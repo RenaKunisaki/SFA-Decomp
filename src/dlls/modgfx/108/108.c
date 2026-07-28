@@ -8,7 +8,7 @@
 #include "main/dll/dll_006C_dummy6c.h"
 #include "dlls/object_descriptor.h"
 
-ObjectDescriptor4 lbl_80313AD0 = {
+ObjectDescriptor4 Dummy6C_funcs = {
     0,
     0,
     0,

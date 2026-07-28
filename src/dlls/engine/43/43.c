@@ -19,7 +19,7 @@ f32 gEffect18Progress2 = 0.1f;
 f32 gEffect18Progress3 = 0.3f;
 
 
-ObjectDescriptor6 lbl_80311038 = {
+ObjectDescriptor6 Effect18_funcs = {
     0,
     0,
     0,

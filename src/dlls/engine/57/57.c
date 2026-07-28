@@ -5,6 +5,7 @@
 #include "main/frame_timing.h"
 #include "main/texture.h"
 #include "main/dll/dll_0039_dummy39.h"
+#include "dlls/object_descriptor.h"
 
 #define DUMMY39_COUNTDOWN_FRAMES 0x28
 #define DUMMY39_WARP_MAP         0x60
@@ -54,7 +55,15 @@ void Dummy39_initialise(void)
     lbl_803DD728 = DUMMY39_COUNTDOWN_FRAMES;
 }
 
-u32 lbl_8031ADD0[10] = {0x00000000, 0x00000000, 0x00000000, 0x00050000,
-        (u32)Dummy39_initialise, (u32)Dummy39_release,
-        0x00000000, (u32)Dummy39_run, (u32)Dummy39_frameEnd,
-        (u32)Dummy39_render};
+ObjectDescriptor6 Dummy39_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_6_SLOTS,
+    (ObjectDescriptorCallback)Dummy39_initialise,
+    (ObjectDescriptorCallback)Dummy39_release,
+    0,
+    (ObjectDescriptorCallback)Dummy39_run,
+    (ObjectDescriptorCallback)Dummy39_frameEnd,
+    (ObjectDescriptorCallback)Dummy39_render,
+};

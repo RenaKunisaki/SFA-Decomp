@@ -3801,7 +3801,7 @@ EmitterCfg gEffect2VelocityRangeTable = {
     {0x00, 0x00},
 };
 
-ObjectDescriptor6 lbl_80310604 = {
+ObjectDescriptor6 partfx_funcs = {
     0,
     0,
     0,

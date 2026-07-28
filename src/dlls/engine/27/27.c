@@ -25,7 +25,7 @@ PartFxSpawnParams lbl_8039C338;
 extern int lbl_803DD2C4;
 
 s32 gEffect2TextureIdTable[4] = {0xDF, 0x1FC, 0x200, 0x1FB};
-ObjectDescriptor6 lbl_80310670 = {
+ObjectDescriptor6 Effect2_funcs = {
     0,
     0,
     0,

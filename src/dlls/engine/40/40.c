@@ -9,7 +9,7 @@
 
 WaterfxCfg gEffect15DefaultSpawnParams;
 
-ObjectDescriptor6 lbl_80310F38 = {
+ObjectDescriptor6 Effect15_funcs = {
     0,
     0,
     0,

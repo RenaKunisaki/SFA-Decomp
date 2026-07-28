@@ -10,7 +10,7 @@
 #include "main/dll/dll_001C_effect3.h"
 
 PartFxSpawnParams lbl_8039C350;
-ObjectDescriptor6 lbl_80310808 = {
+ObjectDescriptor6 Effect3_funcs = {
     0,
     0,
     0,

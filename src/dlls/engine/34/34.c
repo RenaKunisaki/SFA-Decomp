@@ -22,7 +22,7 @@ f32 gEffect9PhaseD = 0.3f;
 
 PartFxSpawnParams lbl_8039C398;
 
-ObjectDescriptor6 lbl_80310BD8 = {
+ObjectDescriptor6 Effect9_funcs = {
     0,
     0,
     0,

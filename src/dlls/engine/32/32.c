@@ -24,7 +24,7 @@ f32 gEffect7TexScrollPhaseB = 0.3f;
 
 PartFxSpawnParams lbl_8039C368;
 
-ObjectDescriptor6 lbl_80310A78 = {
+ObjectDescriptor6 Effect7_funcs = {
     0,
     0,
     0,

@@ -13,6 +13,7 @@
 #include "main/sky.h"
 #include "track/intersect_hud_api.h"
 #include "main/gametext_color_api.h"
+#include "dlls/object_descriptor.h"
 
 f32 lbl_803DD5F4;
 s8 gTitleScreenInitFrameStartPending;
@@ -239,13 +240,15 @@ void TitleScreenInit_initialise(void)
     warpToMap(TITLESCREENINIT_MAP_WARP, 0);
 }
 
-u32 lbl_8031A178[10] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00050000,
-                        (u32)TitleScreenInit_initialise,
-                        (u32)TitleScreenInit_release,
-                        0x00000000,
-                        (u32)TitleScreenInit_frameStart,
-                        (u32)TitleScreenInit_frameEnd,
-                        (u32)TitleScreenInit_render};
+ObjectDescriptor6 TitleScreenInit_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_6_SLOTS,
+    (ObjectDescriptorCallback)TitleScreenInit_initialise,
+    (ObjectDescriptorCallback)TitleScreenInit_release,
+    0,
+    (ObjectDescriptorCallback)TitleScreenInit_frameStart,
+    (ObjectDescriptorCallback)TitleScreenInit_frameEnd,
+    (ObjectDescriptorCallback)TitleScreenInit_render,
+};

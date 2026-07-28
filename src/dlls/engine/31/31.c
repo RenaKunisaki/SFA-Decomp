@@ -19,7 +19,7 @@ f32 gEffect6ScrollPhase1 = 0.3f;
 f32 gEffect6ScrollPhase2 = 0.1f;
 f32 gEffect6ScrollPhase3 = 0.3f;
 
-ObjectDescriptor6 lbl_80310A20 = {
+ObjectDescriptor6 Effect6_funcs = {
     0,
     0,
     0,

@@ -176,7 +176,7 @@ void Effect13_initialise(void)
 {
 }
 
-ObjectDescriptor6 lbl_80310FB8 = {
+ObjectDescriptor6 Effect13_funcs = {
     0,
     0,
     0,

@@ -69,13 +69,15 @@ void dll_3F_initialise(void)
 
 PPCWGPipe GXWGFifo : (0xCC008000);
 
-u32 lbl_8031C5F8[10] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00050000,
-                        (u32)dll_3F_initialise,
-                        (u32)dll_3F_release,
-                        0x00000000,
-                        (u32)dll_3F_frameStart_ret_0,
-                        (u32)dll_3F_frameEnd_nop,
-                        (u32)dll_3F_updateTimerReadout};
+ObjectDescriptor6 dll_3F_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_6_SLOTS,
+    (ObjectDescriptorCallback)dll_3F_initialise,
+    (ObjectDescriptorCallback)dll_3F_release,
+    0,
+    (ObjectDescriptorCallback)dll_3F_frameStart_ret_0,
+    (ObjectDescriptorCallback)dll_3F_frameEnd_nop,
+    (ObjectDescriptorCallback)dll_3F_updateTimerReadout,
+};

@@ -8,7 +8,7 @@
 
 EffectSrcParams gEffect11DefaultSrcParams;
 
-ObjectDescriptor6 lbl_80310D20 = {
+ObjectDescriptor6 Effect11_funcs = {
     0,
     0,
     0,

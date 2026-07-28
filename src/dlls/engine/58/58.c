@@ -1,5 +1,6 @@
 #include "types.h"
 #include "main/dll/dll_003A_dummy3a.h"
+#include "dlls/object_descriptor.h"
 
 void Dummy3A_render(void)
 {
@@ -22,7 +23,15 @@ void Dummy3A_initialise(void)
 {
 }
 
-u32 lbl_8031ADF8[10] = {0x00000000, 0x00000000, 0x00000000, 0x00050000,
-        (u32)Dummy3A_initialise, (u32)Dummy3A_release,
-        0x00000000, (u32)Dummy3A_frameStart, (u32)Dummy3A_frameEnd,
-        (u32)Dummy3A_render};
+ObjectDescriptor6 Dummy3A_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_6_SLOTS,
+    (ObjectDescriptorCallback)Dummy3A_initialise,
+    (ObjectDescriptorCallback)Dummy3A_release,
+    0,
+    (ObjectDescriptorCallback)Dummy3A_frameStart,
+    (ObjectDescriptorCallback)Dummy3A_frameEnd,
+    (ObjectDescriptorCallback)Dummy3A_render,
+};

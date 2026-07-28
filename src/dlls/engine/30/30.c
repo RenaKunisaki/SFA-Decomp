@@ -19,7 +19,7 @@ f32 gEffect5AnimProgressB = 0.3f;
 f32 gEffect5AnimProgressC = 0.1f;
 f32 gEffect5AnimProgressD = 0.3f;
 
-ObjectDescriptor6 lbl_803109B8 = {
+ObjectDescriptor6 Effect5_funcs = {
     0,
     0,
     0,

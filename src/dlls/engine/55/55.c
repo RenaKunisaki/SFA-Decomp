@@ -30,6 +30,7 @@
 #include "main/dll/FRONT/title_menu.h"
 #include "main/dll/dll_0015_curves.h"
 #include "main/gametext_color_api.h"
+#include "dlls/object_descriptor.h"
 
 typedef struct OptionsScreenPanelConfig {
     u16* items;
@@ -553,10 +554,18 @@ OptionsScreenPanelConfig lbl_8031ACB8[4] = {
     {lbl_8031AC04, 0, 0x0203, 0x035b, 0x0368, 0},
 };
 
-u32 lbl_8031ACF8[10] = {0x00000000, 0x00000000, 0x00000000, 0x00050000,
-        (u32)OptionsScreen_initialise, (u32)OptionsScreen_release,
-        0x00000000, (u32)OptionsScreen_frameStart, (u32)OptionsScreen_frameEnd,
-        (u32)OptionsScreen_render};
+ObjectDescriptor6 OptionsScreen_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_6_SLOTS,
+    (ObjectDescriptorCallback)OptionsScreen_initialise,
+    (ObjectDescriptorCallback)OptionsScreen_release,
+    0,
+    (ObjectDescriptorCallback)OptionsScreen_frameStart,
+    (ObjectDescriptorCallback)OptionsScreen_frameEnd,
+    (ObjectDescriptorCallback)OptionsScreen_render,
+};
 
 
 void OptionsScreen_render(int arg)

@@ -23,7 +23,7 @@ f32 lbl_803DB81C = 0.3f;
 
 PartFxSpawnParams lbl_8039C380;
 
-ObjectDescriptor6 lbl_80310B50 = {
+ObjectDescriptor6 Effect8_funcs = {
     0,
     0,
     0,

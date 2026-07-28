@@ -11,7 +11,7 @@
 EffectSrcParams gEffect14SharedSrcParams;
 
 
-ObjectDescriptor6 lbl_80310DE8 = {
+ObjectDescriptor6 Effect14_funcs = {
     0,
     0,
     0,

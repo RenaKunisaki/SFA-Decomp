@@ -1781,7 +1781,7 @@ int pushable_savePos(GameObject* obj)
 
 const f32 lbl_803E06C4 = 0.0f;
 
-ObjectDescriptor12 lbl_803116E0 = {
+ObjectDescriptor12 dll_15_funcs = {
     0,
     0,
     0,

@@ -19,7 +19,7 @@ f32 gEffect20SpawnScrollB = 0.3f;
 f32 gEffect20StepScrollA = 0.1f;
 f32 gEffect20StepScrollB = 0.3f;
 
-ObjectDescriptor6 lbl_80311100 = {
+ObjectDescriptor6 Effect20_funcs = {
     0,
     0,
     0,

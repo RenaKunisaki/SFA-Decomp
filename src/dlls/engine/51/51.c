@@ -4,6 +4,7 @@
 #include "main/frame_timing.h"
 #include "main/model_engine.h"
 #include "main/dll/FRONT/dll_39.h"
+#include "dlls/object_descriptor.h"
 extern int gNrarewareFrameCounter;
 extern f32 gNrarewareStage3Timer;
 extern f32 gNrarewareStage1Timer;
@@ -42,16 +43,18 @@ void n_rareware_frameEnd(void)
 {
 }
 
-u32 lbl_8031A1A0[10] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00050000,
-                        (u32)n_rareware_initialise,
-                        (u32)n_rareware_release,
-                        0x00000000,
-                        (u32)n_rareware_frameStart,
-                        (u32)n_rareware_frameEnd,
-                        (u32)n_rareware_render};
+ObjectDescriptor6 n_rareware_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_6_SLOTS,
+    (ObjectDescriptorCallback)n_rareware_initialise,
+    (ObjectDescriptorCallback)n_rareware_release,
+    0,
+    (ObjectDescriptorCallback)n_rareware_frameStart,
+    (ObjectDescriptorCallback)n_rareware_frameEnd,
+    (ObjectDescriptorCallback)n_rareware_render,
+};
 
 static char sNRarewareReportTag[] = "n_rareware\n";
 

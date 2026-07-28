@@ -22,7 +22,7 @@ f32 gEffect4TickCyclePhaseSlow = 0.3f;
 
 
 
-ObjectDescriptor6 lbl_803108A0 = {
+ObjectDescriptor6 Effect4_funcs = {
     0,
     0,
     0,

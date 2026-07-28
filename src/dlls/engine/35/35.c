@@ -24,7 +24,7 @@ f32 gEffect10TickScrollPhaseB = 0.3f;
 
 EffectSrcParams gEffect10DefaultSrcParams;
 
-ObjectDescriptor6 lbl_80310C60 = {
+ObjectDescriptor6 Effect10_funcs = {
     0,
     0,
     0,

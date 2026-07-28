@@ -21,7 +21,7 @@ f32 gEffect16TimedScrollPhaseB = 0.3f;
 
 WaterfxCfg gEffect16DefaultSpawnSource;
 
-ObjectDescriptor6 lbl_80310E88 = {
+ObjectDescriptor6 Effect16_funcs = {
     0,
     0,
     0,

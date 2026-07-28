@@ -19,7 +19,7 @@ f32 gEffect17AnimProgressC = 0.1f;
 f32 gEffect17AnimProgressD = 0.3f;
 
 
-ObjectDescriptor6 lbl_80310FE0 = {
+ObjectDescriptor6 Effect17_funcs = {
     0,
     0,
     0,

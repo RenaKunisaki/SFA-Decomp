@@ -30,6 +30,7 @@
 #include "main/pause_menu_api.h"
 #include "main/gametext_color_api.h"
 #include "dlls/objects/291_fuelCell.h"
+#include "dlls/object_descriptor.h"
 
 u8 gMinimapEnabled = 1;
 s8 gMinimapSavedViewMode = -1;
@@ -96,45 +97,113 @@ typedef struct MinimapTextBox
     s16 y;
 } MinimapTextBox;
 
-u32 lbl_8031C328[5] = {0xd800e700, 0x20804100, 0x80007fff, 0x00950000, 0x041a0000};
-u32 lbl_8031C33C[5] = {0xd300e200, 0x3c004b00, 0x80007fff, 0x00950000, 0x04420000};
-u32 lbl_8031C350[5] = {0xf1000280, 0xf3800000, 0x80007fff, 0x00950000, 0x04520000};
-u32 lbl_8031C364[5] = {0xf100f880, 0xec00f380, 0x80007fff, 0x00950000, 0x041e0000};
-u32 lbl_8031C378[5] = {0xe200f100, 0xf100fd80, 0x80007fff, 0x00950000, 0x04550000};
-u32 lbl_8031C38C[5] = {0xe480e980, 0xfd800500, 0x80007fff, 0x00950000, 0x041f0000};
-u32 lbl_8031C3A0[5] = {0xcb80df80, 0xec000000, 0x80007fff, 0x00950000, 0x05590000};
-u32 lbl_8031C3B4[5] = {0xdd00e480, 0xf8800000, 0x80007fff, 0x00950000, 0x04410000};
-u32 lbl_8031C3C8[5] = {0xb500cb80, 0xc180d300, 0x80007fff, 0x00950000, 0x052c0000};
-u32 lbl_8031C3DC[5] = {0xfb001180, 0xb500c180, 0x80007fff, 0x00950000, 0x03e00000};
-u32 lbl_8031C3F0[5] = {0xee800000, 0xc180d080, 0x80007fff, 0x00950000, 0x04190000};
-u32 lbl_8031C404[5] = {0x28003480, 0x00001900, 0x80007fff, 0x00950000, 0x04150000};
-u32 lbl_8031C418[10] = {0xb000c400, 0xfd800780, 0x80007fff, 0x00950000, 0x04160000,
-                        0xbc80c400, 0xf8800780, 0x80007fff, 0x00950000, 0x04160000};
-u32 lbl_8031C440[5] = {0xc400cb80, 0xfd800500, 0x80007fff, 0x00950000, 0x04430000};
-u32 lbl_8031C454[5] = {0xe480e980, 0xf600fb00, 0x80007fff, 0x00950000, 0x04590000};
-u32 lbl_8031C468[5] = {0xe700fb00, 0x02801180, 0x80007fff, 0x00950000, 0x04480000};
-u32 lbl_8031C47C[5] = {0xfb000280, 0x07800c80, 0x80007fff, 0x00950000, 0x04180000};
-u32 lbl_8031C490[5] = {0x0a000f00, 0xda80e700, 0x80007fff, 0x00950000, 0x04170000};
-u32 lbl_8031C4A4[5] = {0x05001180, 0xd800df80, 0x80007fff, 0x00950000, 0x04440000};
-u32 lbl_8031C4B8[5] = {0x0c800f00, 0xe700ee80, 0x80007fff, 0x00950000, 0x04450000};
-u32 lbl_8031C4CC[5] = {0x05000f00, 0xec00fb00, 0x80007fff, 0x00950000, 0x04200000};
-u32 lbl_8031C4E0[5] = {0x02800500, 0xee80f600, 0x80007fff, 0x00950000, 0x041d0000};
-u32 lbl_8031C4F4[5] = {0xba00ce00, 0x20803700, 0x80007fff, 0x00950000, 0x04460000};
+MinimapRow gMinimapRowsMap1050[1] = {
+    {-10240, -6400, 8320, 16640, -32768, 32767, 0x95, 0, 0, 1050, 0},
+};
+
+MinimapRow gMinimapRowsMap1090[1] = {
+    {-11520, -7680, 15360, 19200, -32768, 32767, 0x95, 0, 0, 1090, 0},
+};
+
+MinimapRow gMinimapRowsMap1106[1] = {
+    {-3840, 640, -3200, 0, -32768, 32767, 0x95, 0, 0, 1106, 0},
+};
+
+MinimapRow gMinimapRowsMap1054[1] = {
+    {-3840, -1920, -5120, -3200, -32768, 32767, 0x95, 0, 0, 1054, 0},
+};
+
+MinimapRow gMinimapRowsMap1109[1] = {
+    {-7680, -3840, -3840, -640, -32768, 32767, 0x95, 0, 0, 1109, 0},
+};
+
+MinimapRow gMinimapRowsMap1055[1] = {
+    {-7040, -5760, -640, 1280, -32768, 32767, 0x95, 0, 0, 1055, 0},
+};
+
+MinimapRow gMinimapRowsMap1369[1] = {
+    {-13440, -8320, -5120, 0, -32768, 32767, 0x95, 0, 0, 1369, 0},
+};
+
+MinimapRow gMinimapRowsMap1089[1] = {
+    {-8960, -7040, -1920, 0, -32768, 32767, 0x95, 0, 0, 1089, 0},
+};
+
+MinimapRow gMinimapRowsMap1324[1] = {
+    {-19200, -13440, -16000, -11520, -32768, 32767, 0x95, 0, 0, 1324, 0},
+};
+
+MinimapRow gMinimapRowsMap992[1] = {
+    {-1280, 4480, -19200, -16000, -32768, 32767, 0x95, 0, 0, 992, 0},
+};
+
+MinimapRow gMinimapRowsMap1049[1] = {
+    {-4480, 0, -16000, -12160, -32768, 32767, 0x95, 0, 0, 1049, 0},
+};
+
+MinimapRow gMinimapRowsMap1045[1] = {
+    {10240, 13440, 0, 6400, -32768, 32767, 0x95, 0, 0, 1045, 0},
+};
+
+MinimapRow gMinimapRowsMap1046[2] = {
+    {-20480, -15360, -640, 1920, -32768, 32767, 0x95, 0, 0, 1046, 0},
+    {-17280, -15360, -1920, 1920, -32768, 32767, 0x95, 0, 0, 1046, 0},
+};
+
+MinimapRow gMinimapRowsMap1091[1] = {
+    {-15360, -13440, -640, 1280, -32768, 32767, 0x95, 0, 0, 1091, 0},
+};
+
+MinimapRow gMinimapRowsMap1113[1] = {
+    {-7040, -5760, -2560, -1280, -32768, 32767, 0x95, 0, 0, 1113, 0},
+};
+
+MinimapRow gMinimapRowsMap1096[1] = {
+    {-6400, -1280, 640, 4480, -32768, 32767, 0x95, 0, 0, 1096, 0},
+};
+
+MinimapRow gMinimapRowsMap1048[1] = {
+    {-1280, 640, 1920, 3200, -32768, 32767, 0x95, 0, 0, 1048, 0},
+};
+
+MinimapRow gMinimapRowsMap1047[1] = {
+    {2560, 3840, -9600, -6400, -32768, 32767, 0x95, 0, 0, 1047, 0},
+};
+
+MinimapRow gMinimapRowsMap1092[1] = {
+    {1280, 4480, -10240, -8320, -32768, 32767, 0x95, 0, 0, 1092, 0},
+};
+
+MinimapRow gMinimapRowsMap1093[1] = {
+    {3200, 3840, -6400, -4480, -32768, 32767, 0x95, 0, 0, 1093, 0},
+};
+
+MinimapRow gMinimapRowsMap1056[1] = {
+    {1280, 3840, -5120, -1280, -32768, 32767, 0x95, 0, 0, 1056, 0},
+};
+
+MinimapRow gMinimapRowsMap1053[1] = {
+    {640, 1280, -4480, -2560, -32768, 32767, 0x95, 0, 0, 1053, 0},
+};
+
+MinimapRow gMinimapRowsMap1094[1] = {
+    {-17920, -12800, 8320, 14080, -32768, 32767, 0x95, 0, 0, 1094, 0},
+};
 
 MinimapMapEntry gMinimapCellTable[25] = {
-    {(MinimapRow*)lbl_8031C328, 0x059E, 0x13, 1}, {(MinimapRow*)lbl_8031C33C, 0x059E, 0x1B, 1},
-    {(MinimapRow*)lbl_8031C350, 0x05A2, 0x0E, 1}, {(MinimapRow*)lbl_8031C364, 0x05A2, 0x47, 1},
-    {(MinimapRow*)lbl_8031C378, 0x05A3, 0x07, 1}, {(MinimapRow*)lbl_8031C38C, 0x05A3, 0x43, 1},
-    {(MinimapRow*)lbl_8031C3A0, 0x0835, 0x12, 1}, {(MinimapRow*)lbl_8031C3B4, 0x0835, 0x45, 1},
-    {(MinimapRow*)lbl_8031C3C8, 0x082E, 0x0D, 1}, {(MinimapRow*)lbl_8031C3DC, 0x05A1, 0x0C, 1},
-    {(MinimapRow*)lbl_8031C3DC, 0x05A1, 0x10, 1}, {(MinimapRow*)lbl_8031C3DC, 0x05A1, 0x0F, 1},
-    {(MinimapRow*)lbl_8031C3F0, 0x05A1, 0x2B, 1}, {(MinimapRow*)lbl_8031C404, 0x07E5, 0x0B, 1},
-    {(MinimapRow*)lbl_8031C418, 0x059D, 0x04, 2}, {(MinimapRow*)lbl_8031C440, 0x059D, 0x46, 1},
-    {(MinimapRow*)lbl_8031C454, 0x05A3, 0x08, 1}, {(MinimapRow*)lbl_8031C468, 0x05A0, 0x0A, 1},
-    {(MinimapRow*)lbl_8031C47C, 0x05A0, 0x38, 1}, {(MinimapRow*)lbl_8031C490, 0x07E9, 0x32, 1},
-    {(MinimapRow*)lbl_8031C4A4, 0x07E9, 0x15, 1}, {(MinimapRow*)lbl_8031C4B8, 0x07E9, 0x49, 1},
-    {(MinimapRow*)lbl_8031C4CC, 0x082F, 0x1D, 1}, {(MinimapRow*)lbl_8031C4E0, 0x082F, 0x48, 1},
-    {(MinimapRow*)lbl_8031C4F4, 0x07DD, 0x02, 1},
+    {gMinimapRowsMap1050, 0x059E, 0x13, 1}, {gMinimapRowsMap1090, 0x059E, 0x1B, 1},
+    {gMinimapRowsMap1106, 0x05A2, 0x0E, 1}, {gMinimapRowsMap1054, 0x05A2, 0x47, 1},
+    {gMinimapRowsMap1109, 0x05A3, 0x07, 1}, {gMinimapRowsMap1055, 0x05A3, 0x43, 1},
+    {gMinimapRowsMap1369, 0x0835, 0x12, 1}, {gMinimapRowsMap1089, 0x0835, 0x45, 1},
+    {gMinimapRowsMap1324, 0x082E, 0x0D, 1}, {gMinimapRowsMap992, 0x05A1, 0x0C, 1},
+    {gMinimapRowsMap992, 0x05A1, 0x10, 1}, {gMinimapRowsMap992, 0x05A1, 0x0F, 1},
+    {gMinimapRowsMap1049, 0x05A1, 0x2B, 1}, {gMinimapRowsMap1045, 0x07E5, 0x0B, 1},
+    {gMinimapRowsMap1046, 0x059D, 0x04, 2}, {gMinimapRowsMap1091, 0x059D, 0x46, 1},
+    {gMinimapRowsMap1113, 0x05A3, 0x08, 1}, {gMinimapRowsMap1096, 0x05A0, 0x0A, 1},
+    {gMinimapRowsMap1048, 0x05A0, 0x38, 1}, {gMinimapRowsMap1047, 0x07E9, 0x32, 1},
+    {gMinimapRowsMap1092, 0x07E9, 0x15, 1}, {gMinimapRowsMap1093, 0x07E9, 0x49, 1},
+    {gMinimapRowsMap1056, 0x082F, 0x1D, 1}, {gMinimapRowsMap1053, 0x082F, 0x48, 1},
+    {gMinimapRowsMap1094, 0x07DD, 0x02, 1},
 };
 
 void Minimap_drawCompassBlip(void);
@@ -997,13 +1066,15 @@ void Minimap_initialise(void)
     gMinimapBoxY = 340;
 }
 
-u32 lbl_8031C5D0[10] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00040000,
-                        (u32)Minimap_initialise,
-                        (u32)Minimap_release,
-                        0x00000000,
-                        (u32)Minimap_frameStart,
-                        (u32)Minimap_update,
-                        0x00000000};
+ObjectDescriptor6 Minimap_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_5_SLOTS,
+    (ObjectDescriptorCallback)Minimap_initialise,
+    (ObjectDescriptorCallback)Minimap_release,
+    0,
+    (ObjectDescriptorCallback)Minimap_frameStart,
+    (ObjectDescriptorCallback)Minimap_update,
+    0,
+};

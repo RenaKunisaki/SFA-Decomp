@@ -10,7 +10,7 @@
 
 EffectSrcParams gEffect12DefaultSrc;
 
-ObjectDescriptor6 lbl_80310D80 = {
+ObjectDescriptor6 Effect12_funcs = {
     0,
     0,
     0,

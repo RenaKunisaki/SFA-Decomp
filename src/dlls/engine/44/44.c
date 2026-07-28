@@ -150,7 +150,7 @@ void Effect19_initialise(void)
 {
 }
 
-ObjectDescriptor6 lbl_803110D8 = {
+ObjectDescriptor6 Effect19_funcs = {
     0,
     0,
     0,

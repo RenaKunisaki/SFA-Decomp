@@ -1228,7 +1228,7 @@ void sky2_initialise(void)
 
 u8 gSkyConfigFieldIndices[] = {0, 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0};
 
-ObjectDescriptor17 lbl_8030F4AC = {
+ObjectDescriptor17 sky2_funcs = {
     0,
     0,
     0,

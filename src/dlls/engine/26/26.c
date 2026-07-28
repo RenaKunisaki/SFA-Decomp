@@ -1091,7 +1091,7 @@ void Effect1_initialise(void)
 {
 }
 
-ObjectDescriptor6 lbl_80310638 = {
+ObjectDescriptor6 Effect1_funcs = {
     0,
     0,
     0,
