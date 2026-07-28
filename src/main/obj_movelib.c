@@ -25,19 +25,12 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "dolphin/mtx/vec.h"
 #include "main/objfx.h"
+#include "main/dll/baddie_state.h"
 
 f32 lbl_803DC3A0 = 2.0f;
 f32 lbl_803DC3A4 = 0.2f;
 f32 lbl_803DC3A8 = 20.0f;
 u16 lbl_803DC3AC = 0x40;
-
-typedef struct ObjUpdateRomCurveFollowVelocityState
-{
-    u8 pad0[0x28C - 0x0];
-    f32 velX;
-    f32 velZ;
-    u8 pad294[0x298 - 0x294];
-} ObjUpdateRomCurveFollowVelocityState;
 
 int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int count, f32 intensity,
                                ModelLight** light)
@@ -296,14 +289,14 @@ int Obj_UpdateRomCurveFollowVelocityIndexed(GameObject* obj, RomCurveWalker* rou
     delta[2] = route->posZ - obj->anim.localPosZ;
     if ((u8)flag == 0)
     {
-        ObjUpdateRomCurveFollowVelocityState* state = obj->extra;
+        BaddieState* state = obj->extra;
         s16 raw;
         delta[0] = obj->anim.localPosX - route->posX;
         delta[2] = obj->anim.localPosZ - route->posZ;
         raw = (s16)getAngle(delta[0], delta[2]);
         ang = Obj_HeadingRadians(raw);
-        state->velZ = speed * -mathSinf(ang);
-        state->velX = speed * -mathCosf(ang);
+        state->moveInputX = speed * -mathSinf(ang);
+        state->moveInputZ = speed * -mathCosf(ang);
     }
     else
     {
@@ -344,14 +337,14 @@ int Obj_UpdateRomCurveFollowVelocity(GameObject* obj, RomCurveWalker* route, f32
     delta[2] = route->posZ - obj->anim.localPosZ;
     if ((u8)flag == 0)
     {
-        ObjUpdateRomCurveFollowVelocityState* state = obj->extra;
+        BaddieState* state = obj->extra;
         s16 raw;
         delta[0] = obj->anim.localPosX - route->posX;
         delta[2] = obj->anim.localPosZ - route->posZ;
         raw = (s16)getAngle(delta[0], delta[2]);
         ang = Obj_HeadingRadians(raw);
-        state->velZ = speed * -mathSinf(ang);
-        state->velX = speed * -mathCosf(ang);
+        state->moveInputX = speed * -mathSinf(ang);
+        state->moveInputZ = speed * -mathCosf(ang);
     }
     else
     {
