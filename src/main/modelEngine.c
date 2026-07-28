@@ -315,6 +315,7 @@
 #include "dlls/objects/519_WM_Worm.h"
 #include "dlls/objects/520_WM_Wallpowe.h"
 #include "dlls/objects/521_WM_LevelCon.h"
+#include "dlls/objects/522_WM_GeneralS.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -450,7 +451,7 @@ extern ResourceDescriptor gVFP_lavapoolObjDescriptor, gVFP_lavastarObjDescriptor
 extern ResourceDescriptor gWCLevelContObjDescriptor,
     gWCPushBlockObjDescriptor, gWCTempleBriObjDescriptor,
     gWCTileObjDescriptor;
-extern ResourceDescriptor gWM_GeneralScalesObjDescriptor, gWM_PlanetsObjDescriptor;
+extern ResourceDescriptor gWM_PlanetsObjDescriptor;
 extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_WallCrawlerObjDescriptor, gWM_newcrystalObjDescriptor,
     gWM_seqpointObjDescriptor;
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWaterFlowWeObjDescriptor;
@@ -1643,7 +1644,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWM_WormObjDescriptor,
     (ResourceDescriptor*)&gWM_WallpoweNullResourceDescriptor,
     (ResourceDescriptor*)&gWM_LevelControlObjDescriptor,
-    &gWM_GeneralScalesObjDescriptor,
+    (ResourceDescriptor*)&gWM_GeneralScalesObjDescriptor,
     &gFireFlyObjDescriptor,
     &gWM_spiritplaceObjDescriptor,
     &gWM_seqpointObjDescriptor,

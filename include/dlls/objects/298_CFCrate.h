@@ -6,6 +6,8 @@
 #include "game/objects/object_setup.h"
 #include "main/objanim_update.h"
 
+#define CFCRATE_OBJ_SCALESSWORD 0x1B8
+
 /*
  * Every retail EN placement for this family has a fixed 0x0C-byte parameter
  * tail, proving the complete 0x24-byte layout.

@@ -34,7 +34,6 @@ typedef enum CFCrateObjectId {
     CFCRATE_OBJ_CF_POWER_CRYS = 0x0D7, /* CFPowerCrys */
     CFCRATE_OBJ_DIM2_ICE_FLOE = 0x10D, /* DIM2IceFloe */
     CFCRATE_OBJ_SB_LAMP = 0x125,       /* SB_Lamp */
-    CFCRATE_OBJ_SCALESSWORD = 0x1B8,   /* scalessword */
     CFCRATE_OBJ_DFSH_COL = 0x1D0,      /* DFSHcol */
     CFCRATE_OBJ_LINK_BLUE_MU = 0x1D1,  /* LINK_BlueMu */
     CFCRATE_OBJ_ECSH_COL = 0x1D7,      /* ECSHcol */

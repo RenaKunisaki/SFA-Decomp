@@ -4,12 +4,12 @@
  */
 #include "dlls/objects/397_MMSH_Scales.h"
 
+#include "dlls/objects/298_CFCrate.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
-#define MMSH_SCALES_CHILD_OBJECT_ID         0x1B8
 #define MMSH_SCALES_OBJECT_TYPE_ID          0xB
 #define MMSH_SCALES_CLASS_ID                0x10
 #define MMSH_SCALES_CHILD_SETUP_FLAGS       5
@@ -122,7 +122,8 @@ void mmshScales_init(GameObject* obj, const MMSHScalesPlacement* placement) {
     if (Obj_IsLoadingLocked() == 0) {
         return;
     }
-    childSetup = (MMSHScalesChildSetup*)Obj_AllocObjectSetup(sizeof(MMSHScalesChildSetup), MMSH_SCALES_CHILD_OBJECT_ID);
+    childSetup =
+        (MMSHScalesChildSetup*)Obj_AllocObjectSetup(sizeof(MMSHScalesChildSetup), CFCRATE_OBJ_SCALESSWORD);
     childSetup->base.posX = obj->anim.localPosX;
     childSetup->base.posY = obj->anim.localPosY;
     childSetup->base.posZ = obj->anim.localPosZ;

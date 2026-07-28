@@ -35,7 +35,7 @@ which now carries prose evidence notes, so they have been dropped.
 | proposal still differs | 21 |
 | name-conflicts (disambiguated) | 0 |
 | naming contradictions (appendix) | 19 |
-| unit-owned headers recorded (appendix) | 111 |
+| unit-owned headers recorded (appendix) | 112 |
 
 Expansion status over the 705 rows: NO-RETAIL-NAME 288, COMPLETE 264, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 3
 
@@ -571,7 +571,7 @@ any of them is acted on.
 | 0x207 | WM_Worm | COMPLETE | dlls/objects/519_WM_Worm/WM_Worm.c | = (canonical) | Exact complete nine-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x1C-byte state, asserted callback-visible placement prefix, canonical unit header, and typed object, effect, frame-timing, and distance interfaces, with exact emitted runtime sections and semantic relocations and symbols; the complete retail placement width is not established, and the generated source path remains unchanged |
 | 0x208 | WM_Wallpowe | COMPLETE | dlls/objects/520_WM_Wallpowe/WM_Wallpowe.c | = (canonical) | Exact functionless TU containing its proven eight-byte, two-word null resource record in raw storage, with a canonical unit header, explicit size assertion, exact emitted small-data bytes, and an exact registry relocation after intended symbol normalization; the generated source path remains unchanged |
 | 0x209 | WM_LevelCon | COMPLETE | dlls/objects/521_WM_LevelCon/WM_LevelCon.c | = (canonical) | Exact complete ten-function TU with its proven earlier 0x38-byte descriptor, complete allocation-backed and fully asserted 0x1C-byte state, canonical unit header, canonical object/vector fields, typed subsystem interfaces, attached control-flow braces, and an explicitly cast registry boundary, with exact emitted runtime sections and semantic relocations and public symbols; raw object bookkeeping differs only in anonymous pool ordinals and undefined-symbol order, and the generated source path remains unchanged |
-| 0x20A | WM_GeneralS | COMPLETE | dlls/objects/522_WM_GeneralS/WM_GeneralS.c | = (canonical) | — |
+| 0x20A | WM_GeneralS | COMPLETE | dlls/objects/522_WM_GeneralS/WM_GeneralS.c | = (canonical) | Exact complete ten-function TU with its proven early 0x38-byte descriptor followed by the compiler-generated 0x24-byte switch table, allocation-backed and fully asserted 0x08-byte state, shared complete 0x24-byte CFCrate-family scalessword placement and object ID, canonical unit header, and exact 0x344-byte text, 0x5C-byte data, 0x10-byte small-constant image, semantic relocations, and public symbols after the evidenced callback rename; the CFCrate, MMSH_Scales, and registry consumers remain raw-object exact, and the generated source path remains unchanged |
 | 0x20B | FireFly | COMPLETE | dlls/objects/523_FireFly/FireFly.c | = (canonical) | — |
 | 0x20C | WM_spiritpl | COMPLETE | dlls/objects/524_WM_spiritpl/WM_spiritpl.c | = (canonical) | — |
 | 0x20D | WM_seqpoint | COMPLETE | dlls/objects/525_WM_seqpoint/WM_seqpoint.c | = (canonical) | — |
@@ -925,6 +925,7 @@ more as they are recovered.
 | 0x207 | dlls/objects/519_WM_Worm/WM_Worm.c | include/dlls/objects/519_WM_Worm.h |
 | 0x208 | dlls/objects/520_WM_Wallpowe/WM_Wallpowe.c | include/dlls/objects/520_WM_Wallpowe.h |
 | 0x209 | dlls/objects/521_WM_LevelCon/WM_LevelCon.c | include/dlls/objects/521_WM_LevelCon.h |
+| 0x20A | dlls/objects/522_WM_GeneralS/WM_GeneralS.c | include/dlls/objects/522_WM_GeneralS.h |
 | 0x22F | dlls/objects/559_DFP_floorba/DFP_floorba.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |
