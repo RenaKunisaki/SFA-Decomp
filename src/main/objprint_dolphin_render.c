@@ -2442,6 +2442,7 @@ void defragMemory(int mode)
     int i;
     int pass;
     int done;
+    int d;
     u8* base = gResourceFileTable;
     done = 0;
     pass = 0;
@@ -2627,7 +2628,6 @@ void defragMemory(int mode)
                     }
                     else
                     {
-                        int d;
                         memcpy(n, *(void**)q1, *(int*)q3);
                         d = mmSetFreeDelay(0);
                         mm_free(*(void**)q1);
