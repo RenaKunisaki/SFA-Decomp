@@ -133,18 +133,11 @@ const IndTexMtx23 lbl_802C1E28 = {
 const IndTexMtx23 gTexIndMtxTable = {
     {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
 
-extern f32 Prepared_803DEAD8;
-extern f32 lbl_803DEAE0;
-extern int lbl_803DEAB0; /* first word of a GXColorS10 (through 803DEAC0) */
-extern int lbl_803DEAB8;
-extern int lbl_803DEABC;
-extern int lbl_803DEAC0;
+static const GXColorS10 kYuvTevColor0 = { -90, 0, -114, 135 };
+static const GXColor kYuvKColor0 = { 0x00, 0x00, 0xE2, 0x58 };
+static const GXColor kYuvKColor1 = { 0xB3, 0x00, 0x00, 0xB6 };
+static const GXColor kYuvKColor2 = { 0xFF, 0x00, 0xFF, 0x80 };
 extern GXTexObj lbl_803779A0;
-extern f32 lbl_803DEADC;
-extern f32 lbl_803DEAFC;
-extern f32 lbl_803DEB00;
-extern f32 lbl_803DEAC8;
-extern f32 lbl_803DEACC;
 
 
 void gxTextureFn_8004bf88(void* bufp, u8 flag1, u8 flag2, int* out1, int* out2)
@@ -266,20 +259,14 @@ void gxTextureFn_8004bf88(void* bufp, u8 flag1, u8 flag2, int* out1, int* out2)
     }
 }
 
-extern f32 lbl_803DEB04;
-extern f32 lbl_803DEB08;
-extern f32 lbl_803DEB0C;
-extern f32 lbl_803DEB10;
-extern f32 lbl_803DEB14;
-extern f32 lbl_803DEB18;
 
 void setHeatEffectParams(u8 alpha, f32 scale)
 {
     gHeatEffectColor.a = alpha;
     gHeatEffectScale = scale;
-    if (scale > lbl_803DEAC8)
+    if (scale > 1.0f)
     {
-        gHeatEffectScale = lbl_803DEAC8;
+        gHeatEffectScale = 1.0f;
     }
 }
 
@@ -391,8 +378,8 @@ void textureFn_8004c330(void* p1, void* mtx)
         DCFlushRange(lbl_803DCD2C + 0x60, ((Texture*)lbl_803DCD2C)->dataSize);
     }
     newshadows_getReflectionScrollOffsets(&sx, &sy);
-    m.v[0][1] = lbl_803DEAE0 * mathSinf(Prepared_803DEAD8 * sx) + lbl_803DEADC;
-    m.v[1][2] = lbl_803DEAE0 * mathSinf(Prepared_803DEAD8 * sy) + lbl_803DEADC;
+    m.v[0][1] = 0.25f * mathSinf(3.142f * sx) + 0.5f;
+    m.v[1][2] = 0.25f * mathSinf(3.142f * sy) + 0.5f;
     GXSetTevOrder(lbl_803DCD90, GX_TEXCOORD0, lbl_803DCD8C + 1, GX_ALPHA_BUMPN);
     GXSetTevSwapMode(lbl_803DCD90, GX_TEV_SWAP0, GX_TEV_SWAP0);
     if (mtx != 0)
@@ -517,11 +504,11 @@ void addYUVVideoTevStages(void* tex0, void* tex1, void* tex2, s16 w, s16 h)
         GXSetTevSwapMode(lbl_803DCD90 + 4, GX_TEV_SWAP0, GX_TEV_SWAP0);
         GXSetTevKColorSel(lbl_803DCD90 + 4, GX_TEV_KCSEL_1_4);
         lbl_803DCD30 = 1;
-        cs10 = *(GXColorS10*)&lbl_803DEAB0;
+        cs10 = kYuvTevColor0;
         GXSetTevColorS10(GX_TEVREG0, cs10);
-        GXSetTevKColor(lbl_803DCD74, *(GXColor*)&lbl_803DEAB8);
-        GXSetTevKColor(lbl_803DCD74 + 1, *(GXColor*)&lbl_803DEABC);
-        GXSetTevKColor(lbl_803DCD74 + 2, *(GXColor*)&lbl_803DEAC0);
+        GXSetTevKColor(lbl_803DCD74, kYuvKColor0);
+        GXSetTevKColor(lbl_803DCD74 + 1, kYuvKColor1);
+        GXSetTevKColor(lbl_803DCD74 + 2, kYuvKColor2);
         GXInitTexObj((GXTexObj*)buf5c, tex0, w, h, GX_TF_I8, GX_CLAMP, GX_CLAMP, 0);
         GXInitTexObjLOD((GXTexObj*)buf5c, 0, 0, 0.0f, 0.0f, 0.0f, 0, 0, 0);
         GXLoadTexObj((GXTexObj*)buf5c, lbl_803DCD8C);
@@ -696,10 +683,10 @@ void addShadowFalloffTevStages(void)
     }
     else
     {
-        dist = lbl_803DEAFC;
+        dist = 100.0f;
     }
-    tmp = dist - lbl_803DEB00;
-    t = -(lbl_803DEAC8 / (dist - tmp));
+    tmp = dist - 10.0f;
+    t = -(1.0f / (dist - tmp));
     mtx2[0][0] = 0.0f;
     mtx2[0][1] = 0.0f;
     mtx2[0][2] = t;
@@ -779,7 +766,7 @@ void addWavyCausticTevStage(void)
     int id;
     f32 v;
     indmtx = lbl_802C1E10;
-    v = lbl_803DEADC * getNewShadowDistortionWaveOffset();
+    v = 0.5f * getNewShadowDistortionWaveOffset();
     indmtx.m[0][0] = v;
     indmtx.m[1][2] = v;
     if (lbl_803DCD88 > 0)
@@ -889,9 +876,9 @@ void setupHeatShimmerTevStages(char* p1)
     }
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     newshadows_getReflectionScrollOffsets(&rx, &ry);
-    mathSinCosf(Prepared_803DEAD8 * rx, &sv, &cv);
-    s = mathCosf(Prepared_803DEAD8 * ry);
-    k = lbl_803DEB08 * s + lbl_803DEB04;
+    mathSinCosf(3.142f * rx, &sv, &cv);
+    s = mathCosf(3.142f * ry);
+    k = 0.125f * s + 0.75f;
     k = k * gHeatEffectScale;
     cv = cv * k;
     sv = sv * k;
@@ -899,10 +886,10 @@ void setupHeatShimmerTevStages(char* p1)
     m1.v[0][1] = sv;
     m1.v[1][0] = -sv;
     m1.v[1][1] = cv;
-    mathSinCosf(Prepared_803DEAD8 * -ry, &sv, &cv);
-    s = mathCosf(Prepared_803DEAD8 * rx);
-    f31v = lbl_803DEADC * s + lbl_803DEADC;
-    k = lbl_803DEB08 * s + lbl_803DEB04;
+    mathSinCosf(3.142f * -ry, &sv, &cv);
+    s = mathCosf(3.142f * rx);
+    f31v = 0.5f * s + 0.5f;
+    k = 0.125f * s + 0.75f;
     k = k * gHeatEffectScale;
     cv = cv * k;
     sv = sv * k;
@@ -928,7 +915,7 @@ void setupHeatShimmerTevStages(char* p1)
         if (b != 0xff)
         {
             mapTextureScrollGetOffset(b, &tsx, &tsy);
-            PSMTXTrans(mtx64, tsx, tsy, lbl_803DEACC);
+            PSMTXTrans(mtx64, tsx, tsy, 0.0f);
         }
         else
         {
@@ -950,8 +937,8 @@ void setupHeatShimmerTevStages(char* p1)
             GXLoadTexObj((GXTexObj*)obj, GX_TEXMAP1);
         }
     }
-    PSMTXScale(mtxf4, 0.9f, 0.9f, lbl_803DEAC8);
-    mtxf4[1][3] = lbl_803DEB08 * ry;
+    PSMTXScale(mtxf4, 0.9f, 0.9f, 1.0f);
+    mtxf4[1][3] = 0.125f * ry;
     GXLoadTexMtxImm(mtxf4, GX_PTTEXMTX0, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX0);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
@@ -959,10 +946,10 @@ void setupHeatShimmerTevStages(char* p1)
     GXSetIndTexMtx(GX_ITM_0, m1.v, -2);
     GXSetIndTexMtx(GX_ITM_1, m2.v, -2);
     GXSetTevIndirect(1, 0, 0, 7, 1, 6, 6, 0, 0, 0);
-    PSMTXScale(mtxc4, lbl_803DEB0C, *(f32*)&lbl_803DEB0C, lbl_803DEAC8);
-    PSMTXRotRad(mtx94, 0x7a, lbl_803DEB10);
+    PSMTXScale(mtxc4, 1.2f, 1.2f, 1.0f);
+    PSMTXRotRad(mtx94, 0x7a, 0.7853982f);
     PSMTXConcat(mtx94, mtxc4, mtxc4);
-    t = lbl_803DEB14 * rx;
+    t = 0.0625f * rx;
     mtxc4[0][3] = t;
     mtxc4[1][3] = t;
     GXLoadTexMtxImm(mtxc4, GX_PTTEXMTX1, GX_MTX3x4);
@@ -970,7 +957,7 @@ void setupHeatShimmerTevStages(char* p1)
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD2, GX_TEXMAP1);
     GXSetIndTexCoordScale(GX_INDTEXSTAGE1, GX_ITS_1, GX_ITS_1);
     GXSetTevIndirect(2, 1, 0, 7, 2, 0, 0, 1, 0, 0);
-    gHeatEffectColor.r = lbl_803DEB18 * f31v;
+    gHeatEffectColor.r = 64.0f * f31v;
     gHeatEffectColor.g = 0;
     gHeatEffectColor.b = 0;
     GXSetTevKColor(lbl_803DCD74, gHeatEffectColor);
@@ -1011,11 +998,6 @@ void setupHeatShimmerTevStages(char* p1)
 }
 
 
-extern f32 lbl_803DEB1C;
-extern f32 lbl_803DEB20;
-extern f32 lbl_803DEB24;
-extern f32 lbl_803DEB28;
-extern f32 SaveStart_803DEAD0;
 
 void addWarpedRingTevStages(void)
 {
@@ -1044,46 +1026,46 @@ void addWarpedRingTevStages(void)
     vd = ((Vec*)&lbl_802C1D50)[7];
     im = *(IndTexMtx23*)((Vec*)&lbl_802C1D50 + 8);
     invView = Camera_GetInverseViewMatrix();
-    PSMTXRotAxisRad(mf8, &va, lbl_803DEAC8);
-    PSMTXRotAxisRad(mc8, &vb, lbl_803DEAC8);
-    PSMTXRotAxisRad(m98, &vc, lbl_803DEAC8);
-    PSMTXRotAxisRad(m68, &vd, lbl_803DEAC8);
-    m1e8[0][0] = lbl_803DEB1C;
+    PSMTXRotAxisRad(mf8, &va, 1.0f);
+    PSMTXRotAxisRad(mc8, &vb, 1.0f);
+    PSMTXRotAxisRad(m98, &vc, 1.0f);
+    PSMTXRotAxisRad(m68, &vd, 1.0f);
+    m1e8[0][0] = 0.008f;
     m1e8[0][1] = 0.0f;
     m1e8[0][2] = 0.0f;
-    m1e8[0][3] = SaveStart_803DEAD0 * (*(f32*)&lbl_803DEB20 * playerMapOffsetX);
+    m1e8[0][3] = 0.8f * (0.01f * playerMapOffsetX);
     m1e8[1][0] = 0.0f;
-    m1e8[1][1] = lbl_803DEB1C;
+    m1e8[1][1] = 0.008f;
     m1e8[1][2] = 0.0f;
     m1e8[1][3] = 0.0f;
     m1e8[2][0] = 0.0f;
     m1e8[2][1] = 0.0f;
-    m1e8[2][2] = lbl_803DEB1C;
-    m1e8[2][3] = SaveStart_803DEAD0 * (lbl_803DEB20 * playerMapOffsetZ);
-    m1b8[0][0] = lbl_803DEB24;
+    m1e8[2][2] = 0.008f;
+    m1e8[2][3] = 0.8f * (0.01f * playerMapOffsetZ);
+    m1b8[0][0] = 0.005f;
     m1b8[0][1] = 0.0f;
     m1b8[0][2] = 0.0f;
-    m1b8[0][3] = lbl_803DEADC * (lbl_803DEB20 * playerMapOffsetX);
+    m1b8[0][3] = 0.5f * (0.01f * playerMapOffsetX);
     m1b8[1][0] = 0.0f;
-    m1b8[1][1] = lbl_803DEB24;
+    m1b8[1][1] = 0.005f;
     m1b8[1][2] = 0.0f;
     m1b8[1][3] = 0.0f;
     m1b8[2][0] = 0.0f;
     m1b8[2][1] = 0.0f;
-    m1b8[2][2] = lbl_803DEB24;
-    m1b8[2][3] = lbl_803DEADC * (lbl_803DEB20 * playerMapOffsetZ);
+    m1b8[2][2] = 0.005f;
+    m1b8[2][3] = 0.5f * (0.01f * playerMapOffsetZ);
     PSMTXConcat(m1e8, invView, m1e8);
     PSMTXConcat(mf8, m1e8, m1e8);
     m1e8[2][0] = 0.0f;
     m1e8[2][1] = 0.0f;
     m1e8[2][2] = 0.0f;
-    m1e8[2][3] = lbl_803DEAC8;
+    m1e8[2][3] = 1.0f;
     PSMTXConcat(m1b8, invView, m1b8);
     PSMTXConcat(mc8, m1b8, m1b8);
     m1b8[2][0] = 0.0f;
     m1b8[2][1] = 0.0f;
     m1b8[2][2] = 0.0f;
-    m1b8[2][3] = lbl_803DEAC8;
+    m1b8[2][3] = 1.0f;
     GXLoadTexMtxImm(m1e8, lbl_803DCD80, 0);
     GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
     GXLoadTexMtxImm(m1b8, lbl_803DCD80 + 3, 0);
@@ -1107,49 +1089,49 @@ void addWarpedRingTevStages(void)
     newshadows_getReflectionScrollOffsets(&rx, &ry);
     GXSetIndTexMtx(GX_ITM_1, im.v, -1);
     GXSetIndTexOrder(lbl_803DCD7C, lbl_803DCD88 + 2, lbl_803DCD8C + 1);
-    m188[0][0] = lbl_803DEB20;
+    m188[0][0] = 0.01f;
     m188[0][1] = 0.0f;
     m188[0][2] = 0.0f;
-    m188[0][3] = lbl_803DEB20 * playerMapOffsetX + rx;
+    m188[0][3] = 0.01f * playerMapOffsetX + rx;
     m188[1][0] = 0.0f;
-    m188[1][1] = lbl_803DEB20;
+    m188[1][1] = 0.01f;
     m188[1][2] = 0.0f;
     m188[1][3] = 0.0f;
     m188[2][0] = 0.0f;
     m188[2][1] = 0.0f;
-    m188[2][2] = lbl_803DEB20;
-    m188[2][3] = lbl_803DEB20 * playerMapOffsetZ;
-    PSMTXRotRad(m128, 0x79, lbl_803DEB28);
+    m188[2][2] = 0.01f;
+    m188[2][3] = 0.01f * playerMapOffsetZ;
+    PSMTXRotRad(m128, 0x79, 1.1693705f);
     PSMTXConcat(m128, m188, m188);
     PSMTXConcat(m188, invView, m188);
     PSMTXConcat(m98, m188, m188);
     m188[2][0] = 0.0f;
     m188[2][1] = 0.0f;
     m188[2][2] = 0.0f;
-    m188[2][3] = lbl_803DEAC8;
+    m188[2][3] = 1.0f;
     GXLoadTexMtxImm(m188, lbl_803DCD80 + 6, 0);
     GXSetTexCoordGen2(lbl_803DCD88 + 2, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80 + 6);
     GXSetTevIndirect(lbl_803DCD90, lbl_803DCD7C, 0, 2, 2, 0, 0, 0, 0, 0);
     GXSetIndTexCoordScale(lbl_803DCD7C, 0, 0);
     GXSetIndTexOrder(lbl_803DCD7C + 1, lbl_803DCD88 + 3, lbl_803DCD8C + 1);
-    m158[0][0] = lbl_803DEB20;
+    m158[0][0] = 0.01f;
     m158[0][1] = 0.0f;
     m158[0][2] = 0.0f;
-    m158[0][3] = lbl_803DEB20 * playerMapOffsetX;
+    m158[0][3] = 0.01f * playerMapOffsetX;
     m158[1][0] = 0.0f;
-    m158[1][1] = lbl_803DEB20;
+    m158[1][1] = 0.01f;
     m158[1][2] = 0.0f;
     m158[1][3] = 0.0f;
     m158[2][0] = 0.0f;
     m158[2][1] = 0.0f;
-    m158[2][2] = lbl_803DEB20;
-    m158[2][3] = lbl_803DEB20 * playerMapOffsetZ + ry;
+    m158[2][2] = 0.01f;
+    m158[2][3] = 0.01f * playerMapOffsetZ + ry;
     PSMTXConcat(m158, invView, m158);
     PSMTXConcat(m68, m158, m158);
     m158[2][0] = 0.0f;
     m158[2][1] = 0.0f;
     m158[2][2] = 0.0f;
-    m158[2][3] = lbl_803DEAC8;
+    m158[2][3] = 1.0f;
     GXLoadTexMtxImm(m158, lbl_803DCD80 + 9, 0);
     GXSetTexCoordGen2(lbl_803DCD88 + 3, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80 + 9);
     GXSetTevIndirect(lbl_803DCD90 + 1, lbl_803DCD7C + 1, 0, 2, 2, 0, 0, 1, 0, 0);
@@ -1193,8 +1175,6 @@ void addWarpedRingTevStages(void)
     lbl_803DCD68 += 2;
 }
 
-extern f32 lbl_803DEAC4;
-extern f32 lbl_803DEB2C;
 
 void renderHeavyFog(void* fogColor)
 {
@@ -1213,9 +1193,9 @@ void renderHeavyFog(void* fogColor)
     iv = (f32(*)[4])Camera_GetInverseViewMatrix();
     mcc[0][0] = 0.0f;
     mcc[0][1] = 0.0f;
-    mcc[0][2] = lbl_803DEAC4 / lbl_803DCD3C;
+    mcc[0][2] = -1.0f / lbl_803DCD3C;
     mcc[0][3] = lbl_803DCD38;
-    k = lbl_803DEAC4 / (lbl_803DCD44 - lbl_803DCD40);
+    k = -1.0f / (lbl_803DCD44 - lbl_803DCD40);
     mcc[1][0] = k * iv[1][0];
     mcc[1][1] = k * iv[1][1];
     mcc[1][2] = k * iv[1][2];
@@ -1223,7 +1203,7 @@ void renderHeavyFog(void* fogColor)
     mcc[2][0] = 0.0f;
     mcc[2][1] = 0.0f;
     mcc[2][2] = 0.0f;
-    mcc[2][3] = lbl_803DEAC8;
+    mcc[2][3] = 1.0f;
     GXLoadTexMtxImm(mcc, lbl_803DCD80, 0);
     GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, lbl_803DCD80);
     GXSetTevKColor(lbl_803DCD74, *(GXColor*)fogColor);
@@ -1246,8 +1226,8 @@ void renderHeavyFog(void* fogColor)
     if (lbl_803DCD31 != 0)
     {
         newshadows_getReflectionScrollOffsets(&a, &b);
-        b = b * lbl_803DEAE0;
-        a = a * lbl_803DEB08;
+        b = b * 0.25f;
+        a = a * 0.125f;
         GXSetIndTexMtx(GX_ITM_1, im.v, -2);
         GXSetIndTexOrder(lbl_803DCD7C, lbl_803DCD88 + 1, lbl_803DCD8C + 1);
         m9c[0][0] = lbl_803DCD34;
@@ -1261,8 +1241,8 @@ void renderHeavyFog(void* fogColor)
         m9c[2][0] = 0.0f;
         m9c[2][1] = 0.0f;
         m9c[2][2] = 0.0f;
-        m9c[2][3] = lbl_803DEAC8;
-        PSMTXRotRad(mrot, 0x7a, lbl_803DEB28);
+        m9c[2][3] = 1.0f;
+        PSMTXRotRad(mrot, 0x7a, 1.1693705f);
         PSMTXConcat(mrot, m9c, m9c);
         PSMTXConcat(m9c, iv, m9c);
         GXLoadTexMtxImm(m9c, lbl_803DCD80 + 3, 0);
@@ -1281,8 +1261,8 @@ void renderHeavyFog(void* fogColor)
         m6c[2][0] = 0.0f;
         m6c[2][1] = 0.0f;
         m6c[2][2] = 0.0f;
-        m6c[2][3] = lbl_803DEAC8;
-        PSMTXRotRad(mrot, 0x78, lbl_803DEB2C);
+        m6c[2][3] = 1.0f;
+        PSMTXRotRad(mrot, 0x78, 0.38397244f);
         PSMTXConcat(mrot, m6c, m6c);
         PSMTXConcat(m6c, iv, m6c);
         GXLoadTexMtxImm(m6c, lbl_803DCD80 + 6, 0);
@@ -1425,9 +1405,7 @@ int lbl_8030CEE0[9] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8,
 };
 
-extern f32 lbl_803DEB38;
 
-extern f32 lbl_803DEB3C;
 
 void addPointLightAccumStages(f32 scale, int* colorIn, f32* pos)
 {
@@ -1984,7 +1962,7 @@ void addEnvMapTexCoord(int scale)
 {
     f32 m[3][4];
     PSMTXScale(m, scale, scale, 0.0f);
-    m[2][3] = lbl_803DEAC8;
+    m[2][3] = 1.0f;
     GXLoadTexMtxImm(m, lbl_803DCD80, 0);
     GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, lbl_803DCD80);
     lbl_803DCD80 += 3;
@@ -2029,9 +2007,9 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
     {
         result = 1;
     }
-    v = lbl_803DEADC * (lbl_803DEB38 * ((f32)(s32)((p3 & 0xf0) >> 4) / lbl_803DEB3C - lbl_803DEAC8));
+    v = 0.5f * (3.0f * ((f32)(s32)((p3 & 0xf0) >> 4) / 7.0f - 1.0f));
     PSMTXScale(mtx, v, v, 0.0f);
-    mtx[2][3] = lbl_803DEAC8;
+    mtx[2][3] = 1.0f;
     GXLoadTexMtxImm(mtx, lbl_803DCD80, 0);
     GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, GX_TG_BINRM, GX_TEXMTX0, GX_FALSE, lbl_803DCD80);
     GXSetTexCoordGen2(lbl_803DCD88 + 1, GX_TG_MTX2x4, GX_TG_TANGENT, GX_TEXMTX0, GX_FALSE, lbl_803DCD80);
@@ -2124,7 +2102,6 @@ void addAlphaLitColorReg2Stage(u8 mode)
     lbl_803DCD90 = lbl_803DCD90 + 1;
     lbl_803DCD6A++;
 }
-extern f32 lbl_803DEB40;
 
 void addLightTexReg2Stage(void* p1, u8 flag2, u8 flag3)
 {
@@ -2142,8 +2119,8 @@ void addLightTexReg2Stage(void* p1, u8 flag2, u8 flag3)
     }
     else
     {
-        PSMTXScale(mtxA, lbl_803DEB40, *(f32*)&lbl_803DEB40, 0.0f);
-        PSMTXTrans(mtxB, lbl_803DEADC, *(f32*)&lbl_803DEADC, lbl_803DEAC8);
+        PSMTXScale(mtxA, -0.5f, -0.5f, 0.0f);
+        PSMTXTrans(mtxB, 0.5f, 0.5f, 1.0f);
         PSMTXConcat(mtxB, mtxA, mtxA);
         GXLoadTexMtxImm(mtxA, lbl_803DCD80, 0);
         GXSetTexCoordGen2(lbl_803DCD88, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, lbl_803DCD80);
@@ -2203,8 +2180,8 @@ void textureFn_80051348(void* p1, u8 p2)
     int out_c;
     int out_8;
     int texmap;
-    PSMTXScale(mtxA, lbl_803DEB40, *(f32*)&lbl_803DEB40, 0.0f);
-    PSMTXTrans(mtxB, lbl_803DEADC, *(f32*)&lbl_803DEADC, lbl_803DEAC8);
+    PSMTXScale(mtxA, -0.5f, -0.5f, 0.0f);
+    PSMTXTrans(mtxB, 0.5f, 0.5f, 1.0f);
     PSMTXConcat(mtxB, mtxA, mtxA);
     GXLoadTexMtxImm(mtxA, lbl_803DCD80, 0);
     buf[0] = p2;
