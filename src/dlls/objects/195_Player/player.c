@@ -8607,7 +8607,6 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
             *(f32*)((char*)state + 0x2b4) * timeDelta + ((GameObject*)obj)->anim.localPosY;
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
-            f32 d2;
             f32 v;
             gPlayerCurrentMoveId = 2;
             blend = 0.01f;

@@ -3516,7 +3516,6 @@ void ObjHits_AddContactObject(GameObject* obj, GameObject* contactObj)
     int contactObjectIndex;
     int contactObjectCount;
     int contactOffset;
-    int contactStore;
     int i;
     int storeState;
     int transformState;

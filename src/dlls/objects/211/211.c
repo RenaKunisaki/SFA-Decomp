@@ -476,9 +476,6 @@ u32 landedarwing_updateMovementState(GameObject* obj, u32* params)
 void landedarwing_updateAirborneMotion(GameObject* obj, LandedArwingState* state)
 {
     f32 radius;
-    f32 dx;
-    f32 dy;
-    f32 dz;
     f32 start[3];
     f32 end[3];
     TrackQueryBounds bounds;

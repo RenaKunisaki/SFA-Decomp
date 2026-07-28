@@ -1184,7 +1184,6 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
         s16 rotX;
         s16 rotY;
         s16 rotZ;
-        s16 pad;
         f32 unused;
         f32 x;
         f32 y;
@@ -2400,7 +2399,6 @@ void SnowBike_update(GameObject* obj)
     f32 dummy1;
     f32 dummy2;
     s8 mode;
-    int t;
     f32 fz;
     f32 damp;
     f32 value;

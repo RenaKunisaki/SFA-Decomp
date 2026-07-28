@@ -6494,7 +6494,6 @@ void hagabonMK2_update(GameObject* obj, u8* state)
 
 void hagabonMK2_init(GameObject* obj, EnemyState* st)
 {
-    u8* tab;
     st->sightRange = 40.0f;
     st->flags2E4 = 0x405009;
     st->drag = 0.97f;

@@ -826,7 +826,6 @@ void curves_updateLocalPointTransforms(int obj, CurvesCollisionState* collision)
     int off[1];
 
     f32* localPoint;
-    f32 one;
     MatrixTransform transform;
     f32 matrix[16];
 

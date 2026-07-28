@@ -217,7 +217,6 @@ void worldobj_hitDetect(void) {
 void worldobj_update(GameObject* obj) {
     s16 rot[3];
     f32 vec[10];
-    WorldObjEffectParams params;
     WorldObjState* state;
     WorldObjSetup* setup;
     GameObject* objA;

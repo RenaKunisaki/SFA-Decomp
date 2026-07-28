@@ -3464,7 +3464,6 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
             {
                 ObjHitsPriorityState* hitState;
                 ObjHitboxTransformState* transformState;
-                int n;
                 int hdr;
                 f32 r, c;
 

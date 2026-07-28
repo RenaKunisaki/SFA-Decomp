@@ -189,7 +189,6 @@ static void PADOriginUpdateCallback(s32 chan, u32 error, OSContext* context) {
 }
 
 static void PADProbeCallback(s32 chan, u32 error, OSContext* context) {
-    u32 type;
     ASSERTLINE(710, 0 <= ResettingChan && ResettingChan < SI_MAX_CHAN);
     ASSERTLINE(711, chan == ResettingChan);
     ASSERTLINE(713, (Type[chan] & SI_WIRELESS_CONT_MASK) == SI_WIRELESS_CONT && !(Type[chan] & SI_WIRELESS_LITE));

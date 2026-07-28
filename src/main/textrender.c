@@ -911,7 +911,6 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
     int charLen;
     int n2;
     int i;
-    int cnt;
     u8* p;
     TextGlyph* g;
     u8* tbl;

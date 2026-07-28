@@ -380,7 +380,6 @@ int DR_CloudRunner_stateHandler05(GameObject* obj, CloudRunnerState* baddie, f32
     f32 speed;
     f32 accel;
     f32 grav;
-    f32 d8;
     f32 mag;
     f32 adot;
     f32 animSpd;

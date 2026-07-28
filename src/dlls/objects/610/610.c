@@ -222,7 +222,6 @@ void drakormissile_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
     {
         f32 savedScale;
         int* model;
-        char* m;
         savedRotZ = (obj)->anim.rotZ;
         savedRotY = (obj)->anim.rotY;
         savedScale = (obj)->anim.rootMotionScale;

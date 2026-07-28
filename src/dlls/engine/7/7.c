@@ -1071,7 +1071,6 @@ void snowReposSnowCloud(int cloudId)
         s16 f8;
         s16 fa;
         s16 fc;
-        s16 pad_e;
         f32 f10;
         f32 f14;
         f32 f18;
@@ -1292,7 +1291,6 @@ void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
     int ok;
     int i;
     u8 fl;
-    WindSource* w;
     int (*sizeRange)[2];
     int (*spinRange)[2];
 
@@ -2006,7 +2004,6 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
         s16 f8;
         s16 fa;
         s16 fc;
-        s16 pad_e;
         f32 f10;
         f32 f14;
         f32 f18;

@@ -1080,7 +1080,6 @@ void Trigger_hitDetect(GameObject* obj)
     int wasInside;
     int i;
     u8 targetKind;
-    s16 ty;
     f32 dist[1];
 
     dist[0] = 200.0f;

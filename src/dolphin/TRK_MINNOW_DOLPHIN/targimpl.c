@@ -414,7 +414,6 @@ DSError TRKTargetAccessExtended2(u32 firstRegister, u32 lastRegister, MessageBuf
 	u32 value_buf0[1];
 	u32 value_buf[2];
 	DSError err;
-	u32 access_func[10];
 
 	if (lastRegister > 0x1f)
 		return DS_InvalidRegister;

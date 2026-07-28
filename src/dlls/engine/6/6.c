@@ -124,7 +124,6 @@ void sky2GetTargetColor(int* red, int* green, int* blue, f32* blend)
 void sky2ResetStateFromConfig(u8* cfg, u8 flags)
 {
     int i;
-    u8* p2;
     int idx;
 
     if (((Sky2Config*)cfg)->flags & 0x80)

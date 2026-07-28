@@ -84,7 +84,6 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
 
 void* gameTextGetStr(int textId)
 {
-    u8* entry;
     char* strings;
     void* textEntry;
 

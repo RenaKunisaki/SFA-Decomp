@@ -198,7 +198,6 @@ void screens_remove(void)
 void screens_show(int id)
 {
     int* asset = NULL;
-    int* p;
     int count;
     int offset, size;
     if ((int)gScreenDataId != id)

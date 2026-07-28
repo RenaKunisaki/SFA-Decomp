@@ -942,7 +942,6 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
     DIMbossTopState* topState;
     int counter;
     int i;
-    u32 flags;
     f32 vec[3];
 
     topState = runtime->topState;

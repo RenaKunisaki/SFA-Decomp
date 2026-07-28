@@ -741,7 +741,6 @@ SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 p
                                          int globalCtrlDisabled)
 {
     SfxObjectChannel* ch;
-    s32 i;
     u32 handle;
 
     if ((int)audioFlagFn_8000a188(4) != 0)

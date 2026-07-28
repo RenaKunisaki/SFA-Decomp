@@ -38,7 +38,6 @@ void dll_54_update(CameraObject* camera)
     f32 fx, fz;
     f32 d2, h, t;
     f32 t2;
-    f32 lim;
     s16 cur;
     s16 angleDelta;
 

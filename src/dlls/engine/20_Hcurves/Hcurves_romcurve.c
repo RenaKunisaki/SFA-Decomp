@@ -1286,17 +1286,13 @@ f32 curves_getPathLength(u32 startNode, u32 endNode, f32* posA, f32* posB, f32 t
     int cand2[4];
     int cand3[4];
     int done;
-    int slot;
-    u32 mask;
     f32 total;
     int count;
     int next;
     u32 cur;
-    int n;
     int reachedForward;
     int blocked;
     int found;
-    int k;
     int nextId;
     f32 dx;
     f32 dy;
@@ -1786,7 +1782,6 @@ int RomCurve_func13(u32 curveId, int typeFilter, int maxDist, int* outLink)
     f32* pq;
     int pos;
     int m;
-    int j;
     int best[2];
     int off;
     f32 curDist;
@@ -1957,14 +1952,6 @@ int RomCurve_func11(RomCurveDef* curve, int typeFilter, int actionFilter, int* o
     int best[2];
     int off;
     f32 curDist;
-    f32 zd;
-    f32 xd;
-    f32 yd;
-    int linkWord;
-    char* pc;
-    char* pu;
-    int rem;
-    char zval;
     char visited[ROMCURVE_MAX_CURVES];
     int queueIds[ROMCURVE_LINK_SEARCH_QUEUE_CAPACITY];
     f32 queueDist[ROMCURVE_LINK_SEARCH_QUEUE_CAPACITY];
@@ -2106,9 +2093,6 @@ int RomCurve_getRandomLinkedOfTypes(RomCurveDef* curve, int* types, int typeCoun
     int candidateCount;
     int linkIndex;
     int typeIndex;
-    int low;
-    int high;
-    int mid;
     int candidates[4];
 
     if (curve == NULL)
@@ -2262,9 +2246,6 @@ f32 curves_find(int type, int action, f32 x, f32 y, f32 z, f32* outX, f32* outY,
     RomCurveDef* linkedCurve;
     int curveIndex;
     int linkIndex;
-    int high;
-    int low;
-    int mid;
     u32 linkId;
     f32 pointX;
     f32 pointY;
@@ -2367,16 +2348,12 @@ RomCurveDef* RomCurve_findByIdWithIndex(u32 curveId, int* outIndex)
 int RomCurve_buildRandomPoints(RomCurvePlacementDef* curve, f32* outX, f32* outY, f32* outZ, s8* outTypes)
 {
     RomCurveDef* hold;
-    u32 mask;
-    s32* lp;
     int idsB[ROMCURVE_LINK_COUNT];
     RomCurveDef* next;
     int done;
     int n;
     int count;
-    int link;
     int id;
-    int i;
     f32 tz;
     int idsA[ROMCURVE_LINK_COUNT];
 
@@ -2465,12 +2442,9 @@ int RomCurve_buildRandomPoints(RomCurvePlacementDef* curve, f32* outX, f32* outY
 }
 int RomCurve_countRandomPoints(RomCurveDef* curve)
 {
-    u32 mask;
     int linkCount;
-    int link;
     int count;
     int id;
-    int i;
     int ids[ROMCURVE_LINK_COUNT];
 
     count = 1;
@@ -2553,10 +2527,6 @@ void RomCurve_getAdjacentWindow(RomCurveDef* curve, int* outIds)
 {
     RomCurveDef* adjacent;
     int linkId;
-    int adjacentId;
-    int low;
-    int high;
-    int mid;
     int i;
     int j;
 
@@ -2622,9 +2592,6 @@ int RomCurve_getFarthestAdjacentLink(RomCurveDef* curve, int excludeLinkId, f32 
     u32 linkId;
     int linkIndex;
     int slot;
-    int low;
-    int high;
-    int mid;
     RomCurveDef* linkedCurve;
 
     bestLink[1] = ROMCURVE_LINK_ID_NONE;

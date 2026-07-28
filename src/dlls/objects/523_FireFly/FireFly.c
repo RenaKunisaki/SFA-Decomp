@@ -84,7 +84,6 @@ void firefly_pickWanderTarget(GameObject* obj, LgtFireFlyRec* record)
         s16 rotZ;
         s16 rotX;
         s16 rotY;
-        u8 pad0e[2];
         f32 scratch0;
         f32 scratch1;
         f32 scratch2;

@@ -245,7 +245,6 @@ void Rcp_UpdateDistortionTextures(void)
     union
     {
         Mtx m;
-        f64 a8;
     } mtxu;
 #define mtx mtxu.m
     ModelLightStruct* lights[8];

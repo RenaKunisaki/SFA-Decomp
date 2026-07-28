@@ -1101,8 +1101,6 @@ void SHthorntail_init(GameObject* obj, const SHthorntailPlacement* placement) {
     u32 randomTime;
     u8* moveScratch;
     u32 outA[2];
-    u32 outB;
-    u32 stackPad;
 
     runtime = obj->extra;
     outA[0] = lbl_803E5410;

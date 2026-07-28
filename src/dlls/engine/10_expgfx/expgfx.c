@@ -4100,7 +4100,6 @@ void expgfx_free(u32 sourceId)
     ExpgfxTableEntry* tableEntry;
     u32* slotPoolBases[1];
     ExpgfxRuntimeDataLayout* runtime;
-    int tableIndex;
     u32* poolSourceIds[1];
     int poolIndex;
     ExpgfxSlot* slot;
@@ -4177,14 +4176,12 @@ void expgfx_resetAllPools(void)
     s16* poolSlotTypeIds[1];
     u32* poolSourceIds[1];
     u8* poolFrameFlags[1];
-    int resourceIndex;
     int activeBit;
     int poolIndex;
     ExpgfxResourceEntry* resourceEntry;
     ExpgfxTableEntry* tableEntry;
     ExpgfxStaticDataLayout* staticData;
     u32* slotPoolBases[1];
-    int tableIndex;
     ExpgfxRuntimeDataLayout* runtime[1];
     int slotIndex;
     ExpgfxSlot* slot;

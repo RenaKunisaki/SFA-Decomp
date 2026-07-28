@@ -109,7 +109,6 @@ void firstPersonExit(CameraObject* camera)
 {
     register CameraObject* self = camera;
     GameObject* target;
-    CameraModeBikeState* st;
     float tangent;
     float dx;
     float dz;

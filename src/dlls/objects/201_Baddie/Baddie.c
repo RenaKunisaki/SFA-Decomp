@@ -1182,7 +1182,6 @@ void enemyObjAnimUpdate(short* obj, int state)
     int mode;
     int i;
     f32 vel;
-    f32 c;
     f32 phase;
     f32 outY;
     TrickyMoveResult res;

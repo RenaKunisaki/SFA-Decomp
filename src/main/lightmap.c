@@ -403,7 +403,6 @@ void getVisibleObjects(s8* opacity)
     int j;
     u8* interactState;
     int* model;
-    ObjModelInstance* modelDef;
     u32 tf;
     u32 mode;
     s16 t;

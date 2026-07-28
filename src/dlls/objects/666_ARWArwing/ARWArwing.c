@@ -394,7 +394,6 @@ void arwarwing_updateFlightPhysics(GameObject* obj, ArwingState* state)
 {
     ArwingState* arwing = state;
     f32 accel[3];
-    f32 cz;
     int angDelta;
     int rateStep;
 

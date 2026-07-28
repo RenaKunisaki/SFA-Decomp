@@ -201,7 +201,6 @@ static inline void saveGame_addTransientMapBit(int mapId, int shift, SaveGameMap
 int saveGame_restoreObjectPosToRomList(void* objectData)
 {
     SaveGameRomListPosition* object = objectData;
-    u8* walker;
     u8* slot;
     int i;
 
@@ -1180,7 +1179,6 @@ void SaveGame_release(void)
 void SaveGame_initialise(void)
 {
     s8* base = (s8*)gTransientMapBits;
-    int i;
     memset(base + 0x328, 0, SAVEGAME_LIVE_BUFFER_SIZE);
     if (!(lbl_803DD498[0x21] & 0x80))
     {

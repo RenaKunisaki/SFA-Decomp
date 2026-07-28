@@ -515,7 +515,6 @@ void synthSetHandleValue16(u32 handle, u16 speed)
 {
     u32 slot;
     SynthSeqRuntime* runtime;
-    SynthVoice* voice;
 
     runtime = (SynthSeqRuntime*)(void*)gSynthCallbacks;
     slot = synthResolveHandleSlot(handle);

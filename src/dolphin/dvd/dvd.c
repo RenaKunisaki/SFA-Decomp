@@ -609,7 +609,6 @@ void stateReady()
 
 void stateBusy(DVDCommandBlock* block)
 {
-	DVDCommandBlock* finished;
 	LastState = stateBusy;
 	switch (block->command) {
 	case 5:

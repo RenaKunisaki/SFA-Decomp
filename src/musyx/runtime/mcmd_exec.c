@@ -398,7 +398,6 @@ void mcmdSendMessage(McmdVoiceState* state, McmdCommandArgs* args)
     u32 targetInstrument;
     u8 i;
     McmdVoiceState* voiceState;
-    u32 targetVoice;
 
     value = mcmdVarGet32Legacy(state, 0, (args->value >> 8) & 0xff);
 

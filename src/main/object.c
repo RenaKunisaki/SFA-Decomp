@@ -1317,8 +1317,6 @@ void objGetWeaponDa(u8* obj, int objType, ObjWeaponDaTable* weaponDaTable, int k
 void Obj_UpdateObject(GameObject* obj)
 {
     ObjAnimComponent* object;
-    ObjHitsPriorityState* hitState;
-    ObjHitsPriorityState* childHitState;
     u8* t;
     BoneParticleEffectSpawnFn cb;
     void (*cb2)(GameObject*);
@@ -1448,8 +1446,6 @@ void Obj_UpdateObject(GameObject* obj)
 
 void Obj_FreeObject(GameObject* obj)
 {
-    u8** p;
-    int n;
     int i;
     GameObject** base;
     int off;
@@ -2635,7 +2631,6 @@ int loadModLines(int idx, s16* outCount)
 void Obj_RegisterObject(GameObject* obj, int flags)
 {
     ObjAnimComponent* object;
-    ObjHitsPriorityState* hitState;
     int id;
     int prev;
     int cur;

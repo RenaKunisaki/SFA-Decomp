@@ -152,7 +152,6 @@ void drshackle_free(int obj)
 
 void drshackle_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
 {
-    int* ptr;
     u8* state = obj->extra;
     int i;
     if (((BitFlags8*)(state + 0x1a))->b0 == 0 && visible != 0)

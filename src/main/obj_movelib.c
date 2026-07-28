@@ -163,8 +163,6 @@ void voxmaps_traceScaledVectorEnd(f32* out, void* origin, f32* dir, f32 scale)
     int gridA[2];
     int gridB[2];
     int gridOut[2];
-    int e0;
-    int e1;
 
     PSVECNormalize((const Vec*)dir, (Vec*)dir);
     PSVECScale((const Vec*)dir, (Vec*)scaled, scale);

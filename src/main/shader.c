@@ -694,7 +694,6 @@ int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup)
     int bz;
     s8 found;
     s8 i;
-    int* tbl;
     GameObject* player;
     int off;
     f32* p;

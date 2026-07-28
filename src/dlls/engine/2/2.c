@@ -2661,7 +2661,6 @@ void ObjSeq_seqState_init(u8* seq)
     int runLength;
     int track;
     int animCount;
-    u8* animEntry;
     int commandIndex;
     u8* command;
 
@@ -3223,7 +3222,6 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
     ObjAnimComponent* sourceAnim = &sourceObj->anim;
     u32 cmdByte;
     int cmdArg = (cmd >> 8) & 0xff;
-    u8* slotPtr;
     int pair[2];
     GameObject* player;
     u8 flags;
@@ -4056,7 +4054,6 @@ int RomCurveInterp_EvaluateOffsetPosition(RomCurveInterpState* state, f32* offse
     f32 zTangent;
     f32 length;
     f32 scale;
-    f32 angle;
     int segment;
     int i;
 
@@ -4222,7 +4219,6 @@ int objSeqFindLabel(u8* seq, int label)
 {
     int commandCount;
     int commandIndex;
-    int repeatCount;
     u32 packed;
     int currentLabel;
     u8* command;
@@ -5363,7 +5359,6 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
 void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int frame)
 {
     ObjSeqPlacement* model;
-    u8* walk;
     s16* vec;
     s16* vec2;
     ObjTextureRuntimeSlot* tex1;

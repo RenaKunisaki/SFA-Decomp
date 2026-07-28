@@ -1951,7 +1951,6 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
     u8* mtx;
     u8* hitReact;
     u8* samples;
-    u8* src;
     Vec vec;
     f32 zero;
     f32 motionScale;

@@ -7083,9 +7083,6 @@ int tricky_substateHowlCall(GameObject* obj, int* trickyState)
     int b[1];
     int val;
     PartFxSpawnParams fxBuf;
-    int ia;
-    float fa;
-    int ib;
 
     if (tricky_handleFeedOrTalk(obj, trickyState) != 0)
     {
@@ -8799,7 +8796,6 @@ void Tricky_free(int obj, int shouldKeepFlameChildren)
 
 void Tricky_render(GameObject* obj, int p2, int p3, int p4, int p5, char doRender)
 {
-    u8 mode;
     int i;
     int pathState;
     int pathPoint;

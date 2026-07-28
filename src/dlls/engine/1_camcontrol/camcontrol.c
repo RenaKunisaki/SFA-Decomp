@@ -441,8 +441,6 @@ CamcontrolTargetObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraS
     int k;
     int accept;
     f32 dx, dz, dy, distsq, range;
-    f32* pDist;
-    GameObject** pTarget;
 
     (void)cameraState;
     bestPri = -1;
