@@ -2115,17 +2115,17 @@ void ObjModel_SampleJointTransform(ObjModel* model, int b, int idx, f32 t, f32 s
         f32 fcv = n;
         if (fcv != fr)
         {
-            *(s16*)((u8*)ch + 0x4c) = bv;
+            ch->frameStreamStrides[0] = bv;
         }
         else
         {
-            *(s16*)((u8*)ch + 0x4c) = 0;
+            ch->frameStreamStrides[0] = 0;
         }
         if (ch->frameType != 0 && fcv == ch->frameLength - 1.0f)
         {
-            *(s16*)((u8*)ch + 0x4c) = (s16)(-bv * n);
+            ch->frameStreamStrides[0] = (s16)(-bv * n);
         }
-        *(u8**)((u8*)ch + 0x2c) = anim + *(s16*)(anim + 2) + bv * n;
+        ch->frameStreamCursors[0] = anim + *(s16*)(anim + 2) + bv * n;
     }
     modelRenderInterpolateRootTransform(ch, srot, outRot);
     *(int*)&ch->moveFrameData = saved;
@@ -2135,9 +2135,9 @@ void ObjModel_SampleJointTransform(ObjModel* model, int b, int idx, f32 t, f32 s
         outPos[1] = k * srot[1];
         outPos[2] = k * srot[2];
     }
-    outPos[0] = outPos[0] + *(f32*)(*(u8**)((u8*)((ObjModel*)model)->file + 0x3c) + 4);
-    outPos[1] = outPos[1] + *(f32*)(*(u8**)((u8*)((ObjModel*)model)->file + 0x3c) + 8);
-    outPos[2] = outPos[2] + *(f32*)(*(u8**)((u8*)((ObjModel*)model)->file + 0x3c) + 0xc);
+    outPos[0] = outPos[0] + ((ModelBone*)model->file->jointData)->head[0];
+    outPos[1] = outPos[1] + ((ModelBone*)model->file->jointData)->head[1];
+    outPos[2] = outPos[2] + ((ModelBone*)model->file->jointData)->head[2];
     outPos[0] *= s;
     outPos[1] *= s;
     outPos[2] *= s;
@@ -2435,7 +2435,7 @@ void ObjModel_UpdateAnimMatrices(ObjModel* model, ModelFileHeader* blend, GameOb
     f32 pos[3];
     s16 rot[3];
 
-    ObjModel_BuildAnimBlendTable((u8*)obj, *(u8**)((u8*)model + 0x2c), (u8*)blend);
+    ObjModel_BuildAnimBlendTable((u8*)obj, (u8*)model->animStateA, (u8*)blend);
     ((ObjModel*)model)->bufferFlags ^= 1;
     ch = ((ObjModel*)model)->animStateA;
     if (ch->moveControlFlags & 4)
@@ -2446,9 +2446,9 @@ void ObjModel_UpdateAnimMatrices(ObjModel* model, ModelFileHeader* blend, GameOb
         gModelRootRotY = rot[1];
         gModelRootRotZ = rot[2];
     }
-    if (*(u16*)((u8*)((ObjModel*)model)->file + 2) & 8)
+    if (model->file->flags & 8)
     {
-        modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)*(u8**)((u8*)model + 0x2c),
+        modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)model->animStateA,
                               obj->anim.currentMoveProgress, 0x7f);
     }
     else if (((ObjAnimState*)((ObjModel*)model)->animStateA)->moveControlFlags & OBJANIM_MOVE_CONTROL_REFRESH_SAVED_STEP)
@@ -2465,13 +2465,13 @@ void ObjModel_UpdateAnimMatrices(ObjModel* model, ModelFileHeader* blend, GameOb
     }
     else
     {
-        modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)*(u8**)((u8*)model + 0x2c),
+        modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)model->animStateA,
                               obj->anim.currentMoveProgress, 0x7f);
         ch2 = ((ObjModel*)model)->animStateB;
         if (ch2 != NULL && obj->anim.activeMove > -1)
         {
-            ObjModel_BuildAnimBlendTable((u8*)obj, *(u8**)((u8*)model + 0x30), (u8*)blend);
-            modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)*(u8**)((u8*)model + 0x30),
+            ObjModel_BuildAnimBlendTable((u8*)obj, (u8*)model->animStateB, (u8*)blend);
+            modelAnimEvalChannels((u8*)dst, model, (ObjAnimState*)model->animStateB,
                                   obj->anim.activeMoveProgress, -1);
         }
     }
@@ -2694,7 +2694,7 @@ void* ObjModel_LoadModelData(int id)
     model = (void*)roundUpTo16((int)mmAlloc(dataLen + amapSize + 0x1f4, 9, 0));
     loadAndDecompressDataFile(MLDF_FILEID_MODELS_BIN_A, model, fileOffset, dataLen, 0, id, 0);
     ((ModelFileHeader*)model)->headerSize = headerSize;
-    *(u16*)((u8*)model + 0x4) = id; /* modelId */
+    ((ModelFileHeader*)model)->modelId = id;
     ((ModelFileHeader*)model)->animationCount = animCount;
     ((ModelFileHeader*)model)->flags &= ~MODEL_FLAG_VERTEX_ANIM_AREA;
     ((ModelFileHeader*)model)->refCount = 1;
