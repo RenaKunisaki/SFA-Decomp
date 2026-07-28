@@ -803,7 +803,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
     {
         return;
     }
-    if (state[0x33d] != 0)
+    if (((EnemyState*)state)->familyData.sharpClaw.idleRow != 0)
     {
         if (((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN)
         {
@@ -813,20 +813,20 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
             (obj)->anim.velocityX = z;
             {
                 IdleRow* idleRows = (IdleRow*)tbl4;
-                Baddie_SetMove(obj, state, idleRows[state[0x33d]].anim, *(f32*)(tbl4 + state[0x33d] * 12), 0,
-                               (u8)idleRows[state[0x33d]].flags);
+                Baddie_SetMove(obj, state, idleRows[((EnemyState*)state)->familyData.sharpClaw.idleRow].anim, *(f32*)(tbl4 + ((EnemyState*)state)->familyData.sharpClaw.idleRow * 12), 0,
+                               (u8)idleRows[((EnemyState*)state)->familyData.sharpClaw.idleRow].flags);
             }
             ObjAnim_SetMoveProgress(&obj->anim,
-                                    *(f32*)(gBaddieMoveProgressTable + tbl4[state[0x33d] * 12 + 8] * 4));
-            state[0x33d] = tbl4[state[0x33d] * 12 + 9];
-            state[0x33e] = 0;
+                                    *(f32*)(gBaddieMoveProgressTable + tbl4[((EnemyState*)state)->familyData.sharpClaw.idleRow * 12 + 8] * 4));
+            ((EnemyState*)state)->familyData.sharpClaw.idleRow = tbl4[((EnemyState*)state)->familyData.sharpClaw.idleRow * 12 + 9];
+            ((EnemyState*)state)->familyData.sharpClaw.idleRowStarted = 0;
         }
-        if (state[0x33e] == 0)
+        if (((EnemyState*)state)->familyData.sharpClaw.idleRowStarted == 0)
         {
             return;
         }
     }
-    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) && state[0x33d] == 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) && ((EnemyState*)state)->familyData.sharpClaw.idleRow == 0)
     {
         sidekickToy_updateCurveTargetLatch(obj);
     }
@@ -877,7 +877,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
         {
             *(f32*)(state + 0x308) = 0.005f;
         }
-        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) && state[0x33d] == 0)
+        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) && ((EnemyState*)state)->familyData.sharpClaw.idleRow == 0)
         {
             if (((EnemyState*)state)->phaseAngle != 0)
             {
@@ -892,9 +892,9 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
             }
             else if (*(f32*)(state + 0x310) > 0.0001f)
             {
-                state[0x2f2] = 0;
-                state[0x2f3] = 0;
-                state[0x2f4] = 0;
+                ((EnemyState*)state)->curveIndex = 0;
+                ((EnemyState*)state)->curveParamA = 0;
+                ((EnemyState*)state)->curveParamB = 0;
                 if (*(f32*)(state + 0x310) > 1.2f)
                 {
                     ((EnemyState*)state)->rootMotionFlags = 1;
@@ -908,9 +908,9 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
             }
             else
             {
-                state[0x2f2] = 0;
-                state[0x2f3] = 0;
-                state[0x2f4] = 0;
+                ((EnemyState*)state)->curveIndex = 0;
+                ((EnemyState*)state)->curveParamA = 0;
+                ((EnemyState*)state)->curveParamB = 0;
                 ((EnemyState*)state)->rootMotionFlags = 1;
                 *(f32*)(state + 0x308) = 0.01f;
                 ObjAnim_SetCurrentMove((int)obj, tbl0[8], 0.0f, 0);
@@ -921,14 +921,14 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
     }
     else
     {
-        if (state[0x33d] == 0 && (flags & BADDIE_CONTROL_SEQUENCE_DRIVEN))
+        if (((EnemyState*)state)->familyData.sharpClaw.idleRow == 0 && (flags & BADDIE_CONTROL_SEQUENCE_DRIVEN))
         {
             u8 r = randomGetRange(1, tbl4[8]);
             if (((EnemyState*)state)->phaseAngle != 0)
             {
                 {
                     SeqRow16* seqRow16 = (SeqRow16*)tbl1c;
-                    state[0x2f2] = (u8)seqRow16[((EnemyState*)state)->phaseAngle].extra;
+                    ((EnemyState*)state)->curveIndex = (u8)seqRow16[((EnemyState*)state)->phaseAngle].extra;
                     Baddie_SetMove(obj, state, seqRow16[((EnemyState*)state)->phaseAngle].anim,
                                    *(f32*)(tbl1c + ((EnemyState*)state)->phaseAngle * 16), 0,
                                    (u8)seqRow16[((EnemyState*)state)->phaseAngle].flags);
@@ -945,9 +945,9 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
                 if ((obj)->anim.currentMove != (r = (row = (IdleRow*)(tbl4 + (off = r * 12)))->anim) ||
                     r != 0)
                 {
-                    state[0x2f2] = 0;
-                    state[0x2f3] = 0;
-                    state[0x2f4] = 0;
+                    ((EnemyState*)state)->curveIndex = 0;
+                    ((EnemyState*)state)->curveParamA = 0;
+                    ((EnemyState*)state)->curveParamB = 0;
                     Baddie_SetMove(obj, state, row->anim, *(f32*)(tbl4 + off), 0, 3);
                     ObjAnim_SetMoveProgress(&obj->anim,
                                             *(f32*)(gBaddieMoveProgressTable + row->anim * 4));
@@ -1013,7 +1013,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
         SeqRow16* seqRow16 = (SeqRow16*)seqRows;
         if (((EnemyState*)state)->phaseAngle != 0)
         {
-            *(u8*)((u8*)state + 0x2f2) = seqRow16[((EnemyState*)state)->phaseAngle].extra;
+            ((EnemyState*)state)->curveIndex = seqRow16[((EnemyState*)state)->phaseAngle].extra;
             Baddie_SetMove(obj, state, seqRow16[((EnemyState*)state)->phaseAngle].anim,
                            *(f32*)(seqRows + (((EnemyState*)state)->phaseAngle << 4)), 0,
                            (u8)seqRow16[((EnemyState*)state)->phaseAngle].flags);
@@ -1025,7 +1025,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
         {
             IdleRow* idleRows = idleSrc;
             u8 idleAnim;
-            *(u8*)((u8*)state + 0x2f2) = 0;
+            ((EnemyState*)state)->curveIndex = 0;
             *(u8*)((u8*)state + 0x2f3) = 0;
             *(u8*)((u8*)state + 0x2f4) = 0;
             idleAnim = idleRows[*(u16*)((u8*)state + 0x2a0)].anim;
@@ -1326,12 +1326,12 @@ void sharpClawInit(int obj, u8* state)
     ((EnemyState*)state)->animPlaySpeed = 0.005f;
     ((EnemyState*)state)->gravity = 0.17f;
     ((EnemyState*)state)->drag = 0.97f;
-    state[0x320] = 35;
+    ((EnemyState*)state)->moveId0 = 35;
     fz = 1.0f;
     ((EnemyState*)state)->moveSpeedScale0 = fz;
-    state[0x321] = 34;
+    ((EnemyState*)state)->moveId1 = 34;
     ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
-    state[0x322] = 6;
+    ((EnemyState*)state)->moveId2 = 6;
     ((EnemyState*)state)->moveSpeedScale2 = fz;
     ((EnemyState*)state)->pathStep *= 10.0f;
     switch (((GameObject*)obj)->anim.romDefNo)
@@ -1399,12 +1399,12 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->current = 160;
         ((EnemyState*)state)->userData2 = 5;
         z = 0;
-        state[0x320] = z;
+        ((EnemyState*)state)->moveId0 = z;
         fz2 = 1.0f;
         ((EnemyState*)state)->moveSpeedScale0 = fz2;
-        state[0x321] = 21;
+        ((EnemyState*)state)->moveId1 = 21;
         ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
-        state[0x322] = z;
+        ((EnemyState*)state)->moveId2 = z;
         ((EnemyState*)state)->moveSpeedScale2 = fz2;
         *(int*)(state + 0x36c) = (int)ObjModelChain_Alloc(&gGroundBaddieModelChainDesc, 1);
         ObjModelChain_SetOrigin((ObjModelChain*)*(int*)(state + 0x36c), 0.15f, 0.75f, -0.05f);
@@ -5985,12 +5985,12 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
         ((EnemyState*)state)->sightRange = 150.0f;
         ((EnemyState*)state)->aggroRange = 250.0f;
         ((EnemyState*)state)->current = 0x1e;
-        state[0x33b] = 0;
-        state[0x320] = 9;
+        ((EnemyState*)state)->userData2 = 0;
+        ((EnemyState*)state)->moveId0 = 9;
         ((EnemyState*)state)->moveSpeedScale0 = 3.0f;
-        state[0x321] = 0xc;
+        ((EnemyState*)state)->moveId1 = 0xc;
         ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
-        state[0x322] = 9;
+        ((EnemyState*)state)->moveId2 = 9;
         ((EnemyState*)state)->moveSpeedScale2 = 3.0f;
         ((EnemyState*)state)->flags2E4 |= 0x400;
         break;
@@ -5998,12 +5998,12 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
         ((EnemyState*)state)->sightRange = 130.0f;
         ((EnemyState*)state)->aggroRange = 250.0f;
         ((EnemyState*)state)->current = 0x32;
-        state[0x33b] = 1;
-        state[0x320] = 0xe;
+        ((EnemyState*)state)->userData2 = 1;
+        ((EnemyState*)state)->moveId0 = 0xe;
         ((EnemyState*)state)->moveSpeedScale0 = 3.0f;
-        state[0x321] = 0xd;
+        ((EnemyState*)state)->moveId1 = 0xd;
         ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
-        state[0x322] = 0xe;
+        ((EnemyState*)state)->moveId2 = 0xe;
         ((EnemyState*)state)->moveSpeedScale2 = 3.0f;
         ((EnemyState*)state)->flags2E4 |= 0xc00;
         break;
@@ -6011,12 +6011,12 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
         ((EnemyState*)state)->sightRange = 120.0f;
         ((EnemyState*)state)->aggroRange = 240.0f;
         ((EnemyState*)state)->current = 0xf;
-        state[0x33b] = 2;
-        state[0x320] = 0xd;
+        ((EnemyState*)state)->userData2 = 2;
+        ((EnemyState*)state)->moveId0 = 0xd;
         ((EnemyState*)state)->moveSpeedScale0 = 3.0f;
-        state[0x321] = 0x10;
+        ((EnemyState*)state)->moveId1 = 0x10;
         ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
-        state[0x322] = 0xd;
+        ((EnemyState*)state)->moveId2 = 0xd;
         ((EnemyState*)state)->moveSpeedScale2 = 3.0f;
         ((EnemyState*)state)->flags2E4 |= 0xc00;
         break;
