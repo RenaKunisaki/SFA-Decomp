@@ -223,17 +223,18 @@ s32 varGet32(McmdVoiceState* state, u32 useExCtrl, u8 index)
     return SYNTH_GLOBAL_REG(index);
 }
 
-/*
- * Read a signed 16-bit synth register.
- */
-s16 varGet(McmdVoiceState* state, u32 useExCtrl, u8 index)
+static inline s32 varGetReg(McmdVoiceState* state, u32 useExCtrl, u8 index)
 {
-    return (s16)varGet32(state, useExCtrl, index);
-}
-
-static inline s16 varGetSigned(McmdVoiceState* state, u32 useExCtrl, u8 index)
-{
-    return (s16)varGet32(state, useExCtrl, index);
+    if (useExCtrl != 0)
+    {
+        return (u16)inpGetExCtrl(state, index);
+    }
+    index &= 0x1f;
+    if (index < 0x10)
+    {
+        return state->localRegs[index];
+    }
+    return SYNTH_GLOBAL_REG(index);
 }
 
 static inline u32 mcmdVarGet32Legacy(McmdVoiceState* state, u32 useExCtrl, u32 index)
@@ -250,6 +251,19 @@ static inline u32 mcmdVarGet32Legacy(McmdVoiceState* state, u32 useExCtrl, u32 i
     return SYNTH_GLOBAL_REG(index);
 }
 
+/*
+ * Read a signed 16-bit synth register.
+ */
+s16 varGet(McmdVoiceState* state, u32 useExCtrl, u8 index)
+{
+    return (s16)varGetReg(state, useExCtrl, index);
+}
+
+static inline s16 varGetSigned(McmdVoiceState* state, u32 useExCtrl, u8 index)
+{
+    return (s16)varGet32(state, useExCtrl, index);
+}
+
 void varSet32(McmdVoiceState* state, u32 useExCtrl, u8 index, s32 value);
 
 static inline void varSet(McmdVoiceState* state, u8 useExCtrl, u8 index, s16 value)
@@ -260,44 +274,20 @@ static inline void varSet(McmdVoiceState* state, u8 useExCtrl, u8 index, s16 val
 /*
  * Perform 16-bit register arithmetic with saturation.
  */
-void mcmdVarCalculation(McmdVoiceState* state, McmdCommandArgs* args, u8 op)
+void varSet32(McmdVoiceState* state, u32 useExCtrl, u8 index, s32 value)
 {
-    s16 s1;
-    s16 s2;
-    s32 t;
-
-    s1 = varGetSigned(state, (u8)(args->flags >> 0x18), args->value);
-    if (op == 4)
+    if (useExCtrl != 0)
     {
-        s2 = args->value >> 8;
+        inpSetExCtrl(state, index, value);
+        return;
     }
-    else
+    index &= 0x1f;
+    if (index < 0x10)
     {
-        s2 = varGetSigned(state, (u8)(args->value >> 8), args->value >> 0x10);
+        state->localRegs[index] = value;
+        return;
     }
-
-    switch (op)
-    {
-    case 4:
-    case 0:
-        t = s1 + s2;
-        break;
-    case 1:
-        t = s1 - s2;
-        break;
-    case 2:
-        t = s1 * s2;
-        break;
-    case 3:
-        t = s2 != 0 ? s1 / s2 : 0;
-        break;
-    }
-
-    {
-        u8 ctrl = args->flags >> 8;
-        u8 index = args->flags >> 0x10;
-        varSet(state, ctrl, index, (t < -0x8000 ? -0x8000 : t > 0x7fff ? 0x7fff : t));
-    }
+    SYNTH_GLOBAL_REG(index) = value;
 }
 
 /*
@@ -359,6 +349,49 @@ static inline u32 macPostMessage(u32 vid, u32 mesg)
 /*
  * Queue register-derived messages onto voices found through vid handles.
  */
+void mcmdVarCalculation(McmdVoiceState* state, McmdCommandArgs* args, u8 op)
+{
+    s16 s1;
+    s16 s2;
+    s32 t;
+
+    s1 = varGetSigned(state, (u8)(args->flags >> 0x18), args->value);
+    if (op == 4)
+    {
+        s2 = args->value >> 8;
+    }
+    else
+    {
+        s2 = varGetSigned(state, (u8)(args->value >> 8), args->value >> 0x10);
+    }
+
+    switch (op)
+    {
+    case 4:
+    case 0:
+        t = s1 + s2;
+        break;
+    case 1:
+        t = s1 - s2;
+        break;
+    case 2:
+        t = s1 * s2;
+        break;
+    case 3:
+        t = s2 != 0 ? s1 / s2 : 0;
+        break;
+    }
+
+    {
+        u8 ctrl = args->flags >> 8;
+        u8 index = args->flags >> 0x10;
+        varSet(state, ctrl, index, (t < -0x8000 ? -0x8000 : t > 0x7fff ? 0x7fff : t));
+    }
+}
+
+/*
+ * Key off other voices in the same key group, optionally by immediate kill.
+ */
 void mcmdSendMessage(McmdVoiceState* state, McmdCommandArgs* args)
 {
     u32 value;
@@ -394,40 +427,6 @@ void mcmdSendMessage(McmdVoiceState* state, McmdCommandArgs* args)
     else
     {
         macPostMessage(mcmdVarGet32Legacy(state, 0, args->value), value);
-    }
-}
-
-/*
- * Key off other voices in the same key group, optionally by immediate kill.
- */
-void mcmdSetKeyGroup(McmdVoiceState* state, McmdCommandArgs* args)
-{
-    u32 i;
-    u8 kg;
-    u32 kill;
-    McmdVoiceState* voice;
-
-    state->keyGroup = 0;
-    kg = (u8)(args->flags >> 8);
-    kill = (u8)(args->flags >> 0x10) != 0;
-    if (kg != 0)
-    {
-        for (i = 0; i < SYNTH_CONFIGURATION->voiceCount; i++)
-        {
-            voice = &synthVoice[i];
-            if (voice->macroBase != 0 && (MAC_CFLAGS(voice) & MAC_FLAG64(0, 2)) == 0 && kg == voice->keyGroup)
-            {
-                if (kill == 0)
-                {
-                    macSetExternalKeyoff(voice);
-                }
-                else
-                {
-                    voiceKill(i);
-                }
-            }
-        }
-        state->keyGroup = kg;
     }
 }
 
@@ -491,8 +490,8 @@ static inline void mcmdIfVarCompare(McmdVoiceState* svoice, McmdCommandArgs* cst
     s32 rhs;
     u8 result;
 
-    lhs = varGet32(svoice, (cstep->flags >> 8) & 0xff, (cstep->flags >> 0x10) & 0xff);
-    rhs = varGet32(svoice, cstep->flags >> 0x18, (u8)cstep->value);
+    lhs = varGetReg(svoice, (cstep->flags >> 8) & 0xff, (cstep->flags >> 0x10) & 0xff);
+    rhs = varGetReg(svoice, cstep->flags >> 0x18, (u8)cstep->value);
 
     switch (cmp)
     {
@@ -583,6 +582,40 @@ static inline void mcmdSetupLFO(McmdVoiceState* svoice, McmdCommandArgs* cstep)
 
 /*
  * Run the active macro command stream for one voice (MusyX macHandleActive).
+ */
+void mcmdSetKeyGroup(McmdVoiceState* state, McmdCommandArgs* args)
+{
+    u32 i;
+    u8 kg;
+    u32 kill;
+    McmdVoiceState* voice;
+
+    state->keyGroup = 0;
+    kg = (u8)(args->flags >> 8);
+    kill = (u8)(args->flags >> 0x10) != 0;
+    if (kg != 0)
+    {
+        for (i = 0; i < SYNTH_CONFIGURATION->voiceCount; i++)
+        {
+            voice = &synthVoice[i];
+            if (voice->macroBase != 0 && (MAC_CFLAGS(voice) & MAC_FLAG64(0, 2)) == 0 && kg == voice->keyGroup)
+            {
+                if (kill == 0)
+                {
+                    macSetExternalKeyoff(voice);
+                }
+                else
+                {
+                    voiceKill(i);
+                }
+            }
+        }
+        state->keyGroup = kg;
+    }
+}
+
+/*
+ * Write a synth register, routing high registers to the EX controller bank.
  */
 void macHandleActive(McmdVoiceState* sv)
 {
@@ -1223,25 +1256,6 @@ void macHandleActive(McmdVoiceState* sv)
 }
 
 /*
- * Write a synth register, routing high registers to the EX controller bank.
- */
-void varSet32(McmdVoiceState* state, u32 useExCtrl, u8 index, s32 value)
-{
-    if (useExCtrl != 0)
-    {
-        inpSetExCtrl(state, index, value);
-        return;
-    }
-    index &= 0x1f;
-    if (index < 0x10)
-    {
-        state->localRegs[index] = value;
-        return;
-    }
-    SYNTH_GLOBAL_REG(index) = value;
-}
-
-/*
  * Advance the synth voice timer queue and process active voices.
  */
 void macHandle(u32 deltaTime)
@@ -1396,6 +1410,38 @@ void TimeQueueRemove(McmdVoiceState* sv, u32 disableUpdate);
 /*
  * Move a yielded voice back onto the active voice list.
  */
+void TimeQueueRemove(McmdVoiceState* sv, u32 disableUpdate)
+{
+    if (*(u64*)&sv->wakeTimeHi != 0)
+    {
+        if (*(u64*)&sv->wakeTimeHi != (u64)-1)
+        {
+            if (sv->timePrev == 0)
+            {
+                macTimeQueueRoot = (int)sv->timeNext;
+            }
+            else
+            {
+                sv->timePrev->timeNext = sv->timeNext;
+            }
+            if (sv->timeNext != 0)
+            {
+                sv->timeNext->timePrev = sv->timePrev;
+            }
+        }
+        if (disableUpdate == 0)
+        {
+            synthQueueVoicePrimaryUpdates(sv);
+        }
+        *(u64*)&sv->wakeTimeHi = 0;
+        *(u64*)&sv->activeTimeHi = macRealTime;
+        MAC_CFLAGS(sv) &= ~MAC_FLAG64(0, 0x40004);
+    }
+}
+
+/*
+ * Detach a voice from the active list and optionally stop it cold.
+ */
 void macMakeActive(McmdVoiceState* sv)
 {
     if (sv->queueMode != 0)
@@ -1433,7 +1479,7 @@ void macMakeActive(McmdVoiceState* sv)
 }
 
 /*
- * Detach a voice from the active list and optionally stop it cold.
+ * Allocate a voice and start a macro on it (MusyX macStart).
  */
 void macMakeInactive(McmdVoiceState* sv, int newState)
 {
@@ -1486,7 +1532,7 @@ void macMakeInactive(McmdVoiceState* sv, int newState)
 }
 
 /*
- * Allocate a voice and start a macro on it (MusyX macStart).
+ * Reset the macro scheduler state and every voice slot.
  */
 u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 panning, u8 midi, u8 midiSet,
              u8 section, u16 step, u16 trackid, u8 new_vid, u8 vGroup, u8 studio, u32 itd)
@@ -1608,38 +1654,6 @@ u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, 
     }
 
     return 0xffffffff;
-}
-
-/*
- * Reset the macro scheduler state and every voice slot.
- */
-void TimeQueueRemove(McmdVoiceState* sv, u32 disableUpdate)
-{
-    if (*(u64*)&sv->wakeTimeHi != 0)
-    {
-        if (*(u64*)&sv->wakeTimeHi != (u64)-1)
-        {
-            if (sv->timePrev == 0)
-            {
-                macTimeQueueRoot = (int)sv->timeNext;
-            }
-            else
-            {
-                sv->timePrev->timeNext = sv->timeNext;
-            }
-            if (sv->timeNext != 0)
-            {
-                sv->timeNext->timePrev = sv->timePrev;
-            }
-        }
-        if (disableUpdate == 0)
-        {
-            synthQueueVoicePrimaryUpdates(sv);
-        }
-        *(u64*)&sv->wakeTimeHi = 0;
-        *(u64*)&sv->activeTimeHi = macRealTime;
-        MAC_CFLAGS(sv) &= ~MAC_FLAG64(0, 0x40004);
-    }
 }
 void macInit(void)
 {
