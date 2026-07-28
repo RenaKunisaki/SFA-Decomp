@@ -179,8 +179,6 @@ void drawSkyStars(void)
     }
 }
 
-const f32 gNewCloudStarRadius[1] = { 5000.0f };
-const f32 gNewCloudStarAxisThreshold[1] = { 3750.0f };
 
 void initSkyStars(void)
 {
@@ -213,7 +211,7 @@ void initSkyStars(void)
         }
         while (0.0f == starPosition.x && 0.0f == starPosition.y && 0.0f == starPosition.z);
         PSVECNormalize(&starPosition, &starPosition);
-        PSVECScale(&starPosition, &starPosition, gNewCloudStarRadius[0]);
+        PSVECScale(&starPosition, &starPosition, 5000.0f);
         constellationPoint->x = starPosition.x;
         constellationPoint->y = starPosition.y;
         constellationPoint->z = starPosition.z;
@@ -245,17 +243,17 @@ void initSkyStars(void)
                 }
                 while (0.0f == starPosition.x && 0.0f == starPosition.y && 0.0f == starPosition.z);
                 PSVECNormalize(&starPosition, &starPosition);
-                PSVECScale(&starPosition, &starPosition, gNewCloudStarRadius[0]);
+                PSVECScale(&starPosition, &starPosition, 5000.0f);
             }
             else
             {
-                f64 ax;
+                f32 ax;
                 constellationIndex = randomGetRange(0, SKY_STAR_CONSTELLATION_POINT_COUNT - 1);
                 starPosition.x = constellation[constellationIndex].x;
                 starPosition.y = constellation[constellationIndex].y;
                 starPosition.z = constellation[constellationIndex].z;
-                ax = __fabs(starPosition.x);
-                if (ax > gNewCloudStarAxisThreshold[0])
+                ax = __fabsf(starPosition.x);
+                if (ax > 3750.0f)
                 {
                     PSMTXRotRad(rotationA, 0x79,
                                 (0.015f *
@@ -282,8 +280,8 @@ void initSkyStars(void)
                 }
                 else
                 {
-                    f64 ay = __fabs(starPosition.y);
-                    if (ay > gNewCloudStarAxisThreshold[0])
+                    f32 ay = __fabsf(starPosition.y);
+                    if (ay > 3750.0f)
                     {
                         PSMTXRotRad(rotationA, 0x78,
                                     (0.015f *

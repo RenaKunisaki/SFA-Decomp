@@ -13,7 +13,6 @@
 #define DIMBOSSCRACKPAR_BASE_PARTICLE_ID 0x4C6
 #define DIMBOSSCRACKPAR_GLOW_PARTICLE_ID 0x4C8
 
-const f32 gDIMbosscrackparRootMotionScale[1] = {0.1f};
 
 int DIMbosscrackpar_SeqFn(GameObject* obj) {
     DIMbosscrackparPlacementView* placement = (DIMbosscrackparPlacementView*)obj->anim.placementData;
@@ -61,7 +60,7 @@ void DIMbosscrackpar_update(GameObject* obj) {
 
 void DIMbosscrackpar_init(GameObject* obj, DIMbosscrackparPlacementView* placement) {
     obj->anim.rotX = 0;
-    obj->anim.rootMotionScale = gDIMbosscrackparRootMotionScale[0];
+    obj->anim.rootMotionScale = 0.1f;
     obj->animEventCallback = DIMbosscrackpar_SeqFn;
     obj->anim.rotX = (s16)((s32)placement->rotationXByte << 8);
     obj->anim.rotY = (s16)((s32)placement->rotationYByte << 8);

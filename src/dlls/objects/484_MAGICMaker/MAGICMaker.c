@@ -33,8 +33,6 @@ u16 gMagicMakerSpawnObjectIds[MAGICMAKER_SPAWN_OBJECT_COUNT] = {
     COLLECTIBLE_ITEM_ENERGY_EGG, /* duplicate weighting */
 };
 
-const f32 gMagicMakerRenderScale[1] = {1.0f};
-const f32 gMagicMakerSpawnHeightOffset[1] = {10.0f};
 
 int magicmaker_getExtraSize(void) {
     return 0;
@@ -51,7 +49,7 @@ void magicmaker_render(GameObject* obj, int renderArg2, int renderArg3, int rend
     s32 isVisible = visible;
 
     if (isVisible != 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gMagicMakerRenderScale[0]);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
@@ -94,7 +92,7 @@ void magicmaker_update(GameObject* obj) {
                     spawnSetup->hideGameBit = MAGICMAKER_GAMEBIT_NONE;
                     spawnSetup->base.posX =
                         obj->anim.localPosX + (f32)randomGetRange(-MAGICMAKER_SPAWN_RADIUS, MAGICMAKER_SPAWN_RADIUS);
-                    spawnSetup->base.posY = gMagicMakerSpawnHeightOffset[0] + obj->anim.localPosY;
+                    spawnSetup->base.posY = 10.0f + obj->anim.localPosY;
                     spawnSetup->base.posZ =
                         obj->anim.localPosZ + (f32)randomGetRange(-MAGICMAKER_SPAWN_RADIUS, MAGICMAKER_SPAWN_RADIUS);
                     spawnSetup->visibilityGameBit = MAGICMAKER_GAMEBIT_NONE;
@@ -109,7 +107,7 @@ void magicmaker_update(GameObject* obj) {
                     if (spawnedObject != NULL) {
                         i = MAGICMAKER_HIT_BURST_COUNT;
                         do {
-                            objfx_spawnHitEffectBurst(spawnedObject, gMagicMakerRenderScale[0],
+                            objfx_spawnHitEffectBurst(spawnedObject, 1.0f,
                                                       MAGICMAKER_HIT_EFFECT_ID, MAGICMAKER_HIT_EFFECT_VARIANT,
                                                       MAGICMAKER_HIT_EFFECT_PARTICLE_COUNT, NULL);
                             i--;

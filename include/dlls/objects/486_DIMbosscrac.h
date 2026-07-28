@@ -41,7 +41,6 @@ void DIMbosscrackpar_init(GameObject* obj, DIMbosscrackparPlacementView* placeme
 void DIMbosscrackpar_release(void);
 void DIMbosscrackpar_initialise(void);
 
-extern const f32 gDIMbosscrackparRootMotionScale[1];
 extern ObjectDescriptor gDIMbosscrackparObjDescriptor;
 
 #endif /* DLLS_OBJECTS_486_DIMBOSSCRAC_H_ */
