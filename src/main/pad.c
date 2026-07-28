@@ -40,6 +40,22 @@ u32 gPadButtonsReleased[4];
 u32 gPadButtonsJustPressed[4];
 PADStatus gPadStatuses[2][4];
 
+u8 gPadStatusToggle;
+s8 gPadPrevStickX[4];
+s8 gPadPrevStickY[4];
+s8 gPadRepeatX[4];
+s8 gPadRepeatY[4];
+s8 gPadAnalogX[4];
+s8 gPadAnalogY[4];
+u16 gPadTriggersPressed[4];
+u16 gPadTriggersReleased[4];
+u16 gPadTriggers[4];
+u16 gPadPrevTriggers[4];
+u32 gPadResetMask;
+f32 gRumbleTimer;
+u8 rumbleEnabled;
+u8 joypadDisabled;
+
 void stopRumble2(void)
 {
     if (rumbleEnabled != 0)
@@ -92,12 +108,12 @@ void buttonDisable(int port, u32 mask)
 
 void padClearAnalogInputY(int port)
 {
-    (&gPadAnalogY)[port] = 0;
+    gPadAnalogY[port] = 0;
 }
 
 void padClearAnalogInputX(int port)
 {
-    (&gPadAnalogX)[port] = 0;
+    gPadAnalogX[port] = 0;
 }
 
 void padGetAnalogInput(int port, s8* x, s8* y)
@@ -108,8 +124,8 @@ void padGetAnalogInput(int port, s8* x, s8* y)
         *y = 0;
         return;
     }
-    *x = (&gPadAnalogX)[port];
-    *y = (&gPadAnalogY)[port];
+    *x = gPadAnalogX[port];
+    *y = gPadAnalogY[port];
 }
 
 s8 padGetCY(int port)
@@ -210,7 +226,7 @@ u16 padGetTriggersPressed(int port)
     {
         return 0;
     }
-    return (&gPadTriggersPressed)[port];
+    return gPadTriggersPressed[port];
 }
 
 u16 padGetTriggers(int port)
@@ -223,7 +239,7 @@ u16 padGetTriggers(int port)
     {
         return 0;
     }
-    return (&gPadTriggers)[port];
+    return gPadTriggers[port];
 }
 
 u32 getButtonsJustPressedIfNotBusy(int port)
@@ -336,20 +352,20 @@ void padUpdate(void)
 
     i = 0;
     currentStatus = readPad;
-    prevStickY = &gPadPrevStickY;
-    prevStickX = &gPadPrevStickX;
-    repeatY = &gPadRepeatY;
-    repeatX = &gPadRepeatX;
-    analogY = &gPadAnalogY;
-    analogX = &gPadAnalogX;
+    prevStickY = gPadPrevStickY;
+    prevStickX = gPadPrevStickX;
+    repeatY = gPadRepeatY;
+    repeatX = gPadRepeatX;
+    analogY = gPadAnalogY;
+    analogX = gPadAnalogX;
     previousButtons = padStateBlock[0];
     currentButtons = padStateBlock[0] + 4;
     releasedButtons = padStateBlock[0] + 8;
     pressedButtons = padStateBlock[0] + 12;
-    prevTriggers = &gPadPrevTriggers;
-    triggers = &gPadTriggers;
-    triggersReleased = &gPadTriggersReleased;
-    triggersPressed = &gPadTriggersPressed;
+    prevTriggers = gPadPrevTriggers;
+    triggers = gPadTriggers;
+    triggersReleased = gPadTriggersReleased;
+    triggersPressed = gPadTriggersPressed;
     statuses = (PADStatus*)((u8*)padStateBlock[0] + 0x40);
 
     for (; i < 4; i++)
@@ -550,20 +566,20 @@ int initControllers(void)
     }
 
     i = 0;
-    prevStickY = &gPadPrevStickY;
-    prevStickX = &gPadPrevStickX;
-    repeatY = &gPadRepeatY;
-    repeatX = &gPadRepeatX;
-    analogY = &gPadAnalogY;
-    analogX = &gPadAnalogX;
+    prevStickY = gPadPrevStickY;
+    prevStickX = gPadPrevStickX;
+    repeatY = gPadRepeatY;
+    repeatX = gPadRepeatX;
+    analogY = gPadAnalogY;
+    analogX = gPadAnalogX;
     previousButtons = base[0]->previousButtons;
     currentButtons = base[0]->currentButtons;
     buttonsReleased = base[0]->releasedButtons;
     buttonsPressed = base[0]->pressedButtons;
-    prevTriggers = &gPadPrevTriggers;
-    triggers = &gPadTriggers;
-    triggersReleased = &gPadTriggersReleased;
-    triggersPressed = &gPadTriggersPressed;
+    prevTriggers = gPadPrevTriggers;
+    triggers = gPadTriggers;
+    triggersReleased = gPadTriggersReleased;
+    triggersPressed = gPadTriggersPressed;
     statuses = base[0]->statusBuffers[0];
 
     for (; i < 4; i++)
