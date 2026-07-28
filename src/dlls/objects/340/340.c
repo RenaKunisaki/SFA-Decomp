@@ -27,7 +27,7 @@ typedef enum CfPrisonCageObjectSequenceId {
 #define CFPRISONCAGE_HIT_EFFECT_GREEN            128
 #define CFPRISONCAGE_HIT_EFFECT_BLUE             0
 
-int cfPrisonCage_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int cfPrisonCage_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     u32 message;
     u32 unusedMessageSender;
     u32 unusedMessageArgument = 0;

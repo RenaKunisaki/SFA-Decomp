@@ -10,7 +10,7 @@
 
 #define DIM_GATE_TRIGGER_SEQUENCE_ID 399
 
-int dimgate_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int dimgate_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     (void)obj;
     (void)unused;
     (void)animUpdate;

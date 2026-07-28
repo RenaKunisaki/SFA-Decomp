@@ -57,7 +57,7 @@ const Vec3f gSunTempleRestartPos = {-6318.10009765625f, -1232.0f, -5884.0f};
 #define SUNTEMPLE_GAMEBIT_WC_INV_C    0x202
 #define SUNTEMPLE_GAMEBIT_WC_INV_D    0x243
 
-int suntemple_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int suntemple_interactCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     GameObject* gameObj = obj;
     SunTempleSetup* cfg = (SunTempleSetup*)gameObj->anim.placementData;

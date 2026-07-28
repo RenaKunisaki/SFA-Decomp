@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct ECSHShrineState {
     ModelLightStruct* light;
@@ -63,7 +63,7 @@ STATIC_ASSERT(sizeof(ECSHShrineState) == 0x38);
 extern ObjectDescriptor15 gECSHShrineObjDescriptor;
 
 void ecshShrine_updateHoverMotion(GameObject* obj);
-int ecshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int ecshShrine_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void ecshShrine_checkCupPick(u8 cupIndex);
 void ecshShrine_setCupPosition(u8 cupIndex, f32 x, f32 z);
 void ecshShrine_getPhaseAndSpiritCup(int* outAnimState, u8* outSpiritCup);

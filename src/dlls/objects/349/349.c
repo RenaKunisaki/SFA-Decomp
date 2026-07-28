@@ -19,7 +19,7 @@
 #define SLIDING_DOOR_SCALE_DIVISOR          64.0f
 #define SLIDING_DOOR_UPDATE_LATCHED         1
 
-int slidingDoor_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int slidingDoor_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     register int playerNear;
     register int trickyNear;
     register SlidingDoorState* state;
@@ -67,11 +67,11 @@ int slidingDoor_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
     {
         register SlidingDoorState* transitionState = state;
         if (transitionState->mode == SLIDING_DOOR_MODE_OPENING) {
-            if (animUpdate->triggerCommand == SLIDING_DOOR_TRIGGER_OPEN_COMPLETE) {
+            if (animUpdate->unk80 == SLIDING_DOOR_TRIGGER_OPEN_COMPLETE) {
                 transitionState->mode = SLIDING_DOOR_MODE_OPEN;
             }
         } else if (transitionState->mode == SLIDING_DOOR_MODE_CLOSING) {
-            if (animUpdate->triggerCommand == SLIDING_DOOR_TRIGGER_CLOSE_COMPLETE) {
+            if (animUpdate->unk80 == SLIDING_DOOR_TRIGGER_CLOSE_COMPLETE) {
                 transitionState->mode = SLIDING_DOOR_MODE_CLOSED;
             }
         }

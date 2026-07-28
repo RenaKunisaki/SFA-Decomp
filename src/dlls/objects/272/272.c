@@ -6,7 +6,6 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
 
@@ -43,7 +42,7 @@
 #define DOOR_MOVEMENT_SFX_358          275
 #define DOOR_ENDPOINT_SFX_358          504
 
-int Door_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int Door_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int eventIndex;
     DoorState* state;
     DoorPlacement* placement;

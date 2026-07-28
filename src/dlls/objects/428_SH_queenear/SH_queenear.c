@@ -15,10 +15,9 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEvent.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/objprint_anim_api.h"
 #include "main/obj_trigger.h"
-#include "main/objseq.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -91,7 +90,7 @@ ObjectDescriptor gSH_queenearthwalkerObjDescriptor = {
  * QUEEN_EARTH_WALKER_FLAG_INIT_DONE is a one-shot guard that stops the
  * looping object sound.
  */
-int sh_queenearthwalker_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int sh_queenearthwalker_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     QueenEarthWalkerState* state = obj->extra;
     int i;
     u8 flags;
@@ -117,8 +116,8 @@ int sh_queenearthwalker_processAnimEvents(GameObject* obj, int unusedArg, ObjAni
             break;
         case QUEEN_EARTH_WALKER_ANIM_EVENT_END_TARGETING:
             state->flags &= ~QUEEN_EARTH_WALKER_FLAG_TARGETING;
-            animUpdate->hitVolumePair |= 0x8;
-            animUpdate->hitVolumePair |= 0x40;
+            animUpdate->flags |= 0x8;
+            animUpdate->flags |= 0x40;
             break;
         }
     }
@@ -128,7 +127,7 @@ int sh_queenearthwalker_processAnimEvents(GameObject* obj, int unusedArg, ObjAni
         if ((flags & QUEEN_EARTH_WALKER_FLAG_LATCHED) == 0) {
             GameObject* player;
 
-            animUpdate->hitVolumePair &= ~0x8;
+            animUpdate->flags &= ~0x8;
             player = Obj_GetPlayerObject();
             state->look.enabled = 1;
             state->look.targetX = player->anim.localPosX;
@@ -136,7 +135,7 @@ int sh_queenearthwalker_processAnimEvents(GameObject* obj, int unusedArg, ObjAni
             state->look.targetZ = player->anim.localPosZ;
             characterHeadLookCalm(obj, (s16*)&state->look, 0.0f);
         }
-        animUpdate->hitVolumePair &= ~0x40;
+        animUpdate->flags &= ~0x40;
         if ((state->flags & QUEEN_EARTH_WALKER_FLAG_EYE_ANIMS) != 0) {
             characterCloseEyes(obj, &state->look);
         } else {

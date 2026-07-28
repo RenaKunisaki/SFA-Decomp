@@ -13,9 +13,8 @@
  */
 typedef struct ObjSeqState ObjSeqState;
 struct GameObject;
-struct ObjAnimUpdateState;
 
-typedef int (*ObjSeqTurnToPlayerFn)(struct GameObject* obj, struct ObjAnimUpdateState* state, s16 turnDegrees,
+typedef int (*ObjSeqTurnToPlayerFn)(struct GameObject* obj, struct ObjSeqState* state, s16 turnDegrees,
                                     s16 yawThreshold, s16 maxAngle, s16 animRight, s16 animLeft);
 
 typedef struct ObjectTriggerInterface {

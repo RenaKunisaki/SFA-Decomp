@@ -40,9 +40,9 @@
 #define PRESSURE_SWITCH_RISE_SPEED               0.125f
 #define PRESSURE_SWITCH_INITIAL_PRESS_DEPTH      25.0f
 
-int PressureSwitch_SeqFn(GameObject* unusedObj, int unused, ObjAnimUpdateState* animUpdate) {
-    animUpdate->hitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+int PressureSwitch_SeqFn(GameObject* unusedObj, int unused, ObjSeqState* animUpdate) {
+    animUpdate->flags = -1;
+    animUpdate->movementState = 0;
     return 0;
 }
 

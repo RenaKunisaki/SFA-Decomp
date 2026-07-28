@@ -26,11 +26,10 @@
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #include "main/objanim.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
 #include "main/objprint_api.h"
-#include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/pad.h"
 #include "main/resource.h"
@@ -269,7 +268,7 @@ f32 lbl_803DBF14 = -300.0f;
 
 void* gDimCannonResource;
 
-int DIMCannon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     DimCannonState* state;
     DimCannonPlacement* placement = *(DimCannonPlacement**)&obj->anim.placementData;
     int aimDelta;
@@ -278,8 +277,8 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 
     (void)unused;
 
-    animUpdate->sequenceEventActive = 0;
-    animUpdate->hitVolumePair &= ~0x608;
+    animUpdate->movementState = 0;
+    animUpdate->flags &= ~0x608;
     state = obj->extra;
 
     if (state->mode == DIM_CANNON_MODE_PLAYER_CONTROLLED) {

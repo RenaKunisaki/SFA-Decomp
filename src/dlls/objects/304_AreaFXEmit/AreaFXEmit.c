@@ -209,7 +209,7 @@ void AreaFXEmit_emitEffect(GameObject* obj) {
     }
 }
 
-int AreaFXEmit_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int AreaFXEmit_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     u8 i;
     for (i = 0; i < animUpdate->eventCount; i++) {
         switch ((s32)animUpdate->eventIds[i]) {

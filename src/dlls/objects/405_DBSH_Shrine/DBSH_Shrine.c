@@ -140,7 +140,7 @@ void dbshShrine_updateHoverMotion(GameObject* obj) {
     }
 }
 
-int dbshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int dbshShrine_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     DBSHShrineState* state = obj->extra;
     GameObject* player;
     int i;
@@ -149,7 +149,7 @@ int dbshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState
     (void)unused;
     player = Obj_GetPlayerObject();
     animUpdate->savedFlags = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
 
     for (i = 0; i < animUpdate->eventCount; i++) {
         event = animUpdate->eventIds[i];

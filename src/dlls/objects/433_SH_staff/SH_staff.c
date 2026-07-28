@@ -23,13 +23,12 @@
 #include "main/game_ui_interface.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/obj_group.h"
 #include "main/obj_path.h"
 #include "main/objhits.h"
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
-#include "main/objseq.h"
 #include "main/obj_trigger.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
@@ -290,7 +289,7 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
     }
 }
 
-int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     ShStaffState* state = obj->extra;
     int i;
 

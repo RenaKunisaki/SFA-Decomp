@@ -3,9 +3,9 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
-int cfPerch_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int cfPerch_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int cfPerch_getExtraSize(void);
 int cfPerch_getObjectTypeId(void);
 void cfPerch_free(GameObject* obj);

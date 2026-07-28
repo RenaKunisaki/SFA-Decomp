@@ -10,9 +10,8 @@
 #include "main/dll/dll_005A_staffcollisionfunc03.h"
 #include "main/game_ui_interface.h"
 #include "main/objHitReact_types.h"
-#include "main/objanim_update.h"
-#include "main/objfx.h"
 #include "main/objseq.h"
+#include "main/objfx.h"
 #include "main/object_render.h"
 #include "main/resource.h"
 #include "main/shader_api.h"
@@ -48,7 +47,7 @@ int gTreasureChestHitEffectCooldown;
 const StaffCollisionColorArgs gTreasureChestHitEffectColors = {8, 0xFF, 0xFF, 0x78};
 StaffCollisionInterface** gTreasureChestStaffCollisionInterface;
 
-int TreasureChest_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int TreasureChest_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int eventIndex;
     TreasureChestPlacement* placement;
     TreasureChestObjectState* state;

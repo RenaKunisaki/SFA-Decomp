@@ -29,7 +29,7 @@
 
 #define WCTREXSTATU_MAPEVENT_RAISED 2
 
-int wctrexstatu_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int wctrexstatu_interactCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int i;
 

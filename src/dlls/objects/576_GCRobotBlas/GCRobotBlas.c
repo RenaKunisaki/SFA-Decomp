@@ -19,7 +19,7 @@ STATIC_ASSERT(offsetof(GCRobotBlastState, mode) == 0x0);
 STATIC_ASSERT(offsetof(GCRobotBlastState, flags04) == 0x4);
 STATIC_ASSERT(offsetof(GCRobotBlastPlacement, mode) == 0x19);
 
-int GCRobotBlast_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int GCRobotBlast_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     GCRobotBlastState* state = obj->extra;
     int i;

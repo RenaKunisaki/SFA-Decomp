@@ -10,7 +10,7 @@
 #define CFPERCH_REMOVED_MESSAGE       0x40001
 #define CFPERCH_SEQUENCE_SQUAWK       0
 
-int cfPerch_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int cfPerch_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     if (mainGetBit(GAMEBIT_CF_PrisonCageOpened) != 0) {
         animUpdate->sequenceControlFlags = OBJSEQ_CONTROL_SET_LATCH_A;
     }

@@ -37,7 +37,7 @@
 #define NW_TREE_BRIDGE_MEDIUM_BURST_COUNT            100
 #define NW_TREE_BRIDGE_SMALL_BURST_COUNT             5
 
-int nwTreeBridge_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int nwTreeBridge_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     NwTreeBridgeState* state;
     int eventIndex;
     int particlesRemaining;

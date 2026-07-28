@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef enum Dll19BPhase {
     DLL19B_PHASE_IDLE = 0,
@@ -68,7 +68,7 @@ STATIC_ASSERT(offsetof(Dll19BState, unknown17) == 0x17);
 extern ObjectDescriptor gDll19BObjDescriptor;
 extern u32 gDll19BShaderResult;
 
-int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);
+int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate);
 int dll411_getExtraSize(void);
 int dll411_getObjectTypeId(void);
 void dll411_free(GameObject* obj);

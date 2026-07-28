@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef enum DoorF4GateMode {
     DOORF4_GATE_MODE_PROXIMITY = 0,
@@ -68,7 +68,7 @@ STATIC_ASSERT(offsetof(DoorF4State, environmentFxActive) == 0x22);
 STATIC_ASSERT(offsetof(DoorF4State, pad23) == 0x23);
 STATIC_ASSERT(sizeof(DoorF4State) == 0x24);
 
-int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate);
+int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate);
 int DoorF4_getExtraSize(void);
 int DoorF4_getObjectTypeId(void);
 void DoorF4_free(int obj);

@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 #include "ghidra_import.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "game/objects/object_setup.h"
 
 typedef struct WCTempleBriSetup
@@ -48,7 +48,7 @@ STATIC_ASSERT(offsetof(WCTempleBriSetup, solvedBit) == 0x1e);
 
 
 void wctemplebri_updateModelWarp(GameObject* obj, WCTempleBriState* state);
-int wctemplebri_SeqFn(GameObject* obj, int p2, ObjAnimUpdateState* animUpdate);
+int wctemplebri_SeqFn(GameObject* obj, int p2, ObjSeqState* animUpdate);
 int wctemplebri_getExtraSize(void);
 int wctemplebri_getObjectTypeId(GameObject* obj);
 void wctemplebri_free(void);

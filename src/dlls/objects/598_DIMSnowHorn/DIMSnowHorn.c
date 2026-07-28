@@ -825,7 +825,7 @@ int DIMSnowHorn1_stateHandler00(GameObject* obj)
     }
 }
 
-int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     DIMSnowHorn1State* state;
     int animState;
@@ -839,7 +839,7 @@ int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateSta
     switch (state->mode)
     {
     case 0:
-        animUpdate->sequenceEventActive = 0;
+        animUpdate->movementState = 0;
         if (obj->seqIndex == -1)
         {
             for (i = 0; i < (int)(u32)animUpdate->eventCount; i++)
@@ -851,15 +851,15 @@ int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateSta
         (*gPlayerInterface)->setState((void*)obj, state, 1);
         break;
     case 5:
-        animUpdate->sequenceEventActive = 0;
+        animUpdate->movementState = 0;
         (*gPlayerInterface)->setState((void*)obj, state, 2);
         break;
     case 4:
-        animUpdate->sequenceEventActive = 0;
+        animUpdate->movementState = 0;
         (*gPlayerInterface)->setState((void*)obj, state, 7);
         break;
     case 1:
-        animUpdate->sequenceEventActive = 0;
+        animUpdate->movementState = 0;
         if (obj->seqIndex != -1)
         {
             switch (state->triggerMode)
@@ -883,7 +883,7 @@ int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateSta
         (*gPlayerInterface)->setState((void*)obj, state, animState);
         break;
     case 3:
-        animUpdate->sequenceEventActive = 0;
+        animUpdate->movementState = 0;
         state->baddie.moveJustStartedA = 1;
         (*gPlayerInterface)->setState((void*)obj, state, 7);
         break;
@@ -899,7 +899,7 @@ int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateSta
     obj->anim.velocityX = fz;
     obj->anim.velocityY = fz;
     obj->anim.velocityZ = fz;
-    return (u32)(-(s8)animUpdate->sequenceEventActive | (s8)animUpdate->sequenceEventActive) >> 0x1f;
+    return (u32)(-(s8)animUpdate->movementState | (s8)animUpdate->movementState) >> 0x1f;
 }
 
 void DIMSnowHorn1_handleRiderScale(GameObject* obj, f32 scale)

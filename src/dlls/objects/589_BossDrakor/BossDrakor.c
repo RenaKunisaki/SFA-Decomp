@@ -36,7 +36,7 @@
 #include "main/objHitReact.h"
 #include "main/objhits.h"
 #include "main/objanim.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "dolphin/mtx/vec.h"
 #include "main/audio/music_api.h"
 #include "main/gametext_show_api.h"
@@ -101,7 +101,7 @@ STATIC_ASSERT(offsetof(BossDrakorSpellStoneInterface, setState) == 0x20);
 #define BOSSDRAKOR_ENVFX_C 0x10e
 
 
-int bossdrakor_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int inner = *(int*)&(obj)->extra;
     int i;

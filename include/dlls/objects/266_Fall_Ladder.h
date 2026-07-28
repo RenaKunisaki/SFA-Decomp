@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define FALL_LADDER_PLACEMENT_SIZE 0x24 /* 0x18-byte base plus fixed 0xC-byte retail parameter tail */
 #define FALL_LADDER_STATE_SIZE     0xC
@@ -53,7 +53,7 @@ STATIC_ASSERT(offsetof(FallLadderState, playFallSound) == 0x9);
 STATIC_ASSERT(offsetof(FallLadderState, fallDelay) == 0xA);
 STATIC_ASSERT(sizeof(FallLadderState) == FALL_LADDER_STATE_SIZE);
 
-int Fall_Ladders_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int Fall_Ladders_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int Fall_Ladders_getExtraSize(void);
 int Fall_Ladders_getObjectTypeId(void);
 void Fall_Ladders_free(GameObject* obj);

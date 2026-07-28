@@ -111,7 +111,7 @@ void CFCrate_render(GameObject* obj, int renderArg2, int renderArg3, int renderA
     objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
 }
 
-int CFCrate_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int CFCrate_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     CFCrateState* state;
     int i;
 

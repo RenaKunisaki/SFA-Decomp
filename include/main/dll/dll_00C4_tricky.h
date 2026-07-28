@@ -16,7 +16,7 @@ extern const TrickyItemIdList gTrickyCmdQueryInit;
 extern const TrickyItemIdList gTrickyFoodItemIds;
 #include "ghidra_import.h"
 #include "main/dll/tricky_state.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor20WithPadding gTrickyObjDescriptor;
@@ -72,7 +72,7 @@ void sideCommandEnable(GameObject* obj, GameObject* targetObj, int commandKind, 
 int Tricky_updateSideCommandPrompts(int obj);
 void Tricky_free(int obj, int shouldKeepFlameChildren);
 void Tricky_init(GameObject* obj);
-int tricky_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate);
+int tricky_SeqFn(int obj, int unused, ObjSeqState* animUpdate);
 void Tricky_update(int obj);
 void Tricky_render(GameObject* obj, int param_2, int param_3, int param_4, int param_5, char doRender);
 void Tricky_hitDetect(GameObject* obj);

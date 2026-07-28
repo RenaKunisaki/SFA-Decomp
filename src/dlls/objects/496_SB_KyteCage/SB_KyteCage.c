@@ -50,7 +50,7 @@ enum {
     SB_KYTECAGE_SEQEV_LATCH_2 = 2
 };
 
-int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     SBKyteCageState* state;
     int i;
 
@@ -68,15 +68,15 @@ int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
         i++;
     }
 
-    animUpdate->hitVolumePair = -4;
+    animUpdate->flags = -4;
     if (obj->seqIndex != -1) {
-        animUpdate->hitVolumePair &= ~4;
+        animUpdate->flags &= ~4;
         if (ObjAnim_AdvanceCurrentMove((int)obj, SB_KYTECAGE_ANIMATION_RATE, timeDelta, NULL) != 0) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_gdtur2_c);
         }
     }
 
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     return 0;
 }
 

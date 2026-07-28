@@ -88,7 +88,7 @@ void dll_184_hitDetect(void) {
 
 void dll_184_update(GameObject* obj) {
     const Dll184Placement* placement;
-    int sequenceSlot;
+    int slot;
     int sequenceSlotExt;
     int participantCount;
     GameObject** objectList;
@@ -103,14 +103,14 @@ void dll_184_update(GameObject* obj) {
         i = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)framesThisStep);
         dll_184_handleAnimEvents(obj, &state->sequence);
         if (i != 0 && obj->seqIndex == -2) {
-            sequenceSlot = state->sequence.slot;
+            slot = state->sequence.slot;
             sequenceObject = NULL;
             objectList = (GameObject**)ObjList_GetObjects(&i, &objectCount);
             participantCount = 0;
-            for (i = 0, sequenceSlotExt = (int)(s8)sequenceSlot; i < objectCount; i++) {
+            for (i = 0, sequenceSlotExt = (int)(s8)slot; i < objectCount; i++) {
                 GameObject* otherObject = *objectList;
 
-                if (otherObject->seqIndex == sequenceSlot) {
+                if (otherObject->seqIndex == slot) {
                     sequenceObject = otherObject;
                 }
                 if (otherObject->seqIndex == -2 && otherObject->anim.classId == DLL_184_CLASS_ID &&

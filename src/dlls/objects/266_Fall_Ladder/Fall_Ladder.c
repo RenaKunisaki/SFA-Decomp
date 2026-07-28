@@ -39,7 +39,7 @@
 #define FALL_LADDER_BOUNCE_DAMPING 0.3f
 #define FALL_LADDER_SETTLE_SPEED   0.01f
 
-int Fall_Ladders_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int Fall_Ladders_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     (void)obj;
     (void)unused;
     (void)animUpdate;

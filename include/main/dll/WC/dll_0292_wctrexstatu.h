@@ -5,7 +5,7 @@
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct WCTrexStatueSetup
 {
@@ -24,7 +24,7 @@ STATIC_ASSERT(offsetof(WCTrexStatueSetup, raisedBit) == 0x1E);
 
 extern ObjectDescriptor gWCTrexStatuObjDescriptor;
 
-int wctrexstatu_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int wctrexstatu_interactCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int wctrexstatu_getExtraSize(void);
 int wctrexstatu_getObjectTypeId(GameObject* obj);
 void wctrexstatu_free(void);

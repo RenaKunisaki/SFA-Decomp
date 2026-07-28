@@ -32,7 +32,7 @@ static inline int* DrShackle_GetActiveModel(void* obj)
     return (int*)objAnim->banks[objAnim->bankIndex];
 }
 
-int drshackle_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int drshackle_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     char* state = obj->extra;
     DrshacklePlacement* placement = *(DrshacklePlacement**)state;

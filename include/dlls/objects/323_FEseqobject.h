@@ -3,7 +3,7 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /* FEseqobject_getExtraSize proves the complete one-byte allocation. */
 typedef struct FEseqobjectState {
@@ -12,7 +12,7 @@ typedef struct FEseqobjectState {
 
 STATIC_ASSERT(sizeof(FEseqobjectState) == 0x01);
 
-int FEseqobject_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int FEseqobject_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int FEseqobject_getExtraSize(void);
 int FEseqobject_getObjectTypeId(void);
 void FEseqobject_free(void);

@@ -110,7 +110,7 @@ u32 PaymentKiosk_testEvent(GameObject* obj, int unused, int eventId) {
     return result;
 }
 
-int PaymentKiosk_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int PaymentKiosk_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     PaymentKioskState* state = obj->extra;
     const PaymentKioskPlacement* placement = (const PaymentKioskPlacement*)obj->anim.placementData;
     GameObject* player;

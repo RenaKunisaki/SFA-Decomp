@@ -2,7 +2,6 @@
 
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 
 #define DLL_115_GROUP                              0xF
@@ -21,12 +20,12 @@
 STATIC_ASSERT(DLL_115_COMPLETION_GAME_BIT_HALFWORD_INDEX ==
               offsetof(Dll115Placement, completionGameBits) / sizeof(s16));
 
-int dll_115_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int dll_115_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int step;
     Dll115State* state = obj->extra;
     Dll115Placement* placement = (Dll115Placement*)obj->anim.placementData;
-    animUpdate->hitVolumePair = animUpdate->activeHitVolumePair;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->flags = animUpdate->savedFlags;
+    animUpdate->movementState = 0;
     if (obj->seqIndex == DLL_115_SEQUENCE_INDEX_NONE) {
         return 0;
     }

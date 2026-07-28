@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef enum TransporterFlag {
     TRANSPORTER_FLAG_INTERACTIVE = 0x01,
@@ -73,7 +73,7 @@ STATIC_ASSERT(sizeof(TransporterState) == 0x10);
 void Transporter_updateEffects(GameObject* obj);
 void Transporter_updateInteraction(GameObject* obj);
 
-int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int Transporter_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int Transporter_getExtraSize(void);
 void Transporter_render(void);
 void Transporter_hitDetect(int obj);

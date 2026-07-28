@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 
-struct ObjAnimUpdateState;
+struct ObjSeqState;
 
 extern char* sMemoryCardFileName;
 extern int lbl_803DB708;

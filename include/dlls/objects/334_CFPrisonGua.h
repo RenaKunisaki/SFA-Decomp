@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "main/objprint_character_api.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef enum CfPrisonGuardStateId {
     CFPRISONGUARD_STATE_IDLE = 0,
@@ -76,7 +76,7 @@ STATIC_ASSERT(offsetof(CfPrisonGuardState, statusFlags) == 0x39);
 STATIC_ASSERT(offsetof(CfPrisonGuardState, pad3A) == 0x3A);
 STATIC_ASSERT(sizeof(CfPrisonGuardState) == 0x3C);
 
-int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int cfPrisonGuard_getExtraSize(void);
 int cfPrisonGuard_getObjectTypeId(void);
 void cfPrisonGuard_free(void);

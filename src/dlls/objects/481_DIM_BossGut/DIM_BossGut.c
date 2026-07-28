@@ -11,9 +11,9 @@
 #define DIM_BOSS_GUT_OBJECT_SLOT    0x5A
 #define DIM_BOSS_GUT_ANIMATION_STEP 0.005f
 
-int DIM_BossGut_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
-    animUpdate->hitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+int DIM_BossGut_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
+    animUpdate->flags = -1;
+    animUpdate->movementState = 0;
     return 0;
 }
 

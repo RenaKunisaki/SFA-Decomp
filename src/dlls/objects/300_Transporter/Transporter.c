@@ -276,7 +276,7 @@ ObjectDescriptor gTransporterObjDescriptor = {
     Transporter_getExtraSize,
 };
 
-int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int Transporter_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int i;
     TransporterPlacement* placement = (TransporterPlacement*)obj->anim.placementData;
     TransporterState* state = obj->extra;

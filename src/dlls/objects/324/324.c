@@ -4,8 +4,8 @@
 #include "main/object_render.h"
 
 /* 1.0f model render scale from the shared scalar pool. */
-int dll_144_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
-    animUpdate->sequenceEventActive = 0;
+int dll_144_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
+    animUpdate->movementState = 0;
     return 0;
 }
 

@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "main/dll/partfx_interface.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct MMPAsteroidReState {
     u8 eventFlags; /* effect requests plus the sequence-tick latch */
@@ -40,7 +40,7 @@ extern PartFxSpawnParams gMMPAsteroidDustSpawnParams;
 extern int gMMPAsteroidDustHeightParam;
 extern ObjectDescriptor gMMPAsteroidReObjDescriptor;
 
-int mmpAsteroidRe_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
+int mmpAsteroidRe_processAnimEvents(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate);
 int mmpAsteroidRe_getExtraSize(void);
 int mmpAsteroidRe_getObjectTypeId(void);
 void mmpAsteroidRe_free(void);

@@ -6,7 +6,7 @@
 #include "game/objects/object_setup.h"
 
 struct GameTextDef;
-struct ObjAnimUpdateState;
+struct ObjSeqState;
 
 typedef struct InfoPointRenderBounds {
     s32 x;      /* 0x00 */
@@ -70,7 +70,7 @@ STATIC_ASSERT(offsetof(InfoPointPlacement, rotXByte) == 0x1C);
 STATIC_ASSERT(offsetof(InfoPointPlacement, pad1D) == 0x1D);
 STATIC_ASSERT(sizeof(InfoPointPlacement) == 0x20);
 
-int InfoPoint_SeqFn(GameObject* obj, int unused, struct ObjAnimUpdateState* animUpdate);
+int InfoPoint_SeqFn(GameObject* obj, int unused, struct ObjSeqState* animUpdate);
 int InfoPoint_getExtraSize(void);
 int InfoPoint_getObjectTypeId(void);
 void InfoPoint_free(GameObject* obj);

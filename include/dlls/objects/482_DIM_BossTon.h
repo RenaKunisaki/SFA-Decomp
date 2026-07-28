@@ -6,7 +6,7 @@
 #include "game/objects/object_setup.h"
 #include "main/dll/baddie_state.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define DIMBOSSTONSIL_HIT_GAMEBIT 0x20C
 
@@ -110,9 +110,9 @@ int DIMbosstonsil_enableHitReaction(GameObject* obj, DIMbosstonsilState* state);
 int DIMbosstonsil_chooseHitReaction(GameObject* obj, DIMbosstonsilState* state);
 int DIMbosstonsil_startIdleHitReaction(GameObject* obj, DIMbosstonsilState* state);
 void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state);
-void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjAnimUpdateState* animUpdate, DIMbosstonsilState* state,
+void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjSeqState* animUpdate, DIMbosstonsilState* state,
                                          DIMbosstonsilState* updateState);
-int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpdate);
+int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate);
 void DIMbosstonsil_func0B(void);
 int DIMbosstonsil_getControlMode(GameObject* obj);
 int DIMbosstonsil_getExtraSize(void);

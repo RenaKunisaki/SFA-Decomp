@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 /* Both active-target placements are fixed 10-word (0x28-byte) records. */
 typedef struct DimBridgeCogPlacement {
@@ -34,7 +34,7 @@ STATIC_ASSERT(sizeof(DimBridgeCogPlacement) == 0x28);
 STATIC_ASSERT(offsetof(DimBridgeCogState, unknown00) == 0x00);
 STATIC_ASSERT(sizeof(DimBridgeCogState) == 0x01);
 
-int dimbridgecogmai_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dimbridgecogmai_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dimbridgecogmai_getExtraSize(void);
 int dimbridgecogmai_getObjectTypeId(void);
 void dimbridgecogmai_free(GameObject* obj);

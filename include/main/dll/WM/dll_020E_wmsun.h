@@ -4,7 +4,7 @@
 #include "global.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/vec_types.h"
 
 #define WM_SUN_GLARE_COUNT 20
@@ -72,7 +72,7 @@ extern const Vec3f gWmSunGlareSun;
 extern f32 gWmSunGlareIntensity;
 extern f32 gWmSunGlareDamping;
 
-int wmsun_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* actor);
+int wmsun_animEventCallback(GameObject* obj, int unused, ObjSeqState* actor);
 void wmsun_updateGlare(GameObject* obj);
 int wmsun_getExtraSize(void);
 int wmsun_getObjectTypeId(void);

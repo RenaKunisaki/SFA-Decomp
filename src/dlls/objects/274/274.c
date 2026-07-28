@@ -2,7 +2,6 @@
 
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 
 #define SEQ_OBJECT_GROUP                           0xF
@@ -57,7 +56,7 @@ void objCallOnLoadCallback(GameObject* obj) {
     }
 }
 
-int SeqObject_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateState* animUpdate) {
+int SeqObject_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate) {
     SeqObjectPlacement* placement;
     SeqObjectState* state;
     int eventIndex;
@@ -69,7 +68,7 @@ int SeqObject_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateState
     }
     placement = (SeqObjectPlacement*)obj->anim.placementData;
     state = obj->extra;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         int eventId = animUpdate->eventIds[eventIndex];
 

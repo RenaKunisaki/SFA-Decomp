@@ -43,7 +43,7 @@ STATIC_ASSERT(sizeof(NwTrickyPlayBallTargetIdList) == 0x0C);
 
 const int gNwTrickyPlayBallTargetIds[NW_TRICKY_PLAY_BALL_TARGET_POOL_SIZE] = {0xF5B, 0x43EC9, 0x43ED6, 0};
 
-int nwTricky_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjAnimUpdateState* unusedAnimUpdate) {
+int nwTricky_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjSeqState* unusedAnimUpdate) {
     (void)unusedObj;
     (void)unusedArg;
     (void)unusedAnimUpdate;

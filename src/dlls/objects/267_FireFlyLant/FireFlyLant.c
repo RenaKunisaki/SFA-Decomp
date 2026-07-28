@@ -52,7 +52,7 @@ GameObject* FireFlyLantern_spawnFireFly(GameObject* obj) {
     return loadObjectAtObject(obj, &setup->base);
 }
 
-int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     FireFlyLanternState* state;
     GameObject* child;
     int eventIndex;

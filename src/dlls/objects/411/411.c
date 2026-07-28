@@ -101,14 +101,14 @@ ObjectDescriptor gDll19BObjDescriptor = {
     dll411_getExtraSize,
 };
 
-int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     Dll19BState* state;
     int eventIndex;
 
     (void)unusedArg;
     state = obj->extra;
-    animUpdate->hitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->flags = -1;
+    animUpdate->movementState = 0;
 
     if (state->brightnessBVelocity != 0) {
         state->brightnessB += state->brightnessBVelocity;

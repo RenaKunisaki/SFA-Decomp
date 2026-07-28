@@ -5,7 +5,7 @@
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /* Spawn-setup buffer for the arwing-projectile children (defNos
  * 0x80d/0x7e4/0x859). Reuses ObjPlacement's pos/color head and adds the
@@ -61,7 +61,7 @@ STATIC_ASSERT(offsetof(GfHitState, texState[0]) == 0xB9);
 
 extern ObjectDescriptor gGF_LevelConObjDescriptor;
 
-int gf_levelcon_SeqFn(GameObject* obj, int eventId, ObjAnimUpdateState* animUpdate);
+int gf_levelcon_SeqFn(GameObject* obj, int eventId, ObjSeqState* animUpdate);
 int gf_levelcon_getExtraSize(void);
 int gf_levelcon_getObjectTypeId(void);
 void gf_levelcon_hitDetect(void);

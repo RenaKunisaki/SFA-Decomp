@@ -126,7 +126,7 @@ void crcloudrace_updateRaceState(GameObject* obj)
     }
 }
 
-int crcloudrace_completionCallback(int obj, int unused, ObjAnimUpdateState* animUpdate)
+int crcloudrace_completionCallback(int obj, int unused, ObjSeqState* animUpdate)
 {
     CrCloudRaceState* state = ((GameObject*)obj)->extra;
     int i;

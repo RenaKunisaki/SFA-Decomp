@@ -17,13 +17,12 @@
 #include "main/model.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/object_transform.h"
 #include "main/object_update_list.h"
 #include "main/objhits.h"
 #include "main/objprint_api.h"
-#include "main/objseq.h"
 #include "main/objtexture.h"
 #include "main/resource.h"
 #include "main/track_bbox_api.h"
@@ -551,7 +550,7 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
     memcpy(state->cornerWorld, worldPoints, state->pointCount * sizeof(Vec3f));
 }
 
-u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjAnimUpdateState* animUpdate) {
+u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjSeqState* animUpdate) {
     u32 gameBitValue;
     GameObject* player;
     PushableState* state;
@@ -565,7 +564,7 @@ u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjAnimUpdateState*
     if (obj->seqIndex != -1) {
         (*gCameraInterface)->setTargetReticleOverride((int)obj);
     }
-    animUpdate->activeHitVolumePair = -1;
+    animUpdate->savedFlags = -1;
     if ((s8)animUpdate->movementState != 0) {
         if ((s8)animUpdate->movementState != 2) {
             animUpdate->posOffsetScale = PUSHABLE_UNIT_SCALE;

@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "game/objects/object.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "game/objects/object_setup.h"
 
 typedef struct WmSpiritPlaceState
@@ -49,7 +49,7 @@ STATIC_ASSERT(offsetof(WmSpiritPlaceMapData, promptGameBit) == 0x20);
 STATIC_ASSERT(sizeof(WmSpiritPlaceMapData) == 0x24);
 
 void wmspiritplace_onSeqFree(void);
-int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor);
+int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjSeqState* actor);
 int WM_spiritplace_getExtraSize(void);
 int WM_spiritplace_getObjectTypeId(void);
 void WM_spiritplace_free(void);

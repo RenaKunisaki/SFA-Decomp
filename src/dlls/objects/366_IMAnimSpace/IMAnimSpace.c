@@ -54,7 +54,7 @@ ObjectDescriptor13 gIMAnimSpaceObjDescriptor = {
     (ObjectDescriptorCallback)imAnimSpace_modelMtxCallback,
 };
 
-int imAnimSpace_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
+int imAnimSpace_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate) {
     IMAnimSpaceState* state;
     int eventIndex;
     ObjTextureRuntimeSlot* texture;

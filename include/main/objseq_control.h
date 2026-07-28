@@ -2,7 +2,7 @@
 #define MAIN_OBJSEQ_CONTROL_H_
 
 /*
- * Sequence callbacks write these bits into ObjAnimUpdateState/ObjSeqState
+ * Sequence callbacks write these bits into ObjSeqState/ObjSeqState
  * byte +0x90. ObjSeq_update consumes the paired set/clear requests for three
  * per-slot latch arrays plus the saved-frame restart request. The high bit is
  * also observed by an object callback before ObjSeq_update clears the byte.

@@ -22,7 +22,7 @@
 #define DRGENERATOR_WALL_OBJ 0x72e
 #define DRGENERATOR_PARTFX   0x690
 
-int drgenerator_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int drgenerator_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int i;
     for (i = 0; i < animUpdate->eventCount; i++)

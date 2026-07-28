@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define IM_SNOW_CLAW_DROP_OBJECT_COUNT 5
 
@@ -82,7 +82,7 @@ STATIC_ASSERT(sizeof(IMSnowClawDropObjectTable) == 0x0A);
 
 void imSnowClaw_syncMountTransform(GameObject* obj, GameObject* mount, int renderArg2, int renderArg3, int renderArg4,
                                    int renderArg5, int visible, int mountAlpha, int renderMount);
-int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
+int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate);
 int imSnowClaw_getExtraSize(void);
 int imSnowClaw_getObjectTypeId(void);
 void imSnowClaw_free(GameObject* obj);

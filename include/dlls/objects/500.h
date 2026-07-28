@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /* dll500_getExtraSize() allocates this complete 0x01-byte state. */
 typedef struct Dll1F4State {
@@ -33,7 +33,7 @@ STATIC_ASSERT(offsetof(Dll1F4PlacementView, rotXStatic) == 0x1A);
 int dll500_getExtraSize(void);
 void dll500_free(GameObject* obj);
 void dll500_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
-int dll500_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dll500_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void dll500_update(int obj);
 void dll500_init(GameObject* obj, const Dll1F4PlacementView* placement);
 

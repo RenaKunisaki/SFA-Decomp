@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-struct ObjAnimUpdateState;
+struct ObjSeqState;
 
 /*
  * Active EN does not establish a complete retail placement width. This view
@@ -60,9 +60,9 @@ STATIC_ASSERT(sizeof(Dll200State) == 0x28);
 void dll_200_updateMapAct6(GameObject* obj);
 void dll_200_updateMapAct2(GameObject* obj);
 void dll_200_updateMapAct1(GameObject* obj);
-int dll_200_processMapAct1Events(GameObject* obj, int unusedArg2, struct ObjAnimUpdateState* animUpdate,
+int dll_200_processMapAct1Events(GameObject* obj, int unusedArg2, struct ObjSeqState* animUpdate,
                                  int unusedArg4);
-int dll_200_sequenceCallback(GameObject* obj, int unusedArg2, struct ObjAnimUpdateState* animUpdate, int unusedArg4);
+int dll_200_sequenceCallback(GameObject* obj, int unusedArg2, struct ObjSeqState* animUpdate, int unusedArg4);
 int dll_200_getExtraSize(void);
 int dll_200_getObjectTypeId(void);
 void dll_200_free(void);

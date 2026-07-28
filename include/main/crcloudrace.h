@@ -4,7 +4,7 @@
 #include "ghidra_import.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define CRCLOUDRACE_DRAG_ROCK_MAP_ID 0x0C
 
@@ -72,7 +72,7 @@ void crcloudrace_render(u32 param_1,u32 param_2,u32 param_3,
 void crcloudrace_hitDetect(void);
 void crcloudrace_update(GameObject *obj);
 void crcloudrace_init(GameObject *obj);
-int crcloudrace_completionCallback(int obj, int unused, ObjAnimUpdateState *animUpdate);
+int crcloudrace_completionCallback(int obj, int unused, ObjSeqState *animUpdate);
 void crcloudrace_release(void);
 void crcloudrace_initialise(void);
 

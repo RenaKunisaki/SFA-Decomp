@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_1 0x7D
 #define SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_2 0x7E
@@ -52,7 +52,7 @@ STATIC_ASSERT(offsetof(ScLevelControlState, statusFlags) == 0x22);
 STATIC_ASSERT(offsetof(ScLevelControlState, unknown23) == 0x23);
 STATIC_ASSERT(sizeof(ScLevelControlState) == 0x24);
 
-int sc_levelcontrol_processAnimEventsCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int sc_levelcontrol_processAnimEventsCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 u8 sc_levelcontrol_getAnimEventState(GameObject* obj);
 void sc_levelcontrol_applyAnimEventState(GameObject* obj, u8 animEventState);
 int sc_levelcontrol_getExtraSize(void);

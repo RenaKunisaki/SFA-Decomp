@@ -54,7 +54,6 @@
 #include "main/mapEventTypes.h"
 #include "main/mm.h"
 #include "main/objanim.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/resource.h"
 #include "main/sky_interface.h"
@@ -740,7 +739,7 @@ void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int st
     }
 }
 
-int Lightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int Lightfoot_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     GroundBaddieState* inner = obj->extra;
     Dll1B5Placement* placement = (Dll1B5Placement*)obj->anim.placementData;

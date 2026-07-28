@@ -179,7 +179,7 @@ void FXEmit_emitEffect(GameObject* obj) {
     }
 }
 
-int FXEmit_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int FXEmit_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     FXEmitState* state;
     FXEmitPlacement* placement;
     int i;

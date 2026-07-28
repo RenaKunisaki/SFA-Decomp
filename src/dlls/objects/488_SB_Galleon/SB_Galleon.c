@@ -964,7 +964,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
     }
 }
 
-int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     SBGalleonState* state = obj->extra;
     int i;
 
@@ -1067,8 +1067,8 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     state->posX = obj->anim.localPosX;
     state->posY = obj->anim.localPosY;
     state->posZ = obj->anim.localPosZ;
-    animUpdate->hitVolumePair = animUpdate->activeHitVolumePair;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->flags = animUpdate->savedFlags;
+    animUpdate->movementState = 0;
     return 0;
 }
 

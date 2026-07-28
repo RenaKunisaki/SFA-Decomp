@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define CFCRATE_OBJ_SCALESSWORD 0x1B8
 
@@ -95,7 +95,7 @@ int CFCrate_getExtraSize(void);
 int CFCrate_getObjectTypeId(void);
 void CFCrate_free(GameObject* obj);
 void CFCrate_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
-int CFCrate_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int CFCrate_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void CFCrate_hitDetect(void);
 void CFCrate_update(GameObject* obj);
 void CFCrate_init(GameObject* obj, CFCratePlacement* placement);

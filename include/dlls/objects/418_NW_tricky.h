@@ -7,7 +7,7 @@
 #define NW_TRICKY_PLAY_BALL_TARGET_ID_COUNT  3
 #define NW_TRICKY_PLAY_BALL_TARGET_POOL_SIZE 4
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 typedef enum NwTrickyPhase {
     NW_TRICKY_PHASE_HERDING = 0,
@@ -28,7 +28,7 @@ STATIC_ASSERT(offsetof(NwTrickyState, phaseTimer) == 0x04);
 extern const int gNwTrickyPlayBallTargetIds[NW_TRICKY_PLAY_BALL_TARGET_POOL_SIZE];
 extern ObjectDescriptor gNWTrickyObjDescriptor;
 
-int nwTricky_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjAnimUpdateState* unusedAnimUpdate);
+int nwTricky_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjSeqState* unusedAnimUpdate);
 int nwTricky_getExtraSize(void);
 void nwTricky_free(GameObject* unusedObj);
 void nwTricky_update(GameObject* obj);

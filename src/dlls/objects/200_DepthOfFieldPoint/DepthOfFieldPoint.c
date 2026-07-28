@@ -13,7 +13,7 @@
 #define DEPTHOFFIELDPOINT_SEQEV_ENABLE_AREA   2
 #define DEPTHOFFIELDPOINT_SEQEV_ENABLE_BIGGER 3
 
-int depthoffieldpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int depthoffieldpoint_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     DepthOfFieldPointState* state = obj->extra;
     int eventIndex;
 

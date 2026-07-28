@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "game/objects/object.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/dll/DR/dr_types.h"
 #include "game/objects/object_setup.h"
 
@@ -40,7 +40,7 @@ STATIC_ASSERT(offsetof(DrgeneratorState, hitsRemaining) == 0x19A);
 STATIC_ASSERT(offsetof(DrgeneratorState, flags) == 0x19B);
 STATIC_ASSERT(sizeof(DrgeneratorState) == 0x19C);
 
-int drgenerator_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int drgenerator_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int drgenerator_getExtraSize(void);
 int drgenerator_getObjectTypeId(void);
 void drgenerator_free(GameObject* obj);

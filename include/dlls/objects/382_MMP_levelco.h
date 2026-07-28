@@ -4,13 +4,13 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "dlls/objects/430_SH_LevelCon.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 extern SCGameBitLatchState gMMPLevelControlMusicLatch;
 extern f32 gMMPLevelControlTextCountdown;
 extern ObjectDescriptor gMMPLevelControlObjDescriptor;
 
-int mmpLevelControl_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
+int mmpLevelControl_processAnimEvents(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate);
 int mmpLevelControl_getExtraSize(void);
 int mmpLevelControl_getObjectTypeId(void);
 void mmpLevelControl_free(GameObject* obj);

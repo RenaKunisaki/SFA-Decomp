@@ -7,7 +7,7 @@
 #include "main/mapEventTypes.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define LASER_UNSUPPORTED_DLL_ID 0x0236
 #define LASER_UNSUPPORTED_OBJECT_CLASS_ID 0x0030

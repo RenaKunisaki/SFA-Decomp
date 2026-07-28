@@ -8155,7 +8155,7 @@ static inline int trickyGetState(int obj)
     return *(int*)&((GameObject*)obj)->extra;
 }
 
-int tricky_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
+int tricky_SeqFn(int obj, int unused, ObjSeqState* animUpdate)
 {
     int i;
     int state;
@@ -8192,7 +8192,7 @@ int tricky_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
         }
         Sfx_RemoveLoopedObjectSound(obj, SFXTRIG_trwhin1);
         ((TrickyState*)state)->stateFlags = ((TrickyState*)state)->stateFlags | 0x200;
-        if ((animUpdate->hitVolumePair & 3) == 0)
+        if ((animUpdate->flags & 3) == 0)
         {
             ((TrickyState*)state)->stateFlags = ((TrickyState*)state)->stateFlags | 0x4000;
         }
@@ -8281,7 +8281,7 @@ int tricky_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
                         1.0f);
     if ((((TrickyState*)state)->stateFlags & 1) != 0)
     {
-        animUpdate->hitVolumePair &= ~0x40;
+        animUpdate->flags &= ~0x40;
         characterDoEyeAnims((GameObject*)obj, &((TrickyState*)state)->eyeAnimState);
         return (*gObjectTriggerInterface)->func20((GameObject*)obj, animUpdate, 1, 0xf, 0x1e, 0, 0);
     }

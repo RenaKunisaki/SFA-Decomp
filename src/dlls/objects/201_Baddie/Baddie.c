@@ -1840,7 +1840,7 @@ ObjectDescriptor gBaddieObjDescriptor = {
     enemy_getExtraSize,
 };
 
-int enemy_SeqFn(GameObject* node, int unused, ObjAnimUpdateState* animUpdate)
+int enemy_SeqFn(GameObject* node, int unused, ObjSeqState* animUpdate)
 {
     char* sub = *(char**)&node->extra;
     s8* n29 = *(s8**)&node->anim.placementData;
@@ -1909,7 +1909,7 @@ int enemy_SeqFn(GameObject* node, int unused, ObjAnimUpdateState* animUpdate)
     {
         if ((((EnemyState*)sub)->controlFlags & 0x600) != 0)
         {
-            if (animUpdate->sequenceSlot == node->seqIndex)
+            if (animUpdate->slot == node->seqIndex)
                 return 4;
         }
     }

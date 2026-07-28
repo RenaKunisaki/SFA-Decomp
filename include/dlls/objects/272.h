@@ -8,7 +8,7 @@
 #define DOOR_PLACEMENT_SIZE 0x24
 #define DOOR_STATE_SIZE     0x8
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 /* Retail slot 272 placements share this fixed 0xC-byte parameter tail. */
 typedef struct DoorPlacement {
@@ -51,7 +51,7 @@ STATIC_ASSERT(offsetof(DoorState, closeFlags) == 0x6);
 STATIC_ASSERT(offsetof(DoorState, pad07) == 0x7);
 STATIC_ASSERT(sizeof(DoorState) == DOOR_STATE_SIZE);
 
-int Door_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int Door_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int Door_getExtraSize(void);
 void Door_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void Door_update(GameObject* obj);

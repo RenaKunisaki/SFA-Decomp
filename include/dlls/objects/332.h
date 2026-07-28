@@ -6,7 +6,7 @@
 #include "main/objprint_character_api.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/curve_walker.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/objprint_sound_api.h"
 #include "main/vec_types.h"
 
@@ -118,7 +118,7 @@ int babyCloudRunner_updateBurrowAnimation(GameObject* obj);
 void babyCloudRunner_turnTowardTarget(GameObject* obj, GameObject* target, BabyCloudRunnerState* state, int playMove);
 int babyCloudRunner_tryCapture(void* object);
 int babyCloudRunner_func0A(GameObject* obj);
-int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int babyCloudRunner_getExtraSize(void);
 int babyCloudRunner_getObjectTypeId(void);
 void babyCloudRunner_free(GameObject* obj);

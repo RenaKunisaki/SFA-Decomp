@@ -312,7 +312,7 @@ void wclevelcont_updateAct1State(GameObject* obj, WcLevelControlState* state)
     state->completionFlags &= ~WCLEVELCTL_FLAG_TRIGGERED;
 }
 
-int wclevelcont_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int wclevelcont_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     WcLevelControlState* state = obj->extra;
     int i;

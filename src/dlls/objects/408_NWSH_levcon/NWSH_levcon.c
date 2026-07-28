@@ -37,7 +37,7 @@
 #define NWSH_LEVEL_CONTROL_SKY_ENABLED            1
 #define NWSH_LEVEL_CONTROL_RENDER_SCALE           1.0f
 
-int nwshLevelControl_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int nwshLevelControl_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjSeqState* animUpdate) {
     GameObject* player;
     int eventIndex;
 

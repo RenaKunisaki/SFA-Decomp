@@ -63,7 +63,7 @@ u8 Fireball_getColorIndex(GameObject* obj) {
     return ((FireballState*)obj->extra)->colorIndex;
 }
 
-int Fireball_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int Fireball_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int i;
     FireballState* state = obj->extra;
 

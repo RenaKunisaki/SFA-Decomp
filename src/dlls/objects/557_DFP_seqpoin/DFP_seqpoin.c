@@ -42,14 +42,14 @@ typedef struct DfpseqpointPlacement
 
 STATIC_ASSERT(sizeof(DfpSeqPointState) == 0x10);
 
-int DFP_seqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int DFP_seqpoint_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     DfpSeqPointState* blob = obj->extra;
     DfpseqpointPlacement* data = (DfpseqpointPlacement*)obj->anim.placementData;
     int i;
 
-    animUpdate->activeHitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->savedFlags = -1;
+    animUpdate->movementState = 0;
     for (i = 0; i < animUpdate->eventCount; i++)
     {
         switch (blob->sequenceId)

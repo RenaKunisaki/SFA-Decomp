@@ -35,7 +35,7 @@ enum {
     LEVELNAME_PHASE_IDLE = 4
 };
 
-int LevelName_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int LevelName_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     LevelNameState* state = obj->extra;
     int eventIndex;
 

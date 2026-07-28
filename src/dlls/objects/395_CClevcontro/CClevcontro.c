@@ -83,7 +83,7 @@ SkyEnvFxRampTables gCCLevelControlEnvFxRampTables = {
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 };
 
-int ccLevelControl_animationEventCallback(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int ccLevelControl_animationEventCallback(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     if (animUpdate->eventCount != 0) {
         spawnExplosion(obj, CC_LEVEL_CONTROL_EXPLOSION_SCALE, 1, 1, 0, 1, 1, 1, 0);
     }

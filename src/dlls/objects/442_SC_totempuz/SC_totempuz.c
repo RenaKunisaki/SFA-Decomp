@@ -46,7 +46,7 @@
 
 #define SC_TOTEM_PUZZLE_PULSE_FRAME_MIN 7
 #define SC_TOTEM_PUZZLE_PULSE_FRAME_MAX 10
-int sc_totempuzzle_animEventCallback(GameObject* unusedObj, int unused, ObjAnimUpdateState* unusedAnimUpdate) {
+int sc_totempuzzle_animEventCallback(GameObject* unusedObj, int unused, ObjSeqState* unusedAnimUpdate) {
     int r;
 
     if (mainGetBit(GAMEBIT_SC_totempuzzle_running) != 0) {

@@ -56,7 +56,7 @@ enum {
 
 u8 gDBSHSymbolScuffSfxEnabled = 1;
 
-int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjAnimUpdateState* animUpdate) {
+int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjSeqState* animUpdate) {
     int volume;
     int* objectList;
     int objectIndex;
@@ -71,7 +71,7 @@ int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjAnimUpdateSta
     player = (int)Obj_GetPlayerObject();
     Sfx_SetObjectSfxVolume(objectAddress, SFXTRIG_blockscrape_lp, 10, DBSH_SYMBOL_SFX_VOLUME_SCALE);
     Sfx_KeepAliveLoopedObjectSound(objectAddress, SFXTRIG_blockscrape_lp);
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (i = 0; i < animUpdate->eventCount; i++) {
         if (animUpdate->eventIds[i] == DBSH_SYMBOL_ANIM_EVENT_START) {
             gameTimerInit(DBSH_SYMBOL_TIMER_ID, DBSH_SYMBOL_TIMER_DURATION);

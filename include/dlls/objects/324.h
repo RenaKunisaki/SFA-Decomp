@@ -3,9 +3,9 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
-int dll_144_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dll_144_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dll_144_getExtraSize(void);
 int dll_144_getObjectTypeId(void);
 void dll_144_free(void);

@@ -4,11 +4,11 @@
 #include "main/dll/mclightning_state.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 extern ObjectDescriptor gMCLightningObjDescriptor;
 
-int mclightning_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int mclightning_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int mclightning_getExtraSize(void);
 void mclightning_free(GameObject* obj);
 void mclightning_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 scale);

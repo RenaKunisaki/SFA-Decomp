@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "types.h"
 #include "game/objects/object.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "game/objects/object_setup.h"
 
 #define DBHOLE_CONTROL1_OBJECT_GROUP 0x1E
@@ -36,7 +36,7 @@ void dbholecontrol1_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 v
 void dbholecontrol1_hitDetect(void);
 void dbholecontrol1_update(GameObject* obj);
 void dbholecontrol1_init(GameObject* obj, u8* params);
-int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void dbholecontrol1_release(void);
 void dbholecontrol1_initialise(void);
 

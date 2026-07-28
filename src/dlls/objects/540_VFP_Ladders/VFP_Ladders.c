@@ -26,7 +26,7 @@ enum
     VFPLADDERS_PHASE_SETTLED = 2
 };
 
-int vfpladders_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int vfpladders_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     return 0x0;
 }

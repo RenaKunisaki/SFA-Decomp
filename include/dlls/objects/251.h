@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct PressureSwitchFBPlacement {
     ObjPlacement base;  /* 0x00 */
@@ -82,7 +82,7 @@ STATIC_ASSERT(offsetof(PressureSwitchFBState, flags) == 0x84);
 STATIC_ASSERT(offsetof(PressureSwitchFBState, pad85) == 0x85);
 STATIC_ASSERT(sizeof(PressureSwitchFBState) == 0x88);
 
-int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int PressureSwitchFB_getExtraSize(void);
 void PressureSwitchFB_free(GameObject* obj);
 void PressureSwitchFB_update(GameObject* obj);

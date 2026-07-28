@@ -1277,10 +1277,10 @@ void ktrex_updateAttackEffects(GameObject* obj)
     }
 }
 
-int ktrex_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int ktrex_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int i;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (i = 0; i < animUpdate->eventCount; i++)
     {
         switch (animUpdate->eventIds[i])

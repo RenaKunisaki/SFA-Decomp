@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "dlls/object_descriptor.h"
 
 typedef struct VfpLaddersState
@@ -33,7 +33,7 @@ STATIC_ASSERT(offsetof(VfpLaddersSetup, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(VfpLaddersSetup, baseGameBit) == 0x1E);
 STATIC_ASSERT(offsetof(VfpLaddersSetup, triggerGameBit) == 0x20);
 
-int vfpladders_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int vfpladders_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int VFP_Ladders_getExtraSize(void);
 int VFP_Ladders_getObjectTypeId(void);
 void VFP_Ladders_free(GameObject* obj);

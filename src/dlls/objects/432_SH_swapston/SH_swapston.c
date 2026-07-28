@@ -25,7 +25,7 @@
 #include "main/obj_link.h"
 #include "main/obj_path.h"
 #include "main/obj_query.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
 #include "main/objprint_anim_api.h"
@@ -318,7 +318,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
     int i;
     int child;
     u8 command;
-    ObjAnimUpdateState* animUpdate = (ObjAnimUpdateState*)animObj;
+    ObjSeqState* animUpdate = (ObjSeqState*)animObj;
 
     if (animatedObjGetSeqId(animUpdate) == 0x35f) {
         ObjSeq_SetSlotValue(animUpdate, 0x2648);
@@ -336,7 +336,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
     animUpdate->conditionCallback = (ObjAnimSequenceConditionCallback)warpstone_testEvent;
     animUpdate->freeCallback = (ObjAnimSequenceFreeCallback)warpstone_loadBaseUi;
 
-    if ((s8)animUpdate->sequenceEventActive != 0) {
+    if ((s8)animUpdate->movementState != 0) {
         ((WarpStoneState*)state)->sequenceFlags = ((WarpStoneState*)state)->sequenceFlags & ~3;
         if ((s32)playerFn_801d6d58() != 0) {
             ((WarpStoneState*)state)->sequenceFlags = ((WarpStoneState*)state)->sequenceFlags | 1;
@@ -354,10 +354,10 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
                 ((WarpStoneState*)state)->sequenceFlags = ((WarpStoneState*)state)->sequenceFlags | 2;
             }
         }
-        animUpdate->sequenceEventActive = 0;
+        animUpdate->movementState = 0;
 
         if (mainGetBit(((WarpStoneState*)state)->sequenceGameBit) != 0 &&
-            animatedObjGetSeqId((ObjAnimUpdateState*)animObj) == 0x35f) {
+            animatedObjGetSeqId((ObjSeqState*)animObj) == 0x35f) {
             AudioStream_CancelPrepared();
             seqClearTaskTexts();
             doNothing_8000CF54(0);

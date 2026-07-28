@@ -19,7 +19,7 @@
 #include "main/obj_hit_region.h"
 #include "main/obj_message.h"
 #include "main/obj_trigger.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
@@ -334,7 +334,7 @@ void collectible_updateIdleMotion(GameObject* obj) {
     }
 }
 
-int collectible_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int collectible_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     CollectibleState* state = obj->extra;
     PartFxSpawnParams spawn;
     int particleIndex;
@@ -357,7 +357,7 @@ int collectible_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
         }
     }
 
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         u8 eventId = animUpdate->eventIds[eventIndex];
         if (eventId == COLLECTIBLE_SEQUENCE_EVENT_LAUNCH) {

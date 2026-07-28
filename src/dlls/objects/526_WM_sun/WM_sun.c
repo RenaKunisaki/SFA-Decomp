@@ -38,10 +38,10 @@ f32 gWmSunGlareIntensity;
 const Vec3f gWmSunGlareDir = {0.0f, 0.0f, -1.0f};
 const Vec3f gWmSunGlareSun = {0.0f, 0.0f, -1.0f};
 
-int wmsun_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* actor)
+int wmsun_animEventCallback(GameObject* obj, int unused, ObjSeqState* actor)
 {
-    actor->hitVolumePair = -1;
-    actor->sequenceEventActive = 0;
+    actor->flags = -1;
+    actor->movementState = 0;
     return 0;
 }
 
