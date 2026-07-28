@@ -117,7 +117,7 @@ int chukChuk_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
     int attackRoll;
 
     objectState = obj->extra;
-    if (*(char*)&state->baddie.moveDone != '\0' || *(char*)&state->baddie.moveJustStartedB != '\0') {
+    if (*(char*)&state->baddie.moveDone != '\0' || state->baddie.moveJustStartedB != 0) {
         control = objectState->control;
         shouldDropTarget =
             (*gBaddieControlInterface)->shouldDropTarget(obj, state, (f32)(u32)objectState->aggroRange, 1);
@@ -165,7 +165,7 @@ int chukChuk_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
 int chukChuk_checkSubmergeState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
 
-    if ((s8)state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveJustStartedB != 0) {
         f32 zero;
 
         (*gPlayerInterface)->setState(obj, state, 1);
@@ -183,7 +183,7 @@ int chukChuk_checkSubmergeState(GameObject* obj, GroundBaddieState* state) {
 int chukChuk_checkYieldState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState;
 
-    if ((s8)state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveJustStartedB != 0) {
         objectState = obj->extra;
         objectState->subMode = 0;
         if (objectState->gameBitB != -1) {
@@ -201,14 +201,14 @@ int chukChuk_checkDeathState(GameObject* obj, GroundBaddieState* state) {
     f32 zero;
     DllCEControl* control;
 
-    if (*(char*)&state->baddie.moveJustStartedB != '\0') {
+    if (state->baddie.moveJustStartedB != 0) {
         control = objectState->control;
         zero = 0.0f;
         control->soundTimer = zero;
         control->nextSoundTime = zero;
         (*gPlayerInterface)->setState(obj, state, 6);
         *(int*)&state->baddie.targetObj = 0;
-        *(s8*)&state->baddie.physicsActive = 0;
+        state->baddie.physicsActive = 0;
         *(s8*)&state->baddie.hasTarget = 0;
         ObjHits_DisableObject(obj);
         *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
@@ -237,7 +237,7 @@ int chukChuk_checkHealthState(GameObject* obj, GroundBaddieState* state) {
 
 int chukChuk_checkTargetState(GameObject* obj, GroundBaddieState* state) {
     if (*(int**)&state->baddie.targetObj != NULL) {
-        if ((s8)state->baddie.moveJustStartedB != 0) {
+        if (state->baddie.moveJustStartedB != 0) {
             f32 zero = 0.0f;
 
             state->baddie.animSpeedB = zero;
@@ -256,7 +256,7 @@ int chukChuk_updateWindupState(GameObject* obj, GroundBaddieState* state) {
     f32 speed;
 
     objectState = obj->extra;
-    *(s8*)&state->baddie.stateTag = 3;
+    state->baddie.stateTag = 3;
     state->baddie.moveSpeed = 0.008f;
     speed = 0.0f;
     state->baddie.animSpeedA = speed;
@@ -323,7 +323,7 @@ int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state) {
         }
         Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_267);
     }
-    *(s8*)&state->baddie.stateTag = 3;
+    state->baddie.stateTag = 3;
     state->baddie.moveSpeed = 0.015f;
     state->baddie.animSpeedA = 0.0f;
     return 0;
@@ -427,7 +427,7 @@ int chukChuk_updateAttackState(GameObject* obj, GroundBaddieState* state) {
                 *(s8*)&state->baddie.moveDone = 0;
             }
         }
-        *(s8*)&state->baddie.stateTag = 1;
+        state->baddie.stateTag = 1;
         state->baddie.moveSpeed = 0.005f + (f32)(u32)objectState->aggression / 20000.0f;
     }
     state->baddie.animSpeedA = 0.0f;
@@ -456,7 +456,7 @@ int chukChuk_updateSubmergeState(GameObject* obj, GroundBaddieState* state) {
         mainSetBits(objectState->gameBitB, 0);
         ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
         *(int*)&state->baddie.targetObj = 0;
-        *(s8*)&state->baddie.physicsActive = 0;
+        state->baddie.physicsActive = 0;
         *(s8*)&state->baddie.hasTarget = 0;
         objectState->targetState = 0;
         if ((control->coordinationFlags & DLL_CE_COORDINATION_HIDDEN) == 0) {
@@ -478,11 +478,11 @@ int chukChuk_updateEmergeState(GameObject* obj, GroundBaddieState* state) {
         *(s8*)&state->baddie.moveDone = 0;
     }
     if (*(char*)&state->baddie.moveJustStartedA != '\0') {
-        *(s8*)&state->baddie.physicsActive = 1;
+        state->baddie.physicsActive = 1;
         mainSetBits(objectState->gameBitB, 1);
         *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
         obj->anim.alpha = 0xff;
-        *(s8*)&state->baddie.stateTag = 1;
+        state->baddie.stateTag = 1;
         state->baddie.moveSpeed = 0.012f + (f32)(u32)objectState->aggression / 10000.0f;
         ObjHits_EnableObject(obj);
     } else {
@@ -633,7 +633,7 @@ void dll_CE_handleMessage(GameObject* obj, int message) {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_264);
         (*gPlayerInterface)->setState((void*)obj, (void*)stateAlias, 1);
         stateAlias->baddie.substate = 4;
-        *(s8*)&stateAlias->baddie.moveJustStartedB = 1;
+        stateAlias->baddie.moveJustStartedB = 1;
         break;
     case DLL_CE_MESSAGE_RELEASE:
         objectState->configFlags &= ~4;
@@ -782,7 +782,7 @@ void dll_CE_init(GameObject* obj, DllCEPlacement* placement, int flags) {
     *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
     (*gPlayerInterface)->setState(obj, state, 0);
     state->baddie.substate = 0;
-    *(s8*)&state->baddie.physicsActive = 0;
+    state->baddie.physicsActive = 0;
     ObjHits_DisableObject(obj);
 }
 

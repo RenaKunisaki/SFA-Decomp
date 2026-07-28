@@ -1114,7 +1114,7 @@ void Tricky_applyFloorResponse(GameObject* obj, int state)
     }
     (*gPathControlInterface)->advance((void*)obj, (void*)(state + 4), timeDelta);
 
-    if (((*(s8*)&((TrickyState*)state)->physicsActive != 0) &&
+    if (((((TrickyState*)state)->physicsActive != 0) &&
          ((((TrickyState*)state)->controlFlags & TRICKY_CONTROL_FLAG_FLOOR_RESPONSE_MASK) == 0)) &&
         ((*(s8*)&((TrickyState*)state)->surfaceFlags & TRICKY_SURFACE_FLAG_HAS_NEARBY_FLOOR) != 0))
     {

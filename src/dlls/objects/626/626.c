@@ -1101,7 +1101,7 @@ void HighTop_update(GameObject* obj)
     runtime = (HighTopRuntime*)state;
     runtime->turnRateThreshold = 5;
     *(u8*)&((GameObject*)self)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
-    *(s8*)&runtime->baddie.physicsActive = !runtime->flagsC49.b4;
+    runtime->baddie.physicsActive = !runtime->flagsC49.b4;
     runtime->baddie.hitPoints = 0;
     *(int*)state &= ~0x8000;
     if ((runtime->flagsC40 & HIGHTOP_FLAG_CURVE_FOLLOW) != 0)

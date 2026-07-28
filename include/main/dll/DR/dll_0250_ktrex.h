@@ -107,7 +107,7 @@ typedef struct KTRexLaneTuning
 typedef struct KTRexRuntime
 {
     u8 pad000[0x25f];
-    u8 physicsActive; /* 0x25F: BaddieState free-fall physics enable (gBaddieControlInterface) */
+    s8 physicsActive; /* 0x25F: BaddieState free-fall physics enable (gBaddieControlInterface) */
     u8 pad260[0x10];
     s16 substate; /* 0x270: BaddieState control substate (consumed by gPlayerInterface->setState) */
     u8 pad272[8];

@@ -155,7 +155,7 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
 
     range = 1500.0f;
     sub = (DbStealerwormControl*)state->control;
-    if (*(s8*)&baddie->moveJustStartedB != 0 || sub->msgAdvance != 0)
+    if (baddie->moveJustStartedB != 0 || sub->msgAdvance != 0)
     {
         sub->flags15 &= ~4;
         sub->msgAdvance = 0;
@@ -258,7 +258,7 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
 
     range = 1500.0f;
     sub = (DbStealerwormControl*)state->control;
-    if (*(s8*)&baddie->moveJustStartedB != 0 || ((u32)sub->flags44 >> 6 & 1) != 0)
+    if (baddie->moveJustStartedB != 0 || ((u32)sub->flags44 >> 6 & 1) != 0)
     {
         sub->flags15 &= ~4;
         ((DbStealerwormFlags44*)&sub->flags44)->flag40 = 0;
@@ -372,7 +372,7 @@ int dbstealerworm_stateHandlerB04(GameObject* obj, BaddieState* baddie)
     int b8;
 
     b8 = *(int*)&obj->extra;
-    if (*(char*)&baddie->moveJustStartedB != '\0')
+    if (baddie->moveJustStartedB != 0)
     {
         (*gPlayerInterface)->setState(obj, baddie, 1);
         b8 = *(int*)&((GroundBaddieState*)b8)->control;
@@ -387,7 +387,7 @@ int dbstealerworm_stateHandlerB04(GameObject* obj, BaddieState* baddie)
 int dbstealerworm_stateHandlerB03(GameObject* obj, BaddieState* baddie)
 {
     GroundBaddieState* state = obj->extra;
-    if ((s8)baddie->moveJustStartedB != 0)
+    if (baddie->moveJustStartedB != 0)
     {
         (*gBaddieControlInterface)
             ->spawnChild(obj, state->triggerId, -1, 0);
@@ -402,7 +402,7 @@ int dbstealerworm_stateHandlerB02(GameObject* obj, BaddieState* baddie)
     s8 flag2;
 
     b8 = *(int*)&obj->extra;
-    if (*(char*)&baddie->moveJustStartedB != '\0')
+    if (baddie->moveJustStartedB != 0)
     {
         b8 = *(int*)&((GroundBaddieState*)b8)->control;
         fz = 0.0f;
@@ -447,7 +447,7 @@ int dbstealerworm_stateHandlerB00(GameObject* obj, BaddieState* baddie)
     f32 fz;
     if (*(void**)&p->targetObj != NULL)
     {
-        if ((s8)p->moveJustStartedB != 0)
+        if (p->moveJustStartedB != 0)
         {
             fz = 0.0f;
             p->animSpeedB = fz;

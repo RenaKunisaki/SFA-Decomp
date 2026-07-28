@@ -117,7 +117,7 @@ int kaldachom_stateHandlerB05(GameObject* obj, GroundBaddieState* state) {
             state->baddie.moveDone = 1;
         }
     }
-    if ((s8)state->baddie.moveDone != 0 || (s8)state->baddie.moveJustStartedB != 0) {
+    if ((s8)state->baddie.moveDone != 0 || state->baddie.moveJustStartedB != 0) {
         if ((*gBaddieControlInterface)->shouldDropTarget(obj, state, (f32)(u32)objectState->aggroRange, 1) != 0) {
             return 5;
         }
@@ -133,14 +133,14 @@ int kaldachom_stateHandlerB05(GameObject* obj, GroundBaddieState* state) {
 }
 
 int kaldachom_stateHandlerB04(GameObject* obj, GroundBaddieState* state) {
-    if ((s8)state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveJustStartedB != 0) {
         (*gPlayerInterface)->setState(obj, state, 1);
     }
     return 0;
 }
 
 int kaldachom_stateHandlerB03(GameObject* obj, GroundBaddieState* state) {
-    if ((s8)state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveJustStartedB != 0) {
         KaldachomState* objectState = obj->extra;
         objectState->subMode = 0;
         mainSetBits(objectState->gameBitB, 0);
@@ -152,7 +152,7 @@ int kaldachom_stateHandlerB03(GameObject* obj, GroundBaddieState* state) {
 int kaldachom_stateHandlerB02(GameObject* obj, GroundBaddieState* state) {
     KaldachomState* objectState = obj->extra;
 
-    if ((s32)(s8)state->baddie.moveJustStartedB != 0) {
+    if ((s32)state->baddie.moveJustStartedB != 0) {
         objectState->control->soundFlags = 0;
         (*gPlayerInterface)->setState(obj, state, 7);
         ObjHits_DisableObject(obj);
@@ -175,7 +175,7 @@ int kaldachom_stateHandlerB01(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.controlMode == KALDACHOM_CONTROL_MODE_RETURN) {
         f32 zero;
         f32 timer;
-        if ((s8)state->baddie.moveJustStartedB != 0) {
+        if (state->baddie.moveJustStartedB != 0) {
             control->returnStateTimer = 300.0f;
         }
         timer = control->returnStateTimer;
@@ -198,7 +198,7 @@ int kaldachom_stateHandlerB01(GameObject* obj, GroundBaddieState* state) {
 
 int kaldachom_stateHandlerB00(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.targetObj != NULL) {
-        if ((s8)state->baddie.moveJustStartedB != 0) {
+        if (state->baddie.moveJustStartedB != 0) {
             f32 zeroSpeed = 0.0f;
             state->baddie.animSpeedB = zeroSpeed;
             state->baddie.animSpeedA = zeroSpeed;

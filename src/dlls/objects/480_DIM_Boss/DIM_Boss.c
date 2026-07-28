@@ -261,7 +261,7 @@ int DIMbossAnim_updateBossHitReaction(int obj, int statePtr) {
 
     state = (BaddieState*)statePtr;
     moveTable = (DimAnimTable*)lbl_80325960;
-    if ((s8)state->moveDone != 0 || (s8)state->moveJustStartedB != 0) {
+    if ((s8)state->moveDone != 0 || state->moveJustStartedB != 0) {
         DIM2_GetBaddieControlInterface()->queryTargetMove(obj, state->targetObj, 0x10, targetAnim, &targetParam,
                                                           &targetDistance);
         state->moveDone = 0;
@@ -344,7 +344,7 @@ int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, int runtime) {
     int state;
     s16 mode;
     state = *(int*)&obj->extra;
-    if (*(s8*)&((BaddieState*)runtime)->moveDone != 0 || *(s8*)&((BaddieState*)runtime)->moveJustStartedB != 0) {
+    if (*(s8*)&((BaddieState*)runtime)->moveDone != 0 || ((BaddieState*)runtime)->moveJustStartedB != 0) {
         (*gBaddieControlInterface)
             ->getTargetGeometry(obj, (GameObject*)((BaddieState*)runtime)->targetObj, 0x10, &dirSector, &unused,
                                 &distance);
@@ -389,7 +389,7 @@ int DIMbossAnim_finishDefeat(GameObject* obj, int p2) {
     Obj_GetPlayerObject();
     state = *(int*)&obj->extra;
 
-    if ((s32)(s8)((BaddieState*)p2)->moveJustStartedB != 0) {
+    if ((s32)((BaddieState*)p2)->moveJustStartedB != 0) {
         *(int*)&((BaddieState*)p2)->targetObj = 0;
         ((BaddieState*)p2)->physicsActive = 0;
         ((BaddieState*)p2)->hasTarget = 0;

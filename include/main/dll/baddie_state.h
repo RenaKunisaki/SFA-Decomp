@@ -57,7 +57,7 @@ typedef struct BaddieState {
     u8 unk1B8[0x25B - 0x1B8];
     s8 contactSfxMuted; /* nonzero suppresses contact sfx unless contactSfxFlags bit 0x10 (intersect.c) */
     u8 unk25C[0x25F - 0x25C];
-    u8 physicsActive; /* enables the free-fall physics path: gravity integration (velY -= g*dt), floor bounce response; set when thrown/spat */
+    s8 physicsActive; /* enables the free-fall physics path: gravity integration (velY -= g*dt), floor bounce response; set when thrown/spat */
     s8 contactSfxFlags; /* bit 0x10 allows contact sfx while contactSfxMuted is set (intersect.c) */
     u8 unk261[0x270 - 0x261];
     s16 substate; /* CA-family substate 0..5; gates the map-event re-register when != 3 */
@@ -70,7 +70,7 @@ typedef struct BaddieState {
 #else
     u8 moveJustStartedA; /* one-shot, tested at SeqFn entry */
 #endif
-    u8 moveJustStartedB; /* one-shot, secondary channel (death/cleanup handlers) */
+    s8 moveJustStartedB; /* one-shot, secondary channel (death/cleanup handlers) */
     u8 unk27C[0x280 - 0x27C];
     f32 animSpeedA; /* anim blend speed pair */
     f32 animSpeedB;
@@ -182,7 +182,7 @@ typedef struct BaddieState {
     u8 hasTarget; /* cleared with death/reset */
     u8 unk34A[2];
     s8 movementFlags; /* root-motion / velocity handling flags for the shared player controller */
-    u8 stateTag; /* per-tick state/mode index (written each tick; compared ==1/==3 across the baddie cluster + player) */
+    s8 stateTag; /* per-tick state/mode index (written each tick; compared ==1/==3 across the baddie cluster + player) */
     u8 unk34E[6];
     s8 hitPoints; /* remaining hit points; decremented on hit, < 1 = dead */
     u8 unk355;

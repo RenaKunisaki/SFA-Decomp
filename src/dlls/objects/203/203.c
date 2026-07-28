@@ -75,7 +75,7 @@ int dll_CB_stateHandler5(GameObject* obj, GroundBaddieState* state) {
 }
 
 int dll_CB_stateHandler4(GameObject* obj, GroundBaddieState* state) {
-    if ((s8)state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveJustStartedB != 0) {
         f32 initialVelocity;
 
         (*gPlayerInterface)->setState(obj, state, 0);
@@ -105,7 +105,7 @@ int dll_CB_stateHandler4(GameObject* obj, GroundBaddieState* state) {
 int dll_CB_stateHandler3(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
 
-    if ((s8)state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveJustStartedB != 0) {
         (*gBaddieControlInterface)->spawnChild(obj, objectState->triggerId, -1, 0);
     }
     return 0;
@@ -114,7 +114,7 @@ int dll_CB_stateHandler3(GameObject* obj, GroundBaddieState* state) {
 int dll_CB_stateHandler2(GameObject* obj, GroundBaddieState* state) {
     ObjHitsPriorityState* hitState;
 
-    if ((s8)state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveJustStartedB != 0) {
         (*gPlayerInterface)->setState(obj, state, 3);
         state->baddie.targetObj = NULL;
         state->baddie.physicsActive = 0;

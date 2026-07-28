@@ -47,7 +47,7 @@ void* gGrimbleStateHandlersA[10];
 int grimble_stateHandlerB05(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
 
-    if ((s8)state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveJustStartedB != 0) {
         objectState->subMode = 0;
         mainSetBits(objectState->gameBitB, 0);
         mainSetBits(objectState->gameBitA, 1);
@@ -56,7 +56,7 @@ int grimble_stateHandlerB05(GameObject* obj, GroundBaddieState* state) {
 }
 
 int grimble_stateHandlerB04(GameObject* obj, GroundBaddieState* state) {
-    if ((s8)state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveJustStartedB != 0) {
         (*gPlayerInterface)->setState(obj, state, 8);
         state->baddie.targetObj = NULL;
         state->baddie.physicsActive = 0;
@@ -127,7 +127,7 @@ int scarab_updateProximityGate(GameObject* obj, GroundBaddieState* state) {
 }
 
 int grimble_stateHandlerB01(GameObject* obj, GroundBaddieState* state) {
-    if ((s8)state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveJustStartedB != 0) {
         (*gPlayerInterface)->setState(obj, state, 9);
     }
     if ((s8)state->baddie.moveDone != 0) {

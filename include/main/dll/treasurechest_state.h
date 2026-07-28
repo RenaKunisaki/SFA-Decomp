@@ -12,7 +12,7 @@
 typedef struct TreasureChestState {
     int unk0;
     u8 unk4[0x25F - 0x4];
-    u8 physicsActive;
+    s8 physicsActive;
     u8 unk260[0x270 - 0x260];
     s16 substate;
     u8 unk272[0x274 - 0x272];
