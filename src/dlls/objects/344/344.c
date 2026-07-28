@@ -55,6 +55,13 @@
 #define GUNPOWDER_BARREL_GENERATOR_RELEASE_FRAME   0x46
 #define GUNPOWDER_BARREL_MAX_ALPHA                 0xFF
 
+typedef struct GunpowderBarrelTimerInterface {
+    void* pad00[4];
+    void (*render)(GameObject* timer, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+} GunpowderBarrelTimerInterface;
+
+STATIC_ASSERT(offsetof(GunpowderBarrelTimerInterface, render) == 0x10);
+
 typedef union GunpowderBarrelCollisionScratch {
     TrackBBoxHit hit;
     f32 words[24];
@@ -523,8 +530,8 @@ void gunpowderBarrel_render(GameObject* obj, int renderArg2, int renderArg3, int
     }
     linkedTimer = (int*)state->linkedTimerObject;
     if (linkedTimer != 0) {
-        (*(void (**)(int*, int, int, int, int, s8))(*(int*)(*(int*)&((GameObject*)linkedTimer)->anim.dll) + 0x10))(
-            linkedTimer, renderArg2, renderArg3, renderArg4, renderArg5, visible);
+        (*(GunpowderBarrelTimerInterface**)((GameObject*)linkedTimer)->anim.dll)
+            ->render((GameObject*)linkedTimer, renderArg2, renderArg3, renderArg4, renderArg5, visible);
     }
 }
 
