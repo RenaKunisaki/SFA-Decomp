@@ -266,6 +266,7 @@
 #include "dlls/objects/470.h"
 #include "dlls/objects/471_DIM2SnowBal.h"
 #include "dlls/objects/472_DIM2PathGen.h"
+#include "dlls/objects/473_DIM2PrisonM.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -359,7 +360,7 @@ extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor,
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDB_eggObjDescriptor, gDBstealerwormObjDescriptor,
     gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor, gDFP_TorchObjDescriptor;
 extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, gDIM2IceFloeObjDescriptor;
-extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PrisonMammothObjDescriptor;
+extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor;
 extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIM_BossGut2ObjDescriptor, gDIM_BossGutObjDescriptor,
     gDIM_BossObjDescriptor;
 extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescriptor, gDIM_trickyObjDescriptor,
@@ -1559,7 +1560,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll1D6ObjDescriptor,
     (ResourceDescriptor*)&gDIM2SnowBallObjDescriptor,
     (ResourceDescriptor*)&gDIM2PathGeneratorObjDescriptor,
-    &gDIM2PrisonMammothObjDescriptor,
+    (ResourceDescriptor*)&gDIM2PrisonMammothObjDescriptor,
     &dll_1DA,
     &dll_1DB,
     &gDIM2IceFloeObjDescriptor,
