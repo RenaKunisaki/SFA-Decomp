@@ -714,7 +714,6 @@ void sortShadowEntriesDescending(ShadowSortEntry* arr, int count)
 }
 extern NewShadowEntry gNewShadowEntries[0x294 / sizeof(NewShadowEntry)];
 
-extern NewShadowEntry gNewShadowEntries[0x294 / sizeof(NewShadowEntry)];
 
 void sortShadowEntriesDescending(ShadowSortEntry* arr, int count);
 

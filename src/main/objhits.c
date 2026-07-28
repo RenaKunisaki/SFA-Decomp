@@ -2825,10 +2825,8 @@ struct ObjLibRegionList
 
 ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEntry)];
 extern void* gObjHitsWorkBuffer;
-extern ObjHitsPriorityWorkSlot* gObjHitsPriorityHitStates;
 extern u8 gObjGroupObjectCount;
 extern int gObjContactCallbackCount;
-extern f32 gObjHitsPriorityHitTickDelta;
 extern f32 lbl_803DE914;
 extern f32 lbl_803DE968;
 extern f32 OBJLIB_UNIT_SCALE;
