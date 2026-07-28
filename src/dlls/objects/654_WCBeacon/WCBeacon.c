@@ -18,6 +18,7 @@
 #include "main/dll/dll_80136a40.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/WC/WCbeacon.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
@@ -107,7 +108,7 @@ void wcbeacon_update(GameObject* obj)
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             if (tricky != NULL && (obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE))
             {
-                (*(WCBeaconTrickyInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(
+                TRICKY_INTERFACE(tricky)->sideCommandEnable(
                     tricky, obj, WCBEACON_COMMAND_KIND, WCBEACON_COMMAND_TYPE);
             }
         }

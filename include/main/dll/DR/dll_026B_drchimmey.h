@@ -27,12 +27,6 @@ typedef struct DRChimmeyState
     u8 eventActive;
 } DRChimmeyState;
 
-typedef struct DRChimmeyTrickyInterface
-{
-    void* callbacks[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} DRChimmeyTrickyInterface;
-
 STATIC_ASSERT(sizeof(DRChimmeyState) == 0x18);
 STATIC_ASSERT(offsetof(DRChimmeyState, timerDuration) == 0x0c);
 STATIC_ASSERT(offsetof(DRChimmeyState, timer) == 0x10);
@@ -43,7 +37,6 @@ STATIC_ASSERT(sizeof(DRChimmeySetup) == 0x24);
 STATIC_ASSERT(offsetof(DRChimmeySetup, initialRotX) == 0x18);
 STATIC_ASSERT(offsetof(DRChimmeySetup, completionGameBit) == 0x1e);
 STATIC_ASSERT(offsetof(DRChimmeySetup, enableGameBit) == 0x20);
-STATIC_ASSERT(offsetof(DRChimmeyTrickyInterface, sideCommandEnable) == 0x28);
 
 extern ObjectDescriptor gDrChimmeyObjDescriptor;
 

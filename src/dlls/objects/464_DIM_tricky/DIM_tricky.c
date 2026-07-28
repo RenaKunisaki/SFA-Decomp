@@ -2,12 +2,12 @@
  * DIM_tricky (DLL 0x1D0) - DIM Tricky companion object.
  * A simple 1-byte state machine (states 0-3) that watches game bit 0xA1B to
  * trigger a Tricky companion-pickup sequence: clears bits 0x4E4/0x4E5, then
- * dispatches a vtable call (slot 14 of Tricky's object type at offset
- * 0x68+0x38) to link the companion.
+ * asks Tricky to move to this object through his export table.
  */
 #include "sys/objects/lifecycle.h"
 #include "dlls/object_descriptor.h"
 #include "main/object_render.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/gamebits.h"
 
 enum
@@ -25,14 +25,7 @@ typedef struct DimTrickyState
     u8 phase;
 } DimTrickyState;
 
-typedef struct DimTrickyInterfaceVTable
-{
-    void* pad00[14];
-    int (*requestMoveToObject)(GameObject* tricky, GameObject* target);
-} DimTrickyInterfaceVTable;
-
 STATIC_ASSERT(sizeof(DimTrickyState) == 0x1);
-STATIC_ASSERT(offsetof(DimTrickyInterfaceVTable, requestMoveToObject) == 0x38);
 
 int dim_tricky_getExtraSize(void)
 {
@@ -79,7 +72,7 @@ void dim_tricky_update(GameObject* obj)
         state->phase = DIMTRICKY_STATE_MOVE_TO_OBJECT;
         break;
     case DIMTRICKY_STATE_MOVE_TO_OBJECT:
-        (*(DimTrickyInterfaceVTable**)trickyObj->anim.dll)->requestMoveToObject(trickyObj, obj);
+        TRICKY_INTERFACE(trickyObj)->requestMoveToObject(trickyObj, obj);
         state->phase = DIMTRICKY_STATE_DONE;
         break;
     case DIMTRICKY_STATE_DONE:

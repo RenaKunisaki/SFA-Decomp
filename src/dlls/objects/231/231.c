@@ -15,17 +15,10 @@
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "sys/objects/lifecycle.h"
-
-typedef struct FlammableVineTrickyInterfaceVTable {
-    void* callbacks[10];                                                                                 /* 0x00 */
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType); /* 0x28 */
-} FlammableVineTrickyInterfaceVTable;
-
-STATIC_ASSERT(offsetof(FlammableVineTrickyInterfaceVTable, sideCommandEnable) == 0x28);
-STATIC_ASSERT(sizeof(FlammableVineTrickyInterfaceVTable) == 0x2C);
 
 #define FLAMMABLEVINE_SEQID_CC_EYE_VINES 0x102
 
@@ -138,7 +131,7 @@ void FlammableVine_update(GameObject* obj) {
         if (tricky != NULL && canUse != 0) {
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-                (*(FlammableVineTrickyInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(tricky, obj, 1, 4);
+                TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 4);
             }
         }
     }

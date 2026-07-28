@@ -78,12 +78,6 @@ f32 lbl_803DBC60 = 20.0f;
 f32 lbl_803DBC64 = 20.0f;
 f32 lbl_803DBC68 = 2.3509887e-38f;
 
-typedef struct BaddieTrickyInterfaceVTable
-{
-    void* callbacks[10];                                                                                 /* 0x00 */
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType); /* 0x28 */
-} BaddieTrickyInterfaceVTable;
-
 typedef struct BaddieAfterUpdateBonesCbState
 {
     u8 pad0[0x2B0 - 0x0];
@@ -228,19 +222,6 @@ typedef struct
 {
     f32 x, y, z;
 } TrickyVec3;
-
-typedef struct BaddieTrickyInterface
-{
-    void* unknown00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-    void* unknown2C[5];
-    u8 (*isPlayingBall)(GameObject* tricky);
-} BaddieTrickyInterface;
-
-STATIC_ASSERT(offsetof(BaddieTrickyInterface, sideCommandEnable) == 0x28);
-STATIC_ASSERT(offsetof(BaddieTrickyInterface, isPlayingBall) == 0x40);
-
-#define BADDIE_TRICKY_INTERFACE(tricky) (*(BaddieTrickyInterface**)((GameObject*)(tricky))->anim.dll)
 
 extern u8 lbl_8031DBD8[];
 extern u8 lbl_8031DBE4[];
@@ -1710,7 +1691,7 @@ void baddie_updateEngagementState(GameObject* obj, TrickyState* sub)
     sub->flags2DC &= ~0x76f0008LL;
     if (tricky != NULL)
     {
-        u8 r = BADDIE_TRICKY_INTERFACE(tricky)->isPlayingBall((GameObject*)tricky);
+        u8 r = TRICKY_INTERFACE(tricky)->isPlayingBall((GameObject*)tricky);
         if (r != 0)
             sub->flags2DC |= 0x200000LL;
     }
@@ -2864,7 +2845,7 @@ void enemy_update(GameObject* obj)
         }
         if (tricky != NULL && (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
         {
-            BADDIE_TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 2);
+            TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 2);
         }
     }
     baddie_updateWhileFrozen(obj, state, 0);

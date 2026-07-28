@@ -21,6 +21,38 @@ extern const TrickyItemIdList gTrickyFoodItemIds;
 
 extern ObjectDescriptor20WithPadding gTrickyObjDescriptor;
 
+/* gTrickyObjDescriptor from slot02 onwards: the export table other objects reach through
+   obj->anim.dll. */
+typedef struct TrickyCompanionInterface
+{
+    void* pad00[8];
+    int (*getAvailableCommands)(GameObject* tricky);
+    int (*updateSideCommandPrompts)(GameObject* tricky);
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
+    u8 (*getEnergy)(GameObject* tricky);
+    u8 (*getEnergyMax)(GameObject* tricky);
+    void (*commandPlayBall)(GameObject* tricky, int enabled, GameObject* target);
+    int (*requestMoveToObject)(GameObject* tricky, GameObject* target);
+    void (*requestRecall)(GameObject* tricky);
+    u8 (*isPlayingBall)(GameObject* tricky);
+    int (*isGuarding)(GameObject* tricky);
+    int (*getCurrentCommandType)(GameObject* tricky, int* commandType);
+} TrickyCompanionInterface;
+
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, getAvailableCommands) == 0x20);
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, updateSideCommandPrompts) == 0x24);
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, sideCommandEnable) == 0x28);
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, getEnergy) == 0x2C);
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, getEnergyMax) == 0x30);
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, commandPlayBall) == 0x34);
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, requestMoveToObject) == 0x38);
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, requestRecall) == 0x3C);
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, isPlayingBall) == 0x40);
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, isGuarding) == 0x44);
+STATIC_ASSERT(offsetof(TrickyCompanionInterface, getCurrentCommandType) == 0x48);
+
+#define TRICKY_INTERFACE(tricky) ((TrickyCompanionInterface*)*((GameObject*)(tricky))->anim.dll)
+
 void trickyReportError(const char* fmt, ...);
 void trickyDebugPrint(const char* fmt, ...);
 u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state);

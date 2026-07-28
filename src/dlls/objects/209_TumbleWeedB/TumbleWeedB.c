@@ -20,6 +20,7 @@
 #include "sys/objects/lifecycle.h"
 #include "string.h"
 #include "main/audio/sfx_looped_object_api.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/path_control_interface.h"
 #include "main/gamebit_ids.h"
@@ -61,15 +62,6 @@
 #define TUMBLEWEED_PIECE_GROUND_CLEARANCE    7.0f
 #define TUMBLEWEED_PIECE_GRAVITY             -0.17f
 #define TUMBLEWEED_PIECE_ROTATION_DAMPING    100
-
-typedef struct TumbleweedBushTrickyInterface {
-    void* unknown00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} TumbleweedBushTrickyInterface;
-
-STATIC_ASSERT(offsetof(TumbleweedBushTrickyInterface, sideCommandEnable) == 0x28);
-
-#define TUMBLEWEED_BUSH_TRICKY_INTERFACE(tricky) ((TumbleweedBushTrickyInterface*)*(tricky)->anim.dll)
 
 f32 gTumbleweedBushHitCooldown;
 
@@ -434,13 +426,6 @@ ObjectDescriptor11WithPadding gTumbleWeedBushObjDescriptor = {
 #define TUMBLEWEED_TRICKY_COMMAND_KIND 0
 #define TUMBLEWEED_TRICKY_COMMAND_TYPE 1
 
-typedef struct TumbleweedTrickyInterface {
-    void* pad00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} TumbleweedTrickyInterface;
-
-STATIC_ASSERT(offsetof(TumbleweedTrickyInterface, sideCommandEnable) == 0x28);
-
 f32 gTumbleweedCollisionPointData[2] = {25.0f, 0.0f};
 
 void tumbleweed_updateRollingMotion(GameObject* obj, TumbleweedState* state) {
@@ -653,9 +638,8 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
             if (tricky != NULL && tricky->anim.seqId == TRICKY_SEQ_ID) {
                 f32 trickyOffsetX, trickyOffsetZ, trickyDistanceSquared;
                 if (targetDistanceSquared < 30625.0f) {
-                    TUMBLEWEED_BUSH_TRICKY_INTERFACE(tricky)
-                        ->sideCommandEnable(tricky, obj, TUMBLEWEED_TRICKY_COMMAND_KIND,
-                                            TUMBLEWEED_TRICKY_COMMAND_TYPE);
+                    TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, TUMBLEWEED_TRICKY_COMMAND_KIND,
+                                                               TUMBLEWEED_TRICKY_COMMAND_TYPE);
                 }
                 trickyOffsetX = obj->anim.localPosX - tricky->anim.localPosX;
                 trickyOffsetZ = obj->anim.localPosZ - tricky->anim.localPosZ;

@@ -10,6 +10,7 @@
 #include "main/maketex_timer_api.h"
 #include "main/object_render.h"
 #include "main/dll/DR/dll_026B_drchimmey.h"
+#include "main/dll/dll_00C4_tricky.h"
 
 #define DRCHIMMEY_INITIAL_OFFERING_COUNT 3
 #define DRCHIMMEY_REPEAT_OFFERING_COUNT  1
@@ -62,8 +63,7 @@ void DR_Chimmey_update(GameObject* obj)
             {
                 if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
                 {
-                    ((DRChimmeyTrickyInterface*)*tricky->anim.dll)
-                        ->sideCommandEnable(tricky, obj, 1, 4);
+                    TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 4);
                 }
                 obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
                 objRenderFn_80041018(obj);

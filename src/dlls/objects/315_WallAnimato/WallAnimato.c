@@ -2,6 +2,7 @@
 #include "dlls/objects/315_WallAnimato.h"
 
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
@@ -13,10 +14,6 @@
 #define WALL_ANIMATOR_PARTFX_DEBRIS            0xCA
 #define WALL_ANIMATOR_PARTFX_DUST              0xCB
 #define WALL_ANIMATOR_PARTFX_FLAGS             0x200001
-#define WALL_ANIMATOR_TRICKY_SIDE_COMMAND_ENABLE_SLOT 0x0A
-
-typedef void (*WallAnimatorTrickySideCommandEnableFn)(GameObject* tricky, GameObject* target,
-                                                     int commandKind, int commandType);
 
 u8 WallAnimator_getEnergyCost(GameObject* obj) {
     WallAnimatorPlacement* placement = (WallAnimatorPlacement*)obj->anim.placementData;
@@ -129,8 +126,7 @@ void WallAnimator_update(GameObject* obj) {
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-                ((WallAnimatorTrickySideCommandEnableFn)(
-                    *tricky->anim.dll)[WALL_ANIMATOR_TRICKY_SIDE_COMMAND_ENABLE_SLOT])(tricky, obj, 1, 1);
+                TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 1);
             }
             objRenderFn_80041018(obj);
         }

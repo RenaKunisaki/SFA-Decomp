@@ -1,20 +1,11 @@
 /* VFP_flamepo (DLL 0x0225) */
 #include "dlls/object_descriptor.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/gamebits.h"
 #include "sys/objects/lifecycle.h"
 
 #define VFP_FLAMEPOINT_OBJFLAG_HIDDEN             0x4000
 #define VFP_FLAMEPOINT_OBJFLAG_HITDETECT_DISABLED 0x2000
-
-typedef struct VfpFlamePointTrickyInterface
-{
-    void* unknown00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} VfpFlamePointTrickyInterface;
-
-STATIC_ASSERT(offsetof(VfpFlamePointTrickyInterface, sideCommandEnable) == 0x28);
-
-#define VFP_FLAMEPOINT_TRICKY_INTERFACE(tricky) ((VfpFlamePointTrickyInterface*)*(tricky)->anim.dll)
 
 
 #define VFP_FLAMEPOINT_TRICKY_COMMAND_KIND 1
@@ -94,9 +85,9 @@ void VFP_flamepoint_update(GameObject* obj)
                 {
                     if (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE)
                     {
-                        VFP_FLAMEPOINT_TRICKY_INTERFACE((GameObject*)tricky)
-                            ->sideCommandEnable((GameObject*)tricky, obj, VFP_FLAMEPOINT_TRICKY_COMMAND_KIND,
-                                                VFP_FLAMEPOINT_TRICKY_COMMAND_TYPE);
+                        TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj,
+                                                                   VFP_FLAMEPOINT_TRICKY_COMMAND_KIND,
+                                                                   VFP_FLAMEPOINT_TRICKY_COMMAND_TYPE);
                     }
                     *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
                     objRenderFn_80041018(obj);

@@ -6,11 +6,11 @@
  */
 #include "dlls/objects/257_TrickyGuard.h"
 #include "dlls/objects/288_TrickyGuard.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/gamebits.h"
 #include "sys/objects/lifecycle.h"
 
 #define TRICKYGUARD_GAMEBIT_NONE   -1
-#define TRICKYGUARD_VTABLE(tricky) (*(TrickyGuardInterfaceVTable**)((tricky)->anim.dll))
 
 void TrickyGuard_update(GameObject* obj) {
     GameObject* tricky;
@@ -26,11 +26,11 @@ void TrickyGuard_update(GameObject* obj) {
     if (tricky == NULL) {
         return;
     }
-    if ((u8)TRICKYGUARD_VTABLE(tricky)->isGuarding(tricky) != 0) {
+    if ((u8)TRICKY_INTERFACE(tricky)->isGuarding(tricky) != 0) {
         return;
     }
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-        TRICKYGUARD_VTABLE(tricky)->sideCommandEnable(tricky, obj, TRICKY_GUARD_COMMAND_KIND,
+        TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, TRICKY_GUARD_COMMAND_KIND,
                                                       TRICKY_GUARD_COMMAND_TYPE);
     }
     obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);

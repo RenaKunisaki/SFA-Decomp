@@ -7,6 +7,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/os/OSCache.h"
 #include "main/frame_timing.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
 #include "main/object_render.h"
@@ -22,15 +23,6 @@
 
 #define GROUND_ANIMATOR_SINK_DEPTH_SCALE 100.0f
 #define GROUND_ANIMATOR_RENDER_SCALE     1.0f
-
-typedef struct GroundAnimatorTrickyInterface {
-    void* unknown00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} GroundAnimatorTrickyInterface;
-
-STATIC_ASSERT(offsetof(GroundAnimatorTrickyInterface, sideCommandEnable) == 0x28);
-
-#define GROUND_ANIMATOR_TRICKY_INTERFACE(tricky) ((GroundAnimatorTrickyInterface*)*(tricky)->anim.dll)
 
 u16 gGroundAnimatorSfxIds[4] = {0x109, 0x7E, 0, 0};
 
@@ -400,7 +392,7 @@ void GroundAnimator_update(GameObject* obj) {
         }
         *(u8*)&obj->anim.resetHitboxMode = *(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED;
         if (tricky != NULL && (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0) {
-            GROUND_ANIMATOR_TRICKY_INTERFACE((GameObject*)tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 1);
+            TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 1);
         }
     } else {
         *(u8*)&obj->anim.resetHitboxMode = *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;

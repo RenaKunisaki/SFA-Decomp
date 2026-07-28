@@ -5,20 +5,10 @@
  * position within this object's engagement radius.
  */
 #include "dlls/objects/258_StayPoint.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/gamebits.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects/lifecycle.h"
-
-typedef void (*StayPointSideCommandCallback)(GameObject* tricky, GameObject* targetObj, int commandKind,
-                                             int commandType);
-
-typedef struct StayPointTrickyVTable {
-    void* pad00[10];
-    StayPointSideCommandCallback sideCommandEnable;
-} StayPointTrickyVTable;
-
-STATIC_ASSERT(offsetof(StayPointTrickyVTable, pad00) == 0x0);
-STATIC_ASSERT(offsetof(StayPointTrickyVTable, sideCommandEnable) == 0x28);
 
 #define STAYPOINT_ENGAGE_RADIUS_SQ 1e+02f
 
@@ -65,8 +55,8 @@ void StayPoint_update(GameObject* obj) {
                 objRenderFn_80041018(obj);
             }
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-                ((StayPointTrickyVTable*)*tricky->anim.dll)
-                    ->sideCommandEnable(tricky, obj, STAYPOINT_COMMAND_KIND, STAYPOINT_COMMAND_TYPE);
+                TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, STAYPOINT_COMMAND_KIND,
+                                                           STAYPOINT_COMMAND_TYPE);
             }
         }
     }

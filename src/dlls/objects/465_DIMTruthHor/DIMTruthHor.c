@@ -7,6 +7,7 @@
 #include "dlls/objects/465_DIMTruthHor.h"
 
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "sys/objects/lifecycle.h"
@@ -21,16 +22,6 @@
 #define DIM_TRUTH_HORN_ICE_PARTICLE_Y_MAX        350
 #define DIM_TRUTH_HORN_ICE_PARTICLE_OFFSET_SCALE 0.1f
 #define DIM_TRUTH_HORN_ICE_PARTICLE_SCALE        1.0f
-
-typedef struct DimTruthHorniceTrickyInterface
-{
-    void* unknown00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} DimTruthHorniceTrickyInterface;
-
-STATIC_ASSERT(offsetof(DimTruthHorniceTrickyInterface, sideCommandEnable) == 0x28);
-
-#define DIMTRUTHHOR_TRICKY_INTERFACE(tricky) ((DimTruthHorniceTrickyInterface*)*(tricky)->anim.dll)
 
 typedef enum DimTruthHornIcePhase {
     DIM_TRUTH_HORN_ICE_PHASE_INTACT = 0,
@@ -73,7 +64,7 @@ void dimtruthhornice_update(GameObject* obj) {
 
             if (tricky != NULL) {
                 if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0) {
-                    DIMTRUTHHOR_TRICKY_INTERFACE((GameObject*)tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 4);
+                    TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 4);
                 }
                 *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
             }

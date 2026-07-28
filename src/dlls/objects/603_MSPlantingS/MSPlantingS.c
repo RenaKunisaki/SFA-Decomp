@@ -11,6 +11,7 @@
  * decrements it and runs object sequence 0. render tints the model per phase;
  * MoonSeedPlantingSpot_cutOrHarvest is the trigger-volume callback that cuts/harvests.
  */
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/object_render.h"
@@ -49,16 +50,6 @@
 
 #define MSPLANTING_TRICKY_COMMAND_KIND 1
 #define MSPLANTING_TRICKY_COMMAND_TYPE 4
-
-typedef struct MoonSeedPlantingSpotTrickyInterface
-{
-    void* unknown00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} MoonSeedPlantingSpotTrickyInterface;
-
-STATIC_ASSERT(offsetof(MoonSeedPlantingSpotTrickyInterface, sideCommandEnable) == 0x28);
-
-#define MSPLANTING_TRICKY_INTERFACE(tricky) ((MoonSeedPlantingSpotTrickyInterface*)*(tricky)->anim.dll)
 
 int MoonSeedPlantingSpot_SeqFn(GameObject* obj)
 {
@@ -269,9 +260,8 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
                 getXZDistance(&player->anim.worldPosX, &obj->anim.worldPosX) <= 10000.0f)
             {
                 objfx_spawnDirectionalBurst((void*)obj, 5, 1.0f, 5, 1, 0x28, 7.0f, NULL, 0);
-                MSPLANTING_TRICKY_INTERFACE((GameObject*)tricky)
-                    ->sideCommandEnable((GameObject*)tricky, obj, MSPLANTING_TRICKY_COMMAND_KIND,
-                                        MSPLANTING_TRICKY_COMMAND_TYPE);
+                TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, MSPLANTING_TRICKY_COMMAND_KIND,
+                                                           MSPLANTING_TRICKY_COMMAND_TYPE);
             }
             else
             {

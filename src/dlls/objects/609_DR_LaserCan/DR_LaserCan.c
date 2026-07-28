@@ -4,6 +4,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/maketex_timer_api.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/dll_0273_firepipe.h"
 #include "main/dll/DR/dr_types.h"
 #include "main/vecmath.h"
@@ -78,12 +79,6 @@ s16 gLaserCannonMaxAimStep = 0x400;
 #define DR_LASERCANNON_WARNING_HIDE_MODE   5
 #define DR_LASERCANNON_WARNING_HIT_MODE    6
 
-typedef struct DrLaserCannonTrickyInterfaceVTable
-{
-    void* callbacks[10];                                                                                 /* 0x00 */
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType); /* 0x28 */
-} DrLaserCannonTrickyInterfaceVTable;
-
 typedef struct DrLaserCannonState
 {
     int beamObject;
@@ -111,27 +106,11 @@ typedef struct DrLaserCannonState
     u16 bobPhase;
 } DrLaserCannonState;
 
-typedef struct DrLaserCannonTrickyInterface {
-    void* pad00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-    void* pad2C[2];
-    void (*commandPlayBall)(GameObject* tricky, int commandEnabled, GameObject* target);
-    void* pad38[2];
-    u8 (*isPlayingBall)(GameObject* tricky);
-} DrLaserCannonTrickyInterface;
-
-STATIC_ASSERT(offsetof(DrLaserCannonTrickyInterface, sideCommandEnable) == 0x28);
-STATIC_ASSERT(offsetof(DrLaserCannonTrickyInterface, commandPlayBall) == 0x34);
-STATIC_ASSERT(offsetof(DrLaserCannonTrickyInterface, isPlayingBall) == 0x40);
-
-#define DR_LASERCANNON_TRICKY_INTERFACE(tricky) (*(DrLaserCannonTrickyInterface**)((GameObject*)(tricky))->anim.dll)
-
 STATIC_ASSERT(offsetof(DrLaserCannonState, beamObject) == DR_LASERCANNON_STATE_BEAM_OBJECT);
 STATIC_ASSERT(offsetof(DrLaserCannonState, lastHitObject) == DR_LASERCANNON_STATE_LAST_HIT_OBJECT);
 STATIC_ASSERT(offsetof(DrLaserCannonState, muzzleX) == DR_LASERCANNON_STATE_MUZZLE_X);
 STATIC_ASSERT(offsetof(DrLaserCannonState, curveFollow) == DR_LASERCANNON_STATE_CURVE_FOLLOW);
 STATIC_ASSERT(offsetof(DrLaserCannonState, animStepScale) == DR_LASERCANNON_STATE_ANIM_STEP_SCALE);
-STATIC_ASSERT(offsetof(DrLaserCannonTrickyInterfaceVTable, sideCommandEnable) == 0x28);
 STATIC_ASSERT(offsetof(DrLaserCannonState, trickyCooldown) == DR_LASERCANNON_STATE_TRICKY_COOLDOWN);
 STATIC_ASSERT(offsetof(DrLaserCannonState, reloadTimer) == DR_LASERCANNON_STATE_RELOAD_TIMER);
 STATIC_ASSERT(offsetof(DrLaserCannonState, aim) == DR_LASERCANNON_STATE_AIM);
@@ -280,13 +259,13 @@ GameObject* drlasercannon_getTrackedTarget(GameObject* obj, int* cooldownTimer)
     GameObject* target;
     int cooldown;
     if (tricky != 0 && cooldownTimer != 0 &&
-        DR_LASERCANNON_TRICKY_INTERFACE(tricky)->isPlayingBall((GameObject*)tricky))
+        TRICKY_INTERFACE(tricky)->isPlayingBall((GameObject*)tricky))
     {
         cooldown = *cooldownTimer - framesThisStep;
         *cooldownTimer = cooldown;
         if (cooldown < 0)
         {
-            DR_LASERCANNON_TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 0, NULL);
+            TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 0, NULL);
             *cooldownTimer = DR_LASERCANNON_TRICKY_COOLDOWN;
         }
         return (GameObject*)tricky;
@@ -384,7 +363,7 @@ void DR_LaserCannon_hitDetect(GameObject* obj)
             mainSetBits(setup->destroyedGameBit, 1);
             if (tricky != 0)
             {
-                DR_LASERCANNON_TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 0, NULL);
+                TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 0, NULL);
             }
             (obj)->anim.flags |= DR_LASERCANNON_HIDDEN_FLAG;
         }
@@ -594,7 +573,7 @@ void DR_LaserCannon_update(GameObject* obj)
         GameObject* tricky = getTrickyObject();
         if (tricky != NULL)
         {
-            DR_LASERCANNON_TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 2);
+            TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 2);
         }
     }
     hit = ObjAnim_AdvanceCurrentMove((int)obj, state->animStepScale, timeDelta, 0);

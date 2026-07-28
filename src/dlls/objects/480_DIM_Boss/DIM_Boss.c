@@ -13,6 +13,7 @@
 #include "main/dll/baddie_control_interface.h"
 #include "main/dll/boneparticleeffect_interface.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/player_api.h"
 #include "main/fileio.h"
 #include "main/frame_timing.h"
@@ -234,19 +235,6 @@ extern u32 gDIMbossSequenceFlags;
 extern int* gDIMbossHitEffectResource;
 extern int gDim2IcicleHitCooldown;
 extern f32 gDIMbossRenderMtx[12];
-
-typedef struct DimBossTrickyInterface
-{
-    void* unknown00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-    void* unknown2C[2];
-    void (*commandPlayBall)(GameObject* tricky, int enabled, GameObject* target);
-} DimBossTrickyInterface;
-
-STATIC_ASSERT(offsetof(DimBossTrickyInterface, sideCommandEnable) == 0x28);
-STATIC_ASSERT(offsetof(DimBossTrickyInterface, commandPlayBall) == 0x34);
-
-#define DIMBOSS_TRICKY_INTERFACE(tricky) ((DimBossTrickyInterface*)*((GameObject*)(tricky))->anim.dll)
 
 int lbl_80325960[16] = {
     1, 8, 9, 9, 10, 10, 10, 10, 7, 7, 7, 7, 6, 6, 5, 1,
@@ -1256,7 +1244,7 @@ void DIM2icicle_updateCombatState(GameObject* obj, ObjAnimUpdateState* animUpdat
             if (timer <= limit) {
                 topState->icicle.lightTimer = timer + timeDelta;
                 if (topState->icicle.lightTimer >= limit) {
-                    DIMBOSS_TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 1, (GameObject*)obj);
+                    TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 1, (GameObject*)obj);
                 }
             }
         }
@@ -1265,7 +1253,7 @@ void DIM2icicle_updateCombatState(GameObject* obj, ObjAnimUpdateState* animUpdat
             if (topState->icicle.fadeTimer >= 780.0f) {
                 runtime->stateFlags &= ~DIMBOSS_STATE_FLAG_TARGET_TRICKY;
                 topState->icicle.fadeTimer = timer;
-                DIMBOSS_TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 0, NULL);
+                TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 0, NULL);
                 topState->icicle.lightTimer = 1.0f;
             }
         } else if (runtime->phase == DIMBOSS_PHASE_LAUNCH_LIFT) {
@@ -1286,7 +1274,7 @@ void DIM2icicle_updateCombatState(GameObject* obj, ObjAnimUpdateState* animUpdat
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_TONSIL_GUARD_ACTIVE;
     }
     if (runtime->phase == DIMBOSS_PHASE_LAUNCH_LIFT) {
-        DIMBOSS_TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, (GameObject*)obj, 1, 2);
+        TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, (GameObject*)obj, 1, 2);
         gameObj->hitVolumeIndex = 1;
     } else {
         gameObj->hitVolumeIndex = 2;

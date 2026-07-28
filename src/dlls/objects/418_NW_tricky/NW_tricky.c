@@ -9,6 +9,7 @@
 #include "dlls/objects/418_NW_tricky.h"
 
 #include "main/audio/sfx_ids.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/dll_00C9_enemy.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
@@ -38,18 +39,7 @@ typedef struct NwTrickyPlayBallTargetIdList {
     int ids[NW_TRICKY_PLAY_BALL_TARGET_ID_COUNT];
 } NwTrickyPlayBallTargetIdList;
 
-typedef struct NwTrickyCompanionInterface {
-    void* unknown00[13];
-    void (*commandPlayBall)(GameObject* tricky, int enabled, GameObject* target);
-    void* unknown38[2];
-    u8 (*isPlayingBall)(GameObject* tricky);
-} NwTrickyCompanionInterface;
-
 STATIC_ASSERT(sizeof(NwTrickyPlayBallTargetIdList) == 0x0C);
-STATIC_ASSERT(offsetof(NwTrickyCompanionInterface, commandPlayBall) == 0x34);
-STATIC_ASSERT(offsetof(NwTrickyCompanionInterface, isPlayingBall) == 0x40);
-
-#define NW_TRICKY_COMPANION_INTERFACE(tricky) ((NwTrickyCompanionInterface*)*(tricky)->anim.dll)
 
 const int gNwTrickyPlayBallTargetIds[NW_TRICKY_PLAY_BALL_TARGET_POOL_SIZE] = {0xF5B, 0x43EC9, 0x43ED6, 0};
 
@@ -112,7 +102,7 @@ void nwTricky_update(GameObject* obj) {
             state->phase = NW_TRICKY_PHASE_ENERGY;
         } else {
             if (mainGetBit(GAMEBIT_ITEM_TrickyStayFind_Got)) {
-                if (NW_TRICKY_COMPANION_INTERFACE(tricky)->isPlayingBall(tricky) == 0) {
+                if (TRICKY_INTERFACE(tricky)->isPlayingBall(tricky) == 0) {
                     mainSetBits(GAMEBIT_Tricky_Usable, 0);
                     state->phaseTimer = 0.0f;
                 }
@@ -121,7 +111,7 @@ void nwTricky_update(GameObject* obj) {
                      targetIndex < NW_TRICKY_PLAY_BALL_TARGET_ID_COUNT; targetId++, targetIndex++) {
                     target = ObjList_FindObjectById(*targetId);
                     if (target != NULL && enemy_getHealthFraction(target) > minimumHealth) {
-                        NW_TRICKY_COMPANION_INTERFACE(tricky)->commandPlayBall(
+                        TRICKY_INTERFACE(tricky)->commandPlayBall(
                             tricky, NW_TRICKY_PLAY_BALL_COMMAND_ENABLED, target);
                         break;
                     }

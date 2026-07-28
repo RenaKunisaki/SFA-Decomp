@@ -25,13 +25,6 @@ typedef struct WCBeaconState
     u8 pad06[2];
 } WCBeaconState;
 
-typedef struct WCBeaconTrickyInterfaceVTable
-{
-    void* pad00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* beacon, int commandKind,
-                              int commandType);
-} WCBeaconTrickyInterfaceVTable;
-
 STATIC_ASSERT(sizeof(WCBeaconState) == 8);
 STATIC_ASSERT(sizeof(WCBeaconSetup) == 0x24);
 STATIC_ASSERT(offsetof(WCBeaconState, timer) == 0x00);
@@ -41,7 +34,6 @@ STATIC_ASSERT(offsetof(WCBeaconSetup, type) == 0x18);
 STATIC_ASSERT(offsetof(WCBeaconSetup, modelIndex) == 0x19);
 STATIC_ASSERT(offsetof(WCBeaconSetup, solvedBit) == 0x1E);
 STATIC_ASSERT(offsetof(WCBeaconSetup, armBit) == 0x20);
-STATIC_ASSERT(offsetof(WCBeaconTrickyInterfaceVTable, sideCommandEnable) == 0x28);
 
 extern ObjectDescriptor gWCBeaconObjDescriptor;
 #define WCBEACON_RENDER_SCALE        1.0f

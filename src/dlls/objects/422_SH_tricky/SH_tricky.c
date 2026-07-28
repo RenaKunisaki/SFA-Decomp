@@ -7,20 +7,12 @@
  */
 #include "dlls/objects/422_SH_tricky.h"
 
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "sys/objects/lifecycle.h"
 
 #define SH_TRICKY_TRIGGER_GAMEBIT 0x94
-
-typedef struct ShTrickyCompanionInterface {
-    void* unknown00[14];
-    int (*requestMoveToObject)(GameObject* tricky, GameObject* target);
-} ShTrickyCompanionInterface;
-
-STATIC_ASSERT(offsetof(ShTrickyCompanionInterface, requestMoveToObject) == 0x38);
-
-#define SH_TRICKY_COMPANION_INTERFACE(tricky) ((ShTrickyCompanionInterface*)*(tricky)->anim.dll)
 
 int shTricky_getExtraSize(void) {
     return sizeof(ShTrickyState);
@@ -49,7 +41,7 @@ void shTricky_update(GameObject* obj) {
         state->phase = SH_TRICKY_PHASE_REQUEST_MOVE;
         break;
     case SH_TRICKY_PHASE_REQUEST_MOVE:
-        if (SH_TRICKY_COMPANION_INTERFACE(tricky)->requestMoveToObject(tricky, obj) != 0) {
+        if (TRICKY_INTERFACE(tricky)->requestMoveToObject(tricky, obj) != 0) {
             state->phase = SH_TRICKY_PHASE_WAIT_RETURN_TO_QUEEN;
         }
         break;

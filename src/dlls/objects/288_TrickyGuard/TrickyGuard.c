@@ -5,6 +5,7 @@
  * radius while guarding, and recalls him when the configured timer expires.
  */
 #include "dlls/objects/288_TrickyGuard.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/frame_timing.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects/lifecycle.h"
@@ -12,7 +13,6 @@
 #define TRICKY_GUARD_SPOT_GROUP             0x1E
 #define TRICKY_GUARD_SPOT_FRAMES_PER_SECOND 60
 
-#define TRICKY_GUARD_SPOT_VTABLE(tricky) (*(TrickyGuardInterfaceVTable**)((tricky)->anim.dll))
 
 int TrickyGuardSpot_getExtraSize(void) {
     return sizeof(TrickyGuardSpotState);
@@ -38,7 +38,7 @@ void TrickyGuardSpot_update(GameObject* obj) {
     obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
     stateFlags->trickyInRange = 0;
     if (tricky != NULL) {
-        if ((u8)TRICKY_GUARD_SPOT_VTABLE(tricky)->isGuarding(tricky) != 0) {
+        if ((u8)TRICKY_INTERFACE(tricky)->isGuarding(tricky) != 0) {
             if (Vec_xzDistance(&obj->anim.worldPosX, &tricky->anim.worldPosX) < (f32)(s32)placement->triggerRadius) {
                 state->guardTimer = state->guardTimer - framesThisStep;
                 stateFlags->trickyInRange = 1;
@@ -46,16 +46,16 @@ void TrickyGuardSpot_update(GameObject* obj) {
         }
     }
     if (state->guardTimer != 0) {
-        if (tricky != NULL && (u8)TRICKY_GUARD_SPOT_VTABLE(tricky)->isGuarding(tricky) == 0) {
+        if (tricky != NULL && (u8)TRICKY_INTERFACE(tricky)->isGuarding(tricky) == 0) {
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-                TRICKY_GUARD_SPOT_VTABLE(tricky)->sideCommandEnable(tricky, obj, TRICKY_GUARD_COMMAND_KIND,
+                TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, TRICKY_GUARD_COMMAND_KIND,
                                                                     TRICKY_GUARD_COMMAND_TYPE);
             }
             obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
             objRenderFn_80041018(obj);
         }
     } else if (tricky != NULL) {
-        TRICKY_GUARD_SPOT_VTABLE(tricky)->requestRecall(tricky);
+        TRICKY_INTERFACE(tricky)->requestRecall(tricky);
         state->guardTimer = placement->guardDurationSeconds * TRICKY_GUARD_SPOT_FRAMES_PER_SECOND;
     }
     mainSetBits(placement->trickyInRangeGameBit, stateFlags->trickyInRange);

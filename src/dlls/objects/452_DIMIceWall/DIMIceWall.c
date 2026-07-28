@@ -8,6 +8,7 @@
 
 #include "dlls/objects/288_TrickyGuard.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "sys/objects/lifecycle.h"
 
@@ -84,7 +85,7 @@ void dimicewall_update(GameObject* obj) {
 
             if (tricky != NULL) {
                 if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-                    (*(TrickyGuardInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(tricky, obj, 1, 4);
+                    TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 4);
                 }
                 obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
                 objRenderFn_80041018(obj);

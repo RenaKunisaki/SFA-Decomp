@@ -10,16 +10,6 @@
 #define TRICKY_GUARD_COMMAND_KIND 1
 #define TRICKY_GUARD_COMMAND_TYPE 3
 
-/* Tricky vtable subset used by objects that offer the guard command. */
-typedef struct TrickyGuardInterfaceVTable {
-    void* pad00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-    void* pad2C[4];
-    void (*requestRecall)(GameObject* tricky);
-    void* pad40;
-    int (*isGuarding)(GameObject* tricky);
-} TrickyGuardInterfaceVTable;
-
 /* Only the accessed placement prefix is recovered; the complete retail width is not established. */
 typedef struct TrickyGuardSpotPlacement {
     ObjPlacement base;        /* 0x00 */
@@ -40,10 +30,6 @@ typedef struct TrickyGuardSpotState {
     TrickyGuardSpotStateFlags flags; /* 0x04 */
     u8 pad05[3];                     /* 0x05 */
 } TrickyGuardSpotState;
-
-STATIC_ASSERT(offsetof(TrickyGuardInterfaceVTable, sideCommandEnable) == 0x28);
-STATIC_ASSERT(offsetof(TrickyGuardInterfaceVTable, requestRecall) == 0x3C);
-STATIC_ASSERT(offsetof(TrickyGuardInterfaceVTable, isGuarding) == 0x44);
 
 STATIC_ASSERT(offsetof(TrickyGuardSpotPlacement, base) == 0x0);
 STATIC_ASSERT(offsetof(TrickyGuardSpotPlacement, rotationX) == 0x18);

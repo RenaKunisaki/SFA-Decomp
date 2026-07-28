@@ -6,6 +6,7 @@
  */
 #include "dlls/objects/251.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
@@ -57,7 +58,6 @@
 #define PRESSURESWITCHFB_PARTICLE_ARG3     0x12
 
 #define PRESSURESWITCHFB_MOVEMENT_SFX_CHANNEL 8
-#define PRESSURESWITCHFB_TRICKY_VTABLE_OFFSET 0x28
 #define PRESSURESWITCHFB_TRICKY_COMMAND_KIND  1
 #define PRESSURESWITCHFB_TRICKY_COMMAND_TYPE  3
 
@@ -118,14 +118,6 @@ int PressureSwitchFB_getExtraSize(void) {
 void PressureSwitchFB_free(GameObject* obj) {
     ObjGroup_RemoveObject((int)obj, PRESSURESWITCHFB_OBJECT_GROUP);
 }
-
-typedef struct PressureSwitchFBTrickyInterface {
-    void* pad00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} PressureSwitchFBTrickyInterface;
-
-STATIC_ASSERT(offsetof(PressureSwitchFBTrickyInterface, sideCommandEnable) ==
-              PRESSURESWITCHFB_TRICKY_VTABLE_OFFSET);
 
 static inline int PressureSwitchFB_scanTrackedSlots(int stateAddress, u8 slotIndex, int foundTrackedObject,
                                                     int emptyValue) {
@@ -334,9 +326,8 @@ void PressureSwitchFB_update(GameObject* obj) {
             (mainGetBit(placement->pressedGameBit) == 0)) {
             *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
             if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0) {
-                (*(PressureSwitchFBTrickyInterface**)trickyObj->anim.dll)
-                    ->sideCommandEnable(trickyObj, obj, PRESSURESWITCHFB_TRICKY_COMMAND_KIND,
-                                        PRESSURESWITCHFB_TRICKY_COMMAND_TYPE);
+                TRICKY_INTERFACE(trickyObj)->sideCommandEnable(trickyObj, obj, PRESSURESWITCHFB_TRICKY_COMMAND_KIND,
+                                                              PRESSURESWITCHFB_TRICKY_COMMAND_TYPE);
             }
         }
     }

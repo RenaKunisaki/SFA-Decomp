@@ -3,6 +3,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/objects/209_TumbleWeedB.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/path_control_interface.h"
 #include "main/dll/player_target.h"
@@ -80,18 +81,12 @@ u8 gNwMammothArtifactState6TriggerList[4] = {1, 2, 0, 0};
 #define NW_MAMMOTH_TRICKY_COMMAND_KIND 1
 #define NW_MAMMOTH_TRICKY_COMMAND_TYPE 1
 
-typedef struct NwMammothTrickyInterface {
-    void* pad00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} NwMammothTrickyInterface;
-
 typedef struct NwMammothTumbleweedInterface {
     void* pad00[11];
     void (*startHoming)(GameObject* tumbleweed, f32* targetPos);
     int (*isHoming)(GameObject* tumbleweed);
 } NwMammothTumbleweedInterface;
 
-STATIC_ASSERT(offsetof(NwMammothTrickyInterface, sideCommandEnable) == 0x28);
 STATIC_ASSERT(offsetof(NwMammothTumbleweedInterface, startHoming) == 0x2C);
 STATIC_ASSERT(offsetof(NwMammothTumbleweedInterface, isHoming) == 0x30);
 
@@ -353,9 +348,8 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
             tw2 = tumbleweedbush_findNearestActive(&state->spawnPosX);
             if (tw2 != NULL) {
                 GameObject* tk = getTrickyObject();
-                (*(NwMammothTrickyInterface**)tk->anim.dll)
-                    ->sideCommandEnable(tk, obj, NW_MAMMOTH_TRICKY_COMMAND_KIND,
-                                        NW_MAMMOTH_TRICKY_COMMAND_TYPE);
+                TRICKY_INTERFACE(tk)->sideCommandEnable(tk, obj, NW_MAMMOTH_TRICKY_COMMAND_KIND,
+                                                       NW_MAMMOTH_TRICKY_COMMAND_TYPE);
             }
             state->triggerList = gNwMammothGatekeeperCollectionTriggerList;
             if (state->trackedObject == NULL) {

@@ -10,6 +10,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/model.h"
 #include "main/model_light.h"
 #include "main/objanim_update.h"
@@ -36,15 +37,6 @@
 
 #define DIM_LOG_FIRE_TRICKY_COMMAND_KIND 1
 #define DIM_LOG_FIRE_TRICKY_COMMAND_TYPE 4
-
-typedef struct DimLogFireTrickyInterface {
-    void* unknown00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} DimLogFireTrickyInterface;
-
-STATIC_ASSERT(offsetof(DimLogFireTrickyInterface, sideCommandEnable) == 0x28);
-
-#define DIM_LOGFIRE_TRICKY_INTERFACE(tricky) ((DimLogFireTrickyInterface*)*(tricky)->anim.dll)
 
 int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     DimLogFireState* state = obj->extra;
@@ -183,7 +175,7 @@ void DIMLogFire_update(GameObject* obj) {
         tricky = getTrickyObject();
         if (tricky != NULL) {
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-                DIM_LOGFIRE_TRICKY_INTERFACE(tricky)
+                TRICKY_INTERFACE(tricky)
                     ->sideCommandEnable(tricky, obj, DIM_LOG_FIRE_TRICKY_COMMAND_KIND,
                                         DIM_LOG_FIRE_TRICKY_COMMAND_TYPE);
             }
