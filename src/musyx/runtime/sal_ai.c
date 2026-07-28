@@ -15,13 +15,16 @@
 #define SAL_AI_CACHED_BASE         0x80000000U
 #define SAL_AI_OUTPUT_SAMPLE_COUNT 0x7d00
 
-extern u32 salAiDmaBuffer;
-extern volatile u32 salDspCallbackEnabled;
-extern volatile u32 salDspCallbackPending;
-extern volatile u32 salCallbackActive;
-extern volatile u32 salLastTick;
-extern volatile u32 salDspInitIsDone;
-extern u8 salAIBufferIndex;
+u8 salAIBufferIndex;
+u32 oldState;
+u16 hwIrqLevel;
+volatile u32 salDspInitIsDone;
+volatile u32 salLastTick;
+volatile u32 salCallbackActive;
+volatile u32 salDspCallbackPending;
+volatile u32 salDspCallbackEnabled;
+u32 salAiDmaBuffer;
+SalAiCallback salAiCallback;
 
 /*
  * AI DMA done callback: bumps the round-robin buffer index and

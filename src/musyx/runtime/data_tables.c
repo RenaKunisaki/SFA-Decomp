@@ -16,17 +16,23 @@
 #define dataLayerTab           (((SynthDataTables*)dataSmpSDirs)->layer)
 #define dataMacMainTab         (((SynthDataTables*)dataSmpSDirs)->macMain)
 #define dataMacSubTabmem       (((SynthDataTables*)dataSmpSDirs)->macSub)
-extern s32 dataGetMacro_main;
-extern s32 dataGetMacro_bucket;
-extern MAC_SUBTAB dataGetMacro_key;
-extern MAC_SUBTAB* dataGetMacro_result;
-extern SDIR_DATA* dataGetSample_result;
-extern SAMPLE_HEADER* dataGetSample_sheader;
-extern DATA_TAB dataGetCurve_key;
-extern DATA_TAB* dataGetCurve_result;
-extern DATA_TAB dataGetKeymap_key;
-extern DATA_TAB* dataGetKeymap_result;
-extern LAYER_TAB* dataGetLayer_result;
+LAYER_TAB* dataGetLayer_result;
+DATA_TAB* dataGetKeymap_result;
+DATA_TAB dataGetKeymap_key;
+DATA_TAB* dataGetCurve_result;
+DATA_TAB dataGetCurve_key;
+SAMPLE_HEADER* dataGetSample_sheader;
+SDIR_DATA* dataGetSample_result;
+MAC_SUBTAB* dataGetMacro_result;
+MAC_SUBTAB dataGetMacro_key;
+s32 dataGetMacro_bucket;
+s32 dataGetMacro_main;
+u16 dataFXGroupNum;
+u16 dataMacTotal;
+u16 dataLayerNum;
+u16 dataKeymapNum;
+u16 dataCurveNum;
+u16 dataSmpSDirNum;
 
 DataFXSearchKey dataGetFXSearchKey;
 LAYER_TAB dataGetLayerSearchKey;

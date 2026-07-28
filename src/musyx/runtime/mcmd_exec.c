@@ -22,9 +22,6 @@
 #include "musyx/mcmd_setup.h"
 #include "musyx/snd_core.h"
 #include "string.h"
-extern int macActiveRoot;
-extern int macTimeQueueRoot;
-extern u64 macRealTime;
 extern s32 synthGlobalVariable[16];
 
 #define SYNTH_GLOBAL_REG(index) (synthGlobalVariable[(index) - 0x10])
@@ -55,8 +52,11 @@ STATIC_ASSERT(sizeof(MacDataTables) == 0x280);
 extern u8 lbl_8032EDD0[];
 extern u8 inpAuxB[];
 extern u8 inpAuxA[];
-extern u8 macStepsThisFrame;
-extern McmdCommandArgs macCurrentCmd;
+McmdCommandArgs macCurrentCmd;
+u64 macRealTime;
+int macTimeQueueRoot;
+int macActiveRoot;
+u8 macStepsThisFrame;
 extern const f32 sMacDlsScaleMax; /* 1023.0f */
 extern const f32 sMacOne;         /* 1.0f */
 extern f32 voiceAdsrSustainTable[];

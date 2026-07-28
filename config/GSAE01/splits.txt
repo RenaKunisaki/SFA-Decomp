@@ -4542,6 +4542,7 @@ musyx/runtime/synth.c:
 	extabindex  start:0x80005D5C end:0x80005E64
 	.text       start:0x8026F53C end:0x80272610
 	.bss        start:0x803BCD90 end:0x803BE378
+	.sbss       start:0x803DE238 end:0x803DE280
 	.sdata2     start:0x803E7798 end:0x803E77D8
 
 musyx/runtime/synth_control.c:
@@ -4569,6 +4570,7 @@ musyx/runtime/data_tables.c:
 	extabindex  start:0x80005F60 end:0x80006050
 	.text       start:0x802739B8 end:0x80275364
 	.bss        start:0x803BFC78 end:0x803CA2B0
+	.sbss       start:0x803DE288 end:0x803DE2CC
 
 musyx/runtime/mcmd_wait.c:
 	extab       start:0x80005880 end:0x80005888
@@ -4597,6 +4599,7 @@ musyx/runtime/mcmd_exec.c:
 	extabindex  start:0x800060C8 end:0x80006194
 	.text       start:0x8027656C end:0x80278F0C
 	.data       start:0x8032F050 end:0x8032F218
+	.sbss       start:0x803DE2D0 end:0x803DE2F0
 	.sdata2     start:0x803E7810 end:0x803E7818
 
 dolphin/gx/GXTextureTables.c:
@@ -4607,6 +4610,7 @@ musyx/runtime/adsr_data.c:
 
 musyx/runtime/vid_init.c:
 	.text       start:0x80278F0C end:0x80279004
+	.sbss       start:0x803DE2F0 end:0x803DE2FC
 
 musyx/runtime/vid_get.c:
 	.text       start:0x80279004 end:0x80279038
@@ -4621,6 +4625,7 @@ musyx/runtime/voice.c:
 	extabindex  start:0x800061A0 end:0x800061DC
 	.text       start:0x802795CC end:0x8027A330
 	.bss        start:0x803CA2D0 end:0x803CB290
+	.sbss       start:0x803DE2FC end:0x803DE308
 
 musyx/runtime/voice_conv.c:
 	.text       start:0x8027A330 end:0x8027A4E0
@@ -4761,17 +4766,20 @@ musyx/runtime/aram_init.c:
 	extabindex  start:0x80006590 end:0x800065A8
 	.text       start:0x80284224 end:0x80284468
 	.bss        start:0x803D41E4 end:0x803D4468
+	.sbss       start:0x803DE380 end:0x803DE388
 
 musyx/runtime/aram_data.c:
 	extab       start:0x80005C10 end:0x80005C18
 	extabindex  start:0x800065A8 end:0x800065B4
 	.text       start:0x80284468 end:0x80284670
 	.bss        start:0x803D4468 end:0x803D4880
+	.sbss       start:0x803DE388 end:0x803DE3A0
 
 musyx/runtime/sal_ai.c:
 	extab       start:0x80005C18 end:0x80005C40
 	extabindex  start:0x800065B4 end:0x800065F0
 	.text       start:0x80284670 end:0x802848D8
+	.sbss       start:0x803DE3A0 end:0x803DE3C8
 
 musyx/runtime/sal_dsp.c:
 	extab       start:0x80005C40 end:0x80005C60

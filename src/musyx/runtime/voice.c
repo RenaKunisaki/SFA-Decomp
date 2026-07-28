@@ -16,6 +16,12 @@
 #include "musyx/hw_break.h"
 #include "musyx/hw_break.h"
 
+u8 voiceFreeListRoot;
+u8 voiceFreeListTail;
+u8 voiceFxRunning;
+u8 voiceMusicRunning;
+u16 voicePrioSortedRoot;
+
 static McmdVidListNode vidListNodes[128];
 static u8 voiceMidiKeySlots[SYNTH_VOICE_MIDI_CHANNEL_COUNT][SYNTH_VOICE_MIDI_KEY_COUNT];
 static u8 voiceDirectSlots[SYNTH_VOICE_DIRECT_SLOT_COUNT];

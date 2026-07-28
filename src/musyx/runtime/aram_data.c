@@ -19,10 +19,13 @@ extern AramTransferQueues lbl_803D3F60;
 
 extern u32 aramTop;
 extern u32 aramWrite;
-extern u32 aramStream;
-extern u32 aramQueueWrite;
-extern u32 aramQueueValid;
-extern AramStreamBufferEntry* aramStreamFreeList;
+
+AramStreamBufferEntry* aramStreamFreeList;
+u32 aramQueueValid;
+u32 aramQueueWrite;
+u32 aramUploadChunkSize;
+AramUploadCallback aramUploadCallback;
+u32 aramStream;
 extern AramStreamBufferEntry lbl_803D4468[ARAM_STREAM_BUFFER_COUNT];
 
 /*

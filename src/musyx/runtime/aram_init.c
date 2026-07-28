@@ -7,8 +7,9 @@
 #include "dolphin/ar.h"
 
 extern AramTransferQueues lbl_803D3F60;
-extern u32 aramTop;
-extern u32 aramWrite;
+
+u32 aramWrite;
+u32 aramTop;
 
 /*
  * Initializes the AR-side audio data buffer: allocates a 0x500-byte

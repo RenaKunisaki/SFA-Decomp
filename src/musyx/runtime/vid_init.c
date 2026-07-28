@@ -1,5 +1,9 @@
 #include "musyx/vid_init.h"
 
+McmdVidListNode* vidFree;
+McmdVidListNode* vidRoot;
+u32 vidCurrentId;
+
 void vidInit(void)
 {
     int i;

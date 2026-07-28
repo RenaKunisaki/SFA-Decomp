@@ -79,14 +79,19 @@ STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeLo1) == 0x30);
 #define SYNTH_FADE_ACTION_DISABLED           4
 #define SYNTH_INVALID_LINK_ID                0xffffffff
 
-extern u8 gSynthDelayBucketCursor;
-extern u32 synthMasterFaderPauseActiveFlags;
-extern u32 synthMasterFaderActiveFlags;
-extern u8 synthAuxBMIDISet[8];
-extern u8 synthAuxBMIDI[8];
-extern u8 synthAuxAMIDISet[8];
-extern u8 synthAuxAMIDI[8];
-extern u64 synthRealTime;
+u64 synthRealTime;
+u8 synthIdleWaitActive;
+SynthMessageCallback synthMessageCallback;
+McmdVoiceState* synthVoice;
+u32 synthFlags;
+u32 synthMasterFaderActiveFlags;
+u32 synthMasterFaderPauseActiveFlags;
+u8 synthAuxAMIDI[8];
+u8 synthAuxAMIDISet[8];
+u8 synthAuxBMIDI[8];
+u8 synthAuxBMIDISet[8];
+u8 gSynthDelayBucketCursor;
+u8 gSynthInitialized;
 
 typedef struct SynthVoiceLfo
 {
@@ -243,7 +248,6 @@ u8 synthTrackVolume[64];
 SynthFade synthMasterFader[32];
 SynthInfo synthInfo;
 
-extern u32 synthFlags;
 
 typedef struct LAYER
 {
