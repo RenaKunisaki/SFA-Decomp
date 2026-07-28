@@ -200,10 +200,10 @@ void DFRope_UpdateSimulation(DFRope* self) {
     partsInit = self->nodes;
     parts = partsInit;
 
-    if ((s8)self->sway < -DFBARREL_SWAY_LIMIT) {
+    if (self->sway < -DFBARREL_SWAY_LIMIT) {
         self->direction = DFBARREL_SWAY_DIR_INCREASING;
     }
-    if ((s8)self->sway > DFBARREL_SWAY_LIMIT) {
+    if (self->sway > DFBARREL_SWAY_LIMIT) {
         self->direction = DFBARREL_SWAY_DIR_DECREASING;
     }
     if ((s8)self->direction == DFBARREL_SWAY_DIR_DECREASING) {
@@ -217,7 +217,7 @@ void DFRope_UpdateSimulation(DFRope* self) {
     {
         f32 rate = lbl_803E4DF8;
         for (; i < self->count - 1; i++) {
-            partIter->force[0] = partIter->force[0] + rate * (f32)(int)(s8)self->sway;
+            partIter->force[0] = partIter->force[0] + rate * (f32)(int)self->sway;
             partIter++;
         }
     }

@@ -35,7 +35,7 @@ typedef struct DFRope {
   s32 enabled;
   f32 maxSlack;
   f32 step;
-  u8 sway;
+  s8 sway;
   u8 direction;
   u8 pad36[2];
   f32 damping;
