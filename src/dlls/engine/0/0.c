@@ -392,8 +392,6 @@ extern const f32 hudElementOpacity;
 extern const f32 lbl_803E1FA4;
 extern int lbl_803DD740;
 extern int lbl_803A9428[6];
-extern int lbl_803E1E34;
-extern int lbl_803E1E38;
 extern f32 gTrickyHudIconPosX, gTrickyHudIconPosY, gTrickyHudIconPosZ, gTrickyHudIconScale;
 extern f32 gTrickyHudIconRotZ, gTrickyHudIconRotX, gTrickyHudIconRotY, lbl_803DD7FC;
 extern const f32 lbl_803E1E94;
@@ -407,7 +405,6 @@ extern u8 gFearTestMeterMarkerHalfWidth;
 extern u8 gTrickyAirMeterFillSpeed;
 extern s8 lbl_803DD7F8;
 extern s8 lbl_803DD7F9;
-extern int lbl_803E1E30;
 
 #define GAMEUI_TIME_LIST_COUNT 6
 
@@ -554,13 +551,11 @@ void drawFn_8011eb3c(void* tex, f32 x, f32 y, int a, u8 b, int c, int w, int h, 
 extern s16 gCMenuForcedSelIndex;
 extern s8 gCMenuPreselectOwnedBit;
 extern int gTrickyHudActionMask;
-extern u32 lbl_803E1E14;
 extern s16 gTrickyHudIconTextureIds[];
 extern s16 gTrickyHudCachedIconIndex;
 extern void* gTrickyHudCachedIconTexture;
 extern const f32 lbl_803E2038;
 extern const f32 lbl_803E203C;
-extern u32 lbl_803E1E10;
 extern void* gCMenuRingIconTextures[7];
 extern int gCMenuRingIconActiveFlags[7];
 extern s8 cMenuState;
@@ -714,7 +709,6 @@ extern u8 gPauseMenuTransitionStarted;
 extern f32 lbl_803DD7DC;
 extern int gGameUiCurHintTextMap;
 extern f32 lbl_803DD820;
-extern u32 lbl_803E1E00;
 extern const f64 lbl_803E2118;
 extern const f32 lbl_803E2120;
 extern const f64 lbl_803E2128;
@@ -964,8 +958,8 @@ extern char lbl_803A8830[0x120];
 
 void pauseMenuMapFn_8011de20(void* this, u8 a, s16 b, int c)
 {
-    GXColor colA = *(GXColor*)&lbl_803E1E34;
-    GXColor colB = *(GXColor*)&lbl_803E1E38;
+    GXColor colA = { 0xC0, 0xC0, 0xFF, 0x80 };
+    GXColor colB = { 0xFF, 0xFF, 0xFF, 0xFF };
     colA.a = a;
     GXSetTevColor(GX_TEVREG0, colA);
     GXLoadPosMtxImm((const f32(*)[4])lbl_803A8830, 0);
@@ -1027,11 +1021,10 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     Mtx m3;
     GameUiIndirectMatrix indmtx;
     int tex2;
-    GXColor chanCol;
+    GXColor chanCol = { 0xC0, 0xC0, 0xFF, 0xA0 };
     void *op, *layer, *tex0;
     f32 sval;
 
-    chanCol = *(GXColor*)&lbl_803E1E30;
     indmtx = lbl_802C21AC;
     op = ObjModel_GetRenderOp((ModelFileHeader*)*p2, p3);
     layer = Shader_getLayer(op, 0);
@@ -3913,8 +3906,7 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
 int cMenuRingModelRenderFn(GameObject* obj, int block, int idx)
 {
     ModelRenderOp* renderOp;
-    GXColor cfg;
-    *(u32*)&cfg = lbl_803E1E14;
+    GXColor cfg = { 0xFF, 0xFF, 0xFF, 0xFF };
     renderOp = (ModelRenderOp*)ObjModel_GetRenderOp((ModelFileHeader*)*(int*)block, idx);
     Rcp_ResetTextureStageState();
     cfg.a = obj->anim.renderAlpha;
@@ -3931,8 +3923,7 @@ int cMenuRingIconRenderFn(GameObject* obj, int block, int idx)
 {
     int slotIdx;
     void* tex;
-    GXColor cfg;
-    *(u32*)&cfg = lbl_803E1E10;
+    GXColor cfg = { 0xFF, 0xFF, 0xFF, 0xFF };
     slotIdx = ObjModel_GetRenderOp((ModelFileHeader*)*(int*)block, idx)->layerCount - 1;
     Rcp_ResetTextureStageState();
     if (slotIdx >= 0 && slotIdx <= 6 && (tex = gCMenuRingIconTextures[slotIdx]) != 0)
@@ -5813,12 +5804,11 @@ void pauseMenuDoSave(void)
     struct PmColor
     {
         u8 r, g, b, a;
-    } colorB, colorA;
+    } colorB = { 0x20, 0x30, 0xFF, 0xFF }, colorA;
     GameObject** objects;
     u8 i;
     u8 j;
 
-    colorB = *(struct PmColor*)&lbl_803E1E00;
     lbl_803DBAA4 = Camera_GetFovY();
     Camera_SetFovY(43.0f);
     Camera_SetCurrentViewIndex(1);
