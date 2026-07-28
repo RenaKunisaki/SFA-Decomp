@@ -2002,7 +2002,6 @@ void allocLotsOfTextures(void)
         cy = i - lbl_803DED1C;
         lowoff += rowoff;
         cy = cy * lbl_803DEDE0;
-        cy = __fabsf(cy);
         for (; j < 0x80; j++)
         {
             u8* base = (u8*)gNewShadowRadialTexture;
@@ -2014,7 +2013,7 @@ void allocLotsOfTextures(void)
             off = off + (j >> 2) * 0x200 + 0x60;
             cx = __fabsf(((f32)j - lbl_803DED1C) * lbl_803DEDE0);
             cx = cx * cx;
-            d2 = sqrtf(cy * cy + cx);
+            d2 = sqrtf(__fabsf(cy) * __fabsf(cy) + cx);
             v = lbl_803DED2C - d2;
             if (v < lbl_803DED28)
                 v = lbl_803DED28;
