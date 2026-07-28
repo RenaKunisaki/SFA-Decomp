@@ -63,7 +63,7 @@ STATIC_ASSERT(sizeof(DusterObjectState) == DUSTER_OBJECT_STATE_SIZE);
 
 int duster_SeqFn(GameObject* obj);
 int duster_getExtraSize(void);
-void duster_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void duster_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void duster_hitDetect(GameObject* obj);
 void duster_update(GameObject* obj);
 void duster_init(GameObject* obj, DusterPlacement* placement);

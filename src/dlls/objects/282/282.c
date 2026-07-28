@@ -22,9 +22,9 @@ int decoration11a_getExtraSize(void) {
 void decoration11a_free(void) {
 }
 
-void decoration11a_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
-    if (renderState != 0) {
-        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, 1.0f);
+void decoration11a_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

@@ -112,7 +112,7 @@ u8 AppleOnTree_modelMtxFn(GameObject* obj);
 void AppleOnTree_func0A(void);
 int AppleOnTree_getExtraSize(void);
 void AppleOnTree_free(GameObject* obj);
-void AppleOnTree_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void AppleOnTree_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 int appleontree_bounceGroundStep(GameObject* obj, AppleOnTreeState* state, f32 positionY);
 int appleontree_bounceWaterStep(GameObject* obj, AppleOnTreeState* state, f32 positionY);
 void AppleOnTree_update(GameObject* obj);

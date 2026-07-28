@@ -94,7 +94,7 @@ void windLift107_finishSpitBurst(GameObject* obj, f32 playerDistance);
 int windLift107_getExtraSize(void);
 int windLift107_getObjectTypeId(void);
 void windLift107_free(GameObject* obj);
-void windLift107_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void windLift107_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void windLift107_hitDetect(GameObject* obj);
 void windLift107_update(GameObject* obj);
 void windLift107_init(GameObject* obj, WindLift107Placement* placement);

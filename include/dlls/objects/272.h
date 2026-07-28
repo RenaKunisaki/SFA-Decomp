@@ -53,7 +53,7 @@ STATIC_ASSERT(sizeof(DoorState) == DOOR_STATE_SIZE);
 
 int Door_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 int Door_getExtraSize(void);
-void Door_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void Door_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void Door_update(GameObject* obj);
 void Door_init(GameObject* obj, DoorPlacement* placement);
 

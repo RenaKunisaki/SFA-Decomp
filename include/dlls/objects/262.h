@@ -103,7 +103,7 @@ int Scarab_resolveCollision(GameObject* obj);
 void Scarab_applyOrientation(GameObject* obj, const TrackGroundHit* groundHit, u8 mode, const f32* direction);
 int Scarab_getExtraSize(void);
 void Scarab_free(GameObject* obj);
-void Scarab_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void Scarab_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void Scarab_update(GameObject* obj);
 void Scarab_init(GameObject* obj, const ScarabPlacement* placement);
 

@@ -407,7 +407,7 @@ void LargeCrate_free(GameObject* obj) {
     Resource_Release(gLargeCrateResource);
 }
 
-void LargeCrate_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+void LargeCrate_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     LargeCrateState* state;
     LargeCratePlacement* placement;
     s16 breakTimer;
@@ -420,15 +420,15 @@ void LargeCrate_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, 
         obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
     } else {
         if (obj->userData2 != 0) {
-            if (renderState != -1) {
+            if (visible != -1) {
                 obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
                 return;
             }
-        } else if (renderState == 0) {
+        } else if (visible == 0) {
             obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
             return;
         }
-        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, 1.0f);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

@@ -47,7 +47,7 @@ STATIC_ASSERT(sizeof(PortalSpellDoorState) == PORTAL_SPELL_DOOR_STATE_SIZE);
 int PortalSpellDoor_getExtraSize(void);
 int PortalSpellDoor_getObjectTypeId(void);
 void PortalSpellDoor_free(GameObject* obj);
-void PortalSpellDoor_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void PortalSpellDoor_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void PortalSpellDoor_hitDetect(void);
 void PortalSpellDoor_update(GameObject* obj);
 void PortalSpellDoor_init(GameObject* obj, PortalSpellDoorPlacement* placement);

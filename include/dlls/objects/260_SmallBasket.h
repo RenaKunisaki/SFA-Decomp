@@ -104,7 +104,7 @@ int SmallBasket_resolveCollision(GameObject* obj);
 void SmallBasket_throw(GameObject* obj);
 int SmallBasket_getExtraSize(void);
 void SmallBasket_free(GameObject* obj);
-void SmallBasket_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void SmallBasket_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void SmallBasket_update(GameObject* obj);
 void SmallBasket_init(GameObject* obj, SmallBasketPlacement* placement);
 

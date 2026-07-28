@@ -588,7 +588,7 @@ void SmallBasket_free(GameObject* obj) {
     ObjGroup_RemoveObject((int)obj, SMALLBASKET_OBJECT_GROUP);
 }
 
-void SmallBasket_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+void SmallBasket_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     SmallBasketState* state;
     SmallBasketPlacement* placement;
     int mapTimeActive;
@@ -603,10 +603,10 @@ void SmallBasket_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4,
         disableTimer = state->disableTimer;
         if ((disableTimer != 0 && disableTimer <= SMALLBASKET_HIT_DISABLE_FRAMES) || state->hiddenTimer != 0) {
             obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
-        } else if (obj->userData2 != 0 && renderState != -1) {
+        } else if (obj->userData2 != 0 && visible != -1) {
             obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
         } else {
-            objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, gSmallBasketOne[0]);
+            objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gSmallBasketOne[0]);
         }
     }
 }

@@ -141,7 +141,7 @@ void windLift107_free(GameObject* obj) {
     gWindLift107Resource170 = NULL;
 }
 
-void windLift107_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+void windLift107_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     WindLift107State* state;
     s16 burstTimer;
 
@@ -156,12 +156,12 @@ void windLift107_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4,
         return;
     }
     if (obj->userData2 != 0) {
-        if (renderState == -1) {
+        if (visible == -1) {
         } else {
             return;
         }
     } else {
-        if (renderState == 0) {
+        if (visible == 0) {
             return;
         }
     }
@@ -181,7 +181,7 @@ void windLift107_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4,
             objSetGlowColor(WINDLIFT107_GLOW_RED, WINDLIFT107_GLOW_GREEN, WINDLIFT107_GLOW_BLUE, state->glowPulse);
         }
     }
-    objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, 1.0f);
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
 }
 
 void windLift107_hitDetect(GameObject* obj) {

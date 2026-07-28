@@ -41,9 +41,9 @@ void WM_Column_free(GameObject* obj) {
     (*gCarryableInterface)->free(obj);
 }
 
-void WM_Column_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
-    if ((*gCarryableInterface)->updateRenderState(obj, renderState) != 0) {
-        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, WM_COLUMN_MODEL_SCALE);
+void WM_Column_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if ((*gCarryableInterface)->updateRenderState(obj, visible) != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, WM_COLUMN_MODEL_SCALE);
     }
 }
 

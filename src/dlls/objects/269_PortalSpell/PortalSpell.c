@@ -31,10 +31,10 @@ void PortalSpellDoor_free(GameObject* obj) {
     (void)obj;
 }
 
-void PortalSpellDoor_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
-    s32 visible = renderState;
-    if (visible != 0) {
-        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, 1.0f);
+void PortalSpellDoor_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 visibleValue = visible;
+    if (visibleValue != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

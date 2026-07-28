@@ -147,9 +147,9 @@ int Door_getExtraSize(void) {
     return sizeof(DoorState);
 }
 
-void Door_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
-    (void)renderState;
-    objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, DOOR_MODEL_SCALE);
+void Door_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    (void)visible;
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DOOR_MODEL_SCALE);
 }
 
 void Door_update(GameObject* obj) {

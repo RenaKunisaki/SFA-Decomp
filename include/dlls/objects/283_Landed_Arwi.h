@@ -81,7 +81,7 @@ STATIC_ASSERT(sizeof(LandedArwingHitReactionState) == LANDED_ARWING_HIT_REACTION
 void landed_arwing_renderPathEffects(GameObject* obj);
 int landed_arwing_getExtraSize(void);
 void landed_arwing_free(GameObject* obj);
-void landed_arwing_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void landed_arwing_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 void landed_arwing_update(GameObject* obj);
 void landed_arwing_init(GameObject* obj, LandedArwingPlacement* placement);

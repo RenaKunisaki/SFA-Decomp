@@ -245,10 +245,10 @@ void AppleOnTree_free(GameObject* obj) {
     (*gExpgfxInterface)->freeSource((u32)obj);
 }
 
-void AppleOnTree_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+void AppleOnTree_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     AppleOnTreeState* state = obj->extra;
     if ((state->flags & APPLE_ON_TREE_FLAG_INACTIVE) == 0) {
-        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, lbl_803E37C8);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, lbl_803E37C8);
     }
 }
 

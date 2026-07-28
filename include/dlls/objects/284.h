@@ -123,7 +123,7 @@ u8 staffactivated_getMode(GameObject* obj);
 int staffactivated_getExtraSize(void);
 int staffactivated_getObjectTypeId(void);
 void staffactivated_free(GameObject* obj);
-void staffactivated_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void staffactivated_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void staffactivated_update(GameObject* obj);
 void staffactivated_init(GameObject* obj, StaffActivatedPlacement* placement);
 

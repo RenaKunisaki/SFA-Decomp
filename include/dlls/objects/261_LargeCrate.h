@@ -92,7 +92,7 @@ int LargeCrate_seq(GameObject* obj);
 int LargeCrate_getExtraSize(void);
 int LargeCrate_getObjectTypeId(void);
 void LargeCrate_free(GameObject* obj);
-void LargeCrate_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void LargeCrate_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void LargeCrate_hitDetect(GameObject* obj);
 void LargeCrate_update(GameObject* obj);
 void LargeCrate_init(GameObject* obj, LargeCratePlacement* placement);

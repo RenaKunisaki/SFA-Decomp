@@ -64,9 +64,9 @@ void IMMultiSeq_free(GameObject* obj) {
     ObjGroup_RemoveObject((int)obj, IM_MULTI_SEQ_GROUP);
 }
 
-void IMMultiSeq_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
-    if (renderState != 0) {
-        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, IM_MULTI_SEQ_MODEL_SCALE);
+void IMMultiSeq_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, IM_MULTI_SEQ_MODEL_SCALE);
     }
 }
 

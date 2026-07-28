@@ -60,11 +60,11 @@ void dll_115_free(GameObject* obj) {
     ObjGroup_RemoveObject((int)obj, DLL_115_GROUP);
 }
 
-void dll_115_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
-    s32 isVisible = renderState;
+void dll_115_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
 
     if (isVisible != 0) {
-        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, DLL_115_MODEL_SCALE);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DLL_115_MODEL_SCALE);
     }
 }
 

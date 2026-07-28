@@ -39,7 +39,7 @@ int TreasureChest_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
 int TreasureChest_getExtraSize(void);
 int TreasureChest_getObjectTypeId(void);
 void TreasureChest_free(void);
-void TreasureChest_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void TreasureChest_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void TreasureChest_hitDetect(GameObject* obj);
 void TreasureChest_update(GameObject* obj);
 void TreasureChest_init(GameObject* obj);

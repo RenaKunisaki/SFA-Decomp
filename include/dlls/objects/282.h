@@ -36,7 +36,7 @@ STATIC_ASSERT(sizeof(Decoration11AState) == DECORATION11A_STATE_SIZE);
 
 int decoration11a_getExtraSize(void);
 void decoration11a_free(void);
-void decoration11a_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void decoration11a_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void decoration11a_hitDetect(GameObject* obj);
 void decoration11a_update(void);
 void decoration11a_expandBoundsWithVertex(const Vec3f* vertex, Vec3f* boundsMax, Vec3f* boundsMin);

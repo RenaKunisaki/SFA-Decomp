@@ -40,7 +40,7 @@ STATIC_ASSERT(sizeof(BreakableCarryableState) == BREAKABLE_CARRYABLE_STATE_SIZE)
 int breakableCarryable_getExtraSize(void);
 int breakableCarryable_getObjectTypeId(void);
 void breakableCarryable_free(GameObject* obj);
-void breakableCarryable_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void breakableCarryable_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void breakableCarryable_hitDetect(void);
 void breakableCarryable_update(GameObject* obj);
 void breakableCarryable_init(GameObject* obj, BreakableCarryablePlacement* placement);

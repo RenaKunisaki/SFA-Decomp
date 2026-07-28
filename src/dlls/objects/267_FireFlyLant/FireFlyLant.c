@@ -107,9 +107,9 @@ void FireFlyLantern_free(GameObject* obj) {
     ObjGroup_RemoveObject((int)obj, FIREFLY_LANTERN_OBJECT_GROUP);
 }
 
-void FireFlyLantern_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
-    (void)renderState;
-    objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, sFireFlyLanternModelScale);
+void FireFlyLantern_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    (void)visible;
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, sFireFlyLanternModelScale);
 }
 
 void FireFlyLantern_update(GameObject* obj) {

@@ -48,11 +48,11 @@ void breakableCarryable_free(GameObject* obj) {
     (*gCarryableInterface)->free(obj);
 }
 
-void breakableCarryable_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+void breakableCarryable_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     BreakableCarryableState* state = obj->extra;
     if (state->phase == BREAKABLE_CARRYABLE_PHASE_INTACT) {
-        if ((*gCarryableInterface)->updateRenderState(obj, renderState) != 0) {
-            objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, 1.0f);
+        if ((*gCarryableInterface)->updateRenderState(obj, visible) != 0) {
+            objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
         }
     }
 }

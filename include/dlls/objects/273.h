@@ -48,7 +48,7 @@ STATIC_ASSERT(sizeof(DoorLockState) == DOOR_LOCK_STATE_SIZE);
 int DoorLock_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 int DoorLock_getExtraSize(void);
 void DoorLock_free(GameObject* obj);
-void DoorLock_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void DoorLock_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void DoorLock_update(GameObject* obj);
 void DoorLock_init(GameObject* obj, DoorLockPlacement* placement);
 

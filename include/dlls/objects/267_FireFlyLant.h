@@ -56,7 +56,7 @@ int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
 int FireFlyLantern_getExtraSize(void);
 int FireFlyLantern_getObjectTypeId(void);
 void FireFlyLantern_free(GameObject* obj);
-void FireFlyLantern_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void FireFlyLantern_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void FireFlyLantern_update(GameObject* obj);
 void FireFlyLantern_init(GameObject* obj, FireFlyLanternPlacement* placement);
 

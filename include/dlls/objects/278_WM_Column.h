@@ -33,7 +33,7 @@ STATIC_ASSERT(sizeof(WMColumnState) == WM_COLUMN_STATE_SIZE);
 int WM_Column_getExtraSize(void);
 int WM_Column_getObjectTypeId(void);
 void WM_Column_free(GameObject* obj);
-void WM_Column_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void WM_Column_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void WM_Column_hitDetect(void);
 void WM_Column_update(GameObject* obj);
 void WM_Column_init(GameObject* obj, WMColumnPlacement* placement);

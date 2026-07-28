@@ -54,7 +54,7 @@ int dll_115_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* a
 int dll_115_getExtraSize(void);
 int dll_115_getObjectTypeId(void);
 void dll_115_free(GameObject* obj);
-void dll_115_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void dll_115_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void dll_115_hitDetect(void);
 void dll_115_update(GameObject* obj);
 void dll_115_init(GameObject* obj, Dll115Placement* placement);

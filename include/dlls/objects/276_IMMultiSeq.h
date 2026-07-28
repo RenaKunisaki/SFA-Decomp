@@ -46,7 +46,7 @@ int IMMultiSeq_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateStat
 int IMMultiSeq_getExtraSize(void);
 int IMMultiSeq_getObjectTypeId(void);
 void IMMultiSeq_free(GameObject* obj);
-void IMMultiSeq_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);
+void IMMultiSeq_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void IMMultiSeq_hitDetect(void);
 void IMMultiSeq_update(GameObject* obj);
 void IMMultiSeq_init(GameObject* obj, IMMultiSeqPlacement* placement);
