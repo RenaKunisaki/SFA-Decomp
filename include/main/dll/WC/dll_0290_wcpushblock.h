@@ -5,6 +5,13 @@
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 
+#define WCPUSHBLOCK_GAMEBIT_A_SOLVED 0x812
+#define WCPUSHBLOCK_GAMEBIT_A_FADE   0x808
+#define WCPUSHBLOCK_GAMEBIT_A_COUNT  0x810
+#define WCPUSHBLOCK_GAMEBIT_B_SOLVED 0x813
+#define WCPUSHBLOCK_GAMEBIT_B_FADE   0x809
+#define WCPUSHBLOCK_GAMEBIT_B_COUNT  0x811
+
 typedef struct PushBlockFlags
 {
     u8 phase : 3;

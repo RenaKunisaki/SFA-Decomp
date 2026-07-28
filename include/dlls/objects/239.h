@@ -4,14 +4,9 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
+#include "main/vec_types.h"
 
 struct ObjAnimUpdateState;
-
-typedef struct PushablePoint {
-    f32 x;
-    f32 y;
-    f32 z;
-} PushablePoint;
 
 typedef struct PushableMoveFlags {
     u8 activelyPushed : 1;
@@ -24,9 +19,9 @@ typedef struct PushableState {
     f32 cullDistance;              /* 0x00C */
     f32 scale;                     /* 0x010 */
     f32 renderTimer;               /* 0x014 */
-    PushablePoint probeLocal[4];   /* 0x018 */
-    PushablePoint cornerLocal[4];  /* 0x048 */
-    PushablePoint cornerWorld[4];  /* 0x078 */
+    Vec3f probeLocal[4];   /* 0x018 */
+    Vec3f cornerLocal[4];  /* 0x048 */
+    Vec3f cornerWorld[4];  /* 0x078 */
     u32 modelFlags;                /* 0x0A8: bits set by pushable_setModelFlag */
     s16 gameBit;                   /* 0x0AC */
     s16 gameBit2;                  /* 0x0AE */
@@ -87,10 +82,6 @@ typedef struct PushableRadii {
     f32 values[4];
 } PushableRadii;
 
-STATIC_ASSERT(offsetof(PushablePoint, x) == 0x0);
-STATIC_ASSERT(offsetof(PushablePoint, y) == 0x4);
-STATIC_ASSERT(offsetof(PushablePoint, z) == 0x8);
-STATIC_ASSERT(sizeof(PushablePoint) == 0xC);
 STATIC_ASSERT(sizeof(PushableMoveFlags) == 0x1);
 
 STATIC_ASSERT(offsetof(PushableState, pad00) == 0x0);

@@ -537,7 +537,7 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
                         state->flags |= PUSHABLE_FLAG_PUSH_NEG_Z;
                         state->pushAmountZ = PUSHABLE_ZERO;
                     }
-                    memcpy(&state->cornerWorld[pointIndex], &worldPoints[pointIndex * 3], sizeof(PushablePoint));
+                    memcpy(&state->cornerWorld[pointIndex], &worldPoints[pointIndex * 3], sizeof(Vec3f));
                     transformMtx[12] = worldPoints[pointIndex * 3];
                     transformMtx[13] = worldPoints[pointIndex * 3 + 1];
                     transformMtx[14] = worldPoints[pointIndex * 3 + 2];
@@ -548,7 +548,7 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
             }
         }
     }
-    memcpy(state->cornerWorld, worldPoints, state->pointCount * sizeof(PushablePoint));
+    memcpy(state->cornerWorld, worldPoints, state->pointCount * sizeof(Vec3f));
 }
 
 u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjAnimUpdateState* animUpdate) {
@@ -1009,7 +1009,7 @@ void pushable_hitDetect(GameObject* obj) {
     int waterHitCount;
     int i;
     f32 waterDepthSum;
-    PushablePoint worldPoints[PUSHABLE_MAX_POINTS];
+    Vec3f worldPoints[PUSHABLE_MAX_POINTS];
     f32 transformMtx[16];
     TrackQueryBounds sweep;
     MatrixTransform transform;
@@ -1100,7 +1100,7 @@ void pushable_hitDetect(GameObject* obj) {
         groundPointCount = 0;
         waterHitCount = 0;
         for (i = 0; i < state->pointCount; i++) {
-            PushablePoint* point = &worldPoints[i];
+            Vec3f* point = &worldPoints[i];
             f32* groundHeight = &groundHeights[i];
             f32 y = point->y;
             s8 foundGround;
