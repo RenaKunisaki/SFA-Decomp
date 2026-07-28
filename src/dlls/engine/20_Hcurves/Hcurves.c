@@ -100,7 +100,6 @@ extern char sObjfsaMissingPatchExitPoint0[];
 extern char sObjfsaMissingPatchExitPoint1[];
 
 #define OBJFSA_PHASE_LIMIT 1.0f
-#define OBJFSA_HALF        0.5f
 
 int RomCurve_getUnblockedControlPointId(int curve, int exclude, int pickIdx);
 int RomCurve_getControlPointId(int curve, int exclude, int pickIdx);
@@ -1466,13 +1465,8 @@ void walkgroupFindExitPointFn_800dc398(void)
                             z0 = objfsaCorner(edgeCoords[1], scale, &curve->z);
                             x1 = objfsaCorner(edgeCoords[2], scale, &curve->x);
                             z1 = objfsaCorner(edgeCoords[3], scale, &curve->z);
-                            {
-                                f32 sm;
-                                sm = x0 + x1;
-                                np->exit0X = (s16)(sm * OBJFSA_HALF);
-                                sm = z0 + z1;
-                                np->exit0Z = (s16)(sm * OBJFSA_HALF);
-                            }
+                            np->exit0X = (s16)((x0 + x1) / 2.0f);
+                            np->exit0Z = (s16)((z0 + z1) / 2.0f);
 
                             OBJFSA_SET_NEWPATCH_PLANE(0, z1 - z0, x0 - x1, x0, z0);
 
@@ -1483,13 +1477,8 @@ void walkgroupFindExitPointFn_800dc398(void)
 
                             x3 = objfsaCorner(edgeCoords[0x36], scale, &linked->x);
                             z3 = objfsaCorner(edgeCoords[0x37], scale, &linked->z);
-                            {
-                                f32 sm;
-                                sm = x2 + x3;
-                                (ep = &OBJFSA_NEWPATCH)->exit1X = (s16)(sm * OBJFSA_HALF);
-                                sm = z2 + z3;
-                                ep->exit1Z = (s16)(sm * OBJFSA_HALF);
-                            }
+                            (ep = &OBJFSA_NEWPATCH)->exit1X = (s16)((x2 + x3) / 2.0f);
+                            ep->exit1Z = (s16)((z2 + z3) / 2.0f);
 
                             OBJFSA_SET_NEWPATCH_PLANE(2, z3 - z2, x2 - x3, x2, z2);
 

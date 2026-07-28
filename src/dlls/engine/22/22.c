@@ -9,7 +9,6 @@
 
 #define SCREEN_TRANSITION_ALPHA_MIDPOINT 127.0f
 #define SCREEN_TRANSITION_ALPHA_SCALE    2.0f
-#define SCREEN_TRANSITION_EDGE_SCALE     0.0078125f
 #define SCREEN_TRANSITION_ALPHA_MAX      255.0f
 #define SCREEN_TRANSITION_FADE_STEP      256.0f
 #define SCREEN_TRANSITION_HOLD_DURATION  120.0f
@@ -118,7 +117,7 @@ void screenTransition_drawWhiteWipe(int p1, int p2, int p3, u8 r, u8 g, u8 b)
     half = (u16)(width >> 1);
     wipeSpan = wipe & 0xffff;
     conv = (f32)(int)(wipeSpan * half);
-    band = (u32)(int)(conv * SCREEN_TRANSITION_EDGE_SCALE) & 0xffff;
+    band = (u32)(int)(conv / 128.0f) & 0xffff;
     if (band == half)
     {
         screenTransitionFadeColor(r, b, g);
@@ -161,7 +160,7 @@ void screenTransition_drawWhiteWipe(int p1, int p2, int p3, u8 r, u8 g, u8 b)
         hudDrawRect(vx, vy, vx + (band & 0xffff) + 1, vb, col);
         band = (u16)(height >> 1);
         conv = (f32)(int)(wipeSpan * band);
-        wipe = (u32)(int)(conv * SCREEN_TRANSITION_EDGE_SCALE) & 0xffff;
+        wipe = (u32)(int)(conv / 128.0f) & 0xffff;
         half = (band - wipe) & 0xffff;
         fadeSpan = (band + wipe) & 0xffff;
         wipe = ((band - 1) - wipe) & 0xffff;

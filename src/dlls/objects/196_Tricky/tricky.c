@@ -1935,8 +1935,8 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint)
             if ((hitState != NULL) && ((*(s16*)&hitState->flags & 1) != 0))
             {
                 trickyAdjustStepAroundPoint(start, end, guardPoint, &((GameObject*)obj)->anim.worldPosX,
-                                            (f32)(u32)minRadius * lbl_803E2484,
-                                            (f32)(u32) * (u16*)(def + 0x86) * lbl_803E2484);
+                                            lbl_803E2484 * (f32)(u32)minRadius,
+                                            lbl_803E2484 * (f32)(u32) * (u16*)(def + 0x86));
             }
         }
     }

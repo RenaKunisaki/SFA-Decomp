@@ -691,7 +691,8 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
             tbl = obj->anim.weaponDaTable->entries;
             if (sw >= 0.0f)
             {
-                fla = fastFloorf(sw * 40.0f) / 40.0f;
+                sw *= 40.0f;
+                fla = fastFloorf(sw) / 40.0f;
                 fla *= 2.0f;
                 tmax *= 40.0f;
                 flb = fastFloorf(tmax) / 40.0f;

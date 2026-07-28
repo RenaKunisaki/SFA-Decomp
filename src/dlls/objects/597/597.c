@@ -636,7 +636,7 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
             ((DRCloudCageState*)state)->channel2Vol = 45.0f;
         }
         channelVol = ((DRCloudCageState*)state)->channel2Vol;
-        ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 2, channelVol, channelVol * 0.00390625f + 0.3f);
+        ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 2, channelVol, channelVol / 256.0f + 0.3f);
         if (intensity > 5)
         {
             ((DRCloudCageState*)state)->channel4Vol = 60.0f + intensity;
