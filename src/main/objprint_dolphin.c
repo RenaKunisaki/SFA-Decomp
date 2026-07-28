@@ -99,10 +99,11 @@ int objNormalizeRotationMatrix(f32* matrix, f32* out)
     v3.x = matrix[8];
     v3.y = matrix[9];
     v3.z = matrix[10];
+    zero = 0.0f;
 
-    if ((v1.x == lbl_803DEA04 && v1.y == lbl_803DEA04 && v1.z == lbl_803DEA04) ||
-        (v2.x == *(f32*)&lbl_803DEA04 && v2.y == *(f32*)&lbl_803DEA04 && v2.z == *(f32*)&lbl_803DEA04) ||
-        (v3.x == *(f32*)&lbl_803DEA04 && v3.y == *(f32*)&lbl_803DEA04 && v3.z == *(f32*)&lbl_803DEA04))
+    if ((v1.x == zero && v1.y == zero && v1.z == zero) ||
+        (v2.x == zero && v2.y == zero && v2.z == zero) ||
+        (v3.x == zero && v3.y == zero && v3.z == zero))
     {
         return 0;
     }
@@ -114,7 +115,6 @@ int objNormalizeRotationMatrix(f32* matrix, f32* out)
     out[0] = v1.x;
     out[1] = v1.y;
     out[2] = v1.z;
-    zero = lbl_803DEA04;
     out[3] = zero;
     out[4] = v2.x;
     out[5] = v2.y;
