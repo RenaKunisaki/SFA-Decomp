@@ -2143,12 +2143,6 @@ static inline void expgfxSetSlotResult(s16* poolIndexOut, s16* slotIndexOut,
 
 int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int preferredPoolIndex, u32 sourceId)
 {
-    u32 currentMask;
-    u32 bitBase;
-    int slotIndex;
-    u32 activeBit;
-    u32* activeMaskPtr;
-    int chosenPool;
     ExpgfxRuntimeDataLayout* runtime;
     short foundPoolIndex;
     s8* poolActiveCounts;
@@ -2219,6 +2213,13 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
 
     if (found)
     {
+        u32 currentMask;
+        u32 bitBase;
+        int slotIndex;
+        u32 activeBit;
+        u32* activeMaskPtr;
+        int chosenPool;
+
         slotIndex = 0;
         chosenPool = foundPoolIndex;
         activeMaskPtr = EXPGFX_POOL_ACTIVE_MASK_PTR(runtime, chosenPool);
@@ -2263,6 +2264,13 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
 
     if (found)
     {
+        u32 currentMask;
+        u32 bitBase;
+        u32 activeBit;
+        u32* activeMaskPtr;
+        int slotIndex;
+        int chosenPool;
+
         slotIndex = 0;
         chosenPool = foundPoolIndex;
         activeMaskPtr = EXPGFX_POOL_ACTIVE_MASK_PTR(runtime, chosenPool);
