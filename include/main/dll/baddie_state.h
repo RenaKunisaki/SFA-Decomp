@@ -177,7 +177,7 @@ typedef struct BaddieState {
     s8 movementFlags; /* root-motion / velocity handling flags for the shared player controller */
     s8 stateTag; /* per-tick state/mode index (written each tick; compared ==1/==3 across the baddie cluster + player) */
     u8 unk34E;
-    s8 unk34F;
+    s8 lastHitPriority;
     u8 unk350[4];
     s8 hitPoints; /* remaining hit points; decremented on hit, < 1 = dead */
     u8 unk355;

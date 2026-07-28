@@ -156,7 +156,7 @@ void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state) {
         if (0.0f == lbl_803DDB98) {
             state->active = 1;
             state->moveDone = 0;
-            state->hitDamageCount = hit;
+            state->lastHitPriority = hit;
             state->hitPoints--;
             gDIMbosstonsilRoutePhase++;
             mainSetBits(DIMBOSSTONSIL_HIT_GAMEBIT, gDIMbosstonsilRoutePhase);

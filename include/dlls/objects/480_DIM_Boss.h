@@ -114,7 +114,7 @@ typedef struct DIMbossRuntime {
             u8 unknown347[0x349 - 0x347];
             u8 animFinished;
             u8 unknown34A[0x34F - 0x34A];
-            s8 hitDamageCount;
+            s8 lastHitPriority;
             u8 unknown350[0x354 - 0x350];
             s8 animMode;
             u8 unknown355[0x35C - 0x355];
@@ -182,7 +182,7 @@ STATIC_ASSERT(offsetof(DIMbossRuntime, targetModel) == 0x2D0);
 STATIC_ASSERT(offsetof(DIMbossRuntime, sequenceTriggerFlags) == 0x314);
 STATIC_ASSERT(offsetof(DIMbossRuntime, hitResult) == 0x346);
 STATIC_ASSERT(offsetof(DIMbossRuntime, animFinished) == 0x349);
-STATIC_ASSERT(offsetof(DIMbossRuntime, hitDamageCount) == 0x34F);
+STATIC_ASSERT(offsetof(DIMbossRuntime, lastHitPriority) == 0x34F);
 STATIC_ASSERT(offsetof(DIMbossRuntime, animMode) == 0x354);
 STATIC_ASSERT(offsetof(DIMbossRuntime, moveScratch) == 0x35C);
 STATIC_ASSERT(offsetof(DIMbossRuntime, savedPendingParentObj) == 0x3E0);

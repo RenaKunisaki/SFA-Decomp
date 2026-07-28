@@ -48,7 +48,7 @@ typedef union DIMbosstonsilState {
         u8 unknown347[0x02];
         s8 animFinished;
         u8 unknown34A[0x05];
-        s8 hitDamageCount;
+        s8 lastHitPriority;
         u8 unknown350[0x04];
         s8 hitPoints;
         u8 unknown355[0x07];
@@ -92,7 +92,7 @@ STATIC_ASSERT(offsetof(DIMbosstonsilState, recoveryTimer) == 0x2A0);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, targetObj) == 0x2D0);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, moveDone) == 0x346);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, animFinished) == 0x349);
-STATIC_ASSERT(offsetof(DIMbosstonsilState, hitDamageCount) == 0x34F);
+STATIC_ASSERT(offsetof(DIMbosstonsilState, lastHitPriority) == 0x34F);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, hitPoints) == 0x354);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, moveScratch) == 0x35C);
 STATIC_ASSERT(offsetof(DIMbosstonsilState, savedPendingParentObj) == 0x3E0);

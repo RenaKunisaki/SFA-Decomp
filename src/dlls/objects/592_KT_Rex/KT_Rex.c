@@ -1060,7 +1060,7 @@ void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime)
             gKTRexState->timerFA &= ~0x10;
             gKTRexState->timerFA |= 0x8;
         }
-        runtime->baddie.unk34F = hit;
+        runtime->baddie.lastHitPriority = hit;
     }
     else if (gKTRexContactEffectCooldown == 0)
     {
