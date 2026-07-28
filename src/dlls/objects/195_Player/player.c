@@ -10775,7 +10775,6 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
     ObjModel* model;
     int controlFlags;
     int moveFlags;
-    int useSecondary;
     int axisOffset;
     int blendWeight;
     f32 baseDistance, blendDistance, blendFactor;
@@ -10800,8 +10799,7 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
     {
         moveFlags = (moveFlags | 0x1) & 0xff;
     }
-    useSecondary = controlFlags & 0x4;
-    if (useSecondary != 0)
+    if (controlFlags & 0x4)
     {
         ObjAnim_SetCurrentMove(obj, baseMoveId, 0.0f, moveFlags);
         ObjAnim_AdvanceCurrentMove((int)obj, moveStepScale, 0.0f, NULL);
@@ -10821,7 +10819,7 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
     {
         baseDistance = -baseDistance;
     }
-    if (useSecondary != 0)
+    if (controlFlags & 0x4)
     {
         Object_ObjAnimSetSecondaryBlendMove((ObjAnimComponent*)obj, blendMoveId, 0);
         ObjModel_SampleJointTransform(model, 0, 2, samplePhase, ((GameObject*)obj)->anim.rootMotionScale,
@@ -10865,7 +10863,7 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
         blendFactor = 1.0f;
     }
     blendWeight = (int)(16384.0f * blendFactor);
-    if (useSecondary != 0)
+    if (controlFlags & 0x4)
     {
         Object_ObjAnimSetSecondaryBlendMove((ObjAnimComponent*)obj, blendMoveId, (s16)blendWeight);
     }
