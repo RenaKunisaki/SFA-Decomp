@@ -2777,8 +2777,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
 
                         rnd = randomGetRange(0, 5);
                         fade = (f32)(int)rnd;
-                        fade *= 0.01f;
-                        fade = -(fade + 0.25f);
+                        fade = -(0.01f * fade + 0.25f);
                         slot->velocityY *= fade;
                         if (slot->velocityY > 0.3f)
                         {
