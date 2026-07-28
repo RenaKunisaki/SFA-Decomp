@@ -49,7 +49,7 @@ typedef struct LinkMenuItem
     u16 textId;
     u16 boxId;
     s16 rightX;
-    s16 textLeft;
+    s16 textTop;
     s16 slotWidth;
     s16 x;
     s16 y;
@@ -129,11 +129,11 @@ void linkDrawFn_801302c0(void)
     int resetTimer;
     void* iconTex;
     int i;
-    int selLeft;
-    int selRight;
-    int itemLeft;
-    int itemRight;
-    int iconWidth;
+    int selTop;
+    int selBottom;
+    int itemTop;
+    int itemBottom;
+    int iconHeight;
 
     resetTimer = 4;
     gTumbleweedBushItems[linkSelected].timer = resetTimer;
@@ -148,22 +148,22 @@ void linkDrawFn_801302c0(void)
     }
     if (iconTex != NULL)
     {
-        iconWidth = ((Texture*)iconTex)->height;
-        selLeft = sel->y;
+        iconHeight = ((Texture*)iconTex)->height;
+        selTop = sel->y;
     }
     else
     {
         if (getCurLanguage() == 4)
         {
-            iconWidth = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
+            iconHeight = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
         }
         else
         {
-            iconWidth = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
+            iconHeight = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
         }
-        selLeft = sel->textLeft - 2;
+        selTop = sel->textTop - 2;
     }
-    selRight = selLeft + iconWidth;
+    selBottom = selTop + iconHeight;
     for (i = 0; i < gTumbleweedBushItemCount; i++)
     {
         if (i != linkSelected)
@@ -179,23 +179,23 @@ void linkDrawFn_801302c0(void)
             }
             if (iconTex != NULL)
             {
-                iconWidth = ((Texture*)iconTex)->height;
-                itemLeft = gTumbleweedBushItems[i].y;
+                iconHeight = ((Texture*)iconTex)->height;
+                itemTop = gTumbleweedBushItems[i].y;
             }
             else
             {
                 if (getCurLanguage() == 4)
                 {
-                    iconWidth = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
+                    iconHeight = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
                 }
                 else
                 {
-                    iconWidth = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
+                    iconHeight = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
                 }
-                itemLeft = gTumbleweedBushItems[i].textLeft - 2;
+                itemTop = gTumbleweedBushItems[i].textTop - 2;
             }
-            itemRight = itemLeft + iconWidth;
-            if (itemLeft < selRight && itemRight > selLeft)
+            itemBottom = itemTop + iconHeight;
+            if (itemTop < selBottom && itemBottom > selTop)
             {
                 gTumbleweedBushItems[i].timer = resetTimer;
             }
@@ -221,14 +221,14 @@ void linkDrawFn_80130484(void)
     LinkMenuItem* item;
     void* iconTex;
     int i;
-    int minX;
-    int maxX;
-    int iconWidth;
-    int left;
-    int right;
+    int minY;
+    int maxY;
+    int iconHeight;
+    int top;
+    int bottom;
 
-    minX = 480;
-    maxX = 0;
+    minY = 480;
+    maxY = 0;
     i = 0;
     for (; i < gTumbleweedBushItemCount; i++)
     {
@@ -243,29 +243,29 @@ void linkDrawFn_80130484(void)
         }
         if (iconTex != NULL)
         {
-            iconWidth = ((Texture*)iconTex)->height;
-            left = item->y;
+            iconHeight = ((Texture*)iconTex)->height;
+            top = item->y;
         }
         else
         {
             if (getCurLanguage() == 4)
             {
-                iconWidth = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
+                iconHeight = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
             }
             else
             {
-                iconWidth = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
+                iconHeight = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
             }
-            left = item->textLeft - 2;
+            top = item->textTop - 2;
         }
-        right = left + iconWidth;
-        if (left < minX)
+        bottom = top + iconHeight;
+        if (top < minY)
         {
-            minX = left;
+            minY = top;
         }
-        if (right > maxX)
+        if (bottom > maxY)
         {
-            maxX = right;
+            maxY = bottom;
         }
     }
 }
