@@ -9,10 +9,10 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_0053_cameramodecloudrunner.h"
 
-CameraModeCloudRunnerState* lbl_803DD5B8;
+CameraModeCloudRunnerState* gCameraModeCloudRunnerState;
 
-f32 lbl_803DB9D0 = 15.0f;
-int lbl_803DB9D4 = -4;
+f32 gCameraModeCloudRunnerTargetHeightOffset = 15.0f;
+int gCameraModeCloudRunnerRollScale = -4;
 
 #define CLOUDRUNNER_CURVE_TAG 1049
 
@@ -23,8 +23,8 @@ void CameraModeCloudRunner_copyToCurrent(void)
 
 void CameraModeCloudRunner_free(void)
 {
-    mm_free(lbl_803DD5B8);
-    lbl_803DD5B8 = NULL;
+    mm_free(gCameraModeCloudRunnerState);
+    gCameraModeCloudRunnerState = NULL;
 }
 
 void CameraModeCloudRunner_update(CameraObject* camera)
@@ -59,14 +59,14 @@ void CameraModeCloudRunner_update(CameraObject* camera)
         else
         {
             baseX = target->anim.worldPosX;
-            baseY = target->anim.worldPosY + lbl_803DB9D0;
+            baseY = target->anim.worldPosY + gCameraModeCloudRunnerTargetHeightOffset;
             baseZ = target->anim.worldPosZ;
         }
     }
     else
     {
         baseX = target->anim.worldPosX;
-        baseY = target->anim.worldPosY + lbl_803DB9D0;
+        baseY = target->anim.worldPosY + gCameraModeCloudRunnerTargetHeightOffset;
         baseZ = target->anim.worldPosZ;
     }
 
@@ -93,13 +93,13 @@ void CameraModeCloudRunner_update(CameraObject* camera)
     }
     camera->anim.rotY += tgtPitch;
 
-    camera->anim.rotZ = (s16)(target->anim.rotZ * lbl_803DB9D4);
+    camera->anim.rotZ = (s16)(target->anim.rotZ * gCameraModeCloudRunnerRollScale);
 
     cosYaw = mathSinf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
     sinYaw = mathCosf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
     cosPitch = mathCosf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
     sinPitch = mathSinf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
-    radius = lbl_803DD5B8->radius;
+    radius = gCameraModeCloudRunnerState->radius;
     ry = radius * sinPitch;
     rs = radius * cosPitch;
     rx = rs * sinYaw;
@@ -115,33 +115,33 @@ void CameraModeCloudRunner_update(CameraObject* camera)
 void CameraModeCloudRunner_init(int* camera, int radius, f32* focus)
 {
     int* targetObj = (int*)((GameObject*)camera)->anim.targetObj;
-    if (lbl_803DD5B8 == NULL)
+    if (gCameraModeCloudRunnerState == NULL)
     {
-        lbl_803DD5B8 = (CameraModeCloudRunnerState*)mmAlloc(sizeof(CameraModeCloudRunnerState), 15, 0);
+        gCameraModeCloudRunnerState = (CameraModeCloudRunnerState*)mmAlloc(sizeof(CameraModeCloudRunnerState), 15, 0);
     }
     {
         f32 computedRadius;
         if (focus != NULL)
         {
-            lbl_803DD5B8->focusX = focus[0];
-            lbl_803DD5B8->focusY = focus[1];
-            lbl_803DD5B8->focusZ = focus[2];
+            gCameraModeCloudRunnerState->focusX = focus[0];
+            gCameraModeCloudRunnerState->focusY = focus[1];
+            gCameraModeCloudRunnerState->focusZ = focus[2];
             computedRadius = focus[3];
         }
         else
         {
-            lbl_803DD5B8->focusX = ((GameObject*)targetObj)->anim.worldPosX;
-            lbl_803DD5B8->focusY = ((GameObject*)targetObj)->anim.worldPosY;
-            lbl_803DD5B8->focusZ = ((GameObject*)targetObj)->anim.worldPosZ;
+            gCameraModeCloudRunnerState->focusX = ((GameObject*)targetObj)->anim.worldPosX;
+            gCameraModeCloudRunnerState->focusY = ((GameObject*)targetObj)->anim.worldPosY;
+            gCameraModeCloudRunnerState->focusZ = ((GameObject*)targetObj)->anim.worldPosZ;
             computedRadius = radius;
         }
-        lbl_803DD5B8->radius = computedRadius;
+        gCameraModeCloudRunnerState->radius = computedRadius;
     }
-    getAngle(((GameObject*)camera)->anim.worldPosX - lbl_803DD5B8->focusX,
-             ((GameObject*)camera)->anim.worldPosZ - lbl_803DD5B8->focusZ);
+    getAngle(((GameObject*)camera)->anim.worldPosX - gCameraModeCloudRunnerState->focusX,
+             ((GameObject*)camera)->anim.worldPosZ - gCameraModeCloudRunnerState->focusZ);
     {
         GameObject* target = (GameObject*)((GameObject*)camera)->anim.targetObj;
-        f32* state = (f32*)lbl_803DD5B8;
+        f32* state = (f32*)gCameraModeCloudRunnerState;
         getAngle(target->anim.worldPosX - state[0], target->anim.worldPosZ - state[2]);
     }
 }
