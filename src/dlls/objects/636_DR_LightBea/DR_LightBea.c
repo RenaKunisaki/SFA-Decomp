@@ -3,7 +3,7 @@
  * object to a target while its placement game bit (0x20) is set.
  *
  * The target is either another placed object (resolved by id via
- * dll_2E_func0A when the placement target byte at 0x19 is non-zero) or
+ * dll_2E_getCurveActionTarget when the placement target byte at 0x19 is non-zero) or
  * the player. While active, render keeps the beam's endpoints synced to
  * the live source/target positions, advances its lifetime counter and
  * frees the beam once it expires. The extra state (0xc bytes) holds the
@@ -90,7 +90,7 @@ void DR_LightBea_render(GameObject* obj, int p2, int p3, int p4, int p5)
             sourcePos[0] = (obj)->anim.localPosX;
             sourcePos[1] = (obj)->anim.localPosY;
             sourcePos[2] = (obj)->anim.localPosZ;
-            if (setup->targetId != 0 && dll_2E_func0A(setup->targetId, &target) != 0)
+            if (setup->targetId != 0 && dll_2E_getCurveActionTarget(setup->targetId, &target) != 0)
             {
                 targetPos[0] = target.x;
                 targetPos[1] = target.y;

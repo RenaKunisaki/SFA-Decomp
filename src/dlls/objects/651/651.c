@@ -60,7 +60,7 @@ void dll_28B_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
     if (visible != 0)
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-        dll_2E_func06(obj, &state->moveLib, 0);
+        dll_2E_setTargetFromPathPoint(obj, &state->moveLib, 0);
     }
 }
 
@@ -89,7 +89,7 @@ void dll_28B_update(GameObject* obj)
     {
         state->moveLib.modeBits |= 1;
     }
-    dll_2E_func03(obj, &state->moveLib);
+    dll_2E_updateLookAt(obj, &state->moveLib);
     characterDoEyeAnims(obj, state->eyeAnim);
     xform.x = obj->anim.localPosX;
     xform.y = obj->anim.localPosY;
@@ -116,8 +116,8 @@ void dll_28B_init(GameObject* obj)
     blockA = gDll28BMoveBlendDataA;
     blockB = gDll28BMoveBlendDataB;
     curveParam = 2;
-    dll_2E_func05(obj, &state->moveLib, -0x2AAA, 0x638E, 8);
-    dll_2E_func09(&state->moveLib, &blockB, &blockA, 8);
+    dll_2E_initState(obj, &state->moveLib, -0x2AAA, 0x638E, 8);
+    dll_2E_setMoveTables(&state->moveLib, &blockB, &blockA, 8);
     state->moveLib.modeBits |= 0x22;
     (*gRomCurveInterface)->initCurve(&state->route, obj, gDll28BCurveInitParam, &curveParam, -1);
     (*gPlayerInterface)->init(obj, state, 4, 4);

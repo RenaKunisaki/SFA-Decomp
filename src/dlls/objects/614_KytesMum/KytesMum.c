@@ -280,7 +280,7 @@ int kytesmum_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* 
     }
     {
         int move2 = runtime->moveSet->moves[2];
-        int result = !dll_2E_func07(obj, (ObjSeqState*)animUpdate, (MoveLibState*)runtime, move2, move2);
+        int result = !dll_2E_updateSequenceTurn(obj, (ObjSeqState*)animUpdate, (MoveLibState*)runtime, move2, move2);
         return !result;
     }
 }

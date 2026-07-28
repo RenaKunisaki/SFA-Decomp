@@ -1442,7 +1442,7 @@ int DIMboss_updateState(GameObject* obj, u32 state, ObjAnimUpdateState* animUpda
         return 0;
     }
 
-    dll_2E_func07((GameObject*)obj, (ObjSeqState*)animUpdate, (MoveLibState*)animScratch->animController, 1, 1);
+    dll_2E_updateSequenceTurn((GameObject*)obj, (ObjSeqState*)animUpdate, (MoveLibState*)animScratch->animController, 1, 1);
     for (eventIndex = 0; eventIndex < (int)(u32)animUpdate->eventCount; eventIndex = eventIndex + 1) {
         switch (animUpdate->eventIds[eventIndex]) {
         case DIMBOSS_EVENT_SET_SEQUENCE_FLAG_80000:
@@ -1687,7 +1687,7 @@ void DIMboss_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, s8 shouldRe
 
     objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
     DIM2icicle_updateBossSequenceEffects(obj, runtime);
-    dll_2E_func06((GameObject*)obj, &gDIMbossAnimController, 0);
+    dll_2E_setTargetFromPathPoint((GameObject*)obj, &gDIMbossAnimController, 0);
 
     effect = runtime->topState->effect;
     if (effect != NULL && effect->glowType != 0 && effect->enabled != 0) {
@@ -1778,8 +1778,8 @@ void DIMboss_update(GameObject* obj) {
                     ((ObjAnimComponent*)childObject)->parent = obj->anim.parent;
                 }
                 DIM2icicle_updateCombatState(obj, NULL, runtime, runtime);
-                dll_2E_func04(&gDIMbossAnimController, (GameObject*)runtime->targetModel);
-                dll_2E_func03((GameObject*)obj, &gDIMbossAnimController);
+                dll_2E_setLockTarget(&gDIMbossAnimController, (GameObject*)runtime->targetModel);
+                dll_2E_updateLookAt((GameObject*)obj, &gDIMbossAnimController);
                 DIM2icicle_updateDarkIceMinesWarpAndEffects(obj, runtime);
             }
         }
@@ -1828,8 +1828,8 @@ void DIMboss_init(GameObject* obj, u32 params, int isAltVariant) {
     lbl_803DDB84 = 0;
     gDIMbossSequenceFlags = 0;
     mainSetBits(GAMEBIT_Tricky_Usable, 1);
-    dll_2E_func05((GameObject*)obj, &gDIMbossAnimController, 0xffffd8e4, 0x1c71, 6);
-    dll_2E_func09(&gDIMbossAnimController, &localVec, &localVec, 6);
+    dll_2E_initState((GameObject*)obj, &gDIMbossAnimController, 0xffffd8e4, 0x1c71, 6);
+    dll_2E_setMoveTables(&gDIMbossAnimController, &localVec, &localVec, 6);
     animFlagsByte = &gDIMbossAnimController.modeBits;
     *animFlagsByte |= 8;
     *animFlagsByte &= ~1;

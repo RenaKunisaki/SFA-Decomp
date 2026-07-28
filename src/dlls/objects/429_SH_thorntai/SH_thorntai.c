@@ -867,7 +867,7 @@ u32 SHthorntail_updateLevelControlState(GameObject* obj, int unused, ObjAnimUpda
     }
     impactPending = (int)(runtime->behaviorFlags & SHTHORNTAIL_FLAG_IMPACT_PENDING);
     if (impactPending != 0) {
-        impactHandled = dll_2E_func07((GameObject*)obj, (ObjSeqState*)animUpdate, (MoveLibState*)runtime, 0, 0);
+        impactHandled = dll_2E_updateSequenceTurn((GameObject*)obj, (ObjSeqState*)animUpdate, (MoveLibState*)runtime, 0, 0);
         if (impactHandled != 0) {
             return 0;
         }
@@ -902,7 +902,7 @@ void SHthorntail_render(GameObject* obj, int renderArg2, int renderArg3, int ren
 
     runtime = obj->extra;
     objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
-    dll_2E_func06(obj, (MoveLibState*)runtime, 0);
+    dll_2E_setTargetFromPathPoint(obj, (MoveLibState*)runtime, 0);
     pointIndex = 0;
     do {
         ObjPath_GetPointWorldPosition(obj, pointIndex, &runtime->renderPathPoints[0].x, &runtime->renderPathPoints[0].y,
@@ -1040,7 +1040,7 @@ void SHthorntail_update(int obj) {
         } else {
             runtime->movementControlFlags = runtime->movementControlFlags | 1;
         }
-        dll_2E_func03((GameObject*)obj, (MoveLibState*)runtime);
+        dll_2E_updateLookAt((GameObject*)obj, (MoveLibState*)runtime);
         if ((SHTHORNTAIL_STATE_FLAGS(stateTables)[runtime->behaviorState] & SHTHORNTAIL_STATE_FLAG_HEAVY_HIT_REACT) !=
             0) {
             characterCloseEyes((GameObject*)obj, runtime->collisionShapeState);
@@ -1137,7 +1137,7 @@ void SHthorntail_init(GameObject* obj, const SHthorntailPlacement* placement) {
         ->setup(moveScratch, SHTHORNTAIL_PATH_CHANNEL, gSHthorntailPathHeaders, gSHthorntailPathData, outA);
     (*gPathControlInterface)->attachObject(obj, moveScratch);
     obj->animEventCallback = SHthorntail_updateLevelControlState;
-    dll_2E_func05((GameObject*)obj, (MoveLibState*)runtime, 0xffffdc72, 0x2aaa, 3);
-    dll_2E_func08((MoveLibState*)runtime, 400, 0x78);
+    dll_2E_initState((GameObject*)obj, (MoveLibState*)runtime, 0xffffdc72, 0x2aaa, 3);
+    dll_2E_setReattackDelay((MoveLibState*)runtime, 400, 0x78);
     ObjGroup_AddObject((int)obj, SHTHORNTAIL_OBJECT_GROUP);
 }

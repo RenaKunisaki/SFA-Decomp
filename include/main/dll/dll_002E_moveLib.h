@@ -95,18 +95,18 @@ STATIC_ASSERT(offsetof(MoveLibState, lookAtMaxDistance) == 0x614);
 STATIC_ASSERT(offsetof(MoveLibState, reattackTimer) == 0x620);
 STATIC_ASSERT(sizeof(MoveLibState) == 0x624);
 
-void dll_2E_func03(GameObject* obj, MoveLibState* state);
-void dll_2E_func04(MoveLibState* state, GameObject* target);
-void dll_2E_func05(GameObject* obj, MoveLibState* state, s16 minYaw, s16 maxYaw, int count);
-void dll_2E_func06(GameObject* obj, MoveLibState* state, int point);
-int dll_2E_func07(GameObject* obj, ObjSeqState* seq, MoveLibState* state, s16 minYaw, s16 maxYaw);
-void dll_2E_func08(MoveLibState* state, int reattackDelayBase, int reattackDelayMin);
-void dll_2E_func09(MoveLibState* state, const void* turnTable, const void* eventTable, int count);
-int dll_2E_func0A(int curvePointIndex, MoveLibTarget* out);
-f32 dll_2E_func0B(GameObject* obj, int curvePointIndex);
-int dll_2E_func0C(int curvePointIndex, MoveLibTarget* out);
-int dll_2E_func0D(GameObject* obj, const MoveLibTarget* target, f32 speed, int move, f32* out, u8* flags);
-int dll_2E_func0E(GameObject* obj, RomCurveWalker* route, f32 phase, MoveLibHermiteState* state,
+void dll_2E_updateLookAt(GameObject* obj, MoveLibState* state);
+void dll_2E_setLockTarget(MoveLibState* state, GameObject* target);
+void dll_2E_initState(GameObject* obj, MoveLibState* state, s16 minYaw, s16 maxYaw, int count);
+void dll_2E_setTargetFromPathPoint(GameObject* obj, MoveLibState* state, int point);
+int dll_2E_updateSequenceTurn(GameObject* obj, ObjSeqState* seq, MoveLibState* state, s16 minYaw, s16 maxYaw);
+void dll_2E_setReattackDelay(MoveLibState* state, int reattackDelayBase, int reattackDelayMin);
+void dll_2E_setMoveTables(MoveLibState* state, const void* turnTable, const void* eventTable, int count);
+int dll_2E_getCurveActionTarget(int curvePointIndex, MoveLibTarget* out);
+f32 dll_2E_getDistanceToCurveAction(GameObject* obj, int curvePointIndex);
+int dll_2E_getCurveActionTargetAimed(int curvePointIndex, MoveLibTarget* out);
+int dll_2E_moveToTarget(GameObject* obj, const MoveLibTarget* target, f32 speed, int move, f32* out, u8* flags);
+int dll_2E_advanceAlongRoute(GameObject* obj, RomCurveWalker* route, f32 phase, MoveLibHermiteState* state,
                   int curveVariant, f32* rootOut, int* flags);
 int dll_2E_func0F_ret_0(void);
 void dll_2E_setLookAtMaxDistance(MoveLibState* state, f32 value);

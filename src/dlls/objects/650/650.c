@@ -62,7 +62,7 @@ int earthwalker_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate, int s
 
     ewState->flags &= ~1;
     characterDoEyeAnims((GameObject*)obj, ewState->eyeAnimState);
-    if (dll_2E_func07((GameObject*)obj, (ObjSeqState*)animUpdate, (MoveLibState*)ewState, 0, 0) != 0)
+    if (dll_2E_updateSequenceTurn((GameObject*)obj, (ObjSeqState*)animUpdate, (MoveLibState*)ewState, 0, 0) != 0)
     {
         return 0;
     }
@@ -106,7 +106,7 @@ void earthwalker_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
     if (visible != 0)
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E6CE0);
-        dll_2E_func06(obj, (MoveLibState*)state, 0);
+        dll_2E_setTargetFromPathPoint(obj, (MoveLibState*)state, 0);
     }
 }
 
@@ -167,7 +167,7 @@ void earthwalker_update(int obj)
     }
 
     prevAnim = ewState->animPhase;
-    dll_2E_func03((GameObject*)obj, (MoveLibState*)ewState);
+    dll_2E_updateLookAt((GameObject*)obj, (MoveLibState*)ewState);
     if (ewState->encounterType >= 4 && ewState->encounterType <= 7 && prevAnim != 1 && ewState->animPhase == 1)
     {
         Sfx_PlayFromObject(obj, SFXTRIG_mammoth);
@@ -448,8 +448,8 @@ void earthwalker_init(GameObject* obj, int setup)
 
     local = gEarthWalkerMoveBlendData;
     obj->animEventCallback = earthwalker_SeqFn;
-    dll_2E_func05(obj, (MoveLibState*)ewState, -8192, 12743, 2);
-    dll_2E_func09((MoveLibState*)ewState, 0, &local, 2);
+    dll_2E_initState(obj, (MoveLibState*)ewState, -8192, 12743, 2);
+    dll_2E_setMoveTables((MoveLibState*)ewState, 0, &local, 2);
     /* moveLib state+0x614: head look-at only engages while the target is
      * within this distance (live-verified in Dolphin - drop it below the
      * player distance and the head snaps back to neutral). */

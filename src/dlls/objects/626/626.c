@@ -845,7 +845,7 @@ void HighTop_getLookTargetYaw(GameObject* obj, int mode, int* out)
     switch (mode)
     {
     case 2:
-        if (dll_2E_func0A(0x11, &target) != 0)
+        if (dll_2E_getCurveActionTarget(0x11, &target) != 0)
         {
             yaw = (s16)getAngle(target.x - obj->anim.localPosX, target.z - obj->anim.localPosZ);
             *out = yaw + gHighTopLookYawOffset;
@@ -997,7 +997,7 @@ void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible)
         ObjPath_GetPointWorldPosition((GameObject*)obj, 0, &runtime->pathPoint0X, &runtime->pathPoint0Y, &runtime->pathPoint0Z,
                                       0);
         runtime->flagsC49.b5 = 1;
-        dll_2E_func06((GameObject*)obj, (MoveLibState*)runtime->lookController, 0);
+        dll_2E_setTargetFromPathPoint((GameObject*)obj, (MoveLibState*)runtime->lookController, 0);
         if (runtime->flagsC49.b1 != 0)
         {
             int** t = (int**)ObjGroup_GetObjects(55, &count);
@@ -1132,7 +1132,7 @@ void HighTop_update(GameObject* obj)
     hightop_playMovementSfx((GameObject*)self, runtime, runtime);
     characterDoEyeAnims((GameObject*)self, state + 0x38c);
     objAnimFn_80038f38((GameObject*)(self), (char*)(state + 0x3bc));
-    dll_2E_func03((GameObject*)self, (MoveLibState*)(state + 0x3ec));
+    dll_2E_updateLookAt((GameObject*)self, (MoveLibState*)(state + 0x3ec));
     if (ObjTrigger_IsSet(self) != 0)
     {
         s8 substate;
@@ -1199,9 +1199,9 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     (*gPathControlInterface)->setLocalPointCollision(pathState, 2, &base[0xe8], lbl_803DC318, 8);
     (*gPathControlInterface)->setup(pathState, 4, &base[0xa8], &base[0xd8], pathParam.values);
     (*gPathControlInterface)->attachObject(obj, pathState);
-    dll_2E_func05(obj, (MoveLibState*)runtime->lookController, -4551, 23665, 6);
-    dll_2E_func08((MoveLibState*)runtime->lookController, 300, 120);
-    dll_2E_func09((MoveLibState*)runtime->lookController, &local2, &local1, 6);
+    dll_2E_initState(obj, (MoveLibState*)runtime->lookController, -4551, 23665, 6);
+    dll_2E_setReattackDelay((MoveLibState*)runtime->lookController, 300, 120);
+    dll_2E_setMoveTables((MoveLibState*)runtime->lookController, &local2, &local1, 6);
     runtime->flags |= 2;
     runtime->flags |= 8;
     runtime->airMeterRemaining = placement->airMeterParam;

@@ -37,7 +37,7 @@ void dll_2E_setLookAtMaxDistance(MoveLibState* state, f32 value)
     state->lookAtMaxDistance = value;
 }
 
-void dll_2E_func09(MoveLibState* s, const void* src1, const void* src2, int count)
+void dll_2E_setMoveTables(MoveLibState* s, const void* src1, const void* src2, int count)
 {
     (void)count;
     if (src1 == NULL)
@@ -48,7 +48,7 @@ void dll_2E_func09(MoveLibState* s, const void* src1, const void* src2, int coun
     memcpy(s->eventTable, src2, (u32)s->pointCount * 2);
 }
 
-f32 dll_2E_func0B(GameObject* obj, int arg)
+f32 dll_2E_getDistanceToCurveAction(GameObject* obj, int arg)
 {
     int r = (*gRomCurveInterface)->findByAction(arg);
     if (r > -1)
@@ -58,7 +58,7 @@ f32 dll_2E_func0B(GameObject* obj, int arg)
     return -1.0f;
 }
 
-int dll_2E_func0C(int idx, MoveLibTarget* out)
+int dll_2E_getCurveActionTargetAimed(int idx, MoveLibTarget* out)
 {
     f32 range;
     int curveId;
@@ -86,7 +86,7 @@ int dll_2E_func0C(int idx, MoveLibTarget* out)
     return 0;
 }
 
-int dll_2E_func0A(int idx, MoveLibTarget* out)
+int dll_2E_getCurveActionTarget(int idx, MoveLibTarget* out)
 {
     int curveId;
 
@@ -212,7 +212,7 @@ int moveLibAdvanceHermite(GameObject* obj, const MoveLibWaypointDef* def, MoveLi
     return ret;
 }
 
-int dll_2E_func0E(GameObject* obj, RomCurveWalker* route, f32 phase, MoveLibHermiteState* state, int curveVariant,
+int dll_2E_advanceAlongRoute(GameObject* obj, RomCurveWalker* route, f32 phase, MoveLibHermiteState* state, int curveVariant,
                   f32* rootOut, int* flags)
 {
     int moved;
@@ -274,7 +274,7 @@ int dll_2E_func0E(GameObject* obj, RomCurveWalker* route, f32 phase, MoveLibHerm
     return hit;
 }
 
-int dll_2E_func0D(GameObject* obj, const MoveLibTarget* target, f32 speed, int move, f32* out, u8* flags)
+int dll_2E_moveToTarget(GameObject* obj, const MoveLibTarget* target, f32 speed, int move, f32* out, u8* flags)
 {
     f32 dz;
     f32 dy;
@@ -368,7 +368,7 @@ void moveLibSeqFreeCallback(GameObject* obj)
     objJointTracksSetAngles(state->animChannels, state->pointCount, 0, 0);
 }
 
-int dll_2E_func07(GameObject* obj, ObjSeqState* seq, MoveLibState* s, s16 a, s16 b)
+int dll_2E_updateSequenceTurn(GameObject* obj, ObjSeqState* seq, MoveLibState* s, s16 a, s16 b)
 {
     s16 pair[2];
     int mode;
@@ -405,7 +405,7 @@ int dll_2E_func07(GameObject* obj, ObjSeqState* seq, MoveLibState* s, s16 a, s16
                 s->setupFlag = 0;
                 s->phase = MOVELIB_PHASE_RUN;
             case MOVELIB_PHASE_RUN:
-                if (objAnimFn_80115650(obj, player, &s->turnState, (PostControl*)s,
+                if (moveLibTurnToFaceTarget(obj, player, &s->turnState, (PostControl*)s,
                                        (float*)s, pair, &s->targetX) == 0)
                 {
                     s->phase = MOVELIB_PHASE_DONE;
@@ -440,7 +440,7 @@ int dll_2E_func07(GameObject* obj, ObjSeqState* seq, MoveLibState* s, s16 a, s16
     return 0;
 }
 
-void dll_2E_func06(GameObject* obj, MoveLibState* s, int point)
+void dll_2E_setTargetFromPathPoint(GameObject* obj, MoveLibState* s, int point)
 {
     struct
     {
@@ -478,7 +478,7 @@ void dll_2E_func06(GameObject* obj, MoveLibState* s, int point)
     s->targetZ = v.z0;
 }
 
-void dll_2E_func05(GameObject* obj, MoveLibState* s, s16 a, s16 b, int count)
+void dll_2E_initState(GameObject* obj, MoveLibState* s, s16 a, s16 b, int count)
 {
     f32 zero;
 
@@ -501,22 +501,22 @@ void dll_2E_func05(GameObject* obj, MoveLibState* s, s16 a, s16 b, int count)
     characterDecayJointVecs(obj, seqFn_800394a0(), count);
     objFn_8003acfc(obj, seqFn_800394a0(), count, s->animChannels);
     objJointTracksSetAngles(s->animChannels, s->pointCount, 0, 0);
-    dll_2E_func09(s, gMoveLibDefaultMoveData, gMoveLibDefaultMoveData, s->pointCount);
+    dll_2E_setMoveTables(s, gMoveLibDefaultMoveData, gMoveLibDefaultMoveData, s->pointCount);
 }
 
-void dll_2E_func08(MoveLibState* state, int reattackDelayBase, int reattackDelayMin)
+void dll_2E_setReattackDelay(MoveLibState* state, int reattackDelayBase, int reattackDelayMin)
 {
     state->reattackDelayBase = reattackDelayBase;
     state->reattackDelayMin = reattackDelayMin;
     state->reattackTimer = reattackDelayBase;
 }
 
-void dll_2E_func04(MoveLibState* state, GameObject* target)
+void dll_2E_setLockTarget(MoveLibState* state, GameObject* target)
 {
     state->lockTarget = target;
 }
 
-void dll_2E_func03(GameObject* obj, MoveLibState* s)
+void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
 {
     register int yawDelta;
     register int seqHandle;
@@ -704,7 +704,7 @@ void dll_2E_func03(GameObject* obj, MoveLibState* s)
     }
 }
 
-int objAnimFn_80115650(GameObject* obj, GameObject* targetObj, int* turning, PostControl* control, float* turnSpeed,
+int moveLibTurnToFaceTarget(GameObject* obj, GameObject* targetObj, int* turning, PostControl* control, float* turnSpeed,
                        s16* moves, f32* targetPos)
 {
     int yawDelta;
@@ -844,18 +844,18 @@ ObjectDescriptor16WithPadding dll_2E = {
         (ObjectDescriptorCallback)dll_2E_initialise_nop,
         (ObjectDescriptorCallback)dll_2E_release_nop,
         0,
-        (ObjectDescriptorCallback)dll_2E_func03,
-        (ObjectDescriptorCallback)dll_2E_func04,
-        (ObjectDescriptorCallback)dll_2E_func05,
-        (ObjectDescriptorCallback)dll_2E_func06,
-        (ObjectDescriptorCallback)dll_2E_func07,
-        (ObjectDescriptorCallback)dll_2E_func08,
-        (ObjectDescriptorExtraSizeCallback)dll_2E_func09,
-        (ObjectDescriptorCallback)dll_2E_func0A,
-        (ObjectDescriptorCallback)dll_2E_func0B,
-        (ObjectDescriptorCallback)dll_2E_func0C,
-        (ObjectDescriptorCallback)dll_2E_func0D,
-        (ObjectDescriptorCallback)dll_2E_func0E,
+        (ObjectDescriptorCallback)dll_2E_updateLookAt,
+        (ObjectDescriptorCallback)dll_2E_setLockTarget,
+        (ObjectDescriptorCallback)dll_2E_initState,
+        (ObjectDescriptorCallback)dll_2E_setTargetFromPathPoint,
+        (ObjectDescriptorCallback)dll_2E_updateSequenceTurn,
+        (ObjectDescriptorCallback)dll_2E_setReattackDelay,
+        (ObjectDescriptorExtraSizeCallback)dll_2E_setMoveTables,
+        (ObjectDescriptorCallback)dll_2E_getCurveActionTarget,
+        (ObjectDescriptorCallback)dll_2E_getDistanceToCurveAction,
+        (ObjectDescriptorCallback)dll_2E_getCurveActionTargetAimed,
+        (ObjectDescriptorCallback)dll_2E_moveToTarget,
+        (ObjectDescriptorCallback)dll_2E_advanceAlongRoute,
         (ObjectDescriptorCallback)dll_2E_func0F_ret_0,
     },
     0,

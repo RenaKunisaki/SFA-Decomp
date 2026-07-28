@@ -17,7 +17,7 @@ typedef struct PostControl {
   u8 flags;
 } PostControl;
 
-int objAnimFn_80115650(GameObject* obj, GameObject* targetObj, int* turning, PostControl* control, float* turnSpeed,
+int moveLibTurnToFaceTarget(GameObject* obj, GameObject* targetObj, int* turning, PostControl* control, float* turnSpeed,
                        short* moves, float* targetPos);
 
 #endif /* MAIN_DLL_FRONT_POST_H_ */

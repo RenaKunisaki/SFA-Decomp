@@ -469,7 +469,7 @@ void babyCloudRunner_update(GameObject* obj) {
                     target.angleZ = 0;
                     obj->anim.rotY = 0;
                     obj->anim.rotZ = 0;
-                    if (dll_2E_func0D(obj, &target, gBabyCloudRunnerHomeMoveSpeed, -1, &gBabyCloudRunnerHomeAnimSpeed,
+                    if (dll_2E_moveToTarget(obj, &target, gBabyCloudRunnerHomeMoveSpeed, -1, &gBabyCloudRunnerHomeAnimSpeed,
                                       &gBabyCloudRunnerHomeMoveState) != 0) {
                         state->stateFlags.atRoost = 1;
                         mainSetBits(BABYCLOUDRUNNER_AIR_METER_GAME_BIT, 0);

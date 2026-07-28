@@ -147,7 +147,7 @@ void DR_CloudRunner_func23(GameObject* obj, int mode, int* out)
                 p += 1;
                 i += 1;
             } while (i < 4);
-            if (i != 4 && dll_2E_func0A(curve.a[i], &target) != 0)
+            if (i != 4 && dll_2E_getCurveActionTarget(curve.a[i], &target) != 0)
             {
                 s16 tmp = getAngle(target.x - obj->anim.localPosX, target.z - obj->anim.localPosZ);
                 ang = tmp + gDRCloudRunnerHeadingAngleOffset;
@@ -1096,7 +1096,7 @@ void DR_CloudRunner_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 v
         if (inner->flightState != CLOUDRUNNER_FLIGHT_MOUNTED && vis != 0)
         {
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-            dll_2E_func06(obj, (MoveLibState*)((char*)inner + 0x4c4), 0);
+            dll_2E_setTargetFromPathPoint(obj, (MoveLibState*)((char*)inner + 0x4c4), 0);
         }
     }
 }
@@ -1235,7 +1235,7 @@ void DR_CloudRunner_update(GameObject* obj)
     {
         inner->moveFlags &= ~1;
     }
-    dll_2E_func03(obj, (MoveLibState*)((char*)inner + 0x4c4));
+    dll_2E_updateLookAt(obj, (MoveLibState*)((char*)inner + 0x4c4));
     objAnimFn_80038f38(obj, (char*)((int)inner + 0x494));
     characterHeadLookCalm(obj, (s16*)((char*)inner + 0x464), 0.0f);
     characterDoEyeAnims(obj, (void*)((int)inner + 0x464));
@@ -1296,7 +1296,7 @@ void DR_CloudRunner_init(GameObject* obj, int def)
     savedSlot = mainGetBit(0x7a9);
     if (savedSlot != 0)
     {
-        dll_2E_func0A(savedSlot + 0x13, &target);
+        dll_2E_getCurveActionTarget(savedSlot + 0x13, &target);
         (obj)->anim.localPosX = target.x;
         (obj)->anim.localPosY = target.y;
         (obj)->anim.localPosZ = target.z;
@@ -1305,8 +1305,8 @@ void DR_CloudRunner_init(GameObject* obj, int def)
     (*gPlayerInterface)->init(obj, (void*)inner, 8, 1);
     ((CloudRunnerState*)inner)->baddie.gravity = 0.17f;
     DR_CloudRunner_setupPath(obj, (CloudRunnerState*)inner, ((ByteFlags*)((char*)inner + 0xbc0))->b20);
-    dll_2E_func05(obj, (MoveLibState*)((char*)inner + 0x4c4), -0x11c7, 0x1555, 1);
-    dll_2E_func08((MoveLibState*)(inner + 0x4c4), 0x12c, 0x78);
+    dll_2E_initState(obj, (MoveLibState*)((char*)inner + 0x4c4), -0x11c7, 0x1555, 1);
+    dll_2E_setReattackDelay((MoveLibState*)(inner + 0x4c4), 0x12c, 0x78);
     ObjGroup_AddObject((int)obj, ARWARWING_OBJGROUP);
     ((ByteFlags*)((char*)inner + 0xbc0))->b01 = 0;
 }

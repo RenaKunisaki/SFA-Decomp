@@ -44,7 +44,7 @@ void ccQueen_render(GameObject* obj, int renderArg2, int renderArg3, int renderA
     CCQueenState* state = obj->extra;
 
     objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, CC_QUEEN_RENDER_SCALE);
-    dll_2E_func06(obj, &state->moveLib, 0);
+    dll_2E_setTargetFromPathPoint(obj, &state->moveLib, 0);
 }
 
 void ccQueen_update(GameObject* obj) {
@@ -66,7 +66,7 @@ void ccQueen_update(GameObject* obj) {
         ObjHits_DisableObject(obj);
     } else {
         ObjAnim_AdvanceCurrentMove((int)obj, CC_QUEEN_MOVE_STEP_SCALE, timeDelta, NULL);
-        dll_2E_func03(obj, &state->moveLib);
+        dll_2E_updateLookAt(obj, &state->moveLib);
         characterDoEyeAnims(obj, state->eyeAnimState);
     }
 }
@@ -80,10 +80,10 @@ void ccQueen_init(GameObject* obj, const CCQueenPlacement* placement) {
     eventTable = sCCQueenMoveEventTable;
     turnTable = sCCQueenMoveTurnTable;
     obj->anim.rotX = (s16)(placement->rotXByte << CC_QUEEN_ROT_X_SHIFT);
-    dll_2E_func05(obj, &state->moveLib, CC_QUEEN_MOVE_YAW_LIMIT_A, CC_QUEEN_MOVE_YAW_LIMIT_B,
+    dll_2E_initState(obj, &state->moveLib, CC_QUEEN_MOVE_YAW_LIMIT_A, CC_QUEEN_MOVE_YAW_LIMIT_B,
                   CC_QUEEN_MOVE_POINT_COUNT);
-    dll_2E_func08(&state->moveLib, CC_QUEEN_MOVE_REATTACK_DELAY_BASE, CC_QUEEN_MOVE_REATTACK_DELAY_MINIMUM);
-    dll_2E_func09(&state->moveLib, &turnTable, &eventTable, CC_QUEEN_MOVE_POINT_COUNT);
+    dll_2E_setReattackDelay(&state->moveLib, CC_QUEEN_MOVE_REATTACK_DELAY_BASE, CC_QUEEN_MOVE_REATTACK_DELAY_MINIMUM);
+    dll_2E_setMoveTables(&state->moveLib, &turnTable, &eventTable, CC_QUEEN_MOVE_POINT_COUNT);
     state->moveLib.modeBits = (u8)(state->moveLib.modeBits | CC_QUEEN_MOVE_LIB_MODE_BITS);
 }
 

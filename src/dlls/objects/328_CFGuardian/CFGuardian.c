@@ -597,7 +597,7 @@ int cfguardian_updateMain(GameObject* obj) {
     {
         void* nearestObject = (void*)ObjGroup_FindNearestObject(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
         if (nearestObject != NULL && nearestDistance < 300.0f) {
-            dll_2E_func04(&state->moveLib, nearestObject);
+            dll_2E_setLockTarget(&state->moveLib, nearestObject);
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
     }
@@ -605,7 +605,7 @@ int cfguardian_updateMain(GameObject* obj) {
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
             if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
                 gCfGuardianIdleMoveTable[state->questState] != 0) {
-                dll_2E_func0C(0xf, &state->home);
+                dll_2E_getCurveActionTargetAimed(0xf, &state->home);
                 state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
                 gCfGuardianIdleMoveTable[state->questState] = 0;
             }
@@ -618,7 +618,7 @@ int cfguardian_updateMain(GameObject* obj) {
                 gCfGuardianIdleMoveTable[state->questState] != 0xe) {
                 state->chatterState = CFGUARDIAN_CHATTER_PLAYING;
                 state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
-                dll_2E_func0A(0xe, &state->home);
+                dll_2E_getCurveActionTarget(0xe, &state->home);
                 gCfGuardianIdleMoveTable[state->questState] = 0xe;
             }
         }
@@ -636,13 +636,13 @@ int cfguardian_updateMain(GameObject* obj) {
     {
         void* nearestObject = (void*)ObjGroup_FindNearestObject(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
         if (nearestObject != NULL && nearestDistance < 300.0f) {
-            dll_2E_func04(&state->moveLib, nearestObject);
+            dll_2E_setLockTarget(&state->moveLib, nearestObject);
         }
     }
         if (nearestDistance > 300.0f && Vec_xzDistance(&player->anim.worldPosX, &obj->anim.worldPosX) < 80.0f) {
             if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
                 gCfGuardianIdleMoveTable[state->questState] != 0) {
-                dll_2E_func0C(0xf, &state->home);
+                dll_2E_getCurveActionTargetAimed(0xf, &state->home);
                 state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
                 gCfGuardianIdleMoveTable[state->questState] = 0;
             }
@@ -655,7 +655,7 @@ int cfguardian_updateMain(GameObject* obj) {
                 gCfGuardianIdleMoveTable[state->questState] != 0xe) {
                 state->chatterState = CFGUARDIAN_CHATTER_PLAYING;
                 state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
-                dll_2E_func0A(0xe, &state->home);
+                dll_2E_getCurveActionTarget(0xe, &state->home);
                 gCfGuardianIdleMoveTable[state->questState] = 0xe;
             }
         }
@@ -726,7 +726,7 @@ int cfguardian_updateMain(GameObject* obj) {
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
         break;
     }
-    dll_2E_func03(obj, &state->moveLib);
+    dll_2E_updateLookAt(obj, &state->moveLib);
     if (ObjTrigger_IsSet((int)obj) != 0) {
         buttonDisable(0, PAD_BUTTON_A);
         if ((*gGameUIInterface)->isEventReady(CFGUARDIAN_WATER_SPELL_STONE_EVENT) != 0) {
@@ -806,7 +806,7 @@ int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState*
         movePair = &sequenceMoves.idleMoveA;
     }
     if (animatedObjGetSeqId(animUpdate) != CFGUARDIAN_SEQUENCE_ID_MAGIC_GRANT) {
-        if (dll_2E_func07(obj, (ObjSeqState*)animUpdate, &state->moveLib, movePair[0], movePair[1]) != 0) {
+        if (dll_2E_updateSequenceTurn(obj, (ObjSeqState*)animUpdate, &state->moveLib, movePair[0], movePair[1]) != 0) {
             return 1;
         }
     }
@@ -845,7 +845,7 @@ void cfguardian_render(GameObject* obj, int renderArg2, int renderArg3, int rend
 
     if ((s32)visible != 0) {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
-        dll_2E_func06(obj, &state->moveLib, 0);
+        dll_2E_setTargetFromPathPoint(obj, &state->moveLib, 0);
     }
 }
 
@@ -891,12 +891,12 @@ void cfguardian_init(GameObject* obj, CfGuardianPlacement* placement) {
         }
     } else if (mainGetBit(GAMEBIT_ITEM_CFPowerKey_Got) != 0 && placement->variant == 0) {
         state->questState = CFGUARDIAN_STATE_ROOST;
-        dll_2E_func0A(8, (MoveLibTarget*)&obj->anim);
+        dll_2E_getCurveActionTarget(8, (MoveLibTarget*)&obj->anim);
     }
     ObjHits_EnableObject(obj);
-    dll_2E_func05(obj, &state->moveLib, -0x2000, 0x2800, 4);
-    dll_2E_func08(&state->moveLib, 0x12c, 0x64);
-    dll_2E_func09(&state->moveLib, &hitboxTemplateB, &hitboxTemplateA, 4);
+    dll_2E_initState(obj, &state->moveLib, -0x2000, 0x2800, 4);
+    dll_2E_setReattackDelay(&state->moveLib, 0x12c, 0x64);
+    dll_2E_setMoveTables(&state->moveLib, &hitboxTemplateB, &hitboxTemplateA, 4);
     seqPairTablePrepare(gCfGuardianSeqStreamTable, CFGUARDIAN_SEQUENCE_TABLE_ENTRY_COUNT);
     state->flags611 = (u8)(state->flags611 | 0x2);
 }

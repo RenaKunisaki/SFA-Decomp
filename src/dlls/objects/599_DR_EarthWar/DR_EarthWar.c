@@ -889,7 +889,7 @@ int DR_EarthWarrior_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animU
     int i;
     f32 fz;
     *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
-    if (dll_2E_func07(obj, (ObjSeqState*)animUpdate, (MoveLibState*)((char*)inner + 0x3ec), 0, 0) != 0)
+    if (dll_2E_updateSequenceTurn(obj, (ObjSeqState*)animUpdate, (MoveLibState*)((char*)inner + 0x3ec), 0, 0) != 0)
     {
         return 1;
     }
@@ -1086,7 +1086,7 @@ void DR_EarthWarrior_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 
         ObjPath_GetPointWorldPosition(obj, 0xb, (f32*)((char*)inner + 0x1438), (f32*)((char*)inner + 0x143c),
                                       (f32*)((char*)inner + 0x1440), 0);
         ObjPath_GetPointWorldPositionArray(obj, 3, 4, (f32*)((char*)inner + 0xb18));
-        dll_2E_func06(obj, (MoveLibState*)((char*)inner + 0x3ec), 0);
+        dll_2E_setTargetFromPathPoint(obj, (MoveLibState*)((char*)inner + 0x3ec), 0);
     }
 }
 
@@ -1311,7 +1311,7 @@ void DR_EarthWarrior_update(GameObject* obj)
     }
     characterDoEyeAnims(obj, (char*)inner + 0x38c);
     objAnimFn_80038f38(obj, (char*)inner + 0x3bc);
-    dll_2E_func03(obj, (MoveLibState*)((char*)inner + 0x3ec));
+    dll_2E_updateLookAt(obj, (MoveLibState*)((char*)inner + 0x3ec));
     if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
     {
         ((ByteFlags*)&inner->sub.flags994)->b10 = 1;
@@ -1401,8 +1401,8 @@ void DR_EarthWarrior_init(GameObject* obj, int def)
     (*gPathControlInterface)->attachObject((void*)obj, pathState);
     ObjHits_EnableObject(obj);
     ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->trackContactMask = 9;
-    dll_2E_func05(obj, (MoveLibState*)((char*)inner + 0x3ec), -0x2000, 0x31c7, 2);
-    dll_2E_func09((MoveLibState*)(inner + 0x3ec), &r1, &r2, 2);
+    dll_2E_initState(obj, (MoveLibState*)((char*)inner + 0x3ec), -0x2000, 0x31c7, 2);
+    dll_2E_setMoveTables((MoveLibState*)(inner + 0x3ec), &r1, &r2, 2);
     dll_2E_setLookAtMaxDistance((MoveLibState*)(inner + 0x3ec), 150.0f);
     ((DREarthWarriorState*)inner)->unk9FD |= 2;
     ((DREarthWarriorState*)inner)->unk1444 = 4.32f;
