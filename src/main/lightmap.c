@@ -686,17 +686,21 @@ void renderSceneGeometry(u8 renderType, s8* order)
     layer = 4;
     layerTablePtr = &gMapBlockLayerTables[4];
     layerFlagPtr = &lbl_8038228C[4];
-    worldSize = gMapBlockWorldSize;
     do
     {
+        worldSize = gMapBlockWorldSize;
         table = *layerTablePtr;
         gMapLayerCellStates = (s8*)*layerFlagPtr;
         mapFn_80057d24(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
                        gMapCurRomListSlot);
         mp = map;
-        for (k = 0; k < ARRAY_COUNT(map); k++)
+        for (k = 0; k != ARRAY_COUNT(map); k += 4)
         {
-            *mp++ = 0;
+            mp[0] = 0;
+            mp[1] = 0;
+            mp[2] = 0;
+            mp[3] = 0;
+            mp += 4;
         }
         fillBoxRows(map, box0);
         fillBoxRows(map, box1);
