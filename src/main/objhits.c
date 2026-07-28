@@ -2865,7 +2865,6 @@ extern f32 gObjLibBlinkAnglePiDivisor;
 #define OBJLINK_PARENT_OFFSET      0xc4
 #define OBJLINK_CHILD_LIST_OFFSET  0xc8
 #define OBJLINK_CHILD_COUNT_OFFSET 0xeb
-#define OBJLINK_CHILD_STATE_OFFSET 0xe5
 #define OBJLINK_FLAGS_OFFSET       0xb0
 #define OBJLINK_FLAGS_MODE_MASK    0x0007
 #define OBJLINK_FLAGS_DEAD         0x0040
@@ -4356,7 +4355,7 @@ void ObjLink_DetachChild(GameObject* obj, GameObject* child)
         i++;
     }
     obj->childCount--;
-    *(int*)((int)obj + OBJLINK_CHILD_LIST_OFFSET + (u32)obj->childCount * 4) = 0;
+    obj->childObjs[obj->childCount] = NULL;
     child->ownerObj = (void*)0;
     return;
 }
@@ -4375,7 +4374,7 @@ void ObjLink_AttachChild(GameObject* parent, GameObject* child, int linkMode)
     childObj->ownerObj = parent;
     childObj->objectFlags = (u16)(childObj->objectFlags & ~OBJLINK_FLAGS_MODE_MASK);
     childObj->objectFlags = (u16)(childObj->objectFlags | linkMode);
-    *(u8*)((u8*)child + OBJLINK_CHILD_STATE_OFFSET) = 0;
+    childObj->colorFadeFlags = 0;
     return;
 }
 

@@ -164,7 +164,7 @@ void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
         obj->anim.velocityY *= PLAYER_MOVE_VELOCITY_DAMPING;
         obj->anim.velocityY = -(((BaddieState*)ctx)->gravity * t) + obj->anim.velocityY;
     }
-    b = *(s8*)((char*)ctx + 0x34c);
+    b = ((BaddieState*)ctx)->movementFlags;
     if ((b & 1) == 0 || (b & 4) != 0)
     {
         desc.rotX = obj->anim.rotX;
@@ -361,7 +361,7 @@ void dll_0F_func13(GameObject* obj, int* state, int angle, f32 t, f32 scale)
 {
     f32 ang, vx, vz, q, w, dist, c, s;
 
-    *(s8*)((char*)state + 0x34c) |= 1;
+    ((BaddieState*)state)->movementFlags |= 1;
     if ((s8)gPlayerMoveVelHandled == 0)
     {
         ang = (PLAYER_MOVE_PI * angle) / PLAYER_MOVE_HALF_CIRCLE;
@@ -381,7 +381,7 @@ void dll_0F_func13(GameObject* obj, int* state, int angle, f32 t, f32 scale)
     }
     else
     {
-        *(s8*)((char*)state + 0x34c) &= ~1;
+        ((BaddieState*)state)->movementFlags &= ~1;
     }
     q = obj->anim.velocityX * obj->anim.velocityX;
     w = obj->anim.velocityZ * obj->anim.velocityZ;
@@ -823,7 +823,7 @@ void player_setState(void* ctx, void* p, int new_state)
     *(s16*)((char*)p + 0x338) = 0;
     ((BaddieState*)p)->moveJustStartedA = 1;
     ((BaddieState*)p)->stateTag = 0;
-    *(u8*)((char*)p + 0x34c) = 0;
+    ((BaddieState*)p)->movementFlags = 0;
     ((BaddieState*)p)->moveEventFlags = 0;
     ((BaddieState*)p)->stateId = 0;
     q = ((GameObject*)ctx)->anim.hitReactState;
