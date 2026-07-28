@@ -103,19 +103,8 @@ GXColor lbl_803DB6F0 = {0x80, 0, 0x80, 0};
 u32 lbl_803DB6F4 = 0xFFFFFF60;
 u32 lbl_803DB6F8 = 0xA0A0A080;
 
-typedef struct
-{
-    f32 m[6];
-} IndMtxInit;
-
-typedef struct
-{
-    IndMtxInit ind;
-    u32 blk[6][7];
-} IndStageInitData;
 
 
-extern f32 lbl_803DEF20;
 extern f32 lbl_803DEE40;
 extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE44, lbl_803DEE48;
 extern f32 lbl_803DEF4C;
@@ -128,10 +117,6 @@ f32 lbl_8030EA58[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 f32 lbl_8030EA70[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 f32 lbl_8030EA88[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-typedef struct StageCountTable
-{
-    u8 count[7];
-} StageCountTable;
 
 extern f32 lbl_803DEE20;
 extern f32 lbl_803DEE24;

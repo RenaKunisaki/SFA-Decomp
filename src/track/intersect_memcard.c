@@ -31,21 +31,9 @@
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
 
-extern GXColor lbl_803DB6A0;
-
-typedef struct
-{
-    f32 m[6];
-} IndMtxInit;
-
-typedef struct
-{
-    IndMtxInit ind;
-    u32 blk[6][7];
-} IndStageInitData;
 
 
-extern f32 lbl_803DEF20;
+
 extern f32 lbl_803DEF4C;
 
 
@@ -55,10 +43,6 @@ int cardDeleteFn_8007d99c(void);
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
 void showMemCardError(u8 err);
 
-typedef struct StageCountTable
-{
-    u8 count[7];
-} StageCountTable;
 
 extern volatile s32 gSaveCardState;
 

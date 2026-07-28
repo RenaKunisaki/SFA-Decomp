@@ -93,7 +93,6 @@ extern f32 lbl_803DF190;
 extern f32 lbl_803DF194;
 
 
-extern u8 gSkyColorBlendTable[248];
 
 
 void skyGetCurrentAmbientAndLightColors(u8* ambientRed, u8* ambientGreen, u8* ambientBlue, u8* lightRed, u8* lightGreen,
