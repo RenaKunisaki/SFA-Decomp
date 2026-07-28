@@ -4700,7 +4700,6 @@ void setupReflectionBumpDistortTev(void* texture)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void setupWaterCausticTev(void);
 
 
 /*

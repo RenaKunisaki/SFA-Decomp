@@ -258,11 +258,6 @@ typedef enum TransporterSequenceEvent {
     TRANSPORTER_EVENT_RESTORE_ENVIRONMENT = 8,
 } TransporterSequenceEvent;
 
-void Transporter_init(GameObject* obj, TransporterPlacement* placement);
-void Transporter_update(GameObject* obj);
-void Transporter_hitDetect(int obj);
-void Transporter_render(void);
-int Transporter_getExtraSize(void);
 
 ObjectDescriptor gTransporterObjDescriptor = {
     0,

@@ -1515,7 +1515,6 @@ void ObjSeq_RefreshActionCursor(void* obj, void* seqFile, u8* seq);
 void ObjSeq_onMapSetup(void);
 void ObjSeq_release(void);
 void ObjSeq_initialise(void);
-void ObjSeq_copyDefaultColor(GXColor* out);
 void RomCurveInterp_BuildSegmentTimeTable(RomCurveInterpState* out, RomCurveNode* curve, RomCurveNode* next, f32 t,
                                           int flag);
 void RomCurveInterp_UpdateSegmentWindow(RomCurveInterpState* state, f32 t);

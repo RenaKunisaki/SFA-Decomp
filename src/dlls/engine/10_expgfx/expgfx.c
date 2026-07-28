@@ -2132,7 +2132,6 @@ void expgfxRemoveAll(void)
     expgfxRemoveAllBody();
 }
 
-void expgfxRemoveAll(void);
 
 static inline void expgfxSetSlotResult(s16* poolIndexOut, s16* slotIndexOut,
                                        s16 poolIndex, s16 slotIndex)
@@ -3487,7 +3486,6 @@ int expgfx_addToTable(u32 resourceHandle, u32 sourceId, u32 attachedTableKey, s1
     return EXPGFX_INVALID_TABLE_INDEX;
 }
 
-int expgfx_addToTable(u32 resourceHandle, u32 sourceId, u32 attachedTableKey, s16 resourceId);
 
 int expgfx_updateSourceFrameFlags(void* sourceObject)
 {
@@ -3564,7 +3562,6 @@ int expgfx_func09(void)
     return 0;
 }
 
-int expgfx_addToTable(u32 resourceHandle, u32 sourceId, u32 attachedTableKey, s16 resourceId);
 
 void expgfx_renderSourcePools(int sourceId, int sourceMode)
 {

@@ -122,7 +122,6 @@ void vecGetRanges(f32* pts, f32* base, f32 scale, int* out);
 
 int objShadowFn_80062378(GameObject* obj, u8 param);
 
-void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale);
 
 f32 gShadowVolumeBoxCorners[0x19];
 f32 gPrevSunDir[3];

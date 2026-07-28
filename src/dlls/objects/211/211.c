@@ -426,8 +426,6 @@ typedef struct LandedArwingMovementFlags
     u8 hitSurfaceType13 : 1;
 } LandedArwingMovementFlags;
 
-void landedarwing_resolveSurfaceCollision(GameObject* obj, LandedArwingState* state, f32* hit, f32* end);
-void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f32 targetY, f32 targetZ, f32 blend);
 void landedarwing_buildSurfaceOrientationMatrix(f32* out, f32* forward, f32* up);
 
 u32 landedarwing_updateMovementState(GameObject* obj, u32* params)

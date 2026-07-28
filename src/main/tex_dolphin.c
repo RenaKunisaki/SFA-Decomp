@@ -1133,7 +1133,6 @@ void mapBlockRender_setVtxDcrs(u8 doSetup, MapBlockData* block, MapShader* shade
     }
 }
 
-void setupToRenderMapBlock(MapBlockData* block, void* posMtx);
 
 void setupToRenderMapBlock(MapBlockData* block, void* posMtx)
 {

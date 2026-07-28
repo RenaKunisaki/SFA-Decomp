@@ -173,7 +173,6 @@ static inline void errDisplayFillBackdrop(void)
         x++;
     } while (x < 0x280);
 }
-void* errorThreadFunc(void* unused);
 
 int debugPrintDrawGlyph(int unused, int c)
 {

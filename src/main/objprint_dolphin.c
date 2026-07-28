@@ -4290,7 +4290,6 @@ void modelsTabReadCb(s32 result, DVDFileInfo* fileInfo)
     }
 }
 
-void mapLoadDataFiles(int mapIdx);
 
 extern int sMapFileNameIndexRemapTable[];
 
