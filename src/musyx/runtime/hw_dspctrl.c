@@ -6,8 +6,6 @@
 #include "main/unknown/autos/musyx_dsp.h"
 
 
-extern u8 salAuxFrame;
-extern u8 salMaxStudioNum;
 
 #include "dolphin/os.h"
 #include "dolphin/os/OSCache.h"
@@ -18,16 +16,6 @@ DSPstudioinfo dspStudio[8];
 DSPvoice* voices[64];
 SndMessageCallback salMessageCallback;
 
-extern u16* dspCmdLastLoad;
-extern u16* dspCmdLastBase;
-extern u16 dspCmdLastSize;
-extern u16* dspCmdCurBase;
-extern u16* dspCmdMaxPtr;
-extern u16* dspCmdPtr;
-extern u32 dspHRTFOn;
-extern u32 dspARAMZeroBuffer;
-extern s32* dspSurround;
-extern u8 salFrame;
 extern u16 dspMixerCycles[]; /* dspMixerCycles[32] */
 extern u16 pbOffsets[];      /* pbOffsets[9] */
 extern u16 dspSRCCycles[4][3];

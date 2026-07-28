@@ -15,4 +15,8 @@ void salStartAi(void);
 int salExitAi(void);
 int salAiGetDest(void);
 
+extern volatile u32 salDspInitIsDone;
+extern volatile u32 salLastTick;
+extern volatile u32 salDspCallbackEnabled;
+
 #endif /* MUSYX_SAL_AI_H_ */

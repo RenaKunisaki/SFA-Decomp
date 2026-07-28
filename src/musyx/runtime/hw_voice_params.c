@@ -1,11 +1,11 @@
 #include "musyx/dsp_voice.h"
 #include "musyx/dsp_voice_state.h"
 #include "musyx/hw_voice_params.h"
+#include "musyx/hw_init.h"
 
 #define DSP_VOICE_ITD_DISABLED_MASK     0x7fffffff
 #define DSP_VOICE_ITD_CENTER            0x10
 
-extern u8 salTimeOffset;
 
 void hwSetPitch(u32 slot, u16 pitch)
 {

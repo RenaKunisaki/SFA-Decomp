@@ -3,6 +3,7 @@
 #include "musyx/synth_voice.h"
 #include "musyx/synth_delay.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "musyx/snd3d.h"
 
 typedef struct S3DActiveNode
 {
@@ -40,7 +41,6 @@ extern u8 lbl_803DE36B;
 extern u8 lbl_803DE36C;
 extern u8 lbl_803DE36D;
 extern u8 lbl_803DE36A;
-extern SndSpatialListener* s3dListenerRoot;
 
 typedef struct SndFVector
 {

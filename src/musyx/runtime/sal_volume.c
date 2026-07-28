@@ -1,4 +1,5 @@
 #include "musyx/sal_volume.h"
+#include "musyx/adsr.h"
 
 typedef struct
 {
@@ -31,7 +32,6 @@ SalVolTab gSnd3dRoomVolTable = {
     {0.0f, 0.7079f, 1.0f, 1.0f},
     {0.575f, 0.7079f, 1.0f, 1.0f},
     0.0f};
-extern f32 voiceAdsrSustainTable[129];
 
 static inline f32 sal_fmod(f32 x, f32 y)
 {

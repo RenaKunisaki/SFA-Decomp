@@ -6,7 +6,6 @@
 #include "musyx/aram_queue.h"
 #include "dolphin/os/OSCache.h"
 
-extern DSPstudioinfo dspStudio[8];
 
 u32 hwRemoveInput(u8 studio, SND_STUDIO_INPUT* input)
 {

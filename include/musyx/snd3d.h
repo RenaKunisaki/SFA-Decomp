@@ -122,4 +122,12 @@ void s3dInit(u32 flags);
 void s3dExit(void);
 int sndInit(u8 voiceCount, u8 streamCount, u8 unk5, u8 stereo, u32 flags, u32 aramSize);
 
+extern u8 snd_max_studios;
+extern u8 snd_base_studio;
+extern u32 snd_used_studios;
+extern SndStudioInputLink* s3dDoorRoot;
+extern SndSpatialEntry* s3dRoomRoot;
+extern SndSpatialListener* s3dListenerRoot;
+extern Snd3DEmitter* s3dEmitterRoot;
+
 #endif /* MUSYX_SND3D_H_ */

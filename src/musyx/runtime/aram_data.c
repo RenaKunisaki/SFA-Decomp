@@ -17,8 +17,6 @@ STATIC_ASSERT(sizeof(AramStreamBufferEntry) == 0x10);
 
 extern AramTransferQueues lbl_803D3F60;
 
-extern u32 aramTop;
-extern u32 aramWrite;
 
 AramStreamBufferEntry* aramStreamFreeList;
 u32 aramQueueValid;

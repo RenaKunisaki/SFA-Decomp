@@ -16,4 +16,7 @@ void aramRemoveData(void *unused, u32 size);
 void aramInitStreamBuffers(void);
 u32 aramGetStreamBufferAddress(u8 idx, u32 *outPos);
 
+extern u32 aramTop;
+extern u32 aramWrite;
+
 #endif /* MUSYX_ARAM_H_ */

@@ -12,10 +12,9 @@
 #include "musyx/hw_volume.h"
 #include "musyx/hw_voice_params.h"
 #include "musyx/synth_jobs.h"
+#include "musyx/synth_job_init.h"
 
 extern u32 synthFlags;
-extern u8 streamCallCnt;
-extern u8 streamCallDelay;
 
 static f32 streamGainFromVolume(u8 volume)
 {

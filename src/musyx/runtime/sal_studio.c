@@ -8,11 +8,10 @@
 #include "musyx/aram.h"
 #include "musyx/dsp_voice_state.h"
 #include "musyx/sal_studio.h"
+#include "musyx/hw_init.h"
+#include "musyx/hw_dspctrl.h"
 
 
-extern DSPstudioinfo dspStudio[8];
-extern u8 salMaxStudioNum;
-extern u8 salNumVoices;
 
 DSPvoice* dspVoice;
 void* dspITDBuffer;

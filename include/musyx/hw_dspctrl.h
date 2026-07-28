@@ -11,4 +11,6 @@ void salDeactivateVoice(DSPvoice *voice);
 u32 salAddStudioInput(DSPstudioinfo *studio, SND_STUDIO_INPUT *input);
 u32 salRemoveStudioInput(DSPstudioinfo *studio, SND_STUDIO_INPUT *input);
 
+extern DSPstudioinfo dspStudio[8];
+
 #endif /* MUSYX_HW_DSPCTRL_H_ */

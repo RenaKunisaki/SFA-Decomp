@@ -2,7 +2,7 @@
 
 #include "musyx/voice_conv.h"
 #include "musyx/hw_adsr.h"
-extern u8 voiceAdsrDecayTable[];
+#include "musyx/adsr.h"
 
 typedef struct HwAdsrEnvelope
 {

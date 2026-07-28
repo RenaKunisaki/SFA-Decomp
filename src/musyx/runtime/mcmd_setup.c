@@ -9,10 +9,9 @@
 #include "musyx/adsr_setup.h"
 #include "musyx/synth_delay.h"
 #include "musyx/synth_voice.h"
+#include "musyx/adsr.h"
 
 void DoSetPitch(McmdVoiceState* svoice);
-extern u8 voiceAdsrDecayTable[];
-extern f32 voiceAdsrSustainTable[];
 extern u8 lbl_8032EDD0[]; /* pitch ratio table (u16[13]) heads the macro data tables */
 
 typedef union McmdAdsrData

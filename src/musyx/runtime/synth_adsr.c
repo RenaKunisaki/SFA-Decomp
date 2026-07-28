@@ -5,8 +5,6 @@
 #include "musyx/adsr_handle.h"
 #include "musyx/adsr_lowprec.h"
 
-extern u8 voiceAdsrDecayTable[];
-extern u16 lbl_8032F618[];
 
 u32 voiceConvertDbToLinear(u32 timeCents)
 {

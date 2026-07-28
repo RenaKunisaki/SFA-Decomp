@@ -57,4 +57,8 @@ STATIC_ASSERT(offsetof(ADSR_VARS, aMode) == 0x26);
 #define ADSR_STATE_HOLD 3    /* held at sustain; volume frozen */
 #define ADSR_STATE_RELEASE 4 /* ramp current -> 0, then done */
 
+extern u16 lbl_8032F618[];
+extern u8 voiceAdsrDecayTable[];
+extern f32 voiceAdsrSustainTable[];
+
 #endif /* MUSYX_ADSR_H_ */

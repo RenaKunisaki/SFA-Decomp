@@ -14,9 +14,6 @@ typedef struct
     u8 dram[0x2000];
 } SalDspTask;
 
-extern u32 salLastTick;
-extern u32 salDspCallbackEnabled;
-extern volatile u32 salDspInitIsDone;
 static SalDspTask lbl_803D4880;
 u16 dspSlave[0xCF0] = {
     0x0000, 0x0000, 0x029F, 0x0C10, 0x029F, 0x0C1F, 0x029F, 0x0C3B, 0x029F, 0x0C4A, 0x029F, 0x0C50, 0x029F, 0x0C82,

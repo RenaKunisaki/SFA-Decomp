@@ -2,9 +2,9 @@
 #include "musyx/dsp_voice_state.h"
 #include "musyx/aram.h"
 #include "musyx/aram_queue.h"
+#include "musyx/sal_studio.h"
 
 
-extern u32 dspHRTFOn;
 
 void hwSaveSample(SAMPLE_HEADER** sample, void** ptr)
 {

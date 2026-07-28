@@ -5,7 +5,6 @@
 #include "musyx/sal_volume.h"
 
 
-extern DSPstudioinfo dspStudio[8];
 extern const u16 gItdPanDelayTable[128];
 
 /*

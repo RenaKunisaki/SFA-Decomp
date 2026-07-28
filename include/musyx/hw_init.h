@@ -20,4 +20,10 @@ void hwInitSamplePlayback(u32 voiceIndex, u16 sampleId, SAMPLE_INFO *sampleInfo,
                           u32 resetAdsr, u32 priority, u32 callbackUserValue,
                           u32 resetSrc, u32 itdMode);
 
+extern u8 salMaxStudioNum;
+extern u8 salNumVoices;
+extern u8 salAuxFrame;
+extern u8 salFrame;
+extern u8 salTimeOffset;
+
 #endif /* MUSYX_HW_INIT_H_ */
