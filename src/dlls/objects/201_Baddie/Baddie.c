@@ -19,6 +19,7 @@
 #include "main/objanim.h"
 #include "game/objects/object.h"
 #include "main/dll/player_api.h"
+#include "main/dll/baddie_placement.h"
 #include "main/dll/baddie_setmove.h"
 #include "main/dll/boneparticleeffect_interface.h"
 #include "main/obj_group.h"
@@ -140,30 +141,6 @@ typedef struct BaddieInstantiateWeaponPlacement
     f32 unk10;
     u8 pad14[0x18 - 0x14];
 } BaddieInstantiateWeaponPlacement;
-
-typedef struct EnemyPlacement
-{
-    u8 pad0[0x8 - 0x0];
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    u8 pad14[0x18 - 0x14];
-    s16 gameBit;
-    s16 gameBit2;
-    u8 pad1C[0x28 - 0x1C];
-    s8 objectFlagBits; /* 0x28: low 3 bits OR'd into GameObject.objectFlags */
-    u8 aggroRangeByte; /* 0x29 */
-    s8 rotXByte;
-    u8 flags2B;         /* 0x2B: bit 3 (0x8) reloads spawn position before the trigger sequence */
-    s16 respawnEnabled; /* 0x2C: when 0, the off-screen respawn path is skipped */
-    s8 triggerSeqId;
-    u8 healthByte; /* 0x2F */
-    u8 pad30[0x32 - 0x30];
-    u8 hitPoints; /* 0x32: spawn hit-point count -> EnemyState.current (health numerator) */
-    u8 pad33[0x34 - 0x33];
-    u16 unk34;
-    u8 pad36[0x38 - 0x36];
-} EnemyPlacement;
 
 struct VisBits16
 {
@@ -2715,17 +2692,17 @@ void enemy_update(GameObject* obj)
     flags = ((EnemyState*)state)->controlFlags;
     if ((flags & 1) != 0 && (flags & 2) == 0)
     {
-        if (((EnemyPlacement*)setup)->triggerSeqId == -1)
+        if (((EnemyPlacement*)setup)->triggerSequenceId == -1)
         {
             return;
         }
-        if (setup != NULL && (((EnemyPlacement*)setup)->flags2B & 8) != 0)
+        if (setup != NULL && (((EnemyPlacement*)setup)->flags & 8) != 0)
         {
             obj->anim.localPosX = ((ObjPlacement*)setup)->posX;
             obj->anim.localPosY = ((ObjPlacement*)setup)->posY;
             obj->anim.localPosZ = ((ObjPlacement*)setup)->posZ;
         }
-        (*gObjectTriggerInterface)->runSequence(((EnemyPlacement*)setup)->triggerSeqId, obj, -1);
+        (*gObjectTriggerInterface)->runSequence(((EnemyPlacement*)setup)->triggerSequenceId, obj, -1);
         ((EnemyState*)state)->controlFlags |= 2;
         *(u32*)&((EnemyState*)state)->controlFlags = *(u32*)&((EnemyState*)state)->controlFlags & ~1LL;
         return;
@@ -2756,7 +2733,7 @@ void enemy_update(GameObject* obj)
             }
             if (player != NULL)
             {
-                if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->posX) >
+                if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->base.posX) >
                     *enemyRespawnDistanceSq)
                 {
                     enemy_init(obj, setup, 0);
@@ -2786,7 +2763,7 @@ void enemy_update(GameObject* obj)
             player = (u8*)Obj_GetPlayerObject();
             if (player != NULL)
             {
-                if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->posX) >
+                if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->base.posX) >
                     *enemyRespawnDistanceSq)
                 {
                     enemy_init(obj, setup, 0);
@@ -2820,7 +2797,7 @@ void enemy_update(GameObject* obj)
                     player = (u8*)Obj_GetPlayerObject();
                     if (player != NULL)
                     {
-                        if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->posX) >
+                        if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->base.posX) >
                             *enemyRespawnDistanceSq)
                         {
                             enemy_init(obj, setup, 0);
@@ -2856,12 +2833,12 @@ void enemy_update(GameObject* obj)
         if ((((EnemyState*)state)->flags2E4 & 0x20000) != 0)
         {
             s2 = *(u8**)&obj->anim.placementData;
-            obj->anim.localPosX = ((EnemyPlacement*)s2)->posX;
-            obj->anim.localPosY = ((EnemyPlacement*)s2)->posY;
-            obj->anim.localPosZ = ((EnemyPlacement*)s2)->posZ;
+            obj->anim.localPosX = ((EnemyPlacement*)s2)->base.posX;
+            obj->anim.localPosY = ((EnemyPlacement*)s2)->base.posY;
+            obj->anim.localPosZ = ((EnemyPlacement*)s2)->base.posZ;
             obj->anim.rotZ = 0;
             obj->anim.rotY = 0;
-            obj->anim.rotX = ((EnemyPlacement*)s2)->rotXByte << 8;
+            obj->anim.rotX = ((EnemyPlacement*)s2)->initialYaw << 8;
             fz = 0.0f;
             obj->anim.velocityX = fz;
             obj->anim.velocityY = fz;
@@ -2949,7 +2926,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
     ((EnemyState*)state)->aggroRange = (f32)(u32)(((EnemyPlacement*)setup)->aggroRangeByte << 3);
     *(int*)&((EnemyState*)state)->controlFlags = 0;
     ((EnemyState*)state)->initialFlags = *(int*)&((EnemyState*)state)->controlFlags;
-    (obj)->anim.rotX = ((EnemyPlacement*)setup)->rotXByte << 8;
+    (obj)->anim.rotX = ((EnemyPlacement*)setup)->initialYaw << 8;
     (obj)->anim.localPosX = ((ObjPlacement*)setup)->posX;
     (obj)->anim.localPosY = ((ObjPlacement*)setup)->posY;
     (obj)->anim.localPosZ = ((ObjPlacement*)setup)->posZ;
