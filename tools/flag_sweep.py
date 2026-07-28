@@ -34,6 +34,10 @@ real `.o` is never overwritten.  A hit here is a LEAD, not a landing.
 
         FLIP        residual reached zero -- the unit can become `complete`
         FUZZY       fuzzy up, residual not worse -- land it
+        FUZZY-ONLY  fuzzy up but residual worse -- land it only once the unit is
+                    known to be unflippable anyway (e.g. it carries an .sdata2
+                    retail's `.o` does not have, so the pool can never be
+                    claimed); otherwise it trades away the flip
         RESID-ONLY  residual down but fuzzy down too -- REJECT, it is a trap
 
     Even a FLIP/FUZZY hit must be confirmed by editing `configure.py`,
@@ -209,16 +213,17 @@ def compile_and_score(cmd, unit, mutate, target, workdir, unit_entry):
 
 
 def verdict(base, got):
-    """FLIP / FUZZY / RESID-ONLY, per the two-metric rule."""
+    """FLIP / FUZZY / FUZZY-ONLY / RESID-ONLY, per the two-metric rule."""
     if got[0] == 0:
         return "FLIP"
     if base[3] is None or got[3] is None:
         return "RESID-ONLY"
-    if got[3] > base[3] + 1e-6 and got[0] <= base[0]:
-        return "FUZZY"
-    if got[3] >= base[3] - 1e-6:
-        return "FUZZY" if got[0] < base[0] else None
-    return "RESID-ONLY"
+    up = got[3] > base[3] + 1e-6
+    if got[0] < base[0]:
+        return "FUZZY" if got[3] >= base[3] - 1e-6 else "RESID-ONLY"
+    if got[0] == base[0]:
+        return "FUZZY" if up else None
+    return "FUZZY-ONLY" if up else None
 
 
 def sweep_unit(unit, obj, target, profs, top, unit_entry, keep_traps):
@@ -240,14 +245,15 @@ def sweep_unit(unit, obj, target, profs, top, unit_entry, keep_traps):
             v = verdict(base, got)
             if v is None or (v == "RESID-ONLY" and not keep_traps):
                 continue
-            hits.append(({"FLIP": 0, "FUZZY": 1}.get(v, 2), got[0], name, got, v))
+            rank = {"FLIP": 0, "FUZZY": 1, "FUZZY-ONLY": 2}.get(v, 3)
+            hits.append((rank, -(got[3] or 0), got[0], name, got, v))
         hits.sort()
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
     bf = "%.5f" % base[3] if base[3] is not None else "?"
     body = "  ".join(
         "%s[%s resid=%d fuzzy=%s]" % (n, v, g[0], "%.5f" % g[3] if g[3] is not None else "?")
-        for _, _, n, g, v in hits[:top]) or "-"
+        for _, _, _, n, g, v in hits[:top]) or "-"
     return f"{unit}: base resid={base[0]}({base[1]}b/{base[2]}r) fuzzy={bf}\n    {body}"
 
 
