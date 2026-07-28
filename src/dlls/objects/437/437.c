@@ -833,7 +833,7 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
             break;
         }
     }
-    if (*(s16*)((char*)placement + 0x1a) == 0x64c)
+    if (*(s16*)((char*)placement + 0x1a) == DLL437_COMPLETION_GAMEBIT_SC_TOTEM_BOND)
     {
         Lightfoot_UpdatePlayerInteraction((int)obj, inner, inner);
         if ((*(u8*)((char*)inner + 0x404) & 1) != 0 && (obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
@@ -1073,7 +1073,7 @@ void dll437_init(GameObject* obj, const Dll437Placement* placement, int isReload
     ((Dll437ControlState*)control)->weaponDefNoSentinel = -1;
     ((Dll437ControlState*)control)->weaponDefNo = ((Dll437ControlState*)control)->weaponDefNoSentinel;
     obj->objectFlags = (u16)(obj->objectFlags | (placement->objectFlags & 0x7));
-    if (placement->behaviorId == 0x64C) {
+    if (placement->completionGameBit == DLL437_COMPLETION_GAMEBIT_SC_TOTEM_BOND) {
         ((GroundBaddieState*)inner)->baddie.controlMode = 2;
         ((GroundBaddieState*)inner)->baddie.substate = 1;
         ObjHits_DisableObject(obj);
