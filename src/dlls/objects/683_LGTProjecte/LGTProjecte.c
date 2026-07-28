@@ -16,7 +16,7 @@
 #include "main/dll/LGT/dll_02AB_lgtprojectedlight.h"
 #include "dlls/object_descriptor.h"
 
-const f32 lbl_802C2618[4] = {0.0f, 0.0f, 1.0f, 0.0f};
+const f32 gProjectedLightInitialDirection[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 
 const f32 gProjectedLightMinExtent[1] = {1.0f};
 
@@ -69,7 +69,7 @@ void ProjectedLight_init(GameObject* obj, ProjectedLightSetup* setup)
     ProjectedLightSetup* setupData = setup;
     ProjectedLightState* state = (obj)->extra;
 
-    vec = *(Vec3f*)lbl_802C2618;
+    vec = *(Vec3f*)gProjectedLightInitialDirection;
 
     (obj)->anim.rotX = (s16)(setupData->rotXByte << 8);
     (obj)->anim.rotY = (s16)(setupData->rotYByte << 8);

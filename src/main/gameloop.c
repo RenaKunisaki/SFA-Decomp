@@ -11,8 +11,8 @@ int gGameLoopPendingUiDllId = -1;
 f32 gGameLoopMusicFadeTimer = -30.0f;
 u8 lbl_803DB424 = 0xFF;
 u8 gGameLoopResetComboDebounce = 10;
-int lbl_803DB428 = 0xAA;
-int lbl_803DB42C = 0x16A;
+int gAskProgressiveScanYesX = 0xAA;
+int gAskProgressiveScanNoX = 0x16A;
 #include "dolphin/dvd.h"
 #include "dolphin/gx/GXFrameBuffer.h"
 #include "main/asset_load.h"
@@ -382,7 +382,7 @@ void askProgressiveScanMode(void)
         {
             gameTextSetColor(0x80, 0x80, 0x80, 0x80);
         }
-        gameTextShowStr(gameTextGetStr(0x3cd), 0, lbl_803DB428, 0x64);
+        gameTextShowStr(gameTextGetStr(0x3cd), 0, gAskProgressiveScanYesX, 0x64);
         if ((u8)sel == 1)
         {
             gameTextSetColor(0x80, 0x80, 0x80, 0x80);
@@ -391,7 +391,7 @@ void askProgressiveScanMode(void)
         {
             gameTextSetColor(0xff, 0xff, 0xff, 0xff);
         }
-        gameTextShowStr(gameTextGetStr(0x3cc), 0, lbl_803DB42C, 0x64);
+        gameTextShowStr(gameTextGetStr(0x3cc), 0, gAskProgressiveScanNoX, 0x64);
         gameTextRun();
         dvdCheckError();
         doNothing_endOfFrame();

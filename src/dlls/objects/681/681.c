@@ -20,7 +20,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/dll/LGT/dll_02A9_lgtpointlight.h"
 
-const f32 lbl_802C25F8[4] = {0.0f, 0.0f, 1.0f, 0.0f};
+const f32 gPointLightInitialDirection[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 
 #define POINTLIGHT_FLAG_USE_AMBIENT_COLOR 0x01
 #define POINTLIGHT_MAX_SPOT_BRIGHTNESS    0x5a
@@ -122,7 +122,7 @@ void PointLight_init(GameObject* obj, PointLightSetup* setup)
     PointLightSetup* setupData = setup;
     PointLightState* state = (obj)->extra;
 
-    vec = *(Vec3f*)lbl_802C25F8;
+    vec = *(Vec3f*)gPointLightInitialDirection;
 
     (obj)->anim.rotX = (s16)(setupData->rotXByte << 8);
     (obj)->anim.rotY = (s16)(setupData->rotYByte << 8);
