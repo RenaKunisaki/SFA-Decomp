@@ -34,7 +34,7 @@ void gameTextResetCursor(int flags);
 void gameTextSetCursor(u16 x, u16 y, int flags);
 void gameTextSetDrawFunc(void* drawFunc);
 void gameTextSetWindow(u8* textBox);
-f32 gameTextFn_80019c00(void);
+f32 gameTextGetTimer(void);
 void gameTextRun(void);
 void* gameTextGet(int textId);
 void mainLoopDoGameText(void);

@@ -4675,7 +4675,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             f64 tmp = (double)(s16)panelAlpha * (lbl_803E2080 - (double)lbl_803DD75C);
             x = (s32)(tmp * lbl_803E2088);
         }
-        timer = gameTextFn_80019c00();
+        timer = gameTextGetTimer();
         if (timer != lbl_803E1E3C)
         {
             randomWidth = randomGetRange(0, 0x1e) * 2;
@@ -4737,7 +4737,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         model = Obj_GetActiveModel(lbl_803DD860[0]);
         objRender(0, 0, 0, 0, lbl_803DD860[0], 1);
         model->bufferFlags &= ~0x8;
-        timer = gameTextFn_80019c00();
+        timer = gameTextGetTimer();
         if (timer != lbl_803E1E3C)
         {
             randomWidth = randomGetRange(0, 0x1e) * 2;
@@ -4817,7 +4817,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         model = Obj_GetActiveModel(lbl_803DD860[0]);
         objRender(0, 0, 0, 0, lbl_803DD860[0], 1);
         model->bufferFlags &= ~0x8;
-        timer = gameTextFn_80019c00();
+        timer = gameTextGetTimer();
         if (timer != lbl_803E1E3C)
         {
             randomWidth = randomGetRange(0, 0x1e) * 2;
@@ -5036,7 +5036,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
     objRender(0, 0, 0, 0, lbl_803DD860[0], 1);
     model->bufferFlags &= ~0x8;
 
-    timer = gameTextFn_80019c00();
+    timer = gameTextGetTimer();
     if (timer != lbl_803E1E3C)
     {
         s32 rnd1 = randomGetRange(0, 0x1e) * 2;
@@ -5949,7 +5949,7 @@ void pauseMenuFn_80129ee0(void)
     menuMin = 1;
     menuMax = 5;
     charState = (*gMapEventInterface)->getCurCharacterState();
-    textTimer = gameTextFn_80019c00();
+    textTimer = gameTextGetTimer();
     if (textTimer == lbl_803E1E3C)
     {
         btn = getButtonsJustPressed(0);

@@ -194,7 +194,7 @@ int getCurLanguage(void)
     return curLanguage;
 }
 
-f32 gameTextFn_80019c00(void)
+f32 gameTextGetTimer(void)
 {
     return gameTextFonts->timer;
 }
