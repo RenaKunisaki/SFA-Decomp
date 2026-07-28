@@ -438,6 +438,7 @@ char** textMeasureFn_80016c9c(char* str, f32 width, f32 height, int* outCount, f
     f32 penX;
     int charLen;
     int i;
+    int k;
     int charLen2;
     u32 ch;
     lineCount = 0;
@@ -592,7 +593,6 @@ char** textMeasureFn_80016c9c(char* str, f32 width, f32 height, int* outCount, f
             dst--;
             do
             {
-                int k;
                 q = dst;
                 k = 6;
                 do
