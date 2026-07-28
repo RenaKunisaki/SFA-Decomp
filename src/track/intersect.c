@@ -1,7 +1,12 @@
 #include "global.h"
-#include "dolphin/card.h"
-#include "sys/objects.h"
 #include "dolphin/mtx.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/baddie_state.h"
+#include "main/dll/partfx_interface.h"
+#include "main/dll/waterfx_interface.h"
+#include "sys/objects.h"
+#include "track/intersect.h"
+#include "dolphin/card.h"
 #include "track/intersect_card_api.h"
 #include "track/intersect_depth_read_api.h"
 #include "main/model_engine.h"
@@ -26,7 +31,6 @@
 #include "main/maketex_api.h"
 #include "main/pad.h"
 #include "main/pi_dolphin.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "main/shader_api.h"
 #include "dolphin/gx/GXBump.h"
 #include "dolphin/gx/GXCull.h"
@@ -34,8 +38,226 @@
 #include "dolphin/gx/GXLighting.h"
 #include "dolphin/gx/GXTev.h"
 #include "dolphin/gx/GXTransform.h"
+#include "dolphin/mtx/vec.h"
+
+typedef struct
+{
+    s16 id;
+    s16 unk2;
+    s16 unk4;
+    f32 scale;
+    Vec pos;
+} SplashFxParams;
+
+extern u8 lbl_8030E8B0[];
+extern f32 lbl_803DEE20;
+extern f32 lbl_803DEE24;
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
+
+void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, void* points, void* state, f32 unused,
+                         f32 scale)
+{
+    Vec v;
+    SplashFxParams ps;
+    u8* tbl;
+    u16* sfxTab;
+    u8 flags;
+    u8 i;
+    int sfx;
+    u8 vecIdx;
+    u8 cnt;
+    f32* vec;
+    int n;
+    void* desc;
+
+    tbl = lbl_8030E8B0;
+    switch (type)
+    {
+    case 1:
+        sfxTab = (u16*)tbl;
+        break;
+    case 3:
+        sfxTab = (u16*)(tbl + 0x14);
+        break;
+    case 4:
+        sfxTab = (u16*)(tbl + 0x3C);
+        break;
+    case 5:
+        sfxTab = (u16*)(tbl + 0x64);
+        break;
+    case 6:
+        sfxTab = (u16*)(tbl + 0x50);
+        break;
+    case 8:
+        sfxTab = (u16*)(tbl + 0x78);
+        break;
+    case 10:
+        sfxTab = (u16*)(tbl + 0x8C);
+        break;
+    case 9:
+        sfxTab = (u16*)(tbl + 0xA0);
+        break;
+    case 7:
+        sfxTab = (u16*)(tbl + 0x28);
+        break;
+    default:
+        sfxTab = (u16*)(tbl + 0x28);
+        break;
+    }
+    flags = 0;
+    for (i = 0; i < events->triggerCount; i++)
+    {
+        switch (events->triggeredIds[i])
+        {
+        case 1:
+            flags |= 1;
+            vecIdx = 0;
+            break;
+        case 2:
+            flags |= 2;
+            vecIdx = 1;
+            break;
+        case 3:
+            flags |= 4;
+            vecIdx = 2;
+            break;
+        case 4:
+            flags |= 8;
+            vecIdx = 3;
+            break;
+        }
+    }
+    if (flags == 0)
+    {
+        return;
+    }
+    if (!(((BaddieState*)state)->contactSfxFlags & 0x10) && ((BaddieState*)state)->contactSfxMuted != 0)
+    {
+        return;
+    }
+    n = ((BaddieState*)state)->surfaceSoundIndex;
+    if (n < 0 || n >= 0x23)
+    {
+        n = 0;
+    }
+    else
+    {
+        n = tbl[0xb4 + n];
+    }
+    sfx = n;
+    desc = ((BaddieState*)state)->contactObj;
+    if (desc != NULL)
+    {
+        switch (((GameObject*)desc)->anim.seqId)
+        {
+        case 0x5d:
+        case 0x99:
+        case 0x1db:
+        case 0x223:
+            sfx = 4;
+        }
+    }
+    if (sfxTab != NULL)
+    {
+        vec = (f32*)points + vecIdx * 3;
+        if (((BaddieState*)state)->waterDepth > lbl_803DEE20)
+        {
+            (*gWaterfxInterface)->spawnImpactSurface((u8*)obj, flags, (f32*)points, (u8*)state, unused);
+            sfx = 5;
+        }
+        if (obj == Obj_GetPlayerObject())
+        {
+            if (*(s16*)(*(u32*)&obj->extra + 0x81a) == 1)
+            {
+                Sfx_PlayFromObject(0, SFXTRIG_foot_ice_scuff);
+            }
+            Sfx_PlayFromObject(0, sfxTab[sfx]);
+        }
+        else
+        {
+            Sfx_PlayAtPositionFromObject((int)obj, vec[0], vec[1], vec[2], sfxTab[sfx]);
+        }
+    }
+    if (i == 5)
+    {
+        return;
+    }
+    i = 0;
+    scale = lbl_803DEE24 * scale;
+    while (flags != 0)
+    {
+        vec = (f32*)points + i * 3;
+        v.x = vec[0];
+        v.y = vec[1];
+        v.z = vec[2];
+        if (flags & 1)
+        {
+            if (obj->anim.classId == 1 || obj->anim.seqId == 0x416)
+            {
+                playerEarthWalkerAudioFn_8006f950((u8*)obj, (f32*)&v, i & 1, sfx);
+            }
+            ps.pos.x = vec[0];
+            ps.pos.y = vec[1];
+            ps.pos.z = vec[2];
+            ps.scale = scale;
+            ps.id = sfx;
+            ps.unk4 = 0;
+            ps.unk2 = 0;
+            v.x = 0.25f * obj->anim.velocityX;
+            v.y = 0.25f * obj->anim.velocityY;
+            v.z = 0.25f * obj->anim.velocityZ;
+            if (sfx == 6 || sfx == 3)
+            {
+                cnt = randomGetRange(2, 4);
+                while (cnt != 0)
+                {
+                    (*gPartfxInterface)->spawnObject(obj, 0x7e6, &ps, 0x200001, -1, &v);
+                    cnt--;
+                }
+            }
+            else if (sfx == 2)
+            {
+                cnt = randomGetRange(4, 8);
+                while (cnt != 0)
+                {
+                    (*gPartfxInterface)->spawnObject(obj, 0x7e6, &ps, 0x200001, -1, &v);
+                    cnt--;
+                }
+            }
+        }
+        flags = flags >> 1;
+        i++;
+    }
+}
+
+void* surfaceSfxGetRecord(u32 i)
+{
+    u8* base = lbl_8030E8B0;
+    switch (i)
+    {
+    case 1:
+        return base;
+    case 3:
+        return base + 0x14;
+    case 4:
+        return base + 0x3C;
+    case 5:
+        return base + 0x64;
+    case 6:
+        return base + 0x50;
+    case 8:
+        return base + 0x78;
+    case 10:
+        return base + 0x8C;
+    case 9:
+        return base + 0xA0;
+    case 7:
+        return base + 0x28;
+    default:
+        return base + 0x28;
+    }
+}
 
 int lbl_803DD03C;
 f32 gFogNearZ;
@@ -288,6 +510,223 @@ void drawFn_8006f500(void)
         }
     }
     Camera_ApplyFullViewport();
+}
+
+extern u32 lbl_803DCFF4;
+
+
+
+
+extern f32 lbl_803DEE38, lbl_803DEE3C, lbl_803DEE58;
+extern f32 lbl_803DEE5C, lbl_803DEE64;
+extern f32 lbl_803DEE60;
+
+
+int cardDeleteFn_8007d99c(void);
+void cardGetMessage(u32* buttons, u32* texts, u32* count);
+void showMemCardError(u8 err);
+
+
+extern f32 lbl_803DEE20;
+#include "track/intersect_internal.h"
+void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
+void mtx44Identity(f32* mat);
+void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
+void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);
+void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
+int cardProbe(u8 retry);
+void showMemCardError(u8 err);
+void cardShowLoadingMsg(u8 kind);
+int cardCb_8007e6d4(u8 slot, int unused, void* src1, void* src2);
+int saveCb_8007e748(int saveId, int size, void* dst);
+
+void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
+{
+    WaterFxState* base;
+    f32 x, y, z;
+    f32 ax, px;
+    f32 ay, py, az, pz;
+    f32 xm, ym, zm;
+    f32 groundY;
+    Vec axis;
+    Vec perp;
+    Vec norm;
+    f32 fscale;
+
+    base = (WaterFxState*)gWaterFxState;
+    if (((GameObject*)obj)->anim.classId == 1)
+    {
+        gWaterFxBank = *(u8*)&((GameObject*)obj)->anim.bankIndex;
+    }
+    else if (((GameObject*)obj)->anim.seqId == 0x416)
+    {
+        gWaterFxBank = 3;
+    }
+    if (trackGetNearestGroundOffsetAndNormal((GameObject*)obj, ((GameObject*)obj)->anim.localPosX,
+                                             ((GameObject*)obj)->anim.localPosY,
+                                             ((GameObject*)obj)->anim.localPosZ, &groundY, (f32*)&norm, 0) == 0)
+    {
+        if (type == 1)
+        {
+            base->ripples[gWaterRippleWriteIdx].x = pos[0];
+            base->ripples[gWaterRippleWriteIdx].y = lbl_803DEE3C + pos[1];
+            base->ripples[gWaterRippleWriteIdx].z = pos[2];
+            base->ripples[gWaterRippleWriteIdx].id = *(s16*)obj;
+            base->ripples[gWaterRippleWriteIdx].alpha = 0xff;
+            base->ripples[gWaterRippleWriteIdx].flip = flip;
+            gWaterRippleWriteIdx++;
+            if (gWaterRippleWriteIdx >= 0x100)
+            {
+                gWaterRippleWriteIdx = 0;
+            }
+        }
+        PSVECNormalize(&norm, &norm);
+        axis.x = lbl_803DEE38;
+        axis.y = lbl_803DEE20;
+        axis.z = lbl_803DEE20;
+        if (__fabs(PSVECDotProduct(&norm, &axis)) >= lbl_803DEE58)
+        {
+            axis.x = lbl_803DEE20;
+            axis.z = lbl_803DEE38;
+        }
+        PSVECCrossProduct(&norm, &axis, &perp);
+        PSVECCrossProduct(&perp, &norm, &axis);
+        PSVECNormalize(&axis, &axis);
+        PSVECNormalize(&perp, &perp);
+        fscale = base->scales[gWaterFxBank];
+        PSVECScale(&axis, &axis, fscale);
+        PSVECScale(&perp, &perp, fscale);
+        x = pos[0];
+        y = pos[1];
+        z = pos[2];
+        ax = axis.x;
+        xm = x - ax;
+        px = perp.x;
+        base->quads[gWaterQuadWriteIdx].v[0] = xm - px;
+        ay = axis.y;
+        ym = y - ay;
+        py = perp.y;
+        base->quads[gWaterQuadWriteIdx].v[1] = ym - py;
+        az = axis.z;
+        zm = z - az;
+        pz = perp.z;
+        base->quads[gWaterQuadWriteIdx].v[2] = zm - pz;
+        x += ax;
+        base->quads[gWaterQuadWriteIdx].v[3] = x - px;
+        y += ay;
+        base->quads[gWaterQuadWriteIdx].v[4] = y - py;
+        z += az;
+        base->quads[gWaterQuadWriteIdx].v[5] = z - pz;
+        base->quads[gWaterQuadWriteIdx].v[6] = px + x;
+        base->quads[gWaterQuadWriteIdx].v[7] = py + y;
+        base->quads[gWaterQuadWriteIdx].v[8] = pz + z;
+        base->quads[gWaterQuadWriteIdx].v[9] = px + xm;
+        base->quads[gWaterQuadWriteIdx].v[10] = py + ym;
+        base->quads[gWaterQuadWriteIdx].v[11] = pz + zm;
+        base->quads[gWaterQuadWriteIdx].angle = 0x10000 - *(s16*)obj;
+        base->quads[gWaterQuadWriteIdx].type = type;
+        base->quads[gWaterQuadWriteIdx].alpha = 0xff;
+        base->quads[gWaterQuadWriteIdx].flip = flip;
+        gWaterQuadWriteIdx++;
+        if (gWaterQuadWriteIdx >= 0x100)
+        {
+            gWaterQuadWriteIdx = 0;
+        }
+    }
+}
+
+void waterFxSetDisabled(int disabled)
+{
+    int i;
+    SplashQuad* quads;
+    RippleEntry* ripples;
+
+    gWaterFxDisabled = disabled;
+    if (disabled != 0)
+    {
+        return;
+    }
+    quads = gWaterSplashQuads;
+    ripples = gWaterRipples;
+    for (i = 0; i < 32; i++)
+    {
+        quads[i * 8].alpha = 0;
+        ripples[i * 8].alpha = 0;
+        quads[i * 8 + 1].alpha = 0;
+        ripples[i * 8 + 1].alpha = 0;
+        quads[i * 8 + 2].alpha = 0;
+        ripples[i * 8 + 2].alpha = 0;
+        quads[i * 8 + 3].alpha = 0;
+        ripples[i * 8 + 3].alpha = 0;
+        quads[i * 8 + 4].alpha = 0;
+        ripples[i * 8 + 4].alpha = 0;
+        quads[i * 8 + 5].alpha = 0;
+        ripples[i * 8 + 5].alpha = 0;
+        quads[i * 8 + 6].alpha = 0;
+        ripples[i * 8 + 6].alpha = 0;
+        quads[i * 8 + 7].alpha = 0;
+        ripples[i * 8 + 7].alpha = 0;
+    }
+    gWaterQuadWriteIdx = 0;
+    gWaterRippleWriteIdx = 0;
+}
+
+void waterFxInit(void)
+{
+    int i;
+    WaterFxState* waterFx = (WaterFxState*)gWaterFxState;
+    SplashQuad* quads = waterFx->quads;
+    RippleEntry* ripples = waterFx->ripples;
+
+    for (i = 0; i < 16; i++)
+    {
+        quads[0].alpha = 0;
+        ripples[0].alpha = 0;
+        quads[1].alpha = 0;
+        ripples[1].alpha = 0;
+        quads[2].alpha = 0;
+        ripples[2].alpha = 0;
+        quads[3].alpha = 0;
+        ripples[3].alpha = 0;
+        quads[4].alpha = 0;
+        ripples[4].alpha = 0;
+        quads[5].alpha = 0;
+        ripples[5].alpha = 0;
+        quads[6].alpha = 0;
+        ripples[6].alpha = 0;
+        quads[7].alpha = 0;
+        ripples[7].alpha = 0;
+        quads[8].alpha = 0;
+        ripples[8].alpha = 0;
+        quads[9].alpha = 0;
+        ripples[9].alpha = 0;
+        quads[10].alpha = 0;
+        ripples[10].alpha = 0;
+        quads[11].alpha = 0;
+        ripples[11].alpha = 0;
+        quads[12].alpha = 0;
+        ripples[12].alpha = 0;
+        quads[13].alpha = 0;
+        ripples[13].alpha = 0;
+        quads[14].alpha = 0;
+        ripples[14].alpha = 0;
+        quads[15].alpha = 0;
+        ripples[15].alpha = 0;
+        quads += 16;
+        ripples += 16;
+    }
+    waterFx->textures[0] = textureLoadAsset(0x19);
+    waterFx->textures[1] = textureLoadAsset(0x18);
+    waterFx->textures[2] = textureLoadAsset(0x1A);
+    waterFx->textures[3] = textureLoadAsset(0x646);
+    waterFx->scales[0] = lbl_803DEE5C;
+    waterFx->scales[1] = lbl_803DEE60;
+    waterFx->scales[2] = lbl_803DEE60;
+    waterFx->scales[3] = lbl_803DEE64;
+    gWaterFxDisabled = 0;
+    gWaterQuadWriteIdx = 0;
+    gWaterRippleWriteIdx = 0;
+    lbl_803DCFF4 = 0;
 }
 
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
