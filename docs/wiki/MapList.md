@@ -449,7 +449,7 @@ Nothing in the tree centralizes the map-ID space today; individual DLLs each def
 local `#define` for the map IDs they care about, e.g.:
 
 ```c
-// include/main/dll/DIM/dll_01E0_dimboss.h:109-111
+// src/dlls/objects/480_DIM_Boss/DIM_Boss.c:140-142
 #define DIMBOSS_MAP_DIR 0x1C     /* == MAP_ID_SNOWMINES3 ("BOSS DarkIce") below */
 #define DIMBOSS_GUT_MAP_DIR 0x1B /* == MAP_ID_SNOWMINES2 ("DarkIce Mines - Bottom") */
 #define DIMTOP_MAP_DIR 0x13      /* == MAP_ID_SNOWMINES  ("DarkIce Mines - Top") */

@@ -94,7 +94,7 @@ Concrete, high-confidence naming/enum/struct opportunities the agents surfaced w
 ### MapList
 - Add a shared MapId enum (0x00-0x74, named after sMapFileNameTable's existing Romlist strings) to replace ~122 mapGetDirIdx()/lockLevel()/unlockLevel()/mapUnload() call sites currently passing bare hex literals across src/main/dll/**
 - Add a shared MapType enum (MAPTYPE_NORMAL/SUBMAP/UNLOAD_UNUSED/SUBMAP_UNUSED/NO_HUD = 0-4) for curMapType/getCurMapType() in shader.c, replacing magic-number comparisons in object.c:1994/2007 and lightmap.c:440
-- Fold the per-file duplicated map-ID defines (DIMBOSS_MAP_DIR=0x1C, DIMBOSS_GUT_MAP_DIR=0x1B, DIMTOP_MAP_DIR=0x13 in include/main/dll/DIM/dll_01E0_dimboss.h; CRCLOUDRACE_DRAG_ROCK_MAP_ID; WORLDPLANET_MAIN_MAP_ID) into the single MapId enum once adopted
+- Fold the per-file duplicated map-ID defines (DIMBOSS_MAP_DIR=0x1C, DIMBOSS_GUT_MAP_DIR=0x1B, DIMTOP_MAP_DIR=0x13 in src/dlls/objects/480_DIM_Boss/DIM_Boss.c; CRCLOUDRACE_DRAG_ROCK_MAP_ID; WORLDPLANET_MAIN_MAP_ID) into the single MapId enum once adopted
 - Name the 0x20-byte MAPINFO.bin record struct (now that offset +0x1c = map type is pinned down via shader.c:502/2785) instead of raw u8*/getTabEntry byte offsets
 
 ### Maps
