@@ -35,10 +35,20 @@ project matches more.
 - Paired-single disasm: `build/binutils/powerpc-eabi-objdump -M gekko -drz` (stock objdump mis-decodes PS as VSX).
 - Tools are in `tools/` — start with `function_objdump.py <unit> <symbol>` (full target asm) and `ndiff.py`.
 
-## Don't break `main`
+## Integration branch safety
 - Retail target objs (`build/GSAE01/obj/...`) are READ-ONLY — never rebuild or delete them. Only the
   source objs (`build/GSAE01/src/...`) are yours to build.
-- Branch off main; rebase + `ninja EXIT=0` before each commit; commit only when asked. One owner per `.c`.
+- Normal work lands on the UTC-dated branch `staging/YYYY-MM-DD`, not directly on `main`. The
+  initial branch is `staging/2026-07-28`. Fetch it from origin and rebase onto the fresh remote
+  staging tip before every push; abort and re-derive conflicts instead of using `--theirs`.
+- A maintainer or bot normally merges staging into `main` once after the UTC date rolls over. Use a
+  normal merge so the useful per-change history remains while the main Actions build runs once for
+  the batch. The merger owns creating the next dated staging branch from the clean integration
+  result.
+- The initial cutover deliberately stops builds on `main` and directs agents to staging. Do not
+  repair that main-only stop during normal work, and never merge or cherry-pick it into staging.
+  Only the nightly merger should revert it before integrating the batch.
+- Rebase + `ninja EXIT=0` before each commit; commit only when asked. One owner per `.c`.
 - Edit SJIS-bearing files byte-wise (python rb/wb). Never `git stash` in a worktree — use `git checkout -- <file>`.
 
 ## Banned constructs (game code: `src/main/`, `src/track/`)
