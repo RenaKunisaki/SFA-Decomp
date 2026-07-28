@@ -3496,7 +3496,7 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
                 hdr = *(int*)model;
                 if (*(u16*)(hdr + 0xf0) == 0)
                     continue;
-                r = (f32)(u32)(u16)modelFileHeaderGetCullDistance((ModelFileHeader*)hdr);
+                r = (f32)(u32)modelFileHeaderGetCullDistance((ModelFileHeader*)hdr);
                 c = resetObj->worldPosX;
                 if (f30 < c - r)
                     continue;

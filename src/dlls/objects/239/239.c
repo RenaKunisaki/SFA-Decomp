@@ -1269,7 +1269,7 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
     state->unkB0 = *(int*)&setup->unk1C;
     state->scale = (f32) * &setup->scaleRaw / PUSHABLE_SCALE_DENOM;
     state->scale = state->scale * obj->anim.modelInstance->rootMotionScaleBase;
-    state->cullDistance = state->scale * (f32)(u16)modelFileHeaderGetCullDistance((ModelFileHeader*)*activeModelSlot) +
+    state->cullDistance = state->scale * (f32)modelFileHeaderGetCullDistance((ModelFileHeader*)*activeModelSlot) +
                           PUSHABLE_MIN_GROUND_CLEARANCE;
     {
         f32 z0 = PUSHABLE_ZERO;
