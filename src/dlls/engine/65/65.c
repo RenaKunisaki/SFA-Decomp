@@ -9,6 +9,7 @@
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_0041_warpstoneui.h"
+#include "main/resource.h"
 #include "main/gameloop_api.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
 #include "string.h"
@@ -200,15 +201,8 @@ u8 gWarpStoneUiMenuItemTemplates[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-u32 lbl_8031CDB8[12] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00060000,
-                        (u32)WarpstoneUI_initialise,
-                        (u32)WarpstoneUI_release,
-                        0x00000000,
-                        (u32)WarpstoneUI_frameStart,
-                        (u32)WarpstoneUI_frameEnd,
-                        (u32)WarpstoneUI_showUI,
-                        (u32)WarpstoneUI_setState,
-                        0x00000000};
+ResourceDescriptorCallbacks8 gWarpStoneUiDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    {(ResourceDescriptorCallback)WarpstoneUI_initialise, (ResourceDescriptorCallback)WarpstoneUI_release, 0x00000000,
+     (ResourceDescriptorCallback)WarpstoneUI_frameStart, (ResourceDescriptorCallback)WarpstoneUI_frameEnd,
+     (ResourceDescriptorCallback)WarpstoneUI_showUI, (ResourceDescriptorCallback)WarpstoneUI_setState, 0x00000000}};

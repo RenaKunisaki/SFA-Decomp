@@ -20,6 +20,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
+#include "dlls/object_descriptor.h"
 
 /* spawnEffect effect ids per variant. */
 #define DLL8D_EFFECT_ID_VARIANT0 0x156
@@ -468,7 +469,13 @@ u8 gDll8DEffectParamBlock[] = {
     0x00, 0x1E, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-/* DLL entry table. */
-u32 lbl_80316C20[8] = {
-    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_8D_func00_nop, (u32)dll_8D_func01_nop,
-    0x00000000, (u32)dll_8D_func03};
+ObjectDescriptor4 dll_8D_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_8D_func00_nop,
+    (ObjectDescriptorCallback)dll_8D_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_8D_func03,
+};

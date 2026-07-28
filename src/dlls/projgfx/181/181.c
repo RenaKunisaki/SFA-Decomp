@@ -6,17 +6,20 @@
  */
 #include "dolphin/os.h"
 #include "main/dll/dll_00B5_projenergise2.h"
+#include "dlls/object_descriptor.h"
 
 #define PROJENERGISE2_UNSUPPORTED -1
 
-u32 lbl_80319720[8] = {0x00000000,
-                       0x00000000,
-                       0x00000000,
-                       0x00030000,
-                       (u32)projenergise2_initialise,
-                       (u32)projenergise2_release,
-                       0x00000000,
-                       (u32)projenergise2_doUnsupported};
+ObjectDescriptor4 projenergise2_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)projenergise2_initialise,
+    (ObjectDescriptorCallback)projenergise2_release,
+    0,
+    (ObjectDescriptorCallback)projenergise2_doUnsupported,
+};
 
 char sProjenergise2DoNoLongerSupported[] = "<projenergise2 Do>No Longer supported \n";
 

@@ -2,6 +2,7 @@
 #include "main/frame_timing.h"
 #include "main/textrender_api.h"
 #include "main/dll/dll_0040_credits.h"
+#include "dlls/object_descriptor.h"
 
 #define CREDITS_TEXTURE_ID 0xC5
 
@@ -222,6 +223,15 @@ void Credits_initialise(void)
     gCreditsElapsedTime = 0.0f;
 }
 
-void* lbl_8031CC10[10] = {(void*)0x00000000,  (void*)0x00000000, (void*)0x00000000, (void*)0x00050000,
-                          Credits_initialise, Credits_release,   (void*)0x00000000, Credits_frameStart,
-                          Credits_frameEnd,   Credits_render};
+ObjectDescriptor6 gCreditsDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_6_SLOTS,
+    (ObjectDescriptorCallback)Credits_initialise,
+    (ObjectDescriptorCallback)Credits_release,
+    0,
+    (ObjectDescriptorCallback)Credits_frameStart,
+    (ObjectDescriptorCallback)Credits_frameEnd,
+    (ObjectDescriptorCallback)Credits_render,
+};

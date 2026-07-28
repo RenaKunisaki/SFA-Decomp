@@ -340,33 +340,33 @@ typedef struct SkyDllInterface {
     u32 reserved1;
     u32 reserved2;
     u32 slotCountAndFlags;
-    ObjectDescriptorCallback slot00;
-    ObjectDescriptorCallback slot01;
-    ObjectDescriptorCallback slot02;
-    ObjectDescriptorCallback slot03;
-    ObjectDescriptorCallback slot04;
-    ObjectDescriptorCallback slot05;
-    ObjectDescriptorCallback slot06;
-    ObjectDescriptorCallback slot07;
-    ObjectDescriptorCallback slot08;
-    ObjectDescriptorCallback slot09;
-    ObjectDescriptorCallback slot0A;
-    ObjectDescriptorCallback slot0B;
-    ObjectDescriptorCallback slot0C;
-    ObjectDescriptorCallback slot0D;
-    ObjectDescriptorCallback slot0E;
-    ObjectDescriptorCallback slot0F;
-    ObjectDescriptorCallback slot10;
-    ObjectDescriptorCallback slot11;
-    ObjectDescriptorCallback slot12;
-    ObjectDescriptorCallback slot13;
-    ObjectDescriptorCallback slot14;
+    ObjectDescriptorCallback updateEnvfxAct;
+    ObjectDescriptorCallback loadLights;
+    ObjectDescriptorCallback updateTimeOfDay;
+    ObjectDescriptorCallback render;
+    ObjectDescriptorCallback getTimeOfDay;
+    ObjectDescriptorCallback getClockTime;
+    ObjectDescriptorCallback nop1;
+    ObjectDescriptorCallback getTransitionTimer;
+    ObjectDescriptorCallback getSunPosition;
+    ObjectDescriptorCallback setTimeOfDay;
+    ObjectDescriptorCallback return0;
+    ObjectDescriptorCallback timeToDayHourMinute;
+    ObjectDescriptorCallback getVisibility;
+    ObjectDescriptorCallback renderTimeOfDayBackdrop;
+    ObjectDescriptorCallback getCurrentTextureColor;
+    ObjectDescriptorCallback getCurrentAmbientAndLightColors;
+    ObjectDescriptorCallback nop2;
+    ObjectDescriptorCallback nop3;
+    ObjectDescriptorCallback setDayNo;
+    ObjectDescriptorCallback getDayNo;
+    ObjectDescriptorCallback return0b;
     ObjectDescriptorCallback slot15;
     ObjectDescriptorCallback slot16;
     ObjectDescriptorCallback slot17;
 } SkyDllInterface;
 
-SkyDllInterface lbl_8030F414 = {
+SkyDllInterface sky_funcs = {
     0,
     0,
     0,

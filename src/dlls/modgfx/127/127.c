@@ -13,6 +13,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
+#include "dlls/object_descriptor.h"
 
 u8 lbl_803DB8E8[8] = {0, 8, 0, 0, 0, 0, 0, 0};
 
@@ -240,5 +241,16 @@ void dll_7F_func00_nop(void)
 {
 }
 
-void* lbl_80315444[9] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000, dll_7F_func00_nop,
-                         dll_7F_func01_nop, (void*)0x00000000, dll_7F_func03,     (void*)0x00000000};
+ObjectDescriptor4WithPadding dll_7F_funcs = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+        (ObjectDescriptorCallback)dll_7F_func00_nop,
+        (ObjectDescriptorCallback)dll_7F_func01_nop,
+        0,
+        (ObjectDescriptorCallback)dll_7F_func03,
+    },
+    0,
+};

@@ -9,6 +9,7 @@
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_006E_dll6efunc0.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL6E_EFFECT_ID 0x5e
@@ -17,9 +18,16 @@ u32 lbl_80313C30[28] = {0xfc180000, 0xfc180000, 0x000003e8, 0x0000fc18, 0x003f00
                         0x003ffc18, 0x000003e8, 0x0000003f, 0x00000000, 0x00000020, 0x00200000, 0x00000001,
                         0x00040001, 0x00020004, 0x00040002, 0x00030000, 0x00040003, 0x00000000, 0x00000000,
                         0x00000001, 0x00020003, 0x00040000, 0x00000050, 0x00000000, 0x00000000, 0x00000000};
-u32 lbl_80313CA0[8] = {
-    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_6E_func00_nop, (u32)dll_6E_func01_nop,
-    0x00000000, (u32)dll_6E_func03};
+ObjectDescriptor4 dll_6E_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_6E_func00_nop,
+    (ObjectDescriptorCallback)dll_6E_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_6E_func03,
+};
 
 void dll_6E_func03(int sourceObj, int variant, int posSource, u32 flags)
 {

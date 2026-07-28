@@ -14,6 +14,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 
 u8 lbl_803DB980[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 gDllA6EffectTex[8] = {0, 0, 0, 1, 0, 2, 0, 0};
@@ -195,5 +196,13 @@ u8 lbl_80318DF0[32] = {0, 0,  0, 230, 5, 20, 0, 0, 0, 31, 0, 0,  255, 26, 5, 20,
                        0, 31, 0, 31,  0, 0,  0, 0, 0, 0,  0, 15, 0,   16, 0, 0};
 s16 gDllA6EffectHwWords[8] = {0, 0x46, 0x46, 0, 0, 0, 0, 0};
 
-void* lbl_80318E20[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_A6_func00_nop, dll_A6_func01_nop, (void*)0x00000000, dll_A6_func03};
+ObjectDescriptor4 dll_A6_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_A6_func00_nop,
+    (ObjectDescriptorCallback)dll_A6_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_A6_func03,
+};

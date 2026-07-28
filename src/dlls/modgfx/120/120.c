@@ -18,6 +18,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/modgfx_types.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL78_EFFECT_ID 0x34
@@ -216,5 +217,13 @@ void dll_78_func00_nop(void)
 {
 }
 
-void* lbl_80314AD0[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_78_func00_nop, dll_78_func01_nop, (void*)0x00000000, dll_78_func03};
+ObjectDescriptor4 dll_78_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_78_func00_nop,
+    (ObjectDescriptorCallback)dll_78_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_78_func03,
+};

@@ -8,6 +8,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
+#include "dlls/object_descriptor.h"
 
 u8 gDll6FGfxCmdTexture[8] = {0, 0, 0, 6, 0, 0x0C, 0, 0x12};
 
@@ -307,5 +308,13 @@ u8 gDll6FGfxCmdResourceTable[440] = {
     0,   0,   24, 0,  24,  0,   24,  0,  24, 0,   0,   0,   0,  0,  0,
 };
 
-void* lbl_80313E78[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_6F_func00_nop, dll_6F_func01_nop, (void*)0x00000000, dll_6F_func03};
+ObjectDescriptor4 dll_6F_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_6F_func00_nop,
+    (ObjectDescriptorCallback)dll_6F_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_6F_func03,
+};

@@ -15,6 +15,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0069_dll69func0.h"
+#include "dlls/object_descriptor.h"
 
 /* spawnEffect effect group per variant (docblock: "0xc11 for variant 2, else 0x5e0"). */
 #define DLL69_EFFECT_ID_VARIANT2 0xc11
@@ -214,7 +215,13 @@ void dll_69_func00_nop(void)
 {
 }
 
-u32 lbl_80313880[8] = {
-    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_69_func00_nop, (u32)dll_69_func01_nop,
-    0x00000000, (u32)dll_69_func03,
+ObjectDescriptor4 dll_69_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_69_func00_nop,
+    (ObjectDescriptorCallback)dll_69_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_69_func03,
 };

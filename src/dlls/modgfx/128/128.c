@@ -14,6 +14,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL80_EFFECT_ID 0x156
@@ -139,5 +140,13 @@ void dll_80_func00_nop(void)
 {
 }
 
-void* lbl_80315528[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_80_func00_nop, dll_80_func01_nop, (void*)0x00000000, dll_80_func03};
+ObjectDescriptor4 dll_80_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_80_func00_nop,
+    (ObjectDescriptorCallback)dll_80_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_80_func03,
+};

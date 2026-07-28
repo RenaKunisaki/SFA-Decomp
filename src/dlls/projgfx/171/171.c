@@ -8,11 +8,20 @@
  */
 #include "dolphin/os/OSReport.h"
 #include "main/dll/dll_00AB_projdummy.h"
+#include "dlls/object_descriptor.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1
 
-void* lbl_80319378[8] = {(void*)0x00000000,    (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         projdummy_initialise, projdummy_release, (void*)0x00000000, projdummy_doUnsupported};
+ObjectDescriptor4 projdummy_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)projdummy_initialise,
+    (ObjectDescriptorCallback)projdummy_release,
+    0,
+    (ObjectDescriptorCallback)projdummy_doUnsupported,
+};
 
 char sProjdummyDoNoLongerSupported[] = "<projdummy Do>No Longer supported \n";
 

@@ -13,6 +13,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL8F_EFFECT_ID 0x2e
@@ -160,6 +161,16 @@ void dll_8F_func00_nop(void)
 {
 }
 
-u32 lbl_80316E0C[9] = {
-    0x00000000, 0x00000000,         0x00000000, 0x00030000, (u32)dll_8F_func00_nop, (u32)dll_8F_func01_nop,
-    0x00000000, (u32)dll_8F_func03, 0x00000000};
+ObjectDescriptor4WithPadding dll_8F_funcs = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+        (ObjectDescriptorCallback)dll_8F_func00_nop,
+        (ObjectDescriptorCallback)dll_8F_func01_nop,
+        0,
+        (ObjectDescriptorCallback)dll_8F_func03,
+    },
+    0,
+};

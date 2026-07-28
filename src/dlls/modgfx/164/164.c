@@ -5,6 +5,8 @@
  * release and initialise, plus a func03 stub that returns 0. No game
  * objects, state, or behaviour live here.
  */
+#include "dlls/object_descriptor.h"
+
 
 int DummyA4_func03_ret_0(void)
 {
@@ -19,5 +21,13 @@ void DummyA4_initialise(void)
 {
 }
 
-void* lbl_80318D28[8] = {(void*)0x00000000,  (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         DummyA4_initialise, DummyA4_release,   (void*)0x00000000, DummyA4_func03_ret_0};
+ObjectDescriptor4 DummyA4_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)DummyA4_initialise,
+    (ObjectDescriptorCallback)DummyA4_release,
+    0,
+    (ObjectDescriptorCallback)DummyA4_func03_ret_0,
+};

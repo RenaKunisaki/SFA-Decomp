@@ -8,6 +8,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/modgfx_types.h"
+#include "dlls/object_descriptor.h"
 
 s16 lbl_80314980[8] = {0, 155, 200, 1, 155, 0, 0, 0};
 
@@ -120,5 +121,13 @@ void dll_77_func00_nop(void)
 {
 }
 
-void* lbl_80314990[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_77_func00_nop, dll_77_func01_nop, (void*)0x00000000, dll_77_func03};
+ObjectDescriptor4 dll_77_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_77_func00_nop,
+    (ObjectDescriptorCallback)dll_77_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_77_func03,
+};

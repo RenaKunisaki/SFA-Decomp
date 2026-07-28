@@ -15,6 +15,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 
 extern u32 lbl_80318038[];
 
@@ -191,6 +192,13 @@ u32 lbl_80318038[130] = {
     0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00080009, 0x000a000b, 0x000c000d, 0x000e000f, 0x00100011,
     0x00120013, 0x00140000, 0x00070008, 0x0009000a, 0x000b000c, 0x000d000e, 0x000f0010, 0x00110012, 0x00130014,
     0x000000fa, 0x00fa00fa, 0x00010000, 0x00000000};
-u32 lbl_80318240[8] = {
-    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_9D_func00_nop, (u32)dll_9D_func01_nop,
-    0x00000000, (u32)dll_9D_func03};
+ObjectDescriptor4 dll_9D_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_9D_func00_nop,
+    (ObjectDescriptorCallback)dll_9D_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_9D_func03,
+};

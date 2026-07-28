@@ -13,6 +13,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
+#include "dlls/object_descriptor.h"
 
 u8 lbl_803DB8F0[4] = {0, 0, 0, 1};
 u8 lbl_803DB8F4[8] = {0, 0, 0, 1, 0, 2, 0, 3};
@@ -254,5 +255,13 @@ u8 gFoodbagEffectTemplate[88] = {
     0, 0,  0, 0,   0, 0, 0, 0, 5, 39, 5,   40,  0, 223, 0, 222, 0, 223, 2, 0, 1,   251, 1, 251, 0, 223, 0, 222};
 
 /* DLL entry and resource tables. */
-void* lbl_80316000[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_85_func00_nop, dll_85_func01_nop, (void*)0x00000000, dll_85_func03};
+ObjectDescriptor4 dll_85_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_85_func00_nop,
+    (ObjectDescriptorCallback)dll_85_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_85_func03,
+};

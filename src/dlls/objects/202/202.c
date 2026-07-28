@@ -1002,7 +1002,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
         return;
     }
 
-    if ((((EnemyState*)state)->controlFlags & 0x20000000) != 0 && (*(u32*)((u8*)state + 0x2e0) & 0x20000000) == 0)
+    if ((((EnemyState*)state)->controlFlags & 0x20000000) != 0 && (((EnemyState*)state)->prevControlFlags & 0x20000000) == 0)
     {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_mumble02);
         ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
@@ -1026,9 +1026,9 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
             IdleRow* idleRows = idleSrc;
             u8 idleAnim;
             ((EnemyState*)state)->curveIndex = 0;
-            *(u8*)((u8*)state + 0x2f3) = 0;
-            *(u8*)((u8*)state + 0x2f4) = 0;
-            idleAnim = idleRows[*(u16*)((u8*)state + 0x2a0)].anim;
+            ((EnemyState*)state)->curveParamA = 0;
+            ((EnemyState*)state)->curveParamB = 0;
+            idleAnim = idleRows[((EnemyState*)state)->turnOctant].anim;
             if (idleAnim == 0)
             {
                 ((EnemyState*)state)->rootMotionFlags = 3;
@@ -1036,9 +1036,9 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
             }
             else
             {
-                Baddie_SetMove(obj, state, idleAnim, idleRows[*(u16*)((u8*)state + 0x2a0)].speed, 0, 0xb);
+                Baddie_SetMove(obj, state, idleAnim, idleRows[((EnemyState*)state)->turnOctant].speed, 0, 0xb);
                 ObjAnim_SetMoveProgress(
-                    &obj->anim, *(f32*)(table + (idleRows[*(u16*)((u8*)state + 0x2a0)].anim << 2)));
+                    &obj->anim, *(f32*)(table + (idleRows[((EnemyState*)state)->turnOctant].anim << 2)));
             }
         }
     }
@@ -1047,7 +1047,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
     {
         ((EnemyState*)state)->animPlaySpeed =
             ((EnemyState*)state)->pathStep *
-            (((f32)(u32) * (u16*)((u8*)state + 0x2a4) / ((EnemyState*)state)->aggroRange / 60.0f) *
+            (((f32)(u32)((EnemyState*)state)->targetDist / ((EnemyState*)state)->aggroRange / 60.0f) *
              ((f32*)(table + 0x1538))[((EnemyState*)state)->userData2]);
         if (((EnemyState*)state)->animPlaySpeed < 0.03f)
         {
@@ -2929,7 +2929,7 @@ void pinPon_updateIdle(GameObject* obj, int state)
         }
     }
     (obj)->anim.rotY =
-        -(1024.0f * mathSinfFast(0.19634955f * (f32)(u32) * (u8*)(state + 0x33a)) - (f32)(obj)->anim.rotY);
+        -(1024.0f * mathSinfFast(0.19634955f * (f32)(u32)((EnemyState*)state)->userData1) - (f32)(obj)->anim.rotY);
     baddieTurnTowardLookDir(obj, (void*)state, 0xf, 7.5f, 1.0f, 0);
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
@@ -2957,7 +2957,7 @@ void pinPon_updateIdle(GameObject* obj, int state)
     }
     ((EnemyState*)state)->userData1 += 1;
     (obj)->anim.rotY =
-        1024.0f * mathSinfFast(0.19634955f * (f32)(u32) * (u8*)(state + 0x33a)) + (f32)(obj)->anim.rotY;
+        1024.0f * mathSinfFast(0.19634955f * (f32)(u32)((EnemyState*)state)->userData1) + (f32)(obj)->anim.rotY;
     baddieSpawnWaterRipple(obj, (EnemyState*)state);
 }
 
@@ -4058,7 +4058,7 @@ void wbUpdateEngaged(u32 obj, int state)
     }
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        ObjAnim_SetCurrentMove(obj, 3, 0.0f, *(u8*)(state + 0x323));
+        ObjAnim_SetCurrentMove(obj, 3, 0.0f, ((EnemyState*)state)->rootMotionFlags);
     }
     if (((EnemyState*)state)->duster.phaseTimer > 0.0f)
     {
@@ -4150,7 +4150,7 @@ void wbUpdateIdle(u32 obj, int state)
     }
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        ObjAnim_SetCurrentMove(obj, 0, 0.0f, *(u8*)(state + 0x323));
+        ObjAnim_SetCurrentMove(obj, 0, 0.0f, ((EnemyState*)state)->rootMotionFlags);
     }
     if (((EnemyState*)state)->duster.phaseTimer > 0.0f)
     {
@@ -4351,7 +4351,7 @@ void mutatedEbaUpdateEngaged(u32 obj, int state)
         {
             ((EnemyState*)state)->userData1 = 3;
         }
-        if (*(u16*)(state + 0x2a0) < 4)
+        if (((EnemyState*)state)->turnOctant < 4)
         {
             tblOff = (u32)((EnemyState*)state)->userData1 * 0xc;
             baddieSetMove((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 8],
