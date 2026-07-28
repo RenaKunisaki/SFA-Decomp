@@ -694,7 +694,7 @@ void trickyUpdateCirclingTargetPosition();
 void trickyUpdateCircling();
 void trickyGrowl();
 void tricky_trackTumbleweed();
-void trickyFn_8013d8f0();
+void tricky_stateGoToWarpPoint();
 int tricky_substateFollowIdle();
 u32 tricky_substateReturnToHeel();
 u32 tricky_substateWaitQueuedMove();
@@ -738,7 +738,7 @@ TrickyStateHandler gTrickyStateHandlers[] = {
     (TrickyStateHandler)trickyGrowl,
     (TrickyStateHandler)tricky_stateIdleWander,
     (TrickyStateHandler)tricky_trackTumbleweed,
-    (TrickyStateHandler)trickyFn_8013d8f0,
+    (TrickyStateHandler)tricky_stateGoToWarpPoint,
     (TrickyStateHandler)tricky_substateFollowIdle,
     (TrickyStateHandler)tricky_substateReturnToHeel,
     (TrickyStateHandler)tricky_substateWaitQueuedMove,
@@ -3454,7 +3454,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
 
 #define TRICKYWARP_OBJ_GROUP 0x4b /* DLL 0x100 trickywarp */
 
-void trickyFn_8013d8f0(u8* self, u8* state)
+void tricky_stateGoToWarpPoint(u8* self, u8* state)
 {
     u8* nearest;
     f32 rejectDist;
@@ -3472,7 +3472,7 @@ void trickyFn_8013d8f0(u8* self, u8* state)
     best = NULL;
     minDist = 340282346638528859811704183484516925440.0f;
 
-    if (trickyFoodFn_8013db3c(self, state) == 0)
+    if (trickyShouldGoToWarpPoint(self, state) == 0)
     {
         ((TrickyState*)state)->stateIndex = 1;
         ((TrickyState*)state)->substate = 0;
@@ -3557,28 +3557,28 @@ void trickyFn_8013d8f0(u8* self, u8* state)
 }
 
 /*
- * Tricky's "is this critter worth eating?" decision.
+ * Should Tricky head for a trickywarp point?
  *
- * trickyFoodFn_8013db3c is queried with Tricky (arg1) and a candidate
- * critter (arg2). It returns:
- *   0 - not interested,
- *   1 - interested (critter is valid prey here),
- *   2 - interested AND within eating range.
+ * Queried with Tricky (arg1) and his own TrickyState extra block (arg2 - the
+ * raw byte offsets are TrickyState.playerObj at 0x04, commandPhase at 0x0D and
+ * statusFlags at 0x58). It returns:
+ *   0 - no,
+ *   1 - yes,
+ *   2 - yes, and the player is still right next to him (the enter condition).
  *
- * A critter is rejected outright while another object of group 0x53 is
- * nearby. Otherwise critters of type != 3 are accepted depending on the
- * level object's map cell: cell 0x38 gates acceptance behind a set of
- * game bits, any other cell flags the critter's per-instance cooldown
- * (the 4-bit mode field packed at byte 0x58) and accepts it. The final
- * range test promotes a "1" result to "2" when the critter sits within
- * 2500.0f squared units of Tricky.
+ * The answer is no outright while another object of group 0x53 is nearby.
+ * Otherwise, while no command is mid-dispatch (commandPhase != 3) and the
+ * owning player carries the parent-slack flag, map cell 0x38 gates the answer
+ * behind the TrickyFood game bits and any other cell arms the cooldown packed
+ * into statusFlags and answers yes. The final range test promotes a "1" to a
+ * "2" when the player sits within 2500.0f squared units of Tricky.
  */
 
-/* per-critter packed flags at byte 0x58; bits 27..30 hold a countdown mode */
-struct CritterFlags
+/* view of TrickyState.statusFlags (byte 0x58); bits 3..6 hold a countdown */
+struct TrickyWarpCooldown
 {
     u32 pad_high : 3;
-    u32 mode : 4;
+    u32 cooldown : 4;
     u32 pad_low : 1;
 };
 
@@ -3586,15 +3586,15 @@ struct CritterFlags
 #define PRESSURESWITCHFB_REMOVE_GROUP_ID    0x53 /* DLL 0xFB pressureswitchfb (self-registers) */
 
 
-int trickyFoodFn_8013db3c(u8* tricky, u8* critter)
+int trickyShouldGoToWarpPoint(u8* tricky, u8* state)
 {
     int result = 0;
     f32 dist = 40.0f;
-    struct CritterFlags* flags = (struct CritterFlags*)&critter[0x58];
+    struct TrickyWarpCooldown* flags = (struct TrickyWarpCooldown*)&state[0x58];
 
-    if (flags->mode != 0)
+    if (flags->cooldown != 0)
     {
-        flags->mode--;
+        flags->cooldown--;
         result = 1;
     }
 
@@ -3603,11 +3603,11 @@ int trickyFoodFn_8013db3c(u8* tricky, u8* critter)
         return 0;
     }
 
-    if ((s8)critter[0xD] != 3)
+    if ((s8)state[0xD] != 3)
     {
-        u8* levelObj = (u8*)*(u32*)(critter + 4);
+        u8* playerObj = (u8*)*(u32*)(state + 4);
 
-        if ((((GameObject*)levelObj)->objectFlags & MMPCRITTERSPIT_OBJFLAG_PARENT_SLACK) != 0)
+        if ((((GameObject*)playerObj)->objectFlags & MMPCRITTERSPIT_OBJFLAG_PARENT_SLACK) != 0)
         {
             if (coordsToMapCell(((GameObject*)tricky)->anim.localPosX, ((GameObject*)tricky)->anim.localPosZ) == 0x38)
             {
@@ -3622,7 +3622,7 @@ int trickyFoodFn_8013db3c(u8* tricky, u8* critter)
             }
             else
             {
-                flags->mode = 0x1F;
+                flags->cooldown = 0x1F;
                 result = 1;
             }
         }
@@ -3630,9 +3630,9 @@ int trickyFoodFn_8013db3c(u8* tricky, u8* critter)
 
     if (result == 1)
     {
-        u8* levelObj = (u8*)*(u32*)(critter + 4);
+        u8* playerObj = (u8*)*(u32*)(state + 4);
 
-        if (vec3f_distanceSquared(&((GameObject*)levelObj)->anim.worldPosX, &((GameObject*)tricky)->anim.worldPosX) <
+        if (vec3f_distanceSquared(&((GameObject*)playerObj)->anim.worldPosX, &((GameObject*)tricky)->anim.worldPosX) <
             2500.0f)
         {
             return 2;
@@ -9169,7 +9169,7 @@ void Tricky_update(int obj)
                 break;
             }
         }
-        if ((trickyState->stateFlags & 0x10) == 0 && trickyFoodFn_8013db3c((u8*)obj, (u8*)state) == 2)
+        if ((trickyState->stateFlags & 0x10) == 0 && trickyShouldGoToWarpPoint((u8*)obj, (u8*)state) == 2)
         {
             trickyState->stateIndex = 0x11;
         }
