@@ -1,6 +1,7 @@
 /* Collapsing force-field barrier in CloudRunner Fortress. */
 
 #include "dlls/objects/347_CFForceFiel.h"
+#include "dolphin/mtx.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -93,7 +94,7 @@ void cfforcefield_update(GameObject* obj) {
                                    10.0f * (collapseScale * gCfForceFieldRingRadiusScale) *
                                        mathSinf(3.1415927f * (f32)(angle + (int)(100.0f * *phaseSpeedPtr)) / 32768.0f);
                 localPosition[2] = 0.0f;
-                PSMTXMultVecSR((f32*)worldTransform, localPosition, localPosition);
+                PSMTXMultVecSR((MtxPtr)worldTransform, (Vec*)localPosition, (Vec*)localPosition);
                 particleParams.posX = localPosition[0] + obj->anim.localPosX;
                 particleParams.posY = localPosition[1] + obj->anim.localPosY;
                 particleParams.posZ = localPosition[2] + obj->anim.localPosZ;

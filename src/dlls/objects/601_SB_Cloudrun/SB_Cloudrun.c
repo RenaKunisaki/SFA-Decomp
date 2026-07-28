@@ -19,6 +19,7 @@
  */
 
 #include "sys/objects.h"
+#include "dolphin/mtx.h"
 #include "main/dll/cloudaction_interface.h"
 #include "main/dll/WC/WCpushblock.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -740,7 +741,7 @@ void SB_CloudRunner_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 v
             *state = *state - playerMapOffsetX;
             state[2] = state[2] - playerMapOffsetZ;
             Obj_BuildInverseWorldTransformMatrix(obj->anim.parent, mtx);
-            PSMTXMultVec(mtx, state, state);
+            PSMTXMultVec((MtxPtr)mtx, (Vec*)state, (Vec*)state);
         }
     }
     else if (visible != 0)
@@ -752,7 +753,7 @@ void SB_CloudRunner_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 v
             *state = *state - playerMapOffsetX;
             state[2] = state[2] - playerMapOffsetZ;
             Obj_BuildInverseWorldTransformMatrix(obj->anim.parent, mtx);
-            PSMTXMultVec(mtx, state, state);
+            PSMTXMultVec((MtxPtr)mtx, (Vec*)state, (Vec*)state);
         }
     }
     else

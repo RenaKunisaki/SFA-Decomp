@@ -1,5 +1,6 @@
 /* Spirit-door lock and orbit controller. */
 #include "dlls/objects/359_SpiritDoorL.h"
+#include "dolphin/mtx/vec.h"
 
 #include "dlls/objects/343_SpiritDoorS.h"
 
@@ -144,7 +145,7 @@ void SpiritDoorLock_update(GameObject* obj) {
             }
             obj->anim.rotZ = angle;
             Obj_TransformLocalVectorByWorldMatrix(obj, orbitOffset, worldOffset);
-            PSVECAdd(&obj->anim.localPosX, worldOffset, &orbitObjects[i]->anim.localPosX);
+            PSVECAdd(&obj->anim.localPos, (Vec*)worldOffset, &orbitObjects[i]->anim.localPos);
             orbitObjects[i]->anim.rotX = obj->anim.rotX;
             orbitObjects[i]->anim.rotZ = (s16)(angle + SPIRIT_DOOR_LOCK_HALF_TURN);
             orbitObjects[i]->anim.rootMotionScale = obj->anim.rootMotionScale;

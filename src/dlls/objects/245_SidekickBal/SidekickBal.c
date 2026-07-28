@@ -6,6 +6,7 @@
  * reflection, while Tricky and the player coordinate throws via messages.
  */
 #include "dlls/objects/245_SidekickBal.h"
+#include "dolphin/mtx/vec.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/os/OSReport.h"
 #include "dolphin/pad.h"
@@ -299,7 +300,7 @@ void SidekickBall_update(GameObject* obj) {
 
 u8 trickyBallMove(GameObject* obj) {
     int hasCollisionNormal;
-    f32 collisionNormal[3];
+    Vec collisionNormal;
     f32 deltaX;
     f32 deltaY;
     f32 deltaZ;
@@ -331,7 +332,7 @@ u8 trickyBallMove(GameObject* obj) {
 
     if ((deltaX + deltaY + deltaZ) < SIDEKICKBALL_MOVEMENT_EPSILON) {
     } else {
-        PSVECSubtract(&obj->anim.localPosX, &state->previousPosX, collisionNormal);
+        PSVECSubtract(&obj->anim.localPos, (Vec*)&state->previousPosX, &collisionNormal);
         speed = restitution = SIDEKICKBALL_RESTITUTION;
         hasCollisionNormal = 1;
         hasMovementDelta = 1;
@@ -376,13 +377,13 @@ u8 trickyBallMove(GameObject* obj) {
 
     if (state->hasCollisionNormal != 0) {
         hasCollisionNormal = 1;
-        collisionNormal[0] = state->collisionNormal[0];
-        collisionNormal[1] = state->collisionNormal[1];
-        collisionNormal[2] = state->collisionNormal[2];
+        collisionNormal.x = state->collisionNormal[0];
+        collisionNormal.y = state->collisionNormal[1];
+        collisionNormal.z = state->collisionNormal[2];
     }
 
     if (hasCollisionNormal != 0) {
-        PSVECNormalize(collisionNormal, collisionNormal);
+        PSVECNormalize(&collisionNormal, &collisionNormal);
         reflectedX = -obj->anim.velocityX;
         reflectedY = -obj->anim.velocityY;
         reflectedZ = -obj->anim.velocityZ;
@@ -396,13 +397,13 @@ u8 trickyBallMove(GameObject* obj) {
             reflectedY *= invSpeed;
             reflectedZ *= invSpeed;
         }
-        reflectionScale = 2.0f * ((reflectedX * collisionNormal[0]) + (reflectedY * collisionNormal[1]) +
-                                  (reflectedZ * collisionNormal[2]));
+        reflectionScale = 2.0f * ((reflectedX * collisionNormal.x) + (reflectedY * collisionNormal.y) +
+                                  (reflectedZ * collisionNormal.z));
         logPrintf(sSidekickBallDotFormat, reflectionScale);
         if (reflectionScale > 0.0f) {
-            obj->anim.velocityX = collisionNormal[0] * reflectionScale;
-            obj->anim.velocityY = collisionNormal[1] * reflectionScale;
-            obj->anim.velocityZ = collisionNormal[2] * reflectionScale;
+            obj->anim.velocityX = collisionNormal.x * reflectionScale;
+            obj->anim.velocityY = collisionNormal.y * reflectionScale;
+            obj->anim.velocityZ = collisionNormal.z * reflectionScale;
             obj->anim.velocityX -= reflectedX;
             obj->anim.velocityY -= reflectedY;
             obj->anim.velocityZ -= reflectedZ;
@@ -410,7 +411,7 @@ u8 trickyBallMove(GameObject* obj) {
                 (state->hasCollisionNormal != 0)) {
                 return 2;
             }
-            PSVECScale(&obj->anim.velocityX, &obj->anim.velocityX, speed * restitution);
+            PSVECScale(&obj->anim.velocity, &obj->anim.velocity, speed * restitution);
         }
     }
 

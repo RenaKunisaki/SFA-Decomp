@@ -10,6 +10,7 @@
  * curve interface) and animates its texture scroll + particle/sfx cues.
  */
 #include "dlls/object_descriptor.h"
+#include "dolphin/mtx.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DR/dll_0251_ktrexfloorswitch.h"
 
@@ -160,9 +161,9 @@ void KT_RexFloorSwitch_update(GameObject* obj)
         player = Obj_GetPlayerObject();
         if (player != 0)
         {
-            PSMTXRotRad(mtx, 0x79, (f32)(3.142 * (f64)(obj)->anim.rotX / 32768.0));
-            PSMTXMultVecSR(mtx, vecA, vecA);
-            PSMTXMultVecSR(mtx, vecB, vecB);
+            PSMTXRotRad((MtxPtr)mtx, 'y', (f32)(3.142 * (f64)(obj)->anim.rotX / 32768.0));
+            PSMTXMultVecSR((MtxPtr)mtx, (Vec*)vecA, (Vec*)vecA);
+            PSMTXMultVecSR((MtxPtr)mtx, (Vec*)vecB, (Vec*)vecB);
             cx = (obj)->anim.localPosX;
             xLo = cx;
             xHi = vecB[0] + (cx + vecA[0]);

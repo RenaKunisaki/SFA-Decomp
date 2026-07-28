@@ -15,6 +15,7 @@
  * flames, and ends the player's carry.
  */
 #include "dlls/objects/433_SH_staff.h"
+#include "dolphin/mtx.h"
 
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/player_objects.h"
@@ -143,8 +144,8 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
     if (visible != 0) {
         if (state->phase == SHSTAFF_PHASE_CARRY_ATTACH) {
             Obj_BuildWorldTransformMatrix(obj, mtxB, 0);
-            PSMTXInverse((f32*)ObjPath_GetPointModelMtx((GameObject*)player, 0), mtxA);
-            PSMTXConcat(mtxA, mtxB, state->carryMatrix);
+            PSMTXInverse((MtxPtr)ObjPath_GetPointModelMtx((GameObject*)player, 0), (MtxPtr)mtxA);
+            PSMTXConcat((MtxPtr)mtxA, (MtxPtr)mtxB, (MtxPtr)state->carryMatrix);
             state->phase = SHSTAFF_PHASE_CARRY_RENDER;
         }
         if (state->phase == SHSTAFF_PHASE_CARRY_LOCAL) {
@@ -152,7 +153,7 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
             state->phase = SHSTAFF_PHASE_CARRY_RENDER;
         }
         if (state->phase == SHSTAFF_PHASE_CARRY_RENDER) {
-            PSMTXConcat((f32*)ObjPath_GetPointModelMtx((GameObject*)player, 0), state->carryMatrix, mtxB);
+            PSMTXConcat((MtxPtr)ObjPath_GetPointModelMtx((GameObject*)player, 0), (MtxPtr)state->carryMatrix, (MtxPtr)mtxB);
             objSetCurrentMatrix((u32)mtxB);
             objRenderModel(obj);
         } else {

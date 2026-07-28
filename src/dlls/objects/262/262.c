@@ -3,6 +3,7 @@
  * beetles. TU = 0x801843C0..0x80185868.
  */
 #include "dlls/objects/262.h"
+#include "dolphin/mtx/vec.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -283,7 +284,7 @@ void Scarab_update(GameObject* obj) {
     TrackQueryBounds sweepBounds;
     Vec3f startPosition;
     Vec3f endPosition;
-    f32 homeDirection[3];
+    Vec homeDirection;
     TrackGroundHit** groundHits;
     u32 message;
     f32 animationPhase;
@@ -557,8 +558,8 @@ void Scarab_update(GameObject* obj) {
                     Vec_distance(&obj->anim.worldPosX, &((ObjPlacement*)obj->anim.placementData)->posX) >
                         300.0f ||
                     ((hitMask & 1) != 0 && (hitMask & 0x10) == 0)) {
-                    PSVECSubtract(&((ObjPlacement*)obj->anim.placementData)->posX, &obj->anim.localPosX, homeDirection);
-                    angle = (u16)getAngle(homeDirection[0], homeDirection[2]);
+                    PSVECSubtract((Vec*)&((ObjPlacement*)obj->anim.placementData)->posX, &obj->anim.localPos, &homeDirection);
+                    angle = (u16)getAngle(homeDirection.x, homeDirection.z);
                     heading = angle;
                     heading = gScarabReturnHeadingScale * heading + 32768.0f;
                     obj->anim.rotX = heading;

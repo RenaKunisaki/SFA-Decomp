@@ -1,6 +1,7 @@
 /* CloudRunner Fortress main-crystal controller and position source. */
 
 #include "dlls/objects/331_CFMainCryst.h"
+#include "dolphin/mtx/vec.h"
 
 #include "dlls/objects/330_CFPowerBase.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -160,7 +161,7 @@ void cfMainCrystal_updateBeams(GameObject* obj) {
                 beamDirection[0] = state->pylonX[pylonIndex] - beam->startX;
                 beamDirection[1] = (CFMAINCRYSTAL_PYLON_BEAM_Y_OFFSET + state->pylonY[pylonIndex]) - beam->startY;
                 beamDirection[2] = state->pylonZ[pylonIndex] - beam->startZ;
-                PSVECNormalize(beamDirection, beamDirection);
+                PSVECNormalize((Vec*)beamDirection, (Vec*)beamDirection);
                 effectParams.posX = state->pylonX[pylonIndex] - state->crystalX;
                 effectParams.posY = (CFMAINCRYSTAL_PYLON_BEAM_Y_OFFSET + state->pylonY[pylonIndex]) - state->crystalY;
                 effectParams.posZ = state->pylonZ[pylonIndex] - state->crystalZ;
@@ -172,7 +173,7 @@ void cfMainCrystal_updateBeams(GameObject* obj) {
                 beamDirection[0] = state->pylonX[pylonIndex] - gCfMainCrystalPositionObject->anim.localPosX;
                 beamDirection[1] = CFMAINCRYSTAL_DOWNWARD_BEAM_Y;
                 beamDirection[2] = state->pylonZ[pylonIndex] - gCfMainCrystalPositionObject->anim.localPosZ;
-                PSVECNormalize(beamDirection, beamDirection);
+                PSVECNormalize((Vec*)beamDirection, (Vec*)beamDirection);
                 effectParams.posX = 0.0f;
                 effectParams.posY = CFMAINCRYSTAL_CRYSTAL_BEAM_Y_OFFSET;
                 effectParams.posZ = 0.0f;

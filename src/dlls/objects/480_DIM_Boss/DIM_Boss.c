@@ -2,6 +2,7 @@
  * DIM_Boss (DLL 0x1E0) controls the encounter and owns its animation and shared-effect tables.
  */
 #include "dlls/objects/480_DIM_Boss.h"
+#include "dolphin/mtx.h"
 
 #include "dlls/objects/478_DIM2LavaCon.h"
 #include "dlls/objects/482_DIM_BossTon.h"
@@ -885,7 +886,7 @@ void DIM2icicle_updateBossSequenceEffects(GameObject* obj, DIMbossRuntime* runti
             gDIMbossAnimScratchBase[0] = gDim2IcicleDustFxSource.posX / (gDim2IcicleDustFxSource.posZ / 2.0f);
             gDIMbossAnimScratchBase[1] = gDim2IcicleDustFxSource.posY / (gDim2IcicleDustFxSource.posZ / 2.0f);
             gDIMbossAnimScratchBase[2] = 2.0f;
-            PSMTXMultVec(m, gDIMbossAnimScratchBase, gDIMbossAnimScratchBase);
+            PSMTXMultVec((MtxPtr)m, (Vec*)gDIMbossAnimScratchBase, (Vec*)gDIMbossAnimScratchBase);
             ObjPath_GetPointWorldPosition((GameObject*)objIndex, 0xb, &gDim2IcicleDustFxSource.posX,
                                           &gDim2IcicleDustFxSource.posY, &gDim2IcicleDustFxSource.posZ, 1);
             (*gPartfxInterface)
@@ -1023,7 +1024,7 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
                 vec[0] = 0.1f * (f32)randomGetRange(-5, 5);
                 vec[1] = 0.1f * (f32)randomGetRange(-5, 5);
                 vec[2] = -0.25f * (f32)randomGetRange(2, 8);
-                PSMTXMultVec(topState->breathBurstMtx, vec, vec);
+                PSMTXMultVec((MtxPtr)topState->breathBurstMtx, (Vec*)vec, (Vec*)vec);
                 (*gPartfxInterface)->spawnObject((void*)obj, 0x4b5, &topState->breathBurstSource, 0x200001, -1, vec);
                 i = i + 1;
             } while (i < 5);
@@ -1035,14 +1036,14 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
             vec[0] = 0.1f;
             vec[1] = -0.2f;
             vec[2] = -0.1f * (f32)randomGetRange(4, 8);
-            PSMTXMultVec(topState->breathBurstMtx, vec, vec);
+            PSMTXMultVec((MtxPtr)topState->breathBurstMtx, (Vec*)vec, (Vec*)vec);
             (*gPartfxInterface)->spawnObject((void*)obj, 0x4b6, &topState->blueWhiteEffectSource, 0x200001, -1, vec);
         }
         if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_CAPTURE_BLUE_WHITE_VELOCITY) {
             vec[0] = 0.0f;
             vec[1] = -0.2f;
             vec[2] = -1.5f;
-            PSMTXMultVec(topState->breathBurstMtx, vec, vec);
+            PSMTXMultVec((MtxPtr)topState->breathBurstMtx, (Vec*)vec, (Vec*)vec);
             memcpy(topState->blueWhiteVelocity, vec, 0xc);
             gDIMbossSequenceFlags |= (u64)DIMBOSS_SEQUENCE_FLAG_SPAWN_BLUE_WHITE_EFFECT;
         }

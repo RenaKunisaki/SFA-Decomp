@@ -1,4 +1,5 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "dolphin/mtx/vec.h"
 #include "main/acosf.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
@@ -35,7 +36,7 @@ void basisVectorsToEulerAngles(f32* a, f32* b, s16* out0, s16* out1, s16* out2)
     f32 roll;
     f32 yaw;
 
-    PSVECCrossProduct(b, a, cross);
+    PSVECCrossProduct((Vec*)b, (Vec*)a, (Vec*)cross);
     c0 = cross[0];
     c1 = cross[1];
     c2 = cross[2];

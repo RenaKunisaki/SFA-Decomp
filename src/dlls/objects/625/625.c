@@ -18,6 +18,7 @@
  * are DrakorHoverpadFlags / DrakorHoverpadPathFlags.
  */
 #include "main/dll/dll_0271_drakorhoverpad.h"
+#include "dolphin/mtx/vec.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/curve.h"
 #include "main/frame_timing.h"
@@ -777,7 +778,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
     DrakorHoverpadFlags* f = (DrakorHoverpadFlags*)(p + 0x178);
     DrakorHoverpadPathFlags* g = (DrakorHoverpadPathFlags*)(p + 0x179);
     int evOut;
-    f32 diff[3];
+    Vec diff;
     f32 curvePos[3];
     int curveArg;
     f32 phase;
@@ -950,13 +951,13 @@ void drakorhoverpad_updateMain(GameObject* obj)
         }
         (obj)->anim.rotY = c;
     }
-    PSVECSubtract(curvePos, &(obj)->anim.localPosX, diff);
+    PSVECSubtract((Vec*)curvePos, &obj->anim.localPos, &diff);
     /* snapshot the shared steer speed before building the call args (the
      * through-pointer read keeps the load at this statement) */
     spd = lbl_803DC2F8;
-    Obj_SteerVelocityTowardVector(obj, (Vec3f*)&obj->anim.velocityX, (Vec3f*)diff, spd, spd / 30.0f,
+    Obj_SteerVelocityTowardVector(obj, &obj->anim.velocity, &diff, spd, spd / 30.0f,
                                   0.3f);
-    PSVECAdd(&(obj)->anim.localPosX, &(obj)->anim.velocityX, &(obj)->anim.localPosX);
+    PSVECAdd(&obj->anim.localPos, &obj->anim.velocity, &obj->anim.localPos);
 }
 
 void drakorhoverpad_initMain(GameObject* obj, void* desc)

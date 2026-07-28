@@ -13,6 +13,7 @@
  *
  */
 #include "main/model.h"
+#include "dolphin/mtx.h"
 #include "main/texture.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/shader_api.h"
@@ -528,11 +529,11 @@ const f32 gStaffAngleUnitScale = 32768.0f;
 
 void quakeSpellTextureFn_8016dbf4(void)
 {
-    f32 mResult[12];
-    f32 mScale[12];
-    f32 mRot[12];
-    f32 mTrans[12];
-    f32 mView[12];
+    Mtx mResult;
+    Mtx mScale;
+    Mtx mRot;
+    Mtx mTrans;
+    Mtx mView;
 
     if (((StaffQuakeSpellState*)gStaffQuakeSpellState)->active != 0)
     {
@@ -549,13 +550,13 @@ void quakeSpellTextureFn_8016dbf4(void)
                    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ - playerMapOffsetZ);
         PSMTXConcat(mView, mTrans, mView);
         PSMTXConcat(mView, mScale, mResult);
-        GXLoadPosMtxImm(mResult, GX_PNMTX0);
+        GXLoadPosMtxImm((f32*)mResult, GX_PNMTX0);
         PSMTXConcat(mView, mRot, mResult);
         z = 0.0f;
-        mResult[3] = z;
-        mResult[7] = z;
-        mResult[11] = z;
-        GXLoadTexMtxImm(mResult, GX_TEXMTX0, GX_MTX3x4);
+        mResult[0][3] = z;
+        mResult[1][3] = z;
+        mResult[2][3] = z;
+        GXLoadTexMtxImm((f32*)mResult, GX_TEXMTX0, GX_MTX3x4);
         GXDrawTorus(((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius, 10, 20);
     }
 }

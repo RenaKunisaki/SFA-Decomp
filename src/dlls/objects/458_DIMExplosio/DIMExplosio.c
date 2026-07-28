@@ -16,6 +16,7 @@
  */
 
 #include "dlls/objects/458_DIMExplosio.h"
+#include "dolphin/mtx.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/gx/GXGeometry.h"
@@ -235,11 +236,11 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
     u32 colB;
     u32 colA2;
     u32 colB2;
-    f32 mE[12];
-    f32 m4[12];
-    f32 m3[12];
-    f32 m2[12];
-    f32 m1[12];
+    Mtx mE;
+    Mtx m4;
+    Mtx m3;
+    Mtx m2;
+    Mtx m1;
     int state;
     int model;
     int i;
@@ -259,12 +260,12 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
                 void** tex;
                 int k;
                 u8 cv;
-                Obj_BuildWorldTransformMatrix(obj, mE, 0);
-                PSMTXRotRad(m1, 0x7a, (f32)((6.2832 * (f64)(int)((DimExplosionFlame*)cursor)->spinAngle) / 65536.0));
-                PSMTXRotRad(m3, 0x78,
+                Obj_BuildWorldTransformMatrix(obj, (f32*)mE, 0);
+                PSMTXRotRad(m1, 'z', (f32)((6.2832 * (f64)(int)((DimExplosionFlame*)cursor)->spinAngle) / 65536.0));
+                PSMTXRotRad(m3, 'x',
                             (f32)((6.2832 * ((f64)(u32)(Camera_GetCurrentViewPitch() & 0xffff) - 0.0)) / 65536.0));
                 PSMTXConcat(m3, m1, m3);
-                PSMTXRotRad(m2, 0x79,
+                PSMTXRotRad(m2, 'y',
                             (f32)((6.2832 * (f64)(int)(0x10000 - (Camera_GetCurrentViewYaw() & 0xffff))) / 65536.0));
                 PSMTXConcat(m2, m3, m2);
                 PSMTXScale(m4, ((DimExplosionFlame*)cursor)->scale, ((DimExplosionFlame*)cursor)->scale,
@@ -273,7 +274,7 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
                 PSMTXTrans(mE, ((DimExplosionFlame*)cursor)->posX - playerMapOffsetX,
                            ((DimExplosionFlame*)cursor)->posY, ((DimExplosionFlame*)cursor)->posZ - playerMapOffsetZ);
                 PSMTXConcat(mE, m4, mE);
-                PSMTXConcat(Camera_GetViewMatrix(), mE, mE);
+                PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), mE, mE);
                 GXLoadPosMtxImm((const f32(*)[4])mE, GX_PNMTX0);
                 ((u8*)&colA)[3] = ((DimExplosionFlame*)cursor)->alpha;
                 cv = gExplosionDebrisColorScale *
@@ -343,8 +344,8 @@ void explosion_hitDetect(void) {
 void explosion_update(GameObject* obj) {
     DimExplosionPartfxSource fake;
     u16 ang[6];
-    f32 vpos[3];
-    f32 m[12];
+    Vec vpos;
+    Mtx m;
     u8 rgb[3];
     int state = *(int*)&(obj)->extra;
     int i;
@@ -385,24 +386,24 @@ void explosion_update(GameObject* obj) {
                             parentGeneration = ((DimExplosionFlame*)cursor)->generation;
                             parentSpeed = ((DimExplosionFlame*)cursor)->speed;
                             spawnState = *(int*)&(obj)->extra;
-                            vpos[0] = ((DimExplosionFlame*)cursor)->scale *
+                            vpos.x = ((DimExplosionFlame*)cursor)->scale *
                                       (sExplosionChildOffsetStep[0] * (f32)randomGetRange(-5, 3) +
                                        sExplosionBaseScale[0]);
-                            vpos[1] = sExplosionZero[0];
-                            vpos[2] = sExplosionZero[0];
-                            PSMTXRotRad(m, 0x7a,
+                            vpos.y = sExplosionZero[0];
+                            vpos.z = sExplosionZero[0];
+                            PSMTXRotRad(m, 'z',
                                         (f32)(sExplosionPi[0] *
                                               (f64)((f32)randomGetRange(0, 0xffff) / sExplosionAngleScale[0])));
-                            PSMTXConcat(Camera_GetInverseViewRotationMatrix(), m, m);
-                            PSMTXMultVecSR(m, vpos, vpos);
-                            vpos[0] += ((DimExplosionFlame*)cursor)->posX;
-                            vpos[1] += ((DimExplosionFlame*)cursor)->posY;
-                            vpos[2] += ((DimExplosionFlame*)cursor)->posZ;
+                            PSMTXConcat((MtxPtr)Camera_GetInverseViewRotationMatrix(), m, m);
+                            PSMTXMultVecSR(m, &vpos, &vpos);
+                            vpos.x += ((DimExplosionFlame*)cursor)->posX;
+                            vpos.y += ((DimExplosionFlame*)cursor)->posY;
+                            vpos.z += ((DimExplosionFlame*)cursor)->posZ;
                             childSpeed = parentSpeed * (f32)randomGetRange(0xc0, 0x100);
                             childSpeed = childSpeed * sExplosionSpeedScale[0];
                             if (((DimExplosionState*)spawnState)->flameCount < DIM_EXPLOSION_FLAME_CAPACITY) {
-                                explosion_spawnFlame(obj, (u8)(parentGeneration + 1), childSpeed, vpos[0], vpos[1],
-                                                     vpos[2]);
+                                explosion_spawnFlame(obj, (u8)(parentGeneration + 1), childSpeed, vpos.x, vpos.y,
+                                                     vpos.z);
                             }
                             ((DimExplosionFlame*)cursor)->spawnTimer = ((DimExplosionFlame*)cursor)->spawnInterval;
                         }
@@ -546,9 +547,9 @@ void explosion_update(GameObject* obj) {
 }
 
 void explosion_init(GameObject* obj, int placementAddress) {
-    f32 vsp[3];
-    f32 mB[12];
-    f32 mA[12];
+    Vec vsp;
+    Mtx mB;
+    Mtx mA;
     int cursor;
     int state = *(int*)&obj->extra;
     f32 scale;
@@ -589,23 +590,23 @@ void explosion_init(GameObject* obj, int placementAddress) {
         for (i = 0, cursor = state; i < debrisCount; i++) {
             if (((DimExplosionState*)state)->nearGround != 0) {
                 f32 mag = 2.0f * ((f32)randomGetRange(0x14, 0x28) * 0.01f) + 2.0f;
-                vsp[0] = mag;
-                vsp[1] = sExplosionZero[0];
-                vsp[2] = sExplosionZero[0];
-                PSMTXRotRad(mB, 0x7a,
+                vsp.x = mag;
+                vsp.y = sExplosionZero[0];
+                vsp.z = sExplosionZero[0];
+                PSMTXRotRad(mB, 'z',
                             (f32)(sExplosionPi[0] * (f64)((f32)randomGetRange(0x2000, 0x6000) / 65535.0f)));
                 PSMTXRotRad(
                     mA, 0x79,
                     (f32)(sExplosionPi[0] * (f64)((f32)randomGetRange(0, 0xffff) / sExplosionAngleScale[0])));
                 PSMTXConcat(mA, mB, mB);
-                PSMTXMultVecSR(mB, vsp, vsp);
+                PSMTXMultVecSR(mB, &vsp, &vsp);
             } else {
                 f32 mag = 2.0f * ((f32)randomGetRange(0x14, 0x28) * 0.01f) + 2.0f;
                 u8 spreadDirectionIndex;
                 spreadDirectionIndex = i % 4;
-                vsp[0] = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3];
-                vsp[1] = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3 + 1];
-                vsp[2] = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3 + 2];
+                vsp.x = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3];
+                vsp.y = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3 + 1];
+                vsp.z = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3 + 2];
                 PSMTXRotRad(
                     mB, 0x7a,
                     (f32)(sExplosionPi[0] * (f64)(((f32)randomGetRange(0, 0x8000) - 16384.0f) / 65535.0f)));
@@ -613,7 +614,7 @@ void explosion_init(GameObject* obj, int placementAddress) {
                     mA, 0x78,
                     (f32)(sExplosionPi[0] * (f64)(((f32)randomGetRange(0, 0x8000) - 16384.0f) / 65535.0f)));
                 PSMTXConcat(mA, mB, mB);
-                PSMTXMultVecSR(mB, vsp, vsp);
+                PSMTXMultVecSR(mB, &vsp, &vsp);
             }
             {
                 DimExplosionGravityDebris* debris =
@@ -621,9 +622,9 @@ void explosion_init(GameObject* obj, int placementAddress) {
                 debris->posX = obj->anim.localPosX;
                 debris->posY = obj->anim.localPosY;
                 debris->posZ = obj->anim.localPosZ;
-                debris->velocityX = vsp[0];
-                debris->velocityY = vsp[1];
-                debris->velocityZ = vsp[2];
+                debris->velocityX = vsp.x;
+                debris->velocityY = vsp.y;
+                debris->velocityZ = vsp.z;
                 debris->age = 0;
                 debris->lifetime = randomGetRange(0x28, 0x32);
                 debris->active = 1;

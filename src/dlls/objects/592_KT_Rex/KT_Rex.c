@@ -1,5 +1,6 @@
 /* DLL 0x0250 */
 #include "dlls/object_descriptor.h"
+#include "dolphin/mtx.h"
 #include "main/dll/objfsa_romcurve.h"
 #include "main/audio/music_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -161,9 +162,9 @@ void ktrex_spawnRandomEnergyArc(GameObject* obj, int angle, f32 arcLen, int slot
 void ktrex_spawnRandomEnergyArc(GameObject* obj, int angle, f32 arcLen, int slot)
 {
     int* model;
-    f32 point1[3];
-    f32 point2[3];
-    f32 localPoint[3];
+    Vec point1;
+    Vec point2;
+    Vec localPoint;
 
     if (gKTRexState->lightning[slot] != NULL)
     {
@@ -171,23 +172,23 @@ void ktrex_spawnRandomEnergyArc(GameObject* obj, int angle, f32 arcLen, int slot
         gKTRexState->lightning[slot] = NULL;
     }
     model = (int*)Obj_GetActiveModel(obj);
-    localPoint[0] = 0.0f;
-    localPoint[1] = 0.0f;
-    localPoint[2] = 0.0f;
+    localPoint.x = 0.0f;
+    localPoint.y = 0.0f;
+    localPoint.z = 0.0f;
 
-    PSMTXMultVec((f32*)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*(int*)model + 0xf3) - 1)), localPoint,
-                 point1);
-    point1[0] = point1[0] + playerMapOffsetX;
-    point1[1] += 50.0f;
-    point1[2] = point1[2] + playerMapOffsetZ;
+    PSMTXMultVec((MtxPtr)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*(int*)model + 0xf3) - 1)), &localPoint,
+                 &point1);
+    point1.x = point1.x + playerMapOffsetX;
+    point1.y += 50.0f;
+    point1.z = point1.z + playerMapOffsetZ;
 
-    PSMTXMultVec((f32*)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*(int*)model + 0xf3) - 1)), localPoint,
-                 point2);
-    point2[0] = point2[0] + playerMapOffsetX;
-    point2[2] = point2[2] + playerMapOffsetZ;
+    PSMTXMultVec((MtxPtr)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*(int*)model + 0xf3) - 1)), &localPoint,
+                 &point2);
+    point2.x = point2.x + playerMapOffsetX;
+    point2.z = point2.z + playerMapOffsetZ;
 
     gKTRexState->lightning[slot] =
-        lightningCreate((const Vec3f*)point1, (const Vec3f*)point2, 0.1f, 0.3f, angle, 96,
+        lightningCreate(&point1, &point2, 0.1f, 0.3f, angle, 96,
                                    0);
 }
 
@@ -1532,7 +1533,7 @@ void ktrex_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
     gKTRexState->vecX = 0.1f * (f32)randomGetRange(-50, 50);
     gKTRexState->vecY = 0.1f * (f32)randomGetRange(60, 120);
     gKTRexState->vecZ = -0.25f * (f32)randomGetRange(100, 150);
-    PSMTXMultVecSR(m, &gKTRexState->vecX, &gKTRexState->vecX);
+    PSMTXMultVecSR((MtxPtr)m, (Vec*)&gKTRexState->vecX, (Vec*)&gKTRexState->vecX);
     *(u32*)&gKTRexState->phaseFlags |= 0x100000LL;
 }
 

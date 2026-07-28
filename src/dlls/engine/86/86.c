@@ -2,6 +2,7 @@
  * DLL 86 / 0x56 - Arwing camera mode.
  */
 #include "main/camera_interface.h"
+#include "dolphin/mtx/vec.h"
 #include "main/resource.h"
 #include "main/frame_timing.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
@@ -204,7 +205,7 @@ void CameraModeArwing_init(GameObject* obj, int mode, int unused)
     *(p = (f32*)((base = (char*)gCamArwingWork) + 48)) = 0.0f;
     *(f32*)(base + 52) = 20.0f;
     *(f32*)(base + 56) = -165.0f;
-    PSVECAdd(&a4->anim.worldPosX, p, &obj->anim.worldPosX);
+    PSVECAdd(&a4->anim.worldPos, (Vec*)p, &obj->anim.worldPos);
     ((CameraArwingWork*)gCamArwingWork)->active = 1;
     ((CameraArwingWork*)gCamArwingWork)->yawScale = -0.2f;
     ((CameraArwingWork*)gCamArwingWork)->pitchScale = 0.1f;

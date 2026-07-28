@@ -14,6 +14,7 @@
  * gPartfxInterface / objfx_spawnFlaggedTrailBurst.
  */
 #include "main/dll/partfx_interface.h"
+#include "dolphin/mtx/vec.h"
 #include "main/dll/drakorenergystate_struct.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
@@ -86,8 +87,8 @@ void drakorenergy_update(int obj)
     f32 zeroF;
     f32 dist;
     f32 spd;
-    f32 interceptPt[3];
-    f32 seekDir[3];
+    Vec interceptPt;
+    Vec seekDir;
     s16 colorRGB[12];
     GameObject* o = (GameObject*)obj;
     DrakorEnergyState* s = state;
@@ -150,14 +151,14 @@ void drakorenergy_update(int obj)
         {
             spd = gDrakorEnergyChaseSpeed;
             Obj_PredictInterceptPoint(player, spd / 1.2f,
-                                      (const Vec3f*)&o->anim.localPosX, (Vec3f*)interceptPt);
-            PSVECSubtract(interceptPt, (f32*)(obj + 0xc), seekDir);
-            PSVECNormalize(seekDir, seekDir);
+                                      &o->anim.localPos, &interceptPt);
+            PSVECSubtract(&interceptPt, &o->anim.localPos, &seekDir);
+            PSVECNormalize(&seekDir, &seekDir);
             if (dist < spd)
             {
                 spd = dist;
             }
-            PSVECScale(seekDir, (f32*)(obj + 0x24), spd);
+            PSVECScale(&seekDir, &o->anim.velocity, spd);
             objMove((GameObject*)obj, o->anim.velocityX * timeDelta, o->anim.velocityY * timeDelta,
                     o->anim.velocityZ * timeDelta);
             colorRGB[2] = 0xff;
