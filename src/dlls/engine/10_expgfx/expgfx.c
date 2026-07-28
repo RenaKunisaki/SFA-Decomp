@@ -2438,7 +2438,6 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     u32 resource;
     s8* activeCountScan;
     int curPool;
-    int poolByteOffset;
     u32* maskPtr;
     void* cache;
     u8* curCacheBuf;
@@ -2468,6 +2467,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     f32 playerRange;
     f32 trickyRange;
     f32 attractRatio; /* attract speed ratio; reused as cross-product Z lane and trail inv-scale */
+    f32 dirX;
+    f32 dirY;
+    f32 dirZ;
     staticData = EXPGFX_STATIC_DATA;
     runtime = EXPGFX_RUNTIME_DATA;
     attractRatio = 1.0f;
@@ -2562,8 +2564,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
             cacheQueueWait(cacheQueued);
             slot--;
             slotIdx = 0;
-            poolByteOffset = pool * 4;
-            maskPtr = (u32*)((u8*)runtime + poolByteOffset);
+            maskPtr = (u32*)((u8*)runtime + pool * 4);
             maskPtr = (u32*)((u8*)maskPtr + EXPGFX_POOL_ACTIVE_MASKS_OFFSET);
             curPoolBuf = (u8*)cache + cacheParity * 0x1000;
             for (; slotIdx < EXPGFX_SLOTS_PER_POOL; slotIdx++)
@@ -3036,9 +3037,6 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         f32 sx;
                         f32 sy;
                         f32 sz;
-                        f32 dirX;
-                        f32 dirY;
-                        f32 dirZ;
                         f32 prevDX;
                         f32 prevDY;
                         f32 prevDZ;
@@ -3422,7 +3420,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                     }
                 }
             }
-            memcpyToCache((void*)*(u32*)((u8*)runtime->slotPoolBases + poolByteOffset), curPoolBuf, EXPGFX_POOL_CACHE_LINE_COUNT);
+            memcpyToCache((void*)*(u32*)((u8*)runtime->slotPoolBases + pool * 4), curPoolBuf, EXPGFX_POOL_CACHE_LINE_COUNT);
             cacheQueued = 1;
             pool = nextActivePool;
         }
