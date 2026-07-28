@@ -6728,11 +6728,11 @@ void ObjSeq_onMapSetup(void)
     }
 
     {
-        u8* p = base + i;
-        modes = (s16*)(base + offsetof(ObjSeqRuntimeStorage, modes)) + i;
-        handles = (int*)(base + offsetof(ObjSeqRuntimeStorage, handles)) + i;
+        u8* p = base + 0x50;
+        modes = (s16*)(base + offsetof(ObjSeqRuntimeStorage, modes)) + 0x50;
+        handles = (int*)(base + offsetof(ObjSeqRuntimeStorage, handles)) + 0x50;
         marks = p + offsetof(ObjSeqRuntimeStorage, marks);
-        for (; i < 85; i++)
+        for (i = 0; i < 85 - 0x50; i++)
         {
             frames = (f32*)(handles + 300);
             dists = (f32*)(handles + 215);
