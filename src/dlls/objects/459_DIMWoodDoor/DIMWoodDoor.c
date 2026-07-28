@@ -1,135 +1,131 @@
 /*
  * DIMWoodDoor (DLL 0x1CB) - a burnable wooden door object.
  *
- * The door advances its current move animation and slowly rises (its Z
- * eased toward rest by riseSpeed). Once burned, object setup 0x338 bleeds
- * off its alpha past a progress threshold; otherwise the door scans its
- * proximity list and, on finding a key sequence object (0x18F or 0x1D6),
- * snaps open, resets the wobble, sets the placement's gamebit, and plays the
- * open sfx.
+ * The door advances its current move animation and offsets its local Z by a
+ * speed that decays toward rest. Once opened, object type 0x338 fades past an
+ * animation threshold; otherwise the door scans its proximity list for a
+ * triggering sequence object, opens, sets its game bit, and plays a sound.
  */
-#include "main/dll/dimwooddoor2placement_struct.h"
-#include "main/dll/dimwooddoor2state_struct.h"
+
+#include "dlls/objects/459_DIMWoodDoor.h"
+
+#include "dlls/objects/454_DIMCannon.h"
 #include "game/objects/object.h"
-#include "main/gamebits.h"
-#include "main/audio/sfx.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
-#include "main/dll/DIM/dll_01CB_dimwooddoor2.h"
+#include "main/gamebits_api.h"
+#include "main/objanim.h"
 #include "main/object_render.h"
 
-#define DIMWOODDOOR2_FADE_OBJECT_ID 0x338
-#define DIMWOODDOOR2_KEY_SEQ_ID_A   0x18f
-#define DIMWOODDOOR2_KEY_SEQ_ID_B   0x1d6
+#define DIM_WOOD_DOOR_FADE_OBJECT_ID          0x338
+#define DIM_WOOD_DOOR_SNOW_HORN_SEQUENCE_ID   0x18f
+#define DIM_WOOD_DOOR_STATE_OPEN              0
+#define DIM_WOOD_DOOR_STATE_CLOSED            3
+#define DIM_WOOD_DOOR_ALPHA_FADE_PER_FRAME    16
+#define DIM_WOOD_DOOR_RENDER_SCALE            1.0f
+#define DIM_WOOD_DOOR_REST_SPEED              0.0f
+#define DIM_WOOD_DOOR_RISE_SPEED_DECAY        0.95f
+#define DIM_WOOD_DOOR_FADE_PROGRESS_THRESHOLD 0.9f
+#define DIM_WOOD_DOOR_OPEN_ANIMATION_SPEED    0.025f
+#define DIM_WOOD_DOOR_OPEN_RISE_SPEED         -4.0f
 
-int dimwooddoor2_getExtraSize(void)
-{
-    return 0xc;
+int dimwooddoor2_getExtraSize(void) {
+    return sizeof(DimWoodDoorState);
 }
 
-int dimwooddoor2_getObjectTypeId(void)
-{
+int dimwooddoor2_getObjectTypeId(void) {
     return 0x0;
 }
 
-void dimwooddoor2_free(void)
-{
+void dimwooddoor2_free(void) {
 }
 
-void dimwooddoor2_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void dimwooddoor2_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 visibleValue = visible;
+
+    if (visibleValue != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DIM_WOOD_DOOR_RENDER_SCALE);
     }
 }
 
-void dimwooddoor2_hitDetect(void)
-{
+void dimwooddoor2_hitDetect(void) {
 }
 
-void dimwooddoor2_update(GameObject* obj)
-{
-    Dimwooddoor2Placement* placement = (Dimwooddoor2Placement*)obj->anim.placementData;
-    DimWoodDoor2State* state = obj->extra;
+void dimwooddoor2_update(GameObject* obj) {
+    const DimWoodDoorPlacement* placement = (const DimWoodDoorPlacement*)obj->anim.placementData;
+    DimWoodDoorState* state = obj->extra;
     ObjHitsPriorityState* hitState;
-    ObjAnim_AdvanceCurrentMove((int)obj, state->animSpeed, timeDelta, 0);
+
+    ObjAnim_AdvanceCurrentMove((int)obj, state->animationSpeed, timeDelta, 0);
     obj->anim.localPosZ = obj->anim.localPosZ + state->riseSpeed;
     {
-        f32 rs = state->riseSpeed;
-        f32 ceil = 0.0f;
-        if (rs != ceil)
-        {
-            state->riseSpeed *= 0.95f;
-            state->riseSpeed = (state->riseSpeed < ceil) ? state->riseSpeed : ceil;
+        f32 riseSpeed = state->riseSpeed;
+        f32 restSpeed = DIM_WOOD_DOOR_REST_SPEED;
+
+        if (riseSpeed != restSpeed) {
+            state->riseSpeed *= DIM_WOOD_DOOR_RISE_SPEED_DECAY;
+            state->riseSpeed = (state->riseSpeed < restSpeed) ? state->riseSpeed : restSpeed;
         }
     }
-    if (state->burnState <= 0 && placement->base.objectId == DIMWOODDOOR2_FADE_OBJECT_ID &&
-        obj->anim.currentMoveProgress > 0.9f)
-    {
-        int v = obj->anim.alpha - framesThisStep * 16;
-        if (v < 0)
-        {
-            v = 0;
+    if (state->doorState <= DIM_WOOD_DOOR_STATE_OPEN && placement->base.objectId == DIM_WOOD_DOOR_FADE_OBJECT_ID &&
+        obj->anim.currentMoveProgress > DIM_WOOD_DOOR_FADE_PROGRESS_THRESHOLD) {
+        int alpha = obj->anim.alpha - framesThisStep * DIM_WOOD_DOOR_ALPHA_FADE_PER_FRAME;
+
+        if (alpha < 0) {
+            alpha = 0;
         }
         hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
         hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
-        obj->anim.alpha = v;
-    }
-    else
-    {
-        int found;
-        int i;
-        found = 0;
-        for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++)
-        {
-            GameObject* other = obj->anim.hitboxTransformState->contactObjects[i];
-            if (other->anim.seqId == DIMWOODDOOR2_KEY_SEQ_ID_A ||
-                other->anim.seqId == DIMWOODDOOR2_KEY_SEQ_ID_B)
-            {
-                found = 1;
+        obj->anim.alpha = alpha;
+    } else {
+        int triggerFound;
+        int contactIndex;
+
+        triggerFound = 0;
+        for (contactIndex = 0; contactIndex < obj->anim.hitboxTransformState->contactObjectCount; contactIndex++) {
+            GameObject* contact = obj->anim.hitboxTransformState->contactObjects[contactIndex];
+
+            if (contact->anim.seqId == DIM_WOOD_DOOR_SNOW_HORN_SEQUENCE_ID ||
+                contact->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+                triggerFound = 1;
                 break;
             }
         }
-        if (found)
-        {
-            state->animSpeed = 0.025f;
-            state->riseSpeed = -4.0f;
-            state->burnState = 0;
+        if (triggerFound) {
+            state->animationSpeed = DIM_WOOD_DOOR_OPEN_ANIMATION_SPEED;
+            state->riseSpeed = DIM_WOOD_DOOR_OPEN_RISE_SPEED;
+            state->doorState = DIM_WOOD_DOOR_STATE_OPEN;
             mainSetBits(placement->openedGameBit, 1);
             Sfx_PlayFromObject((int)obj, SFXTRIG_wp_dsmk2_c);
         }
     }
 }
 
-void dimwooddoor2_init(GameObject* obj, Dimwooddoor2Placement* placement)
-{
-    DimWoodDoor2State* state;
+void dimwooddoor2_init(GameObject* obj, const DimWoodDoorPlacement* placement) {
+    DimWoodDoorState* state;
     ObjHitsPriorityState* hitState;
-    f32 fz;
-    obj->anim.rotX = (s16)(((s16)placement->rotXByte) << 8);
+    f32 zero;
+
+    obj->anim.rotX = (s16)(((s16)placement->rotationXByte) << 8);
     obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
     state = obj->extra;
-    state->burnState = 3;
-    fz = 0.0f;
-    state->animSpeed = fz;
-    state->riseSpeed = fz;
-    if (mainGetBit(placement->openedGameBit) != 0)
-    {
-        state->burnState = 0;
+    state->doorState = DIM_WOOD_DOOR_STATE_CLOSED;
+    zero = DIM_WOOD_DOOR_REST_SPEED;
+    state->animationSpeed = zero;
+    state->riseSpeed = zero;
+    if (mainGetBit(placement->openedGameBit) != 0) {
+        state->doorState = DIM_WOOD_DOOR_STATE_OPEN;
         hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
         hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
         obj->anim.alpha = 0;
     }
 }
 
-void dimwooddoor2_release(void)
-{
+void dimwooddoor2_release(void) {
 }
 
-void dimwooddoor2_initialise(void)
-{
+void dimwooddoor2_initialise(void) {
 }
 
 ObjectDescriptor gDIMWoodDoor2ObjDescriptor = {

@@ -253,6 +253,7 @@
 #include "dlls/objects/456_DIMBridgeCo.h"
 #include "dlls/objects/457_DIMDismount.h"
 #include "dlls/objects/458_DIMExplosio.h"
+#include "dlls/objects/459_DIMWoodDoor.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -350,8 +351,8 @@ extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, 
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
     gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor;
 extern ResourceDescriptor gDIMMagicBridgeObjDescriptor;
-extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIMTruthHornIceObjDescriptor, gDIMWoodDoor2ObjDescriptor,
-    gDIM_BossGut2ObjDescriptor, gDIM_BossGutObjDescriptor, gDIM_BossObjDescriptor;
+extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIMTruthHornIceObjDescriptor, gDIM_BossGut2ObjDescriptor,
+    gDIM_BossGutObjDescriptor, gDIM_BossObjDescriptor;
 extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescriptor, gDIM_LevelControlObjDescriptor,
     gDIM_trickyObjDescriptor, gDIMbosscrackparObjDescriptor, gDIMbossfireObjDescriptor, gDR_CloudRunnerObjDescriptor,
     gDR_EarthWarriorObjDescriptor;
@@ -1536,7 +1537,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIMBridgeCogMaiObjDescriptor,
     (ResourceDescriptor*)&gDIMDismountPointObjDescriptor,
     (ResourceDescriptor*)&gExplosionObjDescriptor,
-    &gDIMWoodDoor2ObjDescriptor,
+    (ResourceDescriptor*)&gDIMWoodDoor2ObjDescriptor,
     &gDIMMagicBridgeObjDescriptor,
     &gDIM_LevelControlObjDescriptor,
     &dll_1CE,
