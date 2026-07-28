@@ -344,6 +344,7 @@ void textureFn_8004c330(void* p1, void* mtx)
     IndTexMtx23 m;
     f32 sx;
     f32 sy;
+    f32 wave;
     int out_c;
     int out_8;
     int yhi;
@@ -378,8 +379,10 @@ void textureFn_8004c330(void* p1, void* mtx)
         DCFlushRange(lbl_803DCD2C + 0x60, ((Texture*)lbl_803DCD2C)->dataSize);
     }
     newshadows_getReflectionScrollOffsets(&sx, &sy);
-    m.v[0][1] = 0.25f * mathSinf(3.142f * sx) + 0.5f;
-    m.v[1][2] = 0.25f * mathSinf(3.142f * sy) + 0.5f;
+    wave = mathSinf(3.142f * sx);
+    m.v[0][1] = 0.25f * wave + 0.5f;
+    wave = mathSinf(3.142f * sy);
+    m.v[1][2] = 0.25f * wave + 0.5f;
     GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD0, gRcpNextTexMap + 1, GX_ALPHA_BUMPN);
     GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
     if (mtx != 0)
