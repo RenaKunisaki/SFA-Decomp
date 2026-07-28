@@ -2059,6 +2059,8 @@ char lbl_8031D478[] = {
 
 int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
 {
+    int pref;
+    int qref;
     int tp;
     int wref;
     int sref;
@@ -2215,9 +2217,6 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     trickyDebugPrint(strs + 0x2e4, getPatchGroup(target, state->activeWalkGroup));
     if ((state->stateFlags & 0x400) != 0)
     {
-        int pref;
-        int qref;
-
         i = 0;
         pref = (int)state;
         qref = (int)state;
@@ -2270,8 +2269,6 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 {
                     if (wg != 0)
                     {
-                        int pref;
-                        
                         for (i = 0, pref = (int)state; i < 4; pref += 2, i++)
                         {
                             if (*(s16*)(pref + 152) == tp)
