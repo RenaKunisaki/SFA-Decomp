@@ -1,8 +1,7 @@
 #include "types.h"
 #include "main/gameloop_api.h"
 
-extern int gGameLoopButtonObjects[2];
-extern u8 gGameLoopButtonObjectCount;
+#include "main/gameloop_internal.h"
 
 int getButtonObjects(int** p)
 {
