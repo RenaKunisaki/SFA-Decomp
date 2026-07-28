@@ -5,113 +5,94 @@
  * talks to after landing on the galleon.
  *
  * Its extra state is a single s16 chirp timer. Each update tick it counts
- * the timer down by framesThisStep, forces hitbox-reset bit 0x8, and
- * measures its distance to the player; when the timer expires it plays a
- * "beep"/chirp sfx (unless suppressed by a GameBit) and re-arms with a
- * random 400-600 frame delay.
+ * the timer down by framesThisStep, keeps interaction disabled, and measures
+ * its distance to the player. When the timer expires it plays a chirp sound
+ * unless suppressed by a GameBit, then re-arms with a random 400-600 frame
+ * delay.
  */
-#include "sys/objects.h"
+#include "dlls/objects/498_SB_CageKyte.h"
+
 #include "game/objects/object.h"
-#include "main/objanim_update.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/gamebits.h"
 #include "main/frame_timing.h"
-#include "dlls/object_descriptor.h"
+#include "main/gamebits.h"
 #include "main/vecmath.h"
-#include "main/vecmath_distance_api.h"
+#include "sys/objects.h"
 
-/* anim.resetHitboxMode bit forced on each SeqFn / update tick. */
-#define SB_CAGEKYTE_HITBOX_RESET_BIT 0x8
+#define SB_CAGE_KYTE_CHIRP_TIMER_MIN 400
+#define SB_CAGE_KYTE_CHIRP_TIMER_MAX 600
 
-/* GameBit that, when set, suppresses the chirp sfx. */
-#define SB_CAGEKYTE_SILENCE_GAMEBIT 0xA71
-
-/* random re-arm window (frames) for the chirp timer. */
-#define SB_CAGEKYTE_CHIRP_MIN 400
-#define SB_CAGEKYTE_CHIRP_MAX 600
-
-#define SB_CAGEKYTE_OBJFLAG_HIDDEN             0x4000
-#define SB_CAGEKYTE_OBJFLAG_HITDETECT_DISABLED 0x2000
-
-int SB_CageKyte_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
+int SB_CageKyte_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     int holdTimer = obj->userData1;
-    if (holdTimer > 0)
-    {
+
+    (void)unused;
+    if (holdTimer > 0) {
         obj->userData1 = holdTimer - 1;
     }
-    obj->anim.resetHitboxFlags |= SB_CAGEKYTE_HITBOX_RESET_BIT;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     animUpdate->hitVolumePair = -2;
     animUpdate->sequenceEventActive = 0;
     return 0;
 }
 
-int SB_CageKyte_getExtraSize(void)
-{
-    return 0x2;
-}
-int SB_CageKyte_getObjectTypeId(void)
-{
-    return 0x1;
+int SB_CageKyte_getExtraSize(void) {
+    return sizeof(SBCageKyteState);
 }
 
-void SB_CageKyte_free(void)
-{
+int SB_CageKyte_getObjectTypeId(void) {
+    return 1;
 }
 
-void SB_CageKyte_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if (visible == 0)
-    {
+void SB_CageKyte_free(void) {
+}
+
+void SB_CageKyte_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    (void)obj;
+    (void)renderArg2;
+    (void)renderArg3;
+    (void)renderArg4;
+    (void)renderArg5;
+
+    if (visible == 0) {
         return;
     }
 }
 
-void SB_CageKyte_hitDetect(void)
-{
+void SB_CageKyte_hitDetect(void) {
 }
 
-void SB_CageKyte_update(GameObject* obj)
-{
-    s16* timer;
+void SB_CageKyte_update(GameObject* obj) {
+    SBCageKyteState* state = obj->extra;
     GameObject* player;
 
-    timer = obj->extra;
-    if (obj->userData1 > 0)
-    {
+    if (obj->userData1 > 0) {
         obj->userData1 = obj->userData1 - 1;
     }
 
-    obj->anim.resetHitboxFlags |= SB_CAGEKYTE_HITBOX_RESET_BIT;
-    *timer -= framesThisStep;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+    state->chirpTimer -= framesThisStep;
     player = Obj_GetPlayerObject();
-    Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
+    (void)Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
 
-    if (*timer <= 0)
-    {
-        randomGetRange(0, 10);
-        if (mainGetBit(SB_CAGEKYTE_SILENCE_GAMEBIT) == 0u)
-        {
+    if (state->chirpTimer <= 0) {
+        (void)randomGetRange(0, 10);
+        if (mainGetBit(GAMEBIT_SBRelated0A71) == 0u) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_ice_freeze_316);
         }
-        *timer = randomGetRange(SB_CAGEKYTE_CHIRP_MIN, SB_CAGEKYTE_CHIRP_MAX);
+        state->chirpTimer = randomGetRange(SB_CAGE_KYTE_CHIRP_TIMER_MIN, SB_CAGE_KYTE_CHIRP_TIMER_MAX);
     }
 }
 
-void SB_CageKyte_init(GameObject* obj)
-{
+void SB_CageKyte_init(GameObject* obj) {
     obj->animEventCallback = SB_CageKyte_SeqFn;
-    obj->objectFlags =
-        (u16)((u32)obj->objectFlags | (SB_CAGEKYTE_OBJFLAG_HIDDEN | SB_CAGEKYTE_OBJFLAG_HITDETECT_DISABLED));
+    obj->objectFlags = (u16)((u32)obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
 }
 
-void SB_CageKyte_release(void)
-{
+void SB_CageKyte_release(void) {
 }
 
-void SB_CageKyte_initialise(void)
-{
+void SB_CageKyte_initialise(void) {
 }
 
 ObjectDescriptor gSB_CageKyteObjDescriptor = {
@@ -119,14 +100,14 @@ ObjectDescriptor gSB_CageKyteObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)SB_CageKyte_initialise,
-    (ObjectDescriptorCallback)SB_CageKyte_release,
+    SB_CageKyte_initialise,
+    SB_CageKyte_release,
     0,
     (ObjectDescriptorCallback)SB_CageKyte_init,
     (ObjectDescriptorCallback)SB_CageKyte_update,
-    (ObjectDescriptorCallback)SB_CageKyte_hitDetect,
+    SB_CageKyte_hitDetect,
     (ObjectDescriptorCallback)SB_CageKyte_render,
-    (ObjectDescriptorCallback)SB_CageKyte_free,
+    SB_CageKyte_free,
     (ObjectDescriptorCallback)SB_CageKyte_getObjectTypeId,
     SB_CageKyte_getExtraSize,
 };
