@@ -542,7 +542,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1F0 | SB_KyteCage | COMPLETE | dlls/objects/496_SB_KyteCage/SB_KyteCage.c | = (canonical) | Exact complete ten-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x08-byte state, asserted callback-visible placement fields, canonical unit header, canonical staff and learned-to-speak gamebits, and exact emitted sections, relocations, and symbols; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, and the generated source path remains unchanged |
 | 0x1F1 | SB_SeqDoor | COMPLETE | dlls/objects/497_SB_SeqDoor/SB_SeqDoor.c | = (canonical) | Exact complete ten-function TU with its terminal 0x38-byte descriptor, proven zero-byte extra state, asserted callback-visible placement fields, canonical unit header and Ship Battle door-open gamebit, and exact emitted sections, relocations, and symbols; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, and the generated source path remains unchanged |
 | 0x1F2 | SB_CageKyte | COMPLETE | dlls/objects/498_SB_CageKyte/SB_CageKyte.c | = (canonical) | Exact complete ten-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x02-byte state, canonical unit header, canonical interaction flags, object flags, and Ship Battle gamebit, and exact emitted sections, relocations, and symbols; no object-specific placement layout is consumed, and the generated source path remains unchanged |
-| 0x1F3 | SB_MiniFire | COMPLETE | dlls/objects/499_SB_MiniFire/SB_MiniFire.c | = (canonical) | — |
+| 0x1F3 | SB_MiniFire | COMPLETE | dlls/objects/499_SB_MiniFire/SB_MiniFire.c | = (canonical) | Exact complete nine-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x02-byte state, canonical unit header and engine-wide object fields and flags, and exact emitted sections, relocations, and symbols; no object-specific placement layout is consumed, and the generated source path remains unchanged |
 | 0x1F4 | — | COMPLETE | dlls/objects/500/500.c | = (canonical) | No recovered retail basename |
 | 0x1F5 | — | COMPLETE | dlls/objects/501/501.c | = (canonical) | No recovered retail basename |
 | 0x1F6 | — | COMPLETE | dlls/objects/502/502.c | = (canonical) | No recovered retail basename |
@@ -1069,6 +1069,7 @@ more as they are recovered.
 | 0x1F0 | dlls/objects/496_SB_KyteCage/SB_KyteCage.c | include/dlls/objects/496_SB_KyteCage.h |
 | 0x1F1 | dlls/objects/497_SB_SeqDoor/SB_SeqDoor.c | include/dlls/objects/497_SB_SeqDoor.h |
 | 0x1F2 | dlls/objects/498_SB_CageKyte/SB_CageKyte.c | include/dlls/objects/498_SB_CageKyte.h |
+| 0x1F3 | dlls/objects/499_SB_MiniFire/SB_MiniFire.c | include/dlls/objects/499_SB_MiniFire.h |
 | 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |
