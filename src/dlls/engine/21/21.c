@@ -305,7 +305,7 @@ void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
 
 void curves_resolveAveragedSegments(GameObject* obj, CurvesCollisionState* collision)
 {
-    f32 sumY;
+    f32 sum;
     MatrixTransform transform;
     f32 localX[4];
     f32 localY[4];
@@ -396,34 +396,33 @@ void curves_resolveAveragedSegments(GameObject* obj, CurvesCollisionState* colli
             }
             if ((s32)(collision->flags & 0x8000) != 0)
             {
-                secondArg = (localX[0] + localX[idx1]) - (localX[idx3] + localX[idx2]);
-                angle = (u16)getAngle(secondArg, (localZ[0] + localZ[idx1]) - (localZ[idx3] + localZ[idx2]));
+                sum = localX[0] + localX[idx1];
+                secondArg = sum - (localX[idx2] + localX[idx3]);
+                angle = (u16)getAngle(secondArg, (localZ[0] + localZ[idx1]) - (localZ[idx2] + localZ[idx3]));
                 obj->anim.rotX += (s16)(u16)(angle + 0x8000) >> 2;
             }
             if ((s32)(collision->flags & 0x200) != 0)
             {
                 f32 sumZ;
-                f32 k;
                 sumZ = localZ[idx2] - localZ[idx1];
                 sumZ += localZ[idx3] - localZ[0];
-                secondArg = sumZ * (k = CURVES_HALF);
-                sumY = localY[idx2] - localY[idx1];
-                sumY += localY[idx3] - localY[0];
-                sumY *= k;
-                angle = getAngle(sumY, secondArg);
+                sumZ *= CURVES_HALF;
+                sum = localY[idx2] - localY[idx1];
+                sum += localY[idx3] - localY[0];
+                sum *= CURVES_HALF;
+                angle = getAngle(sum, sumZ);
                 collision->tiltPitch = -angle;
             }
             if ((pointCount == 4) && ((s32)(collision->flags & 0x400) != 0))
             {
                 f32 sumX;
-                f32 k;
                 sumX = localX[idx1] - localX[0];
                 sumX += localX[idx2] - localX[idx3];
-                secondArg = sumX * (k = CURVES_HALF);
-                sumY = localY[idx1] - localY[0];
-                sumY += localY[idx2] - localY[idx3];
-                sumY *= k;
-                angle = getAngle(sumY, secondArg);
+                sumX *= CURVES_HALF;
+                sum = localY[idx1] - localY[0];
+                sum += localY[idx2] - localY[idx3];
+                sum *= CURVES_HALF;
+                angle = getAngle(sum, sumX);
                 collision->tiltRoll = angle;
             }
         }
