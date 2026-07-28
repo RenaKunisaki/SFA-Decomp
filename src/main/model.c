@@ -47,15 +47,6 @@ u16 gModelCopyChunkWordLimit = 0x2A0;
 #define GX_LEQUAL 3
 #define GX_ALWAYS 7
 extern f32 gModelPhaseWrapPeriod;
-extern f32 lbl_803DE828;
-extern f32 lbl_803DE840;
-extern f32 lbl_803DE844;
-extern f32 lbl_803DE848;
-extern f32 lbl_803DE84C;
-extern f32 lbl_803DE818;
-extern f32 lbl_803DE874;
-extern f32 lbl_803DE878;
-extern f32 lbl_803DE87C;
 #define MODEL_BONEXFORM_HAS_X 0x2000
 #define MODEL_BONEXFORM_HAS_Y 0x4000
 #define MODEL_BONEXFORM_HAS_Z 0x8000
@@ -99,7 +90,6 @@ extern s16 gModelJointScratchBuffer[0xa0];
         gModelJointScratchBuffer[outPos++] = poseWeights[K];                  \
     }
 extern char sModelAnimationBufferOverflowWarning[];
-extern f32 lbl_803DE850;
 extern f32 gModelJitterAxis[];
 typedef struct ObjHitBufs
 {
@@ -246,7 +236,7 @@ void modelAnimUpdateChannels(ModelFileHeader* file, ObjAnimState* work, int chan
         {
             work->frameStreamStrides[i] = 0;
         }
-        if (work->frameTypes[i] != 0 && frameIdxF == work->frameLengths[i] - lbl_803DE818)
+        if (work->frameTypes[i] != 0 && frameIdxF == work->frameLengths[i] - 1.0f)
         {
             work->frameStreamStrides[i] = (s16)(-frameStride * frameIdx);
         }
@@ -491,7 +481,7 @@ void modelAnimResetState(void* m, void* data)
     channel->eventCountdown = 0;
     channel->eventState = 0;
     channel->prevEventState = 0;
-    f = lbl_803DE828;
+    f = 0.0f;
     channel->frameStep = f;
     channel->framePhase = f;
     channel->frameLength = f;
@@ -517,7 +507,7 @@ void modelAnimResetState(void* m, void* data)
         channel->frameLength = (f32)((u8*)channel->moveFrameData)[1];
         if (channel->frameType == 0)
         {
-            channel->frameLength -= lbl_803DE818;
+            channel->frameLength -= 1.0f;
         }
         channel->prevFrameType = channel->frameType;
         channel->prevMoveFrameData = channel->moveFrameData;
@@ -932,7 +922,7 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
         q = (u8*)((ObjModel*)out2)->blendChannels;
         *(s8*)(q + 0xc) = -1;
         *(s8*)(q + 0xd) = -1;
-        f = lbl_803DE828;
+        f = 0.0f;
         *(f32*)(q + 0) = f;
         *(f32*)(q + 4) = f;
         *(f32*)(q + 8) = f;
@@ -1057,16 +1047,16 @@ void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjMod
         dot = PSVECDotProduct(dir2, dir1);
         if (dot < gModelDotClampMax && dot > gModelDotClampMin)
         {
-            if (dot < lbl_803DE818 && dot > lbl_803DE840)
+            if (dot < 1.0f && dot > -1.0f)
             {
                 PSVECCrossProduct(dir2, dir1, axis);
-                if (dot < lbl_803DE840)
+                if (dot < -1.0f)
                 {
-                    dot = lbl_803DE840;
+                    dot = -1.0f;
                 }
                 else
                 {
-                    f32 sub = lbl_803DE818 - dot;
+                    f32 sub = 1.0f - dot;
                     dot = sub * chain->stiffness + dot;
                 }
                 PSMTXTranspose(tmp, mt);
@@ -1141,13 +1131,13 @@ void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain
         if (dot < gModelDotClampMax && dot > gModelDotClampMin)
         {
             PSVECCrossProduct(dir2, dir1, axis);
-            if (dot < lbl_803DE840)
+            if (dot < -1.0f)
             {
-                dot = lbl_803DE840;
+                dot = -1.0f;
             }
             else
             {
-                f32 sub = lbl_803DE818 - dot;
+                f32 sub = 1.0f - dot;
                 dot = sub * chain->stiffness + dot;
             }
             PSMTXTranspose(tmp, mt);
@@ -1216,12 +1206,12 @@ void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain*
     vec[1] = *(f32*)(base + 0x24);
     vec[2] = *(f32*)(base + 0x28);
     dot = PSVECDotProduct(vec, gModelJitterAxis);
-    if (dot < lbl_803DE828)
+    if (dot < 0.0f)
     {
-        dot = lbl_803DE828;
+        dot = 0.0f;
     }
-    scaled = lbl_803DCB48 * (lbl_803DE844 - dot);
-    amp = lbl_803DE848 * randomGetRange((int)(lbl_803DE84C * scaled), (int)(lbl_803DE850 * scaled));
+    scaled = lbl_803DCB48 * (1.2f - dot);
+    amp = 0.01f * randomGetRange((int)(75.0f * scaled), (int)(100.0f * scaled));
     i = 0;
     off = 0;
     while (i < entry->nodeCount + 1)
@@ -1311,11 +1301,11 @@ void modelChainInitNodesFromJoints(int* obj, int b, int* desc)
         u32 lastCnt;
         int lastLim;
         int lastEntry = *desc + i * 0x54;
-        f32 zero = lbl_803DE828;
+        f32 zero = 0.0f;
 
         *(f32*)(lastEntry + 0x18) = zero;
         *(f32*)(lastEntry + 0x1c) = zero;
-        *(f32*)(lastEntry + 0x20) = lbl_803DE850;
+        *(f32*)(lastEntry + 0x20) = 100.0f;
         {
             int* jointIdxArr = (int*)*(int*)desc[1];
             lastJointIdx = jointIdxArr[desc[2] - 1];
@@ -1439,7 +1429,7 @@ ObjModelChain* ObjModelChain_Alloc(void* models, int count)
     state->stiffness = gModelDefaultOriginX;
     state->damping = gModelDefaultOriginY;
     state->gravityY = gModelDefaultOriginZ;
-    state->phase = lbl_803DE828;
+    state->phase = 0.0f;
     state->enabled = 1;
     return state;
 }
@@ -1603,10 +1593,6 @@ void modelInitBoneMtxs(ObjModel* model, f32* outReordered)
     }
 }
 
-extern f32 lbl_803DE868;
-extern f32 lbl_803DE86C;
-extern f32 lbl_803DE870;
-
 void modelInitBoneMtxs2(ObjModel* model, f32* worldMtx, f32* outReordered)
 {
     int boneByteOff;
@@ -1741,7 +1727,7 @@ void ObjModel_ApplyBlendChannels(ObjModel* model)
         if (ch->flags0E & BLENDCHAN_FLAG_RESET_WEIGHT)
         {
             ch->flags0E &= ~BLENDCHAN_FLAG_RESET_WEIGHT;
-            ch->weight = lbl_803DE828;
+            ch->weight = 0.0f;
         }
         if (chanActive.values[i] && chanFade.values[i])
         {
@@ -1781,39 +1767,38 @@ void ObjModel_ApplyBlendChannels(ObjModel* model)
                 srcVtx = hdr->vertices;
             }
             weight = ch->weight;
-            if (weight > lbl_803DE818)
+            if (weight > 1.0f)
             {
-                ch->weight = lbl_803DE818;
+                ch->weight = 1.0f;
             }
-            else if (weight < lbl_803DE828)
+            else if (weight < 0.0f)
             {
                 if (ch->flags0E & BLENDCHAN_FLAG_CLAMP_TARGET)
                 {
-                    if (weight < lbl_803DE840)
+                    if (weight < -1.0f)
                     {
-                        ch->weight = lbl_803DE840;
+                        ch->weight = -1.0f;
                     }
                 }
                 else
                 {
-                    ch->weight = lbl_803DE828;
+                    ch->weight = 0.0f;
                 }
             }
-            weight = ch->weight;
-            if (weight >= lbl_803DE828)
+            tw = ch->weight;
+            if (tw >= 0.0f)
             {
-                tw = weight;
-                eased = lbl_803DE868 * tw + lbl_803DE86C * (tw * tw) - tw * (tw * tw);
+                eased = 0.5f * tw + 1.5f * (tw * tw) - tw * (tw * tw);
             }
             else
             {
-                tw = weight * lbl_803DE840;
-                eased = lbl_803DE868 * tw + lbl_803DE86C * (tw * tw) - tw * (tw * tw);
-                eased *= lbl_803DE840;
+                tw *= -1.0f;
+                eased = 0.5f * tw + 1.5f * (tw * tw) - tw * (tw * tw);
+                eased *= -1.0f;
             }
             dstVtx = model->vtxBuf[(model->bufferFlags >> 1) & 1];
             modelApplyBoneTransforms(srcVtx, dstVtx, hdr->vertexCount, targetA, targetB,
-                                     (int)(lbl_803DE870 * eased));
+                                     (int)(65536.0f * eased));
             model->vtxBufDirty = 1;
         }
         if (ch->targetWeight != ch->weight)
@@ -1843,16 +1828,16 @@ void ObjModel_AdvanceBlendChannels(u8* model, f32 dt)
             continue;
         }
         ch[0].weight = ch[0].weightRate * dt + ch[0].weight;
-        if (ch[0].weight >= lbl_803DE874)
+        if (ch[0].weight >= 0.99f)
         {
-            ch[0].weight = lbl_803DE874;
-            ch[0].weightRate = lbl_803DE878;
+            ch[0].weight = 0.99f;
+            ch[0].weightRate = 0.001f;
             ch[0].flags0E &= ~BLENDCHAN_FLAG_FADING;
         }
-        else if (ch[0].weight <= lbl_803DE87C)
+        else if (ch[0].weight <= 0.002f)
         {
-            ch[0].weight = lbl_803DE87C;
-            ch[0].weightRate = lbl_803DE878;
+            ch[0].weight = 0.002f;
+            ch[0].weightRate = 0.001f;
             ch[0].flags0E &= ~BLENDCHAN_FLAG_FADING;
         }
     }
@@ -1941,9 +1926,9 @@ void ObjModel_SetBlendChannelTargets(ObjModel* model, int channel, int a, int b,
     ch[0].morphTargetB = b;
     if (!(flags & 0x10))
     {
-        ch[0].weight = lbl_803DE828;
+        ch[0].weight = 0.0f;
     }
-    ch[0].targetWeight = lbl_803DE840;
+    ch[0].targetWeight = -1.0f;
     ch[0].weightRate = weight;
     ch[0].flags0E = flags | BLENDCHAN_FLAG_FADING;
 }
@@ -1952,13 +1937,11 @@ void ObjModel_ClearBlendChannels(ObjModel* model)
 {
     if (model->file->morphTargetPtrs != NULL)
     {
-        ObjModel_SetBlendChannelTargets(model, 0, -1, -1, lbl_803DE828, 7);
-        ObjModel_SetBlendChannelTargets(model, 1, -1, -1, lbl_803DE828, 7);
-        ObjModel_SetBlendChannelTargets(model, 2, -1, -1, lbl_803DE828, 7);
+        ObjModel_SetBlendChannelTargets(model, 0, -1, -1, 0.0f, 7);
+        ObjModel_SetBlendChannelTargets(model, 1, -1, -1, 0.0f, 7);
+        ObjModel_SetBlendChannelTargets(model, 2, -1, -1, 0.0f, 7);
     }
 }
-
-extern f32 lbl_803DE880;
 
 void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u8* obj)
 {
@@ -2047,7 +2030,7 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
         }
         if (i == 0 && obj != prevObj)
         {
-            zero = lbl_803DE828;
+            zero = 0.0f;
             vec[0] = zero;
             vec[1] = zero;
             vec[2] = zero;
@@ -2080,7 +2063,7 @@ void ObjModel_SampleJointTransform(ObjModel* model, int b, int idx, f32 t, f32 s
 
     if (model->file->animationCount == 0)
     {
-        f32 z = lbl_803DE828;
+        f32 z = 0.0f;
         outPos[0] = z;
         outPos[1] = z;
         outPos[2] = z;
@@ -2138,7 +2121,7 @@ void ObjModel_SampleJointTransform(ObjModel* model, int b, int idx, f32 t, f32 s
         {
             *(s16*)((u8*)ch + 0x4c) = 0;
         }
-        if (ch->frameType != 0 && fcv == ch->frameLength - lbl_803DE818)
+        if (ch->frameType != 0 && fcv == ch->frameLength - 1.0f)
         {
             *(s16*)((u8*)ch + 0x4c) = (s16)(-bv * n);
         }
@@ -2147,7 +2130,7 @@ void ObjModel_SampleJointTransform(ObjModel* model, int b, int idx, f32 t, f32 s
     modelRenderInterpolateRootTransform(ch, srot, outRot);
     *(int*)&ch->moveFrameData = saved;
     {
-        f32 k = lbl_803DE880;
+        f32 k = 0.001953125f;
         outPos[0] = k * srot[0];
         outPos[1] = k * srot[1];
         outPos[2] = k * srot[2];
