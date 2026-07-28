@@ -4,38 +4,6 @@
 #include "ghidra_import.h"
 #include "main/objanim_update.h"
 
-typedef struct ScTotemPuzzleState {
-    f32 pulseTimer;
-    f32 pulseTimerReset;
-    f32 peerPhaseOffset;
-    f32 angle;
-    s16 stepIndex;
-    s16 flags;
-} ScTotemPuzzleState;
-
-typedef struct ScTotemPuzzleObject {
-    union {
-        ObjAnimComponent anim;
-        struct {
-            s16 yaw;
-            u8 pad02[0x46 - 0x02];
-            s16 objectType;
-            u8 pad48[0xAD - 0x48];
-            s8 puzzleIndex;
-            u8 padAE[0xB0 - 0xAE];
-        };
-    };
-    u16 objectFlags;
-    u8 padB2[0xB8 - 0xB2];
-    ScTotemPuzzleState *state;
-    int (*animEventCallback)(struct ScTotemPuzzleObject* obj, int unused, ObjAnimUpdateState* animUpdate);
-} ScTotemPuzzleObject;
-
-typedef struct ScTotemPuzzleMapData {
-    u8 pad00[0x1B];
-    u8 puzzleIndex;
-} ScTotemPuzzleMapData;
-
 typedef struct ScTotemBondState {
     s16 yaw;
     s16 pitch;
@@ -78,13 +46,6 @@ typedef struct ScTotemBondObject {
     u32 (*animEventCallback)(struct ScTotemBondObject *obj,u32 param2,ObjAnimUpdateState *animUpdate);
 } ScTotemBondObject;
 
-STATIC_ASSERT(offsetof(ScTotemPuzzleObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(ScTotemPuzzleObject, yaw) == offsetof(ObjAnimComponent, rotX));
-STATIC_ASSERT(offsetof(ScTotemPuzzleObject, objectType) == offsetof(ObjAnimComponent, seqId));
-STATIC_ASSERT(offsetof(ScTotemPuzzleObject, puzzleIndex) == offsetof(ObjAnimComponent, bankIndex));
-STATIC_ASSERT(offsetof(ScTotemPuzzleObject, objectFlags) == 0xB0);
-STATIC_ASSERT(offsetof(ScTotemPuzzleObject, state) == 0xB8);
-STATIC_ASSERT(offsetof(ScTotemPuzzleObject, animEventCallback) == 0xBC);
 STATIC_ASSERT(offsetof(ScTotemBondObject, anim) == 0x00);
 STATIC_ASSERT(offsetof(ScTotemBondObject, yaw) == offsetof(ObjAnimComponent, rotX));
 STATIC_ASSERT(offsetof(ScTotemBondObject, x) == offsetof(ObjAnimComponent, localPosX));
@@ -95,11 +56,6 @@ STATIC_ASSERT(offsetof(ScTotemBondObject, objectFlags) == 0xB0);
 STATIC_ASSERT(offsetof(ScTotemBondObject, state) == 0xB8);
 STATIC_ASSERT(offsetof(ScTotemBondObject, animEventCallback) == 0xBC);
 
-void sc_totempuzzle_update(ScTotemPuzzleObject *obj);
-void sc_totempuzzle_init(ScTotemPuzzleObject *obj,ScTotemPuzzleMapData *params);
-int sc_totempuzzle_animEventCallback(ScTotemPuzzleObject* obj, int unused, ObjAnimUpdateState* animUpdate);
-void sc_totempuzzle_release(void);
-void sc_totempuzzle_initialise(void);
 void sc_totembond_spawnGameBitOrbs(ScTotemBondObject *obj,ScTotemBondState *state,f32 radius);
 u32 sc_totembond_SeqFn(ScTotemBondObject *obj,u32 param_2,ObjAnimUpdateState *animUpdate);
 void sc_totembond_update(ScTotemBondObject *obj);

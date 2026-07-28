@@ -485,7 +485,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1B7 | SC_MusicTree (+SC_BirchTre) | COMPLETE | dlls/objects/439/439.c | = (canonical) | Exact complete 11-function multi-object TU with its terminal descriptor, allocation-backed 0x50-byte state, recovered placement fields, canonical numeric unit header, canonical AppleOnTree child setup use, and complete compiler-generated 0x48-byte constant pool; SC_MusicTree and SC_BirchTre share the TU, so the generated numeric source path remains unchanged |
 | 0x1B8 | SC_totempol | COMPLETE | dlls/objects/440_SC_totempol/SC_totempol.c | = (canonical) | Exact complete ten-function TU with its proven early descriptor followed by the compiler-generated switch jump table, allocation-backed 0x08-byte state, active-EN-retail-backed fixed 0x20-byte placement, canonical unit header, and exact 144-byte data image; the generated source path remains unchanged |
 | 0x1B9 | SC_Cloudrun | COMPLETE | dlls/objects/441_SC_Cloudrun/SC_Cloudrun.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor, allocation-backed 0x140-byte state, recovered placement fields, canonical unit header, and complete compiler-generated 0x10-byte constant pool; the generated source path remains unchanged |
-| 0x1BA | SC_totempuz | COMPLETE | dlls/objects/442_SC_totempuz/SC_totempuz.c | = (canonical) | — |
+| 0x1BA | SC_totempuz | COMPLETE | dlls/objects/442_SC_totempuz/SC_totempuz.c | = (canonical) | Exact complete 11-function TU with its terminal descriptor, allocation-backed 0x14-byte state, active-EN-retail-backed fixed 0x20-byte placement, canonical unit header, and exact 108-byte data image; the generated source path remains unchanged |
 | 0x1BB | SC_totembon | COMPLETE | dlls/objects/443_SC_totembon/SC_totembon.c | = (canonical) | — |
 | 0x1BC | SC_totemstr | COMPLETE | dlls/objects/444_SC_totemstr/SC_totemstr.c | = (canonical) | — |
 | 0x1BD | SC_paypoint (+SPWell) | COMPLETE | dlls/objects/445/445.c | = (canonical) | No single recovered TU basename |
@@ -1012,6 +1012,7 @@ blocked units will surface more when carved.
 | 0x1B7 | dlls/objects/439/439.c | include/dlls/objects/439.h |
 | 0x1B8 | dlls/objects/440_SC_totempol/SC_totempol.c | include/dlls/objects/440_SC_totempol.h |
 | 0x1B9 | dlls/objects/441_SC_Cloudrun/SC_Cloudrun.c | include/dlls/objects/441_SC_Cloudrun.h |
+| 0x1BA | dlls/objects/442_SC_totempuz/SC_totempuz.c | include/dlls/objects/442_SC_totempuz.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |
