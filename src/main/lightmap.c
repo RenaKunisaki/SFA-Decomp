@@ -92,8 +92,8 @@ extern u16 lbl_803DCEAC;
 extern u8 lbl_803DCE06;
 extern s32 heatEffectIntensity;
 extern u8 gLightmapScreenImageEnabled;
-extern s8 lbl_8030E65C[];
-extern s8 lbl_8030E66C[];
+extern s8 gMapBlockDrawOrderFrontToBack[];
+extern s8 gMapBlockDrawOrderBackToFront[];
 extern int lbl_8038228C[];
 extern s8* gMapLayerCellStates;
 extern s32 gMapCurRomListSlot;
@@ -817,7 +817,7 @@ void sceneDraw(void)
     GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
     GXSetChanAmbColor(GX_COLOR0, c);
     GXSetNumChans(1);
-    renderSceneGeometry(0, lbl_8030E65C);
+    renderSceneGeometry(0, gMapBlockDrawOrderFrontToBack);
     renderResetFn_8003fc60();
     renderObjects(buf);
     if (CameraShake_IsActive() != 0 || (int)bEnableMotionBlur != 0)
@@ -846,8 +846,8 @@ void sceneDraw(void)
         cursor += 4;
     }
     renderParticles();
-    renderSceneGeometry(1, lbl_8030E66C);
-    renderSceneGeometry(2, lbl_8030E66C);
+    renderSceneGeometry(1, gMapBlockDrawOrderBackToFront);
+    renderSceneGeometry(2, gMapBlockDrawOrderBackToFront);
     if (lbl_803DCE30 == 1000)
     {
         sceneDrawTransparentPolys();

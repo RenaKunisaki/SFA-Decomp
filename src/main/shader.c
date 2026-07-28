@@ -2935,12 +2935,17 @@ int gSunOcclusionSampleOffsets[10] = {
     0, 0, -15, -15, 15, -15, 15, 15, -15, 15,
 };
 
-/* Scene geometry draw-order table (referenced by lightmap.c). */
-u8 lbl_8030E65C[16] = {7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15};
+/* Map-cell visit order for the opaque scene pass: outward from the two
+   centre rows, i.e. front to back from a camera over the middle of the
+   16x16 map-block grid. */
+u8 gMapBlockDrawOrderFrontToBack[16] = {7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15};
+
+/* Map-cell visit order for the two blended scene passes: inward from both
+   edges, i.e. back to front. */
+u8 gMapBlockDrawOrderBackToFront[16] = {0, 15, 1, 14, 2, 13, 3, 12, 4, 11, 5, 10, 6, 9, 8, 7};
 
 struct
 {
-    u8 drawOrder[16];
     char passLevelObject[28];
     char failManualLoad[24];
     char failOutsideMap[40];
@@ -2948,8 +2953,7 @@ struct
     char passBlockObject[28];
     char passInRange[24];
     char failOutOfRange[28];
-} lbl_8030E66C = {
-    {0, 15, 1, 14, 2, 13, 3, 12, 4, 11, 5, 10, 6, 9, 8, 7},
+} sShaderObjLoadMessages = {
     "LOAD PASS: Level object\n",
     "LOAD FAIL: Manual load\n",
     "LOAD FAIL: Outside map x=%f y=%f z=%f\n",
