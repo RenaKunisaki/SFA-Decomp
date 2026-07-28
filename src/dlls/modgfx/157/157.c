@@ -15,9 +15,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/dll/pickup.h"
-#include "main/dll/dll_009D_dll9dfunc0.h"
 
 extern u32 lbl_80318038[];
 

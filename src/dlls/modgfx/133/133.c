@@ -13,8 +13,6 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
-#include "main/dll/foodbag.h"
-#include "main/vecmath.h"
 
 u8 lbl_803DB8F0[4] = {0, 0, 0, 1};
 u8 lbl_803DB8F4[8] = {0, 0, 0, 1, 0, 2, 0, 3};

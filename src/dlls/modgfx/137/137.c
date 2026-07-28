@@ -12,7 +12,6 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
-#include "main/dll/foodbag.h"
 
 u8 lbl_803DB908[8] = {0};
 

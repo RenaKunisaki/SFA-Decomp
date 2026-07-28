@@ -1,16 +1,11 @@
 /*
  * DLL 82 / 0x52 - force-behind camera mode.
  */
-#include "main/camera_object.h"
 #include "main/resource.h"
-#include "main/dll/CAM/camcloudrunner_state.h"
-#include "game/objects/object.h"
 #include "main/dll/player_motion.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/frame_timing.h"
-#include "main/object_transform.h"
 #include "main/vecmath.h"
-#include "main/dll/dll_0052_cameramodeforcebehind.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 
 f32 gCamForceBehindTraceDistance;

@@ -2,11 +2,8 @@
  * DLL 70 / 0x46 - debug camera mode.
  */
 #include "main/camera_interface.h"
-#include "main/camera_object.h"
 #include "main/dll/CAM/camdebug_state.h"
 #include "main/dll/CAM/camstatic_state.h"
-#include "main/mm.h"
-#include "main/object_transform.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_0046_cameramodedebug.h"
 #include "main/pad.h"

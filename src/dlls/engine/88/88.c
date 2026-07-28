@@ -2,7 +2,6 @@
  * DLL 88 / 0x58 - a no-op DLL.
  */
 #include "types.h"
-#include "main/dll/dll_0058_dummy58.h"
 
 int Dummy58_func03_ret_0(void)
 {

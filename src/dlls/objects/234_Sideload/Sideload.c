@@ -6,7 +6,6 @@
  * spawned Tricky inherits the spawner's position and placement rotation.
  */
 #include "dlls/objects/234_Sideload.h"
-#include "game/objects/object.h"
 #include "main/gamebits_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

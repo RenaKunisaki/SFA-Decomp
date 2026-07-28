@@ -5,11 +5,7 @@
  * position within this object's engagement radius.
  */
 #include "dlls/objects/258_StayPoint.h"
-#include "game/objects/object.h"
-#include "main/dll/dll_0000_gameui_api.h"
-#include "main/dll/dll_80136a40.h"
 #include "main/gamebits.h"
-#include "main/objprint_render_api.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects/lifecycle.h"
 

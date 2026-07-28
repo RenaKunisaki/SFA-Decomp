@@ -6,13 +6,9 @@
  * result through game bits.
  */
 #include "dlls/objects/252.h"
-#include "game/objects/object.h"
 #include "main/gamebits_api.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
-#include "main/objprint_render_api.h"
 #include "main/objseq.h"
-#include "main/vecmath.h"
 
 #define DLL_FC_TARGET_INTERACT_FLAG 0x20
 #define DLL_FC_NO_GAME_BIT          -1

@@ -1,12 +1,9 @@
-#include "main/dll/partfx_interface.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_002B_effect18.h"
-#include "main/vecmath.h"
 
 f32 gEffect18SineValueA;
 f32 gEffect18SineValueB;

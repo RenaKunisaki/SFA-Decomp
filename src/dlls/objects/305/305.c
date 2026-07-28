@@ -4,7 +4,6 @@
  */
 #include "dlls/objects/305.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/objtexture.h"
 

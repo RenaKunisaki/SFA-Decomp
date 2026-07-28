@@ -5,11 +5,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/CAM/dll_0045_camTalk.h"
 #include "main/dll/CAM/camstatic_state.h"
-#include "main/mm.h"
-#include "main/object_transform.h"
-#include "main/obj_group.h"
 #include "main/frame_timing.h"
-#include "main/vecmath.h"
 #include "main/dll/dll_0048_cameramodestatic.h"
 #include "main/resource.h"
 

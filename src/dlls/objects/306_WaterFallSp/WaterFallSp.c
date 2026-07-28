@@ -5,12 +5,9 @@
 #include "dlls/objects/306_WaterFallSp.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_keep_alive_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define WATERFALLSPRAY_GAME_BIT_NONE -1

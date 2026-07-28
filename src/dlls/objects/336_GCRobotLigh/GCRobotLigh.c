@@ -3,15 +3,8 @@
 #include "dlls/objects/336_GCRobotLigh.h"
 
 #include "dolphin/mtx/mtx_legacy.h"
-#include "game/objects/object.h"
-#include "main/dll/player_api.h"
 #include "main/model_light.h"
-#include "main/obj_link.h"
-#include "main/objhits.h"
-#include "main/object_transform.h"
-#include "main/sky.h"
 #include "main/track_bbox_api.h"
-#include "main/voxmaps.h"
 #include "sys/objects.h"
 
 #define GCROBOTLIGHTBEAM_HIT_VOLUME_SLOT       0x17

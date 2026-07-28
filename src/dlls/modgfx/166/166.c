@@ -14,9 +14,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/dll/dll_00A6_dlla6func0.h"
-#include "main/vecmath.h"
 
 u8 lbl_803DB980[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 gDllA6EffectTex[8] = {0, 0, 0, 1, 0, 2, 0, 0};

@@ -2,11 +2,8 @@
  * DLL 91 / 0x5B - an impact and debris effect spawner.
  */
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
 #include "main/debug.h"
-#include "game/objects/object.h"
 #include "main/rcp_dolphin_api.h"
-#include "main/vecmath.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_005B_modgfxfunc03.h"
 

@@ -13,13 +13,10 @@
  * spawnEffect). gDll8EEffectSpawnResource is the lone extra resource handed to
  * spawnEffect alongside the gDll8EEffectTexture texture.
  */
-#include "main/vecmath.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
-#include "main/dll/foodbag.h"
-#include "main/dll/dll_008E_dll8efunc0.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL8E_EFFECT_ID 0x26a

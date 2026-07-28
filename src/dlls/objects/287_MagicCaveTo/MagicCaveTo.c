@@ -6,18 +6,14 @@
  * object returns through the shared Magic Cave gamebits.
  */
 #include "dlls/objects/287_MagicCaveTo.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
-#include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/objfx.h"
 #include "main/dll/player_objects.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
-#include "main/map_load.h"
 #include "main/model.h"
 #include "main/objseq.h"
 #include "main/pad.h"

@@ -1,5 +1,3 @@
-#include "main/dll/partfx_interface.h"
-#include "dlls/object_descriptor.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/debug.h"
 #include "main/dll/mtxbuildarg_struct.h"
@@ -7,11 +5,9 @@
 #include "game/objects/object.h"
 #include "main/resource.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "stdlib.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_000E_partfx.h"
 #include "main/dll/dll_001B_effect2.h"
-#include "main/vecmath.h"
 
 extern u8 lbl_80380209[];
 

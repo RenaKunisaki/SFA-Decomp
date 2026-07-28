@@ -7,12 +7,10 @@
  */
 #include "dlls/objects/236_InfoPoint.h"
 #include "dolphin/pad.h"
-#include "game/objects/object.h"
 #include "main/gametext_internal.h"
 #include "main/objanim_update.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
-#include "main/pad_api.h"
 #include "main/textrender_api.h"
 #include "main/texture.h"
 

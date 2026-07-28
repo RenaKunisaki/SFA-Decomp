@@ -1,10 +1,8 @@
 /*
  * DLL 85 / 0x55 - peering camera mode.
  */
-#include "main/mm.h"
 #include "main/resource.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/camera_object.h"
 #include "main/dll/CAM/camperv_state.h"
 #include "game/objects/object.h"
 #include "main/frame_timing.h"

@@ -1,12 +1,9 @@
 #include "game/objects/object.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "main/dll/effectsrcparams_struct.h"
 #include "main/dll/effectspawnparams_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_0023_effect10.h"
-#include "dlls/object_descriptor.h"
-#include "main/vecmath.h"
 
 f32 gEffect10SineValueA;
 f32 gEffect10SineValueB;

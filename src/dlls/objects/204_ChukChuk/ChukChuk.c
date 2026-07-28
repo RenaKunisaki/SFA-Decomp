@@ -7,16 +7,12 @@
  */
 #include "dlls/objects/204_ChukChuk.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/objfx_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
 #include "main/objtexture.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 

@@ -7,19 +7,13 @@
  */
 #include "dlls/objects/215.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_channel_volume_api.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/model_light.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
-#include "main/vecmath.h"
-#include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
 #define KALDACHOMPSPIT_HIT_VOLUME_SLOT_EXPLOSIVE 31

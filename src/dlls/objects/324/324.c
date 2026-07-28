@@ -1,7 +1,6 @@
 /* Clears sequence-event state and supplies otherwise minimal callbacks. */
 #include "dlls/objects/324.h"
 
-#include "game/objects/object.h"
 #include "main/object_render.h"
 
 /* 1.0f model render scale from the shared scalar pool. */

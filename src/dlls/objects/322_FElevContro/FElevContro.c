@@ -1,7 +1,6 @@
 /* Supplies the render and message-queue callbacks for FElevControl. */
 #include "dlls/objects/322_FElevContro.h"
 
-#include "main/obj_message.h"
 #include "main/object_render.h"
 
 /* 1.0f model render scale from the shared scalar pool. */

@@ -3,8 +3,6 @@
  */
 #include "dlls/objects/269_PortalSpell.h"
 
-#include "game/objects/object.h"
-#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"

@@ -5,20 +5,13 @@
  * surface. An impact hides it, emits variant-specific particles, and leaves a
  * short camera-shake cooldown before the object is freed.
  */
-#include "dlls/objects/205_IceBall.h"
-#include "dlls/objects/203.h"
 #include "dlls/objects/208_Grimble.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/obj_list.h"
-#include "main/objhits.h"
-#include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define ICEBALL_HIT_VOLUME_SLOT 10
 #define ICEBALL_PARTICLE_COUNT  25

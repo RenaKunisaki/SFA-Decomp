@@ -5,19 +5,12 @@
  * game bit and texture state, and can drive a linked Tricky interaction.
  */
 #include "dlls/objects/251.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
-#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "main/obj_group.h"
 #include "main/objtexture.h"
 #include "main/vecmath_distance_api.h"
-#include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define PRESSURESWITCHFB_PARTFX_ID                      0x7C3
 #define PRESSURESWITCHFB_ANIM_COMMAND_IDLE              0

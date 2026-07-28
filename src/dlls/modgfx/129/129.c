@@ -15,7 +15,6 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
-#include "main/dll/foodbag.h"
 
 /* spawnEffect effect ids per variant. */
 #define DLL81_EFFECT_ID_VARIANT1E    0x3e9

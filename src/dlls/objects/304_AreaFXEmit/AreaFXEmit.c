@@ -5,13 +5,11 @@
 #include "dlls/objects/304_AreaFXEmit.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/resource.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define AREAFXEMIT_GAME_BIT_NONE -1

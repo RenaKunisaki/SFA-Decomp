@@ -1,12 +1,9 @@
 #include "dlls/objects/278_WM_Column.h"
 
-#include "game/objects/object.h"
 #include "main/carryable_interface.h"
 #include "main/dll/player_api.h"
 #include "main/dll/tricky_api.h"
-#include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
 #include "main/obj_list.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"

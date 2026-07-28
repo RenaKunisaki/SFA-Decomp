@@ -6,9 +6,7 @@
  * no-ops.
  */
 #include "main/dll/modgfx_interface.h"
-#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
-#include "main/dll/dll_005E_dll5efunc0.h"
 
 extern u8 gDll5EFunc03SequenceData[];
 

@@ -4,18 +4,13 @@
 #include "dlls/objects/268_LanternFire.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/curve_eval.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
-#include "main/gameloop_gamebit_api.h"
 #include "main/model_light.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
-#include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 

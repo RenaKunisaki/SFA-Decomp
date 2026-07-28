@@ -5,7 +5,6 @@
  * and supports latched, toggle, timed-reset, and delayed modes.
  */
 #include "dlls/objects/250_InvisibleHi.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/objhits.h"

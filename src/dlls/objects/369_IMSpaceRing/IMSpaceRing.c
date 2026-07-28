@@ -1,13 +1,8 @@
 #include "dlls/objects/369_IMSpaceRing.h"
 
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
 #include "main/frame_timing.h"
-#include "main/obj_list.h"
 #include "main/object_render.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define IM_SPACE_RING_GENERATOR_SEQUENCE_ID_A 0x164
 #define IM_SPACE_RING_GENERATOR_SEQUENCE_ID_B 0x168

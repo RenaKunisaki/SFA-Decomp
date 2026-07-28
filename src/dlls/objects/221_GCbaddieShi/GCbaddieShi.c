@@ -4,7 +4,6 @@
  * Spins and fades a short-lived billboard shield effect.
  */
 #include "dlls/objects/221_GCbaddieShield.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 

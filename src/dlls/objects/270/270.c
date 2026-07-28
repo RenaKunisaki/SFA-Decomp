@@ -6,19 +6,12 @@
 #include "dlls/objects/270.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "game/objects/object.h"
 #include "main/audio/stream_api.h"
 #include "main/camera.h"
 #include "main/dll/player_status.h"
-#include "main/dll/tricky_api.h"
 #include "main/frame_timing.h"
-#include "main/gameloop_api.h"
-#include "main/lightmap_api.h"
-#include "main/objanim.h"
 #include "main/objtexture.h"
-#include "main/rcp_dolphin.h"
 #include "main/screen_transition.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 static const f32 gDeathSeqCameraYawAngle = -0.7853982f;

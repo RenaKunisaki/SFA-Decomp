@@ -2,7 +2,6 @@
 
 #include "dlls/objects/349.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objseq.h"

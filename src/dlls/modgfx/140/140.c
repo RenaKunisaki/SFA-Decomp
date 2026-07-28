@@ -16,7 +16,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/fb_cmd.h"
-#include "main/dll/foodbag.h"
 #include "game/objects/object.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */

@@ -6,7 +6,6 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
-#include "main/dll/foodbag.h"
 
 /* spawnEffect effect ids per variant (textureAssetId arg). */
 #define DLL82_EFFECT_ID_VARIANT3_4 0xd9

@@ -4,11 +4,9 @@
  */
 #include "dlls/objects/311_AlphaAnimat.h"
 
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
-#include "main/map_block.h"
 #include "main/mm.h"
 #include "main/object_render.h"
 

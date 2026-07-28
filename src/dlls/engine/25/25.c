@@ -1,18 +1,10 @@
-#include "game/objects/object.h"
 #include "main/dll/player_api.h"
 #include "main/track_bbox_api.h"
-#include "main/audio/sfx_stop_channel_api.h"
 #include "main/frame_timing.h"
-#include "main/obj_group.h"
-#include "main/obj_message.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
-#include "main/lightmap_api.h"
 #include "main/shader_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/objhits.h"
-#include "main/mm.h"
-#include "main/objseq.h"
 
 /* object group this object joins */
 #define DLL19_OBJGROUP        3

@@ -7,7 +7,6 @@
  */
 #include "dlls/objects/296_KT_Torch.h"
 
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"

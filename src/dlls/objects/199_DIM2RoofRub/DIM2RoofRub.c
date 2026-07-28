@@ -7,7 +7,6 @@
  */
 #include "dlls/objects/199_DIM2RoofRub.h"
 #include "dolphin/mtx/mtx_legacy.h"
-#include "main/audio/sfx_stop_channel_api.h"
 #include "main/camera_interface.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/partfx_interface.h"
@@ -15,7 +14,6 @@
 #include "main/model.h"
 #include "main/obj_list.h"
 #include "main/objfx.h"
-#include "main/objprint_render_api.h"
 #include "main/object_render.h"
 #include "main/shader_api.h"
 #include "sys/objects.h"

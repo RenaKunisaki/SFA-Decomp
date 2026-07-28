@@ -3,9 +3,7 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_005D_dll5dfunc0.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL5D_EFFECT_ID 0x20b

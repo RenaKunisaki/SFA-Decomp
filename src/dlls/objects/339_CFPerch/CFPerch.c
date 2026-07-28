@@ -2,9 +2,7 @@
 
 #include "dlls/objects/339_CFPerch.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits.h"
-#include "main/gamebit_ids.h"
 #include "main/obj_message.h"
 #include "main/objseq.h"
 

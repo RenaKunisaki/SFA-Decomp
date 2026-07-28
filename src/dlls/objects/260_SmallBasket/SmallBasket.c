@@ -9,7 +9,6 @@
 #include "dlls/objects/262.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/pad.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_object_query_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"

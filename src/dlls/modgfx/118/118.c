@@ -11,9 +11,7 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_0076_dll76func0.h"
 
 s16 lbl_80314950[8] = {0, 155, 200, 1, 155, 0, 0, 0};
 

@@ -7,15 +7,10 @@
  */
 #include "dlls/objects/216_PinPonSpike.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
-#include "main/objhits.h"
-#include "main/vecmath.h"
-#include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
 #define PINPONSPIKE_HIT_VOLUME_SLOT 10

@@ -18,12 +18,10 @@
  */
 #include "dlls/objects/241_InvHit.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/player_target.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
-#include "main/obj_list.h"
 #include "main/object_render.h"
 #include "main/objhits.h"
 #include "main/track_dolphin_api.h"

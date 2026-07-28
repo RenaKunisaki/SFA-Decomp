@@ -3,17 +3,11 @@
  */
 #include "main/dll/CAM/camnpcspeak_state.h"
 #include "main/resource.h"
-#include "game/objects/object.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/mm.h"
 #include "main/maketex_api.h"
 #include "main/dll/CAM/cutCam.h"
-#include "main/rcp_dolphin_api.h"
-#include "main/object_transform.h"
-#include "main/obj_query.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_004D_cameramodenpcspeak.h"
-#include "main/vecmath.h"
 
 CameraModeNpcSpeakState* gCameraModeNpcSpeakState;
 f32 gCameraModeNpcSpeakMode6AnchorLerpScale;

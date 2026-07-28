@@ -5,7 +5,6 @@
 #include "dlls/objects/299_FXEmit.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
 #include "main/debug.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
@@ -13,7 +12,6 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/resource.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define FXEMIT_DEBUG_EFFECT_ID              0x11

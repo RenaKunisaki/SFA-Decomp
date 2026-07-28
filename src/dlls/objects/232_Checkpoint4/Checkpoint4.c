@@ -7,7 +7,6 @@
  * draws the regular model; the remaining runtime callbacks are empty.
  */
 #include "dlls/objects/232_Checkpoint4.h"
-#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/vecmath.h"
 

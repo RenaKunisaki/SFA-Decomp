@@ -5,7 +5,6 @@
  * opacity based on the bomb's height.
  */
 #include "dlls/objects/220_MikaBombShadow.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
 

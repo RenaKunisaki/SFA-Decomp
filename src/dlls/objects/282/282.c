@@ -2,9 +2,7 @@
 
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/model.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
-#include "main/object_transform.h"
 #include "main/vecmath.h"
 
 #define DECORATION11A_COLLISION_OBJECT_GROUP 2

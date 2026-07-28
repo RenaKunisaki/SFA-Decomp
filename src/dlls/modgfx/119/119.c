@@ -8,7 +8,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_0077_dll77func0.h"
 
 s16 lbl_80314980[8] = {0, 155, 200, 1, 155, 0, 0, 0};
 

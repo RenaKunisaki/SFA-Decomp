@@ -1,17 +1,13 @@
 /*
  * DLL 80 / 0x50 - crawl camera mode.
  */
-#include "main/mm.h"
 #include "main/resource.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/camera_interface.h"
 #include "main/frame_timing.h"
 #include "main/dll/CAM/camcrawl_state.h"
-#include "main/vecmath.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "string.h"
 #include "main/object_transform.h"
-#include "main/dll/dll_0050_cameramodecrawl.h"
 
 CameraModeCrawlState* lbl_803DD598;
 

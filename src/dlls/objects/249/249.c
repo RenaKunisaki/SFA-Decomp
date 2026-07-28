@@ -5,14 +5,9 @@
  * Switch state is mirrored to a game bit and to the model's first texture.
  */
 #include "dlls/objects/249.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "main/maketex_sequence_api.h"
-#include "main/objhits.h"
-#include "main/objprint_api.h"
 #include "main/objtexture.h"
 #include "main/object_render.h"
 

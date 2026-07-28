@@ -13,7 +13,6 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0069_dll69func0.h"
 

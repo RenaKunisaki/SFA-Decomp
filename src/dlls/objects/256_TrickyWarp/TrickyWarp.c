@@ -5,13 +5,9 @@
  * rom-curve links, registering off-screen objects as warp candidates.
  */
 #include "dlls/objects/256_TrickyWarp.h"
-#include "game/objects/object.h"
 #include "main/frustum.h"
-#include "main/dll/dll_0014_api.h"
-#include "main/dll/objfsa.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 

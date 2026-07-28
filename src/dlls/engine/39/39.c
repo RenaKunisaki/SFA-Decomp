@@ -1,9 +1,5 @@
-#include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/effectsrcparams_struct.h"
 #include "main/dll/effectspawnparams_struct.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/vecmath.h"
 #include "main/dll/dll_0027_effect14.h"
 
 #define EFFECT_FLAG_HAS_SRC 0x200000

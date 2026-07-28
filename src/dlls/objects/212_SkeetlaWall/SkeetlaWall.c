@@ -5,8 +5,6 @@
  * layer and renders the inactive wall shape.
  */
 #include "dlls/objects/212_SkeetlaWall.h"
-#include "dlls/objects/213_Kaldachom.h"
-#include "game/objects/object.h"
 #include "main/object_render.h"
 
 void SkeetlaWall_getBounds(GameObject* obj, f32* outBounds, u8* outShapeFlag) {

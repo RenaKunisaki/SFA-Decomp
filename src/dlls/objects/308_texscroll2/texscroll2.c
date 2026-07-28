@@ -4,10 +4,8 @@
  */
 #include "dlls/objects/308_texscroll2.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
-#include "main/map_block.h"
 #include "main/map_texscroll.h"
 #include "main/object_render.h"
 #include "main/rcp_dolphin.h"

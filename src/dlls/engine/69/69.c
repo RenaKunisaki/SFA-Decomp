@@ -2,12 +2,8 @@
  * DLL 69 / 0x45.
  */
 #include "main/dll/CAM/cambike_state.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "main/mm.h"
 #include "main/dll/CAM/dll_0045_camTalk.h"
 #include "main/camera_interface.h"
-#include "main/object_transform.h"
-#include "string.h"
 #include "main/frame_timing.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/resource.h"

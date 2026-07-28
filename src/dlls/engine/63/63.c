@@ -1,12 +1,9 @@
 #include "main/texture.h"
 #include "sys/objects.h"
 #include "main/dll/ppcwgpipe_struct.h"
-#include "game/objects/object.h"
-#include "main/obj_group.h"
 #include "dlls/object_descriptor.h"
 #include "main/model_engine.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
-#include "main/dll/dll_003F_dll3f.h"
 
 char lbl_803DBBF0[] = "%2d";
 

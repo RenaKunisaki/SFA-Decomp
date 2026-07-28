@@ -2,10 +2,7 @@
 #include "dlls/objects/267_FireFlyLant.h"
 
 #include "dlls/objects/268_LanternFire.h"
-#include "game/objects/object.h"
 #include "main/gamebit_ids.h"
-#include "main/gameloop_gamebit_api.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

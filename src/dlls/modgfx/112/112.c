@@ -12,9 +12,7 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_0070_dll70func0.h"
 
 u8 lbl_803DB8D0[8] = {0, 0x0A, 0, 0x0C, 0, 0x0E, 0, 0x10};
 

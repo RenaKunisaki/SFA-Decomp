@@ -1,10 +1,8 @@
 #include "dlls/objects/363.h"
 
-#include "game/objects/object.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
-#include "main/render_lactions_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 

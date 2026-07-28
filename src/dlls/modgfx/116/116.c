@@ -7,10 +7,8 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_0074_dll74func0.h"
 
 /* spawnEffect effect ids for the func03 "0/non-0 variant pair" (docblock). */
 #define DLL74_EFFECT_ID_VARIANT0 0x2e

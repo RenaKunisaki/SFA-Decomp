@@ -5,9 +5,7 @@
  * linked mouth objects from the owning Kaldachom's placement ID.
  */
 #include "dlls/objects/214_KaldachomMe.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
-#include "main/objanim.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 

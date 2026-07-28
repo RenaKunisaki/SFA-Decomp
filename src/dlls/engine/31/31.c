@@ -1,11 +1,8 @@
-#include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
 #include "main/frame_timing.h"
-#include "main/vecmath.h"
 #include "main/dll/dll_001F_effect6.h"
 
 f32 gEffect6Osc0Value;

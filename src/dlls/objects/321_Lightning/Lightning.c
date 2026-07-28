@@ -1,14 +1,11 @@
 /* Periodically connects two linked objects with a lightning effect. */
 #include "dlls/objects/321_Lightning.h"
 
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/mm.h"
 #include "main/newclouds.h"
 #include "main/obj_group.h"
 #include "main/objfx.h"
-#include "main/vecmath.h"
 
 #define LIGHTNING_AGE_ROUND_BIAS             0.5f
 #define LIGHTNING_BURST_CHANCE               100

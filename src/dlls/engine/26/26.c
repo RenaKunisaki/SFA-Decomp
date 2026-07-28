@@ -1,5 +1,3 @@
-#include "main/dll/partfx_interface.h"
-#include "dlls/object_descriptor.h"
 #include "main/dll/mtxbuildarg_struct.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"

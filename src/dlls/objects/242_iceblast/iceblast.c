@@ -6,12 +6,9 @@
  * stream created by playerCastIceSpell.
  */
 #include "dlls/objects/242_iceblast.h"
-#include "game/objects/object.h"
 #include "main/dll/vecrotatezxy.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/obj_path.h"
-#include "main/objhits.h"
 #include "sys/objects.h"
 
 #define ICEBLAST_OBJECT_TYPE_ID 0

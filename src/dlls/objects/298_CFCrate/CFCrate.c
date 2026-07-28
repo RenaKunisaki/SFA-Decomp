@@ -9,7 +9,6 @@
 #include "dlls/objects/298_CFCrate.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
@@ -18,10 +17,8 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
-#include "main/render_lactions_api.h"
 #include "sys/objects.h"
 
 /*

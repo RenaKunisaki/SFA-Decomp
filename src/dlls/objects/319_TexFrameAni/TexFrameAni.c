@@ -1,12 +1,10 @@
 /* Animates a map-block texture slot in response to a game bit. */
 #include "dlls/objects/319_TexFrameAni.h"
 
-#include "game/objects/object.h"
 #include "main/debug.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
-#include "main/map_block.h"
 #include "main/object_render.h"
 #include "main/shader_api.h"
 #include "main/shader_map_api.h"

@@ -18,15 +18,11 @@
  */
 #include "dlls/objects/240_WarpPoint.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
-#include "main/gamebit_ids.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/objanim_update.h"
 #include "main/objseq.h"
-#include "main/rcp_dolphin_api.h"
-#include "main/shader_api.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 

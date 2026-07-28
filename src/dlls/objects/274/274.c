@@ -1,12 +1,9 @@
 #include "dlls/objects/274.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
 #include "main/objanim_update.h"
 #include "main/objseq.h"
-#include "main/rcp_dolphin_api.h"
 
 #define SEQ_OBJECT_GROUP                           0xF
 #define SEQ_OBJECT_SEQUENCE_INDEX_NONE             -1

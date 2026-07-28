@@ -5,9 +5,6 @@
 #include "main/frame_timing.h"
 #include "main/model.h"
 #include "main/object_render.h"
-#include "main/object_transform.h"
-#include "main/track_dolphin_api.h"
-#include "main/vecmath.h"
 
 #define EXPLODED_PHYSICS_FLAG_WAS_BELOW_FLOOR 0x04
 #define EXPLODED_OBJECT_TYPE_BANK_SHIFT       11

@@ -1,18 +1,12 @@
 /*
  * DLL 78 / 0x4E - world-map camera mode.
  */
-#include "main/mm.h"
 #include "main/resource.h"
 #include "sys/objects.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/CAM/camworldmap_state.h"
-#include "game/objects/object.h"
-#include "main/lightmap_api.h"
 #include "main/screen_transition.h"
 #include "main/pad.h"
-#include "main/object_transform.h"
-#include "main/vecmath.h"
-#include "main/dll/dll_0000_gameui_hud_api.h"
 
 CameraModeWorldMapState* gCamWorldMapState;
 

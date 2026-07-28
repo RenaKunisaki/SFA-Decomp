@@ -1,16 +1,11 @@
 #include "dlls/objects/273.h"
 
 #include "dolphin/pad.h"
-#include "game/objects/object.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
-#include "main/obj_trigger.h"
 #include "main/objanim_update.h"
-#include "main/objprint_render_api.h"
 #include "main/objseq.h"
-#include "main/pad_api.h"
 
 #define DOOR_LOCK_OBJECT_GROUP                       0xF
 #define DOOR_LOCK_INPUT_PORT                         0

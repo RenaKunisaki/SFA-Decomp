@@ -1,11 +1,8 @@
 /* Drives a sequence-controlled prop and relays its queued messages. */
 #include "dlls/objects/323_FEseqobject.h"
 
-#include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
-#include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
 

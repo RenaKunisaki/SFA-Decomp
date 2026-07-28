@@ -10,16 +10,9 @@
  * volume against the saved-file music-volume setting.
  *
  */
-#include "game/objects/object.h"
-#include "main/objseq.h"
 #include "main/dll/cameramodetitlepose_struct.h"
 #include "main/resource.h"
-#include "main/camera_object.h"
 #include "main/dll/dll_0015_save_settings.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/attract_movie_api.h"
-#include "main/audio/audio_control_api.h"
-#include "main/audio/music_api.h"
 #include "main/dll/dll_0057_cameramodetitle.h"
 
 u8 gCamTitleCurPose;

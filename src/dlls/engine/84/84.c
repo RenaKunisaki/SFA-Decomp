@@ -1,18 +1,11 @@
 /*
  * DLL 84 / 0x54 - NPC conversation camera mode.
  */
-#include "main/mm.h"
 #include "main/resource.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/camera_object.h"
 #include "main/camera_interface.h"
 #include "main/dll/CAM/camera_mode_54_state.h"
-#include "sys/objects.h"
 #include "main/frame_timing.h"
-#include "main/vecmath.h"
-#include "string.h"
-#include "main/object_transform.h"
-#include "main/obj_list.h"
 #include "main/dll/dll_0054_dll54.h"
 
 CameraMode54State* gCameraMode54State;

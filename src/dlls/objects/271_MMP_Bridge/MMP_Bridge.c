@@ -5,11 +5,9 @@
  */
 #include "dlls/objects/271_MMP_Bridge.h"
 
-#include "game/objects/object.h"
 #include "main/debug.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "main/objhits.h"
 #include "main/objtexture.h"
 
 char sMMPBridgeTextureOffsetDebugFormat[] = "S %d\n";

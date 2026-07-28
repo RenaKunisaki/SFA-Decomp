@@ -7,7 +7,6 @@
  */
 #include "dlls/objects/200_DepthOfFieldPoint.h"
 #include "game/objects/object.h"
-#include "main/rcp_dolphin_api.h"
 
 #define DEPTHOFFIELDPOINT_SEQEV_DISABLE       0
 #define DEPTHOFFIELDPOINT_SEQEV_ENABLE        1

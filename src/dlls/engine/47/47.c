@@ -1,16 +1,9 @@
-#include "game/objects/object.h"
 #include "sys/objects.h"
-#include "main/dll/player_api.h"
-#include "main/dll/dll_002F_carryable.h"
-#include "main/dll/savegame_object_api.h"
-#include "main/objhits.h"
 #include "main/dll/player_objects.h"
 #include "main/pad.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
-#include "main/obj_message.h"
-#include "main/obj_group.h"
 
 #define PAD_BUTTON_A              0x100
 #define CARRYABLE_MSG_PLAYER_GRAB 0x100008

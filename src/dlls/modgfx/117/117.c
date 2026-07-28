@@ -5,8 +5,6 @@
  * dll_75_func01_nop are empty entry-point stubs.
  */
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_0075_dll75func0.h"
 

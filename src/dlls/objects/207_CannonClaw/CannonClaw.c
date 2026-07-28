@@ -5,14 +5,10 @@
  * disables its hit volumes and rendering.
  */
 #include "dlls/objects/207_CannonClaw.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/objanim.h"
-#include "main/objhits.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define CANNON_CLAW_TRICKY_OBJECT_ID 0x1723
 #define CANNON_CLAW_ARM_MOVE_ID      0x208

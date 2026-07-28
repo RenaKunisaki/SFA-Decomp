@@ -4,7 +4,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_0062_dll62func0.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL62_EFFECT_ID 0x5e0

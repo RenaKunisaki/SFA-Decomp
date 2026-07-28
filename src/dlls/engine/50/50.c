@@ -1,18 +1,8 @@
-#include "main/dll/FRONT/dll_0032_n_rareware.h"
-#include "main/rcp_dolphin_api.h"
-#include "main/model_engine.h"
-#include "main/map_load.h"
 #include "dolphin/os.h"
 #include "dolphin/gx/GXTexture.h"
 #include "dolphin/gx/GXGet.h"
-#include "main/dll/tricky.h"
-#include "main/dll/dll_B4.h"
-#include "main/gametext_show_str_api.h"
 #include "main/textrender_api.h"
 #include "main/fileio.h"
-#include "main/sky.h"
-#include "track/intersect_hud_api.h"
-#include "main/gametext_color_api.h"
 #include "dlls/object_descriptor.h"
 
 f32 lbl_803DD5F4;

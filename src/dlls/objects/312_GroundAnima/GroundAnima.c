@@ -4,18 +4,12 @@
  */
 #include "dlls/objects/312_GroundAnima.h"
 
-#include "dlls/objects/386_MMP_moonroc.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/os/OSCache.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
-#include "main/map_block.h"
-#include "main/mm.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
-#include "main/objprint_render_api.h"
 #include "main/shader_api.h"
 #include "main/track_dolphin_api.h"
 #include "sys/objects.h"

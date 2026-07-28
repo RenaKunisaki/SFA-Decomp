@@ -2,7 +2,6 @@
 #include "main/dll/partfx_interface.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_0065_dll65func0.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL65_EFFECT_ID 0x40

@@ -6,18 +6,12 @@
  */
 #include "dlls/objects/224_SwarmBaddie.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_channel_volume_api.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/curve.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
-#include "main/objhits.h"
-#include "string.h"
 #include "sys/objects.h"
 
 #define SWARMBADDIE_HIT_VOLUME_SLOT 10

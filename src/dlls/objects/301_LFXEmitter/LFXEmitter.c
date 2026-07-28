@@ -4,17 +4,12 @@
  */
 #include "dlls/objects/301_LFXEmitter.h"
 
-#include "game/objects/object.h"
-#include "main/asset_load.h"
-#include "main/curve.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/mldf_fileid.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define LFXEMITTER_OBJECT_GROUP        0x1C
 #define LFXEMITTER_LIGHT_ACTION_HEAP   0x12

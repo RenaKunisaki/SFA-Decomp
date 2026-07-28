@@ -1,7 +1,6 @@
 /*
  * DLL 79 / 0x4F.
  */
-#include "main/mm.h"
 #include "main/resource.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/curve.h"
@@ -9,7 +8,6 @@
 #include "main/dll/CAM/camera_mode_4f_state.h"
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
-#include "main/vecmath.h"
 
 CameraMode4FState* gCameraMode4FState;
 

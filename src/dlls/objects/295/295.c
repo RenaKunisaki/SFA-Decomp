@@ -7,10 +7,8 @@
  */
 #include "dlls/objects/295.h"
 
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/objhits_types.h"
 
 #define DLL_127_OBJECT_TYPE_ID            0x13
 #define DLL_127_HIT_REACT_COOLDOWN_FRAMES 100

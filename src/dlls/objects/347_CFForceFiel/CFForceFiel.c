@@ -3,15 +3,10 @@
 #include "dlls/objects/347_CFForceFiel.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "dolphin/mtx/mtx_legacy.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "main/maketex_timer_api.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define CFFORCEFIELD_SILENT_COLLAPSE_MAP_ID   0x47F5E

@@ -6,10 +6,8 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_006B_dll6bfunc0.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL6B_EFFECT_ID 0x5e

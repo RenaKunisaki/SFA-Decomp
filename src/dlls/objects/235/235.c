@@ -6,8 +6,6 @@
  * placement radius.
  */
 #include "dlls/objects/235.h"
-#include "game/objects/object.h"
-#include "main/obj_group.h"
 #include "main/objhits.h"
 
 #define SIDEREPEL_OBJECT_GROUP 0x40

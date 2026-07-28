@@ -1,12 +1,9 @@
 /* CloudRunner Fortress power-base controller. */
 
-#include "sys/objects.h"
 #include "dlls/objects/330_CFPowerBase.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/game_ui_interface.h"
-#include "main/obj_message.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
 

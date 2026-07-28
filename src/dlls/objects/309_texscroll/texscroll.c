@@ -4,7 +4,6 @@
  */
 #include "dlls/objects/309_texscroll.h"
 
-#include "game/objects/object.h"
 #include "main/object_render.h"
 
 #define TEXSCROLL_RENDER_SCALE 1.0f

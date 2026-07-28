@@ -12,10 +12,8 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/screenfx_types.h"
-#include "main/dll/screens.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
-#include "main/dll/dll_009C_dll9cfunc0.h"
 
 extern u32 lbl_80317E00[];
 

@@ -5,10 +5,7 @@
  * radius while guarding, and recalls him when the configured timer expires.
  */
 #include "dlls/objects/288_TrickyGuard.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
-#include "main/obj_group.h"
-#include "main/objprint_render_api.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects/lifecycle.h"
 

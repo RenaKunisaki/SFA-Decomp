@@ -8,10 +8,8 @@
  */
 #include "dlls/objects/238_EffectBox.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "game/objects/object.h"
 #include "main/dll/player_api.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

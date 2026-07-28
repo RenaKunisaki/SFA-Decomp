@@ -1,13 +1,10 @@
 #include "main/texture.h"
-#include "main/pad_api.h"
 #include "main/rcp_dolphin_api.h"
-#include "main/model_engine.h"
 #include "main/gameloop_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/textrender_api.h"
 #include "main/dll/dll_0038_weirdunusedmenu.h"
-#include "main/dll/savegame.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
 
 #define WIDGET_FLAG_SAVING 0x1000

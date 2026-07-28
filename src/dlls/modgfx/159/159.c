@@ -15,8 +15,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/dll/dll_009F_dll9ffunc0.h"
 
 /* base draw flags before OR'ing the caller's flags */
 #define DLL9F_EFFECT_BASE_FLAGS 0xc0104c0

@@ -4,14 +4,9 @@
 #include "main/dll/CAM/camclimb_state.h"
 #include "main/resource.h"
 #include "main/dll/CAM/cutCam.h"
-#include "main/mm.h"
 #include "main/camera_interface.h"
 #include "main/frame_timing.h"
-#include "main/object_transform.h"
-#include "main/vecmath.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/dll_004B_cameramodeclimb.h"
-#include "string.h"
 
 CameraModeClimbState* gCamClimbState;
 

@@ -3,19 +3,13 @@
 #include "dlls/objects/331_CFMainCryst.h"
 
 #include "dlls/objects/330_CFPowerBase.h"
-#include "dolphin/mtx/mtx_legacy.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/camera.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/obj_message.h"
 #include "main/object_render.h"
 #include "main/render_envfx_api.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define CFMAINCRYSTAL_PYLON_ACTIVE_FRAMES  0x78

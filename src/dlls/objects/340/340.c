@@ -2,14 +2,10 @@
 
 #include "dlls/objects/340.h"
 
-#include "game/objects/object.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/game_ui_interface.h"
-#include "main/obj_message.h"
-#include "main/objfx_hit_emitter_api.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
 #include "main/objseq.h"
 
 typedef enum CfPrisonCageObjectSequenceId {

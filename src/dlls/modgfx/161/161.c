@@ -15,9 +15,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/dll/pickup.h"
-#include "main/dll/dll_00A1_dlla1func0.h"
 
 /* base spawn flags; low bit positions the effect at the source object */
 #define SPAWN_FLAGS_BASE        0xc0104c0

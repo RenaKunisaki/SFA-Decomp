@@ -4,8 +4,6 @@
 #include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
-#include "main/vecmath.h"
 
 #define EXPLODE_ANIMATOR_PARTFX_SPAWN_FLAGS 2
 

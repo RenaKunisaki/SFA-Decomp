@@ -5,9 +5,6 @@
  * spawns pollen fragments when its vertical motion crosses zero.
  */
 #include "dlls/objects/217_Pollen.h"
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
 #include "main/dll/partfx_interface.h"
@@ -15,8 +12,6 @@
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 

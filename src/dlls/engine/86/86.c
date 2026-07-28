@@ -4,11 +4,7 @@
 #include "main/camera_interface.h"
 #include "main/resource.h"
 #include "main/frame_timing.h"
-#include "game/objects/object.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
-#include "main/object_transform.h"
-#include "dolphin/mtx/mtx_legacy.h"
-#include "main/vecmath.h"
 
 typedef struct CameraArwingWork
 {

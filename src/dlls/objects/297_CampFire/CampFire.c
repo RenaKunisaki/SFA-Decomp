@@ -8,19 +8,14 @@
  */
 #include "dlls/objects/297_CampFire.h"
 
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/model_light.h"
 #include "main/objanim_internal.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
 #include "main/sky_interface.h"
-#include "main/vecmath.h"
-#include "sys/objects.h"
 
 #define CAMPFIRE_HIT_VOLUME_SLOT        0x1F
 #define CAMPFIRE_DAY_BURST_INTERVAL     10.0f

@@ -7,11 +7,8 @@
  */
 #include "dlls/objects/292.h"
 
-#include "game/objects/object.h"
-#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
-#include "main/objhits.h"
 #include "main/pi_dolphin_api.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"

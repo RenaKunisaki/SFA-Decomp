@@ -11,20 +11,12 @@
  * initializes in its consumed state.
  */
 #include "dlls/objects/231.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_keep_alive_api.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_0000_gameui_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/obj_group.h"
-#include "main/objanim.h"
 #include "main/object_render.h"
-#include "main/object_update_list.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
 #include "sys/objects/lifecycle.h"
 
 typedef struct FlammableVineTrickyInterfaceVTable {

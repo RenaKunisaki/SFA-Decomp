@@ -2,20 +2,13 @@
 
 #include "dlls/objects/334_CFPrisonGua.h"
 
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/objfx_api.h"
-#include "main/dll/player_api.h"
 #include "main/dll/waterfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/obj_message.h"
 #include "main/object_render.h"
-#include "main/object_update_list.h"
-#include "main/objhits.h"
-#include "main/objprint_character_api.h"
 #include "main/objseq.h"
-#include "main/render_lactions_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 

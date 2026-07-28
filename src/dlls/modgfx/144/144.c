@@ -15,8 +15,6 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
-#include "main/dll/foodbag.h"
-#include "main/dll/dll_0090_dll90func0.h"
 
 u8 lbl_803DB920[8] = {0, 0x0A, 0, 0x0C, 0, 0x0E, 0, 0x10};
 

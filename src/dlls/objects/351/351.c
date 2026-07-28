@@ -2,10 +2,7 @@
 
 #include "dlls/objects/351.h"
 
-#include "game/objects/object.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define ATTRACTOR_OBJECT_GROUP 0x1E

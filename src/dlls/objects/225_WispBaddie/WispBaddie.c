@@ -6,19 +6,11 @@
  */
 #include "dlls/objects/225_WispBaddie.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_position_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/curve.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
-#include "main/objhits.h"
-#include "main/vecmath.h"
-#include "string.h"
 #include "sys/objects.h"
 
 #define WISPBADDIE_HIT_VOLUME_SLOT 10

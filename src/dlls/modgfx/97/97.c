@@ -7,11 +7,8 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_0061_dll61func0.h"
-#include "main/vecmath.h"
 
 u8 lbl_803DB8C0[8] = {0, 8, 0, 0, 0, 0, 0, 0};
 

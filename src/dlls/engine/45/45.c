@@ -1,13 +1,10 @@
-#include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/maketex_random_api.h"
 #include "main/dll/dll_002D_effect20.h"
-#include "main/vecmath.h"
 
 f32 gEffect20SineValue0;
 f32 gEffect20SineValue1;

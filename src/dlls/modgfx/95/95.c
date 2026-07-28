@@ -12,10 +12,8 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_005F_dll5ffunc0.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL5F_EFFECT_ID 0x48

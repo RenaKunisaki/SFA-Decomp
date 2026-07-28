@@ -4,10 +4,8 @@
  */
 #include "dlls/objects/313_HitAnimator.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
-#include "main/map_block.h"
 #include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_api.h"
 

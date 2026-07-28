@@ -2,8 +2,6 @@
 
 #include "dlls/objects/343_SpiritDoorS.h"
 
-#include "game/objects/object.h"
-#include "main/obj_group.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
 

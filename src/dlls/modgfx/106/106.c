@@ -11,8 +11,6 @@
  *     world position, null uses posSource as a PartFxSpawnParams packet.
  */
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_006A_dll6afunc0.h"
 

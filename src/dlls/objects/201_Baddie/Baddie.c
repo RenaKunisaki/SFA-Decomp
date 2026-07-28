@@ -7,7 +7,6 @@
  * SharpClaw disguise fools the beam.
  */
 #include "dlls/objects/237.h"
-#include "dlls/object_descriptor.h"
 #include "main/camera_interface.h"
 #include "main/dll/objfx_api.h"
 #include "main/objfx.h"
@@ -16,9 +15,6 @@
 #include "main/object_render.h"
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
-#include "main/objanim.h"
-#include "game/objects/object.h"
-#include "main/dll/player_api.h"
 #include "main/dll/baddie_placement.h"
 #include "main/dll/baddie_setmove.h"
 #include "main/dll/boneparticleeffect_interface.h"

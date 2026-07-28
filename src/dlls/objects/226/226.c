@@ -13,17 +13,8 @@
  *
  */
 #include "main/model.h"
-#include "main/dll/partfx_interface.h"
 #include "main/texture.h"
-#include "track/intersect_depth_state_api.h"
-#include "dolphin/mtx/mtx_legacy.h"
-#include "track/intersect_render_setup_api.h"
-#include "track/intersect_geom_api.h"
-#include "track/intersect_texture_api.h"
-#include "main/hud_visibility_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_position_api.h"
 #include "main/shader_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "main/dll/genpropswgpipe_struct.h"

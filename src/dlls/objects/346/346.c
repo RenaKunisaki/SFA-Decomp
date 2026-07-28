@@ -4,15 +4,10 @@
 #include "dlls/objects/358.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/gamebits_api.h"
 #include "main/model.h"
-#include "main/obj_group.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-#include "track/intersect_api.h"
 
 #define EXPLODABLE_FRAGMENT_SETUP_MODE           5
 #define EXPLODABLE_FRAGMENT_VTABLE_STATUS_OFFSET 0x20

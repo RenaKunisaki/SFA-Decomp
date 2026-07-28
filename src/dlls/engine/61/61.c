@@ -2,13 +2,9 @@
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "main/pad.h"
 #include "main/texture.h"
-#include "main/mm.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/textrender_api.h"
-#include "main/gametext_api.h"
-#include "main/audio/music_api.h"
-#include "main/gametext_color_api.h"
 
 #define TITLE_MENU_FLAG_ENABLED          0x01
 #define TITLE_MENU_FLAG_WRAP             0x02

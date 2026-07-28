@@ -1,9 +1,7 @@
 /*
  * DLL 81 / 0x51 - cannon camera mode.
  */
-#include "main/mm.h"
 #include "main/resource.h"
-#include "main/camera_object.h"
 #include "main/dll/CAM/camera_mode_cannon_state.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_0051_cameramodecannon.h"

@@ -2,7 +2,6 @@
 #include "main/screen_transition.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
-#include "main/model_engine.h"
 #include "main/dll/FRONT/dll_39.h"
 #include "dlls/object_descriptor.h"
 u8 gNrarewareTimeoutFlag;

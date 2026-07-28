@@ -12,7 +12,6 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
-#include "main/dll/dll_00AA_dllaafunc0.h"
 
 extern u8 lbl_80319168[];
 

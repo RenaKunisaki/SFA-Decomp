@@ -1,5 +1,4 @@
 #include "dolphin/types.h"
-#include "main/dll/dll_0012_unk.h"
 
 unsigned int lbl_803DD458;
 

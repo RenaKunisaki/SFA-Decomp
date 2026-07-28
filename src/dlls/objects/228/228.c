@@ -5,13 +5,8 @@
  * and BossDarkorF object variants.
  */
 #include "dlls/objects/228_FlameThrowerspe.h"
-#include "game/objects/object.h"
-#include "main/dll/firepipe_effect_api.h"
 #include "main/frame_timing.h"
-#include "main/maketex_timer_api.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define FLAMETHROWERSPE_SCALE_DIVISOR 10.0f

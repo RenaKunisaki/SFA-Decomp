@@ -14,9 +14,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/dll/dll_0098_dll98func0.h"
-#include "main/vecmath.h"
 
 extern u32 lbl_803178B0[];
 

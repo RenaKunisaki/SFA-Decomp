@@ -1,9 +1,6 @@
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/effectsrcparams_struct.h"
 #include "main/dll/effectspawnparams_struct.h"
 #include "main/dll_000A_expgfx.h"
-#include "main/vecmath.h"
 #include "main/dll/dll_0024_effect11.h"
 
 EffectSrcParams gEffect11DefaultSrcParams;

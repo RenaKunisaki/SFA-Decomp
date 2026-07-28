@@ -4,9 +4,7 @@
 
 #include "main/camera.h"
 #include "main/gamebits_api.h"
-#include "main/obj_query.h"
 #include "main/object_render.h"
-#include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 
 #define CFMAGICWALL_MAX_VISIBLE_YAW 0x4000

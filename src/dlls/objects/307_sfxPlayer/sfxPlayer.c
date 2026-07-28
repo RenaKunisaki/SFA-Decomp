@@ -4,16 +4,9 @@
  */
 #include "dlls/objects/307_sfxPlayer.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_looped_object_api.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_position_api.h"
-#include "main/audio/sfx_stop_object_api.h"
 #include "main/camera_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
-#include "main/objseq_api.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define SFXPLAYER_GAME_BIT_NONE -1

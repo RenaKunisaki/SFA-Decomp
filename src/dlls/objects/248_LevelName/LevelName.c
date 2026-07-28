@@ -6,11 +6,9 @@
  */
 #include "dlls/objects/248_LevelName.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/gametext_internal.h"
-#include "main/textrender_api.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 

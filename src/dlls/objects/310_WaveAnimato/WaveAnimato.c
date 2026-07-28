@@ -5,10 +5,8 @@
 #include "dlls/objects/310_WaveAnimato.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
 
 typedef struct WaveAnimatorColor {

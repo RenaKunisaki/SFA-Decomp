@@ -6,12 +6,10 @@
  * delay, and retires when Tricky requests cleanup or is no longer present.
  */
 #include "dlls/objects/243_flameblast.h"
-#include "game/objects/object.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/dll/vecrotatezxy.h"
 #include "main/frame_timing.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
 #include "sys/objects/lifecycle.h"
 
 #define FLAMEBLAST_HIT_VOLUME_SLOT 0x1A

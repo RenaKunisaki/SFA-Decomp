@@ -1,14 +1,10 @@
 /* Tricky-activated wall that emits debris while its completion timer advances. */
 #include "dlls/objects/315_WallAnimato.h"
 
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
-#include "main/objprint_render_api.h"
-#include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
 
 #define WALL_ANIMATOR_DONE_TIMER               3000

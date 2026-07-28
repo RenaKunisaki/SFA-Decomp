@@ -14,17 +14,11 @@
  * table and switch table are owned by this TU.
  */
 #include "dlls/objects/229_Shield.h"
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
 #include "main/audio/sfx_object_volume_api.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_stop_object_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/player_objects.h"
 #include "main/frame_timing.h"
-#include "main/hud_visibility_api.h"
 #include "main/model.h"
 #include "main/model_light.h"
 #include "main/object_render.h"

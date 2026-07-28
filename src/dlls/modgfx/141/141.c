@@ -20,9 +20,6 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
-#include "main/dll/foodbag.h"
-#include "main/dll/dll_008D_dll8dfunc0.h"
-#include "main/vecmath.h"
 
 /* spawnEffect effect ids per variant. */
 #define DLL8D_EFFECT_ID_VARIANT0 0x156

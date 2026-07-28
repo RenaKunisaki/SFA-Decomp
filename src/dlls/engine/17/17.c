@@ -1,12 +1,7 @@
-#include "main/asset_load.h"
 #include "main/pi_dolphin.h"
-#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
-#include "main/mm.h"
 #include "main/dll/dll_0015_curves.h"
 #include "main/textrender_api.h"
-#include "main/dll/hint_text_api.h"
-#include "main/dll/dll_0011_screens.h"
 #include "main/gametext_api.h"
 
 u32 lbl_803DD4AC;

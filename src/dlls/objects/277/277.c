@@ -1,9 +1,7 @@
 #include "dlls/objects/277.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
 #include "main/objanim_update.h"
 #include "main/objseq.h"
 

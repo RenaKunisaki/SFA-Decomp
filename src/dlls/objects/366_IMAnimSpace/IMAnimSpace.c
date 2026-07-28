@@ -1,11 +1,8 @@
 #include "dlls/objects/366_IMAnimSpace.h"
 
-#include "game/objects/object.h"
 #include "main/dll/expgfx_interface.h"
-#include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
-#include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objtexture.h"
 
