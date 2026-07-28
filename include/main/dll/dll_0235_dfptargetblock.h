@@ -61,15 +61,15 @@ STATIC_ASSERT(offsetof(DfpTargetBlockState, floorPointCount) == 0x68);
 STATIC_ASSERT(offsetof(DfpTargetBlockState, mode) == 0x69);
 STATIC_ASSERT(sizeof(DfpTargetBlockState) == 0x6C);
 
-void dfptargetblock_update(DfpTargetBlockObject *obj);
-void dfptargetblock_resolveCollisionPoints(DfpTargetBlockObject* obj,
+void dfptargetblock_update(GameObject *obj);
+void dfptargetblock_resolveCollisionPoints(GameObject* obj,
                                            DfpTargetBlockCollisionPoints* collisionPoints);
-void dfptargetblock_init(DfpTargetBlockObject *obj, DfpTargetBlockPlacement* placement);
+void dfptargetblock_init(GameObject *obj, DfpTargetBlockPlacement* placement);
 int dfptargetblock_getExtraSize(void);
 int dfptargetblock_getObjectTypeId(void);
-void dfptargetblock_free(DfpTargetBlockObject* obj);
-void dfptargetblock_render(DfpTargetBlockObject* obj, int p2, int p3, int p4, int p5, s8 visible);
-void dfptargetblock_hitDetect(DfpTargetBlockObject* obj);
+void dfptargetblock_free(GameObject* obj);
+void dfptargetblock_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
+void dfptargetblock_hitDetect(GameObject* obj);
 void dfptargetblock_release(void);
 void dfptargetblock_initialise(void);
 extern ObjectDescriptor10WithPadding gDfptargetblockObjDescriptor;

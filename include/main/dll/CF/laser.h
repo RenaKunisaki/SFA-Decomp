@@ -2,6 +2,7 @@
 #define MAIN_DLL_CF_LASER_H_
 
 #include "global.h"
+#include "game/objects/object.h"
 #include "main/game_ui_interface.h"
 #include "main/mapEventTypes.h"
 #include "dlls/object_descriptor.h"
@@ -20,27 +21,11 @@ typedef struct LaserState {
 
 typedef struct LaserObjectMapData {
   ObjPlacement base;
-  s8 mapEventSlot;
+  s8 yawByte;
   u8 pad19[0x1E - 0x19];
   s16 completionGameBit;
   s16 activationGameBit;
 } LaserObjectMapData;
-
-typedef struct LaserObject {
-  union {
-    ObjAnimComponent anim;
-    struct {
-      s16 modeWord;
-      u8 pad02[0xAC - 2];
-      s8 mapEventSlot;
-      u8 padAD[0xAF - 0xAD];
-      u8 statusFlags;
-    };
-  };
-  u16 objectFlags;
-  u8 padB2[0xB8 - 0xB2];
-  LaserState *state;
-} LaserObject;
 
 typedef GameUIInterface LaserTriggerInterface;
 
@@ -54,27 +39,16 @@ STATIC_ASSERT(offsetof(LaserState, completionGameBit) == 0x00);
 STATIC_ASSERT(offsetof(LaserState, activationGameBit) == 0x02);
 STATIC_ASSERT(offsetof(LaserState, completionLatched) == 0x04);
 
-STATIC_ASSERT(offsetof(LaserObjectMapData, mapEventSlot) == 0x18);
+STATIC_ASSERT(offsetof(LaserObjectMapData, yawByte) == 0x18);
 STATIC_ASSERT(offsetof(LaserObjectMapData, completionGameBit) == 0x1E);
 STATIC_ASSERT(offsetof(LaserObjectMapData, activationGameBit) == 0x20);
 STATIC_ASSERT(sizeof(LaserObjectMapData) == 0x24);
 
-STATIC_ASSERT(offsetof(LaserObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(LaserObject, modeWord) == offsetof(ObjAnimComponent, rotX));
-STATIC_ASSERT(offsetof(LaserObject, mapEventSlot) == offsetof(ObjAnimComponent, mapEventSlot));
-STATIC_ASSERT(offsetof(LaserObject, statusFlags) == offsetof(ObjAnimComponent, resetHitboxFlags));
-STATIC_ASSERT(offsetof(LaserObject, objectFlags) == 0xB0);
-STATIC_ASSERT(offsetof(LaserObject, state) == 0xB8);
-
 STATIC_ASSERT(offsetof(LaserReleaseInterface, releaseObject) == 0x48);
-
-#define LASER_OBJECT_STATUS_ACTIVE 0x01
-#define LASER_OBJECT_STATUS_DISABLED 0x08
-#define LASER_OBJECT_FLAGS_SEQUENCE_CONTROL 0x6000
 
 #define LASEROBJ_MODE_SEQUENCE_A 1
 #define LASEROBJ_MODE_SEQUENCE_B 2
-#define LASEROBJ_MODE_WORD_SHIFT 8
+#define LASEROBJ_YAW_BYTE_SHIFT 8
 
 #define LASEROBJ_SEQUENCE_A_EVENT 0x2e8
 #define LASEROBJ_SEQUENCE_B_EVENT 0x83c
@@ -104,8 +78,8 @@ int DFPSpPl_getObjectTypeId(void);
 void DFPSpPl_free(void);
 void DFPSpPl_render(void);
 void DFPSpPl_hitDetect(void);
-void DFPSpPl_update(LaserObject *obj);
-void DFPSpPl_init(LaserObject *obj,LaserObjectMapData *mapData);
+void DFPSpPl_update(GameObject *obj);
+void DFPSpPl_init(GameObject *obj,LaserObjectMapData *mapData);
 void DFPSpPl_release(void);
 void DFPSpPl_initialise(void);
 

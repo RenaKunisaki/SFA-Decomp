@@ -30,48 +30,48 @@ void DFPSpPl_hitDetect(void)
 {
 }
 
-void DFPSpPl_update(LaserObject* obj)
+void DFPSpPl_update(GameObject* obj)
 {
     LaserState* state;
     u32 activationGameBitSet;
     int eventReady;
     int mode;
 
-    if ((obj->state->completionLatched == '\0') &&
-        (activationGameBitSet = mainGetBit((int)obj->state->activationGameBit), activationGameBitSet != 0))
+    if ((((LaserState*)obj->extra)->completionLatched == '\0') &&
+        (activationGameBitSet = mainGetBit((int)((LaserState*)obj->extra)->activationGameBit), activationGameBitSet != 0))
     {
-        obj->statusFlags = (u8)(obj->statusFlags & ~LASER_OBJECT_STATUS_DISABLED);
+        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
     }
     else
     {
-        obj->statusFlags = (u8)(obj->statusFlags | LASER_OBJECT_STATUS_DISABLED);
+        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
     }
-    objRenderFn_80041018((GameObject*)obj);
-    if ((obj->statusFlags & LASER_OBJECT_STATUS_ACTIVE) != 0)
+    objRenderFn_80041018(obj);
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
     {
-        mode = (u8)(*gMapEventInterface)->getMapAct((int)obj->mapEventSlot);
+        mode = (u8)(*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
         switch (mode)
         {
         case LASEROBJ_MODE_SEQUENCE_A:
-            state = obj->state;
+            state = obj->extra;
             eventReady = (*gGameUIInterface)->isEventReady(LASEROBJ_SEQUENCE_A_EVENT);
             if (eventReady != 0)
             {
                 mainSetBits((int)state->completionGameBit, 1);
                 mainSetBits((int)state->activationGameBit, 0);
                 state->completionLatched = 1;
-                obj->statusFlags = (u8)(obj->statusFlags | LASER_OBJECT_STATUS_DISABLED);
+                obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             }
             break;
         case LASEROBJ_MODE_SEQUENCE_B:
-            state = obj->state;
+            state = obj->extra;
             eventReady = (*gGameUIInterface)->isEventReady(LASEROBJ_SEQUENCE_B_EVENT);
             if (eventReady != 0)
             {
                 mainSetBits((int)state->completionGameBit, 1);
                 mainSetBits((int)state->activationGameBit, 0);
                 state->completionLatched = 1;
-                obj->statusFlags = (u8)(obj->statusFlags | LASER_OBJECT_STATUS_DISABLED);
+                obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
                 (*gMapEventInterface)->setMapAct(LASEROBJ_SEQUENCE_B_MODE_MAP_A, LASEROBJ_SEQUENCE_B_MODE_A);
                 (*gMapEventInterface)->setMapAct(LASEROBJ_SEQUENCE_B_MODE_MAP_B, LASEROBJ_SEQUENCE_B_MODE_B);
             }
@@ -81,23 +81,23 @@ void DFPSpPl_update(LaserObject* obj)
     return;
 }
 
-void DFPSpPl_init(LaserObject* obj, LaserObjectMapData* mapData)
+void DFPSpPl_init(GameObject* obj, LaserObjectMapData* mapData)
 {
     LaserState* state;
     u32 completionGameBitSet;
 
-    state = obj->state;
+    state = obj->extra;
     state->completionGameBit = mapData->completionGameBit;
     state->activationGameBit = mapData->activationGameBit;
     state->completionLatched = 0;
-    obj->modeWord = (s16)(mapData->mapEventSlot << LASEROBJ_MODE_WORD_SHIFT);
+    obj->anim.rotX = (s16)(mapData->yawByte << LASEROBJ_YAW_BYTE_SHIFT);
     completionGameBitSet = mainGetBit((int)state->completionGameBit);
     if (completionGameBitSet != 0)
     {
         state->completionLatched = 1;
-        obj->statusFlags = (u8)(obj->statusFlags | LASER_OBJECT_STATUS_DISABLED);
+        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
     }
-    obj->objectFlags = (u16)(obj->objectFlags | LASER_OBJECT_FLAGS_SEQUENCE_CONTROL);
+    obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN));
     return;
 }
 

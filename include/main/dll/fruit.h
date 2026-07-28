@@ -43,8 +43,8 @@ typedef enum DfpTargetBlockAudioMode {
 #define DFPTARGETBLOCK_RESET_PARTICLE_MODE 0x200001
 #define DFPTARGETBLOCK_RESET_PARTICLE_COUNT 0x14
 
-struct DfpTargetBlockObject;
+struct GameObject;
 
-void dfptargetblock_hitDetect(struct DfpTargetBlockObject *obj);
+void dfptargetblock_hitDetect(struct GameObject *obj);
 
 #endif /* MAIN_DLL_FRUIT_H_ */

@@ -85,7 +85,7 @@ const s32 gKytesMumTriggerIds[3] = {0, 2, -1};
 int kytesmum_updateInteractionRangeCallback(GameObject* obj, int unused, u8* arg)
 {
     GameObject* player = Obj_GetPlayerObject();
-    KytesMumSetup* setup = ((KytesMumObject*)obj)->setup;
+    KytesMumSetup* setup = (KytesMumSetup*)obj->anim.placementData;
     f32 dist;
     ObjHits_DisableObject(obj);
     dist = Vec_xzDistance(&player->anim.worldPosX, &(obj)->anim.worldPosX);
@@ -215,7 +215,7 @@ int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
 {
     GameObject* player = Obj_GetPlayerObject();
     int* tricky = (int*)getTrickyObject();
-    KytesMumRuntime* runtime = ((KytesMumObject*)obj)->runtime;
+    KytesMumRuntime* runtime = obj->extra;
     if (objGetAnimState80A(player) == 0x40)
     {
         return 1;
@@ -271,11 +271,11 @@ int kytesmum_spawnInteractionCallback(GameObject* obj)
 
 int kytesmum_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 {
-    KytesMumRuntime* runtime = ((KytesMumObject*)obj)->runtime;
+    KytesMumRuntime* runtime = obj->extra;
     KytesMumSetup* setup;
     int i;
     Obj_GetPlayerObject();
-    setup = ((KytesMumObject*)obj)->setup;
+    setup = (KytesMumSetup*)obj->anim.placementData;
     ObjHits_EnableObject(obj);
     ObjHits_RegisterActiveHitVolumeObject(obj);
     for (i = 0; i < animUpdate->eventCount; i++)
@@ -306,7 +306,7 @@ int kytesmum_getObjectTypeId(void)
 
 void kytesmum_free(int obj)
 {
-    KytesMumSetup* setup = ((KytesMumObject*)obj)->setup;
+    KytesMumSetup* setup = (KytesMumSetup*)((GameObject*)obj)->anim.placementData;
     if (setup->mode != 0)
     {
         ObjGroup_RemoveObject(obj, KYTESMUM_OBJGROUP);
@@ -328,9 +328,8 @@ void kytesmum_hitDetect(void)
 
 void kytesmum_update(GameObject* obj)
 {
-    KytesMumObject* kytesMum = (KytesMumObject*)obj;
-    KytesMumRuntime* runtime = kytesMum->runtime;
-    KytesMumSetup* setup = kytesMum->setup;
+    KytesMumRuntime* runtime = obj->extra;
+    KytesMumSetup* setup = (KytesMumSetup*)obj->anim.placementData;
     f32 nearDist;
     s16 diff;
     int absDiff;
@@ -346,7 +345,7 @@ void kytesmum_update(GameObject* obj)
             runtime->questComplete = 1;
         }
     }
-    diff = (s16)((setup->yaw << 8) - (u16)kytesMum->yaw);
+    diff = (s16)((setup->yaw << 8) - (u16)obj->anim.rotX);
     if ((s16)diff > 0x8000)
     {
         diff = (s16)((diff - 0x10000) + 1);
@@ -358,17 +357,17 @@ void kytesmum_update(GameObject* obj)
     if (diff != 0)
     {
         logPrintf(sKytesMumYawDiffMessage);
-        if (kytesMum->currentMove != runtime->moveSet->moves[2])
+        if (obj->anim.currentMove != runtime->moveSet->moves[2])
         {
             ObjAnim_SetCurrentMove((int)obj, runtime->moveSet->moves[2], 0.0f, 0);
         }
-        kytesMum->yaw = (s16)(kytesMum->yaw + ((diff + 1) >> 4));
+        obj->anim.rotX = (s16)(obj->anim.rotX + ((diff + 1) >> 4));
         runtime->animSpeed = 0.01f * (f32)(diff / 1024);
         absDiff = diff;
         absDiff = (absDiff >= 0) ? absDiff : -absDiff;
         if (absDiff < 0x400)
         {
-            kytesMum->yaw = (s16)(setup->yaw << 8);
+            obj->anim.rotX = (s16)(setup->yaw << 8);
             ObjAnim_SetCurrentMove((int)obj, runtime->moveSet->moves[randomGetRange(0, 1)], 0.0f, 0);
             runtime->animSpeed = 0.01f;
         }
@@ -401,10 +400,9 @@ void kytesmum_update(GameObject* obj)
 void kytesmum_init(GameObject* obj, KytesMumSetup* setup)
 {
     KytesMumMoveSet* moveSets = (KytesMumMoveSet*)gKytesMumMoveSets;
-    KytesMumObject* kytesMum = (KytesMumObject*)obj;
-    KytesMumRuntime* runtime = kytesMum->runtime;
+    KytesMumRuntime* runtime = obj->extra;
     int startMove;
-    kytesMum->yaw = (s16)(setup->yaw << 8);
+    obj->anim.rotX = (s16)(setup->yaw << 8);
     if (mainGetBit(setup->completionGameBit) != 0)
     {
         runtime->questComplete = 1;
@@ -415,7 +413,7 @@ void kytesmum_init(GameObject* obj, KytesMumSetup* setup)
         runtime->moveSet = &moveSets[0];
         runtime->updateCallback = (KytesMumUpdateCallback)kytesmum_spawnInteractionCallback;
         runtime->eventSfxTable = 0;
-        kytesMum->interactionCallback = kytesmum_animEventCallback;
+        obj->animEventCallback = kytesmum_animEventCallback;
         break;
     case KYTESMUM_MODE_ROAMING:
         runtime->moveSet = &moveSets[1];
@@ -428,7 +426,7 @@ void kytesmum_init(GameObject* obj, KytesMumSetup* setup)
             (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
         }
         ObjHits_RegisterActiveHitVolumeObject(obj);
-        kytesMum->interactionCallback = kytesmum_animEventCallback;
+        obj->animEventCallback = kytesmum_animEventCallback;
         break;
     case KYTESMUM_MODE_QUEST_A:
     case KYTESMUM_MODE_QUEST_B:
@@ -437,7 +435,7 @@ void kytesmum_init(GameObject* obj, KytesMumSetup* setup)
         runtime->moveSet = &moveSets[2];
         runtime->updateCallback = (KytesMumUpdateCallback)kytesmum_updateQuestStateCallback;
         runtime->eventSfxTable = lbl_803DC2D0;
-        kytesMum->interactionCallback = kytesmum_updateInteractionRangeCallback;
+        obj->animEventCallback = kytesmum_updateInteractionRangeCallback;
         break;
     }
     runtime->idleSfxTable = (ObjSoundDef*)&moveSets[3];
@@ -445,7 +443,7 @@ void kytesmum_init(GameObject* obj, KytesMumSetup* setup)
     startMove = randomGetRange(0, 1) * 2;
     startMove = *(s16*)((char*)runtime->moveSet + startMove);
     ObjAnim_SetCurrentMove((int)obj, startMove, 0.0f, 0);
-    kytesMum->objectFlags |= KYTESMUM_OBJFLAG_HITDETECT_DISABLED;
+    obj->objectFlags |= KYTESMUM_OBJFLAG_HITDETECT_DISABLED;
 }
 
 void kytesmum_release(void)

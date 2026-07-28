@@ -281,7 +281,7 @@ int TREX_Lazerwall_updateTimedChallenge(GameObject* obj)
     return 0;
 }
 
-int DRlaserturret_updateIdle(DRLaserTurretObject* obj, DRLaserTurretAnimState* animState)
+int DRlaserturret_updateIdle(GameObject* obj, DRLaserTurretAnimState* animState)
 {
     void* playerObj;
     DRLaserTurretState* state;
@@ -291,15 +291,15 @@ int DRlaserturret_updateIdle(DRLaserTurretObject* obj, DRLaserTurretAnimState* a
     int rng;
 
     playerObj = Obj_GetPlayerObject();
-    state = obj->state;
+    state = obj->extra;
     state->promptState = 0xff;
     animState->animStepScale = 0.007f;
-    if (obj->currentMove != 0)
+    if (obj->anim.currentMove != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, 0.0f, 0);
     }
     ObjHits_EnableObject((GameObject*)obj);
-    obj->hitFlags &= ~DR_LASERTURRET_HITFLAG_CLEAR_PROMPT;
+    obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if (mainGetBit(DR_LASERTURRET_GAMEBIT_SHOP_OPEN) == 0)
     {
         pushState = DR_LASERTURRET_STATE_PUSH_IDLE;
@@ -311,7 +311,7 @@ int DRlaserturret_updateIdle(DRLaserTurretObject* obj, DRLaserTurretAnimState* a
         return DR_LASERTURRET_STATE_CONTINUE;
     }
     shopKeeperRotateFn_801e7c4c((s16*)obj, playerObj, 0);
-    obj->y = state->bobAmplitude *
+    obj->anim.localPosY = state->bobAmplitude *
                  mathSinf((double)(3.1415927f * (float)(u32)state->bobPhase / 32768.0f)) +
              state->bobBaseY;
     sum = state->bobPhase + framesThisStep * 0x100;
@@ -324,7 +324,7 @@ int DRlaserturret_updateIdle(DRLaserTurretObject* obj, DRLaserTurretAnimState* a
         state->bobAmplitude = rngf;
     }
     state->bobPhase = sum;
-    if ((obj->hitFlags & DR_LASERTURRET_HITFLAG_CAN_PROMPT) != 0)
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
     {
         if (playerGetMoney(playerObj) >= 1)
         {
@@ -341,7 +341,7 @@ int DRlaserturret_updateIdle(DRLaserTurretObject* obj, DRLaserTurretAnimState* a
     return 0;
 }
 
-int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimState* animState)
+int DRlaserturret_updateTracking(GameObject* obj, DRLaserTurretAnimState* animState)
 {
     void* playerObj;
     DRLaserTurretState* state;
@@ -360,7 +360,7 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
     float d;
 
     playerObj = Obj_GetPlayerObject();
-    state = obj->state;
+    state = obj->extra;
     if (animState->stateEntered != 0)
     {
         rng = randomGetRange(0x1f4, 0x3e8);
@@ -371,11 +371,11 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
     {
         if (animState->moveComplete != 0)
         {
-            if (obj->currentMove == DR_LASERTURRET_ANIM_TRACKING && animState->animStepScale > 0.0f)
+            if (obj->anim.currentMove == DR_LASERTURRET_ANIM_TRACKING && animState->animStepScale > 0.0f)
             {
                 ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_ALERT, 0.0f, 0);
             }
-            else if (obj->currentMove != 0)
+            else if (obj->anim.currentMove != 0)
             {
                 ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, 0.0f, 0);
             }
@@ -387,7 +387,7 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
     }
     else
     {
-        if (obj->currentMove != DR_LASERTURRET_ANIM_ALERT && obj->currentMove != 0)
+        if (obj->anim.currentMove != DR_LASERTURRET_ANIM_ALERT && obj->anim.currentMove != 0)
         {
             ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_IDLE, 0.0f, 0);
             animState->animStepScale = 0.007f;
@@ -397,7 +397,7 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
     if (state->actionTimer <= 0.0f && (state->flags & DR_LASERTURRET_FLAG_ACTION_ACTIVE) == 0)
     {
         Sfx_PlayFromObject((int)obj, DR_LASERTURRET_SFX_ACTION);
-        if (obj->currentMove == DR_LASERTURRET_ANIM_ALERT)
+        if (obj->anim.currentMove == DR_LASERTURRET_ANIM_ALERT)
         {
             ObjAnim_SetCurrentMove((int)obj, DR_LASERTURRET_ANIM_TRACKING, 0.99f, 0);
             animState->animStepScale = -0.0125f;
@@ -437,11 +437,11 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
         animState->aimBlend = 0.0f;
     }
     animState->aimBlend = 0.0f;
-    count = hitDetectFn_80065e50((GameObject*)obj, obj->x, obj->y, obj->z, &arr, 0, 0);
+    count = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &arr, 0, 0);
     minDist = 10000.0f;
     for (idx = 0; idx < count; idx++)
     {
-        dist = arr[idx]->height - obj->y;
+        dist = arr[idx]->height - obj->anim.localPosY;
         if (dist < 0.0f)
         {
             dist = -dist;
@@ -452,7 +452,7 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
             minDist = dist;
         }
     }
-    obj->y = state->bobAmplitude *
+    obj->anim.localPosY = state->bobAmplitude *
                  mathSinf((double)(3.1415927f * (float)(u32)state->bobPhase / 32768.0f)) +
              state->bobBaseY;
     sum = state->bobPhase + framesThisStep * 0x100;
@@ -473,11 +473,11 @@ int DRlaserturret_updateTracking(DRLaserTurretObject* obj, DRLaserTurretAnimStat
     return 0;
 }
 
-int DRlaserturret_startLinkedTarget(DRLaserTurretObject* obj)
+int DRlaserturret_startLinkedTarget(GameObject* obj)
 {
     DRLaserTurretState* state;
 
-    state = obj->state;
+    state = obj->extra;
     if (mainGetBit(DR_LASERTURRET_GAMEBIT_LINK_READY) == 0)
     {
         return 0;
@@ -492,7 +492,7 @@ int DRlaserturret_startLinkedTarget(DRLaserTurretObject* obj)
     return DR_LASERTURRET_STATE_LINKED_TARGET;
 }
 
-int DRlaserturret_handlePromptChoice(DRLaserTurretObject* obj, void* param2, int dispatch)
+int DRlaserturret_handlePromptChoice(GameObject* obj, void* param2, int dispatch)
 {
     DRLaserTurretState* state;
     s8 stickHi;
@@ -502,7 +502,7 @@ int DRlaserturret_handlePromptChoice(DRLaserTurretObject* obj, void* param2, int
     char nudge;
     ObjTextureRuntimeSlot* texture;
 
-    state = obj->state;
+    state = obj->extra;
     if (dispatch == DR_LASERTURRET_PROMPT_COUNT)
     {
         padGetAnalogInput(0, &stickHi, &stickLo);
@@ -619,11 +619,11 @@ int DRlaserturret_handlePromptChoice(DRLaserTurretObject* obj, void* param2, int
     return 0;
 }
 
-void DRlaserturret_startTimedChallenge(DRLaserTurretObject* obj)
+void DRlaserturret_startTimedChallenge(GameObject* obj)
 {
     DRLaserTurretState* state;
 
-    state = obj->state;
+    state = obj->extra;
     if ((state->flags & DR_LASERTURRET_FLAG_START_SEQUENCE) != 0)
     {
         int* target;

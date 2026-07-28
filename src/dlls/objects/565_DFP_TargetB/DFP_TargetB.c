@@ -33,7 +33,7 @@ f32 gTargetBlockHomeZ;
 f32 gTargetBlockHomeX;
 s32 gTargetBlockHomePos[] = {0, 0, 0};
 
-void dfptargetblock_resolveCollisionPoints(DfpTargetBlockObject* obj, DfpTargetBlockCollisionPoints* collisionPoints)
+void dfptargetblock_resolveCollisionPoints(GameObject* obj, DfpTargetBlockCollisionPoints* collisionPoints)
 {
     u8* point;
     f32 probe[3];
@@ -48,28 +48,28 @@ void dfptargetblock_resolveCollisionPoints(DfpTargetBlockObject* obj, DfpTargetB
     point = collisionPoints->pointData;
     while (i < collisionPoints->count)
     {
-        probe[0] = *(f32*)(point + DFPTARGETBLOCK_POINT_OFFSET_X) + obj->x;
+        probe[0] = *(f32*)(point + DFPTARGETBLOCK_POINT_OFFSET_X) + obj->anim.localPosX;
         originalX = probe[0];
-        probe[1] = *(f32*)(point + DFPTARGETBLOCK_POINT_OFFSET_Y) + obj->y;
-        probe[2] = *(f32*)(point + DFPTARGETBLOCK_POINT_OFFSET_Z) + obj->z;
+        probe[1] = *(f32*)(point + DFPTARGETBLOCK_POINT_OFFSET_Y) + obj->anim.localPosY;
+        probe[2] = *(f32*)(point + DFPTARGETBLOCK_POINT_OFFSET_Z) + obj->anim.localPosZ;
         originalZ = probe[2];
-        if (objBboxFn_800640cc(&obj->x, probe, (0.5f), 1, &hit, (GameObject*)obj, 8, -1, 0, 0) != 0)
+        if (objBboxFn_800640cc(&obj->anim.localPosX, probe, (0.5f), 1, &hit, obj, 8, -1, 0, 0) != 0)
         {
             deltaX = probe[0] - originalX;
             deltaZ = probe[2] - originalZ;
-            if (0.0f != obj->velX)
+            if (0.0f != obj->anim.velocityX)
             {
-                obj->x = obj->x + deltaX;
+                obj->anim.localPosX = obj->anim.localPosX + deltaX;
             }
-            if (0.0f != obj->velZ)
+            if (0.0f != obj->anim.velocityZ)
             {
-                obj->z = obj->z + deltaZ;
+                obj->anim.localPosZ = obj->anim.localPosZ + deltaZ;
             }
             {
                 f32 zero = 0.0f;
-                obj->velX = zero;
-                obj->velY = zero;
-                obj->velZ = zero;
+                obj->anim.velocityX = zero;
+                obj->anim.velocityY = zero;
+                obj->anim.velocityZ = zero;
             }
             Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_bflconc1_1d0);
             return;
@@ -89,44 +89,44 @@ int dfptargetblock_getObjectTypeId(void)
     return 0;
 }
 
-void dfptargetblock_free(DfpTargetBlockObject* obj)
+void dfptargetblock_free(GameObject* obj)
 {
 }
 
-void dfptargetblock_render(DfpTargetBlockObject* obj, int p2, int p3, int p4, int p5, s8 visible)
+void dfptargetblock_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     DfpTargetBlockState* state;
 
-    state = obj->state;
+    state = obj->extra;
     if (state->completionSfxReady != 0)
         return;
     if (state->stateSfxReady == 0 || state->mode == DFPTARGETBLOCK_MODE_SETTLED)
         return;
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
-static inline void dfptargetblock_resetToHome(DfpTargetBlockObject* obj, DfpTargetBlockHome* home,
+static inline void dfptargetblock_resetToHome(GameObject* obj, ObjPlacement* home,
                                               DfpTargetBlockState* state)
 {
     f32 zero;
 
-    obj->x = home->x;
-    obj->z = home->z;
+    obj->anim.localPosX = home->posX;
+    obj->anim.localPosZ = home->posZ;
     zero = 0.0f;
-    obj->velX = zero;
-    obj->velZ = zero;
+    obj->anim.velocityX = zero;
+    obj->anim.velocityZ = zero;
     state->mode = DFPTARGETBLOCK_MODE_RESETTING;
-    obj->y = home->y - (80.0f);
+    obj->anim.localPosY = home->posY - (80.0f);
     Sfx_PlayFromObject((u32)obj, DFPTARGETBLOCK_RESET_SFX);
 }
-static inline void dfptargetblock_checkSettled(DfpTargetBlockObject* obj, DfpTargetBlockState* state,
+static inline void dfptargetblock_checkSettled(GameObject* obj, DfpTargetBlockState* state,
                                                f32 threshold)
 {
     f32 dx;
     f32 dz;
 
-    dx = obj->x - gTargetBlockHomeX;
-    dz = obj->z - gTargetBlockHomeZ;
+    dx = obj->anim.localPosX - gTargetBlockHomeX;
+    dz = obj->anim.localPosZ - gTargetBlockHomeZ;
     if (!((0.0f == dx) && (0.0f == dz)))
     {
         if (sqrtf(dx * dx + dz * dz) < threshold)
@@ -140,12 +140,12 @@ static inline void dfptargetblock_checkSettled(DfpTargetBlockObject* obj, DfpTar
     }
 }
 
-void dfptargetblock_hitDetect(DfpTargetBlockObject* obj)
+void dfptargetblock_hitDetect(GameObject* obj)
 {
     int i;
     DfpTargetBlockState* state;
-    DfpTargetBlockHome* home;
-    DfpTargetBlockObject* hitObj;
+    ObjPlacement* home;
+    GameObject* hitObj;
     MatrixTransform effect;
     int priority;
     int hitType;
@@ -156,13 +156,13 @@ void dfptargetblock_hitDetect(DfpTargetBlockObject* obj)
     f32 dz;
 
     priority = -1;
-    state = obj->state;
-    home = obj->home;
+    state = obj->extra;
+    home = (ObjPlacement*)obj->anim.placementData;
 
-    if (obj->objectType == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
+    if (obj->anim.seqId == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
     {
-        gTargetBlockHomeX = obj->x;
-        gTargetBlockHomeZ = obj->z;
+        gTargetBlockHomeX = obj->anim.localPosX;
+        gTargetBlockHomeZ = obj->anim.localPosZ;
         return;
     }
 
@@ -172,18 +172,18 @@ void dfptargetblock_hitDetect(DfpTargetBlockObject* obj)
         return;
     }
 
-    obj->prevX = obj->x;
-    obj->prevY = obj->y;
-    obj->prevZ = obj->z;
+    obj->anim.previousLocalPosX = obj->anim.localPosX;
+    obj->anim.previousLocalPosY = obj->anim.localPosY;
+    obj->anim.previousLocalPosZ = obj->anim.localPosZ;
 
     hitObj = NULL;
-    hitType = ObjHits_GetPriorityHit((GameObject*)(obj), (int*)&hitObj, &priority, 0);
+    hitType = ObjHits_GetPriorityHit(obj, (int*)&hitObj, &priority, 0);
     if ((hitType != 0) && (hitObj != NULL) && (hitType == DFPTARGETBLOCK_HIT_TYPE_PUSH) &&
         (hitType == DFPTARGETBLOCK_HIT_TYPE_PUSH))
     {
         Sfx_PlayFromObject((u32)obj, DFPTARGETBLOCK_IMPACT_SFX);
-        velX = hitObj->velX;
-        velZ = hitObj->velZ;
+        velX = hitObj->anim.velocityX;
+        velZ = hitObj->anim.velocityZ;
         if (velX < 0.0f)
         {
             velX *= (-1.0f);
@@ -194,61 +194,61 @@ void dfptargetblock_hitDetect(DfpTargetBlockObject* obj)
         }
         if (velX > velZ)
         {
-            hitObj->velZ = 0.0f;
+            hitObj->anim.velocityZ = 0.0f;
         }
         else
         {
-            hitObj->velX = 0.0f;
+            hitObj->anim.velocityX = 0.0f;
         }
         {
             f32 scale = 0.25f;
-            obj->velX = hitObj->velX * scale;
-            obj->velZ = hitObj->velZ * scale;
+            obj->anim.velocityX = hitObj->anim.velocityX * scale;
+            obj->anim.velocityZ = hitObj->anim.velocityZ * scale;
         }
     }
 
-    obj->x = obj->velX * timeDelta + obj->x;
-    obj->z = obj->velZ * timeDelta + obj->z;
+    obj->anim.localPosX = obj->anim.velocityX * timeDelta + obj->anim.localPosX;
+    obj->anim.localPosZ = obj->anim.velocityZ * timeDelta + obj->anim.localPosZ;
 
-    if (0.0f != obj->velX)
+    if (0.0f != obj->anim.velocityX)
     {
         Sfx_KeepAliveLoopedObjectSound((int)obj, DFPTARGETBLOCK_LOOP_SFX);
-        velX = obj->velX;
+        velX = obj->anim.velocityX;
         if (velX < 0.0f)
         {
             if (velX >= 0.0f)
             {
-                obj->velX = 0.0f;
+                obj->anim.velocityX = 0.0f;
             }
         }
         else if ((velX > 0.0f) && (velX <= 0.0f))
         {
-            obj->velX = 0.0f;
+            obj->anim.velocityX = 0.0f;
         }
     }
 
-    if (0.0f != obj->velZ)
+    if (0.0f != obj->anim.velocityZ)
     {
         Sfx_KeepAliveLoopedObjectSound((int)obj, DFPTARGETBLOCK_LOOP_SFX);
-        velZ = obj->velZ;
+        velZ = obj->anim.velocityZ;
         if (velZ < 0.0f)
         {
             if (velZ >= 0.0f)
             {
-                obj->velZ = 0.0f;
+                obj->anim.velocityZ = 0.0f;
             }
         }
         else if ((velZ > 0.0f) && (velZ <= 0.0f))
         {
-            obj->velZ = 0.0f;
+            obj->anim.velocityZ = 0.0f;
         }
     }
 
     dfptargetblock_resolveCollisionPoints(obj, (DfpTargetBlockCollisionPoints*)state);
 
-    dx = home->x - obj->x;
-    dz = home->z - obj->z;
-    mode = (*gMapEventInterface)->getMapAct(obj->mapId);
+    dx = home->posX - obj->anim.localPosX;
+    dz = home->posZ - obj->anim.localPosZ;
+    mode = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
 
     if (mode == 1)
     {
@@ -264,9 +264,9 @@ void dfptargetblock_hitDetect(DfpTargetBlockObject* obj)
         {
             dfptargetblock_resetToHome(obj, home, state);
 
-            effect.x = obj->x;
-            effect.y = obj->y;
-            effect.z = obj->z;
+            effect.x = obj->anim.localPosX;
+            effect.y = obj->anim.localPosY;
+            effect.z = obj->anim.localPosZ;
             effect.scale = (1.0f);
             effect.rotZ = 0;
             effect.rotY = 0;
@@ -283,17 +283,17 @@ void dfptargetblock_hitDetect(DfpTargetBlockObject* obj)
     }
 }
 
-void dfptargetblock_update(DfpTargetBlockObject* obj)
+void dfptargetblock_update(GameObject* obj)
 {
     u8 mode;
     u8 bitVal;
     DfpTargetBlockState* state;
-    DfpTargetBlockHome* home;
+    ObjPlacement* home;
     f32 buf[6];
 
-    state = obj->state;
-    home = obj->home;
-    if (obj->objectType == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
+    state = obj->extra;
+    home = (ObjPlacement*)obj->anim.placementData;
+    if (obj->anim.seqId == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
     {
         buf[3] = 0.0f;
         buf[4] = (12.0f);
@@ -319,24 +319,24 @@ void dfptargetblock_update(DfpTargetBlockObject* obj)
         }
         if ((mode == DFPTARGETBLOCK_MODE_RAISING) || (mode == DFPTARGETBLOCK_MODE_RESETTING))
         {
-            if (obj->y <= home->y)
+            if (obj->anim.localPosY <= home->posY)
             {
-                obj->y = obj->y + timeDelta;
-                if (obj->y >= home->y)
+                obj->anim.localPosY = obj->anim.localPosY + timeDelta;
+                if (obj->anim.localPosY >= home->posY)
                 {
-                    obj->y = home->y;
+                    obj->anim.localPosY = home->posY;
                     state->mode = DFPTARGETBLOCK_MODE_ACTIVE;
                 }
             }
         }
         else if (mode == DFPTARGETBLOCK_MODE_LOWERING)
         {
-            if (obj->y >= home->y - (80.0f))
+            if (obj->anim.localPosY >= home->posY - (80.0f))
             {
-                obj->y = (-1.0f) * timeDelta + obj->y;
-                if (obj->y <= home->y - (80.0f))
+                obj->anim.localPosY = (-1.0f) * timeDelta + obj->anim.localPosY;
+                if (obj->anim.localPosY <= home->posY - (80.0f))
                 {
-                    obj->y = home->y - (80.0f);
+                    obj->anim.localPosY = home->posY - (80.0f);
                     state->mode = DFPTARGETBLOCK_MODE_SETTLED;
                     mainSetBits((int)state->completionSfxId, 1);
                 }
@@ -352,13 +352,13 @@ void dfptargetblock_update(DfpTargetBlockObject* obj)
     return;
 }
 
-static inline int* ZBomb_GetActiveModel(DfpTargetBlockObject* obj)
+static inline int* ZBomb_GetActiveModel(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     return (int*)objAnim->banks[objAnim->bankIndex];
 }
 
-void dfptargetblock_init(DfpTargetBlockObject* obj, DfpTargetBlockPlacement* placement)
+void dfptargetblock_init(GameObject* obj, DfpTargetBlockPlacement* placement)
 {
     int j;
     bool found;
@@ -369,14 +369,14 @@ void dfptargetblock_init(DfpTargetBlockObject* obj, DfpTargetBlockPlacement* pla
     f32 fconv;
     DfpTargetBlockPoint point;
 
-    state = obj->state;
+    state = obj->extra;
     model = (ModelFileHeader*)*ZBomb_GetActiveModel(obj);
     obj->objectFlags = obj->objectFlags | DFPTARGETBLOCK_OBJFLAG_HIDDEN;
-    if (obj->objectType == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
+    if (obj->anim.seqId == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
     {
-        gTargetBlockHomePos[0] = obj->x;
-        gTargetBlockHomePos[1] = obj->y;
-        gTargetBlockHomePos[2] = obj->z;
+        gTargetBlockHomePos[0] = obj->anim.localPosX;
+        gTargetBlockHomePos[1] = obj->anim.localPosY;
+        gTargetBlockHomePos[2] = obj->anim.localPosZ;
     }
     else
     {
@@ -413,7 +413,7 @@ void dfptargetblock_init(DfpTargetBlockObject* obj, DfpTargetBlockPlacement* pla
             }
         }
         state->mode = DFPTARGETBLOCK_MODE_RAISING;
-        obj->y = obj->y - (80.0f);
+        obj->anim.localPosY = obj->anim.localPosY - (80.0f);
         state->completionSfxId = placement->completionSfxId;
         state->stateSfxId = placement->stateSfxId;
         bitVal = mainGetBit((int)state->completionSfxId);
@@ -422,8 +422,8 @@ void dfptargetblock_init(DfpTargetBlockObject* obj, DfpTargetBlockPlacement* pla
         state->stateSfxReady = bitVal;
         if (state->completionSfxReady != '\0')
         {
-            obj->x += 219.0f;
-            obj->z += -158.0f;
+            obj->anim.localPosX += 219.0f;
+            obj->anim.localPosZ += -158.0f;
             state->mode = DFPTARGETBLOCK_MODE_SETTLED;
         }
     }

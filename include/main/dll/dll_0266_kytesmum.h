@@ -46,41 +46,11 @@ typedef struct KytesMumRuntime
     u8 questComplete;
 } KytesMumRuntime;
 
-typedef struct KytesMumObject
-{
-    union
-    {
-        ObjAnimComponent anim;
-        struct
-        {
-            s16 yaw;
-            u8 pad02[0x4c - 0x2];
-            KytesMumSetup* setup;
-            u8 pad50[0xa0 - 0x50];
-            s16 currentMove;
-            u8 padA2[0xaf - 0xa2];
-            u8 flagsAF;
-        };
-    };
-    u16 objectFlags;
-    u8 padB2[0xb8 - 0xb2];
-    KytesMumRuntime* runtime;
-    void* interactionCallback;
-} KytesMumObject;
-
 STATIC_ASSERT(sizeof(KytesMumSetup) == 0x24);
 STATIC_ASSERT(offsetof(KytesMumSetup, yaw) == 0x18);
 STATIC_ASSERT(offsetof(KytesMumSetup, mode) == 0x19);
 STATIC_ASSERT(offsetof(KytesMumSetup, interactionRange) == 0x1A);
 STATIC_ASSERT(offsetof(KytesMumSetup, completionGameBit) == 0x1E);
-STATIC_ASSERT(offsetof(KytesMumObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(KytesMumObject, yaw) == offsetof(ObjAnimComponent, rotX));
-STATIC_ASSERT(offsetof(KytesMumObject, setup) == offsetof(ObjAnimComponent, placementData));
-STATIC_ASSERT(offsetof(KytesMumObject, currentMove) == offsetof(ObjAnimComponent, currentMove));
-STATIC_ASSERT(offsetof(KytesMumObject, flagsAF) == offsetof(ObjAnimComponent, resetHitboxFlags));
-STATIC_ASSERT(offsetof(KytesMumObject, objectFlags) == 0xB0);
-STATIC_ASSERT(offsetof(KytesMumObject, runtime) == 0xB8);
-STATIC_ASSERT(offsetof(KytesMumObject, interactionCallback) == 0xBC);
 
 int kytesmum_getExtraSize(void);
 int kytesmum_getObjectTypeId(void);

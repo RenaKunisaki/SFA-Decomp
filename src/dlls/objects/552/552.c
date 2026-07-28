@@ -29,44 +29,44 @@ void VFP_SpellPlace_hitDetect(void)
 
 void VFP_SpellPlace_update(int obj)
 {
-    LaserObject* spellPlace;
+    GameObject* spellPlace;
     LaserState* state;
     u8 mode;
 
-    spellPlace = (LaserObject*)obj;
-    if (spellPlace->state->completionLatched == 0 &&
-        mainGetBit((int)spellPlace->state->activationGameBit) != 0)
+    spellPlace = (GameObject*)obj;
+    if (((LaserState*)spellPlace->extra)->completionLatched == 0 &&
+        mainGetBit((int)((LaserState*)spellPlace->extra)->activationGameBit) != 0)
     {
-        spellPlace->statusFlags &= ~LASER_OBJECT_STATUS_DISABLED;
+        spellPlace->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     }
     else
     {
-        spellPlace->statusFlags |= LASER_OBJECT_STATUS_DISABLED;
+        spellPlace->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
     objRenderFn_80041018((GameObject*)obj);
-    if (spellPlace->statusFlags & LASER_OBJECT_STATUS_ACTIVE)
+    if (spellPlace->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
     {
-        mode = (*gMapEventInterface)->getMapAct((int)spellPlace->mapEventSlot);
+        mode = (*gMapEventInterface)->getMapAct((int)spellPlace->anim.mapEventSlot);
         switch (mode)
         {
         case LASEROBJ_MODE_SEQUENCE_A:
-            state = spellPlace->state;
+            state = spellPlace->extra;
             if ((*gGameUIInterface)->isEventReady(LASEROBJ_MAIN_SEQUENCE_A_EVENT) != 0)
             {
                 mainSetBits(state->completionGameBit, 1);
                 mainSetBits(state->activationGameBit, 0);
                 state->completionLatched = 1;
-                spellPlace->statusFlags |= LASER_OBJECT_STATUS_DISABLED;
+                spellPlace->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
             break;
         case LASEROBJ_MODE_SEQUENCE_B:
-            state = spellPlace->state;
+            state = spellPlace->extra;
             if ((*gGameUIInterface)->isEventReady(LASEROBJ_MAIN_SEQUENCE_B_EVENT) != 0)
             {
                 mainSetBits(state->completionGameBit, 1);
                 mainSetBits(state->activationGameBit, 0);
                 state->completionLatched = 1;
-                spellPlace->statusFlags |= LASER_OBJECT_STATUS_DISABLED;
+                spellPlace->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
             break;
         }
@@ -75,23 +75,23 @@ void VFP_SpellPlace_update(int obj)
 
 void VFP_SpellPlace_init(int obj, s8* def)
 {
-    LaserObject* spellPlace;
+    GameObject* spellPlace;
     LaserObjectMapData* mapData;
     LaserState* state;
 
-    spellPlace = (LaserObject*)obj;
+    spellPlace = (GameObject*)obj;
     mapData = (LaserObjectMapData*)def;
-    state = spellPlace->state;
+    state = spellPlace->extra;
     state->completionGameBit = mapData->completionGameBit;
     state->activationGameBit = mapData->activationGameBit;
     state->completionLatched = 0;
-    spellPlace->modeWord = (s16)(mapData->mapEventSlot << LASEROBJ_MODE_WORD_SHIFT);
+    spellPlace->anim.rotX = (s16)(mapData->yawByte << LASEROBJ_YAW_BYTE_SHIFT);
     if (mainGetBit(state->completionGameBit) != 0)
     {
         state->completionLatched = 1;
-        spellPlace->statusFlags |= LASER_OBJECT_STATUS_DISABLED;
+        spellPlace->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
-    spellPlace->objectFlags |= LASER_OBJECT_FLAGS_SEQUENCE_CONTROL;
+    spellPlace->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN;
 }
 
 void VFP_SpellPlace_release(void)

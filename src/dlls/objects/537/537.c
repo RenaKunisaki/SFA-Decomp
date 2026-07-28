@@ -3,7 +3,7 @@
  *
  * Only the object with id DLL_219_MOVING_OBJECT_ID is animated; the
  * remaining ids are inert (update returns immediately). When its game
- * bit is set the object slides its world X down to
+ * bit is set the object slides its local X down to
  * (placement posX - 30) at speed 0.4; when the bit
  * is clear it slides back up to placement posX at speed 0.2,
  * clamping at each end. init seeds the object's rotX and the state's
@@ -46,11 +46,11 @@ void dll_219_hitDetect_nop(void)
 {
 }
 
-void dll_219_update(Dll219Object* obj)
+void dll_219_update(GameObject* obj)
 {
-    ObjPlacement* setup = obj->setup;
-    Dll219State* state = obj->state;
-    s16 objectId = obj->objectId;
+    ObjPlacement* setup = (ObjPlacement*)obj->anim.placementData;
+    Dll219State* state = obj->extra;
+    s16 objectId = obj->anim.seqId;
 
     switch (objectId)
     {
@@ -64,24 +64,24 @@ void dll_219_update(Dll219Object* obj)
 
     if (mainGetBit(state->gameBit) != 0)
     {
-        if (obj->x > setup->posX - 30.0f)
+        if (obj->anim.localPosX > setup->posX - 30.0f)
         {
-            obj->x -= 0.4f;
-            if (obj->x < setup->posX - 30.0f)
+            obj->anim.localPosX -= 0.4f;
+            if (obj->anim.localPosX < setup->posX - 30.0f)
             {
-                obj->x = setup->posX - 30.0f;
+                obj->anim.localPosX = setup->posX - 30.0f;
             }
             return;
         }
     }
     if (mainGetBit(state->gameBit) == 0)
     {
-        if (obj->x < setup->posX)
+        if (obj->anim.localPosX < setup->posX)
         {
-            obj->x += 0.2f;
-            if (obj->x > setup->posX)
+            obj->anim.localPosX += 0.2f;
+            if (obj->anim.localPosX > setup->posX)
             {
-                obj->x = setup->posX;
+                obj->anim.localPosX = setup->posX;
             }
         }
     }

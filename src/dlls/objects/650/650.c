@@ -1,7 +1,7 @@
 /*
  * DLL 650 - the large EarthWalker dinosaur NPC as it
  * appears in the Walled City (WC). Its per-instance record lives at
- * ewObj->state (obj+0xB8; getExtraSize 0x660) and is viewed through
+ * obj->extra (obj+0xB8; getExtraSize 0x660) and is viewed through
  * EarthWalkerState (dll_028A_wcearthwalker.h). render/update/hitDetect
  * forward into the shared dll_2E_* character helpers.
  *
@@ -67,8 +67,8 @@ static const f32 gWcEarthWalkerWalkMoveSpeed = 0.005f;
 
 int earthwalker_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate, int shouldAdvanceMove)
 {
-    EarthWalkerObject* ewObj = (EarthWalkerObject*)obj;
-    EarthWalkerState* ewState = ewObj->state;
+    GameObject* ewObj = (GameObject*)obj;
+    EarthWalkerState* ewState = ewObj->extra;
     int i;
 
     ewState->flags &= ~1;
@@ -112,8 +112,7 @@ void earthwalker_free(void)
 
 void earthwalker_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    EarthWalkerObject* ewObj = (EarthWalkerObject*)obj;
-    EarthWalkerState* state = ewObj->state;
+    EarthWalkerState* state = obj->extra;
 
     if (visible != 0)
     {
@@ -124,10 +123,9 @@ void earthwalker_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 
 void earthwalker_hitDetect(GameObject* obj)
 {
-    EarthWalkerObject* ewObj = (EarthWalkerObject*)obj;
-    EarthWalkerState* ewState = ewObj->state;
+    EarthWalkerState* ewState = obj->extra;
 
-    if (ewObj->currentMove == 0x203)
+    if (obj->anim.currentMove == 0x203)
     {
         characterClampJointVecs(obj, seqFn_800394a0(), ewState->hitTriggerId, 0, 0x186a0);
     }
@@ -154,8 +152,8 @@ ObjectDescriptor gEarthWalkerObjDescriptor = {
 
 void earthwalker_update(int obj)
 {
-    EarthWalkerObject* ewObj = (EarthWalkerObject*)obj;
-    EarthWalkerState* ewState = ewObj->state;
+    GameObject* ewObj = (GameObject*)obj;
+    EarthWalkerState* ewState = ewObj->extra;
     int prevAnim;
 
     if ((ewState->hitReactState = ObjHitReact_Update(obj, gEarthWalkerHitReactEntries, 1, ewState->hitReactState,
@@ -166,14 +164,14 @@ void earthwalker_update(int obj)
 
     if (ewState->encounterType >= 4 && ewState->encounterType <= 8)
     {
-        if (ewObj->currentMove != 0x203)
+        if (ewObj->anim.currentMove != 0x203)
         {
             ObjAnim_SetCurrentMove(obj, 0x203, gEarthWalkerMoveStartProgress, 0);
         }
     }
     else
     {
-        if (ewObj->currentMove != 2)
+        if (ewObj->anim.currentMove != 2)
         {
             ObjAnim_SetCurrentMove(obj, 2, gEarthWalkerMoveStartProgress, 0);
         }
@@ -195,7 +193,7 @@ void earthwalker_update(int obj)
     switch (ewState->interactionState)
     {
     case 0:
-        if (ewObj->statusFlags & 1)
+        if (ewObj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
         {
             buttonDisable(0, PAD_BUTTON_A);
             mainSetBits(0x7fb, 1);
@@ -206,13 +204,13 @@ void earthwalker_update(int obj)
     case 1:
         break;
     case 2:
-        if (ewObj->statusFlags & 1)
+        if (ewObj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
         {
             int newState;
             switch (ewState->encounterType)
             {
             case 0:
-                if ((*gMapEventInterface)->getMapAct(ewObj->mapEventId) == 2)
+                if ((*gMapEventInterface)->getMapAct(ewObj->anim.mapEventSlot) == 2)
                 {
                     if (ewState->lastTriggeredState == 0x14)
                     {
@@ -253,7 +251,7 @@ void earthwalker_update(int obj)
                 }
                 break;
             case 9:
-                if ((*gMapEventInterface)->getMapAct(ewObj->mapEventId) == 2)
+                if ((*gMapEventInterface)->getMapAct(ewObj->anim.mapEventSlot) == 2)
                 {
                     if (ewState->lastTriggeredState == 0x16)
                     {
@@ -290,7 +288,7 @@ void earthwalker_update(int obj)
                 }
                 break;
             case 10:
-                if ((*gMapEventInterface)->getMapAct(ewObj->mapEventId) == 2)
+                if ((*gMapEventInterface)->getMapAct(ewObj->anim.mapEventSlot) == 2)
                 {
                     if (ewState->lastTriggeredState == 0x18)
                     {
@@ -334,7 +332,7 @@ void earthwalker_update(int obj)
                 }
                 break;
             case 11:
-                if ((*gMapEventInterface)->getMapAct(ewObj->mapEventId) == 2)
+                if ((*gMapEventInterface)->getMapAct(ewObj->anim.mapEventSlot) == 2)
                 {
                     if (ewState->lastTriggeredState == 0x1c)
                     {
@@ -378,11 +376,11 @@ void earthwalker_update(int obj)
                 }
                 break;
             case 1:
-                if ((*gMapEventInterface)->getMapAct(ewObj->mapEventId) == 2)
+                if ((*gMapEventInterface)->getMapAct(ewObj->anim.mapEventSlot) == 2)
                 {
                     if ((s32)mainGetBit(GAMEBIT_Tricky_SaidGoodBye) != 0)
                     {
-                        ewObj->statusFlags |= 8;
+                        ewObj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                         newState = -1;
                     }
                     else if ((s32)mainGetBit(GAMEBIT_WC_PlacedSunMoonStones) != 0)
@@ -456,12 +454,11 @@ void earthwalker_update(int obj)
 }
 void earthwalker_init(GameObject* obj, int setup)
 {
-    EarthWalkerObject* ewObj = (EarthWalkerObject*)obj;
-    EarthWalkerState* ewState = ewObj->state;
+    EarthWalkerState* ewState = obj->extra;
     int local;
 
     local = gEarthWalkerMoveBlendData;
-    ewObj->animEventCallback = earthwalker_SeqFn;
+    obj->animEventCallback = earthwalker_SeqFn;
     dll_2E_func05(obj, (MoveLibState*)ewState, -8192, 12743, 2);
     dll_2E_func09((MoveLibState*)ewState, 0, &local, 2);
     /* moveLib state+0x614: head look-at only engages while the target is
@@ -469,11 +466,11 @@ void earthwalker_init(GameObject* obj, int setup)
      * player distance and the head snaps back to neutral). */
     dll_2E_setLookAtMaxDistance((MoveLibState*)ewState, gEarthWalkerLookAtMaxDistance);
     ewState->moveLibFlags611 |= 2;
-    ewObj->facingAngle = (s16)((s8) * (s8*)(setup + 0x18) << 8);
+    obj->anim.rotX = (s16)((s8) * (s8*)(setup + 0x18) << 8);
     ewState->encounterType = *(u8*)(setup + 0x19);
     if (ewState->encounterType == 1)
     {
-        if ((int)mainGetBit(GAMEBIT_WC_FoundKing) != 0 || (*gMapEventInterface)->getMapAct(ewObj->mapEventId) == 2)
+        if ((int)mainGetBit(GAMEBIT_WC_FoundKing) != 0 || (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == 2)
         {
             ewState->interactionState = 2;
         }
@@ -596,14 +593,13 @@ int dll_28B_stateHandler3(GameObject* obj, BaddieState* ai)
 
 int dll_28B_stateHandler2(GameObject* obj, BaddieState* ai)
 {
-    EarthWalkerObject* ewObj = (EarthWalkerObject*)obj;
     Dll28BAiState* state = *(Dll28BAiState**)&obj->extra;
 
     obj->anim.velocityX = oneOverTimeDelta * (state->route.posX - obj->anim.localPosX);
     obj->anim.velocityZ = oneOverTimeDelta * (state->route.posZ - obj->anim.localPosZ);
     obj->anim.localPosX = state->route.posX;
     obj->anim.localPosZ = state->route.posZ;
-    ewObj->facingAngle = getAngle(-state->route.tangentX, -state->route.tangentZ);
+    obj->anim.rotX = getAngle(-state->route.tangentX, -state->route.tangentZ);
     ObjAnim_SampleRootCurvePhase(
         &obj->anim, sqrtf(obj->anim.velocityX * obj->anim.velocityX + obj->anim.velocityZ * obj->anim.velocityZ),
         &ai->moveSpeed);

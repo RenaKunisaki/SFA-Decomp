@@ -8,8 +8,6 @@
 #define DR_LASERTURRET_FLAG_START_SEQUENCE 0x02
 #define DR_LASERTURRET_FLAG_CONFIRM_PROMPT 0x10
 
-#define DR_LASERTURRET_HITFLAG_CAN_PROMPT 0x01
-#define DR_LASERTURRET_HITFLAG_CLEAR_PROMPT 0x08
 
 #define DR_LASERTURRET_GAMEBIT_SHOP_OPEN 0x617
 #define DR_LASERTURRET_GAMEBIT_HAS_MONEY 0x61D
@@ -66,24 +64,6 @@ typedef struct DRLaserTurretState {
     u8 promptState;
 } DRLaserTurretState;
 
-typedef struct DRLaserTurretObject {
-    union {
-        ObjAnimComponent anim;
-        struct {
-            u8 pad000[0x0c];
-            f32 x;
-            f32 y;
-            f32 z;
-            u8 pad018[0xa0 - 0x18];
-            s16 currentMove;
-            u8 pad0a2[0xaf - 0xa2];
-            u8 hitFlags;
-        };
-    };
-    u8 pad0b0[0xb8 - sizeof(ObjAnimComponent)];
-    DRLaserTurretState *state;
-} DRLaserTurretObject;
-
 typedef struct DRLaserTurretAnimState {
     u8 pad000[0x27a];
     s8 stateEntered;
@@ -95,16 +75,11 @@ typedef struct DRLaserTurretAnimState {
     s8 moveComplete;
 } DRLaserTurretAnimState;
 
-STATIC_ASSERT(offsetof(DRLaserTurretObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(DRLaserTurretObject, x) == offsetof(ObjAnimComponent, localPosX));
-STATIC_ASSERT(offsetof(DRLaserTurretObject, currentMove) == offsetof(ObjAnimComponent, currentMove));
-STATIC_ASSERT(offsetof(DRLaserTurretObject, hitFlags) == offsetof(ObjAnimComponent, resetHitboxFlags));
-STATIC_ASSERT(offsetof(DRLaserTurretObject, state) == 0xB8);
 
-int DRlaserturret_updateIdle(DRLaserTurretObject *obj, DRLaserTurretAnimState *animState);
-int DRlaserturret_updateTracking(DRLaserTurretObject *obj, DRLaserTurretAnimState *animState);
-int DRlaserturret_startLinkedTarget(DRLaserTurretObject *obj);
-int DRlaserturret_handlePromptChoice(DRLaserTurretObject *obj, void *param2, int dispatch);
-void DRlaserturret_startTimedChallenge(DRLaserTurretObject *obj);
+int DRlaserturret_updateIdle(GameObject *obj, DRLaserTurretAnimState *animState);
+int DRlaserturret_updateTracking(GameObject *obj, DRLaserTurretAnimState *animState);
+int DRlaserturret_startLinkedTarget(GameObject *obj);
+int DRlaserturret_handlePromptChoice(GameObject *obj, void *param2, int dispatch);
+void DRlaserturret_startTimedChallenge(GameObject *obj);
 
 #endif /* MAIN_DLL_DR_DRLASERTURRET_H_ */
