@@ -225,7 +225,7 @@ void wmwallcrawler_update(GameObject* obj)
             }
             if (((GameObject*)ob)->anim.currentMoveProgress > 0.4f)
             {
-                ((GameObject*)ob)->anim.rootMotionScale = ((GameObject*)ob)->anim.rootMotionScale * 0.95f;
+                ((GameObject*)ob)->anim.rootMotionScale *= 0.95f;
             }
             if (ObjAnim_AdvanceCurrentMove(ob, 0.01f, framesThisStep, NULL) !=
                 0)
