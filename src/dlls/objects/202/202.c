@@ -1371,10 +1371,10 @@ void sharpClawInit(int obj, u8* state)
     int z;
 
     ((GroundBaddieState*)state)->baddie.unk2E4 = 11;
-    *(u32*)&((GroundBaddieState*)state)->baddie.unk2E4 |= 0x402B0LL;
-    *(u32*)&((GroundBaddieState*)state)->baddie.unk2E4 |= 0x3040;
-    *(u32*)&((GroundBaddieState*)state)->baddie.unk2E4 |= 0x40300000LL;
-    *(u32*)&((GroundBaddieState*)state)->baddie.unk2E4 |= 0xC00;
+    ((GroundBaddieState*)state)->baddie.unk2E4 |= 0x402B0LL;
+    ((GroundBaddieState*)state)->baddie.unk2E4 |= 0x3040;
+    ((GroundBaddieState*)state)->baddie.unk2E4 |= 0x40300000LL;
+    ((GroundBaddieState*)state)->baddie.unk2E4 |= 0xC00;
     ((GroundBaddieState*)state)->baddie.unk308 = 0.005f;
     ((GroundBaddieState*)state)->baddie.animDeltaScale = 0.17f;
     ((GroundBaddieState*)state)->baddie.unk304 = 0.97f;
@@ -1757,7 +1757,7 @@ void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, in
     ((BaddieState*)state)->reactionFlags |= 0x8;
     *(f32*)(state + 0x32c) = (f32)(u32)(u16) * (s16*)(sub + 0x2c);
     baddieSetMove((GameObject*)obj, (int)state, 1, 2.5f, 0, 0);
-    *(u32*)&((BaddieState*)state)->unk2E4 &= ~0x20LL;
+    ((BaddieState*)state)->unk2E4 &= ~0x20LL;
     fz = 0.0f;
     ((GameObject*)obj)->anim.velocityZ = 0.0f;
     ((GameObject*)obj)->anim.velocityY = fz;
@@ -1799,11 +1799,11 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
         if (*(f32*)(state + 0x32c) <= 0.0f)
         {
             *(f32*)(state + 0x32c) = 0.0f;
-            *(u32*)&((BaddieState*)state)->unk2E4 |= 0x20;
+            ((BaddieState*)state)->unk2E4 |= 0x20;
             Sfx_StopObjectChannel((u32)obj, 4);
             ((SeqObj11ESetMovePointerStateFn)baddieSetMove)(obj, state, 0, 1.0f, 0, 0);
         }
-        else if (!(*(u32*)&((BaddieState*)state)->unk2E4 & 0x20))
+        else if (!(((BaddieState*)state)->unk2E4 & 0x20))
         {
             return;
         }
@@ -1975,9 +1975,9 @@ void gcRobotPatrol_init(GameObject* obj, int state)
     f32 fz;
 
     ((BaddieState*)state)->speedScale = 60.0f;
-    *(u32*)&((BaddieState*)state)->unk2E4 = 41;
-    *(u32*)&((BaddieState*)state)->unk2E4 |= 0x7000;
-    *(u32*)&((BaddieState*)state)->unk2E4 |= 0x20000LL;
+    ((BaddieState*)state)->unk2E4 = 41;
+    ((BaddieState*)state)->unk2E4 |= 0x7000;
+    ((BaddieState*)state)->unk2E4 |= 0x20000LL;
     ((BaddieState*)state)->unk308 = 0.005f;
     ((BaddieState*)state)->animDeltaScale = 0.006f;
     ((BaddieState*)state)->unk304 = 0.99f;
@@ -2005,7 +2005,7 @@ void mikaladon_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wp
     }
     Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_248);
     *(s16*)&((BaddieState*)state)->hitCounter = 0;
-    *(u32*)&((BaddieState*)state)->unk2E4 |= 0x20;
+    ((BaddieState*)state)->unk2E4 |= 0x20;
     ((BaddieState*)state)->reactionFlags |= 0x8;
 }
 
@@ -2279,7 +2279,7 @@ void vambat_updateIdle(GameObject* obj, int state)
         *(f32*)(state + 0x324) = *(f32*)(state + 0x324) + timeDelta;
         if (*(f32*)(state + 0x324) > 3.6e+02f)
         {
-            *(u32*)&bs->unk2E4 = *(u32*)&bs->unk2E4 & ~(u64)0x10000;
+            bs->unk2E4 = bs->unk2E4 & ~(u64)0x10000;
             *(f32*)(state + 0x324) = 0.0f;
         }
     }
@@ -2339,7 +2339,7 @@ void vambat_updateEngaged(GameObject* obj, int state)
     *(f32*)(state + 0x32c) = *(f32*)(state + 0x32c) + timeDelta;
     if (*(u32*)(state + 0x340) != 0 || *(f32*)(state + 0x32c) > 3.6e+02f)
     {
-        *(u32*)&bs->unk2E4 = *(u32*)&bs->unk2E4 | 0x10000LL;
+        bs->unk2E4 = bs->unk2E4 | 0x10000LL;
         *(f32*)(state + 0x324) = 0.0f;
         *(f32*)(state + 0x32c) = 0.0f;
     }
@@ -2360,7 +2360,7 @@ void vambat_updateEngaged(GameObject* obj, int state)
         {
             if (voxmaps_traceLine((VoxPos*)gridB, (VoxPos*)gridA, NULL, &hitOut, 0) == 0)
             {
-                *(u32*)&bs->unk2E4 = *(u32*)&bs->unk2E4 | 0x10000LL;
+                bs->unk2E4 = bs->unk2E4 | 0x10000LL;
                 *(f32*)(state + 0x324) = 0.0f;
                 *(f32*)(state + 0x32c) = 0.0f;
             }
@@ -2377,7 +2377,7 @@ void vambat_init(GameObject* obj, int state)
     BaddieState* bs = (BaddieState*)state;
 
     bs->speedScale = 4e+01f;
-    *(u32*)&bs->unk2E4 = 0x1009;
+    bs->unk2E4 = 0x1009;
     bs->unk308 = 0.02f;
     bs->animDeltaScale = 0.1f;
     bs->unk304 = 0.97f;
@@ -2756,7 +2756,7 @@ void weevil_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int msgF
         ((WeevilState*)state)->recoverTimer = gWeevilRecoverDurationFrames;
         ((WeevilState*)state)->approachTimer = gWeevilApproachDurationFrames;
         baddieSetMove(obj, (int)state, 4, gWeevilMoveBlendSpeed, 0, 3);
-        *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 | 0x10000LL;
+        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
         ((BaddieState*)state)->userData2 = 0x3c;
     }
     else
@@ -2802,7 +2802,7 @@ void weevil_updateIdle(GameObject* obj, int state)
                 ((WeevilState*)state)->approachTimer = ((WeevilState*)state)->approachTimer - timeDelta;
                 if (((WeevilState*)state)->approachTimer <= zero)
                 {
-                    *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 & ~(u64)0x10000;
+                    ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 & ~(u64)0x10000;
                     ((WeevilState*)state)->approachTimer = zero;
                 }
             }
@@ -2877,7 +2877,7 @@ void weevil_updateEngaged(GameObject* obj, int state)
     }
     if (done != 0)
     {
-        *(u32*)&((BaddieState*)state)->unk2E4 |= (u64)0x10000;
+        ((BaddieState*)state)->unk2E4 |= (u64)0x10000;
     }
     else if (((BaddieState*)state)->userData1 == 0)
     {
@@ -3008,7 +3008,7 @@ void pinPon_updateIdle(GameObject* obj, int state)
         *(f32*)(state + 0x324) += timeDelta;
         if (*(f32*)(state + 0x324) > 360.0f)
         {
-            *(u32*)&((BaddieState*)state)->unk2E4 &= ~(u64)0x10000;
+            ((BaddieState*)state)->unk2E4 &= ~(u64)0x10000;
             *(f32*)(state + 0x324) = 0.0f;
         }
     }
@@ -3759,7 +3759,7 @@ void rachnopUpdateIdle(GameObject* obj, int state)
         if ((((GameObject*)((BaddieState*)state)->trackedObj)->anim.classId == 1) &&
             (cond = fn_80295CBC((GameObject*)(*(int*)&((BaddieState*)state)->trackedObj)), cond != 0))
         {
-            *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 & ~0x10000LL;
+            ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 & ~0x10000LL;
         }
         if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
@@ -3790,7 +3790,7 @@ void rachnopUpdateApproach(GameObject* obj, int state)
     }
     else
     {
-        *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 | 0x10000LL;
+        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
     }
     return;
 }
@@ -3836,7 +3836,7 @@ void rachnopUpdateAttack(GameObject* obj, int state)
     }
     else
     {
-        *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 | 0x10000LL;
+        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
     }
     return;
 }
@@ -3847,7 +3847,7 @@ void rachnopInit(u32 unused, int state)
     float fb;
 
     ((BaddieState*)state)->speedScale = (25.0f);
-    *(u32*)&((BaddieState*)state)->unk2E4 = 1;
+    ((BaddieState*)state)->unk2E4 = 1;
     fa = (0.1f);
     ((BaddieState*)state)->unk308 = (0.1f);
     ((BaddieState*)state)->animDeltaScale = fa;
@@ -3960,13 +3960,13 @@ void spittingEbaUpdateTimeOfDay(int obj, int state)
     if ((isDaytime != 0) && (((BaddieState*)state)->userData1 == 0))
     {
         ((BaddieState*)state)->userData1 = 1;
-        *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 | 0x10000LL;
+        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
         Baddie_SetMove(obj, state, 1, lbl_803E2A78, 0, 0);
     }
     else if ((isDaytime == 0) && (((BaddieState*)state)->userData1 == 2))
     {
         ((BaddieState*)state)->userData1 = 1;
-        *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 | 0x10000LL;
+        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
         Baddie_SetMove(obj, state, 3, lbl_803E2A78, 0, 0);
     }
     return;
@@ -4019,12 +4019,12 @@ void spittingEbaUpdateIdle(GameObject* obj, int state)
             if ((obj)->anim.currentMove == 1)
             {
                 ((BaddieState*)state)->userData1 = 2;
-                *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 & ~0x10000LL;
+                ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 & ~0x10000LL;
             }
             else if ((obj)->anim.currentMove == 3)
             {
                 ((BaddieState*)state)->userData1 = 0;
-                *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 | 0x10000LL;
+                ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
                 Baddie_SetMove(obj, state, 0, (1.0f), 0, 0);
             }
         }
@@ -4083,7 +4083,7 @@ void spittingEbaInit(u32 unused, int state)
     float fb;
 
     ((BaddieState*)state)->speedScale = lbl_803E2A84;
-    *(u32*)&((BaddieState*)state)->unk2E4 = 1;
+    ((BaddieState*)state)->unk2E4 = 1;
     ((BaddieState*)state)->unk308 = (0.02f);
     ((BaddieState*)state)->animDeltaScale = lbl_803E2A88;
     ((BaddieState*)state)->unk304 = lbl_803E2A8C;
@@ -4143,7 +4143,7 @@ void wbUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int wpad
         {
             Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_wingflap_260);
             ((BaddieState*)state)->hitCounter = 0;
-            *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 | 0x20;
+            ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x20;
             ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
         }
     }
@@ -4193,7 +4193,7 @@ void wbUpdateEngaged(u32 obj, int state)
         if (((DusterState*)state)->phaseTimer <= 0.0f)
         {
             ((DusterState*)state)->phaseTimer = lbl_803E2AB0;
-            *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 | 0x10000LL;
+            ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
         }
     }
     else if ((((BaddieState*)state)->controlFlags & 0x400) != 0)
@@ -4289,7 +4289,7 @@ void wbUpdateIdle(u32 obj, int state)
     }
     else
     {
-        *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 & ~0x10000LL;
+        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 & ~0x10000LL;
     }
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
@@ -4983,9 +4983,9 @@ void hoodedZyck_init(GameObject* obj, BaddieState* st)
     }
     ratio = ratio / 10.0f;
     st->speedScale = 30.0f;
-    *(u32*)&st->unk2E4 = 0x8b;
-    flags = *(u32*)&st->unk2E4;
-    *(u32*)&st->unk2E4 = flags | 0x20;
+    st->unk2E4 = 0x8b;
+    flags = st->unk2E4;
+    st->unk2E4 = flags | 0x20;
     st->unk308 = 0.02f * ratio;
     base_v = 1.0f;
     st->animDeltaScale = base_v;
@@ -6154,9 +6154,9 @@ void crawler_update(GameObject* obj, u8* state)
 void crawler_initModelVariant(GameObject* obj, u8* state)
 {
     u8* params = (u8*)obj->anim.placementData;
-    *(u32*)&((BaddieState*)state)->unk2E4 = 0xb;
-    *(u32*)&((BaddieState*)state)->unk2E4 |= 0x400b0LL;
-    *(u32*)&((BaddieState*)state)->unk2E4 |= 0x40001040LL;
+    ((BaddieState*)state)->unk2E4 = 0xb;
+    ((BaddieState*)state)->unk2E4 |= 0x400b0LL;
+    ((BaddieState*)state)->unk2E4 |= 0x40001040LL;
     switch (obj->anim.seqId)
     {
     case FIRECRAWLER_SEQID_REDEYE:
@@ -6170,7 +6170,7 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
         ((BaddieState*)state)->unk318 = 1.25f;
         state[0x322] = 9;
         ((BaddieState*)state)->unk31C = 3.0f;
-        *(u32*)&((BaddieState*)state)->unk2E4 |= 0x400;
+        ((BaddieState*)state)->unk2E4 |= 0x400;
         break;
     case FIRECRAWLER_SEQID_FIRECRAWLER:
         ((BaddieState*)state)->speedScale = 130.0f;
@@ -6183,7 +6183,7 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
         ((BaddieState*)state)->unk318 = 1.25f;
         state[0x322] = 0xe;
         ((BaddieState*)state)->unk31C = 3.0f;
-        *(u32*)&((BaddieState*)state)->unk2E4 |= 0xc00;
+        ((BaddieState*)state)->unk2E4 |= 0xc00;
         break;
     case FIRECRAWLER_SEQID_SHADOWHUNTER:
         ((BaddieState*)state)->speedScale = 120.0f;
@@ -6196,7 +6196,7 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
         ((BaddieState*)state)->unk318 = 1.25f;
         state[0x322] = 0xd;
         ((BaddieState*)state)->unk31C = 3.0f;
-        *(u32*)&((BaddieState*)state)->unk2E4 |= 0xc00;
+        ((BaddieState*)state)->unk2E4 |= 0xc00;
         break;
     }
     ((BaddieState*)state)->unk308 = 0.005f;
@@ -6325,7 +6325,7 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
         ((FCVars*)state)->distToCurve = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
         if (((FCVars*)state)->distToCurve < 100.0f && !((FCVars*)state)->warpTimer)
         {
-            *(u32*)&((BaddieState*)state)->unk2E4 = *(u32*)&((BaddieState*)state)->unk2E4 & ~0x10000LL;
+            ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 & ~0x10000LL;
         }
         t = 1.0f - ((FCVars*)state)->distToCurve / 400.0f;
         if (t < 0.0f)
@@ -6450,7 +6450,7 @@ void hagabonMK2_update(GameObject* obj, u8* state)
 
     if (((FCVars*)state)->linkedObj != NULL && ((FCVars*)state)->linkedObj == ((BaddieState*)state)->trackedObj)
     {
-        *(u32*)&((BaddieState*)state)->unk2E4 |= 0x10000LL;
+        ((BaddieState*)state)->unk2E4 |= 0x10000LL;
         ((FCVars*)state)->warpTimer = 180.0f;
     }
     ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x100;
@@ -6515,7 +6515,7 @@ void hagabonMK2_update(GameObject* obj, u8* state)
         ((FCVars*)state)->distToCurve = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
         if (((FCVars*)state)->distToCurve > 400.0f)
         {
-            *(u32*)&((BaddieState*)state)->unk2E4 |= 0x10000LL;
+            ((BaddieState*)state)->unk2E4 |= 0x10000LL;
             ((FCVars*)state)->warpTimer = 0.0f;
         }
     }
@@ -6544,7 +6544,7 @@ void hagabonMK2_init(GameObject* obj, BaddieState* st)
 {
     u8* tab;
     st->speedScale = 40.0f;
-    *(u32*)&st->unk2E4 = 0x405009;
+    st->unk2E4 = 0x405009;
     st->unk304 = 0.97f;
     *((u8*)st + 0x320) = 0;
     {
