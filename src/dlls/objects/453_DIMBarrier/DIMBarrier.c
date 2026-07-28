@@ -6,14 +6,13 @@
 
 #include "dlls/objects/453_DIMBarrier.h"
 
+#include "dlls/objects/454_DIMCannon.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-
-#define DIM_BARRIER_TRIGGER_SEQUENCE_ID 0x1d6
 
 #define DIM_BARRIER_PHASE_ARMED    0
 #define DIM_BARRIER_PHASE_FADING   1
@@ -24,15 +23,6 @@
 #define DIM_BARRIER_ALPHA_FADE_PER_FRAME      16
 
 #define DIM_BARRIER_RENDER_SCALE 1.0f
-
-typedef struct DimBarrierTriggerStateView {
-    u8 unknown00[4];
-    u8 active;
-    u8 unknown05[0xC - 0x5];
-} DimBarrierTriggerStateView;
-
-STATIC_ASSERT(offsetof(DimBarrierTriggerStateView, active) == 0x04);
-STATIC_ASSERT(sizeof(DimBarrierTriggerStateView) == 0x0C);
 
 int dimbarrier_getExtraSize(void) {
     return sizeof(DimBarrierState);
@@ -63,7 +53,7 @@ void dimbarrier_update(GameObject* obj) {
     switch (state->phase) {
     case DIM_BARRIER_PHASE_ARMED: {
         GameObject* contact;
-        DimBarrierTriggerStateView* triggerState;
+        DimCannonBallState* triggerState;
         int triggerFound;
         int contactIndex;
 
@@ -71,7 +61,7 @@ void dimbarrier_update(GameObject* obj) {
         for (contactIndex = 0; contactIndex < obj->anim.hitboxTransformState->contactObjectCount; contactIndex++) {
             contact = obj->anim.hitboxTransformState->contactObjects[contactIndex];
             triggerState = contact->extra;
-            if (contact->anim.seqId == DIM_BARRIER_TRIGGER_SEQUENCE_ID && triggerState->active != 0) {
+            if (contact->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID && triggerState->variant != 0) {
                 triggerFound = 1;
                 break;
             }
