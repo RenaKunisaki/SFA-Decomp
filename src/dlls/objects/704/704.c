@@ -340,6 +340,7 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
     if (gTitleScreenCursorY > 0.0f)
     {
         f32 (*m2)[4] = (f32 (*)[4])gTitleScreenMtx;
+        Texture* tex;
         int xb;
         int yb;
         int y;
