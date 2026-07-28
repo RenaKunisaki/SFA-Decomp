@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "main/model_engine.h"
+#include "main/objprint_character_api.h"
 
 typedef struct ShopkeeperState
 {
@@ -14,7 +15,8 @@ typedef struct ShopkeeperState
     u8 dll2EBlock[0x96D - 0x35C]; /* 0x35c: dll_2E look-controller block (address-used) */
     u8 unk96D; /* 0x96d */
     u8 pad96E[0x980 - 0x96E];
-    u8 eyeAnimBlock[0x9B0 - 0x980]; /* 0x980: characterDoEyeAnims block (address-used) */
+    CharacterEyeAnimState eyeAnimState; /* 0x980: head-aim / eye-blink record (characterDoEyeAnims) */
+    u8 pad9A8[0x9B0 - 0x9A8];
     RingBufferQueue* msgStack; /* 0x9b0: queued state messages */
     int vendorObj; /* 0x9b4: nearest group-9 shop manager */
     f32 unk9B8; /* 0x9b8 */

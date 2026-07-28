@@ -1291,7 +1291,7 @@ void DIMSnowHorn1_update(GameObject* obj)
         if (((DIMSnowHorn1State*)data)->hitReactState != 0)
         {
             characterHeadLookRelax(obj, (void*)(data + 0x980));
-            characterDoEyeAnims(obj, (void*)(data + 0x980));
+            characterDoEyeAnims(obj, &((DIMSnowHorn1State*)data)->eyeAnimState);
             return;
         }
     }
@@ -1332,16 +1332,16 @@ void DIMSnowHorn1_update(GameObject* obj)
             Vec_distance(&playerObj->anim.worldPosX, &(obj)->anim.worldPosX) < 300.0f &&
             statePtr->mountMode == 0)
         {
-            statePtr->playerNearby = 1;
-            statePtr->spawnPosX = ((GameObject*)playerObj)->anim.localPosX;
-            statePtr->spawnPosY = ((GameObject*)playerObj)->anim.localPosY;
-            statePtr->spawnPosZ = ((GameObject*)playerObj)->anim.localPosZ;
+            statePtr->eyeAnimState.lookAtActive = 1;
+            statePtr->eyeAnimState.lookAtPosX = ((GameObject*)playerObj)->anim.localPosX;
+            statePtr->eyeAnimState.lookAtPosY = ((GameObject*)playerObj)->anim.localPosY;
+            statePtr->eyeAnimState.lookAtPosZ = ((GameObject*)playerObj)->anim.localPosZ;
         }
         else
         {
-            statePtr->playerNearby = 0;
+            statePtr->eyeAnimState.lookAtActive = 0;
         }
-        characterHeadLookCalm(obj, (s16*)(data + 0x980), 0.0f);
+        characterHeadLookCalm(obj, (s16*)&((DIMSnowHorn1State*)data)->eyeAnimState, 0.0f);
         break;
     }
     switch (((DIMSnowHorn1State*)data)->mode)
@@ -1437,7 +1437,7 @@ void DIMSnowHorn1_update(GameObject* obj)
         }
         break;
     }
-    characterDoEyeAnims(obj, (void*)(data + 0x980));
+    characterDoEyeAnims(obj, &((DIMSnowHorn1State*)data)->eyeAnimState);
     {
         MatrixTransform v;
         f32 matrix[16];

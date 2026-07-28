@@ -32,12 +32,8 @@ typedef struct DIMSnowHorn1State
     u8 lookController[0x96D - 0x35C]; /* dll_2E look-controller block at 0x35C (start evidenced; true extent unknown) */
     u8 unk96D;
     u8 pad96E[0x980 - 0x96E];
-    u8 playerNearby; /* 0x980: 1 when player within mount range (mountMode==0); gates spawnPos capture */
-    u8 pad981[3];
-    f32 spawnPosX;
-    f32 spawnPosY;
-    f32 spawnPosZ;
-    u8 pad990[0x9B0 - 0x990];
+    CharacterEyeAnimState eyeAnimState; /* 0x980: head-aim / eye-blink record (characterDoEyeAnims / characterHeadLookCalm / characterHeadLookRelax) */
+    u8 pad9A8[0x9B0 - 0x9A8];
     f32 pathPointArray[12]; /* 0x9B0: ObjPath_GetPointWorldPositionArray(2,4) -> 4 XYZ points */
     u8 pad9E0[0x9E8 - 0x9E0];
     f32 pathPosX; /* model-matrix offset vec */

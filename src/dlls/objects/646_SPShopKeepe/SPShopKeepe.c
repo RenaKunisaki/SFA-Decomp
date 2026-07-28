@@ -1003,7 +1003,7 @@ void ShopKeeper_update(GameObject* obj)
     ((ShopkeeperState*)state)->playerMoney = playerGetMoney(player);
     (*gPlayerInterface)->update((void*)obj, (void*)state, timeDelta, timeDelta, lbl_803AD068, &lbl_803DDC58);
     dll_2E_updateLookAt(obj, (MoveLibState*)(state + 0x35C));
-    characterDoEyeAnims(obj, (void*)(state + 0x980));
+    characterDoEyeAnims(obj, &((ShopkeeperState*)state)->eyeAnimState);
     (obj)->anim.alpha = ((ShopkeeperState*)state)->opacity;
 }
 
