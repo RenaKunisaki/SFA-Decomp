@@ -290,7 +290,7 @@ void tree_init(GameObject* obj, TreeSetup* setup)
     obj->anim.rotZ = (s16)(setupData->rotZ << 8);
     obj->anim.rotY = (s16)(setupData->rotY << 8);
     obj->anim.rotX = (s16)(setupData->rotX << 8);
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     obj->userData2 = 0;
     if (setupData->scale != 0)

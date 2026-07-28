@@ -1484,7 +1484,7 @@ void groundBaddieHandlePaidTrigger(int obj, u8* state)
             playerAddMoney(player, -25);
             mainSetBits(*(s16*)(setup + 0x1c), 1);
             *(u16*)(state + 0x338) = gGroundBaddieTriggerResponseSeq[2];
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             hudFn_8011f38c(2);
             (*gObjectTriggerInterface)->runSequence(2, (void*)obj, -1);
         }
@@ -1601,17 +1601,17 @@ void guardClaw_update(GameObject* obj, u8* state)
 
     if (((BaddieState*)state)->userData1 == 2 && mainGetBit(*(s16*)((char*)def + 0x1c)) == 0)
     {
-        *(u8*)&(obj)->anim.resetHitboxMode =
-            (u8)(*(u8*)&(obj)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
-        if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
+        (obj)->anim.resetHitboxFlags =
+            (u8)((obj)->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+        if ((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
         {
             groundBaddieHandlePaidTrigger((int)obj, state);
         }
     }
     else
     {
-        *(u8*)&(obj)->anim.resetHitboxMode =
-            (u8)(*(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+        (obj)->anim.resetHitboxFlags =
+            (u8)((obj)->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
     }
     flags = ((BaddieState*)state)->controlFlags;
     if (flags & BADDIE_CONTROL_JUST_TRIGGERED)
@@ -1704,7 +1704,7 @@ void guardClaw_init(GameObject* obj, u8* state)
     {
         *(int*)&((BaddieState*)state)->controlFlags |= 1;
     }
-    *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
 }
 
 GameObject* gcRobotLight_init(GameObject* obj, int childId)
@@ -6738,14 +6738,14 @@ void snowworm_update(GameObject* obj, u8* state)
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 1;
     if (obj->anim.currentMove == 0)
     {
-        *(u8*)&obj->anim.resetHitboxMode =
-            *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags =
+            obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         ObjHits_DisableObject(obj);
     }
     else
     {
-        *(u8*)&obj->anim.resetHitboxMode =
-            *(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags =
+            obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
         ObjHits_EnableObject(obj);
     }
 
@@ -7140,7 +7140,7 @@ int iceBaddie_stateHandlerB02(GameObject* obj, GroundBaddieState* state) {
         state->baddie.physicsActive = 0;
         state->baddie.hasTarget = 0;
         ObjHits_DisableObject(obj);
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     } else if (state->baddie.moveDone != 0) {
         ObjMsg_SendToObjects(0, 3, obj, 0xe0000, (int)obj);
         if (obj->anim.placementData == NULL) {
@@ -7277,7 +7277,7 @@ int iceBaddie_stateHandlerA0B(GameObject* obj, GroundBaddieState* state) {
     IceBaddieControl* control;
 
     if (state->baddie.moveJustStartedA != 0) {
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         if (state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 2, 0.0f, 0);
             state->baddie.moveDone = 0;
@@ -7478,7 +7478,7 @@ int iceBaddie_updateSpinState(GameObject* obj, GroundBaddieState* state) {
     control = (IceBaddieControl*)objectState->control;
     control->effectFlags |= (ICEBADDIE_FX_BURST | ICEBADDIE_FX_PUFF);
     if (state->baddie.moveJustStartedA != 0) {
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         objectState->targetState = 4;
     }
     obj->anim.rotX = (s16)(182.0f * (((f32)state->baddie.turnRate * timeDelta) / 12.0f) + (f32) * (s16*)obj);
@@ -7533,7 +7533,7 @@ int iceBaddie_updateHideResetState(GameObject* obj, GroundBaddieState* state) {
         state->baddie.physicsActive = 0;
         state->baddie.hasTarget = 0;
         objectState->targetState = 0;
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
     return 0;
 }
@@ -7554,7 +7554,7 @@ int iceBaddie_updateOpenState(GameObject* obj, GroundBaddieState* state) {
     }
     if (state->baddie.moveJustStartedA != 0) {
         mainSetBits(objectState->gameBitB, 1);
-        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         obj->anim.alpha = 0xff;
         state->baddie.stateTag = 1;
         state->baddie.moveSpeed = 0.012f + (f32)(u32)objectState->aggression / 10000.0f;
@@ -7594,7 +7594,7 @@ int iceBaddie_updateOpenHitState(GameObject* obj, GroundBaddieState* state) {
     }
     if (state->baddie.moveJustStartedA != 0) {
         mainSetBits(objectState->gameBitB, 1);
-        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         obj->anim.alpha = 0xff;
         state->baddie.stateTag = 1;
         state->baddie.moveSpeed = 0.0025f + (f32)(u32)objectState->aggression / 50000.0f;
@@ -7934,7 +7934,7 @@ void iceBaddie_update(GameObject* obj, int unusedA, int unusedB) {
             ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
             objectState->baddie.moveDone = 0;
             obj->anim.alpha = 0xff;
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
     } else if (obj->userData2 == 0) {
         obj->anim.localPosX = placement->base.posX;
@@ -7978,7 +7978,7 @@ void iceBaddie_init(GameObject* obj, IceBaddiePlacement* placement, int flags) {
         objectState->aggroRange = 0x6e;
     }
     ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     (*gPlayerInterface)->setState(obj, objectState, 0);
     objectState->baddie.substate = 0;
     objectState->baddie.physicsActive = 0;

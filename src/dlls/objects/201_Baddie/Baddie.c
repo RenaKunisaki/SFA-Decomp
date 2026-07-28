@@ -303,7 +303,7 @@ void tricky_handleDefeat(GameObject* obj, int state)
         }
         ((TrickyState*)state)->actionTargetObj = NULL;
         ObjHits_DisableObject(obj);
-        *(u8*)&(obj)->anim.resetHitboxMode = *(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
+        (obj)->anim.resetHitboxFlags = (obj)->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         moveId = ((TrickyState*)state)->moveId1;
         ((TrickyState*)state)->animPlaySpeed = 1.0f / (60.0f * ((TrickyState*)state)->moveSpeedScale1);
         ((TrickyState*)state)->flags323 = 1;
@@ -2837,13 +2837,13 @@ void enemy_update(GameObject* obj)
     {
         if (tricky != NULL && mainGetBit(0x9e) != 0)
         {
-            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
         else
         {
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
-        if (tricky != NULL && (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
+        if (tricky != NULL && (obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
         {
             TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 2);
         }
@@ -2918,7 +2918,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
     (obj)->anim.localPosX = ((ObjPlacement*)setup)->posX;
     (obj)->anim.localPosY = ((ObjPlacement*)setup)->posY;
     (obj)->anim.localPosZ = ((ObjPlacement*)setup)->posZ;
-    *(u8*)&(obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+    (obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if (flag == 0)
     {
         *(int*)&((EnemyState*)state)->flags2E4 = 0;

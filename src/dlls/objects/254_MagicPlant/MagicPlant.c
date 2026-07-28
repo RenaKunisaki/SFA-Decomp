@@ -132,7 +132,7 @@ void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlaceme
 
     playerAddress = (int)Obj_GetPlayerObject();
     player = (GameObject*)playerAddress;
-    *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
 
     hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitParamA, &hitParamB, (u32*)&hitObject, &hitPos[0], &hitPos[1],
                                                  &hitPos[2]);
@@ -297,7 +297,7 @@ void MagicPlant_update(GameObject* obj) {
         return;
     }
 
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     if (objIsFrozen((u8*)obj) != 0) {
         hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitParamA, (u32*)&hitParamB, &hitPos[0],
                                                      &hitPos[1], &hitPos[2]);

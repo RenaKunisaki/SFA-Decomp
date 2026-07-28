@@ -390,8 +390,8 @@ int DIMbossAnim_finishDefeat(GameObject* obj, int p2) {
         ((BaddieState*)p2)->physicsActive = 0;
         ((BaddieState*)p2)->hasTarget = 0;
         ObjHits_DisableObject(obj);
-        *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
-        *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode & ~0x80);
+        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~0x80);
         ObjMsg_SendToObject(Obj_GetPlayerObject(), 0xE0000, obj, 0);
         mainSetBits(((GroundBaddieState*)state)->gameBitB, 0);
         mainSetBits(((GroundBaddieState*)state)->gameBitA, 1);
@@ -1187,8 +1187,8 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
                 (*gPlayerInterface)->setState(obj, playerState, 0);
                 hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
                 hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
-                *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
-                *(u8*)&obj->anim.resetHitboxMode &= ~0x80;
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+                obj->anim.resetHitboxFlags &= ~0x80;
                 mainSetBits(DIMBOSS_GAMEBIT_ICICLE_DEFEATED, 1);
                 if (((GroundBaddieState*)state)->targetState == 1) {
                     mainSetBits(GAMEBIT_DIM2_ICICLE_PHASE1_WIN, 1);

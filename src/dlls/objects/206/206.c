@@ -224,7 +224,7 @@ int chukChuk_checkDeathState(GameObject* obj, GroundBaddieState* state) {
         state->baddie.physicsActive = 0;
         *(s8*)&state->baddie.hasTarget = 0;
         ObjHits_DisableObject(obj);
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     } else if (state->baddie.moveDone != '\0') {
         ObjMsg_SendToObjects(0, 3, obj, 0xe0000, (u32)obj);
         if (obj->anim.placementData == NULL) {
@@ -474,7 +474,7 @@ int chukChuk_updateSubmergeState(GameObject* obj, GroundBaddieState* state) {
         *(s8*)&state->baddie.hasTarget = 0;
         objectState->targetState = 0;
         if ((control->coordinationFlags & DLL_CE_COORDINATION_HIDDEN) == 0) {
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
     }
     return 0;
@@ -494,7 +494,7 @@ int chukChuk_updateEmergeState(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveJustStartedA != '\0') {
         state->baddie.physicsActive = 1;
         mainSetBits(objectState->gameBitB, 1);
-        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         obj->anim.alpha = 0xff;
         state->baddie.stateTag = 1;
         state->baddie.moveSpeed = 0.012f + (f32)(u32)objectState->aggression / 10000.0f;
@@ -729,7 +729,7 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
             ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
             state->baddie.moveDone = 0;
             obj->anim.alpha = 0xff;
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
     } else if (obj->userData2 == 0) {
         obj->anim.localPosX = placement->base.posX;
@@ -793,7 +793,7 @@ void dll_CE_init(GameObject* obj, DllCEPlacement* placement, int flags) {
     control = state->control;
     control->soundTimer = (f32)randomGetRange(10, 300);
     ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     (*gPlayerInterface)->setState(obj, state, 0);
     state->baddie.substate = 0;
     state->baddie.physicsActive = 0;

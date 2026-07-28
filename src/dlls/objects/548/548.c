@@ -41,14 +41,14 @@ void spellStoneUseFn_801fd270(GameObject* obj)
         return;
     if (cond == 0)
         return;
-    *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if ((*gGameUIInterface)->isItemBeingUsed(gSpellStoneEventId) != 0)
     {
         if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < lbl_803E6150)
         {
             mainSetBits(state->completeGameBit, 1);
             state->used = 1;
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
     }
 }
@@ -115,7 +115,7 @@ void dll_224_init(GameObject* obj, void* other)
     extra->completeGameBit = def->completeGameBit;
     extra->requiredGameBit = def->requiredGameBit;
     hitboxFlags = (*&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
-    *(u8*)&obj->anim.resetHitboxMode = hitboxFlags;
+    obj->anim.resetHitboxFlags = hitboxFlags;
 }
 
 void dll_224_release_nop(void)

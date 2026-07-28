@@ -315,10 +315,10 @@ void mmpMoonRock_setFrozen(GameObject* obj, u8 frozen) {
     MMPMoonRockState* state = obj->extra;
     if (frozen != 0) {
         state->flags |= MMP_MOON_ROCK_FLAG_FROZEN;
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     } else {
         state->flags &= ~MMP_MOON_ROCK_FLAG_FROZEN;
-        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     }
 }
 

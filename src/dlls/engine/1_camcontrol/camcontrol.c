@@ -403,7 +403,7 @@ void lockIconInit(void)
 static inline int camcontrol_isTargetCandidate(GameObject* obj, ObjHitVolumeRuntimeBounds* data)
 {
     int accept;
-    if (data != NULL && obj->anim.alpha == 0xff && !(*(u8*)&obj->anim.resetHitboxMode & 0x28) &&
+    if (data != NULL && obj->anim.alpha == 0xff && !(obj->anim.resetHitboxFlags & 0x28) &&
         ((obj->objectFlags & CAMCONTROL_OBJFLAG_RENDERED) || (obj->anim.modelInstance->flags & 1)) &&
         !(obj->anim.flags & OBJANIM_FLAG_HIDDEN) && !(obj->objectFlags & CAMCONTROL_OBJFLAG_FREED) &&
         (gCamcontrolTargetClassMask &
@@ -468,7 +468,7 @@ CamcontrolTargetObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraS
         {
             continue;
         }
-        if ((*(u8*)&obj->anim.resetHitboxMode & 0x80) || (data[obj->hitVolumeIndex].flags & 0x80))
+        if ((obj->anim.resetHitboxFlags & 0x80) || (data[obj->hitVolumeIndex].flags & 0x80))
         {
             dy = CAMCONTROL_NORMALIZED_MIN;
         }

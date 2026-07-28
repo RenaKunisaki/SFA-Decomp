@@ -180,12 +180,12 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
         break;
     case DOORF4_GATE_MODE_INTERACTION:
         if (openGameBitValue == 0) {
-            if ((*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_DISABLED) != 0 &&
+            if ((((GameObject*)obj)->anim.resetHitboxFlags & INTERACT_FLAG_DISABLED) != 0 &&
                 mainGetBit(DOORF4_INTERACTION_ENABLE_GAMEBIT) != 0) {
-                *(u8*)&((GameObject*)obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+                ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             }
-            if ((*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0) {
-                *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            if ((((GameObject*)obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
+                ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 mainSetBits(state->openGameBit, 1);
             }
         } else if (openGameBitValue != 0) {
@@ -193,7 +193,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
         }
         break;
     case DOORF4_GATE_MODE_EXPLODABLE:
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         if (openGameBitValue != 0) {
             for (index = objectIndex, objectCursor = (GameObject**)((char*)objects + index * 4);
                  index < objectCount && shouldOpen == 0; objectCursor++, index++) {
@@ -248,9 +248,9 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
         break;
     case DOORF4_GATE_MODE_POWERED_INTERACTION:
         if (mainGetBit(state->requiredGameBit) != 0 && openGameBitValue == 0) {
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
-            if ((*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0) {
-                *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+            if ((((GameObject*)obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
+                ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 mainSetBits(state->openGameBit, 1);
                 (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
                 openGameBitValue = 1;
@@ -258,7 +258,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
         }
         if (openGameBitValue != 0) {
             shouldOpen = 1;
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
         break;
     }
@@ -469,7 +469,7 @@ void DoorF4_init(GameObject* obj, DoorF4Placement* placement) {
     ObjMsg_AllocQueue(obj, DOORF4_INBOX_CAPACITY);
     obj->anim.rotX = (s16)(placement->yawByte << 8);
     obj->animEventCallback = DoorF4_SeqFn;
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     state->openGameBit = placement->openGameBit;
     state->nearSideGameBit = placement->nearSideGameBit;

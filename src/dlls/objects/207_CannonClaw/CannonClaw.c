@@ -73,7 +73,7 @@ void cannonclaw_update(GameObject* obj) {
         return;
     }
     obj->userData1 = CANNON_CLAW_STATUS_DISABLED;
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     ObjHits_DisableObject(obj);
 }
 

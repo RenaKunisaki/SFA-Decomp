@@ -933,7 +933,7 @@ int DR_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
     CloudRunnerState* inner = obj->extra;
     int local = 1;
     int i;
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     for (i = 0; i < animUpdate->eventCount; i++)
     {
         switch ((int)animUpdate->eventIds[i])
@@ -1204,10 +1204,10 @@ void DR_CloudRunner_update(GameObject* obj)
     inner = (obj)->extra;
     inner->unkBAE = 5;
     logPrintf(sOnCloudFormat, mainGetBit(CLOUDRUNNER_ONCLOUD_GAMEBIT));
-    *(u8*)&(obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+    (obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if (inner->flightState == CLOUDRUNNER_FLIGHT_MOUNTED)
     {
-        *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         DR_CloudRunner_updateFlightControl(obj, timeDelta, -1);
         ((ObjAnimComponent*)obj)->modelInstance->flags |= 0x200000LL;
     }
@@ -1239,7 +1239,7 @@ void DR_CloudRunner_update(GameObject* obj)
     objSoundUpdateMouth(obj, (char*)&inner->modelSoundState);
     characterHeadLookCalm(obj, (s16*)&inner->eyeAnimState, 0.0f);
     characterDoEyeAnims(obj, &inner->eyeAnimState);
-    if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
+    if ((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
     {
         if (inner->flightState == CLOUDRUNNER_FLIGHT_GROUNDED)
         {

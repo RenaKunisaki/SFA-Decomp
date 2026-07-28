@@ -299,7 +299,7 @@ void shopitem_update(GameObject* obj)
     {
         (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
         (obj)->objectFlags = (u16)((obj)->objectFlags | OBJECT_OBJFLAG_UPDATE_DISABLED);
-        *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
     else if (b->flag_80)
     {
@@ -325,7 +325,7 @@ void shopitem_update(GameObject* obj)
                     b->flag_40 = 1;
                     (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
                     (obj)->objectFlags = (u16)((obj)->objectFlags | OBJECT_OBJFLAG_UPDATE_DISABLED);
-                    *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                    (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 }
                 s->helpTextId =
                     (s16)(*(int (**)(int, int))((char*)**(int***)(s->vendorObj + 0x68) + 0x3C))(
@@ -334,12 +334,12 @@ void shopitem_update(GameObject* obj)
         }
         else
         {
-            if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE)
+            if ((obj)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE)
             {
                 forceAButtonIcon(0x12);
                 showHelpText(s->helpTextId);
             }
-            if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
+            if ((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
             {
                 money = playerGetMoney(player);
                 price = (*(int (**)(int, int))((char*)**(int***)(s->vendorObj + 0x68) + 0x38))(
@@ -404,7 +404,7 @@ void shopitem_update(GameObject* obj)
         {
             ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, NULL);
         }
-        if ((*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_DISABLED) == 0)
+        if (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_DISABLED) == 0)
         {
             objRenderFn_80041018(obj);
         }

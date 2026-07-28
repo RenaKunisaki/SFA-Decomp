@@ -279,7 +279,7 @@ void dfshShrine_update(int objArg) {
             state->idleChimeTimer = (f32)(s32)randomGetRange(500, 1000);
         }
     }
-        if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0) {
+        if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
             mainSetBits(0x589, 0);
             state->mode = DFSH_SHRINE_MODE_BEGIN_TRANS;
             Music_Trigger(MUSICTRIG_DIM_Snow, 1);

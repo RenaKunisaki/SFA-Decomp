@@ -166,12 +166,12 @@ void PressureSwitchFB_update(GameObject* obj) {
     state = obj->extra;
     if (state->flags.update.active != 0) {
         if (state->flags.update.released == 0) {
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         } else {
-            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         }
     } else {
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
     if ((placement->enableGameBit == PRESSURESWITCHFB_NO_GAME_BIT) || (mainGetBit(placement->enableGameBit) != 0)) {
         if (--state->contactTimer < 0) {
@@ -324,8 +324,8 @@ void PressureSwitchFB_update(GameObject* obj) {
         }
         if (((placement->drivesTricky != 0) && ((trickyObj = (GameObject*)getTrickyObject()) != NULL)) &&
             (mainGetBit(placement->pressedGameBit) == 0)) {
-            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
-            if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0) {
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
                 TRICKY_INTERFACE(trickyObj)->sideCommandEnable(trickyObj, obj, PRESSURESWITCHFB_TRICKY_COMMAND_KIND,
                                                               PRESSURESWITCHFB_TRICKY_COMMAND_TYPE);
             }

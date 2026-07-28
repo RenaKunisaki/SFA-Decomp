@@ -163,7 +163,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
         int newCarryState = 0;
         t = (void*)*(u8**)((u8*)obj + 0x78);
         if ((t[obj->hitVolumeIndex].e & 0xf) == 6 && (buttonGetDisabled(0) & PAD_BUTTON_A) == 0 &&
-            (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0 &&
+            (obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0 &&
             obj->userData2 == 0)
         {
             *(s16*)held = 0;
@@ -181,7 +181,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
             GameObject* hit;
             int cnt, i, j;
             ObjHits_SyncObjectPositionIfDirty(obj);
-            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             if ((held->flags & CARRYABLE_FLAG_GRAVITY_DISABLED) == 0)
             {
                 obj->anim.velocityY = -(0.1f * timeDelta - obj->anim.velocityY);
@@ -236,7 +236,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
     else
     {
         ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         if ((getButtonsJustPressed(0) & PAD_BUTTON_A) != 0)
         {
             if ((held->flags & CARRYABLE_FLAG_DROP_DISABLED) != 0 ||

@@ -150,7 +150,7 @@ int kaldachom_stateHandlerB02(GameObject* obj, GroundBaddieState* state) {
         objectState->control->soundFlags = 0;
         (*gPlayerInterface)->setState(obj, state, 7);
         ObjHits_DisableObject(obj);
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         objectState->flags400 |= 0x20;
         objectState->glowAlpha = 1.0f;
         objectState->unk3EC = 0.01f;
@@ -367,7 +367,7 @@ int kaldachom_stateHandlerA00(GameObject* obj, GroundBaddieState* state) {
         kaldachompme_setLinkedMouthMode(obj, KALDACHOMPME_LINKED_MODE_MOVE_0);
         state->baddie.physicsActive = 1;
         mainSetBits(objectState->gameBitB, 1);
-        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         obj->anim.alpha = 0xff;
         state->baddie.stateTag = 1;
         state->baddie.moveSpeed = 0.012f + ((f32)(u32)objectState->aggression / 10000.0f);
@@ -668,7 +668,7 @@ void kaldachom_update(GameObject* obj) {
             ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
             objectState->ground.baddie.moveDone = 0;
             obj->anim.alpha = 0xff;
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
     } else {
         ref = (*gBaddieControlInterface)->isObjectValid(obj, objectState, 0);
@@ -739,7 +739,7 @@ void kaldachom_init(GameObject* obj, KaldachomPlacement* placement, int flags) {
     control = state->control;
     ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
     obj->anim.currentMoveProgress = 0.01f;
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     (*gPlayerInterface)->setState(obj, state, 0);
     *(u16*)&state->ground.baddie.substate = 0;
     state->ground.baddie.moveSpeed = 0.01f;

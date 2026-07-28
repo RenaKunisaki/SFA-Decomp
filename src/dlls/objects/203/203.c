@@ -114,7 +114,7 @@ int dll_CB_stateHandler2(GameObject* obj, GroundBaddieState* state) {
         state->baddie.hasTarget = 0;
         hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
         hitState->flags &= ~1;
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     } else {
         ObjMsg_SendToObject(Obj_GetPlayerObject(), 0xe0000, obj, 0);
         if (obj->anim.placementData == NULL) {

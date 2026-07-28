@@ -512,7 +512,7 @@ void ecshShrine_update(GameObject* obj) {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice);
                 state->voiceTimer = (f32)randomGetRange(ECSH_SHRINE_VOICE_DELAY_MIN, ECSH_SHRINE_VOICE_DELAY_MAX);
             }
-            if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0) {
+            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
                 state->testPhase = ECSH_SHRINE_PHASE_INTRO_TRANSITION;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
                 (*gObjectTriggerInterface)->runSequence(ECSH_SHRINE_SEQUENCE_INTRO, obj, ECSH_SHRINE_SEQUENCE_FLAGS);

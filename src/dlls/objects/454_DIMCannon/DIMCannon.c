@@ -389,7 +389,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
                 state->mode = DIM_CANNON_MODE_WAIT_FOR_RESET;
                 *(u8*)&state->chargeTimer = 0x3c;
                 animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A;
-                *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
+                obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
                 if (Sfx_IsPlayingFromObjectChannel((u32)obj, 8) != 0) {
                     Sfx_IsPlayingFromObjectChannel((u32)obj, 0);
                 }
@@ -466,8 +466,8 @@ void DIMCannon_update(GameObject* obj) {
         return;
     }
 
-    if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_DISABLED) && mainGetBit(placement->resetGameBit)) {
-        *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_DISABLED) && mainGetBit(placement->resetGameBit)) {
+        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
     }
 
     state = obj->extra;
@@ -490,7 +490,7 @@ void DIMCannon_update(GameObject* obj) {
         s8 chargeTimer = state->chargeTimer;
         if (chargeTimer > 0) {
             state->chargeTimer = (s8)(chargeTimer - framesThisStep);
-        } else if (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) {
+        } else if (obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) {
             GameObject* focusObj;
             state->airMeterCharge = 0;
             state->shutdownTimer = 0;
@@ -500,7 +500,7 @@ void DIMCannon_update(GameObject* obj) {
             state->mode = DIM_CANNON_MODE_PLAYER_CONTROLLED;
             (*gObjectTriggerInterface)->runSequence(0, obj, -1);
             *(u8*)&state->chargeTimer = 0x3c;
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
         state->shouldSpawnProjectile = 0;
         state->launchDelay = 0;
@@ -635,7 +635,7 @@ void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
 
         state->aimRefreshTimer = 0x80;
         state->launchSpeed = 0.0f;
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         obj->animEventCallback = DIMCannon_SeqFn;
         obj->anim.rotX = (s16)(placement->rotationXByte << 8);
         lbl_803DDB50 = Resource_Acquire(0x79, 1);

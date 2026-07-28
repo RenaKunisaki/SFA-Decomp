@@ -181,7 +181,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
     }
     if (mainGetBit(placement->gameBitId) == 0)
     {
-        *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         if (randomChanceOneIn(0x64) != 0)
         {
             objSoundStartFromDef(obj, &state->modelSoundState,
@@ -1094,7 +1094,7 @@ void HighTop_update(GameObject* obj)
     state = ((GameObject*)self)->extra;
     runtime = (HighTopRuntime*)state;
     runtime->turnRateThreshold = 5;
-    *(u8*)&((GameObject*)self)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+    ((GameObject*)self)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     runtime->baddie.physicsActive = !runtime->flagsC49.b4;
     runtime->baddie.hitPoints = 0;
     *(int*)state &= ~0x8000;

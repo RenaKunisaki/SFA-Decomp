@@ -6839,7 +6839,7 @@ int tricky_substateDigForFood(GameObject* obj, int state)
     {
         return 1;
     }
-    *(u8*)&(obj)->anim.resetHitboxMode = *(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_PROMPT_SUPPRESSED;
+    (obj)->anim.resetHitboxFlags = (obj)->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED;
     move = (obj)->anim.currentMove;
     switch (move)
     {
@@ -7067,7 +7067,7 @@ int tricky_substateHowlCall(GameObject* obj, int* trickyState)
     {
         return 1;
     }
-    *(u8*)&(obj)->anim.resetHitboxMode = *(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_PROMPT_SUPPRESSED;
+    (obj)->anim.resetHitboxFlags = (obj)->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED;
     move = (obj)->anim.currentMove;
     switch (move)
     {
@@ -7649,7 +7649,7 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
     s16 item[4];
 
     flag = 0;
-    *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+    obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
     n = mainGetBit(GAMEBIT_ITEM_TrickyFood_Count);
     if (n != 0)
     {
@@ -7665,7 +7665,7 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
     }
     if (flag != 0)
     {
-        if (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
+        if (obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
         {
             if ((*gGameUIInterface)->isItemBeingUsed(0xc1) != 0)
             {
@@ -7769,7 +7769,7 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
         }
         else
         {
-            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 4);
         }
     }
@@ -7778,7 +7778,7 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
         gu = mainGetBit(GAMEBIT_TrickyTalk);
         if (gu != 0xff && cMenuGetSelectedItem() == -1)
         {
-            if (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
+            if (obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
             {
                 mainSetBits(GAMEBIT_TrickyTalk, 0xff);
                 b = obj->extra;
@@ -7821,7 +7821,7 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
                 buttonDisable(0, PAD_BUTTON_A);
                 return 1;
             }
-            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
         }
     }
@@ -9480,8 +9480,8 @@ void Tricky_update(int obj)
             }
         }
     }
-    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode =
-        *(u8*)&((GameObject*)obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
+    ((GameObject*)obj)->anim.resetHitboxFlags =
+        ((GameObject*)obj)->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
     trickyState->heightUpdateActive = 1;
     ((TrickyHandlerFn*)(base + 0x24))[trickyState->stateIndex](obj, state);
     trickyState->stateFlags &= ~(u64)0x2;

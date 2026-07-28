@@ -316,7 +316,7 @@ void gpshShrine_update(GameObject* obj) {
                     Sfx_PlayFromObject((int)obj, SFXTRIG_spirit_voice);
                     state->idleSfxTimer = (f32)randomGetRange(500, 1000);
                 }
-                if (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) {
+                if (obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) {
                     state->phase = GPSH_SHRINE_PHASE_BEGIN;
                     mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
                     mainSetBits(GPSH_SHRINE_RESET_SYMBOL_CREATORS_GAMEBIT, 0);

@@ -513,7 +513,7 @@ void collectible_update(GameObject* obj) {
     f32 timer;
     f32 zero;
 
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     timer = ((CollectibleState*)state)->despawnTimer;
     zero = 0.0f;
     if (timer != zero) {
@@ -587,7 +587,7 @@ void collectible_update(GameObject* obj) {
             obj->userData1 = 0;
         }
     } else {
-        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         collectible_updateIdleMotion(obj);
         if (((CollectibleState*)state)->bounceTimer != 0) {
             collectible_updateLooseMotion(obj);

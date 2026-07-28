@@ -472,7 +472,7 @@ int DR_EarthWarrior_stateHandler03(GameObject* obj, int baddie)
 {
     EarthWarriorState* inner = (obj)->extra;
     f32 fz;
-    *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     fz = 0.0f;
     ((BaddieState*)baddie)->animSpeedC = fz;
     ((BaddieState*)baddie)->animSpeedB = fz;
@@ -892,7 +892,7 @@ int DR_EarthWarrior_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animU
     EarthWarriorState* inner = (obj)->extra;
     int i;
     f32 fz;
-    *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     if (dll_2E_updateSequenceTurn(obj, (ObjSeqState*)animUpdate, (MoveLibState*)((char*)inner + 0x3ec), 0, 0) != 0)
     {
         return 1;
@@ -1290,11 +1290,11 @@ void DR_EarthWarrior_update(GameObject* obj)
         inner->helperObj = newObj;
     }
     inner->sub.unk986 = 5;
-    *(u8*)&(obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+    (obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if (inner->sub.rideState == 2)
     {
         setAButtonIcon(0x13);
-        *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         hitState->lateralResponseWeight = 0xf4;
         hitState->axialResponseWeight = 0xf4;
         DR_EarthWarrior_runController(obj, timeDelta, -1);
@@ -1316,7 +1316,7 @@ void DR_EarthWarrior_update(GameObject* obj)
     characterDoEyeAnims(obj, &inner->eyeAnimState);
     objSoundUpdateMouth(obj, (char*)&inner->modelSoundState);
     dll_2E_updateLookAt(obj, (MoveLibState*)((char*)inner + 0x3ec));
-    if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
+    if ((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
     {
         ((ByteFlags*)&inner->sub.flags994)->b10 = 1;
         if ((*gGameUIInterface)->isItemBeingUsed(0xc1) != 0)

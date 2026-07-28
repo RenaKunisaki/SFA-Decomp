@@ -123,7 +123,7 @@ int kytesmum_updateQuestStateCallback(GameObject* obj, int unused, u8* arg)
     next = triggerIds[count];
     if (next == -1)
     {
-        *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         return 1;
     }
     if (ObjTrigger_IsSet((int)obj) != 0)
@@ -211,7 +211,7 @@ int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
     {
         return 1;
     }
-    if ((*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
+    if (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
     {
         if ((*gGameUIInterface)->isAnyItemBeingUsed() == 0)
         {
@@ -248,7 +248,7 @@ int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
 int kytesmum_spawnInteractionCallback(GameObject* obj)
 {
     Obj_GetPlayerObject();
-    if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
     {
         buttonDisable(0, PAD_BUTTON_A);
         if ((*gGameUIInterface)->isAnyItemBeingUsed() == 0)

@@ -239,8 +239,8 @@ int TREX_Lazerwall_updateTimedChallenge(GameObject* obj)
     int limit;
 
     state = (obj)->extra;
-    *(u8*)&(obj)->anim.resetHitboxMode =
-        (u8)(*(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+    (obj)->anim.resetHitboxFlags =
+        (u8)((obj)->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
     state->popStateEnabled = 0;
     ObjHits_DisableObject(obj);
 

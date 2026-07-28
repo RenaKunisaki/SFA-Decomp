@@ -200,7 +200,7 @@ void ChukChuk_update(GameObject* obj) {
 
 void ChukChuk_init(GameObject* obj, ChukChukPlacement* placement) {
     ChukChukState* state = obj->extra;
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     state->gameBit = placement->gameBit;
     if (state->gameBit != -1 && mainGetBit(state->gameBit) != 0) {
         ObjHits_DisableObject(obj);

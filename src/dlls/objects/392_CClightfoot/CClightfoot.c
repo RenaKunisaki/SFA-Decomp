@@ -218,9 +218,9 @@ void ccLightfoot_update(GameObject* obj) {
 
     singleTarget = 0;
     if ((animTable->phaseFlags[state->phase] & CC_LIGHTFOOT_ANIM_FLAG_INTERACTION_DISABLED) != 0) {
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     } else {
-        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     }
     targetActorAHandle = (u32)state->targetActorA;
     if (targetActorAHandle != 0) {

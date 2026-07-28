@@ -101,7 +101,7 @@ int MoonSeedPlantingSpot_cutOrHarvest(GameObject* obj, int arg)
                 placement = (ObjPlacement*)obj->anim.placementData;
                 if (mainGetBit(held->plantedGameBit) != 0)
                 {
-                    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                     mainSetBits(held->harvestedGameBit, 1);
                     held->phase = MSPLANTING_PHASE_HARVESTED;
                     obj->anim.localPosY = placement->posY;
@@ -174,16 +174,16 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
         ex->flags = ex->flags & ~MSPLANTING_FLAG_PLANTED;
         obj->anim.alpha = 0xff;
     }
-    if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) &&
-        !(*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_DISABLED))
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) &&
+        !(obj->anim.resetHitboxFlags & INTERACT_FLAG_DISABLED))
     {
         if (mainGetBit(GAMEBIT_MOONSEED_COUNT) != 0)
         {
-            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
         else
         {
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
     }
     ex->flags |= MSPLANTING_FLAG_VISIBLE;
@@ -206,7 +206,7 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
             setup2 = (MoonSeedPlantingSpotPlacement*)obj->anim.placementData;
             if (mainGetBit(ex2->plantedGameBit) != 0)
             {
-                *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 mainSetBits(ex2->harvestedGameBit, 1);
                 ex2->phase = MSPLANTING_PHASE_HARVESTED;
                 obj->anim.localPosY = setup2->posY;
@@ -214,7 +214,7 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
         }
         break;
     case MSPLANTING_PHASE_EMPTY:
-        if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) &&
+        if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) &&
             (*gGameUIInterface)->isItemBeingUsed(GAMEBIT_MOONSEED_COUNT) != 0)
         {
             int cnt = mainGetBit(GAMEBIT_MOONSEED_COUNT);
@@ -224,14 +224,14 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
                 obj->anim.alpha = 0;
                 (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
                 mainSetBits(GAMEBIT_MOONSEED_COUNT, cnt - 1);
-                *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
         }
         break;
     case MSPLANTING_PHASE_GROWN:
     {
         int tricky = (int)getTrickyObject();
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         if (ex->flags & MSPLANTING_FLAG_VISIBLE)
         {
             GameObject* player;
@@ -279,7 +279,7 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
     case MSPLANTING_PHASE_CUT:
     {
         GameObject* tricky = getTrickyObject();
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         obj->anim.localPosY = setup->posY;
         if (getXZDistance(&tricky->anim.worldPosX, &obj->anim.worldPosX) <= 10000.0f)
         {
@@ -299,7 +299,7 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
             setup2 = (MoonSeedPlantingSpotPlacement*)obj->anim.placementData;
             if (mainGetBit(ex2->plantedGameBit) != 0)
             {
-                *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 mainSetBits(ex2->harvestedGameBit, 1);
                 ex2->phase = MSPLANTING_PHASE_HARVESTED;
                 obj->anim.localPosY = setup2->posY;

@@ -47,7 +47,7 @@ void wctemple_update(GameObject *obj)
 
     if (state->triggerSlot == WCTEMPLE_SEQUENCE_SLOT_CLOSED)
     {
-        if ((*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
+        if (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
         {
             (*gObjectTriggerInterface)
                 ->runSequence(WCTEMPLE_SEQUENCE_SLOT_CLOSED, (void*)obj, WCTEMPLE_SEQUENCE_INVALID_ARG);
@@ -56,7 +56,7 @@ void wctemple_update(GameObject *obj)
     }
     else
     {
-        if ((*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
+        if (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
         {
             (*gObjectTriggerInterface)
                 ->runSequence(WCTEMPLE_SEQUENCE_SLOT_OPEN, (void*)obj, WCTEMPLE_SEQUENCE_INVALID_ARG);

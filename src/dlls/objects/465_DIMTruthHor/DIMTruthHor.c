@@ -47,7 +47,7 @@ int dimtruthhornice_getExtraSize(void) {
 void dimtruthhornice_update(GameObject* obj) {
     DimTruthHornIceState* state = obj->extra;
 
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     switch (state->phase) {
     case DIM_TRUTH_HORN_ICE_PHASE_INTACT:
         if (state->hitsLeft <= 0) {
@@ -61,10 +61,10 @@ void dimtruthhornice_update(GameObject* obj) {
             int* tricky = (int*)getTrickyObject();
 
             if (tricky != NULL) {
-                if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0) {
+                if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
                     TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 4);
                 }
-                *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+                obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             }
         }
         break;

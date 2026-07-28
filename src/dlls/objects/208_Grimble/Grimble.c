@@ -55,7 +55,7 @@ int grimble_stateHandlerB04(GameObject* obj, GroundBaddieState* state) {
         state->baddie.physicsActive = 0;
         state->baddie.hasTarget = 0;
         ObjHits_DisableObject(obj);
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
     if (obj->anim.alpha == 0) {
         if (obj->anim.placementData == NULL) {

@@ -1598,7 +1598,7 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
         *(int*)&bs->targetObj = 0;
         bs->physicsActive = 1;
         bs->hasTarget = 0;
-        *(u8*)&(obj)->anim.resetHitboxMode = (u8)(*(u8*)&(obj)->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+        (obj)->anim.resetHitboxFlags = (u8)((obj)->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
         ObjHits_DisableObject(obj);
         ObjGroup_RemoveObject((int)obj, DBSTEALERWORM_OBJGROUP);
         if (*(void**)&sub_40c->linkedObj != NULL)
@@ -1810,7 +1810,7 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
         ObjAnim_SetCurrentMove((int)obj, 14, 0.0f, 0);
         bs->moveDone = 0;
     }
-    *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     if ((obj)->anim.currentMoveProgress > 0.25f)
     {
         sub_40c->flags14 |= DBWORM_FLAG14_FX_DUST;
@@ -1839,7 +1839,7 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
         }
         if ((sub_40c->flags15 & 0x2) == 0)
         {
-            *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
         sub_40c->msgAdvance = 1;
     }
@@ -1857,7 +1857,7 @@ int dbstealerworm_stateHandlerA00(GameObject* obj, BaddieState* baddie)
     if ((s32)bs->moveJustStartedA != 0)
     {
         bs->physicsActive = 1;
-        *(u8*)&(obj)->anim.resetHitboxMode = (u8)(*(u8*)&(obj)->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
+        (obj)->anim.resetHitboxFlags = (u8)((obj)->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
         (obj)->anim.alpha = 255;
         bs->stateTag = 1;
         bs->moveSpeed = 0.012f + (f32)(u32)sub->aggression / 10000.0f;
@@ -2322,7 +2322,7 @@ void dbstealerworm_update(GameObject* objp)
     blob = *(int*)&obj->extra;
     data = (int)obj->anim.placementData;
     sub = *(int*)&((GroundBaddieState*)blob)->control;
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     if ((u32)((DbStealerwormControl*)sub)->flags44 >> 4 & 1)
     {
         grp = (DbWormMsgGroup*)(tbl + ((DbstealerwormPlacement*)data)->cfgTableIndex * 8);
@@ -2350,7 +2350,7 @@ void dbstealerworm_update(GameObject* objp)
                 ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
                 ((GroundBaddieState*)blob)->baddie.moveDone = 0;
                 obj->anim.alpha = 0xff;
-                *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
         }
         else if (obj->userData2 == 0)
@@ -2454,8 +2454,8 @@ void dbstealerworm_init(GameObject* obj, u8* def, int flag)
     ((DbStealerwormFlags44*)&((DbStealerwormControl*)p40c)->flags44)->flag10 = 1;
     ((DbStealerwormControl*)p40c)->linkedObj = 0;
     ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
-    *(u8*)&obj->anim.resetHitboxMode =
-        (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+    obj->anim.resetHitboxFlags =
+        (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
     (*gPlayerInterface)->setState(obj, sub, 3);
     ((GroundBaddieState*)sub)->baddie.substate = 0;
     ((GroundBaddieState*)sub)->baddie.physicsActive = 1;

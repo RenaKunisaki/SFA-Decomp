@@ -386,16 +386,16 @@ void GroundAnimator_update(GameObject* obj) {
     if ((state->flags & GROUND_ANIMATOR_STATE_COMPLETE) == 0 && interactionEnabled != 0) {
         tricky = getTrickyObject();
         if (tricky != NULL && mainGetBit(GAMEBIT_Tricky_Usable) != 0) {
-            *(u8*)&obj->anim.resetHitboxMode = *(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         } else {
-            *(u8*)&obj->anim.resetHitboxMode = *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_PROMPT_SUPPRESSED;
+            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
-        *(u8*)&obj->anim.resetHitboxMode = *(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED;
-        if (tricky != NULL && (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0) {
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
+        if (tricky != NULL && (obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
             TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 1);
         }
     } else {
-        *(u8*)&obj->anim.resetHitboxMode = *(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
     }
     objRenderFn_80041018(obj);
 }

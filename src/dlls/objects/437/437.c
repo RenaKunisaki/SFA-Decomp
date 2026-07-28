@@ -192,29 +192,29 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
         if ((u16)v < 0x1770)
         {
             r4c = (Dll437Placement*)((GameObject*)obj)->anim.placementData;
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+            ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             switch (r4c->base.mapId)
             {
             case 0x46a51:
                 if (mainGetBit(GAMEBIT_LV_ChallengeGate1Complete))
                 {
-                    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                    ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 }
                 break;
             case 0x46a55:
                 if (mainGetBit(GAMEBIT_LV_ChallengeGate2Complete))
                 {
-                    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                    ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 }
                 break;
             case 0x49928:
                 if (mainGetBit(GAMEBIT_SC_ChallengeGate3Complete))
                 {
-                    *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                    ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 }
                 break;
             }
-            if ((*(u8*)&((GameObject*)obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0)
+            if ((((GameObject*)obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
             {
                 buttonDisable(0, PAD_BUTTON_A);
                 switch (r4c->base.mapId)
@@ -227,7 +227,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
                             mainSetBits(GAMEBIT_LV_ChallengeGate1Complete, 1);
                             (*gObjectTriggerInterface)->runSequence(3, (void*)obj, -1);
                             sub->challengeCompletePending = 1;
-                            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                            ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                         }
                     }
                     else
@@ -243,7 +243,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
                             mainSetBits(GAMEBIT_LV_ChallengeGate2Complete, 1);
                             (*gObjectTriggerInterface)->runSequence(5, (void*)obj, -1);
                             sub->challengeCompletePending = 1;
-                            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                            ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                         }
                     }
                     else
@@ -259,7 +259,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
                             mainSetBits(GAMEBIT_SC_ChallengeGate3Complete, 1);
                             (*gObjectTriggerInterface)->runSequence(7, (void*)obj, -1);
                             sub->challengeCompletePending = 1;
-                            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+                            ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                         }
                     }
                     else
@@ -272,7 +272,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
         }
         else
         {
-            *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
         if (((BaddieState*)state)->moveJustStartedB != 0 ||
             ((BaddieState*)state)->moveDone != 0)
@@ -1031,7 +1031,7 @@ void dll437_init(GameObject* obj, const Dll437Placement* placement, int isReload
         ((Dll437ControlState*)control)->weaponDefNo = DLL437_WEAPON_DEF_1;
         ((Dll437ControlState*)control)->moveIds = gDll437MoveIds0;
         ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds0;
-        *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
         obj->userData2 = 0;
     } else {
         switch (placementData->base.mapId) {
@@ -1039,21 +1039,21 @@ void dll437_init(GameObject* obj, const Dll437Placement* placement, int isReload
             ((Dll437ControlState*)control)->moveIds = gDll437MoveIds3;
             ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds3;
             ObjHits_DisableObject(obj);
-            *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x33E3C:
             ((Dll437ControlState*)control)->moveIds = gDll437MoveIds0;
             ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds0;
             ((Dll437ControlState*)control)->weaponDefNo = DLL437_WEAPON_DEF_1;
-            *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x33E34:
             ((Dll437ControlState*)control)->moveIds = gDll437MoveIds1;
             ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds1;
             ((Dll437ControlState*)control)->weaponDefNo = DLL437_WEAPON_DEF_1;
-            *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x45C47:
@@ -1061,39 +1061,39 @@ void dll437_init(GameObject* obj, const Dll437Placement* placement, int isReload
             ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds2;
             ObjHits_DisableObject(obj);
             ((Dll437ControlState*)control)->weaponDefNo = DLL437_WEAPON_DEF_2;
-            *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x460B6:
             ((Dll437ControlState*)control)->moveIds = gDll437MoveIds4;
             ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds4;
             ObjHits_DisableObject(obj);
-            *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x3433F:
             ((Dll437ControlState*)control)->moveIds = (s16*)(playerAnimTableBase + 0x30);
             ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x40);
-            *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x46A51:
             if (mainGetBit(GAMEBIT_LV_ChallengeGate1Complete)) {
-                *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+                obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             }
             ((Dll437ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
             ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
             break;
         case 0x46A55:
             if (mainGetBit(GAMEBIT_LV_ChallengeGate2Complete)) {
-                *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+                obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             }
             ((Dll437ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
             ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
             break;
         case 0x49928:
             if (mainGetBit(GAMEBIT_SC_ChallengeGate3Complete)) {
-                *(u8*)&obj->anim.resetHitboxMode = (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
+                obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
             }
             ((Dll437ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
             ((Dll437ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);

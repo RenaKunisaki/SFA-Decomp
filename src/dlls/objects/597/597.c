@@ -2427,7 +2427,7 @@ void SnowBike_update(GameObject* obj)
             Obj_SetModelSlotIndex(obj, 0x13);
         }
     }
-    *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     obj->anim.rotY = s->savedRotY;
     obj->anim.rotZ = s->savedRotZ;
     if (((SnowBikeFlags*)(state + 0x428))->b04 || mainGetBit(s->gameBitId) != 0)
@@ -2441,8 +2441,8 @@ void SnowBike_update(GameObject* obj)
     case 0:
     {
         {
-            *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
-            if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0)
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
             {
                 s->playerInRange = 1;
             }

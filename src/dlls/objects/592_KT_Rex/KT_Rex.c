@@ -398,7 +398,7 @@ int ktrex_stateHandlerA08(GameObject* obj, GroundBaddieState* runtime)
             gKTRexState->stateTimer =
                 (f32)(u32) * (u16*)(row + (gKTRexState->phaseCounter & ~1));
         }
-        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     }
     else
     {
@@ -414,7 +414,7 @@ int ktrex_stateHandlerA08(GameObject* obj, GroundBaddieState* runtime)
             {
                 return 2;
             }
-            *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             return 10;
         }
     }
@@ -426,7 +426,7 @@ int ktrex_stateHandlerA07(GameObject* obj, GroundBaddieState* runtime)
     if ((s8)runtime->baddie.moveJustStartedB != 0)
     {
         (*gPlayerInterface)->setState(obj, runtime, 6);
-        *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         gKTRexState->phaseCounter += 1;
         ktrexlevel_clearPathGameBits();
         mainSetBits(GAMEBIT_DR_KTrexPhaseCounter, gKTRexState->phaseCounter);
@@ -690,7 +690,7 @@ int ktrex_stateHandlerA01(GameObject* obj, GroundBaddieState* runtime)
 {
     if ((s8)runtime->baddie.moveJustStartedB != 0)
     {
-        *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         runtime->baddie.hasTarget = 0;
         runtime->baddie.physicsActive = 0;
         gKTRexState->stateTimer = 60.0f;
@@ -1679,7 +1679,7 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
     *(int*)&rt->baddie.targetObj = 0;
     rt->baddie.physicsActive = 0;
     rt->baddie.hasTarget = 0;
-    *(u8*)&(obj)->anim.resetHitboxMode |= 0x88;
+    (obj)->anim.resetHitboxFlags |= 0x88;
     ObjHits_EnableObject(obj);
     if ((obj)->anim.modelState != NULL)
     {

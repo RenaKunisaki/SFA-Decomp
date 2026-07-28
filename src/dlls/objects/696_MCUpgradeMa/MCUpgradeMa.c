@@ -26,7 +26,7 @@ void mcupgradema_update(GameObject* obj)
 
     if (mainGetBit(setup->collectedGameBit) != 0)
     {
-        *(u8*)&gameObj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
+        gameObj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
     else if (ObjTrigger_IsSet((int)obj) != 0)
     {
