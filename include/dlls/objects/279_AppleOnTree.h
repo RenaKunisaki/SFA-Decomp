@@ -5,9 +5,10 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-#define APPLE_ON_TREE_STATE_SIZE 0x64
+#define APPLE_ON_TREE_OBJECT_ID      0x210
+#define APPLE_ON_TREE_PLACEMENT_SIZE 0x28
+#define APPLE_ON_TREE_STATE_SIZE     0x64
 
-/* Only the accessed placement prefix is recovered; the complete retail width is not established. */
 typedef struct AppleOnTreePlacement {
     ObjPlacement base;      /* 0x00 */
     u32 unk18;              /* 0x18 */
@@ -68,6 +69,7 @@ STATIC_ASSERT(offsetof(AppleOnTreePlacement, landedEndFraction) == 0x23);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, fadeEndFraction) == 0x24);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, unk25) == 0x25);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, despawnGameBit) == 0x26);
+STATIC_ASSERT(sizeof(AppleOnTreePlacement) == APPLE_ON_TREE_PLACEMENT_SIZE);
 
 STATIC_ASSERT(offsetof(AppleOnTreeState, unk00) == 0x0);
 STATIC_ASSERT(offsetof(AppleOnTreeState, phaseDuration) == 0x4);

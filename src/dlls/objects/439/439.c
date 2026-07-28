@@ -1,424 +1,331 @@
-/* DLL 0x01B7 - SC music-tree objects. */
-#include "dlls/object_descriptor.h"
+/*
+ * DLL 0x1B7 - shared implementation for the SC_MusicTree and
+ * SC_BirchTre object mappings.
+ */
+
+#include "dlls/objects/439.h"
+
+#include "dlls/objects/279_AppleOnTree.h"
 #include "dlls/objects/438_SC_levelcon.h"
-#include "game/objects/object_setup.h"
-#include "main/object_render.h"
-#include "main/shader_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/vecmath.h"
-#include "main/dll/SC/dll_01B7_scmusictree.h"
 #include "game/objects/object.h"
-#include "main/obj_path.h"
-#include "sys/objects/lifecycle.h"
-#include "main/audio/sfx.h"
-#include "sys/objects.h"
-#include "main/objprint_api.h"
-#include "main/dll/DR/cloudrunner_state.h"
-#include "main/objfx.h"
-#include "main/objhits.h"
-#include "main/gamebits.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/object_render.h"
+#include "main/obj_path.h"
+#include "main/objHitReact_types.h"
+#include "main/objanim.h"
+#include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/objprint_api.h"
+#include "main/shader_api.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-#define SCMUSICTREE_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_PHASE_MIN      0x708
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_PHASE_MAX      0x1770
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_INITIAL_PHASE  1
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_GROWTH_END     10
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_RIPE_END       40
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_FALL_END       50
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_LANDED_END     10
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_FADE_END       50
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_ACCELERATION   -50
+#define SC_MUSIC_TREE_AMBIENT_EFFECT_NO_DESPAWN_BIT -1
 
-/* placement mapIds: striking the three totem trees sets the combo bits
-   sclevelcontrol watches; the three "gate" trees gate their bits on
-   GAMEBIT_MUSICTREE_GATE. */
-#define SC_MUSICTREE_MAP_TOTEM_1 0x30d9c
-#define SC_MUSICTREE_MAP_TOTEM_2 0x30d9d
-#define SC_MUSICTREE_MAP_TOTEM_3 0x30d9b
-#define SC_MUSICTREE_MAP_GATE_1 0x448c2
-#define SC_MUSICTREE_MAP_GATE_2 0x45178
-#define SC_MUSICTREE_MAP_GATE_3 0x4517c
+/* Striking the three totem trees sets the combo bits watched by SC_levelcon. */
+#define SC_MUSIC_TREE_MAP_TOTEM_1 0x30D9C
+#define SC_MUSIC_TREE_MAP_TOTEM_2 0x30D9D
+#define SC_MUSIC_TREE_MAP_TOTEM_3 0x30D9B
 
-#define GAMEBIT_MUSICTREE_GATE 0xc44
+/* These three trees set their respective bits only while the gate bit is active. */
+#define SC_MUSIC_TREE_MAP_GATE_1          0x448C2
+#define SC_MUSIC_TREE_MAP_GATE_2          0x45178
+#define SC_MUSIC_TREE_MAP_GATE_3          0x4517C
+#define SC_MUSIC_TREE_GAMEBIT_GATE_1      0xC41
+#define SC_MUSIC_TREE_GAMEBIT_GATE_2      0xC43
+#define SC_MUSIC_TREE_GAMEBIT_GATE_ACTIVE 0xC44
+#define SC_MUSIC_TREE_GAMEBIT_GATE_3      0xC45
 
-typedef struct ScMusictreePlacement
-{
-    ObjPlacement base;
-    u8 pad18[0x20 - 0x18];
-    u8 colorR; /* 0x20: render tint red   (passed to objSetColorFilter) */
-    u8 colorG; /* 0x21: render tint green */
-    u8 colorB; /* 0x22: render tint blue */
-    u8 pad23[0x28 - 0x23];
-} ScMusictreePlacement;
+/* The low nibble is the burst type passed to the effect helpers. */
+#define SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK 0x0F
+#define SC_MUSIC_TREE_FLAG_APPROACH_BURST  0x10
+#define SC_MUSIC_TREE_FLAG_HIT_ACTIVE      0x20
+#define SC_MUSIC_TREE_FLAG_PRIORITY_HIT    0x40
+#define SC_MUSIC_TREE_FLAG_SATELLITES      0x80
 
-typedef struct ScMusictreeSpawnAmbientEffectPlacement
-{
-    ObjPlacement base;
-    u8 pad18[0x20 - 0x18];
-    u8 unk20;
-    u8 unk21;
-    u8 unk22;
-    u8 pad23[0x28 - 0x23];
-} ScMusictreeSpawnAmbientEffectPlacement;
+#define SC_MUSIC_TREE_HIT_EFFECT_MODE  8
+#define SC_MUSIC_TREE_HIT_EFFECT_RED   0xFF
+#define SC_MUSIC_TREE_HIT_EFFECT_GREEN 0xFF
+#define SC_MUSIC_TREE_HIT_EFFECT_BLUE  0x78
 
-/* Obj_AllocObjectSetup(0x28,...) buffer composed in sc_musictree_spawnAmbient.
- * Head is the common ObjPlacement; tail (0x18..0x27) is file-local. */
-typedef struct ScMusictreeSetup
-{
-    ObjPlacement head;  /* 0x00..0x17 */
-    int sourceObject;   /* 0x18 */
-    u16 animFrame;      /* 0x1C */
-    u16 unk1E;          /* 0x1E */
-    u8 colorA[3];       /* 0x20 */
-    u8 colorB[2];       /* 0x23 */
-    s8 verticalDrift;   /* 0x25 */
-    s16 modelId;        /* 0x26 */
-} ScMusictreeSetup;
+void sc_musictree_spawnAmbientEffect(GameObject* obj, ScMusicTreeState* state, int unused, s8 index) {
+    ScMusicTreePlacement* placement = (ScMusicTreePlacement*)obj->anim.placementData;
+    int pathIndex;
+    AppleOnTreePlacement* effectPlacement;
 
-STATIC_ASSERT(offsetof(ScMusictreeSetup, sourceObject) == 0x18);
-STATIC_ASSERT(offsetof(ScMusictreeSetup, animFrame) == 0x1C);
-STATIC_ASSERT(offsetof(ScMusictreeSetup, colorA) == 0x20);
-STATIC_ASSERT(offsetof(ScMusictreeSetup, modelId) == 0x26);
+    (void)unused;
 
-STATIC_ASSERT(sizeof(SCMusicTreeSetup) == 0x24);
-STATIC_ASSERT(offsetof(SCMusicTreeSetup, rotXByte) == 0x18);
-STATIC_ASSERT(offsetof(SCMusicTreeSetup, rotZByte) == 0x19);
-STATIC_ASSERT(offsetof(SCMusicTreeSetup, yawByte) == 0x1A);
-STATIC_ASSERT(offsetof(SCMusicTreeSetup, hearRadiusHalf) == 0x1B);
-STATIC_ASSERT(offsetof(SCMusicTreeSetup, scale) == 0x1C);
-STATIC_ASSERT(offsetof(SCMusicTreeSetup, flags) == 0x23);
-
-typedef struct SCMusicTreeState
-{
-    int ambientEffect[3];
-    f32 pathPoint[3][3];
-    f32 proximityBurstTimer;
-    f32 animSpeed;
-    f32 scale;
-    f32 proximityCooldown;
-    f32 hitCooldown;
-    int hitCooldownState;
-    u16 hearRadius;
-    s16 previousDistance;
-    u8 flags;
-    u8 pad4D[0x50 - 0x4D];
-} SCMusicTreeState;
-
-/* music-tree flags (setup 0x23 copied to runtime 0x4C); low nibble 0xf is a
-   burst count/palette passed to the fx helpers, not individual flag bits */
-/* ambient satellite effect object spawned by sc_musictree_spawnAmbientEffect,
-   cached in state->ambientEffect[idx] */
-#define SCMUSICTREE_CHILD_OBJ_AMBIENT_EFFECT 0x210
-
-#define SCMUSICTREE_FLAG_APPROACH_BURST 0x10 /* emit a burst when player crosses hearRadius */
-#define SCMUSICTREE_FLAG_HIT_ACTIVE 0x20     /* run hit detection this frame */
-#define SCMUSICTREE_FLAG_PRIORITY_HIT 0x40   /* use priority-hit poll + color fade path */
-#define SCMUSICTREE_FLAG_SATELLITES 0x80     /* manage the 3 ambient satellite objects */
-
-/* Alternate field view of the music-tree object's extra block used by
-   sc_musictree_update (the CloudRunnerState/SCMusicTreeState families
-   overlap this same 0x50-byte block). */
-typedef struct ScMusictreeState
-{
-    u8 pad0[0x30 - 0x0];
-    f32 proximityBurstTimer; /* 0x30 (aliases SCMusicTreeState.proximityBurstTimer) */
-    f32 moveStepScale;       /* 0x34 (aliases SCMusicTreeState.animSpeed) */
-    u8 pad38[0x48 - 0x38];
-    u16 hearRadius;          /* 0x48 */
-    u16 previousDistance;    /* 0x4A */
-    u8 flags;                /* 0x4C */
-    u8 pad4D[0x50 - 0x4D];
-} ScMusictreeState;
-
-void sc_musictree_spawnAmbientEffect(GameObject *obj, int extra, int unused, s8 idx);
-
-void sc_musictree_spawnAmbientEffect(GameObject *obj, int extra, int unused, s8 idx)
-{
-    int def = *(int*)&(obj)->anim.placementData;
-    SCMusicTreeState* state = (SCMusicTreeState*)extra;
-    int i;
-    int setup;
-
-    if (Obj_IsLoadingLocked() != 0)
-    {
-        setup = (int)Obj_AllocObjectSetup(0x28, SCMUSICTREE_CHILD_OBJ_AMBIENT_EFFECT);
-        ((ScMusictreeSetup*)setup)->head.color[0] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->base.color[0];
-        ((ScMusictreeSetup*)setup)->head.color[2] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->base.color[2];
-        ((ScMusictreeSetup*)setup)->head.color[1] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->base.color[1];
-        ((ScMusictreeSetup*)setup)->head.color[3] = ((ScMusictreeSpawnAmbientEffectPlacement*)def)->base.color[3] - 10;
-        i = idx;
-        ((ObjPlacement*)setup)->posX = state->pathPoint[i][0];
-        ((ObjPlacement*)setup)->posY = state->pathPoint[i][1];
-        ((ObjPlacement*)setup)->posZ = state->pathPoint[i][2];
-        ((ScMusictreeSetup*)setup)->animFrame = randomGetRange(0x708, 0x1770);
-        ((ScMusictreeSetup*)setup)->unk1E = 1;
-        ((ScMusictreeSetup*)setup)->colorA[0] = 10;
-        ((ScMusictreeSetup*)setup)->colorA[1] = 40;
-        ((ScMusictreeSetup*)setup)->colorA[2] = 50;
-        ((ScMusictreeSetup*)setup)->colorB[0] = 10;
-        ((ScMusictreeSetup*)setup)->colorB[1] = 50;
-        ((ScMusictreeSetup*)setup)->verticalDrift = -50;
-        ((ScMusictreeSetup*)setup)->modelId = -1;
-        ((ScMusictreeSetup*)setup)->sourceObject = 0;
-        state->ambientEffect[i] =
-            (int)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, (void*)*(int*)&(obj)->anim.parent);
+    if (Obj_IsLoadingLocked() != 0) {
+        effectPlacement =
+            (AppleOnTreePlacement*)Obj_AllocObjectSetup(APPLE_ON_TREE_PLACEMENT_SIZE, APPLE_ON_TREE_OBJECT_ID);
+        effectPlacement->base.color[0] = placement->base.color[0];
+        effectPlacement->base.color[2] = placement->base.color[2];
+        effectPlacement->base.color[1] = placement->base.color[1];
+        effectPlacement->base.color[3] = placement->base.color[3] - 10;
+        pathIndex = index;
+        effectPlacement->base.posX = state->ambientEffectPositions[pathIndex][0];
+        effectPlacement->base.posY = state->ambientEffectPositions[pathIndex][1];
+        effectPlacement->base.posZ = state->ambientEffectPositions[pathIndex][2];
+        effectPlacement->phaseDuration =
+            randomGetRange(SC_MUSIC_TREE_AMBIENT_EFFECT_PHASE_MIN, SC_MUSIC_TREE_AMBIENT_EFFECT_PHASE_MAX);
+        effectPlacement->initialElapsedTime = SC_MUSIC_TREE_AMBIENT_EFFECT_INITIAL_PHASE;
+        effectPlacement->growthEndFraction = SC_MUSIC_TREE_AMBIENT_EFFECT_GROWTH_END;
+        effectPlacement->ripeEndFraction = SC_MUSIC_TREE_AMBIENT_EFFECT_RIPE_END;
+        effectPlacement->fallEndFraction = SC_MUSIC_TREE_AMBIENT_EFFECT_FALL_END;
+        effectPlacement->landedEndFraction = SC_MUSIC_TREE_AMBIENT_EFFECT_LANDED_END;
+        effectPlacement->fadeEndFraction = SC_MUSIC_TREE_AMBIENT_EFFECT_FADE_END;
+        effectPlacement->unk25 = SC_MUSIC_TREE_AMBIENT_EFFECT_ACCELERATION;
+        effectPlacement->despawnGameBit = SC_MUSIC_TREE_AMBIENT_EFFECT_NO_DESPAWN_BIT;
+        effectPlacement->unk18 = 0;
+        state->ambientEffectHandles[pathIndex] =
+            (int)Obj_SetupObject(&effectPlacement->base, 5, -1, -1, (void*)*(int*)&obj->anim.parent);
     }
 }
 
-void sc_musictree_handleHitObject(GameObject* obj, int extra, int effectType)
-{
-    int id = ((ObjPlacement*)obj->anim.placementData)->mapId;
-    SCMusicTreeState* state = (SCMusicTreeState*)extra;
-    (void)effectType;
+void sc_musictree_handleHitObject(GameObject* obj, ScMusicTreeState* state, int unusedEffectType) {
+    int mapId = ((ObjPlacement*)obj->anim.placementData)->mapId;
 
-    switch (id)
-    {
-    case SC_MUSICTREE_MAP_TOTEM_1:
+    (void)unusedEffectType;
+
+    switch (mapId) {
+    case SC_MUSIC_TREE_MAP_TOTEM_1:
         Sfx_PlayFromObject((int)obj, SFXTRIG_sdrstp_c);
         Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
         mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_1, 1);
         break;
-    case SC_MUSICTREE_MAP_TOTEM_2:
+    case SC_MUSIC_TREE_MAP_TOTEM_2:
         Sfx_PlayFromObject((int)obj, SFXTRIG_en_sdrstp_c);
         Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
         mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_2, 1);
         break;
-    case SC_MUSICTREE_MAP_TOTEM_3:
+    case SC_MUSIC_TREE_MAP_TOTEM_3:
         Sfx_PlayFromObject((int)obj, SFXTRIG_en_sdrstp_c_12d);
         Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
         mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_3, 1);
         break;
-    case SC_MUSICTREE_MAP_GATE_1:
-        if ((u32)mainGetBit(GAMEBIT_MUSICTREE_GATE) != 0)
-            mainSetBits(0xc41, 1);
+    case SC_MUSIC_TREE_MAP_GATE_1:
+        if ((u32)mainGetBit(SC_MUSIC_TREE_GAMEBIT_GATE_ACTIVE) != 0) {
+            mainSetBits(SC_MUSIC_TREE_GAMEBIT_GATE_1, 1);
+        }
         break;
-    case SC_MUSICTREE_MAP_GATE_2:
-        if ((u32)mainGetBit(GAMEBIT_MUSICTREE_GATE) != 0)
-            mainSetBits(0xc43, 1);
+    case SC_MUSIC_TREE_MAP_GATE_2:
+        if ((u32)mainGetBit(SC_MUSIC_TREE_GAMEBIT_GATE_ACTIVE) != 0) {
+            mainSetBits(SC_MUSIC_TREE_GAMEBIT_GATE_2, 1);
+        }
         break;
-    case SC_MUSICTREE_MAP_GATE_3:
-        if ((u32)mainGetBit(GAMEBIT_MUSICTREE_GATE) != 0)
-            mainSetBits(0xc45, 1);
+    case SC_MUSIC_TREE_MAP_GATE_3:
+        if ((u32)mainGetBit(SC_MUSIC_TREE_GAMEBIT_GATE_ACTIVE) != 0) {
+            mainSetBits(SC_MUSIC_TREE_GAMEBIT_GATE_3, 1);
+        }
         break;
     }
-    state->animSpeed = 0.0225f;
+    state->animationStep = 0.0225f;
 }
 
-int sc_musictree_getExtraSize(void) { return 0x50; }
-int sc_musictree_getObjectTypeId(void) { return 0x0; }
-
-void sc_musictree_free(void)
-{
+int sc_musictree_getExtraSize(void) {
+    return sizeof(ScMusicTreeState);
 }
 
-void sc_musictree_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    int* def = *(int**)&obj->anim.placementData;
-    SCMusicTreeState* state = obj->extra;
+int sc_musictree_getObjectTypeId(void) {
+    return 0;
+}
+
+void sc_musictree_free(void) {
+}
+
+void sc_musictree_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    ScMusicTreePlacement* placement = (ScMusicTreePlacement*)obj->anim.placementData;
+    ScMusicTreeState* stateCursor = obj->extra;
     int i;
-    if (visible == 0) return;
-    objSetColorFilter(((ScMusictreePlacement*)def)->colorR, ((ScMusictreePlacement*)def)->colorG,
-                 ((ScMusictreePlacement*)def)->colorB);
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-    if ((state->flags & SCMUSICTREE_FLAG_SATELLITES) != 0)
-    {
-        for (i = 0; i < 3; i++)
-        {
-            ObjPath_GetPointWorldPosition(obj, i,
-                                          &state->pathPoint[0][0],
-                                          &state->pathPoint[0][1],
-                                          &state->pathPoint[0][2],
-                                          0);
-            state = (SCMusicTreeState*)&state->pathPoint[0][0];
+
+    if (visible == 0) {
+        return;
+    }
+    objSetColorFilter(placement->colorR, placement->colorG, placement->colorB);
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    if ((stateCursor->flags & SC_MUSIC_TREE_FLAG_SATELLITES) != 0) {
+        for (i = 0; i < SC_MUSIC_TREE_AMBIENT_EFFECT_COUNT; i++) {
+            ObjPath_GetPointWorldPosition(obj, i, &stateCursor->ambientEffectPositions[0][0],
+                                          &stateCursor->ambientEffectPositions[0][1],
+                                          &stateCursor->ambientEffectPositions[0][2], 0);
+            stateCursor = (ScMusicTreeState*)&stateCursor->ambientEffectPositions[0][0];
         }
     }
     obj->userData2 = 1;
 }
 
-void sc_musictree_hitDetect(void)
-{
+void sc_musictree_hitDetect(void) {
 }
 
-void sc_musictree_update(GameObject* obj)
-{
-    int inner = *(int*)&obj->extra;
-    f32 stk[7];
-    f32 vec[3];
-    f32 vec2[3];
-    int rcType;
-    int hr1, hr2, hr3;
+void sc_musictree_update(GameObject* obj) {
+    ScMusicTreeState* state = obj->extra;
+    ObjAnimEventList animEvents;
+    f32 hitPosition[3];
+    f32 effectPosition[3];
+    int hitType;
+    int hitObject, hitSphereIndex, hitVolume;
     int i;
-    int* p;
-    int* q;
+    int* ambientEffectCursor;
+    int* pathPointCursor;
 
-    ObjAnim_AdvanceCurrentMove((int)obj, ((ScMusictreeState*)inner)->moveStepScale, timeDelta,
-                               (ObjAnimEventList*)&stk);
-    if (((ScMusictreeState*)inner)->flags == 0)
-    {
+    ObjAnim_AdvanceCurrentMove((int)obj, state->animationStep, timeDelta, &animEvents);
+    if (state->flags == 0) {
         return;
     }
-    if (((CloudRunnerState*)inner)->baddie.velY > 0.0f)
-    {
-        ((CloudRunnerState*)inner)->baddie.velY = ((CloudRunnerState*)inner)->baddie.velY - timeDelta;
+    if (state->proximityCooldown > 0.0f) {
+        state->proximityCooldown = state->proximityCooldown - timeDelta;
     }
-    if (((ScMusictreeState*)inner)->moveStepScale > 0.0025f)
-    {
-        ((ScMusictreeState*)inner)->moveStepScale = ((ScMusictreeState*)inner)->moveStepScale - 0.001f;
+    if (state->animationStep > 0.0025f) {
+        state->animationStep = state->animationStep - 0.001f;
     }
-    if ((((ScMusictreeState*)inner)->flags & SCMUSICTREE_FLAG_SATELLITES) && obj->userData2 != 0)
-    {
-        for (i = 0, p = (int*)inner, q = (int*)inner; i < 3; i++)
-        {
-            if (*(void**)p == NULL)
-            {
-                sc_musictree_spawnAmbientEffect(obj, inner, framesThisStep, i);
-            }
-            else
-            {
-                int r = (*(int (**)(int))(*(int*)(*(int*)&((GameObject*)*p)->anim.dll) + 0x28))(*p);
-                if (r > 3)
-                {
-                    *p = 0;
-                }
-                else
-                {
-                    (*(void (**)(int, int))(*(int*)(*(int*)&((GameObject*)*p)->anim.dll) + 0x24))(*p, (int)q + 0xc);
+    if (((state->flags & SC_MUSIC_TREE_FLAG_SATELLITES) != 0) && (obj->userData2 != 0)) {
+        for (i = 0, ambientEffectCursor = (int*)state, pathPointCursor = (int*)state;
+             i < SC_MUSIC_TREE_AMBIENT_EFFECT_COUNT; i++) {
+            if (*(void**)ambientEffectCursor == NULL) {
+                sc_musictree_spawnAmbientEffect(obj, state, framesThisStep, i);
+            } else {
+                int ambientEffectState = (*(int (**)(int))(
+                    *(int*)(*(int*)&((GameObject*)*ambientEffectCursor)->anim.dll) + 0x28))(*ambientEffectCursor);
+                if (ambientEffectState > 3) {
+                    *ambientEffectCursor = 0;
+                } else {
+                    (*(void (**)(int, int))(*(int*)(*(int*)&((GameObject*)*ambientEffectCursor)->anim.dll) + 0x24))(
+                        *ambientEffectCursor,
+                        (int)pathPointCursor + offsetof(ScMusicTreeState, ambientEffectPositions));
                 }
             }
-            p = (int*)((char*)p + 4);
-            q = (int*)((char*)q + 0xc);
+            ambientEffectCursor = (int*)((char*)ambientEffectCursor + sizeof(*ambientEffectCursor));
+            pathPointCursor = (int*)((char*)pathPointCursor + sizeof(state->ambientEffectPositions[0]));
         }
     }
-    if ((((ScMusictreeState*)inner)->flags & SCMUSICTREE_FLAG_HIT_ACTIVE) != 0)
-    {
-    if (((ScMusictreeState*)inner)->flags & (SCMUSICTREE_FLAG_PRIORITY_HIT | SCMUSICTREE_FLAG_SATELLITES))
-    {
-        rcType = ObjHits_GetPriorityHitWithPosition(obj, &hr1, &hr2, (u32*)&hr3, &vec[0],
-                                                    &vec[1], &vec[2]);
-    }
-    else
-    {
-        rcType = ObjHits_PollPriorityHitEffectWithCooldown(obj, 8, 0xff, 0xff, 0x78, 0x129,
-                                                           (f32*)(inner + 0x44));
-    }
-    if (((CloudRunnerState*)inner)->baddie.velZ >= 0.0f)
-    {
-        ((CloudRunnerState*)inner)->baddie.velZ = ((CloudRunnerState*)inner)->baddie.velZ - timeDelta;
-    }
-    if (rcType != 0 && rcType != 0x11 && ((CloudRunnerState*)inner)->baddie.velZ <= 0.0f)
-    {
-    if (((ScMusictreeState*)inner)->flags & (SCMUSICTREE_FLAG_PRIORITY_HIT | SCMUSICTREE_FLAG_SATELLITES))
-    {
-        vec[0] = vec[0] + playerMapOffsetX;
-        vec[2] = vec[2] + playerMapOffsetZ;
-        objLightFn_8009a1dc((void*)obj, 0.014f, vec2, 1, 0);
-        Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
-        sc_musictree_handleHitObject(obj, inner, ((ScMusictreeState*)inner)->flags & 0xf);
-    }
-    else
-    {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_swdtest222);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
-    }
-    {
-        f32 zero = 0.0f;
-        vec[0] = zero;
-        vec[1] = 200.0f * ((CloudRunnerState*)inner)->baddie.velX;
-        vec[2] = zero;
-        objfx_spawnRandomBurst(obj, ((ScMusictreeState*)inner)->flags & 0xf, 0x14, vec2,
-                               80.0f * ((CloudRunnerState*)inner)->baddie.velX, 0);
-    }
-    ((ScMusictreeState*)inner)->moveStepScale = 0.0225f;
-    ((CloudRunnerState*)inner)->baddie.velZ = 20.0f;
-    if (((ScMusictreeState*)inner)->flags & SCMUSICTREE_FLAG_SATELLITES)
-    {
-        int* pp;
-        int idx;
-        for (idx = 0, pp = (int*)inner; idx < 3; idx++)
-        {
-            int rc = *pp;
-            if ((u32)rc != 0)
+    if ((state->flags & SC_MUSIC_TREE_FLAG_HIT_ACTIVE) != 0) {
+        if ((state->flags & (SC_MUSIC_TREE_FLAG_PRIORITY_HIT | SC_MUSIC_TREE_FLAG_SATELLITES)) != 0) {
+            hitType = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, (u32*)&hitVolume,
+                                                         &hitPosition[0], &hitPosition[1], &hitPosition[2]);
+        } else {
+            hitType = ObjHits_PollPriorityHitEffectWithCooldown(
+                obj, SC_MUSIC_TREE_HIT_EFFECT_MODE, SC_MUSIC_TREE_HIT_EFFECT_RED, SC_MUSIC_TREE_HIT_EFFECT_GREEN,
+                SC_MUSIC_TREE_HIT_EFFECT_BLUE, SFXTRIG_swdtest222, &state->hitEffectCooldown);
+        }
+        if (state->hitCooldown >= 0.0f) {
+            state->hitCooldown = state->hitCooldown - timeDelta;
+        }
+        if ((hitType != 0) && (hitType != OBJHITREACT_COLLISION_SKIP_REACTION) && (state->hitCooldown <= 0.0f)) {
+            if ((state->flags & (SC_MUSIC_TREE_FLAG_PRIORITY_HIT | SC_MUSIC_TREE_FLAG_SATELLITES)) != 0) {
+                hitPosition[0] = hitPosition[0] + playerMapOffsetX;
+                hitPosition[2] = hitPosition[2] + playerMapOffsetZ;
+                objLightFn_8009a1dc((void*)obj, 0.014f, effectPosition, 1, 0);
+                Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
+                sc_musictree_handleHitObject(obj, state, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK);
+            } else {
+                Sfx_PlayFromObject((int)obj, SFXTRIG_swdtest222);
+                Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
+            }
             {
-                int rr = (*(int (**)(int))(*(int*)(*(int*)&((GameObject*)rc)->anim.dll) + 0x28))(rc);
-                if (rr > 1)
-                {
-                    ObjHits_RecordObjectHit((GameObject*)*pp, obj, 0xe, 1, 0);
+                f32 zero = 0.0f;
+                hitPosition[0] = zero;
+                hitPosition[1] = 200.0f * state->effectScale;
+                hitPosition[2] = zero;
+                objfx_spawnRandomBurst(obj, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK, 0x14, effectPosition,
+                                       80.0f * state->effectScale, 0);
+            }
+            state->animationStep = 0.0225f;
+            state->hitCooldown = 20.0f;
+            if ((state->flags & SC_MUSIC_TREE_FLAG_SATELLITES) != 0) {
+                int* ambientEffect;
+                int index;
+                for (index = 0, ambientEffect = (int*)state; index < SC_MUSIC_TREE_AMBIENT_EFFECT_COUNT; index++) {
+                    int handle = *ambientEffect;
+                    if ((u32)handle != 0) {
+                        int ambientEffectState =
+                            (*(int (**)(int))(*(int*)(*(int*)&((GameObject*)handle)->anim.dll) + 0x28))(handle);
+                        if (ambientEffectState > 1) {
+                            ObjHits_RecordObjectHit((GameObject*)*ambientEffect, obj, 0xE, 1, 0);
+                        }
+                    }
+                    ambientEffect = (int*)((char*)ambientEffect + sizeof(*ambientEffect));
                 }
             }
-            pp = (int*)((char*)pp + 4);
         }
-    }
-    }
     }
     {
-        void* player = Obj_GetPlayerObject();
-        f32 dx = obj->anim.localPosX - ((GameObject*)player)->anim.localPosX;
-        f32 dz = obj->anim.localPosZ - ((GameObject*)player)->anim.localPosZ;
-        f32 dist = sqrtf(dx * dx + dz * dz);
-        u16 distU16 = dist;
-        if (distU16 < ((ScMusictreeState*)inner)->hearRadius
-        )
-        {
-            if ((((ScMusictreeState*)inner)->flags & SCMUSICTREE_FLAG_APPROACH_BURST)
-                && ((ScMusictreeState*)inner)->previousDistance >= ((ScMusictreeState*)inner)->hearRadius && ((
-                CloudRunnerState*)inner)->baddie.velY <= 0.0f
-            )
-            {
-                vec[0] = 0.0f;
-                vec[1] = 0.75f * (200.0f * ((CloudRunnerState*)inner)->baddie.velX);
-                vec[2] = 0.0f;
-                objfx_spawnRandomBurst(obj, ((ScMusictreeState*)inner)->flags & 0xf, 0xa, vec2,
-                                       80.0f * ((CloudRunnerState*)inner)->baddie.velX, 1);
-                ((CloudRunnerState*)inner)->baddie.velY = 340.0f;
+        GameObject* player = Obj_GetPlayerObject();
+        f32 deltaX = obj->anim.localPosX - player->anim.localPosX;
+        f32 deltaZ = obj->anim.localPosZ - player->anim.localPosZ;
+        f32 distance = sqrtf(deltaX * deltaX + deltaZ * deltaZ);
+        u16 distanceU16 = distance;
+        if (distanceU16 < state->hearRadius) {
+            if (((state->flags & SC_MUSIC_TREE_FLAG_APPROACH_BURST) != 0) &&
+                (state->previousDistance >= state->hearRadius) && (state->proximityCooldown <= 0.0f)) {
+                hitPosition[0] = 0.0f;
+                hitPosition[1] = 0.75f * (200.0f * state->effectScale);
+                hitPosition[2] = 0.0f;
+                objfx_spawnRandomBurst(obj, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK, 0xA, effectPosition,
+                                       80.0f * state->effectScale, 1);
+                state->proximityCooldown = 340.0f;
             }
-            ((ScMusictreeState*)inner)->proximityBurstTimer = ((ScMusictreeState*)inner)->proximityBurstTimer - timeDelta;
-            if (((ScMusictreeState*)inner)->proximityBurstTimer <= 0.0f)
-            {
-                f32* rv;
-                *(rv = &vec[0]) = 0.0f;
-                vec[1] = 200.0f * ((CloudRunnerState*)inner)->baddie.velX;
-                vec[2] = 0.0f;
-                vecRotateZXY(&obj->anim.rotX, rv);
-                objfx_spawnRandomBurst(obj, ((ScMusictreeState*)inner)->flags & 0xf, 1, vec2,
-                                       80.0f * ((CloudRunnerState*)inner)->baddie.velX, 0);
-                ((ScMusictreeState*)inner)->proximityBurstTimer += 30.0f;
+            state->proximityBurstTimer = state->proximityBurstTimer - timeDelta;
+            if (state->proximityBurstTimer <= 0.0f) {
+                f32* rotatedBurstVector;
+                *(rotatedBurstVector = &hitPosition[0]) = 0.0f;
+                hitPosition[1] = 200.0f * state->effectScale;
+                hitPosition[2] = 0.0f;
+                vecRotateZXY(&obj->anim.rotX, rotatedBurstVector);
+                objfx_spawnRandomBurst(obj, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK, 1, effectPosition,
+                                       80.0f * state->effectScale, 0);
+                state->proximityBurstTimer += 30.0f;
             }
         }
-        ((ScMusictreeState*)inner)->previousDistance = distU16;
+        state->previousDistance = distanceU16;
     }
 }
 
-void sc_musictree_init(GameObject* obj, SCMusicTreeSetup* setup)
-{
-    SCMusicTreeState* state = obj->extra;
-    f32 stk[7];
+void sc_musictree_init(GameObject* obj, ScMusicTreePlacement* placement) {
+    ScMusicTreeState* state = obj->extra;
+    ObjAnimEventList animEvents;
     f32 ratio;
     f32 zero;
 
-    state->animSpeed = 0.0025f;
+    state->animationStep = 0.0025f;
     zero = 0.0f;
     state->proximityBurstTimer = zero;
-    state->hearRadius = (u16)((u32)setup->hearRadiusHalf << 1);
-    state->flags = setup->flags;
+    state->hearRadius = (u16)((u32)placement->hearRadiusHalf << 1);
+    state->flags = placement->flags;
     state->proximityCooldown = zero;
-    state->scale = setup->scale;
-    obj->anim.rotZ = (s16)((setup->rotXByte - 0x7f) << 7);
-    obj->anim.rotY = (s16)((setup->rotZByte - 0x7f) << 7);
-    obj->anim.rotX = (s16)((u32)setup->yawByte << 8);
-    obj->anim.rootMotionScale = 3.6f * setup->scale;
+    state->effectScale = placement->scale;
+    obj->anim.rotZ = (s16)((placement->rotZByte - 0x7F) << 7);
+    obj->anim.rotY = (s16)((placement->rotYByte - 0x7F) << 7);
+    obj->anim.rotX = (s16)((u32)placement->rotXByte << 8);
+    obj->anim.rootMotionScale = 3.6f * placement->scale;
     obj->userData2 = 0;
-    obj->objectFlags = (u16)(obj->objectFlags | SCMUSICTREE_OBJFLAG_HITDETECT_DISABLED);
-    ratio = (f32)(s32)
-    randomGetRange(1, 99) / 100.0f;
+    obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
+    ratio = (f32)(s32)randomGetRange(1, 99) / 100.0f;
     ObjAnim_SetCurrentMove((int)obj, 0, ratio, 0);
-    ObjAnim_AdvanceCurrentMove((int)obj, 1.0f, 1.0f,
-                                                                (ObjAnimEventList*)&stk);
-    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (s32)(15.0f * state->scale), -5, 0xff);
-    if (state->flags & SCMUSICTREE_FLAG_SATELLITES)
-    {
-        state->flags = state->flags | SCMUSICTREE_FLAG_HIT_ACTIVE;
+    ObjAnim_AdvanceCurrentMove((int)obj, 1.0f, 1.0f, &animEvents);
+    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (s32)(15.0f * state->effectScale), -5, 0xFF);
+    if ((state->flags & SC_MUSIC_TREE_FLAG_SATELLITES) != 0) {
+        state->flags = state->flags | SC_MUSIC_TREE_FLAG_HIT_ACTIVE;
     }
 }
 
-void sc_musictree_release(void)
-{
+void sc_musictree_release(void) {
 }
 
-void sc_musictree_initialise(void)
-{
+void sc_musictree_initialise(void) {
 }
 
 ObjectDescriptor gSC_MusicTreeObjDescriptor = {
