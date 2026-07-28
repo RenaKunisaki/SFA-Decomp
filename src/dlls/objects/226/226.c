@@ -898,10 +898,8 @@ ObjectDescriptor23 gStaffObjDescriptor = {
     (ObjectDescriptorCallback)staff_getSwipeTextureIndex,
 };
 
-u32 lbl_80320978[] = {
-    0xFF202020,
-    0xFF202020,
-    0xFF000000,
+u8 gFireballLightColors[4][3] = {
+    {0xFF, 0x20, 0x20}, {0x20, 0xFF, 0x20}, {0x20, 0x20, 0xFF}, {0x00, 0x00, 0x00},
 };
 
 
