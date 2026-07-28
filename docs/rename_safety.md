@@ -65,12 +65,23 @@ Renames are **not** byte-neutral and `tools/byteneutral.py` cannot gate them
 1. `python3 tools/pairing_check.py --refs <oldname>` — get the blast radius.
 2. Rename in **both** `config/GSAE01/symbols.txt` and every C occurrence.
 3. `tools/locked_ninja.sh` as its **own step**; read EXIT before continuing.
-   ⚠️ Then rebuild every touched **DLL** object **by name** —
-   `tools/locked_ninja.sh build/GSAE01/src/dlls/<...>.o`. The bare invocation
-   does not build DLL objects, so after a rename the splitter has already
-   re-carved the retail side with the new name while your own object still
-   holds the old one. That is a *complete, correct* rename measuring as a total
-   collapse. Measured on `linkDrawFn_801302c0` in `dlls/engine/60`:
+   ⚠️ Then rebuild **every touched object by name** —
+   `tools/locked_ninja.sh build/GSAE01/src/<...>.o`. Because the re-carve is an
+   undeclared side effect (see above), **ninja has no dependency edge telling it
+   our objects are stale relative to the retail side**, so it will happily leave
+   them alone: the splitter re-carves retail with the new name while your own
+   object still holds the old one. That is a *complete, correct* rename
+   measuring as a total collapse.
+
+   This is NOT only a DLL problem — DLL objects are additionally missing from
+   the default target graph, but the staleness bites anywhere. Observed live on
+   `main/shader.c` after someone else's rename: `pairing_check.py` reported four
+   retail-only symbols and the unit read **90.49737**; a single
+   `locked_ninja.sh build/GSAE01/src/main/shader.o` restored it to **99.43728**
+   and the tree-wide count returned to the expected 2. Nothing was ever wrong
+   with that rename.
+
+   Measured four ways on `linkDrawFn_801302c0` in `dlls/engine/60`:
 
    | state | unitfuzzy |
    |---|---|
