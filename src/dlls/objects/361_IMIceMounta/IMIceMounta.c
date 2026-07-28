@@ -45,8 +45,7 @@
 
 typedef int (*IMIceMountainGetPlayerModeFn)(GameObject* player);
 
-void IMIceMountain_enterWorldMap(GameObject* obj)
-{
+void IMIceMountain_enterWorldMap(GameObject* obj) {
     IMIceMountainState* state = obj->extra;
     s32 playerMode;
     GameObject* player;
@@ -54,25 +53,18 @@ void IMIceMountain_enterWorldMap(GameObject* obj)
     mainSetBits(GAMEBIT_IM_BikeRelated03A3, 0);
     mainSetBits(GAMEBIT_IM_BikeRelated03A2, 0);
     player = playerGetFocusObject(Obj_GetPlayerObject());
-    if (player != NULL)
-    {
+    if (player != NULL) {
         playerMode =
-            (*(IMIceMountainGetPlayerModeFn*)((u8*)*player->anim.dll +
-                                              IM_ICE_MOUNTAIN_PLAYER_VTABLE_GET_MODE))(player);
-    }
-    else
-    {
+            (*(IMIceMountainGetPlayerModeFn*)((u8*)*player->anim.dll + IM_ICE_MOUNTAIN_PLAYER_VTABLE_GET_MODE))(player);
+    } else {
         playerMode = 0;
     }
     lockLevel(mapGetDirIdx(IM_ICE_MOUNTAIN_MAP_DIRECTORY), 1);
-    if (playerMode == IM_ICE_MOUNTAIN_PLAYER_MODE_WORLDMAP)
-    {
+    if (playerMode == IM_ICE_MOUNTAIN_PLAYER_MODE_WORLDMAP) {
         (*gGameUIInterface)->setShowWorldMapHud(1);
         state->eventState = IM_ICE_MOUNTAIN_HUD_STATE_WORLDMAP;
         mainSetBits(GAMEBIT_IMRelated037B, 1);
-    }
-    else
-    {
+    } else {
         state->eventState = IM_ICE_MOUNTAIN_HUD_STATE_HIDDEN;
         mainSetBits(GAMEBIT_IMRelated00CE, 1);
     }
@@ -80,39 +72,30 @@ void IMIceMountain_enterWorldMap(GameObject* obj)
     mainSetBits(GAMEBIT_IM_BikeRelated03B9, 0);
 }
 
-void IMIceMountain_exitWorldMap(GameObject* obj, IMIceMountainState* state)
-{
+void IMIceMountain_exitWorldMap(GameObject* obj, IMIceMountainState* state) {
     s32 playerMode;
     GameObject* player;
 
     (*gGameUIInterface)->setShowWorldMapHud(0);
-    if (mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0)
-    {
+    if (mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0) {
         mainSetBits(GAMEBIT_IM_BikeRelated03A3, 0);
         mainSetBits(GAMEBIT_IM_BikeRelated03A2, 0);
         mainSetBits(GAMEBIT_IM_BikeRelated0378, 0);
         mainSetBits(GAMEBIT_IM_BikeRelated03B9, 0);
         player = playerGetFocusObject(Obj_GetPlayerObject());
-        if (player != NULL)
-        {
-            playerMode =
-                (*(IMIceMountainGetPlayerModeFn*)((u8*)*player->anim.dll +
-                                                  IM_ICE_MOUNTAIN_PLAYER_VTABLE_GET_MODE))(player);
-        }
-        else
-        {
+        if (player != NULL) {
+            playerMode = (*(IMIceMountainGetPlayerModeFn*)((u8*)*player->anim.dll +
+                                                           IM_ICE_MOUNTAIN_PLAYER_VTABLE_GET_MODE))(player);
+        } else {
             playerMode = 0;
         }
         mainSetBits(GAMEBIT_TrickyWarpEnabled, 1);
         (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 1);
-        if (playerMode == IM_ICE_MOUNTAIN_PLAYER_MODE_WORLDMAP)
-        {
+        if (playerMode == IM_ICE_MOUNTAIN_PLAYER_MODE_WORLDMAP) {
             (*gGameUIInterface)->setShowWorldMapHud(1);
             state->eventState = IM_ICE_MOUNTAIN_HUD_STATE_WORLDMAP;
             mainSetBits(GAMEBIT_IM_BikeRelated0379, 1);
-        }
-        else
-        {
+        } else {
             state->eventState = IM_ICE_MOUNTAIN_HUD_STATE_HIDDEN;
             mainSetBits(0xcb, 1);
         }
@@ -136,46 +119,37 @@ ObjectDescriptor gIMIceMountainObjDescriptor = {
     (ObjectDescriptorExtraSizeCallback)IMIceMountain_getExtraSize,
 };
 
-void IMIceMountain_updateEventState(GameObject* obj)
-{
+void IMIceMountain_updateEventState(GameObject* obj) {
     IMIceMountainState* state = obj->extra;
 
-    switch (state->eventState)
-    {
+    switch (state->eventState) {
     case 7:
-        if (mainGetBit(GAMEBIT_IM_TrickyRelated006E) != 0)
-        {
+        if (mainGetBit(GAMEBIT_IM_TrickyRelated006E) != 0) {
             state->eventState = 1;
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 2, 0);
         }
         break;
     case 1:
-        if (mainGetBit(GAMEBIT_IM_CannonGuy1Dead) != 0 && mainGetBit(GAMEBIT_IM_CannonGuy2Dead) != 0)
-        {
+        if (mainGetBit(GAMEBIT_IM_CannonGuy1Dead) != 0 && mainGetBit(GAMEBIT_IM_CannonGuy2Dead) != 0) {
             mainSetBits(GAMEBIT_IM_SwitchVisible, 1);
             state->eventState = 2;
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0xb, 1);
-        }
-        else if (mainGetBit(GAMEBIT_IM_RescuedTricky) != 0)
-        {
+        } else if (mainGetBit(GAMEBIT_IM_RescuedTricky) != 0) {
             state->eventState = 2;
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0xb, 1);
         }
         break;
     case 2:
-        if (mainGetBit(GAMEBIT_IM_RescuedTricky) != 0)
-        {
+        if (mainGetBit(GAMEBIT_IM_RescuedTricky) != 0) {
             state->eventState = 3;
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 1);
         }
         break;
     case 3:
-        if (mainGetBit(GAMEBIT_IM_RaceStarted) != 0)
-        {
+        if (mainGetBit(GAMEBIT_IM_RaceStarted) != 0) {
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0, 0);
         }
-        if (mainGetBit(GAMEBIT_IM_BikeRelated03A2) != 0)
-        {
+        if (mainGetBit(GAMEBIT_IM_BikeRelated03A2) != 0) {
             state->eventState = 4;
             mainSetBits(GAMEBIT_IM_DestroyedBox1, 1);
             mainSetBits(GAMEBIT_IM_DestroyedBox2, 1);
@@ -193,8 +167,7 @@ void IMIceMountain_updateEventState(GameObject* obj)
             mainSetBits(GAMEBIT_IM_BikeRelated0E6A, 1);
             mainSetBits(GAMEBIT_IM_BikeRelated0E6B, 1);
         }
-        if (obj->userData1 == 0)
-        {
+        if (obj->userData1 == 0) {
             getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_A, 0);
             getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_B, 0);
             getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_C, 0);
@@ -210,8 +183,7 @@ void IMIceMountain_updateEventState(GameObject* obj)
         IMIceMountain_exitWorldMap(obj, state);
         break;
     case 5:
-        if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK) != 0)
-        {
+        if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK) != 0) {
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 3, 0);
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 4, 0);
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 0);
@@ -221,14 +193,11 @@ void IMIceMountain_updateEventState(GameObject* obj)
         }
         break;
     case 6:
-        if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK) != 0)
-        {
+        if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK) != 0) {
             state->warpCountdown = 2;
         }
-        if (state->warpCountdown > 0)
-        {
-            if (--state->warpCountdown == 0)
-            {
+        if (state->warpCountdown > 0) {
+            if (--state->warpCountdown == 0) {
                 mainSetBits(GAMEBIT_TrickyWarpEnabled, 0);
                 warpToMap(IM_ICE_MOUNTAIN_EXIT_MAP, 0);
             }
@@ -237,16 +206,13 @@ void IMIceMountain_updateEventState(GameObject* obj)
     }
 }
 
-int IMIceMountain_sequenceCallback(GameObject* obj, int unused, const ObjAnimUpdateState* animUpdate)
-{
+int IMIceMountain_sequenceCallback(GameObject* obj, int unused, const ObjAnimUpdateState* animUpdate) {
     IMIceMountainState* state = obj->extra;
     int i;
 
     state->gameBitLatch.activeMask |= IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK;
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
-        if (animUpdate->eventIds[i] == IM_ICE_MOUNTAIN_SEQUENCE_EVENT_ID)
-        {
+    for (i = 0; i < animUpdate->eventCount; i++) {
+        if (animUpdate->eventIds[i] == IM_ICE_MOUNTAIN_SEQUENCE_EVENT_ID) {
             mainSetBits(GAMEBIT_IM_BikeRelated0378, 0);
             mainSetBits(GAMEBIT_IM_BikeRelated03B9, 0);
         }
@@ -254,55 +220,44 @@ int IMIceMountain_sequenceCallback(GameObject* obj, int unused, const ObjAnimUpd
     return 0;
 }
 
-int IMIceMountain_getExtraSize(void)
-{
+int IMIceMountain_getExtraSize(void) {
     return sizeof(IMIceMountainState);
 }
 
-int IMIceMountain_getObjectTypeId(void)
-{
+int IMIceMountain_getObjectTypeId(void) {
     return 0;
 }
 
-void IMIceMountain_free(void)
-{
+void IMIceMountain_free(void) {
 }
 
-void IMIceMountain_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
-                          s8 visible)
-{
+void IMIceMountain_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 v = visible;
 
-    if (v != 0)
-    {
+    if (v != 0) {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
-void IMIceMountain_hitDetect(void)
-{
+void IMIceMountain_hitDetect(void) {
 }
 
-void IMIceMountain_update(GameObject* obj)
-{
+void IMIceMountain_update(GameObject* obj) {
     IMIceMountainState* state = obj->extra;
 
-    if (obj->userData1 == 0)
-    {
+    if (obj->userData1 == 0) {
         getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_A, 0);
         getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_B, 0);
         getEnvfxAct(obj, obj, IM_ICE_MOUNTAIN_ENVFX_D, 0);
         (*gCloudActionInterface)->func09Nop(1);
         obj->userData1 = 1;
     }
-    switch (state->mapAct)
-    {
+    switch (state->mapAct) {
     case 1:
         IMIceMountain_updateEventState(obj);
         break;
     case 2:
-        if (mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0)
-        {
+        if (mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0) {
             IMIceMountain_enterWorldMap(obj);
         }
         break;
@@ -311,97 +266,74 @@ void IMIceMountain_update(GameObject* obj)
         break;
     }
     state->gameBitLatch.activeMask &= ~IM_ICE_MOUNTAIN_SEQUENCE_LATCH_MASK;
-    if (state->warningTextTimer > 0.0f)
-    {
+    if (state->warningTextTimer > 0.0f) {
         gameTextSetColor(0xFF, 0xFF, 0xFF, 0xFF);
         gameTextShow(IM_ICE_MOUNTAIN_WARNING_TEXT_ID);
         state->warningTextTimer -= timeDelta;
-        if (state->warningTextTimer < 0.0f)
-        {
+        if (state->warningTextTimer < 0.0f) {
             state->warningTextTimer = 0.0f;
         }
     }
-    if ((*gSkyInterface)->getSunPosition(NULL) != 0)
-    {
-        if (state->musicTrack != -1)
-        {
+    if ((*gSkyInterface)->getSunPosition(NULL) != 0) {
+        if (state->musicTrack != -1) {
             state->musicTrack = -1;
-            if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK) != 0)
-            {
+            if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK) != 0) {
                 Music_Trigger(MUSICTRIG_galleon_docks, 0);
             }
         }
-    }
-    else
-    {
-        if (state->musicTrack != MUSICTRIG_galleon_docks)
-        {
+    } else {
+        if (state->musicTrack != MUSICTRIG_galleon_docks) {
             state->musicTrack = MUSICTRIG_galleon_docks;
-            if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK) != 0)
-            {
+            if ((state->gameBitLatch.activeMask & IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK) != 0) {
                 Music_Trigger(MUSICTRIG_galleon_docks, 1);
             }
         }
     }
-    SCGameBitLatch_Update(&state->gameBitLatch, 2, GAMEBIT_IM_TrickyRelated02C1, 568,
-                          GAMEBIT_IM_TrickyRelated01ED, 178);
-    SCGameBitLatch_Update(&state->gameBitLatch, 16, 442, GAMEBIT_IM_TrickyRelated01B9,
-                          GAMEBIT_IM_TrickyRelated01D6, 180);
+    SCGameBitLatch_Update(&state->gameBitLatch, 2, GAMEBIT_IM_TrickyRelated02C1, 568, GAMEBIT_IM_TrickyRelated01ED,
+                          178);
+    SCGameBitLatch_Update(&state->gameBitLatch, 16, 442, GAMEBIT_IM_TrickyRelated01B9, GAMEBIT_IM_TrickyRelated01D6,
+                          180);
     SCGameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, GAMEBIT_IM_WaterRelated03A0, 233);
-    SCGameBitLatch_Update(&state->gameBitLatch, IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK, -1, -1,
-                          GAMEBIT_IM_Done, state->musicTrack);
+    SCGameBitLatch_Update(&state->gameBitLatch, IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK, -1, -1, GAMEBIT_IM_Done,
+                          state->musicTrack);
 }
 
-void IMIceMountain_init(GameObject* obj)
-{
+void IMIceMountain_init(GameObject* obj) {
     IMIceMountainState* state = obj->extra;
     u8 i;
 
     obj->animEventCallback = IMIceMountain_sequenceCallback;
-    for (i = 1; i <= IM_ICE_MOUNTAIN_GAME_BIT_RESET_COUNT; i++)
-    {
+    for (i = 1; i <= IM_ICE_MOUNTAIN_GAME_BIT_RESET_COUNT; i++) {
         gameBitFn_800ea2e0(i);
     }
     state->warningTextTimer = IM_ICE_MOUNTAIN_WARNING_DURATION;
     (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 0);
     (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 5, 1);
     unlockLevel(0, 0, 1);
-    if (mainGetBit(GAMEBIT_IM_BikeRelated0379) != 0)
-    {
+    if (mainGetBit(GAMEBIT_IM_BikeRelated0379) != 0) {
         (*gMapEventInterface)->setMapAct(obj->anim.mapEventSlot, 2);
     }
     state->mapAct = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
-    switch (state->mapAct)
-    {
+    switch (state->mapAct) {
     case 1:
-        if (mainGetBit(GAMEBIT_IM_RaceStarted) != 0)
-        {
-            if (mainGetBit(GAMEBIT_IM_BikeRelated0379) != 0)
-            {
+        if (mainGetBit(GAMEBIT_IM_RaceStarted) != 0) {
+            if (mainGetBit(GAMEBIT_IM_BikeRelated0379) != 0) {
                 state->eventState = 5;
-            }
-            else
-            {
+            } else {
                 mainSetBits(GAMEBIT_IM_BikeRelated03A3, 0);
                 mainSetBits(GAMEBIT_IM_BikeRelated03A2, 0);
                 mainSetBits(0xcb, 0);
                 mainSetBits(GAMEBIT_IM_BikeRelated0379, 0);
                 state->eventState = 3;
             }
-        }
-        else
-        {
+        } else {
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0, 1);
-            if (mainGetBit(GAMEBIT_IM_CannonGuy1Dead) != 0 && mainGetBit(GAMEBIT_IM_CannonGuy2Dead) != 0)
-            {
+            if (mainGetBit(GAMEBIT_IM_CannonGuy1Dead) != 0 && mainGetBit(GAMEBIT_IM_CannonGuy2Dead) != 0) {
                 (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 0xb, 1);
             }
-            if (mainGetBit(GAMEBIT_IM_TrickyRelated006E) != 0)
-            {
+            if (mainGetBit(GAMEBIT_IM_TrickyRelated006E) != 0) {
                 state->eventState = 1;
-            }
-            else
-            {
+            } else {
                 (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 2, 1);
                 state->eventState = 7;
             }
