@@ -6582,7 +6582,6 @@ STATIC_ASSERT(offsetof(ObjSeqRuntimeStorage, actions) == 0x3c4c);
 void ObjSeq_onMapSetup(void)
 {
     u8* base = gObjSeqRuntimeBuffer;
-    u8* flagsB;
     u8* flagsA;
     s16* modes;
     u8* actions;
@@ -6594,6 +6593,7 @@ void ObjSeq_onMapSetup(void)
     u8* counts;
     int* handles;
     u8* marks;
+    u8* flagsB;
     int i = 0;
     f32 neg1;
     f32 zero;
