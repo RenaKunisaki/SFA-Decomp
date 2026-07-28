@@ -3,11 +3,11 @@
 
 
 AramTransferQueue lbl_803D3F60;
-extern AramTransferQueue lbl_803D41E4;
+extern AramTransferQueue aramHighPriorityQueue;
 
 /*
  * ARQ DMA completion callback dispatcher: walks the 16-slot ring
- * queue at lbl_803D3F60 (or lbl_803D41E4 for the secondary pool)
+ * queue at lbl_803D3F60 (or aramHighPriorityQueue for high-priority requests)
  * and invokes any pending entry's callback whose request handle
  * matches `req`. Decrements the count when done.
  */
@@ -18,7 +18,7 @@ void aramQueueCallback(u32 requestAddress)
     u32 i;
 
     request = (ARQRequest*)requestAddress;
-    queue = (request->priority == ARQ_PRIORITY_HIGH) ? &lbl_803D41E4 : &lbl_803D3F60;
+    queue = (request->priority == ARQ_PRIORITY_HIGH) ? &aramHighPriorityQueue : &lbl_803D3F60;
     for (i = 0; i < ARAM_TRANSFER_QUEUE_CAPACITY; i++)
     {
         if (request == &queue->slots[i].request && queue->slots[i].completionCallback != NULL)
@@ -40,7 +40,7 @@ void aramUploadData(void* src, u32 dst, u32 size, u32 mode, void (*callback)(u32
     AramTransferQueue* queue;
     BOOL irq;
 
-    queue = (mode != 0) ? &lbl_803D41E4 : &lbl_803D3F60;
+    queue = (mode != 0) ? &aramHighPriorityQueue : &lbl_803D3F60;
 
     while (1)
     {
