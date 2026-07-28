@@ -323,7 +323,7 @@ extern char sMmStbfStackTooDeepError[];
 extern void* lbl_803DD498;
 extern void* lbl_803DCAFC;
 extern char sMmSpawnedUnalignedSlotWarning[];
-extern int lbl_803DCC7C;
+extern int gModelsArchiveLoadCount;
 extern char sMmFreeMemoryUsageCorruptedError[];
 
 void heapFree(int region, int slotIdx);
@@ -756,7 +756,7 @@ int mmAllocFromRegion(int region, int size, int type, int tag)
         reportAllocFail(gMmRegionTable[0].size / 1024, gMmRegionTable[0].size / 1024 - gMmRegion0Used / 1024,
                         gMmRegionTable[1].size / 1024, gMmRegionTable[1].size / 1024 - gMmRegion1Used / 1024,
                         gMmRegionTable[2].size / 1024, gMmRegionTable[2].size / 1024 - gMmRegion2Used / 1024,
-                        lbl_803DCC7C, gMmTickCount, size, largestFree0, largestFree1);
+                        gModelsArchiveLoadCount, gMmTickCount, size, largestFree0, largestFree1);
     }
     return 0;
 }

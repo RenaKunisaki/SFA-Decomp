@@ -73,19 +73,19 @@ extern u8 lbl_803DCCF8;
 extern int lbl_803DCCF4;
 extern void* externalFrameBuffer0;
 extern void* externalFrameBuffer1;
-extern void* lbl_803DCCE4;
+extern void* gGxFifoSize;
 extern char* lbl_803DCCE0;
-extern void* lbl_803DCCD8;
-extern GXFifoObj* lbl_803DCCD4;
+extern void* gGxFifoBase;
+extern GXFifoObj* gGxFifoObj;
 extern void* renderFrameBuffer;
 extern void* displayFrameBuffer;
-extern char lbl_803DCCC4;
-extern int lbl_803DCCB8;
-extern GXColor lbl_803DB5D0;
-extern u8 lbl_803DB5D4[8];
+extern char gVideoFlipWaitQueue;
+extern int gDispCopyYScaleLines;
+extern GXColor gEfbCopyClearColor;
+extern u8 gDispCopyFilterWeights[8];
 extern u8 gLoadingScreenTextures[];
-extern char lbl_8035F6B8[0x78];
-extern RingBufferQueue lbl_8035F730;
+extern char gVideoFlipQueueBuffer[0x78];
+extern RingBufferQueue gVideoFlipQueue;
 extern f32 lbl_803DEA94;
 extern f32 lbl_803DEA98;
 
@@ -114,14 +114,14 @@ void videoInit(void* wpad0, int wpad1)
     arenaHi = OSGetArenaHi();
     memcpy(arenaHi - 0x40000, gLoadingScreenTextures, 0x40000);
     DCStoreRange(arenaHi - 0x40000, 0x40000);
-    lbl_803DCCE4 = (void*)0x40000;
-    lbl_803DCCD8 = gLoadingScreenTextures;
-    DCInvalidateRange(lbl_803DCCD8, (u32)lbl_803DCCE4);
-    lbl_803DCCD4 = GXInit(lbl_803DCCD8, (u32)lbl_803DCCE4);
-    lbl_803DCCE0 = lbl_803DCCD8;
+    gGxFifoSize = (void*)0x40000;
+    gGxFifoBase = gLoadingScreenTextures;
+    DCInvalidateRange(gGxFifoBase, (u32)gGxFifoSize);
+    gGxFifoObj = GXInit(gGxFifoBase, (u32)gGxFifoSize);
+    lbl_803DCCE0 = gGxFifoBase;
     GXSetDispCopySrc(0, 0, gRenderModeObj->fbWidth, gRenderModeObj->efbHeight);
-    lbl_803DCCB8 = GXSetDispCopyYScale((f32)gRenderModeObj->xfbHeight / gRenderModeObj->efbHeight);
-    fbSize = (u16)((gRenderModeObj->fbWidth + 0xf) & ~0xf) * lbl_803DCCB8 * 2;
+    gDispCopyYScaleLines = GXSetDispCopyYScale((f32)gRenderModeObj->xfbHeight / gRenderModeObj->efbHeight);
+    fbSize = (u16)((gRenderModeObj->fbWidth + 0xf) & ~0xf) * gDispCopyYScaleLines * 2;
     externalFrameBuffer0 = (void*)(((u32)arenaLo + 0x1f) & ~0x1f);
     fbSize += 0x1f;
     externalFrameBuffer1 = (void*)(((u32)externalFrameBuffer0 + fbSize) & ~0x1f);
@@ -136,11 +136,11 @@ void videoInit(void* wpad0, int wpad1)
     GXInitFifoBase(&fifo, externalFrameBuffer0, 0x10000);
     GXSetCPUFifo(&fifo);
     GXSetGPFifo(&fifo);
-    GXInitFifoLimits(lbl_803DCCD4, (u32)lbl_803DCCE4 - 0x4000, (u32)((u32)lbl_803DCCE4 * 3) >> 2);
-    GXSetCPUFifo(lbl_803DCCD4);
-    GXSetGPFifo(lbl_803DCCD4);
-    Queue_Init(&lbl_8035F730, lbl_8035F6B8, 10, 0xc);
-    OSInitThreadQueue((OSThreadQueue*)&lbl_803DCCC4);
+    GXInitFifoLimits(gGxFifoObj, (u32)gGxFifoSize - 0x4000, (u32)((u32)gGxFifoSize * 3) >> 2);
+    GXSetCPUFifo(gGxFifoObj);
+    GXSetGPFifo(gGxFifoObj);
+    Queue_Init(&gVideoFlipQueue, gVideoFlipQueueBuffer, 10, 0xc);
+    OSInitThreadQueue((OSThreadQueue*)&gVideoFlipWaitQueue);
     VISetPreRetraceCallback(videoSwapFrameBuffers);
     VISetPostRetraceCallback(gpuErrorHandler);
     GXSetBreakPtCallback(videoFn_800499e8);
@@ -148,7 +148,7 @@ void videoInit(void* wpad0, int wpad1)
                   lbl_803DEA78);
     GXSetFieldMode(gRenderModeObj->field_rendering, gRenderModeObj->xfbHeight < gRenderModeObj->viHeight);
     GXSetScissor(0, 0, gRenderModeObj->fbWidth, gRenderModeObj->efbHeight);
-    GXSetDispCopyDst(gRenderModeObj->fbWidth, (u16)lbl_803DCCB8);
+    GXSetDispCopyDst(gRenderModeObj->fbWidth, (u16)gDispCopyYScaleLines);
     if (gRenderModeObj->aa != 0)
     {
         GXSetPixelFmt(GX_PF_RGB565_Z16, GX_ZC_LINEAR);
@@ -217,7 +217,7 @@ void videoInit(void* wpad0, int wpad1)
     GXSetVtxAttrFmt(GX_VTXFMT7, GX_VA_TEX3, GX_TEX_ST, GX_S16, 10);
     lbl_803DCCF4 = 0;
     GXSetCullMode(GX_CULL_NONE);
-    GXSetCopyClear(lbl_803DB5D0, 0xffffff);
+    GXSetCopyClear(gEfbCopyClearColor, 0xffffff);
     GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
     GXSetNumChans(1);
     GXSetChanCtrl(GX_COLOR0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
@@ -240,9 +240,9 @@ void videoInit(void* wpad0, int wpad1)
 
 void setColor_803db5d0(u8 r, u8 g, u8 b)
 {
-    lbl_803DB5D0.r = r;
-    lbl_803DB5D0.g = g;
-    lbl_803DB5D0.b = b;
+    gEfbCopyClearColor.r = r;
+    gEfbCopyClearColor.g = g;
+    gEfbCopyClearColor.b = b;
 }
 
 void setDisplayCopyFilter(void)
@@ -254,19 +254,19 @@ void setDisplayCopyFilter(void)
     }
     else
     {
-        GXSetCopyFilter(renderMode->aa, renderMode->sample_pattern, GX_TRUE, lbl_803DB5D4);
+        GXSetCopyFilter(renderMode->aa, renderMode->sample_pattern, GX_TRUE, gDispCopyFilterWeights);
     }
 }
 
-extern OSThread* lbl_803DCCDC;
-extern f32 lbl_803DCCC0;
-extern f32 lbl_803DCCB4;
-extern u8 lbl_803DCCB0;
-extern volatile int lbl_803DCCAC;
-extern u8 lbl_803DCCA7;
+extern OSThread* gVideoWaitThread;
+extern f32 gFrameElapsedMs;
+extern f32 gFrameStepRemainder;
+extern u8 gGpuHangRecoveryEnabled;
+extern volatile int gGpuStallRetraceCount;
+extern u8 gGxBreakPtEnabled;
 extern u8 gVideoBlackScreenFrameCount;
-extern u16 lbl_803DB5CE;
-extern OSStopwatch lbl_8035F680;
+extern u16 gGxDrawSyncToken;
+extern OSStopwatch gFrameStopwatch;
 extern f32 physicsTimeScale;
 extern f32 lbl_803DEAA0;
 extern f32 lbl_803DEA74;
@@ -294,22 +294,22 @@ int GXFlush_(u8 visible, int unused)
     gxSetZMode_(1, GX_LEQUAL, 1);
     GXSetAlphaUpdate(GX_TRUE);
     GXFlush();
-    GXGetFifoPtrs(lbl_803DCCD4, &fifo_get, &fifo_put);
+    GXGetFifoPtrs(gGxFifoObj, &fifo_get, &fifo_put);
     item[0] = fifo_put;
     item[1] = 0;
     item[2] = renderFrameBuffer;
     s = OSDisableInterrupts();
-    Queue_Push(&lbl_8035F730, item);
-    if (lbl_803DCCA7 == 0)
+    Queue_Push(&gVideoFlipQueue, item);
+    if (gGxBreakPtEnabled == 0)
     {
         GXEnableBreakPt(fifo_put);
-        lbl_803DCCA7 = 1;
+        gGxBreakPtEnabled = 1;
     }
     OSRestoreInterrupts(s);
-    GXSetDrawSync(lbl_803DB5CE);
+    GXSetDrawSync(gGxDrawSyncToken);
     GXCopyDisp(renderFrameBuffer, 1);
     GXFlush();
-    lbl_803DB5CE = (u16)(lbl_803DB5CE + 1);
+    gGxDrawSyncToken = (u16)(gGxDrawSyncToken + 1);
     next = renderFrameBuffer == externalFrameBuffer0 ? externalFrameBuffer1 : externalFrameBuffer0;
     renderFrameBuffer = next;
     if (visible != 0 && gVideoBlackScreenFrameCount != 0)
@@ -404,7 +404,7 @@ void gxPerfFn_8004a77c(int enabled)
 }
 void gxTransformFn_8004a83c(void)
 {
-    lbl_803DCCB0 = 0;
+    gGpuHangRecoveryEnabled = 0;
     gxPerfFn_8004a77c(0);
 }
 
@@ -415,12 +415,12 @@ void waitNextFrame(void)
     int lvl;
     u32 frames;
 
-    OSStopStopwatch(&lbl_8035F680);
-    lbl_803DCCC0 =
-        (u64)OSCheckStopwatch(&lbl_8035F680) / (f32)(u32)((*(u32*)0x800000f8 >> 2) / 1000);
-    OSResetStopwatch(&lbl_8035F680);
-    OSStartStopwatch(&lbl_8035F680);
-    timeDelta = physicsTimeScale * (lbl_803DEAA0 * lbl_803DCCC0);
+    OSStopStopwatch(&gFrameStopwatch);
+    gFrameElapsedMs =
+        (u64)OSCheckStopwatch(&gFrameStopwatch) / (f32)(u32)((*(u32*)0x800000f8 >> 2) / 1000);
+    OSResetStopwatch(&gFrameStopwatch);
+    OSStartStopwatch(&gFrameStopwatch);
+    timeDelta = physicsTimeScale * (lbl_803DEAA0 * gFrameElapsedMs);
     if (gDvdErrorPauseActive != 0)
     {
         timeDelta = lbl_803DEA70;
@@ -437,25 +437,25 @@ void waitNextFrame(void)
     {
         oneOverTimeDelta = lbl_803DEA78;
     }
-    frames = (int)(timeDelta + lbl_803DCCB4) & 0xff;
+    frames = (int)(timeDelta + gFrameStepRemainder) & 0xff;
     framesThisStep = frames;
-    lbl_803DCCB4 = (timeDelta + lbl_803DCCB4) - (f32)(u32)framesThisStep;
+    gFrameStepRemainder = (timeDelta + gFrameStepRemainder) - (f32)(u32)framesThisStep;
     lbl_803DB411 = frames;
     if (framesThisStep < 1)
     {
         framesThisStep = 1;
     }
     lvl = OSDisableInterrupts();
-    lbl_803DCCDC = OSGetCurrentThread();
-    if (lbl_803DCCDC->state != OS_THREAD_STATE_RUNNING)
+    gVideoWaitThread = OSGetCurrentThread();
+    if (gVideoWaitThread->state != OS_THREAD_STATE_RUNNING)
     {
-        OSReport(sThreadStateAttrSuspendFormat, lbl_803DCCDC->state, lbl_803DCCDC->attr,
-                 lbl_803DCCDC->suspend);
+        OSReport(sThreadStateAttrSuspendFormat, gVideoWaitThread->state, gVideoWaitThread->attr,
+                 gVideoWaitThread->suspend);
     }
-    if ((u32)Queue_GetCount(&lbl_8035F730) > 1)
+    if ((u32)Queue_GetCount(&gVideoFlipQueue) > 1)
     {
-        lbl_803DCCAC = 0;
-        OSSleepThread((OSThreadQueue*)&lbl_803DCCC4);
+        gGpuStallRetraceCount = 0;
+        OSSleepThread((OSThreadQueue*)&gVideoFlipWaitQueue);
     }
     OSRestoreInterrupts(lvl);
     Camera_ApplyFullViewport();

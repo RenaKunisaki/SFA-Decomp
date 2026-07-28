@@ -36,7 +36,7 @@ STATIC_ASSERT(offsetof(TitleMenuItemInterfaceVTable, isChanged) == 0x2C);
 STATIC_ASSERT(sizeof(TitleMenuItemInterfaceVTable) == 0x34);
 
 extern TitleMenuItemInterface* gTitleMenuItemInterface;
-extern TitleMenuItem* lbl_803A87D0[8];
+extern TitleMenuItem* gOptionsMenuItems[8];
 
 void TitleMenuItem_loadTextures(void);
 int TitleMenuItem_isChanged(TitleMenuItem* item);

@@ -202,7 +202,7 @@ typedef struct ObjModelRenderOp
     u8 pad38[0x3C - 0x38];
     u32 flags;
 } ObjModelRenderOp;
-extern volatile int lbl_803DCC80;
+extern volatile int gAssetLoadInFlightFlags;
 extern f32 lbl_803DEA04;
 extern f32 lbl_803DEA1C;
 typedef struct
@@ -217,8 +217,8 @@ extern f32 lbl_803DEA4C;
 extern f32 lbl_803DEA50;
 extern f32 lbl_803DEA54;
 extern f32 lbl_803DEA48;
-extern s16 lbl_803DCC78;
-extern u32 lbl_803DCC84;
+extern s16 gDefragDelayFrames;
+extern u32 gAssetLoadCompletedFlags;
 
 int getLoadedFileFlags(int slot);
 s32 mapCheckCurBlocks(int v);
@@ -2019,7 +2019,7 @@ void objSetOverrideColor(u8 r, u8 g, u8 b)
     gObjOverrideColor[2] = b;
 }
 
-extern u32 lbl_803DCC74;
+extern u32 gRomListLoadInFlight;
 void objSetMtxFn_800412d4(u32 x)
 {
     curObjMtx = x;
@@ -2428,20 +2428,20 @@ void set_shadowFlag_803dcc29(u8 x)
 
 
 
-extern int lbl_803DCC88;
+extern int gPendingDvdReadCount;
 
 void dvdReadCb_80041d30(s32 result, DVDFileInfo* fileInfo)
 {
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        lbl_803DCC88--;
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        gPendingDvdReadCount--;
     }
 }
 
@@ -2506,19 +2506,19 @@ u8 gObjGxTexMtxIdTable[12] = {0x1E, 0x21, 0x24, 0x27, 0x2A, 0x2D, 0x30, 0x33, 0x
 
 
 
-extern u32 lbl_803DCC70;
+extern u32 gForceLoadImmediately;
 void clearForceLoadImmediately(void)
 {
-    lbl_803DCC70 = 0x0;
+    gForceLoadImmediately = 0x0;
 }
 void setForceLoadImmediately(void)
 {
-    lbl_803DCC70 = 0x1;
+    gForceLoadImmediately = 0x1;
 }
 static inline int loadedFileFlags(int slot)
 {
     int s = OSDisableInterrupts();
-    u32 v = lbl_803DCC80;
+    u32 v = gAssetLoadInFlightFlags;
     OSRestoreInterrupts(s);
     return v;
 }
@@ -2527,7 +2527,7 @@ int getLoadedFileFlags(int slot)
     return loadedFileFlags(slot);
 }
 
-extern u8 lbl_80345E10[0x160];
+extern u8 gResourceFileTable[0x160];
 
 void defragMemory(int mode)
 {
@@ -2538,7 +2538,7 @@ void defragMemory(int mode)
     int i;
     int pass;
     int done;
-    u8* base = lbl_80345E10;
+    u8* base = gResourceFileTable;
     done = 0;
     pass = 0;
     texFlagFn_80023cbc(2);
@@ -2546,10 +2546,10 @@ void defragMemory(int mode)
     {
         return;
     }
-    if (mode == 0 && lbl_803DCC78 == 0)
+    if (mode == 0 && gDefragDelayFrames == 0)
     {
         texRestructRefs(0);
-        lbl_803DCC78 = 6;
+        gDefragDelayFrames = 6;
         return;
     }
     if (mode != 0)
@@ -2757,20 +2757,20 @@ void animCurvReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x10000000)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x10000000)
         {
-            lbl_803DCC84 |= 0x10000000;
+            gAssetLoadCompletedFlags |= 0x10000000;
             gObjBlockStatus[0x34 / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x40000000)
+        else if (gAssetLoadInFlightFlags & 0x40000000)
         {
-            lbl_803DCC84 |= 0x40000000;
+            gAssetLoadCompletedFlags |= 0x40000000;
             gObjBlockStatus[0x154 / 4] = 0;
         }
     }
@@ -2784,20 +2784,20 @@ void animCurvTabReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x20000000)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x20000000)
         {
-            lbl_803DCC84 |= 0x20000000;
+            gAssetLoadCompletedFlags |= 0x20000000;
             gObjBlockStatus[0x38 / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x80000000)
+        else if (gAssetLoadInFlightFlags & 0x80000000)
         {
-            lbl_803DCC84 |= 0x80000000;
+            gAssetLoadCompletedFlags |= 0x80000000;
             gObjBlockStatus[0x158 / 4] = 0;
         }
     }
@@ -2810,20 +2810,20 @@ void voxMapReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x1000000)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x1000000)
         {
-            lbl_803DCC84 |= 0x1000000;
+            gAssetLoadCompletedFlags |= 0x1000000;
             gObjBlockStatus[0x6c / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x4000000)
+        else if (gAssetLoadInFlightFlags & 0x4000000)
         {
-            lbl_803DCC84 |= 0x4000000;
+            gAssetLoadCompletedFlags |= 0x4000000;
             gObjBlockStatus[0x150 / 4] = 0;
         }
     }
@@ -2836,26 +2836,26 @@ void voxMapTabReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x2000000)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x2000000)
         {
-            lbl_803DCC84 |= 0x2000000;
+            gAssetLoadCompletedFlags |= 0x2000000;
             gObjBlockStatus[0x68 / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x8000000)
+        else if (gAssetLoadInFlightFlags & 0x8000000)
         {
-            lbl_803DCC84 |= 0x8000000;
+            gAssetLoadCompletedFlags |= 0x8000000;
             gObjBlockStatus[0x14c / 4] = 0;
         }
     }
 }
 
-u8 lbl_80345E10[0x160];
+u8 gResourceFileTable[0x160];
 
 
 void blocksTabReadCb(s32 result, DVDFileInfo* fileInfo)
@@ -2863,20 +2863,20 @@ void blocksTabReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x20000)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x20000)
         {
-            lbl_803DCC84 |= 0x20000;
+            gAssetLoadCompletedFlags |= 0x20000;
             gObjBlockStatus[0x98 / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x80000)
+        else if (gAssetLoadInFlightFlags & 0x80000)
         {
-            lbl_803DCC84 |= 0x80000;
+            gAssetLoadCompletedFlags |= 0x80000;
             gObjBlockStatus[0x120 / 4] = 0;
         }
     }
@@ -2884,20 +2884,20 @@ void blocksTabReadCb(s32 result, DVDFileInfo* fileInfo)
 
 void romListReadCb(s32 result, DVDFileInfo* fileInfo)
 {
-    lbl_803DCC74 = 0;
+    gRomListLoadInFlight = 0;
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
 }
 
-extern u32 lbl_8035F3E8[];
+extern u32 gResourceFileBuffers[];
 u32 gObjBlockStatus[0x63F6];
 
 void blocksReadCb(s32 result, DVDFileInfo* fileInfo)
@@ -2905,20 +2905,20 @@ void blocksReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x10000)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x10000)
         {
-            lbl_803DCC84 |= 0x10000;
+            gAssetLoadCompletedFlags |= 0x10000;
             gObjBlockStatus[0x94 / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x40000)
+        else if (gAssetLoadInFlightFlags & 0x40000)
         {
-            lbl_803DCC84 |= 0x40000;
+            gAssetLoadCompletedFlags |= 0x40000;
             gObjBlockStatus[0x11c / 4] = 0;
         }
     }
@@ -2929,23 +2929,23 @@ void tex1tab2readCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        mm_free((void*)lbl_8035F3E8[78]);
-        lbl_8035F3E8[78] = 0;
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        mm_free((void*)gResourceFileBuffers[78]);
+        gResourceFileBuffers[78] = 0;
         gObjBlockStatus[78] = 0;
-        if (lbl_803DCC80 & 0x8000)
+        if (gAssetLoadInFlightFlags & 0x8000)
         {
-            lbl_803DCC84 |= 0x8000;
+            gAssetLoadCompletedFlags |= 0x8000;
             gObjBlockStatus[76] = 0;
         }
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x8000)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x8000)
         {
-            lbl_803DCC84 |= 0x8000;
+            gAssetLoadCompletedFlags |= 0x8000;
             gObjBlockStatus[76] = 0;
         }
     }
@@ -2956,23 +2956,23 @@ void tex1tab1readCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        mm_free((void*)lbl_8035F3E8[78]);
-        lbl_8035F3E8[78] = 0;
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        mm_free((void*)gResourceFileBuffers[78]);
+        gResourceFileBuffers[78] = 0;
         gObjBlockStatus[78] = 0;
-        if (lbl_803DCC80 & 0x4000)
+        if (gAssetLoadInFlightFlags & 0x4000)
         {
-            lbl_803DCC84 |= 0x4000;
+            gAssetLoadCompletedFlags |= 0x4000;
             gObjBlockStatus[33] = 0;
         }
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x4000)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x4000)
         {
-            lbl_803DCC84 |= 0x4000;
+            gAssetLoadCompletedFlags |= 0x4000;
             gObjBlockStatus[33] = 0;
         }
     }
@@ -2983,20 +2983,20 @@ void tex1ReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x1000)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x1000)
         {
-            lbl_803DCC84 |= 0x1000;
+            gAssetLoadCompletedFlags |= 0x1000;
             gObjBlockStatus[0x80 / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x2000)
+        else if (gAssetLoadInFlightFlags & 0x2000)
         {
-            lbl_803DCC84 |= 0x2000;
+            gAssetLoadCompletedFlags |= 0x2000;
             gObjBlockStatus[0x12c / 4] = 0;
         }
     }
@@ -3007,23 +3007,23 @@ void tex0tab2readCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        mm_free((void*)lbl_8035F3E8[78]);
-        lbl_8035F3E8[78] = 0;
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        mm_free((void*)gResourceFileBuffers[78]);
+        gResourceFileBuffers[78] = 0;
         gObjBlockStatus[78] = 0;
-        if (lbl_803DCC80 & 0x800)
+        if (gAssetLoadInFlightFlags & 0x800)
         {
-            lbl_803DCC84 |= 0x800;
+            gAssetLoadCompletedFlags |= 0x800;
             gObjBlockStatus[78] = 0;
         }
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x800)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x800)
         {
-            lbl_803DCC84 |= 0x800;
+            gAssetLoadCompletedFlags |= 0x800;
             gObjBlockStatus[78] = 0;
         }
     }
@@ -3033,23 +3033,23 @@ void tex0tab1readCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        mm_free((void*)lbl_8035F3E8[36]);
-        lbl_8035F3E8[36] = 0;
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        mm_free((void*)gResourceFileBuffers[36]);
+        gResourceFileBuffers[36] = 0;
         gObjBlockStatus[36] = 0;
-        if (lbl_803DCC80 & 0x400)
+        if (gAssetLoadInFlightFlags & 0x400)
         {
-            lbl_803DCC84 |= 0x400;
+            gAssetLoadCompletedFlags |= 0x400;
             gObjBlockStatus[36] = 0;
         }
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x400)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x400)
         {
-            lbl_803DCC84 |= 0x400;
+            gAssetLoadCompletedFlags |= 0x400;
             gObjBlockStatus[36] = 0;
         }
     }
@@ -3060,20 +3060,20 @@ void tex0readCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x100)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x100)
         {
-            lbl_803DCC84 |= 0x100;
+            gAssetLoadCompletedFlags |= 0x100;
             gObjBlockStatus[0x8c / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x200)
+        else if (gAssetLoadInFlightFlags & 0x200)
         {
-            lbl_803DCC84 |= 0x200;
+            gAssetLoadCompletedFlags |= 0x200;
             gObjBlockStatus[0x134 / 4] = 0;
         }
     }
@@ -3084,20 +3084,20 @@ void animReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x10)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x10)
         {
-            lbl_803DCC84 |= 0x10;
+            gAssetLoadCompletedFlags |= 0x10;
             gObjBlockStatus[0xc0 / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x20)
+        else if (gAssetLoadInFlightFlags & 0x20)
         {
-            lbl_803DCC84 |= 0x20;
+            gAssetLoadCompletedFlags |= 0x20;
             gObjBlockStatus[0x128 / 4] = 0;
         }
     }
@@ -3108,20 +3108,20 @@ void modelsReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x1)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x1)
         {
-            lbl_803DCC84 |= 0x1;
+            gAssetLoadCompletedFlags |= 0x1;
             gObjBlockStatus[0xac / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x2)
+        else if (gAssetLoadInFlightFlags & 0x2)
         {
-            lbl_803DCC84 |= 0x2;
+            gAssetLoadCompletedFlags |= 0x2;
             gObjBlockStatus[0x118 / 4] = 0;
         }
     }
@@ -3132,20 +3132,20 @@ void animTabReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x40)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x40)
         {
-            lbl_803DCC84 |= 0x40;
+            gAssetLoadCompletedFlags |= 0x40;
             gObjBlockStatus[0xbc / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x80)
+        else if (gAssetLoadInFlightFlags & 0x80)
         {
-            lbl_803DCC84 |= 0x80;
+            gAssetLoadCompletedFlags |= 0x80;
             gObjBlockStatus[0x124 / 4] = 0;
         }
     }
@@ -3156,20 +3156,20 @@ void modelsTabReadCb(s32 result, DVDFileInfo* fileInfo)
     if (result < 0)
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
     else
     {
         DVDClose(fileInfo);
-        AtomicSList_Push(lbl_803DCC8C, fileInfo);
-        if (lbl_803DCC80 & 0x4)
+        AtomicSList_Push(gDvdFileInfoPool, fileInfo);
+        if (gAssetLoadInFlightFlags & 0x4)
         {
-            lbl_803DCC84 |= 0x4;
+            gAssetLoadCompletedFlags |= 0x4;
             gObjBlockStatus[0xa8 / 4] = 0;
         }
-        else if (lbl_803DCC80 & 0x8)
+        else if (gAssetLoadInFlightFlags & 0x8)
         {
-            lbl_803DCC84 |= 0x8;
+            gAssetLoadCompletedFlags |= 0x8;
             gObjBlockStatus[0x114 / 4] = 0;
         }
     }
@@ -3242,9 +3242,9 @@ void mapLoadDataFiles(int mapIdx)
 void clearLoadedFileFlags_blocks1(void)
 {
     int s = OSDisableInterrupts();
-    if (lbl_803DCC80 & 0x100000)
+    if (gAssetLoadInFlightFlags & 0x100000)
     {
-        lbl_803DCC80 ^= 0x100000;
+        gAssetLoadInFlightFlags ^= 0x100000;
     }
     OSRestoreInterrupts(s);
 }
@@ -3253,12 +3253,12 @@ void clearLoadedFileFlags_blocks1(void)
 void setLoadedFileFlags_blocks1(void)
 {
     int s = OSDisableInterrupts();
-    lbl_803DCC80 |= 0x100000;
+    gAssetLoadInFlightFlags |= 0x100000;
     OSRestoreInterrupts(s);
 }
 int isRomListLoading(void)
 {
-    return lbl_803DCC74;
+    return gRomListLoadInFlight;
 }
 
 
@@ -3266,10 +3266,10 @@ extern s32 gObjTableFileRequestFlags;
 
 u32 loadTableFiles(void)
 {
-    u8* base = lbl_80345E10;
+    u8* base = gResourceFileTable;
     int s = OSDisableInterrupts();
     int flags = loadedFileFlags(0);
-    lbl_803DCC80;
+    gAssetLoadInFlightFlags;
     if ((gObjTableFileRequestFlags & 0x4) && !(flags & 0x4) && *(s32*)(base + 0x191e4) == -1)
     {
         mergeTableFiles((u32*)(base + 0x170e0), 0x2a, 0x45, 0x800);
@@ -3327,10 +3327,10 @@ u32 loadTableFiles(void)
         mergeTableFiles((u32*)(base + 0x2c0), 0xe, 0x56, 0x1fd0);
     }
     gObjTableFileRequestFlags = flags;
-    lbl_803DCC80 = lbl_803DCC80 ^ lbl_803DCC84;
-    lbl_803DCC84 = 0;
+    gAssetLoadInFlightFlags = gAssetLoadInFlightFlags ^ gAssetLoadCompletedFlags;
+    gAssetLoadCompletedFlags = 0;
     OSRestoreInterrupts(s);
-    return lbl_803DCC80;
+    return gAssetLoadInFlightFlags;
 }
 
 int unlockLevel(s32 val, int idx, int flag)
@@ -3365,7 +3365,7 @@ int lockLevel(s32 val, int idx)
 
 int getTableFileEntry(int fileId, int index, int* out)
 {
-    u8* base = lbl_80345E10;
+    u8* base = gResourceFileTable;
     int count = 0;
     void* table = NULL;
     switch (fileId)
@@ -3442,7 +3442,7 @@ struct MldfTables
 
 void* getCurrentDataFile(int id)
 {
-    u8* base = lbl_80345E10;
+    u8* base = gResourceFileTable;
     switch (id)
     {
     case 42:
@@ -3481,7 +3481,7 @@ int mapUnload(int mapId, int flags)
     int j;
     int* st;
 
-    tbl = (struct MldfTables*)lbl_80345E10;
+    tbl = (struct MldfTables*)gResourceFileTable;
     i = 0;
     needWait = 0;
     st = (int*)(*gMapEventInterface)->getCurCharPos();
@@ -3493,7 +3493,7 @@ int mapUnload(int mapId, int flags)
             0x1a, 0x2000, 0x54, 0x1000, 0x53, 0x2000, 0xd,  0x400, 0xe,  0x800, 0x55, 0x400, 0x56, 0x800,
         };
 
-        while (s = OSDisableInterrupts(), n = lbl_803DCC80, OSRestoreInterrupts(s), n != 0)
+        while (s = OSDisableInterrupts(), n = gAssetLoadInFlightFlags, OSRestoreInterrupts(s), n != 0)
         {
             if (n == 0x100000)
             {
@@ -3654,7 +3654,7 @@ int mapUnload(int mapId, int flags)
 int mergeTableFiles(void* table, int id, int idx, int count_)
 {
     u32* tbl = table;
-    u8* base = lbl_80345E10;
+    u8* base = gResourceFileTable;
     int i = 0;
     int e1 = 0;
     int e2 = 0;

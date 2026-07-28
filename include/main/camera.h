@@ -110,7 +110,7 @@ extern f32 gCameraDefaultFarPlane;
 extern f32 gCameraDefaultPosition;
 extern f32 lbl_803DB26C;
 extern s16 gCameraViewportScreenParams[];
-extern u32 lbl_803DCCBC;
+extern u32 gViewportJitterField;
 extern s16 lbl_803DC88A;
 extern u8 gCameraViewportEntries[];
 

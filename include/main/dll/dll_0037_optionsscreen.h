@@ -3,7 +3,7 @@
 
 #include "main/dll/savedata_struct.h"
 
-extern SaveData* lbl_803DD708;
+extern SaveData* gOptionsSaveData;
 
 void OptionsScreen_render(int arg);
 void OptionsScreen_initialise(void);

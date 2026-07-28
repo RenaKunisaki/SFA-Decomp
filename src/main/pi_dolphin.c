@@ -72,29 +72,29 @@ int lbl_803DCCF4;
 GXRenderModeObj* gRenderModeObj;
 void* externalFrameBuffer0;
 void* externalFrameBuffer1;
-void* lbl_803DCCE4;
+void* gGxFifoSize;
 char* lbl_803DCCE0;
-OSThread* lbl_803DCCDC;
-void* lbl_803DCCD8;
-GXFifoObj* lbl_803DCCD4;
+OSThread* gVideoWaitThread;
+void* gGxFifoBase;
+GXFifoObj* gGxFifoObj;
 void* renderFrameBuffer;
 void* displayFrameBuffer;
 static u32 sPiUnused4;
-char lbl_803DCCC4;
-f32 lbl_803DCCC0;
-u32 lbl_803DCCBC;
-int lbl_803DCCB8;
-f32 lbl_803DCCB4;
-u8 lbl_803DCCB0;
-volatile int lbl_803DCCAC;
-u16 lbl_803DCCAA;
-u8 lbl_803DCCA9;
-u8 lbl_803DCCA8;
-u8 lbl_803DCCA7;
-u8 lbl_803DCCA6;
+char gVideoFlipWaitQueue;
+f32 gFrameElapsedMs;
+u32 gViewportJitterField;
+int gDispCopyYScaleLines;
+f32 gFrameStepRemainder;
+u8 gGpuHangRecoveryEnabled;
+volatile int gGpuStallRetraceCount;
+u16 gLastDrawSyncToken;
+u8 gFrameBufferFlipped;
+u8 gFlipTokenHeldForDisplayedFb;
+u8 gGxBreakPtEnabled;
+u8 gVideoRetracePending;
 u8 gPadReadReady;
-u8 lbl_803DCCA4;
-int lbl_803DCCA0;
+u8 gResetButtonPressState;
+int gRetraceCountSinceFlip;
 static u32 sPiUnused0;
 int lbl_803DCC98;
 
@@ -138,9 +138,9 @@ char sZlbBlockTag[] = "ZLB";
 char sDirBlockTag[] = "DIR";
 int lbl_803DB5C8 = 1;
 u8 gVideoBlackScreenFrameCount = 5;
-u16 lbl_803DB5CE = 1;
-GXColor lbl_803DB5D0 = {0, 0, 0, 0xFF};
-u8 lbl_803DB5D4[8] = {7, 7, 0xC, 0xC, 0xC, 7, 7, 0};
+u16 gGxDrawSyncToken = 1;
+GXColor gEfbCopyClearColor = {0, 0, 0, 0xFF};
+u8 gDispCopyFilterWeights[8] = {7, 7, 0xC, 0xC, 0xC, 7, 7, 0};
 char sProgramCounterFormat[] = "PC: %x";
 int lbl_803DB5E4 = 0;
 
@@ -151,11 +151,11 @@ int lbl_803DB5E4 = 0;
 #define PAD_BUTTON_A  0x100
 #define PAD_BUTTON_B  0x200
 extern char sResourceFileNameAudioTab[];
-extern u8 lbl_80345E10[]; /* resource file table -- see struct MldfTables */
-extern s16 lbl_803DCC92;
-extern int lbl_803DCC70;
-extern int lbl_803DCC7C;
-extern volatile int lbl_803DCC80;
+extern u8 gResourceFileTable[]; /* resource file table -- see struct MldfTables */
+extern s16 gForceNextLoadSync;
+extern int gForceLoadImmediately;
+extern int gModelsArchiveLoadCount;
+extern volatile int gAssetLoadInFlightFlags;
 
 #include "main/objprint_load_api.h"
 #include "dolphin/os/OSAlloc.h"
@@ -181,12 +181,12 @@ struct MldfNames
     char fmtModTab[0x10];
 };
 
-/* Resource file table at lbl_80345E10 (0x80345E10, 0x20000 bytes). File slots are
+/* Resource file table at gResourceFileTable (0x80345E10, 0x20000 bytes). File slots are
    indexed by resource fileId (0..0x57); map-owned resources use paired slots (e.g.
    ANIMCURV 0xd/0x55) so two maps can be resident at once. Several arrays are also
    addressed directly through their own symbols elsewhere in this file:
-   ids   == lbl_8035EF48 (pending mapId per slot, -1 = none; retried by loadDataFiles)
-   sizes == lbl_8035F0A8, romList == lbl_8035F208, ptrs == lbl_8035F3E8. */
+   ids   == gResourcePendingMapIds (pending mapId per slot, -1 = none; retried by loadDataFiles)
+   sizes == gResourceFileSizes, romList == gMapRomListBuffers, ptrs == gResourceFileBuffers. */
 struct MldfTables
 {
     u8 pad0[0x160];
@@ -910,11 +910,11 @@ extern void* renderFrameBuffer;
 extern void* externalFrameBuffer0;
 extern void* externalFrameBuffer1;
 extern u8 gLoadingScreenTextures[];
-extern u8 lbl_803DCC90;
-extern int lbl_803DCC88;
-extern volatile int lbl_803DCC84;
+extern u8 gLoadFilesInitDone;
+extern int gPendingDvdReadCount;
+extern volatile int gAssetLoadCompletedFlags;
 extern void* displayFrameBuffer;
-extern RingBufferQueue lbl_8035F730;
+extern RingBufferQueue gVideoFlipQueue;
 void piRomLoadSection(int romOffset, int mapIndex, int destBuf);
 int GXFlush_(u8 visible, int unused);
 void waitNextFrame(void);
@@ -923,7 +923,7 @@ void waitNextFrame(void);
 void* mapLoadDataFile(int mapId, int fileId)
 {
     struct MldfNames* nm = (struct MldfNames*)sResourceFileNameAudioTab;
-    struct MldfTables* tbl = (struct MldfTables*)lbl_80345E10;
+    struct MldfTables* tbl = (struct MldfTables*)gResourceFileTable;
     DVDFileInfo* fi;
     int sync = 0;
     void* result;
@@ -936,9 +936,9 @@ void* mapLoadDataFile(int mapId, int fileId)
     int adjacentClass[1];
     char buf[56];
 
-    if (lbl_803DCC92 != 0)
+    if (gForceNextLoadSync != 0)
     {
-        lbl_803DCC92 = 0;
+        gForceNextLoadSync = 0;
         sync = 1;
     }
     adj = MLDF_ADJ(mapId);
@@ -958,7 +958,7 @@ void* mapLoadDataFile(int mapId, int fileId)
         }
         if (nOwned == 0)
         {
-            lbl_803DCC92 = 1;
+            gForceNextLoadSync = 1;
             if (o25 == adj)
             {
                 adjacentClass[0] = 0;
@@ -978,7 +978,7 @@ void* mapLoadDataFile(int mapId, int fileId)
             sync = 1;
         }
     }
-    sync = sync | lbl_803DCC70;
+    sync = sync | gForceLoadImmediately;
     switch (fileId)
     {
     case 0xd:
@@ -1023,7 +1023,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, nm->fmtAnimCurvBin, MLDF_MAP_NAME(mapId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1048,7 +1048,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                             texRestructRefs(1);
                         }
                         DVDClose(fi);
-                        AtomicSList_Push(lbl_803DCC8C, fi);
+                        AtomicSList_Push(gDvdFileInfoPool, fi);
                         MLDF_SP_SIZE(x) = 0;
                         MLDF_SP_ID(x) = mapId;
                         return 0;
@@ -1059,8 +1059,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                         {
                             DVDRead(fi, loadedBuffer, MLDF_SP_SIZE(x), 0);
                             DVDClose(fi);
-                            AtomicSList_Push(lbl_803DCC8C, fi);
-                            if (((lbl_803DCC80 & 0x20000000) == 0) && ((lbl_803DCC80 & 0x80000000) == 0))
+                            AtomicSList_Push(gDvdFileInfoPool, fi);
+                            if (((gAssetLoadInFlightFlags & 0x20000000) == 0) && ((gAssetLoadInFlightFlags & 0x80000000) == 0))
                             {
                                 mergeTableFiles(tbl->mergeAnimCurv, 0xe, 0x56, 0x1fd0);
                             }
@@ -1069,11 +1069,11 @@ void* mapLoadDataFile(int mapId, int fileId)
                         {
                             if (slot == 0xd)
                             {
-                                lbl_803DCC80 = lbl_803DCC80 | 0x10000000;
+                                gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x10000000;
                             }
                             else
                             {
-                                lbl_803DCC80 = lbl_803DCC80 | 0x40000000;
+                                gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x40000000;
                             }
                             DVDReadAsyncPrio(fi, loadedBuffer, MLDF_SP_SIZE(x), 0, animCurvReadCb, 2);
                             MLDF_FINFO4(x) = fi;
@@ -1123,7 +1123,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, nm->fmtAnimCurvTab, MLDF_MAP_NAME(mapId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1144,8 +1144,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         DVDRead(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0);
                         DVDClose(fi);
-                        AtomicSList_Push(lbl_803DCC8C, fi);
-                        if (((lbl_803DCC80 & 0x20000000) == 0) && ((lbl_803DCC80 & 0x80000000) == 0))
+                        AtomicSList_Push(gDvdFileInfoPool, fi);
+                        if (((gAssetLoadInFlightFlags & 0x20000000) == 0) && ((gAssetLoadInFlightFlags & 0x80000000) == 0))
                         {
                             mergeTableFiles(tbl->mergeAnimCurv, 0xe, 0x56, 0x1fd0);
                         }
@@ -1154,11 +1154,11 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         if (slot == 0xe)
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x20000000;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x20000000;
                         }
                         else
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x80000000;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x80000000;
                         }
                         DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, animCurvTabReadCb, 2);
                         MLDF_FINFO4(x) = fi;
@@ -1207,7 +1207,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, nm->fmtVoxmapBin, MLDF_MAP_NAME(mapId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1237,8 +1237,8 @@ void* mapLoadDataFile(int mapId, int fileId)
             {
                 DVDRead(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0);
                 DVDClose(fi);
-                AtomicSList_Push(lbl_803DCC8C, fi);
-                if (((lbl_803DCC80 & 0x2000000) == 0) && ((lbl_803DCC80 & 0x8000000) == 0))
+                AtomicSList_Push(gDvdFileInfoPool, fi);
+                if (((gAssetLoadInFlightFlags & 0x2000000) == 0) && ((gAssetLoadInFlightFlags & 0x8000000) == 0))
                 {
                     mergeTableFiles(tbl->mergeVoxMap, 0x1a, 0x53, 0x800);
                 }
@@ -1247,11 +1247,11 @@ void* mapLoadDataFile(int mapId, int fileId)
             {
                 if (slot == 0x1b)
                 {
-                    lbl_803DCC80 = lbl_803DCC80 | 0x1000000;
+                    gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x1000000;
                 }
                 else
                 {
-                    lbl_803DCC80 = lbl_803DCC80 | 0x4000000;
+                    gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x4000000;
                 }
                 MLDF_FINFO4(x) = fi;
                 DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, voxMapReadCb, 2);
@@ -1298,7 +1298,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, nm->fmtVoxmapTab, MLDF_MAP_NAME(mapId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1309,7 +1309,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_SIZE_INIT(x) = DVD_FI_LENGTH(fi);
                 if (MLDF_SP_SIZE(x) == 0)
                 {
-                    AtomicSList_Push(lbl_803DCC8C, fi);
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
                     return 0;
                 }
                 else
@@ -1320,8 +1320,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         DVDRead(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0);
                         DVDClose(fi);
-                        AtomicSList_Push(lbl_803DCC8C, fi);
-                        if (((lbl_803DCC80 & 0x2000000) == 0) && ((lbl_803DCC80 & 0x8000000) == 0))
+                        AtomicSList_Push(gDvdFileInfoPool, fi);
+                        if (((gAssetLoadInFlightFlags & 0x2000000) == 0) && ((gAssetLoadInFlightFlags & 0x8000000) == 0))
                         {
                             mergeTableFiles(tbl->mergeVoxMap, 0x1a, 0x53, 0x800);
                         }
@@ -1330,11 +1330,11 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         if (slot == 0x1a)
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x2000000;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x2000000;
                         }
                         else
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x8000000;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x8000000;
                         }
                         MLDF_FINFO4(x) = fi;
                         DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, voxMapTabReadCb, 2);
@@ -1400,7 +1400,7 @@ void* mapLoadDataFile(int mapId, int fileId)
             {
                 sprintf(buf, nm->fmtModBin, MLDF_MAP_NAME(mapId), mapId);
             }
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1419,7 +1419,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                         texRestructRefs(1);
                     }
                     DVDClose(fi);
-                    AtomicSList_Push(lbl_803DCC8C, fi);
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
                     MLDF_SP_SIZE(x) = 0;
                     MLDF_SP_ID(x) = mapId;
                     return 0;
@@ -1430,8 +1430,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         DVDRead(fi, loadedBuffer, MLDF_SP_SIZE(x), 0);
                         DVDClose(fi);
-                        AtomicSList_Push(lbl_803DCC8C, fi);
-                        if (((lbl_803DCC80 & 0x20000) == 0) && ((lbl_803DCC80 & 0x80000) == 0))
+                        AtomicSList_Push(gDvdFileInfoPool, fi);
+                        if (((gAssetLoadInFlightFlags & 0x20000) == 0) && ((gAssetLoadInFlightFlags & 0x80000) == 0))
                         {
                             mergeTableFiles(tbl->mergeBlocks, 0x26, 0x48, 0x800);
                         }
@@ -1440,11 +1440,11 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         if (slot == 0x25)
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x10000;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x10000;
                         }
                         else
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x40000;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x40000;
                         }
                         MLDF_FINFO4(x) = fi;
                         DVDReadAsyncPrio(fi, loadedBuffer, MLDF_SP_SIZE(x), 0, blocksReadCb, 2);
@@ -1510,7 +1510,7 @@ void* mapLoadDataFile(int mapId, int fileId)
             {
                 sprintf(buf, nm->fmtModTab, MLDF_MAP_NAME(mapId), mapId);
             }
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1525,8 +1525,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                 {
                     DVDRead(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0);
                     DVDClose(fi);
-                    AtomicSList_Push(lbl_803DCC8C, fi);
-                    if (((lbl_803DCC80 & 0x20000) == 0) && ((lbl_803DCC80 & 0x80000) == 0))
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
+                    if (((gAssetLoadInFlightFlags & 0x20000) == 0) && ((gAssetLoadInFlightFlags & 0x80000) == 0))
                     {
                         mergeTableFiles(tbl->mergeBlocks, 0x26, 0x48, 0x800);
                     }
@@ -1535,11 +1535,11 @@ void* mapLoadDataFile(int mapId, int fileId)
                 {
                     if (slot == 0x26)
                     {
-                        lbl_803DCC80 = lbl_803DCC80 | 0x20000;
+                        gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x20000;
                     }
                     else
                     {
-                        lbl_803DCC80 = lbl_803DCC80 | 0x80000;
+                        gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x80000;
                     }
                     MLDF_FINFO4(x) = fi;
                     DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, blocksTabReadCb, 2);
@@ -1598,7 +1598,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, sArchivePathFormat, MLDF_MAP_NAME(mapId), MLDF_FILE_NAME(fileId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1617,7 +1617,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                         texRestructRefs(1);
                     }
                     DVDClose(fi);
-                    AtomicSList_Push(lbl_803DCC8C, fi);
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
                     MLDF_SP_SIZE(x) = 0;
                     MLDF_SP_ID(x) = mapId;
                     return 0;
@@ -1628,23 +1628,23 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         DVDRead(fi, loadedBuffer, MLDF_SP_SIZE(x), 0);
                         DVDClose(fi);
-                        AtomicSList_Push(lbl_803DCC8C, fi);
-                        if (((lbl_803DCC80 & 4) == 0) && ((lbl_803DCC80 & 8) == 0))
+                        AtomicSList_Push(gDvdFileInfoPool, fi);
+                        if (((gAssetLoadInFlightFlags & 4) == 0) && ((gAssetLoadInFlightFlags & 8) == 0))
                         {
                             mergeTableFiles(tbl->mergeModels, 0x2a, 0x45, 0x800);
                         }
-                        lbl_803DCC7C = lbl_803DCC7C + 1;
+                        gModelsArchiveLoadCount = gModelsArchiveLoadCount + 1;
                     }
                     else
                     {
-                        lbl_803DCC7C = lbl_803DCC7C + 1;
+                        gModelsArchiveLoadCount = gModelsArchiveLoadCount + 1;
                         if (slot == 0x2b)
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 1;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 1;
                         }
                         else
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 2;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 2;
                         }
                         MLDF_FINFO4(x) = fi;
                         DVDReadAsyncPrio(fi, loadedBuffer, MLDF_SP_SIZE(x), 0, modelsReadCb, 2);
@@ -1693,7 +1693,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, sArchivePathFormat, MLDF_MAP_NAME(mapId), MLDF_FILE_NAME(fileId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1708,8 +1708,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                 {
                     DVDRead(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0);
                     DVDClose(fi);
-                    AtomicSList_Push(lbl_803DCC8C, fi);
-                    if (((lbl_803DCC80 & 4) == 0) && ((lbl_803DCC80 & 8) == 0))
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
+                    if (((gAssetLoadInFlightFlags & 4) == 0) && ((gAssetLoadInFlightFlags & 8) == 0))
                     {
                         mergeTableFiles(tbl->mergeModels, 0x2a, 0x45, 0x800);
                     }
@@ -1718,11 +1718,11 @@ void* mapLoadDataFile(int mapId, int fileId)
                 {
                     if (slot == 0x2a)
                     {
-                        lbl_803DCC80 = lbl_803DCC80 | 4;
+                        gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 4;
                     }
                     else
                     {
-                        lbl_803DCC80 = lbl_803DCC80 | 8;
+                        gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 8;
                     }
                     MLDF_FINFO4(x) = fi;
                     DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, modelsTabReadCb, 2);
@@ -1780,7 +1780,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, sArchivePathFormat, MLDF_MAP_NAME(mapId), MLDF_FILE_NAME(fileId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1799,7 +1799,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                         texRestructRefs(1);
                     }
                     DVDClose(fi);
-                    AtomicSList_Push(lbl_803DCC8C, fi);
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
                     MLDF_SP_SIZE(x) = 0;
                     MLDF_SP_ID(x) = mapId;
                     return 0;
@@ -1810,8 +1810,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         DVDRead(fi, loadedBuffer, MLDF_SP_SIZE(x), 0);
                         DVDClose(fi);
-                        AtomicSList_Push(lbl_803DCC8C, fi);
-                        if (((lbl_803DCC80 & 0x40) == 0) && ((lbl_803DCC80 & 0x80) == 0))
+                        AtomicSList_Push(gDvdFileInfoPool, fi);
+                        if (((gAssetLoadInFlightFlags & 0x40) == 0) && ((gAssetLoadInFlightFlags & 0x80) == 0))
                         {
                             mergeTableFiles(tbl->mergeAnim, 0x2f, 0x49, 3000);
                         }
@@ -1820,11 +1820,11 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         if (slot == 0x30)
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x10;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x10;
                         }
                         else
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x20;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x20;
                         }
                         MLDF_FINFO4(x) = fi;
                         DVDReadAsyncPrio(fi, loadedBuffer, MLDF_SP_SIZE(x), 0, animReadCb, 2);
@@ -1873,7 +1873,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, sArchivePathFormat, MLDF_MAP_NAME(mapId), MLDF_FILE_NAME(fileId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1888,8 +1888,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                 {
                     DVDRead(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0);
                     DVDClose(fi);
-                    AtomicSList_Push(lbl_803DCC8C, fi);
-                    if (((lbl_803DCC80 & 0x40) == 0) && ((lbl_803DCC80 & 0x80) == 0))
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
+                    if (((gAssetLoadInFlightFlags & 0x40) == 0) && ((gAssetLoadInFlightFlags & 0x80) == 0))
                     {
                         mergeTableFiles(tbl->mergeAnim, 0x2f, 0x49, 3000);
                     }
@@ -1898,11 +1898,11 @@ void* mapLoadDataFile(int mapId, int fileId)
                 {
                     if (slot == 0x2f)
                     {
-                        lbl_803DCC80 = lbl_803DCC80 | 0x40;
+                        gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x40;
                     }
                     else
                     {
-                        lbl_803DCC80 = lbl_803DCC80 | 0x80;
+                        gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x80;
                     }
                     MLDF_FINFO4(x) = fi;
                     DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, animTabReadCb, 2);
@@ -1960,7 +1960,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, sArchivePathFormat, MLDF_MAP_NAME(mapId), MLDF_FILE_NAME(fileId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -1979,7 +1979,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                         texRestructRefs(1);
                     }
                     DVDClose(fi);
-                    AtomicSList_Push(lbl_803DCC8C, fi);
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
                     MLDF_SP_SIZE(x) = 0;
                     MLDF_SP_ID(x) = mapId;
                     return 0;
@@ -1990,8 +1990,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         DVDRead(fi, loadedBuffer, MLDF_SP_SIZE(x), 0);
                         DVDClose(fi);
-                        AtomicSList_Push(lbl_803DCC8C, fi);
-                        if (((lbl_803DCC80 & 0x400) == 0) && ((lbl_803DCC80 & 0x800) == 0))
+                        AtomicSList_Push(gDvdFileInfoPool, fi);
+                        if (((gAssetLoadInFlightFlags & 0x400) == 0) && ((gAssetLoadInFlightFlags & 0x800) == 0))
                         {
                             mergeTableFiles(tbl->mergeTex0, 0x24, 0x4e, 0x1000);
                         }
@@ -2000,11 +2000,11 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         if (slot == 0x23)
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x100;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x100;
                         }
                         else
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x200;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x200;
                         }
                         MLDF_FINFO4(x) = fi;
                         DVDReadAsyncPrio(fi, loadedBuffer, MLDF_SP_SIZE(x), 0, tex0readCb, 2);
@@ -2053,7 +2053,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, sArchivePathFormat, MLDF_MAP_NAME(mapId), MLDF_FILE_NAME(fileId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -2068,8 +2068,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                 {
                     DVDRead(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0);
                     DVDClose(fi);
-                    AtomicSList_Push(lbl_803DCC8C, fi);
-                    if (((lbl_803DCC80 & 0x400) == 0) && ((lbl_803DCC80 & 0x800) == 0))
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
+                    if (((gAssetLoadInFlightFlags & 0x400) == 0) && ((gAssetLoadInFlightFlags & 0x800) == 0))
                     {
                         mergeTableFiles(tbl->mergeTex0, 0x24, 0x4e, 0x1000);
                     }
@@ -2078,13 +2078,13 @@ void* mapLoadDataFile(int mapId, int fileId)
                 {
                     if (slot == 0x24)
                     {
-                        lbl_803DCC80 = lbl_803DCC80 | 0x400;
+                        gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x400;
                         MLDF_FINFO4(x) = fi;
                         DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, tex0tab1readCb, 2);
                     }
                     else
                     {
-                        lbl_803DCC80 = lbl_803DCC80 | 0x800;
+                        gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x800;
                         MLDF_FINFO4(x) = fi;
                         DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, tex0tab2readCb, 2);
                     }
@@ -2136,7 +2136,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, sArchivePathFormat, MLDF_MAP_NAME(mapId), MLDF_FILE_NAME(fileId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -2155,7 +2155,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                         texRestructRefs(1);
                     }
                     DVDClose(fi);
-                    AtomicSList_Push(lbl_803DCC8C, fi);
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
                     MLDF_SP_SIZE(x) = 0;
                     MLDF_SP_ID(x) = mapId;
                     return 0;
@@ -2166,8 +2166,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         DVDRead(fi, loadedBuffer, MLDF_SP_SIZE(x), 0);
                         DVDClose(fi);
-                        AtomicSList_Push(lbl_803DCC8C, fi);
-                        if (((lbl_803DCC80 & 0x4000) == 0) && ((lbl_803DCC80 & 0x8000) == 0))
+                        AtomicSList_Push(gDvdFileInfoPool, fi);
+                        if (((gAssetLoadInFlightFlags & 0x4000) == 0) && ((gAssetLoadInFlightFlags & 0x8000) == 0))
                         {
                             mergeTableFiles(tbl->mergeTex1, 0x21, 0x4c, 0x1000);
                         }
@@ -2176,11 +2176,11 @@ void* mapLoadDataFile(int mapId, int fileId)
                     {
                         if (slot == 0x20)
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x1000;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x1000;
                         }
                         else
                         {
-                            lbl_803DCC80 = lbl_803DCC80 | 0x2000;
+                            gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x2000;
                         }
                         MLDF_FINFO4(x) = fi;
                         DVDReadAsyncPrio(fi, loadedBuffer, MLDF_SP_SIZE(x), 0, tex1ReadCb, 2);
@@ -2223,7 +2223,7 @@ void* mapLoadDataFile(int mapId, int fileId)
                 MLDF_SP_PTR(x) = 0;
             }
             sprintf(buf, sArchivePathFormat, MLDF_MAP_NAME(mapId), MLDF_FILE_NAME(fileId));
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
@@ -2238,8 +2238,8 @@ void* mapLoadDataFile(int mapId, int fileId)
                 {
                     DVDRead(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0);
                     DVDClose(fi);
-                    AtomicSList_Push(lbl_803DCC8C, fi);
-                    if (((lbl_803DCC80 & 0x4000) == 0) && ((lbl_803DCC80 & 0x8000) == 0))
+                    AtomicSList_Push(gDvdFileInfoPool, fi);
+                    if (((gAssetLoadInFlightFlags & 0x4000) == 0) && ((gAssetLoadInFlightFlags & 0x8000) == 0))
                     {
                         mergeTableFiles(tbl->mergeTex1, 0x21, 0x4c, 0x1000);
                     }
@@ -2249,12 +2249,12 @@ void* mapLoadDataFile(int mapId, int fileId)
                     MLDF_FINFO4(x) = fi;
                     if (slot == 0x21)
                     {
-                        lbl_803DCC80 = lbl_803DCC80 | 0x4000;
+                        gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x4000;
                         DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, tex1tab1readCb, 2);
                     }
                     else
                     {
-                        lbl_803DCC80 = lbl_803DCC80 | 0x8000;
+                        gAssetLoadInFlightFlags = gAssetLoadInFlightFlags | 0x8000;
                         DVDReadAsyncPrio(fi, MLDF_SP_PTR(x), MLDF_SP_SIZE(x), 0, tex1tab2readCb, 2);
                     }
                 }
@@ -2281,7 +2281,7 @@ char sRomlistZlbPathFormat[] = "%s.romlist.zlb";
 void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 length, int* sizeOut, int entryIndex,
                                 u32 flagBits)
 {
-    struct MldfTables* tbl = (struct MldfTables*)lbl_80345E10;
+    struct MldfTables* tbl = (struct MldfTables*)gResourceFileTable;
     u32 tab0 = 0; /* TAB ptr of the primary slot of the pair, 0 = not ready */
     u32 tab1 = 0; /* TAB ptr of the alternate slot of the pair */
     u8 frame = 0; /* run a full frame per wait iteration once dvd error UI is up */
@@ -2304,7 +2304,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
     {
     case 0xd:
         intr = OSDisableInterrupts();
-        entryIndex = lbl_803DCC80;
+        entryIndex = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(intr);
         if ((entryIndex & 0x20000000) == 0 && (entryIndex & 0x10000000) == 0)
         {
@@ -2317,7 +2317,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         hiSel = offsetFlags & 0x80000000;
         if (hiSel != 0 && tab0 == 0)
         {
-            while (intr = OSDisableInterrupts(), entryIndex = lbl_803DCC80, OSRestoreInterrupts(intr), entryIndex != 0)
+            while (intr = OSDisableInterrupts(), entryIndex = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), entryIndex != 0)
             {
                 if ((entryIndex & 0x20000000) == 0 && (entryIndex & 0x10000000) == 0)
                 {
@@ -2346,7 +2346,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         }
         else if ((offsetFlags & 0x20000000) != 0 && tab1 == 0)
         {
-            while (intr = OSDisableInterrupts(), entryIndex = lbl_803DCC80, OSRestoreInterrupts(intr), entryIndex != 0)
+            while (intr = OSDisableInterrupts(), entryIndex = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), entryIndex != 0)
             {
                 if ((entryIndex & 0x80000000) == 0 && (entryIndex & 0x40000000) == 0)
                 {
@@ -2393,7 +2393,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         break;
     case 0x1b:
         intr = OSDisableInterrupts();
-        entryIndex = lbl_803DCC80;
+        entryIndex = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(intr);
         if ((entryIndex & 0x2000000) == 0 && (entryIndex & 0x1000000) == 0)
         {
@@ -2406,7 +2406,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         hiSel = offsetFlags & 0x80000000;
         if (hiSel != 0 && tab0 == 0)
         {
-            while (intr = OSDisableInterrupts(), entryIndex = lbl_803DCC80, OSRestoreInterrupts(intr), entryIndex != 0)
+            while (intr = OSDisableInterrupts(), entryIndex = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), entryIndex != 0)
             {
                 if ((entryIndex & 0x2000000) == 0 && (entryIndex & 0x1000000) == 0)
                 {
@@ -2435,7 +2435,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         }
         else if ((offsetFlags & 0x20000000) != 0 && tab1 == 0)
         {
-            while (intr = OSDisableInterrupts(), entryIndex = lbl_803DCC80, OSRestoreInterrupts(intr), entryIndex != 0)
+            while (intr = OSDisableInterrupts(), entryIndex = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), entryIndex != 0)
             {
                 if ((entryIndex & 0x8000000) == 0 && (entryIndex & 0x4000000) == 0)
                 {
@@ -2482,7 +2482,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         break;
     case 0x25:
         intr = OSDisableInterrupts();
-        entryIndex = lbl_803DCC80;
+        entryIndex = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(intr);
         if ((entryIndex & 0x20000) == 0 && (entryIndex & 0x10000) == 0)
         {
@@ -2512,7 +2512,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         break;
     case 0x2b:
         intr = OSDisableInterrupts();
-        flags = lbl_803DCC80;
+        flags = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(intr);
         if ((flags & 4) == 0 && (flags & 1) == 0)
         {
@@ -2525,7 +2525,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         entryOff = offsetFlags & 0x10000000;
         if (entryOff != 0 && tab0 == 0)
         {
-            while (intr = OSDisableInterrupts(), flags = lbl_803DCC80, OSRestoreInterrupts(intr), flags != 0)
+            while (intr = OSDisableInterrupts(), flags = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), flags != 0)
             {
                 if ((flags & 4) == 0 && (flags & 1) == 0)
                 {
@@ -2554,7 +2554,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         }
         else if ((offsetFlags & 0x20000000) != 0 && tab1 == 0)
         {
-            while (intr = OSDisableInterrupts(), flags = lbl_803DCC80, OSRestoreInterrupts(intr), flags != 0)
+            while (intr = OSDisableInterrupts(), flags = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), flags != 0)
             {
                 if ((flags & 8) == 0 && (flags & 2) == 0)
                 {
@@ -2757,7 +2757,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         break;
     case 0x30:
         intr = OSDisableInterrupts();
-        flags = lbl_803DCC80;
+        flags = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(intr);
         if ((flags & 0x40) == 0 && (flags & 0x10) == 0)
         {
@@ -2769,7 +2769,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         }
         if ((offsetFlags & 0x10000000) != 0 && tab0 == 0)
         {
-            while (intr = OSDisableInterrupts(), flags = lbl_803DCC80, OSRestoreInterrupts(intr), flags != 0)
+            while (intr = OSDisableInterrupts(), flags = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), flags != 0)
             {
                 if ((flags & 0x40) == 0 && (flags & 0x10) == 0)
                 {
@@ -2798,7 +2798,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         }
         else if ((offsetFlags & 0x20000000) != 0 && tab1 == 0)
         {
-            while (intr = OSDisableInterrupts(), flags = lbl_803DCC80, OSRestoreInterrupts(intr), flags != 0)
+            while (intr = OSDisableInterrupts(), flags = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), flags != 0)
             {
                 if ((flags & 0x80) == 0 && (flags & 0x20) == 0)
                 {
@@ -2893,7 +2893,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         break;
     case 0x23:
         intr = OSDisableInterrupts();
-        i = lbl_803DCC80;
+        i = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(intr);
         if ((i & 0x100) == 0 && (i & 0x100) == 0)
         {
@@ -2905,7 +2905,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         }
         if ((offsetFlags & 0x40000000) != 0 && tab0 == 0)
         {
-            while (intr = OSDisableInterrupts(), i = lbl_803DCC80, OSRestoreInterrupts(intr), i != 0)
+            while (intr = OSDisableInterrupts(), i = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), i != 0)
             {
                 if ((i & 0x100) == 0 && (i & 0x100) == 0)
                 {
@@ -2934,7 +2934,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         }
         else if ((offsetFlags & 0x80000000) != 0 && tab1 == 0)
         {
-            while (intr = OSDisableInterrupts(), i = lbl_803DCC80, OSRestoreInterrupts(intr), i != 0)
+            while (intr = OSDisableInterrupts(), i = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), i != 0)
             {
                 if ((i & 0x800) == 0 && (i & 0x200) == 0)
                 {
@@ -3079,7 +3079,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         break;
     case 0x20:
         intr = OSDisableInterrupts();
-        i = lbl_803DCC80;
+        i = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(intr);
         if ((i & 0x4000) == 0 && (i & 0x1000) == 0)
         {
@@ -3091,7 +3091,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         }
         if ((offsetFlags & 0x40000000) != 0 && tab0 == 0)
         {
-            while (intr = OSDisableInterrupts(), i = lbl_803DCC80, OSRestoreInterrupts(intr), i != 0)
+            while (intr = OSDisableInterrupts(), i = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), i != 0)
             {
                 if ((i & 0x1000) == 0 && (i & 0x1000) == 0)
                 {
@@ -3120,7 +3120,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         }
         else if ((offsetFlags & 0x80000000) != 0 && tab1 == 0)
         {
-            while (intr = OSDisableInterrupts(), i = lbl_803DCC80, OSRestoreInterrupts(intr), i != 0)
+            while (intr = OSDisableInterrupts(), i = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), i != 0)
             {
                 if ((i & 0x8000) == 0 && (i & 0x2000) == 0)
                 {
@@ -3464,9 +3464,9 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
     return 0;
 }
 
-extern int lbl_8035F208[];
-extern u32 lbl_8035F3E8[];
-extern int lbl_803DCC74;
+extern int gMapRomListBuffers[];
+extern u32 gResourceFileBuffers[];
+extern int gRomListLoadInFlight;
 
 
 int mapGetDirIdx(int idx)
@@ -3477,8 +3477,8 @@ int mapGetDirIdx(int idx)
 }
 
 
-extern int lbl_8035EF48[];
-extern s16 lbl_803DCC78;
+extern int gResourcePendingMapIds[];
+extern s16 gDefragDelayFrames;
 
 void loadDataFiles()
 {
@@ -3496,28 +3496,28 @@ void loadDataFiles()
     {
         defragMemory(0);
     }
-    if (lbl_803DCC78 != 0)
+    if (gDefragDelayFrames != 0)
     {
-        if (lbl_803DCC78 == 1)
+        if (gDefragDelayFrames == 1)
         {
             defragMemory(0);
         }
-        lbl_803DCC78--;
+        gDefragDelayFrames--;
     }
     for (i = 0; i <= 0x57; i++)
     {
-        if (lbl_8035EF48[i] != -1)
+        if (gResourcePendingMapIds[i] != -1)
         {
             debugPrintSetColor(0, 0xff, 0, 0xff);
             logPrintf(sAssetHaltFormat, sResourceFileNameTable[i]);
             debugPrintSetColor(0xff, 0xff, 0xff, 0xff);
-            lbl_803DCC70 = 1;
-            if (mapLoadDataFile(lbl_8035EF48[i], i) != 0)
+            gForceLoadImmediately = 1;
+            if (mapLoadDataFile(gResourcePendingMapIds[i], i) != 0)
             {
-                lbl_8035EF48[i] = -1;
+                gResourcePendingMapIds[i] = -1;
                 printHeapStats(1);
             }
-            lbl_803DCC70 = 0;
+            gForceLoadImmediately = 0;
         }
     }
     loadTableFiles();
@@ -3529,38 +3529,38 @@ void piRomLoadSection(int romOffset, int mapIndex, int destBuf)
     int ok;
     struct PackHeader* hdr;
 
-    if (((void*)destBuf == NULL) && ((void*)lbl_8035F208[mapIndex] == NULL))
+    if (((void*)destBuf == NULL) && ((void*)gMapRomListBuffers[mapIndex] == NULL))
     {
         sprintf(buf, sRomlistZlbPathFormat, sMapFileNameTable[mapIndex]);
-        fi = AtomicSList_Pop(lbl_803DCC8C);
+        fi = AtomicSList_Pop(gDvdFileInfoPool);
         ok = DVDOpen(buf, fi);
         if (ok != 0)
         {
-            lbl_8035F208[mapIndex] = (int)mmAlloc(DVD_FI_LENGTH(fi), 0x7d7d7d7d, 0);
-            lbl_803DCC74 = 1;
-            DVDReadAsyncPrio(fi, (void*)lbl_8035F208[mapIndex], DVD_FI_LENGTH(fi), 0, romListReadCb, 2);
+            gMapRomListBuffers[mapIndex] = (int)mmAlloc(DVD_FI_LENGTH(fi), 0x7d7d7d7d, 0);
+            gRomListLoadInFlight = 1;
+            DVDReadAsyncPrio(fi, (void*)gMapRomListBuffers[mapIndex], DVD_FI_LENGTH(fi), 0, romListReadCb, 2);
         }
     }
     else
     {
-        if ((void*)lbl_8035F208[mapIndex] == NULL)
+        if ((void*)gMapRomListBuffers[mapIndex] == NULL)
         {
             sprintf(buf, sRomlistZlbPathFormat, sMapFileNameTable[mapIndex]);
-            fi = AtomicSList_Pop(lbl_803DCC8C);
+            fi = AtomicSList_Pop(gDvdFileInfoPool);
             ok = DVDOpen(buf, fi);
             if (ok == 0)
             {
                 return;
             }
-            lbl_8035F208[mapIndex] = (int)mmAlloc(DVD_FI_LENGTH(fi), 0x7d7d7d7d, 0);
-            DVDRead(fi, (void*)lbl_8035F208[mapIndex], DVD_FI_LENGTH(fi), 0);
+            gMapRomListBuffers[mapIndex] = (int)mmAlloc(DVD_FI_LENGTH(fi), 0x7d7d7d7d, 0);
+            DVDRead(fi, (void*)gMapRomListBuffers[mapIndex], DVD_FI_LENGTH(fi), 0);
             DVDClose(fi);
-            AtomicSList_Push(lbl_803DCC8C, fi);
+            AtomicSList_Push(gDvdFileInfoPool, fi);
         }
-        hdr = (struct PackHeader*)(lbl_8035F3E8[0x1d] + romOffset);
+        hdr = (struct PackHeader*)(gResourceFileBuffers[0x1d] + romOffset);
         if (hdr->magic == 0xfacefeed)
         {
-            zlbDecompress((u8*)(lbl_8035F208[mapIndex] + 0x10), hdr->compressedSize, (u8*)destBuf, &hdr->decompressedSize);
+            zlbDecompress((u8*)(gMapRomListBuffers[mapIndex] + 0x10), hdr->compressedSize, (u8*)destBuf, &hdr->decompressedSize);
             DCStoreRange((void*)destBuf, hdr->decompressedSize);
         }
     }
@@ -3569,15 +3569,15 @@ void piRomLoadSection(int romOffset, int mapIndex, int destBuf)
 void tex1GetFrame(int texId, int unused, int* outA, int* outB, int count, int* frameTable, int queryMode)
 {
     int idx = -1;
-    if (lbl_8035F3E8[0x20] != 0 || lbl_8035F3E8[0x4b] != 0)
+    if (gResourceFileBuffers[0x20] != 0 || gResourceFileBuffers[0x4b] != 0)
     {
         int s = OSDisableInterrupts();
-        int flags = lbl_803DCC80;
+        int flags = gAssetLoadInFlightFlags;
         u32 f46c;
         u32 f518;
         OSRestoreInterrupts(s);
-        f46c = lbl_8035F3E8[0x21];
-        f518 = lbl_8035F3E8[0x4c];
+        f46c = gResourceFileBuffers[0x21];
+        f518 = gResourceFileBuffers[0x4c];
         if ((texId & 0x80000000) != 0 && (flags & 0x2000) == 0)
         {
             idx = 0x4b;
@@ -3586,16 +3586,16 @@ void tex1GetFrame(int texId, int unused, int* outA, int* outB, int count, int* f
         {
             idx = 0x20;
         }
-        else if (f46c != 0 && (flags & 0x1000) == 0 && lbl_8035F3E8[0x20] != 0)
+        else if (f46c != 0 && (flags & 0x1000) == 0 && gResourceFileBuffers[0x20] != 0)
         {
             idx = 0x20;
         }
-        else if (f518 != 0 && (flags & 0x2000) == 0 && lbl_8035F3E8[0x4b] != 0)
+        else if (f518 != 0 && (flags & 0x2000) == 0 && gResourceFileBuffers[0x4b] != 0)
         {
             idx = 0x4b;
         }
         {
-            u32 base = lbl_8035F3E8[idx];
+            u32 base = gResourceFileBuffers[idx];
             if (base != 0)
             {
                 if (queryMode == 1 && frameTable != 0)
@@ -3672,15 +3672,15 @@ void tex1GetFrame(int texId, int unused, int* outA, int* outB, int count, int* f
 void tex0GetFrame(int texId, int unused, int* outA, int* outB, int count, int* frameTable, int queryMode)
 {
     int idx = -1;
-    if (lbl_8035F3E8[0x23] != 0 || lbl_8035F3E8[0x4d] != 0)
+    if (gResourceFileBuffers[0x23] != 0 || gResourceFileBuffers[0x4d] != 0)
     {
         int s = OSDisableInterrupts();
-        int flags = lbl_803DCC80;
+        int flags = gAssetLoadInFlightFlags;
         u32 f478;
         u32 f520;
         OSRestoreInterrupts(s);
-        f478 = lbl_8035F3E8[0x24];
-        f520 = lbl_8035F3E8[0x4e];
+        f478 = gResourceFileBuffers[0x24];
+        f520 = gResourceFileBuffers[0x4e];
         if ((texId & 0x80000000) != 0 && (flags & 0x200) == 0)
         {
             idx = 0x4d;
@@ -3699,7 +3699,7 @@ void tex0GetFrame(int texId, int unused, int* outA, int* outB, int count, int* f
         }
         if (queryMode == 1 && frameTable != 0)
         {
-            int base = lbl_8035F3E8[idx];
+            int base = gResourceFileBuffers[idx];
             int e = base + (texId & 0xffffff) * 2 + frameTable[count] + 4;
             int v = *(int*)(e + 8);
             *outA = *(int*)(e + 4);
@@ -3707,11 +3707,11 @@ void tex0GetFrame(int texId, int unused, int* outA, int* outB, int count, int* f
         }
         else if (queryMode == 2 && frameTable != 0)
         {
-            memcpy(frameTable, (void*)(lbl_8035F3E8[idx] + (texId & 0xffffff) * 2), (count + 1) * 4);
+            memcpy(frameTable, (void*)(gResourceFileBuffers[idx] + (texId & 0xffffff) * 2), (count + 1) * 4);
         }
         else
         {
-            int e = lbl_8035F3E8[idx] + (texId & 0xffffff) * 2 + 4;
+            int e = gResourceFileBuffers[idx] + (texId & 0xffffff) * 2 + 4;
             int v = *(int*)(e + 8);
             *outA = *(int*)(e + 4);
             *outB = v;
@@ -3722,7 +3722,7 @@ void tex0GetFrame(int texId, int unused, int* outA, int* outB, int count, int* f
 
 void texPreGetMipmap(int texId, int unused, int* outA, int* outB, int count, int* frameTable, int queryMode)
 {
-    u32 base = lbl_8035F3E8[0x4f];
+    u32 base = gResourceFileBuffers[0x4f];
     if (base != 0)
     {
         if (queryMode == 1 && frameTable != 0)
@@ -3761,18 +3761,18 @@ void loadModelsBin(int offsetFlags, int* p1c, int* p20, int* p18, int* p4, int w
     int flags;
     int saved;
     char* entry;
-    if (lbl_8035F3E8[0x2b] != 0 || lbl_8035F3E8[0x46] != 0)
+    if (gResourceFileBuffers[0x2b] != 0 || gResourceFileBuffers[0x46] != 0)
     {
         saved = OSDisableInterrupts();
-        flags = lbl_803DCC80;
+        flags = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(saved);
         if ((flags & 4) == 0 && (flags & 1) == 0)
         {
-            tab0 = lbl_8035F3E8[0x2a];
+            tab0 = gResourceFileBuffers[0x2a];
         }
         if ((flags & 8) == 0 && (flags & 2) == 0)
         {
-            tab1 = lbl_8035F3E8[0x45];
+            tab1 = gResourceFileBuffers[0x45];
         }
         if (tab1 != 0 && (offsetFlags & 0x20000000) != 0)
         {
@@ -3790,7 +3790,7 @@ void loadModelsBin(int offsetFlags, int* p1c, int* p20, int* p18, int* p4, int w
         {
             idx = 0x46;
         }
-        entry = (char*)lbl_8035F3E8[idx] + (offsetFlags & 0x0fffffff);
+        entry = (char*)gResourceFileBuffers[idx] + (offsetFlags & 0x0fffffff);
         *p18 = *(int*)(entry + 0x18);
         *p1c = *(int*)(entry + 0x1c);
         *p20 = *(int*)(entry + 0x20);
@@ -3799,11 +3799,11 @@ void loadModelsBin(int offsetFlags, int* p1c, int* p20, int* p18, int* p4, int w
 }
 
 
-/* base+0x74 / base+0x78 are lbl_8035F3E8[0x1d]/[0x1e] (MldfTables.ptrs: maps info
+/* base+0x74 / base+0x78 are gResourceFileBuffers[0x1d]/[0x1e] (MldfTables.ptrs: maps info
    bin/tab); the byte-offset spelling is codegen-load-bearing */
 void mapsBinGetRomlistSize(int idx, int* out1, int* out2, int* out3, int p5)
 {
-    char* base = (char*)lbl_8035F3E8;
+    char* base = (char*)gResourceFileBuffers;
     char* e;
     if (*(void**)(base + 0x74) == NULL)
         return;
@@ -3822,13 +3822,13 @@ void checkLoadBlock(int a, int* pc, int* p8)
     int saved;
     char* blk;
     u32 t25, t47;
-    if ((lbl_8035F3E8[0x26] != 0 && lbl_8035F3E8[0x25] != 0) || (lbl_8035F3E8[0x48] != 0 && lbl_8035F3E8[0x47] != 0))
+    if ((gResourceFileBuffers[0x26] != 0 && gResourceFileBuffers[0x25] != 0) || (gResourceFileBuffers[0x48] != 0 && gResourceFileBuffers[0x47] != 0))
     {
         saved = OSDisableInterrupts();
-        flags = lbl_803DCC80;
+        flags = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(saved);
-        t25 = lbl_8035F3E8[0x25];
-        t47 = lbl_8035F3E8[0x47];
+        t25 = gResourceFileBuffers[0x25];
+        t47 = gResourceFileBuffers[0x47];
         if (t25 != 0 && (a & 0x10000000) != 0 && (flags & 0x10000) == 0)
         {
             idx = 0x25;
@@ -3845,7 +3845,7 @@ void checkLoadBlock(int a, int* pc, int* p8)
         {
             idx = 0x47;
         }
-        blk = (char*)lbl_8035F3E8[idx] + (a & 0x00ffffff);
+        blk = (char*)gResourceFileBuffers[idx] + (a & 0x00ffffff);
         if (strncmp(blk, sZlbBlockTag, 3) != 0)
         {
             *p8 = 0;
@@ -3874,13 +3874,13 @@ void loadVoxMaps(int a, int* pc, int* p8)
     int saved;
     char* blk;
     u32 t1b, t54;
-    if ((lbl_8035F3E8[0x1a] != 0 && lbl_8035F3E8[0x1b] != 0) || (lbl_8035F3E8[0x53] != 0 && lbl_8035F3E8[0x54] != 0))
+    if ((gResourceFileBuffers[0x1a] != 0 && gResourceFileBuffers[0x1b] != 0) || (gResourceFileBuffers[0x53] != 0 && gResourceFileBuffers[0x54] != 0))
     {
         saved = OSDisableInterrupts();
-        flags = lbl_803DCC80;
+        flags = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(saved);
-        t1b = lbl_8035F3E8[0x1b];
-        t54 = lbl_8035F3E8[0x54];
+        t1b = gResourceFileBuffers[0x1b];
+        t54 = gResourceFileBuffers[0x54];
         if (t1b != 0 && (a & 0x80000000) != 0 && (flags & 0x1000000) == 0)
         {
             idx = 0x1b;
@@ -3899,7 +3899,7 @@ void loadVoxMaps(int a, int* pc, int* p8)
         }
         if ((a & 0xf0000000) != 0)
         {
-            blk = (char*)lbl_8035F3E8[idx] + (a & 0x00ffffff);
+            blk = (char*)gResourceFileBuffers[idx] + (a & 0x00ffffff);
             if (strncmp(blk, sZlbBlockTag, 3) != 0)
             {
                 *p8 = 0;
@@ -3927,13 +3927,13 @@ void loadVoxMaps(int a, int* pc, int* p8)
     }
 }
 
-extern u32 lbl_8035F0A8[];
+extern u32 gResourceFileSizes[];
 
 s32 getDataFileSize(int idx)
 {
-    if (lbl_8035F3E8[idx] != 0)
+    if (gResourceFileBuffers[idx] != 0)
     {
-        return lbl_8035F0A8[idx];
+        return gResourceFileSizes[idx];
     }
     *(u8*)0 = 0;
     return 0;
@@ -3945,10 +3945,10 @@ int fileLoadToBufferOffset(int id, void* buffer, int offset, int size)
     void* tmp;
     if (size == 0)
         return 0;
-    if (lbl_8035F3E8[id] != 0)
+    if (gResourceFileBuffers[id] != 0)
     {
         {
-            int base = lbl_8035F3E8[id];
+            int base = gResourceFileBuffers[id];
             memcpy(buffer, (void*)(base + offset), size);
         }
         DCStoreRange(buffer, size);
@@ -3977,11 +3977,11 @@ int fileLoadToBufferOffset(int id, void* buffer, int offset, int size)
 int fileLoadToBuffer(int id, void* buffer)
 {
     DVDFileInfo fileInfo;
-    if (lbl_8035F3E8[id] != 0)
+    if (gResourceFileBuffers[id] != 0)
     {
-        memcpy(buffer, (void*)lbl_8035F3E8[id], lbl_8035F0A8[id]);
-        DCStoreRange(buffer, lbl_8035F0A8[id]);
-        return lbl_8035F0A8[id];
+        memcpy(buffer, (void*)gResourceFileBuffers[id], gResourceFileSizes[id]);
+        DCStoreRange(buffer, gResourceFileSizes[id]);
+        return gResourceFileSizes[id];
     }
     DVDOpen(sResourceFileNameTable[id], &fileInfo);
     DCInvalidateRange(buffer, fileInfo.length);
@@ -3993,17 +3993,17 @@ int fileLoadToBuffer(int id, void* buffer)
 void* fileLoad(int id, int wpad0)
 {
     DVDFileInfo fileInfo;
-    if (lbl_8035F3E8[id] != 0)
+    if (gResourceFileBuffers[id] != 0)
     {
-        return (void*)lbl_8035F3E8[id];
+        return (void*)gResourceFileBuffers[id];
     }
     DVDOpen(sResourceFileNameTable[id], &fileInfo);
-    lbl_8035F0A8[id] = fileInfo.length;
-    lbl_8035F3E8[id] = (u32)mmAlloc(lbl_8035F0A8[id] + 0x20, 0x7d7d7d7d, 0);
-    DCInvalidateRange((void*)lbl_8035F3E8[id], lbl_8035F0A8[id]);
-    DVDRead(&fileInfo, (void*)lbl_8035F3E8[id], lbl_8035F0A8[id], 0);
+    gResourceFileSizes[id] = fileInfo.length;
+    gResourceFileBuffers[id] = (u32)mmAlloc(gResourceFileSizes[id] + 0x20, 0x7d7d7d7d, 0);
+    DCInvalidateRange((void*)gResourceFileBuffers[id], gResourceFileSizes[id]);
+    DVDRead(&fileInfo, (void*)gResourceFileBuffers[id], gResourceFileSizes[id], 0);
     DVDClose(&fileInfo);
-    return (void*)lbl_8035F3E8[id];
+    return (void*)gResourceFileBuffers[id];
 }
 
 u8 initLoadFiles(void)
@@ -4013,12 +4013,12 @@ u8 initLoadFiles(void)
     int* rom;
     struct MldfIterators it;
     u8* himem;
-    struct MldfTables* tbl = (struct MldfTables*)lbl_80345E10;
-    if (lbl_803DCC90 == 0)
+    struct MldfTables* tbl = (struct MldfTables*)gResourceFileTable;
+    if (gLoadFilesInitDone == 0)
     {
-        lbl_803DCC90 = 1;
-        lbl_803DCC88 = 0;
-        lbl_803DCC8C = stackCreate(0x5e, 0x40);
+        gLoadFilesInitDone = 1;
+        gPendingDvdReadCount = 0;
+        gDvdFileInfoPool = stackCreate(0x5e, 0x40);
         i = 0;
         rom = (int*)((MldfArenaBlock*)tbl + 1) - MLDF_ROM_LIST_WORDS_FROM_ARENA_END;
         for (; i < 0x75; rom++, i++)
@@ -4096,11 +4096,11 @@ u8 initLoadFiles(void)
             default:
                 if (*it.ptrs == 0)
                 {
-                    fileInfo = AtomicSList_Pop(lbl_803DCC8C);
+                    fileInfo = AtomicSList_Pop(gDvdFileInfoPool);
                     DVDOpen(*it.names, fileInfo);
                     *it.sizes = fileInfo->length;
                     *it.ptrs = mmAlloc(*it.sizes + 0x20, 0x7d7d7d7d, 0);
-                    lbl_803DCC88 = lbl_803DCC88 + 1;
+                    gPendingDvdReadCount = gPendingDvdReadCount + 1;
                     DVDReadAsyncPrio(fileInfo, *it.ptrs, *it.sizes, 0, dvdReadCb_80041d30, 2);
                 }
                 *it.owners = -1;
@@ -4110,25 +4110,25 @@ u8 initLoadFiles(void)
             *it.flags = 0;
         }
     }
-    if (lbl_803DCC88 == 0)
+    if (gPendingDvdReadCount == 0)
     {
-        if (((lbl_803DCC80 & 0x100) == 0 || (lbl_803DCC80 & 0x400) == 0) &&
-            ((lbl_803DCC84 & 0x100) == 0 || (lbl_803DCC84 & 0x400) == 0))
+        if (((gAssetLoadInFlightFlags & 0x100) == 0 || (gAssetLoadInFlightFlags & 0x400) == 0) &&
+            ((gAssetLoadCompletedFlags & 0x100) == 0 || (gAssetLoadCompletedFlags & 0x400) == 0))
         {
             int saved = testAndSet_onlyUseHeap3(0);
             mapLoadDataFile(5, MLDF_FILEID_TEX0_BIN_A);
             mapLoadDataFile(5, MLDF_FILEID_TEX0_TAB_A);
             testAndSet_onlyUseHeap3(saved);
         }
-        else if ((lbl_803DCC84 & 0x100) != 0 && (lbl_803DCC84 & 0x400) != 0)
+        else if ((gAssetLoadCompletedFlags & 0x100) != 0 && (gAssetLoadCompletedFlags & 0x400) != 0)
         {
             mergeTableFiles(tbl->mergeModels, 0x2a, 0x45, 0x800);
             mergeTableFiles(tbl->mergeAnim, 0x2f, 0x49, 3000);
             mergeTableFiles(tbl->mergeTex0, 0x24, 0x4e, 0x1000);
             mergeTableFiles(tbl->mergeTex1, 0x21, 0x4c, 0x1000);
             mergeTableFiles(tbl->mergeBlocks, 0x26, 0x48, 0x800);
-            lbl_803DCC84 = 0;
-            lbl_803DCC80 = 0;
+            gAssetLoadCompletedFlags = 0;
+            gAssetLoadInFlightFlags = 0;
             return 1;
         }
     }
@@ -4178,44 +4178,44 @@ void gpuErrorHandler(u32 retraceCount)
     u32 rdIdle;
     u32 cmdIdle;
 
-    if (lbl_803DCCA8 != 0 && lbl_803DCCA9 != 0)
+    if (gFlipTokenHeldForDisplayedFb != 0 && gFrameBufferFlipped != 0)
     {
-        Queue_Pop(&lbl_8035F730, tok);
-        lbl_803DCCAC = 0;
-        OSWakeupThread((OSThreadQueue*)&lbl_803DCCC4);
-        if (Queue_IsEmpty(&lbl_8035F730) != 0)
+        Queue_Pop(&gVideoFlipQueue, tok);
+        gGpuStallRetraceCount = 0;
+        OSWakeupThread((OSThreadQueue*)&gVideoFlipWaitQueue);
+        if (Queue_IsEmpty(&gVideoFlipQueue) != 0)
         {
             GXDisableBreakPt();
-            lbl_803DCCA7 = 0;
+            gGxBreakPtEnabled = 0;
         }
         else
         {
-            Queue_Peek(&lbl_8035F730, tok);
+            Queue_Peek(&gVideoFlipQueue, tok);
             GXEnableBreakPt((void*)tok[0]);
-            lbl_803DCCA7 = 1;
+            gGxBreakPtEnabled = 1;
         }
-        lbl_803DCCA8 = 0;
-        lbl_803DCCA9 = 0;
+        gFlipTokenHeldForDisplayedFb = 0;
+        gFrameBufferFlipped = 0;
     }
     gPadReadReady = 1;
-    lbl_803DCCA6 = 1;
-    switch (lbl_803DCCA4)
+    gVideoRetracePending = 1;
+    switch (gResetButtonPressState)
     {
     case 0:
         if (OSGetResetButtonState() != 0)
         {
-            lbl_803DCCA4++;
+            gResetButtonPressState++;
         }
         break;
     case 1:
         if (OSGetResetButtonState() == 0)
         {
-            lbl_803DCCA4++;
+            gResetButtonPressState++;
             setShouldResetNextFrame(1);
         }
         break;
     }
-    if (enableDebugText != 0 && lbl_803DCCDC != NULL && (u32)lbl_803DCCAC > 600)
+    if (enableDebugText != 0 && gVideoWaitThread != NULL && (u32)gGpuStallRetraceCount > 600)
     {
         debugPrintfxy(0x32, 100, strs + 0x40000);
         GXReadXfRasMetric(&botPerf0, &botClks, &botPerf1, &botClks2);
@@ -4246,7 +4246,7 @@ void gpuErrorHandler(u32 retraceCount)
         {
             debugPrintfxy(0x32, 0x8c, strs + 0x400e4);
         }
-        debugPrintfxy(0x32, 0xa0, sProgramCounterFormat, lbl_803DCCDC->context.srr0);
+        debugPrintfxy(0x32, 0xa0, sProgramCounterFormat, gVideoWaitThread->context.srr0);
     }
 }
 void logGpuHang(void);
@@ -4257,11 +4257,11 @@ void videoSwapFrameBuffers(u32 retraceCount)
     int tok[3];
     GXFifoObj fifo;
 
-    lbl_803DCCA0 = lbl_803DCCA0 + 1;
+    gRetraceCountSinceFlip = gRetraceCountSinceFlip + 1;
     sync = GXReadDrawSync();
-    if (sync == (u16)(lbl_803DCCAA + 1))
+    if (sync == (u16)(gLastDrawSyncToken + 1))
     {
-        lbl_803DCCAA = sync;
+        gLastDrawSyncToken = sync;
         if (displayFrameBuffer == externalFrameBuffer0)
         {
             displayFrameBuffer = externalFrameBuffer1;
@@ -4272,12 +4272,12 @@ void videoSwapFrameBuffers(u32 retraceCount)
         }
         VISetNextFrameBuffer(displayFrameBuffer);
         VIFlush();
-        lbl_803DCCA9 = 1;
-        lbl_803DB5C8 = lbl_803DCCA0;
-        lbl_803DCCA0 = 0;
+        gFrameBufferFlipped = 1;
+        lbl_803DB5C8 = gRetraceCountSinceFlip;
+        gRetraceCountSinceFlip = 0;
     }
-    lbl_803DCCAC = lbl_803DCCAC + 1;
-    if (lbl_803DCCB0 != 0 && (u32)lbl_803DCCAC > 18000)
+    gGpuStallRetraceCount = gGpuStallRetraceCount + 1;
+    if (gGpuHangRecoveryEnabled != 0 && (u32)gGpuStallRetraceCount > 18000)
     {
         logGpuHang();
         gxErrorFn_80060b40();
@@ -4286,20 +4286,20 @@ void videoSwapFrameBuffers(u32 retraceCount)
         GXInitFifoBase(&fifo, renderFrameBuffer, 0x10000);
         GXSetCPUFifo(&fifo);
         GXSetGPFifo(&fifo);
-        lbl_803DCCD4 = GXInit(lbl_803DCCD8, (u32)lbl_803DCCE4);
-        if (Queue_IsEmpty(&lbl_8035F730) == 0)
+        gGxFifoObj = GXInit(gGxFifoBase, (u32)gGxFifoSize);
+        if (Queue_IsEmpty(&gVideoFlipQueue) == 0)
         {
-            Queue_Pop(&lbl_8035F730, tok);
+            Queue_Pop(&gVideoFlipQueue, tok);
         }
-        OSWakeupThread((OSThreadQueue*)&lbl_803DCCC4);
-        if (Queue_IsEmpty(&lbl_8035F730) != 0)
+        OSWakeupThread((OSThreadQueue*)&gVideoFlipWaitQueue);
+        if (Queue_IsEmpty(&gVideoFlipQueue) != 0)
         {
             GXDisableBreakPt();
-            lbl_803DCCA7 = 0;
+            gGxBreakPtEnabled = 0;
         }
         else
         {
-            Queue_Peek(&lbl_8035F730, tok);
+            Queue_Peek(&gVideoFlipQueue, tok);
             GXEnableBreakPt((void*)tok[0]);
         }
         gxPerfFn_8004a77c(1);
@@ -4316,7 +4316,7 @@ void videoFn_800499e8(void)
     {
         THPPlayerPostDrawDone();
     }
-    Queue_Peek(&lbl_8035F730, &peek);
+    Queue_Peek(&gVideoFlipQueue, &peek);
     for (i = 0; i < (int)(u32)gDepthReadPendingCount; i++)
     {
         gDepthReadResults[i].x = gDepthReadPendingQueue[i].x;
@@ -4328,33 +4328,33 @@ void videoFn_800499e8(void)
     gDepthReadPendingCount = 0;
     if (*(void**)(peek + 8) == displayFrameBuffer)
     {
-        lbl_803DCCA8 = 1;
-        lbl_803DCCA9 = 0;
+        gFlipTokenHeldForDisplayedFb = 1;
+        gFrameBufferFlipped = 0;
     }
     else
     {
-        Queue_Pop(&lbl_8035F730, tok);
-        lbl_803DCCAC = 0;
-        OSWakeupThread((OSThreadQueue*)&lbl_803DCCC4);
-        if (Queue_IsEmpty(&lbl_8035F730) != 0)
+        Queue_Pop(&gVideoFlipQueue, tok);
+        gGpuStallRetraceCount = 0;
+        OSWakeupThread((OSThreadQueue*)&gVideoFlipWaitQueue);
+        if (Queue_IsEmpty(&gVideoFlipQueue) != 0)
         {
             GXDisableBreakPt();
-            lbl_803DCCA7 = 0;
+            gGxBreakPtEnabled = 0;
         }
         else
         {
-            Queue_Peek(&lbl_8035F730, tok);
+            Queue_Peek(&gVideoFlipQueue, tok);
             GXEnableBreakPt((void*)tok[0]);
-            lbl_803DCCA7 = 1;
+            gGxBreakPtEnabled = 1;
         }
     }
 }
 
-RingBufferQueue lbl_8035F730;
-char lbl_8035F6B8[0x78];
-OSStopwatch lbl_8035F680;
+RingBufferQueue gVideoFlipQueue;
+char gVideoFlipQueueBuffer[0x78];
+OSStopwatch gFrameStopwatch;
 s16 gObjMapBlockInfo[0x9C];
-u32 lbl_8035F3E8[0x58];
-int lbl_8035F208[0x78];
-u32 lbl_8035F0A8[0x58];
-int lbl_8035EF48[0x58];
+u32 gResourceFileBuffers[0x58];
+int gMapRomListBuffers[0x78];
+u32 gResourceFileSizes[0x58];
+int gResourcePendingMapIds[0x58];

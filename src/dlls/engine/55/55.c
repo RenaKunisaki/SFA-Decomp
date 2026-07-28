@@ -41,14 +41,14 @@ typedef struct OptionsScreenPanelConfig {
     u16 padding;
 } OptionsScreenPanelConfig;
 
-extern OptionsScreenPanelConfig lbl_8031ACB8[4];
+extern OptionsScreenPanelConfig gOptionsPanelTable[4];
 
 /*
  * dll_4e - options-menu setting callbacks (audio panel, gameplay panel,
  * submenu selector).
  *
  * Each callback is driven by the title-menu item widgets in
- * lbl_803A87D0[]: the widget at the option index (the menu row) is
+ * gOptionsMenuItems[]: the widget at the option index (the menu row) is
  * queried through the gTitleMenuItemInterface vtable - slot 0x2c tests
  * whether the value changed, slot 0x24 reads the current value, slot
  * 0x28 sets a value, slot 0x10 frees the widget. The action arg selects
@@ -56,7 +56,7 @@ extern OptionsScreenPanelConfig lbl_8031ACB8[4];
  * the screen transition into the next menu state.
  *
  * - applyAudioSetting: sound mode, music/sfx/voice volume, reset to
- *   defaults (reloads the saved volumes from lbl_803DD708).
+ *   defaults (reloads the saved volumes from gOptionsSaveData).
  * - applyGameplaySetting: widescreen, rumble, roll credits, colour
  *   filter.
  * - openSelectedSubmenu: general / audio / language panels.
@@ -89,47 +89,47 @@ extern OptionsScreenPanelConfig lbl_8031ACB8[4];
 #define OPTIONS_SUBMENU_AUDIO    2
 #define OPTIONS_SUBMENU_LANGUAGE 3
 
-extern s8 lbl_803DBA28;
-extern u8 lbl_803DD6F8;
+extern s8 gOptionsActivePanel;
+extern u8 gOptionsRequestedPanel;
 extern u8 lbl_803DD6F9;
 extern int lbl_803DD6FC;
-extern int lbl_803DD700;
-extern s8 lbl_803DD704;
-extern s8 lbl_803DD705;
-extern s8 lbl_803DD706;
+extern int gOptionsLastSelectedRow;
+extern s8 gOptionsExitCountdown;
+extern s8 gOptionsExitRequested;
+extern s8 gOptionsLayoutRefreshFrames;
 extern s8 lbl_803DD70C;
 
 void optionsMenu_applyAudioSetting(int action, int option)
 {
     int value;
 
-    if (lbl_803A87D0[option] != NULL && gTitleMenuItemInterface->vtable->isChanged(lbl_803A87D0[option]) != 0)
+    if (gOptionsMenuItems[option] != NULL && gTitleMenuItemInterface->vtable->isChanged(gOptionsMenuItems[option]) != 0)
     {
         switch (option)
         {
         case AUDIO_OPTION_SOUND_MODE:
-            audioSetSoundMode((u8)gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[option]), 1);
+            audioSetSoundMode((u8)gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[option]), 1);
             break;
         case AUDIO_OPTION_SFX_VOLUME:
-            value = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[option]);
+            value = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[option]);
             audioSetVolumes((u8)value, OPTIONS_MENU_VOLUME_STEP, 0, 1, 0);
             break;
         case AUDIO_OPTION_MUSIC_VOLUME:
-            value = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[option]);
+            value = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[option]);
             audioSetVolumes((u8)value, OPTIONS_MENU_VOLUME_STEP, 1, 0, 0);
-            value = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[option]);
+            value = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[option]);
             gTitleMenuControlInterface->vtable->func0D(value); /* set music control value */
             break;
         case AUDIO_OPTION_VOICE_VOLUME:
-            value = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[option]);
+            value = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[option]);
             audioSetVolumes((u8)value, OPTIONS_MENU_VOLUME_STEP, 0, 0, 1);
             break;
         case AUDIO_OPTION_EXTRA:
-            lbl_803DD6FC = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[option]);
+            lbl_803DD6FC = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[option]);
             break;
         }
     }
-    if ((lbl_803A87D0[option] == NULL) ||
+    if ((gOptionsMenuItems[option] == NULL) ||
         ((option != AUDIO_OPTION_SFX_VOLUME) && (option != AUDIO_OPTION_MUSIC_VOLUME) &&
          (option != AUDIO_OPTION_VOICE_VOLUME)))
     {
@@ -139,22 +139,22 @@ void optionsMenu_applyAudioSetting(int action, int option)
     {
         Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
         (*gScreenTransitionInterface)->start(OPTIONS_MENU_TRANSITION_FRAMES, OPTIONS_MENU_TRANSITION_MODE);
-        lbl_803DD704 = OPTIONS_MENU_NEXT_STATE;
-        lbl_803DD705 = 1;
+        gOptionsExitCountdown = OPTIONS_MENU_NEXT_STATE;
+        gOptionsExitRequested = 1;
     }
     else if ((action == OPTIONS_MENU_ACTION_SELECT) && (option == AUDIO_OPTION_RESET_DEFAULTS))
     {
         saveFileStruct_resetVolumes();
-        gTitleMenuItemInterface->vtable->setValue(lbl_803A87D0[AUDIO_OPTION_MUSIC_VOLUME],
-                                                   lbl_803DD708->musicVolume);
-        gTitleMenuItemInterface->vtable->setValue(lbl_803A87D0[AUDIO_OPTION_SFX_VOLUME], lbl_803DD708->sfxVolume);
-        gTitleMenuItemInterface->vtable->setValue(lbl_803A87D0[AUDIO_OPTION_VOICE_VOLUME],
-                                                   lbl_803DD708->speechVolume);
-        value = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[AUDIO_OPTION_MUSIC_VOLUME]);
+        gTitleMenuItemInterface->vtable->setValue(gOptionsMenuItems[AUDIO_OPTION_MUSIC_VOLUME],
+                                                   gOptionsSaveData->musicVolume);
+        gTitleMenuItemInterface->vtable->setValue(gOptionsMenuItems[AUDIO_OPTION_SFX_VOLUME], gOptionsSaveData->sfxVolume);
+        gTitleMenuItemInterface->vtable->setValue(gOptionsMenuItems[AUDIO_OPTION_VOICE_VOLUME],
+                                                   gOptionsSaveData->speechVolume);
+        value = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[AUDIO_OPTION_MUSIC_VOLUME]);
         audioSetVolumes((u8)value, OPTIONS_MENU_VOLUME_STEP, 0, 1, 0);
-        value = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[AUDIO_OPTION_SFX_VOLUME]);
+        value = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[AUDIO_OPTION_SFX_VOLUME]);
         audioSetVolumes((u8)value, OPTIONS_MENU_VOLUME_STEP, 1, 0, 0);
-        value = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[AUDIO_OPTION_VOICE_VOLUME]);
+        value = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[AUDIO_OPTION_VOICE_VOLUME]);
         audioSetVolumes((u8)value, OPTIONS_MENU_VOLUME_STEP, 0, 0, 1);
         Sfx_PlayFromObject(0, OPTIONS_SFX_CONFIRM);
     }
@@ -165,15 +165,15 @@ void optionsMenu_applyGameplaySetting(int action, int option)
     int z[2];
     u8 newState;
 
-    if (lbl_803A87D0[option] != NULL && gTitleMenuItemInterface->vtable->isChanged(lbl_803A87D0[option]) != 0)
+    if (gOptionsMenuItems[option] != NULL && gTitleMenuItemInterface->vtable->isChanged(gOptionsMenuItems[option]) != 0)
     {
         switch (option)
         {
         case GAMEPLAY_OPTION_WIDESCREEN:
-            setWidescreen((u8)gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[option]));
+            setWidescreen((u8)gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[option]));
             break;
         case GAMEPLAY_OPTION_RUMBLE:
-            newState = !gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[option]);
+            newState = !gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[option]);
             if (newState == 0)
             {
                 stopRumble2();
@@ -185,28 +185,28 @@ void optionsMenu_applyGameplaySetting(int action, int option)
             }
             break;
         case GAMEPLAY_OPTION_CREDITS:
-            if (gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[option]) == 0)
+            if (gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[option]) == 0)
             {
                 creditsStart();
-                if (lbl_803DBA28 != -1)
+                if (gOptionsActivePanel != -1)
                 {
                     gTitleMenuLinkInterface->vtable->free();
-                    lbl_803DBA28 = -1;
+                    gOptionsActivePanel = -1;
                 }
                 z[0] = 0;
                 z[1] = z[0];
                 for (; z[0] < OPTIONS_MENU_ITEM_COUNT; z[0]++)
                 {
-                    if (lbl_803A87D0[z[0]] != NULL)
+                    if (gOptionsMenuItems[z[0]] != NULL)
                     {
-                        gTitleMenuItemInterface->vtable->free(lbl_803A87D0[z[0]]);
-                        lbl_803A87D0[z[0]] = (TitleMenuItem*)z[1];
+                        gTitleMenuItemInterface->vtable->free(gOptionsMenuItems[z[0]]);
+                        gOptionsMenuItems[z[0]] = (TitleMenuItem*)z[1];
                     }
                 }
             }
             break;
         case GAMEPLAY_OPTION_COLOR_FILTER:
-            Rcp_SetColorFilterEnabled(gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[option]));
+            Rcp_SetColorFilterEnabled(gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[option]));
             break;
         }
     }
@@ -214,8 +214,8 @@ void optionsMenu_applyGameplaySetting(int action, int option)
     {
         Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
         (*gScreenTransitionInterface)->start(OPTIONS_MENU_TRANSITION_FRAMES, OPTIONS_MENU_TRANSITION_MODE);
-        lbl_803DD704 = OPTIONS_MENU_NEXT_STATE;
-        lbl_803DD705 = 1;
+        gOptionsExitCountdown = OPTIONS_MENU_NEXT_STATE;
+        gOptionsExitRequested = 1;
     }
 }
 
@@ -240,8 +240,8 @@ int optionsMenu_openSelectedSubmenu(int action, int option)
     {
         Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
         (*gScreenTransitionInterface)->start(OPTIONS_MENU_TRANSITION_FRAMES, OPTIONS_MENU_TRANSITION_MODE);
-        lbl_803DD704 = OPTIONS_MENU_NEXT_STATE;
-        lbl_803DD705 = 1;
+        gOptionsExitCountdown = OPTIONS_MENU_NEXT_STATE;
+        gOptionsExitRequested = 1;
     }
     return 0;
 }
@@ -249,18 +249,18 @@ int optionsMenu_openSelectedSubmenu(int action, int option)
 /*
  * dll_4d - language/misc front-end menu setup (UI DLL 0x4D).
  *
- * languageMenuInit() builds the "misc" sub-panel (lbl_8031ACB8) of the
+ * languageMenuInit() builds the "misc" sub-panel (gOptionsPanelTable) of the
  * options front-end: it tears down any previously-active panel, marks
- * panel 3 (misc) active (lbl_803DBA28), and creates the language menu
+ * panel 3 (misc) active (gOptionsActivePanel), and creates the language menu
  * row through the title-menu item interface. When cheat 3 is unlocked
  * and not already shown (lbl_803DC968), it links in and creates a second
  * row reflecting that cheat's active state; otherwise that row is hidden.
  * The created rows are focused through the title-menu item interface,
  * laid out through the title-menu link interface, and the panel's
- * render-stale countdown (lbl_803DD706) is reset so the new layout draws.
+ * render-stale countdown (gOptionsLayoutRefreshFrames) is reset so the new layout draws.
  */
 
-/* misc-panel id stored in lbl_803DBA28 (see dll_0037_optionsscreen.c) */
+/* misc-panel id stored in gOptionsActivePanel (see dll_0037_optionsscreen.c) */
 #define OPTIONS_PANEL_MISC 3
 
 /* the in-game cheat queried for the second menu row */
@@ -269,32 +269,32 @@ int optionsMenu_openSelectedSubmenu(int action, int option)
 /* TitleMenuTextEntry.flags: row is hidden / non-selectable */
 #define TITLE_MENU_TEXT_ENTRY_HIDDEN 0x4000
 
-/* lbl_803DBA28 active-panel id and lbl_803DD706 render-stale countdown
+/* gOptionsActivePanel active-panel id and gOptionsLayoutRefreshFrames render-stale countdown
    are owned by dll_0037_optionsscreen.c */
-extern s8 lbl_803DBA28;
-extern s8 lbl_803DD706;
+extern s8 gOptionsActivePanel;
+extern s8 gOptionsLayoutRefreshFrames;
 
 void languageMenuInit(void)
 {
     MenuPanelGroup* panel;
 
-    if ((s8)lbl_803DBA28 != -1)
+    if ((s8)gOptionsActivePanel != -1)
     {
         gTitleMenuLinkInterface->vtable->free();
     }
-    lbl_803DBA28 = OPTIONS_PANEL_MISC;
+    gOptionsActivePanel = OPTIONS_PANEL_MISC;
 
-    panel = (MenuPanelGroup*)lbl_8031ACB8;
-    lbl_803A87D0[0] =
+    panel = (MenuPanelGroup*)gOptionsPanelTable;
+    gOptionsMenuItems[0] =
         gTitleMenuItemInterface->vtable->createWithWindow(0x36b, 0x22, 0, 1,
-                                                         (s16)(lbl_803DD708->subtitlesEnabled == 0));
+                                                         (s16)(gOptionsSaveData->subtitlesEnabled == 0));
 
     if (isCheatUnlocked(LANGUAGE_MENU_CHEAT_ID) != 0 && lbl_803DC968 == 0)
     {
         panel->entries[panel->count - 2].pad18[3] = panel->count - 1;
         panel->entries[panel->count - 1].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
 
-        lbl_803A87D0[1] = gTitleMenuItemInterface->vtable->createWithWindow(
+        gOptionsMenuItems[1] = gTitleMenuItemInterface->vtable->createWithWindow(
             0x36b, 0x23, 0, 1, (s16)(saveFileStruct_isCheatActive(LANGUAGE_MENU_CHEAT_ID) == 0));
     }
     else
@@ -303,12 +303,12 @@ void languageMenuInit(void)
         panel->entries[panel->count - 1].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
     }
 
-    gTitleMenuItemInterface->vtable->setEnabled(lbl_803A87D0[0], 1);
+    gTitleMenuItemInterface->vtable->setEnabled(gOptionsMenuItems[0], 1);
 
     gTitleMenuLinkInterface->vtable->setup(panel->entries, panel->count, 0, NULL, 0, 0, 0x14, 0xc8, 0xff, 0xff, 0xff,
                                            0xff);
 
-    lbl_803DD706 = 2;
+    gOptionsLayoutRefreshFrames = 2;
 }
 
 /*
@@ -321,13 +321,13 @@ void languageMenuInit(void)
  * unlocking option/cheat entries based on isCheatUnlocked() and toggling
  * the per-entry "disabled" flag (0x4000) accordingly.
  *
- * lbl_803DBA28 tracks which panel is currently open (-1 = none); a switch
+ * gOptionsActivePanel tracks which panel is currently open (-1 = none); a switch
  * away first tears down the previous link (slot +8). Built item handles
- * are cached in lbl_803A87D0[]. lbl_803DD706 is set to 2 by both builders;
+ * are cached in gOptionsMenuItems[]. gOptionsLayoutRefreshFrames is set to 2 by both builders;
  * its exact role is unconfirmed.
  */
-extern s8 lbl_803DBA28;
-extern s8 lbl_803DD706;
+extern s8 gOptionsActivePanel;
+extern s8 gOptionsLayoutRefreshFrames;
 
 typedef struct OptionsMenuPanels
 {
@@ -349,12 +349,12 @@ void optionsMenu_openAudioPanel(void)
     OptionsMenuPanels* panels;
     TitleMenuItem* item;
 
-    if (lbl_803DBA28 != -1)
+    if (gOptionsActivePanel != -1)
     {
         gTitleMenuLinkInterface->vtable->free();
     }
-    lbl_803DBA28 = 1;
-    panels = (OptionsMenuPanels*)lbl_8031ACB8;
+    gOptionsActivePanel = 1;
+    panels = (OptionsMenuPanels*)gOptionsPanelTable;
 
     if (isCheatUnlocked(2) != 0)
     {
@@ -373,32 +373,32 @@ void optionsMenu_openAudioPanel(void)
 
     if (OSGetSoundMode() == 1)
     {
-        item = gTitleMenuItemInterface->vtable->createWithWindow(0x36c, 0x22, 0, 3, lbl_803DD708->soundMode);
+        item = gTitleMenuItemInterface->vtable->createWithWindow(0x36c, 0x22, 0, 3, gOptionsSaveData->soundMode);
     }
     else
     {
         item = gTitleMenuItemInterface->vtable->createWithWindow(0x36c, 0x22, 0, 3, 2);
     }
-    lbl_803A87D0[0] = item;
-    lbl_803A87D0[1] =
-        gTitleMenuItemInterface->vtable->createWithText(0x124, 0xb2, 0, 0x7f, lbl_803DD708->musicVolume, 0x3e);
-    lbl_803A87D0[2] =
-        gTitleMenuItemInterface->vtable->createWithText(0x124, 0xcc, 0, 0x7f, lbl_803DD708->sfxVolume, 0x3e);
-    lbl_803A87D0[3] =
-        gTitleMenuItemInterface->vtable->createWithText(0x124, 0xe6, 0, 0x7f, lbl_803DD708->speechVolume, 0x3e);
-    lbl_803A87D0[3]->flags = (u8)(lbl_803A87D0[3]->flags | 0x40);
-    lbl_803A87D0[4] = NULL;
-    lbl_803A87D0[5] = NULL;
+    gOptionsMenuItems[0] = item;
+    gOptionsMenuItems[1] =
+        gTitleMenuItemInterface->vtable->createWithText(0x124, 0xb2, 0, 0x7f, gOptionsSaveData->musicVolume, 0x3e);
+    gOptionsMenuItems[2] =
+        gTitleMenuItemInterface->vtable->createWithText(0x124, 0xcc, 0, 0x7f, gOptionsSaveData->sfxVolume, 0x3e);
+    gOptionsMenuItems[3] =
+        gTitleMenuItemInterface->vtable->createWithText(0x124, 0xe6, 0, 0x7f, gOptionsSaveData->speechVolume, 0x3e);
+    gOptionsMenuItems[3]->flags = (u8)(gOptionsMenuItems[3]->flags | 0x40);
+    gOptionsMenuItems[4] = NULL;
+    gOptionsMenuItems[5] = NULL;
 
     if (isCheatUnlocked(2) != 0)
     {
-        lbl_803A87D0[5] = gTitleMenuItemInterface->vtable->createWithWindow(
+        gOptionsMenuItems[5] = gTitleMenuItemInterface->vtable->createWithWindow(
             0x3cb, 0x27, 0, (s16)(return0x64_8000A378() - 1), 0);
-        lbl_803A87D0[5]->flags = (u8)(lbl_803A87D0[5]->flags | 0x80);
+        gOptionsMenuItems[5]->flags = (u8)(gOptionsMenuItems[5]->flags | 0x80);
     }
 
-    gTitleMenuItemInterface->vtable->setEnabled(lbl_803A87D0[0], 1);
-    lbl_803DD706 = 2;
+    gTitleMenuItemInterface->vtable->setEnabled(gOptionsMenuItems[0], 1);
+    gOptionsLayoutRefreshFrames = 2;
 }
 
 void optionsMenu_openGeneralPanel(void)
@@ -412,12 +412,12 @@ void optionsMenu_openGeneralPanel(void)
     int entryOffset2;
     int lastUnlocked2;
 
-    if (lbl_803DBA28 != -1)
+    if (gOptionsActivePanel != -1)
     {
         gTitleMenuLinkInterface->vtable->free();
     }
-    lbl_803DBA28 = 2;
-    panels = (OptionsMenuPanels*)lbl_8031ACB8;
+    gOptionsActivePanel = 2;
+    panels = (OptionsMenuPanels*)gOptionsPanelTable;
 
     lastUnlocked = -1;
     cheatId = 3;
@@ -457,12 +457,12 @@ void optionsMenu_openGeneralPanel(void)
     gTitleMenuLinkInterface->vtable->setup(panels->optionEntries, panels->optionCount, 0, NULL, 0, 0, 0x14, 0xc8, 0xff,
                                            0xff, 0xff, 0xff);
 
-    lbl_803A87D0[0] =
-        gTitleMenuItemInterface->vtable->createWithWindow(0x366, 0x22, 0, 1, lbl_803DD708->widescreenEnabled);
-    lbl_803A87D0[1] =
+    gOptionsMenuItems[0] =
+        gTitleMenuItemInterface->vtable->createWithWindow(0x366, 0x22, 0, 1, gOptionsSaveData->widescreenEnabled);
+    gOptionsMenuItems[1] =
         gTitleMenuItemInterface->vtable->createWithWindow(0x36b, 0x23, 0, 1,
-                                                         (s16)(lbl_803DD708->rumbleEnabled == 0));
-    slot[0] = lbl_803A87D0;
+                                                         (s16)(gOptionsSaveData->rumbleEnabled == 0));
+    slot[0] = gOptionsMenuItems;
 
     cheatId = 0;
     do
@@ -484,8 +484,8 @@ void optionsMenu_openGeneralPanel(void)
         cheatId++;
     } while (cheatId <= 1);
 
-    gTitleMenuItemInterface->vtable->setEnabled(lbl_803A87D0[0], 1);
-    lbl_803DD706 = 2;
+    gTitleMenuItemInterface->vtable->setEnabled(gOptionsMenuItems[0], 1);
+    gOptionsLayoutRefreshFrames = 2;
 }
 
 #define OPTIONSSCREEN_MENU_ITEM_COUNT 8
@@ -496,18 +496,18 @@ void optionsMenu_openGeneralPanel(void)
 #define OPTIONSSCREEN_PANEL_GAMEPLAY 2
 #define OPTIONSSCREEN_PANEL_MISC     3
 
-s8 lbl_803DBA28 = -1;
-u8 lbl_803DD6F8;
+s8 gOptionsActivePanel = -1;
+u8 gOptionsRequestedPanel;
 u8 lbl_803DD6F9;
 int lbl_803DD6FC;
-int lbl_803DD700;
-s8 lbl_803DD704;
-s8 lbl_803DD705;
-s8 lbl_803DD706;
-SaveData* lbl_803DD708;
+int gOptionsLastSelectedRow;
+s8 gOptionsExitCountdown;
+s8 gOptionsExitRequested;
+s8 gOptionsLayoutRefreshFrames;
+SaveData* gOptionsSaveData;
 s8 lbl_803DD70C;
 
-u16 lbl_8031A8F8[90] = {
+u16 gOptionsTopPanelEntries[90] = {
     0x035a, 0x0012, 0x0140, 0x00a4, 0x0000, 0x0140, 0x0034, 0x0000, 0xffff, 0xffff, 0x00c8, 0x0200, 0x0000, 0xff01, 0xffff, 0xff00,
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x035c, 0x0013,
     0x0140, 0x0110, 0x0000, 0x0140, 0x00a0, 0x0000, 0xffff, 0xffff, 0x00c8, 0x0200, 0x0000, 0x01ff, 0xffff, 0xff00, 0x0000, 0x0000,
@@ -515,7 +515,7 @@ u16 lbl_8031A8F8[90] = {
     0x0000, 0x0140, 0x006a, 0x0000, 0xffff, 0xffff, 0x00c8, 0x0200, 0x0000, 0x0002, 0xffff, 0xff00, 0x0000, 0x0000, 0x0000, 0x0000,
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000};
 
-u16 lbl_8031A9AC[120] = {
+u16 gOptionsGeneralPanelEntries[120] = {
     0x035e, 0x0017, 0x005a, 0x00cb, 0x0000, 0x005a, 0x0116, 0x0000, 0xffff, 0xffff, 0x0000, 0x0021, 0x0000, 0xff01, 0xffff, 0xff00,
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0360, 0x0018,
     0x005a, 0x0119, 0x0000, 0x005a, 0x0146, 0x0000, 0xffff, 0xffff, 0x0000, 0x0021, 0x0000, 0x0002, 0xffff, 0xff00, 0x0000, 0x0000,
@@ -525,7 +525,7 @@ u16 lbl_8031A9AC[120] = {
     0x0146, 0x0000, 0xffff, 0xffff, 0x0000, 0x0021, 0x0000, 0x02ff, 0xffff, 0xff00, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000};
 
-u16 lbl_8031AA9C[180] = {
+u16 gOptionsAudioPanelEntries[180] = {
     0x0361, 0x0017, 0x005a, 0x00b1, 0x0000, 0x005a, 0x00fe, 0x0000, 0xffff, 0xffff, 0x0000, 0x0021, 0x0000, 0xff01, 0xffff, 0xff00,
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0362, 0x0018,
     0x005a, 0x00e5, 0x0000, 0x005a, 0x0116, 0x0000, 0xffff, 0xffff, 0x0000, 0x0021, 0x0000, 0x0002, 0xffff, 0xff00, 0x0000, 0x0000,
@@ -539,7 +539,7 @@ u16 lbl_8031AA9C[180] = {
     0x0000, 0x0001, 0x0000, 0x04ff, 0xffff, 0xff00, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
     0x0000, 0x0000, 0x0000, 0x0000};
 
-u16 lbl_8031AC04[90] = {
+u16 gOptionsMiscPanelEntries[90] = {
     0x035f, 0x0017, 0x0140, 0x0170, 0x0000, 0x0140, 0x00bb, 0x0000, 0xffff, 0xffff, 0x00b4, 0x0000, 0x0000, 0xff01, 0xffff, 0xff00,
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0506, 0x0018,
     0x0140, 0x0170, 0x0000, 0x0140, 0x00bb, 0x0000, 0xffff, 0xffff, 0x00b4, 0x0000, 0x0000, 0x00ff, 0xffff, 0xff00, 0x0000, 0x0000,
@@ -547,11 +547,11 @@ u16 lbl_8031AC04[90] = {
     0x0000, 0x0109, 0x017c, 0x0000, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xff00, 0x0000, 0x0000, 0x0000, 0x0000,
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000};
 
-OptionsScreenPanelConfig lbl_8031ACB8[4] = {
-    {lbl_8031A8F8, 0, 0x0304, 0x0330, 0x0367, 0},
-    {lbl_8031AA9C, 0, 0x0603, 0x035c, 0x0368, 0},
-    {lbl_8031A9AC, 0, 0x0403, 0x035a, 0x0368, 0},
-    {lbl_8031AC04, 0, 0x0203, 0x035b, 0x0368, 0},
+OptionsScreenPanelConfig gOptionsPanelTable[4] = {
+    {gOptionsTopPanelEntries, 0, 0x0304, 0x0330, 0x0367, 0},
+    {gOptionsAudioPanelEntries, 0, 0x0603, 0x035c, 0x0368, 0},
+    {gOptionsGeneralPanelEntries, 0, 0x0403, 0x035a, 0x0368, 0},
+    {gOptionsMiscPanelEntries, 0, 0x0203, 0x035b, 0x0368, 0},
 };
 
 ObjectDescriptor6 OptionsScreen_funcs = {
@@ -574,7 +574,7 @@ void OptionsScreen_render(int arg)
     int fade;
     TitleMenuItem** item;
     int i;
-    u16* panel = (u16*)lbl_8031ACB8 + lbl_803DBA28 * 8;
+    u16* panel = (u16*)gOptionsPanelTable + gOptionsActivePanel * 8;
 
     if (shouldShowCredits() != 0)
     {
@@ -610,7 +610,7 @@ void OptionsScreen_render(int arg)
         gameTextShow(panel[6]);
     }
 
-    item = lbl_803A87D0;
+    item = gOptionsMenuItems;
     for (i = 0; i < OPTIONSSCREEN_MENU_ITEM_COUNT; i++)
     {
         if (item[i] != NULL)
@@ -622,9 +622,9 @@ void OptionsScreen_render(int arg)
     gTitleMenuLinkInterface->vtable->render(arg);
     gameTextSetDrawFunc(0);
     titleScreenShowCopyright(0);
-    if ((s8)--lbl_803DD706 < 0)
+    if ((s8)--gOptionsLayoutRefreshFrames < 0)
     {
-        lbl_803DD706 = 0;
+        gOptionsLayoutRefreshFrames = 0;
     }
 }
 
@@ -638,10 +638,10 @@ static inline void optionsScreenFreeMenuItems(void)
 
     for (i = 0; i < OPTIONSSCREEN_MENU_ITEM_COUNT; i++)
     {
-        if (lbl_803A87D0[i] != NULL)
+        if (gOptionsMenuItems[i] != NULL)
         {
-            gTitleMenuItemInterface->vtable->free(lbl_803A87D0[i]);
-            lbl_803A87D0[i] = NULL;
+            gTitleMenuItemInterface->vtable->free(gOptionsMenuItems[i]);
+            gOptionsMenuItems[i] = NULL;
         }
     }
 }
@@ -649,7 +649,7 @@ static inline void optionsScreenFreeMenuItems(void)
 int OptionsScreen_frameStart(void)
 {
     int step = framesThisStep;
-    s8 oldFade = lbl_803DD704;
+    s8 oldFade = gOptionsExitCountdown;
     int selection;
     int item;
     int i;
@@ -662,42 +662,42 @@ int OptionsScreen_frameStart(void)
     {
         step = 3;
     }
-    if (lbl_803DD704 > 0)
+    if (gOptionsExitCountdown > 0)
     {
-        lbl_803DD704 = (s8)(lbl_803DD704 - step);
+        gOptionsExitCountdown = (s8)(gOptionsExitCountdown - step);
     }
     if ((*gScreenTransitionInterface)->isFinished() == 0)
     {
         gTitleMenuLinkInterface->vtable->resetTimers();
-        lbl_803DD706 = 2;
+        gOptionsLayoutRefreshFrames = 2;
     }
 
-    if (lbl_803DD705 != 0)
+    if (gOptionsExitRequested != 0)
     {
-        if ((oldFade <= 0xc || lbl_803DD704 > 0xc) && lbl_803DD704 <= 0)
+        if ((oldFade <= 0xc || gOptionsExitCountdown > 0xc) && gOptionsExitCountdown <= 0)
         {
-            if ((s8)lbl_803DBA28 != OPTIONSSCREEN_PANEL_NONE)
+            if ((s8)gOptionsActivePanel != OPTIONSSCREEN_PANEL_NONE)
             {
                 gTitleMenuLinkInterface->vtable->free();
-                lbl_803DBA28 = OPTIONSSCREEN_PANEL_NONE;
+                gOptionsActivePanel = OPTIONSSCREEN_PANEL_NONE;
             }
             optionsScreenFreeMenuItems();
             titleScreenFn_8005cdd4(1);
             setDrawCloudsAndLights(1);
             loadUiDll(4);
         }
-        return lbl_803DD704 <= 12;
+        return gOptionsExitCountdown <= 12;
     }
 
     selection = gTitleMenuLinkInterface->vtable->update();
     item = gTitleMenuLinkInterface->vtable->getSelected();
-    if (item != lbl_803DD700)
+    if (item != gOptionsLastSelectedRow)
     {
         Sfx_PlayFromObject(0, SFXTRIG_warningloop);
     }
-    lbl_803DD700 = item;
+    gOptionsLastSelectedRow = item;
 
-    switch ((s8)lbl_803DBA28)
+    switch ((s8)gOptionsActivePanel)
     {
     case OPTIONSSCREEN_PANEL_TOP:
         lbl_803DD70C = item;
@@ -710,20 +710,20 @@ int OptionsScreen_frameStart(void)
         optionsMenu_applyGameplaySetting(selection, item);
         if (selection == 0)
         {
-            lbl_803DD708->widescreenEnabled = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[0]);
-            lbl_803DD708->rumbleEnabled = !gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[1]);
-            setWidescreen(lbl_803DD708->widescreenEnabled);
-            setRumbleEnabled(lbl_803DD708->rumbleEnabled);
+            gOptionsSaveData->widescreenEnabled = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[0]);
+            gOptionsSaveData->rumbleEnabled = !gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[1]);
+            setWidescreen(gOptionsSaveData->widescreenEnabled);
+            setRumbleEnabled(gOptionsSaveData->rumbleEnabled);
         }
         break;
     case OPTIONSSCREEN_PANEL_AUDIO:
         optionsMenu_applyAudioSetting(selection, item);
         if (selection == 0)
         {
-            lbl_803DD708->soundMode = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[0]);
-            lbl_803DD708->musicVolume = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[1]);
-            lbl_803DD708->sfxVolume = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[2]);
-            lbl_803DD708->speechVolume = gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[3]);
+            gOptionsSaveData->soundMode = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[0]);
+            gOptionsSaveData->musicVolume = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[1]);
+            gOptionsSaveData->sfxVolume = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[2]);
+            gOptionsSaveData->speechVolume = gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[3]);
         }
         break;
     case OPTIONSSCREEN_PANEL_MISC:
@@ -731,41 +731,41 @@ int OptionsScreen_frameStart(void)
         {
             Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
             (*gScreenTransitionInterface)->start(0x14, 5);
-            lbl_803DD704 = 0x23;
-            lbl_803DD705 = 1;
+            gOptionsExitCountdown = 0x23;
+            gOptionsExitRequested = 1;
         }
-        if (lbl_803A87D0[item] != NULL && gTitleMenuItemInterface->vtable->isChanged(lbl_803A87D0[item]) != 0)
+        if (gOptionsMenuItems[item] != NULL && gTitleMenuItemInterface->vtable->isChanged(gOptionsMenuItems[item]) != 0)
         {
             switch (item)
             {
             case 0:
-                lbl_803DD708->subtitlesEnabled = !gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[0]);
-                setSubtitlesEnabled(lbl_803DD708->subtitlesEnabled);
+                gOptionsSaveData->subtitlesEnabled = !gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[0]);
+                setSubtitlesEnabled(gOptionsSaveData->subtitlesEnabled);
                 break;
             default:
                 saveFileStruct_setCheatActive(CHEAT_DINO_LANGUAGE,
-                                              !gTitleMenuItemInterface->vtable->getValue(lbl_803A87D0[item]));
+                                              !gTitleMenuItemInterface->vtable->getValue(gOptionsMenuItems[item]));
                 break;
             }
         }
         break;
     }
 
-    if ((s8)lbl_803DBA28 != OPTIONSSCREEN_PANEL_TOP)
+    if ((s8)gOptionsActivePanel != OPTIONSSCREEN_PANEL_TOP)
     {
         for (i = 0; i < OPTIONSSCREEN_MENU_ITEM_COUNT; i++)
         {
-            if (lbl_803A87D0[i] != NULL)
+            if (gOptionsMenuItems[i] != NULL)
             {
                 if (i == item)
                 {
-                    gTitleMenuItemInterface->vtable->setEnabled(lbl_803A87D0[i], 1);
+                    gTitleMenuItemInterface->vtable->setEnabled(gOptionsMenuItems[i], 1);
                 }
                 else
                 {
-                    gTitleMenuItemInterface->vtable->setEnabled(lbl_803A87D0[i], 0);
+                    gTitleMenuItemInterface->vtable->setEnabled(gOptionsMenuItems[i], 0);
                 }
-                gTitleMenuItemInterface->vtable->update(lbl_803A87D0[i]);
+                gTitleMenuItemInterface->vtable->update(gOptionsMenuItems[i]);
             }
         }
     }
@@ -781,12 +781,12 @@ void OptionsScreen_initialise(void)
     (*gScreenTransitionInterface)->step(20, 5);
     gameTextLoadDir(21);
     lbl_803DD70C = 0;
-    lbl_803DD708 = getSaveFileStruct();
-    if (lbl_803DD6F8 == 0)
+    gOptionsSaveData = getSaveFileStruct();
+    if (gOptionsRequestedPanel == 0)
     {
         optionsMenu_openGeneralPanel();
     }
-    else if (lbl_803DD6F8 == 1)
+    else if (gOptionsRequestedPanel == 1)
     {
         optionsMenu_openAudioPanel();
     }
@@ -794,7 +794,7 @@ void OptionsScreen_initialise(void)
     {
         languageMenuInit();
     }
-    lbl_803DD706 = 2;
-    lbl_803DD705 = 0;
+    gOptionsLayoutRefreshFrames = 2;
+    gOptionsExitRequested = 0;
     lbl_803DD6F9 = 0;
 }

@@ -59,7 +59,7 @@ u8 initLoadFiles(void);
 void videoBlackScreenForFrames(int frameCount);
 void checkLoadBlock(int a, int* compressedSize, int* decompressedSize);
 
-extern void** lbl_803DCC8C;
+extern void** gDvdFileInfoPool;
 extern GXRenderModeObj* gRenderModeObj;
 extern s32 gObjLevelLockSlots[2];
 

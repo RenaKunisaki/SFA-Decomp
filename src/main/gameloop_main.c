@@ -369,7 +369,7 @@ void setFrameCountdown_800202c4(s8 count)
 }
 
 #define AI_STREAM_STOP 0
-extern u8 lbl_803DCCA6;
+extern u8 gVideoRetracePending;
 char sGameBitSetDuringSaveLoadWarning[204] =
     "WARNING in mainSetBits: Bit %d can't be set to %d while a savegame is "
     "loading\n\000\000GAME_STATE_RESETPRESSED\n\000\000\000\000GAME_STATE_RESETNOW\n\000\000\000\000audioQuit "
@@ -384,11 +384,11 @@ void checkReset(void)
     int status;
 
     msg = sGameLoopResetMessages;
-    if (lbl_803DCCA6 == 0 || gDvdCoverOpenErrorActive != 0)
+    if (gVideoRetracePending == 0 || gDvdCoverOpenErrorActive != 0)
     {
         return;
     }
-    lbl_803DCCA6 = 0;
+    gVideoRetracePending = 0;
     switch (gameState)
     {
     case GAMELOOP_STATE_BOOTING:

@@ -40,8 +40,8 @@
 #include "main/objprint_internal.h"
 
 
-int lbl_803DB460 = 100;
-f32 lbl_803DB464 = 20.0f;
+int gObjLookAtTurnRateDivisor = 100;
+f32 gObjMouthBlendFrames = 20.0f;
 
 
 extern f32 lbl_803DE9D8;
@@ -93,7 +93,7 @@ void objAnimFn_80038f38(GameObject* obj, char* state)
             if (pi->file->morphTargetCount != 0)
             {
                 ObjModel_SetBlendChannelTargets(pi, 2, pi->blendChannels[2].morphTargetB, -1,
-                                                lbl_803DE99C / lbl_803DB464, 0);
+                                                lbl_803DE99C / gObjMouthBlendFrames, 0);
             }
         }
     }
@@ -128,7 +128,7 @@ void objKfAnimUpdate(GameObject* obj, ObjKfAnimState* state)
             {
                 ObjModel_SetBlendChannelTargets(model, 2,
                                                 model->blendChannels[2].morphTargetB, -1,
-                                                lbl_803DE99C / lbl_803DB464, 0);
+                                                lbl_803DE99C / gObjMouthBlendFrames, 0);
             }
         }
         else
@@ -146,7 +146,7 @@ void objKfAnimUpdate(GameObject* obj, ObjKfAnimState* state)
             {
                 ObjModel_SetBlendChannelTargets(model, 2,
                                                 model->blendChannels[2].morphTargetB, kfval - 1,
-                                                lbl_803DE99C / lbl_803DB464, 0);
+                                                lbl_803DE99C / gObjMouthBlendFrames, 0);
             }
             state->timer = state->timer + state->timerStep;
         }
@@ -197,7 +197,7 @@ void objSoundFn_800392f0(GameObject* obj, ObjSoundState* state, ObjSoundDef* sou
         {
             ObjModel_SetBlendChannelTargets(model, 2,
                                             model->blendChannels[2].morphTargetB, count - 1,
-                                            lbl_803DE99C / lbl_803DB464, 0);
+                                            lbl_803DE99C / gObjMouthBlendFrames, 0);
             did = 1;
         }
         else
@@ -225,11 +225,11 @@ void objAudioFn_800393f8(GameObject* obj, ObjSoundState* state, u16 sfx, int pit
     state->blendWeight = lbl_803DE99C;
 }
 
-int lbl_802CAE88[10] = {0, 0xb, 0xc, 0xd, 0xe, 0xf, 0x10, 0x11, 0x12, 0x13};
+int gObjLookAtJointKeys[10] = {0, 0xb, 0xc, 0xd, 0xe, 0xf, 0x10, 0x11, 0x12, 0x13};
 
 int* seqFn_800394a0(void)
 {
-    return lbl_802CAE88;
+    return gObjLookAtJointKeys;
 }
 
 ObjTextureRuntimeSlot* objFindTexture(GameObject* obj, int target, int unusedMaterialIndex)
@@ -817,7 +817,7 @@ s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* pos, u8* p4, s1
         int key;
         void* m[1];
 
-        key = lbl_802CAE88[i];
+        key = gObjLookAtJointKeys[i];
         found[0] = NULL;
         m[0] = (void*)go->anim.modelInstance;
         if (m[0] != NULL)
@@ -897,17 +897,17 @@ s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* pos, u8* p4, s1
             int t2;
             int lim3;
 
-            lim = (d1 < framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)-spd[i]) / lbl_803DB460))
-                      ? framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)-spd[i]) / lbl_803DB460)
-                      : ((d1 > framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)spd[i]) / lbl_803DB460))
-                             ? framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)spd[i]) / lbl_803DB460)
+            lim = (d1 < framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)-spd[i]) / gObjLookAtTurnRateDivisor))
+                      ? framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)-spd[i]) / gObjLookAtTurnRateDivisor)
+                      : ((d1 > framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)spd[i]) / gObjLookAtTurnRateDivisor))
+                             ? framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)spd[i]) / gObjLookAtTurnRateDivisor)
                              : d1);
             d2 = (s16)((s16)((fv[0] + dst[1]) >> 1) - fv[0]);
             t2 = (s16)(s32)(*(f32*)&gObjPrintDegToAngle * (f32)sp2[i]);
             lim3 =
-                (d2 < framesThisStep * (-t2 / (lbl_803DB460 << 1)))
-                    ? framesThisStep * (-t2 / (lbl_803DB460 << 1))
-                    : ((d2 > framesThisStep * (t2 / (lbl_803DB460 << 1))) ? framesThisStep * (t2 / (lbl_803DB460 << 1))
+                (d2 < framesThisStep * (-t2 / (gObjLookAtTurnRateDivisor << 1)))
+                    ? framesThisStep * (-t2 / (gObjLookAtTurnRateDivisor << 1))
+                    : ((d2 > framesThisStep * (t2 / (gObjLookAtTurnRateDivisor << 1))) ? framesThisStep * (t2 / (gObjLookAtTurnRateDivisor << 1))
                                                                           : d2);
             fv[0] += (s16)lim3;
             fv[1] += lim;
@@ -1161,16 +1161,16 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
     }
 }
 
-s16 lbl_803DCC18;
-s16 lbl_803DCC16;
-s16 lbl_803DCC14;
+s16 gObjColorFilterRed;
+s16 gObjColorFilterGreen;
+s16 gObjColorFilterBlue;
 f32* gObjModelMatrixOverride;
-u8 lbl_803DCC0D;
-u8 lbl_803DCC0C;
-u8 lbl_803DCC0B;
-u8 lbl_803DCC0A;
-u8 lbl_803DCC09;
-u8 lbl_803DCC08;
+u8 gObjGlowColorRed;
+u8 gObjGlowColorGreen;
+u8 gObjGlowColorBlue;
+u8 gObjGlowColorAlpha;
+u8 gObjGlowColorEnabled;
+u8 gObjColorFilterEnabled;
 
 void characterSetHeadYawToTarget(GameObject* obj, GameObject* target, CharacterEyeAnimState* state, int maxAngle)
 {
@@ -1312,20 +1312,20 @@ void characterHeadLookCalm(GameObject* obj, s16* state, f32 value)
 
 void objSetGlowColor(int red, int green, int blue, u8 alpha)
 {
-    lbl_803DCC0D = red;
-    lbl_803DCC0C = green;
-    lbl_803DCC0B = blue;
-    lbl_803DCC09 = 1;
-    lbl_803DCC0A = alpha;
+    gObjGlowColorRed = red;
+    gObjGlowColorGreen = green;
+    gObjGlowColorBlue = blue;
+    gObjGlowColorEnabled = 1;
+    gObjGlowColorAlpha = alpha;
 }
 
 
 void objSetColorFilter(s16 a, s16 b, s16 c)
 {
-    lbl_803DCC18 = a;
-    lbl_803DCC16 = b;
-    lbl_803DCC14 = c;
-    lbl_803DCC08 = 1;
+    gObjColorFilterRed = a;
+    gObjColorFilterGreen = b;
+    gObjColorFilterBlue = c;
+    gObjColorFilterEnabled = 1;
 }
 
 typedef struct

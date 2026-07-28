@@ -63,7 +63,7 @@ static char sNRarewareReportTag[] = "n_rareware\n";
 
 extern TitleMenuTextEntry lbl_8031A214[4];
 extern TitleMenuTextEntry sNAttractModeStringBlock[1];
-extern u8 lbl_803DD6F8;
+extern u8 gOptionsRequestedPanel;
 
 extern u8* lbl_803DD498;
 
@@ -353,15 +353,15 @@ int TitleMenu_run(void)
                 break;
             case 1:
                 gTitleMenuNextDllId = 7;
-                lbl_803DD6F8 = 0;
+                gOptionsRequestedPanel = 0;
                 break;
             case 2:
                 gTitleMenuNextDllId = 7;
-                lbl_803DD6F8 = 1;
+                gOptionsRequestedPanel = 1;
                 break;
             case 3:
                 gTitleMenuNextDllId = 7;
-                lbl_803DD6F8 = 2;
+                gOptionsRequestedPanel = 2;
                 break;
             }
             return 0;

@@ -50,16 +50,16 @@ extern f32 gModelEngineTimerDuration;
 extern f32 gModelEngineTimerValue;
 extern s32 gModelEngineHudNumber;
 extern s32 lbl_803DB28C;
-extern char lbl_803DB290[];
+extern char sModelEngineHudNumberFormat[];
 extern char gModelEngineTextBuf[];
 extern s32 gModelEngineUiDllResourceIds[];
-extern char lbl_803DB294[];
-extern char lbl_803DB29C[];
-extern char lbl_803DB2A0[];
-extern int lbl_803DB27C;
-extern int lbl_803DB280;
-extern int lbl_803DB284;
-extern int lbl_803DB288;
+extern char sModelEngineTimerDigitFormat[];
+extern char sModelEngineTimerColonText[];
+extern char sModelEngineTimerDotText[];
+extern int gModelEngineTimerDigitPairXOffset;
+extern int gModelEngineTimerFieldXStride;
+extern int gModelEngineTimerColonX;
+extern int gModelEngineTimerDotX;
 
 u8* modelRenderDecodeAdpcm(u8* compressed, int sampleCount, ModelRenderInstrsState* output, int bitStride,
                           u8 encodedBitWidth);

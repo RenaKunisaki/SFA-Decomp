@@ -118,9 +118,9 @@ u8 gBaddieMoveProgressTable[288] = {
     0,   0,   0,  0,   0,   0,   0,  0,   0,   0,   0,  0,  0,  0,   0,  0, 0, 0,  0,   0,   0,  0, 0, 0, 0, 0,  0,
     0,   0,   0,  0,   0,   0,   0,  0,   0,   0,   0,  0,  0,  0,   0,  0, 0, 0,  0,   0,   0,  0, 0, 0, 0, 0,  0,
     0,   0,   0,  0,   0,   0,   0,  0,   0,   0,   0,  0,  0,  0,   0,  0, 0, 0};
-u8 lbl_8031DE50[48] = {60, 35, 215, 10, 0, 0, 0, 0, 0,  0, 0, 0, 60, 35, 215, 10, 0, 0, 0, 0, 11, 0, 0, 0,
+u8 gSharpClawLocomotionMoves[48] = {60, 35, 215, 10, 0, 0, 0, 0, 0,  0, 0, 0, 60, 35, 215, 10, 0, 0, 0, 0, 11, 0, 0, 0,
                        60, 35, 215, 10, 0, 0, 0, 0, 15, 0, 0, 0, 60, 35, 215, 10, 0, 0, 0, 0, 12, 0, 0, 0};
-u8 lbl_8031DE80[324] = {
+u8 gSharpClawIdleMoveTable[324] = {
     0,  0,  0,  0,  0, 0, 0,  0,  13, 0,  0, 0, 64, 64,  0,  0,  0, 0, 0,  0,  0,  0,  0, 0, 64, 64,  0,  0,  0, 0,
     0,  0,  0,  0,  0, 0, 64, 64, 0,  0,  0, 0, 0,  0,   0,  0,  0, 0, 64, 64, 0,  0,  0, 0, 0,  0,   0,  0,  0, 0,
     64, 64, 0,  0,  0, 0, 0,  0,  0,  0,  0, 0, 64, 64,  0,  0,  0, 0, 0,  0,  0,  0,  0, 0, 64, 64,  0,  0,  0, 0,
@@ -132,7 +132,7 @@ u8 lbl_8031DE80[324] = {
     64, 64, 0,  0,  0, 0, 0,  0,  7,  25, 0, 0, 64, 160, 0,  0,  0, 0, 0,  0,  26, 25, 0, 0, 64, 64,  0,  0,  0, 0,
     0,  0,  8,  25, 0, 0, 64, 0,  0,  0,  0, 0, 0,  0,   23, 25, 0, 0, 64, 64, 0,  0,  0, 0, 0,  0,   3,  25, 0, 0,
     64, 0,  0,  0,  0, 0, 0,  1,  11, 0,  0, 0, 64, 128, 0,  0,  0, 0, 0,  0,  30, 25, 0, 0};
-u8 lbl_8031DFC4[300] = {
+u8 gSharpClawAnimEventMoves[300] = {
     63, 128, 0,  0, 0, 0, 0,  11,  64, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  60, 0, 0, 0, 63, 128, 0,  0, 0, 0,
     0,  11,  61, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  61, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  62, 0, 0, 0,
     63, 128, 0,  0, 0, 0, 0,  11,  62, 0, 0, 0, 0,  0,   0,  0, 0, 0, 0,  0,   0,  0, 0, 0, 0,  0,   0,  0, 0, 0,
@@ -143,7 +143,7 @@ u8 lbl_8031DFC4[300] = {
     0,  11,  60, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  61, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  61, 0, 0, 0,
     63, 128, 0,  0, 0, 0, 0,  11,  62, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  62, 0, 0, 0, 0,  0,   0,  0, 0, 0,
     0,  11,  0,  0, 0, 0, 0,  0,   0,  0, 0, 0, 0,  0,   0,  0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  64, 0, 0, 0};
-u8 lbl_8031E0F0[300] = {62, 148, 122, 225, 0, 0, 0, 11, 69, 2, 2, 0, 62, 148, 122, 225, 0, 0, 0, 11, 65, 2, 2, 0,
+u8 gSharpClawBlockReactionMoves[300] = {62, 148, 122, 225, 0, 0, 0, 11, 69, 2, 2, 0, 62, 148, 122, 225, 0, 0, 0, 11, 65, 2, 2, 0,
                         62, 148, 122, 225, 0, 0, 0, 11, 66, 2, 2, 0, 62, 148, 122, 225, 0, 0, 0, 11, 66, 2, 2, 0,
                         62, 148, 122, 225, 0, 0, 0, 11, 67, 2, 2, 0, 62, 148, 122, 225, 0, 0, 0, 11, 67, 2, 2, 0,
                         0,  0,   0,   0,   0, 0, 0, 0,  0,  0, 0, 0, 0,  0,   0,   0,   0, 0, 0, 0,  0,  0, 0, 0,
@@ -156,13 +156,13 @@ u8 lbl_8031E0F0[300] = {62, 148, 122, 225, 0, 0, 0, 11, 69, 2, 2, 0, 62, 148, 12
                         62, 148, 122, 225, 0, 0, 0, 11, 67, 2, 0, 0, 62, 148, 122, 225, 0, 0, 0, 11, 67, 2, 0, 0,
                         0,  0,   0,   0,   0, 0, 0, 0,  0,  0, 0, 0, 0,  0,   0,   0,   0, 0, 0, 0,  0,  0, 0, 0,
                         62, 148, 122, 225, 0, 0, 0, 11, 69, 2, 0, 0};
-u8 lbl_8031E21C[36] = {0, 0,  0,  0, 0, 0, 0, 11, 24, 1, 0, 0, 0, 0,  0,  0, 0, 0,
+u8 gSharpClawAttackHitVolumes[36] = {0, 0,  0,  0, 0, 0, 0, 11, 24, 1, 0, 0, 0, 0,  0,  0, 0, 0,
                        0, 12, 25, 1, 0, 0, 0, 0,  0,  0, 0, 0, 0, 10, 16, 1, 0, 0};
-u8 lbl_8031E240[96] = {63, 128, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 63, 128, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0,
+u8 gSharpClawModeIdleMoves[96] = {63, 128, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 63, 128, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0,
                        63, 0,   0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0,  0,   0, 0, 0, 0, 0, 0, 0,  0, 0, 0,
                        0,  0,   0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 63, 0,   0, 0, 0, 0, 0, 0, 21, 0, 0, 0,
                        63, 128, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 63, 128, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0};
-u8 lbl_8031E2A0[300] = {63, 0,   0,   0,   0, 0, 0, 0,  40, 0, 0, 0, 63, 0,   0,   0,   0, 0, 0, 0, 38, 0, 0, 0,
+u8 gSharpClawHitReactionMoves[300] = {63, 0,   0,   0,   0, 0, 0, 0,  40, 0, 0, 0, 63, 0,   0,   0,   0, 0, 0, 0, 38, 0, 0, 0,
                         63, 76,  204, 205, 0, 0, 0, 1,  53, 0, 0, 0, 63, 0,   0,   0,   0, 0, 0, 0, 47, 0, 0, 0,
                         63, 76,  204, 205, 0, 0, 0, 1,  54, 0, 0, 0, 63, 0,   0,   0,   0, 0, 0, 0, 48, 0, 0, 0,
                         0,  0,   0,   0,   0, 0, 0, 0,  0,  0, 0, 0, 0,  0,   0,   0,   0, 0, 0, 0, 0,  0, 0, 0,
@@ -175,7 +175,7 @@ u8 lbl_8031E2A0[300] = {63, 0,   0,   0,   0, 0, 0, 0,  40, 0, 0, 0, 63, 0,   0,
                         63, 153, 153, 154, 0, 0, 0, 0,  41, 2, 0, 0, 63, 153, 153, 154, 0, 0, 0, 0, 41, 2, 0, 0,
                         0,  0,   0,   0,   0, 0, 0, 0,  0,  0, 0, 0, 0,  0,   0,   0,   0, 0, 0, 0, 0,  0, 0, 0,
                         63, 192, 0,   0,   0, 0, 0, 11, 28, 3, 0, 0};
-u8 lbl_8031E3CC[208] = {
+u8 gSharpClawReactionMoveChain[208] = {
     0,  0,   0,  0,  0, 0, 0, 0,  0,  0, 0, 0,  0, 0, 0, 0,  63, 192, 0,  0,  0, 0, 0, 11, 56, 1, 5, 10, 0, 0, 0, 64,
     63, 192, 0,  0,  0, 0, 0, 11, 55, 2, 6, 11, 0, 0, 0, 64, 63, 192, 0,  0,  0, 0, 0, 11, 29, 0, 0, 0,  0, 0, 0, 0,
     63, 192, 0,  0,  0, 0, 0, 3,  46, 0, 0, 0,  0, 0, 0, 0,  63, 192, 0,  0,  0, 0, 0, 11, 51, 0, 0, 0,  0, 0, 0, 0,
@@ -183,7 +183,7 @@ u8 lbl_8031E3CC[208] = {
     63, 64,  0,  0,  0, 0, 0, 11, 58, 0, 0, 0,  0, 0, 0, 0,  63, 128, 0,  0,  0, 0, 0, 11, 36, 0, 0, 0,  0, 0, 0, 0,
     63, 51,  51, 51, 0, 0, 0, 11, 70, 0, 0, 0,  0, 0, 0, 0,  63, 51,  51, 51, 0, 0, 0, 11, 70, 0, 0, 0,  0, 0, 0, 0,
     63, 51,  51, 51, 0, 0, 0, 11, 71, 0, 0, 0,  0, 0, 0, 0};
-u8 lbl_8031E49C[432] = {
+u8 gSharpClawMoveSelectTable[432] = {
     0,  0,   0,   0,   0, 0, 0, 0, 21, 0, 0, 0,   0, 0, 0, 0, 63, 128, 0,   0,   0, 0, 0, 0, 36, 0, 0,  0,   0, 0, 0, 0,
     63, 128, 0,   0,   0, 0, 0, 0, 24, 0, 5, 230, 1, 0, 0, 0, 63, 166, 102, 102, 0, 0, 0, 0, 25, 0, 9,  230, 1, 0, 0, 0,
     63, 128, 0,   0,   0, 0, 0, 0, 36, 0, 0, 0,   0, 0, 0, 0, 63, 166, 102, 102, 0, 0, 0, 0, 25, 0, 9,  230, 1, 0, 0, 0,
@@ -198,8 +198,8 @@ u8 lbl_8031E49C[432] = {
     63, 38,  102, 102, 0, 4, 0, 0, 17, 0, 0, 0,   0, 0, 0, 0, 63, 140, 204, 205, 0, 1, 0, 0, 16, 0, 33, 230, 2, 0, 0, 0,
     63, 12,  204, 205, 0, 1, 0, 0, 12, 0, 0, 0,   0, 0, 0, 0, 63, 38,  102, 102, 0, 8, 0, 0, 19, 0, 0,  0,   0, 0, 0, 0,
     63, 38,  102, 102, 0, 2, 0, 0, 18, 0, 0, 0,   0, 0, 0, 0};
-u8 lbl_8031E64C[24] = {0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
-u8 lbl_8031E664[432] = {0,  0,   0,   0,   0, 0, 0, 0, 21, 0,   0,   0,   0, 0, 0, 0, 63, 128, 0,   0,   0, 0, 0, 0,
+u8 gSharpClawDeflectHitboxFlags[24] = {0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
+u8 gSharpClawSoMoveSelectTable[432] = {0,  0,   0,   0,   0, 0, 0, 0, 21, 0,   0,   0,   0, 0, 0, 0, 63, 128, 0,   0,   0, 0, 0, 0,
                         36, 0,   0,   0,   0, 0, 0, 0, 63, 128, 0,   0,   0, 0, 0, 0, 24, 0,   5,   230, 1, 0, 0, 0,
                         63, 166, 102, 102, 0, 0, 0, 0, 25, 0,   9,   230, 1, 0, 0, 0, 63, 128, 0,   0,   0, 1, 0, 0,
                         16, 0,   33,  230, 2, 0, 0, 0, 63, 166, 102, 102, 0, 0, 0, 0, 25, 0,   9,   230, 1, 0, 0, 0,
@@ -217,10 +217,10 @@ u8 lbl_8031E664[432] = {0,  0,   0,   0,   0, 0, 0, 0, 21, 0,   0,   0,   0, 0, 
                         17, 0,   0,   0,   0, 0, 0, 0, 63, 140, 204, 205, 0, 1, 0, 0, 16, 0,   33,  230, 2, 0, 0, 0,
                         63, 12,  204, 205, 0, 1, 0, 0, 12, 0,   0,   0,   0, 0, 0, 0, 63, 38,  102, 102, 0, 8, 0, 0,
                         19, 0,   0,   0,   0, 0, 0, 0, 63, 38,  102, 102, 0, 2, 0, 0, 18, 0,   0,   0,   0, 0, 0, 0};
-u8 lbl_8031E814[24] = {0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
-u8 lbl_8031E82C[36] = {0, 0,  0,  0, 0, 0, 0, 11, 24, 2, 0, 0, 0, 0,  0,  0, 0, 0,
+u8 gSharpClawSoDeflectHitboxFlags[24] = {0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
+u8 gSharpClawCoAttackHitVolumes[36] = {0, 0,  0,  0, 0, 0, 0, 11, 24, 2, 0, 0, 0, 0,  0,  0, 0, 0,
                        0, 10, 25, 2, 0, 0, 0, 0,  0,  0, 0, 0, 0, 24, 16, 4, 0, 0};
-u8 lbl_8031E850[432] = {0,  0,   0,   0,   0, 0, 0, 0, 21, 0,   0,   0,   0, 0, 0, 0, 63, 128, 0,   0,   0, 0, 0, 0,
+u8 gSharpClawCoMoveSelectTable[432] = {0,  0,   0,   0,   0, 0, 0, 0, 21, 0,   0,   0,   0, 0, 0, 0, 63, 128, 0,   0,   0, 0, 0, 0,
                         36, 0,   0,   0,   0, 0, 0, 0, 63, 128, 0,   0,   0, 0, 0, 0, 24, 0,   5,   230, 1, 0, 0, 0,
                         63, 102, 102, 102, 0, 0, 0, 0, 25, 0,   9,   230, 1, 0, 0, 0, 63, 128, 0,   0,   0, 1, 0, 0,
                         16, 0,   33,  230, 2, 0, 0, 0, 63, 102, 102, 102, 0, 0, 0, 0, 25, 0,   9,   230, 1, 0, 0, 0,
@@ -238,8 +238,8 @@ u8 lbl_8031E850[432] = {0,  0,   0,   0,   0, 0, 0, 0, 21, 0,   0,   0,   0, 0, 
                         17, 0,   0,   0,   0, 0, 0, 0, 63, 140, 204, 205, 0, 1, 0, 0, 16, 0,   33,  230, 2, 0, 0, 0,
                         63, 12,  204, 205, 0, 1, 0, 0, 12, 0,   0,   0,   0, 0, 0, 0, 63, 38,  102, 102, 0, 8, 0, 0,
                         19, 0,   0,   0,   0, 0, 0, 0, 63, 38,  102, 102, 0, 2, 0, 0, 18, 0,   0,   0,   0, 0, 0, 0};
-u8 lbl_8031EA00[24] = {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
-u8 lbl_8031EA18[468] = {0,  0,   0,   0,   0, 0, 0, 0,  21, 0,   0,   0,   0, 0, 0, 0, 63, 128, 0,   0,   0,  0, 0, 0,
+u8 gSharpClawCoDeflectHitboxFlags[24] = {1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0};
+u8 gSharpClawAsMoveSelectTable[468] = {0,  0,   0,   0,   0, 0, 0, 0,  21, 0,   0,   0,   0, 0, 0, 0, 63, 128, 0,   0,   0,  0, 0, 0,
                         36, 0,   0,   0,   0, 0, 0, 0,  63, 128, 0,   0,   0, 0, 0, 0, 24, 0,   5,   230, 1,  0, 0, 0,
                         63, 166, 102, 102, 0, 0, 0, 0,  25, 0,   9,   230, 1, 0, 0, 0, 63, 128, 0,   0,   0,  1, 0, 0,
                         16, 0,   33,  230, 2, 0, 0, 0,  63, 166, 102, 102, 0, 0, 0, 0, 25, 0,   9,   230, 1,  0, 0, 0,
@@ -259,11 +259,11 @@ u8 lbl_8031EA18[468] = {0,  0,   0,   0,   0, 0, 0, 0,  21, 0,   0,   0,   0, 0,
                         19, 0,   0,   0,   0, 0, 0, 0,  63, 38,  102, 102, 0, 2, 0, 0, 18, 0,   0,   0,   0,  0, 0, 0,
                         0,  0,   0,   0,   0, 0, 0, 11, 24, 1,   0,   0,   0, 0, 0, 0, 0,  0,   0,   12,  25, 1, 0, 0,
                         0,  0,   0,   0,   0, 0, 0, 10, 16, 2,   0,   0};
-u8 lbl_8031EBEC[24] = {0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
-u8 lbl_8031EC04[48] = {60, 35, 215, 10, 0, 0, 0, 0, 0, 0, 0, 0, 60, 35, 215, 10, 0, 0, 0, 0, 1, 0, 0, 0,
+u8 gSharpClawAsDeflectHitboxFlags[24] = {0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
+u8 gBossGeneralLocomotionMoves[48] = {60, 35, 215, 10, 0, 0, 0, 0, 0, 0, 0, 0, 60, 35, 215, 10, 0, 0, 0, 0, 1, 0, 0, 0,
                        60, 35, 215, 10, 0, 0, 0, 0, 2, 0, 0, 0, 60, 35, 215, 10, 0, 0, 0, 0, 1, 0, 0, 0};
-u8 lbl_8031EC34[24] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 64, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-u8 lbl_8031EC4C[300] = {
+u8 gBossGeneralIdleMoveTable[24] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 64, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+u8 gBossGeneralAnimEventMoves[300] = {
     63, 128, 0,  0, 0, 0, 0,  11,  20, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  16, 0, 0, 0, 63, 128, 0,  0, 0, 0,
     0,  11,  18, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  18, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  19, 0, 0, 0,
     63, 128, 0,  0, 0, 0, 0,  11,  19, 0, 0, 0, 0,  0,   0,  0, 0, 0, 0,  0,   0,  0, 0, 0, 0,  0,   0,  0, 0, 0,
@@ -274,7 +274,7 @@ u8 lbl_8031EC4C[300] = {
     0,  11,  16, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  18, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  18, 0, 0, 0,
     63, 128, 0,  0, 0, 0, 0,  11,  19, 0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  19, 0, 0, 0, 0,  0,   0,  0, 0, 0,
     0,  11,  0,  0, 0, 0, 0,  0,   0,  0, 0, 0, 0,  0,   0,  0, 0, 0, 63, 128, 0,  0, 0, 0, 0,  11,  20, 0, 0, 0};
-u8 lbl_8031ED78[300] = {62, 148, 122, 225, 0, 0, 0, 11, 20, 2, 0, 0, 62, 148, 122, 225, 0, 0, 0, 11, 16, 2, 0, 0,
+u8 gBossGeneralBlockReactionMoves[300] = {62, 148, 122, 225, 0, 0, 0, 11, 20, 2, 0, 0, 62, 148, 122, 225, 0, 0, 0, 11, 16, 2, 0, 0,
                         62, 148, 122, 225, 0, 0, 0, 11, 18, 2, 0, 0, 62, 148, 122, 225, 0, 0, 0, 11, 18, 2, 0, 0,
                         62, 148, 122, 225, 0, 0, 0, 11, 19, 2, 0, 0, 62, 148, 122, 225, 0, 0, 0, 11, 19, 2, 0, 0,
                         0,  0,   0,   0,   0, 0, 0, 0,  0,  0, 0, 0, 0,  0,   0,   0,   0, 0, 0, 0,  0,  0, 0, 0,
@@ -287,13 +287,13 @@ u8 lbl_8031ED78[300] = {62, 148, 122, 225, 0, 0, 0, 11, 20, 2, 0, 0, 62, 148, 12
                         62, 148, 122, 225, 0, 0, 0, 11, 19, 2, 0, 0, 62, 148, 122, 225, 0, 0, 0, 11, 19, 2, 0, 0,
                         0,  0,   0,   0,   0, 0, 0, 0,  0,  0, 0, 0, 0,  0,   0,   0,   0, 0, 0, 0,  0,  0, 0, 0,
                         62, 148, 122, 225, 0, 0, 0, 11, 20, 2, 0, 0};
-u8 lbl_8031EEA4[36] = {0, 0,  0, 0, 0, 0, 0, 11, 0, 1, 0, 0, 0, 0,  0, 0, 0, 0,
+u8 gBossGeneralAttackHitVolumes[36] = {0, 0,  0, 0, 0, 0, 0, 11, 0, 1, 0, 0, 0, 0,  0, 0, 0, 0,
                        0, 12, 0, 1, 0, 0, 0, 0,  0, 0, 0, 0, 0, 10, 0, 1, 0, 0};
-u8 lbl_8031EEC8[96] = {63, 128, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 63, 128, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0,
+u8 gBossGeneralModeIdleMoves[96] = {63, 128, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 63, 128, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0,
                        63, 0,   0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0,  0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                        0,  0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 0,   0, 0, 0, 0, 0, 0, 7, 0, 0, 0,
                        63, 128, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 63, 128, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0};
-u8 lbl_8031EF28[300] = {63, 0,   0,   0,   0, 0, 0, 0, 15, 0, 0, 0, 63, 0,   0,   0,   0, 0, 0, 0, 12, 0, 0, 0,
+u8 gBossGeneralHitReactionMoves[300] = {63, 0,   0,   0,   0, 0, 0, 0, 15, 0, 0, 0, 63, 0,   0,   0,   0, 0, 0, 0, 12, 0, 0, 0,
                         63, 76,  204, 205, 0, 0, 0, 0, 14, 0, 0, 0, 63, 0,   0,   0,   0, 0, 0, 0, 14, 0, 0, 0,
                         63, 76,  204, 205, 0, 0, 0, 0, 13, 0, 0, 0, 63, 0,   0,   0,   0, 0, 0, 0, 13, 0, 0, 0,
                         0,  0,   0,   0,   0, 0, 0, 0, 0,  0, 0, 0, 0,  0,   0,   0,   0, 0, 0, 0, 0,  0, 0, 0,
@@ -306,8 +306,8 @@ u8 lbl_8031EF28[300] = {63, 0,   0,   0,   0, 0, 0, 0, 15, 0, 0, 0, 63, 0,   0, 
                         63, 153, 153, 154, 0, 0, 0, 0, 13, 0, 0, 0, 63, 153, 153, 154, 0, 0, 0, 0, 13, 0, 0, 0,
                         0,  0,   0,   0,   0, 0, 0, 0, 0,  0, 0, 0, 0,  0,   0,   0,   0, 0, 0, 0, 0,  0, 0, 0,
                         63, 192, 0,   0,   0, 0, 0, 0, 15, 0, 0, 0};
-u8 lbl_8031F054[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-u8 lbl_8031F064[240] = {
+u8 gBossGeneralNullMoveChain[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+u8 gBossGeneralMoveSelectTable[240] = {
     0,  0,   0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 64, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0,  0,   0, 0, 0, 0,
     63, 128, 0, 0, 0, 8, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 63, 128, 0, 0, 0, 1, 0, 0, 1, 0, 0,  0,   0, 0, 0, 0,
     64, 0,   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 128, 0, 0, 0, 4, 0, 0, 3, 0, 0,  0,   0, 0, 0, 0,
@@ -316,20 +316,20 @@ u8 lbl_8031F064[240] = {
     63, 128, 0, 0, 0, 4, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 63, 128, 0, 0, 0, 1, 0, 0, 1, 0, 33, 230, 2, 0, 0, 0,
     63, 128, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 63, 128, 0, 0, 0, 8, 0, 0, 5, 0, 0,  0,   0, 0, 0, 0,
     63, 128, 0, 0, 0, 2, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0};
-u8 lbl_8031F154[24] = {0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
+u8 gBossGeneralDeflectHitboxFlags[24] = {0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
 FamilyTable gBaddieFamilyTables[6] = {
-    {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031E49C, lbl_8031E2A0, lbl_8031E21C, lbl_8031E240, lbl_8031E3CC,
-     lbl_8031E64C, lbl_8031E0F0},
-    {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031E49C, lbl_8031E2A0, lbl_8031E21C, lbl_8031E240, lbl_8031E3CC,
-     lbl_8031E64C, lbl_8031E0F0},
-    {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031E664, lbl_8031E2A0, lbl_8031E21C, lbl_8031E240, lbl_8031E3CC,
-     lbl_8031E814, lbl_8031E0F0},
-    {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031E850, lbl_8031E2A0, lbl_8031E82C, lbl_8031E240, lbl_8031E3CC,
-     lbl_8031EA00, lbl_8031E0F0},
-    {lbl_8031DE50, lbl_8031DE80, lbl_8031DFC4, lbl_8031EA18, lbl_8031E2A0, lbl_8031E21C, lbl_8031E240, lbl_8031E3CC,
-     lbl_8031EBEC, lbl_8031E0F0},
-    {lbl_8031EC04, lbl_8031EC34, lbl_8031EC4C, lbl_8031F064, lbl_8031EF28, lbl_8031EEA4, lbl_8031EEC8, lbl_8031F054,
-     lbl_8031F154, lbl_8031ED78},
+    {gSharpClawLocomotionMoves, gSharpClawIdleMoveTable, gSharpClawAnimEventMoves, gSharpClawMoveSelectTable, gSharpClawHitReactionMoves, gSharpClawAttackHitVolumes, gSharpClawModeIdleMoves, gSharpClawReactionMoveChain,
+     gSharpClawDeflectHitboxFlags, gSharpClawBlockReactionMoves},
+    {gSharpClawLocomotionMoves, gSharpClawIdleMoveTable, gSharpClawAnimEventMoves, gSharpClawMoveSelectTable, gSharpClawHitReactionMoves, gSharpClawAttackHitVolumes, gSharpClawModeIdleMoves, gSharpClawReactionMoveChain,
+     gSharpClawDeflectHitboxFlags, gSharpClawBlockReactionMoves},
+    {gSharpClawLocomotionMoves, gSharpClawIdleMoveTable, gSharpClawAnimEventMoves, gSharpClawSoMoveSelectTable, gSharpClawHitReactionMoves, gSharpClawAttackHitVolumes, gSharpClawModeIdleMoves, gSharpClawReactionMoveChain,
+     gSharpClawSoDeflectHitboxFlags, gSharpClawBlockReactionMoves},
+    {gSharpClawLocomotionMoves, gSharpClawIdleMoveTable, gSharpClawAnimEventMoves, gSharpClawCoMoveSelectTable, gSharpClawHitReactionMoves, gSharpClawCoAttackHitVolumes, gSharpClawModeIdleMoves, gSharpClawReactionMoveChain,
+     gSharpClawCoDeflectHitboxFlags, gSharpClawBlockReactionMoves},
+    {gSharpClawLocomotionMoves, gSharpClawIdleMoveTable, gSharpClawAnimEventMoves, gSharpClawAsMoveSelectTable, gSharpClawHitReactionMoves, gSharpClawAttackHitVolumes, gSharpClawModeIdleMoves, gSharpClawReactionMoveChain,
+     gSharpClawAsDeflectHitboxFlags, gSharpClawBlockReactionMoves},
+    {gBossGeneralLocomotionMoves, gBossGeneralIdleMoveTable, gBossGeneralAnimEventMoves, gBossGeneralMoveSelectTable, gBossGeneralHitReactionMoves, gBossGeneralAttackHitVolumes, gBossGeneralModeIdleMoves, gBossGeneralNullMoveChain,
+     gBossGeneralDeflectHitboxFlags, gBossGeneralBlockReactionMoves},
 };
 u8 gBaddieEventDelayRanges[6][2] = {{15, 60}, {10, 50}, {7, 20}, {5, 20}, {3, 15}, {3, 15}};
 f32 gBaddieFamilySpeedScales[6] = {0.5f, 0.5f, 0.7f, 0.6f, 1.5f, 1.5f};
@@ -1571,9 +1571,9 @@ void guardClawUpdateWhileFrozen(GameObject* obj, u8* state, int wpad0, int wpad1
     ((GroundBaddieState*)state)->baddie.reactionFlags |= 0x10;
 }
 
-int lbl_803DBCA8[2] = {2, 3};
-f32 lbl_803DBCB0 = 0.018f;
-f32 lbl_803DBCB4 = 240.0f;
+int gGcRobotPatrolCurveInitData[2] = {2, 3};
+f32 gGcRobotPatrolRiseAccel = 0.018f;
+f32 gGcRobotPatrolCatchCooldown = 240.0f;
 
 /* gcRobotPatrol (mikaladon_update): periodically dropped object; parented back to
  * the dropper via +0xC4 and announced with SFX 0x249. */
@@ -1741,9 +1741,9 @@ Seq11ERow gSeq11EStateTable[6] = {
 typedef void (*SeqObj11ESetMovePointerStateFn)(GameObject* obj, void* state, int moveId, f32 speed, int p5,
                                                int flags);
 
-extern int lbl_803DBCA8[2];
-extern f32 lbl_803DBCB0;
-extern f32 lbl_803DBCB4;
+extern int gGcRobotPatrolCurveInitData[2];
+extern f32 gGcRobotPatrolRiseAccel;
+extern f32 gGcRobotPatrolCatchCooldown;
 
 void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wpad0, int wpad1, Vec* wpad2, int wpad3)
 {
@@ -1820,7 +1820,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             if ((*gRomCurveInterface)->goNextPoint(path) != 0)
             {
                 if ((*gRomCurveInterface)
-                        ->initCurve(*(RomCurveWalker**)state, obj, 700.0f, (int*)&lbl_803DBCA8, -1) != 0)
+                        ->initCurve(*(RomCurveWalker**)state, obj, 700.0f, (int*)&gGcRobotPatrolCurveInitData, -1) != 0)
                 {
                     ((BaddieState*)state)->controlFlags &= ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
                 }
@@ -1892,7 +1892,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
     }
     if (((BaddieState*)state)->userData1 != 0)
     {
-        obj->anim.velocityY += lbl_803DBCB0 * timeDelta;
+        obj->anim.velocityY += gGcRobotPatrolRiseAccel * timeDelta;
     }
     if (obj->objectFlags & OBJECT_OBJFLAG_RENDERED)
     {
@@ -1927,7 +1927,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             ObjHits_RecordObjectHit(Obj_GetPlayerObject(), obj, 0x16, 2, 0);
             gcRobotLight_init(obj, 0x3b2);
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_rolovr_6);
-            *(f32*)(state + 0x32c) = lbl_803DBCB4;
+            *(f32*)(state + 0x32c) = gGcRobotPatrolCatchCooldown;
         }
         if ((int)randomGetRange(0, (int)(1000.0f * oneOverTimeDelta)) == 0)
         {
@@ -2196,9 +2196,9 @@ void mikaladon_init(GameObject* obj, MikaladonState* state)
         b * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterZ;
 }
 
-int lbl_803DBCB8[2] = {2, 3};
+int gVambatCurveInitData[2] = {2, 3};
 u8 gMagicPlantSeqEntryTable[8] = {1, 1, 3, 2, 0, 0, 0, 0};
-int lbl_803DBCC8[2] = {2, 3};
+int gWeevilCurveInitData[2] = {2, 3};
 
 /* The Firebat variant of the shared Vambat/Firebat family (retail
    OBJECTS.bin name "Firebat", DLL 0xC9); it alone runs with userData2 set. */
@@ -2265,7 +2265,7 @@ void vambat_updateIdle(GameObject* obj, int state)
             if ((*gRomCurveInterface)->goNextPoint(curve) != 0)
             {
                 if ((*gRomCurveInterface)
-                        ->initCurve(*(RomCurveWalker**)state, (void*)obj, 7e+02f, lbl_803DBCB8, -1) != 0)
+                        ->initCurve(*(RomCurveWalker**)state, (void*)obj, 7e+02f, gVambatCurveInitData, -1) != 0)
                 {
                     bs->controlFlags = bs->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
                 }
@@ -2326,7 +2326,7 @@ void vambat_updateEngaged(GameObject* obj, int state)
             if ((*gRomCurveInterface)->goNextPoint(curve) != 0)
             {
                 if ((*gRomCurveInterface)
-                        ->initCurve(*(RomCurveWalker**)state, (void*)obj, 7e+02f, lbl_803DBCB8, -1) != 0)
+                        ->initCurve(*(RomCurveWalker**)state, (void*)obj, 7e+02f, gVambatCurveInitData, -1) != 0)
                 {
                     bs->controlFlags = bs->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
                 }
@@ -2671,7 +2671,7 @@ void kooshy_init(int unused, int state)
 
 #define FALL_LADDERS_HIT_VOLUME_SLOT 0x18
 
-extern int lbl_803DBCC8[2];
+extern int gWeevilCurveInitData[2];
 extern const f64 gWeevilFrozenProgressThreshold;
 extern const f32 gWeevilRecoverDurationFrames;
 extern const f32 gWeevilApproachDurationFrames;
@@ -2786,7 +2786,7 @@ void weevil_updateIdle(GameObject* obj, int state)
             if ((*gRomCurveInterface)->goNextPoint(curve) != 0)
             {
                 if ((*gRomCurveInterface)
-                        ->initCurve(*(RomCurveWalker**)state, (void*)obj, gWeevilCurveInitDistance, lbl_803DBCC8, -1) != 0)
+                        ->initCurve(*(RomCurveWalker**)state, (void*)obj, gWeevilCurveInitDistance, gWeevilCurveInitData, -1) != 0)
                 {
                     ((BaddieState*)state)->controlFlags =
                         ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
@@ -2930,7 +2930,7 @@ void weevil_init(int unused, u8* state)
     ((BaddieState*)state)->pathStep = gWeevilHalf;
 }
 
-int lbl_803DBCD0[2] = {2, 3};
+int gPinPonCurveInitData[2] = {2, 3};
 
 void baddieSpawnWaterRipple(GameObject* obj, BaddieState* state)
 {
@@ -3000,7 +3000,7 @@ void pinPon_updateIdle(GameObject* obj, int state)
              curve->atSegmentEnd != 0) &&
             (*gRomCurveInterface)->goNextPoint((void*)curve) != 0 &&
             (*gRomCurveInterface)
-                    ->initCurve(*(RomCurveWalker**)state, (void*)obj, 700.0f, lbl_803DBCD0, -1) != 0)
+                    ->initCurve(*(RomCurveWalker**)state, (void*)obj, 700.0f, gPinPonCurveInitData, -1) != 0)
         {
             ((BaddieState*)state)->controlFlags &= ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
         }
@@ -3076,7 +3076,7 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
     if (((state[0xb7] & 0x2000U) != 0) &&
         ((Curve_AdvanceAlongPath(&curve->curve, 0.0f) != 0 || curve->atSegmentEnd != 0) &&
          ((*gRomCurveInterface)->goNextPoint(curve) != 0)) &&
-        ((*gRomCurveInterface)->initCurve((RomCurveWalker*)*state, (void*)obj, 700.0f, (int*)&lbl_803DBCD0, -1) !=
+        ((*gRomCurveInterface)->initCurve((RomCurveWalker*)*state, (void*)obj, 700.0f, (int*)&gPinPonCurveInitData, -1) !=
          0))
     {
         *(u32*)&state[0xb7] &= ~0x2000LL;
@@ -3395,7 +3395,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     return angleStep & 0xffff;
 }
 
-int lbl_803DBCD8[2] = {2, 3};
+int gWbCurveInitData[2] = {2, 3};
 
 /* object-type id of the pollen-spit projectile spawned by spittingEbaSpawnPollen
  * (see file docblock). */
@@ -3555,13 +3555,13 @@ u8 gDusterEbaMoveTable[] = {
 
 /* baddie-AI tables referenced via extern by firecrawler.c; owned here by link order */
 
-u8 lbl_8031F3A0[0x30] = {
+u8 gRedEyeLocomotionMoves[0x30] = {
     0x40, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x0E, 0x00, 0x03, 0x00, 0x40, 0x00, 0x00, 0x00,
     0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x3F, 0xC0, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
     0x01, 0x00, 0x03, 0x00, 0x3F, 0xC0, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x02, 0x00, 0x03, 0x00,
 };
 
-u8 lbl_8031F3D0[0x54] = {
+u8 gRedEyeRandomMoves[0x54] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x40, 0x40, 0x00, 0x00, 0x00,
     0x0F, 0x00, 0x00, 0x12, 0x00, 0x08, 0x00, 0x40, 0x40, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x14, 0x00,
     0x08, 0x00, 0x40, 0x40, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x14, 0x00, 0x08, 0x00, 0x40, 0xA0, 0x00,
@@ -3569,14 +3569,14 @@ u8 lbl_8031F3D0[0x54] = {
     0x10, 0x00, 0x08, 0x00, 0x3F, 0xA6, 0x66, 0x66, 0x00, 0x0F, 0x00, 0x00, 0x11, 0x00, 0x08, 0x00,
 };
 
-u8 lbl_8031F424[0x48] = {
+u8 gRedEyeDefaultMoveChain[0x48] = {
     0x3F, 0xC0, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x0D, 0x01, 0x03, 0x00, 0x3F, 0xC0, 0x00, 0x00, 0x00, 0x0F,
     0x00, 0x00, 0x0F, 0x02, 0x03, 0x00, 0x3F, 0xC0, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x0F, 0x03, 0x03, 0x00,
     0x40, 0x60, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x14, 0x04, 0x08, 0x00, 0x3F, 0xC0, 0x00, 0x00, 0x00, 0x0F,
     0x00, 0x00, 0x0F, 0x05, 0x03, 0x00, 0x40, 0xC0, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x13, 0x01, 0x03, 0x00,
 };
 
-u8 lbl_8031F46C[0x60] = {
+u8 gRedEyeMoveChain[0x60] = {
     0x40, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x14, 0x01, 0x08, 0x00, 0x3F, 0x80, 0x00, 0x00,
     0x00, 0x0F, 0x00, 0x00, 0x02, 0x02, 0x03, 0x00, 0x3F, 0xC0, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00,
     0x04, 0x03, 0x03, 0x00, 0x3F, 0x80, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x02, 0x04, 0x03, 0x00,
@@ -3585,7 +3585,7 @@ u8 lbl_8031F46C[0x60] = {
     0x06, 0x07, 0x03, 0x00, 0x3F, 0xC0, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x04, 0x00, 0x03, 0x00,
 };
 
-u8 lbl_8031F4CC[0x60] = {
+u8 gRedEyeOctantMoves[0x60] = {
     0x3F, 0xA6, 0x66, 0x66, 0x00, 0x0F, 0x00, 0x00, 0x12, 0x00, 0x08, 0x00, 0x3F, 0xA6, 0x66, 0x66,
     0x00, 0x0F, 0x00, 0x00, 0x10, 0x00, 0x08, 0x00, 0x3F, 0xA6, 0x66, 0x66, 0x00, 0x0F, 0x00, 0x00,
     0x10, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -3594,7 +3594,7 @@ u8 lbl_8031F4CC[0x60] = {
     0x11, 0x00, 0x08, 0x00, 0x3F, 0xA6, 0x66, 0x66, 0x00, 0x0F, 0x00, 0x00, 0x12, 0x00, 0x08, 0x00,
 };
 
-u8 lbl_8031F52C[0xC0] = {
+u8 gRedEyeMoveHitVolumes[0xC0] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x18, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x01, 0x01, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x02, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -3608,7 +3608,7 @@ u8 lbl_8031F52C[0xC0] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x15, 0x01, 0x00, 0x00,
 };
 
-u8 lbl_8031F5EC[0x70] = {
+u8 gRedEyeHitReactionSeq[0x70] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x0B, 0x07, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x06, 0x3E, 0xCC, 0xCC, 0xCD, 0x00, 0x00,
     0x00, 0x0B, 0x0A, 0x06, 0x06, 0x00, 0x00, 0x00, 0x00, 0x02, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0x08,
@@ -3617,7 +3617,7 @@ u8 lbl_8031F5EC[0x70] = {
     0x06, 0x3F, 0x33, 0x33, 0x33, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-u8 lbl_8031F65C[0x9C] = {
+u8 gCrawlerDefaultMoveEventFx[0x9C] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x41, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xA0, 0x03, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -3629,13 +3629,13 @@ u8 lbl_8031F65C[0x9C] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x9F, 0x0C, 0x00, 0x00, 0x00,
 };
 
-u8 lbl_8031F6F8[0x30] = {
+u8 gFireCrawlerLocomotionMoves[0x30] = {
     0x40, 0x40, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x3F, 0x00, 0x00, 0x00,
     0x00, 0x01, 0x00, 0x00, 0x02, 0x00, 0x03, 0x00, 0x3F, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
     0x03, 0x00, 0x03, 0x00, 0x3F, 0x19, 0x99, 0x9A, 0x00, 0x01, 0x00, 0x00, 0x04, 0x00, 0x03, 0x00,
 };
 
-u8 lbl_8031F728[0x60] = {
+u8 gFireCrawlerOctantMoves[0x60] = {
     0x40, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x08, 0x00, 0x08, 0x00, 0x3F, 0x99, 0x99, 0x9A,
     0x00, 0x0F, 0x00, 0x00, 0x06, 0x00, 0x08, 0x00, 0x3F, 0x99, 0x99, 0x9A, 0x00, 0x0F, 0x00, 0x00,
     0x06, 0x00, 0x08, 0x00, 0x3F, 0x99, 0x99, 0x9A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -3644,17 +3644,17 @@ u8 lbl_8031F728[0x60] = {
     0x07, 0x00, 0x08, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x08, 0x00, 0x08, 0x00,
 };
 
-u8 lbl_8031F788[0x24] = {
+u8 gFireCrawlerRandomMoves[0x24] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x40, 0x40, 0x00, 0x00, 0x00, 0x0F,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x40, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
 };
 
-u8 lbl_8031F7AC[0x24] = {
+u8 gFireCrawlerMoveChain[0x24] = {
     0x40, 0x19, 0x99, 0x9A, 0x00, 0x0F, 0x00, 0x00, 0x05, 0x01, 0x03, 0x00, 0x3F, 0xB3, 0x33, 0x33, 0x00, 0x0F,
     0x00, 0x00, 0x09, 0x02, 0x03, 0x00, 0x40, 0x80, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x0A, 0x00, 0x03, 0x00,
 };
 
-u8 lbl_8031F7D0[0x9C] = {
+u8 gFireCrawlerMoveHitVolumes[0x9C] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x09, 0x02, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x09, 0x03, 0x01, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x09, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -3666,7 +3666,7 @@ u8 lbl_8031F7D0[0x9C] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x0D, 0x02, 0x00, 0x00,
 };
 
-u8 lbl_8031F86C[0x50] = {
+u8 gFireCrawlerHitReactionSeq[0x50] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x3F, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0x0B, 0x02, 0x03, 0x00, 0x00, 0x00, 0x00, 0x06,
     0x3F, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0x0C, 0x04, 0x03, 0x00, 0x00, 0x00, 0x00, 0x02,
@@ -3674,7 +3674,7 @@ u8 lbl_8031F86C[0x50] = {
     0x3F, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
 };
 
-u8 lbl_8031F8BC[0x9C] = {
+u8 gFireCrawlerMoveEventFx[0x9C] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x04, 0xAB, 0x01, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0xAB, 0x02, 0x00, 0x00, 0x08,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -3686,13 +3686,13 @@ u8 lbl_8031F8BC[0x9C] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x00, 0x00, 0x00,
 };
 
-u8 lbl_8031F958[0x30] = {
+u8 gShadowHunterLocomotionMoves[0x30] = {
     0x40, 0x80, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x3F, 0x00, 0x00, 0x00,
     0x00, 0x01, 0x00, 0x00, 0x03, 0x00, 0x03, 0x00, 0x3F, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00,
     0x04, 0x00, 0x03, 0x00, 0x3F, 0x19, 0x99, 0x9A, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x03, 0x00,
 };
 
-u8 lbl_8031F988[0x60] = {
+u8 gShadowHunterOctantMoves[0x60] = {
     0x40, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x08, 0x00, 0x08, 0x00, 0x3F, 0xC0, 0x00, 0x00,
     0x00, 0x0F, 0x00, 0x00, 0x06, 0x00, 0x08, 0x00, 0x3F, 0xC0, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00,
     0x06, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -3701,31 +3701,31 @@ u8 lbl_8031F988[0x60] = {
     0x07, 0x00, 0x08, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x08, 0x00, 0x08, 0x00,
 };
 
-u8 lbl_8031F9E8[0x30] = {
+u8 gShadowHunterRandomMoves[0x30] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x40, 0x80, 0x00, 0x00,
     0x00, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x40, 0x80, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00,
     0x01, 0x00, 0x08, 0x00, 0x40, 0x80, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x02, 0x00, 0x08, 0x00,
 };
 
-u8 lbl_8031FA18[0x24] = {
+u8 gShadowHunterMoveChain[0x24] = {
     0x3F, 0xC0, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x05, 0x01, 0x03, 0x00, 0x3F, 0xC0, 0x00, 0x00, 0x00, 0x0F,
     0x00, 0x00, 0x05, 0x02, 0x03, 0x00, 0x3F, 0xC0, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x05, 0x00, 0x03, 0x00,
 };
 
-u8 lbl_8031FA3C[0x3C] = {
+u8 gShadowHunterDefaultMoveChain[0x3C] = {
     0x3F, 0x80, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x09, 0x01, 0x03, 0x02, 0x3F, 0x80, 0x00,
     0x00, 0x00, 0x0F, 0x00, 0x00, 0x0A, 0x00, 0x03, 0x00, 0x3F, 0x80, 0x00, 0x00, 0x00, 0x0F,
     0x00, 0x00, 0x0B, 0x03, 0x03, 0x03, 0x3F, 0x80, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x0C,
     0x04, 0x03, 0x04, 0x3F, 0x80, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x0D, 0x00, 0x03, 0x00,
 };
 
-u8 lbl_8031FA78[0x30] = {
+u8 gShadowHunterMoveHitVolumes[0x30] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x0A, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05,
     0x0A, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x0D, 0x01, 0x00, 0x00,
 };
 
-u8 lbl_8031FAA8[0x40] = {
+u8 gShadowHunterHitReactionSeq[0x40] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x3F, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0x0E, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x06,
     0x3F, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0x0F, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x06,
@@ -4104,7 +4104,7 @@ void spittingEbaInit(u32 unused, int state)
     return;
 }
 
-extern int lbl_803DBCD8[2];
+extern int gWbCurveInitData[2];
 extern const f32 lbl_803E2AA8;
 extern const f32 lbl_803E2AAC;
 extern const f32 lbl_803E2AB0;
@@ -4300,7 +4300,7 @@ void wbUpdateIdle(u32 obj, int state)
               route->atSegmentEnd != 0) &&
              (*gRomCurveInterface)->goNextPoint(route) != 0) &&
             (*gRomCurveInterface)
-                    ->initCurve(*(RomCurveWalker**)state, (void*)obj, lbl_803E2AE4, (int*)&lbl_803DBCD8, -1) != 0)
+                    ->initCurve(*(RomCurveWalker**)state, (void*)obj, lbl_803E2AE4, (int*)&gWbCurveInitData, -1) != 0)
         {
             ((BaddieState*)state)->controlFlags =
                 ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
@@ -4595,10 +4595,10 @@ STATIC_ASSERT(offsetof(FCVars, linkedObj) == 0x340);
 /* group owned by another DLL, queried here */
 #define LANTERNFIREFLY_OBJGROUP 0x30 /* DLL 0x10C lanternfirefly */
 
-extern f32 lbl_803DBCE0;
-extern f32 lbl_803DBCE4;
-extern f32 lbl_803DBCE8;
-extern f32 lbl_803DBCEC;
+extern f32 gHoodedZyckFollowUpMoveSpeed;
+extern f32 gHoodedZyckLungeMoveSpeed;
+extern f32 gHoodedZyckLargeTargetSpeedScale;
+extern f32 gHoodedZyckEmergeMoveSpeed;
 
 void hoodedZyckUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int wpad0, int wpad1, Vec* wpad2,
                                  int wpad3)
@@ -4659,7 +4659,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
         ObjHits_DisableObject(obj);
         if ((obj)->anim.currentMove != 5)
         {
-            baddieSetMove(obj, state, 5, lbl_803DBCEC, 0, 0);
+            baddieSetMove(obj, state, 5, gHoodedZyckEmergeMoveSpeed, 0, 0);
         }
         else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
@@ -4749,7 +4749,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
         ObjHits_DisableObject(obj);
         if (obj->anim.currentMove != 5)
         {
-            baddieSetMove(obj, (int)state, 5, lbl_803DBCEC, 0, 0);
+            baddieSetMove(obj, (int)state, 5, gHoodedZyckEmergeMoveSpeed, 0, 0);
         }
         else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
@@ -4848,7 +4848,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
         if (((BaddieState*)state)->trackedObj != NULL &&
             ((GameObject*)((BaddieState*)state)->trackedObj)->anim.hitboxScale > 56.0f)
         {
-            ((BaddieState*)state)->speedScale = lbl_803DBCE8;
+            ((BaddieState*)state)->speedScale = gHoodedZyckLargeTargetSpeedScale;
         }
         if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0 || noHit == 0 ||
             (mag < 3000 && noHit != 0 && obj->anim.currentMove != 0))
@@ -4900,7 +4900,7 @@ void hoodedZyck_update(GameObject* obj, u8* state)
         ObjHits_DisableObject(obj);
         if (obj->anim.currentMove != 5)
         {
-            baddieSetMove(obj, (int)state, 5, lbl_803DBCEC, 0, 0);
+            baddieSetMove(obj, (int)state, 5, gHoodedZyckEmergeMoveSpeed, 0, 0);
         }
         else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
@@ -4933,7 +4933,7 @@ void hoodedZyck_update(GameObject* obj, u8* state)
         grabbed = ((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN;
         if (grabbed != 0 && obj->anim.currentMove == 6)
         {
-            baddieSetMove(obj, (int)state, 4, lbl_803DBCE0, 0, 1);
+            baddieSetMove(obj, (int)state, 4, gHoodedZyckFollowUpMoveSpeed, 0, 1);
         }
         else
         {
@@ -4949,7 +4949,7 @@ void hoodedZyck_update(GameObject* obj, u8* state)
                     }
                     else
                     {
-                        baddieSetMove(obj, (int)state, 6, lbl_803DBCE4, 0, 0);
+                        baddieSetMove(obj, (int)state, 6, gHoodedZyckLungeMoveSpeed, 0, 0);
                     }
                     ((FCVars*)state)->turnDelta = 0;
                 }
@@ -5011,17 +5011,17 @@ void hoodedZyck_init(GameObject* obj, BaddieState* st)
     ObjHits_EnableObject(obj);
 }
 
-f32 lbl_803DBCE0 = 0.7f;
-f32 lbl_803DBCE4 = 2.0f;
-f32 lbl_803DBCE8 = 110.0f;
-f32 lbl_803DBCEC = 2.0f;
-int lbl_803DBCF0[2] = {2, 3};
-int lbl_803DBCF8[2] = {2, 3};
-extern u8 lbl_8031FBB8[];
-extern u8 lbl_8031FBD0[];
-extern u8 lbl_8031FBE8[];
-extern u8 lbl_8031FC00[];
-extern u8 lbl_8031FC18[];
+f32 gHoodedZyckFollowUpMoveSpeed = 0.7f;
+f32 gHoodedZyckLungeMoveSpeed = 2.0f;
+f32 gHoodedZyckLargeTargetSpeedScale = 110.0f;
+f32 gHoodedZyckEmergeMoveSpeed = 2.0f;
+int gCrawlerCurveInitData[2] = {2, 3};
+int gHagabonMK2CurveInitData[2] = {2, 3};
+extern u8 gHagabonMK2ModelChain0BoneIds[];
+extern u8 gHagabonMK2ModelChain1BoneIds[];
+extern u8 gHagabonMK2ModelChain2BoneIds[];
+extern u8 gHagabonMK2ModelChain3BoneIds[];
+extern u8 gHagabonMK2ModelChain4BoneIds[];
 
 typedef struct CrawlerModelChainList
 {
@@ -5031,16 +5031,16 @@ typedef struct CrawlerModelChainList
 
 STATIC_ASSERT(sizeof(CrawlerModelChainList) == 8);
 
-CrawlerModelChainList lbl_803DBD00 = {lbl_8031FBB8, 6};
-CrawlerModelChainList lbl_803DBD08 = {lbl_8031FBD0, 6};
-CrawlerModelChainList lbl_803DBD10 = {lbl_8031FBE8, 6};
-CrawlerModelChainList lbl_803DBD18 = {lbl_8031FC00, 6};
-CrawlerModelChainList lbl_803DBD20 = {lbl_8031FC18, 5};
+CrawlerModelChainList gHagabonMK2ModelChain0 = {gHagabonMK2ModelChain0BoneIds, 6};
+CrawlerModelChainList gHagabonMK2ModelChain1 = {gHagabonMK2ModelChain1BoneIds, 6};
+CrawlerModelChainList gHagabonMK2ModelChain2 = {gHagabonMK2ModelChain2BoneIds, 6};
+CrawlerModelChainList gHagabonMK2ModelChain3 = {gHagabonMK2ModelChain3BoneIds, 6};
+CrawlerModelChainList gHagabonMK2ModelChain4 = {gHagabonMK2ModelChain4BoneIds, 5};
 u8 gSnowwormSeqIndexReset[4] = {2, 2, 0, 0};
 u8 gSnowwormSeqIndexMax[4] = {0xD, 7, 0, 0};
-u8 lbl_803DBD30[4] = {0x3C, 0xB4, 0, 0};
-u8 lbl_803DBD34[4] = {3, 5, 9, 0xB};
-u8 lbl_803DBD38[8] = {3, 5, 3, 5, 0, 0, 0, 0};
+u8 gSnowwormTurnRates[4] = {0x3C, 0xB4, 0, 0};
+u8 gSnowwormHitReactionSeqIndices[4] = {3, 5, 9, 0xB};
+u8 gSnowwormBabyHitReactionSeqIndices[8] = {3, 5, 3, 5, 0, 0, 0, 0};
 
 #define FIRECRAWLER_OBJFLAG_RENDERED     0x800
 #define FIRECRAWLER_OBJFLAG_PARENT_SLACK 0x1000
@@ -5065,32 +5065,32 @@ EnemyTargetSearchResult gCrawlerNearbyObjectBuffer[16];
 f32 gCrawlerHitSfxTimer;
 
 
-extern u8 lbl_8031F3A0[];
-extern u8 lbl_8031F3D0[];
-extern u8 lbl_8031F424[];
-extern u8 lbl_8031F46C[];
-extern u8 lbl_8031F4CC[];
-extern u8 lbl_8031F52C[];
-extern u8 lbl_8031F5EC[];
-extern u8 lbl_8031F65C[];
-extern u8 lbl_8031F6F8[];
-extern u8 lbl_8031F728[];
-extern u8 lbl_8031F788[];
-extern u8 lbl_8031F7AC[];
-extern u8 lbl_8031F7D0[];
-extern u8 lbl_8031F86C[];
-extern u8 lbl_8031F8BC[];
-extern u8 lbl_8031F958[];
-extern u8 lbl_8031F988[];
-extern u8 lbl_8031F9E8[];
-extern u8 lbl_8031FA18[];
-extern u8 lbl_8031FA3C[];
-extern u8 lbl_8031FA78[];
-extern u8 lbl_8031FAA8[];
+extern u8 gRedEyeLocomotionMoves[];
+extern u8 gRedEyeRandomMoves[];
+extern u8 gRedEyeDefaultMoveChain[];
+extern u8 gRedEyeMoveChain[];
+extern u8 gRedEyeOctantMoves[];
+extern u8 gRedEyeMoveHitVolumes[];
+extern u8 gRedEyeHitReactionSeq[];
+extern u8 gCrawlerDefaultMoveEventFx[];
+extern u8 gFireCrawlerLocomotionMoves[];
+extern u8 gFireCrawlerOctantMoves[];
+extern u8 gFireCrawlerRandomMoves[];
+extern u8 gFireCrawlerMoveChain[];
+extern u8 gFireCrawlerMoveHitVolumes[];
+extern u8 gFireCrawlerHitReactionSeq[];
+extern u8 gFireCrawlerMoveEventFx[];
+extern u8 gShadowHunterLocomotionMoves[];
+extern u8 gShadowHunterOctantMoves[];
+extern u8 gShadowHunterRandomMoves[];
+extern u8 gShadowHunterMoveChain[];
+extern u8 gShadowHunterDefaultMoveChain[];
+extern u8 gShadowHunterMoveHitVolumes[];
+extern u8 gShadowHunterHitReactionSeq[];
 void* gCrawlerDescriptorTable[24] = {
-    lbl_8031F3A0, lbl_8031F46C, lbl_8031F3D0, lbl_8031F4CC, lbl_8031F424, lbl_8031F5EC, lbl_8031F52C, lbl_8031F65C,
-    lbl_8031F6F8, lbl_8031F7AC, lbl_8031F788, lbl_8031F728, lbl_8031F7AC, lbl_8031F86C, lbl_8031F7D0, lbl_8031F8BC,
-    lbl_8031F958, lbl_8031FA18, lbl_8031F9E8, lbl_8031F988, lbl_8031FA3C, lbl_8031FAA8, lbl_8031FA78, lbl_8031F65C,
+    gRedEyeLocomotionMoves, gRedEyeMoveChain, gRedEyeRandomMoves, gRedEyeOctantMoves, gRedEyeDefaultMoveChain, gRedEyeHitReactionSeq, gRedEyeMoveHitVolumes, gCrawlerDefaultMoveEventFx,
+    gFireCrawlerLocomotionMoves, gFireCrawlerMoveChain, gFireCrawlerRandomMoves, gFireCrawlerOctantMoves, gFireCrawlerMoveChain, gFireCrawlerHitReactionSeq, gFireCrawlerMoveHitVolumes, gFireCrawlerMoveEventFx,
+    gShadowHunterLocomotionMoves, gShadowHunterMoveChain, gShadowHunterRandomMoves, gShadowHunterOctantMoves, gShadowHunterDefaultMoveChain, gShadowHunterHitReactionSeq, gShadowHunterMoveHitVolumes, gCrawlerDefaultMoveEventFx,
 };
 typedef struct
 {
@@ -5107,20 +5107,20 @@ u8 gCrawlerSeqTable[] = {
     0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x04, 0x04, 0x00, 0x3F, 0x80, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x02, 0x04, 0x05, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
 };
-u8 lbl_8031FBB8[0x18] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03,
+u8 gHagabonMK2ModelChain0BoneIds[0x18] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03,
                          0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x06};
-u8 lbl_8031FBD0[0x18] = {0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 0x00, 0x0e,
+u8 gHagabonMK2ModelChain1BoneIds[0x18] = {0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 0x00, 0x0e,
                          0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x11};
-u8 lbl_8031FBE8[0x18] = {0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 0x14,
+u8 gHagabonMK2ModelChain2BoneIds[0x18] = {0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 0x14,
                          0x00, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x17};
-u8 lbl_8031FC00[0x18] = {0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x19, 0x00, 0x00, 0x00, 0x1a,
+u8 gHagabonMK2ModelChain3BoneIds[0x18] = {0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x19, 0x00, 0x00, 0x00, 0x1a,
                          0x00, 0x00, 0x00, 0x1b, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x1d};
-u8 lbl_8031FC18[0x14] = {0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00,
+u8 gHagabonMK2ModelChain4BoneIds[0x14] = {0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00,
                          0x00, 0x09, 0x00, 0x00, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x0b};
 void* gCrawlerModelChainIds[] = {
-    &lbl_803DBD00, &lbl_803DBD08, &lbl_803DBD10, &lbl_803DBD18, &lbl_803DBD20,
+    &gHagabonMK2ModelChain0, &gHagabonMK2ModelChain1, &gHagabonMK2ModelChain2, &gHagabonMK2ModelChain3, &gHagabonMK2ModelChain4,
 };
-u8 lbl_8031FC40[0xa8] = {
+u8 gSnowwormMoveSequence[0xa8] = {
     0x3f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x07, 0x07, 0x07, 0x00, 0x40, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x3e, 0xcc, 0xcc, 0xcd, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x00, 0x3e, 0xcc,
     0xcc, 0xcd, 0x00, 0x00, 0x00, 0x01, 0x02, 0x02, 0x02, 0x00, 0x3f, 0x33, 0x33, 0x33, 0x00, 0x00, 0x00, 0x03, 0x03,
@@ -5130,7 +5130,7 @@ u8 lbl_8031FC40[0xa8] = {
     0x00, 0x01, 0x02, 0x02, 0x02, 0x00, 0x3f, 0xa6, 0x66, 0x66, 0x00, 0x00, 0x00, 0x03, 0x04, 0x04, 0x09, 0x00, 0x3f,
     0x33, 0x33, 0x33, 0x00, 0x00, 0x00, 0x03, 0x08, 0x08, 0x08, 0x00, 0x3f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
     0x07, 0x07, 0x07, 0x00, 0x40, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-u8 lbl_8031FCE8[0x60] = {0x3f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x07, 0x07, 0x07, 0x00, 0x40, 0x20,
+u8 gSnowwormBabyMoveSequence[0x60] = {0x3f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x07, 0x07, 0x07, 0x00, 0x40, 0x20,
                          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3e, 0xcc, 0xcc, 0xcd,
                          0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x00, 0x3f, 0x19, 0x99, 0x9a, 0x00, 0x00,
                          0x00, 0x01, 0x02, 0x02, 0x02, 0x00, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
@@ -5138,10 +5138,10 @@ u8 lbl_8031FCE8[0x60] = {0x3f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x07, 0
                          0x08, 0x00, 0x3f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x07, 0x07, 0x07, 0x00,
                          0x40, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 u8* gCrawlerReactionTables[] = {
-    lbl_8031FC40,
-    lbl_803DBD34,
-    lbl_8031FCE8,
-    lbl_803DBD38,
+    gSnowwormMoveSequence,
+    gSnowwormHitReactionSeqIndices,
+    gSnowwormBabyMoveSequence,
+    gSnowwormBabyHitReactionSeqIndices,
 };
 typedef struct
 {
@@ -5600,7 +5600,7 @@ void crawler_updateC(GameObject* obj, u8* state)
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
     {
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD | 8;
-        if ((*gRomCurveInterface)->initCurve(*(RomCurveWalker**)state, obj, 0.0f, (int*)&lbl_803DBCF0, -1) != 0)
+        if ((*gRomCurveInterface)->initCurve(*(RomCurveWalker**)state, obj, 0.0f, (int*)&gCrawlerCurveInitData, -1) != 0)
         {
             ((BaddieState*)state)->controlFlags =
                 ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
@@ -5684,7 +5684,7 @@ void crawler_updateC(GameObject* obj, u8* state)
                  base->atSegmentEnd != 0) &&
                 (*gRomCurveInterface)->goNextPoint(base) != 0 &&
                 (*gRomCurveInterface)
-                        ->initCurve(*(RomCurveWalker**)state, obj, 700.0f, (int*)&lbl_803DBCF0, -1) != 0)
+                        ->initCurve(*(RomCurveWalker**)state, obj, 700.0f, (int*)&gCrawlerCurveInitData, -1) != 0)
             {
                 ((BaddieState*)state)->controlFlags =
                     ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
@@ -6213,7 +6213,7 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
     obj->anim.rootMotionScale = 0.5f + ((f32)(s32)(s8)params[0x28] / 127.0f);
 }
 
-extern int lbl_803DBCF8[2];
+extern int gHagabonMK2CurveInitData[2];
 
 extern void* gCrawlerModelChainIds[];
 
@@ -6342,7 +6342,7 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
         if ((Curve_AdvanceAlongPath(&base->curve, ((BaddieState*)state)->pathStep * t) != 0 ||
              base->atSegmentEnd != 0) &&
             (*gRomCurveInterface)->goNextPoint(base) != 0 &&
-            (*gRomCurveInterface)->initCurve(*(RomCurveWalker**)state, obj, 700.0f, (int*)&lbl_803DBCF8, -1) != 0)
+            (*gRomCurveInterface)->initCurve(*(RomCurveWalker**)state, obj, 700.0f, (int*)&gHagabonMK2CurveInitData, -1) != 0)
         {
             ((BaddieState*)state)->controlFlags =
                 ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
@@ -6574,7 +6574,7 @@ void hagabonMK2_init(GameObject* obj, BaddieState* st)
     *(int*)((char*)obj + 0x108) = (int)&baddieAfterUpdateBonesCb;
 }
 
-extern u8 lbl_803DBD30[4];
+extern u8 gSnowwormTurnRates[4];
 
 #define SNOWWORM_SEQID_BABY            0x84b /* "snowworm_ba" - the baby variant of 0x842 "snowworm" */
 
@@ -6803,7 +6803,7 @@ void snowworm_update(GameObject* obj, u8* state)
 
     baddieTurnTowardPoint(obj, (int)state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
                 ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ,
-                lbl_803DBD30[((FCVars*)state)->turnDelta], 0);
+                gSnowwormTurnRates[((FCVars*)state)->turnDelta], 0);
     crawler_playReactionEffects(obj, (int*)state);
 }
 

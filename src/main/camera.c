@@ -914,7 +914,7 @@ void Camera_ApplyFullViewport(void)
     if (renderMode->field_rendering != 0)
     {
         GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE60C,
-                            lbl_803DE5F0, lbl_803DCCBC);
+                            lbl_803DE5F0, gViewportJitterField);
     }
     else
     {
@@ -930,7 +930,7 @@ void Camera_ApplyEffectDepthViewport(void)
     if (renderMode->field_rendering != 0)
     {
         GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE640,
-                            lbl_803DE5F0, lbl_803DCCBC);
+                            lbl_803DE5F0, gViewportJitterField);
     }
     else
     {
@@ -946,7 +946,7 @@ void Camera_ApplyTransparentViewport(void)
     if (renderMode->field_rendering != 0)
     {
         GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE644,
-                            lbl_803DE5F0, lbl_803DCCBC);
+                            lbl_803DE5F0, gViewportJitterField);
     }
     else
     {
@@ -962,7 +962,7 @@ void Camera_ApplyDecalViewport(void)
     if (renderMode->field_rendering != 0)
     {
         GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE648,
-                            lbl_803DE5F0, lbl_803DCCBC);
+                            lbl_803DE5F0, gViewportJitterField);
     }
     else
     {
