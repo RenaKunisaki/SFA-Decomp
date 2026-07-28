@@ -485,8 +485,6 @@ f32 pathcam_segmentParam(f32 px, f32 unused, f32 pz, int* obj)
     return -t1 / (t2 - t1);
 }
 
-char sPathCamNeedTwoControlPointsError[] = "PATHCAM error: need at least two control points\n";
-
 
 CamCannonState* gCamCannonState;
 
@@ -949,3 +947,5 @@ ResourceDescriptorCallbacks7 lbl_80319C88 = {
      (ResourceDescriptorCallback)CameraModeTestStrength_update,
      (ResourceDescriptorCallback)CameraModeTestStrength_free,
      (ResourceDescriptorCallback)CameraModeTestStrength_copyToCurrent}};
+
+char sPathCamNeedTwoControlPointsError[] = "PATHCAM error: need at least two control points\n";
