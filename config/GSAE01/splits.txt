@@ -5082,7 +5082,7 @@ dlls/objects/195_Player/player.c:
 	.data       start:0x80332EC0 end:0x80334FF8
 	.bss        start:0x803DAEF0 end:0x803DB0D0
 	.sdata      start:0x803DC660 end:0x803DC6E8
-	.sbss       start:0x803DE41C end:0x803DE4C0
+	.sbss       start:0x803DE420 end:0x803DE4C0
 	.sdata2     start:0x803E7E68 end:0x803E8214
 
 dlls/objects/585/585.c:
