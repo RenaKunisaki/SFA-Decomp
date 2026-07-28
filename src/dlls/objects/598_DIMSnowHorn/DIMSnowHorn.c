@@ -6,6 +6,7 @@
  * input and the air-meter while mounted, and DIMSnowHorn1_update coordinates
  * the full per-frame tick.
  */
+#include "dlls/objects/457_DIMDismount.h"
 #include "main/dll/partfx_interface.h"
 #include "main/texture.h"
 #include "game/objects/object.h"
@@ -58,7 +59,6 @@ s16 lbl_803DC73C[2] = {0x103, 0xB};
 f32 lbl_803DC740[2] = {0.0031f, 0.005f};
 s16 lbl_803DC748[4] = {0, 3, 0, 0};
 
-#define OBJGROUP_SNOWHORN_PUZZLE        0x13  /* puzzle-target object group for nearest-object search */
 #define DIMSNOWHORN1_OBJGROUP           0xa   /* snowhorn own add/remove group */
 #define DIMSNOWHORN1_AIRMETER_BGTEXTURE 0x5d0 /* HUD air-meter background texture id */
 #define GAMEBIT_SNOWHORN_RIDING         0x3e3 /* set while Fox is mounted on the SnowHorn */
@@ -152,7 +152,7 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, int state, f32 t)
     f32 nearDist;
 
     nearDist = 300.0f;
-    near = ObjGroup_FindNearestObject(OBJGROUP_SNOWHORN_PUZZLE, obj, &nearDist);
+    near = ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &nearDist);
     inner = (obj)->extra;
     if (mainGetBit(GAMEBIT_SNOWHORN_RIDING) != 0)
     {
@@ -291,7 +291,7 @@ int DIMSnowHorn1_stateHandler09(GameObject* obj, int state, f32 fv)
     f32 sp = 300.0f;
     s16 turnRate;
 
-    near = ObjGroup_FindNearestObject(OBJGROUP_SNOWHORN_PUZZLE, obj, &sp);
+    near = ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp);
     inner = (obj)->extra;
     ((DIMSnowHorn1State*)state)->baddie.flags0 |= 0x200000;
 
@@ -396,7 +396,7 @@ int DIMSnowHorn1_stateHandler07(GameObject* obj, int state)
     f32 sp = 300.0f;
     f32 fz;
 
-    near = (void*)ObjGroup_FindNearestObject(OBJGROUP_SNOWHORN_PUZZLE, obj, &sp);
+    near = (void*)ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp);
     inner = (obj)->extra;
     *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
     fz = 0.0f;
@@ -1052,7 +1052,7 @@ int DIMSnowHorn1_setScale(GameObject* obj)
         return 0;
     }
 
-    nearest = (void*)ObjGroup_FindNearestObject(OBJGROUP_SNOWHORN_PUZZLE, obj, &range);
+    nearest = (void*)ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &range);
     if ((nearest != NULL) && ((*(u8*)&((GameObject*)nearest)->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0))
     {
         buttonDisable(0, PAD_BUTTON_A);
@@ -1359,7 +1359,7 @@ void DIMSnowHorn1_update(GameObject* obj)
     case 3:
     case 4:
         nearDist = 300.0f;
-        found = (char*)ObjGroup_FindNearestObject(OBJGROUP_SNOWHORN_PUZZLE, obj, &nearDist);
+        found = (char*)ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &nearDist);
         if (((DIMSnowHorn1State*)data)->mountMode == 0 && ((DIMSnowHorn1State*)data)->baddie.controlMode == 7 &&
             getXZDistance(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 10000.0f)
         {

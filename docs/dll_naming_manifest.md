@@ -500,7 +500,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1C6 | DIMCannon (+DIMCannonBa) | COMPLETE | dlls/objects/454_DIMCannon/DIMCannon.c | = (canonical) | Complete 13-function multi-role TU at its unchanged 99.96049% fuzzy match with 12 exact functions, an allocation-backed 0xB4-byte cannon state, separate allocation-backed 0x0C-byte cannonball state, active-EN-retail-backed fixed 0x2C-byte cannon placement, allocation-backed 0x24-byte cannonball setup, canonical unit header, terminal descriptor, and exact 188-byte data image; the generated source path remains unchanged |
 | 0x1C7 | DIMLavaSmas | COMPLETE | dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c | = (canonical) | Complete 11-function TU at its unchanged 99.69811% fuzzy match with ten exact functions, an allocation-backed three-byte state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header, terminal descriptor, and exact 60-byte data image; the generated source path remains unchanged |
 | 0x1C8 | DIMBridgeCo | COMPLETE | dlls/objects/456_DIMBridgeCo/DIMBridgeCo.c | = (canonical) | Exact complete ten-function TU with its terminal descriptor, allocation-backed one-byte state, active-EN-retail-backed fixed 0x28-byte placement, canonical unit header, and exact 60-byte data image; the generated source path remains unchanged |
-| 0x1C9 | DIMDismount | COMPLETE | dlls/objects/457_DIMDismount/DIMDismount.c | = (canonical) | — |
+| 0x1C9 | DIMDismount | COMPLETE | dlls/objects/457_DIMDismount/DIMDismount.c | = (canonical) | Exact complete 11-function TU with its terminal 12-slot descriptor, allocation-backed 0x10-byte plane state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header and shared dismount-point object-group contract, and exact 96-byte data image; the generated source path remains unchanged |
 | 0x1CA | DIMExplosio | COMPLETE | dlls/objects/458_DIMExplosio/DIMExplosio.c | = (canonical) | — |
 | 0x1CB | DIMWoodDoor | COMPLETE | dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c | = (canonical) | — |
 | 0x1CC | DIMMagicBri | COMPLETE | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | = (canonical) | — |
@@ -1028,6 +1028,7 @@ more as they are recovered.
 | 0x1C6 | dlls/objects/454_DIMCannon/DIMCannon.c | include/dlls/objects/454_DIMCannon.h |
 | 0x1C7 | dlls/objects/455_DIMLavaSmas/DIMLavaSmas.c | include/dlls/objects/455_DIMLavaSmas.h |
 | 0x1C8 | dlls/objects/456_DIMBridgeCo/DIMBridgeCo.c | include/dlls/objects/456_DIMBridgeCo.h |
+| 0x1C9 | dlls/objects/457_DIMDismount/DIMDismount.c | include/dlls/objects/457_DIMDismount.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |
