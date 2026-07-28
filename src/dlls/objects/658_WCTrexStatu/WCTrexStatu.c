@@ -57,7 +57,7 @@ int wctrexstatu_getExtraSize(void)
 
 int wctrexstatu_getObjectTypeId(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     int modelIndex = ((WCTrexStatueSetup*)obj->anim.placementData)->modelIndex;
     int modelCount = objAnim->modelInstance->modelCount;
 
@@ -82,7 +82,7 @@ void wctrexstatu_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 
 void wctrexstatu_hitDetect(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     GameObject* gameObj = (GameObject*)obj;
 
     if (gameObj->userData1 != 0 && randomGetRange(0, WCTREXSTATU_PARTFX_CHANCE) == 0)
@@ -108,7 +108,7 @@ void wctrexstatu_update(void)
 
 void wctrexstatu_init(GameObject* obj, WCTrexStatueSetup* setup, int fromLoad)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     obj->animEventCallback = wctrexstatu_interactCallback;
     *(u8*)&objAnim->bankIndex = setup->modelIndex;
     if (objAnim->bankIndex >= objAnim->modelInstance->modelCount)

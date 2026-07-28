@@ -240,7 +240,7 @@ void wmsun_update(GameObject* obj)
     u8 curAlpha;
     s16 newAlpha;
 
-    objAnim = (ObjAnimComponent*)obj;
+    objAnim = &obj->anim;
     thresh = 0;
     mult = 1;
     spd = 0.0f;
@@ -455,7 +455,7 @@ void wmsun_init(GameObject* obj, WmSunMapData* mapData)
     s16 i;
     s16 mode;
 
-    objAnim = (ObjAnimComponent*)obj;
+    objAnim = &obj->anim;
     obj->animEventCallback = wmsun_animEventCallback;
     mapAct = (*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
     if (mapAct == 3 && mainGetBit(0x21b) == 0)

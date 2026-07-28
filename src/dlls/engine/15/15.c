@@ -315,7 +315,7 @@ void player_updateSecondaryBlend(GameObject* obj, int* ctx, int moveA, int moveB
         q1 = ((BaddieState*)ctx)->animSpeedA * ((BaddieState*)ctx)->animSpeedA;
         q2 = ((BaddieState*)ctx)->animSpeedB * ((BaddieState*)ctx)->animSpeedB;
         mag = sqrtf(q1 + q2);
-        if (ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, mag, &tmp) != 0)
+        if (ObjAnim_SampleRootCurvePhase(&obj->anim, mag, &tmp) != 0)
         {
             ((BaddieState*)ctx)->moveSpeed = tmp;
         }
@@ -332,11 +332,11 @@ void player_updateSecondaryBlend(GameObject* obj, int* ctx, int moveA, int moveB
         }
         if (((BaddieState*)ctx)->animSpeedB > PLAYER_MOVE_ZERO)
         {
-            Object_ObjAnimSetSecondaryBlendMove((ObjAnimComponent*)obj, moveB, idx);
+            Object_ObjAnimSetSecondaryBlendMove(&obj->anim, moveB, idx);
         }
         else
         {
-            Object_ObjAnimSetSecondaryBlendMove((ObjAnimComponent*)obj, moveA, idx);
+            Object_ObjAnimSetSecondaryBlendMove(&obj->anim, moveA, idx);
         }
     }
 }

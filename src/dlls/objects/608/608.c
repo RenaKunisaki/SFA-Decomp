@@ -44,7 +44,7 @@ void ProximityMine_expire(GameObject* obj)
     s16toFloat(&state->renderTimer, 10);
     state->mode = PROXIMITYMINE_MODE_EXPIRED;
     ObjHits_EnableObject(obj);
-    ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
+    ObjHits_MarkObjectPositionDirty(&obj->anim);
     storeZeroToFloatParam(&state->resetTimer);
     objfx_shakeCameraByDistance(obj, 200.0f);
     {
@@ -52,8 +52,8 @@ void ProximityMine_expire(GameObject* obj)
         spawnExplosion(obj, 60.0f + triggerRadiusDelta * gProximityMineExplosionRadiusScale, 1, 1, 0, 1, 0, 1,
                        0);
     }
-    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, state->triggerDistance, -5, 10);
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, PROXIMITYMINE_HIT_VOLUME_SLOT, 1, 0);
+    ObjHitbox_SetCapsuleBounds(&obj->anim, state->triggerDistance, -5, 10);
+    ObjHits_SetHitVolumeSlot(&obj->anim, PROXIMITYMINE_HIT_VOLUME_SLOT, 1, 0);
     ObjHits_EnableObject(obj);
     if (state->effectHandle != NULL)
     {
@@ -319,7 +319,7 @@ void ProximityMine_update(GameObject* obj)
             {
                 ObjHits_EnableObject(obj);
             }
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, PROXIMITYMINE_HIT_VOLUME_SLOT, 1, 0);
+            ObjHits_SetHitVolumeSlot(&obj->anim, PROXIMITYMINE_HIT_VOLUME_SLOT, 1, 0);
             if (state->effectHandle != NULL)
             {
                 if ((state->effectHandle->enabled != 0) && (state->effectVisible == 0))

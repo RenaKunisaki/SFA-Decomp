@@ -263,7 +263,7 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, int state, f32 t)
         }
     }
 
-    ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, ((DIMSnowHorn1State*)state)->baddie.animSpeedA,
+    ObjAnim_SampleRootCurvePhase(&obj->anim, ((DIMSnowHorn1State*)state)->baddie.animSpeedA,
                                  &((DIMSnowHorn1State*)state)->baddie.moveSpeed);
     if ((*(int*)&((DIMSnowHorn1State*)state)->baddie.unk31C & PAD_BUTTON_A) != 0)
     {

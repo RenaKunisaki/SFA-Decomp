@@ -69,7 +69,7 @@ int wcapertures_getExtraSize(void)
 
 int wcapertures_getObjectTypeId(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     int modelIndex = ((WCAperturesSetup*)obj->anim.placementData)->modelIndex;
     int modelCount = objAnim->modelInstance->modelCount;
 
@@ -127,7 +127,7 @@ void wcapertures_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 
 void wcapertures_hitDetect(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     WCAperturesState* state = obj->extra;
 
     if (state->mode == WCAPERTURES_MODE_OPEN)
@@ -220,7 +220,7 @@ void wcapertures_update(GameObject* obj)
 
 void wcapertures_init(GameObject* obj, WCAperturesSetup* setup)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     WCAperturesState* state = (obj)->extra;
 
     (obj)->anim.rotX = (s16)(setup->type << 8);

@@ -712,7 +712,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
         if ((skip != 0 || (void*)q->prevMoveTable != (void*)q->moveTable ||
              (obj)->anim.currentMove !=
                  *(s16*)(q->moveTable + q->attackPhase * 2)) &&
-            (ObjAnim_GetCurrentEventCountdown((ObjAnimComponent*)obj) == 0 ||
+            (ObjAnim_GetCurrentEventCountdown(&obj->anim) == 0 ||
              ((ByteFlags*)&q->flags3F2)->b10 != 0))
         {
             if ((obj)->anim.currentMove == 0x14)
@@ -726,7 +726,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
     if (!((ByteFlags*)&q->flags3F0)->b80 && !((ByteFlags*)&q->flags3F0)->b40 &&
         !((ByteFlags*)&inner->sub.flags994)->b01)
     {
-        if (ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj,
+        if (ObjAnim_SampleRootCurvePhase(&obj->anim,
                                          ((EarthWarriorState*)state)->baddie.animSpeedC,
                                          (f32*)(state + 0x2a0)) == 0)
         {
@@ -803,7 +803,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
         (obj)->anim.currentMove == *(s16*)(q->moveTable + 0x32))
     {
         if (((BaddieState*)baddie)->moveDone != 0 &&
-            ObjAnim_GetCurrentEventCountdown((ObjAnimComponent*)obj) == 0 &&
+            ObjAnim_GetCurrentEventCountdown(&obj->anim) == 0 &&
             !((ByteFlags*)&inner->sub.flags994)->b01)
         {
             ObjAnim_SetCurrentMove((int)obj, moveId, 0.0f, 0);

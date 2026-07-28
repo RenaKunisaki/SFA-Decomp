@@ -154,7 +154,7 @@ void cnthitobjec_update(GameObject* obj)
         state->remainingHealth = setup->startHealth;
         if (setup->mode != CNTHIT_MODE_VISIBLE_OBJECT)
         {
-            ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, setup->explosionSize);
+            ObjHitbox_SetSphereRadius(&obj->anim, setup->explosionSize);
         }
     }
 }
@@ -170,7 +170,7 @@ void cnthitobjec_init(GameObject* obj, CntHitObjectSetup* setup)
     state->allowedHitSourceCount = sCntHitSourceCounts[setupData->hitSourceProfile];
     if (state->allowedHitSources == &sCntHitSourceProfile1)
     {
-        ObjHits_ClearSourceMask((ObjAnimComponent*)obj, 8);
+        ObjHits_ClearSourceMask(&obj->anim, 8);
     }
     if (setupData->mode == CNTHIT_MODE_VISIBLE_OBJECT)
     {

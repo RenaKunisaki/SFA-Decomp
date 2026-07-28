@@ -77,7 +77,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
     int i;
     BitFlags8* bf = (BitFlags8*)(p + 0x1a);
     DrshacklePlacement* placement;
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
 
     if (bf->b0 == 0)
     {

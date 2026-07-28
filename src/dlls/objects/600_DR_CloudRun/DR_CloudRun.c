@@ -1208,13 +1208,13 @@ void DR_CloudRunner_update(GameObject* obj)
     {
         (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         DR_CloudRunner_updateFlightControl(obj, timeDelta, -1);
-        ((ObjAnimComponent*)obj)->modelInstance->flags |= 0x200000LL;
+        (&obj->anim)->modelInstance->flags |= 0x200000LL;
     }
     else
     {
         inner->baddie.physicsActive = 0;
         DR_CloudRunner_updateFlightControl(obj, timeDelta, -1);
-        ((ObjAnimComponent*)obj)->modelInstance->flags &= ~0x200000LL;
+        (&obj->anim)->modelInstance->flags &= ~0x200000LL;
     }
     if (inner->cooldownTimer != 0)
     {
@@ -1227,7 +1227,7 @@ void DR_CloudRunner_update(GameObject* obj)
     }
     if (inner->flightState == CLOUDRUNNER_FLIGHT_MOUNTED)
     {
-        ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
+        ObjHits_MarkObjectPositionDirty(&obj->anim);
         inner->moveLib.modeBits |= 1;
     }
     else

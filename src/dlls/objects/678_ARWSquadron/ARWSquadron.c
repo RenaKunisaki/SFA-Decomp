@@ -522,7 +522,7 @@ void ARWSquadron_update(GameObject* obj)
         if (flags->attackWindowOpen)
         {
             ArwSquadronSetup* volleyPlacement = *(ArwSquadronSetup**)&obj->anim.placementData;
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWSQUADRON_HIT_VOLUME_SLOT, state->hitVolumeMode, 0);
+            ObjHits_SetHitVolumeSlot(&obj->anim, ARWSQUADRON_HIT_VOLUME_SLOT, state->hitVolumeMode, 0);
             if (state->variant == ARW_SQUADRON_VARIANT_FIGHTER)
                 arwsquadron_updateVolley(obj, state, volleyPlacement);
         }

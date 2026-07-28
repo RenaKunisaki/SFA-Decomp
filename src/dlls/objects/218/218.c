@@ -287,7 +287,7 @@ void pollenfragment_update(GameObject* obj)
     Sfx_KeepAliveLoopedObjectSound((int)obj, (u16)(((PollenFragmentExtra*)extra)->def)->loopSfx);
     objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
             obj->anim.velocityZ * timeDelta);
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, POLLENFRAGMENT_HIT_VOLUME_SLOT, 1, 0);
+    ObjHits_SetHitVolumeSlot(&obj->anim, POLLENFRAGMENT_HIT_VOLUME_SLOT, 1, 0);
     ObjHits_EnableObject(obj);
     hit = (void*)((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject;
     if (hit != NULL && ((GameObject*)hit)->anim.romDefNo != obj->anim.romDefNo &&

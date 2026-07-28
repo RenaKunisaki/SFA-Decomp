@@ -74,7 +74,7 @@ void arwprojectile_createLinkedEffect(GameObject* obj, u8 enable)
     {
         modelLightStruct_setDiffuseColor(state->light, 0xff, 0x14, 0x50, 0);
     }
-    else if (((ObjAnimComponent*)obj)->bankIndex == 0)
+    else if ((&obj->anim)->bankIndex == 0)
     {
         modelLightStruct_setDiffuseColor(state->light, 0x3c, 0xff, 0x5a, 0);
     }
@@ -241,7 +241,7 @@ void arwingandrossstuff_update(GameObject* obj)
             return;
         }
     }
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)object, ARWINGANDROSSSTUFF_HIT_VOLUME_SLOT, state->hitVolumeMode, 0);
+    ObjHits_SetHitVolumeSlot(&object->anim, ARWINGANDROSSSTUFF_HIT_VOLUME_SLOT, state->hitVolumeMode, 0);
     object->anim.alpha = 0xff;
     {
         f32 lt = state->lifetime;
@@ -285,7 +285,7 @@ void arwingandrossstuff_update(GameObject* obj)
         if (object->anim.romDefNo == ARW_SEQID_ANDROSS_RING)
         {
             object->anim.rootMotionScale += gArwingAndrossRingScaleStep;
-            ObjHitbox_SetSphereRadius((ObjAnimComponent*)object,
+            ObjHitbox_SetSphereRadius(&object->anim,
                                       (int)(object->anim.rootMotionScale * gArwingAndrossRingRadiusScale));
             object->anim.rotZ = (f32)object->anim.rotZ + gArwingAndrossRingSpinStep;
         }
@@ -318,7 +318,7 @@ void arwingandrossstuff_init(GameObject* obj, ArwProjectileSetup* setup)
         break;
     case ARW_SEQID_LASER_BASIC:
         ObjHits_SetTargetMask(obj, 1);
-        if (((ObjAnimComponent*)obj)->bankIndex != 0)
+        if ((&obj->anim)->bankIndex != 0)
         {
             state->param0.particleKind = 2;
             state->hitVolumeMode = 2;
