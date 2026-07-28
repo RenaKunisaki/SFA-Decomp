@@ -24,7 +24,6 @@
  * Trigger_render/update/release/initialise are stubs; Trigger_free stops
  * any sfx the trigger started.
  */
-#define DLL_0126_TRIGGER_LEGCODE_INT
 #include "main/frame_timing.h"
 #include "main/texture.h"
 #include "main/gameloop_api.h"
@@ -325,7 +324,7 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
     obj->anim.rotX = (s16)((placement->rotX & 0x3f) << 10);
     obj->anim.rotY = (s16)(placement->rotY << 8);
     obj->anim.rootMotionScale =
-        obj->anim.modelInstance->rootMotionScaleBase * ((float)(u32)placement->reachScale * 0.0625f);
+        obj->anim.modelInstance->rootMotionScaleBase * ((float)(u32)placement->reachScale / 16.0f);
 
     xf.rotX = obj->anim.rotX;
     xf.rotY = obj->anim.rotY;
@@ -468,7 +467,7 @@ void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj)
 #define TRIGGER_CMD_OVERRIDE_DISABLED 0x20 /* run even when SFLAG_DISABLED is set */
 #define TRIGGER_SFLAG_SEED_TARGET 0x40 /* first hit: seed target position from current, not previous */
 
-void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distSq)
+void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq)
 {
     char* desc = (char*)&gTriggerObjDescriptor;
     u8* state = obj->extra;
@@ -505,7 +504,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
         b = *p;
         if ((b & TRIGGER_CMD_UNCONDITIONAL) == 0)
         {
-            if ((s8)legCode == 1)
+            if (legCode == 1)
             {
                 if ((b & TRIGGER_CMD_ON_ENTER) == 0)
                 {
@@ -516,7 +515,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     continue;
                 }
             }
-            else if ((s8)legCode == -1)
+            else if (legCode == -1)
             {
                 if ((b & TRIGGER_CMD_ON_EXIT) == 0)
                 {
@@ -534,12 +533,12 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
         }
         else if ((b & TRIGGER_CMD_ON_ENTER) != 0)
         {
-            if ((s8)legCode < 0)
+            if (legCode < 0)
             {
                 continue;
             }
         }
-        else if ((b & TRIGGER_CMD_ON_EXIT) != 0 && (s8)legCode > 0)
+        else if ((b & TRIGGER_CMD_ON_EXIT) != 0 && legCode > 0)
         {
             continue;
         }
@@ -588,7 +587,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     }
                     break;
                 case 4:
-                    if ((s8)legCode >= 0)
+                    if (legCode >= 0)
                     {
                         Sfx_PlayFromObject((u32)obj, (u16)((p[2] << 8) | p[3]));
                     }
@@ -1018,12 +1017,12 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, int legCode, int distS
                     break;
                 }
     }
-    if ((s8)legCode > 0)
+    if (legCode > 0)
     {
         *state |= TRIGGER_SFLAG_ENTERED;
         mainSetBits(((TriggerState*)state)->gameBit, 1);
     }
-    else if ((s8)legCode < 0)
+    else if (legCode < 0)
     {
         *state |= TRIGGER_SFLAG_EXITED;
     }

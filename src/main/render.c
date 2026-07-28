@@ -109,7 +109,7 @@ typedef struct EnvfxActEntry {
     u8 pad2[3];
 } EnvfxActEntry;
 
-int getLActions(void* source, void* target, u16 index, int arg3, int arg4, int arg5)
+int getLActions(void* source, void* target, u16 index, s8 arg3, int arg4, int arg5)
 {
     void* buf = mmAlloc(0x28, -1, 0);
     getTabEntry(buf, MLDF_FILEID_LACTIONS_BIN, index * 0x28, 0x28);
