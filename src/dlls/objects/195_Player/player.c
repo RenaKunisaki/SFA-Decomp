@@ -2374,7 +2374,7 @@ GameObject* playerGetFocusObject(GameObject* obj)
     return inner->focusObject;
 }
 
-void fn_802972B4(GameObject* obj, u32* flags, f32* p5, f32* p6, f32* p7, u16* p8)
+void fn_802972B4(GameObject* obj, u32* flags, f32* p5, f32* p6, f32* p7, u16* outHitStunFrames)
 {
     PlayerState* inner = obj->extra;
     s8 idx;
@@ -2428,7 +2428,7 @@ void fn_802972B4(GameObject* obj, u32* flags, f32* p5, f32* p6, f32* p7, u16* p8
         *(u32*)flags &= 0x7dLL;
         *flags |= 2;
     }
-    *p8 = 0x78;
+    *outHitStunFrames = 0x78;
 }
 
 int fn_80297498(void)
