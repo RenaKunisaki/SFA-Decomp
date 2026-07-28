@@ -45,14 +45,6 @@
 #include "main/track_dolphin_shadow_api.h"
 #include "string.h"
 
-typedef struct SkyColor
-{
-    u8 r;
-    u8 g;
-    u8 b;
-    u8 a;
-} SkyColor;
-
 u32 lbl_803DD18C;
 u32 lbl_803DD188;
 u8* gSky2State;
@@ -115,7 +107,6 @@ extern u16 lbl_803E8460;
 extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];
 const SkyVec3 lbl_802C1F98 = {-1000.0f, -1000.0f, -1000.0f};
-extern u8 gSkyColorBlendTable[];
 extern f32 lbl_803DF190;
 extern f32 lbl_803DF194;
 
@@ -146,36 +137,6 @@ void loadSunAndMoon(void);
 
 extern u8 gSkyColorBlendTable[248];
 
-typedef struct SkyDllInterface {
-    u32 reserved0;
-    u32 reserved1;
-    u32 reserved2;
-    u32 slotCountAndFlags;
-    ObjectDescriptorCallback slot00;
-    ObjectDescriptorCallback slot01;
-    ObjectDescriptorCallback slot02;
-    ObjectDescriptorCallback slot03;
-    ObjectDescriptorCallback slot04;
-    ObjectDescriptorCallback slot05;
-    ObjectDescriptorCallback slot06;
-    ObjectDescriptorCallback slot07;
-    ObjectDescriptorCallback slot08;
-    ObjectDescriptorCallback slot09;
-    ObjectDescriptorCallback slot0A;
-    ObjectDescriptorCallback slot0B;
-    ObjectDescriptorCallback slot0C;
-    ObjectDescriptorCallback slot0D;
-    ObjectDescriptorCallback slot0E;
-    ObjectDescriptorCallback slot0F;
-    ObjectDescriptorCallback slot10;
-    ObjectDescriptorCallback slot11;
-    ObjectDescriptorCallback slot12;
-    ObjectDescriptorCallback slot13;
-    ObjectDescriptorCallback slot14;
-    ObjectDescriptorCallback slot15;
-    ObjectDescriptorCallback slot16;
-    ObjectDescriptorCallback slot17;
-} SkyDllInterface;
 
 
 void skyFn_80088c94(int flags, u8 mode);

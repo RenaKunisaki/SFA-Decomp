@@ -413,7 +413,7 @@ void cmbsrc_hitDetect(CmbSrcObject* cmbsrc)
     }
 }
 
-int cmbsrc_update(CmbSrcObject* cmbsrc)
+void cmbsrc_update(CmbSrcObject* cmbsrc)
 {
     CmbSrcState* state = cmbsrc->state;
     CmbSrcMapData* setup = (CmbSrcMapData*)cmbsrc->objAnim.placementData;
