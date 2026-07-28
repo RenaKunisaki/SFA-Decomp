@@ -10909,7 +10909,6 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     f32 dp;
     int i;
     s8 ok;
-    f32 ang;
     f32 lo;
     int k;
     s8 flagB;
@@ -10919,10 +10918,9 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
 
     ai = (u16)getAngle(((PlayerState*)state2)->baddie.moveInputX, -((PlayerState*)state2)->baddie.moveInputZ) -
          ((PlayerState*)state2)->baddie.cameraYaw;
-    ang = (3.1415927f * (f32)ai) / 32768.0f;
-    rot[0] = -mathSinf(ang);
+    rot[0] = -mathSinf((3.1415927f * (f32)ai) / 32768.0f);
     rot[1] = 0.0f;
-    rot[2] = -mathCosf(ang);
+    rot[2] = -mathCosf((3.1415927f * (f32)ai) / 32768.0f);
     fn_802A81B8((GameObject*)(obj), state, vec);
     sc1p[0] = 50.0f * rot[0];
     sc1p[1] = 50.0f * rot[1];
@@ -15893,8 +15891,8 @@ void fn_802B0EA4(GameObject* obj, int inner, int state)
     {
         if (1.0f != ((PlayerState*)inner)->yawSmoothScale)
         {
-            f32 base = *(f32*)(((PlayerState*)inner)->moveParams + 0x10);
-            f32 frac = (((PlayerState*)state)->baddie.animSpeedA - base) / (((PlayerState*)inner)->maxSpeed - base);
+            f32 frac = (((PlayerState*)state)->baddie.animSpeedA - *(f32*)(((PlayerState*)inner)->moveParams + 0x10)) /
+                       (((PlayerState*)inner)->maxSpeed - *(f32*)(((PlayerState*)inner)->moveParams + 0x10));
             f32 v430 = ((PlayerState*)inner)->yawSmoothRate;
             f32 diff = ((PlayerState*)inner)->yawSmoothScale - 1.0f;
             ((PlayerState*)inner)->yawSmoothRate =
