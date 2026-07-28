@@ -1,72 +1,67 @@
 /*
- * dimbossgut (DLL 0x1E1) - the DIM boss gut cavity object (interior mesh).
- * Advances the gut's idle animation each frame and renders it.
- * The animEventCallback is wired to DIM_BossGut_SeqFn to clear the
- * hit-volume pair and suppress sequence events.
+ * DIM_BossGut (DLL 0x1E1) - DarkIce Mines boss gut cavity object.
+ * The object advances and renders the cavity's idle animation, while its
+ * sequence callback disables sequence events and clears the hit-volume pair.
  */
-#include "main/dll/DIM/dll_01E1_dimbossgut.h"
-#include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/object_render.h"
-#include "main/frame_timing.h"
+#include "dlls/objects/481_DIM_BossGut.h"
 
-int DIM_BossGut_SeqFn(int obj, int runtime, ObjAnimUpdateState* animUpdate)
-{
+#include "game/objects/object.h"
+#include "main/frame_timing.h"
+#include "main/object_render.h"
+#include "main/objanim.h"
+#include "sys/objects.h"
+
+#define DIM_BOSS_GUT_OBJECT_SLOT    0x5A
+#define DIM_BOSS_GUT_ANIMATION_STEP 0.005f
+
+int DIM_BossGut_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     animUpdate->hitVolumePair = -1;
     animUpdate->sequenceEventActive = 0;
     return 0;
 }
 
-int DIM_BossGut_getExtraSize(void)
-{
-    return 0x0;
-}
-int DIM_BossGut_getObjectTypeId(void)
-{
-    return 0x0;
+int DIM_BossGut_getExtraSize(void) {
+    return 0;
 }
 
-void DIM_BossGut_free(void)
-{
+int DIM_BossGut_getObjectTypeId(void) {
+    return 0;
 }
 
-void DIM_BossGut_render(int obj, u32 p2, u32 p3, u32 p4, u32 p5, char shouldRender)
-{
+void DIM_BossGut_free(void) {
+}
+
+void DIM_BossGut_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                        s8 shouldRender) {
     int visible;
 
     visible = shouldRender;
-    if (visible != 0)
-    {
-        ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, NULL);
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    if (visible != 0) {
+        ObjAnim_AdvanceCurrentMove((int)obj, DIM_BOSS_GUT_ANIMATION_STEP, timeDelta, NULL);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
-void DIM_BossGut_hitDetect(void)
-{
+void DIM_BossGut_hitDetect(void) {
 }
 
-void DIM_BossGut_update(void)
-{
+void DIM_BossGut_update(void) {
 }
 
-void DIM_BossGut_init(void* obj)
-{
+void DIM_BossGut_init(GameObject* obj) {
     int objArg;
 
-    objSetSlot((GameObject*)obj, 0x5a);
-    ((GameObject*)obj)->animEventCallback = DIM_BossGut_SeqFn;
+    objSetSlot(obj, DIM_BOSS_GUT_OBJECT_SLOT);
+    obj->animEventCallback = DIM_BossGut_SeqFn;
     objArg = (int)obj;
     ObjAnim_SetCurrentMove(objArg, 0, 0.0f, 0);
-    ObjAnim_AdvanceCurrentMove(objArg, 0.005f, timeDelta, NULL);
+    ObjAnim_AdvanceCurrentMove(objArg, DIM_BOSS_GUT_ANIMATION_STEP, timeDelta, NULL);
 }
 
-void DIM_BossGut_release(void)
-{
+void DIM_BossGut_release(void) {
 }
 
-void DIM_BossGut_initialise(void)
-{
+void DIM_BossGut_initialise(void) {
 }
 
 ObjectDescriptor gDIM_BossGutObjDescriptor = {
@@ -74,14 +69,14 @@ ObjectDescriptor gDIM_BossGutObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)DIM_BossGut_initialise,
-    (ObjectDescriptorCallback)DIM_BossGut_release,
+    DIM_BossGut_initialise,
+    DIM_BossGut_release,
     0,
     (ObjectDescriptorCallback)DIM_BossGut_init,
-    (ObjectDescriptorCallback)DIM_BossGut_update,
-    (ObjectDescriptorCallback)DIM_BossGut_hitDetect,
+    DIM_BossGut_update,
+    DIM_BossGut_hitDetect,
     (ObjectDescriptorCallback)DIM_BossGut_render,
-    (ObjectDescriptorCallback)DIM_BossGut_free,
+    DIM_BossGut_free,
     (ObjectDescriptorCallback)DIM_BossGut_getObjectTypeId,
     DIM_BossGut_getExtraSize,
 };
