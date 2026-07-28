@@ -579,23 +579,18 @@ void SaveSelectScreen_render(int param)
     SaveSelectPanel* panel;
     int progress;
     int alpha;
-    u8 transitionAlpha;
     u8 fadeAlpha;
 
     panel = &gSaveSelectPanels[gSaveSelectPanelIndex];
     gameTextSetDrawFunc(titleScreenTextDrawFunc);
     progress = (int)(255.0f - (*gScreenTransitionInterface)->getProgress());
-    if ((u8)progress < 0x80)
-    {
+    if ((u8)progress < 0x80) {
         f32 conv = (f32)(int)((u8)progress * 0x86);
         titleScreenPositionElements(40.0f, 254.0f - conv / 128.0f);
         alpha = 0;
-    }
-    else
-    {
+    } else {
         titleScreenPositionElements(40.0f, 120.0f);
-        transitionAlpha = ((u8)progress & 0x7f) * 2;
-        alpha = transitionAlpha;
+        alpha = ((u8)progress & 0x7f) * 2;
     }
     gameTextBoxFn_80134d40(alpha, (u8)(gSaveSelectPanelIndex == SAVE_SELECT_PANEL_CONFIRM_ERASE), 0);
     switch (gSaveSelectPanelIndex)
