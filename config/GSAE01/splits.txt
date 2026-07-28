@@ -279,7 +279,7 @@ main/shadow_dolphin.c:
 	.bss        start:0x803879B0 end:0x8038D840
 	.sdata      start:0x803DB650 end:0x803DB660
 	.sbss       start:0x803DCED8 end:0x803DCF30
-	.sdata2     start:0x803DEC60 end:0x803DEC68
+	.sdata2     start:0x803DEC58 end:0x803DECB0
 
 main/track_dolphin.c:
 	.text       start:0x80062D60 end:0x80069B1C
