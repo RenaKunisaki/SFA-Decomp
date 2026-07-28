@@ -478,7 +478,7 @@ void ecshShrine_update(GameObject* obj) {
     if (obj->userData1 != 0) {
         obj->userData1 = obj->userData1 - 1;
         if (obj->userData1 == 0) {
-            skyFn_80088c94(ECSH_SHRINE_SKY_FLAGS, 1);
+            skySetSlotFlag80(ECSH_SHRINE_SKY_FLAGS, 1);
             getEnvfxAct(obj, player, ECSH_SHRINE_ENVFX_A, ECSH_SHRINE_ENVFX_FLAGS);
             getEnvfxAct(obj, player, ECSH_SHRINE_ENVFX_B, ECSH_SHRINE_ENVFX_FLAGS);
             getEnvfxAct(obj, player, ECSH_SHRINE_ENVFX_C, ECSH_SHRINE_ENVFX_FLAGS);

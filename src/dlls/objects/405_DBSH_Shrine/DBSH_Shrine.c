@@ -244,7 +244,7 @@ void dbshShrine_update(GameObject* obj) {
     if (obj->userData1 != 0) {
         obj->userData1--;
         if (obj->userData1 == 0) {
-            skyFn_80088c94(7, 1);
+            skySetSlotFlag80(7, 1);
             getEnvfxAct(obj, player, DBSH_SHRINE_ENVFX_A, 0);
             getEnvfxAct(obj, player, DBSH_SHRINE_ENVFX_B, 0);
             getEnvfxAct(obj, player, DBSH_SHRINE_ENVFX_C, 0);

@@ -102,7 +102,7 @@ void nwshLevelControl_update(GameObject* obj) {
     if (obj->userData1 != 0) {
         obj->userData1--;
         if (obj->userData1 == 0) {
-            skyFn_80088c94(NWSH_LEVEL_CONTROL_SKY_FLAGS, NWSH_LEVEL_CONTROL_SKY_ENABLED);
+            skySetSlotFlag80(NWSH_LEVEL_CONTROL_SKY_FLAGS, NWSH_LEVEL_CONTROL_SKY_ENABLED);
             getEnvfxAct(NULL, NULL, NWSH_LEVEL_CONTROL_ENVFX_A, NWSH_LEVEL_CONTROL_ENVFX_FLAGS);
             getEnvfxAct(NULL, NULL, NWSH_LEVEL_CONTROL_ENVFX_B, NWSH_LEVEL_CONTROL_ENVFX_FLAGS);
             getEnvfxAct(NULL, NULL, NWSH_LEVEL_CONTROL_ENVFX_C, NWSH_LEVEL_CONTROL_ENVFX_FLAGS);

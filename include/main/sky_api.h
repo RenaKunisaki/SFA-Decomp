@@ -12,8 +12,8 @@ void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z);
 void modelTextureFn_80089970(int slot);
 void textureColorFn_8008991c(int slot, u8* red, u8* green, u8* blue);
 void objGetColor(int slot, u8* red, u8* green, u8* blue);
-int getSkyColorFn_80088e08(int slot);
-void skyFn_80088c94(int flags, u8 mode);
+int skyGetSlotFlag80(int slot);
+void skySetSlotFlag80(int flags, u8 mode);
 void skySetLightIndex(int mode, f32 brightness);
 void skySetLightDirection(int flags, f32 x, f32 y, f32 z);
 void skySetLightColor(int flags, u8 red, u8 green, u8 blue);
@@ -27,7 +27,7 @@ void skySetOverrideLightDirectionEnabled(u8 enabled);
 ModelLightStruct* skyGetMoonLight(void);
 ModelLightStruct* skyGetSunLight(void);
 
-#define getSkyColorFn_80088e08ByteLegacy(slot) \
-    ((u8 (*)(int))getSkyColorFn_80088e08)((slot))
+#define skyGetSlotFlag80ByteLegacy(slot) \
+    ((u8 (*)(int))skyGetSlotFlag80)((slot))
 
 #endif /* MAIN_SKY_API_H_ */

@@ -632,11 +632,11 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq
                     case 6:
                         if (p[3] != 0)
                         {
-                            skyFn_80088c94(7, 1);
+                            skySetSlotFlag80(7, 1);
                         }
                         else
                         {
-                            skyFn_80088c94(7, 0);
+                            skySetSlotFlag80(7, 0);
                         }
                         break;
                     case 7:

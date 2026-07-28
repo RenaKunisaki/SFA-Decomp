@@ -106,7 +106,7 @@ void linkLevelControl_applyEnterAreaEffects(GameObject* obj) {
         Music_Trigger(MUSICTRIG_LVF_Tracking_f2, 0);
         break;
     case LINK_LEVEL_CONTROL_AREA_CELL_45:
-        skyFn_80088c94(7, 0);
+        skySetSlotFlag80(7, 0);
         skySetEnvFxFlags(0);
         getEnvfxAct(NULL, NULL, LINK_LEVEL_CONTROL_ENVFX_A, 0);
         getEnvfxAct(NULL, NULL, LINK_LEVEL_CONTROL_ENVFX_B, 0);

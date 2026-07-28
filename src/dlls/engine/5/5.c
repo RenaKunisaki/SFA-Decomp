@@ -397,7 +397,7 @@ SkyDllInterface lbl_8030F414 = {
     (ObjectDescriptorCallback)return0_80088758,
 };
 
-void skyFn_80088c94(int flags, u8 mode)
+void skySetSlotFlag80(int flags, u8 mode)
 {
     u8* env;
     u8* sky;
@@ -440,7 +440,7 @@ void skyFn_80088c94(int flags, u8 mode)
     }
 }
 
-int getSkyColorFn_80088e08(int slot)
+int skyGetSlotFlag80(int slot)
 {
     u8* sky;
 
@@ -2016,7 +2016,7 @@ void skyLoadLights(void)
         }
     }
     skyResetState();
-    skyFn_80088c94(7, 0);
+    skySetSlotFlag80(7, 0);
     skySetLightIndex(0, lbl_803DF058);
     skyFn_8008a500();
     skyFn_8008a04c();
@@ -2237,7 +2237,7 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
         }
         if (((Sky2Config*)cfg)->cloudBlendMode != 0)
         {
-            skyFn_80088c94(mask, (u8)(((Sky2Config*)cfg)->cloudBlendMode > 2 ? 1 : 0));
+            skySetSlotFlag80(mask, (u8)(((Sky2Config*)cfg)->cloudBlendMode > 2 ? 1 : 0));
         }
         vis = ((Sky2Config*)cfg)->visibility;
         for (i = 0; i < 2; i++)

@@ -87,7 +87,7 @@ void KT_RexLevel_update(GameObject* obj)
 {
     if ((obj)->userData1 == 0)
     {
-        skyFn_80088c94(7, 1);
+        skySetSlotFlag80(7, 1);
         getEnvfxAct(obj, obj, KTREXLEVEL_ENVFX_A, 0);
         getEnvfxAct(obj, obj, KTREXLEVEL_ENVFX_B, 0);
         getEnvfxAct(obj, obj, KTREXLEVEL_ENVFX_C, 0);

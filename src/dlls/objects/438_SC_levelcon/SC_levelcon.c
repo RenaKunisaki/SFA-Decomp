@@ -158,7 +158,7 @@ void sc_levelcontrol_update(GameObject* obj) {
     GameObject* player = Obj_GetPlayerObject();
 
     if (obj->userData1 != 0) {
-        skyFn_80088c94(7, 0);
+        skySetSlotFlag80(7, 0);
         skySetEnvFxFlags(0);
         if (obj->userData1 == 2) {
             getEnvfxActImmediately(0, 0, SC_LEVEL_CONTROL_ENVFX_A, 0);

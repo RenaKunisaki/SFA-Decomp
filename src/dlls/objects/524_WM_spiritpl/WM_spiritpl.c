@@ -143,7 +143,7 @@ int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
             state->fxFlags = (u8)(state->fxFlags & ~WMSPIRITPLACE_FX_ACTIVE);
             break;
         case WMSPIRITPLACE_SEQEV_SKY_RESTORE:
-            skyFn_80088c94(7, 0);
+            skySetSlotFlag80(7, 0);
             setDrawCloudsAndLights(1);
             getEnvfxAct(obj, obj, WMSPIRITPLACE_ENVFX_A, 0);
             getEnvfxAct(obj, obj, WMSPIRITPLACE_ENVFX_B, 0);

@@ -76,7 +76,7 @@ void wmseqpoint_onSeqFree(GameObject* obj)
     }
     else if (state->sequenceId == WMSEQPOINT_SEQ_SKY_TOGGLE)
     {
-        skyOn = getSkyColorFn_80088e08(0) & 0xff;
+        skyOn = skyGetSlotFlag80(0) & 0xff;
         if (state->skyEnabledLatch != 0 && skyOn == 0)
         {
             getEnvfxActImmediatelyVoid(0, 0, WMSEQPOINT_ENVFX_NIGHT_A, 0);
@@ -144,7 +144,7 @@ int wmseqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
             switch (actor->eventIds[i])
             {
             case 0xb:
-                if ((u32)(getSkyColorFn_80088e08(0) & 0xff) != 0)
+                if ((u32)(skyGetSlotFlag80(0) & 0xff) != 0)
                 {
                     getEnvfxActImmediatelyVoid(0, 0, WMSEQPOINT_ENVFX_DAY_A, 0);
                     getEnvfxActImmediatelyVoid(obj, obj, WMSEQPOINT_ENVFX_DAY_B, 0);
@@ -156,7 +156,7 @@ int wmseqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
                 }
                 break;
             case 0xa:
-                if ((u32)(getSkyColorFn_80088e08(0) & 0xff) == 0)
+                if ((u32)(skyGetSlotFlag80(0) & 0xff) == 0)
                 {
                     getEnvfxActImmediatelyVoid(0, 0, WMSEQPOINT_ENVFX_NIGHT_A, 0);
                     getEnvfxActImmediatelyVoid(obj, obj, WMSEQPOINT_ENVFX_NIGHT_B, 0);
@@ -268,7 +268,7 @@ void wmseqpoint_update(GameObject* obj)
             }
             else if (state->sequenceId == WMSEQPOINT_SEQ_SKY_TOGGLE)
             {
-                state->skyEnabledLatch = getSkyColorFn_80088e08ByteLegacy(0);
+                state->skyEnabledLatch = skyGetSlotFlag80ByteLegacy(0);
             }
             (*gObjectTriggerInterface)->runSequence(state->sequenceId, (void*)obj, -1);
             state->doneLatch = 1;

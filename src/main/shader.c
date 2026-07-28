@@ -1825,8 +1825,8 @@ void beginLoadingMap(void)
             if (v != -1)
                 getEnvfxActImmediately(player, player, v & 0xFFFF, 0);
         }
-        skyFn_80088c94(1, (*(u8*)(env + 0x40) & 2) ? 1 : 0);
-        skyFn_80088c94(2, (*(u8*)(env + 0x40) & 4) ? 1 : 0);
+        skySetSlotFlag80(1, (*(u8*)(env + 0x40) & 2) ? 1 : 0);
+        skySetSlotFlag80(2, (*(u8*)(env + 0x40) & 4) ? 1 : 0);
         skySetLightIndex((*(u8*)(env + 0x40) & 0x10) ? 1 : 0, lbl_803DEBCC);
         if (*(u8*)(env + 0x40) & 1)
             bo = 1;

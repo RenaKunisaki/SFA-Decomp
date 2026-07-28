@@ -349,7 +349,7 @@ int shop_getObjectTypeId(void)
 
 void shop_free(GameObject* obj)
 {
-    skyFn_80088c94(7, 0);
+    skySetSlotFlag80(7, 0);
     ObjGroup_RemoveObject((int)obj, SPSHOP_OBJGROUP);
     Music_Trigger(MUSICTRIG_communicator, 0);
     mainSetBits(GAMEBIT_PlayerInShop, 0);
@@ -383,7 +383,7 @@ void shop_update(GameObject* obj)
         (*gMapEventInterface)->setObjGroupStatus((obj)->anim.mapEventSlot, 5, 1);
         (*gMapEventInterface)->setObjGroupStatus((obj)->anim.mapEventSlot, 6, 1);
         mainSetBits(GAMEBIT_SHOP_Unk0617, 1);
-        skyFn_80088c94(7, 1);
+        skySetSlotFlag80(7, 1);
         (obj)->userData1 = 1;
     }
 

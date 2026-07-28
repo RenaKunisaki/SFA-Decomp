@@ -152,7 +152,7 @@ void WM_LevelControl_updateSkyLighting(GameObject* obj)
     }
 
     setDrawLights(0);
-    skyColorActive = getSkyColorFn_80088e08(0);
+    skyColorActive = skyGetSlotFlag80(0);
     if (skyColorActive != 0)
     {
         skySetOverrideLightColorEnabled(0);

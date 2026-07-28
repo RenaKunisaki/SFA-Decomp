@@ -106,7 +106,7 @@ void mmpLevelControl_update(GameObject* obj) {
     if (obj->userData1 != 0) {
         skySetEnvFxFlags(0);
         if (mainGetBit(MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_A) != 0) {
-            skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 1);
+            skySetSlotFlag80(MMP_LEVEL_CONTROL_SKY_GROUP, 1);
             if (obj->userData1 == 2) {
                 getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
                 getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_A_1, 0);
@@ -118,7 +118,7 @@ void mmpLevelControl_update(GameObject* obj) {
             }
             obj->userData2 = 0;
         } else if (mainGetBit(MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_B) != 0) {
-            skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 1);
+            skySetSlotFlag80(MMP_LEVEL_CONTROL_SKY_GROUP, 1);
             if (obj->userData1 == 2) {
                 getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
                 getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_1, 0);
@@ -131,7 +131,7 @@ void mmpLevelControl_update(GameObject* obj) {
             obj->userData2 = 1;
         } else if (coordsToMapCell(playerForMap->anim.localPosX, playerForMap->anim.localPosZ) ==
                    MMP_LEVEL_CONTROL_MAP_ID) {
-            skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 0);
+            skySetSlotFlag80(MMP_LEVEL_CONTROL_SKY_GROUP, 0);
             if (obj->userData1 == 2) {
                 getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
                 getEnvfxActImmediately(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_LOCAL_LAYER, 0);
@@ -148,13 +148,13 @@ void mmpLevelControl_update(GameObject* obj) {
     }
 
     if (obj->userData2 != 0 && mainGetBit(MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_B) == 0) {
-        skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 0);
+        skySetSlotFlag80(MMP_LEVEL_CONTROL_SKY_GROUP, 0);
         getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
         getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_LOCAL_LAYER, 0);
         getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_MAP_CELL, 0);
         obj->userData2 = 0;
     } else if (obj->userData2 == 0 && mainGetBit(MMP_LEVEL_CONTROL_GAMEBIT_ENVIRONMENT_B) != 0) {
-        skyFn_80088c94(MMP_LEVEL_CONTROL_SKY_GROUP, 1);
+        skySetSlotFlag80(MMP_LEVEL_CONTROL_SKY_GROUP, 1);
         getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_COMMON, 0);
         getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_1, 0);
         getEnvfxAct(obj, playerForFx, MMP_LEVEL_CONTROL_ENVFX_GAMEBIT_B_2, 0);

@@ -395,7 +395,7 @@ void mmshShrine_update(GameObject* obj) {
     if (MMSH_SHRINE_LOAD_TIMER(obj) != 0) {
         MMSH_SHRINE_LOAD_TIMER(obj)--;
         if (MMSH_SHRINE_LOAD_TIMER(obj) == 0) {
-            skyFn_80088c94(MMSH_SHRINE_SKY_FLAGS, 1);
+            skySetSlotFlag80(MMSH_SHRINE_SKY_FLAGS, 1);
             getEnvfxAct(obj, player, MMSH_SHRINE_ENVFX_A, MMSH_SHRINE_ENVFX_FLAGS);
             getEnvfxAct(obj, player, MMSH_SHRINE_ENVFX_B, MMSH_SHRINE_ENVFX_FLAGS);
             getEnvfxAct(obj, player, MMSH_SHRINE_ENVFX_C, MMSH_SHRINE_ENVFX_FLAGS);
