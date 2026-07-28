@@ -336,7 +336,7 @@ void MagicPlant_update(GameObject* obj) {
             } else if (progress < MAGICPLANT_ZERO) {
                 progress = MAGICPLANT_ZERO;
             }
-            state->animProgress = *(f32*)&MAGICPLANT_ONE - progress;
+            state->animProgress = MAGICPLANT_ONE - progress;
         }
         if (obj->anim.currentMove != MAGICPLANT_MOVE_CLOSED) {
             ObjAnim_SetCurrentMove((int)obj, MAGICPLANT_MOVE_CLOSED, state->animProgress, 0);
@@ -409,7 +409,7 @@ void MagicPlant_init(GameObject* obj, MagicPlantPlacement* placement) {
         } else if (progress < MAGICPLANT_ZERO) {
             progress = MAGICPLANT_ZERO;
         }
-        state->animProgress = *(f32*)&MAGICPLANT_ONE - progress;
+        state->animProgress = MAGICPLANT_ONE - progress;
     } else {
         state->animProgress = MAGICPLANT_ONE;
     }
