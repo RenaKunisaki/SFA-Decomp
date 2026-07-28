@@ -57,8 +57,13 @@ below the data reads (that one is *worse*, 99.835). It is an LICM constant-place
 
 **The cast is the correct source and is deliberately not committed**, because it measures −0.016 on
 the unit. It should be landed together with whatever fixes the `li` placement, not before.
+| 7 | `dlls/objects/195_Player/player.c` | `playerStateTryCastSpell` (964 B) | **none identified** — not source- and not flag-reachable | — | — | Retail hoists the shared `lis r6,32` high half of two identical `0x200001` call arguments into a saved reg (`lis r30,32`) and derives `addi r6,r30,1` at each site; we rematerialize `lis;addi` twice. In an isolated 2-call probe **4 source spellings** (bare literal, `int f = 0x200001`, `b+1`, `b|1`) and **7 `-opt` profiles x 4 `-O` levels** all emit the un-hoisted form, so it is neither a literal spelling nor an enumerated flag. Most likely a consequence of whole-function register pressure — i.e. band-adjacent, not a source lever. **Third data point for the player.c conflict: this is a *more*-CSE behaviour, while row 1 wants `-opt nocse`.** |
 
 ## The `player.c` conflict — an open TU-boundary question
+
+*(Updated: rows 1, 2 and 7 are now three mutually incompatible requirements in one TU —
+`nocse`, `nopropagation`, and a hoist that needs* more *CSE than we currently get. Three
+conflicting profiles is stronger evidence for a merged-TU boundary than two.)*
 
 `playerUpdate` is byte-exact under `-opt nocse`; `fn_802AABE4` is byte-exact under
 `-opt nopropagation`. **Both are in `src/dlls/objects/195_Player/player.c`, and no single profile
