@@ -59,14 +59,12 @@ void camCombatIntroEvalPos(CameraObject* camera, float* outX, float* outY, float
         }
         {
             u8 ci = gCamCombatState->pathBlendStartIndex;
-            float w;
             float dx = hitVolumes[ci].centerX - hitVolumes[target->hitVolumeIndex].centerX;
             float dy = hitVolumes[ci].centerY - hitVolumes[target->hitVolumeIndex].centerY;
             float dz = hitVolumes[ci].centerZ - hitVolumes[target->hitVolumeIndex].centerZ;
-            w = gCamCombatState->pathBlendWeight;
-            dx *= w;
-            dy *= w;
-            dz *= w;
+            dx *= gCamCombatState->pathBlendWeight;
+            dy *= gCamCombatState->pathBlendWeight;
+            dz *= gCamCombatState->pathBlendWeight;
             dx += hitVolumes[target->hitVolumeIndex].centerX;
             dy += hitVolumes[target->hitVolumeIndex].centerY;
             dz += hitVolumes[target->hitVolumeIndex].centerZ;
