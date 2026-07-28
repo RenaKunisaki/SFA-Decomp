@@ -68,18 +68,6 @@ typedef struct WCPushBlockObjectSetup
     f32 z;
 } WCPushBlockObjectSetup;
 
-typedef struct WCPushBlockRotationWork
-{
-    s16 yaw;
-    s16 pitch;
-    s16 roll;
-    s16 pad;
-    f32 scale;
-    f32 zeroX;
-    f32 zeroY;
-    f32 zeroZ;
-} WCPushBlockRotationWork;
-
 struct WCPushBlockState
 {
     u8 pad0[0x10];
@@ -119,7 +107,7 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
     WCPushBlockObjectSetup* setup;
     GameObject* block;
     f32 outVec[3];
-    WCPushBlockRotationWork rotation;
+    MatrixTransform rotation;
 
     if (Obj_IsLoadingLocked() == 0)
     {
@@ -128,17 +116,17 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
 
     Sfx_PlayFromObject(0, WCPUSHBLOCK_SPAWN_SFX);
 
-    rotation.zeroX = 0.0f;
-    rotation.zeroY = 0.0f;
-    rotation.zeroZ = 0.0f;
+    rotation.x = 0.0f;
+    rotation.y = 0.0f;
+    rotation.z = 0.0f;
     rotation.scale = 1.0f;
-    rotation.yaw = path->anim.rotX;
-    rotation.pitch = path->anim.rotY;
-    rotation.roll = path->anim.rotZ;
+    rotation.rotX = path->anim.rotX;
+    rotation.rotY = path->anim.rotY;
+    rotation.rotZ = path->anim.rotZ;
     outVec[0] = 0.0f;
     outVec[1] = 38.0f;
     outVec[2] = -80.0f;
-    vecRotateZXY((s16*)&rotation, outVec);
+    vecRotateZXY(&rotation.rotX, outVec);
 
     setup = (WCPushBlockObjectSetup*)Obj_AllocObjectSetup(WCPUSHBLOCK_SPAWN_SETUP_SIZE,
                                                           WCPUSHBLOCK_SPAWN_OBJECT_ID);
@@ -154,17 +142,17 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
         return;
     }
 
-    rotation.zeroX = 0.0f;
-    rotation.zeroY = 0.0f;
-    rotation.zeroZ = 0.0f;
+    rotation.x = 0.0f;
+    rotation.y = 0.0f;
+    rotation.z = 0.0f;
     rotation.scale = 1.0f;
-    rotation.yaw = path->anim.rotX;
-    rotation.pitch = path->anim.rotY;
-    rotation.roll = 0;
+    rotation.rotX = path->anim.rotX;
+    rotation.rotY = path->anim.rotY;
+    rotation.rotZ = 0;
     outVec[0] = 0.0f;
     outVec[1] = 0.0f;
     outVec[2] = -16.0f;
-    vecRotateZXY((s16*)&rotation, outVec);
+    vecRotateZXY(&rotation.rotX, outVec);
 
     block->anim.velocityX = outVec[0];
     block->anim.velocityY = outVec[1];
