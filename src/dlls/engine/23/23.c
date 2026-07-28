@@ -354,7 +354,7 @@ void gplaySaveGame(int param)
             memcpy((void*)pRestartPoint, gSaveGameData, 0x564);
         }
     }
-    if ((s8)gSaveGameCurrentSlot == -1)
+    if (gSaveGameCurrentSlot == -1)
     {
         gSaveGameCurrentSlot = 0;
     }
@@ -387,7 +387,7 @@ void saveGame_save(void)
             memcpy((void*)pRestartPoint, gSaveGameData, 0x564);
         }
     }
-    if ((s8)gSaveGameCurrentSlot == -1)
+    if (gSaveGameCurrentSlot == -1)
     {
         gSaveGameCurrentSlot = 0;
     }

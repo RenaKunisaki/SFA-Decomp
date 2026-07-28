@@ -280,7 +280,7 @@ void languageMenuInit(void)
 {
     MenuPanelGroup* panel;
 
-    if ((s8)gOptionsActivePanel != -1)
+    if (gOptionsActivePanel != -1)
     {
         gTitleMenuLinkInterface->vtable->free();
     }
@@ -678,7 +678,7 @@ int OptionsScreen_frameStart(void)
     {
         if ((oldFade <= 0xc || gOptionsExitCountdown > 0xc) && gOptionsExitCountdown <= 0)
         {
-            if ((s8)gOptionsActivePanel != OPTIONSSCREEN_PANEL_NONE)
+            if (gOptionsActivePanel != OPTIONSSCREEN_PANEL_NONE)
             {
                 gTitleMenuLinkInterface->vtable->free();
                 gOptionsActivePanel = OPTIONSSCREEN_PANEL_NONE;
@@ -699,7 +699,7 @@ int OptionsScreen_frameStart(void)
     }
     gOptionsLastSelectedRow = item;
 
-    switch ((s8)gOptionsActivePanel)
+    switch (gOptionsActivePanel)
     {
     case OPTIONSSCREEN_PANEL_TOP:
         lbl_803DD70C = item;
@@ -753,7 +753,7 @@ int OptionsScreen_frameStart(void)
         break;
     }
 
-    if ((s8)gOptionsActivePanel != OPTIONSSCREEN_PANEL_TOP)
+    if (gOptionsActivePanel != OPTIONSSCREEN_PANEL_TOP)
     {
         for (i = 0; i < OPTIONSSCREEN_MENU_ITEM_COUNT; i++)
         {

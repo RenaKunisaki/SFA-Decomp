@@ -17,22 +17,22 @@ void n_rareware_render(void)
 {
     int frame;
 
-    if (((s8)gNrarewareTransitionStarted != 0) && ((s8)gNrarewareExitDelay <= 10))
+    if (((s8)gNrarewareTransitionStarted != 0) && (gNrarewareExitDelay <= 10))
     {
         return;
     }
 
     frame = gNrarewareFrameCounter;
-    if ((frame > 40) && ((s8)gNrarewareStage == 0))
+    if ((frame > 40) && (gNrarewareStage == 0))
     {
         gNrarewareStage = 1;
         gNrarewareStage1Timer = 5e+02f;
     }
-    if ((frame > 50) && ((s8)gNrarewareStage == 1))
+    if ((frame > 50) && (gNrarewareStage == 1))
     {
         gNrarewareStage = 2;
     }
-    if ((frame > 285) && ((s8)gNrarewareStage == 2))
+    if ((frame > 285) && (gNrarewareStage == 2))
     {
         gNrarewareStage = 3;
         gNrarewareStage3Timer = 145.0f;
@@ -68,7 +68,7 @@ int n_rareware_frameStart(void)
     {
         frameStep = 3;
     }
-    if ((s8)gNrarewareExitDelay > 0)
+    if (gNrarewareExitDelay > 0)
     {
         gNrarewareExitDelay = (s8)(gNrarewareExitDelay - frameStep);
     }

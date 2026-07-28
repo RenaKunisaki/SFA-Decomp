@@ -103,7 +103,7 @@ void sc_cloudrunnera_update(int obj) {
             if (sequenceIndex == SC_CLOUDRUNNER_A_SEQUENCE_PENDING &&
                 ((GameObject*)otherObject)->anim.classId == SC_CLOUDRUNNER_A_SEQUENCE_CLASS_ID) {
                 sequence = *(ObjSeqState**)&((GameObject*)otherObject)->extra;
-                if (sequenceSlotCopy == (s8)sequence->slot) {
+                if (sequenceSlotCopy == sequence->slot) {
                     participantCount++;
                 }
             }

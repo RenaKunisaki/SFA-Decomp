@@ -360,7 +360,7 @@ void saveFileSelect_init(int sel, int slot)
             else
             {
                 Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up);
-                if ((s8)gSaveSelectPanelIndex != -1)
+                if (gSaveSelectPanelIndex != -1)
                 {
                     gTitleMenuLinkInterface->vtable->free();
                 }
@@ -413,7 +413,7 @@ void saveSelectGoToChapterSelect(void)
     int i;
     SaveSelectPanel* panel;
 
-    if ((s8)gSaveSelectPanelIndex != -1)
+    if (gSaveSelectPanelIndex != -1)
     {
         gTitleMenuLinkInterface->vtable->free();
     }
