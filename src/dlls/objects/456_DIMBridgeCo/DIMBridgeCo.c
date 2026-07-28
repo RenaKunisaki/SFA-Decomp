@@ -1,155 +1,152 @@
 /*
  * DIMBridgeCo (DLL 0x1C8) - bridge cog main object for Dinosaur Island
- * Mission 2.  Watches one or more gamebits and, when they become set, either
- * hides the cog or triggers an animation sequence depending on the gamebit
+ * Mission 2.  Watches one or more game bits and, when they become set, either
+ * hides the cog or triggers an animation sequence depending on the game bit's
  * value; also fires sequence events from the SeqFn callback.
  */
-#include "main/dll/DIM/dll_01C8_dimbridgecogmai.h"
+
+#include "dlls/objects/456_DIMBridgeCo.h"
+
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "dlls/object_descriptor.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
 #include "main/obj_group.h"
-#include "main/objseq.h"
-#include "main/gamebits.h"
+#include "main/objanim_update.h"
 #include "main/object_render.h"
+#include "main/objseq.h"
 
-/* Cog-puzzle gamebits for DIM2 bridge puzzle */
-#define COGBIT_PANEL_A     0x17a
-#define COGBIT_PANEL_B     0x181
-#define COGBIT_BRIDGE      0x1e3
-#define COGBIT_SLOT_0      0x182
-#define COGBIT_SLOT_1      0x183
-#define COGBIT_SLOT_2      0x184
+#define DIM_BRIDGE_COG_PANEL_GAME_BIT  0x17a
+#define DIM_BRIDGE_COG_BRIDGE_GAME_BIT 0x1e3
 
-#define DIMBRIDGECOG_GROUP 0xf
-#define DIMBRIDGECOG_FLAG_WAIT_FOR_SEQUENCE 0x2
+#define DIM_BRIDGE_COG_OBJECT_GROUP           0xf
+#define DIM_BRIDGE_COG_FLAG_WAIT_FOR_SEQUENCE 0x2
 
-int dimbridgecogmai_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
-    DimbridgecogmaiPlacement* placement = (DimbridgecogmaiPlacement*)obj->anim.placementData;
+#define DIM_BRIDGE_COG_SEQUENCE_COMPLETE_COMMAND 1
+
+#define DIM_BRIDGE_COG_PANEL_SEQUENCE_ID       0x1f
+#define DIM_BRIDGE_COG_BRIDGE_SEQUENCE_BASE_ID 0x1d
+
+#define DIM_BRIDGE_COG_ALL_USED_MASK          7
+#define DIM_BRIDGE_COG_COG4_USED_MASK         4
+#define DIM_BRIDGE_COG_COG3_USED_MASK         2
+#define DIM_BRIDGE_COG_COG4_SEQUENCE_FLAG     2
+#define DIM_BRIDGE_COG_COG3_SEQUENCE_FLAG     0x20
+#define DIM_BRIDGE_COG_DEFAULT_SEQUENCE_SLOT  0
+#define DIM_BRIDGE_COG_ACTIVE_SEQUENCE_SLOT   1
+#define DIM_BRIDGE_COG_COMPLETE_SEQUENCE_SLOT 2
+#define DIM_BRIDGE_COG_NO_SEQUENCE_ID         (-1)
+
+#define DIM_BRIDGE_COG_STATE_INITIAL_VALUE 100
+#define DIM_BRIDGE_COG_RENDER_SCALE        1.0f
+
+int dimbridgecogmai_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+    const DimBridgeCogPlacement* placement = (const DimBridgeCogPlacement*)obj->anim.placementData;
+
+    (void)unused;
+
     animUpdate->sequenceEventActive = 0;
-    if ((placement->flags & DIMBRIDGECOG_FLAG_WAIT_FOR_SEQUENCE) != 0 && animUpdate->triggerCommand == 1)
-    {
+    if ((placement->flags & DIM_BRIDGE_COG_FLAG_WAIT_FOR_SEQUENCE) != 0 &&
+        animUpdate->triggerCommand == DIM_BRIDGE_COG_SEQUENCE_COMPLETE_COMMAND) {
         mainSetBits(placement->doneGameBit, 1);
         animUpdate->triggerCommand = 0;
     }
     return 0;
 }
 
-int dimbridgecogmai_getExtraSize(void)
-{
-    return sizeof(DimbridgecogmaiState);
+int dimbridgecogmai_getExtraSize(void) {
+    return sizeof(DimBridgeCogState);
 }
 
-int dimbridgecogmai_getObjectTypeId(void)
-{
+int dimbridgecogmai_getObjectTypeId(void) {
     return 0x0;
 }
 
-void dimbridgecogmai_free(GameObject* obj)
-{
-    ObjGroup_RemoveObject((int)obj, DIMBRIDGECOG_GROUP);
+void dimbridgecogmai_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, DIM_BRIDGE_COG_OBJECT_GROUP);
 }
 
-void dimbridgecogmai_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void dimbridgecogmai_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                            s8 visible) {
+    s32 visibleValue = visible;
+
+    if (visibleValue != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DIM_BRIDGE_COG_RENDER_SCALE);
     }
 }
 
-void dimbridgecogmai_hitDetect(void)
-{
+void dimbridgecogmai_hitDetect(void) {
 }
 
-void dimbridgecogmai_update(GameObject* obj)
-{
-    DimbridgecogmaiPlacement* placement;
+void dimbridgecogmai_update(GameObject* obj) {
+    const DimBridgeCogPlacement* placement;
     int sequenceId;
-    u8 bits;
+    u8 usedCogMask;
     int sequenceSlot;
 
-    placement = (DimbridgecogmaiPlacement*)obj->anim.placementData;
-    if (mainGetBit(placement->watchGameBit) != 0)
-    {
-        if (placement->sequenceGate != -1)
-        {
-            switch (placement->watchGameBit)
-            {
-            case COGBIT_PANEL_A:
-                if (mainGetBit(COGBIT_PANEL_B) != 0)
-                {
+    placement = (const DimBridgeCogPlacement*)obj->anim.placementData;
+    if (mainGetBit(placement->watchGameBit) != 0) {
+        if (placement->sequenceGate != -1) {
+            switch (placement->watchGameBit) {
+            case DIM_BRIDGE_COG_PANEL_GAME_BIT:
+                if (mainGetBit(GAMEBIT_ITEM_DIMCog1_Used) != 0) {
                     obj->objectFlags |= OBJECT_OBJFLAG_UPDATE_DISABLED;
-                    sequenceId = -1;
-                    sequenceSlot = 0;
-                }
-                else
-                {
+                    sequenceId = DIM_BRIDGE_COG_NO_SEQUENCE_ID;
+                    sequenceSlot = DIM_BRIDGE_COG_DEFAULT_SEQUENCE_SLOT;
+                } else {
                     mainSetBits(placement->watchGameBit, 0);
-                    sequenceId = 0x1f;
-                    sequenceSlot = 1;
+                    sequenceId = DIM_BRIDGE_COG_PANEL_SEQUENCE_ID;
+                    sequenceSlot = DIM_BRIDGE_COG_ACTIVE_SEQUENCE_SLOT;
                 }
                 break;
-            case COGBIT_BRIDGE:
-                bits = mainGetBit(COGBIT_SLOT_0);
-                bits |= mainGetBit(COGBIT_SLOT_1) << 1;
-                bits |= mainGetBit(COGBIT_SLOT_2) << 2;
-                if (bits == 7)
-                {
+            case DIM_BRIDGE_COG_BRIDGE_GAME_BIT:
+                usedCogMask = mainGetBit(GAMEBIT_ITEM_DIMCog2_Used);
+                usedCogMask |= mainGetBit(GAMEBIT_ITEM_DIMCog3_Used) << 1;
+                usedCogMask |= mainGetBit(GAMEBIT_ITEM_DIMCog4_Used) << 2;
+                if (usedCogMask == DIM_BRIDGE_COG_ALL_USED_MASK) {
                     obj->objectFlags |= OBJECT_OBJFLAG_UPDATE_DISABLED;
-                    sequenceId = -1;
-                    sequenceSlot = 2;
-                }
-                else
-                {
+                    sequenceId = DIM_BRIDGE_COG_NO_SEQUENCE_ID;
+                    sequenceSlot = DIM_BRIDGE_COG_COMPLETE_SEQUENCE_SLOT;
+                } else {
                     mainSetBits(placement->watchGameBit, 0);
-                    sequenceId = 0x1d;
-                    if ((bits & 4) != 0)
-                    {
-                        sequenceId |= 2;
-                        if ((bits & 2) != 0)
-                        {
-                            sequenceId |= 0x20;
+                    sequenceId = DIM_BRIDGE_COG_BRIDGE_SEQUENCE_BASE_ID;
+                    if ((usedCogMask & DIM_BRIDGE_COG_COG4_USED_MASK) != 0) {
+                        sequenceId |= DIM_BRIDGE_COG_COG4_SEQUENCE_FLAG;
+                        if ((usedCogMask & DIM_BRIDGE_COG_COG3_USED_MASK) != 0) {
+                            sequenceId |= DIM_BRIDGE_COG_COG3_SEQUENCE_FLAG;
                         }
                     }
-                    sequenceSlot = 1;
+                    sequenceSlot = DIM_BRIDGE_COG_ACTIVE_SEQUENCE_SLOT;
                 }
                 break;
             default:
-                sequenceSlot = 0;
+                sequenceSlot = DIM_BRIDGE_COG_DEFAULT_SEQUENCE_SLOT;
                 break;
             }
             (*gObjectTriggerInterface)->runSequence(sequenceSlot, (int*)obj, sequenceId);
         }
-        if ((placement->flags & DIMBRIDGECOG_FLAG_WAIT_FOR_SEQUENCE) == 0)
-        {
+        if ((placement->flags & DIM_BRIDGE_COG_FLAG_WAIT_FOR_SEQUENCE) == 0) {
             mainSetBits(placement->doneGameBit, 1);
         }
     }
 }
 
-void dimbridgecogmai_init(GameObject* obj, DimbridgecogmaiInitDef* def)
-{
-    DimbridgecogmaiState* state = obj->extra;
-    state->unk0 = 100;
-    obj->anim.rotX = (s16)((u32)def->rotationAngle << 8);
+void dimbridgecogmai_init(GameObject* obj, const DimBridgeCogPlacement* placement) {
+    DimBridgeCogState* state = obj->extra;
+
+    state->unknown00 = DIM_BRIDGE_COG_STATE_INITIAL_VALUE;
+    obj->anim.rotX = (s16)((u32)placement->rotationAngle << 8);
     obj->animEventCallback = dimbridgecogmai_SeqFn;
-    ObjGroup_AddObject((u32)obj, DIMBRIDGECOG_GROUP);
-    if ((u8)mainGetBit(def->watchGameBit) != 0)
-    {
+    ObjGroup_AddObject((u32)obj, DIM_BRIDGE_COG_OBJECT_GROUP);
+    if ((u8)mainGetBit(placement->doneGameBit) != 0) {
         obj->objectFlags |= OBJECT_OBJFLAG_UPDATE_DISABLED;
     }
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 
-void dimbridgecogmai_release(void)
-{
+void dimbridgecogmai_release(void) {
 }
 
-void dimbridgecogmai_initialise(void)
-{
+void dimbridgecogmai_initialise(void) {
 }
 
 ObjectDescriptor gDIMBridgeCogMaiObjDescriptor = {
