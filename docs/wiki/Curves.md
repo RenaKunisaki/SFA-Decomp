@@ -151,7 +151,7 @@ Cross-references verified by reading the source at the paths below.
 | 0x24 | Used by Tricky | Confirmed exactly: `Objfsa_FindNearestCurveType24` / `Objfsa_FindNearestEnabledCurveType24` (`src/main/dll/dll_0014_unk.c`) hardcode `type == 0x24`; called from `src/dlls/objects/196_Tricky/tricky.c`. |
 | 0x2A | DrakorHoverPad | `src/dlls/objects/625/625.c` (DLL 625, resource ID 0x271) follows a "ROM spline/curve network"; its local `DrakorCurveNode` overlay reuses the placement's rotZ/rotY/rotX bytes (0x2C/0x2D/0x2E) as `tangentYaw`/`tangentPitch`/`tangentMag` to derive bob/banking velocity — direct confirmation of the wiki's "rot: ... can influence how some objects follow the path." No literal `== 0x2A` type check found (likely passed in via a caller-side type filter, not visible in this TU). |
 | 0x01, 0x02, 0x19, 0x1F | Dragon Rock Bottom / WB / DIM barrel grabbers / crawl tunnels | Not found. These types are presumably passed as filter arguments from each object's own DLL when it calls the curve-find interface, rather than hardcoded in the shared curve DLL; the specific DLLs for "WB" and Dragon Rock Bottom's objects were not identified by name in this pass. |
-| 0x17 | *(not on the wiki)* | `RomCurve_func16` (`src/main/dll/dll_0014_unk.c`) hardcodes `type == 0x17` — a special-cased type the wiki's "Known types" list doesn't mention. Worth flagging upstream. |
+| 0x17 | *(not on the wiki)* | `curves_findEnclosingLoopOfType17` (`src/main/dll/dll_0014_unk.c`) hardcodes `type == 0x17` — a special-cased type the wiki's "Known types" list doesn't mention. Worth flagging upstream. |
 
 ### DLL 0x14 "network curve" and interpolation
 
@@ -228,7 +228,7 @@ Two write-ups the wiki backs with concrete values that this codebase doesn't yet
    #define ROMCURVE_TYPE_HAGABON_MK2   0x03 /* firecrawler.c hagabonMK2_update/B, DLL 0xC9 */
    #define ROMCURVE_TYPE_DIM2_PATHGEN  0x15 /* == ROMCURVE_TYPE_ACTION; curves_findByAction */
    #define ROMCURVE_TYPE_16            0x16 /* curves_findNearestOfType16 - purpose still unclear */
-   #define ROMCURVE_TYPE_17            0x17 /* RomCurve_func16 - not documented upstream */
+   #define ROMCURVE_TYPE_17            0x17 /* curves_findEnclosingLoopOfType17 - not documented upstream */
    #define ROMCURVE_TYPE_CURVEFISH     0x23 /* CurveFish.c: gCurveFishCurveQueryKey */
    #define ROMCURVE_TYPE_TRICKY        0x24 /* Objfsa_FindNearest(Enabled)CurveType24 */
    ```

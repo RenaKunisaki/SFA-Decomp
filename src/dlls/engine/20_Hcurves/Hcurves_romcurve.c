@@ -1164,7 +1164,7 @@ int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurve
     return -1;
 }
 
-int RomCurve_func1B(ObjfsaRomCurveDef* curve, int preferredNeighborId, f32 x, f32 y, f32 z)
+int Objfsa_GetNearestAdjacentLink(ObjfsaRomCurveDef* curve, int preferredNeighborId, f32 x, f32 y, f32 z)
 {
     int bestNeighborIds[2];
     float bestDistances[2];
@@ -1227,7 +1227,7 @@ int RomCurve_func1B(ObjfsaRomCurveDef* curve, int preferredNeighborId, f32 x, f3
     return -1;
 }
 
-int RomCurve_func16(f32 x, f32 y, f32 z)
+int curves_findEnclosingLoopOfType17(f32 x, f32 y, f32 z)
 {
     u32 candidateIds[20];
     u32* top;
@@ -2325,7 +2325,7 @@ f32 curves_find(int type, int action, f32 x, f32 y, f32 z, f32* outX, f32* outY,
 }
 
 
-void RomCurve_func0D(RomCurveDef** startOut, RomCurveDef** endOut)
+void RomCurve_getLastFindSegment(RomCurveDef** startOut, RomCurveDef** endOut)
 {
     *startOut = gRomCurveLastFindStart;
     *endOut = gRomCurveLastFindEnd;
@@ -2494,7 +2494,7 @@ int RomCurve_countRandomPoints(RomCurveDef* curve)
     return count;
 }
 
-int RomCurve_func1E(u32* curveIds, float* outX, float* outY, float* outZ)
+int RomCurve_buildAdjacentWindowPoints(u32* curveIds, float* outX, float* outY, float* outZ)
 {
     RomCurveDef** resolveCursor;
     float* outXStart;
@@ -2610,7 +2610,7 @@ void RomCurve_getAdjacentWindow(RomCurveDef* curve, int* outIds)
     }
 }
 
-int RomCurve_getNearestAdjacentLink(RomCurveDef* curve, int excludeLinkId, f32 x, f32 y, f32 z)
+int RomCurve_getFarthestAdjacentLink(RomCurveDef* curve, int excludeLinkId, f32 x, f32 y, f32 z)
 {
     int bestLink[2];
     f32 bestDistance[2];
@@ -3002,7 +3002,7 @@ void* lbl_803115F8[49] = {(void*)0,
                           (void*)curves_find,
                           (void*)curves_distToObj,
                           (void*)curves_distXZ,
-                          (void*)RomCurve_func0D,
+                          (void*)RomCurve_getLastFindSegment,
                           (void*)curves_isPoint,
                           (void*)curves_isNotPoint,
                           (void*)RomCurve_getRandomLinkedOfTypes,
@@ -3011,15 +3011,15 @@ void* lbl_803115F8[49] = {(void*)0,
                           (void*)RomCurve_func13,
                           (void*)curves_findNearestOfType16,
                           (void*)curves_isPointInsideLoop,
-                          (void*)RomCurve_func16,
+                          (void*)curves_findEnclosingLoopOfType17,
                           (void*)RomCurve_getRandomUnblockedLink,
                           (void*)RomCurve_getLinkIds,
-                          (void*)RomCurve_getNearestAdjacentLink,
+                          (void*)RomCurve_getFarthestAdjacentLink,
                           (void*)RomCurve_getRandomBlockedLink,
-                          (void*)RomCurve_func1B,
+                          (void*)Objfsa_GetNearestAdjacentLink,
                           (void*)RomCurve_func1C,
                           (void*)RomCurve_getAdjacentWindow,
-                          (void*)RomCurve_func1E,
+                          (void*)RomCurve_buildAdjacentWindowPoints,
                           (void*)RomCurve_countRandomPoints,
                           (void*)RomCurve_buildRandomPoints,
                           (void*)RomCurve_projectPointToAdjacentWindow,

@@ -43,7 +43,7 @@ typedef struct GameObject GameObject;
 #define ROMCURVE_TYPE_HAGABON_MK2                     0x03 /* firecrawler.c hagabonMK2 (DLL 0xC9) */
 #define ROMCURVE_TYPE_DIM2_PATHGEN                    0x15 /* == ROMCURVE_TYPE_ACTION; curves_findByAction */
 #define ROMCURVE_TYPE_16                              0x16 /* curves_findNearestOfType16 */
-#define ROMCURVE_TYPE_17                              0x17 /* RomCurve_func16 */
+#define ROMCURVE_TYPE_17                              0x17 /* curves_findEnclosingLoopOfType17 */
 #define ROMCURVE_TYPE_CURVEFISH                       0x23 /* CurveFish path query */
 #define ROMCURVE_TYPE_TRICKY                          0x24 /* Objfsa_FindNearest(Enabled)CurveType24 */
 #define ROMCURVE_GETCURVES_MAX_POINTS                 0x23
@@ -231,9 +231,9 @@ f32 curves_find(int type, int action, f32 x, f32 y, f32 z, f32* outX, f32* outY,
 RomCurveDef* RomCurve_findByIdWithIndex(u32 curveId, int* outIndex);
 int RomCurve_buildRandomPoints(RomCurvePlacementDef* curve, f32* outX, f32* outY, f32* outZ, s8* outTypes);
 int RomCurve_countRandomPoints(RomCurveDef* curve);
-int RomCurve_func1E(u32* curveIds, float* outX, float* outY, float* outZ);
+int RomCurve_buildAdjacentWindowPoints(u32* curveIds, float* outX, float* outY, float* outZ);
 void RomCurve_getAdjacentWindow(RomCurveDef* curve, int* outIds);
-int RomCurve_getNearestAdjacentLink(RomCurveDef* curve, int excludeLinkId, f32 x, f32 y, f32 z);
+int RomCurve_getFarthestAdjacentLink(RomCurveDef* curve, int excludeLinkId, f32 x, f32 y, f32 z);
 f32 RomCurve_distanceToSegment(f32 x, f32 y, f32 z, RomCurveSegmentProjection* segment);
 int RomCurve_getRandomBlockedLink(RomCurveDef* curve, int excludeLinkId);
 int RomCurve_getLinkIds(RomCurveDef* curve, int excludeLinkId, int* outIds);
