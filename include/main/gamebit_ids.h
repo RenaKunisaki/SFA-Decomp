@@ -85,7 +85,7 @@ enum GameBitId {
      * shrine, dll_018F, anim-event 7 - the same event that calls
      * objSetAnimStateFlags(player, 0x08, 1) to set the spirit bit in playerStatus). It is
      * one of the three guard bits (with 0x316 and 0x511) that disable the K1
-     * Krazoa Shrine return transporter pad (slot 300, base.mapId 0x43F83 ->
+     * Krazoa Shrine return transporter pad (slot 300, base.ident 0x43F83 ->
      * map 0x21): once the spirit is taken, the pad locks out. Live-verified
      * that setting this disable path kills the pad's A-prompt.
      */
@@ -828,8 +828,8 @@ enum GameBitId {
     GAMEBIT_CannonRelated0C2D = 0xC2D,                   /* table 2 */
     GAMEBIT_CannonRelated0C2E = 0xC2E,                   /* table 2 */
     GAMEBIT_PlayerIsDisguised = 0xC30,                   /* table 0 */
-    GAMEBIT_LV_ChallengeGate1Complete = 0xC52,           /* challenge-gate NPC 1 reward latch (mapId 0x46A51) */
-    GAMEBIT_LV_ChallengeGate2Complete = 0xC53,           /* One-shot reward latch for LightFoot Village challenge-gate NPC 2 (mapId 0x46A55): fires once bits 0xc3b/0xc3c/0xc3d (the three baby-lightfoot-delivered flags) are all set, permanently disabling that NPC's interaction and unlocking swapcircle map objgroup 0xa */
+    GAMEBIT_LV_ChallengeGate1Complete = 0xC52,           /* challenge-gate NPC 1 reward latch (ident 0x46A51) */
+    GAMEBIT_LV_ChallengeGate2Complete = 0xC53,           /* One-shot reward latch for LightFoot Village challenge-gate NPC 2 (ident 0x46A55): fires once bits 0xc3b/0xc3c/0xc3d (the three baby-lightfoot-delivered flags) are all set, permanently disabling that NPC's interaction and unlocking swapcircle map objgroup 0xa */
     GAMEBIT_SC_ChallengeGate3Complete = 0xC54,           /* One-shot latch: Lightfoot Village's third target-hit challenge gate (encounterType 0x49928) has been completed and its reward sequence (7) already played */
     GAMEBIT_ITEM_SuperQuake_Got = 0xC55,                 /* table 2; hint 364; ref wallcity/MagicCaveTo Collected */
     GAMEBIT_ITEM_Viewfinder_Got = 0xC64,                 /* table 2; hint 409; aka High-Defnition Display Device or Zoom Goggles */

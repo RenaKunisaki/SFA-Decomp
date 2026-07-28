@@ -70,7 +70,7 @@ void DR_LightBea_render(GameObject* obj, int p2, int p3, int p4, int p5)
             mm_free(state->handle);
             state->handle = NULL;
             state->flags.bit80 = 0;
-            if ((u32)setup->base.mapId == 0xffffffff)
+            if ((u32)setup->base.ident == 0xffffffff)
             {
                 state->flags.bit40 = 1;
             }

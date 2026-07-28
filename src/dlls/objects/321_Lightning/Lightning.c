@@ -81,7 +81,7 @@ void lightning_update(GameObject* obj) {
             objects = ObjGroup_GetObjects(LIGHTNING_OBJECT_GROUP, &objectCount);
             objectIndex = 0;
             while (objectIndex < objectCount) {
-                u32 linkedMapId = ((GameObject*)objects[objectIndex])->anim.placement->mapId;
+                u32 linkedMapId = ((GameObject*)objects[objectIndex])->anim.placement->ident;
                 if (linkedMapId == state->linkedMapId) {
                     break;
                 }

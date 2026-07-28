@@ -234,7 +234,7 @@ void Hagabon_update(GameObject* obj) {
         if ((placement->armGameBit != HAGABON_GAME_BIT_NONE) && (mainGetBit(placement->armGameBit) != 0)) {
             return;
         }
-        if ((*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId) == 0) {
+        if ((*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) == 0) {
             return;
         }
         obj->userData1 = 0;
@@ -283,7 +283,7 @@ void Hagabon_update(GameObject* obj) {
             lightPos[2] += playerMapOffsetZ;
             objDoHitParticleFx((void*)obj, 0.014f, effectPos, 3, 0);
             (*gMapEventInterface)
-                ->addTime(placement->base.mapId, (f32)(s32)(placement->timeReward * HAGABON_MAP_SECONDS_PER_MINUTE));
+                ->addTime(placement->base.ident, (f32)(s32)(placement->timeReward * HAGABON_MAP_SECONDS_PER_MINUTE));
             if (placement->armGameBit != HAGABON_GAME_BIT_NONE) {
                 mainSetBits(placement->armGameBit, 1);
             }

@@ -64,7 +64,7 @@ void dimsnowball1c2_update(GameObject* obj) {
                 setup->base.posX = obj->anim.localPosX;
                 setup->base.posY = obj->anim.localPosY;
                 setup->base.posZ = obj->anim.localPosZ;
-                setup->targetObjectId = placement->base.mapId;
+                setup->targetObjectId = placement->base.ident;
                 {
                     int childRotationX = placement->childRotationXByte;
 

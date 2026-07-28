@@ -645,7 +645,7 @@ STATIC_ASSERT(sizeof(ShopkeeperState) == 0x9D8);
 STATIC_ASSERT(offsetof(ShopkeeperState, msgStack) == 0x9B0);
 
 /* Obj_AllocObjectSetup(36,...) buffer composed in ShopKeeper_spawnScarabs. Head is the
- * common ObjPlacement; mapId slot (0x14) is repurposed as an int (vendorObj),
+ * common ObjPlacement; ident slot (0x14) is repurposed as an int (vendorObj),
  * tail (0x18..0x1B) is file-local. */
 typedef struct ShopkeeperSpawnSetup
 {
@@ -914,7 +914,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[3] = 255;
         ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
-        ((ShopkeeperSpawnSetup*)setup)->base.mapId = ((ShopkeeperState*)state)->vendorObj;
+        ((ShopkeeperSpawnSetup*)setup)->base.ident = ((ShopkeeperState*)state)->vendorObj;
         Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 
@@ -931,7 +931,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
         ((ShopkeeperSpawnSetup*)setup)->kind = 1;
-        ((ShopkeeperSpawnSetup*)setup)->base.mapId = ((ShopkeeperState*)state)->vendorObj;
+        ((ShopkeeperSpawnSetup*)setup)->base.ident = ((ShopkeeperState*)state)->vendorObj;
         Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 }

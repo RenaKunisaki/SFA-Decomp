@@ -7,7 +7,7 @@
 
 /*
  * Placement/def record the map loader hands to DFP_Torch_init. Embeds the
- * common ObjPlacement head (position / mapId), then the torch's
+ * common ObjPlacement head (position / ident), then the torch's
  * class-specific setup fields - matching the <Family>Placement convention
  * used by the other object DLLs (e.g. FirePipeMapData, ExplodablePlacement).
  */

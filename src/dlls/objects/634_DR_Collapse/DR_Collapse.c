@@ -1,4 +1,4 @@
-/* DR_Collapse (DLL 634) */
+/* DR_Collapse (DLL 0x027A) */
 #include "global.h"
 
-u32 lbl_803DC388[2] = {0};
+u32 gDR_CollapseNullResourceDescriptor[2] = {0};

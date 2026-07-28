@@ -193,7 +193,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
         {
             r4c = (Dll437Placement*)((GameObject*)obj)->anim.placementData;
             ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-            switch (r4c->base.mapId)
+            switch (r4c->base.ident)
             {
             case 0x46a51:
                 if (mainGetBit(GAMEBIT_LV_ChallengeGate1Complete))
@@ -217,7 +217,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
             if ((((GameObject*)obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
             {
                 buttonDisable(0, PAD_BUTTON_A);
-                switch (r4c->base.mapId)
+                switch (r4c->base.ident)
                 {
                 case 0x46a51:
                     if (mainGetBit(0xc38) != 0 && mainGetBit(0xc39) != 0 && mainGetBit(0xc3a) != 0)
@@ -556,15 +556,15 @@ void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieSt
         return;
 
     idx = (ObjPlacement*)obj->anim.placementData;
-    if (idx->mapId == 0x46A51 && mainGetBit(0xc49) == 0)
+    if (idx->ident == 0x46A51 && mainGetBit(0xc49) == 0)
     {
         mainSetBits(0xc49, 1);
     }
-    else if (idx->mapId == 0x46A55 && mainGetBit(0xc4a) == 0)
+    else if (idx->ident == 0x46A55 && mainGetBit(0xc4a) == 0)
     {
         mainSetBits(0xc4a, 1);
     }
-    else if (idx->mapId == 0x49928 && mainGetBit(0xc4b) == 0)
+    else if (idx->ident == 0x49928 && mainGetBit(0xc4b) == 0)
     {
         mainSetBits(0xc4b, 1);
     }
@@ -724,7 +724,7 @@ void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int st
     {
         characterDoEyeAnims((GameObject*)obj, &inner->eyeAnimState);
         ((BaddieState*)state)->targetObj = Obj_GetPlayerObject();
-        v = sub->mapId;
+        v = sub->ident;
         if (v >= 0x49942 || v < 0x4993f)
         {
             (*gBaddieControlInterface)
@@ -885,7 +885,7 @@ void dll437_update(GameObject* obj) {
     }
 
     if (obj->anim.romDefNo == DLL437_SEQUENCE_ID_SC_BABY_LIGHTFOOT && inner->groundBaddie.gameBitA != -1) {
-        switch (((Dll437Placement*)workValue)->base.mapId) {
+        switch (((Dll437Placement*)workValue)->base.ident) {
         case 0x4993F:
         case 0x49940:
         case 0x49941:
@@ -964,9 +964,9 @@ void dll437_update(GameObject* obj) {
     }
 
     if (obj->userData1 != 0) {
-        if (((((Dll437Placement*)workValue)->base.mapId == 0x499B5 && mainGetBit(0xC42) &&
+        if (((((Dll437Placement*)workValue)->base.ident == 0x499B5 && mainGetBit(0xC42) &&
               (mainGetBit(0xC3B) == 0 || mainGetBit(0xC3C) == 0 || mainGetBit(0xC3D) == 0)) ||
-             (((Dll437Placement*)workValue)->base.mapId == 0x499B6 && mainGetBit(0xC46) &&
+             (((Dll437Placement*)workValue)->base.ident == 0x499B6 && mainGetBit(0xC46) &&
               (mainGetBit(0xC3E) == 0 || mainGetBit(0xC3F) == 0 || mainGetBit(0xC40) == 0)))) {
             effectParams[3] = 0.0f;
             effectParams[4] = 24.0f;
@@ -1034,7 +1034,7 @@ void dll437_init(GameObject* obj, const Dll437Placement* placement, int isReload
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         obj->userData2 = 0;
     } else {
-        switch (placementData->base.mapId) {
+        switch (placementData->base.ident) {
         case 0x34316:
             ((Dll437ControlState*)control)->moveIds = gDll437MoveIds3;
             ((Dll437ControlState*)control)->moveSpeeds = gDll437MoveSpeeds3;

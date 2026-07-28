@@ -1,4 +1,4 @@
-/* DR_Rock (DLL 624) */
+/* DR_Rock (DLL 0x0270) */
 #include "global.h"
 
-u32 lbl_803DC338[2] = {0};
+u32 gDR_RockNullResourceDescriptor[2] = {0};

@@ -40,12 +40,12 @@ static const GXColor sMovieKColor2 = {0xFF, 0x00, 0xFF, 0x80};
 #define S16_MIN               (-0x8000)
 #define S16_MAX               0x7fff
 
-s32 lbl_803DD660;                      /* texture-set free queue active */
-extern AIDCallback lbl_803DD668;       /* AI DMA done callback */
-extern s32 lbl_803DD66C;               /* DMA callback phase */
-extern u32 lbl_803DD670;               /* previous/pending DMA source addr */
-extern u32 lbl_803DD674;               /* queued next DMA source addr */
-extern u32 lbl_803DD678;               /* AI DMA double-buffer index */
+s32 gAttractMovieAudioActive;
+extern AIDCallback gAttractMovieAudioPrevDmaCallback;
+extern s32 gAttractMovieAudioMode;
+extern u32 gAttractMovieAudioMixSourceAddr;
+extern u32 gAttractMovieAudioPendingSourceAddr;
+extern u32 gAttractMovieAudioDmaBufferIndex;
 extern OSMessageQueue lbl_803A5CCC[1]; /* spent texture-set queue */
 
 u16 gAttractMovieVolumeScale[128] = {
@@ -358,46 +358,46 @@ void AttractMovieAudio_DmaCallback(void)
 {
     BOOL interrupts;
 
-    if (lbl_803DD66C == 0)
+    if (gAttractMovieAudioMode == 0)
     {
-        lbl_803DD678 ^= 1;
-        AIInitDMA((u32)(lbl_803A57C0 + (lbl_803DD678 * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
+        gAttractMovieAudioDmaBufferIndex ^= 1;
+        AIInitDMA((u32)(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
                   ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         interrupts = OSEnableInterrupts();
-        AttractMovieAudio_Mix((s16*)(lbl_803A57C0 + (lbl_803DD678 * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)), NULL,
+        AttractMovieAudio_Mix((s16*)(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)), NULL,
                               ATTRACT_MOVIE_AUDIO_DMA_SAMPLE_COUNT);
-        DCFlushRange(lbl_803A57C0 + (lbl_803DD678 * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
+        DCFlushRange(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
                      ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         OSRestoreInterrupts(interrupts);
     }
     else
     {
-        if (lbl_803DD66C == 1)
+        if (gAttractMovieAudioMode == 1)
         {
-            if (lbl_803DD674 != 0)
+            if (gAttractMovieAudioPendingSourceAddr != 0)
             {
-                lbl_803DD670 = lbl_803DD674;
+                gAttractMovieAudioMixSourceAddr = gAttractMovieAudioPendingSourceAddr;
             }
-            lbl_803DD668();
-            lbl_803DD674 = AIGetDMAStartAddr() + 0x80000000 /* phys -> cached RAM */;
+            gAttractMovieAudioPrevDmaCallback();
+            gAttractMovieAudioPendingSourceAddr = AIGetDMAStartAddr() + 0x80000000 /* phys -> cached RAM */;
         }
         else
         {
-            lbl_803DD668();
-            lbl_803DD670 = AIGetDMAStartAddr() + 0x80000000 /* phys -> cached RAM */;
+            gAttractMovieAudioPrevDmaCallback();
+            gAttractMovieAudioMixSourceAddr = AIGetDMAStartAddr() + 0x80000000 /* phys -> cached RAM */;
         }
 
-        lbl_803DD678 ^= 1;
-        AIInitDMA((u32)(lbl_803A57C0 + (lbl_803DD678 * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
+        gAttractMovieAudioDmaBufferIndex ^= 1;
+        AIInitDMA((u32)(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
                   ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         interrupts = OSEnableInterrupts();
-        if (lbl_803DD670 != 0)
+        if (gAttractMovieAudioMixSourceAddr != 0)
         {
-            DCInvalidateRange((void*)lbl_803DD670, ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
+            DCInvalidateRange((void*)gAttractMovieAudioMixSourceAddr, ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         }
-        AttractMovieAudio_Mix((s16*)(lbl_803A57C0 + (lbl_803DD678 * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
-                              (s16*)lbl_803DD670, ATTRACT_MOVIE_AUDIO_DMA_SAMPLE_COUNT);
-        DCFlushRange(lbl_803A57C0 + (lbl_803DD678 * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
+        AttractMovieAudio_Mix((s16*)(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
+                              (s16*)gAttractMovieAudioMixSourceAddr, ATTRACT_MOVIE_AUDIO_DMA_SAMPLE_COUNT);
+        DCFlushRange(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
                      ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         OSRestoreInterrupts(interrupts);
     }
@@ -408,7 +408,7 @@ void THPPlayerPostDrawDone(void)
     OSMessage msg;
     OSMessage textureSet;
 
-    if (lbl_803DD660 != 0)
+    if (gAttractMovieAudioActive != 0)
     {
         while (TRUE)
         {

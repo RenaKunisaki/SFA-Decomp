@@ -504,15 +504,19 @@ extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode
 extern ResourceDescriptor Dummy3A_funcs, lbl_8031C020, lbl_8031C168, lbl_8031C1E4, lbl_8031C2B4, Dummy3E_funcs,
     Minimap_funcs, dll_3F_funcs;
 extern ResourceDescriptor lbl_8031CC10, lbl_8031CDB8;
-extern ResourceDescriptorCallbacks8 lbl_80320700;
-extern ResourceDescriptor lbl_80328E28, lbl_80329340;
+extern ResourceDescriptorCallbacks8 gDllC5NullResourceDescriptor;
+extern ResourceDescriptor gWM_VConsoleNullResourceDescriptor, gGCRobotBlastObjDescriptor;
 extern ResourceDescriptor gDll22CObjDescriptor, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
-extern ResourceDescriptor lbl_8032A110, lbl_8032AD00, lbl_8032AD68, gDll29EObjDescriptor;
-extern ResourceDescriptor lbl_803DC138, lbl_803DC140, lbl_803DC150;
-extern ResourceDescriptor lbl_803DC158, lbl_803DC2C0, lbl_803DC2D8, lbl_803DC2E0, lbl_803DC2E8, lbl_803DC338,
-    lbl_803DC358, lbl_803DC360;
-extern ResourceDescriptor lbl_803DC368, lbl_803DC370, lbl_803DC378, lbl_803DC388, lbl_803DC390, lbl_803DC6E8,
-    playerShadow_funcs, projgfx_funcs;
+extern ResourceDescriptor lbl_8032A110, gDll27BNullResourceDescriptor, gDll27DNullResourceDescriptor,
+    gDll29EObjDescriptor;
+extern ResourceDescriptor gDll212NullResourceDescriptor, gWM_TransTopNullResourceDescriptor,
+    gDBPointMumNullResourceDescriptor;
+extern ResourceDescriptor gDll23ENullResourceDescriptor, gDll264NullResourceDescriptor, gDll267NullResourceDescriptor,
+    gDR_GeezerNullResourceDescriptor, gDR_VinesNullResourceDescriptor, gDR_RockNullResourceDescriptor,
+    gDR_cradleNullResourceDescriptor, gDR_pulleyNullResourceDescriptor;
+extern ResourceDescriptor gDll276NullResourceDescriptor, gCFWindLiftLNullResourceDescriptor,
+    gDll278NullResourceDescriptor, gDR_CollapseNullResourceDescriptor, gDll27FNullResourceDescriptor,
+    gDll249NullResourceDescriptor, playerShadow_funcs, projgfx_funcs;
 
 void* gResourceLoadedHandles[0x2C1];
 u16 gResourceRefCounts[0x2C2];
@@ -1319,7 +1323,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &lbl_80319A40,
     NULL,
     &gTrickyObjDescriptor,
-    (ResourceDescriptor*)&lbl_80320700,
+    (ResourceDescriptor*)&gDllC5NullResourceDescriptor,
     (ResourceDescriptor*)&gAnimatedObjDescriptor,
     (ResourceDescriptor*)&gDIM2RoofRubObjDescriptor,
     (ResourceDescriptor*)&gDepthOfFieldPointObjDescriptor,
@@ -1652,9 +1656,9 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gWM_SpiritSetObjDescriptor,
     &gWM_PlanetsObjDescriptor,
     &gWM_WallCrawlerObjDescriptor,
-    &lbl_803DC138,
-    &lbl_80328E28,
-    &lbl_803DC140,
+    &gDll212NullResourceDescriptor,
+    &gWM_VConsoleNullResourceDescriptor,
+    &gWM_TransTopNullResourceDescriptor,
     &gWM_newcrystalObjDescriptor,
     &gVFP_LevelControlObjDescriptor,
     &gVFP_ObjCreatorObjDescriptor,
@@ -1695,10 +1699,10 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gPlatform1ObjDescriptor,
     &gDfplightniObjDescriptor,
     &gDfppowerslObjDescriptor,
-    &lbl_803DC150,
-    &lbl_803DC158,
+    &gDBPointMumNullResourceDescriptor,
+    &gDll23ENullResourceDescriptor,
     &gDB_eggObjDescriptor,
-    &lbl_80329340,
+    &gGCRobotBlastObjDescriptor,
     &gDrakorEnergyObjDescriptor,
     &gDBstealerwormObjDescriptor,
     &gDBHoleControl1ObjDescriptor,
@@ -1707,7 +1711,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &Dummy246,
     &Dummy247,
     &Dummy248,
-    &lbl_803DC6E8,
+    &gDll249NullResourceDescriptor,
     &Dummy24A,
     &Dummy24B,
     &lbl_8032A110,
@@ -1734,34 +1738,34 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gDrLaserCannonObjDescriptor,
     &gDrakorMissileObjDescriptor,
     &gGmMazeWellObjDescriptor,
-    &lbl_803DC2C0,
+    &gDll264NullResourceDescriptor,
     &gDrCreatorObjDescriptor,
     &gKytesMumObjDescriptor,
-    &lbl_803DC2D8,
+    &gDll267NullResourceDescriptor,
     &gDrCageControlObjDescriptor,
     &gExplodePlanObjDescriptor,
-    &lbl_803DC2E0,
+    &gDR_GeezerNullResourceDescriptor,
     &gDrChimmeyObjDescriptor,
     &gDrCageWithObjDescriptor,
-    &lbl_803DC2E8,
+    &gDR_VinesNullResourceDescriptor,
     &gDrShackleObjDescriptor,
     &gDrGeneratorObjDescriptor,
-    &lbl_803DC338,
+    &gDR_RockNullResourceDescriptor,
     &gDrakorHoverPadObjDescriptor,
     &gHighTopObjDescriptor,
     &gFirePipeObjDescriptor,
-    &lbl_803DC360,
-    &lbl_803DC358,
-    &lbl_803DC368,
-    &lbl_803DC370,
-    &lbl_803DC378,
+    &gDR_pulleyNullResourceDescriptor,
+    &gDR_cradleNullResourceDescriptor,
+    &gDll276NullResourceDescriptor,
+    &gCFWindLiftLNullResourceDescriptor,
+    &gDll278NullResourceDescriptor,
     &gDrEnergyDiscObjDescriptor,
-    &lbl_803DC388,
-    &lbl_8032AD00,
+    &gDR_CollapseNullResourceDescriptor,
+    &gDll27BNullResourceDescriptor,
     &gDrLightBeaObjDescriptor,
-    &lbl_8032AD68,
+    &gDll27DNullResourceDescriptor,
     &gDrMusicContObjDescriptor,
-    &lbl_803DC390,
+    &gDll27FNullResourceDescriptor,
     &gDrCloudPerObjDescriptor,
     (ResourceDescriptor*)&gDrEarthCalObjDescriptor,
     (ResourceDescriptor*)&gBarrelGenerObjDescriptor,

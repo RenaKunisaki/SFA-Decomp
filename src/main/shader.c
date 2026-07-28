@@ -704,7 +704,7 @@ int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup)
     f32 range;
 
     strs = sShaderDebugStrings;
-    if (placement->mapId == 0x49054)
+    if (placement->ident == 0x49054)
     {
         verbose = 1;
     }

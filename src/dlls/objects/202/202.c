@@ -7879,7 +7879,7 @@ void iceBaddie_update(GameObject* obj, int unusedA, int unusedB) {
     placement = (IceBaddiePlacement*)obj->anim.placementData;
     if (obj->userData1 != 0) {
         if ((objectState->baddie.substate != 3 || (objectState->configFlags & 1) != 0) &&
-            (*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId) != 0) {
+            (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) != 0) {
             (*gBaddieControlInterface)
                 ->initGroundBaddie(obj, (u8*)placement, (u8*)objectState, 14, 8, 0x102, 0x26, 20.0f);
             objectState->targetState = 0;

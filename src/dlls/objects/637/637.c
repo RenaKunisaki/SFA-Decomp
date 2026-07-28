@@ -1,7 +1,7 @@
-/* DLL 637 */
+/* DLL 0x027D */
 #include "main/resource.h"
 
-ResourceDescriptorCallbacks8 lbl_8032AD68 = {
+ResourceDescriptorCallbacks8 gDll27DNullResourceDescriptor = {
     {-1, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0},
 };

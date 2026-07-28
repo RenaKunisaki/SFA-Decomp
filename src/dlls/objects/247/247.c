@@ -123,7 +123,7 @@ void dll_F7_update(GameObject* obj) {
     hitEffect.color = lbl_802C2260;
     if (state->broken != 0) {
         DllF7Placement* placement = (DllF7Placement*)obj->anim.placementData;
-        if (state->alternateMode == 0 && (*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId) != 0) {
+        if (state->alternateMode == 0 && (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) != 0) {
             state->broken = 0;
             state->unk08 = 1;
             state->hitsRemaining = DLLF7_HIT_COUNT;
@@ -157,7 +157,7 @@ void dll_F7_update(GameObject* obj) {
     if (state->hitsRemaining <= 0) {
         DllF7Placement* placement = (DllF7Placement*)obj->anim.placementData;
         if (state->alternateMode == 0) {
-            (*gMapEventInterface)->addTime(placement->base.mapId, DLLF7_BREAK_TIME);
+            (*gMapEventInterface)->addTime(placement->base.ident, DLLF7_BREAK_TIME);
         }
         state->broken = 1;
         state->unk08 = 0;
@@ -220,7 +220,7 @@ void dll_F7_init(GameObject* obj, DllF7Placement* placement) {
     *(u8*)&state->hitsRemaining = DLLF7_HIT_COUNT;
     *(u8*)&state->alternateMode = placement->alternateMode;
     if (state->alternateMode == 0) {
-        int mapEventState = (*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId);
+        int mapEventState = (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident);
         if (mapEventState == 0) {
             ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
             hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;

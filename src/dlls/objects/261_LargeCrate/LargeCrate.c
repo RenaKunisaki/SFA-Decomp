@@ -172,7 +172,7 @@ void LargeCrate_updateConveyorSlide(GameObject* obj, LargeCrateState* state) {
         obj->anim.velocityX = -(f32)slideAngle / state->slidePhase;
         if ((previousVelocityX <= 0.0f && obj->anim.velocityX >= 0.0f) ||
             (previousVelocityX >= 0.0f && obj->anim.velocityX <= 0.0f)) {
-            linkedId = placement->mapId;
+            linkedId = placement->ident;
             linkedIdOffset = linkedId - LARGECRATE_LINKED_ID_BASE;
             if ((linkedIdOffset == LARGECRATE_ROB_WAVE_ID_65D7) ||
                 ((linkedIdOffset - LARGECRATE_ROB_WAVE_ID_65D5) <=
@@ -406,7 +406,7 @@ void LargeCrate_render(GameObject* obj, int renderArg2, int renderArg3, int rend
 
     state = obj->extra;
     placement = (LargeCratePlacement*)obj->anim.placementData;
-    if (((*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId) == 0) ||
+    if (((*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) == 0) ||
         (((breakTimer = state->breakTimer) != 0) && (breakTimer <= LARGECRATE_BREAK_FRAMES)) ||
         (state->hiddenTimer > 0.0f)) {
         obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
@@ -449,7 +449,7 @@ void LargeCrate_update(GameObject* obj) {
     if (obj->anim.parent != NULL) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
-    if ((*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId) == 0) {
+    if ((*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) == 0) {
         ObjHits_DisableObject(obj);
     } else {
         if (state->hiddenTimer > (zero = 0.0f)) {
@@ -479,7 +479,7 @@ void LargeCrate_update(GameObject* obj) {
                 if ((state->breakTimer -= framesThisStep) <= 0) {
                     if (state->respawnDelay > 0) {
                         state->hiddenTimer = 1.0f;
-                        (*gMapEventInterface)->addTime(placement->base.mapId, (f32)state->respawnDelay);
+                        (*gMapEventInterface)->addTime(placement->base.ident, (f32)state->respawnDelay);
                     } else {
                         state->hiddenTimer = 1.0f;
                     }

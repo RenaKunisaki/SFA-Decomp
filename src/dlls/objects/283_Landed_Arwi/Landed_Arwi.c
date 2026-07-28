@@ -181,7 +181,7 @@ int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
     int eventIndex;
     LandedArwingPlacement* placement;
     LandedArwingObjectState* state;
-    int mapId;
+    int ident;
     GameObject* child;
 
     placement = (LandedArwingPlacement*)obj->anim.placementData;
@@ -190,8 +190,8 @@ int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
         switch (animUpdate->eventIds[eventIndex]) {
         case 2:
         case 0x65:
-            mapId = placement->base.mapId;
-            switch (mapId) {
+            ident = placement->base.ident;
+            switch (ident) {
             case 0x43775:
                 loadMapAndParent(0x29);
                 unlockLevel(0, 0, 1);
@@ -229,8 +229,8 @@ int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
             break;
         case 3:
         case 0x64:
-            mapId = placement->base.mapId;
-            switch (mapId) {
+            ident = placement->base.ident;
+            switch (ident) {
             case 0x43775:
                 unlockLevel(0, 0, 1);
                 mapUnload(mapGetDirIdx(7), 0x3F3C);
@@ -254,8 +254,8 @@ int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
             }
             break;
         case 5:
-            mapId = placement->base.mapId;
-            switch (mapId) {
+            ident = placement->base.ident;
+            switch (ident) {
             case 0x43775:
             case 0x49F5A:
                 setLoadedFileFlags_blocks1();
@@ -268,8 +268,8 @@ int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
             }
             break;
         case 6:
-            mapId = placement->base.mapId;
-            switch (mapId) {
+            ident = placement->base.ident;
+            switch (ident) {
             case 0x43775:
             case 0x49F5A:
                 clearLoadedFileFlags_blocks1();
@@ -283,8 +283,8 @@ int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
             break;
         case 7:
         case 0x66:
-            mapId = placement->base.mapId;
-            switch (mapId) {
+            ident = placement->base.ident;
+            switch (ident) {
             case 0x451B9:
                 if ((*gMapEventInterface)->getMapAct(0xD) == 2) {
                     (*gMapEventInterface)->setMapAct(0xB, 5);

@@ -73,7 +73,7 @@ void dimicewall_update(GameObject* obj) {
                     ->spawnObject((int*)obj, DIM_ICE_WALL_SECONDARY_PARTICLE_ID, &spawnParams,
                                   DIM_ICE_WALL_PARTICLE_SPAWN_MODE, -1, NULL);
             }
-            if ((u32)placement->base.mapId != DIM_ICE_WALL_SILENT_MAP_ID) {
+            if ((u32)placement->base.ident != DIM_ICE_WALL_SILENT_MAP_ID) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_bounce1);
             }
             state->shattered = 1;

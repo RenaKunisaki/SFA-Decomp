@@ -589,7 +589,7 @@ void SmallBasket_render(GameObject* obj, int renderArg2, int renderArg3, int ren
 
     state = *(SmallBasketState**)&obj->extra;
     placement = *(SmallBasketPlacement**)&obj->anim.placementData;
-    mapTimeActive = (*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId);
+    mapTimeActive = (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident);
     if (mapTimeActive == 0) {
         obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
     } else {
@@ -622,7 +622,7 @@ void SmallBasket_update(GameObject* obj) {
     clockScale = gSmallBasketOne[0];
     (*gSkyInterface)->getClockTime(&clockScale);
     state = obj->extra;
-    if ((*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId) == 0) {
+    if ((*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) == 0) {
         return;
     }
     playerState = player->extra;
@@ -674,7 +674,7 @@ void SmallBasket_update(GameObject* obj) {
                 } else {
                     state->hiddenTimer = 1;
                 }
-                (*gMapEventInterface)->addTime(placement->base.mapId, (f32)state->respawnDelay);
+                (*gMapEventInterface)->addTime(placement->base.ident, (f32)state->respawnDelay);
                 obj->anim.localPosX = placement->base.posX;
                 obj->anim.localPosY = placement->base.posY;
                 obj->anim.localPosZ = placement->base.posZ;

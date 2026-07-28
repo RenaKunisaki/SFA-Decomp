@@ -117,7 +117,7 @@ void DIM2PathGenerator_update(GameObject* obj) {
             ((Dim2SnowBallPlacement*)childPlacementData)->base.posX = state->originX;
             ((Dim2SnowBallPlacement*)childPlacementData)->base.posY = state->originY;
             ((Dim2SnowBallPlacement*)childPlacementData)->base.posZ = state->originZ;
-            ((Dim2SnowBallPlacement*)childPlacementData)->base.mapId = placement->base.mapId;
+            ((Dim2SnowBallPlacement*)childPlacementData)->base.ident = placement->base.ident;
             (*(void (**)(int*, int*, int))(**(int**)((char*)objects[objectIndex] + 0x68) + 4))(objects[objectIndex],
                                                                                                childPlacementData, 1);
             ObjGroup_RemoveObject((int)objects[objectIndex], DIM2_PATH_GENERATOR_SNOWBALL_GROUP);
@@ -145,7 +145,7 @@ void DIM2PathGenerator_update(GameObject* obj) {
         np->rotationXByte = (s8)placement->childRotationXByte;
         np->unknown1A = placement->childUnknown1A;
         np->unknown1C = placement->childUnknown1C;
-        np->base.mapId = placement->base.mapId;
+        np->base.ident = placement->base.ident;
         Obj_SetupObject((ObjPlacement*)np, 5, obj->anim.mapEventSlot, -1, NULL);
         state->flags |= (toggle ^ 1) & DIM2_PATH_GENERATOR_FLAG_SPAWN_TOGGLE;
     }

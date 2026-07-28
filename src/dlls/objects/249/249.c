@@ -198,7 +198,7 @@ void ProjectileSwitch_init(GameObject* obj, ProjectileSwitchPlacement* placement
         parentPlacement = (ObjPlacement*)parentObj->anim.placementData;
         if (parentPlacement != NULL) {
             switchState->gameBitId = seqPairTableLookup(
-                gProjectileSwitchParentGameBitMap, PROJECTILE_SWITCH_PARENT_GAME_BIT_COUNT, parentPlacement->mapId);
+                gProjectileSwitchParentGameBitMap, PROJECTILE_SWITCH_PARENT_GAME_BIT_COUNT, parentPlacement->ident);
         } else {
             switchState->gameBitId = PROJECTILE_SWITCH_NO_GAME_BIT;
         }

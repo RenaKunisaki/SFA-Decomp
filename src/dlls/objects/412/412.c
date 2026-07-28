@@ -76,7 +76,7 @@ void dll412_update(GameObject* obj) {
         childSetup->posY = DLL412_CHILD_HEIGHT_OFFSET + placement->base.posY;
         childSetup->posZ = placement->base.posZ;
         childSetup->objectId = DLL412_CHILD_OBJECT_ID;
-        childSetup->mapId = -1;
+        childSetup->ident = -1;
         childSetup->color[0] = placement->base.color[0];
         childSetup->color[1] = placement->base.color[1];
         childSetup->color[2] = placement->base.color[2];

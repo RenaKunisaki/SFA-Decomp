@@ -346,7 +346,7 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
 
     state->reach = 100.0f * obj->anim.rootMotionScale;
     state->nearRadiusSq = (145.0f * obj->anim.rootMotionScale) * (145.0f * obj->anim.rootMotionScale);
-    if (placement->base.mapId == MMP_GYSERVENT_DEBUG_INSTANCE_ID)
+    if (placement->base.ident == MMP_GYSERVENT_DEBUG_INSTANCE_ID)
     {
         OSReport(sTriggerDebugTextBlock);
     }

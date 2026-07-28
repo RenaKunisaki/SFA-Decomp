@@ -46,7 +46,7 @@ typedef struct AndrossHandState
  * plus the class-specific yaw/pitch/flag bytes the parent seeds at +0x18. */
 typedef struct AndrossHandShotSetup
 {
-    ObjPlacement head; /* 0x00: pos/color/mapId */
+    ObjPlacement head; /* 0x00: pos/color/ident */
     u8 flag18;         /* 0x18 */
     u8 pitch;          /* 0x19 */
     u8 yaw;            /* 0x1a */

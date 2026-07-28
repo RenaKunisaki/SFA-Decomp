@@ -33,7 +33,7 @@ void kaldachompme_setLinkedMouthMode(GameObject* obj, KaldaChompMeLinkedMode mod
     if (obj == NULL) {
         return;
     }
-    switch (obj->anim.placement->mapId) {
+    switch (obj->anim.placement->ident) {
     case 0x43d14:
         linkedObj = ObjList_FindObjectById(0x4b3b5);
         break;

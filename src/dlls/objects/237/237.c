@@ -634,7 +634,7 @@ void collectible_init(GameObject* obj, CollectibleSetup* setup) {
     ((CollectibleState*)state)->hitRegionId = COLLECTIBLE_HIT_REGION_UNRESOLVED;
     ((CollectibleState*)state)->bounceTimer = 0;
     ((CollectibleState*)state)->visibilityGameBit = setup->visibilityGameBit;
-    ((CollectibleState*)state)->mapId = setup->base.mapId;
+    ((CollectibleState*)state)->mapId = setup->base.ident;
     ((CollectibleState*)state)->basePosX = obj->anim.localPosX;
     ((CollectibleState*)state)->basePosY = obj->anim.localPosY;
     ((CollectibleState*)state)->basePosZ = obj->anim.localPosZ;

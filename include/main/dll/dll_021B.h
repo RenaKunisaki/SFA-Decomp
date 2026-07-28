@@ -15,7 +15,7 @@ STATIC_ASSERT(sizeof(Dll21BState) == 0x2);
 
 /*
  * Class-specific placement record for DLL 0x21B: the common ObjPlacement
- * head (position / mapId at 0x00..0x17) followed by the slide parameters.
+ * head (position / ident at 0x00..0x17) followed by the slide parameters.
  *  - 0x18 s8 initRotByte: seeds anim.rotX (<<8) at init
  *  - 0x19 s8 direction:   1 selects the negative-Z-open slide convention
  *  - 0x1E s16 driveGameBit: game bit that drives the slide

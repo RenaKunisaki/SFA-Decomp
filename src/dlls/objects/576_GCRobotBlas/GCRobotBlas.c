@@ -83,7 +83,7 @@ void GCRobotBlast_initialise(void)
 {
 }
 
-u32 lbl_80329340[14] = {0x00000000,
+u32 gGCRobotBlastObjDescriptor[14] = {0x00000000,
                         0x00000000,
                         0x00000000,
                         0x000d0000,

@@ -663,7 +663,7 @@ void kaldachom_update(GameObject* obj) {
     placement = (ObjPlacement*)obj->anim.placementDataAddress;
     if (obj->userData1 != 0) {
         if ((objectState->substate != 3) &&
-            (cond = (*gMapEventInterface)->shouldNotSaveTime(placement->mapId), cond != 0)) {
+            (cond = (*gMapEventInterface)->shouldNotSaveTime(placement->ident), cond != 0)) {
             (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)placement, (u8*)objectState, 8, 6, 0, 0x26, 20.0f);
             objectState->targetState = 0;
             Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy211);

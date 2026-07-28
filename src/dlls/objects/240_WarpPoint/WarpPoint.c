@@ -26,7 +26,7 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 
-/* placement mapIds that arm the one-shot save-point recording at init */
+/* placement idents that arm the one-shot save-point recording at init */
 #define WARPPOINT_MAP_SAVE_A 0x4B675
 #define WARPPOINT_MAP_SAVE_B 0x46882
 
@@ -225,7 +225,7 @@ void WarpPoint_init(GameObject* obj, WarpPointPlacement* placement) {
     if (placement->mode == WARPPOINT_MODE_GATED_WARP) {
         state->warpDelay = 0;
     }
-    if (placement->base.mapId == WARPPOINT_MAP_SAVE_A || placement->base.mapId == WARPPOINT_MAP_SAVE_B) {
+    if (placement->base.ident == WARPPOINT_MAP_SAVE_A || placement->base.ident == WARPPOINT_MAP_SAVE_B) {
         placement->savePointArmed = 1;
     } else {
         placement->savePointArmed = 0;

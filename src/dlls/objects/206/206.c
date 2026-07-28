@@ -722,7 +722,7 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
     placement = (DllCEPlacement*)obj->anim.placementData;
     if (obj->userData1 != 0) {
         if ((state->baddie.substate != 3 || (state->configFlags & 1) != 0) &&
-            (*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId) != 0) {
+            (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) != 0) {
             (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)placement, (u8*)state, 7, 6, 0x102, 0x26, 20.0f);
             state->targetState = 0;
             Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_seal4_c_263);
