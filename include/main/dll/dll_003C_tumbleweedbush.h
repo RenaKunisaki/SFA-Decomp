@@ -42,6 +42,6 @@ STATIC_ASSERT(offsetof(LinkInterfaceVTable, setOpacity) == 0x30);
 STATIC_ASSERT(offsetof(LinkInterfaceVTable, resetTimers) == 0x34);
 STATIC_ASSERT(sizeof(LinkInterfaceVTable) == 0x38);
 
-void titleScreenFn_80130464(u8 v);
+void Link_setNavigationEnabled(u8 v);
 
 #endif /* MAIN_DLL_DLL_003C_TUMBLEWEEDBUSH_H_ */

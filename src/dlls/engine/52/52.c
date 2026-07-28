@@ -284,14 +284,14 @@ int TitleMenu_run(void)
         Sfx_PlayFromObject(0, SFXTRIG_menu_fox_select);
         gTitleMenuSelectionFadeStep = -TITLE_MENU_SELECTION_FADE_STEP;
         gTitleMenuPreviousSelection = gTitleMenuSelection;
-        titleScreenFn_80130464(0);
+        Link_setNavigationEnabled(0);
     }
     sum = gTitleMenuSelectionFade + gTitleMenuSelectionFadeStep;
     if (sum >= TITLE_MENU_SELECTION_FADE_MAX)
     {
         gTitleMenuSelectionFade = TITLE_MENU_SELECTION_FADE_MAX;
         gTitleMenuSelectionFadeStep = 0;
-        titleScreenFn_80130464(1);
+        Link_setNavigationEnabled(1);
     }
     else if (sum <= 0)
     {
@@ -324,7 +324,7 @@ int TitleMenu_run(void)
         {
             titleScreenFn_801368a4(1);
             gTitleMenuLoadDelay = 1;
-            titleScreenFn_80130464(1);
+            Link_setNavigationEnabled(1);
             Sfx_PlayFromObject(0, SFXTRIG_crf_babyflute);
             switch (gTitleMenuSelection)
             {
@@ -354,7 +354,7 @@ int TitleMenu_run(void)
 void TitleMenu_release(void)
 {
     setLinkNotRotated();
-    titleScreenFn_80130464(1);
+    Link_setNavigationEnabled(1);
     cardSetIdentityCheckEnabled(1);
 }
 

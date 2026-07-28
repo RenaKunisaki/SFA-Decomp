@@ -26,7 +26,7 @@ s8 gTumbleweedBushInputEnabled[5];
 s8 linkSelected;
 s8 gTumbleweedBushItemCount;
 s8 gTumbleweedBushPulseDir;
-s16 linkCount_803dd90e;
+s16 gTumbleweedBushPulse;
 s16 linkItemOpacity;
 const char* gTumbleweedBushDefaultText;
 s16 gTumbleweedBushBaseColorR;
@@ -36,7 +36,7 @@ s16 gTumbleweedBushSelColorR;
 s16 gTumbleweedBushSelColorG;
 s16 gTumbleweedBushSelColorB;
 u8 linkIsRotated;
-u8 linkFlag_803dd8f8;
+u8 gLinkNavigationEnabled;
 extern char sTumbleweedBushSlotOverflowErr[];
 extern char sTumbleweedBushNavLinkRangeErr[];
 
@@ -203,9 +203,9 @@ void linkDrawFn_801302c0(void)
     }
 }
 
-void titleScreenFn_80130464(u8 v)
+void Link_setNavigationEnabled(u8 v)
 {
-    linkFlag_803dd8f8 = v;
+    gLinkNavigationEnabled = v;
 }
 void setLinkNotRotated(void)
 {
@@ -269,7 +269,7 @@ void linkDrawFn_80130484(void)
         }
     }
 }
-void Link_func0F(void)
+void Link_resetTimers(void)
 {
     int i;
 
@@ -310,11 +310,11 @@ void Link_copy(u8* srcArg)
     }
 }
 
-u8 Link_func0C(void)
+u8 Link_getPulse(void)
 {
-    return linkCount_803dd90e;
+    return gTumbleweedBushPulse;
 }
-void Link_func0B(u8* srcArg)
+void Link_updateItems(u8* srcArg)
 {
     LinkMenuItem* src;
     int i;
@@ -327,12 +327,12 @@ void Link_func0B(u8* srcArg)
         gTumbleweedBushItems[i].timer = 2;
     }
 }
-void Link_func0A(int idx, int v)
+void Link_setItemState(int idx, int v)
 {
     gTumbleweedBushItems[idx].state = v;
 }
 
-s32 Link_func09(int idx)
+s32 Link_getItemState(int idx)
 {
     return gTumbleweedBushItems[idx].state;
 }
@@ -447,7 +447,7 @@ void Link_render(void)
 
                 if ((drawItem->flags & LINK_FLAG_DRAW_BLACK_SHADOW) != 0)
                 {
-                    gameTextSetColor(0, 0, 0, (u8)(((linkCount_803dd90e + 1) * linkItemOpacity) >> 8));
+                    gameTextSetColor(0, 0, 0, (u8)(((gTumbleweedBushPulse + 1) * linkItemOpacity) >> 8));
                     gameTextShowAt(drawItem->textId, 2, 2);
                 }
 
@@ -456,11 +456,11 @@ void Link_render(void)
                     if (linkSelected == i)
                     {
                         red = gTumbleweedBushBaseColorR +
-                              ((linkCount_803dd90e * (gTumbleweedBushSelColorR - gTumbleweedBushBaseColorR)) >> 8);
+                              ((gTumbleweedBushPulse * (gTumbleweedBushSelColorR - gTumbleweedBushBaseColorR)) >> 8);
                         green = gTumbleweedBushBaseColorG +
-                                ((linkCount_803dd90e * (gTumbleweedBushSelColorG - gTumbleweedBushBaseColorG)) >> 8);
+                                ((gTumbleweedBushPulse * (gTumbleweedBushSelColorG - gTumbleweedBushBaseColorG)) >> 8);
                         blue = gTumbleweedBushBaseColorB +
-                               ((linkCount_803dd90e * (gTumbleweedBushSelColorB - gTumbleweedBushBaseColorB)) >> 8);
+                               ((gTumbleweedBushPulse * (gTumbleweedBushSelColorB - gTumbleweedBushBaseColorB)) >> 8);
                         if ((drawItem->flags & LINK_FLAG_DIM_OPACITY) != 0)
                         {
                             alpha = linkItemOpacity * 200 >> 8;
@@ -567,19 +567,19 @@ u32 Link_update(void)
         horizontalInput = 0;
     }
 
-    if (((horizontalInput != 0) || (verticalInput != 0)) && (linkFlag_803dd8f8 != 0))
+    if (((horizontalInput != 0) || (verticalInput != 0)) && (gLinkNavigationEnabled != 0))
     {
         if ((verticalInput < 0) && (item->downLink != -1) && LINK_IS_NAVIGABLE(item->downLink))
         {
             padClearAnalogInputY(0);
             linkSelected = item->downLink;
-            linkCount_803dd90e = 0xff;
+            gTumbleweedBushPulse = 0xff;
         }
         else if ((verticalInput > 0) && (item->upLink != -1) && LINK_IS_NAVIGABLE(item->upLink))
         {
             padClearAnalogInputY(0);
             linkSelected = item->upLink;
-            linkCount_803dd90e = 0xff;
+            gTumbleweedBushPulse = 0xff;
         }
 
         if (item->state != -1)
@@ -589,13 +589,13 @@ u32 Link_update(void)
             {
                 padClearAnalogInputX(0);
                 gTumbleweedBushItems[linkSelected].state = item->leftLink;
-                linkCount_803dd90e = 0xff;
+                gTumbleweedBushPulse = 0xff;
             }
             else if ((horizontalInput > 0) && (item->rightLink != -1))
             {
                 padClearAnalogInputX(0);
                 gTumbleweedBushItems[linkSelected].state = item->rightLink;
-                linkCount_803dd90e = 0xff;
+                gTumbleweedBushPulse = 0xff;
             }
         }
         else
@@ -604,13 +604,13 @@ u32 Link_update(void)
             {
                 padClearAnalogInputX(0);
                 linkSelected = item->leftLink;
-                linkCount_803dd90e = 0xff;
+                gTumbleweedBushPulse = 0xff;
             }
             else if ((horizontalInput > 0) && (item->rightLink != -1) && LINK_IS_NAVIGABLE(item->rightLink))
             {
                 padClearAnalogInputX(0);
                 linkSelected = item->rightLink;
-                linkCount_803dd90e = 0xff;
+                gTumbleweedBushPulse = 0xff;
             }
         }
 
@@ -650,21 +650,21 @@ u32 Link_update(void)
 
     if (gTumbleweedBushPulseDir != 0)
     {
-        linkCount_803dd90e = (s16)(linkCount_803dd90e + framesThisStep * 5);
+        gTumbleweedBushPulse = (s16)(gTumbleweedBushPulse + framesThisStep * 5);
     }
     else
     {
-        linkCount_803dd90e = (s16)(linkCount_803dd90e - framesThisStep * 5);
+        gTumbleweedBushPulse = (s16)(gTumbleweedBushPulse - framesThisStep * 5);
     }
 
-    if (linkCount_803dd90e > 0xff)
+    if (gTumbleweedBushPulse > 0xff)
     {
-        linkCount_803dd90e = (s16)(0xff - (linkCount_803dd90e - 0xff));
+        gTumbleweedBushPulse = (s16)(0xff - (gTumbleweedBushPulse - 0xff));
         gTumbleweedBushPulseDir = (s8)(*(s8*)&gTumbleweedBushPulseDir ^ 1);
     }
-    else if (linkCount_803dd90e < 0)
+    else if (gTumbleweedBushPulse < 0)
     {
-        linkCount_803dd90e = (s16)-linkCount_803dd90e;
+        gTumbleweedBushPulse = (s16)-gTumbleweedBushPulse;
         gTumbleweedBushPulseDir = (s8)(*(s8*)&gTumbleweedBushPulseDir ^ 1);
     }
 
@@ -701,7 +701,7 @@ void Link_setup(LinkMenuItem* items, int count, int selected, const char* defaul
     if (count <= 40)
     {
         gTumbleweedBushItemCount = count;
-        linkCount_803dd90e = 0xff;
+        gTumbleweedBushPulse = 0xff;
         linkSelected = selected;
         gTumbleweedBushPulseDir = 0;
         gTumbleweedBushInputEnabled[0] = 0;
@@ -804,7 +804,7 @@ void Link_initialise(void)
     linkItemOpacity = 0xff;
     subtitleLoadBoxTextures(3);
     linkIsRotated = 0;
-    linkFlag_803dd8f8 = 1;
+    gLinkNavigationEnabled = 1;
 }
 
 LinkMenuItem gTumbleweedBushItems[40];
@@ -839,13 +839,13 @@ struct LinkObjDescriptor lbl_8031C1E4 = {
         Link_render,
         Link_getSelected,
         Link_setSelected,
-        Link_func09,
-        Link_func0A,
-        Link_func0B,
-        Link_func0C,
+        Link_getItemState,
+        Link_setItemState,
+        Link_updateItems,
+        Link_getPulse,
         Link_copy,
         Link_setOpacity,
-        Link_func0F,
+        Link_resetTimers,
     },
 };
 
