@@ -1320,9 +1320,9 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
             if ((u32)(st->flags428 >> 1 & 1) == 0)
             {
                 setMotionBlur(1, 0.7f);
-                st->collisionFxTimer = (f32)(s32)gSnowBikeBoostFxDuration;
+                st->collisionFxTimer = (f32)gSnowBikeBoostFxDuration;
                 st->collisionFxDamping = gSnowBikeBoostFxDamping;
-                st->airMeterRefillTimer = (f32)(s32)gSnowBikeAirRefillAmount;
+                st->airMeterRefillTimer = (f32)gSnowBikeAirRefillAmount;
             }
             break;
         }
@@ -1343,7 +1343,7 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
             st->collisionFxDamping = 1.0f;
             if ((u32)(st->flags428 >> 1 & 1) == 0)
             {
-                st->collisionFxTimer = (f32)(s32)gSnowBikeHardCollisionFxDuration;
+                st->collisionFxTimer = (f32)gSnowBikeHardCollisionFxDuration;
             }
         }
     }

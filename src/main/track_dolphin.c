@@ -1850,7 +1850,7 @@ void trackCollectGroundHits(TrackTriangle* triStart, TrackTriangle* triEnd, Trac
         }
         if (inside == 0)
             continue;
-        if ((s8)lbl_803DCF60 >= 0x23)
+        if (lbl_803DCF60 >= 0x23)
             break;
         if (desc->object != NULL)
         {

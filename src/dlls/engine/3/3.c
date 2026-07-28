@@ -657,7 +657,7 @@ void Checkpoint_func06(GameObject* obj, CheckpointRouteState* state, int filter)
     }
     else
     {
-        for (i = 0; i < (int)gCheckpointRouteCount; i++)
+        for (i = 0; i < gCheckpointRouteCount; i++)
         {
             e = gCheckpointRouteTable[i].entry;
             if (visited[i] == 0 && (filter == -1 || e->group == filter))
@@ -668,7 +668,7 @@ void Checkpoint_func06(GameObject* obj, CheckpointRouteState* state, int filter)
                 if (nz * nz + (nx * nx + ddy * ddy) < 409600.0f)
                 {
                     stack[count++] = i;
-                    for (j = i; j < (int)gCheckpointRouteCount; j++)
+                    for (j = i; j < gCheckpointRouteCount; j++)
                     {
                         if (filter == gCheckpointRouteTable[j].entry->group)
                         {

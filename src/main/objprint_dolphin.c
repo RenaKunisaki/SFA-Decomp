@@ -360,7 +360,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     }
     lbl_803DCC3E = 1;
     getNewShadowNoiseTextureFrames(&noiseTextures, &noiseFrameCount);
-    fz = (f32)(s32)lbl_803DCC44 / (f32)(s32)noiseFrameCount;
+    fz = (f32)lbl_803DCC44 / (f32)(s32)noiseFrameCount;
     fz = fz * fz;
     fz = fz * lbl_803DEA28;
     selectTexture((Texture*)(textureIdxToPtr(*(u32*)Shader_getLayer(rop, 0))), 0);
@@ -547,7 +547,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     }
     else
     {
-        fz = (f32)(s32)lbl_803DCC44 / (f32)(s32)noiseFrameCount;
+        fz = (f32)lbl_803DCC44 / (f32)(s32)noiseFrameCount;
         fz = fz * lbl_803DEA28;
     }
     selectTexture((Texture*)(textureIdxToPtr(*(u32*)Shader_getLayer(rop, 0))), 0);
