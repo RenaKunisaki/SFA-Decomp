@@ -11,7 +11,7 @@
  *    cooldown partfx; otherwise the player takes a recorded hit. Either
  *    way a sfx plays.
  *  - TrickyCurve_updateBurstHit is the burst variant: spawns a directional burst partfx
- *    (TrickyCurveBurstPartfxArgs carries the player-relative deltas and an
+ *    (the PartFxSpawnParams packet carries the player-relative deltas and an
  *    x-rotation flip when the player crosses the x midline) and, off the
  *    slide path, messages the player and plays the burst sfx. The
  *    gTrickyCurveBurstCounter gates the bit/sfx to once every
@@ -56,22 +56,9 @@ typedef struct TrickyCurveTriggerState
     u8 zSide;     /* 0x12 */
 } TrickyCurveTriggerState;
 
-typedef struct TrickyCurveBurstPartfxArgs
-{
-    s16 xRot;
-    s16 yRot;
-    s16 zRot;
-    f32 scale;
-    f32 xDelta;
-    f32 yDelta;
-    f32 zDelta;
-} TrickyCurveBurstPartfxArgs;
-
 STATIC_ASSERT(offsetof(TrickyCurveTriggerState, cooldown) == 0x06);
 STATIC_ASSERT(offsetof(TrickyCurveTriggerState, xSide) == 0x10);
 STATIC_ASSERT(sizeof(TrickyCurveTriggerState) == 0x14);
-STATIC_ASSERT(offsetof(TrickyCurveBurstPartfxArgs, scale) == 0x08);
-STATIC_ASSERT(offsetof(TrickyCurveBurstPartfxArgs, xDelta) == 0x0C);
 
 
 u8
@@ -184,7 +171,7 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
     f32 xDelta;
     f32 zDelta;
     f32 yDelta;
-    TrickyCurveBurstPartfxArgs partfxArgs;
+    PartFxSpawnParams partfxArgs;
 
     state = (TrickyCurveTriggerState*)obj->extra;
     player = (GameObject*)Obj_GetPlayerObject();
@@ -249,16 +236,16 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
 
     if (insideAxes == 3)
     {
-        partfxArgs.xDelta = xDelta;
-        partfxArgs.yDelta = yDelta;
-        partfxArgs.zDelta = zDelta;
+        partfxArgs.posX = xDelta;
+        partfxArgs.posY = yDelta;
+        partfxArgs.posZ = zDelta;
         partfxArgs.scale = 1.0f;
-        partfxArgs.zRot = 0;
-        partfxArgs.yRot = 0;
-        partfxArgs.xRot = 0;
+        partfxArgs.rotZ = 0;
+        partfxArgs.rotY = 0;
+        partfxArgs.rotX = 0;
         if (xSide != state->xSide)
         {
-            partfxArgs.xRot = 0x3fff;
+            partfxArgs.rotX = 0x3fff;
         }
 
         if (objGetAnimState80A((GameObject*)player) == TRICKY_CURVE_PLAYER_ANIM_SLIDE)
@@ -398,18 +385,6 @@ typedef struct TrickyCurveObjectDef
     u8 pad22[0x28 - 0x22];
 } TrickyCurveObjectDef;
 
-typedef struct TrickyCurveBurstFxParams
-{
-    s16 rotX;
-    s16 rotY;
-    s16 rotZ;
-    s16 pad;
-    f32 scale;
-    f32 xOffset;
-    f32 yOffset;
-    f32 zOffset;
-} TrickyCurveBurstFxParams;
-
 #define DFPFORCEAW_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define DFPFORCEAW_MSG_PLAYER_BURST           0x60004 /* knock the player back with a burst hit */
 
@@ -429,7 +404,7 @@ void TrickyCurve_updateBurstTrigger(GameObject* obj)
     u8 xSide;
     u8 ySide;
     u8 zSide;
-    TrickyCurveBurstFxParams fxParams;
+    PartFxSpawnParams fxParams;
     int burstParticles;
 
     state = (obj)->extra;
@@ -504,9 +479,9 @@ void TrickyCurve_updateBurstTrigger(GameObject* obj)
 
     if (insideCount == 3)
     {
-        fxParams.xOffset = dx;
-        fxParams.yOffset = dy;
-        fxParams.zOffset = dz;
+        fxParams.posX = dx;
+        fxParams.posY = dy;
+        fxParams.posZ = dz;
         fxParams.scale = 1.0f;
         fxParams.rotZ = 0;
         fxParams.rotY = 0;
