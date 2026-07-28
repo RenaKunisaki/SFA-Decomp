@@ -1,5 +1,5 @@
-#include "main/dll/mtxbuildarg_struct.h"
 #include "main/dll/partfxspawn_struct.h"
+#include "main/vecmath.h"
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -37,7 +37,7 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
 {
     int spawnResult;
     int randPick;
-    MtxBuildArg es;
+    MatrixTransform es;
     PartFxSpawn cfg;
 
     gEffect4SpawnCyclePhaseFast += 0.001f;
@@ -99,14 +99,14 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         break;
     case 0x1c9:
         cfg.startPosZ = (12.0f);
-        es.a = (0.0f);
-        es.b = (0.0f);
-        es.c = (0.0f);
-        es.w = 1.0f;
-        es.rz = 0;
-        es.ry = 0;
-        es.rx = randomGetRange(0, 0xffff);
-        vecRotateZXY(&es.rotation.x, &cfg.startPosX);
+        es.x = (0.0f);
+        es.y = (0.0f);
+        es.z = (0.0f);
+        es.scale = 1.0f;
+        es.rotZ = 0;
+        es.rotY = 0;
+        es.rotX = randomGetRange(0, 0xffff);
+        vecRotateZXY(&es.rotX, &cfg.startPosX);
         cfg.scale = (1.75e-05f) * (f32)(s32)randomGetRange(0xc8, 0x118);
         cfg.lifetimeFrames = 0x14;
         cfg.initialAlpha = 0xe1;
@@ -152,14 +152,14 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         break;
     case 0x1c5:
         cfg.startPosX = (4.5e+02f);
-        es.a = (0.0f);
-        es.b = (0.0f);
-        es.c = (0.0f);
-        es.w = 1.0f;
-        es.rz = randomGetRange(0, 0xffff);
-        es.ry = randomGetRange(0, 0xffff);
-        es.rx = randomGetRange(0, 0xffff);
-        vecRotateZXY(&es.rotation.x, &cfg.startPosX);
+        es.x = (0.0f);
+        es.y = (0.0f);
+        es.z = (0.0f);
+        es.scale = 1.0f;
+        es.rotZ = randomGetRange(0, 0xffff);
+        es.rotY = randomGetRange(0, 0xffff);
+        es.rotX = randomGetRange(0, 0xffff);
+        vecRotateZXY(&es.rotX, &cfg.startPosX);
         cfg.scale = (0.005f);
         cfg.lifetimeFrames = 0xc8;
         cfg.initialAlpha = 0xff;
@@ -168,14 +168,14 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         break;
     case 0x1c4:
         cfg.startPosX = (3.5e+02f);
-        es.a = (0.0f);
-        es.b = (0.0f);
-        es.c = (0.0f);
-        es.w = 1.0f;
-        es.rz = randomGetRange(0, 0xffff);
-        es.ry = randomGetRange(0, 0xffff);
-        es.rx = randomGetRange(0, 0xffff);
-        vecRotateZXY(&es.rotation.x, &cfg.startPosX);
+        es.x = (0.0f);
+        es.y = (0.0f);
+        es.z = (0.0f);
+        es.scale = 1.0f;
+        es.rotZ = randomGetRange(0, 0xffff);
+        es.rotY = randomGetRange(0, 0xffff);
+        es.rotX = randomGetRange(0, 0xffff);
+        vecRotateZXY(&es.rotX, &cfg.startPosX);
         cfg.scale = (0.008f);
         cfg.lifetimeFrames = 0xc8;
         cfg.initialAlpha = 0xff;
@@ -185,14 +185,14 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
     case 0x1c6:
         cfg.startPosX = (2.5e+02f) + (f32)(s32)randomGetRange(0, 0x5a);
         cfg.startPosY = (f32)(s32)randomGetRange(-0xa, 0xa);
-        es.a = (0.0f);
-        es.b = (0.0f);
-        es.c = (0.0f);
-        es.w = 1.0f;
-        es.rz = 0;
-        es.ry = 0;
-        es.rx = randomGetRange(0, 0xffff);
-        vecRotateZXY(&es.rotation.x, &cfg.startPosX);
+        es.x = (0.0f);
+        es.y = (0.0f);
+        es.z = (0.0f);
+        es.scale = 1.0f;
+        es.rotZ = 0;
+        es.rotY = 0;
+        es.rotX = randomGetRange(0, 0xffff);
+        vecRotateZXY(&es.rotX, &cfg.startPosX);
         cfg.scale = (0.0002f) * (f32)(s32)randomGetRange(1, 0x14);
         cfg.lifetimeFrames = 0xc8;
         cfg.initialAlpha = 0xff;
@@ -601,14 +601,14 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
             cfg.lifetimeFrames = 0x78;
             cfg.velocityX = (0.45f);
         }
-        es.a = (0.0f);
-        es.b = (0.0f);
-        es.c = (0.0f);
-        es.w = 1.0f;
-        es.rz = randomGetRange(0, 0xffff);
-        es.ry = randomGetRange(0, 0xffff);
-        es.rx = randomGetRange(0, 0xffff);
-        vecRotateZXY(&es.rotation.x, &cfg.velocityX);
+        es.x = (0.0f);
+        es.y = (0.0f);
+        es.z = (0.0f);
+        es.scale = 1.0f;
+        es.rotZ = randomGetRange(0, 0xffff);
+        es.rotY = randomGetRange(0, 0xffff);
+        es.rotX = randomGetRange(0, 0xffff);
+        vecRotateZXY(&es.rotX, &cfg.velocityX);
         cfg.scale = (0.005f);
         cfg.linkGroup = 0x10;
         cfg.initialAlpha = 0xff;
@@ -742,14 +742,14 @@ int Effect4_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         break;
     case 0x1ab:
         cfg.startPosX = (45.0f);
-        es.a = (0.0f);
-        es.b = (0.0f);
-        es.c = (0.0f);
-        es.w = 1.0f;
-        es.rz = randomGetRange(0, 0xffff);
-        es.ry = randomGetRange(0, 0xffff);
-        es.rx = randomGetRange(0, 0xffff);
-        vecRotateZXY(&es.rotation.x, &cfg.startPosX);
+        es.x = (0.0f);
+        es.y = (0.0f);
+        es.z = (0.0f);
+        es.scale = 1.0f;
+        es.rotZ = randomGetRange(0, 0xffff);
+        es.rotY = randomGetRange(0, 0xffff);
+        es.rotX = randomGetRange(0, 0xffff);
+        vecRotateZXY(&es.rotX, &cfg.startPosX);
         cfg.velocityX = cfg.startPosX / (1e+02f);
         cfg.velocityY = cfg.startPosY / (1e+02f);
         cfg.velocityZ = cfg.startPosZ / (1e+02f);

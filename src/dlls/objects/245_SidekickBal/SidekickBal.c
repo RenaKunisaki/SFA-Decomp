@@ -13,7 +13,6 @@
 #include "main/debug.h"
 #include "main/dll/path_control_interface.h"
 #include "main/dll/player_state.h"
-#include "main/dll/vecrotatezxy.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
@@ -22,6 +21,7 @@
 #include "main/object_render.h"
 #include "main/objhits.h"
 #include "main/pad.h"
+#include "main/vecmath.h"
 #include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -90,7 +90,7 @@ void sidekickBall_handlePlayerInteraction(GameObject* obj, SidekickBallState* st
     PlayerState* playerState;
     s16 selectedItem;
     u32 buttons;
-    VecRotateZXYArg rotationArg;
+    MatrixTransform rotationArg;
 
     player = Obj_GetPlayerObject();
     playerState = player->extra;
@@ -138,12 +138,12 @@ void sidekickBall_handlePlayerInteraction(GameObject* obj, SidekickBallState* st
                                   -SIDEKICKBALL_THROW_BASE_SPEED);
             }
 
-            rotationArg.pos[1] = 0.0f;
-            rotationArg.pos[2] = 0.0f;
-            rotationArg.pos[3] = 0.0f;
-            rotationArg.pos[0] = 1.0f;
-            rotationArg.rotation.z = 0;
-            rotationArg.rotation.y = 0;
+            rotationArg.x = 0.0f;
+            rotationArg.y = 0.0f;
+            rotationArg.z = 0.0f;
+            rotationArg.scale = 1.0f;
+            rotationArg.rotZ = 0;
+            rotationArg.rotY = 0;
             {
                 s16 rotationX;
                 if (player->anim.parent != NULL) {
@@ -151,9 +151,9 @@ void sidekickBall_handlePlayerInteraction(GameObject* obj, SidekickBallState* st
                 } else {
                     rotationX = player->anim.rotX;
                 }
-                rotationArg.rotation.x = rotationX;
+                rotationArg.rotX = rotationX;
             }
-            vecRotateZXY(&rotationArg.rotation.x, &obj->anim.velocityX);
+            vecRotateZXY(&rotationArg.rotX, &obj->anim.velocityX);
 
             sidekickBall_throw(obj, obj->anim.velocityX, obj->anim.velocityY, obj->anim.velocityZ);
         } else {

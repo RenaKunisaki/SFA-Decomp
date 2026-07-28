@@ -19,19 +19,6 @@ typedef struct WmPlanetsState
     f32 baseZ;       /* 0x18 */
 } WmPlanetsState;
 
-/* argument record for vecRotateZXY (angles in, vector in/out) */
-typedef struct WmPlanetsRotationWork
-{
-    s16 yaw;   /* 0x00 */
-    s16 pitch; /* 0x02 */
-    s16 roll;  /* 0x04 */
-    s16 pad06;
-    f32 scale; /* 0x08 */
-    f32 zeroX; /* 0x0C */
-    f32 zeroY; /* 0x10 */
-    f32 zeroZ; /* 0x14 */
-} WmPlanetsRotationWork;
-
 typedef union WmPlanetsVector
 {
     f32 f[3];

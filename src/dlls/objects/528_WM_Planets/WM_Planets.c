@@ -8,6 +8,7 @@
 #include "main/dll/WM/dll_0210_wmplanets.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "main/vecmath.h"
 
 const u32 lbl_802C2500[4] = {0, 0, 0, 0};
 
@@ -41,7 +42,7 @@ void WM_Planets_update(GameObject* obj)
 {
     WmPlanetsState* state;
     WmPlanetsVector vec;
-    WmPlanetsRotationWork rotate;
+    MatrixTransform rotate;
 
     state = obj->extra;
     /* Initialize from the zero-vector template. */
@@ -56,23 +57,23 @@ void WM_Planets_update(GameObject* obj)
 
     state->orbitYaw += state->orbitYawStep;
 
-    rotate.zeroX = 0.0f;
-    rotate.zeroY = 0.0f;
-    rotate.zeroZ = 0.0f;
+    rotate.x = 0.0f;
+    rotate.y = 0.0f;
+    rotate.z = 0.0f;
     rotate.scale = 1.0f;
-    rotate.roll = 0;
-    rotate.pitch = 0;
-    rotate.yaw = state->orbitYaw;
-    vecRotateZXY(&rotate.yaw, vec.f);
+    rotate.rotZ = 0;
+    rotate.rotY = 0;
+    rotate.rotX = state->orbitYaw;
+    vecRotateZXY(&rotate.rotX, vec.f);
 
-    rotate.zeroX = 0.0f;
-    rotate.zeroY = 0.0f;
-    rotate.zeroZ = 0.0f;
+    rotate.x = 0.0f;
+    rotate.y = 0.0f;
+    rotate.z = 0.0f;
     rotate.scale = 1.0f;
-    rotate.roll = 0;
-    rotate.pitch = state->orbitPitch;
-    rotate.yaw = 0;
-    vecRotateZXY(&rotate.yaw, vec.f);
+    rotate.rotZ = 0;
+    rotate.rotY = state->orbitPitch;
+    rotate.rotX = 0;
+    vecRotateZXY(&rotate.rotX, vec.f);
 
     obj->anim.localPosX = vec.f[0] + state->baseX;
     obj->anim.localPosY = vec.f[1] + state->baseY;

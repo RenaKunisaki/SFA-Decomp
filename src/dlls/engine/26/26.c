@@ -1,5 +1,5 @@
-#include "main/dll/mtxbuildarg_struct.h"
 #include "main/dll/partfxspawn_struct.h"
+#include "main/vecmath.h"
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -35,7 +35,7 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
                    s16* extraArgs)
 {
     int spawnResult;
-    MtxBuildArg es;
+    MatrixTransform es;
     PartFxSpawn cfg;
 
     gEffect1AnimRampC += 0.001f;
@@ -247,14 +247,14 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.velocityZ = 0.1f * (f32)(s32)randomGetRange(0x14, 0x1e);
         cfg.velocityX = 0.02f * (f32)(s32)randomGetRange(-0x14, 0x14);
         cfg.velocityY = 0.02f * (f32)(s32)randomGetRange(-0x14, 0x14);
-        es.a = 0.0f;
-        es.b = 0.0f;
-        es.c = 0.0f;
-        es.w = 1.0f;
-        es.rz = ((s16*)sourceObj)[2];
-        es.ry = ((s16*)sourceObj)[1];
-        es.rx = *(s16*)sourceObj;
-        vecRotateZXY(&es.rotation.x, &cfg.velocityX);
+        es.x = 0.0f;
+        es.y = 0.0f;
+        es.z = 0.0f;
+        es.scale = 1.0f;
+        es.rotZ = ((s16*)sourceObj)[2];
+        es.rotY = ((s16*)sourceObj)[1];
+        es.rotX = *(s16*)sourceObj;
+        vecRotateZXY(&es.rotX, &cfg.velocityX);
         cfg.scale = 0.005f;
         cfg.lifetimeFrames = 0x32;
         cfg.initialAlpha = 0xff;
@@ -273,14 +273,14 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.velocityZ = 0.04f * (f32)(s32)randomGetRange(0x14, 0x1e);
         cfg.velocityX = 0.012f * (f32)(s32)randomGetRange(-0x14, 0x14);
         cfg.velocityY = 0.015f * (f32)(s32)randomGetRange(2, 6);
-        es.a = 0.0f;
-        es.b = 0.0f;
-        es.c = 0.0f;
-        es.w = 1.0f;
-        es.rz = ((s16*)sourceObj)[2];
-        es.ry = ((s16*)sourceObj)[1];
-        es.rx = *(s16*)sourceObj;
-        vecRotateZXY(&es.rotation.x, &cfg.velocityX);
+        es.x = 0.0f;
+        es.y = 0.0f;
+        es.z = 0.0f;
+        es.scale = 1.0f;
+        es.rotZ = ((s16*)sourceObj)[2];
+        es.rotY = ((s16*)sourceObj)[1];
+        es.rotX = *(s16*)sourceObj;
+        vecRotateZXY(&es.rotX, &cfg.velocityX);
         cfg.scale = 0.002f * (f32)(s32)randomGetRange(8, 0x14);
         cfg.lifetimeFrames = randomGetRange(0x3c, 0x78);
         cfg.behaviorFlags = 0x80180000;
@@ -937,11 +937,11 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.startPosX = (f32)(s32)randomGetRange(-5, 5);
         cfg.startPosY = (f32)(s32)randomGetRange(1, 5);
         cfg.startPosZ = (f32)(s32)randomGetRange(-5, 5);
-        es.w = 0.003f * (f32)(s32)randomGetRange(0, 0x258) + 1.5f;
+        es.scale = 0.003f * (f32)(s32)randomGetRange(0, 0x258) + 1.5f;
         cfg.velocityY = 0.001f * (f32)(s32)randomGetRange(0, 0xc8) + 1.0f;
         cfg.velocityX = 0.015f * (f32)(s32)randomGetRange(0, 0x14) + 0.1f;
-        cfg.velocityY = cfg.velocityY * es.w;
-        cfg.velocityX = cfg.velocityX * es.w;
+        cfg.velocityY = cfg.velocityY * es.scale;
+        cfg.velocityX = cfg.velocityX * es.scale;
         cfg.scale = 6e-05f * (f32)(s32)randomGetRange(0, 0xa) + 0.0048f;
         cfg.lifetimeFrames = randomGetRange(0xb4, 0xc8);
         cfg.initialAlpha = 0xff;

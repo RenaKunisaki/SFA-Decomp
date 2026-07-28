@@ -7,9 +7,9 @@
  */
 #include "dlls/objects/243_flameblast.h"
 #include "main/dll/dll_80136a40.h"
-#include "main/dll/vecrotatezxy.h"
 #include "main/frame_timing.h"
 #include "main/objfx.h"
+#include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
 
 #define FLAMEBLAST_HIT_VOLUME_SLOT 0x1A
@@ -35,7 +35,7 @@ int flameblast_seedVelocity(GameObject* obj, FlameblastState* state) {
     GameObject* tricky = getTrickyObject();
     f32* origin;
     f32 reachScale = FLAMEBLAST_REACH_SCALE;
-    VecRotateZXYArg rotationArg;
+    MatrixTransform rotationArg;
 
     if (state->freeRequested != 0 || tricky == NULL) {
         Obj_FreeObject(obj);
@@ -44,14 +44,14 @@ int flameblast_seedVelocity(GameObject* obj, FlameblastState* state) {
     obj->anim.velocityX = 0.0f;
     obj->anim.velocityY = 0.0f;
     obj->anim.velocityZ = FLAMEBLAST_FORWARD_SPEED;
-    rotationArg.pos[1] = 0.0f;
-    rotationArg.pos[2] = 0.0f;
-    rotationArg.pos[3] = 0.0f;
-    rotationArg.pos[0] = 1.0f;
-    rotationArg.rotation.z = tricky->anim.rotZ;
-    rotationArg.rotation.y = tricky->anim.rotY;
-    rotationArg.rotation.x = tricky->anim.rotX + trickyGetAimPitchOffset(tricky);
-    vecRotateZXY(&rotationArg.rotation.x, &obj->anim.velocity.x);
+    rotationArg.x = 0.0f;
+    rotationArg.y = 0.0f;
+    rotationArg.z = 0.0f;
+    rotationArg.scale = 1.0f;
+    rotationArg.rotZ = tricky->anim.rotZ;
+    rotationArg.rotY = tricky->anim.rotY;
+    rotationArg.rotX = tricky->anim.rotX + trickyGetAimPitchOffset(tricky);
+    vecRotateZXY(&rotationArg.rotX, &obj->anim.velocity.x);
     if ((tricky->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
         origin = trickyGetQueuedPathParticlePos(tricky);
     } else {

@@ -6,9 +6,9 @@
  * stream created by playerCastIceSpell.
  */
 #include "dlls/objects/242_iceblast.h"
-#include "main/dll/vecrotatezxy.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define ICEBLAST_OBJECT_TYPE_ID 0
@@ -45,7 +45,7 @@ void iceblast_update(GameObject* obj) {
     GameObject* player = Obj_GetPlayerObject();
     IceblastState* state = obj->extra;
     IceblastPlacement* placement = (IceblastPlacement*)obj->anim.placementData;
-    VecRotateZXYArg rotationArg;
+    MatrixTransform rotationArg;
 
     if (player != NULL && (pathObj = player->childObjs[0]) != NULL) {
         obj->anim.rotZ = pathObj->anim.rotZ;
@@ -65,14 +65,14 @@ void iceblast_update(GameObject* obj) {
         obj->anim.velocityX = 0.0f;
         obj->anim.velocityZ = 0.0f;
         obj->anim.velocityY = ICEBLAST_VERTICAL_VELOCITY;
-        rotationArg.pos[1] = 0.0f;
-        rotationArg.pos[2] = 0.0f;
-        rotationArg.pos[3] = 0.0f;
-        rotationArg.pos[0] = 1.0f;
-        rotationArg.rotation.z = pathObj->anim.rotZ;
-        rotationArg.rotation.y = pathObj->anim.rotY;
-        rotationArg.rotation.x = pathObj->anim.rotX;
-        vecRotateZXY(&rotationArg.rotation.x, &obj->anim.velocity.x);
+        rotationArg.x = 0.0f;
+        rotationArg.y = 0.0f;
+        rotationArg.z = 0.0f;
+        rotationArg.scale = 1.0f;
+        rotationArg.rotZ = pathObj->anim.rotZ;
+        rotationArg.rotY = pathObj->anim.rotY;
+        rotationArg.rotX = pathObj->anim.rotX;
+        vecRotateZXY(&rotationArg.rotX, &obj->anim.velocity.x);
         ObjPath_GetPointWorldPosition(pathObj, 0, &obj->anim.localPosX, &obj->anim.localPosY, &obj->anim.localPosZ,
                                       0);
         ObjHits_EnableObject(obj);

@@ -17,7 +17,6 @@
 #include "game/objects/object.h"
 #include "main/dll/WM/dll_0211_wmwallcrawler.h"
 #include "main/dll/partfx_interface.h"
-#include "main/dll/vecrotatezxy.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
@@ -142,7 +141,7 @@ void WM_ObjCreator_update(GameObject* obj) {
     WMObjCreatorPlacementView* placement;
     WMObjCreatorState* state;
     int objectCount;
-    VecRotateZXYArg particleArgs;
+    PartFxSpawnParams particleArgs;
 
     placement = (WMObjCreatorPlacementView*)obj->anim.placementData;
     state = obj->extra;
@@ -298,13 +297,13 @@ void WM_ObjCreator_update(GameObject* obj) {
                         spawned->anim.velocityX = 0.1f * (f32)randomGetRange(-0x23, 0x23);
                         spawned->anim.velocityZ = 0.1f * (f32)randomGetRange(-0x23, 0x23);
                         spawned->anim.velocityY = 0.0f;
-                        particleArgs.pos[0] = 1.0f;
-                        particleArgs.dir[0] = 0;
-                        particleArgs.dir[1] = 0;
-                        particleArgs.dir[2] = 0;
-                        particleArgs.pos[1] = spawned->anim.velocityX;
-                        particleArgs.pos[3] = spawned->anim.velocityZ;
-                        particleArgs.pos[2] = 0.0f;
+                        particleArgs.scale = 1.0f;
+                        particleArgs.rotX = 0;
+                        particleArgs.rotY = 0;
+                        particleArgs.rotZ = 0;
+                        particleArgs.posX = spawned->anim.velocityX;
+                        particleArgs.posZ = spawned->anim.velocityZ;
+                        particleArgs.posY = 0.0f;
                         (*gPartfxInterface)
                             ->spawnObject((void*)spawned, WMOBJCREATOR_PARTFX_SCATTER_TRAIL, &particleArgs, 0x10000, -1,
                                           NULL);
@@ -344,13 +343,13 @@ void WM_ObjCreator_update(GameObject* obj) {
                 ((WMRockSpawnSetup*)setup)->yawByte = obj->anim.rotX >> 8;
                 Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 for (remainingCount = randomGetRange(2, 5); remainingCount != 0; remainingCount--) {
-                    particleArgs.pos[0] = 1.0f;
-                    particleArgs.dir[0] = 0;
-                    particleArgs.dir[1] = 0;
-                    particleArgs.dir[2] = 0;
-                    particleArgs.pos[1] = (f32)randomGetRange(-200, 200);
-                    particleArgs.pos[3] = (f32)randomGetRange(-0x14, 0x14);
-                    particleArgs.pos[2] = 200.0f;
+                    particleArgs.scale = 1.0f;
+                    particleArgs.rotX = 0;
+                    particleArgs.rotY = 0;
+                    particleArgs.rotZ = 0;
+                    particleArgs.posX = (f32)randomGetRange(-200, 200);
+                    particleArgs.posZ = (f32)randomGetRange(-0x14, 0x14);
+                    particleArgs.posY = 200.0f;
                     (*gPartfxInterface)
                         ->spawnObject((void*)obj, WMOBJCREATOR_PARTFX_DEBRIS, &particleArgs, 0x10002, -1, NULL);
                 }

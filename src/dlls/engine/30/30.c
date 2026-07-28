@@ -1,6 +1,6 @@
-#include "main/dll/mtxbuildarg_struct.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/dll/partfxspawn_struct.h"
+#include "main/vecmath.h"
 #include "game/objects/object.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/modgfx.h"
@@ -34,7 +34,7 @@ int Effect5_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
                    s16* extraArgs)
 {
     int spawnResult;
-    MtxBuildArg es;
+    MatrixTransform es;
     PartFxSpawn cfg;
 
     gEffect5AnimProgressA += 0.001f;
@@ -99,14 +99,14 @@ int Effect5_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.velocityX = 0.01f * (f32)(s32)randomGetRange(-0x14, 0x14);
         cfg.velocityY = 0.01f * (f32)(s32)randomGetRange(0xa, 0x14);
         cfg.velocityZ = 0.02f * (f32)(s32)randomGetRange(0x14, 0x1e);
-        es.a = 0.0f;
-        es.b = 0.0f;
-        es.c = 0.0f;
-        es.w = 1.0f;
-        es.rz = 0;
-        es.ry = 0;
-        es.rx = spawnParams->rotX;
-        vecRotateZXY(&es.rotation.x, &cfg.velocityX);
+        es.x = 0.0f;
+        es.y = 0.0f;
+        es.z = 0.0f;
+        es.scale = 1.0f;
+        es.rotZ = 0;
+        es.rotY = 0;
+        es.rotX = spawnParams->rotX;
+        vecRotateZXY(&es.rotX, &cfg.velocityX);
         cfg.scale = 0.002f * (f32)(s32)randomGetRange(4, 8);
         cfg.lifetimeFrames = 0x46;
         cfg.initialAlpha = 0x64;
@@ -137,14 +137,14 @@ int Effect5_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.velocityX = 0.025f * (f32)(s32)randomGetRange(-0x14, 0x14);
         cfg.velocityY = 0.045f * (f32)(s32)randomGetRange(0xa, 0x14);
         cfg.velocityZ = 0.025f * (f32)(s32)randomGetRange(0x14, 0x1e);
-        es.a = 0.0f;
-        es.b = 0.0f;
-        es.c = 0.0f;
-        es.w = 1.0f;
-        es.rz = 0;
-        es.ry = 0;
-        es.rx = spawnParams->rotX;
-        vecRotateZXY(&es.rotation.x, &cfg.velocityX);
+        es.x = 0.0f;
+        es.y = 0.0f;
+        es.z = 0.0f;
+        es.scale = 1.0f;
+        es.rotZ = 0;
+        es.rotY = 0;
+        es.rotX = spawnParams->rotX;
+        vecRotateZXY(&es.rotX, &cfg.velocityX);
         cfg.scale = 0.0001f * (f32)(s32)randomGetRange(4, 8);
         cfg.lifetimeFrames = 0x46;
         cfg.initialAlpha = 0xff;
