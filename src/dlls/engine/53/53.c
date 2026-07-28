@@ -278,11 +278,11 @@ void saveSelectGoToChapterSelect(void);
 
 void* gSaveSelectTextBuffers[SAVE_SELECT_TEXT_BUFFER_COUNT];
 extern void* lbl_803DD498;
-extern TitleMenuTextEntry lbl_8031A4B0[];
-extern TitleMenuTextEntry lbl_8031A564[];
-extern TitleMenuTextEntry lbl_8031A618[];
-extern TitleMenuTextEntry lbl_8031A5DC[];
-extern TitleMenuTextEntry lbl_8031A654[];
+extern TitleMenuTextEntry gSaveSelectChooseSlotEntries[];
+extern TitleMenuTextEntry gSaveSelectOpenFileEntries[];
+extern TitleMenuTextEntry gSaveSelectSlotActionEntries[];
+extern TitleMenuTextEntry gSaveSelectConfirmEraseEntries[];
+extern TitleMenuTextEntry gSaveSelectChapterSelectEntries[];
 char sSaveGameBinPathFormat[] = "/savegame/save%d.bin";
 
 void saveSelectOpenFile(int sel, int slot)
@@ -942,9 +942,9 @@ void SaveSelectScreen_initialise(void)
 }
 
 SaveSelectPanel gSaveSelectPanels[] = {
-    {lbl_8031A4B0, 3, 0, 0x0379, 0x0367, {2, 0}}, {lbl_8031A564, 2, 0, 0x0379, 0x0367, {2, 0}},
-    {lbl_8031A618, 1, 0, 0x037A, 0xFFFF, {2, 0}}, {lbl_8031A5DC, 1, 0, 0x0379, 0x0367, {2, 0}},
-    {lbl_8031A654, 6, 0, 0x0450, 0x0367, {2, 0}},
+    {gSaveSelectChooseSlotEntries, 3, 0, 0x0379, 0x0367, {2, 0}}, {gSaveSelectOpenFileEntries, 2, 0, 0x0379, 0x0367, {2, 0}},
+    {gSaveSelectSlotActionEntries, 1, 0, 0x037A, 0xFFFF, {2, 0}}, {gSaveSelectConfirmEraseEntries, 1, 0, 0x0379, 0x0367, {2, 0}},
+    {gSaveSelectChapterSelectEntries, 6, 0, 0x0450, 0x0367, {2, 0}},
 };
 
 u8 lbl_8031A7F8[12] = {0, 0, 5, 213, 0, 0, 5, 214, 0, 0, 5, 212};

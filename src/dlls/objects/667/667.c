@@ -12,7 +12,7 @@
  * impact sfx + particle fx, and frees it. hitDetect() handles deflection:
  * an Arwing barrel-roll reflects the shot (half-angle of incoming
  * velocity) and rescales its speed by deflectSpeedScale.
- * createLinkedEffect() attaches a coloured point light to the shot.
+ * arwprojectile_createLinkedEffect() attaches a coloured point light to the shot.
  *
  * arwprojectile_setLifetime + arwprojectile_placeForward configure a new
  * projectile's lifetime and launch velocity (callers: arwarwing, arwsquadron,

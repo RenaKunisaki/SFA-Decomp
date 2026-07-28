@@ -137,7 +137,7 @@ typedef struct PlayerState {
     f32 targetObjectDist;       /* planar distance to cameraTargetObject (sqrt(dx^2+dz^2)) */
     u16 targetObjModelType; /* low nibble of cameraTargetObject model flag byte; compared to classify the target */
     u8 pad4B6[0x4B8 - 0x4B6];
-    void *cameraTargetObject; /* Camera_GetTarget() result; mirrored into gPlayerInteractTarget */
+    void *cameraTargetObject; /* (*gCameraInterface)->getTarget() result; mirrored into gPlayerInteractTarget */
     u8 pad4BC[0x4C0 - 0x4BC];
     int lastHitObject;
     GameObject* groundObject; /* object the player stands on/rides; transform parent for relative pos, set from collision hit */
