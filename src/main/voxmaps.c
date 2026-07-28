@@ -1243,7 +1243,8 @@ int* voxmaps_updateActiveMap(VoxPos* obj)
     }
     if (blockId != -1)
     {
-        for (slot = 0, foundSlot = -1; slot < VOXMAP_SLOT_COUNT; slot++)
+        foundSlot = -1;
+        for (slot = 0; slot < VOXMAP_SLOT_COUNT; slot++)
         {
             if (blockId == vm->blockId[slot])
             {
