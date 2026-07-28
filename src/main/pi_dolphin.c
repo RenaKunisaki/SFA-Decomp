@@ -72,7 +72,7 @@ int lbl_803DCCF4;
 GXRenderModeObj* gRenderModeObj;
 void* externalFrameBuffer0;
 void* externalFrameBuffer1;
-void* gGxFifoSize;
+u32 gGxFifoSize;
 char* lbl_803DCCE0;
 OSThread* gVideoWaitThread;
 void* gGxFifoBase;
@@ -4286,7 +4286,7 @@ void videoSwapFrameBuffers(u32 retraceCount)
         GXInitFifoBase(&fifo, renderFrameBuffer, 0x10000);
         GXSetCPUFifo(&fifo);
         GXSetGPFifo(&fifo);
-        gGxFifoObj = GXInit(gGxFifoBase, (u32)gGxFifoSize);
+        gGxFifoObj = GXInit(gGxFifoBase, gGxFifoSize);
         if (Queue_IsEmpty(&gVideoFlipQueue) == 0)
         {
             Queue_Pop(&gVideoFlipQueue, tok);
