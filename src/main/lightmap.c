@@ -973,6 +973,7 @@ void updateEnvironment(int mode)
         MapTextureScroll* textureScroll;
         Texture* tex;
         int i;
+        int off;
         f32 x;
         f32 deltaY;
         f32 deltaX;
@@ -984,9 +985,10 @@ void updateEnvironment(int mode)
         (*gSkyInterface)->updateTimeOfDay();
         (*gNewCloudsInterface)->run();
 
-        for (i = 0; i < 80; i++)
+        off = i = 0;
+        for (; i < 80; off += sizeof(MapTextureOverride), i++)
         {
-            textureOverride = &lbl_803DCE6C[i];
+            textureOverride = (MapTextureOverride*)((u8*)lbl_803DCE6C + off);
             if (textureOverride->refCount != 0 && (tex = textureOverride->texture) != NULL &&
                 tex->animationFrameCount != 0x100 && tex->animationFrameStep != 0)
             {
