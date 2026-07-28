@@ -30,7 +30,6 @@ extern u8 sGameTextFallbackDefs[];
 extern f32 gGameTextRevealProgress;
 extern int gGameTextDrawnCharIndex;
 extern int gGameTextRevealActive;
-extern f32 lbl_803DE700;
 extern f32 gGameTextRevealSpeed;
 
 int utf8GetNextChar(u8* str, int* outLen);
