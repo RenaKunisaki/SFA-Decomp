@@ -535,7 +535,7 @@ main/dll/DF/DFcradle.c                                  2 dlls: 0x174:CCriverflo
 main/dll/DF/rope.c                                      4 dlls: 0x1E3:DIM_BossGut, 0x1E4:MAGICMaker, 0x1E5:DIM_BossSpi, 0x1E6:DIMbosscrac
 main/dll/DIM/DIM2conveyor.c                             2 dlls: 0x1C8:DIMBridgeCo, 0x1C9:DIMDismount
 main/dll/DIM/DIM2flameburst.c                           4 dlls: 0x1CA:DIMExplosio, 0x1CB:DIMWoodDoor, 0x1CC:DIMMagicBri, 0x1CE:gDll1CEObjDescriptor
-main/dll/DIM/DIM2projrock.c                             6 dlls: 0x1DA:gDll1DAObjDescriptor, 0x1DB:dll_1DB, 0x1DC:DIM2IceFloe, 0x1DD:DIM2Icicle, 0x1DE:DIM2LavaCon, 0x1DF:lbl_80325928
+main/dll/DIM/DIM2projrock.c                             6 dlls: 0x1DA:gDll1DAObjDescriptor, 0x1DB:gDll1DBObjDescriptor, 0x1DC:DIM2IceFloe, 0x1DD:DIM2Icicle, 0x1DE:DIM2LavaCon, 0x1DF:lbl_80325928
 main/dll/DIM/DIM2snowball.c                             8 dlls: 0x1CD:DIM_LevelCo, 0x1CF:gDll1CFObjDescriptor, 0x1D0:DIM_tricky, 0x1D1:DIMTruthHor, 0x1D5:DIM2Conveyo, 0x1D6:gDll1D6ObjDescriptor, 0x1D7:DIM2SnowBal, 0x1D8:DIM2PathGen
 main/dll/DIM/DIMExplosion.c                             4 dlls: 0x1C2:DIMSnowBall, 0x1C3:DIMGate, 0x1C4:DIMIceWall, 0x1C5:DIMBarrier
 main/dll/DIM/DIMboulder.c                               4 dlls: 0x169:IMIceMounta, 0x16A:CRrockfall, 0x16B:DIMMagicLig, 0x16C:lbl_80323740

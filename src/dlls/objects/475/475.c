@@ -1,161 +1,158 @@
-#include "main/object_render.h"
-#include "main/audio/sfx.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/gamebits.h"
-#include "main/frame_timing.h"
-#include "sys/objects.h"
-#include "main/dll/dll_01DB_dll1db.h"
+/*
+ * DLL 0x1DB drives a vertically moving platform between fixed upper and lower
+ * stops. The generated numeric source path remains authoritative because
+ * retail evidence does not establish an original basename.
+ */
 
-enum
-{
-    DIM2_CRUSHER_STATE_TOP = 1,
-    DIM2_CRUSHER_STATE_BOTTOM = 2,
-    DIM2_CRUSHER_STATE_RISING = 3,
-    DIM2_CRUSHER_STATE_FALLING = 4
+#include "dlls/objects/475.h"
+
+#include "game/objects/object.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/object_render.h"
+#include "main/objhits_types.h"
+#include "sys/objects.h"
+
+enum {
+    DLL1DB_MOTION_STATE_TOP = 1,
+    DLL1DB_MOTION_STATE_BOTTOM = 2,
+    DLL1DB_MOTION_STATE_RISING = 3,
+    DLL1DB_MOTION_STATE_FALLING = 4
 };
 
-int dll_1DB_getExtraSize(void)
-{
-    return sizeof(Dim2CrusherState);
-}
-int dll_1DB_getObjectTypeId(void)
-{
-    return 0x0;
+int dll_1DB_getExtraSize(void) {
+    return sizeof(Dll1DBState);
 }
 
-void dll_1DB_free(void)
-{
+int dll_1DB_getObjectTypeId(void) {
+    return 0;
 }
 
-void dll_1DB_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void dll_1DB_free(void) {
 }
 
-void dll_1DB_hitDetect(void)
-{
+void dll_1DB_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void dll_1DB_update(GameObject* obj)
-{
-    Dim2CrusherState* state;
-    Dim2CrusherPlacement* placement;
-    int found;
+void dll_1DB_hitDetect(void) {
+}
+
+void dll_1DB_update(GameObject* obj) {
+    Dll1DBState* state;
+    const Dll1DBPlacementView* placement;
+    int playerContacted;
     GameObject* player;
-    int i;
-    int n;
-    int contactListAddress;
+    int contactOffset;
+    int remainingContacts;
+    int hitboxStateAddress;
 
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    placement = (Dim2CrusherPlacement*)obj->anim.placementData;
-    found = 0;
-    i = 0;
-    contactListAddress = (int)obj->anim.hitboxTransformState;
-    for (n = ((ObjHitboxTransformState*)contactListAddress)->contactObjectCount; n > 0; n--)
-    {
-        GameObject* entry =
-            *(GameObject**)(contactListAddress + i + offsetof(ObjHitboxTransformState, contactObjects));
-        if (entry == player)
-        {
-            found = 1;
+    placement = (const Dll1DBPlacementView*)obj->anim.placementData;
+    playerContacted = 0;
+    contactOffset = 0;
+    hitboxStateAddress = (int)obj->anim.hitboxTransformState;
+    for (remainingContacts = ((ObjHitboxTransformState*)hitboxStateAddress)->contactObjectCount; remainingContacts > 0;
+         remainingContacts--) {
+        GameObject* contactObject =
+            *(GameObject**)(hitboxStateAddress + contactOffset + offsetof(ObjHitboxTransformState, contactObjects));
+
+        if (contactObject == player) {
+            playerContacted = 1;
             break;
         }
-        i += sizeof(((ObjHitboxTransformState*)contactListAddress)->contactObjects[0]);
+
+        contactOffset += sizeof(((ObjHitboxTransformState*)hitboxStateAddress)->contactObjects[0]);
     }
-    switch (state->motionState)
-    {
-    case DIM2_CRUSHER_STATE_TOP:
+
+    switch (state->motionState) {
+    case DLL1DB_MOTION_STATE_TOP:
         Sfx_StopObjectChannel((int)obj, 8);
-        if (found == 0)
-        {
-            state->contactLostFlag = 1;
+        if (playerContacted == 0) {
+            state->contactLost = 1;
+        } else if (state->contactLost != 0 && state->boarded != 0) {
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_wickpickup16);
+            state->motionState = DLL1DB_MOTION_STATE_FALLING;
+            state->verticalVelocity = 0.0f;
         }
-        else if (state->contactLostFlag != 0 && state->boardedFlag != 0)
-        {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mv_wickpickup16);
-            state->motionState = DIM2_CRUSHER_STATE_FALLING;
-            state->velocity = 0.0f;
-        }
-        if (mainGetBit(placement->triggerGameBit) != 0)
-        {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mv_wickpickup16);
-            state->motionState = DIM2_CRUSHER_STATE_FALLING;
-            state->velocity = 0.0f;
+
+        if (mainGetBit(placement->triggerGameBit) != 0) {
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_wickpickup16);
+            state->motionState = DLL1DB_MOTION_STATE_FALLING;
+            state->verticalVelocity = 0.0f;
         }
         break;
-    case DIM2_CRUSHER_STATE_BOTTOM:
+    case DLL1DB_MOTION_STATE_BOTTOM:
         Sfx_StopObjectChannel((int)obj, 8);
-        if (state->boardedFlag != 0)
-        {
-            if (found == 0)
-            {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_mv_wickpickup16);
-                state->motionState = DIM2_CRUSHER_STATE_RISING;
-                state->velocity = 0.0f;
-                state->boardedFlag = 0;
+        if (state->boarded != 0) {
+            if (playerContacted == 0) {
+                Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_wickpickup16);
+                state->motionState = DLL1DB_MOTION_STATE_RISING;
+                state->verticalVelocity = 0.0f;
+                state->boarded = 0;
                 mainSetBits(placement->boardedGameBit, 0);
             }
-        }
-        else
-        {
-            if (mainGetBit(placement->triggerGameBit) == 0)
-            {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_mv_wickpickup16);
-                state->motionState = DIM2_CRUSHER_STATE_RISING;
-                state->velocity = 0.0f;
-                state->boardedFlag = 0;
+        } else {
+            if (mainGetBit(placement->triggerGameBit) == 0) {
+                Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_wickpickup16);
+                state->motionState = DLL1DB_MOTION_STATE_RISING;
+                state->verticalVelocity = 0.0f;
+                state->boarded = 0;
                 mainSetBits(placement->boardedGameBit, 0);
             }
         }
         break;
-    case DIM2_CRUSHER_STATE_RISING:
-        state->velocity =
-            state->velocity + (0.02f * timeDelta + 0.1f * (f32)(s32)(state->velocity < 0.0f));
+    case DLL1DB_MOTION_STATE_RISING:
+        state->verticalVelocity =
+            state->verticalVelocity + (0.02f * timeDelta + 0.1f * (f32)(s32)(state->verticalVelocity < 0.0f));
         {
-            f32 velocity = state->velocity;
-            if (velocity > 1.5f)
-            {
-                state->velocity = 1.5f;
+            f32 verticalVelocity = state->verticalVelocity;
+
+            if (verticalVelocity > 1.5f) {
+                state->verticalVelocity = 1.5f;
             }
         }
-        obj->anim.localPosY = state->velocity * timeDelta + obj->anim.localPosY;
-        if (obj->anim.localPosY > placement->base.posY)
-        {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_en_lflsh2_b);
+
+        obj->anim.localPosY = state->verticalVelocity * timeDelta + obj->anim.localPosY;
+        if (obj->anim.localPosY > placement->base.posY) {
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_lflsh2_b);
             obj->anim.localPosY = placement->base.posY;
-            state->motionState = DIM2_CRUSHER_STATE_TOP;
-            if (found != 0)
-            {
-                state->boardedFlag = 1;
-                state->contactLostFlag = 0;
+            state->motionState = DLL1DB_MOTION_STATE_TOP;
+            if (playerContacted != 0) {
+                state->boarded = 1;
+                state->contactLost = 0;
             }
         }
         break;
-    case DIM2_CRUSHER_STATE_FALLING:
-        state->velocity = -0.02f * timeDelta + state->velocity;
+    case DLL1DB_MOTION_STATE_FALLING:
+        state->verticalVelocity = -0.02f * timeDelta + state->verticalVelocity;
         {
-            f32 velocity = state->velocity;
-            if (velocity < -1.5f)
-            {
-                state->velocity = -1.5f;
+            f32 verticalVelocity = state->verticalVelocity;
+
+            if (verticalVelocity < -1.5f) {
+                state->verticalVelocity = -1.5f;
             }
         }
-        obj->anim.localPosY = state->velocity * timeDelta + obj->anim.localPosY;
-        if (obj->anim.localPosY < placement->base.posY - 235.5f)
-        {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_en_lflsh2_b);
+
+        obj->anim.localPosY = state->verticalVelocity * timeDelta + obj->anim.localPosY;
+        if (obj->anim.localPosY < placement->base.posY - 235.5f) {
+            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_lflsh2_b);
             obj->anim.localPosY = placement->base.posY - 235.5f;
-            state->motionState = DIM2_CRUSHER_STATE_BOTTOM;
+            state->motionState = DLL1DB_MOTION_STATE_BOTTOM;
             mainSetBits(placement->boardedGameBit, 1);
         }
-        if (state->boardedFlag == 0)
-        {
-            if (mainGetBit(placement->triggerGameBit) == 0)
-            {
-                state->motionState = DIM2_CRUSHER_STATE_RISING;
+
+        if (state->boarded == 0) {
+            if (mainGetBit(placement->triggerGameBit) == 0) {
+                state->motionState = DLL1DB_MOTION_STATE_RISING;
                 mainSetBits(placement->boardedGameBit, 0);
             }
         }
@@ -163,31 +160,27 @@ void dll_1DB_update(GameObject* obj)
     }
 }
 
-void dll_1DB_init(GameObject* obj, Dim2CrusherPlacement* placement)
-{
-    Dim2CrusherState* state = obj->extra;
-    s16 t = (s16)((s32)placement->rotXByte << 8);
-    obj->anim.rotX = t;
-    if (mainGetBit(placement->boardedGameBit) != 0)
-    {
-        state->motionState = DIM2_CRUSHER_STATE_BOTTOM;
+void dll_1DB_init(GameObject* obj, const Dll1DBPlacementView* placement) {
+    Dll1DBState* state = obj->extra;
+    s16 rotationX = (s16)((s32)placement->rotationXByte << 8);
+
+    obj->anim.rotX = rotationX;
+    if (mainGetBit(placement->boardedGameBit) != 0) {
+        state->motionState = DLL1DB_MOTION_STATE_BOTTOM;
+    } else {
+        state->motionState = DLL1DB_MOTION_STATE_TOP;
     }
-    else
-    {
-        state->motionState = DIM2_CRUSHER_STATE_TOP;
-    }
+
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 
-void dll_1DB_release(void)
-{
+void dll_1DB_release(void) {
 }
 
-void dll_1DB_initialise(void)
-{
+void dll_1DB_initialise(void) {
 }
 
-ObjectDescriptor dll_1DB = {
+ObjectDescriptor gDll1DBObjDescriptor = {
     0,
     0,
     0,
@@ -201,5 +194,5 @@ ObjectDescriptor dll_1DB = {
     (ObjectDescriptorCallback)dll_1DB_render,
     (ObjectDescriptorCallback)dll_1DB_free,
     (ObjectDescriptorCallback)dll_1DB_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll_1DB_getExtraSize,
+    dll_1DB_getExtraSize,
 };
