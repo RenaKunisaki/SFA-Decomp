@@ -20,12 +20,30 @@ list, applying only the normalisations that genuine link-equivalence permits:
      byte behind it, so the entire tail of the section counted as residual --
      the absolute figure mostly ranked WHERE in `.text` the first size defect
      sat, not how much was wrong (engine/0 read 56874 absolute against 3166
-     function-aligned, player.c 88171 against 10018).  A genuine size difference
-     still counts, as the per-function length delta, because it is still a real
-     defect that has to be fixed before the unit can link clean; the absolute
-     figure stays in the `abs` column and in `[abs N]` per section.  `.text`
-     reloc OFFSETS canonicalise the same way, to (owning function, offset within
-     it), for the same reason;
+     function-aligned, player.c 88171 against 10018).  The absolute figure stays
+     in the `abs` column and in `[abs N]` per section.  `.text` reloc OFFSETS
+     canonicalise the same way, to (owning function, offset within it), for the
+     same reason;
+  0b. INSIDE a function the two instruction streams are ALIGNED as well, by the
+     least-bytes edit distance of `align()`, and only genuinely differing
+     instructions plus the insert/delete cost are charged.  Function-aligning
+     fixed the section level but left exactly the same distortion one level
+     down: a positional comparison inside a length-differing function charges
+     every byte after the insertion point, so ONE extra instruction in an
+     80-instruction function read as 182 residual bytes while objdiff scored
+     that function 98.5%.  That inflated the top of the ranking with
+     length-differing units and made `fix the length' look like an enormous win
+     when it can cost fuzzy -- several lanes were sent at units that were never
+     as bad as they looked (Hcurves 3926 -> 149, and it is one 3-instruction
+     function; track_dolphin 4369 -> 613; player.c 10003 -> 1177; expgfx
+     6906 -> 428).  Against objdiff's own per-function `fuzzy_match_percent`
+     the two now broadly agree where before they diverged wildly: over the 58
+     length-differing functions the mean gap between the residual-implied
+     percentage and objdiff's fell from 40.3 points to 2.6, the median from
+     39.3 to 1.0.  A genuine size difference is still charged, as the alignment's
+     insert/delete cost, and is reported whole in the `dlen` column and per
+     section as `<dlen N>`, because it still has to be fixed before the unit can
+     link clean;
   3b. a reloc TARGETING `.text` canonicalises to (containing function, offset
      within that function) rather than to a raw `.text` section offset.  A
      function-pointer table entry names a function, not an address: mwld
@@ -62,7 +80,13 @@ __exception.s leave a handful of bytes each.  Treat that set as the screen's
 known noise floor.  If the count grows after a toolchain or config change, the
 screen -- not the units -- is what regressed.  Note the noise floor is measured
 on the ABSOLUTE figure, because link-equality is byte-equality including layout;
-the function-aligned figure is the worklist, not the flip test.
+the function-aligned figure is the worklist, not the flip test.  That is also
+what makes the floor a usable regression gate on the screen itself: turning the
+intra-function alignment on left it at the same 8 units out of 998, with the
+link-clean count unchanged at 880 and the differing count unchanged at 118 --
+alignment may only ever LOWER a residual (positional comparison is itself one
+particular alignment, so `align()` takes it as an upper bound), so no unit can
+cross the zero boundary in either direction.
 
 The report-to-config key normalisation has to cope with two shapes dtk emits:
 `metadata.module_name` is absent for some units (their `main/` prefix has to be
@@ -192,18 +216,240 @@ def fn_spans(funcs, size):
     return out
 
 
+def words(b):
+    """`.text` bytes as big-endian instruction words (trailing odd bytes kept)."""
+    n = len(b) & ~3
+    return [int.from_bytes(b[i:i + 4], "big") for i in range(0, n, 4)]
+
+
+def _brel(w):
+    """(displacement in words, alignment key) for a PC-relative branch, else None.
+
+    A relative branch encodes a byte displacement, so inserting one instruction
+    ahead of it changes its bytes without changing what it means.  The key masks
+    the displacement out so alignment is not derailed by it; the displacement is
+    returned so the comparison can ask the real question -- does the branch land
+    on the same instruction? -- instead of comparing raw bytes.
+    """
+    op = w >> 26
+    if w & 2:                       # AA=1: absolute target, not position-relative
+        return None
+    if op == 18:                    # b / bl
+        d = w & 0x03FFFFFC
+        if d & 0x02000000:
+            d -= 0x04000000
+        return d >> 2, w & 0xFC000003
+    if op == 16:                    # bc / bcl
+        d = w & 0x0000FFFC
+        if d & 0x8000:
+            d -= 0x10000
+        return d >> 2, w & 0xFFFF0003
+    return None
+
+
+def _key(w):
+    r = _brel(w)
+    return r[1] if r else w
+
+
+INF = 1 << 30
+
+
+def _bh(x, y):
+    """Byte hamming distance of two instruction words."""
+    z = x ^ y
+    if not z:
+        return 0
+    return ((z >> 24) & 255 != 0) + ((z >> 16) & 255 != 0) \
+        + ((z >> 8) & 255 != 0) + (z & 255 != 0)
+
+
+def align(a, b, band=48):
+    """Least-BYTES alignment of two instruction-word sequences.
+
+    Residual is a count of bytes, so the honest question is `what is the
+    smallest number of bytes that have to change to turn our function into
+    retail's', with an inserted or deleted instruction costing its four bytes.
+    That is a weighted edit distance -- substitution priced at the byte hamming
+    distance of the two words, insert and delete at 4 -- and it is computed
+    here by Wagner-Fischer restricted to a diagonal band.
+
+    Minimising bytes rather than edits matters.  A plain LCS diff (Myers, or
+    difflib) minimises insertions plus deletions, so it will happily pay two
+    indels -- eight bytes -- to avoid one substitution that costs four or less,
+    and on a REORDERING it charges the moved instructions twice.  Positional
+    comparison is itself just one particular alignment (all substitutions), so
+    the banded optimum is never worse than it: `resid' can only fall when the
+    alignment is turned on, never rise.  The band is |n-m| wide plus a margin,
+    which covers every realistic codegen difference; the caller still takes the
+    min against the positional cost so a clipped band can never inflate.
+    """
+    n, m = len(a), len(b)
+    d = m - n
+    lo, hi = min(0, d) - band, max(0, d) + band
+    w = hi - lo + 1
+    back = bytearray((n + 1) * w)
+    prev = [INF] * w
+    o0 = -lo                                   # offset of j == i
+    if 0 <= o0 < w:
+        prev[o0] = 0
+    for o in range(o0 + 1, w):
+        j = o + lo
+        if j > m:
+            break
+        prev[o] = 4 * j
+        back[o] = 2
+    for i in range(1, n + 1):
+        cur = [INF] * w
+        base = i * w
+        for o in range(w):
+            j = i + lo + o
+            if j < 0:
+                continue
+            if j > m:
+                break
+            best, ch = INF, 0
+            if j == 0:
+                best, ch = prev[o + 1] + 4 if o + 1 < w else INF, 1
+                if best >= INF:
+                    continue
+            else:
+                s = prev[o]
+                if s < INF:
+                    best, ch = s + _bh(a[i - 1], b[j - 1]), 3
+                if o + 1 < w and prev[o + 1] + 4 < best:
+                    best, ch = prev[o + 1] + 4, 1
+                if o and cur[o - 1] + 4 < best:
+                    best, ch = cur[o - 1] + 4, 2
+            cur[o] = best
+            back[base + o] = ch
+        prev = cur
+    o = m - n - lo
+    if not (0 <= o < w) or prev[o] >= INF:
+        return None, None
+    return prev[o], _trace(back, n, m, lo, w)
+
+
+def _trace(back, n, m, lo, w):
+    """Walk the choice table back into difflib-style opcodes."""
+    path, i, j = [], n, m
+    while i or j:
+        ch = back[i * w + (j - i - lo)]
+        if ch == 3:
+            i -= 1
+            j -= 1
+            path.append(("sub", i, j))
+        elif ch == 1:
+            i -= 1
+            path.append(("del", i, j))
+        elif ch == 2:
+            j -= 1
+            path.append(("ins", i, j))
+        else:
+            break
+    path.reverse()
+    ops, i, j, p = [], 0, 0, 0
+    while p < len(path):
+        if path[p][0] == "sub":
+            s = p
+            while p < len(path) and path[p][0] == "sub":
+                p += 1
+            c = p - s
+            ops.append(("pair", i, i + c, j, j + c))
+            i += c
+            j += c
+            continue
+        nd = ni = 0
+        while p < len(path) and path[p][0] != "sub":
+            if path[p][0] == "del":
+                nd += 1
+            else:
+                ni += 1
+            p += 1
+        ops.append(("replace" if nd and ni else "delete" if nd else "insert",
+                    i, i + nd, j, j + ni))
+        i += nd
+        j += ni
+    return ops
+
+
+def fn_resid(a, b, detail=False):
+    """Differing bytes between two copies of one function, counted over an
+    ALIGNED instruction diff rather than positionally.
+
+    Positional comparison charges every byte behind an insertion point: a single
+    extra instruction in an 80-instruction function reads as 182 residual bytes
+    while objdiff scores that same function 98.5%.  That inflation is not a
+    rounding error -- it re-ranks the whole worklist by WHERE a length defect
+    sits rather than how much is wrong, and it makes `fixing the length' look
+    like a huge win when it can cost fuzzy.
+
+    So the two instruction streams are aligned the way objdiff aligns them (a
+    diff/LCS over decoded instructions) and only real differences are charged:
+    the differing bytes of instructions the alignment pairs up, plus four bytes
+    for each instruction inserted or deleted.  Relative branches compare by
+    where they LAND -- our target index mapped through the alignment against
+    retail's -- so a branch whose displacement moved only because the function
+    got longer is not charged a second time for the insertion.
+    """
+    wa, wb = words(a), words(b)
+    ta, tb = a[len(wa) * 4:], b[len(wb) * 4:]
+    tail = sum(1 for x, y in zip(ta, tb) if x != y) + abs(len(ta) - len(tb))
+    pos = (sum(_bh(x, y) for x, y in zip(wa, wb))
+           + 4 * abs(len(wa) - len(wb)) + tail)
+    if wa == wb and not tail:
+        return (0, []) if detail else 0
+    ka, kb = [_key(w) for w in wa], [_key(w) for w in wb]
+    _, ops = align(ka, kb)
+    if ops is None:
+        m = min(len(wa), len(wb))
+        ops = [("pair", 0, m, 0, m)]
+        if len(wa) > m:
+            ops.append(("delete", m, len(wa), m, m))
+        elif len(wb) > m:
+            ops.append(("insert", m, m, m, len(wb)))
+    amap = {}
+    for tag, i1, i2, j1, j2 in ops:
+        if tag == "pair":
+            for k in range(i2 - i1):
+                amap[i1 + k] = j1 + k
+    n = 0
+    sites = []
+    for tag, i1, i2, j1, j2 in ops:
+        if tag == "pair":
+            for k in range(i2 - i1):
+                i, j = i1 + k, j1 + k
+                if wa[i] == wb[j]:
+                    continue
+                ra, rb = _brel(wa[i]), _brel(wb[j])
+                if ra and rb and amap.get(i + ra[0], -1) == j + rb[0]:
+                    continue        # same landing instruction, shifted encoding
+                n += _bh(wa[i], wb[j])
+                sites.append(("sub", i, i + 1, j, j + 1))
+            continue
+        m = min(i2 - i1, j2 - j1)
+        for k in range(m):
+            n += _bh(wa[i1 + k], wb[j1 + k])
+        n += 4 * ((i2 - i1) + (j2 - j1) - 2 * m)
+        sites.append((tag, i1, i2, j1, j2))
+    n = min(n + tail, pos)
+    return (n, sites) if detail else n
+
+
 def text_fn_resid(ao, at, fo, ft):
     """Differing bytes counted FUNCTION-ALIGNED: every retail function against
-    OUR copy of the same symbol.
+    OUR copy of the same symbol, each pair compared by `fn_resid`.
 
     Comparing `.text` at absolute section offsets makes one short function shift
     every byte behind it, so the whole tail of the section counts as residual --
     the absolute figure mostly ranks WHERE in `.text` the first size defect sits,
     not how much is actually wrong.  Matching by symbol first isolates each
-    defect to the function that owns it.  A genuine size difference still counts
-    (as the length delta), because it is still a real defect that has to be fixed
-    before the unit can link clean.  Bytes of a retail function our object does
-    not define at all are also returned separately, and printed as `<miss N>`:
+    defect to the function that owns it; aligning inside the function stops the
+    same inflation recurring one level down.  A genuine size difference is still
+    charged, as the insert/delete cost of the alignment, and is also reported
+    whole in the `dlen` column, because it is still a defect that has to be
+    fixed before the unit can link clean.  Bytes of a retail function our object
+    does not define at all are returned separately and printed as `<miss N>`:
     that is missing CONTENT (typically a `gap_` region dtk attributes to this
     unit but no source provides), a different -- and usually not
     source-attackable -- work class from a byte-level codegen defect.  render.c
@@ -211,19 +457,20 @@ def text_fn_resid(ao, at, fo, ft):
     """
     so_ = fn_spans(fo, len(ao))
     st_ = fn_spans(ft, len(at))
-    nb = miss = 0
+    nb = miss = dlen = 0
     for nm, (s, e) in st_.items():
         b = at[s:e]
         if nm not in so_:
             n = len(b) if any(b) else 0
             nb += n
             miss += n
+            dlen += n
             continue
         s2, e2 = so_[nm]
         a = ao[s2:e2]
-        n = min(len(a), len(b))
-        nb += sum(1 for i in range(n) if a[i] != b[i]) + abs(len(a) - len(b))
-    return nb, miss
+        nb += fn_resid(a, b)
+        dlen += abs(len(a) - len(b))
+    return nb, miss, dlen
 
 
 def canon(rl, sec, remap, fnsym=None, offkey=None):
@@ -331,7 +578,7 @@ def screen(ours, tgt):
     lo, lt = fn_at(fo), fn_at(ft)
     common = ({n for _, _, n in fo} & {n for _, _, n in ft})
     ko, kt = text_offkey(lo, common), text_offkey(lt, common)
-    per, tot_b, tot_r, tot_abs = {}, 0, 0, 0
+    per, tot_b, tot_r, tot_abs, tot_dl = {}, 0, 0, 0, 0
     for sec in SECS:
         a = bo if sec == ".text" else do.get(sec, b"")
         b = dt.get(sec, b"")
@@ -343,18 +590,29 @@ def screen(ours, tgt):
             nb += sum(1 for i in range(n) if a[i] != b[i])
         elif a != b:
             nb = sum(1 for x, y in zip(a, b) if x != y)
-        na, miss = nb, 0
+        na, miss, dl = nb, 0, abs(len(a) - len(b))
         if sec == ".text":
-            nb, miss = text_fn_resid(do.get(".text", b""), b, fo, ft)
+            nb, miss, dl = text_fn_resid(do.get(".text", b""), b, fo, ft)
         nr = len(set(canon(ro.get(sec, []), sec, remap, lo, ko if sec == ".text" else None))
                  ^ set(canon(rt.get(sec, []), sec, lambda x: x, lt,
                              kt if sec == ".text" else None)))
         if nb or nr or na:
-            per[sec] = (nb, nr, len(a), len(b), na, miss)
+            per[sec] = (nb, nr, len(a), len(b), na, miss, dl)
             tot_b += nb
             tot_r += nr
             tot_abs += na
-    return tot_b, tot_r, per, tot_abs
+            tot_dl += dl
+    return tot_b, tot_r, per, tot_abs, tot_dl
+
+
+def fn_fuzzy(f):
+    """objdiff records a UNIT's score under `measures` but a FUNCTION's at top
+    level.  Reading the unit shape on a function silently scored every function
+    0, so the `sub100` column counted every function in the unit."""
+    m = f.get("measures")
+    if isinstance(m, dict) and "fuzzy_match_percent" in m:
+        return m["fuzzy_match_percent"]
+    return f.get("fuzzy_match_percent", 0.0)
 
 
 def units(only=()):
@@ -370,7 +628,7 @@ def units(only=()):
         row = (u["metadata"].get("complete", False),
                u["measures"].get("fuzzy_match_percent", 0.0),
                sum(1 for f in u.get("functions", [])
-                   if f.get("measures", {}).get("fuzzy_match_percent", 0) < 100.0))
+                   if fn_fuzzy(f) < 100.0))
         meta[n] = row
         head = n.split("/", 1)
         if len(head) == 2 and head[0] in modules:
@@ -428,24 +686,26 @@ def cmd_rank(args):
     rows = []
     for name, ours, tgt, (done, fz, s1) in units(args):
         try:
-            tb, tr, per, ta = screen(ours, tgt)
+            tb, tr, per, ta, td = screen(ours, tgt)
         except Exception as e:
             print(f"ERR {name}: {e}", file=sys.stderr)
             continue
-        rows.append((tb, tr, name, per, done, s1, fz, ta))
+        rows.append((tb, tr, name, per, done, s1, fz, ta, td))
     rows.sort(key=lambda r: (r[0] + 4 * r[1], r[7]))
-    print(f"{'resid':>8} {'abs':>8} {'relocD':>7} {'M':>1} {'sub100':>6} {'fuzzy':>7}  unit")
-    for tb, tr, name, per, done, s1, fz, ta in rows:
+    print(f"{'resid':>8} {'dlen':>7} {'abs':>8} {'relocD':>7} {'M':>1} "
+          f"{'sub100':>6} {'fuzzy':>7}  unit")
+    for tb, tr, name, per, done, s1, fz, ta, td in rows:
         if not tb and not tr and not ta:
             continue
         parts = " ".join(
             f"{k}:{v[0]}b" + (f"[abs {v[4]}]" if v[4] != v[0] else "")
             + (f"<miss {v[5]}>" if v[5] else "")
+            + (f"<dlen {v[6]}>" if v[6] else "")
             + (f"/{v[1]}r" if v[1] else "")
             + (f"(sz {v[2]}!={v[3]})" if v[2] != v[3] else "")
             for k, v in per.items())
-        print(f"{tb:>8} {ta:>8} {tr:>7} {'Y' if done else '.':>1} {s1:>6} {fz:>7.2f}  {name}"
-              f"\n           {parts}")
+        print(f"{tb:>8} {td:>7} {ta:>8} {tr:>7} {'Y' if done else '.':>1} "
+              f"{s1:>6} {fz:>7.2f}  {name}\n           {parts}")
     clean = [r for r in rows if not r[0] and not r[1] and not r[7]]
     fp = [r for r in rows if (r[0] or r[1] or r[7]) and r[4]]
     print(f"\n# screened {len(rows)}  link-clean {len(clean)}  differing {len(rows)-len(clean)}")
@@ -482,31 +742,52 @@ def _aligned(ours, tgt):
     return {k: v for k, v in a.items() if k in b}, b
 
 
+def fn_sites(ours, tgt):
+    """name -> (residual bytes, alignment diff sites) per shared function."""
+    do, _, _, _, fo = load(ours)
+    dt, _, _, _, ft = load(tgt)
+    ao, at = do.get(".text", b""), dt.get(".text", b"")
+    so_, st_ = fn_spans(fo, len(ao)), fn_spans(ft, len(at))
+    out = {}
+    for nm, (s, e) in st_.items():
+        if nm in so_:
+            s2, e2 = so_[nm]
+            out[nm] = fn_resid(ao[s2:e2], at[s:e], detail=True)
+    return out
+
+
 def cmd_where(args):
     for name, ours, tgt, _ in units(args):
-        da, db = _aligned(ours, tgt)
-        n = shown = 0
-        lens = []
-        for fn in sorted(db, key=lambda f: (f not in da, f)):
-            x, y = da.get(fn, []), db[fn]
-            if x == y:
-                continue
-            if len(x) != len(y):
-                lens.append(f"{fn} ({len(x)}!={len(y)})")
-                continue
-            for i, (p, q) in enumerate(zip(x, y)):
-                if p == q:
-                    continue
-                n += 1
-                kind = "reg" if REG.sub("#", p) == REG.sub("#", q) else "STRUCT"
+        da, db = _bysym(dis(ours)), _bysym(dis(tgt))
+        sites = fn_sites(ours, tgt)
+        bad = [f for f in sites if sites[f][0]]
+        bad.sort(key=lambda f: (-sites[f][0], f))
+        tot = n = shown = 0
+        for fn in bad:
+            rb, ss = sites[fn]
+            x, y = da.get(fn, []), db.get(fn, [])
+            tot += rb
+            print(f"  [{fn}] {rb}b resid  ours {len(x)} insn / retail {len(y)}")
+            for tag, i1, i2, j1, j2 in ss:
+                n += max(i2 - i1, j2 - j1)
                 shown += 1
-                if shown <= 60:
-                    print(f"  [{fn}] insn#{i} ({kind})\n"
-                          f"      ours   {p}\n      retail {q}")
-        print(f"# {name}: differing instructions {n} in same-length functions")
-        if lens:
-            print(f"#   LENGTH DIFFERS (inlining or control-flow shape) in "
-                  f"{len(lens)}: {' '.join(lens[:20])}")
+                if shown > 80:
+                    continue
+                if tag == "sub" and i2 - i1 == 1:
+                    p, q = (x[i1] if i1 < len(x) else "?",
+                            y[j1] if j1 < len(y) else "?")
+                    kind = ("reg" if REG.sub("#", p) == REG.sub("#", q)
+                            else "STRUCT")
+                    print(f"      #{i1} ({kind})\n"
+                          f"        ours   {p}\n        retail {q}")
+                    continue
+                print(f"      #{i1} ({tag.upper()} {i2-i1}->{j2-j1})")
+                for p in x[i1:i2][:8]:
+                    print(f"        ours   {p}")
+                for q in y[j1:j2][:8]:
+                    print(f"        retail {q}")
+        print(f"# {name}: {len(bad)} differing functions, {n} differing "
+              f"instructions after alignment, {tot} aligned residual bytes")
 
 
 def cmd_classify(args):
@@ -515,7 +796,7 @@ def cmd_classify(args):
         if done:
             continue
         try:
-            tb, tr, _, ta = screen(ours, tgt)
+            tb, tr, _, ta, _ = screen(ours, tgt)
         except Exception:
             continue
         if not tb and not tr and not ta:
@@ -523,21 +804,28 @@ def cmd_classify(args):
         da, db = _aligned(ours, tgt)
         ro = st = ln = 0
         fns = set()
+        import difflib
         for fn, y in db.items():
             x = da.get(fn)
             if x == y:
                 continue
             fns.add(fn)
-            if x is None or len(x) != len(y):
-                ln += abs(len(x or ()) - len(y)) or 1
+            if x is None:
+                ln += len(y)
                 continue
-            for p, q in zip(x, y):
-                if p == q:
+            for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(
+                    None, x, y, autojunk=False).get_opcodes():
+                if tag == "equal":
                     continue
-                if REG.sub("#", p) == REG.sub("#", q):
-                    ro += 1
-                else:
-                    st += 1
+                if tag != "replace" or i2 - i1 != j2 - j1:
+                    ln += max(i2 - i1, j2 - j1)
+                    continue
+                for k in range(i2 - i1):
+                    p, q = x[i1 + k], y[j1 + k]
+                    if REG.sub("#", p) == REG.sub("#", q):
+                        ro += 1
+                    else:
+                        st += 1
         kind = ("LEN" if ln else "STRUCT" if st
                 else "REGROT" if ro else "DATA")
         out.append((tb + 4 * tr, tb, tr, kind, ro, st, name, ",".join(sorted(fns)[:3])))
