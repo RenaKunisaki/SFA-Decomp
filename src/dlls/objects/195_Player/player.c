@@ -10225,9 +10225,11 @@ int playerStateMoving(int obj, int state, f32 fv)
             else if (((ByteFlags*)((char*)inner + 0x3f0))->b08 != 0 ||
                      ((ByteFlags*)((char*)inner + 0x3f0))->b04 != 0)
             {
+                f32 vz;
+
                 t = ((PlayerState*)inner)->currentSpeed *
                     -mathSinf((3.1415927f * (182.044f * (f32) * (int*)((char*)inner + 0x48c))) / 32768.0f);
-                ya = ((PlayerState*)inner)->currentSpeed *
+                vz = ((PlayerState*)inner)->currentSpeed *
                      mathCosf((3.1415927f * (182.044f * (f32) * (int*)((char*)inner + 0x48c))) / 32768.0f);
                 if (((u32) * (u8*)((char*)inner + 0x3f0) >> 2 & 1) != 0)
                 {
@@ -10240,7 +10242,7 @@ int playerStateMoving(int obj, int state, f32 fv)
                         -(0.025f * timeDelta - ((PlayerState*)state)->baddie.animSpeedC);
                 }
                 {
-                    f32 v2 = 0.03f * ya;
+                    f32 v2 = 0.03f * vz;
                     f32 m = (v2 < -0.075f) ? -0.075f : ((v2 > 0.075f) ? 0.075f : v2);
                     ((PlayerState*)state)->baddie.animSpeedC = m * timeDelta + ((PlayerState*)state)->baddie.animSpeedC;
                 }
@@ -15892,9 +15894,9 @@ void fn_802B0EA4(GameObject* obj, int inner, int state)
             f32 frac = (((PlayerState*)state)->baddie.animSpeedA - *(f32*)(((PlayerState*)inner)->moveParams + 0x10)) /
                        (((PlayerState*)inner)->maxSpeed - *(f32*)(((PlayerState*)inner)->moveParams + 0x10));
             f32 v430 = ((PlayerState*)inner)->yawSmoothRate;
-            f32 diff = ((PlayerState*)inner)->yawSmoothScale - 1.0f;
             ((PlayerState*)inner)->yawSmoothRate =
-                v430 * (diff * ((frac < 0.0f) ? 0.0f : ((frac > 1.0f) ? 1.0f : frac)) +
+                v430 * ((((PlayerState*)inner)->yawSmoothScale - 1.0f) *
+                            ((frac < 0.0f) ? 0.0f : ((frac > 1.0f) ? 1.0f : frac)) +
                         1.0f);
         }
     }
