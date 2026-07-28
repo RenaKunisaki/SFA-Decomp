@@ -3281,7 +3281,7 @@ u32 loadTableFiles(void)
     u8* base = lbl_80345E10;
     int s = OSDisableInterrupts();
     int flags = loadedFileFlags(0);
-    lbl_803DCC80;
+    int loadedFlags = lbl_803DCC80;
     if ((gObjTableFileRequestFlags & 0x4) && !(flags & 0x4) && *(s32*)(base + 0x191e4) == -1)
     {
         mergeTableFiles((u32*)(base + 0x170e0), 0x2a, 0x45, 0x800);
