@@ -10,91 +10,75 @@
  * 2 vs 1) that opens the deck door to the golden-key passage. On DLL free it
  * detaches the attached Kyte child.
  */
-#include "main/dll/sbkytecagestate_struct.h"
-#include "main/render_lactions_api.h"
+#include "dlls/objects/496_SB_KyteCage.h"
+
+#include "dolphin/pad.h"
 #include "game/objects/object.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/frame_timing.h"
+#include "main/gamebits.h"
+#include "main/objanim.h"
 #include "main/obj_list.h"
 #include "main/obj_link.h"
 #include "main/objprint_api.h"
-#include "main/audio/sfx.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "main/objseq.h"
-#include "main/objanim_update.h"
-#include "main/gamebits.h"
-#include "main/pad.h"
-#include "main/frame_timing.h"
-#include "main/dll/SB/dll_01F0_sbkytecage.h"
-#include "dlls/object_descriptor.h"
-
-STATIC_ASSERT(sizeof(SBKyteCageState) == 0x8);
-
-#define PAD_BUTTON_A 0x100
+#include "main/pad_api.h"
+#include "main/render_lactions_api.h"
 
 /* objType of the loose Kyte child the cage attaches */
-#define SB_KYTE_OBJECT_TYPE 0x121
+#define SB_KYTECAGE_KYTE_OBJECT_TYPE 0x121
 
-/* gMapEvent action ids requested at init when GAMEBIT_KYTE_CAGED is unset */
-enum
-{
+#define SB_KYTECAGE_ANIMATION_RATE  0.004f
+#define SB_KYTECAGE_FAR_PARENT_KIND 9
+
+/* LAction IDs requested at init while Kyte is still caged. */
+enum {
     SB_KYTECAGE_LACTION_A = 88,
     SB_KYTECAGE_LACTION_B = 109
 };
 
 /* trigger-sequence indices run by SB_KyteCage_update */
-enum
-{
+enum {
     SB_KYTECAGE_TRIGGER_RELEASE_A = 1, /* first activation */
     SB_KYTECAGE_TRIGGER_RELEASE_B = 2, /* later activations */
     SB_KYTECAGE_TRIGGER_OPEN = 3
 };
 
 /* anim.currentMove ids selected from the parent's kind */
-enum
-{
+enum {
     SB_KYTECAGE_MOVE_NEAR = 5, /* parent kind < 9 */
     SB_KYTECAGE_MOVE_FAR = 9   /* parent kind >= 9 */
 };
 
-/* game bits */
-#define GAMEBIT_KYTE_CAGED  117
-#define GAMEBIT_KYTE_OPENED 0x92a
-
 /* SB_KyteCage_SeqFn anim-event opcodes (written into state->seqLatch) */
-enum
-{
+enum {
     SB_KYTECAGE_SEQEV_LATCH_1 = 1,
     SB_KYTECAGE_SEQEV_LATCH_2 = 2
 };
 
-int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
+int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     SBKyteCageState* state;
     int i;
 
     state = obj->extra;
     i = 0;
-    while (i < animUpdate->eventCount)
-    {
+    while (i < animUpdate->eventCount) {
         u8 seqCode;
 
         seqCode = animUpdate->eventIds[i];
-        if (seqCode == SB_KYTECAGE_SEQEV_LATCH_1)
-        {
+        if (seqCode == SB_KYTECAGE_SEQEV_LATCH_1) {
             state->seqLatch = 1;
-        }
-        else if (seqCode == SB_KYTECAGE_SEQEV_LATCH_2)
-        {
+        } else if (seqCode == SB_KYTECAGE_SEQEV_LATCH_2) {
             state->seqLatch = 2;
         }
         i++;
     }
 
     animUpdate->hitVolumePair = -4;
-    if (obj->seqIndex != -1)
-    {
+    if (obj->seqIndex != -1) {
         animUpdate->hitVolumePair &= ~4;
-        if (ObjAnim_AdvanceCurrentMove((int)obj, 0.004f, timeDelta, NULL) != 0)
-        {
+        if (ObjAnim_AdvanceCurrentMove((int)obj, SB_KYTECAGE_ANIMATION_RATE, timeDelta, NULL) != 0) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_gdtur2_c);
         }
     }
@@ -103,121 +87,97 @@ int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
     return 0;
 }
 
-int SB_KyteCage_getExtraSize(void)
-{
+int SB_KyteCage_getExtraSize(void) {
     return sizeof(SBKyteCageState);
 }
-int SB_KyteCage_getObjectTypeId(void)
-{
-    return 0x0;
+
+int SB_KyteCage_getObjectTypeId(void) {
+    return 0;
 }
 
-void SB_KyteCage_free(GameObject* obj)
-{
+void SB_KyteCage_free(GameObject* obj) {
     GameObject* child = ((SBKyteCageState*)obj->extra)->kyte;
-    if (child != NULL)
-    {
+    if (child != NULL) {
         ObjLink_DetachChild(obj, child);
     }
 }
 
-void SB_KyteCage_render(void)
-{
+void SB_KyteCage_render(void) {
 }
 
-void SB_KyteCage_hitDetect(void)
-{
+void SB_KyteCage_hitDetect(void) {
 }
 
-void SB_KyteCage_update(GameObject* obj)
-{
+void SB_KyteCage_update(GameObject* obj) {
     SBKyteCageState* state = obj->extra;
 
     obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
-    if (state->kyte == NULL)
-    {
+    if (state->kyte == NULL) {
         GameObject** objects;
         int count;
         int i;
         objects = (GameObject**)ObjList_GetObjects(&i, &count);
-        for (i = 0; i < count; i++)
-        {
+        for (i = 0; i < count; i++) {
             GameObject* child = objects[i];
-            if (child->anim.seqId == SB_KYTE_OBJECT_TYPE)
-            {
+            if (child->anim.seqId == SB_KYTECAGE_KYTE_OBJECT_TYPE) {
                 state->kyte = child;
                 ObjLink_AttachChild(obj, state->kyte, 1);
                 i = count;
             }
         }
     }
-    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
-    {
-        if (mainGetBit(GAMEBIT_KYTE_OPENED) == 0)
-        {
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
+        if (mainGetBit(GAMEBIT_LearnedToSpeak) == 0) {
             buttonDisable(0, PAD_BUTTON_A);
             (*gObjectTriggerInterface)->setRunSequenceWorldSpace((int)obj, 0);
             (*gObjectTriggerInterface)->runSequence(SB_KYTECAGE_TRIGGER_OPEN, (void*)obj, -1);
-            mainSetBits(GAMEBIT_KYTE_OPENED, 1);
+            mainSetBits(GAMEBIT_LearnedToSpeak, 1);
             return;
         }
     }
-    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
-    {
+    if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
         buttonDisable(0, PAD_BUTTON_A);
         (*gObjectTriggerInterface)->setRunSequenceWorldSpace((int)obj, 0);
-        if (state->releaseStage != 0)
-        {
+        if (state->releaseStage != 0) {
             (*gObjectTriggerInterface)->runSequence(SB_KYTECAGE_TRIGGER_RELEASE_B, (void*)obj, -1);
-        }
-        else
-        {
+        } else {
             (*gObjectTriggerInterface)->runSequence(SB_KYTECAGE_TRIGGER_RELEASE_A, (void*)obj, -1);
             state->releaseStage = 1;
         }
     }
-    if (obj->anim.parent != NULL)
-    {
+    if (obj->anim.parent != NULL) {
         int kind = ((GameObject*)obj->anim.parent)->userData1;
         s16* mvec = objModelGetVecFn_800395d8(obj, 0);
-        if (mvec != 0 && kind < 9 && obj->anim.currentMove != SB_KYTECAGE_MOVE_NEAR)
-        {
+        if (mvec != NULL && kind < SB_KYTECAGE_FAR_PARENT_KIND && obj->anim.currentMove != SB_KYTECAGE_MOVE_NEAR) {
             mvec[2] = ((GameObject*)obj->anim.parent)->anim.rotZ;
             ObjAnim_SetCurrentMove((int)obj, SB_KYTECAGE_MOVE_NEAR, 0.0f, 0);
-        }
-        else if (mvec != 0 && kind >= 9 && obj->anim.currentMove != SB_KYTECAGE_MOVE_FAR)
-        {
+        } else if (mvec != NULL && kind >= SB_KYTECAGE_FAR_PARENT_KIND &&
+                   obj->anim.currentMove != SB_KYTECAGE_MOVE_FAR) {
             mvec[2] = 0;
             ObjAnim_SetCurrentMove((int)obj, SB_KYTECAGE_MOVE_FAR, 0.0f, 0);
         }
     }
-    if (ObjAnim_AdvanceCurrentMove((int)obj, 0.004f, timeDelta, NULL) != 0)
-    {
+    if (ObjAnim_AdvanceCurrentMove((int)obj, SB_KYTECAGE_ANIMATION_RATE, timeDelta, NULL) != 0) {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_gdtur2_c);
     }
 }
 
-void SB_KyteCage_init(GameObject* obj, SBKyteCagePlacement* placement)
-{
+void SB_KyteCage_init(GameObject* obj, SBKyteCagePlacementView* placement) {
     SBKyteCageState* state = obj->extra;
     obj->animEventCallback = SB_KyteCage_SeqFn;
     obj->anim.rotX = (s16)(placement->rotXByte << 8);
-    obj->objectFlags =
-        (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN));
+    obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HITDETECT_DISABLED | OBJECT_OBJFLAG_HIDDEN));
     state->seqLatch = 0;
-    if (mainGetBit(GAMEBIT_KYTE_CAGED) == 0u)
-    {
+    if (mainGetBit(GAMEBIT_ITEM_Staff_Got) == 0u) {
         getLActions(obj, obj, SB_KYTECAGE_LACTION_A, 0, 0, 0);
         getLActions(obj, obj, SB_KYTECAGE_LACTION_B, 0, 0, 0);
     }
 }
 
-void SB_KyteCage_release(void)
-{
+void SB_KyteCage_release(void) {
 }
 
-void SB_KyteCage_initialise(void)
-{
+void SB_KyteCage_initialise(void) {
 }
 
 ObjectDescriptor gSB_KyteCageObjDescriptor = {
@@ -225,13 +185,13 @@ ObjectDescriptor gSB_KyteCageObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)SB_KyteCage_initialise,
-    (ObjectDescriptorCallback)SB_KyteCage_release,
+    SB_KyteCage_initialise,
+    SB_KyteCage_release,
     0,
     (ObjectDescriptorCallback)SB_KyteCage_init,
     (ObjectDescriptorCallback)SB_KyteCage_update,
-    (ObjectDescriptorCallback)SB_KyteCage_hitDetect,
-    (ObjectDescriptorCallback)SB_KyteCage_render,
+    SB_KyteCage_hitDetect,
+    SB_KyteCage_render,
     (ObjectDescriptorCallback)SB_KyteCage_free,
     (ObjectDescriptorCallback)SB_KyteCage_getObjectTypeId,
     SB_KyteCage_getExtraSize,

@@ -539,7 +539,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1ED | SB_FireBall | COMPLETE | dlls/objects/493_SB_FireBall/SB_FireBall.c | = (canonical) | Exact complete nine-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x18-byte state, canonical unit header, canonical hit-state and particle interfaces, and exact emitted sections, relocations, and symbols; no object-specific placement layout is consumed, and the generated source path remains unchanged |
 | 0x1EE | SB_CannonBa | COMPLETE | dlls/objects/494_SB_CannonBa/SB_CannonBa.c | = (canonical) | Exact complete nine-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x24-byte state, canonical unit header and shared cannonball object ID, canonical hit-state, light, particle, and effect interfaces, and exact emitted sections, relocations, and symbols; the retail basename is truncated, no object-specific placement layout is consumed, and the generated source path remains unchanged |
 | 0x1EF | SB_CloudBal | COMPLETE | dlls/objects/495_SB_CloudBal/SB_CloudBal.c | = (canonical) | Exact complete nine-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x24-byte state, canonical unit header, canonical object and hit-state fields, and exact emitted sections, relocations, and symbols; the narrow model-light declarations preserve the TU's exact anonymous literal numbering, the retail basename is truncated, no object-specific placement layout is consumed, and the generated source path remains unchanged |
-| 0x1F0 | SB_KyteCage | COMPLETE | dlls/objects/496_SB_KyteCage/SB_KyteCage.c | = (canonical) | — |
+| 0x1F0 | SB_KyteCage | COMPLETE | dlls/objects/496_SB_KyteCage/SB_KyteCage.c | = (canonical) | Exact complete ten-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x08-byte state, asserted callback-visible placement fields, canonical unit header, canonical staff and learned-to-speak gamebits, and exact emitted sections, relocations, and symbols; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, and the generated source path remains unchanged |
 | 0x1F1 | SB_SeqDoor | COMPLETE | dlls/objects/497_SB_SeqDoor/SB_SeqDoor.c | = (canonical) | — |
 | 0x1F2 | SB_CageKyte | COMPLETE | dlls/objects/498_SB_CageKyte/SB_CageKyte.c | = (canonical) | — |
 | 0x1F3 | SB_MiniFire | COMPLETE | dlls/objects/499_SB_MiniFire/SB_MiniFire.c | = (canonical) | — |
@@ -1066,6 +1066,7 @@ more as they are recovered.
 | 0x1ED | dlls/objects/493_SB_FireBall/SB_FireBall.c | include/dlls/objects/493_SB_FireBall.h |
 | 0x1EE | dlls/objects/494_SB_CannonBa/SB_CannonBa.c | include/dlls/objects/494_SB_CannonBa.h |
 | 0x1EF | dlls/objects/495_SB_CloudBal/SB_CloudBal.c | include/dlls/objects/495_SB_CloudBal.h |
+| 0x1F0 | dlls/objects/496_SB_KyteCage/SB_KyteCage.c | include/dlls/objects/496_SB_KyteCage.h |
 | 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |
