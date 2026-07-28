@@ -430,9 +430,9 @@ void curves_updateSurfaceTilt(short* obj, int state)
     f32 normalZ;
     short pitch;
     int angle;
-    f32 dy;
-    f32 dx;
-    f32 dz;
+    f32 nx;
+    f32 ny;
+    f32 nz;
     short outVec[4];
     f32 matrixBuf[20];
 
@@ -452,13 +452,13 @@ void curves_updateSurfaceTilt(short* obj, int state)
         matrixBuf[3] = 0.0f;
         mtxRotateByVec3s(&matrixBuf[4], outVec);
         Matrix_TransformPoint((f32*)((u8*)matrixBuf + 0x10), (double)collision->surfaceNormalX, (double)collision->surfaceNormalY,
-                              (double)collision->surfaceNormalZ, &dy, &dx, &dz);
-        angle = getAngle(dx, dz);
+                              (double)collision->surfaceNormalZ, &nx, &ny, &nz);
+        angle = getAngle(ny, nz);
         pitch = 0x4000 - angle;
         collision->tiltPitchTarget = pitch;
         collision->tiltPitch =
             collision->tiltPitch + ((int)((u32)framesThisStep * ((int)pitch - collision->tiltPitch)) >> 3);
-        angle = getAngle(dx, dy);
+        angle = getAngle(ny, nx);
         pitch = -(0x4000 - angle);
         collision->tiltRollTarget = pitch;
         collision->tiltRoll =

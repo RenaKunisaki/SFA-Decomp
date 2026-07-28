@@ -307,9 +307,9 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
         f32 m[16];
         f64 a8;
     } rotU;
+    f32 outX;
     f32 outY;
     f32 outZ;
-    f32 outX;
     f32 posMtx[16];
 #define rotMtx rotU.m
 
@@ -327,12 +327,12 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
     xf.y = 0.0f;
     xf.z = 0.0f;
     setMatrixFromObjectPos(posMtx, &xf);
-    Matrix_TransformPoint(posMtx, 0.0f, 0.0f, 1.0f, &outY, &outZ, &outX);
-    state->planeNormalX = outY;
-    state->planeNormalY = outZ;
-    state->planeNormalZ = outX;
+    Matrix_TransformPoint(posMtx, 0.0f, 0.0f, 1.0f, &outX, &outY, &outZ);
+    state->planeNormalX = outX;
+    state->planeNormalY = outY;
+    state->planeNormalZ = outZ;
     state->planeOffset =
-        -(obj->anim.worldPosZ * outX + (obj->anim.worldPosX * outY + obj->anim.worldPosY * outZ));
+        -(obj->anim.worldPosZ * outZ + (obj->anim.worldPosX * outX + obj->anim.worldPosY * outY));
 
     xf.rotX = (s16)-obj->anim.rotX;
     xf.rotY = (s16)-obj->anim.rotY;
