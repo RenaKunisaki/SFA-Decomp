@@ -20,7 +20,6 @@
 #include "main/object_transform.h"
 #include "main/object_render.h"
 #include "main/dll/sbshipheadstate_struct.h"
-#include "main/dll/sbpropellerstate_struct.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/obj_group.h"
@@ -35,7 +34,6 @@
 
 u8 gSbShipHeadHasFiredFireball = 1;
 
-STATIC_ASSERT(sizeof(SBPropellerState) == 0x10);
 STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);
 
 #define SBSHIPHEAD_OBJGROUP 3

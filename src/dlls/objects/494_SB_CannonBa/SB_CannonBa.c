@@ -13,7 +13,6 @@
 #include "main/model_light.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/sbshipheadstate_struct.h"
-#include "main/dll/sbpropellerstate_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/SB/dll_01EE_sbcannonball.h"
 #include "main/frame_timing.h"
@@ -59,8 +58,6 @@
 
 #define SB_CANNONBALL_LAUNCH_SFX 53
 #define SB_CANNONBALL_LOOP_SFX   714
-
-STATIC_ASSERT(sizeof(SBPropellerState) == 0x10);
 
 STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);
 

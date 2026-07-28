@@ -25,7 +25,6 @@
 #include "sys/objects.h"
 #include "main/obj_path.h"
 #include "main/obj_list.h"
-#include "main/dll/sbpropellerstate_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/SB/dll_01EE_sbcannonball.h"
 #include "dlls/objects/488_SB_Galleon.h"
@@ -71,8 +70,6 @@
 #define SB_SHIPGUN_SMOKE_PARTICLE_ID    0x7AA
 #define SB_SHIPGUN_SMOKE_PARTICLE_FLAGS 0x0C0A
 #define SB_SHIPGUN_SMOKE_PARTICLE_PARAM 2
-
-STATIC_ASSERT(sizeof(SBPropellerState) == 0x10);
 
 STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);
 

@@ -4,6 +4,7 @@
  */
 #include "dlls/objects/488_SB_Galleon.h"
 
+#include "dlls/objects/489_SB_Propelle.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_channel_query_api.h"
 #include "main/audio/sfx_play_api.h"
@@ -120,8 +121,6 @@ extern f32 lbl_803E57AC;
 extern f32 lbl_803E57B0;
 extern f32 lbl_803E57B4;
 extern f32 lbl_803E57B8;
-
-u32 sbGetPropeller(void);
 
 ObjectDescriptor15 gSB_GalleonObjDescriptor = {
     0,

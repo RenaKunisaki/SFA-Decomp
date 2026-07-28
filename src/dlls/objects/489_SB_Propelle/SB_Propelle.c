@@ -9,24 +9,20 @@
  * propeller queries the parent Galleon through its anim.dll vtable
  * (offsets 0x20/0x24/0x28) for camera/state info.
  */
-#include "main/dll/partfx_interface.h"
-#include "main/audio/sfx_keep_alive_api.h"
-#include "main/dll/sbshipheadstate_struct.h"
-#include "main/frame_timing.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/vecmath.h"
-#include "main/dll/sbpropellerstate_struct.h"
-#include "main/objhits.h"
-#include "dlls/objects/488_SB_Galleon.h"
-#include "main/obj_path.h"
-#include "main/dll/SB/dll_01E9_sbpropeller.h"
-#include "main/object_render.h"
-#include "sys/objects.h"
-#include "main/objfx.h"
-#include "dlls/object_descriptor.h"
+#include "dlls/objects/489_SB_Propelle.h"
 
-STATIC_ASSERT(sizeof(SBPropellerState) == 0x10);
-STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);
+#include "dlls/objects/488_SB_Galleon.h"
+#include "game/objects/object.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/partfx_interface.h"
+#include "main/frame_timing.h"
+#include "main/object_render.h"
+#include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/obj_path.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 
 /* anim.seqId tag identifying a live propeller (vs. a placeholder stand-in) */
 #define SB_PROPELLER_SEQ_ID 0x69c
@@ -42,162 +38,133 @@ STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);
 #define SB_PROPELLER_PARTFX_SMOKE  0x9f  /* smokeTimer-gated smoke burst at the hub */
 #define SB_PROPELLER_PARTFX_DEBRIS 0x7aa /* bankIndex==1 debris trail from path point 0 */
 
-
 u32 lbl_803DDC40;
 
-u32 sbGetPropeller(void)
-{
+u32 sbGetPropeller(void) {
     return lbl_803DDC40;
 }
 
-int SB_Propeller_getExtraSize(void)
-{
+int SB_Propeller_getExtraSize(void) {
     return sizeof(SBPropellerState);
 }
 
-void SB_Propeller_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void SB_Propeller_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void SB_Propeller_hitDetect(GameObject* obj)
-{
-    if (obj->anim.seqId != SB_PROPELLER_SEQ_ID)
+void SB_Propeller_hitDetect(GameObject* obj) {
+    if (obj->anim.seqId != SB_PROPELLER_SEQ_ID) {
         return;
+    }
     obj->anim.rotZ = ((GameObject*)lbl_803DDC40)->anim.rotZ;
 }
 
-void SB_Propeller_update(GameObject* obj)
-{
-    ObjAnimComponent* objAnim;
-    int camA;
-    int camB;
-    int camC;
+void SB_Propeller_update(GameObject* obj) {
+    int galleonStage;
+    int galleonPhase;
+    int cameraState;
     int parentTimer;
-    GameObject* object;
-    int i;
-    int j;
-    int hit;
+    int smokeCount;
+    int frameIndex;
+    int hitObjectAddress;
     SBPropellerState* state;
-    PartFxSpawnParams effect;
+    PartFxSpawnParams spawnParams;
 
-    objAnim = (ObjAnimComponent*)obj;
-    object = obj;
-    state = object->extra;
-    camA = SB_GALLEON_VTBL(*(int*)&objAnim->parent)->getStage(*(int*)&objAnim->parent);
-    camB = SB_GALLEON_VTBL(*(int*)&objAnim->parent)->getPhase(*(int*)&objAnim->parent);
-    if (((state->health != 0) && (camB < 6)) && (objAnim->seqId != SB_PROPELLER_SEQ_ID))
-    {
+    state = obj->extra;
+    galleonStage = SB_GALLEON_VTBL(*(int*)&obj->anim.parent)->getStage(*(int*)&obj->anim.parent);
+    galleonPhase = SB_GALLEON_VTBL(*(int*)&obj->anim.parent)->getPhase(*(int*)&obj->anim.parent);
+    if (state->health != 0 && galleonPhase < 6 && obj->anim.seqId != SB_PROPELLER_SEQ_ID) {
         Sfx_KeepAliveLoopedObjectSound((int)obj, SB_PROPELLER_SFX_LOOP);
     }
-    camC = DBprotection_getCameraState((GameObject*)objAnim->parent);
-    if ((camC < 2) && (state->health <= 0))
-    {
+    cameraState = DBprotection_getCameraState((GameObject*)obj->anim.parent);
+    if (cameraState < 2 && state->health <= 0) {
         state->smokeTimer = state->smokeTimer - timeDelta;
-        if (state->smokeTimer <= 0.0f)
-        {
-            f32 spd;
-            for (i = randomGetRange(10, 0x19), spd = 1.0f; i != 0; i--)
-            {
-                effect.posX = objAnim->worldPosX;
-                effect.posY = objAnim->worldPosY;
-                effect.posZ = objAnim->worldPosZ;
-                effect.scale = spd;
-                (*gPartfxInterface)->spawnObject((void*)obj, SB_PROPELLER_PARTFX_SMOKE, &effect, 0x200001, -1, NULL);
+        if (state->smokeTimer <= 0.0f) {
+            f32 scale;
+            for (smokeCount = randomGetRange(10, 0x19), scale = 1.0f; smokeCount != 0; smokeCount--) {
+                spawnParams.posX = obj->anim.worldPosX;
+                spawnParams.posY = obj->anim.worldPosY;
+                spawnParams.posZ = obj->anim.worldPosZ;
+                spawnParams.scale = scale;
+                (*gPartfxInterface)->spawnObject(obj, SB_PROPELLER_PARTFX_SMOKE, &spawnParams, 0x200001, -1, NULL);
             }
             state->smokeTimer = (f32)randomGetRange(0x5a, 0xf0);
         }
-        if ((2 < camA) && (objAnim->bankIndex == 1))
-        {
-            effect.scale = 2.5f;
-            effect.arg3 = 0xc0a;
-            ObjPath_GetPointWorldPosition(obj, 0, &effect.posX, &effect.posY, &effect.posZ, 0);
-            effect.posX = effect.posX - objAnim->worldPosX;
-            effect.posY = effect.posY - objAnim->worldPosY;
-            effect.posZ = effect.posZ - objAnim->worldPosZ;
-            for (j = 0; j < framesThisStep; j++)
-            {
-                (*gPartfxInterface)->spawnObject((void*)obj, SB_PROPELLER_PARTFX_DEBRIS, &effect, 2, -1, NULL);
+        if (2 < galleonStage && obj->anim.bankIndex == 1) {
+            spawnParams.scale = 2.5f;
+            spawnParams.arg3 = 0xc0a;
+            ObjPath_GetPointWorldPosition(obj, 0, &spawnParams.posX, &spawnParams.posY, &spawnParams.posZ, 0);
+            spawnParams.posX = spawnParams.posX - obj->anim.worldPosX;
+            spawnParams.posY = spawnParams.posY - obj->anim.worldPosY;
+            spawnParams.posZ = spawnParams.posZ - obj->anim.worldPosZ;
+            for (frameIndex = 0; frameIndex < framesThisStep; frameIndex++) {
+                (*gPartfxInterface)->spawnObject(obj, SB_PROPELLER_PARTFX_DEBRIS, &spawnParams, 2, -1, NULL);
             }
         }
     }
-    if (objAnim->parent != NULL)
-    {
-        parentTimer = ((GameObject*)objAnim->parent)->userData1;
-        if ((objAnim->seqId != SB_PROPELLER_SEQ_ID) && (parentTimer < 4))
-        {
+    if (obj->anim.parent != NULL) {
+        parentTimer = ((GameObject*)obj->anim.parent)->userData1;
+        if (obj->anim.seqId != SB_PROPELLER_SEQ_ID && parentTimer < 4) {
             state->spinBlend = state->spinRate / 1600.0f;
-            if (state->spinBlend < 0.0f)
-            {
+            if (state->spinBlend < 0.0f) {
                 state->spinBlend = -state->spinBlend;
             }
-            if (state->spinBlend < 0.2f)
-            {
+            if (state->spinBlend < 0.2f) {
                 state->spinBlend = 0.2f;
             }
         }
-        object->userData1 = object->userData1 - framesThisStep;
-        if (object->userData1 < 0)
-        {
-            object->userData1 = 0;
+        obj->userData1 = obj->userData1 - framesThisStep;
+        if (obj->userData1 < 0) {
+            obj->userData1 = 0;
         }
-        if (((((((camB == 1) && (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0)) && (object->userData1 == 0)) &&
-               (((void*)hit != NULL && ((void*)hit != (void*)Obj_GetPlayerObject())))) &&
-              ((((GameObject*)hit)->anim.seqId != SB_PROPELLER_SEQ_ID &&
-                ((((GameObject*)hit)->anim.seqId != SB_OTHER_SEQ_ID &&
-                  ((object->userData1 = 0x14, objAnim->parent != NULL))))))) &&
-             ((camA == 2 || (camA == 5)))) &&
-            (objAnim->seqId == SB_PROPELLER_SEQ_ID))
-        {
+        if (galleonPhase == 1 && ObjHits_GetPriorityHit(obj, &hitObjectAddress, 0, 0) != 0 && obj->userData1 == 0 &&
+            (void*)hitObjectAddress != NULL && (void*)hitObjectAddress != (void*)Obj_GetPlayerObject() &&
+            ((GameObject*)hitObjectAddress)->anim.seqId != SB_PROPELLER_SEQ_ID &&
+            ((GameObject*)hitObjectAddress)->anim.seqId != SB_OTHER_SEQ_ID &&
+            (obj->userData1 = 0x14, obj->anim.parent != NULL) && (galleonStage == 2 || galleonStage == 5) &&
+            obj->anim.seqId == SB_PROPELLER_SEQ_ID) {
             Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
             Sfx_PlayFromObject((int)obj, SB_PROPELLER_SFX_HIT);
             state->health -= 1;
-            if (state->health <= 0)
-            {
+            if (state->health <= 0) {
                 state->health = 0;
-                SB_GALLEON_VTBL(*(int*)&objAnim->parent)->onPartDestroyed(*(int*)&objAnim->parent);
+                SB_GALLEON_VTBL(*(int*)&obj->anim.parent)->onPartDestroyed(*(int*)&obj->anim.parent);
                 ObjHits_DisableObject(obj);
-                objAnim->flags = objAnim->flags | OBJANIM_FLAG_HIDDEN;
+                obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
                 spawnExplosion(obj, 100.0f, 1, 1, 1, 0, 1, 1, 0);
                 Sfx_PlayFromObject((int)obj, SB_PROPELLER_SFX_DESTROYED);
             }
         }
-        if (object->userData1 == 0)
-        {
-            ((ObjHitsPriorityState*)objAnim->hitReactState)->hitVolumePriority = 6;
-            ((ObjHitsPriorityState*)objAnim->hitReactState)->hitVolumeId = 1;
-            ((ObjHitsPriorityState*)objAnim->hitReactState)->objectHitMask = 0x10;
-            ((ObjHitsPriorityState*)objAnim->hitReactState)->skeletonHitMask = 0x10;
+        if (obj->userData1 == 0) {
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = 6;
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 1;
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectHitMask = 0x10;
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->skeletonHitMask = 0x10;
+        } else {
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairPriority = 0;
         }
-        else
-        {
-            ((ObjHitsPriorityState*)objAnim->hitReactState)->objectPairPriority = 0;
-        }
-        objAnim->rotZ = -(state->spinRate * timeDelta - (f32)objAnim->rotZ);
+        obj->anim.rotZ = -(state->spinRate * timeDelta - (f32)obj->anim.rotZ);
     }
 }
 
-void SB_Propeller_init(GameObject* obj, SBPropellerPlacement* placement)
-{
-    ObjAnimComponent* objAnim;
+void SB_Propeller_init(GameObject* obj, SBPropellerPlacementView* placement) {
     u32 randVal;
     SBPropellerState* state;
 
-    objAnim = &obj->anim;
     state = obj->extra;
     randVal = randomGetRange(0x5a, 0xf0);
-    state->smokeTimer = (f32)(s32)(randVal);
+    state->smokeTimer = (f32)(s32)randVal;
     state->spinBlend = 1.0f;
     state->spinRate = 1200;
     state->health = 4;
-    objAnim->bankIndex = (char)placement->modelBankIndex;
-    if (objAnim->seqId != SB_PROPELLER_SEQ_ID)
-    {
+    obj->anim.bankIndex = (s8)placement->modelBankIndex;
+    if (obj->anim.seqId != SB_PROPELLER_SEQ_ID) {
         lbl_803DDC40 = (u32)obj;
     }
-    return;
 }
 
 ObjectDescriptor gSB_PropellerObjDescriptor = {
