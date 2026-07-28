@@ -5,7 +5,7 @@
 #include "main/projected_shadow.h"
 
 void setupAdditiveTintedTexture(void* texture, u32* colorA, u32* colorB);
-void gxDebugTextureFn_80078c1c(void);
+void gxSetDebugTextMode(void);
 void gxTevModulateRasStage(void);
 void gxTevRasTimesColor1Stage(void);
 void gxTevPassRasStage(void);

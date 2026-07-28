@@ -46,7 +46,7 @@ STATIC_ASSERT(offsetof(MmpGyserventState, reachAX) == 0x1C);
 STATIC_ASSERT(offsetof(MmpGyserventState, reachBX) == 0x28);
 STATIC_ASSERT(offsetof(MmpGyserventState, reach) == 0x34);
 
-void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement);
+void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement);
 void objSeqMoveFn_80199188(GameObject* obj, GameObject* seqObj);
 void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj);
 

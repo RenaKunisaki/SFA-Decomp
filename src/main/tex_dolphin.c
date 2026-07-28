@@ -1268,7 +1268,7 @@ void renderGlows(void)
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
     gxTevResetStages();
-    gxTextureFn_800794e0();
+    gxTevColor1TexAlphaStage();
     gxTevCommitStages();
     GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, fogCol);
     gxSetAdditiveBlendNoZTest();
@@ -1375,7 +1375,7 @@ void renderGlows(void)
                 e->glowAlphaStep = -0x10;
         }
         GXSetCurrentMtx(GX_IDENTITY);
-        gxTextureFn_800794e0();
+        gxTevColor1TexAlphaStage();
         gxSetAdditiveBlendNoZTest();
         for (i = 0; i < lbl_803DCE06; i++)
         {

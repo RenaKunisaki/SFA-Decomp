@@ -412,7 +412,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
             break;
 
         case 0xd:
-            subtitleFn_8001b700();
+            subtitleStop();
         case 0xe:
         case 0xf:
         case 0x10:

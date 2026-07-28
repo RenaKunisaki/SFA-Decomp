@@ -194,7 +194,7 @@ int getCurLanguage(void)
     return curLanguage;
 }
 
-f32 gameTextFn_80019c00(void)
+f32 gameTextGetTimer(void)
 {
     return gameTextFonts->timer;
 }
@@ -1249,7 +1249,7 @@ void subtitleUpdateAndDraw(int a)
             gSubtitleLineIndex++;
             if (gSubtitleLineIndex + 1 >= gSubtitleLineCount)
             {
-                subtitleFn_8001b700();
+                subtitleStop();
                 if (gGameTextSequenceMode != 0)
                 {
                     gameTextSetCharset(charset, 2);
@@ -1284,7 +1284,7 @@ void mainLoopDoGameText(void)
     }
 }
 
-void subtitleFn_8001b700(void)
+void subtitleStop(void)
 {
     void** slot;
     int i;

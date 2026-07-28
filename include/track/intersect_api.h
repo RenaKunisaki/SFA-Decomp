@@ -15,7 +15,7 @@ void gxSetOpaqueZWriteMode(void);
 void gxSetAdditiveBlendNoZTest(void);
 void gxSetAlphaBlendZTest(void);
 void gxTevModulateColor1Stage(void);
-void gxTextureFn_800794e0(void);
+void gxTevColor1TexAlphaStage(void);
 void waterFxInit(void);
 void waterFxSetDisabled(int disabled);
 void mtx44Perspective(f32* matrix, u16* perspectiveNorm, f32 fovY, f32 aspect, f32 nearPlane, f32 farPlane, f32 scale);

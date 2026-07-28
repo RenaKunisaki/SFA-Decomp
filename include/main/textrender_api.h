@@ -21,7 +21,7 @@ extern GameTextSlot lbl_8033A540[];
 #define gGameTextCommandCount lbl_803DC9C8
 #define gGameTextCommandSlots lbl_8033A540
 
-void subtitleFn_8001b700(void);
+void subtitleStop(void);
 void subtitleStart(int x);
 void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang);
 void subtitleUpdateAndDraw(int mode);
@@ -34,7 +34,7 @@ void gameTextResetCursor(int flags);
 void gameTextSetCursor(u16 x, u16 y, int flags);
 void gameTextSetDrawFunc(void* drawFunc);
 void gameTextSetWindow(u8* textBox);
-f32 gameTextFn_80019c00(void);
+f32 gameTextGetTimer(void);
 void gameTextRun(void);
 void* gameTextGet(int textId);
 void mainLoopDoGameText(void);

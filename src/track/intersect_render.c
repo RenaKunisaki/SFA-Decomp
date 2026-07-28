@@ -3270,7 +3270,7 @@ void gxSetAlphaBlendZTest(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxDebugTextureFn_80078c1c(void)
+void gxSetDebugTextMode(void)
 {
     GXSetCullMode(GX_CULL_NONE);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
@@ -3418,7 +3418,7 @@ void gxTevAddTextureFrameBlendStages(void)
     gTevTexMapCursor += 1;
 }
 
-void gxTextureFn_800794e0(void)
+void gxTevColor1TexAlphaStage(void)
 {
     GXSetTevOrder(gTevStageCursor, gTevTexCoordCursor, gTevTexMapCursor, GX_COLOR_NULL);
     GXSetTevDirect(gTevStageCursor);
