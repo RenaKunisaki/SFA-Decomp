@@ -6,9 +6,11 @@
 #include "game/objects/object_setup.h"
 #include "main/dll/baddie_state.h"
 
-#define DLL437_STATE_HANDLER_COUNT           5
-#define DLL437_SUBSTATE_HANDLER_COUNT        3
-#define DLL437_SEQUENCE_ID_SC_BABY_LIGHTFOOT 0x27C
+#define DLL437_STATE_HANDLER_COUNT                   5
+#define DLL437_SUBSTATE_HANDLER_COUNT                3
+#define DLL437_SEQUENCE_ID_SC_LIGHTFOOT              0x27B
+#define DLL437_SEQUENCE_ID_SC_BABY_LIGHTFOOT         0x27C
+#define DLL437_COMPLETION_GAMEBIT_SC_TOTEM_BOND      0x64C
 
 typedef int (*Dll437StateHandler)(GameObject* obj, int state, f32 timeDelta);
 typedef int (*Dll437SubstateHandler)(int obj, int state);
