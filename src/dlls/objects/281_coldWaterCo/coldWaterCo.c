@@ -22,7 +22,7 @@ void ColdWaterControl_update(GameObject* obj) {
     }
 
     if (state->cachedPlayer != NULL) {
-        if (fn_80295C40(state->cachedPlayer) != 0) {
+        if (playerIsInWater(state->cachedPlayer) != 0) {
             if (COLD_WATER_TIMER_INITIAL == state->damageTimer) {
                 ObjHits_RecordObjectHit(state->cachedPlayer, obj, COLD_WATER_HIT_PRIORITY, 0, 1);
             }

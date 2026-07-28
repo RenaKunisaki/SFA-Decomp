@@ -716,7 +716,7 @@ GameObject* dll_19_findAggroTarget(GameObject* self, void* state, f32 frange, in
         {
             if ((s8)((BaddieState*)state)->hitPoints != 0)
             {
-                if (fn_8029610C(obj) > 0.5f)
+                if (playerGetAnimSpeed(obj) > 0.5f)
                 {
                     found = 1;
                 }

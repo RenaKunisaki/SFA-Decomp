@@ -220,7 +220,7 @@ static inline void sc_totembond_finishOrbGame(GameObject* obj, ScTotemBondState*
     (*gMapEventInterface)->clearRestartPoint();
     (*gCameraInterface)->setMode(SC_TOTEM_BOND_CAMERA_MODE_DEFAULT, 0, 3, 0, NULL, 0, 0);
     obj->anim.alpha = 0xFF;
-    fn_80296124(player, NULL, NULL, 0);
+    playerTeleport(player, NULL, NULL, 0);
     ObjHits_EnableObject(obj);
     hudFn_8011f38c(0);
     mainSetBits(SC_TOTEM_BOND_GAMEBIT_COMPLETE, 1);
@@ -297,7 +297,7 @@ void sc_totembond_update(GameObject* obj) {
             }
         }
 
-        fn_80296124(player, &obj->anim.localPos, &obj->anim.rotation, 0);
+        playerTeleport(player, &obj->anim.localPos, &obj->anim.rotation, 0);
         state->cameraX = obj->anim.localPosX;
         state->cameraY = SC_TOTEM_BOND_CAMERA_HEIGHT + obj->anim.localPosY;
         state->cameraZ = obj->anim.localPosZ;

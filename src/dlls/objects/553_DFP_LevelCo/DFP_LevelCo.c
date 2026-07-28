@@ -152,7 +152,7 @@ int DFP_LevelControl_sequenceCallback(GameObject* obj)
     if (timer > 0)
     {
         state->timer -= (s16)timeDelta;
-        fn_802960E8(player, 0x51e);
+        playerSetPendingBoneEffect(player, 0x51e);
     }
     return 0;
 }

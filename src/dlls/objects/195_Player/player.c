@@ -1383,13 +1383,13 @@ int fn_80295C0C(GameObject* obj)
     return ((inner->flags3F0 >> 1) & 1) == 0;
 }
 
-int fn_80295C24(GameObject* obj)
+int playerIsTargetSuppressed(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return inner->targetSuppressTimer > 0.0f;
 }
 
-int fn_80295C40(GameObject* obj)
+int playerIsInWater(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return inner->waterDepth > 2.0f;
@@ -1407,7 +1407,7 @@ int fn_80295C5C(GameObject* obj)
     return inner->baddie.controlMode == 0x36 && ((ByteFlags*)((char*)inner + 0x3f3))->b10;
 }
 
-int fn_80295C88(GameObject* player)
+int playerFindNearestFirefly(GameObject* player)
 {
     f32 dist = 300.0f;
     return ObjGroup_FindNearestObject(LANTERNFIREFLY_OBJGROUP, player, &dist);
@@ -1557,13 +1557,13 @@ void fn_802960E4(int a, f32 b, f32 c)
 {
 }
 
-void fn_802960E8(GameObject* player, s16 effectId)
+void playerSetPendingBoneEffect(GameObject* player, s16 effectId)
 {
     PlayerState* inner = player->extra;
     inner->pendingBoneEffectId = effectId;
 }
 
-void fn_802960F4(GameObject* obj, f32** outFxOffsets)
+void playerGetFxOffsets(GameObject* obj, f32** outFxOffsets)
 {
     PlayerState* inner = obj->extra;
     if (outFxOffsets == NULL)
@@ -1573,19 +1573,19 @@ void fn_802960F4(GameObject* obj, f32** outFxOffsets)
     *outFxOffsets = &inner->fxOffsetX;
 }
 
-f32 fn_8029610C(GameObject* obj)
+f32 playerGetAnimSpeed(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return inner->baddie.animSpeedA;
 }
 
-int fn_80296118(GameObject* obj)
+int playerGetTargetObject(GameObject* obj)
 {
     int inner = *(int*)&obj->extra;
     return *(int*)&((PlayerState*)inner)->baddie.targetObj;
 }
 
-void fn_80296124(GameObject* obj, const Vec3f* position, const Vec3s* rotation, int unused)
+void playerTeleport(GameObject* obj, const Vec3f* position, const Vec3s* rotation, int unused)
 {
     PlayerState* inner = obj->extra;
     *(u32*)&((PlayerState*)inner)->flags360 &= ~0x4000LL;
@@ -1609,7 +1609,7 @@ void fn_80296124(GameObject* obj, const Vec3f* position, const Vec3s* rotation, 
     }
 }
 
-void fn_802961A4(GameObject* obj, int* outMove, f32* outChargeLevel)
+void playerGetMoveAndChargeLevel(GameObject* obj, int* outMove, f32* outChargeLevel)
 {
     PlayerState* inner = obj->extra;
     *outMove = obj->anim.currentMove;
@@ -1642,13 +1642,13 @@ void fn_802961FC(GameObject* obj, u8 type)
     lbl_803DE459 = v;
 }
 
-f32 fn_80296214(GameObject* obj)
+f32 playerGetVerticalVel(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return inner->verticalVel;
 }
 
-void fn_80296220(GameObject* obj, f32 v)
+void playerSetVerticalVel(GameObject* obj, f32 v)
 {
     PlayerState* inner = obj->extra;
     inner->verticalVel = v;

@@ -4383,7 +4383,7 @@ void* trickyFindCirclingTarget(GameObject* obj, void* state)
         return target;
     }
 
-    target = (GameObject*)fn_80296118(((TrickyState*)state)->playerObj);
+    target = (GameObject*)playerGetTargetObject(((TrickyState*)state)->playerObj);
     if (target != NULL)
     {
         list = (void**)ObjGroup_GetObjects(3, &count);

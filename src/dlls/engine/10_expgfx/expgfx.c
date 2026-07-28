@@ -2515,7 +2515,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
         }
         if (player != NULL)
         {
-            playerRange = fn_8029610C(player);
+            playerRange = playerGetAnimSpeed(player);
         }
         cacheQueued = 0;
         ambRPlus1 = ambientScaled[2] + 1;

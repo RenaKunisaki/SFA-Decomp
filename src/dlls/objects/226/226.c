@@ -283,7 +283,7 @@ void quakeSpellFn_8016cee8(GameObject* obj, GameObject* player)
                                       45.0f * power, NULL, 0);
             }
         }
-        fn_802961A4(player, &type, &power);
+        playerGetMoveAndChargeLevel(player, &type, &power);
         fxB.id = 0;
         fxB.a = 0;
         fxB.b = 0;
@@ -394,7 +394,7 @@ void quakeSpellFn_8016cee8(GameObject* obj, GameObject* player)
             {
                 fxA.count = 21 - (int)(15.0f * (power / 60.0f));
                 fxA.id = 0xc95;
-                fn_802960F4((GameObject*)(*(int*)&obj->ownerObj), &pos2);
+                playerGetFxOffsets((GameObject*)(*(int*)&obj->ownerObj), &pos2);
                 fxB.f1 = pos2[3];
                 fxB.f2 = pos2[4];
                 fxB.f3 = pos2[5];

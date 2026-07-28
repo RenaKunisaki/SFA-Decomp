@@ -495,7 +495,7 @@ CamcontrolTargetObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraS
         }
         canTarget = 1;
         if ((entry->flags & CAMCONTROL_TARGET_KIND_MASK) == CAMCONTROL_TARGET_KIND_A_BUTTON_HINT &&
-            fn_80295C24((GameObject*)(player)) != 0)
+            playerIsTargetSuppressed((GameObject*)(player)) != 0)
         {
             canTarget = 0;
         }

@@ -292,7 +292,7 @@ typedef struct PlayerState {
     f32 probeHitDist; /* hit distance (SweepHit.dist) from a directional collision probe (objBboxFn_800640cc); has a getter (fn_802966F4), reset to 0 on state changes */
     f32 timeScale; /* player time-scale factor returned via the out-param of playerGetTimeScale(obj,&out); reset to 0.0 on state init */
     u8 pad780[0x784 - 0x780];
-    f32 verticalVel; /* vertical velocity factor applied as anim.velocityY = verticalVel*fv; has dedicated get/set (fn_80296220), drives climb/descend move progress */
+    f32 verticalVel; /* vertical velocity factor applied as anim.velocityY = verticalVel*fv; has dedicated get/set (playerSetVerticalVel), drives climb/descend move progress */
     f32 aimScreenY; /* aim-cursor screen Y (centered at halfH), driven by stick aimInputX; unprojected to a world aim direction */
     f32 aimScreenX; /* aim-cursor screen X (centered at halfW), driven by stick aimInputZ; unprojected to a world aim direction */
     u8 pad790[0x79C - 0x790];
@@ -308,7 +308,7 @@ typedef struct PlayerState {
     f32 teleportAnimRate;     /* growth rate for teleportAnimProgress (+= *timeDelta): reset to the forward rate (lbl_803E7F14) at the low end and to 0 at the high end to stop */
     f32 teleportAnimProgress; /* teleport/warp draw-effect progress (0..lbl_803E80C4): accumulates teleportAnimRate*timeDelta while teleportAnimActive, drives the drawn column geometry (base - progress) and its alpha fade past a threshold in playerDrawTeleportAnim */
     f32 chargeLevel; /* charge/breath meter: builds (+= K*fv) while a charge move's button is held, drains (-= K*dt) and floors at 0 otherwise; at capacity (unk41C) fires the charged attack; (u8) value fed to hudSetMagicCostPreview */
-    f32 boulderChargeLevel; /* second charge/hold meter (sibling of chargeLevel): reset to 0 on move start, builds (+= K*timeDelta) while inside the staff-boulder-drop hit window and first-cross-from-0 fires SFXTRIG_staff_boulder_drops, clamped to a max; decays (-= K*timeDelta, same rate as chargeLevel) and floors at 0 otherwise; exposed via fn_802961A4 when controlMode==0x26 */
+    f32 boulderChargeLevel; /* second charge/hold meter (sibling of chargeLevel): reset to 0 on move start, builds (+= K*timeDelta) while inside the staff-boulder-drop hit window and first-cross-from-0 fires SFXTRIG_staff_boulder_drops, clamped to a max; decays (-= K*timeDelta, same rate as chargeLevel) and floors at 0 otherwise; exposed via playerGetMoveAndChargeLevel when controlMode==0x26 */
     f32 pathBearingEyeY; /* per-character vertical offset (set with characterHeightOffset by characterId) added to worldPosY before getAngle(dx,dz) computes the bearing toward a path point */
     f32 curveSpeedScale; /* speed->curve-sample multiplier: u = speed*curveSpeedScale, the eval position into paramCurve0-4 */
     u8 pad7E4[0x7EC - 0x7E4];
@@ -329,7 +329,7 @@ typedef struct PlayerState {
     f32 idleHoldTimer; /* seconds the current idle move has been held; += timeDelta, clamped */
     u8 pad818[0x81A - 0x818];
     s16 characterId;
-    s16 pendingBoneEffectId; /* one-shot bone-particle effect id (set by fn_802960E8); spawned via gBoneParticleEffectInterface->spawnEffect then cleared to 0 */
+    s16 pendingBoneEffectId; /* one-shot bone-particle effect id (set by playerSetPendingBoneEffect); spawned via gBoneParticleEffectInterface->spawnEffect then cleared to 0 */
     s16 unk81E;
     f32 cutsceneTimer; /* time-stop/cutscene countdown (-= dt while >0); on expiry calls cutsceneEnterExit(0,0)+sets cutsceneEnded, at threshold lbl_803E7EF0 calls cutsceneEnterExit(1,0)+setTimeStop */
     f32 unk824;
@@ -355,7 +355,7 @@ typedef struct PlayerState {
     u8 pad870[0x874 - 0x870];
     f32 characterHeightOffset; /* 0x874: per-character vertical height offset (set with pathBearingEyeY by characterId at spawn); subtracted from leapTargetY to convert the leap/ledge world-Y anchor into anim.worldPosY (worldPosY = leapTargetY - characterHeightOffset) */
     f32 particleBurstCooldown; /* f32 countdown decremented by frame-time each tick, floored to 0; while moving fast, on expiry (<=0) spawns a burst of particle FX (spawnObject 0x804) then resets to the burst interval */
-    f32 targetSuppressTimer; /* f32 countdown decremented by frame-time each tick, floored to 0; set on a state transition (flag 0x3f2:b40); while active (>0, queried via fn_80295C24) suppresses A-button-hint camera targeting */
+    f32 targetSuppressTimer; /* f32 countdown decremented by frame-time each tick, floored to 0; set on a state transition (flag 0x3f2:b40); while active (>0, queried via playerIsTargetSuppressed) suppresses A-button-hint camera targeting */
     f32 idleDelayTimer; /* idle-eligibility countdown (f32); set positive at state init (lbl_803E7FA4), decremented by frame-time in fn_802B18BC and floored at 0; the default-idle "stay" path requires it == 0 */
     u32 flags884; /* 0x884: directional-response flag word (set in another TU); bit0 gates the rumble + directional anim branch, bits 2/4/8 select the directional move index (idx 3/1/2) into the move table */
     f32 animSpeedDecay; /* 0x888: per-frame decay rate for baddie.animSpeedA via powfBitEstimate(rate, dt) */

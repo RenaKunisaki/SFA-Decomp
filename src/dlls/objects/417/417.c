@@ -331,7 +331,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
                 }
                 {
                     int* o2 = (int*)ObjList_FindObjectById(gNwMammothBushObjectIds[i]);
-                    if ((int*)fn_80296118((GameObject*)*(int*)&state->playerObject) == o2) {
+                    if ((int*)playerGetTargetObject((GameObject*)*(int*)&state->playerObject) == o2) {
                         enemy_setTrackedObj((GameObject*)o2, state->playerObject);
                     } else {
                         tw = tumbleweedbush_findNearestActive(&((GameObject*)o2)->anim.worldPosX);

@@ -4798,7 +4798,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
             s16 t = turnRaw;
             mag = (u16)(t >= 0 ? t : -t);
         }
-        if (fn_80295C88(Obj_GetPlayerObject()) != 0)
+        if (playerFindNearestFirefly(Obj_GetPlayerObject()) != 0)
         {
             range = 100.0f;
             other = (GameObject*)ObjGroup_FindNearestObject(LANTERNFIREFLY_OBJGROUP, obj, &range);

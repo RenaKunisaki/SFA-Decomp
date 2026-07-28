@@ -799,7 +799,7 @@ void gunpowderBarrel_update(GameObject* obj) {
                 /* Launch at the selected target. */
                 ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
                 gunpowderBarrel_launchAtTarget(obj, 1);
-            } else if (0.0f == fn_80296214(player)) {
+            } else if (0.0f == playerGetVerticalVel(player)) {
                 /* Release without lift as a gentle toss. */
                 ObjHits_SyncObjectPositionIfDirty(obj);
                 gunpowderBarrel_launchAtTarget(obj, 0);

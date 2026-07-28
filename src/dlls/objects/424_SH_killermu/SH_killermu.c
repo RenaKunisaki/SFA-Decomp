@@ -336,7 +336,7 @@ void EnemyMushroom_update(GameObject* obj) {
             f32 dz = player->anim.localPosZ - obj->anim.localPosZ;
             if ((u16)(int)sqrtf(dx * dx + dy * dy + dz * dz) <
                 (u16)(int)(ENEMY_MUSHROOM_DETECT_RANGE_SCALE * (f32)placement->detectRange)) {
-                if (fn_8029610C(player) >= ENEMY_MUSHROOM_TRIGGER_ANIM_SPEED) {
+                if (playerGetAnimSpeed(player) >= ENEMY_MUSHROOM_TRIGGER_ANIM_SPEED) {
                     state->stateFlags = (u8)(state->stateFlags & ~ENEMY_MUSHROOM_STATE_FLAG_HIT_PLAYER);
                     state->stateId = ENEMY_MUSHROOM_STATE_STARTLED;
                     state->timer = 0.0f;

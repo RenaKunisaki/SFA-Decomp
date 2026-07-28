@@ -253,10 +253,10 @@ void ccLightfoot_update(GameObject* obj) {
                     if ((getXZDistance(&obj->anim.worldPosX,
                                        (f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX))) <
                              CC_LIGHTFOOT_ALERT_DISTANCE_SQUARED ||
-                         (void*)fn_80296118((GameObject*)state->playerObject) == (void*)state->targetActorA ||
-                         (void*)fn_80296118((GameObject*)state->playerObject) == (void*)state->targetActorB) &&
+                         (void*)playerGetTargetObject((GameObject*)state->playerObject) == (void*)state->targetActorA ||
+                         (void*)playerGetTargetObject((GameObject*)state->playerObject) == (void*)state->targetActorB) &&
                         playerIsDisguised((GameObject*)state->playerObject) == 0) {
-                        if ((void*)fn_80296118((GameObject*)state->playerObject) == (void*)farTarget) {
+                        if ((void*)playerGetTargetObject((GameObject*)state->playerObject) == (void*)farTarget) {
                             u32 tmp = farTarget ^ nearTarget;
                             nearTarget = nearTarget ^ tmp;
                             farTarget = tmp ^ nearTarget;
@@ -311,7 +311,7 @@ void ccLightfoot_update(GameObject* obj) {
                                                 (f32*)(singleTarget + offsetof(GameObject, anim.worldPosX)));
                 if ((getXZDistance(&obj->anim.worldPosX, (f32*)(singleTarget + offsetof(GameObject, anim.worldPosX))) <
                          distanceSquared &&
-                     (void*)fn_80296118((GameObject*)state->playerObject) != (void*)singleTarget) ||
+                     (void*)playerGetTargetObject((GameObject*)state->playerObject) != (void*)singleTarget) ||
                     playerIsDisguised((GameObject*)state->playerObject) != 0) {
                     enemy_setTrackedObj((GameObject*)singleTarget, obj);
                 } else {
