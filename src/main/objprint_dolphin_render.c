@@ -1477,6 +1477,7 @@ extern u8 gObjGxTexMtxIdTable[12];
 
 void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
 {
+    int joff;
     f32 fm[16];
     f32 sm[16];
     f32 wm[16];
@@ -1648,7 +1649,6 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
     m2 = mode8 & 2;
     if (m2 || m4 || (mode8 & 8))
     {
-        int joff;
         int j;
         f32 one;
         j = 0;
