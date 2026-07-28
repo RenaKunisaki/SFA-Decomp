@@ -30,7 +30,6 @@ void* lbl_803DD984;
 void* lbl_803DD980;
 f32 lbl_803DD97C;
 int gWarpStoneUiMenuActive;
-extern f32 lbl_803E22D8;
 extern u8 gWarpStoneUiMenuItemTemplates[];
 
 WarpstoneMenuItem gWarpStoneUiMenuItems[WARPSTONE_UI_ENTRY_COUNT];
@@ -153,11 +152,11 @@ int WarpstoneUI_frameStart(void)
     f32 alpha;
     if (warpstoneUIState[0] == 0)
     {
-        lbl_803DD97C = lbl_803DD97C - (lbl_803E22D8 * timeDelta);
+        lbl_803DD97C = lbl_803DD97C - (8.0f * timeDelta);
     }
     else
     {
-        lbl_803DD97C = lbl_803DD97C + (lbl_803E22D8 * timeDelta);
+        lbl_803DD97C = lbl_803DD97C + (8.0f * timeDelta);
     }
     alpha = lbl_803DD97C;
     if (alpha > 255.0f)

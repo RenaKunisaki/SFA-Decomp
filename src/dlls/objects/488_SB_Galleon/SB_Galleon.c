@@ -83,13 +83,6 @@ extern s8 lbl_803DDC2C;
 extern const f32 lbl_803E56CC;
 extern f32 gDBprotPi;
 extern f32 gDBprotAngleUnit;
-extern f32 lbl_803E57C8;
-extern f32 lbl_803E57CC;
-extern f32 lbl_803E57D0;
-extern f32 lbl_803E57D4;
-extern f32 lbl_803E57D8;
-extern f32 lbl_803E57DC;
-extern f32 lbl_803E57E0;
 extern f32 lbl_803E56C8;
 extern f32 lbl_803E56D0;
 extern f32 lbl_803E56D4;
@@ -148,14 +141,6 @@ extern f32 lbl_803E57AC;
 extern f32 lbl_803E57B0;
 extern f32 lbl_803E57B4;
 extern f32 lbl_803E57B8;
-extern f32 lbl_803E57F0;
-extern f32 lbl_803E57F4;
-extern f32 lbl_803E57F8;
-extern f32 lbl_803E57FC;
-extern f32 lbl_803E5800;
-extern f32 lbl_803E5804;
-extern f32 lbl_803E5808;
-extern f32 lbl_803E580C;
 
 ObjectDescriptor15 gSB_GalleonObjDescriptor = {
     0,
@@ -976,13 +961,13 @@ void DBprotection_updateShield(GameObject* obj)
         lbl_803DDC2C = 0;
     }
 
-    (*gCloudActionInterface)->func12Nop(lbl_803E57C8, lbl_803E56CC);
+    (*gCloudActionInterface)->func12Nop(-25.0f, lbl_803E56CC);
     (*gCloudActionInterface)->func10Nop(0);
 
     angleCos = mathSinf((gDBprotPi * state->shieldAngle) / gDBprotAngleUnit);
     if (state->shieldSfxLatch == 0)
     {
-        if (angleCos < lbl_803E57CC)
+        if (angleCos < -0.9f)
         {
             if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0)
             {
@@ -990,7 +975,7 @@ void DBprotection_updateShield(GameObject* obj)
             }
             state->shieldSfxLatch = 1;
         }
-        else if (angleCos > lbl_803E57D0)
+        else if (angleCos > 0.9f)
         {
             if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0)
             {
@@ -999,13 +984,13 @@ void DBprotection_updateShield(GameObject* obj)
             state->shieldSfxLatch = 1;
         }
     }
-    else if (angleCos > lbl_803E57D4 && angleCos < lbl_803E57D8)
+    else if (angleCos > -0.1f && angleCos < 0.1f)
     {
         state->shieldSfxLatch = 0;
     }
 
-    *(u16*)&obj->anim.rotZ = lbl_803E57DC * angleCos;
-    state->shieldAngle = (u16)(s32)(lbl_803E57E0 * timeDelta + state->shieldAngle);
+    *(u16*)&obj->anim.rotZ = 432.0f * angleCos;
+    state->shieldAngle = (u16)(s32)(128.0f * timeDelta + state->shieldAngle);
 }
 
 void SB_Galleon_onSeqFree(GameObject* obj)
@@ -1166,7 +1151,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state)
     }
     skySetAmbientColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorC[0],
                 gSbGalleonSkyColorC[1], gSbGalleonSkyColorC[2]);
-    gSbGalleonSkyLightIntensity = gSbGalleonSkyBlendFactor * lbl_803E57E0 + lbl_803E57F0;
+    gSbGalleonSkyLightIntensity = gSbGalleonSkyBlendFactor * 128.0f + 32.0f;
     skySetOverrideLightDirectionEnabled(1);
     skySetOverrideLightDirection(gSbGalleonSkyBlendFactor * (overrideDirectionEnd.x - overrideDirectionStart.x) + overrideDirectionStart.x,
                                  gSbGalleonSkyBlendFactor * (overrideDirectionEnd.y - overrideDirectionStart.y) + overrideDirectionStart.y,
@@ -1185,7 +1170,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state)
     activeModel = Obj_GetActiveModel(obj);
     renderOpIndex = 0;
     {
-        f32 alphaScale = lbl_803E57F4;
+        f32 alphaScale = 255.0f;
         for (; renderOpIndex < activeModel->file->renderOpCount; renderOpIndex++)
         {
             renderOp = ObjModel_GetRenderOp(activeModel->file, renderOpIndex);
@@ -1286,7 +1271,7 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             Music_Trigger(state->musicIdA, 0);
             break;
         case SBGALLEON_SEQEV_TEXT:
-            state->textTimer = lbl_803E57F8;
+            state->textTimer = 600.0f;
             state->textRising = 1;
             state->textAlpha = lbl_803E56CC;
             break;
@@ -1311,7 +1296,7 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     }
     {
         f32 v = state->textAlpha;
-        state->textAlpha = (v < lbl_803E56CC) ? lbl_803E56CC : ((v > lbl_803E57F4) ? lbl_803E57F4 : v);
+        state->textAlpha = (v < lbl_803E56CC) ? lbl_803E56CC : ((v > 255.0f) ? 255.0f : v);
     }
     if (state->textAlpha > lbl_803E56CC)
     {
@@ -1455,12 +1440,12 @@ void SB_Galleon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visib
         if ((s8)state->cameraState < 2)
         {
             stk.mode = state->wanderA;
-            stk.c = lbl_803E57FC;
-            stk.b = lbl_803E5800;
-            stk.a = lbl_803E5804;
+            stk.c = 570.0f;
+            stk.b = 85.0f;
+            stk.a = 217.0f;
             (*gPartfxInterface)->spawnObject((void*)obj, SBGALLEON_FX_WANDER, stk.pad, 2, -1, NULL);
             stk.mode = state->wanderB;
-            stk.a = lbl_803E5808;
+            stk.a = -217.0f;
             (*gPartfxInterface)->spawnObject((void*)obj, SBGALLEON_FX_WANDER, stk.pad, 2, -1, NULL);
         }
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E57A4);
@@ -1573,7 +1558,7 @@ void SB_Galleon_init(GameObject* obj)
     (*gMapEventInterface)->setMapAct(obj->anim.mapEventSlot, 1);
     getLActions(obj, obj, 0x58, 0, 0, 0);
     state->wanderTimerA = lbl_803E56CC;
-    state->wanderTimerB = lbl_803E580C;
+    state->wanderTimerB = 180.0f;
     hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     hitState->flags |= 0x1800;
     setDrawLights(0);

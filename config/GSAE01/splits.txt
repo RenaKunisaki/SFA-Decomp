@@ -90,6 +90,7 @@ main/gametext.c:
 	.text       start:0x80015BC8 end:0x8001628C
 	.data       start:0x802C6E98 end:0x802C8D40
 	.sdata      start:0x803DB2B0 end:0x803DB378
+	.sdata2     start:0x803DE6F0 end:0x803DE700
 
 main/gametext_measurebyid.c:
 	.text       start:0x8001628C end:0x800163C4
@@ -112,6 +113,7 @@ main/textrender_gettext.c:
 main/textrender_run.c:
 	.text       start:0x80019970 end:0x8001B7B8
 	.sbss       start:0x803DC968 end:0x803DC9F0
+	.sdata2     start:0x803DE720 end:0x803DE730
 
 main/textrender_subtitle.c:
 	.text       start:0x8001B7B8 end:0x8001BB78
@@ -190,6 +192,7 @@ main/objprint.c:
 	.data       start:0x802CAE88 end:0x802CAED0
 	.sdata      start:0x803DB460 end:0x803DB468
 	.sbss       start:0x803DCC08 end:0x803DCC20
+	.sdata2     start:0x803DE9C8 end:0x803DE9F0
 
 main/objprint_dolphin.c:
 	.text       start:0x8003BB84 end:0x8003E060
@@ -1217,7 +1220,7 @@ dlls/engine/70/70.c:
 	.text       start:0x80109748 end:0x80109B04
 	.data       start:0x80319C28 end:0x80319C58
 	.sbss       start:0x803DD550 end:0x803DD554
-	.sdata2     start:0x803E1868 end:0x803E1874
+	.sdata2     start:0x803E1840 end:0x803E1874
 
 dlls/engine/72/72.c:
 	.text       start:0x80109B04 end:0x8010A104
@@ -1494,7 +1497,7 @@ dlls/engine/65/65.c:
 	.bss        start:0x803A9DD0 end:0x803A9F50
 	.sdata      start:0x803DBBF8 end:0x803DBC08
 	.sbss       start:0x803DD978 end:0x803DD990
-	.sdata2     start:0x803E22D0 end:0x803E22D8
+	.sdata2     start:0x803E22D0 end:0x803E22E4
 
 dlls/objects/704/704.c:
 	.text       start:0x80134870 end:0x80136A40
@@ -3033,6 +3036,7 @@ dlls/objects/488_SB_Galleon/SB_Galleon.c:
 	.data       start:0x80327BE0 end:0x80327C88
 	.sdata      start:0x803DC078 end:0x803DC090
 	.sbss       start:0x803DDC18 end:0x803DDC40
+	.sdata2     start:0x803E57C0 end:0x803E5810
 
 dlls/objects/489_SB_Propelle/SB_Propelle.c:
 	.text       start:0x801E2570 end:0x801E2B28
@@ -4721,7 +4725,7 @@ musyx/runtime/hw_volume.c:
 	extab       start:0x80005B80 end:0x80005BA0
 	extabindex  start:0x800064D0 end:0x80006500
 	.text       start:0x8028383C end:0x80283BA0
-	.sdata2     start:0x803E78E0 end:0x803E78E4
+	.sdata2     start:0x803E78E0 end:0x803E78E8
 
 musyx/runtime/hw_input.c:
 	extab       start:0x80005BA0 end:0x80005BA8
