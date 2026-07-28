@@ -4,6 +4,7 @@
  */
 #include "dlls/objects/303_BarrelPad.h"
 
+#include "main/dll/partfx_interface.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
 
@@ -13,14 +14,6 @@
 #define BARRELPAD_ROTATION_SHIFT 8
 #define BARRELPAD_SCALE_DIVISOR  255.0f
 #define BARRELPAD_DEFAULT_SCALE  1.0f
-
-typedef struct BarrelPadParticleArgs {
-    u8 pad00[0xC];
-    f32 offset[3];
-} BarrelPadParticleArgs;
-
-STATIC_ASSERT(offsetof(BarrelPadParticleArgs, offset) == 0x0C);
-STATIC_ASSERT(sizeof(BarrelPadParticleArgs) == 0x18);
 
 int BarrelPad_getExtraSize(void) {
     return 0;
@@ -41,17 +34,17 @@ void BarrelPad_hitDetect(void) {
 }
 
 void BarrelPad_update(GameObject* obj) {
-    BarrelPadParticleArgs particleArgs;
+    PartFxSpawnParams particleArgs;
 
     if (obj->anim.seqId == BARRELPAD_SEQ_LAUNCH_ACTIVE) {
-        particleArgs.offset[0] = 0.0f;
-        particleArgs.offset[1] = 8.0f;
-        particleArgs.offset[2] = 0.0f;
+        particleArgs.posX = 0.0f;
+        particleArgs.posY = 8.0f;
+        particleArgs.posZ = 0.0f;
         objfx_spawnArcedBurst(obj, 5, 0.75f, 5, 2, 0x19, 12.0f, 12.0f, 2.0f, &particleArgs, 0);
     } else if (obj->anim.seqId == BARRELPAD_SEQ_LAUNCH_SECONDARY) {
-        particleArgs.offset[0] = 0.0f;
-        particleArgs.offset[1] = 6.0f;
-        particleArgs.offset[2] = 0.0f;
+        particleArgs.posX = 0.0f;
+        particleArgs.posY = 6.0f;
+        particleArgs.posZ = 0.0f;
         objfx_spawnArcedBurst(obj, 5, 0.25f, 5, 2, 5, 7.0f, 7.0f, 2.0f, &particleArgs, 0);
     }
 }

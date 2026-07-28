@@ -145,11 +145,6 @@ ObjectDescriptor gNW_mammothObjDescriptor = {
     NW_mammoth_getExtraSize,
 };
 
-typedef struct NwMammothPartfxBlock {
-    u8 unknown00[0xC];
-    f32 pos[3];
-} NwMammothPartfxBlock;
-
 f32* NW_mammoth_getSpawnPosition(GameObject* obj) {
     return &((NwMammothState*)obj->extra)->spawnPosX;
 }
@@ -207,7 +202,7 @@ int NW_mammoth_updateSleepCycle(GameObject* obj, NwMammothState* state) {
     u8 night;
     int animCue;
     f32 sunTime;
-    NwMammothPartfxBlock partfxBlock;
+    PartFxSpawnParams partfxBlock;
 
     night = (u8)(*gSkyInterface)->getSunPosition(&sunTime);
     if (state->animEvents.triggerCount != 0) {
@@ -249,9 +244,9 @@ int NW_mammoth_updateSleepCycle(GameObject* obj, NwMammothState* state) {
             state->partfxTimer = t;
             if (t <= 0.0f) {
                 if (obj->objectFlags & OBJECT_OBJFLAG_RENDERED) {
-                    partfxBlock.pos[0] = state->spawnPosX;
-                    partfxBlock.pos[1] = state->spawnPosY;
-                    partfxBlock.pos[2] = state->spawnPosZ;
+                    partfxBlock.posX = state->spawnPosX;
+                    partfxBlock.posY = state->spawnPosY;
+                    partfxBlock.posZ = state->spawnPosZ;
                     (*gPartfxInterface)->spawnObject(obj, NW_MAMMOTH_PARTFX, &partfxBlock, 0x200001, -1, NULL);
                 }
                 state->partfxTimer = 30.0f;

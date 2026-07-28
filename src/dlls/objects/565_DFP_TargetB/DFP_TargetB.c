@@ -281,16 +281,16 @@ void dfptargetblock_update(GameObject* obj)
     u8 bitVal;
     DfpTargetBlockState* state;
     ObjPlacement* home;
-    f32 buf[6];
+    PartFxSpawnParams burstOrigin;
 
     state = obj->extra;
     home = (ObjPlacement*)obj->anim.placementData;
     if (obj->anim.seqId == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
     {
-        buf[3] = 0.0f;
-        buf[4] = (12.0f);
-        buf[5] = 0.0f;
-        objfx_spawnArcedBurst(obj, 5, (0.75f), 1, 2, 0x32, (12.0f), (12.0f), 10.0f, buf, 0);
+        burstOrigin.posX = 0.0f;
+        burstOrigin.posY = (12.0f);
+        burstOrigin.posZ = 0.0f;
+        objfx_spawnArcedBurst(obj, 5, (0.75f), 1, 2, 0x32, (12.0f), (12.0f), 10.0f, &burstOrigin, 0);
     }
     else
     {

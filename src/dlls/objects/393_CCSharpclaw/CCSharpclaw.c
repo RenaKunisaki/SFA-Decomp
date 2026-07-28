@@ -12,6 +12,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
+#include "main/dll/partfx_interface.h"
 #include "main/minimap_api.h"
 #include "main/objfx.h"
 #include "main/vecmath_distance_api.h"
@@ -35,35 +36,26 @@
 #define CC_SHARPCLAW_PAD_PARTICLE_ANGLE_HIGH 10.0f
 #define CC_SHARPCLAW_PAD_PARTICLE_FLAGS      0
 
-typedef struct CCSharpClawPadParticleOrigin {
-    u8 unknown00[0x0C];
-    f32 localPosition[3];
-} CCSharpClawPadParticleOrigin;
-
-STATIC_ASSERT(sizeof(CCSharpClawPadParticleOrigin) == 0x18);
-STATIC_ASSERT(offsetof(CCSharpClawPadParticleOrigin, unknown00) == 0x00);
-STATIC_ASSERT(offsetof(CCSharpClawPadParticleOrigin, localPosition) == 0x0C);
-
 int ccSharpClawPad_getExtraSize(void) {
     return sizeof(CCSharpClawPadState);
 }
 
 void ccSharpClawPad_update(GameObject* obj) {
-    CCSharpClawPadParticleOrigin particleOrigin;
+    PartFxSpawnParams particleOrigin;
     CCSharpClawPadState* state;
     GameObject* player;
 
     if (mainGetBit(((const CCSharpClawPadPlacement*)obj->anim.placement)->activationGameBit) != 0) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-        particleOrigin.localPosition[0] = -CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
-        particleOrigin.localPosition[1] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Y;
-        particleOrigin.localPosition[2] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Z;
+        particleOrigin.posX = -CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
+        particleOrigin.posY = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Y;
+        particleOrigin.posZ = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Z;
         objfx_spawnArcedBurst(obj, CC_SHARPCLAW_PAD_PARTICLE_INDEX, CC_SHARPCLAW_PAD_PARTICLE_SCALE,
                               CC_SHARPCLAW_PAD_PARTICLE_KIND_LIT, CC_SHARPCLAW_PAD_PARTICLE_MODE,
                               CC_SHARPCLAW_PAD_PARTICLE_CHANCE, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_BASE,
                               CC_SHARPCLAW_PAD_PARTICLE_ANGLE_LOW, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_HIGH,
                               &particleOrigin, CC_SHARPCLAW_PAD_PARTICLE_FLAGS);
-        particleOrigin.localPosition[0] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
+        particleOrigin.posX = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
         objfx_spawnArcedBurst(obj, CC_SHARPCLAW_PAD_PARTICLE_INDEX, CC_SHARPCLAW_PAD_PARTICLE_SCALE,
                               CC_SHARPCLAW_PAD_PARTICLE_KIND_LIT, CC_SHARPCLAW_PAD_PARTICLE_MODE,
                               CC_SHARPCLAW_PAD_PARTICLE_CHANCE, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_BASE,
@@ -96,15 +88,15 @@ void ccSharpClawPad_update(GameObject* obj) {
             mainSetBits(((const CCSharpClawPadPlacement*)obj->anim.placement)->activationGameBit, 1);
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
-        particleOrigin.localPosition[0] = -CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
-        particleOrigin.localPosition[1] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Y;
-        particleOrigin.localPosition[2] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Z;
+        particleOrigin.posX = -CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
+        particleOrigin.posY = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Y;
+        particleOrigin.posZ = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_Z;
         objfx_spawnArcedBurst(obj, CC_SHARPCLAW_PAD_PARTICLE_INDEX, CC_SHARPCLAW_PAD_PARTICLE_SCALE,
                               CC_SHARPCLAW_PAD_PARTICLE_KIND_UNLIT, CC_SHARPCLAW_PAD_PARTICLE_MODE,
                               CC_SHARPCLAW_PAD_PARTICLE_CHANCE, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_BASE,
                               CC_SHARPCLAW_PAD_PARTICLE_ANGLE_LOW, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_HIGH,
                               &particleOrigin, CC_SHARPCLAW_PAD_PARTICLE_FLAGS);
-        particleOrigin.localPosition[0] = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
+        particleOrigin.posX = CC_SHARPCLAW_PAD_PARTICLE_OFFSET_X;
         objfx_spawnArcedBurst(obj, CC_SHARPCLAW_PAD_PARTICLE_INDEX, CC_SHARPCLAW_PAD_PARTICLE_SCALE,
                               CC_SHARPCLAW_PAD_PARTICLE_KIND_UNLIT, CC_SHARPCLAW_PAD_PARTICLE_MODE,
                               CC_SHARPCLAW_PAD_PARTICLE_CHANCE, CC_SHARPCLAW_PAD_PARTICLE_ANGLE_BASE,

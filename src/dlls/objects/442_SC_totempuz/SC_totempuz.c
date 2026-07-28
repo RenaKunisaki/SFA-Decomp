@@ -8,6 +8,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
+#include "main/dll/partfx_interface.h"
 #include "main/obj_list.h"
 #include "main/objHitReact_types.h"
 #include "main/objfx.h"
@@ -15,20 +16,6 @@
 #include "main/object_render.h"
 #include "main/shader_api.h"
 #include "main/vecmath.h"
-
-typedef struct ScTotemPuzzleParticleOrigin {
-    u8 unknown00[8];
-    f32 alpha;
-    f32 x;
-    f32 y;
-    f32 z;
-} ScTotemPuzzleParticleOrigin;
-
-STATIC_ASSERT(offsetof(ScTotemPuzzleParticleOrigin, alpha) == 0x08);
-STATIC_ASSERT(offsetof(ScTotemPuzzleParticleOrigin, x) == 0x0C);
-STATIC_ASSERT(offsetof(ScTotemPuzzleParticleOrigin, y) == 0x10);
-STATIC_ASSERT(offsetof(ScTotemPuzzleParticleOrigin, z) == 0x14);
-STATIC_ASSERT(sizeof(ScTotemPuzzleParticleOrigin) == 0x18);
 
 /* Exact anim.seqId value used by peer scans; this is not the retail object-definition ID. */
 #define SC_TOTEM_PUZZLE_SEQUENCE_ID       0x3c1
@@ -71,7 +58,7 @@ int sc_totempuzzle_animEventCallback(GameObject* unusedObj, int unused, ObjAnimU
 }
 
 u8 sc_totempuzzle_checkSolvedSequence(GameObject* obj, ScTotemPuzzleState* state) {
-    ScTotemPuzzleParticleOrigin particleOrigin;
+    PartFxSpawnParams particleOrigin;
     int objectIndex;
     int objectCount;
     int* objects;
@@ -121,10 +108,10 @@ u8 sc_totempuzzle_checkSolvedSequence(GameObject* obj, ScTotemPuzzleState* state
     if (solvedThisObject != 0) {
         ObjTextureRuntimeSlot* solvedTexture;
 
-        particleOrigin.x = 0.0f;
-        particleOrigin.y = 16.5f;
-        particleOrigin.z = 0.0f;
-        particleOrigin.alpha = 1.0f;
+        particleOrigin.posX = 0.0f;
+        particleOrigin.posY = 16.5f;
+        particleOrigin.posZ = 0.0f;
+        particleOrigin.scale = 1.0f;
 
         for (objectIndex = SC_TOTEM_PUZZLE_PARTICLE_COUNT; objectIndex != 0; objectIndex--) {
             objfx_spawnArcedBurst(obj, SC_TOTEM_PUZZLE_PARTICLE_INDEX, SC_TOTEM_PUZZLE_PARTICLE_SCALE,
