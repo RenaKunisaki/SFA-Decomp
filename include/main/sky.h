@@ -135,7 +135,7 @@ void skyApplyPlayerEnvFx(u8 idx);
 void sky2BlendTowardTargetColor(s32* red, s32* green, s32* blue);
 void sky2_run(void);
 void sky2_onMapSetup(void);
-void timeOfDayFn_8008b964(void);
+void skyUpdateTimeOfDay(void);
 void skyFn_8008a500(void);
 void sky2_update(int a, int b, u8* cfg);
 void sky2ResetStateFromConfig(u8* cfg, u8 flags);
@@ -145,7 +145,7 @@ void skyFn_8008a04c(void);
 void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,
                  int lightIntensity, u8 blendAlpha);
 void renderSunAndMoon(int a, int b, int c, int d, int visible);
-void skyFn_8008aee8(void);
-void Sky_func03(int a, int b, u8* cfg);
+void skyRenderTimeOfDayBackdrop(void);
+void skyUpdateEnvfxAct(int a, int b, u8* cfg);
 
 #endif /* MAIN_SKY_H_ */

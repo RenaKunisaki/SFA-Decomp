@@ -5,7 +5,7 @@
 #include "main/checkpoint_route.h"
 #include "game/objects/object.h"
 
-int Checkpoint_func07(GameObject *obj, CheckpointRouteState *state);
+int Checkpoint_getRouteHeading(GameObject *obj, CheckpointRouteState *state);
 void FUN_800d7c90(double param_1,double param_2,double param_3,double param_4,double param_5,
                  int param_6,int param_7);
 void FUN_800d84e0(u32 param_1,u32 param_2,int param_3,int param_4,u32 param_5,

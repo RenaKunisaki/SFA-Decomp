@@ -126,7 +126,7 @@ STATIC_ASSERT(offsetof(SkyState, timeOfDay) == 0x20C);
 STATIC_ASSERT(offsetof(SkyState, unk250) == 0x250);
 STATIC_ASSERT(sizeof(SkyState) == 0x258);
 
-/* Per-map sky blend config record passed to sky2_update / Sky_func03. */
+/* Per-map sky blend config record passed to sky2_update / skyUpdateEnvfxAct. */
 typedef struct Sky2Config {
     u8 unk00[0xC];
     u8 lightColorR;

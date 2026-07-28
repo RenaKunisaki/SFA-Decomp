@@ -386,9 +386,9 @@ SkyDllInterface lbl_8030F414 = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)Sky_func03,
+    (ObjectDescriptorCallback)skyUpdateEnvfxAct,
     (ObjectDescriptorCallback)skyLoadLights,
-    (ObjectDescriptorCallback)timeOfDayFn_8008b964,
+    (ObjectDescriptorCallback)skyUpdateTimeOfDay,
     (ObjectDescriptorCallback)renderSky,
     (ObjectDescriptorCallback)getTimeOfDay,
     (ObjectDescriptorCallback)skyGetClockTime,
@@ -399,7 +399,7 @@ SkyDllInterface lbl_8030F414 = {
     (ObjectDescriptorCallback)return0_8008B7E8,
     (ObjectDescriptorCallback)skyTimeToDayHourMinute,
     (ObjectDescriptorCallback)skyGetVisibility,
-    (ObjectDescriptorCallback)skyFn_8008aee8,
+    (ObjectDescriptorCallback)skyRenderTimeOfDayBackdrop,
     (ObjectDescriptorCallback)skyGetCurrentTextureColor,
     (ObjectDescriptorCallback)skyGetCurrentAmbientAndLightColors,
     (ObjectDescriptorCallback)doNothing_800887C8,
@@ -1594,7 +1594,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
     }
 }
 
-void skyFn_8008aee8(void)
+void skyRenderTimeOfDayBackdrop(void)
 {
     int* sky;
     int texA;
@@ -1899,7 +1899,7 @@ void renderSky(int a, int b, int c, int d, int visible)
     skyFn_8008a04c();
 }
 
-void timeOfDayFn_8008b964(void)
+void skyUpdateTimeOfDay(void)
 {
     u8* env;
     f32 time;
@@ -2145,7 +2145,7 @@ void skyResetState(void)
     } while (i < 3);
 }
 
-void Sky_func03(int a, int b, u8* cfg)
+void skyUpdateEnvfxAct(int a, int b, u8* cfg)
 {
     s16* envp;
     u8* env2;

@@ -193,7 +193,7 @@ s32 Checkpoint_buildControlPoints(CheckpointRouteEntry* checkpoint, s32 linkInde
 
 /* Look up a checkpoint by key and emit a random local offset, then pick the
  * forward or back link to advance along depending on the flag byte. */
-void Checkpoint_func0A(s32 key, f32* out_vec, u8* flag_byte)
+void Checkpoint_getRandomLinkedVector(s32 key, f32* out_vec, u8* flag_byte)
 {
     s32 local_idx;
     CheckpointRouteEntry* n;
@@ -263,7 +263,7 @@ int Checkpoint_func09_ret_1(void)
 
 /* Advance along the route by arc-length `dist`, sampling the Hermite curve and
  * clamping t to [0,1]; crossing a segment end hands off to the next checkpoint. */
-s32 Checkpoint_func08(CheckpointCursor* out, CheckpointNavState* o, f32 dist, s32 p3, u8 flag, int unused)
+s32 Checkpoint_advanceRoute(CheckpointCursor* out, CheckpointNavState* o, f32 dist, s32 p3, u8 flag, int unused)
 {
     f32 v1[4];
     f32 v2[4];
@@ -395,7 +395,7 @@ s32 Checkpoint_func08(CheckpointCursor* out, CheckpointNavState* o, f32 dist, s3
     return 0;
 }
 
-s32 Checkpoint_func0F(PartFxItem* p)
+s32 Checkpoint_getRouteRank(PartFxItem* p)
 {
     PartFxItem* q;
     s32 rank = 1;
@@ -422,7 +422,7 @@ s32 Checkpoint_func0F(PartFxItem* p)
     return rank;
 }
 
-PartFxItem* Checkpoint_func10(s32 target_rank)
+PartFxItem* Checkpoint_getRouteRankItem(s32 target_rank)
 {
     s32 i;
     for (i = 0; i < lbl_803DD414; i++)
@@ -470,13 +470,13 @@ void Checkpoint_onGameLoop(void)
     lbl_803DD416 = 0;
 }
 
-u32 Checkpoint_func0E(s32* p)
+u32 Checkpoint_getRouteRankItems(s32* p)
 {
     *p = lbl_803DD414;
     return (u32)lbl_803DD418;
 }
 
-/* Object cursor written back by Checkpoint_func08: the sampled heading/pitch
+/* Object cursor written back by Checkpoint_advanceRoute: the sampled heading/pitch
  * angles at the front and the interpolated world position (x/y/z) mid-block. */
 STATIC_ASSERT(offsetof(CheckpointCursor, posX) == 0x0C);
 STATIC_ASSERT(offsetof(CheckpointCursor, posZ) == 0x14);
@@ -485,7 +485,7 @@ STATIC_ASSERT(offsetof(CheckpointCursor, posZ) == 0x14);
  * front, with a route-branch flag byte further into the object. */
 STATIC_ASSERT(offsetof(CheckpointNavState, branchFlag) == 0x30);
 
-void Checkpoint_func0C(CheckpointRouteState* o)
+void Checkpoint_rewindRoute(CheckpointRouteState* o)
 {
     s32 local_idx;
     CheckpointRouteEntry* ret;
@@ -508,7 +508,7 @@ void Checkpoint_func0C(CheckpointRouteState* o)
     }
 }
 
-void Checkpoint_func0D(u32 v)
+void Checkpoint_queueRouteRankItem(u32 v)
 {
     if (lbl_803DD416 >= 10)
         return;
@@ -519,7 +519,7 @@ void Checkpoint_func0D(u32 v)
 
 /* Project the object onto the current checkpoint segment, stepping the route
  * cursor forward or back and returning the segment heading. */
-int Checkpoint_func07(GameObject* obj, CheckpointRouteState* state)
+int Checkpoint_getRouteHeading(GameObject* obj, CheckpointRouteState* state)
 {
     s32 slotC;
     s32 slot8;
@@ -629,7 +629,7 @@ int Checkpoint_func07(GameObject* obj, CheckpointRouteState* state)
 
 /* Flood-search the route graph (filtered by group) for the segment the object
  * lies within, recording the matched checkpoint and local coordinates. */
-void Checkpoint_func06(GameObject* obj, CheckpointRouteState* state, int filter)
+void Checkpoint_findRouteForObject(GameObject* obj, CheckpointRouteState* state, int filter)
 {
     int stack[64];
     char visited[200];
@@ -864,8 +864,8 @@ void Checkpoint_initialise(void)
 u32 lbl_803112E8[22] = {
     0, 0, 0, 0x00110000,
     (u32)Checkpoint_initialise, (u32)Checkpoint_release, 0, (u32)Checkpoint_reset,
-    (u32)Checkpoint_Add, (u32)Checkpoint_Remove, (u32)Checkpoint_func06, (u32)Checkpoint_func07,
-    (u32)Checkpoint_func08, (u32)Checkpoint_func09_ret_1, (u32)Checkpoint_func0A, (u32)Checkpoint_find,
-    (u32)Checkpoint_func0C, (u32)Checkpoint_func0D, (u32)Checkpoint_func0E, (u32)Checkpoint_func0F,
-    (u32)Checkpoint_func10, (u32)Checkpoint_onGameLoop,
+    (u32)Checkpoint_Add, (u32)Checkpoint_Remove, (u32)Checkpoint_findRouteForObject, (u32)Checkpoint_getRouteHeading,
+    (u32)Checkpoint_advanceRoute, (u32)Checkpoint_func09_ret_1, (u32)Checkpoint_getRandomLinkedVector, (u32)Checkpoint_find,
+    (u32)Checkpoint_rewindRoute, (u32)Checkpoint_queueRouteRankItem, (u32)Checkpoint_getRouteRankItems, (u32)Checkpoint_getRouteRank,
+    (u32)Checkpoint_getRouteRankItem, (u32)Checkpoint_onGameLoop,
 };
