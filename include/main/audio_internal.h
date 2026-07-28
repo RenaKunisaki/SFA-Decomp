@@ -59,7 +59,7 @@ STATIC_ASSERT(offsetof(AudioDvdStreamStorage, prepared) == 0x30);
 
 typedef struct MusicTrackSlot {
     s16 id;
-    u8 unk2;
+    u8 groupId;
     u8 unk3;
     char* name;
     int offset;

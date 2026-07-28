@@ -1415,7 +1415,7 @@ void Music_ChannelLoadedCallback(MusicTrackSlot* slot, MusicChannel* channel, Mu
             params.volume.target = 0;
             params.volume.time = 0;
             params.flags |= 4;
-            seqHandle = sndSeqPlayEx(slot->unk2, trigger->track, channel->bankData, &params, 0);
+            seqHandle = sndSeqPlayEx(slot->groupId, trigger->track, channel->bankData, &params, 0);
             sndSeqVolume(voice, 0x1f4, seqHandle, 0);
             channel->status = 1;
             channel->seqHandle = seqHandle;
