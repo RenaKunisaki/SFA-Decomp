@@ -25,14 +25,6 @@ static const f32 lbl_803E6158 = 35.0f;
 #define VFP_FLAMEPOINT_TRICKY_COMMAND_KIND 1
 #define VFP_FLAMEPOINT_TRICKY_COMMAND_TYPE 4
 
-typedef struct VfpFlamePointTrickyInterface
-{
-    void* pad00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} VfpFlamePointTrickyInterface;
-
-STATIC_ASSERT(offsetof(VfpFlamePointTrickyInterface, sideCommandEnable) == 0x28);
-
 typedef struct VfpFlamePointData
 {
     s16 showGameBit;  /* 0x0 */

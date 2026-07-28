@@ -46,10 +46,13 @@
 
 typedef struct KytesMumTrickyInterface
 {
-    void* unknown00[13];
+    void* unknown00[10];
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
+    void* unknown2C[2];
     void (*commandPlayBall)(GameObject* tricky, int enabled, GameObject* target);
 } KytesMumTrickyInterface;
 
+STATIC_ASSERT(offsetof(KytesMumTrickyInterface, sideCommandEnable) == 0x28);
 STATIC_ASSERT(offsetof(KytesMumTrickyInterface, commandPlayBall) == 0x34);
 
 #define KYTESMUM_TRICKY_INTERFACE(tricky) ((KytesMumTrickyInterface*)*((GameObject*)(tricky))->anim.dll)
@@ -64,14 +67,6 @@ s16 lbl_803DC2D0[4] = {0x336, 0x337, 0x337, 0};
 
 #define KYTESMUM_TRICKY_COMMAND_KIND 1
 #define KYTESMUM_TRICKY_COMMAND_TYPE 2
-
-typedef struct KytesMumTrickyInterface
-{
-    void* pad00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} KytesMumTrickyInterface;
-
-STATIC_ASSERT(offsetof(KytesMumTrickyInterface, sideCommandEnable) == 0x28);
 
 #define PAD_BUTTON_A 0x100
 
