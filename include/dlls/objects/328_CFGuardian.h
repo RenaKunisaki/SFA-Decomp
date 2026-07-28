@@ -86,7 +86,7 @@ STATIC_ASSERT(offsetof(CfGuardianState, stateFlags) == 0xA9B);
 STATIC_ASSERT(sizeof(CfGuardianState) == 0xA9C);
 
 int cfguardian_playEventSfx(u32 obj, ObjAnimEventList* eventList, s16* sfxIds);
-int cfguardian_func0A(GameObject* obj);
+int cfguardian_isNotPathFlying(GameObject* obj);
 int cfguardian_flyAlongPath(GameObject* obj, RomCurveWalker* walker, f32 speed, int pointId, f32* outPhase);
 int cfguardian_steerToward(GameObject* obj, MoveLibTarget* target, f32 speed, f32* outPhase);
 RomCurveDef* cfguardian_findRomCurvePointNearObject(GameObject* obj, int curveGroup, f32* outPosition, int mode);

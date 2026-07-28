@@ -24,7 +24,7 @@ STATIC_ASSERT(offsetof(AttractorPlacement, mode) == 0x19);
 STATIC_ASSERT(offsetof(AttractorPlacement, unknown1A) == 0x1A);
 
 void attractor_getTarget(GameObject* obj, GameObject** outTarget);
-int attractor_func0A(GameObject* obj);
+int attractor_getScale(GameObject* obj);
 int attractor_getExtraSize(void);
 int attractor_getObjectTypeId(void);
 void attractor_free(GameObject* obj);
