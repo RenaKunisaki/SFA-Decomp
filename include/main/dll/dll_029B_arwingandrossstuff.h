@@ -65,9 +65,9 @@ STATIC_ASSERT(offsetof(ArwProjectileSetup, rotYByte) == 0x19);
 STATIC_ASSERT(offsetof(ArwProjectileSetup, rotXByte) == 0x1A);
 
 extern ObjectDescriptor gArwingAndrossStuffObjDescriptor;
-extern f32 lbl_803DC3D0;
-extern f32 lbl_803DC3D4;
-extern f32 lbl_803DC3D8;
+extern f32 gArwingAndrossRingScaleStep;
+extern f32 gArwingAndrossRingSpinStep;
+extern f32 gArwingAndrossRingRadiusScale;
 
 void arwprojectile_createLinkedEffect(GameObject* obj, u8 enable);
 void arwprojectile_placeForward(GameObject* obj, f32 dist);
