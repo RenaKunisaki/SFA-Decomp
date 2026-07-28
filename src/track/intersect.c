@@ -823,10 +823,10 @@ SplashQuad gWaterSplashQuads[0x100];
 DepthReadRequest gDepthReadResults[0x14];
 DepthReadRequest gDepthReadPendingQueue[0x14];
 
-f32 lbl_803967C0[3][4];
-f32 lbl_803967F0[3][4];
-f32 lbl_80396820[3][4];
-f32 lbl_80396850[3][4];
+f32 gCameraModelViewMatrix[3][4];
+f32 gCameraLightPerspectiveMatrix[3][4];
+f32 gCameraLightPerspectiveFlipYMatrix[3][4];
+f32 gCameraLightPerspectiveScaledMatrix[3][4];
 f32 hudMatrix[4][4];
 int lbl_803968C0[0x10];
 SaveCardFileInfo gSaveCardFileInfo;

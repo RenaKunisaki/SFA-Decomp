@@ -775,7 +775,7 @@ void addWavyCausticTevStage(void)
             GXLoadTexObj(obj, id);
         }
     }
-    GXLoadTexMtxImm(lbl_80396820, gRcpNextPostTexMtx, 0);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, gRcpNextPostTexMtx, 0);
     GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
     GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
     GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);

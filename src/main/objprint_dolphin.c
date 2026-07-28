@@ -1999,7 +1999,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         f32* vm = Camera_GetViewMatrix();
         Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
         PSMTXConcat((MtxPtr)vm, (MtxPtr)wm, (MtxPtr)t1);
-        PSMTXConcat((MtxPtr)(f32*)lbl_803967F0, (MtxPtr)t1, (MtxPtr)t2);
+        PSMTXConcat((MtxPtr)(f32*)gCameraLightPerspectiveMatrix, (MtxPtr)t1, (MtxPtr)t2);
         GXLoadTexMtxImm((const f32 (*)[4])t2, 0x24, 0);
         addSmallReflectionTevStage();
     }

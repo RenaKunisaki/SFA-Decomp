@@ -244,9 +244,9 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     GXInitTexObj((void*)((u8*)tex2 + 0x20), (u8*)tex2 + 0x60, ((Texture*)tex2)->width, ((Texture*)tex2)->height,
                  ((Texture*)tex2)->format, GX_REPEAT, GX_REPEAT, wrapBit);
     selectTexture((Texture*)tex2, 2);
-    GXLoadTexMtxImm(lbl_80396850, GX_PTTEXMTX6, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveScaledMatrix, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
-    GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX7, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX7);
     newshadows_getReflectionScrollOffsets(&fA, &fB);
     PSMTXScale(scaleMtx, 1.0f, 1.0f, 1.0f);
@@ -1122,7 +1122,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
     selectTexture((Texture*)tex, 1);
     selectWhirlpoolTexture(2);
 
-    GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX7, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX7);
 
     if (model == 0 || ((ModelFileHeader*)model)->normalCount != 0)
@@ -1324,7 +1324,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
 
 /*
  * Three-tex-coord-gen ind+direct TEV setup. Loads the active env-mtx
- * (lbl_80396820) for tex0, scales tex1 by 4.0f through a 3x4
+ * (gCameraLightPerspectiveFlipYMatrix) for tex0, scales tex1 by 4.0f through a 3x4
  * matrix from PSMTXScale, and stamps an indirect tex matrix from local
  * stack data. Two TEV stages: stage 0 K-modulates the texture by alpha,
  * stage 1 modulates by the second texture. Uses ind tex stage 0 to warp
@@ -1344,7 +1344,7 @@ void quakeSpellTextureFn_8007366c(u8 alpha)
 
     Camera_GetViewMatrix();
     selectReflectionTexture(0);
-    GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX6, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
     newshadows_getReflectionScrollOffsets(&a, &b);
     a *= 8.0f;
@@ -1658,7 +1658,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     GXSetIndTexCoordScale(1, 0, 0);
     GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
     PSMTXScale(mtx_30, lbl_803DB6B0, lbl_803DB6B0, 1.0f);
-    PSMTXConcat(mtx_30, lbl_80396820, mtx_90);
+    PSMTXConcat(mtx_30, gCameraLightPerspectiveFlipYMatrix, mtx_90);
     PSMTXTrans(mtx_30, 0.5f * (lbl_803DEEE4 - lbl_803DB6B0),
                0.5f * (lbl_803DEEE4 - lbl_803DB6B0), 0.0f);
     PSMTXConcat(mtx_30, mtx_90, mtx_90);
@@ -1862,7 +1862,7 @@ u32 objCallback_80074d04(int handle, void* model)
     }
 
     selectReflectionTexture(0);
-    GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX6, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
     newshadows_getReflectionScrollOffsets(&f1, &f2);
     f1 *= 4.0f;
@@ -4377,7 +4377,7 @@ void setupWaterReflectionTev(int handle1, int handle2)
     selectTexture((Texture*)handle2, 2);
 
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-    GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX7, GX_MTX3x4);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX7);
     PSMTXScale(mtx_30, 12.0f, 1.0f, 0.0f);
     GXLoadTexMtxImm(mtx_30, GX_TEXMTX0, GX_MTX2x4);

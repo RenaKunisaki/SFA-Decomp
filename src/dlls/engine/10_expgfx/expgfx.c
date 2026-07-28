@@ -3665,7 +3665,7 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     GXSetCullMode(GX_CULL_NONE);
     viewMatrix = (MtxPtr)Camera_GetViewMatrix();
     GXLoadPosMtxImm(viewMatrix, GX_PNMTX0);
-    PSMTXCopy(viewMatrix, lbl_803967C0);
+    PSMTXCopy(viewMatrix, gCameraModelViewMatrix);
     loadReflectionTexMtxs();
     _gxSetFogParams();
     if ((short)renderModeSetOrGet(-1) == 1)

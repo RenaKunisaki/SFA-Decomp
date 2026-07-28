@@ -1148,7 +1148,7 @@ void setupToRenderMapBlock(MapBlockData* block, void* posMtx)
     tmp[1][3] = fc;
     tmp[2][3] = fc;
     GXLoadNrmMtxImm(tmp, GX_PNMTX0);
-    PSMTXConcat((MtxPtr)lbl_803967F0, (MtxPtr)posMtx, out);
+    PSMTXConcat((MtxPtr)gCameraLightPerspectiveMatrix, (MtxPtr)posMtx, out);
     GXLoadTexMtxImm(out, GX_TEXMTX2, GX_MTX3x4);
     GXSetArray(GX_VA_POS, block->vertices, 6);
     GXSetArray(GX_VA_CLR0, block->vertexColors, 2);

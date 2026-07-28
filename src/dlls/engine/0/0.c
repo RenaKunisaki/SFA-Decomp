@@ -1061,7 +1061,7 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     GXSetIndTexOrder(1, 0, 2);
     GXSetIndTexCoordScale(1, 0, 0);
     GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
-    PSMTXConcat((MtxPtr)lbl_80396820, (MtxPtr)lbl_803A8950, m1);
+    PSMTXConcat((MtxPtr)gCameraLightPerspectiveFlipYMatrix, (MtxPtr)lbl_803A8950, m1);
     sval = 0.5f * (lbl_803DD850 * lbl_803DD850);
     PSMTXScale(m3, sval, sval, lbl_803E1E68);
     PSMTXConcat(m3, m1, m1);
