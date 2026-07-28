@@ -10,6 +10,7 @@
 #include "game/objects/object.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/baddie_placement.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/foodbag.h"
 #include "main/frame_timing.h"
@@ -19,55 +20,6 @@
 #include "main/resource.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-
-typedef struct ECSHCreatorSharpClawSetup {
-    ObjPlacement base;
-    s16 gameBit;
-    s16 gameBit2;
-    u8 unknown1C[0x1E - 0x1C];
-    s16 unknown1E;
-    s16 unknown20;
-    s16 droppedItemId;
-    s16 unknown24;
-    u8 unknown26;
-    s8 initialWeaponId;
-    u8 objectFlagBits;
-    u8 aggroRangeByte;
-    s8 initialYaw;
-    u8 flags;
-    s16 respawnEnabled;
-    s8 triggerSequenceId;
-    u8 healthByte;
-    s16 unknown30;
-    u8 hitPoints;
-    u8 unknown33;
-    u16 unknown34;
-    u8 unknown36[0x38 - 0x36];
-} ECSHCreatorSharpClawSetup;
-
-STATIC_ASSERT(sizeof(ECSHCreatorSharpClawSetup) == 0x38);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, base) == 0x00);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, gameBit) == 0x18);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, gameBit2) == 0x1A);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown1C) == 0x1C);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown1E) == 0x1E);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown20) == 0x20);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, droppedItemId) == 0x22);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown24) == 0x24);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown26) == 0x26);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, initialWeaponId) == 0x27);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, objectFlagBits) == 0x28);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, aggroRangeByte) == 0x29);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, initialYaw) == 0x2A);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, flags) == 0x2B);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, respawnEnabled) == 0x2C);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, triggerSequenceId) == 0x2E);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, healthByte) == 0x2F);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown30) == 0x30);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, hitPoints) == 0x32);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown33) == 0x33);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown34) == 0x34);
-STATIC_ASSERT(offsetof(ECSHCreatorSharpClawSetup, unknown36) == 0x36);
 
 #define ECSH_CREATOR_EFFECT_RESOURCE_ID  0x82
 #define ECSH_CREATOR_SHARPCLAW_OBJECT_ID 0x11
@@ -118,7 +70,7 @@ void ecshCreator_update(GameObject* obj) {
     const ECSHCreatorPlacement* placement;
     ECSHCreatorState* state;
     Dll82Interface** effectResource;
-    ECSHCreatorSharpClawSetup* spawnSetup;
+    EnemyPlacement* spawnSetup;
     GameObject* sharpClaw;
 
     placement = (const ECSHCreatorPlacement*)obj->anim.placementData;
@@ -136,8 +88,7 @@ void ecshCreator_update(GameObject* obj) {
         state->spawnTimer -= state->spawnTimerRate * framesThisStep;
     }
     if (Obj_IsLoadingLocked() != 0 && state->spawnTimer <= 0) {
-        spawnSetup =
-            mmAlloc(sizeof(ECSHCreatorSharpClawSetup), ECSH_CREATOR_SETUP_ALLOC_TYPE, ECSH_CREATOR_SETUP_ALLOC_FLAGS);
+        spawnSetup = mmAlloc(sizeof(EnemyPlacement), ECSH_CREATOR_SETUP_ALLOC_TYPE, ECSH_CREATOR_SETUP_ALLOC_FLAGS);
         spawnSetup->base.posX = placement->base.posX;
         spawnSetup->base.posY = placement->base.posY;
         spawnSetup->base.posZ = placement->base.posZ;
@@ -150,17 +101,17 @@ void ecshCreator_update(GameObject* obj) {
         spawnSetup->initialWeaponId = ECSH_CREATOR_SHARPCLAW_INITIAL_WEAPON_ID;
         spawnSetup->objectFlagBits = 0;
         spawnSetup->gameBit = state->triggerGameBit + placement->childGameBitOffset;
-        spawnSetup->unknown30 = -1;
+        spawnSetup->unk30 = -1;
         spawnSetup->initialYaw = (s8)(obj->anim.rotX >> ECSH_CREATOR_INITIAL_YAW_SHIFT);
         spawnSetup->flags = ECSH_CREATOR_SHARPCLAW_FLAGS;
-        spawnSetup->unknown20 = 0;
-        spawnSetup->unknown1E = 0;
+        spawnSetup->unk20 = 0;
+        spawnSetup->unk1E = 0;
         spawnSetup->droppedItemId = ECSH_CREATOR_SHARPCLAW_INVALID_DROPPED_ITEM_ID;
         spawnSetup->aggroRangeByte = ECSH_CREATOR_SHARPCLAW_AGGRO_RANGE_BYTE;
         spawnSetup->triggerSequenceId = ECSH_CREATOR_SHARPCLAW_NO_TRIGGER_SEQUENCE;
-        spawnSetup->unknown24 = 0;
+        spawnSetup->unk24 = 0;
         spawnSetup->respawnEnabled = 0;
-        spawnSetup->unknown34 = 0xFFFF;
+        spawnSetup->unk34 = 0xFFFF;
         spawnSetup->gameBit2 = 0;
         spawnSetup->hitPoints = state->sharpClawHitPoints;
         sharpClaw = Obj_SetupObject(&spawnSetup->base, ECSH_CREATOR_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
