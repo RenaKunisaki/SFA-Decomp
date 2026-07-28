@@ -37,8 +37,7 @@ int IMIceMountain_sequenceCallback(GameObject* obj, int unused, const struct Obj
 int IMIceMountain_getExtraSize(void);
 int IMIceMountain_getObjectTypeId(void);
 void IMIceMountain_free(void);
-void IMIceMountain_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
-                          s8 visible);
+void IMIceMountain_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void IMIceMountain_hitDetect(void);
 void IMIceMountain_update(GameObject* obj);
 void IMIceMountain_init(GameObject* obj);

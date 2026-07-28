@@ -80,7 +80,6 @@ void Transporter_hitDetect(int obj);
 void Transporter_update(GameObject* obj);
 void Transporter_init(GameObject* obj, TransporterPlacement* placement);
 
-extern const f32 gTransporterZero[1];
 extern ObjectDescriptor gTransporterObjDescriptor;
 
 #endif /* DLLS_OBJECTS_300_TRANSPORTER_H_ */

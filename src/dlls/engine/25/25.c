@@ -609,11 +609,11 @@ GameObject* dll_19_func15(GameObject* obj, int spawnType, int unused, int alt)
             if (gDll19NearestObj != NULL)
             {
                 f32 xx, yy, zz;
+                f32 yOffset = 15.0f;
                 xx = source->anim.localPosX;
                 gDll19NearestObj->anim.worldPosX = xx;
                 gDll19NearestObj->anim.localPosX = xx;
-                yy = source->anim.localPosY;
-                yy += 15.0f;
+                yy = source->anim.localPosY + yOffset;
                 gDll19NearestObj->anim.worldPosY = yy;
                 gDll19NearestObj->anim.localPosY = yy;
                 zz = source->anim.localPosZ;

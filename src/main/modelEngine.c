@@ -218,6 +218,9 @@
 #include "dlls/objects/421_NW_levcontr.h"
 #include "dlls/objects/422_SH_tricky.h"
 #include "dlls/objects/423.h"
+#include "dlls/objects/424_SH_killermu.h"
+#include "dlls/objects/425_BombPlant.h"
+#include "dlls/objects/426_BombPlantSp.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -305,8 +308,7 @@ extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor;
-extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantObjDescriptor, gBombPlantSporeObjDescriptor,
-    gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
+extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDB_eggObjDescriptor, gDBstealerwormObjDescriptor,
@@ -333,7 +335,7 @@ extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor,
     gDrLightBeaObjDescriptor, gDrMusicContObjDescriptor, gDrShackleObjDescriptor, gDrakorDThornBushObjDescriptor,
     gDrakorEnergyObjDescriptor;
 extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor;
-extern ResourceDescriptor gEarthWalkerObjDescriptor, gEnemyMushroomObjDescriptor, gExplodePlanObjDescriptor;
+extern ResourceDescriptor gEarthWalkerObjDescriptor, gExplodePlanObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGmMazeWellObjDescriptor;
@@ -1477,9 +1479,9 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gNWLevelControlObjDescriptor,
     (ResourceDescriptor*)&gSHTrickyObjDescriptor,
     (ResourceDescriptor*)&gEdibleMushroomObjDescriptor,
-    &gEnemyMushroomObjDescriptor,
-    &gBombPlantObjDescriptor,
-    &gBombPlantSporeObjDescriptor,
+    (ResourceDescriptor*)&gEnemyMushroomObjDescriptor,
+    (ResourceDescriptor*)&gBombPlantObjDescriptor,
+    (ResourceDescriptor*)&gBombPlantSporeObjDescriptor,
     &gBombPlantingSpotObjDescriptor,
     &gSH_queenearthwalkerObjDescriptor,
     &gSH_thorntailObjDescriptor,

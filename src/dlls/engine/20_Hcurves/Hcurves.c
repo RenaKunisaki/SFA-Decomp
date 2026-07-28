@@ -412,35 +412,27 @@ int RomCurve_setSegmentEndNode(RomCurveWalker* walker, void* curve)
     *(void**)(A + 0xa4) = curve;
     if (*(int*)(A + 0x80) != 0)
     {
-        f32 t;
         *(f32*)(A + 0xa8) = *(f32*)(B + 0x8);
-        t = (float)(u32) * (u8*)(B + 0x2e) *
-            mathSinf(3.1415927f * (float)((s32)((s8) * (B + 0x2c)) << 8) / 32768.0f);
-        *(f32*)(A + 0xb0) = 2.0f * t;
+        *(f32*)(A + 0xb0) = 2.0f * ((float)(u32) * (u8*)(B + 0x2e) *
+                                  mathSinf(3.1415927f * (float)((s32)((s8) * (B + 0x2c)) << 8) / 32768.0f));
         *(f32*)(A + 0xc8) = *(f32*)(B + 0xc);
-        t = (float)(u32) * (u8*)(B + 0x2e) *
-            mathSinf(3.1415927f * (float)((s32)((s8) * (B + 0x2d)) << 8) / 32768.0f);
-        *(f32*)(A + 0xd0) = 2.0f * t;
+        *(f32*)(A + 0xd0) = 2.0f * ((float)(u32) * (u8*)(B + 0x2e) *
+                                  mathSinf(3.1415927f * (float)((s32)((s8) * (B + 0x2d)) << 8) / 32768.0f));
         *(f32*)(A + 0xe8) = *(f32*)(B + 0x10);
-        t = (float)(u32) * (u8*)(B + 0x2e) *
-            mathCosf(3.1415927f * (float)((s32)((s8) * (B + 0x2c)) << 8) / 32768.0f);
-        *(f32*)(A + 0xf0) = 2.0f * t;
+        *(f32*)(A + 0xf0) = 2.0f * ((float)(u32) * (u8*)(B + 0x2e) *
+                                  mathCosf(3.1415927f * (float)((s32)((s8) * (B + 0x2c)) << 8) / 32768.0f));
     }
     else
     {
-        f32 t;
         *(f32*)(A + 0xbc) = *(f32*)(B + 0x8);
-        t = (float)(u32) * (u8*)(B + 0x2e) *
-            mathSinf(3.1415927f * (float)((s32)((s8) * (B + 0x2c)) << 8) / 32768.0f);
-        *(f32*)(A + 0xc4) = 2.0f * t;
+        *(f32*)(A + 0xc4) = 2.0f * ((float)(u32) * (u8*)(B + 0x2e) *
+                                  mathSinf(3.1415927f * (float)((s32)((s8) * (B + 0x2c)) << 8) / 32768.0f));
         *(f32*)(A + 0xdc) = *(f32*)(B + 0xc);
-        t = (float)(u32) * (u8*)(B + 0x2e) *
-            mathSinf(3.1415927f * (float)((s32)((s8) * (B + 0x2d)) << 8) / 32768.0f);
-        *(f32*)(A + 0xe4) = 2.0f * t;
+        *(f32*)(A + 0xe4) = 2.0f * ((float)(u32) * (u8*)(B + 0x2e) *
+                                  mathSinf(3.1415927f * (float)((s32)((s8) * (B + 0x2d)) << 8) / 32768.0f));
         *(f32*)(A + 0xfc) = *(f32*)(B + 0x10);
-        t = (float)(u32) * (u8*)(B + 0x2e) *
-            mathCosf(3.1415927f * (float)((s32)((s8) * (B + 0x2c)) << 8) / 32768.0f);
-        *(f32*)(A + 0x104) = 2.0f * t;
+        *(f32*)(A + 0x104) = 2.0f * ((float)(u32) * (u8*)(B + 0x2e) *
+                                  mathCosf(3.1415927f * (float)((s32)((s8) * (B + 0x2c)) << 8) / 32768.0f));
     }
     return 0;
 }
@@ -1271,6 +1263,12 @@ inline int objfsaExitOutside(ObjfsaWalkGroup* g, s16 ex, s16 ez)
         }
     }
     return edge != 4;
+}
+
+static void objfsaSetPlaneNormal(ObjfsaPatchPlane* pl, f32 dxn, f32 dzn)
+{
+    pl->normalX = (s16)(32767.0f * dxn);
+    pl->normalZ = (s16)(32767.0f * dzn);
 }
 
 void walkgroupFindExitPointFn_800dc398(void)

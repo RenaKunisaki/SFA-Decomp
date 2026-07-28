@@ -2776,7 +2776,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         f32 fade;
 
                         rnd = randomGetRange(0, 5);
-                        fade = -((f32)(int)rnd * 0.01f + 0.25f);
+                        fade = (f32)(int)rnd;
+                        fade *= 0.01f;
+                        fade = -(fade + 0.25f);
                         slot->velocityY *= fade;
                         if (slot->velocityY > 0.3f)
                         {
@@ -2815,14 +2817,14 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         {
                             slot->velocityX *= 0.5f;
                             slot->velocityZ *= 0.5f;
-                            slot->scaleCurrent = (f32)slot->scaleCurrent * 0.65f;
+                            slot->scaleCurrent *= 0.65f;
                             slot->behaviorFlags ^= EXPGFX_BEHAVIOR_GROUND_IMPACT_STAGE_1 | 0LL;
                         }
                         else if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_GROUND_IMPACT_STAGE_2) != 0)
                         {
                             slot->velocityX *= 0.5f;
                             slot->velocityZ *= 0.5f;
-                            slot->scaleCurrent = (f32)slot->scaleCurrent * 0.65f;
+                            slot->scaleCurrent *= 0.65f;
                             slot->behaviorFlags ^= EXPGFX_BEHAVIOR_GROUND_IMPACT_STAGE_2 | 0LL;
                             slot->behaviorFlags |= EXPGFX_BEHAVIOR_GROUND_IMPACT_STAGE_1;
                         }
@@ -2830,7 +2832,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         {
                             slot->velocityX *= 0.5f;
                             slot->velocityZ *= 0.5f;
-                            slot->scaleCurrent = (f32)slot->scaleCurrent * 0.65f;
+                            slot->scaleCurrent *= 0.65f;
                             slot->behaviorFlags ^= EXPGFX_BEHAVIOR_GROUND_IMPACT_STAGE_3 | 0LL;
                             slot->behaviorFlags |= EXPGFX_BEHAVIOR_GROUND_IMPACT_STAGE_2;
                             if (slot->impactEffectId != -1)
@@ -2850,7 +2852,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                                 v = slot->velocityZ;
                                 slot->velocityZ = v * (st - v);
                             }
-                            slot->scaleCurrent = (f32)slot->scaleCurrent * 0.65f;
+                            slot->scaleCurrent *= 0.65f;
                             slot->behaviorFlags ^= EXPGFX_BEHAVIOR_GROUND_IMPACT_STAGE_4 | 0LL;
                             slot->behaviorFlags |= EXPGFX_BEHAVIOR_GROUND_IMPACT_STAGE_3;
                             if (slot->impactEffectId != -1)

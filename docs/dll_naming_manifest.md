@@ -467,9 +467,9 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1A5 | NW_levcontr | COMPLETE | dlls/objects/421_NW_levcontr/NW_levcontr.c | = (canonical) | Exact complete five-function TU with its retail-proven early descriptor and following compiler switch table, typed 0x14-byte controller state, canonical unit header, and full level-data block; the generated source path remains unchanged |
 | 0x1A6 | SH_tricky | COMPLETE | dlls/objects/422_SH_tricky/SH_tricky.c | = (canonical) | Exact complete three-function TU with its terminal descriptor, one-byte controller state, typed Tricky move-request callback, and canonical unit header; the generated source path remains unchanged |
 | 0x1A7 | — | NO-RETAIL-NAME | dlls/objects/423/423.c | = (canonical) | Exact complete eight-function TU with its retail-proven Edible Mushroom object family, retail-backed 0x20-byte placement layout, canonical numeric unit header, proven early descriptor, trailing compiler switch table, and full constant pool; the generated source path remains unchanged |
-| 0x1A8 | SH_killermu | COMPLETE | dlls/objects/424_SH_killermu/SH_killermu.c | = (canonical) | — |
-| 0x1A9 | BombPlant | COMPLETE | dlls/objects/425_BombPlant/BombPlant.c | = (canonical) | — |
-| 0x1AA | BombPlantSp | COMPLETE | dlls/objects/426_BombPlantSp/BombPlantSp.c | = (canonical) | — |
+| 0x1A8 | SH_killermu | COMPLETE | dlls/objects/424_SH_killermu/SH_killermu.c | = (canonical) | Exact complete ten-function TU with its early descriptor, typed 0x3C-byte state, retail-backed 0x24-byte placement layout, canonical unit header, and complete animation tables; the generated source path remains unchanged |
+| 0x1A9 | BombPlant | COMPLETE | dlls/objects/425_BombPlant/BombPlant.c | = (canonical) | Exact complete ten-function TU with its terminal descriptor-plus-padding record, typed 0x18-byte state, evidenced 0x20-byte placement layout, typed five-entry state configuration table, and canonical unit header; the generated source path remains unchanged |
+| 0x1AA | BombPlantSp | COMPLETE | dlls/objects/426_BombPlantSp/BombPlantSp.c | = (canonical) | Exact complete six-function TU with its terminal descriptor-plus-padding record, retail-proven BombPlantSp object identity, producer-backed 0x24-byte setup layout, typed 0x2B4-byte state and embedded path-control block, canonical unit header, and full data/small-data ownership; the generated source path remains unchanged |
 | 0x1AB | BombPlantin | COMPLETE | dlls/objects/427_BombPlantin/BombPlantin.c | = (canonical) | — |
 | 0x1AC | SH_queenear | COMPLETE | dlls/objects/428_SH_queenear/SH_queenear.c | = (canonical) | — |
 | 0x1AD | SH_thorntail | COMPLETE | dlls/objects/429_SH_thorntai/SH_thorntai.c | = (canonical) | — |
@@ -996,7 +996,9 @@ blocked units will surface more when carved.
 | 0x1A5 | dlls/objects/421_NW_levcontr/NW_levcontr.c | include/dlls/objects/421_NW_levcontr.h |
 | 0x1A6 | dlls/objects/422_SH_tricky/SH_tricky.c | include/dlls/objects/422_SH_tricky.h |
 | 0x1A7 | dlls/objects/423/423.c | include/dlls/objects/423.h |
-| 0x1A8 | dlls/objects/424_SH_killermu/SH_killermu.c | include/main/dll/dll_01A8_shkillermushroom.h |
+| 0x1A8 | dlls/objects/424_SH_killermu/SH_killermu.c | include/dlls/objects/424_SH_killermu.h |
+| 0x1A9 | dlls/objects/425_BombPlant/BombPlant.c | include/dlls/objects/425_BombPlant.h |
+| 0x1AA | dlls/objects/426_BombPlantSp/BombPlantSp.c | include/dlls/objects/426_BombPlantSp.h |
 | 0x1AC | dlls/objects/428_SH_queenear/SH_queenear.c | include/main/dll/SH/dll_01AC_shqueenearthwalker.h |
 | 0x1AE | main/dll/dll_01AE_shlevelcontrol.c | include/main/dll/SH/dll_01AE_shlevelcontrol.h |
 | 0x1B0 | main/dll/dll_01B0_shswapston.c | include/main/dll/SH/dll_01B0_shswapston.h |
