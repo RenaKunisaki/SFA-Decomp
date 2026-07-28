@@ -1449,17 +1449,6 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
 
 void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
 {
-    typedef struct HightopPartfxTransform
-    {
-        s16 rotX;
-        s16 rotY;
-        s16 rotZ;
-        s16 pad;
-        f32 scale;
-        f32 x;
-        f32 y;
-        f32 z;
-    } HightopPartfxTransform;
 
     SnowBikeState* st = (SnowBikeState*)stateRaw;
     u8 flags;
@@ -1475,7 +1464,7 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
     f32 target540;
     f32 target544;
     f32 k;
-    HightopPartfxTransform effect;
+    MatrixTransform effect;
 
     speed =
         sqrtf(st->distanceScale * st->distanceScale + (st->localVelX * st->localVelX + st->localVelY * st->localVelY));

@@ -19,19 +19,8 @@
 #include "main/dll/path_control_interface.h"
 #include "main/dll/dll_0235_dfptargetblock.h"
 #include "main/gamebits.h"
+#include "main/vecmath.h"
 #include "main/frame_timing.h"
-
-typedef struct DfpTargetBlockPartfxArgs
-{
-    s16 rotX;
-    s16 rotY;
-    s16 rotZ;
-    s16 pad06;
-    f32 scale;
-    f32 x;
-    f32 y;
-    f32 z;
-} DfpTargetBlockPartfxArgs;
 
 #define DFPTARGETBLOCK_OBJFLAG_HIDDEN 0x4000
 
@@ -157,7 +146,7 @@ void dfptargetblock_hitDetect(DfpTargetBlockObject* obj)
     DfpTargetBlockState* state;
     DfpTargetBlockHome* home;
     DfpTargetBlockObject* hitObj;
-    DfpTargetBlockPartfxArgs effect;
+    MatrixTransform effect;
     int priority;
     int hitType;
     s16 mode;
@@ -293,8 +282,6 @@ void dfptargetblock_hitDetect(DfpTargetBlockObject* obj)
         dfptargetblock_checkSettled(obj, state, 20.0f);
     }
 }
-
-
 
 void dfptargetblock_update(DfpTargetBlockObject* obj)
 {

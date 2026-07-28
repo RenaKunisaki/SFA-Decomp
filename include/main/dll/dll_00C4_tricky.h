@@ -14,7 +14,6 @@ STATIC_ASSERT(sizeof(TrickyItemIdList) == 0x14);
 
 extern const TrickyItemIdList gTrickyCmdQueryInit;
 extern const TrickyItemIdList gTrickyFoodItemIds;
-extern u16 gSkeetlaFootstepSfxId2;
 #include "ghidra_import.h"
 #include "main/dll/tricky_state.h"
 #include "main/objanim_update.h"
