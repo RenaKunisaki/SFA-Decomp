@@ -389,12 +389,12 @@ f32* Camera_GetWorldMatrix(void) {
     return gCameraWorldMatrix;
 }
 
-void Camera_LoadModelViewMatrix(int unused0, int unused1, MatrixTransform* transform, f32 scale, f32 unused4,
-                                f32* matrix) {
+void Camera_LoadModelViewMatrix(int unusedDisplayList, int unusedMatrixList, MatrixTransform* transform, f32 yScale,
+                                f32 unusedOffsetY, f32* outMatrix) {
     f32* modelMatrix;
 
-    if (matrix != NULL) {
-        modelMatrix = matrix;
+    if (outMatrix != NULL) {
+        modelMatrix = outMatrix;
     } else {
         modelMatrix = gCameraDefaultModelMatrix;
     }
@@ -402,14 +402,14 @@ void Camera_LoadModelViewMatrix(int unused0, int unused1, MatrixTransform* trans
     transform->x -= playerMapOffsetX;
     transform->z -= playerMapOffsetZ;
     setMatrixFromObjectPos(modelMatrix, transform);
-    if (lbl_803DE5F0 != scale) {
-        mtx44ScaleRow1(modelMatrix, scale);
+    if (lbl_803DE5F0 != yScale) {
+        mtx44ScaleRow1(modelMatrix, yScale);
     }
 
-    if (matrix == NULL) {
+    if (outMatrix == NULL) {
         mtx44Transpose(modelMatrix, (f32*)gCameraModelViewMatrix);
     } else {
-        mtx44Transpose(matrix, (f32*)gCameraModelViewMatrix);
+        mtx44Transpose(outMatrix, (f32*)gCameraModelViewMatrix);
     }
 
     PSMTXConcat((MtxPtr)gCameraViewMatrix, (MtxPtr)gCameraModelViewMatrix, (MtxPtr)gCameraModelViewMatrix);
@@ -629,8 +629,8 @@ void Camera_UpdateProjection(void* viewportArg, int unused) {
         u8 savedViewIndex = gCameraCurrentViewIndex;
 
         gCameraCurrentViewIndex = viewIndex;
-        gxSetScissorRect(0, 0, viewports[viewIndex & 0xff].ulx, viewports[viewIndex & 0xff].uly,
-                         viewports[viewIndex & 0xff].lrx, viewports[viewIndex & 0xff].lry);
+        gxSetScissorRect(0, 0, viewports[viewIndex & 0xff].scissorX1, viewports[viewIndex & 0xff].scissorY1,
+                         viewports[viewIndex & 0xff].scissorX2, viewports[viewIndex & 0xff].scissorY2);
 
         activeViewport = gCameraViewports;
         activeViewIndex = gCameraCurrentViewIndex;

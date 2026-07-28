@@ -81,14 +81,17 @@ typedef struct CameraViewport {
     s32 posY;
     s32 width;
     s32 height;
-    s32 ulx;
-    s32 uly;
-    s32 lrx;
-    s32 lry;
+    s32 scissorX1;
+    s32 scissorY1;
+    s32 scissorX2;
+    s32 scissorY2;
     s32 flags;
 } CameraViewport;
 
-STATIC_ASSERT(offsetof(CameraViewport, ulx) == 0x20);
+STATIC_ASSERT(offsetof(CameraViewport, scissorX1) == 0x20);
+STATIC_ASSERT(offsetof(CameraViewport, scissorY1) == 0x24);
+STATIC_ASSERT(offsetof(CameraViewport, scissorX2) == 0x28);
+STATIC_ASSERT(offsetof(CameraViewport, scissorY2) == 0x2C);
 STATIC_ASSERT(offsetof(CameraViewport, flags) == 0x30);
 STATIC_ASSERT(sizeof(CameraViewport) == 0x34);
 
@@ -165,8 +168,8 @@ f32* Camera_GetViewMatrix(void);
 f32* Camera_GetInverseViewMatrix(void);
 Camera* Camera_GetCurrent(void);
 u8 CameraShake_IsActive(void);
-void Camera_LoadModelViewMatrix(int unused0, int unused1, MatrixTransform* transform, f32 scale, f32 unused4,
-                                f32* matrix);
+void Camera_LoadModelViewMatrix(int unusedDisplayList, int unusedMatrixList, MatrixTransform* transform, f32 yScale,
+                                f32 unusedOffsetY, f32* outMatrix);
 void Camera_UpdateForObject(Camera* camera);
 void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex);
 void Obj_BuildTransformMatrices(GameObject* obj);
