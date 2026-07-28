@@ -468,7 +468,7 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
     return 4;
 }
 
-void wclevelcont_getSolvedTileXYB(s16 value, s16* outRow, s16* outCol)
+void wclevelcont_getSolvedTileXYB(s16 value, s16* outTileX, s16* outTileY)
 {
     int i, j;
 
@@ -478,15 +478,15 @@ void wclevelcont_getSolvedTileXYB(s16 value, s16* outRow, s16* outCol)
         {
             if (value == gWcTileGridBSolved.g[i][j])
             {
-                *outRow = i;
-                *outCol = j;
+                *outTileX = i;
+                *outTileY = j;
                 return;
             }
         }
     }
 }
 
-void wclevelcont_getInitialTileXYB(s16 value, s16* outRow, s16* outCol)
+void wclevelcont_getInitialTileXYB(s16 value, s16* outTileX, s16* outTileY)
 {
     int i, j;
 
@@ -496,50 +496,50 @@ void wclevelcont_getInitialTileXYB(s16 value, s16* outRow, s16* outCol)
         {
             if (value == gWcTileGridBInitial.g[i][j])
             {
-                *outRow = i;
-                *outCol = j;
+                *outTileX = i;
+                *outTileY = j;
                 return;
             }
         }
     }
 }
 
-int wclevelcont_getTileB(s16 i, s16 j)
+int wclevelcont_getTileB(s16 tileX, s16 tileY)
 {
-    if (i < 0 || i > 7 || j < 0 || j > 7)
+    if (tileX < 0 || tileX > 7 || tileY < 0 || tileY > 7)
     {
         return 0;
     }
-    return gWcTileGridB[i][j];
+    return gWcTileGridB[tileX][tileY];
 }
 
-void wclevelcont_setTileB(int value, s16 i, s16 j)
+void wclevelcont_setTileB(int value, s16 tileX, s16 tileY)
 {
-    if (i < 0 || i > 7 || j < 0 || j > 7)
+    if (tileX < 0 || tileX > 7 || tileY < 0 || tileY > 7)
     {
         return;
     }
-    gWcTileGridB[i][j] = value;
+    gWcTileGridB[tileX][tileY] = value;
 }
 
-void wclevelcont_worldPosToTileB(GameObject* obj, f32 px, f32 pz, s16* outRow, s16* outCol)
+void wclevelcont_worldPosToTileB(GameObject* obj, f32 px, f32 pz, s16* outTileX, s16* outTileY)
 {
     f32 outX, outZ;
 
     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &outX, &outZ);
-    *outRow = (s16)((s16)(px - outX - 224.0f) / 48);
-    *outCol = (s16)((s16)(pz - outZ - 128.0f) / 48);
+    *outTileX = (s16)((s16)(px - outX - 224.0f) / 48);
+    *outTileY = (s16)((s16)(pz - outZ - 128.0f) / 48);
 }
 
-void wclevelcont_tileBToWorldPos(GameObject* obj, s16 col, s16 row, f32* outXp, f32* outZp)
+void wclevelcont_tileBToWorldPos(GameObject* obj, s16 tileX, s16 tileY, f32* outXp, f32* outZp)
 {
     f32 outX, outZ;
 
     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &outX, &outZ);
     {
         f32 base = 24.0f;
-        *outXp = base + (224.0f + outX + (f32)(col * 48));
-        *outZp = base + (128.0f + outZ + (f32)(row * 48));
+        *outXp = base + (224.0f + outX + (f32)(tileX * 48));
+        *outZp = base + (128.0f + outZ + (f32)(tileY * 48));
     }
 }
 
@@ -659,7 +659,7 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
     return 4;
 }
 
-void wclevelcont_getSolvedTileXYA(s16 value, s16* outRow, s16* outCol)
+void wclevelcont_getSolvedTileXYA(s16 value, s16* outTileX, s16* outTileY)
 {
     int i, j;
 
@@ -669,15 +669,15 @@ void wclevelcont_getSolvedTileXYA(s16 value, s16* outRow, s16* outCol)
         {
             if (value == gWcTileGridASolved.g[i][j])
             {
-                *outRow = i;
-                *outCol = j;
+                *outTileX = i;
+                *outTileY = j;
                 return;
             }
         }
     }
 }
 
-void wclevelcont_getInitialTileXYA(s16 value, s16* outRow, s16* outCol)
+void wclevelcont_getInitialTileXYA(s16 value, s16* outTileX, s16* outTileY)
 {
     int i, j;
 
@@ -687,50 +687,50 @@ void wclevelcont_getInitialTileXYA(s16 value, s16* outRow, s16* outCol)
         {
             if (value == gWcTileGridAInitial.g[i][j])
             {
-                *outRow = i;
-                *outCol = j;
+                *outTileX = i;
+                *outTileY = j;
                 return;
             }
         }
     }
 }
 
-int wclevelcont_getTileA(s16 i, s16 j)
+int wclevelcont_getTileA(s16 tileX, s16 tileY)
 {
-    if (i < 0 || i > 7 || j < 0 || j > 7)
+    if (tileX < 0 || tileX > 7 || tileY < 0 || tileY > 7)
     {
         return 0;
     }
-    return gWcTileGridA[i][j];
+    return gWcTileGridA[tileX][tileY];
 }
 
-void wclevelcont_setTileA(int value, s16 i, s16 j)
+void wclevelcont_setTileA(int value, s16 tileX, s16 tileY)
 {
-    if (i < 0 || i > 7 || j < 0 || j > 7)
+    if (tileX < 0 || tileX > 7 || tileY < 0 || tileY > 7)
     {
         return;
     }
-    gWcTileGridA[i][j] = value;
+    gWcTileGridA[tileX][tileY] = value;
 }
 
-void wclevelcont_worldPosToTileA(GameObject* obj, f32 px, f32 pz, s16* outRow, s16* outCol)
+void wclevelcont_worldPosToTileA(GameObject* obj, f32 px, f32 pz, s16* outTileX, s16* outTileY)
 {
     f32 outX, outZ;
 
     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &outX, &outZ);
-    *outRow = (s16)((s16)(px - outX - 32.0f) / 48);
-    *outCol = (s16)((s16)(pz - outZ - 129.0f) / 48);
+    *outTileX = (s16)((s16)(px - outX - 32.0f) / 48);
+    *outTileY = (s16)((s16)(pz - outZ - 129.0f) / 48);
 }
 
-void wclevelcont_tileAToWorldPos(GameObject* obj, s16 col, s16 row, f32* outXp, f32* outZp)
+void wclevelcont_tileAToWorldPos(GameObject* obj, s16 tileX, s16 tileY, f32* outXp, f32* outZp)
 {
     f32 outX, outZ;
 
     mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &outX, &outZ);
     {
         f32 base = 24.0f;
-        *outXp = base + (32.0f + outX + (f32)(col * 48));
-        *outZp = base + (129.0f + outZ + (f32)(row * 48));
+        *outXp = base + (32.0f + outX + (f32)(tileX * 48));
+        *outZp = base + (129.0f + outZ + (f32)(tileY * 48));
     }
 }
 
