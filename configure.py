@@ -12,16 +12,6 @@
 # Append --help to see available options.
 ###
 
-# <DELIBERATELY BREAK MAIN>
-# Temporary main-only cutover stop. Revert this commit during the nightly merge;
-# never merge or cherry-pick it into the dated staging branch.
-raise SystemExit(
-    "INTENTIONAL MAIN BRANCH PAUSE: normal work has moved to "
-    "origin/staging/2026-07-28.\n"
-    "Fetch and check out that branch instead of repairing main. "
-    "The nightly merger owns reverting this temporary stop."
-)
-
 import argparse
 import shutil
 import sys
