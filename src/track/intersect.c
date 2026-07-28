@@ -660,4 +660,4 @@ f32 lbl_80396820[3][4];
 f32 lbl_80396850[3][4];
 f32 hudMatrix[4][4];
 int lbl_803968C0[0x10];
-SaveCardFileInfo lbl_80396900;
+SaveCardFileInfo gSaveCardFileInfo;

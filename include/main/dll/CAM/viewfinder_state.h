@@ -21,7 +21,7 @@ typedef struct ViewfinderFlags {
 
 /*
  * ViewfinderState - the heap record behind the .sbss pointer
- * lbl_803DD548, used by the dll_5B camera modes (CameraModeViewfinder /
+ * gViewfinderState, used by the dll_5B camera modes (CameraModeViewfinder /
  * CameraModeDebug / CameraModeStatic / firstPerson). The five
  * ViewfinderHermiteChannel members are the control-point/tangent arrays
  * fed to Curve_BuildHermiteCoeffs through viewCurve.

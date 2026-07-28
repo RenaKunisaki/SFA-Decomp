@@ -153,7 +153,7 @@ const struct VisBits16 gTrickyVisibilityBitsInit = {{0x10000, 0x20000, 0x40000, 
 const StaffCollisionColorArgs gTrickyFrozenFxColors = {0x08, 0xFF, 0xFF, 0x78};
 
 int gTrickyNearestObject;
-StaffCollisionInterface** lbl_803DDA50;
+StaffCollisionInterface** gBaddieStaffCollisionInterface;
 
 #define ENEMY_OBJFLAG_PARENT_SLACK 0x1000
 #define ENEMY_OBJFLAG_FREED        0x40
@@ -651,9 +651,9 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                 params.rot[2] = 0;
                 params.rot[1] = 0;
                 params.rot[0] = 0;
-                if (lbl_803DDA50 != NULL)
+                if (gBaddieStaffCollisionInterface != NULL)
                 {
-                    (*lbl_803DDA50)->spawn(NULL, 1, (PartFxSpawnParams*)&params, 0x401, -1, &colors);
+                    (*gBaddieStaffCollisionInterface)->spawn(NULL, 1, (PartFxSpawnParams*)&params, 0x401, -1, &colors);
                 }
                 ((TrickyState*)state)->freezeEffectTimer = 20.0f;
                 if (*(void**)&((TrickyState*)state)->light == NULL)
@@ -3103,17 +3103,17 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
 
 void enemy_release(void)
 {
-    if (lbl_803DDA50 != NULL)
+    if (gBaddieStaffCollisionInterface != NULL)
     {
-        Resource_Release(lbl_803DDA50);
-        lbl_803DDA50 = NULL;
+        Resource_Release(gBaddieStaffCollisionInterface);
+        gBaddieStaffCollisionInterface = NULL;
     }
 }
 
 void enemy_initialise(void)
 {
-    if (lbl_803DDA50 == NULL)
-        lbl_803DDA50 = Resource_Acquire(0x5a, 1);
+    if (gBaddieStaffCollisionInterface == NULL)
+        gBaddieStaffCollisionInterface = Resource_Acquire(0x5a, 1);
 }
 
 const f32 lbl_803E2604 = 0.0f;

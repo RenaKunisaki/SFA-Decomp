@@ -636,7 +636,7 @@ int memCardFn_8007dd04(u8 retry)
             if (lbl_803DD05A != 0)
             {
                 lbl_803DD05A = 0;
-                CARDClose(&lbl_80396900.fileInfo);
+                CARDClose(&gSaveCardFileInfo.fileInfo);
             }
             CARDUnmount(0);
             mm_free(lbl_803DD040);
