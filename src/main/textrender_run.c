@@ -955,9 +955,8 @@ void gameTextLoadGraphicsFn_8001a918(void)
                     dst += row * gGameTextFontTexRowPitch;
                     for (k = 0; k < 8; k++)
                     {
-                        *(u32*)(dst + 0x60 + k * 4) = src[k];
+                        *(u32*)(dst + 0x60 + k * 4) = *src++;
                     }
-                    src += 8;
                 }
             }
         }
