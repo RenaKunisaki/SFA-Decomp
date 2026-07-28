@@ -321,7 +321,7 @@ void DR_BarrelGr_init(GameObject* obj, DrbarrelgrPlacement* setup)
     storeZeroToFloatParam(&state->timer);
     s16toFloat(&state->timer, placement->range);
     obj->anim.rotX = (s16)((s8)placement->spawnYawByte << 8);
-    (*gRomCurveInterface)->initCurve(&state->curve, (void*)obj, lbl_803E6CD0, &one, 0);
+    (*gRomCurveInterface)->initCurve(&state->curve, (void*)obj, 500.0f, &one, 0);
     obj->anim.localPosX = state->curve.posX;
     obj->anim.localPosZ = state->curve.posZ;
     obj->anim.localPosY = state->curve.posY;

@@ -3037,6 +3037,7 @@ dlls/objects/488_SB_Galleon/SB_Galleon.c:
 	.sdata      start:0x803DC078 end:0x803DC090
 	.sbss       start:0x803DDC18 end:0x803DDC40
 	.sdata2     start:0x803E57C0 end:0x803E5810
+	.sdata2     start:0x803E56C8 end:0x803E57C0
 
 dlls/objects/489_SB_Propelle/SB_Propelle.c:
 	.text       start:0x801E2570 end:0x801E2B28
@@ -3585,7 +3586,7 @@ dlls/objects/588_BossDrakor_/BossDrakor_.c:
 dlls/objects/468_WORLDAstero/WORLDAstero.c:
 	.text       start:0x8020C278 end:0x8020C5EC
 	.data       start:0x8032A140 end:0x8032A178
-	.sdata2     start:0x803E65D8 end:0x803E65E0
+	.sdata2     start:0x803E65D8 end:0x803E65EC
 
 dlls/objects/466_WORLDplanet/WORLDplanet.c:
 	.text       start:0x8020C5EC end:0x8020D9E4
@@ -3836,7 +3837,7 @@ dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c:
 	.text       start:0x802227EC end:0x80223004
 	.data       start:0x8032AE88 end:0x8032AEC0
 	.sdata      start:0x803DC3B0 end:0x803DC3B8
-	.sdata2     start:0x803E6CC8 end:0x803E6CD0
+	.sdata2     start:0x803E6CC8 end:0x803E6CD4
 
 dlls/objects/650/650.c:
 	.text       start:0x80223004 end:0x80223D18
@@ -3858,13 +3859,13 @@ dlls/objects/652_WCBouncyCra/WCBouncyCra.c:
 dlls/objects/656_WCPushBlock/WCPushBlock.c:
 	.text       start:0x802243F4 end:0x802251B4
 	.data       start:0x8032AFB0 end:0x8032B108
-	.sdata2     start:0x803E6D98 end:0x803E6DA0
+	.sdata2     start:0x803E6D98 end:0x803E6DA4
 
 dlls/objects/653_WCLevelCont/WCLevelCont.c:
 	.text       start:0x802251B4 end:0x802272C8
 	.data       start:0x8032B108 end:0x8032B178
 	.bss        start:0x803AD298 end:0x803AD320
-	.sdata2     start:0x803E6DC8 end:0x803E6DD0
+	.sdata2     start:0x803E6DC8 end:0x803E6DDC
 
 dlls/objects/654_WCBeacon/WCBeacon.c:
 	.text       start:0x802272C8 end:0x802276AC
