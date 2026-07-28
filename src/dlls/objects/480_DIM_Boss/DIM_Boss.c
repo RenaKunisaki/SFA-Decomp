@@ -495,7 +495,7 @@ int DIMbossHitDetect_liftImpact(int obj, int p2) {
         ((BaddieState*)p2)->moveDone = 0;
     }
 
-    if ((*(int*)&((BaddieState*)p2)->eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
+    if ((((BaddieState*)p2)->eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
         gDIMbossSequenceFlags |= 0x4004;
         Sfx_PlayFromObject(obj, SFXTRIG_mn_dimbos46);
         Camera_EnableViewYOffset();
@@ -596,7 +596,7 @@ int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, int runtime, f32 arg) {
     } else if (progress > 0.25f) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0040;
     }
-    if (*(int*)&((BaddieState*)runtime)->eventFlags & 1) {
+    if (((BaddieState*)runtime)->eventFlags & 1) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_CAPTURE_BLUE_WHITE_VELOCITY;
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, 3, lbl_80325AA0);
@@ -624,9 +624,9 @@ int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, int runtime, f32 arg
     } else if (progress > 0.35f) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0040;
     }
-    if (*(int*)&((BaddieState*)runtime)->eventFlags & BADDIE_EVENT_LANDING) {
+    if (((BaddieState*)runtime)->eventFlags & BADDIE_EVENT_LANDING) {
         gDIMbossSequenceFlags |= (u64)DIMBOSS_SEQUENCE_FLAG_CAPTURE_BLUE_WHITE_VELOCITY;
-        *(int*)&((BaddieState*)runtime)->eventFlags &= ~BADDIE_EVENT_LANDING;
+        ((BaddieState*)runtime)->eventFlags &= ~BADDIE_EVENT_LANDING;
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, 3, lbl_80325AA0);
     (*gPlayerInterface)->rotateTowardTarget(obj, (void*)runtime, arg, 0xf0);
@@ -656,9 +656,9 @@ int DIMbossHitDetect_randomSwipe(GameObject* obj, int runtime, f32 arg) {
             ((BaddieState*)runtime)->moveSpeed = 0.006f;
         }
     }
-    eventFlags = *(int*)&((BaddieState*)runtime)->eventFlags;
+    eventFlags = ((BaddieState*)runtime)->eventFlags;
     if (eventFlags & BADDIE_EVENT_LANDING) {
-        *(int*)&((BaddieState*)runtime)->eventFlags = eventFlags & ~BADDIE_EVENT_LANDING;
+        ((BaddieState*)runtime)->eventFlags = eventFlags & ~BADDIE_EVENT_LANDING;
         gDIMbossSequenceFlags |= (DIMBOSS_SEQUENCE_FLAG_0001 | DIMBOSS_SEQUENCE_FLAG_0004);
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, randomGetRange(0, 1), lbl_80325AA0);

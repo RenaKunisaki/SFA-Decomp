@@ -590,42 +590,42 @@ static void Lightfoot_RearmScuffBurst(GameObject* obj, f32* timer, f32* params)
 
 void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
 {
-    if (*(int*)&inner->eventFlags & 4)
+    if (inner->eventFlags & 4)
     {
-        *(int*)&inner->eventFlags &= ~4;
+        inner->eventFlags &= ~4;
         Sfx_PlayFromObject(obj, SFXTRIG_sc_spotfox02);
     }
-    if (*(int*)&inner->eventFlags & 2)
+    if (inner->eventFlags & 2)
     {
-        *(int*)&inner->eventFlags &= ~2;
+        inner->eventFlags &= ~2;
         Sfx_PlayFromObject(obj, SFXTRIG_sc_spotfox02);
     }
-    if (*(int*)&inner->eventFlags & 1)
+    if (inner->eventFlags & 1)
     {
-        *(int*)&inner->eventFlags &= ~1;
+        inner->eventFlags &= ~1;
         if (randomGetRange(0, 2) == 0)
         {
             Sfx_PlayFromObject(obj, SFXTRIG_skeep_mumb4);
         }
     }
-    if (*(int*)&inner->eventFlags & 0x80)
+    if (inner->eventFlags & 0x80)
     {
-        *(int*)&inner->eventFlags &= ~0x80;
+        inner->eventFlags &= ~0x80;
         Sfx_PlayFromObject(obj, SFXTRIG_wp_swdtest322);
     }
-    if (*(int*)&inner->eventFlags & 0x200)
+    if (inner->eventFlags & 0x200)
     {
-        *(int*)&inner->eventFlags &= ~0x200;
+        inner->eventFlags &= ~0x200;
         Sfx_PlayFromObject(obj, SFXTRIG_sk_trwhin3);
     }
-    if (*(int*)&inner->eventFlags & 0x40)
+    if (inner->eventFlags & 0x40)
     {
-        *(int*)&inner->eventFlags &= ~0x40;
+        inner->eventFlags &= ~0x40;
         Sfx_PlayFromObject(obj, SFXTRIG_wp_swdtest322_135);
     }
-    if (*(int*)&inner->eventFlags & 0x800)
+    if (inner->eventFlags & 0x800)
     {
-        *(int*)&inner->eventFlags &= ~0x800;
+        inner->eventFlags &= ~0x800;
         ObjHits_RecordObjectHit(Obj_GetPlayerObject(), (GameObject*)obj, 0x19, 2, 1);
         Sfx_PlayFromObject(obj, SFXTRIG_wp_simp1_c);
         CameraShake_Start(2.5f, 5.0f, 4.0f);

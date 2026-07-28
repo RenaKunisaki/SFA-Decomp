@@ -7337,7 +7337,7 @@ int iceBaddie_updateCommDownState(GameObject* obj, GroundBaddieState* state) {
         state->baddie.moveDone = 0;
     }
     state->baddie.stateTag = 1;
-    if ((*(s32*)&state->baddie.eventFlags & 1) != 0) {
+    if ((state->baddie.eventFlags & 1) != 0) {
         control = (IceBaddieControl*)objectState->control;
         state->baddie.eventFlags &= ~BADDIE_EVENT_FOOTSTEP;
         control->effectFlags |= ICEBADDIE_FX_ARM_ICEBALL;

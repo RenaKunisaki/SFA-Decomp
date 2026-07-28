@@ -2577,7 +2577,7 @@ int playerState3D(int obj, int state, f32 fv)
     inner->yaw = hdr;
     inner->targetYaw = hdr;
     (*gPlayerInterface)->updateAnimRootMotion((void*)obj, (void*)state, fv, 1);
-    if (*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x200)
+    if (((PlayerState*)state)->baddie.eventFlags & 0x200)
     {
         doRumble(5.0f);
         Sfx_PlayFromObject(obj, SFXTRIG_rserv1_c);
@@ -2718,7 +2718,7 @@ int playerState3B(GameObject* obj, int state, f32 fv)
     inner->yaw = hdr;
     inner->targetYaw = hdr;
     (*gPlayerInterface)->updateAnimRootMotion(obj, (void*)state, fv, 2);
-    if (*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x200)
+    if (((PlayerState*)state)->baddie.eventFlags & 0x200)
     {
         doRumble(5.0f);
         Sfx_PlayFromObject((int)obj, SFXTRIG_rserv1_c);
@@ -2786,7 +2786,7 @@ int playerState3A(GameObject* obj, int state, f32 fv)
     inner->yaw = hdr;
     inner->targetYaw = hdr;
     (*gPlayerInterface)->updateAnimRootMotion(obj, (void*)state, fv, 2);
-    if (*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x200)
+    if (((PlayerState*)state)->baddie.eventFlags & 0x200)
     {
         doRumble(5.0f);
         Sfx_PlayFromObject((int)obj, SFXTRIG_rserv1_c);
@@ -4859,13 +4859,13 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
         changed = 0;
         if (((PlayerState*)state)->baddie.moveSpeed > 0.0f)
         {
-            if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
+            if ((((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
             {
                 doRumble(5.0f);
                 Sfx_PlayFromObject((int)obj, SFXTRIG_rserv1_c);
                 inner->pendingFxFlags = inner->pendingFxFlags | 4;
             }
-            if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x400) != 0)
+            if ((((PlayerState*)state)->baddie.eventFlags & 0x400) != 0)
             {
                 doRumble(5.0f);
                 Sfx_PlayFromObject((int)obj, SFXTRIG_rserv1_c);
@@ -6965,7 +6965,7 @@ int playerStateClimbDownFromWall(GameObject* obj, int state)
     obj->anim.velocityY = fz;
     ObjAnim_WriteStateWord((ObjAnimComponent*)obj, OBJANIM_STATE_INDEX_CURRENT, OBJANIM_STATE_WORD_EVENT_STATE,
                            inner->animEventState);
-    if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
+    if ((((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
     {
         doRumble(5.0f);
     }
@@ -7601,7 +7601,7 @@ void playerPlayClimbingSound(GameObject* obj, int p2)
     int t;
     int sfx;
 
-    if (*(int*)&((PlayerState*)p2)->baddie.eventFlags & 1)
+    if (((PlayerState*)p2)->baddie.eventFlags & 1)
     {
         cell = coordsToMapCell(obj->anim.localPosX, obj->anim.localPosZ);
         if (cell == 0x12)
@@ -7620,7 +7620,7 @@ void playerPlayClimbingSound(GameObject* obj, int p2)
         if (t < 0)
             gPlayerSfxTimerB = 0;
     }
-    if (*(int*)&((PlayerState*)p2)->baddie.eventFlags & 0x80)
+    if (((PlayerState*)p2)->baddie.eventFlags & 0x80)
     {
         if (gPlayerSfxTimerB == 0)
         {
@@ -7732,7 +7732,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
     {
         f32 f30 = 10.0f * -lbl_803DE498;
         f32 f3;
-        if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 1) != 0)
+        if ((((PlayerState*)state)->baddie.eventFlags & 1) != 0)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_mv_dive4_c);
         }
@@ -7826,7 +7826,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
     }
     break;
     case 0x37:
-        if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 1) != 0)
+        if ((((PlayerState*)state)->baddie.eventFlags & 1) != 0)
         {
             int snd = audioPickSoundEffect_8006ed24(inner->surfaceType, inner->footstepSoundId);
             Sfx_PlayFromObject((int)obj, snd);
@@ -7968,7 +7968,7 @@ int playerStateOnLadder(int obj, int state)
     spd = 0.0f;
     ph = ((PlayerState*)state)->baddie.moveSpeed;
     gPlayerPrevMoveId = gPlayerCurrentMoveId;
-    if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 1) != 0)
+    if ((((PlayerState*)state)->baddie.eventFlags & 1) != 0)
     {
         switch (((PlayerState*)inner)->footstepSurface)
         {
@@ -8002,7 +8002,7 @@ int playerStateOnLadder(int obj, int state)
         break;
     case 6:
     case 7:
-        if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x80) != 0)
+        if ((((PlayerState*)state)->baddie.eventFlags & 0x80) != 0)
         {
             Sfx_PlayFromObject(obj, SFXTRIG_foot);
             if (((PlayerState*)inner)->characterId == 0)
@@ -8024,7 +8024,7 @@ int playerStateOnLadder(int obj, int state)
         }
     case 10:
     case 11:
-        if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
+        if ((((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
         {
             doRumble(5.0f);
             if (((PlayerState*)inner)->waterDepth > 0.0f)
@@ -8082,7 +8082,7 @@ int playerStateOnLadder(int obj, int state)
             break;
         }
     default:
-        if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x80) != 0)
+        if ((((PlayerState*)state)->baddie.eventFlags & 0x80) != 0)
         {
             Sfx_PlayFromObject(obj, SFXTRIG_foot_var);
         }
@@ -8396,13 +8396,13 @@ int playerStateClimbOntoLadder(GameObject* obj, int state, f32 fv)
     {
         ((PlayerState*)state)->baddie.moveSpeed = 0.014f;
     }
-    if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x80) != 0)
+    if ((((PlayerState*)state)->baddie.eventFlags & 0x80) != 0)
     {
         int o = (int)obj;
         u16 sfxId = inner->characterId == 0 ? 0x398 : 0x1d;
         Sfx_PlayFromObject(o, sfxId);
     }
-    if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 1) != 0)
+    if ((((PlayerState*)state)->baddie.eventFlags & 1) != 0)
     {
         switch (inner->footstepSurface)
         {
@@ -8852,13 +8852,13 @@ int playerState0B(GameObject* obj, int state)
     {
     case 0x12:
     case 0x1a:
-        if (*(int*)&((PlayerState*)state)->baddie.eventFlags & 1)
+        if (((PlayerState*)state)->baddie.eventFlags & 1)
         {
             Sfx_PlayFromObject((int)obj, (u16)(inner->characterId == 0 ? SFXTRIG_jump3 : SFXTRIG_sabrepush));
         }
         if ((((u32)inner->flags3F0 >> 5) & 1) || gPlayerCurrentMoveId == 0x1a)
         {
-            if (*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x80)
+            if (((PlayerState*)state)->baddie.eventFlags & 0x80)
             {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_fox_swimstroke222);
             }
@@ -9500,7 +9500,7 @@ int playerStateThrowing(GameObject* obj, int state)
     obj->anim.velocityZ = k;
     ((PlayerState*)state)->baddie.moveSpeed = 0.0165f;
 
-    if (*(int*)&((PlayerState*)state)->baddie.eventFlags & 1)
+    if (((PlayerState*)state)->baddie.eventFlags & 1)
     {
         Sfx_PlayFromObject((int)obj, (u16)(inner->characterId == 0 ? SFXTRIG_foxcom_decoy : SFXTRIG_sa_jump02));
     }
@@ -9555,7 +9555,7 @@ int playerState06(GameObject* obj, int state)
         *(s16*)((char*)state + 0x278) = 1;
         inner->stateHandler = (int)fn_802A514C;
     }
-    if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 1) && (sub = inner->heldObj) != NULL)
+    if ((((PlayerState*)state)->baddie.eventFlags & 1) && (sub = inner->heldObj) != NULL)
     {
         switch (sub->anim.seqId)
         {
@@ -9675,7 +9675,7 @@ int playerState05(GameObject* obj, int state)
         break;
     }
     }
-    if (*(int*)&((PlayerState*)state)->baddie.eventFlags & 1)
+    if (((PlayerState*)state)->baddie.eventFlags & 1)
     {
         u16 snd;
         if (inner->characterId == 0)
@@ -14134,13 +14134,13 @@ void fn_802ADE80(GameObject* obj, int inner, int state)
     playEffect = 0;
     if (((PlayerState*)state)->baddie.controlMode == 1)
     {
-        if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
+        if ((((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
         {
             Sfx_PlayAtPositionFromObject((int)obj, obj->anim.localPosX,
                                          ((PlayerState*)inner)->waterSurfaceY, obj->anim.localPosZ, 0xe);
         }
         if (((PlayerState*)inner)->waterDepth < 25.0f &&
-            (*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
+            (((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
         {
             t[0] = (f32)randomGetRange(-0x14, 0x14) / 10.0f;
             t[2] = (f32)randomGetRange(-0x14, 0x14) / 10.0f;
@@ -14149,13 +14149,13 @@ void fn_802ADE80(GameObject* obj, int inner, int state)
     }
     else
     {
-        if ((*(int*)&((PlayerState*)state)->baddie.eventFlags & 1) != 0)
+        if ((((PlayerState*)state)->baddie.eventFlags & 1) != 0)
         {
             Sfx_PlayAtPositionFromObject((int)obj, obj->anim.localPosX,
                                          ((PlayerState*)inner)->waterSurfaceY, obj->anim.localPosZ, 0xf);
         }
         if (((PlayerState*)inner)->waterDepth < 25.0f &&
-            (*(int*)&((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
+            (((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
         {
             s8 c;
             t[0] = (f32)randomGetRange(-0x14, 0x14) / 10.0f;
@@ -14275,7 +14275,7 @@ void fn_802AE650(GameObject* obj, int state, int p3)
         v = ((PlayerState*)state)->unk844;
         ((PlayerState*)state)->unk844 = (v < 0.0f) ? 0.0f : ((v > ee0) ? ee0 : v);
     }
-    if ((*(int*)&((PlayerState*)p3)->baddie.eventFlags & 0x200) != 0)
+    if ((((PlayerState*)p3)->baddie.eventFlags & 0x200) != 0)
     {
         doRumble(5.0f);
         Sfx_PlayFromObject((int)obj, SFXTRIG_rserv1_c);
@@ -18428,7 +18428,7 @@ void playerUpdate(GameObject* obj)
             ((PlayerState*)inner)->isHoldingObject = 0;
             ((PlayerState*)inner)->queuedBitCount = 0;
             *(s16*)obj = ((PlayerState*)inner)->targetYaw;
-            objAudioFn_8006edcc((GameObject*)obj, *(int*)&((PlayerState*)inner)->baddie.eventFlags,
+            objAudioFn_8006edcc((GameObject*)obj, ((PlayerState*)inner)->baddie.eventFlags,
                                 ((PlayerState*)inner)->animSoundId, (void*)(inner + 0x3c4), (void*)(inner + 4),
                                 ((PlayerState*)inner)->baddie.animSpeedA, 1.0f);
         }

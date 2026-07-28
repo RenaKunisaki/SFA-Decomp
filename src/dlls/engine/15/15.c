@@ -439,10 +439,10 @@ void player_playSoundFn10(GameObject* obj, int* state, int bit, int idx, int* sf
     register int flags;
     register int mask;
     mask = 1 << bit;
-    flags = *(int*)&((BaddieState*)state)->eventFlags;
+    flags = ((BaddieState*)state)->eventFlags;
     if ((flags & mask) != 0)
     {
-        *(int*)&((BaddieState*)state)->eventFlags = flags & ~mask;
+        ((BaddieState*)state)->eventFlags = flags & ~mask;
         Sfx_PlayFromObject((u32)obj, (u16)sfxTable[idx]);
     }
 }
@@ -452,10 +452,10 @@ void player_playSoundFn0F(GameObject* obj, int* state, int bit, int idx, int* sf
     register int flags;
     register int mask;
     mask = 1 << bit;
-    flags = *(int*)&((BaddieState*)state)->eventFlags;
+    flags = ((BaddieState*)state)->eventFlags;
     if ((flags & mask) != 0)
     {
-        *(int*)&((BaddieState*)state)->eventFlags = flags & ~mask;
+        ((BaddieState*)state)->eventFlags = flags & ~mask;
         Sfx_PlayFromObject((u32)obj, (u16)sfxTable[idx]);
     }
 }

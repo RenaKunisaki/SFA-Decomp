@@ -1187,7 +1187,7 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
     }
     (*gPlayerInterface)->update(obj, inner, f, timeDelta, gDRCloudRunnerStateHandlers,
                                 &gDRCloudRunnerDefaultStateHandler);
-    if ((*(int*)&inner->baddie.eventFlags & 1) != 0)
+    if ((inner->baddie.eventFlags & 1) != 0)
     {
         DR_CloudRunner_fireProjectile(obj);
     }

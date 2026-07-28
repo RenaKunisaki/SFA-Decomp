@@ -1342,8 +1342,8 @@ void DR_EarthWarrior_update(GameObject* obj)
     {
         f32 saved = (obj)->anim.velocityY;
         (obj)->anim.velocityY = 0.0f;
-        *(int*)&inner->baddie.eventFlags &= ~7;
-        objAudioFn_8006edcc(obj, *(int*)&inner->baddie.eventFlags, inner->sub.soundId, (void*)((char*)inner + 0xb18),
+        inner->baddie.eventFlags &= ~7;
+        objAudioFn_8006edcc(obj, inner->baddie.eventFlags, inner->sub.soundId, (void*)((char*)inner + 0xb18),
                             (void*)((char*)inner + 0x4), inner->baddie.animSpeedA,
                             (inner->sub.soundId == 8) ? 2.5f : 2.75f);
         (obj)->anim.velocityY = saved;

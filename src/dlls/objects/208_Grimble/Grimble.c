@@ -500,9 +500,9 @@ int grimble_stateHandlerA01(GameObject* obj, char* state, f32 timeStep) {
         ((GroundBaddieState*)state)->baddie.moveDone = 0;
     }
     (*gPlayerInterface)->updateAnimRootMotion(obj, state, timeStep, 0);
-    if ((*(int*)&((GroundBaddieState*)state)->baddie.eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
-        *(int*)&((GroundBaddieState*)state)->baddie.eventFlags =
-            *(int*)&((GroundBaddieState*)state)->baddie.eventFlags & ~BADDIE_EVENT_FOOTSTEP;
+    if ((((GroundBaddieState*)state)->baddie.eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
+        ((GroundBaddieState*)state)->baddie.eventFlags =
+            ((GroundBaddieState*)state)->baddie.eventFlags & ~BADDIE_EVENT_FOOTSTEP;
         Sfx_PlayFromObject((int)obj, SFXTRIG_mv_persquk1);
     }
     (*(void (**)(int, char*, f32))(
@@ -582,9 +582,9 @@ int grimble_stateHandlerA00(GameObject* obj, char* state, f32 timeStep) {
         *(s8*)&((GroundBaddieState*)state)->baddie.moveDone != 0) {
         return 3;
     }
-    if ((*(int*)&((GroundBaddieState*)state)->baddie.eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
-        *(int*)&((GroundBaddieState*)state)->baddie.eventFlags =
-            *(int*)&((GroundBaddieState*)state)->baddie.eventFlags & ~BADDIE_EVENT_FOOTSTEP;
+    if ((((GroundBaddieState*)state)->baddie.eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
+        ((GroundBaddieState*)state)->baddie.eventFlags =
+            ((GroundBaddieState*)state)->baddie.eventFlags & ~BADDIE_EVENT_FOOTSTEP;
         Sfx_PlayFromObject((int)obj, SFXTRIG_mv_persquk1);
     }
     (*(void (**)(int, f32, f32*, f32*, f32*))(

@@ -142,7 +142,7 @@ typedef struct BaddieState {
  * test-then-cleared by the readers to fire the land sound / rumble / waterfx
  * splash. */
 #define BADDIE_EVENT_LANDING 0x200
-    u32 eventFlags; /* bits 1/0x200 observed; whirlpool states store an f32 here (union via launder) */
+    s32 eventFlags; /* bits 1/0x200 observed; whirlpool states store an f32 here (union via launder) */
     f32 unk318;
     f32 unk31C;
     u8 unk320;

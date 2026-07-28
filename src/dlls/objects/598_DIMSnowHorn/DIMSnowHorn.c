@@ -1069,7 +1069,7 @@ void DIMSnowHorn1_spawnFootstepEffects(int obj, DIMSnowHorn1State* pointState, D
     } args;
 
     flags = 0;
-    inputFlags = *(s32*)&inputState->baddie.eventFlags;
+    inputFlags = inputState->baddie.eventFlags;
     if ((inputFlags & 2) != 0)
     {
         flags |= 1;

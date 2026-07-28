@@ -221,9 +221,9 @@ int kaldachom_stateHandlerA07(GameObject* obj, GroundBaddieState* state) {
         }
     }
     {
-        int eventFlags = *(int*)&state->baddie.eventFlags;
+        int eventFlags = state->baddie.eventFlags;
         if ((eventFlags & KALDACHOM_EVENT_MOUTH_LINK) != 0) {
-            *(int*)&state->baddie.eventFlags = eventFlags & ~KALDACHOM_EVENT_MOUTH_LINK;
+            state->baddie.eventFlags = eventFlags & ~KALDACHOM_EVENT_MOUTH_LINK;
             kaldachompme_setLinkedMouthMode(obj, KALDACHOMPME_LINKED_MODE_MOVE_1);
         }
     }

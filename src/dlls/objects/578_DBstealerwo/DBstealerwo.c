@@ -1876,9 +1876,9 @@ int dbstealerworm_stateHandlerA00(GameObject* obj, BaddieState* baddie)
         sub_40c->msgAdvance = 1;
     }
 
-    if ((*(int*)&bs->eventFlags & BADDIE_EVENT_LANDING) != 0)
+    if ((bs->eventFlags & BADDIE_EVENT_LANDING) != 0)
     {
-        *(int*)&bs->eventFlags = *(int*)&bs->eventFlags & ~BADDIE_EVENT_LANDING;
+        bs->eventFlags = bs->eventFlags & ~BADDIE_EVENT_LANDING;
         sub_40c->flags14 = (u8)(sub_40c->flags14 | DBWORM_FLAG14_FX_SPRAY);
     }
 
