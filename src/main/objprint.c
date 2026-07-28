@@ -1067,9 +1067,9 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
         else
         {
             f32 dx = (obj)->anim.localPosX - ((GameObject*)tgt)->anim.localPosX;
-            f32 dy = (obj)->anim.localPosZ - ((GameObject*)tgt)->anim.localPosZ;
-            f32 dz = (obj)->anim.localPosY - ((GameObject*)tgt)->anim.localPosY;
-            f32 dist = sqrtf(dx * dx + dy * dy);
+            f32 dz = (obj)->anim.localPosZ - ((GameObject*)tgt)->anim.localPosZ;
+            f32 dy = (obj)->anim.localPosY - ((GameObject*)tgt)->anim.localPosY;
+            f32 dist = sqrtf(dx * dx + dz * dz);
             ObjJointTrackChannel* channel;
             s16* ap;
             int minB;
@@ -1077,7 +1077,7 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
             int i;
             f32 prodB;
 
-            ang[0] = (s16)getAngle(dx, dy) - (u16)(obj)->anim.rotX;
+            ang[0] = (s16)getAngle(dx, dz) - (u16)(obj)->anim.rotX;
             if (ang[0] > 0x8000)
             {
                 ang[0] = (s16)(ang[0] - 0xffff);
@@ -1090,7 +1090,7 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
             {
                 ang[0] = (s16)(ang[0] + 0x8000);
             }
-            ang[1] = (s16)((s16)getAngle(dist, dz) - 0x3fff);
+            ang[1] = (s16)((s16)getAngle(dist, dy) - 0x3fff);
 
             a = (s16)(182.04f * a);
             channel = p3;
