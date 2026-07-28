@@ -137,6 +137,11 @@ int dbstealerworm_turnToFaceObject(GameObject* obj, GameObject* otherObj, f32 ya
 int dbstealerworm_turnToFaceObjectVertical(GameObject* obj, GameObject* otherObj, f32 yawOffset, f32 speed, f32 unused, f32 range);
 int dbstealerworm_avoidObjects(GameObject* obj, int* objs, f32* weights, int n, f32 limit);
 
+static void dbstealerworm_stopMoving(BaddieState* baddie)
+{
+    baddie->animSpeedA = 0.0f;
+}
+
 int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
 {
 
@@ -2286,6 +2291,11 @@ void dbstealerworm_hitDetect(GameObject* obj)
 {
     int* inner = obj->extra;
     (*gPlayerInterface)->updateVelocityState(obj, inner, gDBStealerWormStateHandlersA);
+}
+
+static void dbstealerworm_applyFallGravity(GameObject* obj, void* state)
+{
+    (*gBaddieControlInterface)->updateGravity(obj, state, 0.17f, -1);
 }
 
 void dbstealerworm_update(u8* objp)
