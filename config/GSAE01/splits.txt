@@ -1983,14 +1983,14 @@ dlls/objects/284/284.c:
 	.text       start:0x801899B4 end:0x8018A8BC
 	.data       start:0x80321C28 end:0x80321C60
 	.sdata      start:0x803DBDE0 end:0x803DBDE8
-	.sdata2     start:0x803E3BC8 end:0x803E3C1C
+	.sdata2     start:0x803E3BC8 end:0x803E3C20
 
 dlls/objects/285/285.c:
 	.text       start:0x8018A8BC end:0x8018ADB4
 	.rodata     start:0x802C22B0 end:0x802C22C0
 	.data       start:0x80321C60 end:0x80321C98
 	.sbss       start:0x803DDAE0 end:0x803DDAE8
-	.sdata2     start:0x803E3C1C end:0x803E3C30
+	.sdata2     start:0x803E3C20 end:0x803E3C30
 
 dlls/objects/286_MagicCaveBo/MagicCaveBo.c:
 	.text       start:0x8018ADB4 end:0x8018AFC8
