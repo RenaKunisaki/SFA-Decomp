@@ -46,15 +46,10 @@ typedef struct Dll19Placement
     u8 progressDenominator;
     u8 pad33[0x34 - 0x33];
     u16 spawnCount;
-    u8 pad36[0x3E8 - 0x36];
-    f32 oscValue;
-    f32 oscVelocity;
-    u8 pad3F0[0x400 - 0x3F0];
-    u16 flags;
-    u8 pad402[0x408 - 0x402];
+    u8 pad36[0x38 - 0x36];
 } Dll19Placement;
 
-/* bits in the u16 flags word at +0x400 (shared Dll19State/Dll19Placement view) */
+/* bits in the Dll19State flags word at +0x400 */
 #define DLL19_FLAG_YAW_ALIGNED 0x10 /* yaw delta within facing cone */
 #define DLL19_FLAG_OSC_RISING  0x20 /* oscillation phase 1 (initial rise) */
 #define DLL19_FLAG_OSC_ACTIVE  0x40 /* oscillation phase 2 (active/return) */
@@ -404,27 +399,27 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
     f32 posY;
     f32 posZ;
 
-    if (((Dll19Placement*)state)->oscValue > 0.0f)
+    if (((Dll19State*)state)->oscValue > 0.0f)
     {
-        ((Dll19Placement*)state)->oscValue =
-            timeDelta * ((Dll19Placement*)state)->oscVelocity + ((Dll19Placement*)state)->oscValue;
-        if ((((Dll19Placement*)state)->flags & DLL19_FLAG_OSC_RISING) != 0)
+        ((Dll19State*)state)->oscValue =
+            timeDelta * ((Dll19State*)state)->oscVelocity + ((Dll19State*)state)->oscValue;
+        if ((((Dll19State*)state)->flags & DLL19_FLAG_OSC_RISING) != 0)
         {
-            ((Dll19Placement*)state)->flags = ((Dll19Placement*)state)->flags & ~DLL19_FLAG_OSC_RISING;
-            ((Dll19Placement*)state)->flags = ((Dll19Placement*)state)->flags | DLL19_FLAG_OSC_ACTIVE;
-            if (((Dll19Placement*)state)->oscValue > 2.0f)
+            ((Dll19State*)state)->flags = ((Dll19State*)state)->flags & ~DLL19_FLAG_OSC_RISING;
+            ((Dll19State*)state)->flags = ((Dll19State*)state)->flags | DLL19_FLAG_OSC_ACTIVE;
+            if (((Dll19State*)state)->oscValue > 2.0f)
             {
-                ((Dll19Placement*)state)->oscValue = 0.0f;
-                ((Dll19Placement*)state)->flags = ((Dll19Placement*)state)->flags & ~DLL19_FLAG_OSC_ACTIVE;
+                ((Dll19State*)state)->oscValue = 0.0f;
+                ((Dll19State*)state)->flags = ((Dll19State*)state)->flags & ~DLL19_FLAG_OSC_ACTIVE;
             }
         }
-        else if ((((Dll19Placement*)state)->flags & DLL19_FLAG_OSC_ACTIVE) != 0)
+        else if ((((Dll19State*)state)->flags & DLL19_FLAG_OSC_ACTIVE) != 0)
         {
-            if (((Dll19Placement*)state)->oscValue > 2.0f)
+            if (((Dll19State*)state)->oscValue > 2.0f)
             {
                 int other = obj->anim.placementDataAddress;
-                ((Dll19Placement*)state)->oscValue = 0.0f;
-                ((Dll19Placement*)state)->flags = ((Dll19Placement*)state)->flags & ~DLL19_FLAG_OSC_ACTIVE;
+                ((Dll19State*)state)->oscValue = 0.0f;
+                ((Dll19State*)state)->flags = ((Dll19State*)state)->flags & ~DLL19_FLAG_OSC_ACTIVE;
                 ((BaddieState*)baddieState)->hitPoints = 0;
                 obj->anim.alpha = 0;
                 obj->userData1 = 1;
@@ -434,14 +429,14 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
         }
         else
         {
-            if (((Dll19Placement*)state)->oscValue < 0.0f)
+            if (((Dll19State*)state)->oscValue < 0.0f)
             {
-                ((Dll19Placement*)state)->oscValue = 0.0f;
+                ((Dll19State*)state)->oscValue = 0.0f;
             }
-            else if (((Dll19Placement*)state)->oscValue > 120.0f)
+            else if (((Dll19State*)state)->oscValue > 120.0f)
             {
-                ((Dll19Placement*)state)->oscValue = 120.0f - (((Dll19Placement*)state)->oscValue - 120.0f);
-                ((Dll19Placement*)state)->oscVelocity = -((Dll19Placement*)state)->oscVelocity;
+                ((Dll19State*)state)->oscValue = 120.0f - (((Dll19State*)state)->oscValue - 120.0f);
+                ((Dll19State*)state)->oscVelocity = -((Dll19State*)state)->oscVelocity;
             }
         }
     }
@@ -475,9 +470,9 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
         *(s8*)&((BaddieState*)baddieState)->hitPoints = (s8)(((BaddieState*)baddieState)->hitPoints - v24);
         if (*(s8*)&((BaddieState*)baddieState)->hitPoints < 1)
         {
-            ((Dll19Placement*)state)->flags = ((Dll19Placement*)state)->flags | DLL19_FLAG_OSC_RISING;
-            ((Dll19Placement*)state)->oscValue = 1.0f;
-            ((Dll19Placement*)state)->oscVelocity = 0.01f;
+            ((Dll19State*)state)->flags = ((Dll19State*)state)->flags | DLL19_FLAG_OSC_RISING;
+            ((Dll19State*)state)->oscValue = 1.0f;
+            ((Dll19State*)state)->oscVelocity = 0.01f;
             ((BaddieState*)baddieState)->substate = substate;
             ((BaddieState*)baddieState)->hitPoints = 0;
         }
@@ -493,8 +488,8 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
                         ((BaddieState*)baddieState)->hasTarget = 0;
                     }
                 }
-                ((Dll19Placement*)state)->oscValue = 1.0f;
-                ((Dll19Placement*)state)->oscVelocity = 12.0f;
+                ((Dll19State*)state)->oscValue = 1.0f;
+                ((Dll19State*)state)->oscVelocity = 12.0f;
                 if (tableA != NULL)
                 {
                     if (tableA[hit - 2] != -1)
