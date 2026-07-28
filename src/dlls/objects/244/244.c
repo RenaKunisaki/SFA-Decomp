@@ -133,7 +133,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
             break;
         }
     }
-    shouldOpen = *(s8*)&state->isOpen;
+    shouldOpen = state->isOpen;
     switch (placement->gateMode) {
     case DOORF4_GATE_MODE_GAMEBIT:
         if (openGameBitValue != 0) {

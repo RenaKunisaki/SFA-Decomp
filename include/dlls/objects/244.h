@@ -37,7 +37,7 @@ typedef struct DoorF4State {
     s32 nearSideGameBit;    /* 0x18 */
     u16 openSfxId;          /* 0x1C */
     u16 closeSfxId;         /* 0x1E */
-    u8 isOpen;              /* 0x20 */
+    s8 isOpen;              /* 0x20 */
     u8 sequenceLatch;       /* 0x21 */
     u8 environmentFxActive; /* 0x22 */
     u8 pad23;               /* 0x23 */

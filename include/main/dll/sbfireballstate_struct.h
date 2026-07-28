@@ -11,7 +11,7 @@ typedef struct SBFireBallState
     f32 velX;
     f32 velY;
     f32 velZ;
-    u8 launched;
+    s8 launched;
     u8 pad15[3];
 } SBFireBallState;
 

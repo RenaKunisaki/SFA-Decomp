@@ -12,7 +12,7 @@ typedef struct SBCloudBallState
     f32 posY;
     f32 posZ;
     int light; /* objCreateLight handle */
-    u8 launched;
+    s8 launched;
     u8 pad1D[3];
     f32 fadeTimer; /* nonzero = despawning */
 } SBCloudBallState;

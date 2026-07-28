@@ -113,7 +113,7 @@ void SB_FireBall_update(GameObject* obj)
             return;
         }
 
-        if (*(s8*)&state->launched == 0)
+        if (state->launched == 0)
         {
             state->velX = obj->anim.velocityX;
             state->velY = obj->anim.velocityY;
