@@ -443,7 +443,7 @@ void gameTextLoadGraphicsFn_8001a918(void);
 void gameTextInitFn_8001c794(void);
 void subtitleBuildLineTable(void);
 
-int getControlCharLen(u32 c)
+static inline int ctrlCharLen(u32 c)
 {
     CtrlCharEntry* p = gGameTextCtrlCodeArgCounts;
     int i = 46;
@@ -457,6 +457,41 @@ int getControlCharLen(u32 c)
     }
     return 0;
 }
+
+void gameTextSetWindow(u8* textBox)
+{
+    int i;
+    GameTextSlot* cmd;
+    int idx;
+
+    if (textBox == NULL)
+    {
+        i = gGameTextCommandCount;
+        gGameTextCommandCount = i + 1;
+        cmd = &gGameTextCommandSlots[i];
+        gCurTextBox = NULL;
+        cmd->opcode = 8;
+        cmd->arg0 = 0xff;
+    }
+    else
+    {
+        i = gGameTextCommandCount;
+        gGameTextCommandCount = i + 1;
+        cmd = &gGameTextCommandSlots[i];
+        idx = (textBox - (u8*)gTextBoxes) / 0x20;
+        if (idx == 0xff)
+        {
+            gCurTextBox = NULL;
+        }
+        else
+        {
+            gCurTextBox = (u8*)gTextBoxes + idx * 0x20;
+        }
+        cmd->opcode = 8;
+        cmd->arg0 = idx;
+    }
+}
+
 
 static inline TextGlyph* findGlyph(u32 ch, int glyphLang)
 {
@@ -544,7 +579,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
         skipGlyph = 0;
         if (ch >= 0xe000 && ch <= 0xf8ff)
         {
-            n2 = getControlCharLen(ch);
+            n2 = ctrlCharLen(ch);
             for (i = 0; i < n2; i++)
             {
                 int hi = ((u8*)str)[byteOff++];
@@ -650,7 +685,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                     }
                     if (innerCh >= 0xe000 && innerCh <= 0xf8ff)
                     {
-                        acc += getControlCharLen(innerCh) * 2;
+                        acc += ctrlCharLen(innerCh) * 2;
                     }
                 }
                 spaceExtra = (win->width - measW) / spaceCount;
@@ -852,7 +887,7 @@ void translateToDinoLanguage(u8* str)
     {
         if (ch >= 0xe000 && ch <= 0xf8ff)
         {
-            byteOff += getControlCharLen(ch) * 2;
+            byteOff += ctrlCharLen(ch) * 2;
         }
         else
         {
@@ -876,6 +911,34 @@ void translateToDinoLanguage(u8* str)
         }
         byteOff += charLen;
     }
+}
+
+int GameText_CountPrintableChars(u8* str)
+{
+    int count;
+    int off;
+    int len;
+    u32 ch;
+
+    count = 0;
+    off = 0;
+    if (str == NULL)
+    {
+        return 0;
+    }
+    while ((ch = utf8GetNextChar(str + off, &len)) != 0)
+    {
+        off += len;
+        if (ch >= 0xE000 && ch <= 0xF8FF)
+        {
+            off += ctrlCharLen(ch) * 2;
+        }
+        else
+        {
+            count++;
+        }
+    }
+    return count;
 }
 
 void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang)
@@ -930,7 +993,7 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
         byteOff += charLen;
         if (ch >= 0xe000 && ch <= 0xf8ff)
         {
-            n2 = getControlCharLen(ch);
+            n2 = ctrlCharLen(ch);
             for (i = 0; i < n2; i++)
             {
                 int hi = str[byteOff++];
@@ -1016,7 +1079,7 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count)
             }
             *(u32*)tbl = ch;
             q = (u16*)(tbl + 4);
-            n2 = getControlCharLen(ch);
+            n2 = ctrlCharLen(ch);
             if (n2 > 4)
             {
                 n2 = 4;
@@ -1134,33 +1197,6 @@ GlyphResource802CA100 gGameTextBoxEdgeTexSrc = {
     },
 };
 
-int GameText_CountPrintableChars(u8* str)
-{
-    int count;
-    int off;
-    int len;
-    u32 ch;
-
-    count = 0;
-    off = 0;
-    if (str == NULL)
-    {
-        return 0;
-    }
-    while ((ch = utf8GetNextChar(str + off, &len)) != 0)
-    {
-        off += len;
-        if (ch >= 0xE000 && ch <= 0xF8FF)
-        {
-            off += getControlCharLen(ch) * 2;
-        }
-        else
-        {
-            count++;
-        }
-    }
-    return count;
-}
 
 int GameText_FindControlCodeArgs(u8* str, u32 target, int* out)
 {
@@ -1180,7 +1216,7 @@ int GameText_FindControlCodeArgs(u8* str, u32 target, int* out)
         off += len;
         if (ch >= 0xE000 && ch <= 0xF8FF)
         {
-            n = getControlCharLen(ch);
+            n = ctrlCharLen(ch);
             if (ch == target)
             {
                 for (i = 0; i < n; i++)
@@ -1200,39 +1236,21 @@ int GameText_FindControlCodeArgs(u8* str, u32 target, int* out)
 char* gSubtitleLineStrs[0x100];
 f32 gSubtitleLineTimes[0x100];
 
-void gameTextSetWindow(u8* textBox)
+int getControlCharLen(u32 c)
 {
-    int i;
-    GameTextSlot* cmd;
-    int idx;
-
-    if (textBox == NULL)
+    CtrlCharEntry* p = gGameTextCtrlCodeArgCounts;
+    int i = 46;
+    while (i--)
     {
-        i = gGameTextCommandCount;
-        gGameTextCommandCount = i + 1;
-        cmd = &gGameTextCommandSlots[i];
-        gCurTextBox = NULL;
-        cmd->opcode = 8;
-        cmd->arg0 = 0xff;
-    }
-    else
-    {
-        i = gGameTextCommandCount;
-        gGameTextCommandCount = i + 1;
-        cmd = &gGameTextCommandSlots[i];
-        idx = (textBox - (u8*)gTextBoxes) / 0x20;
-        if (idx == 0xff)
+        if (p->key == c)
         {
-            gCurTextBox = NULL;
+            return p->len;
         }
-        else
-        {
-            gCurTextBox = (u8*)gTextBoxes + idx * 0x20;
-        }
-        cmd->opcode = 8;
-        cmd->arg0 = idx;
+        p++;
     }
+    return 0;
 }
+
 
 u8 gGameTextBase[0x20];
 u8 sGameTextFallbackBufSlots[0x20];
