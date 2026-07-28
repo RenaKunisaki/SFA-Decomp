@@ -72,7 +72,7 @@ extern f32 gObjHitsResponseClampMin;
 extern f32 gObjHitsResponseClampMax;
 extern f32 gObjHitsPi;
 extern f32 gObjHitsAngleHalfPeriod;
-extern f32 lbl_803DB450;
+extern f32 gObjHitsResponseDominanceRatio;
 
 typedef struct ObjHitsVec3
 {
@@ -1838,11 +1838,11 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
         cosVal = mathCosf((gObjHitsPi * angleB) / gObjHitsAngleHalfPeriod);
         cosSq = cosVal * cosVal;
         weightB = stateB->lateralResponseWeight * cosSq + stateB->axialResponseWeight * (gObjHitsScalarOne - cosSq);
-        if (weightA < weightB * lbl_803DB450)
+        if (weightA < weightB * gObjHitsResponseDominanceRatio)
         {
             weightA = gObjHitsScalarZero;
         }
-        else if (weightB < weightA * lbl_803DB450)
+        else if (weightB < weightA * gObjHitsResponseDominanceRatio)
         {
             weightB = gObjHitsScalarZero;
         }
@@ -2574,7 +2574,7 @@ void ObjHits_Update(int objectCount)
 char sObjHitsTooManyHitSpheresWarning[] = "HIT VOLUMES: an object has too many hit spheres\n";
 
 
-f32 lbl_803DB450 = 0.4f;
+f32 gObjHitsResponseDominanceRatio = 0.4f;
 char sObjHitReactResetString[7] = "reset\n";
 
 
