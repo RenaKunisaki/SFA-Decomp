@@ -408,6 +408,7 @@ f32 pathcam_segmentParam(f32 px, f32 unused, f32 pz, int* obj)
     int i;
     f32 dx1;
     f32 dz1;
+    f32 psx;
     f32 sx;
     f32 sz;
     f32 nsz;
@@ -430,15 +431,15 @@ f32 pathcam_segmentParam(f32 px, f32 unused, f32 pz, int* obj)
     dz1 = pts[2]->z - pts[1]->z;
     if (pts[0] != NULL)
     {
-        sx = pts[1]->x - pts[0]->x;
+        psx = pts[1]->x - pts[0]->x;
         sz = pts[1]->z - pts[0]->z;
     }
     else
     {
-        sx = dx1;
+        psx = dx1;
         sz = dz1;
     }
-    nx = 0.5f * (sx + dx1);
+    nx = 0.5f * (psx + dx1);
     nz = 0.5f * (sz + dz1);
     len = sqrtf(nx * nx + nz * nz);
     if (0.0f != len)
