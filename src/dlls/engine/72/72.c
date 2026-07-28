@@ -9,7 +9,7 @@
 #include "main/dll/dll_0048_cameramodestatic.h"
 #include "main/resource.h"
 
-CameraModeStaticState* lbl_803DD558;
+CameraModeStaticState* gCameraModeStaticState;
 
 #define CAMSTATIC_CAMMODE_DEFAULT 0x42
 
@@ -58,8 +58,8 @@ void CameraModeStatic_copyToCurrent(void)
 
 void CameraModeStatic_free(void)
 {
-    mm_free(lbl_803DD558);
-    lbl_803DD558 = 0;
+    mm_free(gCameraModeStaticState);
+    gCameraModeStaticState = 0;
 }
 
 void CameraModeStatic_update(short* camObj)
@@ -72,14 +72,14 @@ void CameraModeStatic_update(short* camObj)
     f32 dy;
     f32 dz;
 
-    if (lbl_803DD558->missingObject != 0)
+    if (gCameraModeStaticState->missingObject != 0)
     {
         (*gCameraInterface)->setMode(CAMSTATIC_CAMMODE_DEFAULT, 0, 1, 0, NULL, 0, 0xff);
     }
     else
     {
         viewObj = *(int*)(camObj + 0x52);
-        placement = (int)lbl_803DD558->staticObject->anim.placementData;
+        placement = (int)gCameraModeStaticState->staticObject->anim.placementData;
         if ((((CameraModeStaticPlacement*)placement)->flags & 1) == 0)
         {
             *camObj = ((CameraModeStaticPlacement*)placement)->yaw + 0x8000;
@@ -92,9 +92,9 @@ void CameraModeStatic_update(short* camObj)
         {
             camObj[2] = ((CameraModeStaticPlacement*)placement)->roll;
         }
-        ((CameraObject*)camObj)->anim.worldPosX = lbl_803DD558->staticObject->anim.worldPosX;
-        ((CameraObject*)camObj)->anim.worldPosY = lbl_803DD558->staticObject->anim.worldPosY;
-        ((CameraObject*)camObj)->anim.worldPosZ = lbl_803DD558->staticObject->anim.worldPosZ;
+        ((CameraObject*)camObj)->anim.worldPosX = gCameraModeStaticState->staticObject->anim.worldPosX;
+        ((CameraObject*)camObj)->anim.worldPosY = gCameraModeStaticState->staticObject->anim.worldPosY;
+        ((CameraObject*)camObj)->anim.worldPosZ = gCameraModeStaticState->staticObject->anim.worldPosZ;
         ((CameraObject*)camObj)->fov = (float)(u32)((CameraModeStaticPlacement*)placement)->fovByte;
         dx = ((CameraObject*)camObj)->anim.worldPosX - *(float*)(viewObj + 0x18);
         dy = ((CameraObject*)camObj)->anim.worldPosY - *(float*)(viewObj + 0x1c);
@@ -153,19 +153,19 @@ void CameraModeStatic_init(u8* cam, int p2, int* p3)
     f32 dz;
 
     state = ((CameraObject*)cam)->anim.targetObj;
-    if (lbl_803DD558 == NULL)
+    if (gCameraModeStaticState == NULL)
     {
-        lbl_803DD558 = (CameraModeStaticState*)mmAlloc(sizeof(CameraModeStaticState), 15, 0);
+        gCameraModeStaticState = (CameraModeStaticState*)mmAlloc(sizeof(CameraModeStaticState), 15, 0);
     }
-    lbl_803DD558->active = 1;
-    lbl_803DD558->missingObject = 0;
+    gCameraModeStaticState->active = 1;
+    gCameraModeStaticState->missingObject = 0;
     best = (GameObject*)camStaticFindNearestAnchor(state->anim.worldPosX, state->anim.worldPosY, state->anim.worldPosZ, *p3, 18);
     if (best == NULL)
     {
-        lbl_803DD558->missingObject = 1;
+        gCameraModeStaticState->missingObject = 1;
         return;
     }
-    lbl_803DD558->staticObject = best;
+    gCameraModeStaticState->staticObject = best;
     setup = (u8*)best->anim.placementData;
     dx = best->anim.worldPosX - state->anim.worldPosX;
     dy = best->anim.worldPosY - state->anim.worldPosY;
