@@ -1,9 +1,6 @@
 #include "PowerPC_EABI_Support/Runtime/runtime.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/s_tan.h"
 
-extern double lbl_803E7C00;
-extern double lbl_803E7C08;
-
 
 double tan(int* quadrant, float angle)
 {
@@ -12,8 +9,8 @@ double tan(int* quadrant, float angle)
     double scaledAngle;
 
     absoluteAngle = __fabsf(angle);
-    scaledAngle = lbl_803E7C00 * absoluteAngle;
+    scaledAngle = 1.2732395447351628 * absoluteAngle;
     roundedQuadrant = (__cvt_fp2unsigned(scaledAngle) + 1) & ~1U;
     *quadrant = roundedQuadrant;
-    return absoluteAngle - lbl_803E7C08 * (double)roundedQuadrant;
+    return absoluteAngle - 0.7853981633974483 * (double)roundedQuadrant;
 }

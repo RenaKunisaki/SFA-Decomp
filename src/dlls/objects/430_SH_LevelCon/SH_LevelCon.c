@@ -59,7 +59,6 @@
 #define SCTOTEMLOGPUZ_MAP_UNLOAD_FLAGS       0x20000000
 #define SHLEVELCONTROL_AIRMETER_BGTEXTURE    0x5db /* air-meter background texture id */
 
-extern f32 gShLevelControlHudTextDuration;
 
 void SH_LevelControl_setMusic(short* state);
 
@@ -757,7 +756,7 @@ void SH_LevelControl_init(GameObject* obj) {
     }
 
     ((ShLevelControlState*)state)->dayNightMusicLatch = -1;
-    ((ShLevelControlState*)state)->hudTextTimer = gShLevelControlHudTextDuration;
+    ((ShLevelControlState*)state)->hudTextTimer = 300.0f;
 
     if (mainGetBit(GAMEBIT_ITEM_MMPKey_Got) != 0) {
         ((ShLevelControlState*)state)->flags |= SHOPKEEPER_OBJFLAG_THORNTAIL_TRIGGERED;

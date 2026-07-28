@@ -64,7 +64,7 @@ int wctempledia_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState
     WCTempleDiaState* state = obj->extra;
 
     {
-        f32 scaled = gWcTempleDiaSpeedLerpRate;
+        f32 scaled = 0.01f;
         f32 cs = state->currentSpeed;
         scaled = scaled * -cs;
         state->currentSpeed = scaled * timeDelta + cs;
@@ -120,7 +120,7 @@ void wctempledia_update(GameObject* obj)
         wctempledia_syncPartVisibility(go, state->stageMask);
         return;
     }
-    state->currentSpeed += timeDelta * (gWcTempleDiaSpeedLerpRate * (state->targetSpeed - state->currentSpeed));
+    state->currentSpeed += timeDelta * (0.01f * (state->targetSpeed - state->currentSpeed));
     go->anim.rotZ = (s16)(timeDelta * state->currentSpeed + (f32)go->anim.rotZ);
     Sfx_KeepAliveLoopedObjectSound(k, SFXTRIG_en_treedrum16);
     {

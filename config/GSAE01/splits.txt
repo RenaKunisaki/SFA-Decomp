@@ -1426,7 +1426,7 @@ dlls/engine/56/56.c:
 	.text       start:0x8011D51C end:0x8011D854
 	.data       start:0x8031AD20 end:0x8031ADD0
 	.sbss       start:0x803DD710 end:0x803DD728
-	.sdata2     start:0x803E1DF8 end:0x803E1E00
+	.sdata2     start:0x803E1DF0 end:0x803E1E00
 
 dlls/engine/57/57.c:
 	.text       start:0x8011D854 end:0x8011D900
@@ -2937,7 +2937,7 @@ dlls/objects/432_SH_swapston/SH_swapston.c:
 dlls/objects/430_SH_LevelCon/SH_LevelCon.c:
 	.text       start:0x801D7BA8 end:0x801D981C
 	.data       start:0x80327618 end:0x803277A8
-	.sdata2     start:0x803E54B0 end:0x803E54C0
+	.sdata2     start:0x803E54B0 end:0x803E54C4
 
 dlls/objects/431_SH_swaplift/SH_swaplift.c:
 	.text       start:0x801D981C end:0x801D9B1C
@@ -2948,7 +2948,7 @@ dlls/objects/431_SH_swaplift/SH_swaplift.c:
 dlls/objects/433_SH_staff/SH_staff.c:
 	.text       start:0x801D9B1C end:0x801DA8C4
 	.data       start:0x803277E0 end:0x8032784C
-	.sdata2     start:0x803E5500 end:0x803E5518
+	.sdata2     start:0x803E54D0 end:0x803E5518
 
 dlls/objects/434_SH_staffHaz/SH_staffHaz.c:
 	.text       start:0x801DA8C4 end:0x801DA954
@@ -3906,7 +3906,7 @@ dlls/objects/662_WCTempleDia/WCTempleDia.c:
 	.text       start:0x802293F8 end:0x8022999C
 	.data       start:0x8032B348 end:0x8032B398
 	.sdata      start:0x803DC3B8 end:0x803DC3C8
-	.sdata2     start:0x803E6E50 end:0x803E6E6C
+	.sdata2     start:0x803E6E48 end:0x803E6E6C
 
 dlls/objects/663_WCTempleBri/WCTempleBri.c:
 	.text       start:0x8022999C end:0x8022A298
@@ -5029,7 +5029,7 @@ dolphin/MSL_C/PPCEABI/bare/H/e_atan2.c:
 
 dolphin/MSL_C/PPCEABI/bare/H/s_tan.c:
 	.text       start:0x80292D3C end:0x80292DC0
-	.sdata2     start:0x803E7C10 end:0x803E7C18
+	.sdata2     start:0x803E7C00 end:0x803E7C18
 
 dolphin/MSL_C/PPCEABI/bare/H/rand.c:
 	.text       start:0x80292DC0 end:0x80292DEC

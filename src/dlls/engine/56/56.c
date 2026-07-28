@@ -25,7 +25,6 @@
 #define PAD_BUTTON_B 0x200
 #define PAD_CONFIRM_MASK (PAD_BUTTON_A | PAD_BUTTON_B)
 
-extern f32 gWeirdMenuSaveTimerLimit;
 
 void* gWeirdMenuTextHandle[2];
 Texture* gWeirdMenuTextureA;
@@ -106,7 +105,7 @@ int WeirdUnusedMenu_run(void)
         {
             saveGame_save();
         }
-        if ((f32)(s8)(gWeirdMenuSaveTimer = ((f32)(s8)gWeirdMenuSaveTimer + timeDelta)) >= gWeirdMenuSaveTimerLimit)
+        if ((f32)(s8)(gWeirdMenuSaveTimer = ((f32)(s8)gWeirdMenuSaveTimer + timeDelta)) >= 120.0f)
         {
             gWeirdMenuPhase = 0;
             gWeirdMenuWidgetWork.widgetFlagsA = (u16)(gWeirdMenuWidgetWork.widgetFlagsA & ~WIDGET_FLAG_SAVING);

@@ -121,17 +121,6 @@ void sh_staff_free(int* obj, int freeArg) {
 #define SHSTAFF_MAP_LOAD_DIST_SQ    250000.0f
 #define SHSTAFF_MAP_UNLOAD_DIST_SQ  490000.0f
 
-extern f32 gShStaffUnitScale;
-extern f32 gShStaffZero;
-extern f32 gShStaffHazeStep;
-extern f32 gShStaffHazeFadeOutScaleRate;
-extern f32 gShStaffFadeTimerMax;
-extern f32 gShStaffHazeScaleRampRate;
-extern f32 gShStaffConvergeLerpBase;
-extern f32 gShStaffConvergeLerpDiv;
-extern f32 gShStaffHazeSpacing;
-extern f32 gShStaffScatterJitterDiv;
-extern f32 gShStaffHazeScale;
 
 void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     ShStaffState* state;
@@ -175,7 +164,7 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
             objSetMtxFn_800412d4((u32)mtxB);
             objRenderModel(obj);
         } else {
-            objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, (double)gShStaffUnitScale);
+            objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
         }
         ObjPath_GetPointWorldPosition(obj, 0, &x0, &y0, &z0, 0);
         ObjPath_GetPointWorldPosition(obj, 1, &x1, &y1, &z1, 0);
@@ -217,23 +206,23 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
                 }
                 if ((state->hazeFlags & SHSTAFF_HAZE_FLAG_FADE_OUT) != 0) {
                     state->hazeFadeTimer = state->hazeFadeTimer - timeDelta;
-                    if (state->hazeFadeTimer <= gShStaffZero) {
-                        foldScale = gShStaffHazeStep;
+                    if (state->hazeFadeTimer <= 0.0f) {
+                        foldScale = 0.01f;
                     } else {
                         state->hazeFadeTimer = state->hazeFadeTimer - timeDelta;
-                        foldScale = gShStaffHazeFadeOutScaleRate * state->hazeFadeTimer;
+                        foldScale = (1.0f / 3000.0f) * state->hazeFadeTimer;
                     }
                 } else {
                     state->hazeFadeTimer = state->hazeFadeTimer + timeDelta;
-                    if (state->hazeFadeTimer >= gShStaffFadeTimerMax) {
-                        state->hazeFadeTimer = *(f32*)&gShStaffFadeTimerMax;
+                    if (state->hazeFadeTimer >= 60.0f) {
+                        state->hazeFadeTimer = 60.0f;
                     }
-                    foldScale = gShStaffHazeScaleRampRate * state->hazeFadeTimer;
+                    foldScale = (1.0f / 120.0f) * state->hazeFadeTimer;
                 }
                 j = 0;
                 for (; j < 5; j++) {
                     if (((u32)state->hazeChildren[j] != 0) && ((u32)state->hazeChildren[4] != 0)) {
-                        t = gShStaffConvergeLerpBase + j / gShStaffConvergeLerpDiv;
+                        t = 0.2f + j / 5.0f;
                         bx = ((GameObject*)state->hazeChildren[4])->anim.localPosX;
                         ((GameObject*)state->hazeChildren[j])->anim.localPosX = t * (x0 - bx) + bx;
                         ((GameObject*)state->hazeChildren[j])->anim.localPosY =
@@ -248,7 +237,7 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
                 j = 9;
                 for (; j > 4; j--) {
                     if (((u32)state->hazeChildren[j] != 0) && ((u32)state->hazeChildren[5] != 0)) {
-                        t = gShStaffConvergeLerpBase + (f32)(9 - j) / gShStaffConvergeLerpDiv;
+                        t = 0.2f + (f32)(9 - j) / 5.0f;
                         bx = ((GameObject*)state->hazeChildren[5])->anim.localPosX;
                         ((GameObject*)state->hazeChildren[j])->anim.localPosX = t * (x1 - bx) + bx;
                         ((GameObject*)state->hazeChildren[j])->anim.localPosY =
@@ -261,19 +250,19 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
                     }
                 }
             } else {
-                scatterScale = gShStaffHazeStep;
+                scatterScale = 0.01f;
                 if ((state->hazeFlags & SHSTAFF_HAZE_FLAG_FADE_OUT) != 0) {
                     state->hazeFadeTimer = state->hazeFadeTimer - timeDelta;
-                    if (state->hazeFadeTimer <= gShStaffZero) {
+                    if (state->hazeFadeTimer <= 0.0f) {
                         state->hazeFlags &= ~SHSTAFF_HAZE_FLAG_FADE_OUT;
                     } else {
-                        scatterScale = gShStaffHazeScaleRampRate * state->hazeFadeTimer;
+                        scatterScale = (1.0f / 120.0f) * state->hazeFadeTimer;
                     }
                 }
                 for (j = 0; j < SHSTAFF_HAZE_CHILD_COUNT; j++) {
                     if ((u32)state->hazeChildren[j] != 0) {
-                        t = gShStaffHazeSpacing * j;
-                        t = t + (f32)(int)randomGetRange(-0x32, 0x32) / gShStaffScatterJitterDiv;
+                        t = (1.0f / 9.0f) * j;
+                        t = t + (f32)(int)randomGetRange(-0x32, 0x32) / 1000.0f;
                         ((GameObject*)state->hazeChildren[j])->anim.localPosX = dx * t + x0;
                         ((GameObject*)state->hazeChildren[j])->anim.localPosY = dy * t + y0;
                         ((GameObject*)state->hazeChildren[j])->anim.localPosZ = dz * t + z0;
@@ -282,9 +271,9 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
                 }
             }
         } else {
-            scale = gShStaffHazeScale;
+            scale = 0.5f;
             cur2 = state->hazeFadeTimer;
-            bx = gShStaffZero;
+            bx = 0.0f;
             if (cur2 != bx) {
                 state->hazeFadeTimer = cur2 - timeDelta;
                 if (state->hazeFadeTimer <= bx) {
@@ -295,7 +284,7 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
                         state->hazeFadeTimer = bx;
                     }
                 } else {
-                    scale = gShStaffHazeScaleRampRate * state->hazeFadeTimer;
+                    scale = (1.0f / 120.0f) * state->hazeFadeTimer;
                 }
             }
             if ((u32)state->hazeChildren[0] != 0) {
@@ -357,11 +346,11 @@ int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* a
             break;
         case SHSTAFF_EVENT_FADE_HAZE_OUT:
             state->hazeFlags = (u8)(state->hazeFlags | SHSTAFF_HAZE_FLAG_FADE_OUT);
-            state->hazeFadeTimer = gShStaffFadeTimerMax;
+            state->hazeFadeTimer = 60.0f;
             break;
         case SHSTAFF_EVENT_CONVERGE_HAZE:
             state->hazeFlags = (u8)(state->hazeFlags | SHSTAFF_HAZE_FLAG_CONVERGE);
-            state->hazeFadeTimer = gShStaffZero;
+            state->hazeFadeTimer = 0.0f;
             break;
         case SHSTAFF_EVENT_FINISH_HAZE_EFFECT:
             state->hazeFlags = (u8)(state->hazeFlags | SHSTAFF_HAZE_FLAG_FADE_OUT);
@@ -379,9 +368,9 @@ int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* a
         ((void (*)(s16, int, int))((int*)*gGameUIInterface)[0x34 / 4])(obj->anim.modelInstance->helpTextIds[1], 0xa0,
                                                                        0x8c);
     }
-    state->hazeClimbT = gShStaffHazeStep * timeDelta + state->hazeClimbT;
-    if (state->hazeClimbT > gShStaffUnitScale) {
-        state->hazeClimbT = gShStaffZero;
+    state->hazeClimbT = 0.01f * timeDelta + state->hazeClimbT;
+    if (state->hazeClimbT > 1.0f) {
+        state->hazeClimbT = 0.0f;
     }
     return 0;
 }
@@ -425,7 +414,7 @@ void sh_staff_update(GameObject* obj) {
             } else {
                 int loadResult;
                 staffToggle((GameObject*)player, 0);
-                ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, gShStaffUnitScale);
+                ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, 1.0f);
                 obj->anim.rotY = (s16)(placement->rotYByte << 8);
                 obj->anim.rotZ = (s16)(placement->rotZByte << 8);
                 obj->animEventCallback = sh_staff_sequenceCallback;
@@ -448,7 +437,7 @@ void sh_staff_update(GameObject* obj) {
             int target = ObjGroup_FindNearestObject(SHSTAFF_TARGET_OBJGROUP, obj, 0);
             (*gObjectTriggerInterface)->runSequence(0, (void*)target, -1);
             state->phase = SHSTAFF_PHASE_PICKUP;
-            state->hazeFadeTimer = gShStaffFadeTimerMax;
+            state->hazeFadeTimer = 60.0f;
             mainSetBits(GAMEBIT_STAFF_ACQUIRED, 1);
         } else if (distanceSq > SHSTAFF_MAP_UNLOAD_DIST_SQ) {
             if (state->pickupMapLoaded != 0) {
@@ -469,13 +458,13 @@ void sh_staff_update(GameObject* obj) {
         }
     }
     hudFn_8011f38c(0);
-    state->hazeClimbT = gShStaffHazeStep * timeDelta + state->hazeClimbT;
-    if (state->hazeClimbT > gShStaffUnitScale) {
-        state->hazeClimbT = gShStaffZero;
+    state->hazeClimbT = 0.01f * timeDelta + state->hazeClimbT;
+    if (state->hazeClimbT > 1.0f) {
+        state->hazeClimbT = 0.0f;
     }
-    state->fizzSfxTimer = gShStaffHazeStep * timeDelta + state->fizzSfxTimer;
-    if (state->fizzSfxTimer > gShStaffUnitScale) {
-        state->fizzSfxTimer = gShStaffZero;
+    state->fizzSfxTimer = 0.01f * timeDelta + state->fizzSfxTimer;
+    if (state->fizzSfxTimer > 1.0f) {
+        state->fizzSfxTimer = 0.0f;
         if (state->phase == SHSTAFF_PHASE_ARMED) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_pk_staff_fizz);
         }
