@@ -717,7 +717,7 @@ void CameraModeViewfinder_initialise(void)
 {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319BF8 = {
+ResourceDescriptorCallbacks8 gCameraModeViewfinderDescriptor = {
     {0x00000000, 0x00000000, 0x00000000, 0x00060000},
     {(ResourceDescriptorCallback)CameraModeViewfinder_initialise,
      (ResourceDescriptorCallback)CameraModeViewfinder_release,

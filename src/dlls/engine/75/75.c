@@ -219,7 +219,7 @@ void CameraModeClimb_initialise(void)
 {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319D48 = {{0x00000000,
+ResourceDescriptorCallbacks8 gCameraModeClimbDescriptor = {{0x00000000,
                        0x00000000,
                        0x00000000,
                        0x00060000},

@@ -503,7 +503,7 @@ void CameraModeCombat_initialise(void)
 }
 
 
-ResourceDescriptorCallbacks8 lbl_80319CE8 = {{0x00000000,
+ResourceDescriptorCallbacks8 gCameraModeCombatDescriptor = {{0x00000000,
                         0x00000000,
                         0x00000000,
                         0x00060000},

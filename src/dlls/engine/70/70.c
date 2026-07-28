@@ -115,7 +115,7 @@ void CameraModeDebug_initialise_nop(void)
 {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319C28 = {
+ResourceDescriptorCallbacks8 gCameraModeDebugDescriptor = {
     {0x00000000, 0x00000000, 0x00000000, 0x00060000},
     {(ResourceDescriptorCallback)CameraModeDebug_initialise_nop,
      (ResourceDescriptorCallback)CameraModeDebug_release_nop,

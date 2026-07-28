@@ -378,7 +378,7 @@ void CameraModeWorldMap_initialise(void)
 {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319E08 = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
+ResourceDescriptorCallbacks8 gCameraModeWorldMapDescriptor = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
         {(ResourceDescriptorCallback)CameraModeWorldMap_initialise, (ResourceDescriptorCallback)CameraModeWorldMap_release,
         0x00000000, (ResourceDescriptorCallback)CameraModeWorldMap_init, (ResourceDescriptorCallback)CameraModeWorldMap_update,
         (ResourceDescriptorCallback)CameraModeWorldMap_free, (ResourceDescriptorCallback)CameraModeWorldMap_copyToCurrent, 0x00000000}};

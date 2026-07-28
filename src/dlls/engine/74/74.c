@@ -163,7 +163,7 @@ void CameraModeShipBattle_initialise(void)
 {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319D18 = {{0x00000000,
+ResourceDescriptorCallbacks8 gCameraModeShipBattleDescriptor = {{0x00000000,
                        0x00000000,
                        0x00000000,
                        0x00060000},

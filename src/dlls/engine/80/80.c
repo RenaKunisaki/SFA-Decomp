@@ -146,7 +146,7 @@ void CameraModeCrawl_initialise(void)
 {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319E68 = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
+ResourceDescriptorCallbacks8 gCameraModeCrawlDescriptor = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
         {(ResourceDescriptorCallback)CameraModeCrawl_initialise, (ResourceDescriptorCallback)CameraModeCrawl_release,
         0x00000000, (ResourceDescriptorCallback)CameraModeCrawl_init, (ResourceDescriptorCallback)CameraModeCrawl_update,
         (ResourceDescriptorCallback)CameraModeCrawl_free, (ResourceDescriptorCallback)CameraModeCrawl_copyToCurrent, 0x00000000}};

@@ -939,7 +939,7 @@ void CameraModeTestStrength_initialise(void)
 {
 }
 
-ResourceDescriptorCallbacks7 lbl_80319C88 = {
+ResourceDescriptorCallbacks7 gCameraModeTestStrengthDescriptor = {
     {0x00000000, 0x00000000, 0x00000000, 0x00060000},
     {(ResourceDescriptorCallback)CameraModeTestStrength_initialise,
      (ResourceDescriptorCallback)CameraModeTestStrength_release,

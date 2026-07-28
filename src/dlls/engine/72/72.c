@@ -220,7 +220,7 @@ void CameraModeStatic_initialise(void)
 {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319C58 = {
+ResourceDescriptorCallbacks8 gCameraModeStaticDescriptor = {
     {0x00000000, 0x00000000, 0x00000000, 0x00060000},
     {(ResourceDescriptorCallback)CameraModeStatic_initialise,
      (ResourceDescriptorCallback)CameraModeStatic_release,
