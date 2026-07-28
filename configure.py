@@ -1394,7 +1394,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/297_CampFire/CampFire.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/298_CFCrate/CFCrate.c", cflags=cflags_dll_noopt_noprop),
             Object(MatchingFor("GSAE01"), "dlls/objects/299_FXEmit/FXEmit.c"),
-            Object(NonMatching, "dlls/objects/300_Transporter/Transporter.c", cflags=cflags_dll_noopt_noloopinv),
+            Object(MatchingFor("GSAE01"), "dlls/objects/300_Transporter/Transporter.c", cflags=cflags_dll_noopt_noloopinv),
             Object(MatchingFor("GSAE01"), "dlls/objects/301_LFXEmitter/LFXEmitter.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/302/302.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/303_BarrelPad/BarrelPad.c"),

@@ -70,8 +70,6 @@ STATIC_ASSERT(sizeof(TransporterEffectParams) == 0x18);
 extern u8 lbl_803DCDE0;
 extern s16 lbl_803DCEB8;
 
-const f32 gTransporterZero[1] = {0.0f};
-
 void Transporter_updateEffects(GameObject* obj) {
     TransporterState* state;
     GameObject* player;
@@ -81,9 +79,9 @@ void Transporter_updateEffects(GameObject* obj) {
 
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    fx.pos[0] = gTransporterZero[0];
+    fx.pos[0] = 0.0f;
     fx.pos[1] = 55.0f;
-    fx.pos[2] = gTransporterZero[0];
+    fx.pos[2] = 0.0f;
     flags = state->flags;
 
     if ((flags & TRANSPORTER_FLAG_WARP_A) != 0) {
@@ -160,7 +158,7 @@ void Transporter_updateEffects(GameObject* obj) {
                 }
             }
         } else if (!(state->pulseTimer < WARP_PAD_PULSE_END_TIME)) {
-            state->pulseTimer = gTransporterZero[0];
+            state->pulseTimer = 0.0f;
             state->flags &= ~TRANSPORTER_FLAG_PULSE_FX;
         }
         state->pulseTimer += timeDelta;
@@ -229,8 +227,8 @@ void Transporter_updateInteraction(GameObject* obj) {
         }
     }
     state->cooldownTimer -= timeDelta;
-    if (state->cooldownTimer <= gTransporterZero[0]) {
-        state->cooldownTimer = gTransporterZero[0];
+    if (state->cooldownTimer <= 0.0f) {
+        state->cooldownTimer = 0.0f;
         state->unk0A = -1;
     }
 }
@@ -427,7 +425,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_SKY, 0);
                 setDrawCloudsAndLights(0);
                 skyFn_80088c94(1, 1);
-                skyFn_80088e54(0, gTransporterZero[0]);
+                skyFn_80088e54(0, 0.0f);
                 break;
             case 0x48506:
             case 0x4A533:
@@ -439,7 +437,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G1_C, 0);
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G1_D, 0);
                 skyFn_80088c94(1, 0);
-                skyFn_80088e54(0, gTransporterZero[0]);
+                skyFn_80088e54(0, 0.0f);
                 break;
             case 0x4B666:
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G2_A, 0);
@@ -450,7 +448,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G2_B, 0);
                 (*gMapEventInterface)->setObjGroupStatus(0x15, 2, 1);
                 getEnvfxActImmediately(0, 0, TRANSPORTER_ENVFX_G2_C, 0);
-                skyFn_80088e54(1, gTransporterZero[0]);
+                skyFn_80088e54(1, 0.0f);
                 break;
             case 0x4670D:
             case 0x4827E:
@@ -464,7 +462,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G4_A, 0);
                 getEnvfxActImmediately(obj, obj, TRANSPORTER_ENVFX_G4_B, 0);
                 skyFn_80088c94(1, 1);
-                skyFn_80088e54(0, gTransporterZero[0]);
+                skyFn_80088e54(0, 0.0f);
             case 0x4CB84:
                 mainSetBits(GAMEBIT_VFP_EnvironmentRelated0EF6, 0);
                 break;
