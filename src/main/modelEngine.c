@@ -301,6 +301,7 @@
 #include "dlls/objects/505_WM_ObjCreat.h"
 #include "dlls/objects/506_WM_seqobjec.h"
 #include "dlls/objects/507.h"
+#include "dlls/objects/508.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -412,7 +413,7 @@ extern ResourceDescriptor gHighTopObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor;
-extern ResourceDescriptor gLaserBeamObjDescriptor, gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
+extern ResourceDescriptor gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
 extern ResourceDescriptor gLightSourceObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
 extern ResourceDescriptor gPlatform1ObjDescriptor, gPointLightObjDescriptor;
@@ -1617,7 +1618,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWM_ObjCreatorObjDescriptor,
     (ResourceDescriptor*)&gWM_seqobjectObjDescriptor,
     (ResourceDescriptor*)&gDll507ObjDescriptor,
-    &gLaserBeamObjDescriptor,
+    (ResourceDescriptor*)&gLaserBeamObjDescriptor,
     &gWM_LaserTargetObjDescriptor,
     &gPressureSwitchObjDescriptor,
     &dll_1FF,
