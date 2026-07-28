@@ -3284,11 +3284,14 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         DVDOpen(sResourceFileNameTable[fileId], &buf);
         if (((u32)destBuf & 0x1f) != 0 || ((int)length & 0x1f) != 0)
         {
-            alignedSize = (length + 0x1f) & 0xffffffe0;
-            tmp = (int)mmAlloc(alignedSize, 0x7f7f7fff, 0);
-            DVDRead(&buf, (void*)tmp, alignedSize, offsetFlags);
-            memcpy((void*)destBuf, (void*)tmp, length);
-            mm_free((void*)tmp);
+            u32 bounceSize;
+            int bounceBuf;
+
+            bounceSize = (length + 0x1f) & 0xffffffe0;
+            bounceBuf = (int)mmAlloc(bounceSize, 0x7f7f7fff, 0);
+            DVDRead(&buf, (void*)bounceBuf, bounceSize, offsetFlags);
+            memcpy((void*)destBuf, (void*)bounceBuf, length);
+            mm_free((void*)bounceBuf);
         }
         else
         {
