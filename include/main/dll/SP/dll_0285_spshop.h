@@ -29,7 +29,7 @@ typedef struct ShopItemRow
     u8 discount1;  /* 0x1 "D1" */
     u8 discount2;  /* 0x2 "D2" */
     u8 discount3;  /* 0x3 "D3" (observed always == price) */
-    u8 field4;     /* 0x4 */
+    u8 specialPrice; /* 0x4 */
     u8 minPrice;   /* 0x5 */
     s16 availBit;  /* 0x6 "available" GameBit slot (-1 = always available) */
     s16 boughtBit; /* 0x8 "bought" GameBit slot (-1 = none) */
@@ -44,11 +44,11 @@ s32 shop_getItemIndex(GameObject* obj);
 void shop_setItemIndex(GameObject* obj, int v);
 s16 shop_getItemTextId(GameObject* obj, int idx);
 int shop_getItemPrice(GameObject* obj, int idx);
-u8 shop_getItemField4(GameObject* obj, int idx);
+u8 shop_getItemSpecialPrice(GameObject* obj, int idx);
 u8 shop_getItemMinPrice(GameObject* obj, int idx);
 int shop_isItemBought(GameObject* obj, int idx);
 int shop_isItemAvailable(GameObject* obj, int idx);
-void shop_func0B(GameObject* obj, int v, int p3);
+void shop_playSequence(GameObject* obj, int playSequence, int sequenceIndex);
 s32 shop_getStateField0(GameObject* obj);
 int shop_getExtraSize(void);
 int shop_getObjectTypeId(void);

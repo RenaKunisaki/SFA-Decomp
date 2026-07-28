@@ -138,11 +138,11 @@ ObjectDescriptor24 gShopObjDescriptor = {
     (ObjectDescriptorCallback)shop_getObjectTypeId,
     shop_getExtraSize,
     (ObjectDescriptorCallback)shop_getStateField0,
-    (ObjectDescriptorCallback)shop_func0B,
+    (ObjectDescriptorCallback)shop_playSequence,
     (ObjectDescriptorCallback)shop_isItemAvailable,
     (ObjectDescriptorCallback)shop_isItemBought,
     (ObjectDescriptorCallback)shop_getItemMinPrice,
-    (ObjectDescriptorCallback)shop_getItemField4,
+    (ObjectDescriptorCallback)shop_getItemSpecialPrice,
     (ObjectDescriptorCallback)shop_getItemPrice,
     (ObjectDescriptorCallback)shop_getItemTextId,
     (ObjectDescriptorCallback)shop_setItemIndex,
@@ -269,7 +269,7 @@ int shop_getItemPrice(GameObject* obj, int idx)
     return 0;
 }
 
-u8 shop_getItemField4(GameObject* obj, int idx)
+u8 shop_getItemSpecialPrice(GameObject* obj, int idx)
 {
     if (idx >= 0 && idx < SHOP_ITEM_ROW_COUNT)
     {
@@ -322,13 +322,13 @@ int shop_isItemAvailable(GameObject* obj, int idx)
     return result;
 }
 
-void shop_func0B(GameObject* obj, int v, int seqId)
+void shop_playSequence(GameObject* obj, int playSequence, int sequenceIndex)
 {
     ShopBuyItemState* state = obj->extra;
-    state->unk0 = v;
-    if (v != 0)
+    state->unk0 = playSequence;
+    if (playSequence != 0)
     {
-        (*gObjectTriggerInterface)->runSequence(seqId, obj, -1);
+        (*gObjectTriggerInterface)->runSequence(sequenceIndex, obj, -1);
     }
 }
 

@@ -104,11 +104,11 @@ STATIC_ASSERT(offsetof(TumbleweedState, phaseTimer) == 0x2A0);
 STATIC_ASSERT(sizeof(TumbleweedState) == 0x2A4);
 
 void tumbleweed_updateRollingMotion(GameObject* obj, TumbleweedState* state);
-void tumbleweed_func0F(GameObject* obj, GameObject* target);
-int tumbleweed_func0E(GameObject* obj);
-void tumbleweed_render2(GameObject* obj, f32* targetPos);
-void tumbleweed_modelMtxFn(GameObject* obj);
-void tumbleweed_func0B(GameObject* obj, f32 x, f32 z);
+void tumbleweed_setPlayer(GameObject* obj, GameObject* target);
+int tumbleweed_isGravitating(GameObject* obj);
+void tumbleweed_gravitateToPoint(GameObject* obj, f32* targetPos);
+void tumbleweed_fall(GameObject* obj);
+void tumbleweed_setHome(GameObject* obj, f32 x, f32 z);
 int tumbleweed_getPhase(GameObject* obj);
 int tumbleweed_getExtraSize(void);
 void tumbleweed_free(GameObject* obj);

@@ -521,19 +521,19 @@ void tumbleweed_updateRollingMotion(GameObject* obj, TumbleweedState* state) {
     }
 }
 
-void tumbleweed_func0F(GameObject* obj, GameObject* target) {
+void tumbleweed_setPlayer(GameObject* obj, GameObject* target) {
     TumbleweedState* state = obj->extra;
 
     state->targetObj = target;
 }
 
-int tumbleweed_func0E(GameObject* obj) {
+int tumbleweed_isGravitating(GameObject* obj) {
     TumbleweedState* state = obj->extra;
 
     return state->phase == TUMBLEWEED_PHASE_HOMING;
 }
 
-void tumbleweed_render2(GameObject* obj, f32* targetPos) {
+void tumbleweed_gravitateToPoint(GameObject* obj, f32* targetPos) {
     TumbleweedState* state = obj->extra;
     f32 speedScale;
 
@@ -544,7 +544,7 @@ void tumbleweed_render2(GameObject* obj, f32* targetPos) {
     ObjHits_DisableObject(obj);
 }
 
-void tumbleweed_modelMtxFn(GameObject* obj) {
+void tumbleweed_fall(GameObject* obj) {
     TumbleweedState* state = obj->extra;
 
     if (state->phase == TUMBLEWEED_PHASE_ARMED) {
@@ -557,7 +557,7 @@ void tumbleweed_modelMtxFn(GameObject* obj) {
     }
 }
 
-void tumbleweed_func0B(GameObject* obj, f32 x, f32 z) {
+void tumbleweed_setHome(GameObject* obj, f32 x, f32 z) {
     TumbleweedState* state = obj->extra;
 
     state->anchorPosX = x;
@@ -997,11 +997,11 @@ ObjectDescriptor16WithPadding gTumbleweedObjDescriptor = {
         0,
         tumbleweed_getExtraSize,
         (ObjectDescriptorCallback)tumbleweed_getPhase,
-        (ObjectDescriptorCallback)tumbleweed_func0B,
-        (ObjectDescriptorCallback)tumbleweed_modelMtxFn,
-        (ObjectDescriptorCallback)tumbleweed_render2,
-        (ObjectDescriptorCallback)tumbleweed_func0E,
-        (ObjectDescriptorCallback)tumbleweed_func0F,
+        (ObjectDescriptorCallback)tumbleweed_setHome,
+        (ObjectDescriptorCallback)tumbleweed_fall,
+        (ObjectDescriptorCallback)tumbleweed_gravitateToPoint,
+        (ObjectDescriptorCallback)tumbleweed_isGravitating,
+        (ObjectDescriptorCallback)tumbleweed_setPlayer,
     },
     0,
 };
