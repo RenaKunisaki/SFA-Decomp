@@ -3497,7 +3497,7 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
 
     for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds[0]++, flagWalk++, poolIndex++)
     {
-        if ((((ExpgfxSourceObject*)sourceObject)->objType == EXPGFX_SOURCE_OBJTYPE_MATCH_ALL) ||
+        if ((((ExpgfxSourceObject*)sourceObject)->seqId == EXPGFX_SOURCE_SEQID_MATCH_ALL) ||
             (*poolSourceIds[0] == sourceObject))
         {
             s64 frameBit;
@@ -4433,7 +4433,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
 
             if (attachedSource != NULL)
             {
-                attachedTableKey = attachedSource->attachedTableKey;
+                attachedTableKey = attachedSource->parentAddress;
             }
             attachedSource = NULL;
         }

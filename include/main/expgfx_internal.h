@@ -140,7 +140,7 @@
 #define EXPGFX_SOURCE_FRAME_STATE_MIXED 3
 #define EXPGFX_POOL_SOURCE_MODE_STANDALONE 0
 #define EXPGFX_POOL_SOURCE_MODE_SOURCE_OFFSET 1
-#define EXPGFX_SOURCE_OBJTYPE_MATCH_ALL 0xD4
+#define EXPGFX_SOURCE_SEQID_MATCH_ALL 0xD4
 #define EXPGFX_QUAD_TEXCOORD_MAX 0x80
 #define EXPGFX_QUEUE_DEPTH_SLOT_TYPE_MASK 0x21
 #define EXPGFX_STATIC_BOUNDS_TEMPLATE_COUNT \
@@ -170,21 +170,22 @@ typedef struct ExpgfxSourceObject {
   f32 velocityX;
   f32 velocityY;
   f32 velocityZ;
-  s32 attachedTableKey;
+  s32 parentAddress;
   u8 pad34[0x36 - 0x34];
   u8 alpha;
   u8 pad37[0x46 - 0x37];
-  /* Type 0xD4 updates frame flags for every tracked pool, not just pointer matches. */
-  s16 objType;
+  /* Sources with this seqId update frame flags for every tracked pool, not
+     just pointer matches. */
+  s16 seqId;
 } ExpgfxSourceObject;
 
 STATIC_ASSERT(offsetof(ExpgfxSourceObject, rootMotionScale) == 0x08);
 STATIC_ASSERT(offsetof(ExpgfxSourceObject, localPosX) == 0x0C);
 STATIC_ASSERT(offsetof(ExpgfxSourceObject, worldPosX) == 0x18);
 STATIC_ASSERT(offsetof(ExpgfxSourceObject, velocityX) == 0x24);
-STATIC_ASSERT(offsetof(ExpgfxSourceObject, attachedTableKey) == 0x30);
+STATIC_ASSERT(offsetof(ExpgfxSourceObject, parentAddress) == 0x30);
 STATIC_ASSERT(offsetof(ExpgfxSourceObject, alpha) == 0x36);
-STATIC_ASSERT(offsetof(ExpgfxSourceObject, objType) == 0x46);
+STATIC_ASSERT(offsetof(ExpgfxSourceObject, seqId) == 0x46);
 
 typedef struct ExpgfxPoolSourcePosition {
   u8 pad00[0x0C];
