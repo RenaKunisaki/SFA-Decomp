@@ -1332,6 +1332,8 @@ void trackIntersect(void)
     int sortComplete;
     s16 previousType, segmentType;
     f32 pointX, pointY, pointZ;
+    f32 blockX;
+    f32 blockZ;
 
     lbl_803DCF44 = 0;
     if (lbl_803DCF4D != 0 && getHudHiddenFrameCount() == 0)
@@ -1366,7 +1368,6 @@ void trackIntersect(void)
         s8* idx = mapGetBlockIdx(layer);
         for (gridZ = 0, rowOffset = 0; gridZ < 0x10; rowOffset += 0x10, gridZ++)
         {
-            f32 blockZ;
             gridX = 0;
             blockIndex = rowOffset;
             blockZ = 640.0f * gridZ;
@@ -1375,7 +1376,6 @@ void trackIntersect(void)
                 if (idx[blockIndex] >= 0)
                 {
                     MapBlockData* blk = mapGetBlock(idx[blockIndex]);
-                    f32 blockX;
                     sourceIndex = 0;
                     sourceOffset = 0;
                     blockX = 640.0f * gridX;
