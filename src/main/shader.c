@@ -1022,7 +1022,7 @@ void mapLoadUnloadObjects(int flag)
             for (i = 0; i < objCount; i++)
             {
                 GameObject* obj2 = (GameObject*)objs2[i];
-                u32 mid2 = obj2->anim.pad34;
+                u32 mid2 = obj2->anim.hostedMapSlot;
                 MapRomListPage* page2 = ((MapRomListPage**)(base + 0x83A8))[mid2];
                 if (page2 != 0)
                 {
@@ -2729,7 +2729,7 @@ void mapLoadForObject(int mapId, GameObject* obj)
         }
         slot++;
     }
-    obj->anim.pad34 = slot;
+    obj->anim.hostedMapSlot = slot;
     (*gMapEventInterface)->setMapActLut(mapId, slot);
     defStartFn_8005972c((char*)romList, (u32*)&lbl_803822C8[slot * 0x8c], slot, 0);
     (*gMapEventInterface)->updateObjGroups(slot);

@@ -98,9 +98,9 @@ int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             obj->userData1 = WM_GALLEON_ACTION_13;
             break;
         case WM_GALLEON_COMMAND_CLEAR_MAP_EVENTS:
-            (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 1, 0);
-            (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 2, 0);
-            (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 4, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 1, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 2, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 4, 0);
             mainSetBits(WM_GALLEON_GAMEBIT_CLEAR_DOOR, 0);
             break;
         case WM_GALLEON_COMMAND_CLEAR_LACTIONS:
@@ -122,10 +122,10 @@ int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
 
     if (mainGetBit(WM_GALLEON_GAMEBIT_CUTSCENE_DONE) != 0)
     {
-        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.pad34, 2) != 0)
+        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.hostedMapSlot, 2) != 0)
         {
-            (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 1, 0);
-            (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 2, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 1, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 2, 0);
         }
     }
     return 0;
@@ -206,33 +206,33 @@ void WM_Galleon_update(GameObject* obj)
 
     if (mainGetBit(WM_GALLEON_GAMEBIT_CUTSCENE_DONE) != 0)
     {
-        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.pad34, 2) != 0)
+        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.hostedMapSlot, 2) != 0)
         {
-            (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 1, 0);
-            (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 2, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 1, 0);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 2, 0);
         }
     }
     else if ((mainGetBit(GAMEBIT_WM_GalleonRelated00D0) == 0) &&
-             ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.pad34, 2) == 0))
+             ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.hostedMapSlot, 2) == 0))
     {
-        (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 1, 1);
-        (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 2, 1);
+        (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 1, 1);
+        (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 2, 1);
     }
 
     if (mainGetBit(GAMEBIT_WM_GalleonRelated00D0) == 0)
     {
         if ((state->mapEventsLatched == 0) && (mainGetBit(WM_GALLEON_GAMEBIT_CUTSCENE_DONE) == 0))
         {
-            (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 1, 1);
-            (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 2, 1);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 1, 1);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 2, 1);
             state->mapEventsLatched = 1;
         }
     }
     else
     {
-        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.pad34, 4) == 0)
+        if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.hostedMapSlot, 4) == 0)
         {
-            (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 4, 1);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 4, 1);
         }
         if (state->mapEventsLatched != 0)
         {
@@ -290,7 +290,7 @@ void WM_Galleon_init(GameObject* obj, WMGalleonSetup* setup)
     trackSetLinesEnabledByParam(0, obj, 0);
     for (i = 0; i < 5; i++)
     {
-        (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, i, 0);
+        (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, i, 0);
     }
     mainSetBits(GAMEBIT_WM_GalleonRelated00A4, 1);
 }

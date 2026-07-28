@@ -804,7 +804,7 @@ void DBprotection_updateFlight(GameObject* obj)
                 ((GameObject*)obj)->anim.localPosY = lbl_803E57AC;
                 ((GameObject*)obj)->anim.localPosZ = spawnData->posZ;
                 Sfx_StopObjectChannel((int)obj, 1);
-                (*gMapEventInterface)->setObjGroupStatus(obj->anim.pad34, 2, 1);
+                (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 2, 1);
                 (*gObjectTriggerInterface)->runSequence(0, obj, -1);
                 return;
             }

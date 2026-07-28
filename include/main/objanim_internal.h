@@ -419,7 +419,11 @@ typedef struct ObjAnimComponent {
     struct ObjAnimComponent *parentAnim;
     u32 parentAddress; /* raw address view for APIs that accept a 32-bit parent handle */
   };
-  u8 pad34;
+  u8 hostedMapSlot; /* 0x34: romlist page slot this object hosts - taken
+                       from the extended 0x50..0x77 band by
+                       mapLoadForObject when the object definition names
+                       a map to load, registered with setMapActLut and
+                       released through mapUnloadRomListPage */
   s8 transformMatrixIndex;
   u8 alpha;
   union {
@@ -471,7 +475,10 @@ typedef struct ObjAnimComponent {
                      sites across CAM TUs + baddieControl.c 0xA4-as-pointer
                      census - general object field, not camera-specific */
   f32 hitboxScale;
-  s8 mapEventSlot;
+  s8 mapEventSlot; /* 0xAC: map-event slot the object belongs to - the
+                      mapLayer argument of loadCharacter; for objects
+                      instantiated inside an object-hosted map this is
+                      that host's hostedMapSlot */
   s8 bankIndex;
   s8 activeHitboxMode;
   union {
@@ -696,6 +703,7 @@ STATIC_ASSERT(offsetof(ObjAnimComponent, velocityX) == 0x24);
 STATIC_ASSERT(offsetof(ObjAnimComponent, velocityY) == 0x28);
 STATIC_ASSERT(offsetof(ObjAnimComponent, velocityZ) == 0x2C);
 STATIC_ASSERT(offsetof(ObjAnimComponent, parent) == 0x30);
+STATIC_ASSERT(offsetof(ObjAnimComponent, hostedMapSlot) == 0x34);
 STATIC_ASSERT(offsetof(ObjAnimComponent, alpha) == 0x36);
 STATIC_ASSERT(offsetof(ObjAnimComponent, next) == 0x38);
 STATIC_ASSERT(offsetof(ObjAnimComponent, loadDistance) == 0x3C);
