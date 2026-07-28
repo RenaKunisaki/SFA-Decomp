@@ -1,6 +1,8 @@
 #ifndef MAIN_DLL_TREASURECHEST_STATE_H_
 #define MAIN_DLL_TREASURECHEST_STATE_H_
 
+#include "main/dll/baddie_state.h"
+
 #include "ghidra_import.h"
 #include "global.h"
 
@@ -9,7 +11,9 @@
  * mirror the observed deref widths; unobserved ranges are padded. The
  * span covers every observed access - the true allocation may be larger.
  */
-typedef struct TreasureChestState {
+typedef union TreasureChestState {
+    GroundBaddieState groundBaddie;
+    struct {
     int unk0;
     u8 unk4[0x25F - 0x4];
     s8 physicsActive;
@@ -36,6 +40,7 @@ typedef struct TreasureChestState {
     u8 unk404[0x405 - 0x404];
     u8 subMode;
     u8 unk406[0x40C - 0x406];
+    };
 } TreasureChestState;
 
 #endif /* MAIN_DLL_TREASURECHEST_STATE_H_ */

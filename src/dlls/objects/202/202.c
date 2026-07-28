@@ -7784,7 +7784,7 @@ void iceBaddie_tryAcquireTarget(GameObject* obj, GroundBaddieState* objectState,
     if (acquired != 0) {
         int physicsActive = -1;
         (*gBaddieControlInterface)
-            ->startHitReaction(obj, state, (char*)objectState + 0x35c, objectState->gameBitB, NULL, 0, 0, 8,
+            ->startHitReaction(obj, state, &objectState->routeNav, objectState->gameBitB, NULL, 0, 0, 8,
                                physicsActive);
         state->baddie.targetObj = acquired;
         state->baddie.hasTarget = 0;
@@ -7840,7 +7840,7 @@ void iceBaddie_updateTargetCollision(GameObject* obj, int stateAddress, GroundBa
     ((IceBaddieControl*)controlAddress)->hitTimer += timeDelta;
     if (state->baddie.controlMode != 3 &&
         (*gBaddieControlInterface)
-                ->updateHitReaction(obj, state, (char*)stateAddress + 0x35c,
+                ->updateHitReaction(obj, state, &((GroundBaddieState*)stateAddress)->routeNav,
                                     ((GroundBaddieState*)stateAddress)->gameBitB, gIceBaddieHitReactionMoves,
                                     gIceBaddieHitReactionDamage, 1, hitInfo) != 0) {
         if (((IceBaddieControl*)controlAddress)->hitTimer < 240.0f) {

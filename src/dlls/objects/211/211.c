@@ -1277,7 +1277,7 @@ void dll_D3_update(GameObject* obj)
         if (rc != 0u)
         {
             (*gBaddieControlInterface)
-                ->startHitReaction(obj, state, (char*)state + 0x35c,
+                ->startHitReaction(obj, state, &((TreasureChestState*)state)->groundBaddie.routeNav,
                                    ((TreasureChestState*)state)->gameBitB, NULL, 0, 1, 0, -1);
             ((TreasureChestState*)state)->targetObj = rc;
             ((TreasureChestState*)state)->hasTarget = 0;
@@ -1306,7 +1306,7 @@ void dll_D3_update(GameObject* obj)
     }
 
     (*gBaddieControlInterface)
-        ->processMessages(obj, state, (char*)state + 0x35c,
+        ->processMessages(obj, state, &((TreasureChestState*)state)->groundBaddie.routeNav,
                           ((TreasureChestState*)state)->gameBitB, NULL, 0, 0, 0);
 
     hits = (int)((TreasureChestState*)state)->hitPoints;

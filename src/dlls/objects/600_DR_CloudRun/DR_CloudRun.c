@@ -745,15 +745,15 @@ int DR_CloudRunner_stateHandler04(GameObject* obj, CloudRunnerState* baddie)
         (obj)->anim.velocityY = fz;
         (obj)->anim.velocityZ = fz;
     }
-    (obj)->anim.localPosX = inner->posX;
-    (obj)->anim.localPosY = inner->posY;
-    (obj)->anim.localPosZ = inner->posZ;
+    (obj)->anim.localPosX = inner->curveWalker.posX;
+    (obj)->anim.localPosY = inner->curveWalker.posY;
+    (obj)->anim.localPosZ = inner->curveWalker.posZ;
     {
         int a0;
         int a1;
-        a0 = getAngle(-inner->pathPointX, -inner->pathPointZ) & 0xffff;
-        a1 = getAngle(inner->pathPointY,
-                      sqrtf(inner->pathPointX * inner->pathPointX + inner->pathPointZ * inner->pathPointZ)) &
+        a0 = getAngle(-inner->curveWalker.tangentX, -inner->curveWalker.tangentZ) & 0xffff;
+        a1 = getAngle(inner->curveWalker.tangentY,
+                      sqrtf(inner->curveWalker.tangentX * inner->curveWalker.tangentX + inner->curveWalker.tangentZ * inner->curveWalker.tangentZ)) &
              0xffff;
         a0 -= (u16)(obj)->anim.rotX;
         if (a0 > 0x8000)
@@ -939,7 +939,7 @@ int DR_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
         switch ((int)animUpdate->eventIds[i])
         {
         case 1:
-            (*gRomCurveInterface)->initCurve((char*)inner + 0x35c, (void*)obj, 500.0f, &local, 0xf);
+            (*gRomCurveInterface)->initCurve(&inner->curveWalker, (void*)obj, 500.0f, &local, 0xf);
             break;
         default:
             break;
@@ -1167,7 +1167,7 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
         inner->baddie.cameraYaw = *(s16*)slot;
         if (((ByteFlags*)&inner->flagsBC0)->b01 != 0)
         {
-            Obj_UpdateRomCurveFollowVelocity(obj, (RomCurveWalker*)((char*)inner + 0x35c), inner->pathFollowSpeed,
+            Obj_UpdateRomCurveFollowVelocity(obj, &inner->curveWalker, inner->pathFollowSpeed,
                                              200.0f, 10.0f, 1);
         }
     }

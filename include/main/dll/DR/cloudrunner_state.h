@@ -3,17 +3,11 @@
 
 #include "global.h"
 #include "main/dll/baddie_state.h"
+#include "main/dll/curve_walker.h"
 
 typedef struct CloudRunnerState {
     BaddieState baddie;
-    u8 pad35C[0x3c4 - 0x35c];
-    f32 posX; /* 0x3c4: copied into the object's anim.localPos */
-    f32 posY;
-    f32 posZ;
-    f32 pathPointX;
-    f32 pathPointY;
-    f32 pathPointZ;
-    u8 pad3DC[0x464 - 0x3dc];
+    RomCurveWalker curveWalker; /* 0x35c: rom-curve follower; its posX/posY/posZ are copied into the object's anim.localPos */
     u8 unk464;
     u8 pad465[0xad5 - 0x465];
     u8 moveFlags;
