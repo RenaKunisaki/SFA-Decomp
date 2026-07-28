@@ -59,16 +59,16 @@ KTRexWork gKTRexEffectSpawnWork;
 void* gKTRexStateHandlersA[12];
 void* gKTRexStateHandlersB[10];
 
-s16 lbl_803DC250[4] = {9, 0x12, 0x12, 0};
-s16 lbl_803DC258[4] = {1, 2, 3, 0};
-s16 lbl_803DC260[4] = {4, 6, 6, 0};
-u16 lbl_803DC268[4] = {1, 4, 0x10, 0};
-u16 lbl_803DC270[4] = {2, 8, 0x20, 0};
-u16 lbl_803DC278[4] = {0x4000, 0x4000, 0x4000, 0};
-u16 lbl_803DC280[4] = {0x8000, 0x8000, 0x8000, 0};
-u16 lbl_803DC288[4] = {0x40, 0x80, 0x100, 0};
-s16 lbl_803DC290[4] = {0x566, 0x567, 0x568, 0x569};
-s16 lbl_803DC298[4] = {0x560, 0x561, 0x562, 0x563};
+s16 gKTRexMoveIdByLaneB05[4] = {9, 0x12, 0x12, 0};
+s16 gKTRexWalkMoveIdByLane[4] = {1, 2, 3, 0};
+s16 gKTRexMoveIdByVariantB04[4] = {4, 6, 6, 0};
+u16 gKTRexWalkPhaseFlagsByLaneEvent4[4] = {1, 4, 0x10, 0};
+u16 gKTRexWalkPhaseFlagsByLaneEvent2[4] = {2, 8, 0x20, 0};
+u16 gKTRexWalkEndPhaseFlagsByLaneAlt[4] = {0x4000, 0x4000, 0x4000, 0};
+u16 gKTRexWalkEndPhaseFlagsByLane[4] = {0x8000, 0x8000, 0x8000, 0};
+u16 gKTRexPhaseFlagsByVariantB04[4] = {0x40, 0x80, 0x100, 0};
+s16 gKTRexLaneEnabledGameBits[4] = {0x566, 0x567, 0x568, 0x569};
+s16 gKTRexLaneModeGameBits[4] = {0x560, 0x561, 0x562, 0x563};
 
 #define CAMMODE_DEFAULT 0x42 /* dll_0042 - default/release camera */
 
@@ -811,7 +811,7 @@ int ktrex_stateHandlerB05(GameObject* obj, KTRexRuntime* runtime)
     f32 z;
     if ((s8)runtime->moveJustStartedA != 0)
     {
-        ObjAnim_SetCurrentMove((int)obj, lbl_803DC250[gKTRexState->laneIndex], 0.0f, 0);
+        ObjAnim_SetCurrentMove((int)obj, gKTRexMoveIdByLaneB05[gKTRexState->laneIndex], 0.0f, 0);
         runtime->curvePhase = 0.005f;
         z = 0.0f;
         runtime->localOffsetZ = z;
@@ -831,13 +831,13 @@ int ktrex_stateHandlerB04(GameObject* obj, KTRexRuntime* runtime)
     u16 mask;
     if ((s8)runtime->moveJustStartedA != 0)
     {
-        ObjAnim_SetCurrentMove((int)obj, lbl_803DC260[gKTRexState->moveVariant], 0.0f, 0);
-        runtime->curvePhase = lbl_8032A51C[gKTRexState->moveVariant];
+        ObjAnim_SetCurrentMove((int)obj, gKTRexMoveIdByVariantB04[gKTRexState->moveVariant], 0.0f, 0);
+        runtime->curvePhase = gKTRexCurvePhaseByVariantB04[gKTRexState->moveVariant];
         z = 0.0f;
         runtime->localOffsetZ = z;
         runtime->localOffsetX = z;
     }
-    mask = lbl_803DC288[gKTRexState->moveVariant];
+    mask = gKTRexPhaseFlagsByVariantB04[gKTRexState->moveVariant];
     if ((gKTRexRuntime->handlerState & 1) != 0)
     {
         gKTRexRuntime->handlerState &= ~1;
@@ -895,8 +895,8 @@ int ktrex_stateHandlerB02(GameObject* obj, KTRexRuntime* runtime)
     if ((s8)runtime->moveJustStartedA != 0)
     {
         lane = gKTRexState->laneIndex * 2;
-        ObjAnim_SetCurrentMove((int)obj, lbl_8032A510[lane + dir], 0.0f, 0);
-        runtime->curvePhase = lbl_8032A528[gKTRexState->laneIndex];
+        ObjAnim_SetCurrentMove((int)obj, gKTRexTurnMoveIdByLaneAndDir[lane + dir], 0.0f, 0);
+        runtime->curvePhase = gKTRexTurnCurvePhaseByLane[gKTRexState->laneIndex];
         gKTRexState->homeYaw = (obj)->anim.rotX;
     }
     if ((gKTRexRuntime->handlerState & 4) != 0)
@@ -954,18 +954,18 @@ int ktrex_stateHandlerB01(GameObject* obj, KTRexRuntime* runtime)
     f32 dz;
     if ((s8)runtime->moveJustStartedA != 0)
     {
-        ObjAnim_SetCurrentMove((int)obj, lbl_803DC258[gKTRexState->laneIndex], 0.0f, 0);
+        ObjAnim_SetCurrentMove((int)obj, gKTRexWalkMoveIdByLane[gKTRexState->laneIndex], 0.0f, 0);
         z = 0.0f;
         runtime->localOffsetZ = z;
         runtime->localOffsetX = z;
     }
-    mask = lbl_803DC268[gKTRexState->laneIndex];
+    mask = gKTRexWalkPhaseFlagsByLaneEvent4[gKTRexState->laneIndex];
     if ((gKTRexRuntime->handlerState & 4) != 0)
     {
         gKTRexRuntime->handlerState &= ~4;
         *(int*)&gKTRexState->phaseFlags |= mask;
     }
-    mask = lbl_803DC270[gKTRexState->laneIndex];
+    mask = gKTRexWalkPhaseFlagsByLaneEvent2[gKTRexState->laneIndex];
     if ((gKTRexRuntime->handlerState & 2) != 0)
     {
         gKTRexRuntime->handlerState &= ~2;
@@ -973,11 +973,11 @@ int ktrex_stateHandlerB01(GameObject* obj, KTRexRuntime* runtime)
     }
     if (gKTRexState->laneAltSelect != 0)
     {
-        mask = lbl_803DC278[gKTRexState->laneIndex];
+        mask = gKTRexWalkEndPhaseFlagsByLaneAlt[gKTRexState->laneIndex];
     }
     else
     {
-        mask = lbl_803DC280[gKTRexState->laneIndex];
+        mask = gKTRexWalkEndPhaseFlagsByLane[gKTRexState->laneIndex];
     }
     maskI = mask;
     if ((gKTRexRuntime->handlerState & 1) != 0)
@@ -1605,7 +1605,7 @@ void ktrex_update(GameObject* obj)
     characterDoEyeAnims(obj, (char*)gKTRexRuntime + 0x3ac);
     zm[0] = 0;
     zc[0] = zm[0];
-    bitA = lbl_803DC290;
+    bitA = gKTRexLaneEnabledGameBits;
     for (; zc[0] < 4; zc[0]++)
     {
         if (mainGetBit(*bitA) != 0)
@@ -1638,7 +1638,7 @@ void ktrex_update(GameObject* obj)
     }
     zm[0] = 0;
     zc[0] = zm[0];
-    bitB = lbl_803DC298;
+    bitB = gKTRexLaneModeGameBits;
     flags = gKTRexState->currentLaneMask;
     for (; zc[0] < 4; zc[0]++)
     {
@@ -1664,7 +1664,7 @@ void ktrex_update(GameObject* obj)
 
 void ktrex_init(GameObject* obj, char* arg, int flag)
 {
-    int* base = (int*)lbl_8032A510;
+    int* base = (int*)gKTRexTurnMoveIdByLaneAndDir;
     int* pA;
     int iv;
     int* pB;
@@ -1792,9 +1792,9 @@ void ktrex_initialiseStateHandlerTables(void)
     gKTRexStateHandlersA[11] = ktrex_stateHandlerA11;
 }
 
-s16 lbl_8032A510[6] = {8, 14, 16, 17, 16, 17};
-f32 lbl_8032A51C[3] = {0.006f, 0.003f, 0.003f};
-f32 lbl_8032A528[3] = {0.0055f, 0.012f, 0.012f};
+s16 gKTRexTurnMoveIdByLaneAndDir[6] = {8, 14, 16, 17, 16, 17};
+f32 gKTRexCurvePhaseByVariantB04[3] = {0.006f, 0.003f, 0.003f};
+f32 gKTRexTurnCurvePhaseByLane[3] = {0.0055f, 0.012f, 0.012f};
 
 f32 gKTRexLaneSpeedMin[3] = {0.0f, 0.025f, 0.025f};
 

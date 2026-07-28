@@ -66,7 +66,7 @@ typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0,
 extern GameTextDrawFunc gameTextDrawFunc;
 
 extern u8 gGameTextBase[];
-extern u8 lbl_803399A0[];
+extern u8 sGameTextFallbackBufSlots[];
 extern int gGameTextFallbackBuf;
 extern u8* gGameTextLastEntry;
 extern int gCurTextBuffer;
@@ -74,7 +74,7 @@ extern int gGameTextBufferIndex;
 extern const f32 gGameTextFadeLimit;
 extern void* curGameTextDir;
 extern char gGameTextFontData[];
-extern char lbl_803DB3D4[5];
+extern char sGameTextBlankFormat[5];
 
 void* gameTextGetPhrase(int textId, int phraseIndex)
 {
@@ -89,10 +89,10 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
         {
             gGameTextBufferIndex = 0;
         }
-        gGameTextLastEntry = lbl_803399C0 + gGameTextBufferIndex * 0xc;
+        gGameTextLastEntry = sGameTextFallbackDefs + gGameTextBufferIndex * 0xc;
         gCurTextBuffer = *(int*)*(int**)(gGameTextLastEntry + 8);
         *(u16*)gGameTextLastEntry = 0xffff;
-        gGameTextFallbackBuf = (int)(lbl_803399A0 + gGameTextBufferIndex * 4);
+        gGameTextFallbackBuf = (int)(sGameTextFallbackBufSlots + gGameTextBufferIndex * 4);
         switch (gameTextFonts->mode)
         {
         case 0:
@@ -119,10 +119,10 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
         {
             gGameTextBufferIndex = 0;
         }
-        gGameTextLastEntry = lbl_803399C0 + gGameTextBufferIndex * 0xc;
+        gGameTextLastEntry = sGameTextFallbackDefs + gGameTextBufferIndex * 0xc;
         gCurTextBuffer = *(int*)*(int**)(gGameTextLastEntry + 8);
         *(u16*)gGameTextLastEntry = 0xffff;
-        gGameTextFallbackBuf = (int)(lbl_803399A0 + gGameTextBufferIndex * 4);
+        gGameTextFallbackBuf = (int)(sGameTextFallbackBufSlots + gGameTextBufferIndex * 4);
         sprintf((char*)gCurTextBuffer, strings + 0xefc, textId,
                 sMapDirectoryNameTable[(int)curGameTextDir]);
         return gGameTextLastEntry;
@@ -135,10 +135,10 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
         {
             gGameTextBufferIndex = 0;
         }
-        gGameTextLastEntry = lbl_803399C0 + gGameTextBufferIndex * 0xc;
+        gGameTextLastEntry = sGameTextFallbackDefs + gGameTextBufferIndex * 0xc;
         gCurTextBuffer = *(int*)*(int**)(gGameTextLastEntry + 8);
         *(u16*)gGameTextLastEntry = 0xffff;
-        gGameTextFallbackBuf = (int)(lbl_803399A0 + gGameTextBufferIndex * 4);
+        gGameTextFallbackBuf = (int)(sGameTextFallbackBufSlots + gGameTextBufferIndex * 4);
         sprintf((char*)gCurTextBuffer, strings + 0xf10, textId, phraseIndex);
         return gGameTextLastEntry;
     }
@@ -160,10 +160,10 @@ void* gameTextGetStr(int textId)
         {
             gGameTextBufferIndex = 0;
         }
-        gGameTextLastEntry = lbl_803399C0 + gGameTextBufferIndex * 0xc;
+        gGameTextLastEntry = sGameTextFallbackDefs + gGameTextBufferIndex * 0xc;
         gCurTextBuffer = *(int*)*(int**)(gGameTextLastEntry + 8);
         *(u16*)gGameTextLastEntry = 0xffff;
-        gGameTextFallbackBuf = (int)(lbl_803399A0 + gGameTextBufferIndex * 4);
+        gGameTextFallbackBuf = (int)(sGameTextFallbackBufSlots + gGameTextBufferIndex * 4);
         switch (gameTextFonts->mode)
         {
         case 0:
@@ -280,7 +280,7 @@ void* gameTextGet(int textId)
     *(u16*)gGameTextLastEntry = 0xffff;
     p = gameTextBase + gGameTextBufferIndex * 4;
     gGameTextFallbackBuf = (int)(p + 0x20);
-    sprintf((char*)gCurTextBuffer, lbl_803DB3D4, textId, sMapDirectoryNameTable[(int)curGameTextDir]);
+    sprintf((char*)gCurTextBuffer, sGameTextBlankFormat, textId, sMapDirectoryNameTable[(int)curGameTextDir]);
     *(u16*)gGameTextLastEntry = textId;
     *(f32*)gGameTextFallbackBuf = lbl_803DE704;
     return gGameTextLastEntry;
@@ -343,10 +343,10 @@ void gameTextSetColor(u8 r, u8 g, u8 b, u8 a)
 {
     if (gameTextDrawFunc != NULL)
     {
-        lbl_803DC9A7 = r;
-        lbl_803DC9A6 = g;
-        lbl_803DC9A5 = b;
-        lbl_803DC9A4 = a;
+        gGameTextColorR = r;
+        gGameTextColorG = g;
+        gGameTextColorB = b;
+        gGameTextColorA = a;
     }
     else
     {

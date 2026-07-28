@@ -59,12 +59,12 @@
 #include "string.h"
 #include "main/dll/baddie_control_interface.h"
 
-extern int lbl_803296FC[];
-extern f32 lbl_8032970C[];
-extern int lbl_8032971C[];
-extern f32 lbl_8032972C[];
-extern int lbl_8032973C[];
-extern f32 lbl_8032974C[];
+extern int gDbStealerwormRunToAvoidGroups[];
+extern f32 gDbStealerwormRunToAvoidWeights[];
+extern int gDbStealerwormWaitAvoidGroups[];
+extern f32 gDbStealerwormWaitAvoidWeights[];
+extern int gDbStealerwormKillAvoidGroups[];
+extern f32 gDbStealerwormKillAvoidWeights[];
 
 typedef struct DbstealerwormPlacement
 {
@@ -131,7 +131,7 @@ STATIC_ASSERT(offsetof(DbEggState, mode) == 0x118);
 STATIC_ASSERT(sizeof(DfpSeqPointState) == 0x10);
 
 STATIC_ASSERT(sizeof(DrakorEnergyState) == 0xC);
-extern u32 lbl_80329514[];
+extern u32 gDbStealerwormScriptTable[];
 
 int dbstealerworm_turnToFaceObject(GameObject* obj, GameObject* otherObj, f32 yawOffset, f32 speed, f32 unused, f32 range);
 int dbstealerworm_turnToFaceObjectVertical(GameObject* obj, GameObject* otherObj, f32 yawOffset, f32 speed, f32 unused, f32 range);
@@ -170,7 +170,7 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
                 Obj_FreeObject(obj);
                 return 0;
             }
-            entry = (char*)&lbl_80329514[((DbstealerwormPlacement*)data)->cfgTableIndex * 2];
+            entry = (char*)&gDbStealerwormScriptTable[((DbstealerwormPlacement*)data)->cfgTableIndex * 2];
             count = *(s16*)(entry + 4);
             for (; count != 0;)
             {
@@ -299,7 +299,7 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
             range = 200.0f;
             i = 3;
             found = 0;
-            p = &lbl_803296FC[3];
+            p = &gDbStealerwormRunToAvoidGroups[3];
             for (; (p--, --i) >= 0;)
             {
                 nearest = ObjGroup_FindNearestObjectForObject(*p, obj, &range);
@@ -361,10 +361,10 @@ DbWormEffectSpawnWork gDbWormEffectSpawnWork;
 int gDBStealerWormStateHandlersB[7];
 int gDBStealerWormStateHandlersA[17];
 
-extern int lbl_80329634[];
-extern int lbl_80329640[];
+extern int gDbStealerwormDeathFootstepSfx[];
+extern int gDbStealerwormBurrowFootstepSfx[];
 extern int gDbStealerwormSfxIds[];
-extern u32 lbl_803293B8[];
+extern u32 gDbStealerwormScriptStealEggThrowToWorm[];
 
 int dbstealerworm_stateHandlerB04(GameObject* obj, BaddieState* baddie)
 {
@@ -490,7 +490,7 @@ int dbstealerworm_stateHandlerA0F(GameObject* obj, int baddie, f32 t)
     dbstealerworm_turnToFaceObject(obj, ((BaddieState*)baddie)->targetObj, 1.0f, frac, 0.2f, t);
     if (((u32)sub->flags44 >> 5 & 1) != 0)
     {
-        dbstealerworm_avoidObjects(obj, lbl_8032973C, lbl_8032974C, 4, frac);
+        dbstealerworm_avoidObjects(obj, gDbStealerwormKillAvoidGroups, gDbStealerwormKillAvoidWeights, 4, frac);
     }
     d = Vec_xzDistance(&obj->anim.worldPosX,
                        &((GameObject*)((BaddieState*)baddie)->targetObj)->anim.worldPosX);
@@ -655,7 +655,7 @@ int dbstealerworm_stateHandlerA0D(GameObject* obj, BaddieState* baddie)
 }
 int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
 {
-    char* tbl = (char*)lbl_803293B8;
+    char* tbl = (char*)gDbStealerwormScriptStealEggThrowToWorm;
     GroundBaddieState* blob = obj->extra;
     DbStealerwormControl* sub = (DbStealerwormControl*)blob->control;
     int c30 = sub->objGroup;
@@ -981,7 +981,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     dbstealerworm_turnToFaceObject(obj, baddie->targetObj, 200.0f, frac, 0.2f, t);
     if (((u32)sub->flags44 >> 5 & 1) != 0)
     {
-        dbstealerworm_avoidObjects(obj, lbl_8032971C, lbl_8032972C, 4, frac);
+        dbstealerworm_avoidObjects(obj, gDbStealerwormWaitAvoidGroups, gDbStealerwormWaitAvoidWeights, 4, frac);
     }
     player = Obj_GetPlayerObject();
     d = Obj_GetYawDeltaToObject(obj, player, &yawf);
@@ -1279,7 +1279,7 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
     }
     if (((u32)sub->flags44 >> 5 & 1) != 0)
     {
-        dbstealerworm_avoidObjects(obj, lbl_803296FC, lbl_8032970C, 4, frac);
+        dbstealerworm_avoidObjects(obj, gDbStealerwormRunToAvoidGroups, gDbStealerwormRunToAvoidWeights, 4, frac);
     }
     else if (*(void**)&sub->linkedObj == NULL)
     {
@@ -1478,7 +1478,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
     }
     if (((u32)sub->flags44 >> 5 & 1) != 0)
     {
-        dbstealerworm_avoidObjects(obj, lbl_803296FC, lbl_8032970C, 4, frac);
+        dbstealerworm_avoidObjects(obj, gDbStealerwormRunToAvoidGroups, gDbStealerwormRunToAvoidWeights, 4, frac);
     }
     else if (*(void**)&sub->linkedObj == NULL)
     {
@@ -1636,8 +1636,8 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
         }
         sub->configFlags |= ((DbstealerwormPlacement*)data)->configFlags;
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 0, 2, lbl_80329634);
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, lbl_80329640);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 0, 2, gDbStealerwormDeathFootstepSfx);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, gDbStealerwormBurrowFootstepSfx);
     return 0;
 }
 
@@ -1846,7 +1846,7 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
         }
         sub_40c->msgAdvance = 1;
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, lbl_80329640);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, gDbStealerwormBurrowFootstepSfx);
     return 0;
 }
 
@@ -1890,7 +1890,7 @@ int dbstealerworm_stateHandlerA00(GameObject* obj, BaddieState* baddie)
         sub_40c->flags14 = (u8)(sub_40c->flags14 | DBWORM_FLAG14_FX_DUST);
     }
 
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, lbl_80329640);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, gDbStealerwormBurrowFootstepSfx);
     return 0;
 }
 
@@ -2166,7 +2166,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
         }
         if (sub->countdown > sub->nextSfxTime && dist < 400.0f)
         {
-            Sfx_PlayFromObject((int)obj, lbl_80329640[1]);
+            Sfx_PlayFromObject((int)obj, gDbStealerwormBurrowFootstepSfx[1]);
             sub->nextSfxTime = sub->nextSfxTime + (f32)(int)randomGetRange(0x32, 0xfa);
         }
         sub->countdown += timeDelta;
@@ -2321,7 +2321,7 @@ void dbstealerworm_update(u8* objp)
 
     obj = (GameObject*)objp;
     st = &gDbWormEffectSpawnWork;
-    tbl = (char*)lbl_803293B8;
+    tbl = (char*)gDbStealerwormScriptStealEggThrowToWorm;
     blob = *(int*)&obj->extra;
     data = (int)obj->anim.placementData;
     sub = *(int*)&((GroundBaddieState*)blob)->control;
@@ -2450,7 +2450,7 @@ void dbstealerworm_init(GameObject* obj, u8* def, int flag)
     p40c = *(int**)&((GroundBaddieState*)sub)->control;
     memset(p40c, 0, sizeof(DbStealerwormControl));
     ((DbStealerwormControl*)p40c)->unk08 = 20.0f;
-    ((DbStealerwormControl*)p40c)->cfg = (int)&lbl_80329514[((s16) * (s16*)(def + 0x24)) * 2];
+    ((DbStealerwormControl*)p40c)->cfg = (int)&gDbStealerwormScriptTable[((s16) * (s16*)(def + 0x24)) * 2];
     randomValue = randomGetRange(0xa, 0x12c);
     ((DbStealerwormControl*)p40c)->countdown = (f32)(s32)randomValue;
     ((DbStealerwormFlags44*)&((DbStealerwormControl*)p40c)->flags44)->flag20 = def[0x2b] & 1;
@@ -2507,25 +2507,25 @@ void DBstealerwo_setFuncPtrs_80203c78(void)
     gDBStealerWormStateHandlersB[6] = (int)dbstealerworm_stateHandlerB06;
 }
 
-u32 lbl_803293B8[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
+u32 gDbStealerwormScriptStealEggThrowToWorm[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
                         0x00000009, 0x00000000, 0x00000024, 0x00000008, 0x00000000, 0x00000003,
                         0x0000000a, 0x00000000, 0x00000003, 0x00000001, 0x00000000, 0x00000000};
-u32 lbl_80329400[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
+u32 gDbStealerwormScriptStealEggThrowToGroup30[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
                         0x00000009, 0x00000000, 0x00000024, 0x00000008, 0x00000000, 0x0000001e,
                         0x0000000a, 0x00000000, 0x0000001e, 0x00000001, 0x00000000, 0x00000000};
-u32 lbl_80329448[15] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
+u32 gDbStealerwormScriptStealEggCarryToGroup30[15] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
                         0x00000009, 0x00000000, 0x00000024, 0x00000007, 0x00000000, 0x0000001e,
                         0x00000001, 0x00000000, 0x00000000};
-u32 lbl_80329484[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
+u32 gDbStealerwormScriptStealEggThrowToGroup0[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
                         0x00000009, 0x00000000, 0x00000024, 0x00000008, 0x00000000, 0x00000000,
                         0x0000000a, 0x00000000, 0x00000000, 0x00000001, 0x00000000, 0x00000000};
-u32 lbl_803294CC[9] = {0x00000000, 0x00000000, 0x00000000, 0x0000000b, 0x00000000, 0x00000024,
+u32 gDbStealerwormScriptWaitForEgg[9] = {0x00000000, 0x00000000, 0x00000000, 0x0000000b, 0x00000000, 0x00000024,
                        0x00000001, 0x00000000, 0x00000000};
-u32 lbl_803294F0[9] = {0x00000000, 0x00000000, 0x00000000, 0x0000000f, 0x00000000, 0x00000000,
+u32 gDbStealerwormScriptKillTarget[9] = {0x00000000, 0x00000000, 0x00000000, 0x0000000f, 0x00000000, 0x00000000,
                        0x00000001, 0x00000000, 0x00000000};
-u32 lbl_80329514[72] = {(u32)lbl_803293B8, 0x00060000, (u32)lbl_80329400, 0x00060000,
-                        (u32)lbl_80329448, 0x00050000, (u32)lbl_80329484, 0x00060000,
-                        (u32)lbl_803294CC, 0x00030000, (u32)lbl_803294F0, 0x00030000,
+u32 gDbStealerwormScriptTable[72] = {(u32)gDbStealerwormScriptStealEggThrowToWorm, 0x00060000, (u32)gDbStealerwormScriptStealEggThrowToGroup30, 0x00060000,
+                        (u32)gDbStealerwormScriptStealEggCarryToGroup30, 0x00050000, (u32)gDbStealerwormScriptStealEggThrowToGroup0, 0x00060000,
+                        (u32)gDbStealerwormScriptWaitForEgg, 0x00030000, (u32)gDbStealerwormScriptKillTarget, 0x00030000,
                         0x706f704f, 0x75744f66, 0x47726f75, 0x6e640062,
                         0x75727374, 0x496e746f, 0x47726f75, 0x6e006269,
                         0x74654174, 0x7461636b, 0x20202020, 0x00737461,
@@ -2541,20 +2541,20 @@ u32 lbl_80329514[72] = {(u32)lbl_803293B8, 0x00060000, (u32)lbl_80329400, 0x0006
                         0x6f770074, 0x72795f74, 0x6f5f6361, 0x74636820,
                         0x20006361, 0x7463685f, 0x4f626a65, 0x63742020,
                         0x004b696c, 0x6c5f4f62, 0x6a656374, 0x20202000};
-int lbl_80329634[3] = {0x000001ed, 0x000001ed, 0x000001ec};
-int lbl_80329640[4] = {0x00000000, 0x000001f0, 0x000001f1, 0x000001f1};
+int gDbStealerwormDeathFootstepSfx[3] = {0x000001ed, 0x000001ed, 0x000001ec};
+int gDbStealerwormBurrowFootstepSfx[4] = {0x00000000, 0x000001f0, 0x000001f1, 0x000001f1};
 
 int gDbStealerwormSfxIds[] = {
     498, 498, 498, 149, 149, 5, 5, 5, 5, 5, 5, 5, 5, 5,  5,  5,  5,  5,  5,  2,  5,      5,
     5,   5,   5,   5,   5,   5, 5, 5, 5, 5, 5, 5, 5, -1, -1, -1, -1, -1, -1, -1, -65536,
 };
 
-int lbl_803296FC[4] = {0, 1, 3, 10};
-f32 lbl_8032970C[4] = {2.0f, 4.0f, 1.5f, 3.0f};
-int lbl_8032971C[4] = {3, 0, 1, 10};
-f32 lbl_8032972C[4] = {8.0f, 3.0f, 2.0f, 4.0f};
-int lbl_8032973C[4] = {3, 1, 0, 10};
-f32 lbl_8032974C[10] = {2.0f, 0.8f, 0.4f, 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+int gDbStealerwormRunToAvoidGroups[4] = {0, 1, 3, 10};
+f32 gDbStealerwormRunToAvoidWeights[4] = {2.0f, 4.0f, 1.5f, 3.0f};
+int gDbStealerwormWaitAvoidGroups[4] = {3, 0, 1, 10};
+f32 gDbStealerwormWaitAvoidWeights[4] = {8.0f, 3.0f, 2.0f, 4.0f};
+int gDbStealerwormKillAvoidGroups[4] = {3, 1, 0, 10};
+f32 gDbStealerwormKillAvoidWeights[10] = {2.0f, 0.8f, 0.4f, 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 u32 gDBstealerwormObjDescriptor[39] = {0x00000000,
                                        0x00000000,
                                        0x00000000,

@@ -33,35 +33,35 @@
 
 struct JapaneseDiscStatusResource;
 struct EnglishDiscStatusResource;
-extern struct JapaneseDiscStatusResource lbl_802C981C;
+extern struct JapaneseDiscStatusResource sJpDiscStatusMessageTable;
 extern struct EnglishDiscStatusResource sDiscStatusMessageTable;
 extern char sDiscReadingMessage[];
 extern char sDiscInsertPromptLine[];
 extern char sDiscInsertGameDiscLine[];
 
-void* lbl_803DB378 = (void*)-1;
-char lbl_803DB37C[4] = {0};
-char lbl_803DB380[4] = {0};
-char lbl_803DB384[4] = {0};
-char lbl_803DB388[4] = {0};
-char lbl_803DB38C[4] = {0};
-char lbl_803DB390[4] = {0};
-char lbl_803DB394[4] = {0};
-char lbl_803DB398[4] = {0};
-char lbl_803DB39C[4] = "\xE3\x80\x80";
-char* lbl_803DB3A0[1] = {(char*)&lbl_802C981C};
-char lbl_803DB3A4[4] = {0};
-char lbl_803DB3A8[4] = {0};
-char* lbl_803DB3AC[1] = {sDiscReadingMessage};
-char lbl_803DB3B0[4] = {0};
-char* lbl_803DB3B4[2] = {sDiscInsertPromptLine, sDiscInsertGameDiscLine};
-char lbl_803DB3BC[4] = {0};
-char* lbl_803DB3C0[1] = {(char*)&sDiscStatusMessageTable};
-int lbl_803DB3C4 = 0x800;
+void* gGameTextStringStore = (void*)-1;
+char sJpDiscErrorTopSpacerLine[4] = {0};
+char sJpDiscErrorBottomSpacerLine[4] = {0};
+char sJpDiscReadErrorTopSpacerLine[4] = {0};
+char sJpDiscReadingTopSpacerLine[4] = {0};
+char sJpDiscCoverOpenTopSpacerLine[4] = {0};
+char sJpDiscInsertTopSpacerLine[4] = {0};
+char sJpDiscInsertBottomSpacerLine[4] = {0};
+char sJpWrongDiscTopSpacerLine[4] = {0};
+char sJpWrongDiscMiddleSpacerLine[4] = "\xE3\x80\x80";
+char* sJpDiscLoadingMessageLines[1] = {(char*)&sJpDiscStatusMessageTable};
+char sDiscErrorSpacerLine[4] = {0};
+char sDiscReadErrorSpacerLine[4] = {0};
+char* sDiscReadingMessageLines[1] = {sDiscReadingMessage};
+char sDiscCoverOpenSpacerLine[4] = {0};
+char* sDiscInsertMessageLines[2] = {sDiscInsertPromptLine, sDiscInsertGameDiscLine};
+char sWrongDiscSpacerLine[4] = {0};
+char* sDiscLoadingMessageLines[1] = {(char*)&sDiscStatusMessageTable};
+int gGameTextFontTexRowPitch = 0x800;
 GXColor gGameTextClearColor = {0, 0, 0, 0xC0};
-int lbl_803DB3CC = 3;
-f32 lbl_803DB3D0 = 0.4f;
-char lbl_803DB3D4[] = "    ";
+int gGameTextFlagGlyphRaise = 3;
+f32 gGameTextRevealSpeed = 0.4f;
+char sGameTextBlankFormat[] = "    ";
 char lbl_803DB3DC[4] = {0};
 int gGameTextSavedDir = -1;
 char lbl_803DB3E4[4] = {0};
@@ -269,7 +269,7 @@ extern TextFont* gameTextFonts;
 typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
 extern GameTextDrawFunc gameTextDrawFunc;
 extern LanguageName sLanguageNameTable[];
-extern u8 lbl_802C8680[];
+extern u8 gGameTextFontMetrics[];
 extern const f32 lbl_803DE70C;
 extern const f32 lbl_803DE710;
 extern const f32 lbl_803DE714;
@@ -277,10 +277,10 @@ extern const f32 lbl_803DE718;
 extern int gGameTextShadowOffsetX;
 extern int gGameTextShadowOffsetY;
 extern int gameTextCharset;
-extern CtrlCharEntry lbl_802C86F0[];
+extern CtrlCharEntry gGameTextCtrlCodeArgCounts[];
 
 extern u8 gGameTextBase[];
-extern u32 lbl_80339C40[];
+extern u32 sSubtitleCtrlCmdScratch[];
 
 void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang);
 void translateToDinoLanguage(u8* str);
@@ -396,111 +396,111 @@ char gGameTextFontData[1360] = {
 
 /* Japanese disc-status message lines (UTF-8 encoded). */
 /* "An error has occurred." */
-char lbl_802C9490[0x24] = "\xe3\x82\xa8\xe3\x83\xa9\xe3\x83\xbc\xe3\x81\x8c\xe7\x99\xba\xe7\x94\x9f\xe3\x81\x97\xe3\x81"
+char sJpDiscErrorOccurredLine[0x24] = "\xe3\x82\xa8\xe3\x83\xa9\xe3\x83\xbc\xe3\x81\x8c\xe7\x99\xba\xe7\x94\x9f\xe3\x81\x97\xe3\x81"
                           "\xbe\xe3\x81\x97\xe3\x81\x9f\xe3\x80\x82\x20";
 /* "(press) the unit's POWER Button" */
-char lbl_802C94B4[0x20] = "\xe6\x9c\xac\xe4\xbd\x93\xe3\x81\xae\xe3\x83\x91\xe3\x83\xaf\xe3\x83\xbc\xe3\x83\x9c\xe3\x82"
+char sJpDiscErrorPowerButtonLine[0x20] = "\xe6\x9c\xac\xe4\xbd\x93\xe3\x81\xae\xe3\x83\x91\xe3\x83\xaf\xe3\x83\xbc\xe3\x83\x9c\xe3\x82"
                           "\xbf\xe3\x83\xb3\xe3\x82\x92";
 /* "to turn the power OFF, and" */
-char lbl_802C94D4[0x1c] =
+char sJpDiscErrorPowerOffLine[0x1c] =
     "\xe6\x8a\xbc\xe3\x81\x97\xe3\x81\xa6\xe9\x9b\xbb\xe6\xba\x90\xe3\x82\x92\x4f\x46\x46\xe3\x81\xab\xe3\x81\x97";
 /* "(refer to) the unit's Instruction Booklet" */
-char lbl_802C94F0[0x1c] =
+char sJpDiscErrorInstructionBookletLine[0x1c] =
     "\xe6\x9c\xac\xe4\xbd\x93\xe3\x81\xae\xe5\x8f\x96\xe6\x89\xb1\xe8\xaa\xac\xe6\x98\x8e\xe6\x9b\xb8\xe3\x81\xae";
 /* "and follow its instructions." */
-char lbl_802C950C[0x20] = "\xe6\x8c\x87\xe7\xa4\xba\xe3\x81\xab\xe5\xbe\x93\xe3\x81\xa3\xe3\x81\xa6\xe4\xb8\x8b\xe3\x81"
+char sJpDiscErrorFollowInstructionsLine[0x20] = "\xe6\x8c\x87\xe7\xa4\xba\xe3\x81\xab\xe5\xbe\x93\xe3\x81\xa3\xe3\x81\xa6\xe4\xb8\x8b\xe3\x81"
                           "\x95\xe3\x81\x84\xe3\x80\x82";
 
-char* lbl_802C952C[] = {
-    lbl_803DB37C, lbl_802C9490, lbl_802C94B4, lbl_802C94D4, lbl_802C94F0, lbl_802C950C, lbl_803DB380,
+char* sJpDiscErrorOccurredMessageLines[] = {
+    sJpDiscErrorTopSpacerLine, sJpDiscErrorOccurredLine, sJpDiscErrorPowerButtonLine, sJpDiscErrorPowerOffLine, sJpDiscErrorInstructionBookletLine, sJpDiscErrorFollowInstructionsLine, sJpDiscErrorBottomSpacerLine,
 };
 
 /* "The Game Disc could not be read." */
-char lbl_802C9548[0x2c] = "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x82\x92\xe8\xaa\xad\xe3\x82\x81\xe3\x81"
+char sJpDiscReadErrorLine[0x2c] = "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x82\x92\xe8\xaa\xad\xe3\x82\x81\xe3\x81"
                           "\xbe\xe3\x81\x9b\xe3\x82\x93\xe3\x81\xa7\xe3\x81\x97\xe3\x81\x9f\xe3\x80\x82";
 /* "For details, (see) the unit's Instruction Booklet" */
-char lbl_802C9574[0x2c] = "\xe3\x81\x8f\xe3\x82\x8f\xe3\x81\x97\xe3\x81\x8f\xe3\x81\xaf\xe6\x9c\xac\xe4\xbd\x93\xe3\x81"
+char sJpDiscReadErrorInstructionBookletLine[0x2c] = "\xe3\x81\x8f\xe3\x82\x8f\xe3\x81\x97\xe3\x81\x8f\xe3\x81\xaf\xe6\x9c\xac\xe4\xbd\x93\xe3\x81"
                           "\xae\xe5\x8f\x96\xe6\x89\xb1\xe8\xaa\xac\xe6\x98\x8e\xe6\x9b\xb8\xe3\x82\x92";
 /* "please read it." */
-char lbl_802C95A0[0x18] = "\xe3\x81\x8a\xe8\xaa\xad\xe3\x81\xbf\xe4\xb8\x8b\xe3\x81\x95\xe3\x81\x84\xe3\x80\x82";
+char sJpDiscReadErrorPleaseReadLine[0x18] = "\xe3\x81\x8a\xe8\xaa\xad\xe3\x81\xbf\xe4\xb8\x8b\xe3\x81\x95\xe3\x81\x84\xe3\x80\x82";
 
-char* lbl_802C95B8[] = {
-    lbl_803DB384,
-    lbl_802C9548,
-    lbl_802C9574,
-    lbl_802C95A0,
+char* sJpDiscReadErrorMessageLines[] = {
+    sJpDiscReadErrorTopSpacerLine,
+    sJpDiscReadErrorLine,
+    sJpDiscReadErrorInstructionBookletLine,
+    sJpDiscReadErrorPleaseReadLine,
 };
 
 /* "The disc" */
-char lbl_802C95C8[0x10] = "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x82\x92";
+char sJpDiscReadingDiscLine[0x10] = "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x82\x92";
 /* "is being read." */
-char lbl_802C95D8[0x1c] =
+char sJpDiscReadingInProgressLine[0x1c] =
     "\xe8\xaa\xad\xe3\x81\xbf\xe8\xbe\xbc\xe3\x82\x93\xe3\x81\xa7\xe3\x81\x84\xe3\x81\xbe\xe3\x81\x99\xe3\x80\x82";
 
-char* lbl_802C95F4[] = {
-    lbl_803DB388,
-    lbl_802C95C8,
-    lbl_802C95D8,
+char* sJpDiscReadingMessageLines[] = {
+    sJpDiscReadingTopSpacerLine,
+    sJpDiscReadingDiscLine,
+    sJpDiscReadingInProgressLine,
 };
 
 /* "The Disc Cover" */
-char lbl_802C9600[0x1c] =
+char sJpDiscCoverLine[0x1c] =
     "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x82\xab\xe3\x83\x90\xe3\x83\xbc\xe3\x81\x8c";
 /* "is open." */
-char lbl_802C961C[0x18] = "\xe9\x96\x8b\xe3\x81\x84\xe3\x81\xa6\xe3\x81\x84\xe3\x81\xbe\xe3\x81\x99\xe3\x80\x82";
+char sJpDiscCoverIsOpenLine[0x18] = "\xe9\x96\x8b\xe3\x81\x84\xe3\x81\xa6\xe3\x81\x84\xe3\x81\xbe\xe3\x81\x99\xe3\x80\x82";
 /* "To continue the game," */
-char lbl_802C9634[0x20] = "\xe3\x82\xb2\xe3\x83\xbc\xe3\x83\xa0\xe3\x82\x92\xe7\xb6\x9a\xe3\x81\x91\xe3\x82\x8b\xe5\xa0"
+char sJpDiscCoverContinuePromptLine[0x20] = "\xe3\x82\xb2\xe3\x83\xbc\xe3\x83\xa0\xe3\x82\x92\xe7\xb6\x9a\xe3\x81\x91\xe3\x82\x8b\xe5\xa0"
                           "\xb4\xe5\x90\x88\xe3\x81\xaf";
 /* "the Disc Cover" */
-char lbl_802C9654[0x1c] =
+char sJpDiscCoverCloseTargetLine[0x1c] =
     "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x82\xab\xe3\x83\x90\xe3\x83\xbc\xe3\x82\x92";
 /* "please close." */
-char lbl_802C9670[0x18] = "\xe9\x96\x89\xe3\x82\x81\xe3\x81\xa6\xe4\xb8\x8b\xe3\x81\x95\xe3\x81\x84\xe3\x80\x82";
+char sJpDiscCoverClosePromptLine[0x18] = "\xe9\x96\x89\xe3\x82\x81\xe3\x81\xa6\xe4\xb8\x8b\xe3\x81\x95\xe3\x81\x84\xe3\x80\x82";
 
-char* lbl_802C9688[] = {
-    lbl_803DB38C, lbl_802C9600, lbl_802C961C, lbl_802C9634, lbl_802C9654, lbl_802C9670,
+char* sJpDiscCoverOpenMessageLines[] = {
+    sJpDiscCoverOpenTopSpacerLine, sJpDiscCoverLine, sJpDiscCoverIsOpenLine, sJpDiscCoverContinuePromptLine, sJpDiscCoverCloseTargetLine, sJpDiscCoverClosePromptLine,
 };
 
 /* ""Star Fox" */
-char lbl_802C96A0[0x1c] =
+char sJpDiscInsertGameNameLine[0x1c] =
     "\xe3\x80\x8c\xe3\x82\xb9\xe3\x82\xbf\xe3\x83\xbc\xe3\x83\x95\xe3\x82\xa9\xe3\x83\x83\xe3\x82\xaf\xe3\x82\xb9";
 /* "Adventure"'s" */
-char lbl_802C96BC[0x1c] =
+char sJpDiscInsertGameSubtitleLine[0x1c] =
     "\xe3\x82\xa2\xe3\x83\x89\xe3\x83\x99\xe3\x83\xb3\xe3\x83\x81\xe3\x83\xa3\xe3\x83\xbc\xe3\x80\x8d\xe3\x81\xae";
 /* "disc" */
-char lbl_802C96D8[0x10] = "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x82\x92";
+char sJpDiscInsertGameDiscLine[0x10] = "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x82\x92";
 /* "please insert." */
-char lbl_802C96E8[0x1c] =
+char sJpDiscInsertPromptLine[0x1c] =
     "\xe3\x82\xbb\xe3\x83\x83\xe3\x83\x88\xe3\x81\x97\xe3\x81\xa6\xe4\xb8\x8b\xe3\x81\x95\xe3\x81\x84\xe3\x80\x82";
 
-char* lbl_802C9704[] = {
-    lbl_803DB390, lbl_802C96A0, lbl_802C96BC, lbl_802C96D8, lbl_802C96E8, lbl_803DB394,
+char* sJpDiscInsertMessageLines[] = {
+    sJpDiscInsertTopSpacerLine, sJpDiscInsertGameNameLine, sJpDiscInsertGameSubtitleLine, sJpDiscInsertGameDiscLine, sJpDiscInsertPromptLine, sJpDiscInsertBottomSpacerLine,
 };
 
 /* "This disc is" */
-char lbl_802C971C[0x18] = "\xe3\x81\x93\xe3\x81\xae\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x81\xaf";
+char sJpWrongDiscThisIsNotLine[0x18] = "\xe3\x81\x93\xe3\x81\xae\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x81\xaf";
 /* "Star Fox" */
-char lbl_802C9734[0x1c] =
+char sJpWrongDiscGameNameLine[0x1c] =
     "\xe3\x82\xb9\xe3\x82\xbf\xe3\x83\xbc\xe3\x83\x95\xe3\x82\xa9\xe3\x83\x83\xe3\x82\xaf\xe3\x82\xb9";
 /* "Adventure's" */
-char lbl_802C9750[0x1c] =
+char sJpWrongDiscGameSubtitleLine[0x1c] =
     "\xe3\x82\xa2\xe3\x83\x89\xe3\x83\x99\xe3\x83\xb3\xe3\x83\x81\xe3\x83\xa3\xe3\x83\xbc\xe3\x81\xae";
 /* "not the disc." */
-char lbl_802C976C[0x28] = "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x81\xa7\xe3\x81\xaf\xe3\x81\x82\xe3\x82"
+char sJpWrongDiscNotGameDiscLine[0x28] = "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x81\xa7\xe3\x81\xaf\xe3\x81\x82\xe3\x82"
                           "\x8a\xe3\x81\xbe\xe3\x81\x9b\xe3\x82\x93\xe3\x80\x82";
 /* "Star Fox" */
-char lbl_802C9794[0x1c] =
+char sJpWrongDiscInsertGameNameLine[0x1c] =
     "\xe3\x82\xb9\xe3\x82\xbf\xe3\x83\xbc\xe3\x83\x95\xe3\x82\xa9\xe3\x83\x83\xe3\x82\xaf\xe3\x82\xb9";
 /* "Adventure's" */
-char lbl_802C97B0[0x1c] =
+char sJpWrongDiscInsertGameSubtitleLine[0x1c] =
     "\xe3\x82\xa2\xe3\x83\x89\xe3\x83\x99\xe3\x83\xb3\xe3\x83\x81\xe3\x83\xa3\xe3\x83\xbc\xe3\x81\xae";
 /* "please insert the disc." */
-char lbl_802C97CC[0x2c] = "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x82\x92\xe3\x82\xbb\xe3\x83\x83\xe3\x83"
+char sJpWrongDiscInsertPromptLine[0x2c] = "\xe3\x83\x87\xe3\x82\xa3\xe3\x82\xb9\xe3\x82\xaf\xe3\x82\x92\xe3\x82\xbb\xe3\x83\x83\xe3\x83"
                           "\x88\xe3\x81\x97\xe3\x81\xa6\xe4\xb8\x8b\xe3\x81\x95\xe3\x81\x84\xe3\x80\x82";
 
-char* lbl_802C97F8[] = {
-    lbl_803DB398, lbl_802C971C, lbl_802C9734, lbl_802C9750, lbl_802C976C,
-    lbl_803DB39C, lbl_802C9794, lbl_802C97B0, lbl_802C97CC,
+char* sJpWrongDiscMessageLines[] = {
+    sJpWrongDiscTopSpacerLine, sJpWrongDiscThisIsNotLine, sJpWrongDiscGameNameLine, sJpWrongDiscGameSubtitleLine, sJpWrongDiscNotGameDiscLine,
+    sJpWrongDiscMiddleSpacerLine, sJpWrongDiscInsertGameNameLine, sJpWrongDiscInsertGameSubtitleLine, sJpWrongDiscInsertPromptLine,
 };
 
 /*
@@ -513,16 +513,16 @@ struct JapaneseDiscStatusResource
     char loadingMessage[16]; /* "Now loading..." */
     DiscStatusMessage messages[7];
     TextGlyph glyphs[43];
-} lbl_802C981C = {
+} sJpDiscStatusMessageTable = {
     "\xe3\x83\xad\xe3\x83\xbc\xe3\x83\x89\xe4\xb8\xad\xe2\x80\xa6",
     {
-        {0x339, 7, 0x81000004, lbl_802C952C},
-        {0x33a, 4, 0x81000004, lbl_802C95B8},
-        {0x33b, 3, 0x81000004, lbl_802C95F4},
-        {0x33c, 6, 0x81000004, lbl_802C9688},
-        {0x33d, 6, 0x81000004, lbl_802C9704},
-        {0x33e, 9, 0x81000004, lbl_802C97F8},
-        {0x565, 1, 0x93000004, lbl_803DB3A0},
+        {0x339, 7, 0x81000004, sJpDiscErrorOccurredMessageLines},
+        {0x33a, 4, 0x81000004, sJpDiscReadErrorMessageLines},
+        {0x33b, 3, 0x81000004, sJpDiscReadingMessageLines},
+        {0x33c, 6, 0x81000004, sJpDiscCoverOpenMessageLines},
+        {0x33d, 6, 0x81000004, sJpDiscInsertMessageLines},
+        {0x33e, 9, 0x81000004, sJpWrongDiscMessageLines},
+        {0x565, 1, 0x93000004, sJpDiscLoadingMessageLines},
     },
     {
         {0x41, 0x01, 0x1, 0, 1, 3, 4, 0x0d, 0x0e, 4, 0},  {0x6e, 0x0f, 0x1, 0, 1, 7, 4, 0x09, 0x0a, 4, 0},
@@ -557,7 +557,7 @@ char sDiscErrorInstructionBookletLine[] =
 
 char* sDiscErrorOccurredMessageLines[] = {
     sDiscErrorOccurredLine,
-    lbl_803DB3A4,
+    sDiscErrorSpacerLine,
     sDiscErrorInstructionBookletLine,
 };
 
@@ -567,7 +567,7 @@ char sDiscReadErrorInstructionBookletLine[] =
 
 char* sDiscReadErrorMessageLines[] = {
     sDiscReadErrorLine,
-    lbl_803DB3A8,
+    sDiscReadErrorSpacerLine,
     sDiscReadErrorInstructionBookletLine,
 };
 
@@ -579,7 +579,7 @@ char sDiscCoverClosePromptLine[] = "please close the Disc Cover.";
 
 char* sDiscCoverOpenMessageLines[] = {
     sDiscCoverOpenLine,
-    lbl_803DB3B0,
+    sDiscCoverOpenSpacerLine,
     sDiscCoverContinuePromptLine,
     sDiscCoverClosePromptLine,
 };
@@ -594,7 +594,7 @@ char sWrongDiscInsertPromptLine[] = "Please insert a";
 char sWrongDiscInsertGameDiscLine[] = "Star Fox Adventures Game Disc.";
 
 char* sWrongDiscMessageLines[] = {
-    sWrongDiscThisIsNotLine,    sWrongDiscGameNameLine,       sWrongDiscGameDiscLine, lbl_803DB3BC,
+    sWrongDiscThisIsNotLine,    sWrongDiscGameNameLine,       sWrongDiscGameDiscLine, sWrongDiscSpacerLine,
     sWrongDiscInsertPromptLine, sWrongDiscInsertGameDiscLine,
 };
 
@@ -608,11 +608,11 @@ struct EnglishDiscStatusResource
     {
         {0x339, 3, 0x81000000, sDiscErrorOccurredMessageLines},
         {0x33a, 3, 0x81000000, sDiscReadErrorMessageLines},
-        {0x33b, 1, 0x81000000, lbl_803DB3AC},
+        {0x33b, 1, 0x81000000, sDiscReadingMessageLines},
         {0x33c, 4, 0x81000000, sDiscCoverOpenMessageLines},
-        {0x33d, 2, 0x81000000, lbl_803DB3B4},
+        {0x33d, 2, 0x81000000, sDiscInsertMessageLines},
         {0x33e, 6, 0x81000000, sWrongDiscMessageLines},
-        {0x565, 1, 0x93000000, lbl_803DB3C0},
+        {0x565, 1, 0x93000000, sDiscLoadingMessageLines},
     },
 };
 
@@ -633,7 +633,7 @@ void subtitleBuildLineTable(void);
 
 int getControlCharLen(u32 c)
 {
-    CtrlCharEntry* p = lbl_802C86F0;
+    CtrlCharEntry* p = gGameTextCtrlCodeArgCounts;
     int i = 46;
     while (i--)
     {
@@ -711,11 +711,11 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
         translateToDinoLanguage((u8*)str);
     }
 
-    gameTextMeasureString((u8*)str, lbl_803DC9A0, &measW, &measN, 0, 0, -1);
-    if (lbl_803DC9BC == 0)
+    gameTextMeasureString((u8*)str, gGameTextScale, &measW, &measN, 0, 0, -1);
+    if (gGameTextMeasureOnly == 0)
     {
-        setTextColor(0, lbl_803DC9A7, lbl_803DC9A6, lbl_803DC9A5, lbl_803DC9A4);
-        _textSetColor(0, lbl_803DC9A7, lbl_803DC9A6, lbl_803DC9A5, lbl_803DC9A4);
+        setTextColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
+        _textSetColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
         textureSetupFn_800799c0();
         textRenderSetup();
         textRenderSetupFn_80079804();
@@ -742,7 +742,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
             switch (ch)
             {
             case TEXT_CTRL_SCALE:
-                lbl_803DC9A0 = params[0] * lbl_803DE708;
+                gGameTextScale = params[0] * lbl_803DE708;
                 break;
             case TEXT_CTRL_FONT:
                 glyphLang = params[0];
@@ -767,19 +767,19 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 if (mode == 0)
                 {
                     {
-                        u8 c3 = params[3] * (lbl_803DC9A4 + 1) >> 8;
+                        u8 c3 = params[3] * (gGameTextColorA + 1) >> 8;
                         u8 c2 = params[2];
                         u8 c1 = params[1];
                         u8 c0 = params[0];
-                        lbl_803DC9A7 = c0;
-                        lbl_803DC9A6 = c1;
-                        lbl_803DC9A5 = c2;
-                        lbl_803DC9A4 = c3;
+                        gGameTextColorR = c0;
+                        gGameTextColorG = c1;
+                        gGameTextColorB = c2;
+                        gGameTextColorA = c3;
                     }
-                    if (lbl_803DC9BC == 0)
+                    if (gGameTextMeasureOnly == 0)
                     {
-                        setTextColor(0, lbl_803DC9A7, lbl_803DC9A6, lbl_803DC9A5, lbl_803DC9A4);
-                        _textSetColor(0, lbl_803DC9A7, lbl_803DC9A6, lbl_803DC9A5, lbl_803DC9A4);
+                        setTextColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
+                        _textSetColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
                         textureSetupFn_800799c0();
                         textRenderSetup();
                         textRenderSetupFn_80079804();
@@ -798,7 +798,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
         {
             if (mode == 0)
             {
-                lbl_803DC998++;
+                gGameTextDrawnCharIndex++;
             }
         }
 
@@ -811,12 +811,12 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 break;
             case TEXT_ALIGN_RIGHT:
                 spaceExtra = lbl_803DE704;
-                gameTextMeasureString(p, lbl_803DC9A0, &measW, NULL, 0, 0, -1);
+                gameTextMeasureString(p, gGameTextScale, &measW, NULL, 0, 0, -1);
                 x = win->x + ((f32)win->width - measW);
                 break;
             case TEXT_ALIGN_CENTER:
                 spaceExtra = lbl_803DE704;
-                gameTextMeasureString(p, lbl_803DC9A0, &measW, NULL, 0, 0, -1);
+                gameTextMeasureString(p, gGameTextScale, &measW, NULL, 0, 0, -1);
                 x = (f32)win->width - measW;
                 x = x * lbl_803DE70C + win->x;
                 break;
@@ -826,7 +826,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 int acc;
                 u32 innerCh;
                 int innerLen;
-                gameTextMeasureString(p, lbl_803DC9A0, &measW, NULL, 0, 0, -1);
+                gameTextMeasureString(p, gGameTextScale, &measW, NULL, 0, 0, -1);
                 acc = 0;
                 spaceCount = acc;
                 while ((innerCh = utf8GetNextChar(p + acc, &innerLen)) != 0)
@@ -862,7 +862,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
         }
         if (ch == 0x20)
         {
-            x = lbl_803DC9A0 * (f32)(g->advanceX + (g->width + g->offsetX)) + x;
+            x = gGameTextScale * (f32)(g->advanceX + (g->width + g->offsetX)) + x;
             x = x + spaceExtra;
             continue;
         }
@@ -870,14 +870,14 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
         u0 = (f32)(g->u << 5);
         v0 = (f32)(g->v << 5);
         e710 = lbl_803DE710;
-        fx0 = (f32)g->offsetX * lbl_803DC9A0;
+        fx0 = (f32)g->offsetX * gGameTextScale;
         fx0 = x + fx0;
         fx0 = e710 * fx0;
-        fy0 = (f32)g->offsetY * lbl_803DC9A0;
+        fy0 = (f32)g->offsetY * gGameTextScale;
         fy0 = y + fy0;
         fy0 = e710 * fy0;
-        fx1 = e710 * ((f32)(u32)g->width * lbl_803DC9A0) + fx0;
-        fy1 = e710 * ((f32)(u32)g->height * lbl_803DC9A0) + fy0;
+        fx1 = e710 * ((f32)(u32)g->width * gGameTextScale) + fx0;
+        fy1 = e710 * ((f32)(u32)g->height * gGameTextScale) + fy0;
         if (fx0 < lbl_803DE704 && fx1 > lbl_803DE704)
         {
             u0 = lbl_803DE714 * -fx0 + u0;
@@ -889,34 +889,34 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
             fy0 = lbl_803DE704;
         }
 
-        if (lbl_803DC9BC != 0)
+        if (gGameTextMeasureOnly != 0)
         {
-            if (fx0 < lbl_803DC9B0)
+            if (fx0 < gGameTextBoundsMinX)
             {
-                lbl_803DC9B0 = fx0;
+                gGameTextBoundsMinX = fx0;
             }
-            if (fx1 > lbl_803DC9AC)
+            if (fx1 > gGameTextBoundsMaxX)
             {
-                lbl_803DC9AC = fx1;
+                gGameTextBoundsMaxX = fx1;
             }
-            if (fy0 < lbl_803DC9B8)
+            if (fy0 < gGameTextBoundsMinY)
             {
-                lbl_803DC9B8 = fy0;
+                gGameTextBoundsMinY = fy0;
             }
-            if (fy1 > lbl_803DC9B4)
+            if (fy1 > gGameTextBoundsMaxY)
             {
-                lbl_803DC9B4 = fy1;
+                gGameTextBoundsMaxY = fy1;
             }
         }
         else
         {
             if (g->lang == GAMETEXT_FONT_FLAG)
             {
-                int shift = lbl_803DB3CC << 2;
+                int shift = gGameTextFlagGlyphRaise << 2;
                 fy0 = fy0 - shift;
                 fy1 = fy1 - shift;
                 GXGetScissor(&scisX, &scisY, &scisW, &scisH);
-                GXSetScissor(scisX, (scisY >= lbl_803DB3CC) ? scisY - lbl_803DB3CC : 0, scisW, scisH);
+                GXSetScissor(scisX, (scisY >= gGameTextFlagGlyphRaise) ? scisY - gGameTextFlagGlyphRaise : 0, scisW, scisH);
             }
             if (g->lang == GAMETEXT_FONT_FACE)
             {
@@ -945,22 +945,22 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 fy1 = fy1 + oy;
             }
 
-            if (lbl_803DC9BC == 0)
+            if (gGameTextMeasureOnly == 0)
             {
                 if (curTexPage != g->page)
                 {
                     curTexPage = g->page;
                     tex = gameTextFonts->textures[g->page];
                     selectTexture(tex, 0);
-                    if (lbl_802C8680[g->lang * 16 + 6] == 1)
+                    if (gGameTextFontMetrics[g->lang * 16 + 6] == 1)
                     {
                         if (mode != 0)
                         {
-                            setTextColor(0, 0, 0, 0, lbl_803DC9A4);
+                            setTextColor(0, 0, 0, 0, gGameTextColorA);
                         }
                         else
                         {
-                            setTextColor(0, 0xff, 0xff, 0xff, lbl_803DC9A4);
+                            setTextColor(0, 0xff, 0xff, 0xff, gGameTextColorA);
                             textureSetupFn_800799c0();
                             textRenderSetupFn_800795e8();
                             textRenderSetupFn_80079804();
@@ -968,8 +968,8 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                     }
                     else
                     {
-                        setTextColor(0, lbl_803DC9A7, lbl_803DC9A6, lbl_803DC9A5, lbl_803DC9A4);
-                        _textSetColor(0, lbl_803DC9A7, lbl_803DC9A6, lbl_803DC9A5, lbl_803DC9A4);
+                        setTextColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
+                        _textSetColor(0, gGameTextColorR, gGameTextColorG, gGameTextColorB, gGameTextColorA);
                         textureSetupFn_800799c0();
                         textRenderSetup();
                         textRenderSetupFn_80079804();
@@ -977,7 +977,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 }
             }
 
-            if (lbl_803DC99C != 0 && mode == 0 && g->lang != GAMETEXT_FONT_FACE && lbl_803DC998 >= lbl_803DC994)
+            if (gGameTextRevealActive != 0 && mode == 0 && g->lang != GAMETEXT_FONT_FACE && gGameTextDrawnCharIndex >= gGameTextRevealProgress)
             {
                 setTextColor(0, 0, 0, 0, 0);
             }
@@ -1005,7 +1005,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
 
         if ((int)g->lang != GAMETEXT_FONT_FACE)
         {
-            x = lbl_803DC9A0 * (f32)(g->advanceX + (g->width + g->offsetX)) + x;
+            x = gGameTextScale * (f32)(g->advanceX + (g->width + g->offsetX)) + x;
         }
     }
 }
@@ -1100,7 +1100,7 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
             glyphLang = tbl[curLanguage * 8 + 4];
         }
     }
-    tbl = &lbl_802C8680[glyphLang * 16];
+    tbl = &gGameTextFontMetrics[glyphLang * 16];
     if (glyphLang != GAMETEXT_FONT_FACE)
     {
         if (outMaxAdv != NULL)
@@ -1132,7 +1132,7 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
                 break;
             case TEXT_CTRL_FONT:
                 glyphLang = params[0];
-                tbl = &lbl_802C8680[glyphLang * 16];
+                tbl = &gGameTextFontMetrics[glyphLang * 16];
                 if (glyphLang != GAMETEXT_FONT_FACE)
                 {
                     mAdv = (f32)(u32) * (u16*)(tbl + 8) * scale;
@@ -1183,7 +1183,7 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count)
 
     off = 0;
     n = 0;
-    tbl = (u8*)lbl_80339C40;
+    tbl = (u8*)sSubtitleCtrlCmdScratch;
     if ((u8*)str == NULL)
     {
         return NULL;
@@ -1224,7 +1224,7 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count)
     {
         int size = n * 0xc;
         u8* buf = mmAlloc(size, 0x1a, 0);
-        memcpy(buf, lbl_80339C40, size);
+        memcpy(buf, sSubtitleCtrlCmdScratch, size);
         *count = n;
         return (SubtitleCmd*)buf;
     }
@@ -1301,7 +1301,7 @@ u16 gGameTextBoxCornerTexSrc[256] = {
     0x505A, 0x505A, 0x505A, 0x505A,
 };
 
-GlyphResource802CA100 lbl_802CA100 = {
+GlyphResource802CA100 gGameTextBoxEdgeTexSrc = {
     {
     0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x1444, 0x3444,
     0x1444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444, 0x0444,
@@ -1453,9 +1453,9 @@ void gameTextSetWindow(u8* textBox)
 
 
 u8 gGameTextBase[0x20];
-u8 lbl_803399A0[0x20];
-u8 lbl_803399C0[0x280];
-u32 lbl_80339C40[0x240];
+u8 sGameTextFallbackBufSlots[0x20];
+u8 sGameTextFallbackDefs[0x280];
+u32 sSubtitleCtrlCmdScratch[0x240];
 GameTextSlot gGameTextCommandSlots[0xA00 / sizeof(GameTextSlot)];
 
 void* jumptable_802C9DD4[12] = {

@@ -12,7 +12,7 @@ typedef struct GlyphResource802CA100 {
 
 extern s16 gGameTextBoxTexAssets;
 extern u16 gGameTextBoxCornerTexSrc[256];
-extern GlyphResource802CA100 lbl_802CA100;
+extern GlyphResource802CA100 gGameTextBoxEdgeTexSrc;
 extern Texture* gGameTextBoxCornerTexture;
 extern Texture* gGameTextBoxBgTexture;
 extern Texture* gGameTextBoxEdgeTexture;

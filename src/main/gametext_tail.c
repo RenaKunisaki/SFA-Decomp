@@ -28,68 +28,68 @@
 
 int isSpace(u32 c);
 
-void gameTextMeasureFn_800163c4(char* str, int boxIdx, int x, int y, int* outMaxX, int* outMaxY, int* outMinX,
-                                int* outMinY)
+void gameTextMeasureFn_800163c4(char* str, int boxIdx, int x, int y, int* outMinX, int* outMaxX, int* outMinY,
+                                int* outMaxY)
 {
     TextSlot* box = (TextSlot*)gTextBoxes + boxIdx;
     s16 savedX = box->cursorX;
     s16 savedY = box->cursorY;
-    lbl_803DC9BC = 1;
-    lbl_803DC9B0 = 0x7FFFFFFF;
-    lbl_803DC9AC = 0;
-    lbl_803DC9B8 = 0x7FFFFFFF;
-    lbl_803DC9B4 = 0;
+    gGameTextMeasureOnly = 1;
+    gGameTextBoundsMinX = 0x7FFFFFFF;
+    gGameTextBoundsMaxX = 0;
+    gGameTextBoundsMinY = 0x7FFFFFFF;
+    gGameTextBoundsMaxY = 0;
     box->cursorX = x;
     box->cursorY = y;
     gameTextRenderStrs(str, boxIdx);
-    lbl_803DC9BC = 0;
-    if (outMinX != NULL)
-    {
-        *outMinX = lbl_803DC9B8 >> 2;
-    }
+    gGameTextMeasureOnly = 0;
     if (outMinY != NULL)
     {
-        *outMinY = lbl_803DC9B4 >> 2;
-    }
-    if (outMaxX != NULL)
-    {
-        *outMaxX = lbl_803DC9B0 >> 2;
+        *outMinY = gGameTextBoundsMinY >> 2;
     }
     if (outMaxY != NULL)
     {
-        *outMaxY = lbl_803DC9AC >> 2;
+        *outMaxY = gGameTextBoundsMaxY >> 2;
+    }
+    if (outMinX != NULL)
+    {
+        *outMinX = gGameTextBoundsMinX >> 2;
+    }
+    if (outMaxX != NULL)
+    {
+        *outMaxX = gGameTextBoundsMaxX >> 2;
     }
     box->cursorX = savedX;
     box->cursorY = savedY;
 }
 
-void gameTextMeasureStringBounds(char* str, int boxIdx, int* outMaxX, int* outMaxY, int* outMinX, int* outMinY)
+void gameTextMeasureStringBounds(char* str, int boxIdx, int* outMinX, int* outMaxX, int* outMinY, int* outMaxY)
 {
     TextSlot* box = (TextSlot*)gTextBoxes + boxIdx;
     s16 savedX = box->cursorX;
     s16 savedY = box->cursorY;
-    lbl_803DC9BC = 1;
-    lbl_803DC9B0 = 0x7FFFFFFF;
-    lbl_803DC9AC = 0;
-    lbl_803DC9B8 = 0x7FFFFFFF;
-    lbl_803DC9B4 = 0;
+    gGameTextMeasureOnly = 1;
+    gGameTextBoundsMinX = 0x7FFFFFFF;
+    gGameTextBoundsMaxX = 0;
+    gGameTextBoundsMinY = 0x7FFFFFFF;
+    gGameTextBoundsMaxY = 0;
     gameTextRenderStrs(str, boxIdx);
-    lbl_803DC9BC = 0;
-    if (outMinX != NULL)
-    {
-        *outMinX = lbl_803DC9B8 >> 2;
-    }
+    gGameTextMeasureOnly = 0;
     if (outMinY != NULL)
     {
-        *outMinY = lbl_803DC9B4 >> 2;
-    }
-    if (outMaxX != NULL)
-    {
-        *outMaxX = lbl_803DC9B0 >> 2;
+        *outMinY = gGameTextBoundsMinY >> 2;
     }
     if (outMaxY != NULL)
     {
-        *outMaxY = lbl_803DC9AC >> 2;
+        *outMaxY = gGameTextBoundsMaxY >> 2;
+    }
+    if (outMinX != NULL)
+    {
+        *outMinX = gGameTextBoundsMinX >> 2;
+    }
+    if (outMaxX != NULL)
+    {
+        *outMaxX = gGameTextBoundsMaxX >> 2;
     }
     box->cursorX = savedX;
     box->cursorY = savedY;
@@ -99,10 +99,10 @@ void gameTextFn_8001658c(int a, int b, int c)
 {
     GameTextDef* def = (GameTextDef*)gameTextGet(a);
     TextSlot* slot;
-    u8 save7 = lbl_803DC9A7;
-    u8 save6 = lbl_803DC9A6;
-    u8 save5 = lbl_803DC9A5;
-    u8 save4 = lbl_803DC9A4;
+    u8 save7 = gGameTextColorR;
+    u8 save6 = gGameTextColorG;
+    u8 save5 = gGameTextColorB;
+    u8 save4 = gGameTextColorA;
     int i;
 
     lbl_803DC9C0 = 1;
@@ -121,10 +121,10 @@ void gameTextFn_8001658c(int a, int b, int c)
 
     if ((u8*)slot == gTextBoxes + 0x10a0)
     {
-        lbl_803DC9A7 = 255;
-        lbl_803DC9A6 = 255;
-        lbl_803DC9A5 = 255;
-        lbl_803DC9A4 = 255;
+        gGameTextColorR = 255;
+        gGameTextColorG = 255;
+        gGameTextColorB = 255;
+        gGameTextColorA = 255;
     }
 
     if (def->alignH == 0)
@@ -134,7 +134,7 @@ void gameTextFn_8001658c(int a, int b, int c)
     slot->cursorX = b;
     slot->cursorY = c;
 
-    if (lbl_803DC9BC == 0)
+    if (gGameTextMeasureOnly == 0)
     {
         int mode;
         if (def->alignV == 0)
@@ -162,7 +162,7 @@ void gameTextFn_8001658c(int a, int b, int c)
         }
     }
 
-    if (lbl_803DC9BC == 0)
+    if (gGameTextMeasureOnly == 0)
     {
         gameTextDrawBox(def, 0, slot);
     }
@@ -180,7 +180,7 @@ void gameTextFn_8001658c(int a, int b, int c)
         {
             slot->y = 0;
         }
-        if (lbl_803DC9BC == 0)
+        if (gGameTextMeasureOnly == 0)
         {
             gxSetScissorRect(0, 0, slot->x, slot->y, slot->x + slot->width, slot->y + slot->height);
         }
@@ -193,14 +193,14 @@ void gameTextFn_8001658c(int a, int b, int c)
     }
 
     lbl_803DC9C0 = 0;
-    if (lbl_803DC9BC == 0)
+    if (gGameTextMeasureOnly == 0)
     {
         Camera_ApplyCurrentViewport(0);
     }
-    lbl_803DC9A7 = save7;
-    lbl_803DC9A6 = save6;
-    lbl_803DC9A5 = save5;
-    lbl_803DC9A4 = save4;
+    gGameTextColorR = save7;
+    gGameTextColorG = save6;
+    gGameTextColorB = save5;
+    gGameTextColorA = save4;
 }
 
 void gameTextFn_80016810(int a, int b, int c)
@@ -243,7 +243,7 @@ void gameTextShow(int a)
 
 static inline int gameTextCtrlCharLen(u32 c)
 {
-    SpecialGlyph* p = lbl_802C86F0;
+    SpecialGlyph* p = gGameTextCtrlCodeArgCounts;
     int i = 46;
     while (i--)
     {
@@ -274,7 +274,7 @@ void textDisplayFn_800168dc(int textId, TextDisplayState* state)
     def = gameTextGet(textId);
     defAddress = (u8*)def;
     special = 0;
-    if (defAddress >= lbl_803399C0 && defAddress < lbl_803399C0 + 0x60)
+    if (defAddress >= sGameTextFallbackDefs && defAddress < sGameTextFallbackDefs + 0x60)
     {
         special = 1;
     }
@@ -302,28 +302,28 @@ void textDisplayFn_800168dc(int textId, TextDisplayState* state)
     }
     if (state->active == 0)
     {
-        lbl_803DC998 = 0;
-        lbl_803DC994 = lbl_803DE700;
+        gGameTextDrawnCharIndex = 0;
+        gGameTextRevealProgress = lbl_803DE700;
         state->f10 = def->count;
         state->f8 = 0;
         state->active = 1;
     }
-    if (lbl_803DE700 == lbl_803DC994)
+    if (lbl_803DE700 == gGameTextRevealProgress)
     {
         Sfx_PlayFromObject(0, SFXTRIG_clock_loop);
     }
-    lbl_803DC99C = 1;
-    lbl_803DC998 = 0;
-    lbl_803DC994 = timeDelta * lbl_803DB3D0 + lbl_803DC994;
-    if (lbl_803DC994 >= (f32)(charCount - 2))
+    gGameTextRevealActive = 1;
+    gGameTextDrawnCharIndex = 0;
+    gGameTextRevealProgress = timeDelta * gGameTextRevealSpeed + gGameTextRevealProgress;
+    if (gGameTextRevealProgress >= (f32)(charCount - 2))
     {
         Sfx_StopFromObject(0, SFXTRIG_clock_loop);
     }
     if (state->fC != 0)
     {
-        if (lbl_803DC994 < charCount)
+        if (gGameTextRevealProgress < charCount)
         {
-            lbl_803DC994 = charCount;
+            gGameTextRevealProgress = charCount;
         }
         else
         {
@@ -353,14 +353,14 @@ void textDisplayFn_800168dc(int textId, TextDisplayState* state)
             }
             else
             {
-                lbl_803DC994 = lbl_803DE700;
+                gGameTextRevealProgress = lbl_803DE700;
             }
             if (state->charIndex < 0)
             {
                 state->charIndex = 0;
             }
             if (state->charIndex == def->count - 1 && (state->fC = 1) != 0 &&
-                lbl_803DC994 >= charCount)
+                gGameTextRevealProgress >= charCount)
             {
                 state->f8 = 1;
             }
@@ -451,7 +451,7 @@ char** textMeasureFn_80016c9c(char* str, f32 width, f32 height, int* outCount, f
         i = sLanguageNameTable[curLanguage].sizeIdx;
     }
     langIdx = i;
-    sizeEntry = &lbl_802C8680[i];
+    sizeEntry = &gGameTextFontMetrics[i];
 
     *outCount = 0;
     if (outLineH != NULL)
@@ -498,7 +498,7 @@ char** textMeasureFn_80016c9c(char* str, f32 width, f32 height, int* outCount, f
                 break;
             case TEXT_CTRL_FONT:
                 langIdx = params[0];
-                sizeEntry = &lbl_802C8680[langIdx];
+                sizeEntry = &gGameTextFontMetrics[langIdx];
                 break;
             default:
                 sel = 0;
@@ -554,7 +554,7 @@ char** textMeasureFn_80016c9c(char* str, f32 width, f32 height, int* outCount, f
     charLen = cursor + (lineCount + lineOff);
     if (outLineH != NULL)
     {
-        buffer = mmAllocateFromFBMemoryStore((int)lbl_803DB378, charLen);
+        buffer = mmAllocateFromFBMemoryStore((int)gGameTextStringStore, charLen);
     }
     else
     {

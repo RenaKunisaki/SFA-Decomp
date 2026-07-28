@@ -60,10 +60,10 @@
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/gametext_color_api.h"
 
-s8 lbl_803DBC08 = -1;
-s8 lbl_803DBC09 = -1;
-u16 lbl_803DBC0A = 0x35;
-f32 lbl_803DBC0C = 0.01f;
+s8 gTitleScreenPrevMenuSelection = -1;
+s8 gTitleScreenPrevMenuActive = -1;
+u16 gTitleScreenCreditCount = 0x35;
+f32 gTitleScreenFoxTypeMoveRate = 0.01f;
 
 #define TITLE_SCREEN_TEXTURE_COUNT 19
 
@@ -101,14 +101,14 @@ void* gTitleScreenMainTex;
 f32 lbl_803DD9D0;
 f32 lbl_803DD9CC;
 f32 gTitleScreenCursorY;
-f32 lbl_803DD9C4;
-u8 lbl_803DD9C0;
+f32 gTitleScreenPulseTimer;
+u8 gTitleScreenPulseAlpha;
 u32 gNameEntryScrollX;
 u32 gNameEntryScrollY;
-f32 lbl_803DD9B4;
+f32 gTitleScreenSlideProgressX;
 f32 gTitleScreenCursorX;
 int gTitleScreenCopyrightBaseY;
-u8 lbl_803DD9AB;
+u8 gTitleScreenActorsEnabled;
 u8 gTitleScreenCreditsStarted;
 s16 gTitleScreenCreditDelay;
 int gTitleScreenCreditsEndTriggered;
@@ -116,11 +116,11 @@ u8 gTitleScreenCopyrightLatch;
 f32 gTitleScreenCopyrightFade;
 u16 gTitleScreenCreditIndex;
 u16 gTitleScreenCreditTimer;
-u16 lbl_803DD994;
+u16 gTitleScreenCreditsElapsed;
 u8 showCredits;
 u8 gTitleScreenSetupDone;
-s8 lbl_803DD991;
-s8 lbl_803DD990;
+s8 gTitleScreenMenuActive;
+s8 gTitleScreenMenuSelection;
 extern f32 lbl_803E2318;
 extern f32 lbl_803E22F8;
 #define FRONT_TEXT_COPYRIGHT 0x3d9
@@ -240,7 +240,7 @@ extern CreditEntry gCreditEntries[];
 void creditsStart_(void)
 {
     int alpha;
-    if (gTitleScreenCreditIndex >= lbl_803DBC0A)
+    if (gTitleScreenCreditIndex >= gTitleScreenCreditCount)
     {
         if ((*gCameraInterface)->getMode() == FRONT_CAMMODE_TITLE)
         {
@@ -265,7 +265,7 @@ void creditsStart_(void)
     }
     else if (gTitleScreenCreditTimer >= gCreditEntries[gTitleScreenCreditIndex].duration - 0x14)
     {
-        if (gTitleScreenCreditIndex == lbl_803DBC0A - 1 && gTitleScreenCreditsEndTriggered == 0)
+        if (gTitleScreenCreditIndex == gTitleScreenCreditCount - 1 && gTitleScreenCreditsEndTriggered == 0)
         {
             Music_StopChannelsByPriorityGroup(3, MUSIC_CHANNEL_STOP_FADE, 0xfa0);
             gTitleScreenCreditsEndTriggered = 1;
@@ -279,7 +279,7 @@ void creditsStart_(void)
     }
     gameTextSetColor(0xff, 0xff, 0xff, alpha);
     gameTextFn_80016810(gCreditEntries[gTitleScreenCreditIndex].textId, 0, 0);
-    lbl_803DD994 += lbl_803DB411;
+    gTitleScreenCreditsElapsed += lbl_803DB411;
     gTitleScreenCreditTimer += lbl_803DB411;
     if (gTitleScreenCreditTimer < gCreditEntries[gTitleScreenCreditIndex].duration)
     {
@@ -287,7 +287,7 @@ void creditsStart_(void)
     }
     gTitleScreenCreditIndex++;
     gTitleScreenCreditDelay = 0x3c;
-    if (gTitleScreenCreditIndex < lbl_803DBC0A)
+    if (gTitleScreenCreditIndex < gTitleScreenCreditCount)
     {
         gTitleScreenCreditTimer = 0;
     }
@@ -304,7 +304,7 @@ u8 shouldShowCredits(void)
 void creditsStart(void)
 {
     showCredits = 1;
-    lbl_803DD994 = 0;
+    gTitleScreenCreditsElapsed = 0;
     gTitleScreenCreditTimer = 0;
     gTitleScreenCreditDelay = 0;
     gTitleScreenCreditIndex = 0;
@@ -334,12 +334,12 @@ void titleScreenShowCopyright(u8 arg)
     }
     else if (gTitleScreenCopyrightLatch != 0)
     {
-        gTitleScreenCopyrightFade = lbl_803DD9B4;
+        gTitleScreenCopyrightFade = gTitleScreenSlideProgressX;
     }
     else
     {
         gTitleScreenCopyrightFade = lbl_803E2318;
-        if (lbl_803DD9B4 > lbl_803E231C)
+        if (gTitleScreenSlideProgressX > lbl_803E231C)
         {
             gTitleScreenCopyrightLatch = 1;
         }
@@ -380,13 +380,13 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
     int yb;
     int r;
 
-    m = (lbl_803DD9C4 = lbl_803DD9C4 + timeDelta);
+    m = (gTitleScreenPulseTimer = gTitleScreenPulseTimer + timeDelta);
     if (m > *(f32*)&lbl_803E22F0)
     {
-        lbl_803DD9C4 = m - lbl_803E22F0;
+        gTitleScreenPulseTimer = m - lbl_803E22F0;
     }
-    lbl_803DD9C0 =
-        lbl_803E232C * mathCosf(gTitleScreenPi * (lbl_803E2334 * lbl_803DD9C4) / *(f32*)&lbl_803E22F0) + lbl_803E2328;
+    gTitleScreenPulseAlpha =
+        lbl_803E232C * mathCosf(gTitleScreenPi * (lbl_803E2334 * gTitleScreenPulseTimer) / *(f32*)&lbl_803E22F0) + lbl_803E2328;
     if (gTitleScreenCursorY > lbl_803E22F8)
     {
         f32 (*m2)[4] = (f32 (*)[4])gTitleScreenMtx;
@@ -414,7 +414,7 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
     {
         int xb = (int)mtx[3];
         int yb = (int)mtx[7];
-        int a = (gTitleScreenCursorY > lbl_803E22F8) ? 0xff : lbl_803DD9C0;
+        int a = (gTitleScreenCursorY > lbl_803E22F8) ? 0xff : gTitleScreenPulseAlpha;
         drawTexture(gTitleScreenTextures[1], (f32)(int)(xb - 0x18),
                     (f32)(int)(yb - ((Texture*)gTitleScreenTextures[1])->height + 3), 0xff, 0xff);
         texs2 = (Texture**)gTitleScreenTextures;
@@ -424,13 +424,13 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
         int xb = (int)mtx[3];
         int yb = (int)mtx[7];
         f32 cy = gTitleScreenCursorY;
-        int a = (cy > lbl_803E22F8) ? 0xff : lbl_803DD9C0;
+        int a = (cy > lbl_803E22F8) ? 0xff : gTitleScreenPulseAlpha;
         drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), lbl_803E22FC + (lbl_803E2300 * cy + (f32)(int)yb),
                     0xff, 0xff);
         drawTexture(texs2[7], (f32)(int)(xb + 0xa1), lbl_803E2304 + (lbl_803E2300 * gTitleScreenCursorY + (f32)(int)yb),
                     a, 0xff);
     }
-    gameTextSetColor(0xff, 0xff, 0xff, (int)((f64)lbl_803DD9C0 * (lbl_803E2308 - gTitleScreenCursorY)));
+    gameTextSetColor(0xff, 0xff, 0xff, (int)((f64)gTitleScreenPulseAlpha * (lbl_803E2308 - gTitleScreenCursorY)));
     gameTextShow(0x3da);
     drawTexture(gTitleScreenTextures[3], (f32)(int)((int)mtx[3] - 0x32),
                 (f32)(int)(0xfe - ((u32)((Texture*)gTitleScreenTextures[3])->width >> 1)), 0xff, 0xff);
@@ -445,7 +445,7 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
         {
             tex = texs[4];
             drawScaledTexture(tex, (f32)(int)(xb + 0x5a + texs[6]->width - (i + 1) * 4),
-                              (f32)(int)(yb - 0x10 - (i + 1) * 3), (int)(u32)lbl_803DD9C0 >> (i + 3) & 0xff, 0x100,
+                              (f32)(int)(yb - 0x10 - (i + 1) * 3), (int)(u32)gTitleScreenPulseAlpha >> (i + 3) & 0xff, 0x100,
                               tex->width + (i + 1) * 8, (u32)(sc3 * gTitleScreenCursorY) + ((i + 1) * 6 + 0x10), 4);
             i++;
         } while (i < 4);
@@ -460,34 +460,34 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
             drawTexture(gTitleScreenTextures[5], (f32)(int)(xb + 0x2f), (f32)(int)(yb - 1), alpha, 0xff);
         }
     }
-    idx = (u8)((int)((u32)lbl_803DD9C0 << 3) / 0x100);
+    idx = (u8)((int)((u32)gTitleScreenPulseAlpha << 3) / 0x100);
     texs = (Texture**)gTitleScreenTextures;
     {
         Texture* t = texs[18];
         drawScaledTexture(t, (f32)(int)((int)(lbl_803E22F0 * gTitleScreenCursorX) - 0x50),
-                          (f32)(int)((int)(lbl_803E22F4 * lbl_803DD9B4) + 0x1e0), 0xff, 0x100, t->width, t->height, 1);
+                          (f32)(int)((int)(lbl_803E22F4 * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 1);
     }
     texs2 = &((Texture**)(gTitleScreenTextures + 8))[idx];
     {
         Texture* t = *texs2;
         drawScaledTexture(t, (f32)(int)((int)(lbl_803E22F0 * gTitleScreenCursorX) + ((tex = texs[18])->width - 0x4a)),
-                          (f32)(int)((int)(lbl_803E22F4 * lbl_803DD9B4) + 0x1e0), 0xff, 0x100, t->width, t->height, 0);
+                          (f32)(int)((int)(lbl_803E22F4 * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 0);
     }
     {
         Texture* t = texs[18];
         drawScaledTexture(t,
                           (f32)(int)(0x280 - ((int)(lbl_803E22F0 * gTitleScreenCursorX) - 0x50) - texs[18]->width),
-                          (f32)(int)((int)(lbl_803E22F4 * lbl_803DD9B4) + 0x1e0), 0xff, 0x100, t->width, t->height, 0);
+                          (f32)(int)((int)(lbl_803E22F4 * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 0);
     }
     {
         Texture* t = *texs2;
         drawScaledTexture(
             t,
             (f32)(int)(0x27a - ((int)(lbl_803E22F0 * gTitleScreenCursorX) - 0x50) - texs[18]->width - t->width),
-            (f32)(int)((int)(lbl_803E22F4 * lbl_803DD9B4) + 0x1e0), 0xff, 0x100, t->width, t->height, 1);
+            (f32)(int)((int)(lbl_803E22F4 * gTitleScreenSlideProgressX) + 0x1e0), 0xff, 0x100, t->width, t->height, 1);
     }
-    m = lbl_803DD9B4;
-    if (lbl_803DD9B4 > gTitleScreenCursorX)
+    m = gTitleScreenSlideProgressX;
+    if (gTitleScreenSlideProgressX > gTitleScreenCursorX)
     {
         m = gTitleScreenCursorX;
     }
@@ -517,7 +517,7 @@ void titleScreenPositionElements(f32 a, f32 b)
 {
     PSMTXTrans((f32*)gTitleScreenMtx, a, b, lbl_803E22F8);
     gTitleScreenCursorY = (lbl_803E2344 - b) / lbl_803E2348;
-    lbl_803DD9B4 = (a - lbl_803E234C) / lbl_803E2350;
+    gTitleScreenSlideProgressX = (a - lbl_803E234C) / lbl_803E2350;
     gTitleScreenCursorX = lbl_803E2318 - gTitleScreenCursorY;
 }
 
@@ -630,7 +630,7 @@ void TitleScreen_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
     s32 v = visible;
     if (v == 0)
         return;
-    if (lbl_803DD9AB == 0)
+    if (gTitleScreenActorsEnabled == 0)
         return;
     objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E2318);
     if (showCredits == 0)
@@ -670,9 +670,9 @@ void TitleScreen_update(GameObject* obj)
     s16 t;
     u8 buf[0x1c];
 
-    if (lbl_803DD9AB != 0)
+    if (gTitleScreenActorsEnabled != 0)
     {
-        if (state->poseIndex != lbl_803DD990 && lbl_803DD991 == 0 &&
+        if (state->poseIndex != gTitleScreenMenuSelection && gTitleScreenMenuActive == 0 &&
             (phase = state->animPhase) != 0 && phase != 4 && phase != 3)
         {
             if (obj->anim.seqId == FRONT_SEQID_FOX || obj->anim.seqId == FRONT_SEQID_ROB)
@@ -690,7 +690,7 @@ void TitleScreen_update(GameObject* obj)
                     gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[0];
             }
         }
-        if (state->poseIndex == lbl_803DD990 && lbl_803DD991 != 0 &&
+        if (state->poseIndex == gTitleScreenMenuSelection && gTitleScreenMenuActive != 0 &&
             (phase = state->animPhase) != 1 && phase != 2 && phase != 5)
         {
             state->animPhase = 1;
@@ -716,11 +716,11 @@ void TitleScreen_update(GameObject* obj)
             {
                 if (obj->anim.currentMoveProgress < lbl_803E2358)
                 {
-                    lbl_803DBC0C = progress = lbl_803E235C * (f32)(int)randomGetRange(0x32, 0x96);
+                    gTitleScreenFoxTypeMoveRate = progress = lbl_803E235C * (f32)(int)randomGetRange(0x32, 0x96);
                 }
                 else
                 {
-                    progress = lbl_803DBC0C;
+                    progress = gTitleScreenFoxTypeMoveRate;
                 }
             }
             else
@@ -730,7 +730,7 @@ void TitleScreen_update(GameObject* obj)
             evt = ObjAnim_AdvanceCurrentMove(objHandle, progress, timeDelta, (ObjAnimEventList*)buf);
             if (evt != 0)
             {
-                if (state->poseIndex == lbl_803DD990 && state->animPhase == 1)
+                if (state->poseIndex == gTitleScreenMenuSelection && state->animPhase == 1)
                 {
                     state->animPhase = 2;
                     ObjAnim_SetCurrentMove(objHandle, 2, lbl_803E22F8, 0);
@@ -804,8 +804,8 @@ void TitleScreen_update(GameObject* obj)
             morphTarget = randomGetRange(0, model->file->morphTargetCount);
             ObjModel_SetBlendChannelTargets(model, 0, blend->morphTargetB, morphTarget - 1, lbl_803E2360, 0);
         }
-        lbl_803DBC08 = -1;
-        lbl_803DBC09 = -1;
+        gTitleScreenPrevMenuSelection = -1;
+        gTitleScreenPrevMenuActive = -1;
         phaseSel = state->animPhase;
         t = obj->anim.seqId;
         switch (t)
@@ -1000,30 +1000,30 @@ void TitleScreen_init(GameObject* obj, u8* def)
     }
 }
 
-/* Two-byte state push: if arg differs from lbl_803DD991, save old to
- * lbl_803DBC09 and set new. */
+/* Two-byte state push: if arg differs from gTitleScreenMenuActive, save old to
+ * gTitleScreenPrevMenuActive and set new. */
 void titleScreenFn_801368a4(s8 arg)
 {
     s8 cur;
-    if (arg == (cur = lbl_803DD991))
+    if (arg == (cur = gTitleScreenMenuActive))
         return;
-    lbl_803DBC09 = cur;
-    lbl_803DD991 = arg;
+    gTitleScreenPrevMenuActive = cur;
+    gTitleScreenMenuActive = arg;
 }
 
 u8 gTitleScreenSfxFlagGrid[0x48];
 
-/* Two-byte state push (no equality check): copy lbl_803DD990 to
- * lbl_803DBC08 and write new value. */
+/* Two-byte state push (no equality check): copy gTitleScreenMenuSelection to
+ * gTitleScreenPrevMenuSelection and write new value. */
 void titleScreenFn_801368c4(s8 arg)
 {
-    lbl_803DBC08 = lbl_803DD990;
-    lbl_803DD990 = arg;
+    gTitleScreenPrevMenuSelection = gTitleScreenMenuSelection;
+    gTitleScreenMenuSelection = arg;
 }
 
 void titleScreenFn_801368d4(void)
 {
-    lbl_803DD9AB = 0;
+    gTitleScreenActorsEnabled = 0;
 }
 
 
@@ -1059,10 +1059,10 @@ extern s16 gTitleScreenTextureIds[];
 void TitleScreen_initialise(void)
 {
     int i;
-    lbl_803DBC08 = -1;
-    lbl_803DD990 = 0;
-    lbl_803DBC09 = -1;
-    lbl_803DD991 = 0;
+    gTitleScreenPrevMenuSelection = -1;
+    gTitleScreenMenuSelection = 0;
+    gTitleScreenPrevMenuActive = -1;
+    gTitleScreenMenuActive = 0;
     if (lbl_803DC968 != 0)
     {
         gTitleScreenMainTex = textureLoadAsset(FRONT_MAIN_TEXTURE_ID_A);
@@ -1078,12 +1078,12 @@ void TitleScreen_initialise(void)
     {
         gTitleScreenTextures[i] = textureLoadAsset(gTitleScreenTextureIds[i]);
     }
-    lbl_803DD9C4 = lbl_803E22F8;
+    gTitleScreenPulseTimer = lbl_803E22F8;
     gTitleScreenSetupDone = 0;
     gTitleScreenCopyrightBaseY = 0;
-    lbl_803DD9B4 = lbl_803E2318;
+    gTitleScreenSlideProgressX = lbl_803E2318;
     gTitleScreenCursorX = lbl_803E2318;
-    lbl_803DD9AB = 1;
+    gTitleScreenActorsEnabled = 1;
 }
 
 

@@ -26,7 +26,7 @@
 #define LANGUAGE_JAPANESE 4
 #define LANGUAGE_SPANISH  5
 
-void gameTextMeasureById(int id, int a, int b, int* outMaxX, int* outMaxY, int* outMinX, int* outMinY)
+void gameTextMeasureById(int id, int a, int b, int* outMinX, int* outMaxX, int* outMinY, int* outMaxY)
 {
     GlyphEntry* e;
     GameTextFont* fonts;
@@ -55,33 +55,33 @@ void gameTextMeasureById(int id, int a, int b, int* outMaxX, int* outMaxY, int* 
     }
     if (!found)
     {
-        *outMaxX = 0;
-        *outMaxY = 0;
         *outMinX = 0;
+        *outMaxX = 0;
         *outMinY = 0;
+        *outMaxY = 0;
         return;
     }
-    lbl_803DC9BC = 1;
-    lbl_803DC9B0 = 0x7FFFFFFF;
-    lbl_803DC9AC = 0;
-    lbl_803DC9B8 = 0x7FFFFFFF;
-    lbl_803DC9B4 = 0;
+    gGameTextMeasureOnly = 1;
+    gGameTextBoundsMinX = 0x7FFFFFFF;
+    gGameTextBoundsMaxX = 0;
+    gGameTextBoundsMinY = 0x7FFFFFFF;
+    gGameTextBoundsMaxY = 0;
     gameTextFn_8001658c(id, a, b);
-    lbl_803DC9BC = 0;
-    if (outMinX != NULL)
-    {
-        *outMinX = lbl_803DC9B8 >> 2;
-    }
+    gGameTextMeasureOnly = 0;
     if (outMinY != NULL)
     {
-        *outMinY = lbl_803DC9B4 >> 2;
-    }
-    if (outMaxX != NULL)
-    {
-        *outMaxX = lbl_803DC9B0 >> 2;
+        *outMinY = gGameTextBoundsMinY >> 2;
     }
     if (outMaxY != NULL)
     {
-        *outMaxY = lbl_803DC9AC >> 2;
+        *outMaxY = gGameTextBoundsMaxY >> 2;
+    }
+    if (outMinX != NULL)
+    {
+        *outMinX = gGameTextBoundsMinX >> 2;
+    }
+    if (outMaxX != NULL)
+    {
+        *outMaxX = gGameTextBoundsMaxX >> 2;
     }
 }

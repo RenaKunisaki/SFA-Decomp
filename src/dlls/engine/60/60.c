@@ -39,7 +39,7 @@ u8 linkFlag_803dd8f8;
 extern char sTumbleweedBushSlotOverflowErr[];
 extern char sTumbleweedBushNavLinkRangeErr[];
 
-extern u8 lbl_802C8680[];
+extern u8 gGameTextFontMetrics[];
 #define PAD_BUTTON_A     0x100
 #define PAD_BUTTON_B     0x200
 #define PAD_BUTTON_START 0x1000
@@ -157,11 +157,11 @@ void linkDrawFn_801302c0(void)
     {
         if (getCurLanguage() == 4)
         {
-            iconWidth = *(u16*)(lbl_802C8680 + 0xa) + 2;
+            iconWidth = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
         }
         else
         {
-            iconWidth = *(u16*)(lbl_802C8680 + 0x4a) + 2;
+            iconWidth = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
         }
         selLeft = sel->textLeft - 2;
     }
@@ -188,11 +188,11 @@ void linkDrawFn_801302c0(void)
             {
                 if (getCurLanguage() == 4)
                 {
-                    iconWidth = *(u16*)(lbl_802C8680 + 0xa) + 2;
+                    iconWidth = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
                 }
                 else
                 {
-                    iconWidth = *(u16*)(lbl_802C8680 + 0x4a) + 2;
+                    iconWidth = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
                 }
                 itemLeft = gTumbleweedBushItems[i].textLeft - 2;
             }
@@ -252,11 +252,11 @@ void linkDrawFn_80130484(void)
         {
             if (getCurLanguage() == 4)
             {
-                iconWidth = *(u16*)(lbl_802C8680 + 0xa) + 2;
+                iconWidth = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
             }
             else
             {
-                iconWidth = *(u16*)(lbl_802C8680 + 0x4a) + 2;
+                iconWidth = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
             }
             left = item->textLeft - 2;
         }

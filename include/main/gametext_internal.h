@@ -85,8 +85,8 @@ extern GameTextFont* gameTextFonts;
 extern int gameTextCharset;
 extern int curLanguage;
 extern LanguageName sLanguageNameTable[];
-extern FontSizeEntry lbl_802C8680[];
-extern SpecialGlyph lbl_802C86F0[];
+extern FontSizeEntry gGameTextFontMetrics[];
+extern SpecialGlyph gGameTextCtrlCodeArgCounts[];
 
 extern char sMapDirectoryNameArwing[];
 extern char sMapDirectoryNameBoot[];

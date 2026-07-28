@@ -109,7 +109,7 @@ static inline int textCountChars(char* lineStr)
         byteOffset += charLen;
         if (ch >= 0xe000 && ch <= 0xf8ff)
         {
-            SpecialGlyph* g = lbl_802C86F0;
+            SpecialGlyph* g = gGameTextCtrlCodeArgCounts;
             int n;
             int val = 0;
             for (n = 46; n-- != 0;)
@@ -245,7 +245,7 @@ void gameTextRenderStrs(char* str, int boxIdx)
     if (lbl_803DC9C0 != 1)
     {
         slot->alignment = slot->alignH;
-        if (lbl_803DC9BC == 0)
+        if (gGameTextMeasureOnly == 0)
         {
             gameTextDrawBox(NULL, (int)str, slot);
         }
@@ -260,11 +260,11 @@ void gameTextRenderStrs(char* str, int boxIdx)
     {
         gxSetScissorRect(0, 0, 0, 0, 0x280, 0x1e0);
     }
-    else if (lbl_803DC9BC == 0)
+    else if (gGameTextMeasureOnly == 0)
     {
         gxSetScissorRect(0, 0, slot->x, slot->y, slot->x + slot->width, slot->y + slot->height);
     }
-    lbl_803DC9A0 = slot->scale;
+    gGameTextScale = slot->scale;
     for (i = 0; i < count; i++)
     {
         if (i == count - 1 && slot->alignment == 3)
@@ -272,20 +272,20 @@ void gameTextRenderStrs(char* str, int boxIdx)
             slot->alignment = 0;
             closeAtEnd = 1;
         }
-        if (lbl_803DC984 == 1 && lbl_803DC9BC == 0)
+        if (lbl_803DC984 == 1 && gGameTextMeasureOnly == 0)
         {
-            u8 save7 = lbl_803DC9A7;
-            u8 save6 = lbl_803DC9A6;
-            u8 save5 = lbl_803DC9A5;
-            f32 saveColor = lbl_803DC9A0;
-            lbl_803DC9A7 = lbl_803DC992;
-            lbl_803DC9A6 = lbl_803DC991;
-            lbl_803DC9A5 = lbl_803DC990;
+            u8 save7 = gGameTextColorR;
+            u8 save6 = gGameTextColorG;
+            u8 save5 = gGameTextColorB;
+            f32 saveColor = gGameTextScale;
+            gGameTextColorR = lbl_803DC992;
+            gGameTextColorG = lbl_803DC991;
+            gGameTextColorB = lbl_803DC990;
             textRenderStr(lines[i], slot, slot->cursorX, slot->cursorY, lineH, 1);
-            lbl_803DC9A7 = save7;
-            lbl_803DC9A6 = save6;
-            lbl_803DC9A5 = save5;
-            lbl_803DC9A0 = saveColor;
+            gGameTextColorR = save7;
+            gGameTextColorG = save6;
+            gGameTextColorB = save5;
+            gGameTextScale = saveColor;
         }
         textRenderStr(lines[i], slot, slot->cursorX, slot->cursorY, lineH, 0);
         slot->cursorY = (s16)((f32)slot->cursorY + lineH);
@@ -294,7 +294,7 @@ void gameTextRenderStrs(char* str, int boxIdx)
             slot->alignment = 3;
         }
     }
-    if (lbl_803DC9BC == 0)
+    if (gGameTextMeasureOnly == 0)
     {
         Camera_ApplyCurrentViewport(NULL);
     }
@@ -718,14 +718,14 @@ u8 lbl_802C8048[1592] = {
     0, 0,   0, 0,   0,  0,   0, 0,
 };
 
-FontSizeEntry lbl_802C8680[7] = {
+FontSizeEntry gGameTextFontMetrics[7] = {
     {{0, 0, 14, 170, 21, 10, 2, 0, 0, 21}, 21, {0, 0, 0, 0}}, {{0, 0, 0, 1, 14, 7, 1, 0, 0, 14}, 21, {0, 0, 0, 0}},
     {{0, 0, 0, 11, 30, 15, 1, 0, 0, 30}, 22, {0, 0, 0, 0}},   {{0, 0, 0, 6, 32, 16, 1, 0, 0, 32}, 24, {0, 0, 0, 0}},
     {{0, 0, 0, 136, 21, 10, 2, 0, 0, 21}, 21, {0, 0, 0, 0}},  {{0, 0, 0, 8, 46, 23, 1, 0, 0, 46}, 55, {0, 0, 0, 0}},
     {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, {0, 0, 0, 0}},
 };
 
-SpecialGlyph lbl_802C86F0[46] = {
+SpecialGlyph gGameTextCtrlCodeArgCounts[46] = {
     {0x0000F8F2, 0x00000002}, {0x0000F8F3, 0x00000000}, {0x0000F8F4, 0x00000001}, {0x0000F8F5, 0x00000001},
     {0x0000F8F6, 0x00000001}, {0x0000F8F7, 0x00000001}, {0x0000F8F8, 0x00000000}, {0x0000F8F9, 0x00000000},
     {0x0000F8FA, 0x00000000}, {0x0000F8FB, 0x00000000}, {0x0000F8FC, 0x00000000}, {0x0000F8FD, 0x00000000},

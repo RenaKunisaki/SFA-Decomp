@@ -66,7 +66,7 @@
 #include "main/track_dolphin_sky_api.h"
 
 int gShadowVolumeBuffer;
-void* lbl_803DCF24[2];
+void* gShadowVolumeBuffers[2];
 int lbl_803DCF20;
 int lbl_803DCF1C;
 int lbl_803DCF18;
@@ -82,21 +82,21 @@ s16 lbl_803DCEF8;
 s16 lbl_803DCEF6;
 s16 lbl_803DCEF4;
 s16 gShadowVisibleCount;
-s16 lbl_803DCEF0;
+s16 gShadowTrackTriangleCount;
 s8 lbl_803DCEEE;
 s8 lbl_803DCEED;
-s8 lbl_803DCEEC;
+s8 gShadowVolumeBufferSelect;
 s8 lbl_803DCEEB;
 s8 lbl_803DCEEA;
 u8 lbl_803DCEE9;
 u8 lbl_803DCEE8;
-int lbl_803DCEE4;
-int lbl_803DCEE0;
+int gShadowTrackGridOrigin;
+int gShadowTrackTriangleBuffer;
 f32 gShadowOffsetZ;
 f32 gShadowOffsetX;
 
 f32 gShadowOffsetY = 1.0f;
-f32 lbl_803DB654 = 1.0f;
+f32 gShadowAlphaScale = 1.0f;
 s8 gShadowVolumesDirty = 10;
 s16 gSunMagnitude = 100;
 int gSunDirChanged = 1;
@@ -145,7 +145,7 @@ int objShadowFn_80062378(GameObject* obj, u8 param);
 
 void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale);
 
-f32 lbl_8038D7DC[0x19];
+f32 gShadowVolumeBoxCorners[0x19];
 f32 gPrevSunDir[3];
 
 u8 gShadowDrawScratch[0x5DC0];
@@ -214,16 +214,16 @@ void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale)
     xf.rotX = (s16)getAngle(direction[0], direction[2]);
     for (i = 0; i < 8; i++)
     {
-        out[i * 3 + 0] = lbl_8038D7DC[i * 3 + 0];
-        if (lbl_8038D7DC[i * 3 + 1] > 0.0f)
+        out[i * 3 + 0] = gShadowVolumeBoxCorners[i * 3 + 0];
+        if (gShadowVolumeBoxCorners[i * 3 + 1] > 0.0f)
         {
-            out[i * 3 + 1] = lbl_8038D7DC[i * 3 + 1];
+            out[i * 3 + 1] = gShadowVolumeBoxCorners[i * 3 + 1];
         }
         else
         {
-            out[i * 3 + 1] = lowerScale * lbl_8038D7DC[i * 3 + 1];
+            out[i * 3 + 1] = lowerScale * gShadowVolumeBoxCorners[i * 3 + 1];
         }
-        out[i * 3 + 2] = lbl_8038D7DC[i * 3 + 2];
+        out[i * 3 + 2] = gShadowVolumeBoxCorners[i * 3 + 2];
         vecRotateZXY(&xf.rotX, &out[i * 3]);
     }
 }
@@ -782,9 +782,9 @@ int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameC
         alpha = alphaOut;
         idxOut = collectShadowTrackTriangles((int*)obj, alpha, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
                              (f32)(int)vtx[2], renderMode, modelState->flags & 0x40000);
-        lbl_803DCEE0 = alpha;
-        lbl_803DCEF0 = idxOut;
-        lbl_803DCEE4 = (int)vtx;
+        gShadowTrackTriangleBuffer = alpha;
+        gShadowTrackTriangleCount = idxOut;
+        gShadowTrackGridOrigin = (int)vtx;
         trackDolphin_buildShadowVolumePlanes((int*)obj, buf48, bufA8);
         cullVisibleShadowTriangles(obj, buf48, bufA8, idxOut, (Vec3f*)gShadowVolumeBuffer, (Vec3f*)cache,
                     (TrackShadowTriangle*)gShadowDrawScratch, 0x555);
@@ -824,7 +824,7 @@ u8 objShadowUpdateAlpha(GameObject* obj, int delta)
         }
     }
     f31 = (1.0f / 16384.0f) * (f32)*alphaStep;
-    f31 = lbl_803DB654 * f31;
+    f31 = gShadowAlphaScale * f31;
     {
         f32 tint = objShadowFn_80062378(obj, modelState->shadowTintA);
         v = (s16)(int)(tint * f31);
@@ -852,10 +852,10 @@ void shadowVolumeBeginFrame(void)
     lbl_803DCEF8 = zero;
     lbl_803DCEFC = zero;
     lbl_803DCEF4 = zero;
-    lbl_803DCEEC = 1 - lbl_803DCEEC;
+    gShadowVolumeBufferSelect = 1 - gShadowVolumeBufferSelect;
     lbl_803DCEED = 1 - lbl_803DCEED;
     lbl_803DCEEE = 1 - lbl_803DCEEE;
-    bufPtr = lbl_803DCF24[lbl_803DCEEC];
+    bufPtr = gShadowVolumeBuffers[gShadowVolumeBufferSelect];
     lbl_803DCF08 = bufPtr;
     lbl_803DCEF4 = zero;
     lbl_803DCF10 = lbl_803DCF20;
@@ -962,7 +962,7 @@ void shadowSetLightDirection(f32 directionX, f32 directionY, f32 directionZ, int
     gSunMagnitude = magnitude;
     gShadowOffsetX = directionX * magnitude;
     gShadowOffsetY = directionY * magnitude;
-    lbl_803DB654 = 1.0f;
+    gShadowAlphaScale = 1.0f;
     if (gShadowOffsetY < 80.0f)
     {
         gShadowOffsetY = 80.0f;
@@ -1009,7 +1009,7 @@ void shadowSetLightDirection(f32 directionX, f32 directionY, f32 directionZ, int
 void initTextures(void)
 {
     f32* a = lbl_8038D77C;
-    f32* b = lbl_8038D7DC;
+    f32* b = gShadowVolumeBoxCorners;
 
     gShadowVolumesDirty = 10;
     gShadowVolumeBuffer = (int)mmAlloc(0xa8c0, 0x18, 0);

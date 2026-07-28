@@ -70,7 +70,7 @@
 #define SNOWBIKE_AIRMETER_BGTEXTURE 0x5cd
 
 const GXColor lbl_803E5AE0 = {5, 5, 5, 5};
-const GXColor lbl_803E5AE4 = {0x20, 0x20, 0x20, 0x80};
+const GXColor sSnowBikeTrailTevColor = {0x20, 0x20, 0x20, 0x80};
 
 typedef union SnowBikeCheckpointRank
 {
@@ -80,9 +80,9 @@ typedef union SnowBikeCheckpointRank
 
 STATIC_ASSERT(sizeof(SnowBikeCheckpointRank) == 0x38);
 
-SnowBikeCheckpointRank lbl_803AD088;
+SnowBikeCheckpointRank gSnowBikeLeaderRankItem;
 
-f32 lbl_803284E0[19] = {
+f32 gSnowBikePathSetupPoints[19] = {
     -6.5f, 0.0f,  -13.0f, 6.5f, 0.0f, -13.0f, 6.5f, 0.0f, 13.0f, -6.5f,
     0.0f,  13.0f, 1.0f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f,
 };
@@ -98,16 +98,16 @@ s16 gSnowBikeHitObjectIdTable[26] = {
 
 int gSnowBikeMountRomListTable[6] = {0x30C60, 0x30C60, 0x30C60, 0xC9E, 0xC9F, 0xCB3};
 
-f32 lbl_803DC0B8 = 15.0f;
-int lbl_803DC0BC = -1;
-f32 lbl_803DC0C0 = 8.5f;
-f32 lbl_803DC0C4 = 6.0f;
-f32 lbl_803DC0C8 = 1.05f;
-int lbl_803DC0CC = 5000;
-int lbl_803DC0D0 = 60;
-int lbl_803DC0D4 = 20;
-f32 lbl_803DC0D8 = 4.7f;
-s16 lbl_803DC0DC = 0x4000;
+f32 gSnowBikeCollisionRadius = 15.0f;
+int gSnowBikeLeaderRouteRank = -1;
+f32 gSnowBikeClawBikeVelLimitZ = 8.5f;
+f32 gSnowBikeCrBikeVelLimitZ = 6.0f;
+f32 gSnowBikeBoostFxDamping = 1.05f;
+int gSnowBikeAirRefillAmount = 5000;
+int gSnowBikeBoostFxDuration = 60;
+int gSnowBikeHardCollisionFxDuration = 20;
+f32 gSnowBikeAirDrainRate = 4.7f;
+s16 gSnowBikeWrongWayAngleThreshold = 0x4000;
 f32 gDrCloudCageRouteDistGate = 2000.0f;
 char sSnowBikeVelDebugFmt[] = "vel %f\n";
 
@@ -128,7 +128,7 @@ char sSnowBikeVelDebugFmt[] = "vel %f\n";
 #define GX_QUADS          0x80
 #define GX_VTXFMT2        2
 
-Texture* lbl_803DDC60;
+Texture* sSnowBikeTrailTexture;
 
 #define GXWGFifo (*(volatile ShWGPipe*)0xCC008000)
 
@@ -166,8 +166,8 @@ void SnowBike_DrawTrails(int p1, char* table)
     f32 texT;
     f32 texS;
 
-    color = lbl_803E5AE4;
-    selectTexture((Texture*)lbl_803DDC60, 0);
+    color = sSnowBikeTrailTevColor;
+    selectTexture((Texture*)sSnowBikeTrailTexture, 0);
     textureSetupFn_800799c0();
     geomDrawFn_800796f0();
     textRenderSetupFn_80079804();
@@ -232,7 +232,7 @@ void SnowBike_DrawTrails(int p1, char* table)
  *                then advances the trails via drcloudcage_updateTrails.
  *   drcloudcage_getRouteIntensity  returns a distance/route-rank weighted scalar (pitch/intensity)
  *                from the checkpoint route rank, falling back to player distance
- *                when no rank gate (lbl_803DC0BC) is set.
+ *                when no rank gate (gSnowBikeLeaderRouteRank) is set.
  *
  * State is addressed through raw byte offsets into the owning object's extra
  * block; trail buffers begin at DRCLOUDCAGE_TRAILS_OFFSET (DRCLOUDCAGE_TRAIL_COUNT
@@ -680,10 +680,10 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
     f32 stateMetric;
     int rank;
 
-    if ((lbl_803DC0BC == -1) ||
-        (rank = (*gCheckpointInterface)->getRouteRank((CheckpointRankItem*)(state + 0x28)), lbl_803DC0BC > rank))
+    if ((gSnowBikeLeaderRouteRank == -1) ||
+        (rank = (*gCheckpointInterface)->getRouteRank((CheckpointRankItem*)(state + 0x28)), gSnowBikeLeaderRouteRank > rank))
     {
-        if (lbl_803DC0BC == -1)
+        if (gSnowBikeLeaderRouteRank == -1)
         {
             rank = (int)Obj_GetPlayerObject();
             d = Vec_distance(&obj->anim.worldPosX, (f32*)(rank + 0x18));
@@ -695,8 +695,8 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
              * its linkDepth (+0x1C = 0x44) and routeProgress (+0xC = 0x34) are
              * read here. These stay raw: spelling them as nested-struct members
              * (rankItem.linkDepth / rankItem.routeProgress) shifts codegen. */
-            templateMetric = 100.0f * (f32) * (s32*)(lbl_803AD088.bytes + 0x1c) +
-                             100.0f * *(f32*)(lbl_803AD088.bytes + 0xc);
+            templateMetric = 100.0f * (f32) * (s32*)(gSnowBikeLeaderRankItem.bytes + 0x1c) +
+                             100.0f * *(f32*)(gSnowBikeLeaderRankItem.bytes + 0xc);
             stateMetric = 100.0f * (f32) * (s32*)(state + 0x44) + 100.0f * *(f32*)(state + 0x34);
             d = templateMetric - stateMetric;
             d = (d >= 0.0f) ? d : -d;
@@ -999,7 +999,7 @@ void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
         st->routeState.matchedCheckpointId = -1;
         st->routeState.currentCheckpointId = -1;
         st->routeState.linkDepth = 0;
-        lbl_803DC0BC = -1;
+        gSnowBikeLeaderRouteRank = -1;
         gameBitSet = mainGetBit(st->gameBitPtr[0]);
         if (gameBitSet != 0)
         {
@@ -1034,8 +1034,8 @@ void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
                 headingDelta = headingDelta + 0xffff;
             }
             absoluteHeadingDelta = ((int)headingDelta >= 0) ? headingDelta : -headingDelta;
-            if ((int)((u32)(((int)(absoluteHeadingDelta ^ lbl_803DC0DC) >> 1) -
-                             ((absoluteHeadingDelta ^ lbl_803DC0DC) & absoluteHeadingDelta)) >> 0x1f) ==
+            if ((int)((u32)(((int)(absoluteHeadingDelta ^ gSnowBikeWrongWayAngleThreshold) >> 1) -
+                             ((absoluteHeadingDelta ^ gSnowBikeWrongWayAngleThreshold) & absoluteHeadingDelta)) >> 0x1f) ==
                 0)
             {
                 pathStep = timeDelta;
@@ -1055,15 +1055,15 @@ void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
             (*gCheckpointInterface)->queueRouteRankItem(&st->rankItem);
             st->routeRank = (s8)(*gCheckpointInterface)->getRouteRank(&st->rankItem);
             routeRank = st->routeRank;
-            if ((routeRank == 1) && (lbl_803DC0BC == -1))
+            if ((routeRank == 1) && (gSnowBikeLeaderRouteRank == -1))
             {
-                lbl_803DC0BC = -1;
+                gSnowBikeLeaderRouteRank = -1;
             }
             else
             {
-                lbl_803DC0BC = routeRank;
-                lbl_803AD088.item.linkDepth = st->routeState.linkDepth;
-                lbl_803AD088.item.routeProgress = st->routeState.routeProgress;
+                gSnowBikeLeaderRouteRank = routeRank;
+                gSnowBikeLeaderRankItem.item.linkDepth = st->routeState.linkDepth;
+                gSnowBikeLeaderRankItem.item.routeProgress = st->routeState.routeProgress;
             }
         }
         gameBitSet = mainGetBit(st->gameBitPtr[1]);
@@ -1086,7 +1086,7 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
         if (st->airMeterCurrent >= 0.0f)
         {
             td = timeDelta;
-            st->airMeterCurrent -= td * lbl_803DC0D8 + (f32)(s32)(st->airDrainRate * (td * PSVECMag(&st->localVelX)));
+            st->airMeterCurrent -= td * gSnowBikeAirDrainRate + (f32)(s32)(st->airDrainRate * (td * PSVECMag(&st->localVelX)));
             lim = 0.0f;
             if (lim != st->airMeterRefillTimer)
             {
@@ -1321,9 +1321,9 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
             if ((u32)(st->flags428 >> 1 & 1) == 0)
             {
                 setMotionBlur(1, 0.7f);
-                st->collisionFxTimer = (f32)(s32)lbl_803DC0D0;
-                st->collisionFxDamping = lbl_803DC0C8;
-                st->airMeterRefillTimer = (f32)(s32)lbl_803DC0CC;
+                st->collisionFxTimer = (f32)(s32)gSnowBikeBoostFxDuration;
+                st->collisionFxDamping = gSnowBikeBoostFxDamping;
+                st->airMeterRefillTimer = (f32)(s32)gSnowBikeAirRefillAmount;
             }
             break;
         }
@@ -1344,7 +1344,7 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
             st->collisionFxDamping = 1.0f;
             if ((u32)(st->flags428 >> 1 & 1) == 0)
             {
-                st->collisionFxTimer = (f32)(s32)lbl_803DC0D4;
+                st->collisionFxTimer = (f32)(s32)gSnowBikeHardCollisionFxDuration;
             }
         }
     }
@@ -1964,7 +1964,7 @@ typedef struct SnowBikeMountState
     f32 velocityZ;
 } SnowBikeMountState;
 
-/* texture asset loaded into lbl_803DDC60 (this DLL's only texture) */
+/* texture asset loaded into sSnowBikeTrailTexture (this DLL's only texture) */
 #define SNOWBIKE_TEXTURE_ID 0x186
 typedef struct SnowBikeRomListItem
 {
@@ -2018,12 +2018,12 @@ s32 SnowBike_isAtRankGate(GameObject* obj)
     int result = (*gCheckpointInterface)->getRouteRank((CheckpointRankItem*)(*(int*)&obj->extra + 0x28));
     if (result == 3)
     {
-        if (lbl_803DC0BC == -1)
+        if (gSnowBikeLeaderRouteRank == -1)
         {
             return 1;
         }
     }
-    return (u32)__cntlzw(lbl_803DC0BC - 1 - result) >> 5;
+    return (u32)__cntlzw(gSnowBikeLeaderRouteRank - 1 - result) >> 5;
 }
 
 void SnowBike_func17(void)
@@ -2630,7 +2630,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     u8* state;
     SnowBikeState* s;
 
-    base[0] = (char*)lbl_803284E0;
+    base[0] = (char*)gSnowBikePathSetupPoints;
     pathParam = lbl_803E5AE0;
     state = obj->extra;
     s = (SnowBikeState*)state;
@@ -2734,7 +2734,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
         break;
     case SNOWBIKE_CR_BIKE_OBJ:
         s->bikeType = 0;
-        s->velLimitZ = lbl_803DC0C4;
+        s->velLimitZ = gSnowBikeCrBikeVelLimitZ;
         s->modelId = 282;
         break;
     case SNOWBIKE_CR_CLAWBIKE_V0_OBJ:
@@ -2742,21 +2742,21 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
         s->bikeVariant = 0;
         s->unk01C = 200.0f;
         s->unk018 = 600.0f;
-        s->velLimitZ = 1.2f * lbl_803DC0C0;
+        s->velLimitZ = 1.2f * gSnowBikeClawBikeVelLimitZ;
         break;
     case SNOWBIKE_CR_CLAWBIKE_V1_OBJ:
         s->bikeType = 0;
         s->bikeVariant = 1;
         s->unk01C = 100.0f;
         s->unk018 = 500.0f;
-        s->velLimitZ = 1.1f * lbl_803DC0C0;
+        s->velLimitZ = 1.1f * gSnowBikeClawBikeVelLimitZ;
         break;
     case SNOWBIKE_CR_CLAWBIKE_V2_OBJ:
         s->bikeType = 0;
         s->bikeVariant = 2;
         s->unk01C = 100.0f;
         s->unk018 = 500.0f;
-        s->velLimitZ = lbl_803DC0C0;
+        s->velLimitZ = gSnowBikeClawBikeVelLimitZ;
         break;
     }
     fv = s->velLimitX;
@@ -2788,31 +2788,31 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     (*gPathControlInterface)->setup(path, 4, base[0], base[0] + 0x30, &pathParam);
     if (((SnowBikeFlags*)(state + 0x428))->b02 && s->collisionHitType != -1)
     {
-        curves_setLocalPointCollisionEx((CurvesCollisionState*)path, 1, (f32*)(base[0] + 0x40), &lbl_803DC0B8, 8,
+        curves_setLocalPointCollisionEx((CurvesCollisionState*)path, 1, (f32*)(base[0] + 0x40), &gSnowBikeCollisionRadius, 8,
                                         s->collisionHitType);
     }
     else
     {
-        (*gPathControlInterface)->setLocalPointCollision(path, 1, base[0] + 0x40, &lbl_803DC0B8, 8);
+        (*gPathControlInterface)->setLocalPointCollision(path, 1, base[0] + 0x40, &gSnowBikeCollisionRadius, 8);
     }
-    path[0x264] = 10.0f + lbl_803DC0B8;
+    path[0x264] = 10.0f + gSnowBikeCollisionRadius;
     (*gPathControlInterface)->attachObject((void*)obj, path);
 }
 
 void SnowBike_release(void)
 {
-    if (lbl_803DDC60 != 0)
+    if (sSnowBikeTrailTexture != 0)
     {
-        textureFree((Texture*)((u8*)lbl_803DDC60));
-        lbl_803DDC60 = 0;
+        textureFree((Texture*)((u8*)sSnowBikeTrailTexture));
+        sSnowBikeTrailTexture = 0;
     }
 }
 
 void SnowBike_initialise(void)
 {
-    if (lbl_803DDC60 == 0)
+    if (sSnowBikeTrailTexture == 0)
     {
-        lbl_803DDC60 = textureLoadAsset(SNOWBIKE_TEXTURE_ID);
+        sSnowBikeTrailTexture = textureLoadAsset(SNOWBIKE_TEXTURE_ID);
     }
 }
 

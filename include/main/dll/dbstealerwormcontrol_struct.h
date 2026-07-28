@@ -14,7 +14,7 @@ struct GameObject;
 
 typedef struct DbStealerwormControl
 {
-    int cfg; /* entry in the lbl_80329514 table (stride 8 ints) */
+    int cfg; /* entry in the gDbStealerwormScriptTable table (stride 8 ints) */
     f32 unk04;
     f32 unk08;
     f32 countdown; /* countdown; init randomGetRange(10, 300) */

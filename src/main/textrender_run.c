@@ -227,7 +227,7 @@ extern TextFont* gameTextFonts;
 typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
 extern GameTextDrawFunc gameTextDrawFunc;
 extern LanguageName sLanguageNameTable[];
-extern u8 lbl_802C8680[];
+extern u8 gGameTextFontMetrics[];
 extern int gGameTextShadowOffsetX;
 extern int gGameTextShadowOffsetY;
 extern int gameTextCharset;
@@ -257,8 +257,8 @@ extern char gGameTextFontData[];
 extern u16 gGameTextSjisGlyphTable[];
 extern char sGameTextMapPathFormat[];
 extern GXColor gGameTextClearColor;
-extern int lbl_803DB3C4;
-extern char lbl_803DB3D4[5];
+extern int gGameTextFontTexRowPitch;
+extern char sGameTextBlankFormat[5];
 extern GameTextStateElem gGameTextCharsets[];
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 
@@ -279,10 +279,10 @@ void gameTextLoadDir(int dirId)
     GXColor color;
     int slotIndex;
 
-    lbl_803DC9A7 = 0xff;
-    lbl_803DC9A6 = 0xff;
-    lbl_803DC9A5 = 0xff;
-    lbl_803DC9A4 = 0xff;
+    gGameTextColorR = 0xff;
+    gGameTextColorG = 0xff;
+    gGameTextColorB = 0xff;
+    gGameTextColorA = 0xff;
 
     if (dirId == 3)
     {
@@ -290,7 +290,7 @@ void gameTextLoadDir(int dirId)
         gameTextCharset = GAMETEXT_SLOT_ERROR;
         color = gGameTextClearColor;
         hudDrawRect(0, 0, 0xa00, 0x780, color);
-        lbl_803DC99C = 0;
+        gGameTextRevealActive = 0;
         if (gameTextDrawFunc == NULL)
         {
             slotIndex = gGameTextCommandCount;
@@ -498,7 +498,7 @@ void gameTextRun(void)
                 {
                     *timer = zero;
                     *alpha = zero;
-                    sprintf(*entry->text, lbl_803DB3D4);
+                    sprintf(*entry->text, sGameTextBlankFormat);
                 }
             }
         }
@@ -520,7 +520,7 @@ void gameTextRun(void)
         textBox++;
     }
 
-    lbl_803DC99C = 0;
+    gGameTextRevealActive = 0;
     lbl_803DC9AA = 0;
     lbl_803DC9A8 = 0;
 
@@ -535,10 +535,10 @@ void gameTextRun(void)
             c3 = cmd->arg3;
             c2 = cmd->arg2;
             c1 = cmd->arg1;
-            lbl_803DC9A7 = cmd->arg0;
-            lbl_803DC9A6 = c1;
-            lbl_803DC9A5 = c2;
-            lbl_803DC9A4 = c3;
+            gGameTextColorR = cmd->arg0;
+            gGameTextColorG = c1;
+            gGameTextColorB = c2;
+            gGameTextColorA = c3;
             break;
         }
         case 4:
@@ -628,14 +628,14 @@ void gameTextRun(void)
             {
                 color = gGameTextClearColor;
                 hudDrawRect(0, 0, 0xa00, 0x780, color);
-                lbl_803DC99C = 0;
+                gGameTextRevealActive = 0;
             }
             break;
         }
         cmd++;
     }
 
-    if (lbl_803DC99C == 0)
+    if (gGameTextRevealActive == 0)
     {
         Sfx_StopFromObject(0, SFXTRIG_clock_loop);
     }
@@ -735,11 +735,11 @@ void gameTextInitFn_8001a234(void)
     gCurTextBox = NULL;
     gGameTextLastLanguage = -1;
     gGameTextLastDir = -1;
-    lbl_803DC9BC = 0;
-    lbl_803DC9A7 = 0xff;
-    lbl_803DC9A6 = 0xff;
-    lbl_803DC9A5 = 0xff;
-    lbl_803DC9A4 = 0xff;
+    gGameTextMeasureOnly = 0;
+    gGameTextColorR = 0xff;
+    gGameTextColorG = 0xff;
+    gGameTextColorB = 0xff;
+    gGameTextColorA = 0xff;
     gGameTextCommandCount = 0;
     lbl_803DC9C4 = (char*)(gameTextBase + GAMETEXT_COMMAND_STRING_BUFFER_OFFSET);
     gGameTextBufferIndex = 0;
@@ -755,7 +755,7 @@ void gameTextInitFn_8001a234(void)
     lbl_803DC980 = 0;
     gameTextLoadGraphicsFn_8001a918();
     curGameTextDir = (void*)3;
-    lbl_803DB378 = (void*)mmCreateMemoryStore(0x800);
+    gGameTextStringStore = (void*)mmCreateMemoryStore(0x800);
 }
 
 extern char sGameTextSequencePathFormat[];
@@ -965,7 +965,7 @@ void gameTextLoadGraphicsFn_8001a918(void)
     s32 width;
 
     fontData = (u8*)gGameTextFontData;
-    base30 = lbl_802C8680;
+    base30 = gGameTextFontMetrics;
     charset = (TextFont*)&gGameTextCharsets[GAMETEXT_SLOT_ERROR];
     savedHeap = testAndSet_onlyUseHeap3(0);
     buf = mmAlloc(0x120, 0x1a, 0);
@@ -1100,7 +1100,7 @@ void gameTextLoadGraphicsFn_8001a918(void)
                 {
                     int k;
                     dst = (u8*)charset->textures[0] + (j2 << 5);
-                    dst += row * lbl_803DB3C4;
+                    dst += row * gGameTextFontTexRowPitch;
                     for (k = 0; k < 8; k++)
                     {
                         *(u32*)(dst + 0x60 + k * 4) = src[k];
@@ -1452,7 +1452,7 @@ void gameTextSetCharset(int charset, int flags)
         {
             GXColor color = gGameTextClearColor;
             hudDrawRect(0, 0, 0xa00, 0x780, color);
-            lbl_803DC99C = 0;
+            gGameTextRevealActive = 0;
         }
     }
     if (gameTextDrawFunc == NULL || (flags & 2))
