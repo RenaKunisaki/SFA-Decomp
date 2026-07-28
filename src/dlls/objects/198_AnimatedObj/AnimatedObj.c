@@ -84,7 +84,7 @@ void animatedobj_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, 
         PSMTXConcat(flipZ, cameraFlippedY, cameraFlippedYZ);
         PSMTXConcat(cameraTranslation, cameraFlippedYZ, mirroredCamera);
         PSMTXConcat(mirroredCamera, translatedWorld, renderMatrix);
-        objSetMtxFn_800412d4((u32)renderMatrix);
+        objSetCurrentMatrix((u32)renderMatrix);
         objRenderModel(obj);
     } else {
         objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);

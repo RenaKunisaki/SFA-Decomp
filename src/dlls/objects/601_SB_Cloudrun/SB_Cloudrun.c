@@ -620,7 +620,7 @@ void SB_CloudRunner_func23(void)
 
 void SB_CloudRunner_setGroundMarkerMatrix(void* obj)
 {
-    objSetMtxFn_800412d4(ObjPath_GetPointModelMtx(obj, 3));
+    objSetCurrentMatrix(ObjPath_GetPointModelMtx(obj, 3));
 }
 
 

@@ -3948,7 +3948,7 @@ u8 initLoadFiles(void)
                     *it.sizes = fileInfo->length;
                     *it.ptrs = mmAlloc(*it.sizes + 0x20, 0x7d7d7d7d, 0);
                     gPendingDvdReadCount = gPendingDvdReadCount + 1;
-                    DVDReadAsyncPrio(fileInfo, *it.ptrs, *it.sizes, 0, dvdReadCb_80041d30, 2);
+                    DVDReadAsyncPrio(fileInfo, *it.ptrs, *it.sizes, 0, initLoadFileReadCb, 2);
                 }
                 *it.owners = -1;
                 *it.ids = -1;

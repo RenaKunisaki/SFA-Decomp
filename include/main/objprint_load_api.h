@@ -20,7 +20,7 @@ void animReadCb(s32 result, DVDFileInfo* fileInfo);
 void animTabReadCb(s32 result, DVDFileInfo* fileInfo);
 void modelsReadCb(s32 result, DVDFileInfo* fileInfo);
 void modelsTabReadCb(s32 result, DVDFileInfo* fileInfo);
-void dvdReadCb_80041d30(s32 result, DVDFileInfo* fileInfo);
+void initLoadFileReadCb(s32 result, DVDFileInfo* fileInfo);
 void romListReadCb(s32 result, DVDFileInfo* fileInfo);
 s32 ObjLoad_GetDvdCommandBlockStatus(DVDCommandBlock* block);
 

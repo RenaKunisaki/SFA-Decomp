@@ -116,7 +116,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
         mag = PSVECMag((Vec*)jointPos);
         obj->anim.rotZ = (s16)(lbl_803DC2F0 + getAngle(jointPos[0], jointPos[2]));
         obj->anim.rotY = (s16)(lbl_803DDD70 + getAngle(mag, savedY));
-        objSetMtxFn_800412d4(ObjPath_GetPointModelMtx((GameObject*)a, b));
+        objSetCurrentMatrix(ObjPath_GetPointModelMtx((GameObject*)a, b));
     }
     ObjPath_GetPointWorldPosition((GameObject*)a, b, &obj->anim.localPosX, &obj->anim.localPosY, &obj->anim.localPosZ,
                                   0);

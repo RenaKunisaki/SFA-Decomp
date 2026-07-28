@@ -153,7 +153,7 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
         }
         if (state->phase == SHSTAFF_PHASE_CARRY_RENDER) {
             PSMTXConcat((f32*)ObjPath_GetPointModelMtx((GameObject*)player, 0), state->carryMatrix, mtxB);
-            objSetMtxFn_800412d4((u32)mtxB);
+            objSetCurrentMatrix((u32)mtxB);
             objRenderModel(obj);
         } else {
             objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);

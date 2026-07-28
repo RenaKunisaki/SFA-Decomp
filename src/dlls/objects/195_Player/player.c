@@ -17661,9 +17661,9 @@ void fn_802B4ED8(GameObject* obj, int p2, int mode)
     }
     else if (m == 4)
     {
-        fuzzRenderFn_800412dc((int*)obj);
+        objRenderFuzzShells((int*)obj);
     }
-    objSetMtxFn_800412d4(0);
+    objSetCurrentMatrix(0);
     obj->anim.localPosY = obj->anim.localPosY - inner->sinkOffsetY;
     if ((*(u32*)&((PlayerState*)inner)->flags360 & 0x8000000) != 0)
     {

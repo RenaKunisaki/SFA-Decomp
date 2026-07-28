@@ -631,9 +631,9 @@ void renderObjectShadowTexture(GameObject* obj)
         ObjModel* model;
         saved = obj->anim.rootMotionScale;
         obj->anim.rootMotionScale = objScale;
-        set_shadowFlag_803dcc29(1);
+        objSetRenderingShadowPass(1);
         objRender(0, 0, 0, 0, obj, 1);
-        set_shadowFlag_803dcc29(0);
+        objSetRenderingShadowPass(0);
         obj->anim.rootMotionScale = saved;
         model = (ObjModel*)Obj_GetActiveModel(obj);
         model->bufferFlags &= ~0x8;
