@@ -44,7 +44,7 @@ void gxSetAlphaBlendZTest(void);
 void textRenderSetup(void);
 void gxTevAddColor1Stage(void);
 void gxTevModulateColor1Stage(void);
-void gxTextureFn_800794e0(void);
+void gxTevColor1TexAlphaStage(void);
 void gxTevTextureTimesColor1Stage(void);
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u8 alpha1, f32 s3);

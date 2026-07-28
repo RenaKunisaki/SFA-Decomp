@@ -78,7 +78,7 @@ void crrockfall_hitDetect(void) {
 void crrockfall_update(GameObject* obj) {
     CrRockfallState* state = obj->extra;
     ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
-    ObjModelState* modelState = obj->anim.modelState;
+    void* phaseData = obj->anim.modelState;
     const CrRockfallPlacement* placement = (const CrRockfallPlacement*)obj->anim.placementData;
 
     if (gCrRockfallResource == NULL) {
@@ -87,13 +87,13 @@ void crrockfall_update(GameObject* obj) {
 
     if (state->floorFound == 0) {
         state->floorY = crrockfall_findFloorY(obj);
-        if (state->floorFound != 0 && modelState != NULL) {
-            modelState->overrideWorldPosY = state->floorY;
+        if (state->floorFound != 0 && phaseData != NULL) {
+            ((ObjModelState*)phaseData)->overrideWorldPosY = state->floorY;
             objShadowInvalidate(obj);
         }
         return;
     } else {
-        if (modelState != NULL) {
+        if (phaseData != NULL) {
             f32 heightFraction;
             f32 height;
             f32 playerDistance;
@@ -121,7 +121,7 @@ void crrockfall_update(GameObject* obj) {
             playerDistance = (playerDistance - 250.0f) / 100.0f;
             playerDistance = 1.0f - playerDistance;
             alphaScale = (int)(120.0f * height) + 0x40;
-            modelState->shadowAlpha =
+            ((ObjModelState*)phaseData)->shadowAlpha =
                 (int)(((f32)(u32)obj->anim.renderAlpha / 255.0f) * ((f32)alphaScale * playerDistance));
         }
 
@@ -131,7 +131,6 @@ void crrockfall_update(GameObject* obj) {
 
         switch (state->mode) {
         case CR_ROCKFALL_MODE_ARMED: {
-            const CrRockfallPlacement* armedPlacement;
             f32 xzDistance;
             f32 verticalDistance;
             int inRange;
@@ -140,13 +139,14 @@ void crrockfall_update(GameObject* obj) {
             if (player == NULL) {
                 inRange = 0;
             } else {
-                armedPlacement = (const CrRockfallPlacement*)obj->anim.placementData;
+                phaseData = obj->anim.placementData;
                 xzDistance = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
                 verticalDistance = obj->anim.localPosY - player->anim.localPosY;
                 if (verticalDistance < 0.0f) {
                     verticalDistance = 0.0f;
                 }
-                if (xzDistance < 4.0f * (f32)(u32)armedPlacement->triggerRange && verticalDistance < 300.0f) {
+                if (xzDistance < 4.0f * (f32)(u32)((const CrRockfallPlacement*)phaseData)->triggerRange &&
+                    verticalDistance < 300.0f) {
                     inRange = 1;
                 } else {
                     inRange = 0;

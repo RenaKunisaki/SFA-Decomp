@@ -985,7 +985,7 @@ void ObjSeq_AudioStreamCallback(void)
     }
     else if (gObjSeqSubtitleId != -1)
     {
-        subtitleFn_8001b700();
+        subtitleStop();
         subtitleStart(gObjSeqSubtitleId);
         gObjSeqSubtitleId = -1;
     }

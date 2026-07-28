@@ -233,7 +233,7 @@ int debugPrintDrawGlyph(int unused, int c)
     {
         px = (int)((f32)debugPrintXpos * (gDebugScaleX + gDebugScaleBiasX));
         py = (int)((f32)debugPrintYpos * (gDebugScaleY + gDebugScaleBiasY));
-        gxDebugTextureFn_80078c1c();
+        gxSetDebugTextMode();
         textRenderChar(px << 2, py << 2,
                        (int)(4.0f * ((f32)c * (gDebugScaleX + gDebugScaleBiasX) + px)),
                        (int)(4.0f * (10.0f * (gDebugScaleY + gDebugScaleBiasY) + py)),
@@ -550,7 +550,7 @@ void debugPrintDraw(int ctx)
         gDebugPrintOriginY = 0x20;
         gDebugMarginBottom = sh - 0x20;
     }
-    gxDebugTextureFn_80078c1c();
+    gxSetDebugTextMode();
     p = debugLogBuffer;
     tx = gDebugPrintOriginX;
     debugPrintXpos = tx;

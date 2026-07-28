@@ -433,7 +433,7 @@ void lightningRender(LightningEffect* p)
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
     gxTevResetStages();
-    gxTextureFn_800794e0();
+    gxTevColor1TexAlphaStage();
     gxTevCommitStages();
     gxSetAdditiveBlendZTest();
     getNewShadowLightningTexture(&tex);

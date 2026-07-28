@@ -298,7 +298,7 @@ void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj)
 #define MMP_GYSERVENT_PLACE_ROTY     0x3e /* rotY */
 #define MMP_GYSERVENT_PLACE_IDENT    0x14 /* ObjPlacement.ident */
 
-void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
+void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement)
 {
     MmpGyserventState* state;
     MatrixTransform xf;
@@ -1313,7 +1313,7 @@ void Trigger_init(GameObject* obj, u8* params)
         break;
     case 0x4c:
         ((TriggerState*)state)->gateBits[0] = ((TriggerPlacement*)params)->gateBitSrc[0];
-        objFn_80198fa4(obj, (MMPTriggerGeyserPlacement*)params);
+        MmpGyservent_setup(obj, (MMPTriggerGeyserPlacement*)params);
         break;
     case 0x230:
         ((TriggerState*)state)->rangeSq = (f32)(s32)(((TriggerPlacement*)params)->size[0] * 2);

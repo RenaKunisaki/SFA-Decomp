@@ -187,7 +187,7 @@ int setSubtitlesEnabled(int enabled)
     gSubtitlesEnabled = enabled;
     if (enabled == 0)
     {
-        subtitleFn_8001b700();
+        subtitleStop();
     }
     return old;
 }
