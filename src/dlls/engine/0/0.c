@@ -3782,7 +3782,6 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     u8* w4;
     int active;
     void** texW;
-    s16* idsW2;
     void** texP2;
     int i;
     s16 saved[CMENU_ITEM_SLOT_COUNT];
@@ -3945,18 +3944,18 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
         }
     }
     i = 0;
-    idsW2 = ids;
+    w1 = ids;
     texP2 = (void**)(base + 0x9c8);
     texW = texP2;
     do
     {
-        if (*dst > -1 && *dst != *idsW2 && *texW != 0)
+        if (*dst > -1 && *dst != *w1 && *texW != 0)
         {
             textureFree((Texture*)(*texW));
             *texW = 0;
         }
         dst++;
-        idsW2++;
+        w1++;
         texW++;
         i++;
     } while (i < CMENU_ITEM_SLOT_COUNT);
