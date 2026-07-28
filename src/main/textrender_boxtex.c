@@ -3,6 +3,10 @@
 #include "main/textrender_internal.h"
 #include "dolphin/os/OSCache.h"
 
+Texture* gGameTextBoxBgTexture;
+Texture* gGameTextBoxCornerTexture;
+Texture* gGameTextBoxEdgeTexture;
+
 void gameTextInitFn_8001c794(void)
 {
     Texture** q;
