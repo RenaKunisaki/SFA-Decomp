@@ -520,7 +520,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1DA | — | COMPLETE | dlls/objects/474/474.c | = (canonical) | Exact complete nine-function TU with its terminal numbered descriptor, allocation-backed 0x08-byte state, canonical collision-result type, canonical unit header, and exact 104-byte data image; active-target retail placement inputs are unavailable in this checkout, so no basename or placement layout is claimed, and the generated numeric source path remains unchanged |
 | 0x1DB | — | COMPLETE | dlls/objects/475/475.c | = (canonical) | Exact complete nine-function TU with its terminal numbered descriptor, allocation-backed 0x08-byte state, fully asserted callback-visible placement prefix, canonical unit header, and exact 96-byte data image; active-target retail placement inputs are unavailable in this checkout, so no basename or complete placement width is claimed, and the generated numeric source path remains unchanged |
 | 0x1DC | DIM2IceFloe | COMPLETE | dlls/objects/476_DIM2IceFloe/DIM2IceFloe.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor, allocation-backed and fully asserted 0xBC-byte state, fully asserted callback-visible placement prefix, canonical unit header, and exact 112-byte data image; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, and the generated source path remains unchanged |
-| 0x1DD | DIM2Icicle | COMPLETE | dlls/objects/477_DIM2Icicle/DIM2Icicle.c | = (canonical) | — |
+| 0x1DD | DIM2Icicle | COMPLETE | dlls/objects/477_DIM2Icicle/DIM2Icicle.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor, allocation-backed and fully asserted 0x0C-byte state, fully asserted callback-visible placement prefix, canonical unit header, and exact 96-byte data image; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, and the generated source path remains unchanged |
 | 0x1DE | DIM2LavaCon | COMPLETE | dlls/objects/478_DIM2LavaCon/DIM2LavaCon.c | = (canonical) | — |
 | 0x1DF | — | COMPLETE | dlls/objects/479/479.c | = (canonical) | No recovered retail basename |
 | 0x1E0 | DIM_Boss | COMPLETE | dlls/objects/480_DIM_Boss/DIM_Boss.c | = (canonical) | — |
@@ -1047,6 +1047,7 @@ more as they are recovered.
 | 0x1DA | dlls/objects/474/474.c | include/dlls/objects/474.h |
 | 0x1DB | dlls/objects/475/475.c | include/dlls/objects/475.h |
 | 0x1DC | dlls/objects/476_DIM2IceFloe/DIM2IceFloe.c | include/dlls/objects/476_DIM2IceFloe.h |
+| 0x1DD | dlls/objects/477_DIM2Icicle/DIM2Icicle.c | include/dlls/objects/477_DIM2Icicle.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |
