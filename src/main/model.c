@@ -6,6 +6,7 @@
 #include "main/shader_api.h"
 #include "main/debug.h"
 #include "main/model.h"
+#include "main/objmodel.h"
 #include "main/model_engine.h"
 #include "main/model_runtime_api.h"
 #include "main/mm.h"
@@ -3224,7 +3225,7 @@ void ObjModel_UnpackResourcePayload(u8* src, int srcSize, u8* dst, int dstSize)
     }
 }
 
-int return0_8002A5B8(void) { return 0x0; }
+int return0_8002A5B8(u8* resource) { return 0x0; }
 
 int ObjModel_GetUnpackedResourceSize(u8* resource, int baseSize)
 {

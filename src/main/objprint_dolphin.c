@@ -57,6 +57,7 @@
 #include "main/loaded_file_flags.h"
 #include "main/map_load.h"
 #include "main/objprint_load_api.h"
+#include "main/objprint_api.h"
 #include "main/table_file.h"
 #include "main/fileio.h"
 #include "main/vecmath.h"

@@ -160,6 +160,7 @@ extern volatile int lbl_803DCC80;
 #include "main/objprint_load_api.h"
 #include "dolphin/os/OSAlloc.h"
 #include "main/objmodel.h"
+#include "main/voxmaps.h"
 #include "main/newshadows_texture_api.h"
 #include "main/rcp_dolphin_render_api.h"
 #include "dolphin/gx/GXBump.h"
@@ -2861,7 +2862,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         {
             qptr = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]);
             fileBuf = qptr + offsetFlags;
-            tmp = return0_8002A5B8(fileBuf);
+            tmp = return0_8002A5B8((u8*)fileBuf);
             if (tmp != 0)
             {
                 *sizeOut = ObjModel_GetUnpackedResourceSize((u8*)fileBuf, *sizeOut);
@@ -2883,7 +2884,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         {
             qptr = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]);
             fileBuf = qptr + offsetFlags;
-            tmp = return0_8002A5B8(fileBuf);
+            tmp = return0_8002A5B8((u8*)fileBuf);
             if (tmp != 0)
             {
                 *sizeOut = ObjModel_GetUnpackedResourceSize((u8*)fileBuf, *sizeOut);
@@ -3405,7 +3406,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         else if (fileId == 0x30 || fileId == 0x51 || fileId == 0x4a)
         {
             fileBuf = qptr + offsetFlags;
-            tmp = return0_8002A5B8(fileBuf);
+            tmp = return0_8002A5B8((u8*)fileBuf);
             if (tmp != 0)
             {
                 ObjModel_UnpackResourcePayload((u8*)fileBuf, *sizeOut, (u8*)destBuf,

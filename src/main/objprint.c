@@ -1310,13 +1310,13 @@ void characterHeadLookCalm(GameObject* obj, s16* state, f32 value)
     }
 }
 
-void objSetGlowColor(int a, int b, int c, u8 d)
+void objSetGlowColor(int red, int green, int blue, u8 alpha)
 {
-    lbl_803DCC0D = a;
-    lbl_803DCC0C = b;
-    lbl_803DCC0B = c;
+    lbl_803DCC0D = red;
+    lbl_803DCC0C = green;
+    lbl_803DCC0B = blue;
     lbl_803DCC09 = 1;
-    lbl_803DCC0A = d;
+    lbl_803DCC0A = alpha;
 }
 
 

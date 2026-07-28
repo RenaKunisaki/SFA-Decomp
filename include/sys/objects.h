@@ -29,6 +29,7 @@ void Obj_SetActiveHitVolumeBounds(GameObject* obj, int xBound, int zBound, int y
 void Obj_ResetActiveHitVolumeBounds(GameObject* obj);
 void objSetHintTextIdx(GameObject* obj, u16 idx);
 void objSetSlot(GameObject* obj, s8 slot);
+void doNothing_beforeRenderObject(int a);
 void doNothing_afterRenderObject(void);
 
 #endif /* SYS_OBJECTS_H_ */
