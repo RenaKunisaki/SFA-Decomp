@@ -1987,13 +1987,17 @@ void ObjHits_DetectObjectPair(int objA, int objB)
             segSq = (sy * cy + sx * cx + sz * cz) / segSq;
             if ((segSq >= gObjHitsScalarZero) && (segSq <= gObjHitsScalarOne))
             {
-                cz = (segSq * sz + stateA->worldPosZ) - ((GameObject*)objB)->anim.worldPosZ;
-                cz = cz * cz;
-                cx = (segSq * sx + stateA->worldPosX) - ((GameObject*)objB)->anim.worldPosX;
-                cx = cx * cx;
-                cy = (segSq * sy + stateA->worldPosY) - ((GameObject*)objB)->anim.worldPosY;
-                cy = cy * cy;
-                dist = sqrtf(cz + (cx + cy));
+                f32 oz;
+                f32 ox;
+                f32 oy;
+
+                oz = (segSq * sz + stateA->worldPosZ) - ((GameObject*)objB)->anim.worldPosZ;
+                oz = oz * oz;
+                ox = (segSq * sx + stateA->worldPosX) - ((GameObject*)objB)->anim.worldPosX;
+                ox = ox * ox;
+                oy = (segSq * sy + stateA->worldPosY) - ((GameObject*)objB)->anim.worldPosY;
+                oy = oy * oy;
+                dist = sqrtf(oz + (ox + oy));
             }
         }
         if ((dist < sumRadius) && (dist > gObjHitsScalarZero))
@@ -2911,14 +2915,13 @@ typedef struct ObjPathPoint
 void ObjHitbox_SetStateIndex(GameObject* object, ObjHitReactState* hitStatePtr, int stateIndex)
 {
     ObjHitsPriorityState* hitState;
-    int slotIndex;
+    int i;
     ObjHitsPriorityWorkSlot* workSlot;
-    int modelCount;
 
-    modelCount = object->anim.modelInstance->modelCount;
-    if (stateIndex >= modelCount)
+    i = object->anim.modelInstance->modelCount;
+    if (stateIndex >= i)
     {
-        stateIndex = modelCount + -1;
+        stateIndex = i - 1;
     }
     else if (stateIndex < 0)
     {
@@ -2929,9 +2932,9 @@ void ObjHitbox_SetStateIndex(GameObject* object, ObjHitReactState* hitStatePtr, 
     {
         return;
     }
-    for (slotIndex = 0; (s16)slotIndex < OBJHITS_PRIORITY_WORK_SLOT_COUNT; slotIndex = slotIndex + 1)
+    for (i = 0; (s16)i < OBJHITS_PRIORITY_WORK_SLOT_COUNT; i++)
     {
-        workSlot = &gObjHitsPriorityHitStates[slotIndex];
+        workSlot = &gObjHitsPriorityHitStates[i];
         if ((workSlot->active != 0) && (workSlot->object == object))
         {
             workSlot->active = 0;
