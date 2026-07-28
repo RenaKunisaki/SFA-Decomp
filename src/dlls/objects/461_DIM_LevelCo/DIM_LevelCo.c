@@ -5,250 +5,244 @@
  * fx for the lava area, an NPC dialogue trigger (game bits 0x3E2/0x3E3), and
  * initial level unlock.
  */
-#include "main/dll/DIM/dll_01CD_dimlevelcontrol.h"
+
+#include "dlls/objects/461_DIM_LevelCo.h"
+
+#include "dlls/objects/430_SH_LevelCon.h"
+#include "game/objects/object.h"
+#include "main/audio/music_api.h"
+#include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_0011_screens.h"
 #include "main/dll/savegame_load_api.h"
-#include "main/gametext_show_api.h"
-#include "main/textrender_api.h"
-#include "main/audio/music_api.h"
-#include "main/map_load.h"
-#include "main/render_envfx_api.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/game_ui_interface.h"
-#include "game/objects/object.h"
-#include "dlls/objects/430_SH_LevelCon.h"
-#include "main/rcp_dolphin_api.h"
-#include "main/mapEvent.h"
-#include "main/sky_interface.h"
-#include "main/gamebits.h"
-#include "main/gamebit_ids.h"
 #include "main/frame_timing.h"
-#include "main/vecmath.h"
-#include "main/audio/sfx.h"
-#include "main/audio/music_trigger_ids.h"
-#include "main/object_render.h"
-#include "dlls/object_descriptor.h"
+#include "main/game_ui_interface.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
 #include "main/gametext_color_api.h"
+#include "main/gametext_show_api.h"
+#include "main/map_load.h"
+#include "main/mapEvent.h"
+#include "main/object_render.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/render_envfx_api.h"
+#include "main/sky_interface.h"
+#include "main/vecmath.h"
 
-#define DIMLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED 0x2000
-#define DIMLEVELCONTROL_OBJFLAG_HIDDEN 0x4000
+#define DIM_LEVEL_CONTROL_GAMEBIT_D0B 0xD0B
+#define DIM_LEVEL_CONTROL_GAMEBIT_D0C 0xD0C
+#define DIM_LEVEL_CONTROL_GAMEBIT_D0D 0xD0D
+#define DIM_LEVEL_CONTROL_GAMEBIT_D0E 0xD0E
 
-/* env-effect ids co-activated once on the lava-area env-fx replay (index-style; roles opaque) */
-#define DIMLEVELCONTROL_ENVFX_A 0x160
-#define DIMLEVELCONTROL_ENVFX_B 0x15a
-#define DIMLEVELCONTROL_ENVFX_C 0x15c
-#define DIMLEVELCONTROL_ENVFX_D 0x15f
+#define DIM_LEVEL_CONTROL_GAMEBIT_0017 0x017
+#define DIM_LEVEL_CONTROL_GAMEBIT_0EAD 0xEAD
+#define DIM_LEVEL_CONTROL_GAMEBIT_089D 0x89D
+#define DIM_LEVEL_CONTROL_GAMEBIT_08A4 0x8A4
+#define DIM_LEVEL_CONTROL_GAMEBIT_08A5 0x8A5
+#define DIM_LEVEL_CONTROL_GAMEBIT_0F0A 0xF0A
 
-#define DIMLEVELCONTROL_MUSIC_DAY   0xc5
-#define DIMLEVELCONTROL_MUSIC_NIGHT 0xe2
+#define DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01A7 0x1A7
+#define DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C1E 0xC1E
+#define DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C1F 0xC1F
+#define DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01BA 0x1BA
+#define DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C20 0xC20
+#define DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0D8F 0xD8F
 
-int dim_levelcontrol_getExtraSize(void)
-{
-    return 0x10;
+/* Env-effect IDs co-activated once on the lava-area replay; individual roles remain opaque. */
+#define DIM_LEVEL_CONTROL_ENVFX_A 0x160
+#define DIM_LEVEL_CONTROL_ENVFX_B 0x15A
+#define DIM_LEVEL_CONTROL_ENVFX_C 0x15C
+#define DIM_LEVEL_CONTROL_ENVFX_D 0x15F
+
+#define DIM_LEVEL_CONTROL_MUSICTRIG_DAY   0xC5
+#define DIM_LEVEL_CONTROL_MUSICTRIG_NIGHT 0xE2
+#define DIM_LEVEL_CONTROL_MUSICTRIG_02B   0x2B
+#define DIM_LEVEL_CONTROL_MUSICTRIG_035   0x35
+#define DIM_LEVEL_CONTROL_MUSICTRIG_0CF   0xCF
+#define DIM_LEVEL_CONTROL_MUSICTRIG_0DC   0xDC
+
+#define DIM_LEVEL_CONTROL_MESSAGE_TEXT_ID          0x430
+#define DIM_LEVEL_CONTROL_NPC_DIALOGUE_ID          0x4BA
+#define DIM_LEVEL_CONTROL_NPC_DIALOGUE_SPEAKER     0x14
+#define DIM_LEVEL_CONTROL_NPC_DIALOGUE_VOICE       0x8C
+#define DIM_LEVEL_CONTROL_DINO_HORN_GROUP_MAP_ID   0x13
+#define DIM_LEVEL_CONTROL_DINO_HORN_GROUP_ID       0x0D
+#define DIM_LEVEL_CONTROL_INITIAL_DIALOGUE_GAMEBIT 0x0DC
+
+int dim_levelcontrol_getExtraSize(void) {
+    return sizeof(DimLevelControlState);
 }
 
-void dim_levelcontrol_free(GameObject* obj)
-{
+void dim_levelcontrol_free(GameObject* unused) {
+    (void)unused;
+
     Music_Trigger(MUSICTRIG_drako_1, 0);
     Music_Trigger(MUSICTRIG_citytombs_ed, 0);
     Rcp_DisableHeatEffect();
 }
 
-void dim_levelcontrol_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void dim_levelcontrol_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                             s8 visible) {
+    s32 isVisible = visible;
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
-typedef struct DimLevelControlState
-{
-    f32 timer;
-    int latch;
-    u8 saveState;
-    u8 unk9;
-    s16 musicTrack;
-    u8 dialogueFired;
-    u8 groupStatus;
-    u8 b7 : 1;
-    u8 b6 : 1;
-    u8 b5 : 1;
-    u8 b4 : 1;
-    u8 b3 : 1;
-} DimLevelControlState;
+void dim_levelcontrol_update(GameObject* obj) {
+    u8 gameBitD0B;
+    u8 gameBitD0C;
+    u8 gameBitD0D;
+    u8 gameBitD0E;
+    DimLevelControlState* state;
+    u32 triggerLostInBlizzard;
+    u32 lostInBlizzardState;
 
-void dim_levelcontrol_update(GameObject* obj)
-{
-    u8 a;
-    u8 b;
-    u8 c;
-    u8 d;
-    DimLevelControlState* st;
-    u32 t;
-    u32 t2;
-
-    a = mainGetBit(0xd0b);
-    b = mainGetBit(0xd0c);
-    c = mainGetBit(0xd0d);
-    d = mainGetBit(0xd0e);
-    st = obj->extra;
-    if ((a && !st->b7) || (b && !st->b6) || (c && !st->b5) || (d && !st->b4))
-    {
+    gameBitD0B = mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_D0B);
+    gameBitD0C = mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_D0C);
+    gameBitD0D = mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_D0D);
+    gameBitD0E = mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_D0E);
+    state = obj->extra;
+    if ((gameBitD0B && !state->statusGameBitD0B) || (gameBitD0C && !state->statusGameBitD0C) ||
+        (gameBitD0D && !state->statusGameBitD0D) || (gameBitD0E && !state->statusGameBitD0E)) {
         Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
     }
-    st->b7 = a;
-    st->b6 = b;
-    st->b5 = c;
-    st->b4 = d;
-    if (!st->b3 && mainGetBit(GAMEBIT_DIM_CannonRelated0A21) != 0)
-    {
+    state->statusGameBitD0B = gameBitD0B;
+    state->statusGameBitD0C = gameBitD0C;
+    state->statusGameBitD0D = gameBitD0D;
+    state->statusGameBitD0E = gameBitD0E;
+    if (!state->cannonStatusGameBit && mainGetBit(GAMEBIT_DIM_CannonRelated0A21) != 0) {
         Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
-        st->b3 = 1;
+        state->cannonStatusGameBit = 1;
     }
-    if (obj->userData1 != 0)
-    {
+    if (obj->userData1 != 0) {
         if ((u32)mainGetBit(GAMEBIT_DIM_FlewTo) == 0 ||
-            ((u32)mainGetBit(0x17) != 0 && mainGetBit(0xead) == 0))
-        {
-            if (obj->userData1 == 2)
-            {
-                getEnvfxActImmediately(0, 0, DIMLEVELCONTROL_ENVFX_A, 0);
-                getEnvfxActImmediately(0, 0, DIMLEVELCONTROL_ENVFX_B, 0);
-                getEnvfxActImmediately(0, 0, DIMLEVELCONTROL_ENVFX_C, 0);
-                getEnvfxActImmediately(0, 0, DIMLEVELCONTROL_ENVFX_D, 0);
-            }
-            else
-            {
-                getEnvfxAct(0, 0, DIMLEVELCONTROL_ENVFX_A, 0);
-                getEnvfxAct(0, 0, DIMLEVELCONTROL_ENVFX_B, 0);
-                getEnvfxAct(0, 0, DIMLEVELCONTROL_ENVFX_C, 0);
-                getEnvfxAct(0, 0, DIMLEVELCONTROL_ENVFX_D, 0);
+            ((u32)mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_0017) != 0 && mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_0EAD) == 0)) {
+            if (obj->userData1 == 2) {
+                getEnvfxActImmediately(0, 0, DIM_LEVEL_CONTROL_ENVFX_A, 0);
+                getEnvfxActImmediately(0, 0, DIM_LEVEL_CONTROL_ENVFX_B, 0);
+                getEnvfxActImmediately(0, 0, DIM_LEVEL_CONTROL_ENVFX_C, 0);
+                getEnvfxActImmediately(0, 0, DIM_LEVEL_CONTROL_ENVFX_D, 0);
+            } else {
+                getEnvfxAct(0, 0, DIM_LEVEL_CONTROL_ENVFX_A, 0);
+                getEnvfxAct(0, 0, DIM_LEVEL_CONTROL_ENVFX_B, 0);
+                getEnvfxAct(0, 0, DIM_LEVEL_CONTROL_ENVFX_C, 0);
+                getEnvfxAct(0, 0, DIM_LEVEL_CONTROL_ENVFX_D, 0);
             }
         }
         obj->userData1 = 0;
     }
-    if (st->groupStatus != 0)
-    {
-        if ((u32)mainGetBit(GAMEBIT_ITEM_DinoHorn_651) == 0)
-        {
-            (*gMapEventInterface)->setObjGroupStatus(0x13, 0xd, 0);
-            st->groupStatus = 0;
+    if (state->dinoHornGroupEnabled != 0) {
+        if ((u32)mainGetBit(GAMEBIT_ITEM_DinoHorn_651) == 0) {
+            (*gMapEventInterface)
+                ->setObjGroupStatus(DIM_LEVEL_CONTROL_DINO_HORN_GROUP_MAP_ID, DIM_LEVEL_CONTROL_DINO_HORN_GROUP_ID, 0);
+            state->dinoHornGroupEnabled = 0;
+        }
+    } else {
+        if ((u32)mainGetBit(GAMEBIT_ITEM_DinoHorn_651) != 0) {
+            (*gMapEventInterface)
+                ->setObjGroupStatus(DIM_LEVEL_CONTROL_DINO_HORN_GROUP_MAP_ID, DIM_LEVEL_CONTROL_DINO_HORN_GROUP_ID, 1);
+            state->dinoHornGroupEnabled = 1;
         }
     }
-    else
-    {
-        if ((u32)mainGetBit(GAMEBIT_ITEM_DinoHorn_651) != 0)
-        {
-            (*gMapEventInterface)->setObjGroupStatus(0x13, 0xd, 1);
-            st->groupStatus = 1;
-        }
-    }
-    if (st->timer > 0.0f)
-    {
+    if (state->messageTimer > 0.0f) {
         gameTextSetColor(0xff, 0xff, 0xff, 0xff);
-        gameTextShow(0x430);
-        st->timer = st->timer - timeDelta;
-        if (st->timer < 0.0f)
-        {
-            st->timer = 0.0f;
+        gameTextShow(DIM_LEVEL_CONTROL_MESSAGE_TEXT_ID);
+        state->messageTimer = state->messageTimer - timeDelta;
+        if (state->messageTimer < 0.0f) {
+            state->messageTimer = 0.0f;
         }
     }
-    if (st->dialogueFired == 0)
-    {
-        t = mainGetBit(GAMEBIT_DIM_TriggerLostInBlizzard);
-        t2 = mainGetBit(GAMEBIT_NW_SnowHorn03E3);
-        st->dialogueFired = (u8)(t2 & t);
-        if (st->dialogueFired != 0)
-        {
-            (*gGameUIInterface)->showNpcDialogue(0x4ba, 0x14, 0x8c, 1);
+    if (state->lostInBlizzardDialogueFired == 0) {
+        triggerLostInBlizzard = mainGetBit(GAMEBIT_DIM_TriggerLostInBlizzard);
+        lostInBlizzardState = mainGetBit(GAMEBIT_NW_SnowHorn03E3);
+        state->lostInBlizzardDialogueFired = (u8)(lostInBlizzardState & triggerLostInBlizzard);
+        if (state->lostInBlizzardDialogueFired != 0) {
+            (*gGameUIInterface)
+                ->showNpcDialogue(DIM_LEVEL_CONTROL_NPC_DIALOGUE_ID, DIM_LEVEL_CONTROL_NPC_DIALOGUE_SPEAKER,
+                                  DIM_LEVEL_CONTROL_NPC_DIALOGUE_VOICE, 1);
         }
     }
-    t = mainGetBit(GAMEBIT_DIM_TriggerLostInBlizzard);
+    triggerLostInBlizzard = mainGetBit(GAMEBIT_DIM_TriggerLostInBlizzard);
     {
-        int gb = !mainGetBit(GAMEBIT_NW_SnowHorn03E3);
-        t = gb & t;
+        int snowHornCondition = !mainGetBit(GAMEBIT_NW_SnowHorn03E3);
+        triggerLostInBlizzard = snowHornCondition & triggerLostInBlizzard;
     }
-    t2 = t & 0xff;
-    if (t2 != st->saveState)
-    {
-        mainSetBits(GAMEBIT_DIM_LostInBlizzard, t2);
-        st->saveState = t2;
+    lostInBlizzardState = triggerLostInBlizzard & 0xff;
+    if (lostInBlizzardState != state->lostInBlizzardState) {
+        mainSetBits(GAMEBIT_DIM_LostInBlizzard, lostInBlizzardState);
+        state->lostInBlizzardState = lostInBlizzardState;
     }
-    if (!(u8)mainGetBit(0x8a5) && mainGetBit(0x89d) != 0)
-    {
-        mainSetBits(0x8a4, 1);
+    if (!(u8)mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_08A5) && mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_089D) != 0) {
+        mainSetBits(DIM_LEVEL_CONTROL_GAMEBIT_08A4, 1);
     }
-    if ((*gSkyInterface)->getSunPosition(0) == 0)
-    {
-        if (st->musicTrack != DIMLEVELCONTROL_MUSIC_NIGHT)
-        {
-            st->musicTrack = DIMLEVELCONTROL_MUSIC_NIGHT;
-            if (st->latch & 4)
-            {
-                Music_Trigger(DIMLEVELCONTROL_MUSIC_DAY, 0);
-                Music_Trigger(DIMLEVELCONTROL_MUSIC_NIGHT, 1);
+    if ((*gSkyInterface)->getSunPosition(0) == 0) {
+        if (state->dayNightMusicTrigger != DIM_LEVEL_CONTROL_MUSICTRIG_NIGHT) {
+            state->dayNightMusicTrigger = DIM_LEVEL_CONTROL_MUSICTRIG_NIGHT;
+            if (state->musicLatchMask & 4) {
+                Music_Trigger(DIM_LEVEL_CONTROL_MUSICTRIG_DAY, 0);
+                Music_Trigger(DIM_LEVEL_CONTROL_MUSICTRIG_NIGHT, 1);
+            }
+        }
+    } else {
+        if (state->dayNightMusicTrigger != DIM_LEVEL_CONTROL_MUSICTRIG_DAY) {
+            state->dayNightMusicTrigger = DIM_LEVEL_CONTROL_MUSICTRIG_DAY;
+            if (state->musicLatchMask & 4) {
+                Music_Trigger(DIM_LEVEL_CONTROL_MUSICTRIG_NIGHT, 0);
+                Music_Trigger(DIM_LEVEL_CONTROL_MUSICTRIG_DAY, 1);
             }
         }
     }
-    else
-    {
-        if (st->musicTrack != DIMLEVELCONTROL_MUSIC_DAY)
-        {
-            st->musicTrack = DIMLEVELCONTROL_MUSIC_DAY;
-            if (st->latch & 4)
-            {
-                Music_Trigger(DIMLEVELCONTROL_MUSIC_NIGHT, 0);
-                Music_Trigger(DIMLEVELCONTROL_MUSIC_DAY, 1);
-            }
-        }
-    }
-    SCGameBitLatch_Update((SCGameBitLatchState*)&st->latch, 1, 0x1a7, 0x64b, 0xc1e, 0xa1);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&st->latch, 2, 0x1a8, 0xc0, 0xc1f, 0xcf);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&st->latch, 4, 0x1ba, 0x1b9, 0xc20, st->musicTrack);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&st->latch, 8, -1, -1, 0xd8f, 0xdc);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&st->latch, 0x10, 0x1a7, 0x64b, 0xc1e, 0xed);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&st->latch, 0x20, 0x1a8, 0xc0, 0xc1f, 0x36);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&st->latch, 0x40, 0x1ba, 0x1b9, 0xc20, 0x35);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&st->latch, 0x100, -1, -1, 0x3e2, 0x2b);
+    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 1, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01A7,
+                          GAMEBIT_SH_Landed064B, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C1E, MUSICTRIG_drako_1);
+    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 2, GAMEBIT_SH_WarpStoneRelated01A8,
+                          GAMEBIT_SH_Entered00C0, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C1F,
+                          DIM_LEVEL_CONTROL_MUSICTRIG_0CF);
+    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 4, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01BA,
+                          GAMEBIT_IM_TrickyRelated01B9, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C20,
+                          state->dayNightMusicTrigger);
+    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 8, -1, -1, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0D8F,
+                          DIM_LEVEL_CONTROL_MUSICTRIG_0DC);
+    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 0x10, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01A7,
+                          GAMEBIT_SH_Landed064B, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C1E, MUSICTRIG_citytombs_ed);
+    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 0x20, GAMEBIT_SH_WarpStoneRelated01A8,
+                          GAMEBIT_SH_Entered00C0, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C1F, MUSICTRIG_Teleport);
+    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 0x40, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01BA,
+                          GAMEBIT_IM_TrickyRelated01B9, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C20,
+                          DIM_LEVEL_CONTROL_MUSICTRIG_035);
+    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 0x100, -1, -1,
+                          GAMEBIT_DIM_TriggerLostInBlizzard, DIM_LEVEL_CONTROL_MUSICTRIG_02B);
 }
 
-
-void dim_levelcontrol_init(GameObject* obj)
-{
-    DimLevelControlState* st;
-    u8 i;
+void dim_levelcontrol_init(GameObject* obj) {
+    DimLevelControlState* state;
+    u8 taskHintIndex;
 
     randomGetRange(0, 11);
-    st = obj->extra;
-    st->saveState = 0;
-    st->timer = 300.0f;
-    if (getSaveGameLoadStatus() != 0)
-    {
+    state = obj->extra;
+    state->lostInBlizzardState = 0;
+    state->messageTimer = 300.0f;
+    if (getSaveGameLoadStatus() != 0) {
         obj->userData1 = 2;
-    }
-    else
-    {
+    } else {
         obj->userData1 = 1;
     }
-    for (i = 1; i <= 38; i++)
-    {
-        gameBitFn_800ea2e0(i);
+    for (taskHintIndex = 1; taskHintIndex <= 38; taskHintIndex++) {
+        gameBitFn_800ea2e0(taskHintIndex);
     }
-    st->dialogueFired = mainGetBit(0xdc);
-    mainSetBits(0xf0a, 0);
-    if ((u32)mainGetBit(0x89d) != 0 && mainGetBit(0x8a5) == 0)
-    {
-        mainSetBits(0x89d, 0);
+    state->lostInBlizzardDialogueFired = mainGetBit(DIM_LEVEL_CONTROL_INITIAL_DIALOGUE_GAMEBIT);
+    mainSetBits(DIM_LEVEL_CONTROL_GAMEBIT_0F0A, 0);
+    if ((u32)mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_089D) != 0 && mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_08A5) == 0) {
+        mainSetBits(DIM_LEVEL_CONTROL_GAMEBIT_089D, 0);
     }
-    st->b7 = mainGetBit(0xd0b);
-    st->b6 = mainGetBit(0xd0c);
-    st->b5 = mainGetBit(0xd0d);
-    st->b4 = mainGetBit(0xd0e);
-    st->b3 = mainGetBit(GAMEBIT_DIM_CannonRelated0A21);
+    state->statusGameBitD0B = mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_D0B);
+    state->statusGameBitD0C = mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_D0C);
+    state->statusGameBitD0D = mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_D0D);
+    state->statusGameBitD0E = mainGetBit(DIM_LEVEL_CONTROL_GAMEBIT_D0E);
+    state->cannonStatusGameBit = mainGetBit(GAMEBIT_DIM_CannonRelated0A21);
     (*gMapEventInterface)->setMapAct(obj->anim.mapEventSlot, 1);
-    obj->objectFlags |= (DIMLEVELCONTROL_OBJFLAG_HIDDEN | DIMLEVELCONTROL_OBJFLAG_HITDETECT_DISABLED);
+    obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     unlockLevel(0, 0, 1);
 }
 
