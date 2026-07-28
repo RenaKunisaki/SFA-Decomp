@@ -30,7 +30,7 @@ f32 gDrakorEnergySeekRange = 900.0f;
 f32 gDrakorEnergyCollectRadius = 20.0f;
 f32 gDrakorEnergyChaseSpeed = 7.0f;
 int gDrakorEnergyHealAmount = 1;
-f32 lbl_803DC174 = 0.4f;
+f32 gDrakorEnergyTrailScale = 0.4f;
 s16 gDrakorEnergySpinStep = 0x200;
 
 STATIC_ASSERT(sizeof(DrakorEnergyState) == 0xC);
@@ -137,7 +137,7 @@ void drakorenergy_update(int obj)
         {
             s->mode = DRAKORENERGY_MODE_CHASING;
         }
-        objfx_spawnFlaggedTrailBurst((void*)obj, lbl_803DC174, 1, 0xc22, 0x14, (void*)(obj + 0x24));
+        objfx_spawnFlaggedTrailBurst((void*)obj, gDrakorEnergyTrailScale, 1, 0xc22, 0x14, (void*)(obj + 0x24));
         break;
     case DRAKORENERGY_MODE_CHASING:
         dist = Vec_xzDistance(&o->anim.worldPosX, &player->anim.worldPosX);
@@ -164,7 +164,7 @@ void drakorenergy_update(int obj)
             colorRGB[2] = 0xff;
             colorRGB[1] = 0;
             colorRGB[0] = 0xff;
-            objfx_spawnFlaggedTrailBurst((void*)obj, lbl_803DC174, 1, 0xc22, 0x14, (void*)(obj + 0x24));
+            objfx_spawnFlaggedTrailBurst((void*)obj, gDrakorEnergyTrailScale, 1, 0xc22, 0x14, (void*)(obj + 0x24));
         }
         break;
     case DRAKORENERGY_MODE_RESET:
