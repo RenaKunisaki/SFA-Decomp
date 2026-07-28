@@ -227,9 +227,8 @@ typedef struct EarthWarriorState
     CharacterEyeAnimState eyeAnimState; /* 0x38c: head-aim / eye-blink record (characterDoEyeAnims) */
     u8 pad3B4[0x3bc - 0x3b4];
     ObjSoundState modelSoundState; /* 0x3bc: mouth/voice playback state (objSoundUpdateMouth) */
-    u8 pad3EC[0x9fd - 0x3ec];
-    u8 unk9FD;
-    u8 pad9FE[0xb54 - 0x9fe];
+    MoveLibState moveLib; /* 0x3ec: dll_2E look-controller block */
+    u8 padA10[0xb54 - 0xa10];
     GameObject* helperObj;
     EarthWarriorSub sub; /* 0xb58 */
 } EarthWarriorState;
@@ -893,7 +892,7 @@ int DR_EarthWarrior_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animU
     int i;
     f32 fz;
     (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-    if (dll_2E_updateSequenceTurn(obj, (ObjSeqState*)animUpdate, (MoveLibState*)((char*)inner + 0x3ec), 0, 0) != 0)
+    if (dll_2E_updateSequenceTurn(obj, (ObjSeqState*)animUpdate, &inner->moveLib, 0, 0) != 0)
     {
         return 1;
     }
@@ -906,11 +905,11 @@ int DR_EarthWarrior_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animU
             break;
         case 0xe:
         case 0xf:
-            inner->unk9FD |= 1;
+            inner->moveLib.modeBits |= 1;
             ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->shapeFlags &= ~0x20;
             break;
         case 0x10:
-            inner->unk9FD &= ~1;
+            inner->moveLib.modeBits &= ~1;
             ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->shapeFlags |= 0x20;
             break;
         }
@@ -978,7 +977,7 @@ void DR_EarthWarrior_setMountState(GameObject* obj, int param)
     {
         mainSetBits(0x7bc, 0);
         mainSetBits(0x7d4, 1);
-        inner->unk9FD &= ~1;
+        inner->moveLib.modeBits &= ~1;
         ((ByteFlags*)&inner->sub.flags994)->b02 = 0;
         (*gGameUIInterface)->airMeterShutdown();
     }
@@ -1090,7 +1089,7 @@ void DR_EarthWarrior_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 
         ObjPath_GetPointWorldPosition(obj, 0xb, (f32*)((char*)inner + 0x1438), (f32*)((char*)inner + 0x143c),
                                       (f32*)((char*)inner + 0x1440), 0);
         ObjPath_GetPointWorldPositionArray(obj, 3, 4, (f32*)((char*)inner + 0xb18));
-        dll_2E_setTargetFromPathPoint(obj, (MoveLibState*)((char*)inner + 0x3ec), 0);
+        dll_2E_setTargetFromPathPoint(obj, &inner->moveLib, 0);
     }
 }
 
@@ -1315,7 +1314,7 @@ void DR_EarthWarrior_update(GameObject* obj)
     }
     characterDoEyeAnims(obj, &inner->eyeAnimState);
     objSoundUpdateMouth(obj, &inner->modelSoundState);
-    dll_2E_updateLookAt(obj, (MoveLibState*)((char*)inner + 0x3ec));
+    dll_2E_updateLookAt(obj, &inner->moveLib);
     if ((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
     {
         ((ByteFlags*)&inner->sub.flags994)->b10 = 1;

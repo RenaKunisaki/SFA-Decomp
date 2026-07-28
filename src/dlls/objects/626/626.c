@@ -153,7 +153,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
         {
             state->substate = 9;
         }
-        state->flags &= ~1;
+        state->lookController.modeBits &= ~1;
         state->flagsC49.b1 = 0;
         state->idleSeqIndex = 0;
         state->flagsC49.b6 = 0;
@@ -270,7 +270,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
                     roll -= gHighTopIdleSequenceWeights[idx++];
                 }
                 state->idleSeqIndex = idx;
-                state->flags |= 1;
+                state->lookController.modeBits |= 1;
                 s16toFloat(&state->transitionTimer, 0x14);
             }
         }
@@ -356,7 +356,7 @@ int hightop_stateHandler07(GameObject* obj, HighTopRuntime* stateArg)
         rt->flagsC49.b1 = 0;
         rt->substate = 5;
         stateArg->baddie.moveSpeed = 0.004f;
-        rt->flags &= ~1;
+        rt->lookController.modeBits &= ~1;
         ObjGroup_RemoveObject((int)obj, HIGHTOP_OBJGROUP);
     }
     if (stateArg->baddie.moveDone != 0)
@@ -379,7 +379,7 @@ int hightop_stateHandler06(GameObject* obj, HighTopRuntime* state)
     HighTopRuntime* runtime = obj->extra;
     if (state->baddie.moveJustStartedA != 0)
     {
-        runtime->flags |= 1;
+        runtime->lookController.modeBits |= 1;
     }
     if (mainGetBit(GAMEBIT_DR_RescuedHighTop) != 0)
     {
@@ -507,7 +507,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
               ? dy
               : -dy) > 300.0f))
     {
-        state->flags |= 1;
+        state->lookController.modeBits |= 1;
         if (randomGetRange(0, 0x64) == 0 && obj->anim.currentMove != 9)
         {
             f32 deltaY = player->anim.localPosY - obj->anim.localPosY;
@@ -520,7 +520,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
     }
     else
     {
-        state->flags &= ~1;
+        state->lookController.modeBits &= ~1;
     }
     return 0;
 }
@@ -582,7 +582,7 @@ int hightop_handleMotionEvent(int obj, u8 event)
         mainSetBits(0x631, 1);
         ((GameObject*)obj)->anim.modelInstance->runtimeSourceHitMask |= 1;
         runtime->flagsC40 &= ~0x140;
-        runtime->flags &= ~2;
+        runtime->lookController.modeBits &= ~2;
         (*gPlayerInterface)->setState((void*)obj, runtime, 7);
         break;
     case 8:
@@ -804,7 +804,7 @@ int HighTop_seqFn(GameObject* obj)
     HighTopRuntime* runtime;
     objGetLookAtJointKeys();
     runtime = (obj)->extra;
-    runtime->flags &= ~1;
+    runtime->lookController.modeBits &= ~1;
     runtime->flagsC49.b4 = 0;
     runtime->flagsC49.b6 = 1;
     if ((s8)runtime->substate == 0)
@@ -997,7 +997,7 @@ void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible)
         ObjPath_GetPointWorldPosition((GameObject*)obj, 0, &runtime->pathPoint0X, &runtime->pathPoint0Y, &runtime->pathPoint0Z,
                                       0);
         runtime->flagsC49.b5 = 1;
-        dll_2E_setTargetFromPathPoint((GameObject*)obj, (MoveLibState*)runtime->lookController, 0);
+        dll_2E_setTargetFromPathPoint((GameObject*)obj, &runtime->lookController, 0);
         if (runtime->flagsC49.b1 != 0)
         {
             int** t = (int**)ObjGroup_GetObjects(55, &count);
@@ -1109,7 +1109,7 @@ void HighTop_update(GameObject* obj)
             if (ev == -1)
             {
                 runtime->flagsC40 &= ~0x140;
-                runtime->flags &= ~2;
+                runtime->lookController.modeBits &= ~2;
             }
             else
             {
@@ -1132,7 +1132,7 @@ void HighTop_update(GameObject* obj)
     hightop_playMovementSfx((GameObject*)self, runtime, runtime);
     characterDoEyeAnims((GameObject*)self, &runtime->eyeAnimState);
     objSoundUpdateMouth((GameObject*)(self), &runtime->modelSoundState);
-    dll_2E_updateLookAt((GameObject*)self, (MoveLibState*)(state + 0x3ec));
+    dll_2E_updateLookAt((GameObject*)self, &((HighTopRuntime*)state)->lookController);
     if (ObjTrigger_IsSet(self) != 0)
     {
         s8 substate;
@@ -1199,13 +1199,13 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     (*gPathControlInterface)->setLocalPointCollision(pathState, 2, &base[0xe8], lbl_803DC318, 8);
     (*gPathControlInterface)->setup(pathState, 4, &base[0xa8], &base[0xd8], pathParam.values);
     (*gPathControlInterface)->attachObject(obj, pathState);
-    dll_2E_initState(obj, (MoveLibState*)runtime->lookController, -4551, 23665, 6);
-    dll_2E_setReattackDelay((MoveLibState*)runtime->lookController, 300, 120);
-    dll_2E_setMoveTables((MoveLibState*)runtime->lookController, &local2, &local1, 6);
-    runtime->flags |= 2;
-    runtime->flags |= 8;
+    dll_2E_initState(obj, &runtime->lookController, -4551, 23665, 6);
+    dll_2E_setReattackDelay(&runtime->lookController, 300, 120);
+    dll_2E_setMoveTables(&runtime->lookController, &local2, &local1, 6);
+    runtime->lookController.modeBits |= 2;
+    runtime->lookController.modeBits |= 8;
     runtime->airMeterRemaining = placement->airMeterParam;
-    runtime->flags |= 1;
+    runtime->lookController.modeBits |= 1;
     (obj)->anim.modelInstance->runtimeSourceHitMask = 127;
     runtime->flagsC49.b4 = 0;
     runtime->flagsC49.b7 = 0;
