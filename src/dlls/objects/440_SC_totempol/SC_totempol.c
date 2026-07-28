@@ -1,25 +1,47 @@
-/* SC_totempol (DLL 0x1B8) - the LightFoot Village totem poles.
- * The four LightFoot Village totem poles - the "Tracking Test". Each pole's
- * lit state is one GameBit: FRONT 0x81 / LEFT 0x82 / RIGHT 0x83 / REAR 0x84
- * (reset by sclevelcontrol on entry). Lighting all four plays the success
- * fanfare; the test is timed (beat MuscleFoot's record). */
-#include "dlls/object_descriptor.h"
-#include "game/objects/object_setup.h"
-#include "main/dll/SC/sc_shared.h"
-#include "main/dll/SC/dll_01B8_sctotempole.h"
+/*
+ * SC_totempol (DLL 0x1B8) - the four LightFoot Village tracking-test
+ * totem poles.
+ */
+
+#include "dlls/objects/440_SC_totempol.h"
+
 #include "game/objects/object.h"
-#include "main/objhits.h"
-#include "main/obj_list.h"
-#include "main/frame_timing.h"
-#include "main/object_render.h"
-#include "main/gamebits.h"
-#include "main/model_engine.h"
-#include "main/audio/sfx.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/frame_timing.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/model_engine.h"
+#include "main/obj_list.h"
+#include "main/objanim.h"
+#include "main/object_render.h"
+#include "main/objhits.h"
 
-u16 gSCTotemPoleRecordGameBits[4] = {0x2B7, 0x2CB, 0x2CC, 0};
+#define SC_TOTEM_POLE_RECORD_COUNT 3
 
-int gSCTotemPoleHitCooldown;
+#define SC_TOTEM_POLE_MAP_ID_REAR  0x44916
+#define SC_TOTEM_POLE_MAP_ID_RIGHT 0x44909
+#define SC_TOTEM_POLE_MAP_ID_FRONT 0x4490C
+#define SC_TOTEM_POLE_MAP_ID_LEFT  0x4490F
+
+#define SC_TOTEM_POLE_EVENT_ALL_LIT 6
+
+#define SC_TOTEM_POLE_HIT_EFFECT_MODE  8
+#define SC_TOTEM_POLE_HIT_EFFECT_RED   0xFF
+#define SC_TOTEM_POLE_HIT_EFFECT_GREEN 0xFF
+#define SC_TOTEM_POLE_HIT_EFFECT_BLUE  0x78
+
+#define SC_TOTEM_POLE_ANIMATION_SPEED     0.01f
+#define SC_TOTEM_POLE_RECORD_TIME_DIVISOR 10.0f
+
+u16 gScTotemPoleRecordGameBits[4] = {
+    GAMEBIT_LV_TestTrackingBestTime1,
+    GAMEBIT_LV_TestTrackingBestTime2,
+    GAMEBIT_LV_TestTrackingBestTime3,
+    0,
+};
+
+f32 gScTotemPoleHitEffectCooldown;
 
 ObjectDescriptor gSC_totempoleObjDescriptor = {
     0,
@@ -38,153 +60,130 @@ ObjectDescriptor gSC_totempoleObjDescriptor = {
     sc_totempole_getExtraSize,
 };
 
-#define SC_TOTEMPOLE_GAMEBIT_FRONT 0x81
-#define SC_TOTEMPOLE_GAMEBIT_LEFT 0x82
-#define SC_TOTEMPOLE_GAMEBIT_RIGHT 0x83
-#define SC_TOTEMPOLE_GAMEBIT_REAR 0x84
-#define SC_TOTEMPOLE_MAP_ID_REAR 0x44916
-#define SC_TOTEMPOLE_MAP_ID_RIGHT 0x44909
-#define SC_TOTEMPOLE_MAP_ID_FRONT 0x4490C
-#define SC_TOTEMPOLE_MAP_ID_LEFT 0x4490F
-
-#define SC_TOTEMPOLE_EVENT_ALL_LIT 6      /* peer event: all four poles lit */
-
-/* Insert newTime into the three sorted record-time GameBits (ascending,
-   zero = empty slot); returns whether the order changed. */
-int sc_totempole_sortCompletionGameBits(recordBits, newTime)
-u16* recordBits;
-u16 newTime;
+// clang-format off
+int sc_totempole_sortCompletionGameBits(recordGameBits, completionTime)
+const u16* recordGameBits;
+u16 completionTime;
 {
-    u16 times[4];
-    u8 i, j;
+    // clang-format on
+    u16 completionTimes[SC_TOTEM_POLE_RECORD_COUNT + 1];
+    u8 recordIndex;
+    u8 pass;
     s32 changed = 0;
 
-    for (i = 0; i < 3; i++)
-    {
-        u16 v = mainGetBit(recordBits[i]);
-        times[i] = v;
+    for (recordIndex = 0; recordIndex < SC_TOTEM_POLE_RECORD_COUNT; recordIndex++) {
+        u16 recordTime = mainGetBit(recordGameBits[recordIndex]);
+        completionTimes[recordIndex] = recordTime;
     }
-    times[3] = newTime;
-    for (j = 0; j < 3; j++)
-    {
-        for (i = 0; i < 3; i++)
-        {
-            if (times[i + 1] != 0)
-            {
-                if ((times[i + 1] < times[i]) || (times[i] == 0))
-                {
-                    u16 tmp = times[i];
-                    times[i] = times[i + 1];
-                    times[i + 1] = tmp;
+    completionTimes[SC_TOTEM_POLE_RECORD_COUNT] = completionTime;
+    for (pass = 0; pass < SC_TOTEM_POLE_RECORD_COUNT; pass++) {
+        for (recordIndex = 0; recordIndex < SC_TOTEM_POLE_RECORD_COUNT; recordIndex++) {
+            if (completionTimes[recordIndex + 1] != 0) {
+                if ((completionTimes[recordIndex + 1] < completionTimes[recordIndex]) ||
+                    (completionTimes[recordIndex] == 0)) {
+                    u16 previousTime = completionTimes[recordIndex];
+                    completionTimes[recordIndex] = completionTimes[recordIndex + 1];
+                    completionTimes[recordIndex + 1] = previousTime;
                     changed = 1;
                 }
             }
         }
     }
-    for (i = 0; i < 3; i++)
-    {
-        mainSetBits(recordBits[i], times[i]);
+    for (recordIndex = 0; recordIndex < SC_TOTEM_POLE_RECORD_COUNT; recordIndex++) {
+        mainSetBits(recordGameBits[recordIndex], completionTimes[recordIndex]);
     }
     return changed;
 }
 
-int sc_totempole_getExtraSize(void) { return sizeof(SCTotemPoleState); }
-int sc_totempole_getObjectTypeId(void) { return 0x0; }
-
-void sc_totempole_free(void)
-{
+int sc_totempole_getExtraSize(void) {
+    return sizeof(ScTotemPoleState);
 }
 
-void sc_totempole_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0) objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+int sc_totempole_getObjectTypeId(void) {
+    return 0;
 }
 
-void sc_totempole_hitDetect(void)
-{
+void sc_totempole_free(void) {
 }
 
-void sc_totempole_update(GameObject* obj)
-{
-    SCTotemPoleState* state = obj->extra;
+void sc_totempole_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 visibleValue = visible;
+
+    if (visibleValue != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
+}
+
+void sc_totempole_hitDetect(void) {
+}
+
+void sc_totempole_update(GameObject* obj) {
+    ScTotemPoleState* state = obj->extra;
     ObjAnimEventList animEvents;
-    int playedFanfare;
+    int allPolesLit;
     GameObject** objects;
-    int objCount;
-    int i;
+    int objectCount;
+    int objectIndex;
 
-    state->previousState = state->currentState;
-    state->currentState = mainGetBit(state->gameBit);
-    if (state->previousState != state->currentState)
-    {
-        if (state->currentState != 0)
-        {
+    state->wasLit = state->lit;
+    state->lit = mainGetBit(state->litGameBit);
+    if (state->wasLit != state->lit) {
+        if (state->lit != 0) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_cflap2_c);
-            state->animSpeed = 0.01f;
-            playedFanfare = 0;
-            if (mainGetBit(SC_TOTEMPOLE_GAMEBIT_FRONT) != 0 &&
-                mainGetBit(SC_TOTEMPOLE_GAMEBIT_LEFT) != 0 &&
-                mainGetBit(SC_TOTEMPOLE_GAMEBIT_RIGHT) != 0 &&
-                mainGetBit(SC_TOTEMPOLE_GAMEBIT_REAR) != 0)
-            {
+            state->animationSpeed = SC_TOTEM_POLE_ANIMATION_SPEED;
+            allPolesLit = 0;
+            if (mainGetBit(SC_TOTEM_POLE_GAMEBIT_FRONT) != 0 && mainGetBit(SC_TOTEM_POLE_GAMEBIT_LEFT) != 0 &&
+                mainGetBit(SC_TOTEM_POLE_GAMEBIT_RIGHT) != 0 && mainGetBit(SC_TOTEM_POLE_GAMEBIT_REAR) != 0) {
                 Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
-                playedFanfare = 1;
-                objects = (GameObject**)ObjList_GetObjects(&i, &objCount);
-                for (; i < objCount; i++)
-                {
-                    if (objects[i] != obj && objects[i]->anim.seqId == SC_SEQ_TOTEMPOLE)
-                    {
-                        (*(SCTotemPoleInterfaceVTable**)objects[i]->anim.dll)->handleEvent(
-                            objects[i], SC_TOTEMPOLE_EVENT_ALL_LIT);
+                allPolesLit = 1;
+                objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+                for (; objectIndex < objectCount; objectIndex++) {
+                    if (objects[objectIndex] != obj && objects[objectIndex]->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID) {
+                        (*(ScTotemPoleInterfaceVTable**)objects[objectIndex]->anim.dll)
+                            ->handleEvent(objects[objectIndex], SC_TOTEM_POLE_EVENT_ALL_LIT);
                         break;
                     }
                 }
-                sc_totempole_sortCompletionGameBits(gSCTotemPoleRecordGameBits,
-                                                     (s32)(gameTimerGetElapsedMilliseconds() / 10.0f));
+                sc_totempole_sortCompletionGameBits(
+                    gScTotemPoleRecordGameBits,
+                    (s32)(gameTimerGetElapsedMilliseconds() / SC_TOTEM_POLE_RECORD_TIME_DIVISOR));
             }
-            if (!playedFanfare)
-            {
+            if (!allPolesLit) {
                 Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
             }
-        }
-        else
-        {
+        } else {
             Sfx_PlayFromObject((int)obj, SFXTRIG_cflap2_c);
-            state->animSpeed = -0.01f;
+            state->animationSpeed = -SC_TOTEM_POLE_ANIMATION_SPEED;
         }
     }
-    ObjAnim_AdvanceCurrentMove((int)obj, state->animSpeed, timeDelta, &animEvents);
-    ObjHits_PollPriorityHitEffectWithCooldown(obj, 8, 0xff, 0xff, 0x78, 0x129,
-                                               (f32*)&gSCTotemPoleHitCooldown);
+    ObjAnim_AdvanceCurrentMove((int)obj, state->animationSpeed, timeDelta, &animEvents);
+    ObjHits_PollPriorityHitEffectWithCooldown(obj, SC_TOTEM_POLE_HIT_EFFECT_MODE, SC_TOTEM_POLE_HIT_EFFECT_RED,
+                                              SC_TOTEM_POLE_HIT_EFFECT_GREEN, SC_TOTEM_POLE_HIT_EFFECT_BLUE,
+                                              SFXTRIG_swdtest222, &gScTotemPoleHitEffectCooldown);
 }
 
-void sc_totempole_init(GameObject* obj, SCTotemPolePlacement* placement)
-{
-    SCTotemPoleState* state = obj->extra;
-    switch (placement->head.mapId)
-    {
-    case SC_TOTEMPOLE_MAP_ID_REAR:
-        state->gameBit = SC_TOTEMPOLE_GAMEBIT_REAR;
+void sc_totempole_init(GameObject* obj, const ScTotemPolePlacement* placement) {
+    ScTotemPoleState* state = obj->extra;
+
+    switch (placement->base.mapId) {
+    case SC_TOTEM_POLE_MAP_ID_REAR:
+        state->litGameBit = SC_TOTEM_POLE_GAMEBIT_REAR;
         break;
-    case SC_TOTEMPOLE_MAP_ID_RIGHT:
-        state->gameBit = SC_TOTEMPOLE_GAMEBIT_RIGHT;
+    case SC_TOTEM_POLE_MAP_ID_RIGHT:
+        state->litGameBit = SC_TOTEM_POLE_GAMEBIT_RIGHT;
         break;
-    case SC_TOTEMPOLE_MAP_ID_FRONT:
-        state->gameBit = SC_TOTEMPOLE_GAMEBIT_FRONT;
+    case SC_TOTEM_POLE_MAP_ID_FRONT:
+        state->litGameBit = SC_TOTEM_POLE_GAMEBIT_FRONT;
         break;
-    case SC_TOTEMPOLE_MAP_ID_LEFT:
-        state->gameBit = SC_TOTEMPOLE_GAMEBIT_LEFT;
+    case SC_TOTEM_POLE_MAP_ID_LEFT:
+        state->litGameBit = SC_TOTEM_POLE_GAMEBIT_LEFT;
         break;
     }
-    obj->anim.rotX = (s16)((u32)placement->yaw << 8);
+    obj->anim.rotX = (s16)((u32)placement->rotXByte << 8);
 }
 
-void sc_totempole_release(void)
-{
+void sc_totempole_release(void) {
 }
 
-void sc_totempole_initialise(void)
-{
+void sc_totempole_initialise(void) {
 }
-
