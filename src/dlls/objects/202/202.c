@@ -5238,7 +5238,7 @@ void firecrawler_spawnFireHole(GameObject* obj, u8* state)
         if (child != NULL)
         {
             ObjLink_AttachChild(obj, child, 0);
-            firepipe_setLinkedUpdateFlag((FirePipeObject*)child);
+            firepipe_setLinkedUpdateFlag(child);
             child->anim.flags = (s16)(child->anim.flags | OBJANIM_FLAG_HIDDEN);
         }
     }
@@ -5341,12 +5341,12 @@ void crawlerPlayMoveEventFx(GameObject* obj, u8* state)
                         }
                         else
                         {
-                            firepipe_setLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
+                            firepipe_setLinkedUpdateFlag(obj->childObjs[0]);
                         }
                     }
                     else if (obj->childObjs[0] != NULL)
                     {
-                        firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
+                        firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
                     }
                 }
                 if ((sub->flags & 2) != 0)
@@ -5416,7 +5416,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
 
     if (idx == 1 && (obj)->childObjs[0] != NULL)
     {
-        firepipe_clearLinkedUpdateFlag((FirePipeObject*)(obj)->childObjs[0]);
+        firepipe_clearLinkedUpdateFlag((obj)->childObjs[0]);
     }
     ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x40;
     ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags & ~0x40LL;
@@ -5591,7 +5591,7 @@ void crawler_updateC(GameObject* obj, u8* state)
     ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags & ~0x40LL;
     if (obj->childObjs[0] != NULL)
     {
-        firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
+        firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
     }
 
     if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
@@ -5833,7 +5833,7 @@ void crawler_updateB(GameObject* obj, u8* state)
             Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_eggsnatch_var);
             if (obj->childObjs[0] != NULL)
             {
-                firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
+                firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
             }
         }
     }
@@ -5926,7 +5926,7 @@ void crawler_updateB(GameObject* obj, u8* state)
             if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER &&
                 obj->childObjs[0] != NULL)
             {
-                firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
+                firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
             }
             if (((FCVars*)state)->reactStep != 0)
             {
@@ -6051,7 +6051,7 @@ void crawler_update(GameObject* obj, u8* state)
         }
         if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER && obj->childObjs[0] != NULL)
         {
-            firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
+            firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
         }
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD | 0x10;
     }
@@ -6075,7 +6075,7 @@ void crawler_update(GameObject* obj, u8* state)
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x30;
         if (obj->anim.seqId == FIRECRAWLER_SEQID_FIRECRAWLER && obj->childObjs[0] != NULL)
         {
-            firepipe_clearLinkedUpdateFlag((FirePipeObject*)obj->childObjs[0]);
+            firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
         }
         if (((FCVars*)state)->reactStep != 0)
         {

@@ -99,7 +99,7 @@ typedef struct DrLaserCannonState
     DrLaserCannonAim aim;
     u8 pad176[DR_LASERCANNON_STATE_WARNING_OBJECT - 0x176];
     GameObject* warningObject;
-    FirePipeObject* firepipeObject;
+    GameObject* firepipeObject;
     int activeFrames;
     int hitExcludeType;
     f32 bobOffset;
@@ -323,7 +323,7 @@ void DR_LaserCannon_free(GameObject* obj)
     if (state->firepipeObject != NULL)
     {
         firepipe_clearLinkedUpdateFlag(state->firepipeObject);
-        ObjLink_DetachChild(obj, (GameObject*)state->firepipeObject);
+        ObjLink_DetachChild(obj, state->firepipeObject);
     }
     if (state->warningObject != NULL)
     {
@@ -418,11 +418,11 @@ void DR_LaserCannon_update(GameObject* obj)
     if (state->flags.b7 != 0)
     {
         nearDist = 50.0f;
-        if ((state->firepipeObject = (FirePipeObject*)ObjGroup_FindNearestObject(
+        if ((state->firepipeObject = (GameObject*)ObjGroup_FindNearestObject(
                  DR_LASERCANNON_FIREPIPE_GROUP_ID, obj, &nearDist)) != 0u)
         {
             state->hasFirepipe = 1;
-            ObjLink_AttachChild(obj, (GameObject*)state->firepipeObject, 0);
+            ObjLink_AttachChild(obj, state->firepipeObject, 0);
             firepipe_setLinkedUpdateFlag(state->firepipeObject);
         }
         state->flags.b7 = 0;

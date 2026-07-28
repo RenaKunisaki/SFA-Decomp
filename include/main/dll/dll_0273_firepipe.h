@@ -38,32 +38,6 @@ typedef struct FirePipeMapData {
     u8 pad23;
 } FirePipeMapData;
 
-typedef struct FirePipeObject {
-    union {
-        ObjAnimComponent anim;
-        struct {
-            s16 rotX;
-            s16 rotY;
-            s16 resetTimer;
-            u8 pad06[0x08 - 0x06];
-            f32 scale;
-            u8 pad0C[0x46 - 0x0C];
-            s16 objectId;
-            u8 pad48[0x4C - 0x48];
-            void *objectDef;
-            void *model;
-            u8 pad54[0xAF - 0x54];
-            u8 statusFlags;
-        };
-    };
-    u16 objectFlags;
-    u8 padB2[0xB8 - 0xB2];
-    FirePipeExtra *extra;
-    u32 (*sequenceCallback)(struct FirePipeObject *obj);
-    u8 padC0[0xC4 - 0xC0];
-    u32 (*callback)(struct FirePipeObject *obj);
-} FirePipeObject;
-
 STATIC_ASSERT(offsetof(FirePipeMapData, rotX) == 0x18);
 STATIC_ASSERT(offsetof(FirePipeMapData, rotY) == 0x19);
 STATIC_ASSERT(offsetof(FirePipeMapData, cycleTime) == 0x1A);
@@ -72,28 +46,18 @@ STATIC_ASSERT(offsetof(FirePipeMapData, gameBit) == 0x1E);
 STATIC_ASSERT(offsetof(FirePipeMapData, startOffset) == 0x20);
 STATIC_ASSERT(offsetof(FirePipeMapData, flags) == 0x22);
 STATIC_ASSERT(sizeof(FirePipeMapData) == 0x24);
-STATIC_ASSERT(offsetof(FirePipeObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(FirePipeObject, rotX) == offsetof(ObjAnimComponent, rotX));
-STATIC_ASSERT(offsetof(FirePipeObject, scale) == offsetof(ObjAnimComponent, rootMotionScale));
-STATIC_ASSERT(offsetof(FirePipeObject, objectId) == offsetof(ObjAnimComponent, seqId));
-STATIC_ASSERT(offsetof(FirePipeObject, objectDef) == offsetof(ObjAnimComponent, placementData));
-STATIC_ASSERT(offsetof(FirePipeObject, model) == offsetof(ObjAnimComponent, modelInstance));
-STATIC_ASSERT(offsetof(FirePipeObject, statusFlags) == offsetof(ObjAnimComponent, resetHitboxFlags));
-STATIC_ASSERT(offsetof(FirePipeObject, extra) == 0xB8);
-STATIC_ASSERT(offsetof(FirePipeObject, sequenceCallback) == 0xBC);
-STATIC_ASSERT(offsetof(FirePipeObject, callback) == 0xC4);
 
-int firepipe_spawnEffectObject(FirePipeExtra *extra, FirePipeObject *obj, ObjPlacement *spawnDef);
-int firepipe_clearLinkedUpdateFlag(FirePipeObject *obj);
-int firepipe_setLinkedUpdateFlag(FirePipeObject *obj);
-void firepipe_updateState(FirePipeObject *obj);
+int firepipe_spawnEffectObject(FirePipeExtra *extra, GameObject *obj, ObjPlacement *spawnDef);
+int firepipe_clearLinkedUpdateFlag(GameObject *obj);
+int firepipe_setLinkedUpdateFlag(GameObject *obj);
+void firepipe_updateState(GameObject *obj);
 int firepipe_getExtraSize(void);
-u32 firepipe_stateCallback(FirePipeObject *obj);
+u32 firepipe_stateCallback(GameObject *obj);
 int firepipe_getObjectTypeId(void);
-void firepipe_free(FirePipeObject *obj);
-void firepipe_render(FirePipeObject *obj, int param_2, int param_3, int param_4, int param_5, char param_6);
-void firepipe_update(FirePipeObject *obj);
-void firepipe_init(FirePipeObject *obj, FirePipeMapData *mapData);
+void firepipe_free(GameObject *obj);
+void firepipe_render(GameObject *obj, int param_2, int param_3, int param_4, int param_5, char param_6);
+void firepipe_update(GameObject *obj);
+void firepipe_init(GameObject *obj, FirePipeMapData *mapData);
 
 extern ObjectDescriptor gFirePipeObjDescriptor;
 
