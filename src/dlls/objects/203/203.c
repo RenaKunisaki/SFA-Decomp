@@ -490,4 +490,3 @@ ObjectDescriptor12 gDllCBObjDescriptor = {
     (ObjectDescriptorCallback)dll_CB_handleMessage,
 };
 
-const f32 lbl_803E2EAC = 0.0f;

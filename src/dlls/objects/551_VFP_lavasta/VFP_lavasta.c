@@ -11,8 +11,6 @@
 #define VFP_LAVASTAR_RESOURCE_ID                 0xa6
 #define VFP_LAVASTAR_PARTFX                     0x3a4
 
-static const f32 lbl_803E61B0 = 900.0f;
-static const f32 lbl_803E61B4 = 0.1f;
 
 void* gVfpLavaPoolEffectResource;
 
@@ -78,9 +76,9 @@ void VFP_lavastar_update(GameObject* obj)
     mapData = (VfpLavaStarMapData*)obj->anim.placementData;
     state = obj->extra;
     obj->anim.localPosY += timeDelta * state->verticalVelocity;
-    if (obj->anim.localPosY > lbl_803E61B0 + mapData->base.posY)
+    if (obj->anim.localPosY > 900.0f + mapData->base.posY)
     {
-        state->verticalVelocity = lbl_803E61B4 * (f32)randomGetRange(5, 0x14);
+        state->verticalVelocity = 0.1f * (f32)randomGetRange(5, 0x14);
         obj->anim.localPosY = mapData->base.posY;
     }
     state->effectTimer += (s16)timeDelta;
@@ -107,7 +105,7 @@ void VFP_lavastar_init(GameObject* obj, int def)
     mapData = (VfpLavaStarMapData*)def;
     state = obj->extra;
     state->gameBit = mapData->gameBit;
-    state->verticalVelocity = lbl_803E61B4 * (f32)randomGetRange(10, 0x19);
+    state->verticalVelocity = 0.1f * (f32)randomGetRange(10, 0x19);
     state->effectTimer = 0x14;
     obj->anim.localPosY = mapData->base.posY + (f32)(int)mapData->heightOffset;
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;

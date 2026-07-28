@@ -16,7 +16,6 @@ STATIC_ASSERT(offsetof(VfpFlamePointTrickyInterface, sideCommandEnable) == 0x28)
 
 #define VFP_FLAMEPOINT_TRICKY_INTERFACE(tricky) ((VfpFlamePointTrickyInterface*)*(tricky)->anim.dll)
 
-static const f32 lbl_803E6158 = 35.0f;
 
 #define VFP_FLAMEPOINT_TRICKY_COMMAND_KIND 1
 #define VFP_FLAMEPOINT_TRICKY_COMMAND_TYPE 4
@@ -89,7 +88,7 @@ void VFP_flamepoint_update(GameObject* obj)
             tricky = getTrickyObject();
             if (tricky != NULL)
             {
-                f32 dist = lbl_803E6158;
+                f32 dist = 35.0f;
 
                 if (d->noCheck || (void*)ObjGroup_FindNearestObject(5, obj, &dist) == NULL)
                 {

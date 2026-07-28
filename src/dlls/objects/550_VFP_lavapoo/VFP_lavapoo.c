@@ -10,21 +10,7 @@
 
 #define VFP_LAVAPOOL_PARTFX          0x3a2
 
-static const f32 lbl_803E6160 = 100.0f;
-static const f32 lbl_803E6164 = 32767.0f;
-static const f32 lbl_803E6168 = 1.0f;
-static const f32 lbl_803E616C = 0.0f;
-static const f32 lbl_803E6170 = 255.0f;
 static const f32 gVfpLavaPoolPi = 3.1415927f;
-static const f32 lbl_803E6178 = 32768.0f;
-static const f32 lbl_803E617C = 0.2f;
-static const f32 lbl_803E6180 = 0.8f;
-static const f32 lbl_803E6184 = 4767.0f;
-static const f32 lbl_803E6188 = 20767.0f;
-static const f32 lbl_803E618C = 16767.0f;
-static const f32 lbl_803E6190 = 2000.0f;
-static const f32 lbl_803E6194 = 10000.0f;
-static const f32 lbl_803E6198 = 50.0f;
 
 f32 gVfpLavaPoolWaveSin;
 
@@ -73,20 +59,20 @@ void VFP_lavapool_updateWave(GameObject* obj)
     state = obj->extra;
     mapData = (VfpLavaPoolMapData*)obj->anim.placementData;
     speed = (f32)(u32)obj->anim.alpha;
-    state->phase += timeDelta * ((lbl_803E6160 * state->speedFactor) / lbl_803E6160);
-    if (state->phase > lbl_803E6164)
+    state->phase += timeDelta * ((100.0f * state->speedFactor) / 100.0f);
+    if (state->phase > 32767.0f)
     {
         state->speedFactor = (f32)randomGetRange(0x32, 100);
-        state->amplitude = lbl_803E6168 / ((f32)(int)mapData->amplitudeDivisor / (f32)randomGetRange(0x15e, 800));
-        state->phase = lbl_803E616C;
+        state->amplitude = 1.0f / ((f32)(int)mapData->amplitudeDivisor / (f32)randomGetRange(0x15e, 800));
+        state->phase = 0.0f;
         Sfx_PlayFromObject((u32)obj, SFXTRIG_id_111);
         speed = 255.0f;
     }
-    gVfpLavaPoolWaveSin = mathSinf((gVfpLavaPoolPi * (f32)(s16)(int)state->phase) / lbl_803E6178);
-    waveScale = lbl_803E6180 * state->amplitude;
-    obj->anim.rootMotionScale = lbl_803E617C * state->amplitude + waveScale * gVfpLavaPoolWaveSin;
+    gVfpLavaPoolWaveSin = mathSinf((gVfpLavaPoolPi * (f32)(s16)(int)state->phase) / 32768.0f);
+    waveScale = 0.8f * state->amplitude;
+    obj->anim.rootMotionScale = 0.2f * state->amplitude + waveScale * gVfpLavaPoolWaveSin;
     phase = state->phase;
-    if (phase > lbl_803E6184 && phase < lbl_803E6188)
+    if (phase > 4767.0f && phase < 20767.0f)
     {
         parm.value = state->amplitude;
         if (obj->objectFlags & OBJECT_OBJFLAG_RENDERED)
@@ -95,23 +81,23 @@ void VFP_lavapool_updateWave(GameObject* obj)
         }
     }
     phase = state->phase;
-    if (phase > lbl_803E618C)
+    if (phase > 16767.0f)
     {
         speed = (f32)(s16)(int)(255.0f * gVfpLavaPoolWaveSin);
     }
-    if (phase < lbl_803E6190)
+    if (phase < 2000.0f)
     {
-        speed = 255.0f * (phase / lbl_803E6190);
+        speed = 255.0f * (phase / 2000.0f);
     }
-    obj->anim.alpha = ((speed < lbl_803E616C) ? lbl_803E616C : ((speed > 255.0f) ? 255.0f : speed));
+    obj->anim.alpha = ((speed < 0.0f) ? 0.0f : ((speed > 255.0f) ? 255.0f : speed));
     tex = objFindTexture((GameObject*)obj, 0, 0);
     if (tex != NULL)
     {
         scrollT = (f32)(int)tex->offsetT;
-        scrollT += lbl_803E6160;
-        if (scrollT >= lbl_803E6194)
+        scrollT += 100.0f;
+        if (scrollT >= 10000.0f)
         {
-            scrollT -= lbl_803E6194;
+            scrollT -= 10000.0f;
         }
         tex->offsetT = (s16)scrollT;
     }
@@ -119,10 +105,10 @@ void VFP_lavapool_updateWave(GameObject* obj)
     if (tex != NULL)
     {
         scrollT = (f32)(int)tex->offsetT;
-        scrollT += lbl_803E6198;
-        if (scrollT >= lbl_803E6194)
+        scrollT += 50.0f;
+        if (scrollT >= 10000.0f)
         {
-            scrollT -= lbl_803E6194;
+            scrollT -= 10000.0f;
         }
         tex->offsetT = (s16)scrollT;
     }
@@ -152,7 +138,7 @@ void VFP_lavapool_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 vis
     if (visible != 0)
     {
         objSetColorFilter(0xff, 0xe6, 0xd7);
-        objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, lbl_803E6168);
+        objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
     }
 }
 
@@ -178,7 +164,7 @@ void VFP_lavapool_init(GameObject* obj, VfpLavaPoolMapData* mapData)
         mapData->amplitudeDivisor = 500;
     }
     obj->anim.rootMotionScale =
-        lbl_803E6168 /
+        1.0f /
         ((f32)(int)mapData->amplitudeDivisor / (f32)randomGetRange(600, 1000));
     state->amplitude = obj->anim.rootMotionScale;
     state->speedFactor = (f32)randomGetRange(0x32, 100);

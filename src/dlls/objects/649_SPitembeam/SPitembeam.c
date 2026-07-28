@@ -115,4 +115,3 @@ ObjectDescriptor gSPitembeamObjDescriptor = {
     spitembeam_getExtraSize,
 };
 
-const f32 lbl_803E5ADC = 0.0f;

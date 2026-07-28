@@ -13,10 +13,6 @@
 
 #define VFP_DOORSWITCH_LIFTIND_OBJ 0x3e7
 
-static const f32 lbl_803E6118 = 0.025f;
-static const f32 lbl_803E611C = 1.0f;
-static const f32 lbl_803E6120 = 100.0f;
-static const f32 lbl_803E6124 = 80.0f;
 
 typedef struct VfpDoorSwitchState
 {
@@ -53,20 +49,20 @@ void vfpdoorswitch_updateExplodingVariant(GameObject* obj)
     }
     if (state->activated != 0)
     {
-        ObjAnim_AdvanceCurrentMove((int)obj, lbl_803E6118, timeDelta, NULL);
+        ObjAnim_AdvanceCurrentMove((int)obj, 0.025f, timeDelta, NULL);
         if (state->exploded == 0)
         {
-            if (obj->anim.currentMoveProgress >= lbl_803E611C)
+            if (obj->anim.currentMoveProgress >= 1.0f)
             {
                 Vec vec;
                 PSVECSubtract(&camView->position, &obj->anim.localPos, &vec);
                 PSVECNormalize(&vec, &vec);
-                PSVECScale(&vec, &vec, lbl_803E6120);
+                PSVECScale(&vec, &vec, 100.0f);
                 PSVECAdd(&obj->anim.localPos, &vec, &obj->anim.localPos);
                 obj->anim.worldPosX = obj->anim.localPosX;
                 obj->anim.worldPosY = obj->anim.localPosY;
                 obj->anim.worldPosZ = obj->anim.localPosZ;
-                spawnExplosionLegacy((int)obj, lbl_803E6124, 1, 1, 0, 0, 0, 0, 0);
+                spawnExplosionLegacy((int)obj, 80.0f, 1, 1, 0, 0, 0, 0, 0);
                 state->exploded = 1;
                 obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
             }
@@ -91,7 +87,7 @@ void VFP_DoorSwitch_free(int obj)
 
 void VFP_DoorSwitch_render(int p1, int p2, int p3, int p4, int p5, s8 visible)
 {
-    objRenderModelAndHitVolumes(p1, p2, p3, p4, p5, lbl_803E611C);
+    objRenderModelAndHitVolumes(p1, p2, p3, p4, p5, 1.0f);
 }
 
 void VFP_DoorSwitch_hitDetect(void)
@@ -128,7 +124,7 @@ void VFP_DoorSwitch_init(GameObject* obj, int data)
     state->gameBitId = def->gameBitId;
     if (mainGetBit(state->gameBitId) != 0)
     {
-        ((ObjAnimSetProgressObjectFirstFn)ObjAnim_SetMoveProgress)((int)obj, lbl_803E611C);
+        ((ObjAnimSetProgressObjectFirstFn)ObjAnim_SetMoveProgress)((int)obj, 1.0f);
         state->activated = 1;
         state->exploded = 1;
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;

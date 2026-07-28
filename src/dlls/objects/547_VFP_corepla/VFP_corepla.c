@@ -5,9 +5,6 @@
 #include "main/object_render_legacy.h"
 #include "game/objects/object_setup.h"
 
-static const f32 lbl_803E6140 = 1.0f;
-static const f32 lbl_803E6144 = 0.7f;
-static const f32 lbl_803E6148 = 0.45f;
 
 typedef struct VfpCorePlatformState
 {
@@ -48,7 +45,7 @@ void VFP_coreplat_free(int obj)
 
 void VFP_coreplat_render(int p1, int p2, int p3, int p4, int p5, s8 visible)
 {
-    objRenderModelAndHitVolumes(p1, p2, p3, p4, p5, lbl_803E6140);
+    objRenderModelAndHitVolumes(p1, p2, p3, p4, p5, 1.0f);
 }
 
 void VFP_coreplat_hitDetect(void)
@@ -72,12 +69,12 @@ void VFP_coreplat_init(GameObject* obj, int data)
         if (mainGetBit(GAMEBIT_ITEM_SpellStone1_Used) != 0)
         {
             obj->anim.rootMotionScale =
-                lbl_803E6144 * obj->anim.modelInstance->rootMotionScaleBase;
+                0.7f * obj->anim.modelInstance->rootMotionScaleBase;
         }
         if (mainGetBit(GAMEBIT_ITEM_SpellStone3_Got) != 0)
         {
             obj->anim.rootMotionScale =
-                lbl_803E6148 * obj->anim.modelInstance->rootMotionScaleBase;
+                0.45f * obj->anim.modelInstance->rootMotionScaleBase;
         }
     }
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;

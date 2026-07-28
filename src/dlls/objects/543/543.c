@@ -10,8 +10,6 @@
 
 #define VFP_PLATFORM_LAVABLOCK_OBJ 960
 
-static const f32 lbl_803E6108 = 120.0f;
-static const f32 lbl_803E610C = 1.0f;
 
 typedef struct VfpPlatformState
 {
@@ -86,22 +84,22 @@ void VFP_Platform_updateLavaBlock(GameObject* obj)
         }
         else if (state->axisMode == 0)
         {
-            if (obj->anim.localPosZ == placement->posZ - lbl_803E6108)
+            if (obj->anim.localPosZ == placement->posZ - 120.0f)
             {
                 state->state = 2;
             }
-            if (obj->anim.localPosZ == lbl_803E6108 + placement->posZ)
+            if (obj->anim.localPosZ == 120.0f + placement->posZ)
             {
                 state->state = 3;
             }
         }
         else
         {
-            if (obj->anim.localPosZ == placement->posZ - lbl_803E6108)
+            if (obj->anim.localPosZ == placement->posZ - 120.0f)
             {
                 state->state = 4;
             }
-            if (obj->anim.localPosZ == lbl_803E6108 + placement->posZ)
+            if (obj->anim.localPosZ == 120.0f + placement->posZ)
             {
                 state->state = 5;
             }
@@ -112,7 +110,7 @@ void VFP_Platform_updateLavaBlock(GameObject* obj)
     {
         f32 thr;
         f32 z = obj->anim.localPosZ;
-        if (z < (thr = lbl_803E6108, thr + placement->posZ))
+        if (z < (thr = 120.0f, thr + placement->posZ))
         {
             obj->anim.localPosZ = z + timeDelta;
             if (obj->anim.localPosZ >= thr + placement->posZ)
@@ -127,7 +125,7 @@ void VFP_Platform_updateLavaBlock(GameObject* obj)
     case 3:
     {
         f32 thr;
-        if (obj->anim.localPosZ > placement->posZ - (thr = lbl_803E6108))
+        if (obj->anim.localPosZ > placement->posZ - (thr = 120.0f))
         {
             obj->anim.localPosZ = obj->anim.localPosZ - timeDelta;
             if (obj->anim.localPosZ <= placement->posZ - thr)
@@ -163,7 +161,7 @@ void VFP_Platform_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis
     s32 isVisible = visible;
     if (isVisible != 0 && state->axisMode != 0x63)
     {
-        ((void (*)(int, int, int, int, int, f32))objRenderModelAndHitVolumes)((int)obj, p2, p3, p4, p5, lbl_803E610C);
+        ((void (*)(int, int, int, int, int, f32))objRenderModelAndHitVolumes)((int)obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
