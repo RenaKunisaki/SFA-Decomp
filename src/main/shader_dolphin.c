@@ -835,7 +835,7 @@ void setupHeatShimmerTevStages(char* p1)
     f32 tsx;
     f32 tsy;
     f32 f31v;
-    f32 s;
+    f32 c;
     f32 k;
     f32 t;
     Texture* tex24;
@@ -857,8 +857,8 @@ void setupHeatShimmerTevStages(char* p1)
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     newshadows_getReflectionScrollOffsets(&rx, &ry);
     mathSinCosf(3.142f * rx, &sv, &cv);
-    s = mathCosf(3.142f * ry);
-    k = 0.125f * s + 0.75f;
+    c = mathCosf(3.142f * ry);
+    k = 0.125f * c + 0.75f;
     k = k * gHeatEffectScale;
     cv = cv * k;
     sv = sv * k;
@@ -867,9 +867,9 @@ void setupHeatShimmerTevStages(char* p1)
     m1.v[1][0] = -sv;
     m1.v[1][1] = cv;
     mathSinCosf(3.142f * -ry, &sv, &cv);
-    s = mathCosf(3.142f * rx);
-    f31v = 0.5f * s + 0.5f;
-    k = 0.125f * s + 0.75f;
+    c = mathCosf(3.142f * rx);
+    f31v = 0.5f * c + 0.5f;
+    k = 0.125f * c + 0.75f;
     k = k * gHeatEffectScale;
     cv = cv * k;
     sv = sv * k;

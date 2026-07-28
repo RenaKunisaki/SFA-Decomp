@@ -76,12 +76,12 @@ void CameraModeDebug_update(CameraObject* cam)
     {
         f32 cosYaw = mathSinf(3.1415927f * (f32)(s32)(cam->anim.rotX - 0x4000) / 32768.0f);
         f32 sinYaw = mathCosf(3.1415927f * (f32)(s32)(cam->anim.rotX - 0x4000) / 32768.0f);
-        f32 sinPitch = mathCosf(3.1415927f * (f32)(s32)cam->anim.rotY / 32768.0f);
-        f32 cosPitch = mathSinf(3.1415927f * (f32)(s32)cam->anim.rotY / 32768.0f);
+        f32 cosPitch = mathCosf(3.1415927f * (f32)(s32)cam->anim.rotY / 32768.0f);
+        f32 sinPitch = mathSinf(3.1415927f * (f32)(s32)cam->anim.rotY / 32768.0f);
         f32 vy, h, px;
         radius = gCamDebugState->orbitRadius;
-        vy = radius * cosPitch;
-        h = radius * sinPitch;
+        vy = radius * sinPitch;
+        h = radius * cosPitch;
         px = h * sinYaw;
         h = h * cosYaw;
         cam->anim.worldPosX = state->anim.worldPosX + px;

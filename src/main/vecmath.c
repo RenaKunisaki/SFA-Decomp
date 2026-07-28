@@ -179,36 +179,36 @@ void vecRotateYXZ(s16* a, f32* v)
 {
     f32 x, y, z;
     f32 s1, s2;
-    f32 c;
+    f32 trig;
 
     x = v[0];
     y = v[1];
     z = v[2];
 
-    c = mathSinf((gVecMathPi * a[0]) / 32768.0f);
-    s1 = x * c;
-    s2 = z * c;
-    c = mathCosf((gVecMathPi * a[0]) / 32768.0f);
-    x *= c;
-    z *= c;
+    trig = mathSinf((gVecMathPi * a[0]) / 32768.0f);
+    s1 = x * trig;
+    s2 = z * trig;
+    trig = mathCosf((gVecMathPi * a[0]) / 32768.0f);
+    x *= trig;
+    z *= trig;
     x += s2;
     z -= s1;
 
-    c = mathSinf((gVecMathPi * a[1]) / 32768.0f);
-    s1 = y * c;
-    s2 = z * c;
-    c = mathCosf((gVecMathPi * a[1]) / 32768.0f);
-    y *= c;
-    z *= c;
+    trig = mathSinf((gVecMathPi * a[1]) / 32768.0f);
+    s1 = y * trig;
+    s2 = z * trig;
+    trig = mathCosf((gVecMathPi * a[1]) / 32768.0f);
+    y *= trig;
+    z *= trig;
     y -= s2;
     z += s1;
 
-    c = mathSinf((gVecMathPi * a[2]) / 32768.0f);
-    s1 = x * c;
-    s2 = y * c;
-    c = mathCosf((gVecMathPi * a[2]) / 32768.0f);
-    x *= c;
-    y *= c;
+    trig = mathSinf((gVecMathPi * a[2]) / 32768.0f);
+    s1 = x * trig;
+    s2 = y * trig;
+    trig = mathCosf((gVecMathPi * a[2]) / 32768.0f);
+    x *= trig;
+    y *= trig;
     x -= s2;
     y += s1;
 

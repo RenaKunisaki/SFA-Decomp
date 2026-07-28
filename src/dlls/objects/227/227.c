@@ -103,7 +103,7 @@ void Fireball_homeToTarget(GameObject* obj, FireballState* state, GameObject* ta
         s16 targP;
         f32 t1;
         f32 t2;
-        f32 c;
+        f32 t;
 
         angY = (s16)getAngle(obj->anim.velocityX, obj->anim.velocityZ);
         t1 = obj->anim.velocityX * obj->anim.velocityX;
@@ -147,20 +147,20 @@ void Fireball_homeToTarget(GameObject* obj, FireballState* state, GameObject* ta
         obj->anim.velocityX = mathSinf(dx);
         obj->anim.velocityZ = mathCosf(dx);
         dx = FIREBALL_PI * angP / FIREBALL_ANGLE_SCALE;
-        c = mathSinf(dx);
+        t = mathSinf(dx);
         {
             f32 cosP = mathCosf(dx);
             if (0.0f != cosP) {
-                c = c / cosP;
+                t = t / cosP;
             }
         }
-        obj->anim.velocityY = c;
+        obj->anim.velocityY = t;
 
-        c = 5.0f / sqrtf(obj->anim.velocityZ * obj->anim.velocityZ +
+        t = 5.0f / sqrtf(obj->anim.velocityZ * obj->anim.velocityZ +
                          (obj->anim.velocityX * obj->anim.velocityX + obj->anim.velocityY * obj->anim.velocityY));
-        obj->anim.velocityX *= c;
-        obj->anim.velocityY *= c;
-        obj->anim.velocityZ *= c;
+        obj->anim.velocityX *= t;
+        obj->anim.velocityY *= t;
+        obj->anim.velocityZ *= t;
     }
 }
 

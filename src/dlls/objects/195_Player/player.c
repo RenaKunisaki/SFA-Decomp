@@ -5244,7 +5244,7 @@ void fn_8029C8C8(GameObject* obj, int p2)
 int playerState25(int obj, int state, f32 fv)
 {
     PlayerState* inner = ((GameObject*)obj)->extra;
-    f32 ratio, c, s, vx, t0, curveOut;
+    f32 ratio, s, c, vx, t0, curveOut;
     f32 vy;
     int r;
 
@@ -5288,19 +5288,19 @@ int playerState25(int obj, int state, f32 fv)
     }
     {
         f32 ang = 3.1415927f * (f32)inner->targetYaw / 32768.0f;
-        c = mathSinf(ang);
+        s = mathSinf(ang);
     }
     {
         f32 ang = 3.1415927f * (f32)inner->targetYaw / 32768.0f;
-        s = mathCosf(ang);
+        c = mathCosf(ang);
     }
     {
         f32 cc = inner->smoothVelZ;
         f32 c8 = inner->smoothVelX;
         ((PlayerState*)state)->baddie.animSpeedA +=
-            interpolate(-cc * s - c8 * c - ((PlayerState*)state)->baddie.animSpeedA, inner->targetAnimSpeed, timeDelta);
+            interpolate(-cc * c - c8 * s - ((PlayerState*)state)->baddie.animSpeedA, inner->targetAnimSpeed, timeDelta);
         ((PlayerState*)state)->baddie.animSpeedB +=
-            interpolate(c8 * s - cc * c - ((PlayerState*)state)->baddie.animSpeedB, inner->targetAnimSpeed, timeDelta);
+            interpolate(c8 * c - cc * s - ((PlayerState*)state)->baddie.animSpeedB, inner->targetAnimSpeed, timeDelta);
     }
     t0 = ((GameObject*)obj)->anim.currentMoveProgress;
     {
@@ -10732,12 +10732,12 @@ int playerStateIdle(int obj, int state, f32 fv)
     {
         f32 vx;
         f32 vz;
-        f32 c;
-        c = mathSinf((3.1415927f * (f32) * (int*)((char*)inner + 0x474)) / 32768.0f);
-        vx = t * -c;
+        f32 trig;
+        trig = mathSinf((3.1415927f * (f32) * (int*)((char*)inner + 0x474)) / 32768.0f);
+        vx = t * -trig;
         vx = ((PlayerState*)inner)->maxSpeed * vx;
-        c = mathCosf((3.1415927f * (f32) * (int*)((char*)inner + 0x474)) / 32768.0f);
-        vz = t * -c;
+        trig = mathCosf((3.1415927f * (f32) * (int*)((char*)inner + 0x474)) / 32768.0f);
+        vz = t * -trig;
         vz = ((PlayerState*)inner)->maxSpeed * vz;
         vx = interpolate(vx - ((PlayerState*)inner)->smoothVelX, ((PlayerState*)inner)->velSmoothRate, timeDelta);
         vz = interpolate(vz - ((PlayerState*)inner)->smoothVelZ, ((PlayerState*)inner)->velSmoothRate, timeDelta);
@@ -12994,14 +12994,14 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
 {
     int any;
     PlayerState* inner = ((GameObject*)player)->extra;
-    f32 sumC;
     f32 sumS;
+    f32 sumC;
     f32 ratio;
     int* objs;
     int n;
     int i;
 
-    sumC = sumS = 0.0f;
+    sumS = sumC = 0.0f;
     objs = (int*)ObjGroup_GetObjects(0x14, &n);
     any = 0;
     for (i = 0; i < n; i++)
@@ -13026,8 +13026,8 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
                         ratio = (thresh - dist) / thresh;
                     }
                     ratio = ratio * (10.0f * *(f32*)((char*)o + 0x8));
-                    sumC = ratio * mathSinf(3.1415927f * (f32)(int)*(s16*)((char*)o + 0) / 32768.0f) + sumC;
-                    sumS = ratio * mathCosf(3.1415927f * (f32)(int)*(s16*)((char*)o + 0) / 32768.0f) + sumS;
+                    sumS = ratio * mathSinf(3.1415927f * (f32)(int)*(s16*)((char*)o + 0) / 32768.0f) + sumS;
+                    sumC = ratio * mathCosf(3.1415927f * (f32)(int)*(s16*)((char*)o + 0) / 32768.0f) + sumC;
                 }
             }
         }
@@ -13055,8 +13055,8 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
                     ratio = (thresh - dist) / thresh;
                 }
                 ratio = ratio * strength;
-                sumC = ratio * mathSinf(3.1415927f * (f32)(int)a22 / 32768.0f) + sumC;
-                sumS = ratio * mathCosf(3.1415927f * (f32)(int)a22 / 32768.0f) + sumS;
+                sumS = ratio * mathSinf(3.1415927f * (f32)(int)a22 / 32768.0f) + sumS;
+                sumC = ratio * mathCosf(3.1415927f * (f32)(int)a22 / 32768.0f) + sumC;
             }
         }
     }
@@ -13064,11 +13064,11 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
     {
         f32 mag;
         f32 k;
-        sumC = sumC / (f32)(int)any;
         sumS = sumS / (f32)(int)any;
+        sumC = sumC / (f32)(int)any;
         k = 0.05f;
-        inner->avoidVelX = inner->avoidVelX - k * sumC;
-        inner->avoidVelZ = inner->avoidVelZ - k * sumS;
+        inner->avoidVelX = inner->avoidVelX - k * sumS;
+        inner->avoidVelZ = inner->avoidVelZ - k * sumC;
         {
             f32 k;
             inner->avoidVelX = inner->avoidVelX * (k = 0.99f);
@@ -18068,9 +18068,9 @@ void playerDoHitDetection(int obj)
                     }
                     dt = mathSinf((3.1415927f * (f32)((PlayerState*)inner)->yaw) / 32768.0f);
                     {
-                        f32 s = mathCosf((3.1415927f * (f32)((PlayerState*)inner)->yaw) / 32768.0f);
+                        f32 cosYaw = mathCosf((3.1415927f * (f32)((PlayerState*)inner)->yaw) / 32768.0f);
                         ((PlayerState*)inner)->baddie.animSpeedA =
-                            -((GameObject*)obj)->anim.velocityZ * s - ((GameObject*)obj)->anim.velocityX * dt;
+                            -((GameObject*)obj)->anim.velocityZ * cosYaw - ((GameObject*)obj)->anim.velocityX * dt;
                     }
                     ((PlayerState*)inner)->baddie.animSpeedA *= 1.5f;
                     {

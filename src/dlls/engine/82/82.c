@@ -34,7 +34,7 @@ void CameraModeForceBehind_update(CameraObject* camera)
     f32 cosv, sinv;
     f32 sx, sz;
     f32 baseX, baseY, baseZ;
-    f32 cosYaw, sinYaw, sinPitch, cosPitch;
+    f32 cosYaw, sinYaw, cosPitch, sinPitch;
     f32 radius;
     f32 dx, dz;
 
@@ -81,12 +81,12 @@ void CameraModeForceBehind_update(CameraObject* camera)
 
     cosYaw = mathSinf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
     sinYaw = mathCosf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
-    sinPitch = mathCosf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
-    cosPitch = mathSinf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
+    cosPitch = mathCosf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
+    sinPitch = mathSinf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
     radius = gCamForceBehindPlacementRadius;
     {
-        f32 ry = radius * cosPitch;
-        f32 rh = radius * sinPitch;
+        f32 ry = radius * sinPitch;
+        f32 rh = radius * cosPitch;
         f32 rx = rh * sinYaw;
         rh = rh * cosYaw;
         camera->anim.worldPosX = baseX + rx;

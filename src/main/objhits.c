@@ -1680,8 +1680,8 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
     int angleA;
     int angleB;
     u32 angle;
-    f32 sinVal;
-    f32 sinSq;
+    f32 cosVal;
+    f32 cosSq;
     f32 weightA;
     f32 weightB;
     f32 sum;
@@ -1814,12 +1814,12 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
         {
             angleB += 0xffff;
         }
-        sinVal = mathCosf((gObjHitsPi * angleA) / gObjHitsAngleHalfPeriod);
-        sinSq = sinVal * sinVal;
-        weightA = stateA->lateralResponseWeight * sinSq + stateA->axialResponseWeight * (gObjHitsScalarOne - sinSq);
-        sinVal = mathCosf((gObjHitsPi * angleB) / gObjHitsAngleHalfPeriod);
-        sinSq = sinVal * sinVal;
-        weightB = stateB->lateralResponseWeight * sinSq + stateB->axialResponseWeight * (gObjHitsScalarOne - sinSq);
+        cosVal = mathCosf((gObjHitsPi * angleA) / gObjHitsAngleHalfPeriod);
+        cosSq = cosVal * cosVal;
+        weightA = stateA->lateralResponseWeight * cosSq + stateA->axialResponseWeight * (gObjHitsScalarOne - cosSq);
+        cosVal = mathCosf((gObjHitsPi * angleB) / gObjHitsAngleHalfPeriod);
+        cosSq = cosVal * cosVal;
+        weightB = stateB->lateralResponseWeight * cosSq + stateB->axialResponseWeight * (gObjHitsScalarOne - cosSq);
         if (weightA < weightB * lbl_803DB450)
         {
             weightA = gObjHitsScalarZero;
@@ -4779,13 +4779,13 @@ u32 ObjHitRegion_FindContainingId(f32 x, f32 y, f32 z)
             {
                 if (entry->type == OBJHITREGION_ROM_ENTRY_TYPE)
                 {
-                    f32 yawCos = mathSinf(gObjLibAnglePiNumerator * (f32) -
+                    f32 yawSin = mathSinf(gObjLibAnglePiNumerator * (f32) -
                                           (s32)((u32)entry->yaw << 8) / gObjLibAngleUnitDivisor);
-                    f32 yawSin = mathCosf(gObjLibAnglePiNumerator * (f32) -
+                    f32 yawCos = mathCosf(gObjLibAnglePiNumerator * (f32) -
                                           (s32)((u32)entry->yaw << 8) / gObjLibAngleUnitDivisor);
-                    f32 pitchCos = mathSinf(gObjLibAnglePiNumerator * (f32) -
+                    f32 pitchSin = mathSinf(gObjLibAnglePiNumerator * (f32) -
                                             (s32)((u32)entry->pitch << 8) / gObjLibAngleUnitDivisor);
-                    f32 pitchSin = mathCosf(gObjLibAnglePiNumerator * (f32) -
+                    f32 pitchCos = mathCosf(gObjLibAnglePiNumerator * (f32) -
                                             (s32)((u32)entry->pitch << 8) / gObjLibAngleUnitDivisor);
                     f32 deltaZ;
                     f32 deltaY;
@@ -4797,10 +4797,10 @@ u32 ObjHitRegion_FindContainingId(f32 x, f32 y, f32 z)
                     deltaX = x - entry->x;
                     deltaY = y - entry->y;
                     deltaZ = z - entry->z;
-                    localX = deltaX * yawSin - deltaZ * yawCos;
-                    yawZ = deltaX * yawCos + deltaZ * yawSin;
-                    localY = deltaY * pitchSin - yawZ * pitchCos;
-                    localZ = deltaY * pitchCos + yawZ * pitchSin;
+                    localX = deltaX * yawCos - deltaZ * yawSin;
+                    yawZ = deltaX * yawSin + deltaZ * yawCos;
+                    localY = deltaY * pitchCos - yawZ * pitchSin;
+                    localZ = deltaY * pitchSin + yawZ * pitchCos;
 
                     if (localX < 0.0f)
                     {

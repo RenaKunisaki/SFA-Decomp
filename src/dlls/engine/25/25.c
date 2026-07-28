@@ -1080,8 +1080,8 @@ f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, char* st)
     f32 dist;
     f32 fz;
     f32 fx;
-    f32 c;
     f32 s;
+    f32 c;
     f32 dx;
     f32 dz;
 
@@ -1093,15 +1093,15 @@ f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, char* st)
         f32 base;
         f32 d1;
         f32 d2;
-        c = mathSinf(3.1415927f * (f32)(obj)->anim.rotX / 32768.0f);
-        s = mathCosf(3.1415927f * (f32)(obj)->anim.rotX / 32768.0f);
-        base = -(c * (px - c) + s * (pz - s));
-        d1 = base + (c * ((BaddieState*)st)->posY + s * *(f32*)(st + 0x20));
-        d2 = base + (c * *(f32*)(st + 0x8c) + s * *(f32*)(st + 0x94));
+        s = mathSinf(3.1415927f * (f32)(obj)->anim.rotX / 32768.0f);
+        c = mathCosf(3.1415927f * (f32)(obj)->anim.rotX / 32768.0f);
+        base = -(s * (px - s) + c * (pz - c));
+        d1 = base + (s * ((BaddieState*)st)->posY + c * *(f32*)(st + 0x20));
+        d2 = base + (s * *(f32*)(st + 0x8c) + c * *(f32*)(st + 0x94));
         if (d1 > 0.0f && d2 <= 1.0f)
         {
-            ((BaddieState*)st)->posY = ((BaddieState*)st)->posY - c * d1;
-            *(f32*)(st + 0x20) = *(f32*)(st + 0x20) - s * d1;
+            ((BaddieState*)st)->posY = ((BaddieState*)st)->posY - s * d1;
+            *(f32*)(st + 0x20) = *(f32*)(st + 0x20) - c * d1;
             Obj_TransformWorldPointToLocal(((BaddieState*)st)->posY, ((BaddieState*)st)->posZ, *(f32*)(st + 0x20),
                                            (f32*)(st + 0xc), (f32*)(st + 0x10), (f32*)(st + 0x14), *(u32*)(st + 0x30));
         }
@@ -1120,9 +1120,9 @@ f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, char* st)
         fx = px;
         fz = pz;
     }
-    c = mathSinf(3.1415927f * (f32)((obj)->anim.rotX + 0x4000) / 32768.0f);
-    s = mathCosf(3.1415927f * (f32)((obj)->anim.rotX + 0x4000) / 32768.0f);
-    return -(-((obj)->anim.localPosX * c + (obj)->anim.localPosZ * s) + (c * fx + s * fz));
+    s = mathSinf(3.1415927f * (f32)((obj)->anim.rotX + 0x4000) / 32768.0f);
+    c = mathCosf(3.1415927f * (f32)((obj)->anim.rotX + 0x4000) / 32768.0f);
+    return -(-((obj)->anim.localPosX * s + (obj)->anim.localPosZ * c) + (s * fx + c * fz));
 }
 
 /* Computes the yaw step, wrapped yaw delta and distance from an object to its

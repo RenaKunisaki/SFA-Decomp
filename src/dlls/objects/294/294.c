@@ -161,10 +161,10 @@ int triggerPointInBox(GameObject* obj, f32* point)
     f32 pointX;
     f32 pointY;
     f32 pointZ;
-    f32 yawCos;
     f32 yawSin;
-    f32 pitchCos;
+    f32 yawCos;
     f32 pitchSin;
+    f32 pitchCos;
     f32 relZ;
     f32 relY;
     f32 relX;
@@ -179,18 +179,18 @@ int triggerPointInBox(GameObject* obj, f32* point)
     pointY = point[1];
     pointZ = point[2];
 
-    yawCos = mathSinf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotX));
-    yawSin = mathCosf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotX));
-    pitchCos = mathSinf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotY));
-    pitchSin = mathCosf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotY));
+    yawSin = mathSinf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotX));
+    yawCos = mathCosf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotX));
+    pitchSin = mathSinf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotY));
+    pitchCos = mathCosf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotY));
 
     relX = pointX - o->anim.worldPosX;
     relY = pointY - o->anim.worldPosY;
     relZ = pointZ - o->anim.worldPosZ;
-    localX = relX * yawSin - relZ * yawCos;
-    forward = relX * yawCos + relZ * yawSin;
-    localY = relY * pitchSin - forward * pitchCos;
-    localZ = relY * pitchCos + forward * pitchSin;
+    localX = relX * yawCos - relZ * yawSin;
+    forward = relX * yawSin + relZ * yawCos;
+    localY = relY * pitchCos - forward * pitchSin;
+    localZ = relY * pitchSin + forward * pitchCos;
 
     if (localX < 0.0f)
     {

@@ -362,42 +362,42 @@ s16 EdibleMushroom_findClearApproachAngle(GameObject* obj, GameObject* player, E
     s16 angleMinus;
     int i;
     f32 rad;
-    f32 cos0;
     f32 sin0;
+    f32 cos0;
     f32 cosM;
     f32 cosP;
     f32 sinM;
     f32 sinP;
-    f32 cosStepP;
-    f32 cosStepM;
     f32 sinStepP;
     f32 sinStepM;
+    f32 cosStepP;
+    f32 cosStepM;
     f32 vec[3];
 
     angle = getAngle(-(obj->anim.localPosX - player->anim.localPosX), -(obj->anim.localPosZ - player->anim.localPosZ));
     rad = (3.1415927f * angle) / 32768.0f;
-    cos0 = mathSinf(rad);
-    sin0 = mathCosf(rad);
-    vec[0] = obj->anim.localPosX - dist * cos0;
+    sin0 = mathSinf(rad);
+    cos0 = mathCosf(rad);
+    vec[0] = obj->anim.localPosX - dist * sin0;
     vec[1] = obj->anim.localPosY;
-    vec[2] = obj->anim.localPosZ - dist * sin0;
+    vec[2] = obj->anim.localPosZ - dist * cos0;
     if (objBboxFn_800640cc(&obj->anim.localPosX, vec, 0.1f, 3, NULL, obj, 8, -1, 0xFF, 0) != 0) {
         anglePlus = angle;
         angleMinus = angle;
-        cosM = cos0;
-        cosP = cos0;
-        cosStepP = mathSinf(0.34898064f);
-        cosStepM = mathSinf(-0.34898064f);
-        sinP = sin0;
-        sinM = sin0;
-        sinStepP = mathCosf(0.34898064f);
-        sinStepM = mathCosf(-0.34898064f);
+        cosM = sin0;
+        cosP = sin0;
+        sinStepP = mathSinf(0.34898064f);
+        sinStepM = mathSinf(-0.34898064f);
+        sinP = cos0;
+        sinM = cos0;
+        cosStepP = mathCosf(0.34898064f);
+        cosStepM = mathCosf(-0.34898064f);
         for (i = 0; i < 8; i++) {
             f32 cosNext;
 
             anglePlus += 0xE38;
-            cosNext = cosP * sinStepP + sinP * cosStepP;
-            sinP = sinP * sinStepP - cosP * cosStepP;
+            cosNext = cosP * cosStepP + sinP * sinStepP;
+            sinP = sinP * cosStepP - cosP * sinStepP;
             cosP = cosNext;
             vec[0] = obj->anim.localPosX - dist * cosNext;
             vec[2] = obj->anim.localPosZ - dist * sinP;
@@ -405,8 +405,8 @@ s16 EdibleMushroom_findClearApproachAngle(GameObject* obj, GameObject* player, E
                 return anglePlus;
             }
             angleMinus -= 0xE38;
-            cosNext = cosM * sinStepM + sinM * cosStepM;
-            sinM = sinM * sinStepM - cosM * cosStepM;
+            cosNext = cosM * cosStepM + sinM * sinStepM;
+            sinM = sinM * cosStepM - cosM * sinStepM;
             cosM = cosNext;
             vec[0] = obj->anim.localPosX - dist * cosNext;
             vec[2] = obj->anim.localPosZ - dist * sinM;

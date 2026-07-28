@@ -359,7 +359,7 @@ void player_clearXZvel(GameObject* obj, int* state)
 
 void dll_0F_func13(GameObject* obj, int* state, int angle, f32 t, f32 scale)
 {
-    f32 ang, vx, vz, q, w, dist, c, s;
+    f32 ang, vx, vz, q, w, dist, s, c;
 
     ((BaddieState*)state)->movementFlags |= 1;
     if ((s8)gPlayerMoveVelHandled == 0)
@@ -394,11 +394,11 @@ void dll_0F_func13(GameObject* obj, int* state, int angle, f32 t, f32 scale)
         obj->anim.velocityX = z;
         obj->anim.velocityZ = z;
     }
-    c = mathSinf((PLAYER_MOVE_PI * (f32)*(s16*)obj) / PLAYER_MOVE_HALF_CIRCLE);
-    s = mathCosf((PLAYER_MOVE_PI * (f32)*(s16*)obj) / PLAYER_MOVE_HALF_CIRCLE);
-    ((BaddieState*)state)->animSpeedB = obj->anim.velocityX * s - obj->anim.velocityZ * c;
+    s = mathSinf((PLAYER_MOVE_PI * (f32)*(s16*)obj) / PLAYER_MOVE_HALF_CIRCLE);
+    c = mathCosf((PLAYER_MOVE_PI * (f32)*(s16*)obj) / PLAYER_MOVE_HALF_CIRCLE);
+    ((BaddieState*)state)->animSpeedB = obj->anim.velocityX * c - obj->anim.velocityZ * s;
     ((BaddieState*)state)->animSpeedA =
-        -obj->anim.velocityZ * s - obj->anim.velocityX * c;
+        -obj->anim.velocityZ * c - obj->anim.velocityX * s;
 }
 
 void dll_0F_func19_nop(void)

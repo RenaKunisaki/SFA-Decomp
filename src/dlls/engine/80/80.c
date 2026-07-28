@@ -17,7 +17,7 @@ void CameraModeCrawl_copyToCurrent(void* param1, int param2)
     int obj;
     GameObject* target;
     int yaw;
-    f32 c, s;
+    f32 s, c;
     f32 pos[3];
 
     if (param1 == NULL)
@@ -30,16 +30,16 @@ void CameraModeCrawl_copyToCurrent(void* param1, int param2)
 
     if (param2 == 0)
     {
-        c = mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
-        s = mathCosf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
+        s = mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
+        c = mathCosf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
     }
     else
     {
-        c = -mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
-        s = -mathCosf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
+        s = -mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
+        c = -mathCosf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
     }
     {
-        target->anim.rotX = getAngle(c, s);
+        target->anim.rotX = getAngle(s, c);
     }
     camcontrol_getTargetPosition((CameraObject*)obj, &target->anim, pos, NULL);
     target->anim.rotX = yaw;

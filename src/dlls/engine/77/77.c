@@ -29,8 +29,8 @@ void CameraModeNpcSpeak_solveOrbitPosition(GameObject* target, f32* outX, f32* o
     f32 dz;
     f32 dist;
     u16 angle;
-    f32 cosVal;
     f32 sinVal;
+    f32 cosVal;
 
     dx = target->anim.worldPosX - state->anchorX;
     dz = target->anim.worldPosZ - state->anchorZ;
@@ -45,9 +45,9 @@ void CameraModeNpcSpeak_solveOrbitPosition(GameObject* target, f32* outX, f32* o
     dx += state->anchorX;
     dz += state->anchorZ;
 
-    cosVal = mathSinf(3.1415927f * (f32)(s32)(angle + gCameraModeNpcSpeakState->orbitAngleOffset) /
+    sinVal = mathSinf(3.1415927f * (f32)(s32)(angle + gCameraModeNpcSpeakState->orbitAngleOffset) /
                       32768.0f);
-    sinVal = mathCosf(3.1415927f * (f32)(s32)(angle + gCameraModeNpcSpeakState->orbitAngleOffset) /
+    cosVal = mathCosf(3.1415927f * (f32)(s32)(angle + gCameraModeNpcSpeakState->orbitAngleOffset) /
                       32768.0f);
 
     if (dist < gCameraModeNpcSpeakState->minDistance)
@@ -56,10 +56,10 @@ void CameraModeNpcSpeak_solveOrbitPosition(GameObject* target, f32* outX, f32* o
     }
     dist += gCameraModeNpcSpeakState->distanceOffset;
 
-    *outX = cosVal * dist + dx;
+    *outX = sinVal * dist + dx;
     *outY = (target->anim.worldPosY + gCameraModeNpcSpeakState->targetHeightOffset) -
             0.03f * ((30.0f + target->anim.worldPosY) - state->anchorY);
-    *outZ = sinVal * dist + dz;
+    *outZ = cosVal * dist + dz;
 }
 
 void CameraModeNpcSpeak_copyToCurrent(void)

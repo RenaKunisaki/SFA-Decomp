@@ -4158,8 +4158,8 @@ void ObjSeq_UpdateCurvePosition(GameObject* obj, u8* seq)
     f32 dx;
     f32 dy;
     f32 dz;
-    f32 angleSin;
     f32 angleCos;
+    f32 angleSin;
 
     object = obj;
     state = (ObjSeqState*)seq;
@@ -4173,10 +4173,10 @@ void ObjSeq_UpdateCurvePosition(GameObject* obj, u8* seq)
     {
         dx = object->anim.localPosX - placement->baseX;
         dz = object->anim.localPosZ - placement->baseZ;
-        angleCos = mathSinf((3.1415927f * (f32)state->heading) / 32768.0f);
-        angleSin = mathCosf((3.1415927f * (f32)state->heading) / 32768.0f);
-        object->anim.localPosX = angleCos * dz + (angleSin * dx + placement->baseX);
-        object->anim.localPosZ = -(angleCos * dx - (angleSin * dz + placement->baseZ));
+        angleSin = mathSinf((3.1415927f * (f32)state->heading) / 32768.0f);
+        angleCos = mathCosf((3.1415927f * (f32)state->heading) / 32768.0f);
+        object->anim.localPosX = angleSin * dz + (angleCos * dx + placement->baseX);
+        object->anim.localPosZ = -(angleSin * dx - (angleCos * dz + placement->baseZ));
         return;
     }
 
@@ -4213,10 +4213,10 @@ void ObjSeq_UpdateCurvePosition(GameObject* obj, u8* seq)
         return;
     }
 
-    angleCos = mathSinf((3.1415927f * (f32)state->heading) / 32768.0f);
-    angleSin = mathCosf((3.1415927f * (f32)state->heading) / 32768.0f);
-    object->anim.localPosX = angleCos * dz + (angleSin * dx + placement->baseX);
-    object->anim.localPosZ = -(angleCos * dx - (angleSin * dz + placement->baseZ));
+    angleSin = mathSinf((3.1415927f * (f32)state->heading) / 32768.0f);
+    angleCos = mathCosf((3.1415927f * (f32)state->heading) / 32768.0f);
+    object->anim.localPosX = angleSin * dz + (angleCos * dx + placement->baseX);
+    object->anim.localPosZ = -(angleSin * dx - (angleCos * dz + placement->baseZ));
 }
 int objSeqFindLabel(u8* seq, int label)
 {

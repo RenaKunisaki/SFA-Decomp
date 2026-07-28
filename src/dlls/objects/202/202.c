@@ -1515,8 +1515,8 @@ void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
     f32 dy;
     f32 px0;
     f32 pz0;
-    f32 cosA;
     f32 sinA;
+    f32 cosA;
     f32 base;
     f32 f5;
     f32 f2v;
@@ -1541,19 +1541,19 @@ void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
     dz = player->anim.worldPosZ - pz0;
     if (sqrtf(dx * dx + dz * dz) < ((GroundBaddieState*)state)->baddie.speedScale)
     {
-        cosA = mathSinf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
-        sinA = mathCosf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
-        base = -(cosA * (px0 - cosA) + sinA * (pz0 - sinA));
-        f5 = base + (cosA * player->anim.previousWorldPosX + sinA * player->anim.previousWorldPosZ);
-        f2v = base + (cosA * player->anim.worldPosX + sinA * player->anim.worldPosZ);
+        sinA = mathSinf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
+        cosA = mathCosf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
+        base = -(sinA * (px0 - sinA) + cosA * (pz0 - cosA));
+        f5 = base + (sinA * player->anim.previousWorldPosX + cosA * player->anim.previousWorldPosZ);
+        f2v = base + (sinA * player->anim.worldPosX + cosA * player->anim.worldPosZ);
         if (f2v > 0.0f)
         {
             if (!(f5 >= GROUND_BADDIE_PUSH_MAX_DEPTH))
             {
                 return;
             }
-            player->anim.worldPosX = player->anim.worldPosX - cosA * f5;
-            player->anim.worldPosZ = player->anim.worldPosZ - sinA * f5;
+            player->anim.worldPosX = player->anim.worldPosX - sinA * f5;
+            player->anim.worldPosZ = player->anim.worldPosZ - cosA * f5;
             Obj_TransformWorldPointToLocal(player->anim.worldPosX, player->anim.worldPosY, player->anim.worldPosZ,
                                            &player->anim.localPosX, &player->anim.localPosY, &player->anim.localPosZ,
                                            (u32)player->anim.parent);

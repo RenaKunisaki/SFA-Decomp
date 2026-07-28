@@ -753,7 +753,7 @@ int DBprotection_getCameraState(GameObject* obj) {
 
 void DBprotection_updateShield(GameObject* obj) {
     SBGalleonState* state;
-    f32 angleCos;
+    f32 angleSin;
 
     state = obj->extra;
     obj->userData1 = 7;
@@ -778,24 +778,24 @@ void DBprotection_updateShield(GameObject* obj) {
     (*gCloudActionInterface)->func12Nop(-25.0f, 0.0f);
     (*gCloudActionInterface)->func10Nop(0);
 
-    angleCos = mathSinf((gDBprotPi * state->shieldAngle) / gDBprotAngleUnit);
+    angleSin = mathSinf((gDBprotPi * state->shieldAngle) / gDBprotAngleUnit);
     if (state->shieldSfxLatch == 0) {
-        if (angleCos < -0.9f) {
+        if (angleSin < -0.9f) {
             if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_tr_gal_crateslide);
             }
             state->shieldSfxLatch = 1;
-        } else if (angleCos > 0.9f) {
+        } else if (angleSin > 0.9f) {
             if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_tr_gal_sailflap3);
             }
             state->shieldSfxLatch = 1;
         }
-    } else if (angleCos > -0.1f && angleCos < 0.1f) {
+    } else if (angleSin > -0.1f && angleSin < 0.1f) {
         state->shieldSfxLatch = 0;
     }
 
-    *(u16*)&obj->anim.rotZ = 432.0f * angleCos;
+    *(u16*)&obj->anim.rotZ = 432.0f * angleSin;
     state->shieldAngle = (u16)(s32)(128.0f * timeDelta + state->shieldAngle);
 }
 

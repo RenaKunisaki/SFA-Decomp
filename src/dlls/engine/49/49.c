@@ -524,9 +524,9 @@ int Minimap_update(void)
                     gMinimapArrowScale1 = fv;
                     gMinimapArrowScale2 = fv;
                     {
-                        f32 c1 = gMinimapArrowScale0 *
-                             mathSinf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
                         f32 s1 = gMinimapArrowScale0 *
+                             mathSinf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
+                        f32 c1 = gMinimapArrowScale0 *
                              mathCosf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
                         f32 c2 = gMinimapArrowScale1 *
                              mathSinf(3.1415927f * (f32)(player->anim.rotX + 0x6000) / 32768.0f);
@@ -536,15 +536,15 @@ int Minimap_update(void)
                              mathSinf(3.1415927f * (f32)(player->anim.rotX - 0x6000) / 32768.0f);
                         f32 s3 = gMinimapArrowScale2 *
                              mathCosf(3.1415927f * (f32)(player->anim.rotX - 0x6000) / 32768.0f);
-                        hudDrawTriangle(cx - c1, cy - s1, cx - c2, cy - s2, cx - c3, cy - s3, color.channels);
+                        hudDrawTriangle(cx - s1, cy - c1, cx - c2, cy - s2, cx - c3, cy - s3, color.channels);
                     }
                     color.channels.a = gMinimapContentAlpha;
                     color.channels.r = 0xff;
                     color.channels.g = 0xff;
                     color.channels.b = 0;
                     {
-                        f32 c1 = -6.0f * mathSinf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
-                        f32 s1 = -6.0f * mathCosf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
+                        f32 s1 = -6.0f * mathSinf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
+                        f32 c1 = -6.0f * mathCosf(3.1415927f * (f32)player->anim.rotX / 32768.0f);
                         f32 c2 = -4.0f *
                              mathSinf(3.1415927f * (f32)(player->anim.rotX + 0x6000) / 32768.0f);
                         f32 s2 = -4.0f *
@@ -553,7 +553,7 @@ int Minimap_update(void)
                              mathSinf(3.1415927f * (f32)(player->anim.rotX - 0x6000) / 32768.0f);
                         f32 s3 = -4.0f *
                              mathCosf(3.1415927f * (f32)(player->anim.rotX - 0x6000) / 32768.0f);
-                        hudDrawTriangle(cx - c1, cy - s1, cx - c2, cy - s2, cx - c3, cy - s3, color.channels);
+                        hudDrawTriangle(cx - s1, cy - c1, cx - c2, cy - s2, cx - c3, cy - s3, color.channels);
                     }
                 }
                 else

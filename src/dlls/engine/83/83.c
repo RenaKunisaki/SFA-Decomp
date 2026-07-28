@@ -33,7 +33,7 @@ void CameraModeCloudRunner_update(CameraObject* camera)
     s16 tgtYaw;
     s16 tgtPitch;
     f32 baseX, baseY, baseZ;
-    f32 cosYaw, sinYaw, sinPitch, cosPitch;
+    f32 cosYaw, sinYaw, cosPitch, sinPitch;
     f32 radius;
     f32 rx, ry, rs;
     MatrixTransform mxin;
@@ -96,11 +96,11 @@ void CameraModeCloudRunner_update(CameraObject* camera)
 
     cosYaw = mathSinf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
     sinYaw = mathCosf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
-    sinPitch = mathCosf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
-    cosPitch = mathSinf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
+    cosPitch = mathCosf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
+    sinPitch = mathSinf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
     radius = lbl_803DD5B8->radius;
-    ry = radius * cosPitch;
-    rs = radius * sinPitch;
+    ry = radius * sinPitch;
+    rs = radius * cosPitch;
     rx = rs * sinYaw;
     rs = rs * cosYaw;
     camera->anim.worldPosX = baseX + rx;

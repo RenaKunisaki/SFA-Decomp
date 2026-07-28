@@ -329,8 +329,8 @@ void CameraModeStaffAnim_init(CameraObject* camera, int unused, u8* settings)
     f32 sinFacing;
     f32 cosFacing;
     f32 relAngleRad;
-    f32 relCos;
     f32 relSin;
+    f32 relCos;
     int facingDelta;
     s16 approachAngle;
     s16 turnAmount;
@@ -378,8 +378,8 @@ void CameraModeStaffAnim_init(CameraObject* camera, int unused, u8* settings)
     }
 
     relAngleRad = CameraModeStaffAnim_angleToRadians(facingDelta);
-    relCos = mathSinf(relAngleRad);
-    relSin = mathCosf(relAngleRad);
+    relSin = mathSinf(relAngleRad);
+    relCos = mathCosf(relAngleRad);
 
     approachAngle = target->anim.rotX - (u16)getAngle(camera->anim.worldPosX - target->anim.worldPosX,
                                                       camera->anim.worldPosZ - target->anim.worldPosZ);
@@ -434,7 +434,7 @@ void CameraModeStaffAnim_init(CameraObject* camera, int unused, u8* settings)
         dx = camera->anim.localPosX - localPos[0];
         dz = camera->anim.localPosZ - localPos[2];
         pathRadius = 0.5f * sqrtf(dx * dx + dz * dz);
-        turnAmount = getAngle(-relCos, -relSin) - (u16)getAngle(dx, dz);
+        turnAmount = getAngle(-relSin, -relCos) - (u16)getAngle(dx, dz);
 
         if (turnAmount > 0x8000)
         {
@@ -478,8 +478,8 @@ void CameraModeStaffAnim_init(CameraObject* camera, int unused, u8* settings)
             pathScale = 0.0f;
         }
 
-        baseX = localPos[0] - (relCos * pathScale);
-        baseZ = localPos[2] - (relSin * pathScale);
+        baseX = localPos[0] - (relSin * pathScale);
+        baseZ = localPos[2] - (relCos * pathScale);
         gCamcontrolPathState->pathCurve.px = gCamcontrolPathState->pointsX;
         gCamcontrolPathState->pathCurve.py = gCamcontrolPathState->pointsY;
         gCamcontrolPathState->pathCurve.pz = gCamcontrolPathState->pointsZ;
