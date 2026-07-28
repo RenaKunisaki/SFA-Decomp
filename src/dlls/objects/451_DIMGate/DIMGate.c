@@ -57,9 +57,9 @@ void dimgate_update(GameObject* obj)
                 ObjHitbox_SetStateIndex(obj, obj->anim.hitReactState, DIMGATE_MODE_OPENING);
             }
             found = 0;
-            for (i = 0; i < obj->anim.proximityList->count; i++)
+            for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++)
             {
-                GameObject* other = obj->anim.proximityList->objects[i];
+                GameObject* other = obj->anim.hitboxTransformState->contactObjects[i];
                 if (other->anim.seqId == DIMGATE_TRIGGER_SEQ_ID)
                 {
                     found = 1;

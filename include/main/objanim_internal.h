@@ -379,16 +379,6 @@ typedef struct ObjModelState {
   u8 pad41[0x44 - 0x41];
 } ObjModelState;
 
-typedef struct ObjProximityList {
-  u8 pad0[0x100];
-  void *objects[3];
-  u8 pad10C[0x10F - 0x10C];
-  s8 count;
-} ObjProximityList;
-
-STATIC_ASSERT(offsetof(ObjProximityList, objects) == 0x100);
-STATIC_ASSERT(offsetof(ObjProximityList, count) == 0x10F);
-
 typedef struct ObjAnimComponent {
   union {
     struct {
@@ -454,10 +444,7 @@ typedef struct ObjAnimComponent {
     ObjHitReactState *hitReactState;
     struct ObjAnimComponent *linkedAnim;
   };
-  union {
-    ObjProximityList *proximityList;
-    struct ObjHitboxTransformState *hitboxTransformState;
-  };
+  ObjHitboxTransformState *hitboxTransformState;
   struct ObjWeaponDaTable *weaponDaTable;
   struct ObjAnimEventTable *eventTable;
   ObjModelState *modelState;

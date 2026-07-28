@@ -163,7 +163,7 @@ void KT_RexFloorSwitch_update(GameObject* obj)
     {
         state->graceTimer = 0;
     }
-    if (obj->anim.proximityList->count > 0 && (obj)->userData1 == 2)
+    if (obj->anim.hitboxTransformState->contactObjectCount > 0 && (obj)->userData1 == 2)
     {
         player = Obj_GetPlayerObject();
         if (player != 0)

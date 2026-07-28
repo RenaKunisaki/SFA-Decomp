@@ -147,14 +147,14 @@ void wcpressures_update(GameObject* obj)
     }
     if ((state->pressTimer -= 1) < 0)
         state->pressTimer = 0;
-    if (obj->anim.proximityList->count > 0)
+    if (obj->anim.hitboxTransformState->contactObjectCount > 0)
     {
         for (i = 0, off = 0;
-             i < obj->anim.proximityList->count;
+             i < obj->anim.hitboxTransformState->contactObjectCount;
              off += 4, i++)
         {
             GameObject* ent =
-                *(GameObject**)((u8*)obj->anim.proximityList + off + WCPRESSURES_HITLIST_OBJECTS_OFFSET);
+                *(GameObject**)((u8*)obj->anim.hitboxTransformState + off + WCPRESSURES_HITLIST_OBJECTS_OFFSET);
             if (ent->anim.localPosY - obj->anim.localPosY >
                 (f32)(u32)setup->triggerHeight)
             {

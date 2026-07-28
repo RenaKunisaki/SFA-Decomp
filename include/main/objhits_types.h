@@ -6,6 +6,32 @@
 
 #define OBJHITS_PRIORITY_HIT_COUNT 3
 
+#define OBJHITBOX_CONTACT_OBJECT_COUNT 3
+
+/*
+ * ObjHitboxTransformState - the per-hitbox runtime record at
+ * ObjAnimComponent+0x58 (also reached as ObjHitbox.transformState).
+ * objhits.c allocates it and keeps the current/previous collision and
+ * model matrices in the 0x100-byte matrix block; the tail holds the
+ * objects currently in contact with the hitbox. Lives here rather than
+ * in objhits.h so dll object code (which includes this types header,
+ * not the full objhits.h) can read the contact list.
+ */
+typedef struct ObjHitboxTransformState {
+  f32 matrices[4][4][4];
+  void* contactObjects[OBJHITBOX_CONTACT_OBJECT_COUNT];
+  u8 activeMatrixIndex;
+  u8 resetFrames;
+  u8 pad10E;
+  s8 contactObjectCount;
+} ObjHitboxTransformState;
+
+STATIC_ASSERT(offsetof(ObjHitboxTransformState, contactObjects) == 0x100);
+STATIC_ASSERT(offsetof(ObjHitboxTransformState, activeMatrixIndex) == 0x10C);
+STATIC_ASSERT(offsetof(ObjHitboxTransformState, resetFrames) == 0x10D);
+STATIC_ASSERT(offsetof(ObjHitboxTransformState, contactObjectCount) == 0x10F);
+STATIC_ASSERT(sizeof(ObjHitboxTransformState) == 0x110);
+
 /*
  * ObjHitsPriorityState.contactFlags (state+0xAD s8) contact-kind markers.
  * The producer objhits.c sets exactly one per contact based on the struck

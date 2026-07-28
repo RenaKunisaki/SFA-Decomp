@@ -80,14 +80,14 @@ void warpstonelift_update(GameObject* obj)
     int i;
     s16 item;
 
-    list = (char*)obj->anim.proximityList;
-    count = *(s8*)(list + offsetof(ObjProximityList, count));
+    list = (char*)obj->anim.hitboxTransformState;
+    count = *(s8*)(list + offsetof(ObjHitboxTransformState, contactObjectCount));
     if (count > 0)
     {
         off = 0;
         for (i = 0; i < count; i++)
         {
-            char* other = *(char**)(list + off + offsetof(ObjProximityList, objects));
+            char* other = *(char**)(list + off + offsetof(ObjHitboxTransformState, contactObjects));
             if (((GameObject*)other)->anim.classId == 1)
             {
                 found = 1;

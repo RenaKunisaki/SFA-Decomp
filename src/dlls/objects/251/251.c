@@ -189,9 +189,9 @@ void PressureSwitchFB_update(GameObject* obj) {
         if (nearestTarget != 0) {
             state->contactTimer = PRESSURESWITCHFB_CONTACT_FRAMES;
         }
-        if (obj->anim.proximityList->count > 0) {
-            for (i = 0; i < obj->anim.proximityList->count; i++) {
-                nearbyObject = (u32)obj->anim.proximityList->objects[i];
+        if (obj->anim.hitboxTransformState->contactObjectCount > 0) {
+            for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++) {
+                nearbyObject = (u32)obj->anim.hitboxTransformState->contactObjects[i];
                 if ((((GameObject*)nearbyObject)->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_PLAYER) ||
                     (((GameObject*)nearbyObject)->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_TRICKY) ||
                     (((GameObject*)nearbyObject)->anim.seqId == PRESSURESWITCHFB_TRACKED_SEQ_ID_A) ||

@@ -82,9 +82,9 @@ void dimwooddoor2_update(GameObject* obj)
         int found;
         int i;
         found = 0;
-        for (i = 0; i < obj->anim.proximityList->count; i++)
+        for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++)
         {
-            GameObject* other = obj->anim.proximityList->objects[i];
+            GameObject* other = obj->anim.hitboxTransformState->contactObjects[i];
             if (other->anim.seqId == DIMWOODDOOR2_KEY_SEQ_ID_A ||
                 other->anim.seqId == DIMWOODDOOR2_KEY_SEQ_ID_B)
             {

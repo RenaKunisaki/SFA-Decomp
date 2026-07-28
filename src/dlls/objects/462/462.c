@@ -99,23 +99,23 @@ void dll_1CE_update(GameObject* obj)
     {
         int offset;
         int i;
-        ObjProximityList* proximityList;
+        ObjHitboxTransformState* hitboxTransformState;
         int count;
         int found = 0;
         offset = 0;
-        proximityList = obj->anim.proximityList;
-        count = proximityList->count;
+        hitboxTransformState = obj->anim.hitboxTransformState;
+        count = hitboxTransformState->contactObjectCount;
         for (i = 0; i < count; i++)
         {
             GameObject* other =
-                *(GameObject**)((u8*)proximityList + offset + offsetof(ObjProximityList, objects));
+                *(GameObject**)((u8*)hitboxTransformState + offset + offsetof(ObjHitboxTransformState, contactObjects));
             if (other->anim.seqId == DLL1CE_KEY_SEQID_A ||
                 other->anim.seqId == DLL1CE_KEY_SEQID_B)
             {
                 found = 1;
                 break;
             }
-            offset += sizeof(proximityList->objects[0]);
+            offset += sizeof(hitboxTransformState->contactObjects[0]);
         }
         if (!found)
         {

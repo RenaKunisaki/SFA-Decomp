@@ -87,9 +87,9 @@ void dimbarrier_update(GameObject* obj)
             int found;
             int i;
             found = 0;
-            for (i = 0; i < obj->anim.proximityList->count; i++)
+            for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++)
             {
-                entry = obj->anim.proximityList->objects[i];
+                entry = obj->anim.hitboxTransformState->contactObjects[i];
                 triggerState = entry->extra;
                 if (entry->anim.seqId == DIMBARRIER_TRIGGER_SEQ_ID && triggerState->active != 0)
                 {

@@ -46,8 +46,8 @@ typedef struct PressureSwitchFlags
     u8 otherFlags : 6;
 } PressureSwitchFlags;
 
-/* Re-derefs the +0x58 ObjAnimComponent.proximityList pointer per use. */
-#define PSW_CONTACT_LIST(obj) ((ObjProximityList*)*(char**)((obj) + 0x58))
+/* Re-derefs the +0x58 ObjAnimComponent.hitboxTransformState pointer per use. */
+#define PSW_CONTACT_LIST(obj) ((ObjHitboxTransformState*)*(char**)((obj) + 0x58))
 
 /* seqIds of objects this pad reacts to (compared against ent->anim.seqId). */
 #define PSWITCH_TRIGGER_SEQ_ID 0x6d
@@ -90,7 +90,7 @@ void PressureSwitch_update(int obj)
     PressureswitchPlacement* placement;
     GameObject* self;
     PressureSwitchState* state;
-    ObjProximityList* contacts;
+    ObjHitboxTransformState* contacts;
     s8 playerFar;
     int i;
     GameObject* player;
@@ -120,12 +120,12 @@ void PressureSwitch_update(int obj)
     }
     byteOff[0] = 0;
     ((PressureSwitchFlags*)&state->flags)->active = byteOff[0];
-    if (PSW_CONTACT_LIST(obj) != NULL && PSW_CONTACT_LIST(obj)->count > 0)
+    if (PSW_CONTACT_LIST(obj) != NULL && PSW_CONTACT_LIST(obj)->contactObjectCount > 0)
     {
         state->retriggerTimer = (s16)(placement->retriggerDelay * 60);
         i = 0;
         heightThreshold = 7.0f;
-        for (; i < (contacts = PSW_CONTACT_LIST(obj))->count; i++)
+        for (; i < (contacts = PSW_CONTACT_LIST(obj))->contactObjectCount; i++)
         {
             GameObject* ent = *(GameObject**)((char*)contacts + byteOff[0] + 256);
             if (ent->anim.seqId == PSWITCH_TRIGGER_SEQ_ID)

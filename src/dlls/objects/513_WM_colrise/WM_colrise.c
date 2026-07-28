@@ -69,11 +69,11 @@ void WM_colrise_update(GameObject* obj)
         state->raiseTimer = 0;
     /* rearm the 60-frame rise window while any rider sits more than
        3.0 above the column */
-    if (obj->anim.proximityList->count > 0)
+    if (obj->anim.hitboxTransformState->contactObjectCount > 0)
     {
-        for (i = 0; i < obj->anim.proximityList->count; i++)
+        for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++)
         {
-            GameObject* rider = obj->anim.proximityList->objects[i];
+            GameObject* rider = obj->anim.hitboxTransformState->contactObjects[i];
             if (rider->anim.localPosY - obj->anim.localPosY > WM_COLRISE_RIDER_HEIGHT)
             {
                 state->raiseTimer = 0x3c;

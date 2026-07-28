@@ -53,17 +53,17 @@ void dll_1DB_update(GameObject* obj)
     placement = (Dim2CrusherPlacement*)obj->anim.placementData;
     found = 0;
     i = 0;
-    contactListAddress = (int)obj->anim.proximityList;
-    for (n = ((ObjProximityList*)contactListAddress)->count; n > 0; n--)
+    contactListAddress = (int)obj->anim.hitboxTransformState;
+    for (n = ((ObjHitboxTransformState*)contactListAddress)->contactObjectCount; n > 0; n--)
     {
         GameObject* entry =
-            *(GameObject**)(contactListAddress + i + offsetof(ObjProximityList, objects));
+            *(GameObject**)(contactListAddress + i + offsetof(ObjHitboxTransformState, contactObjects));
         if (entry == player)
         {
             found = 1;
             break;
         }
-        i += sizeof(((ObjProximityList*)contactListAddress)->objects[0]);
+        i += sizeof(((ObjHitboxTransformState*)contactListAddress)->contactObjects[0]);
     }
     switch (state->motionState)
     {

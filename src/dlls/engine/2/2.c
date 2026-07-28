@@ -4321,9 +4321,9 @@ void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject = 0;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->priorityHitCount = 0;
     }
-    if (obj->anim.proximityList != NULL)
+    if (obj->anim.hitboxTransformState != NULL)
     {
-        obj->anim.proximityList->count = 0;
+        obj->anim.hitboxTransformState->contactObjectCount = 0;
     }
 }
 
