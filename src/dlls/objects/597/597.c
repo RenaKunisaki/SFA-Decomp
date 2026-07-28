@@ -1390,8 +1390,8 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
             if ((u32)(st->flags428 >> 1 & 1) == 0)
             {
                 doRumble(st->impactShakeTimer * fa);
-                Camera_EnableViewYOffset();
-                CameraShake_SetAllMagnitudes(st->impactShakeTimer / 12.0f);
+                CameraShake_Enable();
+                CameraShake_SetOffset(st->impactShakeTimer / 12.0f);
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_tr_jbike_bombbeep);
                 fb = (80.0f < 3.0f * st->impactShakeTimer) ? 80.0f
                                                                           : 3.0f * st->impactShakeTimer;
@@ -2282,9 +2282,9 @@ void SnowBike_hitDetect(GameObject* obj)
     }
     if (!((SnowBikeFlags*)&state->flags428)->b02 && mag > 3.0f)
     {
-        Camera_EnableViewYOffset();
+        CameraShake_Enable();
         shakeScale = 0.5f;
-        CameraShake_SetAllMagnitudes(mag * shakeScale);
+        CameraShake_SetOffset(mag * shakeScale);
     }
     if (*(void**)&state->linkedObj != NULL)
     {

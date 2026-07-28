@@ -108,7 +108,7 @@ void CameraModeCombat_update(CameraObject* cam)
     f32 dz;
     Vec n;
     u8 trace[116];
-    CameraViewSlot* view = Camera_GetCurrentViewSlot();
+    Camera* view = Camera_GetCurrent();
     GameObject* tgt;
     ObjHitVolumeRuntimeTransform* hitVolumes;
     GameObject* focus;

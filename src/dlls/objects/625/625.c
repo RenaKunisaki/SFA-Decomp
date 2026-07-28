@@ -464,7 +464,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
         if (player->anim.parent == (void*)obj)
         {
-            Camera_EnableViewYOffset();
+            CameraShake_Enable();
             if (((DrakorHoverpadState*)p)->speed >= 0.0f)
             {
                 shakeMag = ((DrakorHoverpadState*)p)->speed;
@@ -473,7 +473,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
             {
                 shakeMag = -((DrakorHoverpadState*)p)->speed;
             }
-            CameraShake_SetAllMagnitudes(shakeMag);
+            CameraShake_SetOffset(shakeMag);
         }
         break;
     case 3:
@@ -495,7 +495,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
         if (player->anim.parent == (void*)obj)
         {
-            Camera_EnableViewYOffset();
+            CameraShake_Enable();
             if (((DrakorHoverpadState*)p)->speed >= 0.0f)
             {
                 shakeMag = ((DrakorHoverpadState*)p)->speed;
@@ -504,7 +504,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
             {
                 shakeMag = -((DrakorHoverpadState*)p)->speed;
             }
-            CameraShake_SetAllMagnitudes(shakeMag);
+            CameraShake_SetOffset(shakeMag);
         }
         return 1;
     case 4:
@@ -621,7 +621,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
             ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
             if (player->anim.parent == (void*)obj)
             {
-                Camera_EnableViewYOffset();
+                CameraShake_Enable();
                 if (((DrakorHoverpadState*)p)->speed >= 0.0f)
                 {
                     shakeMag = ((DrakorHoverpadState*)p)->speed;
@@ -630,7 +630,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
                 {
                     shakeMag = -((DrakorHoverpadState*)p)->speed;
                 }
-                CameraShake_SetAllMagnitudes(shakeMag);
+                CameraShake_SetOffset(shakeMag);
             }
         }
         break;
@@ -647,7 +647,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
             ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
             if (player->anim.parent == (void*)obj)
             {
-                Camera_EnableViewYOffset();
+                CameraShake_Enable();
                 if (((DrakorHoverpadState*)p)->speed >= 0.0f)
                 {
                     shakeMag = ((DrakorHoverpadState*)p)->speed;
@@ -656,7 +656,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
                 {
                     shakeMag = -((DrakorHoverpadState*)p)->speed;
                 }
-                CameraShake_SetAllMagnitudes(shakeMag);
+                CameraShake_SetOffset(shakeMag);
             }
         }
         break;

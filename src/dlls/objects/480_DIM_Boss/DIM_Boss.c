@@ -440,8 +440,8 @@ int DIMbossHitDetect_tonsilSlam(GameObject* obj, int runtime) {
     }
     if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         gDIMbossSequenceFlags |= (u64)DIMBOSS_SEQUENCE_FLAGS_TONSIL_IMPACT;
-        Camera_EnableViewYOffset();
-        CameraShake_Start(2.5f, 5.0f, 2.0f);
+        CameraShake_Enable();
+        CameraShake_StartDampened(2.5f, 5.0f, 2.0f);
         doRumble(12.0f);
         obj->anim.activeMove = -1;
         ((BaddieState*)runtime)->moveSpeed = 0.002f * (f32)(((BaddieState*)runtime)->hitPoints + 1);
@@ -462,8 +462,8 @@ int DIMbossHitDetect_liftSlam(GameObject* obj, int runtime) {
     if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         f32 animSpeed;
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_2000;
-        Camera_EnableViewYOffset();
-        CameraShake_Start(2.5f, 5.0f, 2.0f);
+        CameraShake_Enable();
+        CameraShake_StartDampened(2.5f, 5.0f, 2.0f);
         doRumble(12.0f);
         obj->anim.activeMove = -1;
         ((BaddieState*)runtime)->moveSpeed = 0.01f;
@@ -499,8 +499,8 @@ int DIMbossHitDetect_liftImpact(int obj, int p2) {
     if ((((BaddieState*)p2)->eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
         gDIMbossSequenceFlags |= 0x4004;
         Sfx_PlayFromObject(obj, SFXTRIG_mn_dimbos46);
-        Camera_EnableViewYOffset();
-        CameraShake_Start(5.0f, 10.0f, 4.0f);
+        CameraShake_Enable();
+        CameraShake_StartDampened(5.0f, 10.0f, 4.0f);
         doRumble(20.0f);
         mainSetBits(619, 1);
     }
@@ -1056,19 +1056,19 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
         } while (i < 0x32);
     }
     if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_0001) {
-        Camera_EnableViewYOffset();
+        CameraShake_Enable();
         doRumble(4.0f);
-        CameraShake_Start(2.5f, 5.0f, 2.0f);
+        CameraShake_StartDampened(2.5f, 5.0f, 2.0f);
     }
     if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_40000) {
-        Camera_EnableViewYOffset();
+        CameraShake_Enable();
         doRumble(30.0f);
-        CameraShake_Start(5.0f, 10.0f, 4.0f);
+        CameraShake_StartDampened(5.0f, 10.0f, 4.0f);
     }
     if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_0002) {
-        Camera_EnableViewYOffset();
-        CameraShake_Start(0.0f, 0.0f, 0.0f);
-        CameraShake_SetAllMagnitudes(0.0f);
+        CameraShake_Enable();
+        CameraShake_StartDampened(0.0f, 0.0f, 0.0f);
+        CameraShake_SetOffset(0.0f);
     }
     if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_0004) {
         mainSetBits(GAMEBIT_DIM2_ICICLE_ACTIVE, 1);
@@ -1646,7 +1646,7 @@ void DIMboss_free(GameObject* obj) {
     mainSetBits(0xd8f, 0);
     mainSetBits(GAMEBIT_DIM_TriggerLostInBlizzard, 0);
     obj->anim.resetHitboxFlags &= ~DIMBOSS_OBJECT_FLAG_ACTIVE;
-    Camera_DisableViewYOffset();
+    CameraShake_Disable();
     ObjGroup_RemoveObject((int)obj, DIMBOSS_OBJGROUP);
     childObject = obj->childObjs[0];
     if (childObject != NULL) {

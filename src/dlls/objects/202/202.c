@@ -7635,8 +7635,8 @@ void iceBaddie_updateControlEffects(GameObject* obj, GroundBaddieState* state) {
                           particleArgs);
     }
     if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_IMPACT) != 0) {
-        Camera_EnableViewYOffset();
-        CameraShake_SetAllMagnitudes(2.0f * shakeScale);
+        CameraShake_Enable();
+        CameraShake_SetOffset(2.0f * shakeScale);
         for (i = 0; i < 0x28; i++) {
             (*gPartfxInterface)
                 ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, (void*)(controlAddress + 0x20), 0x200001, -1,
@@ -7644,8 +7644,8 @@ void iceBaddie_updateControlEffects(GameObject* obj, GroundBaddieState* state) {
         }
     }
     if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_LANDING) != 0) {
-        Camera_EnableViewYOffset();
-        CameraShake_SetAllMagnitudes(3.0f * shakeScale);
+        CameraShake_Enable();
+        CameraShake_SetOffset(3.0f * shakeScale);
         for (i = 0; i < 0x28; i++) {
             (*gPartfxInterface)
                 ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, (void*)(controlAddress + 0x20), 0x200001, -1,
@@ -7835,7 +7835,7 @@ int iceBaddie_getObjectTypeId(void) {
 void iceBaddie_free(GameObject* obj) {
     GroundBaddieState* state = obj->extra;
 
-    Camera_DisableViewYOffset();
+    CameraShake_Disable();
     ObjGroup_RemoveObject((int)obj, ICEBADDIE_OBJGROUP);
     {
         GameObject* child = (GameObject*)obj->childObjs[0];

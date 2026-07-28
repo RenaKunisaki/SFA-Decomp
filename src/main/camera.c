@@ -23,7 +23,7 @@ f32 gCameraOrthoLeft;
 f32 gCameraOrthoRight;
 s32 gCameraProjectionMode;
 u8 gCameraCurrentViewIndex;
-u8 cameraViewYOffsetEnabled;
+u8 gCameraShakeEnabled;
 s16 lbl_803DC88A;
 s8 gObjTransformMatrixSlot;
 s16 cameraViewportYOffset;
@@ -35,7 +35,7 @@ CameraMatrix gObjInverseYawTransformMatrices[0x1E];
 CameraMatrix gObjYawTransformMatrices[0x22];
 f32 gCameraWorldMatrix[64];
 CameraMatrix gCameraDefaultModelMatrix;
-CameraViewSlot gCameraShakeSlots[0x480 / sizeof(CameraViewSlot)];
+Camera gCameras[12];
 CameraMatrix gCameraViewRotationMatrix;
 CameraMatrix gCameraInverseViewRotationMatrix;
 CameraMatrix gCameraViewMatrix;
@@ -57,26 +57,27 @@ void Obj_RotateLocalOffsetByYaw(f32* local, f32* out, s8 yawIndex) {
     }
 }
 
-void Obj_UpdateWorldTransform(CameraViewSlot* view) {
+void Camera_UpdateForObject(Camera* camera) {
     GameObject* parent;
     s32 matrixOffset;
     f32* matrix;
 
-    parent = view->parentObject;
+    parent = camera->parentObject;
     if (parent == NULL) {
-        view->worldX = view->x;
-        view->worldY = view->y;
-        view->worldZ = view->z;
-        view->worldYaw = view->yaw;
-        view->worldPitch = view->pitch;
-        view->worldRoll = view->roll;
+        camera->worldX = camera->x;
+        camera->worldY = camera->y;
+        camera->worldZ = camera->z;
+        camera->worldYaw = camera->yaw;
+        camera->worldPitch = camera->pitch;
+        camera->worldRoll = camera->roll;
     } else {
         matrixOffset = parent->anim.transformMatrixIndex * 16;
         matrix = (f32*)gObjYawTransformMatrices + matrixOffset;
-        Matrix_TransformPoint(matrix, view->x, view->y, view->z, &view->worldX, &view->worldY, &view->worldZ);
-        view->worldYaw = view->yaw - parent->anim.rotX;
-        view->worldPitch = view->pitch;
-        view->worldRoll = view->roll;
+        Matrix_TransformPoint(matrix, camera->x, camera->y, camera->z, &camera->worldX, &camera->worldY,
+                              &camera->worldZ);
+        camera->worldYaw = camera->yaw - parent->anim.rotX;
+        camera->worldPitch = camera->pitch;
+        camera->worldRoll = camera->roll;
     }
 }
 
@@ -269,9 +270,9 @@ static inline f32 Camera_Expf(f32 x, u32 iterations) {
 }
 
 void Camera_UpdateShakeAndFarPlane(void) {
-    CameraViewSlot* slot;
+    Camera* camera;
     f32 expTerm;
-    f32 shakeTimer;
+    f32 shakeTime;
     f32 sinePhase;
     f32 phaseScale;
 
@@ -287,63 +288,63 @@ void Camera_UpdateShakeAndFarPlane(void) {
     }
 
     gObjTransformMatrixSlot = 0;
-    slot = &gCameraShakeSlots[gCameraCurrentViewIndex];
+    camera = &gCameras[gCameraCurrentViewIndex];
 
-    if (slot->shakeActive == 0) {
-        slot->shakeFlipTimer--;
-        while (slot->shakeFlipTimer < 0) {
-            slot->shakeFlipTimer++;
-            slot->shakeMagnitude = gCameraShakeMagnitudeDecay * -slot->shakeMagnitude;
+    if (camera->shakeMode == 0) {
+        camera->shakeCooldown--;
+        while (camera->shakeCooldown < 0) {
+            camera->shakeCooldown++;
+            camera->shakeOffsetY = gCameraShakeMagnitudeDecay * -camera->shakeOffsetY;
         }
-    } else if (slot->shakeActive == 1) {
-        expTerm = Camera_Expf(-slot->shakeFalloff * (shakeTimer = slot->shakeTimer), 20);
+    } else if (camera->shakeMode == 1) {
+        expTerm = Camera_Expf(-camera->shakeDamping * (shakeTime = camera->shakeTime), 20);
 
-        phaseScale = 65535.0f * slot->shakeDuration;
-        sinePhase = (gCameraPi * (phaseScale * shakeTimer)) / 32768.0f;
-        slot->shakeMagnitude = slot->shakeMagnitudeTarget * expTerm * mathCosf(sinePhase);
-        if ((slot->shakeMagnitude < gCameraShakeStopThreshold) &&
-            (slot->shakeMagnitude > gCameraShakeStopThresholdNeg)) {
-            slot->shakeMagnitude = lbl_803DE60C;
-            slot->shakeActive = -1;
+        phaseScale = 65535.0f * camera->shakeFrequency;
+        sinePhase = (gCameraPi * (phaseScale * shakeTime)) / 32768.0f;
+        camera->shakeOffsetY = camera->shakeAmplitude * expTerm * mathCosf(sinePhase);
+        if ((camera->shakeOffsetY < gCameraShakeStopThreshold) &&
+            (camera->shakeOffsetY > gCameraShakeStopThresholdNeg)) {
+            camera->shakeOffsetY = lbl_803DE60C;
+            camera->shakeMode = -1;
         }
-        slot->shakeTimer += timeDelta / 60.0f;
+        camera->shakeTime += timeDelta / 60.0f;
     }
 }
 
 u8 CameraShake_IsActive(void) {
-    CameraViewSlot* slot = &gCameraShakeSlots[gCameraCurrentViewIndex];
+    Camera* camera = &gCameras[gCameraCurrentViewIndex];
 
-    return slot->shakeActive == 1;
+    return camera->shakeMode == 1;
 }
 
-void CameraShake_Start(f32 magnitude, f32 duration, f32 falloff) {
-    CameraViewSlot* slot = &gCameraShakeSlots[0];
+void CameraShake_StartDampened(f32 amplitude, f32 frequency, f32 damping) {
+    Camera* camera = &gCameras[0];
 
-    slot->shakeMagnitude = magnitude;
-    slot->shakeMagnitudeTarget = magnitude;
-    slot->shakeDuration = duration;
-    slot->shakeTimer = lbl_803DE60C;
-    slot->shakeFalloff = falloff;
-    slot->shakeActive = 1;
+    camera->shakeOffsetY = amplitude;
+    camera->shakeAmplitude = amplitude;
+    camera->shakeFrequency = frequency;
+    camera->shakeTime = lbl_803DE60C;
+    camera->shakeDamping = damping;
+    camera->shakeMode = 1;
 }
 
-void CameraShake_SetAllMagnitudes(f32 magnitude) {
-    CameraViewSlot* slot = gCameraShakeSlots;
+void CameraShake_SetOffset(f32 offsetY) {
+    Camera* camera = gCameras;
     int group;
     int i;
 
     for (group = 0; group < 2; group++) {
         for (i = 0; i < 6; i++) {
-            CameraViewSlot* p = &slot[i];
-            p->shakeMagnitude = magnitude;
-            p->shakeActive = 0;
+            Camera* p = &camera[i];
+            p->shakeOffsetY = offsetY;
+            p->shakeMode = 0;
         }
-        slot += 6;
+        camera += 6;
     }
 }
 
-void CameraShake_ApplyRadial(f32 x, f32 y, f32 z, f32 radius, f32 magnitude) {
-    CameraViewSlot* slot;
+void CameraShake_ApplyRadial(f32 x, f32 y, f32 z, f32 radius, f32 intensity) {
+    Camera* camera;
     s32 i;
     f32 dx;
     f32 dy;
@@ -351,16 +352,16 @@ void CameraShake_ApplyRadial(f32 x, f32 y, f32 z, f32 radius, f32 magnitude) {
     f32 distance;
     s8 inactive;
 
-    slot = gCameraShakeSlots;
+    camera = gCameras;
     inactive = 0;
     for (i = 0; i <= 7; i++) {
-        dx = x - slot[i].x;
-        dy = y - slot[i].y;
-        dz = z - slot[i].z;
+        dx = x - camera[i].x;
+        dy = y - camera[i].y;
+        dz = z - camera[i].z;
         distance = sqrtf(dx * dx + dy * dy + dz * dz);
         if (distance < radius) {
-            slot[i].shakeMagnitude = (magnitude * (radius - distance)) / radius;
-            slot[i].shakeActive = inactive;
+            camera[i].shakeOffsetY = (intensity * (radius - distance)) / radius;
+            camera[i].shakeMode = inactive;
         }
     }
 }
@@ -722,35 +723,35 @@ void Camera_SetCurrentViewIndex(int index) {
 }
 
 f32 Camera_DistanceToCurrentViewPosition(f32 x, f32 y, f32 z) {
-    CameraViewSlot* slot = &gCameraShakeSlots[gCameraCurrentViewIndex];
+    Camera* camera = &gCameras[gCameraCurrentViewIndex];
     f32 delta;
     f32 dz;
     f32 dx;
     f32 dy;
 
-    delta = z - slot->z;
+    delta = z - camera->z;
     dz = delta * delta;
-    delta = x - slot->x;
+    delta = x - camera->x;
     dx = delta * delta;
-    delta = y - slot->y;
+    delta = y - camera->y;
     dy = delta * delta;
     return sqrtf(dz + (dx + dy));
 }
 
 void Camera_SetCurrentViewRotation(int yaw, int pitch, int roll) {
-    CameraViewSlot* slot = &gCameraShakeSlots[gCameraCurrentViewIndex];
+    Camera* camera = &gCameras[gCameraCurrentViewIndex];
 
-    slot->yaw = yaw;
-    slot->pitch = pitch;
-    slot->roll = roll;
+    camera->yaw = yaw;
+    camera->pitch = pitch;
+    camera->roll = roll;
 }
 
 void Camera_SetCurrentViewPosition(f32 x, f32 y, f32 z) {
-    CameraViewSlot* slot = &gCameraShakeSlots[gCameraCurrentViewIndex];
+    Camera* camera = &gCameras[gCameraCurrentViewIndex];
 
-    slot->x = x;
-    slot->y = y;
-    slot->z = z;
+    camera->x = x;
+    camera->y = y;
+    camera->z = z;
 }
 
 f32* Camera_GetViewRotationMatrix(void) {
@@ -774,7 +775,7 @@ typedef struct CameraMatrixStorage {
     CameraMatrix yawTransforms[0x22];
     f32 worldMatrix[64];
     CameraMatrix defaultModelMatrix;
-    CameraViewSlot viewSlots[12];
+    Camera cameras[12];
     CameraMatrix viewRotationMatrix;
     CameraMatrix inverseViewRotationMatrix;
     CameraMatrix viewMatrix;
@@ -785,30 +786,30 @@ typedef struct CameraMatrixStorage {
 STATIC_ASSERT(offsetof(CameraMatrixStorage, yawTransforms) == 0x780);
 STATIC_ASSERT(offsetof(CameraMatrixStorage, worldMatrix) == 0x1000);
 STATIC_ASSERT(offsetof(CameraMatrixStorage, defaultModelMatrix) == 0x1100);
-STATIC_ASSERT(offsetof(CameraMatrixStorage, viewSlots) == 0x1140);
+STATIC_ASSERT(offsetof(CameraMatrixStorage, cameras) == 0x1140);
 STATIC_ASSERT(offsetof(CameraMatrixStorage, projectionMatrix) == 0x16C0);
 STATIC_ASSERT(sizeof(CameraMatrixStorage) == 0x1700);
 
 void Camera_UpdateViewMatrices(void) {
     CameraMatrixStorage* storage;
-    CameraViewSlot* viewSlots;
-    CameraViewSlot* slot;
+    Camera* cameras;
+    Camera* camera;
     MatrixTransform transform;
     f32 rotationMatrix[16];
 
     storage = (CameraMatrixStorage*)gObjInverseYawTransformMatrices;
-    viewSlots = storage->viewSlots;
-    slot = &viewSlots[gCameraCurrentViewIndex];
-    transform.x = -(slot->x - playerMapOffsetX);
-    transform.y = -slot->y;
-    transform.z = -(slot->z - playerMapOffsetZ);
-    transform.rotX = slot->yaw + 0x8000;
-    transform.rotY = slot->pitch;
-    transform.rotZ = slot->roll;
+    cameras = storage->cameras;
+    camera = &cameras[gCameraCurrentViewIndex];
+    transform.x = -(camera->x - playerMapOffsetX);
+    transform.y = -camera->y;
+    transform.z = -(camera->z - playerMapOffsetZ);
+    transform.rotX = camera->yaw + 0x8000;
+    transform.rotY = camera->pitch;
+    transform.rotZ = camera->roll;
     transform.scale = lbl_803DE5F0;
     if (pauseMenuGetState() == 0) {
-        if (cameraViewYOffsetEnabled != 0) {
-            transform.y -= slot->shakeMagnitude;
+        if (gCameraShakeEnabled != 0) {
+            transform.y -= camera->shakeOffsetY;
         }
         transform.x += lbl_803DE60C;
         transform.y += lbl_803DE60C;
@@ -818,16 +819,16 @@ void Camera_UpdateViewMatrices(void) {
     mtxRotateByVec3s(rotationMatrix, &transform);
     mtx44Transpose(rotationMatrix, storage->viewMatrix);
 
-    transform.x = slot->x - playerMapOffsetX;
-    transform.y = slot->y;
-    transform.z = slot->z - playerMapOffsetZ;
-    transform.rotX = -(slot->yaw + 0x8000);
-    transform.rotY = -slot->pitch;
-    transform.rotZ = -slot->roll;
+    transform.x = camera->x - playerMapOffsetX;
+    transform.y = camera->y;
+    transform.z = camera->z - playerMapOffsetZ;
+    transform.rotX = -(camera->yaw + 0x8000);
+    transform.rotY = -camera->pitch;
+    transform.rotZ = -camera->roll;
     transform.scale = lbl_803DE5F0;
     if (pauseMenuGetState() == 0) {
-        if (cameraViewYOffsetEnabled != 0) {
-            transform.y += slot->shakeMagnitude;
+        if (gCameraShakeEnabled != 0) {
+            transform.y += camera->shakeOffsetY;
         }
         transform.x -= lbl_803DE60C;
         transform.y -= lbl_803DE60C;
@@ -889,27 +890,27 @@ void Camera_ApplyDecalViewport(void) {
 }
 
 u16 Camera_GetCurrentViewPitch(void) {
-    return gCameraShakeSlots[gCameraCurrentViewIndex].pitch;
+    return gCameras[gCameraCurrentViewIndex].pitch;
 }
 
 u16 Camera_GetCurrentViewYaw(void) {
-    return gCameraShakeSlots[gCameraCurrentViewIndex].yaw;
+    return gCameras[gCameraCurrentViewIndex].yaw;
 }
 
-CameraViewSlot* Camera_GetCurrentViewSlot(void) {
-    return &gCameraShakeSlots[gCameraCurrentViewIndex];
+Camera* Camera_GetCurrent(void) {
+    return &gCameras[gCameraCurrentViewIndex];
 }
 
-int Camera_IsViewYOffsetEnabled(void) {
-    return cameraViewYOffsetEnabled;
+int CameraShake_IsEnabled(void) {
+    return gCameraShakeEnabled;
 }
 
-void Camera_DisableViewYOffset(void) {
-    cameraViewYOffsetEnabled = 0;
+void CameraShake_Disable(void) {
+    gCameraShakeEnabled = 0;
 }
 
-void Camera_EnableViewYOffset(void) {
-    cameraViewYOffsetEnabled = 1;
+void CameraShake_Enable(void) {
+    gCameraShakeEnabled = 1;
 }
 
 s16 Camera_GetViewportYOffset(void) {
@@ -979,28 +980,28 @@ void Camera_SetFovY(f32 fovY) {
 void Camera_InitState(void) {
     CameraMatrixStorage* storage = (CameraMatrixStorage*)gObjInverseYawTransformMatrices;
     u32 i;
-    CameraViewSlot* slot;
+    Camera* camera;
 
     for (i = 0; i < 12; i++) {
-        slot = (CameraViewSlot*)((u8*)storage + (u8)i * sizeof(CameraViewSlot));
-        slot = (CameraViewSlot*)((u8*)slot + offsetof(CameraMatrixStorage, viewSlots));
-        slot->roll = 0;
-        slot->pitch = 0;
-        slot->yaw = 0x7FF8;
-        slot->x = gCameraDefaultPosition;
-        slot->y = gCameraDefaultPosition;
-        slot->z = gCameraDefaultPosition;
-        slot->unk20.x = lbl_803DE60C;
-        slot->unk20.y = lbl_803DE60C;
-        slot->unk20.z = lbl_803DE60C;
-        slot->shakeMagnitude = lbl_803DE60C;
-        slot->parentObject = NULL;
-        slot->unk5A = 0;
-        slot->fovY = 60.0f;
+        camera = (Camera*)((u8*)storage + (u8)i * sizeof(Camera));
+        camera = (Camera*)((u8*)camera + offsetof(CameraMatrixStorage, cameras));
+        camera->roll = 0;
+        camera->pitch = 0;
+        camera->yaw = 0x7FF8;
+        camera->x = gCameraDefaultPosition;
+        camera->y = gCameraDefaultPosition;
+        camera->z = gCameraDefaultPosition;
+        camera->velocity.x = lbl_803DE60C;
+        camera->velocity.y = lbl_803DE60C;
+        camera->velocity.z = lbl_803DE60C;
+        camera->shakeOffsetY = lbl_803DE60C;
+        camera->parentObject = NULL;
+        camera->shakePitchOffset = 0;
+        camera->fovY = 60.0f;
     }
 
     gCameraCurrentViewIndex = 0;
-    cameraViewYOffsetEnabled = 0;
+    gCameraShakeEnabled = 0;
     gObjTransformMatrixSlot = 0;
     gCameraViewportYOffset = 0;
     cameraViewportYOffset = 0;

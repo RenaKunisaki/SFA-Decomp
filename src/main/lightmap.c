@@ -128,7 +128,7 @@ static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 
 void updateVisibleGeometry(void)
 {
-    CameraViewSlot* cam;
+    Camera* cam;
     int n;
     int i;
     f32 tt, ff, ss;
@@ -142,7 +142,7 @@ void updateVisibleGeometry(void)
     MatrixTransform st;
     f32 m[17];
 
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     if ((renderFlags & RENDERFLAG_WIDESCREEN) != 0 || (renderFlags & RENDERFLAG_DRAW_DISTANCE) != 0)
     {
         scale = Camera_GetFovY() / lbl_803DEBF8;
@@ -913,11 +913,11 @@ void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad
     Camera_UpdateProjection(NULL, 0);
     updateVisibleGeometry();
     buildPlayerRelativeFrustumPlanes();
-    Camera_EnableViewYOffset();
+    CameraShake_Enable();
     Camera_UpdateViewMatrices();
     Camera_RebuildProjectionMatrix();
     updateLights();
-    lbl_803DCEA8 = (int)Camera_GetCurrentViewSlot();
+    lbl_803DCEA8 = (int)Camera_GetCurrent();
     sceneDraw();
     Camera_SetupFullscreenViewport(NULL);
     renderFlags &= ~2LL;

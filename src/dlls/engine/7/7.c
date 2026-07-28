@@ -980,7 +980,7 @@ void snowCloudUpdateFlakes(u8* snow);
 
 void snowCloudUpdateFlakes(u8* snow)
 {
-    CameraViewSlot* cam;
+    Camera* cam;
     SnowQuad* e;
     f32* m;
     int i;
@@ -992,7 +992,7 @@ void snowCloudUpdateFlakes(u8* snow)
     f32 c3;
     f32 s3;
 
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     e = (SnowQuad*)(snow + 0x1008);
     if (((NewCloud*)snow)->cloudType == 0)
     {
@@ -1055,7 +1055,7 @@ void snowReposSnowCloud(int cloudId)
 {
     u8* p;
     SnowFlake* part;
-    CameraViewSlot* cam;
+    Camera* cam;
     f32* m;
     u8* q;
     int i;
@@ -1106,7 +1106,7 @@ void snowReposSnowCloud(int cloudId)
         return;
     }
     part = ((NewCloud*)p)->flakes;
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     dx = cam->worldX - ((NewCloud*)gNewClouds[i])->worldPosX;
     dy = cam->worldY - ((NewCloud*)gNewClouds[i])->worldPosY;
     dz = cam->worldZ - ((NewCloud*)gNewClouds[i])->worldPosZ;
@@ -1549,7 +1549,7 @@ void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
 
 void dll_07_func09(void)
 {
-    Camera_GetCurrentViewSlot();
+    Camera_GetCurrent();
     randomGetRange(5, 5);
 }
 
@@ -1582,7 +1582,7 @@ void newclouds_renderSnowClouds(int renderPass)
 }
 void newclouds_run(void)
 {
-    CameraViewSlot* cam;
+    Camera* cam;
     void** clouds;
     u8** pp;
     int i;
@@ -1617,7 +1617,7 @@ void newclouds_run(void)
     clouds = (void**)gNewCloudLayerTextures;
     i = 0;
     off = 0;
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     activeCount = 0;
     nearestCloud = NULL;
     nearest = gNewCloudNearestInit;

@@ -107,7 +107,7 @@ s16 lbl_803DCEB4;
 int gMapBlockIndexCount;
 s16 gVisibleObjectSortKeyCount;
 u16 lbl_803DCEAC;
-CameraViewSlot* lbl_803DCEA8;
+Camera* lbl_803DCEA8;
 s8 curMapType;
 void* lbl_803DCEA0;
 MapBlockData** gMapBlocks;
@@ -1096,15 +1096,15 @@ void playerUpdateFn_8005649c(void)
     int count;
     int slot;
     GameObject** objs;
-    CameraViewSlot* cam;
+    Camera* cam;
     int k;
     GameObject** e;
     int i;
     f32 lx, ly, lz;
 
     objs = (GameObject**)ObjGroup_GetObjects(6, &count);
-    cam = Camera_GetCurrentViewSlot();
-    Obj_UpdateWorldTransform(cam);
+    cam = Camera_GetCurrent();
+    Camera_UpdateForObject(cam);
     for (k = 0; k < 31; k++)
         lbl_80386648[k].valid = 0;
     lbl_80386648[0].x = cam->worldX;
@@ -1713,7 +1713,7 @@ void beginLoadingMap(void)
     int mapKind;
     f32* p;
     f32 px, py, pz;
-    CameraViewSlot* cam;
+    Camera* cam;
     char* player;
     u8* env;
     int bo;
@@ -1785,7 +1785,7 @@ void beginLoadingMap(void)
     }
     renderFlags &= ~4LL;
     trackIntersect();
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     cam->x = p[0];
     cam->y = p[1];
     cam->z = p[2];
@@ -3443,7 +3443,7 @@ void buildPlayerRelativeFrustumPlanes(void)
     PlayerFrustumPlaneScales scales;
     PlayerFrustumPlaneDirections planes;
     GameObject* player;
-    CameraViewSlot* viewSlot;
+    Camera* viewSlot;
     FrustumPlane* outPtr;
     int i;
     f32* invRotMtx;
@@ -3452,7 +3452,7 @@ void buildPlayerRelativeFrustumPlanes(void)
     planes = sPlayerFrustumPlaneDirs;
     scales = sPlayerFrustumPlaneScales;
     player = Obj_GetPlayerObject();
-    viewSlot = Camera_GetCurrentViewSlot();
+    viewSlot = Camera_GetCurrent();
     camPos.x = viewSlot->worldX - playerMapOffsetX;
     camPos.y = viewSlot->worldY;
     camPos.z = viewSlot->worldZ - playerMapOffsetZ;

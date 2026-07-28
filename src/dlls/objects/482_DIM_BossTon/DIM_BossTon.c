@@ -152,7 +152,7 @@ void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state) {
         } else {
             Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_NORMAL_HIT_SFX);
         }
-        CameraShake_SetAllMagnitudes(3.0f);
+        CameraShake_SetOffset(3.0f);
         if (0.0f == lbl_803DDB98) {
             state->active = 1;
             state->moveDone = 0;

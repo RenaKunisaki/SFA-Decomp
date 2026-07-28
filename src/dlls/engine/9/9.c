@@ -160,7 +160,7 @@ void renderClouds(int a, int b, int c, int d)
     u32 savedClipH;
     Vec pos;
     Mtx mtx;
-    CameraViewSlot* view;
+    Camera* view;
     ObjModel* model;
     MtxPtr viewMtx;
     f32 cloudT;
@@ -168,7 +168,7 @@ void renderClouds(int a, int b, int c, int d)
     f32 c0;
     f32 c1;
 
-    view = Camera_GetCurrentViewSlot();
+    view = Camera_GetCurrent();
     (*gSkyInterface)
         ->getCurrentAmbientAndLightColors(&ambientRed, &ambientGreen, &ambientBlue, &lightRed, &lightGreen, &lightBlue);
 

@@ -38,7 +38,7 @@ int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
         switch (animUpdate->eventIds[i])
         {
         case WMNEWCRYSTAL_EVENT_DETONATE:
-            PSVECSubtract(&Camera_GetCurrentViewSlot()->position, &obj->anim.localPos, &cameraDelta);
+            PSVECSubtract(&Camera_GetCurrent()->position, &obj->anim.localPos, &cameraDelta);
             PSVECNormalize(&cameraDelta, &cameraDelta);
             PSVECScale(&cameraDelta, &cameraDelta, 100.0f);
             PSVECAdd(&obj->anim.localPos, &cameraDelta, &obj->anim.localPos);

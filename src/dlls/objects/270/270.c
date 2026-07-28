@@ -61,7 +61,7 @@ void DeathSeq_hitDetect(void) {
 }
 
 void DeathSeq_update(GameObject* obj) {
-    CameraViewSlot* camera = Camera_GetCurrentViewSlot();
+    Camera* camera = Camera_GetCurrent();
     DeathSeqState* state = obj->extra;
     int useDeathCamera;
     GameObject* player = Obj_GetPlayerObject();
@@ -167,7 +167,7 @@ void DeathSeq_update(GameObject* obj) {
 
 void DeathSeq_init(GameObject* obj) {
     DeathSeqState* state = obj->extra;
-    CameraViewSlot* camera = Camera_GetCurrentViewSlot();
+    Camera* camera = Camera_GetCurrent();
     f32 distance;
 
     setScreenTransitionPause(TRUE);

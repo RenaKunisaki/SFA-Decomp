@@ -834,7 +834,7 @@ void Minimap_frameStart(void)
     u16 sfx;
     int held;
     int pressed;
-    CameraViewSlot* slot;
+    Camera* slot;
     int targetAngle;
     s16 angleDelta;
     s16 areaNameId;
@@ -996,7 +996,7 @@ void Minimap_frameStart(void)
                     {
                         gMinimapBlipPulse = 0;
                     }
-                    slot = Camera_GetCurrentViewSlot();
+                    slot = Camera_GetCurrent();
                     targetAngle =
                         getAngle(((GameObject*)gMinimapRadarTarget)->anim.localPosX - ((GameObject*)player)->anim.localPosX,
                                  ((GameObject*)gMinimapRadarTarget)->anim.localPosZ - ((GameObject*)player)->anim.localPosZ);

@@ -459,8 +459,8 @@ int DR_EarthWarrior_stateHandler03(GameObject* obj, int baddie)
             if (inner->sub.health <= 0)
             {
                 inner->sub.unk8EC = lbl_803DC76C;
-                Camera_EnableViewYOffset();
-                CameraShake_SetAllMagnitudes(1.0f);
+                CameraShake_Enable();
+                CameraShake_SetOffset(1.0f);
                 playerAddHealth(Obj_GetPlayerObject(), -1);
                 inner->sub.health = 0;
             }
@@ -1189,7 +1189,7 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
     int slot;
     Obj_GetPlayerObject();
     sub = inner + 0xb58;
-    slot = (int)Camera_GetCurrentViewSlot();
+    slot = (int)Camera_GetCurrent();
     ((EarthWarriorState*)inner)->baddie.hitPoints = 0;
     ((EarthWarriorState*)inner)->baddie.flags0 &= ~0x8000;
     if (((EarthWarriorState*)inner)->sub.rideState == 2)

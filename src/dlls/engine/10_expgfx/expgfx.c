@@ -1733,7 +1733,7 @@ void objfx_shakeCameraByDistance(GameObject* obj, f32 shakeRange)
         if (dist <= shakeRange)
         {
             f32 falloff = 1.0f - dist / shakeRange;
-            CameraShake_Start(5.0f * falloff, 10.0f * falloff, 4.0f);
+            CameraShake_StartDampened(5.0f * falloff, 10.0f * falloff, 4.0f);
             doRumble(22.0f * falloff);
         }
     }
@@ -1782,7 +1782,7 @@ void DIMexplosionFn_8009a96c(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u
                 if (d <= 300.0f)
                 {
                     f32 t = 1.0f - d / 300.0f;
-                    CameraShake_Start(5.0f * t, 10.0f * t, 4.0f);
+                    CameraShake_StartDampened(5.0f * t, 10.0f * t, 4.0f);
                     doRumble(22.0f * t);
                 }
             }
@@ -1833,7 +1833,7 @@ void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 
                 if (d <= 300.0f)
                 {
                     f32 t = 1.0f - d / 300.0f;
-                    CameraShake_Start(5.0f * t, 10.0f * t, 4.0f);
+                    CameraShake_StartDampened(5.0f * t, 10.0f * t, 4.0f);
                     doRumble(22.0f * t);
                 }
             }
@@ -2508,7 +2508,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
         copyToCache(cache, (void*)runtime->slotPoolBases[pool], EXPGFX_POOL_CACHE_LINE_COUNT);
         cacheParity = 1;
         curCacheBuf = (ExpgfxSlot*)(cache);
-        Camera_GetCurrentViewSlot();
+        Camera_GetCurrent();
         if (tricky != NULL)
         {
             trickyRange = trickyGetAnimSpeed(tricky);
@@ -3622,7 +3622,7 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     ObjAnimComponent* sourceObject;
     u32 renderFlags;
     u32 stateBitsValue;
-    CameraViewSlot* cameraSlot;
+    Camera* cameraSlot;
     f32 halfLifeFrames;
     f32 scaleSize;
     f32 centerX, centerY, centerZ;
@@ -3672,7 +3672,7 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     {
         return;
     }
-    cameraSlot = Camera_GetCurrentViewSlot();
+    cameraSlot = Camera_GetCurrent();
     _textSetColor(0, 0xff, 0xff, 0xff, 0xff);
     alphaMode = -1;
     blendMode = -1;

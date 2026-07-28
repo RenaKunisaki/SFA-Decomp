@@ -1356,7 +1356,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
     SkyVec3 sunDir;
     SkyVec3 moonDir;
     int v;
-    CameraViewSlot* cam;
+    Camera* cam;
     f32 far;
     f32 yaw;
     f32 scale;
@@ -1369,7 +1369,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
     u8* model;
     SkyState* sky;
 
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     sunDir = gSkyBaseSunDirection;
     moonDir = gSkyBaseMoonDirection;
     v = 0;
@@ -1588,7 +1588,7 @@ void skyRenderTimeOfDayBackdrop(void)
     int texA;
     int texB;
     u8* texC;
-    CameraViewSlot* cam;
+    Camera* cam;
     GameObject* player;
     int cell;
     u8* tbl;
@@ -1727,7 +1727,7 @@ void skyRenderTimeOfDayBackdrop(void)
         gradB = channel[idxB];
         gSkyCurrentAmbientColor.b = (u8)(int)(tc * (f32)(gradB - gradA) + (f32)(u32)gradA);
         texC = (u8*)sky[((SkyTimeBlend*)sky)->texSel + 2];
-        cam = Camera_GetCurrentViewSlot();
+        cam = Camera_GetCurrent();
         frac = Camera_GetFovY();
         frac = frac / 2.0f;
         texHeightF = (f32)(u32) * (u16*)(texC + 0xc);

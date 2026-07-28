@@ -144,12 +144,12 @@ void cmbsrc_updateVisuals(GameObject* cmbsrc, CmbSrcState* sourceState)
     int colorIdx = 0;
     int effectMode = 0;
     int subMode = 0;
-    CameraViewSlot* viewSlot;
+    Camera* viewSlot;
     f32 dist;
     f32 vec[3];
     PartFxSpawnParams param;
 
-    viewSlot = Camera_GetCurrentViewSlot();
+    viewSlot = Camera_GetCurrent();
     if (sourceState->active == 0)
     {
         sourceState->radius = 2.0f * setup->radius;

@@ -151,13 +151,13 @@ void CFCrate_hitDetect(void) {
 void CFCrate_update(GameObject* obj) {
     CFCrateState* state;
     CFCratePlacement* placement;
-    CameraViewSlot* camera;
+    Camera* camera;
     int rotDelta;
     s16 objectId;
 
     Obj_GetPlayerObject();
     state = obj->extra;
-    camera = Camera_GetCurrentViewSlot();
+    camera = Camera_GetCurrent();
     placement = (CFCratePlacement*)obj->anim.placementData;
     objectId = obj->anim.seqId;
 

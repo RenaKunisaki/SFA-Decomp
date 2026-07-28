@@ -12362,7 +12362,7 @@ void fn_802AA014(GameObject* obj, int state, f32 aimInputZ, f32 zero)
     PlayerState* inner;
 
     inner = obj->extra;
-    slot = (int)Camera_GetCurrentViewSlot();
+    slot = (int)Camera_GetCurrent();
     if (Obj_IsLoadingLocked())
     {
         setup = Obj_AllocObjectSetup(0x24, 0x14b);
@@ -12422,7 +12422,7 @@ void fn_802AA2B0(int obj, int state, f32 unused, f32 yoff)
     f32 dx, dy, dz, len;
 
     linkEffect = 1;
-    Camera_GetCurrentViewSlot();
+    Camera_GetCurrent();
     if (Obj_IsLoadingLocked() != 0)
     {
         Sfx_PlayFromObject(0, SFXTRIG_staff_rocket_hitdirt);
@@ -12475,7 +12475,7 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
     MatrixTransform v;
     f32 mtx[16];
 
-    slot = (int)Camera_GetCurrentViewSlot();
+    slot = (int)Camera_GetCurrent();
     if (Obj_IsLoadingLocked())
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_hitpos_6_20a);
@@ -13753,8 +13753,8 @@ int fn_802AD2F4(GameObject* obj, int inner, int state)
         else if ((((PlayerState*)inner)->fallSeverity >= 2) && (((ByteFlags*)(((char*)inner) + 0x3f2))->b04 == 0))
         {
             s8 hv;
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(10.0f);
+            CameraShake_Enable();
+            CameraShake_SetOffset(10.0f);
             ObjPath_GetPointWorldPosition((GameObject*)obj, 0xb, &v[3], &v[4], &v[5], 0);
             if (((PlayerState*)inner)->surfaceType == 0x1a)
             {
@@ -13849,8 +13849,8 @@ int fn_802AD2F4(GameObject* obj, int inner, int state)
         {
             s8 hv;
             doRumble(20.0f);
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(15.0f);
+            CameraShake_Enable();
+            CameraShake_SetOffset(15.0f);
             ObjAnim_SetCurrentMove((int)obj, 0xb, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.015f;
             Sfx_PlayFromObject((int)obj, SFXTRIG_foot_crawl2);
@@ -15151,8 +15151,8 @@ void fn_802AFB0C(int obj, int inner, int state)
             switch (((PlayerState*)inner)->focusObject->anim.seqId)
             {
             case 0x714:
-                Camera_EnableViewYOffset();
-                CameraShake_SetAllMagnitudes(1.0f);
+                CameraShake_Enable();
+                CameraShake_SetOffset(1.0f);
                 break;
             }
             break;
@@ -15167,8 +15167,8 @@ void fn_802AFB0C(int obj, int inner, int state)
             }
             break;
         case 0x19:
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(1.0f);
+            CameraShake_Enable();
+            CameraShake_SetOffset(1.0f);
             break;
         case 0x1b:
             newAnim = *(s16*)((char*)state + 0x278);
@@ -18153,7 +18153,7 @@ void playerUpdateWhileTimeStopped(int obj)
 void playerUpdate(GameObject* obj)
 {
     int inner = *(int*)&obj->extra;
-    int cam = (int)Camera_GetCurrentViewSlot();
+    int cam = (int)Camera_GetCurrent();
     f32 zero;
     f32 six;
     f32 t = ((PlayerState*)inner)->cutsceneTimer;

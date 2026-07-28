@@ -790,7 +790,7 @@ SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 p
 
 void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
 {
-    CameraViewSlot* slot;
+    Camera* slot;
     int level;
     f32 dist;
     f32 near;
@@ -798,7 +798,7 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
     f32 volf;
     f32 delta[3];
 
-    slot = Camera_GetCurrentViewSlot();
+    slot = Camera_GetCurrent();
     if (slot == NULL || objectChannel == NULL)
     {
         return;
@@ -945,7 +945,7 @@ f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta)
     double t2;
     Vec* listener;
     GameObject* player = Obj_GetPlayerObject();
-    CameraViewSlot* slot = Camera_GetCurrentViewSlot();
+    Camera* slot = Camera_GetCurrent();
     int seqNo = getCurSeqNo();
 
     if (player != NULL && seqNo == 0)

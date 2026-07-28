@@ -3422,7 +3422,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
         {
             break;
         }
-        Camera_EnableViewYOffset();
+        CameraShake_Enable();
         player = Obj_GetPlayerObject();
         if (player == NULL)
         {
@@ -3436,7 +3436,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
             {
                 strength *= 1.0f - (dist - 50.0f) / 150.0f;
             }
-            CameraShake_Start(gObjSeqShakeAmplitude * strength, gObjSeqShakeAmplitude * strength,
+            CameraShake_StartDampened(gObjSeqShakeAmplitude * strength, gObjSeqShakeAmplitude * strength,
                               gObjSeqShakeAmplitude);
         }
         break;

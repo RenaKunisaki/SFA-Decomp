@@ -14,11 +14,12 @@ STATIC_ASSERT(sizeof(CameraMatrix) == 0x40);
 typedef f32 CameraProjectionMatrix[4][4];
 STATIC_ASSERT(sizeof(CameraProjectionMatrix) == 0x40);
 
-typedef struct CameraViewSlot {
+typedef struct Camera {
     s16 yaw;
     s16 pitch;
     s16 roll;
-    u8 pad06[6];
+    s16 flags;
+    f32 scale;
     union {
         struct {
             f32 x;
@@ -29,12 +30,12 @@ typedef struct CameraViewSlot {
     };
     f32 fovY;
     u8 pad1C[4];
-    Vec3f unk20;
-    f32 shakeMagnitude;
-    f32 shakeMagnitudeTarget;
-    f32 shakeDuration;
-    f32 shakeTimer;
-    f32 shakeFalloff;
+    Vec3f velocity;
+    f32 shakeOffsetY;
+    f32 shakeAmplitude;
+    f32 shakeFrequency;
+    f32 shakeTime;
+    f32 shakeDamping;
     GameObject* parentObject;
     union {
         struct {
@@ -47,21 +48,31 @@ typedef struct CameraViewSlot {
     s16 worldYaw;
     s16 worldPitch;
     s16 worldRoll;
-    u8 pad56[4];
-    s16 unk5A;
-    s8 shakeFlipTimer;
-    s8 shakeActive;
+    u16 blockIndex;
+    u16 unk58;
+    s16 shakePitchOffset; /* Pitch delta contributed by camera shake. */
+    s8 shakeCooldown;
+    s8 shakeMode; /* -1: inactive, 0: bouncing offset, 1: dampened oscillation. */
     u8 pad5E[2];
-} CameraViewSlot;
+} Camera;
 
-STATIC_ASSERT(offsetof(CameraViewSlot, fovY) == 0x18);
-STATIC_ASSERT(offsetof(CameraViewSlot, unk20) == 0x20);
-STATIC_ASSERT(offsetof(CameraViewSlot, shakeMagnitude) == 0x2C);
-STATIC_ASSERT(offsetof(CameraViewSlot, parentObject) == 0x40);
-STATIC_ASSERT(offsetof(CameraViewSlot, unk5A) == 0x5A);
-STATIC_ASSERT(sizeof(CameraViewSlot) == 0x60);
+STATIC_ASSERT(offsetof(Camera, flags) == 0x6);
+STATIC_ASSERT(offsetof(Camera, scale) == 0x8);
+STATIC_ASSERT(offsetof(Camera, fovY) == 0x18);
+STATIC_ASSERT(offsetof(Camera, velocity) == 0x20);
+STATIC_ASSERT(offsetof(Camera, shakeOffsetY) == 0x2C);
+STATIC_ASSERT(offsetof(Camera, shakeAmplitude) == 0x30);
+STATIC_ASSERT(offsetof(Camera, shakeFrequency) == 0x34);
+STATIC_ASSERT(offsetof(Camera, shakeTime) == 0x38);
+STATIC_ASSERT(offsetof(Camera, shakeDamping) == 0x3C);
+STATIC_ASSERT(offsetof(Camera, parentObject) == 0x40);
+STATIC_ASSERT(offsetof(Camera, blockIndex) == 0x56);
+STATIC_ASSERT(offsetof(Camera, shakePitchOffset) == 0x5A);
+STATIC_ASSERT(offsetof(Camera, shakeCooldown) == 0x5C);
+STATIC_ASSERT(offsetof(Camera, shakeMode) == 0x5D);
+STATIC_ASSERT(sizeof(Camera) == 0x60);
 
-extern CameraViewSlot gCameraShakeSlots[];
+extern Camera gCameras[12];
 extern CameraMatrix gCameraDefaultModelMatrix;
 extern f32 gCameraWorldMatrix[64];
 extern f32 lbl_803DE5F0;
@@ -78,7 +89,6 @@ extern CameraMatrix gCameraInverseViewRotationMatrix;
 extern CameraMatrix gCameraViewMatrix;
 extern CameraMatrix gCameraInverseViewMatrix;
 extern u8 gCameraCurrentViewIndex;
-extern u8 cameraViewYOffsetEnabled;
 extern s16 cameraViewportYOffset;
 extern s16 gCameraViewportYOffset;
 extern CameraProjectionMatrix gCameraProjectionMatrix;
@@ -112,11 +122,11 @@ f32* Camera_GetViewRotationMatrix(void);
 f32* Camera_GetInverseViewRotationMatrix(void);
 f32* Camera_GetViewMatrix(void);
 f32* Camera_GetInverseViewMatrix(void);
-CameraViewSlot* Camera_GetCurrentViewSlot(void);
+Camera* Camera_GetCurrent(void);
 u8 CameraShake_IsActive(void);
 void Camera_LoadModelViewMatrix(int unused0, int unused1, MatrixTransform* transform, f32 scale, f32 unused4,
                                 f32* matrix);
-void Obj_UpdateWorldTransform(CameraViewSlot* view);
+void Camera_UpdateForObject(Camera* camera);
 void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex);
 void Obj_BuildTransformMatrices(GameObject* obj);
 s32 Obj_BuildTransformMatrixSlot(GameObject* obj);
@@ -134,9 +144,6 @@ void Camera_SetCurrentViewRotation(int yaw, int pitch, int roll);
 void Camera_SetCurrentViewPosition(f32 x, f32 y, f32 z);
 void Camera_UpdateViewMatrices(void);
 void Camera_ApplyFullViewport(void);
-int Camera_IsViewYOffsetEnabled(void);
-void Camera_DisableViewYOffset(void);
-void Camera_EnableViewYOffset(void);
 s16 Camera_GetViewportYOffset(void);
 void Camera_SetViewportYOffset(s16 yOffset);
 f32* Camera_GetProjectionMatrix(void);

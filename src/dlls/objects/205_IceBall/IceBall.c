@@ -57,16 +57,16 @@ void iceBall_handleSurfaceImpact(GameObject* obj) {
     }
 
     Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_lummy311_26a);
-    Camera_EnableViewYOffset();
-    CameraShake_SetAllMagnitudes(1.0f);
+    CameraShake_Enable();
+    CameraShake_SetOffset(1.0f);
 }
 
 void iceBall_handleCharacterImpact(GameObject* obj) {
     s16 sequenceId;
     int particleIndex;
 
-    Camera_EnableViewYOffset();
-    CameraShake_SetAllMagnitudes(1.0f);
+    CameraShake_Enable();
+    CameraShake_SetOffset(1.0f);
     Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_lummy311_26a);
     sequenceId = obj->anim.seqId;
     if (sequenceId == 0x2cb) {
@@ -116,7 +116,7 @@ int IceBall_getObjectTypeId(void) {
 void IceBall_free(GameObject* obj) {
     (void)obj;
 
-    Camera_DisableViewYOffset();
+    CameraShake_Disable();
 }
 
 void IceBall_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {

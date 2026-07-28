@@ -78,7 +78,7 @@ void DIMbossspit_updateBurst(GameObject* obj) {
                           DIMBOSSSPIT_PARTFX_MODEL_NONE, NULL);
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_gcexp1_c);
         Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy311);
-        CameraShake_SetAllMagnitudes(3.0f);
+        CameraShake_SetOffset(3.0f);
         doRumble(12.0f);
         if (((DIMbossSpitState*)stateAddress)->light != NULL) {
             modelLightStruct_setEnabled(((DIMbossSpitState*)stateAddress)->light, 0, 1.0f);

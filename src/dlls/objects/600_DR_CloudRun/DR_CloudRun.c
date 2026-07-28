@@ -1153,7 +1153,7 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
     {
         flag = 1;
     }
-    slot = (int)Camera_GetCurrentViewSlot();
+    slot = (int)Camera_GetCurrent();
     inner = (obj)->extra;
     inner->baddie.hitPoints = 0;
     *(int*)&inner->baddie &= ~0x8000;

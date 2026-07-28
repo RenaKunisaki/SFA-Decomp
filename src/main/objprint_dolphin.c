@@ -3220,7 +3220,7 @@ void objRenderFuzz(int* obj)
     u32 savedMtx;
     u8 strong;
     f32 dx, dy, dz, dist;
-    CameraViewSlot* cam = Camera_GetCurrentViewSlot();
+    Camera* cam = Camera_GetCurrent();
     if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) ||
         ((GameObject*)obj)->anim.mapEventSlot == 0x3f ||
         ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_FOX ||
@@ -3365,7 +3365,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
     }
     if (OBJPRINT_MODEL_DEF(child)->renderFlags & 8)
     {
-        CameraViewSlot* cam = Camera_GetCurrentViewSlot();
+        Camera* cam = Camera_GetCurrent();
         blk.scale = ((GameObject*)child)->anim.rootMotionScale;
         dx = ((GameObject*)child)->anim.localPosX - cam->x;
         dz = ((GameObject*)child)->anim.localPosZ - cam->z;

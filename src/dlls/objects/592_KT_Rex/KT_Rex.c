@@ -1144,8 +1144,8 @@ void ktrex_updateAttackEffects(GameObject* obj)
     if ((gKTRexState->phaseFlags & 0x20000) != 0)
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_en_fireup_c);
-        Camera_EnableViewYOffset();
-        CameraShake_SetAllMagnitudes(2.0f * mag);
+        CameraShake_Enable();
+        CameraShake_SetOffset(2.0f * mag);
     }
     if ((gKTRexState->timerFA & 0x10) != 0)
     {
@@ -1173,8 +1173,8 @@ void ktrex_updateAttackEffects(GameObject* obj)
         doRumble(4.0f);
         if (mag > 0.1f)
         {
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(mag);
+            CameraShake_Enable();
+            CameraShake_SetOffset(mag);
             mainSetBits(0x554, 1);
         }
     }
@@ -1184,8 +1184,8 @@ void ktrex_updateAttackEffects(GameObject* obj)
         Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexfoot11_91);
         if (mag > 0.1f)
         {
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(2.0f * mag);
+            CameraShake_Enable();
+            CameraShake_SetOffset(2.0f * mag);
             mainSetBits(0x554, 1);
         }
     }
@@ -1195,8 +1195,8 @@ void ktrex_updateAttackEffects(GameObject* obj)
         Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexfoot11_92);
         if (mag > 0.1f)
         {
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(3.0f * mag);
+            CameraShake_Enable();
+            CameraShake_SetOffset(3.0f * mag);
             mainSetBits(0x554, 1);
         }
     }

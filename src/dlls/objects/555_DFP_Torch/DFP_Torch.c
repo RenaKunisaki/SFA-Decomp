@@ -50,7 +50,7 @@ void DFP_Torch_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visibl
 {
 
     DfpTorchState* state = (obj)->extra;
-    CameraViewSlot* cam;
+    Camera* cam;
     f32 dist;
     f32 scale;
     struct
@@ -79,7 +79,7 @@ void DFP_Torch_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visibl
         if (state->lit != 0)
         {
             state->visibleLatch = 1;
-            cam = Camera_GetCurrentViewSlot();
+            cam = Camera_GetCurrent();
             stk2.d[0] = cam->x - (obj)->anim.localPosX;
             stk2.d[1] = cam->y - (obj)->anim.localPosY;
             stk2.d[2] = cam->z - (obj)->anim.localPosZ;

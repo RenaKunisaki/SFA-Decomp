@@ -232,11 +232,11 @@ void arwarwing_readControls(GameObject* obj, ArwingState* state)
 void arwarwing_updateThrusters(GameObject* obj, ArwingState* state)
 {
 
-    CameraViewSlot* slot;
+    Camera* slot;
     f32 mtx[16];
     MatrixTransform src;
 
-    slot = Camera_GetCurrentViewSlot();
+    slot = Camera_GetCurrent();
     src.x = obj->anim.localPosX;
     src.y = obj->anim.localPosY;
     src.z = obj->anim.localPosZ;
@@ -779,8 +779,8 @@ void arwarwing_handlePathDamage(GameObject* obj, ArwingState* state)
         state->shakePitch = 0;
         state->knockVelX = *(f32*)(pathBlock + 0x1a0);
         state->knockVelZ = *(f32*)(pathBlock + 0x1a4);
-        Camera_EnableViewYOffset();
-        CameraShake_SetAllMagnitudes(15.0f);
+        CameraShake_Enable();
+        CameraShake_SetOffset(15.0f);
     }
     else
     {
@@ -826,8 +826,8 @@ void arwarwing_handleObjectDamage(GameObject* obj, ArwingState* state)
                 state->knockVelX = knock;
                 state->knockVelZ = knock;
             }
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(10.0f);
+            CameraShake_Enable();
+            CameraShake_SetOffset(10.0f);
         }
     }
     if (state->mode != ARWING_MODE_DEAD && state->mode != ARWING_MODE_EXPLODE &&
@@ -1015,7 +1015,7 @@ int arwarwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
     int i;
     ArwingState* state = obj->extra;
 
-    Camera_GetCurrentViewSlot();
+    Camera_GetCurrent();
     animUpdate->freeCallback = (ObjAnimSequenceFreeCallback)arwarwing_clearAimSnapshot;
     if ((state->flags477 & ARWING_FLAG_ACTIVE) == 0)
     {
@@ -1038,7 +1038,7 @@ int arwarwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
         {
         case 8:
         {
-            CameraViewSlot* cam = Camera_GetCurrentViewSlot();
+            Camera* cam = Camera_GetCurrent();
             state->aimOffsetX = cam->x - obj->anim.localPosX;
             state->aimOffsetY = cam->y - obj->anim.localPosY;
             state->aimOffsetZ = cam->z - obj->anim.localPosZ;

@@ -262,7 +262,7 @@ void updateHeavyFogTexture(int intensity)
     lbl_803DCF80 = intensity;
 }
 
-CameraViewSlot* gNewShadowCurrentViewSlot;
+Camera* gNewShadowCurrentViewSlot;
 u32 gNewShadowReflectionSmallTexture;
 Texture* gNewShadowCausticTexture;
 u32 gNewShadowReflectionTexture2;
@@ -342,7 +342,7 @@ u8 lbl_8030E8B0[0xD8] = {
     0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x09, 0x00,
 };
 extern u8 gNewShadowCasterCount;
-extern CameraViewSlot* gNewShadowCurrentViewSlot;
+extern Camera* gNewShadowCurrentViewSlot;
 extern f32 gNewShadowReflectionScrollY, gNewShadowReflectionScrollX;
 extern u16 lbl_803DCFA0;
 extern int gNewShadowLightAngleX, gNewShadowLightAngleY;
@@ -701,7 +701,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     f32 mc54[3], mc48[3];
     Vec vA, v30;
     Vec dot24, proj;
-    CameraViewSlot* slot;
+    Camera* slot;
     NewShadowData* shadowData = (NewShadowData*)gNewShadowEntries;
     void* layerTables;
     u32 blocks;
@@ -717,10 +717,10 @@ void renderShadows(int unused0, int unused1, int unused2)
 
     if (gNewShadowCasterCount == 0)
         return;
-    Camera_DisableViewYOffset();
+    CameraShake_Disable();
     sortShadowEntriesDescending((ShadowSortEntry*)shadowData->casters, gNewShadowCasterCount);
     Camera_SetCurrentViewIndex(1);
-    slot = Camera_GetCurrentViewSlot();
+    slot = Camera_GetCurrent();
     savedFovY = Camera_GetFovY();
     Camera_SetFovY(gNewShadowFovY);
     Camera_SetAspectRatio(1.0f);
@@ -999,7 +999,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     Camera_UpdateViewMatrices();
     Camera_RebuildProjectionMatrix();
     Camera_ApplyFullViewport();
-    Camera_EnableViewYOffset();
+    CameraShake_Enable();
 }
 
 extern NewShadowCaster gNewShadowCasterTable[NEW_SHADOW_MAX_QUEUED_CASTERS];
@@ -1254,7 +1254,7 @@ void maybeHudFn_8006c91c(void)
             gNewShadowReflectionScrollY = gNewShadowReflectionScrollY - 256.0f;
     }
     gNewShadowCasterCount = 0;
-    gNewShadowCurrentViewSlot = Camera_GetCurrentViewSlot();
+    gNewShadowCurrentViewSlot = Camera_GetCurrent();
     lbl_803DCFA0 = (u16)(lbl_803DCFA0 + framesThisStep * 0x28a);
     lbl_803DCFA4 = 0.2f * mathSinfHighPrecision(6.284f * (f32)(u32)lbl_803DCFA0 / 65536.0f);
     mapClearBlockEdgeFlags();

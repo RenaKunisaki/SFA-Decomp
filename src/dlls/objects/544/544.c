@@ -35,7 +35,7 @@ typedef struct VfpDoorSwitchPlacement
 void vfpdoorswitch_updateExplodingVariant(GameObject* obj)
 {
     VfpDoorSwitchState* state = obj->extra;
-    CameraViewSlot* camView = Camera_GetCurrentViewSlot();
+    Camera* camView = Camera_GetCurrent();
 
     if (state->activated == 0)
     {

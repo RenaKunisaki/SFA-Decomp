@@ -753,7 +753,7 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
     Mtx mtxA;
     int** p;
     int slot;
-    CameraViewSlot* view;
+    Camera* view;
     u8 texCount;
     void* buf1;
     void* buf2;
@@ -781,7 +781,7 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
     {
         return 1;
     }
-    view = Camera_GetCurrentViewSlot();
+    view = Camera_GetCurrent();
     p = (int**)gPartfxActiveEffects;
     for (slot = 0; slot < PARTFX_ACTIVE_EFFECT_COUNT; slot++)
     {

@@ -91,7 +91,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
     DoorF4Placement* placement;
     DoorF4State* state;
     GameObject** objectCursor;
-    CameraViewSlot* view;
+    Camera* view;
     u8 eventId;
     f32 angle[1];
     f32 distance;
@@ -282,7 +282,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
         if (eventId != 0) {
             switch (eventId) {
             case DOORF4_SEQUENCE_EVENT_OPEN:
-                view = Camera_GetCurrentViewSlot();
+                view = Camera_GetCurrent();
                 if (state->planeOffset + (state->planeNormalX * view->x + state->planeNormalZ * view->z) < 0.0f) {
                     if (placement->nearSideGameBit != -1) {
                         sideGameBitValue = (u8)mainGetBit(placement->nearSideGameBit);
@@ -347,7 +347,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
                 }
                 break;
             case DOORF4_SEQUENCE_EVENT_CLOSE:
-                view = Camera_GetCurrentViewSlot();
+                view = Camera_GetCurrent();
                 if (state->planeOffset + (state->planeNormalX * view->x + state->planeNormalZ * view->z) < 0.0f) {
                     if (placement->nearSideGameBit != -1) {
                         sideGameBitValue = (u8)mainGetBit(placement->nearSideGameBit);

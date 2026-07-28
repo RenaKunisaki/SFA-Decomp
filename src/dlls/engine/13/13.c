@@ -25,7 +25,7 @@ f32 gPlayerShadowCamDelta[3] = {0.0f, 0.0f, 0.0f};
 void playerShadow_scatterFootfallEffects(PlayerShadowTriHit* hits, int count, f32 offsX, f32 offsZ, GameObject* obj)
 {
     PartFxSpawnParams data;
-    CameraViewSlot* cam;
+    Camera* cam;
     u8 found;
     u8 surfType;
     int i;
@@ -51,7 +51,7 @@ void playerShadow_scatterFootfallEffects(PlayerShadowTriHit* hits, int count, f3
     f32 w2;
 
     found = 0;
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     {
         s16 camRotY = cam->pitch;
         lbl_803DD29A = cam->yaw;

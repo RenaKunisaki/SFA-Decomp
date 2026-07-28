@@ -54,7 +54,7 @@ void rollingBarrel_explode(GameObject* obj, int unusedExplosionVariant) {
         distance = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
         if (distance <= 500.0f) {
             falloff = 1.0f - distance / 500.0f;
-            CameraShake_Start(5.0f * falloff, 10.0f * falloff, 4.0f);
+            CameraShake_StartDampened(5.0f * falloff, 10.0f * falloff, 4.0f);
             doRumble(15.0f * falloff);
         }
     }

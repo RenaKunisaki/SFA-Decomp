@@ -687,16 +687,16 @@ void camcontrol_activateHandler(u16 actionId, void* actionData)
 
 void firstPersonZoomOutOnExit(u8 blendFrames, u8 blendFlags)
 {
-    CameraViewSlot* vs;
+    Camera* vs;
     f32 blendProgress;
 
-    Camera_GetCurrentViewSlot();
+    Camera_GetCurrent();
     blendProgress = CAMCONTROL_NORMALIZED_MAX;
     CAMCONTROL_CAMERA->blendProgress = blendProgress;
     CAMCONTROL_CAMERA->blendStep = blendProgress / (float)blendFrames;
     CAMCONTROL_CAMERA->queuedBlendFlags = blendFlags;
 
-    vs = Camera_GetCurrentViewSlot();
+    vs = Camera_GetCurrent();
     CAMCONTROL_CAMERA->blendStartX = vs->x;
     CAMCONTROL_CAMERA->blendStartY = vs->y;
     CAMCONTROL_CAMERA->blendStartZ = vs->z;
@@ -716,14 +716,14 @@ void camcontrol_applyState(CamcontrolCameraState* camera)
 {
     f32 prog;
     f32 clamped;
-    CameraViewSlot* view;
+    Camera* view;
     int itmp;
     f32 mag;
     f32 blendFactor;
     f32 delta[3];
 
     Camera_SetCurrentViewIndex(0);
-    view = Camera_GetCurrentViewSlot();
+    view = Camera_GetCurrent();
     view->yaw = camera->yaw;
     view->pitch = camera->pitch;
     view->roll = camera->roll;
@@ -829,7 +829,7 @@ void camcontrol_applyState(CamcontrolCameraState* camera)
         }
     }
     Camera_SetFovY(lbl_803DD4D0);
-    Obj_UpdateWorldTransform(view);
+    Camera_UpdateForObject(view);
     loadMapForCameraPos(camera->worldX, camera->worldY, camera->worldZ);
     lbl_803DD4C0 = Camera_GetViewportYOffset();
     if ((int)lbl_803DD4C0 != camera->letterboxTargetOffset)
@@ -858,7 +858,7 @@ void camcontrol_applyState(CamcontrolCameraState* camera)
 
 void camcontrol_applyQueuedAction(void)
 {
-    CameraViewSlot* view;
+    Camera* view;
     f32 blendStep;
 
     if (gCamcontrolQueuedActionPending != '\0')
@@ -879,7 +879,7 @@ void camcontrol_applyQueuedAction(void)
             CAMCONTROL_CAMERA->blendProgress = CAMCONTROL_NORMALIZED_MIN;
             CAMCONTROL_CAMERA->queuedBlendFlags = 0;
         }
-        view = Camera_GetCurrentViewSlot();
+        view = Camera_GetCurrent();
         if (CAMCONTROL_NORMALIZED_MAX == CAMCONTROL_CAMERA->blendProgress)
         {
             CAMCONTROL_CAMERA->blendStartX = view->x;

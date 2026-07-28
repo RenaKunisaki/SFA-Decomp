@@ -257,8 +257,8 @@ void SB_ShipGun_update(GameObject* obj) {
                 cannonball->anim.rotX = getAngle(cannonball->anim.velocityX, cannonball->anim.velocityZ);
                 cannonball->userData1 = SB_SHIPGUN_CANNONBALL_LIFETIME;
                 cannonball->userData2 = (int)state->cloudRunner;
-                Camera_EnableViewYOffset();
-                CameraShake_SetAllMagnitudes(0.1f);
+                CameraShake_Enable();
+                CameraShake_SetOffset(0.1f);
                 Sfx_PlayFromObject((int)obj, SB_SHIPGUN_FIRE_SFX);
                 state->volleyCount += 1;
                 if (state->volleyCount == SB_SHIPGUN_VOLLEY_SIZE) {

@@ -623,7 +623,7 @@ void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
         inner->eventFlags &= ~0x800;
         ObjHits_RecordObjectHit(Obj_GetPlayerObject(), (GameObject*)obj, 0x19, 2, 1);
         Sfx_PlayFromObject(obj, SFXTRIG_wp_simp1_c);
-        CameraShake_Start(2.5f, 5.0f, 4.0f);
+        CameraShake_StartDampened(2.5f, 5.0f, 4.0f);
         doRumble(11.0f);
     }
 }
