@@ -133,14 +133,14 @@ void WM_seqobject_update(int* obj)
     }
 }
 
-void WM_seqobject_init(int* obj, s8* def)
+void WM_seqobject_init(GameObject* obj, s8* def)
 {
     s16 angle;
     WMSeqObjectSetup* setup = (WMSeqObjectSetup*)def;
 
     angle = (s16)((s32)setup->yawByte << 8);
     OBJ_S16(obj, 0) = angle;
-    ((GameObject*)obj)->animEventCallback = WM_seqobject_SeqFn;
+    obj->animEventCallback = WM_seqobject_SeqFn;
     OBJ_S32(obj, 0xf8) = 0x14;
 }
 

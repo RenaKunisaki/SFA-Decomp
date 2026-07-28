@@ -30,7 +30,7 @@
 
 extern u8 lbl_803186B0[]; /* texture/asset table */
 
-void dll_A0_func03(u8* sourceObj, int variant, int posSource, u32 flags)
+void dll_A0_func03(GameObject* sourceObj, int variant, int posSource, u32 flags)
 {
     ModgfxSpawnPacket buf;
     u8* tab = lbl_803186B0;
@@ -156,9 +156,9 @@ void dll_A0_func03(u8* sourceObj, int variant, int posSource, u32 flags)
     {
         if (sourceObj != NULL)
         {
-            buf.pos[0] += ((GameObject*)(sourceObj))->anim.worldPosX;
-            buf.pos[1] += ((GameObject*)(sourceObj))->anim.worldPosY;
-            buf.pos[2] += ((GameObject*)(sourceObj))->anim.worldPosZ;
+            buf.pos[0] += (sourceObj)->anim.worldPosX;
+            buf.pos[1] += (sourceObj)->anim.worldPosY;
+            buf.pos[2] += (sourceObj)->anim.worldPosZ;
         }
         else
         {

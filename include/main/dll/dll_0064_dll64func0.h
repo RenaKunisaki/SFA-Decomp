@@ -2,8 +2,9 @@
 #define MAIN_DLL_DLL_0064_DLL64FUNC0_H_
 
 #include "ghidra_import.h"
+#include "game/objects/object_fwd.h"
 
-void dll_64_func03(u8* sourceObj, int variant, u8* posSource, u32 flags);
+void dll_64_func03(GameObject* sourceObj, int variant, u8* posSource, u32 flags);
 void dll_64_func01_nop(void);
 void dll_64_func00_nop(void);
 

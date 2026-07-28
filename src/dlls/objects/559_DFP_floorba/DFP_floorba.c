@@ -54,11 +54,11 @@ int DFP_Floorbar_getObjectTypeId(void)
     return 0;
 }
 
-void DFP_Floorbar_free(int* obj)
+void DFP_Floorbar_free(GameObject* obj)
 {
     DfpFloorbarState* state;
 
-    state = (DfpFloorbarState*)*(int*)&((GameObject*)obj)->extra;
+    state = (DfpFloorbarState*)*(int*)&obj->extra;
     (*gExpgfxInterface)->freeSource2((u32)obj);
     state->linkedObject = NULL;
     return;
@@ -73,12 +73,12 @@ void DFP_Floorbar_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
     }
 }
 
-void DFP_Floorbar_hitDetect(int* obj)
+void DFP_Floorbar_hitDetect(GameObject* obj)
 {
     int* linkedObject;
     int** state;
     s32 hitFlag;
-    state = (int**)*(int*)&((GameObject*)obj)->extra;
+    state = (int**)*(int*)&obj->extra;
     linkedObject = state[2];
     if (linkedObject == NULL)
         return;

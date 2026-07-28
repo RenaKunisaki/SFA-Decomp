@@ -55,9 +55,9 @@ void CameraModeWorldMap_free(void)
     mm_free((void*)gCamWorldMapState);
     gCamWorldMapState = NULL;
 }
-void CameraModeWorldMap_update(u8* obj)
+void CameraModeWorldMap_update(GameObject* obj)
 {
-    GameObject* camera = (GameObject*)obj;
+    GameObject* camera = obj;
     GameObject* focus;
     GameObject *objA, *objB;
     u16 buttons;
@@ -357,7 +357,7 @@ void CameraModeWorldMap_update(u8* obj)
                                    *(int*)&camera->anim.parent);
 }
 
-void CameraModeWorldMap_init(int* obj)
+void CameraModeWorldMap_init(GameObject* obj)
 {
     register u32 bitval;
     if (gCamWorldMapState == NULL)
@@ -373,8 +373,8 @@ void CameraModeWorldMap_init(int* obj)
     gCamWorldMapState->settleFrames = 1;
     gCamWorldMapState->focusBlendTimer = 0;
     gCamWorldMapState->focusObjectId = 0;
-    *(f32*)&((GameObject*)obj)->seqIndex = 60.0f;
-    ((GameObject*)obj)->anim.rotX = -32768;
+    *(f32*)&obj->seqIndex = 60.0f;
+    obj->anim.rotX = -32768;
 }
 void CameraModeWorldMap_release(void)
 {

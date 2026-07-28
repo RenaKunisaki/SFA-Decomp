@@ -36,7 +36,7 @@ u32 lbl_803146D8[137] = {
     0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00080009, 0x000a000b, 0x000c000d, 0x0000000a, 0x00b40028,
     0x00000000, 0x00000000};
 
-void dll_74_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
+void dll_74_func03(GameObject* sourceObj, int variant, u8* posSource, u32 flags)
 {
     ModgfxPointerSpawnPacket buf;
     GfxCmd* e;
@@ -202,9 +202,9 @@ void dll_74_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
     {
         if (sourceObj != NULL)
         {
-            buf.pos[0] += ((GameObject*)sourceObj)->anim.localPosX;
-            buf.pos[1] += ((GameObject*)sourceObj)->anim.localPosY;
-            buf.pos[2] += ((GameObject*)sourceObj)->anim.localPosZ;
+            buf.pos[0] += (sourceObj)->anim.localPosX;
+            buf.pos[1] += (sourceObj)->anim.localPosY;
+            buf.pos[2] += (sourceObj)->anim.localPosZ;
         }
         else
         {

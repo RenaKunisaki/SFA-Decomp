@@ -117,7 +117,7 @@ STATIC_ASSERT(offsetof(MmpTriggerPlaneState, mtx) == 0x38);
 
 #define MOONROCK_ANGLE_TO_RADIANS(angle) ((3.1415927f * (f32)(s32)(-(angle))) / 32768.0f)
 
-void triggerEvalCurveLoop(u8* obj, GameObject* seqObj)
+void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj)
 {
     MmpTriggerPlaneState* state;
     f32 hitDistance;
@@ -127,10 +127,10 @@ void triggerEvalCurveLoop(u8* obj, GameObject* seqObj)
     int rearBlocked;
 
     queryType = 0x17;
-    state = (MmpTriggerPlaneState*)((GameObject*)obj)->extra;
+    state = (MmpTriggerPlaneState*)obj->extra;
     curveHit = (*gRomCurveInterface)->find(
         state->ptB[0], state->ptB[1], state->ptB[2], &queryType, 1,
-        *(s16*)(*(u8**)&((GameObject*)obj)->anim.placementData + 0x38));
+        *(s16*)(*(u8**)&obj->anim.placementData + 0x38));
     frontBlocked = (*gRomCurveInterface)->isPointInsideLoop(
         curveHit, state->ptB[0], state->ptB[1], state->ptB[2], &hitDistance);
     rearBlocked = (*gRomCurveInterface)->isPointInsideLoop(
@@ -140,20 +140,20 @@ void triggerEvalCurveLoop(u8* obj, GameObject* seqObj)
     {
         if (rearBlocked == 0)
         {
-            objInterpretSeq((GameObject*)obj, seqObj, 1, (int)hitDistance);
+            objInterpretSeq(obj, seqObj, 1, (int)hitDistance);
         }
         else
         {
-            objInterpretSeq((GameObject*)obj, seqObj, 2, (int)hitDistance);
+            objInterpretSeq(obj, seqObj, 2, (int)hitDistance);
         }
     }
     else if (rearBlocked != 0)
     {
-        objInterpretSeq((GameObject*)obj, seqObj, -1, (int)hitDistance);
+        objInterpretSeq(obj, seqObj, -1, (int)hitDistance);
     }
     else
     {
-        objInterpretSeq((GameObject*)obj, seqObj, -2, (int)hitDistance);
+        objInterpretSeq(obj, seqObj, -2, (int)hitDistance);
     }
 }
 
@@ -162,7 +162,7 @@ static f32 moonrockAngleToRadians(s16 angle)
     return MOONROCK_ANGLE_TO_RADIANS(angle);
 }
 
-int triggerPointInBox(u8* obj, f32* point)
+int triggerPointInBox(GameObject* obj, f32* point)
 {
     u8* data;
     f32 pointX;
@@ -179,7 +179,7 @@ int triggerPointInBox(u8* obj, f32* point)
     f32 localY;
     f32 localZ;
     f32 forward;
-    GameObject* o = (GameObject*)obj;
+    GameObject* o = obj;
 
     data = *(u8**)&o->anim.placementData;
     pointX = point[0];
@@ -220,7 +220,7 @@ int triggerPointInBox(u8* obj, f32* point)
     return 0;
 }
 
-void triggerEvalPlaneCrossing(u8* obj, GameObject* seqObj)
+void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj)
 {
     f32 ny;
     MmpTriggerPlaneState* state;
@@ -246,8 +246,8 @@ void triggerEvalPlaneCrossing(u8* obj, GameObject* seqObj)
     f32 t;
     f32 localPos[3];
 
-    data = *(u8**)&((GameObject*)obj)->anim.placementData;
-    state = (MmpTriggerPlaneState*)((GameObject*)obj)->extra;
+    data = *(u8**)&obj->anim.placementData;
+    state = (MmpTriggerPlaneState*)obj->extra;
 
     planeBase = state->planeD;
     normalZ = state->normalZ;
@@ -290,7 +290,7 @@ void triggerEvalPlaneCrossing(u8* obj, GameObject* seqObj)
             (localPos[1] >= -state->clipHalfExtent) && (localPos[1] <= state->clipHalfExtent))
         {
             OSReport(sMoonrockTriggerIdentFormat, triggerState, *(u32*)(data + 0x14));
-            objInterpretSeq((GameObject*)obj, seqObj, triggerState, (int)farDist);
+            objInterpretSeq(obj, seqObj, triggerState, (int)farDist);
         }
     }
 }
@@ -1220,7 +1220,7 @@ void Trigger_hitDetect(GameObject* obj)
                     }
                     if (ok2 && ok)
                     {
-                        triggerEvalPlaneCrossing((u8*)obj, target);
+                        triggerEvalPlaneCrossing(obj, target);
                     }
                     break;
                 case 0x4e:
@@ -1234,8 +1234,8 @@ void Trigger_hitDetect(GameObject* obj)
                     if (ok)
                     {
                         TriggerState* st = (TriggerState*)(obj)->extra;
-                        inside = triggerPointInBox((u8*)obj, &st->prevTargetPosX);
-                        wasInside = triggerPointInBox((u8*)obj, &st->targetPosX);
+                        inside = triggerPointInBox(obj, &st->prevTargetPosX);
+                        wasInside = triggerPointInBox(obj, &st->targetPosX);
                         if (inside != 0)
                         {
                             if (wasInside == 0)
@@ -1289,7 +1289,7 @@ void Trigger_hitDetect(GameObject* obj)
                 case 0xf4:
                     if (ok)
                     {
-                        triggerEvalCurveLoop((u8*)obj, target);
+                        triggerEvalCurveLoop(obj, target);
                     }
                     break;
                 }

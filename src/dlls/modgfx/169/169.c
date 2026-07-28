@@ -22,7 +22,7 @@
 
 extern u8 lbl_80319028[];
 
-void dll_A9_func03(u8* sourceObj, int variant, u8* posSource, u32 flags, u32 modelId, u8* extraArgs)
+void dll_A9_func03(GameObject* sourceObj, int variant, u8* posSource, u32 flags, u32 modelId, u8* extraArgs)
 {
     ModgfxSpawnPacket buf;
     u8* tab = (u8*)(int)lbl_80319028;
@@ -173,9 +173,9 @@ void dll_A9_func03(u8* sourceObj, int variant, u8* posSource, u32 flags, u32 mod
     {
         if (sourceObj != 0)
         {
-            buf.pos[0] += ((GameObject*)(sourceObj))->anim.worldPosX;
-            buf.pos[1] += ((GameObject*)(sourceObj))->anim.worldPosY;
-            buf.pos[2] += ((GameObject*)(sourceObj))->anim.worldPosZ;
+            buf.pos[0] += (sourceObj)->anim.worldPosX;
+            buf.pos[1] += (sourceObj)->anim.worldPosY;
+            buf.pos[2] += (sourceObj)->anim.worldPosZ;
         }
         else
         {

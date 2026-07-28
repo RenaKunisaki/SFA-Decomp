@@ -40,7 +40,7 @@ u32 lbl_80312D18[72] = {
 #define DLL64_COMMAND_DEPTH      20.0f
 #define DLL64_PLACEMENT_SCALE    0.1f
 
-void dll_64_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
+void dll_64_func03(GameObject* sourceObj, int variant, u8* posSource, u32 flags)
 {
     ModgfxPointerSpawnPacket buf;
     u32 flag;
@@ -49,7 +49,7 @@ void dll_64_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
     {
         *(s16*)&base[0x112] = 0;
     }
-    flag = *(u8*)(*(u8**)&((GameObject*)sourceObj)->anim.placementData + 0x1a);
+    flag = *(u8*)(*(u8**)&(sourceObj)->anim.placementData + 0x1a);
     buf.entries[0].layer = 0;
     buf.entries[0].flags = 7;
     buf.entries[0].tex = &base[0xf0];

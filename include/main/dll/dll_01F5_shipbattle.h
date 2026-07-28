@@ -17,8 +17,8 @@ typedef struct ShipBattleObjectDef
 
 int ShipBattle_getExtraSize(void);
 int ShipBattle_getObjectTypeId(void);
-void ShipBattle_free(int* obj);
-void ShipBattle_render(int* obj, int p2, int p3, int p4, int p5, s8 visible);
+void ShipBattle_free(GameObject* obj);
+void ShipBattle_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void ShipBattle_hitDetect(void);
 void ShipBattle_update(GameObject* obj);
 void ShipBattle_init(GameObject* obj, int def);
