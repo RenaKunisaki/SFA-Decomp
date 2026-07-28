@@ -3136,7 +3136,7 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
         }
         else
         {
-            ((FireflyLanternState*)state)->breathTimer = ((FireflyLanternState*)state)->breathTimer - timeDelta;
+            ((FireflyLanternState*)state)->breathTimer -= timeDelta;
             if (((FireflyLanternState*)state)->breathTimer <= fval)
             {
                 ((FireflyLanternState*)state)->breathTimer = fval;
@@ -6793,9 +6793,9 @@ void snowworm_update(GameObject* obj, u8* state)
             s16 a = randomGetRange(-0x8000, 0x7fff);
             f32 angle = (gCrawlerPi * a) / gCrawlerHalfCircleBams;
             obj->anim.localPosX =
-                r * mathSinf(angle) + *(f32*)(*(int*)&obj->anim.placementData + 8);
+                r * mathSinf(angle) + ((ObjPlacement*)obj->anim.placementData)->posX;
             obj->anim.localPosZ =
-                r * mathCosf(angle) + ((GameObject*)obj->anim.placementData)->anim.localPosY;
+                r * mathCosf(angle) + ((ObjPlacement*)obj->anim.placementData)->posZ;
             baddieTurnTowardPoint(obj, (int)state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
                         ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 1, 0);
         }

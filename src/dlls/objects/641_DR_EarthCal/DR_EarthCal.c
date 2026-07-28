@@ -72,11 +72,11 @@ void drearthcal_update(GameObject* obj)
     else
     {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-        if (0 < *(s8*)((int)obj->anim.proximityList + 0x10f))
-            for (i = 0; i < *(s8*)((int)obj->anim.proximityList + 0x10f); i++)
+        if (0 < obj->anim.proximityList->count)
+            for (i = 0; i < obj->anim.proximityList->count; i++)
             {
                 {
-                    int elem = ((int*)(int)obj->anim.proximityList)[i + 0x40];
+                    int elem = (int)obj->anim.proximityList->objects[i];
                     if ((GameObject*)elem == player)
                     {
                         obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;

@@ -401,7 +401,7 @@ void wmwallcrawler_update(GameObject* obj)
                                 d = list[idx]->height - ((GameObject*)ob)->anim.localPosY;
                                 if (d < 0.0f)
                                 {
-                                    d = d * -1.0f;
+                                    d *= -1.0f;
                                 }
                                 if (d < best)
                                 {
@@ -500,7 +500,7 @@ void wmwallcrawler_update(GameObject* obj)
                                         d = list[idx]->height - ((GameObject*)ob)->anim.localPosY;
                                         if (d < 0.0f)
                                         {
-                                            d = d * -1.0f;
+                                            d *= -1.0f;
                                         }
                                         if (d < best)
                                         {

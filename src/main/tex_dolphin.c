@@ -1791,9 +1791,8 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
     int grp;
     int outOff;
 
-    grp = 0;
     outOff = 0;
-    j = grp;
+    j = grp = 0;
     total = 0;
     kindMask = kindMask ? 4 : 8;
     for (; descBytes < end; descBytes += 0x18)

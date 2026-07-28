@@ -147,7 +147,7 @@ typedef struct PushableCollisionProbe {
 #define PUSHABLE_SEQUENCE_MOVEMENT_OFFSET  2
 #define PUSHABLE_SEQUENCE_DEFAULT_USERDATA 2
 #define PUSHABLE_SEQUENCE_KNOCKBACK_RESULT 4
-#define PUSHABLE_SEQUENCE_TARGET_SEQ_ID    0x24
+#define PUSHABLE_SEQUENCE_TARGET_CLASS_ID  0x24
 
 #define PUSHABLE_DIRECTION_NONE  0
 #define PUSHABLE_DIRECTION_NEG_X 1
@@ -613,8 +613,9 @@ u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjAnimUpdateState*
     }
     if ((obj->anim.seqId == PUSHABLE_SEQ_ID_MAGIC_GEM_21E) || (obj->anim.seqId == PUSHABLE_SEQ_ID_MAGIC_GEM_411)) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-        if (('\0' < *(char*)(*(int*)((char*)obj + 0x58) + 0x10f)) &&
-            ((*(short*)(*(int*)(*(int*)((char*)obj + 0x58) + 0x100) + 0x44) == PUSHABLE_SEQUENCE_TARGET_SEQ_ID &&
+        if ((0 < obj->anim.hitboxTransformState->contactObjectCount) &&
+            ((((GameObject*)obj->anim.hitboxTransformState->contactObjects[0])->anim.classId ==
+                  PUSHABLE_SEQUENCE_TARGET_CLASS_ID &&
               (gameBitValue = mainGetBit(PUSHABLE_SEQUENCE_GAME_BIT), gameBitValue == 0)))) {
             mainSetBits(PUSHABLE_SEQUENCE_GAME_BIT, 1);
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
@@ -903,8 +904,8 @@ int pushable_setScale(GameObject* obj, GameObject* target, int active, f32 pushX
         }
     } else {
         int pointIndex;
-        char* transformState = *(char**)((char*)obj + 0x58);
-        f32* modelMtx = (f32*)(transformState + ((*(u8*)(transformState + 0x10c) + 2) << 4) * 4);
+        ObjHitboxTransformState* transformState = obj->anim.hitboxTransformState;
+        f32* modelMtx = (f32*)((char*)transformState + ((transformState->activeMatrixIndex + 2) << 4) * 4);
         pointIndex = 0;
         localPoint = (f32*)state;
         for (; pointIndex < state->pointCount; pointIndex++) {
@@ -1319,8 +1320,8 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
         debugPrintf(sPushPullObjectHitpointOverflow);
     }
     {
-        char* transformState = *(char**)((char*)obj + 0x58);
-        modelMtx = (f32*)(transformState + ((*(u8*)(transformState + 0x10c) + 2) << 4) * 4);
+        ObjHitboxTransformState* transformState = obj->anim.hitboxTransformState;
+        modelMtx = (f32*)((char*)transformState + ((transformState->activeMatrixIndex + 2) << 4) * 4);
     }
     {
         for (i = 0; i < state->pointCount; i++) {

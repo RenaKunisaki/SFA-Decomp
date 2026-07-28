@@ -73,6 +73,8 @@ extern f32 lbl_803DEF4C;
 extern f32 lbl_803DEF90, lbl_803DEF94, lbl_803DEF98, lbl_803DEF9C;
 
 
+char sMemoryCardFileNameString[20] = "Star Fox Adventures";
+
 int cardDeleteFn_8007d99c(void);
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
 void showMemCardError(u8 err);

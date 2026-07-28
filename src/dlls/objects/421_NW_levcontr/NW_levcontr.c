@@ -4,81 +4,68 @@
  *
  * Runs the area's overall progression: a countdown that gates a hint
  * message, the day/night music swap driven by the sun position, a set of
- * latched game-bit -> music/sfx reactions (SCGameBitLatch_Update), the
- * timed-challenge timer (init / count-up / stop with the SnowHorn rescue
- * bits 0x19d/0x19f), and a state machine that walks a table of target
- * objects (nw_levcontrol_advanceSequenceTable) firing their trigger sequences in turn.
+ * latched game-bit reactions, the timed-challenge timer, and a state machine
+ * that walks a table of target objects and fires their trigger sequences.
  */
-#include "dlls/object_descriptor.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/music_api.h"
-#include "main/dll/savegame_load_api.h"
-#include "main/game_timer_control_api.h"
-#include "main/gametext_show_api.h"
-#include "main/sky_api.h"
-#include "main/sky.h"
-#include "sys/objects.h"
-#include "main/render_envfx_api.h"
-#include "main/audio/sfx_trigger_ids.h"
+#include "dlls/objects/421_NW_levcontr.h"
+
 #include "game/objects/object.h"
-#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
-#include "main/obj_list.h"
-#include "main/obj_trigger.h"
-#include "main/mapEvent.h"
-#include "main/model_engine.h"
-#include "main/objseq.h"
-#include "main/sky_interface.h"
-#include "main/gamebits.h"
-#include "main/gamebit_ids.h"
-#include "main/frame_timing.h"
+#include "main/audio/music_api.h"
 #include "main/audio/sfx.h"
-#include "main/dll/NW/dll_01A5_nwlevcontrol.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/SH/dll_01AE_shlevelcontrol.h"
+#include "main/dll/savegame_load_api.h"
+#include "main/frame_timing.h"
+#include "main/game_timer_control_api.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/gametext_show_api.h"
+#include "main/mapEventTypes.h"
+#include "main/model_engine.h"
+#include "main/obj_trigger.h"
+#include "main/objseq.h"
+#include "main/render_envfx_api.h"
+#include "main/sky.h"
+#include "main/sky_interface.h"
+#include "sys/objects.h"
 
-/* obj+0xB8 per-class state block (getExtraSize == 0x14). */
-typedef struct NwLevControlState
-{
-    f32 countdown;   /* 0x00 hint-message countdown */
-    u8 mode;         /* 0x04 state-machine mode */
-    u8 timerMinutes; /* 0x05 challenge timer minutes */
-    u8 pad06[0x08 - 0x06];
-    u32 flags;     /* 0x08 progression flag bits */
-    u8 seqId;      /* 0x0C trigger sequence id */
-    u8 nextMode;   /* 0x0D mode to enter after the timer step */
-    u8 tableIndex; /* 0x0E walk index into the target-object table */
-    u8 pad0F[0x10 - 0x0F];
-    s16 dayNightMusic; /* 0x10 day/night music marker */
-    u8 pad12[0x14 - 0x12];
-} NwLevControlState;
+#define NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT 7
+#define NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT 28
 
-STATIC_ASSERT(sizeof(NwLevControlState) == 0x14);
+#define NW_LEVEL_CONTROL_HINT_TEXT_ID       0x435
+#define NW_LEVEL_CONTROL_HINT_DURATION      300.0f
+#define NW_LEVEL_CONTROL_ENVIRONMENT_EFFECT 0x23C
+#define NW_LEVEL_CONTROL_DAY_NIGHT_MUSIC_ID 0x1A
+#define NW_LEVEL_CONTROL_TIMER_END_MUSIC_ID 0xAF
+#define NW_LEVEL_CONTROL_TRIGGER_ID         0x1EE
+#define NW_LEVEL_CONTROL_TIMER_ID           0x15
+#define NW_LEVEL_CONTROL_SECONDS_PER_MINUTE 60.0f
 
-#define NWLEVCONTROL_OBJFLAG_HIDDEN             0x4000
-#define NWLEVCONTROL_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define NW_LEVEL_CONTROL_FLAG_TIMER_START_PENDING 0x01
+#define NW_LEVEL_CONTROL_FLAG_TIMER_RUNNING       0x02
+#define NW_LEVEL_CONTROL_FLAG_TIMER_COMPLETE      0x04
+#define NW_LEVEL_CONTROL_FLAG_DAY_NIGHT_MUSIC     0x10
 
-/* level-init env effect (index-style; immediate vs deferred by save-load status) */
-#define NWLEVCONTROL_ENVFX_A 0x23c
+typedef struct NwLevelControlDataView {
+    s32 targetObjectIds[NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT];
+    s32 sequenceIds[NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT];
+    s32 nextModes[NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT];
+    s16 skyRampA[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
+    s16 skyRampB[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
+    s16 skyRampC[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
+    s16 skyRampD[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
+} NwLevelControlDataView;
 
-/* SnowHorn Wastes music tracks (Music_Trigger ids). */
-#define NWLEVCONTROL_MUSIC_TRACK     0x1a /* day/night ambient track */
-#define NWLEVCONTROL_MUSIC_TIMER_END 0xaf /* timed-challenge completion track */
+STATIC_ASSERT(sizeof(NwLevelControlDataView) == NW_LEVEL_CONTROL_DATA_SIZE);
+STATIC_ASSERT(offsetof(NwLevelControlDataView, targetObjectIds) == 0x00);
+STATIC_ASSERT(offsetof(NwLevelControlDataView, sequenceIds) == 0x1C);
+STATIC_ASSERT(offsetof(NwLevelControlDataView, nextModes) == 0x38);
+STATIC_ASSERT(offsetof(NwLevelControlDataView, skyRampA) == 0x54);
+STATIC_ASSERT(offsetof(NwLevelControlDataView, skyRampB) == 0x8C);
+STATIC_ASSERT(offsetof(NwLevelControlDataView, skyRampC) == 0xC4);
+STATIC_ASSERT(offsetof(NwLevelControlDataView, skyRampD) == 0xFC);
 
-/* NwLevControlState.mode: SnowHorn Wastes progression state machine.
- * Modes 3..7 are the intermediate table-walk steps (identical handling,
- * driven externally by the target-object trigger sequences) so they stay
- * numeric. */
-enum NwLevControlMode
-{
-    NWLEVCONTROL_MODE_WAIT_START = 0,        /* wait for rescue bit 0x19d, then run seq 0 */
-    NWLEVCONTROL_MODE_INIT_START = 1,        /* resumed-start: preempt+run seq, arm progression */
-    NWLEVCONTROL_MODE_WALK_TABLE = 2,        /* walk target-object table, arm challenge timer */
-    NWLEVCONTROL_MODE_WALK_FINAL = 8,        /* final table check, latch completion flag */
-    NWLEVCONTROL_MODE_WAIT_MENU_LOCK = 9,    /* wait for the menu-lock flag to be set */
-    NWLEVCONTROL_MODE_TIMER_STEP = 10,       /* menu-locked: init/count-up/stop the timer */
-    NWLEVCONTROL_MODE_CLEANUP = 0xb,         /* clear game bit 0xecd */
-    NWLEVCONTROL_MODE_RESCUE_RETRIGGER = 0xc /* post-rescue re-trigger, then cleanup */
-};
-
-u8 lbl_803269F8[308] = {
+u8 gNwLevelControlData[NW_LEVEL_CONTROL_DATA_SIZE] = {
     0,  4,   71, 213, 0, 4,   71, 214, 0, 4,   71, 213, 0, 4,   71, 214, 0, 4,   71, 213, 0, 4,   71, 214, 0, 4,
     71, 213, 0,  0,   0, 2,   0,  0,   0, 3,   0,  0,   0, 4,   0,  0,   0, 5,   0,  0,   0, 6,   0,  0,   0, 7,
     0,  0,   0,  1,   0, 0,   0,  3,   0, 0,   0,  4,   0, 0,   0,  5,   0, 0,   0,  6,   0, 0,   0,  7,   0, 0,
@@ -92,7 +79,7 @@ u8 lbl_803269F8[308] = {
     0,  183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183,
     0,  183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183};
 
-ObjectDescriptor gNW_levcontrolObjDescriptor = {
+ObjectDescriptor gNWLevelControlObjDescriptor = {
     0,
     0,
     0,
@@ -100,42 +87,37 @@ ObjectDescriptor gNW_levcontrolObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorCallback)nw_levcontrol_init,
-    (ObjectDescriptorCallback)nw_levcontrol_update,
+    (ObjectDescriptorCallback)nwLevelControl_init,
+    (ObjectDescriptorCallback)nwLevelControl_update,
     0,
     0,
-    (ObjectDescriptorCallback)nw_levcontrol_free,
+    (ObjectDescriptorCallback)nwLevelControl_free,
     0,
-    nw_levcontrol_getExtraSize,
+    nwLevelControl_getExtraSize,
 };
 
-int nw_levcontrol_advanceSequenceTable(u8* stateBytes)
-{
-    NwLevControlState* state = (NwLevControlState*)stateBytes;
-    s32* table;
+int nwLevelControl_advanceSequenceTable(NwLevelControlState* state) {
+    NwLevelControlDataView* data;
     int obj;
 
-    table = (s32*)lbl_803269F8;
-    obj = (int)ObjList_FindObjectById(table[state->tableIndex]);
-    if (ObjTrigger_IsSetById(obj, 0x1ee) != 0)
-    {
+    data = (NwLevelControlDataView*)gNwLevelControlData;
+    obj = (int)ObjList_FindObjectById(data->targetObjectIds[state->tableIndex]);
+    if (ObjTrigger_IsSetById(obj, NW_LEVEL_CONTROL_TRIGGER_ID) != 0) {
         (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
-        state->mode = NWLEVCONTROL_MODE_WAIT_MENU_LOCK;
-        state->seqId = table[state->tableIndex + 7];
-        state->nextMode = table[state->tableIndex + 0xe];
+        state->mode = NW_LEVEL_CONTROL_MODE_WAIT_PARENT_SLACK;
+        state->sequenceId = data->sequenceIds[state->tableIndex];
+        state->nextMode = data->nextModes[state->tableIndex];
         state->tableIndex++;
-        state->timerMinutes = 0x1e;
+        state->timerMinutes = 30;
         return 1;
     }
 
-    if (state->tableIndex != 0)
-    {
-        obj = (int)ObjList_FindObjectById(table[state->tableIndex - 1]);
-        if (ObjTrigger_IsSetById(obj, 0x1ee) != 0)
-        {
+    if (state->tableIndex != 0) {
+        obj = (int)ObjList_FindObjectById(data->targetObjectIds[state->tableIndex - 1]);
+        if (ObjTrigger_IsSetById(obj, NW_LEVEL_CONTROL_TRIGGER_ID) != 0) {
             (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
-            state->mode = NWLEVCONTROL_MODE_WAIT_MENU_LOCK;
-            state->seqId = table[state->tableIndex + 6];
+            state->mode = NW_LEVEL_CONTROL_MODE_WAIT_PARENT_SLACK;
+            state->sequenceId = data->sequenceIds[state->tableIndex - 1];
             state->timerMinutes = 0;
             return 2;
         }
@@ -144,137 +126,112 @@ int nw_levcontrol_advanceSequenceTable(u8* stateBytes)
     return 0;
 }
 
-int nw_levcontrol_getExtraSize(void)
-{
-    return 0x14;
+int nwLevelControl_getExtraSize(void) {
+    return sizeof(NwLevelControlState);
 }
+
 /* On free, restore the default environment fx (only if this slot's object
  * group is no longer active) and always stop the challenge timer. */
-void nw_levcontrol_free(GameObject* obj)
-{
+void nwLevelControl_free(GameObject* obj) {
     s8 slot = obj->anim.mapEventSlot;
     int groupStatus = (*gMapEventInterface)->getObjGroupStatus((s32)slot, 0);
-    if ((u8)groupStatus == 0)
-    {
+    if ((u8)groupStatus == 0) {
         envFxActFn_800887f8(0);
     }
     gameTimerStop();
 }
 
-void nw_levcontrol_update(int objArg)
-{
-    int obj;
+void nwLevelControl_update(GameObject* obj) {
     GameObject* player;
     u8 status;
-    int sunPos;
+    int sunPosition;
+    int sequenceResult;
     u32 gameBit;
     u32 rescueBit;
     u8 timerRunning;
-    int flags;
+    int stateFlags;
     u32 timerActive;
-    NwLevControlState* state;
+    NwLevelControlState* state;
 
-    obj = objArg;
-    state = (NwLevControlState*)((GameObject*)obj)->extra;
+    state = obj->extra;
     player = Obj_GetPlayerObject();
-    if (state->countdown > 0.0f)
-    {
-        gameTextShow(0x435);
-        state->countdown = state->countdown - timeDelta;
-        if (state->countdown < 0.0f)
-        {
-            state->countdown = 0.0f;
+    if (state->hintCountdown > 0.0f) {
+        gameTextShow(NW_LEVEL_CONTROL_HINT_TEXT_ID);
+        state->hintCountdown = state->hintCountdown - timeDelta;
+        if (state->hintCountdown < 0.0f) {
+            state->hintCountdown = 0.0f;
         }
     }
-    status = (*gMapEventInterface)->getMapAct((int)((GameObject*)obj)->anim.mapEventSlot);
-    if (status != 1)
-    {
-        (*gMapEventInterface)->setMapAct((int)((GameObject*)obj)->anim.mapEventSlot, 1);
+    status = (*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
+    if (status != 1) {
+        (*gMapEventInterface)->setMapAct((int)obj->anim.mapEventSlot, 1);
     }
     status = (*gMapEventInterface)->getMapAct(7);
-    if (status == 1)
-    {
+    if (status == 1) {
         (*gMapEventInterface)->setMapAct(7, 2);
         mainSetBits(0xf22, 1);
         mainSetBits(0xf23, 1);
         mainSetBits(0xf24, 1);
         mainSetBits(0xf25, 1);
     }
-    sunPos = (*gSkyInterface)->getSunPosition(0);
-    if (sunPos != 0)
-    {
-        if (state->dayNightMusic != -1)
-        {
-            state->dayNightMusic = -1;
-            if (((int)state->flags & 0x10) != 0)
-            {
-                Music_Trigger(NWLEVCONTROL_MUSIC_TRACK, 0);
+    sunPosition = (*gSkyInterface)->getSunPosition(0);
+    if (sunPosition != 0) {
+        if (state->dayNightMusicId != -1) {
+            state->dayNightMusicId = -1;
+            if (((int)state->flags & NW_LEVEL_CONTROL_FLAG_DAY_NIGHT_MUSIC) != 0) {
+                Music_Trigger(NW_LEVEL_CONTROL_DAY_NIGHT_MUSIC_ID, 0);
             }
         }
-    }
-    else
-    {
-        if (state->dayNightMusic != NWLEVCONTROL_MUSIC_TRACK)
-        {
-            state->dayNightMusic = NWLEVCONTROL_MUSIC_TRACK;
-            if (((int)state->flags & 0x10) != 0)
-            {
-                Music_Trigger(NWLEVCONTROL_MUSIC_TRACK, 1);
+    } else {
+        if (state->dayNightMusicId != NW_LEVEL_CONTROL_DAY_NIGHT_MUSIC_ID) {
+            state->dayNightMusicId = NW_LEVEL_CONTROL_DAY_NIGHT_MUSIC_ID;
+            if (((int)state->flags & NW_LEVEL_CONTROL_FLAG_DAY_NIGHT_MUSIC) != 0) {
+                Music_Trigger(NW_LEVEL_CONTROL_DAY_NIGHT_MUSIC_ID, 1);
             }
         }
     }
     SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 8, -1, -1, 0x3a0, 0x35);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 0x10, -1, -1, 0x3a1,
-                          (int)state->dayNightMusic);
+    SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 0x10, -1, -1, 0x3a1, (int)state->dayNightMusicId);
     SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 0x20, -1, -1, 0x393, 0x36);
     SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 0x40, -1, -1, 0xcbb, 0xc4);
     timerActive = 0;
     gameBit = mainGetBit(GAMEBIT_SnowHornArtifact19F);
     rescueBit = mainGetBit(GAMEBIT_SnowHornArtifact19D);
-    if (((rescueBit ^ gameBit) != 0) && (timerRunning = gameTimerIsRunning(), timerRunning != 0))
-    {
+    if (((rescueBit ^ gameBit) != 0) && (timerRunning = gameTimerIsRunning(), timerRunning != 0)) {
         timerActive = 1;
     }
     mainSetBits(0xf31, timerActive);
     SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 0x80, -1, -1, 0xf31,
-                          NWLEVCONTROL_MUSIC_TIMER_END);
+                          NW_LEVEL_CONTROL_TIMER_END_MUSIC_ID);
     gameBit = mainGetBit(0x398);
     if ((gameBit != 0) &&
-        (status = (*gMapEventInterface)->getObjGroupStatus((int)((GameObject*)obj)->anim.mapEventSlot, 0x1f),
-         status == 0))
-    {
-        (*gMapEventInterface)->setObjGroupStatus((int)((GameObject*)obj)->anim.mapEventSlot, 0x1f, 1);
+        (status = (*gMapEventInterface)->getObjGroupStatus((int)obj->anim.mapEventSlot, 0x1f), status == 0)) {
+        (*gMapEventInterface)->setObjGroupStatus((int)obj->anim.mapEventSlot, 0x1f, 1);
     }
-    if ((((int)state->flags & 2) != 0) && isGameTimerDisabled() != 0)
-    {
+    if ((((int)state->flags & NW_LEVEL_CONTROL_FLAG_TIMER_RUNNING) != 0) && isGameTimerDisabled() != 0) {
         Sfx_PlayFromObject(0, SFXTRIG_sc_lockon22);
         (*gMapEventInterface)->gotoRestartPoint();
-    }
-    else
-    {
-        switch (state->mode)
-        {
-        case NWLEVCONTROL_MODE_WAIT_START:
+    } else {
+        switch (state->mode) {
+        case NW_LEVEL_CONTROL_MODE_WAIT_START:
             gameBit = mainGetBit(GAMEBIT_SnowHornArtifact19D);
-            if (gameBit != 0)
-            {
-                (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
-                state->mode = NWLEVCONTROL_MODE_WALK_TABLE;
+            if (gameBit != 0) {
+                (*gObjectTriggerInterface)->runSequence(0, obj, -1);
+                state->mode = NW_LEVEL_CONTROL_MODE_WALK_TABLE;
                 mainSetBits(0xecd, 1);
             }
             break;
-        case NWLEVCONTROL_MODE_INIT_START:
-            (*gObjectTriggerInterface)->preempt(obj, 0x64a);
-            (*gObjectTriggerInterface)->runSequence(0, (void*)obj, 0x20);
-            state->mode = NWLEVCONTROL_MODE_WALK_TABLE;
+        case NW_LEVEL_CONTROL_MODE_INIT_START:
+            (*gObjectTriggerInterface)->preempt((int)obj, 0x64a);
+            (*gObjectTriggerInterface)->runSequence(0, obj, 0x20);
+            state->mode = NW_LEVEL_CONTROL_MODE_WALK_TABLE;
             mainSetBits(0xecd, 1);
             break;
-        case NWLEVCONTROL_MODE_WALK_TABLE:
-            obj = nw_levcontrol_advanceSequenceTable((u8*)state);
-            if (obj != 0)
-            {
-                state->timerMinutes = 0x32;
-                state->flags = state->flags | 1;
+        case NW_LEVEL_CONTROL_MODE_WALK_TABLE:
+            sequenceResult = nwLevelControl_advanceSequenceTable(state);
+            if (sequenceResult != 0) {
+                state->timerMinutes = 50;
+                state->flags = state->flags | NW_LEVEL_CONTROL_FLAG_TIMER_START_PENDING;
             }
             break;
         case 3:
@@ -282,103 +239,84 @@ void nw_levcontrol_update(int objArg)
         case 5:
         case 6:
         case 7:
-            nw_levcontrol_advanceSequenceTable((u8*)state);
+            nwLevelControl_advanceSequenceTable(state);
             break;
-        case NWLEVCONTROL_MODE_WALK_FINAL:
-            obj = nw_levcontrol_advanceSequenceTable((u8*)state);
-            if (obj == 1)
-            {
-                state->flags = state->flags | 4;
+        case NW_LEVEL_CONTROL_MODE_WALK_FINAL:
+            sequenceResult = nwLevelControl_advanceSequenceTable(state);
+            if (sequenceResult == 1) {
+                state->flags = state->flags | NW_LEVEL_CONTROL_FLAG_TIMER_COMPLETE;
             }
             break;
-        case NWLEVCONTROL_MODE_WAIT_MENU_LOCK:
-            if (((player)->objectFlags & 0x1000) != 0)
-            {
-                state->mode = NWLEVCONTROL_MODE_TIMER_STEP;
+        case NW_LEVEL_CONTROL_MODE_WAIT_PARENT_SLACK:
+            if (((player)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0) {
+                state->mode = NW_LEVEL_CONTROL_MODE_TIMER_STEP;
             }
             break;
-        case NWLEVCONTROL_MODE_TIMER_STEP:
-            if (((player)->objectFlags & 0x1000) == 0)
-            {
-                flags = state->flags;
-                if ((flags & 1) != 0)
-                {
-                    state->flags = flags & ~1;
-                    state->flags = state->flags | 2;
-                    gameTimerInit(0x15, (u32)state->timerMinutes);
+        case NW_LEVEL_CONTROL_MODE_TIMER_STEP:
+            if (((player)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
+                stateFlags = state->flags;
+                if ((stateFlags & NW_LEVEL_CONTROL_FLAG_TIMER_START_PENDING) != 0) {
+                    state->flags = stateFlags & ~NW_LEVEL_CONTROL_FLAG_TIMER_START_PENDING;
+                    state->flags = state->flags | NW_LEVEL_CONTROL_FLAG_TIMER_RUNNING;
+                    gameTimerInit(NW_LEVEL_CONTROL_TIMER_ID, (u32)state->timerMinutes);
                     timerSetToCountUp();
                     (*gMapEventInterface)->savePoint((int)&(player)->anim.localPosX, (int)(player)->anim.rotX, 0, 0);
-                }
-                else if ((flags & 4) != 0)
-                {
-                    state->flags = flags & ~2;
-                    state->flags = state->flags & ~4;
+                } else if ((stateFlags & NW_LEVEL_CONTROL_FLAG_TIMER_COMPLETE) != 0) {
+                    state->flags = stateFlags & ~NW_LEVEL_CONTROL_FLAG_TIMER_RUNNING;
+                    state->flags = state->flags & ~NW_LEVEL_CONTROL_FLAG_TIMER_COMPLETE;
                     gameTimerStop();
-                    Music_Trigger(NWLEVCONTROL_MUSIC_TIMER_END, 0);
+                    Music_Trigger(NW_LEVEL_CONTROL_TIMER_END_MUSIC_ID, 0);
                     mainSetBits(GAMEBIT_SnowHornArtifact19F, 1);
-                }
-                else
-                {
-                    int extra = (int)(gameTimerGetValue() / 60.0f);
+                } else {
+                    int extra = (int)(gameTimerGetValue() / NW_LEVEL_CONTROL_SECONDS_PER_MINUTE);
                     gameTimerStop();
-                    gameTimerInit(0x15, (u32)state->timerMinutes + extra);
+                    gameTimerInit(NW_LEVEL_CONTROL_TIMER_ID, (u32)state->timerMinutes + extra);
                     timerSetToCountUp();
                 }
-                (*gObjectTriggerInterface)->runSequence(state->seqId, (void*)obj, -1);
+                (*gObjectTriggerInterface)->runSequence(state->sequenceId, obj, -1);
                 state->mode = state->nextMode;
             }
             break;
-        case NWLEVCONTROL_MODE_CLEANUP:
+        case NW_LEVEL_CONTROL_MODE_CLEANUP:
             gameBit = mainGetBit(0xecd);
-            if (gameBit != 0)
-            {
+            if (gameBit != 0) {
                 mainSetBits(0xecd, 0);
             }
             break;
-        case NWLEVCONTROL_MODE_RESCUE_RETRIGGER:
-            (*gObjectTriggerInterface)->preempt(obj, 0x5a);
-            (*gObjectTriggerInterface)->runSequence(1, (void*)obj, 8);
-            state->mode = NWLEVCONTROL_MODE_CLEANUP;
+        case NW_LEVEL_CONTROL_MODE_RESCUE_RETRIGGER:
+            (*gObjectTriggerInterface)->preempt((int)obj, 0x5a);
+            (*gObjectTriggerInterface)->runSequence(1, obj, 8);
+            state->mode = NW_LEVEL_CONTROL_MODE_CLEANUP;
         }
     }
     return;
 }
 
-void nw_levcontrol_init(GameObject* obj)
-{
-    char* base = (char*)lbl_803269F8;
-    NwLevControlState* state = (obj)->extra;
+void nwLevelControl_init(GameObject* obj) {
+    NwLevelControlDataView* data = (NwLevelControlDataView*)gNwLevelControlData;
+    NwLevelControlState* state = obj->extra;
 
     Obj_GetPlayerObject();
-    (obj)->objectFlags = (u16)((obj)->objectFlags |
-                               (NWLEVCONTROL_OBJFLAG_HIDDEN | NWLEVCONTROL_OBJFLAG_HITDETECT_DISABLED));
+    obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
 
-    if (mainGetBit(GAMEBIT_SnowHornArtifact19F) != 0)
-    {
-        state->mode = NWLEVCONTROL_MODE_RESCUE_RETRIGGER;
-    }
-    else if (mainGetBit(GAMEBIT_SnowHornArtifact19D) != 0)
-    {
-        state->mode = NWLEVCONTROL_MODE_INIT_START;
-    }
-    else
-    {
-        state->mode = NWLEVCONTROL_MODE_WAIT_START;
+    if (mainGetBit(GAMEBIT_SnowHornArtifact19F) != 0) {
+        state->mode = NW_LEVEL_CONTROL_MODE_RESCUE_RETRIGGER;
+    } else if (mainGetBit(GAMEBIT_SnowHornArtifact19D) != 0) {
+        state->mode = NW_LEVEL_CONTROL_MODE_INIT_START;
+    } else {
+        state->mode = NW_LEVEL_CONTROL_MODE_WAIT_START;
     }
 
-    state->countdown = 300.0f;
+    state->hintCountdown = NW_LEVEL_CONTROL_HINT_DURATION;
 
-    skySetEnvFxRampTables(base + 0x8c, base + 0x54, base + 0xc4, base + 0xfc);
+    skySetEnvFxRampTables(data->skyRampB, data->skyRampA, data->skyRampC, data->skyRampD);
 
-    if (getSaveGameLoadStatus() != 0)
-    {
+    if (getSaveGameLoadStatus() != 0) {
         envFxActFn_800887f8(0x3f);
-        getEnvfxActImmediately(0, 0, NWLEVCONTROL_ENVFX_A, 0);
-    }
-    else
-    {
+        getEnvfxActImmediately(0, 0, NW_LEVEL_CONTROL_ENVIRONMENT_EFFECT, 0);
+    } else {
         envFxActFn_800887f8(0x1f);
-        getEnvfxAct(0, 0, NWLEVCONTROL_ENVFX_A, 0);
+        getEnvfxAct(0, 0, NW_LEVEL_CONTROL_ENVIRONMENT_EFFECT, 0);
     }
 
     (*gMapEventInterface)->setObjGroupStatus(7, 0, 0);

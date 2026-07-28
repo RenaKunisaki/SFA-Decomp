@@ -148,30 +148,6 @@ f32 lbl_8030EA58[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 f32 lbl_8030EA70[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 f32 lbl_8030EA88[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-char sMemoryCardFileNameString[20] = "Star Fox Adventures";
-
-int cardDeleteFn_8007d99c(void);
-void cardGetMessage(u32* buttons, u32* texts, u32* count);
-void showMemCardError(u8 err);
-
-void* jumptable_8030EACC[14] = {
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x130), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x13C), (void*)((u8*)cardDeleteFn_8007d99c + 0x158),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x118), (void*)((u8*)cardDeleteFn_8007d99c + 0x10C),
-    (void*)((u8*)cardDeleteFn_8007d99c + 0x158), (void*)((u8*)cardDeleteFn_8007d99c + 0x148)};
-void* jumptable_8030EB04[14] = {
-    (void*)((u8*)cardGetMessage + 0x50),  (void*)((u8*)cardGetMessage + 0x64),  (void*)((u8*)cardGetMessage + 0x94),
-    (void*)((u8*)cardGetMessage + 0xC4),  (void*)((u8*)cardGetMessage + 0xF4),  (void*)((u8*)cardGetMessage + 0x124),
-    (void*)((u8*)cardGetMessage + 0x168), (void*)((u8*)cardGetMessage + 0x1AC), (void*)((u8*)cardGetMessage + 0x1DC),
-    (void*)((u8*)cardGetMessage + 0x1E8), (void*)((u8*)cardGetMessage + 0x228), (void*)((u8*)cardGetMessage + 0x258),
-    (void*)((u8*)cardGetMessage + 0x258), (void*)((u8*)cardGetMessage + 0x288)};
-void* jumptable_8030EB3C[7] = {(void*)((u8*)showMemCardError + 0x2C8), (void*)((u8*)showMemCardError + 0x2D4),
-                               (void*)((u8*)showMemCardError + 0x2E8), (void*)((u8*)showMemCardError + 0x2FC),
-                               (void*)((u8*)showMemCardError + 0x318), (void*)((u8*)showMemCardError + 0x33C),
-                               (void*)((u8*)showMemCardError + 0x36C)};
 typedef struct StageCountTable
 {
     u8 count[7];

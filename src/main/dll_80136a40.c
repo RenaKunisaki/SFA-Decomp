@@ -533,7 +533,7 @@ static inline void debugDrawLogRect(void)
         }
         y1 = y + 2;
         y0 = y0 * (sc = gDebugScaleX + gDebugScaleBiasX);
-        y1 = y1 * sc;
+        y1 *= sc;
         x0 = x0 * (sc = gDebugScaleY + gDebugScaleBiasY);
         x2 = x2 * sc;
         col.r = gDebugTextColorR;

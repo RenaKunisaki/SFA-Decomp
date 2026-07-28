@@ -215,6 +215,9 @@
 #include "dlls/objects/418_NW_tricky.h"
 #include "dlls/objects/419.h"
 #include "dlls/objects/420.h"
+#include "dlls/objects/421_NW_levcontr.h"
+#include "dlls/objects/422_SH_tricky.h"
+#include "dlls/objects/423.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -330,8 +333,7 @@ extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor,
     gDrLightBeaObjDescriptor, gDrMusicContObjDescriptor, gDrShackleObjDescriptor, gDrakorDThornBushObjDescriptor,
     gDrakorEnergyObjDescriptor;
 extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor;
-extern ResourceDescriptor gEarthWalkerObjDescriptor, gEdibleMushroomObjDescriptor, gEnemyMushroomObjDescriptor,
-    gExplodePlanObjDescriptor;
+extern ResourceDescriptor gEarthWalkerObjDescriptor, gEnemyMushroomObjDescriptor, gExplodePlanObjDescriptor;
 extern ResourceDescriptor gExplosionObjDescriptor, gFireFlyObjDescriptor, gFireObjDescriptor;
 extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
 extern ResourceDescriptor gGmMazeWellObjDescriptor;
@@ -344,8 +346,7 @@ extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObj
 extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
     gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
-extern ResourceDescriptor gNW_levcontrolObjDescriptor, gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor,
-    gPointLightObjDescriptor;
+extern ResourceDescriptor gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
 extern ResourceDescriptor gRingObjDescriptor, gSB_CageKyteObjDescriptor, gSB_CannonBallObjDescriptor,
     gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
@@ -358,8 +359,8 @@ extern ResourceDescriptor gSB_ShipHeadObjDescriptor, gSB_ShipMastObjDescriptor, 
 extern ResourceDescriptor gSC_totemstrengthObjDescriptor, gSH_BeaconObjDescriptor, gSH_EmptyTumbleWObjDescriptor,
     gSH_LevelControlObjDescriptor, gSH_queenearthwalkerObjDescriptor, gSH_staffHazeObjDescriptor,
     gSH_staffObjDescriptor, gSH_thorntailObjDescriptor;
-extern ResourceDescriptor gSH_trickyObjDescriptor, gSPDrapeObjDescriptor, gSPScarabObjDescriptor,
-    gSPitembeamObjDescriptor, gSeqPointObjDescriptor;
+extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
+    gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
     gShopKeeperObjDescriptor, gShopObjDescriptor;
 extern ResourceDescriptor gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
@@ -1473,9 +1474,9 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gNWTrickyObjDescriptor,
     (ResourceDescriptor*)&gDll419ObjDescriptor,
     (ResourceDescriptor*)&gNW_iceObjDescriptor,
-    &gNW_levcontrolObjDescriptor,
-    &gSH_trickyObjDescriptor,
-    &gEdibleMushroomObjDescriptor,
+    (ResourceDescriptor*)&gNWLevelControlObjDescriptor,
+    (ResourceDescriptor*)&gSHTrickyObjDescriptor,
+    (ResourceDescriptor*)&gEdibleMushroomObjDescriptor,
     &gEnemyMushroomObjDescriptor,
     &gBombPlantObjDescriptor,
     &gBombPlantSporeObjDescriptor,
