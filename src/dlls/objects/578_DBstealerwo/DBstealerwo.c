@@ -2235,7 +2235,7 @@ void dbstealerworm_free(GameObject* obj)
     if (obj->childObjs[0] != NULL)
     {
         Obj_FreeObject(obj->childObjs[0]);
-        *(int*)&obj->childObjs[0] = 0;
+        obj->childObjs[0] = NULL;
     }
     (*gBaddieControlInterface)->releaseState(obj, sub, 3);
 }

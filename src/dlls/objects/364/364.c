@@ -112,7 +112,7 @@ int imSnowClaw_sequenceCallback(
         if (obj->childObjs[0] != NULL)
         {
             Obj_FreeObject((GameObject*)obj->childObjs[0]);
-            *(int*)&obj->childObjs[0] = 0;
+            obj->childObjs[0] = NULL;
             obj->childCount = 0;
         }
         if (Obj_IsLoadingLocked())
@@ -121,8 +121,8 @@ int imSnowClaw_sequenceCallback(
 
             if (dropObjectIndex > 0)
             {
-                *(int*)&obj->childObjs[0] =
-                    (int)Obj_SetupObject(
+                obj->childObjs[0] =
+                    Obj_SetupObject(
                         Obj_AllocObjectSetup(
                             IM_SNOW_CLAW_CHILD_SETUP_SIZE,
                             dropObjectTable.objectIds[dropObjectIndex - 1]),
@@ -276,7 +276,7 @@ void imSnowClaw_update(GameObject* obj)
         if (obj->childObjs[0] != NULL)
         {
             Obj_FreeObject((GameObject*)obj->childObjs[0]);
-            *(int*)&obj->childObjs[0] = 0;
+            obj->childObjs[0] = NULL;
             obj->childCount = 0;
         }
         if (Obj_IsLoadingLocked())
@@ -285,8 +285,8 @@ void imSnowClaw_update(GameObject* obj)
 
             if (dropObjectIndex > 0)
             {
-                *(int*)&obj->childObjs[0] =
-                    (int)Obj_SetupObject(
+                obj->childObjs[0] =
+                    Obj_SetupObject(
                         Obj_AllocObjectSetup(
                             IM_SNOW_CLAW_CHILD_SETUP_SIZE,
                             dropObjectTable.objectIds[dropObjectIndex - 1]),
