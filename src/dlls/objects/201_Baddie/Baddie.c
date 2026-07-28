@@ -210,7 +210,7 @@ static const u16 lbl_803E2568[1] = { 0xB };
 
 void baddie_updateEngagementState(GameObject* obj, EnemyState* sub);
 void baddieTurnTowardTarget(GameObject* node, EnemyState* sub);
-void baddie_decodePlayerAttackFlags(EnemyState* state, u32 flags, f32 f, u16 val);
+void baddie_decodePlayerAttackFlags(EnemyState* state, u32 flags, f32 f, u16 hitStunFrames);
 void Tricky_findNearbyFloorHeights(GameObject* obj, int state, f32* nearestFloorY, f32* nearestSpecialY);
 typedef struct
 {
@@ -396,7 +396,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
     int hitArg;
     u32 hitCount;
     u32 hitEffects;
-    u16 impactSfx;
+    u16 hitStun;
 
     player = (int)Obj_GetPlayerObject();
     colors = gTrickyFrozenFxColors;
@@ -432,8 +432,8 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
         {
             ((EnemyState*)state)->freezeRecoverTimer = 0.0f;
         }
-        fn_802972B4((GameObject*)(player), &hitEffects, &fxA, &fxB, &fxC, &impactSfx);
-        baddie_decodePlayerAttackFlags((EnemyState*)state, hitEffects, fxA, impactSfx);
+        fn_802972B4((GameObject*)(player), &hitEffects, &fxA, &fxB, &fxC, &hitStun);
+        baddie_decodePlayerAttackFlags((EnemyState*)state, hitEffects, fxA, hitStun);
         if (hit != 0)
         {
             if (fromHit)
@@ -669,7 +669,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
     }
 }
 
-void baddie_decodePlayerAttackFlags(EnemyState* state, u32 flags, f32 f, u16 val)
+void baddie_decodePlayerAttackFlags(EnemyState* state, u32 flags, f32 f, u16 hitStunFrames)
 {
     state->flags2F1 = 0;
     if ((flags & 0x2) != 0)
@@ -716,7 +716,7 @@ void baddie_decodePlayerAttackFlags(EnemyState* state, u32 flags, f32 f, u16 val
     {
         state->spawnBits = 3;
     }
-    state->impactSfxId = val;
+    state->hitStunFrames = hitStunFrames;
 }
 
 int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAltMode, u32 mode)
@@ -1106,7 +1106,7 @@ void Tricky_applyFloorResponse(GameObject* obj, int state)
     {
         ObjPath_GetPointWorldPositionArray(obj, 2, 2, points);
         objAudioFn_8006edcc(obj, ((EnemyState*)state)->animEventMask, 7, points, (void*)(state + 4),
-                            ((EnemyState*)state)->unk310, 1.0f);
+                            ((EnemyState*)state)->pathSpeed, 1.0f);
     }
 }
 
@@ -2915,7 +2915,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
         ((EnemyState*)state)->flags2E8 = 0;
         state[0x2f1] = 0;
         state[0x2f2] = 0;
-        ((EnemyState*)state)->impactSfxId = 0;
+        ((EnemyState*)state)->hitStunFrames = 0;
         state[0x2f5] = 0;
         fz = 0.0f;
         ((EnemyState*)state)->gravity = fz;
@@ -2923,7 +2923,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
         ((EnemyState*)state)->animPlaySpeed = fz;
         ((EnemyState*)state)->particleScale = fz;
         state[0x323] = 0;
-        ((EnemyState*)state)->unk310 = fz;
+        ((EnemyState*)state)->pathSpeed = fz;
         ((EnemyState*)state)->animEventMask = 0;
         state[0x33a] = 0;
         state[0x33b] = 0;

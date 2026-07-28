@@ -4494,22 +4494,24 @@ void mutatedEbaInit(u32 unused, int state)
     return;
 }
 
+/* The crawler/snowworm view of DLL 0xC9's 0x370 extra block (EnemyState in
+ * main/dll/dll_00C9_enemy.h); 0x324-0x33f is per-family scratch. */
 typedef struct FCVars
 {
     u8 pad000[0x2a0];
-    u16 moveTableIndex;
+    u16 turnOctant;
     u8 pad2a2[0x2a4 - 0x2a2];
-    u16 projectileTimer;
+    u16 targetDist;
     u8 pad2a6[0x2ec - 0x2a6];
-    u16 hitCountScalar;
+    u16 hitStunFrames;
     u8 pad2ee[0x2f1 - 0x2ee];
     u8 hitConfigFlags;
     u8 pad2f2[0x2f8 - 0x2f2];
-    u16 moveEventMask;
+    u16 animEventMask;
     u8 pad2fa[0x310 - 0x2fa];
     f32 pathSpeed;
     u8 pad314[0x323 - 0x314];
-    u8 moveStartFlags;
+    u8 rootMotionFlags;
     f32 engineTimer;
     f32 emergeTimer;
     f32 distToCurve;
@@ -4524,13 +4526,13 @@ typedef struct FCVars
     void* linkedObj;
 } FCVars;
 
-STATIC_ASSERT(offsetof(FCVars, moveTableIndex) == 0x2a0);
-STATIC_ASSERT(offsetof(FCVars, projectileTimer) == 0x2a4);
-STATIC_ASSERT(offsetof(FCVars, hitCountScalar) == 0x2ec);
+STATIC_ASSERT(offsetof(FCVars, turnOctant) == 0x2a0);
+STATIC_ASSERT(offsetof(FCVars, targetDist) == 0x2a4);
+STATIC_ASSERT(offsetof(FCVars, hitStunFrames) == 0x2ec);
 STATIC_ASSERT(offsetof(FCVars, hitConfigFlags) == 0x2f1);
-STATIC_ASSERT(offsetof(FCVars, moveEventMask) == 0x2f8);
+STATIC_ASSERT(offsetof(FCVars, animEventMask) == 0x2f8);
 STATIC_ASSERT(offsetof(FCVars, pathSpeed) == 0x310);
-STATIC_ASSERT(offsetof(FCVars, moveStartFlags) == 0x323);
+STATIC_ASSERT(offsetof(FCVars, rootMotionFlags) == 0x323);
 STATIC_ASSERT(offsetof(FCVars, engineTimer) == 0x324);
 STATIC_ASSERT(offsetof(FCVars, emergeTimer) == 0x328);
 STATIC_ASSERT(offsetof(FCVars, distToCurve) == 0x32c);
@@ -5214,7 +5216,7 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
         child = (GameObject*)((int)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, 0));
         if ((u32)child != 0)
         {
-            f32 dur = 60.0f * ((f32)((FCVars*)state)->projectileTimer / ((BaddieState*)state)->unk2A8);
+            f32 dur = 60.0f * ((f32)((FCVars*)state)->targetDist / ((BaddieState*)state)->unk2A8);
             child->anim.velocityX = (((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX -
                                                     ((ObjPlacement*)setup)->posX) /
                                                    dur;
@@ -5256,7 +5258,7 @@ void crawlerPlayMoveEventFx(GameObject* obj, u8* state)
 
     for (i = 0; i <= 12; i++)
     {
-        if ((((FCVars*)state)->moveEventMask & (1 << i)) != 0)
+        if ((((FCVars*)state)->animEventMask & (1 << i)) != 0)
         {
             sub = &entry[i];
             if (sub->sfxId != 0)
@@ -5445,7 +5447,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         v = ((BaddieState*)state)->userData2;
         if (v == 0)
         {
-            ((FCVars*)state)->emergeTimer = 6.0f * (f32)((FCVars*)state)->hitCountScalar;
+            ((FCVars*)state)->emergeTimer = 6.0f * (f32)((FCVars*)state)->hitStunFrames;
             ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
             if ((obj)->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
             {
@@ -5473,7 +5475,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         }
         if (v == 1)
         {
-            ((FCVars*)state)->emergeTimer = 2.0f * (f32)((FCVars*)state)->hitCountScalar;
+            ((FCVars*)state)->emergeTimer = 2.0f * (f32)((FCVars*)state)->hitStunFrames;
             if ((obj)->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
             {
                 if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
@@ -5711,22 +5713,22 @@ void crawler_updateC(GameObject* obj, u8* state)
                             int j = ((BaddieState*)state)->userData2;
                             if (v > gCrawlerSpeedThresholds.speeds[j][0])
                             {
-                                ((FCVars*)state)->moveStartFlags = 1;
+                                ((FCVars*)state)->rootMotionFlags = 1;
                                 ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 0x2c), 0.0f, 0);
                             }
                             else if (v > gCrawlerSpeedThresholds.speeds[j][1])
                             {
-                                ((FCVars*)state)->moveStartFlags = 1;
+                                ((FCVars*)state)->rootMotionFlags = 1;
                                 ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 0x20), 0.0f, 0);
                             }
                             else if (v > gCrawlerSpeedThresholds.speeds[j][2])
                             {
-                                ((FCVars*)state)->moveStartFlags = 1;
+                                ((FCVars*)state)->rootMotionFlags = 1;
                                 ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 0x14), 0.0f, 0);
                             }
                             else
                             {
-                                ((FCVars*)state)->moveStartFlags = 1;
+                                ((FCVars*)state)->rootMotionFlags = 1;
                                 *(f32*)(state + 0x308) = 0.01f;
                                 ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 8), 0.0f, 0);
                                 ((FCVars*)state)->pathSpeed = 0.0f;
@@ -5740,7 +5742,7 @@ void crawler_updateC(GameObject* obj, u8* state)
                     }
                 }
             }
-            if ((((FCVars*)state)->moveStartFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
+            if ((((FCVars*)state)->rootMotionFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
             {
                 baddieTurnTowardPoint(obj, (int)state, base->posX, base->posZ, 0xf, 0);
             }
@@ -5843,7 +5845,7 @@ void crawler_updateB(GameObject* obj, u8* state)
                     if (oct < 3 || oct > 4)
                     {
                         u8 mv;
-                        i = ((FCVars*)state)->moveTableIndex;
+                        i = ((FCVars*)state)->turnOctant;
                         mv = tC[i].moveId;
                         if (mv == 0)
                         {
@@ -5898,7 +5900,7 @@ void crawler_updateB(GameObject* obj, u8* state)
                      (q = &t4[i2 = ((FCVars*)state)->moveChainIndex])->mask) != 0)
                 {
                     u8 mv;
-                    i = ((FCVars*)state)->moveTableIndex;
+                    i = ((FCVars*)state)->turnOctant;
                     mv = tC[i].moveId;
                     if (mv == 0)
                     {
@@ -5912,7 +5914,7 @@ void crawler_updateB(GameObject* obj, u8* state)
                 else
                 {
                     u8 mv;
-                    i = ((FCVars*)state)->moveTableIndex;
+                    i = ((FCVars*)state)->turnOctant;
                     mv = tC[i].moveId;
                     if (mv == 0)
                     {
@@ -5960,7 +5962,7 @@ void crawler_updateB(GameObject* obj, u8* state)
         }
     }
 
-    if ((((FCVars*)state)->moveStartFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
+    if ((((FCVars*)state)->rootMotionFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
     {
         baddieTurnTowardPoint(obj, (int)state,
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
@@ -6041,10 +6043,10 @@ void crawler_update(GameObject* obj, u8* state)
         }
         else
         {
-            i = ((FCVars*)state)->moveTableIndex;
+            i = ((FCVars*)state)->turnOctant;
             if (t7[i].moveId == 0)
             {
-                if (((FCVars*)state)->projectileTimer >= 0x50)
+                if (((FCVars*)state)->targetDist >= 0x50)
                 {
                     ((BaddieState*)state)->userData1 = 0;
                 }
@@ -6092,7 +6094,7 @@ void crawler_update(GameObject* obj, u8* state)
         p += 0xc;
     }
 
-    if ((((FCVars*)state)->moveStartFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
+    if ((((FCVars*)state)->rootMotionFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
     {
         baddieTurnTowardPoint(obj, (int)state,
                     ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
@@ -6582,7 +6584,7 @@ void snowworm_updateWhileFrozen(int obj, u8* st, int p3, int cmd, int p5, int su
         ((BaddieState*)st)->reactionFlags |= 0x20;
         return;
     }
-    if (((FCVars*)st)->moveTableIndex > 3)
+    if (((FCVars*)st)->turnOctant > 3)
     {
         baddieSetMove((GameObject*)obj, (int)st, 6, 0.5f, 0, 0);
     }
@@ -6616,20 +6618,20 @@ void crawler_playReactionEffects(GameObject* obj, int* st)
     switch (obj->anim.currentMove)
     {
     case 2:
-        if (((FCVars*)st)->moveEventMask != 0)
+        if (((FCVars*)st)->animEventMask != 0)
         {
             Sfx_PlayFromObjectLimited((u32)obj, SFXTRIG_baddie_blooplaugh3, 2);
         }
         flag = 1;
         break;
     case 3:
-        if (((FCVars*)st)->moveEventMask != 0)
+        if (((FCVars*)st)->animEventMask != 0)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_haga_death);
         }
         break;
     case 4:
-        if (((FCVars*)st)->moveEventMask != 0)
+        if (((FCVars*)st)->animEventMask != 0)
         {
             if (obj->anim.currentMoveProgress < 0.15f)
             {
@@ -6642,26 +6644,26 @@ void crawler_playReactionEffects(GameObject* obj, int* st)
         }
         break;
     case 5:
-        if (((FCVars*)st)->moveEventMask != 0)
+        if (((FCVars*)st)->animEventMask != 0)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_eggsnatch);
         }
         break;
     case 6:
-        if (((FCVars*)st)->moveEventMask != 0)
+        if (((FCVars*)st)->animEventMask != 0)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_eggsnatch);
         }
         break;
     case 7:
-        if (((FCVars*)st)->moveEventMask != 0)
+        if (((FCVars*)st)->animEventMask != 0)
         {
             Sfx_PlayFromObjectLimited((u32)obj, SFXTRIG_baddie_eggsnatch_movelp, 2);
         }
         flag = 1;
         break;
     case 9:
-        if (((FCVars*)st)->moveEventMask != 0)
+        if (((FCVars*)st)->animEventMask != 0)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_blooplaugh2);
         }
@@ -6721,7 +6723,7 @@ void snowworm_update(GameObject* obj, u8* state)
         {
             ((BaddieState*)state)->userData1 = gSnowwormSeqIndexReset[((FCVars*)state)->turnDelta];
         }
-        if (((FCVars*)state)->moveTableIndex < 4)
+        if (((FCVars*)state)->turnOctant < 4)
         {
             i = ((BaddieState*)state)->userData1 * 0xc;
             baddieSetMove(obj, (int)state, (tbl + i)[8], *(f32*)((int)tbl + i), 0, 0);

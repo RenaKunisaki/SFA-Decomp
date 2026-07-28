@@ -49,7 +49,7 @@ typedef struct EnemyState {
     u32 prevControlFlags; /* controlFlags snapshot taken at the top of enemy_update; (cur & bit) && !(prev & bit) = bit raised this frame */
     u32 flags2E4;
     u32 flags2E8;
-    u16 impactSfxId;
+    u16 hitStunFrames; /* hit-reaction duration base handed over by the player attack descriptor (always 0x78); the crawler seeds its emerge timer with 2x/6x it */
     u8 unk2EE[0x2EF - 0x2EE];
     u8 actionId; /* current action selector (0..5) */
     u8 prevActionId; /* previous frame's actionId */
@@ -68,7 +68,7 @@ typedef struct EnemyState {
     f32 drag; /* per-second velocity damping base: velocity *= powfBitEstimate(drag, dt) */
     f32 animPlaySpeed; /* play speed handed to ObjAnim_AdvanceCurrentMove */
     f32 particleScale;
-    f32 unk310;
+    f32 pathSpeed; /* rom-curve advance step (fed to Curve_AdvanceAlongPath, floored at 0.25) */
     f32 moveSpeedScale0; /* animPlaySpeed = 1 / (60 * scale) for moveId0 */
     f32 moveSpeedScale1; /* paired with moveId1 */
     f32 moveSpeedScale2; /* paired with moveId2 */
