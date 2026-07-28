@@ -250,13 +250,11 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
             GXSetVtxDesc(next++, GX_DIRECT);
         }
         {
-            u32 t;
             int i = 0;
-            t = p5;
             for (; i < ((ModelFileHeader*)hdr)->texMtxCount; i++)
             {
                 u8 use;
-                if (t == 4 && i == 0)
+                if (p5 == 4 && i == 0)
                 {
                     int b;
                     int a;
