@@ -141,9 +141,9 @@ void DR_CageWith_hitDetect(GameObject* obj)
             spawned->color[0] = 2;
             spawned->color[1] = 1;
             spawned->color[1] = (u8)(spawned->color[1] | (placement->flags & 0x18));
-            ((GameObject*)spawned)->anim.rootMotionScale = (obj)->anim.localPosX;
-            ((GameObject*)spawned)->anim.localPosX = (obj)->anim.localPosY;
-            ((GameObject*)spawned)->anim.localPosY = (obj)->anim.localPosZ;
+            spawned->posX = (obj)->anim.localPosX;
+            spawned->posY = (obj)->anim.localPosY;
+            spawned->posZ = (obj)->anim.localPosZ;
             spawned = (ObjPlacement*)Obj_SetupObject(spawned, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
             ((GameObject*)spawned)->anim.flags |= OBJANIM_FLAG_HIDDEN;
             ((GameObject*)spawned)->userData1 = 1;
