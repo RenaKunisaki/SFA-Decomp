@@ -3263,6 +3263,16 @@ int isRomListLoading(void)
 
 
 s32 gObjTableFileRequestFlags;
+s16 gForceNextLoadSync;
+u8 gLoadFilesInitDone;
+void** gDvdFileInfoPool;
+int gPendingDvdReadCount;
+u32 gAssetLoadCompletedFlags;
+volatile int gAssetLoadInFlightFlags;
+int gModelsArchiveLoadCount;
+s16 gDefragDelayFrames;
+u32 gRomListLoadInFlight;
+u32 gForceLoadImmediately;
 
 u32 loadTableFiles(void)
 {
