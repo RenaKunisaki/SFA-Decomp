@@ -202,21 +202,28 @@ def text_fn_resid(ao, at, fo, ft):
     not how much is actually wrong.  Matching by symbol first isolates each
     defect to the function that owns it.  A genuine size difference still counts
     (as the length delta), because it is still a real defect that has to be fixed
-    before the unit can link clean.
+    before the unit can link clean.  Bytes of a retail function our object does
+    not define at all are also returned separately, and printed as `<miss N>`:
+    that is missing CONTENT (typically a `gap_` region dtk attributes to this
+    unit but no source provides), a different -- and usually not
+    source-attackable -- work class from a byte-level codegen defect.  render.c
+    is 4876 of its 6711 that way.
     """
     so_ = fn_spans(fo, len(ao))
     st_ = fn_spans(ft, len(at))
-    nb = 0
+    nb = miss = 0
     for nm, (s, e) in st_.items():
         b = at[s:e]
         if nm not in so_:
-            nb += len(b) if any(b) else 0
+            n = len(b) if any(b) else 0
+            nb += n
+            miss += n
             continue
         s2, e2 = so_[nm]
         a = ao[s2:e2]
         n = min(len(a), len(b))
         nb += sum(1 for i in range(n) if a[i] != b[i]) + abs(len(a) - len(b))
-    return nb
+    return nb, miss
 
 
 def canon(rl, sec, remap, fnsym=None, offkey=None):
@@ -336,14 +343,14 @@ def screen(ours, tgt):
             nb += sum(1 for i in range(n) if a[i] != b[i])
         elif a != b:
             nb = sum(1 for x, y in zip(a, b) if x != y)
-        na = nb
+        na, miss = nb, 0
         if sec == ".text":
-            nb = text_fn_resid(do.get(".text", b""), b, fo, ft)
+            nb, miss = text_fn_resid(do.get(".text", b""), b, fo, ft)
         nr = len(set(canon(ro.get(sec, []), sec, remap, lo, ko if sec == ".text" else None))
                  ^ set(canon(rt.get(sec, []), sec, lambda x: x, lt,
                              kt if sec == ".text" else None)))
         if nb or nr or na:
-            per[sec] = (nb, nr, len(a), len(b), na)
+            per[sec] = (nb, nr, len(a), len(b), na, miss)
             tot_b += nb
             tot_r += nr
             tot_abs += na
@@ -433,6 +440,7 @@ def cmd_rank(args):
             continue
         parts = " ".join(
             f"{k}:{v[0]}b" + (f"[abs {v[4]}]" if v[4] != v[0] else "")
+            + (f"<miss {v[5]}>" if v[5] else "")
             + (f"/{v[1]}r" if v[1] else "")
             + (f"(sz {v[2]}!={v[3]})" if v[2] != v[3] else "")
             for k, v in per.items())
