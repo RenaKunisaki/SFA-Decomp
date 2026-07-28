@@ -271,11 +271,11 @@ This section is fully resolved in this codebase, and turns out to be the model's
   matching the wiki's "field 0xDC points to a list of offsets" exactly. Its companion count field,
   `morphTargetCount`, has an explicit `STATIC_ASSERT(offsetof(ModelFileHeader, morphTargetCount) ==
   0xF9)` — matching the wiki's "field 0xF9 is the number of entries" exactly.
-- `ObjModel_RelocateModelData` (`src/main/model.c:391`) relocates each `morphTargetPtrs[i]` from a
+- `ObjModel_RelocateModelData` (`src/main/model.c:2586`) relocates each `morphTargetPtrs[i]` from a
   file offset to a real pointer — matching "a list of **offsets** to vertex adjustment data".
 - The per-entry u16 format is fully implemented (as hand-written PowerPC assembly in the retail
   game — see below) in `modelBoneTransforms_next`/`modelApplyBoneTransform`
-  (`src/main/model.c:1211`/`1236`), called from `ObjModel_AdvanceBlendChannels`'s use of
+  (`src/main/model.c:168`/`115`), called from `ObjModel_AdvanceBlendChannels`'s use of
   `modelApplyBoneTransforms` (`include/main/model.h`) to blend up to two morph targets
   (`ObjModelBlendChannel.morphTargetA`/`morphTargetB`) into the live vertex buffer:
   ```c
@@ -283,18 +283,34 @@ This section is fully resolved in this codebase, and turns out to be the model's
   #define MODEL_BONEXFORM_HAS_Y 0x4000
   #define MODEL_BONEXFORM_HAS_Z 0x8000
   ```
-  confirming the wiki's "top 3 bits" guess exactly (bits 13/14/15 of a u16). The asm masks the
-  remaining bits with `0x1fff` (13 bits) and uses the result directly as a **vertex index**,
+  confirming the wiki's "top 3 bits" guess exactly (bits 13/14/15 of a u16). The retail code masks
+  the remaining bits with `0x1fff` (13 bits) and uses the result directly as a **vertex index**,
   resolving the wiki's "remaining bits may be an offset or vertex number?" question in favor of
   vertex number. The terminator value the wiki observed (`0x08AA`) is consistent: its top 3 bits
   are clear (`0x08AA < 0x2000`), so it reads as "vertex 0x8AA, no deltas follow" — the loop in
   `modelApplyBoneTransform` naturally stops advancing that stream once its index is beyond the
   vertex range being processed.
-  - `modelBoneTransforms_next` is written as a full `asm void` function (not the project's usual
-    banned inline `asm{}`) with a comment explaining why: it uses a custom, non-EABI calling
-    convention (cursor in `r20`, results in `r10`/`r12`/`r15`, only `r21`/`r22` clobbered) that no
-    C signature can express — an explicit, already-documented exception to this project's "no
-    asm" rule, not something introduced by this pass.
+
+#### Why the morph-target pair does not byte-match
+
+Inline assembly is banned in game code (`src/main/`, `src/track/`) with **no exceptions**. The
+paired-single carve-out in `CLAUDE.md` applies only inside `src/dolphin/` SDK code. Both functions
+are therefore written in plain C, and both are `NonMatching`: `modelApplyBoneTransform` scores
+3.17% and `modelBoneTransforms_next` 10.83% of `main/model.c`'s `.text`.
+
+The reason is a custom, non-EABI calling convention that retail uses between the two, which no C
+signature can express:
+
+- `modelBoneTransforms_next` takes its stream cursor in `r20` and updates it there in place;
+  it returns the three deltas in `r10`/`r12`/`r15`, uses `r21`/`r22` as scratch, has no stack
+  frame, does not save `lr`, and clobbers non-volatile registers it never restores.
+- `modelApplyBoneTransform` is written to that convention: it stages the cursor with
+  `mr r20,r24` / `bl` / `mr r24,r20` around each call and consumes `r10`/`r12`/`r15` directly,
+  keeping all six deltas and both stream cursors in non-volatiles across the loop.
+
+In C, the deltas must travel through pointer out-parameters, which forces stack homes and a
+`lwz`/`stw` per component, and the callee must obey the EABI. The arithmetic and control flow of
+the C version are a faithful reconstruction; the divergence is entirely register/ABI shape.
 
 ### Fox Animation IDs / move IDs
 
