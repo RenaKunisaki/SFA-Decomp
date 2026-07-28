@@ -135,8 +135,6 @@ void partfx_freeEffectsBySequence(s16 a, int b);
 #define MODGFX_ZERO 0.0f
 #define MODGFX_ONE  1.0f
 
-const f32 lbl_803DF42C = 0.0f;
-
 s16 dll_0B_func04(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16* d, int textureAssetId,
                   void* textureResource);
 
