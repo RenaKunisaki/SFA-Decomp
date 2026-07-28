@@ -1039,7 +1039,6 @@ void Tricky_applyFloorResponse(GameObject* obj, int state)
     f32 nearestSpecialY;
     f32 points[6];
     u32 flags;
-    f32 dy;
 
     ((EnemyState*)state)->controlFlags &= 0xf7efffff;
     flags = ((EnemyState*)state)->flags2E4;

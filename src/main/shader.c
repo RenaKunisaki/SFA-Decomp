@@ -2371,7 +2371,6 @@ void doPendingMapLoads(void)
                             for (layer = 0; layer < 5; layer++)
                             {
                                 char* g3;
-                                s8 cnt2;
                                 mapFn_80057d24(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, rectA, rectB, rectC, rectD,
                                                layer, 0, slot);
                                 g3 = *aBase;

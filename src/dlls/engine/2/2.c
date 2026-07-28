@@ -5977,7 +5977,6 @@ int ObjSeq_update(GameObject* obj, f32 t)
     f32 fval;
     f32 prevX;
     f32 prevZ;
-    ObjAnimSequenceConditionCallback cb;
 
     (void)t;
 

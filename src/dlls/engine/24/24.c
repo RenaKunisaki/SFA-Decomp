@@ -90,7 +90,6 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
     void** grp;
     void** grp2;
     int slot;
-    s32 idx;
     f32 k2002;
     f32 one;
     f32 zero;

@@ -592,7 +592,6 @@ void* textureLoad(int texId, u8 flagIn)
     int mipLevel;
     int frameSize;
     int n;
-    int* bankPtr;
     int sizeOut;
     int frameOut;
     int disabled;

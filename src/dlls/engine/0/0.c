@@ -1374,7 +1374,6 @@ static inline void gameUiFreeHudAnims(GameObject** anims)
 
 void gameUiResetMenuState(void)
 {
-    int objectIndex;
     cMenuEnabled = 0;
     curGameText = 0xffff;
     lbl_803DD8D0 = 0;
@@ -3206,7 +3205,6 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
     u8* bPhraseIndex;
     GameTextDef* textObj;
     char slots[68];
-    u32 glyph;
     int wid;
     u8 bi;
     f32 scaleT;

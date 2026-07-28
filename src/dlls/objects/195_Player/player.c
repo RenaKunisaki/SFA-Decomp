@@ -17887,7 +17887,6 @@ void playerDoHitDetection(int obj)
     f32 dt = timeDelta;
     f32 spd;
     int sub;
-    int desc;
     HitDesc* hd;
     u32 fl;
     f32 x;

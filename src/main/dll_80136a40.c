@@ -751,7 +751,6 @@ void* errorThreadFunc(void* unused)
     u32* sp;
     int depth;
     int hold;
-    int x;
     int h, h2;
     int b;
     ErrStackFrame* frame;

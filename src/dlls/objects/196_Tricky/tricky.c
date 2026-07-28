@@ -3008,7 +3008,6 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         if ((state->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
         {
             f32 dx;
-            f32 dz;
             TrickyJumpArc* arc = &state->jumpArc;
             ObjfsaRomCurveDef* landNode = state->route.nodeA0;
             dx = landNode->x - obj->anim.worldPosX;
@@ -6146,10 +6145,6 @@ void trickyDigTunnel(u8* obj, u8* state)
     u8* pos;
     u8* ptr;
     int gidx;
-    int k;
-    int off;
-    int idx;
-    int v;
     int inWater;
     u16 id;
     f32 vz, vx, spd, z, vxx;

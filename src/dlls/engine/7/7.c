@@ -1590,7 +1590,6 @@ void newclouds_run(void)
     int off;
     u8* p;
     f32* m;
-    f32 wrap;
     f32 mag;
     f32 t;
     f32 rot;

@@ -780,7 +780,6 @@ void drakorhoverpad_updateMain(GameObject* obj)
     int evOut;
     Vec diff;
     f32 curvePos[3];
-    int curveArg;
     f32 phase;
     f32 wobbleY;
     f32 limit;

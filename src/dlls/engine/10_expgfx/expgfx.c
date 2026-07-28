@@ -3621,7 +3621,6 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     int slotIndex;
     int alpha;
     ObjAnimComponent* sourceObject;
-    u32 renderFlags;
     u32 stateBitsValue;
     Camera* cameraSlot;
     f32 halfLifeFrames;
@@ -4322,7 +4321,6 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
     s16 texS1 = 0;
     s16 texS0 = 0;
     f32 scaleVal;
-    u8* poolSourceModesByte;
     u8 sourceModeValue;
 
     ExpgfxQuadVertex* quadVertices;
@@ -4521,7 +4519,6 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
             f32 dx;
             f32 dz;
             f32 distSq;
-            f32 inv;
             playerObj = (GameObject*)Obj_GetPlayerObject();
             slot->renderFlags = slot->renderFlags ^ (EXPGFX_RENDER_AIM_AT_ACTOR + 0LL);
             if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_AIM_VELOCITY_TOWARD_PLAYER) != 0)

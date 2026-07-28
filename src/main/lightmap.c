@@ -551,7 +551,6 @@ void renderObjects(s8* opacity)
     u32 flags;
     int idx;
     u8* obj;
-    u8* state;
     int* p;
     int slot;
     int* objects;

@@ -324,7 +324,6 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
     Texture** texs2;
     f32 m;
     f32 sc3;
-    int a;
     u16 boxIndex;
     int idx;
     int yb;

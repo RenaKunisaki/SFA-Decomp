@@ -1228,8 +1228,6 @@ void walkgroupFindExitPointFn_800dc398(void)
     int pi;
     u8 gi;
     u8 groupA;
-    u8 normalIdx;
-    u8 edge;
     int pairId;
     u16 pairGid;
     u32 checksum;
@@ -1246,8 +1244,6 @@ void walkgroupFindExitPointFn_800dc398(void)
     f32 dxn;
     f32 dzn;
     f32 len;
-    f32 exitFx;
-    f32 exitFz;
     f32 x0;
     f32 z0;
     ObjfsaPatch* pB;
