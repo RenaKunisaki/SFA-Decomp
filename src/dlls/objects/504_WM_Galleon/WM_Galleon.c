@@ -33,7 +33,7 @@ u32 lbl_803DC0F0 = 3;
 #define WM_GALLEON_MAP_EVENT_GROUP_COUNT    5
 
 void* lbl_803DDC74;
-extern u32* lbl_803DCA94;
+extern u32* gDll12Interface;
 s8 gWMGalleonShowScreen;
 
 ObjectDescriptor gWM_GalleonObjDescriptor = {
@@ -86,7 +86,7 @@ int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             getLActions(obj, obj, 0x80, 0, 0, 0);
             break;
         case WM_GALLEON_COMMAND_SCREEN_FADE:
-            (*(void (**)(int, int, int))((u8*)*lbl_803DCA94 + 0x14))(0, 0x1e, 0x50);
+            (*(void (**)(int, int, int))((u8*)*gDll12Interface + 0x14))(0, 0x1e, 0x50);
             break;
         case WM_GALLEON_COMMAND_SHOW_MODEL:
             gWMGalleonShowScreen = 1;

@@ -59,7 +59,7 @@ int gAskProgressiveScanNoX = 0x16A;
 #include "string.h"
 
 f32 gGameLoopResetFadeOutTimer;
-void* lbl_803DCAFC;
+void* gAskProgressiveScanFlag;
 int gGameLoopPendingMapId;
 int gGameLoopPendingMapDataFileId;
 u8 gGameLoopPendingMusicId;
@@ -85,7 +85,7 @@ TitleMenuItemInterface* gTitleMenuItemInterface;
 LinkInterface* gTitleMenuLinkInterface;
 RomCurveInterface** gRomCurveInterface;
 WaterfxInterface** gWaterfxInterface;
-void* lbl_803DCA94;
+void* gDll12Interface;
 ScreensInterface* gScreensInterface;
 PlayerControlInterface** gPlayerInterface;
 EffectInterface** gPartfxInterface;
