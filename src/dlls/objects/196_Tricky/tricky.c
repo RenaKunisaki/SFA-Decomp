@@ -1218,13 +1218,9 @@ int trickyMove(GameObject* obj, f32* targetPos)
 
     if (moveSpeed < 0.05f)
     {
-        f32 stepX;
-        f32 stepZ;
-        stepX = 0.05f * state->dirX;
-        prospectivePos[0] = stepX * timeDelta + obj->anim.worldPosX;
+        prospectivePos[0] = (0.05f * state->dirX) * timeDelta + obj->anim.worldPosX;
         prospectivePos[1] = obj->anim.worldPosY;
-        stepZ = 0.05f * state->dirZ;
-        prospectivePos[2] = stepZ * timeDelta + obj->anim.worldPosZ;
+        prospectivePos[2] = (0.05f * state->dirZ) * timeDelta + obj->anim.worldPosZ;
     }
     else
     {
@@ -2217,14 +2213,16 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     trickyDebugPrint(strs + 0x2e4, getPatchGroup(target, state->activeWalkGroup));
     if ((state->stateFlags & 0x400) != 0)
     {
-        i = 0;
+        int slotIdx;
+
+        slotIdx = 0;
         pref = (int)state;
         qref = (int)state;
-        for (; i < 4; pref += 2, qref += 12, i++)
+        for (; slotIdx < 4; pref += 2, qref += 12, slotIdx++)
         {
             if (*(s16*)(pref + 152) != 0)
             {
-                trickyDebugPrint(strs + 0x308, i, *(f32*)(qref + 160), *(f32*)(qref + 164),
+                trickyDebugPrint(strs + 0x308, slotIdx, *(f32*)(qref + 160), *(f32*)(qref + 164),
                                  *(f32*)(qref + 168));
             }
         }
