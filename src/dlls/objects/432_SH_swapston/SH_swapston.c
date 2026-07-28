@@ -500,7 +500,7 @@ void warpstone_hitDetect(GameObject* obj) {
         } else {
             Sfx_PlayFromObject((int)obj, SFXTRIG_swapstone_move_short_2bc);
         }
-        objAudioFn_800393f8(obj, (ObjSoundState*)((u8*)state + offsetof(WarpStoneState, soundState)), 171, -1280, -1,
+        objSoundStartTimed(obj, (ObjSoundState*)((u8*)state + offsetof(WarpStoneState, soundState)), 171, -1280, -1,
                             0);
     }
 }
@@ -546,11 +546,11 @@ void warpstone_update(int obj) {
     advanceResult = SClantern_advanceAnimEvents(obj, 0.0055555557f);
     if (((GameObject*)obj)->anim.currentMove == 0) {
         if (randomChanceOneIn(100) != 0) {
-            objAudioFn_800393f8((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0xab,
+            objSoundStartTimed((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0xab,
                                 -0x100, -1, 0);
         }
         if (randomChanceOneIn(500) != 0) {
-            objAudioFn_800393f8((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0x417,
+            objSoundStartTimed((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0x417,
                                 -0x500, -1, 0);
         }
     }
@@ -618,7 +618,7 @@ void warpstone_update(int obj) {
         }
     }
 
-    objAnimFn_80038f38((GameObject*)obj, (char*)(state + offsetof(WarpStoneState, soundState)));
+    objSoundUpdateMouth((GameObject*)obj, (char*)(state + offsetof(WarpStoneState, soundState)));
     characterDoEyeAnims((GameObject*)obj, (void*)(state + offsetof(WarpStoneState, eyeAnimState)));
     if (mainGetBit(GAMEBIT_SH_SawWarpStoneIntro) == 0) {
         ((WarpStoneState*)state)->activated = 0;

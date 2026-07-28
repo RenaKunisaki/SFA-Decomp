@@ -7,7 +7,7 @@
 typedef struct ModelFileHeader ModelFileHeader;
 typedef struct ObjModel ObjModel;
 
-int* seqFn_800394a0(void);
+int* objGetLookAtJointKeys(void);
 void objPosFn_80039510(GameObject* obj, int key, f32* outPosition);
 void characterClampJointVecs(GameObject* obj, int* keys, int count, int lo, int hi);
 s16* objModelGetVecFn_800395d8(GameObject* obj, int target);

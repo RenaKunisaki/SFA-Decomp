@@ -775,9 +775,9 @@ int cfguardian_updateMain(GameObject* obj) {
     }
     cfguardian_playEventSfx((u32)obj, (ObjAnimEventList*)scratch.eventBuffer, gCfGuardianSfxIds);
     if (randomChanceOneIn(CFGUARDIAN_CHATTER_CHANCE_DENOMINATOR) != 0) {
-        objAudioFn_800393f8(obj, &state->soundState, CFGUARDIAN_SFX_CHATTER, CFGUARDIAN_CHATTER_PITCH, -1, 0);
+        objSoundStartTimed(obj, &state->soundState, CFGUARDIAN_SFX_CHATTER, CFGUARDIAN_CHATTER_PITCH, -1, 0);
     }
-    objAnimFn_80038f38(obj, (char*)&state->soundState);
+    objSoundUpdateMouth(obj, (char*)&state->soundState);
     characterDoEyeAnims(obj, state->eyeBlock);
     if (state->questState != mainGetBit(GAMEBIT_CFGUARDIAN_QUEST_STATE)) {
         mainSetBits(GAMEBIT_CFGUARDIAN_QUEST_STATE, state->questState);

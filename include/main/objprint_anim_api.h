@@ -4,7 +4,7 @@
 #include "global.h"
 #include "game/objects/object.h"
 
-void objAnimFn_80038f38(GameObject* obj, char* state);
+void objSoundUpdateMouth(GameObject* obj, char* state);
 void characterHeadLookCalm(GameObject* obj, s16* state, f32 value);
 void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val);
 

@@ -989,7 +989,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     }
     if (flag != 0)
     {
-        ptr = seqFn_800394a0();
+        ptr = objGetLookAtJointKeys();
         zero = 0;
         for (q = 1, ptr = ptr + 1; q < 9; ptr++, q++)
         {
@@ -1289,7 +1289,7 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
         }
         if (flag != 0)
         {
-            ptr = seqFn_800394a0();
+            ptr = objGetLookAtJointKeys();
             zero = 0;
             for (q = 1, ptr = ptr + 1; q < 9; ptr++, q++)
             {
@@ -1325,7 +1325,7 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
     }
     if (((u32)sub->flags44 >> 6 & 1) != 0)
     {
-        p2 = seqFn_800394a0();
+        p2 = objGetLookAtJointKeys();
         zero = 0;
         for (i2 = 1, p2 = p2 + 1; i2 < 9; p2++, i2++)
         {
@@ -1361,7 +1361,7 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
             fv = 0x500;
         }
         sb = fv;
-        p3 = seqFn_800394a0();
+        p3 = objGetLookAtJointKeys();
         i3 = 1;
         p3 = p3 + 1;
         for (; i3 < 9; i3++)
@@ -1488,7 +1488,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
         }
         if (flag != 0)
         {
-            ptr = seqFn_800394a0();
+            ptr = objGetLookAtJointKeys();
             zero = 0;
             for (q = 1, ptr = ptr + 1; q < 9; ptr++, q++)
             {
@@ -1524,7 +1524,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
     }
     if (((u32)sub->flags44 >> 6 & 1) != 0)
     {
-        p2 = seqFn_800394a0();
+        p2 = objGetLookAtJointKeys();
         zero = 0;
         for (i2 = 1, p2 = p2 + 1; i2 < 9; p2++, i2++)
         {
@@ -1560,7 +1560,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
             fv = 0x500;
         }
         sb = fv;
-        p3 = seqFn_800394a0();
+        p3 = objGetLookAtJointKeys();
         i3 = 1;
         p3 = p3 + 1;
         for (; i3 < 9; i3++)

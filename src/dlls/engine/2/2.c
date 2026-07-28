@@ -5695,7 +5695,7 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
                 if ((((ObjSeqState*)seq)->flags & 0x400) != 0)
                 {
                     slots = ((SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->modelSlot;
-                    modelIds = seqFn_800394a0();
+                    modelIds = objGetLookAtJointKeys();
                     if (slots == 0)
                     {
                         slots = 9;

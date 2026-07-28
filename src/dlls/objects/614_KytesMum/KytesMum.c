@@ -366,7 +366,7 @@ void kytesmum_update(GameObject* obj)
     if ((s16)(runtime->idleSfxTimer -= framesThisStep) < 0)
     {
         runtime->idleSfxTimer = randomGetRange(0x32, 0x1f4);
-        objSoundFn_800392f0(obj, &runtime->modelSoundState,
+        objSoundStartFromDef(obj, &runtime->modelSoundState,
                             &runtime->idleSfxTable[randomGetRange(0, 3)], 0);
     }
     if (ObjAnim_AdvanceCurrentMove((int)obj, runtime->animSpeed, timeDelta,
@@ -378,7 +378,7 @@ void kytesmum_update(GameObject* obj)
     }
     kytesmum_playAnimationEventSfx((u32)obj, runtime->animEvents, runtime->eventSfxTable);
     characterDoEyeAnims(obj, runtime->eyeAnimState);
-    objAnimFn_80038f38(obj, (char*)&runtime->modelSoundState);
+    objSoundUpdateMouth(obj, (char*)&runtime->modelSoundState);
     nearest = ObjGroup_FindNearestObject(KYTESMUM_TARGET_OBJGROUP, obj, &nearDist);
     if ((void*)nearest != NULL)
     {

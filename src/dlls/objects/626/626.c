@@ -184,7 +184,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
         *(u8*)&(obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
         if (randomChanceOneIn(0x64) != 0)
         {
-            objSoundFn_800392f0(obj, &state->modelSoundState,
+            objSoundStartFromDef(obj, &state->modelSoundState,
                                 (ObjSoundDef*)(lbl_803DC308 + randomGetRange(0, 0) * 6), 1);
         }
         if ((s8)stateArg->baddie.moveDone != 0)
@@ -802,7 +802,7 @@ int hightop_stateHandler00(GameObject* obj)
 int HighTop_seqFn(GameObject* obj)
 {
     HighTopRuntime* runtime;
-    seqFn_800394a0();
+    objGetLookAtJointKeys();
     runtime = (obj)->extra;
     runtime->flags &= ~1;
     runtime->flagsC49.b4 = 0;
@@ -1043,7 +1043,7 @@ void HighTop_hitDetect(GameObject* obj)
         return;
     }
     Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&l8, 20.0f);
-    objSoundFn_800392f0(obj, &runtime->modelSoundState,
+    objSoundStartFromDef(obj, &runtime->modelSoundState,
                         (ObjSoundDef*)(lbl_803DC308 + randomGetRange(0, 0) * 6), 1);
     st = runtime->baddie.controlMode;
     if (st != 3)
@@ -1131,7 +1131,7 @@ void HighTop_update(GameObject* obj)
                                 &gHighTopDefaultStateHandler);
     hightop_playMovementSfx((GameObject*)self, runtime, runtime);
     characterDoEyeAnims((GameObject*)self, state + 0x38c);
-    objAnimFn_80038f38((GameObject*)(self), (char*)(state + 0x3bc));
+    objSoundUpdateMouth((GameObject*)(self), (char*)(state + 0x3bc));
     dll_2E_updateLookAt((GameObject*)self, (MoveLibState*)(state + 0x3ec));
     if (ObjTrigger_IsSet(self) != 0)
     {
@@ -1152,7 +1152,7 @@ void HighTop_update(GameObject* obj)
     }
     if (randomGetRange(0, 0x64) == 0)
     {
-        objSoundFn_800392f0((GameObject*)self, &((HighTopRuntime*)state)->modelSoundState,
+        objSoundStartFromDef((GameObject*)self, &((HighTopRuntime*)state)->modelSoundState,
                             (ObjSoundDef*)&lbl_8032AAB0[randomGetRange(0, 2) * 6], 0);
     }
     if (runtime->flagsC49.b7 != 0)

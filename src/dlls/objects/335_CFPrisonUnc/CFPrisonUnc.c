@@ -120,7 +120,7 @@ void cfPrisonUncle_update(GameObject* obj) {
         characterAimHeadAtTarget(obj, player, ((CfPrisonUncleState*)obj->extra)->headTrackState,
                                  CFPRISONUNCLE_HEAD_AIM_LIMIT, 0, 3);
         if (randomGetRange(0, CFPRISONUNCLE_MUTTER_RANDOM_RANGE) == 0) {
-            objAudioFn_80039270((int)obj, &state->soundState, SFXbaddie_kooshy_call);
+            objSoundStart((int)obj, &state->soundState, SFXbaddie_kooshy_call);
         }
         if (ObjTrigger_IsSet((int)obj) != 0) {
             s16* modelVector;
@@ -130,7 +130,7 @@ void cfPrisonUncle_update(GameObject* obj) {
             *modelVector = CFPRISONUNCLE_HEAD_VECTOR_ANGLE;
             (*gObjectTriggerInterface)->runSequence(CFPRISONUNCLE_SEQUENCE_DIALOGUE, obj, -1);
         } else {
-            objAnimFn_80038f38(obj, (char*)&state->soundState);
+            objSoundUpdateMouth(obj, (char*)&state->soundState);
             ObjAnim_AdvanceCurrentMove((int)obj, CFPRISONUNCLE_ANIM_STEP, (f32)(u32)framesThisStep, 0);
         }
     } else {

@@ -165,7 +165,7 @@ int babyCloudRunner_tryCapture(void* object) {
         obj->userData1 = 0;
         return 1;
     }
-    objAudioFn_800393f8(obj, &state->soundState, BABYCLOUDRUNNER_CAPTURE_SFX_ID, BABYCLOUDRUNNER_CAPTURE_SFX_PITCH, -1,
+    objSoundStartTimed(obj, &state->soundState, BABYCLOUDRUNNER_CAPTURE_SFX_ID, BABYCLOUDRUNNER_CAPTURE_SFX_PITCH, -1,
                         1);
     Sfx_PlayFromObject((int)obj, SFXTRIG_wp_ice_freeze);
     return 0;
@@ -369,9 +369,9 @@ void babyCloudRunner_update(GameObject* obj) {
         } else {
             if (randomChanceOneIn(BABYCLOUDRUNNER_MUTTER_SFX_PERIOD) != 0) {
                 u16 sfxId = state->mutterSfxTable[randomGetRange(0, BABYCLOUDRUNNER_MUTTER_SFX_COUNT - 1)];
-                objAudioFn_80039270((int)obj, &state->soundState, sfxId);
+                objSoundStart((int)obj, &state->soundState, sfxId);
             }
-            objAnimFn_80038f38(obj, (char*)&state->soundState);
+            objSoundUpdateMouth(obj, (char*)&state->soundState);
             if (state->runnerState == BABYCLOUDRUNNER_STATE_FOLLOW_CURVE ||
                 state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
                 f32 speed = state->curveSpeed;

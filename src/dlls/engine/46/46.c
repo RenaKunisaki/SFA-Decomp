@@ -357,7 +357,7 @@ void moveLibSeqFreeCallback(GameObject* obj)
     MoveLibState* state;
     int* types;
 
-    types = seqFn_800394a0();
+    types = objGetLookAtJointKeys();
     state = obj->extra;
 
     (*gCameraInterface)->setTarget(0);
@@ -397,7 +397,7 @@ int dll_2E_updateSequenceTurn(GameObject* obj, ObjSeqState* seq, MoveLibState* s
     {
         if (s->phase >= MOVELIB_PHASE_RUN && s->phase <= MOVELIB_PHASE_FINISH)
         {
-            void* types = seqFn_800394a0();
+            void* types = objGetLookAtJointKeys();
             switch (s->phase)
             {
             case MOVELIB_PHASE_SETUP:
@@ -453,7 +453,7 @@ void dll_2E_setTargetFromPathPoint(GameObject* obj, MoveLibState* s, int point)
         f32 cA;
         f32 cB;
         f32 cC;
-        characterDecayJointVecs(obj, seqFn_800394a0(), s->pointCount);
+        characterDecayJointVecs(obj, objGetLookAtJointKeys(), s->pointCount);
         ObjPath_GetPointWorldPosition(obj, point, &v.x0, &v.y0, &v.z0, 0);
         ObjPath_GetPointWorldPosition(obj, point + 1, &v.x1, &v.y1, &v.z1, 0);
         cA = 3.0f;
@@ -498,8 +498,8 @@ void dll_2E_initState(GameObject* obj, MoveLibState* s, s16 a, s16 b, int count)
     s->startOffsetY = zero;
     s->startOffsetZ = zero;
     s->reattackDelayBase = -1;
-    characterDecayJointVecs(obj, seqFn_800394a0(), count);
-    objFn_8003acfc(obj, seqFn_800394a0(), count, s->animChannels);
+    characterDecayJointVecs(obj, objGetLookAtJointKeys(), count);
+    objFn_8003acfc(obj, objGetLookAtJointKeys(), count, s->animChannels);
     objJointTracksSetAngles(s->animChannels, s->pointCount, 0, 0);
     dll_2E_setMoveTables(s, gMoveLibDefaultMoveData, gMoveLibDefaultMoveData, s->pointCount);
 }
@@ -534,7 +534,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
     sv.range = 1000.0f;
     targetYaw = 30.0f;
     yawDelta = 0;
-    seqHandle = (int)seqFn_800394a0();
+    seqHandle = (int)objGetLookAtJointKeys();
     (void)Obj_GetPlayerObject();
     if (s->needsReinit == 0)
     {
@@ -550,7 +550,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
             }
             else
             {
-                characterDecayJointVecs((GameObject*)obj, seqFn_800394a0(), (u32)s->pointCount);
+                characterDecayJointVecs((GameObject*)obj, objGetLookAtJointKeys(), (u32)s->pointCount);
             }
         }
         else if (bit1 == 0 && s->phase == MOVELIB_PHASE_HELD)
@@ -570,7 +570,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
             }
             else
             {
-                characterDecayJointVecs((GameObject*)obj, seqFn_800394a0(), (u32)s->pointCount);
+                characterDecayJointVecs((GameObject*)obj, objGetLookAtJointKeys(), (u32)s->pointCount);
             }
         }
         else
@@ -716,7 +716,7 @@ int moveLibTurnToFaceTarget(GameObject* obj, GameObject* targetObj, int* turning
     void* secondary;
     s16 turnDelta;
 
-    jointKeys = seqFn_800394a0();
+    jointKeys = objGetLookAtJointKeys();
     if (targetObj->anim.hitReactState != 0)
     {
         ObjHitsPriorityState* hitShape = (ObjHitsPriorityState*)targetObj->anim.hitReactState;

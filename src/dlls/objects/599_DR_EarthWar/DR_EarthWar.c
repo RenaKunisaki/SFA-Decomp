@@ -310,7 +310,7 @@ void DR_EarthWarrior_func23(GameObject* obj, int mode)
     {
     case 1:
         inner->sub.health += 4;
-        objAudioFn_800393f8(obj, (ObjSoundState*)((char*)inner + 0x3bc), 0x291, 0x1000, -1, 1);
+        objSoundStartTimed(obj, (ObjSoundState*)((char*)inner + 0x3bc), 0x291, 0x1000, -1, 1);
         inner->sub.unk8EC = 4.32f;
         *(f32*)((char*)lbl_8033527C + 0x24) = inner->sub.unk8EC;
         break;
@@ -1143,7 +1143,7 @@ void DR_EarthWarrior_hitDetect(GameObject* obj)
                     return;
                 }
                 {
-                    objAudioFn_800393f8(obj, (ObjSoundState*)((char*)inner + 0x3bc), 0x28e, 0x1000, -1, 1);
+                    objSoundStartTimed(obj, (ObjSoundState*)((char*)inner + 0x3bc), 0x28e, 0x1000, -1, 1);
                     {
                         s16 d = obj->anim.rotX - (u16)((GameObject*)hitObj)->anim.rotX;
                         if (d > 0x8000)
@@ -1310,7 +1310,7 @@ void DR_EarthWarrior_update(GameObject* obj)
         DR_EarthWarrior_runController(obj, framesThisStep, -1);
     }
     characterDoEyeAnims(obj, (char*)inner + 0x38c);
-    objAnimFn_80038f38(obj, (char*)inner + 0x3bc);
+    objSoundUpdateMouth(obj, (char*)inner + 0x3bc);
     dll_2E_updateLookAt(obj, (MoveLibState*)((char*)inner + 0x3ec));
     if (*(u8*)&(obj)->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED)
     {

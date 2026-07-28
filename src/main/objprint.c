@@ -33,7 +33,7 @@ f32 gObjMouthBlendFrames = 20.0f;
 
 extern f32 lbl_803DE9A4;
 
-void objAnimFn_80038f38(GameObject* obj, char* state)
+void objSoundUpdateMouth(GameObject* obj, char* state)
 {
     s16* found;
     int timer;
@@ -136,7 +136,7 @@ void objKfAnimStop(ObjKfAnimState* state)
     state->frame = -1;
 }
 
-void objAudioFn_80039270(u32 obj, void* p, u16 sfxId)
+void objSoundStart(u32 obj, void* p, u16 sfxId)
 {
     if (Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0)
     {
@@ -149,7 +149,7 @@ void objAudioFn_80039270(u32 obj, void* p, u16 sfxId)
 }
 
 
-void objSoundFn_800392f0(GameObject* obj, ObjSoundState* state, ObjSoundDef* soundDef, u8 force)
+void objSoundStartFromDef(GameObject* obj, ObjSoundState* state, ObjSoundDef* soundDef, u8 force)
 {
     u16 sfx;
     s16 pitch;
@@ -190,14 +190,14 @@ void objSoundFn_800392f0(GameObject* obj, ObjSoundState* state, ObjSoundDef* sou
 }
 
 
-void objAudioFn_800393f8(GameObject* obj, ObjSoundState* state, u16 sfx, int pitch, int volume, u8 force)
+void objSoundStartTimed(GameObject* obj, ObjSoundState* state, u16 sfx, int pitch, int duration, u8 force)
 {
     if (force == 0 && Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) != 0)
     {
         return;
     }
     Sfx_PlayFromObjectChannel((u32)obj, 0x10, sfx);
-    state->timer = volume;
+    state->timer = duration;
     state->pitch = (s16)(-pitch);
     state->active = 1;
     state->blendWeight = 1.0f;
@@ -205,7 +205,7 @@ void objAudioFn_800393f8(GameObject* obj, ObjSoundState* state, u16 sfx, int pit
 
 int gObjLookAtJointKeys[10] = {0, 0xb, 0xc, 0xd, 0xe, 0xf, 0x10, 0x11, 0x12, 0x13};
 
-int* seqFn_800394a0(void)
+int* objGetLookAtJointKeys(void)
 {
     return gObjLookAtJointKeys;
 }

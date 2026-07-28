@@ -892,7 +892,7 @@ void bossdrakor_update(GameObject* obj)
         drakorState->shakeAmount = t;
         shakeScaleZ = drakorState->shakeScaleZ;
         shake = drakorState->shakeAmount;
-        tblRes = seqFn_800394a0();
+        tblRes = objGetLookAtJointKeys();
         shakeX = (s16)(gBossDrakorDegToAngle * shake);
         shakeY = (s16)(gBossDrakorDegToAngle * (shake * shakeScaleZ));
         i = 0;
@@ -912,9 +912,9 @@ void bossdrakor_update(GameObject* obj)
     }
     if (randomChanceOneIn(200) != 0 && ((BossDrakorState*)state)->flags198.b40)
     {
-    objAudioFn_80039270((u32)obj, &drakorState->soundState, 0x2ff);
+    objSoundStart((u32)obj, &drakorState->soundState, 0x2ff);
     }
-    objAnimFn_80038f38(obj, (char*)&drakorState->soundState);
+    objSoundUpdateMouth(obj, (char*)&drakorState->soundState);
     if (((BossDrakorState*)state)->flags198.b04)
     {
         player = Obj_GetPlayerObject();
