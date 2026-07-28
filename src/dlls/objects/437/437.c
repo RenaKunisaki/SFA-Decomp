@@ -1209,7 +1209,7 @@ ObjectDescriptor gDll437ObjDescriptor = {
     (ObjectDescriptorCallback)dll437_render,
     (ObjectDescriptorCallback)dll437_free,
     (ObjectDescriptorCallback)dll437_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll437_getExtraSize,
+    dll437_getExtraSize,
 };
 
 Dll437StateHandler gDll437StateHandlers[DLL437_STATE_HANDLER_COUNT];

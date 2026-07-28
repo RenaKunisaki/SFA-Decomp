@@ -92,5 +92,5 @@ ObjectDescriptor gNW_iceObjDescriptor = {
     (ObjectDescriptorCallback)NW_ice_render,
     (ObjectDescriptorCallback)NW_ice_free,
     0,
-    (ObjectDescriptorExtraSizeCallback)NW_ice_getExtraSize,
+    NW_ice_getExtraSize,
 };

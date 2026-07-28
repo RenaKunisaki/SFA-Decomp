@@ -178,5 +178,5 @@ ObjectDescriptor gDIM2IcicleObjDescriptor = {
     (ObjectDescriptorCallback)dim2icicle_render,
     (ObjectDescriptorCallback)dim2icicle_free,
     (ObjectDescriptorCallback)dim2icicle_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dim2icicle_getExtraSize,
+    dim2icicle_getExtraSize,
 };

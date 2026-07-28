@@ -85,7 +85,7 @@ ObjectDescriptor gSH_queenearthwalkerObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorExtraSizeCallback)sh_queenearthwalker_getExtraSize,
+    sh_queenearthwalker_getExtraSize,
 };
 
 /*

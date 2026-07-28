@@ -92,5 +92,5 @@ ObjectDescriptor gSHTrickyObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorExtraSizeCallback)shTricky_getExtraSize,
+    shTricky_getExtraSize,
 };

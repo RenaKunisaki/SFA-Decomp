@@ -72,5 +72,5 @@ ObjectDescriptor gIMSpaceRingObjDescriptor = {
     (ObjectDescriptorCallback)imSpaceRing_render,
     (ObjectDescriptorCallback)imSpaceRing_free,
     (ObjectDescriptorCallback)imSpaceRing_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)imSpaceRing_getExtraSize,
+    imSpaceRing_getExtraSize,
 };

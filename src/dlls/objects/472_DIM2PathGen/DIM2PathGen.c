@@ -197,7 +197,7 @@ ObjectDescriptor11WithPadding gDIM2PathGeneratorObjDescriptor = {
         (ObjectDescriptorCallback)DIM2PathGenerator_render,
         (ObjectDescriptorCallback)DIM2PathGenerator_free,
         (ObjectDescriptorCallback)DIM2PathGenerator_getObjectTypeId,
-        (ObjectDescriptorExtraSizeCallback)DIM2PathGenerator_getExtraSize,
+        DIM2PathGenerator_getExtraSize,
         (ObjectDescriptorCallback)DIM2PathGenerator_getCurveVals,
     },
     0,

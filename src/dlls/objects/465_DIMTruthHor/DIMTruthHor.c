@@ -149,5 +149,5 @@ ObjectDescriptor gDIMTruthHornIceObjDescriptor = {
     0,
     0,
     0,
-    (ObjectDescriptorExtraSizeCallback)dimtruthhornice_getExtraSize,
+    dimtruthhornice_getExtraSize,
 };

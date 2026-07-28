@@ -337,5 +337,5 @@ ObjectDescriptor gIMSnowClawObjDescriptor = {
     (ObjectDescriptorCallback)imSnowClaw_render,
     (ObjectDescriptorCallback)imSnowClaw_free,
     (ObjectDescriptorCallback)imSnowClaw_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)imSnowClaw_getExtraSize,
+    imSnowClaw_getExtraSize,
 };

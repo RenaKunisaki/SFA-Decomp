@@ -240,5 +240,5 @@ ObjectDescriptor gPaymentKioskObjDescriptor = {
     (ObjectDescriptorCallback)PaymentKiosk_render,
     (ObjectDescriptorCallback)PaymentKiosk_free,
     (ObjectDescriptorCallback)PaymentKiosk_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)PaymentKiosk_getExtraSize,
+    PaymentKiosk_getExtraSize,
 };

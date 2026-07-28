@@ -256,5 +256,5 @@ ObjectDescriptor gCFLevelControlObjDescriptor = {
     (ObjectDescriptorCallback)cflevelcontrol_render,
     (ObjectDescriptorCallback)cflevelcontrol_free,
     (ObjectDescriptorCallback)cflevelcontrol_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)cflevelcontrol_getExtraSize,
+    cflevelcontrol_getExtraSize,
 };

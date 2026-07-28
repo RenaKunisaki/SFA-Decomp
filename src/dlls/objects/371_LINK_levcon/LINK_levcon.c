@@ -196,5 +196,5 @@ ObjectDescriptor gLINKLevelControlObjDescriptor = {
     0,
     (ObjectDescriptorCallback)linkLevelControl_free,
     0,
-    (ObjectDescriptorExtraSizeCallback)linkLevelControl_getExtraSize,
+    linkLevelControl_getExtraSize,
 };

@@ -250,5 +250,5 @@ ObjectDescriptor gDIM2SnowBallObjDescriptor = {
     (ObjectDescriptorCallback)dim2snowball_render,
     (ObjectDescriptorCallback)dim2snowball_free,
     (ObjectDescriptorCallback)dim2snowball_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dim2snowball_getExtraSize,
+    dim2snowball_getExtraSize,
 };

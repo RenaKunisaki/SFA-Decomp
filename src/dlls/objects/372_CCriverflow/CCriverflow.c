@@ -77,5 +77,5 @@ ObjectDescriptor gCCRiverFlowObjDescriptor = {
     (ObjectDescriptorCallback)ccRiverFlow_render,
     (ObjectDescriptorCallback)ccRiverFlow_free,
     0,
-    (ObjectDescriptorExtraSizeCallback)ccRiverFlow_getExtraSize,
+    ccRiverFlow_getExtraSize,
 };

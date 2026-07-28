@@ -160,7 +160,7 @@ ObjectDescriptor11WithPadding gDIM2ConveyorObjDescriptor = {
         (ObjectDescriptorCallback)dim2conveyor_render,
         (ObjectDescriptorCallback)dim2conveyor_free,
         (ObjectDescriptorCallback)dim2conveyor_getObjectTypeId,
-        (ObjectDescriptorExtraSizeCallback)dim2conveyor_getExtraSize,
+        dim2conveyor_getExtraSize,
         (ObjectDescriptorCallback)dim2conveyor_getScrollVector,
     },
     0,

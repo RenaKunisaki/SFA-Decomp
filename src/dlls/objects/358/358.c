@@ -285,7 +285,7 @@ ObjectDescriptor16 gExplodedObjDescriptor = {
     (ObjectDescriptorCallback)exploded_render,
     (ObjectDescriptorCallback)exploded_free,
     (ObjectDescriptorCallback)exploded_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)exploded_getExtraSize,
+    exploded_getExtraSize,
     (ObjectDescriptorCallback)exploded_setScale,
     0,
     0,

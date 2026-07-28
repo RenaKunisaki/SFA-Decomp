@@ -110,5 +110,5 @@ ObjectDescriptor gDIM_trickyObjDescriptor = {
     (ObjectDescriptorCallback)dim_tricky_render,
     (ObjectDescriptorCallback)dim_tricky_free,
     (ObjectDescriptorCallback)dim_tricky_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dim_tricky_getExtraSize,
+    dim_tricky_getExtraSize,
 };

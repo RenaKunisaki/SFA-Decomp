@@ -157,5 +157,5 @@ ObjectDescriptor gDIM2IceFloeObjDescriptor = {
     (ObjectDescriptorCallback)dim2icefloe_render,
     (ObjectDescriptorCallback)dim2icefloe_free,
     (ObjectDescriptorCallback)dim2icefloe_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dim2icefloe_getExtraSize,
+    dim2icefloe_getExtraSize,
 };

@@ -209,5 +209,5 @@ ObjectDescriptor gSpiritPrizeObjDescriptor = {
     (ObjectDescriptorCallback)spiritPrize_render,
     (ObjectDescriptorCallback)spiritPrize_free,
     (ObjectDescriptorCallback)spiritPrize_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)spiritPrize_getExtraSize,
+    spiritPrize_getExtraSize,
 };

@@ -98,5 +98,5 @@ ObjectDescriptor gCFMagicWallObjDescriptor = {
     (ObjectDescriptorCallback)cfmagicwall_render,
     (ObjectDescriptorCallback)cfmagicwall_free,
     (ObjectDescriptorCallback)cfmagicwall_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)cfmagicwall_getExtraSize,
+    cfmagicwall_getExtraSize,
 };

@@ -21,11 +21,9 @@ typedef struct ScTotemPoleInterfaceVTable {
 
 typedef struct ScTotemPolePlacement {
     ObjPlacement base;
-    u8 unknown18;
-    u8 unknown19;
+    u8 unknown18[2];
     u8 rotXByte;
-    u8 unknown1B;
-    u32 unknown1C;
+    u8 unknown1B[5];
 } ScTotemPolePlacement;
 
 typedef struct ScTotemPoleState {
@@ -39,10 +37,8 @@ STATIC_ASSERT(offsetof(ScTotemPoleInterfaceVTable, handleEvent) == SC_TOTEM_POLE
 
 STATIC_ASSERT(offsetof(ScTotemPolePlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(ScTotemPolePlacement, unknown18) == 0x18);
-STATIC_ASSERT(offsetof(ScTotemPolePlacement, unknown19) == 0x19);
 STATIC_ASSERT(offsetof(ScTotemPolePlacement, rotXByte) == 0x1A);
 STATIC_ASSERT(offsetof(ScTotemPolePlacement, unknown1B) == 0x1B);
-STATIC_ASSERT(offsetof(ScTotemPolePlacement, unknown1C) == 0x1C);
 STATIC_ASSERT(sizeof(ScTotemPolePlacement) == 0x20);
 
 STATIC_ASSERT(offsetof(ScTotemPoleState, litGameBit) == 0x00);

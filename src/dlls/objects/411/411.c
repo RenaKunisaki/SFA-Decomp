@@ -102,7 +102,7 @@ ObjectDescriptor gDll411ObjDescriptor = {
     (ObjectDescriptorCallback)dll411_render,
     (ObjectDescriptorCallback)dll411_free,
     (ObjectDescriptorCallback)dll411_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll411_getExtraSize,
+    dll411_getExtraSize,
 };
 
 int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {

@@ -200,5 +200,5 @@ ObjectDescriptor gFEseqobjectObjDescriptor = {
     (ObjectDescriptorCallback)FEseqobject_render,
     (ObjectDescriptorCallback)FEseqobject_free,
     (ObjectDescriptorCallback)FEseqobject_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)FEseqobject_getExtraSize,
+    FEseqobject_getExtraSize,
 };

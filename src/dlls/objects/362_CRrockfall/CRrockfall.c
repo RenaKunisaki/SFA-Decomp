@@ -282,5 +282,5 @@ ObjectDescriptor gCRrockfallObjDescriptor = {
     (ObjectDescriptorCallback)crrockfall_render,
     (ObjectDescriptorCallback)crrockfall_free,
     (ObjectDescriptorCallback)crrockfall_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)crrockfall_getExtraSize,
+    crrockfall_getExtraSize,
 };

@@ -196,5 +196,5 @@ ObjectDescriptor gNWTrickyObjDescriptor = {
     0,
     (ObjectDescriptorCallback)nwTricky_free,
     0,
-    (ObjectDescriptorExtraSizeCallback)nwTricky_getExtraSize,
+    nwTricky_getExtraSize,
 };

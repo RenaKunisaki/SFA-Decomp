@@ -192,5 +192,5 @@ ObjectDescriptor gIMSpaceThrusterObjDescriptor = {
     (ObjectDescriptorCallback)imSpaceThruster_render,
     (ObjectDescriptorCallback)imSpaceThruster_free,
     (ObjectDescriptorCallback)imSpaceThruster_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)imSpaceThruster_getExtraSize,
+    imSpaceThruster_getExtraSize,
 };

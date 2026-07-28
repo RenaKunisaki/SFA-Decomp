@@ -145,7 +145,7 @@ ObjectDescriptor gEnemyMushroomObjDescriptor = {
     (ObjectDescriptorCallback)EnemyMushroom_render,
     (ObjectDescriptorCallback)EnemyMushroom_free,
     (ObjectDescriptorCallback)EnemyMushroom_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)EnemyMushroom_getExtraSize,
+    EnemyMushroom_getExtraSize,
 };
 
 /* Per-frame poison, hit-reaction, fade, and respawn state machine. */

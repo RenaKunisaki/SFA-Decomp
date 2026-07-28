@@ -105,5 +105,5 @@ ObjectDescriptor gCCQueenObjDescriptor = {
     (ObjectDescriptorCallback)ccQueen_render,
     0,
     0,
-    (ObjectDescriptorExtraSizeCallback)ccQueen_getExtraSize,
+    ccQueen_getExtraSize,
 };

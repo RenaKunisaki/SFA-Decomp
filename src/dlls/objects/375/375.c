@@ -125,5 +125,5 @@ ObjectDescriptor gDll177ObjDescriptor = {
     (ObjectDescriptorCallback)dll_177_render,
     (ObjectDescriptorCallback)dll_177_free,
     (ObjectDescriptorCallback)dll_177_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll_177_getExtraSize,
+    dll_177_getExtraSize,
 };

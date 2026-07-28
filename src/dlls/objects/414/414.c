@@ -337,5 +337,5 @@ ObjectDescriptor gDll414ObjDescriptor = {
     (ObjectDescriptorCallback)dll414_render,
     (ObjectDescriptorCallback)dll414_free,
     (ObjectDescriptorCallback)dll414_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll414_getExtraSize,
+    dll414_getExtraSize,
 };

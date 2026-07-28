@@ -116,7 +116,7 @@ ObjectDescriptor gIMIceMountainObjDescriptor = {
     (ObjectDescriptorCallback)IMIceMountain_render,
     (ObjectDescriptorCallback)IMIceMountain_free,
     (ObjectDescriptorCallback)IMIceMountain_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)IMIceMountain_getExtraSize,
+    IMIceMountain_getExtraSize,
 };
 
 void IMIceMountain_updateEventState(GameObject* obj) {

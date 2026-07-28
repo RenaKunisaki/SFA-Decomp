@@ -51,7 +51,7 @@ ObjectDescriptor13 gIMAnimSpaceObjDescriptor = {
     (ObjectDescriptorCallback)imAnimSpace_render,
     (ObjectDescriptorCallback)imAnimSpace_free,
     (ObjectDescriptorCallback)imAnimSpace_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)imAnimSpace_getExtraSize,
+    imAnimSpace_getExtraSize,
     (ObjectDescriptorCallback)imAnimSpace_setScale,
     (ObjectDescriptorCallback)imAnimSpace_getEventFlag,
     (ObjectDescriptorCallback)imAnimSpace_modelMtxCallback,

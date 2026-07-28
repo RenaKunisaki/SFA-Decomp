@@ -12,8 +12,7 @@
 /* Retail romlists use the complete fixed-size 0x20-byte setup record. */
 typedef struct TrickyWarpPlacement {
     ObjPlacement base; /* 0x00 */
-    u8 unk18;          /* 0x18 */
-    u8 unk19;          /* 0x19 */
+    u8 unknown18[2];   /* 0x18 */
     u8 rotXByte;       /* 0x1A */
     u8 pad1B[5];       /* 0x1B */
 } TrickyWarpPlacement;
@@ -27,8 +26,7 @@ typedef struct TrickyWarpState {
 } TrickyWarpState;
 
 STATIC_ASSERT(offsetof(TrickyWarpPlacement, base) == 0x0);
-STATIC_ASSERT(offsetof(TrickyWarpPlacement, unk18) == 0x18);
-STATIC_ASSERT(offsetof(TrickyWarpPlacement, unk19) == 0x19);
+STATIC_ASSERT(offsetof(TrickyWarpPlacement, unknown18) == 0x18);
 STATIC_ASSERT(offsetof(TrickyWarpPlacement, rotXByte) == 0x1A);
 STATIC_ASSERT(offsetof(TrickyWarpPlacement, pad1B) == 0x1B);
 STATIC_ASSERT(sizeof(TrickyWarpPlacement) == TRICKYWARP_PLACEMENT_SIZE);

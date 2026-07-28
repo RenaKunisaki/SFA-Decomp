@@ -269,5 +269,5 @@ ObjectDescriptor gDFSHLaserBeamObjDescriptor = {
     (ObjectDescriptorCallback)dfshLaserBeam_render,
     (ObjectDescriptorCallback)dfshLaserBeam_free,
     (ObjectDescriptorCallback)dfshLaserBeam_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dfshLaserBeam_getExtraSize,
+    dfshLaserBeam_getExtraSize,
 };

@@ -71,5 +71,5 @@ ObjectDescriptor gDll419ObjDescriptor = {
     (ObjectDescriptorCallback)dll419_render,
     (ObjectDescriptorCallback)dll419_free,
     (ObjectDescriptorCallback)dll419_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll419_getExtraSize,
+    dll419_getExtraSize,
 };

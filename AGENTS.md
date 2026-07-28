@@ -109,6 +109,11 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   complete symbol as an object-descriptor-plus-tail layout. Keep unexplained tail words opaque and
   size-asserted until real consumers establish their fields; do not inflate the callback type or
   assign meanings from value patterns alone.
+- In an object descriptor initializer, use the function designator directly when its declared
+  prototype exactly matches the slot typedef, such as `int getExtraSize(void)` for an
+  `ObjectDescriptorExtraSizeCallback`. Keep an explicit callback cast when the generic descriptor
+  slot intentionally stores a differently shaped function; do not cast away a real signature
+  mismatch merely for visual uniformity.
 - Keep a functionless DLL's proven eight-byte null resource record as two raw words. Do not widen
   it into `ResourceDescriptor` or `ObjectDescriptor` merely because the generic registry stores its
   address; give the record a unit-owned name and cast only at that registry boundary.
@@ -152,6 +157,11 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   three sub-agents active at once. The primary agent must personally review every resulting diff,
   stale-symbol search, match report, shared-consumer edit, and generated-path audit before
   committing. Commit and push reviewed TUs one coherent slot at a time.
+- When a newly evidenced housekeeping rule exposes the same purely mechanical, byte-neutral issue
+  across previously reviewed object TUs, audit the complete cleaned range and land the back-apply
+  as a dedicated range-audit commit rather than burying it in the current slot. Record every
+  intentional exception, compare each affected object before and after, and keep non-mechanical or
+  codegen-changing cases in their own TU reviews.
 - Claim a cleaned TU's complete evidenced constant pool only when the source can emit it without
   duplicate named constants, invented section placement, or codegen changes. MWCC may copy a
   same-TU named `const` scalar into a second anonymous literal while leaving the named definition
@@ -168,10 +178,16 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   to the next known field. If the code caps a six-element child list and the next field is eight
   words later, model six elements plus an unknown trailing word; do not invent a seventh child to
   consume the offset.
+- Consolidate contiguous, entirely unaccessed imported byte fields into one opaque byte span unless
+  retail layout or a real consumer distinguishes their roles. Do not preserve separate `unkXX`
+  byte scalars merely because Ghidra guessed field boundaries; conversely, keep any byte that is
+  independently loaded, stored, or interpreted at a codegen-significant width as its own field.
 - Size an object state from that object's allocation contract, not from every helper defined in its
   TU. If a helper is called only with another object's larger state and accesses beyond the owner's
   `getExtraSize`, model the owning state and the cross-object helper overlay as separate types,
-  assert both layouts, and keep the cast explicit at the reuse boundary.
+  assert both layouts, and keep the cast explicit at the reuse boundary. A proven zero
+  `getExtraSize()` owns no extra-state typedef unless independent object-owned storage is
+  separately evidenced.
 - Do not cast one object's state to an unrelated object's type merely because useful fields happen
   to share offsets. Recover those fields in the owning state; share a state type only when allocation
   and behavioral evidence establish a real common contract.

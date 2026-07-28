@@ -389,5 +389,5 @@ ObjectDescriptor gSC_totembondObjDescriptor = {
     (ObjectDescriptorCallback)sc_totembond_render,
     (ObjectDescriptorCallback)sc_totembond_free,
     (ObjectDescriptorCallback)sc_totembond_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)sc_totembond_getExtraSize,
+    sc_totembond_getExtraSize,
 };

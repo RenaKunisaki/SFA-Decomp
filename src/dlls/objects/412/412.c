@@ -122,5 +122,5 @@ ObjectDescriptor gDll412ObjDescriptor = {
     (ObjectDescriptorCallback)dll412_render,
     (ObjectDescriptorCallback)dll412_free,
     (ObjectDescriptorCallback)dll412_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)dll412_getExtraSize,
+    dll412_getExtraSize,
 };

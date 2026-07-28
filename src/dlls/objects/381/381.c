@@ -284,5 +284,5 @@ ObjectDescriptor gRollingBarrelObjDescriptor = {
     (ObjectDescriptorCallback)rollingBarrel_render,
     (ObjectDescriptorCallback)rollingBarrel_free,
     (ObjectDescriptorCallback)rollingBarrel_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)rollingBarrel_getExtraSize,
+    rollingBarrel_getExtraSize,
 };

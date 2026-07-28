@@ -49,5 +49,5 @@ ObjectDescriptor gIMIcePillarObjDescriptor = {
     (ObjectDescriptorCallback)imIcePillar_render,
     (ObjectDescriptorCallback)imIcePillar_free,
     (ObjectDescriptorCallback)imIcePillar_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)imIcePillar_getExtraSize,
+    imIcePillar_getExtraSize,
 };

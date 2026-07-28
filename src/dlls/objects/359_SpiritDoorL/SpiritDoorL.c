@@ -228,5 +228,5 @@ ObjectDescriptor gSpiritDoorLockObjDescriptor = {
     (ObjectDescriptorCallback)SpiritDoorLock_render,
     (ObjectDescriptorCallback)SpiritDoorLock_free,
     (ObjectDescriptorCallback)SpiritDoorLock_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)SpiritDoorLock_getExtraSize,
+    SpiritDoorLock_getExtraSize,
 };
