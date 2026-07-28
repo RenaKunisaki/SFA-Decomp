@@ -13003,7 +13003,7 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
     PlayerState* inner = ((GameObject*)player)->extra;
     f32 sumC;
     f32 sumS;
-    f32 angle;
+    f32 ratio;
     int* objs;
     int n;
     int i;
@@ -13013,7 +13013,6 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
     any = 0;
     for (i = 0; i < n; i++)
     {
-        f32 ratio;
         int o = objs[i];
         if (*(u8*)((char*)*(int*)((char*)o + 0x4c) + 0x1a) & 2)
         {
@@ -13043,7 +13042,6 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
     objs = (int*)ObjGroup_GetObjects(0x50, &n);
     for (i = 0; i < n; i++)
     {
-        f32 ratio;
         int o = objs[i];
         f32 strength = (f32)(u32) * (u8*)((char*)*(int*)((char*)o + 0x4c) + 0x32) / 10.0f;
         f32 dy;
@@ -13064,9 +13062,8 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
                     ratio = (thresh - dist) / thresh;
                 }
                 ratio = ratio * strength;
-                angle = 3.1415927f * (f32)(int)a22 / 32768.0f;
-                sumC = ratio * mathSinf(angle) + sumC;
-                sumS = ratio * mathCosf(angle) + sumS;
+                sumC = ratio * mathSinf(3.1415927f * (f32)(int)a22 / 32768.0f) + sumC;
+                sumS = ratio * mathCosf(3.1415927f * (f32)(int)a22 / 32768.0f) + sumS;
             }
         }
     }
