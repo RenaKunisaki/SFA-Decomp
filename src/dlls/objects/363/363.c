@@ -8,18 +8,16 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 
-#define MAGIC_LIGHT_SEQ_GLOW 0x172
-#define MAGIC_LIGHT_SEQ_PROXIMITY 0x16B
+#define MAGIC_LIGHT_SEQ_GLOW              0x172
+#define MAGIC_LIGHT_SEQ_PROXIMITY         0x16B
 #define MAGIC_LIGHT_SEQUENCE_STARTED(obj) ((obj)->userData1)
 
-int MagicLight_sequenceCallback(GameObject* obj)
-{
+int MagicLight_sequenceCallback(GameObject* obj) {
     MagicLightState* state;
     GameObject* player;
     f32 distance;
 
-    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW)
-    {
+    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW) {
         return 0;
     }
 
@@ -27,67 +25,50 @@ int MagicLight_sequenceCallback(GameObject* obj)
     player = Obj_GetPlayerObject();
     distance = Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX);
 
-    if (distance < state->triggerRadius && state->inRange == 0)
-    {
+    if (distance < state->triggerRadius && state->inRange == 0) {
         state->inRange = 1;
         getLActions(obj, obj, (u16)state->enterAction, 0, 0, 0);
-    }
-    else if (distance > 10.0f + state->triggerRadius && state->inRange != 0)
-    {
+    } else if (distance > 10.0f + state->triggerRadius && state->inRange != 0) {
         state->inRange = 0;
         getLActions(obj, obj, (u16)state->leaveAction, 0, 0, 0);
     }
     return 0;
 }
 
-int MagicLight_getExtraSize(GameObject* obj)
-{
-    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW)
-    {
+int MagicLight_getExtraSize(GameObject* obj) {
+    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW) {
         return 0;
     }
 
     return sizeof(MagicLightState);
 }
 
-int MagicLight_getObjectTypeId(void)
-{
+int MagicLight_getObjectTypeId(void) {
     return 0;
 }
 
-void MagicLight_free(GameObject* obj)
-{
+void MagicLight_free(GameObject* obj) {
     MagicLightState* state = obj->extra;
 
-    if (obj->anim.seqId != MAGIC_LIGHT_SEQ_GLOW)
-    {
-        if (state->inRange != 0)
-        {
+    if (obj->anim.seqId != MAGIC_LIGHT_SEQ_GLOW) {
+        if (state->inRange != 0) {
             getLActions(obj, obj, (u16)state->leaveAction, 0, 0, 0);
         }
         (*gExpgfxInterface)->freeSource2((u32)obj);
     }
 }
 
-void MagicLight_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible)
-{
-    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW && visible != 0)
-    {
-        objRenderModelAndHitVolumes(
-            obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+void MagicLight_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW && visible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
-void MagicLight_hitDetect(void)
-{
+void MagicLight_hitDetect(void) {
 }
 
-void MagicLight_update(GameObject* obj)
-{
-    if (obj->anim.seqId != MAGIC_LIGHT_SEQ_GLOW &&
-        MAGIC_LIGHT_SEQUENCE_STARTED(obj) == 0)
-    {
+void MagicLight_update(GameObject* obj) {
+    if (obj->anim.seqId != MAGIC_LIGHT_SEQ_GLOW && MAGIC_LIGHT_SEQUENCE_STARTED(obj) == 0) {
         obj->anim.rotX = 0;
         obj->anim.rotY = 0;
         obj->anim.rotZ = 0;
@@ -96,25 +77,21 @@ void MagicLight_update(GameObject* obj)
     }
 }
 
-void MagicLight_init(GameObject* obj, const MagicLightPlacement* placement)
-{
+void MagicLight_init(GameObject* obj, const MagicLightPlacement* placement) {
     MagicLightState* state;
 
     MAGIC_LIGHT_SEQUENCE_STARTED(obj) = 0;
     obj->anim.rotX = (s16)(placement->initialRotX << 8);
     obj->animEventCallback = MagicLight_sequenceCallback;
-    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW)
-    {
+    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_GLOW) {
         return;
     }
     state = obj->extra;
     state->lifetime = randomGetRange(0xC8, 0x258);
     state->subtype = (s8)placement->subtype;
     state->inRange = 0;
-    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_PROXIMITY)
-    {
-        switch (state->subtype)
-        {
+    if (obj->anim.seqId == MAGIC_LIGHT_SEQ_PROXIMITY) {
+        switch (state->subtype) {
         case 0:
             state->enterAction = 0x90;
             state->leaveAction = 0x91;
@@ -137,19 +114,15 @@ void MagicLight_init(GameObject* obj, const MagicLightPlacement* placement)
             break;
         }
         state->unknown10 = 0x12D;
-    }
-    else
-    {
+    } else {
         state->unknown10 = 0x12D;
     }
 }
 
-void MagicLight_release(void)
-{
+void MagicLight_release(void) {
 }
 
-void MagicLight_initialise(void)
-{
+void MagicLight_initialise(void) {
 }
 
 ObjectDescriptor gMagicLightObjDescriptor = {
