@@ -246,7 +246,6 @@ void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model)
     }
 }
 
-void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model);
 
 void modelInitMtxs(ModelFileHeader* def, ObjModel* model)
 {
@@ -1124,7 +1123,6 @@ extern s32 lbl_803DCC48;
 
 extern u8 gObjGxPosMtxIdTable[12];
 
-void modelMtxFn_8003be38(u8* def, int* model, f32* mtxA, f32* mtxB);
 
 void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
 {
@@ -1313,13 +1311,11 @@ extern f32 gObjPrintNegHalfPi;
 extern const f32 gObjPrintAngleUnitScale;
 extern const f32 gObjPrintTwoPi;
 
-int objMatrixToRotation(f32* m, s16* outA, s16* outB, s16* outC);
 
 
 
 
 
-void modelInitMtxs(ModelFileHeader* def, ObjModel* model);
 
 #include "main/objprint_dolphin_internal.h"
 
@@ -1330,7 +1326,6 @@ extern int lbl_803DB498;
 extern int lbl_803DB49C;
 extern f32 lbl_803DEA38;
 
-int modelRenderCb_8003c268(int obj, int* model, int ropIdx);
 
 extern ObjPrintGXColor lbl_803DB494;
 extern u8 lbl_803DCC35;
@@ -1341,7 +1336,6 @@ extern int lbl_803DB48C;
 extern int lbl_803DB490;
 
 
-int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx);
 
 extern u8 gObjOverrideColor[3];
 extern GXColor gObjCurChanColor;
@@ -1381,14 +1375,11 @@ extern f32 lbl_803DEA54;
 extern s16 gDefragDelayFrames;
 extern u32 gAssetLoadCompletedFlags;
 
-int getLoadedFileFlags(int slot);
-s32 mapCheckCurBlocks(int v);
 
 
 
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 
-void objRenderFuzzFn_8003d6f8(void* objArg);
 extern f32 lbl_803DEA64;
 extern f32 lbl_803DEA6C;
 

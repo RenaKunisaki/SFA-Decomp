@@ -68,7 +68,6 @@ extern void* gRcpDistortTexture;
 extern u8 gRcpDistortGroup;
 static const f32 gRcpScreenWidth = 640.0f;
 static const f32 gRcpScreenHeight = 480.0f;
-void* textureLoadAsset(int asset);
 void* textureAlloc(u16 w, u16 h, int fmt, u8 mip, u8 maxLod, u8 wrapS, u8 wrapT, u8 minFilter, u8 magFilter);
 static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** lights);
 
@@ -94,8 +93,6 @@ static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** ligh
 }
 
 void addVertexColorKAlphaStage(GXColor* param);
-void Rcp_ApplyTextureStageCounts(void);
-void Rcp_ResetTextureStageState(void);
 int Rcp_SetupDistortionLights(int model, f32* params);
 static const f32 gRcpDistortScaleA[1] = {2.146452f};
 static const f32 gRcpDistortPowExp[1] = {2.520326f};

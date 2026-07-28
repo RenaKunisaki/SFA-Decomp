@@ -104,7 +104,6 @@ extern f32 gMapSavedPlayerOffsetX;
 extern f32 gMapSavedPlayerOffsetZ;
 
 void setGQR7Packed(int a, int b, int c, int d);
-void setGQR6_2(int a, int b, int c, int d);
 u8* modelBoneTransforms_next(u8* stream, int* dx, int* dy, int* dz);
 static inline void* modelGetBoneMtx(ObjModel* model, int idx);
 void ObjModel_TransformVerticesWithTranslation(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
@@ -1866,7 +1865,6 @@ int ObjModel_HasActiveBlendChannels(ObjModel* model)
     }
     return 0;
 }
-
 typedef f32 Mtx[3][4];
 
 void ObjModel_SetBlendChannelTargets(ObjModel* model, int channel, int a, int b, f32 weight, int flags);

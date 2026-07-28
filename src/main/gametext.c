@@ -29,7 +29,6 @@ char sLanguageNameGerman[] = "German";
 char sLanguageNameItalian[] = "Italian";
 char sLanguageNameSpanish[] = "Spanish";
 
-int utf8GetNextChar(u8* str, int* outLen);
 int isSpace(u32 c);
 static inline int gameTextIdExists(int id);
 static inline int textCountChars(char* lineStr);

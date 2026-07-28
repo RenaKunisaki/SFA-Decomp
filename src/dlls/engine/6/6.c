@@ -79,7 +79,6 @@ extern f32 lbl_803DF194;
 void skyGetCurrentAmbientAndLightColors(u8* ambientRed, u8* ambientGreen, u8* ambientBlue, u8* lightRed, u8* lightGreen,
                                         u8* lightBlue);
 
-
 void getAmbientColor(int slot, u8* red, u8* green, u8* blue);
 
 

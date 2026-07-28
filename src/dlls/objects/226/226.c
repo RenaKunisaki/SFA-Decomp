@@ -204,16 +204,8 @@ typedef struct QuakeFxParams
     f32 f2;
     f32 f3;
 } QuakeFxParams;
-
-void staff_func0F(void);
-void staff_func0E(void);
-void staff_func0B(void);
-void staff_func0A(void);
-void staff_render(void);
-void staff_hitDetect(void);
 int staff_getExtraSize(void);
 int staff_getObjectTypeId(void);
-s16 staff_getHitReactValue(GameObject* obj);
 s32 staff_getSwipeTextureIndex(GameObject* obj);
 void staff_func10(GameObject* obj, s32 v);
 void staff_setHitReactValue(GameObject* obj, s32 v);

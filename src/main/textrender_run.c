@@ -86,14 +86,8 @@ extern int gGameTextFontTexRowPitch;
 extern GameTextStateElem gGameTextCharsets[];
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 
-int gameTextFn_8001b44c(int x);
-int subtitleIsActive(void);
-void subtitleFn_8001b700(void);
 void dvdCancelCallback_8001b39c(s32 result, DVDCommandBlock* block);
 void gameTextOpenCallback_8001b3d0(s32 status, DVDFileInfo* fileInfo);
-void gameTextLoadForCurMap(int sourceId);
-void gameTextLoadGraphicsFn_8001a918(void);
-void gameTextInitFn_8001c794(void);
 
 void gameTextLoadDir(int dirId)
 {
@@ -157,10 +151,7 @@ void gameTextLoadDir(int dirId)
     }
 }
 
-int gameTextGetCharset(void);
-void gameTextSetCharset(int charset, int flags);
 
-int getCurGameText(void);
 
 int gameTextGetCharset(void)
 {

@@ -750,30 +750,10 @@ extern u32 gCMenuButtons;
 extern s8 gCMenuCloseSfx;
 
 
-
-s32 GameUI_isOneOfItemsBeingUsed(s32* arr, int count);
-int cMenuGetSelectedItem(void);
-int GameUI_isItemBeingUsed(s32 id);
-int GameUI_isAnyItemBeingUsed(void);
-void GameUI_hudDraw(int a, int b, int c);
-void showHelpText(s16 val);
 void GameUI_frameEnd(void);
 void cMenuSelectItemByTarget(int idx, s16 target, s8 flag);
 void cMenuSelectFirstEnabledItem(int idx, s8 flag);
-int GameUI_frameStart(void);
-void GameUI_setUnusedHudSetting(u8 val);
-void CMenu_SetShouldClose(int val);
 void GameUI_release(void);
-
-void GameUI_airMeterShutdown(void);
-void gameUiResetMenuState(void);
-void hudDrawMagicBar(u8 alpha, int elemAlpha, u8 flags);
-int cMenuRingModelRenderFn(GameObject* obj, int block, int idx);
-int cMenuRingIconRenderFn(GameObject* obj, int block, int idx);
-void pauseMenuDrawStatus_801274A0(GameObject* arg1);
-void pauseMenuDrawSideRails(s32 alpha);
-void pauseMenuFn_8012b77c(void);
-void pauseMenuRunSubmenu(int p1);
 void pauseMenuSetupTitle(s32 fade_target, u8 idx, u8 flags, u8 q);
 
 void cMenuPlayTrickyCommandSfx(int obj)
@@ -5215,7 +5195,6 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
     Camera_RebuildProjectionMatrix();
     Camera_ApplyFullViewport();
 }
-
 void pauseMenuDrawSideRails(s32 alpha)
 {
     f32 phase;
@@ -5226,14 +5205,12 @@ void pauseMenuDrawSideRails(s32 alpha)
     s8 i;
 
     phase = 6.0f * mathSinf(lbl_803E1EC8 * (lbl_803DD748 * 1000.0f) / lbl_803E1E94);
-
     for (i = 10; i >= 0; i -= 2)
     {
         pauseMenuDrawElement(((HudTextures*)hudTextures)->tex11C, 20.0f, 280.0f,
                              x = (s16)((0xf5 - i) - lbl_803DD75C), alpha, 0x200, 0);
         pauseMenuDrawElement(((HudTextures*)hudTextures)->tex11C, lbl_803E20C0, 280.0f, x, alpha, 0x200, 0);
     }
-
     j = 10;
     brightness = lbl_803E20C4 - phase * lbl_803E1E6C;
     for (; j >= 0; j -= 10)

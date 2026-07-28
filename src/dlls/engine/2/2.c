@@ -85,7 +85,6 @@ typedef struct
 #define CARD_RESULT_READY    0
 #define CARD_RESULT_IOERROR  -5
 
-void cardSetStatusNoCard2(void);
 static inline int maketex_indexOf(int* p, int n, int target)
 {
     int i;
@@ -102,7 +101,6 @@ static inline int maketex_indexOf(int* p, int n, int target)
     return -1;
 }
 void loadMemCardImages(void);
-int saveGame(int writeImages);
 static inline u64 saveGame_checksum(u64* p, int count)
 {
     u64 x[1];

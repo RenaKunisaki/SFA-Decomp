@@ -388,7 +388,6 @@ void modelLightStruct_startColorFade(ModelLightStruct* light, int mode, s16 fram
     }
 }
 
-void modelLightStruct_startColorFade(ModelLightStruct* light, int mode, s16 frames);
 
 void modelLightStruct_updateGlowAlpha(ModelLightStruct* light)
 {

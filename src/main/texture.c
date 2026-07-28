@@ -78,7 +78,6 @@ int* gRcpTexBankTable[3];
 u32 gRcpTexAllocTag = 6;
 char sDebugIntLineFormat[] = "%d\n";
 
-void* textureLoadAsset(int asset);
 void* textureAlloc(u16 w, u16 h, int fmt, u8 mip, u8 maxLod, u8 wrapS, u8 wrapT, u8 minFilter, u8 magFilter);
 void textureInitGXTexObj(Texture* texture);
 

@@ -506,8 +506,6 @@ void curves_snapToNearestSurface(GameObject* obj, CurvesCollisionState* collisio
     }
 }
 
-void curves_updateSurfaceTilt(short* obj, int state);
-void curves_snapToNearestSurface(GameObject* obj, CurvesCollisionState* collision);
 
 void curves_resolveWaterFloorCeiling(GameObject* obj, CurvesCollisionState* collision)
 {

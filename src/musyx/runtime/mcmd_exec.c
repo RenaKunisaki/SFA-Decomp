@@ -1362,7 +1362,6 @@ void TimeQueueAdd(McmdVoiceState* state)
     McmdVoiceState* next;
     McmdVoiceState* prev;
     McmdVoiceState* cur;
-
     next = (McmdVoiceState*)macTimeQueueRoot;
     prev = 0;
     while ((cur = next) != 0 && *(u64*)&cur->wakeTimeHi < *(u64*)&state->wakeTimeHi)

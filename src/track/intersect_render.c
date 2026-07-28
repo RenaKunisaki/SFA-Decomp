@@ -133,10 +133,6 @@ static const GXColor sColorFilterKColor2 = {0x14, 0x14, 0x14, 0};
 static const GXColor sColorFilterTevColor = {0x0A, 0x0A, 0x0A, 255};
 
 extern u32 lbl_803E8450;
-void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
-void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
-void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);
-void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 int cardProbe(u8 retry);
 void showMemCardError(u8 err);
 void cardShowLoadingMsg(u8 kind);
@@ -144,7 +140,6 @@ int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
 int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
-void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc)
 {

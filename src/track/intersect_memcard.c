@@ -39,9 +39,6 @@ typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, i
 
 char sMemoryCardFileNameString[20] = "Star Fox Adventures";
 
-int cardDeleteSaveFile(void);
-void cardGetMessage(u32* buttons, u32* texts, u32* count);
-void showMemCardError(u8 err);
 
 
 extern volatile s32 gSaveCardState;
@@ -61,11 +58,6 @@ void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
 void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
-int cardProbe(u8 retry);
-void showMemCardError(u8 err);
-void cardShowLoadingMsg(u8 kind);
-int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
-int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);

@@ -11,7 +11,6 @@ static const f32 gGxPi = 3.1415927f;
 extern int lbl_803DD03C;
 extern int lbl_803968C0[];
 
-void mtx44Identity(f32* mat);
 
 /* Queues a GXPeekZ read at (x,y) tagged by an opaque requestKey (callers pass
  * any unique value - object ptrs, loop indices, even a function address) and
