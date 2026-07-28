@@ -64,15 +64,15 @@ u8 enableDebugText;
 void* gDebugFontTex0;
 void* gDebugFontTex1;
 void* gDebugFontTex2;
-u16 debugPrintYpos;
 u16 debugPrintXpos;
-u16 gDebugRectStartY;
+u16 debugPrintYpos;
 u16 gDebugRectStartX;
+u16 gDebugRectStartY;
 int gDebugFixedWidthMode;
 int gDebugDrawPass;
-u32 gDebugPrintOriginY;
-u32 gDebugMarginRight;
 u32 gDebugPrintOriginX;
+u32 gDebugMarginRight;
+u32 gDebugPrintOriginY;
 u32 gDebugMarginBottom;
 u32 gDebugCurrentFontSet;
 u16 gDebugScreenWidth;
@@ -232,8 +232,8 @@ int debugPrintDrawGlyph(int unused, int c)
     c = tbl[c * 2 + 1] - first + 1;
     if (gDebugDrawPass != 0)
     {
-        px = (int)((f32)debugPrintYpos * (gDebugScaleX + gDebugScaleBiasX));
-        py = (int)((f32)debugPrintXpos * (gDebugScaleY + gDebugScaleBiasY));
+        px = (int)((f32)debugPrintXpos * (gDebugScaleX + gDebugScaleBiasX));
+        py = (int)((f32)debugPrintYpos * (gDebugScaleY + gDebugScaleBiasY));
         gxDebugTextureFn_80078c1c();
         textRenderChar(px << 2, py << 2,
                        (int)(4.0f * ((f32)c * (gDebugScaleX + gDebugScaleBiasX) + px)),
@@ -328,37 +328,37 @@ int debugPrintDrawRecord(int color, u8* p)
         }
         case 0x82:
         {
-            u32 x2;
-            u32 y;
-            u32 x0;
             u32 y1;
+            u32 x;
             u32 y0;
+            u32 x1;
+            u32 x0;
             if (gDebugDrawPass == 0)
             {
-                x2 = debugPrintXpos + 0xa;
-                y = debugPrintYpos;
-                x0 = gDebugRectStartX;
+                y1 = debugPrintYpos + 0xa;
+                x = debugPrintXpos;
                 y0 = gDebugRectStartY;
-                if ((((y - y0) == 0) | ((x2 - x0) == 0)) == 0)
+                x0 = gDebugRectStartX;
+                if ((((x - x0) == 0) | ((y1 - y0) == 0)) == 0)
                 {
-                    if (y0 >= 2)
+                    if (x0 >= 2)
                     {
-                        y0 -= 2;
+                        x0 -= 2;
                     }
-                    y1 = y + 2;
-                    y0 = y0 * (sc = gDebugScaleX + gDebugScaleBiasX);
+                    x1 = x + 2;
+                    x0 = x0 * (sc = gDebugScaleX + gDebugScaleBiasX);
+                    x1 = x1 * sc;
+                    y0 = y0 * (sc = gDebugScaleY + gDebugScaleBiasY);
                     y1 = y1 * sc;
-                    x0 = x0 * (sc = gDebugScaleY + gDebugScaleBiasY);
-                    x2 = x2 * sc;
-                    debugPrintFillRect(y0, x0, y1, x2);
+                    debugPrintFillRect(x0, y0, x1, y1);
                 }
             }
-            debugPrintYpos = *p++;
-            debugPrintYpos = debugPrintYpos | (*p++ << 8);
             debugPrintXpos = *p++;
             debugPrintXpos = debugPrintXpos | (*p++ << 8);
-            gDebugRectStartY = debugPrintYpos;
+            debugPrintYpos = *p++;
+            debugPrintYpos = debugPrintYpos | (*p++ << 8);
             gDebugRectStartX = debugPrintXpos;
+            gDebugRectStartY = debugPrintYpos;
             break;
         }
         case 0x86:
@@ -370,39 +370,39 @@ int debugPrintDrawRecord(int color, u8* p)
             break;
         case 0xa:
         {
-            u32 x2;
-            u32 y;
-            u32 y0;
             u32 y1;
+            u32 x;
             u32 x0;
+            u32 x1;
+            u32 y0;
             if (gDebugDrawPass == 0)
             {
-                x2 = debugPrintXpos + 0xa;
-                y = debugPrintYpos;
-                x0 = gDebugRectStartX;
+                y1 = debugPrintYpos + 0xa;
+                x = debugPrintXpos;
                 y0 = gDebugRectStartY;
-                if ((((y - y0) == 0) | ((x2 - x0) == 0)) == 0)
+                x0 = gDebugRectStartX;
+                if ((((x - x0) == 0) | ((y1 - y0) == 0)) == 0)
                 {
-                    if (y0 >= 2)
+                    if (x0 >= 2)
                     {
-                        y0 -= 2;
+                        x0 -= 2;
                     }
-                    y1 = y + 2;
-                    y0 = y0 * (sc = gDebugScaleX + gDebugScaleBiasX);
+                    x1 = x + 2;
+                    x0 = x0 * (sc = gDebugScaleX + gDebugScaleBiasX);
+                    x1 = x1 * sc;
+                    y0 = y0 * (sc = gDebugScaleY + gDebugScaleBiasY);
                     y1 = y1 * sc;
-                    x0 = x0 * (sc = gDebugScaleY + gDebugScaleBiasY);
-                    x2 = x2 * sc;
-                    debugPrintFillRect(y0, x0, y1, x2);
+                    debugPrintFillRect(x0, y0, x1, y1);
                 }
             }
-            debugPrintYpos = gDebugPrintOriginY;
-            debugPrintXpos += 0xb;
-            gDebugRectStartY = debugPrintYpos;
+            debugPrintXpos = gDebugPrintOriginX;
+            debugPrintYpos += 0xb;
             gDebugRectStartX = debugPrintXpos;
+            gDebugRectStartY = debugPrintYpos;
             break;
         }
         case 9:
-            rm = debugPrintYpos % gDebugTabWidth;
+            rm = debugPrintXpos % gDebugTabWidth;
             if (rm == 0)
             {
                 w = gDebugTabWidth;
@@ -420,38 +420,38 @@ int debugPrintDrawRecord(int color, u8* p)
         {
             w = 7;
         }
-        debugPrintYpos += w;
-        if (debugPrintYpos * (sc = gDebugScaleX + gDebugScaleBiasX) > gDebugScreenWidth - 0x10)
+        debugPrintXpos += w;
+        if (debugPrintXpos * (sc = gDebugScaleX + gDebugScaleBiasX) > gDebugScreenWidth - 0x10)
         {
-            u32 x2;
-            u32 y;
-            u32 y0;
             u32 y1;
+            u32 x;
             u32 x0;
+            u32 x1;
+            u32 y0;
             if (gDebugDrawPass == 0)
             {
-                x2 = debugPrintXpos + 0xa;
-                y = debugPrintYpos;
-                x0 = gDebugRectStartX;
+                y1 = debugPrintYpos + 0xa;
+                x = debugPrintXpos;
                 y0 = gDebugRectStartY;
-                if ((((y - y0) == 0) | ((x2 - x0) == 0)) == 0)
+                x0 = gDebugRectStartX;
+                if ((((x - x0) == 0) | ((y1 - y0) == 0)) == 0)
                 {
-                    if (y0 >= 2)
+                    if (x0 >= 2)
                     {
-                        y0 -= 2;
+                        x0 -= 2;
                     }
-                    y1 = y + 2;
-                    y0 = y0 * sc;
+                    x1 = x + 2;
+                    x0 = x0 * sc;
+                    x1 = x1 * sc;
+                    y0 = y0 * (sc = gDebugScaleY + gDebugScaleBiasY);
                     y1 = y1 * sc;
-                    x0 = x0 * (sc = gDebugScaleY + gDebugScaleBiasY);
-                    x2 = x2 * sc;
-                    debugPrintFillRect(y0, x0, y1, x2);
+                    debugPrintFillRect(x0, y0, x1, y1);
                 }
             }
-            debugPrintYpos = gDebugPrintOriginY;
-            debugPrintXpos += 0xb;
-            gDebugRectStartY = debugPrintYpos;
+            debugPrintXpos = gDebugPrintOriginX;
+            debugPrintYpos += 0xb;
             gDebugRectStartX = debugPrintXpos;
+            gDebugRectStartY = debugPrintYpos;
         }
     }
     return p - start;
@@ -472,13 +472,13 @@ void debugPrintSetColor(u8 r, u8 g, u8 b, u8 a)
 }
 void debugPrintReset(void)
 {
-    u32 yp;
     u32 xp;
+    u32 yp;
     debugLogEnd = debugLogBuffer;
-    yp = gDebugPrintOriginY & 0xffff;
-    debugPrintYpos = yp;
     xp = gDebugPrintOriginX & 0xffff;
     debugPrintXpos = xp;
+    yp = gDebugPrintOriginY & 0xffff;
+    debugPrintYpos = yp;
 }
 
 /* Lay out the debug log
@@ -486,40 +486,40 @@ void debugPrintReset(void)
  * the passes when the log produced any extent. */
 static inline void debugDrawLogRect(void)
 {
-    u32 y0;
-    u32 y;
     u32 x0;
-    u32 x2;
+    u32 x;
+    u32 y0;
     u32 y1;
+    u32 x1;
     f32 sc;
     GXColor col;
 
-    x2 = debugPrintXpos + 0xa;
-    y = debugPrintYpos;
-    x0 = gDebugRectStartX;
+    y1 = debugPrintYpos + 0xa;
+    x = debugPrintXpos;
     y0 = gDebugRectStartY;
-    if ((((y - y0) == 0) | ((x2 - x0) == 0)) == 0)
+    x0 = gDebugRectStartX;
+    if ((((x - x0) == 0) | ((y1 - y0) == 0)) == 0)
     {
-        if (y0 >= 2)
+        if (x0 >= 2)
         {
-            y0 -= 2;
+            x0 -= 2;
         }
-        y1 = y + 2;
-        y0 = y0 * (sc = gDebugScaleX + gDebugScaleBiasX);
-        y1 *= sc;
-        x0 = x0 * (sc = gDebugScaleY + gDebugScaleBiasY);
-        x2 = x2 * sc;
+        x1 = x + 2;
+        x0 = x0 * (sc = gDebugScaleX + gDebugScaleBiasX);
+        x1 *= sc;
+        y0 = y0 * (sc = gDebugScaleY + gDebugScaleBiasY);
+        y1 = y1 * sc;
         col.r = gDebugTextColorR;
         col.g = gDebugTextColorG;
         col.b = gDebugTextColorB;
         col.a = gDebugTextColorA;
-        hudDrawRect(y0, x0, y1, x2, col);
+        hudDrawRect(x0, y0, x1, y1, col);
     }
 }
 void debugPrintDraw(int ctx)
 {
     u8* p;
-    u16 tx, ty;
+    u16 ty, tx;
     int pass;
     u32 res;
     u32 sw;
@@ -532,36 +532,36 @@ void debugPrintDraw(int ctx)
     sw = gDebugScreenWidth;
     if (sw <= 0x140)
     {
-        gDebugPrintOriginY = 0x10;
+        gDebugPrintOriginX = 0x10;
         gDebugMarginRight = sw - 0x10;
     }
     else
     {
-        gDebugPrintOriginY = 0x20;
+        gDebugPrintOriginX = 0x20;
         gDebugMarginRight = sw - 0x20;
     }
     sh = gDebugScreenHeight;
     if (sh <= 0xf0)
     {
-        gDebugPrintOriginX = 0x10;
+        gDebugPrintOriginY = 0x10;
         gDebugMarginBottom = sh - 0x10;
     }
     else
     {
-        gDebugPrintOriginX = 0x20;
+        gDebugPrintOriginY = 0x20;
         gDebugMarginBottom = sh - 0x20;
     }
     gxDebugTextureFn_80078c1c();
     p = debugLogBuffer;
-    ty = gDebugPrintOriginY;
-    debugPrintYpos = ty;
     tx = gDebugPrintOriginX;
     debugPrintXpos = tx;
+    ty = gDebugPrintOriginY;
+    debugPrintYpos = ty;
     gDebugCurrentFontSet = 0xffffffff;
     pass = 0;
     gDebugFixedWidthMode = pass;
-    gDebugRectStartY = ty;
     gDebugRectStartX = tx;
+    gDebugRectStartY = ty;
     for (; p != debugLogEnd;)
     {
         gDebugDrawPass = pass;
@@ -569,8 +569,8 @@ void debugPrintDraw(int ctx)
     }
     debugDrawLogRect();
     p = debugLogBuffer;
-    debugPrintYpos = gDebugPrintOriginY;
     debugPrintXpos = gDebugPrintOriginX;
+    debugPrintYpos = gDebugPrintOriginY;
     gDebugCurrentFontSet = 0xffffffff;
     gDebugFixedWidthMode = 0;
     pass = 1;
