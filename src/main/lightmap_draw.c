@@ -119,18 +119,9 @@ static inline void GXTexCoord2s16(const s16 s, const s16 t)
 }
 static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 
-void updateVisibleGeometry(void);
-
-MapBlockData* mapGetBlock(int i);
 
 extern u32 lbl_8037E0C0[];
 extern s32 lbl_803DCE30;
-
-s8* mapGetBlockIdx(int layer);
-
-MapBlockData* mapGetBlockAtPos(int x, int y, int layer);
-
-void* RomList_GetLoadedPages(void);
 
 
 typedef struct LightmapDrawEntry
@@ -171,26 +162,14 @@ typedef struct
 } LightmapDrawQueue;
 
 
-int coordsToMapCell(f32 x, f32 z);
-
-void mapGetBlockOriginForPos(f32 x, f32 y, f32 z, f32* outX, f32* outZ);
-
 #define MAP_BLOCK_LAYER_COUNT 5
 
-int isInBounds(f32 x, f32 z);
-
-
-int objPosToMapBlockIdx(f32 x, f32 y, f32 z);
-
-
-int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type, int* out_lastpage);
 
 void sortVisibleObjectKeysDescending(u32* arr, int n);
 
 void sortVisibleObjectKeysDescending(u32* arr, int n);
 void getVisibleObjects(s8* opacity);
 
-void renderObjects(s8* opacity);
 static inline void fillBoxRows(u8* map, int* box)
 {
     int y, x0;
@@ -214,12 +193,6 @@ void renderSceneGeometry(u8 renderType, s8* order);
 
 void sceneDraw(void);
 
-
-void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad5);
-
-void doNothing_beforeTitleScreen(void);
-void updateEnvironment(int mode);
-void initMapBlocks(void);
 
 void gameFlagFn_8005cd24(int v)
 {
@@ -440,8 +413,6 @@ typedef union
         u32 lo;
     } u;
 } F64Cvt;
-
-
 
 
 extern f32 lbl_803DEC20;

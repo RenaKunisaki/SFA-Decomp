@@ -111,99 +111,19 @@ extern f32 lbl_803DF190;
 extern f32 lbl_803DF194;
 
 
-int return0_80088758(void);
-
-int getEnvFxBit2BA(void);
-
-void setGameBit2BA(int value);
-
-void doNothing_800887C4(void);
-
-void doNothing_800887C8(void);
-
-void envFxFn_800887cc(void);
-
-void envFxActFn_800887f8(u8 value);
-
-void skySetEnvFxRampTables(void* groupB, void* groupA, void* groupC, void* groupD);
-
-void envFxFn_80088884(void);
-
-void playerEnvFxFn_80088ad4(u8 idx);
-
-void loadSunAndMoon(void);
-
-
-
 extern u8 gSkyColorBlendTable[248];
 
-
-
-void skyFn_80088c94(int flags, u8 mode);
-
-int getSkyColorFn_80088e08(int slot);
-
-int getSkyColorFn_80088e30(int slot);
-
-void skyFn_80088e54(int mode, f32 brightness);
-
-int getSkyStructField24C(void);
-
-void skyGetCurrentTextureColor(u8* red, u8* green, u8* blue);
 
 void skyGetCurrentAmbientAndLightColors(u8* ambientRed, u8* ambientGreen, u8* ambientBlue, u8* lightRed, u8* lightGreen,
                                         u8* lightBlue);
 
-Texture* skyGetSkyTexture(void);
-
-void skyBuildSunModelMatrix(f32 mtx[3][4]);
-
-u8 skyGetSunRenderAlpha(int slot);
-
-void skySetOverrideLightColor(u8 red, u8 green, u8 blue);
-
-void skySetOverrideLightColorEnabled(u8 enabled);
-
-void skySetOverrideLightDirection(f32 x, f32 y, f32 z, f32 intensity);
-
-void skySetOverrideLightDirectionEnabled(u8 enabled);
-
-void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z);
-
-void skySetLightDirection(int flags, f32 x, f32 y, f32 z);
-
-void skySetLightColor(int flags, u8 red, u8 green, u8 blue);
-
-void skySetAmbientColor(int flags, u8 red, u8 green, u8 blue);
-
-void skySetBaseColor(int flags, u8 red, u8 green, u8 blue, u8 ambientScale, u8 lightScale);
-
-void skyFn_80089710(int flags, u8 enabled, int startComplete);
-
-void skyGetSunLightDirection(int slot, f32* x, f32* y, f32* z);
-
-void objGetColor(int slot, u8* red, u8* green, u8* blue);
 
 void getAmbientColor(int slot, u8* red, u8* green, u8* blue);
 
-void textureColorFn_8008991c(int slot, u8* red, u8* green, u8* blue);
-
-void modelTextureFn_80089970(int slot);
-
-ModelLightStruct* skyGetMoonLight(void);
-
-ModelLightStruct* skyGetSunLight(void);
 
 void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,
                  int lightIntensity, u8 blendAlpha);
 
-void skyFn_8008a04c(void);
-
-void skyFn_8008a500(void);
-
-void renderSunAndMoon(int a, int b, int c, int d, int visible);
-
-void skyFn_8008aee8(void);
 
 void dll_06_func0B(int* x, int* y)
 {

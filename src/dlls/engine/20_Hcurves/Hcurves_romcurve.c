@@ -146,7 +146,6 @@ static f32 RomCurve_scaleTangent(f32 t)
 }
 
 static inline f32 RomCurveNode_GetHermiteTangent(void** nodePtr, int angleOffset, int useCos);
-inline f32 objfsaCorner(s8 ofs, f32 scl, f32* base);
 
 
 static inline ObjfsaPatch* Objfsa_GetPatch(int patchIndex)
@@ -1059,12 +1058,7 @@ int curves_findNearObj(GameObject* obj, int* curveTypes, int typeCount, int acti
 }
 
 
-
-
 #define OBJFSA_WG(GRP) ((ObjfsaWalkGroup*)((char*)patchBase[0] + (GRP) * OBJFSA_PATCHGROUP_STRIDE + 0x3000))
-
-
-
 
 
 int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurveId)

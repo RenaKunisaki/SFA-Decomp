@@ -44,9 +44,6 @@ int gObjLookAtTurnRateDivisor = 100;
 f32 gObjMouthBlendFrames = 20.0f;
 
 
-
-
-
 extern f32 lbl_803DE9A4;
 extern f32 lbl_803DE99C;
 
@@ -567,8 +564,6 @@ void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val)
         break;
     }
 }
-
-
 
 
 void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val)
@@ -1429,7 +1424,6 @@ void objRenderShadowIfVisible(GameObject* obj, int wpad0, int wpad1, int wpad2, 
     }
 }
 
-int objNormalizeRotationMatrix(f32* matrix, f32* out);
 
 void objRenderModelAndHitVolumes(GameObject* obj, int p2, int p3, int p4, int p5, f32 scale)
 {

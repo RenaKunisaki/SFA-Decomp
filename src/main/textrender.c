@@ -87,8 +87,6 @@ extern u32 sSubtitleCtrlCmdScratch[];
 void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang);
 void translateToDinoLanguage(u8* str);
 void gameTextSetWindow(u8* textBox);
-void setLanguageFn_8001ad64(GameTextLoadSlot* slot);
-void boxDrawFn_8001c5ac(u16* strPtr, int boxId, u8* box);
 int GameText_CountPrintableChars(u8* str);
 int GameText_FindControlCodeArgs(u8* str, u32 target, int* out);
 
@@ -422,16 +420,6 @@ struct EnglishDiscStatusResource
 u8 sGameTextGlyphOrder[0x1b] = "urstovwxazbcmdefghtkilnpoq";
 
 int getControlCharLen(u32 c);
-void* gameTextGet(int textId);
-int gameTextFn_8001b44c(int x);
-int subtitleIsActive(void);
-void subtitleFn_8001b700(void);
-void dvdCancelCallback_8001b39c(s32 result, DVDCommandBlock* block);
-void gameTextOpenCallback_8001b3d0(s32 status, DVDFileInfo* fileInfo);
-void gameTextLoadForCurMap(int sourceId);
-void gameTextLoadGraphicsFn_8001a918(void);
-void gameTextInitFn_8001c794(void);
-void subtitleBuildLineTable(void);
 
 static inline int ctrlCharLen(u32 c)
 {
@@ -1097,19 +1085,11 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count)
 
 GameTextStateElem gGameTextCharsets[0xA0 / sizeof(GameTextStateElem)];
 
-int gameTextGetCharset(void);
-void gameTextSetCharset(int charset, int flags);
-
-int getCurGameText(void);
-
-int gameTextGetState(int i);
-
 
 void* gSubtitleLineTable[0x100];
 
 
 GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
-
 
 
 void* jumptable_802C9E84[16] = {

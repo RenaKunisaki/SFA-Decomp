@@ -125,17 +125,8 @@ static inline void GXTexCoord2s16(const s16 s, const s16 t)
 }
 static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 
-void updateVisibleGeometry(void);
-
-MapBlockData* mapGetBlock(int i);
 
 extern u32 lbl_8037E0C0[];
-
-s8* mapGetBlockIdx(int layer);
-
-MapBlockData* mapGetBlockAtPos(int x, int y, int layer);
-
-void* RomList_GetLoadedPages(void);
 
 
 typedef struct
@@ -158,26 +149,14 @@ typedef struct
 } LightmapDrawQueue;
 
 
-int coordsToMapCell(f32 x, f32 z);
-
-void mapGetBlockOriginForPos(f32 x, f32 y, f32 z, f32* outX, f32* outZ);
-
 #define MAP_BLOCK_LAYER_COUNT 5
 
-int isInBounds(f32 x, f32 z);
-
-
-int objPosToMapBlockIdx(f32 x, f32 y, f32 z);
-
-
-int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type, int* out_lastpage);
 
 void sortVisibleObjectKeysDescending(u32* arr, int n);
 
 void sortVisibleObjectKeysDescending(u32* arr, int n);
 void getVisibleObjects(s8* opacity);
 
-void renderObjects(s8* opacity);
 static inline void fillBoxRows(u8* map, int* box)
 {
     int y, x0;
@@ -202,10 +181,6 @@ void renderSceneGeometry(u8 renderType, s8* order);
 void sceneDraw(void);
 
 
-void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad5);
-
-void doNothing_beforeTitleScreen(void);
-void updateEnvironment(int mode);
 void initMapBlocks(void)
 {
     u8* mb = (u8*)lbl_8037E0C0;
@@ -307,43 +282,6 @@ void initMapBlocks(void)
     *(u32*)(mb + 0x8818) = -1;
 }
 
-void gameFlagFn_8005cd24(int v);
-
-int getDrawDistanceFlag_8005cd48(void);
-
-int setWidescreen(u8 v);
-int isWidescreen(void);
-u32 shouldDrawShadows(void);
-int shouldDrawClouds(void);
-
-void titleScreenFn_8005cdd4(int v);
-
-void setDrawLights(int v);
-
-void gameFlagFn_8005ce6c(int v);
-
-u8 isOvercast(void);
-
-void setIsOvercast(int v);
-
-void setStarsHidden(int v);
-
-void setDrawCloudsAndLights(int v);
-
-void setPendingMapLoad(int v);
-
-void drawFn_8005cf8c(const void* vertexBase, u8* triList, int triCount);
-
-
-void setFogColorCallback(int unused, u8 red, u8 green, u8 blue, int wpad0);
-
-
-void _textSetColor(void* context, int red, int green, int blue, int alpha);
-
-void setTextColor(void* context, int a, int b, int c, int d);
-
-void doNothing_8005D148(int arg0, int arg1);
-
 
 void objDrawFn_8005da48(GameObject* obj);
 void modelRenderFn_8005d4ec(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
@@ -356,7 +294,6 @@ void getVisibleObjects(s8 * opacity);
 
 void renderSceneGeometry(u8 renderType, s8* order);
 
-void doNothing_8005D14C(int arg0, int arg1);
 void renderShadowType3(u8* obj, u32 b, s32 offset);
 
 void lightmap_sortTransparentDrawQueue(void);
@@ -374,12 +311,6 @@ typedef union
 } F64Cvt;
 
 
-
-
-
-void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector);
-
-
 void sortVisibleObjectKeysDescending(u32* arr, int n);
 
 
@@ -392,5 +323,3 @@ void objDrawFn_8005da48(GameObject* obj);
 
 void sceneDrawTransparentPolys(void);
 
-
-void lightmap_queueExternalRenderEntry(u32 a, u32 b, f32* p);
