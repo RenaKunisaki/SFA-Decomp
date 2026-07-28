@@ -1,27 +1,27 @@
-#ifndef MAIN_DLL_DLL_01AB_BOMBPLANTINGSPOT_H_
-#define MAIN_DLL_DLL_01AB_BOMBPLANTINGSPOT_H_
+#ifndef DLLS_OBJECTS_427_BOMB_PLANTIN_H_
+#define DLLS_OBJECTS_427_BOMB_PLANTIN_H_
 
-#include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
+#include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-typedef struct BombPlantingSpotPlacement
-{
+typedef struct BombPlantingSpotPlacement {
     ObjPlacement base;
     s8 rotX;
-    u8 pad19[0x1E - 0x19];
+    u8 unknown19[5];
     s16 plantedGameBit;
     s16 requiredGameBit;
 } BombPlantingSpotPlacement;
 
+STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, rotX) == 0x18);
+STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, unknown19) == 0x19);
 STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, plantedGameBit) == 0x1E);
 STATIC_ASSERT(offsetof(BombPlantingSpotPlacement, requiredGameBit) == 0x20);
-STATIC_ASSERT(sizeof(BombPlantingSpotPlacement) == 0x24);
 
-void BombPlantingSpot_init(GameObject* obj, BombPlantingSpotPlacement* placement);
 void BombPlantingSpot_update(GameObject* obj);
+void BombPlantingSpot_init(GameObject* obj, const BombPlantingSpotPlacement* placement);
 
 extern ObjectDescriptor gBombPlantingSpotObjDescriptor;
 
-#endif /* MAIN_DLL_DLL_01AB_BOMBPLANTINGSPOT_H_ */
+#endif /* DLLS_OBJECTS_427_BOMB_PLANTIN_H_ */

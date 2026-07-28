@@ -221,6 +221,7 @@
 #include "dlls/objects/424_SH_killermu.h"
 #include "dlls/objects/425_BombPlant.h"
 #include "dlls/objects/426_BombPlantSp.h"
+#include "dlls/objects/427_BombPlantin.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -308,7 +309,7 @@ extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor;
-extern ResourceDescriptor gBaddieObjDescriptor, gBombPlantingSpotObjDescriptor, gBossDrakorObjDescriptor;
+extern ResourceDescriptor gBaddieObjDescriptor, gBossDrakorObjDescriptor;
 extern ResourceDescriptor gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDB_eggObjDescriptor, gDBstealerwormObjDescriptor,
@@ -1482,7 +1483,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gEnemyMushroomObjDescriptor,
     (ResourceDescriptor*)&gBombPlantObjDescriptor,
     (ResourceDescriptor*)&gBombPlantSporeObjDescriptor,
-    &gBombPlantingSpotObjDescriptor,
+    (ResourceDescriptor*)&gBombPlantingSpotObjDescriptor,
     &gSH_queenearthwalkerObjDescriptor,
     &gSH_thorntailObjDescriptor,
     &gSH_LevelControlObjDescriptor,
