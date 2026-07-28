@@ -1146,7 +1146,7 @@ static void SnowBike_ResetAirMeter(SnowBikeState* st)
     if (st->riderMode == 2)
     {
         (*gGameUIInterface)->initAirMeter((int)st->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
-        (*gGameUIInterface)->airMeterSetRatio(4.0f);
+        (*gGameUIInterface)->airMeterSetField24(4.0f);
     }
 }
 
@@ -2110,7 +2110,7 @@ void SnowBike_setMountState(GameObject* obj, int type)
             {
                 (*gGameUIInterface)
                     ->initAirMeter((int)((SnowBikeSetTypeState*)state)->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
-                (*gGameUIInterface)->airMeterSetRatio(4.0f);
+                (*gGameUIInterface)->airMeterSetField24(4.0f);
             }
         }
         if (obj->anim.seqId == SNOWBIKE_IM_BIKE_OBJ)
@@ -2647,7 +2647,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
             {
                 (*gGameUIInterface)
                     ->initAirMeter((int)s->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
-                (*gGameUIInterface)->airMeterSetRatio(4.0f);
+                (*gGameUIInterface)->airMeterSetField24(4.0f);
             }
         }
     }

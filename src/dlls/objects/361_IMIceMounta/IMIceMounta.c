@@ -54,7 +54,7 @@ void IMIceMountain_enterWorldMap(GameObject* obj) {
     }
     lockLevel(mapGetDirIdx(IM_ICE_MOUNTAIN_MAP_DIRECTORY), 1);
     if (playerMode == IM_ICE_MOUNTAIN_PLAYER_MODE_WORLDMAP) {
-        (*gGameUIInterface)->setShowWorldMapHud(1);
+        (*gGameUIInterface)->setCMenuShouldClose(1);
         state->eventState = IM_ICE_MOUNTAIN_HUD_STATE_WORLDMAP;
         mainSetBits(GAMEBIT_IMRelated037B, 1);
     } else {
@@ -69,7 +69,7 @@ void IMIceMountain_exitWorldMap(GameObject* obj, IMIceMountainState* state) {
     s32 playerMode;
     GameObject* player;
 
-    (*gGameUIInterface)->setShowWorldMapHud(0);
+    (*gGameUIInterface)->setCMenuShouldClose(0);
     if (mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0) {
         mainSetBits(GAMEBIT_IM_BikeRelated03A3, 0);
         mainSetBits(GAMEBIT_IM_BikeRelated03A2, 0);
@@ -85,7 +85,7 @@ void IMIceMountain_exitWorldMap(GameObject* obj, IMIceMountainState* state) {
         mainSetBits(GAMEBIT_TrickyWarpEnabled, 1);
         (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 1);
         if (playerMode == IM_ICE_MOUNTAIN_PLAYER_MODE_WORLDMAP) {
-            (*gGameUIInterface)->setShowWorldMapHud(1);
+            (*gGameUIInterface)->setCMenuShouldClose(1);
             state->eventState = IM_ICE_MOUNTAIN_HUD_STATE_WORLDMAP;
             mainSetBits(GAMEBIT_IM_BikeRelated0379, 1);
         } else {

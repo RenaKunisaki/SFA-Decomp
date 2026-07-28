@@ -89,7 +89,7 @@ static inline void sc_totembond_beginOrbGame(GameObject* obj, ScTotemBondState* 
     obj->anim.alpha = 0;
     state->eventFlags &= ~SC_TOTEM_BOND_EVENT_START_ORBS;
     state->eventFlags |= SC_TOTEM_BOND_EVENT_ORBS_ACTIVE;
-    (*gGameUIInterface)->setShowWorldMapHud(1);
+    (*gGameUIInterface)->setCMenuShouldClose(1);
     hudFn_8011f38c(1);
     (*gScreenTransitionInterface)->step(SC_TOTEM_BOND_SCREEN_TRANSITION, SC_TOTEM_BOND_SCREEN_TRANSITION_STATE);
     state->spawnTimer = SC_TOTEM_BOND_SPAWN_DELAY;

@@ -1526,7 +1526,7 @@ extern s8 gObjSeqCondFlags[];
 extern s8 gObjSeqSlotResults[];
 extern ObjSeqBgCmd lbl_8039A5BC[];
 extern u8 gObjSeqRuntimeBuffer[];
-extern int lbl_8030EDA4[];
+extern int gObjSeqScriptedButtonMasks[];
 extern ObjSeqStreamMapEntry gObjSeqStreamTableA[];
 void ObjSeq_setCamVars(int camA, int camB, int camC, int camD);
 int objSeqFindLabel(u8* seq, int label);
@@ -1697,7 +1697,7 @@ int gObjSeqSavedCamPitch;
 int gObjSeqSavedCamYaw;
 int gObjSeqSavedCamRoll;
 int gObjSeqStreamSuppressed;
-int lbl_803DD090;
+int gObjSeqInputOverrideActive;
 u8 curSeqNo;
 s16 lbl_803DD08A;
 u8 gObjSeqFovOverrideActive;
@@ -2804,7 +2804,7 @@ ObjSeqStreamMapEntry gObjSeqStreamTableB[OBJSEQ_STREAM_MAP_COUNT] = {
 
 s16 gObjSeqSlotValues[86] = {0};
 
-int lbl_8030EDA4[7] = {0x100, 0x200, 0x40000, 0x80000, 0x20000, 0x10000, -1};
+int gObjSeqScriptedButtonMasks[7] = {0x100, 0x200, 0x40000, 0x80000, 0x20000, 0x10000, -1};
 
 int gObjSeqMsgIds[] = {
     0x00050001, 0x00050002, 0x00050003, 0x00060001, 0x00060002, 0x000A0001, 0x000A0002, 0x000A0003,
@@ -4403,11 +4403,11 @@ void objSeqDoBgCmds0D(u8* seq, GameObject* obj, int skipSpawns)
     int cmdParam;
     void* resource;
     int transitionSlot;
-    int uiId;
+    int scriptedButtons;
 
-    if (lbl_803DD090 != 0 && obj->seqIndex != (s8)((ObjSeqState*)seq)->slot)
+    if (gObjSeqInputOverrideActive != 0 && obj->seqIndex != (s8)((ObjSeqState*)seq)->slot)
     {
-        (*gGameUIInterface)->setHudFields(0, 0, 0);
+        (*gGameUIInterface)->setInputOverride(0, 0, 0);
     }
 
     while (lbl_803DD113 > 0)
@@ -4487,15 +4487,15 @@ void objSeqDoBgCmds0D(u8* seq, GameObject* obj, int skipSpawns)
         case 0xd:
             if ((u8)skipSpawns == 0)
             {
-                uiId = lbl_8030EDA4[cmdParam];
-                (*gGameUIInterface)->setHudFields(uiId, 0, 0);
-                if (lbl_8030EDA4[cmdParam] != -1)
+                scriptedButtons = gObjSeqScriptedButtonMasks[cmdParam];
+                (*gGameUIInterface)->setInputOverride(scriptedButtons, 0, 0);
+                if (gObjSeqScriptedButtonMasks[cmdParam] != -1)
                 {
-                    lbl_803DD090 = 1;
+                    gObjSeqInputOverrideActive = 1;
                 }
                 else
                 {
-                    lbl_803DD090 = 0;
+                    gObjSeqInputOverrideActive = 0;
                 }
             }
             break;

@@ -156,11 +156,11 @@ int GameUI_isAnyItemBeingUsed(void);
 int GameUI_isItemBeingUsed(s32 id);
 s32 GameUI_isOneOfItemsBeingUsed(s32* ids, int count);
 void GameUI_release(void);
-int GameUI_run(void);
-void GameUI_setInputOverride(int enabled, s16 x, s16 y);
+int GameUI_frameStart(void);
+void GameUI_setInputOverride(int buttons, s16 stickX, s16 stickY);
 void GameUI_setUnusedHudSetting(u8 value);
 void GameUI_unselectAllItems(void);
-void GameUI_update(void);
+void GameUI_frameEnd(void);
 s32 CMenu_GetState(void);
 void CMenu_SetShouldClose(int value);
 #ifdef FEAR_TEST_METER_POSITION_INT

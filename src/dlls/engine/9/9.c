@@ -324,7 +324,7 @@ void renderClouds(int a, int b, int c, int d)
     }
 }
 
-void cloudaction_func05(void)
+void cloudaction_scrollTexture(void)
 {
     ObjTextureRuntimeSlot* tex;
     if (lbl_8039AB28.mainCloudObj != NULL)
@@ -481,7 +481,7 @@ ResourceDescriptorCallbacks14 lbl_8030F7E8 = {
      0x00000000,
      (ResourceDescriptorCallback)cloudaction_update,
      (ResourceDescriptorCallback)cloudaction_onMapSetup,
-     (ResourceDescriptorCallback)cloudaction_func05,
+     (ResourceDescriptorCallback)cloudaction_scrollTexture,
      (ResourceDescriptorCallback)renderClouds,
      (ResourceDescriptorCallback)cloudaction_free,
      (ResourceDescriptorCallback)cloudaction_func08_nop,

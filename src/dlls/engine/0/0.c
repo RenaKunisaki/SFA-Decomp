@@ -371,7 +371,7 @@ extern f32 lbl_803DD764;
 extern int lbl_803DD8DC;
 extern int lbl_803DD7D8;
 extern int gCMenuScriptedButtons;
-extern s16 lbl_803DD89E;
+extern s16 gCMenuScriptedStickX;
 extern s16 gCMenuScriptedStickY;
 extern s8 gCMenuScriptedInput;
 extern u8 arwingHudVisible;
@@ -827,10 +827,10 @@ int GameUI_isItemBeingUsed(s32 id);
 int GameUI_isAnyItemBeingUsed(void);
 void GameUI_hudDraw(int a, int b, int c);
 void showHelpText(s16 val);
-void GameUI_update(void);
+void GameUI_frameEnd(void);
 void cMenuSelectItemByTarget(int idx, s16 target, s8 flag);
 void cMenuSelectFirstEnabledItem(int idx, s8 flag);
-int GameUI_run(void);
+int GameUI_frameStart(void);
 void GameUI_setUnusedHudSetting(u8 val);
 void CMenu_SetShouldClose(int val);
 void GameUI_release(void);
@@ -2203,19 +2203,19 @@ void GameUI_showItemInfoPopup(s16 itemGamebit, int displayDuration, int itemCoun
     }
 }
 
-void GameUI_setInputOverride(int x, s16 a, s16 b)
+void GameUI_setInputOverride(int buttons, s16 stickX, s16 stickY)
 {
-    if (x == -1)
+    if (buttons == -1)
     {
         gCMenuScriptedButtons = 0;
-        lbl_803DD89E = 0;
+        gCMenuScriptedStickX = 0;
         gCMenuScriptedStickY = 0;
         gCMenuScriptedInput = 0;
         return;
     }
-    gCMenuScriptedButtons = x;
-    lbl_803DD89E = a;
-    gCMenuScriptedStickY = b;
+    gCMenuScriptedButtons = buttons;
+    gCMenuScriptedStickX = stickX;
+    gCMenuScriptedStickY = stickY;
     gCMenuScriptedInput = 1;
 }
 
@@ -2882,8 +2882,8 @@ u32 lbl_8031C020[33] = {0x00000000,
                         (u32)GameUI_initialise,
                         (u32)GameUI_release,
                         0x00000000,
-                        (u32)GameUI_run,
-                        (u32)GameUI_update,
+                        (u32)GameUI_frameStart,
+                        (u32)GameUI_frameEnd,
                         (u32)GameUI_hudDraw,
                         (u32)GameUI_unselectAllItems,
                         (u32)GameUI_requestPlayerStatsSnapshot,
@@ -8660,7 +8660,7 @@ void showHelpText(s16 val)
 }
 
 /* Per-frame UI/pause-menu update + dispatch. */
-void GameUI_update(void)
+void GameUI_frameEnd(void)
 {
     GameObject* player = Obj_GetPlayerObject();
     GameObject* tricky = getTrickyObject();
@@ -8675,7 +8675,7 @@ void GameUI_update(void)
     lbl_803DD898 = getButtonsHeld(0);
     if (gCMenuScriptedInput != 0)
     {
-        cx = lbl_803DD89E;
+        cx = gCMenuScriptedStickX;
     }
     else
     {
@@ -9053,7 +9053,7 @@ void cMenuSelectFirstEnabledItem(int idx, s8 flag)
  * Otherwise: optionally runs drawWorldMapHud (if mapScreenVisible set), runs
  * gameTextFadeOut, optionally runs cMenuRun (if cMenuEnabled set),
  * runs npcTalkFn_8012e880, returns 0. */
-int GameUI_run(void)
+int GameUI_frameStart(void)
 {
     if (gameUiResourcesLoaded == 0)
     {
@@ -9262,7 +9262,7 @@ s8 gCMenuScriptedInput;
 int lbl_803DD8A8;
 u32 gCMenuButtons;
 int gCMenuScriptedButtons;
-s16 lbl_803DD89E;
+s16 gCMenuScriptedStickX;
 s16 gCMenuScriptedStickY;
 int lbl_803DD898;
 s8 gCMenuPreselectOwnedBit;

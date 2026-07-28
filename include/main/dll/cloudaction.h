@@ -20,7 +20,7 @@ extern s32 lbl_803DB618[2];
 void cloudaction_func08_nop(void);
 void cloudaction_func09_nop(void);
 void cloudaction_free(void);
-void cloudaction_func05(void);
+void cloudaction_scrollTexture(void);
 void cloudaction_onMapSetup(void);
 void cloudaction_update(int p1, int p2, u8* state, int p4, int val);
 void cloudaction_release(void);
