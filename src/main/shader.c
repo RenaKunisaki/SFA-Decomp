@@ -2100,7 +2100,7 @@ void doPendingMapLoads(void)
     char** aBase;
     char* cellGrid;
     int row;
-    int unusedColumn;
+    int n;
     int gridPass;
     MapLoadRec recs[300];
     int rectA[4], rectB[4], rectC[4], rectD[4];
@@ -2342,7 +2342,7 @@ void doPendingMapLoads(void)
                             {
                                 for (col = 0; col < 7; col++)
                                 {
-                                    for (unusedColumn = 0; unusedColumn < 16; unusedColumn++)
+                                    for (n = 0; n < 16; n++)
                                     {
                                         cellGrid += 12;
                                     }
@@ -2381,20 +2381,19 @@ void doPendingMapLoads(void)
                                 {
                                     int loadedCount = 0;
                                     int zc[2];
-                                    int blockX;
                                     char* cellState;
                                     zc[0] = 0;
                                     zc[1] = zc[0];
                                     cellState = g3;
                                     do
                                     {
-                                        for (blockX = 0; blockX < 16; blockX++)
+                                        for (col = 0; col < 16; col++)
                                         {
-                                            int bx = gMapBlockOriginX + blockX;
+                                            int bx = gMapBlockOriginX + col;
                                             int bz = gMapBlockOriginZ + zc[1];
                                             if (*cellState == -3)
                                             {
-                                                if (mapLoadBlock(blockX, zc[1], bx, bz, layer) == 0)
+                                                if (mapLoadBlock(col, zc[1], bx, bz, layer) == 0)
                                                 {
                                                     *cellState = -2;
                                                 }
@@ -2456,18 +2455,16 @@ void doPendingMapLoads(void)
                                 MapBlockData* block = gMapBlocks[blockId];
                                 MapShader* shader;
                                 MapShaderLayer* shaderLayer;
-                                int shaderIndex;
-                                int layerIndex;
-                                int textureIndex;
+                                int k;
                                 u32 scrollSlot;
                                 gMapBlockIds[blockId] = -1;
                                 gMapBlocks[blockId] = NULL;
-                                for (shaderIndex = 0; shaderIndex < block->shaderCount; shaderIndex++)
+                                for (n = 0; n < block->shaderCount; n++)
                                 {
-                                    shader = &block->shaders[shaderIndex];
-                                    for (layerIndex = 0; layerIndex < shader->layerCount; layerIndex++)
+                                    shader = &block->shaders[n];
+                                    for (k = 0; k < shader->layerCount; k++)
                                     {
-                                        shaderLayer = &shader->layers[layerIndex];
+                                        shaderLayer = &shader->layers[k];
                                         scrollSlot = shaderLayer->scrollMtx;
                                         if (scrollSlot != 0xff)
                                         {
@@ -2479,8 +2476,8 @@ void doPendingMapLoads(void)
                                                                       shaderLayer->overrideType);
                                     }
                                 }
-                                for (textureIndex = 0; textureIndex < block->textureCount; textureIndex++)
-                                    textureFree(block->textures[textureIndex].texture);
+                                for (n = 0; n < block->textureCount; n++)
+                                    textureFree(block->textures[n].texture);
                                 if (block->auxData != NULL)
                                     mm_free(block->auxData);
                                 if (block->hits != NULL)
