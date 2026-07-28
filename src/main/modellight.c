@@ -44,26 +44,13 @@ STATIC_ASSERT(sizeof(ModelLightCornerBlock) == 0x60);
 #define LIGHTCLIP_NEAR   0x10 /* worldZ < nearZ */
 #define LIGHTCLIP_FAR    0x20 /* worldZ > farZ */
 
-extern f32 lbl_803DE750;
-extern f32 lbl_803DE754;
-extern f32 lbl_803DE758;
-extern f32 lbl_803DE76C;
-extern f32 lbl_803DE790;
-extern f32 lbl_803DE79C;
-extern f32 lbl_803DE7A0;
 u8 gModelLightColorTable[8] = {0};
-extern f32 lbl_803DE764;
-extern f32 lbl_803DE778;
-extern f32 lbl_803DE78C;
-extern f32 lbl_803DE794;
-extern f32 lbl_803DE798;
-extern f32 lbl_803DE7A4;
-extern f32 lbl_803DE768;
 const ModelLightCornerBlock gModelLightCornerBlock = {{
     1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f,
     -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f,
     -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f}};
 
+extern f32 lbl_803DE790;
 extern ModelLightStruct* gModelLightList[0x32];
 
 static inline void modelLightRemoveAndFree(ModelLightStruct* light)
@@ -144,9 +131,9 @@ ModelLightStruct* modelLightStruct_createPointLight(void* owner, u8 red, u8 gree
         light->diffuseFadeStartColor[3] = 0;
         light->diffuseColor[3] = 0;
         light->fieldBC = 1;
-        light->attenuationNear = lbl_803DE750;
-        light->attenuationFar = lbl_803DE754;
-        GXInitLightDistAttn(&light->diffuseLightObj, light->attenuationNear, lbl_803DE758, GX_DA_MEDIUM);
+        light->attenuationNear = 50.0f;
+        light->attenuationFar = 80.0f;
+        GXInitLightDistAttn(&light->diffuseLightObj, light->attenuationNear, 0.75f, GX_DA_MEDIUM);
         GXGetLightAttnK(&light->diffuseLightObj, &light->attenuationK0, &light->attenuationK1,
                         &light->attenuationK2);
         if (setFlag != 0)
@@ -270,7 +257,7 @@ f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj
 
     PSVECSubtract(&obj->anim.worldPosX, &light->worldX, delta);
     dist = PSVECMag(delta) - obj->anim.hitboxScale * obj->anim.rootMotionScale;
-    if (dist > lbl_803DE768 || dist > light->attenuationFar)
+    if (dist > 1000.0f || dist > light->attenuationFar)
     {
         return 0.0f;
     }
@@ -307,7 +294,7 @@ void modelLightStruct_updateColorFade(ModelLightStruct* light)
         light->colorFadeTimer += light->colorFadeStep * timeDelta;
         if (light->colorFadeTimer >= 1.0f)
         {
-            light->colorFadeProgress = randomGetRange(0, 100) / lbl_803DE778;
+            light->colorFadeProgress = randomGetRange(0, 100) / 100.0f;
             light->colorFadeTimer = 0.0f;
         }
         break;
@@ -485,14 +472,14 @@ f32* modelLightStruct_getProjectionTexMtx(ModelLightStruct* p)
 
 void modelLightStruct_setProjectionFarZ(ModelLightStruct* p, f32 v)
 {
-    p->projectionFarZ = (v < p->projectionNearZ) ? p->projectionNearZ : ((v > lbl_803DE764) ? lbl_803DE764 : v);
+    p->projectionFarZ = (v < p->projectionNearZ) ? p->projectionNearZ : ((v > 500.0f) ? 500.0f : v);
 }
 
 ModelLightStruct* gModelLightList[0x32];
 
 void modelLightStruct_setProjectionNearZ(ModelLightStruct* p, f32 v)
 {
-    p->projectionNearZ = (v < lbl_803DE78C) ? lbl_803DE78C : ((v > p->projectionFarZ) ? p->projectionFarZ : v);
+    p->projectionNearZ = (v < 10.0f) ? 10.0f : ((v > p->projectionFarZ) ? p->projectionFarZ : v);
 }
 
 void modelLightStruct_setupPerspectiveProjection(ModelLightStruct* obj, f32 fovY, f32 aspect)
@@ -701,7 +688,7 @@ void modelLightStruct_setEnabled(ModelLightStruct* light, u8 enabled, f32 durati
         if (light->activeState == 0 || light->activeState == 3)
         {
             light->activeState = 1;
-            light->activeIntensityStep = 1.0f / (lbl_803DE794 * duration);
+            light->activeIntensityStep = 1.0f / (60.0f * duration);
             light->activeIntensity = 0.0f;
         }
         light->enabled = 1;
@@ -713,7 +700,7 @@ void modelLightStruct_setEnabled(ModelLightStruct* light, u8 enabled, f32 durati
         return;
     }
     light->activeState = 3;
-    light->activeIntensityStep = lbl_803DE798 / (lbl_803DE794 * duration);
+    light->activeIntensityStep = -1.0f / (60.0f * duration);
     light->activeIntensity = 1.0f;
 }
 
@@ -721,7 +708,7 @@ void modelLightStruct_setDistanceAttenuation(ModelLightStruct* light, f32 near, 
 {
     light->attenuationNear = near;
     light->attenuationFar = far;
-    GXInitLightDistAttn(&light->diffuseLightObj, light->attenuationNear, lbl_803DE758, GX_DA_MEDIUM);
+    GXInitLightDistAttn(&light->diffuseLightObj, light->attenuationNear, 0.75f, GX_DA_MEDIUM);
     GXGetLightAttnK(&light->diffuseLightObj, &light->attenuationK0, &light->attenuationK1, &light->attenuationK2);
 }
 
@@ -893,9 +880,9 @@ ModelLightStruct* objAllocLight(void* owner)
     modelLightStruct_setEnabled(light, 1, 0.0f);
     light->lightKind = MODEL_LIGHT_KIND_DIRECTIONAL;
     light->projectedLightChannelPreference = 1;
-    light->attenuationNear = lbl_803DE750;
-    light->attenuationFar = lbl_803DE754;
-    GXInitLightDistAttn(&light->diffuseLightObj, light->attenuationNear, lbl_803DE758, GX_DA_MEDIUM);
+    light->attenuationNear = 50.0f;
+    light->attenuationFar = 80.0f;
+    GXInitLightDistAttn(&light->diffuseLightObj, light->attenuationNear, 0.75f, GX_DA_MEDIUM);
     GXGetLightAttnK(&light->diffuseLightObj, &light->attenuationK0, &light->attenuationK1, &light->attenuationK2);
     zero = 0.0f;
     light->attenuationFar = zero;
@@ -913,7 +900,7 @@ ModelLightStruct* objAllocLight(void* owner)
     light->diffuseColor[2] = 0xff;
     light->diffuseFadeStartColor[3] = 0xff;
     light->diffuseColor[3] = 0xff;
-    light->spotCutoff = lbl_803DE79C;
+    light->spotCutoff = 90.0f;
     light->spotFunction = 0;
     GXInitLightAttnA(&light->diffuseLightObj, 1.0f, zero, zero);
     light->field114 = 0;
@@ -925,8 +912,8 @@ ModelLightStruct* objAllocLight(void* owner)
     light->specularColor[2] = 0xff;
     light->specularFadeStartColor[3] = 0xff;
     light->specularColor[3] = 0xff;
-    light->specularAttenuationScale = lbl_803DE7A0;
-    light->specularBrightness = lbl_803DE76C;
+    light->specularAttenuationScale = 4.0f;
+    light->specularBrightness = 255.0f;
     atten = light->specularAttenuationScale * lbl_803DE790;
     GXInitLightAttn(&light->specularLightObj, 0.0f, 0.0f, 1.0f, atten, 0.0f, 1.0f - atten);
     modelLightStruct_startColorFade(light, 0, 0);
@@ -1029,7 +1016,7 @@ void modelLightStruct_loadDiffuseGXLight(ModelLightStruct* light, GameObject* ob
             viewPos[1] = 0.0f;
             viewPos[2] = 0.0f;
         }
-        PSVECScale(&light->viewDirX, &light->viewX, lbl_803DE7A4);
+        PSVECScale(&light->viewDirX, &light->viewX, -100000.0f);
         PSVECAdd(&light->viewX, viewPos, viewPos);
         GXInitLightPos(&light->diffuseLightObj, viewPos[0], viewPos[1], viewPos[2]);
         color = *(GXColor*)light->diffuseColor;
@@ -1196,9 +1183,9 @@ void modelLightStruct_selectBrightestAabbLights(f32 minX, f32 minY, f32 minZ, f3
     int candidateCount;
     int selectedCount;
 
-    center[0] = lbl_803DE790 * (minX + maxX);
-    center[1] = lbl_803DE790 * (minY + maxY);
-    center[2] = lbl_803DE790 * (minZ + maxZ);
+    center[0] = 0.5f * (minX + maxX);
+    center[1] = 0.5f * (minY + maxY);
+    center[2] = 0.5f * (minZ + maxZ);
 
     candidateCount = 0;
     for (i = 0; i < gModelLightCount; i++)
@@ -1297,7 +1284,7 @@ void modelLightStruct_selectObjectLights(GameObject* obj, ModelLightStruct** out
             lightType = light->lightKind;
             if (lightType == 4)
             {
-                light->selectionScore = lbl_803DE768;
+                light->selectionScore = 1000.0f;
             }
             else if (lightType == 8)
             {
@@ -1306,7 +1293,7 @@ void modelLightStruct_selectObjectLights(GameObject* obj, ModelLightStruct** out
                 {
                     PSVECSubtract(&obj->anim.worldPosX, &light->worldX, delta);
                     dist = PSVECMag(delta);
-                    intensity = lbl_803DE764;
+                    intensity = 500.0f;
                     light->selectionScore = intensity + intensity / dist;
                     light->lightAmount = modelLightStruct_getObjectIntensity(light, obj);
                 }

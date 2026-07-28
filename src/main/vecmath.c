@@ -6,23 +6,20 @@
 
 typedef f32 Mtx[3][4];
 
-extern double lbl_803DE7D8;
 extern f32 gVecMathAngleScale;
 extern f32 lbl_803DE7C0;
-extern f32 lbl_803DE7C4;
 extern f32 gVecMathPi;
-extern f32 lbl_803DE7EC;
 extern f32 gVecMathHalfPi;
 extern f32 gVecMathNegHalfPi;
 extern f32 gVecMathTwoPi;
 
 f32 interpolate(f32 a, f32 t, f32 exp)
 {
-    if (t <= lbl_803DE7C4)
+    if (t <= 1.0f)
     {
-        return a * (lbl_803DE7C4 - powfBitEstimate(lbl_803DE7C4 - t, exp));
+        return a * (1.0f - powfBitEstimate(1.0f - t, exp));
     }
-    return lbl_803DE7C0;
+    return 0.0f;
 }
 void basisVectorsToEulerAngles(f32* a, f32* b, s16* out0, s16* out1, s16* out2)
 {
@@ -55,12 +52,12 @@ void basisVectorsToEulerAngles(f32* a, f32* b, s16* out0, s16* out1, s16* out2)
         }
         else
         {
-            roll = -__kernel_cos(c1, c0) + (yaw = lbl_803DE7C0);
+            roll = -__kernel_cos(c1, c0) + (yaw = 0.0f);
         }
     }
     else
     {
-        roll = __kernel_cos(c1, c0) - (yaw = lbl_803DE7C0);
+        roll = __kernel_cos(c1, c0) - (yaw = 0.0f);
     }
     {
         f32 twoPi;
@@ -142,22 +139,22 @@ int cos16(s16 angle)
 
 int atan2_8002178c(float y, float x)
 {
-    return (int)(lbl_803DE7D8 * atan2f(y, x));
+    return (int)(10430.37835 * atan2f(y, x));
 }
 
 int getAngle(float y, float x)
 {
-    return (int)(lbl_803DE7D8 * atan2f(y, x));
+    return (int)(10430.37835 * atan2f(y, x));
 }
 
 int atan2i(int y, int x)
 {
-    return (int)(lbl_803DE7D8 * atan2f((f32)y, x));
+    return (int)(10430.37835 * atan2f((f32)y, x));
 }
 
 void initRotationMtx(f32* m, f32 a, f32 b, f32 c)
 {
-    f32 z = lbl_803DE7C0;
+    f32 z = 0.0f;
     m[0] = z;
     m[1] = z;
     m[2] = z;
@@ -188,28 +185,28 @@ void vecRotateYXZ(s16* a, f32* v)
     y = v[1];
     z = v[2];
 
-    c = mathSinf((gVecMathPi * a[0]) / lbl_803DE7EC);
+    c = mathSinf((gVecMathPi * a[0]) / 32768.0f);
     s1 = x * c;
     s2 = z * c;
-    c = mathCosf((gVecMathPi * a[0]) / lbl_803DE7EC);
+    c = mathCosf((gVecMathPi * a[0]) / 32768.0f);
     x *= c;
     z *= c;
     x += s2;
     z -= s1;
 
-    c = mathSinf((gVecMathPi * a[1]) / lbl_803DE7EC);
+    c = mathSinf((gVecMathPi * a[1]) / 32768.0f);
     s1 = y * c;
     s2 = z * c;
-    c = mathCosf((gVecMathPi * a[1]) / lbl_803DE7EC);
+    c = mathCosf((gVecMathPi * a[1]) / 32768.0f);
     y *= c;
     z *= c;
     y -= s2;
     z += s1;
 
-    c = mathSinf((gVecMathPi * a[2]) / lbl_803DE7EC);
+    c = mathSinf((gVecMathPi * a[2]) / 32768.0f);
     s1 = x * c;
     s2 = y * c;
-    c = mathCosf((gVecMathPi * a[2]) / lbl_803DE7EC);
+    c = mathCosf((gVecMathPi * a[2]) / 32768.0f);
     x *= c;
     y *= c;
     x -= s2;
@@ -333,14 +330,11 @@ void mtxRotateByVec3s(f32* mtx, const void* transform)
     s = s * z;
     t1 = t1 + s;
     mtx[14] = t1;
-    mtx[15] = lbl_803DE7C4;
+    mtx[15] = 1.0f;
 }
 
 extern f32 lbl_803DE808;
 extern f32 lbl_803DE80C;
-extern f32 lbl_803DE810;
-extern f32 lbl_803DE7F8;
-extern f32 lbl_803DE7F4;
 
 void mtx44ScaleRow1(f32* p, f32 s)
 {
@@ -367,7 +361,7 @@ void setMatrixFromObjectPos(f32* m, const MatrixTransform* transform)
     m[0] = scale * (s2 * (s1 * s0) + c2 * c0);
     m[1] = scale * (s2 * c1);
     m[2] = scale * (s2 * (s1 * c0) - c2 * s0);
-    zero = lbl_803DE7C0;
+    zero = 0.0f;
     m[3] = zero;
     m[4] = scale * (c2 * (s1 * s0) - s2 * c0);
     m[5] = scale * (c2 * c1);
@@ -380,7 +374,7 @@ void setMatrixFromObjectPos(f32* m, const MatrixTransform* transform)
     m[12] = transform->x;
     m[13] = transform->y;
     m[14] = transform->z;
-    m[15] = lbl_803DE7C4;
+    m[15] = 1.0f;
 }
 int RandomTimer_UpdateRangeTrigger(void* timerp, f32 lo, f32 hi)
 {
@@ -392,7 +386,7 @@ int RandomTimer_UpdateRangeTrigger(void* timerp, f32 lo, f32 hi)
     f32 freq;
     f32 t;
 
-    *timer += timeDelta / (freq = lbl_803DE7F4);
+    *timer += timeDelta / (freq = 60.0f);
     if (*timer > lo)
     {
         if (*timer > hi)
@@ -411,8 +405,8 @@ int RandomTimer_UpdateRangeTrigger(void* timerp, f32 lo, f32 hi)
                 rv = rand();
                 {
                     f32 acc = rv;
-                    acc = acc / lbl_803DE7F8;
-                    acc = acc * ((lbl_803DE7C4 + range) - (t = lbl_803DE7C0));
+                    acc = acc / 4294967296.0f;
+                    acc = acc * ((1.0f + range) - (t = 0.0f));
                     acc = acc + t;
                     val = acc;
                 }
@@ -421,7 +415,7 @@ int RandomTimer_UpdateRangeTrigger(void* timerp, f32 lo, f32 hi)
         }
         if (trig != 0)
         {
-            *timer = lbl_803DE7C0;
+            *timer = 0.0f;
         }
         return trig;
     }
@@ -436,8 +430,8 @@ int randomGetRange(int lo, int hi)
         return lo;
     }
     v = (f32)(u32)rand();
-    v = v / lbl_803DE7F8;
-    v = v * (lbl_803DE7C4 + hi - lo);
+    v = v / 4294967296.0f;
+    v = v * (1.0f + hi - lo);
     v = v + lo;
     return v;
 }
@@ -664,9 +658,9 @@ f32 Vec3_Normalize(f32* vector)
     f32 inverseLength;
 
     length = sqrtf(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
-    if (lbl_803DE808 != length)
+    if (0.0f != length)
     {
-        inverseLength = lbl_803DE810 / length;
+        inverseLength = 1.0f / length;
         vector[0] *= inverseLength;
         vector[1] *= inverseLength;
         vector[2] *= inverseLength;
