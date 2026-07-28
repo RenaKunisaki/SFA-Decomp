@@ -2916,6 +2916,7 @@ void ObjModel_BlendNormalStream(u8* mtxs, u8* job, u8* animData, u8** outs, int 
         u32 i;
         u32 nextSlot;
         u8* chunkDst;
+        u8* lastChunk;
 
         chunk = *(u8**)(job + 0xc);
         vtxWords = (u32)((chunk[0x73] << 5) + 0x1f) >> 5;
@@ -2957,26 +2958,26 @@ void ObjModel_BlendNormalStream(u8* mtxs, u8* job, u8* animData, u8** outs, int 
                 memcpyToCache(chunkDst, gModelCacheBuffersA[(u8)((i & 1) * 2)], chunkWords[i & 1]);
             }
         }
-        chunk = *(u8**)(job + 0xc) + i * 0x74;
+        lastChunk = *(u8**)(job + 0xc) + i * 0x74;
         cacheQueueWait(0);
         if ((u8)quad)
         {
             chunkDst = outs[i];
-            ObjModel_TransformQuadVerticesLinear(mtxs + chunk[0x6c] * 0x30, mtxs + chunk[0x6d] * 0x30,
+            ObjModel_TransformQuadVerticesLinear(mtxs + lastChunk[0x6c] * 0x30, mtxs + lastChunk[0x6d] * 0x30,
                                                  gModelCacheBuffersA[(u8)((i & 1) * 2) + 1],
-                                                 chunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
-                                                 chunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
-                                                 *(u16*)(chunk + 0x70));
+                                                 lastChunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
+                                                 lastChunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
+                                                 *(u16*)(lastChunk + 0x70));
             memcpyToCache(chunkDst, gModelCacheBuffersA[(u8)((i & 1) * 2)], chunkWords[i & 1]);
         }
         else
         {
             chunkDst = outs[i];
-            ObjModel_TransformVerticesLinear(mtxs + chunk[0x6c] * 0x30, mtxs + chunk[0x6d] * 0x30,
+            ObjModel_TransformVerticesLinear(mtxs + lastChunk[0x6c] * 0x30, mtxs + lastChunk[0x6d] * 0x30,
                                              gModelCacheBuffersA[(u8)((i & 1) * 2) + 1],
-                                             chunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
-                                             chunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
-                                             *(u16*)(chunk + 0x70));
+                                             lastChunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
+                                             lastChunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
+                                             *(u16*)(lastChunk + 0x70));
             memcpyToCache(chunkDst, gModelCacheBuffersA[(u8)((i & 1) * 2)], chunkWords[i & 1]);
         }
         cacheQueueWait(0);
