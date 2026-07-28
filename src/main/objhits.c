@@ -2340,7 +2340,6 @@ void ObjHits_Update(int objectCount)
     u8 skeletonScratchD[100];
     u8 skeletonScratchE[100];
     int listObj;
-    ObjHitsPriorityState* listState;
     ObjHitsSweepEntry* nextEntry;
     ObjHitsSweepEntry** entrySlot;
     int slotIndex;
@@ -2376,6 +2375,8 @@ void ObjHits_Update(int objectCount)
     for (; objectCount > 0; objectCount--)
     {
         {
+            ObjHitsPriorityState* listState;
+
             listObj = *objectList;
             listState = (ObjHitsPriorityState*)((GameObject*)listObj)->anim.hitReactState;
             if (listState != NULL)

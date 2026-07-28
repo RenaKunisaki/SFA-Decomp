@@ -2086,7 +2086,6 @@ void doPendingMapLoads(void)
     char* base;
     MapLoadRec* savedBlocks;
     int doLoad;
-    MapCellEntry** eBase;
     u8 waited;
     int col;
     int slot;
@@ -2156,6 +2155,8 @@ void doPendingMapLoads(void)
             }
             if (gx != 7 || gz != 7 || doLoad != 0 || (renderFlags & 0x4000))
             {
+                MapCellEntry** eBase;
+
                 shadowVolumesSetDirty(1);
                 doNothing_8001F678(1, 0);
                 cnt = 0;
