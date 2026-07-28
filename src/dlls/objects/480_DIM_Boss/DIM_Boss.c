@@ -1329,7 +1329,7 @@ ObjectDescriptor12 gDIM_BossObjDescriptor = {
     (ObjectDescriptorCallback)DIMboss_free,
     (ObjectDescriptorCallback)DIMboss_getObjectTypeId,
     DIMboss_getExtraSize,
-    (ObjectDescriptorCallback)DIMboss_setScale,
+    (ObjectDescriptorCallback)DIMboss_getControlMode,
     DIMboss_func0B,
 };
 
@@ -1625,7 +1625,7 @@ int DIMboss_updateState(GameObject* obj, u32 state, ObjAnimUpdateState* animUpda
 void DIMboss_func0B(void) {
 }
 
-int DIMboss_setScale(GameObject* obj) {
+int DIMboss_getControlMode(GameObject* obj) {
     return ((DIMbossRuntime*)obj->extra)->scale;
 }
 

@@ -42,7 +42,7 @@ typedef struct KtrexState
     u8 pad0[0x38];
     f32 unk38;
     u8 pad3C[0x274 - 0x3C];
-    s16 scale;
+    s16 controlMode;
     u8 pad276[0x5A4 - 0x276];
 } KtrexState;
 

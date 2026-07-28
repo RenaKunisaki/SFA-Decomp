@@ -109,7 +109,7 @@ int tumbleweed_func0E(GameObject* obj);
 void tumbleweed_render2(GameObject* obj, f32* targetPos);
 void tumbleweed_modelMtxFn(GameObject* obj);
 void tumbleweed_func0B(GameObject* obj, f32 x, f32 z);
-int tumbleweed_setScale(GameObject* obj);
+int tumbleweed_getPhase(GameObject* obj);
 int tumbleweed_getExtraSize(void);
 void tumbleweed_free(GameObject* obj);
 void tumbleweed_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible);

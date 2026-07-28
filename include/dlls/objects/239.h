@@ -168,7 +168,7 @@ void pushable_handleMsgs(GameObject* obj, int unused);
 int pushable_render2(GameObject* obj);
 void pushable_modelMtxFn(GameObject* obj, int modelNo);
 int pushable_func0B(GameObject* obj, GameObject* other);
-int pushable_setScale(GameObject* obj, GameObject* target, int active, f32 pushX, f32 pushZ);
+int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f32 pushZ);
 int pushable_getExtraSize(void);
 int pushable_getObjectTypeId(void);
 void pushable_free(GameObject* obj);

@@ -2160,7 +2160,7 @@ u8 SnowBike_func0B(GameObject* obj)
     return ((SnowBikeState*)obj->extra)->playerInRange;
 }
 
-u32 SnowBike_setScale(GameObject* obj)
+u32 SnowBike_canUseDismountPoint(GameObject* obj)
 {
     int state = *(int*)&obj->extra;
     u32 bit = (((SnowBikeMountState*)state)->flags >> 1) & 1;
@@ -2819,7 +2819,7 @@ ObjectDescriptor24 gSnowBikeObjDescriptor = {
     (ObjectDescriptorCallback)SnowBike_free,
     (ObjectDescriptorCallback)SnowBike_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)SnowBike_getExtraSize,
-    (ObjectDescriptorCallback)SnowBike_setScale,
+    (ObjectDescriptorCallback)SnowBike_canUseDismountPoint,
     (ObjectDescriptorCallback)SnowBike_func0B,
     (ObjectDescriptorCallback)SnowBike_modelMtxFn,
     (ObjectDescriptorCallback)SnowBike_render2,

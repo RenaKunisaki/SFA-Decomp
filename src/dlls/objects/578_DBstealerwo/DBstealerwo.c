@@ -2216,7 +2216,7 @@ int dbstealerworm_func0B(GameObject* obj, u8 msg, int* out)
 }
 
 
-s16 dbstealerworm_setScale(GameObject* obj)
+s16 dbstealerworm_getControlMode(GameObject* obj)
 {
     return ((BaddieState*)obj->extra)->controlMode;
 }
@@ -2569,7 +2569,7 @@ u32 gDBstealerwormObjDescriptor[39] = {0x00000000,
                                        (u32)dbstealerworm_free,
                                        (u32)dbstealerworm_getObjectTypeId,
                                        (u32)dbstealerworm_getExtraSize,
-                                       (u32)dbstealerworm_setScale,
+                                       (u32)dbstealerworm_getControlMode,
                                        (u32)dbstealerworm_func0B,
                                        0x20537461,
                                        0x636b202d,

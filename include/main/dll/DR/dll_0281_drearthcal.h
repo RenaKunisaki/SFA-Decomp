@@ -16,7 +16,7 @@ STATIC_ASSERT(offsetof(DREarthCalSetup, yaw) == 0x18);
 
 extern ObjectDescriptor12 gDrEarthCalObjDescriptor;
 
-int drearthcal_setScale(void);
+int drearthcal_func0A(void);
 int drearthcal_getExtraSize(void);
 int drearthcal_getObjectTypeId(void);
 void drearthcal_free(void);

@@ -9,7 +9,7 @@
  * spawns directional fx, accepts a priority hit of type 0x1a to be cut) -> CUT
  * -> HARVESTED. The shared "seeds carried" counter is game bit 0x86A; planting
  * decrements it and runs object sequence 0. render tints the model per phase;
- * setScale is the trigger-volume callback that cuts/harvests.
+ * MoonSeedPlantingSpot_cutOrHarvest is the trigger-volume callback that cuts/harvests.
  */
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
@@ -73,7 +73,7 @@ int MoonSeedPlantingSpot_func0B(void)
     return 0x0;
 }
 
-int MoonSeedPlantingSpot_setScale(GameObject* obj, int arg)
+int MoonSeedPlantingSpot_cutOrHarvest(GameObject* obj, int arg)
 {
     ObjPlacement* placement;
     MoonSeedPlantingSpotState* held;
@@ -401,7 +401,7 @@ ObjectDescriptor14 gMoonSeedPlantingSpotObjDescriptor = {
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_free,
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_getObjectTypeId,
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_getExtraSize,
-    (ObjectDescriptorCallback)MoonSeedPlantingSpot_setScale,
+    (ObjectDescriptorCallback)MoonSeedPlantingSpot_cutOrHarvest,
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_func0B,
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_modelMtxFn,
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_render2,

@@ -178,7 +178,7 @@ int drakorhoverpad_func0B(void)
     return 0x1;
 }
 
-int drakorhoverpad_setScale(GameObject* obj)
+int drakorhoverpad_canUseDismountPoint(GameObject* obj)
 {
     u8* p = obj->extra;
     return (p[0x179] >> 2) & 1;
@@ -393,7 +393,7 @@ ObjectDescriptor24 gDrakorHoverPadObjDescriptor = {
     (ObjectDescriptorCallback)drakorhoverpad_free,
     (ObjectDescriptorCallback)drakorhoverpad_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)drakorhoverpad_getExtraSize,
-    (ObjectDescriptorCallback)drakorhoverpad_setScale,
+    (ObjectDescriptorCallback)drakorhoverpad_canUseDismountPoint,
     (ObjectDescriptorCallback)drakorhoverpad_func0B,
     (ObjectDescriptorCallback)drakorhoverpad_modelMtxFn,
     (ObjectDescriptorCallback)drakorhoverpad_render2,

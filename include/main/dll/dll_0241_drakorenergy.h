@@ -25,7 +25,7 @@ typedef struct DrakorenergyPlacement
     u8 pad_2F[0x30 - 0x2F];
 } DrakorenergyPlacement;
 
-int drakorenergy_setScale(GameObject* obj);
+int drakorenergy_isIdle(GameObject* obj);
 void DrakorEnergy_func0B_nop(void);
 int drakorenergy_getExtraSize(void);
 int drakorenergy_getObjectTypeId(void);

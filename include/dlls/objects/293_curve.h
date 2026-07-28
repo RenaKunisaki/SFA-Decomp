@@ -21,7 +21,7 @@ STATIC_ASSERT(offsetof(CurvePlacement, pad2E) == 0x2E);
 STATIC_ASSERT(offsetof(CurvePlacement, roll) == 0x38);
 
 int curve_func0B(void);
-void curve_setScale(void);
+void curve_func0A(void);
 int curve_getExtraSize(void);
 int curve_getObjectTypeId(void);
 void curve_free(void);

@@ -126,7 +126,7 @@ void kaldachom_spawnMouthProjectile(GameObject* obj, KaldachomState* state, u8 u
 void kaldachom_handleAnimEvents(GameObject* obj, KaldachomState* objectState, GroundBaddieState* state);
 void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAddress);
 void kaldachom_func0B(void);
-s16 kaldachom_setScale(GameObject* obj);
+s16 kaldachom_getControlMode(GameObject* obj);
 int kaldachom_getExtraSize(void);
 int kaldachom_getObjectTypeId(void);
 void kaldachom_free(GameObject* obj);

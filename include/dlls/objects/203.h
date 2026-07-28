@@ -58,7 +58,7 @@ void dll_CB_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int f
 void dll_CB_free(GameObject* obj);
 int dll_CB_getObjectTypeId(void);
 int dll_CB_getExtraSize(void);
-s16 dll_CB_setScale(GameObject* obj);
+s16 dll_CB_getControlMode(GameObject* obj);
 void dll_CB_handleMessage(GameObject* obj, int message);
 
 extern DllCBMoveHandler gDllCBMoveHandlers[4];

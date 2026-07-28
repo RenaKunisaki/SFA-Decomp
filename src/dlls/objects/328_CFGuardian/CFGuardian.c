@@ -198,7 +198,7 @@ ObjectDescriptor11 gCFGuardianObjDescriptor = {
     (ObjectDescriptorCallback)cfguardian_free,
     (ObjectDescriptorCallback)cfguardian_getObjectTypeId,
     (ObjectDescriptorCallback)cfguardian_getExtraSize,
-    (ObjectDescriptorCallback)cfguardian_setScale,
+    (ObjectDescriptorCallback)cfguardian_func0A,
 };
 
 /* cfguardian_playEventSfx: walk this step's triggered anim events and play the
@@ -245,9 +245,9 @@ int cfguardian_playEventSfx(u32 obj, ObjAnimEventList* eventList, s16* sfxIds) {
     return marker;
 }
 
-/* cfguardian_setScale: true when the guardian is not mid path-flight
- * (queried by the render path to decide whether to apply scale). */
-int cfguardian_setScale(GameObject* obj) {
+/* cfguardian_func0A: descriptor slot 0x0A; true when the guardian is not
+ * mid path-flight. No caller of this slot is known for this object. */
+int cfguardian_func0A(GameObject* obj) {
     CfGuardianState* state = obj->extra;
     return (state->stateFlags & CFGUARDIAN_STATE_PATH_FLYING) == 0;
 }

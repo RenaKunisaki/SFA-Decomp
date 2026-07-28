@@ -35,10 +35,10 @@
 
 #define DRCAGEWITH_OBJFLAG_FREED 0x40
 
-int DR_CageWith_setScale(GameObject* obj)
+int DR_CageWith_func0A(GameObject* obj)
 {
     DrcagewithState* state = obj->extra;
-    return state->scaleMode;
+    return state->unk30;
 }
 
 int DR_CageWith_toggleRopeStateCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
@@ -295,7 +295,7 @@ ObjectDescriptor11WithPadding gDrCageWithObjDescriptor = {
         (ObjectDescriptorCallback)DR_CageWith_free,
         (ObjectDescriptorCallback)DR_CageWith_getObjectTypeId,
         (ObjectDescriptorExtraSizeCallback)DR_CageWith_getExtraSize,
-        (ObjectDescriptorCallback)DR_CageWith_setScale,
+        (ObjectDescriptorCallback)DR_CageWith_func0A,
     },
     0,
 };

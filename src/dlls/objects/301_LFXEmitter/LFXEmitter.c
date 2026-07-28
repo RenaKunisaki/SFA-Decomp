@@ -79,7 +79,7 @@ int LFXEmitter_isLightActionLoaded(GameObject* obj) {
     return state->lightAction != NULL;
 }
 
-int LFXEmitter_setScale(void) {
+int LFXEmitter_func0A(void) {
     return -1;
 }
 
@@ -258,6 +258,6 @@ ObjectDescriptor12 gLFXEmitterObjDescriptor = {
     (ObjectDescriptorCallback)LFXEmitter_free,
     (ObjectDescriptorCallback)LFXEmitter_getObjectTypeId,
     LFXEmitter_getExtraSize,
-    (ObjectDescriptorCallback)LFXEmitter_setScale,
+    (ObjectDescriptorCallback)LFXEmitter_func0A,
     (ObjectDescriptorCallback)LFXEmitter_isLightActionLoaded,
 };

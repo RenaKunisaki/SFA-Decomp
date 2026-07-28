@@ -33,7 +33,7 @@ int MoonSeedPlantingSpot_SeqFn(GameObject* obj);
 int MoonSeedPlantingSpot_render2(void);
 int MoonSeedPlantingSpot_modelMtxFn(void);
 int MoonSeedPlantingSpot_func0B(void);
-int MoonSeedPlantingSpot_setScale(GameObject* obj, int arg);
+int MoonSeedPlantingSpot_cutOrHarvest(GameObject* obj, int arg);
 int MoonSeedPlantingSpot_getExtraSize(void);
 int MoonSeedPlantingSpot_getObjectTypeId(void);
 void MoonSeedPlantingSpot_free(int obj);

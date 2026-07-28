@@ -26,7 +26,7 @@ u32 imAnimSpace_getEventFlag(GameObject* obj) {
     return state->eventFlags & IM_ANIM_SPACE_FLAG_TOGGLE_4;
 }
 
-int imAnimSpace_setScale(GameObject* obj, int bitIndex) {
+int imAnimSpace_isSubmodelEnabled(GameObject* obj, int bitIndex) {
     IMAnimSpaceState* state = obj->extra;
 
     switch (state->submodelMask & (1 << bitIndex)) {
@@ -52,7 +52,7 @@ ObjectDescriptor13 gIMAnimSpaceObjDescriptor = {
     (ObjectDescriptorCallback)imAnimSpace_free,
     (ObjectDescriptorCallback)imAnimSpace_getObjectTypeId,
     imAnimSpace_getExtraSize,
-    (ObjectDescriptorCallback)imAnimSpace_setScale,
+    (ObjectDescriptorCallback)imAnimSpace_isSubmodelEnabled,
     (ObjectDescriptorCallback)imAnimSpace_getEventFlag,
     (ObjectDescriptorCallback)imAnimSpace_modelMtxCallback,
 };

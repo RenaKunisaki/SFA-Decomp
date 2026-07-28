@@ -1037,7 +1037,7 @@ int DR_EarthWarrior_func11(GameObject* obj)
     return 2;
 }
 
-int DR_EarthWarrior_setScale(void)
+int DR_EarthWarrior_canUseDismountPoint(void)
 {
     return 0x0;
 }
@@ -1553,7 +1553,7 @@ ObjectDescriptor24WithPadding gDR_EarthWarriorObjDescriptor = {
         (ObjectDescriptorCallback)DR_EarthWarrior_free,
         (ObjectDescriptorCallback)DR_EarthWarrior_getObjectTypeId,
         (ObjectDescriptorExtraSizeCallback)DR_EarthWarrior_getExtraSize,
-        (ObjectDescriptorCallback)DR_EarthWarrior_setScale,
+        (ObjectDescriptorCallback)DR_EarthWarrior_canUseDismountPoint,
         (ObjectDescriptorCallback)DR_EarthWarrior_func11,
         (ObjectDescriptorCallback)DR_EarthWarrior_modelMtxFn,
         (ObjectDescriptorCallback)DR_EarthWarrior_render2,

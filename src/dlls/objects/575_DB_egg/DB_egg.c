@@ -121,7 +121,7 @@ int dbegg_setLaunchVelocity(GameObject* obj, f32* v)
     return 0;
 }
 
-int dbegg_setScale(GameObject* obj)
+int dbegg_isActive(GameObject* obj)
 {
     u8* inner = obj->extra;
     return ((DbEggState*)inner)->mode != DBEGG_MODE_RELEASED;
@@ -514,7 +514,7 @@ ObjectDescriptor12 gDB_eggObjDescriptor = {
     (ObjectDescriptorCallback)dbegg_free,
     (ObjectDescriptorCallback)dbegg_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)dbegg_getExtraSize,
-    (ObjectDescriptorCallback)dbegg_setScale,
+    (ObjectDescriptorCallback)dbegg_isActive,
     (ObjectDescriptorCallback)dbegg_setLaunchVelocity,
 };
 

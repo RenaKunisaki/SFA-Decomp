@@ -112,7 +112,7 @@ ObjectDescriptor13 gAppleOnTreeObjDescriptor = {
     (ObjectDescriptorCallback)AppleOnTree_free,
     0,
     AppleOnTree_getExtraSize,
-    (ObjectDescriptorCallback)AppleOnTree_setScale,
+    (ObjectDescriptorCallback)AppleOnTree_func0A,
     (ObjectDescriptorCallback)AppleOnTree_setPosition,
     (ObjectDescriptorCallback)AppleOnTree_modelMtxFn,
 };
@@ -240,7 +240,7 @@ u8 AppleOnTree_modelMtxFn(GameObject* obj) {
     return ((AppleOnTreeState*)obj->extra)->animState;
 }
 
-void AppleOnTree_setScale(void) {
+void AppleOnTree_func0A(void) {
 }
 
 int AppleOnTree_getExtraSize(void) {

@@ -53,7 +53,7 @@ void chukChuk_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Gro
 void chukChuk_updateTargeting(GameObject* obj, int objectStateAddress, int stateAddress);
 
 void dll_CE_handleMessage(GameObject* obj, int message);
-s16 dll_CE_setScale(GameObject* obj);
+s16 dll_CE_getControlMode(GameObject* obj);
 int dll_CE_getExtraSize(void);
 int dll_CE_getObjectTypeId(void);
 void dll_CE_free(GameObject* obj);

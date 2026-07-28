@@ -212,7 +212,7 @@ typedef struct QuakeFxParams
 void staff_func0F(void);
 void staff_func0E(void);
 void staff_func0B(void);
-void staff_setScale(void);
+void staff_func0A(void);
 void staff_render(void);
 void staff_hitDetect(void);
 int staff_getExtraSize(void);
@@ -887,7 +887,7 @@ ObjectDescriptor23 gStaffObjDescriptor = {
     (ObjectDescriptorCallback)staff_free,
     (ObjectDescriptorCallback)staff_getObjectTypeId,
     staff_getExtraSize,
-    (ObjectDescriptorCallback)staff_setScale,
+    (ObjectDescriptorCallback)staff_func0A,
     (ObjectDescriptorCallback)staff_func0B,
     (ObjectDescriptorCallback)staff_modelMtxFn,
     (ObjectDescriptorCallback)staff_hitDetectGeometry,
@@ -1071,7 +1071,7 @@ void* gStaffSwipeTextures[2];
 s16* gStaffSwipeTextureIds;
 StaffCollisionInterface** gStaffSwipeResource;
 
-void staff_setScale(void)
+void staff_func0A(void)
 {
 }
 

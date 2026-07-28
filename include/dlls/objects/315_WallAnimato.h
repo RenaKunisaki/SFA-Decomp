@@ -48,7 +48,7 @@ STATIC_ASSERT(sizeof(WallAnimatorState) == 0x08);
 
 u8 WallAnimator_modelMtxFn(GameObject* obj);
 u8 WallAnimator_isComplete(GameObject* obj);
-f32 WallAnimator_setScale(GameObject* obj, GameObject* target);
+f32 WallAnimator_applyImpact(GameObject* obj, GameObject* target);
 int WallAnimator_getExtraSize(void);
 void WallAnimator_free(GameObject* obj);
 void WallAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);

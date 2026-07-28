@@ -341,7 +341,7 @@ void dll_CB_handleMessage(GameObject* obj, int message) {
     (void)message;
 }
 
-s16 dll_CB_setScale(GameObject* obj) {
+s16 dll_CB_getControlMode(GameObject* obj) {
     return ((BaddieState*)obj->extra)->controlMode;
 }
 
@@ -493,7 +493,7 @@ ObjectDescriptor12 gDllCBObjDescriptor = {
     (ObjectDescriptorCallback)dll_CB_free,
     (ObjectDescriptorCallback)dll_CB_getObjectTypeId,
     dll_CB_getExtraSize,
-    (ObjectDescriptorCallback)dll_CB_setScale,
+    (ObjectDescriptorCallback)dll_CB_getControlMode,
     (ObjectDescriptorCallback)dll_CB_handleMessage,
 };
 

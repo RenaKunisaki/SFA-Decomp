@@ -45,7 +45,7 @@ STATIC_ASSERT(offsetof(Dimbossgut2Curve, light) == 0x18);
 
 void dimbossgut2_updateTracking(GameObject* obj, Dimbossgut2State* state);
 void DIM_BossGut2_func0B(void);
-int DIM_BossGut2_setScale(void);
+int DIM_BossGut2_func0A(void);
 int DIM_BossGut2_getExtraSize(void);
 int DIM_BossGut2_getObjectTypeId(void);
 void DIM_BossGut2_free(int arg9);

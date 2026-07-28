@@ -112,7 +112,7 @@ void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedState* state, Explod
     }
 }
 
-u8 exploded_setScale(ExplodedObject* obj) {
+u8 exploded_getPhase(ExplodedObject* obj) {
     return obj->state->phase;
 }
 
@@ -286,7 +286,7 @@ ObjectDescriptor16 gExplodedObjDescriptor = {
     (ObjectDescriptorCallback)exploded_free,
     (ObjectDescriptorCallback)exploded_getObjectTypeId,
     exploded_getExtraSize,
-    (ObjectDescriptorCallback)exploded_setScale,
+    (ObjectDescriptorCallback)exploded_getPhase,
     0,
     0,
     0,

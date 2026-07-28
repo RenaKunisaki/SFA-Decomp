@@ -46,7 +46,7 @@ STATIC_ASSERT(offsetof(SkeetlaWallPlacement, negYExtent) == 0x1D);
 STATIC_ASSERT(offsetof(SkeetlaWallPlacement, shapeFlag) == 0x1E);
 STATIC_ASSERT(sizeof(SkeetlaWallPlacement) == 0x20);
 
-void SkeetlaWall_setScale(GameObject* obj, f32* outBounds, u8* outShapeFlag);
+void SkeetlaWall_getBounds(GameObject* obj, f32* outBounds, u8* outShapeFlag);
 int SkeetlaWall_getExtraSize(void);
 int SkeetlaWall_getObjectTypeId(void);
 void SkeetlaWall_free(GameObject* obj);

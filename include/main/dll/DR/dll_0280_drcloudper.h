@@ -45,7 +45,7 @@ STATIC_ASSERT(offsetof(DrCloudPerObject, flagsB0) == 0xb0);
 STATIC_ASSERT(offsetof(DrCloudPerObject, state) == 0xb8);
 
 
-int DR_CloudPer_setScale(int obj);
+int DR_CloudPer_activate(int obj);
 int DR_CloudPer_selectActiveCloud(int obj);
 int DR_CloudPer_getExtraSize(void);
 int DR_CloudPer_getObjectTypeId(void);

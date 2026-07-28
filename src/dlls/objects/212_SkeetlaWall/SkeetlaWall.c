@@ -9,7 +9,7 @@
 #include "game/objects/object.h"
 #include "main/object_render.h"
 
-void SkeetlaWall_setScale(GameObject* obj, f32* outBounds, u8* outShapeFlag) {
+void SkeetlaWall_getBounds(GameObject* obj, f32* outBounds, u8* outShapeFlag) {
     SkeetlaWallState* state = obj->extra;
 
     outBounds[0] = obj->anim.worldPosX - (f32)(u32)state->negXExtent;
@@ -85,7 +85,7 @@ ObjectDescriptor11WithPadding gSkeetlaWallObjDescriptor = {
         (ObjectDescriptorCallback)SkeetlaWall_free,
         (ObjectDescriptorCallback)SkeetlaWall_getObjectTypeId,
         SkeetlaWall_getExtraSize,
-        (ObjectDescriptorCallback)SkeetlaWall_setScale,
+        (ObjectDescriptorCallback)SkeetlaWall_getBounds,
     },
     0,
 };

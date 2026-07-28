@@ -12,7 +12,7 @@ int curve_func0B(void) {
     return 0;
 }
 
-void curve_setScale(void) {
+void curve_func0A(void) {
 }
 
 int curve_getExtraSize(void) {
@@ -63,6 +63,6 @@ ObjectDescriptor12 gCurveObjDescriptor = {
     (ObjectDescriptorCallback)curve_free,
     (ObjectDescriptorCallback)curve_getObjectTypeId,
     curve_getExtraSize,
-    (ObjectDescriptorCallback)curve_setScale,
+    (ObjectDescriptorCallback)curve_func0A,
     (ObjectDescriptorCallback)curve_func0B,
 };

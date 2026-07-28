@@ -53,7 +53,7 @@ void DrakorEnergy_func0B_nop(void)
 {
 }
 
-int drakorenergy_setScale(GameObject* obj)
+int drakorenergy_isIdle(GameObject* obj)
 {
     return ((DrakorEnergyState*)obj->extra)->mode == DRAKORENERGY_MODE_IDLE;
 }
@@ -224,6 +224,6 @@ ObjectDescriptor12 gDrakorEnergyObjDescriptor = {
     (ObjectDescriptorCallback)drakorenergy_free,
     (ObjectDescriptorCallback)drakorenergy_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)drakorenergy_getExtraSize,
-    (ObjectDescriptorCallback)drakorenergy_setScale,
+    (ObjectDescriptorCallback)drakorenergy_isIdle,
     (ObjectDescriptorCallback)DrakorEnergy_func0B_nop,
 };

@@ -100,7 +100,7 @@ ObjectDescriptor12 gKaldachomObjDescriptor = {
     (ObjectDescriptorCallback)kaldachom_free,
     (ObjectDescriptorCallback)kaldachom_getObjectTypeId,
     kaldachom_getExtraSize,
-    (ObjectDescriptorCallback)kaldachom_setScale,
+    (ObjectDescriptorCallback)kaldachom_getControlMode,
     (ObjectDescriptorCallback)kaldachom_func0B,
 };
 
@@ -599,7 +599,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
 void kaldachom_func0B(void) {
 }
 
-s16 kaldachom_setScale(GameObject* obj) {
+s16 kaldachom_getControlMode(GameObject* obj) {
     return ((KaldachomState*)obj->extra)->controlMode;
 }
 

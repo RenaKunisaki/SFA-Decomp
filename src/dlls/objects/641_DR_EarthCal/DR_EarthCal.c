@@ -17,7 +17,7 @@
 /* Mount object group: query nearest mount to gate the interact prompt. */
 #define DREARTHCAL_MOUNT_OBJGROUP 0xa
 
-int drearthcal_setScale(void)
+int drearthcal_func0A(void)
 {
     return 1;
 }
@@ -139,6 +139,6 @@ ObjectDescriptor12 gDrEarthCalObjDescriptor = {
     (ObjectDescriptorCallback)drearthcal_free,
     (ObjectDescriptorCallback)drearthcal_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)drearthcal_getExtraSize,
-    (ObjectDescriptorCallback)drearthcal_setScale,
+    (ObjectDescriptorCallback)drearthcal_func0A,
     0,
 };

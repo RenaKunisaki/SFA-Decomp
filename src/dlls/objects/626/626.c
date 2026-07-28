@@ -553,7 +553,7 @@ ObjectDescriptor24 gHighTopObjDescriptor = {
     (ObjectDescriptorCallback)HighTop_free,
     (ObjectDescriptorCallback)HighTop_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)HighTop_getExtraSize,
-    (ObjectDescriptorCallback)HighTop_setScale,
+    (ObjectDescriptorCallback)HighTop_canUseDismountPoint,
     (ObjectDescriptorCallback)hightop_func0B,
     (ObjectDescriptorCallback)HighTop_modelMtxFn,
     (ObjectDescriptorCallback)HighTop_render2,
@@ -966,7 +966,7 @@ int hightop_func0B(void)
     return 0x1;
 }
 
-int HighTop_setScale(void)
+int HighTop_canUseDismountPoint(void)
 {
     return 0x0;
 }

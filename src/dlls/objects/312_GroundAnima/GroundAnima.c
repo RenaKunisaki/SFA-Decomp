@@ -46,7 +46,7 @@ u8 GroundAnimator_isFullySunk(GameObject* obj) {
     return depth > GROUND_ANIMATOR_SINK_DEPTH_SCALE * maxDepth;
 }
 
-f32 GroundAnimator_setScale(GameObject* obj, GameObject* target) {
+f32 GroundAnimator_applyPress(GameObject* obj, GameObject* target) {
     GroundAnimatorPlacement* placement;
     GroundAnimatorState* state;
     f32 dy;
@@ -441,7 +441,7 @@ ObjectDescriptor14 gGroundAnimatorObjDescriptor = {
     (ObjectDescriptorCallback)GroundAnimator_free,
     0,
     (ObjectDescriptorCallback)GroundAnimator_getExtraSize,
-    (ObjectDescriptorCallback)GroundAnimator_setScale,
+    (ObjectDescriptorCallback)GroundAnimator_applyPress,
     (ObjectDescriptorCallback)GroundAnimator_isFullySunk,
     (ObjectDescriptorCallback)GroundAnimator_modelMtxFn,
     0,

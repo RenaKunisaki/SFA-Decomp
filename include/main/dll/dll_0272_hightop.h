@@ -139,7 +139,7 @@ int HighTop_getExtraSize(void);
 int HighTop_getObjectTypeId(void);
 void HighTop_release(void);
 int HighTop_render2(void);
-int HighTop_setScale(void);
+int HighTop_canUseDismountPoint(void);
 void hightop_func11(GameObject* obj, int val);
 f32 hightop_func13(int obj, f32* out);
 void hightop_func12(int obj, f32* a, int* b);

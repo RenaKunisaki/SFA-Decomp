@@ -76,7 +76,7 @@ STATIC_ASSERT(sizeof(GroundAnimatorState) == 0x30);
 
 u8 GroundAnimator_modelMtxFn(GameObject* obj);
 u8 GroundAnimator_isFullySunk(GameObject* obj);
-f32 GroundAnimator_setScale(GameObject* obj, GameObject* target);
+f32 GroundAnimator_applyPress(GameObject* obj, GameObject* target);
 void GroundAnimator_gatherVertices(GameObject* obj, GroundAnimatorState* state, GroundAnimatorPlacement* placement);
 int GroundAnimator_getExtraSize(void);
 void GroundAnimator_free(GameObject* obj, int flags);

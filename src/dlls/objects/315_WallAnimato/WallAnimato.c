@@ -34,7 +34,7 @@ u8 WallAnimator_isComplete(GameObject* obj) {
     return state->timer >= WALL_ANIMATOR_DONE_TIMER;
 }
 
-f32 WallAnimator_setScale(GameObject* obj, GameObject* target) {
+f32 WallAnimator_applyImpact(GameObject* obj, GameObject* target) {
     PartFxSpawnParams spawn;
     f32 deltaX;
     f32 deltaY;
@@ -171,7 +171,7 @@ ObjectDescriptor14 gWallAnimatorObjDescriptor = {
     (ObjectDescriptorCallback)WallAnimator_free,
     0,
     (ObjectDescriptorCallback)WallAnimator_getExtraSize,
-    (ObjectDescriptorCallback)WallAnimator_setScale,
+    (ObjectDescriptorCallback)WallAnimator_applyImpact,
     (ObjectDescriptorCallback)WallAnimator_isComplete,
     (ObjectDescriptorCallback)WallAnimator_modelMtxFn,
     0,

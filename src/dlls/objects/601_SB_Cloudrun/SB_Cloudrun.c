@@ -742,7 +742,7 @@ int SB_CloudRunner_func11(void)
     return 0x0;
 }
 
-int SB_CloudRunner_setScale(void)
+int SB_CloudRunner_canUseDismountPoint(void)
 {
     return 0x0;
 }
@@ -928,7 +928,7 @@ ObjectDescriptor24 gSB_CloudRunnerObjDescriptor = {
     (ObjectDescriptorCallback)SB_CloudRunner_free,
     (ObjectDescriptorCallback)SB_CloudRunner_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)SB_CloudRunner_getExtraSize,
-    (ObjectDescriptorCallback)SB_CloudRunner_setScale,
+    (ObjectDescriptorCallback)SB_CloudRunner_canUseDismountPoint,
     (ObjectDescriptorCallback)SB_CloudRunner_func11,
     (ObjectDescriptorCallback)SB_CloudRunner_modelMtxFn,
     (ObjectDescriptorCallback)SB_CloudRunner_render2,

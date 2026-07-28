@@ -552,7 +552,7 @@ void tumbleweed_func0B(GameObject* obj, f32 x, f32 z) {
     state->anchorPosZ = z;
 }
 
-int tumbleweed_setScale(GameObject* obj) {
+int tumbleweed_getPhase(GameObject* obj) {
     TumbleweedState* state = obj->extra;
 
     return state->phase;
@@ -982,7 +982,7 @@ ObjectDescriptor16WithPadding gTumbleweedObjDescriptor = {
         (ObjectDescriptorCallback)tumbleweed_free,
         0,
         tumbleweed_getExtraSize,
-        (ObjectDescriptorCallback)tumbleweed_setScale,
+        (ObjectDescriptorCallback)tumbleweed_getPhase,
         (ObjectDescriptorCallback)tumbleweed_func0B,
         (ObjectDescriptorCallback)tumbleweed_modelMtxFn,
         (ObjectDescriptorCallback)tumbleweed_render2,

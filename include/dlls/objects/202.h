@@ -50,7 +50,7 @@ int iceBaddie_stateHandlerB07(GameObject* obj, GroundBaddieState* state);
 
 void iceBaddie_updateEffectAnchors(GameObject* obj, GroundBaddieState* state);
 void iceBaddie_handleMessage(GameObject* obj, int message);
-s16 iceBaddie_setScale(GameObject* obj);
+s16 iceBaddie_getControlMode(GameObject* obj);
 int iceBaddie_getExtraSize(void);
 int iceBaddie_getObjectTypeId(void);
 void iceBaddie_free(GameObject* obj);

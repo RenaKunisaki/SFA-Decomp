@@ -76,7 +76,7 @@ ObjectDescriptor12 gDllCEObjDescriptor = {
     (ObjectDescriptorCallback)dll_CE_free,
     (ObjectDescriptorCallback)dll_CE_getObjectTypeId,
     dll_CE_getExtraSize,
-    (ObjectDescriptorCallback)dll_CE_setScale,
+    (ObjectDescriptorCallback)dll_CE_getControlMode,
     (ObjectDescriptorCallback)dll_CE_handleMessage,
 };
 
@@ -641,7 +641,7 @@ void dll_CE_handleMessage(GameObject* obj, int message) {
     }
 }
 
-s16 dll_CE_setScale(GameObject* obj) {
+s16 dll_CE_getControlMode(GameObject* obj) {
     return ((BaddieState*)obj->extra)->controlMode;
 }
 

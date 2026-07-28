@@ -7872,7 +7872,7 @@ void iceBaddie_handleMessage(GameObject* obj, int message) {
     }
 }
 
-s16 iceBaddie_setScale(GameObject* obj) {
+s16 iceBaddie_getControlMode(GameObject* obj) {
     return ((GroundBaddieState*)obj->extra)->baddie.controlMode;
 }
 
@@ -8009,6 +8009,6 @@ ObjectDescriptor12 gIceBaddieObjDescriptor = {
     (ObjectDescriptorCallback)iceBaddie_free,
     (ObjectDescriptorCallback)iceBaddie_getObjectTypeId,
     iceBaddie_getExtraSize,
-    (ObjectDescriptorCallback)iceBaddie_setScale,
+    (ObjectDescriptorCallback)iceBaddie_getControlMode,
     (ObjectDescriptorCallback)iceBaddie_handleMessage,
 };

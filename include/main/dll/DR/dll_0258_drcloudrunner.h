@@ -79,7 +79,7 @@ void DR_CloudRunner_func21(void);
 int DR_CloudRunner_func20(void);
 int DR_CloudRunner_func16(void);
 int DR_CloudRunner_render2(void);
-int DR_CloudRunner_setScale(void);
+int DR_CloudRunner_canUseDismountPoint(void);
 int DR_CloudRunner_getExtraSize(void);
 int DR_CloudRunner_getObjectTypeId(void);
 void DR_CloudRunner_release(void);

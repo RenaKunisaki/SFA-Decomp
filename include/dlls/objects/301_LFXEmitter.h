@@ -78,7 +78,7 @@ STATIC_ASSERT(offsetof(LFXEmitterState, pad121) == 0x121);
 STATIC_ASSERT(sizeof(LFXEmitterState) == 0x124);
 
 int LFXEmitter_isLightActionLoaded(GameObject* obj);
-int LFXEmitter_setScale(void);
+int LFXEmitter_func0A(void);
 void LFXEmitter_copyLightAction(const LFXEmitterLightAction* source, LFXEmitterLightAction* destination);
 int LFXEmitter_getExtraSize(void);
 int LFXEmitter_getObjectTypeId(void);

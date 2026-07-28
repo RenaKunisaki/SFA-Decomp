@@ -199,7 +199,7 @@ ObjectDescriptor14 gPushableObjDescriptor = {
     (ObjectDescriptorCallback)pushable_free,            /* free */
     (ObjectDescriptorCallback)pushable_getObjectTypeId, /* getObjectTypeId */
     (ObjectDescriptorCallback)pushable_getExtraSize,    /* slot09 */
-    (ObjectDescriptorCallback)pushable_setScale,        /* slot0A */
+    (ObjectDescriptorCallback)pushable_push,        /* slot0A */
     (ObjectDescriptorCallback)pushable_func0B,          /* slot0B */
     (ObjectDescriptorCallback)pushable_modelMtxFn,      /* slot0C */
     (ObjectDescriptorCallback)pushable_render2,         /* slot0D */
@@ -694,7 +694,7 @@ int pushable_func0B(GameObject* obj, GameObject* other) {
     return sqrtf(delta[2] * delta[2] + (delta[0] * delta[0] + delta[1] * delta[1])) < state->cullDistance;
 }
 
-int pushable_setScale(GameObject* obj, GameObject* target, int active, f32 pushX, f32 pushZ) {
+int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f32 pushZ) {
     PushableCollisionProbe* collisionProbe;
     PushableState* state;
     char pushDirection;

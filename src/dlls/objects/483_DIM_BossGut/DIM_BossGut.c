@@ -175,7 +175,7 @@ void DIM_BossGut2_func0B(void)
 {
 }
 
-int DIM_BossGut2_setScale(void)
+int DIM_BossGut2_func0A(void)
 {
     return 0x0;
 }
@@ -396,6 +396,6 @@ ObjectDescriptor12 gDIM_BossGut2ObjDescriptor = {
     (ObjectDescriptorCallback)DIM_BossGut2_free,
     (ObjectDescriptorCallback)DIM_BossGut2_getObjectTypeId,
     DIM_BossGut2_getExtraSize,
-    (ObjectDescriptorCallback)DIM_BossGut2_setScale,
+    (ObjectDescriptorCallback)DIM_BossGut2_func0A,
     (ObjectDescriptorCallback)DIM_BossGut2_func0B,
 };

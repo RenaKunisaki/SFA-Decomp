@@ -17,7 +17,7 @@
 #define CHECKPOINT4_TRIGGER_SCALE      2.0f
 #define CHECKPOINT4_RANDOM_HEADING_MAX 0xF0
 
-void checkpoint4_setScale(void) {
+void checkpoint4_func0A(void) {
 }
 
 int checkpoint4_getExtraSize(void) {
@@ -108,7 +108,7 @@ ObjectDescriptor11WithPadding gCheckpoint4ObjDescriptor = {
         (ObjectDescriptorCallback)checkpoint4_free,            /* free */
         (ObjectDescriptorCallback)checkpoint4_getObjectTypeId, /* getObjectTypeId */
         checkpoint4_getExtraSize,                              /* getExtraSize */
-        (ObjectDescriptorCallback)checkpoint4_setScale,        /* slot0A */
+        (ObjectDescriptorCallback)checkpoint4_func0A,        /* slot0A */
     },
     0, /* padding */
 };

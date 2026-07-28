@@ -1440,11 +1440,11 @@ void ktrex_func0B(void)
 {
 }
 
-int ktrex_setScale(GameObject* obj)
+int ktrex_getControlMode(GameObject* obj)
 {
     void* p = obj->extra;
     gKTRexRuntime = p;
-    return ((KtrexState*)p)->scale;
+    return ((KtrexState*)p)->controlMode;
 }
 
 int ktrex_getExtraSize(void)
@@ -1824,7 +1824,7 @@ ObjectDescriptor12WithPadding gKtRexObjDescriptor = {
         (ObjectDescriptorCallback)ktrex_free,
         (ObjectDescriptorCallback)ktrex_getObjectTypeId,
         ktrex_getExtraSize,
-        (ObjectDescriptorCallback)ktrex_setScale,
+        (ObjectDescriptorCallback)ktrex_getControlMode,
         (ObjectDescriptorCallback)ktrex_func0B,
     },
     0,

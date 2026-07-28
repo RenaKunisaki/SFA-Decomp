@@ -4,7 +4,7 @@
  * init derives a vertical clip plane (normal + distance) from the
  * placement yaw byte and the object's position, joins the trigger and
  * surface object groups, and enables this cloud's map anim event if it
- * is the currently selected active cloud. setScale arms the cloud (when
+ * is the currently selected active cloud. DR_CloudPer_activate arms the cloud (when
  * its placement game bit is set) by recording it as the active cloud and
  * running the enable sequence; selectActiveCloud switches the active
  * cloud and runs the select sequence.
@@ -25,7 +25,7 @@
 #define DRCLOUDPER_MAP_ANIM_EVENT       0x0c
 #define DRCLOUDPER_OBJECT_FLAGS         0xe000
 
-int DR_CloudPer_setScale(int obj)
+int DR_CloudPer_activate(int obj)
 {
     DrCloudPerObject* cloud = (DrCloudPerObject*)obj;
     DrCloudPerSetup* setup = (DrCloudPerSetup*)cloud->setup;
@@ -127,6 +127,6 @@ ObjectDescriptor12 gDrCloudPerObjDescriptor = {
     (ObjectDescriptorCallback)DR_CloudPer_free,
     (ObjectDescriptorCallback)DR_CloudPer_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)DR_CloudPer_getExtraSize,
-    (ObjectDescriptorCallback)DR_CloudPer_setScale,
+    (ObjectDescriptorCallback)DR_CloudPer_activate,
     (ObjectDescriptorCallback)DR_CloudPer_selectActiveCloud,
 };

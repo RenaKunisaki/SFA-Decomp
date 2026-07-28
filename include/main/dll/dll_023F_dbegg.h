@@ -40,7 +40,7 @@ STATIC_ASSERT(offsetof(DbeggPlacement, unk2E) == 0x2E);
 STATIC_ASSERT(sizeof(DbeggPlacement) == 0x30);
 
 int dbegg_setLaunchVelocity(GameObject* obj, f32* velocity);
-int dbegg_setScale(GameObject* obj);
+int dbegg_isActive(GameObject* obj);
 int dbegg_getExtraSize(void);
 int dbegg_getObjectTypeId(void);
 void dbegg_free(int obj);

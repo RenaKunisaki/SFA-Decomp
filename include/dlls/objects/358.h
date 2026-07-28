@@ -93,7 +93,7 @@ STATIC_ASSERT(offsetof(ExplodedObject, state) == 0xB8);
 void exploded_initDebrisState(ExplodedObject* obj, ExplodedPlacement* placement, int usePresetCenter,
                               ExplodedState* state);
 void exploded_seedDebrisMotion(ExplodedObject* obj, ExplodedState* state, ExplodedPlacement* placement);
-u8 exploded_setScale(ExplodedObject* obj);
+u8 exploded_getPhase(ExplodedObject* obj);
 int exploded_getExtraSize(void);
 u32 exploded_getObjectTypeId(ExplodedObject* obj);
 void exploded_free(void);

@@ -31,7 +31,7 @@ typedef struct DrcagewithState
     f32 unk20;
     f32 angularVel; /* 0x24: damped angular velocity */
     u8 pad28[0x30 - 0x28];
-    u8 scaleMode;
+    u8 unk30;
     BitFlags8 ropeFlags;
     u8 pad32[0x34 - 0x32];
 } DrcagewithState;
@@ -44,11 +44,11 @@ STATIC_ASSERT(offsetof(DrcagewithPlacement, openedGameBit) == 0x1E);
 STATIC_ASSERT(offsetof(DrcagewithState, spawnedObject) == 0x0);
 STATIC_ASSERT(offsetof(DrcagewithState, linkedObject) == 0x4);
 STATIC_ASSERT(offsetof(DrcagewithState, angularVel) == 0x24);
-STATIC_ASSERT(offsetof(DrcagewithState, scaleMode) == 0x30);
+STATIC_ASSERT(offsetof(DrcagewithState, unk30) == 0x30);
 STATIC_ASSERT(offsetof(DrcagewithState, ropeFlags) == 0x31);
 STATIC_ASSERT(sizeof(DrcagewithState) == 0x34);
 
-int DR_CageWith_setScale(GameObject* obj);
+int DR_CageWith_func0A(GameObject* obj);
 int DR_CageWith_toggleRopeStateCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 int DR_CageWith_getExtraSize(void);
 int DR_CageWith_getObjectTypeId(void);

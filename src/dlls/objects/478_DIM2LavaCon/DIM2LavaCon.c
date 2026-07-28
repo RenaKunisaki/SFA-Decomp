@@ -64,7 +64,7 @@ u8 gDim2LavaHeatAlphaTargets[DIM2_LAVA_CONTROL_HEAT_ALPHA_TARGET_COUNT] = {0xFF,
 
 STATIC_ASSERT(sizeof(gDim2LavaHeatAlphaTargets) == 0x08);
 
-void dim2lavacontrol_setScale(GameObject* obj) {
+void dim2lavacontrol_tickCountdown(GameObject* obj) {
     Dim2LavaControlState* state = obj->extra;
 
     if (((s32)state->statusFlags & DIM2_LAVA_CONTROL_STATE_FLAG_COUNTDOWN_COMPLETE) == 0) {
@@ -225,6 +225,6 @@ ObjectDescriptor12 gDIM2LavaControlObjDescriptor = {
     dim2lavacontrol_free,
     0,
     dim2lavacontrol_getExtraSize,
-    (ObjectDescriptorCallback)dim2lavacontrol_setScale,
+    (ObjectDescriptorCallback)dim2lavacontrol_tickCountdown,
     0,
 };

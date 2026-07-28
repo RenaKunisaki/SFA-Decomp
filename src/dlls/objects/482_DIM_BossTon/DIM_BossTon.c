@@ -400,7 +400,7 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpd
 void DIMbosstonsil_func0B(void) {
 }
 
-int DIMbosstonsil_setScale(GameObject* obj) {
+int DIMbosstonsil_getControlMode(GameObject* obj) {
     return ((DIMbosstonsilState*)obj->extra)->scale;
 }
 
@@ -597,6 +597,6 @@ ObjectDescriptor12 gDIM_BossTonsilObjDescriptor = {
     (ObjectDescriptorCallback)DIMbosstonsil_free,
     (ObjectDescriptorCallback)DIMbosstonsil_getObjectTypeId,
     DIMbosstonsil_getExtraSize,
-    (ObjectDescriptorCallback)DIMbosstonsil_setScale,
+    (ObjectDescriptorCallback)DIMbosstonsil_getControlMode,
     DIMbosstonsil_func0B,
 };

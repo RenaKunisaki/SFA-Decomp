@@ -109,7 +109,7 @@ void AppleOnTree_setPosition(GameObject* obj, f32* position);
 void appleontree_knockLoose(GameObject* obj, int message);
 void appleontree_handleCollectableHit(GameObject* obj);
 u8 AppleOnTree_modelMtxFn(GameObject* obj);
-void AppleOnTree_setScale(void);
+void AppleOnTree_func0A(void);
 int AppleOnTree_getExtraSize(void);
 void AppleOnTree_free(GameObject* obj);
 void AppleOnTree_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState);

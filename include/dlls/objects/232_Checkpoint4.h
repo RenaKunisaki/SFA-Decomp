@@ -47,7 +47,7 @@ STATIC_ASSERT(offsetof(Checkpoint4State, randomHeadings) == 0x34);
 STATIC_ASSERT(offsetof(Checkpoint4State, pad3C) == 0x3C);
 STATIC_ASSERT(sizeof(Checkpoint4State) == 0x40);
 
-void checkpoint4_setScale(void);
+void checkpoint4_func0A(void);
 int checkpoint4_getExtraSize(void);
 int checkpoint4_getObjectTypeId(void);
 void checkpoint4_free(GameObject* obj);

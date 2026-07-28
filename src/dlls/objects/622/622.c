@@ -1,6 +1,6 @@
 /*
  * DLL 622 - the swinging chain/shackle that hangs from a
- * path point. drshackle_setScale orients the chain along the segment
+ * path point. drshackle_renderAtPathPoint orients the chain along the segment
  * between two model joints, drshackle_update binds the per-slot path
  * objects (ObjGroup 0x17) the chain rides, and drshackle_hitDetect plays
  * a distance-scaled footstep-style rattle when active.
@@ -72,7 +72,7 @@ int drshackle_func0B(GameObject* obj)
     return placement->unk19;
 }
 
-int drshackle_setScale(GameObject* obj, int a, int b, int c, int d, int e, int f)
+int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int e, int f)
 {
     int* model;
     int* modelData;
@@ -267,6 +267,6 @@ ObjectDescriptor12 gDrShackleObjDescriptor = {
     (ObjectDescriptorCallback)drshackle_free,
     (ObjectDescriptorCallback)drshackle_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)drshackle_getExtraSize,
-    (ObjectDescriptorCallback)drshackle_setScale,
+    (ObjectDescriptorCallback)drshackle_renderAtPathPoint,
     (ObjectDescriptorCallback)drshackle_func0B,
 };

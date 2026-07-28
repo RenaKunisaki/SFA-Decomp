@@ -1069,7 +1069,7 @@ int DR_CloudRunner_func11(GameObject* obj)
     return 2;
 }
 
-int DR_CloudRunner_setScale(void)
+int DR_CloudRunner_canUseDismountPoint(void)
 {
     return 0x0;
 }
@@ -1367,7 +1367,7 @@ ObjectDescriptor24 gDR_CloudRunnerObjDescriptor = {
     (ObjectDescriptorCallback)DR_CloudRunner_free,
     (ObjectDescriptorCallback)DR_CloudRunner_getObjectTypeId,
     DR_CloudRunner_getExtraSize,
-    (ObjectDescriptorCallback)DR_CloudRunner_setScale,
+    (ObjectDescriptorCallback)DR_CloudRunner_canUseDismountPoint,
     (ObjectDescriptorCallback)DR_CloudRunner_func11,
     (ObjectDescriptorCallback)DR_CloudRunner_modelMtxFn,
     (ObjectDescriptorCallback)DR_CloudRunner_render2,

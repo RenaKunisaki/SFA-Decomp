@@ -19,7 +19,7 @@ STATIC_ASSERT(sizeof(IMAnimSpaceState) == 0x04);
 
 void imAnimSpace_modelMtxCallback(void);
 u32 imAnimSpace_getEventFlag(GameObject* obj);
-int imAnimSpace_setScale(GameObject* obj, int bitIndex);
+int imAnimSpace_isSubmodelEnabled(GameObject* obj, int bitIndex);
 int imAnimSpace_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
 int imAnimSpace_getExtraSize(void);
 int imAnimSpace_getObjectTypeId(void);

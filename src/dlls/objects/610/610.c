@@ -188,7 +188,7 @@ void drakormissile_startStraightLaunch(GameObject* obj, GameObject* from, GameOb
     Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_173);
 }
 
-int drakormissile_setScale(GameObject* obj)
+int drakormissile_isFadingOut(GameObject* obj)
 {
     DrakorMissileState* state = obj->extra;
     return state->state == DRAKORMISSILE_STATE_FADEOUT;
@@ -458,7 +458,7 @@ ObjectDescriptor14 gDrakorMissileObjDescriptor = {
     (ObjectDescriptorCallback)drakormissile_free,
     (ObjectDescriptorCallback)drakormissile_getObjectTypeId,
     (ObjectDescriptorCallback)drakormissile_getExtraSize,
-    (ObjectDescriptorCallback)drakormissile_setScale,
+    (ObjectDescriptorCallback)drakormissile_isFadingOut,
     (ObjectDescriptorCallback)drakormissile_startStraightLaunch,
     (ObjectDescriptorCallback)drakormissile_modelMtxFn,
     (ObjectDescriptorCallback)drakormissile_abortStraightFlight,

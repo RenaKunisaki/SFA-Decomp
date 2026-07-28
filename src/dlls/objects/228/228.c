@@ -50,7 +50,7 @@ ObjectDescriptor13 gFlameThrowerspeObjDescriptor = {
     (ObjectDescriptorCallback)FlameThrowerspe_free,
     (ObjectDescriptorCallback)FlameThrowerspe_getObjectTypeId,
     FlameThrowerspe_getExtraSize,
-    (ObjectDescriptorCallback)FlameThrowerspe_setScale,
+    (ObjectDescriptorCallback)FlameThrowerspe_setTransform,
     (ObjectDescriptorCallback)FlameThrowerspe_func0B,
     (ObjectDescriptorCallback)FlameThrowerspe_modelMtxFn,
 };
@@ -65,7 +65,7 @@ void FlameThrowerspe_func0B(GameObject* obj) {
     state->phase = phase;
 }
 
-void FlameThrowerspe_setScale(GameObject* obj, s16 rotY, s16 rotX, f32 x, f32 y, f32 z) {
+void FlameThrowerspe_setTransform(GameObject* obj, s16 rotY, s16 rotX, f32 x, f32 y, f32 z) {
     obj->anim.localPosX = x;
     obj->anim.localPosY = y;
     obj->anim.localPosZ = z;
