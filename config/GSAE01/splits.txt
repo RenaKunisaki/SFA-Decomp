@@ -1512,7 +1512,7 @@ dlls/objects/201_Baddie/Baddie.c:
 	.text       start:0x80148C18 end:0x8014E1DC
 	.rodata     start:0x802C21F0 end:0x802C2210
 	.data       start:0x8031DBD8 end:0x8031DC88
-	.sdata      start:0x803DBC58 end:0x803DBC70
+	.sdata      start:0x803DBC58 end:0x803DBC6C
 	.sbss       start:0x803DDA50 end:0x803DDA58
 	.sdata2     start:0x803E2558 end:0x803E2608
 

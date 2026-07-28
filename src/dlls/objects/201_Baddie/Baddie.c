@@ -152,8 +152,8 @@ STATIC_ASSERT(sizeof(struct VisBits16) == 0x10);
 const struct VisBits16 gTrickyVisibilityBitsInit = {{0x10000, 0x20000, 0x40000, 0x80000}};
 const StaffCollisionColorArgs gTrickyFrozenFxColors = {0x08, 0xFF, 0xFF, 0x78};
 
-StaffCollisionInterface** lbl_803DDA50;
 int gTrickyNearestObject;
+StaffCollisionInterface** lbl_803DDA50;
 
 #define ENEMY_OBJFLAG_PARENT_SLACK 0x1000
 #define ENEMY_OBJFLAG_FREED        0x40
@@ -218,8 +218,7 @@ int gTrickyNearestObject;
 #define BADDIE_PLACEMENT_DEATH_GAMEBIT          0x18 /* s16: gamebit incremented on defeat */
 #define BADDIE_PLACEMENT_CLEAR_ON_DEATH_GAMEBIT 0x1a /* s16: gamebit cleared on defeat */
 
-static const u16 lbl_803E2558[2] = { 0x2C4, 0x2CD };
-static const u16 lbl_803E255C[2] = { 0x2CE, 0x2CF };
+static const u16 lbl_803E2558[4] = { 0x2C4, 0x2CD, 0x2CE, 0x2CF };
 static const u16 lbl_803E2560[2] = { 0x3CD, 0xB };
 static const u16 lbl_803E2564[2] = { 0x3CD, 0x2C4 };
 static const u16 lbl_803E2568[1] = { 0xB };
@@ -912,7 +911,6 @@ void baddieInstantiateWeapon(GameObject* obj, int state)
     }
 }
 
-const f32 enemySightRange[1] = { 1905.0f };
 
 u8 baddie_canSeeTarget(GameObject* obj, int state, void* from, void* to)
 {
@@ -948,7 +946,7 @@ u8 baddie_canSeeTarget(GameObject* obj, int state, void* from, void* to)
         probe.z = *(f32*)((int)to + 8);
         voxmaps_worldToGrid((f32*)&probe, toGrid);
         PSVECSubtract((f32*)from, (f32*)&probe, (f32*)&delta);
-        if (PSVECMag((f32*)&delta) < *enemySightRange)
+        if (PSVECMag((f32*)&delta) < 1905.0f)
         {
             if (*(u32*)&(obj)->anim.parent == 0)
             {
@@ -1015,7 +1013,7 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
         }
         voxmaps_worldToGrid((f32*)&probe, probeGrid);
         PSVECSubtract(&obj->anim.worldPosX, (f32*)&probe, (f32*)&delta);
-        if (PSVECMag((f32*)&delta) < *enemySightRange)
+        if (PSVECMag((f32*)&delta) < 1905.0f)
         {
             if (*(u32*)&obj->anim.parent != 0)
             {
@@ -2613,7 +2611,6 @@ void enemy_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
     }
 }
 
-const f32 enemyRespawnDistanceSq[1] = { 1600.0f };
 
 void enemy_hitDetect(GameObject* obj)
 {
@@ -2734,7 +2731,7 @@ void enemy_update(GameObject* obj)
             if (player != NULL)
             {
                 if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->base.posX) >
-                    *enemyRespawnDistanceSq)
+                    1600.0f)
                 {
                     enemy_init(obj, setup, 0);
                     ((EnemyState*)state)->controlFlags |= 0x1000;
@@ -2764,7 +2761,7 @@ void enemy_update(GameObject* obj)
             if (player != NULL)
             {
                 if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->base.posX) >
-                    *enemyRespawnDistanceSq)
+                    1600.0f)
                 {
                     enemy_init(obj, setup, 0);
                     ((EnemyState*)state)->controlFlags |= 0x1000;
@@ -2798,7 +2795,7 @@ void enemy_update(GameObject* obj)
                     if (player != NULL)
                     {
                         if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->base.posX) >
-                            *enemyRespawnDistanceSq)
+                            1600.0f)
                         {
                             enemy_init(obj, setup, 0);
                             ((EnemyState*)state)->controlFlags |= 0x1000;
@@ -3094,13 +3091,13 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
         }
     }
     ((EnemyState*)state)->freezeRecoverTimer = 0.0f;
-    if (((EnemyState*)state)->aggroRange > *enemySightRange)
+    if (((EnemyState*)state)->aggroRange > 1905.0f)
     {
-        ((EnemyState*)state)->aggroRange = *enemySightRange;
+        ((EnemyState*)state)->aggroRange = 1905.0f;
     }
-    if (((EnemyState*)state)->sightRange > *enemySightRange)
+    if (((EnemyState*)state)->sightRange > 1905.0f)
     {
-        ((EnemyState*)state)->sightRange = *enemySightRange;
+        ((EnemyState*)state)->sightRange = 1905.0f;
     }
 }
 
