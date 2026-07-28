@@ -51,13 +51,9 @@ ObjHitsContactScratchEntry gObjHitsContactScratch[OBJHITS_CONTACT_SCRATCH_COUNT]
 extern ObjHitsPriorityWorkSlot* gObjHitsPriorityHitStates;
 extern f64 lbl_803DE928;
 extern f32 gObjHitsSweepSortSentinel;
-extern f32 lbl_803DE91C;
 extern f32 gObjHitsResponseClampMin;
 extern f32 gObjHitsResponseClampMax;
-extern f32 lbl_803DE920;
 extern f32 lbl_803DE930;
-extern f32 lbl_803DE934;
-extern f32 lbl_803DE938;
 extern f32 gObjHitsPi;
 extern f32 gObjHitsAngleHalfPeriod;
 extern f32 lbl_803DB450;
@@ -187,7 +183,7 @@ int ObjHits_CollectSkeletonHitsXZ(f32* point, f32 radius, ObjHitsSkeletonJointDa
                         cur->signedSurfaceDistance = radius + (sqrtf(distSq) - radSum);
                         if (gObjHitsScalarZero == cur->signedSurfaceDistance)
                         {
-                            cur->signedSurfaceDistance = lbl_803DE920;
+                            cur->signedSurfaceDistance = 1e-06f;
                         }
                         d = (cur->signedSurfaceDistance > gObjHitsScalarZero) ? cur->signedSurfaceDistance
                                                                               : -cur->signedSurfaceDistance;
@@ -326,7 +322,7 @@ int ObjHits_CollectSkeletonHits3D(f32* point, f32 radius, ObjHitsSkeletonJointDa
                     cur->signedSurfaceDistance = radius + (sqrtf(distSq) - radSum);
                     if (gObjHitsScalarZero == cur->signedSurfaceDistance)
                     {
-                        cur->signedSurfaceDistance = lbl_803DE920;
+                        cur->signedSurfaceDistance = 1e-06f;
                     }
                     d = (cur->signedSurfaceDistance > gObjHitsScalarZero) ? cur->signedSurfaceDistance
                                                                           : -cur->signedSurfaceDistance;
@@ -1195,7 +1191,7 @@ int ObjHits_CheckHitVolumes(int objA, int objB, int srcObj, char checkA, char ch
     dys = ((GameObject*)objA)->anim.worldPosY - ((GameObject*)objB)->anim.worldPosY;
     dzs = ((GameObject*)objA)->anim.worldPosZ - ((GameObject*)objB)->anim.worldPosZ;
     dsq = sqrtf(dzs * dzs + (dxs * dxs + (dys * dys)));
-    if (dsq > lbl_803DE934 + (radiusA + radiusB))
+    if (dsq > 100.0f + (radiusA + radiusB))
     {
         return 0;
     }
@@ -1230,7 +1226,7 @@ int ObjHits_CheckHitVolumes(int objA, int objB, int srcObj, char checkA, char ch
         p++;
     }
     contactBase = gObjHitsContactScratch;
-    bestDepth = lbl_803DE938;
+    bestDepth = -1.0f;
     count = 1;
     while (count != 0)
     {
@@ -2265,9 +2261,9 @@ void ObjHits_CheckTrackContact(int objA, int objB)
             startPoints[1] = ((GameObject*)objA)->anim.previousWorldPosY;
             startPoints[2] = ((GameObject*)objA)->anim.previousWorldPosZ;
             fConv = (f32)(u32)((GameObject*)objA)->anim.modelInstance->fallbackHitSphereRadius;
-            if (fConv < lbl_803DE91C)
+            if (fConv < 0.1f)
             {
-                fConv = lbl_803DE91C;
+                fConv = 0.1f;
             }
             hb.radii[0] = fConv;
             hb.ids[0] = -1;
@@ -2827,21 +2823,9 @@ ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEnt
 extern void* gObjHitsWorkBuffer;
 extern u8 gObjGroupObjectCount;
 extern int gObjContactCallbackCount;
-extern f32 lbl_803DE914;
-extern f32 lbl_803DE968;
 extern f32 OBJLIB_UNIT_SCALE;
-extern f32 lbl_803DE970;
-extern f32 lbl_803DE974;
-extern f32 lbl_803DE978;
 extern f32 gObjLibAnglePiNumerator;
 extern f32 gObjLibAngleUnitDivisor;
-extern f32 lbl_803DE998;
-extern f32 lbl_803DE99C;
-extern f32 lbl_803DE9A0;
-extern f32 lbl_803DE9A4;
-extern f32 lbl_803DE9A8;
-extern f32 lbl_803DE9AC;
-extern f32 lbl_803DE9B0;
 extern f32 gObjLibBlinkAngleUnitScale;
 extern f32 gObjLibBlinkAnglePiDivisor;
 
@@ -3699,7 +3683,7 @@ void ObjHits_InitWorkBuffers(void)
     gObjHitsPrimaryHitboxBufferScratch1 = mmAlloc(0x400, 0xe, 0);
     gObjHitsSecondaryHitboxBufferScratch0 = mmAlloc(0x400, 0xe, 0);
     gObjHitsSecondaryHitboxBufferScratch1 = mmAlloc(0x400, 0xe, 0);
-    gObjHitsPriorityHitTickDelta = lbl_803DE914;
+    gObjHitsPriorityHitTickDelta = 2.0f;
     ((int*)(int)gObjHitsActiveHitVolumeObjects)[hitVolumeIndex = 0] = 0;
     ((int*)(int)gObjHitsActiveHitVolumeObjects)[++hitVolumeIndex] = 0;
     ((int*)(int)gObjHitsActiveHitVolumeObjects)[++hitVolumeIndex] = 0;
@@ -3791,7 +3775,7 @@ GameObject* ObjGroup_FindNearestObjectForObject(int group, GameObject* obj, floa
     }
     else
     {
-        bestDistanceSq = lbl_803DE968;
+        bestDistanceSq = 3.4028235e38f;
     }
     index = gObjGroupOffsets.offsets[group];
     limit = gObjGroupOffsets.offsets[group + 1];
@@ -3838,7 +3822,7 @@ int ObjGroup_FindNearestObject(int group, GameObject* obj, float* maxDistance)
     }
     else
     {
-        bestDistanceSq = lbl_803DE968;
+        bestDistanceSq = 3.4028235e38f;
     }
     o = obj;
     index = gObjGroupOffsets.offsets[group];
@@ -4268,7 +4252,7 @@ int ObjHits_PollPriorityHitWithCooldown(GameObject* obj, float* cooldown, int* o
 
     collisionType = 0;
     *cooldown = *cooldown - timeDelta;
-    if (*cooldown <= lbl_803DE970)
+    if (*cooldown <= 0.0f)
     {
         if (outHitPos != (float*)0x0)
         {
@@ -4285,7 +4269,7 @@ int ObjHits_PollPriorityHitWithCooldown(GameObject* obj, float* cooldown, int* o
         }
         if (collisionType != 0)
         {
-            *cooldown = lbl_803DE974;
+            *cooldown = 30.0f;
         }
     }
     return collisionType;
@@ -4304,9 +4288,9 @@ int ObjHits_PollPriorityHitEffectWithCooldown(GameObject* obj, u32 hitFxMode, u3
     collisionType =
         ObjHits_GetPriorityHitWithPosition(obj, (int*)&hitObject, 0x0, 0x0, &effectParams.posX, &effectParams.posY,
                                            &effectParams.posZ);
-    if ((*cooldown <= lbl_803DE970) && (collisionType != 0))
+    if ((*cooldown <= 0.0f) && (collisionType != 0))
     {
-        *cooldown = lbl_803DE978;
+        *cooldown = 45.0f;
         if ((collisionType != 0x1a) && (collisionType != 5))
         {
             effectParams.posX = effectParams.posX + playerMapOffsetX;
@@ -4566,7 +4550,7 @@ GameObject* ObjList_FindNearestObjectByDefNo(GameObject* obj, int defNo, float* 
     {
         objectIndex = startIndex;
         walker = objects + startIndex;
-        invalidDistance = lbl_803DE970;
+        invalidDistance = 0.0f;
 
         while (objectIndex < objectCount)
         {
@@ -4903,8 +4887,8 @@ void playerEyeAnimFn_80038988(int obj, int blinkState, u16 flags)
     f32 wave;
 
     objAnim = (ObjAnimComponent*)obj;
-    step = lbl_803DE998 * timeDelta;
-    rightScale = (leftScale = lbl_803DE99C);
+    step = 3.0f * timeDelta;
+    rightScale = (leftScale = 1.0f);
     switch (bs->mode)
     {
     case OBJLIB_BLINK_MODE_OPEN:
@@ -4975,9 +4959,9 @@ void playerEyeAnimFn_80038988(int obj, int blinkState, u16 flags)
         bs->amount -= step;
         break;
     case OBJLIB_BLINK_MODE_WINK_RIGHT:
-        bs->timer = (u8)(lbl_803DE9A0 * timeDelta + bs->timer);
+        bs->timer = (u8)(16.0f * timeDelta + bs->timer);
         bs->amount = 0xff;
-        rightScale = lbl_803DE9A4;
+        rightScale = 0.0f;
         if (randomGetRange(0, 25) == 1)
         {
             switch (bs->mode)
@@ -4994,9 +4978,9 @@ void playerEyeAnimFn_80038988(int obj, int blinkState, u16 flags)
         }
         break;
     case OBJLIB_BLINK_MODE_WINK_LEFT:
-        bs->timer = (u8)(lbl_803DE9A0 * timeDelta + bs->timer);
+        bs->timer = (u8)(16.0f * timeDelta + bs->timer);
         bs->amount = 0xff;
-        leftScale = lbl_803DE9A4;
+        leftScale = 0.0f;
         if (randomGetRange(0, 25) == 1)
         {
             switch (bs->mode)
@@ -5014,9 +4998,9 @@ void playerEyeAnimFn_80038988(int obj, int blinkState, u16 flags)
         break;
     }
 
-    phase = lbl_803DE9AC * bs->timer;
-    wave = lbl_803DE9A8 * mathCosfHighPrecision(phase);
-    wave = wave * bs->amount / lbl_803DE9B0;
+    phase = 0.09856f * bs->timer;
+    wave = 0.25f * mathCosfHighPrecision(phase);
+    wave = wave * bs->amount / 255.0f;
     rotation = (gObjLibBlinkAngleUnitScale * (leftScale * wave)) / gObjLibBlinkAnglePiDivisor;
     *(s16*)(playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_LEFT_JOINT_TAG) + 2) = rotation;
 
