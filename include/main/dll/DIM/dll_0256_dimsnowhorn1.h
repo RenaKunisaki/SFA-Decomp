@@ -103,7 +103,7 @@ void DIMSnowHorn1_modelMtxFn(GameObject* obj, f32* out_x, f32* out_y, f32* out_z
 int DIMSnowHorn1_func11(GameObject* obj);
 int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 void DIMSnowHorn1_func22(GameObject* obj, f32 scale);
-int DIMSnowHorn1_setScale(GameObject* obj);
+int DIMSnowHorn1_canUseDismountPoint(GameObject* obj);
 int DIMSnowHorn1_getExtraSize(void);
 int DIMSnowHorn1_getObjectTypeId(void);
 void DIMSnowHorn1_free(GameObject* obj);

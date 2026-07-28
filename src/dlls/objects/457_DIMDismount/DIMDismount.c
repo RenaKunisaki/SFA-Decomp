@@ -28,7 +28,7 @@ void DIMDismountPoint_func0B(GameObject* obj, int side) {
     (*gObjectTriggerInterface)->runSequence((side ^ 1) + 2, (void*)obj, -1);
 }
 
-int DIMDismountPoint_setScale(GameObject* obj) {
+int DIMDismountPoint_func0A(GameObject* obj) {
     GameObject* player = Obj_GetPlayerObject();
     DimDismountState* state = obj->extra;
     f32 signedDistance;
@@ -132,6 +132,6 @@ ObjectDescriptor12 gDIMDismountPointObjDescriptor = {
     (ObjectDescriptorCallback)DIMDismountPoint_free,
     (ObjectDescriptorCallback)DIMDismountPoint_getObjectTypeId,
     DIMDismountPoint_getExtraSize,
-    (ObjectDescriptorCallback)DIMDismountPoint_setScale,
+    (ObjectDescriptorCallback)DIMDismountPoint_func0A,
     (ObjectDescriptorCallback)DIMDismountPoint_func0B,
 };

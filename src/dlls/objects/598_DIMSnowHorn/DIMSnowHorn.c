@@ -1028,7 +1028,7 @@ int DIMSnowHorn1_func11(GameObject* obj)
     return 2;
 }
 
-int DIMSnowHorn1_setScale(GameObject* obj)
+int DIMSnowHorn1_canUseDismountPoint(GameObject* obj)
 {
     DIMSnowHorn1State* state;
     f32 range;
@@ -1628,7 +1628,7 @@ ObjectDescriptor24 gDIMSnowHorn1ObjDescriptor = {
     (ObjectDescriptorCallback)DIMSnowHorn1_free,
     (ObjectDescriptorCallback)DIMSnowHorn1_getObjectTypeId,
     DIMSnowHorn1_getExtraSize,
-    (ObjectDescriptorCallback)DIMSnowHorn1_setScale,
+    (ObjectDescriptorCallback)DIMSnowHorn1_canUseDismountPoint,
     (ObjectDescriptorCallback)DIMSnowHorn1_func11,
     (ObjectDescriptorCallback)DIMSnowHorn1_modelMtxFn,
     (ObjectDescriptorCallback)DIMSnowHorn1_render2,

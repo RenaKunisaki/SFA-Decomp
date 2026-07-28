@@ -32,7 +32,7 @@ STATIC_ASSERT(offsetof(DimDismountState, planeConstant) == 0x0C);
 STATIC_ASSERT(sizeof(DimDismountState) == 0x10);
 
 void DIMDismountPoint_func0B(GameObject* obj, int side);
-int DIMDismountPoint_setScale(GameObject* obj);
+int DIMDismountPoint_func0A(GameObject* obj);
 int DIMDismountPoint_getExtraSize(void);
 int DIMDismountPoint_getObjectTypeId(void);
 void DIMDismountPoint_free(GameObject* obj);
