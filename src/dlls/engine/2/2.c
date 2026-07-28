@@ -3557,7 +3557,7 @@ int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, 
     u8* cmds;
     int count;
     int opcode;
-    int arg10;
+    int operand;
     int top16;
     int subId;
     int i;
@@ -3578,7 +3578,7 @@ int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, 
     {
         packed = *(u32*)cmds;
         opcode = packed & 0x3f;
-        arg10 = (packed >> 6) & 0x3ff;
+        operand = (packed >> 6) & 0x3ff;
         top16 = packed >> 16;
         if (opcode == 2 || opcode == 3)
         {
@@ -3586,39 +3586,39 @@ int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, 
             {
                 top16 |= 0xffff0000;
             }
-            subId = arg10;
-            arg10 = 0;
+            subId = operand;
+            operand = 0;
         }
 
         result = 0;
         switch (opcode)
         {
         case 6:
-            if (objSeqExecCmd06(obj, sourceObj, seq, arg10 | (top16 << 8), flag2) == 0)
+            if (objSeqExecCmd06(obj, sourceObj, seq, operand | (top16 << 8), flag2) == 0)
             {
                 return 1;
             }
             result = -1;
-            arg10 = 0;
+            operand = 0;
             break;
         case 7:
             if (sourceObj != obj)
             {
-                switch ((s8)gObjSeqMsgSendModes[arg10])
+                switch ((s8)gObjSeqMsgSendModes[operand])
                 {
                 case 1:
-                    ObjMsg_SendToObjects(0, 2, obj, gObjSeqMsgIds[arg10], (u32)obj);
+                    ObjMsg_SendToObjects(0, 2, obj, gObjSeqMsgIds[operand], (u32)obj);
                     break;
                 case 2:
-                    ObjMsg_SendToNearbyObjects(0, 600.0f, 2, obj, gObjSeqMsgIds[arg10], (u32)obj);
+                    ObjMsg_SendToNearbyObjects(0, 600.0f, 2, obj, gObjSeqMsgIds[operand], (u32)obj);
                     break;
                 default:
-                    ObjMsg_SendToObject(sourceObj, gObjSeqMsgIds[arg10], obj, 0);
+                    ObjMsg_SendToObject(sourceObj, gObjSeqMsgIds[operand], obj, 0);
                     break;
                 }
             }
             result = -1;
-            arg10 = 0;
+            operand = 0;
             break;
         case 8:
             if (flag2 == 0)
@@ -3628,7 +3628,7 @@ int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, 
                 for (j = 0; j < 10; j++)
                 {
                     slotVal = seq[j + 0x12c];
-                    if (slotVal == arg10)
+                    if (slotVal == operand)
                     {
                         found = 1;
                     }
@@ -3639,7 +3639,7 @@ int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, 
                 }
                 if (found == 0 && freeSlot != -1)
                 {
-                    seq[freeSlot + 0x12c] = arg10;
+                    seq[freeSlot + 0x12c] = operand;
                     *(s16*)(seq + freeSlot * 2 + 0x118) = objSeqFindLabel(seq, top16);
                 }
                 result = 0;
@@ -3648,7 +3648,7 @@ int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, 
         case 9:
             break;
         default:
-            result = ObjSeq_EvaluateCondition(arg10, seq, obj->anim.placementDataAddress);
+            result = ObjSeq_EvaluateCondition(operand, seq, obj->anim.placementDataAddress);
             break;
         }
 
@@ -3735,7 +3735,7 @@ int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, 
                 }
                 ((ObjSeqState*)seq)->curFrame = xrot;
                 ((ObjSeqState*)seq)->prevFrame = xrot;
-                ((ObjSeqState*)seq)->pendingConditionId = (s8)(arg10 + 1);
+                ((ObjSeqState*)seq)->pendingConditionId = (s8)(operand + 1);
                 gObjSeqJumpLatch[(s8)((ObjSeqState*)seq)->slot] = 1;
                 return 1;
             case 5:

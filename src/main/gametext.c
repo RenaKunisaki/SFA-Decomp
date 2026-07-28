@@ -196,7 +196,7 @@ int gameTextGetTaskText(int id, int* outTextSeqId, int* outDirId)
     return 0;
 }
 
-void gameTextShowStr(char* text, int box, int arg2, int arg3)
+void gameTextShowStr(char* text, int box, int cursorX, int cursorY)
 {
     int i;
     GameTextSlot* e;
@@ -204,8 +204,8 @@ void gameTextShowStr(char* text, int box, int arg2, int arg3)
     if (gameTextDrawFunc != NULL)
     {
         TextSlot* slot = (TextSlot*)gTextBoxes + box;
-        slot->cursorX = arg2;
-        slot->cursorY = arg3;
+        slot->cursorX = cursorX;
+        slot->cursorY = cursorY;
         gameTextRenderStrs(text, box);
     }
     else
@@ -217,8 +217,8 @@ void gameTextShowStr(char* text, int box, int arg2, int arg3)
         lbl_803DC9C4 = gameStrcpy(buf, text) + 1;
         e->arg0 = (int)buf;
         e->arg1 = box;
-        e->arg2 = arg2;
-        e->arg3 = arg3;
+        e->arg2 = cursorX;
+        e->arg3 = cursorY;
     }
 }
 
@@ -289,14 +289,14 @@ void gameTextRenderStrs(char* str, int boxIdx)
     }
 }
 
-void gameTextAppendStr(char* str, int arg2)
+void gameTextAppendStr(char* str, int box)
 {
     int i;
     GameTextSlot* e;
     char* buf;
     if (gameTextDrawFunc != NULL)
     {
-        gameTextRenderStrs(str, arg2);
+        gameTextRenderStrs(str, box);
     }
     else
     {
@@ -306,7 +306,7 @@ void gameTextAppendStr(char* str, int arg2)
         buf = lbl_803DC9C4;
         lbl_803DC9C4 = gameStrcpy(buf, str) + 1;
         e->arg0 = (int)buf;
-        e->arg1 = arg2;
+        e->arg1 = box;
     }
 }
 

@@ -251,8 +251,8 @@ extern u16 gCamcontrolReticleSpin;
 
 void camcontrol_updateTargetFeedback(void);
 void camcontrol_updateTargetReticle(CamcontrolTargetObject *fallbackTarget, int unused2,
-                                    u32 arg3, u32 arg4, u32 arg5,
-                                    u32 arg6);
+                                    u32 renderArg2, u32 renderArg3, u32 renderArg4,
+                                    u32 renderArg5);
 void camcontrol_getRelativePosition(void *targetObj, float *outX, float *outY, float *outZ,
                                     float *outDistanceXZ, f32 heightOffset, int useLocalPosition);
 void camcontrol_initialise(f32 numerator, float *dst, f32 denominator, f32 minValue, f32 y, f32 z);

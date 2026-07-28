@@ -174,8 +174,8 @@ int Camera_getMinimapInfoText(void)
     return gCamcontrolTargetHelpTextId;
 }
 
-void camcontrol_updateTargetReticle(CamcontrolTargetObject* fallbackTarget, int unused2, u32 arg3, u32 arg4, u32 arg5,
-                                    u32 arg6)
+void camcontrol_updateTargetReticle(CamcontrolTargetObject* fallbackTarget, int unused2, u32 renderArg2,
+                                    u32 renderArg3, u32 renderArg4, u32 renderArg5)
 {
     int savedReticleState;
     u8 savedReticleAlpha;
@@ -249,7 +249,7 @@ void camcontrol_updateTargetReticle(CamcontrolTargetObject* fallbackTarget, int 
         reticle->anim.rotZ = 0;
         reticle->anim.rootMotionScale = CAMCONTROL_RETICLE_ROOT_MOTION_SCALE;
         ((u8*)reticle)[0x37] = reticle->anim.alpha;
-        objRenderModelAndHitVolumes(reticle, arg3, arg4, arg5, arg6, CAMCONTROL_NORMALIZED_MAX);
+        objRenderModelAndHitVolumes(reticle, renderArg2, renderArg3, renderArg4, renderArg5, CAMCONTROL_NORMALIZED_MAX);
     }
     else
     {
@@ -945,13 +945,13 @@ void Camera_setLetterbox(int yOffset, int applyNow)
     }
 }
 
-void Camera_minimapShowHelpTextForTarget(int arg1, int arg2, int arg3, int arg4)
+void Camera_minimapShowHelpTextForTarget(int renderArg2, int renderArg3, int renderArg4, int renderArg5)
 {
     if (gameTextFn_80134be8() == 0)
     {
         gCamcontrolTargetHelpTextId = CAMCONTROL_HELP_TEXT_NONE;
         camcontrol_updateTargetReticle((CamcontrolTargetObject*)CAMCONTROL_CAMERA->targetReticleFocus,
-                                       gCamcontrolActiveActionId == 0x49, arg1, arg2, arg3, arg4);
+                                       gCamcontrolActiveActionId == 0x49, renderArg2, renderArg3, renderArg4, renderArg5);
         CAMCONTROL_CAMERA->targetReticleOverride = 0;
     }
 }
