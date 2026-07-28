@@ -23,7 +23,7 @@
 #include "main/dll/dll_005A_staffcollisionfunc03.h"
 #include "main/resource.h"
 #include "dolphin/os/OSReport.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/dll/objpathtransform_struct.h"
 #include "main/game_ui_interface.h"
 #include "main/lightmap_api.h"
@@ -3741,7 +3741,7 @@ int ObjGroup_FindNearestObjectToPoint(int group, float* point, float* maxDistanc
     {
         if (*entry != 0)
         {
-            distanceSq = PSVECSquareDistance(point, &((GameObject*)*entry)->anim.worldPosX);
+            distanceSq = PSVECSquareDistance((Vec*)point, &((GameObject*)*entry)->anim.worldPos);
             if (distanceSq < bestDistanceSq)
             {
                 bestDistanceSq = distanceSq;
@@ -4724,7 +4724,7 @@ void ObjPath_GetPointWorldPosition(GameObject* obj, int pointIndex, float* outX,
             }
             mtxRotateByVec3s(rotMtx, &transform);
             mtx44Transpose(rotMtx, transposedMtx);
-            PSMTXConcat(jointMtx, transposedMtx, concatMtx);
+            PSMTXConcat((MtxPtr)jointMtx, (MtxPtr)transposedMtx, (MtxPtr)concatMtx);
             *outX = concatMtx[3] + playerMapOffsetX;
             *outY = concatMtx[7];
             *outZ = concatMtx[11] + playerMapOffsetZ;
