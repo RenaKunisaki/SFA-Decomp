@@ -1,4 +1,5 @@
 #include "main/dll/CAM/cutCam.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "main/object_transform.h"
 #include "main/camera_interface.h"
 #include "main/curve.h"
@@ -168,7 +169,7 @@ void camcontrol_updateTargetAction(CameraObject* camera, GameObject* target)
              ((cond = fn_80295C0C(target)) != 0)) ||
             ((camera->targetFlags & 2) != 0))
         {
-            cameraSetInterpMode(1);
+            Camera_setBlendCurveMode(1);
             (*gCameraInterface)->setMode(CAMMODE_COMBAT, 1, 0, 4, &camera->currentTarget, 0x3c, 0xff);
         }
         else if ((((buttons & PAD_TRIGGER_Z) != 0) && (target->anim.classId == 1)) &&
@@ -177,7 +178,7 @@ void camcontrol_updateTargetAction(CameraObject* camera, GameObject* target)
             action44Payload.distance = gCamcontrolModeSettings->minDistance;
             action44Payload.yOffset = gCamcontrolModeSettings->lowerHeightOffset;
             action44Payload.height = gCamcontrolModeSettings->targetHeight;
-            cameraSetInterpMode(0);
+            Camera_setBlendCurveMode(0);
             (*gCameraInterface)->setMode(CAMMODE_VIEWFINDER, 1, 0, 0xc, &action44Payload, 0xf, 0xfe);
         }
         else

@@ -60,7 +60,7 @@
 #include "main/dll/path_control_interface.h"
 #include "main/voxmaps.h"
 #include "main/dll/FRONT/dll_0032_n_rareware.h"
-#include "main/dll/dll_BC.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "track/intersect_api.h"
 #include "dolphin/ai.h"
 #include "main/lightmap.h"

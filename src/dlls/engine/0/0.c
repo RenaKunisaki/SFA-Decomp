@@ -85,7 +85,7 @@
 #include "track/intersect_hud_api.h"
 #undef INTERSECT_HUD_ALPHA_U8
 #include "main/dll/dll_0011_screens.h"
-#include "main/dll/dll_8B.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "main/dll/player_spirit_api.h"
 #include "main/loaded_file_flags.h"
 #include "main/fsin16_approx_api.h"
@@ -8659,11 +8659,11 @@ void GameUI_frameEnd(void)
                 {
                     buttonDisable(0, 0xf0000);
                     gCMenuButtons = 0;
-                    if (cameraGetTargetType() == 4)
+                    if (Camera_getTargetKind() == CAMCONTROL_TARGET_KIND_CONTEXT_A)
                     {
                         gCMenuButtons |= 0x80000;
                     }
-                    else if (cameraGetTargetType() == 9)
+                    else if (Camera_getTargetKind() == CAMCONTROL_TARGET_KIND_CONTEXT_B)
                     {
                         gCMenuButtons |= 0x40000;
                     }
@@ -8674,7 +8674,8 @@ void GameUI_frameEnd(void)
                         gCMenuButtons |= 0x80000;
                         trickyProximity = 1;
                     }
-                    else if (tricky != 0 && mainGetBit(GAMEBIT_Tricky_Usable) && cameraGetTargetType() == 8)
+                    else if (tricky != 0 && mainGetBit(GAMEBIT_Tricky_Usable) &&
+                             Camera_getTargetKind() == CAMCONTROL_TARGET_KIND_SUPPRESSED)
                     {
                         gCMenuButtons |= 0x20000;
                     }

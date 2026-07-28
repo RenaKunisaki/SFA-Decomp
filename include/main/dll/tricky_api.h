@@ -3,8 +3,14 @@
 
 #include "global.h"
 
-#define A_BUTTON_ICON_THROW_CARRYABLE 4
-#define A_BUTTON_ICON_PLACE_CARRYABLE 5
+enum AButtonIcon {
+    A_BUTTON_ICON_THROW_CARRYABLE = 4,
+    A_BUTTON_ICON_PLACE_CARRYABLE = 5,
+    A_BUTTON_ICON_HINT = 7,
+    A_BUTTON_ICON_TALK_NPC = 8,
+    A_BUTTON_ICON_TALK_OBJECT = 9,
+    A_BUTTON_ICON_CONTEXT_B = 0x0F
+};
 
 void setAButtonIcon(int icon);
 void setBButtonIcon(int icon);
