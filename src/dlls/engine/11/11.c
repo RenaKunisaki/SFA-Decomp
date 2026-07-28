@@ -1597,6 +1597,7 @@ s16 dll_0B_func04(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16*
 {
     int base0;
     int total = 0;
+    int m;
     int off;
     int i = 0;
     int found = i;
@@ -1768,7 +1769,6 @@ s16 dll_0B_func04(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16*
 
     {
         u8* dst = arr[slot]->auxSequenceBuffer;
-        int m;
         for (m = 0, off = 0; m < arr[slot]->emitterCount; m++, off += 0x18)
         {
             ((ModgfxPendingSpawn*)((u8*)arr[slot]->emitterCommands + off))
