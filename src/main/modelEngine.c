@@ -283,6 +283,7 @@
 #include "dlls/objects/487_DIMbossfire.h"
 #include "dlls/objects/488_SB_Galleon.h"
 #include "dlls/objects/489_SB_Propelle.h"
+#include "dlls/objects/490_SB_ShipHead.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -405,7 +406,7 @@ extern ResourceDescriptor gRingObjDescriptor, gSB_CageKyteObjDescriptor, gSB_Can
     gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
 extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_KyteCageObjDescriptor, gSB_MiniFireObjDescriptor,
     gSB_SeqDoorObjDescriptor, gSB_ShipGunBrokeObjDescriptor, gSB_ShipGunObjDescriptor;
-extern ResourceDescriptor gSB_ShipHeadObjDescriptor, gSB_ShipMastObjDescriptor;
+extern ResourceDescriptor gSB_ShipMastObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
@@ -1588,7 +1589,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIMbossfireObjDescriptor,
     (ResourceDescriptor*)&gSB_GalleonObjDescriptor,
     (ResourceDescriptor*)&gSB_PropellerObjDescriptor,
-    &gSB_ShipHeadObjDescriptor,
+    (ResourceDescriptor*)&gSB_ShipHeadObjDescriptor,
     &gSB_ShipMastObjDescriptor,
     &gSB_ShipGunObjDescriptor,
     &gSB_FireBallObjDescriptor,

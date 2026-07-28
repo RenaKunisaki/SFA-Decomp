@@ -19,7 +19,6 @@
  * parent Galleon's phase through the Galleon DLL's interface vtable.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/dll/sbshipheadstate_struct.h"
 #include "main/camera_shake_api.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
@@ -70,8 +69,6 @@
 #define SB_SHIPGUN_SMOKE_PARTICLE_ID    0x7AA
 #define SB_SHIPGUN_SMOKE_PARTICLE_FLAGS 0x0C0A
 #define SB_SHIPGUN_SMOKE_PARTICLE_PARAM 2
-
-STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);
 
 /* SBShipGunState: the gun's 0x10-byte extra block. cloudRunner (+0x00)
    caches the ridden CloudRunner object pointer; the rest is the aim/timing
