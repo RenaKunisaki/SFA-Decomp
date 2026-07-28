@@ -12766,7 +12766,7 @@ void playerDrawTeleportAnim(GameObject* obj)
     setMatrixFromObjectTransposed(&xf, mtx);
     PSMTXConcat(Camera_GetViewMatrix(), mtx, mtx);
     GXLoadPosMtxImm((const f32(*)[4])mtx, 0);
-    drawFn_8005cf8c(vp, (u8*)lbl_802C2B30, 0xc);
+    lightmapDrawTriangleList(vp, (u8*)lbl_802C2B30, 0xc);
 
     if (((PlayerState*)state)->teleportAnimProgress >= 68.0f)
     {

@@ -1056,13 +1056,13 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
             {
                 if ((int)((PartfxEffectState*)p[slot])->flags & 0x8000000)
                 {
-                    drawFn_8005cf8c(buf1, (u8*)buf2,
+                    lightmapDrawTriangleList(buf1, (u8*)buf2,
                                     ((PartfxEffectState*)p[slot])->colorVertexCount /
                                         ((PartfxEffectState*)p[slot])->drawGroupCount);
                 }
                 else
                 {
-                    drawFn_8005cf8c(buf1, (u8*)buf2,
+                    lightmapDrawTriangleList(buf1, (u8*)buf2,
                                     ((PartfxEffectState*)p[slot])->colorVertexCount);
                 }
                 buf1 = (char*)buf1 + (((PartfxEffectState*)p[slot])->drawGroupStride << 4);

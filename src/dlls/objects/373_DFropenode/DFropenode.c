@@ -783,7 +783,7 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
             node++;
             dfropenode_buildRopeSegmentMesh((u8*)gRopeNodeSegmentDataA, extra->angle, (node - 1)->pos, node->pos,
                                             segmentVerts);
-            drawFn_8005cf8c(segmentVerts, (u8*)gRopeNodeDisplayList, 6);
+            lightmapDrawTriangleList(segmentVerts, (u8*)gRopeNodeDisplayList, 6);
         }
         if (objDef->textureIndex == 1) {
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_waterblock_wave);
@@ -799,7 +799,7 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
                 node++;
                 dfropenode_buildRopeSegmentMesh((u8*)gRopeNodeSegmentDataB, extra->angle, (node - 1)->pos, node->pos,
                                                 segmentVerts);
-                drawFn_8005cf8c(segmentVerts, (u8*)gRopeNodeDisplayList, 6);
+                lightmapDrawTriangleList(segmentVerts, (u8*)gRopeNodeDisplayList, 6);
             }
         }
     }

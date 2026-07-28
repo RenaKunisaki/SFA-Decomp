@@ -228,7 +228,7 @@ void setPendingMapLoad(int v)
     renderFlags = (v != 0) ? (renderFlags | RENDERFLAG_PENDING_MAP_LOAD) : (renderFlags & ~RENDERFLAG_PENDING_MAP_LOAD);
 }
 
-void drawFn_8005cf8c(const void* vertexBase, u8* triList, int triCount)
+void lightmapDrawTriangleList(const void* vertexBase, u8* triList, int triCount)
 {
     const LightmapVertex* vertices = vertexBase;
     const LightmapVertex* vertex;
@@ -281,10 +281,10 @@ void doNothing_8005D148(int arg0, int arg1)
 }
 
 
-void objDrawFn_8005da48(GameObject* obj);
-void modelRenderFn_8005d4ec(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void modelRenderFn_8005d69c(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void modelRenderFn_8005d894(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void lightmapDrawQueuedObject(GameObject* obj);
+void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 void lightmap_sortTransparentDrawQueue(void);
 
 void getVisibleObjects(s8 * opacity);
@@ -398,7 +398,7 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
 void sortVisibleObjectKeysDescending(u32* arr, int n);
 
 
-void modelRenderFn_8005d4ec(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
+void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
 {
     int state[5];
     int countShifted;
@@ -436,7 +436,7 @@ void modelRenderFn_8005d4ec(MapBlockBoundsRec* bounds, MapBlockData* block, floa
     mapBlockRender_drawLightmapIndirectPasses(block, newR, (ModelRenderInstrsState*)state,
                                                (float (*)[4])viewMtx);
 }
-void modelRenderFn_8005d69c(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
+void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
 {
     int state[5];
     f32 m[12];
@@ -478,7 +478,7 @@ void modelRenderFn_8005d69c(MapBlockBoundsRec* bounds, MapBlockData* block, floa
     state[4] += 4;
     mapBlockRender_callList(1, 1, block, newR, (ModelRenderInstrsState*)state, viewMtx);
 }
-void modelRenderFn_8005d894(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
+void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx)
 {
     int state[5];
     int countShifted;
@@ -518,7 +518,7 @@ void modelRenderFn_8005d894(MapBlockBoundsRec* bounds, MapBlockData* block, floa
 }
 
 
-void objDrawFn_8005da48(GameObject* obj)
+void lightmapDrawQueuedObject(GameObject* obj)
 {
     int* model = (int*)Obj_GetActiveModel(obj);
     if (*(void**)((char*)model + 0x58) != NULL)
@@ -571,7 +571,7 @@ void sceneDrawTransparentPolys(void)
         {
         case 0:
             expgfx_renderSourcePools(entries[i].arg0.value, 0);
-            objDrawFn_8005da48(entries[i].arg0.object);
+            lightmapDrawQueuedObject(entries[i].arg0.object);
             expgfx_renderSourcePools(entries[i].arg0.value, 1);
             break;
         case 1:
@@ -607,7 +607,7 @@ void sceneDrawTransparentPolys(void)
             lightmapSetObjAmbColor();
             PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
             setupToRenderMapBlock(item.block, m);
-            modelRenderFn_8005d894(entries[i].arg0.bounds, entries[i].arg1.block, m);
+            mapBlockRenderTransparent(entries[i].arg0.bounds, entries[i].arg1.block, m);
             break;
         case 5:
             item.block = entries[i].arg1.block;
@@ -616,7 +616,7 @@ void sceneDrawTransparentPolys(void)
             lightmapSetObjAmbColor();
             PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
             setupToRenderMapBlock(item.block, m);
-            modelRenderFn_8005d69c(entries[i].arg0.bounds, entries[i].arg1.block, m);
+            mapBlockRenderWater(entries[i].arg0.bounds, entries[i].arg1.block, m);
             break;
         case 6:
             item.block = entries[i].arg1.block;
@@ -625,7 +625,7 @@ void sceneDrawTransparentPolys(void)
             lightmapSetObjAmbColor();
             PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
             setupToRenderMapBlock(item.block, m);
-            modelRenderFn_8005d4ec(entries[i].arg0.bounds, entries[i].arg1.block, m);
+            mapBlockRenderMain(entries[i].arg0.bounds, entries[i].arg1.block, m);
             break;
         case 7:
             drawGlow(entries[i].arg0.value, entries[i].arg1.value);

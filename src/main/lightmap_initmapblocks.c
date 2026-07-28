@@ -213,10 +213,10 @@ void initMapBlocks(void)
 }
 
 
-void objDrawFn_8005da48(GameObject* obj);
-void modelRenderFn_8005d4ec(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void modelRenderFn_8005d69c(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void modelRenderFn_8005d894(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void lightmapDrawQueuedObject(GameObject* obj);
+void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 void lightmap_sortTransparentDrawQueue(void);
 
 void getVisibleObjects(s8 * opacity);
@@ -234,12 +234,12 @@ void lightmap_sortTransparentDrawQueue(void);
 void sortVisibleObjectKeysDescending(u32* arr, int n);
 
 
-void modelRenderFn_8005d4ec(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void modelRenderFn_8005d69c(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void modelRenderFn_8005d894(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
+void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 
 
-void objDrawFn_8005da48(GameObject* obj);
+void lightmapDrawQueuedObject(GameObject* obj);
 
 void sceneDrawTransparentPolys(void);
 

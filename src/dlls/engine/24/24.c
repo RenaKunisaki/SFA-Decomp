@@ -273,7 +273,7 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
         i = 0;
         do
         {
-            drawFn_8005cf8c(*grp2, (u8*)(base + 0x2f0), 0x20);
+            lightmapDrawTriangleList(*grp2, (u8*)(base + 0x2f0), 0x20);
             grp2 += 1;
             i += 1;
         } while (i < BONE_PARTICLE_EFFECT_BUFFER_COUNT);

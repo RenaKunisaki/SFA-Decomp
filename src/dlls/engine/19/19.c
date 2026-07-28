@@ -569,7 +569,7 @@ void waterfx_render(int obj, int renderParam)
                 Camera_LoadModelViewMatrix(obj, renderParam, &dp, 1.0f, WATERFX_ZERO,
                                            NULL);
                 loadReflectionTexMtxs();
-                drawFn_8005cf8c(gWaterfxRippleVtx + i * 0x40,
+                lightmapDrawTriangleList(gWaterfxRippleVtx + i * 0x40,
                                   gWaterfxRippleVtxDesc + i * 0x20, 2);
             }
         }
@@ -635,7 +635,7 @@ void waterfx_render(int obj, int renderParam)
                 Camera_LoadModelViewMatrix(obj, renderParam, &dp, 1.0f, WATERFX_ZERO,
                                            NULL);
                 loadReflectionTexMtxs();
-                drawFn_8005cf8c(gWaterfxWakeVtx + vertexOffset,
+                lightmapDrawTriangleList(gWaterfxWakeVtx + vertexOffset,
                                   gWaterfxWakeVtxDesc + descriptorOffset, 2);
             }
         }
