@@ -15718,7 +15718,7 @@ void fn_802B0EA4(GameObject* obj, int inner, int state)
         d = d + 0xffff;
     }
     ((PlayerState*)inner)->yawRate = (int)((f32)d / 182.044f);
-    if (((PlayerState*)inner)->turnDeadzoneScale != 0.0f)
+    if (((PlayerState*)inner)->turnDeadzoneScale != (v = 0.0f))
     {
         f32 dead = ((PlayerState*)inner)->turnDeadzoneScale * ((PlayerState*)state)->baddie.animSpeedA;
         if ((f32)((PlayerState*)inner)->yawRate < dead && (f32)((PlayerState*)inner)->yawRate > -dead)
@@ -15761,7 +15761,7 @@ void fn_802B0EA4(GameObject* obj, int inner, int state)
         d = d + 0xffff;
     }
     ((PlayerState*)inner)->targetYawRate = (int)((f32)d / 182.044f);
-    if (((PlayerState*)inner)->turnDeadzoneScale != 0.0f)
+    if (((PlayerState*)inner)->turnDeadzoneScale != (v = 0.0f))
     {
         f32 dead = ((PlayerState*)inner)->turnDeadzoneScale * ((PlayerState*)state)->baddie.animSpeedA;
         if ((f32)((PlayerState*)inner)->targetYawRate < dead && (f32)((PlayerState*)inner)->targetYawRate > -dead)
