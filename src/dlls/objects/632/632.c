@@ -1,4 +1,4 @@
-/* DLL 632 */
+/* DLL 0x0278 */
 #include "global.h"
 
-u32 lbl_803DC378[2] = {0};
+u32 gDll278NullResourceDescriptor[2] = {0};

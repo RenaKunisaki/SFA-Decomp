@@ -1,4 +1,4 @@
-/* DLL 615 */
+/* DLL 0x0267 */
 #include "global.h"
 
-u32 lbl_803DC2D8[2] = {0};
+u32 gDll267NullResourceDescriptor[2] = {0};

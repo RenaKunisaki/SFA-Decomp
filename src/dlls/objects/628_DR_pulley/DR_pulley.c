@@ -1,4 +1,4 @@
-/* DR_pulley (DLL 628) */
+/* DR_pulley (DLL 0x0274) */
 #include "global.h"
 
-u32 lbl_803DC360[2] = {0};
+u32 gDR_pulleyNullResourceDescriptor[2] = {0};

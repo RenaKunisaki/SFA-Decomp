@@ -1,4 +1,4 @@
-/* DR_Vines (DLL 621) */
+/* DR_Vines (DLL 0x026D) */
 #include "global.h"
 
-u32 lbl_803DC2E8[2] = {0};
+u32 gDR_VinesNullResourceDescriptor[2] = {0};
