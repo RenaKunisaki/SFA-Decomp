@@ -92,14 +92,6 @@ u8 synthAuxBMIDI[8];
 u8 synthAuxBMIDISet[8];
 u8 gSynthDelayBucketCursor;
 u8 gSynthInitialized;
-SynthVoice* gSynthQueuedVoices;
-SynthVoice* gSynthAllocatedVoices;
-SynthVoice* gSynthFreeVoices;
-u32 gSynthNextHandle;
-u8 gSynthCurrentFadeOutState;
-u32 gSynthCurrentVoiceSlotIndex;
-SynthCallbackLink* gSynthFreeCallbacks;
-SynthVoice* gSynthCurrentVoice;
 
 typedef struct SynthVoiceLfo
 {
