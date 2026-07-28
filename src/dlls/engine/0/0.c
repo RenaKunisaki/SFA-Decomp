@@ -1522,7 +1522,7 @@ void fearTestMeterDraw(void)
     u16 hgt = ((Texture*)texB)->height;
     int gap = fearTestMeterOuterHalfWidth - fearTestMeterInnerHalfWidth;
     void* texA = hudTextures[0x5f];
-    int wid = *(u16*)((char*)texA + 0xa) & 0xff;
+    int wid = ((Texture*)texA)->width & 0xff;
     if (gFearTestMeterFadeIn != 0)
     {
         gFearTestMeterAlpha = gFearTestMeterAlpha + gFearTestMeterFadeSpeed * framesThisStep;
@@ -4037,7 +4037,7 @@ void hudDrawCMenu(int p1, int p2, int p3)
         slot = 2;
         break;
     }
-    *(f32*)((u8*)gCMenuRingFrontObjs[slot] + 0x10) =
+    gCMenuRingFrontObjs[slot]->anim.localPosY =
         lbl_803E1E40 + (f32)(-gCMenuScrollTimer * lbl_803DBA30) / lbl_803E201C;
     sy = lbl_803DBAC8;
     sx = lbl_803DBAC4;
@@ -4060,7 +4060,7 @@ void hudDrawCMenu(int p1, int p2, int p3)
     do
     {
         used[i] = 0;
-        vals[i] = mathCosf(lbl_803E1EC8 * (f32) * (s16*)gCMenuRingObjs[i] / lbl_803E1E94);
+        vals[i] = mathCosf(lbl_803E1EC8 * (f32)gCMenuRingObjs[i]->anim.rotX / lbl_803E1E94);
         i++;
     } while (i < 3);
     j = 0;
@@ -5228,9 +5228,9 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
         }
         {
             u16 jj;
-            for (jj = 0; (s32)(u16)jj < (*(int*)((u8*)lbl_803A9364 + 0x1c) >> 2); jj++)
+            for (jj = 0; (s32)(u16)jj < (lbl_803A9364[7] >> 2); jj++)
             {
-                s32 v = *(int*)lbl_803A9364;
+                s32 v = lbl_803A9364[0];
                 u8 tex;
                 f32 fyj;
                 if ((s32)(u16)jj < (v >> 2))
@@ -5500,7 +5500,7 @@ void pauseMenuDrawGrid(int alpha)
         int w = lbl_803E1F34;
         int cw = (int)(scale * (f32)e->trailX);
         int ch = (int)(scale * (f32)e->trailY);
-        int vx = e->x + *(s8*)((char*)e + 0xb);
+        int vx = e->x + e->xOffset;
         u16 w16;
         s16 cursorAlpha;
         int x1 = (int)((f32)vx - lbl_803E2110 - (f32)(u8)cw);
@@ -5891,7 +5891,7 @@ void pauseMenuDoSave(void)
             lbl_803A9410[i]->anim.placementDataAddress = 0;
         }
         objRender(0, 0, 0, 0, lbl_803A9410[i], 1);
-        *(u16*)((u8*)Obj_GetActiveModel(lbl_803A9410[i]) + 0x18) &= ~0x8;
+        Obj_GetActiveModel(lbl_803A9410[i])->bufferFlags &= ~0x8;
         lbl_803A9410[i]->anim.renderAlpha = 0xff;
         if (i == lbl_803DBA64)
         {
@@ -5908,8 +5908,8 @@ void pauseMenuDoSave(void)
     while (j < 2)
     {
         objRender(0, 0, 0, 0, objects[j], 1);
-        *(u16*)((u8*)Obj_GetActiveModel(objects[j]) + 0x18) &= ~0x8;
-        *((u8*)objects[j] + 0x37) = 0xff;
+        Obj_GetActiveModel(objects[j])->bufferFlags &= ~0x8;
+        objects[j]->anim.renderAlpha = 0xff;
         j++;
     }
     Camera_SetCurrentViewIndex(0);
@@ -6482,8 +6482,8 @@ void pauseMenuFn_80129ee0(void)
                             {
                                 lbl_803DD824[k].id = 0x49;
                             }
-                            *(u8*)((char*)&lbl_803DD824[k] + 0x8) = 0x10;
-                            *(u8*)((char*)&lbl_803DD824[k] + 0x9) = 0xc;
+                            lbl_803DD824[k].trailX = 0x10;
+                            lbl_803DD824[k].trailY = 0xc;
                         }
                     }
                     if (lbl_803DD7D6 == lbl_803DD8E0)
