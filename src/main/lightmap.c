@@ -1036,45 +1036,32 @@ void updateEnvironment(int mode)
         }
     }
 }
-void initMapBlocks(void);
 
-void gameFlagFn_8005cd24(int v);
 
 int getDrawDistanceFlag_8005cd48(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
 
 
-int setWidescreen(u8 v);
 int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }
 u32 shouldDrawShadows(void) { return renderFlags & RENDERFLAG_DRAW_SHADOWS; }
 int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
 
-void titleScreenFn_8005cdd4(int v);
 
-void setDrawLights(int v);
 
-void gameFlagFn_8005ce6c(int v);
 
 u8 isOvercast(void);
 
-void setIsOvercast(int v);
 
 void setStarsHidden(int v);
 
-void setDrawCloudsAndLights(int v);
 
 void setPendingMapLoad(int v);
 
-void drawFn_8005cf8c(const void* vertexBase, u8* triList, int triCount);
 
 
-void setFogColorCallback(int unused, u8 red, u8 green, u8 blue, int wpad0);
 
 
-void _textSetColor(void* context, int red, int green, int blue, int alpha);
 
-void setTextColor(void* context, int a, int b, int c, int d);
 
-void doNothing_8005D148(int arg0, int arg1);
 
 
 void objDrawFn_8005da48(GameObject* obj);
@@ -1088,7 +1075,6 @@ void getVisibleObjects(s8 * opacity);
 
 void renderSceneGeometry(u8 renderType, s8* order);
 
-void doNothing_8005D14C(int arg0, int arg1);
 void renderShadowType3(u8* obj, u32 b, s32 offset);
 
 void lightmap_sortTransparentDrawQueue(void);
@@ -1109,7 +1095,6 @@ typedef union
 
 
 
-void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector);
 
 
 void sortVisibleObjectKeysDescending(u32* arr, int n);
@@ -1125,4 +1110,3 @@ void objDrawFn_8005da48(GameObject* obj);
 void sceneDrawTransparentPolys(void);
 
 
-void lightmap_queueExternalRenderEntry(u32 a, u32 b, f32* p);

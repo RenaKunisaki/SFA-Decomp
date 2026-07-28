@@ -803,9 +803,6 @@ const int lbl_802C1B70[56] = {
     0xD, 0x400, 0xE, 0x800, 0x55, 0x400, 0x56, 0x800
 };
 
-void objRenderShadow2(int* obj, int* obj2, u8* m, int p4);
-void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode);
-void objRenderChild(int* child, int* parent, u8 isShadow);
 
 /*
  * One render op ("shader") record from the model file's renderOps array,
@@ -837,8 +834,6 @@ typedef struct
 } MtxBitStream;
 typedef u8 (*ObjModelRenderCb)(int* obj, int* am, int p3);
 
-int getLoadedFileFlags(int slot);
-s32 mapCheckCurBlocks(int v);
 
 
 // ObjModelRenderOp.flags (+0x3C) bits

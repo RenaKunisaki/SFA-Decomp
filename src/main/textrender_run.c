@@ -77,13 +77,7 @@ int gGameTextFallbackBuf;
 GameTextDrawFunc gameTextDrawFunc;
 u8 lbl_803DC968;
 
-void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang);
-void translateToDinoLanguage(u8* str);
-void gameTextSetWindow(u8* textBox);
 void setLanguageFn_8001ad64(GameTextLoadSlot* slot);
-void boxDrawFn_8001c5ac(u16* strPtr, int boxId, u8* box);
-int GameText_CountPrintableChars(u8* str);
-int GameText_FindControlCodeArgs(u8* str, u32 target, int* out);
 
 extern u16 gGameTextSjisGlyphTable[];
 extern char sGameTextMapPathFormat[];
@@ -92,8 +86,6 @@ extern int gGameTextFontTexRowPitch;
 extern GameTextStateElem gGameTextCharsets[];
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 
-int getControlCharLen(u32 c);
-void* gameTextGet(int textId);
 int gameTextFn_8001b44c(int x);
 int subtitleIsActive(void);
 void subtitleFn_8001b700(void);

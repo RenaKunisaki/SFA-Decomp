@@ -101,9 +101,6 @@ extern char sObjfsaMissingPatchExitPoint1[];
 
 #define OBJFSA_PHASE_LIMIT 1.0f
 
-int RomCurve_getUnblockedControlPointId(int curve, int exclude, int pickIdx);
-int RomCurve_getControlPointId(int curve, int exclude, int pickIdx);
-int RomCurve_segmentIntersectsOriginRayXZ(f32 x, f32 unusedY, f32 z, RomCurveDef* a, RomCurveDef* b, f32 unusedW);
 
 ObjfsaPatch gObjfsaPatches[0x3000 / sizeof(ObjfsaPatch)];
 ObjfsaWalkGroup gObjfsaWalkGroups[0x1C48 / sizeof(ObjfsaWalkGroup)];

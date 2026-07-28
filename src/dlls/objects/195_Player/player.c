@@ -271,8 +271,6 @@ void fn_802B1BF8(GameObject* a, int b, int state, f32 unusedTimeDelta);
 void playerItemGetAnimFn(int obj, int inner, int state);
 int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag);
 void fn_802B4DE0(GameObject* obj, int p2);
-void Lightfoot_UpdatePlayerInteraction(int obj, int inner, int state);
-void Lightfoot_ProcessHitResponseFlags(int obj, int inner);
 s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
                 f32 samplePhase, f32 moveStepScale, int axis, int flags);
 

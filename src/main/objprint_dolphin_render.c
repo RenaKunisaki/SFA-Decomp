@@ -92,7 +92,6 @@ int objRotateFn_8003bce8(f32* m, s16* outA, s16* outB, s16* outC);
 
 
 
-void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model);
 
 void modelInitMtxs(ModelFileHeader* def, ObjModel* model);
 
