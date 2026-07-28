@@ -2927,11 +2927,13 @@ void ObjModel_BlendNormalStream(u8* mtxs, u8* job, u8* animData, u8** outs, int 
         copyToCache(*(u8**)((int)gModelCacheBuffersA + 4), *(u8**)(chunk + 0x64), weightWords);
         for (i = 0; i < (u32)(((ModelFileHeader*)job)->flags - 1); i++)
         {
+            int nextVtxWords;
+
             chunk = *(u8**)(job + 0xc) + i * 0x74;
-            vtxWords = (u32)((chunk[0xe7] << 5) + 0x1f) >> 5;
+            nextVtxWords = (u32)((chunk[0xe7] << 5) + 0x1f) >> 5;
             nextSlot = (i + 1) & 1;
-            copyToCache(gModelCacheBuffersA[(u8)(nextSlot * 2)], animData + *(int*)(chunk + 0xd4), vtxWords);
-            chunkWords[(i + 1) & 1] = vtxWords;
+            copyToCache(gModelCacheBuffersA[(u8)(nextSlot * 2)], animData + *(int*)(chunk + 0xd4), nextVtxWords);
+            chunkWords[(i + 1) & 1] = nextVtxWords;
             {
                 u8* nextChunk;
                 int nextWeightWords = (u32)(((nextChunk = *(u8**)(job + 0xc) + i * 0x74)[0xe3] << 5) + 0x1f) >> 5;
