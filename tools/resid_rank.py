@@ -101,9 +101,17 @@ ZERO RESIDUAL IS NECESSARY, NOT SUFFICIENT.  `rank` splits its zero-residual
 units into flip candidates and a BLOCKED list.  A blocked unit is byte- and
 relocation-equal but its retail `.o` exports a global name ours does not --
 invariably a `lbl_` pool constant, which MWCC emits as an anonymous local `@N`
--- and some sibling that is still on its retail object references that name.
-Flipping one links but fails `undefined:`; it only becomes flippable once every
-such sibling matches too.
+-- AND some sibling still on its retail object actually references that name.
+Both halves are required.  The screen used to test only the first and parked
+`dlls/engine/73` over 31 names nothing in the image consumed; intersecting the
+missing exports against the undefined references of the objects mwld is really
+given (`consumers`, read off the generated link rule) cleared it, and it
+flipped with the DOL byte-identical.  `main/gametext.c` is the genuine shape:
+`main/gametext_tail.c` and `main/textrender.c` are still NonMatching, so their
+retail objects are in the link and carry real undefined references to
+`lbl_803DE6F0`/`lbl_803DE6F8`.  Names that are missing but unconsumed are
+printed alongside the flip candidate as harmless, so the distinction stays
+visible rather than being silently dropped.
 
 WARNING.  Residual and `fuzzy_match_percent` can move in OPPOSITE directions: a
 change may cut residual while regressing fuzzy.  Only a change that drives
@@ -559,16 +567,95 @@ def exports(path):
     return out
 
 
+def undefined(path):
+    """Global names the object REFERENCES but does not define."""
+    out = set()
+    with open(path, "rb") as f:
+        elf = ELFFile(f)
+        for sec in elf.iter_sections():
+            if not isinstance(sec, SymbolTableSection):
+                continue
+            for s in sec.iter_symbols():
+                if s["st_shndx"] == "SHN_UNDEF" and s.name:
+                    out.add(s.name)
+    return out
+
+
+def link_objects():
+    """The object list mwld is actually given, read off the generated link rule.
+
+    That list is the ground truth for which side of each unit is in the image:
+    a `complete` unit contributes `build/GSAE01/src/...`, a NonMatching one
+    still contributes its retail `build/GSAE01/obj/...`.  Anything not in the
+    link cannot consume a symbol and must not be allowed to block a flip.
+    """
+    txt = (ROOT / "build.ninja").read_text().splitlines()
+    out, i = [], 0
+    while i < len(txt):
+        if not re.match(r"^build \S+\.elf: link ", txt[i]):
+            i += 1
+            continue
+        buf = []
+        while True:
+            buf.append(txt[i].rstrip())
+            if not buf[-1].endswith("$"):
+                break
+            i += 1
+        blob = " ".join(x.rstrip("$").strip() for x in buf)
+        blob = blob.split(":", 1)[1].split("|")[0]
+        out += [t for t in blob.split() if t.endswith(".o")]
+        i += 1
+    return out
+
+
+_CONSUMERS = None
+
+
+def consumers():
+    """name -> the linked objects with an UNDEFINED reference to it.
+
+    This is the half the BLOCKED screen used to be missing.  `missing_exports`
+    asks only whether retail's object exports a global that ours does not; it
+    never asks whether anything in the link still NEEDS that global.  MWCC emits
+    a pool constant as an anonymous local `@N`, so a `lbl_...` retail exports
+    disappears the moment we start linking our object -- but that only breaks
+    the link if some sibling still on its retail object actually references the
+    name.  Screening on the export set alone parked `dlls/engine/73` over 31
+    names (`gCamCombatPi`, `gCamCombatBinAngleHalfCircle`, 29 `lbl_803E18xx`)
+    that NOTHING in the image referenced; it flipped clean, DOL byte-identical.
+    Intersecting the missing exports against this index is what makes the
+    BLOCKED verdict mean `a sibling needs this', not `retail happened to name
+    it'.
+    """
+    global _CONSUMERS
+    if _CONSUMERS is None:
+        idx = {}
+        for o in link_objects():
+            p = ROOT / o
+            if not p.exists():
+                continue
+            for n in undefined(p):
+                idx.setdefault(n, set()).add(o)
+        _CONSUMERS = idx
+    return _CONSUMERS
+
+
 def missing_exports(ours, tgt):
     """Names retail's object exports that ours does not.
 
-    A unit can screen link-clean and still break the link: MWCC emits pool
-    constants as anonymous local @N symbols, so a `lbl_...` that retail's
-    object exports globally vanishes when we start linking ours.  Any sibling
-    still on its retail object references that name and mwld fails undefined.
-    The unit only becomes flippable once every such sibling matches too.
+    Split into (blocking, unconsumed): a missing export only blocks the flip
+    when something else in the link has an undefined reference to it.  Our own
+    object is excluded from the consumer set -- it resolves the name internally
+    through its local `@N` -- as is retail's copy of the same unit, which
+    leaves the image when the unit flips.
     """
-    return exports(tgt) - exports(ours)
+    miss = exports(tgt) - exports(ours)
+    if not miss:
+        return set(), set()
+    idx = consumers()
+    mine = {str(Path(ours).relative_to(ROOT)), str(Path(tgt).relative_to(ROOT))}
+    block = {n for n in miss if idx.get(n, set()) - mine}
+    return block, miss - block
 
 
 def screen(ours, tgt):
@@ -716,16 +803,20 @@ def cmd_rank(args):
     ready, held = [], []
     lookup = {n: (o, t) for n, o, t, _ in units(args)}
     for r in bad:
-        miss = missing_exports(*lookup[r[2]])
-        (held if miss else ready).append((r[2], sorted(miss)))
+        block, free = missing_exports(*lookup[r[2]])
+        (held if block else ready).append((r[2], sorted(block), sorted(free)))
     print(f"# LINK-CLEAN but NonMatching (flip candidates): {len(ready)}")
-    for n, _ in ready:
-        print(f"    {n}")
+    for n, _, free in ready:
+        tail = f"  (unconsumed, harmless: {' '.join(free)})" if free else ""
+        print(f"    {n}{tail}")
     if held:
         print(f"# LINK-CLEAN but BLOCKED (retail object exports names ours does "
-              f"not; siblings still reference them): {len(held)}")
-        for n, miss in held:
-            print(f"    {n}  missing: {' '.join(miss)}")
+              f"not AND a linked sibling still references them): {len(held)}")
+        for n, block, free in held:
+            print(f"    {n}  blocking: {' '.join(block)}")
+            for b in block:
+                by = sorted(consumers().get(b, ()))[:4]
+                print(f"        {b} <- {' '.join(by)}")
 
 
 def _bysym(rows):
