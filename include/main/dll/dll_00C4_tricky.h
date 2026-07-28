@@ -106,7 +106,7 @@ u8 Tricky_getEnergyMax(int* obj);
 u8 Tricky_getEnergy(int* obj);
 int Tricky_getCurrentCommandType(int* obj, int* out);
 void Tricky_requestRecall(int* obj);
-int Tricky_func13(int* obj);
+int Tricky_isGuarding(int* obj);
 int Tricky_isPlayingBall(int* obj);
 int Tricky_getAvailableCommands(void);
 

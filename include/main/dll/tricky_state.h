@@ -77,7 +77,7 @@ typedef struct TrickyState {
     u8* progressPtr; /* MapEventInterface getTrickyEnergy() result */
     GameObject* playerObj; /* owning player/sidekick object */
     u8 stateIndex; /* primary Tricky state selector (0..0x11); indexes the handlerBase[] per-state handler dispatch table and gates the state machine */
-    u8 followPhase; /* follow-handler phase selector (discrete 0..5; gates the pathing/seed branches) */
+    u8 movementState; /* follow-handler phase selector (discrete 0..5; gates the pathing/seed branches) */
     u8 substate; /* anim-sequence substate 0..7 */
     u8 commandRequestBits; /* pending-command request bitmask: |= (1 << commandType) on enqueue, OR'd with 9 into the prompt mask, tested != 0, cleared to 0 (tricky) */
     u8 unk0C;
@@ -111,7 +111,7 @@ typedef struct TrickyState {
     f32 prevLocalPosX;
     f32 prevLocalPosY;
     f32 prevLocalPosZ;
-    s16 patch[4]; /* curve-walk patch values (dll_DF trickyFn_8013b368) */
+    s16 patch[4]; /* curve-walk patch values (dll_DF trickyUpdateMovementState) */
     TrickyPoint3 patchTargets[4];
     u16 activeWalkGroup; /* current active walk-group id (getPatchGroup/walkGroupFn arg; tracked vs targetWg) */
     s16 linkedWalkGroup; /* walk-group/patch id linked to activeWalkGroup: set to the intersected walk-group product, compared == targetWg/getPatchGroup results, cleared to 0 (trickyfollow/tricky_substates) */

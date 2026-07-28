@@ -20,7 +20,7 @@ typedef struct SkeetlaParticleSpawnArgs
 } SkeetlaParticleSpawnArgs;
 
 int trickyTurnTowardYaw(u8* obj, s16 targetYaw);
-int trickyMove(GameObject* obj, f32* targetPos);
+int moveTricky(GameObject* obj, f32* targetPos);
 void* trickyFindNearestLinkedRouteEntry(u8* context, u8* routeDef, int linkSelector, int routeFlagValue);
 void* trickyFindPathRouteEntry(u8* state, u32 route, int pathId);
 void* trickySelectRouteEntry(u8* state, u8* routeDef, u8 routeFlagValue);
