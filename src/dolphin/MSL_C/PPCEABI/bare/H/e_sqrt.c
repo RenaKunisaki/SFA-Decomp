@@ -37,13 +37,6 @@ extern double lbl_803E7BB0;
 extern double lbl_803E7BB8;
 extern double lbl_803E7BC0;
 extern float lbl_803E7BC8;
-extern float lbl_803E7BD8;
-extern float lbl_803E7BDC;
-extern float lbl_803E7BE0;
-extern float lbl_803E7BE4;
-extern float lbl_803E7BE8;
-extern float lbl_803E7BEC;
-extern float lbl_803E7BF0;
 
 float powfCoreHighPrecision(float base, float power) {
     register double logValue;
@@ -100,13 +93,13 @@ float powfCoreFast(float base, register float power) {
         baseExponent = ((baseBits >> 23) & 0xFF) - 127;
         *(u32 *)&logValue = (baseBits & 0x7FFFFF) | 0x3F800000;
         logValue = logValue - lbl_803E7BC8;
-        logValue = logValue * (logValue * (lbl_803E7BE4 * logValue + lbl_803E7BE0) + lbl_803E7BDC) + lbl_803E7BD8;
+        logValue = logValue * (logValue * (0.15544586f * logValue + -0.5729206f) + 1.4172995f) + 0.00072527403f;
         baseExponentAsFloat = fastCastS16ToFloat(&baseExponent);
         logValue = power * (logValue + baseExponentAsFloat);
         fastCastFloatToS16(logValue, &resultExponent);
         resultExponentAsFloat = fastCastS16ToFloat(&resultExponent);
         logValue = logValue - resultExponentAsFloat;
-        result = (logValue != lbl_803E7AB8) ? (logValue * (lbl_803E7BF0 * logValue + lbl_803E7BEC) + lbl_803E7BE8) : lbl_803E7BC8;
+        result = (logValue != lbl_803E7AB8) ? (logValue * (0.3431449f * logValue + 0.6519048f) + 1.0023681f) : lbl_803E7BC8;
         if ((int)(baseBits & 0x80000000)) {
             integerPower = power;
             if (integerPower & 1) {

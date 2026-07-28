@@ -655,7 +655,7 @@ dlls/modgfx/90/90.c:
 	.text       start:0x800EB098 end:0x800EB618
 	.data       start:0x80311DA8 end:0x80311E30
 	.sdata      start:0x803DB898 end:0x803DB8B0
-	.sdata2     start:0x803E0728 end:0x803E0730
+	.sdata2     start:0x803E0710 end:0x803E0730
 
 dlls/modgfx/91/91.c:
 	.text       start:0x800EB618 end:0x800EC7BC
@@ -5015,7 +5015,7 @@ main/acosf.c:
 
 dolphin/MSL_C/PPCEABI/bare/H/e_sqrt.c:
 	.text       start:0x802927A4 end:0x80292B44
-	.sdata2     start:0x803E7BD0 end:0x803E7BD8
+	.sdata2     start:0x803E7BD0 end:0x803E7BF4
 
 dolphin/MSL_C/PPCEABI/bare/H/e_atan2.c:
 	.text       start:0x80292B44 end:0x80292D3C
