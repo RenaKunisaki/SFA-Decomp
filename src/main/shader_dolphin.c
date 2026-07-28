@@ -238,6 +238,12 @@ void chooseTevKonstSelectors(void* params, u8 colorEnabled, u8 alphaEnabled, int
 }
 
 
+static void setHeatEffectInverted(void)
+{
+    gHeatEffectScale = -1.0f;
+}
+
+
 void setHeatEffectParams(u8 alpha, f32 scale)
 {
     gHeatEffectColor.a = alpha;
@@ -246,6 +252,14 @@ void setHeatEffectParams(u8 alpha, f32 scale)
     {
         gHeatEffectScale = 1.0f;
     }
+}
+
+
+static void setDefaultHeavyFogParams(void)
+{
+    lbl_803DCD3C = 0.0f;
+    lbl_803DCD38 = 0.8f;
+    lbl_803DCD34 = 0.9f;
 }
 
 
