@@ -437,7 +437,7 @@ int DIMbossHitDetect_tonsilSlam(GameObject* obj, int runtime) {
     if (obj->anim.currentMoveProgress > 0.9f) {
         gDIMbossSequenceFlags &= ~DIMBOSS_SEQUENCE_FLAG_0020;
     }
-    if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         gDIMbossSequenceFlags |= (u64)DIMBOSS_SEQUENCE_FLAGS_TONSIL_IMPACT;
         Camera_EnableViewYOffset();
         CameraShake_Start(2.5f, 5.0f, 2.0f);
@@ -447,7 +447,7 @@ int DIMbossHitDetect_tonsilSlam(GameObject* obj, int runtime) {
         animSpeed = 0.0f;
         ((BaddieState*)runtime)->animSpeedA = animSpeed;
         ((BaddieState*)runtime)->animSpeedB = animSpeed;
-        if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0x15, animSpeed, 0);
             ((BaddieState*)runtime)->moveDone = 0;
         }
@@ -458,7 +458,7 @@ int DIMbossHitDetect_tonsilSlam(GameObject* obj, int runtime) {
 
 int DIMbossHitDetect_liftSlam(GameObject* obj, int runtime) {
     int state = *(int*)&obj->extra;
-    if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         f32 animSpeed;
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_2000;
         Camera_EnableViewYOffset();
@@ -469,7 +469,7 @@ int DIMbossHitDetect_liftSlam(GameObject* obj, int runtime) {
         animSpeed = 0.0f;
         ((BaddieState*)runtime)->animSpeedA = animSpeed;
         ((BaddieState*)runtime)->animSpeedB = animSpeed;
-        if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0xe, animSpeed, 0);
             ((BaddieState*)runtime)->moveDone = 0;
         }
@@ -490,7 +490,7 @@ int DIMbossHitDetect_liftImpact(int obj, int p2) {
     ((BaddieState*)p2)->animSpeedB = zeroProgress;
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIM2LIFT_HIT_VOLUME_SLOT_10, 1, -1);
 
-    if ((s32)(s8)((BaddieState*)p2)->moveJustStartedA != 0) {
+    if ((s32)((BaddieState*)p2)->moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove(obj, 15, 0.0f, 0);
         ((BaddieState*)p2)->moveDone = 0;
     }
@@ -507,7 +507,7 @@ int DIMbossHitDetect_liftImpact(int obj, int p2) {
 }
 
 int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, int runtime) {
-    if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         f32 animSpeed;
         obj->anim.activeMove = -1;
         animSpeed = 0.0f;
@@ -515,12 +515,12 @@ int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, int runtime) {
         ((BaddieState*)runtime)->animSpeedB = animSpeed;
         ((BaddieState*)runtime)->moveSpeed = 0.005f;
         if (randomGetRange(0, 1) != 0) {
-            if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+            if (((BaddieState*)runtime)->moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0xd, 0.0f, 0);
                 ((BaddieState*)runtime)->moveDone = 0;
             }
         } else {
-            if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+            if (((BaddieState*)runtime)->moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0xc, 0.0f, 0);
                 ((BaddieState*)runtime)->moveDone = 0;
             }
@@ -533,10 +533,10 @@ int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, int runtime) {
 
 int DIMbossHitDetect_lungeAttack(GameObject* obj, int runtime, f32 hitAmount) {
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIM2LIFT_HIT_VOLUME_SLOT_9, 1, -1);
-    if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         f32 animSpeed;
         ((BaddieState*)runtime)->moveSpeed = 0.006f;
-        if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0x13, 0.0f, 0);
             ((BaddieState*)runtime)->moveDone = 0;
         }
@@ -553,9 +553,9 @@ int DIMbossHitDetect_lungeAttack(GameObject* obj, int runtime, f32 hitAmount) {
 int DIMbossHitDetect_breathBurst(GameObject* obj, int runtime, f32 arg) {
     f32 progress;
     f32 animSpeed;
-    if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         ((BaddieState*)runtime)->moveSpeed = 0.0025f;
-        if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0x12, 0.0f, 0);
             ((BaddieState*)runtime)->moveDone = 0;
         }
@@ -579,9 +579,9 @@ int DIMbossHitDetect_breathBurst(GameObject* obj, int runtime, f32 arg) {
 int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, int runtime, f32 arg) {
     f32 progress;
     f32 animSpeed;
-    if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         ((BaddieState*)runtime)->moveSpeed = 0.025f;
-        if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0x11, 0.0f, 0);
             ((BaddieState*)runtime)->moveDone = 0;
         }
@@ -607,9 +607,9 @@ int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, int runtime, f32 arg) {
 int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, int runtime, f32 arg) {
     f32 progress;
     f32 animSpeed;
-    if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         ((BaddieState*)runtime)->moveSpeed = 0.005f;
-        if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0x11, 0.0f, 0);
             ((BaddieState*)runtime)->moveDone = 0;
         }
@@ -637,19 +637,19 @@ int DIMbossHitDetect_randomSwipe(GameObject* obj, int runtime, f32 arg) {
     int eventFlags;
     f32 animSpeed;
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIM2LIFT_HIT_VOLUME_SLOT_9, 1, -1);
-    if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         obj->anim.activeMove = -1;
         animSpeed = 0.0f;
         ((BaddieState*)runtime)->animSpeedA = animSpeed;
         ((BaddieState*)runtime)->animSpeedB = animSpeed;
         if (randomGetRange(0, 1) != 0) {
-            if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+            if (((BaddieState*)runtime)->moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0xb, 0.0f, 0);
                 ((BaddieState*)runtime)->moveDone = 0;
             }
             ((BaddieState*)runtime)->moveSpeed = 0.005f;
         } else {
-            if (*(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0) {
+            if (((BaddieState*)runtime)->moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0x10, 0.0f, 0);
                 ((BaddieState*)runtime)->moveDone = 0;
             }
@@ -671,7 +671,7 @@ int DIMbossHitDetect_trackTargetMove(GameObject* obj, int runtime, f32 hitAmount
     u16 unused;
     u16 distance;
     ((BaddieState*)runtime)->animSpeedA = 0.0f;
-    if (*(s8*)&((BaddieState*)runtime)->moveDone != 0 || *(s8*)&((BaddieState*)runtime)->moveJustStartedA != 0 ||
+    if (*(s8*)&((BaddieState*)runtime)->moveDone != 0 || ((BaddieState*)runtime)->moveJustStartedA != 0 ||
         obj->anim.currentMove == 1) {
         (*gBaddieControlInterface)
             ->getTargetGeometry(obj, (GameObject*)((BaddieState*)runtime)->targetObj, 0x10, &dirSector, &unused,
@@ -685,7 +685,7 @@ int DIMbossHitDetect_trackTargetMove(GameObject* obj, int runtime, f32 hitAmount
 }
 
 int DIMbossHitDetect_applyForwardMove(int* obj, u8* state, f32 weight) {
-    if (*(s8*)&((BaddieState*)state)->moveJustStartedA != 0) {
+    if (((BaddieState*)state)->moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 2, 0.0f, 0);
         ((BaddieState*)state)->moveDone = 0;
     }
@@ -696,9 +696,9 @@ int DIMbossHitDetect_applyForwardMove(int* obj, u8* state, f32 weight) {
 }
 
 int DIMbossHitDetect_resetIdleMove(GameObject* obj, u8* state) {
-    if (*(s8*)&((BaddieState*)state)->moveJustStartedA != 0) {
+    if (((BaddieState*)state)->moveJustStartedA != 0) {
         f32 fz;
-        if (*(s8*)&((BaddieState*)state)->moveJustStartedA != 0) {
+        if (((BaddieState*)state)->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 1, 0.0f, 0);
             ((BaddieState*)state)->moveDone = 0;
         }

@@ -215,7 +215,7 @@ int kaldachom_stateHandlerA07(GameObject* obj, GroundBaddieState* state) {
         f32 fz = 0.0f;
         state->baddie.animSpeedA = fz;
         state->baddie.animSpeedB = fz;
-        if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+        if (state->baddie.moveJustStartedA != '\0') {
             ObjAnim_SetCurrentMove((int)obj, 5, fz, 0);
             state->baddie.moveDone = 0;
         }
@@ -258,8 +258,8 @@ int kaldachom_stateHandlerA07(GameObject* obj, GroundBaddieState* state) {
 }
 
 int kaldachom_stateHandlerA06(GameObject* obj, GroundBaddieState* state) {
-    if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
-        if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+    if ((s32)state->baddie.moveJustStartedA != 0) {
+        if ((s32)state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
@@ -275,8 +275,8 @@ int kaldachom_stateHandlerA06(GameObject* obj, GroundBaddieState* state) {
 int kaldachom_stateHandlerA05(GameObject* obj, GroundBaddieState* state) {
     KaldachomControl* control = ((KaldachomState*)obj->extra)->control;
 
-    if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
-        if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+    if ((s32)state->baddie.moveJustStartedA != 0) {
+        if ((s32)state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, gKaldachomMoves[4], 0.0f, 0);
             state->baddie.moveDone = 0;
         }
@@ -288,8 +288,8 @@ int kaldachom_stateHandlerA05(GameObject* obj, GroundBaddieState* state) {
 }
 
 int kaldachom_stateHandlerA04(GameObject* obj, GroundBaddieState* state) {
-    if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
-        if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+    if ((s32)state->baddie.moveJustStartedA != 0) {
+        if ((s32)state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 3, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
@@ -302,9 +302,9 @@ int kaldachom_stateHandlerA04(GameObject* obj, GroundBaddieState* state) {
 }
 
 int kaldachom_stateHandlerA03(GameObject* obj, GroundBaddieState* state) {
-    if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+    if ((s32)state->baddie.moveJustStartedA != 0) {
         ObjHits_EnableObject(obj);
-        if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+        if ((s32)state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, randomGetRange(6, 7), 0.0f, 0);
             state->baddie.moveDone = 0;
         }
@@ -317,8 +317,8 @@ int kaldachom_stateHandlerA03(GameObject* obj, GroundBaddieState* state) {
 int kaldachom_stateHandlerA02(GameObject* obj, GroundBaddieState* state) {
     KaldachomControl* control = ((KaldachomState*)obj->extra)->control;
 
-    if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
-        if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+    if ((s32)state->baddie.moveJustStartedA != 0) {
+        if ((s32)state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, gKaldachomMoves[randomGetRange(0, 4)], 0.0f, 0);
             state->baddie.moveDone = 0;
         }
@@ -333,8 +333,8 @@ int kaldachom_stateHandlerA02(GameObject* obj, GroundBaddieState* state) {
 int kaldachom_stateHandlerA01(GameObject* obj, GroundBaddieState* state) {
     KaldachomState* objectState = obj->extra;
 
-    if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
-        if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+    if ((s32)state->baddie.moveJustStartedA != 0) {
+        if ((s32)state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 5, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
@@ -343,7 +343,7 @@ int kaldachom_stateHandlerA01(GameObject* obj, GroundBaddieState* state) {
         state->baddie.animSpeedA = 0.0f;
     } else if ((s32)(s8)state->baddie.moveDone != 0) {
         mainSetBits(objectState->gameBitB, 0);
-        if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+        if ((s32)state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
@@ -359,8 +359,8 @@ int kaldachom_stateHandlerA01(GameObject* obj, GroundBaddieState* state) {
 int kaldachom_stateHandlerA00(GameObject* obj, GroundBaddieState* state) {
     KaldachomState* objectState = obj->extra;
 
-    if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
-        if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+    if ((s32)state->baddie.moveJustStartedA != 0) {
+        if ((s32)state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, 0);
             state->baddie.moveDone = 0;
         }

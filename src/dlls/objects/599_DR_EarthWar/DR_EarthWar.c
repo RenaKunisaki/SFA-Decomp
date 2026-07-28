@@ -480,7 +480,7 @@ int DR_EarthWarrior_stateHandler03(GameObject* obj, int baddie)
     (obj)->anim.velocityX = fz;
     (obj)->anim.velocityY = fz;
     (obj)->anim.velocityZ = fz;
-    if (*(s8*)&((BaddieState*)baddie)->moveJustStartedA != 0)
+    if (((BaddieState*)baddie)->moveJustStartedA != 0)
     {
         if (((ByteFlags*)&inner->sub.flags994)->b80)
         {
@@ -519,7 +519,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
     ((ByteFlags*)&q->flags3F1)->b04 = 0;
     ((ByteFlags*)&q->flags3F1)->b08 = 0;
     ((ByteFlags*)&q->flags3F2)->b10 = 0;
-    if (*(s8*)&((EarthWarriorState*)state)->baddie.moveJustStartedA != 0)
+    if (((EarthWarriorState*)state)->baddie.moveJustStartedA != 0)
     {
         ((ByteFlags*)&q->flags3F0)->b80 = 0;
         ((ByteFlags*)&q->flags3F0)->b40 = 0;
@@ -539,7 +539,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
     *(int*)state |= 0x800000;
     ((EarthWarriorState*)state)->baddie.stateId = 0;
     q->animSpeedMax = 4.32f;
-    if (*(s8*)&((EarthWarriorState*)state)->baddie.moveJustStartedA != 0)
+    if (((EarthWarriorState*)state)->baddie.moveJustStartedA != 0)
     {
         q->currentYaw += q->turnDegrees * 0xb6;
         q->frameCounter = 0;
@@ -784,7 +784,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
     EarthWarriorState* inner = (obj)->extra;
     EarthWarriorSub* q = &inner->sub;
     int moveId;
-    if (*(s8*)&((BaddieState*)baddie)->moveJustStartedA != 0)
+    if (((BaddieState*)baddie)->moveJustStartedA != 0)
     {
         ((BaddieState*)baddie)->animSpeedC = 0.0f;
     }
@@ -829,7 +829,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
     }
     ((BaddieState*)baddie)->animSpeedC +=
         interpolate(q->targetAnimSpeed - ((BaddieState*)baddie)->animSpeedC, q->animSpeedSmoothing, timeDelta);
-    if (*(s8*)&((BaddieState*)baddie)->moveJustStartedA != 0)
+    if (((BaddieState*)baddie)->moveJustStartedA != 0)
     {
         q->yawTurnProgress = 0;
         q->yawTurnDir = 0;

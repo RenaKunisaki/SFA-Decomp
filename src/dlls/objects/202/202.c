@@ -7219,7 +7219,7 @@ int iceBaddie_updateLandingState(GameObject* obj, GroundBaddieState* state) {
     noBlend = 0.0f;
     state->baddie.animSpeedA = noBlend;
     state->baddie.animSpeedB = noBlend;
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 1, noBlend, 0);
         state->baddie.moveDone = 0;
     }
@@ -7251,11 +7251,11 @@ int iceBaddie_updateContactHitState(GameObject* obj, GroundBaddieState* state) {
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);
     if (objectState->aggression > 0x32) {
-        if ((s8)state->baddie.moveJustStartedA != 0) {
+        if (state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
-    } else if ((s8)state->baddie.moveJustStartedA != 0) {
+    } else if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 0xe, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
@@ -7276,9 +7276,9 @@ int iceBaddie_stateHandlerA0B(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
     IceBaddieControl* control;
 
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
-        if ((s8)state->baddie.moveJustStartedA != 0) {
+        if (state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 2, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
@@ -7306,11 +7306,11 @@ int iceBaddie_updateDropState(GameObject* obj, GroundBaddieState* state) {
     GameObject* player;
 
     control->effectFlags |= ICEBADDIE_FX_BURST;
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         Obj_GetPlayerObject();
         player = Obj_GetPlayerObject();
         if (player->anim.seqId != 0) {
@@ -7332,7 +7332,7 @@ int iceBaddie_updateCommDownState(GameObject* obj, GroundBaddieState* state) {
 
     control->effectFlags |= ICEBADDIE_FX_BURST;
     state->baddie.moveSpeed = 0.01f;
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 10, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
@@ -7351,7 +7351,7 @@ int iceBaddie_updateControlMove5State(GameObject* obj, GroundBaddieState* state)
     IceBaddieControl* control = (IceBaddieControl*)((GroundBaddieState*)obj->extra)->control;
     control->effectFlags |= ICEBADDIE_FX_BURST;
     state->baddie.moveSpeed = 0.01f;
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 5, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
@@ -7365,8 +7365,8 @@ int iceBaddie_updateHeightBlendState(GameObject* obj, GroundBaddieState* state) 
     f32 height;
 
     control->effectFlags |= (ICEBADDIE_FX_BURST | ICEBADDIE_FX_PUFF);
-    if ((s8)state->baddie.moveJustStartedA != 0) {
-        if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
+        if (state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0xf, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
@@ -7396,16 +7396,16 @@ int iceBaddie_stateHandlerA06(GameObject* obj, GroundBaddieState* state) {
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = 10;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         gIceBaddieA06MoveVariant = randomGetRange(0, 2);
         moveChoice = randomGetRange(0, 1);
         if (moveChoice != 0) {
-            if ((s8)state->baddie.moveJustStartedA != 0) {
+            if (state->baddie.moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 7, 0.0f, 0);
                 state->baddie.moveDone = 0;
             }
         } else {
-            if ((s8)state->baddie.moveJustStartedA != 0) {
+            if (state->baddie.moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 3, 0.0f, 0);
                 state->baddie.moveDone = 0;
             }
@@ -7435,17 +7435,17 @@ int iceBaddie_stateHandlerA05(GameObject* obj, GroundBaddieState* state) {
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = 10;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         moveChoice = randomGetRange(0, 1);
         if (moveChoice != 0) {
             gIceBaddieA05MoveVariant = randomGetRange(0, 2);
-            if ((s8)state->baddie.moveJustStartedA != 0) {
+            if (state->baddie.moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 6, 0.0f, 0);
                 state->baddie.moveDone = 0;
             }
         } else {
             gIceBaddieA05MoveVariant = 3;
-            if ((s8)state->baddie.moveJustStartedA != 0) {
+            if (state->baddie.moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 10, 0.0f, 0);
                 state->baddie.moveDone = 0;
             }
@@ -7471,13 +7471,13 @@ int iceBaddie_updateSpinState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
     IceBaddieControl* control;
 
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 9, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
     control = (IceBaddieControl*)objectState->control;
     control->effectFlags |= (ICEBADDIE_FX_BURST | ICEBADDIE_FX_PUFF);
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
         objectState->targetState = 4;
     }
@@ -7494,10 +7494,10 @@ int iceBaddie_updateImpactHitState(GameObject* obj, GroundBaddieState* state) {
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = 10;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         state->baddie.moveDone = 0;
     }
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
@@ -7515,12 +7515,12 @@ int iceBaddie_updateHideResetState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
     ObjHitsPriorityState* hitState;
 
-    if (state->baddie.prevControlMode != 4 && (s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.prevControlMode != 4 && state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 0xe, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
     ((IceBaddieControl*)objectState->control)->effectFlags |= (ICEBADDIE_FX_BURST | ICEBADDIE_FX_PUFF);
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
         hitState->flags &= ~1;
         state->baddie.moveSpeed = 0.01f;
@@ -7548,11 +7548,11 @@ int iceBaddie_updateOpenState(GameObject* obj, GroundBaddieState* state) {
     hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     hitState->flags |= 1;
     state->baddie.physicsActive = 1;
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 11, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         mainSetBits(objectState->gameBitB, 1);
         *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
         obj->anim.alpha = 0xff;
@@ -7588,11 +7588,11 @@ int iceBaddie_updateOpenHitState(GameObject* obj, GroundBaddieState* state) {
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = 9;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         mainSetBits(objectState->gameBitB, 1);
         *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
         obj->anim.alpha = 0xff;

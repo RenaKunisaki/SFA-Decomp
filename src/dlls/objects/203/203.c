@@ -179,7 +179,7 @@ int dll_CB_moveHandler1(GameObject* obj, GroundBaddieState* state, f32 timeDelta
 
     (void)timeDelta;
 
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
         state->baddie.moveDone = 0;
     }

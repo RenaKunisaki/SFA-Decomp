@@ -274,7 +274,7 @@ int chukChuk_updateWindupState(GameObject* obj, GroundBaddieState* state) {
     speed = 0.0f;
     state->baddie.animSpeedA = speed;
     state->baddie.animSpeedB = speed;
-    if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+    if (state->baddie.moveJustStartedA != '\0') {
         ObjAnim_SetCurrentMove((int)obj, 1, speed, 0);
         *(s8*)&state->baddie.moveDone = 0;
     }
@@ -304,11 +304,11 @@ int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state) {
     GameObject* player;
     int childState;
 
-    if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+    if (state->baddie.moveJustStartedA != '\0') {
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
         *(s8*)&state->baddie.moveDone = 0;
     }
-    if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+    if (state->baddie.moveJustStartedA != '\0') {
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
             void* sibling = (void*)objects[objectIndex];
@@ -348,7 +348,7 @@ int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state) {
     int objectCount;
     int objectIndex;
 
-    if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+    if ((s32)state->baddie.moveJustStartedA != 0) {
         ObjHits_EnableObject(obj);
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DLL_CE_HIT_VOLUME_SLOT, 1, -1);
@@ -356,7 +356,7 @@ int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state) {
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairHitVolume = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);
 
-    if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+    if ((s32)state->baddie.moveJustStartedA != 0) {
         int* objects = ObjList_GetObjects(&objectIndex, &objectCount);
 
         while (objectIndex < objectCount) {
@@ -373,7 +373,7 @@ int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state) {
 
     state->baddie.moveSpeed = 0.01f;
 
-    if ((s32)(s8)state->baddie.moveJustStartedA != 0) {
+    if ((s32)state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 10, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
@@ -390,7 +390,7 @@ int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state) {
 }
 
 int chukChuk_updateState3(GameObject* obj, GroundBaddieState* state) {
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjHits_EnableObject(obj);
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DLL_CE_HIT_VOLUME_SLOT, 1, -1);
@@ -398,7 +398,7 @@ int chukChuk_updateState3(GameObject* obj, GroundBaddieState* state) {
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairHitVolume = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);
     state->baddie.moveSpeed = 0.01f;
-    if ((s8)state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 5, 0.0f, 0);
         state->baddie.moveDone = 0;
     }
@@ -413,14 +413,14 @@ int chukChuk_updateAttackState(GameObject* obj, GroundBaddieState* state) {
     int* objects;
 
     objectState = obj->extra;
-    if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+    if (state->baddie.moveJustStartedA != '\0') {
         ObjHits_EnableObject(obj);
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DLL_CE_HIT_VOLUME_SLOT, 1, -1);
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairPriority = 10;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairHitVolume = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);
-    if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+    if (state->baddie.moveJustStartedA != '\0') {
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
             void* sibling = (void*)objects[objectIndex];
@@ -431,12 +431,12 @@ int chukChuk_updateAttackState(GameObject* obj, GroundBaddieState* state) {
             }
         }
         if (randomGetRange(0, 1) != 0) {
-            if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+            if (state->baddie.moveJustStartedA != '\0') {
                 ObjAnim_SetCurrentMove((int)obj, 6, 0.0f, 0);
                 *(s8*)&state->baddie.moveDone = 0;
             }
         } else {
-            if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+            if (state->baddie.moveJustStartedA != '\0') {
                 ObjAnim_SetCurrentMove((int)obj, 7, 0.0f, 0);
                 *(s8*)&state->baddie.moveDone = 0;
             }
@@ -453,7 +453,7 @@ int chukChuk_updateSubmergeState(GameObject* obj, GroundBaddieState* state) {
     DllCEControl* control;
 
     objectState = obj->extra;
-    if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+    if (state->baddie.moveJustStartedA != '\0') {
         ObjAnim_SetCurrentMove((int)obj, 14, 0.0f, 0);
         *(s8*)&state->baddie.moveDone = 0;
     }
@@ -461,7 +461,7 @@ int chukChuk_updateSubmergeState(GameObject* obj, GroundBaddieState* state) {
         control = objectState->control;
         control->effectFlags |= DLL_CE_EFFECT_DUST;
     }
-    if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+    if (state->baddie.moveJustStartedA != '\0') {
         ObjHits_DisableObject(obj);
         state->baddie.moveSpeed = 0.01f;
         state->baddie.animSpeedA = 0.0f;
@@ -487,11 +487,11 @@ int chukChuk_updateEmergeState(GameObject* obj, GroundBaddieState* state) {
 
     objectState = obj->extra;
     control = objectState->control;
-    if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+    if (state->baddie.moveJustStartedA != '\0') {
         ObjAnim_SetCurrentMove((int)obj, 11, 0.0f, 0);
         *(s8*)&state->baddie.moveDone = 0;
     }
-    if (*(char*)&state->baddie.moveJustStartedA != '\0') {
+    if (state->baddie.moveJustStartedA != '\0') {
         state->baddie.physicsActive = 1;
         mainSetBits(objectState->gameBitB, 1);
         *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;

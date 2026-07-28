@@ -572,7 +572,7 @@ int dll_28B_stateHandler3(GameObject* obj, BaddieState* ai)
 {
     GameObject* player = (GameObject*)Obj_GetPlayerObject();
 
-    if (*(s8*)&ai->moveJustStartedA != 0)
+    if (ai->moveJustStartedA != 0)
     {
         ai->moveSpeed = gWcEarthWalkerChaseMoveSpeed;
         getAngle(obj->anim.localPosX - player->anim.localPosX, obj->anim.localPosZ - player->anim.localPosZ);
@@ -597,7 +597,7 @@ int dll_28B_stateHandler2(GameObject* obj, BaddieState* ai)
 
 int dll_28B_stateHandler1(GameObject* obj, BaddieState* ai)
 {
-    if (*(s8*)&ai->moveJustStartedA != 0)
+    if (ai->moveJustStartedA != 0)
     {
         ai->moveSpeed = gWcEarthWalkerWalkMoveSpeed;
     }

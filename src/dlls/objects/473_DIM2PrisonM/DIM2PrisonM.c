@@ -58,7 +58,7 @@ int dim2prisonmammoth_stateHandler03(GameObject* obj, Dim2PrisonMammothState* st
     obj->anim.velocityY = fz;
     obj->anim.velocityZ = fz;
     state->baddie.flags0 |= 0x200000;
-    if (*(s8*)&state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         int k = randomGetRange(0, 1);
 
         state->baddie.moveSpeed = gPrisonMammothMoveSpeedTable[k];
@@ -107,7 +107,7 @@ int dim2prisonmammoth_stateHandler01(GameObject* obj, Dim2PrisonMammothState* st
     obj->anim.velocityY = fz;
     obj->anim.velocityZ = fz;
     state->baddie.flags0 |= 0x200000;
-    if (*(s8*)&state->baddie.moveJustStartedA != 0) {
+    if (state->baddie.moveJustStartedA != 0) {
         state->baddie.moveSpeed = 0.005f;
         if (obj->anim.currentMove != 5) {
             ObjAnim_SetCurrentMove((int)obj, 5, fz, 0);

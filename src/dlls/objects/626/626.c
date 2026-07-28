@@ -96,7 +96,7 @@ int hightop_stateHandler10(GameObject* obj, HighTopRuntime* stateArg)
     int* weight;
     int roll;
     int i;
-    if ((s8)stateArg->baddie.moveJustStartedA != 0)
+    if (stateArg->baddie.moveJustStartedA != 0)
     {
         rt->substate = 3;
         *(int*)((char*)stateArg + 0) |= 0x1000000;
@@ -143,7 +143,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
     int* weight;
     int roll;
     int idx;
-    if ((s8)stateArg->baddie.moveJustStartedA != 0 || state->flagsC49.b6 != 0)
+    if (stateArg->baddie.moveJustStartedA != 0 || state->flagsC49.b6 != 0)
     {
         if (state->flagsC4A.b0 == 0)
         {
@@ -281,7 +281,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
 int hightop_stateHandler08(GameObject* obj, HighTopRuntime* stateArg)
 {
     HighTopRuntime* state = (obj)->extra;
-    if ((s8)stateArg->baddie.moveJustStartedA != 0)
+    if (stateArg->baddie.moveJustStartedA != 0)
     {
         f32 zero;
         state->stateTimer = 400.0f;
@@ -341,7 +341,7 @@ int hightop_stateHandler07(GameObject* obj, HighTopRuntime* stateArg)
 {
     HighTopRuntime* rt = (obj)->extra;
     f32 zero;
-    if ((s8)stateArg->baddie.moveJustStartedA != 0)
+    if (stateArg->baddie.moveJustStartedA != 0)
     {
         zero = 0.0f;
         stateArg->baddie.animSpeedC = zero;
@@ -377,7 +377,7 @@ int hightop_stateHandler07(GameObject* obj, HighTopRuntime* stateArg)
 int hightop_stateHandler06(GameObject* obj, HighTopRuntime* state)
 {
     HighTopRuntime* runtime = obj->extra;
-    if ((s8)state->baddie.moveJustStartedA != 0)
+    if (state->baddie.moveJustStartedA != 0)
     {
         runtime->flags |= 1;
     }
@@ -391,7 +391,7 @@ int hightop_stateHandler06(GameObject* obj, HighTopRuntime* state)
 int hightop_stateHandler05(GameObject* obj, HighTopRuntime* state)
 {
     HighTopRuntime* runtime = obj->extra;
-    if ((s8)state->baddie.moveJustStartedA != 0)
+    if (state->baddie.moveJustStartedA != 0)
     {
         runtime->flagsC49.b1 = 0;
         runtime->substate = 0xa;
@@ -421,7 +421,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
     int count;
     GameObject* player;
     f32 dy;
-    if ((s8)stateArg->baddie.moveJustStartedA != 0)
+    if (stateArg->baddie.moveJustStartedA != 0)
     {
         state->flagsC49.b1 = 1;
         state->stateTimer = (f32)randomGetRange(0x1f4, 0x3e8);
@@ -610,7 +610,7 @@ int hightop_stateHandler03(GameObject* obj, HighTopRuntime* state)
     (obj)->anim.velocityX = zero;
     (obj)->anim.velocityY = zero;
     (obj)->anim.velocityZ = zero;
-    if ((s8)state->baddie.moveJustStartedA != 0)
+    if (state->baddie.moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0x78);
         if (*(u32*)&runtime->savedControlMode == 4)
@@ -761,7 +761,7 @@ int hightop_stateHandler01(GameObject* obj, HighTopRuntime* stateArg)
     (obj)->anim.velocityY = zero;
     (obj)->anim.velocityZ = zero;
     *(int*)((char*)stateArg + 0) |= 0x200000;
-    if ((s8)stateArg->baddie.moveJustStartedA != 0)
+    if (stateArg->baddie.moveJustStartedA != 0)
     {
         *(s16*)((char*)stateArg + 0x338) = 0;
         stateArg->baddie.moveSpeed = 0.005f;

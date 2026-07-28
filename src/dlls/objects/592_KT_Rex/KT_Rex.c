@@ -736,7 +736,7 @@ int ktrex_stateHandlerA00(void)
 
 int ktrex_stateHandlerB08(GameObject* obj, GroundBaddieState* runtime)
 {
-    if ((s8)runtime->baddie.moveJustStartedA != 0)
+    if (runtime->baddie.moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, 13, 0.0f, 0);
         runtime->baddie.moveSpeed =
@@ -753,7 +753,7 @@ int ktrex_stateHandlerB08(GameObject* obj, GroundBaddieState* runtime)
 
 int ktrex_stateHandlerB07(GameObject* obj, GroundBaddieState* runtime)
 {
-    if ((s8)runtime->baddie.moveJustStartedA != 0)
+    if (runtime->baddie.moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, 12, 0.0f, 0);
         runtime->baddie.moveSpeed = 0.01f;
@@ -774,7 +774,7 @@ int ktrex_stateHandlerB07(GameObject* obj, GroundBaddieState* runtime)
 int ktrex_stateHandlerB06(GameObject* obj, GroundBaddieState* runtime)
 {
     f32 z;
-    if ((s8)runtime->baddie.moveJustStartedA != 0)
+    if (runtime->baddie.moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, 11, 0.0f, 0);
         Sfx_PlayFromObject((u32)obj, SFXTRIG_rexelctro11);
@@ -799,7 +799,7 @@ int ktrex_stateHandlerB06(GameObject* obj, GroundBaddieState* runtime)
 int ktrex_stateHandlerB05(GameObject* obj, GroundBaddieState* runtime)
 {
     f32 z;
-    if ((s8)runtime->baddie.moveJustStartedA != 0)
+    if (runtime->baddie.moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, gKTRexMoveIdByLaneB05[gKTRexState->laneIndex], 0.0f, 0);
         runtime->baddie.moveSpeed = 0.005f;
@@ -819,7 +819,7 @@ int ktrex_stateHandlerB04(GameObject* obj, GroundBaddieState* runtime)
 {
     f32 z;
     u16 mask;
-    if ((s8)runtime->baddie.moveJustStartedA != 0)
+    if (runtime->baddie.moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, gKTRexMoveIdByVariantB04[gKTRexState->moveVariant], 0.0f, 0);
         runtime->baddie.moveSpeed = gKTRexCurvePhaseByVariantB04[gKTRexState->moveVariant];
@@ -851,7 +851,7 @@ int ktrex_stateHandlerB03(GameObject* obj, GroundBaddieState* runtime)
     f32 z;
     u16 dir;
     dir = gKTRexState->timerFA & 1;
-    if ((s8)runtime->baddie.moveJustStartedA != 0)
+    if (runtime->baddie.moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, 15, 0.0f, 0);
         runtime->baddie.moveSpeed = 0.005f;
@@ -882,7 +882,7 @@ int ktrex_stateHandlerB02(GameObject* obj, GroundBaddieState* runtime)
     f32 mtx[16];
 
     dir = gKTRexState->timerFA & 1;
-    if ((s8)runtime->baddie.moveJustStartedA != 0)
+    if (runtime->baddie.moveJustStartedA != 0)
     {
         lane = gKTRexState->laneIndex * 2;
         ObjAnim_SetCurrentMove((int)obj, gKTRexTurnMoveIdByLaneAndDir[lane + dir], 0.0f, 0);
@@ -942,7 +942,7 @@ int ktrex_stateHandlerB01(GameObject* obj, GroundBaddieState* runtime)
     int maskI;
     f32 dx;
     f32 dz;
-    if ((s8)runtime->baddie.moveJustStartedA != 0)
+    if (runtime->baddie.moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, gKTRexWalkMoveIdByLane[gKTRexState->laneIndex], 0.0f, 0);
         z = 0.0f;
@@ -986,7 +986,7 @@ int ktrex_stateHandlerB01(GameObject* obj, GroundBaddieState* runtime)
 
 int ktrex_stateHandlerB00(GameObject* obj, GroundBaddieState* runtime)
 {
-    if ((s8)runtime->baddie.moveJustStartedA != 0)
+    if (runtime->baddie.moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
     }

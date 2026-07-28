@@ -304,7 +304,7 @@ int DR_CloudRunner_stateHandler06(GameObject* obj, CloudRunnerState* baddie)
     CloudRunnerState* inner = (obj)->extra;
     int hitState = *(int*)&(obj)->anim.hitReactState;
     *(int*)((char*)baddie + 0) |= 0x200000;
-    if (*(s8*)&baddie->baddie.moveJustStartedA != 0)
+    if (baddie->baddie.moveJustStartedA != 0)
     {
         f32 dir[3];
         struct
@@ -403,7 +403,7 @@ int DR_CloudRunner_stateHandler05(GameObject* obj, CloudRunnerState* baddie, f32
         needMove = 1;
     }
     ObjHits_RegisterActiveHitVolumeObject(obj);
-    if (*(s8*)&baddie->baddie.moveJustStartedA != 0)
+    if (baddie->baddie.moveJustStartedA != 0)
     {
         if (!((ByteFlags*)&inner->flagsBC0)->b20)
         {
@@ -713,7 +713,7 @@ int DR_CloudRunner_stateHandler04(GameObject* obj, CloudRunnerState* baddie)
     CloudRunnerState* inner = (obj)->extra;
     *(int*)((char*)baddie + 0) |= 0x1204000;
     baddie->baddie.physicsActive = 0;
-    if (*(s8*)&baddie->baddie.moveJustStartedA != 0)
+    if (baddie->baddie.moveJustStartedA != 0)
     {
         f32 fz = 0.0f;
         CloudRunnerState* inner2;
@@ -795,7 +795,7 @@ int DR_CloudRunner_stateHandler04(GameObject* obj, CloudRunnerState* baddie)
 int DR_CloudRunner_stateHandler03(GameObject* obj, CloudRunnerState* baddie)
 {
     CloudRunnerState* inner = (obj)->extra;
-    if (*(s8*)&baddie->baddie.moveJustStartedA != 0)
+    if (baddie->baddie.moveJustStartedA != 0)
     {
         ((ByteFlags*)&inner->flagsBC0)->b10 = 0;
         (obj)->anim.velocityY = 0.0f;
@@ -844,7 +844,7 @@ int DR_CloudRunner_stateHandler02(GameObject* obj, CloudRunnerState* baddie)
 {
     CloudRunnerState* inner = (obj)->extra;
     *(int*)((char*)baddie + 0) |= 0x200000;
-    if (*(s8*)&baddie->baddie.moveJustStartedA != 0)
+    if (baddie->baddie.moveJustStartedA != 0)
     {
         f32 fz = 0.0f;
         baddie->baddie.animSpeedC = fz;
@@ -880,7 +880,7 @@ int DR_CloudRunner_stateHandler01(GameObject* obj, CloudRunnerState* baddie)
     CloudRunnerState* inner;
     DRCloudRunnerPlacement* placement = (DRCloudRunnerPlacement*)(obj)->anim.placementData;
     *(int*)((char*)baddie + 0) |= 0x200000;
-    if (*(s8*)&baddie->baddie.moveJustStartedA != 0)
+    if (baddie->baddie.moveJustStartedA != 0)
     {
         f32 fz;
         ObjHits_DisableObject(obj);

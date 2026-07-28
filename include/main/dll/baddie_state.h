@@ -66,11 +66,7 @@ typedef struct BaddieState {
     s16 controlMode; /* current control move/mode; gPlayerInterface[5](obj,state,N) requests N */
     s16 prevControlMode; /* latched from controlMode for change detection (parallels prevSubstate/substate): controlMode != prevControlMode arms moveJustStartedA, then prevControlMode = controlMode; consumers compare it to prior mode ids (dll_000F/icebaddie/player) */
     s16 stateId; /* active player/control state id, written when a state handler starts */
-#ifdef BADDIE_MOVE_STATUS_SIGNED
     s8 moveJustStartedA; /* one-shot, tested at SeqFn entry */
-#else
-    u8 moveJustStartedA; /* one-shot, tested at SeqFn entry */
-#endif
     s8 moveJustStartedB; /* one-shot, secondary channel (death/cleanup handlers) */
     u8 unk27C[0x280 - 0x27C];
     f32 animSpeedA; /* anim blend speed pair */

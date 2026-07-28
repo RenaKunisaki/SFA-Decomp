@@ -96,7 +96,7 @@ int DIMSnowHorn1_stateHandler0B(GameObject* obj, DIMSnowHorn1State* state)
     (obj)->anim.velocityY = k;
     (obj)->anim.velocityZ = k;
 
-    if (*(s8*)&state->baddie.moveJustStartedA != 0)
+    if (state->baddie.moveJustStartedA != 0)
     {
         inner->flags &= ~SNOWHORN1_FLAG_HITVOL_PRIO;
         sub->flags |= OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
@@ -398,7 +398,7 @@ int DIMSnowHorn1_stateHandler07(GameObject* obj, int state)
     (obj)->anim.velocityY = fz;
     (obj)->anim.velocityZ = fz;
     ((DIMSnowHorn1State*)state)->baddie.flags0 |= 0x200000;
-    if (*(s8*)&((DIMSnowHorn1State*)state)->baddie.moveJustStartedA != 0)
+    if (((DIMSnowHorn1State*)state)->baddie.moveJustStartedA != 0)
     {
         *(s16*)((char*)state + 0x338) = 0;
         ((DIMSnowHorn1State*)state)->baddie.moveSpeed = 0.005f;
@@ -471,7 +471,7 @@ int DIMSnowHorn1_stateHandler06(GameObject* obj, DIMSnowHorn1State* state)
     inner = (obj)->extra;
     *(u8*)&(obj)->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
     (obj)->hitVolumeIndex = mainGetBit(GAMEBIT_SNOWHORN_PUZZLE) != 0;
-    if (*(s8*)&state->baddie.moveJustStartedA != 0)
+    if (state->baddie.moveJustStartedA != 0)
     {
         state->baddie.moveSpeed = 0.005f;
         if ((obj)->anim.currentMove != 0x13)
@@ -569,7 +569,7 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, int state)
         break;
     }
 
-    if (*(s8*)&((DIMSnowHorn1State*)state)->baddie.moveJustStartedA != 0)
+    if (((DIMSnowHorn1State*)state)->baddie.moveJustStartedA != 0)
     {
         ((DIMSnowHorn1State*)state)->baddie.moveSpeed = 0.005f;
         if ((obj)->anim.currentMove != 0x13)
@@ -655,7 +655,7 @@ int DIMSnowHorn1_stateHandler04(GameObject* obj, DIMSnowHorn1State* state)
     (obj)->anim.velocityZ = k;
     state->baddie.flags0 |= 0x200000;
 
-    if (*(s8*)&state->baddie.moveJustStartedA != 0)
+    if (state->baddie.moveJustStartedA != 0)
     {
         idx = randomGetRange(0, 1);
         state->baddie.moveSpeed = lbl_803DC740[idx];
@@ -687,7 +687,7 @@ int DIMSnowHorn1_stateHandler03(GameObject* obj, DIMSnowHorn1State* state)
     (obj)->anim.velocityZ = k;
     state->baddie.flags0 |= 0x200000;
 
-    if (*(s8*)&state->baddie.moveJustStartedA != 0)
+    if (state->baddie.moveJustStartedA != 0)
     {
         idx = randomGetRange(0, 1);
         state->baddie.moveSpeed = lbl_803DC740[idx];
@@ -761,7 +761,7 @@ int DIMSnowHorn1_stateHandler01(GameObject* obj, DIMSnowHorn1State* state, f32 f
     (obj)->anim.velocityZ = k;
     state->baddie.flags0 |= 0x200000;
 
-    if (*(s8*)&state->baddie.moveJustStartedA != 0)
+    if (state->baddie.moveJustStartedA != 0)
     {
         state->baddie.moveSpeed = 0.005f;
         if ((obj)->anim.currentMove != lbl_803DC748[0])
