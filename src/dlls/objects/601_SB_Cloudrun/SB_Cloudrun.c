@@ -403,8 +403,7 @@ enum
 #define COLORFADE_RUMBLE_PRESET 4000 /* anim.rotY written on a fade hit */
 
 
-/* Analog-stick steering update for the cloudrunner ride (target 0x801EE668;
- * Ghidra split this body as FUN_801eeafc). Integrates stick X/Y into the
+/* Analog-stick steering update for the cloudrunner ride. Integrates stick X/Y into the
  * bird's yaw/pitch/roll, clamps to the steer limits, advances the
  * flap/glide animation, and fires the forward burst on a fresh A press. */
 

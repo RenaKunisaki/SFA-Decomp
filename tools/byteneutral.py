@@ -57,24 +57,23 @@ class BuildInfo:
 
     def _scan(self) -> None:
         for i, line in enumerate(self._lines):
-            m = re.match(r"^build (build/\S+\.o): \S+ (.*)$", line)
+            if not line.startswith("build build/"):
+                continue
+            # A build statement may wrap anywhere, including immediately after
+            # the ':' -- so join continuations before looking for the source.
+            stmt, j = line, i
+            while stmt.rstrip().endswith("$") and j + 1 < len(self._lines):
+                j += 1
+                stmt = stmt.rstrip()[:-1] + " " + self._lines[j].strip()
+            m = re.match(r"^build (build/\S+\.o):\s*(.*)$", stmt)
             if not m:
                 continue
             obj, rest = m.group(1), m.group(2)
-            # the source may be on this line or continued onto the next
-            src = None
-            for cand in rest.split():
-                if cand.endswith(".c") or cand.endswith(".cpp"):
-                    src = cand
-                    break
-            if src is None and rest.rstrip().endswith("$") and i + 1 < len(self._lines):
-                for cand in self._lines[i + 1].split():
-                    if cand.endswith(".c") or cand.endswith(".cpp"):
-                        src = cand
-                        break
+            src = next((c for c in rest.split()
+                        if c.endswith((".c", ".cpp"))), None)
             if src is None:
                 continue
-            cflags, mw = self._props(i)
+            cflags, mw = self._props(j)
             if cflags and src not in self._by_src:
                 self._by_src[src] = (obj, cflags, mw or "GC/2.0")
 
