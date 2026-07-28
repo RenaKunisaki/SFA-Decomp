@@ -204,23 +204,22 @@ void CameraModeWorldMap_update(u8* obj)
                 }
                 {
                     f32 snYaw, csYaw, snPit, csPit;
-                    f32 r, vy, h, px, pz;
-                    f32 dxx, dyy, dzz;
+                    f32 r, x, y, z;
                     snYaw = -mathCosf(3.1415927f * camera->anim.rotX / 32768.0f);
                     csYaw = mathSinf(3.1415927f * camera->anim.rotX / 32768.0f);
                     snPit = mathCosf(3.1415927f * (f32)(camera->anim.rotY + 0x320) / 32768.0f);
                     csPit = mathSinf(3.1415927f * (f32)(camera->anim.rotY + 0x320) / 32768.0f);
                     r = gCamWorldMapState->distance;
-                    vy = r * csPit;
-                    h = r * snPit;
-                    px = h * csYaw;
-                    pz = h * snYaw;
-                    dxx = camera->anim.worldPosX - (focus->anim.worldPosX + px);
-                    dyy = camera->anim.worldPosY - ((-30.0f + focus->anim.worldPosY) + vy);
-                    dzz = camera->anim.worldPosZ - (focus->anim.worldPosZ + pz);
-                    camera->anim.worldPosX = camera->anim.worldPosX - dxx / gCamWorldMapState->settleFrames;
-                    camera->anim.worldPosY = camera->anim.worldPosY - dyy / gCamWorldMapState->settleFrames;
-                    camera->anim.worldPosZ = camera->anim.worldPosZ - dzz / gCamWorldMapState->settleFrames;
+                    y = r * csPit;
+                    z = r * snPit;
+                    x = z * csYaw;
+                    z *= snYaw;
+                    x = camera->anim.worldPosX - (focus->anim.worldPosX + x);
+                    y = camera->anim.worldPosY - ((-30.0f + focus->anim.worldPosY) + y);
+                    z = camera->anim.worldPosZ - (focus->anim.worldPosZ + z);
+                    camera->anim.worldPosX = camera->anim.worldPosX - x / gCamWorldMapState->settleFrames;
+                    camera->anim.worldPosY = camera->anim.worldPosY - y / gCamWorldMapState->settleFrames;
+                    camera->anim.worldPosZ = camera->anim.worldPosZ - z / gCamWorldMapState->settleFrames;
                 }
             }
         }
@@ -279,23 +278,22 @@ void CameraModeWorldMap_update(u8* obj)
                 camera->anim.rotY = camera->anim.rotY + angleDelta / gCamWorldMapState->settleFrames;
                 {
                     f32 cs, sn54, cs54;
-                    f32 t6, t5, px, pz;
-                    f32 dxx, dyy, dzz;
+                    f32 x, y, z;
                     a = 3.1415927f * (f32)(u16)(ang - 0x39dc) / 32768.0f;
                     sn = -mathCosf(a);
                     cs = mathSinf(a);
                     sn54 = mathCosf(0.1917476f);
                     cs54 = mathSinf(0.1917476f);
-                    t6 = 70.0f * cs54;
-                    t5 = 70.0f * sn54;
-                    px = t5 * cs;
-                    pz = t5 * sn;
-                    dxx = camera->anim.worldPosX - (focus->anim.worldPosX + px);
-                    dyy = camera->anim.worldPosY - (25.0f + (focus->anim.worldPosY + t6));
-                    dzz = camera->anim.worldPosZ - (focus->anim.worldPosZ + pz);
-                    camera->anim.worldPosX = camera->anim.worldPosX - dxx / gCamWorldMapState->settleFrames;
-                    camera->anim.worldPosY = camera->anim.worldPosY - dyy / gCamWorldMapState->settleFrames;
-                    camera->anim.worldPosZ = camera->anim.worldPosZ - dzz / gCamWorldMapState->settleFrames;
+                    y = 70.0f * cs54;
+                    z = 70.0f * sn54;
+                    x = z * cs;
+                    z *= sn;
+                    x = camera->anim.worldPosX - (focus->anim.worldPosX + x);
+                    y = camera->anim.worldPosY - (25.0f + (focus->anim.worldPosY + y));
+                    z = camera->anim.worldPosZ - (focus->anim.worldPosZ + z);
+                    camera->anim.worldPosX = camera->anim.worldPosX - x / gCamWorldMapState->settleFrames;
+                    camera->anim.worldPosY = camera->anim.worldPosY - y / gCamWorldMapState->settleFrames;
+                    camera->anim.worldPosZ = camera->anim.worldPosZ - z / gCamWorldMapState->settleFrames;
                 }
                 my = (u16)(camera->anim.rotX + 0x1388);
                 if (isWidescreen() != 0)
