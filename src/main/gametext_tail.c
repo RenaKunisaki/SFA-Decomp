@@ -285,7 +285,11 @@ void textDisplayFn_800168dc(int textId, TextDisplayState* state)
     }
     lineStr = def->strings[state->charIndex];
     byteOffset = charCount = 0;
-    if (lineStr != NULL)
+    if (lineStr == NULL)
+    {
+        charCount = byteOffset;
+    }
+    else
     {
         while ((ch = utf8GetNextChar((u8*)(lineStr + byteOffset), &charLen)) != 0)
         {
