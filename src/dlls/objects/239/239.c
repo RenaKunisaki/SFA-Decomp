@@ -173,8 +173,8 @@ STATIC_ASSERT(offsetof(PushableCollisionProbe, unk2C) == 0x2C);
 STATIC_ASSERT(offsetof(PushableCollisionProbe, pad2E) == 0x2E);
 STATIC_ASSERT(sizeof(PushableCollisionProbe) == 0x30);
 
-int gPushableSavedMapIdCount;
-int gPushableSavedMapIds[0x28];
+int gPushableSavedIdentCount;
+int gPushableSavedIdents[0x28];
 
 ObjectDescriptor14 gPushableObjDescriptor = {
     0,                                                  /* reserved0 */
@@ -937,7 +937,7 @@ void pushable_free(GameObject* obj) {
     PushableObjectDef* placement = (PushableObjectDef*)obj->anim.placementData;
     PushableState* state = obj->extra;
     s16 sequenceId = obj->anim.romDefNo;
-    int savedMapIndex;
+    int savedIdentIndex;
 
     switch (sequenceId) {
     case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
@@ -956,9 +956,9 @@ void pushable_free(GameObject* obj) {
     }
     if ((state->flags & PUSHABLE_FLAG_RESTORED) != 0) {
         int ident = placement->base.ident;
-        savedMapIndex = gPushableSavedMapIdCount;
-        gPushableSavedMapIdCount = savedMapIndex + 1;
-        gPushableSavedMapIds[savedMapIndex] = ident;
+        savedIdentIndex = gPushableSavedIdentCount;
+        gPushableSavedIdentCount = savedIdentIndex + 1;
+        gPushableSavedIdents[savedIdentIndex] = ident;
     }
     ObjGroup_RemoveObject((int)obj, PUSHABLE_OBJECT_GROUP);
 }
@@ -1392,8 +1392,8 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
         }
     }
     state->flags = state->flags | PUSHABLE_FLAG_INITIALIZED;
-    if (arrayIndexOf(gPushableSavedMapIds, gPushableSavedMapIdCount, setup->base.ident) != -1) {
+    if (arrayIndexOf(gPushableSavedIdents, gPushableSavedIdentCount, setup->base.ident) != -1) {
         state->flags = state->flags | PUSHABLE_FLAG_RESTORED;
-        arrayRemoveUnordered(gPushableSavedMapIds, &gPushableSavedMapIdCount, setup->base.ident);
+        arrayRemoveUnordered(gPushableSavedIdents, &gPushableSavedIdentCount, setup->base.ident);
     }
 }
