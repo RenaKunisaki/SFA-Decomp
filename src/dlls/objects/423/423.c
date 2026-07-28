@@ -2,6 +2,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll_000A_expgfx.h"
@@ -39,15 +40,6 @@
 #define EDIBLE_MUSHROOM_PARTFX_TAIL_SWING 0x7F0
 /* Spore puff emitted on the sporePuffTimer tick during the burrow/attack state. */
 #define EDIBLE_MUSHROOM_PARTFX_SPORE_PUFF 0x51D
-
-typedef struct EdibleMushroomTrickyInterface {
-    void* unknown00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-} EdibleMushroomTrickyInterface;
-
-STATIC_ASSERT(offsetof(EdibleMushroomTrickyInterface, sideCommandEnable) == 0x28);
-
-#define EDIBLE_MUSHROOM_TRICKY_INTERFACE(tricky) ((EdibleMushroomTrickyInterface*)*(tricky)->anim.dll)
 
 s16 gEdibleMushroomStateMoveIds[12] = {0, 1, 6, 2, 3, 4, 0, 5, 6, 7, -1, 0};
 
@@ -518,7 +510,7 @@ void EdibleMushroom_update(GameObject* obj) {
             state->currentTargetDistance = sqrtf(distEnemy);
         }
         if (state->currentTargetDistance < (f32)(u32)placement->retreatTriggerDistance) {
-            EDIBLE_MUSHROOM_TRICKY_INTERFACE(enemy)->sideCommandEnable(enemy, obj, 0, 1);
+            TRICKY_INTERFACE(enemy)->sideCommandEnable(enemy, obj, 0, 1);
         }
     }
 
