@@ -2078,7 +2078,6 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     ObjfsaRomCurveDef* node;
     u8 slot;
     f32* patchTarget;
-    int absDiff;
     u16 ulink;
     s16 yawA;
     s16 yawB;
@@ -2557,8 +2556,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                     {
                         diff += 0x8000;
                     }
-                    absDiff = (diff >= 0) ? diff : -diff;
-                    if (0x1000 < absDiff)
+                    if (0x1000 < ((diff >= 0) ? diff : -diff))
                     {
                         state->speed = velBefore;
                         trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
@@ -2848,8 +2846,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             {
                 diff += 0x8000;
             }
-            absDiff = (diff >= 0) ? diff : -diff;
-            if (0x1000 < absDiff)
+            if (0x1000 < ((diff >= 0) ? diff : -diff))
             {
                 state->speed = velBefore;
                 trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
@@ -2901,8 +2898,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         {
             diff += 0x8000;
         }
-        absDiff = (diff >= 0) ? diff : -diff;
-        if (0x1000 < absDiff)
+        if (0x1000 < ((diff >= 0) ? diff : -diff))
         {
             state->speed = velBefore;
             trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
@@ -3120,8 +3116,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         {
             diff += 0x8000;
         }
-        absDiff = (diff >= 0) ? diff : -diff;
-        if (0x1000 < absDiff)
+        if (0x1000 < ((diff >= 0) ? diff : -diff))
         {
             state->speed = velBefore;
             trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
@@ -3236,8 +3231,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         {
             diff += 0x8000;
         }
-        absDiff = (diff >= 0) ? diff : -diff;
-        if (0x1000 < absDiff)
+        if (0x1000 < ((diff >= 0) ? diff : -diff))
         {
             state->speed = velBefore;
             trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
