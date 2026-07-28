@@ -12,6 +12,17 @@ typedef union SaveCardFileInfo
 
 extern SaveCardFileInfo gSaveCardFileInfo;
 
+/*
+ * Card init / serial-no validation. Mounts slot 0; if the mount comes back
+ * "no card filesystem" (-13) it remembers we need to format. On a check
+ * error (-6) it runs CARDCheck; if that also returns -6 it formats. On a
+ * clean mount (or after the recovery path) it reads the card serial and
+ * compares against the cached pair (gSaveCardSerialHi/Lo). If the cached pair
+ * is zero, or doesn't match the live card, the cache is rejected with a
+ * "wrong card" error code (-0x55, gSaveCardState = 11). Otherwise CARDFormat
+ * if we still owe one, else success: clear the cache, set state 13,
+ * unmount, return 1.
+ */
 int cardLoadFn_8007d72c(void);
 void saveFn_8007d960(u32 enable);
 void cardSetStatusNeedInit(void);

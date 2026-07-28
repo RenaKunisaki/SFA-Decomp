@@ -158,10 +158,6 @@ void cardShowLoadingMsg(u8 kind);
 int cardCb_8007e6d4(u8 slot, int unused, void* src1, void* src2);
 int saveCb_8007e748(int saveId, int size, void* dst);
 
-/* Per-frame alpha decrement of the two water-effect pools. */
-void timeFn_8006f400(f32 step);
-
-void drawFn_8006f500(void);
 
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 
@@ -4742,7 +4738,6 @@ void setupReflectionBumpDistortTev(void* texture)
 
 void gxTextureSetupFn_8007cf7c(void);
 
-void loadReflectionTexMtxs(void);
 
 /*
  * Retail ships a locally-defined empty OSReport that disables debug
@@ -4750,24 +4745,6 @@ void loadReflectionTexMtxs(void);
  */
 void OSReport(const char* msg, ...);
 
-/*
- * Card init / serial-no validation. Mounts slot 0; if the mount comes back
- * "no card filesystem" (-13) it remembers we need to format. On a check
- * error (-6) it runs CARDCheck; if that also returns -6 it formats. On a
- * clean mount (or after the recovery path) it reads the card serial and
- * compares against the cached pair (gSaveCardSerialHi/Lo). If the cached pair
- * is zero, or doesn't match the live card, the cache is rejected with a
- * "wrong card" error code (-0x55, gSaveCardState = 11). Otherwise CARDFormat
- * if we still owe one, else success: clear the cache, set state 13,
- * unmount, return 1.
- */
-int cardLoadFn_8007d72c(void);
-
-void saveFn_8007d960(u32 enable);
-
-void cardSetStatusNeedInit(void);
-
-s32 saveGameGetStatus(void);
 
 int cardDeleteFn_8007d99c(void);
 
@@ -4775,12 +4752,9 @@ int _saveGame(int slot, void* save, void* data);
 
 int maybeTryLoadSave(void* data);
 
-int loadSaveGame(int slot, void* save);
 
-int memCardFn_8007dd04(u8 retry);
 int cardProbe(u8 retry);
 
-void _initCardAndDsp(void);
 
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
 

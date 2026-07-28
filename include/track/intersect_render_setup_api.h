@@ -17,6 +17,14 @@ void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u
 void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* color, f32 mtx[3][4]);
 void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, u32* color, f32 mtx[3][4], f32 depth);
 void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u32* color, f32 mtx[3][4], f32 scale);
+/*
+ * Closes out the TEV pipeline configuration that drawViewFinderAperture etc. open:
+ * pushes the current ind-stage / chan-ctrl / tex-gen counts in
+ * gTevIndStageCount..00B back into GX, and if the global tint alpha
+ * gHudTintAlpha isn't fully transparent (0xFF) appends one final TEV
+ * stage that K-multiplies the tint over the existing color, advancing
+ * gTevStageCursor (TEV stage cursor) and gTevStageCount (stage count).
+ */
 void textRenderSetupFn_80079804(void);
 void textureSetupFn_800799c0(void);
 
