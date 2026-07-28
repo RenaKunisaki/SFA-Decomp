@@ -1825,6 +1825,7 @@ void allocLotsOfTextures(void)
     f32 cx;
     f32 d2;
     f32 v;
+    int bumpRowOff;
 
     u8 saved = testAndSet_onlyUseHeap3(1);
 
@@ -1892,10 +1893,10 @@ void allocLotsOfTextures(void)
             f32 inv = 1.0f / mx;
             for (j = 0; j < 0x40; j++)
             {
-                int rowoff, lowoff;
+                int lowoff;
                 f32 fj, fj2;
                 i = 0;
-                rowoff = (j >> 2) * 0x20;
+                bumpRowOff = (j >> 2) * 0x20;
                 lowoff = (j & 3) * 2;
                 fj = j - 32.0f;
                 fj2 = (f32)(j + 1) - 32.0f;
@@ -1907,7 +1908,7 @@ void allocLotsOfTextures(void)
                     int bi, ci, ai;
                     rowCoord = fj * lbl_803DEDFC;
                     rc2 = fj2 * lbl_803DEDFC;
-                    dst += rowoff;
+                    dst += bumpRowOff;
                     dst += (i & 3) * 8;
                     dst += (i >> 2) * 0x200;
                     cc = (f32)i - 32.0f;

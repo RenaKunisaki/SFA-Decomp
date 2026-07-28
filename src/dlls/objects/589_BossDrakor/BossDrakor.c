@@ -166,6 +166,7 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
     s16* neck;
     s16* upperJaw;
     s16* lowerJaw;
+    int neckDelta;
     int neckStep;
     int jawStep;
     s16 jawDelta;
@@ -182,10 +183,10 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
     neck = objModelGetVecFn_800395d8(obj, 0xe);
     if (neck != NULL)
     {
-        neckStep = (s16)-neck[0];
-        neckStep = (neckStep < -(framesThisStep << 8))
+        neckDelta = (s16)-neck[0];
+        neckStep = (neckDelta < -(framesThisStep << 8))
                    ? -(framesThisStep << 8)
-                   : (s16)((neckStep > (framesThisStep << 8)) ? (framesThisStep << 8) : neckStep);
+                   : (s16)((neckDelta > (framesThisStep << 8)) ? (framesThisStep << 8) : neckDelta);
         neck[0] += (s16)neckStep;
         PSVECSubtract(&drakorState->homePos, &obj->anim.localPos, &partfxParams.vec);
         partfxParams.val = 1.0f;
