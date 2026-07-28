@@ -94,7 +94,7 @@ void wctempledia_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 {
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E6E58);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -126,8 +126,8 @@ void wctempledia_update(GameObject* obj)
     {
         f32 ratio = state->currentSpeed / state->targetTable[2];
         ((void (*)(int, int, int, f32))Sfx_SetObjectSfxVolume)(
-            (u32)go, SFXTRIG_en_treedrum16, (u8)(lbl_803E6E60 * ratio + lbl_803E6E5C),
-            lbl_803E6E68 * ratio + lbl_803E6E64);
+            (u32)go, SFXTRIG_en_treedrum16, (u8)(18.0f * ratio + 109.0f),
+            0.75f * ratio + 0.25f);
     }
     for (i = 0; i < WCTEMPLE_DIA_STAGE_COUNT; i++)
     {

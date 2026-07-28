@@ -1700,7 +1700,7 @@ dlls/objects/228/228.c:
 	.text       start:0x80170004 end:0x801702D4
 	.data       start:0x803209C0 end:0x80320A28
 	.sdata      start:0x803DBD60 end:0x803DBD70
-	.sdata2     start:0x803E3388 end:0x803E33A0
+	.sdata2     start:0x803E3388 end:0x803E33A4
 
 dlls/objects/229/229.c:
 	.text       start:0x801702D4 end:0x80171300
@@ -1895,7 +1895,7 @@ dlls/objects/258_StayPoint/StayPoint.c:
 dlls/objects/280_Duster/Duster.c:
 	.text       start:0x801804C8 end:0x80180DC8
 	.data       start:0x80321648 end:0x80321680
-	.sdata2     start:0x803E38D8 end:0x803E38E4
+	.sdata2     start:0x803E38B0 end:0x803E38E4
 
 dlls/objects/259_CurveFish/CurveFish.c:
 	.text       start:0x80180DC8 end:0x801814D0
@@ -2989,7 +2989,7 @@ dlls/objects/441_SC_Cloudrun/SC_Cloudrun.c:
 dlls/objects/442_SC_totempuz/SC_totempuz.c:
 	.text       start:0x801DD170 end:0x801DDA28
 	.data       start:0x80327A18 end:0x80327A5C
-	.sdata2     start:0x803E55F0 end:0x803E5618
+	.sdata2     start:0x803E55F0 end:0x803E5634
 
 dlls/objects/443_SC_totembon/SC_totembon.c:
 	.text       start:0x801DDA28 end:0x801DE430
@@ -3427,7 +3427,7 @@ dlls/objects/577_DrakorEnerg/DrakorEnerg.c:
 	.text       start:0x801FF9B0 end:0x801FFE18
 	.data       start:0x80329378 end:0x803293B8
 	.sdata      start:0x803DC160 end:0x803DC180
-	.sdata2     start:0x803E6298 end:0x803E62A4
+	.sdata2     start:0x803E6278 end:0x803E62A4
 
 dlls/objects/578_DBstealerwo/DBstealerwo.c:
 	.text       start:0x801FFE18 end:0x80203DA0
@@ -3902,7 +3902,7 @@ dlls/objects/662_WCTempleDia/WCTempleDia.c:
 	.text       start:0x802293F8 end:0x8022999C
 	.data       start:0x8032B348 end:0x8032B398
 	.sdata      start:0x803DC3B8 end:0x803DC3C8
-	.sdata2     start:0x803E6E50 end:0x803E6E58
+	.sdata2     start:0x803E6E50 end:0x803E6E6C
 
 dlls/objects/663_WCTempleBri/WCTempleBri.c:
 	.text       start:0x8022999C end:0x8022A298
