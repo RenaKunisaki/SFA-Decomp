@@ -2443,7 +2443,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     void* cache;
     u8* curCacheBuf;
     u8* curPoolBuf;
-    ExpgfxSourceObject* srcObj;
+    ObjAnimComponent* srcObj;
     u8 cacheQueued;
     int ambRPlus1;
     int ambGPlus1;
@@ -2583,7 +2583,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                 }
                 entry = (ExpgfxTableEntry*)((u8*)runtime->expTab +
                                             (((u32)slot->encodedTableIndex >> 1) & EXPGFX_SLOT_TABLE_INDEX_MASK) * 16);
-                srcObj = (ExpgfxSourceObject*)entry->sourceId;
+                srcObj = (ObjAnimComponent*)entry->sourceId;
                 resource = entry->resource;
                 slot->stateBits.bits.frameParity = 0;
                 slot->stateBits.bits.quadReady = 1;
@@ -3432,7 +3432,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
 
 u8 gExpgfxRuntimeData[0x980];
 ExpgfxTableEntry gExpgfxTableEntries[0x550 / sizeof(ExpgfxTableEntry)];
-ExpgfxSourceObject* gExpgfxTrackedPoolSourceIds[0x50];
+ObjAnimComponent* gExpgfxTrackedPoolSourceIds[0x50];
 u64 gExpgfxTrackedSourceFrameMasks[0xB0 / sizeof(u64)];
 u32 gExpgfxSlotActiveMasks[0x50];
 u32 gExpgfxSlotPoolBases[0x50];
@@ -3494,7 +3494,7 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
 {
     s16 signedPoolIndex;
     int result;
-    ExpgfxSourceObject** poolSourceIds[1];
+    ObjAnimComponent** poolSourceIds[1];
     int poolIndex;
     u8* flagWalk;
     result = EXPGFX_SOURCE_FRAME_STATE_NONE;
@@ -3505,7 +3505,7 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
 
     for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds[0]++, flagWalk++, poolIndex++)
     {
-        if ((((ExpgfxSourceObject*)sourceObject)->seqId == EXPGFX_SOURCE_SEQID_MATCH_ALL) ||
+        if ((((ObjAnimComponent*)sourceObject)->seqId == EXPGFX_SOURCE_SEQID_MATCH_ALL) ||
             (*poolSourceIds[0] == sourceObject))
         {
             s64 frameBit;
@@ -3621,7 +3621,7 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     f32 sinB, cosB;
     int slotIndex;
     int alpha;
-    ExpgfxSourceObject* sourceObject;
+    ObjAnimComponent* sourceObject;
     u32 renderFlags;
     u32 stateBitsValue;
     CameraViewSlot* cameraSlot;
@@ -3691,7 +3691,7 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     {
         slot++;
         tabEntry = &tabBase[((u32)slot->encodedTableIndex >> 1) & EXPGFX_SLOT_TABLE_INDEX_MASK];
-        sourceObject = (ExpgfxSourceObject*)tabEntry->sourceId;
+        sourceObject = (ObjAnimComponent*)tabEntry->sourceId;
         texture = tabEntry->resource;
         if ((1U << slotIndex & *activeMasks) != 0)
         {
@@ -4312,7 +4312,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
 {
     u32 behaviorFlags;
     ExpgfxSlot* slot;
-    ExpgfxSourceObject* attachedSource;
+    ObjAnimComponent* attachedSource;
     ExpgfxResourceHandle* resourceHandle;
     ExpgfxRuntimeDataLayout* runtime;
     GameObject* playerObj;
@@ -4410,7 +4410,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
             texT0 = 0;
         }
 
-        attachedSource = (ExpgfxSourceObject*)config->attachedSource;
+        attachedSource = (ObjAnimComponent*)config->attachedSource;
         attachedTableKey = 0;
         if (attachedSource == NULL)
         {

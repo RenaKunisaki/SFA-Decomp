@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "ghidra_import.h"
+#include "main/objanim_internal.h"
 
 #define EXPGFX_POOL_COUNT 0x50
 #define EXPGFX_POOL_RESET_BATCH_SIZE 8
@@ -154,38 +155,6 @@ typedef struct ExpgfxBounds {
   float minZ;
   float maxZ;
 } ExpgfxBounds;
-
-typedef struct ExpgfxSourceObject {
-  s16 rotX;
-  s16 rotY;
-  s16 rotZ;
-  s16 flags;
-  f32 rootMotionScale;
-  f32 localPosX;
-  f32 localPosY;
-  f32 localPosZ;
-  f32 worldPosX;
-  f32 worldPosY;
-  f32 worldPosZ;
-  f32 velocityX;
-  f32 velocityY;
-  f32 velocityZ;
-  s32 parentAddress;
-  u8 pad34[0x36 - 0x34];
-  u8 alpha;
-  u8 pad37[0x46 - 0x37];
-  /* Sources with this seqId update frame flags for every tracked pool, not
-     just pointer matches. */
-  s16 seqId;
-} ExpgfxSourceObject;
-
-STATIC_ASSERT(offsetof(ExpgfxSourceObject, rootMotionScale) == 0x08);
-STATIC_ASSERT(offsetof(ExpgfxSourceObject, localPosX) == 0x0C);
-STATIC_ASSERT(offsetof(ExpgfxSourceObject, worldPosX) == 0x18);
-STATIC_ASSERT(offsetof(ExpgfxSourceObject, velocityX) == 0x24);
-STATIC_ASSERT(offsetof(ExpgfxSourceObject, parentAddress) == 0x30);
-STATIC_ASSERT(offsetof(ExpgfxSourceObject, alpha) == 0x36);
-STATIC_ASSERT(offsetof(ExpgfxSourceObject, seqId) == 0x46);
 
 typedef struct ExpgfxPoolSourcePosition {
   u8 pad00[0x0C];
@@ -525,7 +494,7 @@ STATIC_ASSERT(offsetof(ExpgfxSlot, renderX) == 0x90);
 extern u8 gExpgfxStaticData[];
 extern u8 gExpgfxRuntimeData[];
 extern ExpgfxTableEntry gExpgfxTableEntries[];
-extern ExpgfxSourceObject* gExpgfxTrackedPoolSourceIds[];
+extern ObjAnimComponent* gExpgfxTrackedPoolSourceIds[];
 extern u64 gExpgfxTrackedSourceFrameMasks[];
 extern s16 gExpgfxStaticPoolSlotTypeIds[];
 extern u8 gExpgfxStaticPoolFrameFlags[];

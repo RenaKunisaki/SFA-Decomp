@@ -165,15 +165,15 @@ void dll_0B_func16(void* a, void* b, void* c, void* d, void* e, int f, void* g)
     {
         if (gModgfxSpawnContext.attachedSource != NULL)
         {
-            gModgfxSpawnContext.posX += ((ExpgfxSourceObject*)gModgfxSpawnContext.attachedSource)->worldPosX;
-            gModgfxSpawnContext.posY += ((ExpgfxSourceObject*)gModgfxSpawnContext.attachedSource)->worldPosY;
-            gModgfxSpawnContext.posZ += ((ExpgfxSourceObject*)gModgfxSpawnContext.attachedSource)->worldPosZ;
+            gModgfxSpawnContext.posX += ((ObjAnimComponent*)gModgfxSpawnContext.attachedSource)->worldPosX;
+            gModgfxSpawnContext.posY += ((ObjAnimComponent*)gModgfxSpawnContext.attachedSource)->worldPosY;
+            gModgfxSpawnContext.posZ += ((ObjAnimComponent*)gModgfxSpawnContext.attachedSource)->worldPosZ;
         }
         else
         {
-            gModgfxSpawnContext.posX += ((ExpgfxSourceObject*)a)->localPosX;
-            gModgfxSpawnContext.posY += ((ExpgfxSourceObject*)a)->localPosY;
-            gModgfxSpawnContext.posZ += ((ExpgfxSourceObject*)a)->localPosZ;
+            gModgfxSpawnContext.posX += ((ObjAnimComponent*)a)->localPosX;
+            gModgfxSpawnContext.posY += ((ObjAnimComponent*)a)->localPosY;
+            gModgfxSpawnContext.posZ += ((ObjAnimComponent*)a)->localPosZ;
         }
     }
     gModgfxLastSpawnHandle = dll_0B_func04(&gModgfxSpawnContext, 0, (int)c, b, (int)e, d, f, g);
