@@ -145,13 +145,13 @@ void pathSearchHeapSiftDown(u8* arr, int size, int idx)
 static inline void pathSearchHeapInsert(PathSearch* search, u16 index, u32 pri)
 {
     int i;
-    u16 idx16;
     u32 key;
+    u16 idx16;
     int parent;
     u32* heap;
     u16* hh;
     heap = (u32*)search->heap;
-    hh = (u16*)search->heap;
+    hh = (u16*)heap;
     hh[++search->heapSize * 4 + 2] = index;
     *(u32*)((int)heap + search->heapSize * 8) = pri;
     i = search->heapSize;
@@ -221,10 +221,10 @@ void pathSearchEnqueuePoint(int* q, int* elem, int idx, u32 d, char* obj)
         PathSearchNode* node3 = &search->nodes[z[0]];
         if (d < node3->routeDistance)
         {
-            u32 newpri;
             int s2;
-            int j;
             u16 target;
+            int j;
+            u32 newpri;
             u32* entry;
             u32 old;
             node3->parentIndex = idx;
