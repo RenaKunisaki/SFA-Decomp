@@ -58,6 +58,14 @@ defaults the unit to NonMatching and manufactures phantom flip candidates --
 `targsupp.s` were all reported as link-clean flip candidates while already
 being `complete`.
 
+ZERO RESIDUAL IS NECESSARY, NOT SUFFICIENT.  `rank` splits its zero-residual
+units into flip candidates and a BLOCKED list.  A blocked unit is byte- and
+relocation-equal but its retail `.o` exports a global name ours does not --
+invariably a `lbl_` pool constant, which MWCC emits as an anonymous local `@N`
+-- and some sibling that is still on its retail object references that name.
+Flipping one links but fails `undefined:`; it only becomes flippable once every
+such sibling matches too.
+
 WARNING.  Residual and `fuzzy_match_percent` can move in OPPOSITE directions: a
 change may cut residual while regressing fuzzy.  Only a change that drives
 residual to zero flips a unit to `complete`; anything short of that must not
@@ -206,6 +214,38 @@ def text_excision(bo, statics, keep):
     return bytes(b for i, b in enumerate(bo) if i not in drop), new.get
 
 
+def exports(path):
+    """Global symbol names the object DEFINES -- what mwld can resolve from it."""
+    out = set()
+    with open(path, "rb") as f:
+        elf = ELFFile(f)
+        sn = {i: s.name for i, s in enumerate(elf.iter_sections())}
+        for sec in elf.iter_sections():
+            if not isinstance(sec, SymbolTableSection):
+                continue
+            for s in sec.iter_symbols():
+                sh = s["st_shndx"]
+                if not isinstance(sh, int) or sn.get(sh) not in SECS:
+                    continue
+                if (s.name and s["st_info"]["bind"] != "STB_LOCAL"
+                        and s["st_info"]["type"] != "STT_SECTION"
+                        and not s.name.startswith("gap_")):
+                    out.add(s.name)
+    return out
+
+
+def missing_exports(ours, tgt):
+    """Names retail's object exports that ours does not.
+
+    A unit can screen link-clean and still break the link: MWCC emits pool
+    constants as anonymous local @N symbols, so a `lbl_...` that retail's
+    object exports globally vanishes when we start linking ours.  Any sibling
+    still on its retail object references that name and mwld fails undefined.
+    The unit only becomes flippable once every such sibling matches too.
+    """
+    return exports(tgt) - exports(ours)
+
+
 def screen(ours, tgt):
     do, so, no, ro, fo = load(ours)
     dt, st, nt, rt, ft = load(tgt)
@@ -326,9 +366,19 @@ def cmd_rank(args):
     for r in fp:
         print(f"    {r[0]}b/{r[1]}r  {r[2]}")
     bad = [r for r in clean if not r[4]]
-    print(f"# LINK-CLEAN but NonMatching (flip candidates): {len(bad)}")
+    ready, held = [], []
+    lookup = {n: (o, t) for n, o, t, _ in units(args)}
     for r in bad:
-        print(f"    {r[2]}")
+        miss = missing_exports(*lookup[r[2]])
+        (held if miss else ready).append((r[2], sorted(miss)))
+    print(f"# LINK-CLEAN but NonMatching (flip candidates): {len(ready)}")
+    for n, _ in ready:
+        print(f"    {n}")
+    if held:
+        print(f"# LINK-CLEAN but BLOCKED (retail object exports names ours does "
+              f"not; siblings still reference them): {len(held)}")
+        for n, miss in held:
+            print(f"    {n}  missing: {' '.join(miss)}")
 
 
 def _aligned(ours, tgt):
