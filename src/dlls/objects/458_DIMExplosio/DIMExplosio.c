@@ -324,12 +324,12 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
             cursor += sizeof(DimExplosionFlame);
         }
         if (((DimExplosionState*)state)->frameCounter < ((DimExplosionState*)state)->lifeFrames &&
-            ((DimExplosionState*)state)->rayMode != 0) {
-            for (i = 0, cursor = state; i < ((DimExplosionState*)state)->rayMode; cursor += sizeof(s16) * 2, i++) {
-                obj->anim.rotY = (s16)((DimExplosionState*)cursor)->rayYawA;
-                obj->anim.rotX = (s16)((DimExplosionState*)cursor)->rayPitchA;
+            ((DimExplosionState*)state)->rayCount != 0) {
+            for (i = 0; i < ((DimExplosionState*)state)->rayCount; i++) {
+                obj->anim.rotY = (s16)((DimExplosionState*)state)->rays[i].yaw;
+                obj->anim.rotX = (s16)((DimExplosionState*)state)->rays[i].pitch;
                 objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, visible);
-                if (i < ((DimExplosionState*)state)->rayMode - 1) {
+                if (i < ((DimExplosionState*)state)->rayCount - 1) {
                     ((ObjModel*)model)->bufferFlags &= ~8;
                 }
             }
@@ -652,18 +652,18 @@ void explosion_init(GameObject* obj, int placementAddress) {
     obj->anim.alpha = 0xff;
     if (((DimExplosionPlacement*)placementAddress)->configFlags & DIM_EXPLOSION_CONFIG_HAS_RAYS) {
         if (((DimExplosionState*)state)->nearGround == 0) {
-            ((DimExplosionState*)state)->rayMode = 2;
-            ((DimExplosionState*)state)->rayYawA = randomGetRange(0, 0x4000);
-            ((DimExplosionState*)state)->rayPitchA = randomGetRange(0, 0x8000);
-            ((DimExplosionState*)state)->rayYawB = ((DimExplosionState*)state)->rayYawA + 0x4000;
-            ((DimExplosionState*)state)->rayPitchB = ((DimExplosionState*)state)->rayPitchA;
+            ((DimExplosionState*)state)->rayCount = 2;
+            ((DimExplosionState*)state)->rays[0].yaw = randomGetRange(0, 0x4000);
+            ((DimExplosionState*)state)->rays[0].pitch = randomGetRange(0, 0x8000);
+            ((DimExplosionState*)state)->rays[1].yaw = ((DimExplosionState*)state)->rays[0].yaw + 0x4000;
+            ((DimExplosionState*)state)->rays[1].pitch = ((DimExplosionState*)state)->rays[0].pitch;
         } else {
-            ((DimExplosionState*)state)->rayMode = 1;
-            ((DimExplosionState*)state)->rayYawA = 0;
-            ((DimExplosionState*)state)->rayPitchA = 0;
+            ((DimExplosionState*)state)->rayCount = 1;
+            ((DimExplosionState*)state)->rays[0].yaw = 0;
+            ((DimExplosionState*)state)->rays[0].pitch = 0;
         }
     } else {
-        ((DimExplosionState*)state)->rayMode = 0;
+        ((DimExplosionState*)state)->rayCount = 0;
     }
     ((DimExplosionState*)state)->halfLifeFired = 0;
     ((DimExplosionState*)state)->frameCounter = 0;
