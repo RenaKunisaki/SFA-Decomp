@@ -1509,6 +1509,8 @@ void Stack_Free(RingBufferQueue* stack)
     mm_free(stack);
 }
 
+char sVoxmapsRouteNodesListOverflow[] = "VOXMAPS: route nodes list overflow\n";
+
 char sVoxMapsDebugStrings[380] =
     "Childnode Null\n\000overflow in 'genVoxelCircle'\n\000\000\000VOXMAP: attempt to load invalid object voxmap "
     "'%d'\n\000VOXMAP: Size overflow on object voxmap load->Ignoring defined voxmap\n\000\000\000<voxLoadVoxMapActual> "
@@ -1516,4 +1518,3 @@ char sVoxMapsDebugStrings[380] =
     "voxmap\n\000<voxLoadVoxMapActual>  Warning uncompressedSize is 0\n\000\000\000 WARNING: Voxmap has no mem "
     "available \n";
 
-char sVoxmapsRouteNodesListOverflow[] = "VOXMAPS: route nodes list overflow\n";

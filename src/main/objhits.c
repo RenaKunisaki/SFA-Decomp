@@ -5034,6 +5034,6 @@ void objSetLookAtFlip(int mode, u8 enabled)
     gObjLookAtControlFlags.flip = enabled;
 }
 
-char sObjMsgOverflowInObjectWarning[] = "objmsg (%x): overflow in object %d defno=%d FROM: defno %d\n";
-
 char sObjAddObjectTypeReachedMaxTypes[38] = "objAddObjectType: Reached MAXTYPES!!\n\000";
+
+char sObjMsgOverflowInObjectWarning[] = "objmsg (%x): overflow in object %d defno=%d FROM: defno %d\n";

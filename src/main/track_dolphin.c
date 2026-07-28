@@ -224,11 +224,11 @@ u32 trackGetPackedSurfaceType(int* obj);
 
 int insertPoint(int val, s16* arr, f32 x, f32 y, f32 z);
 
-char sTrackIntersectFuncOverflowFormat[] = "trackIntersect: FUNC OVERFLOW %d\n";
+char sTrackNoFreeLastLineError[] = "NO FREE LAST LINE\n";
 
 u16 gIntersectSegmentTypeTable[0x212];
 
-char sTrackNoFreeLastLineError[] = "NO FREE LAST LINE\n";
+char sTrackIntersectFuncOverflowFormat[] = "trackIntersect: FUNC OVERFLOW %d\n";
 
 int findSurfaceInYRange(GameObject* obj, f32 x, f32 lo, f32 z, f32 hi, f32* outSurfaceY,
                         GameObject** outSurfaceObj)
