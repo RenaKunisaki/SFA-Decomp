@@ -180,6 +180,7 @@ void DIMwooddoor_updateShardAim(GameObject* obj, f32 targetX, f32 unusedTargetY,
     f32 heightDelta;
     f32 accel;
     f32 accelDenom;
+    f32 launchSpeed;
     register int facingAngle;
     int angleDelta;
     int pitchSign;
@@ -247,10 +248,10 @@ void DIMwooddoor_updateShardAim(GameObject* obj, f32 targetX, f32 unusedTargetY,
 
         accel = (0.01f * -lbl_803DBEF0) * distSq;
         accelDenom = 8.0f * heightDelta - 4.0f * dist;
-        accel = accel / ((accelDenom < -1.0f) ? accelDenom : -1.0f);
-        accel = (0.0f > accel) ? 0.0f : accel;
-        accel = sqrtf(accel);
-        state->launchSpeed += (accel - state->launchSpeed) / 80.0f;
+        launchSpeed = accel / ((accelDenom < -1.0f) ? accelDenom : -1.0f);
+        launchSpeed = (0.0f > launchSpeed) ? 0.0f : launchSpeed;
+        launchSpeed = sqrtf(launchSpeed);
+        state->launchSpeed += (launchSpeed - state->launchSpeed) / 80.0f;
     }
 }
 
