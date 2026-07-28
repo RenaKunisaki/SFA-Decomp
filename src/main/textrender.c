@@ -1126,6 +1126,15 @@ extern f32 gSubtitleLineTimes[0x100];
 
 extern char* gSubtitleLineStrs[0x100];
 
+void* jumptable_802C9E84[16] = {
+    (void*)((u8*)gameTextRun + 0x54C), (void*)((u8*)gameTextRun + 0x3B8), (void*)((u8*)gameTextRun + 0x3C8),
+    (void*)((u8*)gameTextRun + 0x354), (void*)((u8*)gameTextRun + 0x388), (void*)((u8*)gameTextRun + 0x3DC),
+    (void*)((u8*)gameTextRun + 0x408), (void*)((u8*)gameTextRun + 0x418), (void*)((u8*)gameTextRun + 0x450),
+    (void*)((u8*)gameTextRun + 0x480), (void*)((u8*)gameTextRun + 0x490), (void*)((u8*)gameTextRun + 0x4AC),
+    (void*)((u8*)gameTextRun + 0x4BC), (void*)((u8*)gameTextRun + 0x4F0), (void*)((u8*)gameTextRun + 0x4C8),
+    (void*)((u8*)gameTextRun + 0x504),
+};
+
 char sGameTextSequencePathFormat[] = "gametext/Sequences/%d_%s.bin";
 
 /* Task (fortune-teller) text ids that may be shown; 0-terminated. */
@@ -1258,14 +1267,6 @@ u8 sGameTextFallbackDefs[0x280];
 u32 sSubtitleCtrlCmdScratch[0x240];
 GameTextSlot gGameTextCommandSlots[0xA00 / sizeof(GameTextSlot)];
 
-void* jumptable_802C9E84[16] = {
-    (void*)((u8*)gameTextRun + 0x54C), (void*)((u8*)gameTextRun + 0x3B8), (void*)((u8*)gameTextRun + 0x3C8),
-    (void*)((u8*)gameTextRun + 0x354), (void*)((u8*)gameTextRun + 0x388), (void*)((u8*)gameTextRun + 0x3DC),
-    (void*)((u8*)gameTextRun + 0x408), (void*)((u8*)gameTextRun + 0x418), (void*)((u8*)gameTextRun + 0x450),
-    (void*)((u8*)gameTextRun + 0x480), (void*)((u8*)gameTextRun + 0x490), (void*)((u8*)gameTextRun + 0x4AC),
-    (void*)((u8*)gameTextRun + 0x4BC), (void*)((u8*)gameTextRun + 0x4F0), (void*)((u8*)gameTextRun + 0x4C8),
-    (void*)((u8*)gameTextRun + 0x504),
-};
 void* jumptable_802CA420[8] = {
     (void*)((u8*)gameTextDrawBox + 0x310), (void*)((u8*)gameTextDrawBox + 0x0E8), (void*)((u8*)gameTextDrawBox + 0x4EC),
     (void*)((u8*)gameTextDrawBox + 0x368), (void*)((u8*)gameTextDrawBox + 0x6F8), (void*)((u8*)gameTextDrawBox + 0x068),
