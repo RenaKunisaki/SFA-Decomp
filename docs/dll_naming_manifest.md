@@ -537,7 +537,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1EB | SB_ShipMast | COMPLETE | dlls/objects/491_SB_ShipMast/SB_ShipMast.c | = (canonical) | Exact complete nine-function TU with its terminal 0x38-byte descriptor, proven zero-byte extra state, canonical unit header, canonical object-animation API, and exact emitted sections, relocations, and symbols; no object-specific placement layout is consumed, and the generated source path remains unchanged |
 | 0x1EC | SB_ShipGun | COMPLETE | dlls/objects/492_SB_ShipGun/SB_ShipGun.c | = (canonical) | Exact complete five-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x10-byte state, fully asserted callback-visible placement prefix, canonical unit header and shared Galleon-part interface, and exact emitted sections, relocations, and symbols; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, and the generated source path remains unchanged |
 | 0x1ED | SB_FireBall | COMPLETE | dlls/objects/493_SB_FireBall/SB_FireBall.c | = (canonical) | Exact complete nine-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x18-byte state, canonical unit header, canonical hit-state and particle interfaces, and exact emitted sections, relocations, and symbols; no object-specific placement layout is consumed, and the generated source path remains unchanged |
-| 0x1EE | SB_CannonBa | COMPLETE | dlls/objects/494_SB_CannonBa/SB_CannonBa.c | = (canonical) | Retail basename is truncated |
+| 0x1EE | SB_CannonBa | COMPLETE | dlls/objects/494_SB_CannonBa/SB_CannonBa.c | = (canonical) | Exact complete nine-function TU with its terminal 0x38-byte descriptor, allocation-backed and fully asserted 0x24-byte state, canonical unit header and shared cannonball object ID, canonical hit-state, light, particle, and effect interfaces, and exact emitted sections, relocations, and symbols; the retail basename is truncated, no object-specific placement layout is consumed, and the generated source path remains unchanged |
 | 0x1EF | SB_CloudBal | COMPLETE | dlls/objects/495_SB_CloudBal/SB_CloudBal.c | = (canonical) | Retail basename is truncated |
 | 0x1F0 | SB_KyteCage | COMPLETE | dlls/objects/496_SB_KyteCage/SB_KyteCage.c | = (canonical) | — |
 | 0x1F1 | SB_SeqDoor | COMPLETE | dlls/objects/497_SB_SeqDoor/SB_SeqDoor.c | = (canonical) | — |
@@ -1064,6 +1064,7 @@ more as they are recovered.
 | 0x1EB | dlls/objects/491_SB_ShipMast/SB_ShipMast.c | include/dlls/objects/491_SB_ShipMast.h |
 | 0x1EC | dlls/objects/492_SB_ShipGun/SB_ShipGun.c | include/dlls/objects/492_SB_ShipGun.h |
 | 0x1ED | dlls/objects/493_SB_FireBall/SB_FireBall.c | include/dlls/objects/493_SB_FireBall.h |
+| 0x1EE | dlls/objects/494_SB_CannonBa/SB_CannonBa.c | include/dlls/objects/494_SB_CannonBa.h |
 | 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |
