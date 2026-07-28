@@ -499,15 +499,15 @@ void optionsMenu_openGeneralPanel(void)
 #define OPTIONSSCREEN_PANEL_MISC     3
 
 s8 gOptionsActivePanel = -1;
-u8 gOptionsRequestedPanel;
-u8 lbl_803DD6F9;
-int lbl_803DD6FC;
-int gOptionsLastSelectedRow;
-s8 gOptionsExitCountdown;
-s8 gOptionsExitRequested;
-s8 gOptionsLayoutRefreshFrames;
-SaveData* gOptionsSaveData;
 s8 lbl_803DD70C;
+SaveData* gOptionsSaveData;
+s8 gOptionsLayoutRefreshFrames;
+s8 gOptionsExitRequested;
+s8 gOptionsExitCountdown;
+int gOptionsLastSelectedRow;
+int lbl_803DD6FC;
+u8 lbl_803DD6F9;
+u8 gOptionsRequestedPanel;
 
 u16 gOptionsTopPanelEntries[90] = {
     0x035a, 0x0012, 0x0140, 0x00a4, 0x0000, 0x0140, 0x0034, 0x0000, 0xffff, 0xffff, 0x00c8, 0x0200, 0x0000, 0xff01, 0xffff, 0xff00,
