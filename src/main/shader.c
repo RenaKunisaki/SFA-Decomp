@@ -463,6 +463,7 @@ void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObjec
     int byteIdx;
     int bit;
     s8* vis;
+    int visByte;
 
     if (seg[index] == -1)
         return;
@@ -518,12 +519,12 @@ void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObjec
                 if (objIndex >= 0)
                 {
                     MapRomListPage* bm2 = gLoadedRomListPages[mapId];
-                    byteIdx = objIndex >> 3;
+                    visByte = objIndex >> 3;
                     bit = 1 << (objIndex & 7);
                     vis = (s8*)bm2->loadedObjectBits;
-                    vis[byteIdx] &= ~bit;
+                    vis[visByte] &= ~bit;
                     vis = (s8*)bm2->loadedObjectBits;
-                    vis[byteIdx] |= bit;
+                    vis[visByte] |= bit;
                 }
                 Obj_SetupObject((ObjPlacement*)obj, 1, mapId, objIndex, parent);
             }
