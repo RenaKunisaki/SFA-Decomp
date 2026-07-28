@@ -5047,9 +5047,6 @@ char sObjMsgOverflowInObjectWarning[64] = "objmsg (%x): overflow in object %d de
 int gObjLookAtTurnRateDivisor = 100;
 f32 gObjMouthBlendFrames = 20.0f;
 
-
-extern f32 lbl_803DE9A4;
-
 void objSoundUpdateMouth(GameObject* obj, char* state)
 {
     s16* found;
@@ -5070,7 +5067,7 @@ void objSoundUpdateMouth(GameObject* obj, char* state)
             if (timer < 0)
             {
                 Sfx_StopObjectChannel((u32)obj, 0x10);
-                ((ObjSoundState*)state)->blendWeight = lbl_803DE9A4;
+                ((ObjSoundState*)state)->blendWeight = 0.0f;
                 ((ObjSoundState*)state)->pitch = 0;
             }
             ((ObjSoundState*)state)->timer = timer;
@@ -5080,10 +5077,10 @@ void objSoundUpdateMouth(GameObject* obj, char* state)
     {
         ((ObjSoundState*)state)->timer = -1.0f;
         ((ObjSoundState*)state)->pitch = 0;
-        if (((ObjSoundState*)state)->blendWeight > lbl_803DE9A4)
+        if (((ObjSoundState*)state)->blendWeight > 0.0f)
         {
             ObjModel* pi;
-            ((ObjSoundState*)state)->blendWeight = *(f32*)&lbl_803DE9A4;
+            ((ObjSoundState*)state)->blendWeight = 0.0f;
             pi = (ObjModel*)OBJPRINT_ACTIVE_BANK(obj);
             if (pi->file->morphTargetCount != 0)
             {
@@ -5112,7 +5109,7 @@ void objKfAnimUpdate(GameObject* obj, ObjKfAnimState* state)
         return;
     t = state->timer - timeDelta;
     state->timer = t;
-    if (t < lbl_803DE9A4)
+    if (t < 0.0f)
     {
         frame = state->frame;
         if (frame >= state->frameCount)
@@ -5398,9 +5395,9 @@ int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b)
     {
         ratio = 1.0f;
     }
-    else if (ratio < lbl_803DE9A4)
+    else if (ratio < 0.0f)
     {
-        ratio = lbl_803DE9A4;
+        ratio = 0.0f;
     }
 
     {
@@ -5446,9 +5443,9 @@ int characterTrackJointYaw(s16* curve, s16* state)
     {
         ratio = 1.0f;
     }
-    else if (ratio < lbl_803DE9A4)
+    else if (ratio < 0.0f)
     {
-        ratio = lbl_803DE9A4;
+        ratio = 0.0f;
     }
 
     {
@@ -5672,7 +5669,7 @@ void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val)
             else
             {
                 f32 t = *(f32*)((char*)curve + 0x10);
-                f32 lo = lbl_803DE9A4;
+                f32 lo = 0.0f;
                 if (t > lo)
                 {
                     f32 nv;
@@ -5734,7 +5731,7 @@ void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 
         {
             found[0] = (s16)(found[0] * 3 / 4);
         }
-        if (val < lbl_803DE9A4)
+        if (val < 0.0f)
         {
             val = -val;
         }
@@ -6282,7 +6279,7 @@ void characterDoEyeAnims(GameObject* obj, void* stateData)
             b->textureId = v;
             break;
         }
-        characterDoEyeMovements(obj, state, lbl_803DE9A4);
+        characterDoEyeMovements(obj, state, 0.0f);
     }
 }
 
@@ -6297,7 +6294,7 @@ void characterHeadLookCalm(GameObject* obj, s16* state, f32 value)
         {
             found[0] = (s16)(found[0] * 3 / 4);
         }
-        characterHeadLookIdle(obj, state, found, lbl_803DE9A4);
+        characterHeadLookIdle(obj, state, found, 0.0f);
         ((CharacterEyeAnimState*)state)->headTrackMode = (s16)(u16)(u8)((CharacterEyeAnimState*)state)->headTrackMode;
     }
 }
