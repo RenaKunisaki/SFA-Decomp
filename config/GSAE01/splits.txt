@@ -1305,7 +1305,7 @@ dlls/engine/85/85.c:
 	.text       start:0x80110C80 end:0x80110E30
 	.data       start:0x80319F58 end:0x80319F88
 	.sbss       start:0x803DD5C8 end:0x803DD5D0
-	.sdata2     start:0x803E1B78 end:0x803E1B98
+	.sdata2     start:0x803E1B78 end:0x803E1BA0
 
 dlls/engine/86/86.c:
 	.text       start:0x80110E30 end:0x801115E4

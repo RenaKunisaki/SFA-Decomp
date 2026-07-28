@@ -12,8 +12,6 @@
 
 CameraModePervState* lbl_803DD5C8;
 
-extern f32 lbl_803E1B98;
-extern f32 lbl_803E1B9C;
 
 void CameraModePerv_copyToCurrent(void)
 {
@@ -53,8 +51,8 @@ void CameraModePerv_init(int* obj)
     {
         lbl_803DD5C8 = (CameraModePervState*)mmAlloc(sizeof(CameraModePervState), 15, 0);
     }
-    lbl_803DD5C8->timer = lbl_803E1B98;
-    lbl_803DD5C8->cameraY = ((GameObject*)camera->anim.targetObj)->anim.worldPosY - lbl_803E1B9C;
+    lbl_803DD5C8->timer = 100.0f;
+    lbl_803DD5C8->cameraY = ((GameObject*)camera->anim.targetObj)->anim.worldPosY - 200.0f;
 }
 
 void CameraModePerv_release(void)
