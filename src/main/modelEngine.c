@@ -259,6 +259,7 @@
 #include "dlls/objects/462.h"
 #include "dlls/objects/463.h"
 #include "dlls/objects/465_DIMTruthHor.h"
+#include "dlls/objects/466_WORLDplanet.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -414,8 +415,7 @@ extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gW
     gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqobjectObjDescriptor,
     gWM_seqpointObjDescriptor;
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWaterFlowWeObjDescriptor;
-extern ResourceDescriptor gWorldAsteroidsObjDescriptor, gWorldObjObjDescriptor, gWorldPlanetObjDescriptor,
-    lbl_8030EE34;
+extern ResourceDescriptor gWorldAsteroidsObjDescriptor, gWorldObjObjDescriptor, lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, sky2_funcs, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
     lbl_8030FCA8, partfx_funcs;
 extern ResourceDescriptor Effect1_funcs, Effect2_funcs, Effect3_funcs, Effect4_funcs, Effect5_funcs, Effect6_funcs,
@@ -1548,7 +1548,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll1CFObjDescriptor,
     &gDIM_trickyObjDescriptor,
     (ResourceDescriptor*)&gDIMTruthHornIceObjDescriptor,
-    &gWorldPlanetObjDescriptor,
+    (ResourceDescriptor*)&gWorldPlanetObjDescriptor,
     &gWorldObjObjDescriptor,
     &gWorldAsteroidsObjDescriptor,
     &gDIM2ConveyorObjDescriptor,
