@@ -2440,7 +2440,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     int curPool;
     u32* maskPtr;
     void* cache;
-    u8* curCacheBuf;
+    ExpgfxSlot* curCacheBuf;
     u8* curPoolBuf;
     ObjAnimComponent* srcObj;
     u8 cacheQueued;
@@ -2507,7 +2507,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     {
         copyToCache(cache, (void*)runtime->slotPoolBases[pool], EXPGFX_POOL_CACHE_LINE_COUNT);
         cacheParity = 1;
-        curCacheBuf = cache;
+        curCacheBuf = (ExpgfxSlot*)(cache);
         Camera_GetCurrentViewSlot();
         if (tricky != NULL)
         {
@@ -2551,13 +2551,13 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                 }
                 activeCountScan++;
             }
-            slot = (ExpgfxSlot*)curCacheBuf;
+            slot = curCacheBuf;
             if (nextActivePool > -1)
             {
                 nextCacheBuf = (u8*)cache + cacheParity * 0x1000;
                 copyToCache(nextCacheBuf, (void*)*(u32*)((u8*)runtime->slotPoolBases + nextActivePool * 4),
                             EXPGFX_POOL_CACHE_LINE_COUNT);
-                curCacheBuf = nextCacheBuf;
+                curCacheBuf = (ExpgfxSlot*)(nextCacheBuf);
                 cacheQueued = 1;
             }
             cacheParity ^= 1;

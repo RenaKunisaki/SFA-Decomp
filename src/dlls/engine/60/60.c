@@ -127,7 +127,7 @@ void linkDrawFn_801302c0(void)
 {
     LinkMenuItem* sel;
     int resetTimer;
-    void* iconTex;
+    Texture* iconTex;
     int i;
     int selTop;
     int selBottom;
@@ -140,15 +140,15 @@ void linkDrawFn_801302c0(void)
     sel = &gTumbleweedBushItems[linkSelected];
     if (((sel->flags & LINK_FLAG_DRAW_SLOTS) != 0) && (sel->slots[0] != -1))
     {
-        iconTex = *(void**)(linkTextures + sel->slots[0] * 8);
+        iconTex = (Texture*)(*(void**)(linkTextures + sel->slots[0] * 8));
     }
     else
     {
-        iconTex = sel->texture;
+        iconTex = (Texture*)(sel->texture);
     }
     if (iconTex != NULL)
     {
-        iconHeight = ((Texture*)iconTex)->height;
+        iconHeight = iconTex->height;
         selTop = sel->y;
     }
     else
@@ -171,15 +171,15 @@ void linkDrawFn_801302c0(void)
             if (((gTumbleweedBushItems[i].flags & LINK_FLAG_DRAW_SLOTS) != 0) &&
                 (gTumbleweedBushItems[i].slots[0] != -1))
             {
-                iconTex = *(void**)(linkTextures + gTumbleweedBushItems[i].slots[0] * 8);
+                iconTex = (Texture*)(*(void**)(linkTextures + gTumbleweedBushItems[i].slots[0] * 8));
             }
             else
             {
-                iconTex = gTumbleweedBushItems[i].texture;
+                iconTex = (Texture*)(gTumbleweedBushItems[i].texture);
             }
             if (iconTex != NULL)
             {
-                iconHeight = ((Texture*)iconTex)->height;
+                iconHeight = iconTex->height;
                 itemTop = gTumbleweedBushItems[i].y;
             }
             else
@@ -219,7 +219,7 @@ void setLinkIsRotated(void)
 void linkDrawFn_80130484(void)
 {
     LinkMenuItem* item;
-    void* iconTex;
+    Texture* iconTex;
     int i;
     int minY;
     int maxY;
@@ -235,15 +235,15 @@ void linkDrawFn_80130484(void)
         item = &gTumbleweedBushItems[i];
         if (((item->flags & LINK_FLAG_DRAW_SLOTS) != 0) && (item->slots[0] != -1))
         {
-            iconTex = *(void**)(linkTextures + item->slots[0] * 8);
+            iconTex = (Texture*)(*(void**)(linkTextures + item->slots[0] * 8));
         }
         else
         {
-            iconTex = item->texture;
+            iconTex = (Texture*)(item->texture);
         }
         if (iconTex != NULL)
         {
-            iconHeight = ((Texture*)iconTex)->height;
+            iconHeight = iconTex->height;
             top = item->y;
         }
         else

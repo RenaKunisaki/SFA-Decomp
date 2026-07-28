@@ -154,7 +154,7 @@ void pollenfragment_hitDetect(GameObject* obj)
 void pollenfragment_update(GameObject* obj)
 {
     u8* extra;
-    u8* nearObj;
+    GameObject* nearObj;
     PollenFragmentDef* def;
     void* hit;
     int i;
@@ -220,22 +220,22 @@ void pollenfragment_update(GameObject* obj)
         (*gPartfxInterface)
             ->spawnObject((void*)obj, (int)(((PollenFragmentExtra*)extra)->def)->auraFx, NULL, 1, -1, NULL);
     }
-    nearObj = (u8*)ObjGroup_FindNearestObject((int)(((PollenFragmentExtra*)extra)->def)->targetGroup, obj, 0);
+    nearObj = (GameObject*)((u8*)ObjGroup_FindNearestObject((int)(((PollenFragmentExtra*)extra)->def)->targetGroup, obj, 0));
     if (nearObj != NULL &&
         (!(def = ((PollenFragmentExtra*)extra)->def)->timed || ((PollenFragmentExtra*)extra)->timer < 210.0f))
     {
         if (def->usePath)
         {
-            ObjPath_GetPointWorldPosition((GameObject*)nearObj, 0, &pos.x, &pos.y, &pos.z, 0);
+            ObjPath_GetPointWorldPosition(nearObj, 0, &pos.x, &pos.y, &pos.z, 0);
         }
         else
         {
             f32 prod;
             f32 quarter = 0.25f;
-            pos.x = ((GameObject*)nearObj)->anim.worldPosX;
-            prod = ((GameObject*)nearObj)->anim.hitboxScale * ((GameObject*)nearObj)->anim.rootMotionScale;
-            pos.y = prod * quarter + ((GameObject*)nearObj)->anim.worldPosY;
-            pos.z = ((GameObject*)nearObj)->anim.worldPosZ;
+            pos.x = nearObj->anim.worldPosX;
+            prod = nearObj->anim.hitboxScale * nearObj->anim.rootMotionScale;
+            pos.y = prod * quarter + nearObj->anim.worldPosY;
+            pos.z = nearObj->anim.worldPosZ;
         }
         PSVECSubtract(&pos, &obj->anim.worldPos, &dir);
         PSVECMag(&dir);

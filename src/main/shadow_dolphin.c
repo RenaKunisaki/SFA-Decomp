@@ -685,10 +685,10 @@ int objShadowFn_80062378(GameObject* obj, u8 param)
     int lo;
     int hi;
     f32 inv;
-    void* p;
+    ObjDef* p;
 
-    p = (obj)->anim.modelInstance;
-    if (((ObjDef*)p)->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
+    p = (ObjDef*)((obj)->anim.modelInstance);
+    if (p->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
     {
         lo = 1000;
         hi = 2000;
@@ -719,7 +719,7 @@ int objShadowFn_80062378(GameObject* obj, u8 param)
 int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameCount)
 {
     ObjModelState* modelState;
-    u8* cache;
+    Vec3f* cache;
     f32 yOff;
     int idxOut = 0;
     int drawScratch;
@@ -733,7 +733,7 @@ int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameC
     u8 buf48[96];
     u8 bufA8[304];
 
-    cache = getCache();
+    cache = (Vec3f*)(getCache());
     modelState = obj->anim.modelState;
     if ((s32)shouldDrawShadows() == 0)
     {
@@ -750,10 +750,10 @@ int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameC
         buildShadowVolumeBox(vec, (f32*)buf48, modelState->shadowModelScale);
 
         {
-            void* p54 = obj->anim.hitReactState;
+            ObjHitsPriorityState* p54 = (ObjHitsPriorityState*)(obj->anim.hitReactState);
             if (p54 != NULL)
             {
-                yOff = (f32)((int)((ObjHitsPriorityState*)p54)->primaryCapsuleOffsetB / 2);
+                yOff = (f32)((int)p54->primaryCapsuleOffsetB / 2);
             }
             else
             {
@@ -777,10 +777,10 @@ int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameC
         gShadowTrackTriangleCount = idxOut;
         gShadowTrackGridOrigin = (int)vtx;
         trackDolphin_buildShadowVolumePlanes((int*)obj, buf48, bufA8);
-        cullVisibleShadowTriangles(obj, buf48, bufA8, idxOut, (Vec3f*)gShadowVolumeBuffer, (Vec3f*)cache,
+        cullVisibleShadowTriangles(obj, buf48, bufA8, idxOut, (Vec3f*)gShadowVolumeBuffer, cache,
                     (TrackShadowTriangle*)gShadowDrawScratch, 0x555);
     }
-    objDrawFn_80061f0c((Vec3f*)cache, modelState, obj, gShadowVisibleCount, &drawScratch, buf48, yOff);
+    objDrawFn_80061f0c(cache, modelState, obj, gShadowVisibleCount, &drawScratch, buf48, yOff);
     return 0;
 }
 

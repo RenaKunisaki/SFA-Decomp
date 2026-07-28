@@ -69,7 +69,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
     u8 cnt;
     f32* vec;
     int n;
-    void* desc;
+    GameObject* desc;
 
     tbl = lbl_8030E8B0;
     switch (type)
@@ -146,10 +146,10 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
         n = tbl[0xb4 + n];
     }
     sfx = n;
-    desc = ((BaddieState*)state)->contactObj;
+    desc = (GameObject*)(((BaddieState*)state)->contactObj);
     if (desc != NULL)
     {
-        switch (((GameObject*)desc)->anim.seqId)
+        switch (desc->anim.seqId)
         {
         case 0x5d:
         case 0x99:

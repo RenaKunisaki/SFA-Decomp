@@ -102,12 +102,12 @@ static const DbEggIntPair sDbEggCurveIds = { 1, 0 };
 
 int dbegg_setLaunchVelocity(GameObject* obj, f32* v)
 {
-    u8* inner = obj->extra;
-    if (((DbEggState*)inner)->mode == 0xb)
+    DbEggState* inner = (DbEggState*)(obj->extra);
+    if (inner->mode == 0xb)
     {
-        ((DbEggState*)inner)->launchVelX = v[0];
-        ((DbEggState*)inner)->launchVelY = v[1];
-        ((DbEggState*)inner)->launchVelZ = v[2];
+        inner->launchVelX = v[0];
+        inner->launchVelY = v[1];
+        inner->launchVelZ = v[2];
         return 1;
     }
     return 0;
@@ -115,8 +115,8 @@ int dbegg_setLaunchVelocity(GameObject* obj, f32* v)
 
 int dbegg_isActive(GameObject* obj)
 {
-    u8* inner = obj->extra;
-    return ((DbEggState*)inner)->mode != DBEGG_MODE_RELEASED;
+    DbEggState* inner = (DbEggState*)(obj->extra);
+    return inner->mode != DBEGG_MODE_RELEASED;
 }
 
 void dbegg_processMessages(GameObject* obj)

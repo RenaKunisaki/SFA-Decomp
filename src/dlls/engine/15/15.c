@@ -414,14 +414,14 @@ void player_updateCurve(GameObject* obj, int* state, f32 t)
     }
     else
     {
-        int* curve = (int*)(*gRomCurveInterface)->getById(idx);
+        ObjfsaRomCurveDef* curve = (ObjfsaRomCurveDef*)((int*)(*gRomCurveInterface)->getById(idx));
         if (curve == NULL)
         {
             *(f32*)((char*)state + 700) = PLAYER_MOVE_ZERO;
         }
         else
         {
-            player_followCurve(obj, state, ((ObjfsaRomCurveDef*)curve)->x, ((ObjfsaRomCurveDef*)curve)->z, t, 1);
+            player_followCurve(obj, state, curve->x, curve->z, t, 1);
         }
     }
 }

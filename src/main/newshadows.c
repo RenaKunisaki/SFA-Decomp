@@ -628,15 +628,15 @@ void renderObjectShadowTexture(GameObject* obj)
                   0.0f, 1.0f);
     if (vC < 0.0f)
     {
-        int* model;
+        ObjModel* model;
         saved = obj->anim.rootMotionScale;
         obj->anim.rootMotionScale = objScale;
         set_shadowFlag_803dcc29(1);
         objRender(0, 0, 0, 0, obj, 1);
         set_shadowFlag_803dcc29(0);
         obj->anim.rootMotionScale = saved;
-        model = (int*)Obj_GetActiveModel(obj);
-        ((ObjModel*)model)->bufferFlags &= ~0x8;
+        model = (ObjModel*)Obj_GetActiveModel(obj);
+        model->bufferFlags &= ~0x8;
         gxSetZMode_(1, GX_LEQUAL, 1);
         GXSetTexCopySrc(0x100, 0xb0, 0x80, 0x80);
         GXSetTexCopyDst(0x80, 0x80, GX_CTF_B8, GX_FALSE);

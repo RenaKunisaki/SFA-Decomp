@@ -202,7 +202,7 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, M
     u32 bits;
     int bitPos;
     u32 flags;
-    u8* mtxSrc;
+    IndMtxCopy* mtxSrc;
     int i;
 
     bitPos = state->bit;
@@ -241,8 +241,8 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, M
         PSMTXTrans((f32*)passMtx, 0.0f, 0.4f * (f32)(i + 1), 0.0f);
         PSMTXConcat((f32*)viewMtx, (f32*)passMtx, (f32*)passMtx);
         GXLoadPosMtxImm(passMtx, GX_PNMTX0);
-        mtxSrc = (u8*)gTexIndMtxTable;
-        *(IndMtxCopy*)indMtx = *(IndMtxCopy*)mtxSrc;
+        mtxSrc = (IndMtxCopy*)((u8*)gTexIndMtxTable);
+        *(IndMtxCopy*)indMtx = *mtxSrc;
         getNewShadowNoiseTextureFrames(&noiseTextures, &noiseFrameCount);
         selectTexture(noiseTextures[(u8)i], 1);
         {

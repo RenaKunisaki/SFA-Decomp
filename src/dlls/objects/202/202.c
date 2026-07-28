@@ -1016,7 +1016,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
     u8* table = gBaddieMoveProgressTable;
     u8 idx = ((BaddieState*)state)->userData2;
     void* animCtrl = *(void**)(table + idx * 0x28 + 0x143c);
-    void* idleSrc = *(void**)(table + idx * 0x28 + 0x1454);
+    IdleRow* idleSrc = (IdleRow*)(*(void**)(table + idx * 0x28 + 0x1454));
     u8* seqRows = *(u8**)(table + idx * 0x28 + 0x1458);
 
     if (idx == 5 && (((BaddieState*)state)->controlFlags & 0x800000) != 0)
@@ -1075,7 +1075,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
         }
         else
         {
-            IdleRow* idleRows = (IdleRow*)idleSrc;
+            IdleRow* idleRows = idleSrc;
             u8 idleAnim;
             *(u8*)((u8*)state + 0x2f2) = 0;
             *(u8*)((u8*)state + 0x2f3) = 0;
@@ -1109,9 +1109,9 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
 
     if ((((SeqObj11EState*)state)->animFlags & 8) == 0)
     {
-        void* tracked = ((BaddieState*)state)->trackedObj;
-        baddieTurnTowardPoint(obj, (int)state, ((GameObject*)tracked)->anim.localPosX,
-                    ((GameObject*)tracked)->anim.localPosZ, 0xf, 0);
+        GameObject* tracked = (GameObject*)(((BaddieState*)state)->trackedObj);
+        baddieTurnTowardPoint(obj, (int)state, tracked->anim.localPosX,
+                    tracked->anim.localPosZ, 0xf, 0);
     }
 }
 

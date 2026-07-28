@@ -1173,7 +1173,7 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     u8* base = lbl_8032AAB0;
     HighTopRuntime* runtime = (obj)->extra;
     u8* pathState;
-    int* node;
+    ObjModelState* node;
     HtInitData local1;
     HtInitData local2;
     HighTopPathParams pathParam = sHighTopPathParams;
@@ -1184,10 +1184,10 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     runtime->unkC45 = placement->spawnVariant;
     runtime->turnRateThreshold = 5;
     *(s8*)&runtime->substate = -1;
-    node = *(int**)&(obj)->anim.modelState;
+    node = (ObjModelState*)(*(int**)&(obj)->anim.modelState);
     if (node != 0)
     {
-        *(int*)&((ObjModelState*)node)->flags |= 0xa10;
+        *(int*)&node->flags |= 0xa10;
     }
     ObjGroup_AddObject((int)obj, ARWARWING_OBJGROUP);
     ObjGroup_AddObject((int)obj, HIGHTOP_OBJGROUP);

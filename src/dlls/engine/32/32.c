@@ -49,10 +49,10 @@ int Effect7_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
                    s16* extraArgs)
 {
     int spawnResult;
-    void* player;
+    GameObject* player;
     PartFxSpawn cfg;
 
-    player = Obj_GetPlayerObject();
+    player = (GameObject*)(Obj_GetPlayerObject());
     gEffect7ScrollPhaseA += 0.001f;
     if (gEffect7ScrollPhaseA > 1.0f)
         gEffect7ScrollPhaseA = 0.1f;
@@ -174,9 +174,9 @@ int Effect7_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
     case 0x85:
         if (extraArgs == 0)
             return 0;
-        cfg.startPosX = ((GameObject*)player)->anim.worldPosX;
-        cfg.startPosY = ((GameObject*)player)->anim.worldPosY;
-        cfg.startPosZ = ((GameObject*)player)->anim.worldPosZ;
+        cfg.startPosX = player->anim.worldPosX;
+        cfg.startPosY = player->anim.worldPosY;
+        cfg.startPosZ = player->anim.worldPosZ;
         cfg.scale = 4.55f;
         cfg.lifetimeFrames = 0x28;
         cfg.initialAlpha = 0xff;

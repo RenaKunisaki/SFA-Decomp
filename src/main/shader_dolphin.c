@@ -764,14 +764,14 @@ void addWavyCausticTevStage(void)
     id = gRcpNextTexMap + 1;
     if (tex != NULL)
     {
-        void* obj = (char*)tex + 0x20;
+        GXTexObj* obj = (GXTexObj*)((char*)tex + 0x20);
         if (((Texture*)tex)->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)tex)->tmemAddr, id);
+            GXLoadTexObjPreLoaded(obj, (GXTexRegion*)((Texture*)tex)->tmemAddr, id);
         }
         else
         {
-            GXLoadTexObj((GXTexObj*)obj, id);
+            GXLoadTexObj(obj, id);
         }
     }
     GXLoadTexMtxImm(lbl_80396820, gRcpNextPostTexMtx, 0);
@@ -1659,14 +1659,14 @@ void addSignedOverlayTexStage(u8* texSrc, void* texMtx, u8* color)
         int id = gRcpNextTexMap;
         if (texSrc != NULL)
         {
-            void* obj = texSrc + 0x20;
+            GXTexObj* obj = (GXTexObj*)(texSrc + 0x20);
             if (texSrc[0x48] != 0)
             {
-                GXLoadTexObjPreLoaded((GXTexObj*)obj, *(GXTexRegion**)(texSrc + 0x40), id);
+                GXLoadTexObjPreLoaded(obj, *(GXTexRegion**)(texSrc + 0x40), id);
             }
             else
             {
-                GXLoadTexObj((GXTexObj*)obj, id);
+                GXLoadTexObj(obj, id);
             }
         }
     }
@@ -1916,14 +1916,14 @@ void addProjectedLightTevStage(u8* texSrc, void* texMtx, int stageMode, int comp
     texmap = gRcpNextTexMap;
     if (texSrc != NULL)
     {
-        u8* tex = texSrc + 0x20;
+        GXTexObj* tex = (GXTexObj*)(texSrc + 0x20);
         if (texSrc[0x48] != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)tex, *(GXTexRegion**)(texSrc + 0x40), texmap);
+            GXLoadTexObjPreLoaded(tex, *(GXTexRegion**)(texSrc + 0x40), texmap);
         }
         else
         {
-            GXLoadTexObj((GXTexObj*)tex, texmap);
+            GXLoadTexObj(tex, texmap);
         }
     }
     gRcpNextPostTexMtx = gRcpNextPostTexMtx + 3;
@@ -1969,11 +1969,11 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
     GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord + p2, gRcpNextTexMap);
     if (p4 != 0)
     {
-        void* texptr;
+        Texture* texptr;
         u32 div;
         int p2v = (p3 & 0xf) * 4 + 1;
-        texptr = textureIdxToPtr(p4);
-        div = (u32) ((Texture*)texptr)->width / (u32)(*(u16*)((char*)p1 + 0xa) * p2v);
+        texptr = (Texture*)(textureIdxToPtr(p4));
+        div = (u32) texptr->width / (u32)(*(u16*)((char*)p1 + 0xa) * p2v);
         if (div != 0)
         {
             GXSetIndTexCoordScale(gRcpNextIndTexStage, lbl_8030CEE0[div - 1], lbl_8030CEE0[div - 1]);
@@ -2247,14 +2247,14 @@ void addTexLayerStagesLit(void* p1, void* mtx)
         int id = gRcpNextTexMap;
         if (p1 != 0)
         {
-            void* obj = (char*)p1 + 0x20;
+            GXTexObj* obj = (GXTexObj*)((char*)p1 + 0x20);
             if (((Texture*)p1)->preloaded != 0)
             {
-                GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)p1)->tmemAddr, id);
+                GXLoadTexObjPreLoaded(obj, (GXTexRegion*)((Texture*)p1)->tmemAddr, id);
             }
             else
             {
-                GXLoadTexObj((GXTexObj*)obj, id);
+                GXLoadTexObj(obj, id);
             }
         }
     }

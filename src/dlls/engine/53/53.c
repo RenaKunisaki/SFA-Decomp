@@ -484,8 +484,8 @@ void saveSelectGoToChooseSlot(int arg)
     gSaveSelectPanelIndex = SAVE_SELECT_PANEL_CHOOSE_SLOT;
     saveFileSelect_currentSlotIndex = 0;
     {
-        void* tmp = &gSaveSelectPanels[SAVE_SELECT_PANEL_CHOOSE_SLOT];
-        p = (SaveSelectPanel*)tmp;
+        SaveSelectPanel* tmp = (SaveSelectPanel*)(&gSaveSelectPanels[SAVE_SELECT_PANEL_CHOOSE_SLOT]);
+        p = tmp;
     }
 
     saveSelectFn_8011a70c();

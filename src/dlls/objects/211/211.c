@@ -72,14 +72,14 @@ int LandedArwing_ReturnZero(void)
 
 int LandedArwing_TriggerLaunchTarget(GameObject* obj, int target)
 {
-    int* aux = obj->extra;
+    LandedArwingTriggerLaunchTargetState* aux = (LandedArwingTriggerLaunchTargetState*)(obj->extra);
     if (*(s8*)(target + LANDED_ARWING_JUST_COLLIDED) != 0)
     {
         (*gBaddieControlInterface)
-            ->spawnChild(obj, (int)((LandedArwingTriggerLaunchTargetState*)aux)->launchMoveId, -1, 0);
+            ->spawnChild(obj, (int)aux->launchMoveId, -1, 0);
         (*gPlayerInterface)->spawnPartfx(obj, (void*)target, 0x3c, 0xa, 0);
-        mainSetBits((int)((LandedArwingTriggerLaunchTargetState*)aux)->triggerGameBit, 1);
-        ((LandedArwingTriggerLaunchTargetState*)aux)->subMode = 0;
+        mainSetBits((int)aux->triggerGameBit, 1);
+        aux->subMode = 0;
     }
     return 0;
 }

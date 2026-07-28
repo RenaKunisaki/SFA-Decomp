@@ -399,7 +399,7 @@ void getVisibleObjects(s8* opacity)
     int depthInt;
     s8* cur;
     u8* sub;
-    u8* att;
+    GameObject* att;
     int j;
     u8* interactState;
     int* model;
@@ -427,10 +427,10 @@ void getVisibleObjects(s8* opacity)
         sub = o;
         for (; j < ((GameObject*)o)->childCount; j++)
         {
-            att = *(u8**)(sub + 0xc8);
+            att = (GameObject*)(*(u8**)(sub + 0xc8));
             if (att != NULL)
             {
-                ((GameObject*)att)->objectFlags &= ~OBJECT_OBJFLAG_RENDERED;
+                att->objectFlags &= ~OBJECT_OBJFLAG_RENDERED;
             }
             sub += 4;
         }

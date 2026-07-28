@@ -139,9 +139,9 @@ void CameraModeCloudRunner_init(int* camera, int radius, f32* focus)
     getAngle(((GameObject*)camera)->anim.worldPosX - lbl_803DD5B8->focusX,
              ((GameObject*)camera)->anim.worldPosZ - lbl_803DD5B8->focusZ);
     {
-        int* target = (int*)((GameObject*)camera)->anim.targetObj;
+        GameObject* target = (GameObject*)((GameObject*)camera)->anim.targetObj;
         f32* state = (f32*)lbl_803DD5B8;
-        getAngle(((GameObject*)target)->anim.worldPosX - state[0], ((GameObject*)target)->anim.worldPosZ - state[2]);
+        getAngle(target->anim.worldPosX - state[0], target->anim.worldPosZ - state[2]);
     }
 }
 

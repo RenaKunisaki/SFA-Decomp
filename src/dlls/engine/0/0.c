@@ -1533,11 +1533,11 @@ void fearTestMeterDraw(void)
     GXColor col;
     u32 sc0, sc1, sc2, sc3;
     int a;
-    void* texB = hudTextures[0x60];
-    u16 hgt = ((Texture*)texB)->height;
+    Texture* texB = (Texture*)(hudTextures[0x60]);
+    u16 hgt = texB->height;
     int gap = fearTestMeterOuterHalfWidth - fearTestMeterInnerHalfWidth;
-    void* texA = hudTextures[0x5f];
-    int wid = ((Texture*)texA)->width & 0xff;
+    Texture* texA = (Texture*)(hudTextures[0x5f]);
+    int wid = texA->width & 0xff;
     if (gFearTestMeterFadeIn != 0)
     {
         gFearTestMeterAlpha = gFearTestMeterAlpha + gFearTestMeterFadeSpeed * framesThisStep;

@@ -110,7 +110,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
     f32 maxDist;
     int i;
     ObjPlacement* spawned;
-    int* nearest;
+    GameObject* nearest;
     f32 angVel;
     f32 clamped;
     f32 px;
@@ -158,10 +158,10 @@ void DR_CageWith_hitDetect(GameObject* obj)
             ObjHits_DisableObject(obj);
             (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
             bf31->b0 = 1;
-            nearest = (int*)ObjGroup_FindNearestObject(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
-            if (nearest != NULL && ((GameObject*)nearest)->anim.seqId == DRCAGEWITH_CLOUDRUNNER_OBJ)
+            nearest = (GameObject*)ObjGroup_FindNearestObject(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
+            if (nearest != NULL && nearest->anim.seqId == DRCAGEWITH_CLOUDRUNNER_OBJ)
             {
-                ((GameObject*)nearest)->userData1 = 0;
+                nearest->userData1 = 0;
                 state->linkedObject = NULL;
             }
             return;
@@ -185,12 +185,12 @@ void DR_CageWith_hitDetect(GameObject* obj)
         if (state->spawnedObject != NULL)
         {
             state->spawnedObject->anim.rotZ = (s16)state->angularVel;
-            nearest = (int*)ObjGroup_FindNearestObject(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
-            if (nearest != NULL && ((GameObject*)nearest)->anim.seqId == DRCAGEWITH_CLOUDRUNNER_OBJ)
+            nearest = (GameObject*)ObjGroup_FindNearestObject(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
+            if (nearest != NULL && nearest->anim.seqId == DRCAGEWITH_CLOUDRUNNER_OBJ)
             {
-                ((GameObject*)nearest)->userData1 = 1;
-                state->linkedObject = (GameObject*)nearest;
-                ((GameObject*)nearest)->anim.rotZ = state->spawnedObject->anim.rotZ;
+                nearest->userData1 = 1;
+                state->linkedObject = nearest;
+                nearest->anim.rotZ = state->spawnedObject->anim.rotZ;
                 state->spawnedObject->userData1 = 1;
             }
             if (state->linkedObject != NULL && (state->linkedObject->objectFlags & OBJECT_OBJFLAG_FREED) != 0)
