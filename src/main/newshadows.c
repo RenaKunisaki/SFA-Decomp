@@ -1901,10 +1901,10 @@ void allocLotsOfTextures(void)
                 for (; i < 0x40; i++)
                 {
                     int dst = gNewShadowBumpTexture + lowoff;
-                    f32 cc, d1, d2, cc2, d3, n1, n2, n3, a, b;
+                    f32 cc, d1, d2, cc2, d3, n1, n2, n3, a, b, rowCoord;
                     f32 c;
                     int bi, ci, ai;
-                    rc = fj * lbl_803DEDFC;
+                    rowCoord = fj * lbl_803DEDFC;
                     rc2 = fj2 * lbl_803DEDFC;
                     dst += rowoff;
                     dst += (i & 3) * 8;
@@ -1912,13 +1912,13 @@ void allocLotsOfTextures(void)
                     cc = (f32)i - 32.0f;
                     cc = cc * lbl_803DEDFC;
                     cc = cc * cc;
-                    d1 = sqrtf(rc * rc + cc);
+                    d1 = sqrtf(rowCoord * rowCoord + cc);
                     d2 = sqrtf(rc2 * rc2 + cc);
                     cc2 = (f32)(i + 1) - 32.0f;
                     cc2 = cc2 * lbl_803DEDFC;
                     cc2 = cc2 * cc2;
-                    rc = fj * lbl_803DEDFC;
-                    d3 = sqrtf(rc * rc + cc2);
+                    rowCoord = fj * lbl_803DEDFC;
+                    d3 = sqrtf(rowCoord * rowCoord + cc2);
                     n1 = -mathCosfHighPrecision(18.852f * d1);
                     n2 = -mathCosfHighPrecision(18.852f * d2);
                     n3 = -mathCosfHighPrecision(18.852f * d3);
