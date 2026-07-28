@@ -505,11 +505,11 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1CB | DIMWoodDoor | COMPLETE | dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor, allocation-backed 0x0C-byte state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header and shared cannonball sequence contract, and exact 80-byte data image; the generated source path remains unchanged |
 | 0x1CC | DIMMagicBri | COMPLETE | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | = (canonical) | Exact complete 12-function TU with its terminal descriptor, allocation-backed 0x68-byte state, active-EN-retail-backed fixed 0x24-byte placement, runtime-bounded ten-segment arrays, canonical unit header, and exact 84-byte data image; the generated source path remains unchanged |
 | 0x1CD | DIM_LevelCo | COMPLETE | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | = (canonical) | Exact complete five-function TU with its terminal descriptor, allocation-backed 0x10-byte state, active-EN-retail-backed fixed 0x18-byte placement, canonical unit header, canonical object flags, and recovered gamebit/music-trigger roles; the exact 68-byte data image and generated source path remain unchanged |
-| 0x1CE | — | COMPLETE | dlls/objects/462/462.c | = (canonical) | No recovered retail basename |
-| 0x1CF | — | COMPLETE | dlls/objects/463/463.c | = (canonical) | No recovered retail basename |
+| 0x1CE | — | COMPLETE | dlls/objects/462/462.c | = (canonical) | Exact complete nine-function TU with its terminal numbered descriptor, allocation-backed 0x0C-byte state, fully asserted callback-visible placement prefix, canonical unit header, and exact 88-byte data image; active EN has no object definitions for this DLL, no basename or placement width is claimed, and the generated source path remains unchanged |
+| 0x1CF | — | COMPLETE | dlls/objects/463/463.c | = (canonical) | Exact complete nine-function TU with its terminal numbered descriptor, zero-byte extra state, fully asserted callback-visible placement prefix, canonical unit header, and exact 60-byte data image; active EN has no object definitions for this DLL, no basename or placement width is claimed, and the generated source path remains unchanged |
 | 0x1D0 | DIM_tricky | COMPLETE | dlls/objects/464_DIM_tricky/DIM_tricky.c | = (canonical) | — |
-| 0x1D1 | DIMTruthHor | COMPLETE | dlls/objects/465_DIMTruthHor/DIMTruthHor.c | = (canonical) | — |
-| 0x1D2 | WORLDplanet | COMPLETE | dlls/objects/466_WORLDplanet/WORLDplanet.c | = (canonical) | — |
+| 0x1D1 | DIMTruthHor | COMPLETE | dlls/objects/465_DIMTruthHor/DIMTruthHor.c | = (canonical) | Exact complete four-function TU with its terminal descriptor, allocation-backed 0x08-byte state, active-EN-retail-backed fixed 0x30-byte placement, canonical unit header, canonical hidden-object flag, and exact 80-byte data image; the generated source path remains unchanged |
+| 0x1D2 | WORLDplanet | COMPLETE | dlls/objects/466_WORLDplanet/WORLDplanet.c | = (canonical) | Complete 11-function TU at its unchanged 99.40532% fuzzy match with ten exact functions, an allocation-backed 0x18-byte state, a separate allocation-backed 0x20-byte Fox-spawn setup, canonical unit header, terminal descriptor, and exact 344-byte data image; the generated source path remains unchanged |
 | 0x1D3 | worldobj (+WORLDcloudr, WORLDdragro, WORLDwalled, WORLDdarkic, WORLDcloudl, WORLDpath1, WORLDpath2, WORLDpath3, WORLDpath4, WORLDpath5, WORLDpath6, WORLDpath7, WORLDpath8, WORLDarwing, WORLDgreatf, WORLDsun, WORLDsunray, WORLDpepper, WORLDsunfla, WORLDComet, WORLDastGen, WORLDhalo, WORLDhalobr, WORLDarrow) | COMPLETE | dlls/objects/467/467.c | = (canonical) | No single recovered TU basename |
 | 0x1D4 | WORLDAstero | COMPLETE | dlls/objects/468_WORLDAstero/WORLDAstero.c | = (canonical) | — |
 | 0x1D5 | DIM2Conveyo | COMPLETE | dlls/objects/469_DIM2Conveyo/DIM2Conveyo.c | = (canonical) | — |
@@ -1033,6 +1033,10 @@ more as they are recovered.
 | 0x1CB | dlls/objects/459_DIMWoodDoor/DIMWoodDoor.c | include/dlls/objects/459_DIMWoodDoor.h |
 | 0x1CC | dlls/objects/460_DIMMagicBri/DIMMagicBri.c | include/dlls/objects/460_DIMMagicBri.h |
 | 0x1CD | dlls/objects/461_DIM_LevelCo/DIM_LevelCo.c | include/dlls/objects/461_DIM_LevelCo.h |
+| 0x1CE | dlls/objects/462/462.c | include/dlls/objects/462.h |
+| 0x1CF | dlls/objects/463/463.c | include/dlls/objects/463.h |
+| 0x1D1 | dlls/objects/465_DIMTruthHor/DIMTruthHor.c | include/dlls/objects/465_DIMTruthHor.h |
+| 0x1D2 | dlls/objects/466_WORLDplanet/WORLDplanet.c | include/dlls/objects/466_WORLDplanet.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |

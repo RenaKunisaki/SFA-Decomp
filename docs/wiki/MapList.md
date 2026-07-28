@@ -455,7 +455,7 @@ local `#define` for the map IDs they care about, e.g.:
 #define DIMTOP_MAP_DIR 0x13      /* == MAP_ID_SNOWMINES  ("DarkIce Mines - Top") */
 ```
 
-(`include/main/crcloudrace.h:9` and `include/main/worldplanet.h:9` follow the same one-off pattern.)
+(`include/main/crcloudrace.h:9` and `src/dlls/objects/466_WORLDplanet/WORLDplanet.c:41` follow the same one-off pattern.)
 Most call sites (`src/dlls/objects/300_Transporter/Transporter.c`, `src/dlls/objects/700_Andross/Andross.c`, `WM/dll_020C_wmspiritplace.c`,
 `src/dlls/objects/666_ARWArwing/ARWArwing.c`, etc.) just pass a bare hex literal to `mapGetDirIdx`/`lockLevel`/
 `unlockLevel`/`mapUnload` with no name at all.

@@ -103,7 +103,7 @@
 #include "main/dll/DR/dll_026B_drchimmey.h"
 #include "dlls/objects/452_DIMIceWall.h"
 #include "dlls/objects/448_DIMLogFire.h"
-#include "main/dll/DIM/dll_01D1_dimtruthhornice.h"
+#include "dlls/objects/465_DIMTruthHor.h"
 #include "dlls/objects/435_SH_Beacon.h"
 #include "dlls/objects/437.h"
 #include "main/main_internal.h"
@@ -1934,7 +1934,7 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
         moveDistance = sqrtf(limitDistanceSq);
         {
             f32 blend = moveDistance - sqrtf(centerToEnd);
-            moveDistance = moveDistance - (blend * 0.125f);
+            moveDistance = moveDistance - (blend / 8.0f);
         }
     }
 
@@ -2978,7 +2978,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         }
         else
         {
-            ObjAnim_SampleRootCurvePhase(&obj->anim, state->speed * 0.25f, &state->moveProgress);
+            ObjAnim_SampleRootCurvePhase(&obj->anim, state->speed / 4.0f, &state->moveProgress);
             obj->anim.localPosX =
                 timeDelta * (state->dirX * (state->speed * (k = 0.25f))) +
                 obj->anim.localPosX;
@@ -3075,7 +3075,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 else
                 {
                     k = (k - 6.0f) / (v - 12.0f);
-                    state->arcMoveProgress = k * 0.5f + 0.25f;
+                    state->arcMoveProgress = k / 2.0f + 0.25f;
                 }
             }
             objHitDetectFn_80062e84(obj, NULL, 0);
@@ -4170,7 +4170,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
             {
                 f32 rv;
                 rv = (s32)randomGetRange(0xc8, 0x258);
-                t->cooldownA = rv * 0.5f;
+                t->cooldownA = rv / 2.0f;
                 TRICKY_BARK((int*)gobj, 0x29b, 0x1000);
             }
         }
