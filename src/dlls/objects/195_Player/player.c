@@ -6303,12 +6303,12 @@ int playerState1B(GameObject* obj, int state, f32 fv)
         {
             int pt = (int)(*gRomCurveInterface)->getById(found);
             int pt2;
-            *(f32*)((int)inner + 0x61c) = ((ObjHitVolumeRuntimeTransform*)pt)->jointZ;
-            inner->curveStartY = ((ObjHitVolumeRuntimeTransform*)pt)->centerX;
-            inner->curveStartZ = ((ObjHitVolumeRuntimeTransform*)pt)->centerY;
-            obj->anim.localPosX = ((ObjHitVolumeRuntimeTransform*)pt)->jointZ;
-            obj->anim.localPosY = ((ObjHitVolumeRuntimeTransform*)pt)->centerX;
-            obj->anim.localPosZ = ((ObjHitVolumeRuntimeTransform*)pt)->centerY;
+            inner->curveStartX = ((RomCurveDef*)pt)->x;
+            inner->curveStartY = ((RomCurveDef*)pt)->y;
+            inner->curveStartZ = ((RomCurveDef*)pt)->z;
+            obj->anim.localPosX = ((RomCurveDef*)pt)->x;
+            obj->anim.localPosY = ((RomCurveDef*)pt)->y;
+            obj->anim.localPosZ = ((RomCurveDef*)pt)->z;
             inner->targetYaw = (s16)getAngle(inner->hitNormalX, inner->hitNormalZ);
             inner->yaw = inner->targetYaw;
             sqrtf(inner->hitNormalX * inner->hitNormalX + inner->hitNormalZ * inner->hitNormalZ);
@@ -6319,9 +6319,9 @@ int playerState1B(GameObject* obj, int state, f32 fv)
                 found = (*gRomCurveInterface)->getRandomBlockedLink((RomCurveDef*)pt, -1);
             }
             pt2 = (int)(*gRomCurveInterface)->getById(found);
-            *(f32*)((int)inner + 0x628) = *(f32*)((char*)pt2 + 0x8);
-            inner->curveEndY = *(f32*)((char*)pt2 + 0xc);
-            inner->curveEndZ = *(f32*)((char*)pt2 + 0x10);
+            inner->curveEndX = ((RomCurveDef*)pt2)->x;
+            inner->curveEndY = ((RomCurveDef*)pt2)->y;
+            inner->curveEndZ = ((RomCurveDef*)pt2)->z;
             inner->traveledDistance = 0.0f;
             PSVECSubtract((Vec*)((char*)inner + 0x628), (Vec*)((char*)inner + 0x61c), (Vec*)vec);
             inner->travelTargetDistance = PSVECMag((Vec*)vec);
@@ -16313,8 +16313,8 @@ void playerItemGetAnimFn(int obj, int inner, int state)
             f32 dx;
             f32 d;
             f32 zz;
-            dx = *(f32*)(p + 0xc) - ((GameObject*)obj)->anim.localPosX;
-            dz = ((PlayerState*)p)->baddie.posX - ((GameObject*)obj)->anim.localPosZ;
+            dx = ((GameObject*)p)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
+            dz = ((GameObject*)p)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
             zz = dz * dz;
             d = sqrtf(zz + dx * dx);
             if (d > 1.0f)
@@ -16353,9 +16353,9 @@ void playerItemGetAnimFn(int obj, int inner, int state)
         case 0x60004:
         {
             f32 dz;
-            f32 dx = *(f32*)(p + 0xc) - ((GameObject*)obj)->anim.localPosX;
+            f32 dx = ((GameObject*)p)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
             f32 d;
-            dz = ((PlayerState*)p)->baddie.posX - ((GameObject*)obj)->anim.localPosZ;
+            dz = ((GameObject*)p)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
             d = sqrtf(dx * dx + dz * dz);
             if (d > 1.0f)
             {
@@ -16395,9 +16395,9 @@ void playerItemGetAnimFn(int obj, int inner, int state)
         case 0x60005:
         {
             f32 dz;
-            f32 dx = *(f32*)(p + 0xc) - ((GameObject*)obj)->anim.localPosX;
+            f32 dx = ((GameObject*)p)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
             f32 d;
-            dz = ((PlayerState*)p)->baddie.posX - ((GameObject*)obj)->anim.localPosZ;
+            dz = ((GameObject*)p)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
             d = sqrtf(dx * dx + dz * dz);
             if (d > 1.0f)
             {
@@ -16644,7 +16644,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 seq->posOffsetScale = 1.0f;
                 seq->posOffsetX = ((GameObject*)obj)->anim.localPosX - ((GameObject*)obj2)->anim.localPosX;
                 seq->posOffsetY = ((GameObject*)obj)->anim.localPosY - ((GameObject*)obj2)->anim.localPosY;
-                seq->posOffsetZ = ((GameObject*)obj)->anim.localPosZ - ((PlayerState*)obj2)->baddie.posX;
+                seq->posOffsetZ = ((GameObject*)obj)->anim.localPosZ - ((GameObject*)obj2)->anim.localPosZ;
                 seq->rotOffsetX = inner->targetYaw - (u16) * (s16*)obj2;
                 if (seq->rotOffsetX > 0x8000)
                 {
@@ -16898,7 +16898,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 dist = sqrtf(ax * ax + az * az);
             }
             dx2 = ((GameObject*)obj2)->anim.localPosX - seq->posOffsetX;
-            dz2 = ((PlayerState*)obj2)->baddie.posX - seq->posOffsetZ;
+            dz2 = ((GameObject*)obj2)->anim.localPosZ - seq->posOffsetZ;
             d2 = sqrtf(dx2 * dx2 + dz2 * dz2);
             if (dist <= lbl_803DE468)
             {
@@ -17938,14 +17938,14 @@ void playerDoHitDetection(int obj)
                     }
                 }
                 {
-                    hd = *(HitDesc**)(sub + 0x50);
-                    if (hd != NULL)
+                    GameObject* hitObj = *(GameObject**)(sub + 0x50);
+                    if (hitObj != NULL)
                     {
-                        if ((((GameObject*)hd)->anim.modelInstance->effectFlags & 4) != 0)
+                        if ((hitObj->anim.modelInstance->effectFlags & 4) != 0)
                         {
                             doRumble(10.0f);
                         }
-                        if ((((GameObject*)hd)->anim.modelInstance->effectFlags & 8) != 0)
+                        if ((hitObj->anim.modelInstance->effectFlags & 8) != 0)
                         {
                             lbl_803DE459 = 1;
                         }
