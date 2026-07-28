@@ -74,16 +74,10 @@ void Tricky_free(int obj, int shouldKeepFlameChildren);
 void Tricky_init(GameObject* obj);
 int tricky_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate);
 void Tricky_update(int obj);
-void tricky_handleDefeat(GameObject* obj, int state);
-void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit);
-int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAltMode, u32 mode);
-u8 baddie_canSeeTarget(GameObject* obj, TrickyState* state, void* from, void* to);
-void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, float radius);
 void Tricky_render(GameObject* obj, int param_2, int param_3, int param_4, int param_5, char doRender);
 void Tricky_hitDetect(GameObject* obj);
 void FUN_80146f94(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
                   u64 param_8);
-void baddieInstantiateWeapon(GameObject* obj, int state);
 void FUN_80146fa4(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
                   u64 param_8, u32 param_9, int param_10, u32 param_11, u32 param_12, u32 param_13, u32 param_14,
                   u32 param_15, u32 param_16);
