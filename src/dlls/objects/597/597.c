@@ -1127,7 +1127,7 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
             }
             else
             {
-                (*gGameUIInterface)->airMeterSetShutdown();
+                (*gGameUIInterface)->airMeterShutdown();
                 (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
                 lim = 0.01f;
                 st->velLimitX = 0.01f;
@@ -1218,7 +1218,7 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
             }
             break;
         case 3:
-            (*gGameUIInterface)->airMeterSetShutdown();
+            (*gGameUIInterface)->airMeterShutdown();
             break;
         }
     }
@@ -2200,7 +2200,7 @@ void SnowBike_free(GameObject* obj)
     bit = (((SnowBikeMountState*)state)->flags >> 5) & 1;
     if (bit != 0)
     {
-        (*gGameUIInterface)->airMeterSetShutdown();
+        (*gGameUIInterface)->airMeterShutdown();
     }
 }
 

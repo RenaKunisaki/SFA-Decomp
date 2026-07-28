@@ -31,7 +31,7 @@ void DeathGas_free(GameObject* obj) {
         }
     }
     if (state->flags.airMeterActive) {
-        (*gGameUIInterface)->airMeterSetShutdown();
+        (*gGameUIInterface)->airMeterShutdown();
     }
 }
 
@@ -57,7 +57,7 @@ void DeathGas_update(GameObject* obj) {
             state->flags.fogStateActive = 0;
         }
         if (state->flags.airMeterActive) {
-            (*gGameUIInterface)->airMeterSetShutdown();
+            (*gGameUIInterface)->airMeterShutdown();
             state->flags.airMeterActive = 0;
         }
         return;
@@ -91,7 +91,7 @@ void DeathGas_update(GameObject* obj) {
     } else if (state->flags.airMeterActive) {
         state->airRemaining += (timeDelta * placement->fillRate) / 10.0f;
         if (state->airRemaining > DEATH_GAS_AIR_METER_FULL) {
-            (*gGameUIInterface)->airMeterShutdown();
+            (*gGameUIInterface)->airMeterSetShutdown();
             state->flags.airMeterActive = 0;
         }
     }

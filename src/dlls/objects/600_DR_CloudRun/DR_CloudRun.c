@@ -1080,7 +1080,7 @@ void DR_CloudRunner_free(GameObject* obj)
     mainSetBits(0x7aa, inner->altMoveEnabled);
     ObjGroup_RemoveObject((int)obj, DRCLOUDRUNNER_OBJGROUP);
     ObjGroup_RemoveObject((int)obj, ARWARWING_OBJGROUP);
-    (*gGameUIInterface)->airMeterSetShutdown();
+    (*gGameUIInterface)->airMeterShutdown();
 }
 
 void DR_CloudRunner_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
@@ -1131,7 +1131,7 @@ void DR_CloudRunner_hitDetect(GameObject* obj)
         inner->airTimeRemaining -= 1;
         if (inner->airTimeRemaining <= 0)
         {
-            (*gGameUIInterface)->airMeterSetShutdown();
+            (*gGameUIInterface)->airMeterShutdown();
             (*gObjectTriggerInterface)->runSequence(5, (void*)obj, -1);
             inner->airTimeRemaining = 1;
             (*gPlayerInterface)->setState(obj, inner, 7);

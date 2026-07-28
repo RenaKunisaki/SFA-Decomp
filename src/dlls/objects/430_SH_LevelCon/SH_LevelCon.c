@@ -108,7 +108,7 @@ int SH_LevelControl_getExtraSize(void) {
 void SH_LevelControl_free(void) {
     skySetEnvFxFlags(0);
     if (mainGetBit(GAMEBIT_ITEM_BigScarabBag_Got) == 0) {
-        (*gGameUIInterface)->airMeterShutdown();
+        (*gGameUIInterface)->airMeterSetShutdown();
     }
     if (mainGetBit(GAMEBIT_ITEM_MoonPassKey_Got) != 0) {
         mainSetBits(GAMEBIT_ITEM_FireWeed_Count, 0);
@@ -272,7 +272,7 @@ void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) 
     if (((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) == 0) &&
         (mainGetBit(GAMEBIT_ITEM_BigScarabBag_Got) == 0)) {
         state->bloopEventState = 0;
-        (*gGameUIInterface)->airMeterShutdown();
+        (*gGameUIInterface)->airMeterSetShutdown();
         for (j = 0; j < 0x12; j++) {
             mainSetBits(gShLevelControlTables.bloopGameBits[j], 0);
         }
@@ -304,7 +304,7 @@ void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) 
         }
         logPrintf(sShLevelControlNumBloopsFormat, bloopsRemaining);
         if (bloopsRemaining == 0) {
-            (*gGameUIInterface)->airMeterShutdown();
+            (*gGameUIInterface)->airMeterSetShutdown();
             (*gScreenTransitionInterface)->start(0x14, 1);
             state->bloopEventState = 3;
             Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
@@ -313,7 +313,7 @@ void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) 
             if (state->airMeterTimer >= 0.0f) {
                 (*gGameUIInterface)->runAirMeter((int)state->airMeterTimer);
             } else if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) != 0) {
-                (*gGameUIInterface)->airMeterShutdown();
+                (*gGameUIInterface)->airMeterSetShutdown();
                 (*gScreenTransitionInterface)->start(0x14, 1);
                 state->bloopEventState = 5;
             } else {

@@ -117,7 +117,7 @@ void AndrossBrain_update(GameObject* obj)
     case ANDROSSBRAIN_SHIELDED:
         if (stateChanged != 0)
         {
-            (*gGameUIInterface)->airMeterShutdown();
+            (*gGameUIInterface)->airMeterSetShutdown();
         }
         (obj)->anim.rotX = state->andross->anim.rotX;
         (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
@@ -161,7 +161,7 @@ void AndrossBrain_update(GameObject* obj)
         if (stateChanged != 0)
         {
             androssligh_setState((GameObject*)state->lightning, ANDROSSLIGH_DONE, 0);
-            (*gGameUIInterface)->airMeterShutdown();
+            (*gGameUIInterface)->airMeterSetShutdown();
         }
         (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
         andross_setPartSignal((GameObject*)state->andross, ANDROSS_SIGNAL_BRAIN_DEFEATED);

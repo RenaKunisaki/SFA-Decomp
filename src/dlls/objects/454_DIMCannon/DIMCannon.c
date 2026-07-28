@@ -384,7 +384,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
             if (shouldExit != 0 || (getButtonsJustPressed(0) & PAD_BUTTON_B)) {
                 buttonDisable(0, PAD_BUTTON_B);
                 hudFn_8011f38c(0);
-                (*gGameUIInterface)->airMeterSetShutdown();
+                (*gGameUIInterface)->airMeterShutdown();
                 (*gCameraInterface)->setMode(DIM_CANNON_RELEASE_CAMERA_MODE, 0, 1, 0, NULL, 0, 0xff);
                 state->mode = DIM_CANNON_MODE_WAIT_FOR_RESET;
                 *(u8*)&state->chargeTimer = 0x3c;

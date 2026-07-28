@@ -351,7 +351,7 @@ int hightop_stateHandler07(GameObject* obj, HighTopRuntime* stateArg)
         (obj)->anim.velocityY = zero;
         (obj)->anim.velocityZ = zero;
         ObjHits_SyncObjectPositionIfDirty(obj);
-        (*gGameUIInterface)->airMeterSetShutdown();
+        (*gGameUIInterface)->airMeterShutdown();
         rt->flagsC49.b7 = 0;
         rt->flagsC49.b1 = 0;
         rt->substate = 5;
@@ -978,7 +978,7 @@ void HighTop_free(int obj)
 {
     ObjGroup_RemoveObject(obj, ARWARWING_OBJGROUP);
     ObjGroup_RemoveObject(obj, HIGHTOP_OBJGROUP);
-    (*gGameUIInterface)->airMeterSetShutdown();
+    (*gGameUIInterface)->airMeterShutdown();
 }
 
 void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible)
@@ -1057,7 +1057,7 @@ void HighTop_hitDetect(GameObject* obj)
         objfx_shakeCameraByDistance(obj, 1000.0f);
         if (runtime->airMeterRemaining <= 0)
         {
-            (*gGameUIInterface)->airMeterSetShutdown();
+            (*gGameUIInterface)->airMeterShutdown();
             runtime->flagsC49.b7 = 0;
             mainSetBits(0x634, 0);
             if (Obj_IsLoadingLocked() != 0)
@@ -1077,7 +1077,7 @@ void HighTop_hitDetect(GameObject* obj)
             runtime->baddie.physicsActive = 0;
             *(int*)runtime |= 0x1000000;
             mainSetBits(0xb48, 1);
-            (*gGameUIInterface)->airMeterSetShutdown();
+            (*gGameUIInterface)->airMeterShutdown();
         }
     }
     else

@@ -1426,7 +1426,7 @@ void DIMSnowHorn1_update(GameObject* obj)
                         mainSetBits(GAMEBIT_NW_SnowHown05BB, 1);
                     }
                     *(int*)&((DIMSnowHorn1State*)data)->baddie.unk31C = 0;
-                    (*gGameUIInterface)->airMeterSetShutdown();
+                    (*gGameUIInterface)->airMeterShutdown();
                     (*gMapEventInterface)->clearRestartPoint();
                 }
             }

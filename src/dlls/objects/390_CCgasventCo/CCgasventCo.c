@@ -120,7 +120,7 @@ void ccGasVentControl_free(GameObject* obj) {
     if (phase == CC_GAS_VENT_CONTROL_PHASE_ACTIVE || phase == CC_GAS_VENT_CONTROL_PHASE_RESTART) {
         disableHeavyFog();
     }
-    (*gGameUIInterface)->airMeterSetShutdown();
+    (*gGameUIInterface)->airMeterShutdown();
 }
 
 void ccGasVentControl_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
@@ -200,7 +200,7 @@ void ccGasVentControl_update(GameObject* obj) {
             if (state->airRemaining >= CC_GAS_VENT_CONTROL_AIR_MIN) {
                 (*gGameUIInterface)->runAirMeter((int)state->airRemaining);
             } else {
-                (*gGameUIInterface)->airMeterSetShutdown();
+                (*gGameUIInterface)->airMeterShutdown();
                 obj->anim.localPosX = player->anim.localPosX;
                 obj->anim.localPosY = player->anim.localPosY;
                 obj->anim.localPosZ = player->anim.localPosZ;
@@ -216,7 +216,7 @@ void ccGasVentControl_update(GameObject* obj) {
             }
         } else {
             Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
-            (*gGameUIInterface)->airMeterSetShutdown();
+            (*gGameUIInterface)->airMeterShutdown();
             mainSetBits(CC_GAS_VENT_CONTROL_PUZZLE_COMPLETE_GAMEBIT, 1);
             mainSetBits(CC_GAS_VENT_CONTROL_PUZZLE_STATE_GAMEBIT, 0);
             state->phase = CC_GAS_VENT_CONTROL_PHASE_SAVE_POINT;

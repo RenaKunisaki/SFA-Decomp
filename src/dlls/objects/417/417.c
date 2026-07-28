@@ -420,7 +420,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
             state->stateIndex = 0x12;
             mainSetBits(0xd32, 0);
             state->runtimeFlags = (u8)(state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_UI_MESSAGE);
-            (*gGameUIInterface)->airMeterShutdown();
+            (*gGameUIInterface)->airMeterSetShutdown();
         }
         break;
     case 0x12:
@@ -620,7 +620,7 @@ void NW_mammoth_free(GameObject* obj) {
     state = (NwMammothState*)obj->extra;
     ObjGroup_RemoveObject((int)obj, NW_MAMMOTH_GROUP_ID);
     if ((state->runtimeFlags & NW_MAMMOTH_RUNTIME_UI_MESSAGE) != 0) {
-        (*gGameUIInterface)->airMeterShutdown();
+        (*gGameUIInterface)->airMeterSetShutdown();
     }
 }
 

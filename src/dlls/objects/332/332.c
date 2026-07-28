@@ -340,7 +340,7 @@ void babyCloudRunner_update(GameObject* obj) {
     }
     if (state->runnerState == BABYCLOUDRUNNER_STATE_CHASED && mainGetBit(BABYCLOUDRUNNER_AIR_METER_GAME_BIT) != 0) {
         (*gObjectTriggerInterface)->runSequence(BABYCLOUDRUNNER_SEQUENCE_METER_EMPTY, obj, -1);
-        (*gGameUIInterface)->airMeterSetShutdown();
+        (*gGameUIInterface)->airMeterShutdown();
     } else if (timerIsActive(&state->captureTimer) != 0) {
         state->captureFlags |= BABYCLOUDRUNNER_CAPTURE_ACTIVE;
         state->behaviourState = 0;
@@ -424,7 +424,7 @@ void babyCloudRunner_update(GameObject* obj) {
                     if ((Obj_GetPlayerObject()->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0 &&
                         timerCountDown(&state->countdownTimer) != 0) {
                         (*gObjectTriggerInterface)->runSequence(BABYCLOUDRUNNER_SEQUENCE_METER_EMPTY, obj, -1);
-                        (*gGameUIInterface)->airMeterSetShutdown();
+                        (*gGameUIInterface)->airMeterShutdown();
                         return;
                     }
                     (*gGameUIInterface)->runAirMeter((int)state->countdownTimer);
@@ -435,7 +435,7 @@ void babyCloudRunner_update(GameObject* obj) {
                 }
                 if (mainGetBit(state->runnerIndex + GAMEBIT_CFRelated0B2E) != 0) {
                     state->runnerState = BABYCLOUDRUNNER_STATE_FREED;
-                    (*gGameUIInterface)->airMeterSetShutdown();
+                    (*gGameUIInterface)->airMeterShutdown();
                     Sfx_PlayFromObject((int)obj, SFXTRIG_menuups16k);
                     storeZeroToFloatParam(&state->countdownTimer);
                 }

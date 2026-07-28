@@ -976,7 +976,7 @@ void DR_EarthWarrior_setMountState(GameObject* obj, int param)
         mainSetBits(0x7d4, 1);
         inner->unk9FD &= ~1;
         ((ByteFlags*)&inner->sub.flags994)->b02 = 0;
-        (*gGameUIInterface)->airMeterSetShutdown();
+        (*gGameUIInterface)->airMeterShutdown();
     }
     else
     {
@@ -1061,7 +1061,7 @@ void DR_EarthWarrior_free(GameObject* obj)
     ObjGroup_RemoveObject((int)obj, DREARTHWARRIOR_OBJGROUP);
     if (((ByteFlags*)&inner->sub.flags994)->b02)
     {
-        (*gGameUIInterface)->airMeterSetShutdown();
+        (*gGameUIInterface)->airMeterShutdown();
     }
     if (inner->helperObj != NULL)
     {
