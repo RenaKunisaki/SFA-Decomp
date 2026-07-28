@@ -46,7 +46,7 @@ extern s32 gAttractMovieAudioMode;
 extern u32 gAttractMovieAudioMixSourceAddr;
 extern u32 gAttractMovieAudioPendingSourceAddr;
 extern u32 gAttractMovieAudioDmaBufferIndex;
-extern OSMessageQueue lbl_803A5CCC[1]; /* spent texture-set queue */
+extern OSMessageQueue gAttractMovieSpentTextureSetQueue[1];
 
 u16 gAttractMovieVolumeScale[128] = {
     0,     2,     8,     18,    32,    50,    73,    99,    130,   164,   203,   245,   292,   343,   398,   457,
@@ -58,7 +58,7 @@ u16 gAttractMovieVolumeScale[128] = {
     18723, 19115, 19511, 19911, 20316, 20724, 21136, 21553, 21974, 22398, 22827, 23260, 23696, 24137, 24582, 25031,
     25484, 25941, 26402, 26868, 27337, 27810, 28288, 28769, 29255, 29744, 30238, 30736, 31238, 31744, 32254, 32768,
 };
-char lbl_803A57C0[0x50C]; /* AI DMA double buffer */
+char gAttractMovieAudioDmaBuffer[0x50C];
 
 void THPPlayerDrawCurrentFrame(void* yBuf, void* uBuf, void* vBuf, u32 width, u32 height)
 {
@@ -361,12 +361,12 @@ void AttractMovieAudio_DmaCallback(void)
     if (gAttractMovieAudioMode == 0)
     {
         gAttractMovieAudioDmaBufferIndex ^= 1;
-        AIInitDMA((u32)(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
+        AIInitDMA((u32)(gAttractMovieAudioDmaBuffer + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
                   ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         interrupts = OSEnableInterrupts();
-        AttractMovieAudio_Mix((s16*)(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)), NULL,
+        AttractMovieAudio_Mix((s16*)(gAttractMovieAudioDmaBuffer + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)), NULL,
                               ATTRACT_MOVIE_AUDIO_DMA_SAMPLE_COUNT);
-        DCFlushRange(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
+        DCFlushRange(gAttractMovieAudioDmaBuffer + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
                      ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         OSRestoreInterrupts(interrupts);
     }
@@ -388,16 +388,16 @@ void AttractMovieAudio_DmaCallback(void)
         }
 
         gAttractMovieAudioDmaBufferIndex ^= 1;
-        AIInitDMA((u32)(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
+        AIInitDMA((u32)(gAttractMovieAudioDmaBuffer + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
                   ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         interrupts = OSEnableInterrupts();
         if (gAttractMovieAudioMixSourceAddr != 0)
         {
             DCInvalidateRange((void*)gAttractMovieAudioMixSourceAddr, ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         }
-        AttractMovieAudio_Mix((s16*)(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
+        AttractMovieAudio_Mix((s16*)(gAttractMovieAudioDmaBuffer + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE)),
                               (s16*)gAttractMovieAudioMixSourceAddr, ATTRACT_MOVIE_AUDIO_DMA_SAMPLE_COUNT);
-        DCFlushRange(lbl_803A57C0 + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
+        DCFlushRange(gAttractMovieAudioDmaBuffer + (gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
                      ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         OSRestoreInterrupts(interrupts);
     }
@@ -412,7 +412,7 @@ void THPPlayerPostDrawDone(void)
     {
         while (TRUE)
         {
-            if (OSReceiveMessage(lbl_803A5CCC, &msg, OS_MESSAGE_NOBLOCK) == TRUE)
+            if (OSReceiveMessage(gAttractMovieSpentTextureSetQueue, &msg, OS_MESSAGE_NOBLOCK) == TRUE)
             {
                 textureSet = msg;
             }
@@ -523,8 +523,8 @@ int ProperTimingForGettingNextFrame(void)
 /* .bss glue 0x803A5CCC-0x803A5F08 */
 AttractMoviePlayer gAttractMoviePlayer;
 char gPicMenuDvdReadBuffer[0x40];
-u8 lbl_803A5CEC[0x34];
-OSMessageQueue lbl_803A5CCC[1];
+u8 gAttractMoviePrepareReadyQueue[0x34];
+OSMessageQueue gAttractMovieSpentTextureSetQueue[1];
 
 /* title-menu text entry tables referenced via extern by dll_0035_saveselectscreen; owned here by link order */
 

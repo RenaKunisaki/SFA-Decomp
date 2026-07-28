@@ -37,7 +37,7 @@ extern const f32 lbl_803E4DFC;
 
 int gRopeNodeTextureAssetIds[2] = {0x3CA, 0x5DD};
 void* gRopeNodeTextures[2] = {0};
-f32 lbl_803DBF50[2] = {0.1f, 0.13f};
+f32 gRopeNodeTickScales[2] = {0.1f, 0.13f};
 u8 gRopeNodeVariantVisibleFlags[8] = {0, 1, 0, 0, 0, 0, 0, 0};
 
 u32 gRopeNodeSegmentDataA[24] = {
@@ -874,7 +874,7 @@ void dfropenode_update(GameObject* obj) {
         extra->angle = angle;
 
         extra->rope = DFRope_Create(0.0f, 0.0f, 0.0f, dx, dy, dz, length, 0x10,
-                                    (lbl_803DBF50)[((DfropenodePlacement*)objDef)->textureIndex]);
+                                    (gRopeNodeTickScales)[((DfropenodePlacement*)objDef)->textureIndex]);
 
         extra->minX = obj->anim.localPosX;
         extra->minZ = obj->anim.localPosZ;

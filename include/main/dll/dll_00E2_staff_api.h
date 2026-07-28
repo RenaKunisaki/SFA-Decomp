@@ -5,7 +5,7 @@
 #include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor23 gStaffObjDescriptor;
-extern u32 lbl_80320978[];
+extern u8 gFireballLightColors[4][3];
 
 void objSetAnimField48to0(GameObject* obj);
 void playerRenderQuakeSpell(GameObject* obj);

@@ -258,7 +258,7 @@ void Fireball_hitDetect(GameObject* obj) {
             state->colorIndex = (u8)idx;
             if (state->light != NULL) {
                 int paletteBase = state->colorIndex * 3;
-                u8* pal = (u8*)lbl_80320978;
+                u8* pal = (u8*)gFireballLightColors;
                 modelLightStruct_setDiffuseColor(state->light, pal[paletteBase], pal[paletteBase + 1],
                                                  pal[paletteBase + 2], 0);
             }
@@ -427,12 +427,12 @@ void Fireball_init(GameObject* obj) {
                 modelLightStruct_setPosition(state->light, 0.0f, 0.0f, 0.0f);
                 lightSetFieldBC_8001db14(state->light, 1);
                 c = state->colorIndex * 3;
-                modelLightStruct_setDiffuseColor(state->light, ((u8*)lbl_80320978)[c],
-                                                 (base1 = (u8*)lbl_80320978 + 1)[state->colorIndex * 3],
-                                                 (base2 = (u8*)lbl_80320978 + 2)[state->colorIndex * 3], 0);
+                modelLightStruct_setDiffuseColor(state->light, ((u8*)gFireballLightColors)[c],
+                                                 (base1 = (u8*)gFireballLightColors + 1)[state->colorIndex * 3],
+                                                 (base2 = (u8*)gFireballLightColors + 2)[state->colorIndex * 3], 0);
                 modelLightStruct_setDistanceAttenuation(state->light, 60.0f, 80.0f);
                 c = state->colorIndex * 3;
-                modelLightStruct_setupGlow(state->light, 0, ((u8*)lbl_80320978)[c], base1[c], base2[c], 32, 50.0f);
+                modelLightStruct_setupGlow(state->light, 0, ((u8*)gFireballLightColors)[c], base1[c], base2[c], 32, 50.0f);
                 modelLightStruct_setGlowProjectionRadius(state->light, 50.0f);
             }
         }

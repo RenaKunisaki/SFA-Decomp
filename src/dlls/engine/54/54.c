@@ -21,14 +21,12 @@ u8 lbl_803DD6EC;
 u32 gEnterSaveNameTotalWidth;
 s32 gEnterSaveNameSelectedIndex;
 f32 gEnterSaveNameScrollPos;
-u32 lbl_803DD6DC;
+u32 gEnterSaveNameScrollWrapOffset;
 u8 gEnterSaveNameAutoScrolling;
 u16 gEnterSaveNameColorAnimTime;
 f32 gEnterSaveNameTargetScrollVel;
-f32 lbl_803DD6D0;
+f32 gEnterSaveNameScrollVelocity;
 
-#define gEnterSaveNameScrollVelocity lbl_803DD6D0
-#define gEnterSaveNameScrollWrapOffset lbl_803DD6DC
 #define gEnterSaveNameRefreshState lbl_803DD6EC
 
 void EnterSaveNameScreen_render(void)
@@ -39,7 +37,7 @@ void EnterSaveNameScreen_render(void)
     buf[1] = 0;
     gameTextSetDrawFunc(nameEntryTextDrawFunc);
     titleScreenPositionElements(40.0f, 120.0f);
-    nameEntrySetScroll((int)(gEnterSaveNameScrollPos + lbl_803DD6DC - 8.0f), 0);
+    nameEntrySetScroll((int)(gEnterSaveNameScrollPos + gEnterSaveNameScrollWrapOffset - 8.0f), 0);
     titleScreenDrawMenuFrame(0xff, 1, 1);
     gameTextSetColor(0xc0, 0xc0, 0xc0, 0xff);
     gameTextShow(0x3ae);
@@ -296,7 +294,7 @@ void EnterSaveNameScreen_initialise(void)
 
     gEnterSaveNameSelectedIndex = 0;
     gEnterSaveNameScrollPos = (f32)(gEnterSaveNameCharWidths[0] / 2);
-    lbl_803DD6DC = gEnterSaveNameTotalWidth;
+    gEnterSaveNameScrollWrapOffset = gEnterSaveNameTotalWidth;
     gEnterSaveNameAutoScrolling = 0;
     Sfx_PlayFromObject(0, ENTER_SAVE_NAME_SFX_CONFIRM);
 }

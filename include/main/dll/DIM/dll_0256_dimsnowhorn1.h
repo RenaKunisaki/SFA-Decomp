@@ -58,10 +58,10 @@ typedef struct DIMSnowHorn1State
 STATIC_ASSERT(sizeof(DIMSnowHorn1State) == 0xD0C);
 STATIC_ASSERT(offsetof(DIMSnowHorn1State, countdownTimer) == 0xA84);
 
-extern f32 lbl_80335128[];
-extern s16 lbl_803DC73C[2];
-extern f32 lbl_803DC740[2];
-extern s16 lbl_803DC748[4];
+extern f32 gDIMSnowHorn1LocomotionSpeedRanges[];
+extern s16 gDIMSnowHorn1MoveIds[2];
+extern f32 gDIMSnowHorn1MoveSpeeds[2];
+extern s16 gDIMSnowHorn1LocomotionMoveIds[4];
 
 extern f32 gDIMSnowHorn1ModelMtx[16];
 extern void* gDIMSnowHorn1DefaultStateHandler;

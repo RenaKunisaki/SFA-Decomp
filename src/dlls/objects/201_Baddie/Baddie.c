@@ -1916,9 +1916,9 @@ int enemy_SeqFn(GameObject* node, int unused, ObjAnimUpdateState* animUpdate)
     return 0;
 }
 
-/* sidekickToy_updateCurveTargetLatch: pre-curve probe + state-bit gate. If state's 0x2000 bit is
- * set, ask baddie_canSeeTarget whether the target is locked on; on hit,
- * leave state[0x2dc] alone. Otherwise initialise the rom-curve walker with
+/* sidekickToy_updateCurveTargetLatch: pre-curve probe + state-bit gate. If controlFlags'
+ * BADDIE_CONTROL_PATH_FOLLOW bit is set, ask baddie_canSeeTarget whether the target is
+ * locked on; on hit, leave controlFlags alone. Otherwise initialise the rom-curve walker with
  * (data, obj, 700.0f, &lbl_803DBC58, -1) and toggle
  * the 0x2000 bit based on the u8 result. */
 void sidekickToy_updateCurveTargetLatch(GameObject* obj)
@@ -2911,23 +2911,23 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
     {
         ((EnemyState*)state)->flags2E4 = 0;
         ((EnemyState*)state)->flags2E8 = 0;
-        state[0x2f1] = 0;
-        state[0x2f2] = 0;
+        ((EnemyState*)state)->flags2F1 = 0;
+        ((EnemyState*)state)->curveIndex = 0;
         ((EnemyState*)state)->hitStunFrames = 0;
-        state[0x2f5] = 0;
+        ((EnemyState*)state)->spawnBits = 0;
         fz = 0.0f;
         ((EnemyState*)state)->gravity = fz;
         ((EnemyState*)state)->drag = fz;
         ((EnemyState*)state)->animPlaySpeed = fz;
         ((EnemyState*)state)->particleScale = fz;
-        state[0x323] = 0;
+        ((EnemyState*)state)->rootMotionFlags = 0;
         ((EnemyState*)state)->pathSpeed = fz;
         ((EnemyState*)state)->animEventMask = 0;
-        state[0x33a] = 0;
-        state[0x33b] = 0;
+        ((EnemyState*)state)->userData1 = 0;
+        ((EnemyState*)state)->userData2 = 0;
         ((EnemyState*)state)->phaseAngle = 0;
-        state[0x33c] = 0;
-        state[0x33d] = 0;
+        ((EnemyState*)state)->familyData.unk33C[0] = 0;
+        ((EnemyState*)state)->familyData.unk33C[1] = 0;
         ((EnemyState*)state)->unk324 = fz;
         ((EnemyState*)state)->unk328 = fz;
         ((EnemyState*)state)->unk32C = fz;
@@ -3016,8 +3016,8 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
             ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 & -39;
         }
         ObjGroup_AddObject((int)obj, ENEMY_OBJGROUP);
-        state[0x2f0] = 7;
-        state[0x2ef] = 2;
+        ((EnemyState*)state)->prevActionId = 7;
+        ((EnemyState*)state)->actionId = 2;
         if (*(void**)state == NULL)
         {
             *(int*)state = (int)mmAlloc(264, 26, 0);
@@ -3043,7 +3043,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
         (*gPathControlInterface)->attachObject(obj, state + 4);
         if ((((EnemyState*)state)->flags2E4 & 0xc) != 0)
         {
-            state[0x25f] = 1;
+            ((EnemyState*)state)->physicsActive = 1;
         }
         if ((((EnemyState*)state)->flags2E4 & 0x8000022) != 0 || ((EnemyPlacement*)setup)->unk34 != 0 ||
             (obj)->anim.romDefNo == ENEMY_VAMBAT_OBJ || (obj)->anim.romDefNo == ENEMY_FIREBAT_OBJ)
