@@ -588,10 +588,13 @@ char** textMeasureFn_80016c9c(char* str, f32 width, f32 height, int* outCount, f
         *dst++ = *src;
         if (charPos == boundary[1])
         {
-            char* q = --dst;
+            char* q;
+            dst--;
             do
             {
-                int k = 6;
+                int k;
+                q = dst;
+                k = 6;
                 do
                 {
                     ch = utf8GetNextChar((u8*)(dst - k), &charLen2);
