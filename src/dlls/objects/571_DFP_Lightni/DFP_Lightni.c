@@ -170,7 +170,7 @@ void DFP_Lightni_update(GameObject* obj)
                                                                               : radiusX;
                         state->effectHandle = lightningCreate(
                             (const Vec3f*)effectStart, (const Vec3f*)effectEnd, clampX, clampY,
-                            (u16)state->delayFrames,
+                            state->delayFrames,
                             state->angleIndex * DFPLIGHTNI_ANGLE_STEP & DFPLIGHTNI_EFFECT_ANGLE_MASK, 0);
                     }
                 }

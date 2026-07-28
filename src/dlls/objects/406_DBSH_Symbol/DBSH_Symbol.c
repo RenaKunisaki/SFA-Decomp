@@ -188,7 +188,7 @@ int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjAnimUpdateSta
         if (volume > DBSH_SYMBOL_MAX_SFX_VOLUME) {
             volume = DBSH_SYMBOL_MAX_SFX_VOLUME;
         }
-        Sfx_SetObjectSfxVolume(objectAddress, SFXTRIG_blockscrape_lp, (u8)volume, DBSH_SYMBOL_SFX_VOLUME_SCALE);
+        Sfx_SetObjectSfxVolume(objectAddress, SFXTRIG_blockscrape_lp, volume, DBSH_SYMBOL_SFX_VOLUME_SCALE);
     }
     return 0;
 }

@@ -142,7 +142,7 @@ void videoInit(void* wpad0, int wpad1)
                   1.0f);
     GXSetFieldMode(gRenderModeObj->field_rendering, gRenderModeObj->xfbHeight < gRenderModeObj->viHeight);
     GXSetScissor(0, 0, gRenderModeObj->fbWidth, gRenderModeObj->efbHeight);
-    GXSetDispCopyDst(gRenderModeObj->fbWidth, (u16)gDispCopyYScaleLines);
+    GXSetDispCopyDst(gRenderModeObj->fbWidth, gDispCopyYScaleLines);
     if (gRenderModeObj->aa != 0)
     {
         GXSetPixelFmt(GX_PF_RGB565_Z16, GX_ZC_LINEAR);

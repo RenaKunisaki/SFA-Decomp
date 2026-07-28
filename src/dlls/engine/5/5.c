@@ -158,7 +158,7 @@ void doNothing_800887C8(void)
 
 void skyRefreshPlayerEnvFx(void)
 {
-    skyApplyPlayerEnvFx((u8)mainGetBit(GAMEBIT_ENV_dayNo));
+    skyApplyPlayerEnvFx(mainGetBit(GAMEBIT_ENV_dayNo));
 }
 
 void skySetEnvFxFlags(u8 value)
@@ -222,22 +222,22 @@ void skyUpdateEnvFx(void)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, (u16)((s16*)lbl_803DD130)[b], 0);
+            getEnvfxActImmediately(0, 0, ((s16*)lbl_803DD130)[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, (u16)((s16*)lbl_803DD130)[b], 0);
+            getEnvfxAct(0, 0, ((s16*)lbl_803DD130)[b], 0);
         }
     }
     if ((u32)lbl_803DD13C != 0 && (gSkyEnvFxFlags & SKY_ENVFX_GROUP_B) != 0)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, (u16)((s16*)lbl_803DD13C)[b], 0);
+            getEnvfxActImmediately(0, 0, ((s16*)lbl_803DD13C)[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, (u16)((s16*)lbl_803DD13C)[b], 0);
+            getEnvfxAct(0, 0, ((s16*)lbl_803DD13C)[b], 0);
         }
     }
     if ((u32)lbl_803DD138 != 0 && (gSkyEnvFxFlags & SKY_ENVFX_GROUP_C) != 0 &&
@@ -245,11 +245,11 @@ void skyUpdateEnvFx(void)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, (u16)((s16*)lbl_803DD138)[b], 0);
+            getEnvfxActImmediately(0, 0, ((s16*)lbl_803DD138)[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, (u16)((s16*)lbl_803DD138)[b], 0);
+            getEnvfxAct(0, 0, ((s16*)lbl_803DD138)[b], 0);
         }
     }
     skyApplyPlayerEnvFx(b);
@@ -291,11 +291,11 @@ void skyApplyPlayerEnvFx(u8 idx)
     {
         if (gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE)
         {
-            getEnvfxActImmediately(player, player, (u16)val, 0);
+            getEnvfxActImmediately(player, player, val, 0);
         }
         else
         {
-            getEnvfxAct(player, player, (u16)val, 0);
+            getEnvfxAct(player, player, val, 0);
         }
     }
 }
@@ -2237,7 +2237,7 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
         }
         if (((Sky2Config*)cfg)->cloudBlendMode != 0)
         {
-            skySetSlotFlag80(mask, (u8)(((Sky2Config*)cfg)->cloudBlendMode > 2 ? 1 : 0));
+            skySetSlotFlag80(mask, (((Sky2Config*)cfg)->cloudBlendMode > 2 ? 1 : 0));
         }
         vis = ((Sky2Config*)cfg)->visibility;
         for (i = 0; i < 2; i++)

@@ -446,8 +446,8 @@ void AttractMovie_AddVideoTevStages(void)
     if (gAttractMovieState == 2)
     {
         textureSet = lbl_803A5D60.curTextureSet;
-        addYUVVideoTevStages(textureSet->yTexture, textureSet->uTexture, textureSet->vTexture, (s16)lbl_803A5D60.videoInfo.xSize,
-                    (s16)lbl_803A5D60.videoInfo.ySize);
+        addYUVVideoTevStages(textureSet->yTexture, textureSet->uTexture, textureSet->vTexture, lbl_803A5D60.videoInfo.xSize,
+                    lbl_803A5D60.videoInfo.ySize);
     }
 }
 

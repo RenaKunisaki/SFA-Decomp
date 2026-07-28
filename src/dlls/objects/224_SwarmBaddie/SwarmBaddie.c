@@ -170,7 +170,7 @@ void SwarmBaddie_update(GameObject* obj) {
         state->hitVolumeEnvelope -= 0.005f;
     }
     volume = state->hitVolumeEnvelope;
-    Sfx_SetObjectChannelVolume((u32)obj, 0x40, (u8)(63.0f * volume),
+    Sfx_SetObjectChannelVolume((u32)obj, 0x40, (63.0f * volume),
                                0.05f * mathSinf((SWARMBADDIE_PI * (f32)(state->yawWavePhase + state->rollWavePhase)) /
                                                 SWARMBADDIE_S16_ANGLE_SCALE) +
                                    volume);

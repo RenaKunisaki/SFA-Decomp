@@ -140,7 +140,7 @@ void AreaFXEmit_emitEffect(GameObject* obj) {
                 ->spawnObject(obj, state->effectId, &args, AREAFXEMIT_WORLD_SPAWN_MODE, AREAFXEMIT_MODEL_NONE, NULL);
         }
     } else if (type == AREAFXEMIT_SPAWN_OBJECT_RESOURCE) {
-        resource = Resource_Acquire((u16)(state->effectId + AREAFXEMIT_RESOURCE_OFFSET), AREAFXEMIT_RESOURCE_GROUP);
+        resource = Resource_Acquire((state->effectId + AREAFXEMIT_RESOURCE_OFFSET), AREAFXEMIT_RESOURCE_GROUP);
         if (state->emitCount > 0) {
             for (i = 0; i < state->emitCount; i++) {
                 (*(void (**)(GameObject*, int, int, int, int, int))(*(int*)resource + 4))(obj, 0, 0, 1, -1, 0);
@@ -150,7 +150,7 @@ void AreaFXEmit_emitEffect(GameObject* obj) {
         }
         Resource_Release(resource);
     } else if (type == AREAFXEMIT_SPAWN_OBJECT_RESOURCE_ALT) {
-        resource = Resource_Acquire((u16)(state->effectId + AREAFXEMIT_ALT_RESOURCE_OFFSET), AREAFXEMIT_RESOURCE_GROUP);
+        resource = Resource_Acquire((state->effectId + AREAFXEMIT_ALT_RESOURCE_OFFSET), AREAFXEMIT_RESOURCE_GROUP);
         if (state->emitCount > 0) {
             for (i = 0; i < state->emitCount; i++) {
                 (*(void (**)(GameObject*, int, int, int, int, int, int))(*(int*)resource + 4))(

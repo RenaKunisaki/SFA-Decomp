@@ -133,7 +133,7 @@ int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState*
                 if (lbl_803DB610 == -1) {
                     getEnvfxAct(obj, obj, DLL411_ENVFX_B, 0);
                 } else {
-                    getEnvfxAct(obj, obj, (u16)lbl_803DB610, 0);
+                    getEnvfxAct(obj, obj, lbl_803DB610, 0);
                 }
                 break;
             case DLL411_ANIM_EVENT_PENDING:

@@ -373,7 +373,7 @@ void textureFn_8004c330(void* p1, void* mtx)
     {
         GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     }
-    GXSetIndTexMtx(GX_ITM_0, m.v, (s8)lbl_803DB5F4);
+    GXSetIndTexMtx(GX_ITM_0, m.v, lbl_803DB5F4);
     GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord, gRcpNextTexMap);
     GXSetTevIndirect(gRcpNextTevStage, gRcpNextIndTexStage, 0, 7, 1, 0, 0, 0, 0, 3);
     chooseTevKonstSelectors(lbl_803DB5F8, 1, 0, &out_c, &out_8);

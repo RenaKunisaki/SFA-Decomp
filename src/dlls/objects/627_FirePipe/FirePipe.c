@@ -250,7 +250,7 @@ void firepipe_updateState(GameObject* obj)
                         }
                         else
                         {
-                            s16toFloat(&ex2->cycleTimer, (s16)(md2->startOffset * 0x3c));
+                            s16toFloat(&ex2->cycleTimer, (md2->startOffset * 0x3c));
                             if (md2->startOffset >= md2->cycleTime)
                             {
                                 ((FirePipeBitFlags*)&ex2->flags)->emitting = 0;
@@ -259,7 +259,7 @@ void firepipe_updateState(GameObject* obj)
                     }
                     else
                     {
-                        s16toFloat(&ex2->cycleTimer, (s16)(cycleTime * 0x3c));
+                        s16toFloat(&ex2->cycleTimer, (cycleTime * 0x3c));
                     }
                 }
             }
@@ -345,7 +345,7 @@ void firepipe_updateState(GameObject* obj)
         {
             if (mapData->cycleTime != 0)
             {
-                s16toFloat(&extra->cycleTimer, (s16)(mapData->cycleTime * 0x3c));
+                s16toFloat(&extra->cycleTimer, (mapData->cycleTime * 0x3c));
             }
             flags->emitting = (flags->emitting == 0);
         }

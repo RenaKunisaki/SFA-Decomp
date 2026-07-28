@@ -545,7 +545,7 @@ void Shield_update(GameObject* obj) {
         obj->anim.alpha = (u8)(state->fadeValue / state->fadeMax * (f32)(s32)randomGetRange(192, 255));
     }
     Sfx_SetObjectSfxVolume((int)obj, SFXTRIG_lockon3_on,
-                           (u8)(SHIELD_SFX_VOLUME_MAX * (state->fadeValue / state->fadeMax)), SHIELD_SFX_VOLUME_SCALE);
+                           (SHIELD_SFX_VOLUME_MAX * (state->fadeValue / state->fadeMax)), SHIELD_SFX_VOLUME_SCALE);
     if (obj->anim.alpha != 0) {
         obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
     } else {

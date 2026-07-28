@@ -138,7 +138,7 @@ void KaldaChompSpit_update(GameObject* obj) {
                 Sfx_StopObjectChannel((int)obj, 0x7f);
                 objAnim->alpha = 0;
             }
-            Sfx_SetObjectChannelVolume((u32)obj, 0x40, (u8)(objAnim->alpha >> 1), 0.5f);
+            Sfx_SetObjectChannelVolume((u32)obj, 0x40, (objAnim->alpha >> 1), 0.5f);
         }
         moveX = obj->anim.velocityX * timeDelta;
         moveY = obj->anim.velocityY * timeDelta;

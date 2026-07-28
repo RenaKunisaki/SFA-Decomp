@@ -105,7 +105,7 @@ void TreasureChest_hitDetect(GameObject* obj) {
     state = obj->extra;
     if (state->hitEffectEnabled != 0) {
         objfx_spawnHitEffectBurst(obj, TREASURE_CHEST_HIT_EFFECT_SCALE, TREASURE_CHEST_HIT_EFFECT_TYPE,
-                                  (u8)(placement->hitboxKind + TREASURE_CHEST_HITBOX_KIND_OFFSET),
+                                  (placement->hitboxKind + TREASURE_CHEST_HITBOX_KIND_OFFSET),
                                   TREASURE_CHEST_HIT_EFFECT_BURST_COUNT, NULL);
     }
 }

@@ -789,7 +789,7 @@ void snowclaw_update(GameObject* obj)
             snowclaw_spawnDropBomb((GameObject*)(*(int*)inner), obj, (u8)choice, 0);
         }
         s16toFloat((f32*)(inner + offsetof(SnowclawState, attackTimer)),
-                   (s16)lbl_8032A340[SnowBike_getRouteRank((GameObject*)(*(int*)inner)) - 1]);
+                   lbl_8032A340[SnowBike_getRouteRank((GameObject*)(*(int*)inner)) - 1]);
     }
 
     sub = *(int**)inner;
@@ -862,7 +862,7 @@ void snowclaw_init(GameObject* obj, s8* init)
     inner->attackDelay = 0x64;
     inner->unk30 = 0.006f;
     storeZeroToFloatParam(&inner->attackTimer);
-    s16toFloat(&inner->attackTimer, (s16) * (int*)(table + 0x3c));
+    s16toFloat(&inner->attackTimer, * (int*)(table + 0x3c));
     seqPairTablePrepare((u8*)(int)gSnowClawMoveTable, 6);
     gSnowClawDropBombAngle = 0x96;
     ((SnowclawAaFlags*)&inner->flags)->b0 = 0;

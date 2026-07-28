@@ -3144,7 +3144,7 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
     GXSetNumChans(0);
     GXSetNumTexGens(2);
-    GXSetNumTevStages((u8)(stage_count + 2));
+    GXSetNumTevStages((stage_count + 2));
 
     GXSetFog(GX_FOG_PERSP_EXP, gFogStartZ, gFogEndZ, gFogNearZ, gFogFarZ, fog_var);
     GXSetBlendMode(GX_BM_BLEND, GX_BL_ZERO, GX_BL_INVSRCCLR, GX_LO_NOOP);
