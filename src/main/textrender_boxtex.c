@@ -112,9 +112,9 @@ void gameTextInitFn_8001c794(void)
     gGameTextBoxEdgeTexture = tex;
     dst = (u16*)(tex + 1);
     i = 0;
-    y = 0;
     for (; i < 5; i++)
     {
+        y = i * 4;
         j = 0;
         x0 = 0;
         for (; j < 20;)
@@ -150,7 +150,6 @@ void gameTextInitFn_8001c794(void)
             j += 4;
             x0 += 8;
         }
-        y += 4;
     }
     DCFlushRange(gGameTextBoxEdgeTexture + 1, 800);
 }
