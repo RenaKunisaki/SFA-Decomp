@@ -701,7 +701,7 @@ extern u8 gPauseMenuTextCharset;
 extern s16 lbl_803DD784;
 extern s16 lbl_803DD786;
 extern s16 lbl_803DD78C;
-extern u32 lbl_8033BE40[5];
+extern Texture* gGameTextBoxFrameTextures[5];
 extern TaskHintEntry gTaskHintTable[GAMEUI_TASK_HINT_COUNT];
 extern f32 lbl_803DD7C0;
 extern f32 gPauseMenuSwivelWrapMax;
@@ -7641,11 +7641,11 @@ void pauseMenuDrawText(int unused1, int unused2, int unused3)
     handle = gameTextGetPhrase(lbl_803DBA60, lbl_803DBA5C);
     sprite = gameTextGetBox(0x49);
 
-    lbl_8033BE40[0] = *(u32*)&((HudTextures*)hudTextures)->unk13C;
-    lbl_8033BE40[1] = *(u32*)&((HudTextures*)hudTextures)->unk140;
-    lbl_8033BE40[2] = *(u32*)&((HudTextures*)hudTextures)->unk144;
-    lbl_8033BE40[3] = *(u32*)&((HudTextures*)hudTextures)->unk148;
-    lbl_8033BE40[4] = *(u32*)&((HudTextures*)hudTextures)->unk14C;
+    gGameTextBoxFrameTextures[0] = ((HudTextures*)hudTextures)->textBoxFrameTex[0];
+    gGameTextBoxFrameTextures[1] = ((HudTextures*)hudTextures)->textBoxFrameTex[1];
+    gGameTextBoxFrameTextures[2] = ((HudTextures*)hudTextures)->textBoxFrameTex[2];
+    gGameTextBoxFrameTextures[3] = ((HudTextures*)hudTextures)->textBoxFrameTex[3];
+    gGameTextBoxFrameTextures[4] = ((HudTextures*)hudTextures)->textBoxFrameTex[4];
 
     cur = lbl_803DD774;
     mirrored = cur;

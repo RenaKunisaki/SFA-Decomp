@@ -39,11 +39,8 @@ typedef struct HudTextures {
     u8 pad120[0x134 - 0x120];
     void * tex134;
     u8 pad138[0x13C - 0x138];
-    s32 unk13C;
-    s32 unk140;
-    s32 unk144;
-    s32 unk148;
-    s32 unk14C;
+    Texture* textBoxFrameTex[5]; /* 0x13C: the five game-text box frame textures
+        copied into gGameTextBoxFrameTextures */
     void * tex150;
     u8 pad154[0x170 - 0x154];
     void * tex170;
@@ -61,7 +58,7 @@ STATIC_ASSERT(offsetof(HudTextures, tex80) == 0x80);
 STATIC_ASSERT(offsetof(HudTextures, texBC) == 0xBC);
 STATIC_ASSERT(offsetof(HudTextures, texF8) == 0xF8);
 STATIC_ASSERT(offsetof(HudTextures, tex134) == 0x134);
-STATIC_ASSERT(offsetof(HudTextures, unk13C) == 0x13C);
+STATIC_ASSERT(offsetof(HudTextures, textBoxFrameTex) == 0x13C);
 STATIC_ASSERT(offsetof(HudTextures, tex170) == 0x170);
 
 #endif
