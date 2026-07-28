@@ -132,16 +132,9 @@ static const IndMtxInit lbl_802C1F68 = {{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
 
 
 extern f32 hudMatrix[4][4];
-extern f32 hudScale;
-extern f32 gSynthDelayedActionWord0, gSynthFadeMask;
-extern f32 lbl_803DEF08, lbl_803DEF20;
-extern double lbl_803DEF10, lbl_803DEF18;
-extern f32 lbl_803DEED8, lbl_803DEEE8, lbl_803DEEEC, lbl_803DEEF4;
-extern f32 lbl_803DEF24, lbl_803DEF28, lbl_803DEF30, lbl_803DEF34, lbl_803DEF38;
-extern f32 lbl_803DEF4C, lbl_803DEF50, lbl_803DEF54, lbl_803DEF58, lbl_803DEF5C;
-extern f32 lbl_803DEF60, lbl_803DEF64, lbl_803DEF68, lbl_803DEF6C, lbl_803DEF70, lbl_803DEF74;
-extern f32 lbl_803DEF78, lbl_803DEF7C, lbl_803DEF80;
-extern GXColor lbl_803DEEB4, lbl_803E8454;
+extern f32 gSynthFadeMask;
+extern f32 lbl_803DEF28;
+extern GXColor lbl_803E8454;
 
 extern f32 lbl_8030EA10[3][2][3];
 extern f32 lbl_8030EA58[2][3];
@@ -158,10 +151,21 @@ typedef struct StageCountTable
     u8 count[7];
 } StageCountTable;
 
-extern u32 lbl_803DEEA0, lbl_803DEEA4, lbl_803DEEA8;
-extern StageCountTable lbl_803DEEAC;
-extern u32 lbl_803DEEB8, lbl_803DEEBC, lbl_803DEEC0, lbl_803DEEC4;
-extern u32 lbl_803DEEC8, lbl_803DEECC, lbl_803DEED0, lbl_803DEED4, lbl_803E8450;
+static const GXColor sApertureColorBlack = {0, 0, 0, 255};
+static const GXColor sApertureColorEdge = {0, 0, 0, 4};
+static const GXColor sApertureColorCentre = {0, 0, 0, 255};
+static const StageCountTable sProjectedShadowStageCounts = {{3, 3, 2, 2, 1, 1, 1}};
+static const GXColor sMoonFxTint = {0, 0, 255, 255};
+static const GXColor sDistortKColor0 = {0x42, 0x42, 0x42, 0};
+static const GXColor sDistortKColor1 = {0x81, 0x81, 0x81, 0};
+static const GXColor sDistortKColor2 = {0x19, 0x19, 0x19, 0};
+static const GXColor sDistortTevColor = {0x10, 0x10, 0x10, 0};
+static const GXColor sColorFilterKColor0 = {0x42, 0x42, 0x42, 0};
+static const GXColor sColorFilterKColor1 = {0x6E, 0x6E, 0x6E, 0};
+static const GXColor sColorFilterKColor2 = {0x14, 0x14, 0x14, 0};
+static const GXColor sColorFilterTevColor = {0x0A, 0x0A, 0x0A, 255};
+
+extern u32 lbl_803E8450;
 typedef struct RippleEntry
 {
     f32 x, y, z;
@@ -254,18 +258,17 @@ void _gxSetFogParams(void)
 
 void fogFn_80070404(f32 a, f32 b)
 {
-    extern f32 lbl_803DEEDC;
     f32 xc, yc, x, y;
     GXColor c;
 
     gFogNearZ = Camera_GetNearPlane();
     gFogFarZ = Camera_GetFarPlane();
 
-    x = lbl_803DEED8 * a;
-    y = lbl_803DEED8 * b;
+    x = 0.001f * a;
+    y = 0.001f * b;
 
-    xc = (x < lbl_803DEEDC) ? lbl_803DEEDC : ((x > gSynthFadeMask) ? gSynthFadeMask : x);
-    yc = (y < *(f32*)&lbl_803DEEDC) ? *(f32*)&lbl_803DEEDC : ((y > gSynthFadeMask) ? gSynthFadeMask : y);
+    xc = (x < 0.0f) ? 0.0f : ((x > gSynthFadeMask) ? gSynthFadeMask : x);
+    yc = (y < 0.0f) ? 0.0f : ((y > gSynthFadeMask) ? gSynthFadeMask : y);
 
     gFogStartZ = xc * (gFogFarZ - gFogNearZ) + gFogNearZ;
     gFogEndZ = yc * (gFogFarZ - gFogNearZ) + gFogNearZ;
@@ -540,12 +543,12 @@ void screenImageDraw(u8 alpha)
 
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXScale(mtx_60, lbl_803DEEE8, *(f32*)&lbl_803DEEE8, lbl_803DEEE4);
+    PSMTXScale(mtx_60, 0.2f, 0.2f, lbl_803DEEE4);
     mtx_60[1][3] = -fA;
     GXLoadTexMtxImm(mtx_60, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXScale(mtx_60, lbl_803DEEEC, *(f32*)&lbl_803DEEEC, lbl_803DEEE4);
+    PSMTXScale(mtx_60, 0.25f, 0.25f, lbl_803DEEE4);
     PSMTXRotRad(mtx_30, 'z', 0.7853982f);
     PSMTXConcat(mtx_30, mtx_60, mtx_60);
     mtx_60[0][3] = fB;
@@ -810,10 +813,10 @@ void doColorFilter(u8* mod)
 {
     GXColor c0, c1, c2, c3;
 
-    *(u32*)&c0 = lbl_803DEEC8;
-    *(u32*)&c1 = lbl_803DEECC;
-    *(u32*)&c2 = lbl_803DEED0;
-    *(u32*)&c3 = lbl_803DEED4;
+    c0 = sColorFilterKColor0;
+    c1 = sColorFilterKColor1;
+    c2 = sColorFilterKColor2;
+    c3 = sColorFilterTevColor;
     {
         int s0, s1, s2;
         c0.r = (u8)(c0.r + (s0 = mod[0] >> 3));
@@ -930,16 +933,16 @@ static inline f32 distortSqrtf(f32 x)
 {
     volatile float y;
     double guess = __frsqrte((double)x);
-    guess = lbl_803DEF10 * guess * (lbl_803DEF18 - guess * guess * x);
-    guess = lbl_803DEF10 * guess * (lbl_803DEF18 - guess * guess * x);
-    guess = lbl_803DEF10 * guess * (lbl_803DEF18 - guess * guess * x);
+    guess = 0.5 * guess * (3.0 - guess * guess * x);
+    guess = 0.5 * guess * (3.0 - guess * guess * x);
+    guess = 0.5 * guess * (3.0 - guess * guess * x);
     y = (float)(x * guess);
     return y;
 }
 
 void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
     Mtx mtx_d0;
     Mtx mtx_a0;
     Mtx mtx_70;
@@ -954,10 +957,10 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     Texture* handle3;
     f32 x, z;
 
-    *(u32*)&c0 = lbl_803DEEB8;
-    *(u32*)&c1 = lbl_803DEEBC;
-    *(u32*)&c2 = lbl_803DEEC0;
-    *(u32*)&c3 = lbl_803DEEC4;
+    c0 = sDistortKColor0;
+    c1 = sDistortKColor1;
+    c2 = sDistortKColor2;
+    c3 = sDistortTevColor;
     {
         int b0, b1, b2;
         int s0, s1, s2;
@@ -981,7 +984,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     z = z - playerMapOffsetZ;
     Camera_ProjectWorldSphere(x, pos[1], z, radius, &proj5, &proj4, &proj3, &proj2, &proj1, &proj0);
     proj3 = proj3 + lbl_803DEEE4;
-    c0.a = (u8)(((u32)(lbl_803DEF08 * proj3) & 0x00FF0000) >> 16);
+    c0.a = (u8)(((u32)(16777216.0f * proj3) & 0x00FF0000) >> 16);
 
     selectReflectionTexture(0);
     getReflectionTexture2((u32*)&handle1);
@@ -996,13 +999,13 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXTrans(mtx_a0, 0.5f * (-proj5) - 0.5f, 0.5f * proj4 - 0.5f, lbl_803DEEDC);
+    PSMTXTrans(mtx_a0, 0.5f * (-proj5) - 0.5f, 0.5f * proj4 - 0.5f, 0.0f);
     {
         f32 s = *(f32*)&lbl_803DB6C4;
-        PSMTXScale(mtx_70, s / proj2, s / proj1, lbl_803DEEDC);
+        PSMTXScale(mtx_70, s / proj2, s / proj1, 0.0f);
     }
     PSMTXConcat(mtx_70, mtx_a0, mtx_d0);
-    PSMTXTrans(mtx_a0, 0.5f, 0.5f, lbl_803DEEDC);
+    PSMTXTrans(mtx_a0, 0.5f, 0.5f, 0.0f);
     PSMTXConcat(mtx_a0, mtx_d0, mtx_d0);
     GXLoadTexMtxImm(mtx_d0, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
@@ -1010,19 +1013,19 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     {
         f32 r2 = lbl_803DB6C8 / radius;
         f32 sr;
-        sr = (r2 > lbl_803DEEDC) ? distortSqrtf(r2) : r2;
+        sr = (r2 > 0.0f) ? distortSqrtf(r2) : r2;
         if (sr > lbl_803DEEE4)
         {
             c1.a = 0xFF;
         }
         else
         {
-            c1.a = lbl_803DEF20 * sr;
+            c1.a = 255.0f * sr;
         }
         sr = sr * gSynthFadeMask;
         if (sr > *(f32*)&lbl_803DEEE4)
             sr = *(f32*)&lbl_803DEEE4;
-        c3.a = lbl_803DEF20 * sr;
+        c3.a = 255.0f * sr;
     }
 
     GXSetTevKColor(GX_KCOLOR0, c0);
@@ -1038,19 +1041,19 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
         if (ind_s > 0.5f)
             ind_s = 0.5f;
         indMtx[0] = ind_s;
-        indMtx[1] = lbl_803DEEDC;
-        indMtx[2] = lbl_803DEEDC;
-        indMtx[3] = lbl_803DEEDC;
+        indMtx[1] = 0.0f;
+        indMtx[2] = 0.0f;
+        indMtx[3] = 0.0f;
         indMtx[4] = ind_s;
-        indMtx[5] = lbl_803DEEDC;
+        indMtx[5] = 0.0f;
     }
 
-    PSMTXTrans(mtx_a0, 0.5f * (-proj5) - 0.5f, 0.5f * proj4 - 0.5f, lbl_803DEEDC);
-    PSMTXScale(mtx_70, lbl_803DEF24, *(f32*)&lbl_803DEF24, lbl_803DEEDC);
+    PSMTXTrans(mtx_a0, 0.5f * (-proj5) - 0.5f, 0.5f * proj4 - 0.5f, 0.0f);
+    PSMTXScale(mtx_70, 0.8f, 0.8f, 0.0f);
     PSMTXRotRad(mtx_d0, 'z', angle);
     PSMTXConcat(mtx_70, mtx_a0, mtx_70);
     PSMTXConcat(mtx_d0, mtx_70, mtx_d0);
-    PSMTXTrans(mtx_a0, 0.5f, 0.5f, lbl_803DEEDC);
+    PSMTXTrans(mtx_a0, 0.5f, 0.5f, 0.0f);
     PSMTXConcat(mtx_a0, mtx_d0, mtx_d0);
     GXLoadTexMtxImm(mtx_d0, GX_TEXMTX1, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
@@ -1174,7 +1177,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
 
 int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
     Mtx mtx_54;
     Mtx mtx_24;
     void* renderOp;
@@ -1197,22 +1200,22 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
 
     if (model == 0 || ((ModelFileHeader*)model)->normalCount != 0)
     {
-        PSMTXScale(mtx_54, lbl_803DB6B8, lbl_803DB6B8, lbl_803DEEDC);
+        PSMTXScale(mtx_54, lbl_803DB6B8, lbl_803DB6B8, 0.0f);
         mtx_54[2][3] = lbl_803DEEE4;
-        PSMTXTrans(mtx_24, gSynthDelayedActionWord0, *(f32*)&gSynthDelayedActionWord0, lbl_803DEEDC);
+        PSMTXTrans(mtx_24, 0.5f, 0.5f, 0.0f);
         PSMTXConcat(mtx_24, mtx_54, mtx_54);
     }
     else
     {
         PSMTXScale(mtx_54, 0.0f, 0.0f, 0.0f);
-        mtx_54[0][3] = gSynthDelayedActionWord0;
-        mtx_54[1][3] = gSynthDelayedActionWord0;
+        mtx_54[0][3] = 0.5f;
+        mtx_54[1][3] = 0.5f;
         mtx_54[2][3] = lbl_803DEEE4;
     }
     GXLoadTexMtxImm(mtx_54, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX6);
 
-    PSMTXScale(mtx_54, lbl_803DB6C0, lbl_803DB6C0, lbl_803DEEDC);
+    PSMTXScale(mtx_54, lbl_803DB6C0, lbl_803DB6C0, 0.0f);
     mtx_54[2][3] = lbl_803DEEE4;
     GXLoadTexMtxImm(mtx_54, GX_PTTEXMTX5, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX5);
@@ -1394,7 +1397,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
 
 /*
  * Three-tex-coord-gen ind+direct TEV setup. Loads the active env-mtx
- * (lbl_80396820) for tex0, scales tex1 by hudScale through a 3x4
+ * (lbl_80396820) for tex0, scales tex1 by 4.0f through a 3x4
  * matrix from PSMTXScale, and stamps an indirect tex matrix from local
  * stack data. Two TEV stages: stage 0 K-modulates the texture by alpha,
  * stage 1 modulates by the second texture. Uses ind tex stage 0 to warp
@@ -1402,7 +1405,6 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
  */
 void quakeSpellTextureFn_8007366c(u8 alpha)
 {
-    extern f32 lbl_803DEEDC;
     extern f32 lbl_803DEEE4;
 
     int handle1;
@@ -1426,27 +1428,27 @@ void quakeSpellTextureFn_8007366c(u8 alpha)
     tex_mtx[0][3] = a;
     GXLoadTexMtxImm(tex_mtx, GX_TEXMTX1, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
-    ind_mtx[0][0] = gSynthDelayedActionWord0;
-    ind_mtx[0][1] = lbl_803DEEDC;
-    ind_mtx[0][2] = lbl_803DEEDC;
-    ind_mtx[1][0] = lbl_803DEEDC;
-    ind_mtx[1][1] = lbl_803DEEEC;
-    ind_mtx[1][2] = lbl_803DEEDC;
+    ind_mtx[0][0] = 0.5f;
+    ind_mtx[0][1] = 0.0f;
+    ind_mtx[0][2] = 0.0f;
+    ind_mtx[1][0] = 0.0f;
+    ind_mtx[1][1] = 0.25f;
+    ind_mtx[1][2] = 0.0f;
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
     GXSetIndTexCoordScale(0, 0, 0);
     GXSetIndTexMtx(1, ind_mtx, -3);
     GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
-    mtx[0][0] = lbl_803DEF30;
-    mtx[0][1] = lbl_803DEEDC;
-    mtx[0][2] = lbl_803DEEDC;
-    mtx[0][3] = *(f32*)&gSynthDelayedActionWord0;
-    mtx[1][0] = lbl_803DEEDC;
-    mtx[1][1] = lbl_803DEF30;
-    mtx[1][2] = lbl_803DEEDC;
-    mtx[1][3] = *(f32*)&gSynthDelayedActionWord0;
-    mtx[2][0] = lbl_803DEEDC;
-    mtx[2][1] = lbl_803DEEDC;
-    mtx[2][2] = lbl_803DEEDC;
+    mtx[0][0] = 0.6f;
+    mtx[0][1] = 0.0f;
+    mtx[0][2] = 0.0f;
+    mtx[0][3] = 0.5f;
+    mtx[1][0] = 0.0f;
+    mtx[1][1] = 0.6f;
+    mtx[1][2] = 0.0f;
+    mtx[1][3] = 0.5f;
+    mtx[2][0] = 0.0f;
+    mtx[2][1] = 0.0f;
+    mtx[2][2] = 0.0f;
     mtx[2][3] = lbl_803DEEE4;
     GXLoadTexMtxImm(mtx, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX7);
@@ -1535,7 +1537,7 @@ void setupAdditiveTintedTexture(void* texture, u32* colorA, u32* colorB)
 
 int modelCb_80073d04(u8* obj, int* objB)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
     int handle;
     GXColor colorK;
     GXColor colorB;
@@ -1543,20 +1545,20 @@ int modelCb_80073d04(u8* obj, int* objB)
     int tex;
     int model;
 
-    colorB = lbl_803DEEB4;
+    colorB = sMoonFxTint;
     model = objB[0];
     tex = (int)textureIdxToPtr(*(int*)Shader_getLayer(ObjModel_GetRenderOp((ModelFileHeader*)model, 0), 0));
-    texMtx[0][0] = lbl_803DEF34;
-    texMtx[0][1] = lbl_803DEEDC;
-    texMtx[0][2] = lbl_803DEEDC;
-    texMtx[0][3] = *(f32*)&gSynthDelayedActionWord0;
-    texMtx[1][0] = lbl_803DEEDC;
-    texMtx[1][1] = lbl_803DEF34;
-    texMtx[1][2] = lbl_803DEEDC;
-    texMtx[1][3] = *(f32*)&gSynthDelayedActionWord0;
-    texMtx[2][0] = lbl_803DEEDC;
-    texMtx[2][1] = lbl_803DEEDC;
-    texMtx[2][2] = lbl_803DEEDC;
+    texMtx[0][0] = 0.7f;
+    texMtx[0][1] = 0.0f;
+    texMtx[0][2] = 0.0f;
+    texMtx[0][3] = 0.5f;
+    texMtx[1][0] = 0.0f;
+    texMtx[1][1] = 0.7f;
+    texMtx[1][2] = 0.0f;
+    texMtx[1][3] = 0.5f;
+    texMtx[2][0] = 0.0f;
+    texMtx[2][1] = 0.0f;
+    texMtx[2][2] = 0.0f;
     texMtx[2][3] = lbl_803DEEE4;
     GXLoadTexMtxImm(texMtx, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX7);
@@ -1621,7 +1623,6 @@ int modelCb_80073d04(u8* obj, int* objB)
 
 int moonFxCb_80074110(u8* obj, int* objB, int slot)
 {
-    extern f32 lbl_803DEEDC;
     GXColor colorK;
     GXColor colorFog;
     Mtx mtx;
@@ -1633,8 +1634,8 @@ int moonFxCb_80074110(u8* obj, int* objB, int slot)
     tex = (int)textureIdxToPtr(*(int*)Shader_getLayer((void*)op, 0));
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     lbl_803DD010 = mainGetBit(0x2ba);
-    tx = lbl_803DD010 / lbl_803DEF38;
-    PSMTXTrans(mtx, tx, lbl_803DEEDC, *(f32*)&lbl_803DEEDC);
+    tx = lbl_803DD010 / 30.0f;
+    PSMTXTrans(mtx, tx, 0.0f, 0.0f);
     GXLoadTexMtxImm(mtx, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     GXSetNumTexGens(2);
@@ -1691,7 +1692,7 @@ int moonFxCb_80074110(u8* obj, int* objB, int slot)
 
 int modelCb_80074518(void* obj_a, void** obj_b, int slot)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
     Mtx mtx_90;
     Mtx mtx_60;
     Mtx mtx_30;
@@ -1709,7 +1710,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     renderOp = ObjModel_GetRenderOp((ModelFileHeader*)model, slot);
     tex = textureIdxToPtr(*(int*)Shader_getLayer(renderOp, 0));
 
-    PSMTXScale(mtx_60, lbl_803DB6B4, lbl_803DB6B4, lbl_803DEEDC);
+    PSMTXScale(mtx_60, lbl_803DB6B4, lbl_803DB6B4, 0.0f);
     mtx_60[2][3] = lbl_803DEEE4;
     GXLoadTexMtxImm(mtx_60, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX7);
@@ -1733,8 +1734,8 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
     PSMTXScale(mtx_30, lbl_803DB6B0, lbl_803DB6B0, lbl_803DEEE4);
     PSMTXConcat(mtx_30, lbl_80396820, mtx_90);
-    PSMTXTrans(mtx_30, gSynthDelayedActionWord0 * (lbl_803DEEE4 - lbl_803DB6B0),
-               gSynthDelayedActionWord0 * (lbl_803DEEE4 - lbl_803DB6B0), lbl_803DEEDC);
+    PSMTXTrans(mtx_30, 0.5f * (lbl_803DEEE4 - lbl_803DB6B0),
+               0.5f * (lbl_803DEEE4 - lbl_803DB6B0), 0.0f);
     PSMTXConcat(mtx_30, mtx_90, mtx_90);
     GXLoadTexMtxImm(mtx_90, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_TRUE, GX_PTTEXMTX6);
@@ -1893,7 +1894,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
 
 u32 objCallback_80074d04(int handle, void* model)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
 
     Mtx mtx_ec;
     Mtx mtx_bc;
@@ -1917,7 +1918,7 @@ u32 objCallback_80074d04(int handle, void* model)
         py = mtx_8c[1][3];
         pz = mtx_8c[2][3];
         dist = px * px + py * py + pz * pz;
-        if (dist > lbl_803DEEDC)
+        if (dist > 0.0f)
         {
             dist = distortSqrtf(dist);
         }
@@ -1934,24 +1935,24 @@ u32 objCallback_80074d04(int handle, void* model)
     GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
     newshadows_getReflectionScrollOffsets(&f1, &f2);
-    f1 *= hudScale;
-    f2 *= hudScale;
+    f1 *= 4.0f;
+    f2 *= 4.0f;
     getNewShadowCausticTexture((u32*)&handle1);
     selectTexture((Texture*)handle1, 1);
 
-    PSMTXScale(mtx_ec, hudScale, hudScale, hudScale);
+    PSMTXScale(mtx_ec, 4.0f, 4.0f, 4.0f);
     mtx_ec[0][3] = f1;
     GXLoadTexMtxImm(mtx_ec, GX_TEXMTX1, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
 
     {
-        f32 v = gSynthDelayedActionWord0 * f31_val;
+        f32 v = 0.5f * f31_val;
         indMtx_44[0] = v;
-        indMtx_44[1] = lbl_803DEEDC;
-        indMtx_44[2] = lbl_803DEEDC;
-        indMtx_44[3] = lbl_803DEEDC;
+        indMtx_44[1] = 0.0f;
+        indMtx_44[2] = 0.0f;
+        indMtx_44[3] = 0.0f;
         indMtx_44[4] = v;
-        indMtx_44[5] = lbl_803DEEDC;
+        indMtx_44[5] = 0.0f;
     }
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
     GXSetIndTexCoordScale(0, 0, 0);
@@ -1971,10 +1972,10 @@ u32 objCallback_80074d04(int handle, void* model)
         f32 v48 = -0.3536f * f31_val;
         indMtx_2c[0] = v44;
         indMtx_2c[1] = v44;
-        indMtx_2c[2] = lbl_803DEEDC;
+        indMtx_2c[2] = 0.0f;
         indMtx_2c[3] = v48;
         indMtx_2c[4] = v44;
-        indMtx_2c[5] = lbl_803DEEDC;
+        indMtx_2c[5] = 0.0f;
     }
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD2, GX_TEXMAP1);
     GXSetIndTexCoordScale(1, 0, 0);
@@ -1982,16 +1983,16 @@ u32 objCallback_80074d04(int handle, void* model)
     GXSetTevIndirect(1, 1, 0, 7, 2, 0, 0, 1, 0, 0);
 
     ((f32*)mtx_8c)[0] = lbl_803DB6AC;
-    ((f32*)mtx_8c)[1] = lbl_803DEEDC;
-    ((f32*)mtx_8c)[2] = lbl_803DEEDC;
-    ((f32*)mtx_8c)[3] = gSynthDelayedActionWord0;
-    ((f32*)mtx_8c)[4] = lbl_803DEEDC;
+    ((f32*)mtx_8c)[1] = 0.0f;
+    ((f32*)mtx_8c)[2] = 0.0f;
+    ((f32*)mtx_8c)[3] = 0.5f;
+    ((f32*)mtx_8c)[4] = 0.0f;
     ((f32*)mtx_8c)[5] = lbl_803DB6AC;
-    ((f32*)mtx_8c)[6] = lbl_803DEEDC;
-    ((f32*)mtx_8c)[7] = gSynthDelayedActionWord0;
-    ((f32*)mtx_8c)[8] = lbl_803DEEDC;
-    ((f32*)mtx_8c)[9] = lbl_803DEEDC;
-    ((f32*)mtx_8c)[10] = lbl_803DEEDC;
+    ((f32*)mtx_8c)[6] = 0.0f;
+    ((f32*)mtx_8c)[7] = 0.5f;
+    ((f32*)mtx_8c)[8] = 0.0f;
+    ((f32*)mtx_8c)[9] = 0.0f;
+    ((f32*)mtx_8c)[10] = 0.0f;
     ((f32*)mtx_8c)[11] = lbl_803DEEE4;
     GXLoadTexMtxImm((f32(*)[4])mtx_8c, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTTEXMTX7);
@@ -2053,7 +2054,7 @@ u32 objCallback_80074d04(int handle, void* model)
 
 void hudDrawRect(int x1, int y1, int x2, int y2, GXColor color)
 {
-    extern f32 lbl_803DEEDC;
+    f32 zero = 0.0f;
 
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
@@ -2093,37 +2094,37 @@ void hudDrawRect(int x1, int y1, int x2, int y2, GXColor color)
     GXWGFifo.s16 = x1 << 2;
     GXWGFifo.s16 = y1 << 2;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = x2 << 2;
     GXWGFifo.s16 = y1 << 2;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = x2 << 2;
     GXWGFifo.s16 = y2 << 2;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = x1 << 2;
     GXWGFifo.s16 = y2 << 2;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     Camera_RebuildProjectionMatrix();
 }
 
 void drawViewFinderLine(f32 x1, f32 y1, f32 x2, f32 y2, f32 x3, f32 y3, f32 x4, f32 y4, GXColor* color)
 {
-    extern f32 lbl_803DEEDC;
-    f32 scale = hudScale;
+    f32 zero = 0.0f;
+    f32 scale = 4.0f;
     f32 fy4, fx4, fy3, fx3, fy2, fx2, fy1, fx1;
     fx1 = scale * x1;
     fy1 = scale * y1;
@@ -2172,37 +2173,37 @@ void drawViewFinderLine(f32 x1, f32 y1, f32 x2, f32 y2, f32 x3, f32 y3, f32 x4, 
     GXWGFifo.s16 = fx1;
     GXWGFifo.s16 = fy1;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = fx2;
     GXWGFifo.s16 = fy2;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = fx3;
     GXWGFifo.s16 = fy3;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = fx4;
     GXWGFifo.s16 = fy4;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     Camera_RebuildProjectionMatrix();
 }
 
 void hudDrawTriangle(f32 x1, f32 y1, f32 x2, f32 y2, f32 x3, f32 y3, GXColor color)
 {
-    extern f32 lbl_803DEEDC;
-    f32 scale = hudScale;
+    f32 zero = 0.0f;
+    f32 scale = 4.0f;
     f32 fy3, fx3, fy2, fx2, fy1, fx1;
     fx1 = scale * x1;
     fy1 = scale * y1;
@@ -2249,22 +2250,22 @@ void hudDrawTriangle(f32 x1, f32 y1, f32 x2, f32 y2, f32 x3, f32 y3, GXColor col
     GXWGFifo.s16 = fx1;
     GXWGFifo.s16 = fy1;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = fx2;
     GXWGFifo.s16 = fy2;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = fx3;
     GXWGFifo.s16 = fy3;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     Camera_RebuildProjectionMatrix();
 }
@@ -2418,8 +2419,8 @@ void drawPartialTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     drawScale = scale;
     w = (s32)(((u32)(width << 2) * drawScale) >> 8);
-    sx = hudScale * sx;
-    sy = hudScale * sy;
+    sx = 4.0f * sx;
+    sy = 4.0f * sy;
     u0 = (f32)(u32)u_offset / (f32)((u16*)obj)[5];
     v0 = (f32)(u32)v_offset / (f32)((u16*)obj)[6];
     u1 = (f32)(u32)(width + u_offset) / (f32)((u16*)obj)[5];
@@ -2502,8 +2503,8 @@ void drawRect(f32 sx, f32 sy, int x, int y)
     }
     GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
     GXSetCurrentMtx(GX_IDENTITY);
-    sx = hudScale * sx;
-    sy = hudScale * sy;
+    sx = 4.0f * sx;
+    sy = 4.0f * sy;
     GXBegin(GX_QUADS, GX_VTXFMT1, 4);
 
     GXWGFifo.s16 = sx;
@@ -2528,7 +2529,6 @@ void drawRect(f32 sx, f32 sy, int x, int y)
 
 void drawScaledTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int width, int height, int flags)
 {
-    extern f32 lbl_803DEEDC;
     GXColor c;
     s32 w, h;
     s32 alpha;
@@ -2599,29 +2599,29 @@ void drawScaledTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int 
     }
     w = (s32)(((u32)(width << 2) * (u16)scale) >> 8);
     h = (s32)(((u32)(height << 2) * (u16)scale) >> 8);
-    sx = hudScale * sx;
-    sy = hudScale * sy;
+    sx = 4.0f * sx;
+    sy = 4.0f * sy;
     {
         f32 ur = (f32)(u32)width / (f32)(u16)((u16*)obj)[5];
         f32 vr = (f32)(u32)height / (f32)(u16)((u16*)obj)[6];
         if ((fbits & 1) != 0)
         {
             u0 = ur;
-            u1 = lbl_803DEEDC;
+            u1 = 0.0f;
         }
         else
         {
-            u0 = lbl_803DEEDC;
+            u0 = 0.0f;
             u1 = ur;
         }
         if ((fbits & 2) != 0)
         {
             v0 = vr;
-            v1 = lbl_803DEEDC;
+            v1 = 0.0f;
         }
         else
         {
-            v0 = lbl_803DEEDC;
+            v0 = 0.0f;
             v1 = vr;
         }
     }
@@ -2667,7 +2667,7 @@ void drawScaledTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int 
  */
 void hudDrawColored(int obj, int x, int y, u32* color, int scale, int flag)
 {
-    extern const f32 lbl_803DEEDC;
+    f32 zero = 0.0f;
     extern const f32 lbl_803DEEE4;
 
     GXClearVtxDesc();
@@ -2742,15 +2742,15 @@ void hudDrawColored(int obj, int x, int y, u32* color, int scale, int flag)
         GXWGFifo.s16 = (s16)(x << 2);
         GXWGFifo.s16 = (s16)(y << 2);
         GXWGFifo.s16 = -8;
-        GXWGFifo.f32 = lbl_803DEEDC;
-        GXWGFifo.f32 = lbl_803DEEDC;
+        GXWGFifo.f32 = zero;
+        GXWGFifo.f32 = zero;
 
         GXWGFifo.u8 = 0x3C;
         GXWGFifo.s16 = (s16)((x << 2) + w);
         GXWGFifo.s16 = (s16)(y << 2);
         GXWGFifo.s16 = -8;
         GXWGFifo.f32 = *(const f32*)&lbl_803DEEE4;
-        GXWGFifo.f32 = lbl_803DEEDC;
+        GXWGFifo.f32 = zero;
 
         GXWGFifo.u8 = 0x3C;
         GXWGFifo.s16 = (s16)((x << 2) + w);
@@ -2763,7 +2763,7 @@ void hudDrawColored(int obj, int x, int y, u32* color, int scale, int flag)
         GXWGFifo.s16 = (s16)(x << 2);
         GXWGFifo.s16 = (s16)((y << 2) + h);
         GXWGFifo.s16 = -8;
-        GXWGFifo.f32 = lbl_803DEEDC;
+        GXWGFifo.f32 = zero;
         GXWGFifo.f32 = lbl_803DEEE4;
     }
     Camera_RebuildProjectionMatrix();
@@ -2780,7 +2780,7 @@ void hudDrawColored(int obj, int x, int y, u32* color, int scale, int flag)
  */
 void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
 {
-    extern const f32 lbl_803DEEDC;
+    f32 zero = 0.0f;
     extern const f32 lbl_803DEEE4;
     GXColor c;
     s32 w, h;
@@ -2842,23 +2842,23 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     w = ((((u16*)obj)[5] << 2) * (u16)scale) / 256;
     h = ((((u16*)obj)[6] << 2) * (u16)scale) / 256;
-    sx = hudScale * sx;
-    sy = hudScale * sy;
+    sx = 4.0f * sx;
+    sy = 4.0f * sy;
     GXBegin(GX_QUADS, GX_VTXFMT1, 4);
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = sx;
     GXWGFifo.s16 = sy;
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = *(const f32*)&lbl_803DEEDC;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
+    GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = (s16)(sx + (f32)(u32)w);
     GXWGFifo.s16 = sy;
     GXWGFifo.s16 = -8;
     GXWGFifo.f32 = *(const f32*)&lbl_803DEEE4;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
 
     GXWGFifo.u8 = 0x3C;
     GXWGFifo.s16 = (s16)(sx + (f32)(u32)w);
@@ -2871,7 +2871,7 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
     GXWGFifo.s16 = sx;
     GXWGFifo.s16 = (s16)(sy + (f32)(u32)h);
     GXWGFifo.s16 = -8;
-    GXWGFifo.f32 = lbl_803DEEDC;
+    GXWGFifo.f32 = zero;
     GXWGFifo.f32 = lbl_803DEEE4;
 
     Camera_RebuildProjectionMatrix();
@@ -2965,7 +2965,7 @@ void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* col
 
 void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
     Mtx m58;
     Mtx m28;
     Vec v;
@@ -3003,15 +3003,15 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
     z = -v.z;
     getNewShadowRampTexture((u32*)&handle);
     selectTexture((Texture*)handle, 1);
-    m58[0][0] = lbl_803DEEDC;
-    m58[0][1] = lbl_803DEEDC;
+    m58[0][0] = 0.0f;
+    m58[0][1] = 0.0f;
     d = z - depth;
     m58[0][2] = lbl_803DEEE4 / (q = z - d);
     m58[0][3] = z / q;
-    m58[1][0] = lbl_803DEEDC;
-    m58[1][1] = lbl_803DEEDC;
-    m58[1][2] = lbl_803DEEDC;
-    m58[1][3] = lbl_803DEEDC;
+    m58[1][0] = 0.0f;
+    m58[1][1] = 0.0f;
+    m58[1][2] = 0.0f;
+    m58[1][3] = 0.0f;
     PSMTXConcat(shadow->depthMtx, mtx, m28);
     PSMTXConcat(m58, m28, m28);
     GXLoadTexMtxImm(m28, GX_TEXMTX1, GX_MTX2x4);
@@ -3050,7 +3050,7 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
 
 void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
     typedef struct
     {
         u32 w[7];
@@ -3080,7 +3080,7 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     buf_70 = *(Blk28*)&lbl_802C1EA8.blk[3];
     buf_54 = *(Blk28*)&lbl_802C1EA8.blk[4];
     buf_38 = *(Blk28*)&lbl_802C1EA8.blk[5];
-    stab = lbl_803DEEAC;
+    stab = sProjectedShadowStageCounts;
     *(u32*)&fog_var = lbl_803E8450;
 
     PSMTXConcat(shadow->textureMtx, mtx, mtx_110);
@@ -3178,14 +3178,14 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
 
     {
         f32 d2;
-        mtx_110[0][0] = lbl_803DEEDC;
-        mtx_110[0][1] = lbl_803DEEDC;
+        mtx_110[0][0] = 0.0f;
+        mtx_110[0][1] = 0.0f;
         mtx_110[0][2] = lbl_803DEEE4 / (d2 = f31_val - (f31_val - scale));
         mtx_110[0][3] = f31_val / d2;
-        mtx_110[1][0] = lbl_803DEEDC;
-        mtx_110[1][1] = lbl_803DEEDC;
-        mtx_110[1][2] = lbl_803DEEDC;
-        mtx_110[1][3] = lbl_803DEEDC;
+        mtx_110[1][0] = 0.0f;
+        mtx_110[1][1] = 0.0f;
+        mtx_110[1][2] = 0.0f;
+        mtx_110[1][3] = 0.0f;
     }
     PSMTXConcat(shadow->depthMtx, mtx, mtx_e0);
     PSMTXConcat(mtx_110, mtx_e0, mtx_e0);
@@ -3631,34 +3631,33 @@ void _gxSetTevColor1(u8 r, u8 g, u8 b, u8 a)
  * K0/T1/T2; `flag == 0` instead does a single K0 modulate where K0's
  * alpha is the caller's byte divided by 4. Builds a per-call 3x4 tex
  * coord matrix that scales the source texture by 1/sx and 1/sy with a
- * sub-pixel offset baked from lbl_803DEF4C/50.
+ * sub-pixel offset baked from -320.0f/50.
  */
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag)
 {
-    extern f32 lbl_803DEEDC;
     extern f32 lbl_803DEEE4;
     Texture* handle;
     GXColor c0, c1, c2;
     Mtx mtx;
 
-    *(u32*)&c0 = lbl_803DEEA0;
-    *(u32*)&c1 = lbl_803DEEA4;
-    *(u32*)&c2 = lbl_803DEEA8;
+    c0 = sApertureColorBlack;
+    c1 = sApertureColorEdge;
+    c2 = sApertureColorCentre;
     getNewShadowRadialTexture(&handle);
     selectTexture(handle, 0);
     {
-        f32 dec = *(f32*)&gSynthDelayedActionWord0;
-        f32 zero = lbl_803DEEDC;
+        f32 dec = 0.5f;
+        f32 zero = 0.0f;
         f32 inv_sx = dec / sx;
         f32 inv_sy = dec / sy;
         mtx[0][0] = inv_sx;
         mtx[0][1] = zero;
         mtx[0][2] = zero;
-        mtx[0][3] = lbl_803DEF4C * inv_sx + dec;
+        mtx[0][3] = -320.0f * inv_sx + dec;
         mtx[1][0] = zero;
         mtx[1][1] = inv_sy;
         mtx[1][2] = zero;
-        mtx[1][3] = lbl_803DEF50 * inv_sy + dec;
+        mtx[1][3] = -240.0f * inv_sy + dec;
         mtx[2][0] = zero;
         mtx[2][1] = zero;
         mtx[2][2] = zero;
@@ -3740,7 +3739,7 @@ void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag)
 
 void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1, f32 s3)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
     Mtx mtx_58;
     Mtx mtx_28;
     int handle1;
@@ -3756,8 +3755,8 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
 
     c_K0.a = alpha0;
     c_K1.a = alpha1;
-    ratio1 = ((f32)(u32)Camera_GetCurrentViewYaw() - lbl_803DEF54) / lbl_803DEF58;
-    ratio2 = ((f32)(u32)Camera_GetCurrentViewPitch() - lbl_803DEF54) / lbl_803DEF58;
+    ratio1 = ((f32)(u32)Camera_GetCurrentViewYaw() - 32768.0f) / 8192.0f;
+    ratio2 = ((f32)(u32)Camera_GetCurrentViewPitch() - 32768.0f) / 8192.0f;
     if (getHudHiddenFrameCount() != 0)
     {
         angle = lbl_803DD00C;
@@ -3765,7 +3764,7 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
     else
     {
         f32 t = atanf_fast(((f32*)vec)[0] / ((f32*)vec)[1]);
-        angle = lbl_803DD00C + interpolate(t - lbl_803DD00C, lbl_803DEF5C, timeDelta);
+        angle = lbl_803DD00C + interpolate(t - lbl_803DD00C, 0.05f, timeDelta);
         lbl_803DD00C = angle;
     }
     c_K2.a = mtxIdx;
@@ -3777,24 +3776,24 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
 
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXScale(mtx_58, lbl_803DEF60 * (f32)s2, lbl_803DEF60 * (f32)s2, lbl_803DEEDC);
-    PSMTXTrans(mtx_28, ratio1 * (f32)s3, ratio2 * (f32)s3 + (f32)s1, lbl_803DEEDC);
+    PSMTXScale(mtx_58, 6.0f * (f32)s2, 6.0f * (f32)s2, 0.0f);
+    PSMTXTrans(mtx_28, ratio1 * (f32)s3, ratio2 * (f32)s3 + (f32)s1, 0.0f);
     PSMTXConcat(mtx_28, mtx_58, mtx_58);
     PSMTXRotRad(mtx_28, 'z', angle);
     PSMTXConcat(mtx_58, mtx_28, mtx_58);
-    PSMTXTrans(mtx_28, lbl_803DEEF4, *(f32*)&lbl_803DEEF4, lbl_803DEEDC);
+    PSMTXTrans(mtx_28, -0.5f, -0.5f, 0.0f);
     PSMTXConcat(mtx_58, mtx_28, mtx_58);
     GXLoadTexMtxImm(mtx_58, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXScale(mtx_58, lbl_803DEF64 * (f32)s2, lbl_803DEF64 * (f32)s2, lbl_803DEEDC);
+    PSMTXScale(mtx_58, 12.0f * (f32)s2, 12.0f * (f32)s2, 0.0f);
     fade1 = gSynthFadeMask * ratio1;
     fade2 = *(f32*)&gSynthFadeMask * ratio2;
-    PSMTXTrans(mtx_28, fade1 * (f32)s3, lbl_803DEF68 * (f32)s1 + fade2 * (f32)s3, lbl_803DEEDC);
+    PSMTXTrans(mtx_28, fade1 * (f32)s3, 0.75f * (f32)s1 + fade2 * (f32)s3, 0.0f);
     PSMTXConcat(mtx_28, mtx_58, mtx_58);
-    PSMTXRotRad(mtx_28, 'z', gSynthDelayedActionWord0 * angle);
+    PSMTXRotRad(mtx_28, 'z', 0.5f * angle);
     PSMTXConcat(mtx_58, mtx_28, mtx_58);
-    PSMTXTrans(mtx_28, lbl_803DEEF4, *(f32*)&lbl_803DEEF4, lbl_803DEEDC);
+    PSMTXTrans(mtx_28, -0.5f, -0.5f, 0.0f);
     PSMTXConcat(mtx_58, mtx_28, mtx_58);
     GXLoadTexMtxImm(mtx_58, GX_TEXMTX1, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
@@ -3915,7 +3914,7 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
 
 void doHeatEffect(u8 alpha)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
     Mtx mtx_44;
     f32 indMtx[6];
     int handle2;
@@ -3948,21 +3947,21 @@ void doHeatEffect(u8 alpha)
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
     newshadows_getReflectionScrollOffsets(&fA, &fB);
-    fA *= lbl_803DEF6C;
-    fB *= lbl_803DEF6C;
+    fA *= 10.0f;
+    fB *= 10.0f;
     getNewShadowCausticTexture((u32*)&handle2);
     selectTexture((Texture*)handle2, 2);
 
-    mathSinCosf(lbl_803DEF70 * fA, &mulX, &mulY);
-    mulY *= gSynthDelayedActionWord0;
-    mulX *= gSynthDelayedActionWord0;
+    mathSinCosf(3.142f * fA, &mulX, &mulY);
+    mulY *= 0.5f;
+    mulX *= 0.5f;
 
     indMtx[0] = mulY;
     indMtx[1] = mulX;
     indMtx[3] = -mulX;
     indMtx[4] = mulY;
 
-    PSMTXScale(mtx_44, lbl_803DEF74, *(f32*)&lbl_803DEF74, lbl_803DEEE4);
+    PSMTXScale(mtx_44, 7.0f, 7.0f, lbl_803DEEE4);
     mtx_44[0][3] = fA;
     mtx_44[1][3] = -fB;
     GXLoadTexMtxImm(mtx_44, GX_PTTEXMTX0, GX_MTX3x4);
@@ -4069,7 +4068,7 @@ void doHeatEffect(u8 alpha)
 
 /*
  * Fullscreen 640x480 textured quad with caller-supplied alpha. The alpha
- * is multiplied by lbl_803DEF20 (a 0..255 scale), converted to int and
+ * is multiplied by 255.0f (a 0..255 scale), converted to int and
  * stamped into byte 3 of the K0 GXColor cache (lbl_803DB6A0). Sets up
  * one TEV stage that K-multiplies the texture by alpha; uses fixed UVs
  * 0..0x80 so the texture maps once across the screen. Used when fading
@@ -4079,7 +4078,7 @@ void renderMotionBlur(f32 alpha)
 {
     Mtx mtx;
 
-    lbl_803DB6A0.a = lbl_803DEF20 * alpha;
+    lbl_803DB6A0.a = 255.0f * alpha;
     selectReflectionTexture(0);
     GXSetTevKColor(GX_KCOLOR0, lbl_803DB6A0);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
@@ -4172,29 +4171,29 @@ void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5)
     wz = wz - playerMapOffsetZ;
     Camera_ProjectWorldPoint(wx, wy, wz, &px, &py, &pz, &pw);
     pz = pz + lbl_803DEEE4;
-    c0.a = (u8)(((u32)(lbl_803DEF08 * pz) & 0x00FF0000) >> 16);
+    c0.a = (u8)(((u32)(16777216.0f * pz) & 0x00FF0000) >> 16);
     selectReflectionTexture(0);
     getReflectionTexture2((u32*)&handle);
     selectTexture((Texture*)handle, 1);
     GXSetTevSwapModeTable(GX_TEV_SWAP1, GX_CH_RED, GX_CH_RED, GX_CH_RED, GX_CH_GREEN);
 
     PSMTXIdentity(mtx_24);
-    mtx_24[1][3] = lbl_803DEF78;
+    mtx_24[1][3] = -0.0041666667f;
     GXLoadTexMtxImm(mtx_24, GX_TEXMTX2, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
 
     PSMTXIdentity(mtx_2A);
-    mtx_2A[1][3] = lbl_803DEF78;
+    mtx_2A[1][3] = -0.0041666667f;
     GXLoadTexMtxImm(mtx_2A, GX_TEXMTX4, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX4, GX_FALSE, GX_PTIDENTITY);
 
     PSMTXIdentity(mtx_2D);
-    mtx_2D[0][3] = lbl_803DEF7C;
+    mtx_2D[0][3] = 0.003125f;
     GXLoadTexMtxImm(mtx_2D, GX_TEXMTX5, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX5, GX_FALSE, GX_PTIDENTITY);
 
     PSMTXIdentity(mtx_30);
-    mtx_30[0][3] = lbl_803DEF80;
+    mtx_30[0][3] = -0.003125f;
     GXLoadTexMtxImm(mtx_30, GX_TEXMTX6, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD4, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX6, GX_FALSE, GX_PTIDENTITY);
 
@@ -4438,7 +4437,7 @@ void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5)
 
 void setupWaterReflectionTev(int handle1, int handle2)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
     Mtx mtx_30;
     GXColor temp;
     GXColor temp2;
@@ -4457,7 +4456,7 @@ void setupWaterReflectionTev(int handle1, int handle2)
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXLoadTexMtxImm(lbl_80396820, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX7);
-    PSMTXScale(mtx_30, lbl_803DEF64, lbl_803DEEE4, lbl_803DEEDC);
+    PSMTXScale(mtx_30, 12.0f, lbl_803DEEE4, 0.0f);
     GXLoadTexMtxImm(mtx_30, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
@@ -4560,18 +4559,17 @@ void setupWaterReflectionTev(int handle1, int handle2)
 
 void setupReflectionIndirectTev(u8 flag)
 {
-    extern f32 lbl_803DEEDC;
     f32 mtx[6];
 
     selectReflectionTexture(1);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-    mtx[0] = lbl_803DEEDC;
-    mtx[1] = *(f32*)&gSynthDelayedActionWord0;
-    mtx[2] = lbl_803DEEDC;
-    mtx[3] = lbl_803DEEDC;
-    mtx[4] = lbl_803DEEDC;
-    mtx[5] = *(f32*)&gSynthDelayedActionWord0;
+    mtx[0] = 0.0f;
+    mtx[1] = 0.5f;
+    mtx[2] = 0.0f;
+    mtx[3] = 0.0f;
+    mtx[4] = 0.0f;
+    mtx[5] = 0.5f;
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD0, GX_TEXMAP0);
     GXSetIndTexCoordScale(0, 0, 0);
     GXSetIndTexMtx(1, (void*)mtx, -2);
@@ -4606,7 +4604,7 @@ void setupReflectionIndirectTev(u8 flag)
 
 void setupReflectionDistortTev(int texHandle)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
 
     u8 ignoredLightColor;
     f32 sOff;
@@ -4622,12 +4620,12 @@ void setupReflectionDistortTev(int texHandle)
     PSMTXScale(scaleMtx, 1.0f, 1.0f, 1.0f);
     GXLoadTexMtxImm(scaleMtx, GX_TEXMTX1, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
-    indMtx[0] = lbl_803DEEDC;
-    indMtx[1] = *(f32*)&gSynthDelayedActionWord0;
-    indMtx[2] = lbl_803DEEDC;
-    indMtx[3] = lbl_803DEEDC;
-    indMtx[4] = lbl_803DEEDC;
-    indMtx[5] = *(f32*)&gSynthDelayedActionWord0;
+    indMtx[0] = 0.0f;
+    indMtx[1] = 0.5f;
+    indMtx[2] = 0.0f;
+    indMtx[3] = 0.0f;
+    indMtx[4] = 0.0f;
+    indMtx[5] = 0.5f;
     if (isHeavyFogEnabled())
     {
         lbl_803DB688.r = gFogColor.r;
@@ -4697,7 +4695,7 @@ void setupReflectionDistortTev(int texHandle)
 
 void setupReflectionBumpDistortTev(void* texture)
 {
-    extern f32 lbl_803DEEDC, lbl_803DEEE4;
+    extern f32 lbl_803DEEE4;
 
     u8 ignoredLightColor;
     f32 sOff;
@@ -4713,12 +4711,12 @@ void setupReflectionBumpDistortTev(void* texture)
     PSMTXScale(scaleMtx, 1.0f, 1.0f, 1.0f);
     GXLoadTexMtxImm(scaleMtx, GX_TEXMTX1, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
-    indMtx[0] = lbl_803DEEEC;
-    indMtx[1] = lbl_803DEEDC;
-    indMtx[2] = lbl_803DEEDC;
-    indMtx[3] = lbl_803DEEDC;
-    indMtx[4] = lbl_803DEEEC;
-    indMtx[5] = lbl_803DEEDC;
+    indMtx[0] = 0.25f;
+    indMtx[1] = 0.0f;
+    indMtx[2] = 0.0f;
+    indMtx[3] = 0.0f;
+    indMtx[4] = 0.25f;
+    indMtx[5] = 0.0f;
     if (isHeavyFogEnabled())
     {
         lbl_803DB680.r = gFogColor.r;
@@ -4862,8 +4860,6 @@ int saveCb_8007e748(int saveId, int size, void* dst);
 
 void gxTextureSetupFn_8007cf7c(void)
 {
-    extern f32 lbl_803DEEDC;
-    extern f32 lbl_803DEF84, lbl_803DEF88;
     extern u32 lbl_803DB67C;
 
     Mtx mtx_cc;
@@ -4887,12 +4883,12 @@ void gxTextureSetupFn_8007cf7c(void)
     GXLoadTexMtxImm(mtx_cc, GX_TEXMTX3, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX3, GX_FALSE, GX_PTIDENTITY);
 
-    indMtx_54[0] = gSynthDelayedActionWord0;
-    indMtx_54[1] = lbl_803DEEDC;
-    indMtx_54[2] = lbl_803DEEDC;
-    indMtx_54[3] = lbl_803DEEDC;
-    indMtx_54[4] = gSynthDelayedActionWord0;
-    indMtx_54[5] = lbl_803DEEDC;
+    indMtx_54[0] = 0.5f;
+    indMtx_54[1] = 0.0f;
+    indMtx_54[2] = 0.0f;
+    indMtx_54[3] = 0.0f;
+    indMtx_54[4] = 0.5f;
+    indMtx_54[5] = 0.0f;
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
     GXSetIndTexCoordScale(0, 0, 0);
     GXSetIndTexMtx(1, (f32(*)[3])indMtx_54, -2);
@@ -4906,12 +4902,12 @@ void gxTextureSetupFn_8007cf7c(void)
     GXLoadTexMtxImm(mtx_9c, GX_TEXMTX4, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX4, GX_FALSE, GX_PTIDENTITY);
 
-    indMtx_3c[0] = lbl_803DEF84;
-    indMtx_3c[1] = lbl_803DEF84;
-    indMtx_3c[2] = lbl_803DEEDC;
-    indMtx_3c[3] = lbl_803DEF88;
-    indMtx_3c[4] = lbl_803DEF84;
-    indMtx_3c[5] = lbl_803DEEDC;
+    indMtx_3c[0] = 0.3f;
+    indMtx_3c[1] = 0.3f;
+    indMtx_3c[2] = 0.0f;
+    indMtx_3c[3] = -0.3f;
+    indMtx_3c[4] = 0.3f;
+    indMtx_3c[5] = 0.0f;
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD2, GX_TEXMAP1);
     GXSetIndTexCoordScale(1, 0, 0);
     GXSetIndTexMtx(2, (f32(*)[3])indMtx_3c, -4);
@@ -4969,12 +4965,12 @@ void gxTextureSetupFn_8007cf7c(void)
     }
     GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVREG0);
 
-    indMtx_24[0] = lbl_803DEEDC;
-    indMtx_24[1] = gSynthDelayedActionWord0;
-    indMtx_24[2] = lbl_803DEEDC;
-    indMtx_24[3] = lbl_803DEEF4;
-    indMtx_24[4] = lbl_803DEEDC;
-    indMtx_24[5] = lbl_803DEEDC;
+    indMtx_24[0] = 0.0f;
+    indMtx_24[1] = 0.5f;
+    indMtx_24[2] = 0.0f;
+    indMtx_24[3] = -0.5f;
+    indMtx_24[4] = 0.0f;
+    indMtx_24[5] = 0.0f;
     GXSetIndTexMtx(3, (f32(*)[3])indMtx_24, -5);
     GXSetTevIndirect(2, 0, 0, 7, 2, 6, 6, 0, 0, 0);
     GXSetTevIndirect(3, 1, 0, 7, 3, 0, 0, 1, 0, 0);
