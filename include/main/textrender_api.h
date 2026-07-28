@@ -39,7 +39,7 @@ void gameTextRun(void);
 void* gameTextGet(int textId);
 void mainLoopDoGameText(void);
 void gameTextLoadDir(int dirId);
-int gameTextFn_8001b44c(int x);
+int gameTextSaveDir(int x);
 void gameTextLoadForCurMap(int sourceId);
 void gameTextLoadTaskText(int taskId);
 int getCurGameText(void);

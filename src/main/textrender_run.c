@@ -144,7 +144,7 @@ void gameTextLoadDir(int dirId)
             cmd->arg0 = GAMETEXT_SLOT_DIALOGUE;
         }
         curGameTextDir = dirId;
-        if ((subtitleIsActive() == 0 || gameTextFn_8001b44c(dirId) == 0) && curGameTextDir != gGameTextLastDir)
+        if ((subtitleIsActive() == 0 || gameTextSaveDir(dirId) == 0) && curGameTextDir != gGameTextLastDir)
         {
             gameTextLoadForCurMap(GAMETEXT_SLOT_DIALOGUE);
         }
@@ -1194,7 +1194,7 @@ void gameTextSetDrawFunc(void* fn)
     gameTextDrawFunc = fn;
 }
 
-int gameTextFn_8001b44c(int x)
+int gameTextSaveDir(int x)
 {
     if (gGameTextSequenceMode == 0)
     {
