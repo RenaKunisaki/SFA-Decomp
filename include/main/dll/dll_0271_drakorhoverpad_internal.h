@@ -5,7 +5,7 @@
 #include "main/dll/rom_curve_interface.h"
 
 extern const f32 gDrakorHoverpadSpeedStep;
-extern f32 lbl_803DC2F8;
+extern f32 gDrakorHoverpadSteerMaxSpeed;
 extern s16 lbl_803DC2FC;
 extern f32 lbl_803DC300;
 extern f32 lbl_803DC304;

@@ -31,7 +31,7 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/critical_regions.gamecube.h"
 #include "sys/objects/lifecycle.h"
 
-CloudActionRuntime lbl_8039AB28;
+CloudActionRuntime gCloudActionRuntime;
 
 GameObject* lbl_803DD1F0[2];
 u8 gCloudOverridePositionValid;
@@ -74,10 +74,10 @@ void* cloudGetLayerTextureSize(f32* out1, f32* out2)
     ObjTextureRuntimeSlot* tex;
     int* layer;
 
-    if (lbl_8039AB28.mainCloudObj != NULL)
+    if (gCloudActionRuntime.mainCloudObj != NULL)
     {
-        layer = (int*)Shader_getLayer(ObjModel_GetRenderOp(Obj_GetActiveModel(lbl_8039AB28.mainCloudObj)->file, 0), 0);
-        tex = objFindTexture((GameObject*)(lbl_8039AB28.mainCloudObj), 0, 0);
+        layer = (int*)Shader_getLayer(ObjModel_GetRenderOp(Obj_GetActiveModel(gCloudActionRuntime.mainCloudObj)->file, 0), 0);
+        tex = objFindTexture((GameObject*)(gCloudActionRuntime.mainCloudObj), 0, 0);
         if (tex != NULL)
         {
             f32 scale = 0.0001f;
@@ -122,24 +122,24 @@ void cloudaction_func09_nop(void)
 
 void cloudaction_free(void)
 {
-    if (lbl_8039AB28.mainCloudObj != NULL)
+    if (gCloudActionRuntime.mainCloudObj != NULL)
     {
-        Obj_FreeObject(lbl_8039AB28.mainCloudObj);
-        lbl_8039AB28.mainCloudObj = NULL;
+        Obj_FreeObject(gCloudActionRuntime.mainCloudObj);
+        gCloudActionRuntime.mainCloudObj = NULL;
     }
-    lbl_8039AB28.mainCloudAssetId = 0;
-    if (lbl_8039AB28.upperCloudObj != NULL)
+    gCloudActionRuntime.mainCloudAssetId = 0;
+    if (gCloudActionRuntime.upperCloudObj != NULL)
     {
-        Obj_FreeObject(lbl_8039AB28.upperCloudObj);
-        lbl_8039AB28.upperCloudObj = NULL;
+        Obj_FreeObject(gCloudActionRuntime.upperCloudObj);
+        gCloudActionRuntime.upperCloudObj = NULL;
     }
-    lbl_8039AB28.upperCloudAssetId = 0;
-    if (lbl_8039AB28.lowerCloudObj != NULL)
+    gCloudActionRuntime.upperCloudAssetId = 0;
+    if (gCloudActionRuntime.lowerCloudObj != NULL)
     {
-        Obj_FreeObject(lbl_8039AB28.lowerCloudObj);
-        lbl_8039AB28.lowerCloudObj = NULL;
+        Obj_FreeObject(gCloudActionRuntime.lowerCloudObj);
+        gCloudActionRuntime.lowerCloudObj = NULL;
     }
-    lbl_8039AB28.lowerCloudAssetId = 0;
+    gCloudActionRuntime.lowerCloudAssetId = 0;
 }
 
 void renderClouds(int a, int b, int c, int d)
@@ -197,49 +197,49 @@ void renderClouds(int a, int b, int c, int d)
         return;
     }
 
-    if (lbl_8039AB28.upperCloudObj != NULL)
+    if (gCloudActionRuntime.upperCloudObj != NULL)
     {
-        model = Obj_GetActiveModel((GameObject*)lbl_8039AB28.upperCloudObj);
+        model = Obj_GetActiveModel((GameObject*)gCloudActionRuntime.upperCloudObj);
         model->bufferFlags &= ~8;
-        ((u8*)lbl_8039AB28.upperCloudObj)[0x37] = 0xff;
+        ((u8*)gCloudActionRuntime.upperCloudObj)[0x37] = 0xff;
         if ((u32)gCloudOverridePositionValid != 0)
         {
-            lbl_8039AB28.upperCloudObj->anim.localPosX = gCloudOverridePositionX;
-            lbl_8039AB28.upperCloudObj->anim.localPosY = 300.0f + gCloudOverridePositionY;
-            lbl_8039AB28.upperCloudObj->anim.localPosZ = gCloudOverridePositionZ;
+            gCloudActionRuntime.upperCloudObj->anim.localPosX = gCloudOverridePositionX;
+            gCloudActionRuntime.upperCloudObj->anim.localPosY = 300.0f + gCloudOverridePositionY;
+            gCloudActionRuntime.upperCloudObj->anim.localPosZ = gCloudOverridePositionZ;
         }
         else
         {
-            sky2ApplyModelTint((GameObject*)lbl_8039AB28.upperCloudObj);
-            lbl_8039AB28.upperCloudObj->anim.localPosX = view->x;
-            lbl_8039AB28.upperCloudObj->anim.localPosY = view->y;
-            lbl_8039AB28.upperCloudObj->anim.localPosZ = view->z;
+            sky2ApplyModelTint((GameObject*)gCloudActionRuntime.upperCloudObj);
+            gCloudActionRuntime.upperCloudObj->anim.localPosX = view->x;
+            gCloudActionRuntime.upperCloudObj->anim.localPosY = view->y;
+            gCloudActionRuntime.upperCloudObj->anim.localPosZ = view->z;
         }
         objSetOverrideColor(ambientRed, ambientGreen, ambientBlue);
-        objRender(a, b, c, d, lbl_8039AB28.upperCloudObj, 1);
+        objRender(a, b, c, d, gCloudActionRuntime.upperCloudObj, 1);
     }
 
-    if (lbl_8039AB28.mainCloudObj != NULL)
+    if (gCloudActionRuntime.mainCloudObj != NULL)
     {
         if (isOvercast())
         {
-            sky2ApplyModelTint((GameObject*)lbl_8039AB28.mainCloudObj);
+            sky2ApplyModelTint((GameObject*)gCloudActionRuntime.mainCloudObj);
         }
-        model = Obj_GetActiveModel((GameObject*)lbl_8039AB28.mainCloudObj);
+        model = Obj_GetActiveModel((GameObject*)gCloudActionRuntime.mainCloudObj);
         model->bufferFlags &= ~8;
-        ((u8*)lbl_8039AB28.mainCloudObj)[0x37] = 0xff;
+        ((u8*)gCloudActionRuntime.mainCloudObj)[0x37] = 0xff;
         v = view->x;
-        lbl_8039AB28.mainCloudObj->anim.worldPosX = v;
-        lbl_8039AB28.mainCloudObj->anim.localPosX = v;
+        gCloudActionRuntime.mainCloudObj->anim.worldPosX = v;
+        gCloudActionRuntime.mainCloudObj->anim.localPosX = v;
         v = 40.0f + view->y;
-        lbl_8039AB28.mainCloudObj->anim.worldPosY = v;
-        lbl_8039AB28.mainCloudObj->anim.localPosY = v;
+        gCloudActionRuntime.mainCloudObj->anim.worldPosY = v;
+        gCloudActionRuntime.mainCloudObj->anim.localPosY = v;
         v = view->z;
-        lbl_8039AB28.mainCloudObj->anim.worldPosZ = v;
-        lbl_8039AB28.mainCloudObj->anim.localPosZ = v;
-        lbl_8039AB28.mainCloudObj->anim.rotY = 0;
+        gCloudActionRuntime.mainCloudObj->anim.worldPosZ = v;
+        gCloudActionRuntime.mainCloudObj->anim.localPosZ = v;
+        gCloudActionRuntime.mainCloudObj->anim.rotY = 0;
         objSetOverrideColor(ambientRed, ambientGreen, ambientBlue);
-        objRender(a, b, c, d, lbl_8039AB28.mainCloudObj, 1);
+        objRender(a, b, c, d, gCloudActionRuntime.mainCloudObj, 1);
 
         getSunFlareScissorRect(&clipX, &clipY, &clipW, &clipH);
         if (clipW > 0 && clipH > 0)
@@ -249,7 +249,7 @@ void renderClouds(int a, int b, int c, int d)
             model->file->flags = model->file->flags | 0x2000;
             objSetAlphaCompareThreshold(0x80);
             GXSetColorUpdate(GX_FALSE);
-            objRender(a, b, c, d, lbl_8039AB28.mainCloudObj, 1);
+            objRender(a, b, c, d, gCloudActionRuntime.mainCloudObj, 1);
             model->file->flags = model->file->flags & ~0x2000;
             objSetAlphaCompareThreshold(0);
             GXSetColorUpdate(GX_TRUE);
@@ -305,37 +305,37 @@ void renderClouds(int a, int b, int c, int d)
         GXTex2f32(c0, c1);
     }
 
-    if (lbl_8039AB28.lowerCloudObj != NULL)
+    if (gCloudActionRuntime.lowerCloudObj != NULL)
     {
-        model = Obj_GetActiveModel((GameObject*)lbl_8039AB28.lowerCloudObj);
+        model = Obj_GetActiveModel((GameObject*)gCloudActionRuntime.lowerCloudObj);
         model->bufferFlags &= ~8;
-        ((u8*)lbl_8039AB28.lowerCloudObj)[0x37] = 0xff;
+        ((u8*)gCloudActionRuntime.lowerCloudObj)[0x37] = 0xff;
         if ((u32)gCloudOverridePositionValid != 0)
         {
-            lbl_8039AB28.lowerCloudObj->anim.localPosX = gCloudOverridePositionX;
-            lbl_8039AB28.lowerCloudObj->anim.localPosY = gCloudOverridePositionY - 50.0f;
-            lbl_8039AB28.lowerCloudObj->anim.localPosZ = gCloudOverridePositionZ;
+            gCloudActionRuntime.lowerCloudObj->anim.localPosX = gCloudOverridePositionX;
+            gCloudActionRuntime.lowerCloudObj->anim.localPosY = gCloudOverridePositionY - 50.0f;
+            gCloudActionRuntime.lowerCloudObj->anim.localPosZ = gCloudOverridePositionZ;
         }
         else
         {
-            sky2ApplyModelTint((GameObject*)lbl_8039AB28.lowerCloudObj);
-            lbl_8039AB28.lowerCloudObj->anim.localPosX = view->x;
-            lbl_8039AB28.lowerCloudObj->anim.localPosY = view->y;
-            lbl_8039AB28.lowerCloudObj->anim.localPosZ = view->z;
+            sky2ApplyModelTint((GameObject*)gCloudActionRuntime.lowerCloudObj);
+            gCloudActionRuntime.lowerCloudObj->anim.localPosX = view->x;
+            gCloudActionRuntime.lowerCloudObj->anim.localPosY = view->y;
+            gCloudActionRuntime.lowerCloudObj->anim.localPosZ = view->z;
         }
-        objRender(a, b, c, d, lbl_8039AB28.lowerCloudObj, 1);
+        objRender(a, b, c, d, gCloudActionRuntime.lowerCloudObj, 1);
     }
 }
 
 void cloudaction_scrollTexture(void)
 {
     ObjTextureRuntimeSlot* tex;
-    if (lbl_8039AB28.mainCloudObj != NULL)
+    if (gCloudActionRuntime.mainCloudObj != NULL)
     {
-        tex = objFindTexture((GameObject*)(lbl_8039AB28.mainCloudObj), 0, 0);
+        tex = objFindTexture((GameObject*)(gCloudActionRuntime.mainCloudObj), 0, 0);
         if (tex != NULL)
         {
-            tex->offsetS -= lbl_8039AB28.textureScrollStep;
+            tex->offsetS -= gCloudActionRuntime.textureScrollStep;
             if (tex->offsetS < -0x2710)
             {
                 tex->offsetS += 0x2710;
@@ -346,7 +346,7 @@ void cloudaction_scrollTexture(void)
 
 void cloudaction_onMapSetup(void)
 {
-    memset(&lbl_8039AB28, 0, sizeof(CloudActionRuntime));
+    memset(&gCloudActionRuntime, 0, sizeof(CloudActionRuntime));
 }
 
 void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
@@ -370,93 +370,93 @@ void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
     }
     lbl_803DB618[0] = lbl_803DB618[1];
     lbl_803DB618[1] = (u16)val;
-    lbl_8039AB28.textureScrollStep = *(f32*)(state + 8) / 3.0f;
-    lbl_8039AB28.pad19 = 0;
+    gCloudActionRuntime.textureScrollStep = *(f32*)(state + 8) / 3.0f;
+    gCloudActionRuntime.pad19 = 0;
     if ((*(u8*)(state + 0x59) & 4) != 0)
     {
-        lbl_8039AB28.layerRenderEnabled = 0;
+        gCloudActionRuntime.layerRenderEnabled = 0;
     }
     else
     {
-        lbl_8039AB28.layerRenderEnabled = 1;
+        gCloudActionRuntime.layerRenderEnabled = 1;
     }
     if (state[0x5d] != 0)
     {
         if (state[0x5d] < 5)
         {
-            if (lbl_8039AB28.mainCloudAssetId != tbl->mainCloudAssetIds[state[0x5d]])
+            if (gCloudActionRuntime.mainCloudAssetId != tbl->mainCloudAssetIds[state[0x5d]])
             {
-                if (lbl_8039AB28.mainCloudObj != NULL)
+                if (gCloudActionRuntime.mainCloudObj != NULL)
                 {
-                    Obj_FreeObject(lbl_8039AB28.mainCloudObj);
+                    Obj_FreeObject(gCloudActionRuntime.mainCloudObj);
                 }
-                lbl_8039AB28.mainCloudObj =
+                gCloudActionRuntime.mainCloudObj =
                     (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(0x20, tbl->mainCloudAssetIds[state[0x5d]]),
                                                  4, -1, -1, 0);
-                lbl_8039AB28.mainCloudAssetId = tbl->mainCloudAssetIds[state[0x5d]];
+                gCloudActionRuntime.mainCloudAssetId = tbl->mainCloudAssetIds[state[0x5d]];
             }
         }
     }
     else
     {
-        if (lbl_8039AB28.mainCloudObj != NULL)
+        if (gCloudActionRuntime.mainCloudObj != NULL)
         {
-            Obj_FreeObject(lbl_8039AB28.mainCloudObj);
-            lbl_8039AB28.mainCloudObj = NULL;
+            Obj_FreeObject(gCloudActionRuntime.mainCloudObj);
+            gCloudActionRuntime.mainCloudObj = NULL;
         }
-        lbl_8039AB28.mainCloudAssetId = 0;
+        gCloudActionRuntime.mainCloudAssetId = 0;
     }
     if (state[0x5b] != 0)
     {
         if (state[0x5b] < 4)
         {
-            if (lbl_8039AB28.upperCloudAssetId != tbl->upperCloudAssetIds[state[0x5b]])
+            if (gCloudActionRuntime.upperCloudAssetId != tbl->upperCloudAssetIds[state[0x5b]])
             {
-                if (lbl_8039AB28.upperCloudObj != NULL)
+                if (gCloudActionRuntime.upperCloudObj != NULL)
                 {
-                    Obj_FreeObject(lbl_8039AB28.upperCloudObj);
+                    Obj_FreeObject(gCloudActionRuntime.upperCloudObj);
                 }
-                lbl_8039AB28.upperCloudObj =
+                gCloudActionRuntime.upperCloudObj =
                     (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(0x20, tbl->upperCloudAssetIds[state[0x5b]]),
                                                  4, -1, -1, 0);
-                lbl_8039AB28.upperCloudAssetId = tbl->upperCloudAssetIds[state[0x5b]];
+                gCloudActionRuntime.upperCloudAssetId = tbl->upperCloudAssetIds[state[0x5b]];
             }
         }
     }
     else
     {
-        if (lbl_8039AB28.upperCloudObj != NULL)
+        if (gCloudActionRuntime.upperCloudObj != NULL)
         {
-            Obj_FreeObject(lbl_8039AB28.upperCloudObj);
-            lbl_8039AB28.upperCloudObj = NULL;
+            Obj_FreeObject(gCloudActionRuntime.upperCloudObj);
+            gCloudActionRuntime.upperCloudObj = NULL;
         }
-        lbl_8039AB28.upperCloudAssetId = 0;
+        gCloudActionRuntime.upperCloudAssetId = 0;
     }
     if (state[0x5a] != 0)
     {
         if (state[0x5a] < 5)
         {
-            if (lbl_8039AB28.lowerCloudAssetId != tbl->lowerCloudAssetIds[state[0x5a]])
+            if (gCloudActionRuntime.lowerCloudAssetId != tbl->lowerCloudAssetIds[state[0x5a]])
             {
-                if (lbl_8039AB28.lowerCloudObj != NULL)
+                if (gCloudActionRuntime.lowerCloudObj != NULL)
                 {
-                    Obj_FreeObject(lbl_8039AB28.lowerCloudObj);
+                    Obj_FreeObject(gCloudActionRuntime.lowerCloudObj);
                 }
-                lbl_8039AB28.lowerCloudObj =
+                gCloudActionRuntime.lowerCloudObj =
                     (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(0x20, tbl->lowerCloudAssetIds[state[0x5a]]),
                                                  4, -1, -1, 0);
-                lbl_8039AB28.lowerCloudAssetId = tbl->lowerCloudAssetIds[state[0x5a]];
+                gCloudActionRuntime.lowerCloudAssetId = tbl->lowerCloudAssetIds[state[0x5a]];
             }
         }
     }
     else
     {
-        if (lbl_8039AB28.lowerCloudObj != NULL)
+        if (gCloudActionRuntime.lowerCloudObj != NULL)
         {
-            Obj_FreeObject(lbl_8039AB28.lowerCloudObj);
-            lbl_8039AB28.lowerCloudObj = NULL;
+            Obj_FreeObject(gCloudActionRuntime.lowerCloudObj);
+            gCloudActionRuntime.lowerCloudObj = NULL;
         }
-        lbl_8039AB28.lowerCloudAssetId = 0;
+        gCloudActionRuntime.lowerCloudAssetId = 0;
     }
 }
 

@@ -4467,7 +4467,7 @@ u32 loadTableFiles(void)
     return gAssetLoadInFlightFlags;
 }
 
-int unlockLevel(s32 val, int idx, int flag)
+int unlockLevel(s32 level, int bucket, int flag)
 {
     s32 cur;
     if (flag == 1)
@@ -4476,22 +4476,22 @@ int unlockLevel(s32 val, int idx, int flag)
         gObjLevelLockSlots[1] = -2;
         return -1;
     }
-    cur = gObjLevelLockSlots[idx];
-    if (val == cur || cur == -2)
+    cur = gObjLevelLockSlots[bucket];
+    if (level == cur || cur == -2)
     {
-        gObjLevelLockSlots[idx] = -2;
+        gObjLevelLockSlots[bucket] = -2;
         return -1;
     }
     return cur;
 }
 
 
-int lockLevel(s32 val, int idx)
+int lockLevel(s32 level, int bucket)
 {
-    s32 cur = gObjLevelLockSlots[idx];
+    s32 cur = gObjLevelLockSlots[bucket];
     if (cur == -2)
     {
-        gObjLevelLockSlots[idx] = val;
+        gObjLevelLockSlots[bucket] = level;
         return -1;
     }
     return cur;

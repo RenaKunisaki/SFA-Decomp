@@ -21,6 +21,6 @@ STATIC_ASSERT(sizeof(CloudActionRuntime) == 0x1C);
 STATIC_ASSERT(offsetof(CloudActionRuntime, mainCloudAssetId) == 0x0C);
 STATIC_ASSERT(offsetof(CloudActionRuntime, textureScrollStep) == 0x18);
 
-extern CloudActionRuntime lbl_8039AB28;
+extern CloudActionRuntime gCloudActionRuntime;
 
 #endif

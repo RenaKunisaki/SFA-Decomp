@@ -39,7 +39,7 @@
 const f32 gDrakorHoverpadSpeedStep = 2.0f;
 f32 gDrakorHoverpadMtx[16];
 
-f32 lbl_803DC2F8 = 5.0f;
+f32 gDrakorHoverpadSteerMaxSpeed = 5.0f;
 s16 lbl_803DC2FC = 3;
 f32 lbl_803DC300 = 5.0f;
 f32 lbl_803DC304 = -40.0f;
@@ -855,7 +855,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
     {
         ObjHits_DisableObject(obj);
         ((DrakorHoverpadState*)p)->speed = ((DrakorHoverpadState*)p)->commandSpeed;
-        lbl_803DC2F8 = (*(f32*)&gDrakorHoverpadSpeedStep) * ((DrakorHoverpadState*)p)->commandSpeed;
+        gDrakorHoverpadSteerMaxSpeed = (*(f32*)&gDrakorHoverpadSpeedStep) * ((DrakorHoverpadState*)p)->commandSpeed;
     }
     if (((DrakorHoverpadState*)p)->speed < 0.0f)
     {
@@ -954,7 +954,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
     PSVECSubtract((Vec*)curvePos, &obj->anim.localPos, &diff);
     /* snapshot the shared steer speed before building the call args (the
      * through-pointer read keeps the load at this statement) */
-    spd = lbl_803DC2F8;
+    spd = gDrakorHoverpadSteerMaxSpeed;
     Obj_SteerVelocityTowardVector(obj, &obj->anim.velocity, &diff, spd, spd / 30.0f,
                                   0.3f);
     PSVECAdd(&obj->anim.localPos, &obj->anim.velocity, &obj->anim.localPos);

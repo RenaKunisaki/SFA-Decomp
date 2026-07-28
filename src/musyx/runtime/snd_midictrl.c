@@ -832,8 +832,8 @@ typedef union AuxInputSlots
 
 extern AuxInputSlots inpAuxB;
 extern AuxInputSlots inpAuxA;
-u32 lbl_8032FFE0[4] = {0x80000001, 0x80000002, 0x80000004, 0x80000008};
-u32 lbl_8032FFF0[4] = {0x80000010, 0x80000020, 0x80000040, 0x80000080};
+u32 inpAuxADirtyFlags[4] = {0x80000001, 0x80000002, 0x80000004, 0x80000008};
+u32 inpAuxBDirtyFlags[4] = {0x80000010, 0x80000020, 0x80000040, 0x80000080};
 
 
 /*
@@ -880,7 +880,7 @@ static inline u32 inpResetGlobalMIDIDirtyFlag(u8 chan, u8 midiSet, u32 flag)
  */
 u16 inpGetAuxA(u8 studio, u8 index, u8 midi, u8 midiSet)
 {
-    if (!inpResetGlobalMIDIDirtyFlag(midi, midiSet, lbl_8032FFE0[index]))
+    if (!inpResetGlobalMIDIDirtyFlag(midi, midiSet, inpAuxADirtyFlags[index]))
     {
         return inpAuxA.slots[studio][index].cachedValue;
     }
@@ -892,7 +892,7 @@ u16 inpGetAuxA(u8 studio, u8 index, u8 midi, u8 midiSet)
  */
 u16 inpGetAuxB(u8 studio, u8 index, u8 midi, u8 midiSet)
 {
-    if (!inpResetGlobalMIDIDirtyFlag(midi, midiSet, lbl_8032FFF0[index]))
+    if (!inpResetGlobalMIDIDirtyFlag(midi, midiSet, inpAuxBDirtyFlags[index]))
     {
         return inpAuxB.slots[studio][index].cachedValue;
     }
