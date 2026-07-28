@@ -137,7 +137,7 @@ extern u16 gKTRexWalkEndPhaseFlagsByLane[4];
 extern f32 gKTRexCurvePhaseByVariantB04[];
 extern s16 gKTRexTurnMoveIdByLaneAndDir[];
 extern f32 gKTRexTurnCurvePhaseByLane[];
-extern s16 lbl_8032A730[];
+extern s16 gGmMazeWellQuestBits[];
 
 void ktrex_initialiseStateHandlerTables(void);
 int ktrex_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
