@@ -339,7 +339,7 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
             cursor += sizeof(DimExplosionFlame);
         }
         if (((DimExplosionState*)state)->frameCounter < ((DimExplosionState*)state)->lifeFrames &&
-            *(u8*)&((DimExplosionState*)state)->rayMode != 0) {
+            ((DimExplosionState*)state)->rayMode != 0) {
             for (i = 0, cursor = state; i < ((DimExplosionState*)state)->rayMode; cursor += sizeof(s16) * 2, i++) {
                 obj->anim.rotY = (s16) * (u16*)&((DimExplosionState*)cursor)->rayYawA;
                 obj->anim.rotX = (s16) * (u16*)&((DimExplosionState*)cursor)->rayPitchA;
@@ -385,8 +385,8 @@ void explosion_update(GameObject* obj) {
             if (((DimExplosionFlame*)cursor)->age >= ((DimExplosionFlame*)cursor)->lifetime) {
                 ((DimExplosionFlame*)cursor)->active = 0;
             } else {
-                *(s16*)&((DimExplosionFlame*)cursor)->spinAngle +=
-                    framesThisStep * *(s16*)&((DimExplosionFlame*)cursor)->spinSpeed;
+                ((DimExplosionFlame*)cursor)->spinAngle +=
+                    framesThisStep * ((DimExplosionFlame*)cursor)->spinSpeed;
                 if (((DimExplosionFlame*)cursor)->textureVariant >= DIM_EXPLOSION_TEXTURE_COUNT) {
                     ((DimExplosionFlame*)cursor)->textureVariant -= DIM_EXPLOSION_TEXTURE_COUNT;
                 }

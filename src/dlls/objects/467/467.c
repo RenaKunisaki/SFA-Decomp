@@ -191,7 +191,7 @@ void worldobj_render(GameObject* obj, int renderArg2, int renderArg3, int render
         }
         break;
     case WORLDOBJ_ARROW_OBJ:
-        if (state->effectState != 0 && (u8)getWorldMapVoiceoverTimer() == 0 &&
+        if (state->effectState != 0 && getWorldMapVoiceoverTimer() == 0 &&
             (*gScreenTransitionInterface)->isFinished() != 0) {
             if (gWorldObjEffectRenderDelay != 0) {
                 gWorldObjEffectRenderDelay = gWorldObjEffectRenderDelay - 1;
@@ -410,7 +410,7 @@ void worldobj_update(GameObject* obj) {
             ((GameObject*)state->lookAtTargetRef)->anim.localPosZ = sv * dz + obj->anim.localPosZ;
         }
         if (state->effectState != 0) {
-            if ((u8)getWorldMapVoiceoverTimer() == 0 && (*gScreenTransitionInterface)->isFinished() != 0 &&
+            if (getWorldMapVoiceoverTimer() == 0 && (*gScreenTransitionInterface)->isFinished() != 0 &&
                 gWorldObjEffectRenderDelay == 0) {
                 if (state->light == NULL) {
                     state->light = objCreateLight(obj, 1);

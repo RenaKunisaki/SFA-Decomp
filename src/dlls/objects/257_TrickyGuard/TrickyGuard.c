@@ -20,7 +20,7 @@ void TrickyGuard_update(GameObject* obj) {
 
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     if (placement->armingGameBit != TRICKYGUARD_GAMEBIT_NONE) {
-        if ((u32)mainGetBit(placement->armingGameBit) == 0) {
+        if (mainGetBit(placement->armingGameBit) == 0) {
             return;
         }
     }

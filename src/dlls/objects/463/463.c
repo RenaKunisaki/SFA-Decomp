@@ -35,7 +35,7 @@ void dll_1CF_update(void) {
 }
 
 void dll_1CF_init(GameObject* obj, const Dll1CFPlacementView* placement) {
-    if ((u32)mainGetBit(placement->gateGameBit) != 0u) {
+    if (mainGetBit(placement->gateGameBit) != 0u) {
         obj->anim.rotY = (s16)(((s32)placement->rotationYDegrees << 13) / 45);
     }
     obj->anim.rotX = (s16)((s32)placement->rotationXByte << 8);

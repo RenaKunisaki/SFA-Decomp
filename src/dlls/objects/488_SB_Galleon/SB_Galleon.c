@@ -1263,7 +1263,7 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             state->skyFlag = 0;
             break;
         case SBGALLEON_SEQEV_SPLASH_SFX:
-            Sfx_PlayFromObject((u32)sbGetPropeller(), SBGALLEON_SFX_SPRAY);
+            Sfx_PlayFromObject(sbGetPropeller(), SBGALLEON_SFX_SPRAY);
             break;
         case SBGALLEON_SEQEV_MUSIC:
             state->musicIdB = SBGALLEON_MUSIC_INTRO;

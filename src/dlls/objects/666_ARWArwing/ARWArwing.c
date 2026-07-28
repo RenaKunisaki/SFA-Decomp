@@ -1002,7 +1002,7 @@ void arwarwing_warpByCourse(GameObject* obj)
     switch (obj->anim.mapEventSlot)
     {
     case 0x3a:
-        if ((u32)mainGetBit(GAMEBIT_ITEM_Spirit5_Got) != 0)
+        if (mainGetBit(GAMEBIT_ITEM_Spirit5_Got) != 0)
         {
             mainSetBits(GAMEBIT_WM_ObjGroups, 0);
             (*gMapEventInterface)->setMapAct(ARWARWING_MAPEVENT_SHRINE, 5);

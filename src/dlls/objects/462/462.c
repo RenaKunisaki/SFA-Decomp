@@ -138,7 +138,7 @@ void dll_1CE_update(GameObject* obj) {
         contentsSetup->visibilityGameBit = -1;
         contentsSetup->counterGameBit = -1;
         contentsSetup->unk1A = 5;
-        contentsSetup->rotXByte = (u8)((s16)obj->anim.rotX >> 8);
+        contentsSetup->rotXByte = (u8)(obj->anim.rotX >> 8);
         Obj_SetupObject(&contentsSetup->base, 5, obj->anim.mapEventSlot, -1, 0);
     }
 }

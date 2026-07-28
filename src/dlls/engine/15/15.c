@@ -218,7 +218,7 @@ void player_steerFromInput(GameObject* obj, int* ctx)
     {
         diff += 0xffff;
     }
-    *(s16*)&((BaddieState*)ctx)->turnRate = ((f32)diff / PLAYER_MOVE_DEG_TO_ANGLE);
+    ((BaddieState*)ctx)->turnRate = ((f32)diff / PLAYER_MOVE_DEG_TO_ANGLE);
     if (diff < 0)
     {
         *(s16*)((char*)ctx + 0x334) = -((BaddieState*)ctx)->turnRate;

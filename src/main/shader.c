@@ -952,7 +952,7 @@ void mapLoadUnloadObjects(int flag)
                     grpBit = 0;
                     while (bits != 0)
                     {
-                        if ((bits & 1) && (s8)SaveGame_findTransientMapBit(i, grpBit) == -1)
+                        if ((bits & 1) && SaveGame_findTransientMapBit(i, grpBit) == -1)
                         {
                             mapInstantiateObjects((MapRomListPage*)((char**)(base + 0x83A8))[i], i, grpBit, NULL);
                             mapClearBit(i, grpBit);
@@ -1036,7 +1036,7 @@ void mapLoadUnloadObjects(int flag)
                         grpBit = 0;
                         while (bits != 0)
                         {
-                            if ((bits & 1) && (s8)SaveGame_findTransientMapBit(mid2, grpBit) == -1)
+                            if ((bits & 1) && SaveGame_findTransientMapBit(mid2, grpBit) == -1)
                             {
                                 mapInstantiateObjects(page2, mid2, grpBit, obj2);
                             }

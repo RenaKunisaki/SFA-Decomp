@@ -430,7 +430,7 @@ void earthwalker_update(int obj)
                 newState = 3;
                 break;
             case 8:
-                if ((u32)mainGetBit(GAMEBIT_K1_SHRINE_DOOR_DIALOGUE_DONE) == 0)
+                if (mainGetBit(GAMEBIT_K1_SHRINE_DOOR_DIALOGUE_DONE) == 0)
                 {
                     newState = 4;
                     buttonDisable(0, PAD_BUTTON_A);

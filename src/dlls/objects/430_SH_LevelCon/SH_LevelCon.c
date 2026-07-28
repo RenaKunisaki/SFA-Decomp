@@ -143,7 +143,7 @@ void SH_LevelControl_updateTotemPuzzleMapState(void* obj, void* state) {
     puzzleObj = (SCTotemLogPuzzleObject*)obj;
     runtime = (SCTotemLogPuzzleRuntime*)state;
 
-    if ((u32)mainGetBit(GAMEBIT_SH_initObjGroups) != 0) {
+    if (mainGetBit(GAMEBIT_SH_initObjGroups) != 0) {
         runtime->eventCountdown = SCTOTEMLOGPUZ_EVENT_COUNTDOWN_RESET;
         mainSetBits(GAMEBIT_SH_initObjGroups, 0);
     }

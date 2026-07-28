@@ -252,7 +252,7 @@ void collectible_updateLooseMotion(GameObject* obj) {
     (*gPathControlInterface)->update(obj, state + offsetof(CollectibleState, pathState), timeDelta);
     (*gPathControlInterface)->apply(obj, state + offsetof(CollectibleState, pathState));
     (*gPathControlInterface)->advance(obj, state + offsetof(CollectibleState, pathState), timeDelta);
-    if (*(s8*)&((CollectibleState*)state)->bounceHitFlag != 0) {
+    if (((CollectibleState*)state)->bounceHitFlag != 0) {
         f32 inverseVelocityX = -obj->anim.velocityX;
         f32 inverseVelocityY = -obj->anim.velocityY;
         f32 inverseVelocityZ = -obj->anim.velocityZ;
