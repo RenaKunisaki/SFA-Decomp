@@ -86,8 +86,8 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
     u32 fmt;
     u32 w;
     u32 h;
-    u32 wA;
-    u32 wB;
+    u8 wA;
+    u8 wB;
     int pixelB;
     int pixelA;
     int redB;
@@ -185,6 +185,7 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
                     int rowDataOffset;
                     int pixelColumnOffset = (j & 3) * 2;
                     int tileColumnOffset;
+                    int pixelA, pixelB;
                     u8 *ad, *bd, *ct, *cd;
                     int aLo, bLo, aHi, bHi;
                     ad = (u8*)src1 + pixelColumnOffset;
