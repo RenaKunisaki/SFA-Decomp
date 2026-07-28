@@ -159,5 +159,4 @@ void Camera_ApplyDecalViewport(void);
 u16 Camera_GetCurrentViewPitch(void);
 u16 Camera_GetCurrentViewYaw(void);
 
-
 #endif /* MAIN_CAMERA_H_ */
