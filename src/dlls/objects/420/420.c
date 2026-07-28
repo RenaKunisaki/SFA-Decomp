@@ -1,89 +1,81 @@
-/* DLL 0x01A4 - paired ice objects in SnowHorn Wastes. */
-#include "main/obj_group.h"
+/*
+ * DLL 0x1A4 (slot 420) - paired SnowHorn Wastes ice objects.
+ *
+ * Retail objects NW_ice1, NW_ice2, and NW_ice3 use this DLL. Each instance
+ * finds the slot-419 object with the same placement pair ID, follows its
+ * transform, and disables collision as that paired object fades out.
+ */
+#include "dlls/objects/420.h"
+
+#include "dlls/objects/419.h"
 #include "game/objects/object.h"
-#include "sys/objects.h"
-#include "main/dll/NW/dll_01A4_nwice.h"
 #include "main/dll/player_api.h"
-#include "dlls/object_descriptor.h"
+#include "main/obj_group.h"
 #include "main/objhits.h"
+#include "sys/objects.h"
 
-#define NWICE_OBJGROUP      0x3c
-#define NWICE_LINK_OBJGROUP 0x3d /* scanned to find the paired ice object by linkId */
+#define NW_ICE_COLLISION_ALPHA_THRESHOLD 0xC0
+#define NW_ICE_NEAR_DISTANCE             120.0f
 
-int NW_ice_getExtraSize(void)
-{
+int NW_ice_getExtraSize(void) {
     return sizeof(NwIceState);
 }
 
-void NW_ice_free(GameObject* obj)
-{
-    ObjGroup_RemoveObject((int)obj, NWICE_OBJGROUP);
+void NW_ice_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, NW_ICE_OBJECT_GROUP_ID);
 }
 
-void NW_ice_render(void)
-{
+void NW_ice_render(void) {
 }
 
-void NW_ice_update(GameObject* obj)
-{
-    GameObject** scan;
-    int i;
+void NW_ice_update(GameObject* obj) {
+    GameObject** candidatePtr;
+    int objectIndex;
     NwIcePlacement* placement;
     NwIceState* state;
-    GameObject** objects;
-    GameObject* candidate;
-    int count;
-    f32 nearestDist;
+    GameObject** pairedObjects;
+    GameObject* candidateObject;
+    int objectCount;
+    f32 nearestDistance;
 
-    nearestDist = 3.4028235e38f;
-    state = obj->extra;
-    if (state->pairedIce != NULL)
-    {
-        obj->anim.localPosX = state->pairedIce->anim.localPosX;
-        obj->anim.localPosY = state->pairedIce->anim.localPosY;
-        obj->anim.localPosZ = state->pairedIce->anim.localPosZ;
-        obj->anim.rotX = state->pairedIce->anim.rotX;
-        ObjGroup_FindNearestObjectForObject(NWICE_OBJGROUP, obj, &nearestDist);
+    nearestDistance = 3.4028235e38f;
+    state = (NwIceState*)obj->extra;
+    if (state->pairedIceObject != NULL) {
+        obj->anim.localPosX = state->pairedIceObject->anim.localPosX;
+        obj->anim.localPosY = state->pairedIceObject->anim.localPosY;
+        obj->anim.localPosZ = state->pairedIceObject->anim.localPosZ;
+        obj->anim.rotX = state->pairedIceObject->anim.rotX;
+        ObjGroup_FindNearestObjectForObject(NW_ICE_OBJECT_GROUP_ID, obj, &nearestDistance);
 
-        if (state->pairedIce->anim.alpha < 0xc0)
-        {
+        if (state->pairedIceObject->anim.alpha < NW_ICE_COLLISION_ALPHA_THRESHOLD) {
             ObjHits_DisableObject(obj);
             fn_80296D20(Obj_GetPlayerObject(), obj);
-        }
-        else
-        {
+        } else {
             ObjHits_EnableObject(obj);
         }
 
-        if ((state->pairedIce->anim.alpha < 0xc0) || (nearestDist < 120.0f))
-        {
+        if ((state->pairedIceObject->anim.alpha < NW_ICE_COLLISION_ALPHA_THRESHOLD) ||
+            (nearestDistance < NW_ICE_NEAR_DISTANCE)) {
             obj->objectFlags = (u16)(obj->objectFlags | 0x100);
-        }
-        else
-        {
+        } else {
             obj->objectFlags = (u16)(obj->objectFlags & ~0x100);
         }
-    }
-    else
-    {
-        objects = (GameObject**)ObjGroup_GetObjects(NWICE_LINK_OBJGROUP, &count);
+    } else {
+        pairedObjects = (GameObject**)ObjGroup_GetObjects(DLL419_OBJECT_GROUP_ID, &objectCount);
         placement = (NwIcePlacement*)obj->anim.placementData;
-        for (i = 0, scan = objects; i < count; scan++, i++)
-        {
-            candidate = *scan;
-            if (obj != candidate &&
-                placement->pairId == ((NwIcePlacement*)candidate->anim.placementData)->pairId)
-            {
-                state->pairedIce = objects[i];
+        for (objectIndex = 0, candidatePtr = pairedObjects; objectIndex < objectCount; candidatePtr++, objectIndex++) {
+            candidateObject = *candidatePtr;
+            if (obj != candidateObject &&
+                placement->pairId == ((NwIcePlacement*)candidateObject->anim.placementData)->pairId) {
+                state->pairedIceObject = pairedObjects[objectIndex];
                 break;
             }
         }
     }
 }
 
-void NW_ice_init(GameObject* obj)
-{
-    ObjGroup_AddObject((int)obj, NWICE_OBJGROUP);
+void NW_ice_init(GameObject* obj) {
+    ObjGroup_AddObject((int)obj, NW_ICE_OBJECT_GROUP_ID);
 }
 
 ObjectDescriptor gNW_iceObjDescriptor = {
