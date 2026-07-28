@@ -322,11 +322,9 @@ track/intersect_mtx44.c:
 	.sdata2     start:0x803DEE98 end:0x803DEEA0
 
 track/intersect_render.c:
-	.text       start:0x800702B8 end:0x8007CF7C
+	.text       start:0x800702B8 end:0x8007D670
 	.rodata     start:0x802C1EA8 end:0x802C1F80
-
-track/intersect_texsetup.c:
-	.text       start:0x8007CF7C end:0x8007D670
+	.sdata2     start:0x803DEEA0 end:0x803DEF8C
 
 track/intersect_memcard.c:
 	.text       start:0x8007D670 end:0x8007E77C

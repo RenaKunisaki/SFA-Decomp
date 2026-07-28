@@ -1856,7 +1856,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "track/intersect_screenmath.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "track/intersect_mtx44.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "track/intersect_render.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "track/intersect_texsetup.c", cflags=cflags_dll_noopt_nocse_noautoinline),
             Object(Matching, "track/intersect_memcard.c", cflags=cflags_dll_noopt_noautoinline),
             Object(Matching, "n_attractmode.c"),
 
