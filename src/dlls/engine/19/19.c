@@ -553,8 +553,7 @@ void waterfx_render(int obj, int renderParam)
         {
             setupReflectionBumpDistortTev(gWaterfxRippleTexture);
         }
-        for (i = 0, poolOffset = 0, descriptorOffset = 0; i < WATERFX_POOL_SIZE;
-             poolOffset += 0x1c, descriptorOffset += 0x20, i++)
+        for (i = 0, poolOffset = 0; i < WATERFX_POOL_SIZE; poolOffset += 0x1c, i++)
         {
             e = (WaterEntry7*)(gWaterfxRipplePool + poolOffset);
             if (e->active != 0)
@@ -571,7 +570,7 @@ void waterfx_render(int obj, int renderParam)
                                            NULL);
                 loadReflectionTexMtxs();
                 drawFn_8005cf8c(gWaterfxRippleVtx + i * 0x40,
-                                  gWaterfxRippleVtxDesc + descriptorOffset, 2);
+                                  gWaterfxRippleVtxDesc + i * 0x20, 2);
             }
         }
         j = 0;
@@ -618,8 +617,9 @@ void waterfx_render(int obj, int renderParam)
         {
             setupReflectionDistortTev((int)gWaterfxWakeTexture);
         }
-        for (i = 0, poolOffset = 0, vertexOffset = 0; i < WATERFX_POOL_SIZE;
-             poolOffset += 0x1c, vertexOffset += 0x40, i++)
+        for (i = 0, poolOffset = 0, descriptorOffset = 0, vertexOffset = 0;
+             i < WATERFX_POOL_SIZE;
+             poolOffset += 0x1c, descriptorOffset += 0x20, vertexOffset += 0x40, i++)
         {
             g = (WaterEntry*)(gWaterfxWakePool + poolOffset);
             if (g->active != 0 && g->f18 == 0)
@@ -636,7 +636,7 @@ void waterfx_render(int obj, int renderParam)
                                            NULL);
                 loadReflectionTexMtxs();
                 drawFn_8005cf8c(gWaterfxWakeVtx + vertexOffset,
-                                  gWaterfxWakeVtxDesc + i * 0x20, 2);
+                                  gWaterfxWakeVtxDesc + descriptorOffset, 2);
             }
         }
         Rcp_ResetRenderState();
