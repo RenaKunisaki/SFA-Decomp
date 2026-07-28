@@ -6,7 +6,7 @@
 #include "game/objects/object_setup.h"
 
 typedef struct BaddieInterestPPlacement {
-    ObjPlacement base;     /* 0x00; mapId is the linked-object ID */
+    ObjPlacement base;     /* 0x00; ident is the linked-object ID */
     s8 modeKind;           /* 0x18 */
     s8 triggerProbability; /* 0x19 */
     s16 targetLinkIdLo;    /* 0x1A */

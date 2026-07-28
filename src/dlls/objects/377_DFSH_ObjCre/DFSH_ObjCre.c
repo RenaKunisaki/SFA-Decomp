@@ -86,7 +86,7 @@ void dfshObjCreator_update(GameObject* obj) {
         sharpClawSetup->base.posX = placement->base.posX;
         sharpClawSetup->base.posY = placement->base.posY;
         sharpClawSetup->base.posZ = placement->base.posZ;
-        sharpClawSetup->base.mapId = placement->base.mapId;
+        sharpClawSetup->base.ident = placement->base.ident;
         sharpClawSetup->base.color[0] = placement->base.color[0];
         sharpClawSetup->base.color[1] = placement->base.color[1];
         sharpClawSetup->base.color[2] = placement->base.color[2];

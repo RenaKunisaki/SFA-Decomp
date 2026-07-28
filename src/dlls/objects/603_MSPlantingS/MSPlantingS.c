@@ -1,7 +1,7 @@
 /*
  * MSPlantingS (DLL 0x25B) - moon-seed planting spots.
  *
- * Each spot is a placeable object identified by its placement mapId; init maps
+ * Each spot is a placeable object identified by its placement ident; init maps
  * that id to a pair of game bits: one tracking whether a seed has been planted
  * here (inner+8), the other whether the grown plant has been harvested (inner+0xa).
  * The object walks a small state machine in update (phase byte at extra+0):
@@ -318,15 +318,15 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
 void MoonSeedPlantingSpot_init(GameObject* obj, MoonSeedPlantingSpotPlacement* init)
 {
     MoonSeedPlantingSpotState* inner;
-    int mapId;
+    int ident;
 
     inner = obj->extra;
     obj->animEventCallback = MoonSeedPlantingSpot_SeqFn;
     obj->anim.rotX = (s16)(init->rotByte << 8);
     inner->phase = MSPLANTING_PHASE_INIT;
     ObjGroup_AddObject((int)obj, MSPLANTING_OBJ_GROUP);
-    mapId = init->mapId;
-    switch (mapId)
+    ident = init->ident;
+    switch (ident)
     {
     case 0x41a5b:
         inner->plantedGameBit = 0x866;

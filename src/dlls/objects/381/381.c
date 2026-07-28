@@ -236,7 +236,7 @@ void rollingBarrel_init(GameObject* obj, RollingBarrelPlacement* placement) {
     int curveInitParams[2];
 
     *(RollingBarrelCurveInitPair*)curveInitParams = gRollingBarrelCurveInitPair;
-    placement->base.mapId = -1;
+    placement->base.ident = -1;
     obj->anim.flags = (s16)(obj->anim.flags & ~OBJANIM_FLAG_HIDDEN);
     obj->anim.rotZ = 0x4000;
 

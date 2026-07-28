@@ -160,7 +160,7 @@ void sc_totempole_update(GameObject* obj) {
 void sc_totempole_init(GameObject* obj, const ScTotemPolePlacement* placement) {
     ScTotemPoleState* state = obj->extra;
 
-    switch (placement->base.mapId) {
+    switch (placement->base.ident) {
     case SC_TOTEM_POLE_MAP_ID_REAR:
         state->litGameBit = SC_TOTEM_POLE_GAMEBIT_REAR;
         break;

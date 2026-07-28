@@ -355,7 +355,7 @@ void tricky_handleDefeat(GameObject* obj, int state)
         (obj)->anim.flags = (obj)->anim.flags | OBJANIM_FLAG_HIDDEN;
         (obj)->anim.alpha = 0;
         *(u32*)&(obj)->userData1 = 1;
-        if ((u32)((ObjPlacement*)setup)->mapId == 0xFFFFFFFF)
+        if ((u32)((ObjPlacement*)setup)->ident == 0xFFFFFFFF)
         {
             Obj_FreeObject(obj);
         }
@@ -364,7 +364,7 @@ void tricky_handleDefeat(GameObject* obj, int state)
             if (*(s16*)(setup + 0x2c) != 0)
             {
                 (*gMapEventInterface)
-                    ->addTime(((ObjPlacement*)setup)->mapId, 60.0f * (f32) * (s16*)(setup + 0x2c));
+                    ->addTime(((ObjPlacement*)setup)->ident, 60.0f * (f32) * (s16*)(setup + 0x2c));
             }
             ((EnemyState*)state)->controlFlags = ((EnemyState*)state)->controlFlags & ~(u64)0x800;
             ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 & ~3LL;
@@ -2760,7 +2760,7 @@ void enemy_update(GameObject* obj)
         }
         else
         {
-            if (*(u32*)&((ObjPlacement*)setup)->mapId == 0xFFFFFFFF)
+            if (*(u32*)&((ObjPlacement*)setup)->ident == 0xFFFFFFFF)
             {
                 return;
             }
@@ -2768,7 +2768,7 @@ void enemy_update(GameObject* obj)
             {
                 return;
             }
-            if ((*gMapEventInterface)->shouldNotSaveTime(((ObjPlacement*)setup)->mapId) != 0)
+            if ((*gMapEventInterface)->shouldNotSaveTime(((ObjPlacement*)setup)->ident) != 0)
             {
                 if ((((EnemyState*)state)->controlFlags & 0x800) == 0)
                 {
@@ -2869,7 +2869,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
                 (obj)->userData1 = mainGetBit(((EnemyPlacement*)setup)->gameBit2) == 0;
             }
         }
-        if (*(u32*)&((ObjPlacement*)setup)->mapId != 0xFFFFFFFF)
+        if (*(u32*)&((ObjPlacement*)setup)->ident != 0xFFFFFFFF)
         {
             if ((obj)->userData1 == 0)
             {
@@ -2881,7 +2881,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
                 {
                     if (((EnemyPlacement*)setup)->respawnEnabled != 0)
                     {
-                        if ((*gMapEventInterface)->shouldNotSaveTime(((ObjPlacement*)setup)->mapId) == 0)
+                        if ((*gMapEventInterface)->shouldNotSaveTime(((ObjPlacement*)setup)->ident) == 0)
                         {
                             (obj)->userData1 = 1;
                         }

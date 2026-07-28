@@ -7,7 +7,7 @@
 #include "main/dll/curve_walker.h"
 
 typedef struct HagabonPlacement {
-    ObjPlacement base;     /* 0x00; mapId is the map-event ID */
+    ObjPlacement base;     /* 0x00; ident is the map-event ID */
     u8 pad18;              /* 0x18 */
     s8 chaseRadiusScale;   /* 0x19 */
     s16 curveStepRaw;      /* 0x1A */

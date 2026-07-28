@@ -78,7 +78,7 @@ void spiritPrize_update(GameObject* obj) {
     if (placement->animDataIndex == -1) {
         return;
     }
-    if (placement->base.mapId == SPIRIT_PRIZE_DISABLED_MAP_ID) {
+    if (placement->base.ident == SPIRIT_PRIZE_DISABLED_MAP_ID) {
         return;
     }
 
@@ -149,7 +149,7 @@ void spiritPrize_init(GameObject* obj, const SpiritPrizePlacement* placement) {
     int loadedAnimDataIndexPlusOne;
 
     state = obj->extra;
-    if (placement->base.mapId == SPIRIT_PRIZE_DISABLED_MAP_ID) {
+    if (placement->base.ident == SPIRIT_PRIZE_DISABLED_MAP_ID) {
         return;
     }
     state->sequence.gameBit = placement->sequenceGameBit;

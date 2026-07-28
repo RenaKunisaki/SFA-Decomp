@@ -954,7 +954,7 @@ ObjPlacement* Obj_AllocObjectSetup(int size, int type)
 {
     ObjPlacement* p = mmAlloc(size, 0xe, 0);
     memset(p, 0, size);
-    p->mapId = -1;
+    p->ident = -1;
     p->color[2] = 0x64;
     p->color[3] = 0x96;
     p->color[0] = 8;

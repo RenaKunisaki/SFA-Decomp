@@ -1,7 +1,7 @@
 /*
  * WM_spiritpl (DLL 0x020C) - the six Krazoa Spirit shrines at Warlock
  * Mountain on Dinosaur Planet.
- * Each placed instance is tagged by its placement mapId
+ * Each placed instance is tagged by its placement ident
  * (WMSPIRITPLACE_MAP_N) and becomes interactive once the palace's
  * map-event mode reaches N: it raises the A-button prompt, runs trigger
  * sequence 0 when the player interacts, and once the sequence game bit
@@ -22,7 +22,7 @@
 #include "main/sky_api.h"
 #include "main/lightmap_render_control_api.h"
 
-/* placement mapId tags of the six spirit-place instances; place N
+/* placement ident tags of the six spirit-place instances; place N
    becomes active once the palace's map-event mode reaches N. */
 enum
 {
@@ -84,7 +84,7 @@ int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
 {
     int i;
     WmSpiritPlaceState* state;
-    int mapId;
+    int ident;
     u8 eventId;
     u8 fxPos[24];
 
@@ -109,8 +109,8 @@ int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
             unlockLevel(0, 0, 1);
             break;
         case WMSPIRITPLACE_SEQEV_WARP:
-            mapId = obj->anim.placement->mapId;
-            switch (mapId)
+            ident = obj->anim.placement->ident;
+            switch (ident)
             {
             case WMSPIRITPLACE_MAP_2:
                 warpToMap(0x7e, 0);
@@ -124,8 +124,8 @@ int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
             }
             break;
         case WMSPIRITPLACE_SEQEV_SET_SEQUENCE_BIT:
-            mapId = obj->anim.placement->mapId;
-            switch (mapId)
+            ident = obj->anim.placement->ident;
+            switch (ident)
             {
             case WMSPIRITPLACE_MAP_2:
             case WMSPIRITPLACE_MAP_3:
@@ -157,8 +157,8 @@ int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
             Rcp_SetSpiritVisionEnabled(0);
             break;
         case WMSPIRITPLACE_SEQEV_MAP_PROGRESS:
-            mapId = obj->anim.placement->mapId;
-            switch (mapId)
+            ident = obj->anim.placement->ident;
+            switch (ident)
             {
             case WMSPIRITPLACE_MAP_1:
                 lockLevel(mapGetDirIdx(0x41), 0);
@@ -227,7 +227,7 @@ void WM_spiritplace_hitDetect(GameObject* obj)
 void WM_spiritplace_update(GameObject* obj)
 {
     WmSpiritPlaceState* state;
-    u32 mapId;
+    u32 ident;
 
     state = obj->extra;
     if (state->transitionDelay != 0)
@@ -241,8 +241,8 @@ void WM_spiritplace_update(GameObject* obj)
     else
     {
         state->fxFlags &= ~WMSPIRITPLACE_FX_ACTIVE;
-        mapId = obj->anim.placement->mapId;
-        if (mapId == WMSPIRITPLACE_MAP_2)
+        ident = obj->anim.placement->ident;
+        if (ident == WMSPIRITPLACE_MAP_2)
         {
             if (state->mapEventMode == 2)
             {
@@ -286,7 +286,7 @@ void WM_spiritplace_update(GameObject* obj)
                 obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
         }
-        else if (mapId == WMSPIRITPLACE_MAP_1)
+        else if (ident == WMSPIRITPLACE_MAP_1)
         {
             if (state->mapEventMode == 1)
             {
@@ -321,7 +321,7 @@ void WM_spiritplace_update(GameObject* obj)
                 obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
         }
-        else if (mapId == WMSPIRITPLACE_MAP_3)
+        else if (ident == WMSPIRITPLACE_MAP_3)
         {
             if (state->mapEventMode == 3)
             {
@@ -364,7 +364,7 @@ void WM_spiritplace_update(GameObject* obj)
                 obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
         }
-        else if (mapId == WMSPIRITPLACE_MAP_4)
+        else if (ident == WMSPIRITPLACE_MAP_4)
         {
             if (state->mapEventMode == 4)
             {
@@ -407,7 +407,7 @@ void WM_spiritplace_update(GameObject* obj)
                 obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
         }
-        else if (mapId == WMSPIRITPLACE_MAP_5)
+        else if (ident == WMSPIRITPLACE_MAP_5)
         {
             if (state->mapEventMode == 5)
             {
@@ -461,7 +461,7 @@ void WM_spiritplace_update(GameObject* obj)
                 obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
         }
-        else if (mapId == WMSPIRITPLACE_MAP_6)
+        else if (ident == WMSPIRITPLACE_MAP_6)
         {
             if (state->mapEventMode == 6)
             {
@@ -530,14 +530,14 @@ void WM_spiritplace_init(GameObject* obj, WmSpiritPlaceMapData* placement)
         (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
     state->mapEventMode = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
 
-    if (obj->anim.placement->mapId == WMSPIRITPLACE_MAP_2)
+    if (obj->anim.placement->ident == WMSPIRITPLACE_MAP_2)
     {
         if (mainGetBit(GAMEBIT_WM_FoundKrystal) != 0 || mainGetBit(0xeaf) != 0 || state->mapEventMode > 2)
         {
             obj->anim.localPosX -= 25.0f;
         }
     }
-    else if (obj->anim.placement->mapId == WMSPIRITPLACE_MAP_6 && state->mapEventMode >= 6)
+    else if (obj->anim.placement->ident == WMSPIRITPLACE_MAP_6 && state->mapEventMode >= 6)
     {
         obj->anim.localPosX += 25.0f;
     }

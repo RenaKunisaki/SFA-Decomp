@@ -8913,10 +8913,10 @@ void Tricky_hitDetect(GameObject* obj)
                                                                     : -(height - obj->anim.localPosY);
                 if (dy < 6.0f)
                 {
-                    ((TrickyState*)state)->heightTrackObjId = (*objects)->anim.placement->mapId;
+                    ((TrickyState*)state)->heightTrackObjId = (*objects)->anim.placement->ident;
                 }
             }
-            if (((TrickyState*)state)->heightTrackObjId == (u32)(*objects)->anim.placement->mapId)
+            if (((TrickyState*)state)->heightTrackObjId == (u32)(*objects)->anim.placement->ident)
             {
                 th = ((TrickyState*)state)->trackedHeight;
                 z = 0.0f;

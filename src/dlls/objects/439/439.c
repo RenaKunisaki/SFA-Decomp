@@ -104,11 +104,11 @@ void sc_musictree_spawnAmbientEffect(GameObject* obj, ScMusicTreeState* state, i
 }
 
 void sc_musictree_handleHitObject(GameObject* obj, ScMusicTreeState* state, int unusedEffectType) {
-    int mapId = ((ObjPlacement*)obj->anim.placementData)->mapId;
+    int ident = ((ObjPlacement*)obj->anim.placementData)->ident;
 
     (void)unusedEffectType;
 
-    switch (mapId) {
+    switch (ident) {
     case SC_MUSIC_TREE_MAP_TOTEM_1:
         Sfx_PlayFromObject((int)obj, SFXTRIG_sdrstp_c);
         Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);

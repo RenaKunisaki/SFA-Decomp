@@ -240,7 +240,7 @@ int pushable_updateCurtain(int obj, PushableState* state) {
 void pushable_initWcPushBlock(GameObject* obj, PushableState* state) {
     PushableObjectDef* placement = (PushableObjectDef*)obj->anim.placementData;
 
-    switch (placement->base.mapId) {
+    switch (placement->base.ident) {
     case PUSHABLE_WC_MAP_ID_HIT_10:
         state->requiredHitId = 10;
         break;
@@ -955,10 +955,10 @@ void pushable_free(GameObject* obj) {
         break;
     }
     if ((state->flags & PUSHABLE_FLAG_RESTORED) != 0) {
-        int mapId = placement->base.mapId;
+        int ident = placement->base.ident;
         savedMapIndex = gPushableSavedMapIdCount;
         gPushableSavedMapIdCount = savedMapIndex + 1;
-        gPushableSavedMapIds[savedMapIndex] = mapId;
+        gPushableSavedMapIds[savedMapIndex] = ident;
     }
     ObjGroup_RemoveObject((int)obj, PUSHABLE_OBJECT_GROUP);
 }
@@ -1244,7 +1244,7 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
     f32* modelMtx;
     f32 vertex[3];
 
-    if (setup->base.mapId == PUSHABLE_FORCE_HIT_ID_MAP) {
+    if (setup->base.ident == PUSHABLE_FORCE_HIT_ID_MAP) {
         setup->requiredHitId = 1;
     } else {
         setup->requiredHitId = PUSHABLE_NO_HIT_ID;
@@ -1392,8 +1392,8 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
         }
     }
     state->flags = state->flags | PUSHABLE_FLAG_INITIALIZED;
-    if (arrayIndexOf(gPushableSavedMapIds, gPushableSavedMapIdCount, setup->base.mapId) != -1) {
+    if (arrayIndexOf(gPushableSavedMapIds, gPushableSavedMapIdCount, setup->base.ident) != -1) {
         state->flags = state->flags | PUSHABLE_FLAG_RESTORED;
-        arrayRemoveUnordered(gPushableSavedMapIds, &gPushableSavedMapIdCount, setup->base.mapId);
+        arrayRemoveUnordered(gPushableSavedMapIds, &gPushableSavedMapIdCount, setup->base.ident);
     }
 }

@@ -91,7 +91,7 @@ void ecshCreator_update(GameObject* obj) {
         spawnSetup->base.posY = placement->base.posY;
         spawnSetup->base.posZ = placement->base.posZ;
         spawnSetup->base.objectId = ECSH_CREATOR_SHARPCLAW_OBJECT_ID;
-        spawnSetup->base.mapId = ECSH_CREATOR_NO_MAP_ID;
+        spawnSetup->base.ident = ECSH_CREATOR_NO_MAP_ID;
         spawnSetup->base.color[0] = placement->base.color[0];
         spawnSetup->base.color[1] = placement->base.color[1];
         spawnSetup->base.color[2] = placement->base.color[2];

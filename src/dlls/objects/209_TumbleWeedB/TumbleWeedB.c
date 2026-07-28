@@ -137,7 +137,7 @@ s8 tumbleweedbush_spawnSibling(GameObject* obj) {
     newPlacement->scale = TUMBLEWEED_BUSH_PIECE_SCALE;
 
     if ((state->variant & 1) != 0) {
-        switch (((ObjPlacement*)obj->anim.placementData)->mapId) {
+        switch (((ObjPlacement*)obj->anim.placementData)->ident) {
         case 0x292c:
             if (state->spawnedCount == 6) {
                 newPlacement->radiusByte = 1;

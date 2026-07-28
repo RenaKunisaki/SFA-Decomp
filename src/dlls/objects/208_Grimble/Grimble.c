@@ -743,7 +743,7 @@ void grimble_update(GameObject* obj) {
     control = state->control;
     placement = (ObjPlacement*)obj->anim.placementData;
     if (obj->userData1 != 0) {
-        if ((*gMapEventInterface)->shouldNotSaveTime(placement->mapId) != 0) {
+        if ((*gMapEventInterface)->shouldNotSaveTime(placement->ident) != 0) {
             (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)placement, (u8*)state, 0xa, 6, 0x10e, 0x36, 20.0f);
             state->baddie.substate = 1;
             state->baddie.moveJustStartedB = 1;

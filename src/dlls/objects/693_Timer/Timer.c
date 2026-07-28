@@ -125,7 +125,7 @@ void timer_update(GameObject* obj)
             storeZeroToFloatParam(&state->countdownTimer);
             if (state->mode == TIMER_MODE_GLOBAL)
             {
-                switch (((TimerSetup*)(obj)->anim.placementData)->base.mapId)
+                switch (((TimerSetup*)(obj)->anim.placementData)->base.ident)
                 {
                 case TIMER_MAP_NO_FOOTSTEP:
                     break;

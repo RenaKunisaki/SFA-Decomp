@@ -126,7 +126,7 @@ void ccPedestal_init(GameObject* obj, const CCPedestalPlacement* placement) {
 
     obj->anim.rotX = (s16)((u32)placement->rotXByte << CC_PEDESTAL_ROT_X_SHIFT);
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HIDDEN);
-    switch (placement->base.mapId) {
+    switch (placement->base.ident) {
     case CC_PEDESTAL_FIRE_GEM_SOURCE_PLACEMENT_ID:
         state->variantUpdate = ccPedestal_updateFireGemSource;
         state->activationGameBit = CC_PEDESTAL_SOURCE_ACTIVATED_GAMEBIT;

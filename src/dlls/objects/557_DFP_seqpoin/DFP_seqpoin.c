@@ -24,7 +24,7 @@
 
 typedef struct DfpseqpointPlacement
 {
-    ObjPlacement head;  /* 0x00..0x17 (posX 0x08, mapId 0x14) */
+    ObjPlacement head;  /* 0x00..0x17 (posX 0x08, ident 0x14) */
     s8 rotXByte;       /* 0x18 */
     u8 triggerMode;    /* 0x19 */
     s16 triggerRadius; /* 0x1A */
@@ -77,7 +77,7 @@ int DFP_seqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpda
             switch (animUpdate->eventIds[i])
             {
             case 0x14:
-                if (*(u32*)&data->head.mapId == 0x49de8)
+                if (*(u32*)&data->head.ident == 0x49de8)
                 {
                     ((DfpFlags7*)&blob->flags0F)->b80 = 1;
                 }

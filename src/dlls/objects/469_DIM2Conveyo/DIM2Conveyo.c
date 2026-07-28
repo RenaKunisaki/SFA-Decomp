@@ -21,14 +21,14 @@
 
 void dim2conveyor_getScrollVector(GameObject* obj, GameObject* caller, f32 unused, f32* outX, f32* outZ) {
     Dim2ConveyorState* state = obj->extra;
-    s32 mapId;
+    s32 ident;
 
     if (state->musicHoldTimer == 0) {
         Music_Trigger(DIM2CONVEYOR_MUSIC_TRACK_ID, 1);
     }
     state->musicHoldTimer = 20;
-    mapId = ((const Dim2ConveyorPlacement*)obj->anim.placementData)->base.mapId;
-    switch (mapId) {
+    ident = ((const Dim2ConveyorPlacement*)obj->anim.placementData)->base.ident;
+    switch (ident) {
     case DIM2CONVEYOR_SINGLE_DIRECTION_MAP_ID:
         *outX = state->scrollX;
         *outZ = state->scrollZ;
@@ -91,7 +91,7 @@ void dim2conveyor_update(GameObject* obj) {
             Music_Trigger(DIM2CONVEYOR_MUSIC_TRACK_ID, 0);
         }
     }
-    switch (((const Dim2ConveyorPlacement*)obj->anim.placementData)->base.mapId) {
+    switch (((const Dim2ConveyorPlacement*)obj->anim.placementData)->base.ident) {
     case DIM2CONVEYOR_DUAL_DIRECTION_MAP_ID:
         if (mainGetBit(DIM2CONVEYOR_GAMEBIT_DIRECTION_SWAP_ENABLED) != 0) {
             state->directionSwapTimer = state->directionSwapTimer + timeDelta;
@@ -130,7 +130,7 @@ void dim2conveyor_init(GameObject* obj, const Dim2ConveyorPlacement* placement) 
     state->musicHoldTimer = 0;
     ObjGroup_AddObject((u32)obj, CFGUARDIAN_OBJECT_GROUP);
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
-    if (placement->base.mapId == DIM2CONVEYOR_DUAL_DIRECTION_MAP_ID) {
+    if (placement->base.ident == DIM2CONVEYOR_DUAL_DIRECTION_MAP_ID) {
         mainSetBits(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION, 1);
     }
 }

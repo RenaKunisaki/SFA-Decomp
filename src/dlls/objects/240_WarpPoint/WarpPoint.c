@@ -225,7 +225,7 @@ void WarpPoint_init(GameObject* obj, WarpPointPlacement* placement) {
     if (placement->mode == WARPPOINT_MODE_GATED_WARP) {
         state->warpDelay = 0;
     }
-    if (placement->base.mapId == WARPPOINT_MAP_SAVE_A || placement->base.mapId == WARPPOINT_MAP_SAVE_B) {
+    if (placement->base.ident == WARPPOINT_MAP_SAVE_A || placement->base.ident == WARPPOINT_MAP_SAVE_B) {
         placement->savePointArmed = 1;
     } else {
         placement->savePointArmed = 0;

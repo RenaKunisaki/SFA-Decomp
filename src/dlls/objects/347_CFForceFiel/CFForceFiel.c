@@ -118,7 +118,7 @@ void cfforcefield_update(GameObject* obj) {
             } else if (mainGetBit(placement->collapseGameBit) != 0) {
                 s16toFloat(&state->collapseTimer, CFFORCEFIELD_COLLAPSE_FRAMES);
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_en_littletink22);
-                if (((CfForceFieldPlacement*)obj->anim.placement)->base.mapId != CFFORCEFIELD_SILENT_COLLAPSE_MAP_ID) {
+                if (((CfForceFieldPlacement*)obj->anim.placement)->base.ident != CFFORCEFIELD_SILENT_COLLAPSE_MAP_ID) {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_menuups16k_409);
                 }
             }

@@ -198,17 +198,17 @@ void PressureSwitch_update(GameObject* obj) {
 
 void PressureSwitch_init(GameObject* obj, const PressureSwitchPlacementView* placement) {
     PressureSwitchState* state;
-    u32 mapId;
+    u32 ident;
 
     state = obj->extra;
     obj->animEventCallback = PressureSwitch_SeqFn;
     obj->anim.rotX = (s16)((s32)placement->rotationXHighByte << 8);
     state->retriggerTimer = (s16)(placement->retriggerDelay * PRESSURE_SWITCH_RETRIGGER_FRAMES_PER_SEC);
     state->chimeLatch = 0;
-    mapId = obj->anim.placement->mapId;
-    if (mapId == 0x1F1A) {
+    ident = obj->anim.placement->ident;
+    if (ident == 0x1F1A) {
         state->mapGameBit = GAMEBIT_WM_SwitchDoorOpen;
-    } else if (mapId == 0x47293) {
+    } else if (ident == 0x47293) {
         state->mapGameBit = 0xF46;
     } else {
         state->mapGameBit = -1;

@@ -140,7 +140,7 @@ void drakord_thornbush_hitDetect(GameObject* obj)
                 obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
                 ObjHits_DisableObject(obj);
             }
-            else if (*(u32*)&((ObjPlacement*)setup)->mapId == 0xffffffff)
+            else if (*(u32*)&((ObjPlacement*)setup)->ident == 0xffffffff)
             {
                 Obj_FreeObject(obj);
             }
@@ -172,7 +172,7 @@ void drakord_thornbush_update(GameObject* obj)
         {
             (obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
             ((ByteFlags*)((char*)inner + 0x79))->b80 = 1;
-            if (*(u32*)&((ObjPlacement*)setup)->mapId == 0xffffffff)
+            if (*(u32*)&((ObjPlacement*)setup)->ident == 0xffffffff)
             {
                 Obj_FreeObject(obj);
             }
@@ -234,7 +234,7 @@ void drakord_thornbush_init(GameObject* obj, u8* init)
     inner->health = 0;
         ObjHits_SetTargetMask(obj, 4);
     (obj)->anim.rotY = (s16)((s8)init[0x18] << 8);
-    if (*(u32*)&((ObjPlacement*)init)->mapId == 0xffffffff)
+    if (*(u32*)&((ObjPlacement*)init)->ident == 0xffffffff)
     {
         ((ByteFlags*)((char*)inner + 0x79))->b80 = 1;
     }

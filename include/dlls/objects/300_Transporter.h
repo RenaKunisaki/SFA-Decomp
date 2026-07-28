@@ -27,7 +27,7 @@ typedef enum TransporterTriggerMode {
 
 /*
  * Retail EN romlists prove that all 35 Transporter placements use this
- * complete 0x24-byte layout. The object's identity is stored in base.mapId.
+ * complete 0x24-byte layout. The object's identity is stored in base.ident.
  */
 typedef struct TransporterPlacement {
     ObjPlacement base; /* 0x00 */

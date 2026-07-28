@@ -242,7 +242,7 @@ const f32 gWarpPadRestZero[1] = {0.0f};
 #define TRANSPORTER_ENVFX_G2_C 0x23E
 #define TRANSPORTER_ENVFX_G3_A 0x247 /* mapIds 0x4670D / 0x4827E / 0x49267 */
 #define TRANSPORTER_ENVFX_G3_B 0x248
-#define TRANSPORTER_ENVFX_G4_A 0x238 /* mapId 0x4CB6A */
+#define TRANSPORTER_ENVFX_G4_A 0x238 /* ident 0x4CB6A */
 #define TRANSPORTER_ENVFX_G4_B 0x239
 
 #define TRANSPORTER_ACTIVATE_DELAY 400
@@ -294,7 +294,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
             Sfx_PlayFromObject((u32)obj, SFXTRIG_id_420);
             break;
         case TRANSPORTER_EVENT_MAP_PROGRESS:
-            id = placement->base.mapId;
+            id = placement->base.ident;
             switch (id) {
             case 0x49C33:
                 mainSetBits(GAMEBIT_SH_WarpStoneRelated0884, 1);
@@ -376,28 +376,28 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
             }
             break;
         case TRANSPORTER_EVENT_UNLOCK_LEVEL:
-            switch (placement->base.mapId) {
+            switch (placement->base.ident) {
             case 0x47064:
                 unlockLevel(0, 0, 1);
                 break;
             }
             break;
         case TRANSPORTER_EVENT_LOAD_BLOCKS:
-            switch (placement->base.mapId) {
+            switch (placement->base.ident) {
             case 0x47064:
                 setLoadedFileFlags_blocks1();
                 break;
             }
             break;
         case TRANSPORTER_EVENT_CLEAR_BLOCKS:
-            switch (placement->base.mapId) {
+            switch (placement->base.ident) {
             case 0x47064:
                 clearLoadedFileFlags_blocks1();
                 break;
             }
             break;
         case TRANSPORTER_EVENT_WARP:
-            switch (placement->base.mapId) {
+            switch (placement->base.ident) {
             case 0x47064:
                 clearLoadedFileFlags_blocks1();
                 break;
@@ -405,7 +405,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState
             warpToMap(placement->warpId, 0);
             break;
         case TRANSPORTER_EVENT_RESTORE_ENVIRONMENT:
-            id = placement->base.mapId;
+            id = placement->base.ident;
             switch (id) {
             case 0x43F83:
             case 0x4977D:
@@ -533,7 +533,7 @@ void Transporter_init(GameObject* obj, TransporterPlacement* placement) {
     obj->animEventCallback = Transporter_sequenceCallback;
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
 
-    id = placement->base.mapId;
+    id = placement->base.ident;
     switch (id) {
     case 0x4670D:
     case 0x4827E:
