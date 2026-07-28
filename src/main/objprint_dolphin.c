@@ -73,14 +73,10 @@
 #include "string.h"
 
 extern s32 lbl_803DCC48;
-extern f32 lbl_803DEA04;
 extern s32 lbl_803DCC44;
 extern u8 lbl_803DCC3E;
 extern u32 lbl_803DB468;
 extern f32 lbl_803DEA28;
-extern f32 lbl_803DEA2C;
-extern f32 lbl_803DEA30;
-extern f32 lbl_803DEA1C;
 
 int objNormalizeRotationMatrix(f32* matrix, f32* out)
 {
@@ -153,14 +149,14 @@ int objRotateFn_8003bce8(f32* m, s16* outA, s16* outB, s16* outC)
         else
         {
             y = __kernel_cos(buf[1], buf[0]);
-            z = lbl_803DEA04;
+            z = 0.0f;
             y = z - y;
         }
     }
     else
     {
         y = __kernel_cos(buf[1], buf[0]);
-        z = lbl_803DEA04;
+        z = 0.0f;
         y = y - z;
     }
     *outC = (s16)(s32)(gObjPrintAngleUnitScale * z / gObjPrintTwoPi);
@@ -187,7 +183,7 @@ void modelMtxFn_8003be38(u8* def, int* model, f32* mtxA, f32* mtxB)
     dstB = (MtxPtr)((u8*)cache + 0x12c0);
     cacheQueueWait(0);
     i = 0;
-    fill = lbl_803DEA04;
+    fill = 0.0f;
     for (; i < count; i++)
     {
         PSMTXConcat((MtxPtr)mtxA, dstA, mid);
@@ -304,8 +300,6 @@ extern u32 lbl_803DEA00;
 extern u32 lbl_803DB470;
 extern int lbl_803DB498;
 extern int lbl_803DB49C;
-extern f32 lbl_803DEA34;
-extern f32 lbl_803DEA38;
 
 int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
 {
@@ -366,8 +360,8 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     GXSetTevKColor(GX_KCOLOR0, kc);
     GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
-    PSMTXScale(mtx3, lbl_803DEA2C, *(f32*)&lbl_803DEA2C, lbl_803DEA04);
-    PSMTXTrans(mtx2, lbl_803DEA28, *(f32*)&lbl_803DEA28, lbl_803DEA1C);
+    PSMTXScale(mtx3, -0.5f, -0.5f, 0.0f);
+    PSMTXTrans(mtx2, lbl_803DEA28, *(f32*)&lbl_803DEA28, 1.0f);
     PSMTXConcat(mtx2, mtx3, mtx3);
     GXLoadTexMtxImm(mtx3, GX_PTTEXMTX1, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTTEXMTX1);
@@ -382,9 +376,9 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     getNewShadowCausticTexture((u32*)&t164);
     selectTexture((Texture*)((void*)t164), 4);
     newshadows_getReflectionScrollOffsets(&sx, &sy);
-    PSMTXTrans(mtxR, lbl_803DEA28 * sx, *(f32*)&lbl_803DEA28 * sy, lbl_803DEA04);
-    mtxR[0][0] = lbl_803DEA1C;
-    mtxR[1][1] = lbl_803DEA1C;
+    PSMTXTrans(mtxR, lbl_803DEA28 * sx, *(f32*)&lbl_803DEA28 * sy, 0.0f);
+    mtxR[0][0] = 1.0f;
+    mtxR[1][1] = 1.0f;
     GXLoadTexMtxImm(mtxR, GX_PTTEXMTX2, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX2);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP4);
@@ -408,7 +402,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     GXSetIndTexMtx(GX_ITM_1, mtxB.m, (s8)lbl_803DB49C);
     GXSetTevIndirect(3, 1, 0, 7, 2, 0, 0, 1, 0, 1);
     selectTexture(noiseTextures[lbl_803DCC44], 3);
-    PSMTXScale(mtx4, lbl_803DEA30, *(f32*)&lbl_803DEA30, lbl_803DEA1C);
+    PSMTXScale(mtx4, 37.5f, 37.5f, 1.0f);
     GXLoadTexMtxImm(mtx4, GX_PTTEXMTX0, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD4, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_TRUE, GX_PTTEXMTX0);
     GXSetTevKColorSel(GX_TEVSTAGE3, GX_TEV_KCSEL_1_2);
@@ -432,7 +426,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
         if (lt != NULL)
         {
             modelLightStruct_setLightKind(lt, MODEL_LIGHT_KIND_DIRECTIONAL);
-            modelLightStruct_setDirection(lt, lbl_803DEA04, lbl_803DEA34, *(f32*)&lbl_803DEA04);
+            modelLightStruct_setDirection(lt, 0.0f, -0.707f, 0.0f);
             modelLightStruct_setDiffuseColor(lt, 0xff, 0xff, 0xff, 0xff);
             modelLightChannels_reset(0);
             modelLightChannel_configure(2, 0, 0);
@@ -447,7 +441,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
         GXSetTevKColorSel(GX_TEVSTAGE5, GX_TEV_KCSEL_K0);
         newshadows_getShadowTextureTable4x8(&shadowTable, &shadowStride, &shadowRows);
         selectTexture(shadowTable[(lbl_803DCC44 - 0xc) + lbl_803DCC3D * shadowStride], 5);
-        PSMTXScale(mtx5, lbl_803DEA38, *(f32*)&lbl_803DEA38, lbl_803DEA1C);
+        PSMTXScale(mtx5, 20.0f, 20.0f, 1.0f);
         GXLoadTexMtxImm(mtx5, GX_PTTEXMTX3, GX_MTX3x4);
         GXSetTexCoordGen2(GX_TEXCOORD5, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_TRUE, GX_PTTEXMTX3);
         GXSetTevDirect(GX_TEVSTAGE4);
@@ -530,7 +524,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     getNewShadowNoiseTextureFrames(&noiseTextures, &noiseFrameCount);
     if (lbl_803DCC35 != 0)
     {
-        fz = lbl_803DEA04;
+        fz = 0.0f;
     }
     else
     {
@@ -585,8 +579,8 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
         s10.a = obj->anim.pad37[0] - 0xff;
     }
     GXSetTevColorS10(GX_TEVREG2, s10);
-    PSMTXScale(mtx3, lbl_803DEA2C, *(f32*)&lbl_803DEA2C, lbl_803DEA04);
-    PSMTXTrans(mtx2, lbl_803DEA28, *(f32*)&lbl_803DEA28, lbl_803DEA1C);
+    PSMTXScale(mtx3, -0.5f, -0.5f, 0.0f);
+    PSMTXTrans(mtx2, lbl_803DEA28, *(f32*)&lbl_803DEA28, 1.0f);
     PSMTXConcat(mtx2, mtx3, mtx3);
     GXLoadTexMtxImm(mtx3, GX_PTTEXMTX1, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTTEXMTX1);
@@ -663,9 +657,9 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     getNewShadowCausticTexture((u32*)&texRef4);
     selectTexture((Texture*)((void*)texRef4), 4);
     newshadows_getReflectionScrollOffsets(&sx, &sy);
-    PSMTXTrans(mtxR, lbl_803DEA28 * sx, *(f32*)&lbl_803DEA28 * sy, lbl_803DEA04);
-    mtxR[0][0] = lbl_803DEA1C;
-    mtxR[1][1] = lbl_803DEA1C;
+    PSMTXTrans(mtxR, lbl_803DEA28 * sx, *(f32*)&lbl_803DEA28 * sy, 0.0f);
+    mtxR[0][0] = 1.0f;
+    mtxR[1][1] = 1.0f;
     GXLoadTexMtxImm(mtxR, GX_PTTEXMTX2, GX_MTX3x4);
     GXSetTexCoordGen2(coord, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX2);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, coord, GX_TEXMAP4);
@@ -695,13 +689,13 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     {
         GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD3, GX_TEXMAP2);
         GXSetIndTexCoordScale(1, 0, 0);
-        mtxB.m[0][1] = lbl_803DEA04;
-        mtxB.m[1][2] = lbl_803DEA04;
+        mtxB.m[0][1] = 0.0f;
+        mtxB.m[1][2] = 0.0f;
         GXSetIndTexMtx(GX_ITM_1, mtxB.m, -0xf);
         GXSetTevIndirect(stage + 1, 1, 0, 7, 2, 0, 0, 1, 0, 0);
     }
     selectTexture(noiseTextures[lbl_803DCC44], 3);
-    PSMTXScale(mtx4, lbl_803DEA30, *(f32*)&lbl_803DEA30, lbl_803DEA1C);
+    PSMTXScale(mtx4, 37.5f, 37.5f, 1.0f);
     GXLoadTexMtxImm(mtx4, GX_PTTEXMTX0, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD4, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_TRUE, GX_PTTEXMTX0);
     GXSetTevKColorSel(stage + 1, GX_TEV_KCSEL_1_2);
@@ -822,7 +816,7 @@ void objRenderFuzzFn_8003d6f8(void* objArg)
     if (renderHandle != 0x0)
     {
         modelLightStruct_setLightKind(renderHandle, 4);
-        modelLightStruct_setDirection(renderHandle, lbl_803DEA04, lbl_803DEA34, *(f32*)&lbl_803DEA04);
+        modelLightStruct_setDirection(renderHandle, 0.0f, -0.707f, 0.0f);
         modelLightStruct_setDiffuseColor(renderHandle, 0xff, 0xff, 0xff, 0xff);
         modelLightChannels_reset(0);
         modelLightChannel_configure(2, 0, 0);
@@ -837,7 +831,7 @@ void objRenderFuzzFn_8003d6f8(void* objArg)
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     newshadows_getShadowTextureTable4x8(&shadowTable, &shadowStride, &shadowParam);
     selectTexture(shadowTable[(lbl_803DCC44 >> 2) + lbl_803DCC3D * shadowStride], 0);
-    PSMTXScale((MtxPtr)mtx, lbl_803DEA38, *(f32*)&lbl_803DEA38, lbl_803DEA1C);
+    PSMTXScale((MtxPtr)mtx, 20.0f, 20.0f, 1.0f);
     GXLoadTexMtxImm((const f32 (*)[4])mtx, 0x40, 0);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_TRUE, GX_PTTEXMTX0);
     GXSetTevDirect(GX_TEVSTAGE0);
@@ -890,11 +884,11 @@ void objRenderFn_8003d980(u8* obj, int* p2)
     PSMTXConcat((MtxPtr)vm, (MtxPtr)wm, (MtxPtr)cm);
     GXLoadPosMtxImm((const f32 (*)[4])cm, gObjGxPosMtxIdTable[0]);
     GXSetCurrentMtx(gObjGxPosMtxIdTable[0]);
-    PSMTXScale((MtxPtr)sm, lbl_803DEA1C / ((GameObject*)obj)->anim.rootMotionScale,
-               lbl_803DEA1C / ((GameObject*)obj)->anim.rootMotionScale, lbl_803DEA1C);
-    cm[3] = lbl_803DEA04;
-    cm[7] = lbl_803DEA04;
-    cm[11] = lbl_803DEA04;
+    PSMTXScale((MtxPtr)sm, 1.0f / ((GameObject*)obj)->anim.rootMotionScale,
+               1.0f / ((GameObject*)obj)->anim.rootMotionScale, 1.0f);
+    cm[3] = 0.0f;
+    cm[7] = 0.0f;
+    cm[11] = 0.0f;
     PSMTXConcat((MtxPtr)cm, (MtxPtr)sm, (MtxPtr)cm);
     GXLoadTexMtxImm((const f32 (*)[4])cm, 0x1e, 0);
     gxTextureFn_80072dfc(obj, (void**)mdl, 0);
@@ -951,7 +945,7 @@ void objRenderFn_8003d980(u8* obj, int* p2)
         blk.x = fs * (f32)(verts[m] >> 8) + ((GameObject*)obj)->anim.localPosX;
         blk.y = fs * (f32)(verts[m + 1] >> 8) + ((GameObject*)obj)->anim.localPosY;
         blk.z = fs * (f32)(verts[m + 2] >> 8) + ((GameObject*)obj)->anim.localPosZ;
-        blk.scale = lbl_803DEA1C;
+        blk.scale = 1.0f;
         blk.rotX = 0;
         blk.rotZ = 0;
         blk.rotY = 0;

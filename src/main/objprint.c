@@ -32,7 +32,6 @@ f32 gObjMouthBlendFrames = 20.0f;
 
 
 extern f32 lbl_803DE9A4;
-extern f32 lbl_803DE99C;
 
 void objAnimFn_80038f38(GameObject* obj, char* state)
 {
@@ -72,7 +71,7 @@ void objAnimFn_80038f38(GameObject* obj, char* state)
             if (pi->file->morphTargetCount != 0)
             {
                 ObjModel_SetBlendChannelTargets(pi, 2, pi->blendChannels[2].morphTargetB, -1,
-                                                lbl_803DE99C / gObjMouthBlendFrames, 0);
+                                                1.0f / gObjMouthBlendFrames, 0);
             }
         }
     }
@@ -107,7 +106,7 @@ void objKfAnimUpdate(GameObject* obj, ObjKfAnimState* state)
             {
                 ObjModel_SetBlendChannelTargets(model, 2,
                                                 model->blendChannels[2].morphTargetB, -1,
-                                                lbl_803DE99C / gObjMouthBlendFrames, 0);
+                                                1.0f / gObjMouthBlendFrames, 0);
             }
         }
         else
@@ -125,7 +124,7 @@ void objKfAnimUpdate(GameObject* obj, ObjKfAnimState* state)
             {
                 ObjModel_SetBlendChannelTargets(model, 2,
                                                 model->blendChannels[2].morphTargetB, kfval - 1,
-                                                lbl_803DE99C / gObjMouthBlendFrames, 0);
+                                                1.0f / gObjMouthBlendFrames, 0);
             }
             state->timer = state->timer + state->timerStep;
         }
@@ -145,7 +144,7 @@ void objAudioFn_80039270(u32 obj, void* p, u16 sfxId)
         ((ObjSoundState*)p)->timer = -1.0f;
         ((ObjSoundState*)p)->pitch = -0x500;
         ((ObjSoundState*)p)->active = 1;
-        ((ObjSoundState*)p)->blendWeight = lbl_803DE99C;
+        ((ObjSoundState*)p)->blendWeight = 1.0f;
     }
 }
 
@@ -166,7 +165,7 @@ void objSoundFn_800392f0(GameObject* obj, ObjSoundState* state, ObjSoundDef* sou
         state->timer = -1.0f;
         state->pitch = (s16)(-pitch);
         state->active = 1;
-        state->blendWeight = lbl_803DE99C;
+        state->blendWeight = 1.0f;
     }
     count = soundDef->blendCount;
     if (count != 0)
@@ -176,7 +175,7 @@ void objSoundFn_800392f0(GameObject* obj, ObjSoundState* state, ObjSoundDef* sou
         {
             ObjModel_SetBlendChannelTargets(model, 2,
                                             model->blendChannels[2].morphTargetB, count - 1,
-                                            lbl_803DE99C / gObjMouthBlendFrames, 0);
+                                            1.0f / gObjMouthBlendFrames, 0);
             did = 1;
         }
         else
@@ -201,7 +200,7 @@ void objAudioFn_800393f8(GameObject* obj, ObjSoundState* state, u16 sfx, int pit
     state->timer = volume;
     state->pitch = (s16)(-pitch);
     state->active = 1;
-    state->blendWeight = lbl_803DE99C;
+    state->blendWeight = 1.0f;
 }
 
 int gObjLookAtJointKeys[10] = {0, 0xb, 0xc, 0xd, 0xe, 0xf, 0x10, 0x11, 0x12, 0x13};
@@ -378,9 +377,9 @@ int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b)
         return 1;
     }
 
-    if (ratio > lbl_803DE99C)
+    if (ratio > 1.0f)
     {
-        ratio = lbl_803DE99C;
+        ratio = 1.0f;
     }
     else if (ratio < lbl_803DE9A4)
     {
@@ -396,7 +395,7 @@ int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b)
         *state = rate * timeDelta + (f32)(s32)*state;
     }
 
-    if (lbl_803DE99C == ratio || *state >= 8191 || *state <= -8191)
+    if (1.0f == ratio || *state >= 8191 || *state <= -8191)
     {
         *state = curve[10];
         return 1;
@@ -426,9 +425,9 @@ int characterTrackJointYaw(s16* curve, s16* state)
         return 1;
     }
 
-    if (ratio > lbl_803DE99C)
+    if (ratio > 1.0f)
     {
-        ratio = lbl_803DE99C;
+        ratio = 1.0f;
     }
     else if (ratio < lbl_803DE9A4)
     {
@@ -444,7 +443,7 @@ int characterTrackJointYaw(s16* curve, s16* state)
         state[1] = rate * timeDelta + (f32)(s32)state[1];
     }
 
-    if (lbl_803DE99C == ratio || state[1] >= 8191 || state[1] <= -8191)
+    if (1.0f == ratio || state[1] >= 8191 || state[1] <= -8191)
     {
         state[1] = curve[10];
         return 1;
@@ -579,7 +578,7 @@ void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val)
         {
             curve[13] = (s16)(flag << 8 | 3);
             curve[11] = state[1];
-            *(f32*)((char*)curve + 0x10) = lbl_803DE99C;
+            *(f32*)((char*)curve + 0x10) = 1.0f;
         }
         else
         {

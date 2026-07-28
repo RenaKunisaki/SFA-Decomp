@@ -79,7 +79,6 @@ extern const f32 lbl_803DEBFC;
 extern const f32 lbl_803DEC20;
 extern const f32 gTexIndMtxScale;
 extern f32 lbl_803DEC28;
-extern const f32 lbl_803DEC2C;
 extern int lbl_803DEBB0;
 extern ModelLightStruct* gTexDimmedLightList[2];
 extern ModelLightStruct* gTexBlockLightList[2];
@@ -239,7 +238,7 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, M
     i = 0;
     for (; i < passCount; i = i + 1)
     {
-        PSMTXTrans((f32*)passMtx, 0.0f, lbl_803DEC2C * (f32)(i + 1), 0.0f);
+        PSMTXTrans((f32*)passMtx, 0.0f, 0.4f * (f32)(i + 1), 0.0f);
         PSMTXConcat((f32*)viewMtx, (f32*)passMtx, (f32*)passMtx);
         GXLoadPosMtxImm(passMtx, GX_PNMTX0);
         mtxSrc = (u8*)gTexIndMtxTable;
@@ -1039,7 +1038,6 @@ typedef struct TrackTriangle
 
 #include "main/dll/ppcwgpipe_struct.h"
 
-extern const f32 lbl_803DEC50;
 extern u32 gSunFlareScissorX;
 extern u32 gSunFlareScissorY;
 extern u32 gSunFlareScissorWidth;
@@ -1056,10 +1054,8 @@ extern int renderFlags;
 extern u8 colorScale;
 extern f32 gSunFlareFade;
 extern int gSunOcclusionSampleOffsets[];
-extern f32 lbl_803DEBD4, lbl_803DEBD8, lbl_803DEBDC;
-extern f32 lbl_803DEBE4;
-extern f32 lbl_803DEC30, lbl_803DEC34, lbl_803DEC38;
-extern f32 lbl_803DEC3C, lbl_803DEC40;
+extern f32 lbl_803DEBDC;
+extern f32 lbl_803DEC40;
 
 void* trackGetBlockDescriptors(u32* outVal);
 
@@ -1294,7 +1290,7 @@ void renderGlows(void)
             int occ;
             f32 fade;
             skyBuildSunModelMatrix((f32(*)[4])sunMtx);
-            Camera_ProjectWorldPointWithOffset(sunMtx[3], sunMtx[7], sunMtx[11], lbl_803DEBD4, &px, &py, &pz);
+            Camera_ProjectWorldPointWithOffset(sunMtx[3], sunMtx[7], sunMtx[11], 100.0f, &px, &py, &pz);
             Camera_NdcToScreen(px, py, pz, &sx, &sy, &sz);
             gSunFlareScissorX = sx - 0x10;
             gSunFlareScissorWidth = 0x20;
@@ -1320,11 +1316,11 @@ void renderGlows(void)
                 if (sz <= d && pauseMenuGetState() == 0)
                     occ++;
             }
-            fade = (f32)(u32)occ / lbl_803DEBE4 - gSunFlareFade;
-            if (fade > lbl_803DEC30)
-                fade = lbl_803DEC30;
-            else if (fade < lbl_803DEC34)
-                fade = lbl_803DEC34;
+            fade = (f32)(u32)occ / 5.0f - gSunFlareFade;
+            if (fade > 0.0125f)
+                fade = 0.0125f;
+            else if (fade < -0.0125f)
+                fade = -0.0125f;
             gSunFlareFade = gSunFlareFade + fade;
             sunDot = sunDot * gSunFlareFade;
             if (sunDot > lbl_803DEBCC)
@@ -1336,8 +1332,8 @@ void renderGlows(void)
                 getAmbientColor(0, &amb[0], &amb[1], &amb[2]);
                 sunDot = (f32)(u32)sunAlpha * sunDot;
                 _gxSetTevColor2(amb[0], amb[1], amb[2], (int)(lbl_803DEBFC * sunDot));
-                alpha = lbl_803DEBD8 - lbl_803DEC38 * sunDot;
-                fade = lbl_803DEC3C * sunDot;
+                alpha = 255.0f - 0.9f * sunDot;
+                fade = 20000.0f * sunDot;
                 sunDot = fade * lbl_803DEC40;
                 GXBegin(GX_QUADS, GX_VTXFMT2, 4);
                 GXWGFifo.f32 = -sunDot;
@@ -1493,9 +1489,9 @@ void trackPackVector(short* out, float* vec)
     int yScaled;
     int zScaled;
 
-    yScaled = (int)(lbl_803DEC50 * vec[1]);
-    zScaled = (int)(lbl_803DEC50 * vec[2]);
-    *out = (short)(int)(lbl_803DEC50 * *vec);
+    yScaled = (int)(8.0f * vec[1]);
+    zScaled = (int)(8.0f * vec[2]);
+    *out = (short)(int)(8.0f * *vec);
     out[1] = yScaled;
     out[2] = zScaled;
 }

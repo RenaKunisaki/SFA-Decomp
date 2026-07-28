@@ -86,17 +86,11 @@ extern u8 gDispCopyFilterWeights[8];
 extern u8 gLoadingScreenTextures[];
 extern char gVideoFlipQueueBuffer[0x78];
 extern RingBufferQueue gVideoFlipQueue;
-extern f32 lbl_803DEA94;
-extern f32 lbl_803DEA98;
 
 void videoSwapFrameBuffers(u32 retraceCount);
 void gpuErrorHandler(u32 retraceCount);
 void videoFn_800499e8(void);
 
-extern f32 lbl_803DEA70;
-extern f32 lbl_803DEA78;
-extern f32 lbl_803DEA8C;
-extern f32 lbl_803DEA90;
 extern Mtx44 hudMatrix;
 
 void initViewport(void)
@@ -144,8 +138,8 @@ void videoInit(void* wpad0, int wpad1)
     VISetPreRetraceCallback(videoSwapFrameBuffers);
     VISetPostRetraceCallback(gpuErrorHandler);
     GXSetBreakPtCallback(videoFn_800499e8);
-    GXSetViewport(lbl_803DEA70, lbl_803DEA70, gRenderModeObj->fbWidth, gRenderModeObj->xfbHeight, lbl_803DEA70,
-                  lbl_803DEA78);
+    GXSetViewport(0.0f, 0.0f, gRenderModeObj->fbWidth, gRenderModeObj->xfbHeight, 0.0f,
+                  1.0f);
     GXSetFieldMode(gRenderModeObj->field_rendering, gRenderModeObj->xfbHeight < gRenderModeObj->viHeight);
     GXSetScissor(0, 0, gRenderModeObj->fbWidth, gRenderModeObj->efbHeight);
     GXSetDispCopyDst(gRenderModeObj->fbWidth, (u16)gDispCopyYScaleLines);
@@ -232,7 +226,7 @@ void videoInit(void* wpad0, int wpad1)
     GXLoadTexMtxImm(mtx, GX_TEXMTX0, GX_MTX3x4);
     GXLoadTexMtxImm(mtx, GX_TEXMTX1, GX_MTX3x4);
     GXSetCurrentMtx(GX_PNMTX0);
-    C_MTXOrtho(hudMatrix, lbl_803DEA94, lbl_803DEA98, lbl_803DEA70, lbl_803DEA8C, lbl_803DEA78, lbl_803DEA90);
+    C_MTXOrtho(hudMatrix, -23.0f, 502.0f, 0.0f, 640.0f, 1.0f, 100.0f);
     GXSetMisc(GX_MT_XF_FLUSH, 8);
     PPCMtmsr(PPCMfmsr() | MSR_PM);
     PPCMthid0(PPCMfhid0() | HID0_SPD);
@@ -268,9 +262,6 @@ extern u8 gVideoBlackScreenFrameCount;
 extern u16 gGxDrawSyncToken;
 extern OSStopwatch gFrameStopwatch;
 extern f32 physicsTimeScale;
-extern f32 lbl_803DEAA0;
-extern f32 lbl_803DEA74;
-extern f32 lbl_803DEA7C;
 extern u8 lbl_803DB411;
 
 #include "main/dll/ppcwgpipe_struct.h"
@@ -412,22 +403,22 @@ void waitNextFrame(void)
         (u64)OSCheckStopwatch(&gFrameStopwatch) / (f32)(u32)((*(u32*)0x800000f8 >> 2) / 1000);
     OSResetStopwatch(&gFrameStopwatch);
     OSStartStopwatch(&gFrameStopwatch);
-    timeDelta = physicsTimeScale * (lbl_803DEAA0 * gFrameElapsedMs);
+    timeDelta = physicsTimeScale * (0.001f * gFrameElapsedMs);
     if (gDvdErrorPauseActive != 0)
     {
-        timeDelta = lbl_803DEA70;
+        timeDelta = 0.0f;
     }
-    if (timeDelta > lbl_803DEA74)
+    if (timeDelta > 6.0f)
     {
-        timeDelta = *(f32*)&lbl_803DEA74;
+        timeDelta = 6.0f;
     }
-    if (timeDelta > lbl_803DEA7C)
+    if (timeDelta > 0.1f)
     {
-        oneOverTimeDelta = lbl_803DEA78 / timeDelta;
+        oneOverTimeDelta = 1.0f / timeDelta;
     }
     else
     {
-        oneOverTimeDelta = lbl_803DEA78;
+        oneOverTimeDelta = 1.0f;
     }
     frames = (int)(timeDelta + gFrameStepRemainder) & 0xff;
     framesThisStep = frames;
