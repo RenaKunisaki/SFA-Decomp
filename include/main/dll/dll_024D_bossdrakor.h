@@ -4,6 +4,8 @@
 #include "types.h"
 #include "game/objects/object.h"
 #include "main/byte_flags.h"
+#include "main/dll/curve_walker.h"
+#include "main/objprint_sound_api.h"
 #include "main/model_light.h"
 #include "main/objanim_update.h"
 #include "global.h"
@@ -30,11 +32,8 @@ typedef struct BossDrakorState
     f32 homePosX;
     f32 homePosY;
     f32 homePosZ;
-    u8 pad28[0x68];
-    f32 savedPosX;
-    f32 savedPosY;
-    f32 savedPosZ;
-    u8 pad9C[0xc4];
+    RomCurveWalker curveWalker; /* 0x28: the rom-curve walker this boss follows */
+    ObjSoundState soundState; /* 0x130 */
     ModelLightStruct* lightObj; /* 0x160 */
     f32 moveSpeed;
     int moveState; /* 0x168 */
@@ -50,11 +49,14 @@ typedef struct BossDrakorState
     u8 repeatCount;
     u8 pad191[3];
     int curveFollowState;
-    u8 pad198[4];
+    ByteFlags flags198;
+    u8 pad199[3];
     f32 hitSfxCooldown;
     f32 hurtSfxCooldown;
 } BossDrakorState;
 
+STATIC_ASSERT(offsetof(BossDrakorState, curveWalker) == 0x28);
+STATIC_ASSERT(offsetof(BossDrakorState, soundState) == 0x130);
 STATIC_ASSERT(sizeof(BossDrakorState) == 0x1a4);
 
 extern f32 lbl_803E6510;
@@ -118,10 +120,10 @@ void bossdrakor_update(GameObject* obj);
 void bossdrakor_free(GameObject* obj);
 void bossdrakor_hitDetect(GameObject* obj);
 int bossdrakor_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
-void bossdrakor_handleActionEvent(GameObject* obj, int state, int action);
-void bossdrakor_updateHeadTracking(GameObject* obj, int state);
+void bossdrakor_handleActionEvent(GameObject* obj, BossDrakorState* state, int action);
+void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state);
 int bossdrakor_chooseNextMove(GameObject* obj, f32* speedOut);
-void bossdrakor_spawnAttackObjects(GameObject* obj, int state, int action);
+void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int action);
 void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init);
 void bossdrakor_render(GameObject* p1, int p2, int p3, int p4, int p5, s8 vis);
 

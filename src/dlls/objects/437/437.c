@@ -134,13 +134,13 @@ int Lightfoot_UpdateProximityInteractionState(int obj, int state)
 
 int Lightfoot_UpdateCompletionInteraction(int obj, int state)
 {
-    int data = *(int*)&((GameObject*)obj)->anim.placementData;
+    Dll437Placement* data = (Dll437Placement*)((GameObject*)obj)->anim.placementData;
     int inner = *(int*)&((GameObject*)obj)->extra;
     int control = *(int*)((char*)inner + 0x40c);
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedB != 0 ||
         *(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
     {
-        if (mainGetBit(((Dll437Placement*)data)->eventGameBit) != 0)
+        if (mainGetBit(data->eventGameBit) != 0)
         {
             *(u8*)((char*)inner + 0x404) |= 1;
         }
@@ -156,8 +156,8 @@ int Lightfoot_UpdateCompletionInteraction(int obj, int state)
                 ((Dll437ControlState*)control)->completionCountdown -= 1;
                 if (((Dll437ControlState*)control)->completionCountdown == 0)
                 {
-                    mainSetBits(((Dll437Placement*)data)->completionGameBit, 1);
-                    mainSetBits(((Dll437Placement*)data)->activeGameBit, 0);
+                    mainSetBits(data->completionGameBit, 1);
+                    mainSetBits(data->activeGameBit, 0);
                     ((GameObject*)obj)->anim.alpha = 0;
                     ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
                     ((Dll437ControlState*)control)->completionTimer = 120.0f;
@@ -169,7 +169,7 @@ int Lightfoot_UpdateCompletionInteraction(int obj, int state)
         {
             if (((PlayerState*)state)->baddie.controlMode != 1)
             {
-                if (mainGetBit(((Dll437Placement*)data)->activeGameBit) != 0)
+                if (mainGetBit(data->activeGameBit) != 0)
                 {
                     (*gPlayerInterface)->setState((void*)obj, (void*)state, 1);
                 }

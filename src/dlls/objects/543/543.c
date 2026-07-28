@@ -171,7 +171,7 @@ void VFP_Platform_hitDetect(void)
 
 void VFP_Platform_update(GameObject* obj)
 {
-    int params = *(int*)&(obj)->anim.placementData;
+    ObjPlacement* params = (ObjPlacement*)(obj)->anim.placementData;
     VfpPlatformState* state = (obj)->extra;
     int xi;
     int yi;
@@ -189,8 +189,8 @@ void VFP_Platform_update(GameObject* obj)
     {
         xi = (obj)->anim.localPosX;
         yi = (obj)->anim.localPosZ;
-        txi = ((ObjPlacement*)params)->posX;
-        tyi = ((ObjPlacement*)params)->posZ;
+        txi = params->posX;
+        tyi = params->posZ;
         if (s3 != 99)
         {
             if ((obj)->anim.seqId == VFP_PLATFORM_LAVABLOCK_OBJ)

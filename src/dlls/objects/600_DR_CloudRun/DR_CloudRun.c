@@ -878,7 +878,7 @@ int DR_CloudRunner_stateHandler02(GameObject* obj, CloudRunnerState* baddie)
 int DR_CloudRunner_stateHandler01(GameObject* obj, CloudRunnerState* baddie)
 {
     CloudRunnerState* inner;
-    int placement = *(int*)&(obj)->anim.placementData;
+    DRCloudRunnerPlacement* placement = (DRCloudRunnerPlacement*)(obj)->anim.placementData;
     *(int*)((char*)baddie + 0) |= 0x200000;
     if (*(s8*)&baddie->baddie.moveJustStartedA != 0)
     {
@@ -901,7 +901,7 @@ int DR_CloudRunner_stateHandler01(GameObject* obj, CloudRunnerState* baddie)
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_lfoot_taunt);
     }
-    if (mainGetBit(((DRCloudRunnerPlacement*)placement)->enableGameBit) != 0)
+    if (mainGetBit(placement->enableGameBit) != 0)
     {
         (obj)->userData1 = 0;
         ObjHits_EnableObject(obj);

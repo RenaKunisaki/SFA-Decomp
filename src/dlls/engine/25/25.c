@@ -118,12 +118,12 @@ int dll_19_func1B(GameObject* obj)
 
 f32 dll_19_getHealthFraction(GameObject* obj)
 {
-    int p_b8 = *(int*)&(obj)->extra;
-    int p_4c = *(int*)&(obj)->anim.placementData;
-    u8 denom = ((Dll19Placement*)p_4c)->progressDenominator;
+    Dll19State* p_b8 = (Dll19State*)(obj)->extra;
+    Dll19Placement* p_4c = (Dll19Placement*)(obj)->anim.placementData;
+    u8 denom = p_4c->progressDenominator;
     if (denom != 0)
     {
-        s8 numer = ((Dll19State*)p_b8)->progressNumerator;
+        s8 numer = p_b8->progressNumerator;
         if (numer != 0)
         {
             return (f32)numer / denom;

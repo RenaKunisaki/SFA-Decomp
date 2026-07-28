@@ -981,10 +981,10 @@ void DR_EarthWarrior_setMountState(GameObject* obj, int param)
     else
     {
         EarthWarriorState* inner2 = obj->extra;
-        int placement = *(int*)&obj->anim.placementData;
+        DREarthWarriorPlacement* placement = (DREarthWarriorPlacement*)obj->anim.placementData;
         ((ByteFlags*)&inner2->sub.flags994)->b02 = 1;
         (*gGameUIInterface)
-            ->initAirMeter(((DREarthWarriorPlacement*)placement)->airMeterMax, DREARTHWARRIOR_AIRMETER_BGTEXTURE);
+            ->initAirMeter(placement->airMeterMax, DREARTHWARRIOR_AIRMETER_BGTEXTURE);
         (*gGameUIInterface)->runAirMeter(inner2->sub.health);
         mainSetBits(0x7bc, 1);
         mainSetBits(0x7d4, 0);

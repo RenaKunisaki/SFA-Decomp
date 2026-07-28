@@ -48,17 +48,17 @@ int lightsource_getObjectTypeId(void)
 
 void lightsource_free(GameObject* obj)
 {
-    int state = *(int*)&obj->extra;
+    LightSourceState* state = (LightSourceState*)obj->extra;
     (*gExpgfxInterface)->freeSource2((u32)obj);
-    if (((LightSourceState*)state)->light != 0)
+    if (state->light != 0)
     {
-        ModelLightStruct_free(((LightSourceState*)state)->light);
+        ModelLightStruct_free(state->light);
     }
 }
 
 void lightsource_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
 {
-    ModelLightStruct* light = (*(LightSourceState**)&(obj)->extra)->light;
+    ModelLightStruct* light = ((LightSourceState*)obj->extra)->light;
     if (light != NULL && light->glowType != 0 && light->enabled != 0)
     {
         queueGlowRender(light);

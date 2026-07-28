@@ -80,7 +80,7 @@ void drakorenergy_hitDetect(void)
 
 void drakorenergy_update(int obj)
 {
-    int state = *(int*)&((GameObject*)obj)->extra;
+    DrakorEnergyState* state = (DrakorEnergyState*)((GameObject*)obj)->extra;
     int placement;
     GameObject* player;
     f32 zeroF;
@@ -90,7 +90,7 @@ void drakorenergy_update(int obj)
     f32 seekDir[3];
     s16 colorRGB[12];
     GameObject* o = (GameObject*)obj;
-    DrakorEnergyState* s = (DrakorEnergyState*)state;
+    DrakorEnergyState* s = state;
 
     player = Obj_GetPlayerObject();
     placement = *(int*)&o->anim.placementData;
