@@ -396,7 +396,7 @@ int DR_CloudRunner_stateHandler05(GameObject* obj, CloudRunnerState* baddie, f32
     inner = obj->extra;
     *(int*)((char*)baddie + 0) |= 0x200000;
     baddie->baddie.physicsActive = 0;
-    if (*(s8*)&baddie->baddie.moveDone != 0)
+    if (baddie->baddie.moveDone != 0)
     {
         ((ByteFlags*)&inner->flagsBC0)->b80 = 0;
         ((ByteFlags*)&inner->flagsBC0)->b08 = 0;
@@ -815,7 +815,7 @@ int DR_CloudRunner_stateHandler03(GameObject* obj, CloudRunnerState* baddie)
         }
         break;
     case 0x20c:
-        if (*(s8*)&baddie->baddie.moveDone != 0)
+        if (baddie->baddie.moveDone != 0)
         {
             ((DRCloudRunnerState*)inner)->flagsAD5 &= ~2;
             return 3;

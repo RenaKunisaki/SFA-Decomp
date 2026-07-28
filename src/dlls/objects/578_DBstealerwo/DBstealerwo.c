@@ -410,7 +410,7 @@ int dbstealerworm_stateHandlerB02(GameObject* obj, BaddieState* baddie)
     }
     else
     {
-        flag2 = *(char*)&baddie->moveDone;
+        flag2 = baddie->moveDone;
         if (flag2 != 0)
         {
             if (obj->anim.alpha == 0)
@@ -430,7 +430,7 @@ int dbstealerworm_stateHandlerB01(GameObject* obj, BaddieState* baddie)
     GroundBaddieState* state = obj->extra;
     if (baddie->hitPoints < 1)
         return 3;
-    if ((s8)baddie->moveDone != 0)
+    if (baddie->moveDone != 0)
     {
         ((DbStealerwormControl*)state->control)->spawnAccumulator += 170.0f;
         return 7;
@@ -451,7 +451,7 @@ int dbstealerworm_stateHandlerB00(GameObject* obj, BaddieState* baddie)
             p->animSpeedA = fz;
             return 7;
         }
-        if ((s8)p->moveDone != 0)
+        if (p->moveDone != 0)
             return 7;
     }
     return 0;
@@ -1118,7 +1118,7 @@ int dbstealerworm_stateHandlerA0A(GameObject* obj, BaddieState* state)
             ObjAnim_SetCurrentMove((int)obj, 0x12, 0.0f, 0);
             state->moveDone = 0;
         }
-        if ((s8)state->moveDone != 0)
+        if (state->moveDone != 0)
         {
             control->msgAdvance = 1;
         }
@@ -1188,7 +1188,7 @@ int dbstealerworm_stateHandlerA09(GameObject* obj, BaddieState* baddie)
         ObjAnim_SetCurrentMove((int)obj, 16, 0.0f, 0);
         bs->moveDone = 0;
     }
-    if (*(s8*)&bs->moveDone != 0)
+    if (bs->moveDone != 0)
     {
         sub_40c->msgAdvance = 1;
     }
@@ -1693,7 +1693,7 @@ int dbstealerworm_stateHandlerA05(GameObject* obj, BaddieState* baddie)
     bs->stateTag = 16;
     bs->moveSpeed = 0.015f;
     bs->animSpeedA = 0.0f;
-    if (*(s8*)&bs->moveDone != 0)
+    if (bs->moveDone != 0)
     {
         sub_40c->msgAdvance = 1;
     }
@@ -1726,7 +1726,7 @@ int dbstealerworm_stateHandlerA04(GameObject* obj, BaddieState* baddie)
         bs->eventFlags = eventFlags & ~BADDIE_EVENT_FOOTSTEP;
         sub->flags14 = sub->flags14 | DBWORM_FLAG14_ATTACK;
     }
-    if (*(s8*)&bs->moveDone != 0)
+    if (bs->moveDone != 0)
     {
         sub->msgAdvance = 1;
     }
@@ -1787,7 +1787,7 @@ int dbstealerworm_stateHandlerA02(GameObject* obj, BaddieState* baddie)
         bs->moveSpeed = 0.005f + state->aggression / 20000.0f;
     }
     bs->animSpeedA = 0.0f;
-    if (*(s8*)&bs->moveDone != 0)
+    if (bs->moveDone != 0)
     {
         sub->msgAdvance = 1;
     }
@@ -1821,7 +1821,7 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
         bs->moveSpeed = 0.01f;
         bs->animSpeedA = 0.0f;
     }
-    if (*(s8*)&bs->moveDone != 0)
+    if (bs->moveDone != 0)
     {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_eggylaugh116);
         sub_40c->unk04 = 1.0f;
@@ -1870,7 +1870,7 @@ int dbstealerworm_stateHandlerA00(GameObject* obj, BaddieState* baddie)
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DBSTEALERWORM_HIT_VOLUME_SLOT, 1, -1);
     }
 
-    if ((s32)(s8)bs->moveDone != 0)
+    if ((s32)bs->moveDone != 0)
     {
         sub->targetState = 1;
         sub_40c->msgAdvance = 1;

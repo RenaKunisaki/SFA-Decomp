@@ -375,7 +375,7 @@ int ktrex_stateHandlerA09(GameObject* obj, GroundBaddieState* runtime)
             (*gCameraInterface)->loadTriggeredCamAction(2, 0, 0);
         }
     }
-    else if ((s8)runtime->baddie.moveDone != 0)
+    else if (runtime->baddie.moveDone != 0)
     {
         gKTRexState->lastPhase = (gKTRexState->timerFA >> 1) & 3;
         gKTRexState->stateTimer = 300.0f;
@@ -436,7 +436,7 @@ int ktrex_stateHandlerA07(GameObject* obj, GroundBaddieState* runtime)
         Music_Trigger(MUSICTRIG_mammoth_walk, 0);
         Music_Trigger(MUSICTRIG_menu_page, 1);
     }
-    else if ((s8)runtime->baddie.moveDone != 0 || (gKTRexState->timerFA & 8) != 0)
+    else if (runtime->baddie.moveDone != 0 || (gKTRexState->timerFA & 8) != 0)
     {
         return 9;
     }
@@ -450,7 +450,7 @@ int ktrex_stateHandlerA06(GameObject* obj, GroundBaddieState* runtime)
     {
         (*gPlayerInterface)->setState(obj, runtime, 5);
     }
-    else if (*(s8*)&runtime->baddie.moveDone != 0)
+    else if (runtime->baddie.moveDone != 0)
     {
         slot = 0;
         if (Stack_IsEmpty(gKTRexState->stack) == 0)
@@ -527,7 +527,7 @@ int ktrex_stateHandlerA04(GameObject* obj, GroundBaddieState* runtime)
         {
             gKTRexState->stateTimer = 0.0f;
         }
-        if ((s8)runtime->baddie.moveDone != 0)
+        if (runtime->baddie.moveDone != 0)
         {
             if (gKTRexState->stateTimer <= 0.0f)
             {
@@ -553,7 +553,7 @@ int ktrex_stateHandlerA03(GameObject* obj, GroundBaddieState* runtime)
     {
         (*gPlayerInterface)->setState(obj, runtime, 2);
     }
-    else if ((s8)runtime->baddie.moveDone != 0)
+    else if (runtime->baddie.moveDone != 0)
     {
         phase = (gKTRexState->timerFA >> 1) & 3;
         f5 = ((f32*)gKTRexState->rowBX)[phase] -

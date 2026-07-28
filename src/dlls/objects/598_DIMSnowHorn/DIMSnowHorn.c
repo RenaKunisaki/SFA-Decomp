@@ -246,7 +246,7 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, int state, f32 t)
     }
 
     useNormal = 1;
-    if (*(s8*)&((DIMSnowHorn1State*)state)->baddie.moveDone != 0 && (obj)->anim.currentMove == 0x208)
+    if (((DIMSnowHorn1State*)state)->baddie.moveDone != 0 && (obj)->anim.currentMove == 0x208)
     {
         changed = 1;
         useNormal = 0;
@@ -332,7 +332,7 @@ int DIMSnowHorn1_stateHandler08(GameObject* obj, int state)
     switch ((obj)->anim.currentMove)
     {
     case 0x206:
-        if (*(s8*)&((DIMSnowHorn1State*)state)->baddie.moveDone != 0)
+        if (((DIMSnowHorn1State*)state)->baddie.moveDone != 0)
         {
             if (((DIMSnowHorn1State*)state)->baddie.moveSpeed > 0.0f)
             {
@@ -367,7 +367,7 @@ int DIMSnowHorn1_stateHandler08(GameObject* obj, int state)
         }
         break;
     case 0x207:
-        if (*(s8*)&((DIMSnowHorn1State*)state)->baddie.moveDone != 0)
+        if (((DIMSnowHorn1State*)state)->baddie.moveDone != 0)
         {
             return 8;
         }
@@ -412,7 +412,7 @@ int DIMSnowHorn1_stateHandler07(GameObject* obj, int state)
     {
     case 0x209:
     case 0x20a:
-        if (*(s8*)&((DIMSnowHorn1State*)state)->baddie.moveDone != 0)
+        if (((DIMSnowHorn1State*)state)->baddie.moveDone != 0)
         {
             ObjAnim_SetCurrentMove((int)obj, lbl_803DC748[0], 0.0f, 0);
             ((DIMSnowHorn1State*)state)->baddie.moveSpeed = 0.005f;
@@ -661,7 +661,7 @@ int DIMSnowHorn1_stateHandler04(GameObject* obj, DIMSnowHorn1State* state)
         state->baddie.moveSpeed = lbl_803DC740[idx];
         ObjAnim_SetCurrentMove((int)obj, lbl_803DC73C[idx], 0.0f, 0);
     }
-    if (*(s8*)&state->baddie.moveDone != 0)
+    if (state->baddie.moveDone != 0)
     {
         return -2;
     }
@@ -693,7 +693,7 @@ int DIMSnowHorn1_stateHandler03(GameObject* obj, DIMSnowHorn1State* state)
         state->baddie.moveSpeed = lbl_803DC740[idx];
         ObjAnim_SetCurrentMove((int)obj, lbl_803DC73C[idx], 0.0f, 0);
     }
-    if (*(s8*)&state->baddie.moveDone != 0)
+    if (state->baddie.moveDone != 0)
     {
         return -1;
     }

@@ -64,7 +64,7 @@ int dim2prisonmammoth_stateHandler03(GameObject* obj, Dim2PrisonMammothState* st
         state->baddie.moveSpeed = gPrisonMammothMoveSpeedTable[k];
         ObjAnim_SetCurrentMove((int)obj, gPrisonMammothMoveIdTable[k], 0.0f, 0);
     }
-    if (*(s8*)&state->baddie.moveDone != 0) {
+    if (state->baddie.moveDone != 0) {
         return -1;
     }
 

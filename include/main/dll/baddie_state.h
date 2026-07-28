@@ -170,11 +170,7 @@ typedef struct BaddieState {
     u8 userData1;
     u8 userData2;
     u8 unk33C[0x346 - 0x33C]; /* incl. 0x340: ptr in smallbasket, u32-tested in magicPlant - thin/conflicting, left raw */
-#ifdef BADDIE_MOVE_STATUS_SIGNED
     s8 moveDone; /* set when the current move completes; SeqFns chain the next mode off it */
-#else
-    u8 moveDone; /* set when the current move completes; SeqFns chain the next mode off it */
-#endif
     u8 unk347[2];
     u8 hasTarget; /* cleared with death/reset */
     u8 unk34A[2];

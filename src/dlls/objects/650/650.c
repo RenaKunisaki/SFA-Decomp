@@ -492,7 +492,7 @@ int dll_28B_substateHandler3(GameObject* obj, BaddieState* ai)
         state->flagsAC0 &= ~1;
         (*gPlayerInterface)->setState((void*)obj, (void*)ai, 3);
     }
-    else if (*(s8*)&ai->moveDone != 0)
+    else if (ai->moveDone != 0)
     {
         return 3;
     }

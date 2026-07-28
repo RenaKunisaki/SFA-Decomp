@@ -9,8 +9,6 @@
  * objectives are complete.
  */
 
-#define BADDIE_MOVE_STATUS_SIGNED
-
 #include "main/render_envfx_api.h"
 #include "main/objprint_character_api.h"
 #include "dlls/objects/229_Shield.h"
@@ -81,8 +79,6 @@
 #include "main/gamebit_ids.h"
 #include "main/player_control_interface.h"
 #include "main/sky.h"
-
-#undef BADDIE_MOVE_STATUS_SIGNED
 
 #include "dlls/objects/437.h"
 

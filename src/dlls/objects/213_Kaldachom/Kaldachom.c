@@ -111,7 +111,7 @@ int kaldachom_stateHandlerB05(GameObject* obj, GroundBaddieState* state) {
             state->baddie.moveDone = 1;
         }
     }
-    if ((s8)state->baddie.moveDone != 0 || state->baddie.moveJustStartedB != 0) {
+    if (state->baddie.moveDone != 0 || state->baddie.moveJustStartedB != 0) {
         if ((*gBaddieControlInterface)->shouldDropTarget(obj, state, (f32)(u32)objectState->aggroRange, 1) != 0) {
             return 5;
         }
@@ -154,7 +154,7 @@ int kaldachom_stateHandlerB02(GameObject* obj, GroundBaddieState* state) {
         objectState->flags400 |= 0x20;
         objectState->glowAlpha = 1.0f;
         objectState->unk3EC = 0.01f;
-    } else if ((s32)(s8)state->baddie.moveDone != 0) {
+    } else if ((s32)state->baddie.moveDone != 0) {
         if (obj->anim.placementData == NULL) {
             Obj_FreeObject(obj);
             return 0;
@@ -183,7 +183,7 @@ int kaldachom_stateHandlerB01(GameObject* obj, GroundBaddieState* state) {
             return 6;
         }
     } else {
-        if ((s8)state->baddie.moveDone != 0) {
+        if (state->baddie.moveDone != 0) {
             return 6;
         }
     }
@@ -197,7 +197,7 @@ int kaldachom_stateHandlerB00(GameObject* obj, GroundBaddieState* state) {
             state->baddie.animSpeedB = zeroSpeed;
             state->baddie.animSpeedA = zeroSpeed;
             (*gPlayerInterface)->setState(obj, state, 0);
-        } else if ((s8)state->baddie.moveDone != 0) {
+        } else if (state->baddie.moveDone != 0) {
             return 6;
         }
     }
@@ -341,7 +341,7 @@ int kaldachom_stateHandlerA01(GameObject* obj, GroundBaddieState* state) {
         ObjHits_DisableObject(obj);
         state->baddie.moveSpeed = 0.01f;
         state->baddie.animSpeedA = 0.0f;
-    } else if ((s32)(s8)state->baddie.moveDone != 0) {
+    } else if ((s32)state->baddie.moveDone != 0) {
         mainSetBits(objectState->gameBitB, 0);
         if ((s32)state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, 0);
@@ -372,7 +372,7 @@ int kaldachom_stateHandlerA00(GameObject* obj, GroundBaddieState* state) {
         state->baddie.stateTag = 1;
         state->baddie.moveSpeed = 0.012f + ((f32)(u32)objectState->aggression / 10000.0f);
         ObjHits_EnableObject(obj);
-    } else if ((s32)(s8)state->baddie.moveDone != 0) {
+    } else if ((s32)state->baddie.moveDone != 0) {
         objectState->targetState = 1;
     }
     return 0;

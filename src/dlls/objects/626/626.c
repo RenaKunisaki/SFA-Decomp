@@ -187,7 +187,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
             objSoundStartFromDef(obj, &state->modelSoundState,
                                 (ObjSoundDef*)(lbl_803DC308 + randomGetRange(0, 0) * 6), 1);
         }
-        if ((s8)stateArg->baddie.moveDone != 0)
+        if (stateArg->baddie.moveDone != 0)
         {
             if (randomChanceOneIn(2) != 0)
             {
@@ -238,7 +238,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
         (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
         return 0;
     }
-    if ((s8)stateArg->baddie.moveDone != 0)
+    if (stateArg->baddie.moveDone != 0)
     {
         if ((obj)->anim.currentMove != 2)
         {
@@ -293,7 +293,7 @@ int hightop_stateHandler08(GameObject* obj, HighTopRuntime* stateArg)
         (obj)->anim.velocityY = zero;
         (obj)->anim.velocityZ = zero;
     }
-    if ((s8)stateArg->baddie.moveDone != 0)
+    if (stateArg->baddie.moveDone != 0)
     {
         s16 cur = (obj)->anim.currentMove;
         switch (cur)
@@ -359,7 +359,7 @@ int hightop_stateHandler07(GameObject* obj, HighTopRuntime* stateArg)
         rt->flags &= ~1;
         ObjGroup_RemoveObject((int)obj, HIGHTOP_OBJGROUP);
     }
-    if ((s8)stateArg->baddie.moveDone != 0)
+    if (stateArg->baddie.moveDone != 0)
     {
         if ((obj)->anim.currentMove != 0)
         {
@@ -485,7 +485,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
             }
         }
     }
-    if ((s8)stateArg->baddie.moveDone != 0)
+    if (stateArg->baddie.moveDone != 0)
     {
         if (obj->anim.currentMove != 2)
         {

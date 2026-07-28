@@ -548,7 +548,7 @@ void player_advanceMove(short* moveState, u32* obj, f32 dt, int flags)
     f32 stopVal;
 
     buf.flag = 0;
-    *(s8*)&((BaddieState*)obj)->moveDone =
+    ((BaddieState*)obj)->moveDone =
         ObjAnim_AdvanceCurrentMove((int)moveState, ((BaddieState*)obj)->moveSpeed, dt, (ObjAnimEventList*)&buf);
 
     ((BaddieState*)obj)->eventFlags = 0;
@@ -781,7 +781,7 @@ void playerRunStateMachine(GameObject* obj, BaddieState* state, f32 dt, PlayerSt
         int i;
 
         animEvents.triggerCount = 0;
-        *(s8*)&state->moveDone = ObjAnim_AdvanceCurrentMove((int)obj, state->moveSpeed, dt, &animEvents);
+        state->moveDone = ObjAnim_AdvanceCurrentMove((int)obj, state->moveSpeed, dt, &animEvents);
         state->eventFlags = 0;
         for (i = 0; i < animEvents.triggerCount; i++)
         {

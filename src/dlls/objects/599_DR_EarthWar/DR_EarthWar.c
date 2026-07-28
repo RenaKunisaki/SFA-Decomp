@@ -492,7 +492,7 @@ int DR_EarthWarrior_stateHandler03(GameObject* obj, int baddie)
         }
         ((BaddieState*)baddie)->moveSpeed = 0.02f;
     }
-    if (*(s8*)&((BaddieState*)baddie)->moveDone != 0)
+    if (((BaddieState*)baddie)->moveDone != 0)
     {
         if (inner->sub.rideState == 2)
         {
@@ -562,7 +562,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
             *(s16*)&q->appliedYaw = yaw;
             q->savedYaw = yaw;
         }
-        if (*(s8*)&((EarthWarriorState*)state)->baddie.moveDone != 0)
+        if (((EarthWarriorState*)state)->baddie.moveDone != 0)
         {
             s16 sw;
             ((ByteFlags*)&q->flags3F0)->b40 = 0;
@@ -591,7 +591,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
     else if (((ByteFlags*)((char*)inner + 0x14ec))->b01)
     {
         ((EarthWarriorState*)state)->baddie.moveSpeed = 0.02f;
-        if (*(s8*)&((EarthWarriorState*)state)->baddie.moveDone != 0)
+        if (((EarthWarriorState*)state)->baddie.moveDone != 0)
         {
             ((ByteFlags*)((char*)inner + 0x14ec))->b01 = 0;
             ((ByteFlags*)&q->flags3F1)->b08 = 1;
@@ -843,7 +843,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
     if ((obj)->anim.currentMove == *(s16*)(q->moveTable + 0x30) ||
         (obj)->anim.currentMove == *(s16*)(q->moveTable + 0x32))
     {
-        if (*(s8*)&((BaddieState*)baddie)->moveDone != 0 &&
+        if (((BaddieState*)baddie)->moveDone != 0 &&
             ObjAnim_GetCurrentEventCountdown((ObjAnimComponent*)obj) == 0 &&
             !((ByteFlags*)&inner->sub.flags994)->b01)
         {

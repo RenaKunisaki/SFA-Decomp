@@ -793,7 +793,7 @@ int dll_19_shouldDropTarget(GameObject* obj, void* state, f32 distThreshold, int
     GameObject* player = Obj_GetPlayerObject();
     int result = 0;
 
-    if ((s8)((BaddieState*)state)->moveDone != 0)
+    if (((BaddieState*)state)->moveDone != 0)
     {
         if (((BaddieState*)state)->targetObj == player && (s8)((BaddieState*)state)->hitPoints != 0)
         {

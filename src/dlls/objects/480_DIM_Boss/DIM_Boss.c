@@ -257,7 +257,7 @@ int DIMbossAnim_updateBossHitReaction(int obj, int statePtr) {
 
     state = (BaddieState*)statePtr;
     moveTable = (DimAnimTable*)lbl_80325960;
-    if ((s8)state->moveDone != 0 || state->moveJustStartedB != 0) {
+    if (state->moveDone != 0 || state->moveJustStartedB != 0) {
         DIM2_GetBaddieControlInterface()->queryTargetMove(obj, state->targetObj, 0x10, targetAnim, &targetParam,
                                                           &targetDistance);
         state->moveDone = 0;
@@ -340,7 +340,7 @@ int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, int runtime) {
     int state;
     s16 mode;
     state = *(int*)&obj->extra;
-    if (*(s8*)&((BaddieState*)runtime)->moveDone != 0 || ((BaddieState*)runtime)->moveJustStartedB != 0) {
+    if (((BaddieState*)runtime)->moveDone != 0 || ((BaddieState*)runtime)->moveJustStartedB != 0) {
         (*gBaddieControlInterface)
             ->getTargetGeometry(obj, (GameObject*)((BaddieState*)runtime)->targetObj, 0x10, &dirSector, &unused,
                                 &distance);
@@ -404,11 +404,11 @@ int DIMbossAnim_finishDefeat(GameObject* obj, int p2) {
 }
 
 int DIMbossAnim_hasMoveDone(int unused, int* state) {
-    return *(s8*)&((BaddieState*)state)->moveDone != 0;
+    return ((BaddieState*)state)->moveDone != 0;
 }
 
 int DIMbossAnim_returnToIdleWhenDone(int obj, int runtime) {
-    if (*(s8*)&((BaddieState*)runtime)->moveDone != 0) {
+    if (((BaddieState*)runtime)->moveDone != 0) {
         (*gPlayerInterface)->setState((void*)obj, (void*)runtime, 0);
     }
     return 0;
@@ -565,7 +565,7 @@ int DIMbossHitDetect_breathBurst(GameObject* obj, int runtime, f32 arg) {
         ((BaddieState*)runtime)->animSpeedB = animSpeed;
     }
     progress = obj->anim.currentMoveProgress;
-    if (progress > 0.95f || *(s8*)&((BaddieState*)runtime)->moveDone != 0) {
+    if (progress > 0.95f || ((BaddieState*)runtime)->moveDone != 0) {
         return 8;
     }
     if (progress > 0.3f) {
@@ -671,7 +671,7 @@ int DIMbossHitDetect_trackTargetMove(GameObject* obj, int runtime, f32 hitAmount
     u16 unused;
     u16 distance;
     ((BaddieState*)runtime)->animSpeedA = 0.0f;
-    if (*(s8*)&((BaddieState*)runtime)->moveDone != 0 || ((BaddieState*)runtime)->moveJustStartedA != 0 ||
+    if (((BaddieState*)runtime)->moveDone != 0 || ((BaddieState*)runtime)->moveJustStartedA != 0 ||
         obj->anim.currentMove == 1) {
         (*gBaddieControlInterface)
             ->getTargetGeometry(obj, (GameObject*)((BaddieState*)runtime)->targetObj, 0x10, &dirSector, &unused,
