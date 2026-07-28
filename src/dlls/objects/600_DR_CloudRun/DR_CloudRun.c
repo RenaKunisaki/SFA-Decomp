@@ -808,7 +808,7 @@ int DR_CloudRunner_stateHandler03(GameObject* obj, CloudRunnerState* baddie)
     switch ((obj)->anim.currentMove)
     {
     case 0x203:
-        if (((DRCloudRunnerState*)inner)->altMoveEnabled != 0)
+        if (inner->airTimeRemaining != 0)
         {
             ObjAnim_SetCurrentMove((int)obj, 0x20c, 0.0f, 0);
             baddie->baddie.moveSpeed = 0.01f;
@@ -817,7 +817,7 @@ int DR_CloudRunner_stateHandler03(GameObject* obj, CloudRunnerState* baddie)
     case 0x20c:
         if (baddie->baddie.moveDone != 0)
         {
-            ((DRCloudRunnerState*)inner)->flagsAD5 &= ~2;
+            inner->moveLib.modeBits &= ~2;
             return 3;
         }
         break;
@@ -825,7 +825,7 @@ int DR_CloudRunner_stateHandler03(GameObject* obj, CloudRunnerState* baddie)
     {
         f32 fz;
         ObjAnim_SetCurrentMove((int)obj, 0x203, 0.0f, 0);
-        ((DRCloudRunnerState*)inner)->flagsAD5 |= 2;
+        inner->moveLib.modeBits |= 2;
         fz = 0.0f;
         baddie->baddie.animSpeedC = fz;
         baddie->baddie.animSpeedB = fz;
@@ -1076,8 +1076,8 @@ int DR_CloudRunner_getObjectTypeId(void)
 
 void DR_CloudRunner_free(GameObject* obj)
 {
-    DRCloudRunnerState* inner = (DRCloudRunnerState*)(obj)->extra;
-    mainSetBits(0x7aa, inner->altMoveEnabled);
+    CloudRunnerState* inner = (obj)->extra;
+    mainSetBits(0x7aa, inner->airTimeRemaining);
     ObjGroup_RemoveObject((int)obj, DRCLOUDRUNNER_OBJGROUP);
     ObjGroup_RemoveObject((int)obj, ARWARWING_OBJGROUP);
     (*gGameUIInterface)->airMeterShutdown();
@@ -1280,15 +1280,15 @@ void DR_CloudRunner_init(GameObject* obj, int def)
     MoveLibTarget target;
     int inner;
     int savedSlot;
-    (obj)->anim.rotX = (s16)((s8) * (s8*)((char*)def + 0x18) << 8);
+    (obj)->anim.rotX = (s16)(((DRCloudRunnerPlacement*)def)->spawnRot << 8);
     (obj)->animEventCallback = DR_CloudRunner_SeqFn;
     ObjGroup_AddObject((int)obj, DRCLOUDRUNNER_OBJGROUP);
     inner = *(int*)&(obj)->extra;
-    ((DRCloudRunnerState*)inner)->spawnVariant = *(u8*)((char*)def + 0x19);
-    ((DRCloudRunnerState*)inner)->unkBAE = 5;
-    ((DRCloudRunnerState*)inner)->altMoveEnabled = *(s16*)((char*)def + 0x1a);
-    ((DRCloudRunnerState*)inner)->unkBC4 = -1;
-    ((DRCloudRunnerState*)inner)->unkB50 = (f32) * (s16*)((char*)def + 0x1c) / 10.0f;
+    ((CloudRunnerState*)inner)->spawnVariant = ((DRCloudRunnerPlacement*)def)->spawnVariant;
+    ((CloudRunnerState*)inner)->unkBAE = 5;
+    ((CloudRunnerState*)inner)->airTimeRemaining = ((DRCloudRunnerPlacement*)def)->airMeterCapacity;
+    ((CloudRunnerState*)inner)->sequenceIndex = -1;
+    ((CloudRunnerState*)inner)->pathFollowSpeed = (f32)((DRCloudRunnerPlacement*)def)->pathSpeedTenths / 10.0f;
     if ((obj)->anim.modelState != NULL)
     {
         (obj)->anim.modelState->flags |= 0xa10;
