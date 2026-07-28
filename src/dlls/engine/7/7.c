@@ -6,7 +6,11 @@
 #include "dolphin/gx/GXEnum.h"
 #include "dolphin/os/OSCache.h"
 #include "main/sky.h"
+#include "dolphin/gx/GXCull.h"
+#include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXLegacy.h"
+#include "dolphin/gx/GXPixel.h"
+#include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "main/camera.h"
 #include "main/dll/dll_80136a40.h"
@@ -71,8 +75,6 @@ typedef struct WindSource
 extern int gNewCloudLightningFogColor;
 extern NewCloud* gNewClouds[8];
 
-typedef void (*LightningDrawBoltU8WidthFn)(f32* start, f32* end, u8 width, f32 segScale, f32 d,
-                                           int* seed, int depth, int flags);
 extern const f32 lbl_803DF214;
 #define NC_CLOUD ((u8 *)gNewClouds[*(u16 *)(params + 0x26)])
 extern const f32 gNewCloudNearestInit;
@@ -107,7 +109,7 @@ f32 lightningGetRemainingFraction(void)
     return 0.0f;
 }
 
-void lightningGetStartPos(f32* out)
+void lightningGetStartPos(Vec* out)
 {
     LightningEffect* state;
 
@@ -116,12 +118,12 @@ void lightningGetStartPos(f32* out)
     {
         return;
     }
-    out[0] = state->start[0];
-    out[1] = gActiveLightning->start[1];
-    out[2] = gActiveLightning->start[2];
+    out->x = state->start[0];
+    out->y = gActiveLightning->start[1];
+    out->z = gActiveLightning->start[2];
 }
 
-void lightningDrawStrand(f32* from, f32* to, int width, f32 segScale, int* seed)
+void lightningDrawStrand(f32* from, f32* to, u8 width, f32 segScale, int* seed)
 {
     int segs;
     int savedRand;
@@ -250,8 +252,8 @@ void lightningDrawStrand(f32* from, f32* to, int width, f32 segScale, int* seed)
 }
 
 
-void lightningDrawBolt(f32* start, f32* end, int width, f32 segScale, f32 d, int* seed, int depth,
-                       int flags)
+void lightningDrawBolt(f32* start, f32* end, u8 width, f32 segScale, f32 d, int* seed, int depth,
+                       u8 flags)
 {
     f32 len;
     f32 total;
@@ -325,8 +327,8 @@ void lightningDrawBolt(f32* start, f32* end, int width, f32 segScale, f32 d, int
     cur[2] = pz;
     progress = 0.0f;
     i = 0;
-    oddFlag = (u8)flags & 1;
-    halfWidth = (u8)width >> 1;
+    oddFlag = flags & 1;
+    halfWidth = width >> 1;
     for (; i <= segs; i++)
     {
         if (i < segs)
@@ -352,7 +354,7 @@ void lightningDrawBolt(f32* start, f32* end, int width, f32 segScale, f32 d, int
             next[0] = nx + offset[0];
             next[1] = ny + offset[1];
             next[2] = nz + offset[2];
-            if (randomGetRange(1, 3) == 1 && (u8)width >= 0xc && oddFlag == 0)
+            if (randomGetRange(1, 3) == 1 && width >= 0xc && oddFlag == 0)
             {
                 PSVECScale((Vec*)up, (Vec*)offset,
                            0.01f * (0.3f *
@@ -374,8 +376,7 @@ void lightningDrawBolt(f32* start, f32* end, int width, f32 segScale, f32 d, int
                 PSVECScale((Vec*)scaled, (Vec*)branchEnd, bfrac * len);
                 PSVECAdd((Vec*)start, (Vec*)branchEnd, (Vec*)branchEnd);
                 PSVECAdd((Vec*)branchEnd, (Vec*)offset, (Vec*)branchEnd);
-                ((LightningDrawBoltU8WidthFn)lightningDrawBolt)(
-                    next, branchEnd, halfWidth, segScale, d, seed, depth + 1, flags);
+                lightningDrawBolt(next, branchEnd, halfWidth, segScale, d, seed, depth + 1, flags);
             }
         }
         else
@@ -401,12 +402,12 @@ void lightningRender(LightningEffect* p)
     f32 diff[3];
     Texture* tex;
     int savedSeed;
-    FogColor color;
+    GXColor color;
     int timer;
     int lifetime;
     int half;
 
-    color = *(FogColor*)&gNewCloudLightningFogColor;
+    color = *(GXColor*)&gNewCloudLightningFogColor;
     start[0] = p->start[0] - playerMapOffsetX;
     start[1] = p->start[1];
     start[2] = p->start[2] - playerMapOffsetZ;
@@ -438,7 +439,7 @@ void lightningRender(LightningEffect* p)
     selectTexture(tex, 0);
     GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, color);
     Camera_UpdateViewMatrices();
-    GXLoadPosMtxImm(Camera_GetViewMatrix(), GX_PNMTX0);
+    GXLoadPosMtxImm((MtxPtr)Camera_GetViewMatrix(), GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
     savedSeed = rand();
     if (p->seed == 0xffff)
@@ -840,7 +841,7 @@ int snowPrintSnowCloud(int arg, int cloudId)
     mtx44_mult(mtxA, mtxB, mtxOut);
     mtx44Transpose(mtxOut, mtxT);
     PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), (MtxPtr)mtxT, (MtxPtr)mtxT);
-    GXLoadPosMtxImm(mtxT, GX_PNMTX0);
+    GXLoadPosMtxImm((MtxPtr)mtxT, GX_PNMTX0);
     texIdx = 0;
     selectTexture((Texture*)(((NewCloud*)p)->cloudType == 0 ? gNewCloudLayerTextures[0] : lbl_803DD1C4), 0);
     GXSetCullMode(GX_CULL_NONE);
@@ -1564,7 +1565,7 @@ void dll_07_func07(int arg)
     NewCloud* snow;
 
     GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f,
-             *(FogColor*)&gNewCloudSnowFogColor);
+             *(GXColor*)&gNewCloudSnowFogColor);
     for (i = 0, total = 0; i < 8; i++)
     {
         snow = gNewClouds[i];

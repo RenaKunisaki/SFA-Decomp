@@ -1,6 +1,14 @@
 #include "main/dll/waterfx.h"
 #include "main/dll/ppcwgpipe_struct.h"
-#include "dolphin/gx/GXLegacyDecls.h"
+#include "dolphin/gx/GXBump.h"
+#include "dolphin/gx/GXCull.h"
+#include "dolphin/gx/GXDispList.h"
+#include "dolphin/gx/GXGeometry.h"
+#include "dolphin/gx/GXLighting.h"
+#include "dolphin/gx/GXManage.h"
+#include "dolphin/gx/GXPixel.h"
+#include "dolphin/gx/GXTev.h"
+#include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/sky_interface.h"
@@ -52,43 +60,6 @@ volatile PPCWGPipe GXWGFifo : (0xCC008000);
 #define WATERFX_TEXTURE_SPLASH1 0xc2c /* gWaterfxSplashTexture1 */
 #define WATERFX_TEXTURE_WAKE    0xc2d /* gWaterfxWakeTexture */
 
-#define GX_BM_BLEND       1
-#define GX_BL_SRCALPHA    4
-#define GX_BL_INVSRCALPHA 5
-#define GX_LO_NOOP        5
-#define GX_ALWAYS         7
-#define GX_AOP_AND        0
-#define GX_CULL_NONE      0
-#define GX_CULL_FRONT     1
-#define GX_CULL_BACK      2
-#define GX_VA_PNMTXIDX    0
-#define GX_VA_TEX0MTXIDX  1
-#define GX_PNMTX0         0
-#define GX_VA_POS         9
-#define GX_VA_CLR0        11
-#define GX_VA_TEX0        13
-#define GX_DIRECT         1
-#define GX_INDEX16        3
-#define GX_POINTS         0xb8
-#define GX_TRIANGLESTRIP  152
-#define GX_VTXFMT2        2
-#define GX_TEVSTAGE0      0
-#define GX_TEXCOORD_NULL  0xff
-#define GX_TEXMAP_NULL    0xff
-#define GX_COLOR0A0       4
-#define GX_CC_KONST       0xe
-#define GX_CC_ZERO        0xf
-#define GX_CA_KONST       6
-#define GX_CA_ZERO        7
-#define GX_TEV_SWAP0      0
-#define GX_TEV_ADD        0
-#define GX_TB_ZERO        0
-#define GX_CS_SCALE_1     0
-#define GX_TRUE           1
-#define GX_TEVPREV        0
-#define GX_KCOLOR0        0
-#define GX_TEV_KCSEL_K0   0xc
-#define GX_TEV_KASEL_K0_A 0x1c
 
 #define WATERFX_PHASE_START             0.100000024f
 #define WATERFX_BAND_OFFSET_SCALE       0.9f
@@ -115,13 +86,12 @@ volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
 void waterfx_setupSplashDropPointRender(void)
 {
-    u8 col[4];
-    u8 kcol[4];
+    GXColor col;
     u8 ignoredLightColor;
     GXSetPointSize(0x12, 5);
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
-    GXLoadPosMtxImm(Camera_GetViewMatrix(), GX_PNMTX0);
+    GXLoadPosMtxImm((MtxPtr)Camera_GetViewMatrix(), GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
@@ -142,14 +112,13 @@ void waterfx_setupSplashDropPointRender(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
     GXSetCullMode(GX_CULL_NONE);
     (*gSkyInterface)
-        ->getCurrentAmbientAndLightColors(&col[0], &col[1], &col[2], &ignoredLightColor, &ignoredLightColor,
+        ->getCurrentAmbientAndLightColors(&col.r, &col.g, &col.b, &ignoredLightColor, &ignoredLightColor,
                                           &ignoredLightColor);
-    col[0] = (col[0] >> 2) + 0x80;
-    col[1] = (col[1] >> 2) + 0x80;
-    col[2] = (col[2] >> 2) + 0x80;
-    col[3] = 0x80;
-    *(int*)kcol = *(int*)col;
-    GXSetTevKColor(GX_KCOLOR0, kcol);
+    col.r = (col.r >> 2) + 0x80;
+    col.g = (col.g >> 2) + 0x80;
+    col.b = (col.b >> 2) + 0x80;
+    col.a = 0x80;
+    GXSetTevKColor(GX_KCOLOR0, col);
 }
 
 static f32 waterfxBandEnvelope(f32 frac, f32 life, f32* phaseOut, f32* alphaOut)
@@ -229,7 +198,7 @@ void waterfx_drawSplashBurst(WaterParticle* s)
         PSMTXTrans(mtxC, s->x - playerMapOffsetX, s->y, s->z - playerMapOffsetZ);
         PSMTXConcat(mtxC, mtxD, mtxD);
         PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), mtxD, mtxD);
-        GXLoadPosMtxImm((f32*)mtxD, mtxIdx);
+        GXLoadPosMtxImm(mtxD, mtxIdx);
         *(u32*)(colorOut + 0x18) = (u8)(int)(WATERFX_ALPHA_MAX * alpha);
         mtxIdx += 3;
         colorOut += 4;

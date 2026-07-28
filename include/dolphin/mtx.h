@@ -30,7 +30,7 @@ typedef f32 Mtx44[4][4];
 typedef f32 (*Mtx44Ptr)[4];
 
 typedef f32 ROMtx[4][3];
-typedef f32 (*ROMtxPtr)[4];
+typedef f32 (*ROMtxPtr)[3];
 
 // do these belong in the sdk?
 typedef f32 Mtx33[3][3];

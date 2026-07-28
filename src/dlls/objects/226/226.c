@@ -44,7 +44,11 @@
 #include "main/gamebit_ids.h"
 #include "main/frame_timing.h"
 #include "main/rcp_dolphin_api.h"
-#include "dolphin/gx/GXLegacyDecls.h"
+#include "dolphin/gx/GXCull.h"
+#include "dolphin/gx/GXGeometry.h"
+#include "dolphin/gx/GXPixel.h"
+#include "dolphin/gx/GXTev.h"
+#include "dolphin/gx/GXTransform.h"
 
 extern u8 gStaffQuakeSpellState[0x28];
 extern void* gStaffSwipeTextures[2];
@@ -550,13 +554,13 @@ void quakeSpellTextureFn_8016dbf4(void)
                    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ - playerMapOffsetZ);
         PSMTXConcat(mView, mTrans, mView);
         PSMTXConcat(mView, mScale, mResult);
-        GXLoadPosMtxImm((f32*)mResult, GX_PNMTX0);
+        GXLoadPosMtxImm(mResult, GX_PNMTX0);
         PSMTXConcat(mView, mRot, mResult);
         z = 0.0f;
         mResult[0][3] = z;
         mResult[1][3] = z;
         mResult[2][3] = z;
-        GXLoadTexMtxImm((f32*)mResult, GX_TEXMTX0, GX_MTX3x4);
+        GXLoadTexMtxImm(mResult, GX_TEXMTX0, GX_MTX3x4);
         GXDrawTorus(((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius, 10, 20);
     }
 }
@@ -578,7 +582,7 @@ void staffDrawSwipe(GameObject* obj, StaffState* swipe)
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
-    GXLoadPosMtxImm(Camera_GetViewMatrix(), GX_PNMTX0);
+    GXLoadPosMtxImm((MtxPtr)Camera_GetViewMatrix(), GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
 
     i = 0;

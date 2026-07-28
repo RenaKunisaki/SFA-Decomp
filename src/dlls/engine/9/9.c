@@ -9,7 +9,10 @@
 #include "main/sky_interface.h"
 #include "main/shader_api.h"
 #include "main/dll/savegame_env_api.h"
-#include "dolphin/gx/GXLegacyDecls.h"
+#include "dolphin/gx/GXCull.h"
+#include "dolphin/gx/GXGeometry.h"
+#include "dolphin/gx/GXPixel.h"
+#include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "track/intersect_render_setup_api.h"
 #include "track/intersect_api.h"
@@ -155,8 +158,8 @@ void renderClouds(int a, int b, int c, int d)
     u32 savedClipY;
     u32 savedClipW;
     u32 savedClipH;
-    f32 pos[3];
-    f32 mtx[12];
+    Vec pos;
+    Mtx mtx;
     CameraViewSlot* view;
     ObjModel* model;
     MtxPtr viewMtx;
@@ -257,9 +260,9 @@ void renderClouds(int a, int b, int c, int d)
     cloudT = lightningGetRemainingFraction();
     if (cloudT > 0.0f)
     {
-        lightningGetStartPos(pos);
-        pos[0] -= playerMapOffsetX;
-        pos[2] -= playerMapOffsetZ;
+        lightningGetStartPos(&pos);
+        pos.x -= playerMapOffsetX;
+        pos.z -= playerMapOffsetZ;
         viewMtx = (MtxPtr)Camera_GetViewMatrix();
         GXSetCullMode(GX_CULL_NONE);
         Camera_RebuildProjectionMatrix();
@@ -270,8 +273,8 @@ void renderClouds(int a, int b, int c, int d)
         gxTextureFn_800794e0();
         gxTevCommitStages();
         gxSetAdditiveBlendNoZTest();
-        PSMTXMultVec(viewMtx, (Vec*)pos, (Vec*)pos);
-        PSMTXTrans((MtxPtr)mtx, pos[0], pos[1], pos[2]);
+        PSMTXMultVec(viewMtx, &pos, &pos);
+        PSMTXTrans(mtx, pos.x, pos.y, pos.z);
         GXLoadPosMtxImm(mtx, GX_PNMTX0);
         GXSetCurrentMtx(GX_PNMTX0);
         selectTexture((Texture*)skyGetSkyTexture(), 0);

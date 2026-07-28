@@ -11,7 +11,7 @@
 #include "main/dll/dll_0018_boneparticleeffect.h"
 #include "main/vecmath.h"
 #include "main/camera.h"
-#include "dolphin/gx/GXLegacyDecls.h"
+#include "dolphin/gx/GXCull.h"
 #include "dolphin/mtx.h"
 #include "main/rcp_dolphin_api.h"
 

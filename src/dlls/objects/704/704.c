@@ -48,7 +48,10 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
-#include "dolphin/gx/GXLegacyDecls.h"
+#include "dolphin/gx/GXCull.h"
+#include "dolphin/gx/GXEnum.h"
+#include "dolphin/gx/GXGeometry.h"
+#include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "main/gametext_color_api.h"
 
@@ -122,15 +125,7 @@ volatile PPCWGPipe GXWGFifo : (0xCC008000);
 extern u8 gTitleScreenSfxFlagGrid[0x48];
 extern u8 gTitleScreenMtx[0x34];
 extern TitleAnimMoves gTitleScreenAnimMoves[];
-#define GX_ORTHOGRAPHIC 1 /* GXProjectionType (GXEnum.h): GX_PERSPECTIVE=0, GX_ORTHOGRAPHIC=1 */
-extern f32 hudMatrix[];
-#define GX_PNMTX0    0 /* GXPosNrmMtx (GXEnum.h): GX_PNMTX0=0 */
-#define GX_VA_POS    9
-#define GX_VA_TEX0   13
-#define GX_DIRECT    1
-#define GX_CULL_NONE 0
-#define GX_QUADS     0x80
-#define GX_VTXFMT1   1
+extern f32 hudMatrix[4][4];
 extern u8 lbl_803DB411;
 extern f32 lbl_803E2300;
 extern f32 gTitleScreenPi;
@@ -482,7 +477,7 @@ void titleScreenPositionElements(f32 a, f32 b)
 
 void nameEntryTextDrawFunc(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1)
 {
-    GXLoadPosMtxImm((f32*)gTitleScreenMtx, GX_PNMTX0);
+    GXLoadPosMtxImm((MtxPtr)gTitleScreenMtx, GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
     GXSetProjection(hudMatrix, GX_ORTHOGRAPHIC);
     GXClearVtxDesc();
@@ -522,7 +517,7 @@ void nameEntryTextDrawFunc(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u
 
 void titleScreenTextDrawFunc(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1)
 {
-    GXLoadPosMtxImm((f32*)gTitleScreenMtx, GX_PNMTX0);
+    GXLoadPosMtxImm((MtxPtr)gTitleScreenMtx, GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
     GXSetProjection(hudMatrix, GX_ORTHOGRAPHIC);
     GXClearVtxDesc();

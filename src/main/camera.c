@@ -6,6 +6,7 @@
 #include "main/shader_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/gx/GXLegacy.h"
+#include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 
 f32 gCameraNearPlane = 2.5f;
@@ -458,7 +459,7 @@ void Camera_LoadModelViewMatrix(int unused0, int unused1, MatrixTransform* trans
     }
 
     PSMTXConcat((MtxPtr)gCameraViewMatrix, (MtxPtr)lbl_803967C0, (MtxPtr)lbl_803967C0);
-    GXLoadPosMtxImm((f32*)lbl_803967C0, GX_PNMTX0);
+    GXLoadPosMtxImm(lbl_803967C0, GX_PNMTX0);
     transform->x += playerMapOffsetX;
     transform->z += playerMapOffsetZ;
 }
@@ -709,7 +710,7 @@ void Camera_UpdateProjection(void* viewportArg, int unused)
             C_MTXLightPerspective((MtxPtr)lbl_803967F0, gCameraFovY, gCameraAspectRatio, 0.5f, 0.5f, 0.5f, 0.5f);
             C_MTXLightPerspective((MtxPtr)lbl_80396820, gCameraFovY, gCameraAspectRatio, 0.5f, -0.5f, 0.5f, 0.5f);
         }
-        GXSetProjection(gCameraProjectionMatrix, gCameraProjectionMode);
+        GXSetProjection((Mtx44Ptr)gCameraProjectionMatrix, gCameraProjectionMode);
         gCameraCurrentViewIndex = viewIndex;
     }
     else
@@ -741,7 +742,7 @@ void Camera_UpdateProjection(void* viewportArg, int unused)
             C_MTXLightPerspective((MtxPtr)lbl_803967F0, gCameraFovY, gCameraAspectRatio, 0.5f, 0.5f, 0.5f, 0.5f);
             C_MTXLightPerspective((MtxPtr)lbl_80396820, gCameraFovY, gCameraAspectRatio, 0.5f, -0.5f, 0.5f, 0.5f);
         }
-        GXSetProjection(gCameraProjectionMatrix, gCameraProjectionMode);
+        GXSetProjection((Mtx44Ptr)gCameraProjectionMatrix, gCameraProjectionMode);
         Camera_ApplyCurrentViewport(viewportArg);
         gCameraCurrentViewIndex = viewIndex;
     }
@@ -1020,7 +1021,7 @@ void Camera_RebuildProjectionMatrix(void)
         C_MTXLightPerspective((MtxPtr)lbl_803967F0, gCameraFovY, gCameraAspectRatio, 0.5f, 0.5f, 0.5f, 0.5f);
         C_MTXLightPerspective((MtxPtr)lbl_80396820, gCameraFovY, gCameraAspectRatio, 0.5f, -0.5f, 0.5f, 0.5f);
     }
-    GXSetProjection(gCameraProjectionMatrix, gCameraProjectionMode);
+    GXSetProjection((Mtx44Ptr)gCameraProjectionMatrix, gCameraProjectionMode);
 }
 
 f32 Camera_GetFarPlane(void)
@@ -1121,7 +1122,7 @@ void Camera_InitState(void)
         C_MTXLightPerspective((MtxPtr)lbl_803967F0, gCameraFovY, gCameraAspectRatio, 0.5f, 0.5f, 0.5f, 0.5f);
         C_MTXLightPerspective((MtxPtr)lbl_80396820, gCameraFovY, gCameraAspectRatio, 0.5f, (-0.5f), 0.5f, 0.5f);
     }
-    GXSetProjection((f32*)(base + 5824), gCameraProjectionMode);
+    GXSetProjection((Mtx44Ptr)(base + 5824), gCameraProjectionMode);
 
     matrixFn_8006ff0c((f32*)(base + 0x1080), &lbl_803DC88A, gCameraFovY, gCameraAspectRatio, gCameraNearPlane,
                       gCameraFarPlane, lbl_803DE5F0);

@@ -6,7 +6,12 @@
 #include "dolphin/gx/GXEnum.h"
 #include "dolphin/os/OSCache.h"
 #include "main/sky_state.h"
+#include "dolphin/gx/GXCull.h"
+#include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXLegacy.h"
+#include "dolphin/gx/GXManage.h"
+#include "dolphin/gx/GXPixel.h"
+#include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "main/lightmap_api.h"
 #include "main/vecmath.h"
@@ -49,7 +54,7 @@ enum
 SkyStarAlphaRange gNewCloudStarAlphaRanges[SKY_STAR_COLOR_RANGE_COUNT] = {
     {0xA0, 0xAA}, {0x82, 0x8C}, {0x64, 0x6E}, {0x50, 0x5A}
 };
-FogColor gNewCloudStarFogColor = {0};
+GXColor gNewCloudStarFogColor = {0};
 
 static inline void starFifoPosition3s16(s16 x, s16 y, s16 z)
 {
@@ -83,7 +88,7 @@ void drawSkyStars(void)
     int starAlpha;
     SkyStarColorRange* colorRange;
     SkyStarAlphaRange* alphaRange;
-    FogColor color;
+    GXColor color;
     f32 sunTransitionTime;
 
     timeOk = (*gSkyInterface)->getSunPosition(&sunTransitionTime);
@@ -129,7 +134,7 @@ void drawSkyStars(void)
     color = gNewCloudStarFogColor;
     GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, color);
     Camera_UpdateViewMatrices();
-    GXLoadPosMtxImm(Camera_GetViewRotationMatrix(), GX_PNMTX0);
+    GXLoadPosMtxImm((MtxPtr)Camera_GetViewRotationMatrix(), GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
     for (i = firstDisplayList; i < SKY_STAR_DISPLAY_LIST_COUNT; i++)
     {

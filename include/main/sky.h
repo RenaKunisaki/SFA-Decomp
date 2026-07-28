@@ -2,7 +2,8 @@
 #define MAIN_SKY_H_
 
 #include "global.h"
-#include "dolphin/gx/GXFogColor.h"
+#include "dolphin/gx/GXStruct.h"
+#include "dolphin/mtx/vec_types.h"
 #include "main/sky_api.h"
 
 typedef struct Texture Texture;
@@ -113,7 +114,7 @@ void sky2GetTargetColor(int* red, int* green, int* blue, f32* blend);
 void sky2SetDrawMode1(void);
 void sky2SetDrawMode2(void);
 void sky2_initialise(void);
-void lightningGetStartPos(f32* out);
+void lightningGetStartPos(Vec* out);
 int skyGetVisibility(int slot);
 void skyTimeToDayHourMinute(f32 time, s16* days, s16* hours, s16* minutes);
 void skyGetClockTime(f32* time);

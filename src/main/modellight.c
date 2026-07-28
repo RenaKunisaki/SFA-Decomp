@@ -8,7 +8,6 @@
 #include "main/texture.h"
 #include "main/frame_timing.h"
 #include "sys/objects.h"
-#include "dolphin/gx/GXLegacyDecls.h"
 #include "dolphin/gx/GXLighting.h"
 #include "string.h"
 

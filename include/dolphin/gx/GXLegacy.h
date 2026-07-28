@@ -1,7 +1,7 @@
 #ifndef DOLPHIN_GX_GXLEGACY_H_
 #define DOLPHIN_GX_GXLEGACY_H_
 
-#include "dolphin/gx/GXLegacyDecls.h"
+#include "types.h"
 
 typedef union PPCWGPipe2 {
     u8 u8;

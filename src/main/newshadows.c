@@ -66,7 +66,7 @@
 #include "main/objprint_render_api.h"
 #include "main/newshadows_audio_api.h"
 #include "dolphin/gx/GXManage.h"
-#include "dolphin/gx/GXTransformLegacy.h"
+#include "dolphin/gx/GXTransform.h"
 #include "dolphin/gx/GXStruct.h"
 #include "dolphin/gx/GXTexture.h"
 #include "main/frame_timing.h"
@@ -865,7 +865,7 @@ void renderShadows(int unused0, int unused1, int unused2)
             GXSetScissor(2, 2, screenW - 4, screenW - 4);
             GXSetViewport(0.0f, 0.0f, (f32)(u32)screenW, (f32)(u32)screenW, 0.0f, 1.0f);
             C_MTXOrtho(mOrtho, vAx, vAz, vAx, vAz, 1.0f, 1025.0f);
-            GXSetProjection((f32*)mOrtho, GX_ORTHOGRAPHIC);
+            GXSetProjection(mOrtho, GX_ORTHOGRAPHIC);
             Camera_UpdateViewMatrices();
             C_MTXLightOrtho((MtxPtr)castSlot->textureMtx, vAz, vAx, vAx, vAz, orthoHalf, orthoHalf, orthoHalf,
                             orthoHalf);

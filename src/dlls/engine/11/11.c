@@ -25,7 +25,8 @@
 #include "dolphin/gx/GXEnum.h"
 #include "main/render_mode_api.h"
 #include "main/sky.h"
-#include "dolphin/gx/GXLegacyDecls.h"
+#include "dolphin/gx/GXCull.h"
+#include "dolphin/gx/GXTransform.h"
 #include "track/intersect_api.h"
 #include "string.h"
 
@@ -748,8 +749,8 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
     f32 pos[3];
     f32 rot[3];
     MatrixTransform xf;
-    f32 mtxB[16];
-    f32 mtxA[12];
+    Mtx44 mtxB;
+    Mtx mtxA;
     int** p;
     int slot;
     CameraViewSlot* view;
@@ -929,9 +930,9 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
         }
         xf.x = xf.x - playerMapOffsetX;
         xf.z = xf.z - playerMapOffsetZ;
-        setMatrixFromObjectPos(mtxB, &xf);
-        mtx44Transpose(mtxB, mtxA);
-        PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), (MtxPtr)mtxA, (MtxPtr)mtxA);
+        setMatrixFromObjectPos(mtxB[0], &xf);
+        mtx44Transpose(mtxB[0], mtxA[0]);
+        PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), mtxA, mtxA);
         GXLoadPosMtxImm(mtxA, GX_PNMTX0);
         tex = ((PartfxEffectState*)p[slot])->textureResource;
         if (tex != NULL)
