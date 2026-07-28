@@ -722,12 +722,9 @@ void Camera_UpdateProjection(void* viewportArg, int unused)
         viewport += activeViewIndex;
         if ((viewport->flags & 1) == 0)
         {
-            s16 scaledHalfHeight;
-
-            scaledHalfHeight = (s16)(halfScreenHeight << 2);
-            gCameraViewportScreenParams[activeViewIndex * 8 + 4] = scaledHalfHeight;
+            gCameraViewportScreenParams[activeViewIndex * 8 + 4] = (s16)(halfScreenHeight << 2);
             gCameraViewportScreenParams[activeViewIndex * 8 + 5] = (s16)(halfScreenWidth << 2);
-            gCameraViewportScreenParams[activeViewIndex * 8 + 0] = scaledHalfHeight;
+            gCameraViewportScreenParams[activeViewIndex * 8 + 0] = (s16)(halfScreenHeight << 2);
             gCameraViewportScreenParams[activeViewIndex * 8 + 1] = (s16)(halfScreenWidth << 2);
         }
 
