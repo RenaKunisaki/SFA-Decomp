@@ -513,7 +513,7 @@ void CameraModeViewfinder_update(CameraObject* obj)
             {
                 fade = 0.0f;
             }
-            fade = fade * 1.25f;
+            fade *= 1.25f;
             if (fade > 1.0f)
             {
                 fade = 1.0f;
