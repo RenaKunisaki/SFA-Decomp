@@ -6327,6 +6327,7 @@ void staffMtxFn_8003b620(int staffArg, GameObject* objArg, int modelArg, int a, 
     int k;
     char* q;
     Vec* vp;
+    Vec* vp0;
     int i;
     char* base;
     u8* model;
@@ -6345,7 +6346,8 @@ void staffMtxFn_8003b620(int staffArg, GameObject* objArg, int modelArg, int a, 
         k = 1;
         off = 0x18;
         q = base;
-        vp = (Vec*)va;
+        vp0 = (Vec*)va;
+        vp = vp0;
 
         while (i < *(s16*)(base + 0xb0))
         {
@@ -6384,6 +6386,7 @@ void staffMtxFn_8003b620(int staffArg, GameObject* objArg, int modelArg, int a, 
             off += 0x30;
             q += 4;
             i++;
+            vp = vp0;
         }
 
         if (*(s16*)(base + 0xb0) != 0)
