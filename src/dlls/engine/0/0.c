@@ -382,7 +382,7 @@ extern const f32 lbl_803E1F9C;
 extern const f32 lbl_803E1FA0;
 extern const f32 lbl_803E1FA4;
 extern int lbl_803DD740;
-extern int lbl_803A9428[];
+extern int lbl_803A9428[6];
 extern const f32 lbl_803E1E80;
 extern int lbl_803E1E34;
 extern int lbl_803E1E38;
@@ -498,7 +498,7 @@ extern u8 cMenuOpen;
 extern short gCMenuOpenAnim;
 extern int gTrickyHudItemMask;
 extern CMenuItemDef gCMenuStaffAbilities[];
-extern int lbl_803A9364[];
+extern int lbl_803A9364[13];
 extern int gHudMagicBarX;
 extern int gHudMagicBarY;
 extern char sTemplateProgressCounterFormat[];
@@ -607,7 +607,7 @@ struct PauseMenuPanelAnimTable
 };
 
 extern u8 gHeadDisplayEntryTable[];
-extern GameObject* gHeadDisplayModelObjs[];
+extern GameObject* gHeadDisplayModelObjs[6];
 extern const f32 lbl_803E2040;
 extern const f32 lbl_803E2044;
 extern const f32 lbl_803E2048;
@@ -619,7 +619,7 @@ extern u8 lbl_803DD7A9;
 extern u8 lbl_803DD8C8;
 extern s16 lbl_803DD8CA;
 extern f32 lbl_803DD8CC;
-extern u8 lbl_803A9440[];
+extern u8 lbl_803A9440[0x18];
 extern const f32 lbl_803E205C;
 extern const f32 lbl_803E2060;
 extern const f32 lbl_803E2064;
@@ -1710,6 +1710,17 @@ void hudDrawAirMeter(void)
     }
     GXSetScissor(sc0, sc1, sc2, sc3);
 }
+
+u8 lbl_803A9440[0x18];
+int lbl_803A9428[6];
+GameObject* lbl_803A9410[6];
+GameObject* gHeadDisplayModelObjs[6];
+GameObject* gCMenuRingObjs[3];
+GameObject* gCMenuRingFrontObjs[3];
+void* gCMenuRingIconTextures[7];
+int gCMenuRingIconActiveFlags[7];
+GameUIWork10 lbl_803A9398;
+int lbl_803A9364[13];
 
 char lbl_803A8830[0x120];
 void GameUI_airMeterRun(int v)
