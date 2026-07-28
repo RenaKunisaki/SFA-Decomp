@@ -1291,7 +1291,7 @@ void renderGlows(void)
             f32 fade;
             skyBuildSunModelMatrix(sunMtx);
             Camera_ProjectWorldPointWithOffset(sunMtx[0][3], sunMtx[1][3], sunMtx[2][3], 100.0f, &px, &py, &pz);
-            Camera_NdcToScreen(px, py, pz, &sx, &sy, &sz);
+            Camera_ClipToScreen(px, py, pz, &sx, &sy, &sz);
             gSunFlareScissorX = sx - 0x10;
             gSunFlareScissorWidth = 0x20;
             gSunFlareScissorY = sy - 0x10;
@@ -1368,7 +1368,7 @@ void renderGlows(void)
             e = gGlowLightList[i];
             Camera_ProjectWorldPointWithOffset(e->worldX - playerMapOffsetX, e->worldY, e->worldZ - playerMapOffsetZ,
                                                e->glowProjectionRadius, &px, &py, &pz);
-            Camera_NdcToScreen(px, py, pz, &sx, &sy, &sz);
+            Camera_ClipToScreen(px, py, pz, &sx, &sy, &sz);
             d = depthReadRequestPoll(sx, sy, e);
             if (sz <= d && pauseMenuGetState() == 0)
                 e->glowAlphaStep = 0x10;

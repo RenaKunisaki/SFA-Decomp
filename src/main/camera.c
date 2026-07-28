@@ -399,7 +399,7 @@ void Camera_LoadModelViewMatrix(int unused0, int unused1, MatrixTransform* trans
     transform->z += playerMapOffsetZ;
 }
 
-typedef struct CameraViewportEntry {
+typedef struct CameraViewport {
     s32 x1;
     s32 y1;
     s32 x2;
@@ -408,45 +408,44 @@ typedef struct CameraViewportEntry {
     s32 posY;
     s32 width;
     s32 height;
-    s32 scissorX1;
-    s32 scissorY1;
-    s32 scissorX2;
-    s32 scissorY2;
+    s32 ulx;
+    s32 uly;
+    s32 lrx;
+    s32 lry;
     s32 flags;
-} CameraViewportEntry;
+} CameraViewport;
 
-STATIC_ASSERT(offsetof(CameraViewportEntry, scissorX1) == 0x20);
-STATIC_ASSERT(offsetof(CameraViewportEntry, flags) == 0x30);
-STATIC_ASSERT(sizeof(CameraViewportEntry) == 0x34);
+STATIC_ASSERT(offsetof(CameraViewport, ulx) == 0x20);
+STATIC_ASSERT(offsetof(CameraViewport, flags) == 0x30);
+STATIC_ASSERT(sizeof(CameraViewport) == 0x34);
 
-typedef struct CameraScreenTransform {
-    s16 halfWidthQuarterPixels;
-    s16 halfHeightQuarterPixels;
-    s16 unk04;
-    s16 unk06;
-    s16 centerXQuarterPixels;
-    s16 centerYQuarterPixels;
-    s16 unk0C;
-    s16 unk0E;
-} CameraScreenTransform;
+typedef struct CameraViewportTransform {
+    s16 scaleX;
+    s16 scaleY;
+    s16 scaleZ;
+    s16 scaleW;
+    s16 translateX;
+    s16 translateY;
+    s16 translateZ;
+    s16 translateW;
+} CameraViewportTransform;
 
-STATIC_ASSERT(offsetof(CameraScreenTransform, halfWidthQuarterPixels) == 0x0);
-STATIC_ASSERT(offsetof(CameraScreenTransform, halfHeightQuarterPixels) == 0x2);
-STATIC_ASSERT(offsetof(CameraScreenTransform, centerXQuarterPixels) == 0x8);
-STATIC_ASSERT(offsetof(CameraScreenTransform, centerYQuarterPixels) == 0xA);
-STATIC_ASSERT(sizeof(CameraScreenTransform) == 0x10);
+STATIC_ASSERT(offsetof(CameraViewportTransform, scaleX) == 0x0);
+STATIC_ASSERT(offsetof(CameraViewportTransform, scaleY) == 0x2);
+STATIC_ASSERT(offsetof(CameraViewportTransform, scaleZ) == 0x4);
+STATIC_ASSERT(offsetof(CameraViewportTransform, translateX) == 0x8);
+STATIC_ASSERT(offsetof(CameraViewportTransform, translateY) == 0xA);
+STATIC_ASSERT(offsetof(CameraViewportTransform, translateZ) == 0xC);
+STATIC_ASSERT(sizeof(CameraViewportTransform) == 0x10);
 
-extern CameraViewportEntry gCameraViewportEntries[];
-extern CameraScreenTransform gCameraViewportScreenParams[];
+extern CameraViewport gCameraViewports[];
+extern CameraViewportTransform gCameraViewportTransforms[];
 
 /*
  * The fullscreen post-scene path deliberately selects index 4 even though the viewport table has four entries.
- * Retail reads the flags field at that out-of-bounds index, which lands 0x30 bytes into the adjacent screen-transform
+ * Retail reads the flags field at that out-of-bounds index, which lands 0x30 bytes into the adjacent viewport-transform
  * table.
  */
-#define SCREEN_RESOLUTION_WIDTH(resolution)  ((resolution) & 0xFFFF)
-#define SCREEN_RESOLUTION_HEIGHT(resolution) ((resolution) >> 16)
-
 void Camera_SetupFullscreenViewport(void* viewportArg) {
     u32 resolution;
     u32 height;
@@ -458,53 +457,53 @@ void Camera_SetupFullscreenViewport(void* viewportArg) {
 
     gCameraCurrentViewIndex = 4;
     resolution = getScreenResolution();
-    height = SCREEN_RESOLUTION_HEIGHT(resolution);
-    width = SCREEN_RESOLUTION_WIDTH(resolution);
-    viewportFlags = &gCameraViewportEntries[0].flags;
+    height = resolution >> 16;
+    width = resolution & 0xFFFF;
+    viewportFlags = &gCameraViewports[0].flags;
 
-    if ((viewportFlags[gCameraCurrentViewIndex * (sizeof(CameraViewportEntry) / sizeof(*viewportFlags))] & 1) == 0) {
+    if ((viewportFlags[gCameraCurrentViewIndex * (sizeof(CameraViewport) / sizeof(*viewportFlags))] & 1) == 0) {
         gxSetScissorRect(0, 0, 0, 0, width - 1, height - 1);
         halfWidth = width / 2;
         viewIndex = gCameraCurrentViewIndex;
-        if ((viewportFlags[viewIndex * (sizeof(CameraViewportEntry) / sizeof(*viewportFlags))] & 1) == 0) {
-            gCameraViewportScreenParams[viewIndex].centerXQuarterPixels = (s16)(halfWidth * 4);
+        if ((viewportFlags[viewIndex * (sizeof(CameraViewport) / sizeof(*viewportFlags))] & 1) == 0) {
+            gCameraViewportTransforms[viewIndex].translateX = (s16)(halfWidth * 4);
             halfHeightQuarterPixels = (s16)((height / 2) * 4);
-            gCameraViewportScreenParams[viewIndex].centerYQuarterPixels = halfHeightQuarterPixels;
-            gCameraViewportScreenParams[viewIndex].halfWidthQuarterPixels = (s16)(halfWidth * 4);
-            gCameraViewportScreenParams[viewIndex].halfHeightQuarterPixels = halfHeightQuarterPixels;
+            gCameraViewportTransforms[viewIndex].translateY = halfHeightQuarterPixels;
+            gCameraViewportTransforms[viewIndex].scaleX = (s16)(halfWidth * 4);
+            gCameraViewportTransforms[viewIndex].scaleY = halfHeightQuarterPixels;
         }
     } else {
         Camera_ApplyCurrentViewport(viewportArg);
         viewIndex = gCameraCurrentViewIndex;
-        if ((viewportFlags[viewIndex * (sizeof(CameraViewportEntry) / sizeof(*viewportFlags))] & 1) == 0) {
-            gCameraViewportScreenParams[viewIndex].centerXQuarterPixels = 0;
-            gCameraViewportScreenParams[viewIndex].centerYQuarterPixels = 0;
-            gCameraViewportScreenParams[viewIndex].halfWidthQuarterPixels = 0;
-            gCameraViewportScreenParams[viewIndex].halfHeightQuarterPixels = 0;
+        if ((viewportFlags[viewIndex * (sizeof(CameraViewport) / sizeof(*viewportFlags))] & 1) == 0) {
+            gCameraViewportTransforms[viewIndex].translateX = 0;
+            gCameraViewportTransforms[viewIndex].translateY = 0;
+            gCameraViewportTransforms[viewIndex].scaleX = 0;
+            gCameraViewportTransforms[viewIndex].scaleY = 0;
         }
     }
 
     gCameraCurrentViewIndex = 0;
 }
 
-void Camera_NdcToScreen(f32 ndcX, f32 ndcY, f32 ndcZ, s32* outX, s32* outY, s32* outZ) {
+void Camera_ClipToScreen(f32 clipX, f32 clipY, f32 clipZ, s32* outX, s32* outY, s32* outZ) {
     f32 coord;
 
     if (outX != NULL) {
-        coord = ndcX * (f32)(gCameraViewportScreenParams[0].halfWidthQuarterPixels >> 2);
-        coord = coord + (f32)(gCameraViewportScreenParams[0].centerXQuarterPixels >> 2);
+        coord = clipX * (f32)(gCameraViewportTransforms[0].scaleX >> 2);
+        coord = coord + (f32)(gCameraViewportTransforms[0].translateX >> 2);
         *outX = coord;
     }
 
     if (outY != NULL) {
-        coord = ndcY * (f32)(gCameraViewportScreenParams[0].halfHeightQuarterPixels >> 2);
-        coord = coord + (f32)(gCameraViewportScreenParams[0].centerYQuarterPixels >> 2);
+        coord = clipY * (f32)(gCameraViewportTransforms[0].scaleY >> 2);
+        coord = coord + (f32)(gCameraViewportTransforms[0].translateY >> 2);
         *outY = coord;
         *outY = 480 - *outY;
     }
 
     if (outZ != NULL) {
-        *outZ = (s32)(gCameraDepth24BitMax * (lbl_803DE5F0 + ndcZ));
+        *outZ = (s32)(gCameraDepth24BitMax * (lbl_803DE5F0 + clipZ));
     }
 }
 
@@ -628,7 +627,7 @@ void Camera_ApplyCurrentViewport(void* viewportArg) {
     u32 screenSize;
 
     screenSize = getScreenResolution();
-    viewportY = SCREEN_RESOLUTION_HEIGHT(screenSize);
+    viewportY = screenSize >> 16;
     width = screenSize;
     screenSize = viewportY;
     viewportY = gCameraViewportYOffset + 6;
@@ -640,26 +639,26 @@ void Camera_UpdateProjection(void* viewportArg, int unused) {
     u8 viewIndex = gCameraCurrentViewIndex;
     u8 activeViewIndex;
     u32 resolution = getScreenResolution();
-    u32 screenHeight = SCREEN_RESOLUTION_HEIGHT(resolution);
-    u32 screenWidth = SCREEN_RESOLUTION_WIDTH(resolution);
-    CameraViewportEntry* base = gCameraViewportEntries;
-    CameraViewportEntry* viewport;
+    u32 screenHeight = resolution >> 16;
+    u32 screenWidth = resolution & 0xFFFF;
+    CameraViewport* base = gCameraViewports;
+    CameraViewport* viewport;
 
     if ((base[viewIndex].flags & 1) != 0) {
         u8 savedViewIndex = gCameraCurrentViewIndex;
 
         gCameraCurrentViewIndex = viewIndex;
-        gxSetScissorRect(0, 0, base[viewIndex & 0xff].scissorX1, base[viewIndex & 0xff].scissorY1,
-                         base[viewIndex & 0xff].scissorX2, base[viewIndex & 0xff].scissorY2);
+        gxSetScissorRect(0, 0, base[viewIndex & 0xff].ulx, base[viewIndex & 0xff].uly, base[viewIndex & 0xff].lrx,
+                         base[viewIndex & 0xff].lry);
 
-        viewport = gCameraViewportEntries;
+        viewport = gCameraViewports;
         activeViewIndex = gCameraCurrentViewIndex;
         viewport += activeViewIndex;
         if ((viewport->flags & 1) == 0) {
-            gCameraViewportScreenParams[activeViewIndex].centerXQuarterPixels = 0;
-            gCameraViewportScreenParams[activeViewIndex].centerYQuarterPixels = 0;
-            gCameraViewportScreenParams[activeViewIndex].halfWidthQuarterPixels = 0;
-            gCameraViewportScreenParams[activeViewIndex].halfHeightQuarterPixels = 0;
+            gCameraViewportTransforms[activeViewIndex].translateX = 0;
+            gCameraViewportTransforms[activeViewIndex].translateY = 0;
+            gCameraViewportTransforms[activeViewIndex].scaleX = 0;
+            gCameraViewportTransforms[activeViewIndex].scaleY = 0;
         }
 
         gCameraCurrentViewIndex = savedViewIndex;
@@ -683,13 +682,13 @@ void Camera_UpdateProjection(void* viewportArg, int unused) {
         u32 halfScreenWidth = screenWidth / 2;
 
         activeViewIndex = gCameraCurrentViewIndex;
-        viewport = gCameraViewportEntries;
+        viewport = gCameraViewports;
         viewport += activeViewIndex;
         if ((viewport->flags & 1) == 0) {
-            gCameraViewportScreenParams[activeViewIndex].centerXQuarterPixels = (s16)(halfScreenWidth * 4);
-            gCameraViewportScreenParams[activeViewIndex].centerYQuarterPixels = (s16)(halfScreenHeight * 4);
-            gCameraViewportScreenParams[activeViewIndex].halfWidthQuarterPixels = (s16)(halfScreenWidth * 4);
-            gCameraViewportScreenParams[activeViewIndex].halfHeightQuarterPixels = (s16)(halfScreenHeight * 4);
+            gCameraViewportTransforms[activeViewIndex].translateX = (s16)(halfScreenWidth * 4);
+            gCameraViewportTransforms[activeViewIndex].translateY = (s16)(halfScreenHeight * 4);
+            gCameraViewportTransforms[activeViewIndex].scaleX = (s16)(halfScreenWidth * 4);
+            gCameraViewportTransforms[activeViewIndex].scaleY = (s16)(halfScreenHeight * 4);
         }
 
         if (gCameraProjectionMode == 1) {
@@ -711,13 +710,13 @@ void Camera_UpdateProjection(void* viewportArg, int unused) {
     }
 }
 
-void Camera_GetCurrentViewport(s32* outX, s32* outY, u32* outRight, s32* outBottom) {
+void Camera_GetFullViewportRect(s32* outLeft, s32* outTop, u32* outRight, s32* outBottom) {
     u32 resolution = getScreenResolution();
 
-    *outX = 0;
-    *outRight = SCREEN_RESOLUTION_WIDTH(resolution);
-    *outY = gCameraViewportYOffset + 6;
-    *outBottom = SCREEN_RESOLUTION_HEIGHT(resolution) - (gCameraViewportYOffset + 6);
+    *outLeft = 0;
+    *outRight = resolution & 0xFFFF;
+    *outTop = gCameraViewportYOffset + 6;
+    *outBottom = (resolution >> 16) - (gCameraViewportYOffset + 6);
 }
 
 void Camera_SetCurrentViewIndex(int index) {
@@ -1038,14 +1037,14 @@ void Camera_InitState(void) {
     copyMatrix44(storage->worldMatrix + 32, storage->yawTransforms[33]);
 }
 
-CameraViewportEntry gCameraViewportEntries[4] = {
+CameraViewport gCameraViewports[4] = {
     {0, 0, 320, 240, 160, 120, 320, 240, 0, 0, 319, 239, 0},
     {0, 0, 320, 240, 160, 120, 320, 240, 0, 0, 319, 239, 0},
     {0, 0, 320, 240, 160, 120, 320, 240, 0, 0, 319, 239, 0},
     {0, 0, 320, 240, 160, 120, 320, 240, 0, 0, 319, 239, 0},
 };
 
-CameraScreenTransform gCameraViewportScreenParams[20] = {
+CameraViewportTransform gCameraViewportTransforms[20] = {
     {0, 0, 511, 0, 0, 0, 511, 0}, {0, 0, 511, 0, 0, 0, 511, 0}, {0, 0, 511, 0, 0, 0, 511, 0},
     {0, 0, 511, 0, 0, 0, 511, 0}, {0, 0, 511, 0, 0, 0, 511, 0}, {0, 0, 511, 0, 0, 0, 511, 0},
     {0, 0, 511, 0, 0, 0, 511, 0}, {0, 0, 511, 0, 0, 0, 511, 0}, {0, 0, 511, 0, 0, 0, 511, 0},

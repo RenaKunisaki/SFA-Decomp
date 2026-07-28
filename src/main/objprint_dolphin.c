@@ -3518,7 +3518,7 @@ void objRenderModel(GameObject* obj)
     Camera_ProjectWorldPointWithOffset(
         obj->anim.localPosX - playerMapOffsetX, obj->anim.localPosY, obj->anim.localPosZ - playerMapOffsetZ,
         obj->anim.hitboxScale * obj->anim.rootMotionScale, &px, &py, &pz);
-    Camera_NdcToScreen(px, py, pz, &sx, &sy, &sz);
+    Camera_ClipToScreen(px, py, pz, &sx, &sy, &sz);
     if (sz <= depthReadRequestPoll(sx, sy, obj))
     {
         obj->anim.modelState->shadowAlphaStep = 0x20;

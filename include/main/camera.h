@@ -130,14 +130,14 @@ void Camera_UpdateForObject(Camera* camera);
 void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex);
 void Obj_BuildTransformMatrices(GameObject* obj);
 s32 Obj_BuildTransformMatrixSlot(GameObject* obj);
-void Camera_NdcToScreen(f32 ndcX, f32 ndcY, f32 ndcZ, s32* outX, s32* outY, s32* outZ);
+void Camera_ClipToScreen(f32 clipX, f32 clipY, f32 clipZ, s32* outX, s32* outY, s32* outZ);
 void Camera_ProjectWorldPoint(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, f32* outViewZ);
 void Camera_ProjectWorldPointWithOffset(f32 x, f32 y, f32 z, f32 offset, f32* outX, f32* outY, f32* outZ);
 void Camera_ProjectWorldSphere(f32 x, f32 y, f32 z, f32 radius, f32* outX, f32* outY, f32* outZ, f32* outRadiusX,
                                f32* outRadiusY, f32* outRadiusZ);
 void Camera_ApplyCurrentViewport(void* viewportArg);
 void Camera_UpdateProjection(void* viewportArg, int unused);
-void Camera_GetCurrentViewport(s32* outX, s32* outY, u32* outRight, s32* outBottom);
+void Camera_GetFullViewportRect(s32* outLeft, s32* outTop, u32* outRight, s32* outBottom);
 void Camera_SetCurrentViewIndex(int index);
 f32 Camera_DistanceToCurrentViewPosition(f32 x, f32 y, f32 z);
 void Camera_SetCurrentViewRotation(int yaw, int pitch, int roll);
