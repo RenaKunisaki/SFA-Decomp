@@ -43,8 +43,8 @@ void gameTextInitFn_8001c794(void)
     for (; i < 4; i++)
     {
         j = 0;
-        x = 0;
         x0 = 0;
+        x = 0;
         while (j++ < 2)
         {
             x1 = (x + 1) * 2;
