@@ -42,13 +42,6 @@ const f32 gSmallBasketPercentScale[1] = {100.0f};
 const f32 gSmallBasketEffectScale[1] = {0.014f};
 const f32 gSmallBasketZero[1] = {0.0f};
 const f32 gSmallBasketQuarter[1] = {0.25f};
-const f32 gSmallBasketHealthPercentLow[1] = {50.0f};
-const f32 gSmallBasketHealthPercentHigh[1] = {75.0f};
-const f32 gSmallBasketBurstVelocityXZ[1] = {3.0f};
-const f32 gSmallBasketBurstVelocityY[1] = {4.0f};
-const f32 gSmallBasketOne[1] = {1.0f};
-const f32 gSmallBasketVelocityStep[1] = {0.01f};
-const f32 gSmallBasketThrowVelocityY[1] = {2.2f};
 
 #define SMALLBASKET_HIT_VOLUME_SLOT 0xE
 
@@ -219,10 +212,10 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         maxHealth = (f32)Player_GetMaxHealth((int)player);
         healthPercent = healthPercent / maxHealth;
         healthPercent = healthPercent * gSmallBasketPercentScale[0];
-        if (healthPercent <= gSmallBasketHealthPercentLow[0]) {
+        if (healthPercent <= 50.0f) {
             subtypeChoice = SMALLBASKET_SUBTYPE_APPLE;
-        } else if (healthPercent <= gSmallBasketHealthPercentHigh[0]) {
-            if (randomGetRange(0, (s16)(int)(healthPercent - gSmallBasketHealthPercentLow[0])) < 7) {
+        } else if (healthPercent <= 75.0f) {
+            if (randomGetRange(0, (s16)(int)(healthPercent - 50.0f)) < 7) {
                 subtypeChoice = SMALLBASKET_SUBTYPE_APPLE;
                 maxCount = (s16)(maxHealth * gSmallBasketQuarter[0]);
                 if (maxCount < 1) {
@@ -251,9 +244,9 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((ScarabPlacement*)childPlacement)->activeTimer = 0x190;
         child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
-            burstScale = gSmallBasketBurstVelocityXZ[0];
+            burstScale = 3.0f;
             ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
-            ((GameObject*)child)->anim.velocityY = gSmallBasketBurstVelocityY[0] * hitVelocity[1];
+            ((GameObject*)child)->anim.velocityY = 4.0f * hitVelocity[1];
             ((GameObject*)child)->anim.velocityZ = burstScale * collisionVelocity[2];
         } else {
             ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
@@ -268,15 +261,15 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         }
         ((GameObject*)child)->anim.velocityX =
             ((GameObject*)child)->anim.velocityX *
-            -(gSmallBasketVelocityStep[0] * (f32)randomGetRange(0, 0x19) - gSmallBasketOne[0]);
+            (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
         ((GameObject*)child)->anim.velocityZ =
             ((GameObject*)child)->anim.velocityZ *
-            -(gSmallBasketVelocityStep[0] * (f32)randomGetRange(0, 0x19) - gSmallBasketOne[0]);
-        ((GameObject*)child)->anim.velocityY = gSmallBasketThrowVelocityY[0];
+            (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
+        ((GameObject*)child)->anim.velocityY = 2.2f;
         rotation.posX = gSmallBasketZero[0];
         rotation.posY = gSmallBasketZero[0];
         rotation.posZ = gSmallBasketZero[0];
-        rotation.scale = gSmallBasketOne[0];
+        rotation.scale = 1.0f;
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
@@ -300,9 +293,9 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((ScarabPlacement*)childPlacement)->activeTimer = 0x190;
         child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
-            burstScale = gSmallBasketBurstVelocityXZ[0];
+            burstScale = 3.0f;
             ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
-            ((GameObject*)child)->anim.velocityY = gSmallBasketBurstVelocityY[0] * hitVelocity[1];
+            ((GameObject*)child)->anim.velocityY = 4.0f * hitVelocity[1];
             ((GameObject*)child)->anim.velocityZ = burstScale * collisionVelocity[2];
         } else {
             ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
@@ -317,15 +310,15 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         }
         ((GameObject*)child)->anim.velocityX =
             ((GameObject*)child)->anim.velocityX *
-            -(gSmallBasketVelocityStep[0] * (f32)randomGetRange(0, 0x19) - gSmallBasketOne[0]);
+            (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
         ((GameObject*)child)->anim.velocityZ =
             ((GameObject*)child)->anim.velocityZ *
-            -(gSmallBasketVelocityStep[0] * (f32)randomGetRange(0, 0x19) - gSmallBasketOne[0]);
-        ((GameObject*)child)->anim.velocityY = gSmallBasketThrowVelocityY[0];
+            (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
+        ((GameObject*)child)->anim.velocityY = 2.2f;
         rotation.posX = gSmallBasketZero[0];
         rotation.posY = gSmallBasketZero[0];
         rotation.posZ = gSmallBasketZero[0];
-        rotation.scale = gSmallBasketOne[0];
+        rotation.scale = 1.0f;
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
@@ -349,9 +342,9 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((ScarabPlacement*)childPlacement)->activeTimer = 0x7D0;
         child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
-            burstScale = gSmallBasketBurstVelocityXZ[0];
+            burstScale = 3.0f;
             ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
-            ((GameObject*)child)->anim.velocityY = gSmallBasketBurstVelocityY[0] * hitVelocity[1];
+            ((GameObject*)child)->anim.velocityY = 4.0f * hitVelocity[1];
             ((GameObject*)child)->anim.velocityZ = burstScale * collisionVelocity[2];
         } else {
             ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
@@ -366,15 +359,15 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         }
         ((GameObject*)child)->anim.velocityX =
             ((GameObject*)child)->anim.velocityX *
-            -(gSmallBasketVelocityStep[0] * (f32)randomGetRange(0, 0x19) - gSmallBasketOne[0]);
+            (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
         ((GameObject*)child)->anim.velocityZ =
             ((GameObject*)child)->anim.velocityZ *
-            -(gSmallBasketVelocityStep[0] * (f32)randomGetRange(0, 0x19) - gSmallBasketOne[0]);
-        ((GameObject*)child)->anim.velocityY = gSmallBasketThrowVelocityY[0];
+            (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
+        ((GameObject*)child)->anim.velocityY = 2.2f;
         rotation.posX = gSmallBasketZero[0];
         rotation.posY = gSmallBasketZero[0];
         rotation.posZ = gSmallBasketZero[0];
-        rotation.scale = gSmallBasketOne[0];
+        rotation.scale = 1.0f;
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
@@ -411,9 +404,9 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((CollectibleSetup*)childPlacement)->visibilityGameBit = -1;
         child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
-            burstScale = gSmallBasketBurstVelocityXZ[0];
+            burstScale = 3.0f;
             ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
-            ((GameObject*)child)->anim.velocityY = gSmallBasketBurstVelocityY[0] * hitVelocity[1];
+            ((GameObject*)child)->anim.velocityY = 4.0f * hitVelocity[1];
             ((GameObject*)child)->anim.velocityZ = burstScale * collisionVelocity[2];
         }
         horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX;
@@ -426,18 +419,18 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         }
         ((GameObject*)child)->anim.velocityX =
             ((GameObject*)child)->anim.velocityX *
-            -(gSmallBasketVelocityStep[0] * (f32)randomGetRange(0, 0x19) - gSmallBasketOne[0]);
+            (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
         ((GameObject*)child)->anim.velocityZ =
             ((GameObject*)child)->anim.velocityZ *
-            -(gSmallBasketVelocityStep[0] * (f32)randomGetRange(0, 0x19) - gSmallBasketOne[0]);
-        ((GameObject*)child)->anim.velocityY = gSmallBasketThrowVelocityY[0];
+            (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
+        ((GameObject*)child)->anim.velocityY = 2.2f;
         (*(CollectibleInterface**)((GameObject*)child)->anim.dll)
             ->startBounceMotion((GameObject*)child, ((GameObject*)child)->anim.velocityX,
                                 ((GameObject*)child)->anim.velocityY, ((GameObject*)child)->anim.velocityZ);
         rotation.posX = gSmallBasketZero[0];
         rotation.posY = gSmallBasketZero[0];
         rotation.posZ = gSmallBasketZero[0];
-        rotation.scale = gSmallBasketOne[0];
+        rotation.scale = 1.0f;
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
@@ -559,12 +552,12 @@ void SmallBasket_throw(GameObject* obj) {
     state->carryAttached = 0;
     state->carryState = SMALLBASKET_CARRY_IDLE;
     state->throwState = SMALLBASKET_THROW_LAUNCHED;
-    obj->anim.velocityY = gSmallBasketThrowVelocityY[0];
+    obj->anim.velocityY = 2.2f;
     obj->anim.velocityZ = (-2.2f);
     rotation.posX = gSmallBasketZero[0];
     rotation.posY = gSmallBasketZero[0];
     rotation.posZ = gSmallBasketZero[0];
-    rotation.scale = gSmallBasketOne[0];
+    rotation.scale = 1.0f;
     rotation.rotZ = 0;
     rotation.rotY = 0;
     rotation.rotX = player->anim.rotX;
@@ -599,7 +592,7 @@ void SmallBasket_render(GameObject* obj, int renderArg2, int renderArg3, int ren
         } else if (obj->userData2 != 0 && visible != -1) {
             obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
         } else {
-            objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gSmallBasketOne[0]);
+            objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
         }
     }
 }
@@ -619,7 +612,7 @@ void SmallBasket_update(GameObject* obj) {
 
     player = Obj_GetPlayerObject();
     placement = *(SmallBasketPlacement**)&obj->anim.placementData;
-    clockScale = gSmallBasketOne[0];
+    clockScale = 1.0f;
     (*gSkyInterface)->getClockTime(&clockScale);
     state = obj->extra;
     if ((*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) == 0) {
@@ -740,12 +733,12 @@ void SmallBasket_update(GameObject* obj) {
                         state->carryState = SMALLBASKET_CARRY_IDLE;
                         state->throwState = SMALLBASKET_THROW_LAUNCHED;
                         obj->anim.velocityY =
-                            (0.75f) * playerState->baddie.inputMagnitude + gSmallBasketThrowVelocityY[0];
+                            (0.75f) * playerState->baddie.inputMagnitude + 2.2f;
                         obj->anim.velocityZ = (-0.75f) * playerState->baddie.inputMagnitude + (-2.2f);
                         effectParams.posX = gSmallBasketZero[0];
                         effectParams.posY = gSmallBasketZero[0];
                         effectParams.posZ = gSmallBasketZero[0];
-                        effectParams.scale = gSmallBasketOne[0];
+                        effectParams.scale = 1.0f;
                         effectParams.rotZ = 0;
                         effectParams.rotY = 0;
                         effectParams.rotX = player->anim.rotX;
@@ -772,7 +765,7 @@ void SmallBasket_update(GameObject* obj) {
                         effectParams.posX = gSmallBasketZero[0];
                         effectParams.posY = gSmallBasketZero[0];
                         effectParams.posZ = gSmallBasketZero[0];
-                        effectParams.scale = gSmallBasketOne[0];
+                        effectParams.scale = 1.0f;
                         effectParams.rotZ = 0;
                         effectParams.rotY = 0;
                         effectParams.rotX = player->anim.rotX;
