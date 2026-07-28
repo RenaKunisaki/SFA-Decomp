@@ -324,11 +324,9 @@ track/intersect_mtx44.c:
 	.sdata2     start:0x803DEE98 end:0x803DEEA0
 
 track/intersect_render.c:
-	.text       start:0x800702B8 end:0x8007CF7C
+	.text       start:0x800702B8 end:0x8007D670
 	.rodata     start:0x802C1EA8 end:0x802C1F80
-
-track/intersect_texsetup.c:
-	.text       start:0x8007CF7C end:0x8007D670
+	.sdata2     start:0x803DEEA0 end:0x803DEF8C
 
 track/intersect_memcard.c:
 	.text       start:0x8007D670 end:0x8007E77C
@@ -1512,7 +1510,7 @@ dlls/objects/196_Tricky/tricky.c:
 	.data       start:0x8031D2E8 end:0x8031DBD8
 	.sdata      start:0x803DBC40 end:0x803DBC58
 	.sbss       start:0x803DDA48 end:0x803DDA50
-	.sdata2     start:0x803E23C0 end:0x803E2558
+	.sdata2     start:0x803E23C0 end:0x803E2554
 
 dlls/objects/201_Baddie/Baddie.c:
 	.text       start:0x80148C18 end:0x8014E1DC
@@ -4510,21 +4508,17 @@ musyx/runtime/synth_sequence.c:
 	.text       start:0x8026E0E4 end:0x8026E0E4
 
 musyx/runtime/synth_seq_dispatch.c:
-	extab       start:0x80005660 end:0x80005680
-	extabindex  start:0x80005D20 end:0x80005D50
-	.text       start:0x8026E0E4 end:0x8026EC44
+	extab       start:0x80005660 end:0x80005688
+	extabindex  start:0x80005D20 end:0x80005D5C
+	.text       start:0x8026E0E4 end:0x8026F53C
 	.data       start:0x8032ED80 end:0x8032EDD0
+	.sdata2     start:0x803E7780 end:0x803E7798
 
 musyx/runtime/mcmd_data.c:
 	.data       start:0x8032EDD0 end:0x8032F050
 
 musyx/runtime/synth_seq_queue.c:
-	.text       start:0x8026EC44 end:0x8026EC44
-
-musyx/runtime/synth_channel_scale.c:
-	extab       start:0x80005680 end:0x80005688
-	extabindex  start:0x80005D50 end:0x80005D5C
-	.text       start:0x8026EC44 end:0x8026F53C
+	.text       start:0x8026F53C end:0x8026F53C
 
 musyx/runtime/synth.c:
 	extab       start:0x80005688 end:0x80005738

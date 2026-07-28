@@ -649,15 +649,21 @@ void objDrawFn_8005da48(GameObject* obj)
     }
 }
 
+static inline void lightmapSetObjAmbColor(void)
+{
+    GXColor color;
+
+    objGetColor(0, (u8*)&color, (u8*)&color + 1, (u8*)&color + 2);
+    GXSetChanAmbColor(GX_COLOR0, color);
+    GXSetNumChans(1);
+}
+
 void sceneDrawTransparentPolys(void)
 {
-    GXColor c5;
     int i;
     LightmapDrawItem item;
     GameObject* player;
-    GXColor c4;
     LightmapDrawEntry* entries;
-    GXColor c6;
     f32 m[16];
 
     lightmap_sortTransparentDrawQueue();
@@ -702,9 +708,7 @@ void sceneDrawTransparentPolys(void)
             item.block = entries[i].arg1.block;
             GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            objGetColor(0, (u8*)&c4, (u8*)&c4 + 1, (u8*)&c4 + 2);
-            GXSetChanAmbColor(GX_COLOR0, c4);
-            GXSetNumChans(1);
+            lightmapSetObjAmbColor();
             PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
             setupToRenderMapBlock(item.block, m);
             modelRenderFn_8005d894(entries[i].arg0.bounds, entries[i].arg1.block, m);
@@ -713,9 +717,7 @@ void sceneDrawTransparentPolys(void)
             item.block = entries[i].arg1.block;
             GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            objGetColor(0, (u8*)&c5, (u8*)&c5 + 1, (u8*)&c5 + 2);
-            GXSetChanAmbColor(GX_COLOR0, c5);
-            GXSetNumChans(1);
+            lightmapSetObjAmbColor();
             PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
             setupToRenderMapBlock(item.block, m);
             modelRenderFn_8005d69c(entries[i].arg0.bounds, entries[i].arg1.block, m);
@@ -724,9 +726,7 @@ void sceneDrawTransparentPolys(void)
             item.block = entries[i].arg1.block;
             GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
             GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            objGetColor(0, (u8*)&c6, (u8*)&c6 + 1, (u8*)&c6 + 2);
-            GXSetChanAmbColor(GX_COLOR0, c6);
-            GXSetNumChans(1);
+            lightmapSetObjAmbColor();
             PSMTXConcat((f32*)Camera_GetViewMatrix(), (f32*)item.block->transform, m);
             setupToRenderMapBlock(item.block, m);
             modelRenderFn_8005d4ec(entries[i].arg0.bounds, entries[i].arg1.block, m);

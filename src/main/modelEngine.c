@@ -230,6 +230,9 @@
 #include "dlls/objects/433_SH_staff.h"
 #include "dlls/objects/434_SH_staffHaz.h"
 #include "dlls/objects/435_SH_Beacon.h"
+#include "dlls/objects/436_SH_EmptyTum.h"
+#include "dlls/objects/437.h"
+#include "dlls/objects/438_SC_levelcon.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -354,8 +357,8 @@ extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor;
 extern ResourceDescriptor gLampObjDescriptor, gLaserBeamObjDescriptor, gLaserObjDescriptor,
     gLaserUnsupportedObjDescriptor;
-extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightFootObjDescriptor,
-    gLightSourceObjDescriptor, gMAGICMakerObjDescriptor;
+extern ResourceDescriptor gLavaBall1BEObjDescriptor, gLavaBall1BFObjDescriptor, gLightSourceObjDescriptor,
+    gMAGICMakerObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
 extern ResourceDescriptor gPaymentKioskObjDescriptor, gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
@@ -365,9 +368,8 @@ extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_GalleonObjDescriptor, g
     gSB_MiniFireObjDescriptor, gSB_PropellerObjDescriptor, gSB_SeqDoorObjDescriptor, gSB_ShipGunBrokeObjDescriptor,
     gSB_ShipGunObjDescriptor;
 extern ResourceDescriptor gSB_ShipHeadObjDescriptor, gSB_ShipMastObjDescriptor, gSC_CloudrunnerAObjDescriptor,
-    gSC_MusicTreeObjDescriptor, gSC_levelcontrolObjDescriptor, gSC_totembondObjDescriptor, gSC_totempoleObjDescriptor,
-    gSC_totempuzzleObjDescriptor;
-extern ResourceDescriptor gSC_totemstrengthObjDescriptor, gSH_EmptyTumbleWObjDescriptor;
+    gSC_MusicTreeObjDescriptor, gSC_totembondObjDescriptor, gSC_totempoleObjDescriptor, gSC_totempuzzleObjDescriptor;
+extern ResourceDescriptor gSC_totemstrengthObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
@@ -1497,9 +1499,9 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSH_staffObjDescriptor,
     (ResourceDescriptor*)&gSH_staffHazeObjDescriptor,
     (ResourceDescriptor*)&gSH_BeaconObjDescriptor,
-    &gSH_EmptyTumbleWObjDescriptor,
-    &gLightFootObjDescriptor,
-    &gSC_levelcontrolObjDescriptor,
+    (ResourceDescriptor*)&gSH_EmptyTumbleWObjDescriptor,
+    (ResourceDescriptor*)&gDll437ObjDescriptor,
+    (ResourceDescriptor*)&gSC_levelcontrolObjDescriptor,
     &gSC_MusicTreeObjDescriptor,
     &gSC_totempoleObjDescriptor,
     &gSC_CloudrunnerAObjDescriptor,

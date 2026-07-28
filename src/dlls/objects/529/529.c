@@ -350,7 +350,7 @@ void wmwallcrawler_update(GameObject* obj)
                             }
                             if (state->mode != WMWALLCRAWLER_MODE_FLEE)
                             {
-                                Sfx_StopObjectChannel(ob, 0x10);
+                                Sfx_StopObjectChannel((int)(GameObject*)ob, 0x10);
                                 state->mode = WMWALLCRAWLER_MODE_FLEE;
                                 ((GameObject*)ob)->anim.velocityX =
                                     -((GameObject*)ob)->anim.velocityX * (d = 0.25f);
@@ -434,7 +434,7 @@ void wmwallcrawler_update(GameObject* obj)
                             else
                             {
                                 state->mode = WMWALLCRAWLER_MODE_IDLE;
-                                Sfx_StopObjectChannel(ob, 0x18);
+                                Sfx_StopObjectChannel((int)(GameObject*)ob, 0x18);
                                 ((GameObject*)ob)->anim.localPosX = state->homeX;
                                 ((GameObject*)ob)->anim.localPosY =
                                     state->homeY + (f32)state->heightOffset;
