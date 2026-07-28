@@ -32,9 +32,7 @@ typedef struct IMSnowClawState {
 
 typedef struct IMSnowClawMountInterface {
     void* pad00[4];
-    void (*render)(
-        GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
-        int visible);
+    void (*render)(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, int visible);
     void* pad14[5];
     void (*getPosition)(GameObject* obj, f32* x, f32* y, f32* z);
     void* pad2C[3];
@@ -82,16 +80,13 @@ STATIC_ASSERT(sizeof(IMSnowClawMountInterface) == 0x48);
 STATIC_ASSERT(offsetof(IMSnowClawDropObjectTable, objectIds) == 0x00);
 STATIC_ASSERT(sizeof(IMSnowClawDropObjectTable) == 0x0A);
 
-void imSnowClaw_syncMountTransform(
-    GameObject* obj, GameObject* mount, int renderArg2, int renderArg3, int renderArg4,
-    int renderArg5, int visible, int mountAlpha, int renderMount);
-int imSnowClaw_sequenceCallback(
-    GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
+void imSnowClaw_syncMountTransform(GameObject* obj, GameObject* mount, int renderArg2, int renderArg3, int renderArg4,
+                                   int renderArg5, int visible, int mountAlpha, int renderMount);
+int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
 int imSnowClaw_getExtraSize(void);
 int imSnowClaw_getObjectTypeId(void);
 void imSnowClaw_free(GameObject* obj);
-void imSnowClaw_render(
-    GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void imSnowClaw_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void imSnowClaw_hitDetect(GameObject* obj);
 void imSnowClaw_update(GameObject* obj);
 void imSnowClaw_init(GameObject* obj, IMSnowClawPlacement* placement);
