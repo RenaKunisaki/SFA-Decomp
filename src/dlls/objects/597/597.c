@@ -1279,7 +1279,9 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
     u32 hitOutC;
     int hitObj;
     f32 velNrm[3];
+    f32 zero;
 
+    zero = 0.0f;
     hitReact = *(int*)&obj->anim.hitReactState;
     if (ObjHits_IsObjectEnabled((ObjAnimComponent*)obj) != 0)
     {
@@ -1303,12 +1305,12 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
             }
             break;
         case 0x15:
-            if (st->collisionFxTimer == 0.0f)
+            if (st->collisionFxTimer == zero)
             {
                 PSVECNormalize((float*)&obj->anim.velocityX, velNrm);
                 dot = PSVECDotProduct(velNrm, (float*)(hitObj + 0x24));
                 PSVECScale(&st->localVelX, &st->localVelX, dot * st->collisionBounceScale + 1.0f);
-                st->localVelY = st->localVelY * 0.2f;
+                st->localVelY *= 0.2f;
                 st->collisionFxTimer = 20.0f;
                 st->collisionFxDamping = 1.0f;
             }
@@ -1324,7 +1326,7 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
             break;
         }
         hit = *(u32*)(hitReact + 0x50);
-        if (((hit != 0) && (hitObj = hit, *(u32*)& st->linkedObj = hit, st->collisionFxTimer == 0.0f)) &&
+        if (((hit != 0) && (hitObj = hit, *(u32*)& st->linkedObj = hit, st->collisionFxTimer == zero)) &&
             (hitKind = arrayIndexOf(gDrHighTopHitObjectKinds, 0xc, (int)*(short*)(hitObj + 0x46)), hitKind != -1))
         {
             objfx_shakeCameraByDistance((GameObject*)obj, 300.0f);
