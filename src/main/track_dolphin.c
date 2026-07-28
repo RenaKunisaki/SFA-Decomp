@@ -1292,19 +1292,17 @@ void intersectModLineBuild(IntersectModLineObject* obj)
         }
         {
             s16 bestLine;
-            int lineOff;
             int n;
-            lineOff = n = 0;
             bestLine = best;
-            for (; n < gIntersectLineCount; lineOff += 0x10, n++)
-            {
-                line = (IntersectLine*)(lbl_803DCF34 + lineOff);
-                if (line->kind != 0x14)
-                {
-                    if (bestLine == line->adj[0])
+            for (n = 0; n < gIntersectLineCount; n++) {
+                line = &((IntersectLine*)lbl_803DCF34)[n];
+                if (line->kind != 0x14) {
+                    if (bestLine == line->adj[0]) {
                         line->adj[0] = li;
-                    if (bestLine == ((IntersectLine*)(lbl_803DCF34 + lineOff))->adj[1])
-                        ((IntersectLine*)(lbl_803DCF34 + lineOff))->adj[1] = li;
+                    }
+                    if (bestLine == ((IntersectLine*)lbl_803DCF34)[n].adj[1]) {
+                        ((IntersectLine*)lbl_803DCF34)[n].adj[1] = li;
+                    }
                 }
             }
         }
