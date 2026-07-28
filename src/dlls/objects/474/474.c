@@ -9,6 +9,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/vecmath_distance_api.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/track_bbox_api.h"
