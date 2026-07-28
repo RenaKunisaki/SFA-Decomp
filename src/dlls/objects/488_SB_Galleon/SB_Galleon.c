@@ -1,23 +1,9 @@
 /*
- * dbprotection - galleon damage-phase + boss handlers for the SB_Galleon boss.
- * Runs on the SB_Galleon object (extra == SBGalleonState).
- *
- * DBprotection_updateFlight is the per-step movement/flight driver: it locates the
- * "tricky" target object (seqId 0x8C), runs the wander/drift bob in phase
- * 0, the flight-pattern approach in phase 1, and the swooping attack sweep
- * in phases 2-8, finally fading the screen out (kind 0x41) and refreshing
- * trigger sequence 0 when the run completes.
- *
- * DBprotection_updateShield drives the screen transition (game bits 0x9f /
- * 0xa0 / 0x91c arm-use-ready), the envfx game-bit cycle, the cloud action
- * interface and the shield-impact sfx (latched on the sine of shieldAngle).
- * DBprotection_updateEnvfxGameBits toggles the A/B envfx cycle game bits
- * (0xa3c-0xa3f), swapping envfxIndex and replaying actions from the
- * SBGalleonState envfx table. DBprotection_getCameraState exposes the
- * boss's cameraState byte to other DLLs; SB_Galleon_onSeqFree
- * latches the object's local position as the home position.
+ * SB_Galleon (DLL 0x1E8) - General Scales' galleon in the ShipBattle
+ * prologue.
  */
-#include "main/dll/DB/DBprotection.h"
+#include "dlls/objects/488_SB_Galleon.h"
+
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_channel_query_api.h"
 #include "main/audio/sfx_play_api.h"
@@ -26,14 +12,12 @@
 #include "main/render_envfx_api.h"
 #include "main/camera_interface.h"
 #include "main/dll/cloudaction_interface.h"
-#include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "sys/objects.h"
 #include "main/obj_list.h"
 
 #include "main/frame_timing.h"
 #include "main/mapEventTypes.h"
-#include "main/dll/DB/sbgalleon_state.h"
 #include "main/objseq.h"
 #include "main/screen_transition.h"
 #include "main/gamebits.h"
@@ -41,12 +25,8 @@
 #include "main/vecmath.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/DB/DBstealerworm.h"
-#include "main/dll/SB/dll_01E8_sbgalleon.h"
-#include "main/dll/SB/dll_01E9_sbpropeller.h"
 #include "main/dll/ship_battle_api.h"
 #include "main/dll/partfx_interface.h"
-#include "main/dll/sbshipheadstate_struct.h"
 #include "main/gametext_show_api.h"
 #include "main/textrender_api.h"
 #include "main/lightmap_render_control_api.h"
@@ -54,10 +34,9 @@
 #include "main/object_render.h"
 #include "main/pi_dolphin_api.h"
 #include "main/map_load.h"
-#include "main/sky_api.h"
+#include "main/sky.h"
 #include "main/model.h"
 #include "main/render_lactions_api.h"
-#include "main/dll/sbpropellerstate_struct.h"
 #include "main/obj_group.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/texture.h"
@@ -75,9 +54,9 @@
 #define DBPROTECTION_ENVFX_B                  0x467e8
 #define DBPROTECTION_PLAYER_ENVFX_FLASH       0x96
 #define DBPROTECTION_PLAYER_ENVFX_SWAP        0x8a
-/* seqId of the "tricky" target object the galleon flight driver locks onto (docblock: "locates the tricky target object (seqId 0x8C)") */
-#define DBPROTECTION_TRICKY_TARGET_SEQID 0x8C
-#define DBPROTECTION_GAMEBIT_DIVE_ACTIVE 0xF1E
+/* Tricky's sequence ID. */
+#define DBPROTECTION_TRICKY_TARGET_SEQID 0x8c
+#define DBPROTECTION_GAMEBIT_DIVE_ACTIVE 0xf1e
 
 extern s8 lbl_803DDC2C;
 extern const f32 lbl_803E56CC;
@@ -142,6 +121,8 @@ extern f32 lbl_803E57B0;
 extern f32 lbl_803E57B4;
 extern f32 lbl_803E57B8;
 
+u32 sbGetPropeller(void);
+
 ObjectDescriptor15 gSB_GalleonObjDescriptor = {
     0,
     0,
@@ -164,8 +145,7 @@ ObjectDescriptor15 gSB_GalleonObjDescriptor = {
     (ObjectDescriptorCallback)SB_Galleon_func0E,
 };
 
-void DBprotection_updateFlight(GameObject* obj)
-{
+void DBprotection_updateFlight(GameObject* obj) {
     ObjPlacement* spawnData;
     SBGalleonState* state;
     GameObject* tricky;
@@ -211,89 +191,65 @@ void DBprotection_updateFlight(GameObject* obj)
     state = obj->extra;
     camShake = lbl_803E56C8;
     obj->anim.mapEventSlot = -1;
-    if ((state->targetObj != NULL) && ((state->targetObj->anim.flags & 0x40) != 0))
-    {
+    if ((state->targetObj != NULL) && ((state->targetObj->anim.flags & 0x40) != 0)) {
         state->targetObj = NULL;
     }
-    if (state->targetObj == NULL)
-    {
+    if (state->targetObj == NULL) {
         objects = ObjList_GetObjects(&objIndex, &objCount);
-        for (t = objIndex; t < objCount; t++)
-        {
+        for (t = objIndex; t < objCount; t++) {
             otherObj = objects[t];
-            if (otherObj->anim.seqId == DBPROTECTION_TRICKY_TARGET_SEQID)
-            {
+            if (otherObj->anim.seqId == DBPROTECTION_TRICKY_TARGET_SEQID) {
                 state->targetObj = otherObj;
                 t = objCount;
             }
         }
     }
-    if (state->phase >= 2)
-    {
+    if (state->phase >= 2) {
         Sfx_PlayFromObject((int)obj, SFXTRIG_tr_gal_lightning);
-    }
-    else
-    {
+    } else {
         Sfx_StopFromObject((int)obj, SFXTRIG_tr_gal_lightning);
     }
     tricky = state->targetObj;
-    if (tricky == NULL)
+    if (tricky == NULL) {
         return;
-    if ((tricky != NULL) && (tricky->userData1 == 0))
-    {
+    }
+    if ((tricky != NULL) && (tricky->userData1 == 0)) {
         SB_CloudRunner_getSpawnPos(tricky, &state->homeX, &state->homeY, &state->homeZ);
     }
     state->timer26 -= framesThisStep;
-    if (state->timer26 < 0)
-    {
+    if (state->timer26 < 0) {
         state->timer26 = 0;
     }
     c = state->stage;
-    if (c == 7)
-    {
+    if (c == 7) {
         state->damagePhase = 3;
-    }
-    else if (c == 8)
-    {
+    } else if (c == 8) {
         state->damagePhase = 4;
-    }
-    else if (c == 9)
-    {
+    } else if (c == 9) {
         state->damagePhase = 5;
     }
-    if (state->phase < 2)
-    {
+    if (state->phase < 2) {
         state->wanderTimerA -= timeDelta;
-        if (state->wanderTimerA <= lbl_803E56CC)
-        {
+        if (state->wanderTimerA <= lbl_803E56CC) {
             state->wanderFlagA ^= 1;
             state->wanderTimerA = (f32)randomGetRange(0xB4, 300);
         }
-        if (state->wanderFlagA != 0)
-        {
+        if (state->wanderFlagA != 0) {
             state->wanderA = lbl_803E56D0 * timeDelta + state->wanderA;
-        }
-        else
-        {
+        } else {
             state->wanderA -= timeDelta;
         }
         state->wanderTimerB -= timeDelta;
-        if (state->wanderTimerB <= lbl_803E56CC)
-        {
+        if (state->wanderTimerB <= lbl_803E56CC) {
             state->wanderFlagB ^= 1;
             state->wanderTimerB = (f32)randomGetRange(0xB4, 300);
         }
-        if (state->wanderFlagB != 0)
-        {
+        if (state->wanderFlagB != 0) {
             state->wanderB = lbl_803E56D0 * timeDelta + state->wanderB;
-        }
-        else
-        {
+        } else {
             state->wanderB -= timeDelta;
         }
-    }
-    else
-    {
+    } else {
         amp = lbl_803E56D4;
         state->wanderA = -(amp * timeDelta - state->wanderA);
         state->wanderB = -(amp * timeDelta - state->wanderB);
@@ -302,8 +258,7 @@ void DBprotection_updateFlight(GameObject* obj)
     state->wanderA = (dx < lbl_803E56CC) ? lbl_803E56CC : (dx > lbl_803E56D8) ? lbl_803E56D8 : dx;
     dx = state->wanderB;
     state->wanderB = (dx < lbl_803E56CC) ? lbl_803E56CC : (dx > lbl_803E56D8) ? lbl_803E56D8 : dx;
-    switch (state->phase)
-    {
+    switch (state->phase) {
     case 0:
         camShake = lbl_803E56C8;
         Sfx_StopObjectChannel((int)obj, 1);
@@ -323,38 +278,29 @@ void DBprotection_updateFlight(GameObject* obj)
         dy = dy * lbl_803E56F8;
         dz = dz * lbl_803E56F8;
         limit = ((SBGalleonState*)state)->speed;
-        if (dx > limit)
-        {
+        if (dx > limit) {
             dx = limit;
         }
         negLimit = -limit;
-        if (dx < negLimit)
-        {
+        if (dx < negLimit) {
             dx = negLimit;
         }
-        if (dy > limit)
-        {
+        if (dy > limit) {
             dy = limit;
         }
-        if (dy < negLimit)
-        {
+        if (dy < negLimit) {
             dy = negLimit;
         }
-        if (dz > limit)
-        {
+        if (dz > limit) {
             dz = limit;
         }
-        if (dz < negLimit)
-        {
+        if (dz < negLimit) {
             dz = negLimit;
         }
         t = ((SBGalleonState*)state)->phaseTimer;
-        if (t < 0x78)
-        {
+        if (t < 0x78) {
             dy = lbl_803E56CC;
-        }
-        else if (t < 0xB4)
-        {
+        } else if (t < 0xB4) {
             dy = dy * ((f32)(t - 0x78) / lbl_803E56F0);
         }
         ((SBGalleonState*)state)->phaseTimer += framesThisStep;
@@ -364,17 +310,13 @@ void DBprotection_updateFlight(GameObject* obj)
         ambA = lbl_803E5700;
         ambB = lbl_803E5704;
         ambC = lbl_803E5708;
-        if (((SBGalleonState*)state)->cycleKind == 0)
-        {
-            switch (((SBGalleonState*)state)->stage)
-            {
+        if (((SBGalleonState*)state)->cycleKind == 0) {
+            switch (((SBGalleonState*)state)->stage) {
             case 0:
             case 1:
-                if (((SBGalleonState*)state)->headingLatch != 0)
-                {
+                if (((SBGalleonState*)state)->headingLatch != 0) {
                     ((SBGalleonState*)state)->headingLatch -= 1;
-                    if (((SBGalleonState*)state)->headingLatch <= 0)
-                    {
+                    if (((SBGalleonState*)state)->headingLatch <= 0) {
                         ((SBGalleonState*)state)->headingLatch = 200;
                     }
                 }
@@ -390,18 +332,13 @@ void DBprotection_updateFlight(GameObject* obj)
                 mainSetBits(DBPROTECTION_GAMEBIT_DIVE_ACTIVE, 1);
                 break;
             }
-        }
-        else
-        {
-            switch (((SBGalleonState*)state)->stage)
-            {
+        } else {
+            switch (((SBGalleonState*)state)->stage) {
             case 3:
             case 4:
-                if (((SBGalleonState*)state)->headingLatch != 0)
-                {
+                if (((SBGalleonState*)state)->headingLatch != 0) {
                     ((SBGalleonState*)state)->headingLatch -= 1;
-                    if (((SBGalleonState*)state)->headingLatch <= 0)
-                    {
+                    if (((SBGalleonState*)state)->headingLatch <= 0) {
                         ((SBGalleonState*)state)->headingLatch = 200;
                     }
                 }
@@ -421,22 +358,19 @@ void DBprotection_updateFlight(GameObject* obj)
         ((GameObject*)obj)->userData1 = 2;
         camShake = lbl_803E56C8;
         (*gCameraInterface)->releaseAction(&camShake, 0);
-        if (((SBGalleonState*)state)->headingLatch != 0)
-        {
+        if (((SBGalleonState*)state)->headingLatch != 0) {
             ((SBGalleonState*)state)->headingLatch -= 1;
         }
-        switch (((SBGalleonState*)state)->flightPattern)
-        {
+        switch (((SBGalleonState*)state)->flightPattern) {
         case 0:
             tx = ((SBGalleonState*)state)->homeX - lbl_803E570C;
             tz = ((SBGalleonState*)state)->homeZ;
             ty = lbl_803E56EC + ((GameObject*)tricky)->anim.localPosY;
             if ((((SBGalleonState*)state)->headingLatch <= 0) &&
-                ((((SBGalleonState*)state)->phaseCounter == 0) || (((SBGalleonState*)state)->phaseCounter == 5)))
-            {
+                ((((SBGalleonState*)state)->phaseCounter == 0) || (((SBGalleonState*)state)->phaseCounter == 5))) {
                 ((SBGalleonState*)state)->headingLatch = 200;
             }
-            Sfx_IsPlayingFromObjectChannel((int)obj, 2); /* called for side-effect; result discarded in target */
+            Sfx_IsPlayingFromObjectChannel((int)obj, 2); /* The result is intentionally unused. */
             break;
         case 1:
             tx = ((SBGalleonState*)state)->homeX - lbl_803E5710;
@@ -483,28 +417,22 @@ void DBprotection_updateFlight(GameObject* obj)
         tx = tx * lbl_803E56FC;
         dy = dy * lbl_803E56F8;
         tz = tz * lbl_803E56F8;
-        if (tx > lbl_803E5730)
-        {
+        if (tx > lbl_803E5730) {
             tx = lbl_803E5730;
         }
-        if (tx < lbl_803E5734)
-        {
+        if (tx < lbl_803E5734) {
             tx = lbl_803E5734;
         }
-        if (dy > lbl_803E5738)
-        {
+        if (dy > lbl_803E5738) {
             dy = lbl_803E5738;
         }
-        if (dy < lbl_803E573C)
-        {
+        if (dy < lbl_803E573C) {
             dy = lbl_803E573C;
         }
-        if (tz > lbl_803E5740)
-        {
+        if (tz > lbl_803E5740) {
             tz = lbl_803E5740;
         }
-        if (tz < lbl_803E5744)
-        {
+        if (tz < lbl_803E5744) {
             tz = lbl_803E5744;
         }
         ((SBGalleonState*)state)->phaseTimer += framesThisStep;
@@ -515,61 +443,50 @@ void DBprotection_updateFlight(GameObject* obj)
         ambA = lbl_803E5754;
         ambB = lbl_803E5758;
         ambC = lbl_803E56CC;
-        switch (((SBGalleonState*)state)->flightPattern)
-        {
+        switch (((SBGalleonState*)state)->flightPattern) {
         case 0:
-            if (dist < lbl_803E575C)
-            {
+            if (dist < lbl_803E575C) {
                 ((SBGalleonState*)state)->flightPattern = 1;
                 ((SBGalleonState*)state)->phaseTimer = 0;
             }
             break;
         case 1:
-            if (dist < lbl_803E5708)
-            {
+            if (dist < lbl_803E5708) {
                 ((SBGalleonState*)state)->flightPattern = 2;
                 ((SBGalleonState*)state)->phaseTimer = 0;
             }
             break;
         case 2:
-            if ((((SBGalleonState*)state)->phaseTimer > 0xF0) || (dist < lbl_803E5708))
-            {
+            if ((((SBGalleonState*)state)->phaseTimer > 0xF0) || (dist < lbl_803E5708)) {
                 ((SBGalleonState*)state)->flightPattern = 0;
                 ((SBGalleonState*)state)->phaseTimer = 0;
             }
             break;
         case 3:
-            if ((dist < lbl_803E5708) || (((SBGalleonState*)state)->phaseTimer > 0x78))
-            {
+            if ((dist < lbl_803E5708) || (((SBGalleonState*)state)->phaseTimer > 0x78)) {
                 ((SBGalleonState*)state)->flightPattern = 0;
                 ((SBGalleonState*)state)->phaseTimer = 0;
             }
             break;
         case 4:
-            if ((dist < lbl_803E5708) || (((SBGalleonState*)state)->phaseTimer > 0x78))
-            {
+            if ((dist < lbl_803E5708) || (((SBGalleonState*)state)->phaseTimer > 0x78)) {
                 ((SBGalleonState*)state)->flightPattern = 5;
                 ((SBGalleonState*)state)->phaseTimer = 3;
             }
             break;
         case 5:
-            if ((dist < lbl_803E5708) || (((SBGalleonState*)state)->phaseTimer > 0x78))
-            {
+            if ((dist < lbl_803E5708) || (((SBGalleonState*)state)->phaseTimer > 0x78)) {
                 ((SBGalleonState*)state)->flightPattern = 0;
                 ((SBGalleonState*)state)->phaseTimer = 0;
             }
             break;
         default:
-            if (dist < lbl_803E5760)
-            {
-                if (((SBGalleonState*)state)->stage == 2)
-                {
+            if (dist < lbl_803E5760) {
+                if (((SBGalleonState*)state)->stage == 2) {
                     ((SBGalleonState*)state)->phaseTimer = 0;
                     ((SBGalleonState*)state)->phase = 0;
                     ((SBGalleonState*)state)->stage = 3;
-                }
-                else if (((SBGalleonState*)state)->stage == 5)
-                {
+                } else if (((SBGalleonState*)state)->stage == 5) {
                     ((SBGalleonState*)state)->phase = 2;
                     ((SBGalleonState*)state)->stage = 6;
                 }
@@ -577,8 +494,7 @@ void DBprotection_updateFlight(GameObject* obj)
             break;
         }
         ((SBGalleonState*)state)->timer26 = 300;
-        if ((((SBGalleonState*)state)->phaseCounter >= 4) && (((SBGalleonState*)state)->stage < 3))
-        {
+        if ((((SBGalleonState*)state)->phaseCounter >= 4) && (((SBGalleonState*)state)->stage < 3)) {
             ((SBGalleonState*)state)->phase = 0;
             ((SBGalleonState*)state)->cycleKind = 1;
             ((SBGalleonState*)state)->stage = 3;
@@ -588,9 +504,7 @@ void DBprotection_updateFlight(GameObject* obj)
             Sfx_StopFromObject(sfxObj, SFXTRIG_swtst1_c);
             Sfx_PlayFromObject(sfxObj, SFXTRIG_mv_curtainloop16);
             mainSetBits(DBPROTECTION_GAMEBIT_DIVE_ACTIVE, 0);
-        }
-        else if (((SBGalleonState*)state)->phaseCounter >= 4)
-        {
+        } else if (((SBGalleonState*)state)->phaseCounter >= 4) {
             ((SBGalleonState*)state)->phase = 2;
             ((SBGalleonState*)state)->cycleKind = 3;
             ((SBGalleonState*)state)->stage = 6;
@@ -609,12 +523,10 @@ void DBprotection_updateFlight(GameObject* obj)
         Sfx_StopObjectChannel((int)obj, 2);
         (*gCameraInterface)->releaseAction(&camShake, 0);
         ((GameObject*)obj)->userData1 = 3;
-        if (((SBGalleonState*)state)->headingLatch != 0)
-        {
+        if (((SBGalleonState*)state)->headingLatch != 0) {
             ((SBGalleonState*)state)->headingLatch -= 1;
         }
-        switch (((SBGalleonState*)state)->phase)
-        {
+        switch (((SBGalleonState*)state)->phase) {
         case 2:
             speedTarget = lbl_803E5764;
             tx = ((SBGalleonState*)state)->homeX - lbl_803E5768;
@@ -647,8 +559,7 @@ void DBprotection_updateFlight(GameObject* obj)
             ty = ((SBGalleonState*)state)->homeY - lbl_803E5724;
             nextState = 6;
             threshold = lbl_803E577C;
-            if ((((SBGalleonState*)state)->headingLatch <= 0) && (((SBGalleonState*)state)->stage == 6))
-            {
+            if ((((SBGalleonState*)state)->headingLatch <= 0) && (((SBGalleonState*)state)->stage == 6)) {
                 ((SBGalleonState*)state)->headingLatch = 200;
             }
             break;
@@ -683,14 +594,11 @@ void DBprotection_updateFlight(GameObject* obj)
         ((SBGalleonState*)state)->speed =
             ((SBGalleonState*)state)->speed + (speedTarget - ((SBGalleonState*)state)->speed) / lbl_803E5798;
         dist = sqrtf(dx * dx + dz * dz);
-        if ((((SBGalleonState*)state)->phase == 5) && (dist < lbl_803E579C))
-        {
+        if ((((SBGalleonState*)state)->phase == 5) && (dist < lbl_803E579C)) {
             ((GameObject*)obj)->userData1 = 5;
         }
-        if (dist < threshold)
-        {
-            if (((SBGalleonState*)state)->phase == 5)
-            {
+        if (dist < threshold) {
+            if (((SBGalleonState*)state)->phase == 5) {
                 ((SBGalleonState*)state)->sweepDir = -((SBGalleonState*)state)->sweepDir;
             }
             ((SBGalleonState*)state)->phase = nextState;
@@ -698,54 +606,43 @@ void DBprotection_updateFlight(GameObject* obj)
         wrap = (getAngle(dx, dz) & 0xFFFF) + 0x8000;
         angY = getAngle(dy, dist) & 0xFFFF;
         diff = wrap - (((GameObject*)obj)->anim.rotX & 0xFFFF);
-        if (diff > 0x8000)
-        {
+        if (diff > 0x8000) {
             diff = diff - 0xFFFF;
         }
-        if (diff < -0x8000)
-        {
+        if (diff < -0x8000) {
             diff = diff + 0xFFFF;
         }
         ((SBGalleonState*)state)->turnRate =
             ((SBGalleonState*)state)->turnRate + ((framesThisStep * (diff - ((SBGalleonState*)state)->turnRate)) >> 4);
         c = ((SBGalleonState*)state)->phase;
-        if ((c == 3) || (c == 4))
-        {
+        if ((c == 3) || (c == 4)) {
             ((GameObject*)obj)->anim.rotX =
                 ((GameObject*)obj)->anim.rotX + (((SBGalleonState*)state)->turnRate * framesThisStep) / 0x3C;
-        }
-        else if ((c == 6) || (c == 2))
-        {
+        } else if ((c == 6) || (c == 2)) {
             ((GameObject*)obj)->anim.rotX =
                 ((GameObject*)obj)->anim.rotX + (((SBGalleonState*)state)->turnRate * framesThisStep) / 0x78;
-        }
-        else
-        {
+        } else {
             ((GameObject*)obj)->anim.rotX =
                 ((GameObject*)obj)->anim.rotX + (((SBGalleonState*)state)->turnRate * framesThisStep) / 0x3C;
         }
         wrap = angY - (((GameObject*)obj)->anim.rotY & 0xFFFF);
-        if (wrap > 0x8000)
-        {
+        if (wrap > 0x8000) {
             wrap = wrap - 0xFFFF;
         }
-        if (wrap < -0x8000)
-        {
+        if (wrap < -0x8000) {
             wrap = wrap + 0xFFFF;
         }
         obj->anim.rotY = obj->anim.rotY + ((wrap * framesThisStep) >> 6);
         dx = ((SBGalleonState*)state)->homeX - ((GameObject*)obj)->anim.localPosX;
         dz = ((SBGalleonState*)state)->homeZ - ((GameObject*)obj)->anim.localPosZ;
-        sqrtf(dx * dx + dz * dz); /* match: dead sqrt present in target */
+        sqrtf(dx * dx + dz * dz); /* The result is intentionally unused. */
         t = ((GameObject*)obj)->anim.rotZ;
         iv = (int)(lbl_803E57A0 * (f32)((SBGalleonState*)state)->turnRate);
         dv = (iv - t) >> 3;
-        if (dv > 0x3C)
-        {
+        if (dv > 0x3C) {
             dv = 0x3C;
         }
-        if (dv < -0x3C)
-        {
+        if (dv < -0x3C) {
             dv = -0x3C;
         }
         obj->anim.rotZ = dv * timeDelta + (f32)obj->anim.rotZ;
@@ -759,8 +656,7 @@ void DBprotection_updateFlight(GameObject* obj)
         setMatrixFromObjectPos(mtx, &objPos);
         Matrix_TransformPoint(mtx, lbl_803E56CC, *(f32*)&lbl_803E56CC, -((SBGalleonState*)state)->speed * timeDelta,
                               &state->driftX, &state->driftY, &state->driftZ);
-        if (((SBGalleonState*)state)->phase == 7)
-        {
+        if (((SBGalleonState*)state)->phase == 7) {
             ((SBGalleonState*)state)->posX = tx;
             ((SBGalleonState*)state)->posY = ty;
             ((SBGalleonState*)state)->posZ = tz;
@@ -768,9 +664,7 @@ void DBprotection_updateFlight(GameObject* obj)
             ((SBGalleonState*)state)->swayX = zero;
             ((SBGalleonState*)state)->swayY = zero;
             ((SBGalleonState*)state)->swayZ = zero;
-        }
-        else
-        {
+        } else {
             ((SBGalleonState*)state)->posX = ((SBGalleonState*)state)->posX + ((SBGalleonState*)state)->driftX;
             ((SBGalleonState*)state)->posY = ((SBGalleonState*)state)->posY + ((SBGalleonState*)state)->driftY;
             ((SBGalleonState*)state)->posZ = ((SBGalleonState*)state)->posZ + ((SBGalleonState*)state)->driftZ;
@@ -780,23 +674,19 @@ void DBprotection_updateFlight(GameObject* obj)
         ((GameObject*)obj)->anim.localPosY = ((SBGalleonState*)state)->posY + ((SBGalleonState*)state)->swayY;
         ((GameObject*)obj)->anim.localPosZ = ((SBGalleonState*)state)->posZ + ((SBGalleonState*)state)->swayZ +
                                              (((GameObject*)tricky)->anim.localPosZ - ((SBGalleonState*)state)->refZ);
-        if (((SBGalleonState*)state)->stage >= 7)
-        {
-            if (((SBGalleonState*)state)->fadeTimer == 0)
-            {
+        if (((SBGalleonState*)state)->stage >= 7) {
+            if (((SBGalleonState*)state)->fadeTimer == 0) {
                 ObjHits_DisableObject(obj);
                 (*gScreenTransitionInterface)->start(0x41, 1);
             }
             ((SBGalleonState*)state)->fadeTimer += framesThisStep;
-            if (((SBGalleonState*)state)->fadeTimer > 0x41)
-            {
+            if (((SBGalleonState*)state)->fadeTimer > 0x41) {
                 ((GameObject*)obj)->anim.rotX = 0;
                 ((SBGalleonState*)state)->phase = 6;
                 (*gCloudActionInterface)->func10Nop(0);
                 (*gCloudActionInterface)->func11Nop(0);
                 (*gCloudActionInterface)->func12Nop(lbl_803E56CC, lbl_803E5760);
-                if (((SBGalleonState*)state)->musicLatch == 0)
-                {
+                if (((SBGalleonState*)state)->musicLatch == 0) {
                     ((SBGalleonState*)state)->musicLatch = 1;
                 }
                 ((SBGalleonState*)state)->cameraState = 1;
@@ -814,8 +704,9 @@ void DBprotection_updateFlight(GameObject* obj)
         ((GameObject*)obj)->userData1 = 7;
         break;
     }
-    if (((SBGalleonState*)state)->phase < 2)
-    {
+
+    /* Integrate the current drift while the Galleon is in a flight phase. */
+    if (((SBGalleonState*)state)->phase < 2) {
         ((SBGalleonState*)state)->posX =
             ((SBGalleonState*)state)->moveScale * (((SBGalleonState*)state)->driftX * timeDelta) +
             ((SBGalleonState*)state)->posX;
@@ -826,8 +717,7 @@ void DBprotection_updateFlight(GameObject* obj)
             ((SBGalleonState*)state)->moveScale * (((SBGalleonState*)state)->driftZ * timeDelta) +
             ((SBGalleonState*)state)->posZ;
         ((SBGalleonState*)state)->moveScale += lbl_803E57B0;
-        if (((SBGalleonState*)state)->moveScale > lbl_803E57A4)
-        {
+        if (((SBGalleonState*)state)->moveScale > lbl_803E57A4) {
             ((SBGalleonState*)state)->moveScale = *(f32*)&lbl_803E57A4;
         }
         blendK = lbl_803E57B4;
@@ -837,8 +727,7 @@ void DBprotection_updateFlight(GameObject* obj)
             blendK * (timeDelta * (ambC - ((SBGalleonState*)state)->rollScaleSmooth));
         ((SBGalleonState*)state)->swayResponseSmooth +=
             blendK * (timeDelta * (ambB - ((SBGalleonState*)state)->swayResponseSmooth));
-        if (((SBGalleonState*)state)->phase == 0)
-        {
+        if (((SBGalleonState*)state)->phase == 0) {
             zRatio = (f32)tricky->anim.rotY / ((SBGalleonState*)state)->swayScaleSmooth;
             ((SBGalleonState*)state)->swayZ +=
                 timeDelta * (((SBGalleonState*)state)->swayResponseSmooth *
@@ -852,9 +741,7 @@ void DBprotection_updateFlight(GameObject* obj)
             rollA = (s16)(-((SBGalleonState*)state)->swayZ * ((SBGalleonState*)state)->rollScaleSmooth);
             rollB =
                 (s16)(lbl_803E57B8 * (-((SBGalleonState*)state)->swayY * ((SBGalleonState*)state)->rollScaleSmooth));
-        }
-        else
-        {
+        } else {
             ((SBGalleonState*)state)->swayZ -=
                 timeDelta * (((SBGalleonState*)state)->swayZ * ((SBGalleonState*)state)->swayResponseSmooth);
             ((SBGalleonState*)state)->swayY -=
@@ -877,14 +764,12 @@ void DBprotection_updateFlight(GameObject* obj)
     }
 }
 
-void DBprotection_updateEnvfxGameBits(u8* state)
-{
+void DBprotection_updateEnvfxGameBits(u8* state) {
     GameObject* player;
     GameObject* effectObj;
 
     player = Obj_GetPlayerObject();
-    if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_A_PENDING) != 0)
-    {
+    if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_A_PENDING) != 0) {
         effectObj = ObjList_FindObjectById(DBPROTECTION_ENVFX_B);
         getEnvfxAct(effectObj, player, state[state[0xa4] + 0xa9], 0);
         effectObj = ObjList_FindObjectById(DBPROTECTION_ENVFX_A);
@@ -894,8 +779,7 @@ void DBprotection_updateEnvfxGameBits(u8* state)
         ((SBGalleonState*)state)->envfxCycle = DBPROTECTION_GAMEBIT_CYCLE_A_DONE;
     }
 
-    if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_B_PENDING) != 0)
-    {
+    if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_B_PENDING) != 0) {
         effectObj = ObjList_FindObjectById(DBPROTECTION_ENVFX_A);
         getEnvfxAct(effectObj, player, state[state[0xa4] + 0xa9], 0);
         effectObj = ObjList_FindObjectById(DBPROTECTION_ENVFX_B);
@@ -905,10 +789,8 @@ void DBprotection_updateEnvfxGameBits(u8* state)
         ((SBGalleonState*)state)->envfxCycle = DBPROTECTION_GAMEBIT_CYCLE_B_DONE;
     }
 
-    if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_A_DONE) != 0)
-    {
-        if (((SBGalleonState*)state)->envfxCycle != DBPROTECTION_GAMEBIT_CYCLE_A_DONE)
-        {
+    if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_A_DONE) != 0) {
+        if (((SBGalleonState*)state)->envfxCycle != DBPROTECTION_GAMEBIT_CYCLE_A_DONE) {
             state[0xa4] = (u8)(state[0xa4] ^ 1);
         }
         getEnvfxAct(player, player, state[(state[0xa4] ^ 1) + 0xa5], 0);
@@ -917,10 +799,8 @@ void DBprotection_updateEnvfxGameBits(u8* state)
         mainSetBits(DBPROTECTION_GAMEBIT_CYCLE_A_DONE, 0);
     }
 
-    if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_B_DONE) != 0)
-    {
-        if (((SBGalleonState*)state)->envfxCycle != DBPROTECTION_GAMEBIT_CYCLE_B_DONE)
-        {
+    if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_B_DONE) != 0) {
+        if (((SBGalleonState*)state)->envfxCycle != DBPROTECTION_GAMEBIT_CYCLE_B_DONE) {
             state[0xa4] = (u8)(state[0xa4] ^ 1);
         }
         getEnvfxAct(player, player, state[(state[0xa4] ^ 1) + 0xa5], 0);
@@ -930,13 +810,11 @@ void DBprotection_updateEnvfxGameBits(u8* state)
     }
 }
 
-int DBprotection_getCameraState(GameObject* obj)
-{
+int DBprotection_getCameraState(GameObject* obj) {
     return *(s8*)((char*)(int*)obj->extra + 0x70);
 }
 
-void DBprotection_updateShield(GameObject* obj)
-{
+void DBprotection_updateShield(GameObject* obj) {
     SBGalleonState* state;
     f32 angleCos;
 
@@ -944,8 +822,8 @@ void DBprotection_updateShield(GameObject* obj)
     obj->userData1 = 7;
 
     if (mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_ARMED) != 0 &&
-        mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_USED) == 0 && mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_READY) != 0)
-    {
+        mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_USED) == 0 &&
+        mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_READY) != 0) {
         lbl_803DDC2C = 1;
         mainSetBits(DBPROTECTION_GAMEBIT_TRANSITION_USED, 1);
         (*gScreenTransitionInterface)->start(0xa, 1);
@@ -953,8 +831,7 @@ void DBprotection_updateShield(GameObject* obj)
 
     DBprotection_updateEnvfxGameBits((u8*)state);
 
-    if (lbl_803DDC2C != 0 && (*gScreenTransitionInterface)->isFinished() != 0)
-    {
+    if (lbl_803DDC2C != 0 && (*gScreenTransitionInterface)->isFinished() != 0) {
         (*gScreenTransitionInterface)->step(0x50, 1);
         (*gObjectTriggerInterface)->runSequence(1, obj, -1);
         state->cameraState = 3;
@@ -965,27 +842,19 @@ void DBprotection_updateShield(GameObject* obj)
     (*gCloudActionInterface)->func10Nop(0);
 
     angleCos = mathSinf((gDBprotPi * state->shieldAngle) / gDBprotAngleUnit);
-    if (state->shieldSfxLatch == 0)
-    {
-        if (angleCos < -0.9f)
-        {
-            if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0)
-            {
+    if (state->shieldSfxLatch == 0) {
+        if (angleCos < -0.9f) {
+            if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_tr_gal_crateslide);
             }
             state->shieldSfxLatch = 1;
-        }
-        else if (angleCos > 0.9f)
-        {
-            if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0)
-            {
+        } else if (angleCos > 0.9f) {
+            if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_tr_gal_sailflap3);
             }
             state->shieldSfxLatch = 1;
         }
-    }
-    else if (angleCos > -0.1f && angleCos < 0.1f)
-    {
+    } else if (angleCos > -0.1f && angleCos < 0.1f) {
         state->shieldSfxLatch = 0;
     }
 
@@ -993,8 +862,7 @@ void DBprotection_updateShield(GameObject* obj)
     state->shieldAngle = (u16)(s32)(128.0f * timeDelta + state->shieldAngle);
 }
 
-void SB_Galleon_onSeqFree(GameObject* obj)
-{
+void SB_Galleon_onSeqFree(GameObject* obj) {
     SBGalleonState* state = obj->extra;
     state->posX = obj->anim.localPosX;
     state->posY = obj->anim.localPosY;
@@ -1010,22 +878,8 @@ u8 gSbGalleonSkyColorCEnd[4] = {0x13, 0x23, 0x36, 0};
 
 #define SBGALLEON_OBJGROUP 3
 
-STATIC_ASSERT(sizeof(SBPropellerState) == 0x10);
-
-STATIC_ASSERT(sizeof(SBShipHeadState) == 0x10);
-
-
-typedef struct SkyVec3
-{
-    f32 x, y, z;
-} SkyVec3;
-
 const SkyVec3 gSbGalleonSkyLightVecs[4] = {
-    {-1.0f, -2.0f, -1.0f},
-    {1.0f, -2.0f, 1.0f},
-    {1.0f, -2.0f, 1.0f},
-    {1.0f, -0.25f, 1.0f}
-};
+    {-1.0f, -2.0f, -1.0f}, {1.0f, -2.0f, 1.0f}, {1.0f, -2.0f, 1.0f}, {1.0f, -0.25f, 1.0f}};
 static u32 sSbGalleonUnused0;
 u8 gSbGalleonSkyColorA[4];
 u8 gSbGalleonSkyColorB[4];
@@ -1038,8 +892,7 @@ GameObject* gSbGalleon;
 int gSbGalleonSkyTexB;
 int gSbGalleonSkyTexA;
 /* Sequence-event opcodes consumed by SB_Galleon_SeqFn. */
-enum SbGalleonSeqEvent
-{
+enum SbGalleonSeqEvent {
     SBGALLEON_SEQEV_TOGGLE_DAMAGE_PHASE_1 = 2, /* toggle damagePhase to 1 */
     SBGALLEON_SEQEV_SPRAY_ON = 3,
     SBGALLEON_SEQEV_SPRAY_OFF = 4,
@@ -1056,8 +909,7 @@ enum SbGalleonSeqEvent
 
 /* SBGalleonState.cameraState - protection-spirit encounter state machine
    stepped in SB_Galleon_update. */
-enum SbGalleonCameraState
-{
+enum SbGalleonCameraState {
     SBGALLEON_CAM_APPROACH = 0,
     SBGALLEON_CAM_START_INTRO = 1,
     SBGALLEON_CAM_SHIELD = 2,
@@ -1079,8 +931,7 @@ enum SbGalleonCameraState
 #define SBGALLEON_MAP_PALACE       0xb /* map-event/dir id this boss locks */
 #define SBGALLEON_SKY_LIGHT_SLOT   7   /* sky override light slot SB_Galleon_updateSkyLighting drives */
 
-void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state)
-{
+void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
     ObjModel* activeModel;
     int renderOpIndex;
     ModelRenderOp* renderOp;
@@ -1096,16 +947,14 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state)
     skySetOverrideLightColorEnabled(1);
     skySetOverrideLightColor(0x29, 0x4b, 0xa9);
     skyFn_80089710(SBGALLEON_SKY_LIGHT_SLOT, 1, 0);
-    if (lightningGetRemainingFraction() > *(f32*)&lbl_803E56CC)
-    {
+    if (lightningGetRemainingFraction() > *(f32*)&lbl_803E56CC) {
         gSbGalleonSkyBlendHold = lbl_803E57A4;
         gSbGalleonSkyBlendFactor = lbl_803E57A4;
     }
     {
         f32 blendFactor = -(lbl_803E57B4 * timeDelta - gSbGalleonSkyBlendFactor);
         gSbGalleonSkyBlendFactor = blendFactor;
-        if (blendFactor < lbl_803E56CC)
-        {
+        if (blendFactor < lbl_803E56CC) {
             gSbGalleonSkyBlendFactor = lbl_803E56CC;
         }
     }
@@ -1121,8 +970,8 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state)
         int blue = gSbGalleonSkyColorAStart[2];
         gSbGalleonSkyColorA[2] = blue + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorAEnd[2] - blue);
     }
-    skySetBaseColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorA[0], gSbGalleonSkyColorA[1],
-                   gSbGalleonSkyColorA[2], 0x40, 0x40);
+    skySetBaseColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorA[0], gSbGalleonSkyColorA[1], gSbGalleonSkyColorA[2],
+                    0x40, 0x40);
     {
         int red = gSbGalleonSkyColorBStart[0];
         gSbGalleonSkyColorB[0] = red + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorBEnd[0] - red);
@@ -1135,8 +984,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state)
         int blue = gSbGalleonSkyColorBStart[2];
         gSbGalleonSkyColorB[2] = blue + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorBEnd[2] - blue);
     }
-    skySetLightColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorB[0],
-                gSbGalleonSkyColorB[1], gSbGalleonSkyColorB[2]);
+    skySetLightColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorB[0], gSbGalleonSkyColorB[1], gSbGalleonSkyColorB[2]);
     {
         int red = gSbGalleonSkyColorCStart[0];
         gSbGalleonSkyColorC[0] = red + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorCEnd[0] - red);
@@ -1149,21 +997,19 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state)
         int blue = gSbGalleonSkyColorCStart[2];
         gSbGalleonSkyColorC[2] = blue + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorCEnd[2] - blue);
     }
-    skySetAmbientColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorC[0],
-                gSbGalleonSkyColorC[1], gSbGalleonSkyColorC[2]);
+    skySetAmbientColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorC[0], gSbGalleonSkyColorC[1],
+                       gSbGalleonSkyColorC[2]);
     gSbGalleonSkyLightIntensity = gSbGalleonSkyBlendFactor * 128.0f + 32.0f;
     skySetOverrideLightDirectionEnabled(1);
-    skySetOverrideLightDirection(gSbGalleonSkyBlendFactor * (overrideDirectionEnd.x - overrideDirectionStart.x) + overrideDirectionStart.x,
-                                 gSbGalleonSkyBlendFactor * (overrideDirectionEnd.y - overrideDirectionStart.y) + overrideDirectionStart.y,
-                                 gSbGalleonSkyBlendFactor * (overrideDirectionEnd.z - overrideDirectionStart.z) + overrideDirectionStart.z,
-                                 lbl_803E5724);
-    if (state->skyFlag == 0)
-    {
+    skySetOverrideLightDirection(
+        gSbGalleonSkyBlendFactor * (overrideDirectionEnd.x - overrideDirectionStart.x) + overrideDirectionStart.x,
+        gSbGalleonSkyBlendFactor * (overrideDirectionEnd.y - overrideDirectionStart.y) + overrideDirectionStart.y,
+        gSbGalleonSkyBlendFactor * (overrideDirectionEnd.z - overrideDirectionStart.z) + overrideDirectionStart.z,
+        lbl_803E5724);
+    if (state->skyFlag == 0) {
         skySetLightDirection(SBGALLEON_SKY_LIGHT_SLOT, primaryLightDirection.x, primaryLightDirection.y,
                              primaryLightDirection.z);
-    }
-    else
-    {
+    } else {
         skySetLightDirection(SBGALLEON_SKY_LIGHT_SLOT, alternateLightDirection.x, alternateLightDirection.y,
                              alternateLightDirection.z);
     }
@@ -1171,19 +1017,16 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state)
     renderOpIndex = 0;
     {
         f32 alphaScale = 255.0f;
-        for (; renderOpIndex < activeModel->file->renderOpCount; renderOpIndex++)
-        {
+        for (; renderOpIndex < activeModel->file->renderOpCount; renderOpIndex++) {
             renderOp = ObjModel_GetRenderOp(activeModel->file, renderOpIndex);
-            if (renderOp->layerCount == 1)
-            {
+            if (renderOp->layerCount == 1) {
                 renderOp->alpha = alphaScale * gSbGalleonSkyBlendFactor;
             }
         }
     }
 }
 
-int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
-{
+int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     SBGalleonState* state = obj->extra;
     int i;
 
@@ -1197,29 +1040,21 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
         state->swayZ = z;
     }
     animUpdate->freeCallback = (ObjAnimSequenceFreeCallback)SB_Galleon_onSeqFree;
-    for (i = 0; i < animUpdate->eventCount; i++)
-    {
-        switch (animUpdate->eventIds[i])
-        {
+    for (i = 0; i < animUpdate->eventCount; i++) {
+        switch (animUpdate->eventIds[i]) {
         case SBGALLEON_SEQEV_TOGGLE_DAMAGE_PHASE_1:
-            if (state->damagePhase == 1)
-            {
+            if (state->damagePhase == 1) {
                 state->damagePhase = 0;
-            }
-            else
-            {
+            } else {
                 state->damagePhase = 1;
             }
             break;
-        case SBGALLEON_SEQEV_SPRAY_ON:
-        {
+        case SBGALLEON_SEQEV_SPRAY_ON: {
             int start;
             int end;
             int* arr = ObjList_GetObjects(&start, &end);
-            for (i = start; i < end; i++)
-            {
-                if (((GameObject*)arr[i])->anim.seqId == SBGALLEON_ROMLIST_LINKED)
-                {
+            for (i = start; i < end; i++) {
+                if (((GameObject*)arr[i])->anim.seqId == SBGALLEON_ROMLIST_LINKED) {
                     state->linkedActor = arr[i];
                     i = end;
                 }
@@ -1231,12 +1066,9 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             state->sprayActive = 0;
             break;
         case SBGALLEON_SEQEV_TOGGLE_DAMAGE_PHASE_2:
-            if (state->damagePhase == 2)
-            {
+            if (state->damagePhase == 2) {
                 state->damagePhase = 0;
-            }
-            else
-            {
+            } else {
                 state->damagePhase = 2;
             }
             break;
@@ -1247,12 +1079,9 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             Sfx_StopFromObject((u32)obj, SBGALLEON_SFX_SPLASH);
             break;
         case SBGALLEON_SEQEV_TOGGLE_DAMAGE_PHASE_8:
-            if (state->damagePhase == 8)
-            {
+            if (state->damagePhase == 8) {
                 state->damagePhase = 1;
-            }
-            else
-            {
+            } else {
                 state->damagePhase = 8;
             }
             break;
@@ -1277,29 +1106,23 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             break;
         }
     }
-    if (state->textTimer >= lbl_803E56CC)
-    {
+    if (state->textTimer >= lbl_803E56CC) {
         state->textTimer = state->textTimer - timeDelta;
-        if (state->textTimer < lbl_803E56CC)
-        {
+        if (state->textTimer < lbl_803E56CC) {
             state->textTimer = lbl_803E56CC;
             state->textRising = 0;
         }
     }
-    if (state->textRising != 0)
-    {
+    if (state->textRising != 0) {
         state->textAlpha = lbl_803E5790 * timeDelta + state->textAlpha;
-    }
-    else
-    {
+    } else {
         state->textAlpha = -(lbl_803E5790 * timeDelta - state->textAlpha);
     }
     {
         f32 v = state->textAlpha;
         state->textAlpha = (v < lbl_803E56CC) ? lbl_803E56CC : ((v > 255.0f) ? 255.0f : v);
     }
-    if (state->textAlpha > lbl_803E56CC)
-    {
+    if (state->textAlpha > lbl_803E56CC) {
         gameTextSetColor(0xff, 0xff, 0xff, state->textAlpha);
         gameTextShow(SBGALLEON_GAMETEXT);
     }
@@ -1311,68 +1134,59 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     return 0;
 }
 
-GameObject* getSbGalleon(void)
-{
+GameObject* getSbGalleon(void) {
     return gSbGalleon;
 }
 
-int SB_Galleon_func0E(GameObject* obj)
-{
+int SB_Galleon_func0E(GameObject* obj) {
     SBGalleonState* state = (SBGalleonState*)obj->extra;
-    if ((s8)(u8)state->phase == 1)
-    {
+    if ((s8)(u8)state->phase == 1) {
         int wrapped;
-        if ((s8)(u8)state->phaseCounter >= 5)
+        if ((s8)(u8)state->phaseCounter >= 5) {
             wrapped = (s8)(u8)state->phaseCounter - 5;
-        else
+        } else {
             wrapped = (s8)(u8)state->phaseCounter;
+        }
         return (6 - wrapped) * 0x5a;
     }
     return 0x640;
 }
 
-u8 SB_Galleon_getDamagePhase(GameObject* obj)
-{
+u8 SB_Galleon_getDamagePhase(GameObject* obj) {
     return ((SBGalleonState*)obj->extra)->damagePhase;
 }
 
-int SB_Galleon_getPhase(GameObject* obj)
-{
+int SB_Galleon_getPhase(GameObject* obj) {
     int phase;
     SBGalleonState* state = (SBGalleonState*)obj->extra;
     int pattern;
     phase = (u8)state->phase;
-    if ((s8)phase == 0)
-    {
-        if (state->timer26 > 0)
+    if ((s8)phase == 0) {
+        if (state->timer26 > 0) {
             return -2;
+        }
     }
-    if ((s8)phase == 1)
-    {
-        if ((pattern = state->flightPattern) == 2 || pattern == 3 || pattern == 5)
+    if ((s8)phase == 1) {
+        if ((pattern = state->flightPattern) == 2 || pattern == 3 || pattern == 5) {
             return -1;
+        }
     }
     return (s8)phase;
 }
 
-s32 SB_Galleon_getStage(GameObject* obj)
-{
+s32 SB_Galleon_getStage(GameObject* obj) {
     return ((SBGalleonState*)obj->extra)->stage;
 }
 
 /*
- * Galleon DLL vtable slot SB_GALLEON_VTBL_ON_GUN_DESTROYED: a destructible part
- * (gun / propeller blade / ship head, via their *_update) reports its destruction
- * here. Advances the fight -- bumps `stage`, or `phaseCounter` while phase == 1.
+ * A destructible gun, propeller blade, or ship head reports its destruction
+ * through the Galleon's callback at offset 0x20.
  */
-int SB_Galleon_onPartDestroyed(GameObject* obj)
-{
+int SB_Galleon_onPartDestroyed(GameObject* obj) {
     SBGalleonState* state = (SBGalleonState*)obj->extra;
     int phase = state->phase;
-    if (phase != 1)
-    {
-        if (phase >= 2)
-        {
+    if (phase != 1) {
+        if (phase >= 2) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_npu_216_3f);
         }
         state->stage += 1;
@@ -1380,8 +1194,7 @@ int SB_Galleon_onPartDestroyed(GameObject* obj)
     }
     {
         int pattern;
-        if ((pattern = state->flightPattern) == 0 || pattern == 1 || pattern == 2)
-        {
+        if ((pattern = state->flightPattern) == 0 || pattern == 1 || pattern == 2) {
             state->phaseCounter += 1;
             return 1;
         }
@@ -1389,32 +1202,26 @@ int SB_Galleon_onPartDestroyed(GameObject* obj)
     return 0;
 }
 
-int SB_Galleon_getExtraSize(void)
-{
+int SB_Galleon_getExtraSize(void) {
     return sizeof(SBGalleonState);
 }
 
-int SB_Galleon_getObjectTypeId(void)
-{
+int SB_Galleon_getObjectTypeId(void) {
     return 0x0;
 }
 
-void SB_Galleon_free(GameObject* obj, int leavingMap)
-{
+void SB_Galleon_free(GameObject* obj, int leavingMap) {
     SBGalleonState* state = (SBGalleonState*)obj->extra;
-    if ((void*)gSbGalleonSkyTexA != NULL)
-    {
+    if ((void*)gSbGalleonSkyTexA != NULL) {
         textureFree((Texture*)((void*)gSbGalleonSkyTexA));
         gSbGalleonSkyTexA = 0;
     }
-    if ((void*)gSbGalleonSkyTexB != NULL)
-    {
+    if ((void*)gSbGalleonSkyTexB != NULL) {
         textureFree((Texture*)((void*)gSbGalleonSkyTexB));
         gSbGalleonSkyTexB = 0;
     }
     ObjGroup_RemoveObject((u32)obj, SBGALLEON_OBJGROUP);
-    if (state->musicLatch != 0 && leavingMap == 0)
-    {
+    if (state->musicLatch != 0 && leavingMap == 0) {
         state->musicLatch = 0;
     }
     gSbGalleon = NULL;
@@ -1423,11 +1230,9 @@ void SB_Galleon_free(GameObject* obj, int leavingMap)
     mainSetBits(SBGALLEON_GAMEBIT_DEFEATED, 1);
 }
 
-void SB_Galleon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void SB_Galleon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible) {
     SBGalleonState* state = (SBGalleonState*)obj->extra;
-    struct
-    {
+    struct {
         u8 pad[6];
         u16 mode;
         f32 unused;
@@ -1435,10 +1240,8 @@ void SB_Galleon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visib
         f32 b;
         f32 c;
     } stk;
-    if (visible != 0)
-    {
-        if (state->cameraState < 2)
-        {
+    if (visible != 0) {
+        if (state->cameraState < 2) {
             stk.mode = state->wanderA;
             stk.c = 570.0f;
             stk.b = 85.0f;
@@ -1452,12 +1255,10 @@ void SB_Galleon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visib
     }
 }
 
-void SB_Galleon_hitDetect(GameObject* obj)
-{
+void SB_Galleon_hitDetect(GameObject* obj) {
     SBGalleonState* state = (SBGalleonState*)obj->extra;
     u8 i;
-    struct
-    {
+    struct {
         u8 pad[6];
         u16 mode;
         f32 a;
@@ -1465,46 +1266,37 @@ void SB_Galleon_hitDetect(GameObject* obj)
         f32 c;
         f32 d;
     } stk;
-    if (state->sprayActive != 0 && *(void**)&state->linkedActor != NULL)
-    {
+    if (state->sprayActive != 0 && *(void**)&state->linkedActor != NULL) {
         stk.a = lbl_803E5738;
         stk.mode = 0xc0a;
         stk.b = lbl_803E56CC;
         stk.c = lbl_803E56F0;
         stk.d = lbl_803E56C8;
-        for (i = 0; i < framesThisStep; i++)
-        {
+        for (i = 0; i < framesThisStep; i++) {
             (*gPartfxInterface)->spawnObject((void*)state->linkedActor, SBGALLEON_FX_SPRAY, stk.pad, 2, -1, 0);
         }
     }
 }
 
-void SB_Galleon_update(GameObject* obj)
-{
+void SB_Galleon_update(GameObject* obj) {
     SBGalleonState* state = (SBGalleonState*)obj->extra;
     obj->anim.mapEventSlot = state->mapLayer;
     SB_Galleon_updateSkyLighting(obj, state);
-    if (mainGetBit(SBGALLEON_GAMEBIT_INTRO) == 0)
-    {
+    if (mainGetBit(SBGALLEON_GAMEBIT_INTRO) == 0) {
         (*gMapEventInterface)->setMapAct(SBGALLEON_MAP_PALACE, 1);
         (*gMapEventInterface)->setObjGroupStatus(SBGALLEON_MAP_PALACE, 0, 1);
         (*gMapEventInterface)->setObjGroupStatus(SBGALLEON_MAP_PALACE, 1, 1);
         (*gMapEventInterface)->setObjGroupStatus(SBGALLEON_MAP_PALACE, 5, 1);
         lockLevel(mapGetDirIdx(SBGALLEON_MAP_PALACE), 0);
-        if ((*gMapEventInterface)->getObjGroupStatus(*(u8*)((char*)obj + 0x34), 1) == 0)
-        {
-            (*gMapEventInterface)->setObjGroupStatus(*(u8*)((char*)obj + 0x34), 1, 1);
+        if ((*gMapEventInterface)->getObjGroupStatus(obj->anim.hostedMapSlot, 1) == 0) {
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 1, 1);
         }
         obj->userData1 = 0;
-    }
-    else
-    {
-        if ((state->musicLatch == 0) && (state->cameraState > 0))
-        {
+    } else {
+        if ((state->musicLatch == 0) && (state->cameraState > 0)) {
             state->musicLatch = 1;
         }
-        switch (state->cameraState)
-        {
+        switch (state->cameraState) {
         case SBGALLEON_CAM_APPROACH:
             DBprotection_updateFlight(obj);
             break;
@@ -1526,8 +1318,7 @@ void SB_Galleon_update(GameObject* obj)
     }
 }
 
-void SB_Galleon_init(GameObject* obj)
-{
+void SB_Galleon_init(GameObject* obj) {
     SBGalleonState* state = (SBGalleonState*)obj->extra;
     ObjHitsPriorityState* hitState;
     gSbGalleon = obj;
@@ -1567,10 +1358,8 @@ void SB_Galleon_init(GameObject* obj)
     Music_Trigger(state->musicIdB, 1);
 }
 
-void SB_Galleon_release(void)
-{
+void SB_Galleon_release(void) {
 }
 
-void SB_Galleon_initialise(void)
-{
+void SB_Galleon_initialise(void) {
 }

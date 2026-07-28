@@ -6,7 +6,6 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
 #include "main/objhits.h"
-#include "main/dll/DB/DBstealerworm.h"
 
 typedef struct SBPropellerPlacement
 {

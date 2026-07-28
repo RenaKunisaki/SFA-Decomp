@@ -28,7 +28,7 @@
 #include "main/dll/sbpropellerstate_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/SB/dll_01EE_sbcannonball.h"
-#include "main/dll/DB/DBstealerworm.h"
+#include "dlls/objects/488_SB_Galleon.h"
 #include "main/objhits.h"
 #include "main/objfx.h"
 #include "main/audio/sfx.h"

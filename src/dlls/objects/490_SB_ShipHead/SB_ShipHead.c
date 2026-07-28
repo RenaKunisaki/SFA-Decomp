@@ -27,11 +27,9 @@
 #include "main/obj_list.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
-#include "main/dll/DB/DBstealerworm.h"
-#include "main/dll/DB/DBprotection.h"
+#include "dlls/objects/488_SB_Galleon.h"
 #include "main/frame_timing.h"
 #include "main/dll/SB/dll_01EA_sbshiphead.h"
-#include "main/dll/SB/dll_01E8_sbgalleon.h"
 #include "dlls/object_descriptor.h"
 #include "main/objhits.h"
 

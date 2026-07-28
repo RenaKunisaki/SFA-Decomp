@@ -281,6 +281,7 @@
 #include "dlls/objects/485_DIM_BossSpi.h"
 #include "dlls/objects/486_DIMbosscrac.h"
 #include "dlls/objects/487_DIMbossfire.h"
+#include "dlls/objects/488_SB_Galleon.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -401,9 +402,8 @@ extern ResourceDescriptor gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gPressureSwitchObjDescriptor, gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
 extern ResourceDescriptor gRingObjDescriptor, gSB_CageKyteObjDescriptor, gSB_CannonBallObjDescriptor,
     gSB_CloudBallObjDescriptor, gSB_CloudRunnerObjDescriptor;
-extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_GalleonObjDescriptor, gSB_KyteCageObjDescriptor,
-    gSB_MiniFireObjDescriptor, gSB_PropellerObjDescriptor, gSB_SeqDoorObjDescriptor, gSB_ShipGunBrokeObjDescriptor,
-    gSB_ShipGunObjDescriptor;
+extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_KyteCageObjDescriptor, gSB_MiniFireObjDescriptor,
+    gSB_PropellerObjDescriptor, gSB_SeqDoorObjDescriptor, gSB_ShipGunBrokeObjDescriptor, gSB_ShipGunObjDescriptor;
 extern ResourceDescriptor gSB_ShipHeadObjDescriptor, gSB_ShipMastObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
@@ -1585,7 +1585,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIM_BossSpitObjDescriptor,
     (ResourceDescriptor*)&gDIMbosscrackparObjDescriptor,
     (ResourceDescriptor*)&gDIMbossfireObjDescriptor,
-    &gSB_GalleonObjDescriptor,
+    (ResourceDescriptor*)&gSB_GalleonObjDescriptor,
     &gSB_PropellerObjDescriptor,
     &gSB_ShipHeadObjDescriptor,
     &gSB_ShipMastObjDescriptor,

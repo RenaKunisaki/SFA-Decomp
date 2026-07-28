@@ -38,8 +38,6 @@
 #include "dlls/objects/437.h"
 #include "main/dll/dll_000D_playershadow.h"
 #include "main/dll/dll_01B5_lightfoot.h"
-#include "main/dll/DB/DBprotection.h"
-#include "main/dll/SB/dll_01E8_sbgalleon.h"
 #include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/viewfinder.h"
 #include "main/sky_api.h"
