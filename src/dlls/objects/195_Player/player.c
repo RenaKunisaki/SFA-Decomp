@@ -142,7 +142,7 @@ int playerState3A(GameObject* obj, int state, f32 fv);
 int playerState39(GameObject* obj, int state, f32 fv);
 int playerState38(GameObject* obj, int state, f32 fv);
 int playerState37(GameObject* obj, int state);
-void fn_802985AC(GameObject* obj);
+void playerStagedResetAnimState(GameObject* obj);
 int playerStateSuperQuake(GameObject* obj, int state, f32 fv);
 void fn_80298924(int obj);
 int playerState35(GameObject* obj, int state);
@@ -196,7 +196,7 @@ int playerStateGrabLedge(GameObject* obj, int state);
 int playerState09(GameObject* obj, int state);
 void playerResetMoveTables(GameObject* obj);
 int playerStateThrowing(GameObject* obj, int state);
-void fn_802A4B4C(GameObject* obj);
+void playerStagedMarkTeleported(GameObject* obj);
 int playerState06(GameObject* obj, int state);
 int playerState05(GameObject* obj, int state);
 int playerState04(int obj, int state, f32 fv);
@@ -1791,7 +1791,7 @@ int playerSetHeldObject(GameObject* obj, GameObject* heldObj)
     {
         inner->heldObj = heldObj;
         (*gPlayerInterface)->setState(obj, inner, 5);
-        *(int*)&((PlayerState*)inner)->baddie.unk304 = (int)fn_802A4B4C;
+        *(int*)&((PlayerState*)inner)->baddie.unk304 = (int)playerStagedMarkTeleported;
     }
     else if (inner->heldObj != NULL)
     {
@@ -2953,7 +2953,7 @@ int playerState37(GameObject* obj, int state)
     return 0x39;
 }
 
-void fn_802985AC(GameObject* obj)
+void playerStagedResetAnimState(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     ((ByteFlags*)((char*)inner + 0x3f4))->b20 = 0;
@@ -9515,7 +9515,7 @@ int playerStateThrowing(GameObject* obj, int state)
     return 0;
 }
 
-void fn_802A4B4C(GameObject* obj)
+void playerStagedMarkTeleported(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     void* p = ((PlayerState*)inner)->heldObj;
@@ -12898,7 +12898,7 @@ void playerCastSpell(int a, int b, int c)
     case 0x107:
     case 0xc55:
         (*gPlayerInterface)->setState((void*)a, (void*)b, 0x36);
-        *(int*)&((PlayerState*)b)->baddie.unk304 = (int)fn_802985AC;
+        *(int*)&((PlayerState*)b)->baddie.unk304 = (int)playerStagedResetAnimState;
         break;
     case 0x40:
         ((PlayerState*)b)->stateTimer = 300.0f;
@@ -16493,7 +16493,7 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 }
                 ((PlayerState*)inner)->unk7FC = (f32)(param >> 0x10) / 10.0f;
                 (*gPlayerInterface)->setState((void*)obj, (void*)state, 5);
-                *(void (**)(GameObject*))&((PlayerState*)state)->baddie.unk304 = fn_802A4B4C;
+                *(void (**)(GameObject*))&((PlayerState*)state)->baddie.unk304 = playerStagedMarkTeleported;
                 if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0)
                 {
                     ((PlayerState*)inner)->staffActionRequest = 1;
@@ -16514,7 +16514,7 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 }
                 ((PlayerState*)inner)->unk7FC = (f32)(param >> 0x10);
                 (*gPlayerInterface)->setState((void*)obj, (void*)state, 5);
-                *(void (**)(GameObject*))&((PlayerState*)state)->baddie.unk304 = fn_802A4B4C;
+                *(void (**)(GameObject*))&((PlayerState*)state)->baddie.unk304 = playerStagedMarkTeleported;
                 if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0)
                 {
                     ((PlayerState*)inner)->staffActionRequest = 1;
