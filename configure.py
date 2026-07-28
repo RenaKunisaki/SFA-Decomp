@@ -1847,7 +1847,7 @@ config.libs = [
             Object(Matching, "main/rcp_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/texture.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/shader.c", cflags=cflags_dll_noopt_noautoinline_deferred),
-            Object(NonMatching, "main/tex_dolphin.c", cflags=cflags_dll_noopt_noautoinline_deferred, section_alignments={".data": 4}),
+            Object(NonMatching, "main/tex_dolphin.c", cflags=cflags_dll_noopt_noautoinline, section_alignments={".data": 4}),
             Object(NonMatching, "main/shadow_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/track_dolphin.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/newshadows.c", cflags=cflags_dll_noopt_noautoinline),
