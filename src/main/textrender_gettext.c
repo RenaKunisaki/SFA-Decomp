@@ -31,36 +31,6 @@
 #include "string.h"
 #include "main/lightmap.h"
 
-typedef struct
-{
-    u32 key;     /* 0x00 */
-    u16 u;       /* 0x04 */
-    u16 v;       /* 0x06 */
-    s8 offsetX;  /* 0x08 */
-    s8 advanceX; /* 0x09 */
-    s8 offsetY;  /* 0x0a */
-    s8 advanceY; /* 0x0b */
-    u8 width;    /* 0x0c */
-    u8 height;   /* 0x0d */
-    u8 lang;     /* 0x0e */
-    u8 page;     /* 0x0f */
-} TextGlyph;
-
-typedef struct
-{
-    TextGlyph* glyphs; /* 0x00 */
-    u16* entries;      /* 0x04 */
-    int glyphCount;    /* 0x08 */
-    int entryCount;    /* 0x0c */
-    Texture* textures[3]; /* 0x10 */
-    int mode;          /* 0x1c */
-    f32 timer;         /* 0x20 */
-    u8 dirId;          /* 0x24 */
-    u8 languageId;     /* 0x25 */
-    u8 pad26[2];       /* 0x26 */
-} TextFont;
-
-
 extern TextFont* gameTextFonts;
 typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
 extern GameTextDrawFunc gameTextDrawFunc;
@@ -72,7 +42,7 @@ extern u8* gGameTextLastEntry;
 extern int gCurTextBuffer;
 extern int gGameTextBufferIndex;
 extern const f32 gGameTextFadeLimit;
-extern void* curGameTextDir;
+extern int curGameTextDir;
 extern char gGameTextFontData[];
 extern char sGameTextBlankFormat[5];
 
@@ -124,7 +94,7 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
         *(u16*)gGameTextLastEntry = 0xffff;
         gGameTextFallbackBuf = (int)(sGameTextFallbackBufSlots + gGameTextBufferIndex * 4);
         sprintf((char*)gCurTextBuffer, strings + 0xefc, textId,
-                sMapDirectoryNameTable[(int)curGameTextDir]);
+                sMapDirectoryNameTable[curGameTextDir]);
         return gGameTextLastEntry;
     }
 
@@ -262,7 +232,7 @@ void* gameTextGet(int textId)
                 if (av >= gGameTextFadeLimit)
                 {
                     sprintf((char*)*(int*)*(int**)((u8*)cachedEntry + 8), strings + 0xefc, textId,
-                            sMapDirectoryNameTable[(int)curGameTextDir]);
+                            sMapDirectoryNameTable[curGameTextDir]);
                 }
             }
             return cachedEntry;
@@ -280,7 +250,7 @@ void* gameTextGet(int textId)
     *(u16*)gGameTextLastEntry = 0xffff;
     p = gameTextBase + gGameTextBufferIndex * 4;
     gGameTextFallbackBuf = (int)(p + 0x20);
-    sprintf((char*)gCurTextBuffer, sGameTextBlankFormat, textId, sMapDirectoryNameTable[(int)curGameTextDir]);
+    sprintf((char*)gCurTextBuffer, sGameTextBlankFormat, textId, sMapDirectoryNameTable[curGameTextDir]);
     *(u16*)gGameTextLastEntry = textId;
     *(f32*)gGameTextFallbackBuf = lbl_803DE704;
     return gGameTextLastEntry;

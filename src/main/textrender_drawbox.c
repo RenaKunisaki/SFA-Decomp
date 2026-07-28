@@ -83,7 +83,7 @@ void gameTextLoadTaskText(int taskId)
         }
 
         gGameTextPendingTextId = textId;
-        gGameTextPendingDir = (void*)dirId;
+        gGameTextPendingDir = dirId;
         if (dirId == 0x29)
         {
             loadGameTextSequence(dirId, textId);
@@ -91,8 +91,8 @@ void gameTextLoadTaskText(int taskId)
         }
         else
         {
-            gGameTextSavedDir = (int)getCurGameText();
-            gameTextLoadDir((int)gGameTextPendingDir);
+            gGameTextSavedDir = getCurGameText();
+            gameTextLoadDir(gGameTextPendingDir);
             gGameTextSequenceMode = 0;
         }
         gSubtitleActive = 1;
@@ -220,7 +220,7 @@ void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box)
     case 5:
         return;
     case 7:
-        if ((int)getCurGameText() == 3)
+        if (getCurGameText() == 3)
         {
             u16 bh = ((GameTextBox*)box)->height;
             u16 bw = ((GameTextBox*)box)->width;

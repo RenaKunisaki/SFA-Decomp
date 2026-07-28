@@ -227,6 +227,9 @@
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "dlls/objects/431_SH_swaplift.h"
 #include "dlls/objects/432_SH_swapston.h"
+#include "dlls/objects/433_SH_staff.h"
+#include "dlls/objects/434_SH_staffHaz.h"
+#include "dlls/objects/435_SH_Beacon.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -364,8 +367,7 @@ extern ResourceDescriptor gSB_FireBallObjDescriptor, gSB_GalleonObjDescriptor, g
 extern ResourceDescriptor gSB_ShipHeadObjDescriptor, gSB_ShipMastObjDescriptor, gSC_CloudrunnerAObjDescriptor,
     gSC_MusicTreeObjDescriptor, gSC_levelcontrolObjDescriptor, gSC_totembondObjDescriptor, gSC_totempoleObjDescriptor,
     gSC_totempuzzleObjDescriptor;
-extern ResourceDescriptor gSC_totemstrengthObjDescriptor, gSH_BeaconObjDescriptor, gSH_EmptyTumbleWObjDescriptor,
-    gSH_staffHazeObjDescriptor, gSH_staffObjDescriptor;
+extern ResourceDescriptor gSC_totemstrengthObjDescriptor, gSH_EmptyTumbleWObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
@@ -1492,9 +1494,9 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSH_LevelControlObjDescriptor,
     (ResourceDescriptor*)&gWarpStoneLiftObjDescriptor,
     (ResourceDescriptor*)&gWarpStoneObjDescriptor,
-    &gSH_staffObjDescriptor,
-    &gSH_staffHazeObjDescriptor,
-    &gSH_BeaconObjDescriptor,
+    (ResourceDescriptor*)&gSH_staffObjDescriptor,
+    (ResourceDescriptor*)&gSH_staffHazeObjDescriptor,
+    (ResourceDescriptor*)&gSH_BeaconObjDescriptor,
     &gSH_EmptyTumbleWObjDescriptor,
     &gLightFootObjDescriptor,
     &gSC_levelcontrolObjDescriptor,

@@ -11,6 +11,7 @@
 #include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/baddie_placement.h"
 #include "main/dll/foodbag.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
@@ -18,55 +19,6 @@
 #include "main/resource.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-
-typedef struct DFSHObjCreatorSharpClawSetup {
-    ObjPlacement base;
-    s16 gameBit;
-    s16 gameBit2;
-    s16 unknown1C;
-    s16 unknown1E;
-    s16 unknown20;
-    s16 droppedItemId;
-    s16 unknown24;
-    u8 unknown26;
-    s8 initialWeaponId;
-    u8 objectFlagBits;
-    u8 aggroRangeByte;
-    s8 initialYaw;
-    u8 flags;
-    s16 respawnEnabled;
-    s8 triggerSequenceId;
-    u8 healthByte;
-    s16 unknown30;
-    u8 hitPoints;
-    u8 unknown33;
-    u16 unknown34;
-    u8 unknown36[0x38 - 0x36];
-} DFSHObjCreatorSharpClawSetup;
-
-STATIC_ASSERT(sizeof(DFSHObjCreatorSharpClawSetup) == 0x38);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, base) == 0x00);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, gameBit) == 0x18);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, gameBit2) == 0x1A);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown1C) == 0x1C);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown1E) == 0x1E);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown20) == 0x20);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, droppedItemId) == 0x22);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown24) == 0x24);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown26) == 0x26);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, initialWeaponId) == 0x27);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, objectFlagBits) == 0x28);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, aggroRangeByte) == 0x29);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, initialYaw) == 0x2A);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, flags) == 0x2B);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, respawnEnabled) == 0x2C);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, triggerSequenceId) == 0x2E);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, healthByte) == 0x2F);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown30) == 0x30);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, hitPoints) == 0x32);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown33) == 0x33);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown34) == 0x34);
-STATIC_ASSERT(offsetof(DFSHObjCreatorSharpClawSetup, unknown36) == 0x36);
 
 #define DFSH_OBJ_CREATOR_SHARPCLAW_OBJECT_ID       0x11
 #define DFSH_OBJ_CREATOR_EFFECT_RESOURCE_ID        0x82
@@ -107,7 +59,7 @@ void dfshObjCreator_update(GameObject* obj) {
     const DFSHObjCreatorPlacement* placement;
     DFSHObjCreatorState* state;
     Dll82Interface** effectResource;
-    DFSHObjCreatorSharpClawSetup* sharpClawSetup;
+    EnemyPlacement* sharpClawSetup;
 
     placement = (const DFSHObjCreatorPlacement*)obj->anim.placementData;
     state = obj->extra;
@@ -132,7 +84,7 @@ void dfshObjCreator_update(GameObject* obj) {
     }
 
     if (Obj_IsLoadingLocked() != 0 && state->spawnTimer <= 0) {
-        sharpClawSetup = (DFSHObjCreatorSharpClawSetup*)Obj_AllocObjectSetup(sizeof(DFSHObjCreatorSharpClawSetup),
+        sharpClawSetup = (EnemyPlacement*)Obj_AllocObjectSetup(sizeof(EnemyPlacement),
                                                                              DFSH_OBJ_CREATOR_SHARPCLAW_OBJECT_ID);
         sharpClawSetup->base.posX = placement->base.posX;
         sharpClawSetup->base.posY = placement->base.posY;
@@ -144,9 +96,9 @@ void dfshObjCreator_update(GameObject* obj) {
         sharpClawSetup->base.color[3] = placement->base.color[3];
         sharpClawSetup->initialWeaponId = DFSH_OBJ_CREATOR_SHARPCLAW_INITIAL_WEAPON;
         sharpClawSetup->gameBit = DFSH_OBJ_CREATOR_SHARPCLAW_GAME_BIT;
-        sharpClawSetup->unknown30 = -1;
+        sharpClawSetup->unk30 = -1;
         sharpClawSetup->gameBit2 = -1;
-        sharpClawSetup->unknown1C = -1;
+        sharpClawSetup->unk1C = -1;
         sharpClawSetup->initialYaw = (s8)(obj->anim.rotX >> 8);
         sharpClawSetup->flags = DFSH_OBJ_CREATOR_SHARPCLAW_FLAGS;
         if (mainGetBit(DFSH_OBJ_CREATOR_DROPPED_ITEM_GAME_BIT) != 0) {
@@ -156,7 +108,7 @@ void dfshObjCreator_update(GameObject* obj) {
         }
         sharpClawSetup->aggroRangeByte = 0xFF;
         sharpClawSetup->triggerSequenceId = -1;
-        sharpClawSetup->unknown34 = 0xFFFF;
+        sharpClawSetup->unk34 = 0xFFFF;
         Obj_SetupObject(&sharpClawSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         state->spawnTimer = DFSH_OBJ_CREATOR_SPAWN_TIMER;
         state->spawnTimerRate = 0;

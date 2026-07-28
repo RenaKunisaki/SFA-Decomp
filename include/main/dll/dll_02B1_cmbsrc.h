@@ -158,7 +158,7 @@ u8 cmbsrc_shouldDeactivate(CmbSrcObject* obj, CmbSrcState* state, CmbSrcMapData*
 void cmbsrc_hitDetect(CmbSrcObject* obj);
 u8 cmbsrc_cycleColor(CmbSrcObject* obj, CmbSrcState* state);
 void cmbsrc_updateVisuals(CmbSrcObject* obj, CmbSrcState* state);
-int cmbsrc_update(CmbSrcObject* obj);
+void cmbsrc_update(CmbSrcObject* obj);
 void cmbsrc_init(CmbSrcObject* obj, CmbSrcMapData* setup);
 
 #endif /* MAIN_DLL_CMBSRC_H_ */

@@ -42,7 +42,7 @@ void gameTextLoadDir(int dirId);
 int gameTextFn_8001b44c(int x);
 void gameTextLoadForCurMap(int sourceId);
 void gameTextLoadTaskText(int taskId);
-void* getCurGameText(void);
+int getCurGameText(void);
 int getCurLanguage(void);
 void gameTextInit(void);
 void gameTextInitFn_8001a234(void);

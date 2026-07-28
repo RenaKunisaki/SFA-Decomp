@@ -2,260 +2,197 @@
  * SH_Beacon (DLL 0x1B3) - the SnowHorn beacon / brazier the player lights.
  *
  * mode (ShBeaconState.mode): 0 = unlit, 1 = lit, 2 = igniting. While
- * unlit it waits for the light event (0x194); igniting spawns the flame
- * child object (type 0x55), runs the ignite sequence and ticks the
- * flame/fade effects through objfx_spawnPulseBurst; once lit it loops the fire sfx
- * and sets its progress game bit. The placement carries the lit/ignite
- * game-bit ids.
+ * unlit it waits for the FireWeed inventory event; igniting spawns its
+ * SH_BeaconTw child object (runtime object ID 0x55), runs the ignite sequence,
+ * and ticks the flame/fade effects through objfx_spawnPulseBurst. Once lit it
+ * loops the fire sfx and sets its progress game bit. The placement carries the
+ * lit/ignite game-bit ids.
  */
-#include "dlls/object_descriptor.h"
-#include "main/dll/beaconflags_types.h"
-#include "main/dll/SH/dll_01B3_shbeacon.h"
-#include "game/objects/object_setup.h"
-#include "main/dll_000A_expgfx.h"
-#include "main/game_ui_interface.h"
+#include "dlls/objects/435_SH_Beacon.h"
+
 #include "game/objects/object.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/dll_000A_expgfx.h"
+#include "main/frame_timing.h"
+#include "main/game_ui_interface.h"
+#include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
+#include "main/gameloop_gamebit_api.h"
 #include "main/objfx.h"
-#include "sys/objects/lifecycle.h"
-#include "sys/objects.h"
 #include "main/objhits.h"
 #include "main/objseq.h"
-#include "main/gamebits.h"
-#include "main/gamebit_ids.h"
-#include "main/audio/sfx.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/frame_timing.h"
-#include "main/gameloop_gamebit_api.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-/* flame child object spawned on ignition, cached in ShBeaconState.childObj */
-#define SHBEACON_CHILD_OBJ_FLAME 0x55
+/* Active EN OBJINDEX maps runtime object ID 0x55 to SH_BeaconTw. */
+#define SH_BEACON_TWINKLE_OBJECT_ID  0x55
+#define SH_BEACON_TWINKLE_SETUP_SIZE 0x20
 
-#define SHBEACON_OBJFLAG_HIDDEN   0x4000
-#define SHBEACON_OBJFLAG_RENDERED 0x800
-#define SHBEACON_OBJFLAG_FREED    0x40
+f32 gShBeaconHitEffectCooldown;
 
-typedef struct ShBeaconPlacement
-{
-    ObjPlacement base;
-    u8 pad18[0x1E - 0x18];
-    s16 litGameBit;    /* 0x1E: set once the beacon is fully lit */
-    s16 igniteGameBit; /* 0x20: set when ignition is triggered */
-    u8 pad22[0x28 - 0x22];
-} ShBeaconPlacement;
-
-typedef enum ShBeaconMode
-{
-    SH_BEACON_MODE_UNLIT = 0,    /* waits for the light event, then ignites */
-    SH_BEACON_MODE_LIT = 1,      /* fully lit: loops fire sfx and emits bursts */
-    SH_BEACON_MODE_IGNITING = 2, /* ignition sequence and flame/fade effects */
-} ShBeaconMode;
-
-STATIC_ASSERT(sizeof(ShBeaconState) == 0x18);
-
-
-f32 lbl_803DDBF8;
-
-int sh_beacon_SeqFn(GameObject* obj)
-{
-    ShBeaconState* extra = (ShBeaconState*)(obj)->extra;
-    extra->seqTimer = extra->seqTimer + timeDelta;
-    if (extra->seqTimer >= 20.0f)
-    {
-        extra->seqTimer = extra->seqTimer - 20.0f;
-        if (((obj)->objectFlags & SHBEACON_OBJFLAG_RENDERED) != 0)
-        {
-            objfx_spawnPulseBurst(obj, (obj)->anim.rootMotionScale, 0, 2, 0, NULL);
+int sh_beacon_sequenceCallback(GameObject* obj) {
+    ShBeaconState* state = obj->extra;
+    state->pulseTimer = state->pulseTimer + timeDelta;
+    if (state->pulseTimer >= 20.0f) {
+        state->pulseTimer = state->pulseTimer - 20.0f;
+        if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
+            objfx_spawnPulseBurst(obj, obj->anim.rootMotionScale, 0, 2, 0, NULL);
         }
     }
     return 0;
 }
 
-int shbeacon_resetFadeTimerCallback(GameObject* obj)
-{
+int sh_beacon_resetFadeTimerCallback(GameObject* obj) {
     ((ShBeaconState*)*(int*)&obj->extra)->fadeTimer = 6.0f;
     return 1;
 }
 
-int sh_beacon_getExtraSize(void)
-{
-    return 0x18;
+int sh_beacon_getExtraSize(void) {
+    return sizeof(ShBeaconState);
 }
 
-void sh_beacon_free(GameObject* obj, int keepChild)
-{
-    ShBeaconState* extra = (ShBeaconState*)obj->extra;
+void sh_beacon_free(GameObject* obj, int keepChild) {
+    ShBeaconState* state = obj->extra;
     (*gExpgfxInterface)->freeSource2((u32)obj);
-    if (keepChild == 0)
-    {
-        GameObject* p = extra->childObj;
-        if (p != NULL && (p->objectFlags & SHBEACON_OBJFLAG_FREED) == 0)
-        {
-            Obj_FreeObject(p);
+    if (keepChild == 0) {
+        GameObject* twinkleObject = state->twinkleObject;
+        if (twinkleObject != NULL && (twinkleObject->objectFlags & OBJECT_OBJFLAG_FREED) == 0) {
+            Obj_FreeObject(twinkleObject);
         }
     }
 }
 
-void sh_beacon_update(GameObject* obj)
-{
+void sh_beacon_update(GameObject* obj) {
     ShBeaconState* state;
-    int def;
-    int tricky;
-    ObjPlacement* setup;
-    int mode;
-    ShBeaconState* state2;
+    int placementAddress;
+    int trickyObjectAddress;
+    ObjPlacement* twinklePlacement;
+    int pulseMode;
+    ShBeaconState* ignitingState;
 
-    state = (obj)->extra;
-    def = *(int*)&(obj)->anim.placementData;
-    switch (state->mode)
-    {
+    state = obj->extra;
+    placementAddress = *(int*)&obj->anim.placementData;
+    switch (state->mode) {
     case SH_BEACON_MODE_UNLIT:
-        if ((((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) &&
-            ((*gGameUIInterface)->isEventReady(0x194) != 0))
-        {
+        if (((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) &&
+            ((*gGameUIInterface)->isEventReady(GAMEBIT_ITEM_FireWeed_Count) != 0)) {
             gameBitDecrement(GAMEBIT_ITEM_FireWeed_Count);
-            mainSetBits(((ShBeaconPlacement*)def)->igniteGameBit, 1);
-            if (Obj_IsLoadingLocked() != 0)
-            {
-                setup = Obj_AllocObjectSetup(0x20, SHBEACON_CHILD_OBJ_FLAME);
-                setup->posX = (obj)->anim.localPosX;
-                setup->posY = (obj)->anim.localPosY;
-                setup->posZ = (obj)->anim.localPosZ;
-                setup->color[0] = 2;
-                setup->color[1] = *(u8*)(*(int*)&(obj)->anim.placementData + 5);
-                setup->color[3] = *(u8*)(*(int*)&(obj)->anim.placementData + 7);
-                state->childObj = loadObjectAtObject(obj, (ObjPlacement*)setup);
+            mainSetBits(((ShBeaconPlacement*)placementAddress)->igniteGameBit, 1);
+            if (Obj_IsLoadingLocked() != 0) {
+                twinklePlacement = Obj_AllocObjectSetup(SH_BEACON_TWINKLE_SETUP_SIZE, SH_BEACON_TWINKLE_OBJECT_ID);
+                twinklePlacement->posX = obj->anim.localPosX;
+                twinklePlacement->posY = obj->anim.localPosY;
+                twinklePlacement->posZ = obj->anim.localPosZ;
+                twinklePlacement->color[0] = 2;
+                twinklePlacement->color[1] = *(u8*)(*(int*)&obj->anim.placementData + offsetof(ObjPlacement, color[1]));
+                twinklePlacement->color[3] = *(u8*)(*(int*)&obj->anim.placementData + offsetof(ObjPlacement, color[3]));
+                state->twinkleObject = loadObjectAtObject(obj, twinklePlacement);
             }
             (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
             state->mode = SH_BEACON_MODE_IGNITING;
         }
+        /* fall through */
     case SH_BEACON_MODE_IGNITING:
-        state2 = (ShBeaconState*)(obj)->extra;
-        state2->seqTimer = state2->seqTimer + timeDelta;
-        if (state2->seqTimer >= 20.0f)
-        {
-            state2->seqTimer = state2->seqTimer - 20.0f;
-            if (((obj)->objectFlags & SHBEACON_OBJFLAG_RENDERED) != 0)
-            {
-                objfx_spawnPulseBurst(obj, (obj)->anim.rootMotionScale, 0, 2, 0, NULL);
+        ignitingState = obj->extra;
+        ignitingState->pulseTimer = ignitingState->pulseTimer + timeDelta;
+        if (ignitingState->pulseTimer >= 20.0f) {
+            ignitingState->pulseTimer = ignitingState->pulseTimer - 20.0f;
+            if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
+                objfx_spawnPulseBurst(obj, obj->anim.rootMotionScale, 0, 2, 0, NULL);
             }
         }
         break;
     case SH_BEACON_MODE_LIT:
-        if ((((BeaconFlags*)&state->flags15)->looping) == 0)
-        {
+        if (state->flags.loopSoundActive == 0) {
             Sfx_AddLoopedObjectSound((int)obj, SFXTRIG_forcecryslp11);
-            ((BeaconFlags*)&state->flags15)->looping = 1;
+            state->flags.loopSoundActive = 1;
         }
-        if (((obj)->objectFlags & SHBEACON_OBJFLAG_RENDERED) != 0)
-        {
-            state->modeTimer = state->modeTimer + timeDelta;
-            if (state->modeTimer > 10.0f)
-            {
-                mode = 2;
-                state->modeTimer = state->modeTimer - 10.0f;
+        if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
+            state->pulseModeTimer = state->pulseModeTimer + timeDelta;
+            if (state->pulseModeTimer > 10.0f) {
+                pulseMode = 2;
+                state->pulseModeTimer = state->pulseModeTimer - 10.0f;
+            } else {
+                pulseMode = 0;
             }
-            else
-            {
-                mode = 0;
-            }
-            state->burstTimer = state->burstTimer + timeDelta;
-            if (state->burstTimer > 2.0f)
-            {
-                state->burstTimer = state->burstTimer - 2.0f;
-                objfx_spawnPulseBurst(obj, (obj)->anim.rootMotionScale, 2, mode, 0, NULL);
+            state->pulseSpawnTimer = state->pulseSpawnTimer + timeDelta;
+            if (state->pulseSpawnTimer > 2.0f) {
+                state->pulseSpawnTimer = state->pulseSpawnTimer - 2.0f;
+                objfx_spawnPulseBurst(obj, obj->anim.rootMotionScale, 2, pulseMode, 0, NULL);
             }
         }
         break;
     }
-    if (state->mode != SH_BEACON_MODE_LIT)
-    {
-        (obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-        if (state->mode == SH_BEACON_MODE_IGNITING)
-        {
+    if (state->mode != SH_BEACON_MODE_LIT) {
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+        if (state->mode == SH_BEACON_MODE_IGNITING) {
             Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 8);
+        } else if ((state->mode == SH_BEACON_MODE_UNLIT) && (mainGetBit(GAMEBIT_ITEM_FireWeed_Count) == 0)) {
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+        } else {
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
-        else if ((state->mode == SH_BEACON_MODE_UNLIT) &&
-                 (mainGetBit(GAMEBIT_ITEM_FireWeed_Count) == 0))
-        {
-            (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+        trickyObjectAddress = (int)getTrickyObject();
+        if (((void*)trickyObjectAddress != NULL) && ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)) {
+            (*(VtableFn*)(*(int*)(*(int*)(trickyObjectAddress + 0x68)) + 0x28))(trickyObjectAddress, obj, 1, 4);
         }
-        else
-        {
-            (obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
-        }
-        tricky = (int)getTrickyObject();
-        if (((void*)tricky != NULL) && (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0))
-        {
-            (*(VtableFn*)(*(int*)(*(int*)(tricky + 0x68)) + 0x28))(tricky, obj, 1, 4);
-        }
-    }
-    else
-    {
-        if ((mainGetBit(GAMEBIT_ITEM_MoonPassKey_Got) != 0) || (((ShBeaconPlacement*)def)->litGameBit != 0x95))
-        {
-            (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-        }
-        else
-        {
-            (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
+    } else {
+        if ((mainGetBit(GAMEBIT_ITEM_MoonPassKey_Got) != 0) ||
+            (((ShBeaconPlacement*)placementAddress)->litGameBit != GAMEBIT_Always1)) {
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+        } else {
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
     }
-    if (state->fadeTimer > 0.0f)
-    {
+    if (state->fadeTimer > 0.0f) {
         state->fadeTimer = state->fadeTimer - timeDelta;
-        if (((obj)->objectFlags & SHBEACON_OBJFLAG_RENDERED) != 0)
-        {
-            objfx_spawnPulseBurst(obj, 0.6f * (obj)->anim.rootMotionScale, 3, 0, 0, NULL);
+        if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
+            objfx_spawnPulseBurst(obj, 0.6f * obj->anim.rootMotionScale, 3, 0, 0, NULL);
         }
-        if ((state->fadeTimer <= 0.0f) && (state->mode == SH_BEACON_MODE_IGNITING))
-        {
+        if ((state->fadeTimer <= 0.0f) && (state->mode == SH_BEACON_MODE_IGNITING)) {
             state->mode = SH_BEACON_MODE_LIT;
-            mainSetBits(((ShBeaconPlacement*)def)->litGameBit, 1);
+            mainSetBits(((ShBeaconPlacement*)placementAddress)->litGameBit, 1);
             if ((mainGetBit(GAMEBIT_SH_FireWeed_190) != 0) && (mainGetBit(GAMEBIT_SH_FireWeed_191) != 0) &&
-                (mainGetBit(GAMEBIT_SH_FireWeed_192) != 0))
-            {
+                (mainGetBit(GAMEBIT_SH_FireWeed_192) != 0)) {
                 Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
-            }
-            else
-            {
+            } else {
                 Sfx_PlayFromObject(0, SFXTRIG_sc_menuups16k_409);
             }
         }
     }
-    ObjHits_PollPriorityHitEffectWithCooldown(obj, 8, 0xff, 0xff, 0x78, 0x129, &lbl_803DDBF8);
+    ObjHits_PollPriorityHitEffectWithCooldown(obj, 8, 0xff, 0xff, 0x78, SFXTRIG_swdtest222,
+                                              &gShBeaconHitEffectCooldown);
 }
 
-void sh_beacon_init(GameObject* obj, int defData)
-{
+void sh_beacon_init(GameObject* obj, const ShBeaconPlacement* placement) {
     ShBeaconState* state;
-    ObjPlacement* setup;
+    ObjPlacement* twinklePlacement;
 
-    state = (ShBeaconState*)(obj)->extra;
-    (obj)->anim.rotX = (s16)((s32) * (s8*)(defData + 0x18) << 8);
-    (obj)->objectFlags = (u16)((obj)->objectFlags | SHBEACON_OBJFLAG_HIDDEN);
+    state = obj->extra;
+    obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
+    obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HIDDEN);
 
-    state->mode = mainGetBit(((ShBeaconPlacement*)defData)->litGameBit);
-    if (state->mode == SH_BEACON_MODE_UNLIT)
-    {
-        if (mainGetBit(((ShBeaconPlacement*)defData)->igniteGameBit) != 0)
-        {
+    state->mode = mainGetBit(placement->litGameBit);
+    if (state->mode == SH_BEACON_MODE_UNLIT) {
+        if (mainGetBit(placement->igniteGameBit) != 0) {
             state->mode = SH_BEACON_MODE_IGNITING;
         }
     }
 
-    if (state->mode != SH_BEACON_MODE_UNLIT && Obj_IsLoadingLocked() != 0)
-    {
-        setup = Obj_AllocObjectSetup(0x20, SHBEACON_CHILD_OBJ_FLAME);
-        setup->posX = (obj)->anim.localPosX;
-        setup->posY = (obj)->anim.localPosY;
-        setup->posZ = (obj)->anim.localPosZ;
-        setup->color[0] = 2;
-        setup->color[1] = *(u8*)(*(int*)&(obj)->anim.placementData + 5);
-        setup->color[3] = *(u8*)(*(int*)&(obj)->anim.placementData + 7);
-        state->childObj = loadObjectAtObject(obj, (ObjPlacement*)setup);
+    if (state->mode != SH_BEACON_MODE_UNLIT && Obj_IsLoadingLocked() != 0) {
+        twinklePlacement = Obj_AllocObjectSetup(SH_BEACON_TWINKLE_SETUP_SIZE, SH_BEACON_TWINKLE_OBJECT_ID);
+        twinklePlacement->posX = obj->anim.localPosX;
+        twinklePlacement->posY = obj->anim.localPosY;
+        twinklePlacement->posZ = obj->anim.localPosZ;
+        twinklePlacement->color[0] = 2;
+        twinklePlacement->color[1] = *(u8*)(*(int*)&obj->anim.placementData + offsetof(ObjPlacement, color[1]));
+        twinklePlacement->color[3] = *(u8*)(*(int*)&obj->anim.placementData + offsetof(ObjPlacement, color[3]));
+        state->twinkleObject = loadObjectAtObject(obj, twinklePlacement);
     }
 
-    (obj)->animEventCallback = sh_beacon_SeqFn;
+    obj->animEventCallback = sh_beacon_sequenceCallback;
 }
 
 ObjectDescriptor gSH_BeaconObjDescriptor = {
