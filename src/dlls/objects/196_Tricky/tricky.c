@@ -104,7 +104,8 @@
 #include "main/dll/DIM/dll_01C4_dimicewall.h"
 #include "main/dll/DIM/dimlogfire.h"
 #include "main/dll/DIM/dll_01D1_dimtruthhornice.h"
-#include "main/dll/SH/dll_01B3_shbeacon.h"
+#include "dlls/objects/435_SH_Beacon.h"
+#include "dlls/objects/437.h"
 #include "main/main_internal.h"
 #include "main/dll/baddie_frozen.h"
 #include "dlls/objects/316_XYZAnimator.h"
@@ -145,7 +146,6 @@ extern f32 lbl_803DBC48;
 #define TRICKY_SEQID_WHIRLPOOL    2129 /* "Whirlpool" (DLL 0xC9) */
 #define TRICKY_SEQID_VAMBAT       1022 /* "Vambat" (DLL 0xC9) */
 #define TRICKY_SEQID_WB           1239 /* "WB" (DLL 0xC9) */
-#define TRICKY_SEQID_SC_BABYLIGHT 636  /* "SC_babyligh" (DLL 0x1B5) */
 #define TRICKY_SEQID_PINPON       593  /* "PinPon" (DLL 0xC9) */
 
 #define TUMBLEWEED_BLEND_FLAGS_OFFSET    0x82e
@@ -407,6 +407,19 @@ void tricky_updateModelVariantFade(int obj, int state)
 
 /* Set bit 0x80000000 of obj->_b8->_54
  * and store 20.0f into obj->_b8->_808. */
+static int trickyEventTimeExpired(TrickyState* state)
+{
+    if (-100000.0f == state->eventTime)
+    {
+        return 1;
+    }
+    if ((state->currentTime - state->eventTime) > 8.0f)
+    {
+        return 1;
+    }
+    return 0;
+}
+
 void trickyImpress(GameObject* obj)
 {
     TrickyImpressState* b = ((GameObject*)obj)->extra;
@@ -511,8 +524,8 @@ GameObject* trickyFindNearestUsableBaddie(GameObject* origin, f32 maxRadius, int
                     if (allowSpecialTypes == 0)
                     {
                         s16 m = ((GameObject*)*objs)->anim.seqId;
-                        if (m == TRICKY_SEQID_VAMBAT || m == TRICKY_SEQID_WB || m == TRICKY_SEQID_SC_BABYLIGHT ||
-                            m == TRICKY_SEQID_PINPON)
+                        if (m == TRICKY_SEQID_VAMBAT || m == TRICKY_SEQID_WB ||
+                            m == DLL437_SEQUENCE_ID_SC_BABY_LIGHTFOOT || m == TRICKY_SEQID_PINPON)
                             continue;
                     }
                     {
@@ -654,10 +667,20 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 #define SKEETLA_PARTICLE_SPARK_B       0xcb
 
 /* attacker seqId that triggers the staff-impact sfx (retail OBJECTS.bin). */
-#define SKEETLA_ATTACKER_SEQID_STAFF 0x69 /* "staff" (DLL 0xE2) */
+#define SKEETLA_ATTACKER_SEQID_STAFF 0x69
+/* "staff" (DLL 0xE2) */
 #define SKEETLA_PARTICLE_SPAWN_FLAGS   0x200001
 #define SKEETLA_PARTICLE_RANDOM_RATE   4
 
+
+static f32 trickyApproachSpeedStep(f32 speed, f32 target)
+{
+    if (speed > target)
+    {
+        return -0.15f;
+    }
+    return 0.05f;
+}
 
 void trickyUpdateCollisionAndPathState(u8* obj)
 {
@@ -832,6 +855,29 @@ void trickyUpdateCollisionAndPathState(u8* obj)
 
     ((GameObject*)obj)->anim.rotY = state->pathRotY;
     ((GameObject*)obj)->anim.rotZ = state->pathRotZ;
+}
+
+static f32 trickyRouteTurnRate(f32 distance)
+{
+    f32 rate;
+    f32 limit;
+
+    rate = 0.02f;
+    limit = 600.0f;
+    if (distance > limit)
+    {
+        rate = 0.005f;
+    }
+    return rate;
+}
+
+static f32 trickyRouteStep(RomCurveWalker* route)
+{
+    if (route->reverse != 0)
+    {
+        return -2.0f;
+    }
+    return 2.0f;
 }
 
 int trickyAdvanceRouteTargetAhead(int obj, RomCurveWalker* route, f32 speed)
@@ -1025,6 +1071,16 @@ static inline void skeetla_playFootstepSfx(u8* obj, u16 sfxId)
     {
         objAudioFn_800393f8((GameObject*)obj, &((TrickyState*)state)->soundState, sfxId, 0x500, -1, 0);
     }
+}
+
+static f32 trickyBinAngleToRadians(int binAngle)
+{
+    f32 halfTurn;
+    f32 scale;
+
+    halfTurn = 3.1415927f;
+    scale = 32768.0f;
+    return halfTurn * (f32)binAngle / scale;
 }
 
 int trickyMove(GameObject* obj, f32* targetPos)
@@ -9109,7 +9165,7 @@ void Tricky_update(int obj)
                             *(void**)&trickyState->unk724 = 0;
                             break;
                         case 0x3c:
-                            *(void**)&trickyState->unk724 = shbeacon_resetFadeTimerCallback;
+                            *(void**)&trickyState->unk724 = sh_beacon_resetFadeTimerCallback;
                             break;
                         case 0x50f:
                             *(void**)&trickyState->unk724 = wcbeacon_aButtonCallback;

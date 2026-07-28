@@ -1508,7 +1508,7 @@ dlls/objects/196_Tricky/tricky.c:
 	.data       start:0x8031D2E8 end:0x8031DBD8
 	.sdata      start:0x803DBC40 end:0x803DBC58
 	.sbss       start:0x803DDA48 end:0x803DDA50
-	.sdata2     start:0x803E23C0 end:0x803E2558
+	.sdata2     start:0x803E23C0 end:0x803E2554
 
 dlls/objects/201_Baddie/Baddie.c:
 	.text       start:0x80148C18 end:0x8014E1DC

@@ -53,7 +53,7 @@ void decoration11a_hitDetect(GameObject* obj) {
         if (Vec_distance(&(*objectCursor)->anim.worldPosX, &obj->anim.worldPosX) < state->boundingRadius) {
             if ((*objectCursor)->anim.hitReactState != NULL) {
                 candidateRadius = (f32)((ObjHitsPriorityState*)(*objectCursor)->anim.hitReactState)->primaryRadius;
-                objWorldToLocalPos(&localPosition.x, (ObjLocalTransform*)obj, &(*objectCursor)->anim.localPosX);
+                objWorldToLocalPos(&localPosition.x, (MatrixTransform*)obj, &(*objectCursor)->anim.localPosX);
 
                 distanceSquared = 0.0f;
 

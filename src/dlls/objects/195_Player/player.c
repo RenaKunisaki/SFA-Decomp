@@ -24,6 +24,7 @@
 #include "dlls/objects/284.h"
 #include "dlls/objects/315_WallAnimato.h"
 #include "dlls/objects/328_CFGuardian.h"
+#include "dlls/objects/437.h"
 #include "main/dll/dll_000D_playershadow.h"
 #include "main/dll/dll_01B5_lightfoot.h"
 #include "main/dll/DB/DBprotection.h"
@@ -18948,11 +18949,11 @@ int Lightfoot_UpdateCompletionInteraction(int obj, int state)
 {
     int data = *(int*)&((GameObject*)obj)->anim.placementData;
     int inner = *(int*)&((GameObject*)obj)->extra;
-    int a4 = *(int*)((char*)inner + 0x40c);
+    int control = *(int*)((char*)inner + 0x40c);
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedB != 0 ||
         *(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
     {
-        if (mainGetBit(*(s16*)((char*)data + 0x1c)) != 0)
+        if (mainGetBit(((Dll437Placement*)data)->eventGameBit) != 0)
         {
             *(u8*)((char*)inner + 0x404) |= 1;
         }
@@ -18960,20 +18961,20 @@ int Lightfoot_UpdateCompletionInteraction(int obj, int state)
         {
             if (((PlayerState*)state)->baddie.controlMode != 3)
             {
-                *(u8*)((char*)a4 + 0x2c) = 4;
+                ((Dll437ControlState*)control)->completionCountdown = 4;
                 (*gPlayerInterface)->setState((void*)obj, (void*)state, 3);
             }
-            if (*(u8*)((char*)a4 + 0x2c) != 0)
+            if (((Dll437ControlState*)control)->completionCountdown != 0)
             {
-                *(u8*)((char*)a4 + 0x2c) -= 1;
-                if (*(u8*)((char*)a4 + 0x2c) == 0)
+                ((Dll437ControlState*)control)->completionCountdown -= 1;
+                if (((Dll437ControlState*)control)->completionCountdown == 0)
                 {
-                    mainSetBits(*(s16*)((char*)data + 0x1a), 1);
-                    mainSetBits(*(s16*)((char*)data + 0x30), 0);
+                    mainSetBits(((Dll437Placement*)data)->completionGameBit, 1);
+                    mainSetBits(((Dll437Placement*)data)->activeGameBit, 0);
                     ((GameObject*)obj)->anim.alpha = 0;
                     ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-                    *(f32*)((char*)a4 + 0x8) = lbl_803E8178;
-                    *(f32*)((char*)a4 + 0x10) = lbl_803E817C;
+                    ((Dll437ControlState*)control)->completionTimer = lbl_803E8178;
+                    ((Dll437ControlState*)control)->lifeTimer = lbl_803E817C;
                 }
             }
         }
@@ -18981,7 +18982,7 @@ int Lightfoot_UpdateCompletionInteraction(int obj, int state)
         {
             if (((PlayerState*)state)->baddie.controlMode != 1)
             {
-                if (mainGetBit(*(s16*)((char*)data + 0x30)) != 0)
+                if (mainGetBit(((Dll437Placement*)data)->activeGameBit) != 0)
                 {
                     (*gPlayerInterface)->setState((void*)obj, (void*)state, 1);
                 }
@@ -19013,7 +19014,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
             switch (*(int*)((char*)r4c + 0x14))
             {
             case 0x46a51:
-                if (mainGetBit(0xc52))
+                if (mainGetBit(GAMEBIT_LV_ChallengeGate1Complete))
                 {
                     *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
                 }
@@ -19039,9 +19040,9 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
                 case 0x46a51:
                     if (mainGetBit(0xc38) != 0 && mainGetBit(0xc39) != 0 && mainGetBit(0xc3a) != 0)
                     {
-                        if (mainGetBit(0xc52) == 0)
+                        if (mainGetBit(GAMEBIT_LV_ChallengeGate1Complete) == 0)
                         {
-                            mainSetBits(0xc52, 1);
+                            mainSetBits(GAMEBIT_LV_ChallengeGate1Complete, 1);
                             (*gObjectTriggerInterface)->runSequence(3, (void*)obj, -1);
                             *(u8*)((char*)sub + 0x2e) = 1;
                             *(u8*)&((GameObject*)obj)->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
@@ -19224,38 +19225,12 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
     return 0;
 }
 
-typedef struct LightfootButtonTimingState
-{
-    u8 pad00[0x18];
-    u16 phase;
-    u16 previousPhase2;
-    u16 previousPhase;
-    u8 pad1E[0x24 - 0x1E];
-    u16 animationIndex;
-    u8 pad26[0x2D - 0x26];
-    u8 difficulty;
-} LightfootButtonTimingState;
-STATIC_ASSERT(offsetof(LightfootButtonTimingState, phase) == 0x18);
-STATIC_ASSERT(offsetof(LightfootButtonTimingState, animationIndex) == 0x24);
-STATIC_ASSERT(offsetof(LightfootButtonTimingState, difficulty) == 0x2D);
-
-typedef struct LightfootChallengePlacement
-{
-    ObjPlacement base;
-    u8 pad18[2];
-    s16 completionGameBit;
-    u8 pad1C[0x30 - 0x1C];
-    s16 activeGameBit;
-} LightfootChallengePlacement;
-STATIC_ASSERT(offsetof(LightfootChallengePlacement, completionGameBit) == 0x1A);
-STATIC_ASSERT(offsetof(LightfootChallengePlacement, activeGameBit) == 0x30);
-
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
 {
-    LightfootChallengePlacement* placement;
+    const Dll437Placement* placement;
     EmitCtrlTbl* controls = (EmitCtrlTbl*)&lbl_80334EE8;
     GroundBaddieState* actor = obj->extra;
-    LightfootButtonTimingState* challenge = actor->control;
+    Dll437ButtonTimingControlState* challenge = actor->control;
     BaddieState* playerState = (BaddieState*)state;
     GameObject* target = playerState->targetObj;
     if (target != NULL)
@@ -19325,7 +19300,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
             fearTestMeterSetFadeIn(1);
             setAButtonIcon(6);
         }
-        placement = (LightfootChallengePlacement*)obj->anim.placementData;
+        placement = (const Dll437Placement*)obj->anim.placementData;
         if (playerState->moveJustStartedA != 0)
         {
             challenge->animationIndex = 0;
@@ -19571,7 +19546,9 @@ void Lightfoot_UpdatePlayerInteraction(int obj, int inner, int state)
         }
         ((PlayerState*)inner)->pendingParentObj = *(int*)&((GameObject*)obj)->pendingParentObj;
         *(int*)&((GameObject*)obj)->pendingParentObj = 0;
-        (*gPlayerInterface)->update((void*)obj, (void*)state, timeDelta, timeDelta, lbl_803DB0DC, lbl_803DB0D0);
+        (*gPlayerInterface)
+            ->update((void*)obj, (void*)state, timeDelta, timeDelta, gDll437StateHandlers,
+                     gDll437SubstateHandlers);
         *(int*)&((GameObject*)obj)->pendingParentObj = ((PlayerState*)inner)->pendingParentObj;
         Lightfoot_ProcessHitResponseFlags(obj, inner);
     }

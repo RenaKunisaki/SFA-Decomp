@@ -3269,7 +3269,7 @@ u32 loadTableFiles(void)
     u8* base = gResourceFileTable;
     int s = OSDisableInterrupts();
     int flags = loadedFileFlags(0);
-    gAssetLoadInFlightFlags;
+    int loadedFlags = gAssetLoadInFlightFlags;
     if ((gObjTableFileRequestFlags & 0x4) && !(flags & 0x4) && *(s32*)(base + 0x191e4) == -1)
     {
         mergeTableFiles((u32*)(base + 0x170e0), 0x2a, 0x45, 0x800);

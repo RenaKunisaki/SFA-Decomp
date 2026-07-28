@@ -5,33 +5,47 @@
  * volume scaled by the model's root-motion scale; update just polls the
  * shared priority hit-effect handler each frame.
  */
-#include "dlls/object_descriptor.h"
+
+#include "dlls/objects/436_SH_EmptyTum.h"
+
 #include "game/objects/object.h"
-#include "game/objects/object_setup.h"
+#include "main/audio/sfx_trigger_ids.h"
 #include "main/objhits.h"
-#include "main/dll/SH/dll_01B4_shemptytumblew.h"
 
-#define SHEMPTYTUMBLEW_OBJFLAG_HIDDEN 0x4000
+#define SH_EMPTY_TUMBLEWEED_HIT_EFFECT_MODE      8
+#define SH_EMPTY_TUMBLEWEED_HIT_EFFECT_RED       0xFF
+#define SH_EMPTY_TUMBLEWEED_HIT_EFFECT_GREEN     0xFF
+#define SH_EMPTY_TUMBLEWEED_HIT_EFFECT_BLUE      0x78
+#define SH_EMPTY_TUMBLEWEED_ROTATION_BYTE_CENTER 0x7F
+#define SH_EMPTY_TUMBLEWEED_ROTATION_BYTE_SCALE  0x80
+#define SH_EMPTY_TUMBLEWEED_ROTATION_BYTE_SHIFT  8
+#define SH_EMPTY_TUMBLEWEED_HITBOX_RADIUS        15.0f
+#define SH_EMPTY_TUMBLEWEED_HITBOX_VERTICAL_MIN  -5.0f
+#define SH_EMPTY_TUMBLEWEED_HITBOX_VERTICAL_MAX  100.0f
 
-f32 lbl_803DDC00;
+f32 gShEmptyTumbleweedHitEffectCooldown;
 
-void SH_EmptyTumbleW_update(GameObject* obj)
-{
-    ObjHits_PollPriorityHitEffectWithCooldown(obj, 8, 0xff, 0xff, 0x78, 0x280, &lbl_803DDC00);
+void SH_EmptyTumbleW_update(GameObject* obj) {
+    ObjHits_PollPriorityHitEffectWithCooldown(obj, SH_EMPTY_TUMBLEWEED_HIT_EFFECT_MODE,
+                                              SH_EMPTY_TUMBLEWEED_HIT_EFFECT_RED, SH_EMPTY_TUMBLEWEED_HIT_EFFECT_GREEN,
+                                              SH_EMPTY_TUMBLEWEED_HIT_EFFECT_BLUE, SFXTRIG_wp_swdtest222_280,
+                                              &gShEmptyTumbleweedHitEffectCooldown);
 }
 
-void SH_EmptyTumbleW_init(s16* obj, ShEmptyTumblewPlacement* def)
-{
+void SH_EmptyTumbleW_init(GameObject* obj, ShEmptyTumbleweedPlacement* placement) {
     f32 scale;
 
-    ((GameObject*)obj)->anim.rotZ = (def->rotZByte - 0x7f) * 0x80;
-    ((GameObject*)obj)->anim.rotY = (def->rotYByte - 0x7f) * 0x80;
-    ((GameObject*)obj)->anim.rotX = def->rotXByte << 8;
-    ((GameObject*)obj)->anim.rootMotionScale = def->scale;
-    scale = ((GameObject*)obj)->anim.rootMotionScale;
-    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (int)(15.0f * scale), (int)(-5.0f * scale),
-                               (int)(100.0f * scale));
-    ((GameObject*)obj)->objectFlags |= SHEMPTYTUMBLEW_OBJFLAG_HIDDEN;
+    obj->anim.rotZ =
+        (placement->rotZByte - SH_EMPTY_TUMBLEWEED_ROTATION_BYTE_CENTER) * SH_EMPTY_TUMBLEWEED_ROTATION_BYTE_SCALE;
+    obj->anim.rotY =
+        (placement->rotYByte - SH_EMPTY_TUMBLEWEED_ROTATION_BYTE_CENTER) * SH_EMPTY_TUMBLEWEED_ROTATION_BYTE_SCALE;
+    obj->anim.rotX = placement->rotXByte << SH_EMPTY_TUMBLEWEED_ROTATION_BYTE_SHIFT;
+    obj->anim.rootMotionScale = placement->scale;
+    scale = obj->anim.rootMotionScale;
+    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (int)(SH_EMPTY_TUMBLEWEED_HITBOX_RADIUS * scale),
+                               (int)(SH_EMPTY_TUMBLEWEED_HITBOX_VERTICAL_MIN * scale),
+                               (int)(SH_EMPTY_TUMBLEWEED_HITBOX_VERTICAL_MAX * scale));
+    obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
 }
 
 ObjectDescriptor gSH_EmptyTumbleWObjDescriptor = {
