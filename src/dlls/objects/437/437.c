@@ -343,7 +343,7 @@ int Lightfoot_UpdateWanderSteering(GameObject* obj, int state, f32 fv)
         ((PlayerState*)sub)->baddie.posX = (f32)randomGetRange(0x78, 0xb4);
     }
     ((PlayerState*)state)->baddie.moveSpeed =
-        0.04f * (1.0f - (f32)(u16) * (u16*)((char*)sub + 0x22) / (f32)(u16)inner->proximityRange);
+        0.04f * (1.0f - (f32)(u16) * (u16*)((char*)sub + 0x22) / (f32)inner->proximityRange);
     if (((PlayerState*)state)->baddie.moveSpeed < 0.01f)
     {
         ((PlayerState*)state)->baddie.moveSpeed = 0.01f;

@@ -79,7 +79,7 @@ void CameraModeClimb_update(CameraObject* camObj)
                 (f32)(s32)gCamClimbState->transitionDuration;
         gCamClimbState->relativePosition =
             blend * (f32)(s32)(gCamClimbState->targetRelativePosition - gCamClimbState->startRelativePosition) +
-            (f32)(u32)(u16)gCamClimbState->startRelativePosition;
+            (f32)(u32)gCamClimbState->startRelativePosition;
         gCamClimbState->targetDistance =
             blend * (gCamClimbState->endDistance - gCamClimbState->startDistance) + gCamClimbState->startDistance;
         gCamClimbState->minHeight =

@@ -198,7 +198,7 @@ void KT_Lazerwall_update(GameObject* obj)
 void KT_Lazerwall_init(GameObject* obj, KtlazerwallPlacement* placement)
 {
     KtlazerwallState* state = obj->extra;
-    obj->anim.rotX = (s16)((s8)placement->rotXByte << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
     state->reloadTimer = 0.0f;
     state->driftSpeed = 0.01f * (f32)(int)randomGetRange(0x50, 0x78);
     if ((s32)randomGetRange(0, 1) != 0)

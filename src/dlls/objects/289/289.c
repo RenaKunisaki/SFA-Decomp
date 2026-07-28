@@ -41,8 +41,8 @@ void infotext_update(GameObject* obj) {
 
 void infotext_init(GameObject* obj, InfoTextPlacement* placement) {
     obj->objectFlags = (u16)((u32)obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
-    obj->anim.rotX = (s16)((s32)(u8)placement->rotationX << 8);
-    objSetHintTextIdx(obj, (u8)placement->hintTextIndex);
+    obj->anim.rotX = (s16)((s32)placement->rotationX << 8);
+    objSetHintTextIdx(obj, placement->hintTextIndex);
 }
 
 ObjectDescriptor gInfoTextObjDescriptor = {

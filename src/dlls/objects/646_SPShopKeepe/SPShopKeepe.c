@@ -712,7 +712,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     }
     if ((obj)->seqIndex == -1)
     {
-        if ((s8)seq->movementState != 0)
+        if (seq->movementState != 0)
         {
             slot = (*(int (**)(int))((char*)*((GameObject*)((ShopkeeperState*)state)->vendorObj)->anim.dll + 0x44))(
                 ((ShopkeeperState*)state)->vendorObj);

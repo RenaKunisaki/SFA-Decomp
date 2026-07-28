@@ -111,7 +111,7 @@ void dll_224_init(GameObject* obj, void* other)
 {
     SpellStoneUseState* extra = obj->extra;
     SpellStonePlacement* def = (SpellStonePlacement*)other;
-    s16 rotX = ((s8)def->rotXByte << 8);
+    s16 rotX = (def->rotXByte << 8);
     u8 hitboxFlags;
 
     obj->anim.rotX = rotX;

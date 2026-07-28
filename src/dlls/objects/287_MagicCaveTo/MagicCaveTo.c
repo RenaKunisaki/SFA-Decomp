@@ -301,7 +301,7 @@ void MagicCaveTop_init(GameObject* obj, MagicCaveTopPlacement* placement) {
     if (mainGetBit(placement->visibleGameBit) != 0) {
         state->fadeTimer = MAGIC_CAVE_TOP_FADE_MAX;
     }
-    obj->anim.rotX = (s16)((s32)(u8)placement->rotationX << 8);
+    obj->anim.rotX = (s16)((s32)placement->rotationX << 8);
     textureRefs = ObjModel_GetRenderOpTextureRefs(Obj_GetActiveModel(obj), 0);
     if (placement->textureSwapGameBit > 0) {
         if (mainGetBit(placement->textureSwapGameBit) != 0) {

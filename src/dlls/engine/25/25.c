@@ -942,7 +942,7 @@ int dll_19_func0F(GameObject* obj, ObjSeqState* seq, char* st, void* moveHandler
         ((BaddieState*)st)->moveInputX = rest;
         ((BaddieState*)st)->moveInputZ = rest;
     }
-    if ((s8)seq->movementState != 1)
+    if (seq->movementState != 1)
     {
         seq->posOffsetX = (obj)->anim.localPosX;
         seq->posOffsetY = (obj)->anim.localPosY;
@@ -1030,7 +1030,7 @@ int dll_19_func0F(GameObject* obj, ObjSeqState* seq, char* st, void* moveHandler
         }
     }
     gDll19SeqMinDist = dist;
-    if ((s8)seq->movementState == 0)
+    if (seq->movementState == 0)
     {
         ((GroundBaddieState*)st)->subMode = 0;
         ((BaddieState*)st)->controlMode = controlMode;

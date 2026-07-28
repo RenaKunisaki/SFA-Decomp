@@ -622,9 +622,9 @@ void collectible_init(GameObject* obj, CollectibleSetup* setup) {
     pathControlByte = sCollectiblePathByte[0];
     ObjGroup_AddObject((int)obj, COLLECTIBLE_OBJECT_GROUP);
     ObjMsg_AllocQueue(obj, COLLECTIBLE_MESSAGE_QUEUE_LENGTH);
-    obj->anim.rotX = (s16)((u8)setup->rotXByte << 8);
-    obj->anim.rotY = (s16)((u8)setup->rotYByte << 8);
-    obj->anim.rotZ = (s16)((u8)setup->rotZByte << 8);
+    obj->anim.rotX = (s16)(setup->rotXByte << 8);
+    obj->anim.rotY = (s16)(setup->rotYByte << 8);
+    obj->anim.rotZ = (s16)(setup->rotZByte << 8);
     obj->anim.rootMotionScale = objAnim->modelInstance->rootMotionScaleBase;
     obj->animEventCallback = collectible_SeqFn;
     modelIndex = setup->modelIndex;

@@ -5310,7 +5310,7 @@ void crawlerPlayMoveEventFx(GameObject* obj, u8* state)
             sub = &entry[i];
             if (sub->sfxId != 0)
             {
-                Sfx_PlayFromObject((int)obj, (u16)sub->sfxId);
+                Sfx_PlayFromObject((int)obj, sub->sfxId);
             }
             if (sub->shakeAmt != 0)
             {

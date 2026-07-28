@@ -448,7 +448,7 @@ void DoorF4_update(GameObject* obj) {
         obj->anim.localPosX = placement->base.posX;
         obj->anim.localPosY = placement->base.posY;
         obj->anim.localPosZ = placement->base.posZ;
-        obj->anim.rotX = (s16)((s8)placement->yawByte << 8);
+        obj->anim.rotX = (s16)(placement->yawByte << 8);
         sequenceId = obj->anim.seqId;
         if (sequenceId == DOORF4_WARP_DOOR_SEQUENCE_ID) {
             if (mainGetBit(state->openGameBit) != 0) {
@@ -474,7 +474,7 @@ void DoorF4_init(GameObject* obj, DoorF4Placement* placement) {
     s16 sequenceId;
 
     ObjMsg_AllocQueue(obj, DOORF4_INBOX_CAPACITY);
-    obj->anim.rotX = (s16)((s8)placement->yawByte << 8);
+    obj->anim.rotX = (s16)(placement->yawByte << 8);
     obj->animEventCallback = DoorF4_SeqFn;
     *(u8*)&obj->anim.resetHitboxMode |= INTERACT_FLAG_DISABLED;
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
