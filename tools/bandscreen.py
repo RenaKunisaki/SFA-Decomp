@@ -1,27 +1,28 @@
 #!/usr/bin/env python3
 """Rank the sub-100 frontier by SAVED-REGISTER BAND WIDTH.
 
-Why this exists: the register-band assignment model is near-exact for narrow
-bands and collapses as the band fills.  Measured over 6,288 SFA retail
-functions (materialized-ascending + computed-descending, jointly):
+Why this exists: the register-band assignment model is exact for narrow bands
+and then falls off a cliff.  Scoring the CLAUDE.md load-class rule (non-copy
+saved regs = one declaration-keyed population filling r31/f31 downward) over
+6,288 SFA retail functions, by total saved regs in the band:
 
     saved regs in band :   2      3      4      5     6+
-    GPR                : 99.8%  98.1%  86.0%  48.1%  27.0%
-    FP                 : 86.5%  63.8%  55.9%  37.5%  25.6%
+    GPR                : 97.7%  99.3%  98.8%   1.4%   0.1%
+    FP                 : 45.5%  36.8%  19.3%  14.9%   5.1%
 
-So in a <=3-register function the band is effectively deterministic and
-STRUCTURE is the only free variable -- a structural fix lands cleanly instead
-of being swamped by allocation noise.  At >=6 there is no total order to steer
-and declaration-order sweeps are provably flat (four exhaustive sweeps of
-720/225/144/121 candidates all returned zero movement, every one a wide-band
-function).
+It is a cliff, not a decay: the rule holds through width 4 and dies at 5.  So
+in a <=4-register function the band is effectively deterministic and STRUCTURE
+is the only free variable -- a structural fix lands cleanly instead of being
+swamped by allocation noise.  At >=5 there is no total order to fit and
+declaration sweeps are provably flat (four exhaustive sweeps of 720/225/144/121
+candidates all returned zero movement, every one a wide-band function).
 
-This screens every function that differs from retail and ranks the narrow-band
-ones by how many bytes they are missing -- i.e. the set where a probe result
-will transfer and a fix will stick.
+Narrow band means the assignment is PREDICTABLE, not STEERABLE -- a
+120-permutation sweep of playerUpdate (3 saved GPRs) was also flat.  Use this to
+find *shape* defects (rank by structB), not to plan register moves.
 
-    python3 tools/bandscreen.py                  # narrow-band worklist
-    python3 tools/bandscreen.py --max-band 2     # only the 99.8% regime
+    python3 tools/bandscreen.py --struct-only    # shape defects only
+    python3 tools/bandscreen.py --max-band 2     # the tightest regime
     python3 tools/bandscreen.py --all            # every differing function
 """
 from __future__ import annotations
@@ -76,34 +77,38 @@ def band_widths(ins: list[str]) -> tuple[int, int]:
     return len(g), len(f)
 
 
-def differing(t: list[str], c: list[str]) -> tuple[int, str]:
-    """(differing instructions, kind).
+def differing(t: list[str], c: list[str]) -> tuple[int, int]:
+    """(structB_instructions, regB_instructions).
 
-    kind is STRUCT when the mnemonic stream itself differs -- a real shape
-    difference a source edit can address -- and REG when the mnemonics match
-    one-for-one and only operands (register numbers) differ, which is
-    allocation noise.  Absolute addresses inside operands are noise either way.
+    Align the two streams on their MNEMONIC sequence.  Inside a block whose
+    mnemonics agree, an instruction that still differs is an operand-only
+    difference -- register allocation (regB).  Anything the mnemonic alignment
+    could not match is a real shape difference (structB).
+
+    Aligning on mnemonics rather than on full text is what keeps a whole-function
+    register rename (e.g. an r5<->r7 swap where a mr/addi pair trades roles) out
+    of the structural bucket, and it behaves identically whether or not the two
+    functions are the same length.
     """
-    strip = lambda s: re.sub(r'\b[0-9a-f]{4,8} <[^>]+>', '<T>', s)
+    strip = lambda x: re.sub(r'\b[0-9a-f]{4,8} <[^>]+>', '<T>', x)
     T, C = [strip(x) for x in t], [strip(x) for x in c]
-    if len(T) == len(C):
-        nm = sum(1 for a, b in zip(T, C) if a.split()[0] != b.split()[0])
-        nr = sum(1 for a, b in zip(T, C)
-                 if a != b and a.split()[0] == b.split()[0])
-        return nm, nr
+    mt, mc = [x.split()[0] for x in T], [x.split()[0] for x in C]
     import difflib
-    sm = difflib.SequenceMatcher(None, [x.split()[0] for x in T],
-                                 [x.split()[0] for x in C], autojunk=False)
-    nm = sum(max(i2 - i1, j2 - j1) for tag, i1, i2, j1, j2
-             in sm.get_opcodes() if tag != 'equal')
-    return nm, abs(len(T) - len(C)) * 0 + max(0, min(len(T), len(C)) - nm) and 0
+    sm = difflib.SequenceMatcher(None, mt, mc, autojunk=False)
+    struct = reg = 0
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == "equal":
+            reg += sum(1 for a, b in zip(T[i1:i2], C[j1:j2]) if a != b)
+        else:
+            struct += max(i2 - i1, j2 - j1)
+    return struct, reg
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("-v", "--version", default="GSAE01")
-    ap.add_argument("--max-band", type=int, default=3,
-                    help="max saved regs in EACH band (default 3)")
+    ap.add_argument("--max-band", type=int, default=4,
+                    help="max saved regs in EACH band (default 4 -- the cliff is at 4->5)")
     ap.add_argument("--all", action="store_true", help="ignore the band filter")
     ap.add_argument("--struct-only", action="store_true",
                     help="only functions whose mnemonic stream differs")
