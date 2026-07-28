@@ -86,7 +86,7 @@ extern int gLightmapDrawQueueCount;
 extern int* lbl_803DCE34;
 extern int gTexIndMtxTable[];
 extern u8 gLightmapDrawQueue[];
-extern int lbl_80382008[5];
+extern u8 gCloudLayerTexMatrix[0x30];
 #define FRUSTUM_PLANE_COUNT 5
 u8 gRcpPendingWarpDest[0x10];
 FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
@@ -938,7 +938,7 @@ MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRe
     flags = SHADER_FLAGS(shader);
     if ((flags & 0x20) != 0 && (lightList = lbl_803DCE34) != 0)
     {
-        addSignedOverlayTexStage((u8*)lightList, &lbl_80382008, lbl_803DB638);
+        addSignedOverlayTexStage((u8*)lightList, &gCloudLayerTexMatrix, lbl_803DB638);
     }
     else if ((flags & 0x40) != 0)
     {

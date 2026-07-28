@@ -70,7 +70,7 @@ typedef struct MapInfoRecord
     u8 unk1d;
     s16 unk1e; /* +0x1e */
 } MapInfoRecord;
-extern WarpVec lbl_80386648[];
+extern WarpVec gCameraPosByTransformSpace[];
 extern const f32 gMapBlockWorldSize;
 
 #include "sys/objects/lifecycle.h"
@@ -631,9 +631,9 @@ int objShouldUnload(GameObject* obj)
         {
             idx2 = 0;
         }
-        x = lbl_80386648[idx2].x;
-        y = lbl_80386648[idx2].y;
-        z = lbl_80386648[idx2].z;
+        x = gCameraPosByTransformSpace[idx2].x;
+        y = gCameraPosByTransformSpace[idx2].y;
+        z = gCameraPosByTransformSpace[idx2].z;
     }
     dist = obj->anim.loadDistance;
     if (obj->anim.parent != NULL)
@@ -792,8 +792,8 @@ int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup)
     if (useObj != 0)
     {
         off = viewSlot << 4;
-        x = lbl_80386648[viewSlot].x;
-        p = (f32*)((u8*)lbl_80386648 + off);
+        x = gCameraPosByTransformSpace[viewSlot].x;
+        p = (f32*)((u8*)gCameraPosByTransformSpace + off);
         y = p[1];
         z = p[2];
     }
@@ -1105,29 +1105,29 @@ void playerUpdateFn_8005649c(void)
     cam = Camera_GetCurrent();
     Camera_UpdateForObject(cam);
     for (k = 0; k < 31; k++)
-        lbl_80386648[k].valid = 0;
-    lbl_80386648[0].x = cam->worldX;
-    lbl_80386648[0].y = cam->worldY;
-    lbl_80386648[0].z = cam->worldZ;
-    lbl_80386648[0].valid = 1;
+        gCameraPosByTransformSpace[k].valid = 0;
+    gCameraPosByTransformSpace[0].x = cam->worldX;
+    gCameraPosByTransformSpace[0].y = cam->worldY;
+    gCameraPosByTransformSpace[0].z = cam->worldZ;
+    gCameraPosByTransformSpace[0].valid = 1;
     for (i = 0, e = objs; i < count; e++, i++)
     {
         GameObject* obj = *e;
         slot = obj->anim.transformMatrixIndex + 1;
         if (cam->parentObject == obj)
         {
-            lbl_80386648[slot].x = cam->x;
-            lbl_80386648[slot].y = cam->y;
-            lbl_80386648[slot].z = cam->z;
+            gCameraPosByTransformSpace[slot].x = cam->x;
+            gCameraPosByTransformSpace[slot].y = cam->y;
+            gCameraPosByTransformSpace[slot].z = cam->z;
         }
         else
         {
             Obj_TransformWorldPointToLocal(cam->worldX, cam->worldY, cam->worldZ, &lx, &ly, &lz, obj);
-            lbl_80386648[slot].x = lx;
-            lbl_80386648[slot].y = ly;
-            lbl_80386648[slot].z = lz;
+            gCameraPosByTransformSpace[slot].x = lx;
+            gCameraPosByTransformSpace[slot].y = ly;
+            gCameraPosByTransformSpace[slot].z = lz;
         }
-        lbl_80386648[slot].valid = 1;
+        gCameraPosByTransformSpace[slot].valid = 1;
     }
 }
 
@@ -3484,7 +3484,7 @@ void buildPlayerRelativeFrustumPlanes(void)
 
 char gLightmapDrawQueue[0x2149];
 u8 lbl_80380209[0x1DFF];
-u8 lbl_80382008[0x30];
+u8 gCloudLayerTexMatrix[0x30];
 u8 gGlowLightList[0x190];
 f32 distortionFilterVector[0x1c];
 int gShaderMapRomBuffers[0x5];
@@ -3494,4 +3494,4 @@ int gMapBlockCellEntryTables[5];
 s8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
 
 MapRomListPage* gLoadedRomListPages[ROM_LIST_PAGE_COUNT];
-WarpVec lbl_80386648[0x29];
+WarpVec gCameraPosByTransformSpace[0x29];
