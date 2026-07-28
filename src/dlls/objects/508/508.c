@@ -269,7 +269,7 @@ void LaserBeam_update(int obj2)
     }
     if (player != NULL && state->fireCooldown == 0 && state->beamState == 2)
     {
-        range = 5.0f + (f32)(int)*(s8*)&state->rangeOffset;
+        range = 5.0f + (f32)(int)state->rangeOffset;
         dy = player->anim.localPosY - ((GameObject*)obj2)->anim.localPosY;
         if (dy < range && dy > -(25.0f + range))
         {

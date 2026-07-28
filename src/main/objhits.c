@@ -1539,7 +1539,7 @@ void ObjHits_CheckObjectHitVolumes(int objA, int objB, int attA, int attB, f32 d
         attStateB = NULL;
     }
     result = 0;
-    if ((stateA->objectHitMask != 0) && ((s8)stateA->suppressOutgoingHits == 0))
+    if ((stateA->objectHitMask != 0) && (stateA->suppressOutgoingHits == 0))
     {
         if (((GameObject*)objA)->anim.classId == 1)
         {
@@ -1595,7 +1595,7 @@ void ObjHits_CheckObjectHitVolumes(int objA, int objB, int attA, int attB, f32 d
         }
     }
     result = 0;
-    if (((stateB->sourceMask & 0x80) == 0) && (stateB->objectHitMask != 0) && ((s8)stateB->suppressOutgoingHits == 0))
+    if (((stateB->sourceMask & 0x80) == 0) && (stateB->objectHitMask != 0) && (stateB->suppressOutgoingHits == 0))
     {
         if (((GameObject*)objB)->anim.classId == 1)
         {
@@ -2194,7 +2194,7 @@ void ObjHits_CheckTrackContact(int objA, int objB)
 
     stateA = (ObjHitsPriorityState*)((GameObject*)objA)->anim.hitReactState;
     mask2 = (u32)objB == objA ? stateA->objectHitMask >> 4 : stateA->objectHitMask & 0xf;
-    if ((mask2 != 0) && (*(s8*)&stateA->suppressOutgoingHits == 0))
+    if ((mask2 != 0) && (stateA->suppressOutgoingHits == 0))
     {
         stateB = (ObjHitsPriorityState*)((GameObject*)objB)->anim.hitReactState;
         if ((stateB->secondaryShapeFlags & OBJHITS_SHAPE_MODEL_HIT_VOLUMES) != 0)

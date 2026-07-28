@@ -485,7 +485,7 @@ int SmallBasket_resolveCollision(GameObject* obj) {
         return 1;
     }
 
-    if ((int)(hitState->objectHitMask >> 4) != 0 && (s8)hitState->suppressOutgoingHits == 0) {
+    if ((int)(hitState->objectHitMask >> 4) != 0 && hitState->suppressOutgoingHits == 0) {
         endPoints[0] = obj->anim.localPosX;
         *(endPointY = &endPoints[1]) = obj->anim.localPosY;
         *(endPointZ = &endPoints[2]) = obj->anim.localPosZ;

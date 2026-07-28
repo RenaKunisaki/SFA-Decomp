@@ -17,7 +17,7 @@ typedef struct LaserBeamState
     u8 pad20[4];
     u8 beamState; /* 0x24: 0/1/2 active beam state (2 = firing) */
     u8 sweepDone; /* 0x25: set when sweepYaw reaches its limit */
-    u8 rangeOffset; /* 0x26: signed range bias added to fire range */
+    s8 rangeOffset; /* 0x26: signed range bias added to fire range */
     s8 fireCooldown; /* 0x27: countdown gating fire (framesThisStep) */
     s16 unk28;
     s16 sweepYaw; /* 0x2a */

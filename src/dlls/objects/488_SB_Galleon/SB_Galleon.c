@@ -385,7 +385,7 @@ void DBprotection_updateFlight(GameObject* obj)
                 ((SBGalleonState*)state)->phase = 1;
                 ((SBGalleonState*)state)->cycleKind = 1;
                 ((SBGalleonState*)state)->phaseCounter = 0;
-                *(s8*)&((SBGalleonState*)state)->flightPattern = 0;
+                ((SBGalleonState*)state)->flightPattern = 0;
                 ((SBGalleonState*)state)->headingLatch = 200;
                 mainSetBits(DBPROTECTION_GAMEBIT_DIVE_ACTIVE, 1);
                 break;
@@ -411,7 +411,7 @@ void DBprotection_updateFlight(GameObject* obj)
                 ((SBGalleonState*)state)->phaseTimer = 0;
                 ((SBGalleonState*)state)->phase = 1;
                 ((SBGalleonState*)state)->cycleKind = 2;
-                *(s8*)&((SBGalleonState*)state)->flightPattern = 0;
+                ((SBGalleonState*)state)->flightPattern = 0;
                 ((SBGalleonState*)state)->headingLatch = 200;
                 break;
             }
@@ -425,7 +425,7 @@ void DBprotection_updateFlight(GameObject* obj)
         {
             ((SBGalleonState*)state)->headingLatch -= 1;
         }
-        switch (*(s8*)&((SBGalleonState*)state)->flightPattern)
+        switch (((SBGalleonState*)state)->flightPattern)
         {
         case 0:
             tx = ((SBGalleonState*)state)->homeX - lbl_803E570C;
@@ -515,7 +515,7 @@ void DBprotection_updateFlight(GameObject* obj)
         ambA = lbl_803E5754;
         ambB = lbl_803E5758;
         ambC = lbl_803E56CC;
-        switch (*(s8*)&((SBGalleonState*)state)->flightPattern)
+        switch (((SBGalleonState*)state)->flightPattern)
         {
         case 0:
             if (dist < lbl_803E575C)
@@ -1349,7 +1349,7 @@ int SB_Galleon_getPhase(GameObject* obj)
     }
     if ((s8)phase == 1)
     {
-        if ((pattern = (s8)state->flightPattern) == 2 || pattern == 3 || pattern == 5)
+        if ((pattern = state->flightPattern) == 2 || pattern == 3 || pattern == 5)
             return -1;
     }
     return (s8)phase;
@@ -1380,7 +1380,7 @@ int SB_Galleon_onPartDestroyed(GameObject* obj)
     }
     {
         int pattern;
-        if ((pattern = (s8)state->flightPattern) == 0 || pattern == 1 || pattern == 2)
+        if ((pattern = state->flightPattern) == 0 || pattern == 1 || pattern == 2)
         {
             state->phaseCounter += 1;
             return 1;
@@ -1437,7 +1437,7 @@ void SB_Galleon_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visib
     } stk;
     if (visible != 0)
     {
-        if ((s8)state->cameraState < 2)
+        if (state->cameraState < 2)
         {
             stk.mode = state->wanderA;
             stk.c = 570.0f;
@@ -1499,11 +1499,11 @@ void SB_Galleon_update(GameObject* obj)
     }
     else
     {
-        if ((state->musicLatch == 0) && ((s8)state->cameraState > 0))
+        if ((state->musicLatch == 0) && (state->cameraState > 0))
         {
             state->musicLatch = 1;
         }
-        switch ((s8)state->cameraState)
+        switch (state->cameraState)
         {
         case SBGALLEON_CAM_APPROACH:
             DBprotection_updateFlight(obj);

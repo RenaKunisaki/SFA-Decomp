@@ -40,8 +40,8 @@ STATIC_ASSERT(sizeof(KtrexfloorswitchPlacement) == 0x20);
 typedef struct KtrexfloorswitchState
 {
     u8 pad0[0x4 - 0x0];
-    u8 graceTimer;     /* 0x04: frames the plate stays pressed after release */
-    u8 prevGraceTimer; /* 0x05: previous frame's graceTimer */
+    s8 graceTimer;     /* 0x04: frames the plate stays pressed after release */
+    s8 prevGraceTimer; /* 0x05: previous frame's graceTimer */
     u8 pad6[0x8 - 0x6];
     f32 chargeTimer; /* 0x08: counts down between level increments */
     f32 scrollSpeed; /* 0x0C: texture scroll velocity */

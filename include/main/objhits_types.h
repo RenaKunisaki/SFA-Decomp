@@ -92,7 +92,7 @@ typedef struct ObjHitsPriorityState {
   u8 objectPairHitVolume;
   s8 hitVolumePriority;
   s8 hitVolumeId;
-  u8 suppressOutgoingHits;
+  s8 suppressOutgoingHits;
   s8 priorityHitCount;
   s8 sphereIndices[OBJHITS_PRIORITY_HIT_COUNT];
   s8 priorities[OBJHITS_PRIORITY_HIT_COUNT];

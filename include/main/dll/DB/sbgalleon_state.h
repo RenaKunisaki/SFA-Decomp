@@ -49,7 +49,7 @@ typedef struct SBGalleonState {
     u8 pad6A[2];
     s16 fadeTimer;   /* 0x6c */
     s16 phaseTimer;  /* 0x6e */
-    u8 cameraState;  /* 0x70 */
+    s8 cameraState;  /* 0x70 */
     u8 pad71;
     s16 mapLayer;    /* 0x72: latched from obj+0xac at init */
     f32 textAlpha;   /* 0x74: gameText 0x4b1 fade */
@@ -60,7 +60,7 @@ typedef struct SBGalleonState {
                         and toggled by the victory-cinematic anim events (0/1/2/8); stays 0
                         through the fight, so the head-fire escalation is dormant in retail.
                         (The guns fast-fire on `stage`, not this.) */
-    u8 flightPattern;/* 0x7a */
+    s8 flightPattern;/* 0x7a */
     u8 unk7B;        /* 0x7b */
     s8 phaseCounter;        /* 0x7c */
     u8 pad7D[3];

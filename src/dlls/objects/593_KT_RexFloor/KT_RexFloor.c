@@ -159,7 +159,7 @@ void KT_RexFloorSwitch_update(GameObject* obj)
             }
         }
     }
-    if ((s8)(state->graceTimer -= 1) < 0)
+    if ((state->graceTimer -= 1) < 0)
     {
         state->graceTimer = 0;
     }
@@ -237,7 +237,7 @@ void KT_RexFloorSwitch_update(GameObject* obj)
             }
         }
     }
-    else if ((s8)state->graceTimer != 0 &&
+    else if (state->graceTimer != 0 &&
              (state->flags & KTREXFLOORSWITCH_FLAG_CHARGE_LOCKED) == 0)
     {
         height = ((KtrexfloorswitchPlacement*)placement)->baseHeight -
@@ -321,7 +321,7 @@ void KT_RexFloorSwitch_update(GameObject* obj)
         }
     }
     if ((state->flags & KTREXFLOORSWITCH_FLAG_CHARGE_LOCKED) == 0 &&
-        (s8)state->prevGraceTimer != (s8)state->graceTimer)
+        state->prevGraceTimer != state->graceTimer)
     {
         mainGetBit(((KtrexfloorswitchPlacement*)placement)->levelBit);
         mainSetBits(((KtrexfloorswitchPlacement*)placement)->levelBit, 0);
@@ -333,7 +333,7 @@ void KT_RexFloorSwitch_update(GameObject* obj)
     gKTrexFloorSwitchPrevMoved = (s8)moved;
     if ((obj)->userData1 == 2)
     {
-        if ((s8)state->graceTimer != 0)
+        if (state->graceTimer != 0)
         {
             if (0.0f == state->scrollSpeed)
             {
