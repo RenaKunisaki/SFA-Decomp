@@ -388,6 +388,8 @@ void drawFn_8006f500(void)
     int i;
     f32 tTop;
     f32 tBot;
+    f32 sLeft;
+    f32 sRight;
     u8 alpha;
 
     if (Obj_GetPlayerObject() == NULL)
@@ -424,6 +426,8 @@ void drawFn_8006f500(void)
     gxSetZMode_(1, 3, 0);
     gxSetPeControl_ZCompLoc_(1);
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
+    sLeft = 0.0f;
+    sRight = 1.0f;
     i = 0;
     for (; i < 0x100; i++)
     {
@@ -468,7 +472,7 @@ void drawFn_8006f500(void)
                 GXWGFifo.f32 = py;
                 GXWGFifo.f32 = pz;
             }
-            GXWGFifo.f32 = 0.0f;
+            GXWGFifo.f32 = sLeft;
             GXWGFifo.f32 = tTop;
             {
                 f32 px, py, pz;
@@ -479,7 +483,7 @@ void drawFn_8006f500(void)
                 GXWGFifo.f32 = py;
                 GXWGFifo.f32 = pz;
             }
-            GXWGFifo.f32 = 1.0f;
+            GXWGFifo.f32 = sRight;
             GXWGFifo.f32 = tTop;
             {
                 f32 px, py, pz;
@@ -490,7 +494,7 @@ void drawFn_8006f500(void)
                 GXWGFifo.f32 = py;
                 GXWGFifo.f32 = pz;
             }
-            GXWGFifo.f32 = 1.0f;
+            GXWGFifo.f32 = sRight;
             GXWGFifo.f32 = tBot;
             {
                 f32 px, py, pz;
@@ -501,7 +505,7 @@ void drawFn_8006f500(void)
                 GXWGFifo.f32 = py;
                 GXWGFifo.f32 = pz;
             }
-            GXWGFifo.f32 = 0.0f;
+            GXWGFifo.f32 = sLeft;
             GXWGFifo.f32 = tBot;
         }
     }
