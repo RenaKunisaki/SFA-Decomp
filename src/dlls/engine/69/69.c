@@ -37,6 +37,11 @@ void CameraModeBike_free(void)
     gCamTalkBikeState = 0;
 }
 
+static void CameraModeBike_resetSmoothing(CameraModeBikeState* st)
+{
+    st->smoothedYawOffset = (0.0f);
+}
+
 void CameraModeBike_update(CameraObject* camera)
 {
     float rollSmoothing;
@@ -102,10 +107,10 @@ void CameraModeBike_update(CameraObject* camera)
         st = gCamTalkBikeState;
         heightT = -st->heightInput / (6.0f);
         followTermA = CAM_TALK_FOLLOW_SMOOTHING;
-        followTermB = (25.0f);
+        followTermB = CAM_TALK_DEFAULT_FOLLOW_DIST;
         heightT =
             (heightT < (0.0f)) ? (0.0f) : ((heightT > (1.0f)) ? (1.0f) : heightT);
-        st->followDistance += followTermA * ((followTermB * heightT + CAM_TALK_DEFAULT_FOLLOW_DIST) - st->followDistance);
+        st->followDistance += followTermA * (((25.0f) * heightT + followTermB) - st->followDistance);
         followDist = gCamTalkBikeState->followDistance;
         followTermA = followDist * sinPitch;
         followTermB = followDist * cosPitch;
