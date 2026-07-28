@@ -263,6 +263,7 @@
 #include "dlls/objects/467.h"
 #include "dlls/objects/468_WORLDAstero.h"
 #include "dlls/objects/469_DIM2Conveyo.h"
+#include "dlls/objects/470.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -344,7 +345,7 @@ char sModelEngineTimerDotText[] = ".";
 #define MODELENGINE_TIMER_RUNNING   4
 
 extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19;
-extern ResourceDescriptor dll_1D6, dll_1DA, dll_1DB, dll_1FB;
+extern ResourceDescriptor dll_1DA, dll_1DB, dll_1FB;
 extern ResourceDescriptor dll_1FF, dll_200, dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
 extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
@@ -1554,7 +1555,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWorldObjObjDescriptor,
     (ResourceDescriptor*)&gWorldAsteroidsObjDescriptor,
     (ResourceDescriptor*)&gDIM2ConveyorObjDescriptor,
-    &dll_1D6,
+    (ResourceDescriptor*)&gDll1D6ObjDescriptor,
     &gDIM2SnowBallObjDescriptor,
     &gDIM2PathGeneratorObjDescriptor,
     &gDIM2PrisonMammothObjDescriptor,
