@@ -26,7 +26,7 @@
 #include "main/obj_group.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "dolphin/os/OSFastCast.h"
 #include "dolphin/gx/GXCull.h"
 #include "dolphin/gx/GXGeometry.h"
@@ -696,10 +696,11 @@ void renderShadows(int unused0, int unused1, int unused2)
     Texture** texture;
     NewShadowCaster* casterPtr;
     f32 om100[24];
-    f32 mTrans[12], mScale[12], mOrtho[16];
+    Mtx mTrans, mScale;
+    Mtx44 mOrtho;
     f32 mc54[3], mc48[3];
-    f32 vA[3], v30[3];
-    f32 dot24[3], proj[3];
+    Vec vA, v30;
+    Vec dot24, proj;
     CameraViewSlot* slot;
     NewShadowData* shadowData = (NewShadowData*)gNewShadowEntries;
     void* layerTables;
@@ -711,7 +712,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     s16 savedRotZ;
     ObjModelState* modelState;
     NewShadowCastSlot* castSlot;
-    f32* viewMtx;
+    MtxPtr viewMtx;
     int screenW;
 
     if (gNewShadowCasterCount == 0)
@@ -730,10 +731,10 @@ void renderShadows(int unused0, int unused1, int unused2)
     savedRotX = slot->yaw;
     savedRotZ = slot->roll;
     slot->pitch = 0;
-    v30[0] = 0.0f;
-    v30[1] = 1.0f;
-    v30[2] = 0.0f;
-    buildShadowVolumeBox(v30, om100, 2.0f);
+    v30.x = 0.0f;
+    v30.y = 1.0f;
+    v30.z = 0.0f;
+    buildShadowVolumeBox(&v30.x, om100, 2.0f);
     mapGetBlocks(&layerTables, &blocks);
     slotIdx = 0;
     casterIdx = 0;
@@ -789,36 +790,36 @@ void renderShadows(int unused0, int unused1, int unused2)
                 w = obj->anim.modelState->shadowTexture->width;
                 screenW = w;
             }
-            skyGetObjectLightDirection(obj, vA, &vA[1], &vA[2]);
-            dot24[0] = -modelState->shadowOffsetX;
-            dot24[1] = -modelState->shadowOffsetY;
-            dot24[2] = -modelState->shadowOffsetZ;
+            skyGetObjectLightDirection(obj, &vA.x, &vA.y, &vA.z);
+            dot24.x = -modelState->shadowOffsetX;
+            dot24.y = -modelState->shadowOffsetY;
+            dot24.z = -modelState->shadowOffsetZ;
             {
-                f32 dot = PSVECDotProduct(dot24, vA);
+                f32 dot = PSVECDotProduct(&dot24, &vA);
                 if (dot < 1.0f && dot > -1.0f)
                 {
                     f32 mag;
-                    proj[0] = lbl_803DED48 * dot24[0] + lbl_803DED4C * vA[0];
-                    proj[1] = lbl_803DED48 * dot24[1] + lbl_803DED4C * vA[1];
-                    proj[2] = lbl_803DED48 * dot24[2] + lbl_803DED4C * vA[2];
-                    mag = PSVECMag(proj);
+                    proj.x = lbl_803DED48 * dot24.x + lbl_803DED4C * vA.x;
+                    proj.y = lbl_803DED48 * dot24.y + lbl_803DED4C * vA.y;
+                    proj.z = lbl_803DED48 * dot24.z + lbl_803DED4C * vA.z;
+                    mag = PSVECMag(&proj);
                     if (mag > 0.0f)
                     {
                         mag = 1.0f / mag;
-                        PSVECScale(proj, vA, mag);
+                        PSVECScale(&proj, &vA, mag);
                     }
                 }
             }
-            if (vA[1] > (-0.707f))
+            if (vA.y > (-0.707f))
             {
-                vA[1] = (-0.707f);
-                PSVECNormalize(vA, vA);
+                vA.y = (-0.707f);
+                PSVECNormalize(&vA, &vA);
             }
-            vAx = vA[0];
+            vAx = vA.x;
             dirX = -vAx;
-            vAy = vA[1];
+            vAy = vA.y;
             dirY = -vAy;
-            vAz = vA[2];
+            vAz = vA.z;
             dirZ = -vAz;
             gNewShadowLightAngleX = (u16)getAngle(dirX, vAz);
             {
@@ -839,9 +840,9 @@ void renderShadows(int unused0, int unused1, int unused2)
                 }
             }
             slot->parentObject = NULL;
-            modelState->shadowOffsetX = -vA[0];
-            modelState->shadowOffsetY = -vA[1];
-            modelState->shadowOffsetZ = -vA[2];
+            modelState->shadowOffsetX = -vA.x;
+            modelState->shadowOffsetY = -vA.y;
+            modelState->shadowOffsetZ = -vA.z;
             setScreenWidth(screenW);
             {
                 f32* m = (f32*)ObjModel_GetJointMatrix((u8*)Obj_GetActiveModel(obj), 0);
@@ -864,14 +865,14 @@ void renderShadows(int unused0, int unused1, int unused2)
             GXSetScissor(2, 2, screenW - 4, screenW - 4);
             GXSetViewport(0.0f, 0.0f, (f32)(u32)screenW, (f32)(u32)screenW, 0.0f, 1.0f);
             C_MTXOrtho(mOrtho, vAx, vAz, vAx, vAz, 1.0f, 1025.0f);
-            GXSetProjection(mOrtho, GX_ORTHOGRAPHIC);
+            GXSetProjection((f32*)mOrtho, GX_ORTHOGRAPHIC);
             Camera_UpdateViewMatrices();
-            C_MTXLightOrtho((f32*)castSlot->textureMtx, vAz, vAx, vAx, vAz, orthoHalf, orthoHalf, orthoHalf,
+            C_MTXLightOrtho((MtxPtr)castSlot->textureMtx, vAz, vAx, vAx, vAz, orthoHalf, orthoHalf, orthoHalf,
                             orthoHalf);
             {
-                viewMtx = Camera_GetViewMatrix();
-                PSMTXCopy(viewMtx, (f32*)castSlot->depthMtx);
-                PSMTXConcat((f32*)castSlot->textureMtx, viewMtx, (f32*)castSlot->textureMtx);
+                viewMtx = (MtxPtr)Camera_GetViewMatrix();
+                PSMTXCopy(viewMtx, (MtxPtr)castSlot->depthMtx);
+                PSMTXConcat((MtxPtr)castSlot->textureMtx, viewMtx, (MtxPtr)castSlot->textureMtx);
                 obj->anim.modelState->shadowCastSlot = castSlot;
                 {
                     Texture** texturePool = shadowData->castTextures;
@@ -882,11 +883,11 @@ void renderShadows(int unused0, int unused1, int unused2)
                     if (casterPtr->flags == 2)
                     {
                         gxSetZMode_(1, GX_LEQUAL, 1);
-                        PSMTXScale((f32*)castSlot->depthMtx, 0.0f, 0.0f, 0.0f);
+                        PSMTXScale((MtxPtr)castSlot->depthMtx, 0.0f, 0.0f, 0.0f);
                         castSlot->depthMtx[0][2] = lbl_803DED70;
                         castSlot->depthMtx[0][3] = lbl_803DED74;
                         castSlot->depthMtx[2][3] = 1.0f;
-                        PSMTXConcat((f32*)castSlot->depthMtx, viewMtx, (f32*)castSlot->depthMtx);
+                        PSMTXConcat((MtxPtr)castSlot->depthMtx, viewMtx, (MtxPtr)castSlot->depthMtx);
                         GXSetTexCopySrc(0, 0, screenW, screenW);
                         GXSetTexCopyDst(screenW, screenW, GX_TF_Z8, GX_FALSE);
                         {
@@ -926,23 +927,23 @@ void renderShadows(int unused0, int unused1, int unused2)
             PSMTXTrans(mTrans, -fx, -obj->anim.localPosY, -fz);
             {
                 f32 s = lbl_803DED38 / modelState->shadowScale;
-                mScale[0] = s;
-                mScale[1] = 0.0f;
-                mScale[2] = 0.0f;
-                mScale[3] = lbl_803DED38;
-                mScale[4] = 0.0f;
-                mScale[5] = 0.0f;
-                mScale[6] = s;
-                mScale[7] = lbl_803DED38;
-                mScale[8] = 0.0f;
-                mScale[9] = 0.0f;
-                mScale[10] = 0.0f;
-                mScale[11] = 1.0f;
+                mScale[0][0] = s;
+                mScale[0][1] = 0.0f;
+                mScale[0][2] = 0.0f;
+                mScale[0][3] = lbl_803DED38;
+                mScale[1][0] = 0.0f;
+                mScale[1][1] = 0.0f;
+                mScale[1][2] = s;
+                mScale[1][3] = lbl_803DED38;
+                mScale[2][0] = 0.0f;
+                mScale[2][1] = 0.0f;
+                mScale[2][2] = 0.0f;
+                mScale[2][3] = 1.0f;
             }
-            PSMTXConcat(mScale, mTrans, (f32*)castSlot->textureMtx);
-            modelState->shadowOffsetX = v30[0];
-            modelState->shadowOffsetY = v30[1];
-            modelState->shadowOffsetZ = v30[2];
+            PSMTXConcat(mScale, mTrans, (MtxPtr)castSlot->textureMtx);
+            modelState->shadowOffsetX = v30.x;
+            modelState->shadowOffsetY = v30.y;
+            modelState->shadowOffsetZ = v30.z;
             obj->anim.modelState->shadowCastSlot = castSlot;
         }
         slotIdx++;

@@ -2,6 +2,7 @@
 #define MAIN_MODEL_LIGHT_H_
 
 #include "ghidra_import.h"
+#include "main/vec_types.h"
 #include "dolphin/gx/GXStruct.h"
 #include "main/modellight_api.h"
 
@@ -9,24 +10,54 @@ typedef struct GameObject GameObject;
 
 typedef struct ModelLightStruct {
     void *owner;
-    f32 localX;
-    f32 localY;
-    f32 localZ;
-    f32 worldX;
-    f32 worldY;
-    f32 worldZ;
-    f32 viewX;
-    f32 viewY;
-    f32 viewZ;
-    f32 localDirX;
-    f32 localDirY;
-    f32 localDirZ;
-    f32 worldDirX;
-    f32 worldDirY;
-    f32 worldDirZ;
-    f32 viewDirX;
-    f32 viewDirY;
-    f32 viewDirZ;
+    union {
+        struct {
+            f32 localX;
+            f32 localY;
+            f32 localZ;
+        };
+        Vec3f localPos;
+    };
+    union {
+        struct {
+            f32 worldX;
+            f32 worldY;
+            f32 worldZ;
+        };
+        Vec3f worldPos;
+    };
+    union {
+        struct {
+            f32 viewX;
+            f32 viewY;
+            f32 viewZ;
+        };
+        Vec3f viewPos;
+    };
+    union {
+        struct {
+            f32 localDirX;
+            f32 localDirY;
+            f32 localDirZ;
+        };
+        Vec3f localDirection;
+    };
+    union {
+        struct {
+            f32 worldDirX;
+            f32 worldDirY;
+            f32 worldDirZ;
+        };
+        Vec3f worldDirection;
+    };
+    union {
+        struct {
+            f32 viewDirX;
+            f32 viewDirY;
+            f32 viewDirZ;
+        };
+        Vec3f viewDirection;
+    };
     u8 enabled;
     u8 field4D;
     u8 pad4e[0x50 - 0x4e];

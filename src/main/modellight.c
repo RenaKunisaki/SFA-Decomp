@@ -1,4 +1,4 @@
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/shader_api.h"
 #include "main/dll/ivec3_struct.h"
 #include "main/model_light.h"
@@ -165,7 +165,7 @@ u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* light, Game
     worldPos[0] = obj->anim.localPosX - playerMapOffsetX;
     worldPos[1] = obj->anim.localPosY;
     worldPos[2] = obj->anim.localPosZ - playerMapOffsetZ;
-    PSMTXMultVec(light->inverseWorldProjectionMtx, worldPos, localPos);
+    PSMTXMultVec((MtxPtr)light->inverseWorldProjectionMtx, (Vec*)worldPos, (Vec*)localPos);
 
     if (light->projectionType == 0)
     {
@@ -194,7 +194,7 @@ u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* light, Game
             worldPos[0] = localPos[0] + scaledExtent * cv[0];
             worldPos[1] = localPos[1] + scaledExtent * cv[1];
             worldPos[2] = localPos[2] + scaledExtent * cv[2];
-            PSMTXMultVec(light->lightProjectionClipMtx, worldPos, projected);
+            PSMTXMultVec((MtxPtr)light->lightProjectionClipMtx, (Vec*)worldPos, (Vec*)projected);
             if (zero != projected[2])
             {
                 projected[0] /= projected[2];
@@ -255,8 +255,8 @@ f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj
         obj = obj->ownerObj;
     }
 
-    PSVECSubtract(&obj->anim.worldPosX, &light->worldX, delta);
-    dist = PSVECMag(delta) - obj->anim.hitboxScale * obj->anim.rootMotionScale;
+    PSVECSubtract(&obj->anim.worldPos, &light->worldPos, (Vec*)delta);
+    dist = PSVECMag((Vec*)delta) - obj->anim.hitboxScale * obj->anim.rootMotionScale;
     if (dist > 1000.0f || dist > light->attenuationFar)
     {
         return 0.0f;
@@ -274,8 +274,8 @@ f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj
 
     if (light->spotFunction != 0)
     {
-        PSVECScale(delta, delta, 1.0f / dist);
-        PSVECDotProduct(&light->worldDirX, delta);
+        PSVECScale((Vec*)delta, (Vec*)delta, 1.0f / dist);
+        PSVECDotProduct(&light->worldDirection, (Vec*)delta);
     }
 
     return amount;
@@ -487,9 +487,9 @@ void modelLightStruct_setupPerspectiveProjection(ModelLightStruct* obj, f32 fovY
     obj->projectionFovY = fovY;
     obj->projectionAspect = aspect;
     obj->projectionType = 1;
-    C_MTXLightPerspective(obj->lightProjectionTexMtx, obj->projectionFovY, obj->projectionAspect, 0.5f, 0.5f, 0.5f,
+    C_MTXLightPerspective((MtxPtr)obj->lightProjectionTexMtx, obj->projectionFovY, obj->projectionAspect, 0.5f, 0.5f, 0.5f,
                           0.5f);
-    C_MTXLightPerspective(obj->lightProjectionClipMtx, obj->projectionFovY, obj->projectionAspect, 0.5f, 0.5f, 0.5f,
+    C_MTXLightPerspective((MtxPtr)obj->lightProjectionClipMtx, obj->projectionFovY, obj->projectionAspect, 0.5f, 0.5f, 0.5f,
                           0.5f);
 }
 void modelLightStruct_setupOrthoProjection(ModelLightStruct* obj, f32 top, f32 bottom, f32 left, f32 right, f32 scaleT,
@@ -505,9 +505,9 @@ void modelLightStruct_setupOrthoProjection(ModelLightStruct* obj, f32 top, f32 b
     obj->projectionType = 0;
     fScale = scaleS * lbl_803DE790;
     eScale = scaleT * lbl_803DE790;
-    C_MTXLightOrtho(obj->lightProjectionTexMtx, obj->projectionTop, obj->projectionBottom, obj->projectionLeft,
+    C_MTXLightOrtho((MtxPtr)obj->lightProjectionTexMtx, obj->projectionTop, obj->projectionBottom, obj->projectionLeft,
                     obj->projectionRight, fScale, eScale, fScale, eScale);
-    C_MTXLightOrtho(obj->lightProjectionClipMtx, obj->projectionTop, obj->projectionBottom, obj->projectionLeft,
+    C_MTXLightOrtho((MtxPtr)obj->lightProjectionClipMtx, obj->projectionTop, obj->projectionBottom, obj->projectionLeft,
                     obj->projectionRight, 0.5f, 0.5f, 0.5f, 0.5f);
 }
 
@@ -733,7 +733,7 @@ void modelLightStruct_setDirection(ModelLightStruct* s, f32 x, f32 y, f32 z)
     view = Camera_GetViewMatrix();
     if (s->transformMode == 0)
     {
-        PSMTXMultVecSR(view, &s->worldDirX, &s->viewDirX);
+        PSMTXMultVecSR((MtxPtr)view, &s->worldDirection, &s->viewDirection);
     }
     else
     {
@@ -793,7 +793,7 @@ void modelLightStruct_setPosition(ModelLightStruct* s, f32 x, f32 y, f32 z)
         tmp[0] = s->worldX - playerMapOffsetX;
         tmp[1] = s->worldY;
         tmp[2] = s->worldZ - playerMapOffsetZ;
-        PSMTXMultVec(view, tmp, &s->viewX);
+        PSMTXMultVec((MtxPtr)view, (Vec*)tmp, &s->viewPos);
     }
     else
     {
@@ -842,7 +842,7 @@ ModelLightStruct* objAllocLight(void* owner)
         tmp[0] = light->worldX - playerMapOffsetX;
         tmp[1] = light->worldY;
         tmp[2] = light->worldZ - playerMapOffsetZ;
-        PSMTXMultVec(view, tmp, &light->viewX);
+        PSMTXMultVec((MtxPtr)view, (Vec*)tmp, &light->viewPos);
     }
     else
     {
@@ -870,7 +870,7 @@ ModelLightStruct* objAllocLight(void* owner)
     view = Camera_GetViewMatrix();
     if (light->transformMode == 0)
     {
-        PSMTXMultVecSR(view, &light->worldDirX, &light->viewDirX);
+        PSMTXMultVecSR((MtxPtr)view, &light->worldDirection, &light->viewDirection);
     }
     else
     {
@@ -958,13 +958,13 @@ void modelLightStruct_loadDiffuseGXLight(ModelLightStruct* light, GameObject* ob
                 worldPos[0] = obj->anim.localPosX - playerMapOffsetX;
                 worldPos[1] = obj->anim.localPosY;
                 worldPos[2] = obj->anim.localPosZ - playerMapOffsetZ;
-                PSMTXMultVec(view, worldPos, viewPos);
+                PSMTXMultVec((MtxPtr)view, (Vec*)worldPos, (Vec*)viewPos);
             }
             else
             {
                 *(IVec3*)viewPos = *(IVec3*)&obj->anim.localPosX;
             }
-            PSVECSubtract(&light->viewX, viewPos, viewPos);
+            PSVECSubtract(&light->viewPos, (Vec*)viewPos, (Vec*)viewPos);
             GXInitLightPos(&light->diffuseLightObj, viewPos[0], viewPos[1], viewPos[2]);
         }
         else
@@ -1003,7 +1003,7 @@ void modelLightStruct_loadDiffuseGXLight(ModelLightStruct* light, GameObject* ob
                 worldPos[0] = obj->anim.localPosX - playerMapOffsetX;
                 worldPos[1] = obj->anim.localPosY;
                 worldPos[2] = obj->anim.localPosZ - playerMapOffsetZ;
-                PSMTXMultVec(view, worldPos, viewPos);
+                PSMTXMultVec((MtxPtr)view, (Vec*)worldPos, (Vec*)viewPos);
             }
             else
             {
@@ -1016,8 +1016,8 @@ void modelLightStruct_loadDiffuseGXLight(ModelLightStruct* light, GameObject* ob
             viewPos[1] = 0.0f;
             viewPos[2] = 0.0f;
         }
-        PSVECScale(&light->viewDirX, &light->viewX, -100000.0f);
-        PSVECAdd(&light->viewX, viewPos, viewPos);
+        PSVECScale(&light->viewDirection, &light->viewPos, -100000.0f);
+        PSVECAdd(&light->viewPos, (Vec*)viewPos, (Vec*)viewPos);
         GXInitLightPos(&light->diffuseLightObj, viewPos[0], viewPos[1], viewPos[2]);
         color = *(GXColor*)light->diffuseColor;
         GXInitLightColor(&light->diffuseLightObj, color);
@@ -1051,11 +1051,11 @@ void modelLightStruct_loadChannelLight(int channel, ModelLightStruct* light, Gam
         switch (lightType)
         {
         case 2:
-            PSVECSubtract(&obj->anim.localPosX, &light->worldX, localDir);
-            PSVECNormalize(localDir, localDir);
+            PSVECSubtract(&obj->anim.localPos, &light->worldPos, (Vec*)localDir);
+            PSVECNormalize((Vec*)localDir, (Vec*)localDir);
             if (light->transformMode == 0)
             {
-                PSMTXMultVecSR(view[0], localDir, viewDir);
+                PSMTXMultVecSR((MtxPtr)view[0], (Vec*)localDir, (Vec*)viewDir);
             }
             else
             {
@@ -1194,8 +1194,8 @@ void modelLightStruct_selectBrightestAabbLights(f32 minX, f32 minY, f32 minZ, f3
         if (light->enabled != 0 && light->lightKind == 2 && light->attenuationFar > 0.0f &&
             light->affectsAabbLightSelection != 0)
         {
-            PSVECSubtract(center, &light->worldX, delta);
-            dist = PSVECMag(delta);
+            PSVECSubtract((Vec*)center, &light->worldPos, (Vec*)delta);
+            dist = PSVECMag((Vec*)delta);
             if (light->worldX + light->attenuationFar >= minX && light->worldY + light->attenuationFar >= minY &&
                 light->worldZ + light->attenuationFar >= minZ && light->worldX - light->attenuationFar <= maxX &&
                 light->worldY - light->attenuationFar <= maxY && light->worldZ - light->attenuationFar <= maxZ)
@@ -1291,8 +1291,8 @@ void modelLightStruct_selectObjectLights(GameObject* obj, ModelLightStruct** out
                 if (light->projectionTexture != NULL &&
                     modelLightStruct_projectedLightIntersectsObject(light, obj) != 0)
                 {
-                    PSVECSubtract(&obj->anim.worldPosX, &light->worldX, delta);
-                    dist = PSVECMag(delta);
+                    PSVECSubtract(&obj->anim.worldPos, &light->worldPos, (Vec*)delta);
+                    dist = PSVECMag((Vec*)delta);
                     intensity = 500.0f;
                     light->selectionScore = intensity + intensity / dist;
                     light->lightAmount = modelLightStruct_getObjectIntensity(light, obj);
@@ -1418,7 +1418,7 @@ void updateLights(void)
                     viewPos[0] = light->worldX - playerMapOffsetX;
                     viewPos[1] = light->worldY;
                     viewPos[2] = light->worldZ - playerMapOffsetZ;
-                    PSMTXMultVec(view, viewPos, &light->viewX);
+                    PSMTXMultVec((MtxPtr)view, (Vec*)viewPos, &light->viewPos);
                 }
                 else
                 {
@@ -1432,7 +1432,7 @@ void updateLights(void)
             }
             if (light->transformMode == 0)
             {
-                PSMTXMultVecSR(view, &light->worldDirX, &light->viewDirX);
+                PSMTXMultVecSR((MtxPtr)view, &light->worldDirection, &light->viewDirection);
             }
             else
             {
@@ -1458,8 +1458,8 @@ void updateLights(void)
             if (light->lightKind == MODEL_LIGHT_KIND_PROJECTED)
             {
                 Obj_BuildInverseWorldTransformMatrix((GameObject*)light->owner, light->inverseWorldProjectionMtx);
-                PSMTXConcat(light->inverseWorldProjectionMtx, Camera_GetInverseViewMatrix(), concatMtx);
-                PSMTXConcat(light->lightProjectionTexMtx, concatMtx, light->projectionTexMtx);
+                PSMTXConcat((MtxPtr)light->inverseWorldProjectionMtx, (MtxPtr)Camera_GetInverseViewMatrix(), (MtxPtr)concatMtx);
+                PSMTXConcat((MtxPtr)light->lightProjectionTexMtx, (MtxPtr)concatMtx, (MtxPtr)light->projectionTexMtx);
             }
         }
     }
