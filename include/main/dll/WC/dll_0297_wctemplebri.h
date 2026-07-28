@@ -18,7 +18,7 @@ typedef struct WCTempleBriSetup
 
 typedef struct WCTempleBriState
 {
-    f32 maxY;
+    f32 minZ;
     f32 sortedOffsets[15];
     u8 partFlags[15];
     u8 partCount;
@@ -33,7 +33,7 @@ typedef struct WCTempleBriState
 
 STATIC_ASSERT(sizeof(WCTempleBriState) == 0x68);
 STATIC_ASSERT(sizeof(WCTempleBriSetup) == 0x24);
-STATIC_ASSERT(offsetof(WCTempleBriState, maxY) == 0x00);
+STATIC_ASSERT(offsetof(WCTempleBriState, minZ) == 0x00);
 STATIC_ASSERT(offsetof(WCTempleBriState, sortedOffsets) == 0x04);
 STATIC_ASSERT(offsetof(WCTempleBriState, partFlags) == 0x40);
 STATIC_ASSERT(offsetof(WCTempleBriState, partCount) == 0x4f);

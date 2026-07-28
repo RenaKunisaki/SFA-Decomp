@@ -71,9 +71,9 @@ void wctemplebri_updateModelWarp(GameObject* obj, WCTempleBriState* state)
     state->wavePhaseB = phase;
 }
 
-static s16 wctemplebri_deformedCoordX(s16 z, s16 x, f32 maxY, int phase)
+static s16 wctemplebri_deformedCoordX(s16 z, s16 x, f32 minZ, int phase)
 {
-    int wave = (u16)(int)(65535.0f * ((f32)z / maxY));
+    int wave = (u16)(int)(65535.0f * ((f32)z / minZ));
     int idx = wave + phase;
 
     if (x > 0)
@@ -85,7 +85,7 @@ static inline void wctemplebri_deformVertex(ObjModel* model, ModelFileHeader* mo
 {
     s16* curr = ObjModel_GetCurrentVertexCoords(model, i);
     s16* base = ObjModel_GetBaseVertexCoords(modelBase, i);
-    int wave = (u16)(int)(65535.0f * ((f32)curr[2] / state->maxY));
+    int wave = (u16)(int)(65535.0f * ((f32)curr[2] / state->minZ));
     int idx = wave + state->wavePhaseA;
 
     if (base[0] > 0)
@@ -227,7 +227,7 @@ void wctemplebri_init(GameObject* obj, WCTempleBriSetup* setup)
     WCTempleBriState* state;
     ObjModel* model;
     int i;
-    int maxY;
+    int minZ;
     ModelFileHeader* modelData;
     int k;
     int done;
@@ -238,14 +238,14 @@ void wctemplebri_init(GameObject* obj, WCTempleBriSetup* setup)
         objAnim->bankIndex = 0;
     obj->animEventCallback = wctemplebri_SeqFn;
     state = obj->extra;
-    maxY = 0;
+    minZ = 0;
     model = Obj_GetActiveModel(obj);
     modelData = model->file;
     for (i = 0; i < modelData->vertexCount; i++)
     {
         int y = ObjModel_GetCurrentVertexCoords(model, i)[2];
-        if (y < maxY)
-            maxY = y;
+        if (y < minZ)
+            minZ = y;
     }
     done = 0;
     while (done == 0)
@@ -264,7 +264,7 @@ void wctemplebri_init(GameObject* obj, WCTempleBriSetup* setup)
         }
     }
     state->partCount = 0xa;
-    state->maxY = maxY;
+    state->minZ = minZ;
     if (mainGetBit(setup->solvedBit) != 0)
     {
         state->active = 1;
