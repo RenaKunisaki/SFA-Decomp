@@ -1853,6 +1853,10 @@ void allocLotsOfTextures(void)
     Texture** renderTargets = shadowData->castTextures;
     Texture** frameTextures = shadowData->frameTextures;
     f32 cy;
+    int off;
+    f32 cx;
+    f32 d2;
+    f32 v;
 
     u8 saved = testAndSet_onlyUseHeap3(1);
 
@@ -2005,10 +2009,6 @@ void allocLotsOfTextures(void)
         for (; j < 0x80; j++)
         {
             u8* base = (u8*)gNewShadowRadialTexture;
-            int off;
-            f32 cx;
-            f32 d2;
-            f32 v;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x200 + 0x60;
             cx = __fabsf(((f32)j - lbl_803DED1C) * lbl_803DEDE0);
