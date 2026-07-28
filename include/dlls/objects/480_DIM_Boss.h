@@ -229,7 +229,7 @@ void DIM2icicle_updateCombatState(GameObject* obj, ObjAnimUpdateState* animUpdat
 
 int DIMboss_updateState(GameObject* obj, u32 state, ObjAnimUpdateState* animUpdate);
 void DIMboss_func0B(void);
-int DIMboss_setScale(GameObject* obj);
+int DIMboss_getControlMode(GameObject* obj);
 int DIMboss_getExtraSize(void);
 int DIMboss_getObjectTypeId(void);
 void DIMboss_free(GameObject* obj);

@@ -50,7 +50,7 @@ STATIC_ASSERT(offsetof(Dim2LavaControlState, musicLatch) == 0x08);
 STATIC_ASSERT(offsetof(Dim2LavaControlState, musicTriggerId) == 0x0C);
 STATIC_ASSERT(sizeof(Dim2LavaControlState) == 0x10);
 
-void dim2lavacontrol_setScale(GameObject* obj);
+void dim2lavacontrol_tickCountdown(GameObject* obj);
 int dim2lavacontrol_getExtraSize(void);
 void dim2lavacontrol_free(void);
 void dim2lavacontrol_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,

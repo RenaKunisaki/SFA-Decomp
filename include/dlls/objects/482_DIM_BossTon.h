@@ -114,7 +114,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjAnimUpdateState* an
                                          DIMbosstonsilState* updateState);
 int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpdate);
 void DIMbosstonsil_func0B(void);
-int DIMbosstonsil_setScale(GameObject* obj);
+int DIMbosstonsil_getControlMode(GameObject* obj);
 int DIMbosstonsil_getExtraSize(void);
 int DIMbosstonsil_getObjectTypeId(void);
 void DIMbosstonsil_free(GameObject* obj);
