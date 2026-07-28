@@ -1,223 +1,172 @@
 /*
- * DLL 0x01FF - a grabbable object the player can hang from.
- *
- * While free (grabPhase 0) the object falls (velocityY integrated by
- * timeDelta) and probes nearby surfaces with hitDetectFn_80065e50; on
- * contact it snaps to the surface top and registers itself in that
- * surface owner's slot list. When the player grabs it (resetHitboxMode
- * bit 1, userData2 toggles) it disables its own hit volume, latches a
- * pending message (msgHi/msgLo), and on the action button (0x100)
- * releases and forwards the message via ObjMsg_SendToObject. Render
- * gates model-state shadow fade-out on the active trigger sequence.
+ * DLL 0x01FF implements a small carryable-object behavior. Active retail
+ * evidence does not establish an original basename, so the generated numeric
+ * source path and numbered namespace remain authoritative.
  */
-#include "dlls/object_descriptor.h"
+#include "dlls/objects/511.h"
+
+#include "dolphin/pad.h"
+#include "game/objects/object.h"
 #include "main/frame_timing.h"
+#include "main/obj_message.h"
+#include "main/objhits.h"
 #include "main/object_render.h"
 #include "main/pad.h"
 #include "main/track_dolphin_api.h"
 #include "sys/objects.h"
 
-/* dll_1FF_getExtraSize == 0x8 (grabbable hook). */
-typedef struct Dll1FFState
-{
-    s16 msgLo;
-    s16 msgHi;
-    u8 pad4;
-    s8 grabPhase; /* 0 free, 1 held, 2 releasing */
-    s8 sendFlag;  /* pending send flag */
-    u8 pad7;
-} Dll1FFState;
+#define DLL1FF_SPECIAL_SEQUENCE_ID     0x146
+#define DLL1FF_OBJECT_TYPE_DEFAULT     0
+#define DLL1FF_OBJECT_TYPE_SPECIAL     2
+#define DLL1FF_CARRY_STATE_RESTING     0
+#define DLL1FF_CARRY_STATE_HELD        1
+#define DLL1FF_CARRY_STATE_RELEASING   2
+#define DLL1FF_GRAB_MESSAGE_PARAM_HIGH 0x28
+#define DLL1FF_EXCLUDED_SURFACE_TYPE   14
+#define DLL1FF_SURFACE_SNAP_RANGE      40.0f
+#define DLL1FF_GRAVITY                 0.1f
+#define DLL1FF_MODEL_SCALE             1.0f
+#define DLL1FF_MSG_GRAB                0x100008
 
-typedef struct Dll1FFSlot
-{
-    int obj;
-} Dll1FFSlot;
-
-/* registry on the landed surface owner: up to 3 grabbed-object slots */
-typedef struct Dll1FFSlots
-{
-    u8 pad[0x100];
-    Dll1FFSlot slots[3];
-    u8 pad2[3];
-    u8 count;
-} Dll1FFSlots;
-
-#define DLL1FF_SEQID_WM_COLUMN_TOP 0x146 /* retail "WM_Column_T..." (DLL 0x116) */
-#define DLL1FF_BUTTON_ACTION 0x100    /* action-button mask (button-just-pressed / disable) */
-#define DLL1FF_MSG_GRAB      0x100008 /* ObjMsg kind sent on release */
-
-int dll_1FF_getExtraSize_ret_8(void)
-{
-    return 0x8;
+int dll_1FF_getExtraSize(void) {
+    return sizeof(Dll1FFState);
 }
 
-int dll_1FF_getObjectTypeId(GameObject* obj)
-{
-    if (obj->anim.seqId == DLL1FF_SEQID_WM_COLUMN_TOP)
-        return 0x2;
-    return 0x0;
+int dll_1FF_getObjectTypeId(GameObject* obj) {
+    if (obj->anim.seqId == DLL1FF_SPECIAL_SEQUENCE_ID) {
+        return DLL1FF_OBJECT_TYPE_SPECIAL;
+    }
+    return DLL1FF_OBJECT_TYPE_DEFAULT;
 }
 
-void dll_1FF_free_nop(void)
-{
+void dll_1FF_free(void) {
 }
 
 /* visible is -1 while held (userData2 set), otherwise a 0/non-0 flag; gate
    shadow fade-out on whether a trigger sequence is active. */
-void dll_1FF_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
-{
+void dll_1FF_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 isVisible;
-    if (obj->userData2 != 0)
-    {
+    if (obj->userData2 != 0) {
         isVisible = visible;
-        if (isVisible != -1)
+        if (isVisible != -1) {
             return;
-    }
-    else
-    {
-        isVisible = visible;
-        if (isVisible == 0)
-            return;
-    }
-    if (obj->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_MODEL_GEOMETRIC)
-    {
-        if (obj->seqIndex == -1)
-        {
-            obj->anim.modelState->flags &= ~(long long)OBJ_MODEL_STATE_SHADOW_FADE_OUT;
         }
-        else
-        {
+    } else {
+        isVisible = visible;
+        if (isVisible == 0) {
+            return;
+        }
+    }
+    if (obj->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_MODEL_GEOMETRIC) {
+        if (obj->seqIndex == -1) {
+            obj->anim.modelState->flags &= ~(long long)OBJ_MODEL_STATE_SHADOW_FADE_OUT;
+        } else {
             obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
         }
     }
-    objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DLL1FF_MODEL_SCALE);
 }
 
-void dll_1FF_hitDetect_nop(void)
-{
+void dll_1FF_hitDetect(void) {
 }
 
-void dll_1FF_update(GameObject* obj)
-{
-
-    void* player;
+void dll_1FF_update(GameObject* obj) {
+    GameObject* player;
     Dll1FFState* state;
-    int grab[1];
-    int count;
-    GameObject* landed;
-    int i;
-    u8 slot;
-    TrackGroundHit* surf;
-    TrackGroundHit** hitList[2];
+    int nextCarryState[1];
+    int surfaceCount;
+    GameObject* landedObject;
+    int surfaceIndex;
+    u8 contactSlot;
+    TrackGroundHit* surface;
+    TrackGroundHit** hitLists[2];
 
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    if (state->grabPhase == 0)
-    {
-        grab[0] = 0;
-        if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_ACTIVATED) != 0 &&
-            obj->userData2 == 0)
-        {
-            state->msgLo = grab[0];
-            state->msgHi = 0x28;
-            buttonDisable(0, DLL1FF_BUTTON_ACTION);
-            grab[0] = 1;
+    if (state->carryState == DLL1FF_CARRY_STATE_RESTING) {
+        nextCarryState[0] = DLL1FF_CARRY_STATE_RESTING;
+        if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0 && obj->userData2 == 0) {
+            state->messageParamLow = nextCarryState[0];
+            state->messageParamHigh = DLL1FF_GRAB_MESSAGE_PARAM_HIGH;
+            buttonDisable(0, PAD_BUTTON_A);
+            nextCarryState[0] = DLL1FF_CARRY_STATE_HELD;
         }
-        state->grabPhase = grab[0];
-        if (state->grabPhase != 0)
-        {
-            state->sendFlag = 1;
+        state->carryState = nextCarryState[0];
+        if (state->carryState != DLL1FF_CARRY_STATE_RESTING) {
+            state->messagePending = 1;
         }
-        if (obj->userData2 == 0)
-        {
+        if (obj->userData2 == 0) {
             ObjHits_EnableObject(obj);
-            *(u8*)&obj->anim.resetHitboxMode =
-                (u8)(*(u8*)&obj->anim.resetHitboxMode & ~INTERACT_FLAG_DISABLED);
-            obj->anim.velocityY = -((0.1f) * timeDelta - obj->anim.velocityY);
-            obj->anim.localPosY =
-                obj->anim.velocityY * timeDelta + obj->anim.localPosY;
-            count = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY,
-                                         obj->anim.localPosZ, hitList, 0, 1);
-            landed = NULL;
-            for (i = 0; i < count; i++)
-            {
-                surf = hitList[0][i];
-                if ((s8)surf->surfaceType != 14)
-                {
-                    if (obj->anim.localPosY < surf->height)
-                    {
-                        if (obj->anim.localPosY > surf->height - (40.0f) || i == 0)
-                        {
-                            landed = surf->object;
-                            obj->anim.localPosY = surf->height;
-                            obj->anim.velocityY = (0.0f);
+            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+            obj->anim.velocityY = -(DLL1FF_GRAVITY * timeDelta - obj->anim.velocityY);
+            obj->anim.localPosY = obj->anim.velocityY * timeDelta + obj->anim.localPosY;
+            surfaceCount = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
+                                                hitLists, 0, 1);
+            landedObject = NULL;
+            for (surfaceIndex = 0; surfaceIndex < surfaceCount; surfaceIndex++) {
+                surface = hitLists[0][surfaceIndex];
+                if ((s8)surface->surfaceType != DLL1FF_EXCLUDED_SURFACE_TYPE) {
+                    if (obj->anim.localPosY < surface->height) {
+                        if (obj->anim.localPosY > surface->height - DLL1FF_SURFACE_SNAP_RANGE || surfaceIndex == 0) {
+                            landedObject = surface->object;
+                            obj->anim.localPosY = surface->height;
+                            obj->anim.velocityY = 0.0f;
                         }
                     }
                 }
             }
-            if (landed != NULL)
-            {
-                Dll1FFSlots* ts = *(Dll1FFSlots**)((u8*)landed + 0x58);
-                slot = ts->count;
-                ts->count += 1;
-                ts->slots[(s8)slot].obj = (int)obj;
+            if (landedObject != NULL) {
+                ObjHitboxTransformState* hitboxState = landedObject->anim.hitboxTransformState;
+                contactSlot = hitboxState->contactObjectCount;
+                hitboxState->contactObjectCount += 1;
+                hitboxState->contactObjects[(s8)contactSlot] = obj;
             }
         }
-    }
-    else
-    {
+    } else {
         ObjHits_DisableObject(obj);
-        *(u8*)&obj->anim.resetHitboxMode =
-            (u8)(*(u8*)&obj->anim.resetHitboxMode | INTERACT_FLAG_DISABLED);
-        if ((getButtonsJustPressed(0) & DLL1FF_BUTTON_ACTION) != 0)
-        {
-            state->sendFlag = 0;
-            buttonDisable(0, DLL1FF_BUTTON_ACTION);
+        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+        if ((getButtonsJustPressed(0) & PAD_BUTTON_A) != 0) {
+            state->messagePending = 0;
+            buttonDisable(0, PAD_BUTTON_A);
         }
-        if (obj->userData2 == 1)
-        {
-            state->grabPhase = 2;
+        if (obj->userData2 == 1) {
+            state->carryState = DLL1FF_CARRY_STATE_RELEASING;
         }
-        if (state->grabPhase == 2 && obj->userData2 == 0)
-        {
-            state->grabPhase = 0;
-            state->sendFlag = 0;
+        if (state->carryState == DLL1FF_CARRY_STATE_RELEASING && obj->userData2 == 0) {
+            state->carryState = DLL1FF_CARRY_STATE_RESTING;
+            state->messagePending = 0;
         }
-        if (state->sendFlag != 0)
-        {
+        if (state->messagePending != 0) {
             ObjMsg_SendToObject(player, DLL1FF_MSG_GRAB, obj,
-                                ((int)state->msgHi << 16) | ((int)state->msgLo & 0xffff));
+                                ((int)state->messageParamHigh << 16) | ((int)state->messageParamLow & 0xffff));
         }
     }
 }
 
-void dll_1FF_init(s16* a, s8* b)
-{
-    a[0] = (s16)((s32)b[0x18] << 8);
-    a[1] = -0x8000;
+void dll_1FF_init(GameObject* obj, const Dll1FFPlacementView* placement) {
+    obj->anim.rotX = (s16)((s32)placement->rotationXByte << 8);
+    obj->anim.rotY = -0x8000;
 }
 
-void dll_1FF_release_nop(void)
-{
+void dll_1FF_release(void) {
 }
 
-void dll_1FF_initialise_nop(void)
-{
+void dll_1FF_initialise(void) {
 }
 
-ObjectDescriptor dll_1FF = {
+ObjectDescriptor gDll1FFObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll_1FF_initialise_nop,
-    (ObjectDescriptorCallback)dll_1FF_release_nop,
+    dll_1FF_initialise,
+    dll_1FF_release,
     0,
     (ObjectDescriptorCallback)dll_1FF_init,
     (ObjectDescriptorCallback)dll_1FF_update,
-    (ObjectDescriptorCallback)dll_1FF_hitDetect_nop,
+    dll_1FF_hitDetect,
     (ObjectDescriptorCallback)dll_1FF_render,
-    (ObjectDescriptorCallback)dll_1FF_free_nop,
+    dll_1FF_free,
     (ObjectDescriptorCallback)dll_1FF_getObjectTypeId,
-    dll_1FF_getExtraSize_ret_8,
+    dll_1FF_getExtraSize,
 };
