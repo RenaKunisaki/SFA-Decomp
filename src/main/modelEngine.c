@@ -267,6 +267,7 @@
 #include "dlls/objects/471_DIM2SnowBal.h"
 #include "dlls/objects/472_DIM2PathGen.h"
 #include "dlls/objects/473_DIM2PrisonM.h"
+#include "dlls/objects/474.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -348,7 +349,7 @@ char sModelEngineTimerDotText[] = ".";
 #define MODELENGINE_TIMER_RUNNING   4
 
 extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19;
-extern ResourceDescriptor dll_1DA, dll_1DB, dll_1FB;
+extern ResourceDescriptor dll_1DB, dll_1FB;
 extern ResourceDescriptor dll_1FF, dll_200, dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
 extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
@@ -1561,7 +1562,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDIM2SnowBallObjDescriptor,
     (ResourceDescriptor*)&gDIM2PathGeneratorObjDescriptor,
     (ResourceDescriptor*)&gDIM2PrisonMammothObjDescriptor,
-    &dll_1DA,
+    (ResourceDescriptor*)&gDll1DAObjDescriptor,
     &dll_1DB,
     &gDIM2IceFloeObjDescriptor,
     &gDIM2IcicleObjDescriptor,
