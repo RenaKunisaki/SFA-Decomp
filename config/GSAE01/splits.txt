@@ -2914,7 +2914,7 @@ dlls/objects/426_BombPlantSp/BombPlantSp.c:
 	.text       start:0x801D3378 end:0x801D3FF4
 	.data       start:0x80326D98 end:0x80326DE0
 	.sdata      start:0x803DBFC0 end:0x803DBFC8
-	.sdata2     start:0x803E53A0 end:0x803E53A8
+	.sdata2     start:0x803E5390 end:0x803E53F8
 
 dlls/objects/427_BombPlantin/BombPlantin.c:
 	.text       start:0x801D3FF4 end:0x801D4198
