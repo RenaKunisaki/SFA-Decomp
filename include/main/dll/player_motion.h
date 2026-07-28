@@ -5,7 +5,7 @@
 void objSetXRot(GameObject* playerObj, int heading);
 f32 playerGetVerticalVel(GameObject* playerObj);
 void playerSetVerticalVel(GameObject* playerObj, f32 liftVelocityY);
-void fn_8029697C(GameObject* playerObj, s16* outYaw, s16* outPitch);
+void playerGetAimAngles(GameObject* playerObj, s16* outYaw, s16* outPitch);
 
 static inline void Player_SetHeading(int playerObj, int heading)
 {
@@ -24,7 +24,7 @@ static inline void Player_SetLiftVelocityY(int playerObj, f32 liftVelocityY)
 
 static inline void Player_GetAimAngles(int playerObj, s16* outYaw, s16* outPitch)
 {
-    fn_8029697C((GameObject*)(playerObj), outYaw, outPitch);
+    playerGetAimAngles((GameObject*)(playerObj), outYaw, outPitch);
 }
 
 #endif

@@ -271,7 +271,7 @@ void wcpushblock_update(GameObject* obj)
             obj->anim.velocityX = zero;
             obj->anim.velocityZ = zero;
         }
-        if (fn_80296414(player, obj, &state->pushDir) != 0)
+        if (playerIsPushingObject(player, obj, &state->pushDir) != 0)
         {
             if (objAnim->bankIndex == WCPUSHBLOCK_VARIANT_A)
             {

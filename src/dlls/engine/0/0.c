@@ -8601,7 +8601,7 @@ void GameUI_hudDraw(int a, int b, int c)
         if (player != 0 && pauseMenuState == 0)
         {
             f32 sx, sy;
-            if (fn_8029605C((GameObject*)(player), &sx, &sy) != 0)
+            if (playerGetAimScreenPos((GameObject*)(player), &sx, &sy) != 0)
             {
                 void* tex;
                 f32 scale, x, y;

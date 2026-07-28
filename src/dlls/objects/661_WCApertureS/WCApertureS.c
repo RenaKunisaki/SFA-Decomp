@@ -173,7 +173,7 @@ void wcapertures_update(GameObject* obj)
         break;
     case WCAPERTURES_MODE_ARMED:
         if ((*gCameraInterface)->getMode() == WCAPERTURES_CAMERA_MODE &&
-            fn_802969F0(player) == WCAPERTURES_PLAYER_STATE)
+            playerGetSurfaceType(player) == WCAPERTURES_PLAYER_STATE)
         {
             state->targetAlpha = WCAPERTURES_ALPHA_OPAQUE;
             if (Camera_GetFovY() <= 6.0f && (obj->objectFlags & OBJECT_OBJFLAG_RENDERED))

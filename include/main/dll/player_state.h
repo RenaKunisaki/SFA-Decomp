@@ -289,20 +289,20 @@ typedef struct PlayerState {
     f32 savedPosY;
     f32 savedPosZ;
     u8 pad774[0x778 - 0x774];
-    f32 probeHitDist; /* hit distance (SweepHit.dist) from a directional collision probe (objBboxFn_800640cc); has a getter (fn_802966F4), reset to 0 on state changes */
+    f32 probeHitDist; /* hit distance (SweepHit.dist) from a directional collision probe (objBboxFn_800640cc); has a getter (playerGetProbeHitDist), reset to 0 on state changes */
     f32 timeScale; /* player time-scale factor returned via the out-param of playerGetTimeScale(obj,&out); reset to 0.0 on state init */
     u8 pad780[0x784 - 0x780];
     f32 verticalVel; /* vertical velocity factor applied as anim.velocityY = verticalVel*fv; has dedicated get/set (playerSetVerticalVel), drives climb/descend move progress */
-    f32 aimScreenY; /* aim-cursor screen Y (centered at halfH), driven by stick aimInputX; unprojected to a world aim direction */
-    f32 aimScreenX; /* aim-cursor screen X (centered at halfW), driven by stick aimInputZ; unprojected to a world aim direction */
+    f32 aimScreenX; /* aim-cursor screen X (centered at half the screen WIDTH = (getScreenResolution() & 0xffff) >> 1), driven by stick aimInputX; unprojected to a world aim direction */
+    f32 aimScreenY; /* aim-cursor screen Y (centered at half the screen HEIGHT = getScreenResolution() >> 17), driven by stick aimInputZ; unprojected to a world aim direction */
     u8 pad790[0x79C - 0x790];
     f32 knockbackTimer; /* knockback/stagger countdown (-= timeDelta*knockbackDrainRate); set on knock moves, gates knock FX/sfx (0x394/0x395) while >0, reset to 0 on expiry */
     f32 knockbackHitTimer; /* periodic countdown during knockback drag (-= timeDelta); on expiry fires an ObjHits position-hit and reloads */
     f32 knockbackDrainRate; /* drain multiplier for knockbackTimer (-= timeDelta*this); tracks velocity magnitude, clamped to a range */
     u8 knockKindBits; /* KnockBits bitfield byte at 0x7a8 (knock:3 top / low:5): .knock set from knockKind; read as (>>5 & 7)-1 to index the knockback particle table */
     u8 pad7A9[0x7B8 - 0x7A9];
-    f32 aimInputX; /* smoothed aim-stick X (eased from baddie.moveInputX, clamped); drives aimScreenY and the world aim direction */
-    f32 aimInputZ; /* smoothed aim-stick Z (eased from baddie.moveInputZ, clamped); drives aimScreenX and the world aim direction */
+    f32 aimInputX; /* smoothed aim-stick X (eased from baddie.moveInputX, clamped); drives aimScreenX and the world aim direction */
+    f32 aimInputZ; /* smoothed aim-stick Z (eased from baddie.moveInputZ, clamped); drives aimScreenY and the world aim direction */
     u8 pad7C0[0x7C8 - 0x7C0];
     f32 sinkOffsetY; /* vertical sink/bob offset added to localPosY (e.g. sinking into snow during the snowstep move); accumulates and clamps, decays back toward 0 */
     f32 teleportAnimRate;     /* growth rate for teleportAnimProgress (+= *timeDelta): reset to the forward rate (lbl_803E7F14) at the low end and to 0 at the high end to stop */

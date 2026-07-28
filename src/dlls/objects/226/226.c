@@ -260,7 +260,7 @@ void quakeSpellFn_8016cee8(GameObject* obj, GameObject* player)
         if (((StaffState*)state)->glowEnable != 0)
         {
             f32 burstScale;
-            if (objFn_80296700(player) != 0)
+            if (playerIsStaffActionPending(player) != 0)
             {
                 power = 1.0f;
                 burstScale = 1.0f;

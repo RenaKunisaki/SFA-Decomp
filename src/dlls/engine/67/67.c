@@ -179,7 +179,7 @@ void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
     targetObj = (GameObject*)camera->currentTarget;
     if ((targetObj != NULL &&
          (targetObj->anim.classId == 0x1c || targetObj->anim.classId == 0x2a) && target->anim.classId == 1 &&
-         objFn_80296700(target) != 0) ||
+         playerIsStaffActionPending(target) != 0) ||
         (camera->targetFlags & 2) != 0)
     {
         lockSlot = &camera->currentTarget;

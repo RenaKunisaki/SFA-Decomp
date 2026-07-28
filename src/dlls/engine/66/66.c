@@ -163,7 +163,7 @@ void camcontrol_updateTargetAction(CameraObject* camera, GameObject* target)
         buttons = getButtonsJustPressed(0);
         if (((camera->currentTarget != NULL) &&
              (((classId = ((GameObject*)camera->currentTarget)->anim.classId) == 0x1c) || (classId == 0x2a)) &&
-             (target->anim.classId == 1) && ((cond = objFn_80296700(target)) != 0) &&
+             (target->anim.classId == 1) && ((cond = playerIsStaffActionPending(target)) != 0) &&
              ((cond = fn_80295C0C(target)) != 0)) ||
             ((camera->targetFlags & 2) != 0))
         {
@@ -819,7 +819,7 @@ void camslide_update(CameraObject* camera, GameObject* target, f32 upperBound, f
     }
     if (target->anim.classId == 1)
     {
-        if (fn_802966F4((GameObject*)(target)) <= 30.0f)
+        if (playerGetProbeHitDist((GameObject*)(target)) <= 30.0f)
         {
             step = 0.8f * gCamcontrolModeSettings->maxDistance - gCamcontrolModeSettings->lowerHeightOffset;
             step *= 0.05f;

@@ -1027,7 +1027,7 @@ void pushable_hitDetect(GameObject* obj) {
     }
     if (state->moveFlags.activelyPushed == 0) {
         f32 damping;
-        if (fn_802969F0(player) == 0xd) {
+        if (playerGetSurfaceType(player) == 0xd) {
             damping = PUSHABLE_GROUND_DAMPING;
         } else {
             damping = PUSHABLE_AIR_DAMPING;

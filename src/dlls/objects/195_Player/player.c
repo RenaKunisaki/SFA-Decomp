@@ -1537,7 +1537,7 @@ void playerSetDisguised(GameObject* obj, int mode)
     }
 }
 
-int fn_8029605C(GameObject* obj, f32* p2, f32* p3)
+int playerGetAimScreenPos(GameObject* obj, f32* p2, f32* p3)
 {
     void* inner = obj->extra;
     if (inner == NULL || getCurSeqNo() != 0)
@@ -1546,8 +1546,8 @@ int fn_8029605C(GameObject* obj, f32* p2, f32* p3)
     }
     if ((((PlayerState*)inner)->flags360 & 0x400) != 0u)
     {
-        *p2 = ((PlayerState*)inner)->aimScreenY;
-        *p3 = ((PlayerState*)inner)->aimScreenX;
+        *p2 = ((PlayerState*)inner)->aimScreenX;
+        *p3 = ((PlayerState*)inner)->aimScreenY;
         return 1;
     }
     return 0;
@@ -1720,7 +1720,7 @@ int objAnimFn_80296328(GameObject* obj)
     return 0;
 }
 
-u8 fn_80296414(GameObject* obj, GameObject* otherObj, u8* out)
+u8 playerIsPushingObject(GameObject* obj, GameObject* otherObj, u8* out)
 {
     PlayerState* inner = obj->extra;
     *out = inner->surfaceDir;
@@ -1860,13 +1860,13 @@ int playerGetHeldObject(GameObject* obj, GameObject** outHeldObj)
     return inner->heldObj != NULL;
 }
 
-f32 fn_802966F4(GameObject* obj)
+f32 playerGetProbeHitDist(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return inner->probeHitDist;
 }
 
-int objFn_80296700(GameObject* obj)
+int playerIsStaffActionPending(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     if (inner->staffGrown != 0 && inner->staffActionRequest != 0)
@@ -1985,7 +1985,7 @@ void playerAddMoney(GameObject* obj, int amount)
     mainSetBits(GAMEBIT_ITEM_GiveScarabs_Count, total);
 }
 
-void fn_8029697C(GameObject* obj, s16* out1, s16* out2)
+void playerGetAimAngles(GameObject* obj, s16* out1, s16* out2)
 {
     PlayerState* inner = obj->extra;
     *out1 = 10240.0f * inner->aimInputX;
@@ -1999,7 +1999,7 @@ void fn_8029697C(GameObject* obj, s16* out1, s16* out2)
     }
 }
 
-int fn_802969F0(GameObject* obj)
+int playerGetSurfaceType(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     if (((ByteFlags*)((char*)inner + 0x3f1))->b01)
@@ -2042,7 +2042,7 @@ int playerGetMaxMagic(GameObject* obj)
     return *(s16*)((char*)inner->playerStatus + 6);
 }
 
-void fn_80296A9C(GameObject* obj, int delta)
+void playerAddMaxMagic(GameObject* obj, int delta)
 {
     PlayerState* inner = obj->extra;
     int deref = inner->playerStatus;
@@ -4128,14 +4128,14 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
             res = getScreenResolution();
             half = res >> 17;
             low = (res & 0xffff) >> 1;
-            inner->aimScreenY = (k = 0.5f) * (b * (f32)(int)low) + (f32)(int)low;
+            inner->aimScreenX = (k = 0.5f) * (b * (f32)(int)low) + (f32)(int)low;
             if (a < 0.0f)
             {
-                inner->aimScreenX = k * (a * (f32)(int)half) + (f32)(int)half;
+                inner->aimScreenY = k * (a * (f32)(int)half) + (f32)(int)half;
             }
             else
             {
-                inner->aimScreenX = 0.25f * (a * (f32)(int)half) + (f32)(int)half;
+                inner->aimScreenY = 0.25f * (a * (f32)(int)half) + (f32)(int)half;
             }
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_AIM_READY;
             if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
@@ -4429,14 +4429,14 @@ int playerStateAimStaff(int obj, int state, f32 fv)
             res = getScreenResolution();
             half = res >> 17;
             low = (res & 0xffff) >> 1;
-            inner->aimScreenY = (k = 0.5f) * (bv * (f32)(int)low) + (f32)(int)low;
+            inner->aimScreenX = (k = 0.5f) * (bv * (f32)(int)low) + (f32)(int)low;
             if (av < 0.0f)
             {
-                inner->aimScreenX = k * (av * (f32)(int)half) + (f32)(int)half;
+                inner->aimScreenY = k * (av * (f32)(int)half) + (f32)(int)half;
             }
             else
             {
-                inner->aimScreenX = 0.25f * (av * (f32)(int)half) + (f32)(int)half;
+                inner->aimScreenY = 0.25f * (av * (f32)(int)half) + (f32)(int)half;
             }
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_AIM_READY;
         }
@@ -6351,7 +6351,7 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
     void* sub;
     f32 v7b8, v7bc;
     f32 k;
-    int res, halfW, halfH;
+    int res, halfH, halfW;
 
     *(u32*)&inner->flags360 &= ~PLAYER_FLAG_HITDETECT;
     ObjHits_EnableObject(obj);
@@ -6471,16 +6471,16 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
     v7bc = inner->aimInputZ;
     v7b8 = inner->aimInputX;
     res = getScreenResolution();
-    halfW = res >> 17;
-    halfH = (int)(u16)res >> 1;
-    inner->aimScreenY = (k = 0.5f) * (v7b8 * (f32)halfH) + (f32)halfH;
+    halfH = res >> 17;
+    halfW = (int)(u16)res >> 1;
+    inner->aimScreenX = (k = 0.5f) * (v7b8 * (f32)halfW) + (f32)halfW;
     if (v7bc < 0.0f)
     {
-        inner->aimScreenX = k * (v7bc * (f32)halfW) + (f32)halfW;
+        inner->aimScreenY = k * (v7bc * (f32)halfH) + (f32)halfH;
     }
     else
     {
-        inner->aimScreenX = 0.25f * (v7bc * (f32)halfW) + (f32)halfW;
+        inner->aimScreenY = 0.25f * (v7bc * (f32)halfH) + (f32)halfH;
     }
     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_AIM_READY;
     return 0;
@@ -12352,11 +12352,11 @@ void fn_802AA014(GameObject* obj, int state, f32 aimInputZ, f32 zero)
     int slot;
     ObjPlacement* setup;
     f32 v[3];
-    f32 fov, ycomp, cot, aspect, xcomp, len;
+    f32 fov, xcomp, cot, aspect, ycomp, len;
     f32 scale;
     f32 mix;
     f32 t;
-    int res, h2, hw;
+    int res, halfW, halfH;
     PlayerState* inner;
 
     inner = obj->extra;
@@ -12377,7 +12377,7 @@ void fn_802AA014(GameObject* obj, int state, f32 aimInputZ, f32 zero)
         {
             *(s16*)((char*)o + 6) |= 0x2000;
             res = getScreenResolution();
-            hw = res >> 17;
+            halfH = res >> 17;
             *(s16*)((char*)o + 0) = *(s16*)((char*)slot + 0);
             t = Camera_GetFovY();
             t *= 91.022f;
@@ -12385,14 +12385,14 @@ void fn_802AA014(GameObject* obj, int state, f32 aimInputZ, f32 zero)
             cot = mathSinf(fov);
             cot = 100.0f * (cot / mathCosf(fov));
             aspect = Camera_GetAspectRatio();
-            h2 = (u16)res >> 1;
-            t = (inner->aimScreenY - (f32)h2) / (f32)h2;
+            halfW = (u16)res >> 1;
+            t = (inner->aimScreenX - (f32)halfW) / (f32)halfW;
             t *= aspect;
-            ycomp = cot * -t;
-            xcomp = cot * ((inner->aimScreenX - (f32)hw) / (f32)hw);
-            len = sqrtf(10000.0f + (ycomp * ycomp + xcomp * xcomp));
-            v[0] = ycomp / len;
-            v[1] = xcomp / len;
+            xcomp = cot * -t;
+            ycomp = cot * ((inner->aimScreenY - (f32)halfH) / (f32)halfH);
+            len = sqrtf(10000.0f + (xcomp * xcomp + ycomp * ycomp));
+            v[0] = xcomp / len;
+            v[1] = ycomp / len;
             v[2] = 100.0f / len;
             Matrix_TransformVector(Camera_GetWorldMatrix(), v, v);
             *(f32*)((char*)o + 0x24) = v[0] * (scale = -40.0f);
@@ -12550,9 +12550,9 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
                 f32 sn = mathSinf(fov);
                 cot = 100.0f * (sn / mathCosf(fov));
             }
-            fx = cot * -((inner->aimScreenY - (f32)(int)((res & 0xffff) >> 1)) / (f32)(int)((res & 0xffff) >> 1) *
+            fx = cot * -((inner->aimScreenX - (f32)(int)((res & 0xffff) >> 1)) / (f32)(int)((res & 0xffff) >> 1) *
                          Camera_GetAspectRatio());
-            cot = cot * ((inner->aimScreenX - (f32)half) / (f32)half);
+            cot = cot * ((inner->aimScreenY - (f32)half) / (f32)half);
             mag = sqrtf(10000.0f + (fx * fx + cot * cot));
             vec[0] = fx / mag;
             vec[1] = cot / mag;
