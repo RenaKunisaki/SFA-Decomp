@@ -1,106 +1,96 @@
 /*
- * SH_tricky (DLL 0x1A6) - SnowHorn-area scripted-state object that
- * watches Tricky's progress and toggles the related game bits.
+ * SH_tricky (DLL 0x1A6) - SnowHorn-area Tricky controller.
  *
- * The single state byte (obj->extra[0]) drives a small sequence: it
- * waits on a trigger bit, hands control to Tricky, then polls a Tricky
- * vtable method until Tricky reports the task done, and finally watches
- * for the completion bit to flip the result bits back.
+ * Its one-byte state waits for the area's trigger bit, temporarily disables
+ * Tricky commands and warping, then asks Tricky to move to this hidden object.
+ * The command bits are restored after Tricky returns to the EarthWalker Queen.
  */
+#include "dlls/objects/422_SH_tricky.h"
+
 #include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "dlls/object_descriptor.h"
-#include "main/gamebits.h"
 #include "main/gamebit_ids.h"
-#include "main/dll/SH/dll_01A6_shtricky.h"
+#include "main/gamebits_api.h"
+#include "sys/objects/lifecycle.h"
 
-#define SHTRICKY_OBJFLAG_HIDDEN             0x4000
-#define SHTRICKY_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define SH_TRICKY_TRIGGER_GAMEBIT 0x94
 
-#define SHTRICKY_STATE_WAIT_TRIGGER   0
-#define SHTRICKY_STATE_HAND_CONTROL   1
-#define SHTRICKY_STATE_POLL_TASK      2
-#define SHTRICKY_STATE_WATCH_COMPLETE 3
-#define SHTRICKY_STATE_DONE           4
+typedef struct ShTrickyCompanionInterface {
+    void* unknown00[14];
+    int (*requestMoveToObject)(GameObject* tricky, GameObject* target);
+} ShTrickyCompanionInterface;
 
-int sh_tricky_getExtraSize(void)
-{
-    return 1;
+STATIC_ASSERT(offsetof(ShTrickyCompanionInterface, requestMoveToObject) == 0x38);
+
+#define SH_TRICKY_COMPANION_INTERFACE(tricky) ((ShTrickyCompanionInterface*)*(tricky)->anim.dll)
+
+int shTricky_getExtraSize(void) {
+    return sizeof(ShTrickyState);
 }
 
-void sh_tricky_update(GameObject* obj)
-{
-    u8* state;
-    int* tricky;
+void shTricky_update(GameObject* obj) {
+    ShTrickyState* state;
+    GameObject* tricky;
 
     state = obj->extra;
-    tricky = (int*)getTrickyObject();
-    if (tricky == NULL)
-    {
+    tricky = getTrickyObject();
+    if (tricky == NULL) {
         return;
     }
 
-    switch (state[0])
-    {
-    case SHTRICKY_STATE_WAIT_TRIGGER:
-        if (mainGetBit(0x94) != 0)
-        {
+    switch (state->phase) {
+    case SH_TRICKY_PHASE_WAIT_TRIGGER:
+        if (mainGetBit(SH_TRICKY_TRIGGER_GAMEBIT) != 0) {
             mainSetBits(GAMEBIT_Tricky_Usable, 0);
             mainSetBits(GAMEBIT_TrickyWarpEnabled, 0);
             mainSetBits(GAMEBIT_MaybeHaveTricky, 1);
-            state[0] = SHTRICKY_STATE_HAND_CONTROL;
+            state->phase = SH_TRICKY_PHASE_REQUEST_DELAY;
         }
         break;
-    case SHTRICKY_STATE_HAND_CONTROL:
-        state[0] = SHTRICKY_STATE_POLL_TASK;
+    case SH_TRICKY_PHASE_REQUEST_DELAY:
+        state->phase = SH_TRICKY_PHASE_REQUEST_MOVE;
         break;
-    case SHTRICKY_STATE_POLL_TASK:
-        if (((int (*)(int*, int*))(*(int*)(*(int*)(tricky[0x1a]) + 0x38)))(tricky, (int*)obj) != 0)
-        {
-            state[0] = SHTRICKY_STATE_WATCH_COMPLETE;
+    case SH_TRICKY_PHASE_REQUEST_MOVE:
+        if (SH_TRICKY_COMPANION_INTERFACE(tricky)->requestMoveToObject(tricky, obj) != 0) {
+            state->phase = SH_TRICKY_PHASE_WAIT_RETURN_TO_QUEEN;
         }
         break;
-    case SHTRICKY_STATE_WATCH_COMPLETE:
-        if (mainGetBit(GAMEBIT_SH_ReturnedToQueen) != 0)
-        {
+    case SH_TRICKY_PHASE_WAIT_RETURN_TO_QUEEN:
+        if (mainGetBit(GAMEBIT_SH_ReturnedToQueen) != 0) {
             mainSetBits(GAMEBIT_Tricky_Usable, 1);
             mainSetBits(GAMEBIT_TrickyWarpEnabled, 1);
             mainSetBits(GAMEBIT_MaybeHaveTricky, 0);
         }
         break;
-    case SHTRICKY_STATE_DONE:
+    case SH_TRICKY_PHASE_COMPLETE:
         break;
     }
 }
 
-void sh_tricky_init(GameObject* obj)
-{
-    u8* state = obj->extra;
-    if (mainGetBit(GAMEBIT_SH_ReturnedToQueen) != 0)
-    {
-        *state = SHTRICKY_STATE_DONE;
+void shTricky_init(GameObject* obj) {
+    ShTrickyState* state;
+
+    state = obj->extra;
+    if (mainGetBit(GAMEBIT_SH_ReturnedToQueen) != 0) {
+        state->phase = SH_TRICKY_PHASE_COMPLETE;
+    } else {
+        state->phase = SH_TRICKY_PHASE_WAIT_TRIGGER;
     }
-    else
-    {
-        *state = SHTRICKY_STATE_WAIT_TRIGGER;
-    }
-    obj->objectFlags =
-        (u16)(obj->objectFlags | (SHTRICKY_OBJFLAG_HIDDEN | SHTRICKY_OBJFLAG_HITDETECT_DISABLED));
+    obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
 }
 
-ObjectDescriptor gSH_trickyObjDescriptor = {
+ObjectDescriptor gSHTrickyObjDescriptor = {
     0,
     0,
     0,
-    0x00090000,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
     0,
     0,
     0,
-    (ObjectDescriptorCallback)sh_tricky_init,
-    (ObjectDescriptorCallback)sh_tricky_update,
+    (ObjectDescriptorCallback)shTricky_init,
+    (ObjectDescriptorCallback)shTricky_update,
     0,
     0,
     0,
     0,
-    (ObjectDescriptorExtraSizeCallback)sh_tricky_getExtraSize,
+    (ObjectDescriptorExtraSizeCallback)shTricky_getExtraSize,
 };

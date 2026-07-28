@@ -216,6 +216,7 @@
 #include "dlls/objects/419.h"
 #include "dlls/objects/420.h"
 #include "dlls/objects/421_NW_levcontr.h"
+#include "dlls/objects/422_SH_tricky.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -358,8 +359,8 @@ extern ResourceDescriptor gSB_ShipHeadObjDescriptor, gSB_ShipMastObjDescriptor, 
 extern ResourceDescriptor gSC_totemstrengthObjDescriptor, gSH_BeaconObjDescriptor, gSH_EmptyTumbleWObjDescriptor,
     gSH_LevelControlObjDescriptor, gSH_queenearthwalkerObjDescriptor, gSH_staffHazeObjDescriptor,
     gSH_staffObjDescriptor, gSH_thorntailObjDescriptor;
-extern ResourceDescriptor gSH_trickyObjDescriptor, gSPDrapeObjDescriptor, gSPScarabObjDescriptor,
-    gSPitembeamObjDescriptor, gSeqPointObjDescriptor;
+extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
+    gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
     gShopKeeperObjDescriptor, gShopObjDescriptor;
 extern ResourceDescriptor gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
@@ -1474,7 +1475,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll419ObjDescriptor,
     (ResourceDescriptor*)&gNW_iceObjDescriptor,
     (ResourceDescriptor*)&gNWLevelControlObjDescriptor,
-    &gSH_trickyObjDescriptor,
+    (ResourceDescriptor*)&gSHTrickyObjDescriptor,
     &gEdibleMushroomObjDescriptor,
     &gEnemyMushroomObjDescriptor,
     &gBombPlantObjDescriptor,
