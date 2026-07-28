@@ -1,277 +1,239 @@
 /*
  * DIM2SnowBal (DLL 0x1D7) - rolling snowball projectile for Snowhorn Wastes 2.
- * Follows a Hermite spline path provided by the dim2pathgenerator (vtable slot 8),
- * then enters ballistic physics after leaving the path's launch node (curve byte == 32
- * + game bit 0x288). Bounces off walls (objBboxFn_800640cc), fades in/out via alpha,
- * spawns particle fx on impact (partfx 518), and damages SharpClaw (object type 214)
- * on floor-hit via their hit-callback vtable.
+ * It follows a Hermite spline supplied by DIM2PathGen, then enters ballistic
+ * physics at the path's launch node. Floor impacts fade and eventually free
+ * the object; the first impact also notifies the active SharpClaw.
  */
-#include "main/vecmath.h"
-#include "main/dll/partfx_interface.h"
+#include "dlls/objects/471_DIM2SnowBal.h"
+
+#include "game/objects/object.h"
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_play_api.h"
-#include "sys/objects.h"
-#include "main/dll/dim2snowballstate_struct.h"
-#include "main/objseq.h"
-#include "main/frame_timing.h"
-#include "main/track_dolphin_api.h"
-#include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
-#include "main/track_bbox_api.h"
-#include "sys/objects/lifecycle.h"
-#include "main/object_render.h"
-#include "main/gamebits.h"
-#include "main/obj_list.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/curve.h"
+#include "main/dll/partfx_interface.h"
+#include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/obj_list.h"
+#include "main/object_render.h"
+#include "main/track_bbox_api.h"
+#include "main/track_dolphin_api.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-#define DIM2SNOWBALL_OBJFLAG_HITDETECT_DISABLED 0x2000
+#define DIM2_SNOWBALL_SHARPCLAW_SEQUENCE_ID 214
+#define DIM2_SNOWBALL_IMPACT_PARTFX_ID      518
+#define DIM2_SNOWBALL_LAUNCH_GAME_BIT       0x288
 
-typedef struct Dim2snowballObjectDef
-{
-    u8 pad0[0x14 - 0x0];
-    s32 targetId;
-    s8 initRotationByte; /* 0x18: <<8 into anim.rotX as the spawn heading */
-    u8 pad19[0x1A - 0x19];
-    s16 unk1A;
-    s16 unk1C;
-    s16 unk1E;
-} Dim2snowballObjectDef;
+#define DIM2_SNOWBALL_FLAG_PATH_INITIALIZED 0x01
+#define DIM2_SNOWBALL_FLAG_BALLISTIC        0x02
+#define DIM2_SNOWBALL_FLAG_FADING_IN        0x04
+#define DIM2_SNOWBALL_FLAG_FADING_OUT       0x08
+#define DIM2_SNOWBALL_FLAG_IMPACTED         0x10
 
-STATIC_ASSERT(sizeof(Dim2SnowballState) == 0xb0);
+static inline GameObject* dim2snowball_findSharpClaw(GameObject** objects, int* objectIndex, int* objectCount) {
+    GameObject** object = &objects[*objectIndex];
 
-#define OBJ_TYPE_SHARPCLAW       214
-#define PARTFX_SNOWBALL_IMPACT   518
-#define GAMEBIT_SNOWBALL_LAUNCH  648
-
-static inline GameObject* dim2snowball_findSharpclawHit(GameObject** list, int* start, int* count)
-{
-    GameObject** p = &list[*start];
-    for (; *start < *count; p++, (*start)++)
-    {
-        if ((*p)->anim.seqId == OBJ_TYPE_SHARPCLAW)
-        {
-            return list[*start];
+    for (; *objectIndex < *objectCount; object++, (*objectIndex)++) {
+        if ((*object)->anim.seqId == DIM2_SNOWBALL_SHARPCLAW_SEQUENCE_ID) {
+            return objects[*objectIndex];
         }
     }
+
     return NULL;
 }
 
-int dim2snowball_getExtraSize(void)
-{
-    return sizeof(Dim2SnowballState);
+int dim2snowball_getExtraSize(void) {
+    return sizeof(Dim2SnowBallState);
 }
 
-int dim2snowball_getObjectTypeId(void)
-{
+int dim2snowball_getObjectTypeId(void) {
     return 0;
 }
 
-void dim2snowball_free(void)
-{
+void dim2snowball_free(void) {
 }
 
-void dim2snowball_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void dim2snowball_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
-void dim2snowball_hitDetect(void)
-{
+void dim2snowball_hitDetect(void) {
 }
 
-void dim2snowball_update(GameObject* obj)
-{
-    Dim2SnowballState* extra = obj->extra;
-    TrackGroundHit** results;
-    int count;
-    int start;
-    PartFxSpawnParams evt;
-    f32 k;
+void dim2snowball_update(GameObject* obj) {
+    Dim2SnowBallState* state = obj->extra;
+    TrackGroundHit** groundHits;
+    int objectCount;
+    int objectIndex;
+    PartFxSpawnParams particleParams;
+    f32 damping;
 
-    if ((extra->flagsAC & 4) != 0)
-    {
-        int v = obj->anim.alpha + framesThisStep * 2;
-        if (v > 255)
-        {
-            v = 255;
-            extra->flagsAC &= ~4;
+    if ((state->flags & DIM2_SNOWBALL_FLAG_FADING_IN) != 0) {
+        int alpha = obj->anim.alpha + framesThisStep * 2;
+
+        if (alpha > 255) {
+            alpha = 255;
+            state->flags &= ~DIM2_SNOWBALL_FLAG_FADING_IN;
         }
-        obj->anim.alpha = v;
-    }
-    else if ((extra->flagsAC & 8) != 0)
-    {
-        int v = obj->anim.alpha - framesThisStep * 2;
-        if (v < 0)
-        {
-            v = 0;
-            extra->flagsAC &= ~8;
+        obj->anim.alpha = alpha;
+    } else if ((state->flags & DIM2_SNOWBALL_FLAG_FADING_OUT) != 0) {
+        int alpha = obj->anim.alpha - framesThisStep * 2;
+
+        if (alpha < 0) {
+            alpha = 0;
+            state->flags &= ~DIM2_SNOWBALL_FLAG_FADING_OUT;
         }
-        obj->anim.alpha = v;
+        obj->anim.alpha = alpha;
     }
 
-    if ((extra->flagsAC & 1) == 0)
-    {
-        int* cobj = extra->targetObj;
-        extra->curve.count =
-            (*(int (**)(int*, void*, void*, void*, void*))(**(int**)((char*)cobj + 0x68) + 0x20))(
-                cobj, (char*)extra + 0x84, (char*)extra + 0x88, (char*)extra + 0x8c, (char*)extra + 0xa8);
-        extra->curve.dir = 0;
-        extra->curve.eval = Curve_EvalHermite;
-        extra->curve.coeffFn = Curve_BuildHermiteCoeffs;
-        curvesMove(&extra->curve);
-        extra->flagsAC |= 1;
+    if ((state->flags & DIM2_SNOWBALL_FLAG_PATH_INITIALIZED) == 0) {
+        int* pathGenerator = (int*)state->pathGenerator;
+
+        state->path.count =
+            (*(int (**)(int*, void*, void*, void*, void*))(**(int**)((char*)pathGenerator + 0x68) + 0x20))(
+                pathGenerator, (char*)state + 0x84, (char*)state + 0x88, (char*)state + 0x8c, (char*)state + 0xa8);
+        state->path.dir = 0;
+        state->path.eval = Curve_EvalHermite;
+        state->path.coeffFn = Curve_BuildHermiteCoeffs;
+        curvesMove(&state->path);
+        state->flags |= DIM2_SNOWBALL_FLAG_PATH_INITIALIZED;
     }
 
-    if ((extra->flagsAC & 2) != 0)
-    {
-        if (obj->anim.localPosY < extra->floorY)
-        {
-            obj->anim.velocityX = obj->anim.velocityX * (k = 0.9f);
+    if ((state->flags & DIM2_SNOWBALL_FLAG_BALLISTIC) != 0) {
+        if (obj->anim.localPosY < state->floorHeight) {
+            obj->anim.velocityX = obj->anim.velocityX * (damping = 0.9f);
             obj->anim.velocityY = -0.1f;
-            obj->anim.velocityZ = obj->anim.velocityZ * k;
-            if ((extra->flagsAC & 0x10) == 0)
-            {
-                GameObject** list;
-                GameObject* hit;
-                obj->anim.velocityX = obj->anim.velocityX * (k = 0.05f);
-                obj->anim.velocityZ = obj->anim.velocityZ * k;
-                extra->flagsAC |= 0x18;
-                list = ObjList_GetObjects(&start, &count);
-                hit = dim2snowball_findSharpclawHit(list, &start, &count);
-                if (hit != NULL)
-                {
-                    (*(void (**)(GameObject*))(**(int**)&hit->anim.dll + 0x20))(hit);
+            obj->anim.velocityZ = obj->anim.velocityZ * damping;
+
+            if ((state->flags & DIM2_SNOWBALL_FLAG_IMPACTED) == 0) {
+                GameObject** objects;
+                GameObject* sharpClaw;
+
+                obj->anim.velocityX = obj->anim.velocityX * (damping = 0.05f);
+                obj->anim.velocityZ = obj->anim.velocityZ * damping;
+                state->flags |= DIM2_SNOWBALL_FLAG_FADING_OUT | DIM2_SNOWBALL_FLAG_IMPACTED;
+                objects = ObjList_GetObjects(&objectIndex, &objectCount);
+                sharpClaw = dim2snowball_findSharpClaw(objects, &objectIndex, &objectCount);
+                if (sharpClaw != NULL) {
+                    (*(void (**)(GameObject*))(**(int**)&sharpClaw->anim.dll + 0x20))(sharpClaw);
                 }
                 Sfx_PlayFromObject((int)obj, SFXTRIG_en_nlite1_c);
             }
-            evt.posX = obj->anim.localPosX;
-            evt.posY = obj->anim.localPosY;
-            evt.posZ = obj->anim.localPosZ;
-            (*gPartfxInterface)->spawnObject(obj, PARTFX_SNOWBALL_IMPACT, &evt, 4, -1, NULL);
-            if (obj->anim.alpha == 0)
-            {
+
+            particleParams.posX = obj->anim.localPosX;
+            particleParams.posY = obj->anim.localPosY;
+            particleParams.posZ = obj->anim.localPosZ;
+            (*gPartfxInterface)->spawnObject(obj, DIM2_SNOWBALL_IMPACT_PARTFX_ID, &particleParams, 4, -1, NULL);
+            if (obj->anim.alpha == 0) {
                 Obj_FreeObject(obj);
                 return;
             }
-            objMove(obj, obj->anim.velocityX * timeDelta,
-                    obj->anim.velocityY * timeDelta,
+            objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                     obj->anim.velocityZ * timeDelta);
-        }
-        else
-        {
-            int bbox;
-            obj->anim.velocityX = obj->anim.velocityX * (k = 0.98f);
-            obj->anim.velocityY =
-                obj->anim.velocityY - 0.1f * timeDelta;
-            obj->anim.velocityZ = obj->anim.velocityZ * k;
-            objMove(obj, obj->anim.velocityX * timeDelta,
-                    obj->anim.velocityY * timeDelta,
+        } else {
+            int collided;
+
+            obj->anim.velocityX = obj->anim.velocityX * (damping = 0.98f);
+            obj->anim.velocityY = obj->anim.velocityY - 0.1f * timeDelta;
+            obj->anim.velocityZ = obj->anim.velocityZ * damping;
+            objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                     obj->anim.velocityZ * timeDelta);
-            bbox = objBboxFn_800640cc(&obj->anim.previousLocalPosX, (f32*)((char*)obj + 0xc), 36.0f, 0,
-                                                   NULL, obj, 8, -1, 0, 0);
-            if (bbox != 0)
-            {
+            collided = objBboxFn_800640cc(&obj->anim.previousLocalPosX, (f32*)((char*)obj + 0xc), 36.0f, 0, NULL, obj,
+                                          8, -1, 0, 0);
+            if (collided != 0) {
                 obj->anim.velocityX = -obj->anim.velocityX;
                 obj->anim.velocityZ = -obj->anim.velocityZ;
-                obj->anim.velocityX = obj->anim.velocityX * (k = 0.75f);
-                obj->anim.velocityZ = obj->anim.velocityZ * k;
+                obj->anim.velocityX = obj->anim.velocityX * (damping = 0.75f);
+                obj->anim.velocityZ = obj->anim.velocityZ * damping;
             }
         }
-    }
-    else
-    {
-        int done = Curve_AdvanceAlongPath(&extra->curve, 2.1f);
-        obj->anim.localPosX = extra->curve.sample[0];
-        obj->anim.localPosY = (f32)(23.0 + extra->curve.sample[1]);
-        obj->anim.localPosZ = extra->curve.sample[2];
-        *(s16*)obj = getAngle(extra->curve.tangent[0], extra->curve.tangent[2]);
+    } else {
+        int pathComplete = Curve_AdvanceAlongPath(&state->path, 2.1f);
+
+        obj->anim.localPosX = state->path.sample[0];
+        obj->anim.localPosY = (f32)(23.0 + state->path.sample[1]);
+        obj->anim.localPosZ = state->path.sample[2];
+        *(s16*)obj = getAngle(state->path.tangent[0], state->path.tangent[2]);
         obj->anim.rotY = obj->anim.rotY + framesThisStep * 800;
-        obj->anim.velocityX =
-            oneOverTimeDelta * (obj->anim.localPosX - obj->anim.previousLocalPosX);
+        obj->anim.velocityX = oneOverTimeDelta * (obj->anim.localPosX - obj->anim.previousLocalPosX);
         obj->anim.velocityY = 0.0f;
-        obj->anim.velocityZ =
-            oneOverTimeDelta * (obj->anim.localPosZ - obj->anim.previousLocalPosZ);
-        if (done != 0)
-        {
+        obj->anim.velocityZ = oneOverTimeDelta * (obj->anim.localPosZ - obj->anim.previousLocalPosZ);
+        if (pathComplete != 0) {
             Obj_FreeObject(obj);
             return;
         }
-        if (*(u8*)((char*)*(int**)&extra->curveData + (extra->curve.idx >>
-            2)) == 32)
-        {
-            if (mainGetBit(GAMEBIT_SNOWBALL_LAUNCH) != 0)
-            {
+
+        if (*(u8*)((char*)*(int**)&state->pathNodeData + (state->path.idx >> 2)) == 32) {
+            if (mainGetBit(DIM2_SNOWBALL_LAUNCH_GAME_BIT) != 0) {
                 int hitCount;
-                extra->flagsAC |= 2;
-                hitCount = hitDetectFn_80065e50(obj, obj->anim.localPosX,
-                                         obj->anim.localPosY, obj->anim.localPosZ,
-                                         &results, 0, 0);
-                extra->floorY = obj->anim.localPosY;
-                while (hitCount > 0)
-                {
-                    TrackGroundHit* r;
+
+                state->flags |= DIM2_SNOWBALL_FLAG_BALLISTIC;
+                hitCount = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
+                                                &groundHits, 0, 0);
+                state->floorHeight = obj->anim.localPosY;
+                while (hitCount > 0) {
+                    TrackGroundHit* groundHit;
+
                     hitCount--;
-                    r = results[hitCount];
-                    if (r->height < obj->anim.localPosY)
-                    {
-                        s8 t = (s8)r->surfaceType;
-                        if (t == 26 || t == 8)
-                        {
-                            extra->floorY = r->height;
+                    groundHit = groundHits[hitCount];
+                    if (groundHit->height < obj->anim.localPosY) {
+                        s8 surfaceType = (s8)groundHit->surfaceType;
+
+                        if (surfaceType == 26 || surfaceType == 8) {
+                            state->floorHeight = groundHit->height;
                             hitCount = 0;
                         }
                     }
                 }
-                obj->anim.velocityX = obj->anim.velocityX * (k = 0.75f);
-                obj->anim.velocityZ = obj->anim.velocityZ * k;
+                obj->anim.velocityX = obj->anim.velocityX * (damping = 0.75f);
+                obj->anim.velocityZ = obj->anim.velocityZ * damping;
             }
         }
     }
 
-    if (obj->anim.alpha == 255)
-    {
-        int* m = *(int**)&obj->anim.hitReactState;
-        if (m != NULL)
-        {
-            ((ObjHitsPriorityState*)m)->flags |= 1;
-            *(u8*)&((ObjHitsPriorityState*)m)->hitVolumePriority = 4;
-            *(u8*)&((ObjHitsPriorityState*)m)->hitVolumeId = 2;
-            *(int*)&((ObjHitsPriorityState*)m)->objectHitMask = 16;
-            *(int*)&((ObjHitsPriorityState*)m)->skeletonHitMask = 16;
+    if (obj->anim.alpha == 255) {
+        int* hitState = *(int**)&obj->anim.hitReactState;
+
+        if (hitState != NULL) {
+            ((ObjHitsPriorityState*)hitState)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
+            *(u8*)&((ObjHitsPriorityState*)hitState)->hitVolumePriority = 4;
+            *(u8*)&((ObjHitsPriorityState*)hitState)->hitVolumeId = 2;
+            *(int*)&((ObjHitsPriorityState*)hitState)->objectHitMask = 16;
+            *(int*)&((ObjHitsPriorityState*)hitState)->skeletonHitMask = 16;
         }
     }
     Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_firlp6);
 }
 
-void dim2snowball_init(GameObject* obj, Dim2snowballObjectDef* def)
-{
-    Dim2SnowballState* state = obj->extra;
-    state->targetId = def->targetId;
-    state->flagsAC = (u8)(state->flagsAC | 4);
-    def->targetId = -1;
-    *(s16*)obj = (s16)((s32)def->initRotationByte << 8);
+void dim2snowball_init(GameObject* obj, Dim2SnowBallPlacement* placement) {
+    Dim2SnowBallState* state = obj->extra;
+
+    state->targetObjectId = placement->targetObjectId;
+    state->flags = (u8)(state->flags | DIM2_SNOWBALL_FLAG_FADING_IN);
+    placement->targetObjectId = -1;
+    *(s16*)obj = (s16)((s32)placement->rotationXByte << 8);
     *(s8*)&obj->anim.alpha = 0;
     {
-        ObjModelState* p = obj->anim.modelState;
-        if (p != NULL)
-        {
-            p->flags |= 0xA10;
+        ObjModelState* modelState = obj->anim.modelState;
+
+        if (modelState != NULL) {
+            modelState->flags |= 0xA10;
         }
     }
-    state->targetObj = (int*)ObjList_FindObjectById(state->targetId);
-    obj->objectFlags = (u16)(obj->objectFlags | DIM2SNOWBALL_OBJFLAG_HITDETECT_DISABLED);
+    state->pathGenerator = ObjList_FindObjectById(state->targetObjectId);
+    obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 
-void dim2snowball_release(void)
-{
+void dim2snowball_release(void) {
 }
 
-void dim2snowball_initialise(void)
-{
+void dim2snowball_initialise(void) {
 }
 
 ObjectDescriptor gDIM2SnowBallObjDescriptor = {

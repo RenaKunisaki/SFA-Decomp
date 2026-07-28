@@ -264,6 +264,7 @@
 #include "dlls/objects/468_WORLDAstero.h"
 #include "dlls/objects/469_DIM2Conveyo.h"
 #include "dlls/objects/470.h"
+#include "dlls/objects/471_DIM2SnowBal.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -358,7 +359,7 @@ extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDB_eggObjDescriptor, gD
     gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor, gDFP_TorchObjDescriptor;
 extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
-    gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor;
+    gDIM2PrisonMammothObjDescriptor;
 extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIM_BossGut2ObjDescriptor, gDIM_BossGutObjDescriptor,
     gDIM_BossObjDescriptor;
 extern ResourceDescriptor gDIM_BossSpitObjDescriptor, gDIM_BossTonsilObjDescriptor, gDIM_trickyObjDescriptor,
@@ -1556,7 +1557,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWorldAsteroidsObjDescriptor,
     (ResourceDescriptor*)&gDIM2ConveyorObjDescriptor,
     (ResourceDescriptor*)&gDll1D6ObjDescriptor,
-    &gDIM2SnowBallObjDescriptor,
+    (ResourceDescriptor*)&gDIM2SnowBallObjDescriptor,
     &gDIM2PathGeneratorObjDescriptor,
     &gDIM2PrisonMammothObjDescriptor,
     &dll_1DA,

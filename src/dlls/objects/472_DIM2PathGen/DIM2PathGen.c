@@ -6,6 +6,7 @@
  * snowball types per spawn. Spawn rate and type are set from the placement data.
  */
 #include "main/dll/dim2pathgeneratorstate_struct.h"
+#include "dlls/objects/471_DIM2SnowBal.h"
 #include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/rom_curve_interface.h"
@@ -37,16 +38,6 @@ typedef struct Dim2RomCurveDef
     f32 originY;
     f32 originZ;
 } Dim2RomCurveDef;
-
-/* Object spawn-setup descriptor written before Obj_SetupObject. */
-typedef struct Dim2SpawnSetup
-{
-    ObjPlacement base;
-    s8 initRotationByte; /* 0x18: spawn heading, read by the child as anim.rotX (<<8) */
-    u8 pad19;
-    s16 childRot; /* 0x1A rotation region of spawned child placement */
-    s16 unk1C;
-} Dim2SpawnSetup;
 
 typedef struct Dim2pathgeneratorPlacement
 {
@@ -161,10 +152,10 @@ void DIM2PathGenerator_update(GameObject* obj)
             int* p = *(int**)((char*)objs[i] + 0x4c);
             int j;
             int** o2;
-            ((Dim2SpawnSetup*)p)->base.posX = ((Dim2PathGeneratorState*)extra)->originX;
-            ((Dim2SpawnSetup*)p)->base.posY = ((Dim2PathGeneratorState*)extra)->originY;
-            ((Dim2SpawnSetup*)p)->base.posZ = ((Dim2PathGeneratorState*)extra)->originZ;
-            ((Dim2SpawnSetup*)p)->base.mapId = ((Dim2pathgeneratorPlacement*)def)->base.mapId;
+            ((Dim2SnowBallPlacement*)p)->base.posX = ((Dim2PathGeneratorState*)extra)->originX;
+            ((Dim2SnowBallPlacement*)p)->base.posY = ((Dim2PathGeneratorState*)extra)->originY;
+            ((Dim2SnowBallPlacement*)p)->base.posZ = ((Dim2PathGeneratorState*)extra)->originZ;
+            ((Dim2SnowBallPlacement*)p)->base.mapId = ((Dim2pathgeneratorPlacement*)def)->base.mapId;
             (*(void (**)(int*, int*, int))(**(int**)((char*)objs[i] + 0x68) + 4))(objs[i], p, 1);
             ObjGroup_RemoveObject((int)objs[i], OBJ_GROUP_SNOWBALL_POOL);
             o2 = (int**)ObjGroup_GetObjects(OBJ_GROUP_SNOWBALL_POOL, &count);
@@ -177,8 +168,8 @@ void DIM2PathGenerator_update(GameObject* obj)
     }
     if (Obj_IsLoadingLocked())
     {
-        Dim2SpawnSetup* np =
-            (Dim2SpawnSetup*)Obj_AllocObjectSetup(36, ((s16*)((Dim2PathGeneratorState*)extra)->spawnTypes)[toggle]);
+        Dim2SnowBallPlacement* np = (Dim2SnowBallPlacement*)Obj_AllocObjectSetup(
+            36, ((s16*)((Dim2PathGeneratorState*)extra)->spawnTypes)[toggle]);
         np->base.posX = ((Dim2PathGeneratorState*)extra)->originX;
         np->base.posY = ((Dim2PathGeneratorState*)extra)->originY;
         np->base.posZ = ((Dim2PathGeneratorState*)extra)->originZ;
@@ -188,9 +179,9 @@ void DIM2PathGenerator_update(GameObject* obj)
         np->base.color[3] = ((Dim2pathgeneratorPlacement*)def)->base.color[3];
         np->base.color[3] = 255;
         np->base.mapActFlagsLo = ((Dim2pathgeneratorPlacement*)def)->base.mapActFlagsLo;
-        np->initRotationByte = (s8) * (u8*)((char*)def + 0x1c);
-        np->childRot = *(u8*)((char*)def + 0x1a);
-        np->unk1C = *(u8*)((char*)def + 0x1b);
+        np->rotationXByte = (s8) * (u8*)((char*)def + 0x1c);
+        np->unknown1A = *(u8*)((char*)def + 0x1a);
+        np->unknown1C = *(u8*)((char*)def + 0x1b);
         np->base.mapId = ((Dim2pathgeneratorPlacement*)def)->base.mapId;
         Obj_SetupObject((ObjPlacement*)np, 5, obj->anim.mapEventSlot, -1, NULL);
         ((Dim2PathGeneratorState*)extra)->flags |= (toggle ^ 1) & 1;
