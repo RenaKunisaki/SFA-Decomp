@@ -19,6 +19,7 @@
 #include "main/obj_list.h"
 #include "main/obj_path.h"
 #include "main/objhits.h"
+#include "main/object_transform.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -190,7 +191,7 @@ void SB_ShipHead_update(GameObject* obj) {
         Sfx_PlayFromObject((int)obj, SFXTRIG_gcexp1_c);
         object->anim.localPosY += 50.0f;
         object->anim.localPosZ = object->anim.localPosZ - 300.0f;
-        Obj_GetWorldPosition((int)obj, &spawnX, &spawnY, &spawnZ);
+        Obj_GetWorldPosition(obj, &spawnX, &spawnY, &spawnZ);
         object->anim.localPosY = object->anim.localPosY - 50.0f;
         object->anim.localPosZ += 300.0f;
         placementBytes = (u8*)Obj_AllocObjectSetup(0x18, SB_FIREBALL_OBJECT_ID);

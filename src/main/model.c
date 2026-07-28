@@ -2040,7 +2040,8 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
             ((GameObject*)prevObj)->anim.localPosX = vec.x + playerMapOffsetX;
             ((GameObject*)prevObj)->anim.localPosY = vec.y;
             ((GameObject*)prevObj)->anim.localPosZ = vec.z + playerMapOffsetZ;
-            Obj_GetWorldPosition((u32)prevObj, (f32 *)(prevObj + 0x18), (f32 *)(prevObj + 0x1c), (f32 *)(prevObj + 0x20));
+            Obj_GetWorldPosition((GameObject*)prevObj, (f32 *)(prevObj + 0x18), (f32 *)(prevObj + 0x1c),
+                                 (f32 *)(prevObj + 0x20));
         }
         vec.x = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 8);
         vec.y = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 0xc);

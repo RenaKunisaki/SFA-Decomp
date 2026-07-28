@@ -73,8 +73,7 @@ void fn_802B4ED8(GameObject* obj, int state, int mode);
 void fn_802B4DE0(GameObject* obj, int flag);
 void playerUpdateWhileTimeStopped(int obj);
 void objLoadPlayerFromSave(int obj);
-/* The raw integer parent preserves the matched player implementation's signed comparisons. */
-void fn_80296EB4(GameObject* obj, int newParent);
+void fn_80296EB4(GameObject* obj, GameObject* newParent);
 
 int Lightfoot_UpdateProximityInteractionState(int obj, int state);
 int Lightfoot_UpdateCompletionInteraction(int obj, int state);

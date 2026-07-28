@@ -219,7 +219,7 @@ void SB_ShipGun_update(GameObject* obj) {
             }
             state->fireTimer -= framesThisStep;
             if ((state->fireTimer < 0) && (Obj_IsLoadingLocked() != 0)) {
-                Obj_GetWorldPosition((int)obj, &posX, &posY, &posZ);
+                Obj_GetWorldPosition(obj, &posX, &posY, &posZ);
                 spawnArgs.posX = 0.0f;
                 spawnArgs.posY = 0.0f;
                 spawnArgs.posZ = 0.0f;

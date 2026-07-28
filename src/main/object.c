@@ -1423,7 +1423,7 @@ void Obj_UpdateObject(GameObject* obj)
                 }
                 break;
             }
-            Obj_GetWorldPosition((u32)obj, &object->worldPosX, &object->worldPosY, &object->worldPosZ);
+            Obj_GetWorldPosition((GameObject*)obj, &object->worldPosX, &object->worldPosY, &object->worldPosZ);
         } while (0);
     }
     if (object->hitReactState != NULL)
@@ -2501,7 +2501,7 @@ void Obj_UpdateAllObjects(u8 flags)
                     cb(obj3);
                     break;
                 }
-                Obj_GetWorldPosition((u32)obj3, &((GameObject*)obj3)->anim.worldPosX,
+                Obj_GetWorldPosition((GameObject*)obj3, &((GameObject*)obj3)->anim.worldPosX,
                                      &((GameObject*)obj3)->anim.worldPosY, &((GameObject*)obj3)->anim.worldPosZ);
             }
         }
@@ -2535,7 +2535,7 @@ void Obj_UpdateAllObjects(u8 flags)
                         cb(child);
                         break;
                     }
-                    Obj_GetWorldPosition((u32)child, &((GameObject*)child)->anim.worldPosX,
+                    Obj_GetWorldPosition((GameObject*)child, &((GameObject*)child)->anim.worldPosX,
                                          &((GameObject*)child)->anim.worldPosY, &((GameObject*)child)->anim.worldPosZ);
                 } while (0);
             }
@@ -2645,7 +2645,7 @@ void Obj_RegisterObject(GameObject* obj, int flags)
     if (object->parent != NULL)
     {
         Obj_TransformLocalPointToWorld(object->localPosX, object->localPosY, object->localPosZ, &object->worldPosX,
-                                       &object->worldPosY, &object->worldPosZ, (u32)object->parent);
+                                       &object->worldPosY, &object->worldPosZ, object->parent);
     }
     else
     {

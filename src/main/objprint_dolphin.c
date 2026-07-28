@@ -3395,7 +3395,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
     }
     if (isShadow == 0)
     {
-        void* space;
+        GameObject* space;
         ((GameObject*)child)->anim.worldPosX = m2[3] + playerMapOffsetX;
         ((GameObject*)child)->anim.worldPosY = m2[7];
         ((GameObject*)child)->anim.worldPosZ = m2[11] + playerMapOffsetZ;
@@ -3405,7 +3405,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
             Obj_TransformWorldPointToLocal(((GameObject*)child)->anim.worldPosX, ((GameObject*)child)->anim.worldPosY,
                                            ((GameObject*)child)->anim.worldPosZ, &((GameObject*)child)->anim.localPosX,
                                            &((GameObject*)child)->anim.localPosY, &((GameObject*)child)->anim.localPosZ,
-                                           (u32)space);
+                                           space);
         }
         else
         {

@@ -1123,7 +1123,7 @@ void playerUpdateFn_8005649c(void)
         }
         else
         {
-            Obj_TransformWorldPointToLocal(cam->worldX, cam->worldY, cam->worldZ, &lx, &ly, &lz, (u32)obj);
+            Obj_TransformWorldPointToLocal(cam->worldX, cam->worldY, cam->worldZ, &lx, &ly, &lz, obj);
             lbl_80386648[slot].x = lx;
             lbl_80386648[slot].y = ly;
             lbl_80386648[slot].z = lz;

@@ -1,4 +1,5 @@
 #include "main/dll/CAM/cutCam.h"
+#include "main/object_transform.h"
 #include "main/camera_interface.h"
 #include "main/curve.h"
 #include "dolphin/os/OSTime.h"
@@ -447,7 +448,7 @@ void camcontrol_updateWallAvoidance(CameraObject* camera, GameObject* target)
 
     Obj_TransformLocalPointToWorld(camera->anim.localPosX, camera->anim.localPosY, camera->anim.localPosZ,
                                    &camera->anim.worldPosX, &camera->anim.worldPosY, &camera->anim.worldPosZ,
-                                   (int)camera->anim.parent);
+                                   camera->anim.parent);
     gCutCamBboxBlocked = 0;
     if (target->anim.classId == 1)
     {
@@ -539,7 +540,7 @@ void camcontrol_updateWallAvoidance(CameraObject* camera, GameObject* target)
     }
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   (int)camera->anim.parent);
+                                   camera->anim.parent);
 }
 
 void camcontrol_updateModeSettings(int camera)
@@ -717,7 +718,7 @@ void camcontrol_updateVerticalBounds(CameraObject* camera, int flags, int collis
     }
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   camera->anim.parentAddress);
+                                   (GameObject*)camera->anim.parentAddress);
 }
 
 void CameraModeNormal_func0A(float* minDistanceOut, float* maxDistanceOut, float* lowerHeightOffsetOut,
@@ -998,7 +999,7 @@ void CameraModeNormal_follow(CameraObject* camera, ObjAnimComponent* target)
         camcontrol_getTargetPosition(camera, target, &camera->anim.worldPosX, &camera->anim.rotY);
         Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                        &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                       (u32)camera->anim.parent);
+                                       camera->anim.parent);
         camera->probePosX = camera->anim.worldPosX;
         camera->probePosY = camera->anim.worldPosY;
         camera->probePosZ = camera->anim.worldPosZ;
@@ -1231,7 +1232,7 @@ void CameraModeNormal_update(CameraObject* camera)
     CameraModeNormal_follow(camera, &target[0]->anim);
     Obj_TransformLocalPointToWorld(camera->anim.localPosX, camera->anim.localPosY, camera->anim.localPosZ,
                                    &camera->anim.worldPosX, &camera->anim.worldPosY, &camera->anim.worldPosZ,
-                                   (u32)camera->anim.parent);
+                                   camera->anim.parent);
     camslide_update(camera, target[0], gCamcontrolModeSettings->verticalUpperBound,
                     gCamcontrolModeSettings->verticalLowerBound);
     camcontrol_updateVerticalBounds(camera, 1, 8, &gCamcontrolModeSettings->verticalUpperBound,
@@ -1358,7 +1359,7 @@ void CameraModeNormal_update(CameraObject* camera)
     camera->anim.rotZ = camera->anim.rotZ - val;
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   (u32)camera->anim.parent);
+                                   camera->anim.parent);
 }
 
 void CameraModeNormal_init(CameraObject* cam, int mode, u8* data)
@@ -1444,7 +1445,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, u8* data)
         camcontrol_getTargetPosition(cam, &target->anim, &cam->anim.worldPosX, &cam->anim.rotY);
         Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ,
                                        &cam->anim.localPosX, &cam->anim.localPosY, &cam->anim.localPosZ,
-                                       cam->anim.parentAddress);
+                                       (GameObject*)cam->anim.parentAddress);
         (*gCameraInterface)
             ->getRelativePosition(cam, &vOutA, &vOutB, &vOutC, &vOutD, gCamcontrolModeSettings->targetHeight, 0);
         vOutB = cam->anim.localPosY - (target->anim.localPosY + gCamcontrolModeSettings->targetHeight);
@@ -1530,7 +1531,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, u8* data)
             camcontrol_getTargetPosition(cam, &target->anim, &cam->anim.worldPosX, &cam->anim.rotY);
             Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ,
                                            &cam->anim.localPosX, &cam->anim.localPosY, &cam->anim.localPosZ,
-                                           cam->anim.parentAddress);
+                                           (GameObject*)cam->anim.parentAddress);
             gCamcontrolModeSettings->transitionTimer = 0;
         }
         break;
@@ -1541,7 +1542,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, u8* data)
         cam->anim.worldPosZ = gCamcontrolModeSettings->savedWorldZ;
         Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ,
                                        &cam->anim.localPosX, &cam->anim.localPosY, &cam->anim.localPosZ,
-                                       cam->anim.parentAddress);
+                                       (GameObject*)cam->anim.parentAddress);
         cam->anim.rotX = gCamcontrolModeSettings->savedRotX;
         cam->anim.rotY = gCamcontrolModeSettings->savedRotY;
         cam->anim.rotZ = gCamcontrolModeSettings->savedRotZ;

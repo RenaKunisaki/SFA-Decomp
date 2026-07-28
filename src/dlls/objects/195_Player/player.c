@@ -2231,9 +2231,9 @@ void fn_80296D20(GameObject* obj, GameObject* parentObj)
     }
 }
 
-void fn_80296EB4(GameObject* obj, int newParent)
+void fn_80296EB4(GameObject* obj, GameObject* newParent)
 {
-    int oldParent = *(int*)&obj->anim.parent;
+    GameObject* oldParent = obj->anim.parent;
     int a0;
     int a1;
     int a2;
@@ -2249,11 +2249,11 @@ void fn_80296EB4(GameObject* obj, int newParent)
         f32 wp[3];
     } s;
 
-    if ((void*)oldParent == (void*)newParent)
+    if (oldParent == newParent)
     {
         return;
     }
-    if ((void*)oldParent != NULL)
+    if (oldParent != NULL)
     {
         Obj_TransformLocalPointToWorld(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                        &s.wp[0], &s.wp[1], &s.wp[2], oldParent);
@@ -2290,7 +2290,7 @@ void fn_80296EB4(GameObject* obj, int newParent)
         s.wp0[1] = *(f32*)((char*)inner + 0x11c);
         s.wp0[2] = *(f32*)((char*)inner + 0x120);
     }
-    if ((void*)newParent != NULL)
+    if (newParent != NULL)
     {
         Obj_TransformWorldPointToLocal(s.wp[0], s.wp[1], s.wp[2], &obj->anim.localPosX,
                                        &obj->anim.localPosY, &obj->anim.localPosZ,
@@ -2341,7 +2341,7 @@ void fn_80296EB4(GameObject* obj, int newParent)
     Player_GetObjHitsState(obj)->worldPosX = obj->anim.worldPosX;
     Player_GetObjHitsState(obj)->worldPosY = obj->anim.worldPosY;
     Player_GetObjHitsState(obj)->worldPosZ = obj->anim.worldPosZ;
-    *(int*)&obj->anim.parent = newParent;
+    obj->anim.parent = newParent;
 }
 
 void playerSetInCutscene(GameObject* obj)
@@ -6070,7 +6070,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     if (doXform != 0)
     {
         Obj_TransformLocalPointToWorld(inner->contactPointX, inner->contactPointY, inner->contactPointZ,
-                                       (f32*)(obj + 0xc), &yOut, (f32*)(obj + 0x14), sub);
+                                       (f32*)(obj + 0xc), &yOut, (f32*)(obj + 0x14), (GameObject*)sub);
         {
             f32 k = 12.0f;
             self->anim.localPosX = k * inner->surfaceNormalX + self->anim.localPosX;
@@ -6611,7 +6611,7 @@ int playerState19(GameObject* obj, int state)
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, 0.0f,
                                        obj->anim.worldPosZ, &obj->anim.localPosX,
                                        &localPt, &obj->anim.localPosZ,
-                                       (int)obj->anim.parent);
+                                       obj->anim.parent);
         if (inner->warpKind == 1)
         {
             inner->targetYaw += 0x4000;
@@ -6981,7 +6981,7 @@ int playerStateClimbDownFromWall(GameObject* obj, int state)
         }
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, 0.0f,
                                        obj->anim.worldPosZ, &obj->anim.localPosX, &outY,
-                                       &obj->anim.localPosZ, *(int*)&obj->anim.parent);
+                                       &obj->anim.localPosZ, obj->anim.parent);
         fn_802AB5A4(obj, (int)inner, 5);
         ObjAnim_SetCurrentMove((int)obj, *(s16*)inner->moveAnimTable, 0.0f, 1);
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
@@ -7055,7 +7055,7 @@ int playerStateClimbUpFromWall(GameObject* obj, int state)
         }
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, 0.0f,
                                        obj->anim.worldPosZ, &obj->anim.localPosX, &outY,
-                                       &obj->anim.localPosZ, *(int*)&obj->anim.parent);
+                                       &obj->anim.localPosZ, obj->anim.parent);
         fn_802AB5A4(obj, (int)inner, 5);
         ObjAnim_SetCurrentMove((int)obj, *(s16*)inner->moveAnimTable, 0.0f, 1);
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
@@ -7852,7 +7852,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
             Obj_TransformWorldPointToLocal(obj->anim.worldPosX, 0.0f,
                                            obj->anim.worldPosZ, &obj->anim.localPosX,
                                            &local, &obj->anim.localPosZ,
-                                           *(int*)&obj->anim.parent);
+                                           obj->anim.parent);
             fn_802AB5A4(obj, (int)inner, 5);
             ObjAnim_SetCurrentMove((int)obj, *(s16*)(inner->moveAnimTable), 0.0f, 1);
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
@@ -8047,7 +8047,7 @@ int playerStateOnLadder(int obj, int state)
             Obj_TransformWorldPointToLocal(((GameObject*)obj)->anim.worldPosX, 0.0f,
                                            ((GameObject*)obj)->anim.worldPosZ, &((GameObject*)obj)->anim.localPosX,
                                            &outY, &((GameObject*)obj)->anim.localPosZ,
-                                           *(int*)&((GameObject*)obj)->anim.parent);
+                                           ((GameObject*)obj)->anim.parent);
             if (gPlayerCurrentMoveId == 6 || gPlayerCurrentMoveId == 7)
             {
                 fn_802AB5A4((GameObject*)obj, inner, 7);
@@ -8791,7 +8791,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
         ((GameObject*)obj)->anim.velocityY = 0.0f;
         Obj_TransformWorldPointToLocal(((GameObject*)obj)->anim.worldPosX, ((GameObject*)obj)->anim.worldPosY,
                                        ((GameObject*)obj)->anim.worldPosZ, (f32*)(obj + 0xc), (f32*)(obj + 0x10),
-                                       (f32*)(obj + 0x14), *(int*)&((GameObject*)obj)->anim.parent);
+                                       (f32*)(obj + 0x14), ((GameObject*)obj)->anim.parent);
         objHitDetectFn_80062e84((GameObject*)obj, ((PlayerState*)inner)->groundObject, 1);
         ((PlayerState*)inner)->moveStartX = ((GameObject*)obj)->anim.localPosX;
         ((PlayerState*)inner)->moveStartY = ((GameObject*)obj)->anim.localPosY;
@@ -8803,17 +8803,17 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
                 Obj_TransformWorldPointToLocal(((PlayerState*)inner)->launchAnchorX,
                                                ((PlayerState*)inner)->launchAnchorY,
                                                ((PlayerState*)inner)->launchAnchorZ, (f32*)(inner + 0x5d4),
-                                               (f32*)(inner + 0x5d8), (f32*)(inner + 0x5dc), (int)xf);
+                                               (f32*)(inner + 0x5d8), (f32*)(inner + 0x5dc), (GameObject*)xf);
                 Obj_TransformWorldPointToLocal(((PlayerState*)inner)->moveEndX,
                                                ((PlayerState*)inner)->moveEndY,
                                                ((PlayerState*)inner)->moveEndZ, (f32*)(inner + 0x5ec),
                                                (f32*)(inner + 0x5f0), (f32*)(inner + 0x5f4),
-                                               (int)((PlayerState*)inner)->groundObject);
+                                               ((PlayerState*)inner)->groundObject);
                 Obj_TransformWorldPointToLocal(((PlayerState*)inner)->moveEnd2X,
                                                ((PlayerState*)inner)->moveEnd2Y,
                                                ((PlayerState*)inner)->moveEnd2Z, (f32*)(inner + 0x5f8),
                                                (f32*)(inner + 0x5fc), (f32*)(inner + 0x600),
-                                               (int)((PlayerState*)inner)->groundObject);
+                                               ((PlayerState*)inner)->groundObject);
                 ((PlayerState*)inner)->leapTargetY =
                     ((PlayerState*)inner)->leapTargetY - ((PlayerState*)inner)->groundObject->anim.localPosY;
                 ((PlayerState*)inner)->leapBaseY =
@@ -8919,7 +8919,7 @@ int playerState0B(GameObject* obj, int state)
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
                                        obj->anim.worldPosZ, (f32*)((char*)obj + 0xc),
                                        (f32*)((char*)obj + 0x10), (f32*)((char*)obj + 0x14),
-                                       *(int*)&obj->anim.parent);
+                                       obj->anim.parent);
         objHitDetectFn_80062e84(obj, inner->groundObject, 1);
         inner->moveStartX = obj->anim.localPosX;
         inner->moveStartY = obj->anim.localPosY;
@@ -8929,15 +8929,15 @@ int playerState0B(GameObject* obj, int state)
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5d4), *(f32*)((int)inner + 0x5d8),
                                            *(f32*)((int)inner + 0x5dc), (f32*)((char*)inner + 0x5d4),
                                            (f32*)((char*)inner + 0x5d8), (f32*)((char*)inner + 0x5dc),
-                                           (u32)inner->groundObject);
+                                           inner->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5ec), *(f32*)((int)inner + 0x5f0),
                                            *(f32*)((int)inner + 0x5f4), (f32*)((char*)inner + 0x5ec),
                                            (f32*)((char*)inner + 0x5f0), (f32*)((char*)inner + 0x5f4),
-                                           (u32)inner->groundObject);
+                                           inner->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5f8), *(f32*)((int)inner + 0x5fc),
                                            *(f32*)((int)inner + 0x600), (f32*)((char*)inner + 0x5f8),
                                            (f32*)((char*)inner + 0x5fc), (f32*)((char*)inner + 0x600),
-                                           (u32)inner->groundObject);
+                                           inner->groundObject);
             inner->leapTargetY = inner->leapTargetY - inner->groundObject->anim.localPosY;
             inner->leapBaseY = inner->leapBaseY - inner->groundObject->anim.localPosY;
             inner->unk609 = 0;
@@ -9053,7 +9053,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
                                        obj->anim.worldPosZ, (f32*)((char*)obj + 0xc),
                                        (f32*)((char*)obj + 0x10), (f32*)((char*)obj + 0x14),
-                                       *(int*)&obj->anim.parent);
+                                       obj->anim.parent);
         objHitDetectFn_80062e84(obj, ((PlayerState*)inner)->groundObject, 1);
         ((PlayerState*)inner)->moveStartX = obj->anim.localPosX;
         ((PlayerState*)inner)->moveStartY = obj->anim.localPosY;
@@ -9078,15 +9078,15 @@ int playerStateGrabLedge(GameObject* obj, int state)
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5d4), *(f32*)((int)inner + 0x5d8),
                                            *(f32*)((int)inner + 0x5dc), (f32*)((char*)inner + 0x5d4),
                                            (f32*)((char*)inner + 0x5d8), (f32*)((char*)inner + 0x5dc),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5ec), *(f32*)((int)inner + 0x5f0),
                                            *(f32*)((int)inner + 0x5f4), (f32*)((char*)inner + 0x5ec),
                                            (f32*)((char*)inner + 0x5f0), (f32*)((char*)inner + 0x5f4),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5f8), *(f32*)((int)inner + 0x5fc),
                                            *(f32*)((int)inner + 0x600), (f32*)((char*)inner + 0x5f8),
                                            (f32*)((char*)inner + 0x5fc), (f32*)((char*)inner + 0x600),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             ((PlayerState*)inner)->leapTargetY =
                 ((PlayerState*)inner)->leapTargetY - ((PlayerState*)inner)->groundObject->anim.localPosY;
             ((PlayerState*)inner)->leapBaseY =
@@ -9152,22 +9152,22 @@ int playerState09(GameObject* obj, int state)
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
                                        obj->anim.worldPosZ, &obj->anim.localPosX,
                                        &obj->anim.localPosY, &obj->anim.localPosZ,
-                                       *(int*)&obj->anim.parent);
+                                       obj->anim.parent);
         objHitDetectFn_80062e84(obj, ((PlayerState*)inner)->groundObject, 1);
         if (*(void**)((char*)inner + 0x4c4) != NULL)
         {
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5d4), *(f32*)((int)inner + 0x5d8),
                                            *(f32*)((int)inner + 0x5dc), (f32*)((char*)inner + 0x5d4),
                                            (f32*)((char*)inner + 0x5d8), (f32*)((char*)inner + 0x5dc),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5ec), *(f32*)((int)inner + 0x5f0),
                                            *(f32*)((int)inner + 0x5f4), (f32*)((char*)inner + 0x5ec),
                                            (f32*)((char*)inner + 0x5f0), (f32*)((char*)inner + 0x5f4),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5f8), *(f32*)((int)inner + 0x5fc),
                                            *(f32*)((int)inner + 0x600), (f32*)((char*)inner + 0x5f8),
                                            (f32*)((char*)inner + 0x5fc), (f32*)((char*)inner + 0x600),
-                                           (u32)((PlayerState*)inner)->groundObject);
+                                           ((PlayerState*)inner)->groundObject);
             ((PlayerState*)inner)->leapTargetY =
                 ((PlayerState*)inner)->leapTargetY - ((PlayerState*)inner)->groundObject->anim.localPosY;
             ((PlayerState*)inner)->leapBaseY =
@@ -11200,7 +11200,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             {
                 Obj_TransformWorldPointToLocal(end[0], end[1], end[2], &((PlayerState*)state)->contactPointX,
                                                &((PlayerState*)state)->contactPointY,
-                                               &((PlayerState*)state)->contactPointZ, (u32)buf.object);
+                                               &((PlayerState*)state)->contactPointZ, buf.object);
                 ((PlayerState*)state)->contactObject = (int)buf.object;
             }
             else
@@ -11230,7 +11230,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             {
                 Obj_TransformWorldPointToLocal(end[0], end[1], end[2], &((PlayerState*)state)->contactPointX,
                                                &((PlayerState*)state)->contactPointY,
-                                               &((PlayerState*)state)->contactPointZ, (u32)buf.object);
+                                               &((PlayerState*)state)->contactPointZ, buf.object);
                 ((PlayerState*)state)->contactObject = (int)buf.object;
             }
             else
@@ -11692,8 +11692,8 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
                     z2 = *(f32*)(j8 + verts);
                     if (parent != NULL)
                     {
-                        Obj_TransformLocalPointToWorld(x1, y1, z1, &x1, &y1, &z1, (int)parent);
-                        Obj_TransformLocalPointToWorld(x2, y2, z2, px2, py2, pz2, (int)parent);
+                        Obj_TransformLocalPointToWorld(x1, y1, z1, &x1, &y1, &z1, parent);
+                        Obj_TransformLocalPointToWorld(x2, y2, z2, px2, py2, pz2, parent);
                     }
                     {
                         f32 dz = z2 - z1;
@@ -11745,7 +11745,7 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
         probe.y = out[1];
         probe.z = out[0x16];
         Obj_TransformLocalPointToWorld(probe.x, probe.y, probe.z, &probe.x, &probe.y, &probe.z,
-                                       *(int*)&obj->anim.parent);
+                                       obj->anim.parent);
         {
             int cnt = hitDetectFn_80065e50(obj, probe.x, probe.y, probe.z, &list, 0, 0x201);
             if (cnt != 0)
@@ -11785,7 +11785,7 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
         probe.y = out[1];
         probe.z = out[0x13];
         Obj_TransformLocalPointToWorld(probe.x, probe.y, probe.z, &probe.x, &probe.y, &probe.z,
-                                       *(int*)&obj->anim.parent);
+                                       obj->anim.parent);
         if (hitDetectFn_800658a4(obj, probe.x, probe.y, probe.z, out + 0x12, 0x205) == 0)
         {
             out[0x12] = out[1] - out[0x12];
@@ -11801,11 +11801,11 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
         if (obj->anim.parent != NULL)
         {
             Obj_TransformLocalPointToWorld(out[0xb], out[0xc], out[0xd], out + 0xb, out + 0xc, out + 0xd,
-                                           *(int*)&obj->anim.parent);
+                                           obj->anim.parent);
             Obj_TransformLocalPointToWorld(out[0x11], out[0x12], out[0x13], out + 0x11, out + 0x12,
-                                           out + 0x13, *(int*)&obj->anim.parent);
+                                           out + 0x13, obj->anim.parent);
             Obj_TransformLocalPointToWorld(out[0x14], out[0x15], out[0x16], out + 0x14, out + 0x15,
-                                           out + 0x16, *(int*)&obj->anim.parent);
+                                           out + 0x16, obj->anim.parent);
             ((PlayerState*)inner)->leapTargetY =
                 ((PlayerState*)inner)->leapTargetY + *(f32*)(*(int*)&obj->anim.parent + 0x10);
             ((PlayerState*)inner)->leapBaseY =
@@ -11907,8 +11907,8 @@ int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance)
                 bz = *(f32*)(k + tbl2);
                 if (hit != NULL)
                 {
-                    Obj_TransformLocalPointToWorld(ax, ay, az, &ax, &ay, &az, (int)hit);
-                    Obj_TransformLocalPointToWorld(bx, by, bz, pbx, pby, pbz, (int)hit);
+                    Obj_TransformLocalPointToWorld(ax, ay, az, &ax, &ay, &az, (GameObject*)(int)hit);
+                    Obj_TransformLocalPointToWorld(bx, by, bz, pbx, pby, pbz, (GameObject*)(int)hit);
                 }
                 {
                     f32 dz = bz - az;

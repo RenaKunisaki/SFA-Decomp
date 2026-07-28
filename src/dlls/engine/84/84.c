@@ -2,6 +2,7 @@
  * DLL 84 / 0x54 - NPC conversation camera mode.
  */
 #include "main/resource.h"
+#include "main/object_transform.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/camera_interface.h"
 #include "main/dll/CAM/camera_mode_54_state.h"
@@ -129,7 +130,7 @@ void dll_54_update(CameraObject* camera)
         }
         Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                        &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                       camera->anim.parentAddress);
+                                       (GameObject*)camera->anim.parentAddress);
     }
 }
 

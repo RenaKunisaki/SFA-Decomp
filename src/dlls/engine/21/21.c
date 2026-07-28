@@ -741,7 +741,7 @@ void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* collision)
                 Obj_TransformLocalPointToWorld(((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
                                                ((GameObject*)obj)->anim.localPosZ, &((GameObject*)obj)->anim.worldPosX,
                                                &((GameObject*)obj)->anim.worldPosY, &((GameObject*)obj)->anim.worldPosZ,
-                                               ((GameObject*)obj)->anim.parentAddress);
+                                               (GameObject*)((GameObject*)obj)->anim.parentAddress);
             }
         }
         else
@@ -1086,7 +1086,7 @@ void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, 
                     Obj_TransformLocalPointToWorld(
                         curveObj->anim.localPosX, curveObj->anim.localPosY, curveObj->anim.localPosZ,
                         &curveObj->anim.worldPosX, &curveObj->anim.worldPosY, &curveObj->anim.worldPosZ,
-                        (u32)curveObj->anim.parentAnim);
+                        (GameObject*)curveObj->anim.parentAnim);
                 }
             }
             else
@@ -1371,7 +1371,7 @@ void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, 
             Obj_TransformWorldPointToLocal(curveObj->anim.worldPosX, curveObj->anim.worldPosY,
                                            curveObj->anim.worldPosZ, &curveObj->anim.localPosX,
                                            &curveObj->anim.localPosY, &curveObj->anim.localPosZ,
-                                           (u32)curveObj->anim.parentAnim);
+                                           (GameObject*)curveObj->anim.parentAnim);
         }
     }
     else
@@ -1453,7 +1453,7 @@ void curves_updateQueryBounds(GameObject* obj, CurvesCollisionState* state, f32 
             {
                 Obj_TransformLocalPointToWorld(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                                &obj->anim.worldPosX, &obj->anim.worldPosY, &obj->anim.worldPosZ,
-                                               obj->anim.parentAddress);
+                                               (GameObject*)obj->anim.parentAddress);
             }
         }
         else

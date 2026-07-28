@@ -13,6 +13,7 @@
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "main/camera.h"
+#include "main/object_transform.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/dll/savegame_env_api.h"
 #include "main/dll/savegame_load_api.h"
@@ -1688,7 +1689,7 @@ void newclouds_run(void)
             }
             if (*(u8**)D7_CLOUD != NULL)
             {
-                Obj_GetWorldPosition((u32)*(u8 **)D7_CLOUD, &pos[0], &pos[1], &pos[2]);
+                Obj_GetWorldPosition((GameObject*)*(u8 **)D7_CLOUD, &pos[0], &pos[1], &pos[2]);
             }
             if (((NewCloud*)D7_CLOUD)->followCamera != 0 && cam != NULL)
             {

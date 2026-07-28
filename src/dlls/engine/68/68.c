@@ -580,7 +580,7 @@ void CameraModeViewfinder_update(CameraObject* obj)
     logPrintf(sCam5BYDebugFormat, obj->anim.worldPosY);
     Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
                                    obj->anim.worldPosZ, &obj->anim.localPosX, &obj->anim.localPosY,
-                                   &obj->anim.localPosZ, (int)obj->anim.parent);
+                                   &obj->anim.localPosZ, obj->anim.parent);
 }
 
 void CameraModeViewfinder_init(CameraObject* obj, int mode, int* args)

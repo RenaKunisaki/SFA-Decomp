@@ -844,7 +844,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
             for (; pointIndex < state->pointCount; pointIndex++) {
                 Obj_TransformLocalPointToWorld(*(f32*)((char*)localPoint + 0x18), *(f32*)((char*)localPoint + 0x1c),
                                                *(f32*)((char*)localPoint + 0x20), worldPoint, worldPoint + 1,
-                                               worldPoint + 2, (u32)obj);
+                                               worldPoint + 2, obj);
                 delta[0] = obj->anim.localPosX - worldPoint[0];
                 delta[1] = obj->anim.localPosY - worldPoint[1];
                 delta[2] = obj->anim.localPosZ - worldPoint[2];
@@ -1089,7 +1089,7 @@ void pushable_hitDetect(GameObject* obj) {
         Obj_BuildTransformMatrices(obj);
         for (i = 0; i < state->pointCount; i++) {
             Obj_TransformLocalPointToWorld(state->cornerLocal[i].x, state->cornerLocal[i].y, state->cornerLocal[i].z,
-                                           &worldPoints[i].x, &worldPoints[i].y, &worldPoints[i].z, (u32)obj);
+                                           &worldPoints[i].x, &worldPoints[i].y, &worldPoints[i].z, obj);
         }
         hitDetect_calcSweptSphereBounds(&sweep, (f32*)state->cornerWorld, (f32*)worldPoints, radii.values,
                                         PUSHABLE_MAX_POINTS);
@@ -1158,7 +1158,7 @@ void pushable_hitDetect(GameObject* obj) {
     for (i = 0; i < state->pointCount; i++) {
         Obj_TransformLocalPointToWorld(state->probeLocal[i].x, state->probeLocal[i].y, state->probeLocal[i].z,
                                        &state->cornerWorld[i].x, &state->cornerWorld[i].y, &state->cornerWorld[i].z,
-                                       (u32)obj);
+                                       obj);
     }
 }
 

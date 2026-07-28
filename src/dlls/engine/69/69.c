@@ -3,6 +3,7 @@
  */
 #include "main/dll/CAM/cambike_state.h"
 #include "main/dll/CAM/dll_0045_camTalk.h"
+#include "main/object_transform.h"
 #include "main/camera_interface.h"
 #include "main/frame_timing.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -129,7 +130,7 @@ void CameraModeBike_update(CameraObject* camera)
         camera->anim.rotZ += rollStep * rollSmoothing;
         Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                        &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                       camera->anim.parentAddress);
+                                       (GameObject*)camera->anim.parentAddress);
     }
     return;
 }

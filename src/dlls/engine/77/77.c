@@ -2,6 +2,7 @@
  * DLL 77 / 0x4D - NPC conversation camera mode.
  */
 #include "main/dll/CAM/camnpcspeak_state.h"
+#include "main/object_transform.h"
 #include "main/resource.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/maketex_api.h"
@@ -129,7 +130,7 @@ void CameraModeNpcSpeak_update(CameraObject* camera)
     turnOnBlurFilter(speakState->anchorX, speakState->anchorY, speakState->anchorZ, 1, 0);
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   camera->anim.parentAddress);
+                                   (GameObject*)camera->anim.parentAddress);
 }
 
 

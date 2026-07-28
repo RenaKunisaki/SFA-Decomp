@@ -2,6 +2,7 @@
  * DLL 74 / 0x4A - ship-battle camera mode.
  */
 #include "main/resource.h"
+#include "main/object_transform.h"
 #include "main/dll/CAM/camshipbattle_state.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_004A_cameramodeshipbattle.h"
@@ -126,7 +127,7 @@ void CameraModeShipBattle_update(CameraObject* cam)
     Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY,
                                    cam->anim.worldPosZ, &cam->anim.localPosX,
                                    &cam->anim.localPosY, &cam->anim.localPosZ,
-                                   cam->anim.parentAddress);
+                                   (GameObject*)cam->anim.parentAddress);
 }
 
 void CameraModeShipBattle_init(void)

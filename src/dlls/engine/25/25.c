@@ -1099,7 +1099,7 @@ f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, GameObject* mover)
             mover->anim.worldPosZ = mover->anim.worldPosZ - c * d1;
             Obj_TransformWorldPointToLocal(mover->anim.worldPosX, mover->anim.worldPosY, mover->anim.worldPosZ,
                                            &mover->anim.localPosX, &mover->anim.localPosY, &mover->anim.localPosZ,
-                                           mover->anim.parentAddress);
+                                           (GameObject*)mover->anim.parentAddress);
         }
         else if (d2 > 1.0f)
         {

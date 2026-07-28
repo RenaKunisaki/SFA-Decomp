@@ -237,7 +237,7 @@ void camcontrol_updateTargetReticle(CamcontrolTargetObject* fallbackTarget, int 
         {
             Obj_TransformWorldPointToLocal(reticle->anim.worldPosX, reticle->anim.worldPosY, reticle->anim.worldPosZ,
                                            &reticle->anim.localPosX, &reticle->anim.localPosY, &reticle->anim.localPosZ,
-                                           (u32)reticle->anim.parent);
+                                           reticle->anim.parent);
         }
         else
         {
@@ -1619,21 +1619,21 @@ void Camera_update(u8 framesThisStep)
             focus->worldPosY = camera->overrideWorldY;
             focus->worldPosZ = camera->overrideWorldZ;
             Obj_TransformWorldPointToLocal(focus->worldPosX, focus->worldPosY, focus->worldPosZ, &focus->localPosX,
-                                           &focus->localPosY, &focus->localPosZ, (u32)focus->parent);
+                                           &focus->localPosY, &focus->localPosZ, (GameObject*)focus->parent);
             camera->overrideWorldPosPending = 0;
         }
         if (camera->localFrameObj != focus->parent)
         {
             Obj_TransformLocalPointToWorld(camera->localX, camera->localY, camera->localZ, &camera->worldX,
-                                           &camera->worldY, &camera->worldZ, (u32)camera->localFrameObj);
+                                           &camera->worldY, &camera->worldZ, (GameObject*)camera->localFrameObj);
             Obj_TransformLocalPointToWorld(camera->prevLocalX, camera->prevLocalY, camera->prevLocalZ,
                                            &camera->prevWorldX, &camera->prevWorldY, &camera->prevWorldZ,
-                                           (u32)camera->localFrameObj);
+                                           (GameObject*)camera->localFrameObj);
             Obj_TransformWorldPointToLocal(camera->worldX, camera->worldY, camera->worldZ, &camera->localX,
-                                           &camera->localY, &camera->localZ, (u32)focus->parent);
+                                           &camera->localY, &camera->localZ, (GameObject*)focus->parent);
             Obj_TransformWorldPointToLocal(camera->prevWorldX, camera->prevWorldY, camera->prevWorldZ,
                                            &camera->prevLocalX, &camera->prevLocalY, &camera->prevLocalZ,
-                                           (u32)focus->parent);
+                                           (GameObject*)focus->parent);
             camera->localFrameObj = focus->parent;
         }
         if (focus->parent != NULL)
@@ -1645,7 +1645,7 @@ void Camera_update(u8 framesThisStep)
         {
             gCamcontrolCurrentHandler->handler->vtable->update((void*)pCamera);
             Obj_TransformLocalPointToWorld(camera->localX, camera->localY, camera->localZ, &camera->worldX,
-                                           &camera->worldY, &camera->worldZ, (u32)camera->localFrameObj);
+                                           &camera->worldY, &camera->worldZ, (GameObject*)camera->localFrameObj);
             camcontrol_applyState(camera);
         }
         camcontrol_applyQueuedAction();

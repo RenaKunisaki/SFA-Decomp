@@ -2,6 +2,7 @@
  * DLL 75 / 0x4B - climbing camera mode.
  */
 #include "main/dll/CAM/camclimb_state.h"
+#include "main/object_transform.h"
 #include "main/resource.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/camera_interface.h"
@@ -148,7 +149,7 @@ void CameraModeClimb_update(CameraObject* camObj)
     camObj->anim.rotY += (yawDelta * framesThisStep) / 6;
     Obj_TransformWorldPointToLocal(camObj->anim.worldPosX, camObj->anim.worldPosY, camObj->anim.worldPosZ,
                                    &camObj->anim.localPosX, &camObj->anim.localPosY, &camObj->anim.localPosZ,
-                                   camObj->anim.parentAddress);
+                                   (GameObject*)camObj->anim.parentAddress);
 }
 
 void CameraModeClimb_init(CameraObject* camera, int mode, s8* args)

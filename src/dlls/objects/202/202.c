@@ -1556,7 +1556,7 @@ void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
             player->anim.worldPosZ = player->anim.worldPosZ - cosA * f5;
             Obj_TransformWorldPointToLocal(player->anim.worldPosX, player->anim.worldPosY, player->anim.worldPosZ,
                                            &player->anim.localPosX, &player->anim.localPosY, &player->anim.localPosZ,
-                                           (u32)player->anim.parent);
+                                           player->anim.parent);
         }
     }
 }

@@ -2,6 +2,7 @@
  * DLL 70 / 0x46 - debug camera mode.
  */
 #include "main/camera_interface.h"
+#include "main/object_transform.h"
 #include "main/dll/CAM/camdebug_state.h"
 #include "main/dll/CAM/camstatic_state.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -92,7 +93,7 @@ void CameraModeDebug_update(CameraObject* cam)
         cam->anim.worldPosZ = state->anim.worldPosZ + h;
     }
     Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ, &cam->anim.localPosX,
-                                   &cam->anim.localPosY, &cam->anim.localPosZ, cam->anim.parentAddress);
+                                   &cam->anim.localPosY, &cam->anim.localPosZ, (GameObject*)cam->anim.parentAddress);
 }
 
 void CameraModeDebug_init(void)

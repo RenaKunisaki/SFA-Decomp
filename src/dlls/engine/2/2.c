@@ -59,7 +59,7 @@
 #include "main/pad.h"
 #include "main/gamebit_ids.h"
 #include "main/mldf_fileid.h"
-#include "main/camera_ext.h"
+#include "main/object_transform.h"
 #include "main/maketex_yield_api.h"
 #include "dolphin/os.h"
 #include "main/pi_dolphin_api.h"
@@ -2590,7 +2590,7 @@ void ObjSeq_runBgCmds(void)
                     seqp->runState = 2;
                     seqp->pendingStartFrame = xrot;
                     ObjSeq_update(candidate, 1.0f);
-                    Obj_GetWorldPosition((u32)candidate, &candidate->anim.worldPosX,
+                    Obj_GetWorldPosition(candidate, &candidate->anim.worldPosX,
                                          &candidate->anim.worldPosY, &candidate->anim.worldPosZ);
                 }
                 else
@@ -2929,7 +2929,7 @@ void ObjSeq_updateCamera(void)
             *(f32*)(camObj + 0x20) = z;
             Obj_TransformWorldPointToLocal(*(f32*)(camObj + 0x18), *(f32*)(camObj + 0x1c), *(f32*)(camObj + 0x20),
                                            (f32*)(camObj + 0xc), (f32*)(camObj + 0x10), (f32*)(camObj + 0x14),
-                                           (u32)*(void**)(camObj + 0x30));
+                                           (GameObject*)*(void**)(camObj + 0x30));
             *(s16*)camObj = (s16)(0x8000 - pitch);
             *(s16*)(camObj + 2) = (s16)-yaw;
             *(s16*)(camObj + 4) = roll;
@@ -4384,7 +4384,7 @@ void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
     flags = obj->anim.resetHitboxFlags;
     flags &= ~7;
     obj->anim.resetHitboxFlags = flags;
-    Obj_GetWorldPosition((u32)obj, &obj->anim.worldPosX, &obj->anim.worldPosY, &obj->anim.worldPosZ);
+    Obj_GetWorldPosition(obj, &obj->anim.worldPosX, &obj->anim.worldPosY, &obj->anim.worldPosZ);
     if (obj->anim.hitReactState != NULL)
     {
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject = 0;
@@ -5909,7 +5909,7 @@ void ObjSeq_ApplyLinkedObjectTransform(GameObject* obj, GameObject* seqObj, u8* 
         lbl_803DD0B8 = obj;
         lbl_803DD0B6 = framesThisStep;
     }
-    Obj_GetWorldPosition((u32)seqObj, &seqObj->anim.worldPosX, &seqObj->anim.worldPosY,
+    Obj_GetWorldPosition(seqObj, &seqObj->anim.worldPosX, &seqObj->anim.worldPosY,
                          &seqObj->anim.worldPosZ);
 }
 static inline int ObjSeq_CheckConditionOpcode(ObjSeqState* state, GameObject* obj, u8 conditionOpcode)

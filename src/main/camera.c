@@ -1,4 +1,5 @@
 #include "main/camera.h"
+#include "main/object_transform.h"
 #include "main/pi_dolphin.h"
 #include "main/frame_timing.h"
 #include "game/objects/object.h"
@@ -101,39 +102,39 @@ s32 Angle_SubWrappedS16(s32 angle, s16* delta) {
     return angle + 0xFFFF;
 }
 
-void Obj_TransformLocalVectorToWorld(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, int obj) {
+void Obj_TransformLocalVectorToWorld(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, GameObject* obj) {
     f32 vec[3];
     s32 matrixOffset;
 
     vec[0] = x;
     vec[1] = y;
     vec[2] = z;
-    matrixOffset = ((GameObject*)obj)->anim.transformMatrixIndex * 16;
+    matrixOffset = obj->anim.transformMatrixIndex * 16;
     Matrix_TransformVector((f32*)gObjYawTransformMatrices + matrixOffset, vec, vec);
     *outX = vec[0];
     *outY = vec[1];
     *outZ = vec[2];
 }
 
-void Obj_TransformWorldVectorToLocal(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, u32 obj) {
+void Obj_TransformWorldVectorToLocal(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, GameObject* obj) {
     f32 vec[3];
     s32 matrixOffset;
 
     vec[0] = x;
     vec[1] = y;
     vec[2] = z;
-    matrixOffset = ((GameObject*)obj)->anim.transformMatrixIndex * 16;
+    matrixOffset = obj->anim.transformMatrixIndex * 16;
     Matrix_TransformVector((f32*)gObjInverseYawTransformMatrices + matrixOffset, vec, vec);
     *outX = vec[0];
     *outY = vec[1];
     *outZ = vec[2];
 }
 
-void Obj_TransformWorldPointToLocal(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, int obj) {
+void Obj_TransformWorldPointToLocal(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, GameObject* obj) {
     s32 matrixOffset;
 
-    if ((u32)obj != 0) {
-        matrixOffset = ((GameObject*)obj)->anim.transformMatrixIndex * 16;
+    if (obj != NULL) {
+        matrixOffset = obj->anim.transformMatrixIndex * 16;
         Matrix_TransformPoint((f32*)gObjInverseYawTransformMatrices + matrixOffset, x, y, z, outX, outY, outZ);
     } else {
         *outX = x;
@@ -142,11 +143,11 @@ void Obj_TransformWorldPointToLocal(f32 x, f32 y, f32 z, f32* outX, f32* outY, f
     }
 }
 
-void Obj_TransformLocalPointToWorld(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, int obj) {
+void Obj_TransformLocalPointToWorld(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ, GameObject* obj) {
     s32 matrixOffset;
 
-    if ((u32)obj != 0) {
-        matrixOffset = ((GameObject*)obj)->anim.transformMatrixIndex * 16;
+    if (obj != NULL) {
+        matrixOffset = obj->anim.transformMatrixIndex * 16;
         Matrix_TransformPoint((f32*)gObjYawTransformMatrices + matrixOffset, x, y, z, outX, outY, outZ);
     } else {
         *outX = x;
@@ -155,19 +156,19 @@ void Obj_TransformLocalPointToWorld(f32 x, f32 y, f32 z, f32* outX, f32* outY, f
     }
 }
 
-void Obj_GetWorldPosition(u32 obj, f32* outX, f32* outY, f32* outZ) {
-    u32 parent;
+void Obj_GetWorldPosition(GameObject* obj, f32* outX, f32* outY, f32* outZ) {
+    GameObject* parent;
     s32 matrixOffset;
 
-    parent = (u32)((GameObject*)obj)->anim.parent;
-    if (parent == 0) {
-        *outX = ((GameObject*)obj)->anim.localPosX;
-        *outY = ((GameObject*)obj)->anim.localPosY;
-        *outZ = ((GameObject*)obj)->anim.localPosZ;
+    parent = obj->anim.parent;
+    if (parent == NULL) {
+        *outX = obj->anim.localPosX;
+        *outY = obj->anim.localPosY;
+        *outZ = obj->anim.localPosZ;
     } else {
-        matrixOffset = ((GameObject*)parent)->anim.transformMatrixIndex * 16;
-        Matrix_TransformPoint((f32*)gObjYawTransformMatrices + matrixOffset, ((GameObject*)obj)->anim.localPosX,
-                              ((GameObject*)obj)->anim.localPosY, ((GameObject*)obj)->anim.localPosZ, outX, outY, outZ);
+        matrixOffset = parent->anim.transformMatrixIndex * 16;
+        Matrix_TransformPoint((f32*)gObjYawTransformMatrices + matrixOffset, obj->anim.localPosX, obj->anim.localPosY,
+                              obj->anim.localPosZ, outX, outY, outZ);
     }
 }
 

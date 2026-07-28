@@ -2,6 +2,7 @@
  * DLL 72 / 0x48 - static camera mode.
  */
 #include "main/camera_interface.h"
+#include "main/object_transform.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/CAM/dll_0045_camTalk.h"
 #include "main/dll/CAM/camstatic_state.h"
@@ -135,7 +136,7 @@ void CameraModeStatic_update(short* camObj)
             ((CameraObject*)camObj)->anim.worldPosX, ((CameraObject*)camObj)->anim.worldPosY,
             ((CameraObject*)camObj)->anim.worldPosZ, &((CameraObject*)camObj)->anim.localPosX,
             &((CameraObject*)camObj)->anim.localPosY, &((CameraObject*)camObj)->anim.localPosZ,
-            ((CameraObject*)camObj)->anim.parentAddress);
+            (GameObject*)((CameraObject*)camObj)->anim.parentAddress);
     }
     return;
 }
@@ -208,7 +209,7 @@ void CameraModeStatic_init(u8* cam, int p2, int* p3)
     Obj_TransformWorldPointToLocal(((CameraObject*)cam)->anim.worldPosX, ((CameraObject*)cam)->anim.worldPosY,
                                    ((CameraObject*)cam)->anim.worldPosZ, &((CameraObject*)cam)->anim.localPosX,
                                    &((CameraObject*)cam)->anim.localPosY, &((CameraObject*)cam)->anim.localPosZ,
-                                   ((CameraObject*)cam)->anim.parentAddress);
+                                   (GameObject*)((CameraObject*)cam)->anim.parentAddress);
 }
 
 void CameraModeStatic_release(void)
