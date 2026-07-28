@@ -2037,7 +2037,7 @@ extern const f32 lbl_803DF27C;
 #define NC_CLOUD ((u8 *)gNewClouds[cfg->cloudIndex])
 extern int gNewCloudMusicIdByType[5];
 
-void newclouds_updateEnvfxAct(u8* objA, u8* objB, u8* params)
+void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
 {
     CloudSpawnParams* cfg = (CloudSpawnParams*)params;
     u8* env;
@@ -2067,15 +2067,15 @@ void newclouds_updateEnvfxAct(u8* objA, u8* objB, u8* params)
     }
     if (objA != NULL)
     {
-        posA[0] = ((GameObject*)objA)->anim.worldPosX;
-        posA[1] = ((GameObject*)objA)->anim.worldPosY;
-        posA[2] = ((GameObject*)objA)->anim.worldPosZ;
+        posA[0] = objA->anim.worldPosX;
+        posA[1] = objA->anim.worldPosY;
+        posA[2] = objA->anim.worldPosZ;
     }
     if (objB != NULL)
     {
-        posB[0] = ((GameObject*)objB)->anim.worldPosX;
-        posB[1] = ((GameObject*)objB)->anim.worldPosY;
-        posB[2] = ((GameObject*)objB)->anim.worldPosZ;
+        posB[0] = objB->anim.worldPosX;
+        posB[1] = objB->anim.worldPosY;
+        posB[2] = objB->anim.worldPosZ;
     }
     if ((u32)cfg->cloudIndex > 8)
     {
@@ -2212,11 +2212,11 @@ void newclouds_updateEnvfxAct(u8* objA, u8* objB, u8* params)
             args.f10 = lbl_803DF1A4;
             args.fc = 0;
             args.fa = 0;
-            args.f8 = *(s16*)objA;
+            args.f8 = objA->anim.rotX;
             vecRotateZXY(&args.f8, vec);
-            ((NewCloud*)NC_CLOUD)->worldPosX = vec[0] + ((GameObject*)objA)->anim.worldPosX;
-            ((NewCloud*)NC_CLOUD)->worldPosY = vec[1] + ((GameObject*)objA)->anim.worldPosY;
-            ((NewCloud*)NC_CLOUD)->worldPosZ = vec[2] + ((GameObject*)objA)->anim.worldPosZ;
+            ((NewCloud*)NC_CLOUD)->worldPosX = vec[0] + objA->anim.worldPosX;
+            ((NewCloud*)NC_CLOUD)->worldPosY = vec[1] + objA->anim.worldPosY;
+            ((NewCloud*)NC_CLOUD)->worldPosZ = vec[2] + objA->anim.worldPosZ;
             if (((NewCloud*)NC_CLOUD)->driftScale > lbl_803DF27C)
             {
                 Music_Trigger(gNewCloudMusicIdByType[((NewCloud*)NC_CLOUD)->cloudType], 0);
