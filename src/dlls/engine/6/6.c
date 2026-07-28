@@ -30,10 +30,6 @@ u32 lbl_803DD18C;
 u32 lbl_803DD188;
 u8* gSky2State;
 s8 gSky2DrawMode;
-extern void* lbl_803DD13C;
-extern void* lbl_803DD138;
-extern void* lbl_803DD134;
-extern void* lbl_803DD130;
 
 s8 lbl_803DB750 = 1;
 int lbl_803DB754 = 1;
