@@ -2,10 +2,10 @@
 #define MAIN_DLL_DLL_10A_H_
 
 #include "ghidra_import.h"
-#include "main/dll/baddie_state.h"
+#include "main/dll/dll_00C9_enemy.h"
 #include "game/objects/object.h"
 
-void baddieSpawnWaterRipple(GameObject* obj, BaddieState* state);
+void baddieSpawnWaterRipple(GameObject* obj, EnemyState* state);
 void pinPon_updateIdle(GameObject* obj, int state);
 
 void FUN_80154108(u64 param_1,double param_2,double param_3,u64 param_4,

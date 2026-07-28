@@ -495,7 +495,7 @@ void player_rotateTowardEnemy(GameObject* obj, int* ctx, int spd)
 
 void player_render2(GameObject* obj, int* state, f32 f1, f32 f2)
 {
-    f32 cur = ((BaddieState*)state)->unk2A8;
+    f32 cur = ((BaddieState*)state)->nudgeYawProgress;
     f32 new_ = f2 * f1 + cur;
     if (new_ > PLAYER_MOVE_ONE)
     {
@@ -505,15 +505,15 @@ void player_render2(GameObject* obj, int* state, f32 f1, f32 f2)
         f32 delta = new_ - cur;
         if (delta > PLAYER_MOVE_ZERO)
         {
-            *(s16*)obj += (s16)(((BaddieState*)state)->animDeltaScale * delta);
-            ((BaddieState*)state)->unk2A8 = new_;
+            *(s16*)obj += (s16)(((BaddieState*)state)->nudgeYaw * delta);
+            ((BaddieState*)state)->nudgeYawProgress = new_;
         }
     }
 }
 
 void player_modelMtxFn(f32* mtx, int* state, f32 f1, f32 f2)
 {
-    f32 cur = ((BaddieState*)state)->speedScale;
+    f32 cur = ((BaddieState*)state)->nudgePosProgress;
     f32 new_ = f2 * f1 + cur;
     if (new_ > PLAYER_MOVE_ONE)
     {
@@ -523,10 +523,10 @@ void player_modelMtxFn(f32* mtx, int* state, f32 f1, f32 f2)
         f32 delta = new_ - cur;
         if (delta > PLAYER_MOVE_ZERO)
         {
-            *(f32*)((char*)mtx + 12) = *(f32*)((char*)state + 756) * delta + *(f32*)((char*)mtx + 12);
-            *(f32*)((char*)mtx + 16) = *(f32*)((char*)state + 760) * delta + *(f32*)((char*)mtx + 16);
-            *(f32*)((char*)mtx + 20) = ((BaddieState*)state)->pathStep * delta + *(f32*)((char*)mtx + 20);
-            ((BaddieState*)state)->speedScale = new_;
+            *(f32*)((char*)mtx + 12) = ((BaddieState*)state)->nudgePosX * delta + *(f32*)((char*)mtx + 12);
+            *(f32*)((char*)mtx + 16) = ((BaddieState*)state)->nudgePosY * delta + *(f32*)((char*)mtx + 16);
+            *(f32*)((char*)mtx + 20) = ((BaddieState*)state)->nudgePosZ * delta + *(f32*)((char*)mtx + 20);
+            ((BaddieState*)state)->nudgePosProgress = new_;
         }
     }
 }

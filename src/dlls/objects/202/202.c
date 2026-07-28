@@ -338,11 +338,11 @@ void battleDroidUpdateWhileFrozen(int obj, u8* state, int arg, int code, int wpa
 {
     if (code == 0x10)
     {
-        ((BaddieState*)state)->reactionFlags |= 0x20;
+        ((EnemyState*)state)->flags2E8 |= 0x20;
     }
     else
     {
-        ((BaddieState*)state)->reactionFlags |= 0x8;
+        ((EnemyState*)state)->flags2E8 |= 0x8;
     }
 }
 
@@ -352,26 +352,26 @@ void battleDroidUpdate(int obj, int state)
 
 void battleDroidUpdateAttack(int obj, int state)
 {
-    f32* pos = (f32*)((BaddieState*)state)->trackedObj;
+    f32* pos = (f32*)((EnemyState*)state)->trackedObj;
     baddieTurnTowardPoint((GameObject*)obj, state, pos[3], pos[5], 0xf, 0);
 }
 
 void battleDroidInit(int unused, char* p)
 {
     f32 v1c;
-    ((BaddieState*)p)->speedScale = 60.0f;
-    ((BaddieState*)p)->unk2E4 = 1;
-    ((BaddieState*)p)->unk2E4 |= 0x80;
-    ((BaddieState*)p)->unk308 = 0.005f;
-    ((BaddieState*)p)->animDeltaScale = 0.17f;
-    ((BaddieState*)p)->unk304 = 0.97f;
-    ((BaddieState*)p)->unk320 = 0;
+    ((EnemyState*)p)->sightRange = 60.0f;
+    ((EnemyState*)p)->flags2E4 = 1;
+    ((EnemyState*)p)->flags2E4 |= 0x80;
+    ((EnemyState*)p)->animPlaySpeed = 0.005f;
+    ((EnemyState*)p)->gravity = 0.17f;
+    ((EnemyState*)p)->drag = 0.97f;
+    ((EnemyState*)p)->moveId0 = 0;
     v1c = 3.0f;
-    *(f32*)&((BaddieState*)p)->eventFlags = v1c;
-    ((BaddieState*)p)->unk321 = 0;
-    ((BaddieState*)p)->unk318 = 1.25f;
-    ((BaddieState*)p)->unk322 = 0;
-    ((BaddieState*)p)->unk31C = v1c;
+    ((EnemyState*)p)->moveSpeedScale0 = v1c;
+    ((EnemyState*)p)->moveId1 = 0;
+    ((EnemyState*)p)->moveSpeedScale1 = 1.25f;
+    ((EnemyState*)p)->moveId2 = 0;
+    ((EnemyState*)p)->moveSpeedScale2 = v1c;
 }
 
 #define WISPBADDIE_OBJFLAG_PARENT_SLACK 0x1000
@@ -388,7 +388,7 @@ STATIC_ASSERT(offsetof(WispEventRow, moveId) == 0x8);
 
 /*
  * HagabonAnimState - file-local overlay naming the PER-FAMILY anim-control
- * scratch that baddie_state.h leaves raw for the hagabon/swarmbaddie fighter
+ * scratch that dll_00C9_enemy.h leaves raw for the hagabon/swarmbaddie fighter
  * driven by wispBaddieProcessAnimEvent. moveEventFlags(0x2F8) is the u16 per-frame
  * move-progress event bitmask read by wispBaddiePlayMoveEventSfx to fire SFX.
  */
@@ -435,10 +435,10 @@ u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent)
     WispEventRow* row;
     u32 sf2;
 
-    sequenceIndex = ((BaddieState*)state)->userData2;
+    sequenceIndex = ((EnemyState*)state)->userData2;
     sequenceBase = base + sequenceIndex * 0x28;
     eventRows = *(WispEventRow**)(sequenceBase + 0x1444);
-    stateFlags = ((BaddieState*)state)->controlFlags;
+    stateFlags = ((EnemyState*)state)->controlFlags;
     if ((stateFlags & 0x4000) != 0)
     {
         return 0;
@@ -500,13 +500,13 @@ u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent)
          (((HagabonAnimState*)state)->animEvent & 0x20) != 0) &&
         !(((HagabonAnimState*)state)->activeEventIndex == eventIndex && 0.0f != ((HagabonAnimState*)state)->moveHoldTimer))
     {
-        sf2 = ((BaddieState*)state)->controlFlags;
+        sf2 = ((EnemyState*)state)->controlFlags;
         if ((sf2 & 0x800080) != 0 || (((HagabonAnimState*)state)->animEvent & 0x20) != 0)
         {
             blendTimer = 60.0f * (blendScale * (row = &eventRows[eventIndex])->blend);
             ((HagabonAnimState*)state)->unk330 = blendTimer;
             ((HagabonAnimState*)state)->moveHoldTimer = blendTimer;
-            ((BaddieState*)state)->controlFlags = ((BaddieState*)state)->controlFlags | 0x40;
+            ((EnemyState*)state)->controlFlags = ((EnemyState*)state)->controlFlags | 0x40;
             ((HagabonAnimState*)state)->animFlags = ((HagabonAnimState*)state)->animFlags | 0x80;
             ((HagabonAnimState*)state)->unk2F3 = 0;
             ((HagabonAnimState*)state)->unk2F4 = 0;
@@ -523,13 +523,13 @@ u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent)
     }
     if (((HagabonAnimState*)state)->moveHoldTimer)
     {
-        GameObject* pos = (GameObject*)((BaddieState*)state)->trackedObj;
+        GameObject* pos = (GameObject*)((EnemyState*)state)->trackedObj;
         baddieTurnTowardPoint(obj, (int)state, pos->anim.localPosX, pos->anim.localPosZ, 0xf, 0);
-        if (((BaddieState*)state)->unk308 > 0.0166f)
+        if (((EnemyState*)state)->animPlaySpeed > 0.0166f)
         {
-            ((BaddieState*)state)->unk308 = ((BaddieState*)state)->unk308 - 0.005f;
+            ((EnemyState*)state)->animPlaySpeed = ((EnemyState*)state)->animPlaySpeed - 0.005f;
         }
-        if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             eventTableIndex = ((HagabonAnimState*)state)->activeEventIndex;
             Baddie_SetMove(obj, state, eventRows[eventTableIndex].moveId,
@@ -542,9 +542,9 @@ u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent)
         if (((HagabonAnimState*)state)->moveHoldTimer <= 0.0f)
         {
             ((HagabonAnimState*)state)->moveHoldTimer = 0.0f;
-            ((BaddieState*)state)->controlFlags &= ~0x40LL;
-            ((BaddieState*)state)->controlFlags =
-                ((BaddieState*)state)->controlFlags | (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+            ((EnemyState*)state)->controlFlags &= ~0x40LL;
+            ((EnemyState*)state)->controlFlags =
+                ((EnemyState*)state)->controlFlags | (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             ((HagabonAnimState*)state)->animFlags = ((HagabonAnimState*)state)->animFlags & ~0x80;
             ((HagabonAnimState*)state)->activeEventIndex = 0;
             return 0;
@@ -661,15 +661,15 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
     u8* trig;
     u8 ret;
 
-    animRows = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl10;
-    rowsC = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl24;
-    rowsB = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl1c;
-    trig = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl20;
+    animRows = gBaddieFamilyTables[((EnemyState*)state)->userData2].tbl10;
+    rowsC = gBaddieFamilyTables[((EnemyState*)state)->userData2].tbl24;
+    rowsB = gBaddieFamilyTables[((EnemyState*)state)->userData2].tbl1c;
+    trig = gBaddieFamilyTables[((EnemyState*)state)->userData2].tbl20;
     ret = 0;
 
-    if (((BaddieState*)state)->userData2 == 5)
+    if (((EnemyState*)state)->userData2 == 5)
     {
-        ((BaddieState*)state)->reactionFlags |= 0x10;
+        ((EnemyState*)state)->flags2E8 |= 0x10;
         return 0;
     }
     if (msgId == 0xe)
@@ -682,10 +682,10 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
     }
     if (msgId == 0x10)
     {
-        ((BaddieState*)state)->reactionFlags |= 0x28;
+        ((EnemyState*)state)->flags2E8 |= 0x28;
         return 0;
     }
-    if ((((BaddieState*)state)->controlFlags & 0x40) != 0 ||
+    if ((((EnemyState*)state)->controlFlags & 0x40) != 0 ||
         (trig[arrIdx] != 0 && ((u32)(msgId - 0xe) <= 1 || msgId == 0x13)))
     {
         if (msgId != 0x11)
@@ -696,7 +696,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_swdout1);
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_gethit02);
             }
-            ((BaddieState*)state)->reactionFlags |= 0x10;
+            ((EnemyState*)state)->flags2E8 |= 0x10;
             {
                 IdleRow* rows = (IdleRow*)rowsC;
                 Baddie_SetMove(obj, state, rows[state[0x33c]].anim, *(f32*)(rowsC + state[0x33c] * 12), 0,
@@ -773,7 +773,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
             ((SeqObj11EState*)state)->seqNode = animRows[off + 9];
             ((SeqObj11EState*)state)->seqTimer = (f32)(u32) * (u16*)(state + 0x2ec);
         }
-        ((BaddieState*)state)->reactionFlags |= 8;
+        ((EnemyState*)state)->flags2E8 |= 8;
         if (attacker->anim.classId == 0x1c)
         {
             return 0;
@@ -793,15 +793,15 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
         {
             state[0x2f5] = 0;
         }
-        if (damage > ((BaddieState*)state)->hitCounter)
+        if (damage > ((EnemyState*)state)->current)
         {
-            ((BaddieState*)state)->hitCounter = 0;
+            ((EnemyState*)state)->current = 0;
         }
         else
         {
-            ((BaddieState*)state)->hitCounter = ((BaddieState*)state)->hitCounter - damage;
+            ((EnemyState*)state)->current = ((EnemyState*)state)->current - damage;
         }
-        if (((BaddieState*)state)->hitCounter == 0)
+        if (((EnemyState*)state)->current == 0)
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_land);
         }
@@ -828,11 +828,11 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
     u8* tbl1c;
     u32 flags;
 
-    tbl4 = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl4;
-    tbl0 = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl0;
-    tbl1c = gBaddieFamilyTables[((BaddieState*)state)->userData2].tbl1c;
+    tbl4 = gBaddieFamilyTables[((EnemyState*)state)->userData2].tbl4;
+    tbl0 = gBaddieFamilyTables[((EnemyState*)state)->userData2].tbl0;
+    tbl1c = gBaddieFamilyTables[((EnemyState*)state)->userData2].tbl1c;
 
-    if (((BaddieState*)state)->userData2 == 5 && (((BaddieState*)state)->controlFlags & 0x800000))
+    if (((EnemyState*)state)->userData2 == 5 && (((EnemyState*)state)->controlFlags & 0x800000))
     {
         mainSetBits(GAMEBIT_BaddieRelated1C8, 1);
     }
@@ -846,7 +846,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
             if (((SeqObj11EState*)state)->seqTimer <= z)
             {
                 ((SeqObj11EState*)state)->seqTimer = z;
-                ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+                ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
                 ((SeqObj11EState*)state)->seqNode = tbl1c[((SeqObj11EState*)state)->seqNode * 16 + 0xa];
             }
         }
@@ -857,7 +857,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
     }
     if (state[0x33d] != 0)
     {
-        if (((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN)
+        if (((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN)
         {
             f32 z = 0.0f;
             (obj)->anim.velocityZ = z;
@@ -878,11 +878,11 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
             return;
         }
     }
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) && state[0x33d] == 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) && state[0x33d] == 0)
     {
         sidekickToy_updateCurveTargetLatch(obj);
     }
-    flags = ((BaddieState*)state)->controlFlags;
+    flags = ((EnemyState*)state)->controlFlags;
     if (flags & BADDIE_CONTROL_PATH_FOLLOW)
     {
         f32 dist;
@@ -900,7 +900,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
         {
             f32 diff = 64.0f - dist;
             f32 spd = diff / 64.0f;
-            *(f32*)(state + 0x310) = spd * ((BaddieState*)state)->pathStep;
+            *(f32*)(state + 0x310) = spd * ((EnemyState*)state)->pathStep;
         }
         if (*(f32*)(state + 0x310) < 0.25f)
         {
@@ -922,14 +922,14 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
         {
             delta = 65535.0f + delta;
         }
-        ((BaddieState*)state)->unk308 =
-            (((BaddieState*)state)->pathStep - *(f32*)(state + 0x310)) / 60.0f *
+        ((EnemyState*)state)->animPlaySpeed =
+            (((EnemyState*)state)->pathStep - *(f32*)(state + 0x310)) / 60.0f *
             (1.0f - ((delta >= 0.0f) ? delta : -delta) / 65535.0f);
         if (*(f32*)(state + 0x308) < 0.005f)
         {
             *(f32*)(state + 0x308) = 0.005f;
         }
-        if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) && state[0x33d] == 0)
+        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) && state[0x33d] == 0)
         {
             if (((SeqObj11EState*)state)->seqNode != 0)
             {
@@ -1014,18 +1014,18 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
 void sharpClawUpdateApproach(GameObject* obj, void* state)
 {
     u8* table = gBaddieMoveProgressTable;
-    u8 idx = ((BaddieState*)state)->userData2;
+    u8 idx = ((EnemyState*)state)->userData2;
     void* animCtrl = *(void**)(table + idx * 0x28 + 0x143c);
     IdleRow* idleSrc = (IdleRow*)(*(void**)(table + idx * 0x28 + 0x1454));
     u8* seqRows = *(u8**)(table + idx * 0x28 + 0x1458);
 
-    if (idx == 5 && (((BaddieState*)state)->controlFlags & 0x800000) != 0)
+    if (idx == 5 && (((EnemyState*)state)->controlFlags & 0x800000) != 0)
     {
         mainSetBits(GAMEBIT_BaddieRelated1C8, 1);
     }
 
-    if (((BaddieState*)state)->trackedObj != NULL &&
-        ((GameObject*)((BaddieState*)state)->trackedObj)->anim.classId == 1)
+    if (((EnemyState*)state)->trackedObj != NULL &&
+        ((GameObject*)((EnemyState*)state)->trackedObj)->anim.classId == 1)
     {
         requestKrazoaShrineMusic();
     }
@@ -1040,7 +1040,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
             if (((SeqObj11EState*)state)->seqTimer <= zero)
             {
                 ((SeqObj11EState*)state)->seqTimer = zero;
-                ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+                ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
                 {
                     SeqRow16* seqRow16 = (SeqRow16*)seqRows;
                     ((SeqObj11EState*)state)->seqNode = seqRow16[((SeqObj11EState*)state)->seqNode].alt;
@@ -1054,13 +1054,13 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
         return;
     }
 
-    if ((((BaddieState*)state)->controlFlags & 0x20000000) != 0 && (*(u32*)((u8*)state + 0x2e0) & 0x20000000) == 0)
+    if ((((EnemyState*)state)->controlFlags & 0x20000000) != 0 && (*(u32*)((u8*)state + 0x2e0) & 0x20000000) == 0)
     {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_mumble02);
-        ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+        ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
     }
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         SeqRow16* seqRow16 = (SeqRow16*)seqRows;
         if (((SeqObj11EState*)state)->seqNode != 0)
@@ -1097,19 +1097,19 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
 
     if ((s32)(obj)->anim.currentMove == *(u8*)((u8*)animCtrl + 0x2c))
     {
-        ((BaddieState*)state)->unk308 =
-            ((BaddieState*)state)->pathStep *
-            (((f32)(u32) * (u16*)((u8*)state + 0x2a4) / ((BaddieState*)state)->unk2A8 / 60.0f) *
-             ((f32*)(table + 0x1538))[((BaddieState*)state)->userData2]);
-        if (((BaddieState*)state)->unk308 < 0.03f)
+        ((EnemyState*)state)->animPlaySpeed =
+            ((EnemyState*)state)->pathStep *
+            (((f32)(u32) * (u16*)((u8*)state + 0x2a4) / ((EnemyState*)state)->aggroRange / 60.0f) *
+             ((f32*)(table + 0x1538))[((EnemyState*)state)->userData2]);
+        if (((EnemyState*)state)->animPlaySpeed < 0.03f)
         {
-            ((BaddieState*)state)->unk308 = 0.03f;
+            ((EnemyState*)state)->animPlaySpeed = 0.03f;
         }
     }
 
     if ((((SeqObj11EState*)state)->animFlags & 8) == 0)
     {
-        GameObject* tracked = (GameObject*)(((BaddieState*)state)->trackedObj);
+        GameObject* tracked = (GameObject*)(((EnemyState*)state)->trackedObj);
         baddieTurnTowardPoint(obj, (int)state, tracked->anim.localPosX,
                     tracked->anim.localPosZ, 0xf, 0);
     }
@@ -1165,11 +1165,11 @@ void groundBaddiePickIdleMove(GameObject* obj, u8* state)
     char* base;
 
     base = (char*)gBaddieFamilyTables;
-    base += ((GroundBaddieState*)state)->baddie.userData2 * 40;
+    base += ((EnemyState*)state)->userData2 * 40;
     entry = *(SeqEntry**)(base + 12);
-    if ((f32) * (u16*)(state + 0x2a4) > 0.6f * ((GroundBaddieState*)state)->baddie.speedScale)
+    if ((f32) * (u16*)(state + 0x2a4) > 0.6f * ((EnemyState*)state)->sightRange)
     {
-        if ((f32) * (u16*)(state + 0x2a4) > 0.8f * ((GroundBaddieState*)state)->baddie.speedScale)
+        if ((f32) * (u16*)(state + 0x2a4) > 0.8f * ((EnemyState*)state)->sightRange)
         {
             state[0x33a] = (u8)(entry[0].anim + 2);
         }
@@ -1180,9 +1180,9 @@ void groundBaddiePickIdleMove(GameObject* obj, u8* state)
     }
     wrapIdx = 1;
     while (entry[idx = state[0x33a]].mask != 0 &&
-           (((GroundBaddieState*)state)->baddie.controlFlags & entry[idx].mask) == 0)
+           (((EnemyState*)state)->controlFlags & entry[idx].mask) == 0)
     {
-        (((GroundBaddieState*)state)->baddie.userData1)++;
+        (((EnemyState*)state)->userData1)++;
         if (state[0x33a] > entry[0].anim)
         {
             state[0x33a] = wrapIdx;
@@ -1194,7 +1194,7 @@ void groundBaddiePickIdleMove(GameObject* obj, u8* state)
     baddieSetMove(obj, (int)state, entry[state[0x33a]].anim, entry[state[0x33a]].speed, 0, 3);
     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
                             *(f32*)(gBaddieMoveProgressTable + entry[state[0x33a]].anim * 4));
-    (((GroundBaddieState*)state)->baddie.userData1)++;
+    (((EnemyState*)state)->userData1)++;
     if (state[0x33a] > entry[0].anim)
     {
         state[0x33a] = 1;
@@ -1209,7 +1209,7 @@ void groundBaddiePickNextMove(GameObject* obj, u8* state)
     char* base;
 
     base = (char*)gBaddieFamilyTables;
-    base += ((GroundBaddieState*)state)->baddie.userData2 * 40;
+    base += ((EnemyState*)state)->userData2 * 40;
     entry = *(SeqEntry**)(base + 12);
     if (enemy_findNearbyEnemies(obj, 100.0f, 1, 16, gGroundBaddieTargetSearchResult) >= 1)
     {
@@ -1234,7 +1234,7 @@ void groundBaddiePickNextMove(GameObject* obj, u8* state)
         {
             while ((entry[state[0x33a]].r & 1) != 0)
             {
-                (((GroundBaddieState*)state)->baddie.userData1)++;
+                (((EnemyState*)state)->userData1)++;
                 if (state[0x33a] > entry[0].anim)
                 {
                     state[0x33a] = 1;
@@ -1242,14 +1242,14 @@ void groundBaddiePickNextMove(GameObject* obj, u8* state)
             }
         }
     }
-    if ((f32) * (u16*)(state + 0x2a4) < 0.8f * ((GroundBaddieState*)state)->baddie.speedScale)
+    if ((f32) * (u16*)(state + 0x2a4) < 0.8f * ((EnemyState*)state)->sightRange)
     {
         state[0x33a] = (u8)(entry[0].anim + 1);
     }
     while (entry[idx = state[0x33a]].mask != 0 &&
-           (((GroundBaddieState*)state)->baddie.controlFlags & entry[idx].mask) == 0)
+           (((EnemyState*)state)->controlFlags & entry[idx].mask) == 0)
     {
-        (((GroundBaddieState*)state)->baddie.userData1)++;
+        (((EnemyState*)state)->userData1)++;
         if (state[0x33a] > entry[0].anim)
         {
             state[0x33a] = 1;
@@ -1261,7 +1261,7 @@ void groundBaddiePickNextMove(GameObject* obj, u8* state)
     baddieSetMove(obj, (int)state, entry[state[0x33a]].anim, entry[state[0x33a]].speed, 0, 3);
     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
                             *(f32*)(gBaddieMoveProgressTable + entry[state[0x33a]].anim * 4));
-    (((GroundBaddieState*)state)->baddie.userData1)++;
+    (((EnemyState*)state)->userData1)++;
     if (state[0x33a] > entry[0].anim)
     {
         state[0x33a] = 1;
@@ -1279,15 +1279,15 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
     GroundBaddieSequenceTable* table;
 
     table = (GroundBaddieSequenceTable*)gBaddieFamilyTables;
-    tableIdx = ((GroundBaddieState*)state)->baddie.userData2;
+    tableIdx = ((EnemyState*)state)->userData2;
     p20 = table[tableIdx].hitEntries;
     p28 = table[tableIdx].sequenceEntries;
-    if (tableIdx == 5 && (((GroundBaddieState*)state)->baddie.controlFlags & 0x800000) != 0)
+    if (tableIdx == 5 && (((EnemyState*)state)->controlFlags & 0x800000) != 0)
     {
         mainSetBits(GAMEBIT_BaddieRelated1C8, 1);
     }
-    if (((GroundBaddieState*)state)->baddie.trackedObj != NULL &&
-        ((GameObject*)((GroundBaddieState*)state)->baddie.trackedObj)->anim.classId == 1)
+    if (((EnemyState*)state)->trackedObj != NULL &&
+        ((GameObject*)((EnemyState*)state)->trackedObj)->anim.classId == 1)
     {
         requestKrazoaShrineMusic();
     }
@@ -1300,13 +1300,13 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
         if (*(f32*)(state + 0x328) <= fz)
         {
             *(f32*)(state + 0x328) = fz;
-            ((GroundBaddieState*)state)->baddie.controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+            ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             *(u16*)(state + 0x338) = (p28 + *(u16*)(state + 0x338) * 16)[10];
         }
     }
     if ((u8)wispBaddieProcessAnimEvent(obj, state, 1) == 0)
     {
-        if ((((GroundBaddieState*)state)->baddie.controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             player = Obj_GetPlayerObject();
             enemy_findNearbyEnemies(obj, 100.0f, 3, 16, gGroundBaddieTargetSearchResult);
@@ -1326,7 +1326,7 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
             }
             else
             {
-                if (player != NULL && ((((GroundBaddieState*)state)->baddie.controlFlags & 0x800080) != 0 ||
+                if (player != NULL && ((((EnemyState*)state)->controlFlags & 0x800080) != 0 ||
                                        (void*)Player_GetTargetObject((int)player) == NULL))
                 {
                     groundBaddiePickIdleMove(obj, state);
@@ -1357,8 +1357,8 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
         if ((state[0x323] & 8) == 0)
         {
             baddieTurnTowardPoint(obj, (int)state,
-                        ((GameObject*)((GroundBaddieState*)state)->baddie.trackedObj)->anim.localPosX,
-                        ((GameObject*)((GroundBaddieState*)state)->baddie.trackedObj)->anim.localPosZ, 10, 0);
+                        ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
+                        ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ, 10, 0);
         }
     }
 }
@@ -1370,22 +1370,22 @@ void sharpClawInit(int obj, u8* state)
     f32 fz2;
     int z;
 
-    ((GroundBaddieState*)state)->baddie.unk2E4 = 11;
-    ((GroundBaddieState*)state)->baddie.unk2E4 |= 0x402B0LL;
-    ((GroundBaddieState*)state)->baddie.unk2E4 |= 0x3040;
-    ((GroundBaddieState*)state)->baddie.unk2E4 |= 0x40300000LL;
-    ((GroundBaddieState*)state)->baddie.unk2E4 |= 0xC00;
-    ((GroundBaddieState*)state)->baddie.unk308 = 0.005f;
-    ((GroundBaddieState*)state)->baddie.animDeltaScale = 0.17f;
-    ((GroundBaddieState*)state)->baddie.unk304 = 0.97f;
+    ((EnemyState*)state)->flags2E4 = 11;
+    ((EnemyState*)state)->flags2E4 |= 0x402B0LL;
+    ((EnemyState*)state)->flags2E4 |= 0x3040;
+    ((EnemyState*)state)->flags2E4 |= 0x40300000LL;
+    ((EnemyState*)state)->flags2E4 |= 0xC00;
+    ((EnemyState*)state)->animPlaySpeed = 0.005f;
+    ((EnemyState*)state)->gravity = 0.17f;
+    ((EnemyState*)state)->drag = 0.97f;
     state[0x320] = 35;
     fz = 1.0f;
-    *(f32*)&((GroundBaddieState*)state)->baddie.eventFlags = fz;
+    ((EnemyState*)state)->moveSpeedScale0 = fz;
     state[0x321] = 34;
-    ((GroundBaddieState*)state)->baddie.unk318 = 1.25f;
+    ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
     state[0x322] = 6;
-    ((GroundBaddieState*)state)->baddie.unk31C = fz;
-    ((GroundBaddieState*)state)->baddie.pathStep *= 10.0f;
+    ((EnemyState*)state)->moveSpeedScale2 = fz;
+    ((EnemyState*)state)->pathStep *= 10.0f;
     switch (((GameObject*)obj)->anim.romDefNo)
     {
     case 314:
@@ -1393,71 +1393,71 @@ void sharpClawInit(int obj, u8* state)
         {
             *(s16*)(state + 0x2b6) = 51;
         }
-        ((GroundBaddieState*)state)->baddie.speedScale = 110.0f;
-        ((GroundBaddieState*)state)->baddie.hitCounter = 40;
-        ((GroundBaddieState*)state)->baddie.userData2 = 0;
+        ((EnemyState*)state)->sightRange = 110.0f;
+        ((EnemyState*)state)->current = 40;
+        ((EnemyState*)state)->userData2 = 0;
         break;
     case 17:
         if (*(s8*)(setup + 0x27) != 0)
         {
             *(s16*)(state + 0x2b6) = 51;
         }
-        ((GroundBaddieState*)state)->baddie.speedScale = 110.0f;
-        ((GroundBaddieState*)state)->baddie.hitCounter = 40;
-        ((GroundBaddieState*)state)->baddie.userData2 = 1;
+        ((EnemyState*)state)->sightRange = 110.0f;
+        ((EnemyState*)state)->current = 40;
+        ((EnemyState*)state)->userData2 = 1;
         break;
     case 1505:
         if (*(s8*)(setup + 0x27) != 0)
         {
             *(s16*)(state + 0x2b6) = 1529;
         }
-        ((GroundBaddieState*)state)->baddie.speedScale = 110.0f;
-        ((GroundBaddieState*)state)->baddie.hitCounter = 50;
-        ((GroundBaddieState*)state)->baddie.userData2 = 2;
+        ((EnemyState*)state)->sightRange = 110.0f;
+        ((EnemyState*)state)->current = 50;
+        ((EnemyState*)state)->userData2 = 2;
         break;
     case 1463:
         if (*(s8*)(setup + 0x27) != 0)
         {
             *(s16*)(state + 0x2b6) = 1530;
         }
-        ((GroundBaddieState*)state)->baddie.speedScale = 120.0f;
-        ((GroundBaddieState*)state)->baddie.hitCounter = 50;
-        ((GroundBaddieState*)state)->baddie.userData2 = 3;
+        ((EnemyState*)state)->sightRange = 120.0f;
+        ((EnemyState*)state)->current = 50;
+        ((EnemyState*)state)->userData2 = 3;
         break;
     case 1464:
         if (*(s8*)(setup + 0x27) != 0)
         {
             *(s16*)(state + 0x2b6) = 1534;
         }
-        ((GroundBaddieState*)state)->baddie.speedScale = 110.0f;
-        ((GroundBaddieState*)state)->baddie.hitCounter = 60;
-        ((GroundBaddieState*)state)->baddie.userData2 = 4;
+        ((EnemyState*)state)->sightRange = 110.0f;
+        ((EnemyState*)state)->current = 60;
+        ((EnemyState*)state)->userData2 = 4;
         break;
     case 1465:
         if (*(s8*)(setup + 0x27) != 0)
         {
             *(s16*)(state + 0x2b6) = 51;
         }
-        ((GroundBaddieState*)state)->baddie.speedScale = 110.0f;
-        ((GroundBaddieState*)state)->baddie.hitCounter = 1;
-        ((GroundBaddieState*)state)->baddie.userData2 = 1;
+        ((EnemyState*)state)->sightRange = 110.0f;
+        ((EnemyState*)state)->current = 1;
+        ((EnemyState*)state)->userData2 = 1;
         break;
     case 1958:
         if (*(s8*)(setup + 0x27) != 0)
         {
             *(s16*)(state + 0x2b6) = 1957;
         }
-        ((GroundBaddieState*)state)->baddie.speedScale = 110.0f;
-        ((GroundBaddieState*)state)->baddie.hitCounter = 160;
-        ((GroundBaddieState*)state)->baddie.userData2 = 5;
+        ((EnemyState*)state)->sightRange = 110.0f;
+        ((EnemyState*)state)->current = 160;
+        ((EnemyState*)state)->userData2 = 5;
         z = 0;
         state[0x320] = z;
         fz2 = 1.0f;
-        *(f32*)&((GroundBaddieState*)state)->baddie.eventFlags = fz2;
+        ((EnemyState*)state)->moveSpeedScale0 = fz2;
         state[0x321] = 21;
-        ((GroundBaddieState*)state)->baddie.unk318 = 1.25f;
+        ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
         state[0x322] = z;
-        ((GroundBaddieState*)state)->baddie.unk31C = fz2;
+        ((EnemyState*)state)->moveSpeedScale2 = fz2;
         *(int*)(state + 0x36c) = (int)ObjModelChain_Alloc(&gGroundBaddieModelChainDesc, 1);
         ObjModelChain_SetOrigin((ObjModelChain*)*(int*)(state + 0x36c), 0.15f, 0.75f, -0.05f);
         *(int*)(obj + 0x108) = (int)baddieAfterUpdateBonesCb;
@@ -1466,7 +1466,7 @@ void sharpClawInit(int obj, u8* state)
     }
     if (*(s8*)(setup + 0x2e) != -1)
     {
-        ((GroundBaddieState*)state)->baddie.controlFlags |= 1;
+        ((EnemyState*)state)->controlFlags |= 1;
     }
 }
 
@@ -1539,7 +1539,7 @@ void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
                                                              GROUND_BADDIE_ANGLE_UNIT_SCALE);
     dx = player->anim.worldPosX - px0;
     dz = player->anim.worldPosZ - pz0;
-    if (sqrtf(dx * dx + dz * dz) < ((GroundBaddieState*)state)->baddie.speedScale)
+    if (sqrtf(dx * dx + dz * dz) < ((EnemyState*)state)->sightRange)
     {
         sinA = mathSinf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
         cosA = mathCosf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
@@ -1565,7 +1565,7 @@ void guardClawUpdateWhileFrozen(GameObject* obj, u8* state, int wpad0, int wpad1
                                 int wpad5)
 {
     Sfx_PlayFromObject((int)obj, SFXTRIG_wp_pole1_c_23);
-    ((GroundBaddieState*)state)->baddie.reactionFlags |= 0x10;
+    ((EnemyState*)state)->flags2E8 |= 0x10;
 }
 
 int gGcRobotPatrolCurveInitData[2] = {2, 3};
@@ -1599,7 +1599,7 @@ void guardClaw_update(GameObject* obj, u8* state)
     int* def = *(int**)&(obj)->anim.placementData;
     u32 flags;
 
-    if (((BaddieState*)state)->userData1 == 2 && mainGetBit(*(s16*)((char*)def + 0x1c)) == 0)
+    if (((EnemyState*)state)->userData1 == 2 && mainGetBit(*(s16*)((char*)def + 0x1c)) == 0)
     {
         (obj)->anim.resetHitboxFlags =
             (u8)((obj)->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
@@ -1613,70 +1613,70 @@ void guardClaw_update(GameObject* obj, u8* state)
         (obj)->anim.resetHitboxFlags =
             (u8)((obj)->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
     }
-    flags = ((BaddieState*)state)->controlFlags;
+    flags = ((EnemyState*)state)->controlFlags;
     if (flags & BADDIE_CONTROL_JUST_TRIGGERED)
     {
-        if (gSeq11EStateTable[((BaddieState*)state)->userData1].unk4 != 0)
+        if (gSeq11EStateTable[((EnemyState*)state)->userData1].unk4 != 0)
         {
-            ((BaddieState*)state)->controlFlags = flags | (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+            ((EnemyState*)state)->controlFlags = flags | (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
         }
     }
-    flags = ((BaddieState*)state)->controlFlags;
+    flags = ((EnemyState*)state)->controlFlags;
     if (flags & BADDIE_CONTROL_SEQUENCE_DRIVEN)
     {
         int anim;
         u8* animTbl;
 
-        if (((BaddieState*)state)->userData1 == 0)
+        if (((EnemyState*)state)->userData1 == 0)
         {
             if (flags & 0x20000000)
             {
                 if (mainGetBit(*(s16*)((char*)def + 0x1c)) != 0)
                 {
-                    ((BaddieState*)state)->userData1 = gSeq11EStateTable[((BaddieState*)state)->userData1].alt;
+                    ((EnemyState*)state)->userData1 = gSeq11EStateTable[((EnemyState*)state)->userData1].alt;
                 }
                 else
                 {
-                    ((BaddieState*)state)->userData1 = gSeq11EStateTable[((BaddieState*)state)->userData1].next;
+                    ((EnemyState*)state)->userData1 = gSeq11EStateTable[((EnemyState*)state)->userData1].next;
                 }
             }
         }
-        else if (((BaddieState*)state)->userData1 == 2)
+        else if (((EnemyState*)state)->userData1 == 2)
         {
-            if (mainGetBit(*(s16*)((char*)def + 0x1c)) != 0 || !(((BaddieState*)state)->controlFlags & 0x20000000))
+            if (mainGetBit(*(s16*)((char*)def + 0x1c)) != 0 || !(((EnemyState*)state)->controlFlags & 0x20000000))
             {
-                ((BaddieState*)state)->userData1 = gSeq11EStateTable[((BaddieState*)state)->userData1].next;
+                ((EnemyState*)state)->userData1 = gSeq11EStateTable[((EnemyState*)state)->userData1].next;
             }
         }
-        else if (((BaddieState*)state)->userData1 == 3)
+        else if (((EnemyState*)state)->userData1 == 3)
         {
             if (mainGetBit(*(s16*)((char*)def + 0x1c)) != 0)
             {
-                ((BaddieState*)state)->userData1 = gSeq11EStateTable[((BaddieState*)state)->userData1].alt;
+                ((EnemyState*)state)->userData1 = gSeq11EStateTable[((EnemyState*)state)->userData1].alt;
             }
             else
             {
-                ((BaddieState*)state)->userData1 = gSeq11EStateTable[((BaddieState*)state)->userData1].next;
+                ((EnemyState*)state)->userData1 = gSeq11EStateTable[((EnemyState*)state)->userData1].next;
             }
         }
         else
         {
-            ((BaddieState*)state)->userData1 = gSeq11EStateTable[((BaddieState*)state)->userData1].next;
+            ((EnemyState*)state)->userData1 = gSeq11EStateTable[((EnemyState*)state)->userData1].next;
         }
         anim = (obj)->anim.currentMove;
-        if (anim != (animTbl = (u8*)gSeq11EStateTable + 8)[((BaddieState*)state)->userData1 * 12])
+        if (anim != (animTbl = (u8*)gSeq11EStateTable + 8)[((EnemyState*)state)->userData1 * 12])
         {
-            if (animTbl[((BaddieState*)state)->userData1 * 12] != 0 &&
-                animTbl[((BaddieState*)state)->userData1 * 12] != 4)
+            if (animTbl[((EnemyState*)state)->userData1 * 12] != 0 &&
+                animTbl[((EnemyState*)state)->userData1 * 12] != 4)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_eggsnatch_carry3);
             }
             ((SeqObj11ESetMovePointerStateFn)baddieSetMove)(
-                obj, state, animTbl[((BaddieState*)state)->userData1 * 12],
-                *(f32*)((u8*)gSeq11EStateTable + ((BaddieState*)state)->userData1 * 12), 0, 0xf);
+                obj, state, animTbl[((EnemyState*)state)->userData1 * 12],
+                *(f32*)((u8*)gSeq11EStateTable + ((EnemyState*)state)->userData1 * 12), 0, 0xf);
         }
     }
-    if (gSeq11EStateTable[((BaddieState*)state)->userData1].flagB != 0)
+    if (gSeq11EStateTable[((EnemyState*)state)->userData1].flagB != 0)
     {
         groundBaddiePushPlayerOut(obj, state);
     }
@@ -1686,23 +1686,23 @@ void guardClaw_init(GameObject* obj, u8* state)
 {
     int* sub = *(int**)&(obj)->anim.placementData;
     f32 fz;
-    ((BaddieState*)state)->speedScale = 200.0f;
-    ((BaddieState*)state)->unk2A8 = 300.0f;
-    ((BaddieState*)state)->unk2E4 = 1;
-    ((BaddieState*)state)->unk2E4 |= 0xC80;
-    ((BaddieState*)state)->unk308 = 0.0055555557f;
-    ((BaddieState*)state)->animDeltaScale = 0.17f;
-    ((BaddieState*)state)->unk304 = 0.97f;
-    ((BaddieState*)state)->unk320 = 0;
+    ((EnemyState*)state)->sightRange = 200.0f;
+    ((EnemyState*)state)->aggroRange = 300.0f;
+    ((EnemyState*)state)->flags2E4 = 1;
+    ((EnemyState*)state)->flags2E4 |= 0xC80;
+    ((EnemyState*)state)->animPlaySpeed = 0.0055555557f;
+    ((EnemyState*)state)->gravity = 0.17f;
+    ((EnemyState*)state)->drag = 0.97f;
+    ((EnemyState*)state)->moveId0 = 0;
     fz = 1.0f;
-    *(f32*)&((BaddieState*)state)->eventFlags = fz;
-    ((BaddieState*)state)->unk321 = 0;
-    ((BaddieState*)state)->unk318 = fz;
-    ((BaddieState*)state)->unk322 = 0;
-    ((BaddieState*)state)->unk31C = fz;
+    ((EnemyState*)state)->moveSpeedScale0 = fz;
+    ((EnemyState*)state)->moveId1 = 0;
+    ((EnemyState*)state)->moveSpeedScale1 = fz;
+    ((EnemyState*)state)->moveId2 = 0;
+    ((EnemyState*)state)->moveSpeedScale2 = fz;
     if (*((s8*)sub + 0x2e) != -1)
     {
-        *(int*)&((BaddieState*)state)->controlFlags |= 1;
+        *(int*)&((EnemyState*)state)->controlFlags |= 1;
     }
     (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
 }
@@ -1754,10 +1754,10 @@ void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, in
     }
     Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_pole1_c_23);
     Sfx_PlayFromObject((u32)obj, SFXTRIG_en_lrope_powerdown);
-    ((BaddieState*)state)->reactionFlags |= 0x8;
+    ((EnemyState*)state)->flags2E8 |= 0x8;
     *(f32*)(state + 0x32c) = (f32)(u32)(u16) * (s16*)(sub + 0x2c);
     baddieSetMove((GameObject*)obj, (int)state, 1, 2.5f, 0, 0);
-    ((BaddieState*)state)->unk2E4 &= ~0x20LL;
+    ((EnemyState*)state)->flags2E4 &= ~0x20LL;
     fz = 0.0f;
     ((GameObject*)obj)->anim.velocityZ = 0.0f;
     ((GameObject*)obj)->anim.velocityY = fz;
@@ -1799,27 +1799,27 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
         if (*(f32*)(state + 0x32c) <= 0.0f)
         {
             *(f32*)(state + 0x32c) = 0.0f;
-            ((BaddieState*)state)->unk2E4 |= 0x20;
+            ((EnemyState*)state)->flags2E4 |= 0x20;
             Sfx_StopObjectChannel((u32)obj, 4);
             ((SeqObj11ESetMovePointerStateFn)baddieSetMove)(obj, state, 0, 1.0f, 0, 0);
         }
-        else if (!(((BaddieState*)state)->unk2E4 & 0x20))
+        else if (!(((EnemyState*)state)->flags2E4 & 0x20))
         {
             return;
         }
     }
-    if (((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW)
+    if (((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW)
     {
         int step;
 
-        if (Curve_AdvanceAlongPath(&path->curve, ((BaddieState*)state)->pathStep) != 0 || path->atSegmentEnd != 0)
+        if (Curve_AdvanceAlongPath(&path->curve, ((EnemyState*)state)->pathStep) != 0 || path->atSegmentEnd != 0)
         {
             if ((*gRomCurveInterface)->goNextPoint(path) != 0)
             {
                 if ((*gRomCurveInterface)
                         ->initCurve(*(RomCurveWalker**)state, obj, 700.0f, (int*)&gGcRobotPatrolCurveInitData, -1) != 0)
                 {
-                    ((BaddieState*)state)->controlFlags &= ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
+                    ((EnemyState*)state)->controlFlags &= ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
                 }
             }
         }
@@ -1830,7 +1830,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
         {
             baddieTurnTowardPoint(obj, (int)state, path->posX, path->posZ, 0xf, 0);
         }
-        else if (((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW)
+        else if (((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW)
         {
             spd = step << 8;
             if ((int)(10.0f * path->tangentY) >= 0)
@@ -1864,11 +1864,11 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_18d);
             }
-            ((BaddieState*)state)->userData1 = 1;
+            ((EnemyState*)state)->userData1 = 1;
         }
         else
         {
-            ((BaddieState*)state)->userData1 = 0;
+            ((EnemyState*)state)->userData1 = 0;
         }
     }
     else
@@ -1879,15 +1879,15 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_18d);
             }
-            ((BaddieState*)state)->userData1 = 1;
+            ((EnemyState*)state)->userData1 = 1;
         }
         else
         {
-            ((BaddieState*)state)->userData1 = 0;
+            ((EnemyState*)state)->userData1 = 0;
         }
         obj->anim.rotX += *(s8*)((char*)def + 0x2a);
     }
-    if (((BaddieState*)state)->userData1 != 0)
+    if (((EnemyState*)state)->userData1 != 0)
     {
         obj->anim.velocityY += gGcRobotPatrolRiseAccel * timeDelta;
     }
@@ -1960,7 +1960,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             }
             newObj = gcRobotLight_init(obj, 0x639);
             flag = 0;
-            if (*(s8*)((char*)def + 0x2a) != 0 && !(((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW))
+            if (*(s8*)((char*)def + 0x2a) != 0 && !(((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW))
             {
                 flag = 1;
             }
@@ -1974,20 +1974,20 @@ void gcRobotPatrol_init(GameObject* obj, int state)
 {
     f32 fz;
 
-    ((BaddieState*)state)->speedScale = 60.0f;
-    ((BaddieState*)state)->unk2E4 = 41;
-    ((BaddieState*)state)->unk2E4 |= 0x7000;
-    ((BaddieState*)state)->unk2E4 |= 0x20000LL;
-    ((BaddieState*)state)->unk308 = 0.005f;
-    ((BaddieState*)state)->animDeltaScale = 0.006f;
-    ((BaddieState*)state)->unk304 = 0.99f;
-    ((BaddieState*)state)->unk320 = 0;
+    ((EnemyState*)state)->sightRange = 60.0f;
+    ((EnemyState*)state)->flags2E4 = 41;
+    ((EnemyState*)state)->flags2E4 |= 0x7000;
+    ((EnemyState*)state)->flags2E4 |= 0x20000LL;
+    ((EnemyState*)state)->animPlaySpeed = 0.005f;
+    ((EnemyState*)state)->gravity = 0.006f;
+    ((EnemyState*)state)->drag = 0.99f;
+    ((EnemyState*)state)->moveId0 = 0;
     fz = 1.0f;
-    *(f32*)&((BaddieState*)state)->eventFlags = fz;
-    ((BaddieState*)state)->unk321 = 0;
-    ((BaddieState*)state)->unk318 = fz;
-    ((BaddieState*)state)->unk322 = 0;
-    ((BaddieState*)state)->unk31C = fz;
+    ((EnemyState*)state)->moveSpeedScale0 = fz;
+    ((EnemyState*)state)->moveId1 = 0;
+    ((EnemyState*)state)->moveSpeedScale1 = fz;
+    ((EnemyState*)state)->moveId2 = 0;
+    ((EnemyState*)state)->moveSpeedScale2 = fz;
     *(f32*)(state + 0x32c) = 0.0f;
     obj->anim.hitboxScale = 100.0f;
     Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_tr_bcrek1_c);
@@ -2004,9 +2004,9 @@ void mikaladon_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wp
         return;
     }
     Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_248);
-    *(s16*)&((BaddieState*)state)->hitCounter = 0;
-    ((BaddieState*)state)->unk2E4 |= 0x20;
-    ((BaddieState*)state)->reactionFlags |= 0x8;
+    ((EnemyState*)state)->current = 0;
+    ((EnemyState*)state)->flags2E4 |= 0x20;
+    ((EnemyState*)state)->flags2E8 |= 0x8;
 }
 
 #define MAGICPLANT_OBJFLAG_PARENT_SLACK 0x1000
@@ -2074,8 +2074,8 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
     state->actor.orbitAngle =
         MIKALADON_ORBIT_ANGLE_SPEED * timeDelta + (f32)(u32)state->actor.orbitAngle;
     angleToVec2Precise(state->actor.orbitAngle, &sinOut, &cosOut);
-    sinOut = sinOut * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterX;
-    cosOut = cosOut * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterZ;
+    sinOut = sinOut * ((EnemyState*)state)->aggroRange + state->actor.orbitCenterX;
+    cosOut = cosOut * ((EnemyState*)state)->aggroRange + state->actor.orbitCenterZ;
     if (state->actor.verticalPhase == MIKALADON_PHASE_ORBIT)
     {
         f32 dx;
@@ -2083,10 +2083,10 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
 
         y = obj->anim.localPosY;
         dx = state->actor.orbitCenterX -
-             ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX;
+             ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX;
         dz = state->actor.orbitCenterZ -
-             ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ;
-        if (sqrtf(dx * dx + dz * dz) <= MIKALADON_TRIGGER_RADIUS_SCALE * ((BaddieState*)state)->unk2A8)
+             ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ;
+        if (sqrtf(dx * dx + dz * dz) <= MIKALADON_TRIGGER_RADIUS_SCALE * ((EnemyState*)state)->aggroRange)
         {
             state->actor.verticalPhase = MIKALADON_PHASE_DESCEND;
             state->actor.dropTimer = 0;
@@ -2164,18 +2164,18 @@ void mikaladon_init(GameObject* obj, MikaladonState* state)
     f32 a, b;
 
     zero = gMikaladonDefaultPeriod;
-    ((BaddieState*)state)->speedScale = zero;
-    ((BaddieState*)state)->unk2E4 = 1;
-    ((BaddieState*)state)->unk308 = 0.01f;
-    ((BaddieState*)state)->animDeltaScale = 0.006f;
+    ((EnemyState*)state)->sightRange = zero;
+    ((EnemyState*)state)->flags2E4 = 1;
+    ((EnemyState*)state)->animPlaySpeed = 0.01f;
+    ((EnemyState*)state)->gravity = 0.006f;
     lblA = 1.0f;
-    ((BaddieState*)state)->unk304 = lblA;
-    ((BaddieState*)state)->unk320 = 1;
-    *(f32*)&((BaddieState*)state)->eventFlags = lblA;
-    ((BaddieState*)state)->unk321 = 3;
-    ((BaddieState*)state)->unk318 = lblA;
-    ((BaddieState*)state)->unk322 = 1;
-    ((BaddieState*)state)->unk31C = lblA;
+    ((EnemyState*)state)->drag = lblA;
+    ((EnemyState*)state)->moveId0 = 1;
+    ((EnemyState*)state)->moveSpeedScale0 = lblA;
+    ((EnemyState*)state)->moveId1 = 3;
+    ((EnemyState*)state)->moveSpeedScale1 = lblA;
+    ((EnemyState*)state)->moveId2 = 1;
+    ((EnemyState*)state)->moveSpeedScale2 = lblA;
     state->actor.orbitCenterX = obj->anim.localPosX;
     state->actor.homeY = obj->anim.localPosY;
     state->actor.orbitCenterZ = obj->anim.localPosZ;
@@ -2184,13 +2184,13 @@ void mikaladon_init(GameObject* obj, MikaladonState* state)
     state->actor.orbitAngle = 0;
     state->actor.loopSfxTimer = zero;
     state->actor.ambientSfxTimer = zero;
-    ((BaddieState*)state)->pathStep = 8.0f;
+    ((EnemyState*)state)->pathStep = 8.0f;
 
     angleToVec2Precise(state->actor.orbitAngle, &a, &b);
     obj->anim.localPosX =
-        a * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterX;
+        a * ((EnemyState*)state)->aggroRange + state->actor.orbitCenterX;
     obj->anim.localPosZ =
-        b * ((BaddieState*)state)->unk2A8 + state->actor.orbitCenterZ;
+        b * ((EnemyState*)state)->aggroRange + state->actor.orbitCenterZ;
 }
 
 int gVambatCurveInitData[2] = {2, 3};
@@ -2203,28 +2203,28 @@ int gWeevilCurveInitData[2] = {2, 3};
 
 void vambat_updateWhileFrozen(int obj, u8* state, int unused, int msgFlag, int wpad0, int wpad1, Vec* wpad2, int wpad3)
 {
-    BaddieState* bs = (BaddieState*)state;
+    EnemyState* bs = (EnemyState*)state;
 
     if (bs->userData2 != 0)
     {
         if (msgFlag == 16)
         {
-            bs->reactionFlags = bs->reactionFlags | 0x28;
+            bs->flags2E8 = bs->flags2E8 | 0x28;
             Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_wingflap);
-            *(s16*)&bs->hitCounter = 0;
+            bs->current = 0;
         }
     }
     else if (msgFlag != 17)
     {
         if (msgFlag == 16)
         {
-            bs->reactionFlags = bs->reactionFlags | 0x20;
+            bs->flags2E8 = bs->flags2E8 | 0x20;
         }
         else
         {
-            bs->reactionFlags = bs->reactionFlags | 0x8;
+            bs->flags2E8 = bs->flags2E8 | 0x8;
             Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_wingflap);
-            *(s16*)&bs->hitCounter = 0;
+            bs->current = 0;
         }
     }
 }
@@ -2242,7 +2242,7 @@ void vambat_updateIdle(GameObject* obj, int state)
     ObjHitsPriorityState* hitState;
     RomCurveWalker* curve;
     f32 vec[3];
-    BaddieState* bs = (BaddieState*)state;
+    EnemyState* bs = (EnemyState*)state;
 
     curve = *(RomCurveWalker**)state;
     if ((obj)->anim.hitReactState != NULL)
@@ -2252,7 +2252,7 @@ void vambat_updateIdle(GameObject* obj, int state)
     }
     if (bs->userData2 != 0)
     {
-        bs->reactionFlags = bs->reactionFlags | 0x80;
+        bs->flags2E8 = bs->flags2E8 | 0x80;
     }
     if ((bs->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
@@ -2279,7 +2279,7 @@ void vambat_updateIdle(GameObject* obj, int state)
         *(f32*)(state + 0x324) = *(f32*)(state + 0x324) + timeDelta;
         if (*(f32*)(state + 0x324) > 3.6e+02f)
         {
-            bs->unk2E4 = bs->unk2E4 & ~(u64)0x10000;
+            bs->flags2E4 = bs->flags2E4 & ~(u64)0x10000;
             *(f32*)(state + 0x324) = 0.0f;
         }
     }
@@ -2303,13 +2303,13 @@ void vambat_updateEngaged(GameObject* obj, int state)
     int gridB[2];
     int gridA[2];
     u8 hitOut;
-    int trackedObj;
-    BaddieState* bs = (BaddieState*)state;
+    GameObject* trackedObj;
+    EnemyState* bs = (EnemyState*)state;
 
     curve = *(RomCurveWalker**)state;
     if (bs->userData2 != 0)
     {
-        bs->reactionFlags = bs->reactionFlags | 0x80;
+        bs->flags2E8 = bs->flags2E8 | 0x80;
     }
     if ((bs->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
     {
@@ -2331,15 +2331,15 @@ void vambat_updateEngaged(GameObject* obj, int state)
         }
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, MAGICPLANT_HIT_VOLUME_SLOT, 1, 0);
-    trackedObj = *(int*)&bs->trackedObj;
-    vec[0] = ((GameObject*)trackedObj)->anim.localPosX - (obj)->anim.localPosX;
-    vec[1] = (25.0f + ((GameObject*)trackedObj)->anim.localPosY) - (obj)->anim.localPosY;
-    vec[2] = ((GameObject*)trackedObj)->anim.localPosZ - (obj)->anim.localPosZ;
+    trackedObj = bs->trackedObj;
+    vec[0] = trackedObj->anim.localPosX - (obj)->anim.localPosX;
+    vec[1] = (25.0f + trackedObj->anim.localPosY) - (obj)->anim.localPosY;
+    vec[2] = trackedObj->anim.localPosZ - (obj)->anim.localPosZ;
     PSVECMag((Vec*)vec);
     *(f32*)(state + 0x32c) = *(f32*)(state + 0x32c) + timeDelta;
     if (*(u32*)(state + 0x340) != 0 || *(f32*)(state + 0x32c) > 3.6e+02f)
     {
-        bs->unk2E4 = bs->unk2E4 | 0x10000LL;
+        bs->flags2E4 = bs->flags2E4 | 0x10000LL;
         *(f32*)(state + 0x324) = 0.0f;
         *(f32*)(state + 0x32c) = 0.0f;
     }
@@ -2360,7 +2360,7 @@ void vambat_updateEngaged(GameObject* obj, int state)
         {
             if (voxmaps_traceLine((VoxPos*)gridB, (VoxPos*)gridA, NULL, &hitOut, 0) == 0)
             {
-                bs->unk2E4 = bs->unk2E4 | 0x10000LL;
+                bs->flags2E4 = bs->flags2E4 | 0x10000LL;
                 *(f32*)(state + 0x324) = 0.0f;
                 *(f32*)(state + 0x32c) = 0.0f;
             }
@@ -2374,21 +2374,21 @@ void vambat_init(GameObject* obj, int state)
 {
     f32 pathStepInit;
     f32 initSpeed;
-    BaddieState* bs = (BaddieState*)state;
+    EnemyState* bs = (EnemyState*)state;
 
-    bs->speedScale = 4e+01f;
-    bs->unk2E4 = 0x1009;
-    bs->unk308 = 0.02f;
-    bs->animDeltaScale = 0.1f;
-    bs->unk304 = 0.97f;
-    bs->unk320 = 0;
+    bs->sightRange = 4e+01f;
+    bs->flags2E4 = 0x1009;
+    bs->animPlaySpeed = 0.02f;
+    bs->gravity = 0.1f;
+    bs->drag = 0.97f;
+    bs->moveId0 = 0;
     initSpeed = 1.5f;
-    *(f32*)&bs->eventFlags = initSpeed;
-    bs->unk321 = 1;
+    bs->moveSpeedScale0 = initSpeed;
+    bs->moveId1 = 1;
     pathStepInit = 1.0f;
-    bs->unk318 = pathStepInit;
-    bs->unk322 = 0;
-    bs->unk31C = initSpeed;
+    bs->moveSpeedScale1 = pathStepInit;
+    bs->moveId2 = 0;
+    bs->moveSpeedScale2 = initSpeed;
     *(f32*)(state + 0x324) = 0.0f;
     *(f32*)(state + 0x328) = 0.0f;
     *(f32*)(state + 0x32c) = 0.0f;
@@ -2407,7 +2407,7 @@ void vambat_init(GameObject* obj, int state)
 void magicplantSpawnMovePuffs(GameObject* obj, int state)
 {
     u8 count = 0;
-    BaddieState* bs = (BaddieState*)state;
+    EnemyState* bs = (EnemyState*)state;
     switch (obj->anim.currentMove)
     {
     case 1:
@@ -2458,14 +2458,14 @@ void kooshy_spawnProjectile(GameObject* obj, int state)
         if ((void*)newObj != NULL)
         {
             ((GameObject*)newObj)->anim.velocityX =
-                0.02f * (((GameObject*)*(int*)&((BaddieState*)state)->trackedObj)->anim.localPosX - fx->posX);
+                0.02f * (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX - fx->posX);
             {
                 ((GameObject*)newObj)->anim.velocityY =
-                    0.02f * ((14.0f + ((GameObject*)*(int*)&((BaddieState*)state)->trackedObj)->anim.localPosY +
+                    0.02f * ((14.0f + ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosY +
                               (f32)(s32)randomGetRange(-10, 10)) -
                              fx->posY);
                 ((GameObject*)newObj)->anim.velocityZ =
-                    0.02f * (((GameObject*)*(int*)&((BaddieState*)state)->trackedObj)->anim.localPosZ - fx->posZ);
+                    0.02f * (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ - fx->posZ);
             }
             *(int*)&((GameObject*)newObj)->ownerObj = (int)obj;
         }
@@ -2478,27 +2478,27 @@ void kooshy_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int msgF
 {
     if ((obj)->anim.currentMove == 1)
     {
-        if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             return;
         }
     }
     if (msgFlag == 0x10)
     {
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x20;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x20;
     }
     else
     {
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x8;
-        if (damage > (s32)((BaddieState*)state)->hitCounter)
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x8;
+        if (damage > (s32)((EnemyState*)state)->current)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_sc_walkstep);
-            *(s16*)&((BaddieState*)state)->hitCounter = 0;
+            ((EnemyState*)state)->current = 0;
         }
         else
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_sc_runstep);
-            ((BaddieState*)state)->hitCounter = (u16)(((BaddieState*)state)->hitCounter - damage);
+            ((EnemyState*)state)->current = (u16)(((EnemyState*)state)->current - damage);
         }
     }
 }
@@ -2515,31 +2515,31 @@ void kooshy_updateIdle(GameObject* obj, int state)
     u32 rnd;
     s16 angle;
 
-    ((BaddieState*)state)->userData2 = ((BaddieState*)state)->userData2 & 0x7f;
+    ((EnemyState*)state)->userData2 = ((EnemyState*)state)->userData2 & 0x7f;
     losDetected = 0;
-    vec[0] = (obj)->anim.localPosX - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX;
-    vec[1] = (obj)->anim.localPosY - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosY;
-    vec[2] = (obj)->anim.localPosZ - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ;
+    vec[0] = (obj)->anim.localPosX - ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX;
+    vec[1] = (obj)->anim.localPosY - ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosY;
+    vec[2] = (obj)->anim.localPosZ - ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ;
     if (PSVECMag((Vec*)vec) < 400.0f &&
-        (((GameObject*)((BaddieState*)state)->trackedObj)->objectFlags & MAGICPLANT_OBJFLAG_PARENT_SLACK) == 0)
+        (((GameObject*)((EnemyState*)state)->trackedObj)->objectFlags & MAGICPLANT_OBJFLAG_PARENT_SLACK) == 0)
     {
         worldPos[0] = (obj)->anim.localPosX;
         worldPos[1] = 10.0f + (obj)->anim.localPosY;
         worldPos[2] = (obj)->anim.localPosZ;
         voxmaps_worldToGrid(worldPos, (s16*)gridA);
         {
-            int trackedObj = *(int*)&((BaddieState*)state)->trackedObj;
-            worldPos[0] = ((GameObject*)trackedObj)->anim.localPosX;
-            worldPos[1] = 20.0f + ((GameObject*)trackedObj)->anim.localPosY;
-            worldPos[2] = ((GameObject*)trackedObj)->anim.localPosZ;
+            GameObject* trackedObj = ((EnemyState*)state)->trackedObj;
+            worldPos[0] = trackedObj->anim.localPosX;
+            worldPos[1] = 20.0f + trackedObj->anim.localPosY;
+            worldPos[2] = trackedObj->anim.localPosZ;
         }
         voxmaps_worldToGrid(worldPos, (s16*)gridB);
         hit = voxmaps_traceLine((VoxPos*)gridB, (VoxPos*)gridA, NULL, &hitOut, 0) & 0xff;
         if (hit != 0)
         {
-            int trackedObj = *(int*)&((BaddieState*)state)->trackedObj;
-            baddieTurnTowardPoint(obj, state, ((GameObject*)trackedObj)->anim.localPosX,
-                        ((GameObject*)trackedObj)->anim.localPosZ, 0x14, 0);
+            GameObject* trackedObj = ((EnemyState*)state)->trackedObj;
+            baddieTurnTowardPoint(obj, state, trackedObj->anim.localPosX,
+                        trackedObj->anim.localPosZ, 0x14, 0);
             angle = (s16)(getAngle(vec[0], vec[2]) - (u16)(obj)->anim.rotX);
             if (angle > 0x8000)
                 angle = (angle - 0x10000) + 1;
@@ -2555,37 +2555,37 @@ void kooshy_updateIdle(GameObject* obj, int state)
     {
         hit = 0;
     }
-    flagByte = ((BaddieState*)state)->userData2;
+    flagByte = ((EnemyState*)state)->userData2;
     if ((flagByte & 0x40) == 0)
     {
         Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_baddie_blooplaugh3, 2);
         baddieSetMove(obj, state, 2, 1.0f, 0, 0);
-        ((BaddieState*)state)->userData2 = (u8)((((BaddieState*)state)->userData2) | 0x40);
-        ((BaddieState*)state)->userData1 = 0;
+        ((EnemyState*)state)->userData2 = (u8)((((EnemyState*)state)->userData2) | 0x40);
+        ((EnemyState*)state)->userData1 = 0;
     }
-    else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    else if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         u8 mode;
         if ((u8)hit != 0)
         {
-            if (((BaddieState*)state)->userData1 != 0)
+            if (((EnemyState*)state)->userData1 != 0)
             {
-                ((BaddieState*)state)->userData1 -= 1;
+                ((EnemyState*)state)->userData1 -= 1;
                 mode = (u8)(obj)->anim.currentMove;
             }
             else if ((obj)->anim.currentMove != 5 && losDetected)
             {
                 mode = 5;
-                ((BaddieState*)state)->userData1 =
-                    gMagicPlantSeqEntryTable[((BaddieState*)state)->userData2 & 3];
-                ((BaddieState*)state)->userData2 =
-                    (u8)((*(s8*)&((BaddieState*)state)->userData2 + 1) & 0xc3);
+                ((EnemyState*)state)->userData1 =
+                    gMagicPlantSeqEntryTable[((EnemyState*)state)->userData2 & 3];
+                ((EnemyState*)state)->userData2 =
+                    (u8)((*(s8*)&((EnemyState*)state)->userData2 + 1) & 0xc3);
             }
             else
             {
                 mode = 4;
                 rnd = randomGetRange(1, 2);
-                ((BaddieState*)state)->userData1 = rnd;
+                ((EnemyState*)state)->userData1 = rnd;
             }
         }
         else
@@ -2604,7 +2604,7 @@ void kooshy_updateIdle(GameObject* obj, int state)
         baddieSetMove(obj, state, mode, 1.5f, 0, 0);
     }
     if ((obj)->anim.currentMove == 5 && (double)(obj)->anim.currentMoveProgress >= 0.7647 &&
-        (double)(obj)->anim.currentMoveProgress < 0.7647 + ((BaddieState*)state)->unk308 * timeDelta)
+        (double)(obj)->anim.currentMoveProgress < 0.7647 + ((EnemyState*)state)->animPlaySpeed * timeDelta)
     {
         kooshy_spawnProjectile(obj, state);
     }
@@ -2623,8 +2623,8 @@ void kooshy_updateIdle(GameObject* obj, int state)
 
 void kooshy_updateEngaged(GameObject* obj, int state)
 {
-    ((BaddieState*)state)->userData2 = ((BaddieState*)state)->userData2 & 0xbf;
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0 && (obj)->anim.currentMove != 1)
+    ((EnemyState*)state)->userData2 = ((EnemyState*)state)->userData2 & 0xbf;
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0 && (obj)->anim.currentMove != 1)
     {
         Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_baddie_eggsnatch_movelp, 2);
         baddieSetMove(obj, state, 1, 1.0f, 0, 0);
@@ -2636,23 +2636,23 @@ void kooshy_init(int unused, int state)
 {
     f32 eventFlagsVal;
     f32 pathStepInit;
-    ((BaddieState*)state)->speedScale = 40.0f;
-    ((BaddieState*)state)->unk2E4 = 1;
-    ((BaddieState*)state)->unk308 = 0.02f;
-    ((BaddieState*)state)->animDeltaScale = 0.1f;
-    ((BaddieState*)state)->unk304 = 0.97f;
-    ((BaddieState*)state)->unk320 = 0;
+    ((EnemyState*)state)->sightRange = 40.0f;
+    ((EnemyState*)state)->flags2E4 = 1;
+    ((EnemyState*)state)->animPlaySpeed = 0.02f;
+    ((EnemyState*)state)->gravity = 0.1f;
+    ((EnemyState*)state)->drag = 0.97f;
+    ((EnemyState*)state)->moveId0 = 0;
     eventFlagsVal = 1.5f;
-    *(f32*)&((BaddieState*)state)->eventFlags = eventFlagsVal;
-    ((BaddieState*)state)->unk321 = 7;
+    ((EnemyState*)state)->moveSpeedScale0 = eventFlagsVal;
+    ((EnemyState*)state)->moveId1 = 7;
     pathStepInit = 1.0f;
-    ((BaddieState*)state)->unk318 = pathStepInit;
-    ((BaddieState*)state)->unk322 = 0;
-    ((BaddieState*)state)->unk31C = eventFlagsVal;
-    ((BaddieState*)state)->userData1 = 0;
-    ((BaddieState*)state)->userData2 = 0;
+    ((EnemyState*)state)->moveSpeedScale1 = pathStepInit;
+    ((EnemyState*)state)->moveId2 = 0;
+    ((EnemyState*)state)->moveSpeedScale2 = eventFlagsVal;
+    ((EnemyState*)state)->userData1 = 0;
+    ((EnemyState*)state)->userData2 = 0;
     *(f32*)(state + 0x324) = 150.0f;
-    ((BaddieState*)state)->pathStep = pathStepInit;
+    ((EnemyState*)state)->pathStep = pathStepInit;
 }
 
 #define FALL_LADDERS_HIT_VOLUME_SLOT 0x18
@@ -2669,10 +2669,8 @@ extern const f32 gWeevilHalf;
 
 /*
  * WeevilState - file-local overlay naming the per-family scratch that
- * baddie_state.h leaves raw for the weevil creatures: four f32 per-frame
- * countdown timers at 0x324/0x328/0x32C/0x330 (they overlap the s16
- * stateTimer/cameraYaw fields the whirlpool family names, so they cannot
- * live in BaddieState itself).
+ * dll_00C9_enemy.h leaves raw for the weevil creatures: four f32 per-frame
+ * countdown timers at EnemyState.unk324/unk328/unk32C/unk330.
  */
 typedef struct WeevilState
 {
@@ -2728,15 +2726,15 @@ void weevil_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int msgF
     {
         if (condV != 0)
         {
-            ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x20;
+            ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x20;
         }
     }
     else if (condV != 0)
     {
-        if (((BaddieState*)state)->userData2 == 0)
+        if (((EnemyState*)state)->userData2 == 0)
         {
-            ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x8;
-            *(s16*)&((BaddieState*)state)->hitCounter = 0;
+            ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x8;
+            ((EnemyState*)state)->current = 0;
             Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_25f);
         }
     }
@@ -2745,12 +2743,12 @@ void weevil_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int msgF
         ((WeevilState*)state)->recoverTimer = gWeevilRecoverDurationFrames;
         ((WeevilState*)state)->approachTimer = gWeevilApproachDurationFrames;
         baddieSetMove(obj, (int)state, 4, gWeevilMoveBlendSpeed, 0, 3);
-        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
-        ((BaddieState*)state)->userData2 = 0x3c;
+        ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 | 0x10000LL;
+        ((EnemyState*)state)->userData2 = 0x3c;
     }
     else
     {
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x10;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
     }
 }
 }
@@ -2762,11 +2760,11 @@ void weevil_updateIdle(GameObject* obj, int state)
     u8 ctr;
 
     curve = *(RomCurveWalker**)state;
-    ((BaddieState*)state)->userData1 = 0;
+    ((EnemyState*)state)->userData1 = 0;
     ((WeevilState*)state)->retreatTimer = gWeevilZero;
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
-        if (Curve_AdvanceAlongPath(&curve->curve, ((BaddieState*)state)->pathStep) != 0 ||
+        if (Curve_AdvanceAlongPath(&curve->curve, ((EnemyState*)state)->pathStep) != 0 ||
             curve->atSegmentEnd != 0)
         {
             if ((*gRomCurveInterface)->goNextPoint(curve) != 0)
@@ -2774,8 +2772,8 @@ void weevil_updateIdle(GameObject* obj, int state)
                 if ((*gRomCurveInterface)
                         ->initCurve(*(RomCurveWalker**)state, (void*)obj, gWeevilCurveInitDistance, gWeevilCurveInitData, -1) != 0)
                 {
-                    ((BaddieState*)state)->controlFlags =
-                        ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
+                    ((EnemyState*)state)->controlFlags =
+                        ((EnemyState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
                 }
             }
         }
@@ -2791,7 +2789,7 @@ void weevil_updateIdle(GameObject* obj, int state)
                 ((WeevilState*)state)->approachTimer = ((WeevilState*)state)->approachTimer - timeDelta;
                 if (((WeevilState*)state)->approachTimer <= zero)
                 {
-                    ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 & ~(u64)0x10000;
+                    ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 & ~(u64)0x10000;
                     ((WeevilState*)state)->approachTimer = zero;
                 }
             }
@@ -2806,17 +2804,17 @@ void weevil_updateIdle(GameObject* obj, int state)
             baddieSetMove(obj, state, 6, gWeevilMoveBlendSpeed, 0, 3);
             ((WeevilState*)state)->recoverTimer = gWeevilZero;
         }
-        else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        else if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             baddieSetMove(obj, state, 5, gWeevilOne, 0, 3);
         }
     }
-    else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    else if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         baddieSetMove(obj, state, 0, gWeevilHalf, 0, 3);
     }
-    (obj)->anim.rotY = ((BaddieState*)state)->spawnRotY;
-    (obj)->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
+    (obj)->anim.rotY = ((EnemyState*)state)->spawnRotY;
+    (obj)->anim.rotZ = ((EnemyState*)state)->spawnRotZ;
     ((WeevilState*)state)->gruntTimer = ((WeevilState*)state)->gruntTimer - timeDelta;
     if (((WeevilState*)state)->gruntTimer <= gWeevilZero)
     {
@@ -2824,10 +2822,10 @@ void weevil_updateIdle(GameObject* obj, int state)
         ((WeevilState*)state)->gruntTimer = (f32)(s32)rnd;
         Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_25e);
     }
-    ctr = ((BaddieState*)state)->userData2;
+    ctr = ((EnemyState*)state)->userData2;
     if (ctr != 0)
     {
-        ((BaddieState*)state)->userData2--;
+        ((EnemyState*)state)->userData2--;
     }
 }
 
@@ -2850,8 +2848,8 @@ void weevil_updateEngaged(GameObject* obj, int state)
     }
     if (obj->anim.currentMove != 3)
     {
-        baddieTurnTowardPoint(obj, state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
-                    ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 0x3c, 0);
+        baddieTurnTowardPoint(obj, state, ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
+                    ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ, 0x3c, 0);
     }
     else
     {
@@ -2866,27 +2864,27 @@ void weevil_updateEngaged(GameObject* obj, int state)
     }
     if (done != 0)
     {
-        ((BaddieState*)state)->unk2E4 |= (u64)0x10000;
+        ((EnemyState*)state)->flags2E4 |= (u64)0x10000;
     }
-    else if (((BaddieState*)state)->userData1 == 0)
+    else if (((EnemyState*)state)->userData1 == 0)
     {
-        ((BaddieState*)state)->userData1 = 1;
+        ((EnemyState*)state)->userData1 = 1;
         baddieSetMove(obj, state, 1, 0.35f, 0, 3);
     }
-    else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0 &&
+    else if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0 &&
              (baddieSetMove(obj, state, 3, 0.375f, 0, 3),
               gWeevilZero == ((WeevilState*)state)->retreatTimer))
     {
         ((WeevilState*)state)->retreatTimer = 50.0f;
-        baddieTurnTowardPoint(obj, state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
-                    ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 1, 0);
+        baddieTurnTowardPoint(obj, state, ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
+                    ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ, 1, 0);
         Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_25d);
     }
-    obj->anim.rotY = ((BaddieState*)state)->spawnRotY;
-    obj->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
-    if (((BaddieState*)state)->userData2 != 0)
+    obj->anim.rotY = ((EnemyState*)state)->spawnRotY;
+    obj->anim.rotZ = ((EnemyState*)state)->spawnRotZ;
+    if (((EnemyState*)state)->userData2 != 0)
     {
-        ((BaddieState*)state)->userData2 -= 1;
+        ((EnemyState*)state)->userData2 -= 1;
     }
 }
 
@@ -2894,31 +2892,31 @@ void weevil_init(int unused, u8* state)
 {
     f32 fz;
     f32 fc;
-    ((BaddieState*)state)->speedScale = 40.0f;
-    ((BaddieState*)state)->unk2E4 = 173;
-    ((BaddieState*)state)->unk308 = 0.02f;
-    ((BaddieState*)state)->animDeltaScale = gWeevilOne;
-    ((BaddieState*)state)->unk304 = 0.97f;
-    ((BaddieState*)state)->unk320 = 0;
+    ((EnemyState*)state)->sightRange = 40.0f;
+    ((EnemyState*)state)->flags2E4 = 173;
+    ((EnemyState*)state)->animPlaySpeed = 0.02f;
+    ((EnemyState*)state)->gravity = gWeevilOne;
+    ((EnemyState*)state)->drag = 0.97f;
+    ((EnemyState*)state)->moveId0 = 0;
     fz = 1.5f;
-    *(f32*)&((BaddieState*)state)->eventFlags = fz;
-    ((BaddieState*)state)->unk321 = 7;
-    ((BaddieState*)state)->unk318 = 4.0f;
-    ((BaddieState*)state)->unk322 = 0;
-    ((BaddieState*)state)->unk31C = fz;
+    ((EnemyState*)state)->moveSpeedScale0 = fz;
+    ((EnemyState*)state)->moveId1 = 7;
+    ((EnemyState*)state)->moveSpeedScale1 = 4.0f;
+    ((EnemyState*)state)->moveId2 = 0;
+    ((EnemyState*)state)->moveSpeedScale2 = fz;
     fc = gWeevilZero;
     ((WeevilState*)state)->approachTimer = fc;
     ((WeevilState*)state)->retreatTimer = fc;
     ((WeevilState*)state)->recoverTimer = fc;
-    ((BaddieState*)state)->userData1 = 0;
-    ((BaddieState*)state)->userData2 = 0;
+    ((EnemyState*)state)->userData1 = 0;
+    ((EnemyState*)state)->userData2 = 0;
     ((WeevilState*)state)->gruntTimer = 60.0f;
-    ((BaddieState*)state)->pathStep = gWeevilHalf;
+    ((EnemyState*)state)->pathStep = gWeevilHalf;
 }
 
 int gPinPonCurveInitData[2] = {2, 3};
 
-void baddieSpawnWaterRipple(GameObject* obj, BaddieState* state)
+void baddieSpawnWaterRipple(GameObject* obj, EnemyState* state)
 {
     f32 mtx[17];
     MatrixTransform stk;
@@ -2949,7 +2947,7 @@ void baddieSpawnWaterRipple(GameObject* obj, BaddieState* state)
     }
 }
 
-void pinPon_updateWhileFrozen(int obj, BaddieState* state, int unused, int cmd, int wpad0, int wpad1,
+void pinPon_updateWhileFrozen(int obj, EnemyState* state, int unused, int cmd, int wpad0, int wpad1,
                               Vec* wpad2, int wpad3)
 {
     GameObject* self = (GameObject*)obj;
@@ -2957,15 +2955,15 @@ void pinPon_updateWhileFrozen(int obj, BaddieState* state, int unused, int cmd, 
         return;
     if (self->anim.currentMoveProgress > 0.5f)
     {
-        state->reactionFlags |= 8;
+        state->flags2E8 |= 8;
         Sfx_PlayFromObject(obj, SFXTRIG_en_rfall5_c);
         Sfx_PlayFromObject((int)self, SFXTRIG_wp_iceywindlp16_233);
-        state->hitCounter = 0;
-        state->unk2E4 |= 32;
+        state->current = 0;
+        state->flags2E4 |= 32;
     }
     else
     {
-        state->reactionFlags |= 16;
+        state->flags2E8 |= 16;
     }
 }
 
@@ -2977,18 +2975,18 @@ void pinPon_updateIdle(GameObject* obj, int state)
     f32 vec[3];
 
     curve = *(RomCurveWalker**)state;
-    ((BaddieState*)state)->userData2 = 0;
+    ((EnemyState*)state)->userData2 = 0;
     hitState = (ObjHitsPriorityState*)(obj)->anim.hitReactState;
     hitState->suppressOutgoingHits = 0;
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
-        if ((Curve_AdvanceAlongPath(&curve->curve, ((BaddieState*)state)->pathStep) != 0 ||
+        if ((Curve_AdvanceAlongPath(&curve->curve, ((EnemyState*)state)->pathStep) != 0 ||
              curve->atSegmentEnd != 0) &&
             (*gRomCurveInterface)->goNextPoint((void*)curve) != 0 &&
             (*gRomCurveInterface)
                     ->initCurve(*(RomCurveWalker**)state, (void*)obj, 700.0f, gPinPonCurveInitData, -1) != 0)
         {
-            ((BaddieState*)state)->controlFlags &= ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
+            ((EnemyState*)state)->controlFlags &= ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
         }
         vec[0] = curve->posX - (obj)->anim.localPosX;
         vec[1] = 0.0f;
@@ -2997,14 +2995,14 @@ void pinPon_updateIdle(GameObject* obj, int state)
         *(f32*)(state + 0x324) += timeDelta;
         if (*(f32*)(state + 0x324) > 360.0f)
         {
-            ((BaddieState*)state)->unk2E4 &= ~(u64)0x10000;
+            ((EnemyState*)state)->flags2E4 &= ~(u64)0x10000;
             *(f32*)(state + 0x324) = 0.0f;
         }
     }
     (obj)->anim.rotY =
         -(1024.0f * mathSinfFast(0.19634955f * (f32)(u32) * (u8*)(state + 0x33a)) - (f32)(obj)->anim.rotY);
     baddieTurnTowardLookDir(obj, (void*)state, 0xf, 7.5f, 1.0f, 0);
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         if ((obj)->anim.currentMoveProgress < 0.5)
         {
@@ -3019,19 +3017,19 @@ void pinPon_updateIdle(GameObject* obj, int state)
             if ((obj)->anim.currentMoveProgress > 0.5)
             {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_kooshy_hit);
-                ((BaddieState*)state)->unk308 = -0.02f;
+                ((EnemyState*)state)->animPlaySpeed = -0.02f;
             }
             else
             {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_kooshy_death);
-                ((BaddieState*)state)->unk308 = 0.02f;
+                ((EnemyState*)state)->animPlaySpeed = 0.02f;
             }
         }
     }
-    ((BaddieState*)state)->userData1 += 1;
+    ((EnemyState*)state)->userData1 += 1;
     (obj)->anim.rotY =
         1024.0f * mathSinfFast(0.19634955f * (f32)(u32) * (u8*)(state + 0x33a)) + (f32)(obj)->anim.rotY;
-    baddieSpawnWaterRipple(obj, (BaddieState*)state);
+    baddieSpawnWaterRipple(obj, (EnemyState*)state);
 }
 
 #define FIREFLYLANTERN_HIT_VOLUME_SLOT 0xe
@@ -3069,23 +3067,23 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, FIREFLYLANTERN_HIT_VOLUME_SLOT, 1, 0);
     flag = playerGetFlags3F0Bit5((GameObject*)(Obj_GetPlayerObject()));
-    dvec[0] = ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX - (obj)->anim.localPosX;
+    dvec[0] = ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX - (obj)->anim.localPosX;
     dvec[1] = 0.0f;
-    dvec[2] = ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ - (obj)->anim.localPosZ;
+    dvec[2] = ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ - (obj)->anim.localPosZ;
     if (((u32)state[0xd0] != 0) && ((u32)state[0xd0] == (u32)Obj_GetPlayerObject()))
     {
         *(u32*)&state[0xb9] |= 0x10000LL;
         ((FireflyLanternState*)state)->trackTimer = 0.0f;
     }
-    (obj)->anim.rotY = -(1024.0f * mathSinfFast(0.19634955f * (f32)(u32)((BaddieState*)state)->userData1) -
+    (obj)->anim.rotY = -(1024.0f * mathSinfFast(0.19634955f * (f32)(u32)((EnemyState*)state)->userData1) -
                          (f32)(obj)->anim.rotY);
     if (flag == 0)
     {
         fval = 0.0f;
         (obj)->anim.velocityX = fval;
         (obj)->anim.velocityZ = fval;
-        baddieTurnTowardPoint(obj, (int)state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
-                              ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 10, 0);
+        baddieTurnTowardPoint(obj, (int)state, ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
+                              ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ, 10, 0);
     }
     else
     {
@@ -3102,7 +3100,7 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
                 if ((obj)->anim.currentMoveProgress > 0.5f)
                 {
                     ((FireflyLanternState*)state)->breathTimer = 300.0f;
-                    ((BaddieState*)state)->userData2 += 1;
+                    ((EnemyState*)state)->userData2 += 1;
                 }
                 else
                 {
@@ -3112,12 +3110,12 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
             else if ((obj)->anim.currentMoveProgress > 0.5)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_kooshy_hit);
-                ((BaddieState*)state)->unk308 = -0.02f;
+                ((EnemyState*)state)->animPlaySpeed = -0.02f;
             }
             else
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_kooshy_death);
-                ((BaddieState*)state)->unk308 = 0.02f;
+                ((EnemyState*)state)->animPlaySpeed = 0.02f;
             }
         }
         else
@@ -3129,20 +3127,20 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
                 if ((obj)->anim.currentMoveProgress > 0.5)
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_kooshy_hit);
-                    ((BaddieState*)state)->unk308 = -0.02f;
+                    ((EnemyState*)state)->animPlaySpeed = -0.02f;
                 }
                 else
                 {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_kooshy_death);
-                    ((BaddieState*)state)->unk308 = 0.1f;
+                    ((EnemyState*)state)->animPlaySpeed = 0.1f;
                 }
             }
         }
     }
-    ((BaddieState*)state)->userData1 += 1;
-    (obj)->anim.rotY = (1024.0f * mathSinfFast(0.19634955f * (f32)(u32)((BaddieState*)state)->userData1) +
+    ((EnemyState*)state)->userData1 += 1;
+    (obj)->anim.rotY = (1024.0f * mathSinfFast(0.19634955f * (f32)(u32)((EnemyState*)state)->userData1) +
                         (f32)(obj)->anim.rotY);
-    baddieSpawnWaterRipple(obj, (BaddieState*)state);
+    baddieSpawnWaterRipple(obj, (EnemyState*)state);
 }
 
 void pinPon_init(GameObject* obj, void* state)
@@ -3150,30 +3148,30 @@ void pinPon_init(GameObject* obj, void* state)
     float fval;
     u32 randVal;
 
-    ((BaddieState*)state)->speedScale = 40.0f;
-    ((BaddieState*)state)->unk2E4 = 0x8000009;
-    ((BaddieState*)state)->unk308 = -0.02f;
-    ((BaddieState*)state)->animDeltaScale = 0.1f;
-    ((BaddieState*)state)->unk304 = 0.97f;
-    ((BaddieState*)state)->unk320 = 0;
+    ((EnemyState*)state)->sightRange = 40.0f;
+    ((EnemyState*)state)->flags2E4 = 0x8000009;
+    ((EnemyState*)state)->animPlaySpeed = -0.02f;
+    ((EnemyState*)state)->gravity = 0.1f;
+    ((EnemyState*)state)->drag = 0.97f;
+    ((EnemyState*)state)->moveId0 = 0;
     fval = 1.5f;
-    *(float*)&((BaddieState*)state)->eventFlags = 1.5f;
-    ((BaddieState*)state)->unk321 = 1;
-    ((BaddieState*)state)->unk318 = 1.0f;
-    ((BaddieState*)state)->unk322 = 0;
-    ((BaddieState*)state)->unk31C = fval;
+    ((EnemyState*)state)->moveSpeedScale0 = 1.5f;
+    ((EnemyState*)state)->moveId1 = 1;
+    ((EnemyState*)state)->moveSpeedScale1 = 1.0f;
+    ((EnemyState*)state)->moveId2 = 0;
+    ((EnemyState*)state)->moveSpeedScale2 = fval;
     fval = 0.0f;
     ((FireflyLanternState*)state)->trackTimer = fval;
     ((FireflyLanternState*)state)->breathTimer = fval;
     ((FireflyLanternState*)state)->anchorY = obj->anim.localPosY;
     randVal = randomGetRange(0, 0xff);
-    ((BaddieState*)state)->userData1 = randVal;
-    ((BaddieState*)state)->userData2 = 0;
+    ((EnemyState*)state)->userData1 = randVal;
+    ((EnemyState*)state)->userData2 = 0;
     ((FireflyLanternState*)state)->unk330 = 30.0f;
     randVal = randomGetRange(0x32, 0x4b);
     fval = (f32)(s32)randVal;
     fval = gFireflyLanternPathStepScale * fval;
-    ((BaddieState*)state)->pathStep = fval;
+    ((EnemyState*)state)->pathStep = fval;
 }
 
 void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* outAngle, float* outDistance)
@@ -3216,7 +3214,7 @@ void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* ou
     {
         dxDiff = (obj->anim.localPosZ - ((FireflyState*)state)->planeAnchorZ) / crossA[2];
     }
-    targetObj = ((BaddieState*)state)->trackedObj;
+    targetObj = ((EnemyState*)state)->trackedObj;
     targetPos[0] = targetObj->anim.localPosX;
     targetPos[1] = gFireflyLanternTargetHeightOffset + targetObj->anim.localPosY;
     targetPos[2] = targetObj->anim.localPosZ;
@@ -3310,7 +3308,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     {
         dxA = (o->anim.localPosZ - fs->wallPlane.anchorZ) / crossA[2];
     }
-    targetObj = (GameObject*)(*(int*)&((BaddieState*)state)->trackedObj);
+    targetObj = (GameObject*)(((EnemyState*)state)->trackedObj);
     targetPos[0] = targetObj->anim.localPosX;
     targetPos[1] = gFireflyLanternTargetHeightOffset + targetObj->anim.localPosY;
     targetPos[2] = targetObj->anim.localPosZ;
@@ -3520,7 +3518,7 @@ void rachnopFindWallPlane(GameObject* obj, int state)
             ((DusterState*)state)->wallPlane.axisLimit =
                 (cv[2] - ((DusterState*)state)->wallPlane.anchorZ) / sideAxis[2];
         }
-        ((BaddieState*)state)->userData1 = 1;
+        ((EnemyState*)state)->userData1 = 1;
     }
 }
 
@@ -3724,13 +3722,13 @@ void rachnopUpdateWhileFrozen(GameObject* obj, u8* state, int unused, int eventK
 {
     if (eventKind == 0x10)
     {
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x20;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x20;
     }
     else if (eventKind != 0x11)
     {
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
         Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_zyck_lash_254);
-        ((BaddieState*)state)->hitCounter = 0;
+        ((EnemyState*)state)->current = 0;
     }
     return;
 }
@@ -3739,18 +3737,18 @@ void rachnopUpdateIdle(GameObject* obj, int state)
 {
     int cond;
 
-    if (((BaddieState*)state)->userData1 == 0)
+    if (((EnemyState*)state)->userData1 == 0)
     {
         rachnopFindWallPlane(obj, state);
     }
     else
     {
-        if ((((GameObject*)((BaddieState*)state)->trackedObj)->anim.classId == 1) &&
-            (cond = fn_80295CBC((GameObject*)(*(int*)&((BaddieState*)state)->trackedObj)), cond != 0))
+        if ((((GameObject*)((EnemyState*)state)->trackedObj)->anim.classId == 1) &&
+            (cond = fn_80295CBC((GameObject*)(((EnemyState*)state)->trackedObj)), cond != 0))
         {
-            ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 & ~0x10000LL;
+            ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 & ~0x10000LL;
         }
-        if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_id_253);
             Baddie_SetMove((int)obj, state, 2, 1.0f, 0, 0);
@@ -3763,15 +3761,15 @@ void rachnopUpdateApproach(GameObject* obj, int state)
 {
     int cond;
 
-    if (((BaddieState*)state)->userData1 == 0)
+    if (((EnemyState*)state)->userData1 == 0)
     {
         rachnopFindWallPlane(obj, state);
     }
-    else if ((((GameObject*)((BaddieState*)state)->trackedObj)->anim.classId == 1) &&
-             (cond = fn_80295CBC((GameObject*)(*(int*)&((BaddieState*)state)->trackedObj)), cond != 0))
+    else if ((((GameObject*)((EnemyState*)state)->trackedObj)->anim.classId == 1) &&
+             (cond = fn_80295CBC((GameObject*)(((EnemyState*)state)->trackedObj)), cond != 0))
     {
         fireflyLanternSteerTowardTarget((short*)obj, state, 0x19, (double)(0.5f));
-        if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             Baddie_SetMove((int)obj, state, 0, (0.5f), 0, 0);
             Sfx_PlayFromObject((u32)obj, SFXTRIG_id_252);
@@ -3779,7 +3777,7 @@ void rachnopUpdateApproach(GameObject* obj, int state)
     }
     else
     {
-        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
+        ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 | 0x10000LL;
     }
     return;
 }
@@ -3791,12 +3789,12 @@ void rachnopUpdateAttack(GameObject* obj, int state)
     u16 outIds[2];
     float outVec[3];
 
-    if (((BaddieState*)state)->userData1 == 0)
+    if (((EnemyState*)state)->userData1 == 0)
     {
         rachnopFindWallPlane(obj, state);
     }
-    else if ((((GameObject*)((BaddieState*)state)->trackedObj)->anim.classId == 1) &&
-             (cond = fn_80295CBC((GameObject*)(*(int*)&((BaddieState*)state)->trackedObj)), cond != 0))
+    else if ((((GameObject*)((EnemyState*)state)->trackedObj)->anim.classId == 1) &&
+             (cond = fn_80295CBC((GameObject*)(((EnemyState*)state)->trackedObj)), cond != 0))
     {
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DUSTER_HIT_VOLUME_SLOT, 1, 0);
         move = obj->anim.currentMove;
@@ -3809,7 +3807,7 @@ void rachnopUpdateAttack(GameObject* obj, int state)
             fireflyLanternSteerTowardTarget((short*)obj, state, 0x19, (double)0.5f);
         }
         fireflyLanternGetTargetAngleAndDistance(obj, state, outIds, outVec);
-        if (((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0) ||
+        if (((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0) ||
             ((outIds[0] < 0x5dc && (obj->anim.currentMove != 1))))
         {
             if (outIds[0] < 0x5dc)
@@ -3825,7 +3823,7 @@ void rachnopUpdateAttack(GameObject* obj, int state)
     }
     else
     {
-        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
+        ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 | 0x10000LL;
     }
     return;
 }
@@ -3835,24 +3833,24 @@ void rachnopInit(u32 unused, int state)
     float fa;
     float fb;
 
-    ((BaddieState*)state)->speedScale = (25.0f);
-    ((BaddieState*)state)->unk2E4 = 1;
+    ((EnemyState*)state)->sightRange = (25.0f);
+    ((EnemyState*)state)->flags2E4 = 1;
     fa = (0.1f);
-    ((BaddieState*)state)->unk308 = (0.1f);
-    ((BaddieState*)state)->animDeltaScale = fa;
-    ((BaddieState*)state)->unk304 = (0.97f);
-    ((BaddieState*)state)->unk320 = 0;
+    ((EnemyState*)state)->animPlaySpeed = (0.1f);
+    ((EnemyState*)state)->gravity = fa;
+    ((EnemyState*)state)->drag = (0.97f);
+    ((EnemyState*)state)->moveId0 = 0;
     fb = 1.5f;
-    *(float*)&((BaddieState*)state)->eventFlags = 1.5f;
-    ((BaddieState*)state)->unk321 = 4;
+    ((EnemyState*)state)->moveSpeedScale0 = 1.5f;
+    ((EnemyState*)state)->moveId1 = 4;
     fa = 1.0f;
-    ((BaddieState*)state)->unk318 = 1.0f;
-    ((BaddieState*)state)->unk322 = 0;
-    ((BaddieState*)state)->unk31C = fb;
+    ((EnemyState*)state)->moveSpeedScale1 = 1.0f;
+    ((EnemyState*)state)->moveId2 = 0;
+    ((EnemyState*)state)->moveSpeedScale2 = fb;
     ((DusterState*)state)->phaseTimer = 0.0f;
-    ((BaddieState*)state)->userData1 = 0;
-    ((BaddieState*)state)->userData2 = 0;
-    ((BaddieState*)state)->pathStep = fa;
+    ((EnemyState*)state)->userData1 = 0;
+    ((EnemyState*)state)->userData2 = 0;
+    ((EnemyState*)state)->pathStep = fa;
     return;
 }
 
@@ -3881,7 +3879,7 @@ void spittingEbaSpawnPollen(GameObject* obj, int state)
         a[0] = obj->anim.localPosX;
         a[1] = 15.0f + obj->anim.localPosY;
         a[2] = obj->anim.localPosZ;
-        ref = *(int*)&((BaddieState*)state)->trackedObj;
+        ref = (int)((EnemyState*)state)->trackedObj;
         b[0] = ((GameObject*)ref)->anim.localPosX;
         b[1] = 30.0f + ((GameObject*)ref)->anim.localPosY;
         b[2] = ((GameObject*)ref)->anim.localPosZ;
@@ -3939,16 +3937,16 @@ void spittingEbaUpdateTimeOfDay(int obj, int state)
     {
         isDaytime = 0;
     }
-    if ((isDaytime != 0) && (((BaddieState*)state)->userData1 == 0))
+    if ((isDaytime != 0) && (((EnemyState*)state)->userData1 == 0))
     {
-        ((BaddieState*)state)->userData1 = 1;
-        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
+        ((EnemyState*)state)->userData1 = 1;
+        ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 | 0x10000LL;
         Baddie_SetMove(obj, state, 1, 2.0f, 0, 0);
     }
-    else if ((isDaytime == 0) && (((BaddieState*)state)->userData1 == 2))
+    else if ((isDaytime == 0) && (((EnemyState*)state)->userData1 == 2))
     {
-        ((BaddieState*)state)->userData1 = 1;
-        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
+        ((EnemyState*)state)->userData1 = 1;
+        ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 | 0x10000LL;
         Baddie_SetMove(obj, state, 3, 2.0f, 0, 0);
     }
     return;
@@ -3958,34 +3956,34 @@ void spittingEbaUpdateWhileFrozen(int obj, u8* state, int unused1, int eventKind
 {
     if (eventKind == 0x10)
     {
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x20;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x20;
     }
     else if (eventKind == 0x11)
     {
-        if ((((BaddieState*)state)->userData1 == 2) && (((GameObject*)obj)->anim.currentMove != 5))
+        if ((((EnemyState*)state)->userData1 == 2) && (((GameObject*)obj)->anim.currentMove != 5))
         {
             Baddie_SetMove(obj, (int)state, 5, 3.0f, 0, 0);
         }
     }
     else if ((((GameObject*)obj)->anim.currentMove == 5) || (((GameObject*)obj)->anim.currentMove == 4))
     {
-        if (damage > (int)(u32)((BaddieState*)state)->hitCounter)
+        if (damage > (int)(u32)((EnemyState*)state)->current)
         {
-            ((BaddieState*)state)->hitCounter = 0;
+            ((EnemyState*)state)->current = 0;
             Sfx_PlayFromObject(obj, SFXTRIG_baddie_zyck_strike);
             Sfx_PlayFromObject(obj, SFXTRIG_stftest);
         }
         else
         {
-            ((BaddieState*)state)->hitCounter = ((BaddieState*)state)->hitCounter - damage;
+            ((EnemyState*)state)->current = ((EnemyState*)state)->current - damage;
             Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_call);
             Sfx_PlayFromObject(obj, SFXTRIG_stftest);
         }
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
     }
     else
     {
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x10;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
         Sfx_PlayFromObject(obj, SFXTRIG_mv_ladderslide16_250);
     }
     return;
@@ -3994,23 +3992,23 @@ void spittingEbaUpdateWhileFrozen(int obj, u8* state, int unused1, int eventKind
 void spittingEbaUpdateIdle(GameObject* obj, int state)
 {
     ((DusterState*)state)->phaseTimer = 0.0f;
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        if (((BaddieState*)state)->userData1 == 1)
+        if (((EnemyState*)state)->userData1 == 1)
         {
             if ((obj)->anim.currentMove == 1)
             {
-                ((BaddieState*)state)->userData1 = 2;
-                ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 & ~0x10000LL;
+                ((EnemyState*)state)->userData1 = 2;
+                ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 & ~0x10000LL;
             }
             else if ((obj)->anim.currentMove == 3)
             {
-                ((BaddieState*)state)->userData1 = 0;
-                ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
+                ((EnemyState*)state)->userData1 = 0;
+                ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 | 0x10000LL;
                 Baddie_SetMove(obj, state, 0, (1.0f), 0, 0);
             }
         }
-        else if ((((BaddieState*)state)->userData1 == 2) && ((obj)->anim.currentMove != 2))
+        else if ((((EnemyState*)state)->userData1 == 2) && ((obj)->anim.currentMove != 2))
         {
             Baddie_SetMove(obj, state, 2, (1.0f), 0, 0);
         }
@@ -4030,7 +4028,7 @@ void spittingEbaUpdateEngaged(GameObject* obj, int state)
         timerExpired = 1;
         ((DusterState*)state)->phaseTimer = 0.0f;
     }
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         if (obj->anim.currentMove == 4)
         {
@@ -4049,7 +4047,7 @@ void spittingEbaUpdateEngaged(GameObject* obj, int state)
             ((DusterState*)state)->phaseTimer = 180.0f;
         }
         else if ((obj->anim.currentMove == 2) && (timerExpired) &&
-                 ((((BaddieState*)state)->controlFlags & 0x4000000) != 0))
+                 ((((EnemyState*)state)->controlFlags & 0x4000000) != 0))
         {
             Baddie_SetMove(obj, state, 4, (1.0f), 0, 0);
             Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_kooshy_hit);
@@ -4064,22 +4062,22 @@ void spittingEbaInit(u32 unused, int state)
     float fa;
     float fb;
 
-    ((BaddieState*)state)->speedScale = 40.0f;
-    ((BaddieState*)state)->unk2E4 = 1;
-    ((BaddieState*)state)->unk308 = (0.02f);
-    ((BaddieState*)state)->animDeltaScale = 0.1f;
-    ((BaddieState*)state)->unk304 = 0.97f;
-    ((BaddieState*)state)->unk320 = 0;
+    ((EnemyState*)state)->sightRange = 40.0f;
+    ((EnemyState*)state)->flags2E4 = 1;
+    ((EnemyState*)state)->animPlaySpeed = (0.02f);
+    ((EnemyState*)state)->gravity = 0.1f;
+    ((EnemyState*)state)->drag = 0.97f;
+    ((EnemyState*)state)->moveId0 = 0;
     fb = 1.5f;
-    *(float*)&((BaddieState*)state)->eventFlags = 1.5f;
-    ((BaddieState*)state)->unk321 = 7;
+    ((EnemyState*)state)->moveSpeedScale0 = 1.5f;
+    ((EnemyState*)state)->moveId1 = 7;
     fa = (1.0f);
-    ((BaddieState*)state)->unk318 = (1.0f);
-    ((BaddieState*)state)->unk322 = 0;
-    ((BaddieState*)state)->unk31C = fb;
-    ((BaddieState*)state)->userData1 = 0;
+    ((EnemyState*)state)->moveSpeedScale1 = (1.0f);
+    ((EnemyState*)state)->moveId2 = 0;
+    ((EnemyState*)state)->moveSpeedScale2 = fb;
+    ((EnemyState*)state)->userData1 = 0;
     ((DusterState*)state)->phaseTimer = 0.0f;
-    ((BaddieState*)state)->pathStep = fa;
+    ((EnemyState*)state)->pathStep = fa;
     return;
 }
 
@@ -4091,14 +4089,14 @@ void wbUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int wpad
     {
         if (eventKind == 0x10)
         {
-            ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x20;
+            ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x20;
         }
         else
         {
             Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_wingflap_260);
-            ((BaddieState*)state)->hitCounter = 0;
-            ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x20;
-            ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
+            ((EnemyState*)state)->current = 0;
+            ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 | 0x20;
+            ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
         }
     }
     return;
@@ -4118,14 +4116,14 @@ void wbUpdateEngaged(u32 obj, int state)
     hitState = (ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState;
     hitState->suppressOutgoingHits = 0;
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DUSTER_HIT_VOLUME_SLOT, 1, 0);
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         Sfx_PlayFromObject(obj, SFXTRIG_mn_heart1_c_261);
     }
     ((DusterState*)state)->decoyTimer = ((DusterState*)state)->decoyTimer - timeDelta;
     if (((DusterState*)state)->decoyTimer <= 0.0f)
     {
-        if ((((BaddieState*)state)->controlFlags & 0x600) != 0)
+        if ((((EnemyState*)state)->controlFlags & 0x600) != 0)
         {
             randVal = randomGetRange(0x96, 0xfa);
             ((DusterState*)state)->decoyTimer = (float)(int)randVal;
@@ -4137,7 +4135,7 @@ void wbUpdateEngaged(u32 obj, int state)
         }
         Sfx_PlayFromObject(obj, SFXTRIG_baddie_eba_pollenspin);
     }
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         ObjAnim_SetCurrentMove(obj, 3, 0.0f, *(u8*)(state + 0x323));
     }
@@ -4147,33 +4145,33 @@ void wbUpdateEngaged(u32 obj, int state)
         if (((DusterState*)state)->phaseTimer <= 0.0f)
         {
             ((DusterState*)state)->phaseTimer = 600.0f;
-            ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 | 0x10000LL;
+            ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 | 0x10000LL;
         }
     }
-    else if ((((BaddieState*)state)->controlFlags & 0x400) != 0)
+    else if ((((EnemyState*)state)->controlFlags & 0x400) != 0)
     {
         ((DusterState*)state)->phaseTimer = 600.0f;
     }
-    if ((((BaddieState*)state)->controlFlags & 0x8000000) != 0)
+    if ((((EnemyState*)state)->controlFlags & 0x8000000) != 0)
     {
         moveSpeed = 20.0f;
     }
     else
     {
-        tracked = (GameObject*)((BaddieState*)state)->trackedObj;
+        tracked = (GameObject*)((EnemyState*)state)->trackedObj;
         moveSpeed = sidekickToy_accelerateTowardTargetXZ(
             (GameObject*)(obj), tracked->anim.worldPosX, 50.0f + tracked->anim.worldPosY,
-            tracked->anim.worldPosZ, 30.0f, 0.2f, 5.0f, ((BaddieState*)state)->unk304);
+            tracked->anim.worldPosZ, 30.0f, 0.2f, 5.0f, ((EnemyState*)state)->drag);
     }
     if (((moveSpeed > 0.0f) && (((GameObject*)obj)->anim.velocityY < -0.5f)) ||
-        ((((BaddieState*)state)->controlFlags & 0x8000000) != 0))
+        ((((EnemyState*)state)->controlFlags & 0x8000000) != 0))
     {
-        ((BaddieState*)state)->userData1 = 1;
+        ((EnemyState*)state)->userData1 = 1;
     }
-    if ((((BaddieState*)state)->userData1 != 0) && (moveSpeed > 0.0f))
+    if ((((EnemyState*)state)->userData1 != 0) && (moveSpeed > 0.0f))
     {
-        ((BaddieState*)state)->unk308 = 0.05f;
-        if (((BaddieState*)state)->hitCounter != 0)
+        ((EnemyState*)state)->animPlaySpeed = 0.05f;
+        if (((EnemyState*)state)->current != 0)
         {
             ((GameObject*)obj)->anim.velocityY += 0.02f;
         }
@@ -4188,10 +4186,10 @@ void wbUpdateEngaged(u32 obj, int state)
     }
     else
     {
-        ((BaddieState*)state)->userData1 = 0;
-        if (((BaddieState*)state)->unk308 > 0.025f)
+        ((EnemyState*)state)->userData1 = 0;
+        if (((EnemyState*)state)->animPlaySpeed > 0.025f)
         {
-            ((BaddieState*)state)->unk308 = -(0.005f * timeDelta - ((BaddieState*)state)->unk308);
+            ((EnemyState*)state)->animPlaySpeed = -(0.005f * timeDelta - ((EnemyState*)state)->animPlaySpeed);
         }
     }
     baddieTurnTowardLookDir((GameObject*)obj, (void*)state, 0x2d, 0.0f, 0.0f, 0);
@@ -4210,14 +4208,14 @@ void wbUpdateIdle(u32 obj, int state)
     hitState = (ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState;
     hitState->suppressOutgoingHits = 0;
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DUSTER_HIT_VOLUME_SLOT, 1, 0);
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         Sfx_PlayFromObject(obj, SFXTRIG_mn_heart1_c_261);
     }
     ((DusterState*)state)->decoyTimer = ((DusterState*)state)->decoyTimer - timeDelta;
     if (((DusterState*)state)->decoyTimer <= 0.0f)
     {
-        if ((((BaddieState*)state)->controlFlags & 0x600) != 0)
+        if ((((EnemyState*)state)->controlFlags & 0x600) != 0)
         {
             randVal = randomGetRange(0x96, 0xfa);
             ((DusterState*)state)->decoyTimer = (float)(int)randVal;
@@ -4229,7 +4227,7 @@ void wbUpdateIdle(u32 obj, int state)
         }
         Sfx_PlayFromObject(obj, SFXTRIG_baddie_eba_pollenspin);
     }
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         ObjAnim_SetCurrentMove(obj, 0, 0.0f, *(u8*)(state + 0x323));
     }
@@ -4243,20 +4241,20 @@ void wbUpdateIdle(u32 obj, int state)
     }
     else
     {
-        ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 & ~0x10000LL;
+        ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 & ~0x10000LL;
     }
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
-        if (((Curve_AdvanceAlongPath(&route->curve, ((BaddieState*)state)->pathStep) != 0 ||
+        if (((Curve_AdvanceAlongPath(&route->curve, ((EnemyState*)state)->pathStep) != 0 ||
               route->atSegmentEnd != 0) &&
              (*gRomCurveInterface)->goNextPoint(route) != 0) &&
             (*gRomCurveInterface)
                     ->initCurve(*(RomCurveWalker**)state, (void*)obj, 700.0f, (int*)&gWbCurveInitData, -1) != 0)
         {
-            ((BaddieState*)state)->controlFlags =
-                ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
+            ((EnemyState*)state)->controlFlags =
+                ((EnemyState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
         }
-        if ((((BaddieState*)state)->controlFlags & 0x8000000) != 0)
+        if ((((EnemyState*)state)->controlFlags & 0x8000000) != 0)
         {
             moveSpeed = 30.0f;
         }
@@ -4264,10 +4262,10 @@ void wbUpdateIdle(u32 obj, int state)
         {
             moveSpeed = sidekickToy_accelerateTowardTargetXZ((GameObject*)(obj), route->posX, route->posY, route->posZ,
                                                              30.0f, 0.2f, 5.0f,
-                                                             ((BaddieState*)state)->unk304);
+                                                             ((EnemyState*)state)->drag);
         }
     }
-    else if ((((BaddieState*)state)->controlFlags & 0x8000000) != 0)
+    else if ((((EnemyState*)state)->controlFlags & 0x8000000) != 0)
     {
         moveSpeed = 30.0f;
     }
@@ -4275,17 +4273,17 @@ void wbUpdateIdle(u32 obj, int state)
     {
         moveSpeed = sidekickToy_accelerateTowardTargetXZ((GameObject*)(obj), placement->posX, placement->posY,
                                                          placement->posZ, 30.0f, 0.2f, 5.0f,
-                                                         ((BaddieState*)state)->unk304);
+                                                         ((EnemyState*)state)->drag);
     }
     if (((moveSpeed > 0.0f) && (((GameObject*)obj)->anim.velocityY < -0.5f)) ||
-        ((((BaddieState*)state)->controlFlags & 0x8000000) != 0))
+        ((((EnemyState*)state)->controlFlags & 0x8000000) != 0))
     {
-        ((BaddieState*)state)->userData1 = 1;
+        ((EnemyState*)state)->userData1 = 1;
     }
-    if ((((BaddieState*)state)->userData1 != 0) && (moveSpeed > 0.0f))
+    if ((((EnemyState*)state)->userData1 != 0) && (moveSpeed > 0.0f))
     {
-        ((BaddieState*)state)->unk308 = 0.05f;
-        if (((BaddieState*)state)->hitCounter != 0)
+        ((EnemyState*)state)->animPlaySpeed = 0.05f;
+        if (((EnemyState*)state)->current != 0)
         {
             ((GameObject*)obj)->anim.velocityY += 0.02f;
         }
@@ -4300,10 +4298,10 @@ void wbUpdateIdle(u32 obj, int state)
     }
     else
     {
-        ((BaddieState*)state)->userData1 = 0;
-        if (((BaddieState*)state)->unk308 > 0.025f)
+        ((EnemyState*)state)->userData1 = 0;
+        if (((EnemyState*)state)->animPlaySpeed > 0.025f)
         {
-            ((BaddieState*)state)->unk308 = -(0.005f * timeDelta - ((BaddieState*)state)->unk308);
+            ((EnemyState*)state)->animPlaySpeed = -(0.005f * timeDelta - ((EnemyState*)state)->animPlaySpeed);
         }
     }
     baddieTurnTowardLookDir((GameObject*)obj, (void*)state, 0x2d, 0.0f, 0.0f, 0);
@@ -4314,18 +4312,18 @@ void wbInit(u32 unused, int state)
     float fa;
     u32 ua;
 
-    ((BaddieState*)state)->speedScale = 60.0f;
-    ((BaddieState*)state)->unk2E4 = 0x2002b029;
-    ((BaddieState*)state)->unk308 = 0.05f;
-    ((BaddieState*)state)->animDeltaScale = 0.006f;
-    ((BaddieState*)state)->unk304 = 0.95f;
-    ((BaddieState*)state)->unk320 = 0;
+    ((EnemyState*)state)->sightRange = 60.0f;
+    ((EnemyState*)state)->flags2E4 = 0x2002b029;
+    ((EnemyState*)state)->animPlaySpeed = 0.05f;
+    ((EnemyState*)state)->gravity = 0.006f;
+    ((EnemyState*)state)->drag = 0.95f;
+    ((EnemyState*)state)->moveId0 = 0;
     fa = 1.0f;
-    *(float*)&((BaddieState*)state)->eventFlags = 1.0f;
-    ((BaddieState*)state)->unk321 = 1;
-    ((BaddieState*)state)->unk318 = fa;
-    ((BaddieState*)state)->unk322 = 2;
-    ((BaddieState*)state)->unk31C = fa;
+    ((EnemyState*)state)->moveSpeedScale0 = 1.0f;
+    ((EnemyState*)state)->moveId1 = 1;
+    ((EnemyState*)state)->moveSpeedScale1 = fa;
+    ((EnemyState*)state)->moveId2 = 2;
+    ((EnemyState*)state)->moveSpeedScale2 = fa;
     ua = randomGetRange(0x78, 0x1e0);
     ((DusterState*)state)->decoyTimer = (float)(int)ua;
     return;
@@ -4392,21 +4390,21 @@ void mutatedEbaUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, 
     {
         if (eventKind == 0x10)
         {
-            ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x20;
+            ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x20;
         }
         else
         {
             if ((((move = ((GameObject*)obj)->anim.currentMove) == 0) || (move == 1)) || (move == 3) || (move == 4))
             {
                 Sfx_PlayFromObject(obj, SFXTRIG_mv_ladderslide16_250);
-                ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x10;
+                ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
             }
             else
             {
                 baddieSetMove((GameObject*)obj, (int)state, 4, 1.0f, 0, 0);
-                ((BaddieState*)state)->userData1 = 0;
+                ((EnemyState*)state)->userData1 = 0;
                 Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_call);
-                ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
+                ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
             }
         }
     }
@@ -4419,28 +4417,28 @@ void mutatedEbaUpdateEngaged(u32 obj, int state)
 
     ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumePriority = 10;
     ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->hitVolumeId = 1;
-    if (((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0) &&
-        (((BaddieState*)state)->userData1 <= 1))
+    if (((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0) &&
+        (((EnemyState*)state)->userData1 <= 1))
     {
-        ((BaddieState*)state)->userData1 = 1;
-        ((BaddieState*)state)->controlFlags = ((BaddieState*)state)->controlFlags | (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+        ((EnemyState*)state)->userData1 = 1;
+        ((EnemyState*)state)->controlFlags = ((EnemyState*)state)->controlFlags | (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
     }
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        ((BaddieState*)state)->userData1 += 1;
-        if (10 < ((BaddieState*)state)->userData1)
+        ((EnemyState*)state)->userData1 += 1;
+        if (10 < ((EnemyState*)state)->userData1)
         {
-            ((BaddieState*)state)->userData1 = 3;
+            ((EnemyState*)state)->userData1 = 3;
         }
         if (*(u16*)(state + 0x2a0) < 4)
         {
-            tblOff = (u32)((BaddieState*)state)->userData1 * 0xc;
+            tblOff = (u32)((EnemyState*)state)->userData1 * 0xc;
             baddieSetMove((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 8],
                         *(float*)(gDusterEbaMoveTable + tblOff), 0, 0);
         }
         else
         {
-            tblOff = (u32)((BaddieState*)state)->userData1 * 0xc;
+            tblOff = (u32)((EnemyState*)state)->userData1 * 0xc;
             baddieSetMove((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 9],
                         *(float*)(gDusterEbaMoveTable + tblOff), 0, 0);
         }
@@ -4454,18 +4452,18 @@ void mutatedEbaUpdateIdle(u32 obj, int state)
     int tblOff;
     u32 phase;
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        phase = ((BaddieState*)state)->userData1;
+        phase = ((EnemyState*)state)->userData1;
         if (phase == 0)
         {
-            ((BaddieState*)state)->userData1 += 1;
+            ((EnemyState*)state)->userData1 += 1;
         }
         else if (phase >= 2)
         {
-            ((BaddieState*)state)->userData1 = 0;
+            ((EnemyState*)state)->userData1 = 0;
         }
-        tblOff = (u32)((BaddieState*)state)->userData1 * 0xc;
+        tblOff = (u32)((EnemyState*)state)->userData1 * 0xc;
         baddieSetMove((GameObject*)obj, state, gDusterEbaMoveTable[tblOff + 8],
                     *(float*)(gDusterEbaMoveTable + tblOff), 0, 0);
     }
@@ -4477,20 +4475,20 @@ void mutatedEbaInit(u32 unused, int state)
 {
     float fa;
 
-    ((BaddieState*)state)->speedScale = 60.0f;
-    ((BaddieState*)state)->unk2E4 = 0x46001;
-    ((BaddieState*)state)->unk308 = 0.01f;
-    ((BaddieState*)state)->animDeltaScale = 0.006f;
-    ((BaddieState*)state)->unk304 = 0.95f;
-    ((BaddieState*)state)->unk320 = 0;
+    ((EnemyState*)state)->sightRange = 60.0f;
+    ((EnemyState*)state)->flags2E4 = 0x46001;
+    ((EnemyState*)state)->animPlaySpeed = 0.01f;
+    ((EnemyState*)state)->gravity = 0.006f;
+    ((EnemyState*)state)->drag = 0.95f;
+    ((EnemyState*)state)->moveId0 = 0;
     fa = 1.0f;
-    *(float*)&((BaddieState*)state)->eventFlags = 1.0f;
-    ((BaddieState*)state)->unk321 = 4;
-    ((BaddieState*)state)->unk318 = fa;
-    ((BaddieState*)state)->unk322 = 3;
-    ((BaddieState*)state)->unk31C = fa;
-    ((BaddieState*)state)->userData1 = 1;
-    ((BaddieState*)state)->hitCounter = 0xa;
+    ((EnemyState*)state)->moveSpeedScale0 = 1.0f;
+    ((EnemyState*)state)->moveId1 = 4;
+    ((EnemyState*)state)->moveSpeedScale1 = fa;
+    ((EnemyState*)state)->moveId2 = 3;
+    ((EnemyState*)state)->moveSpeedScale2 = fa;
+    ((EnemyState*)state)->userData1 = 1;
+    ((EnemyState*)state)->current = 0xa;
     return;
 }
 
@@ -4558,13 +4556,13 @@ void hoodedZyckUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, 
 {
     if (eventKind == 0x10)
     {
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x20;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x20;
     }
     else
     {
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
         Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_244);
-        ((BaddieState*)state)->hitCounter = 0;
+        ((EnemyState*)state)->current = 0;
     }
     return;
 }
@@ -4614,7 +4612,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
         {
             baddieSetMove(obj, state, 5, gHoodedZyckEmergeMoveSpeed, 0, 0);
         }
-        else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        else if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             ObjHits_EnableObject(obj);
             ((DusterState*)state)->decoyTimer = 0.0f;
@@ -4641,7 +4639,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
                                        (u32) * (u8*)(state + 0x261),
                                        0xffffffff, 0xff, 0);
         noHit = !(groundHit & 0xff);
-        if (!noHit || ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0))
+        if (!noHit || ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0))
         {
             if (noHit && (obj)->anim.currentMove != 0)
             {
@@ -4660,8 +4658,8 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
                 ((DusterState*)state)->turnDelta = (u16)((randBit - 1) * 0x12c);
             }
         }
-        (obj)->anim.rotY = ((BaddieState*)state)->spawnRotY;
-        (obj)->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
+        (obj)->anim.rotY = ((EnemyState*)state)->spawnRotY;
+        (obj)->anim.rotZ = ((EnemyState*)state)->spawnRotZ;
     }
     return;
 }
@@ -4704,7 +4702,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
         {
             baddieSetMove(obj, (int)state, 5, gHoodedZyckEmergeMoveSpeed, 0, 0);
         }
-        else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        else if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             ObjHits_EnableObject(obj);
             ((FCVars*)state)->emergeTimer = 0.0f;
@@ -4731,14 +4729,12 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
         tgtA[0] = -(10.0f * sinA - obj->anim.localPosX);
         tgtA[1] = 5.0f + obj->anim.localPosY;
         tgtA[2] = -(10.0f * cosA - obj->anim.localPosZ);
-        /* 0x261 = BaddieState.contactSfxFlags; kept raw - typed member as a
-         * call arg shifts arg emission bytes here. */
         noHit = !(u8)objBboxFn_800640cc(posA, tgtA, 0.0f, 3, (TrackBBoxHit*)bufA, obj,
-                                        *(u8*)(state + 0x261), -1, 0xff, 0);
+                                        ((EnemyState*)state)->unk261, -1, 0xff, 0);
         ang =
             getAngle(
-                obj->anim.localPosX - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
-                obj->anim.localPosZ - ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ) &
+                obj->anim.localPosX - ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
+                obj->anim.localPosZ - ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ) &
             0xffff;
         diff = (f32)(int)(ang - ((int)*(s16*)obj & 0xffffu));
         if (diff > 32768.0f)
@@ -4786,24 +4782,24 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
                     if ((u8)objBboxFn_800640cc(posB, tgtB, 0.0f, 3, (TrackBBoxHit*)bufB, obj,
                                                *(u8*)(state + 0x261), -1, 0xff, 0) == 0)
                     {
-                        if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+                        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
                         {
                             baddieSetMove(obj, (int)state, 7, 1.0f / (2.0f * scale), 0, 1);
                         }
-                        obj->anim.rotY = ((BaddieState*)state)->spawnRotY;
-                        obj->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
+                        obj->anim.rotY = ((EnemyState*)state)->spawnRotY;
+                        obj->anim.rotZ = ((EnemyState*)state)->spawnRotZ;
                     }
                     *(s16*)obj = -*(s16*)obj;
                 }
                 return;
             }
         }
-        if (((BaddieState*)state)->trackedObj != NULL &&
-            ((GameObject*)((BaddieState*)state)->trackedObj)->anim.hitboxScale > 56.0f)
+        if (((EnemyState*)state)->trackedObj != NULL &&
+            ((GameObject*)((EnemyState*)state)->trackedObj)->anim.hitboxScale > 56.0f)
         {
-            ((BaddieState*)state)->speedScale = gHoodedZyckLargeTargetSpeedScale;
+            ((EnemyState*)state)->sightRange = gHoodedZyckLargeTargetSpeedScale;
         }
-        if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0 || noHit == 0 ||
+        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0 || noHit == 0 ||
             (mag < 3000 && noHit != 0 && obj->anim.currentMove != 0))
         {
             if (noHit != 0 && mag < 3000)
@@ -4834,8 +4830,8 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
                 }
             }
         }
-        obj->anim.rotY = ((BaddieState*)state)->spawnRotY;
-        obj->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
+        obj->anim.rotY = ((EnemyState*)state)->spawnRotY;
+        obj->anim.rotZ = ((EnemyState*)state)->spawnRotZ;
     }
 }
 
@@ -4855,7 +4851,7 @@ void hoodedZyck_update(GameObject* obj, u8* state)
         {
             baddieSetMove(obj, (int)state, 5, gHoodedZyckEmergeMoveSpeed, 0, 0);
         }
-        else if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        else if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             ObjHits_EnableObject(obj);
             ((FCVars*)state)->emergeTimer = 0.0f;
@@ -4877,13 +4873,13 @@ void hoodedZyck_update(GameObject* obj, u8* state)
         obj->anim.velocityY = z;
         obj->anim.velocityZ = z;
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, FIRECRAWLER_HIT_VOLUME_SLOT, 1, -1);
-        turnRaw = hoodedZyck_getAngleDelta(obj, (GameObject*)((BaddieState*)state)->trackedObj);
+        turnRaw = hoodedZyck_getAngleDelta(obj, (GameObject*)((EnemyState*)state)->trackedObj);
         {
             int t = (s16)turnRaw;
             mag = (u16)(t >= 0 ? t : -t);
         }
         ObjHits_EnableObject(obj);
-        grabbed = ((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN;
+        grabbed = ((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN;
         if (grabbed != 0 && obj->anim.currentMove == 6)
         {
             baddieSetMove(obj, (int)state, 4, gHoodedZyckFollowUpMoveSpeed, 0, 1);
@@ -4896,7 +4892,7 @@ void hoodedZyck_update(GameObject* obj, u8* state)
             {
                 if (mag < 1000)
                 {
-                    if (((BaddieState*)state)->speedScale < 40.0f)
+                    if (((EnemyState*)state)->sightRange < 40.0f)
                     {
                         baddieSetMove(obj, (int)state, 2, 0.75f, 0, 0);
                     }
@@ -4919,13 +4915,13 @@ void hoodedZyck_update(GameObject* obj, u8* state)
                     }
                 }
             }
-            obj->anim.rotY = ((BaddieState*)state)->spawnRotY;
-            obj->anim.rotZ = ((BaddieState*)state)->spawnRotZ;
+            obj->anim.rotY = ((EnemyState*)state)->spawnRotY;
+            obj->anim.rotZ = ((EnemyState*)state)->spawnRotZ;
         }
     }
 }
 
-void hoodedZyck_init(GameObject* obj, BaddieState* st)
+void hoodedZyck_init(GameObject* obj, EnemyState* st)
 {
     f32 ratio;
     f32 base_v;
@@ -4938,29 +4934,29 @@ void hoodedZyck_init(GameObject* obj, BaddieState* st)
         ratio = 10.0f;
     }
     ratio = ratio / 10.0f;
-    st->speedScale = 30.0f;
-    st->unk2E4 = 0x8b;
-    flags = st->unk2E4;
-    st->unk2E4 = flags | 0x20;
-    st->unk308 = 0.02f * ratio;
+    st->sightRange = 30.0f;
+    st->flags2E4 = 0x8b;
+    flags = st->flags2E4;
+    st->flags2E4 = flags | 0x20;
+    st->animPlaySpeed = 0.02f * ratio;
     base_v = 1.0f;
-    st->animDeltaScale = base_v;
-    st->unk304 = 0.97f;
+    st->gravity = base_v;
+    st->drag = 0.97f;
     *((u8*)st + 0x320) = 0;
-    *(f32*)&st->eventFlags = 1.5f;
+    st->moveSpeedScale0 = 1.5f;
     *((u8*)st + 0x321) = 3;
     {
         f32 d2 = 2.0f;
-        st->unk318 = d2;
+        st->moveSpeedScale1 = d2;
         *((u8*)st + 0x322) = 5;
-        st->unk31C = d2;
+        st->moveSpeedScale2 = d2;
     }
     ((FCVars*)st)->turnDelta = 0;
     ((FCVars*)st)->engineTimer = 60.0f;
     ((FCVars*)st)->emergeTimer = base_v;
     obj->anim.alpha = 0;
     st->pathStep = 0.5f * ratio;
-    st->reactionFlags = 0;
+    st->flags2E8 = 0;
     ObjHits_EnableObject(obj);
 }
 
@@ -5154,7 +5150,7 @@ void crawler_checkNearbyActive(GameObject* obj, u8* state)
             GameObject* e = gCrawlerNearbyObjectBuffer[objectIndex].obj;
             if (e->anim.romDefNo == FIRECRAWLER_SEQID_REDEYE)
             {
-                u32 flags = ((BaddieState*)e->extra)->controlFlags;
+                u32 flags = ((EnemyState*)e->extra)->controlFlags;
                 if ((flags & 0x20000000) != 0 && (flags & 0x1800) == 0)
                 {
                     i = count;
@@ -5216,16 +5212,16 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
         child = (GameObject*)((int)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, 0));
         if ((u32)child != 0)
         {
-            f32 dur = 60.0f * ((f32)((FCVars*)state)->targetDist / ((BaddieState*)state)->unk2A8);
-            child->anim.velocityX = (((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX -
+            f32 dur = 60.0f * ((f32)((FCVars*)state)->targetDist / ((EnemyState*)state)->aggroRange);
+            child->anim.velocityX = (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX -
                                                     ((ObjPlacement*)setup)->posX) /
                                                    dur;
             child->anim.velocityY =
-                ((30.0f + ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosY +
+                ((30.0f + ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosY +
                   (f32)(int)randomGetRange(-10, 10)) -
                  ((ObjPlacement*)setup)->posY) /
                 dur;
-            child->anim.velocityZ = (((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ -
+            child->anim.velocityZ = (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ -
                                                     ((ObjPlacement*)setup)->posZ) /
                                                    dur;
         }
@@ -5251,7 +5247,7 @@ void crawlerPlayMoveEventFx(GameObject* obj, u8* state)
     } CrawlerDescE;
     CrawlerDescE* d = (CrawlerDescE*)gCrawlerDescriptorTable;
     CrawlerSubDesc* sub;
-    CrawlerSubDesc* entry = d[((BaddieState*)state)->userData2].p;
+    CrawlerSubDesc* entry = d[((EnemyState*)state)->userData2].p;
     u8 i;
 
     gCrawlerHitSfxTimer = gCrawlerHitSfxTimer - timeDelta;
@@ -5324,7 +5320,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
     } CrawlerDesc;
     u8 idx;
     CrawlerDesc* d = (CrawlerDesc*)gCrawlerDescriptorTable;
-    CrawlerSeq16* tbl = d[(idx = ((BaddieState*)state)->userData2)].seq;
+    CrawlerSeq16* tbl = d[(idx = ((EnemyState*)state)->userData2)].seq;
 
     if (cmd == 0xe)
     {
@@ -5366,7 +5362,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_swd_var);
         }
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x10;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
         return;
     }
 
@@ -5375,17 +5371,17 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         firepipe_clearLinkedUpdateFlag((obj)->childObjs[0]);
     }
     ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x40;
-    ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags & ~0x40LL;
-    if (cmd == 0x10 && ((BaddieState*)state)->userData2 != 0)
+    ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 & ~0x40LL;
+    if (cmd == 0x10 && ((EnemyState*)state)->userData2 != 0)
     {
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x20;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x20;
         return;
     }
 
     if (((FCVars*)state)->reactStep != 0)
     {
         u8 step;
-        if (((BaddieState*)state)->userData2 == 0)
+        if (((EnemyState*)state)->userData2 == 0)
         {
             step = 4;
         }
@@ -5397,7 +5393,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         ((FCVars*)state)->flagsC = tbl[step].flagC;
         (obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
         ((FCVars*)state)->reactStep = tbl[step].next9;
-        ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
+        ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
         if ((obj)->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
         {
             if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
@@ -5420,35 +5416,35 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_stftest_var);
         }
-        if (damage > ((BaddieState*)state)->hitCounter)
+        if (damage > ((EnemyState*)state)->current)
         {
-            ((BaddieState*)state)->hitCounter = 0;
+            ((EnemyState*)state)->current = 0;
         }
         else
         {
-            ((BaddieState*)state)->hitCounter = ((BaddieState*)state)->hitCounter - damage;
+            ((EnemyState*)state)->current = ((EnemyState*)state)->current - damage;
         }
-        if (((BaddieState*)state)->hitCounter == 0 && ((BaddieState*)state)->userData2 == 0)
+        if (((EnemyState*)state)->current == 0 && ((EnemyState*)state)->userData2 == 0)
         {
             crawler_checkNearbyActive(obj, state);
         }
         return;
     }
 
-    if ((((BaddieState*)state)->userData2 == 0 && cmd == 0x11 &&
+    if ((((EnemyState*)state)->userData2 == 0 && cmd == 0x11 &&
          mainGetBit(GAMEBIT_STAFF_ABILITY_SUPER_QUAKE) != 0) ||
-        ((BaddieState*)state)->userData2 == 1)
+        ((EnemyState*)state)->userData2 == 1)
     {
         u8 v;
         baddieSetMove(obj, (int)state, tbl[1].moveId, tbl[1].spd, 0, tbl[1].mask & 0xff);
         ((FCVars*)state)->flagsC = tbl[1].flagC;
         (obj)->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
         ((FCVars*)state)->reactStep = tbl[1].next9;
-        v = ((BaddieState*)state)->userData2;
+        v = ((EnemyState*)state)->userData2;
         if (v == 0)
         {
             ((FCVars*)state)->emergeTimer = 6.0f * (f32)((FCVars*)state)->hitStunFrames;
-            ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
+            ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
             if ((obj)->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
             {
                 if (gCrawlerHitSfxTimer <= 0.0f && attacker != NULL)
@@ -5498,7 +5494,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
             {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_swd_var);
             }
-            ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x10;
+            ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
         }
         return;
     }
@@ -5528,41 +5524,41 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
             Sfx_PlayFromObject((int)obj, SFXTRIG_swd_var);
         }
     }
-    ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x10;
+    ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
 }
 
 void crawler_updateC(GameObject* obj, u8* state)
 {
     CrawlerDescriptor* d = (CrawlerDescriptor*)gCrawlerDescriptorTable;
-    CrawlerSeq12* t8 = d[((BaddieState*)state)->userData2].tbl8;
-    u8* t0 = d[((BaddieState*)state)->userData2].tbl0;
-    CrawlerSeq16* seq = d[((BaddieState*)state)->userData2].seq;
-    CrawlerSeq12* tC = d[((BaddieState*)state)->userData2].tblC;
+    CrawlerSeq12* t8 = d[((EnemyState*)state)->userData2].tbl8;
+    u8* t0 = d[((EnemyState*)state)->userData2].tbl0;
+    CrawlerSeq16* seq = d[((EnemyState*)state)->userData2].seq;
+    CrawlerSeq12* tC = d[((EnemyState*)state)->userData2].tblC;
     RomCurveWalker* base = *(RomCurveWalker**)state;
     f32 scale = 1.0f;
     f32 cap;
     int i;
     f32 dv[3];
 
-    ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags & ~0x40LL;
+    ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 & ~0x40LL;
     if (obj->childObjs[0] != NULL)
     {
         firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
     }
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
     {
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD | 8;
         if ((*gRomCurveInterface)->initCurve(*(RomCurveWalker**)state, obj, 0.0f, (int*)&gCrawlerCurveInitData, -1) != 0)
         {
-            ((BaddieState*)state)->controlFlags =
-                ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
+            ((EnemyState*)state)->controlFlags =
+                ((EnemyState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
         }
-        if (((BaddieState*)state)->userData2 == 0)
+        if (((EnemyState*)state)->userData2 == 0)
         {
             crawler_checkNearbyActive(obj, state);
         }
-        ((BaddieState*)state)->userData1 = 0;
+        ((EnemyState*)state)->userData1 = 0;
     }
 
     cap = 0.0f;
@@ -5572,12 +5568,12 @@ void crawler_updateC(GameObject* obj, u8* state)
         if (((FCVars*)state)->emergeTimer <= cap)
         {
             ((FCVars*)state)->emergeTimer = cap;
-            ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+            ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             ((FCVars*)state)->flagsC = seq[((FCVars*)state)->reactStep].flagC;
             obj->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
             ((FCVars*)state)->reactStep = seq[((FCVars*)state)->reactStep].nextA;
         }
-        if ((((BaddieState*)state)->controlFlags & (BADDIE_CONTROL_JUST_TRIGGERED | BADDIE_CONTROL_SEQUENCE_DRIVEN)) ==
+        if ((((EnemyState*)state)->controlFlags & (BADDIE_CONTROL_JUST_TRIGGERED | BADDIE_CONTROL_SEQUENCE_DRIVEN)) ==
             0)
         {
             return;
@@ -5585,7 +5581,7 @@ void crawler_updateC(GameObject* obj, u8* state)
     }
 
     {
-        u32 flags = ((BaddieState*)state)->controlFlags;
+        u32 flags = ((EnemyState*)state)->controlFlags;
         if ((flags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
         {
             int count = enemy_findNearbyEnemies(obj, 250.0f, 1, 0x28, gCrawlerNearbyObjectBuffer);
@@ -5626,7 +5622,7 @@ void crawler_updateC(GameObject* obj, u8* state)
                 }
                 {
                     f32 ratio = (160.0f - dist) / 160.0f;
-                    ((FCVars*)state)->pathSpeed = scale * (ratio * ((BaddieState*)state)->pathStep);
+                    ((FCVars*)state)->pathSpeed = scale * (ratio * ((EnemyState*)state)->pathStep);
                 }
                 if (((FCVars*)state)->pathSpeed < 0.25f)
                 {
@@ -5639,8 +5635,8 @@ void crawler_updateC(GameObject* obj, u8* state)
                 (*gRomCurveInterface)
                         ->initCurve(*(RomCurveWalker**)state, obj, 700.0f, (int*)&gCrawlerCurveInitData, -1) != 0)
             {
-                ((BaddieState*)state)->controlFlags =
-                    ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
+                ((EnemyState*)state)->controlFlags =
+                    ((EnemyState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
             }
             if ((((FCVars*)state)->flagsD & 0xa) == 0)
             {
@@ -5657,9 +5653,9 @@ void crawler_updateC(GameObject* obj, u8* state)
                 {
                     diff = 65535.0f + diff;
                 }
-                t = (((BaddieState*)state)->pathStep * scale - ((FCVars*)state)->pathSpeed) / 60.0f;
+                t = (((EnemyState*)state)->pathStep * scale - ((FCVars*)state)->pathSpeed) / 60.0f;
                 a = diff >= 0.0f ? diff : -diff;
-                /* 0x308 = BaddieState.unk308; kept raw here - the typed
+                /* 0x308 = EnemyState.animPlaySpeed; kept raw here - the typed
                  * member spelling shifts bytes off the u8* state param. */
                 *(f32*)(state + 0x308) = t * (1.0f - a / 65535.0f);
                 if (*(f32*)(state + 0x308) < 0.005f)
@@ -5671,7 +5667,7 @@ void crawler_updateC(GameObject* obj, u8* state)
                     *(f32*)(state + 0x308) = 0.05f;
                 }
             }
-            if ((((BaddieState*)state)->controlFlags &
+            if ((((EnemyState*)state)->controlFlags &
                  (BADDIE_CONTROL_JUST_TRIGGERED | BADDIE_CONTROL_SEQUENCE_DRIVEN)) != 0)
             {
                 ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x20;
@@ -5710,7 +5706,7 @@ void crawler_updateC(GameObject* obj, u8* state)
                         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x18;
                         {
                             f32 v = ((FCVars*)state)->pathSpeed;
-                            int j = ((BaddieState*)state)->userData2;
+                            int j = ((EnemyState*)state)->userData2;
                             if (v > gCrawlerSpeedThresholds.speeds[j][0])
                             {
                                 ((FCVars*)state)->rootMotionFlags = 1;
@@ -5759,31 +5755,31 @@ void crawler_updateC(GameObject* obj, u8* state)
 void crawler_updateB(GameObject* obj, u8* state)
 {
     CrawlerDescriptor* d = (CrawlerDescriptor*)gCrawlerDescriptorTable;
-    CrawlerSeq12* t10 = d[((BaddieState*)state)->userData2].tbl10;
-    CrawlerSeq12* t8 = d[((BaddieState*)state)->userData2].tbl8;
-    CrawlerSeq12* tC = d[((BaddieState*)state)->userData2].tblC;
-    CrawlerSeq16* seq = d[((BaddieState*)state)->userData2].seq;
-    CrawlerSeq12* t4 = d[((BaddieState*)state)->userData2].tbl4;
-    CrawlerSeq12* t18 = d[((BaddieState*)state)->userData2].tbl18;
+    CrawlerSeq12* t10 = d[((EnemyState*)state)->userData2].tbl10;
+    CrawlerSeq12* t8 = d[((EnemyState*)state)->userData2].tbl8;
+    CrawlerSeq12* tC = d[((EnemyState*)state)->userData2].tblC;
+    CrawlerSeq16* seq = d[((EnemyState*)state)->userData2].seq;
+    CrawlerSeq12* t4 = d[((EnemyState*)state)->userData2].tbl4;
+    CrawlerSeq12* t18 = d[((EnemyState*)state)->userData2].tbl18;
     f32 cap;
     int count;
     int i;
     f32 dv[3];
 
-    if (((BaddieState*)state)->trackedObj != NULL &&
-        ((GameObject*)((BaddieState*)state)->trackedObj)->anim.classId == 1)
+    if (((EnemyState*)state)->trackedObj != NULL &&
+        ((GameObject*)((EnemyState*)state)->trackedObj)->anim.classId == 1)
     {
         requestGalleonBattleMusic();
     }
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
     {
-        if (((BaddieState*)state)->userData2 == 0)
+        if (((EnemyState*)state)->userData2 == 0)
         {
             (*gCameraInterface)->loadTriggeredCamAction(0, 0x6c, 0);
         }
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD | 0x10;
-        ((BaddieState*)state)->userData1 = 0;
+        ((EnemyState*)state)->userData1 = 0;
         if (obj->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_eggsnatch_var);
@@ -5801,7 +5797,7 @@ void crawler_updateB(GameObject* obj, u8* state)
         if (((FCVars*)state)->emergeTimer <= cap)
         {
             ((FCVars*)state)->emergeTimer = cap;
-            ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+            ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             ((FCVars*)state)->flagsC = seq[((FCVars*)state)->reactStep].flagC;
             obj->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
             ((FCVars*)state)->reactStep = seq[((FCVars*)state)->reactStep].nextA;
@@ -5812,7 +5808,7 @@ void crawler_updateB(GameObject* obj, u8* state)
     if (count >= 1)
     {
         if ((((FCVars*)state)->flagsD & 0x20) == 0 ||
-            (((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+            (((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             if (((FCVars*)state)->reactStep != 0)
             {
@@ -5876,7 +5872,7 @@ void crawler_updateB(GameObject* obj, u8* state)
     }
     else
     {
-        if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x30;
             if (obj->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER &&
@@ -5896,7 +5892,7 @@ void crawler_updateB(GameObject* obj, u8* state)
             {
                 int i2;
                 CrawlerSeq12* q;
-                if ((((BaddieState*)state)->controlFlags &
+                if ((((EnemyState*)state)->controlFlags &
                      (q = &t4[i2 = ((FCVars*)state)->moveChainIndex])->mask) != 0)
                 {
                     u8 mv;
@@ -5949,11 +5945,11 @@ void crawler_updateB(GameObject* obj, u8* state)
                 ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = (s8) * (u8*)(p + 9);
                 if (((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority == 0x1f)
                 {
-                    ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x40;
+                    ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x40;
                 }
                 else
                 {
-                    ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags & ~0x40LL;
+                    ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 & ~0x40LL;
                 }
                 break;
             }
@@ -5965,8 +5961,8 @@ void crawler_updateB(GameObject* obj, u8* state)
     if ((((FCVars*)state)->rootMotionFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
     {
         baddieTurnTowardPoint(obj, (int)state,
-                    ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
-                    ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 0x1e, 0);
+                    ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
+                    ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ, 0x1e, 0);
     }
     crawlerPlayMoveEventFx(obj, state);
 }
@@ -5983,25 +5979,25 @@ void crawler_update(GameObject* obj, u8* state)
         u8 pad2[4];
     } CrawlerDescL;
     CrawlerDescL* d = (CrawlerDescL*)gCrawlerDescriptorTable;
-    CrawlerSeq12* t9 = d[((BaddieState*)state)->userData2].t10;
-    CrawlerSeq12* t8 = d[((BaddieState*)state)->userData2].t18;
-    CrawlerSeq12* t7 = d[((BaddieState*)state)->userData2].tC;
-    CrawlerSeq16* t6 = d[((BaddieState*)state)->userData2].t14;
+    CrawlerSeq12* t9 = d[((EnemyState*)state)->userData2].t10;
+    CrawlerSeq12* t8 = d[((EnemyState*)state)->userData2].t18;
+    CrawlerSeq12* t7 = d[((EnemyState*)state)->userData2].tC;
+    CrawlerSeq16* t6 = d[((EnemyState*)state)->userData2].t14;
     f32 cap;
     int i;
     u8* p;
     int j;
     int n;
 
-    if (((BaddieState*)state)->trackedObj != NULL &&
-        ((GameObject*)((BaddieState*)state)->trackedObj)->anim.classId == 1)
+    if (((EnemyState*)state)->trackedObj != NULL &&
+        ((GameObject*)((EnemyState*)state)->trackedObj)->anim.classId == 1)
     {
         requestGalleonBattleMusic();
     }
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
     {
-        if (((BaddieState*)state)->userData2 == 0)
+        if (((EnemyState*)state)->userData2 == 0)
         {
             (*gCameraInterface)->loadTriggeredCamAction(0, 0x6c, 0);
         }
@@ -6019,14 +6015,14 @@ void crawler_update(GameObject* obj, u8* state)
         if (((FCVars*)state)->emergeTimer <= cap)
         {
             ((FCVars*)state)->emergeTimer = cap;
-            ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+            ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             ((FCVars*)state)->flagsC = t6[((FCVars*)state)->reactStep].flagC;
             obj->hitVolumeIndex = ((FCVars*)state)->flagsC & 1;
             ((FCVars*)state)->reactStep = t6[((FCVars*)state)->reactStep].nextA;
         }
     }
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         ((FCVars*)state)->flagsD = ((FCVars*)state)->flagsD & ~0x30;
         if (obj->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER && obj->childObjs[0] != NULL)
@@ -6048,18 +6044,18 @@ void crawler_update(GameObject* obj, u8* state)
             {
                 if (((FCVars*)state)->targetDist >= 0x50)
                 {
-                    ((BaddieState*)state)->userData1 = 0;
+                    ((EnemyState*)state)->userData1 = 0;
                 }
                 enemy_findNearbyEnemies(obj, 250.0f, 6, 0x28, gCrawlerNearbyObjectBuffer);
-                if ((((BaddieState*)state)->controlFlags & t9[((BaddieState*)state)->userData1].mask) == 0 &&
-                    t9[((BaddieState*)state)->userData1].next != 0)
+                if ((((EnemyState*)state)->controlFlags & t9[((EnemyState*)state)->userData1].mask) == 0 &&
+                    t9[((EnemyState*)state)->userData1].next != 0)
                 {
-                    ((BaddieState*)state)->userData1 = t9[((BaddieState*)state)->userData1].next;
+                    ((EnemyState*)state)->userData1 = t9[((EnemyState*)state)->userData1].next;
                 }
-                baddieSetMove(obj, (int)state, t9[((BaddieState*)state)->userData1].moveId,
-                               t9[((BaddieState*)state)->userData1].spd, 0,
-                               t9[((BaddieState*)state)->userData1].mode);
-                ((BaddieState*)state)->userData1 = t9[((BaddieState*)state)->userData1].next;
+                baddieSetMove(obj, (int)state, t9[((EnemyState*)state)->userData1].moveId,
+                               t9[((EnemyState*)state)->userData1].spd, 0,
+                               t9[((EnemyState*)state)->userData1].mode);
+                ((EnemyState*)state)->userData1 = t9[((EnemyState*)state)->userData1].next;
             }
             else
             {
@@ -6083,11 +6079,11 @@ void crawler_update(GameObject* obj, u8* state)
                 (s8) * (u8*)((char*)t8 + j * 0xc + 9);
             if (((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority == 0x1f)
             {
-                ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x40;
+                ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x40;
             }
             else
             {
-                ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags & ~0x40LL;
+                ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 & ~0x40LL;
             }
             break;
         }
@@ -6097,8 +6093,8 @@ void crawler_update(GameObject* obj, u8* state)
     if ((((FCVars*)state)->rootMotionFlags & 8) == 0 && (((FCVars*)state)->flagsD & 0x10) == 0)
     {
         baddieTurnTowardPoint(obj, (int)state,
-                    ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
-                    ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 0x1e, 0);
+                    ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
+                    ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ, 0x1e, 0);
     }
     crawlerPlayMoveEventFx(obj, state);
 }
@@ -6110,58 +6106,58 @@ void crawler_update(GameObject* obj, u8* state)
 void crawler_initModelVariant(GameObject* obj, u8* state)
 {
     u8* params = (u8*)obj->anim.placementData;
-    ((BaddieState*)state)->unk2E4 = 0xb;
-    ((BaddieState*)state)->unk2E4 |= 0x400b0LL;
-    ((BaddieState*)state)->unk2E4 |= 0x40001040LL;
+    ((EnemyState*)state)->flags2E4 = 0xb;
+    ((EnemyState*)state)->flags2E4 |= 0x400b0LL;
+    ((EnemyState*)state)->flags2E4 |= 0x40001040LL;
     switch (obj->anim.romDefNo)
     {
     case FIRECRAWLER_SEQID_REDEYE:
-        ((BaddieState*)state)->speedScale = 150.0f;
-        ((BaddieState*)state)->unk2A8 = 250.0f;
-        ((BaddieState*)state)->hitCounter = 0x1e;
+        ((EnemyState*)state)->sightRange = 150.0f;
+        ((EnemyState*)state)->aggroRange = 250.0f;
+        ((EnemyState*)state)->current = 0x1e;
         state[0x33b] = 0;
         state[0x320] = 9;
-        *(f32*)&((BaddieState*)state)->eventFlags = 3.0f;
+        ((EnemyState*)state)->moveSpeedScale0 = 3.0f;
         state[0x321] = 0xc;
-        ((BaddieState*)state)->unk318 = 1.25f;
+        ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
         state[0x322] = 9;
-        ((BaddieState*)state)->unk31C = 3.0f;
-        ((BaddieState*)state)->unk2E4 |= 0x400;
+        ((EnemyState*)state)->moveSpeedScale2 = 3.0f;
+        ((EnemyState*)state)->flags2E4 |= 0x400;
         break;
     case FIRECRAWLER_SEQID_FIRECRAWLER:
-        ((BaddieState*)state)->speedScale = 130.0f;
-        ((BaddieState*)state)->unk2A8 = 250.0f;
-        ((BaddieState*)state)->hitCounter = 0x32;
+        ((EnemyState*)state)->sightRange = 130.0f;
+        ((EnemyState*)state)->aggroRange = 250.0f;
+        ((EnemyState*)state)->current = 0x32;
         state[0x33b] = 1;
         state[0x320] = 0xe;
-        *(f32*)&((BaddieState*)state)->eventFlags = 3.0f;
+        ((EnemyState*)state)->moveSpeedScale0 = 3.0f;
         state[0x321] = 0xd;
-        ((BaddieState*)state)->unk318 = 1.25f;
+        ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
         state[0x322] = 0xe;
-        ((BaddieState*)state)->unk31C = 3.0f;
-        ((BaddieState*)state)->unk2E4 |= 0xc00;
+        ((EnemyState*)state)->moveSpeedScale2 = 3.0f;
+        ((EnemyState*)state)->flags2E4 |= 0xc00;
         break;
     case FIRECRAWLER_SEQID_SHADOWHUNTER:
-        ((BaddieState*)state)->speedScale = 120.0f;
-        ((BaddieState*)state)->unk2A8 = 240.0f;
-        ((BaddieState*)state)->hitCounter = 0xf;
+        ((EnemyState*)state)->sightRange = 120.0f;
+        ((EnemyState*)state)->aggroRange = 240.0f;
+        ((EnemyState*)state)->current = 0xf;
         state[0x33b] = 2;
         state[0x320] = 0xd;
-        *(f32*)&((BaddieState*)state)->eventFlags = 3.0f;
+        ((EnemyState*)state)->moveSpeedScale0 = 3.0f;
         state[0x321] = 0x10;
-        ((BaddieState*)state)->unk318 = 1.25f;
+        ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
         state[0x322] = 0xd;
-        ((BaddieState*)state)->unk31C = 3.0f;
-        ((BaddieState*)state)->unk2E4 |= 0xc00;
+        ((EnemyState*)state)->moveSpeedScale2 = 3.0f;
+        ((EnemyState*)state)->flags2E4 |= 0xc00;
         break;
     }
-    ((BaddieState*)state)->unk308 = 0.005f;
-    ((BaddieState*)state)->animDeltaScale = 0.17f;
-    ((BaddieState*)state)->unk304 = 0.97f;
-    ((BaddieState*)state)->pathStep *= 10.0f;
+    ((EnemyState*)state)->animPlaySpeed = 0.005f;
+    ((EnemyState*)state)->gravity = 0.17f;
+    ((EnemyState*)state)->drag = 0.97f;
+    ((EnemyState*)state)->pathStep *= 10.0f;
     if ((s8)params[0x2e] != -1)
     {
-        ((BaddieState*)state)->controlFlags |= 1;
+        ((EnemyState*)state)->controlFlags |= 1;
     }
     obj->anim.rootMotionScale = 0.5f + ((f32)(s32)(s8)params[0x28] / 127.0f);
 }
@@ -6214,14 +6210,14 @@ void hagabonMK2_updateWhileFrozen(int obj, u8* st, int unused, int cmd, int wpad
     }
     else if (cmd == 0x10)
     {
-        ((BaddieState*)st)->reactionFlags |= 0x20;
+        ((EnemyState*)st)->flags2E8 |= 0x20;
     }
     else
     {
-        ((BaddieState*)st)->reactionFlags |= 0x8;
+        ((EnemyState*)st)->flags2E8 |= 0x8;
         Sfx_StopFromObject(objI, SFXTRIG_baddie_rach_death);
         Sfx_PlayFromObject(obj, SFXTRIG_baddie_eba_leavesopen);
-        *(s16*)&((BaddieState*)st)->hitCounter = 0;
+        ((EnemyState*)st)->current = 0;
     }
 }
 
@@ -6243,7 +6239,7 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
             ((FCVars*)state)->warpTimer = cap;
         }
     }
-    ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x100;
+    ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x100;
     sp.x = 0.0f;
     sp.y = 4.0f;
     sp.z = 0.0f;
@@ -6263,15 +6259,15 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
         }
     }
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
     {
         CrawlerSeq12* sq = (CrawlerSeq12*)gCrawlerSeqTable;
-        ((BaddieState*)state)->userData1 = sq[((BaddieState*)state)->userData1].mode;
+        ((EnemyState*)state)->userData1 = sq[((EnemyState*)state)->userData1].mode;
         ((FCVars*)state)->emergeTimer = 200.0f;
         Sfx_StopFromObject((int)obj, SFXTRIG_baddie_rach_death);
     }
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
         f32* dp = dv;
         f32 t;
@@ -6281,7 +6277,7 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
         ((FCVars*)state)->distToCurve = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
         if (((FCVars*)state)->distToCurve < 100.0f && !((FCVars*)state)->warpTimer)
         {
-            ((BaddieState*)state)->unk2E4 = ((BaddieState*)state)->unk2E4 & ~0x10000LL;
+            ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 & ~0x10000LL;
         }
         t = 1.0f - ((FCVars*)state)->distToCurve / 400.0f;
         if (t < 0.0f)
@@ -6292,25 +6288,25 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
         {
             t = 1.0f;
         }
-        if ((Curve_AdvanceAlongPath(&base->curve, ((BaddieState*)state)->pathStep * t) != 0 ||
+        if ((Curve_AdvanceAlongPath(&base->curve, ((EnemyState*)state)->pathStep * t) != 0 ||
              base->atSegmentEnd != 0) &&
             (*gRomCurveInterface)->goNextPoint(base) != 0 &&
             (*gRomCurveInterface)->initCurve(*(RomCurveWalker**)state, obj, 700.0f, (int*)&gHagabonMK2CurveInitData, -1) != 0)
         {
-            ((BaddieState*)state)->controlFlags =
-                ((BaddieState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
+            ((EnemyState*)state)->controlFlags =
+                ((EnemyState*)state)->controlFlags & ~(u64)BADDIE_CONTROL_PATH_FOLLOW;
         }
         sidekickToy_accelerateTowardTarget3D(obj, base->posX, base->posY, base->posZ, 60.0f,
-                                             0.05f, 5.0f, ((BaddieState*)state)->unk304);
+                                             0.05f, 5.0f, ((EnemyState*)state)->drag);
     }
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         CrawlerSeq12* sq = (CrawlerSeq12*)gCrawlerSeqTable;
-        i = ((BaddieState*)state)->userData1 * 0xc;
+        i = ((EnemyState*)state)->userData1 * 0xc;
         baddieSetMove(obj, (int)state, *(u8*)(gCrawlerSeqTable + i + 8),
                     *(f32*)((int)gCrawlerSeqTable + i), 0, 0);
-        ((BaddieState*)state)->userData1 = sq[((BaddieState*)state)->userData1].next;
+        ((EnemyState*)state)->userData1 = sq[((EnemyState*)state)->userData1].next;
     }
 
     if (((FCVars*)state)->engineTimer > 0.0f)
@@ -6360,9 +6356,9 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
     }
 
     {
-        f32 pw = powfBitEstimate(((BaddieState*)state)->unk304, timeDelta);
+        f32 pw = powfBitEstimate(((EnemyState*)state)->drag, timeDelta);
         obj->anim.rotY = (f32)obj->anim.rotY * pw;
-        pw = powfBitEstimate(((BaddieState*)state)->unk304, timeDelta);
+        pw = powfBitEstimate(((EnemyState*)state)->drag, timeDelta);
         obj->anim.rotZ = (f32)obj->anim.rotZ * pw;
     }
 
@@ -6404,12 +6400,12 @@ void hagabonMK2_update(GameObject* obj, u8* state)
     int i;
     f32 pw;
 
-    if (((FCVars*)state)->linkedObj != NULL && ((FCVars*)state)->linkedObj == ((BaddieState*)state)->trackedObj)
+    if (((FCVars*)state)->linkedObj != NULL && ((FCVars*)state)->linkedObj == ((EnemyState*)state)->trackedObj)
     {
-        ((BaddieState*)state)->unk2E4 |= 0x10000LL;
+        ((EnemyState*)state)->flags2E4 |= 0x10000LL;
         ((FCVars*)state)->warpTimer = 180.0f;
     }
-    ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 0x100;
+    ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x100;
     sp.x = 0.0f;
     sp.y = 4.0f;
     sp.z = 0.0f;
@@ -6428,29 +6424,29 @@ void hagabonMK2_update(GameObject* obj, u8* state)
                                          obj->anim.localPosY, obj->anim.localPosZ);
         }
     }
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
     {
-        ((BaddieState*)state)->userData1 = 3;
-        ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+        ((EnemyState*)state)->userData1 = 3;
+        ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
     }
     sidekickToy_accelerateTowardTarget3D(
-        obj, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.worldPosX,
-        60.0f + ((GameObject*)((BaddieState*)state)->trackedObj)->anim.worldPosY,
-        ((GameObject*)((BaddieState*)state)->trackedObj)->anim.worldPosZ, 60.0f, 0.025f,
-        5.0f, ((BaddieState*)state)->unk304);
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+        obj, ((GameObject*)((EnemyState*)state)->trackedObj)->anim.worldPosX,
+        60.0f + ((GameObject*)((EnemyState*)state)->trackedObj)->anim.worldPosY,
+        ((GameObject*)((EnemyState*)state)->trackedObj)->anim.worldPosZ, 60.0f, 0.025f,
+        5.0f, ((EnemyState*)state)->drag);
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        i = ((BaddieState*)state)->userData1 * 0xc;
+        i = ((EnemyState*)state)->userData1 * 0xc;
         baddieSetMove(obj, (int)state, *(u8*)(gCrawlerSeqTable + i + 8),
                     *(f32*)((int)gCrawlerSeqTable + i), 0, 0);
         {
             CrawlerSeq12* sq = (CrawlerSeq12*)gCrawlerSeqTable;
-            ((BaddieState*)state)->userData1 = sq[((BaddieState*)state)->userData1].next;
+            ((EnemyState*)state)->userData1 = sq[((EnemyState*)state)->userData1].next;
         }
     }
-    pw = powfBitEstimate(((BaddieState*)state)->unk304, timeDelta);
+    pw = powfBitEstimate(((EnemyState*)state)->drag, timeDelta);
     obj->anim.rotY = (f32)obj->anim.rotY * pw;
-    pw = powfBitEstimate(((BaddieState*)state)->unk304, timeDelta);
+    pw = powfBitEstimate(((EnemyState*)state)->drag, timeDelta);
     obj->anim.rotZ = (f32)obj->anim.rotZ * pw;
     if (((FCVars*)state)->engineTimer < 2184.0f)
     {
@@ -6462,7 +6458,7 @@ void hagabonMK2_update(GameObject* obj, u8* state)
     }
     *(s16*)obj = ((FCVars*)state)->engineTimer * timeDelta + (f32)(int)*(s16*)obj;
     ((FCVars*)state)->emergeTimer = 200.0f;
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
         f32* dp = d;
         dp[0] = base->posX - obj->anim.worldPosX;
@@ -6471,7 +6467,7 @@ void hagabonMK2_update(GameObject* obj, u8* state)
         ((FCVars*)state)->distToCurve = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
         if (((FCVars*)state)->distToCurve > 400.0f)
         {
-            ((BaddieState*)state)->unk2E4 |= 0x10000LL;
+            ((EnemyState*)state)->flags2E4 |= 0x10000LL;
             ((FCVars*)state)->warpTimer = 0.0f;
         }
     }
@@ -6496,20 +6492,20 @@ void hagabonMK2_update(GameObject* obj, u8* state)
     }
 }
 
-void hagabonMK2_init(GameObject* obj, BaddieState* st)
+void hagabonMK2_init(GameObject* obj, EnemyState* st)
 {
     u8* tab;
-    st->speedScale = 40.0f;
-    st->unk2E4 = 0x405009;
-    st->unk304 = 0.97f;
+    st->sightRange = 40.0f;
+    st->flags2E4 = 0x405009;
+    st->drag = 0.97f;
     *((u8*)st + 0x320) = 0;
     {
         f32 d1 = 1.5f;
-        *(f32*)&st->eventFlags = d1;
+        st->moveSpeedScale0 = d1;
         *((u8*)st + 0x321) = 0;
-        st->unk318 = 1.0f;
+        st->moveSpeedScale1 = 1.0f;
         *((u8*)st + 0x322) = 0;
-        st->unk31C = d1;
+        st->moveSpeedScale2 = d1;
     }
     st->pathStep *= 3.0f;
     {
@@ -6523,7 +6519,7 @@ void hagabonMK2_init(GameObject* obj, BaddieState* st)
     ObjHits_SetHitVolumeMasks((ObjAnimComponent*)obj, 0xe, 1, 0xfff);
     ((FireCrawlerState*)st)->tailModelChain = ObjModelChain_Alloc(gCrawlerModelChainIds, 5);
     ObjModelChain_SetOrigin(((FireCrawlerState*)st)->tailModelChain, 0.1f, 0.85f, -0.075f);
-    st->reactionFlags = st->reactionFlags | 0x100;
+    st->flags2E8 = st->flags2E8 | 0x100;
     *(int*)((char*)obj + 0x108) = (int)&baddieAfterUpdateBonesCb;
 }
 
@@ -6581,7 +6577,7 @@ void snowworm_updateWhileFrozen(int obj, u8* st, int p3, int cmd, int p5, int su
     }
     if (cmd == 0x10)
     {
-        ((BaddieState*)st)->reactionFlags |= 0x20;
+        ((EnemyState*)st)->flags2E8 |= 0x20;
         return;
     }
     if (((FCVars*)st)->turnOctant > 3)
@@ -6593,17 +6589,17 @@ void snowworm_updateWhileFrozen(int obj, u8* st, int p3, int cmd, int p5, int su
         baddieSetMove((GameObject*)obj, (int)st, 5, 0.5f, 0, 0);
     }
     r = randomGetRange(0, 3);
-    ((BaddieState*)st)->userData1 = base[r];
-    ((BaddieState*)st)->reactionFlags |= 0x8;
-    if (sub > (int)((BaddieState*)st)->hitCounter)
+    ((EnemyState*)st)->userData1 = base[r];
+    ((EnemyState*)st)->flags2E8 |= 0x8;
+    if (sub > (int)((EnemyState*)st)->current)
     {
-        ((BaddieState*)st)->hitCounter = 0;
+        ((EnemyState*)st)->current = 0;
     }
     else
     {
-        ((BaddieState*)st)->hitCounter = (u16)(((BaddieState*)st)->hitCounter - sub);
+        ((EnemyState*)st)->current = (u16)(((EnemyState*)st)->current - sub);
     }
-    if (((BaddieState*)st)->hitCounter == 0)
+    if (((EnemyState*)st)->current == 0)
     {
         Sfx_PlayFromObject(obj, SFXTRIG_baddie_eggsnatch_carry2);
     }
@@ -6702,35 +6698,35 @@ void snowworm_update(GameObject* obj, u8* state)
         ObjHits_EnableObject(obj);
     }
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0 &&
-        ((BaddieState*)state)->userData1 <= 1)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0 &&
+        ((EnemyState*)state)->userData1 <= 1)
     {
         if (((FCVars*)state)->turnDelta != 0 || (int)randomGetRange(0, 0x14) < 10)
         {
-            ((BaddieState*)state)->userData1 = 1;
+            ((EnemyState*)state)->userData1 = 1;
         }
         else
         {
-            ((BaddieState*)state)->userData1 = 7;
+            ((EnemyState*)state)->userData1 = 7;
         }
-        ((BaddieState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
+        ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
     }
 
-    if ((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        *(char*)&((BaddieState*)state)->userData1 += 1;
-        if (((BaddieState*)state)->userData1 > gSnowwormSeqIndexMax[((FCVars*)state)->turnDelta])
+        *(char*)&((EnemyState*)state)->userData1 += 1;
+        if (((EnemyState*)state)->userData1 > gSnowwormSeqIndexMax[((FCVars*)state)->turnDelta])
         {
-            ((BaddieState*)state)->userData1 = gSnowwormSeqIndexReset[((FCVars*)state)->turnDelta];
+            ((EnemyState*)state)->userData1 = gSnowwormSeqIndexReset[((FCVars*)state)->turnDelta];
         }
         if (((FCVars*)state)->turnOctant < 4)
         {
-            i = ((BaddieState*)state)->userData1 * 0xc;
+            i = ((EnemyState*)state)->userData1 * 0xc;
             baddieSetMove(obj, (int)state, (tbl + i)[8], *(f32*)((int)tbl + i), 0, 0);
         }
         else
         {
-            i = ((BaddieState*)state)->userData1 * 0xc;
+            i = ((EnemyState*)state)->userData1 * 0xc;
             baddieSetMove(obj, (int)state, (tbl + i)[9], *(f32*)((int)tbl + i), 0, 0);
         }
         if (obj->anim.currentMove == 9)
@@ -6739,20 +6735,20 @@ void snowworm_update(GameObject* obj, u8* state)
         }
         else if (obj->anim.currentMove == 1)
         {
-            int r = randomGetRange(0, ((BaddieState*)state)->userData2);
+            int r = randomGetRange(0, ((EnemyState*)state)->userData2);
             s16 a = randomGetRange(-0x8000, 0x7fff);
             f32 angle = (gCrawlerPi * a) / gCrawlerHalfCircleBams;
             obj->anim.localPosX =
                 r * mathSinf(angle) + ((ObjPlacement*)obj->anim.placementData)->posX;
             obj->anim.localPosZ =
                 r * mathCosf(angle) + ((ObjPlacement*)obj->anim.placementData)->posZ;
-            baddieTurnTowardPoint(obj, (int)state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
-                        ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ, 1, 0);
+            baddieTurnTowardPoint(obj, (int)state, ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
+                        ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ, 1, 0);
         }
     }
 
-    baddieTurnTowardPoint(obj, (int)state, ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosX,
-                ((GameObject*)((BaddieState*)state)->trackedObj)->anim.localPosZ,
+    baddieTurnTowardPoint(obj, (int)state, ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
+                ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ,
                 gSnowwormTurnRates[((FCVars*)state)->turnDelta], 0);
     crawler_playReactionEffects(obj, (int*)state);
 }
@@ -6761,21 +6757,21 @@ void snowworm_applyReactionState(GameObject* obj, int* st)
 {
     u8* t1 = *(u8**)((char*)gCrawlerReactionTables + ((FCVars*)st)->turnDelta * 8);
     *((u8*)obj + 0xaf) = (u8)(*((u8*)obj + 0xaf) | 0x8);
-    if ((((BaddieState*)st)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
+    if ((((EnemyState*)st)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         s16 a = obj->anim.currentMove;
         if (a == 7)
         {
-            ((BaddieState*)st)->userData1 = 1;
+            ((EnemyState*)st)->userData1 = 1;
         }
         else if (a != 0)
         {
-            ((BaddieState*)st)->userData1 = 0;
+            ((EnemyState*)st)->userData1 = 0;
         }
         {
             u8* bbase = t1;
             f32* fbase = (f32*)t1;
-            u32 idx2 = ((BaddieState*)st)->userData1;
+            u32 idx2 = ((EnemyState*)st)->userData1;
             u32 off = idx2 * 0xc;
             baddieSetMove(obj, (int)st, bbase[off + 8], *(f32*)((char*)fbase + off), 0, 0);
         }
@@ -6785,25 +6781,23 @@ void snowworm_applyReactionState(GameObject* obj, int* st)
 
 void snowworm_init(GameObject* obj, int* st)
 {
-    ((BaddieState*)st)->speedScale = 60.0f;
-    /* 0x33b: crawler variant selector (shares slot with BaddieState.userData2);
-     * kept raw - single site, member spelling off u8* st is byte-risky. */
-    *((u8*)st + 0x33b) = ((BaddieState*)st)->unk2A8;
-    ((BaddieState*)st)->unk2A8 = 160.0f;
-    ((BaddieState*)st)->unk2E4 = 0x42003;
-    ((BaddieState*)st)->unk308 = 0.01f;
-    ((BaddieState*)st)->animDeltaScale = 0.006f;
-    ((BaddieState*)st)->unk304 = 0.95f;
+    ((EnemyState*)st)->sightRange = 60.0f;
+    ((EnemyState*)st)->userData2 = ((EnemyState*)st)->aggroRange;
+    ((EnemyState*)st)->aggroRange = 160.0f;
+    ((EnemyState*)st)->flags2E4 = 0x42003;
+    ((EnemyState*)st)->animPlaySpeed = 0.01f;
+    ((EnemyState*)st)->gravity = 0.006f;
+    ((EnemyState*)st)->drag = 0.95f;
     *((u8*)st + 0x320) = 0;
     {
         f32 d = 1.0f;
-        *(f32*)&((BaddieState*)st)->eventFlags = d;
+        ((EnemyState*)st)->moveSpeedScale0 = d;
         *((u8*)st + 0x321) = 0xa;
-        ((BaddieState*)st)->unk318 = d;
+        ((EnemyState*)st)->moveSpeedScale1 = d;
         *((u8*)st + 0x322) = 7;
-        ((BaddieState*)st)->unk31C = d;
+        ((EnemyState*)st)->moveSpeedScale2 = d;
     }
-    ((BaddieState*)st)->userData1 = 1;
+    ((EnemyState*)st)->userData1 = 1;
     ((FCVars*)st)->turnDelta = (u16)(obj->anim.romDefNo == SNOWWORM_SEQID_BABY);
 }
 
@@ -6815,14 +6809,14 @@ void whirlpool_updateWhileFrozen(int wpad0, u8* wpad1, int wpad2, int wpad3, int
 #define ICEBADDIE_OBJGROUP_SECONDARY 80
 #define ICEBADDIE_HIT_VOLUME_SLOT    10
 
-void iceBaddie_enterWhirlpoolGroup(GameObject* obj, GroundBaddieState* state)
+void iceBaddie_enterWhirlpoolGroup(GameObject* obj, EnemyState* state)
 {
     ObjHitsPriorityState* hitState;
 
-    if (state->baddie.userData2 == 0)
+    if (state->userData2 == 0)
     {
         ObjGroup_AddObject((int)obj, ICEBADDIE_OBJGROUP_SECONDARY);
-        state->baddie.userData2 = 1;
+        state->userData2 = 1;
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ICEBADDIE_HIT_VOLUME_SLOT, 1, 0);
     hitState = (ObjHitsPriorityState*)(obj)->anim.hitReactState;
@@ -6830,35 +6824,35 @@ void iceBaddie_enterWhirlpoolGroup(GameObject* obj, GroundBaddieState* state)
     (obj)->anim.rotX -= 256;
 }
 
-void iceBaddie_leaveWhirlpoolGroup(GameObject* obj, GroundBaddieState* state)
+void iceBaddie_leaveWhirlpoolGroup(GameObject* obj, EnemyState* state)
 {
-    if (state->baddie.userData2 != 0)
+    if (state->userData2 != 0)
     {
         ObjGroup_RemoveObject((int)obj, ICEBADDIE_OBJGROUP_SECONDARY);
-        state->baddie.userData2 = 0;
+        state->userData2 = 0;
     }
     *(u16*)obj = (float)(int)(obj)->anim.rotX - 256.0f * timeDelta;
 }
 
-void baddie_initWhirlpoolState(int* obj, GroundBaddieState* state)
+void baddie_initWhirlpoolState(int* obj, EnemyState* state)
 {
     f32 fz;
-    state->baddie.speedScale = 60.0f;
-    *(char*)&state->baddie.userData2 = state->baddie.unk2A8;
-    state->baddie.unk2A8 = 160.0f;
-    state->baddie.unk2E4 = 0x42001;
-    state->baddie.unk308 = 0.01f;
-    state->baddie.animDeltaScale = 0.006f;
-    state->baddie.unk304 = 0.95f;
-    state->baddie.unk320 = 0;
+    state->sightRange = 60.0f;
+    *(char*)&state->userData2 = state->aggroRange;
+    state->aggroRange = 160.0f;
+    state->flags2E4 = 0x42001;
+    state->animPlaySpeed = 0.01f;
+    state->gravity = 0.006f;
+    state->drag = 0.95f;
+    state->moveId0 = 0;
     fz = 1.0f;
-    *(f32*)&state->baddie.eventFlags = fz;
-    state->baddie.unk321 = 5;
-    state->baddie.unk318 = fz;
-    state->baddie.unk322 = 7;
-    state->baddie.unk31C = fz;
-    state->baddie.userData1 = 1;
-    state->baddie.userData2 = 0;
+    state->moveSpeedScale0 = fz;
+    state->moveId1 = 5;
+    state->moveSpeedScale1 = fz;
+    state->moveId2 = 7;
+    state->moveSpeedScale2 = fz;
+    state->userData1 = 1;
+    state->userData2 = 0;
     ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel((GameObject*)obj), renderWhirlpool);
 }
 
