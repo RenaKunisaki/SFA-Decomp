@@ -2298,7 +2298,7 @@ static void dbstealerworm_applyFallGravity(GameObject* obj, void* state)
     (*gBaddieControlInterface)->updateGravity(obj, state, 0.17f, -1);
 }
 
-void dbstealerworm_update(u8* objp)
+void dbstealerworm_update(GameObject* objp)
 {
     DbWormEffectSpawnWork* st;
     char* tbl;
@@ -2319,7 +2319,7 @@ void dbstealerworm_update(u8* objp)
         f32 v[3];
     } stk;
 
-    obj = (GameObject*)objp;
+    obj = objp;
     st = &gDbWormEffectSpawnWork;
     tbl = (char*)gDbStealerwormScriptStealEggThrowToWorm;
     blob = *(int*)&obj->extra;

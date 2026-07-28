@@ -47,7 +47,7 @@ STATIC_ASSERT(offsetof(ShStaffState, hazeClimbT) == 0x6C);
 STATIC_ASSERT(offsetof(ShStaffState, fizzSfxTimer) == 0x70);
 
 int sh_staff_getExtraSize(void);
-void sh_staff_free(int* obj, int freeArg);
+void sh_staff_free(GameObject* obj, int freeArg);
 void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 void sh_staff_deactivate(GameObject* obj, ShStaffState* state, int clearChildren);

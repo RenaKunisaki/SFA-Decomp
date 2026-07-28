@@ -98,8 +98,8 @@ int sh_staff_getExtraSize(void) {
     return sizeof(ShStaffState);
 }
 
-void sh_staff_free(int* obj, int freeArg) {
-    int* state = ((GameObject*)obj)->extra;
+void sh_staff_free(GameObject* obj, int freeArg) {
+    int* state = obj->extra;
     int* child;
     int i;
 

@@ -96,7 +96,7 @@ void WM_ObjCreator_free(void);
 void WM_ObjCreator_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
 void WM_ObjCreator_hitDetect(void);
 void WM_ObjCreator_update(GameObject* obj);
-void WM_ObjCreator_init(int* obj, s8* def);
+void WM_ObjCreator_init(GameObject* obj, s8* def);
 void WM_ObjCreator_release(void);
 void WM_ObjCreator_initialise(void);
 
@@ -396,11 +396,11 @@ void WM_ObjCreator_update(GameObject* obj)
     }
 }
 
-void WM_ObjCreator_init(int* obj, s8* def)
+void WM_ObjCreator_init(GameObject* obj, s8* def)
 {
     WmObjCreatorPlacement* placement = (WmObjCreatorPlacement*)def;
-    WmObjCreatorState* state = ((GameObject*)obj)->extra;
-    ((GameObject*)obj)->anim.rotX = (s16)((s32)placement->yaw << 8);
+    WmObjCreatorState* state = obj->extra;
+    obj->anim.rotX = (s16)((s32)placement->yaw << 8);
     state->gameBit = placement->gameBit;
     state->spawnPeriod = placement->spawnPeriod;
     state->spawnTimer = state->spawnPeriod;
