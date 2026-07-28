@@ -2986,7 +2986,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
         {
             u32 w;
             int pos = bs.pos;
-            u8* p = bs.data + (pos >> 3);
+            u8* p = (u8*)((pos >> 3) + (int)bs.data);
             w = p[0];
             w |= p[1] << 8;
             w |= p[2] << 16;
@@ -3011,7 +3011,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
                 {
                     u32 w;
                     int pos = bs.pos;
-                    u8* p = bs.data + (pos >> 3);
+                    u8* p = (u8*)((pos >> 3) + (int)bs.data);
                     w = p[0];
                     w |= p[1] << 8;
                     w |= p[2] << 16;
@@ -3028,7 +3028,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
                 u8* dl;
                 u32 w;
                 int pos = bs.pos;
-                u8* p = bs.data + (pos >> 3);
+                u8* p = (u8*)((pos >> 3) + (int)bs.data);
                 w = p[0];
                 w |= p[1] << 8;
                 w |= p[2] << 16;
