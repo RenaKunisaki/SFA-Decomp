@@ -2569,7 +2569,7 @@ void objRenderShadow2(int* obj, int* obj2, u8* m, int p4)
         {
             u32 w;
             int pos = bs.pos;
-            u8* p = bs.data + (pos >> 3);
+            u8* p = (u8*)((pos >> 3) + (int)bs.data);
             w = p[0];
             w |= p[1] << 8;
             w |= p[2] << 16;
@@ -2587,7 +2587,7 @@ void objRenderShadow2(int* obj, int* obj2, u8* m, int p4)
             {
                 u32 w;
                 int pos = bs.pos;
-                u8* p = bs.data + (pos >> 3);
+                u8* p = (u8*)((pos >> 3) + (int)bs.data);
                 w = p[0];
                 w |= p[1] << 8;
                 w |= p[2] << 16;
