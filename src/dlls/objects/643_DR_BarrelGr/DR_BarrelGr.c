@@ -82,7 +82,7 @@ void DR_BarrelGr_render(GameObject* obj, int p2, int p3, int p4, int p5)
     f32 pathPoint[3];
     DrBarrelGrRenderParams params;
 
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E6CA0);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     ObjPath_GetPointWorldPosition(obj, 0, &state->grabX, &state->grabY, &state->grabZ, 0);
     params.a = 0;
     params.c = 0;
@@ -91,13 +91,13 @@ void DR_BarrelGr_render(GameObject* obj, int p2, int p3, int p4, int p5)
     vp2 = &pathPoint[2];
     vp1 = &pathPoint[1];
     vp = &pathPoint[0];
-    dval = lbl_803E6CA4;
+    dval = 0.0f;
     for (; i < 4; i++)
     {
         ObjPath_GetPointWorldPosition(obj, i + 1, vp, vp1, vp2, 0);
         PSVECSubtract((Vec*)vp, (const Vec*)&obj->anim.localPosX, (Vec*)vp);
         params.d = dval;
-        objfx_spawnLightPulse(obj, lbl_803E6CA8, 3, 0, 0, lbl_803E6CAC, &params);
+        objfx_spawnLightPulse(obj, 0.3f, 3, 0, 0, 0.15f, &params);
     }
     objRef = state->heldBarrel;
     if ((u32)objRef != 0)
@@ -113,7 +113,7 @@ void DR_BarrelGr_render(GameObject* obj, int p2, int p3, int p4, int p5)
             state->heldBarrel->anim.localPosX = state->grabX;
             state->heldBarrel->anim.localPosY = state->grabY;
             state->heldBarrel->anim.localPosZ = state->grabZ;
-            objRenderModelAndHitVolumes(state->heldBarrel, p2, p3, p4, p5, lbl_803E6CA0);
+            objRenderModelAndHitVolumes(state->heldBarrel, p2, p3, p4, p5, 1.0f);
         }
     }
 }
@@ -169,11 +169,11 @@ void DR_BarrelGr_update(GameObject* obj)
             nearest = ObjGroup_FindNearestObject(GUNPOWDER_BARREL_OBJECT_GROUP, obj, NULL);
             if ((u32)nearest != 0 &&
                 Vec_xzDistance(&obj->anim.worldPosX, &((GameObject*)nearest)->anim.worldPosX) <
-                    gDrBarrelGenGrabRange &&
+                    20.0f &&
                 ((GameObject*)nearest)->anim.localPosY < obj->anim.localPosY)
             {
                 traceTarget[0] = ((GameObject*)nearest)->anim.localPosX;
-                traceTarget[1] = lbl_803E6CB4 + ((GameObject*)nearest)->anim.localPosY;
+                traceTarget[1] = 10.0f + ((GameObject*)nearest)->anim.localPosY;
                 traceTarget[2] = ((GameObject*)nearest)->anim.localPosZ;
                 if (voxmaps_traceWorldLine((void*)&obj->anim.localPosX, traceTarget) != 0 &&
                     gunpowderBarrel_canBeGrabbed((GameObject*)nearest) != 0)
@@ -199,7 +199,7 @@ void DR_BarrelGr_update(GameObject* obj)
             break;
         }
         if (Vec_xzDistance(&obj->anim.worldPosX, &state->heldBarrel->anim.worldPosX) >
-            gDrBarrelGenGrabRange)
+            20.0f)
         {
             newMode = state->prevMode;
             flags->bit80 = 0;
@@ -207,27 +207,30 @@ void DR_BarrelGr_update(GameObject* obj)
             break;
         }
         PSVECSubtract((const Vec*)&state->grabX, (const Vec*)&state->heldBarrel->anim.localPosX, (Vec*)throwDir);
-        if (throwDir[0] != lbl_803E6CA4 || throwDir[1] != lbl_803E6CA4 || throwDir[2] != lbl_803E6CA4)
         {
-            PSVECNormalize((const Vec*)throwDir, (Vec*)throwDir);
+            f32 zero = 0.0f;
+            if (throwDir[0] != zero || throwDir[1] != zero || throwDir[2] != zero)
+            {
+                PSVECNormalize((const Vec*)throwDir, (Vec*)throwDir);
+            }
         }
         PSVECScale((const Vec*)throwDir, (Vec*)throwDir, lbl_803DC3B0);
         gunpowderBarrel_addThrowVelocity(state->heldBarrel, throwDir);
-        if (PSVECDistance((const Vec*)&state->grabX, (const Vec*)&state->heldBarrel->anim.localPosX) < lbl_803E6CA0 ||
+        if (PSVECDistance((const Vec*)&state->grabX, (const Vec*)&state->heldBarrel->anim.localPosX) < 1.0f ||
             state->heldBarrel->anim.localPosY > state->grabY)
         {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_jbike_boost);
             gunpowderBarrel_setHeldState(state->heldBarrel);
             newMode = state->prevMode;
             flags->bit80 = 1;
-            ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E6CA4, 0);
+            ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
         }
         break;
     case DRBARRELGR_MODE_CARRY:
     {
-        f32 spd = gDrBarrelGenCarrySpeedScale * (f32)state->carrySpeed;
+        f32 spd = 0.1f * (f32)state->carrySpeed;
         int r = Obj_UpdateRomCurveFollowVelocity(obj, &state->curve, spd * timeDelta,
-                                                 lbl_803E6CBC, lbl_803E6CB4, 1);
+                                                 200.0f, 10.0f, 1);
         objMove(obj, obj->anim.velocityX, obj->anim.velocityY, obj->anim.velocityZ);
         if (r != 0)
         {
@@ -235,7 +238,7 @@ void DR_BarrelGr_update(GameObject* obj)
             storeZeroToFloatParam(&state->timer);
             s16toFloat(&state->timer, setup->range);
             {
-                f32 z = lbl_803E6CA4;
+                f32 z = 0.0f;
                 obj->anim.velocityX = z;
                 obj->anim.velocityY = z;
                 obj->anim.velocityZ = z;
@@ -246,7 +249,8 @@ void DR_BarrelGr_update(GameObject* obj)
     case DRBARRELGR_MODE_RAMP_SPEED:
         if (state->carrySpeed == setup->speed)
         {
-            state->carrySpeed = (f32)state->carrySpeed * lbl_803E6CA8;
+            f32 slowdown = 0.3f;
+            state->carrySpeed = (f32)state->carrySpeed * slowdown;
         }
         else
         {
@@ -270,14 +274,14 @@ void DR_BarrelGr_update(GameObject* obj)
         {
             gunpowderBarrel_clearHeldState(state->heldBarrel);
             flags->bit80 = 0;
-            ObjAnim_SetCurrentMove((int)obj, 0, lbl_803E6CA4, 0);
+            ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
         }
         state->heldBarrel = NULL;
         newMode = state->prevMode;
         break;
     }
 
-    ObjAnim_AdvanceCurrentMove((int)obj, lbl_803E6CC0, timeDelta, 0);
+    ObjAnim_AdvanceCurrentMove((int)obj, 0.05f, timeDelta, 0);
     if (newMode != -1 && newMode != state->mode)
     {
         state->prevMode = state->mode;
@@ -315,7 +319,7 @@ void DR_BarrelGr_init(GameObject* obj, DrbarrelgrPlacement* setup)
     state->heldBarrel = NULL;
     state->flags.bit80 = 0;
     state->carrySpeed = placement->speed;
-    state->unk10 = lbl_803E6CA4;
+    state->unk10 = 0.0f;
     state->prevMode = -3;
     state->flags.bit40 = 0;
     storeZeroToFloatParam(&state->timer);

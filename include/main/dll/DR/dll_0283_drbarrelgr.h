@@ -6,16 +6,6 @@
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 
-extern f32 lbl_803E6CA0;
-extern f32 lbl_803E6CA4;
-extern f32 lbl_803E6CA8;
-extern f32 lbl_803E6CAC;
-extern f32 gDrBarrelGenGrabRange;
-extern f32 lbl_803E6CB4;
-extern f32 gDrBarrelGenCarrySpeedScale;
-extern f32 lbl_803E6CBC;
-extern f32 lbl_803E6CC0;
-extern f32 lbl_803E6CD0;
 extern f32 lbl_803DC3B0;
 extern f32 gDrBarrelGenGrabYOffset;
 
