@@ -15,7 +15,6 @@ extern f32 lbl_803E6CB4;
 extern f32 gDrBarrelGenCarrySpeedScale;
 extern f32 lbl_803E6CBC;
 extern f32 lbl_803E6CC0;
-extern f32 lbl_803E6CD0;
 extern f32 lbl_803DC3B0;
 extern f32 gDrBarrelGenGrabYOffset;
 

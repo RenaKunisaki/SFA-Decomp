@@ -91,6 +91,4 @@ void DR_Creator_init(GameObject* obj, DrcreatorPlacement* placement);
 void DR_Creator_release(void);
 void DR_Creator_initialise(void);
 
-extern const f32 lbl_803E69A8;
-
 #endif /* MAIN_DLL_DR_DLL_0265_DRCREATOR_H_ */
