@@ -3488,12 +3488,14 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
     int result;
     ExpgfxSourceObject** poolSourceIds[1];
     int poolIndex;
+    u8* flagWalk;
     result = EXPGFX_SOURCE_FRAME_STATE_NONE;
     lbl_803DD253 = 0;
     poolIndex = 0;
     poolSourceIds[0] = gExpgfxTrackedPoolSourceIds;
+    flagWalk = gExpgfxStaticPoolFrameFlags;
 
-    for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds[0]++, poolIndex++)
+    for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds[0]++, flagWalk++, poolIndex++)
     {
         if ((((ExpgfxSourceObject*)sourceObject)->objType == EXPGFX_SOURCE_OBJTYPE_MATCH_ALL) ||
             (*poolSourceIds[0] == sourceObject))
@@ -3504,7 +3506,7 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
             frameBit = 1 << (signedPoolIndex >> 1);
             if ((frameBit & gExpgfxTrackedSourceFrameMasks[signedPoolIndex & 1]) != 0)
             {
-                gExpgfxStaticPoolFrameFlags[poolIndex] = EXPGFX_SOURCE_FRAME_STATE_B;
+                *flagWalk = EXPGFX_SOURCE_FRAME_STATE_B;
                 if ((s8)result == EXPGFX_SOURCE_FRAME_STATE_A)
                 {
                     result = EXPGFX_SOURCE_FRAME_STATE_MIXED;
@@ -3516,7 +3518,7 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
             }
             else
             {
-                gExpgfxStaticPoolFrameFlags[poolIndex] = EXPGFX_SOURCE_FRAME_STATE_A;
+                *flagWalk = EXPGFX_SOURCE_FRAME_STATE_A;
                 if ((s8)result == EXPGFX_SOURCE_FRAME_STATE_B)
                 {
                     result = EXPGFX_SOURCE_FRAME_STATE_MIXED;
@@ -3529,7 +3531,7 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
         }
         else
         {
-            gExpgfxStaticPoolFrameFlags[poolIndex] = EXPGFX_SOURCE_FRAME_STATE_NONE;
+            *flagWalk = EXPGFX_SOURCE_FRAME_STATE_NONE;
         }
     }
 
