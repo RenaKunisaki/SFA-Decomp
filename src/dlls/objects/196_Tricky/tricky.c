@@ -2059,6 +2059,8 @@ char lbl_8031D478[] = {
 int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
 {
     int tp;
+    int wref;
+    int sref;
     f32* target;
     char* strs = lbl_8031D2E8;
     u8 moved;
@@ -2070,6 +2072,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     s16 link;
     u32 prod;
     int dir;
+    int tref;
     int i;
     ObjfsaRomCurveDef* node;
     u8 slot;
@@ -2160,9 +2163,6 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     trickyDebugPrint(strs + 0x268, velBefore, state->speed);
     if (targetWg == state->activeWalkGroup)
     {
-        int wref;
-        int sref;
-        int tref;
 
         state->stateFlags = state->stateFlags | 0x400;
         i = 0;
