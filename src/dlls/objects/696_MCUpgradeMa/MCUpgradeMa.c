@@ -52,7 +52,7 @@ void mcupgradema_init(GameObject* obj)
     obj->animEventCallback = mcupgradema_SeqFn;
 }
 
-int mcstaffeffe_SeqFn(McStaffEffectObject* staffEffect, int unused, ObjAnimUpdateState* animUpdate)
+int mcstaffeffe_SeqFn(GameObject* staffEffect, int unused, ObjAnimUpdateState* animUpdate)
 {
     GameObject* player;
     GameObject* staff;
@@ -76,7 +76,7 @@ int mcstaffeffe_SeqFn(McStaffEffectObject* staffEffect, int unused, ObjAnimUpdat
             staffSetGlow(staff, 5, 1);
             break;
         case MCSTAFFEFFECT_EVENT_RESTORE_GLOW:
-            staffSetGlow(staff, 5, (u8)staffEffect->staffGlowLevel);
+            staffSetGlow(staff, 5, (u8)staffEffect->userData2);
             break;
         case MCSTAFFEFFECT_EVENT_CLEAR_GLOW:
             staffSetGlow(staff, 5, 0);

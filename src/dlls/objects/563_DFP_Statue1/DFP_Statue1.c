@@ -75,12 +75,12 @@ u32 sfxplayer_updateState(int obj, u32 unused, ObjAnimUpdateState* animUpdate)
     return 0;
 }
 
-void dfpstatue1_updateState(DfpStatue1Object* obj)
+void dfpstatue1_updateState(GameObject* obj)
 {
     DfpStatue1State* state;
     s16 loopBit;
 
-    state = obj->state;
+    state = obj->extra;
     loopBit = mainGetBit(state->loopSfxId);
     if ((state->loopActive == 0) && (loopBit != 0) && (mainGetBit(0xedf) != 0))
     {
@@ -141,18 +141,18 @@ void DFP_Statue1_hitDetect(void)
 {
 }
 
-void DFP_Statue1_update(DfpStatue1Object* obj)
+void DFP_Statue1_update(GameObject* obj)
 {
     dfpstatue1_updateState(obj);
 }
 
-void DFP_Statue1_init(DfpStatue1Object* obj, DfpStatue1MapData* mapData)
+void DFP_Statue1_init(GameObject* obj, DfpStatue1MapData* mapData)
 {
-    DfpStatue1State* state = obj->state;
+    DfpStatue1State* state = obj->extra;
     s16 yaw = (s16)(mapData->yawByte << 8);
 
-    obj->yaw = yaw;
-    obj->updateState = sfxplayer_updateState;
+    obj->anim.rotX = yaw;
+    obj->animEventCallback = sfxplayer_updateState;
     state->effectPairCount = mapData->effectPairCount;
     state->triggerSfxId = mapData->triggerSfxId;
     state->loopSfxId = mapData->loopSfxId;

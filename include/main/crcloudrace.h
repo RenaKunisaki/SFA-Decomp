@@ -56,29 +56,11 @@ typedef struct CrCloudRaceState {
   u8 effect[4];
 } CrCloudRaceState;
 
-typedef struct CrCloudRaceObject {
-  ObjAnimComponent anim;
-  u16 objectFlags;
-  u8 unkB2[0xB8 - 0xB2];
-  CrCloudRaceState *state;
-  int (*animEventCallback)(int obj, int unused, ObjAnimUpdateState *animUpdate);
-  u8 unkC0[0x34];
-  int userData1;
-  int userData2;
-} CrCloudRaceObject;
-
 STATIC_ASSERT(sizeof(CrCloudRaceState) == 0x10);
 STATIC_ASSERT(offsetof(CrCloudRaceState, timer) == 0x04);
 STATIC_ASSERT(offsetof(CrCloudRaceState, phase) == 0x08);
 STATIC_ASSERT(offsetof(CrCloudRaceState, flags) == 0x09);
 STATIC_ASSERT(offsetof(CrCloudRaceState, effect) == 0x0C);
-
-STATIC_ASSERT(offsetof(CrCloudRaceObject, anim) == 0x00);
-STATIC_ASSERT(offsetof(CrCloudRaceObject, objectFlags) == 0xB0);
-STATIC_ASSERT(offsetof(CrCloudRaceObject, state) == 0xB8);
-STATIC_ASSERT(offsetof(CrCloudRaceObject, animEventCallback) == 0xBC);
-STATIC_ASSERT(offsetof(CrCloudRaceObject, userData1) == 0xF4);
-STATIC_ASSERT(offsetof(CrCloudRaceObject, userData2) == 0xF8);
 
 extern ObjectDescriptor gCrCloudRaceObjDescriptor;
 
@@ -88,8 +70,8 @@ void crcloudrace_free(void);
 void crcloudrace_render(u32 param_1,u32 param_2,u32 param_3,
                         u32 param_4,u32 param_5,char visible);
 void crcloudrace_hitDetect(void);
-void crcloudrace_update(CrCloudRaceObject *obj);
-void crcloudrace_init(CrCloudRaceObject *obj);
+void crcloudrace_update(GameObject *obj);
+void crcloudrace_init(GameObject *obj);
 int crcloudrace_completionCallback(int obj, int unused, ObjAnimUpdateState *animUpdate);
 void crcloudrace_release(void);
 void crcloudrace_initialise(void);

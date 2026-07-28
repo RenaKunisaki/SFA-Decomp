@@ -14,39 +14,39 @@
 #include "main/dll/mcstaffeffe_state.h"
 #include "dlls/object_descriptor.h"
 
-void mcstaffeffe_render(McStaffEffectObject* staffEffect)
+void mcstaffeffe_render(GameObject* staffEffect)
 {
-    objfx_spawnPulseBurst(staffEffect, staffEffect->anim.rootMotionScale, (u8)staffEffect->particleType, 0, 0, NULL);
+    objfx_spawnPulseBurst(staffEffect, staffEffect->anim.rootMotionScale, (u8)staffEffect->userData1, 0, 0, NULL);
 }
 
 void mcstaffeffe_update(void)
 {
 }
 
-void mcstaffeffe_init(McStaffEffectObject* staffEffect, McStaffEffectSetup* placement)
+void mcstaffeffe_init(GameObject* staffEffect, McStaffEffectSetup* placement)
 {
-    ((GameObject*)staffEffect)->animEventCallback = mcstaffeffe_SeqFn;
+    staffEffect->animEventCallback = mcstaffeffe_SeqFn;
     switch (placement->effectProfile)
     {
     case 0:
-        staffEffect->particleType = 4;
-        staffEffect->staffGlowLevel = 1;
+        staffEffect->userData1 = 4;
+        staffEffect->userData2 = 1;
         break;
     case 1:
-        staffEffect->particleType = 5;
-        staffEffect->staffGlowLevel = 5;
+        staffEffect->userData1 = 5;
+        staffEffect->userData2 = 5;
         break;
     case 2:
-        staffEffect->particleType = 6;
-        staffEffect->staffGlowLevel = 2;
+        staffEffect->userData1 = 6;
+        staffEffect->userData2 = 2;
         break;
     case 3:
-        staffEffect->particleType = 0xb;
-        staffEffect->staffGlowLevel = 3;
+        staffEffect->userData1 = 0xb;
+        staffEffect->userData2 = 3;
         break;
     default:
-        staffEffect->particleType = 4;
-        staffEffect->staffGlowLevel = 1;
+        staffEffect->userData1 = 4;
+        staffEffect->userData2 = 1;
         break;
     }
 }

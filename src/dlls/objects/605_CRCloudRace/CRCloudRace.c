@@ -34,7 +34,7 @@ ObjectDescriptor gCrCloudRaceObjDescriptor = {
     crcloudrace_getExtraSize,
 };
 
-void crcloudrace_updateCompletionState(CrCloudRaceObject* obj, CrCloudRaceState* state)
+void crcloudrace_updateCompletionState(GameObject* obj, CrCloudRaceState* state)
 {
     f32 dist;
     GameObject* player;
@@ -69,12 +69,12 @@ void crcloudrace_updateCompletionState(CrCloudRaceObject* obj, CrCloudRaceState*
     }
 }
 
-void crcloudrace_updateRaceState(CrCloudRaceObject* obj)
+void crcloudrace_updateRaceState(GameObject* obj)
 {
     CrCloudRaceState* inner;
     GameObject* player;
 
-    inner = obj->state;
+    inner = obj->extra;
     player = Obj_GetPlayerObject();
     switch (inner->phase)
     {
@@ -133,7 +133,7 @@ void crcloudrace_updateRaceState(CrCloudRaceObject* obj)
 
 int crcloudrace_completionCallback(int obj, int unused, ObjAnimUpdateState* animUpdate)
 {
-    CrCloudRaceState* state = ((CrCloudRaceObject*)obj)->state;
+    CrCloudRaceState* state = ((GameObject*)obj)->extra;
     int i;
 
     state->flags |= CRCLOUDRACE_STATE_FLAG_COMPLETION_CALLBACK;
@@ -186,19 +186,19 @@ void crcloudrace_hitDetect(void)
     return;
 }
 
-void crcloudrace_update(CrCloudRaceObject* obj)
+void crcloudrace_update(GameObject* obj)
 {
     u32 eventActive;
     CrCloudRaceState* state;
 
-    state = obj->state;
+    state = obj->extra;
     if (obj->userData2 == 0)
     {
         eventActive = mainGetBit(CRCLOUDRACE_GAMEBIT_EFFECT_CLEAR);
         if (eventActive != 0)
         {
-            getEnvfxActImmediately((GameObject*)obj, (GameObject*)obj, CRCLOUDRACE_ENVFX_CLEAR_A, 0);
-            getEnvfxActImmediately((GameObject*)obj, (GameObject*)obj, CRCLOUDRACE_ENVFX_CLEAR_B, 0);
+            getEnvfxActImmediately(obj, obj, CRCLOUDRACE_ENVFX_CLEAR_A, 0);
+            getEnvfxActImmediately(obj, obj, CRCLOUDRACE_ENVFX_CLEAR_B, 0);
             mainSetBits(CRCLOUDRACE_GAMEBIT_EFFECT_CLEAR, 0);
             unlockLevel(0, 0, 1);
         }
@@ -213,11 +213,11 @@ void crcloudrace_update(CrCloudRaceObject* obj)
     return;
 }
 
-void crcloudrace_init(CrCloudRaceObject* obj)
+void crcloudrace_init(GameObject* obj)
 {
     CrCloudRaceState* state;
 
-    state = obj->state;
+    state = obj->extra;
     obj->animEventCallback = crcloudrace_completionCallback;
     state->phase = CRCLOUDRACE_PHASE_START;
     storeZeroToFloatParam(&state->timer);

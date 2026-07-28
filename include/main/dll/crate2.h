@@ -5,7 +5,7 @@
 #include "main/objseq.h"
 #include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"
-#include "main/objanim_internal.h"
+#include "game/objects/object.h"
 #include "main/objanim_update.h"
 
 typedef struct DfpStatue1State {
@@ -26,31 +26,12 @@ typedef struct DfpStatue1MapData {
   s16 loopSfxId;
 } DfpStatue1MapData;
 
-typedef struct DfpStatue1Object {
-  union {
-    ObjAnimComponent anim;
-    struct {
-      s16 yaw;
-      u8 pad02[0xB0 - 0x02];
-    };
-  };
-  u16 objectFlags;
-  u8 padB2[0xB8 - 0xB2];
-  DfpStatue1State *state;
-  u32 (*updateState)(int obj, u32 param_2, ObjAnimUpdateState *animUpdate);
-} DfpStatue1Object;
-
 STATIC_ASSERT(offsetof(DfpStatue1MapData, yawByte) == 0x18);
 STATIC_ASSERT(offsetof(DfpStatue1MapData, effectPairCount) == 0x19);
 STATIC_ASSERT(offsetof(DfpStatue1MapData, triggerSfxId) == 0x1E);
 STATIC_ASSERT(offsetof(DfpStatue1MapData, loopSfxId) == 0x20);
-STATIC_ASSERT(offsetof(DfpStatue1Object, anim) == 0x00);
-STATIC_ASSERT(offsetof(DfpStatue1Object, yaw) == offsetof(ObjAnimComponent, rotX));
-STATIC_ASSERT(offsetof(DfpStatue1Object, objectFlags) == 0xB0);
-STATIC_ASSERT(offsetof(DfpStatue1Object, state) == 0xB8);
-STATIC_ASSERT(offsetof(DfpStatue1Object, updateState) == 0xBC);
 
-void dfpstatue1_updateState(DfpStatue1Object *obj);
+void dfpstatue1_updateState(GameObject *obj);
 
 extern char sDfperchwitchInitNoLongerSupported[];
 extern ObjectDescriptor gDfpstatue1ObjDescriptor;
@@ -71,8 +52,8 @@ int DFP_Statue1_getObjectTypeId(void);
 void DFP_Statue1_free(void);
 void DFP_Statue1_render(void);
 void DFP_Statue1_hitDetect(void);
-void DFP_Statue1_update(DfpStatue1Object *obj);
-void DFP_Statue1_init(DfpStatue1Object *obj, DfpStatue1MapData *mapData);
+void DFP_Statue1_update(GameObject *obj);
+void DFP_Statue1_init(GameObject *obj, DfpStatue1MapData *mapData);
 void DFP_Statue1_release(void);
 void DFP_Statue1_initialise(void);
 

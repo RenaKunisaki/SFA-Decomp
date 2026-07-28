@@ -7,9 +7,9 @@
 
 extern ObjectDescriptor gMCStaffEffeObjDescriptor;
 
-int mcstaffeffe_SeqFn(McStaffEffectObject* obj, int unused, ObjAnimUpdateState* animUpdate);
-void mcstaffeffe_render(McStaffEffectObject* obj);
+int mcstaffeffe_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+void mcstaffeffe_render(GameObject* obj);
 void mcstaffeffe_update(void);
-void mcstaffeffe_init(McStaffEffectObject* obj, McStaffEffectSetup* setup);
+void mcstaffeffe_init(GameObject* obj, McStaffEffectSetup* setup);
 
 #endif
