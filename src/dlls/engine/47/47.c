@@ -12,6 +12,7 @@
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
 #include "main/obj_message.h"
+#include "main/obj_group.h"
 
 #define PAD_BUTTON_A              0x100
 #define CARRYABLE_MSG_PLAYER_GRAB 0x100008
@@ -287,7 +288,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
 void Carryable_init(GameObject* obj, void* state, int arg2)
 {
     CarryableUpdateHeldState* s = (CarryableUpdateHeldState*)state;
-    ObjGroup_AddObject(obj, CARRYABLE_OBJGROUP);
+    ObjGroup_AddObject((int)obj, CARRYABLE_OBJGROUP);
     s->unk2 = 0;
     s->carryState = CARRY_STATE_RESTING;
     s->pad4[0] = 0;

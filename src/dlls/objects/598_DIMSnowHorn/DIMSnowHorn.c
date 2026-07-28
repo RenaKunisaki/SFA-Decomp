@@ -45,6 +45,7 @@
 #include "main/objprint_character_api.h"
 #include "main/dll/dll_00C9_enemy.h"
 #include "main/pad.h"
+#include "main/obj_group.h"
 
 f32 gDIMSnowHorn1ModelMtx[16];
 int gDIMSnowHorn1StateHandlers[12];
@@ -1472,7 +1473,7 @@ void DIMSnowHorn1_init(GameObject* obj, int def, int spawnFlag)
     s8 idx;
     (obj)->anim.rotX = (s16)((s8) * (s8*)((char*)def + 0x18) << 8);
     (obj)->animEventCallback = (void*)DIMSnowHorn1_animEventCallback;
-    ObjGroup_AddObject(obj, DIMSNOWHORN1_OBJGROUP);
+    ObjGroup_AddObject((int)obj, DIMSNOWHORN1_OBJGROUP);
     inner = (obj)->extra;
     inner->mode = *(u8*)((char*)def + 0x19);
     inner->advanceCountThreshold = 5;

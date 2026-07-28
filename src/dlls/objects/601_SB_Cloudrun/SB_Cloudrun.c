@@ -49,6 +49,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/dll/ship_battle_api.h"
 #include "main/dll/dll_0255_snowbike.h"
+#include "main/vecmath.h"
 
 void SB_CloudRunner_onSeqFree(GameObject* obj)
 {
@@ -176,7 +177,7 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
     outVec[0] = 0.0f;
     outVec[1] = 38.0f;
     outVec[2] = -80.0f;
-    vecRotateZXY(&rotation, outVec);
+    vecRotateZXY((s16*)&rotation, outVec);
 
     setup = (WCPushBlockObjectSetup*)Obj_AllocObjectSetup(WCPUSHBLOCK_SPAWN_SETUP_SIZE,
                                                           WCPUSHBLOCK_SPAWN_OBJECT_ID);
@@ -202,7 +203,7 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
     outVec[0] = 0.0f;
     outVec[1] = 0.0f;
     outVec[2] = -16.0f;
-    vecRotateZXY(&rotation, outVec);
+    vecRotateZXY((s16*)&rotation, outVec);
 
     block->velocityX = outVec[0];
     block->velocityY = outVec[1];
