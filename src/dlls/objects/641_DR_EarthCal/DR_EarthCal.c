@@ -4,6 +4,7 @@
 #include "main/dll/DR/dll_0281_drearthcal.h"
 #include "game/objects/object.h"
 #include "main/objfx.h"
+#include "main/objhits.h"
 #include "sys/objects.h"
 #include "main/obj_group.h"
 #include "main/obj_trigger.h"
@@ -72,11 +73,11 @@ void drearthcal_update(GameObject* obj)
     else
     {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-        if (0 < *(s8*)((int)obj->anim.proximityList + 0x10f))
-            for (i = 0; i < *(s8*)((int)obj->anim.proximityList + 0x10f); i++)
+        if (0 < obj->anim.hitboxTransformState->contactObjectCount)
+            for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++)
             {
                 {
-                    int elem = ((int*)(int)obj->anim.proximityList)[i + 0x40];
+                    int elem = obj->anim.hitboxTransformState->contactObjects[i];
                     if ((GameObject*)elem == player)
                     {
                         obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;

@@ -579,7 +579,7 @@ void OptionsScreen_render(int arg)
     if ((u8)alpha < 0x80)
     {
         f32 conv = (f32)((u8)alpha * 0x86);
-        titleScreenPositionElements(40.0f, -(conv * 0.0078125f - 254.0f));
+        titleScreenPositionElements(40.0f, 254.0f - conv * 0.0078125f);
         fade = 0;
     }
     else

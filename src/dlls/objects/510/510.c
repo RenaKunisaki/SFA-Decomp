@@ -6,6 +6,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEvent.h"
+#include "main/objhits.h"
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
@@ -28,19 +29,6 @@ typedef struct PressureswitchPlacement
     u8 pad2FB[0x300 - 0x2FB];
 } PressureswitchPlacement;
 
-/*
- * The contact list reached via GameObject+0x58 (ObjAnimComponent's pad58):
- * the objects currently resting on / hitting this object. Only the fields
- * this DLL reads are mapped; the engine struct is larger.
- */
-typedef struct PswContactList
-{
-    u8 pad00[0x100];
-    GameObject* objects[3]; /* 0x100: contacts; `count` of them are valid */
-    u8 pad10C[0x10F - 0x10C];
-    s8 count; /* 0x10F */
-} PswContactList;
-
 /* PressureSwitch_getExtraSize == 0x8. */
 typedef struct PressureSwitchState
 {
@@ -59,8 +47,8 @@ typedef struct PressureSwitchFlags
     u8 otherFlags : 6;
 } PressureSwitchFlags;
 
-/* Re-derefs the +0x58 list pointer per use. */
-#define PSW_CONTACT_LIST(obj) ((PswContactList*)*(char**)((obj) + 0x58))
+/* Re-derefs the +0x58 ObjAnimComponent.hitboxTransformState pointer per use. */
+#define PSW_CONTACT_LIST(obj) ((ObjHitboxTransformState*)*(char**)((obj) + 0x58))
 
 /* seqIds of objects this pad reacts to (compared against ent->anim.seqId). */
 #define PSWITCH_TRIGGER_SEQ_ID 0x6d
@@ -103,7 +91,7 @@ void PressureSwitch_update(int obj)
     PressureswitchPlacement* placement;
     GameObject* self;
     PressureSwitchState* state;
-    PswContactList* contacts;
+    ObjHitboxTransformState* contacts;
     s8 playerFar;
     int i;
     GameObject* player;
@@ -133,12 +121,12 @@ void PressureSwitch_update(int obj)
     }
     byteOff[0] = 0;
     ((PressureSwitchFlags*)&state->flags)->active = byteOff[0];
-    if (PSW_CONTACT_LIST(obj) != NULL && PSW_CONTACT_LIST(obj)->count > 0)
+    if (PSW_CONTACT_LIST(obj) != NULL && PSW_CONTACT_LIST(obj)->contactObjectCount > 0)
     {
         state->retriggerTimer = (s16)(placement->retriggerDelay * 60);
         i = 0;
         heightThreshold = 7.0f;
-        for (; i < (contacts = PSW_CONTACT_LIST(obj))->count; i++)
+        for (; i < (contacts = PSW_CONTACT_LIST(obj))->contactObjectCount; i++)
         {
             GameObject* ent = *(GameObject**)((char*)contacts + byteOff[0] + 256);
             if (ent->anim.seqId == PSWITCH_TRIGGER_SEQ_ID)
