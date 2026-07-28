@@ -636,8 +636,8 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
             mode = 4;
         }
         collision->localPointHitMask |=
-            objBboxFn_800640cc(collision->localPointTarget[pointIndex], collision->localPointWorld[pointIndex],
-                               *(f32*)((u8*)collision->localPointRadii + zoff[0]), mode,
+            objBboxFn_800640cc(&collision->localPointTarget[0][zoff[0]], &collision->localPointWorld[0][zoff[0]],
+                               collision->localPointRadii[pointIndex], mode,
                                (TrackBBoxHit*)collision->localHitPlanes, obj,
                                (u8)collision->primaryHitType,
                                -1, 0, (s8)collision->activeTimer)
@@ -653,13 +653,13 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
             {
                 mode = 4;
             }
-            objBboxFn_800640cc(collision->localPointTarget[pointIndex], collision->localPointWorld[pointIndex],
-                               *(f32*)((u8*)collision->localPointRadii + zoff[0]), mode,
+            objBboxFn_800640cc(&collision->localPointTarget[0][zoff[0]], &collision->localPointWorld[0][zoff[0]],
+                               collision->localPointRadii[pointIndex], mode,
                                (TrackBBoxHit*)collision->localHitPlanes, obj,
                                (u8)collision->secondaryHitType, -1, 0, (s8)collision->activeTimer);
         }
-        zoff[0] += sizeof(f32);
         pointIndex++;
+        zoff[0] += 3;
     }
     if (pointCount > 1)
     {
