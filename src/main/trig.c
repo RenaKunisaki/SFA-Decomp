@@ -11,12 +11,12 @@ float fsin16Approx(int angle) {
     float x2 = x * x;
 
     switch (angle & 0xE000) {
-        case 0x0000:
-        case 0xE000:
-            return x * (-2.2078018e-15f * x2 + 0.000023945184f);
         case 0x2000:
         case 0x4000:
             return x2 * (1.3332733e-20f * x2 + -2.8707542e-10f) + 0.99999f;
+        case 0x0000:
+        case 0xE000:
+            return x * (-2.2078018e-15f * x2 + 0.000023945184f);
         case 0x6000:
         case 0x8000:
             return -(x * (-2.2078018e-15f * x2 + 0.000023945184f));
