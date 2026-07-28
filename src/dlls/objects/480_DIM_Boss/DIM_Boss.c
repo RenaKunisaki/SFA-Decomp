@@ -284,7 +284,7 @@ int DIMbossAnim_updateBossHitReaction(int obj, int statePtr) {
                 if (lbl_803DDB84 > 6) {
                     lbl_803DDB84 = 0;
                 }
-                switch ((s8)state->hitPoints) {
+                switch (state->hitPoints) {
                 case 3:
                     (*(Dim2PlayerInterface**)gPlayerInterface)
                         ->requestControlMode(obj, state, moveTable->group3[lbl_803DDB84++]);
@@ -447,7 +447,7 @@ int DIMbossHitDetect_tonsilSlam(GameObject* obj, int runtime) {
         CameraShake_Start(2.5f, 5.0f, 2.0f);
         doRumble(12.0f);
         obj->anim.activeMove = -1;
-        ((BaddieState*)runtime)->moveSpeed = 0.002f * (f32)(*(s8*)&((BaddieState*)runtime)->hitPoints + 1);
+        ((BaddieState*)runtime)->moveSpeed = 0.002f * (f32)(((BaddieState*)runtime)->hitPoints + 1);
         animSpeed = 0.0f;
         ((BaddieState*)runtime)->animSpeedA = animSpeed;
         ((BaddieState*)runtime)->animSpeedB = animSpeed;
@@ -1169,15 +1169,15 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
                 }
             }
             if (((GroundBaddieState*)state)->targetState == 1) {
-                if (*(s8*)&playerState->hitPoints == 3) {
+                if (playerState->hitPoints == 3) {
                     gTitleMenuControlInterfaceCopy->vtable->func04(obj, 0x68, 0, 0, 0);
-                } else if (*(s8*)&playerState->hitPoints == 2) {
+                } else if (playerState->hitPoints == 2) {
                     gTitleMenuControlInterfaceCopy->vtable->func04(obj, 0x6c, 0, 0, 0);
                 }
             } else if (((GroundBaddieState*)state)->targetState == 2) {
-                if (*(s8*)&playerState->hitPoints == 3) {
+                if (playerState->hitPoints == 3) {
                     gTitleMenuControlInterfaceCopy->vtable->func04(obj, 0x77, 0, 0, 0);
-                } else if (*(s8*)&playerState->hitPoints == 2) {
+                } else if (playerState->hitPoints == 2) {
                     gTitleMenuControlInterfaceCopy->vtable->func04(obj, 0x78, 0, 0, 0);
                 }
             }
@@ -1185,7 +1185,7 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
             *(s8*)((u8*)playerState + 0x34f) = hitResult;
             playerState->hitPoints -= 1;
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_mpwru1);
-            if (*(s8*)&playerState->hitPoints <= 0) {
+            if (playerState->hitPoints <= 0) {
                 playerState->hitPoints = 0;
                 playerState->hasTarget = 0;
                 (*gPlayerInterface)->setState(obj, playerState, 0);

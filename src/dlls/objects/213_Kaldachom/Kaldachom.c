@@ -539,7 +539,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                 Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
                 Sfx_PlayFromObject((int)obj, SFXTRIG_stftest);
             }
-            if (*(s8*)&((GroundBaddieState*)stateAddress)->baddie.hitPoints < 1) {
+            if (((GroundBaddieState*)stateAddress)->baddie.hitPoints < 1) {
                 ((GroundBaddieState*)stateAddress)->baddie.substate = 2;
             }
         }
@@ -575,7 +575,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                 }
             }
         }
-        if (*(s8*)&((GroundBaddieState*)stateAddress)->baddie.hitPoints < 1) {
+        if (((GroundBaddieState*)stateAddress)->baddie.hitPoints < 1) {
             ((GroundBaddieState*)stateAddress)->baddie.substate = 2;
         }
     }

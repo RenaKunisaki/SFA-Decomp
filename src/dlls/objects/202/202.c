@@ -7158,7 +7158,7 @@ int iceBaddie_stateHandlerB02(GameObject* obj, GroundBaddieState* state) {
 int iceBaddie_stateHandlerB01(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
 
-    if ((s8)state->baddie.hitPoints < 1) {
+    if (state->baddie.hitPoints < 1) {
         return 3;
     }
     if ((s8)state->baddie.moveDone != 0) {
@@ -7852,7 +7852,7 @@ void iceBaddie_updateTargetCollision(GameObject* obj, int stateAddress, GroundBa
             ((IceBaddieControl*)controlAddress)->consecutiveHitCount = 0;
         }
         ((IceBaddieControl*)controlAddress)->hitTimer = 0.0f;
-        if ((s8)state->baddie.hitPoints > 0 && ((IceBaddieControl*)controlAddress)->consecutiveHitCount >= 2) {
+        if (state->baddie.hitPoints > 0 && ((IceBaddieControl*)controlAddress)->consecutiveHitCount >= 2) {
             (*gPlayerInterface)->setState(obj, state, 3);
             ((IceBaddieControl*)controlAddress)->consecutiveHitCount = 0;
             state->baddie.substate = 5;

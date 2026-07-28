@@ -77,7 +77,7 @@ int grimble_stateHandlerB04(GameObject* obj, GroundBaddieState* state) {
 int grimble_stateHandlerB03(GameObject* obj, GroundBaddieState* state) {
     (void)obj;
 
-    if ((s8)state->baddie.hitPoints < 1) {
+    if (state->baddie.hitPoints < 1) {
         return 5;
     }
     return 1;
@@ -775,7 +775,7 @@ void grimble_update(GameObject* obj) {
                 state->subMode = 2;
                 state->baddie.targetObj = Obj_GetPlayerObject();
             }
-            if (state->baddie.targetObj != NULL || *(s8*)&state->baddie.hitPoints == 0) {
+            if (state->baddie.targetObj != NULL || state->baddie.hitPoints == 0) {
                 ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags |= 1;
                 if ((*gBaddieControlInterface)->shouldDropTarget(obj, state, (f32)state->aggroRange, 1) != 0) {
                     *(int*)&state->baddie.targetObj = 0;

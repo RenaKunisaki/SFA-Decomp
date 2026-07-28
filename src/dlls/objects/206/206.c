@@ -226,7 +226,7 @@ int chukChuk_checkDeathState(GameObject* obj, GroundBaddieState* state) {
 int chukChuk_checkHealthState(GameObject* obj, GroundBaddieState* state) {
     (void)obj;
 
-    if ((s8)state->baddie.hitPoints < 1) {
+    if (state->baddie.hitPoints < 1) {
         return 3;
     }
     if ((s8)state->baddie.moveDone != 0) {

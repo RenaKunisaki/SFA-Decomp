@@ -431,7 +431,7 @@ int dbstealerworm_stateHandlerB02(GameObject* obj, BaddieState* baddie)
 int dbstealerworm_stateHandlerB01(GameObject* obj, BaddieState* baddie)
 {
     GroundBaddieState* state = obj->extra;
-    if ((s8)baddie->hitPoints < 1)
+    if (baddie->hitPoints < 1)
         return 3;
     if ((s8)baddie->moveDone != 0)
     {

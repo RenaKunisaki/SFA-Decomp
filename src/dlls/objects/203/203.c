@@ -136,7 +136,7 @@ int dll_CB_stateHandler2(GameObject* obj, GroundBaddieState* state) {
 int dll_CB_stateHandler1(GameObject* obj, GroundBaddieState* state) {
     (void)obj;
 
-    if ((s8)state->baddie.hitPoints < 1) {
+    if (state->baddie.hitPoints < 1) {
         return 3;
     }
     return 6;
