@@ -125,8 +125,8 @@ void StaffCollision_func03(u8* sourceObj, int variant, PartFxSpawnParams* spawnP
         m.w = 0.0f;
         m.x = 1.0f;
         m.rotY = 0;
-        *(s16*)&m.rotX = rb;
-        *(s16*)&m.rotZ = ra;
+        m.rotX = rb;
+        m.rotZ = ra;
         vecRotateZXY((s16*)&m, &e[3].x);
         buf.v58 = 0;
         buf.ctx = sourceObj;

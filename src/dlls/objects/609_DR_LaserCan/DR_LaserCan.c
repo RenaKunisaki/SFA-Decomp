@@ -581,7 +581,7 @@ void DR_LaserCannon_update(GameObject* obj)
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
         state->animStepScale = 0.005f;
     }
-    *(u16*)&state->bobPhase = (250.0f * timeDelta + (f32)(u32)state->bobPhase);
+    state->bobPhase = (250.0f * timeDelta + (f32)(u32)state->bobPhase);
     state->bobOffset = 5.0f * mathSinf(3.1415927f * (f32)(u32)state->bobPhase / 32768.0f);
     (obj)->anim.localPosY += state->bobOffset;
 }

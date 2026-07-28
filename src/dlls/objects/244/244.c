@@ -126,10 +126,10 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
     if (ObjMsg_Peek((void*)obj, (u32*)&message, 0, 0) != 0) {
         switch (message) {
         case DOORF4_MESSAGE_OPEN:
-            *(u8*)&state->isOpen = 1;
+            state->isOpen = 1;
             break;
         case DOORF4_MESSAGE_CLOSE:
-            *(u8*)&state->isOpen = 0;
+            state->isOpen = 0;
             break;
         }
     }
