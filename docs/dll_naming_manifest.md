@@ -510,7 +510,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1D0 | DIM_tricky | COMPLETE | dlls/objects/464_DIM_tricky/DIM_tricky.c | = (canonical) | — |
 | 0x1D1 | DIMTruthHor | COMPLETE | dlls/objects/465_DIMTruthHor/DIMTruthHor.c | = (canonical) | Exact complete four-function TU with its terminal descriptor, allocation-backed 0x08-byte state, active-EN-retail-backed fixed 0x30-byte placement, canonical unit header, canonical hidden-object flag, and exact 80-byte data image; the generated source path remains unchanged |
 | 0x1D2 | WORLDplanet | COMPLETE | dlls/objects/466_WORLDplanet/WORLDplanet.c | = (canonical) | Complete 11-function TU at its unchanged 99.40532% fuzzy match with ten exact functions, an allocation-backed 0x18-byte state, a separate allocation-backed 0x20-byte Fox-spawn setup, canonical unit header, terminal descriptor, and exact 344-byte data image; the generated source path remains unchanged |
-| 0x1D3 | worldobj (+WORLDcloudr, WORLDdragro, WORLDwalled, WORLDdarkic, WORLDcloudl, WORLDpath1, WORLDpath2, WORLDpath3, WORLDpath4, WORLDpath5, WORLDpath6, WORLDpath7, WORLDpath8, WORLDarwing, WORLDgreatf, WORLDsun, WORLDsunray, WORLDpepper, WORLDsunfla, WORLDComet, WORLDastGen, WORLDhalo, WORLDhalobr, WORLDarrow) | COMPLETE | dlls/objects/467/467.c | = (canonical) | No single recovered TU basename |
+| 0x1D3 | worldobj (+WORLDcloudr, WORLDdragro, WORLDwalled, WORLDdarkic, WORLDcloudl, WORLDpath1, WORLDpath2, WORLDpath3, WORLDpath4, WORLDpath5, WORLDpath6, WORLDpath7, WORLDpath8, WORLDarwing, WORLDgreatf, WORLDsun, WORLDsunray, WORLDpepper, WORLDsunfla, WORLDComet, WORLDastGen, WORLDhalo, WORLDhalobr, WORLDarrow) | COMPLETE | dlls/objects/467/467.c | = (canonical) | Exact complete 11-function TU with its terminal descriptor, allocation-backed 0x284-byte state, active-EN-retail-backed fixed 0x20-byte placement family, canonical unit header, and exact 444-byte data image; no single retail basename is claimed and the generated numeric source path remains unchanged |
 | 0x1D4 | WORLDAstero | COMPLETE | dlls/objects/468_WORLDAstero/WORLDAstero.c | = (canonical) | — |
 | 0x1D5 | DIM2Conveyo | COMPLETE | dlls/objects/469_DIM2Conveyo/DIM2Conveyo.c | = (canonical) | — |
 | 0x1D6 | — | COMPLETE | dlls/objects/470/470.c | = (canonical) | No recovered retail basename |
@@ -1037,6 +1037,7 @@ more as they are recovered.
 | 0x1CF | dlls/objects/463/463.c | include/dlls/objects/463.h |
 | 0x1D1 | dlls/objects/465_DIMTruthHor/DIMTruthHor.c | include/dlls/objects/465_DIMTruthHor.h |
 | 0x1D2 | dlls/objects/466_WORLDplanet/WORLDplanet.c | include/dlls/objects/466_WORLDplanet.h |
+| 0x1D3 | dlls/objects/467/467.c | include/dlls/objects/467.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |

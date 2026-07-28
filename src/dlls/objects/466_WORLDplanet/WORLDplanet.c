@@ -3,6 +3,7 @@
  */
 #include "dlls/objects/466_WORLDplanet.h"
 
+#include "dlls/objects/467.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/audio/audio_control_api.h"
@@ -34,7 +35,6 @@
 #include "main/shader_api.h"
 #include "main/sky_api.h"
 #include "main/vecmath.h"
-#include "main/worldobj.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
