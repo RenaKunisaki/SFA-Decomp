@@ -1226,8 +1226,8 @@ void renderHeavyFog(void* fogColor)
     if (lbl_803DCD31 != 0)
     {
         newshadows_getReflectionScrollOffsets(&a, &b);
-        b = b * 0.25f;
-        a = a * 0.125f;
+        b *= 0.25f;
+        a *= 0.125f;
         GXSetIndTexMtx(GX_ITM_1, im.v, -2);
         GXSetIndTexOrder(lbl_803DCD7C, lbl_803DCD88 + 1, lbl_803DCD8C + 1);
         m9c[0][0] = lbl_803DCD34;
