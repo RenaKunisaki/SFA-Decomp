@@ -84,6 +84,7 @@ static inline float log2_kernel(float value, const float* table)
     float_word coef1;
     float_word inputWord;
     float_word normalizedMantissa;
+    float exponentValue;
 
     bits = *(u32*)&value;
     coef0.i = lbl_803DC658;
@@ -107,14 +108,16 @@ static inline float log2_kernel(float value, const float* table)
 
         delta = normalizedMantissa.f - roundedMantissa.f;
         delta *= __one_over_F[tableIndex];
-        return ((float)exponent + 1.375f)
+        exponentValue = (float)exponent;
+        return (exponentValue + 1.375f)
              + (table[tableIndex]
                 + (delta
                    + (lbl_803DC650[0] * delta
                       + (lbl_803DC650[1] * delta + (delta * delta) * (delta * coef1.f + coef0.f)))));
     }
 
-    return ((float)exponent + 1.375f) + table[tableIndex];
+    exponentValue = (float)exponent;
+    return (exponentValue + 1.375f) + table[tableIndex];
 }
 
 static inline float exp2_kernel(float value, const float* table)
@@ -177,7 +180,7 @@ float powf(float base, float power)
 
     if (base < 0.0f) {
         integerPower = power;
-        fractionalPower = power - (float)integerPower;
+        fractionalPower = power - (int)power;
         if (fractionalPower != 0.0f) {
             return lbl_803DC648;
         }
