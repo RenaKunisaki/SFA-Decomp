@@ -151,7 +151,7 @@ void* lbl_80319A88[35] = {(void*)0x00000000,
                           camcontrol_getRelativePosition,
                           Camera_getOverrideTarget,
                           Camera_getTarget,
-                          Camera_func13,
+                          Camera_setTargetFlag2,
                           Camera_setTarget,
                           Camera_setTargetReticleOverride,
                           Camera_isZooming,
@@ -160,8 +160,8 @@ void* lbl_80319A88[35] = {(void*)0x00000000,
                           Camera_setLetterbox,
                           camcontrol_release,
                           Camera_getMinimapInfoText,
-                          Camera_func1C,
-                          Camera_func1D,
+                          Camera_applyFrameFlags,
+                          Camera_applyTargetFlags,
                           camcontrol_queueSavedAction};
 
 int cameraGetTargetType(void)
@@ -910,12 +910,12 @@ void camcontrol_applyQueuedAction(void)
     }
 }
 
-void Camera_func1D(int targetFlagMode)
+void Camera_applyTargetFlags(int targetFlagMode)
 {
     CAMCONTROL_CAMERA->targetFlags = (u8)(CAMCONTROL_CAMERA->targetFlags | ((targetFlagMode << 3) & 0x18));
 }
 
-void Camera_func13(int enable)
+void Camera_setTargetFlag2(int enable)
 {
     if (enable != 0)
     {
@@ -927,7 +927,7 @@ void Camera_func13(int enable)
     }
 }
 
-void Camera_func1C(int flags)
+void Camera_applyFrameFlags(int flags)
 {
     CAMCONTROL_CAMERA->frameFlags = (u8)(CAMCONTROL_CAMERA->frameFlags | flags);
 }
