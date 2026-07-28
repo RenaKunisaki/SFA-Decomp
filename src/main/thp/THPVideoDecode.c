@@ -60,13 +60,13 @@ void AttractMovieVideo_Decode(void* param)
 
     db = gPicMenuVideoDecodeThreadArea;
     compSizes = (u32*)(((AttractMovieReadBuffer*)param)->ptr + 8);
-    player = &lbl_803A5D60;
+    player = &gAttractMoviePlayer;
 
     dvdData = (char*)((AttractMovieReadBuffer*)param)->ptr + player->compInfo.mNumComponents * sizeof(u32) + 8;
     OSReceiveMessage((OSMessageQueue*)(db + 0x38), &tmpBuf, OS_MESSAGE_BLOCK);
     readMsg = tmpBuf;
     i = 0;
-    player2 = &lbl_803A5D60;
+    player2 = &gAttractMoviePlayer;
     componentKind = (u8*)player2;
 
     while (i < player->compInfo.mNumComponents)
@@ -114,7 +114,7 @@ void AttractMovieVideo_Decode(void* param)
 
 void* AttractMovieVideo_DecoderForOnMemory(void* param)
 {
-    AttractMoviePlayer* player = &lbl_803A5D60;
+    AttractMoviePlayer* player = &gAttractMoviePlayer;
     u32 frameSize = player->frameStride;
     void* cur = param;
     int i = 0;
@@ -188,7 +188,7 @@ void* AttractMovieVideo_DecoderForOnMemory(void* param)
 
 void* AttractMovieVideo_Decoder(void* unused)
 {
-    AttractMoviePlayer* player = &lbl_803A5D60;
+    AttractMoviePlayer* player = &gAttractMoviePlayer;
     void* msg;
 
     while (1)

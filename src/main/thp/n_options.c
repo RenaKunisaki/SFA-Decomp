@@ -1,5 +1,5 @@
 /*
- * THP attract-movie playback back end (AttractMoviePlayer lbl_803A5D60,
+ * THP attract-movie playback back end (AttractMoviePlayer gAttractMoviePlayer,
  * attract_movie.h). Three jobs:
  *
  *  - Video: THPPlayerDrawCurrentFrame builds the GX TEV pipeline that
@@ -136,7 +136,7 @@ BOOL Movie_SetVolumeFade(int volume, int fadeFrames)
     f32 targetVolume;
     int rampCount;
 
-    if ((lbl_803A5D60.isOpen != 0) && (lbl_803A5D60.audioExists != 0))
+    if ((gAttractMoviePlayer.isOpen != 0) && (gAttractMoviePlayer.audioExists != 0))
     {
         if (volume > MOVIE_VOLUME_MAX)
         {
@@ -157,17 +157,17 @@ BOOL Movie_SetVolumeFade(int volume, int fadeFrames)
 
         interrupts = OSDisableInterrupts();
         targetVolume = volume;
-        lbl_803A5D60.targetVolume = targetVolume;
+        gAttractMoviePlayer.targetVolume = targetVolume;
         if (fadeFrames != 0)
         {
             rampCount = fadeFrames << 5;
-            lbl_803A5D60.rampCount = rampCount;
-            lbl_803A5D60.deltaVolume = (targetVolume - lbl_803A5D60.curVolume) / rampCount;
+            gAttractMoviePlayer.rampCount = rampCount;
+            gAttractMoviePlayer.deltaVolume = (targetVolume - gAttractMoviePlayer.curVolume) / rampCount;
         }
         else
         {
-            lbl_803A5D60.rampCount = 0;
-            lbl_803A5D60.curVolume = targetVolume;
+            gAttractMoviePlayer.rampCount = 0;
+            gAttractMoviePlayer.curVolume = targetVolume;
         }
         OSRestoreInterrupts(interrupts);
         return TRUE;
@@ -189,7 +189,7 @@ void AttractMovieAudio_Mix(s16* destination, s16* source, u32 sampleCount)
 
     if (source != NULL)
     {
-        if ((lbl_803A5D60.isOpen != 0) && (lbl_803A5D60.internalState == 2) && (lbl_803A5D60.audioExists != 0))
+        if ((gAttractMoviePlayer.isOpen != 0) && (gAttractMoviePlayer.internalState == 2) && (gAttractMoviePlayer.audioExists != 0))
         {
             cnt = sampleCount;
             dst = destination;
@@ -198,17 +198,17 @@ void AttractMovieAudio_Mix(s16* destination, s16* source, u32 sampleCount)
             {
                 do
                 {
-                    if (lbl_803A5D60.curAudioBuffer == NULL)
+                    if (gAttractMoviePlayer.curAudioBuffer == NULL)
                     {
-                        lbl_803A5D60.curAudioBuffer = (AttractMovieAudioBuffer*)PopDecodedAudioBuffer(0);
-                        if (lbl_803A5D60.curAudioBuffer == NULL)
+                        gAttractMoviePlayer.curAudioBuffer = (AttractMovieAudioBuffer*)PopDecodedAudioBuffer(0);
+                        if (gAttractMoviePlayer.curAudioBuffer == NULL)
                         {
                             memcpy(dst, src, cnt << 2);
                             return;
                         }
-                        lbl_803A5D60.curAudioFrameNumber = lbl_803A5D60.curAudioBuffer->frameNumber;
+                        gAttractMoviePlayer.curAudioFrameNumber = gAttractMoviePlayer.curAudioBuffer->frameNumber;
                     }
-                    validSamples = lbl_803A5D60.curAudioBuffer->validSample;
+                    validSamples = gAttractMoviePlayer.curAudioBuffer->validSample;
                 } while (validSamples == 0);
                 if (validSamples >= cnt)
                 {
@@ -218,19 +218,19 @@ void AttractMovieAudio_Mix(s16* destination, s16* source, u32 sampleCount)
                 {
                     process = validSamples;
                 }
-                audioPtr = lbl_803A5D60.curAudioBuffer->curPtr;
+                audioPtr = gAttractMoviePlayer.curAudioBuffer->curPtr;
                 for (remain = 0; remain < process; remain = remain + 1)
                 {
-                    if (lbl_803A5D60.rampCount != 0)
+                    if (gAttractMoviePlayer.rampCount != 0)
                     {
-                        lbl_803A5D60.rampCount = lbl_803A5D60.rampCount + -1;
-                        lbl_803A5D60.curVolume = lbl_803A5D60.curVolume + lbl_803A5D60.deltaVolume;
+                        gAttractMoviePlayer.rampCount = gAttractMoviePlayer.rampCount + -1;
+                        gAttractMoviePlayer.curVolume = gAttractMoviePlayer.curVolume + gAttractMoviePlayer.deltaVolume;
                     }
                     else
                     {
-                        lbl_803A5D60.curVolume = lbl_803A5D60.targetVolume;
+                        gAttractMoviePlayer.curVolume = gAttractMoviePlayer.targetVolume;
                     }
-                    volumeScale = gAttractMovieVolumeScale[(int)lbl_803A5D60.curVolume];
+                    volumeScale = gAttractMovieVolumeScale[(int)gAttractMoviePlayer.curVolume];
                     mixed = (int)*src + ((int)((u32)volumeScale * (int)*audioPtr) >> 0xf);
                     if (mixed < S16_MIN)
                     {
@@ -256,12 +256,12 @@ void AttractMovieAudio_Mix(s16* destination, s16* source, u32 sampleCount)
                     audioPtr = audioPtr + 2;
                 }
                 cnt = cnt - process;
-                lbl_803A5D60.curAudioBuffer->validSample = lbl_803A5D60.curAudioBuffer->validSample - process;
-                lbl_803A5D60.curAudioBuffer->curPtr = audioPtr;
-                if (lbl_803A5D60.curAudioBuffer->validSample == 0)
+                gAttractMoviePlayer.curAudioBuffer->validSample = gAttractMoviePlayer.curAudioBuffer->validSample - process;
+                gAttractMoviePlayer.curAudioBuffer->curPtr = audioPtr;
+                if (gAttractMoviePlayer.curAudioBuffer->validSample == 0)
                 {
-                    PushFreeAudioBuffer(lbl_803A5D60.curAudioBuffer);
-                    lbl_803A5D60.curAudioBuffer = NULL;
+                    PushFreeAudioBuffer(gAttractMoviePlayer.curAudioBuffer);
+                    gAttractMoviePlayer.curAudioBuffer = NULL;
                 }
                 if (cnt == 0)
                 {
@@ -274,7 +274,7 @@ void AttractMovieAudio_Mix(s16* destination, s16* source, u32 sampleCount)
             memcpy(destination, source, sampleCount << 2);
         }
     }
-    else if ((lbl_803A5D60.isOpen != 0) && (lbl_803A5D60.internalState == 2) && (lbl_803A5D60.audioExists != 0))
+    else if ((gAttractMoviePlayer.isOpen != 0) && (gAttractMoviePlayer.internalState == 2) && (gAttractMoviePlayer.audioExists != 0))
     {
         cnt = sampleCount;
         dst = destination;
@@ -282,35 +282,35 @@ void AttractMovieAudio_Mix(s16* destination, s16* source, u32 sampleCount)
         {
             do
             {
-                if (lbl_803A5D60.curAudioBuffer == NULL)
+                if (gAttractMoviePlayer.curAudioBuffer == NULL)
                 {
-                    lbl_803A5D60.curAudioBuffer = (AttractMovieAudioBuffer*)PopDecodedAudioBuffer(0);
-                    if (lbl_803A5D60.curAudioBuffer == NULL)
+                    gAttractMoviePlayer.curAudioBuffer = (AttractMovieAudioBuffer*)PopDecodedAudioBuffer(0);
+                    if (gAttractMoviePlayer.curAudioBuffer == NULL)
                     {
                         memset(dst, 0, cnt << 2);
                         return;
                     }
-                    lbl_803A5D60.curAudioFrameNumber = lbl_803A5D60.curAudioBuffer->frameNumber;
+                    gAttractMoviePlayer.curAudioFrameNumber = gAttractMoviePlayer.curAudioBuffer->frameNumber;
                 }
-                validSamples = lbl_803A5D60.curAudioBuffer->validSample;
+                validSamples = gAttractMoviePlayer.curAudioBuffer->validSample;
             } while (validSamples == 0);
             if (validSamples >= cnt)
             {
                 validSamples = cnt;
             }
-            audioPtr = lbl_803A5D60.curAudioBuffer->curPtr;
+            audioPtr = gAttractMoviePlayer.curAudioBuffer->curPtr;
             for (remain = 0; remain < validSamples; remain = remain + 1)
             {
-                if (lbl_803A5D60.rampCount != 0)
+                if (gAttractMoviePlayer.rampCount != 0)
                 {
-                    lbl_803A5D60.rampCount = lbl_803A5D60.rampCount + -1;
-                    lbl_803A5D60.curVolume = lbl_803A5D60.curVolume + lbl_803A5D60.deltaVolume;
+                    gAttractMoviePlayer.rampCount = gAttractMoviePlayer.rampCount + -1;
+                    gAttractMoviePlayer.curVolume = gAttractMoviePlayer.curVolume + gAttractMoviePlayer.deltaVolume;
                 }
                 else
                 {
-                    lbl_803A5D60.curVolume = lbl_803A5D60.targetVolume;
+                    gAttractMoviePlayer.curVolume = gAttractMoviePlayer.targetVolume;
                 }
-                volumeScale = gAttractMovieVolumeScale[(int)lbl_803A5D60.curVolume];
+                volumeScale = gAttractMovieVolumeScale[(int)gAttractMoviePlayer.curVolume];
                 mixed = (int)((u32)volumeScale * (int)*audioPtr) >> 0xf;
                 if (mixed < S16_MIN)
                 {
@@ -335,12 +335,12 @@ void AttractMovieAudio_Mix(s16* destination, s16* source, u32 sampleCount)
                 audioPtr = audioPtr + 2;
             }
             cnt = cnt - validSamples;
-            lbl_803A5D60.curAudioBuffer->validSample = lbl_803A5D60.curAudioBuffer->validSample - validSamples;
-            lbl_803A5D60.curAudioBuffer->curPtr = audioPtr;
-            if (lbl_803A5D60.curAudioBuffer->validSample == 0)
+            gAttractMoviePlayer.curAudioBuffer->validSample = gAttractMoviePlayer.curAudioBuffer->validSample - validSamples;
+            gAttractMoviePlayer.curAudioBuffer->curPtr = audioPtr;
+            if (gAttractMoviePlayer.curAudioBuffer->validSample == 0)
             {
-                PushFreeAudioBuffer(lbl_803A5D60.curAudioBuffer);
-                lbl_803A5D60.curAudioBuffer = NULL;
+                PushFreeAudioBuffer(gAttractMoviePlayer.curAudioBuffer);
+                gAttractMoviePlayer.curAudioBuffer = NULL;
             }
             if (cnt == 0)
             {
@@ -431,9 +431,9 @@ void THPPlayerPostDrawDone(void)
 
 BOOL THPPlayerGetVideoInfo(void* dst)
 {
-    if (lbl_803A5D60.isOpen != 0)
+    if (gAttractMoviePlayer.isOpen != 0)
     {
-        memcpy(dst, &lbl_803A5D60.videoInfo, sizeof(lbl_803A5D60.videoInfo));
+        memcpy(dst, &gAttractMoviePlayer.videoInfo, sizeof(gAttractMoviePlayer.videoInfo));
         return TRUE;
     }
     return FALSE;
@@ -445,9 +445,9 @@ void AttractMovie_AddVideoTevStages(void)
 
     if (gAttractMovieState == 2)
     {
-        textureSet = lbl_803A5D60.curTextureSet;
-        addYUVVideoTevStages(textureSet->yTexture, textureSet->uTexture, textureSet->vTexture, lbl_803A5D60.videoInfo.xSize,
-                    lbl_803A5D60.videoInfo.ySize);
+        textureSet = gAttractMoviePlayer.curTextureSet;
+        addYUVVideoTevStages(textureSet->yTexture, textureSet->uTexture, textureSet->vTexture, gAttractMoviePlayer.videoInfo.xSize,
+                    gAttractMoviePlayer.videoInfo.ySize);
     }
 }
 
@@ -467,9 +467,9 @@ BOOL AttractMovie_DrawTextureCallback(int unused, u32* modelPtr, u32 renderOpIdx
 
     if (((renderOp == NULL) || (renderOp[0x29] == 1)) && (gAttractMovieState == 2))
     {
-        textureSet = lbl_803A5D60.curTextureSet;
+        textureSet = gAttractMoviePlayer.curTextureSet;
         THPPlayerDrawCurrentFrame(textureSet->yTexture, textureSet->uTexture, textureSet->vTexture,
-                                  (s16)lbl_803A5D60.videoInfo.xSize, (s16)lbl_803A5D60.videoInfo.ySize);
+                                  (s16)gAttractMoviePlayer.videoInfo.xSize, (s16)gAttractMoviePlayer.videoInfo.ySize);
         return TRUE;
     }
     return FALSE;
@@ -481,7 +481,7 @@ int ProperTimingForGettingNextFrame(void)
     s64 tick;
     u32 field;
 
-    if ((lbl_803A5D60.playFlags & 2) != 0)
+    if ((gAttractMoviePlayer.playFlags & 2) != 0)
     {
         field = VIGetNextField();
         if (field == 0)
@@ -489,7 +489,7 @@ int ProperTimingForGettingNextFrame(void)
             return TRUE;
         }
     }
-    else if ((lbl_803A5D60.playFlags & 4) != 0)
+    else if ((gAttractMoviePlayer.playFlags & 4) != 0)
     {
         field = VIGetNextField();
         if (field == 1)
@@ -499,21 +499,21 @@ int ProperTimingForGettingNextFrame(void)
     }
     else
     {
-        frame = (int)(100.0f * lbl_803A5D60.header.mFrameRate);
+        frame = (int)(100.0f * gAttractMoviePlayer.header.mFrameRate);
         if (VIGetTvFormat() == 1)
         {
-            tick = lbl_803A5D60.retraceCount * frame;
-            lbl_803A5D60.curCount = tick / 5000;
+            tick = gAttractMoviePlayer.retraceCount * frame;
+            gAttractMoviePlayer.curCount = tick / 5000;
         }
         else
         {
-            tick = lbl_803A5D60.retraceCount * frame;
-            lbl_803A5D60.curCount = tick / 0x176a;
+            tick = gAttractMoviePlayer.retraceCount * frame;
+            gAttractMoviePlayer.curCount = tick / 0x176a;
         }
 
-        if (lbl_803A5D60.prevCount != lbl_803A5D60.curCount)
+        if (gAttractMoviePlayer.prevCount != gAttractMoviePlayer.curCount)
         {
-            lbl_803A5D60.prevCount = lbl_803A5D60.curCount;
+            gAttractMoviePlayer.prevCount = gAttractMoviePlayer.curCount;
             return TRUE;
         }
     }
@@ -521,7 +521,7 @@ int ProperTimingForGettingNextFrame(void)
 }
 
 /* .bss glue 0x803A5CCC-0x803A5F08 */
-AttractMoviePlayer lbl_803A5D60;
+AttractMoviePlayer gAttractMoviePlayer;
 char gPicMenuDvdReadBuffer[0x40];
 u8 lbl_803A5CEC[0x34];
 OSMessageQueue lbl_803A5CCC[1];
