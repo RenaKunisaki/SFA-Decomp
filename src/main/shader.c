@@ -3249,9 +3249,9 @@ void mapDebugRender(int* state)
     s8* tbl;
     int h;
     int step;
-    int row;
-    int cx;
-    int cz;
+    int celly;
+    int cellx;
+    int cellz;
     int cell;
     int v;
     int n;
@@ -3299,13 +3299,13 @@ void mapDebugRender(int* state)
                 step = h / 8;
             else
                 step = 80;
-            row = dy / step;
-            cx = wx / 80;
-            cz = wz / 80;
-            cell = row * 0x40;
-            cell += cz * 8;
-            cell += cx;
-            logPrintf(sTrackCellCoordFormat, cx, row, cz);
+            celly = dy / step;
+            cellx = wx / 80;
+            cellz = wz / 80;
+            cell = celly * 0x40;
+            cell += cellz * 8;
+            cell += cellx;
+            logPrintf(sTrackCellCoordFormat, cellx, celly, cellz);
             v = lbl_803DCE70;
             n = v >> 3;
             if (v & 7)

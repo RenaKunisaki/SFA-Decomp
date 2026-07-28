@@ -157,9 +157,9 @@ int gameBitIncrement(int bit)
     return val;
 }
 
-u32 mainGetBit(int eventId)
+u32 mainGetBit(int gameBit)
 {
-    s16 id = (s16)eventId & 0xfff;
+    s16 id = (s16)gameBit & 0xfff;
     u8 flags;
     u8* base;
     int* endPtr;
@@ -177,7 +177,7 @@ u32 mainGetBit(int eventId)
     {
         return 0;
     }
-    if (eventId == -1)
+    if (gameBit == -1)
     {
         return 0;
     }
@@ -214,7 +214,7 @@ u32 mainGetBit(int eventId)
         }
         bit <<= 1;
     }
-    if (eventId & 0x8000)
+    if (gameBit & 0x8000)
     {
         result &= 1;
         result ^= 1;
@@ -222,7 +222,7 @@ u32 mainGetBit(int eventId)
     return result;
 }
 
-void mainSetBits(int eventId, int value)
+void mainSetBits(int gameBit, int value)
 {
     s16 id;
     u8* base;
@@ -234,15 +234,15 @@ void mainSetBits(int eventId, int value)
 
     if (isSaveGameLoading())
     {
-        OSReport(sGameBitSetDuringSaveLoadWarning, eventId, value);
+        OSReport(sGameBitSetDuringSaveLoadWarning, gameBit, value);
         return;
     }
-    if (eventId & 0x8000)
+    if (gameBit & 0x8000)
     {
         value = (u32)value & 1LL;
         value = (u32)value ^ 1LL;
     }
-    id = (s16)eventId & 0xfff;
+    id = (s16)gameBit & 0xfff;
     if (id == 0x95)
     {
         return;
@@ -251,7 +251,7 @@ void mainSetBits(int eventId, int value)
     {
         return;
     }
-    if (eventId == -1)
+    if (gameBit == -1)
     {
         return;
     }

@@ -309,7 +309,7 @@ u8 trickyBallMove(GameObject* obj) {
     f32 reflectedX;
     f32 reflectedY;
     f32 reflectedZ;
-    f32 reflectionScale;
+    f32 dot;
     f32 restitution;
     SidekickBallState* state;
     int hasMovementDelta;
@@ -397,13 +397,13 @@ u8 trickyBallMove(GameObject* obj) {
             reflectedY *= invSpeed;
             reflectedZ *= invSpeed;
         }
-        reflectionScale = 2.0f * ((reflectedX * collisionNormal.x) + (reflectedY * collisionNormal.y) +
+        dot = 2.0f * ((reflectedX * collisionNormal.x) + (reflectedY * collisionNormal.y) +
                                   (reflectedZ * collisionNormal.z));
-        logPrintf(sSidekickBallDotFormat, reflectionScale);
-        if (reflectionScale > 0.0f) {
-            obj->anim.velocityX = collisionNormal.x * reflectionScale;
-            obj->anim.velocityY = collisionNormal.y * reflectionScale;
-            obj->anim.velocityZ = collisionNormal.z * reflectionScale;
+        logPrintf(sSidekickBallDotFormat, dot);
+        if (dot > 0.0f) {
+            obj->anim.velocityX = collisionNormal.x * dot;
+            obj->anim.velocityY = collisionNormal.y * dot;
+            obj->anim.velocityZ = collisionNormal.z * dot;
             obj->anim.velocityX -= reflectedX;
             obj->anim.velocityY -= reflectedY;
             obj->anim.velocityZ -= reflectedZ;
