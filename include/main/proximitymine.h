@@ -30,7 +30,7 @@ typedef struct ProximityMineState {
   struct GameObject *targetObj;
   ModelLightStruct *effectHandle;
   f32 triggerDistance;
-  f32 verticalStep;
+  f32 scaleStep;
   u8 unk10[4];
   f32 renderTimer;
   f32 launchTimer;
@@ -49,51 +49,6 @@ typedef struct ProximityMineState {
 STATIC_ASSERT(offsetof(ProximityMineState, effectHandle) == 0x4);
 STATIC_ASSERT(sizeof(ProximityMineState) == 0x34);
 
-typedef struct ProximityMineCollider {
-  u8 unk0[0x50];
-  void *hitObj;
-  u8 unk54[0x59];
-  s8 hitFlag;
-} ProximityMineCollider;
-
-typedef struct ProximityMineObject {
-  s16 rotX;
-  s16 rotY;
-  s16 rotZ;
-  s16 animFlags;
-  f32 rootMotionScale;
-  f32 localPosX;
-  f32 localPosY;
-  f32 localPosZ;
-  f32 worldPosX;
-  f32 worldPosY;
-  f32 worldPosZ;
-  f32 velocityX;
-  f32 velocityY;
-  f32 velocityZ;
-  u8 unk30[0x16];
-  s16 objId;
-  u8 unk48[4];
-  struct ProximityMineDef *def;
-  u8 unk50[4];
-  ProximityMineCollider *collider;
-  u8 unk58[0x50];
-  f32 lightPosY; /* 0xA8: Y position of the proximity-mine glow point light */
-  u8 unkAC[0xc];
-  ProximityMineState *state;
-  u8 unkBC[8];
-  struct GameObject *pendingTarget;
-  u8 unkC8[0x2c];
-  int pathIndex;
-} ProximityMineObject;
-
-STATIC_ASSERT(offsetof(ProximityMineObject, rotX) == 0x00);
-STATIC_ASSERT(offsetof(ProximityMineObject, animFlags) == 0x06);
-STATIC_ASSERT(offsetof(ProximityMineObject, rootMotionScale) == 0x08);
-STATIC_ASSERT(offsetof(ProximityMineObject, localPosX) == 0x0C);
-STATIC_ASSERT(offsetof(ProximityMineObject, worldPosX) == 0x18);
-STATIC_ASSERT(offsetof(ProximityMineObject, velocityX) == 0x24);
-
 typedef struct ProximityMineDef {
   ObjPlacement base;
   s8 angleSeed;
@@ -106,15 +61,15 @@ STATIC_ASSERT(sizeof(ProximityMineDef) == 0x1C);
 
 extern ObjectDescriptor gProximityMineObjDescriptor;
 
-void ProximityMine_expire(ProximityMineObject *obj);
+void ProximityMine_expire(struct GameObject *obj);
 int ProximityMine_getExtraSize(void);
 int ProximityMine_getObjectTypeId(void);
-void ProximityMine_free(ProximityMineObject *obj);
-void ProximityMine_render(ProximityMineObject *obj,u32 param_2,u32 param_3,
+void ProximityMine_free(struct GameObject *obj);
+void ProximityMine_render(struct GameObject *obj,u32 param_2,u32 param_3,
                           u32 param_4,u32 param_5);
-void ProximityMine_hitDetect(ProximityMineObject *obj);
-void ProximityMine_update(ProximityMineObject *obj);
-void ProximityMine_init(ProximityMineObject *obj,ProximityMineDef *def);
+void ProximityMine_hitDetect(struct GameObject *obj);
+void ProximityMine_update(struct GameObject *obj);
+void ProximityMine_init(struct GameObject *obj,ProximityMineDef *def);
 void ProximityMine_release(void);
 void ProximityMine_initialise(void);
 
