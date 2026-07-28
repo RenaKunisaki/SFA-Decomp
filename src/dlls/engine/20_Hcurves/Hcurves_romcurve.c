@@ -429,7 +429,7 @@ static inline int RomCurve_pickRandomControlPointId_2B(int curve)
                  ROMCURVE_HALF_CIRCLE_ANGLE);                                                                                        \
     *(f32*)(stateBytes + 0x104) = ROMCURVE_TANGENT_SCALE * t
 
-int RomCurve_func2C(RomCurveWalker* state, GameObject* unusedObj, int startCurveId,
+int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int startCurveId,
                     RomCurveInterface* unusedInterface)
 {
     char* stateBytes;
@@ -561,7 +561,7 @@ int RomCurve_getUnblockedControlPointId(int curve, int exclude, int pickIdx)
     return -1;
 }
 
-int RomCurve_func29(RomCurveWalker* state, int pickIdx)
+int RomCurve_goNextPointIndexed(RomCurveWalker* state, int pickIdx)
 {
     char* stateBytes;
     int nextId;
@@ -2364,7 +2364,7 @@ RomCurveDef* RomCurve_findByIdWithIndex(u32 curveId, int* outIndex)
     *outIndex = -1;
     return NULL;
 }
-int RomCurve_func20(RomCurvePlacementDef* curve, f32* outX, f32* outY, f32* outZ, s8* outTypes)
+int RomCurve_buildRandomPoints(RomCurvePlacementDef* curve, f32* outX, f32* outY, f32* outZ, s8* outTypes)
 {
     RomCurveDef* hold;
     u32 mask;
@@ -3021,7 +3021,7 @@ void* lbl_803115F8[49] = {(void*)0,
                           (void*)RomCurve_getAdjacentWindow,
                           (void*)RomCurve_func1E,
                           (void*)RomCurve_countRandomPoints,
-                          (void*)RomCurve_func20,
+                          (void*)RomCurve_buildRandomPoints,
                           (void*)RomCurve_projectPointToAdjacentWindow,
                           (void*)RomCurve_findProjectedCurveFromStart,
                           (void*)curves_getPos,
@@ -3030,8 +3030,8 @@ void* lbl_803115F8[49] = {(void*)0,
                           (void*)RomCurve_goNextPoint,
                           (void*)RomCurve_setClosed,
                           (void*)RomCurve_setNextNode,
-                          (void*)RomCurve_func29,
+                          (void*)RomCurve_goNextPointIndexed,
                           (void*)RomCurve_getUnblockedControlPointId,
                           (void*)RomCurve_getControlPointId,
-                          (void*)RomCurve_func2C};
+                          (void*)RomCurve_initFromCurveId};
 char sCurvesMaxRomCurvesExceeded[36] = "curves.c: MAX_ROMCURVES exceeded!!\n\000";

@@ -61,8 +61,8 @@ typedef u8 (*RomCurveGoNextPointIndexedFn)(void *walker,int pickIdx);
 struct RomCurveInterface {
   RomCurveVoidFn release;
   RomCurveVoidFn initialise;
-  void (*remove)(RomCurveDef *curve);
   void (*addCurveDef)(RomCurveDef *curve);
+  void (*remove)(RomCurveDef *curve);
   RomCurveGetCurvesFn getCurves;
   RomCurveFindFn find;
   void *slot18;

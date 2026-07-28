@@ -2798,7 +2798,7 @@ void defStartFn_8005972c(char* p, u32* tbl, int idx, int flag)
             if (flag != 0)
             {
                 if (*(s16*)cur == 110)
-                    (*gRomCurveInterface)->addCurveDef((RomCurveDef*)cur);
+                    (*gRomCurveInterface)->remove((RomCurveDef*)cur);
                 if (*(s16*)cur == 5)
                     (*gCheckpointInterface)->removeRouteEntry((CheckpointRouteEntry*)cur);
             }
@@ -2808,7 +2808,7 @@ void defStartFn_8005972c(char* p, u32* tbl, int idx, int flag)
                 if (t == 110 || t == 5)
                 {
                     if (t == 110)
-                        (*gRomCurveInterface)->remove((RomCurveDef*)cur);
+                        (*gRomCurveInterface)->addCurveDef((RomCurveDef*)cur);
                     else
                         (*gCheckpointInterface)->addRouteEntry((CheckpointRouteEntry*)cur);
                     if (found == 0)

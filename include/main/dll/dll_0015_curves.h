@@ -229,7 +229,7 @@ f32 curves_distXZ(f32 x, f32 z, u32 curveId);
 f32 curves_distToObj(GameObject* obj, u32 curveId);
 f32 curves_find(int type, int action, f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ);
 RomCurveDef* RomCurve_findByIdWithIndex(u32 curveId, int* outIndex);
-int RomCurve_func20(RomCurvePlacementDef* curve, f32* outX, f32* outY, f32* outZ, s8* outTypes);
+int RomCurve_buildRandomPoints(RomCurvePlacementDef* curve, f32* outX, f32* outY, f32* outZ, s8* outTypes);
 int RomCurve_countRandomPoints(RomCurveDef* curve);
 int RomCurve_func1E(u32* curveIds, float* outX, float* outY, float* outZ);
 void RomCurve_getAdjacentWindow(RomCurveDef* curve, int* outIds);
