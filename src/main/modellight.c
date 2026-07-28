@@ -1191,8 +1191,8 @@ void modelLightStruct_selectBrightestAabbLights(f32 minX, f32 minY, f32 minZ, f3
     int i;
     f32 delta[3];
     f32 center[3];
-    u8* candidates[20];
-    u8* light;
+    ModelLightStruct* candidates[20];
+    ModelLightStruct* light;
     f32 dist;
     f32 intensity;
     f32 red;
@@ -1208,34 +1208,28 @@ void modelLightStruct_selectBrightestAabbLights(f32 minX, f32 minY, f32 minZ, f3
     candidateCount = 0;
     for (i = 0; i < gModelLightCount; i++)
     {
-        light = (u8*)gModelLightList[i];
-        if (((ModelLightStruct*)light)->enabled != 0 && ((ModelLightStruct*)light)->lightKind == 2 &&
-            ((ModelLightStruct*)light)->attenuationFar > 0.0f &&
-            ((ModelLightStruct*)light)->affectsAabbLightSelection != 0)
+        light = gModelLightList[i];
+        if (light->enabled != 0 && light->lightKind == 2 && light->attenuationFar > 0.0f &&
+            light->affectsAabbLightSelection != 0)
         {
-            PSVECSubtract(center, (f32*)(light + 0x10), delta);
+            PSVECSubtract(center, &light->worldX, delta);
             dist = PSVECMag(delta);
-            if (*(f32*)(light + 0x10) + ((ModelLightStruct*)light)->attenuationFar >= minX &&
-                ((ModelLightStruct*)light)->worldY + ((ModelLightStruct*)light)->attenuationFar >= minY &&
-                ((ModelLightStruct*)light)->worldZ + ((ModelLightStruct*)light)->attenuationFar >= minZ &&
-                *(f32*)(light + 0x10) - ((ModelLightStruct*)light)->attenuationFar <= maxX &&
-                ((ModelLightStruct*)light)->worldY - ((ModelLightStruct*)light)->attenuationFar <= maxY &&
-                ((ModelLightStruct*)light)->worldZ - ((ModelLightStruct*)light)->attenuationFar <= maxZ)
+            if (light->worldX + light->attenuationFar >= minX && light->worldY + light->attenuationFar >= minY &&
+                light->worldZ + light->attenuationFar >= minZ && light->worldX - light->attenuationFar <= maxX &&
+                light->worldY - light->attenuationFar <= maxY && light->worldZ - light->attenuationFar <= maxZ)
             {
-                intensity = 1.0f / (((ModelLightStruct*)light)->attenuationK0 +
-                                            (dist * (((ModelLightStruct*)light)->attenuationK2 * dist) +
-                                             ((ModelLightStruct*)light)->attenuationK1 * dist));
-                red = intensity * light[0xa8];
+                intensity = 1.0f / (light->attenuationK0 + (dist * (light->attenuationK2 * dist) +
+                                                            light->attenuationK1 * dist));
+                red = intensity * light->diffuseColor[0];
                 red = (red < 0.0f) ? 0.0f : ((red > 255.0f) ? 255.0f : red);
-                green = intensity * light[0xa9];
+                green = intensity * light->diffuseColor[1];
                 green = (green < 0.0f) ? 0.0f : ((green > 255.0f) ? 255.0f : green);
-                blue = intensity * light[0xaa];
+                blue = intensity * light->diffuseColor[2];
                 blue = (blue < 0.0f) ? 0.0f : ((blue > 255.0f) ? 255.0f : blue);
-                green = (red < green) ? green : red;
-                ((ModelLightStruct*)light)->selectionScore = green;
-                blue = (((ModelLightStruct*)light)->selectionScore > blue) ? ((ModelLightStruct*)light)->selectionScore
-                                                                           : blue;
-                ((ModelLightStruct*)light)->selectionScore = blue;
+                red = (red > green) ? red : green;
+                light->selectionScore = red;
+                blue = (light->selectionScore > blue) ? light->selectionScore : blue;
+                light->selectionScore = blue;
 
                 selectedCount = candidateCount;
                 candidateCount++;
@@ -1260,14 +1254,14 @@ void modelLightStruct_selectBrightestAabbLights(f32 minX, f32 minY, f32 minZ, f3
         intensity = 0.0f;
         for (i = 0; i < candidateCount; i++)
         {
-            if (((ModelLightStruct*)candidates[i])->selectionScore > intensity)
+            if (candidates[i]->selectionScore > intensity)
             {
-                intensity = ((ModelLightStruct*)candidates[i])->selectionScore;
+                intensity = candidates[i]->selectionScore;
                 light = candidates[i];
             }
         }
-        outLights[(*outCount)++] = (ModelLightStruct*)light;
-        ((ModelLightStruct*)light)->selectionScore = dist;
+        outLights[(*outCount)++] = light;
+        light->selectionScore = dist;
     }
 }
 
