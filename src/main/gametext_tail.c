@@ -307,12 +307,12 @@ void gameTextTickReveal(int textId, TextDisplayState* state)
     if (state->active == 0)
     {
         gGameTextDrawnCharIndex = 0;
-        gGameTextRevealProgress = lbl_803DE700;
+        gGameTextRevealProgress = 2.0f;
         state->f10 = def->count;
         state->f8 = 0;
         state->active = 1;
     }
-    if (lbl_803DE700 == gGameTextRevealProgress)
+    if (2.0f == gGameTextRevealProgress)
     {
         Sfx_PlayFromObject(0, SFXTRIG_clock_loop);
     }
@@ -357,7 +357,7 @@ void gameTextTickReveal(int textId, TextDisplayState* state)
             }
             else
             {
-                gGameTextRevealProgress = lbl_803DE700;
+                gGameTextRevealProgress = 2.0f;
             }
             if (state->charIndex < 0)
             {
@@ -446,7 +446,7 @@ char** textMeasureFn_80016c9c(char* str, f32 width, f32 height, int* outCount, f
     cursor = 0;
     breakPos = 0;
     haveSpace = 0;
-    penX = lbl_803DE704;
+    penX = 0.0f;
     if (gameTextCharset == 2)
     {
         i = 6;
@@ -541,7 +541,7 @@ char** textMeasureFn_80016c9c(char* str, f32 width, f32 height, int* outCount, f
                     {
                         return 0;
                     }
-                    penX = lbl_803DE704;
+                    penX = 0.0f;
                     cursor = breakPos;
                     haveSpace = 0;
                 }
