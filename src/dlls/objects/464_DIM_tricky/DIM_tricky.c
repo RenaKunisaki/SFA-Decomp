@@ -30,11 +30,11 @@ typedef struct DimTrickyState
 typedef struct DimTrickyInterfaceVTable
 {
     void* pad00[14];
-    void (*linkCompanion)(GameObject* tricky, GameObject* controller);
+    int (*requestMoveToObject)(GameObject* tricky, GameObject* target);
 } DimTrickyInterfaceVTable;
 
 STATIC_ASSERT(sizeof(DimTrickyState) == 0x1);
-STATIC_ASSERT(offsetof(DimTrickyInterfaceVTable, linkCompanion) == 0x38);
+STATIC_ASSERT(offsetof(DimTrickyInterfaceVTable, requestMoveToObject) == 0x38);
 
 int dim_tricky_getExtraSize(void)
 {
@@ -81,7 +81,7 @@ void dim_tricky_update(GameObject* obj)
         state->phase = DIMTRICKY_STATE_LINK_COMPANION;
         break;
     case DIMTRICKY_STATE_LINK_COMPANION:
-        (*(DimTrickyInterfaceVTable**)trickyObj->anim.dll)->linkCompanion(trickyObj, obj);
+        (*(DimTrickyInterfaceVTable**)trickyObj->anim.dll)->requestMoveToObject(trickyObj, obj);
         state->phase = DIMTRICKY_STATE_DONE;
         break;
     case DIMTRICKY_STATE_DONE:

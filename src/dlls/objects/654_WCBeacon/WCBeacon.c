@@ -110,7 +110,7 @@ void wcbeacon_update(GameObject* obj)
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             if (tricky != NULL && (obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE))
             {
-                (*(WCBeaconTrickyInterfaceVTable**)tricky->anim.dll)->acceptInteraction(
+                (*(WCBeaconTrickyInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(
                     tricky, obj, WCBEACON_TRIGGER_ACCEPT_ARG, INTERACT_FLAG_IN_RANGE);
             }
         }

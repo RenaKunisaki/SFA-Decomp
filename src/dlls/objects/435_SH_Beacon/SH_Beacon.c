@@ -30,6 +30,15 @@
 #define SH_BEACON_TWINKLE_OBJECT_ID  0x55
 #define SH_BEACON_TWINKLE_SETUP_SIZE 0x20
 
+typedef struct ShBeaconTrickyInterface {
+    void* unknown00[10];
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
+} ShBeaconTrickyInterface;
+
+STATIC_ASSERT(offsetof(ShBeaconTrickyInterface, sideCommandEnable) == 0x28);
+
+#define SH_BEACON_TRICKY_INTERFACE(tricky) ((ShBeaconTrickyInterface*)*((GameObject*)(tricky))->anim.dll)
+
 f32 gShBeaconHitEffectCooldown;
 
 int sh_beacon_sequenceCallback(GameObject* obj) {
@@ -136,7 +145,7 @@ void sh_beacon_update(GameObject* obj) {
         }
         tricky = getTrickyObject();
         if ((tricky != NULL) && ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)) {
-            (*(ShBeaconTrickyInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(tricky, obj, 1, 4);
+            SH_BEACON_TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 4);
         }
     } else {
         if ((mainGetBit(GAMEBIT_ITEM_MoonPassKey_Got) != 0) ||

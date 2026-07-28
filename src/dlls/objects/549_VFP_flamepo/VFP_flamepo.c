@@ -10,6 +10,16 @@
 #define VFP_FLAMEPOINT_OBJFLAG_HIDDEN             0x4000
 #define VFP_FLAMEPOINT_OBJFLAG_HITDETECT_DISABLED 0x2000
 
+typedef struct VfpFlamePointTrickyInterface
+{
+    void* unknown00[10];
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
+} VfpFlamePointTrickyInterface;
+
+STATIC_ASSERT(offsetof(VfpFlamePointTrickyInterface, sideCommandEnable) == 0x28);
+
+#define VFP_FLAMEPOINT_TRICKY_INTERFACE(tricky) ((VfpFlamePointTrickyInterface*)*(tricky)->anim.dll)
+
 static const f32 lbl_803E6158 = 35.0f;
 
 typedef struct VfpFlamePointData
@@ -86,8 +96,8 @@ void VFP_flamepoint_update(GameObject* obj)
                 {
                     if (*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE)
                     {
-                        (*(void (*)(void*, int, int, int)) *
-                         (int*)(*(int*)*(int*)((u8*)tricky + 0x68) + 0x28))(tricky, (int)obj, 1, 4);
+                        VFP_FLAMEPOINT_TRICKY_INTERFACE((GameObject*)tricky)
+                            ->sideCommandEnable((GameObject*)tricky, obj, 1, 4);
                     }
                     *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
                     objRenderFn_80041018(obj);

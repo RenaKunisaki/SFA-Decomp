@@ -38,6 +38,15 @@
 #define DIM_LOG_FIRE_OBJECT_GROUP   0x31
 #define DIM_LOG_FIRE_OBJECT_TYPE_ID 1
 
+typedef struct DimLogFireTrickyInterface {
+    void* unknown00[10];
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
+} DimLogFireTrickyInterface;
+
+STATIC_ASSERT(offsetof(DimLogFireTrickyInterface, sideCommandEnable) == 0x28);
+
+#define DIM_LOGFIRE_TRICKY_INTERFACE(tricky) ((DimLogFireTrickyInterface*)*(tricky)->anim.dll)
+
 int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
     DimLogFireState* state = obj->extra;
 
@@ -175,7 +184,7 @@ void DIMLogFire_update(GameObject* obj) {
         tricky = getTrickyObject();
         if (tricky != NULL) {
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-                (*(void (**)(GameObject*, GameObject*, int, int))((u8*)*tricky->anim.dll + 0x28))(tricky, obj, 1, 4);
+                DIM_LOGFIRE_TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 4);
             }
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         }

@@ -55,10 +55,10 @@ typedef struct EdibleMushroomPartfxBlock {
 
 typedef struct EdibleMushroomTrickyInterface {
     void* unknown00[10];
-    void (*enableSideCommand)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
 } EdibleMushroomTrickyInterface;
 
-STATIC_ASSERT(offsetof(EdibleMushroomTrickyInterface, enableSideCommand) == 0x28);
+STATIC_ASSERT(offsetof(EdibleMushroomTrickyInterface, sideCommandEnable) == 0x28);
 
 #define EDIBLE_MUSHROOM_TRICKY_INTERFACE(tricky) ((EdibleMushroomTrickyInterface*)*(tricky)->anim.dll)
 
@@ -531,7 +531,7 @@ void EdibleMushroom_update(GameObject* obj) {
             state->currentTargetDistance = sqrtf(distEnemy);
         }
         if (state->currentTargetDistance < (f32)(u32)placement->retreatTriggerDistance) {
-            EDIBLE_MUSHROOM_TRICKY_INTERFACE(enemy)->enableSideCommand(enemy, obj, 0, 1);
+            EDIBLE_MUSHROOM_TRICKY_INTERFACE(enemy)->sideCommandEnable(enemy, obj, 0, 1);
         }
     }
 

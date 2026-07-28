@@ -44,6 +44,16 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/vecmath.h"
 
+typedef struct KytesMumTrickyInterface
+{
+    void* unknown00[13];
+    void (*commandPlayBall)(GameObject* tricky, int enabled, GameObject* target);
+} KytesMumTrickyInterface;
+
+STATIC_ASSERT(offsetof(KytesMumTrickyInterface, commandPlayBall) == 0x34);
+
+#define KYTESMUM_TRICKY_INTERFACE(tricky) ((KytesMumTrickyInterface*)*((GameObject*)(tricky))->anim.dll)
+
 s16 gKytesMumRoamEventSfxTable[4] = {0x1B4, 0x1B5, 0x1B6, 0};
 s16 lbl_803DC2D0[4] = {0x336, 0x337, 0x337, 0};
 
@@ -224,7 +234,7 @@ int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
             runtime->animSpeed = 0.006f;
             if (tricky != 0)
             {
-                (*(void (**)(int*, int, int))((char*)*(void**)*(void**)((char*)tricky + 0x68) + 0x34))(tricky, 0, 0);
+                KYTESMUM_TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 0, NULL);
             }
         }
     }

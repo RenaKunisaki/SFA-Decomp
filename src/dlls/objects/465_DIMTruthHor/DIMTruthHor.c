@@ -27,6 +27,16 @@
 #define DIM_TRUTH_HORN_ICE_PARTICLE_OFFSET_SCALE 0.1f
 #define DIM_TRUTH_HORN_ICE_PARTICLE_SCALE        1.0f
 
+typedef struct DimTruthHorniceTrickyInterface
+{
+    void* unknown00[10];
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
+} DimTruthHorniceTrickyInterface;
+
+STATIC_ASSERT(offsetof(DimTruthHorniceTrickyInterface, sideCommandEnable) == 0x28);
+
+#define DIMTRUTHHOR_TRICKY_INTERFACE(tricky) ((DimTruthHorniceTrickyInterface*)*(tricky)->anim.dll)
+
 typedef enum DimTruthHornIcePhase {
     DIM_TRUTH_HORN_ICE_PHASE_INTACT = 0,
     DIM_TRUTH_HORN_ICE_PHASE_SHATTERING = 1,
@@ -68,7 +78,7 @@ void dimtruthhornice_update(GameObject* obj) {
 
             if (tricky != NULL) {
                 if ((*(u8*)&obj->anim.resetHitboxMode & INTERACT_FLAG_IN_RANGE) != 0) {
-                    (*(TrickySideCommandEnableFn*)(**(int**)((char*)tricky + 0x68) + 0x28))(tricky, obj, 1, 4);
+                    DIMTRUTHHOR_TRICKY_INTERFACE((GameObject*)tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 4);
                 }
                 *(u8*)&obj->anim.resetHitboxMode &= ~INTERACT_FLAG_DISABLED;
             }

@@ -68,6 +68,15 @@
 #define TUMBLEWEED_PIECE_GRAVITY             -0.17f
 #define TUMBLEWEED_PIECE_ROTATION_DAMPING    100
 
+typedef struct TumbleweedBushTrickyInterface {
+    void* unknown00[10];
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
+} TumbleweedBushTrickyInterface;
+
+STATIC_ASSERT(offsetof(TumbleweedBushTrickyInterface, sideCommandEnable) == 0x28);
+
+#define TUMBLEWEED_BUSH_TRICKY_INTERFACE(tricky) ((TumbleweedBushTrickyInterface*)*(tricky)->anim.dll)
+
 f32 gTumbleweedBushHitCooldown;
 
 s8 tumbleweedbush_spawnSibling(GameObject* obj) {
@@ -641,7 +650,7 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
             if (tricky != NULL && tricky->anim.seqId == TRICKY_SEQ_ID) {
                 f32 trickyOffsetX, trickyOffsetZ, trickyDistanceSquared;
                 if (targetDistanceSquared < 30625.0f) {
-                    (*(int (**)(int, int, int, int))((char*)*tricky->anim.dll + 0x28))((int)tricky, (int)obj, 0, 1);
+                    TUMBLEWEED_BUSH_TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 0, 1);
                 }
                 trickyOffsetX = obj->anim.localPosX - tricky->anim.localPosX;
                 trickyOffsetZ = obj->anim.localPosZ - tricky->anim.localPosZ;

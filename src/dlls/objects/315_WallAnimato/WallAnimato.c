@@ -18,9 +18,10 @@
 #define WALL_ANIMATOR_PARTFX_DEBRIS            0xCA
 #define WALL_ANIMATOR_PARTFX_DUST              0xCB
 #define WALL_ANIMATOR_PARTFX_FLAGS             0x200001
-#define WALL_ANIMATOR_TRICKY_NOTIFY_SLOT_INDEX 0x0A
+#define WALL_ANIMATOR_TRICKY_SIDE_COMMAND_ENABLE_SLOT 0x0A
 
-typedef void (*WallAnimatorTrickyNotifyFn)(GameObject* tricky, GameObject* obj, int arg2, int arg3);
+typedef void (*WallAnimatorTrickySideCommandEnableFn)(GameObject* tricky, GameObject* target,
+                                                     int commandKind, int commandType);
 
 u8 WallAnimator_modelMtxFn(GameObject* obj) {
     WallAnimatorPlacement* placement = (WallAnimatorPlacement*)obj->anim.placementData;
@@ -133,8 +134,8 @@ void WallAnimator_update(GameObject* obj) {
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-                ((WallAnimatorTrickyNotifyFn)(*tricky->anim.dll)[WALL_ANIMATOR_TRICKY_NOTIFY_SLOT_INDEX])(tricky, obj,
-                                                                                                          1, 1);
+                ((WallAnimatorTrickySideCommandEnableFn)(
+                    *tricky->anim.dll)[WALL_ANIMATOR_TRICKY_SIDE_COMMAND_ENABLE_SLOT])(tricky, obj, 1, 1);
             }
             objRenderFn_80041018(obj);
         }

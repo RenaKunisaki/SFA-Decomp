@@ -99,6 +99,21 @@
 #include "main/audio/music_api.h"
 #include "main/gx_scissor_api.h"
 
+typedef struct HudTrickyInterface
+{
+    void* unknown00[8];
+    int (*getAvailableCommands)(GameObject* tricky);
+    int (*updateSideCommandPrompts)(GameObject* tricky);
+    void* unknown28[8];
+    int (*getCurrentCommandType)(GameObject* tricky, int* commandType);
+} HudTrickyInterface;
+
+STATIC_ASSERT(offsetof(HudTrickyInterface, getAvailableCommands) == 0x20);
+STATIC_ASSERT(offsetof(HudTrickyInterface, updateSideCommandPrompts) == 0x24);
+STATIC_ASSERT(offsetof(HudTrickyInterface, getCurrentCommandType) == 0x48);
+
+#define HUD_TRICKY_INTERFACE(tricky) ((HudTrickyInterface*)*((GameObject*)(tricky))->anim.dll)
+
 u16 lbl_803DBA30 = 420;
 f32 lbl_803DBA34 = 0.3f;
 f32 lbl_803DBA38 = -8.0f;
@@ -4253,8 +4268,8 @@ void drawTrickyHudOverlay(int obj, int unused1, int unused2)
     hudDrawTimedElement(obj, &lbl_803A9398);
     if ((void*)tricky != 0)
     {
-        gTrickyHudItemMask = (*(int (**)(int))((char*)*((GameObject*)tricky)->anim.dll + 0x24))(tricky);
-        gTrickyHudActionMask = (*(int (**)(int))((char*)*((GameObject*)tricky)->anim.dll + 0x20))(tricky);
+        gTrickyHudItemMask = HUD_TRICKY_INTERFACE(tricky)->updateSideCommandPrompts((GameObject*)tricky);
+        gTrickyHudActionMask = HUD_TRICKY_INTERFACE(tricky)->getAvailableCommands((GameObject*)tricky);
     }
     else
     {
@@ -4266,7 +4281,7 @@ void drawTrickyHudOverlay(int obj, int unused1, int unused2)
         (player->objectFlags & CMENU_OBJFLAG_PARENT_SLACK) == 0 && pauseMenuState == 0 &&
         (void*)tricky != 0 && getHudHiddenFrameCount() == 0)
     {
-        (*(int (**)(int, int*))((char*)*((GameObject*)tricky)->anim.dll + 0x48))(tricky, &iconIndex);
+        HUD_TRICKY_INTERFACE(tricky)->getCurrentCommandType((GameObject*)tricky, &iconIndex);
         if (gTrickyHudCachedIconTexture != 0)
         {
             if (gTrickyHudCachedIconIndex != iconIndex)
