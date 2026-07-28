@@ -1,9 +1,11 @@
 /*
  * DIMSnowBall (DLL 0x1C2) - timed snowball spawner for Dinosaur Island
  * Mission.  On each timer expiry, if loading is not locked and the player
- * is clear, allocates a rolling-snowball object (kind 36, id 406) seeded
- * from the placement params and resets the spawn countdown.
+ * is clear, allocates a 36-byte setup for rolling-snowball object 406,
+ * seeds it from the placement params, and resets the spawn countdown.
  */
+#include "dlls/objects/449_DIMSnowBall.h"
+
 #include "main/frame_timing.h"
 #include "main/dll/player_api.h"
 #include "main/vecmath.h"
@@ -36,29 +38,12 @@ typedef struct Dimsnowball1c2Placement
     s16 unk1E;
 } Dimsnowball1c2Placement;
 
-/* Spawn-setup buffer for the DIMSNOWBALL1C2 child (Obj_AllocObjectSetup(0x24)):
- * ObjPlacement head (color/pos/mapId) + class-specific rotation fields at
- * 0x18/0x1A/0x1C, sourced from the parent placement's rotByte/childRot/childZOffset. */
-typedef struct Dimsnowball1c2Setup
-{
-    ObjPlacement head; /* 0x00 */
-    s8 rotXByte;           /* 0x18 <- placement->rotX */
-    u8 pad19[0x1A - 0x19];
-    s16 childRot;      /* 0x1A <- def->childRot */
-    s16 childZOffset;  /* 0x1C <- def->childZOffset + random */
-} Dimsnowball1c2Setup;
-
 STATIC_ASSERT(sizeof(Dimsnowball1c2State) == 0x4);
 STATIC_ASSERT(offsetof(Dimsnowball1c2Placement, initialCountdown) == 0x18);
 STATIC_ASSERT(offsetof(Dimsnowball1c2Placement, childRot) == 0x1A);
 STATIC_ASSERT(offsetof(Dimsnowball1c2Placement, childZOffset) == 0x1B);
 STATIC_ASSERT(offsetof(Dimsnowball1c2Placement, rotX) == 0x1C);
 STATIC_ASSERT(offsetof(Dimsnowball1c2Placement, unk1E) == 0x1E);
-STATIC_ASSERT(offsetof(Dimsnowball1c2Setup, rotXByte) == 0x18);
-STATIC_ASSERT(offsetof(Dimsnowball1c2Setup, childRot) == 0x1A);
-STATIC_ASSERT(offsetof(Dimsnowball1c2Setup, childZOffset) == 0x1C);
-
-
 int dimsnowball1c2_getExtraSize(void)
 {
     return sizeof(Dimsnowball1c2State);
@@ -95,27 +80,28 @@ void dimsnowball1c2_update(GameObject* obj)
         {
             if (playerGetFocusObject(Obj_GetPlayerObject()) == NULL)
             {
-                Dimsnowball1c2Setup* setup;
+                DimSnowBallPlacement* setup;
                 Dimsnowball1c2Placement* placement;
                 placement = (Dimsnowball1c2Placement*)obj->anim.placementData;
-                setup = (Dimsnowball1c2Setup*)Obj_AllocObjectSetup(36, DIMSNOWBALL1C2_CHILD_OBJ);
-                setup->head.color[0] = placement->head.color[0];
-                setup->head.color[2] = placement->head.color[2];
-                setup->head.color[1] = placement->head.color[1];
-                setup->head.color[3] = placement->head.color[3];
-                setup->head.posX = obj->anim.localPosX;
-                setup->head.posY = obj->anim.localPosY;
-                setup->head.posZ = obj->anim.localPosZ;
-                setup->head.mapId = placement->head.mapId;
+                setup =
+                    (DimSnowBallPlacement*)Obj_AllocObjectSetup(sizeof(DimSnowBallPlacement), DIMSNOWBALL1C2_CHILD_OBJ);
+                setup->base.color[0] = placement->head.color[0];
+                setup->base.color[2] = placement->head.color[2];
+                setup->base.color[1] = placement->head.color[1];
+                setup->base.color[3] = placement->head.color[3];
+                setup->base.posX = obj->anim.localPosX;
+                setup->base.posY = obj->anim.localPosY;
+                setup->base.posZ = obj->anim.localPosZ;
+                setup->base.mapId = placement->head.mapId;
                 {
                     int rotX = placement->rotX;
-                    setup->rotXByte = rotX;
+                    setup->rotationXByte = rotX;
                 }
-                setup->childRot = placement->childRot;
-                setup->childZOffset =
+                setup->rotationParam1A = placement->childRot;
+                setup->rotationParam1C =
                     (f32)(u32)placement->childZOffset +
                     (f32)(int)randomGetRange(0, 100) / 100.0f;
-                Obj_SetupObject(&setup->head, 5, obj->anim.mapEventSlot, -1, 0);
+                Obj_SetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1, 0);
                 state->countdown = state->spawnPeriod;
             }
         }

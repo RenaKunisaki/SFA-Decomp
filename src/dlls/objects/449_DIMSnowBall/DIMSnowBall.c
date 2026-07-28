@@ -3,89 +3,60 @@
  * path defined by gDimSnowballCoords, plays a jingle on sharp course changes,
  * and drives a hit-detect object that clears its target on impact.
  */
+
+#include "dlls/objects/449_DIMSnowBall.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/frame_timing.h"
-#include "sys/objects.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "game/objects/object.h"
-#include "sys/objects/lifecycle.h"
-#include "dlls/object_descriptor.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_trigger_ids.h"
+#include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/audio/sfx.h"
-#include "main/dll/DIM/DIMlavasmash.h"
+#include "main/objhits.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-typedef struct DimsnowballState
-{
-    u8 pad0[0xC - 0x0];
-    s8 jingleCooldown;
-    u8 padD[0x10 - 0xD];
-} DimsnowballState;
+#define DIM_SNOWBALL_COORDINATES_PER_POINT 3
+#define DIM_SNOWBALL_COORDINATE_SCALE      16.0f
+#define DIM_SNOWBALL_JINGLE_COOLDOWN       0x1E
+#define DIM_SNOWBALL_ROTATION_SCALE        1000.0f
+#define DIM_SNOWBALL_MODEL_FLAGS           0x810
+#define DIM_SNOWBALL_HIT_VOLUME_PRIORITY   4
+#define DIM_SNOWBALL_HIT_VOLUME_ID         2
+#define DIM_SNOWBALL_HIT_MASK              0x10
 
-typedef struct DimSnowballState
-{
-    void* target;
-    int targetId;
-} DimSnowballState;
+s16 gDimSnowballPathPointCount = 0x3E6;
 
-typedef struct DimSnowballObject
-{
-    u8 unk0[0x54];
-    u8* handle54;
-    u8 unk58[0xc];
-    u8* handle64;
-    u8 unk68[0x48];
-    u16 flags;
-    u8 unkB2[6];
-    DimSnowballState* state;
-} DimSnowballObject;
-
-typedef struct DimSnowballDef
-{
-    u8 unk0[0x14];
-    int targetId;
-} DimSnowballDef;
-
-s16 lbl_803DBEE8 = 0x3E6;
-
-#define DIMSNOWBALL_OBJFLAG_PARENT_SLACK 0x1000
-#define DIMSNOWBALL_OBJFLAG_HIDDEN       0x4000
-#define DIMSNOWBALL_OBJFLAG_FREED        0x40
-
-extern s16 gDimSnowballCoords[];
-
-int dimsnowball_getExtraSize(void)
-{
-    return 0x10;
+int dimsnowball_getExtraSize(void) {
+    return sizeof(DimSnowBallState);
 }
 
-int dimsnowball_getObjectTypeId(void)
-{
+int dimsnowball_getObjectTypeId(void) {
     return 2;
 }
 
-void dimsnowball_free(void)
-{
+void dimsnowball_free(void) {
 }
 
-void dimsnowball_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
+void dimsnowball_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+
+    if (v != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void dimsnowball_hitDetect(int* obj)
-{
-    int* state = ((GameObject*)obj)->extra;
-    GameObject* target = (GameObject*)state[0];
-    if ((target->objectFlags & DIMSNOWBALL_OBJFLAG_FREED) == 0)
+void dimsnowball_hitDetect(GameObject* obj) {
+    DimSnowBallState* state = obj->extra;
+    GameObject* target = state->target;
+
+    if ((target->objectFlags & OBJECT_OBJFLAG_FREED) == 0) {
         return;
-    state[0] = 0;
+    }
+    state->target = NULL;
 }
 
-void dimsnowball_update(GameObject* obj)
-{
+void dimsnowball_update(GameObject* obj) {
     s16 idx[4];
     f32 x[4];
     f32 y[4];
@@ -105,161 +76,147 @@ void dimsnowball_update(GameObject* obj)
     ap = x;
     ap = y;
     ap = z;
-    state = (obj)->extra;
+    state = obj->extra;
     player = Obj_GetPlayerObject();
-    if (*(void**)state == NULL)
-    {
+    if (*(void**)state == NULL) {
         Obj_FreeObject(obj);
         return;
     }
     frames = framesThisStep;
-    idx[1] = state[2];
-    count = lbl_803DBEE8;
+    idx[1] = ((DimSnowBallState*)state)->pathPointIndex;
+    count = gDimSnowballPathPointCount;
     last = count - 1;
-    if (idx[1] >= last)
-    {
+    if (idx[1] >= last) {
         Obj_FreeObject(obj);
         return;
     }
     idx[0] = idx[1] - 1;
-    if (idx[0] < 0)
-    {
+    if (idx[0] < 0) {
         idx[0] = 0;
     }
     idx[2] = idx[1] + 1;
-    if ((s16)idx[2] >= count)
-    {
+    if ((s16)idx[2] >= count) {
         idx[2] = last;
     }
     idx[3] = idx[1] + 2;
-    if ((s16)idx[3] >= count)
-    {
+    if ((s16)idx[3] >= count) {
         idx[3] = last;
     }
-    idx[0] *= 3;
+    idx[0] *= DIM_SNOWBALL_COORDINATES_PER_POINT;
     {
         f32 cc1 = gDimSnowballCoords[idx[0]];
-        x[0] = cc1 / 16.0f;
+        x[0] = cc1 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
     {
         f32 cc2 = gDimSnowballCoords[idx[0] + 1];
-        y[0] = cc2 / 16.0f;
+        y[0] = cc2 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
     {
         f32 cc3 = gDimSnowballCoords[idx[0] + 2];
-        z[0] = cc3 / 16.0f;
+        z[0] = cc3 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
-    idx[1] *= 3;
+    idx[1] *= DIM_SNOWBALL_COORDINATES_PER_POINT;
     {
         f32 cc4 = gDimSnowballCoords[idx[1]];
-        x[1] = cc4 / 16.0f;
+        x[1] = cc4 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
     {
         f32 cc5 = gDimSnowballCoords[idx[1] + 1];
-        y[1] = cc5 / 16.0f;
+        y[1] = cc5 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
     {
         f32 cc6 = gDimSnowballCoords[idx[1] + 2];
-        z[1] = cc6 / 16.0f;
+        z[1] = cc6 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
-    idx[2] *= 3;
+    idx[2] *= DIM_SNOWBALL_COORDINATES_PER_POINT;
     {
         f32 cc7 = gDimSnowballCoords[idx[2]];
-        x[2] = cc7 / 16.0f;
+        x[2] = cc7 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
     {
         f32 cc8 = gDimSnowballCoords[idx[2] + 1];
-        y[2] = cc8 / 16.0f;
+        y[2] = cc8 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
     {
         f32 cc9 = gDimSnowballCoords[idx[2] + 2];
-        z[2] = cc9 / 16.0f;
+        z[2] = cc9 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
-    idx[3] *= 3;
+    idx[3] *= DIM_SNOWBALL_COORDINATES_PER_POINT;
     {
         f32 cc10 = gDimSnowballCoords[idx[3]];
-        x[3] = cc10 / 16.0f;
+        x[3] = cc10 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
     {
         f32 cc11 = gDimSnowballCoords[idx[3] + 1];
-        y[3] = cc11 / 16.0f;
+        y[3] = cc11 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
     {
         f32 cc12 = gDimSnowballCoords[idx[3] + 2];
-        z[3] = cc12 / 16.0f;
+        z[3] = cc12 / DIM_SNOWBALL_COORDINATE_SCALE;
     }
     dy1 = y[1] - y[0];
     dy2 = y[2] - y[3];
-    if (dy2 <= 0.0f && dy1 <= 0.0f && ((DimsnowballState*)state)->jingleCooldown <= 0)
-    {
-        sqrtf((obj)->anim.velocityZ * (obj)->anim.velocityZ +
-              ((obj)->anim.velocityX * (obj)->anim.velocityX + (obj)->anim.velocityY * (obj)->anim.velocityY));
-        if ((player->objectFlags & DIMSNOWBALL_OBJFLAG_PARENT_SLACK) == 0)
-        {
+    if (dy2 <= 0.0f && dy1 <= 0.0f && ((DimSnowBallState*)state)->jingleCooldown <= 0) {
+        sqrtf(obj->anim.velocityZ * obj->anim.velocityZ +
+              (obj->anim.velocityX * obj->anim.velocityX + obj->anim.velocityY * obj->anim.velocityY));
+        if ((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_en_fireup_c_1fb);
         }
-        ((DimsnowballState*)state)->jingleCooldown = 0x1e;
+        ((DimSnowBallState*)state)->jingleCooldown = DIM_SNOWBALL_JINGLE_COOLDOWN;
     }
     dy1 = 0.0f;
-    (obj)->anim.localPosX = x[1] + dy1 * (x[2] - x[1]);
-    (obj)->anim.localPosY = y[1] + dy1 * (y[2] - y[1]);
-    (obj)->anim.localPosZ = z[1] + dy1 * (z[2] - z[1]);
-    (obj)->anim.localPosX = (obj)->anim.localPosX + ((GameObject*)*state)->anim.localPosX;
-    (obj)->anim.localPosY = (obj)->anim.localPosY + ((GameObject*)*state)->anim.localPosY;
-    (obj)->anim.localPosZ = (obj)->anim.localPosZ + ((GameObject*)*state)->anim.localPosZ;
-    (obj)->anim.velocityX = oneOverTimeDelta * ((obj)->anim.localPosX - (obj)->anim.previousLocalPosX);
-    (obj)->anim.velocityY = oneOverTimeDelta * ((obj)->anim.localPosY - (obj)->anim.previousLocalPosY);
-    (obj)->anim.velocityZ = oneOverTimeDelta * ((obj)->anim.localPosZ - (obj)->anim.previousLocalPosZ);
-    state[2] = state[2] + frames;
-    if (((DimsnowballState*)state)->jingleCooldown > 0)
-    {
-        ((DimsnowballState*)state)->jingleCooldown -= frames;
+    obj->anim.localPosX = x[1] + dy1 * (x[2] - x[1]);
+    obj->anim.localPosY = y[1] + dy1 * (y[2] - y[1]);
+    obj->anim.localPosZ = z[1] + dy1 * (z[2] - z[1]);
+    obj->anim.localPosX = obj->anim.localPosX + ((DimSnowBallState*)state)->target->anim.localPosX;
+    obj->anim.localPosY = obj->anim.localPosY + ((DimSnowBallState*)state)->target->anim.localPosY;
+    obj->anim.localPosZ = obj->anim.localPosZ + ((DimSnowBallState*)state)->target->anim.localPosZ;
+    obj->anim.velocityX = oneOverTimeDelta * (obj->anim.localPosX - obj->anim.previousLocalPosX);
+    obj->anim.velocityY = oneOverTimeDelta * (obj->anim.localPosY - obj->anim.previousLocalPosY);
+    obj->anim.velocityZ = oneOverTimeDelta * (obj->anim.localPosZ - obj->anim.previousLocalPosZ);
+    ((DimSnowBallState*)state)->pathPointIndex = ((DimSnowBallState*)state)->pathPointIndex + frames;
+    if (((DimSnowBallState*)state)->jingleCooldown > 0) {
+        ((DimSnowBallState*)state)->jingleCooldown -= frames;
     }
-    v24 = (obj)->anim.velocityX;
-    dy2 = 1000.0f;
-    (obj)->anim.rotY = -(dy2 * -(obj)->anim.velocityZ - (f32)(obj)->anim.rotY);
-    (obj)->anim.rotZ = -(dy2 * v24 - (f32)(obj)->anim.rotZ);
-    model = *(u8**)&(obj)->anim.hitReactState;
-    if (model != NULL)
-    {
-        ((ObjHitsPriorityState*)model)->flags |= 1;
-        *(u8*)&((ObjHitsPriorityState*)model)->hitVolumePriority = 4;
-        *(u8*)&((ObjHitsPriorityState*)model)->hitVolumeId = 2;
-        *(int*)&((ObjHitsPriorityState*)model)->objectHitMask = 0x10;
-        *(int*)&((ObjHitsPriorityState*)model)->skeletonHitMask = 0x10;
+    v24 = obj->anim.velocityX;
+    dy2 = DIM_SNOWBALL_ROTATION_SCALE;
+    obj->anim.rotY = -(dy2 * -obj->anim.velocityZ - (f32)obj->anim.rotY);
+    obj->anim.rotZ = -(dy2 * v24 - (f32)obj->anim.rotZ);
+    model = *(u8**)&obj->anim.hitReactState;
+    if (model != NULL) {
+        ((ObjHitsPriorityState*)model)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
+        *(u8*)&((ObjHitsPriorityState*)model)->hitVolumePriority = DIM_SNOWBALL_HIT_VOLUME_PRIORITY;
+        *(u8*)&((ObjHitsPriorityState*)model)->hitVolumeId = DIM_SNOWBALL_HIT_VOLUME_ID;
+        *(int*)&((ObjHitsPriorityState*)model)->objectHitMask = DIM_SNOWBALL_HIT_MASK;
+        *(int*)&((ObjHitsPriorityState*)model)->skeletonHitMask = DIM_SNOWBALL_HIT_MASK;
     }
 }
 
-void dimsnowball_init(DimSnowballObject* objArg, DimSnowballDef* def)
-{
-    DimSnowballObject* obj = objArg;
-    DimSnowballState* state;
+void dimsnowball_init(GameObject* objArg, DimSnowBallPlacement* placement) {
+    GameObject* obj = objArg;
+    DimSnowBallState* state;
 
-    state = obj->state;
-    state->targetId = def->targetId;
-    def->targetId = -1;
-    state->target = ObjList_FindObjectById(state->targetId);
-    if (obj->handle54 != NULL)
-    {
-        obj->handle54[0x6a] = 0;
+    state = obj->extra;
+    state->targetObjectId = placement->targetObjectId;
+    placement->targetObjectId = -1;
+    state->target = ObjList_FindObjectById(state->targetObjectId);
+    if (obj->anim.hitReactState != NULL) {
+        ((ObjHitsPriorityState*)obj->anim.hitReactState)->lateralResponseWeight = 0;
     }
-    if (obj->handle64 != NULL)
-    {
-        *(u32*)(obj->handle64 + 0x30) |= 0x810;
+    if (obj->anim.modelState != NULL) {
+        obj->anim.modelState->flags |= DIM_SNOWBALL_MODEL_FLAGS;
     }
-    obj->flags = (u16)(obj->flags | DIMSNOWBALL_OBJFLAG_HIDDEN);
+    obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HIDDEN);
 }
 
-void dimsnowball_release(void)
-{
+void dimsnowball_release(void) {
 }
 
-void dimsnowball_initialise(void)
-{
+void dimsnowball_initialise(void) {
 }
 
 /* Spline path coordinates. */
-s16 gDimSnowballCoords[2994] = {
+s16 gDimSnowballCoords[DIM_SNOWBALL_PATH_COORDINATE_COUNT] = {
     0,     0,      0,      26,    0,      -54,    52,    0,      -109,   78,    0,      -164,   104,   0,      -219,
     130,   0,      -274,   156,   0,      -329,   182,   0,      -384,   208,   0,      -439,   234,   0,      -494,
     260,   0,      -549,   286,   0,      -604,   312,   0,      -659,   338,   0,      -714,   364,   0,      -769,
