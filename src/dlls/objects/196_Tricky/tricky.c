@@ -120,101 +120,26 @@ typedef struct
     u16 b;
 } TrickySfxPair;
 
-extern f32 lbl_803E23E8;
-extern f32 lbl_803E2418;
-extern f32 lbl_803E23DC;
-extern f32 lbl_803E23E0;
-extern f32 lbl_803E23E4;
-extern f32 lbl_803E23EC;
-extern f32 lbl_803E23F0;
-extern f32 lbl_803E23F4;
-extern f32 lbl_803E23F8;
-extern f32 lbl_803E2408;
-extern f32 lbl_803E240C;
-extern f32 lbl_803E2410;
-extern f32 lbl_803E2414;
-extern f32 lbl_803E2424;
-extern f32 lbl_803E2428;
-extern f32 lbl_803E242C;
-extern f32 lbl_803E2430;
-extern f32 lbl_803E2434;
-extern f32 lbl_803E2438;
-extern f32 lbl_803E244C;
-extern f32 lbl_803E2448;
-extern f32 lbl_803E2450;
-extern f32 lbl_803E2420;
-extern f32 lbl_803E243C;
-extern f32 lbl_803E2440;
-extern f32 lbl_803E2454;
-extern f32 lbl_803E2458;
-extern f32 lbl_803E2468;
-extern f32 lbl_803E246C;
-extern f32 lbl_803E2470;
-extern f32 lbl_803E2474;
-extern f32 lbl_803E247C;
-extern f32 lbl_803E2478;
-extern f32 lbl_803E2480;
-extern f32 lbl_803E2484;
 extern char lbl_8031D2E8[];
 extern u32 gSkeetlaFootstepSfxIds01;
-extern f32 lbl_803E241C;
-extern f32 lbl_803E2488;
 extern f32 gTrickyFollowMaxSpeed;
 extern f32 gTrickyFollowAnim17Speed;
 extern f32 gTrickyFollowAnim18Speed;
 extern f32 gTrickyFollowVerticalDeltaDivisorA;
-extern f32 lbl_803E249C;
 extern f32 gTrickyFollowVerticalDeltaDivisorB;
-extern f32 lbl_803E24A4;
-extern f32 lbl_803E24A8;
-extern f32 lbl_803E24AC;
 extern f32 gTrickyFollowArcCoefficient;
-extern f32 lbl_803E24B4;
-extern f32 lbl_803E24B8;
-extern f32 lbl_803E24BC;
-extern f32 lbl_803E24C0;
-extern f32 lbl_803E2444;
-extern f32 lbl_803E24C4;
 extern char sInWaterMessage[];
 extern char lbl_8031D478[];
-extern f32 lbl_803E24C8;
-extern f32 lbl_803E24CC;
-extern f32 lbl_803E24D0;
 extern const char sTrickyShouldNeverStopCirclingError[];
-extern f32 lbl_803E24D4;
-extern f32 lbl_803E24D8;
-extern f32 lbl_803E24DC;
-extern f32 lbl_803E24E0;
-extern f32 lbl_803E24E4;
-extern f32 lbl_803E24E8;
-extern f32 lbl_803E24EC;
-extern f32 lbl_803E24F0;
-extern f32 lbl_803E24F4;
-extern f32 lbl_803E24F8;
-extern f32 lbl_803E24FC;
-extern f32 lbl_803E2500;
-extern f32 lbl_803E2504;
-extern f32 lbl_803E2508;
-extern f32 lbl_803E250C;
-extern f32 lbl_803E2518;
-extern f32 lbl_803E251C;
-extern f32 lbl_803E2524;
-extern f32 lbl_803E2510;
 extern u32 gTrickySubstateSfxIdPairB;
 extern u32 gTrickySubstateSfxIdPairA;
-extern f32 lbl_803E2514;
-extern f32 lbl_803E2520;
 extern f64 lbl_803E2528;
-extern f32 lbl_803E2530;
-extern f32 lbl_803E2534;
 extern char gTrickyPathPointCollision[];
 extern u32 lbl_803E23C8;
 extern char sSidekickCommandDebugTextBlock[];
 extern f32 lbl_803DBC40[2];
 extern f32 lbl_803DBC48;
 extern u16 lbl_803E23C0;
-extern f32 lbl_803E253C;
-extern f32 lbl_803E2540;
 extern u32 lbl_803E2558;
 extern u32 lbl_803E2560;
 extern u32 lbl_803E2564;
@@ -241,11 +166,6 @@ extern f32 lbl_803E2590;
 extern f32 lbl_803E2594;
 extern f32 lbl_803E259C;
 extern TrickySfxPair lbl_803E23C4;
-extern f32 lbl_803E2538;
-extern f32 lbl_803E2544;
-extern f32 lbl_803E2548;
-extern f32 lbl_803E254C;
-extern f32 lbl_803E2550;
 
 /* The one partfx effect emitted along Tricky's queued impress path. */
 #define TRICKY_PATH_PARTFX 0x533
@@ -397,9 +317,9 @@ void objAnimFreeChildren(int a, int b, GameObject** c)
 /* Weighted blend-channel animator. On state[0x82e] bit 0x80,
  * primes channel 1 (weight 0, target weight ratio at +0x830) and latches
  * the active flag. While bit 0x40 is set, ramps state[0x830] toward
- * data[0] / data[1] with acceleration lbl_803E23E4 and damping
- * lbl_803E23F0, clamps to [0, lbl_803E23E8], and pushes the result to the
- * model's blend channel 1 as `lbl_803E23F8 * weight - lbl_803E23E8`. */
+ * data[0] / data[1] with acceleration 0.004f and damping
+ * 0.7f, clamps to [0, 1.0f], and pushes the result to the
+ * model's blend channel 1 as `2.0f * weight - 1.0f`. */
 void Tricky_updateBlendChannelWeight(int obj, u8* state)
 {
     ObjModel* model;
@@ -409,9 +329,9 @@ void Tricky_updateBlendChannelWeight(int obj, u8* state)
     if ((u32)((state[TUMBLEWEED_BLEND_FLAGS_OFFSET] >> 7) & 1) != 0)
     {
         model = Obj_GetActiveModel((GameObject*)obj);
-        ObjModel_SetBlendChannelTargets(model, 1, -1, 0x1a, lbl_803E23DC, 0x21);
-        *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) = lbl_803E23E0;
-        ObjModel_SetBlendChannelWeight(model, 0, lbl_803E23DC);
+        ObjModel_SetBlendChannelTargets(model, 1, -1, 0x1a, 0.0f, 0x21);
+        *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) = 10.0f;
+        ObjModel_SetBlendChannelWeight(model, 0, 0.0f);
         ((TumbleweedBlendFlags*)(state + TUMBLEWEED_BLEND_FLAGS_OFFSET))->pending = 0;
         ((TumbleweedBlendFlags*)(state + TUMBLEWEED_BLEND_FLAGS_OFFSET))->active = 1;
     }
@@ -422,57 +342,55 @@ void Tricky_updateBlendChannelWeight(int obj, u8* state)
         if (target > *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET))
         {
             *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) =
-                lbl_803E23E4 * timeDelta + *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET);
+                0.004f * timeDelta + *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET);
             *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) =
                 *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) * timeDelta +
                 *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET);
-            if (*(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) > (max = lbl_803E23E8))
+            if (*(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) > (max = 1.0f))
             {
-                *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) = lbl_803E23DC;
+                *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) = 0.0f;
                 *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) = max;
             }
             else if (*(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) > target)
             {
-                if (*(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) < lbl_803E23EC)
+                if (*(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) < 0.01f)
                 {
-                    *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) = lbl_803E23DC;
+                    *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) = 0.0f;
                     *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) = target;
                 }
                 else
                 {
-                    *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) =
-                        *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) * lbl_803E23F0;
+                    *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) *= 0.7f;
                 }
             }
         }
         else if (target < *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET))
         {
             *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) =
-                *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) - lbl_803E23E4 * timeDelta;
+                *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) - 0.004f * timeDelta;
             *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) =
                 *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) * timeDelta +
                 *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET);
-            if (*(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) < *(f32*)&lbl_803E23DC)
+            if (*(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) < 0.0f)
             {
                 *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) = *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) =
-                    lbl_803E23DC;
+                    0.0f;
             }
             if (*(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) < target)
             {
-                if (*(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) > lbl_803E23F4)
+                if (*(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) > -0.01f)
                 {
-                    *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) = lbl_803E23DC;
+                    *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) = 0.0f;
                     *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) = target;
                 }
                 else
                 {
-                    *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) =
-                        *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) * lbl_803E23F0;
+                    *(f32*)(state + TUMBLEWEED_BLEND_VELOCITY_OFFSET) *= 0.7f;
                 }
             }
         }
         ObjModel_SetBlendChannelWeight(Obj_GetActiveModel((GameObject*)obj), 1,
-                                       lbl_803E23F8 * *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) - lbl_803E23E8);
+                                       2.0f * *(f32*)(state + TUMBLEWEED_BLEND_WEIGHT_OFFSET) - 1.0f);
     }
 }
 
@@ -488,25 +406,25 @@ void tricky_updateModelVariantFade(int obj, int state)
             mainSetBits(1005, 1);
             (*gObjectTriggerInterface)->runSequence(5, (void*)obj, -1);
             ((TrickyState*)state)->stateFlags |= 0x4000;
-            *(f32*)(state + 0x828) = *(f32*)(state + 0x828) + lbl_803E2408;
+            *(f32*)(state + 0x828) += 20.0f;
         }
         *(f32*)(state + 0x828) = *(f32*)(state + 0x828) - timeDelta;
         t = *(f32*)(state + 0x828);
-        if (!(t > lbl_803E2408))
+        if (!(t > 20.0f))
         {
-            if (t > lbl_803E23DC)
+            if (t > 0.0f)
             {
                 f32 alpha;
-                if (t > lbl_803E23E0)
+                if (t > 10.0f)
                 {
-                    alpha = lbl_803E23E8 - (t - lbl_803E23E0) / lbl_803E23E0;
+                    alpha = 1.0f - (t - 10.0f) / 10.0f;
                 }
                 else
                 {
                     Obj_GetActiveModel((GameObject*)obj)->textureRefs->swapSelector = ratio;
-                    alpha = *(f32*)(state + 0x828) / lbl_803E23E0;
+                    alpha = *(f32*)(state + 0x828) / 10.0f;
                 }
-                Obj_SetModelColorOverrideRecursive((GameObject*)obj, 255, 255, 255, lbl_803E240C * alpha, 1);
+                Obj_SetModelColorOverrideRecursive((GameObject*)obj, 255, 255, 255, 196.0f * alpha, 1);
             }
             else
             {
@@ -518,12 +436,12 @@ void tricky_updateModelVariantFade(int obj, int state)
 }
 
 /* Set bit 0x80000000 of obj->_b8->_54
- * and store lbl_803E2408 into obj->_b8->_808. */
+ * and store 20.0f into obj->_b8->_808. */
 void trickyImpress(GameObject* obj)
 {
     TrickyImpressState* b = ((GameObject*)obj)->extra;
     b->flags54 |= 0x80000000;
-    b->unk808 = lbl_803E2408;
+    b->unk808 = 20.0f;
 }
 /* GameBit-gated bit toggle on obj->_b8->_54: requires mainGetBit(GAMEBIT_Tricky_Usable); sets bit 0x10000 then
  * checks bit 0x10. Returns 1 only when the post-OR check passes. */
@@ -613,7 +531,7 @@ GameObject* trickyFindNearestUsableBaddie(GameObject* origin, f32 maxRadius, int
             v2 = mainGetBit(g2);
         }
 
-        if (ObjGroup_ContainsObject(*objs, TRICKY_BADDIE_TARGET_OBJGROUP) == 0 && obj_extra > lbl_803E23DC && v1 == 0 &&
+        if (ObjGroup_ContainsObject(*objs, TRICKY_BADDIE_TARGET_OBJGROUP) == 0 && obj_extra > 0.0f && v1 == 0 &&
             v2 != 0)
         {
             if (((GameObject*)*objs)->anim.seqId != TRICKY_SEQID_WHIRLPOOL)
@@ -657,7 +575,7 @@ void Tricky_emitQueuedPathParticles(u8* a, u8* b)
     stk.dx = ((TrickyImpressState*)b)->renderPosX - ((GameObject*)a)->anim.worldPosX;
     stk.dy = ((TrickyImpressState*)b)->renderPosY - ((GameObject*)a)->anim.worldPosY;
     stk.dz = ((TrickyImpressState*)b)->renderPosZ - ((GameObject*)a)->anim.worldPosZ;
-    stk.fk = lbl_803E23E8;
+    stk.fk = 1.0f;
     stk.hx = ((GameObject*)a)->anim.rotX;
     stk.hy = ((GameObject*)a)->anim.rotY;
     stk.hz = ((GameObject*)a)->anim.rotZ;
@@ -679,7 +597,7 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
     GameObject* bestPriorityTarget;
     GameObject* bestFallbackTarget;
 
-    bestPriorityDist = lbl_803E2418;
+    bestPriorityDist = 340282346638528859811704183484516925440.0f;
     bestPriorityTarget = NULL;
     bestFallbackDist = bestPriorityDist;
     bestFallbackTarget = NULL;
@@ -786,7 +704,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
 
     state = (TrickyState*)((GameObject*)obj)->extra;
     doGroundSnap = 0;
-    nearestDistance = lbl_803E2424;
+    nearestDistance = 100.0f;
 
     if ((objPosToMapBlockIdx(((GameObject*)obj)->anim.worldPosX, ((GameObject*)obj)->anim.worldPosY,
                              ((GameObject*)obj)->anim.worldPosZ) == -1) &&
@@ -820,15 +738,15 @@ void trickyUpdateCollisionAndPathState(u8* obj)
 
     if (((s8)state->heightUpdateActive != 0) && (((state->statusFlags >> 5) & 1) == 0u))
     {
-        if (lbl_803E23DC == state->waterLevel)
+        if (0.0f == state->waterLevel)
         {
             doHeightSnap = 0;
         }
-        else if (lbl_803E2410 == state->eventTime)
+        else if (-100000.0f == state->eventTime)
         {
             doHeightSnap = 1;
         }
-        else if (state->currentTime - state->eventTime > lbl_803E2414)
+        else if (state->currentTime - state->eventTime > 8.0f)
         {
             doHeightSnap = 1;
         }
@@ -839,18 +757,18 @@ void trickyUpdateCollisionAndPathState(u8* obj)
 
         if (doHeightSnap != 0)
         {
-            ((GameObject*)obj)->anim.velocityY = *(f32*)&lbl_803E23DC;
-            ((GameObject*)obj)->anim.localPosY = state->currentTime - lbl_803E23EC;
+            ((GameObject*)obj)->anim.velocityY = 0.0f;
+            ((GameObject*)obj)->anim.localPosY = state->currentTime - 0.01f;
         }
         else
         {
-            ((GameObject*)obj)->anim.velocityY += lbl_803E2428 * timeDelta;
+            ((GameObject*)obj)->anim.velocityY += -0.17f * timeDelta;
             ((GameObject*)obj)->anim.localPosY += ((GameObject*)obj)->anim.velocityY * timeDelta;
         }
     }
     else
     {
-        ((GameObject*)obj)->anim.velocityY = lbl_803E23DC;
+        ((GameObject*)obj)->anim.velocityY = 0.0f;
     }
 
     lastContactObj = (void*)((GameObject*)obj)->anim.hitReactState->activeHit;
@@ -863,11 +781,11 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     if ((state->stateFlags & 8) != 0)
     {
         state->contactTimer += timeDelta;
-        if (state->contactTimer >= lbl_803E242C)
+        if (state->contactTimer >= 40.0f)
         {
-            if (vec3f_distanceSquared((f32*)(obj + 0x18), &Obj_GetPlayerObject()->anim.worldPosX) > lbl_803E2430)
+            if (vec3f_distanceSquared((f32*)(obj + 0x18), &Obj_GetPlayerObject()->anim.worldPosX) > 400.0f)
             {
-                state->contactTimer -= lbl_803E242C;
+                state->contactTimer -= 40.0f;
                 ((GameObject*)obj)->anim.modelInstance->runtimeSourceHitMask = 0x7f;
                 state->stateFlags &= ~8LL;
             }
@@ -876,16 +794,16 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     else if ((state->lastContactObj != NULL) && (lastContactObj == state->lastContactObj))
     {
         state->contactTimer += timeDelta;
-        if (state->contactTimer >= *(f32*)&lbl_803E23E0)
+        if (state->contactTimer >= 10.0f)
         {
-            state->contactTimer -= lbl_803E23E0;
+            state->contactTimer -= 10.0f;
             state->stateFlags |= 8;
             ((GameObject*)obj)->anim.modelInstance->runtimeSourceHitMask = 0x7e;
         }
     }
     else
     {
-        state->contactTimer = lbl_803E23DC;
+        state->contactTimer = 0.0f;
     }
 
     state->lastContactObj = lastContactObj;
@@ -903,7 +821,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     case 0xf:
     case 0x11:
     case 0x13:
-        objLightFn_8009a1dc(obj, lbl_803E2434, lightArgs, 1, 0);
+        objLightFn_8009a1dc(obj, 0.014f, lightArgs, 1, 0);
         break;
     case 7:
     case 8:
@@ -912,14 +830,14 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     case 0xb:
     case 0xc:
         objfx_spawnHitEmitterAtPos(hitPosPtr, 8, 0xff, 0x20, 0x20);
-        objLightFn_8009a1dc(obj, lbl_803E2434, lightArgs, 4, 0);
+        objLightFn_8009a1dc(obj, 0.014f, lightArgs, 4, 0);
         if (((GameObject*)lastContactObj)->anim.seqId == SKEETLA_ATTACKER_SEQID_STAFF)
         {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_stftest_var);
         }
         break;
     case 0x1f:
-        state->particleTimer = lbl_803E2438;
+        state->particleTimer = 300.0f;
         break;
     }
 
@@ -955,19 +873,19 @@ int trickyAdvanceRouteTargetAhead(int obj, RomCurveWalker* route, f32 speed)
     f32 maxDist;
 
     result = 0;
-    maxDist = lbl_803E244C * (speed * timeDelta);
+    maxDist = 1.5f * (speed * timeDelta);
     maxSq = maxDist * maxDist;
     dist = getXZDistance(&route->posX, (f32*)(obj + 0x18));
     if (route->reverse != 0)
     {
-        step = lbl_803E2448;
+        step = -2.0f;
     }
     else
     {
-        step = lbl_803E23F8;
+        step = 2.0f;
     }
     iter = 0;
-    limit = lbl_803E2424;
+    limit = 100.0f;
     for (; iter < 5; iter++)
     {
         if (dist > limit && maxSq < dist)
@@ -1029,13 +947,13 @@ int trickyTurnTowardYaw(u8* obj, s16 targetYaw)
 
     if (delta > 0x200)
     {
-        step = (s32)(lbl_803E2450 * timeDelta);
+        step = (s32)(512.0f * timeDelta);
         ((GameObject*)obj)->anim.rotX = currentYaw - step;
         ((TrickyState*)state)->stateFlags |= 0x10000000LL;
     }
     else if (delta < -0x200)
     {
-        step = (s32)(lbl_803E2450 * timeDelta);
+        step = (s32)(512.0f * timeDelta);
         ((GameObject*)obj)->anim.rotX = currentYaw + step;
         ((TrickyState*)state)->stateFlags |= 0x10000000LL;
     }
@@ -1073,15 +991,15 @@ char sSkeetlaVelDebugFmt[] = "Vel %f\n";
 
 static inline int skeetla_isInWater(u8* state)
 {
-    if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+    if (0.0f == ((TrickyState*)state)->waterLevel)
     {
         return 0;
     }
-    if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+    if (-100000.0f == ((TrickyState*)state)->eventTime)
     {
         return 1;
     }
-    if ((((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime) > lbl_803E2414)
+    if ((((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime) > 8.0f)
     {
         return 1;
     }
@@ -1109,7 +1027,7 @@ static inline f32 skeetla_pathSpeedDelta(u8* obj)
         currentSpeed = oneOverTimeDelta * sqrtf((dx * dx) + (dz * dz));
         return currentSpeed - previousSpeed;
     }
-    return lbl_803E23DC;
+    return 0.0f;
 }
 
 static inline void skeetla_updateFacingFromMoveVector(u8* obj, s16* turnDeltaOut)
@@ -1119,12 +1037,12 @@ static inline void skeetla_updateFacingFromMoveVector(u8* obj, s16* turnDeltaOut
 
     state = ((GameObject*)obj)->extra;
     if (((((TrickyState*)state)->dirX * ((TrickyState*)state)->dirX) +
-         (((TrickyState*)state)->dirZ * ((TrickyState*)state)->dirZ)) > lbl_803E23EC)
+         (((TrickyState*)state)->dirZ * ((TrickyState*)state)->dirZ)) > 0.01f)
     {
         yaw = (s16)getAngle(-((TrickyState*)state)->dirX, -((TrickyState*)state)->dirZ);
         *turnDeltaOut = trickyTurnTowardYaw(obj, yaw);
-        ((TrickyState*)state)->dirX = -mathSinf((lbl_803E2454 * (f32)(int)*(s16*)obj) / lbl_803E2458);
-        ((TrickyState*)state)->dirZ = -mathCosf((lbl_803E2454 * (f32)(int)*(s16*)obj) / lbl_803E2458);
+        ((TrickyState*)state)->dirX = -mathSinf((3.1415927f * (f32)(int)*(s16*)obj) / 32768.0f);
+        ((TrickyState*)state)->dirZ = -mathCosf((3.1415927f * (f32)(int)*(s16*)obj) / 32768.0f);
     }
 }
 
@@ -1164,20 +1082,20 @@ int trickyMove(GameObject* obj, f32* targetPos)
     state->dirZ = targetPos[2] - obj->anim.worldPosZ;
     length = sqrtf((state->dirX * state->dirX) +
                    (state->dirZ * state->dirZ));
-    if (lbl_803E23DC != length)
+    if (0.0f != length)
     {
         state->dirX /= length;
         state->dirZ /= length;
     }
 
-    if (moveSpeed < lbl_803E2420)
+    if (moveSpeed < 0.05f)
     {
         f32 stepX;
         f32 stepZ;
-        stepX = lbl_803E2420 * state->dirX;
+        stepX = 0.05f * state->dirX;
         prospectivePos[0] = stepX * timeDelta + obj->anim.worldPosX;
         prospectivePos[1] = obj->anim.worldPosY;
-        stepZ = lbl_803E2420 * state->dirZ;
+        stepZ = 0.05f * state->dirZ;
         prospectivePos[2] = stepZ * timeDelta + obj->anim.worldPosZ;
     }
     else
@@ -1191,43 +1109,43 @@ int trickyMove(GameObject* obj, f32* targetPos)
     adjustedPos[1] = prospectivePos[1];
     adjustedPos[2] = prospectivePos[2];
     trickyApplyObjectAvoidanceToStep(&obj->anim.worldPosX, adjustedPos, targetPos);
-    if (vec3f_distanceSquared(prospectivePos, adjustedPos) > lbl_803E2468)
+    if (vec3f_distanceSquared(prospectivePos, adjustedPos) > 0.0001f)
     {
         state->dirX = adjustedPos[0] - obj->anim.worldPosX;
         state->dirZ = adjustedPos[2] - obj->anim.worldPosZ;
         length = sqrtf((state->dirX * state->dirX) +
                        (state->dirZ * state->dirZ));
-        if (lbl_803E23DC != length)
+        if (0.0f != length)
         {
             state->dirX /= length;
             state->dirZ /= length;
         }
     }
 
-    if (moveSpeed >= lbl_803E2420)
+    if (moveSpeed >= 0.05f)
     {
         skeetla_updateFacingFromMoveVector((u8*)obj, &turnDelta);
         if (skeetla_isInWater((u8*)state) != 0)
         {
-            objAnimFn_8013a3f0((int)obj, 7, lbl_803E2468, 0x2000000);
-            state->cooldownC = lbl_803E2440;
-            state->particleTimer = lbl_803E23DC;
+            objAnimFn_8013a3f0((int)obj, 7, 0.0001f, 0x2000000);
+            state->cooldownC = 600.0f;
+            state->particleTimer = 0.0f;
             trickyDebugPrint(debugStrings + 0x184);
         }
         else
         {
             if (state->stateIndex == 1)
             {
-                if ((skeetla_pathSpeedDelta((u8*)obj) >= lbl_803E23DC ? skeetla_pathSpeedDelta((u8*)obj)
-                                                                      : -skeetla_pathSpeedDelta((u8*)obj)) > lbl_803E23DC)
+                if ((skeetla_pathSpeedDelta((u8*)obj) >= 0.0f ? skeetla_pathSpeedDelta((u8*)obj)
+                                                                      : -skeetla_pathSpeedDelta((u8*)obj)) > 0.0f)
                 {
                     state->sfxIntervalTimer -= timeDelta;
-                    if (state->sfxIntervalTimer <= lbl_803E23DC)
+                    if (state->sfxIntervalTimer <= 0.0f)
                     {
                         state->sfxIntervalTimer = (f32)(int)randomGetRange(600, 1200);
                         if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0)
                         {
-                            if (moveSpeed > lbl_803E23E8)
+                            if (moveSpeed > 1.0f)
                             {
                                 sfxId = randomGetRange(0x34d, 0x34e);
                                 skeetla_playFootstepSfx((u8*)obj, sfxId);
@@ -1252,26 +1170,26 @@ int trickyMove(GameObject* obj, f32* targetPos)
                 }
             }
 
-            if (moveSpeed > lbl_803E246C)
+            if (moveSpeed > 2.5f)
             {
-                state->voiceCooldown = lbl_803E2440;
-                objAnimFn_8013a3f0((int)obj, 0x30, lbl_803E2468, 0x3000000);
+                state->voiceCooldown = 600.0f;
+                objAnimFn_8013a3f0((int)obj, 0x30, 0.0001f, 0x3000000);
             }
-            else if (moveSpeed > lbl_803E23E8)
+            else if (moveSpeed > 1.0f)
             {
-                objAnimFn_8013a3f0((int)obj, 5, lbl_803E2468, 0x3000000);
+                objAnimFn_8013a3f0((int)obj, 5, 0.0001f, 0x3000000);
             }
-            else if (moveSpeed > lbl_803E2470)
+            else if (moveSpeed > 0.66f)
             {
-                objAnimFn_8013a3f0((int)obj, 4, lbl_803E2468, 0x3000000);
+                objAnimFn_8013a3f0((int)obj, 4, 0.0001f, 0x3000000);
             }
-            else if (moveSpeed > lbl_803E2474)
+            else if (moveSpeed > 0.33f)
             {
-                objAnimFn_8013a3f0((int)obj, 2, lbl_803E2468, 0x3000000);
+                objAnimFn_8013a3f0((int)obj, 2, 0.0001f, 0x3000000);
             }
             else
             {
-                objAnimFn_8013a3f0((int)obj, 1, lbl_803E2468, 0x3000000);
+                objAnimFn_8013a3f0((int)obj, 1, 0.0001f, 0x3000000);
             }
             trickyDebugPrint(debugStrings + 0x1a0);
         }
@@ -1288,9 +1206,9 @@ int trickyMove(GameObject* obj, f32* targetPos)
             if (skeetla_isInWater((u8*)state) != 0)
             {
                 trickyDebugPrint(debugStrings + 0x1bc);
-                objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                state->cooldownC = lbl_803E2440;
-                state->particleTimer = lbl_803E23DC;
+                objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                state->cooldownC = 600.0f;
+                state->particleTimer = 0.0f;
             }
             else
             {
@@ -1338,11 +1256,11 @@ int trickyMove(GameObject* obj, f32* targetPos)
                     }
                 }
                 obj->anim.rotX = previousYaw;
-                objAnimFn_8013a3f0((int)obj, animId, lbl_803E2478, 0x1000100);
+                objAnimFn_8013a3f0((int)obj, animId, 0.04f, 0x1000100);
             }
         }
 
-        state->speed = lbl_803E2420;
+        state->speed = 0.05f;
         f = state->stateFlags;
         if (((f & 0x100000) == 0) && ((f & 0x200000) == 0))
         {
@@ -1367,7 +1285,7 @@ int objAnimFn_8013a3f0(int obj, int newState, f32 speed, u32 flags)
     }
     if ((flags & 0x4000000) != 0)
     {
-        ((TrickyState*)t)->animTransitionTimer = lbl_803E247C;
+        ((TrickyState*)t)->animTransitionTimer = 15.0f;
     }
     ((TrickyState*)t)->moveId = newState;
     ((TrickyState*)t)->moveProgressTarget = speed;
@@ -1388,12 +1306,12 @@ int objAnimFn_8013a3f0(int obj, int newState, f32 speed, u32 flags)
     {
         ((TrickyState*)t)->stateFlags = ((TrickyState*)t)->stateFlags & ~(u64)0x100;
     }
-    fz = lbl_803E23E8;
+    fz = 1.0f;
     ((TrickyState*)t)->sidestepDelta = fz;
     ((TrickyState*)t)->backstepDelta = fz;
     ((TrickyState*)t)->verticalDelta = fz;
     ((TrickyState*)t)->rotStepScale = fz;
-    if (((TrickyState*)t)->animTransitionTimer >= lbl_803E247C)
+    if (((TrickyState*)t)->animTransitionTimer >= 15.0f)
     {
         return 1;
     }
@@ -1673,7 +1591,7 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
     state = obj->extra;
     curves = (void**)(*gRomCurveInterface)->getCurves(&count);
 
-    init = lbl_803E2418;
+    init = 340282346638528859811704183484516925440.0f;
     bd = bestDistances;
     rp = outRoutes;
     for (i = 0; i < TRICKY_ROUTE_CANDIDATE_COUNT; i++)
@@ -1877,7 +1795,7 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
     dx = end[0] - center[0];
     dz = end[2] - center[2];
     length = sqrtf((dx * dx) + (dz * dz));
-    if (lbl_803E23DC != length)
+    if (0.0f != length)
     {
         dx /= length;
         dz /= length;
@@ -1888,7 +1806,7 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
         moveDistance = sqrtf(limitDistanceSq);
         {
             f32 blend = moveDistance - sqrtf(centerToEnd);
-            moveDistance = moveDistance - (blend * lbl_803E2480);
+            moveDistance = moveDistance - (blend * 0.125f);
         }
     }
 
@@ -1914,7 +1832,7 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint)
     f32 scale;
 
     objects = (void**)ObjGroup_GetObjects(SIDEREPEL_OBJGROUP, &count);
-    for (i = 0, op = objects, scale = lbl_803E2484; i < count; i++)
+    for (i = 0, op = objects, scale = 0.1f; i < count; i++)
     {
         obj = *op;
         def = *(u8**)&((GameObject*)obj)->anim.placementData;
@@ -1936,8 +1854,8 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint)
             if ((hitState != NULL) && ((*(s16*)&hitState->flags & 1) != 0))
             {
                 trickyAdjustStepAroundPoint(start, end, guardPoint, &((GameObject*)obj)->anim.worldPosX,
-                                            lbl_803E2484 * (f32)(u32)minRadius,
-                                            lbl_803E2484 * (f32)(u32) * (u16*)(def + 0x86));
+                                            0.1f * (f32)(u32)minRadius,
+                                            0.1f * (f32)(u32) * (u16*)(def + 0x86));
             }
         }
     }
@@ -2374,7 +2292,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     {
     case 0:
         trickyDebugPrint(strs + 0x41c);
-        v = lbl_803E241C * timeDelta + velBefore;
+        v = -0.15f * timeDelta + velBefore;
         state->speed = (v < 0.0f) ? 0.0f : v;
         if (0.0f == state->speed)
         {
@@ -2398,20 +2316,20 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     case 4:
         trickyDebugPrint(strs + 0x448);
         state->speed = velBefore;
-        trickyUpdateApproachSpeed(obj, lbl_803E2488, state, &state->patchExitPos.x, 1);
+        trickyUpdateApproachSpeed(obj, 5.0f, state, &state->patchExitPos.x, 1);
         moved = trickyMove(obj, &state->patchExitPos.x);
         break;
     case 3:
         trickyDebugPrint(strs + 0x45c);
         state->speed = velBefore;
-        trickyUpdateApproachSpeed(obj, lbl_803E2488, state, &state->linkedPatchPos.x, 1);
+        trickyUpdateApproachSpeed(obj, 5.0f, state, &state->linkedPatchPos.x, 1);
         moved = trickyMove(obj, &state->linkedPatchPos.x);
         break;
     case 6:
         trickyDebugPrint(strs + 0x46c, 10,
                          (int)getXZDistance(&state->routeSeedNode->x, &obj->anim.worldPosX));
         dist = getXZDistance(&state->routeSeedNode->x, &obj->anim.worldPosX);
-        if (lbl_803E23E0 > dist)
+        if (10.0f > dist)
         {
             state->route.reverse = state->routeSeedDir;
             prevNode = (u8*)state->routeSeedNode;
@@ -2430,7 +2348,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 else
                 {
                         RomCurve_setupHermiteSegment(&state->route, prevNode, node, nextNode);
-                    RomCurve_stepClamped(&state->route, lbl_803E2484);
+                    RomCurve_stepClamped(&state->route, 0.1f);
                     yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
                                     state->prevLocalPosZ - obj->anim.localPosZ);
                     yawB = getAngle(state->prevLocalPosX - state->route.posX,
@@ -2456,7 +2374,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                     if (0x1000 < absDiff)
                     {
                         state->speed = velBefore;
-                        trickyUpdateApproachSpeed(obj, lbl_803E246C, state, &state->route.posX, 1);
+                        trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
                     }
                     trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
                     moved = trickyMove(obj, &state->route.posX);
@@ -2475,9 +2393,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                             state->dirZ = state->dirZ / len;
                         }
                         state->speed = gTrickyFollowMaxSpeed;
-                        objAnimFn_8013a3f0((int)obj, 0x15, lbl_803E2468, 0x4000000);
+                        objAnimFn_8013a3f0((int)obj, 0x15, 0.0001f, 0x4000000);
                         state->followPhase = 9;
-                        state->voiceCooldown = lbl_803E2440;
+                        state->voiceCooldown = 600.0f;
                         break;
                     case 5:
                         node = state->route.nodeA0;
@@ -2507,17 +2425,17 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                         {
                             while (state->route.atSegmentEnd != 0)
                             {
-                                RomCurve_stepClamped(&state->route, lbl_803E2448);
+                                RomCurve_stepClamped(&state->route, -2.0f);
                             }
                         }
                         else
                         {
                             while (state->route.atSegmentEnd == 0)
                             {
-                                RomCurve_stepClamped(&state->route, lbl_803E23F8);
+                                RomCurve_stepClamped(&state->route, 2.0f);
                             }
                         }
-                        state->voiceCooldown = lbl_803E2440;
+                        state->voiceCooldown = 600.0f;
                         break;
                     case 6:
                         node = state->route.nodeA0;
@@ -2531,7 +2449,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                             state->dirX = state->dirX / len;
                             state->dirZ = state->dirZ / len;
                         }
-                        objAnimFn_8013a3f0((int)obj, 0x19, lbl_803E249C, 0x40000c0);
+                        objAnimFn_8013a3f0((int)obj, 0x19, 0.0125f, 0x40000c0);
                         state->verticalDelta =
                             (obj->anim.worldPosY - ((ObjfsaRomCurveDef*)state->route.nodeA0)->y) /
                             gTrickyFollowVerticalDeltaDivisorB;
@@ -2540,17 +2458,17 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                         {
                             while (state->route.atSegmentEnd != 0)
                             {
-                                RomCurve_stepClamped(&state->route, lbl_803E2448);
+                                RomCurve_stepClamped(&state->route, -2.0f);
                             }
                         }
                         else
                         {
                             while (state->route.atSegmentEnd == 0)
                             {
-                                RomCurve_stepClamped(&state->route, lbl_803E23F8);
+                                RomCurve_stepClamped(&state->route, 2.0f);
                             }
                         }
-                        state->voiceCooldown = lbl_803E2440;
+                        state->voiceCooldown = 600.0f;
                         break;
                     case 2:
                     case 7:
@@ -2576,7 +2494,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             if ((node != 0) || (wg == 0))
             {
                 state->speed = velBefore;
-                trickyUpdateApproachSpeed(obj, lbl_803E246C, state,
+                trickyUpdateApproachSpeed(obj, 2.5f, state,
                                           &state->routeSeedNode->x, 1);
                 moved = trickyMove(obj, &state->routeSeedNode->x);
             }
@@ -2598,7 +2516,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         state->routeSeedDir = routeFlags[i];
         state->routeSeedNode = routePtrs[i];
         state->speed = velBefore;
-        trickyUpdateApproachSpeed(obj, lbl_803E2488, state, &state->routeSeedNode->x, 1);
+        trickyUpdateApproachSpeed(obj, 5.0f, state, &state->routeSeedNode->x, 1);
         moved = trickyMove(obj, &state->routeSeedNode->x);
         state->followPhase = 6;
         break;
@@ -2606,7 +2524,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         trickyDebugPrint(strs + 0x490);
         if ((state->savedWalkGroup != 0) && (wg == state->savedWalkGroup))
         {
-            v = lbl_803E241C * timeDelta + velBefore;
+            v = -0.15f * timeDelta + velBefore;
             state->speed = (v < 0.0f) ? 0.0f : v;
         }
         node = state->route.nodeA0;
@@ -2653,11 +2571,11 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                                 prod = (state->route.reverse ^ 1) & 0xff;
                                 if (prod == 0)
                                 {
-                                    RomCurve_stepClamped(&state->route, lbl_803E23F8);
+                                    RomCurve_stepClamped(&state->route, 2.0f);
                                 }
                                 else
                                 {
-                                    RomCurve_stepClamped(&state->route, lbl_803E2448);
+                                    RomCurve_stepClamped(&state->route, -2.0f);
                                 }
                                 state->route.reverse = prod;
                                 RomCurve_swapEndpointNodes(&state->route);
@@ -2741,7 +2659,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             if (0x1000 < absDiff)
             {
                 state->speed = velBefore;
-                trickyUpdateApproachSpeed(obj, lbl_803E246C, state, &state->route.posX, 1);
+                trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
             }
         }
         trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
@@ -2762,11 +2680,11 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         break;
     case 8:
         trickyDebugPrint(strs + 0x49c);
-        v = lbl_803E2420 * timeDelta + velBefore;
+        v = 0.05f * timeDelta + velBefore;
         state->speed = (v > gTrickyFollowMaxSpeed) ? gTrickyFollowMaxSpeed : v;
         if ((state->savedWalkGroup != 0) && (wg == state->savedWalkGroup))
         {
-            v = lbl_803E241C * timeDelta + velBefore;
+            v = -0.15f * timeDelta + velBefore;
             state->speed = (v < 0.0f) ? 0.0f : v;
         }
         yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
@@ -2794,7 +2712,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         if (0x1000 < absDiff)
         {
             state->speed = velBefore;
-            trickyUpdateApproachSpeed(obj, lbl_803E246C, state, &state->route.posX, 1);
+            trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
         }
         trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
         trickyMove(obj, &state->route.posX);
@@ -2821,9 +2739,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                     state->dirZ = state->dirZ / len;
                 }
                 state->speed = gTrickyFollowMaxSpeed;
-                objAnimFn_8013a3f0((int)obj, 0x15, lbl_803E2468, 0x4000000);
+                objAnimFn_8013a3f0((int)obj, 0x15, 0.0001f, 0x4000000);
                 state->followPhase = 9;
-                state->voiceCooldown = lbl_803E2440;
+                state->voiceCooldown = 600.0f;
             }
         }
         break;
@@ -2831,20 +2749,20 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         trickyDebugPrint(strs + 0x4ac);
         if ((u8)(state->stateFlags & 0x10000000))
         {
-            v = lbl_803E23F4 * timeDelta + velBefore;
+            v = -0.01f * timeDelta + velBefore;
             if (v < 0.0f)
             {
                 v = 0.0f;
             }
         }
-        else if (velBefore > (v = lbl_803E24A4))
+        else if (velBefore > (v = 2.3f))
         {
-            k = lbl_803E241C * timeDelta + velBefore;
+            k = -0.15f * timeDelta + velBefore;
             v = (k < v) ? v : k;
         }
         else
         {
-            k = lbl_803E2420 * timeDelta + velBefore;
+            k = 0.05f * timeDelta + velBefore;
             v = (k > v) ? v : k;
         }
         state->speed = v;
@@ -2857,12 +2775,12 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             dz = ((TrickyState*)obj->extra)->dirZ;
             sqz = dz;
             sqz = sqz * sqz;
-            if (sqx + sqz > lbl_803E23EC)
+            if (sqx + sqz > 0.01f)
             {
                 trickyTurnTowardYaw((u8*)obj, (s16)getAngle(-dx, -dz));
             }
         }
-        if (obj->anim.currentMoveProgress < lbl_803E24A8)
+        if (obj->anim.currentMoveProgress < 0.5f)
         {
             ObjAnim_SampleRootCurvePhase(&obj->anim, state->speed, &state->moveProgress);
             obj->anim.localPosX =
@@ -2874,9 +2792,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         }
         else
         {
-            ObjAnim_SampleRootCurvePhase(&obj->anim, state->speed * lbl_803E24AC, &state->moveProgress);
+            ObjAnim_SampleRootCurvePhase(&obj->anim, state->speed * 0.25f, &state->moveProgress);
             obj->anim.localPosX =
-                timeDelta * (state->dirX * (state->speed * (k = lbl_803E24AC))) +
+                timeDelta * (state->dirX * (state->speed * (k = 0.25f))) +
                 obj->anim.localPosX;
             obj->anim.localPosZ =
                 timeDelta * (state->dirZ * (state->speed * k)) +
@@ -2894,7 +2812,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             dx = node->z - obj->anim.worldPosZ;
             dx = dx * dx;
             len = sqrtf(sqx + dx);
-            arc->duration = len / lbl_803E24A4;
+            arc->duration = len / 2.3f;
             arc->time = (v = 0.0f);
             arc->baseX = obj->anim.worldPosX;
             arc->baseY = obj->anim.worldPosY;
@@ -2908,20 +2826,20 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                               k;
             objAnimFn_8013a3f0((int)obj, 0x16, v, 0x4000000);
             state->arcMoveProgress = arc->time / arc->duration;
-            state->speed = lbl_803E24A4;
+            state->speed = 2.3f;
             state->followPhase = 10;
             if (state->route.reverse != 0)
             {
                 while (state->route.atSegmentEnd != 0)
                 {
-                    RomCurve_stepClamped(&state->route, lbl_803E2448);
+                    RomCurve_stepClamped(&state->route, -2.0f);
                 }
             }
             else
             {
                 while (state->route.atSegmentEnd == 0)
                 {
-                    RomCurve_stepClamped(&state->route, lbl_803E23F8);
+                    RomCurve_stepClamped(&state->route, 2.0f);
                 }
             }
         }
@@ -2934,7 +2852,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         if (arc->time >= arc->duration)
         {
             obj->anim.localPosY = ((ObjfsaRomCurveDef*)state->route.nodeA0)->y;
-            state->arcMoveProgress = lbl_803E23E8;
+            state->arcMoveProgress = 1.0f;
             state->followPhase = 7;
         }
         else
@@ -2951,27 +2869,27 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             baseZ = arc->baseZ;
             obj->anim.localPosZ = (arc->landZ - baseZ) * (arc->time / arc->duration) + baseZ;
             v = arc->duration;
-            if (v <= lbl_803E24B4)
+            if (v <= 24.0f)
             {
                 state->arcMoveProgress = arc->time / v;
             }
             else
             {
                 k = arc->time;
-                if (k <= lbl_803E24B8)
+                if (k <= 6.0f)
                 {
-                    state->arcMoveProgress = k / lbl_803E24B4;
+                    state->arcMoveProgress = k / 24.0f;
                 }
-                else if (k >= v - lbl_803E24B8)
+                else if (k >= v - 6.0f)
                 {
                     f32 adj;
-                    adj = lbl_803E24B4 - v;
-                    state->arcMoveProgress = (adj + k) / lbl_803E24B4;
+                    adj = 24.0f - v;
+                    state->arcMoveProgress = (adj + k) / 24.0f;
                 }
                 else
                 {
-                    k = (k - lbl_803E24B8) / (v - lbl_803E24BC);
-                    state->arcMoveProgress = k * lbl_803E24A8 + lbl_803E24AC;
+                    k = (k - 6.0f) / (v - 12.0f);
+                    state->arcMoveProgress = k * 0.5f + 0.25f;
                 }
             }
             objHitDetectFn_80062e84(obj, NULL, 0);
@@ -2981,11 +2899,11 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     }
     case 0xb:
         trickyDebugPrint(strs + 0x4c4);
-        v = lbl_803E2420 * timeDelta + velBefore;
+        v = 0.05f * timeDelta + velBefore;
         state->speed = (v > gTrickyFollowMaxSpeed) ? gTrickyFollowMaxSpeed : v;
         if ((state->savedWalkGroup != 0) && (wg == state->savedWalkGroup))
         {
-            v = lbl_803E241C * timeDelta + velBefore;
+            v = -0.15f * timeDelta + velBefore;
             state->speed = (v < 0.0f) ? 0.0f : v;
         }
         yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
@@ -3013,7 +2931,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         if (0x1000 < absDiff)
         {
             state->speed = velBefore;
-            trickyUpdateApproachSpeed(obj, lbl_803E246C, state, &state->route.posX, 1);
+            trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
         }
         trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
         trickyMove(obj, &state->route.posX);
@@ -3055,17 +2973,17 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 {
                     while (state->route.atSegmentEnd != 0)
                     {
-                        RomCurve_stepClamped(&state->route, lbl_803E2448);
+                        RomCurve_stepClamped(&state->route, -2.0f);
                     }
                 }
                 else
                 {
                     while (state->route.atSegmentEnd == 0)
                     {
-                        RomCurve_stepClamped(&state->route, lbl_803E23F8);
+                        RomCurve_stepClamped(&state->route, 2.0f);
                     }
                 }
-                state->voiceCooldown = lbl_803E2440;
+                state->voiceCooldown = 600.0f;
             }
         }
         break;
@@ -3083,25 +3001,25 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             dz = ((TrickyState*)obj->extra)->dirZ;
             sqx = dz;
             sqx = sqx * sqx;
-            if (sqz + sqx > lbl_803E23EC)
+            if (sqz + sqx > 0.01f)
             {
                 trickyTurnTowardYaw((u8*)obj, (s16)getAngle(-dx, -dz));
             }
         }
         if ((state->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
         {
-            state->speed = lbl_803E24C0;
+            state->speed = 0.75f;
             trickyMove(obj, &state->route.posX);
             state->followPhase = 7;
         }
         break;
     case 0xd:
         trickyDebugPrint(strs + 0x4e8);
-        v = lbl_803E2420 * timeDelta + velBefore;
+        v = 0.05f * timeDelta + velBefore;
         state->speed = (v > gTrickyFollowMaxSpeed) ? gTrickyFollowMaxSpeed : v;
         if ((state->savedWalkGroup != 0) && (wg == state->savedWalkGroup))
         {
-            v = lbl_803E241C * timeDelta + velBefore;
+            v = -0.15f * timeDelta + velBefore;
             state->speed = (v < 0.0f) ? 0.0f : v;
         }
         yawA = getAngle(state->prevLocalPosX - obj->anim.localPosX,
@@ -3129,7 +3047,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         if (0x1000 < absDiff)
         {
             state->speed = velBefore;
-            trickyUpdateApproachSpeed(obj, lbl_803E246C, state, &state->route.posX, 1);
+            trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
         }
         trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
         trickyMove(obj, &state->route.posX);
@@ -3155,7 +3073,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                     state->dirX = state->dirX / len;
                     state->dirZ = state->dirZ / len;
                 }
-                objAnimFn_8013a3f0((int)obj, 0x19, lbl_803E249C, 0x40000c0);
+                objAnimFn_8013a3f0((int)obj, 0x19, 0.0125f, 0x40000c0);
                 state->verticalDelta =
                     (obj->anim.worldPosY - ((ObjfsaRomCurveDef*)state->route.nodeA0)->y) /
                     gTrickyFollowVerticalDeltaDivisorB;
@@ -3164,17 +3082,17 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 {
                     while (state->route.atSegmentEnd != 0)
                     {
-                        RomCurve_stepClamped(&state->route, lbl_803E2448);
+                        RomCurve_stepClamped(&state->route, -2.0f);
                     }
                 }
                 else
                 {
                     while (state->route.atSegmentEnd == 0)
                     {
-                        RomCurve_stepClamped(&state->route, lbl_803E23F8);
+                        RomCurve_stepClamped(&state->route, 2.0f);
                     }
                 }
-                state->voiceCooldown = lbl_803E2440;
+                state->voiceCooldown = 600.0f;
             }
         }
         break;
@@ -3238,10 +3156,10 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
     TrickyState* ctx;
     f32 minSpeed;
 
-    sum = lbl_803E2420;
+    sum = 0.05f;
     v = state->speed;
     td = timeDelta;
-    dec = lbl_803E241C * td;
+    dec = -0.15f * td;
     minSpeed = 0.0f;
     while (v > minSpeed)
     {
@@ -3255,7 +3173,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
     if (dist < distSq)
     {
         candidate = state->speed;
-        candidate = lbl_803E241C * timeDelta + candidate;
+        candidate = -0.15f * timeDelta + candidate;
         state->speed = (candidate < 0.0f) ? 0.0f : candidate;
         return;
     }
@@ -3271,14 +3189,14 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
         if (delta[2] > 0.0f)
         {
             candidate = state->speed;
-            candidate = lbl_803E241C * timeDelta + candidate;
+            candidate = -0.15f * timeDelta + candidate;
             state->speed = (candidate < 0.0f) ? 0.0f : candidate;
             return;
         }
     }
     if ((state->stateFlags & 0x10000000) != 0)
     {
-        state->speed = lbl_803E23F4 * timeDelta + state->speed;
+        state->speed = -0.01f * timeDelta + state->speed;
         if (state->speed < 0.0f)
         {
             state->speed = 0.0f;
@@ -3286,7 +3204,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
         return;
     }
     {
-        f32 deltaSpeed = lbl_803E2488 + thresh;
+        f32 deltaSpeed = 5.0f + thresh;
         f32 deltaSpeedSq = deltaSpeed * deltaSpeed;
         ctx = obj->extra;
         otherTarget = ctx->targetPosPtr;
@@ -3313,7 +3231,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
                 f32 curSpeed = state->speed;
                 if (candidate < curSpeed)
                 {
-                    f32 step = lbl_803E241C * timeDelta + curSpeed;
+                    f32 step = -0.15f * timeDelta + curSpeed;
                     state->speed = (step < candidate) ? candidate : step;
                     return;
                 }
@@ -3322,11 +3240,11 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
                     f32 step;
                     if (candidate > gTrickyFollowMaxSpeed)
                     {
-                        step = lbl_803E2420 * timeDelta + state->speed;
+                        step = 0.05f * timeDelta + state->speed;
                         state->speed = (step > gTrickyFollowMaxSpeed) ? gTrickyFollowMaxSpeed : step;
                         return;
                     }
-                    step = lbl_803E2420 * timeDelta + state->speed;
+                    step = 0.05f * timeDelta + state->speed;
                     state->speed = (step > candidate) ? candidate : step;
                     return;
                 }
@@ -3335,7 +3253,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
     }
     if ((state->stateFlags & 0x00100000) != 0)
     {
-        state->speed = lbl_803E243C * timeDelta + state->speed;
+        state->speed = 0.02f * timeDelta + state->speed;
         if (state->speed > gTrickyFollowMaxSpeed)
         {
             state->speed = gTrickyFollowMaxSpeed;
@@ -3344,7 +3262,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
     }
     {
         f32 step = state->speed;
-        step = lbl_803E2420 * timeDelta + step;
+        step = 0.05f * timeDelta + step;
         state->speed = (step > gTrickyFollowMaxSpeed) ? gTrickyFollowMaxSpeed : step;
     }
 }
@@ -3368,13 +3286,13 @@ void trickyFn_8013d8f0(u8* self, u8* state)
 
     nearest = NULL;
     best = NULL;
-    minDist = lbl_803E2418;
+    minDist = 340282346638528859811704183484516925440.0f;
 
     if (trickyFoodFn_8013db3c(self, state) == 0)
     {
         ((TrickyState*)state)->stateIndex = 1;
         ((TrickyState*)state)->substate = 0;
-        z = lbl_803E23DC;
+        z = 0.0f;
         ((TrickyState*)state)->cooldownA = z;
         ((TrickyState*)state)->cooldownB.f = z;
         ((TrickyState*)state)->stateFlags = ((TrickyState*)state)->stateFlags & (u64)~0x10u;
@@ -3388,7 +3306,7 @@ void trickyFn_8013d8f0(u8* self, u8* state)
     objsList = (u8**)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, &count);
     i = 0;
     objs = objsList;
-    rejectDist = lbl_803E24C4;
+    rejectDist = 2500.0f;
     for (; i < count; i++)
     {
         dist = getXZDistance((f32*)((u8*)((TrickyState*)state)->playerObj + 0x18), (f32*)(*objs + 0x18));
@@ -3419,19 +3337,19 @@ void trickyFn_8013d8f0(u8* self, u8* state)
             }
             ((TrickyState*)state)->linkedWalkGroup = 0;
         }
-        if (trickyFn_8013b368((GameObject*)self, lbl_803E247C, (TrickyState*)state) == 1)
+        if (trickyFn_8013b368((GameObject*)self, 15.0f, (TrickyState*)state) == 1)
             return;
     }
 
-    if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+    if (0.0f == ((TrickyState*)state)->waterLevel)
     {
         inWater = 0;
     }
-    else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+    else if (-100000.0f == ((TrickyState*)state)->eventTime)
     {
         inWater = 1;
     }
-    else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+    else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
     {
         inWater = 1;
     }
@@ -3442,14 +3360,14 @@ void trickyFn_8013d8f0(u8* self, u8* state)
 
     if (inWater != 0)
     {
-        objAnimFn_8013a3f0((int)self, 8, lbl_803E243C, 0);
-        ((TrickyState*)state)->cooldownC = lbl_803E2440;
-        ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+        objAnimFn_8013a3f0((int)self, 8, 0.02f, 0);
+        ((TrickyState*)state)->cooldownC = 600.0f;
+        ((TrickyState*)state)->particleTimer = 0.0f;
         trickyDebugPrint(sInWaterMessage);
     }
     else
     {
-        objAnimFn_8013a3f0((int)self, 0, lbl_803E2444, 0);
+        objAnimFn_8013a3f0((int)self, 0, 0.005f, 0);
         trickyDebugPrint(lbl_8031D478);
     }
 }
@@ -3469,7 +3387,7 @@ void trickyFn_8013d8f0(u8* self, u8* state)
  * game bits, any other cell flags the critter's per-instance cooldown
  * (the 4-bit mode field packed at byte 0x58) and accepts it. The final
  * range test promotes a "1" result to "2" when the critter sits within
- * lbl_803E24C4 squared units of Tricky.
+ * 2500.0f squared units of Tricky.
  */
 
 /* per-critter packed flags at byte 0x58; bits 27..30 hold a countdown mode */
@@ -3487,7 +3405,7 @@ struct CritterFlags
 int trickyFoodFn_8013db3c(u8* tricky, u8* critter)
 {
     int result = 0;
-    f32 dist = lbl_803E242C;
+    f32 dist = 40.0f;
     struct CritterFlags* flags = (struct CritterFlags*)&critter[0x58];
 
     if (flags->mode != 0)
@@ -3531,7 +3449,7 @@ int trickyFoodFn_8013db3c(u8* tricky, u8* critter)
         u8* levelObj = (u8*)*(u32*)(critter + 4);
 
         if (vec3f_distanceSquared(&((GameObject*)levelObj)->anim.worldPosX, &((GameObject*)tricky)->anim.worldPosX) <
-            lbl_803E24C4)
+            2500.0f)
         {
             return 2;
         }
@@ -3592,7 +3510,7 @@ void trickyGrowl(void* obj, void* trickyState)
     {
     case TRICKYGROWL_WINDUP:
         trickyDebugPrint(strBase + 0x558);
-        if (trickyFn_8013b368(obj, lbl_803E24C8, trickyState) == 0)
+        if (trickyFn_8013b368(obj, 30.0f, trickyState) == 0)
         {
             state = ((GameObject*)obj)->extra;
             if ((((u32)((TrickyGrowlState*)state)->unk58 >> 6) & 1) == 0u)
@@ -3607,7 +3525,7 @@ void trickyGrowl(void* obj, void* trickyState)
                 }
             }
             ((TrickyState*)trickyState)->substate = TRICKYGROWL_FACE_TARGET;
-            objAnimFn_8013a3f0((int)obj, 0x33, lbl_803E2444, 0x4000000);
+            objAnimFn_8013a3f0((int)obj, 0x33, 0.005f, 0x4000000);
             *(int*)((char*)trickyState + 0x728) = 0;
         }
         break;
@@ -3642,7 +3560,7 @@ void trickyGrowl(void* obj, void* trickyState)
         break;
     case TRICKYGROWL_DIG_START:
         trickyDebugPrint(strBase + 0x57c);
-        if (trickyFn_8013b368(obj, lbl_803E24CC, trickyState) == 0)
+        if (trickyFn_8013b368(obj, 25.0f, trickyState) == 0)
         {
             if ((u8)Obj_IsLoadingLocked() != 0)
             {
@@ -3662,7 +3580,7 @@ void trickyGrowl(void* obj, void* trickyState)
                 Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_trpopn_c);
             }
             (*((TrickyState*)trickyState)->progressPtr)--;
-            objAnimFn_8013a3f0((int)obj, 0x34, lbl_803E2444, 0x4000000);
+            objAnimFn_8013a3f0((int)obj, 0x34, 0.005f, 0x4000000);
             ((TrickyState*)trickyState)->stateFlags = ((TrickyState*)trickyState)->stateFlags | 0x10;
             ((TrickyState*)trickyState)->substate = TRICKYGROWL_DIG_END;
             *(int*)((char*)trickyState + 0x728) = 0;
@@ -3670,7 +3588,7 @@ void trickyGrowl(void* obj, void* trickyState)
         break;
     case TRICKYGROWL_DIG_END:
         trickyDebugPrint(strBase + 0x590);
-        if (((GameObject*)obj)->anim.currentMoveProgress >= lbl_803E24D0)
+        if (((GameObject*)obj)->anim.currentMoveProgress >= 0.95f)
         {
             ((TrickyState*)trickyState)->stateFlags &= ~(u64)TRICKY_STATE_FLAG_CHILDREN_ACTIVE;
             ((TrickyState*)trickyState)->stateFlags =
@@ -3695,7 +3613,7 @@ void trickyGrowl(void* obj, void* trickyState)
             ((TrickyState*)trickyState)->stateIndex = 1;
             ((TrickyState*)trickyState)->substate = TRICKYGROWL_WINDUP;
             {
-                f32 resetValue = lbl_803E23DC;
+                f32 resetValue = 0.0f;
                 ((TrickyState*)trickyState)->cooldownA = resetValue;
                 ((TrickyState*)trickyState)->cooldownB.f = resetValue;
             }
@@ -3815,7 +3733,7 @@ typedef struct
 
 #define TRICKY_RESET_TAIL(st)                                                                                          \
     {                                                                                                                  \
-        f32 z = lbl_803E23DC;                                                                                          \
+        f32 z = 0.0f;                                                                                          \
         *(f32*)((st) + 0x71c) = z;                                                                                     \
         *(f32*)((st) + 0x720) = z;                                                                                     \
         *(u32*)((st) + TRICKY_STATE_FLAGS_OFFSET) &= 0xFFFFFFEFLL;                                                     \
@@ -3852,7 +3770,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
     int go;
     int* best = NULL;
     f32 detourRatio;
-    f32 bestd = lbl_803E23DC;
+    f32 bestd = 0.0f;
     int count;
     u8* cfg;
 
@@ -3861,8 +3779,8 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
     case ANIMOBJD2_SUBSTATE_ACQUIRE:
     {
         trickyDebugPrint(str + 0x5a0);
-        ok = trickyFn_8013b368(gobj, lbl_803E24D4, t);
-        if ((t->followObj = trickyFindNearestUsableBaddie(t->playerObj, lbl_803E24D8, 0)) != NULL)
+        ok = trickyFn_8013b368(gobj, 50.0f, t);
+        if ((t->followObj = trickyFindNearestUsableBaddie(t->playerObj, 150.0f, 0)) != NULL)
         {
             TRICKY_RETARGET((u8*)t, t->followObj);
             go = 1;
@@ -3895,23 +3813,23 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                 break;
             }
             if (getXZDistance(&gobj->anim.worldPosX, &t->followObj->anim.worldPosX) <
-                lbl_803E24DC)
+                3600.0f)
             {
                 int b;
                 f32 z;
                 t->substate = ANIMOBJD2_SUBSTATE_APPROACH;
                 b = 1;
-                z = lbl_803E23DC;
+                z = 0.0f;
                 t->cooldownA = z;
                 if (z == t->waterLevel)
                 {
                     b = 0;
                 }
-                else if (lbl_803E2410 == t->eventTime)
+                else if (-100000.0f == t->eventTime)
                 {
                     b = 1;
                 }
-                else if (t->currentTime - t->eventTime > lbl_803E2414)
+                else if (t->currentTime - t->eventTime > 8.0f)
                 {
                     b = 1;
                 }
@@ -3921,14 +3839,14 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                 }
                 if (b != 0)
                 {
-                    objAnimFn_8013a3f0((int)gobj, 8, lbl_803E243C, 0);
-                    t->cooldownC = lbl_803E2440;
-                    t->particleTimer = lbl_803E23DC;
+                    objAnimFn_8013a3f0((int)gobj, 8, 0.02f, 0);
+                    t->cooldownC = 600.0f;
+                    t->particleTimer = 0.0f;
                     trickyDebugPrint(str + 0x184);
                 }
                 else
                 {
-                    objAnimFn_8013a3f0((int)gobj, 0, lbl_803E2444, 0);
+                    objAnimFn_8013a3f0((int)gobj, 0, 0.005f, 0);
                     trickyDebugPrint(str + 0x190);
                 }
             }
@@ -3938,8 +3856,8 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
     case ANIMOBJD2_SUBSTATE_APPROACH:
     {
         trickyDebugPrint(str + 0x5b4, *t->progressPtr, *(int*)&t->stateFlags728);
-        ok = trickyFn_8013b368(gobj, lbl_803E24D4, t);
-        if ((t->followObj = trickyFindNearestUsableBaddie(t->playerObj, lbl_803E24D8, 0)) != NULL)
+        ok = trickyFn_8013b368(gobj, 50.0f, t);
+        if ((t->followObj = trickyFindNearestUsableBaddie(t->playerObj, 150.0f, 0)) != NULL)
         {
             TRICKY_RETARGET((u8*)t, t->followObj);
             go = 1;
@@ -3973,7 +3891,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
             }
             if (ok == 0)
             {
-                objAnimFn_8013a3f0((int)gobj, 0x33, lbl_803E243C, 0);
+                objAnimFn_8013a3f0((int)gobj, 0x33, 0.02f, 0);
             }
             if (*(int*)&t->stateFlags728 != 0)
             {
@@ -4029,7 +3947,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                                 (int)Obj_SetupObject((ObjPlacement*)o, 4, -1, -1, (void*)*(int*)&gobj->anim.parent);
                             ObjLink_AttachChild(gobj, t->child, ((TrickyPackedSlots*)((char*)t + 0x7bc))->zzzSlot);
                             {
-                                f32 z3 = lbl_803E23DC;
+                                f32 z3 = 0.0f;
                                 t->childPhaseTimer0 = z3;
                                 t->childPhaseTimer1 = z3;
                                 t->childPhaseTimer2 = z3;
@@ -4044,17 +3962,17 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                 }
             }
             if (getXZDistance(&gobj->anim.worldPosX, &t->followObj->anim.worldPosX) >
-                lbl_803E24E0)
+                5625.0f)
             {
                 t->substate = ANIMOBJD2_SUBSTATE_ACQUIRE;
                 break;
             }
             t->cooldownA -= timeDelta;
-            if (t->cooldownA < lbl_803E23DC)
+            if (t->cooldownA < 0.0f)
             {
                 f32 rv;
                 rv = (s32)randomGetRange(0xc8, 0x258);
-                t->cooldownA = rv * lbl_803E24A8;
+                t->cooldownA = rv * 0.5f;
                 TRICKY_BARK((int*)gobj, 0x29b, 0x1000);
             }
         }
@@ -4063,8 +3981,8 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
     case ANIMOBJD2_SUBSTATE_CHARGE:
     {
         trickyDebugPrint(str + 0x5cc);
-        ok = trickyFn_8013b368(gobj, lbl_803E24E4, t);
-        if ((t->followObj = trickyFindNearestUsableBaddie(t->playerObj, lbl_803E24D8, 0)) != NULL)
+        ok = trickyFn_8013b368(gobj, 55.0f, t);
+        if ((t->followObj = trickyFindNearestUsableBaddie(t->playerObj, 150.0f, 0)) != NULL)
         {
             TRICKY_RETARGET((u8*)t, t->followObj);
             go = 1;
@@ -4077,7 +3995,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         }
         if (go != 0 && ok != 1)
         {
-            objAnimFn_8013a3f0((int)gobj, 0x34, lbl_803E2444, 0x4000000);
+            objAnimFn_8013a3f0((int)gobj, 0x34, 0.005f, 0x4000000);
             t->stateFlags |= TRICKY_STATE_RESET_FLAG_10;
             t->substate = ANIMOBJD2_SUBSTATE_SPAWN;
             *(int*)&t->stateFlags728 = 0;
@@ -4089,7 +4007,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         {
             break;
         }
-        if (gobj->anim.currentMoveProgress > lbl_803E24E8)
+        if (gobj->anim.currentMoveProgress > 0.3f)
         {
             if (Obj_IsLoadingLocked() != 0)
             {
@@ -4150,7 +4068,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
     {
         void** p;
         GameObject* tgt;
-        GameObject* found = trickyFindNearestUsableBaddie(t->playerObj, lbl_803E24D8, 0);
+        GameObject* found = trickyFindNearestUsableBaddie(t->playerObj, 150.0f, 0);
         if (found != NULL && found->anim.seqId == ANIMOBJD2_CIRCLE_TARGET_SEQID)
         {
             tgt = found;
@@ -4169,7 +4087,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
             void** list = (void**)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, &count);
             int i = 0;
             p = list;
-            detourRatio = lbl_803E23F8;
+            detourRatio = 2.0f;
             for (; i < count; i++)
             {
                 f32 d1 = Vec_xzDistance(&((GameObject*)p[0])->anim.worldPosX, &tgt->anim.worldPosX);
@@ -4215,24 +4133,24 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
             u8 r;
             if (*(void**)((u8*)t + 0x724) != NULL)
             {
-                r = trickyFn_8013b368(gobj, lbl_803E2488, t);
+                r = trickyFn_8013b368(gobj, 5.0f, t);
             }
             else
             {
-                r = trickyFn_8013b368(gobj, lbl_803E2418, t);
+                r = trickyFn_8013b368(gobj, 340282346638528859811704183484516925440.0f, t);
             }
             if (r != 1)
             {
                 int b;
-                if (lbl_803E23DC == t->waterLevel)
+                if (0.0f == t->waterLevel)
                 {
                     b = 0;
                 }
-                else if (lbl_803E2410 == t->eventTime)
+                else if (-100000.0f == t->eventTime)
                 {
                     b = 1;
                 }
-                else if (t->currentTime - t->eventTime > lbl_803E2414)
+                else if (t->currentTime - t->eventTime > 8.0f)
                 {
                     b = 1;
                 }
@@ -4242,14 +4160,14 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                 }
                 if (b != 0)
                 {
-                    objAnimFn_8013a3f0((int)gobj, 8, lbl_803E243C, 0);
-                    t->cooldownC = lbl_803E2440;
-                    t->particleTimer = lbl_803E23DC;
+                    objAnimFn_8013a3f0((int)gobj, 8, 0.02f, 0);
+                    t->cooldownC = 600.0f;
+                    t->particleTimer = 0.0f;
                     trickyDebugPrint(str + 0x184);
                 }
                 else
                 {
-                    objAnimFn_8013a3f0((int)gobj, 0, lbl_803E2444, 0);
+                    objAnimFn_8013a3f0((int)gobj, 0, 0.005f, 0);
                     trickyDebugPrint(str + 0x190);
                 }
             }
@@ -4286,7 +4204,7 @@ void* trickyFindCirclingTarget(GameObject* obj, void* state)
                                     &((TrickyState*)state)->playerObj->anim.worldPosX);
                 d3 = Vec_xzDistance(&target->anim.worldPosX,
                                     &((TrickyState*)state)->playerObj->anim.worldPosX);
-                if ((d1 + d2) < lbl_803E23F8 * d3)
+                if ((d1 + d2) < 2.0f * d3)
                 {
                     return target;
                 }
@@ -4340,12 +4258,12 @@ void trickyUpdateCirclingTargetPosition(void* objPtr, void* state)
     }
 
     ((TrickyState*)state)->scratch708.f = ((TrickyState*)state)->followObj->anim.worldPosX -
-                                          lbl_803E24D4 * fsin16Precise((u16)((TrickyState*)state)->scratch704.i);
+                                          50.0f * fsin16Precise((u16)((TrickyState*)state)->scratch704.i);
     ((TrickyState*)state)->scratch70C.f = ((TrickyState*)state)->followObj->anim.worldPosY;
     ((TrickyState*)state)->scratch710.f = ((TrickyState*)state)->followObj->anim.worldPosZ -
-                                          lbl_803E24D4 * fcos16Precise((u16)((TrickyState*)state)->scratch704.i);
+                                          50.0f * fcos16Precise((u16)((TrickyState*)state)->scratch704.i);
 
-    if (trickyFn_8013b368(objPtr, lbl_803E2488, state) == 0)
+    if (trickyFn_8013b368(objPtr, 5.0f, state) == 0)
     {
         trickyReportError(sTrickyShouldNeverStopCirclingError);
     }
@@ -4409,25 +4327,25 @@ void tricky_fetchBall(GameObject* obj, register int state)
     {
     case 0:
         ((TrickyState*)state)->scratch700.ptr = ((TrickyState*)state)->followObj;
-        ((TrickyState*)state)->scratch704.f = lbl_803E24EC;
+        ((TrickyState*)state)->scratch704.f = 180.0f;
         ((TrickyState*)state)->substate = 1;
         ((TrickyState*)state)->sfxIntervalTimer = (f32)(s32)randomGetRange(150, 300);
         /* fall through */
     case 1:
         if (sidekickBall_isHeldOrMoving((GameObject*)((TrickyState*)state)->scratch700.i) != 0)
         {
-            status = trickyFn_8013b368(obj, lbl_803E24F0, (TrickyState*)state);
+            status = trickyFn_8013b368(obj, 13.0f, (TrickyState*)state);
             if (status == 0)
             {
-                if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+                if (0.0f == ((TrickyState*)state)->waterLevel)
                 {
                     useSwimAnim = 0;
                 }
-                else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+                else if (-100000.0f == ((TrickyState*)state)->eventTime)
                 {
                     useSwimAnim = 1;
                 }
-                else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+                else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
                 {
                     useSwimAnim = 1;
                 }
@@ -4437,11 +4355,11 @@ void tricky_fetchBall(GameObject* obj, register int state)
                 }
                 if (useSwimAnim != 0)
                 {
-                    objAnimFn_8013a3f0((int)obj, 28, lbl_803E24F4, 0x4000000);
+                    objAnimFn_8013a3f0((int)obj, 28, 0.03f, 0x4000000);
                 }
                 else
                 {
-                    objAnimFn_8013a3f0((int)obj, 17, lbl_803E24F4, 0x4000000);
+                    objAnimFn_8013a3f0((int)obj, 17, 0.03f, 0x4000000);
                 }
                 ((TrickyState*)state)->stateFlags |= TRICKY_STATE_RESET_FLAG_10;
                 ((TrickyState*)state)->substate = 3;
@@ -4463,7 +4381,7 @@ void tricky_fetchBall(GameObject* obj, register int state)
                 }
                 ((TrickyState*)state)->stateIndex = 1;
                 ((TrickyState*)state)->substate = 0;
-                resetTimer = lbl_803E23DC;
+                resetTimer = 0.0f;
                 ((TrickyState*)state)->cooldownA = resetTimer;
                 ((TrickyState*)state)->cooldownB.f = resetTimer;
                 TRICKY_CLEAR_RESET_FLAGS(state);
@@ -4471,20 +4389,20 @@ void tricky_fetchBall(GameObject* obj, register int state)
         }
         else
         {
-            status = trickyFn_8013b368(obj, lbl_803E2408, (TrickyState*)state);
+            status = trickyFn_8013b368(obj, 20.0f, (TrickyState*)state);
             if (status == 0)
             {
-                if (((TrickyState*)state)->scratch704.f > lbl_803E23DC)
+                if (((TrickyState*)state)->scratch704.f > 0.0f)
                 {
-                    if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+                    if (0.0f == ((TrickyState*)state)->waterLevel)
                     {
                         useSwimAnim = 0;
                     }
-                    else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+                    else if (-100000.0f == ((TrickyState*)state)->eventTime)
                     {
                         useSwimAnim = 1;
                     }
-                    else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+                    else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
                     {
                         useSwimAnim = 1;
                     }
@@ -4494,28 +4412,28 @@ void tricky_fetchBall(GameObject* obj, register int state)
                     }
                     if (useSwimAnim != 0)
                     {
-                        objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                        ((TrickyState*)state)->cooldownC = lbl_803E2440;
-                        ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+                        objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                        ((TrickyState*)state)->cooldownC = 600.0f;
+                        ((TrickyState*)state)->particleTimer = 0.0f;
                         trickyDebugPrint(sInWaterMessage);
                     }
                     else
                     {
-                        objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                        objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                         trickyDebugPrint(lbl_8031D478);
                     }
                     ((TrickyState*)state)->scratch704.f -= timeDelta;
-                    if (((TrickyState*)state)->scratch704.f <= lbl_803E23DC)
+                    if (((TrickyState*)state)->scratch704.f <= 0.0f)
                     {
-                        if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+                        if (0.0f == ((TrickyState*)state)->waterLevel)
                         {
                             useSwimAnim = 0;
                         }
-                        else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+                        else if (-100000.0f == ((TrickyState*)state)->eventTime)
                         {
                             useSwimAnim = 1;
                         }
-                        else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+                        else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
                         {
                             useSwimAnim = 1;
                         }
@@ -4525,28 +4443,28 @@ void tricky_fetchBall(GameObject* obj, register int state)
                         }
                         if (useSwimAnim != 0)
                         {
-                            ((TrickyState*)state)->scratch704.f = lbl_803E24EC;
+                            ((TrickyState*)state)->scratch704.f = 180.0f;
                         }
                         else
                         {
-                            ((TrickyState*)state)->scratch708.f = lbl_803E24F8;
+                            ((TrickyState*)state)->scratch708.f = 60.0f;
                         }
                     }
                 }
                 else
                 {
-                    objAnimFn_8013a3f0((int)obj, 16, lbl_803E243C, 0x4000000);
+                    objAnimFn_8013a3f0((int)obj, 16, 0.02f, 0x4000000);
                     ((TrickyState*)state)->scratch708.f -= timeDelta;
-                    if (((TrickyState*)state)->scratch708.f <= lbl_803E23DC)
+                    if (((TrickyState*)state)->scratch708.f <= 0.0f)
                     {
-                        ((TrickyState*)state)->scratch704.f = lbl_803E24EC;
+                        ((TrickyState*)state)->scratch704.f = 180.0f;
                     }
                 }
             }
             else if (status == 1)
             {
                 ((TrickyState*)state)->sfxIntervalTimer -= timeDelta;
-                if (((TrickyState*)state)->sfxIntervalTimer <= lbl_803E23DC)
+                if (((TrickyState*)state)->sfxIntervalTimer <= 0.0f)
                 {
                     ((TrickyState*)state)->sfxIntervalTimer = (f32)(s32)randomGetRange(150, 300);
                     extra = *(int*)&(obj)->extra;
@@ -4570,15 +4488,15 @@ void tricky_fetchBall(GameObject* obj, register int state)
             }
             else
             {
-                if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+                if (0.0f == ((TrickyState*)state)->waterLevel)
                 {
                     useSwimAnim = 0;
                 }
-                else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+                else if (-100000.0f == ((TrickyState*)state)->eventTime)
                 {
                     useSwimAnim = 1;
                 }
-                else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+                else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
                 {
                     useSwimAnim = 1;
                 }
@@ -4588,35 +4506,35 @@ void tricky_fetchBall(GameObject* obj, register int state)
                 }
                 if (useSwimAnim != 0)
                 {
-                    objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                    ((TrickyState*)state)->cooldownC = lbl_803E2440;
-                    ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+                    objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                    ((TrickyState*)state)->cooldownC = 600.0f;
+                    ((TrickyState*)state)->particleTimer = 0.0f;
                     trickyDebugPrint(sInWaterMessage);
                 }
                 else
                 {
-                    objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                    objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                     trickyDebugPrint(lbl_8031D478);
                 }
             }
         }
         break;
     case 6:
-        if ((obj)->anim.currentMoveProgress >= lbl_803E24FC)
+        if ((obj)->anim.currentMoveProgress >= 0.65f)
         {
             status = ((TrickyState*)state)->scratch700.i;
-            *(float*)(status + 0x10) += lbl_803E2488;
-            bob = -mathCosf(lbl_803E2454 * (f32)(s32) * (short*)obj / lbl_803E2458);
+            *(float*)(status + 0x10) += 5.0f;
+            bob = -mathCosf(3.1415927f * (f32)(s32) * (short*)obj / 32768.0f);
             sidekickBall_launch((GameObject*)((TrickyState*)state)->scratch700.i, obj,
-                                -mathSinf(lbl_803E2454 * (f32)(s32) * (short*)obj / lbl_803E2458),
-                                lbl_803E23E8, bob);
+                                -mathSinf(3.1415927f * (f32)(s32) * (short*)obj / 32768.0f),
+                                1.0f, bob);
             ((TrickyState*)state)->substate = 2;
         }
         break;
     case 2:
         if ((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
         {
-            *(float*)(state + 0x828) = lbl_803E2408;
+            *(float*)(state + 0x828) = 20.0f;
             if (((TrickyState*)state)->progressPtr[2] >= 0xef)
             {
                 ((TrickyState*)state)->progressPtr[2] = 0;
@@ -4647,18 +4565,18 @@ void tricky_fetchBall(GameObject* obj, register int state)
         }
         break;
     case 7:
-        status = trickyFn_8013b368(obj, lbl_803E2408, (TrickyState*)state);
+        status = trickyFn_8013b368(obj, 20.0f, (TrickyState*)state);
         if (status != 1)
         {
-            if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+            if (0.0f == ((TrickyState*)state)->waterLevel)
             {
                 useSwimAnim = 0;
             }
-            else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+            else if (-100000.0f == ((TrickyState*)state)->eventTime)
             {
                 useSwimAnim = 1;
             }
-            else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+            else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
             {
                 useSwimAnim = 1;
             }
@@ -4668,32 +4586,32 @@ void tricky_fetchBall(GameObject* obj, register int state)
             }
             if (useSwimAnim != 0)
             {
-                objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                ((TrickyState*)state)->cooldownC = lbl_803E2440;
-                ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+                objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                ((TrickyState*)state)->cooldownC = 600.0f;
+                ((TrickyState*)state)->particleTimer = 0.0f;
                 trickyDebugPrint(sInWaterMessage);
             }
             else
             {
-                objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                 trickyDebugPrint(lbl_8031D478);
             }
             return;
         }
         if (sidekickBall_isIdle(((TrickyState*)state)->followObj) != 0)
         {
-            ((TrickyState*)state)->scratch704.f = lbl_803E24EC;
+            ((TrickyState*)state)->scratch704.f = 180.0f;
             ((TrickyState*)state)->substate = 1;
         }
         break;
     case 3:
-        if ((obj)->anim.currentMoveProgress >= lbl_803E24A8)
+        if ((obj)->anim.currentMoveProgress >= 0.5f)
         {
             ((TrickyState*)state)->substate = 4;
         }
         break;
     case 4:
-        if ((obj)->anim.currentMoveProgress >= lbl_803E24D0)
+        if ((obj)->anim.currentMoveProgress >= 0.95f)
         {
             targetPos = &((TrickyState*)state)->playerObj->anim.worldPosX;
             if (((TrickyState*)state)->targetPosPtr != targetPos)
@@ -4709,17 +4627,17 @@ void tricky_fetchBall(GameObject* obj, register int state)
             }
             ((TrickyState*)state)->substate = 5;
         case 5:
-            if (trickyFn_8013b368(obj, lbl_803E24C8, (TrickyState*)state) == 0)
+            if (trickyFn_8013b368(obj, 30.0f, (TrickyState*)state) == 0)
             {
-                if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+                if (0.0f == ((TrickyState*)state)->waterLevel)
                 {
                     useSwimAnim = 0;
                 }
-                else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+                else if (-100000.0f == ((TrickyState*)state)->eventTime)
                 {
                     useSwimAnim = 1;
                 }
-                else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+                else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
                 {
                     useSwimAnim = 1;
                 }
@@ -4729,11 +4647,11 @@ void tricky_fetchBall(GameObject* obj, register int state)
                 }
                 if (useSwimAnim != 0)
                 {
-                    objAnimFn_8013a3f0((int)obj, 29, lbl_803E24F4, 0x4000000);
+                    objAnimFn_8013a3f0((int)obj, 29, 0.03f, 0x4000000);
                 }
                 else
                 {
-                    objAnimFn_8013a3f0((int)obj, 19, lbl_803E24F4, 0x4000000);
+                    objAnimFn_8013a3f0((int)obj, 19, 0.03f, 0x4000000);
                 }
                 ((TrickyState*)state)->substate = 6;
             }
@@ -4741,7 +4659,7 @@ void tricky_fetchBall(GameObject* obj, register int state)
         break;
     }
     if (((((TrickyState*)state)->stateFlags & 0x10000) != 0) &&
-        ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX, lbl_803E2500) == 0)
+        ViewFrustum_IsSphereVisible(&(obj)->anim.localPosX, 19.0f) == 0)
     {
         Obj_FreeObject(((TrickyState*)state)->followObj);
     }
@@ -4759,10 +4677,10 @@ void tricky_idleAndEat(GameObject* obj, int state)
 
     if (tricky_handleFeedOrTalk(obj, (int*)state) == 0)
     {
-        if (trickyFn_8013b368(obj, lbl_803E2488, (TrickyState*)state) == 0)
+        if (trickyFn_8013b368(obj, 5.0f, (TrickyState*)state) == 0)
         {
             ((TrickyState*)state)->idleSfxTimer -= timeDelta;
-            if (((TrickyState*)state)->idleSfxTimer <= lbl_803E23DC)
+            if (((TrickyState*)state)->idleSfxTimer <= 0.0f)
             {
                 ((TrickyState*)state)->idleSfxTimer = (f32)(s32)randomGetRange(500, 750);
                 extra = *(int*)&obj->extra;
@@ -4778,15 +4696,15 @@ void tricky_idleAndEat(GameObject* obj, int state)
                     }
                 }
             }
-            if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+            if (0.0f == ((TrickyState*)state)->waterLevel)
             {
                 inWater = 0;
             }
-            else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+            else if (-100000.0f == ((TrickyState*)state)->eventTime)
             {
                 inWater = 1;
             }
-            else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+            else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
             {
                 inWater = 1;
             }
@@ -4796,9 +4714,9 @@ void tricky_idleAndEat(GameObject* obj, int state)
             }
             if (inWater != 0)
             {
-                objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                ((TrickyState*)state)->cooldownC = lbl_803E2440;
-                ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+                objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                ((TrickyState*)state)->cooldownC = 600.0f;
+                ((TrickyState*)state)->particleTimer = 0.0f;
                 trickyDebugPrint(sInWaterMessage);
             }
             else
@@ -4808,13 +4726,13 @@ void tricky_idleAndEat(GameObject* obj, int state)
                 case 13:
                     if ((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
                     {
-                        objAnimFn_8013a3f0((int)obj, 49, lbl_803E243C, 0);
+                        objAnimFn_8013a3f0((int)obj, 49, 0.02f, 0);
                     }
                     break;
                 case 49:
                     break;
                 default:
-                    objAnimFn_8013a3f0((int)obj, 13, lbl_803E2444, 0);
+                    objAnimFn_8013a3f0((int)obj, 13, 0.005f, 0);
                     break;
                 }
                 trickyDebugPrint(lbl_8031D478);
@@ -4870,26 +4788,26 @@ void tricky_trackTumbleweed(GameObject* obj, register int state)
             dx = *targetPos - obj->anim.worldPosX;
             dz = targetPos[2] - obj->anim.worldPosZ;
             distance = sqrtf(dx * dx + dz * dz);
-            if (lbl_803E23DC != distance)
+            if (0.0f != distance)
             {
                 dx = dx / distance;
                 dz = dz / distance;
             }
-            distance = lbl_803E24D4;
+            distance = 50.0f;
             ((TrickyState*)state)->scratch704.f = -(distance * dx - trackedObj->anim.worldPosX);
             ((TrickyState*)state)->scratch708.f = trackedObj->anim.worldPosY;
             ((TrickyState*)state)->scratch70C.f = -(distance * dz - trackedObj->anim.worldPosZ);
-            if (trickyFn_8013b368(obj, lbl_803E2488, (TrickyState*)state) == 0)
+            if (trickyFn_8013b368(obj, 5.0f, (TrickyState*)state) == 0)
             {
-                if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+                if (0.0f == ((TrickyState*)state)->waterLevel)
                 {
                     inWater = 0;
                 }
-                else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+                else if (-100000.0f == ((TrickyState*)state)->eventTime)
                 {
                     inWater = 1;
                 }
-                else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+                else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
                 {
                     inWater = 1;
                 }
@@ -4899,14 +4817,14 @@ void tricky_trackTumbleweed(GameObject* obj, register int state)
                 }
                 if (inWater != 0)
                 {
-                    objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                    ((TrickyState*)state)->cooldownC = lbl_803E2440;
-                    ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+                    objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                    ((TrickyState*)state)->cooldownC = 600.0f;
+                    ((TrickyState*)state)->particleTimer = 0.0f;
                     trickyDebugPrint(sInWaterMessage);
                 }
                 else
                 {
-                    objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                    objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                     trickyDebugPrint(lbl_8031D478);
                 }
             }
@@ -4915,7 +4833,7 @@ void tricky_trackTumbleweed(GameObject* obj, register int state)
         {
             ((TrickyState*)state)->stateIndex = 1;
             ((TrickyState*)state)->substate = 0;
-            resetTimer = lbl_803E23DC;
+            resetTimer = 0.0f;
             ((TrickyState*)state)->cooldownA = resetTimer;
             ((TrickyState*)state)->cooldownB.f = resetTimer;
             TRICKY_CLEAR_RESET_FLAGS(state);
@@ -4929,18 +4847,18 @@ void tricky_moveToFollowTarget(int obj, int state)
     int inWater;
     int result;
 
-    result = trickyFn_8013b368((GameObject*)obj, lbl_803E247C, (TrickyState*)state);
+    result = trickyFn_8013b368((GameObject*)obj, 15.0f, (TrickyState*)state);
     if (result == 0)
     {
-        if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+        if (0.0f == ((TrickyState*)state)->waterLevel)
         {
             inWater = 0;
         }
-        else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+        else if (-100000.0f == ((TrickyState*)state)->eventTime)
         {
             inWater = 1;
         }
-        else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+        else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
         {
             inWater = 1;
         }
@@ -4950,14 +4868,14 @@ void tricky_moveToFollowTarget(int obj, int state)
         }
         if (inWater != 0)
         {
-            objAnimFn_8013a3f0(obj, 8, lbl_803E243C, 0);
-            ((TrickyState*)state)->cooldownC = lbl_803E2440;
-            ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+            objAnimFn_8013a3f0(obj, 8, 0.02f, 0);
+            ((TrickyState*)state)->cooldownC = 600.0f;
+            ((TrickyState*)state)->particleTimer = 0.0f;
             trickyDebugPrint(sInWaterMessage);
         }
         else
         {
-            objAnimFn_8013a3f0(obj, 0, lbl_803E2444, 0);
+            objAnimFn_8013a3f0(obj, 0, 0.005f, 0);
             trickyDebugPrint(lbl_8031D478);
         }
     }
@@ -5083,17 +5001,17 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
         trickyState->guardWalkGroup = Objfsa_GetWalkGroupIndexAtPoint(trickyState->targetPosition, 0x0);
         trickyState->guardPoint[0] =
             (f32)(trickyState->homeObj->worldPosX -
-                  lbl_803E247C * mathSinf((lbl_803E2454 * trickyState->homeObj->rotX) / lbl_803E2458));
+                  15.0f * mathSinf((3.1415927f * trickyState->homeObj->rotX) / 32768.0f));
         trickyState->guardPoint[1] = trickyState->homeObj->worldPosY;
         trickyState->guardPoint[2] =
             (f32)(trickyState->homeObj->worldPosZ -
-                  lbl_803E247C * mathCosf((lbl_803E2454 * trickyState->homeObj->rotX) / lbl_803E2458));
+                  15.0f * mathCosf((3.1415927f * trickyState->homeObj->rotX) / 32768.0f));
         trickyState->guardCanSpawnHelpers = 0;
         trickyState->guardState = 1;
         break;
     case 1:
         trickyDebugPrint(strBase + 0x654);
-        trickyFn_8013b368((GameObject*)obj, lbl_803E2488, (TrickyState*)trickyState);
+        trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)trickyState);
         if (trickyState->guardWalkGroup == Objfsa_GetWalkGroupIndexAtPoint(&obj->worldPosX, 0x0))
         {
             trickyState->guardState = 2;
@@ -5101,7 +5019,7 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
         break;
     case 2:
         trickyDebugPrint(strBase + 0x664);
-        if (trickyFn_8013b368((GameObject*)obj, lbl_803E2488, (TrickyState*)trickyState) == 0)
+        if (trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)trickyState) == 0)
         {
             if ((u32)trickyState->targetPosition != (u32)trickyState->guardPoint)
             {
@@ -5118,17 +5036,17 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
         }
     case 3:
         trickyDebugPrint(strBase + 0x674);
-        if (trickyFn_8013b368((GameObject*)obj, lbl_803E2488, (TrickyState*)trickyState) == 0)
+        if (trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)trickyState) == 0)
         {
-            if (lbl_803E23DC == ((TrickyState*)trickyState)->waterLevel)
+            if (0.0f == ((TrickyState*)trickyState)->waterLevel)
             {
                 found = 0;
             }
-            else if (lbl_803E2410 == ((TrickyState*)trickyState)->eventTime)
+            else if (-100000.0f == ((TrickyState*)trickyState)->eventTime)
             {
                 found = 1;
             }
-            else if ((((TrickyState*)trickyState)->currentTime - ((TrickyState*)trickyState)->eventTime) > lbl_803E2414)
+            else if ((((TrickyState*)trickyState)->currentTime - ((TrickyState*)trickyState)->eventTime) > 8.0f)
             {
                 found = 1;
             }
@@ -5138,14 +5056,14 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
             }
             if (found != 0)
             {
-                objAnimFn_8013a3f0((int)obj, 0x8, lbl_803E243C, 0);
-                ((TrickyState*)trickyState)->cooldownC = lbl_803E2440;
-                ((TrickyState*)trickyState)->particleTimer = lbl_803E23DC;
+                objAnimFn_8013a3f0((int)obj, 0x8, 0.02f, 0);
+                ((TrickyState*)trickyState)->cooldownC = 600.0f;
+                ((TrickyState*)trickyState)->particleTimer = 0.0f;
                 trickyDebugPrint(strBase + 0x184);
             }
             else
             {
-                objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                 trickyDebugPrint(strBase + 0x190);
             }
         }
@@ -5153,7 +5071,7 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
         break;
     case 4:
         trickyDebugPrint(strBase + 0x684);
-        if (trickyFn_8013b368((GameObject*)obj, lbl_803E247C, (TrickyState*)trickyState) == 0)
+        if (trickyFn_8013b368((GameObject*)obj, 15.0f, (TrickyState*)trickyState) == 0)
         {
             trickyState->flags = trickyState->flags | TRICKY_STATE_RESET_FLAG_10;
             if (*trickyState->helperSpawnCount != 0 && trickyState->guardCanSpawnHelpers != 0)
@@ -5176,12 +5094,12 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
                     Sfx_AddLoopedObjectSound((int)obj, SFXTRIG_trpopn_c);
                 }
                 (*trickyState->helperSpawnCount)--;
-                objAnimFn_8013a3f0((int)obj, 0x34, lbl_803E2444, 0x4000000);
+                objAnimFn_8013a3f0((int)obj, 0x34, 0.005f, 0x4000000);
                 trickyState->guardState = 5;
             }
             else
             {
-                objAnimFn_8013a3f0((int)obj, 0x32, lbl_803E23EC, 0x4000000);
+                objAnimFn_8013a3f0((int)obj, 0x32, 0.01f, 0x4000000);
                 trickyState->guardState = 6;
             }
         }
@@ -5203,7 +5121,7 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
         }
     case 5:
         trickyDebugPrint(strBase + 0x694);
-        if ((double)obj->currentMoveProgress >= (double)lbl_803E24D0)
+        if (obj->currentMoveProgress >= 0.95f)
         {
             TRICKY_MARK_HELPERS_FINISHED(trickyState);
             for (i2 = 0, slot2 = (void**)trickyState; i2 < TRICKY_GUARD_HELPER_COUNT; i2++)
@@ -5246,10 +5164,10 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
         break;
     case 6:
         trickyDebugPrint(strBase + 0x6a4);
-        if ((double)obj->currentMoveProgress >= (double)lbl_803E24D0)
+        if (obj->currentMoveProgress >= 0.95f)
         {
-            objAnimFn_8013a3f0((int)obj, 0x33, lbl_803E2444, 0x4000000);
-            trickyState->guardTimer = lbl_803E23DC;
+            objAnimFn_8013a3f0((int)obj, 0x33, 0.005f, 0x4000000);
+            trickyState->guardTimer = 0.0f;
             temp2 = (int)((GameObject*)obj)->extra;
             if ((((u32)((TrickyState*)temp2)->statusFlags >> 6) & 1) == 0)
             {
@@ -5289,11 +5207,11 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
             }
         }
         trickyState->guardTimer = trickyState->guardTimer + timeDelta;
-        if (((double)trickyState->guardTimer >= (double)lbl_803E24D8 &&
-             (double)getXZDistance(trickyState->targetPosition, &obj->worldPosX) >= (double)lbl_803E24C4) ||
+        if ((trickyState->guardTimer >= 150.0f &&
+             getXZDistance(trickyState->targetPosition, &obj->worldPosX) >= 2500.0f) ||
             trickyGuardIsBaddieTargetValid(trickyState) == 0)
         {
-            objAnimFn_8013a3f0((int)obj, 0x32, lbl_803E23F4, 0x4000000);
+            objAnimFn_8013a3f0((int)obj, 0x32, -0.01f, 0x4000000);
             trickyState->guardState = 8;
         }
         else
@@ -5305,7 +5223,7 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
         break;
     case 8:
         trickyDebugPrint(strBase + 0x6c8);
-        if ((double)obj->currentMoveProgress <= (double)lbl_803E2420)
+        if (obj->currentMoveProgress <= 0.05f)
         {
             trickyState->flags &= ~(u64)TRICKY_STATE_RESET_FLAG_10;
             if (trickyGuardFindBaddieTarget(trickyState) == 0)
@@ -5416,11 +5334,11 @@ void trickyFlame(GameObject* obj, int trickyState)
             }
             ((TrickyRuntime*)trickyState)->guardState = 3;
         }
-        trickyFn_8013b368((GameObject*)obj, lbl_803E2488, (TrickyState*)trickyState);
+        trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)trickyState);
         break;
     case 3:
         trickyDebugPrint(strBase + 0x70c);
-        trickyFn_8013b368((GameObject*)obj, lbl_803E2488, (TrickyState*)trickyState);
+        trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)trickyState);
         if ((u8) * (u8*)(*(int*)&((TrickyRuntime*)trickyState)->guardPoint[1] + 0x3) ==
             Objfsa_GetWalkGroupIndexAtPoint((float*)&(obj)->anim.worldPosX, 0x0))
         {
@@ -5431,7 +5349,7 @@ void trickyFlame(GameObject* obj, int trickyState)
     case 4:
         trickyDebugPrint(strBase + 0x720);
         newTarget = *(int*)&((TrickyRuntime*)trickyState)->guardPoint[0] + 0x8;
-        trickyUpdateApproachSpeed((GameObject*)obj, lbl_803E2488, (TrickyState*)trickyState, (f32*)newTarget, 1);
+        trickyUpdateApproachSpeed((GameObject*)obj, 5.0f, (TrickyState*)trickyState, (f32*)newTarget, 1);
         trickyMove(obj, (f32*)newTarget);
         if (Objfsa_GetWalkGroupIndexAtPoint((float*)&(obj)->anim.worldPosX, 0x0) == 0)
         {
@@ -5442,12 +5360,12 @@ void trickyFlame(GameObject* obj, int trickyState)
     case 5:
         trickyDebugPrint(strBase + 0x734);
         newTarget = *(int*)&((TrickyRuntime*)trickyState)->guardPoint[0] + 0x8;
-        trickyUpdateApproachSpeed((GameObject*)obj, lbl_803E2488, (TrickyState*)trickyState, (f32*)newTarget, 1);
+        trickyUpdateApproachSpeed((GameObject*)obj, 5.0f, (TrickyState*)trickyState, (f32*)newTarget, 1);
         if (trickyMove(obj, (f32*)newTarget) != 0)
         {
             break;
         }
-        objAnimFn_8013a3f0((int)obj, 0x1a, lbl_803E23E4, 0x4000000);
+        objAnimFn_8013a3f0((int)obj, 0x1a, 0.004f, 0x4000000);
         ((TrickyRuntime*)trickyState)->guardState = 7;
         (*((TrickyRuntime*)trickyState)->helperSpawnCount) -= 4;
         /* fall through */
@@ -5475,7 +5393,7 @@ void trickyFlame(GameObject* obj, int trickyState)
         }
         do
         {
-            if ((double)(obj)->anim.currentMoveProgress > (double)lbl_803E24AC)
+            if ((obj)->anim.currentMoveProgress > 0.25f)
             {
                 if ((((TrickyRuntime*)trickyState)->flags & TRICKY_STATE_HELPERS_ACTIVE_FLAG) == 0)
                 {
@@ -5504,7 +5422,7 @@ void trickyFlame(GameObject* obj, int trickyState)
                     if (cb != NULL && cb((int)((TrickyRuntime*)trickyState)->homeObj, 1) == 0)
                     {
                     }
-                    else if ((double)(obj)->anim.currentMoveProgress > (double)lbl_803E2504)
+                    else if ((obj)->anim.currentMoveProgress > 0.8f)
                     {
                         TRICKY_MARK_HELPERS_FINISHED(trickyState);
                         for (i = 0, slot = (void**)trickyState; i < TRICKY_GUARD_HELPER_COUNT; i++)
@@ -5535,13 +5453,13 @@ void trickyFlame(GameObject* obj, int trickyState)
         if (dieFlag == 0)
         {
             ((TrickyRuntime*)trickyState)->guardState = 8;
-            ((TrickyRuntime*)trickyState)->guardTimer = lbl_803E24F8;
+            ((TrickyRuntime*)trickyState)->guardTimer = 60.0f;
         }
         break;
     case 1:
         trickyDebugPrint(strBase + 0x750);
         {
-            int r = trickyFn_8013b368((GameObject*)obj, lbl_803E2488, (TrickyState*)trickyState);
+            int r = trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)trickyState);
             if (r == 0)
             {
                 ((TrickyRuntime*)trickyState)->flags |= TRICKY_STATE_RESET_FLAG_10;
@@ -5551,7 +5469,7 @@ void trickyFlame(GameObject* obj, int trickyState)
             {
                 ((TrickyRuntime*)trickyState)->growlLatState = 1;
                 ((TrickyRuntime*)trickyState)->guardState = 0;
-                fz = lbl_803E23DC;
+                fz = 0.0f;
                 ((TrickyRuntime*)trickyState)->guardPoint[0] = fz;
                 ((TrickyRuntime*)trickyState)->guardPoint[1] = fz;
                 TRICKY_RUNTIME_CLEAR_RESET_FLAGS(trickyState);
@@ -5561,10 +5479,10 @@ void trickyFlame(GameObject* obj, int trickyState)
     case 2:
         trickyDebugPrint(strBase + 0x764);
         newTarget = (int)((TrickyRuntime*)trickyState)->homeObj + 0x18;
-        trickyUpdateApproachSpeed((GameObject*)obj, lbl_803E2418, (TrickyState*)trickyState, (f32*)newTarget, 1);
+        trickyUpdateApproachSpeed((GameObject*)obj, 340282346638528859811704183484516925440.0f, (TrickyState*)trickyState, (f32*)newTarget, 1);
         if (trickyMove(obj, (f32*)newTarget) == 0)
         {
-            objAnimFn_8013a3f0((int)obj, 0x1a, lbl_803E23E4, 0x4000000);
+            objAnimFn_8013a3f0((int)obj, 0x1a, 0.004f, 0x4000000);
             ((TrickyRuntime*)trickyState)->guardState = 6;
             (*((TrickyRuntime*)trickyState)->helperSpawnCount) -= 4;
         }
@@ -5573,7 +5491,7 @@ void trickyFlame(GameObject* obj, int trickyState)
         trickyDebugPrint(strBase + 0x778);
         do
         {
-            if ((double)(obj)->anim.currentMoveProgress > (double)lbl_803E24AC)
+            if ((obj)->anim.currentMoveProgress > 0.25f)
             {
                 if ((((TrickyRuntime*)trickyState)->flags & TRICKY_STATE_HELPERS_ACTIVE_FLAG) == 0)
                 {
@@ -5602,7 +5520,7 @@ void trickyFlame(GameObject* obj, int trickyState)
                     if (cb != NULL && cb((int)((TrickyRuntime*)trickyState)->homeObj, 1) == 0)
                     {
                     }
-                    else if ((double)(obj)->anim.currentMoveProgress > (double)lbl_803E2504)
+                    else if ((obj)->anim.currentMoveProgress > 0.8f)
                     {
                         TRICKY_MARK_HELPERS_FINISHED(trickyState);
                         for (i2 = 0, slot2 = (void**)trickyState; i2 < TRICKY_GUARD_HELPER_COUNT; i2++)
@@ -5634,7 +5552,7 @@ void trickyFlame(GameObject* obj, int trickyState)
         {
             ((TrickyRuntime*)trickyState)->growlLatState = 1;
             ((TrickyRuntime*)trickyState)->guardState = 0;
-            fz = lbl_803E23DC;
+            fz = 0.0f;
             ((TrickyRuntime*)trickyState)->guardPoint[0] = fz;
             ((TrickyRuntime*)trickyState)->guardPoint[1] = fz;
             TRICKY_RUNTIME_CLEAR_RESET_FLAGS(trickyState);
@@ -5643,16 +5561,16 @@ void trickyFlame(GameObject* obj, int trickyState)
     case 8:
         trickyDebugPrint(strBase + 0x784);
         ((TrickyRuntime*)trickyState)->guardTimer = ((TrickyRuntime*)trickyState)->guardTimer - timeDelta;
-        if (((TrickyRuntime*)trickyState)->guardTimer <= lbl_803E23DC)
+        if (((TrickyRuntime*)trickyState)->guardTimer <= 0.0f)
         {
             newTarget = *(int*)&((TrickyRuntime*)trickyState)->guardPoint[1] + 0x8;
-            trickyUpdateApproachSpeed((GameObject*)obj, lbl_803E2488, (TrickyState*)trickyState, (f32*)newTarget, 1);
+            trickyUpdateApproachSpeed((GameObject*)obj, 5.0f, (TrickyState*)trickyState, (f32*)newTarget, 1);
             trickyMove(obj, (f32*)newTarget);
             if (Objfsa_GetWalkGroupIndexAtPoint((float*)&(obj)->anim.worldPosX, 0x0) != 0)
             {
                 ((TrickyRuntime*)trickyState)->growlLatState = 1;
                 ((TrickyRuntime*)trickyState)->guardState = 0;
-                fz = lbl_803E23DC;
+                fz = 0.0f;
                 ((TrickyRuntime*)trickyState)->guardPoint[0] = fz;
                 ((TrickyRuntime*)trickyState)->guardPoint[1] = fz;
                 TRICKY_RUNTIME_CLEAR_RESET_FLAGS(trickyState);
@@ -5781,26 +5699,26 @@ void tricky_updateBallRoll(int obj, int ball)
         speed = ts->speed;
         if ((u8)(ts->stateFlags & CANNONBALL_SPEED_DECAY_FLAG) != 0)
         {
-            speed += lbl_803E23F4 * timeDelta;
-            if (speed < lbl_803E23DC)
+            speed += -0.01f * timeDelta;
+            if (speed < 0.0f)
             {
-                speed = lbl_803E23DC;
+                speed = 0.0f;
             }
         }
-        else if (speed > lbl_803E2508)
+        else if (speed > 1.2f)
         {
-            speed += lbl_803E241C * timeDelta;
-            if (speed < lbl_803E2508)
+            speed += -0.15f * timeDelta;
+            if (speed < 1.2f)
             {
-                speed = lbl_803E2508;
+                speed = 1.2f;
             }
         }
         else
         {
-            speed += lbl_803E2420 * timeDelta;
-            if (speed > lbl_803E2508)
+            speed += 0.05f * timeDelta;
+            if (speed > 1.2f)
             {
-                speed = lbl_803E2508;
+                speed = 1.2f;
             }
         }
 
@@ -5818,7 +5736,7 @@ void tricky_updateBallRoll(int obj, int ball)
         }
 
         ts->scratch708.f -= timeDelta;
-        if (ts->scratch708.f < lbl_803E23DC)
+        if (ts->scratch708.f < 0.0f)
         {
             ts->scratch708.f = (f32)(int)randomGetRange(200, 600);
 
@@ -5833,7 +5751,7 @@ void tricky_updateBallRoll(int obj, int ball)
     }
     else
     {
-        trickyFn_8013b368((GameObject*)obj, lbl_803E2488, (TrickyState*)ball);
+        trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)ball);
         if (Objfsa_GetWalkGroupIndexAtPoint((float*)&((GameObject*)obj)->anim.worldPosX, NULL) ==
             (walkGroup = Objfsa_GetWalkGroupIndexAtPoint((float*)((int)ts->scratch700.ptr + 8), NULL)))
         {
@@ -5866,14 +5784,14 @@ void tricky_updateBallRoll(int obj, int ball)
             RomCurve_setupHermiteSegment(&ts->route, curveArg, (void*)fromNode, (void*)targetNode);
             if (ts->route.reverse != 0)
             {
-                RomCurve_stepClamped(&ts->route, lbl_803E250C);
+                RomCurve_stepClamped(&ts->route, -10.0f);
             }
             else
             {
-                RomCurve_stepClamped(&ts->route, lbl_803E23E0);
+                RomCurve_stepClamped(&ts->route, 10.0f);
             }
 
-            ts->scratch708.f = lbl_803E23DC;
+            ts->scratch708.f = 0.0f;
             ts->substate = 1;
         }
     }
@@ -6018,7 +5936,7 @@ void trickyDigTunnel(u8* obj, u8* state)
         state[0xa] = 1;
     case 1:
         trickyDebugPrint((char*)(base + 0x7b8));
-        trickyFn_8013b368((GameObject*)obj, lbl_803E2488, (TrickyState*)state);
+        trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)state);
         gidx = Objfsa_GetWalkGroupIndexAtPoint((f32*)(obj + 0x18), NULL);
         if (((TrickyCurveNode*)((TrickyState*)state)->scratch708.ptr)->walkGroup == gidx)
         {
@@ -6029,7 +5947,7 @@ void trickyDigTunnel(u8* obj, u8* state)
     case 2:
         trickyDebugPrint((char*)(base + 0x7cc));
         pos = (u8*)&((TrickyCurveNode*)((TrickyState*)state)->scratch700.ptr)->x;
-        trickyUpdateApproachSpeed((GameObject*)obj, lbl_803E2488, (TrickyState*)state, (f32*)pos, 1);
+        trickyUpdateApproachSpeed((GameObject*)obj, 5.0f, (TrickyState*)state, (f32*)pos, 1);
         if (trickyMove((GameObject*)obj, (f32*)pos) == 0)
         {
             ((TrickyState*)state)->stateFlags |= 0x2010;
@@ -6044,7 +5962,7 @@ void trickyDigTunnel(u8* obj, u8* state)
         }
         break;
     case 3:
-        objAnimFn_8013a3f0((int)obj, 0xe, lbl_803E2510, 0x4000000);
+        objAnimFn_8013a3f0((int)obj, 0xe, 0.033f, 0x4000000);
         ((TrickyState*)state)->dirX =
             ((TrickyCurveNode*)((TrickyState*)state)->scratch704.ptr)->x - ((TrickyCurveNode*)((TrickyState*)state)->scratch700.ptr)->x;
         ((TrickyState*)state)->dirZ =
@@ -6055,10 +5973,10 @@ void trickyDigTunnel(u8* obj, u8* state)
     case 4:
         trickyDebugPrint((char*)(base + 0x7e4));
         ((TrickyState*)state)->scratch70C.f -= timeDelta;
-        if (((TrickyState*)state)->scratch70C.f <= lbl_803E23DC)
+        if (((TrickyState*)state)->scratch70C.f <= 0.0f)
         {
             ((TrickyState*)state)->scratch70C.f = (f32)(int)randomGetRange(0x14, 0xb4);
-            ((TrickyState*)state)->scratch70C.f *= lbl_803E2424;
+            ((TrickyState*)state)->scratch70C.f *= 100.0f;
             ptr = ((GameObject*)obj)->extra;
             if (((u32)((TrickyState*)ptr)->statusFlags >> 6 & 1) == 0 &&
                 (((GameObject*)obj)->anim.currentMove >= 0x30 || ((GameObject*)obj)->anim.currentMove < 0x29) &&
@@ -6077,7 +5995,7 @@ void trickyDigTunnel(u8* obj, u8* state)
         vxx = vx * vx;
         vz = *(f32*)(*(u8**)&((GameObject*)obj)->extra + 0x30);
         spd = vz * vz;
-        if (vxx + spd > lbl_803E23EC)
+        if (vxx + spd > 0.01f)
         {
             trickyTurnTowardYaw(obj, getAngle(-vx, -vz));
         }
@@ -6104,7 +6022,7 @@ void trickyDigTunnel(u8* obj, u8* state)
                          Vec_xzDistance(&((GameObject*)obj)->anim.worldPosX,
                                         &((TrickyCurveNode*)((TrickyState*)state)->scratch704.ptr)->x));
         pos = (u8*)&((TrickyCurveNode*)((TrickyState*)state)->scratch704.ptr)->x;
-        trickyUpdateApproachSpeed((GameObject*)obj, lbl_803E2488, (TrickyState*)state, (f32*)pos, 1);
+        trickyUpdateApproachSpeed((GameObject*)obj, 5.0f, (TrickyState*)state, (f32*)pos, 1);
         if (trickyMove((GameObject*)obj, (f32*)pos) == 0)
         {
             trickyAdvanceNode(state);
@@ -6114,18 +6032,18 @@ void trickyDigTunnel(u8* obj, u8* state)
     case 6:
         trickyDebugPrint((char*)(base + 0x810));
         pos = (u8*)&((TrickyCurveNode*)((TrickyState*)state)->scratch704.ptr)->x;
-        trickyUpdateApproachSpeed((GameObject*)obj, lbl_803E2488, (TrickyState*)state, (f32*)pos, 1);
+        trickyUpdateApproachSpeed((GameObject*)obj, 5.0f, (TrickyState*)state, (f32*)pos, 1);
         if (trickyMove((GameObject*)obj, (f32*)pos) == 0)
         {
-            if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+            if (0.0f == ((TrickyState*)state)->waterLevel)
             {
                 inWater = 0;
             }
-            else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+            else if (-100000.0f == ((TrickyState*)state)->eventTime)
             {
                 inWater = 1;
             }
-            else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+            else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
             {
                 inWater = 1;
             }
@@ -6135,14 +6053,14 @@ void trickyDigTunnel(u8* obj, u8* state)
             }
             if (inWater != 0)
             {
-                objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                ((TrickyState*)state)->cooldownC = lbl_803E2440;
-                ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+                objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                ((TrickyState*)state)->cooldownC = 600.0f;
+                ((TrickyState*)state)->particleTimer = 0.0f;
                 trickyDebugPrint((char*)(base + 0x184));
             }
             else
             {
-                objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                 trickyDebugPrint((char*)(base + 0x190));
             }
             ((TrickyState*)state)->stateFlags &= ~0x2010;
@@ -6156,7 +6074,7 @@ void trickyDigTunnel(u8* obj, u8* state)
         {
             state[0x8] = 1;
             state[0xa] = 0;
-            z = lbl_803E23DC;
+            z = 0.0f;
             ((TrickyState*)state)->cooldownA = z;
             ((TrickyState*)state)->cooldownB.f = z;
             ((TrickyState*)state)->stateFlags &= ~0x10LL;
@@ -6192,13 +6110,13 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
             Objfsa_FindNearestEnabledCurveType24(&((TrickyState*)state)->followObj->anim.worldPosX, -1, 2);
         if (((TrickyState*)state)->scratch70C.ptr != NULL &&
             getXZDistance(&((TrickyState*)state)->followObj->anim.worldPosX,
-                          &((TrickyCurveNode*)((TrickyState*)state)->scratch70C.ptr)->x) > lbl_803E2514)
+                          &((TrickyCurveNode*)((TrickyState*)state)->scratch70C.ptr)->x) > 10000.0f)
         {
             ((TrickyState*)state)->scratch70C.ptr = NULL;
         }
         state[0xa] = 1;
     case 1:
-        ret = trickyFn_8013b368((GameObject*)obj, lbl_803E2488, (TrickyState*)state);
+        ret = trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)state);
         if (ret == 0)
         {
             if (((TrickyState*)state)->scratch70C.ptr != NULL)
@@ -6221,17 +6139,17 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
             {
                 ((TrickyState*)state)->stateFlags |= 0x10;
                 state[0xa] = 3;
-                ((TrickyState*)state)->scratch700.f = lbl_803E23DC;
+                ((TrickyState*)state)->scratch700.f = 0.0f;
                 ((TrickyState*)state)->scratch710.f = (f32)(int)randomGetRange(0x28, 0x50);
                 Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_trwhin1);
-                objAnimFn_8013a3f0((int)obj, 0xe, lbl_803E2510, 0x4000000);
+                objAnimFn_8013a3f0((int)obj, 0xe, 0.033f, 0x4000000);
             }
         }
         else if (ret == 2)
         {
             state[0x8] = 1;
             state[0xa] = 0;
-            z = lbl_803E23DC;
+            z = 0.0f;
             ((TrickyState*)state)->cooldownA = z;
             ((TrickyState*)state)->cooldownB.f = z;
             ((TrickyState*)state)->stateFlags &= ~0x10LL;
@@ -6246,19 +6164,19 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
         }
         break;
     case 2:
-        if (trickyFn_8013b368((GameObject*)obj, lbl_803E2418, (TrickyState*)state) == 0)
+        if (trickyFn_8013b368((GameObject*)obj, 340282346638528859811704183484516925440.0f, (TrickyState*)state) == 0)
         {
             ((TrickyState*)state)->stateFlags |= 0x10;
             state[0xa] = 3;
-            ((TrickyState*)state)->scratch700.f = lbl_803E23DC;
+            ((TrickyState*)state)->scratch700.f = 0.0f;
             Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_trwhin1);
-            objAnimFn_8013a3f0((int)(u32)obj, 0xe, lbl_803E2510, 0x4000000);
+            objAnimFn_8013a3f0((int)(u32)obj, 0xe, 0.033f, 0x4000000);
         }
         break;
     case 3:
         ((TrickyState*)state)->scratch700.f += timeDelta;
         ((TrickyState*)state)->scratch710.f -= timeDelta;
-        if (((TrickyState*)state)->scratch700.f >= lbl_803E24F8)
+        if (((TrickyState*)state)->scratch700.f >= 60.0f)
         {
             state[0xa] = 4;
             ((TrickyState*)state)->scratch704.f = ((GameObject*)obj)->anim.worldPosX;
@@ -6271,7 +6189,7 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
                 ((TrickyState*)state)->dirZ = ((TrickyCurveNode*)ptr)->z - ((GameObject*)pc)->anim.worldPosZ;
                 dist = sqrtf(((TrickyState*)state)->dirX * ((TrickyState*)state)->dirX +
                           ((TrickyState*)state)->dirZ * ((TrickyState*)state)->dirZ);
-                if (lbl_803E23DC != dist)
+                if (0.0f != dist)
                 {
                     ((TrickyState*)state)->dirX = ((TrickyState*)state)->dirX / dist;
                     ((TrickyState*)state)->dirZ = ((TrickyState*)state)->dirZ / dist;
@@ -6281,10 +6199,10 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
         break;
     case 4:
         ((TrickyState*)state)->scratch710.f -= timeDelta;
-        if (((TrickyState*)state)->scratch710.f <= lbl_803E23DC)
+        if (((TrickyState*)state)->scratch710.f <= 0.0f)
         {
             ((TrickyState*)state)->scratch710.f = (f32)(int)randomGetRange(0x28, 0x50);
-            ((TrickyState*)state)->scratch710.f *= lbl_803E2424;
+            ((TrickyState*)state)->scratch710.f *= 100.0f;
             trickyPlayWhineSfx(0x360, obj);
         }
         spd = ((f32(**)(u8*, u8*))(**(u8***)(pc + 0x68)))[8](pc, obj);
@@ -6296,7 +6214,7 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
             **(u8**)state -= 4;
             state[0x8] = 1;
             state[0xa] = 0;
-            z = lbl_803E23DC;
+            z = 0.0f;
             ((TrickyState*)state)->cooldownA = z;
             ((TrickyState*)state)->cooldownB.f = z;
             ((TrickyState*)state)->stateFlags &= ~0x10LL;
@@ -6377,10 +6295,10 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
                     }
                 }
                 if (tricky_handleFeedOrTalk((GameObject*)obj, (int*)state) == 0 &&
-                    trickyFn_8013b368((GameObject*)obj, lbl_803E2488, (TrickyState*)state) == 0)
+                    trickyFn_8013b368((GameObject*)obj, 5.0f, (TrickyState*)state) == 0)
                 {
                     ((TrickyState*)state)->idleSfxTimer -= timeDelta;
-                    if (((TrickyState*)state)->idleSfxTimer <= lbl_803E23DC)
+                    if (((TrickyState*)state)->idleSfxTimer <= 0.0f)
                     {
                         ((TrickyState*)state)->idleSfxTimer = (f32)(int)randomGetRange(500, 0x2ee);
                         ptr = ((GameObject*)obj)->extra;
@@ -6393,15 +6311,15 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
                                                0);
                         }
                     }
-                    if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+                    if (0.0f == ((TrickyState*)state)->waterLevel)
                     {
                         inWater = 0;
                     }
-                    else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+                    else if (-100000.0f == ((TrickyState*)state)->eventTime)
                     {
                         inWater = 1;
                     }
-                    else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+                    else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
                     {
                         inWater = 1;
                     }
@@ -6411,9 +6329,9 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
                     }
                     if (inWater != 0)
                     {
-                        objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                        ((TrickyState*)state)->cooldownC = lbl_803E2440;
-                        ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+                        objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                        ((TrickyState*)state)->cooldownC = 600.0f;
+                        ((TrickyState*)state)->particleTimer = 0.0f;
                         trickyDebugPrint((char*)(base + 0x184));
                     }
                     else
@@ -6423,11 +6341,11 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
                         case 0xd:
                             if (((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING)
                             {
-                                objAnimFn_8013a3f0((int)obj, 0x31, lbl_803E243C, 0);
+                                objAnimFn_8013a3f0((int)obj, 0x31, 0.02f, 0);
                             }
                             break;
                         default:
-                            objAnimFn_8013a3f0((int)obj, 0xd, lbl_803E2444, 0);
+                            objAnimFn_8013a3f0((int)obj, 0xd, 0.005f, 0);
                         case 0x31:
                             break;
                         }
@@ -6450,7 +6368,7 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
         (*gPathControlInterface)->attachObject(obj, &((TrickyState*)state)->pathControlFlags);
         state[8] = 1;
         state[0xa] = 0;
-        z = lbl_803E23DC;
+        z = 0.0f;
         ((TrickyState*)state)->cooldownA = z;
         ((TrickyState*)state)->cooldownB.f = z;
         ((TrickyState*)state)->stateFlags &= ~0x10LL;
@@ -6471,7 +6389,7 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
         ObjHits_SyncObjectPosition((GameObject*)obj);
         ((GameObject*)obj)->anim.rotX = ((GameObject*)found)->anim.rotX;
         state[9] = 0;
-        z = lbl_803E23DC;
+        z = 0.0f;
         ((TrickyState*)state)->prevSpeed = z;
         ((TrickyState*)state)->speed = z;
         ((TrickyState*)state)->homePosX = ((GameObject*)found)->anim.worldPosX;
@@ -6483,23 +6401,23 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
     else
     {
         ((TrickyState*)state)->cooldownA -= timeDelta;
-        if (((TrickyState*)state)->cooldownA < *(f32*)&lbl_803E23DC)
+        if (((TrickyState*)state)->cooldownA < 0.0f)
         {
-            ((TrickyState*)state)->cooldownA = lbl_803E23DC;
+            ((TrickyState*)state)->cooldownA = 0.0f;
         }
         tricky_handlePlayerContact(obj, state);
         {
             if (((int (**)(u8*, u8*))(base + 0x6c))[state[0xa]](obj, state) == 0)
             {
-                if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+                if (0.0f == ((TrickyState*)state)->waterLevel)
                 {
                     inWater = 0;
                 }
-                else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+                else if (-100000.0f == ((TrickyState*)state)->eventTime)
                 {
                     inWater = 1;
                 }
-                else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+                else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
                 {
                     inWater = 1;
                 }
@@ -6509,13 +6427,13 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
                 }
                 if (inWater != 0)
                 {
-                    objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                    ((TrickyState*)state)->cooldownC = lbl_803E2440;
-                    ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+                    objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                    ((TrickyState*)state)->cooldownC = 600.0f;
+                    ((TrickyState*)state)->particleTimer = 0.0f;
                 }
                 else
                 {
-                    objAnimFn_8013a3f0((int)obj, 0x25, lbl_803E2518, 0);
+                    objAnimFn_8013a3f0((int)obj, 0x25, 0.0025f, 0);
                 }
             }
         }
@@ -6530,7 +6448,7 @@ int tricky_substateApproachThorntail(int obj, int state)
     float pos[3];
 
     objPosFn_80039510(((TrickyState*)state)->followObj, 0, pos);
-    if (getXZDistance(pos, (float*)(state + 0x72c)) > lbl_803E2424)
+    if (getXZDistance(pos, (float*)(state + 0x72c)) > 100.0f)
     {
         ((TrickyState*)state)->wanderTargetX = pos[0];
         ((TrickyState*)state)->wanderTargetY = pos[1];
@@ -6544,7 +6462,7 @@ int tricky_substateApproachThorntail(int obj, int state)
         }
         tricky_startRandomIdleMove((GameObject*)(obj), state);
     }
-    else if ((u8)trickyFn_8013b368((GameObject*)obj, lbl_803E24C8, (TrickyState*)state) != 1)
+    else if ((u8)trickyFn_8013b368((GameObject*)obj, 30.0f, (TrickyState*)state) != 1)
     {
         ((FlagByte728*)&((TrickyState*)state)->stateFlags728)->bf5 = 1;
         sfxId = randomGetRange(862, 863);
@@ -6577,7 +6495,7 @@ int tricky_substateFlameBreath(u8* obj, u8* state)
     switch (((GameObject*)obj)->anim.currentMove)
     {
     case 0x1a:
-        if (((GameObject*)obj)->anim.currentMoveProgress > lbl_803E24AC &&
+        if (((GameObject*)obj)->anim.currentMoveProgress > 0.25f &&
             (((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_CHILDREN_ACTIVE) == 0)
         {
             if (Obj_IsLoadingLocked() != 0)
@@ -6620,7 +6538,7 @@ int tricky_substateFlameBreath(u8* obj, u8* state)
         }
         break;
     default:
-        objAnimFn_8013a3f0((int)obj, 0x1a, lbl_803E23E4, 0);
+        objAnimFn_8013a3f0((int)obj, 0x1a, 0.004f, 0);
     }
     return 1;
 }
@@ -6635,7 +6553,7 @@ int tricky_substateBegForFood(GameObject* obj, int state)
     buf = gTrickyFoodItemIds;
     if (tricky_handleFeedOrTalk(obj, (int*)state) != 0)
     {
-        ((TrickyState*)state)->cooldownB.f = lbl_803E23DC;
+        ((TrickyState*)state)->cooldownB.f = 0.0f;
         {
             u32 m;
             u32 f2 = ((TrickyState*)state)->stateFlags;
@@ -6667,7 +6585,7 @@ int tricky_substateBegForFood(GameObject* obj, int state)
         }
         break;
     }
-    if (lbl_803E23DC == ((TrickyState*)state)->cooldownB.f)
+    if (0.0f == ((TrickyState*)state)->cooldownB.f)
     {
         {
             u32 m;
@@ -6677,7 +6595,7 @@ int tricky_substateBegForFood(GameObject* obj, int state)
         }
         ((TrickyState*)state)->substate = 0;
     }
-    if ((u8)trickyFn_8013b368((GameObject*)obj, lbl_803E2408, (TrickyState*)state) == 1)
+    if ((u8)trickyFn_8013b368((GameObject*)obj, 20.0f, (TrickyState*)state) == 1)
     {
         return 1;
     }
@@ -6702,36 +6620,36 @@ int tricky_substateDigForFood(GameObject* obj, int state)
     case 45:
         if ((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
         {
-            objAnimFn_8013a3f0((int)obj, 46, lbl_803E249C, 0);
+            objAnimFn_8013a3f0((int)obj, 46, 0.0125f, 0);
         }
         break;
     case 46:
     {
         if (((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0) &&
             (((((TrickyState*)state)->stateFlags & 0x10000) != 0 || randomGetRange(0, 2) == 0) ||
-             ((TrickyState*)state)->cooldownB.f > lbl_803E23DC))
+             ((TrickyState*)state)->cooldownB.f > 0.0f))
         {
-            objAnimFn_8013a3f0((int)obj, 47, lbl_803E23EC, 0);
+            objAnimFn_8013a3f0((int)obj, 47, 0.01f, 0);
         }
         spawnBuf.posX = (obj)->anim.worldPosX;
         spawnBuf.posY = (obj)->anim.worldPosY;
         spawnBuf.posZ = (obj)->anim.worldPosZ;
-        spawnBuf.scale = lbl_803E23F0;
+        spawnBuf.scale = 0.7f;
         (*gPartfxInterface)->spawnObject((void*)obj, 2022, &spawnBuf, 0x200001, -1, NULL);
         break;
     }
     case 47:
         if ((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
         {
-            if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+            if (0.0f == ((TrickyState*)state)->waterLevel)
             {
                 b = 0;
             }
-            else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+            else if (-100000.0f == ((TrickyState*)state)->eventTime)
             {
                 b = 1;
             }
-            else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+            else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
             {
                 b = 1;
             }
@@ -6741,14 +6659,14 @@ int tricky_substateDigForFood(GameObject* obj, int state)
             }
             if (b != 0)
             {
-                objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                ((TrickyState*)state)->cooldownC = lbl_803E2440;
-                ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+                objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                ((TrickyState*)state)->cooldownC = 600.0f;
+                ((TrickyState*)state)->particleTimer = 0.0f;
                 trickyDebugPrint(sInWaterMessage);
             }
             else
             {
-                objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                 trickyDebugPrint(lbl_8031D478);
             }
             {
@@ -6772,7 +6690,7 @@ int tricky_substateIdlePick(u8* obj, u8* state)
     {
         return 1;
     }
-    if ((u8)trickyFn_8013b368((GameObject*)obj, lbl_803E2418, (TrickyState*)state) != 1)
+    if ((u8)trickyFn_8013b368((GameObject*)obj, 340282346638528859811704183484516925440.0f, (TrickyState*)state) != 1)
     {
         if (((TrickyState*)state)->childB != NULL)
         {
@@ -6783,7 +6701,7 @@ int tricky_substateIdlePick(u8* obj, u8* state)
             {
                 objAudioFn_800393f8((GameObject*)obj, &((TrickyState*)ptr)->soundState, 0x357, 0, -1, 0);
             }
-            objAnimFn_8013a3f0((int)obj, 0x26, lbl_803E251C, 0);
+            objAnimFn_8013a3f0((int)obj, 0x26, 0.0075f, 0);
             state[0xa] = 5;
         }
         else
@@ -6822,7 +6740,7 @@ u32 tricky_substateFidgetA(GameObject* obj, int* trickyState)
     case 0x23:
         if ((((TrickyState*)trickyState)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
         {
-            objAnimFn_8013a3f0((int)obj, 0x24, lbl_803E2478, 0);
+            objAnimFn_8013a3f0((int)obj, 0x24, 0.04f, 0);
         }
         break;
     case 0x24:
@@ -6852,7 +6770,7 @@ u32 tricky_substateFidgetB(GameObject* obj, int* trickyState)
     case 0x21:
         if ((((TrickyState*)trickyState)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
         {
-            objAnimFn_8013a3f0((int)obj, 0x22, lbl_803E2478, 0);
+            objAnimFn_8013a3f0((int)obj, 0x22, 0.04f, 0);
         }
         break;
     case 0x22:
@@ -6929,23 +6847,23 @@ int tricky_substateHowlCall(GameObject* obj, int* trickyState)
     case 0x29:
         if ((((TrickyState*)trickyState)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
         {
-            objAnimFn_8013a3f0((int)obj, 0x2a, lbl_803E2520, 0);
+            objAnimFn_8013a3f0((int)obj, 0x2a, 0.003f, 0);
         }
         break;
     case 0x2a:
         ((TrickyState*)trickyState)->moveHoldTimer = ((TrickyState*)trickyState)->moveHoldTimer - timeDelta;
-        if (((TrickyState*)trickyState)->moveHoldTimer <= lbl_803E23DC)
+        if (((TrickyState*)trickyState)->moveHoldTimer <= 0.0f)
         {
-            if (((((TrickyState*)trickyState)->stateFlags & 0x10000) != 0) || (((TrickyState*)trickyState)->cooldownB.f > lbl_803E23DC))
+            if (((((TrickyState*)trickyState)->stateFlags & 0x10000) != 0) || (((TrickyState*)trickyState)->cooldownB.f > 0.0f))
             {
-                objAnimFn_8013a3f0((int)obj, 0x2b, lbl_803E23EC, 0);
+                objAnimFn_8013a3f0((int)obj, 0x2b, 0.01f, 0);
             }
             else
             {
                 val = (*gSkyInterface)->getSunPosition(0);
                 if (val == 0)
                 {
-                    objAnimFn_8013a3f0((int)obj, 0x2c, lbl_803E251C, 0);
+                    objAnimFn_8013a3f0((int)obj, 0x2c, 0.0075f, 0);
                     ((TrickyState*)trickyState)->substate = 9;
                 }
             }
@@ -6965,30 +6883,30 @@ int tricky_substateHowlCall(GameObject* obj, int* trickyState)
         }
         fval = ((TrickyState*)trickyState)->sparkleFxTimer - timeDelta;
         ((TrickyState*)trickyState)->sparkleFxTimer = fval;
-        if (fval <= lbl_803E23DC)
+        if (fval <= 0.0f)
         {
             if (((obj)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
             {
                 fxBuf.posX = ((TrickyState*)trickyState)->renderPosX;
-                fxBuf.posY = lbl_803E23F8 + ((TrickyState*)trickyState)->renderPosY;
+                fxBuf.posY = 2.0f + ((TrickyState*)trickyState)->renderPosY;
                 fxBuf.posZ = ((TrickyState*)trickyState)->renderPosZ;
                 (*gPartfxInterface)->spawnObject((void*)obj, 0x7f0, &fxBuf, 0x200001, -1, NULL);
             }
-            ((TrickyState*)trickyState)->sparkleFxTimer = lbl_803E24C8;
+            ((TrickyState*)trickyState)->sparkleFxTimer = 30.0f;
         }
         break;
     case 0x2b:
         if ((((TrickyState*)trickyState)->stateFlags & TRICKY_STATE_FLAG_MOVE_ADVANCING) != 0)
         {
-            if (lbl_803E23DC == ((TrickyState*)trickyState)->waterLevel)
+            if (0.0f == ((TrickyState*)trickyState)->waterLevel)
             {
                 b[0] = 0;
             }
-            else if (lbl_803E2410 == ((TrickyState*)trickyState)->eventTime)
+            else if (-100000.0f == ((TrickyState*)trickyState)->eventTime)
             {
                 b[0] = 1;
             }
-            else if (((TrickyState*)trickyState)->currentTime - ((TrickyState*)trickyState)->eventTime > lbl_803E2414)
+            else if (((TrickyState*)trickyState)->currentTime - ((TrickyState*)trickyState)->eventTime > 8.0f)
             {
                 b[0] = 1;
             }
@@ -6998,14 +6916,14 @@ int tricky_substateHowlCall(GameObject* obj, int* trickyState)
             }
             if (b[0] != 0)
             {
-                objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                ((TrickyState*)trickyState)->cooldownC = lbl_803E2440;
-                ((TrickyState*)trickyState)->particleTimer = lbl_803E23DC;
+                objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                ((TrickyState*)trickyState)->cooldownC = 600.0f;
+                ((TrickyState*)trickyState)->particleTimer = 0.0f;
                 trickyDebugPrint(sInWaterMessage);
             }
             else
             {
-                objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                 trickyDebugPrint(lbl_8031D478);
             }
             {
@@ -7040,7 +6958,7 @@ int tricky_substateSleep(GameObject* obj, int* state)
         return 1;
     }
     ((TrickyState*)state)->sfxRepeatTimer -= timeDelta;
-    if (((TrickyState*)state)->sfxRepeatTimer < lbl_803E23DC)
+    if (((TrickyState*)state)->sfxRepeatTimer < 0.0f)
     {
         ptr = (obj)->extra;
         if (((u32)((TrickyState*)ptr)->statusFlags >> 6 & 1) == 0 &&
@@ -7049,7 +6967,7 @@ int tricky_substateSleep(GameObject* obj, int* state)
         {
             objAudioFn_800393f8(obj, &((TrickyState*)ptr)->soundState, 0x29a, 0x100, -1, 0);
         }
-        ((TrickyState*)state)->sfxRepeatTimer = lbl_803E2440;
+        ((TrickyState*)state)->sfxRepeatTimer = 600.0f;
     }
     if (((TrickyState*)state)->child == NULL && Obj_IsLoadingLocked() != 0)
     {
@@ -7093,15 +7011,15 @@ int tricky_substateSleep(GameObject* obj, int* state)
         ((TrickyState*)state)->child = Obj_SetupObject((ObjPlacement*)e, 4, -1, -1, (obj)->anim.parent);
         ObjLink_AttachChild(obj, ((TrickyState*)state)->child,
                             ((TrickyPackedSlots*)((u8*)state + 0x7bc))->zzzSlot);
-        z = lbl_803E23DC;
+        z = 0.0f;
         ((TrickyState*)state)->childPhaseTimer0 = z;
         ((TrickyState*)state)->childPhaseTimer1 = z;
         ((TrickyState*)state)->childPhaseTimer2 = z;
     }
-    if ((*gSkyInterface)->getSunPosition(0) != 0 && ((TrickyState*)state)->cooldownA <= lbl_803E23DC &&
+    if ((*gSkyInterface)->getSunPosition(0) != 0 && ((TrickyState*)state)->cooldownA <= 0.0f &&
         mainGetBit(GAMEBIT_ITEM_TrickyCall_Got) != 0)
     {
-        objAnimFn_8013a3f0((int)obj, 0x29, lbl_803E2444, 0);
+        objAnimFn_8013a3f0((int)obj, 0x29, 0.005f, 0);
         ptr = (obj)->extra;
         if (((u32)((TrickyState*)ptr)->statusFlags >> 6 & 1) == 0 &&
             ((obj)->anim.currentMove >= 0x30 || (obj)->anim.currentMove < 0x29) &&
@@ -7144,10 +7062,10 @@ u32 tricky_substateReturnToHeel(GameObject* obj, int* trickyState)
     {
         return 1;
     }
-    val = trickyFn_8013b368((GameObject*)obj, lbl_803E2408, (TrickyState*)trickyState);
+    val = trickyFn_8013b368((GameObject*)obj, 20.0f, (TrickyState*)trickyState);
     if (val == 1)
     {
-        if (lbl_803E23DC == ((TrickyState*)trickyState)->cooldownA)
+        if (0.0f == ((TrickyState*)trickyState)->cooldownA)
         {
             ((TrickyState*)trickyState)->substate = 0;
         }
@@ -7179,14 +7097,14 @@ int tricky_substateFollowIdle(GameObject* obj, int state)
         }
         ((TrickyState*)state)->linkedWalkGroup = 0;
     }
-    if (lbl_803E23DC == ((TrickyState*)state)->cooldownA)
+    if (0.0f == ((TrickyState*)state)->cooldownA)
     {
         {
             s8 mm;
             mm = -1;
             ((TrickyState*)state)->commandPhase = mm;
         }
-        threshold = lbl_803E24C8;
+        threshold = 30.0f;
     }
     else
     {
@@ -7195,7 +7113,7 @@ int tricky_substateFollowIdle(GameObject* obj, int state)
             ((TrickyState*)state)->commandPhase = 0;
             ((TrickyState*)state)->stateFlags = ((TrickyState*)state)->stateFlags & ~0x20000LL;
         }
-        threshold = lbl_803E2408;
+        threshold = 20.0f;
     }
     result = trickyFn_8013b368((GameObject*)obj, threshold, (TrickyState*)state);
     if (result != 1)
@@ -7218,15 +7136,15 @@ int tricky_substateFollowIdle(GameObject* obj, int state)
                 }
             }
         }
-        if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+        if (0.0f == ((TrickyState*)state)->waterLevel)
         {
             inWater = 0;
         }
-        else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+        else if (-100000.0f == ((TrickyState*)state)->eventTime)
         {
             inWater = 1;
         }
-        else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > lbl_803E2414)
+        else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime > 8.0f)
         {
             inWater = 1;
         }
@@ -7255,25 +7173,25 @@ u32 tricky_updateIdleBehavior(int obj, int* trickyState)
     {
         return 1;
     }
-    if (((TrickyState*)trickyState)->cooldownC > lbl_803E23DC)
+    if (((TrickyState*)trickyState)->cooldownC > 0.0f)
     {
-        objAnimFn_8013a3f0(obj, 0x1b, lbl_803E23EC, 0);
+        objAnimFn_8013a3f0(obj, 0x1b, 0.01f, 0);
         ((TrickyState*)trickyState)->substate = 2;
-        ((TrickyState*)trickyState)->cooldownC = lbl_803E23DC;
+        ((TrickyState*)trickyState)->cooldownC = 0.0f;
         return 1;
     }
     if ((((TrickyState*)trickyState)->stateFlags728 >> 7 & 1) != 0U)
     {
-        *(f32*)&((TrickyState*)trickyState)->unk724 = lbl_803E2524;
+        *(f32*)&((TrickyState*)trickyState)->unk724 = 200.0f;
         ((FlagByte728*)&((TrickyState*)trickyState)->stateFlags728)->bf7 = 0;
         ((FlagByte728*)&((TrickyState*)trickyState)->stateFlags728)->bf6 = 1;
     }
     if ((((TrickyState*)trickyState)->stateFlags728 >> 6 & 1) != 0U)
     {
         *(f32*)&((TrickyState*)trickyState)->unk724 = *(f32*)&((TrickyState*)trickyState)->unk724 - timeDelta;
-        if (*(f32*)&((TrickyState*)trickyState)->unk724 <= lbl_803E23DC)
+        if (*(f32*)&((TrickyState*)trickyState)->unk724 <= 0.0f)
         {
-            ((TrickyState*)trickyState)->cooldownA = lbl_803E2438;
+            ((TrickyState*)trickyState)->cooldownA = 300.0f;
             bitVal = randomGetRange(200, 500);
             *(f32*)&((TrickyState*)trickyState)->unk724 = (f32)(s32)(bitVal);
             ((FlagByte728*)&((TrickyState*)trickyState)->stateFlags728)->bf6 = 0;
@@ -7305,24 +7223,24 @@ u32 tricky_updateIdleBehavior(int obj, int* trickyState)
     }
     if (*(u8*)*trickyState <= 3)
     {
-        objAnimFn_8013a3f0(obj, 0x14, lbl_803E2444, 0);
+        objAnimFn_8013a3f0(obj, 0x14, 0.005f, 0);
         ((TrickyState*)trickyState)->substate = 3;
-        ((TrickyState*)trickyState)->sfxRepeatTimer = lbl_803E2440;
+        ((TrickyState*)trickyState)->sfxRepeatTimer = 600.0f;
         return 1;
     }
     *(f32*)&((TrickyState*)trickyState)->unk724 = *(f32*)&((TrickyState*)trickyState)->unk724 - timeDelta;
-    if (*(f32*)&((TrickyState*)trickyState)->unk724 <= lbl_803E23DC)
+    if (*(f32*)&((TrickyState*)trickyState)->unk724 <= 0.0f)
     {
         bitVal = randomGetRange(200, 500);
         *(f32*)&((TrickyState*)trickyState)->unk724 = (f32)(s32)(bitVal);
         if (*(u8*)*trickyState <= 7)
         {
-            objAnimFn_8013a3f0(obj, 0x14, lbl_803E2444, 0);
+            objAnimFn_8013a3f0(obj, 0x14, 0.005f, 0);
             ((TrickyState*)trickyState)->substate = 3;
-            ((TrickyState*)trickyState)->sfxRepeatTimer = lbl_803E2440;
+            ((TrickyState*)trickyState)->sfxRepeatTimer = 600.0f;
             return 1;
         }
-        if (((TrickyState*)trickyState)->cooldownA > lbl_803E23DC)
+        if (((TrickyState*)trickyState)->cooldownA > 0.0f)
         {
             tricky_startRandomIdleMove((GameObject*)(obj), (int)trickyState);
         }
@@ -7337,7 +7255,7 @@ u32 tricky_updateIdleBehavior(int obj, int* trickyState)
                 {
                     objAudioFn_800393f8((GameObject*)obj, &((TrickyState*)extra)->soundState, 0x357, 0, 0xffffffff, 0);
                 }
-                objAnimFn_8013a3f0(obj, 0x26, lbl_803E251C, 0);
+                objAnimFn_8013a3f0(obj, 0x26, 0.0075f, 0);
                 ((TrickyState*)trickyState)->substate = 5;
             }
             else
@@ -7375,7 +7293,7 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
 
     lo = 1;
     hi = 3;
-    arr[0] = lbl_803E2524;
+    arr[0] = 200.0f;
     found = (u8*)ObjGroup_FindNearestObject(SHTHORNTAIL_OBJECT_GROUP, (GameObject*)obj, arr);
     if (found != NULL && (((GameObject*)found)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
     {
@@ -7407,12 +7325,12 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
     case 1:
         sv = randomGetRange(0x20, 0xff);
         sv = (s16)((((GameObject*)obj)->anim.rotX + sv) * 0x100);
-        ang = lbl_803E2454 * (f32)sv / lbl_803E2458;
+        ang = 3.1415927f * (f32)sv / 32768.0f;
         ((TrickyState*)state)->wanderTargetX =
             (f32)(lbl_803E2528 * -mathSinf(ang) + ((GameObject*)obj)->anim.localPosX);
         ((TrickyState*)state)->wanderTargetY = ((GameObject*)obj)->anim.localPosY;
         ((TrickyState*)state)->wanderTargetZ =
-            (f32)(lbl_803E2484 * -mathCosf(ang) + ((GameObject*)obj)->anim.localPosZ);
+            (f32)(0.1f * -mathCosf(ang) + ((GameObject*)obj)->anim.localPosZ);
         if ((u8*)((TrickyState*)state)->targetPosPtr != state + 0x72c)
         {
             ((TrickyState*)state)->targetPosPtr = (f32*)(state + 0x72c);
@@ -7427,12 +7345,12 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
         state[0xa] = 8;
         break;
     case 2:
-        objAnimFn_8013a3f0((int)obj, 0x2d, lbl_803E2530, 0);
+        objAnimFn_8013a3f0((int)obj, 0x2d, 0.015f, 0);
         ((TrickyState*)state)->stateFlags |= 0x10;
         state[0xa] = 9;
         break;
     case 3:
-        objAnimFn_8013a3f0((int)obj, 0x29, lbl_803E2444, 0);
+        objAnimFn_8013a3f0((int)obj, 0x29, 0.005f, 0);
         ptr = ((GameObject*)obj)->extra;
         if (((u32)((TrickyState*)ptr)->statusFlags >> 6 & 1) == 0 &&
             (((GameObject*)obj)->anim.currentMove >= 0x30 || ((GameObject*)obj)->anim.currentMove < 0x29) &&
@@ -7456,7 +7374,7 @@ void tricky_startRandomIdleMove(GameObject* obj, int trickyState)
     switch (val)
     {
     case 0:
-        objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+        objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
         ((TrickyState*)trickyState)->substate = 2;
         break;
     case 1:
@@ -7471,19 +7389,19 @@ void tricky_startRandomIdleMove(GameObject* obj, int trickyState)
                 }
             }
         }
-        objAnimFn_8013a3f0((int)obj, 0x26, lbl_803E251C, 0);
+        objAnimFn_8013a3f0((int)obj, 0x26, 0.0075f, 0);
         ((TrickyState*)trickyState)->substate = 5;
         break;
     case 2:
-        objAnimFn_8013a3f0((int)obj, 0x21, lbl_803E2478, 0);
+        objAnimFn_8013a3f0((int)obj, 0x21, 0.04f, 0);
         ((TrickyState*)trickyState)->substate = 6;
         break;
     case 3:
-        objAnimFn_8013a3f0((int)obj, 0x23, lbl_803E2478, 0);
+        objAnimFn_8013a3f0((int)obj, 0x23, 0.04f, 0);
         ((TrickyState*)trickyState)->substate = 7;
         break;
     case 4:
-        objAnimFn_8013a3f0((int)obj, 0x25, lbl_803E2518, 0);
+        objAnimFn_8013a3f0((int)obj, 0x25, 0.0025f, 0);
         ((TrickyState*)trickyState)->substate = 2;
         break;
     }
@@ -7531,15 +7449,15 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
                     b = obj->extra;
                     ((TrickyState*)b)->stateFlags |= 0x4000;
                     ((TrickyState*)b)->stateFlags |= 1;
-                    if (lbl_803E23DC == ((TrickyState*)b)->waterLevel)
+                    if (0.0f == ((TrickyState*)b)->waterLevel)
                     {
                         inWater = 0;
                     }
-                    else if (lbl_803E2410 == ((TrickyState*)b)->eventTime)
+                    else if (-100000.0f == ((TrickyState*)b)->eventTime)
                     {
                         inWater = 1;
                     }
-                    else if (((TrickyState*)b)->currentTime - ((TrickyState*)b)->eventTime > lbl_803E2414)
+                    else if (((TrickyState*)b)->currentTime - ((TrickyState*)b)->eventTime > 8.0f)
                     {
                         inWater = 1;
                     }
@@ -7549,14 +7467,14 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
                     }
                     if (inWater != 0)
                     {
-                        objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                        ((TrickyState*)b)->cooldownC = lbl_803E2440;
-                        ((TrickyState*)b)->particleTimer = lbl_803E23DC;
+                        objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                        ((TrickyState*)b)->cooldownC = 600.0f;
+                        ((TrickyState*)b)->particleTimer = 0.0f;
                         trickyDebugPrint(sInWaterMessage);
                     }
                     else
                     {
-                        objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                        objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                         trickyDebugPrint(lbl_8031D478);
                     }
                     (*gObjectTriggerInterface)->runSequence(3, (void*)obj, -1);
@@ -7586,15 +7504,15 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
                     }
                     b = obj->extra;
                     ((TrickyState*)b)->stateFlags |= 0x4000;
-                    if (lbl_803E23DC == ((TrickyState*)b)->waterLevel)
+                    if (0.0f == ((TrickyState*)b)->waterLevel)
                     {
                         inWater = 0;
                     }
-                    else if (lbl_803E2410 == ((TrickyState*)b)->eventTime)
+                    else if (-100000.0f == ((TrickyState*)b)->eventTime)
                     {
                         inWater = 1;
                     }
-                    else if (((TrickyState*)b)->currentTime - ((TrickyState*)b)->eventTime > lbl_803E2414)
+                    else if (((TrickyState*)b)->currentTime - ((TrickyState*)b)->eventTime > 8.0f)
                     {
                         inWater = 1;
                     }
@@ -7604,14 +7522,14 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
                     }
                     if (inWater != 0)
                     {
-                        objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                        ((TrickyState*)b)->cooldownC = lbl_803E2440;
-                        ((TrickyState*)b)->particleTimer = lbl_803E23DC;
+                        objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                        ((TrickyState*)b)->cooldownC = 600.0f;
+                        ((TrickyState*)b)->particleTimer = 0.0f;
                         trickyDebugPrint(sInWaterMessage);
                     }
                     else
                     {
-                        objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                        objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                         trickyDebugPrint(lbl_8031D478);
                     }
                     (*gObjectTriggerInterface)->runSequence(2, (void*)obj, -1);
@@ -7643,15 +7561,15 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
                 {
                     ((TrickyState*)b)->stateFlags |= 1;
                 }
-                if (lbl_803E23DC == ((TrickyState*)b)->waterLevel)
+                if (0.0f == ((TrickyState*)b)->waterLevel)
                 {
                     inWater = 0;
                 }
-                else if (lbl_803E2410 == ((TrickyState*)b)->eventTime)
+                else if (-100000.0f == ((TrickyState*)b)->eventTime)
                 {
                     inWater = 1;
                 }
-                else if (((TrickyState*)b)->currentTime - ((TrickyState*)b)->eventTime > lbl_803E2414)
+                else if (((TrickyState*)b)->currentTime - ((TrickyState*)b)->eventTime > 8.0f)
                 {
                     inWater = 1;
                 }
@@ -7661,14 +7579,14 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state)
                 }
                 if (inWater != 0)
                 {
-                    objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                    ((TrickyState*)b)->cooldownC = lbl_803E2440;
-                    ((TrickyState*)b)->particleTimer = lbl_803E23DC;
+                    objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                    ((TrickyState*)b)->cooldownC = 600.0f;
+                    ((TrickyState*)b)->particleTimer = 0.0f;
                     trickyDebugPrint(sInWaterMessage);
                 }
                 else
                 {
-                    objAnimFn_8013a3f0((int)obj, 0, lbl_803E2444, 0);
+                    objAnimFn_8013a3f0((int)obj, 0, 0.005f, 0);
                     trickyDebugPrint(lbl_8031D478);
                 }
                 (*gObjectTriggerInterface)->runSequence(g, (void*)obj, -1);
@@ -7691,17 +7609,17 @@ void tricky_handlePlayerContact(u8* obj, u8* state)
     int inWater;
 
     ((TrickyState*)state)->cooldownB.f -= timeDelta;
-    if (((TrickyState*)state)->cooldownB.f < *(f32*)&lbl_803E23DC)
+    if (((TrickyState*)state)->cooldownB.f < 0.0f)
     {
-        ((TrickyState*)state)->cooldownB.f = lbl_803E23DC;
+        ((TrickyState*)state)->cooldownB.f = 0.0f;
     }
     if (ObjHits_GetPriorityHit((GameObject*)obj, hit, 0, 0) != 0 && *(u8**)(hit[0] + 0xc4) != NULL &&
         *(s16*)(*(u8**)(hit[0] + 0xc4) + 0x44) == 1)
     {
         fv = ((TrickyState*)state)->cooldownB.f;
-        if (fv <= lbl_803E23DC)
+        if (fv <= 0.0f)
         {
-            ((TrickyState*)state)->cooldownB.f = fv + lbl_803E24EC;
+            ((TrickyState*)state)->cooldownB.f += 180.0f;
             ptr = ((GameObject*)obj)->extra;
             if (((u32)((TrickyState*)ptr)->statusFlags >> 6 & 1) == 0 &&
                 (((GameObject*)obj)->anim.currentMove >= 0x30 || ((GameObject*)obj)->anim.currentMove < 0x29) &&
@@ -7712,26 +7630,26 @@ void tricky_handlePlayerContact(u8* obj, u8* state)
         }
         else
         {
-            ((TrickyState*)state)->cooldownB.f = fv + lbl_803E2440;
+            ((TrickyState*)state)->cooldownB.f += 600.0f;
             if (state[0xa] != 0xb)
             {
                 if (((TrickyState*)state)->stateFlags & 0x10)
                 {
-                    if (((TrickyState*)state)->cooldownB.f > lbl_803E2534)
+                    if (((TrickyState*)state)->cooldownB.f > 3000.0f)
                     {
-                        ((TrickyState*)state)->cooldownB.f *= lbl_803E24A8;
+                        ((TrickyState*)state)->cooldownB.f *= 0.5f;
                         if (mainGetBit(GAMEBIT_ITEM_TrickyFlame_Got) != 0)
                         {
-                            if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+                            if (0.0f == ((TrickyState*)state)->waterLevel)
                             {
                                 inWater = 0;
                             }
-                            else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+                            else if (-100000.0f == ((TrickyState*)state)->eventTime)
                             {
                                 inWater = 1;
                             }
                             else if (((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime >
-                                     lbl_803E2414)
+                                     8.0f)
                             {
                                 inWater = 1;
                             }
@@ -7850,35 +7768,6 @@ int lbl_803DDA4C;
 u32 gTrickyHelperObject;
 
 u16 gSkeetlaFootstepSfxId2 = 0x355;
-f32 lbl_803E23DC = 0.0f;
-f32 lbl_803E23E0 = 10.0f;
-f32 lbl_803E23E4 = 0.004f;
-f32 lbl_803E23E8 = 1.0f;
-f32 lbl_803E23EC = 0.01f;
-f32 lbl_803E23F0 = 0.7f;
-f32 lbl_803E23F4 = -0.01f;
-f32 lbl_803E23F8 = 2.0f;
-f32 lbl_803E2408 = 20.0f;
-f32 lbl_803E240C = 196.0f;
-f32 lbl_803E2410 = -100000.0f;
-f32 lbl_803E2414 = 8.0f;
-f32 lbl_803E2418 = 3.4028235e38f;
-f32 lbl_803E241C = -0.15f;
-f32 lbl_803E2420 = 0.05f;
-f32 lbl_803E2424 = 100.0f;
-f32 lbl_803E2428 = -0.17f;
-f32 lbl_803E242C = 40.0f;
-f32 lbl_803E2430 = 400.0f;
-f32 lbl_803E2434 = 0.014f;
-f32 lbl_803E2438 = 300.0f;
-f32 lbl_803E243C = 0.02f;
-f32 lbl_803E2440 = 600.0f;
-f32 lbl_803E2444 = 0.005f;
-f32 lbl_803E2448 = -2.0f;
-f32 lbl_803E244C = 1.5f;
-f32 lbl_803E2450 = 512.0f;
-f32 lbl_803E2454 = 3.1415927f;
-f32 lbl_803E2458 = 32768.0f;
 
 u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state)
 {
@@ -7892,11 +7781,11 @@ u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state)
     result = 0;
     objs = (int*)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, count);
     d = getXZDistance(&state->playerObj->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX);
-    if ((d >= lbl_803E2538) || (state->cooldownA > lbl_803E23DC))
+    if ((d >= 360000.0f) || (state->cooldownA > 0.0f))
     {
-        if (ViewFrustum_IsSphereVisible(&((GameObject*)obj)->anim.localPosX, lbl_803E2500) == 0)
+        if (ViewFrustum_IsSphereVisible(&((GameObject*)obj)->anim.localPosX, 19.0f) == 0)
         {
-            bestD = lbl_803E2418;
+            bestD = 340282346638528859811704183484516925440.0f;
             for (i = 0; i < count[0]; i++)
             {
                 f32 cd = getXZDistance(&state->playerObj->anim.worldPosX, &((GameObject*)*objs)->anim.worldPosX);
@@ -7922,15 +7811,15 @@ void tricky_stateIdleWander(GameObject* obj, int state)
     if (tricky_handleFeedOrTalk(obj, (int*)state) == 0)
     {
         ((TrickyState*)state)->wanderTargetX =
-            (obj)->anim.worldPosX - mathSinf((lbl_803E2454 * (f32) * (s16*)obj) / lbl_803E2458);
+            (obj)->anim.worldPosX - mathSinf((3.1415927f * (f32) * (s16*)obj) / 32768.0f);
         ((TrickyState*)state)->wanderTargetY = (obj)->anim.worldPosY;
         ((TrickyState*)state)->wanderTargetZ =
-            (obj)->anim.worldPosZ - mathCosf((lbl_803E2454 * (f32) * (s16*)obj) / lbl_803E2458);
+            (obj)->anim.worldPosZ - mathCosf((3.1415927f * (f32) * (s16*)obj) / 32768.0f);
 
-        if (trickyFn_8013b368(obj, lbl_803E247C, (TrickyState*)state) != 1)
+        if (trickyFn_8013b368(obj, 15.0f, (TrickyState*)state) != 1)
         {
             ((TrickyState*)state)->idleSfxTimer -= timeDelta;
-            if (((TrickyState*)state)->idleSfxTimer <= lbl_803E23DC)
+            if (((TrickyState*)state)->idleSfxTimer <= 0.0f)
             {
                 ((TrickyState*)state)->idleSfxTimer = (f32)(int)randomGetRange(0x1f4, 0x2ee);
                 sfxState = *(int*)&(obj)->extra;
@@ -7942,15 +7831,15 @@ void tricky_stateIdleWander(GameObject* obj, int state)
                 }
             }
 
-            if (lbl_803E23DC == ((TrickyState*)state)->waterLevel)
+            if (0.0f == ((TrickyState*)state)->waterLevel)
             {
                 isInWater = 0;
             }
-            else if (lbl_803E2410 == ((TrickyState*)state)->eventTime)
+            else if (-100000.0f == ((TrickyState*)state)->eventTime)
             {
                 isInWater = 1;
             }
-            else if ((((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime) > lbl_803E2414)
+            else if ((((TrickyState*)state)->currentTime - ((TrickyState*)state)->eventTime) > 8.0f)
             {
                 isInWater = 1;
             }
@@ -7961,9 +7850,9 @@ void tricky_stateIdleWander(GameObject* obj, int state)
 
             if (isInWater)
             {
-                objAnimFn_8013a3f0((int)obj, 8, lbl_803E243C, 0);
-                ((TrickyState*)state)->cooldownC = lbl_803E2440;
-                ((TrickyState*)state)->particleTimer = lbl_803E23DC;
+                objAnimFn_8013a3f0((int)obj, 8, 0.02f, 0);
+                ((TrickyState*)state)->cooldownC = 600.0f;
+                ((TrickyState*)state)->particleTimer = 0.0f;
                 trickyDebugPrint(sInWaterMessage);
             }
             else
@@ -7976,11 +7865,11 @@ void tricky_stateIdleWander(GameObject* obj, int state)
                     transitionFlag = ((TrickyState*)state)->stateFlags & 0x08000000;
                     if (transitionFlag != 0)
                     {
-                        objAnimFn_8013a3f0((int)obj, 0x31, lbl_803E243C, 0);
+                        objAnimFn_8013a3f0((int)obj, 0x31, 0.02f, 0);
                     }
                     break;
                 default:
-                    objAnimFn_8013a3f0((int)obj, 0xd, lbl_803E2444, 0);
+                    objAnimFn_8013a3f0((int)obj, 0xd, 0.005f, 0);
                     break;
                 }
                 trickyDebugPrint(lbl_8031D478);
@@ -8010,7 +7899,7 @@ void tricky_attachToWalkGroup(GameObject* obj, int state)
         ((TrickyState*)state)->walkGroup = pathBytes[0];
         ((TrickyState*)state)->stateIndex = 1;
         ((TrickyState*)state)->substate = 0;
-        resetTimer = lbl_803E23DC;
+        resetTimer = 0.0f;
         ((TrickyState*)state)->cooldownA = resetTimer;
         ((TrickyState*)state)->cooldownB.f = resetTimer;
         ((TrickyState*)state)->stateFlags = ((TrickyState*)state)->stateFlags & (u64)~0x10u;
@@ -8154,8 +8043,8 @@ int tricky_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
     tricky_updateModelVariantFade(obj, state);
     Tricky_updateBlendChannelWeight(obj, (u8*)state);
     objAudioFn_8006ef38((GameObject*)obj, &animUpdate->animEvents, 1, (void*)(state + 0x7d8),
-                        (void*)(state + 0xf8), lbl_803E23E8,
-                        *(f32*)&lbl_803E23E8);
+                        (void*)(state + 0xf8), 1.0f,
+                        1.0f);
     if ((((TrickyState*)state)->stateFlags & 1) != 0)
     {
         animUpdate->hitVolumePair &= ~0x40;
@@ -8375,7 +8264,7 @@ int Tricky_updateSideCommandPrompts(int obj)
         }
         else
         {
-            if (trickyFindNearestUsableBaddie(((TrickyState*)state)->playerObj, lbl_803E2524, 1) !=
+            if (trickyFindNearestUsableBaddie(((TrickyState*)state)->playerObj, 200.0f, 1) !=
                 NULL)
             {
                 promptA = true;
@@ -8430,7 +8319,7 @@ int Tricky_updateSideCommandPrompts(int obj)
         ((TrickyState*)state)->commandRequestBits = 0;
         if ((cond) && ((((TrickyState*)state)->stateFlags & 0x200) == 0))
         {
-            *(float*)(state + 0x7b4) = lbl_803E24F8;
+            *(float*)(state + 0x7b4) = 60.0f;
             if ((((TrickyState*)state)->childB == NULL) && (Obj_IsLoadingLocked() != 0))
             {
                 bitVal = randomGetRange(0, 1);
@@ -8488,14 +8377,14 @@ int Tricky_updateSideCommandPrompts(int obj)
         else if (((TrickyState*)state)->childB != NULL)
         {
             *(float*)(state + 0x7b4) = *(float*)(state + 0x7b4) - timeDelta;
-            if (*(float*)(state + 0x7b4) <= lbl_803E23DC)
+            if (*(float*)(state + 0x7b4) <= 0.0f)
             {
                 objAnimFreeChildren(obj, state, (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
             }
         }
         if ((promptA) && ((((TrickyState*)state)->stateFlags & 0x200) == 0))
         {
-            *(float*)(state + 0x7ac) = lbl_803E24F8;
+            *(float*)(state + 0x7ac) = 60.0f;
             if ((((TrickyState*)state)->childA == NULL) && (Obj_IsLoadingLocked() != 0))
             {
                 if (randomGetRange(0, 3) == 0)
@@ -8567,7 +8456,7 @@ int Tricky_updateSideCommandPrompts(int obj)
         else if (((TrickyState*)state)->childA != NULL)
         {
             *(float*)(state + 0x7ac) = *(float*)(state + 0x7ac) - timeDelta;
-            if (*(float*)(state + 0x7ac) <= lbl_803E23DC)
+            if (*(float*)(state + 0x7ac) <= 0.0f)
             {
                 objAnimFreeChildren(obj, state, (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
             }
@@ -8670,7 +8559,7 @@ void Tricky_render(GameObject* obj, int p2, int p3, int p4, int p5, char doRende
     if (doRender != '\0')
     {
         state = *(int*)&(obj)->extra;
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E23E8);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         pathState = *(int*)&(obj)->extra;
         i = 0;
         pathPoint = pathState;
@@ -8708,15 +8597,15 @@ void Tricky_render(GameObject* obj, int p2, int p3, int p4, int p5, char doRende
                     ((TrickyState*)state)->scratch700.obj->anim.localPosY = ((TrickyState*)state)->renderPosY;
                     ((TrickyState*)state)->scratch700.obj->anim.localPosZ = ((TrickyState*)state)->renderPosZ;
                 }
-                objRenderModelAndHitVolumes(((TrickyState*)state)->scratch700.obj, p2, p3, p4, p5, lbl_803E23E8);
+                objRenderModelAndHitVolumes(((TrickyState*)state)->scratch700.obj, p2, p3, p4, p5, 1.0f);
             }
         }
         Tricky_emitQueuedPathParticles((u8*)obj, (u8*)state);
         ObjPath_GetPointWorldPositionArray(obj, 4, 4, (float*)((TrickyState*)state)->footPoints);
         ((TrickyState*)state)->particleTimer = ((TrickyState*)state)->particleTimer - timeDelta;
-        if (((TrickyState*)state)->particleTimer > lbl_803E23DC)
+        if (((TrickyState*)state)->particleTimer > 0.0f)
         {
-            objParticleFn_80099d84((GameObject*)obj, lbl_803E253C, 6, lbl_803E23E8, 0);
+            objParticleFn_80099d84((GameObject*)obj, 0.4f, 6, 1.0f, 0);
         }
     }
     return;
@@ -8731,29 +8620,31 @@ void Tricky_hitDetect(GameObject* obj)
     void* firepipeObj;
     int state;
     f32 height;
+    f32 z;
+    f32 th;
     int count[2];
 
     state = *(int*)&obj->extra;
     y = obj->anim.localPosY;
-    dy = (y - obj->anim.previousLocalPosY >= lbl_803E23DC) ? y - obj->anim.previousLocalPosY
+    dy = (y - obj->anim.previousLocalPosY >= 0.0f) ? y - obj->anim.previousLocalPosY
                                                            : -(y - obj->anim.previousLocalPosY);
-    if (lbl_803E23E8 == dy)
+    if (1.0f == dy)
     {
         if (y == obj->anim.worldPosY)
         {
             ((TrickyStatusFlags58*)&((TrickyState*)state)->statusFlags)->heightTracking = 1;
             *(s32*)&((TrickyState*)state)->heightTrackObjId = -1;
-            ((TrickyState*)state)->trackedHeight = lbl_803E23DC;
+            ((TrickyState*)state)->trackedHeight = 0.0f;
         }
     }
     else
     {
         firepipeObj = ObjList_FindObjectById(TRICKY_HEIGHT_TRACK_FIREPIPE_OBJECT_ID);
-        if ((firepipeObj != 0) && (getXZDistance(&obj->anim.worldPosX, (f32*)((int)firepipeObj + 0x18)) < lbl_803E2540))
+        if ((firepipeObj != 0) && (getXZDistance(&obj->anim.worldPosX, (f32*)((int)firepipeObj + 0x18)) < 841.0f))
         {
             ((TrickyStatusFlags58*)&((TrickyState*)state)->statusFlags)->heightTracking = 1;
             ((TrickyState*)state)->heightTrackObjId = TRICKY_HEIGHT_TRACK_FIREPIPE_OBJECT_ID;
-            ((TrickyState*)state)->trackedHeight = lbl_803E23DC;
+            ((TrickyState*)state)->trackedHeight = 0.0f;
         }
     }
     if ((((TrickyState*)state)->statusFlags >> 5 & 1) != 0u)
@@ -8768,17 +8659,18 @@ void Tricky_hitDetect(GameObject* obj)
             height = XyzAnimator_getCoordinate(*objects, XYZ_ANIMATOR_COORD_WORLD_Y);
             if (*(s32*)&((TrickyState*)state)->heightTrackObjId == -1)
             {
-                dy = (height - obj->anim.localPosY >= lbl_803E23DC) ? height - obj->anim.localPosY
+                dy = (height - obj->anim.localPosY >= 0.0f) ? height - obj->anim.localPosY
                                                                     : -(height - obj->anim.localPosY);
-                if (dy < lbl_803E24B8)
+                if (dy < 6.0f)
                 {
                     ((TrickyState*)state)->heightTrackObjId = (*objects)->anim.placement->mapId;
                 }
             }
             if (((TrickyState*)state)->heightTrackObjId == (u32)(*objects)->anim.placement->mapId)
             {
-                if ((((TrickyState*)state)->trackedHeight != lbl_803E23DC) &&
-                    (((TrickyState*)state)->trackedHeight == height))
+                th = ((TrickyState*)state)->trackedHeight;
+                z = 0.0f;
+                if ((th != z) && (th == height))
                 {
                     ((TrickyStatusFlags58*)&((TrickyState*)state)->statusFlags)->heightTracking = 0;
                 }
@@ -8803,7 +8695,7 @@ void Tricky_hitDetect(GameObject* obj)
 #define TRICKY_RESET_COMMAND(state)                                                                                    \
     *(u8*)((state) + 8) = 1;                                                                                           \
     *(u8*)((state) + 0xa) = 0;                                                                                         \
-    z = lbl_803E23DC;                                                                                                  \
+    z = 0.0f;                                                                                                  \
     *(f32*)((state) + 0x71c) = z;                                                                                      \
     *(f32*)((state) + 0x720) = z;                                                                                      \
     *(u32*)((state) + 0x54) = *(u32*)((state) + 0x54) & (u64)~0x10U;                                                  \
@@ -8873,7 +8765,7 @@ void Tricky_hitDetect(GameObject* obj)
         *(int*)((state) + 0x7b8) = (int)Obj_SetupObject((ObjPlacement*)setup_, 4, -1, -1, *(void**)((obj) + 0x30));    \
         ObjLink_AttachChild((GameObject*)(obj), *(GameObject**)((state) + 0x7b8),                                    \
                             ((TrickyPackedSlots*)((state) + 0x7bc))->zzzSlot);                                             \
-        z = lbl_803E23DC;                                                                                              \
+        z = 0.0f;                                                                                              \
         *(f32*)((state) + 0x7c0) = z;                                                                                  \
         *(f32*)((state) + 0x7c4) = z;                                                                                  \
         *(f32*)((state) + 0x7c8) = z;                                                                                  \
@@ -8901,6 +8793,7 @@ void Tricky_update(int obj)
     int talking;
     f32* target;
     f32 z;
+    f32 mp;
     u8 blockFlags[120];
     TrickyItemIdList cmdQuery;
     TrickySfxPair pair;
@@ -8967,12 +8860,12 @@ void Tricky_update(int obj)
             (*gPathControlInterface)->attachObject((void*)obj, &trickyState->pathControlFlags);
             if (((GameObject*)obj)->anim.currentMove == 8 || ((GameObject*)obj)->anim.currentMove == 7)
             {
-                trickyState->waterLevel = lbl_803E2414;
-                trickyState->eventTime = lbl_803E2544;
+                trickyState->waterLevel = 8.0f;
+                trickyState->eventTime = -10000.0f;
             }
             else
             {
-                trickyState->waterLevel = lbl_803E23DC;
+                trickyState->waterLevel = 0.0f;
             }
         }
         *(s32*)&trickyState->stateFlags &= ~0x4201;
@@ -9002,7 +8895,7 @@ void Tricky_update(int obj)
             ObjHits_SyncObjectPosition((GameObject*)obj);
             childLoop.index = 0;
             trickyState->followPhase = childLoop.index;
-            z = lbl_803E23DC;
+            z = 0.0f;
             trickyState->prevSpeed = z;
             trickyState->speed = z;
             trickyState->stateFlags |= 0x80000LL;
@@ -9291,7 +9184,7 @@ void Tricky_update(int obj)
                     if (trickyState->stateIndex == 1 && trickyState->commandPhase != 0 &&
                         (flags & 0x20000) == 0)
                     {
-                        step = trickyFindNearestUsableBaddie(trickyState->playerObj, lbl_803E24D8, 0);
+                        step = trickyFindNearestUsableBaddie(trickyState->playerObj, 150.0f, 0);
                         if (step != NULL)
                         {
                             trickyState->followObj = step;
@@ -9334,7 +9227,7 @@ void Tricky_update(int obj)
             {
                 TRICKY_RESET_COMMAND(state);
             }
-            trickyState->cooldownA = lbl_803E2548;
+            trickyState->cooldownA = 1200.0f;
         }
         else if ((flags & 0x40000) != 0)
         {
@@ -9367,7 +9260,7 @@ void Tricky_update(int obj)
     ((TrickyHandlerFn*)(base + 0x24))[trickyState->stateIndex](obj, state);
     trickyState->stateFlags &= ~(u64)0x2;
     trickyState->animTransitionTimer += timeDelta;
-    if (trickyState->animTransitionTimer > lbl_803E247C)
+    if (trickyState->animTransitionTimer > 15.0f)
     {
         if (((GameObject*)obj)->anim.currentMove != trickyState->moveId)
         {
@@ -9379,11 +9272,11 @@ void Tricky_update(int obj)
             }
             else
             {
-                ObjAnim_SetCurrentMove(obj, trickyState->moveId, lbl_803E23DC, 0);
+                ObjAnim_SetCurrentMove(obj, trickyState->moveId, 0.0f, 0);
             }
             trickyState->stateFlags &= ~0x060001e0LL;
             trickyState->stateFlags |= trickyState->pendingStateFlags;
-            trickyState->animTransitionTimer = lbl_803E23DC;
+            trickyState->animTransitionTimer = 0.0f;
             trickyState->moveProgress = trickyState->moveProgressTarget;
         }
     }
@@ -9393,7 +9286,9 @@ void Tricky_update(int obj)
         ((GameObject*)obj)->anim.localPosZ += timeDelta * (trickyState->dirZ * trickyState->speed);
         ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, trickyState->speed, (float*)(state + 0x34));
     }
-    if (trickyState->moveProgress == lbl_803E23DC)
+    mp = trickyState->moveProgress;
+    z = 0.0f;
+    if (mp == z)
     {
         ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, trickyState->arcMoveProgress);
     }
@@ -9482,7 +9377,7 @@ void Tricky_update(int obj)
     }
     else
     {
-        characterUpdateHeadLook((GameObject*)obj, (CharacterEyeAnimState*)(state + 0x378), lbl_803E23DC);
+        characterUpdateHeadLook((GameObject*)obj, (CharacterEyeAnimState*)(state + 0x378), 0.0f);
         characterDoEyeAnims((GameObject*)obj, (void*)(state + 0x378));
     }
     objAnimFn_80038f38((GameObject*)obj, (char*)state + 0x3a8);
@@ -9517,15 +9412,15 @@ void Tricky_update(int obj)
         }
     }
     if (getXZDistance(&((GameObject*)obj)->anim.worldPosX,
-                      &trickyState->playerObj->anim.worldPosX) >= lbl_803E2538 &&
+                      &trickyState->playerObj->anim.worldPosX) >= 360000.0f &&
         mainGetBit(GAMEBIT_Tricky_Usable) != 0)
     {
         trickyState->stateFlags |= 0x10000LL;
     }
     trickyState->cooldownC -= timeDelta;
-    if (trickyState->cooldownC < *(f32*)&lbl_803E23DC)
+    if (trickyState->cooldownC < 0.0f)
     {
-        trickyState->cooldownC = lbl_803E23DC;
+        trickyState->cooldownC = 0.0f;
     }
     if ((trickyState->stateFlags & 4) != 0)
     {
@@ -9566,11 +9461,11 @@ void Tricky_update(int obj)
         }
     }
     trickyState->voiceCooldown -= timeDelta;
-    if (trickyState->voiceCooldown < *(f32*)&lbl_803E23DC)
+    if (trickyState->voiceCooldown < 0.0f)
     {
-        trickyState->voiceCooldown = lbl_803E23DC;
+        trickyState->voiceCooldown = 0.0f;
     }
-    if (trickyState->voiceCooldown > lbl_803E23DC)
+    if (trickyState->voiceCooldown > 0.0f)
     {
         TRICKY_VOICE(obj, 0x29c, 0x100);
     }
@@ -9578,7 +9473,7 @@ void Tricky_update(int obj)
     if ((trickyState->stateFlags & 0x80000000) != 0)
     {
         trickyState->impressTimer -= timeDelta;
-        if (trickyState->impressTimer <= lbl_803E23DC)
+        if (trickyState->impressTimer <= 0.0f)
         {
             trickyState->stateFlags &= 0x7FFFFFFF;
             sfxId = ((u16*)&pair)[randomGetRange(0, 1)];
@@ -9587,20 +9482,20 @@ void Tricky_update(int obj)
     }
     tricky_updateModelVariantFade(obj, state);
     Tricky_updateBlendChannelWeight(obj, (u8*)state);
-    if (trickyState->speed > lbl_803E254C)
+    if (trickyState->speed > 0.2f)
     {
         objAudioFn_8006ef38((GameObject*)obj, (ObjAnimEventList*)(state + 0x80c), 1, (void*)(state + 0x7d8),
-                            (void*)(state + 0xf8), trickyState->speed, lbl_803E23E8);
+                            (void*)(state + 0xf8), trickyState->speed, 1.0f);
     }
-    if (lbl_803E23DC == trickyState->waterLevel)
+    if (0.0f == trickyState->waterLevel)
     {
         talking = 0;
     }
-    else if (lbl_803E2410 == trickyState->eventTime)
+    else if (-100000.0f == trickyState->eventTime)
     {
         talking = 1;
     }
-    else if (trickyState->currentTime - trickyState->eventTime > lbl_803E2414)
+    else if (trickyState->currentTime - trickyState->eventTime > 8.0f)
     {
         talking = 1;
     }
@@ -9639,11 +9534,11 @@ void Tricky_update(int obj)
         trickyState->childPhaseTimer0 += timeDelta;
         trickyState->childPhaseTimer1 += timeDelta;
         trickyState->childPhaseTimer2 += timeDelta;
-        if (trickyState->childPhaseTimer2 > *(f32*)&lbl_803E24C8)
+        if (trickyState->childPhaseTimer2 > 30.0f)
         {
-            trickyState->childPhaseTimer2 -= lbl_803E24C8;
+            trickyState->childPhaseTimer2 -= 30.0f;
         }
-        if (trickyState->childPhaseTimer2 >= lbl_803E2408)
+        if (trickyState->childPhaseTimer2 >= 20.0f)
         {
             *(s16*)(*(int*)&trickyState->child + 6) =
                 *(s16*)(*(int*)&trickyState->child + 6) | 0x4000;
@@ -9653,16 +9548,16 @@ void Tricky_update(int obj)
             *(s16*)(*(int*)&trickyState->child + 6) =
                 *(s16*)(*(int*)&trickyState->child + 6) & ~0x4000;
         }
-        if (trickyState->childPhaseTimer1 > lbl_803E24D8)
+        if (trickyState->childPhaseTimer1 > 150.0f)
         {
-            if (trickyState->childPhaseTimer1 > lbl_803E2440)
+            if (trickyState->childPhaseTimer1 > 600.0f)
             {
-                trickyState->childPhaseTimer1 -= lbl_803E2440;
+                trickyState->childPhaseTimer1 -= 600.0f;
             }
             *(s16*)(*(int*)&trickyState->child + 6) =
                 *(s16*)(*(int*)&trickyState->child + 6) | 0x4000;
         }
-        if (trickyState->childPhaseTimer0 > lbl_803E2550)
+        if (trickyState->childPhaseTimer0 > 2400.0f)
         {
             if (mainGetBit(GAMEBIT_ITEM_TrickyFood_Count) != 0)
             {
@@ -9672,17 +9567,17 @@ void Tricky_update(int obj)
             {
                 TRICKY_VOICE(obj, 0x298, 0x500);
             }
-            trickyState->childPhaseTimer0 -= lbl_803E2550;
+            trickyState->childPhaseTimer0 -= 2400.0f;
         }
-        ObjAnim_AdvanceCurrentMove(*(int*)&trickyState->child, lbl_803E23EC, timeDelta, 0);
+        ObjAnim_AdvanceCurrentMove(*(int*)&trickyState->child, 0.01f, timeDelta, 0);
     }
     if (*(void**)&trickyState->childB != NULL)
     {
-        ObjAnim_AdvanceCurrentMove(*(int*)&trickyState->childB, lbl_803E23EC, timeDelta, 0);
+        ObjAnim_AdvanceCurrentMove(*(int*)&trickyState->childB, 0.01f, timeDelta, 0);
     }
     if (*(void**)&trickyState->childA != NULL)
     {
-        ObjAnim_AdvanceCurrentMove(*(int*)&trickyState->childA, lbl_803E23EC, timeDelta, 0);
+        ObjAnim_AdvanceCurrentMove(*(int*)&trickyState->childA, 0.01f, timeDelta, 0);
     }
 }
 
