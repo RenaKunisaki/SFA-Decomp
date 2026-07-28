@@ -412,7 +412,7 @@ int dll_2E_func07(GameObject* obj, ObjSeqState* seq, MoveLibState* s, s16 a, s16
                 s->setupFlag = 0;
                 s->phase = MOVELIB_PHASE_RUN;
             case MOVELIB_PHASE_RUN:
-                if (objAnimFn_80115650((PostObjAnimComponent*)obj, (PostObject*)player, &s->turnState, (PostControl*)s,
+                if (objAnimFn_80115650(obj, player, &s->turnState, (PostControl*)s,
                                        (float*)s, pair, &s->targetX) == 0)
                 {
                     s->phase = MOVELIB_PHASE_DONE;
@@ -639,16 +639,15 @@ void dll_2E_func03(GameObject* obj, MoveLibState* s)
                 {
                     if (((GameObject*)target)->anim.hitReactState != NULL)
                     {
-                        if ((((PostMotionTarget*)((GameObject*)target)->anim.hitReactState)->flags & 2) != 0)
+                        ObjHitsPriorityState* hitShape =
+                            (ObjHitsPriorityState*)((GameObject*)target)->anim.hitReactState;
+                        if ((hitShape->shapeFlags & 2) != 0)
                         {
-                            targetYaw =
-                                4.0f *
-                                (float)(int)((PostMotionTarget*)((GameObject*)target)->anim.hitReactState)->yawB;
+                            targetYaw = 4.0f * (float)(int)hitShape->primaryCapsuleOffsetB;
                         }
-                        else if ((((PostMotionTarget*)((GameObject*)target)->anim.hitReactState)->flags & 1) != 0)
+                        else if ((hitShape->shapeFlags & 1) != 0)
                         {
-                            targetYaw =
-                                (float)(int)((PostMotionTarget*)((GameObject*)target)->anim.hitReactState)->yawA;
+                            targetYaw = (float)(int)hitShape->primaryRadius;
                         }
                         else
                         {
@@ -712,11 +711,11 @@ void dll_2E_func03(GameObject* obj, MoveLibState* s)
     }
 }
 
-int objAnimFn_80115650(PostObjAnimComponent* objAnim, PostObject* obj, int* turning, PostControl* control,
-                       float* turnSpeed, s16* moves, f32* targetPos)
+int objAnimFn_80115650(GameObject* obj, GameObject* targetObj, int* turning, PostControl* control, float* turnSpeed,
+                       s16* moves, f32* targetPos)
 {
     int yawDelta;
-    PostMotionTarget* motion;
+    int* jointKeys;
     s16 hitResult;
     int turnAmount;
     u32 ret;
@@ -724,16 +723,17 @@ int objAnimFn_80115650(PostObjAnimComponent* objAnim, PostObject* obj, int* turn
     void* secondary;
     s16 turnDelta;
 
-    motion = (PostMotionTarget*)seqFn_800394a0();
-    if (obj->motion != 0)
+    jointKeys = seqFn_800394a0();
+    if (targetObj->anim.hitReactState != 0)
     {
-        if ((obj->motion->flags & 2) != 0)
+        ObjHitsPriorityState* hitShape = (ObjHitsPriorityState*)targetObj->anim.hitReactState;
+        if ((hitShape->shapeFlags & 2) != 0)
         {
-            distance = 4.0f * (f32)(s32)obj->motion->yawB;
+            distance = 4.0f * (f32)(s32)hitShape->primaryCapsuleOffsetB;
         }
-        else if ((obj->motion->flags & 1) != 0)
+        else if ((hitShape->shapeFlags & 1) != 0)
         {
-            distance = (f32)(s32)obj->motion->yawA;
+            distance = (f32)(s32)hitShape->primaryRadius;
         }
         else
         {
@@ -745,21 +745,20 @@ int objAnimFn_80115650(PostObjAnimComponent* objAnim, PostObject* obj, int* turn
         distance = 30.0f;
     }
 
-    yawDelta = Obj_GetYawDeltaToObject((GameObject*)objAnim, (GameObject*)obj, NULL);
+    yawDelta = Obj_GetYawDeltaToObject(obj, targetObj, NULL);
     if ((control->flags & 0x10) != 0)
     {
         objSetLookAtFlip(0, 1);
         yawDelta += -0x8000;
     }
 
-    hitResult =
-        objMathFn_8003a380((GameObject*)objAnim, (GameObject*)obj, control->primary,
-                           ((control->flags & 8) != 0) ? NULL : control->secondary, control->events, distance, 8,
-                           control->eventState);
+    hitResult = objMathFn_8003a380(obj, targetObj, control->primary,
+                                   ((control->flags & 8) != 0) ? NULL : control->secondary, control->events, distance,
+                                   8, control->eventState);
     if ((control->flags & 8) == 0)
     {
         control->blocked =
-            (u32)__cntlzw(characterTrackJointList((GameObject*)objAnim, (int*)motion, control->contactAnim, control->secondary)) >> 5;
+            (u32)__cntlzw(characterTrackJointList(obj, jointKeys, control->contactAnim, control->secondary)) >> 5;
     }
     control->blocked = 0;
 
@@ -786,15 +785,15 @@ int objAnimFn_80115650(PostObjAnimComponent* objAnim, PostObject* obj, int* turn
     }
     else if (*turning != 0)
     {
-        if ((0 < (s16)yawDelta) && (objAnim->currentMove != moves[1]))
+        if ((0 < (s16)yawDelta) && (obj->anim.currentMove != moves[1]))
         {
-            ObjAnim_SetCurrentMove((int)objAnim, moves[1], 0.0f, 0);
-            ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)objAnim, 0x1e);
+            ObjAnim_SetCurrentMove((int)obj, moves[1], 0.0f, 0);
+            ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x1e);
         }
-        if (((s16)yawDelta < 0) && (objAnim->currentMove != moves[0]))
+        if (((s16)yawDelta < 0) && (obj->anim.currentMove != moves[0]))
         {
-            ObjAnim_SetCurrentMove((int)objAnim, moves[0], 0.0f, 0);
-            ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)objAnim, 0x1e);
+            ObjAnim_SetCurrentMove((int)obj, moves[0], 0.0f, 0);
+            ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x1e);
         }
 
         if (hitResult == 0)
@@ -824,7 +823,7 @@ int objAnimFn_80115650(PostObjAnimComponent* objAnim, PostObject* obj, int* turn
             turnDelta = turnAmount;
         }
 
-        objAnim->yaw += turnDelta;
+        obj->anim.rotX += turnDelta;
         ret = (u32)(s16)turnDelta;
         ret = ((int)ret >= 0) ? ret : -ret;
         *turnSpeed = (float)(s32)ret / 20922.25f;

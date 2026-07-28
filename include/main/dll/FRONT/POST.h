@@ -2,26 +2,7 @@
 #define MAIN_DLL_FRONT_POST_H_
 
 #include "ghidra_import.h"
-
-typedef struct PostMotionTarget {
-  u8 pad0[0x5a];
-  s16 yawA;
-  u8 pad5c[2];
-  s16 yawB;
-  u8 pad60[2];
-  u8 flags;
-} PostMotionTarget;
-
-typedef struct PostObject {
-  u8 pad0[0x54];
-  PostMotionTarget *motion;
-} PostObject;
-
-typedef struct PostObjAnimComponent {
-  s16 yaw;
-  u8 pad2[0x9e];
-  s16 currentMove;
-} PostObjAnimComponent;
+#include "game/objects/object.h"
 
 typedef struct PostControl {
   u8 pad0[0x10];
@@ -36,7 +17,7 @@ typedef struct PostControl {
   u8 flags;
 } PostControl;
 
-int objAnimFn_80115650(PostObjAnimComponent* objAnim, PostObject* obj, int* turning, PostControl* control,
-                       float* turnSpeed, short* moves, float* targetPos);
+int objAnimFn_80115650(GameObject* obj, GameObject* targetObj, int* turning, PostControl* control, float* turnSpeed,
+                       short* moves, float* targetPos);
 
 #endif /* MAIN_DLL_FRONT_POST_H_ */

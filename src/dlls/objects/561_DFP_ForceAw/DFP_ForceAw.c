@@ -23,7 +23,6 @@
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx.h"
-#include "main/dll/trickycurve_object.h"
 #include "sys/objects.h"
 #include "game/objects/object.h"
 #include "main/objhits.h"
@@ -88,7 +87,7 @@ STATIC_ASSERT(offsetof(TrickyCurveBurstPartfxArgs, xDelta) == 0x0C);
 u8
     gTrickyCurveBurstCounter; /* inter-frame burst-fire counter; reset to 0 after TRICKY_CURVE_BURST_LIMIT ticks */
 
-void TrickyCurve_updateCooldownHit(TrickyCurveObject* obj)
+void TrickyCurve_updateCooldownHit(GameObject* obj)
 {
     u8 insideAxes;
     TrickyCurveTriggerState* state;
@@ -100,16 +99,16 @@ void TrickyCurve_updateCooldownHit(TrickyCurveObject* obj)
     f32 zDelta;
     f32 yDelta;
 
-    state = (TrickyCurveTriggerState*)obj->state;
+    state = (TrickyCurveTriggerState*)obj->extra;
     player = (GameObject*)Obj_GetPlayerObject();
     insideAxes = 0;
     xSide = 0;
     ySide = 0;
     zSide = 0;
 
-    xDelta = player->anim.localPosX - obj->x;
-    yDelta = player->anim.localPosY - obj->y;
-    zDelta = player->anim.localPosZ - obj->z;
+    xDelta = player->anim.localPosX - obj->anim.localPosX;
+    yDelta = player->anim.localPosY - obj->anim.localPosY;
+    zDelta = player->anim.localPosZ - obj->anim.localPosZ;
 
     if (xDelta <= 0.0f)
     {
@@ -184,7 +183,7 @@ void TrickyCurve_updateCooldownHit(TrickyCurveObject* obj)
     state->zSide = zSide;
 }
 
-void TrickyCurve_updateBurstHit(TrickyCurveObject* obj)
+void TrickyCurve_updateBurstHit(GameObject* obj)
 {
     u8 insideAxes;
     TrickyCurveTriggerState* state;
@@ -197,16 +196,16 @@ void TrickyCurve_updateBurstHit(TrickyCurveObject* obj)
     f32 yDelta;
     TrickyCurveBurstPartfxArgs partfxArgs;
 
-    state = (TrickyCurveTriggerState*)obj->state;
+    state = (TrickyCurveTriggerState*)obj->extra;
     player = (GameObject*)Obj_GetPlayerObject();
     insideAxes = 0;
     xSide = 0;
     ySide = 0;
     zSide = 0;
 
-    xDelta = player->anim.localPosX - obj->x;
-    yDelta = player->anim.localPosY - obj->y;
-    zDelta = player->anim.localPosZ - obj->z;
+    xDelta = player->anim.localPosX - obj->anim.localPosX;
+    yDelta = player->anim.localPosY - obj->anim.localPosY;
+    zDelta = player->anim.localPosZ - obj->anim.localPosZ;
     gTrickyCurveBurstCounter++;
 
     if (xDelta <= 0.0f)
@@ -313,9 +312,9 @@ typedef struct TrickyCurveState
 
 void TrickyCurve_updateCooldownTrigger(int obj)
 {
-    TrickyCurveObject* curve;
+    GameObject* curve;
     TrickyCurveState* state;
-    TrickyCurveObject* player;
+    GameObject* player;
     int axisCount;
     f32 deltaX;
     f32 deltaZ;
@@ -324,13 +323,13 @@ void TrickyCurve_updateCooldownTrigger(int obj)
     f32 randomX;
     f32 randomZ;
 
-    curve = (TrickyCurveObject*)obj;
-    state = (TrickyCurveState*)curve->state;
-    player = (TrickyCurveObject*)Obj_GetPlayerObject();
+    curve = (GameObject*)obj;
+    state = (TrickyCurveState*)curve->extra;
+    player = Obj_GetPlayerObject();
     axisCount = 0;
-    deltaX = player->x - curve->x;
-    deltaY = player->y - curve->y;
-    deltaZ = player->z - curve->z;
+    deltaX = player->anim.localPosX - curve->anim.localPosX;
+    deltaY = player->anim.localPosY - curve->anim.localPosY;
+    deltaZ = player->anim.localPosZ - curve->anim.localPosZ;
 
     if (deltaX <= 0.0f)
     {
@@ -593,11 +592,11 @@ void TrickyCurve_update(GameObject* obj)
     }
     else if (state == 2)
     {
-        TrickyCurve_updateBurstHit((TrickyCurveObject*)obj);
+        TrickyCurve_updateBurstHit(obj);
     }
     else if (state == 3)
     {
-        TrickyCurve_updateCooldownHit((TrickyCurveObject*)obj);
+        TrickyCurve_updateCooldownHit(obj);
     }
 }
 
