@@ -311,6 +311,7 @@
 #include "dlls/objects/515.h"
 #include "dlls/objects/516_WM_Torch.h"
 #include "dlls/objects/517_WM_Vein.h"
+#include "dlls/objects/518_LightSource.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -423,7 +424,6 @@ extern ResourceDescriptor gKtFallingrocksObjDescriptor;
 extern ResourceDescriptor gKtLazerlightObjDescriptor, gKtLazerwallObjDescriptor, gKtRexFloorSwitchObjDescriptor,
     gKtRexLevelObjDescriptor, gKtRexObjDescriptor, gKytesMumObjDescriptor;
 extern ResourceDescriptor gLaserObjDescriptor, gLaserUnsupportedObjDescriptor;
-extern ResourceDescriptor gLightSourceObjDescriptor;
 extern ResourceDescriptor gMoonSeedPlantingSpotObjDescriptor;
 extern ResourceDescriptor gPlatform1ObjDescriptor, gPointLightObjDescriptor;
 extern ResourceDescriptor gProjectedLightObjDescriptor, gProximityMineObjDescriptor;
@@ -1636,7 +1636,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll203NullResourceDescriptor,
     (ResourceDescriptor*)&gWM_TorchObjDescriptor,
     (ResourceDescriptor*)&gWMVeinNullResourceDescriptor,
-    &gLightSourceObjDescriptor,
+    (ResourceDescriptor*)&gLightSourceObjDescriptor,
     &gWM_WormObjDescriptor,
     &lbl_803DC108,
     &gWM_LevelControlObjDescriptor,
