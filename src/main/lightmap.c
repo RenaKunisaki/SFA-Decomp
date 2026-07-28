@@ -669,6 +669,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
     int box1[4];
     int box2[4];
     int box3[4];
+    u8* mp;
     s8** layerTablePtr;
     int* layerFlagPtr;
     int idx;
@@ -692,9 +693,10 @@ void renderSceneGeometry(u8 renderType, s8* order)
         gMapLayerCellStates = (s8*)*layerFlagPtr;
         mapFn_80057d24(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
                        gMapCurRomListSlot);
+        mp = map;
         for (k = 0; k < ARRAY_COUNT(map); k++)
         {
-            map[k] = 0;
+            *mp++ = 0;
         }
         fillBoxRows(map, box0);
         fillBoxRows(map, box1);
