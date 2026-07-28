@@ -2021,7 +2021,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     }
     if ((flags29 & OBJLOAD_FLAG_HAS_SHADOW) && modelDef->shadowType != OBJ_SHADOW_TYPE_NONE)
     {
-        cursor = shadowInit(obj, cursor, 0);
+        cursor = shadowInit((GameObject*)obj, cursor, 0);
     }
     max = lbl_803DE8CC;
     i = 0;
