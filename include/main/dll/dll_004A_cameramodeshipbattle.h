@@ -1,7 +1,9 @@
 #ifndef MAIN_DLL_DLL_004A_CAMERAMODESHIPBATTLE_H_
 #define MAIN_DLL_DLL_004A_CAMERAMODESHIPBATTLE_H_
 
-void CameraModeShipBattle_update(short* cam);
+#include "main/camera_object.h"
+
+void CameraModeShipBattle_update(CameraObject* cam);
 void CameraModeShipBattle_init(void);
 void CameraModeShipBattle_copyToCurrent(void);
 void CameraModeShipBattle_release(void);

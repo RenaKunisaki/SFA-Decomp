@@ -201,7 +201,7 @@ void camcontrol_updateTargetAction(CameraObject* camera, GameObject* target)
     }
 }
 
-int cameraFn_80103b40(short* cam, f32* outA, f32* outB, int angle)
+int cameraFn_80103b40(CameraObject* cam, f32* outA, f32* outB, int angle)
 {
     int tgt0;
     float probe[75];
@@ -238,12 +238,12 @@ int cameraFn_80103b40(short* cam, f32* outA, f32* outB, int angle)
     OSGetTick(); /* timing probe; return value intentionally unused */
     result = 0;
     (*gCameraInterface)->getRelativePosition(cam, &spinB, &spinC, &spinD, &spinA, gCamcontrolModeSettings->targetHeight, 0);
-    tgt0 = *(int*)&((CameraObject*)cam)->anim.targetObj;
+    tgt0 = *(int*)&cam->anim.targetObj;
     *(int*)&probe[35] = tgt0;
-    probe[1] = ((CameraObject*)cam)->anim.worldPosY;
-    pathA[0] = ((CameraObject*)cam)->anim.worldPosX;
-    pathA[1] = ((CameraObject*)cam)->anim.worldPosY;
-    pathA[2] = ((CameraObject*)cam)->anim.worldPosZ;
+    probe[1] = cam->anim.worldPosY;
+    pathA[0] = cam->anim.worldPosX;
+    pathA[1] = cam->anim.worldPosY;
+    pathA[2] = cam->anim.worldPosZ;
     pathB[0] = pathA[0];
     pathB[1] = pathA[1];
     pathB[2] = pathA[2];
@@ -273,7 +273,7 @@ int cameraFn_80103b40(short* cam, f32* outA, f32* outB, int angle)
         {
             dx = spinD;
             dz = spinB;
-            tgt = *(int*)&((CameraObject*)cam)->anim.targetObj;
+            tgt = *(int*)&cam->anim.targetObj;
             rad = (3.1415927f * (f32)(s16)ang) / 32768.0f;
             cosv = mathSinf(rad);
             sinv = mathCosf(rad);
@@ -295,7 +295,7 @@ int cameraFn_80103b40(short* cam, f32* outA, f32* outB, int angle)
         {
             dx = spinD;
             dz = spinB;
-            tgt = *(int*)&((CameraObject*)cam)->anim.targetObj;
+            tgt = *(int*)&cam->anim.targetObj;
             rad = (3.1415927f * (f32)(s16)(-s * 0xb6)) / 32768.0f;
             cosv = mathSinf(rad);
             sinv = mathCosf(rad);
@@ -368,7 +368,7 @@ int cameraFn_80103b40(short* cam, f32* outA, f32* outB, int angle)
     {
         f32 f;
         f32 g;
-        d = (0x8000 - *cam) - (angle & 0xffff);
+        d = (0x8000 - cam->anim.rotX) - (angle & 0xffff);
         if (0x8000 < d)
         {
             d = d - 0xffff;
@@ -381,7 +381,7 @@ int cameraFn_80103b40(short* cam, f32* outA, f32* outB, int angle)
         {
             d = -d;
         }
-        f = ((CameraObject*)cam)->unkC4 * ((CameraObject*)cam)->unkC4;
+        f = cam->unkC4 * cam->unkC4;
         if (f < 1.0f)
         {
             f = 1.0f;
@@ -518,7 +518,7 @@ void camcontrol_updateWallAvoidance(CameraObject* camera, GameObject* target)
     if (trace != 0)
     {
         gCamcontrolModeSettings->wallAvoidanceFlags.b7 = 0;
-        if (cameraFn_80103b40((short*)camera, outA, outB, target->anim.rotX) == 0)
+        if (cameraFn_80103b40(camera, outA, outB, target->anim.rotX) == 0)
         {
             gCamcontrolModeSettings->avoidanceYawOffset = 0.0f;
         }

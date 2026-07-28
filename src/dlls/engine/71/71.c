@@ -637,7 +637,7 @@ void CameraModeTestStrength_free(void)
     gCamCannonState = 0;
 }
 
-void CameraModeTestStrength_update(short* cam)
+void CameraModeTestStrength_update(CameraObject* cam)
 {
     int lockRoll;
     GameObject* obj;
@@ -668,7 +668,7 @@ void CameraModeTestStrength_update(short* cam)
     }
     else
     {
-        obj = ((CameraObject*)cam)->anim.targetObj;
+        obj = cam->anim.targetObj;
         getButtonsJustPressed(0);
         node = (int)(*gRomCurveInterface)->getById(gCamCannonState->nextNodeId);
         node2 = (int)(*gRomCurveInterface)->getById(gCamCannonState->prevNodeId);
@@ -733,43 +733,43 @@ void CameraModeTestStrength_update(short* cam)
         }
         t = 0.3f * (param - gCamCannonState->pathProgress) + gCamCannonState->pathProgress;
         gCamCannonState->pathProgress = t;
-        ((CameraObject*)cam)->anim.worldPosX = Curve_EvalBSpline(x, t, 0);
-        ((CameraObject*)cam)->anim.worldPosY = Curve_EvalBSpline(y, t, 0);
-        ((CameraObject*)cam)->anim.worldPosZ = Curve_EvalBSpline(z, t, 0);
+        cam->anim.worldPosX = Curve_EvalBSpline(x, t, 0);
+        cam->anim.worldPosY = Curve_EvalBSpline(y, t, 0);
+        cam->anim.worldPosZ = Curve_EvalBSpline(z, t, 0);
         node2 = (int)(*gRomCurveInterface)->getById(gCamCannonState->prevNodeId);
         flags = *(u8*)(node2 + 0x3b);
         lockPitch = flags & 1;
         if (lockPitch == 0)
         {
-            *cam = (int)Curve_EvalCatmullRom(pitchS, t, 0) + 0x8000;
+            cam->anim.rotX = (int)Curve_EvalCatmullRom(pitchS, t, 0) + 0x8000;
         }
         lockYaw = flags & 2;
         if (lockYaw == 0)
         {
-            cam[1] = Curve_EvalCatmullRom(yawS, t, 0);
+            cam->anim.rotY = Curve_EvalCatmullRom(yawS, t, 0);
         }
         lockRoll = flags & 4;
         if (lockRoll == 0)
         {
-            cam[2] = Curve_EvalCatmullRom(rollS, t, 0);
+            cam->anim.rotZ = Curve_EvalCatmullRom(rollS, t, 0);
         }
-        ((CameraObject*)cam)->fov = Curve_EvalBSpline(fov, t, 0);
+        cam->fov = Curve_EvalBSpline(fov, t, 0);
         if (gCamCannonState->transitionComplete == 0 && (s32)camTestStrengthUpdateBlend((CameraObject*)cam, (u32)flags) != 0)
         {
             gCamCannonState->transitionComplete = 1;
         }
-        dx = ((CameraObject*)cam)->anim.worldPosX - obj->anim.worldPosX;
-        dy = ((CameraObject*)cam)->anim.worldPosY - obj->anim.worldPosY;
-        dz = ((CameraObject*)cam)->anim.worldPosZ - obj->anim.worldPosZ;
+        dx = cam->anim.worldPosX - obj->anim.worldPosX;
+        dy = cam->anim.worldPosY - obj->anim.worldPosY;
+        dz = cam->anim.worldPosZ - obj->anim.worldPosZ;
         if (lockPitch != 0)
         {
-            *cam = 0x8000 - getAngle(dx, dz);
+            cam->anim.rotX = 0x8000 - getAngle(dx, dz);
         }
         if (lockYaw != 0)
         {
             int delta;
             yaw = getAngle(dy, sqrtf(dx * dx + dz * dz)) & 0xffff;
-            delta = (int)(((f32)yaw - Curve_EvalCatmullRom(yawS, t, 0)) - (f32)(cam[1] & 0xffff));
+            delta = (int)(((f32)yaw - Curve_EvalCatmullRom(yawS, t, 0)) - (f32)(cam->anim.rotY & 0xffff));
             if (delta > 0x8000)
             {
                 delta -= 0xffff;
@@ -778,11 +778,11 @@ void CameraModeTestStrength_update(short* cam)
             {
                 delta += 0xffff;
             }
-            cam[1] += ((int)(delta * framesThisStep) >> 3);
+            cam->anim.rotY += ((int)(delta * framesThisStep) >> 3);
         }
         if (lockRoll != 0)
         {
-            int delta = cam[2] - (obj->anim.rotZ & 0xffff);
+            int delta = cam->anim.rotZ - (obj->anim.rotZ & 0xffff);
             if (delta > 0x8000)
             {
                 delta -= 0xffff;
@@ -791,29 +791,29 @@ void CameraModeTestStrength_update(short* cam)
             {
                 delta += 0xffff;
             }
-            cam[2] += ((int)(delta * framesThisStep) >> 3);
+            cam->anim.rotZ += ((int)(delta * framesThisStep) >> 3);
         }
         if (gCamCannonState->linkedObject != NULL)
         {
             f32 v;
-            v = ((CameraObject*)cam)->anim.worldPosX;
+            v = cam->anim.worldPosX;
             ((GameObject*)gCamCannonState->linkedObject)->anim.worldPosX = v;
             ((GameObject*)gCamCannonState->linkedObject)->anim.localPosX = v;
-            v = ((CameraObject*)cam)->anim.worldPosY;
+            v = cam->anim.worldPosY;
             ((GameObject*)gCamCannonState->linkedObject)->anim.worldPosY = v;
             ((GameObject*)gCamCannonState->linkedObject)->anim.localPosY = v;
-            v = ((CameraObject*)cam)->anim.worldPosZ;
+            v = cam->anim.worldPosZ;
             ((GameObject*)gCamCannonState->linkedObject)->anim.worldPosZ = v;
             ((GameObject*)gCamCannonState->linkedObject)->anim.localPosZ = v;
         }
-        Obj_TransformWorldPointToLocal(((CameraObject*)cam)->anim.worldPosX, ((CameraObject*)cam)->anim.worldPosY,
-                                       ((CameraObject*)cam)->anim.worldPosZ, &((CameraObject*)cam)->anim.localPosX,
-                                       &((CameraObject*)cam)->anim.localPosY, &((CameraObject*)cam)->anim.localPosZ,
-                                       *(int*)(cam + 0x18));
+        Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY,
+                                       cam->anim.worldPosZ, &cam->anim.localPosX,
+                                       &cam->anim.localPosY, &cam->anim.localPosZ,
+                                       *(int*)&cam->anim.parent);
     }
 }
 
-void CameraModeTestStrength_init(short* cam, int param2, int* param3)
+void CameraModeTestStrength_init(CameraObject* cam, int param2, int* param3)
 {
     int romNode;
     GameObject* obj;
@@ -841,7 +841,7 @@ void CameraModeTestStrength_init(short* cam, int param2, int* param3)
     f32 zS[4];
     int tags[2];
 
-    obj = ((CameraObject*)cam)->anim.targetObj;
+    obj = cam->anim.targetObj;
     if (gCamCannonState == 0)
     {
         gCamCannonState = (CamCannonState*)mmAlloc(sizeof(CamCannonState), 0xf, 0);
@@ -913,21 +913,21 @@ void CameraModeTestStrength_init(short* cam, int param2, int* param3)
     pos[2] = pz;
     if (*((u8*)param3 + 4) == 0 && param2 != 3)
     {
-        cameraModeTestStrengthFn_8010b238(fov, (CameraObject*)cam, pos, pitch, yaw, roll);
+        cameraModeTestStrengthFn_8010b238(fov, cam, pos, pitch, yaw, roll);
     }
     else
     {
-        ((CameraObject*)cam)->anim.worldPosX = px;
-        ((CameraObject*)cam)->anim.worldPosY = py;
-        ((CameraObject*)cam)->anim.worldPosZ = pz;
-        Obj_TransformWorldPointToLocal(((CameraObject*)cam)->anim.worldPosX, ((CameraObject*)cam)->anim.worldPosY,
-                                       ((CameraObject*)cam)->anim.worldPosZ, &((CameraObject*)cam)->anim.localPosX,
-                                       &((CameraObject*)cam)->anim.localPosY, &((CameraObject*)cam)->anim.localPosZ,
-                                       *(int*)(cam + 0x18));
-        cam[0] = pitch;
-        cam[1] = yaw;
-        cam[2] = roll;
-        ((CameraObject*)cam)->fov = fov;
+        cam->anim.worldPosX = px;
+        cam->anim.worldPosY = py;
+        cam->anim.worldPosZ = pz;
+        Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY,
+                                       cam->anim.worldPosZ, &cam->anim.localPosX,
+                                       &cam->anim.localPosY, &cam->anim.localPosZ,
+                                       *(int*)&cam->anim.parent);
+        cam->anim.rotX = pitch;
+        cam->anim.rotY = yaw;
+        cam->anim.rotZ = roll;
+        cam->fov = fov;
     }
     gCamCannonState->pathProgress = t;
 }

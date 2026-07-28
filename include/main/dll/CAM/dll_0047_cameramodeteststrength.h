@@ -15,8 +15,8 @@ void cameraModeTestStrengthFn_8010b238(f32 fovEnd, CameraObject* camera, f32* po
                                       s32 rotZEnd);
 void CameraModeTestStrength_copyToCurrent(void);
 void CameraModeTestStrength_free(void);
-void CameraModeTestStrength_update(short* camera);
-void CameraModeTestStrength_init(short* camera, int unused, int* settings);
+void CameraModeTestStrength_update(CameraObject* camera);
+void CameraModeTestStrength_init(CameraObject* camera, int unused, int* settings);
 void CameraModeTestStrength_release(void);
 void CameraModeTestStrength_initialise(void);
 
