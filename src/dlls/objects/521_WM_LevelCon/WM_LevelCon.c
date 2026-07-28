@@ -1,25 +1,32 @@
 /*
  * WM_LevelCon (DLL 0x0209) - Krazoa Palace level control.
  *
- * init seeds the palace's game-bit progression from the map-event mode
- * (the 0xD1B..0xD1F spirit chain consumed by wmspiritplace and
+ * WM_LevelControl_init seeds the palace's game-bit progression from the
+ * map-event mode (the 0xD1B..0xD1F spirit chain consumed by WM_spiritplace and
  * friends); update shows the intro message while messageTimer runs,
  * drives the music game-bit latches, and calls the sky/light override
- * helper every frame. WM_LevelControl_updateSkyLighting cross-fades the palace's sky, light
- * and fog colors toward their spirit-restored values while the
- * gWmLevelControlBlendFactor blend factor (held at 1.0 during restore progress,
- * decaying 0.02/tick after) is up.
+ * helper every frame. WM_LevelControl_updateSkyLighting cross-fades the
+ * palace's sky, light, and fog colors toward their spirit-restored values
+ * while the gWmLevelControlBlendFactor blend factor (held at 1.0 during
+ * restore progress, decaying 0.02/tick after) is up.
  */
+#include "dlls/objects/521_WM_LevelCon.h"
+
+#include "game/objects/object.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
-#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/frame_timing.h"
-#include "main/gamebit_ids.h"
+#include "main/gamebits.h"
+#include "main/gametext_color_api.h"
+#include "main/gametext_show_api.h"
+#include "main/lightmap_render_control_api.h"
+#include "main/map_load.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
+#include "main/obj_group.h"
+#include "main/objseq_api.h"
 #include "main/pi_dolphin_api.h"
 #include "main/sky_api.h"
-#include "main/textrender_api.h"
-#include "main/gametext_color_api.h"
 #include "sys/objects.h"
 
 u8 gWmLevelControlSkyColorFrom[4] = {0x14, 0x20, 0x28, 0};
@@ -29,95 +36,57 @@ u8 gWmLevelControlLightColorTo[4] = {0xD2, 0xF1, 0xFF, 0};
 u8 gWmLevelControlFogColorFrom[4] = {0x4E, 0x64, 0x6A, 0};
 u8 gWmLevelControlFogColorTo[4] = {0x42, 0x56, 0x55, 0};
 
-/* per-object extra state (getExtraSize == 0x1C) */
-typedef struct WmLevelControlState
-{
-    f32 messageTimer; /* 0x00: intro-message frames left */
-    s16 unk04;        /* 0x04: -1 at map-event mode 4, else unset */
-    s16 unk06;        /* 0x06 */
-    s16 unk08;        /* 0x08: 700 at mode 7, else unset */
-    u8 unk0A;         /* 0x0A: 0x1E at mode 7, else unset */
-    u8 unk0B;         /* 0x0B: cleared at init, never read */
-    u8 pad0C[4];
-    SCGameBitLatchState latch; /* 0x10: music-trigger latches */
-    u8 latchesDisabled;        /* 0x14: set at mode 7; skips all latching */
-    u8 pad15[3];
-    u32 frameCounter; /* 0x18: frames since init */
-} WmLevelControlState;
+typedef struct {
+    Vec3f vectors[4];
+} WMLevelControlSkyVectorTable;
 
-STATIC_ASSERT(offsetof(WmLevelControlState, unk08) == 0x08);
-STATIC_ASSERT(offsetof(WmLevelControlState, latch) == 0x10);
-STATIC_ASSERT(offsetof(WmLevelControlState, latchesDisabled) == 0x14);
-STATIC_ASSERT(offsetof(WmLevelControlState, frameCounter) == 0x18);
-STATIC_ASSERT(sizeof(WmLevelControlState) == 0x1C);
+STATIC_ASSERT(sizeof(WMLevelControlSkyVectorTable) == 0x30);
 
-typedef struct
-{
-    Vec3f vecs[4];
-} WmLevelControlSkyVecTable;
-
-STATIC_ASSERT(sizeof(WmLevelControlSkyVecTable) == 0x30);
-
-#define WMLEVELCONTROL_OBJGROUP 9
+#define WM_LEVEL_CONTROL_OBJ_GROUP 9
 
 /* LightFoot Village map-event id (seeded from the palace spirit chain). */
-#define WMLEVELCONTROL_MAP_LIGHTFOOT 0xe
-const WmLevelControlSkyVecTable gWmLevelControlSkyVecTable = {{
-    {-1.0f, -2.0f, -1.0f},
-    {1.0f, -2.0f, 1.0f},
-    {1.0f, -2.0f, 1.0f},
-    {1.0f, -0.25f, 1.0f}
-}}; /* sky light/color/fog vector table */
-u8 gWmLevelControlBlendedLightColor[4];    /* blended light-color out-triplet */
-u8 gWmLevelControlBlendedSkyColor[4];      /* blended sky-color out-triplet */
-u8 gWmLevelControlBlendedFogColor[4];      /* blended fog-color out-triplet */
-u8 gWmLevelControlBlendedLightIntensity;   /* blended light-intensity byte */
-f32 gWmLevelControlBlendFactor;            /* current blend factor */
-f32 gWmLevelControlBlendHold;              /* restore-blend hold flag */
+#define WM_LEVEL_CONTROL_MAP_LIGHTFOOT 0xE
 
-int WM_LevelControl_getExtraSize(void);
-int WM_LevelControl_getObjectTypeId(void);
-void WM_LevelControl_free(int obj);
-void WM_LevelControl_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
-void WM_LevelControl_hitDetect(void);
-void WM_LevelControl_update(GameObject* obj);
-void WM_LevelControl_init(GameObject* obj);
-void WM_LevelControl_release(void);
-void WM_LevelControl_initialise(void);
+/* Sky light, color, and fog direction vectors. */
+const WMLevelControlSkyVectorTable gWmLevelControlSkyVecTable = {
+    {{-1.0f, -2.0f, -1.0f}, {1.0f, -2.0f, 1.0f}, {1.0f, -2.0f, 1.0f}, {1.0f, -0.25f, 1.0f}}};
+u8 gWmLevelControlBlendedLightColor[4];  /* Blended light-color RGB output. */
+u8 gWmLevelControlBlendedSkyColor[4];    /* Blended sky-color RGB output. */
+u8 gWmLevelControlBlendedFogColor[4];    /* Blended fog-color RGB output. */
+u8 gWmLevelControlBlendedLightIntensity; /* Blended light-intensity byte. */
+f32 gWmLevelControlBlendFactor;          /* Current blend factor. */
+f32 gWmLevelControlBlendHold;            /* Restore-blend hold value. */
 
 ObjectDescriptor gWM_LevelControlObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)WM_LevelControl_initialise,
-    (ObjectDescriptorCallback)WM_LevelControl_release,
+    WM_LevelControl_initialise,
+    WM_LevelControl_release,
     0,
     (ObjectDescriptorCallback)WM_LevelControl_init,
     (ObjectDescriptorCallback)WM_LevelControl_update,
-    (ObjectDescriptorCallback)WM_LevelControl_hitDetect,
+    WM_LevelControl_hitDetect,
     (ObjectDescriptorCallback)WM_LevelControl_render,
     (ObjectDescriptorCallback)WM_LevelControl_free,
     (ObjectDescriptorCallback)WM_LevelControl_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)WM_LevelControl_getExtraSize,
+    WM_LevelControl_getExtraSize,
 };
 
-static void WmLevelControl_holdBlendWhileRestoring(void)
-{
-    if (lightningGetRemainingFraction() > 0.0f)
-    {
+static void WmLevelControl_holdBlendWhileRestoring(void) {
+    if (lightningGetRemainingFraction() > 0.0f) {
         gWmLevelControlBlendHold = 1.0f;
         gWmLevelControlBlendFactor = 1.0f;
     }
 }
 
-const f32 gWmLevelControlBlendDecayPerTick[1] = { 0.02f };
-const f32 gWmLevelControlLightIntensityBase[1] = { 32.0f };
-const f32 gWmLevelControlLightIntensityRange[1] = { 128.0f };
-const f32 gWmLevelControlOverrideLightIntensity[1] = { 100.0f };
+const f32 gWmLevelControlBlendDecayPerTick[1] = {0.02f};
+const f32 gWmLevelControlLightIntensityBase[1] = {32.0f};
+const f32 gWmLevelControlLightIntensityRange[1] = {128.0f};
+const f32 gWmLevelControlOverrideLightIntensity[1] = {100.0f};
 
-static void WmLevelControl_blendColor(u8* output, const u8* from, const u8* to)
-{
+static void WmLevelControl_blendColor(u8* output, const u8* from, const u8* to) {
     {
         int red = from[0];
         output[0] = (u8)(red + gWmLevelControlBlendFactor * (to[0] - red));
@@ -132,29 +101,26 @@ static void WmLevelControl_blendColor(u8* output, const u8* from, const u8* to)
     }
 }
 
-void WM_LevelControl_updateSkyLighting(GameObject* obj)
-{
-    Vec3f auxDir;
-    Vec3f fromDir;
-    Vec3f toDir;
+void WM_LevelControl_updateSkyLighting(GameObject* obj) {
+    Vec3f auxiliaryDirection;
+    Vec3f fromDirection;
+    Vec3f toDirection;
     f32 newBlend;
-    const Vec3f* dirTable;
+    const Vec3f* directionTable;
     u8 skyColorActive;
 
-    dirTable = gWmLevelControlSkyVecTable.vecs;
-    auxDir = dirTable[1];
-    fromDir = dirTable[2];
-    toDir = dirTable[3];
+    directionTable = gWmLevelControlSkyVecTable.vectors;
+    auxiliaryDirection = directionTable[1];
+    fromDirection = directionTable[2];
+    toDirection = directionTable[3];
 
-    if (mapEventGetMapAct(obj->anim.mapEventSlot) == 7)
-    {
+    if (mapEventGetMapAct(obj->anim.mapEventSlot) == 7) {
         return;
     }
 
     setDrawLights(0);
     skyColorActive = skyGetSlotFlag80(0);
-    if (skyColorActive != 0)
-    {
+    if (skyColorActive != 0) {
         skySetOverrideLightColorEnabled(0);
         skySetOverrideLightDirectionEnabled(0);
         skyFn_80089710(7, 0, 1);
@@ -162,148 +128,130 @@ void WM_LevelControl_updateSkyLighting(GameObject* obj)
     }
 
     skySetOverrideLightColorEnabled(1);
-    skySetOverrideLightColor(0x88, 0xb7, 0xba);
-    if ((obj->userData1 & 4) == 0)
-    {
+    skySetOverrideLightColor(0x88, 0xB7, 0xBA);
+    if ((obj->userData1 & 4) == 0) {
         skyFn_80089710(1, 1, 0);
         obj->userData1 |= 4;
-    }
-    else
-    {
+    } else {
         skyFn_80089710(1, 1, 1);
     }
 
-    /* hold the blend at full while spirit-restore progress is running,
-       then decay it toward 0. */
+    /*
+     * Hold the blend at full while spirit-restore progress is running, then
+     * decay it toward 0.
+     */
     WmLevelControl_holdBlendWhileRestoring();
     newBlend = -(gWmLevelControlBlendDecayPerTick[0] * timeDelta - gWmLevelControlBlendFactor);
     gWmLevelControlBlendFactor = newBlend;
-    if (newBlend < 0.0f)
-    {
+    if (newBlend < 0.0f) {
         gWmLevelControlBlendFactor = 0.0f;
     }
 
-    /* blend each color channel source->target by the blend factor. */
+    /* Blend each color channel from source to target by the blend factor. */
     WmLevelControl_blendColor(gWmLevelControlBlendedLightColor, gWmLevelControlLightColorFrom,
                               gWmLevelControlLightColorTo);
     skySetBaseColor(1, gWmLevelControlBlendedLightColor[0], gWmLevelControlBlendedLightColor[1],
                     gWmLevelControlBlendedLightColor[2], 0x40, 0x40);
 
-    WmLevelControl_blendColor(gWmLevelControlBlendedSkyColor, gWmLevelControlSkyColorFrom,
-                              gWmLevelControlSkyColorTo);
+    WmLevelControl_blendColor(gWmLevelControlBlendedSkyColor, gWmLevelControlSkyColorFrom, gWmLevelControlSkyColorTo);
     skySetLightColor(1, gWmLevelControlBlendedSkyColor[0], gWmLevelControlBlendedSkyColor[1],
                      gWmLevelControlBlendedSkyColor[2]);
 
-    WmLevelControl_blendColor(gWmLevelControlBlendedFogColor, gWmLevelControlFogColorFrom,
-                              gWmLevelControlFogColorTo);
+    WmLevelControl_blendColor(gWmLevelControlBlendedFogColor, gWmLevelControlFogColorFrom, gWmLevelControlFogColorTo);
     skySetAmbientColor(1, gWmLevelControlBlendedFogColor[0], gWmLevelControlBlendedFogColor[1],
                        gWmLevelControlBlendedFogColor[2]);
 
     gWmLevelControlBlendedLightIntensity =
-        gWmLevelControlBlendFactor * gWmLevelControlLightIntensityRange[0] +
-        gWmLevelControlLightIntensityBase[0];
+        gWmLevelControlBlendFactor * gWmLevelControlLightIntensityRange[0] + gWmLevelControlLightIntensityBase[0];
     skySetOverrideLightDirectionEnabled(1);
-    skySetOverrideLightDirection(gWmLevelControlBlendFactor * (toDir.x - fromDir.x) + fromDir.x,
-                                  gWmLevelControlBlendFactor * (toDir.y - fromDir.y) + fromDir.y,
-                                  gWmLevelControlBlendFactor * (toDir.z - fromDir.z) + fromDir.z,
-                                  gWmLevelControlOverrideLightIntensity[0]);
-    skySetLightDirection(1, auxDir.x, auxDir.y, auxDir.z);
+    skySetOverrideLightDirection(gWmLevelControlBlendFactor * (toDirection.x - fromDirection.x) + fromDirection.x,
+                                 gWmLevelControlBlendFactor * (toDirection.y - fromDirection.y) + fromDirection.y,
+                                 gWmLevelControlBlendFactor * (toDirection.z - fromDirection.z) + fromDirection.z,
+                                 gWmLevelControlOverrideLightIntensity[0]);
+    skySetLightDirection(1, auxiliaryDirection.x, auxiliaryDirection.y, auxiliaryDirection.z);
 }
 
-
-int WM_LevelControl_getExtraSize(void)
-{
-    return sizeof(WmLevelControlState);
-}
-int WM_LevelControl_getObjectTypeId(void)
-{
-    return 0x0;
+int WM_LevelControl_getExtraSize(void) {
+    return sizeof(WMLevelControlState);
 }
 
-void WM_LevelControl_free(int obj)
-{
-    ObjGroup_RemoveObject((u32)obj, WMLEVELCONTROL_OBJGROUP);
+int WM_LevelControl_getObjectTypeId(void) {
+    return 0;
+}
+
+void WM_LevelControl_free(GameObject* obj) {
+    ObjGroup_RemoveObject((u32)obj, WM_LEVEL_CONTROL_OBJ_GROUP);
     Music_Trigger(MUSICTRIG_drako_3, 0);
     mainSetBits(GAMEBIT_WMRelated0A7F, 0);
     mainSetBits(GAMEBIT_KrazTest1Related0372, 1);
     mainSetBits(GAMEBIT_KrazTest1Related0390, 1);
 }
 
-void WM_LevelControl_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+void WM_LevelControl_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                            s8 visible) {
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void WM_LevelControl_hitDetect(void)
-{
+void WM_LevelControl_hitDetect(void) {
 }
 
-void WM_LevelControl_update(GameObject* obj)
-{
-    u32 mode6;
-    int loadingDone;
-    WmLevelControlState* state;
-    float timer;
+void WM_LevelControl_update(GameObject* obj) {
+    u32 condition;
+    int sequenceId;
+    WMLevelControlState* state;
+    f32 timer;
 
-    Obj_GetPlayerObject(); /* result unused (retail does the same call) */
-    state = (obj)->extra;
+    Obj_GetPlayerObject(); /* Retail discards this result. */
+    state = obj->extra;
     timer = state->messageTimer;
-    if (timer > 0.0f)
-    {
-        gameTextSetColor(0xff, 0xff, 0xff, 0xff);
-        gameTextShow(0x42c);
-        state->messageTimer = state->messageTimer - timeDelta;
+    if (timer > 0.0f) {
+        gameTextSetColor(0xFF, 0xFF, 0xFF, 0xFF);
+        gameTextShow(0x42C);
+        state->messageTimer -= timeDelta;
         timer = state->messageTimer;
-        if (timer < 0.0f)
-        {
+        if (timer < 0.0f) {
             state->messageTimer = 0.0f;
         }
     }
-    if (state->latchesDisabled == 0)
-    {
-        mode6 = (*gMapEventInterface)->getMapAct((int)(obj)->anim.mapEventSlot);
-        mode6 = __cntlzw(6 - (mode6 & 0xff));
-        mode6 = mode6 >> 5;
-        if ((((int)mode6 == 0) || (loadingDone = getCurSeqNo(), loadingDone == 0)) ||
-            (mode6 = mainGetBit(GAMEBIT_WMRelated0A7F), mode6 == 0))
-        {
-            SCGameBitLatch_UpdateInverted(&state->latch, 0x10, -1, -1, 0xa7f, 0xa6);
-            SCGameBitLatch_Update(&state->latch, 2, -1, -1, 0xa7f, 0xa8);
+    if (state->musicLatchesDisabled == 0) {
+        condition = (*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
+        condition = __cntlzw(6 - (condition & 0xFF));
+        condition >>= 5;
+        if ((((int)condition == 0) || (sequenceId = getCurSeqNo(), sequenceId == 0)) ||
+            (condition = mainGetBit(GAMEBIT_WMRelated0A7F), condition == 0)) {
+            SCGameBitLatch_UpdateInverted(&state->musicLatch, 0x10, -1, -1, 0xA7F, 0xA6);
+            SCGameBitLatch_Update(&state->musicLatch, 2, -1, -1, 0xA7F, 0xA8);
         }
-        if (0x3c < state->frameCounter)
-        {
-            SCGameBitLatch_Update(&state->latch, 1, -1, -1, 0xada, 0xac);
+        if (0x3C < state->frameCounter) {
+            SCGameBitLatch_Update(&state->musicLatch, 1, -1, -1, 0xADA, 0xAC);
         }
-        SCGameBitLatch_Update(&state->latch, 0x20, -1, -1, 0xcbb, 0xc4);
+        SCGameBitLatch_Update(&state->musicLatch, 0x20, -1, -1, 0xCBB, 0xC4);
     }
     WM_LevelControl_updateSkyLighting(obj);
-    state->frameCounter = state->frameCounter + 1;
-    return;
+    state->frameCounter++;
 }
 
-void WM_LevelControl_init(GameObject* obj)
-{
+void WM_LevelControl_init(GameObject* obj) {
     extern const f32 gWmLevelControlIntroMessageDuration;
-    WmLevelControlState* state;
+    WMLevelControlState* state;
     u8 mode;
 
-    ObjGroup_AddObject((u32)obj, WMLEVELCONTROL_OBJGROUP);
-    unlockLevel(mapGetDirIdx(0xb), 0, 0);
+    ObjGroup_AddObject((u32)obj, WM_LEVEL_CONTROL_OBJ_GROUP);
+    unlockLevel(mapGetDirIdx(0xB), 0, 0);
     state = obj->extra;
-    state->unk0B = 0;
-    state->unk06 = 0x1e;
+    state->unknown0B = 0;
+    state->unknown06 = 0x1E;
     state->messageTimer = gWmLevelControlIntroMessageDuration;
-    state->latch.activeMask = 0;
-    lockLevel(0xf, 0);
+    state->musicLatch.activeMask = 0;
+    lockLevel(0xF, 0);
     /* The 0xD1B..0xD1F chain tracks returned Krazoa spirits. */
     mode = (*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
-    switch (mode)
-    {
+    switch (mode) {
     case 1:
-        (*gMapEventInterface)->setMapAct(WMLEVELCONTROL_MAP_LIGHTFOOT, 1);
-        (*gMapEventInterface)->setObjGroupStatus(WMLEVELCONTROL_MAP_LIGHTFOOT, 0, 1);
+        (*gMapEventInterface)->setMapAct(WM_LEVEL_CONTROL_MAP_LIGHTFOOT, 1);
+        (*gMapEventInterface)->setObjGroupStatus(WM_LEVEL_CONTROL_MAP_LIGHTFOOT, 0, 1);
         break;
     case 2:
         mainSetBits(GAMEBIT_WMRelated0D1B, 1);
@@ -325,7 +273,7 @@ void WM_LevelControl_init(GameObject* obj)
         mainSetBits(GAMEBIT_WMRelated0A7F, 1);
         mainSetBits(GAMEBIT_WM_Warp3Enabled, 0);
         mainSetBits(GAMEBIT_WM_Warp4Enabled, 1);
-        state->unk04 = -1;
+        state->unknown04 = -1;
         break;
     case 5:
         mainSetBits(GAMEBIT_WMRelated0D1B, 1);
@@ -346,21 +294,18 @@ void WM_LevelControl_init(GameObject* obj)
         mainSetBits(GAMEBIT_WM_Warp4Enabled, 0);
         break;
     case 7:
-        state->unk08 = 700;
-        state->unk0A = 0x1e;
-        state->unk06 = state->unk0A;
-        state->latchesDisabled = 1;
+        state->unknown08 = 700;
+        state->unknown0A = 0x1E;
+        state->unknown06 = state->unknown0A;
+        state->musicLatchesDisabled = 1;
         break;
     }
 }
 
 const f32 gWmLevelControlIntroMessageDuration = 300.0f;
 
-void WM_LevelControl_release(void)
-{
+void WM_LevelControl_release(void) {
 }
 
-void WM_LevelControl_initialise(void)
-{
+void WM_LevelControl_initialise(void) {
 }
-
