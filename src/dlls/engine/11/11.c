@@ -1597,7 +1597,6 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
 {
     int base0;
     int total = 0;
-    int m;
     int off;
     int i = 0;
     int found = i;
@@ -1769,7 +1768,7 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
 
     {
         u8* dst = arr[slot]->auxSequenceBuffer;
-        for (m = 0, off = 0; m < arr[slot]->emitterCount; m++, off += 0x18)
+        for (i = 0, off = 0; i < arr[slot]->emitterCount; i++, off += 0x18)
         {
             ((ModgfxPendingSpawn*)((u8*)arr[slot]->emitterCommands + off))
                 ->sequenceIndex = ((ModgfxPendingSpawn*)((u8*)st->pendingSpawns + off))->sequenceIndex;
