@@ -2,9 +2,9 @@
 #include "musyx/synth_config.h"
 #include "musyx/synth_job_init.h"
 
-extern u8 streamCallCnt;
-extern u8 streamCallDelay;
-extern u32 lbl_803DE284;
+u32 lbl_803DE284;
+u8 streamCallDelay;
+u8 streamCallCnt;
 SynthJob streamInfo[64];
 
 void streamInit(void)

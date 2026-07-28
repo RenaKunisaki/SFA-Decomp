@@ -28,18 +28,18 @@
         }                                                                                                              \
     } while (0)
 
-extern u8 s3dCallCnt;
-extern Snd3DEmitter* s3dEmitterRoot;
-extern SndSpatialListener* s3dListenerRoot;
-extern SndSpatialEntry* s3dRoomRoot;
-extern SndStudioInputLink* s3dDoorRoot;
-extern u32 snd_used_studios;
-extern u8 snd_base_studio;
-extern u8 snd_max_studios;
-extern u8 lbl_803DE36A;
-extern u8 lbl_803DE36B;
-extern u8 lbl_803DE36C;
-extern u8 lbl_803DE36D;
+u8 lbl_803DE36D;
+u8 lbl_803DE36C;
+u8 lbl_803DE36B;
+u8 lbl_803DE36A;
+u8 snd_max_studios;
+u8 snd_base_studio;
+u32 snd_used_studios;
+SndStudioInputLink* s3dDoorRoot;
+SndSpatialEntry* s3dRoomRoot;
+SndSpatialListener* s3dListenerRoot;
+Snd3DEmitter* s3dEmitterRoot;
+u8 s3dCallCnt;
 
 void s3dHandle(void)
 {
