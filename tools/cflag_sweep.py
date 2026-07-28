@@ -69,24 +69,38 @@ def main() -> None:
     ap.add_argument("unit_suffix", help='report.json unit name suffix, e.g. worldplanet_lighting')
     ap.add_argument("-v", "--version", default="GSAE01")
     ap.add_argument("--obj", help="object path to force-rebuild (default: derived from object_key)")
+    ap.add_argument("--profile-prefix", default="cflags_dll",
+                    help="which configure.py cflag lists to sweep (default cflags_dll)")
     args = ap.parse_args()
 
     obj = args.obj or f"build/{args.version}/src/{args.object_key[:-2]}.o"
     conf = REPO / "configure.py"
     orig = conf.read_text(encoding="utf-8")
 
-    m = re.search(r'Object\((\w+), "' + re.escape(args.object_key) + r'", cflags=(\w+)\)', orig)
+    # The trailing group keeps any further Object() kwargs (mw_version=,
+    # extra_cflags=, **kwargs) attached.  Requiring a bare `cflags=NAME)` made
+    # this tool refuse every unit that carries one -- main/voxmaps.c among them
+    # -- so those units were never swept and their profiles were never evidence.
+    m = re.search(
+        r'Object\((\w+), "' + re.escape(args.object_key) + r'", cflags=(\w+)((?:, [^)]*)?)\)',
+        orig,
+    )
     if not m:
-        sys.exit(f"no simple `Object(<status>, \"{args.object_key}\", cflags=...)` line in configure.py")
-    status, current = m.group(1), m.group(2)
-    old_line = f'Object({status}, "{args.object_key}", cflags={current})'
-    profiles = sorted(set(re.findall(r"^(cflags_dll[a-z_0-9]*) =", orig, re.M)))
+        sys.exit(f"no `Object(<status>, \"{args.object_key}\", cflags=<name>...)` "
+                 f"line in configure.py (an inline cflags list cannot be swept)")
+    status, current, tail = m.group(1), m.group(2), m.group(3)
+    old_line = f'Object({status}, "{args.object_key}", cflags={current}{tail})'
+    profiles = sorted(set(
+        re.findall(rf"^({re.escape(args.profile_prefix)}[a-z_0-9]*) =", orig, re.M)))
+    if not profiles:
+        sys.exit(f"no profiles matching '{args.profile_prefix}*' in configure.py")
     print(f"unit={args.unit_suffix}  current={current}  profiles={len(profiles)}\n")
 
     results = []
     try:
         for prof in profiles:
-            write_conf(conf, orig.replace(old_line, f'Object({status}, "{args.object_key}", cflags={prof})'))
+            new_line = f'Object({status}, "{args.object_key}", cflags={prof}{tail})'
+            write_conf(conf, orig.replace(old_line, new_line))
             if run("python3 configure.py").returncode != 0:
                 print(f"{prof:<62} CONFIGURE-FAIL")
                 continue
