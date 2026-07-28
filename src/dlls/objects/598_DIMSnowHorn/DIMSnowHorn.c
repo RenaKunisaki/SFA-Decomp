@@ -902,7 +902,7 @@ int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateSta
     return (u32)(-(s8)animUpdate->sequenceEventActive | (s8)animUpdate->sequenceEventActive) >> 0x1f;
 }
 
-void DIMSnowHorn1_func22(GameObject* obj, f32 scale)
+void DIMSnowHorn1_handleRiderScale(GameObject* obj, f32 scale)
 {
     void* pathMtx;
     MatrixTransform transform;
@@ -928,7 +928,7 @@ void DIMSnowHorn1_func21(void)
 {
 }
 
-int DIMSnowHorn1_func20(void)
+int DIMSnowHorn1_getRacePosition(void)
 {
     return 0;
 }
@@ -947,25 +947,25 @@ f32 DIMSnowHorn1_func19(GameObject* obj, f32* out)
     return 0.0f;
 }
 
-void DIMSnowHorn1_func18(void* unused, f32* out_f, int* out_i)
+void DIMSnowHorn1_getPlayerAnim(void* unused, f32* out_f, int* out_i)
 {
     (void)unused;
     *out_f = 0.0f;
     *out_i = 0;
 }
 
-void DIMSnowHorn1_setMountMode(GameObject* obj, int value)
+void DIMSnowHorn1_setMountState(GameObject* obj, int value)
 {
     u8 mode = (u8)value;
     ((DIMSnowHorn1State*)obj->extra)->mountMode = mode;
 }
 
-int DIMSnowHorn1_func16(void)
+int DIMSnowHorn1_getMountState(void)
 {
     return 0;
 }
 
-void DIMSnowHorn1_func15(s16* packed, f32* outX, f32* outY, f32* outZ)
+void DIMSnowHorn1_getCameraPosition(s16* packed, f32* outX, f32* outY, f32* outZ)
 {
     MatrixTransform transform;
     f32 matrix[16];
@@ -981,7 +981,7 @@ void DIMSnowHorn1_func15(s16* packed, f32* outX, f32* outY, f32* outZ)
     Matrix_TransformPoint(matrix, 0.0f, 80.0f, -25.0f, outX, outY, outZ);
 }
 
-int DIMSnowHorn1_func14(GameObject* obj)
+int DIMSnowHorn1_getDismountSide(GameObject* obj)
 {
     if (((DIMSnowHorn1State*)obj->extra)->queryFlagA8F != 0)
     {
@@ -990,7 +990,7 @@ int DIMSnowHorn1_func14(GameObject* obj)
     return 1;
 }
 
-int DIMSnowHorn1_render2(GameObject* obj)
+int DIMSnowHorn1_canDismount(GameObject* obj)
 {
     DIMSnowHorn1State* state = obj->extra;
     if ((state->flags & SNOWHORN1_FLAG_RIDING) != 0)
@@ -1002,7 +1002,7 @@ int DIMSnowHorn1_render2(GameObject* obj)
     return 0;
 }
 
-void DIMSnowHorn1_modelMtxFn(GameObject* obj, f32* out_x, f32* out_y, f32* out_z)
+void DIMSnowHorn1_getRiderPosition(GameObject* obj, f32* out_x, f32* out_y, f32* out_z)
 {
     DIMSnowHorn1State* state = obj->extra;
     *out_x = state->pathPosX;
@@ -1010,7 +1010,7 @@ void DIMSnowHorn1_modelMtxFn(GameObject* obj, f32* out_x, f32* out_y, f32* out_z
     *out_z = state->pathPosZ;
 }
 
-int DIMSnowHorn1_func11(GameObject* obj)
+int DIMSnowHorn1_getMountSide(GameObject* obj)
 {
     if (((DIMSnowHorn1State*)obj->extra)->queryFlagA90 != 0)
     {
@@ -1019,7 +1019,7 @@ int DIMSnowHorn1_func11(GameObject* obj)
     return 2;
 }
 
-int DIMSnowHorn1_canUseDismountPoint(GameObject* obj)
+int DIMSnowHorn1_canMount(GameObject* obj)
 {
     DIMSnowHorn1State* state;
     f32 range;
@@ -1619,19 +1619,19 @@ ObjectDescriptor24 gDIMSnowHorn1ObjDescriptor = {
     (ObjectDescriptorCallback)DIMSnowHorn1_free,
     (ObjectDescriptorCallback)DIMSnowHorn1_getObjectTypeId,
     DIMSnowHorn1_getExtraSize,
-    (ObjectDescriptorCallback)DIMSnowHorn1_canUseDismountPoint,
-    (ObjectDescriptorCallback)DIMSnowHorn1_func11,
-    (ObjectDescriptorCallback)DIMSnowHorn1_modelMtxFn,
-    (ObjectDescriptorCallback)DIMSnowHorn1_render2,
-    (ObjectDescriptorCallback)DIMSnowHorn1_func14,
-    (ObjectDescriptorCallback)DIMSnowHorn1_func15,
-    (ObjectDescriptorCallback)DIMSnowHorn1_func16,
-    (ObjectDescriptorCallback)DIMSnowHorn1_setMountMode,
-    (ObjectDescriptorCallback)DIMSnowHorn1_func18,
+    (ObjectDescriptorCallback)DIMSnowHorn1_canMount,
+    (ObjectDescriptorCallback)DIMSnowHorn1_getMountSide,
+    (ObjectDescriptorCallback)DIMSnowHorn1_getRiderPosition,
+    (ObjectDescriptorCallback)DIMSnowHorn1_canDismount,
+    (ObjectDescriptorCallback)DIMSnowHorn1_getDismountSide,
+    (ObjectDescriptorCallback)DIMSnowHorn1_getCameraPosition,
+    (ObjectDescriptorCallback)DIMSnowHorn1_getMountState,
+    (ObjectDescriptorCallback)DIMSnowHorn1_setMountState,
+    (ObjectDescriptorCallback)DIMSnowHorn1_getPlayerAnim,
     (ObjectDescriptorCallback)DIMSnowHorn1_func19,
-    (ObjectDescriptorCallback)DIMSnowHorn1_func20,
+    (ObjectDescriptorCallback)DIMSnowHorn1_getRacePosition,
     (ObjectDescriptorCallback)DIMSnowHorn1_func21,
-    (ObjectDescriptorCallback)DIMSnowHorn1_func22,
+    (ObjectDescriptorCallback)DIMSnowHorn1_handleRiderScale,
     (ObjectDescriptorCallback)DIMSnowHorn1_func23,
 };
 

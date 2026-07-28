@@ -923,7 +923,7 @@ int DR_EarthWarrior_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animU
     return 0;
 }
 
-void DR_EarthWarrior_func22(GameObject* obj, f32 scale)
+void DR_EarthWarrior_handleRiderScale(GameObject* obj, f32 scale)
 {
     MatrixTransform v;
     f32 lp0, lp1, lp2;
@@ -945,7 +945,7 @@ void DR_EarthWarrior_resetToRomListPosition(void)
 {
 }
 
-int DR_EarthWarrior_func20(void)
+int DR_EarthWarrior_getRacePosition(void)
 {
     return 0x0;
 }
@@ -959,14 +959,14 @@ f32 DR_EarthWarrior_func19(GameObject* obj, f32* out)
     return 0.0f;
 }
 
-void DR_EarthWarrior_getAimAngles(GameObject* obj, f32* a, int* b)
+void DR_EarthWarrior_getPlayerAnim(GameObject* obj, f32* a, int* b)
 {
     EarthWarriorState* inner = obj->extra;
     *a = (f32)(s32)inner->sub.aimAccumY;
     *b = inner->sub.aimAccumX;
 }
 
-void DR_EarthWarrior_setRiderMode(GameObject* obj, int param)
+void DR_EarthWarrior_setMountState(GameObject* obj, int param)
 {
     EarthWarriorState* inner = obj->extra;
     inner->sub.rideState = param;
@@ -991,19 +991,19 @@ void DR_EarthWarrior_setRiderMode(GameObject* obj, int param)
     }
 }
 
-int DR_EarthWarrior_getRiderMode(void)
+int DR_EarthWarrior_getMountState(void)
 {
     return 0x0;
 }
 
-void DR_EarthWarrior_mount(GameObject* obj, f32* x, f32* y, f32* z)
+void DR_EarthWarrior_getCameraPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
     *x = obj->anim.localPosX;
     *y = obj->anim.localPosY;
     *z = obj->anim.localPosZ;
 }
 
-int DR_EarthWarrior_func14(GameObject* obj)
+int DR_EarthWarrior_getDismountSide(GameObject* obj)
 {
     EarthWarriorState* inner = obj->extra;
     if (inner->sub.unk992 != 0)
@@ -1013,12 +1013,12 @@ int DR_EarthWarrior_func14(GameObject* obj)
     return 1;
 }
 
-int DR_EarthWarrior_render2(void)
+int DR_EarthWarrior_canDismount(void)
 {
     return 0x0;
 }
 
-void DR_EarthWarrior_modelMtxFn(GameObject* obj, f32* x, f32* y, f32* z)
+void DR_EarthWarrior_getRiderPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
     EarthWarriorState* inner = obj->extra;
     *x = inner->sub.posX;
@@ -1026,7 +1026,7 @@ void DR_EarthWarrior_modelMtxFn(GameObject* obj, f32* x, f32* y, f32* z)
     *z = inner->sub.posZ;
 }
 
-int DR_EarthWarrior_func11(GameObject* obj)
+int DR_EarthWarrior_getMountSide(GameObject* obj)
 {
     EarthWarriorState* inner = obj->extra;
     if (inner->sub.unk993 != 0)
@@ -1036,7 +1036,7 @@ int DR_EarthWarrior_func11(GameObject* obj)
     return 2;
 }
 
-int DR_EarthWarrior_canUseDismountPoint(void)
+int DR_EarthWarrior_canMount(void)
 {
     return 0x0;
 }
@@ -1552,19 +1552,19 @@ ObjectDescriptor24WithPadding gDR_EarthWarriorObjDescriptor = {
         (ObjectDescriptorCallback)DR_EarthWarrior_free,
         (ObjectDescriptorCallback)DR_EarthWarrior_getObjectTypeId,
         (ObjectDescriptorExtraSizeCallback)DR_EarthWarrior_getExtraSize,
-        (ObjectDescriptorCallback)DR_EarthWarrior_canUseDismountPoint,
-        (ObjectDescriptorCallback)DR_EarthWarrior_func11,
-        (ObjectDescriptorCallback)DR_EarthWarrior_modelMtxFn,
-        (ObjectDescriptorCallback)DR_EarthWarrior_render2,
-        (ObjectDescriptorCallback)DR_EarthWarrior_func14,
-        (ObjectDescriptorCallback)DR_EarthWarrior_mount,
-        (ObjectDescriptorCallback)DR_EarthWarrior_getRiderMode,
-        (ObjectDescriptorCallback)DR_EarthWarrior_setRiderMode,
-        (ObjectDescriptorCallback)DR_EarthWarrior_getAimAngles,
+        (ObjectDescriptorCallback)DR_EarthWarrior_canMount,
+        (ObjectDescriptorCallback)DR_EarthWarrior_getMountSide,
+        (ObjectDescriptorCallback)DR_EarthWarrior_getRiderPosition,
+        (ObjectDescriptorCallback)DR_EarthWarrior_canDismount,
+        (ObjectDescriptorCallback)DR_EarthWarrior_getDismountSide,
+        (ObjectDescriptorCallback)DR_EarthWarrior_getCameraPosition,
+        (ObjectDescriptorCallback)DR_EarthWarrior_getMountState,
+        (ObjectDescriptorCallback)DR_EarthWarrior_setMountState,
+        (ObjectDescriptorCallback)DR_EarthWarrior_getPlayerAnim,
         (ObjectDescriptorCallback)DR_EarthWarrior_func19,
-        (ObjectDescriptorCallback)DR_EarthWarrior_func20,
+        (ObjectDescriptorCallback)DR_EarthWarrior_getRacePosition,
         (ObjectDescriptorCallback)DR_EarthWarrior_resetToRomListPosition,
-        (ObjectDescriptorCallback)DR_EarthWarrior_func22,
+        (ObjectDescriptorCallback)DR_EarthWarrior_handleRiderScale,
         (ObjectDescriptorCallback)DR_EarthWarrior_func23,
     },
     0,

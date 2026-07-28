@@ -2060,7 +2060,7 @@ void SnowBike_resetToRomListPosition(GameObject* obj)
     }
 }
 
-s32 SnowBike_func14(GameObject* obj)
+s32 SnowBike_getRacePosition(GameObject* obj)
 {
     return ((SnowBikeState*)obj->extra)->routeRank;
 }
@@ -2081,7 +2081,7 @@ f32 SnowBike_func13(GameObject* obj, f32* out)
     return speed;
 }
 
-void SnowBike_func12(GameObject* obj, f32* outFloat, s32* outBool)
+void SnowBike_getPlayerAnim(GameObject* obj, f32* outFloat, s32* outBool)
 {
     int state = *(int*)&obj->extra;
     f32 value, r;
@@ -2091,7 +2091,7 @@ void SnowBike_func12(GameObject* obj, f32* outFloat, s32* outBool)
     *outBool = ((SnowBikeMountState*)state)->unk414 < 0.0f;
 }
 
-void SnowBike_setRiderMode(GameObject* obj, int type)
+void SnowBike_setMountState(GameObject* obj, int type)
 {
     int state = *(int*)&obj->extra;
     u32 bit;
@@ -2121,12 +2121,12 @@ void SnowBike_setRiderMode(GameObject* obj, int type)
     }
 }
 
-s32 SnowBike_getRiderMode(GameObject* obj)
+s32 SnowBike_getMountState(GameObject* obj)
 {
     return ((SnowBikeState*)obj->extra)->riderMode;
 }
 
-void SnowBike_mount(GameObject* obj, f32* x, f32* y, f32* z)
+void SnowBike_getCameraPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
     int state = *(int*)&obj->extra;
     ((SnowBikeMountState*)state)->mountPosX = obj->anim.localPosX;
@@ -2137,17 +2137,17 @@ void SnowBike_mount(GameObject* obj, f32* x, f32* y, f32* z)
     *z = ((SnowBikeMountState*)state)->mountPosZ;
 }
 
-int SnowBike_func0E(void)
+int SnowBike_getDismountSide(void)
 {
     return 0x2;
 }
 
-int SnowBike_render2(void)
+int SnowBike_canDismount(void)
 {
     return 0x0;
 }
 
-void SnowBike_modelMtxFn(GameObject* obj, f32* x, f32* y, f32* z)
+void SnowBike_getRiderPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
     int state = *(int*)&obj->extra;
     *x = ((SnowBikeMountState*)state)->modelMtxPosX;
@@ -2155,12 +2155,12 @@ void SnowBike_modelMtxFn(GameObject* obj, f32* x, f32* y, f32* z)
     *z = ((SnowBikeMountState*)state)->modelMtxPosZ;
 }
 
-u8 SnowBike_func0B(GameObject* obj)
+u8 SnowBike_getMountSide(GameObject* obj)
 {
     return ((SnowBikeState*)obj->extra)->playerInRange;
 }
 
-u32 SnowBike_canUseDismountPoint(GameObject* obj)
+u32 SnowBike_canMount(GameObject* obj)
 {
     int state = *(int*)&obj->extra;
     u32 bit = (((SnowBikeMountState*)state)->flags >> 1) & 1;
@@ -2819,17 +2819,17 @@ ObjectDescriptor24 gSnowBikeObjDescriptor = {
     (ObjectDescriptorCallback)SnowBike_free,
     (ObjectDescriptorCallback)SnowBike_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)SnowBike_getExtraSize,
-    (ObjectDescriptorCallback)SnowBike_canUseDismountPoint,
-    (ObjectDescriptorCallback)SnowBike_func0B,
-    (ObjectDescriptorCallback)SnowBike_modelMtxFn,
-    (ObjectDescriptorCallback)SnowBike_render2,
-    (ObjectDescriptorCallback)SnowBike_func0E,
-    (ObjectDescriptorCallback)SnowBike_mount,
-    (ObjectDescriptorCallback)SnowBike_getRiderMode,
-    (ObjectDescriptorCallback)SnowBike_setRiderMode,
-    (ObjectDescriptorCallback)SnowBike_func12,
+    (ObjectDescriptorCallback)SnowBike_canMount,
+    (ObjectDescriptorCallback)SnowBike_getMountSide,
+    (ObjectDescriptorCallback)SnowBike_getRiderPosition,
+    (ObjectDescriptorCallback)SnowBike_canDismount,
+    (ObjectDescriptorCallback)SnowBike_getDismountSide,
+    (ObjectDescriptorCallback)SnowBike_getCameraPosition,
+    (ObjectDescriptorCallback)SnowBike_getMountState,
+    (ObjectDescriptorCallback)SnowBike_setMountState,
+    (ObjectDescriptorCallback)SnowBike_getPlayerAnim,
     (ObjectDescriptorCallback)SnowBike_func13,
-    (ObjectDescriptorCallback)SnowBike_func14,
+    (ObjectDescriptorCallback)SnowBike_getRacePosition,
     (ObjectDescriptorCallback)SnowBike_resetToRomListPosition,
     (ObjectDescriptorCallback)SnowBike_func16,
     (ObjectDescriptorCallback)SnowBike_func17,

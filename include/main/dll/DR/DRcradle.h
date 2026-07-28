@@ -9,12 +9,12 @@ extern ObjectDescriptor24 gSnowBikeObjDescriptor;
 
 void SnowBike_func17(void);
 void SnowBike_func16(void);
-int SnowBike_func0E(void);
-int SnowBike_render2(void);
+int SnowBike_getDismountSide(void);
+int SnowBike_canDismount(void);
 int SnowBike_getExtraSize(void);
 int SnowBike_getObjectTypeId(void);
-u8 SnowBike_func0B(GameObject *obj);
-s32 SnowBike_func14(GameObject *obj);
-s32 SnowBike_getRiderMode(GameObject *obj);
+u8 SnowBike_getMountSide(GameObject *obj);
+s32 SnowBike_getRacePosition(GameObject *obj);
+s32 SnowBike_getMountState(GameObject *obj);
 
 #endif /* MAIN_DLL_DR_DRCRADLE_H_ */

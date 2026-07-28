@@ -83,7 +83,7 @@ typedef struct SnowBikeState {
     u8 pad414[0x8];
     s16 savedRotY;             /* 0x41c: saved anim.rotY (restored after temp halo modify) */
     s16 savedRotZ;             /* 0x41e: saved anim.rotZ (restored after temp halo modify) */
-    u8 playerInRange;       /* 0x420: 1 while the mount hitbox reports INTERACT_FLAG_IN_RANGE, else 0; forced 0 once GAMEBIT_DIM_CrossedBlizzard is set; returned by the SnowBike_func0B vtable getter */
+    u8 playerInRange;       /* 0x420: 1 while the mount hitbox reports INTERACT_FLAG_IN_RANGE, else 0; forced 0 once GAMEBIT_DIM_CrossedBlizzard is set; returned by the SnowBike_getMountSide vtable getter */
     s8 riderMode;              /* 0x421: rider mode */
     s8 routeRank;           /* 0x422: current checkpoint-route rank */
     u8 pad423;

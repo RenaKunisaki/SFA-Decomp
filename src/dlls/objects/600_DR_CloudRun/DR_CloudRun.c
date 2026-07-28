@@ -958,7 +958,7 @@ void DR_CloudRunner_func21(void)
 {
 }
 
-int DR_CloudRunner_func20(void)
+int DR_CloudRunner_getRacePosition(void)
 {
     return 0x0;
 }
@@ -969,7 +969,7 @@ f32 DR_CloudRunner_func19(int obj, f32* out)
     return 0.0f;
 }
 
-void DR_CloudRunner_func18(int obj, f32* a, int* b)
+void DR_CloudRunner_getPlayerAnim(int obj, f32* a, int* b)
 {
     *a = 0.0f;
     *b = 0;
@@ -1003,12 +1003,12 @@ void DR_CloudRunner_setFlightState(GameObject* obj, int param)
     }
 }
 
-int DR_CloudRunner_func16(void)
+int DR_CloudRunner_getMountState(void)
 {
     return 0x0;
 }
 
-void DR_CloudRunner_func15(int obj, f32* a, f32* b, f32* c)
+void DR_CloudRunner_getCameraPosition(int obj, f32* a, f32* b, f32* c)
 {
     MatrixTransform v;
     f32 matrix[16];
@@ -1028,7 +1028,7 @@ void DR_CloudRunner_func15(int obj, f32* a, f32* b, f32* c)
     Matrix_TransformPoint(matrix, 0.0f, lbl_803DC78C, lbl_803DC790, a, b, c);
 }
 
-int DR_CloudRunner_func14(GameObject* obj)
+int DR_CloudRunner_getDismountSide(GameObject* obj)
 {
     CloudRunnerState* inner = obj->extra;
     if (inner->unkBB7 != 0)
@@ -1038,18 +1038,18 @@ int DR_CloudRunner_func14(GameObject* obj)
     return 1;
 }
 
-int DR_CloudRunner_render2(void)
+int DR_CloudRunner_canDismount(void)
 {
     return 0x0;
 }
 
-void DR_CloudRunner_modelMtxFn(GameObject* obj, f32* x, f32* y, f32* z)
+void DR_CloudRunner_getRiderPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
     ObjPath_GetPointWorldPosition(obj, 2, x, y, z, 0);
 }
 
 
-int DR_CloudRunner_func11(GameObject* obj)
+int DR_CloudRunner_getMountSide(GameObject* obj)
 {
     CloudRunnerState* inner = obj->extra;
     if (inner->unkBB8 != 0)
@@ -1059,7 +1059,7 @@ int DR_CloudRunner_func11(GameObject* obj)
     return 2;
 }
 
-int DR_CloudRunner_canUseDismountPoint(void)
+int DR_CloudRunner_canMount(void)
 {
     return 0x0;
 }
@@ -1357,17 +1357,17 @@ ObjectDescriptor24 gDR_CloudRunnerObjDescriptor = {
     (ObjectDescriptorCallback)DR_CloudRunner_free,
     (ObjectDescriptorCallback)DR_CloudRunner_getObjectTypeId,
     DR_CloudRunner_getExtraSize,
-    (ObjectDescriptorCallback)DR_CloudRunner_canUseDismountPoint,
-    (ObjectDescriptorCallback)DR_CloudRunner_func11,
-    (ObjectDescriptorCallback)DR_CloudRunner_modelMtxFn,
-    (ObjectDescriptorCallback)DR_CloudRunner_render2,
-    (ObjectDescriptorCallback)DR_CloudRunner_func14,
-    (ObjectDescriptorCallback)DR_CloudRunner_func15,
-    (ObjectDescriptorCallback)DR_CloudRunner_func16,
+    (ObjectDescriptorCallback)DR_CloudRunner_canMount,
+    (ObjectDescriptorCallback)DR_CloudRunner_getMountSide,
+    (ObjectDescriptorCallback)DR_CloudRunner_getRiderPosition,
+    (ObjectDescriptorCallback)DR_CloudRunner_canDismount,
+    (ObjectDescriptorCallback)DR_CloudRunner_getDismountSide,
+    (ObjectDescriptorCallback)DR_CloudRunner_getCameraPosition,
+    (ObjectDescriptorCallback)DR_CloudRunner_getMountState,
     (ObjectDescriptorCallback)DR_CloudRunner_setFlightState,
-    (ObjectDescriptorCallback)DR_CloudRunner_func18,
+    (ObjectDescriptorCallback)DR_CloudRunner_getPlayerAnim,
     (ObjectDescriptorCallback)DR_CloudRunner_func19,
-    (ObjectDescriptorCallback)DR_CloudRunner_func20,
+    (ObjectDescriptorCallback)DR_CloudRunner_getRacePosition,
     (ObjectDescriptorCallback)DR_CloudRunner_func21,
     (ObjectDescriptorCallback)DR_CloudRunner_setGroundMarkerMatrix,
     (ObjectDescriptorCallback)DR_CloudRunner_func23,

@@ -52,8 +52,8 @@ typedef struct DIMSnowHorn1State
     u8 mode;
     u8 triggerMode;
     u8 flags; /* 0xA8E: bit0x2 riding (GAMEBIT_SNOWHORN_RIDING), bit0x8 hitvol-priority, bit0x20 sequence-triggered */
-    u8 queryFlagA8F;   /* 0xA8F: nonzero queried by DIMSnowHorn1_func14 (set cross-DLL) */
-    u8 queryFlagA90;   /* 0xA90: nonzero queried by DIMSnowHorn1_func11 (set cross-DLL) */
+    u8 queryFlagA8F;   /* 0xA8F: nonzero queried by DIMSnowHorn1_getDismountSide (set cross-DLL) */
+    u8 queryFlagA90;   /* 0xA90: nonzero queried by DIMSnowHorn1_getMountSide (set cross-DLL) */
     u8 proximityPhase; /* 0xA91: 0/1/2 phase toggling linked objects by player distance (stateHandler05) */
     u8 padA92[0xD00 - 0xA92];
     u8 hitReactState; /* 0xD00: ObjHitReact_Update persistent state (in/out), gates characterHeadLookRelax */
@@ -91,19 +91,19 @@ int DIMSnowHorn1_stateHandler06(GameObject* obj, int state);
 int DIMSnowHorn1_stateHandler05(GameObject* obj, int state);
 int DIMSnowHorn1_stateHandler0A(GameObject* obj, int state, f32 t);
 void DIMSnowHorn1_func21(void);
-int DIMSnowHorn1_func20(void);
+int DIMSnowHorn1_getRacePosition(void);
 f32 DIMSnowHorn1_func19(GameObject* obj, f32* out);
-void DIMSnowHorn1_func18(void* unused, f32* out_f, int* out_i);
-void DIMSnowHorn1_setMountMode(GameObject* obj, int value);
-int DIMSnowHorn1_func16(void);
-void DIMSnowHorn1_func15(s16* packed, f32* outX, f32* outY, f32* outZ);
-int DIMSnowHorn1_func14(GameObject* obj);
-int DIMSnowHorn1_render2(GameObject* obj);
-void DIMSnowHorn1_modelMtxFn(GameObject* obj, f32* out_x, f32* out_y, f32* out_z);
-int DIMSnowHorn1_func11(GameObject* obj);
+void DIMSnowHorn1_getPlayerAnim(void* unused, f32* out_f, int* out_i);
+void DIMSnowHorn1_setMountState(GameObject* obj, int value);
+int DIMSnowHorn1_getMountState(void);
+void DIMSnowHorn1_getCameraPosition(s16* packed, f32* outX, f32* outY, f32* outZ);
+int DIMSnowHorn1_getDismountSide(GameObject* obj);
+int DIMSnowHorn1_canDismount(GameObject* obj);
+void DIMSnowHorn1_getRiderPosition(GameObject* obj, f32* out_x, f32* out_y, f32* out_z);
+int DIMSnowHorn1_getMountSide(GameObject* obj);
 int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
-void DIMSnowHorn1_func22(GameObject* obj, f32 scale);
-int DIMSnowHorn1_canUseDismountPoint(GameObject* obj);
+void DIMSnowHorn1_handleRiderScale(GameObject* obj, f32 scale);
+int DIMSnowHorn1_canMount(GameObject* obj);
 int DIMSnowHorn1_getExtraSize(void);
 int DIMSnowHorn1_getObjectTypeId(void);
 void DIMSnowHorn1_free(GameObject* obj);
