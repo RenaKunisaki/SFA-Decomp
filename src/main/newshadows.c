@@ -1553,9 +1553,9 @@ void initFn_8006d020(void)
                     evalNoisePlacements(row * lbl_803DEDE0, column * lbl_803DEDE0, frame,
                                 gNewShadowPlacements, noisePlacementCount, &shift, &intensity);
                     highByte = 255.0f * intensity;
+                    highByte = (highByte & 0xffff) << 8;
                     lowByte = 255.0f * shift;
-                    ((NewShadowVectorTexel*)(texelAddress + 0x60))->packedXY =
-                        ((highByte & 0xffff) << 8) | lowByte;
+                    ((NewShadowVectorTexel*)(texelAddress + 0x60))->packedXY = highByte | lowByte;
                 }
             }
             DCFlushRange(gNewShadowNoiseTexFrames[frame] + 1, gNewShadowNoiseTexFrames[frame]->dataSize);
