@@ -1380,7 +1380,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/276_IMMultiSeq/IMMultiSeq.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/277/277.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/278_WM_Column/WM_Column.c"),
-            Object(NonMatching, "dlls/objects/279_AppleOnTree/AppleOnTree.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(Matching, "dlls/objects/279_AppleOnTree/AppleOnTree.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/280_Duster/Duster.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/281_coldWaterCo/coldWaterCo.c"),
             Object(Matching, "dlls/objects/282/282.c", cflags=cflags_dll_noopt_noinline),
