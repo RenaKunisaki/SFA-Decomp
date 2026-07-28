@@ -332,15 +332,6 @@ extern SynthCallbackLink* gSynthFreeCallbacks;
 extern SynthVoice* gSynthCurrentVoice;
 extern u32 gSynthCurrentVoiceSlotIndex;
 extern u8 gSynthCurrentFadeOutState;
-/* WRONG-SYMBOL IMPORT BUG: lbl_803DEEE8 is the 0.2f constant in the .sdata2
- * float pool (0x3E4CCCCD; intersect.c reads it as f32 correctly). The
- * synth_control.c list-walk that indexes it as a voice array needs a
- * matching pass to locate the true base symbol (likely the synth voice
- * array). Semantics preserved as-imported; do not "fix" without asm. */
-extern McmdVoiceState* lbl_803DEEE8;
-extern u32 gSynthDelayedActionWord0;
-extern u32 gSynthDelayedActionWord1;
-extern u32 gSynthFadeMask;
 
 extern SynthVoice gSynthVoices[SYNTH_MAX_VOICES];
 extern u8 synthTrackVolume[64];
@@ -352,7 +343,6 @@ extern u32 gSynthNextHandle;
 #define SYNTH_VOICE_RUNTIME() ((SynthVoiceRuntime*)(void*)gSynthCallbacks)
 #define SYNTH_VOICE_SLOT_FLAGS64(slot) (*(u64*)&(slot)->inputFlags)
 
-extern const f32 sSynthFadeTimeScale;
 
 void synthSetStudioChannelScale(int value, u8 studioIndex, u8 channelIndex);
 int synthGetVoiceSlotChannelScale(McmdVoiceState *slot);

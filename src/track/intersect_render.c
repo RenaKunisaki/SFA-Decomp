@@ -132,7 +132,7 @@ static const IndMtxInit lbl_802C1F68 = {{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
 
 
 extern f32 hudMatrix[4][4];
-extern f32 gSynthFadeMask;
+extern f32 lbl_803DEEE0;
 extern f32 lbl_803DEF28;
 extern GXColor lbl_803E8454;
 
@@ -267,8 +267,8 @@ void fogFn_80070404(f32 a, f32 b)
     x = 0.001f * a;
     y = 0.001f * b;
 
-    xc = (x < 0.0f) ? 0.0f : ((x > gSynthFadeMask) ? gSynthFadeMask : x);
-    yc = (y < 0.0f) ? 0.0f : ((y > gSynthFadeMask) ? gSynthFadeMask : y);
+    xc = (x < 0.0f) ? 0.0f : ((x > lbl_803DEEE0) ? lbl_803DEEE0 : x);
+    yc = (y < 0.0f) ? 0.0f : ((y > lbl_803DEEE0) ? lbl_803DEEE0 : y);
 
     gFogStartZ = xc * (gFogFarZ - gFogNearZ) + gFogNearZ;
     gFogEndZ = yc * (gFogFarZ - gFogNearZ) + gFogNearZ;
@@ -1022,7 +1022,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
         {
             c1.a = 255.0f * sr;
         }
-        sr = sr * gSynthFadeMask;
+        sr = sr * lbl_803DEEE0;
         if (sr > *(f32*)&lbl_803DEEE4)
             sr = *(f32*)&lbl_803DEEE4;
         c3.a = 255.0f * sr;
@@ -3787,8 +3787,8 @@ void drawFn_80079e64(f32 s1, u8 mtxIdx, void* vec, f32 s2, u8 alpha0, u8 alpha1,
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 
     PSMTXScale(mtx_58, 12.0f * (f32)s2, 12.0f * (f32)s2, 0.0f);
-    fade1 = gSynthFadeMask * ratio1;
-    fade2 = *(f32*)&gSynthFadeMask * ratio2;
+    fade1 = lbl_803DEEE0 * ratio1;
+    fade2 = *(f32*)&lbl_803DEEE0 * ratio2;
     PSMTXTrans(mtx_28, fade1 * (f32)s3, 0.75f * (f32)s1 + fade2 * (f32)s3, 0.0f);
     PSMTXConcat(mtx_28, mtx_58, mtx_58);
     PSMTXRotRad(mtx_28, 'z', 0.5f * angle);

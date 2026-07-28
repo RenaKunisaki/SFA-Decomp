@@ -74,7 +74,6 @@ extern s16 lbl_803DDCAA;
 extern s16 lbl_803DDCAC;
 extern s16 lbl_803DDCAE;
 extern s16 gWmSunEnvfxTimer;
-extern f32 lbl_803E5F20;
 extern const WmSunVec3 gWmSunGlareDir;
 extern const WmSunVec3 gWmSunGlareSun;
 extern f32 gWmSunGlareIntensity;

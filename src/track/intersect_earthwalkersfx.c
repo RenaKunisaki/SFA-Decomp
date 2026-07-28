@@ -380,7 +380,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot);
 
 /*
  * Three-tex-coord-gen ind+direct TEV setup. Loads the active env-mtx
- * (lbl_80396820) for tex0, scales tex1 by hudScale through a 3x4
+ * (lbl_80396820) for tex0, scales tex1 by lbl_803DEF2C through a 3x4
  * matrix from PSMTXScale, and stamps an indirect tex matrix from local
  * stack data. Two TEV stages: stage 0 K-modulates the texture by alpha,
  * stage 1 modulates by the second texture. Uses ind tex stage 0 to warp

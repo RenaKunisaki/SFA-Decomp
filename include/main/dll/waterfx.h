@@ -78,16 +78,6 @@ typedef struct WaterVtxDesc
 } WaterVtxDesc;
 
 extern f32 gWaterfxRippleScale;
-extern f32 lbl_803DF318;
-extern f32 lbl_803DF300;
-extern f32 lbl_803DF31C;
-extern f32 lbl_803DF2EC;
-extern f32 lbl_803DF2FC;
-extern f32 lbl_803DF320;
-extern f32 lbl_803DF2E8;
-extern f32 lbl_803DF338;
-extern f32 lbl_803DF33C;
-extern f32 lbl_803DF334;
 extern u8 gWaterfxPendingImpactPositionValid;
 extern f32 gWaterfxPendingImpactPosition[];
 extern char sWaterfxDllAllocFailed[];
@@ -110,10 +100,6 @@ extern u8* gWaterfxWakeVtxDesc;
 extern u8* gWaterfxWakeVtx;
 extern u8* gWaterfxRippleVtxDesc;
 extern u8* gWaterfxRippleVtx;
-extern f32 gWaterfxWakeGrowSpeed;
-extern f32 gWaterfxDropGravity;
-extern const f32 gWaterfxDropDamping;
-extern f32 gWaterfxRippleGrowSpeed;
 
 void waterfx_setupSplashDropPointRender(void);
 void waterfx_buildSplashDisplayList(void);

@@ -119,10 +119,6 @@ extern ObjFxCrystalBurstTable gObjFxCrystalAmpTbl;
 extern s16 gObjFxCrystalSpinSpeed[4];
 extern u8 gObjFxLightColorTbl[];
 
-extern f32 lbl_803DF384;
-extern f32 lbl_803DF38C;
-extern f32 lbl_803DF390;
-extern f32 lbl_803DF3B0;
 
 void objShowButtonGlow(void* obj, f32 intensity, u8 mode);
 void objfx_spawnFlaggedTrailBurst(void* obj, f32 fval, u8 mode, int f6val, int f4val, void* origin);
