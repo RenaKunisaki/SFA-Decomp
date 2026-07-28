@@ -13154,6 +13154,7 @@ void fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv)
     }
     {
         int r0;
+        f32 k;
         if (!((((u32)((PlayerState*)inner)->flags3F1 >> 5) & 1) || (((u32)((PlayerState*)inner)->flags3F0 >> 4) & 1)))
         {
             r0 = ((PlayerState*)inner)->targetYawRate;
@@ -13184,7 +13185,7 @@ void fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv)
             g -= 0xffff;
         if (g < -0x8000)
             g += 0xffff;
-        g = (int)((f32)(int)g * 0.15f);
+        g = (int)((f32)(int)g * (k = 0.15f));
         if (g < -0x16c)
         {
             g = -0x16c;
