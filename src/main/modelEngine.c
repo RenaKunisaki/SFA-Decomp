@@ -312,6 +312,7 @@
 #include "dlls/objects/516_WM_Torch.h"
 #include "dlls/objects/517_WM_Vein.h"
 #include "dlls/objects/518_LightSource.h"
+#include "dlls/objects/519_WM_Worm.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -448,8 +449,8 @@ extern ResourceDescriptor gWCLevelContObjDescriptor,
     gWCPushBlockObjDescriptor, gWCTempleBriObjDescriptor,
     gWCTileObjDescriptor;
 extern ResourceDescriptor gWM_GeneralScalesObjDescriptor, gWM_LevelControlObjDescriptor, gWM_PlanetsObjDescriptor;
-extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_WallCrawlerObjDescriptor,
-    gWM_WormObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqpointObjDescriptor;
+extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_WallCrawlerObjDescriptor, gWM_newcrystalObjDescriptor,
+    gWM_seqpointObjDescriptor;
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWaterFlowWeObjDescriptor;
 extern ResourceDescriptor lbl_8030EE34;
 extern ResourceDescriptor lbl_8030F414, sky2_funcs, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
@@ -1637,7 +1638,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWM_TorchObjDescriptor,
     (ResourceDescriptor*)&gWMVeinNullResourceDescriptor,
     (ResourceDescriptor*)&gLightSourceObjDescriptor,
-    &gWM_WormObjDescriptor,
+    (ResourceDescriptor*)&gWM_WormObjDescriptor,
     &lbl_803DC108,
     &gWM_LevelControlObjDescriptor,
     &gWM_GeneralScalesObjDescriptor,
