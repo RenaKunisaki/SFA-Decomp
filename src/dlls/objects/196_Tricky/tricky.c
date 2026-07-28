@@ -982,7 +982,7 @@ static f32 trickyRouteStep(RomCurveWalker* route)
     return 2.0f;
 }
 
-int trickyAdvanceRouteTargetAhead(int obj, RomCurveWalker* route, f32 speed)
+int trickyAdvanceRouteTargetAhead(GameObject* obj, RomCurveWalker* route, f32 speed)
 {
     f32 limit;
     f32 maxSq, dist, step;
@@ -993,7 +993,7 @@ int trickyAdvanceRouteTargetAhead(int obj, RomCurveWalker* route, f32 speed)
     result = 0;
     maxDist = 1.5f * (speed * timeDelta);
     maxSq = maxDist * maxDist;
-    dist = getXZDistance(&route->posX, (f32*)(obj + 0x18));
+    dist = getXZDistance(&route->posX, &obj->anim.worldPosX);
     if (route->reverse != 0)
     {
         step = -2.0f;
@@ -1012,7 +1012,7 @@ int trickyAdvanceRouteTargetAhead(int obj, RomCurveWalker* route, f32 speed)
         }
         result = 1;
         RomCurve_stepClamped(route, step);
-        dist = getXZDistance(&route->posX, (f32*)(obj + 0x18));
+        dist = getXZDistance(&route->posX, &obj->anim.worldPosX);
     }
     return 1;
 }
@@ -2170,9 +2170,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         wref = (int)&wgi;
         sref = (int)state;
         tref = (int)state;
-        for (; i < 4; wref += 2, sref += 2, tref += 12, i++, mask = mask << 1)
+        for (; i < 4; wref += 2, sref += 2, tref += 12, i++, mask <<= 1)
         {
-            if (wgi.patchMask & mask)
+            if (wgi.patchMask & (u8)mask)
             {
                 *(s16*)(sref + 152) = *(u16*)(wref + 2);
                 *(f32*)(tref + 160) = ((TrickyPoint3*)target)->x;
@@ -2562,7 +2562,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                         state->speed = velBefore;
                         trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
                     }
-                    trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
+                    trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
                     moved = trickyMove(obj, &state->route.posX);
                     switch (*(s8*)(prevNode + 0x1a))
                     {
@@ -2667,13 +2667,19 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
         }
         else
         {
-            node = state->routeSeedNode;
-            if (node == NULL)
+            prevNode = (u8*)state->routeSeedNode;
+            if (prevNode == NULL)
             {
                 node = NULL;
             }
-            else if (((node->requiredBit != -1) && (mainGetBit(node->requiredBit) == 0)) ||
-                     ((node->forbiddenBit != -1) && (mainGetBit(node->forbiddenBit) != 0)))
+            else if (((((ObjfsaRomCurveDef*)prevNode)->requiredBit == -1) ||
+                      (mainGetBit(((ObjfsaRomCurveDef*)prevNode)->requiredBit) != 0)) &&
+                     ((((ObjfsaRomCurveDef*)prevNode)->forbiddenBit == -1) ||
+                      (mainGetBit(((ObjfsaRomCurveDef*)prevNode)->forbiddenBit) == 0)))
+            {
+                node = (ObjfsaRomCurveDef*)prevNode;
+            }
+            else
             {
                 node = NULL;
             }
@@ -2848,7 +2854,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
             }
         }
-        trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
+        trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
         moved = trickyMove(obj, &state->route.posX);
         type = ((ObjfsaRomCurveDef*)state->route.nodeA0)->unk1A;
         switch (type)
@@ -2900,7 +2906,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             state->speed = velBefore;
             trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
         }
-        trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
+        trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
         trickyMove(obj, &state->route.posX);
         dir = state->route.reverse;
         if (((dir == 0) && (state->route.atSegmentEnd != 0)) || ((dir != 0 && (state->route.atSegmentEnd == 0))))
@@ -3119,7 +3125,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             state->speed = velBefore;
             trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
         }
-        trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
+        trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
         trickyMove(obj, &state->route.posX);
         dir = state->route.reverse;
         if (((dir == 0) && (state->route.atSegmentEnd != 0)) || ((dir != 0 && (state->route.atSegmentEnd == 0))))
@@ -3177,7 +3183,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
     case 0xe:
         trickyDebugPrint(strs + 0x4d4);
         state->heightUpdateActive = 0;
-        trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
+        trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
         {
             f32 dz;
             f32 dx;
@@ -3235,7 +3241,7 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
             state->speed = velBefore;
             trickyUpdateApproachSpeed(obj, 2.5f, state, &state->route.posX, 1);
         }
-        trickyAdvanceRouteTargetAhead((int)obj, &state->route, state->speed);
+        trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
         trickyMove(obj, &state->route.posX);
         dir = state->route.reverse;
         if (((dir == 0) && (state->route.atSegmentEnd != 0)) || ((dir != 0 && (state->route.atSegmentEnd == 0))))
@@ -5945,7 +5951,7 @@ void tricky_updateBallRoll(int obj, int ball)
         }
 
         ts->speed = speed;
-        trickyAdvanceRouteTargetAhead(obj, &ts->route, ts->speed);
+        trickyAdvanceRouteTargetAhead((GameObject*)obj, &ts->route, ts->speed);
         trickyMove((GameObject*)obj, &ts->route.posX);
 
         if (Objfsa_GetWalkGroupIndexAtPoint((float*)&((GameObject*)obj)->anim.worldPosX, NULL) != 0)
