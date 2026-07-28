@@ -916,7 +916,7 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
                 hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &floorOffset,
                                      0);
                 obj->anim.localPosY = obj->anim.localPosY - floorOffset;
-                obj->anim.localPosY = obj->anim.localPosY + 2.0f;
+                obj->anim.localPosY += 2.0f;
             }
             flags->positionAnchored = 1;
             return 0;
