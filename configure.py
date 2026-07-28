@@ -1870,7 +1870,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/thp/THPRead.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "main/thp/THPVideoDecode.c", cflags=cflags_dll_noopt_noinline),
             Object(NonMatching, "main/dll_80136a40.c", cflags=cflags_dll_noopt_nostrength),
-            Object(NonMatching, "main/obj_movelib.c", cflags=cflags_dll_noopt_nocse),
+            Object(MatchingFor("GSAE01"), "main/obj_movelib.c", cflags=cflags_dll_noopt_nocse),
 
             # MSL-derived game math
             Object(NonMatching, "main/acosf.c", mw_version="GC/1.2.5n", cflags=msl_math_o0_cflags, extra_cflags=["-O0", "-opt", "peephole,functions", "-inline", "auto", *msl_math_extra], progress_category="game"),
