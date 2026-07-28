@@ -1506,9 +1506,9 @@ void* mapLoadDataFile(int mapId, int fileId)
         }
         {
             int slot;
-            DVDFileInfo* fi;
             u32 slotPtrAddr;
             u32 slotSizeAddr;
+            DVDFileInfo* fi;
             int ok;
 
             if (MLDF_OWNER(0x2a) == -1)
@@ -1686,9 +1686,9 @@ void* mapLoadDataFile(int mapId, int fileId)
         }
         {
             int slot;
-            DVDFileInfo* fi;
             u32 slotPtrAddr;
             u32 slotSizeAddr;
+            DVDFileInfo* fi;
             int ok;
 
             if (MLDF_OWNER(0x2f) == -1)
@@ -1763,9 +1763,9 @@ void* mapLoadDataFile(int mapId, int fileId)
         }
         {
             int slot;
-            DVDFileInfo* fi;
             u32 slotPtrAddr;
             u32 slotSizeAddr;
+            DVDFileInfo* fi;
             int ok;
 
             if (MLDF_ID(0x23) == mapId)
@@ -1866,9 +1866,9 @@ void* mapLoadDataFile(int mapId, int fileId)
         }
         {
             int slot;
-            DVDFileInfo* fi;
             u32 slotPtrAddr;
             u32 slotSizeAddr;
+            DVDFileInfo* fi;
             int ok;
 
             if (MLDF_OWNER(0x24) == -1)
