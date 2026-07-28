@@ -232,7 +232,7 @@ extern GameTextBox gTextBoxes[];
 extern const f32 gSubtitleNoTimeSentinel;
 extern int gGameTextSequenceMode;
 extern int gSubtitleActive;
-extern void* gGameTextPendingDir;
+extern int gGameTextPendingDir;
 extern int gSubtitlesEnabled;
 extern int gGameTextPendingTextId;
 extern u8 gSubtitleColorR;

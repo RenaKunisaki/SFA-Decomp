@@ -1047,7 +1047,7 @@ GameTextStateElem gGameTextCharsets[0xA0 / sizeof(GameTextStateElem)];
 int gameTextGetCharset(void);
 void gameTextSetCharset(int charset, int flags);
 
-void* getCurGameText(void);
+int getCurGameText(void);
 
 int gameTextGetState(int i);
 

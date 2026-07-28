@@ -42,7 +42,7 @@ extern u8* gGameTextLastEntry;
 extern int gCurTextBuffer;
 extern int gGameTextBufferIndex;
 extern const f32 gGameTextFadeLimit;
-extern void* curGameTextDir;
+extern int curGameTextDir;
 extern char gGameTextFontData[];
 extern char lbl_803DB3D4[5];
 
@@ -94,7 +94,7 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
         *(u16*)gGameTextLastEntry = 0xffff;
         gGameTextFallbackBuf = (int)(lbl_803399A0 + gGameTextBufferIndex * 4);
         sprintf((char*)gCurTextBuffer, strings + 0xefc, textId,
-                sMapDirectoryNameTable[(int)curGameTextDir]);
+                sMapDirectoryNameTable[curGameTextDir]);
         return gGameTextLastEntry;
     }
 
@@ -232,7 +232,7 @@ void* gameTextGet(int textId)
                 if (av >= gGameTextFadeLimit)
                 {
                     sprintf((char*)*(int*)*(int**)((u8*)cachedEntry + 8), strings + 0xefc, textId,
-                            sMapDirectoryNameTable[(int)curGameTextDir]);
+                            sMapDirectoryNameTable[curGameTextDir]);
                 }
             }
             return cachedEntry;
@@ -250,7 +250,7 @@ void* gameTextGet(int textId)
     *(u16*)gGameTextLastEntry = 0xffff;
     p = gameTextBase + gGameTextBufferIndex * 4;
     gGameTextFallbackBuf = (int)(p + 0x20);
-    sprintf((char*)gCurTextBuffer, lbl_803DB3D4, textId, sMapDirectoryNameTable[(int)curGameTextDir]);
+    sprintf((char*)gCurTextBuffer, lbl_803DB3D4, textId, sMapDirectoryNameTable[curGameTextDir]);
     *(u16*)gGameTextLastEntry = textId;
     *(f32*)gGameTextFallbackBuf = lbl_803DE704;
     return gGameTextLastEntry;

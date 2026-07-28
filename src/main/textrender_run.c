@@ -48,7 +48,7 @@ extern u8* gGameTextLastEntry;
 extern int gCurTextBuffer;
 extern int gGameTextBufferIndex;
 extern const f32 gGameTextFadeLimit;
-extern void* curGameTextDir;
+extern int curGameTextDir;
 extern u8 lbl_803DC980;
 extern int gGameTextLastDir;
 extern int lbl_803DC9D0;
@@ -113,7 +113,7 @@ void gameTextLoadDir(int dirId)
     }
     else if (dirId == 0x1c)
     {
-        curGameTextDir = (void*)dirId;
+        curGameTextDir = dirId;
         gameTextFonts = (TextFont*)&gGameTextCharsets[GAMETEXT_SLOT_HUD];
         gameTextCharset = GAMETEXT_SLOT_HUD;
         if (gameTextDrawFunc == NULL)
@@ -138,8 +138,8 @@ void gameTextLoadDir(int dirId)
             cmd->opcode = 0xf;
             cmd->arg0 = GAMETEXT_SLOT_DIALOGUE;
         }
-        curGameTextDir = (void*)dirId;
-        if ((subtitleIsActive() == 0 || gameTextFn_8001b44c(dirId) == 0) && (int)curGameTextDir != gGameTextLastDir)
+        curGameTextDir = dirId;
+        if ((subtitleIsActive() == 0 || gameTextFn_8001b44c(dirId) == 0) && curGameTextDir != gGameTextLastDir)
         {
             gameTextLoadForCurMap(GAMETEXT_SLOT_DIALOGUE);
         }
@@ -149,7 +149,7 @@ void gameTextLoadDir(int dirId)
 int gameTextGetCharset(void);
 void gameTextSetCharset(int charset, int flags);
 
-void* getCurGameText(void);
+int getCurGameText(void);
 
 int getCurLanguage(void)
 {
@@ -542,7 +542,7 @@ void gameTextInitFn_8001a234(void)
     gameTextFonts = (TextFont*)(gameTextBase + GAMETEXT_FONT_SLOT_OFFSET);
     gameTextCharset = 2;
     curLanguage = -1;
-    curGameTextDir = (void*)-1;
+    curGameTextDir = -1;
     gCurTextBox = NULL;
     gGameTextLastLanguage = -1;
     gGameTextLastDir = -1;
@@ -565,7 +565,7 @@ void gameTextInitFn_8001a234(void)
     lbl_803DC984 = 1;
     lbl_803DC980 = 0;
     gameTextLoadGraphicsFn_8001a918();
-    curGameTextDir = (void*)3;
+    curGameTextDir = 3;
     lbl_803DB378 = (void*)mmCreateMemoryStore(0x800);
 }
 
@@ -669,7 +669,7 @@ void gameTextLoadForCurMap(int sourceId)
         return;
     }
 
-    gGameTextLastDir = dirId = (int)curGameTextDir;
+    gGameTextLastDir = dirId = curGameTextDir;
     gGameTextLastLanguage = languageId = curLanguage;
     if (dirId < 0 || dirId >= GAMETEXT_MAP_DIR_COUNT || languageId < 0 || languageId >= GAMETEXT_LANGUAGE_COUNT)
     {
@@ -970,7 +970,7 @@ void setLanguageFn_8001ad64(GameTextLoadSlot* req)
     else
     {
         cs = (GameTextCharset*)&gGameTextCharsets[0];
-        curGameTextDir = (void*)req->dirId;
+        curGameTextDir = req->dirId;
         curLanguage = req->languageId;
     }
     data = req->loadHandle;
@@ -1241,7 +1241,7 @@ void mainLoopDoGameText(void)
     }
     else
     {
-        if (gameTextGetState(0) == 2 && (int)gGameTextPendingDir == (int)getCurGameText() && gSubtitleActive == 1)
+        if (gameTextGetState(0) == 2 && gGameTextPendingDir == getCurGameText() && gSubtitleActive == 1)
         {
             subtitleBuildLineTable();
         }
@@ -1308,7 +1308,7 @@ void subtitleFn_8001b700(void)
     }
 }
 
-void* getCurGameText(void)
+int getCurGameText(void)
 {
     return curGameTextDir;
 }
