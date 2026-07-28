@@ -189,7 +189,7 @@ void _gxSetFogParams(void)
     GXSetFog(GX_FOG_PERSP_EXP, gFogStartZ, gFogEndZ, gFogNearZ, gFogFarZ, c);
 }
 
-void fogFn_80070404(f32 a, f32 b)
+void fogSetRange(f32 start, f32 end)
 {
     f32 xc, yc, x, y;
     GXColor c;
@@ -197,8 +197,8 @@ void fogFn_80070404(f32 a, f32 b)
     gFogNearZ = Camera_GetNearPlane();
     gFogFarZ = Camera_GetFarPlane();
 
-    x = 0.001f * a;
-    y = 0.001f * b;
+    x = 0.001f * start;
+    y = 0.001f * end;
 
     xc = (x < 0.0f) ? 0.0f : ((x > lbl_803DEEE0) ? lbl_803DEEE0 : x);
     yc = (y < 0.0f) ? 0.0f : ((y > lbl_803DEEE0) ? lbl_803DEEE0 : y);

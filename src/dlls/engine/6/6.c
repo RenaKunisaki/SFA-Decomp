@@ -503,7 +503,7 @@ void sky2ApplyFog(int obj)
             *(f32*)(s + 0x14) = *(f32*)(s + 0x18) - lbl_803DF14C;
         }
         s = gSky2State;
-        fogFn_80070404(*(f32*)(s + 0x14), *(f32*)(s + 0x18));
+        fogSetRange(*(f32*)(s + 0x14), *(f32*)(s + 0x18));
     }
 }
 

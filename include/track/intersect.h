@@ -22,7 +22,7 @@ void matrixFn_8006ff0c(float* param_6, short* param_7, f32 param_1, f32 param_2,
 void normalize(f32* x, f32* y, f32* z);
 void mtx44Identity(f32* matrix);
 void resetSomeGxFlags(void);
-void fogFn_80070404(f32 a, f32 b);
+void fogSetRange(f32 start, f32 end);
 void setFogColorRgb(u8 red, u8 green, u8 blue);
 void screenImageDraw(u8 alpha);
 void doSpiritVisionFilter(void);

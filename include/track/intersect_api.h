@@ -34,7 +34,7 @@ void timeFn_8006f400(f32 step);
 void drawFn_8006f500(void);
 int moonFxCb_80074110(u8* obj, int* model, int slot);
 void resetSomeGxFlags(void);
-void fogFn_80070404(f32 a, f32 b);
+void fogSetRange(f32 start, f32 end);
 void setFogColorRgb(u8 red, u8 green, u8 blue);
 void screenImageDraw(u8 alpha);
 void doColorFilter(u8* modulation);

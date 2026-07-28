@@ -194,7 +194,7 @@ int playerState0D(GameObject* obj, int p2);
 int playerState0B(GameObject* obj, int state);
 int playerStateGrabLedge(GameObject* obj, int state);
 int playerState09(GameObject* obj, int state);
-void fn_802A49A8(GameObject* obj);
+void playerResetMoveTables(GameObject* obj);
 int playerStateThrowing(GameObject* obj, int state);
 void fn_802A4B4C(GameObject* obj);
 int playerState06(GameObject* obj, int state);
@@ -9469,7 +9469,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
     }
 }
 
-void fn_802A49A8(GameObject* obj)
+void playerResetMoveTables(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     inner->moveParams = (int)gPlayerDefaultMoveParams;
@@ -13532,10 +13532,10 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
         {
             if ((*(int*)((char*)state + 0x310) & 0x4000) != 0)
             {
-                *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_802A49A8;
+                *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerResetMoveTables;
                 return 7;
             }
-            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_802A49A8;
+            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerResetMoveTables;
             return 8;
         }
         if (!((ByteFlags*)((char*)inner + 0x3f0))->b20 && !((ByteFlags*)((char*)inner + 0x3f0))->b08 &&
