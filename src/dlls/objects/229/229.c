@@ -33,20 +33,13 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
-extern f32 lbl_803E33A8;
-extern f32 lbl_803E33AC;
-extern f32 lbl_803E33E8;
-extern f32 lbl_803E33EC;
-extern f32 lbl_803E33D8;
-extern f32 lbl_803E33DC;
-
-#define SHIELD_NORMAL_WAVE_SCALE lbl_803E33A8
-#define SHIELD_SFX_VOLUME_SCALE  lbl_803E33A8
-#define SHIELD_ZERO              lbl_803E33AC
-#define SHIELD_PARTICLE_OFFSET_X lbl_803E33D8
-#define SHIELD_PARTICLE_OFFSET_Y lbl_803E33DC
-#define SHIELD_SFX_VOLUME_MAX    lbl_803E33E8
-#define SHIELD_OMNI_WAVE_SCALE   lbl_803E33EC
+#define SHIELD_NORMAL_WAVE_SCALE 0.5f
+#define SHIELD_SFX_VOLUME_SCALE  0.5f
+#define SHIELD_ZERO              0.0f
+#define SHIELD_PARTICLE_OFFSET_X 6.0f
+#define SHIELD_PARTICLE_OFFSET_Y -10.0f
+#define SHIELD_SFX_VOLUME_MAX    127.0f
+#define SHIELD_OMNI_WAVE_SCALE   0.25f
 
 /* anim.seqId of the omni_shield variant (retail OBJECTS.bin name; DLL 0xE5
  * also hosts 0x773 "fox_shield"); this variant uses staff-mode 5, otherwise
@@ -582,13 +575,13 @@ void Shield_update(GameObject* obj) {
                                                              stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX]);
             if (obj->anim.seqId == SHIELD_SEQID_OMNI_SHIELD) {
                 f32 c = fcos16((u16)stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX]);
-                c = c * SHIELD_OMNI_WAVE_SCALE + 1.0f;
+                c = c / 4.0f + 1.0f;
                 stateF32[SHIELD_SEGMENT_SCALE_F32_INDEX] = *omniScaleCursor * c;
                 stateF32[SHIELD_SEGMENT_ALPHA_F32_INDEX] = *omniAlphaCursor;
             } else {
                 f32 c = fcos16((u16)stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX]);
                 f32 sum = 1.0f + c;
-                c = sum * SHIELD_NORMAL_WAVE_SCALE;
+                c = sum / 2.0f;
                 stateF32[SHIELD_SEGMENT_SCALE_F32_INDEX] = *tableCursor[0] * c;
                 stateF32[SHIELD_SEGMENT_ALPHA_F32_INDEX] = *alphaCursor;
             }

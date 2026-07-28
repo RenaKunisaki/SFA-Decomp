@@ -11,14 +11,6 @@
 #define DLL59_EFFECT_ID 0xc0d
 
 extern u8 lbl_80311C58[];
-extern f32 lbl_803E06F0;
-extern f32 lbl_803E06F4;
-extern f32 lbl_803E06F8;
-extern f32 lbl_803E06FC;
-extern f32 lbl_803E0700;
-extern f32 lbl_803E0704;
-extern f32 lbl_803E0708;
-extern f32 lbl_803E070C;
 
 void dll_59_func03(int sourceObj, int variant, int posSource, u32 flags)
 {
@@ -32,28 +24,28 @@ void dll_59_func03(int sourceObj, int variant, int posSource, u32 flags)
     e[0].flags = 0x11;
     e[0].tex = &base[220];
     e[0].mode = 0x4000;
-    e[0].x = (zero = lbl_803E06F0);
-    e[0].y = lbl_803E06F4;
+    e[0].x = (zero = 0.0f);
+    e[0].y = -3.0f;
     e[0].z = zero;
     e[1].layer = 1;
     e[1].flags = 0x10;
     e[1].tex = &base[256];
     e[1].mode = 2;
-    e[1].x = lbl_803E06F8;
-    e[1].y = lbl_803E06F8;
-    e[1].z = lbl_803E06F8;
+    e[1].x = 35.0f;
+    e[1].y = 35.0f;
+    e[1].z = 35.0f;
     e[2].layer = 1;
     e[2].flags = 0x11;
     e[2].tex = &base[220];
     e[2].mode = 0x100;
     e[2].x = zero;
     e[2].y = zero;
-    e[2].z = lbl_803E06FC;
+    e[2].z = 1500.0f;
     e[3].layer = 1;
     e[3].flags = 2;
     e[3].tex = NULL;
     e[3].mode = 0x4000000;
-    e[3].x = (one = lbl_803E0700);
+    e[3].x = (one = 1.0f);
     e[3].y = zero;
     e[3].z = zero;
     e[4].layer = 2;
@@ -68,7 +60,7 @@ void dll_59_func03(int sourceObj, int variant, int posSource, u32 flags)
     e[5].tex = &base[220];
     e[5].mode = 0x4000;
     e[5].x = zero;
-    e[5].y = lbl_803E06F4;
+    e[5].y = -3.0f;
     e[5].z = zero;
     e[6].layer = 2;
     e[6].flags = 0x11;
@@ -83,20 +75,20 @@ void dll_59_func03(int sourceObj, int variant, int posSource, u32 flags)
     e[7].mode = 0x100;
     e[7].x = zero;
     e[7].y = zero;
-    e[7].z = lbl_803E0704;
+    e[7].z = -1000.0f;
     e[8].layer = 2;
     e[8].flags = 0x10;
     e[8].tex = &base[256];
     e[8].mode = 2;
-    e[8].x = lbl_803E0708;
-    e[8].y = lbl_803E0708;
-    e[8].z = lbl_803E0708;
+    e[8].x = 2.0f;
+    e[8].y = 2.0f;
+    e[8].z = 2.0f;
     buf.v58 = 0;
     ctx = sourceObj;
     buf.ctx = ctx;
     buf.v44 = variant;
     buf.pos[0] = zero;
-    buf.pos[1] = lbl_803E070C;
+    buf.pos[1] = 135.0f;
     buf.pos[2] = zero;
     buf.col[0] = zero;
     buf.col[1] = zero;
@@ -122,15 +114,15 @@ void dll_59_func03(int sourceObj, int variant, int posSource, u32 flags)
     {
         if ((void*)ctx != NULL)
         {
-            buf.pos[0] = lbl_803E06F0 + ((GameObject*)ctx)->anim.worldPosX;
-            buf.pos[1] = lbl_803E070C + ((GameObject*)ctx)->anim.worldPosY;
-            buf.pos[2] = lbl_803E06F0 + ((GameObject*)ctx)->anim.worldPosZ;
+            buf.pos[0] = zero + ((GameObject*)ctx)->anim.worldPosX;
+            buf.pos[1] = 135.0f + ((GameObject*)ctx)->anim.worldPosY;
+            buf.pos[2] = zero + ((GameObject*)ctx)->anim.worldPosZ;
         }
         else
         {
-            buf.pos[0] = lbl_803E06F0 + ((PartFxSpawnParams*)posSource)->posX;
-            buf.pos[1] = lbl_803E070C + ((PartFxSpawnParams*)posSource)->posY;
-            buf.pos[2] = lbl_803E06F0 + ((PartFxSpawnParams*)posSource)->posZ;
+            buf.pos[0] = zero + ((PartFxSpawnParams*)posSource)->posX;
+            buf.pos[1] = 135.0f + ((PartFxSpawnParams*)posSource)->posY;
+            buf.pos[2] = zero + ((PartFxSpawnParams*)posSource)->posZ;
         }
     }
     (*gModgfxInterface)->spawnEffect(&buf, 0, 0x11, (u8*)(int)lbl_80311C58, 8, &base[172], DLL59_EFFECT_ID, 0);

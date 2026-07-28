@@ -639,6 +639,7 @@ dlls/engine/47/47.c:
 dlls/modgfx/89/89.c:
 	.text       start:0x800EADCC end:0x800EB098
 	.data       start:0x80311C58 end:0x80311DA8
+	.sdata2     start:0x803E06F0 end:0x803E0710
 
 dlls/modgfx/90/90.c:
 	.text       start:0x800EB098 end:0x800EB618
@@ -1689,6 +1690,7 @@ dlls/objects/229/229.c:
 	.text       start:0x801702D4 end:0x80171300
 	.data       start:0x80320A28 end:0x80320AC0
 	.sdata      start:0x803DBD70 end:0x803DBD90
+	.sdata2     start:0x803E33A8 end:0x803E33F0
 
 dlls/objects/293_curve/curve.c:
 	.text       start:0x80171300 end:0x801713D8
@@ -1919,6 +1921,7 @@ dlls/objects/264_EndObject/EndObject.c:
 dlls/objects/269_PortalSpell/PortalSpell.c:
 	.text       start:0x80186498 end:0x80186704
 	.data       start:0x803217F8 end:0x80321830
+	.sdata2     start:0x803E3A88 end:0x803E3A94
 
 dlls/objects/268_LanternFire/LanternFire.c:
 	.text       start:0x80186704 end:0x801871C8
@@ -3558,6 +3561,7 @@ dlls/objects/466_WORLDplanet/WORLDplanet.c:
 	.text       start:0x8020C5EC end:0x8020D9E4
 	.data       start:0x8032A178 end:0x8032A200
 	.sdata      start:0x803DC1B8 end:0x803DC210
+	.sdata2     start:0x803E65F8 end:0x803E6640
 
 dlls/objects/467/467.c:
 	.text       start:0x8020D9E4 end:0x8020F214
@@ -3847,6 +3851,7 @@ dlls/objects/655_WCPressureS/WCPressureS.c:
 dlls/objects/658_WCTrexStatu/WCTrexStatu.c:
 	.text       start:0x802281CC end:0x80228478
 	.data       start:0x8032B230 end:0x8032B268
+	.sdata2     start:0x803E6E10 end:0x803E6E18
 
 dlls/objects/659/659.c:
 	.text       start:0x80228478 end:0x80228B38

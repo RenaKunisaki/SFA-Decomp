@@ -80,7 +80,7 @@ void wctrexstatu_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 {
     if (visible != 0)
     {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, lbl_803E6E10);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -125,7 +125,7 @@ void wctrexstatu_init(GameObject* obj, WCTrexStatueSetup* setup, int fromLoad)
     {
         if ((*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == WCTREXSTATU_MAPEVENT_RAISED)
         {
-            obj->anim.localPosY = obj->anim.localPosY + lbl_803E6E14;
+            obj->anim.localPosY += 30.0f;
         }
     }
 

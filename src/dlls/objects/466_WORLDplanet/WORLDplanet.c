@@ -51,11 +51,6 @@
 
 extern f32 gWorldPlanetLightingLerpT;
 extern u8 gWorldPlanetCurIntensity;
-extern f32 gWorldPlanetLightingZero;
-extern f32 gWorldPlanetLightingMinIntensity;
-extern f32 gWorldPlanetLightingIntensityRange;
-extern f32 gWorldPlanetLightingSkyDirX;
-extern f32 gWorldPlanetLightingSkyDirZ;
 extern int gWorldPlanetSelectConfirmTimer;
 extern u8 gWorldPlanetExitWarpTimer;
 extern s16 gWorldPlanetInputLockTimer;
@@ -64,25 +59,19 @@ extern f32 gWorldPlanetPathProgress;
 extern f32 lbl_803DDD00;
 extern s16 gWorldPlanetReselectDelayTimer;
 extern int lbl_803DDD10;
-extern f32 gWorldPlanetPfxOffsetX;
-extern f32 gWorldPlanetPfxOffsetY;
-extern f32 gWorldPlanetPfxOffsetZ;
-extern f32 gWorldPlanetPathProgressStep;
-extern f32 gWorldPlanetPathProgressMax;
-extern f32 gWorldPlanetOrbitRadius;
 
 void worldplanet_updateMapLighting(GameObject* obj)
 {
     skyFn_80089710(WORLDPLANET_SKY_LIGHT_MASK, 1, 0);
 
-    gWorldPlanetLightingLerpT = gWorldPlanetLightingZero;
+    gWorldPlanetLightingLerpT = 0.0f;
 
     WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurSky, gWorldPlanetSkyColorFrom, gWorldPlanetSkyColorTo, red,
-                            gWorldPlanetLightingZero)
+                            gWorldPlanetLightingLerpT)
     WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurSky, gWorldPlanetSkyColorFrom, gWorldPlanetSkyColorTo, green,
-                            gWorldPlanetLightingZero)
+                            gWorldPlanetLightingLerpT)
     WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurSky, gWorldPlanetSkyColorFrom, gWorldPlanetSkyColorTo, blue,
-                            gWorldPlanetLightingZero)
+                            gWorldPlanetLightingLerpT)
     skySetBaseColor(WORLDPLANET_SKY_LIGHT_MASK, gWorldPlanetCurSky.red, gWorldPlanetCurSky.green,
                     gWorldPlanetCurSky.blue, WORLDPLANET_SKY_COLOR_SCALE, WORLDPLANET_SKY_COLOR_SCALE);
 
@@ -105,9 +94,9 @@ void worldplanet_updateMapLighting(GameObject* obj)
                        gWorldPlanetCurAmbient.blue);
 
     gWorldPlanetCurIntensity =
-        gWorldPlanetLightingLerpT * gWorldPlanetLightingIntensityRange + gWorldPlanetLightingMinIntensity;
-    skySetLightDirection(WORLDPLANET_SKY_LIGHT_MASK, gWorldPlanetLightingSkyDirX, gWorldPlanetLightingZero,
-                         gWorldPlanetLightingSkyDirZ);
+        gWorldPlanetLightingLerpT * 128.0f + 32.0f;
+    skySetLightDirection(WORLDPLANET_SKY_LIGHT_MASK, 0.739264f, 0.0f,
+                         0.673415f);
 }
 
 u8 gWorldPlanetHintFlagTable[8] = {1, 1, 0, 1, 1, 0, 0, 0};
@@ -276,9 +265,9 @@ void worldplanet_update(GameObject* obj)
         }
         buttons = getButtonsJustPressed(0);
         pfx.dispatchTimer = 100;
-        pfx.offsetX = gWorldPlanetPfxOffsetX;
-        pfx.offsetY = gWorldPlanetPfxOffsetY;
-        pfx.offsetZ = gWorldPlanetPfxOffsetZ;
+        pfx.offsetX = 59.3736f;
+        pfx.offsetY = 39.745197f;
+        pfx.offsetZ = -42.603f;
         (*gPartfxInterface)->spawnObject((void*)obj, WORLDPLANET_SELECTION_PFX_ID, &pfx, 2, -1, NULL);
         worldplanet_readMapInput(obj, in.inX, &in.inY);
         (obj)->anim.rotZ -= 10;
@@ -353,7 +342,7 @@ void worldplanet_update(GameObject* obj)
                     (*gCameraInterface)->releaseAction(&objId, 1);
                     Sfx_PlayFromObject(0, SFXTRIG_crf_babyambi3);
                 }
-                gWorldPlanetPathProgress = gWorldPlanetLightingZero;
+                gWorldPlanetPathProgress = 0.0f;
                 {
                     WorldObjState* planetState =
                         ObjList_FindObjectById(tbl->orbitObjectIds[gWorldPlanetSelectionToIndex[prevPlanet]])->extra;
@@ -366,10 +355,10 @@ void worldplanet_update(GameObject* obj)
                 (obj)->userData1 = 1;
             }
         }
-        gWorldPlanetPathProgress = gWorldPlanetPathProgress + gWorldPlanetPathProgressStep;
-        if (gWorldPlanetPathProgress >= gWorldPlanetPathProgressMax)
+        gWorldPlanetPathProgress = gWorldPlanetPathProgress + 0.2f;
+        if (gWorldPlanetPathProgress >= 21.0f)
         {
-            gWorldPlanetPathProgress = gWorldPlanetLightingZero;
+            gWorldPlanetPathProgress = 0.0f;
         }
         for (i = 0; i < WORLDPLANET_PLANET_COUNT; i++)
         {
@@ -481,7 +470,7 @@ void worldplanet_update(GameObject* obj)
                             gWorldPlanetLoadMapIndices[gWorldPlanetSelectionToIndex[state->selectedPlanet]]);
                         lockLevel(gWorldPlanetLoadedMapId, 1);
                         loadModelAndAnimTabs();
-                        lbl_803DDD00 = gWorldPlanetLightingZero;
+                        lbl_803DDD00 = 0.0f;
                         gWorldPlanetSavedSelection = state->selectedPlanet;
                     }
                 }
@@ -489,7 +478,7 @@ void worldplanet_update(GameObject* obj)
             case 1:
                 Pause_ResetMenuFrameCounter();
                 {
-                    int neq = lbl_803DDD00 != gWorldPlanetLightingZero;
+                    int neq = lbl_803DDD00 != 0.0f;
                     neq = !neq;
                     if (neq)
                     {
@@ -543,7 +532,7 @@ void worldplanet_update(GameObject* obj)
                     planetObj->anim.rotZ = -ang;
                 }
             }
-            for (planetIdx = 0, orbitRadius = gWorldPlanetOrbitRadius; planetIdx < WORLDPLANET_PLANET_COUNT; planetIdx++)
+            for (planetIdx = 0, orbitRadius = 220.0f; planetIdx < WORLDPLANET_PLANET_COUNT; planetIdx++)
             {
                 GameObject* planetObj = ObjList_FindObjectById(tbl->orbitObjectIds[planetIdx]);
                 if (tbl->orbitObjectIds[planetIdx] == WORLDPLANET_SPECIAL_ORBIT_OBJECT_ID)

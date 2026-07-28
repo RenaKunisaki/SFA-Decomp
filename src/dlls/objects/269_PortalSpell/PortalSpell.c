@@ -14,9 +14,6 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
-extern f32 gPortalSpellDoorModelScale;
-extern f32 gPortalSpellDoorRootMotionScale;
-extern f32 gPortalSpellDoorOpenAmountScale;
 
 #define PORTAL_SPELL_INDEX_OPEN_PORTAL      3
 #define PORTAL_SPELL_DOOR_OPEN_SEQUENCE     0
@@ -40,7 +37,7 @@ void PortalSpellDoor_free(GameObject* obj) {
 void PortalSpellDoor_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
     s32 visible = renderState;
     if (visible != 0) {
-        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, gPortalSpellDoorModelScale);
+        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, 1.0f);
     }
 }
 
@@ -94,11 +91,8 @@ void PortalSpellDoor_init(GameObject* obj, PortalSpellDoorPlacement* placement) 
     PortalSpellDoorState* state = obj->extra;
     obj->anim.rotX = (s16)((s32)placement->rotXByte << PORTAL_SPELL_DOOR_ROTATION_SHIFT);
     obj->anim.rotY = (s16)((s32)placement->rotY << PORTAL_SPELL_DOOR_ROTATION_SHIFT);
-    obj->anim.rootMotionScale = gPortalSpellDoorRootMotionScale;
-    {
-        f32 scaledHitbox = obj->anim.hitboxScale * obj->anim.rootMotionScale;
-        state->openAmount = scaledHitbox * gPortalSpellDoorOpenAmountScale;
-    }
+    obj->anim.rootMotionScale = 3.1499999f;
+    state->openAmount = obj->anim.hitboxScale * obj->anim.rootMotionScale / 2.0f;
     if (mainGetBit(placement->openedGameBit) != 0) {
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         obj->objectFlags |= OBJECT_OBJFLAG_UPDATE_DISABLED | OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED;
