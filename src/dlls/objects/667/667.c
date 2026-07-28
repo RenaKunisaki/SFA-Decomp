@@ -32,9 +32,9 @@
 #include "main/object_render.h"
 #include "dolphin/mtx/vec.h"
 
-f32 lbl_803DC3D0 = 0.1f;
-f32 lbl_803DC3D4 = 500.0f;
-f32 lbl_803DC3D8 = 10.0f;
+f32 gArwingAndrossRingScaleStep = 0.1f;
+f32 gArwingAndrossRingSpinStep = 500.0f;
+f32 gArwingAndrossRingRadiusScale = 10.0f;
 
 #define ARWINGANDROSSSTUFF_OBJGROUP 0x2
 
@@ -284,10 +284,10 @@ void arwingandrossstuff_update(GameObject* obj)
         }
         if (object->anim.romDefNo == ARW_SEQID_ANDROSS_RING)
         {
-            object->anim.rootMotionScale += lbl_803DC3D0;
+            object->anim.rootMotionScale += gArwingAndrossRingScaleStep;
             ObjHitbox_SetSphereRadius((ObjAnimComponent*)object,
-                                      (int)(object->anim.rootMotionScale * lbl_803DC3D8));
-            object->anim.rotZ = (f32)object->anim.rotZ + lbl_803DC3D4;
+                                      (int)(object->anim.rootMotionScale * gArwingAndrossRingRadiusScale));
+            object->anim.rotZ = (f32)object->anim.rotZ + gArwingAndrossRingSpinStep;
         }
     }
 }

@@ -41,7 +41,7 @@ u8 gTitleMenuSelection;
 s32 gAttractMovieState;
 
 
-extern TitleMenuTextEntry lbl_8031A214[4];
+extern TitleMenuTextEntry gTitleMenuEntries[4];
 extern TitleMenuTextEntry sNAttractModeStringBlock[1];
 extern u8 gOptionsRequestedPanel;
 
@@ -83,14 +83,14 @@ void TitleMenu_frameEnd(void)
         {                                                                                                              \
             if (i == (entry))                                                                                          \
             {                                                                                                          \
-                lbl_8031A214[i].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;                                                \
+                gTitleMenuEntries[i].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;                                                \
             }                                                                                                          \
             else                                                                                                       \
             {                                                                                                          \
-                lbl_8031A214[i].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;                                                 \
+                gTitleMenuEntries[i].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;                                                 \
             }                                                                                                          \
         }                                                                                                              \
-        gTitleMenuLinkInterface->vtable->copyItems(lbl_8031A214);                                                      \
+        gTitleMenuLinkInterface->vtable->copyItems(gTitleMenuEntries);                                                      \
     } while (0)
 #define TitleMenu_ReloadSaveSettings()                                                                                 \
     do                                                                                                                 \
@@ -312,7 +312,7 @@ int TitleMenu_run(void)
         if (menuId == 1)
         {
             gTitleMenuLinkInterface->vtable->free();
-            gTitleMenuLinkInterface->vtable->setup(lbl_8031A214, 9, 5, NULL, 0, 0, 0x14, 200, 0xff, 0xff, 0xff,
+            gTitleMenuLinkInterface->vtable->setup(gTitleMenuEntries, 9, 5, NULL, 0, 0, 0x14, 200, 0xff, 0xff, 0xff,
                                                    0xff);
             gTitleMenuPanelOpen = 1;
         }
@@ -395,7 +395,7 @@ void TitleMenu_initialise(void)
     }
     else
     {
-        gTitleMenuLinkInterface->vtable->setup(lbl_8031A214, 4, 0, NULL, 0, 0, 0x14, 200, 0xff, 0xff, 0xff, 0xff);
+        gTitleMenuLinkInterface->vtable->setup(gTitleMenuEntries, 4, 0, NULL, 0, 0, 0x14, 200, 0xff, 0xff, 0xff, 0xff);
         gTitleMenuPanelOpen = 1;
     }
     gTitleMenuLinkInterface->vtable->setSelected(gTitleMenuSelection);
@@ -418,14 +418,14 @@ void TitleMenu_initialise(void)
     {
         if (i == gTitleMenuSelection)
         {
-            lbl_8031A214[i].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
+            gTitleMenuEntries[i].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
         }
         else
         {
-            lbl_8031A214[i].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
+            gTitleMenuEntries[i].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
         }
     }
-    gTitleMenuLinkInterface->vtable->copyItems(lbl_8031A214);
+    gTitleMenuLinkInterface->vtable->copyItems(gTitleMenuEntries);
     gAttractMoviePreparePending = 0;
     gAttractMovieRetraceCountdown = 0;
     gAttractMovieReplayCountdown = 1;
@@ -469,7 +469,7 @@ TitleMenuTextEntry sNAttractModeStringBlock[1] = {
     },
 };
 
-TitleMenuTextEntry lbl_8031A214[4] = {
+TitleMenuTextEntry gTitleMenuEntries[4] = {
     {0x0331,
      {0x00, 0x11, 0x01, 0x40, 0x01, 0x0a, 0x00, 0x00, 0x01, 0x40, 0x00, 0xb4, 0x00, 0x00},
      -1,

@@ -29,4 +29,17 @@ STATIC_ASSERT(offsetof(MapRomListPage, worldX) == 0x24);
 STATIC_ASSERT(offsetof(MapRomListPage, worldZ) == 0x28);
 STATIC_ASSERT(sizeof(MapRomListPage) == 0x38);
 
+typedef struct MapRomListIndex
+{
+    int groupOffset[32];
+    int objectsSize;
+    int curvesOffset;
+    int groupsStart;
+} MapRomListIndex;
+
+STATIC_ASSERT(offsetof(MapRomListIndex, objectsSize) == 0x80);
+STATIC_ASSERT(offsetof(MapRomListIndex, curvesOffset) == 0x84);
+STATIC_ASSERT(offsetof(MapRomListIndex, groupsStart) == 0x88);
+STATIC_ASSERT(sizeof(MapRomListIndex) == 0x8C);
+
 #endif /* MAIN_MAP_ROMLIST_PAGE_H_ */

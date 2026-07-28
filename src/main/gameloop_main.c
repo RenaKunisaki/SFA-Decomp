@@ -624,9 +624,9 @@ void doQueuedLoads(void)
             gGameLoopMapLoadPending = 0;
         }
         beginLoadingMap();
-        if (lbl_803DCA94 != 0)
+        if (gDll12Interface != 0)
         {
-            (*(void (**)(int))(*(int*)lbl_803DCA94 + 0xc))(1);
+            (*(void (**)(int))(*(int*)gDll12Interface + 0xc))(1);
         }
         mmSetFreeDelay(old);
         lbl_803DCAC4 = 1;
@@ -881,7 +881,7 @@ void init(void)
         runLoadingScreens();
         dvdCheckError();
         gameTextRun();
-        if (*(u8*)lbl_803DCAFC == 0)
+        if (*(u8*)gAskProgressiveScanFlag == 0)
         {
             dtv = 0;
             if (VIGetDTVStatus() != 0)
@@ -895,7 +895,7 @@ void init(void)
                     dtv = 1;
                 }
             }
-            *(u8*)lbl_803DCAFC = dtv;
+            *(u8*)gAskProgressiveScanFlag = dtv;
         }
         GXFlush_(1, 0);
     } while ((filesDone == 0 || (u8)audioDone == 0) && gameState == GAME_STATE_BOOTING);
@@ -931,7 +931,7 @@ void init(void)
     initMaps();
     gGameUIInterface = Resource_Acquire(0, 0xf);
     gCameraInterface = Resource_Acquire(1, 0x17);
-    lbl_803DCA94 = Resource_Acquire(0x12, 8);
+    gDll12Interface = Resource_Acquire(0x12, 8);
     gPlayerInterface = Resource_Acquire(0xf, 0x16);
     gObjectTriggerInterface = Resource_Acquire(2, 0x1d);
     gScreenTransitionInterface = Resource_Acquire(0x16, 4);
@@ -969,9 +969,9 @@ void init(void)
     doNothing_beforeTitleScreen();
     doQueuedLoads();
     setDrawCloudsAndLights(0);
-    if (*(u8*)lbl_803DCAFC != 0)
+    if (*(u8*)gAskProgressiveScanFlag != 0)
     {
-        OSSetSaveRegion(lbl_803DCAFC, (u8*)lbl_803DCAFC + 1);
+        OSSetSaveRegion(gAskProgressiveScanFlag, (u8*)gAskProgressiveScanFlag + 1);
         VISetBlack(0);
         VIFlush();
         VIWaitForRetrace();

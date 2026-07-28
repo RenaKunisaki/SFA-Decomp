@@ -23,10 +23,10 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/shader_api.h"
 
-f32 lbl_803DC218 = 1.0f;
-f32 lbl_803DC21C = -15.0f;
-int lbl_803DC220 = 3;
-f32 lbl_803DC224 = 0.006f;
+f32 gSnowClawPulseScale = 1.0f;
+f32 gSnowClawPulseOffsetY = -15.0f;
+int gSnowClawPulseInterval = 3;
+f32 gSnowClawMoveStepScaleBase = 0.006f;
 
 /* object group queried to find this object's target */
 #define SNOWCLAW_TARGET_OBJGROUP 0x1e
@@ -132,7 +132,7 @@ u8 gSnowClawMoveTable[] = {
     0x00, 0x00, 0x01, 0x70, 0x00, 0x00, 0x01, 0x6F, 0x00, 0x00, 0x03, 0xE8, 0x00, 0x00, 0x03, 0xEA,
 };
 
-s32 lbl_8032A340[4] = {150, 200, 300, 400};
+s32 gSnowClawAttackTimerByRank[4] = {150, 200, 300, 400};
 
 u32 gSnowClawHurtSfxTable[8] = {0x2EF, 0x2EE, 0x2ED, 0x2EC, 0x2EB, 0x0497049C, 0x03A2049C, 0x07D007D1};
 
@@ -236,7 +236,7 @@ void snowclaw_updateMountAttack(GameObject* obj, GameObject* mount)
 
     inner = (obj)->extra;
     movePhase = SNOWCLAW_MOUNT_INTERFACE(mount)->getNormalizedSpeed(mount, &moveStep);
-    moveStep = lbl_803DC224 + 2.0f * (movePhase * lbl_803DC224);
+    moveStep = gSnowClawMoveStepScaleBase + 2.0f * (movePhase * gSnowClawMoveStepScaleBase);
     SNOWCLAW_MOUNT_INTERFACE(mount)->func12(mount, &mountPhase, &mountFlag);
     magnitude = (int)(16384.0f * mountPhase);
     if (magnitude < 0)
@@ -771,7 +771,7 @@ void snowclaw_update(GameObject* obj)
             snowclaw_spawnDropBomb((GameObject*)(*(int*)inner), obj, (u8)choice, 0);
         }
         s16toFloat((f32*)(inner + offsetof(SnowclawState, attackTimer)),
-                   lbl_8032A340[SnowBike_getRouteRank((GameObject*)(*(int*)inner)) - 1]);
+                   gSnowClawAttackTimerByRank[SnowBike_getRouteRank((GameObject*)(*(int*)inner)) - 1]);
     }
 
     sub = *(int**)inner;
@@ -792,14 +792,14 @@ void snowclaw_update(GameObject* obj)
         *(SnowClawPulse4*)pulseModes = *pulseSrc;
         pulseIndex = 3 - s->health;
         i = s->tickCounter++;
-        if ((i % lbl_803DC220) != 0)
+        if ((i % gSnowClawPulseInterval) != 0)
         {
             pulseVec[0] = 0.0f;
-            pulseVec[1] = lbl_803DC21C;
+            pulseVec[1] = gSnowClawPulseOffsetY;
             pulseVec[2] = 0.0f;
             pulseType = &pulseTypes[pulseIndex];
             pulseMode = &pulseModes[pulseIndex];
-            objfx_spawnPulseBurst(obj, lbl_803DC218, (u8)*pulseType, (u8)*pulseMode, 0, pulseVec);
+            objfx_spawnPulseBurst(obj, gSnowClawPulseScale, (u8)*pulseType, (u8)*pulseMode, 0, pulseVec);
         }
     }
 }

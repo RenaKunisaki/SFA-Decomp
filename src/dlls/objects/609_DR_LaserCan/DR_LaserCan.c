@@ -33,8 +33,8 @@
 #include "main/audio/sfx_trigger_ids.h"
 
 f32 lbl_803DDD68;
-f32 lbl_803DC2A8 = 5.0f;
-s16 lbl_803DC2AC = 0x80;
+f32 gLaserCannonAdvanceSpeed = 5.0f;
+s16 gLaserCannonPitchStep = 0x80;
 s16 gLaserCannonMaxAimStep = 0x400;
 
 #define DRLASERCANNON_OBJFLAG_PARENT_SLACK 0x1000
@@ -458,7 +458,7 @@ void DR_LaserCannon_update(GameObject* obj)
         else
         {
             s16* v;
-            (obj)->anim.rotX += lbl_803DC2AC;
+            (obj)->anim.rotX += gLaserCannonPitchStep;
             v = (s16*)objModelGetVecFn_800395d8(obj, 0xb);
             v[0] = (s16)(v[0] >> 1);
         }
@@ -546,7 +546,7 @@ void DR_LaserCannon_update(GameObject* obj)
     }
     if (state->flags.b5 != 0)
     {
-        Obj_UpdateRomCurveFollowVelocity(obj, &state->curveFollow, 0.1f * lbl_803DC2A8, 200.0f,
+        Obj_UpdateRomCurveFollowVelocity(obj, &state->curveFollow, 0.1f * gLaserCannonAdvanceSpeed, 200.0f,
                                          10.0f, 1);
         objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                 obj->anim.velocityZ * timeDelta);

@@ -5,7 +5,7 @@
 #include "main/model_engine.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 
-char lbl_803DBBF0[] = "%2d";
+char sDll3FTimerFormat[] = "%2d";
 
 #define DLL3F_TEXTURE_ID 0x47A
 
@@ -41,7 +41,7 @@ void dll_3F_updateTimerReadout(void* obj)
     {
         elapsed = 0;
     }
-    sprintf(buf, lbl_803DBBF0, elapsed);
+    sprintf(buf, sDll3FTimerFormat, elapsed);
 }
 
 void dll_3F_frameEnd_nop(void)

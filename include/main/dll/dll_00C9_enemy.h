@@ -168,6 +168,11 @@ typedef struct EnemyState {
         struct {
             u8 activeEventIndex;
         } wisp;
+        struct {
+            u8 unk33C;
+            u8 idleRow; /* 12-byte IdleRow index, chained through row+9 */
+            u8 idleRowStarted;
+        } sharpClaw;
     } familyData;
     int lastHitObject;
     /* 0x344: filled exactly by the wall-plane record; the rachnop/duster and

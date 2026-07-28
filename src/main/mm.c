@@ -321,7 +321,7 @@ extern char sMmAllocFreeMessageBlock[];
 extern char sMmStbfStackTooDeepError[];
 
 extern void* lbl_803DD498;
-extern void* lbl_803DCAFC;
+extern void* gAskProgressiveScanFlag;
 extern char sMmSpawnedUnalignedSlotWarning[];
 extern int gModelsArchiveLoadCount;
 extern char sMmFreeMemoryUsageCorruptedError[];
@@ -1013,7 +1013,7 @@ void mmInit(void)
 
     p = OSAllocFromHeap(__OSCurrHeap, 0x6ed);
     lbl_803DD498 = p;
-    lbl_803DCAFC = (u8*)p + 0x6ec;
+    gAskProgressiveScanFlag = (u8*)p + 0x6ec;
 
     p = OSAllocFromHeap(__OSCurrHeap, 0x1c0000);
     DCFlushRange(p, 0x1c0000);

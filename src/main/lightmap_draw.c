@@ -78,8 +78,8 @@ static inline void GXTexCoord2s16(const s16 s, const s16 t)
 static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 
 
-extern u32 lbl_8037E0C0[];
-extern s32 lbl_803DCE30;
+extern u32 gLightmapDrawQueue[];
+extern s32 gLightmapDrawQueueCount;
 
 
 typedef struct LightmapDrawEntry
@@ -300,10 +300,10 @@ void renderShadowType3(u8* obj, u32 b, s32 offset)
 {
     Vec stk;
     s32 t;
-    if (lbl_803DCE30 == 1000)
+    if (gLightmapDrawQueueCount == 1000)
     {
         sceneDrawTransparentPolys();
-        lbl_803DCE30 = 0;
+        gLightmapDrawQueueCount = 0;
     }
     if (((GameObject*)obj)->anim.parent != NULL)
     {
@@ -320,8 +320,8 @@ void renderShadowType3(u8* obj, u32 b, s32 offset)
     PSMTXMultVec((MtxPtr)Camera_GetViewMatrix(), &stk, &stk);
     t = (s32) - stk.z + offset;
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
-    lbl_8037E0C0[lbl_803DCE30 * 4] = (u32)obj;
-    lbl_8037E0C0[lbl_803DCE30 * 4 + 2] = t | ((b & 0xff) << 27);
+    gLightmapDrawQueue[gLightmapDrawQueueCount * 4] = (u32)obj;
+    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 2] = t | ((b & 0xff) << 27);
 }
 
 void lightmap_sortTransparentDrawQueue(void)
@@ -329,20 +329,20 @@ void lightmap_sortTransparentDrawQueue(void)
     int i, j;
     int gap = 1;
     LightSortEntry tmp;
-    while (gap <= (lbl_803DCE30 - 1) / 9)
+    while (gap <= (gLightmapDrawQueueCount - 1) / 9)
         gap = gap * 3 + 1;
     while (gap > 0)
     {
-        for (i = gap + 1; i <= lbl_803DCE30; i++)
+        for (i = gap + 1; i <= gLightmapDrawQueueCount; i++)
         {
-            tmp = ((LightSortEntry*)lbl_8037E0C0)[i - 1];
+            tmp = ((LightSortEntry*)gLightmapDrawQueue)[i - 1];
             j = i;
-            while (j > gap && ((LightSortEntry*)lbl_8037E0C0)[j - gap - 1].key < tmp.key)
+            while (j > gap && ((LightSortEntry*)gLightmapDrawQueue)[j - gap - 1].key < tmp.key)
             {
-                ((LightSortEntry*)lbl_8037E0C0)[j - 1] = ((LightSortEntry*)lbl_8037E0C0)[j - gap - 1];
+                ((LightSortEntry*)gLightmapDrawQueue)[j - 1] = ((LightSortEntry*)gLightmapDrawQueue)[j - gap - 1];
                 j -= gap;
             }
-            ((LightSortEntry*)lbl_8037E0C0)[j - 1] = tmp;
+            ((LightSortEntry*)gLightmapDrawQueue)[j - 1] = tmp;
         }
         gap /= 3;
     }
@@ -368,10 +368,10 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
     f32 minW;
     f32 minD;
 
-    if (lbl_803DCE30 == 1000)
+    if (gLightmapDrawQueueCount == 1000)
     {
         sceneDrawTransparentPolys();
-        lbl_803DCE30 = 0;
+        gLightmapDrawQueueCount = 0;
     }
     maxXs = __OSs16tof32(&bounds->maxX);
     minXs = __OSs16tof32(&bounds->minX);
@@ -390,9 +390,9 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
     PSMTXMultVec((MtxPtr)Camera_GetViewMatrix(), &stk, &stk);
     t = (s32) - stk.z;
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
-    lbl_8037E0C0[lbl_803DCE30 * 4] = (u32)bounds;
-    lbl_8037E0C0[lbl_803DCE30 * 4 + 1] = (u32)block;
-    lbl_8037E0C0[lbl_803DCE30 * 4 + 2] = t | ((selector & 0xff) << 27);
+    gLightmapDrawQueue[gLightmapDrawQueueCount * 4] = (u32)bounds;
+    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 1] = (u32)block;
+    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 2] = t | ((selector & 0xff) << 27);
 }
 
 
@@ -565,8 +565,8 @@ void sceneDrawTransparentPolys(void)
 
     lightmap_sortTransparentDrawQueue();
     i = 0;
-    entries = (LightmapDrawEntry*)lbl_8037E0C0;
-    for (; i < lbl_803DCE30; i++)
+    entries = (LightmapDrawEntry*)gLightmapDrawQueue;
+    for (; i < gLightmapDrawQueueCount; i++)
     {
         switch (entries[i].type)
         {
@@ -644,16 +644,16 @@ void sceneDrawTransparentPolys(void)
 void lightmap_queueExternalRenderEntry(u32 a, u32 b, f32* p)
 {
     s32 t;
-    if (lbl_803DCE30 == 1000)
+    if (gLightmapDrawQueueCount == 1000)
     {
         sceneDrawTransparentPolys();
-        lbl_803DCE30 = 0;
+        gLightmapDrawQueueCount = 0;
     }
     t = (s32) - p[2];
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
-    lbl_8037E0C0[lbl_803DCE30 * 4] = a;
-    lbl_8037E0C0[lbl_803DCE30 * 4 + 1] = b;
-    lbl_8037E0C0[lbl_803DCE30 * 4 + 2] = t | 0x38000000;
-    lbl_8037E0C0[lbl_803DCE30 * 4 + 3] = 7;
-    lbl_803DCE30++;
+    gLightmapDrawQueue[gLightmapDrawQueueCount * 4] = a;
+    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 1] = b;
+    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 2] = t | 0x38000000;
+    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 7;
+    gLightmapDrawQueueCount++;
 }

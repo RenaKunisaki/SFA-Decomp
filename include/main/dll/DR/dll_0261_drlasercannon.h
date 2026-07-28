@@ -46,8 +46,8 @@ void DR_LaserCannon_hitDetect(GameObject* obj);
 void DR_LaserCannon_update(GameObject* obj);
 
 extern s16 gLaserCannonMaxAimStep;
-extern f32 lbl_803DC2A8;
-extern s16 lbl_803DC2AC;
+extern f32 gLaserCannonAdvanceSpeed;
+extern s16 gLaserCannonPitchStep;
 extern f32 lbl_803DDD68;
 
 #endif /* MAIN_DLL_DR_DLL_0261_DRLASERCANNON_H_ */

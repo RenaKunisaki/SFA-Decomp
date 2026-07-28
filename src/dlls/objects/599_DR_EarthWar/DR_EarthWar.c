@@ -1489,10 +1489,10 @@ u8 gDREarthWarriorRowIndices[960] = {
     64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154,
 };
 
-s32 lbl_8033566C[4] = {0x17, 0x18, 0x19, 0x1A};
+s32 gEarthWarriorTailChainJointIndices[4] = {0x17, 0x18, 0x19, 0x1A};
 
-ObjModelChainDesc lbl_803DC760 = {lbl_8033566C, 4};
-ObjModelChainDesc* gEarthWarriorTailChainDesc = &lbl_803DC760;
+ObjModelChainDesc gEarthWarriorTailChain = {gEarthWarriorTailChainJointIndices, 4};
+ObjModelChainDesc* gEarthWarriorTailChainDesc = &gEarthWarriorTailChain;
 
 ObjectDescriptor24WithPadding gDR_EarthWarriorObjDescriptor = {
     {

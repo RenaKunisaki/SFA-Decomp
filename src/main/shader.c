@@ -58,7 +58,7 @@ extern char sTrackLoadBlockOverrunError[];
 #include "dolphin/os/OSCache.h"
 #include "dolphin/fake_tgmath.h"
 #include "dolphin/mtx/vec.h"
-extern char sShaderDebugStrings[];
+extern char sShaderUnusedWordTable[];
 #define MAP_BLOCK_LAYER_COUNT 5
 #define FRUSTUM_PLANE_COUNT   5
 void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer);
@@ -70,7 +70,7 @@ typedef struct MapInfoRecord
     u8 unk1d;
     s16 unk1e; /* +0x1e */
 } MapInfoRecord;
-extern WarpVec lbl_80386648[];
+extern WarpVec gCameraPosByTransformSpace[];
 extern const f32 gMapBlockWorldSize;
 
 #include "sys/objects/lifecycle.h"
@@ -90,7 +90,7 @@ extern const f32 gMapBlockWorldSize;
 int lbl_803DB620 = -1;
 s8 lbl_803DB624[8] = {0, -2, -1, 1, 2, 0, 0, 0};
 f32 lbl_803DB62C = 0.5f;
-extern int lbl_803822A0[5];
+extern int gMapBlockCellEntryTables[5];
 extern f32 lbl_803DEBCC;
 
 f32 gMapSavedPlayerOffsetX;
@@ -137,7 +137,7 @@ u8 distortionFilterColor[3];
 f32 distortionFilterAngle1;
 s32 bEnableColorFilter;
 int* lbl_803DCE34;
-int lbl_803DCE30;
+int gLightmapDrawQueueCount;
 ModelLightStruct* gTexBlockLightList[2];
 ModelLightStruct* gTexDimmedLightList[2];
 int gMapPendingFileFlags;
@@ -176,7 +176,7 @@ int gMapBlockOriginWorldX;
 /* the ice-mountain snowbike; its map-block residency is tracked separately so the
    ride streams blocks ahead. retail OBJECTS.bin name "IMSnowBike" (DLL 0x255) */
 #define SHADER_SNOWBIKE_OBJ 0x72
-void defStartFn_8005972c(MapRomListPage* p1, u32* p2, int idx, int flag);
+void mapBuildRomListIndex(MapRomListPage* page, MapRomListIndex* romListIndex, int slot, int unloading);
 extern f32 gShaderLoadCenterZ;
 extern f32 gShaderLoadCenterY;
 extern f32 gShaderLoadCenterX;
@@ -184,7 +184,7 @@ extern int gShaderCurMapEventId;
 int mapCoordsToId(int x, int z, int layer);
 extern s16* gMapBlockIds;
 extern u8* gMapBlockRefCounts;
-extern char lbl_8037E0C0[];
+extern char gLightmapDrawQueue[];
 typedef struct ShaderRomListSlot
 {
     void* romlist;
@@ -269,7 +269,7 @@ void turnOnDistortionFilter(f32* vec, f32 angle2, u32* color, f32 angle1)
     bEnableDistortionFilter = 1;
 }
 
-extern char lbl_803822C8[];
+extern MapRomListIndex gMapRomListIndexes[];
 extern int gHeatEffectFadeDirection;
 
 void Rcp_DisableHeatEffect(void)
@@ -450,7 +450,7 @@ static inline int objIsVisibleInAct(u8* def, int act)
 
 void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObject* parent)
 {
-    int* seg = (int*)(lbl_803822C8 + mapId * 0x8c);
+    MapRomListIndex* romListIndex = &gMapRomListIndexes[mapId];
     int i;
     char* p;
     char* end;
@@ -465,12 +465,12 @@ void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObjec
     s8* vis;
     int visByte;
 
-    if (seg[index] == -1)
+    if (romListIndex->groupOffset[index] == -1)
         return;
     objIndex = 0;
     romBase = (char*)page->objects;
     p = romBase;
-    objStart = romBase + seg[index];
+    objStart = romBase + romListIndex->groupOffset[index];
     while (p < objStart)
     {
         objIndex++;
@@ -478,11 +478,11 @@ void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObjec
     }
     for (i = index + 1; i <= 0x20; i++)
     {
-        if (seg[i] != -1)
+        if (romListIndex->groupOffset[i] != -1)
             break;
     }
     obj = objStart;
-    end = romBase + seg[i];
+    end = romBase + romListIndex->groupOffset[i];
 
     while (obj < end)
     {
@@ -631,9 +631,9 @@ int objShouldUnload(GameObject* obj)
         {
             idx2 = 0;
         }
-        x = lbl_80386648[idx2].x;
-        y = lbl_80386648[idx2].y;
-        z = lbl_80386648[idx2].z;
+        x = gCameraPosByTransformSpace[idx2].x;
+        y = gCameraPosByTransformSpace[idx2].y;
+        z = gCameraPosByTransformSpace[idx2].z;
     }
     dist = obj->anim.loadDistance;
     if (obj->anim.parent != NULL)
@@ -702,7 +702,7 @@ int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup)
     f32 dy;
     f32 range;
 
-    strs = sShaderDebugStrings;
+    strs = sShaderUnusedWordTable;
     if (placement->ident == 0x49054)
     {
         verbose = 1;
@@ -792,8 +792,8 @@ int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup)
     if (useObj != 0)
     {
         off = viewSlot << 4;
-        x = lbl_80386648[viewSlot].x;
-        p = (f32*)((u8*)lbl_80386648 + off);
+        x = gCameraPosByTransformSpace[viewSlot].x;
+        p = (f32*)((u8*)gCameraPosByTransformSpace + off);
         y = p[1];
         z = p[2];
     }
@@ -840,7 +840,7 @@ void mapLoadUnloadObjects(int flag)
     int vis;
     int idx;
 
-    base = lbl_8037E0C0;
+    base = gLightmapDrawQueue;
     count = 0;
     i = 0;
     tp = (int*)(base + 0x41E0);
@@ -1105,29 +1105,29 @@ void playerUpdateFn_8005649c(void)
     cam = Camera_GetCurrent();
     Camera_UpdateForObject(cam);
     for (k = 0; k < 31; k++)
-        lbl_80386648[k].valid = 0;
-    lbl_80386648[0].x = cam->worldX;
-    lbl_80386648[0].y = cam->worldY;
-    lbl_80386648[0].z = cam->worldZ;
-    lbl_80386648[0].valid = 1;
+        gCameraPosByTransformSpace[k].valid = 0;
+    gCameraPosByTransformSpace[0].x = cam->worldX;
+    gCameraPosByTransformSpace[0].y = cam->worldY;
+    gCameraPosByTransformSpace[0].z = cam->worldZ;
+    gCameraPosByTransformSpace[0].valid = 1;
     for (i = 0, e = objs; i < count; e++, i++)
     {
         GameObject* obj = *e;
         slot = obj->anim.transformMatrixIndex + 1;
         if (cam->parentObject == obj)
         {
-            lbl_80386648[slot].x = cam->x;
-            lbl_80386648[slot].y = cam->y;
-            lbl_80386648[slot].z = cam->z;
+            gCameraPosByTransformSpace[slot].x = cam->x;
+            gCameraPosByTransformSpace[slot].y = cam->y;
+            gCameraPosByTransformSpace[slot].z = cam->z;
         }
         else
         {
             Obj_TransformWorldPointToLocal(cam->worldX, cam->worldY, cam->worldZ, &lx, &ly, &lz, obj);
-            lbl_80386648[slot].x = lx;
-            lbl_80386648[slot].y = ly;
-            lbl_80386648[slot].z = lz;
+            gCameraPosByTransformSpace[slot].x = lx;
+            gCameraPosByTransformSpace[slot].y = ly;
+            gCameraPosByTransformSpace[slot].z = lz;
         }
-        lbl_80386648[slot].valid = 1;
+        gCameraPosByTransformSpace[slot].valid = 1;
     }
 }
 
@@ -1416,7 +1416,7 @@ void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer)
 
 
 
-char lbl_803822C8[0x41A0];
+MapRomListIndex gMapRomListIndexes[120];
 
 void mapBlockFn_80059354(int p1, int p2, MapCellEntry* entry, int layer);
 
@@ -1432,7 +1432,7 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
     s8* statusArr;
     MapCellEntry* entry;
 
-    entry = (MapCellEntry*)lbl_803822A0[layer];
+    entry = (MapCellEntry*)gMapBlockCellEntryTables[layer];
     statusArr = gMapBlockLayerTables[layer];
     slotIdx = cellX + (cellZ << 4);
     entry += slotIdx;
@@ -1717,7 +1717,7 @@ void beginLoadingMap(void)
     int bo;
     char buf[0x110];
 
-    base = lbl_8037E0C0;
+    base = gLightmapDrawQueue;
     if (lbl_803DCEB8 == -1)
     {
         lbl_803DCEB8 = -2;
@@ -2104,7 +2104,7 @@ void doPendingMapLoads(void)
     MapLoadRec recs[300];
     int rectA[4], rectB[4], rectC[4], rectD[4];
 
-    base = lbl_8037E0C0;
+    base = gLightmapDrawQueue;
     waited = 0;
     if (!(renderFlags & 0x1000))
     {
@@ -2426,7 +2426,7 @@ void doPendingMapLoads(void)
                             if (romListSlot->romlist != NULL)
                             {
                                 s16 sl = romListSlot->slot;
-                                defStartFn_8005972c(romListSlot->romlist, (u32*)(base + sl * 0x8C + 0x4208), sl, 1);
+                                mapBuildRomListIndex(romListSlot->romlist, (MapRomListIndex*)(base + sl * 0x8C + 0x4208), sl, 1);
                                 mm_free(romListSlot->romlist);
                                 *(int*)(sl * 4 + 0x83A8 + (char*)base) = 0;
                             }
@@ -2601,7 +2601,7 @@ extern int lbl_803DB648;
 
 MapRomList* mapGetCurrentRomList(void)
 {
-    char* p = (char*)lbl_803822A0[0];
+    char* p = (char*)gMapBlockCellEntryTables[0];
     int v = *(s16*)(p + 0x594);
     if (v < 0)
     {
@@ -2625,7 +2625,7 @@ MapRomList* mapGetCurrentRomList(void)
 
 MapCellEntry* mapGetCellEntry(int x, int z)
 {
-    int* base = (int*)lbl_803822A0[0];
+    int* base = (int*)gMapBlockCellEntryTables[0];
     return (MapCellEntry*)((char*)base + (x + (z << 4)) * 12);
 }
 
@@ -2726,12 +2726,12 @@ void mapLoadForObject(int mapId, GameObject* obj)
     }
     obj->anim.hostedMapSlot = slot;
     (*gMapEventInterface)->setMapActLut(mapId, slot);
-    defStartFn_8005972c((MapRomListPage*)romList, (u32*)&lbl_803822C8[slot * 0x8c], slot, 0);
+    mapBuildRomListIndex((MapRomListPage*)romList, &gMapRomListIndexes[slot], slot, 0);
     (*gMapEventInterface)->updateObjGroups(slot);
     gShaderCurMapEventId = saved;
 }
 
-void defStartFn_8005972c(MapRomListPage* p, u32* tbl, int idx, int flag)
+void mapBuildRomListIndex(MapRomListPage* p, MapRomListIndex* tbl, int idx, int flag)
 {
     char* cur;
     int count;
@@ -2754,39 +2754,39 @@ void defStartFn_8005972c(MapRomListPage* p, u32* tbl, int idx, int flag)
         pos = 0;
         if (flag == 0)
         {
-            tbl[0x21] = -1;
-            tbl[0] = -1;
-            tbl[1] = -1;
-            tbl[2] = -1;
-            tbl[3] = -1;
-            tbl[4] = -1;
-            tbl[5] = -1;
-            tbl[6] = -1;
-            tbl[7] = -1;
-            tbl[8] = -1;
-            tbl[9] = -1;
-            tbl[10] = -1;
-            tbl[11] = -1;
-            tbl[12] = -1;
-            tbl[13] = -1;
-            tbl[14] = -1;
-            tbl[15] = -1;
-            tbl[16] = -1;
-            tbl[17] = -1;
-            tbl[18] = -1;
-            tbl[19] = -1;
-            tbl[20] = -1;
-            tbl[21] = -1;
-            tbl[22] = -1;
-            tbl[23] = -1;
-            tbl[24] = -1;
-            tbl[25] = -1;
-            tbl[26] = -1;
-            tbl[27] = -1;
-            tbl[28] = -1;
-            tbl[29] = -1;
-            tbl[30] = -1;
-            tbl[31] = -1;
+            tbl->curvesOffset = -1;
+            tbl->groupOffset[0] = -1;
+            tbl->groupOffset[1] = -1;
+            tbl->groupOffset[2] = -1;
+            tbl->groupOffset[3] = -1;
+            tbl->groupOffset[4] = -1;
+            tbl->groupOffset[5] = -1;
+            tbl->groupOffset[6] = -1;
+            tbl->groupOffset[7] = -1;
+            tbl->groupOffset[8] = -1;
+            tbl->groupOffset[9] = -1;
+            tbl->groupOffset[10] = -1;
+            tbl->groupOffset[11] = -1;
+            tbl->groupOffset[12] = -1;
+            tbl->groupOffset[13] = -1;
+            tbl->groupOffset[14] = -1;
+            tbl->groupOffset[15] = -1;
+            tbl->groupOffset[16] = -1;
+            tbl->groupOffset[17] = -1;
+            tbl->groupOffset[18] = -1;
+            tbl->groupOffset[19] = -1;
+            tbl->groupOffset[20] = -1;
+            tbl->groupOffset[21] = -1;
+            tbl->groupOffset[22] = -1;
+            tbl->groupOffset[23] = -1;
+            tbl->groupOffset[24] = -1;
+            tbl->groupOffset[25] = -1;
+            tbl->groupOffset[26] = -1;
+            tbl->groupOffset[27] = -1;
+            tbl->groupOffset[28] = -1;
+            tbl->groupOffset[29] = -1;
+            tbl->groupOffset[30] = -1;
+            tbl->groupOffset[31] = -1;
         }
         for (; pos < count;)
         {
@@ -2808,7 +2808,7 @@ void defStartFn_8005972c(MapRomListPage* p, u32* tbl, int idx, int flag)
                         (*gCheckpointInterface)->addRouteEntry((CheckpointRouteEntry*)cur);
                     if (found == 0)
                     {
-                        tbl[0x21] = (int)cur - (int)p->objects;
+                        tbl->curvesOffset = (int)cur - (int)p->objects;
                         found = 1;
                     }
                 }
@@ -2816,7 +2816,7 @@ void defStartFn_8005972c(MapRomListPage* p, u32* tbl, int idx, int flag)
                 {
                     if ((mask & (1 << *(u8*)(cur + 6))) == 0)
                     {
-                        tbl[*(u8*)(cur + 6)] = (int)cur - (int)p->objects;
+                        tbl->groupOffset[*(u8*)(cur + 6)] = (int)cur - (int)p->objects;
                         mask |= 1 << *(u8*)(cur + 6);
                     }
                 }
@@ -2828,22 +2828,22 @@ void defStartFn_8005972c(MapRomListPage* p, u32* tbl, int idx, int flag)
         if (flag == 0)
         {
             minVal = count;
-            entry = tbl[0x21];
+            entry = tbl->curvesOffset;
             if (entry != -1 && entry < count)
                 minVal = entry;
-            row = (int*)tbl;
+            row = tbl->groupOffset;
             for (n2 = 0; n2 < 32; n2++)
             {
                 entry = row[n2];
                 if (entry != -1 && entry < minVal)
                     minVal = entry;
             }
-            tbl[0x22] = minVal;
-            entry = tbl[0x21];
+            tbl->groupsStart = minVal;
+            entry = tbl->curvesOffset;
             if (entry != -1)
-                tbl[0x20] = entry;
+                tbl->objectsSize = entry;
             else
-                tbl[0x20] = count;
+                tbl->objectsSize = count;
         }
     }
 }
@@ -2856,7 +2856,7 @@ void mapUnloadRomListPage(int pageIndex)
     MapRomListPage* p = gLoadedRomListPages[idx];
     if (p != 0)
     {
-        defStartFn_8005972c(p, (u32*)(lbl_803822C8 + idx * 0x8C), idx, 1);
+        mapBuildRomListIndex(p, &gMapRomListIndexes[idx], idx, 1);
         mm_free(gLoadedRomListPages[idx]);
         gLoadedRomListPages[idx] = 0;
     }
@@ -2905,7 +2905,7 @@ int mapCoordsToId(int x, int z, int layerIdx)
     return -1;
 }
 
-char sShaderDebugStrings[172] = {
+char sShaderUnusedWordTable[172] = {
     0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 56, 0, 0, 0, 52, 0, 0, 0, 60,
     0, 0, 0, 56, 0, 0, 0, 60, 0, 0, 0, 64, 0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 52,
     0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 52, 0, 0, 0, 56, 0, 0, 0, 52, 0, 0, 0, 56, 0, 0, 0, 68, 0, 0, 0, 52, 0, 0, 0, 60,
@@ -3003,7 +3003,7 @@ int mapProcessRomList(int slot)
     int rl;
     f32 dx, dz;
 
-    base = lbl_8037E0C0;
+    base = gLightmapDrawQueue;
     flag = 0;
     while (isRomListLoading())
     {
@@ -3100,7 +3100,7 @@ int mapGetRomListAndOffsets(int p1, int flag)
     ((MapRomListPage*)lbl_803DCEA0)->mapLayer = 0;
     if (flag == 0)
     {
-        defStartFn_8005972c(lbl_803DCEA0, (u32*)&lbl_803822C8[p1 * 0x8c], p1, 0);
+        mapBuildRomListIndex(lbl_803DCEA0, &gMapRomListIndexes[p1], p1, 0);
         (*gMapEventInterface)->updateObjGroups(p1);
     }
     return (int)lbl_803DCEA0;
@@ -3481,16 +3481,16 @@ void buildPlayerRelativeFrustumPlanes(void)
     frustumPlanes_updateAabbCornerIndices(gPlayerRelativeFrustumPlanes, FRUSTUM_PLANE_COUNT);
 }
 
-char lbl_8037E0C0[0x2149];
+char gLightmapDrawQueue[0x2149];
 u8 lbl_80380209[0x1DFF];
-u8 lbl_80382008[0x30];
+u8 gCloudLayerTexMatrix[0x30];
 u8 gGlowLightList[0x190];
 f32 distortionFilterVector[0x1c];
 int gShaderMapRomBuffers[0x5];
 BlockEntry gShaderRomListSlots[8];
-u8 lbl_8038228C[0x14];
-int lbl_803822A0[5];
+u8 gMapBlockCellStateTables[0x14];
+int gMapBlockCellEntryTables[5];
 s8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
 
 MapRomListPage* gLoadedRomListPages[ROM_LIST_PAGE_COUNT];
-WarpVec lbl_80386648[0x29];
+WarpVec gCameraPosByTransformSpace[0x29];

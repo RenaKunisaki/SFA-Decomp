@@ -17,7 +17,7 @@
 #include "main/resource.h"
 
 CamcontrolModeSettings* gCamcontrolModeSettings;
-f32 lbl_803DD52C;
+f32 gCamcontrolScaledTimeDelta;
 u8 gCutCamBboxBlocked;
 
 #define PAD_TRIGGER_Z 0x10
@@ -396,7 +396,7 @@ int cameraFn_80103b40(CameraObject* cam, f32* outA, f32* outB, int angle)
         {
             g = -g;
         }
-        g = g * lbl_803DD52C + gCamcontrolModeSettings->avoidanceYawOffset;
+        g = g * gCamcontrolScaledTimeDelta + gCamcontrolModeSettings->avoidanceYawOffset;
         if (g > 1000.0f)
         {
             g = 1000.0f;
@@ -1196,7 +1196,7 @@ void CameraModeNormal_update(CameraObject* camera)
     if (target[0]->anim.classId == 1)
     {
         playerGetTimeScale((GameObject*)target[0], &dx);
-        lbl_803DD52C = timeDelta * dx;
+        gCamcontrolScaledTimeDelta = timeDelta * dx;
         val = EmissionController_IsLingering((GameObject*)target[0]);
         switch (val)
         {
@@ -1224,7 +1224,7 @@ void CameraModeNormal_update(CameraObject* camera)
     }
     else
     {
-        lbl_803DD52C = timeDelta;
+        gCamcontrolScaledTimeDelta = timeDelta;
     }
     camera->unk13E = 0;
     camcontrol_updateModeSettings((int)camera);
