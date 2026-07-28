@@ -515,7 +515,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1D5 | DIM2Conveyo | COMPLETE | dlls/objects/469_DIM2Conveyo/DIM2Conveyo.c | = (canonical) | Exact complete ten-function TU with its terminal 0x40-byte descriptor-plus-tail, allocation-backed 0x14-byte state, active-EN-retail-backed fixed 0x24-byte placement, canonical unit header and shared object-group contract, and exact 96-byte data image; the generated source path remains unchanged |
 | 0x1D6 | — | COMPLETE | dlls/objects/470/470.c | = (canonical) | Exact complete nine-function TU with its terminal numbered descriptor, allocation-backed 0x20-byte state, fully asserted callback-visible placement prefix, canonical unit header, and exact 112-byte data image; active EN has no object definitions for this DLL, no basename or placement width is claimed, and the generated numeric source path remains unchanged |
 | 0x1D7 | DIM2SnowBal | COMPLETE | dlls/objects/471_DIM2SnowBal/DIM2SnowBal.c | = (canonical) | Exact complete nine-function TU with its terminal descriptor, allocation-backed 0xB0-byte state, paired-generator-backed 0x24-byte placement/setup, canonical unit header and shared child-setup contract, and exact 108-byte data image; the generated source path remains unchanged |
-| 0x1D8 | DIM2PathGen | COMPLETE | dlls/objects/472_DIM2PathGen/DIM2PathGen.c | = (canonical) | — |
+| 0x1D8 | DIM2PathGen | COMPLETE | dlls/objects/472_DIM2PathGen/DIM2PathGen.c | = (canonical) | Exact complete ten-function TU with its terminal 0x40-byte descriptor-plus-tail, allocation-backed 0x9A8-byte state, fully asserted callback-visible placement prefix, paired-snowball-backed 0x24-byte child setup, canonical unit header and shared child-setup contract, and exact 64-byte data image; the complete retail placement width is not claimed and the generated source path remains unchanged |
 | 0x1D9 | DIM2PrisonM | COMPLETE | dlls/objects/473_DIM2PrisonM/DIM2PrisonM.c | = (canonical) | — |
 | 0x1DA | — | COMPLETE | dlls/objects/474/474.c | = (canonical) | No recovered retail basename |
 | 0x1DB | — | COMPLETE | dlls/objects/475/475.c | = (canonical) | No recovered retail basename |
@@ -1042,6 +1042,7 @@ more as they are recovered.
 | 0x1D5 | dlls/objects/469_DIM2Conveyo/DIM2Conveyo.c | include/dlls/objects/469_DIM2Conveyo.h |
 | 0x1D6 | dlls/objects/470/470.c | include/dlls/objects/470.h |
 | 0x1D7 | dlls/objects/471_DIM2SnowBal/DIM2SnowBal.c | include/dlls/objects/471_DIM2SnowBal.h |
+| 0x1D8 | dlls/objects/472_DIM2PathGen/DIM2PathGen.c | include/dlls/objects/472_DIM2PathGen.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |
