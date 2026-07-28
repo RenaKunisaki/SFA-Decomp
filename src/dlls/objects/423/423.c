@@ -40,13 +40,6 @@
 /* Spore puff emitted on the sporePuffTimer tick during the burrow/attack state. */
 #define EDIBLE_MUSHROOM_PARTFX_SPORE_PUFF 0x51D
 
-typedef struct EdibleMushroomPartfxBlock {
-    u8 unknown00[0xC];
-    f32 x;
-    f32 y;
-    f32 z;
-} EdibleMushroomPartfxBlock;
-
 typedef struct EdibleMushroomTrickyInterface {
     void* unknown00[10];
     void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
@@ -97,7 +90,7 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
     f32 timer;
     s16 ang;
     ObjAnimEventList animEvents;
-    EdibleMushroomPartfxBlock partfxBlock;
+    PartFxSpawnParams partfxBlock;
     f32 sunTime;
 
     player = Obj_GetPlayerObject();
@@ -144,9 +137,9 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
             timer = (state->tailSwingFxTimer -= timeDelta);
             if (timer <= 0.0f) {
                 if (obj->objectFlags & OBJECT_OBJFLAG_RENDERED) {
-                    partfxBlock.x = obj->anim.worldPosX;
-                    partfxBlock.y = 18.0f + obj->anim.worldPosY;
-                    partfxBlock.z = obj->anim.worldPosZ;
+                    partfxBlock.posX = obj->anim.worldPosX;
+                    partfxBlock.posY = 18.0f + obj->anim.worldPosY;
+                    partfxBlock.posZ = obj->anim.worldPosZ;
                     (*gPartfxInterface)
                         ->spawnObject(obj, EDIBLE_MUSHROOM_PARTFX_TAIL_SWING, &partfxBlock, 0x200001, -1, NULL);
                 }
@@ -286,8 +279,8 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
             timer = state->sporePuffTimer - timeDelta;
             state->sporePuffTimer = timer;
             if (timer <= 0.0f) {
-                partfxBlock.x = 10.0f;
-                partfxBlock.y = 12.0f;
+                partfxBlock.posX = 10.0f;
+                partfxBlock.posY = 12.0f;
                 if (obj->objectFlags & OBJECT_OBJFLAG_RENDERED) {
                     (*gPartfxInterface)->spawnObject(obj, EDIBLE_MUSHROOM_PARTFX_SPORE_PUFF, &partfxBlock, 2, -1, NULL);
                 }
