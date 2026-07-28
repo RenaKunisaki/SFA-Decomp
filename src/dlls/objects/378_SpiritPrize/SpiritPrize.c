@@ -167,7 +167,7 @@ void spiritPrize_init(GameObject* obj, const SpiritPrizePlacement* placement) {
         }
         obj->userData1 = placement->animDataIndex + 1;
     }
-    if (obj->anim.seqId != SPIRIT_PRIZE_BOUND_LIGHT_SEQ_ID) {
+    if (obj->anim.romDefNo != SPIRIT_PRIZE_BOUND_LIGHT_SEQ_ID) {
         state->useDetachedLight = 1;
     }
     if (state->light == NULL) {

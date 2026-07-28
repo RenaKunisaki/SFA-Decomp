@@ -209,7 +209,7 @@ void PaymentKiosk_init(GameObject* obj, const PaymentKioskPlacement* placement) 
     state->payState = PAYMENT_KIOSK_STATE_RESOLVE;
     self->objectFlags = (u16)(self->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
     self->anim.resetHitboxFlags = (u8)(self->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
-    textVariant = (self->anim.seqId == PAYMENT_KIOSK_SP_WELL_SEQUENCE_ID) ? PAYMENT_KIOSK_TEXT_VARIANT_SP_WELL
+    textVariant = (self->anim.romDefNo == PAYMENT_KIOSK_SP_WELL_SEQUENCE_ID) ? PAYMENT_KIOSK_TEXT_VARIANT_SP_WELL
                                                                           : PAYMENT_KIOSK_TEXT_VARIANT_PAYPOINT;
     state->textVariant = textVariant;
 }

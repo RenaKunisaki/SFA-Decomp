@@ -807,7 +807,7 @@ void arwarwing_handleObjectDamage(GameObject* obj, ArwingState* state)
         }
         else
         {
-            if (((GameObject*)hitObj)->anim.seqId == 0x6ae && state->mode == ARWING_MODE_BARRELROLL)
+            if (((GameObject*)hitObj)->anim.romDefNo == 0x6ae && state->mode == ARWING_MODE_BARRELROLL)
             {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_ar_blaunch16);
                 return;

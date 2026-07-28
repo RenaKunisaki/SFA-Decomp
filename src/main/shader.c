@@ -923,7 +923,7 @@ void mapLoadUnloadObjects(int flag)
                         *(s8*)&bb[tbit >> 3] = bb[tbit >> 3] & ~(1 << (tbit & 7));
                     }
                 }
-                if (obj->anim.seqId == SHADER_SNOWBIKE_OBJ)
+                if (obj->anim.romDefNo == SHADER_SNOWBIKE_OBJ)
                 {
                     int slotId = obj->anim.mapEventSlot;
                     s16 j3 = 0;

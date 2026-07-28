@@ -16,7 +16,7 @@ typedef enum FEseqobjectEvent {
     FESEQOBJECT_EVENT_PARTICLE_VARIANT_4 = 6,
 } FEseqobjectEvent;
 
-/* Object messages relayed to the seqId-0xF7 receiver. */
+/* Object messages relayed to the romDefNo-0xF7 receiver. */
 typedef enum FEseqobjectMessage {
     FESEQOBJECT_MESSAGE_IN_1 = 0xF000B,
     FESEQOBJECT_MESSAGE_IN_2 = 0xF000C,
@@ -100,7 +100,7 @@ int FEseqobject_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
             case FESEQOBJECT_MESSAGE_IN_1:
                 receivers = (int*)ObjGroup_GetObjects(FESEQOBJECT_RECEIVER_OBJECT_GROUP, &receiverCount);
                 for (i = 0; i < receiverCount; i++) {
-                    if (((GameObject*)receivers[i])->anim.seqId == FESEQOBJECT_RECEIVER_SEQ_ID) {
+                    if (((GameObject*)receivers[i])->anim.romDefNo == FESEQOBJECT_RECEIVER_SEQ_ID) {
                         receiver = receivers[i];
                         i = receiverCount;
                     }
@@ -112,7 +112,7 @@ int FEseqobject_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
             case FESEQOBJECT_MESSAGE_IN_2:
                 receivers = (int*)ObjGroup_GetObjects(FESEQOBJECT_RECEIVER_OBJECT_GROUP, &receiverCount);
                 for (i = 0; i < receiverCount; i++) {
-                    if (((GameObject*)receivers[i])->anim.seqId == FESEQOBJECT_RECEIVER_SEQ_ID) {
+                    if (((GameObject*)receivers[i])->anim.romDefNo == FESEQOBJECT_RECEIVER_SEQ_ID) {
                         receiver = receivers[i];
                         i = receiverCount;
                     }
@@ -124,7 +124,7 @@ int FEseqobject_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
             case FESEQOBJECT_MESSAGE_IN_3:
                 receivers = (int*)ObjGroup_GetObjects(FESEQOBJECT_RECEIVER_OBJECT_GROUP, &receiverCount);
                 for (i = 0; i < receiverCount; i++) {
-                    if (((GameObject*)receivers[i])->anim.seqId == FESEQOBJECT_RECEIVER_SEQ_ID) {
+                    if (((GameObject*)receivers[i])->anim.romDefNo == FESEQOBJECT_RECEIVER_SEQ_ID) {
                         receiver = receivers[i];
                         i = receiverCount;
                     }

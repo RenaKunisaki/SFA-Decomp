@@ -98,7 +98,7 @@ void dll500_update(int obj) {
         Sfx_StopObjectChannel(obj, DLL500_OBJECT_SFX_CHANNEL);
     }
 
-    if (((GameObject*)obj)->anim.seqId != DLL500_STATIC_SEQUENCE_ID) {
+    if (((GameObject*)obj)->anim.romDefNo != DLL500_STATIC_SEQUENCE_ID) {
         if (((GameObject*)obj)->userData2 == 0) {
             ((GameObject*)obj)->userData2 = 1;
             ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, (f32)(s32)randomGetRange(DLL500_MOVE_PROGRESS_RANDOM_MIN,
@@ -135,7 +135,7 @@ void dll500_update(int obj) {
 void dll500_init(GameObject* obj, const Dll500PlacementView* placement) {
     Dll500State* state = obj->extra;
 
-    if (obj->anim.seqId == DLL500_STATIC_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DLL500_STATIC_SEQUENCE_ID) {
         obj->anim.rotX = (s16)((u32)placement->rotXStatic << 8);
     } else {
         obj->anim.rotX = (s16)((s32)placement->rotXSwing << 8);

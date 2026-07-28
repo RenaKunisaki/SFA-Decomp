@@ -92,7 +92,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         return;
     }
 
-    if (obj->anim.seqId == VORTEX_OBJ_WNDLIFTS || obj->anim.seqId == VORTEX_OBJ_WNDLIFTC)
+    if (obj->anim.romDefNo == VORTEX_OBJ_WNDLIFTS || obj->anim.romDefNo == VORTEX_OBJ_WNDLIFTC)
     {
         texture = objFindTexture((GameObject*)obj, 0, 0);
         if (texture != NULL)
@@ -155,7 +155,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         obj->anim.rotX = objRotY;
         obj->anim.localPosY = objY;
     }
-    else if (obj->anim.seqId == VORTEX_OBJ_DIMPIT)
+    else if (obj->anim.romDefNo == VORTEX_OBJ_DIMPIT)
     {
         texture = objFindTexture((GameObject*)obj, 0, 0);
         if (texture != NULL)
@@ -251,7 +251,7 @@ void Vortex_update(GameObject* obj)
         state->flags.active = mainGetBit(setup->activeGameBit);
     }
 
-    if (obj->anim.seqId == VORTEX_OBJ_SKYVORTC || obj->anim.seqId == VORTEX_OBJ_SKYVORTS)
+    if (obj->anim.romDefNo == VORTEX_OBJ_SKYVORTC || obj->anim.romDefNo == VORTEX_OBJ_SKYVORTS)
     {
         if (state->flags.active != 0)
         {
@@ -302,7 +302,7 @@ void Vortex_init(GameObject* obj, VortexSetup* setup)
     {
         state->flags.active = mainGetBit(setup->activeGameBit);
     }
-    if (o->anim.seqId == VORTEX_OBJ_WNDLIFTS)
+    if (o->anim.romDefNo == VORTEX_OBJ_WNDLIFTS)
     {
         for (i = 0; i < 2; i++)
         {
@@ -311,7 +311,7 @@ void Vortex_init(GameObject* obj, VortexSetup* setup)
             state->angles[i] = randomGetRange(-0x7fff, 0x7fff);
         }
     }
-    else if (o->anim.seqId == VORTEX_OBJ_WNDLIFTC)
+    else if (o->anim.romDefNo == VORTEX_OBJ_WNDLIFTC)
     {
         for (i = 0; i < 2; i++)
         {
@@ -320,7 +320,7 @@ void Vortex_init(GameObject* obj, VortexSetup* setup)
             state->angles[i] = randomGetRange(-0x7fff, 0x7fff);
         }
     }
-    else if (o->anim.seqId == VORTEX_OBJ_DIMPIT)
+    else if (o->anim.romDefNo == VORTEX_OBJ_DIMPIT)
     {
         for (i = 0; i < 3; i++)
         {

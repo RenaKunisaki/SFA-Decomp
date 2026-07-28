@@ -3503,7 +3503,7 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
 
     for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds[0]++, flagWalk++, poolIndex++)
     {
-        if ((((ObjAnimComponent*)sourceObject)->seqId == EXPGFX_SOURCE_SEQID_MATCH_ALL) ||
+        if ((((ObjAnimComponent*)sourceObject)->romDefNo == EXPGFX_SOURCE_SEQID_MATCH_ALL) ||
             (*poolSourceIds[0] == sourceObject))
         {
             s64 frameBit;

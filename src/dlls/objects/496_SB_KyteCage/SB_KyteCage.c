@@ -112,7 +112,7 @@ void SB_KyteCage_update(GameObject* obj) {
         objects = (GameObject**)ObjList_GetObjects(&i, &count);
         for (i = 0; i < count; i++) {
             GameObject* child = objects[i];
-            if (child->anim.seqId == SB_KYTECAGE_KYTE_OBJECT_TYPE) {
+            if (child->anim.romDefNo == SB_KYTECAGE_KYTE_OBJECT_TYPE) {
                 state->kyte = child;
                 ObjLink_AttachChild(obj, state->kyte, 1);
                 i = count;

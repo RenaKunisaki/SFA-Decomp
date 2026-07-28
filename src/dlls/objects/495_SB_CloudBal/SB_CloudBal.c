@@ -97,7 +97,7 @@ void SB_CloudBall_hitDetect(GameObject* obj) {
     if (state->fadeTimer != zero) {
         return;
     }
-    if (target->anim.seqId == SB_CLOUD_BALL_HIT_SFX_TARGET_SEQUENCE_ID) {
+    if (target->anim.romDefNo == SB_CLOUD_BALL_HIT_SFX_TARGET_SEQUENCE_ID) {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_gcfir1_c);
     }
     {

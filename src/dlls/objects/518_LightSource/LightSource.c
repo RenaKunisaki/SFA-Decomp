@@ -101,7 +101,7 @@ void lightsource_update(GameObject* obj) {
         }
         if (state->fxType != 0 || state->fxArg != 0) {
             effectOffset[0] = 0.0f;
-            if (obj->anim.seqId == LIGHTSOURCE_SEQID_ARWING_FX) {
+            if (obj->anim.romDefNo == LIGHTSOURCE_SEQID_ARWING_FX) {
                 effectOffset[1] = effectOffset[0];
             } else {
                 effectOffset[1] = 3.5f;
@@ -131,7 +131,7 @@ void lightsource_update(GameObject* obj) {
         }
         state->light->glowAlpha = glowAlpha;
     }
-    if (obj->anim.seqId != LIGHTSOURCE_SEQID_ARWING_A && obj->anim.seqId != LIGHTSOURCE_SEQID_ARWING_B) {
+    if (obj->anim.romDefNo != LIGHTSOURCE_SEQID_ARWING_A && obj->anim.romDefNo != LIGHTSOURCE_SEQID_ARWING_B) {
         if (state->lit != 0) {
             if (!state->loopFlags.loopedSound) {
                 Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_mushdizzylp12);
@@ -205,7 +205,7 @@ void lightsource_init(GameObject* obj, const LightSourcePlacementView* placement
             }
         }
         if (state->light != NULL) {
-            if (obj->anim.seqId == LIGHTSOURCE_SEQID_ARWING_A || obj->anim.seqId == LIGHTSOURCE_SEQID_ARWING_B) {
+            if (obj->anim.romDefNo == LIGHTSOURCE_SEQID_ARWING_A || obj->anim.romDefNo == LIGHTSOURCE_SEQID_ARWING_B) {
                 modelLightStruct_setPosition(state->light, 0.0f, 0.0f, 0.0f);
             } else {
                 modelLightStruct_setPosition(state->light, 0.0f, 7.0f, 0.0f);
@@ -228,7 +228,7 @@ void lightsource_init(GameObject* obj, const LightSourcePlacementView* placement
             lightSetField4D(state->light, 1);
 
             if (placement->flags & LIGHTSOURCE_FLAG_CREATE_GLOW) {
-                if (obj->anim.seqId == LIGHTSOURCE_SEQID_ARWING_A || obj->anim.seqId == LIGHTSOURCE_SEQID_ARWING_B) {
+                if (obj->anim.romDefNo == LIGHTSOURCE_SEQID_ARWING_A || obj->anim.romDefNo == LIGHTSOURCE_SEQID_ARWING_B) {
                     colorBase = state->fxType * 3;
                     modelLightStruct_setupGlow(state->light, 0, colorTable.colors[colorBase],
                                                colorTable.colors[colorBase + 1], colorTable.colors[colorBase + 2], 0x8c,

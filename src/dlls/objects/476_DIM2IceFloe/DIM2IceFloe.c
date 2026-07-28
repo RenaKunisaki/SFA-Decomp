@@ -113,7 +113,7 @@ void dim2icefloe_init(GameObject* obj, Dim2IceFloePlacementView* placement) {
     obj->anim.rotX = (s16)((s32)placement->initialRotationXByte << 8);
     obj->anim.rotX = randomGetRange(0, 0xffff);
     obj->anim.alpha = 0;
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case DIM2_ICE_FLOE_OBJECT_ID_FLOE_1:
         state->bobRate = 180.0f + (f32)(s32)randomGetRange(0, 0x28);
         state->bobBase = 2.0f;

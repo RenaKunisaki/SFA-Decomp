@@ -59,7 +59,7 @@ void dustmotesou_update(GameObject* source)
     {
         return;
     }
-    if (source->anim.seqId == DUSTMOTESOU_SEQ_TAIL_LIGHT)
+    if (source->anim.romDefNo == DUSTMOTESOU_SEQ_TAIL_LIGHT)
     {
         if (mapData->effectId == 0 || mapData->effectParamA == 0)
         {
@@ -69,7 +69,7 @@ void dustmotesou_update(GameObject* source)
                                    mapData->effectParamB, 0);
         return;
     }
-    if (source->anim.seqId == DUSTMOTESOU_SEQ_FIREWORK)
+    if (source->anim.romDefNo == DUSTMOTESOU_SEQ_FIREWORK)
     {
         if (mapData->effectId == 0 || mapData->effectParamA == 0)
         {

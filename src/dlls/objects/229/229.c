@@ -1,7 +1,7 @@
 /*
  * Shield object family (DLL slot 229 / 0xE5).
  *
- * The shield (seqId 0x836 uses mode 5, otherwise mode 7) is a four-segment
+ * The shield (romDefNo 0x836 uses mode 5, otherwise mode 7) is a four-segment
  * ring driven by Shield_setMode. Each mode sets the per-segment fade/scale
  * targets in ShieldState, drives a point light (modelLightStruct_*) and the
  * 0x42C/0x42D loop sfx, and seeds the fcos16 wobble for the four segments.
@@ -35,7 +35,7 @@
 #define SHIELD_SFX_VOLUME_MAX    127.0f
 #define SHIELD_OMNI_WAVE_SCALE   0.25f
 
-/* anim.seqId of the omni_shield variant (retail OBJECTS.bin name; DLL 0xE5
+/* anim.romDefNo of the omni_shield variant (retail OBJECTS.bin name; DLL 0xE5
  * also hosts 0x773 "fox_shield"); this variant uses staff-mode 5, otherwise
  * mode 7. */
 #define SHIELD_SEQID_OMNI_SHIELD 0x836
@@ -440,7 +440,7 @@ void Shield_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int f
         } else {
             frameDelta = timeDelta;
         }
-        if (obj->anim.seqId == SHIELD_SEQID_OMNI_SHIELD) {
+        if (obj->anim.romDefNo == SHIELD_SEQID_OMNI_SHIELD) {
             for (i = 0; i < SHIELD_SEGMENT_COUNT; i++) {
                 if ((state->segmentFlags[i] & SHIELD_SEGMENT_FLAG_HIDDEN) == 0) {
                     u32 k = i;
@@ -539,7 +539,7 @@ void Shield_update(GameObject* obj) {
             }
         }
     }
-    if (obj->anim.seqId == SHIELD_SEQID_OMNI_SHIELD) {
+    if (obj->anim.romDefNo == SHIELD_SEQID_OMNI_SHIELD) {
         obj->anim.alpha = (u8)(state->fadeValue / state->fadeMax * (f32)(s32)randomGetRange(96, 127));
     } else {
         obj->anim.alpha = (u8)(state->fadeValue / state->fadeMax * (f32)(s32)randomGetRange(192, 255));
@@ -567,7 +567,7 @@ void Shield_update(GameObject* obj) {
         for (; i < SHIELD_SEGMENT_COUNT; i++) {
             stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX] = (s16)((f32)stateS16[SHIELD_SEGMENT_RATE_S16_INDEX] * timeDelta +
                                                              stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX]);
-            if (obj->anim.seqId == SHIELD_SEQID_OMNI_SHIELD) {
+            if (obj->anim.romDefNo == SHIELD_SEQID_OMNI_SHIELD) {
                 f32 c = fcos16((u16)stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX]);
                 c = c / 4.0f + 1.0f;
                 stateF32[SHIELD_SEGMENT_SCALE_F32_INDEX] = *omniScaleCursor * c;
@@ -595,7 +595,7 @@ void Shield_init(GameObject* obj, void* unused) {
     (void)unused;
 
     ObjModel_SetPostRenderCallback(model, postRenderSetAlphaBlendState);
-    if (obj->anim.seqId == SHIELD_SEQID_OMNI_SHIELD) {
+    if (obj->anim.romDefNo == SHIELD_SEQID_OMNI_SHIELD) {
         Shield_setMode(obj, SHIELD_MODE_INIT_OMNI);
     } else {
         Shield_setMode(obj, SHIELD_MODE_INIT_STANDARD);

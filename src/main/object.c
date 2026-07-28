@@ -96,7 +96,7 @@ typedef struct LoadedObj
     f32 f3c;
     f32 f40;
     s16 f44;
-    s16 seqId;
+    s16 romDefNo;
     s16 typeId;
     u8 pad4a[0x2];
     s16* data;
@@ -985,7 +985,7 @@ void objFreeObjDef(u8* obj, int flag)
     {
         ObjContact_RemoveObjectCallbacks((GameObject*)obj);
     }
-    switch (((GameObject*)obj)->anim.seqId)
+    switch (((GameObject*)obj)->anim.romDefNo)
     {
     case 0:
     case 0x1f:
@@ -1330,7 +1330,7 @@ void Obj_UpdateObject(GameObject* obj)
     }
     if (gObjUpdateFlags & 1)
     {
-        switch (object->seqId)
+        switch (object->romDefNo)
         {
         case OBJECT_SEQID_SABRE:
         case OBJECT_SEQID_KRYSTAL:
@@ -1405,7 +1405,7 @@ void Obj_UpdateObject(GameObject* obj)
     {
         do
         {
-            switch (object->seqId)
+            switch (object->romDefNo)
             {
             case OBJECT_SEQID_SABRE:
             case OBJECT_SEQID_KRYSTAL:
@@ -1671,7 +1671,7 @@ int objGetTotalDataSize(void* tmpl, u8* def, s16* data, int flags)
 
     modelDef = (ObjModelInstance*)def;
     size = modelDef->modelCount * 4 + 0x10c;
-    switch (((GameObject*)tmpl)->anim.seqId)
+    switch (((GameObject*)tmpl)->anim.romDefNo)
     {
     case 0:
     case 0x1f:
@@ -1791,7 +1791,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     tmpl.def = def;
     if (def == NULL || (int)def == -1)
     {
-        debugPrintf(sObjUnknownTypeUsingDummyObjectWarning, id, *data, tmpl.seqId);
+        debugPrintf(sObjUnknownTypeUsingDummyObjectWarning, id, *data, tmpl.romDefNo);
         return NULL;
     }
     modelDef = (ObjModelInstance*)def;
@@ -1815,7 +1815,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     tmpl.z = *(f32*)(data + 8);
     tmpl.typeId = id;
     tmpl.data = data;
-    tmpl.seqId = seq;
+    tmpl.romDefNo = seq;
     tmpl.fb2 = arg3;
     tmpl.fac = arg2;
     tmpl.fa2 = -1;
@@ -1841,7 +1841,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     {
         tmpl.dll = Resource_Acquire(modelDef->dllId & 0xffff, 6);
     }
-    switch (tmpl.seqId)
+    switch (tmpl.romDefNo)
     {
     case OBJECT_SEQID_SABRE:
     case OBJECT_SEQID_KRYSTAL:
@@ -1976,7 +1976,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         }
     }
     cursor = roundUpTo4((int)obj->models + modelDef->modelCount * 4);
-    switch (obj->seqId)
+    switch (obj->romDefNo)
     {
     case OBJECT_SEQID_SABRE:
     case OBJECT_SEQID_KRYSTAL:
@@ -2004,7 +2004,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     }
     if ((flags29 & OBJLOAD_FLAG_ANIM_EVENTS) || (((ObjModelInstance*)obj->def)->flags & 0x400000))
     {
-        seq2 = obj->seqId;
+        seq2 = obj->romDefNo;
         alignedCursor = roundUpTo4(cursor);
         obj->objAnimEventTable = (ObjAnimEventTable*)alignedCursor;
         cursor = roundUpTo8(alignedCursor + 8);
@@ -2072,7 +2072,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     if (modelDef->hitboxStateCount != 0 && modelDef->hitReactStateCount != 0)
     {
         alignedCursor = roundUpTo4(cursor);
-        cursor = ObjHitReact_InitState(obj->seqId, (ObjAnimBank*)*(u8**)obj->models, obj->hitReactState, alignedCursor,
+        cursor = ObjHitReact_InitState(obj->romDefNo, (ObjAnimBank*)*(u8**)obj->models, obj->hitReactState, alignedCursor,
                                        (ObjAnimComponent*)obj);
     }
     if (modelDef->hitVolumeCount != 0)
@@ -2482,7 +2482,7 @@ void Obj_UpdateAllObjects(u8 flags)
         {
             if ((((GameObject*)obj3)->objectFlags & OBJECT_OBJFLAG_HITDETECT_DISABLED) == 0)
             {
-                switch (((GameObject*)obj3)->anim.seqId)
+                switch (((GameObject*)obj3)->anim.romDefNo)
                 {
                 case 0:
                 case 0x1f:
@@ -2516,7 +2516,7 @@ void Obj_UpdateAllObjects(u8 flags)
             {
                 do
                 {
-                    switch (((GameObject*)child)->anim.seqId)
+                    switch (((GameObject*)child)->anim.romDefNo)
                     {
                     case 0:
                     case 0x1f:
@@ -2718,7 +2718,7 @@ void Obj_RegisterObject(GameObject* obj, int flags)
 
 void Obj_RunInitCallback(GameObject* obj, int cb, int unused)
 {
-    s16 mode = obj->anim.seqId;
+    s16 mode = obj->anim.romDefNo;
     switch (mode)
     {
     case 0x1f:

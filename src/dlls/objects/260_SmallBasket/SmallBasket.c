@@ -903,7 +903,7 @@ void SmallBasket_init(GameObject* obj, SmallBasketPlacement* placement) {
         ObjHits_DisableObject(obj);
     }
 
-    sequenceId = obj->anim.seqId;
+    sequenceId = obj->anim.romDefNo;
     if (sequenceId == SMALLBASKET_SEQUENCE_VARIANT_A) {
         state->hitSfxId = SMALLBASKET_HIT_SFX_VARIANT_A;
     } else if (sequenceId == SMALLBASKET_SEQUENCE_DISGUISE_GATED) {

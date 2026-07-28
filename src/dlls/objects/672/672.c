@@ -1,7 +1,7 @@
 /*
  * DLL 672 - the collectible flight rings for the Arwing
  * sequences. One object covers every ring variant, selected at init by
- * the placement's seqId: Arwing gold/silver rings, the silver "and"
+ * the placement's romDefNo: Arwing gold/silver rings, the silver "and"
  * ring, and the WeatherControl sun/moon rings (RING_OBJ_*, RING_MODE_*).
  *
  * Each ring follows a placement-chosen route (RING_ROUTE_*): a stationary
@@ -142,7 +142,7 @@ void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
     if (mode == 0)
     {
         Sfx_PlayFromObject((int)arwing, SFXTRIG_ar_lsrhitobj16);
-        if (arwingObj->anim.seqId == RING_SEQID_ARW_ARWING)
+        if (arwingObj->anim.romDefNo == RING_SEQID_ARW_ARWING)
         {
             arwarwing_addHealth(arwingObj, 1);
             arwarwing_addScore(arwingObj, 0xa);
@@ -151,7 +151,7 @@ void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
     else if (mode == 1)
     {
         Sfx_PlayFromObject((int)arwing, SFXTRIG_ar_lsrhitobj16);
-        if (arwingObj->anim.seqId == RING_SEQID_ARW_ARWING)
+        if (arwingObj->anim.romDefNo == RING_SEQID_ARW_ARWING)
         {
             arwarwing_addMaxHealth(arwingObj, 1);
             arwarwing_addHealth(arwingObj, arwarwing_getMaxHealth(arwingObj));
@@ -165,7 +165,7 @@ void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
     else
     {
         Sfx_PlayFromObject((int)arwing, SFXTRIG_ar_laser216);
-        if (arwingObj->anim.seqId == RING_SEQID_ARW_ARWING)
+        if (arwingObj->anim.romDefNo == RING_SEQID_ARW_ARWING)
         {
             int seg;
             int collected;
@@ -329,8 +329,8 @@ void ring_update(GameObject* obj)
         case RING_ROUTE_MOVING_SHOT_A:
         case RING_ROUTE_MOVING_SHOT_B:
             if (ObjHits_GetPriorityHit(obj, &hitA, 0, 0) != 0 && (void*)(hit = hitA) != NULL &&
-                (((GameObject*)hit)->anim.seqId == RING_SHOT_TYPE_A ||
-                 ((GameObject*)hit)->anim.seqId == RING_SHOT_TYPE_B))
+                (((GameObject*)hit)->anim.romDefNo == RING_SHOT_TYPE_A ||
+                 ((GameObject*)hit)->anim.romDefNo == RING_SHOT_TYPE_B))
             {
                 arwarwing_addScore(getArwing(), RING_SCORE_VALUE);
                 obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
@@ -347,8 +347,8 @@ void ring_update(GameObject* obj)
             break;
         case RING_ROUTE_STATIONARY_SHOT:
             if (ObjHits_GetPriorityHit(obj, &hitB, 0, 0) != 0 && (void*)(hit = hitB) != NULL &&
-                (((GameObject*)hit)->anim.seqId == RING_SHOT_TYPE_A ||
-                 ((GameObject*)hit)->anim.seqId == RING_SHOT_TYPE_B))
+                (((GameObject*)hit)->anim.romDefNo == RING_SHOT_TYPE_A ||
+                 ((GameObject*)hit)->anim.romDefNo == RING_SHOT_TYPE_B))
             {
                 arwarwing_addScore(getArwing(), RING_SCORE_VALUE);
                 obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
@@ -483,7 +483,7 @@ void ring_init(GameObject* obj, RingPlacement* setup)
     RingState* state = (obj)->extra;
     RingPlacement* p = setup;
     RingFlags* f = &state->flags;
-    s16 type = (obj)->anim.seqId;
+    s16 type = (obj)->anim.romDefNo;
     if (type == RING_OBJ_ARW_SILVER)
     {
         state->mode = RING_MODE_SILVER;

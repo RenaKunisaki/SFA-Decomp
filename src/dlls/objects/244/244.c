@@ -145,7 +145,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
             shouldOpen = 1;
         }
         if (shouldOpen != 0 && state->environmentFxActive == 0) {
-            if (((GameObject*)obj)->anim.seqId == DOORF4_POWER_DOOR_SEQUENCE_ID) {
+            if (((GameObject*)obj)->anim.romDefNo == DOORF4_POWER_DOOR_SEQUENCE_ID) {
                 if (mainGetBit(GAMEBIT_CF_PowerOn) != 0) {
                     getEnvfxAct(0, 0, DOORF4_ENVFX_POWERED_OPEN, 0);
                 } else {
@@ -154,7 +154,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
             }
             state->environmentFxActive = 1;
         } else if (shouldOpen == 0 && state->environmentFxActive == 1) {
-            if (((GameObject*)obj)->anim.seqId == DOORF4_POWER_DOOR_SEQUENCE_ID && signedDistance <= 0.0f) {
+            if (((GameObject*)obj)->anim.romDefNo == DOORF4_POWER_DOOR_SEQUENCE_ID && signedDistance <= 0.0f) {
                 getEnvfxAct(0, 0, DOORF4_ENVFX_CLOSE, 0);
             }
             state->environmentFxActive = 0;
@@ -198,7 +198,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
             for (index = objectIndex, objectCursor = (GameObject**)((char*)objects + index * 4);
                  index < objectCount && shouldOpen == 0; objectCursor++, index++) {
                 otherObj = *objectCursor;
-                if (otherObj->anim.seqId == DOORF4_EXPLODABLE_SEQUENCE_ID) {
+                if (otherObj->anim.romDefNo == DOORF4_EXPLODABLE_SEQUENCE_ID) {
                     deltaX = otherObj->anim.localPosX - placement->base.posX;
                     deltaZ = otherObj->anim.localPosZ - placement->base.posZ;
                     if (sqrtf(deltaX * deltaX + deltaZ * deltaZ) < DOORF4_EXPLODABLE_SEARCH_RANGE) {
@@ -270,8 +270,8 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
         animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_CLEAR_LATCH_B;
     }
     ((GameObject*)obj)->userData2 = shouldOpen;
-    if ((((GameObject*)obj)->anim.seqId == DOORF4_LATCH_SEQUENCE_ID ||
-         ((GameObject*)obj)->anim.seqId == DOORF4_WARP_DOOR_SEQUENCE_ID) &&
+    if ((((GameObject*)obj)->anim.romDefNo == DOORF4_LATCH_SEQUENCE_ID ||
+         ((GameObject*)obj)->anim.romDefNo == DOORF4_WARP_DOOR_SEQUENCE_ID) &&
         state->sequenceLatch != 0) {
         animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_B;
     }
@@ -295,7 +295,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
                     mainSetBits(placement->farSideGameBit, sideGameBitValue);
                 }
                 if (signedDistance <= 0.0f) {
-                    switch (((GameObject*)obj)->anim.seqId) {
+                    switch (((GameObject*)obj)->anim.romDefNo) {
                     case 0x1a2:
                         ObjMsg_SendToNearbyObjects(0x19c, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
                                                    DOORF4_MESSAGE_PARTNER_OPEN, 0);
@@ -359,7 +359,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
                     sideGameBitValue ^= (u8)(placement->toggleMask >> 8);
                     mainSetBits(placement->farSideGameBit, sideGameBitValue);
                 }
-                switch (((GameObject*)obj)->anim.seqId) {
+                switch (((GameObject*)obj)->anim.romDefNo) {
                 case 0x1a2:
                     ObjMsg_SendToNearbyObjects(0x19c, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
                                                DOORF4_MESSAGE_PARTNER_CLOSE, 0);
@@ -442,7 +442,7 @@ void DoorF4_update(GameObject* obj) {
         obj->anim.localPosY = placement->base.posY;
         obj->anim.localPosZ = placement->base.posZ;
         obj->anim.rotX = (s16)(placement->yawByte << 8);
-        sequenceId = obj->anim.seqId;
+        sequenceId = obj->anim.romDefNo;
         if (sequenceId == DOORF4_WARP_DOOR_SEQUENCE_ID) {
             if (mainGetBit(state->openGameBit) != 0) {
                 (*gObjectTriggerInterface)->preempt((int)obj, 0x75);
@@ -475,7 +475,7 @@ void DoorF4_init(GameObject* obj, DoorF4Placement* placement) {
     state->nearSideGameBit = placement->nearSideGameBit;
     state->openRange = DOORF4_DEFAULT_OPEN_RANGE;
 
-    sequenceId = obj->anim.seqId;
+    sequenceId = obj->anim.romDefNo;
     switch (sequenceId) {
     case 193:
     case 196:

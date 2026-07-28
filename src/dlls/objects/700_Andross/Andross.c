@@ -304,7 +304,7 @@ void andross_processPartHits(GameObject* obj, AndrossState* stateData)
         }
         case 3:
         {
-            if (((GameObject*)hitObj)->anim.seqId == ARW_ARWING_BOMB_OBJ)
+            if (((GameObject*)hitObj)->anim.romDefNo == ARW_ARWING_BOMB_OBJ)
             {
                 if (stateData->partHitTimer[ht] == 0 && stateData->partHealth[ht] != 0 && stateData->actionState == 0xc)
                 {

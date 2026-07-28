@@ -158,7 +158,7 @@ void FireFlyLantern_init(GameObject* obj, FireFlyLanternPlacement* placement) {
     state = obj->extra;
     obj->animEventCallback = FireFlyLantern_SeqFn;
     player = Obj_GetPlayerObject();
-    if (player->anim.seqId != 0) {
+    if (player->anim.romDefNo != 0) {
         state->countGameBit = GAMEBIT_ITEM_Firefly_Count;
     } else {
         state->countGameBit = GAMEBIT_ITEM_FireflyNotShown_Count;

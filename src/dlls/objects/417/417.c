@@ -349,7 +349,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
             state->triggerList = gNwMammothGatekeeperCollectionTriggerList;
             if (state->trackedObject == NULL) {
                 short* setup = obj->anim.placementData;
-                if (tw2 != NULL && tw2->anim.seqId == 0x3fb) {
+                if (tw2 != NULL && tw2->anim.romDefNo == 0x3fb) {
                     if (getXZDistance(&obj->anim.worldPosX, &tw2->anim.worldPosX) <
                         (f32)(s32)(setup[0xC] * setup[0xC])) {
                         if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0) {

@@ -4,7 +4,7 @@
  * This DLL drives dozens of simple placement types across the game: cogs,
  * warding stones, moving water, spinning rings, lock symbols, the galleon,
  * ice floes, and other stationary props. Initialization and update behavior
- * are selected by the object's retail seqId.
+ * are selected by the object's retail romDefNo.
  */
 #include "dlls/objects/298_CFCrate.h"
 
@@ -22,7 +22,7 @@
 #include "sys/objects.h"
 
 /*
- * seqId values resolved through the active EN OBJINDEX.bin and OBJECTS.bin.
+ * romDefNo values resolved through the active EN OBJINDEX.bin and OBJECTS.bin.
  * The three numeric-only entries have no live OBJINDEX record.
  */
 typedef enum CFCrateObjectId {
@@ -100,7 +100,7 @@ void CFCrate_render(GameObject* obj, int renderArg2, int renderArg3, int renderA
     CFCrateState* state;
 
     state = obj->extra;
-    if ((s32)visible == 0 || (objectId = obj->anim.seqId) == CFCRATE_OBJ_SCALESSWORD) {
+    if ((s32)visible == 0 || (objectId = obj->anim.romDefNo) == CFCRATE_OBJ_SCALESSWORD) {
         return;
     }
     if (visible == 0 || objectId == CFCRATE_OBJ_VFP_SPELLST) {
@@ -116,7 +116,7 @@ int CFCrate_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* an
     int i;
 
     state = obj->extra;
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case CFCRATE_OBJ_BOSS_DARKOR_F:
     case CFCRATE_OBJ_CC_QUEEN:
         break;
@@ -159,7 +159,7 @@ void CFCrate_update(GameObject* obj) {
     state = obj->extra;
     camera = Camera_GetCurrent();
     placement = (CFCratePlacement*)obj->anim.placementData;
-    objectId = obj->anim.seqId;
+    objectId = obj->anim.romDefNo;
 
     switch (objectId) {
     case CFCRATE_OBJ_LINKF_COG:

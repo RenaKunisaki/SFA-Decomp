@@ -244,7 +244,7 @@ void wmsun_update(GameObject* obj)
     thresh = 0;
     mult = 1;
     spd = 0.0f;
-    if ((obj)->anim.seqId == WMSUN_SEQID_CRYSTAL) /* WM_Crystal */
+    if ((obj)->anim.romDefNo == WMSUN_SEQID_CRYSTAL) /* WM_Crystal */
     {
         if (mainGetBit(0x38f) != 0)
         {
@@ -313,7 +313,7 @@ void wmsun_update(GameObject* obj)
         }
         return;
     }
-    if ((obj)->anim.seqId == 0x2c2)
+    if ((obj)->anim.romDefNo == 0x2c2)
     {
         if (mainGetBit(0x38f) != 0)
         {
@@ -464,7 +464,7 @@ void wmsun_init(GameObject* obj, WmSunMapData* mapData)
     }
     state->glareParams = NULL;
     state->renderEnabled = 1;
-    mode = obj->anim.seqId;
+    mode = obj->anim.romDefNo;
     if (mode == WMSUN_SEQID_CRYSTAL) /* WM_Crystal */
     {
         obj->anim.rotX = (s16)(mapData->rotXByte << 8);

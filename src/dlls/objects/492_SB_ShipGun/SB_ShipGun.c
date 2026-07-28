@@ -91,7 +91,7 @@ void SB_ShipGun_render(GameObject* obj, int renderArg2, int renderArg3, int rend
     state = obj->extra;
     parent = obj->anim.parent;
     if (parent != NULL) {
-        if (parent->anim.seqId == WM_GALLEON_OBJECT_ID) {
+        if (parent->anim.romDefNo == WM_GALLEON_OBJECT_ID) {
             return;
         }
     }
@@ -144,7 +144,7 @@ void SB_ShipGun_update(GameObject* obj) {
     player = Obj_GetPlayerObject();
     state = obj->extra;
     placement = (SBShipGunPlacementView*)obj->anim.placementData;
-    if (((GameObject*)obj->anim.parent)->anim.seqId == WM_GALLEON_OBJECT_ID) {
+    if (((GameObject*)obj->anim.parent)->anim.romDefNo == WM_GALLEON_OBJECT_ID) {
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
         state->active = 0;
     } else {
@@ -153,14 +153,14 @@ void SB_ShipGun_update(GameObject* obj) {
             objects = ObjList_GetObjects(&listStart, &listCount);
             for (i = listStart; i < listCount; i = i + 1) {
                 cloudRunner = objects[i];
-                if (cloudRunner->anim.seqId == SB_SHIPGUN_CLOUDRUNNER_ALIAS_OBJECT_TYPE) {
+                if (cloudRunner->anim.romDefNo == SB_SHIPGUN_CLOUDRUNNER_ALIAS_OBJECT_TYPE) {
                     state->cloudRunner = cloudRunner;
                     i = listCount;
                 }
             }
         }
         galleon = (int)obj->anim.parent;
-        if (((void*)galleon != NULL) && (((GameObject*)galleon)->anim.seqId == SB_SHIPGUN_GALLEON_ALIAS_OBJECT_TYPE)) {
+        if (((void*)galleon != NULL) && (((GameObject*)galleon)->anim.romDefNo == SB_SHIPGUN_GALLEON_ALIAS_OBJECT_TYPE)) {
             galleonStage = SB_GALLEON_VTBL(galleon)->getStage(galleon);
         } else {
             galleonStage = 0;

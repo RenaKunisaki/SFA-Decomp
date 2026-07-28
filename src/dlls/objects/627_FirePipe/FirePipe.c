@@ -199,7 +199,7 @@ void firepipe_updateState(GameObject* obj)
     else
     {
         priorityHit = ObjHits_GetPriorityHit(obj, 0, 0, 0);
-        switch (obj->anim.seqId)
+        switch (obj->anim.romDefNo)
         {
         case FIREPIPE_OBJ_BOSSDRAKOR_FIRE:
             if ((priorityHit == 0xf) || (priorityHit == 0xe))
@@ -304,7 +304,7 @@ void firepipe_updateState(GameObject* obj)
                     {
                         modelLightStruct_setEnabled(extra->glowLight, 0, 0.0f);
                         modelLightStruct_setEnabled(extra->glowLight, 1, 1.0f);
-                        if (obj->anim.seqId == FIREPIPE_OBJ_ICE_HOLE)
+                        if (obj->anim.romDefNo == FIREPIPE_OBJ_ICE_HOLE)
                         {
                             modelLightStruct_setupGlow(extra->glowLight, 0, 0, 0xb4, 0xff, 0x64,
                                                        lbl_803DC34C * obj->anim.rootMotionScale);
@@ -519,7 +519,7 @@ void firepipe_init(GameObject* obj, FirePipeMapData* mapData)
         }
         extra->clearVolumeA = 0;
         extra->clearVolumeB = 0;
-        switch (obj->anim.seqId)
+        switch (obj->anim.romDefNo)
         {
         case FIREPIPE_OBJ_ICE_HOLE:
             extra->effectType = FIREPIPE_EFFECT_TYPE_ICE_HOLE;

@@ -108,7 +108,7 @@ void BaddieInterestP_update(GameObject* obj) {
                                     if ((int)placement->doneGameBit != BADDIE_INTEREST_GAME_BIT_NONE) {
                                         mainSetBits((int)placement->doneGameBit, 1);
                                     }
-                                    switch (target->anim.seqId) {
+                                    switch (target->anim.romDefNo) {
                                     case 0x11:
                                     case 0x13a:
                                     case 0x5b7:
@@ -130,7 +130,7 @@ void BaddieInterestP_update(GameObject* obj) {
                                         if ((int)placement->doneGameBit != BADDIE_INTEREST_GAME_BIT_NONE) {
                                             mainSetBits((int)placement->doneGameBit, 1);
                                         }
-                                        switch (target->anim.seqId) {
+                                        switch (target->anim.romDefNo) {
                                         case 0x11:
                                         case 0x13a:
                                         case 0x5b7:
@@ -152,7 +152,7 @@ void BaddieInterestP_update(GameObject* obj) {
                                         if ((int)placement->doneGameBit != BADDIE_INTEREST_GAME_BIT_NONE) {
                                             mainSetBits((int)placement->doneGameBit, 1);
                                         }
-                                        switch (target->anim.seqId) {
+                                        switch (target->anim.romDefNo) {
                                         case 0x11:
                                         case 0x13a:
                                         case 0x5b7:

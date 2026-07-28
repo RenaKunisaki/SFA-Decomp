@@ -887,7 +887,7 @@ void gunpowderBarrel_init(GameObject* obj, GunpowderBarrelPlacement* placement) 
     if ((ObjHitsPriorityState*)obj->anim.hitReactState != NULL) {
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->trackContactMask = 1;
     }
-    if (obj->anim.seqId == GUNPOWDER_BARREL_SEQUENCE_CANNON_RANGE) {
+    if (obj->anim.romDefNo == GUNPOWDER_BARREL_SEQUENCE_CANNON_RANGE) {
         state->heldFlags.cannonRangeVariant = 1;
     }
 }

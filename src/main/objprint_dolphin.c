@@ -3223,14 +3223,14 @@ void objRenderFuzz(int* obj)
     Camera* cam = Camera_GetCurrent();
     if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) ||
         ((GameObject*)obj)->anim.mapEventSlot == 0x3f ||
-        ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_FOX ||
-        ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_KRYSTAL)
+        ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_FOX ||
+        ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_KRYSTAL)
     {
         strong = 1;
         if (((GameObject*)obj)->anim.classId == 1 ||
-            ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_FRONT_FOX ||
-            ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_FOX ||
-            ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_KRYSTAL)
+            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_FRONT_FOX ||
+            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_FOX ||
+            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_KRYSTAL)
         {
             maxN = 0xf;
         }
@@ -3501,18 +3501,18 @@ void objRenderModel(GameObject* obj)
         return;
     }
     {
-        s16 seqId = obj->anim.seqId;
-        if (seqId == 0x6a8)
+        s16 romDefNo = obj->anim.romDefNo;
+        if (romDefNo == 0x6a8)
             return;
-        if (seqId == 0x6a9)
+        if (romDefNo == 0x6a9)
             return;
-        if (seqId == 0x6aa)
+        if (romDefNo == 0x6aa)
             return;
-        if (seqId == 0x6ab)
+        if (romDefNo == 0x6ab)
             return;
-        if (seqId == 0x6ac)
+        if (romDefNo == 0x6ac)
             return;
-        if (seqId == 0x752)
+        if (romDefNo == 0x752)
             return;
     }
     Camera_ProjectWorldPointWithOffset(

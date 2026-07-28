@@ -102,13 +102,13 @@ void PressureSwitch_update(GameObject* obj) {
         contactHeightThreshold = PRESSURE_SWITCH_CONTACT_HEIGHT_THRESHOLD;
         for (; contactIndex < (contactState = obj->anim.hitboxTransformState)->contactObjectCount; contactIndex++) {
             GameObject* contact = contactState->contactObjects[contactIndex];
-            if (contact->anim.seqId == PRESSURE_SWITCH_TRIGGER_SEQ_ID) {
+            if (contact->anim.romDefNo == PRESSURE_SWITCH_TRIGGER_SEQ_ID) {
                 state->flags.triggerObjectPresent = 1;
             }
             if (contact->anim.localPosY - obj->anim.localPosY > contactHeightThreshold) {
                 state->holdTimer = PRESSURE_SWITCH_HOLD_FRAMES;
             }
-            if (state->chimeLatch == 0 && contact != NULL && contact->anim.seqId == PRESSURE_SWITCH_CHIME_SEQ_ID) {
+            if (state->chimeLatch == 0 && contact != NULL && contact->anim.romDefNo == PRESSURE_SWITCH_CHIME_SEQ_ID) {
                 if (isPlayerFar == 0) {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_mpick1_b);
                 }

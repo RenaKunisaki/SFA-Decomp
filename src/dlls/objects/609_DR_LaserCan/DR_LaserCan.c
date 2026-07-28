@@ -171,7 +171,7 @@ int drlasercannon_aimAtTarget(GameObject* self, GameObject* target, DrLaserCanno
     /* Desired yaw from the ground-plane heading, pitch from height over horizontal range. */
     yaw = getAngle(dp[0], dp[2]);
     pitch = (s16)getAngle(dp[1], horiz);
-    if (self->anim.seqId == DR_LASERCANNON_PITCH_FLIP_TYPE)
+    if (self->anim.romDefNo == DR_LASERCANNON_PITCH_FLIP_TYPE)
     {
         pitch = (s16)-pitch;
     }
@@ -333,14 +333,14 @@ void DR_LaserCannon_hitDetect(GameObject* obj)
     hit = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, 0, &hitVolume, &hitPosX, &hitPosY, &hitPosZ);
     if (state->flags.b6 != 0)
     {
-        if (hit != 0 && ((GameObject*)hitObject)->anim.seqId != state->hitExcludeType &&
+        if (hit != 0 && ((GameObject*)hitObject)->anim.romDefNo != state->hitExcludeType &&
             state->warningObject != NULL)
         {
             Shield_setMode(state->warningObject, DR_LASERCANNON_WARNING_HIT_MODE);
         }
     }
     else if (((u32)(hit - 0xe) <= 1 || hit == 5) && (void*)state->lastHitObject != (void*)hitObject &&
-             ((GameObject*)hitObject)->anim.seqId != state->hitExcludeType)
+             ((GameObject*)hitObject)->anim.romDefNo != state->hitExcludeType)
     {
         state->lastHitObject = hitObject;
         state->health -= hitVolume;

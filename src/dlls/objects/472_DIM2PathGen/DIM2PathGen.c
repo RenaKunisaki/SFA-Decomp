@@ -110,7 +110,7 @@ void DIM2PathGenerator_update(GameObject* obj) {
     state->flags &= ~DIM2_PATH_GENERATOR_FLAG_SPAWN_TOGGLE;
     objects = (int**)ObjGroup_GetObjects(DIM2_PATH_GENERATOR_SNOWBALL_GROUP, &count);
     for (objectIndex = 0; objectIndex < count; objectIndex++) {
-        if (state->spawnTypes[toggle] == ((GameObject*)objects[objectIndex])->anim.seqId) {
+        if (state->spawnTypes[toggle] == ((GameObject*)objects[objectIndex])->anim.romDefNo) {
             int* childPlacementData = *(int**)((char*)objects[objectIndex] + 0x4c);
             int poolIndex;
 

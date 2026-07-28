@@ -196,7 +196,7 @@ int SHthorntail_HasNearbyPendingEventObject(GameObject* obj) {
     }
     objects = (GameObject**)ObjGroup_GetObjects(SHTHORNTAIL_LINKED_EVENT_OBJECT_GROUP, &count);
     for (index = 0; index < count; index++) {
-        if ((objects[index]->anim.seqId == SHTHORNTAIL_OBJECT_TYPE_ID) &&
+        if ((objects[index]->anim.romDefNo == SHTHORNTAIL_OBJECT_TYPE_ID) &&
             ((SHTHORNTAIL_PLACEMENT(objects[index])->configToken == gSHthorntailDataTables[groupIndex][1]) ||
              (SHTHORNTAIL_PLACEMENT(objects[index])->configToken == gSHthorntailDataTables[groupIndex][2]) ||
              (SHTHORNTAIL_PLACEMENT(objects[index])->configToken == gSHthorntailDataTables[groupIndex][3]))) {

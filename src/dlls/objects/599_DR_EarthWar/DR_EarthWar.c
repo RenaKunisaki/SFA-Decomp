@@ -226,7 +226,7 @@ extern ObjModelChainDesc* gEarthWarriorTailChainDesc;
 #define DREARTHWARRIOR_OBJFLAG_PARENT_SLACK 0x1000
 
 #define DREARTHWARRIOR_CHILD_OBJ_HELPER   0x6f5
-/* attacker seqId whose hits are ignored here (retail OBJECTS.bin). */
+/* attacker romDefNo whose hits are ignored here (retail OBJECTS.bin). */
 #define DREARTHWARRIOR_ATTACKER_SEQID_SWORD 0x23 /* "sword" (DLL 0xE2) */
 #define DREARTHWARRIOR_EFFECT_RESOURCE_ID 0x5a /* shared effect resource -> gEarthWarriorResource */
 
@@ -1099,7 +1099,7 @@ void DR_EarthWarrior_hitDetect(GameObject* obj)
                     return;
                 }
                 Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&hx, 5.0f);
-                if (hit == 0x1a || hitObj == Obj_GetPlayerObject() || ((GameObject*)hitObj)->anim.seqId == DREARTHWARRIOR_ATTACKER_SEQID_SWORD)
+                if (hit == 0x1a || hitObj == Obj_GetPlayerObject() || ((GameObject*)hitObj)->anim.romDefNo == DREARTHWARRIOR_ATTACKER_SEQID_SWORD)
                 {
                     return;
                 }

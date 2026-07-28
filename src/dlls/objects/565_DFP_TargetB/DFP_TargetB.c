@@ -151,7 +151,7 @@ void dfptargetblock_hitDetect(GameObject* obj)
     state = obj->extra;
     home = (ObjPlacement*)obj->anim.placementData;
 
-    if (obj->anim.seqId == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
+    if (obj->anim.romDefNo == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
     {
         gTargetBlockHomeX = obj->anim.localPosX;
         gTargetBlockHomeZ = obj->anim.localPosZ;
@@ -285,7 +285,7 @@ void dfptargetblock_update(GameObject* obj)
 
     state = obj->extra;
     home = (ObjPlacement*)obj->anim.placementData;
-    if (obj->anim.seqId == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
+    if (obj->anim.romDefNo == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
     {
         burstOrigin.posX = 0.0f;
         burstOrigin.posY = (12.0f);
@@ -364,7 +364,7 @@ void dfptargetblock_init(GameObject* obj, DfpTargetBlockPlacement* placement)
     state = obj->extra;
     model = (ModelFileHeader*)*ZBomb_GetActiveModel(obj);
     obj->objectFlags = obj->objectFlags | OBJECT_OBJFLAG_HIDDEN;
-    if (obj->anim.seqId == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
+    if (obj->anim.romDefNo == DFPTARGETBLOCK_HOME_OBJECT_TYPE)
     {
         gTargetBlockHomePos[0] = obj->anim.localPosX;
         gTargetBlockHomePos[1] = obj->anim.localPosY;

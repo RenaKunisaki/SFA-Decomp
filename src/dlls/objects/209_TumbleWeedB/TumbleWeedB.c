@@ -79,7 +79,7 @@ s8 tumbleweedbush_spawnSibling(GameObject* obj) {
 
     state = obj->extra;
     placement = (TumbleweedBushPlacement*)obj->anim.placementData;
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case TUMBLEWEED_BUSH_SEQUENCE_A:
         if ((*gSkyInterface)->getSunPosition(&sunTime) == 0) {
             return -1;
@@ -115,7 +115,7 @@ s8 tumbleweedbush_spawnSibling(GameObject* obj) {
         int currentIndex = *(int*)&objectIndex;
 
         objectIndex = currentIndex + 1;
-        if (siblingSeqId == objects[currentIndex]->anim.seqId) {
+        if (siblingSeqId == objects[currentIndex]->anim.romDefNo) {
             siblingCount++;
         }
     }
@@ -145,7 +145,7 @@ s8 tumbleweedbush_spawnSibling(GameObject* obj) {
                 while (objectIndex < objectCount) {
                     GameObject* markerObj = objects[objectIndex];
 
-                    if (markerObj->anim.seqId == 0x27f) {
+                    if (markerObj->anim.romDefNo == 0x27f) {
                         ((ObjPlacement*)newPlacement)->posX = markerObj->anim.localPosX;
                         ((ObjPlacement*)newPlacement)->posY = objects[objectIndex]->anim.localPosY;
                         ((ObjPlacement*)newPlacement)->posZ = objects[objectIndex]->anim.localPosZ;
@@ -226,14 +226,14 @@ void TumbleWeedBush_update(GameObject* obj) {
     state = obj->extra;
     player = Obj_GetPlayerObject();
     if (ObjHits_PollPriorityHitWithCooldown(obj, &gTumbleweedBushHitCooldown, (int*)&hitObject, hitPos) != 0) {
-        if (hitObject->anim.seqId != TUMBLEWEED_BUSH_SIBLING_C) {
+        if (hitObject->anim.romDefNo != TUMBLEWEED_BUSH_SIBLING_C) {
             objfx_spawnHitEmitterAtPos(hitPos, TUMBLEWEED_BUSH_HIT_EFFECT_ID, TUMBLEWEED_BUSH_HIT_COLOR_R,
                                        TUMBLEWEED_BUSH_HIT_COLOR_G, TUMBLEWEED_BUSH_HIT_COLOR_B);
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_swdtest222_280);
             for (pieceIndex = 0; (u8)pieceIndex < state->pieceCount; pieceIndex++) {
                 pieceSlot = &state->pieceObjects[(u8)pieceIndex];
                 if (*pieceSlot != NULL) {
-                    if (obj->anim.seqId == TUMBLEWEED_BUSH_SEQUENCE_A) {
+                    if (obj->anim.romDefNo == TUMBLEWEED_BUSH_SEQUENCE_A) {
                         if ((*gSkyInterface)->getSunPosition(&sunTime) == 0) {
                             continue;
                         }
@@ -282,7 +282,7 @@ void TumbleWeedBush_init(GameObject* obj, TumbleweedBushPlacement* placement, in
     scale = obj->anim.rootMotionScale;
     ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (s32)(sTumbleweedBushHitRadius[0] * scale),
                                (s32)(TUMBLEWEED_BUSH_HIT_Y_MIN * scale), (s32)(TUMBLEWEED_BUSH_HIT_Y_MAX * scale));
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case TUMBLEWEED_BUSH_SEQUENCE_A:
     case TUMBLEWEED_BUSH_SEQUENCE_C:
     case TUMBLEWEED_BUSH_SEQUENCE_D:
@@ -330,7 +330,7 @@ GameObject* tumbleweedbush_findNearestActive(f32* position) {
         objects = objectList;
     }
     while (objectIndex < objectCount) {
-        if ((*objects)->anim.seqId == TUMBLEWEED_BUSH_SIBLING_B) {
+        if ((*objects)->anim.romDefNo == TUMBLEWEED_BUSH_SIBLING_B) {
             if (((TumbleweedState*)(*objects)->extra)->phase > TUMBLEWEED_PHASE_ARMED) {
                 f32 distance = vec3f_distanceSquared(&(*objects)->anim.worldPosX, position);
 
@@ -480,7 +480,7 @@ void tumbleweed_updateRollingMotion(GameObject* obj, TumbleweedState* state) {
             obj->anim.velocityY += -0.17f;
         } else {
             obj->anim.localPosY = 7.0f + groundHits[0][nearestHitIndex]->height;
-            if (obj->anim.seqId == TUMBLEWEED_TYPE_2) {
+            if (obj->anim.romDefNo == TUMBLEWEED_TYPE_2) {
                 heightDelta = (f32)(int)(randomValue = randomGetRange(0x8c, 0xb4));
                 heightDelta = (f32)state->distToTarget / heightDelta;
                 bounceVelocity = 0.8f * obj->anim.velocityY;
@@ -536,7 +536,7 @@ void tumbleweed_fall(GameObject* obj) {
         ObjHits_EnableObject(obj);
         state->phase = TUMBLEWEED_PHASE_ROLLING;
         state->flags |= TUMBLEWEED_EFFECT_FLAGS_BURST_PUFF;
-        if (obj->anim.seqId == TUMBLEWEED_TYPE_4) {
+        if (obj->anim.romDefNo == TUMBLEWEED_TYPE_4) {
             state->phaseTimer = 30.0f;
         }
     }
@@ -565,7 +565,7 @@ void tumbleweed_free(GameObject* obj) {
     int objectCount;
     int bushSeqId;
 
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case TUMBLEWEED_TYPE_1:
         bushSeqId = TUMBLEWEED_BUSH_SEQUENCE_A;
         break;
@@ -584,7 +584,7 @@ void tumbleweed_free(GameObject* obj) {
     while (objectIndex < objectCount) {
         GameObject* bush = objects[objectIndex];
 
-        if (bushSeqId == bush->anim.seqId) {
+        if (bushSeqId == bush->anim.romDefNo) {
             ((void (*)(GameObject*, GameObject*))(*bush->anim.dll)[TUMBLEWEED_BUSH_REMOVE_PIECE_SLOT])(bush, obj);
         }
         objectIndex++;
@@ -623,7 +623,7 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
                 ObjHits_EnableObject(obj);
                 state->phase = TUMBLEWEED_PHASE_ROLLING;
                 state->flags |= TUMBLEWEED_EFFECT_FLAGS_BURST_PUFF;
-                if (obj->anim.seqId == TUMBLEWEED_TYPE_4) {
+                if (obj->anim.romDefNo == TUMBLEWEED_TYPE_4) {
                     state->phaseTimer = 30.0f;
                 }
             }
@@ -635,7 +635,7 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
             targetOffsetZ = obj->anim.localPosZ - player->anim.localPosZ;
             targetDistanceSquared = targetOffsetX * targetOffsetX + targetOffsetZ * targetOffsetZ;
             tricky = (GameObject*)getTrickyObject();
-            if (tricky != NULL && tricky->anim.seqId == TRICKY_SEQ_ID) {
+            if (tricky != NULL && tricky->anim.romDefNo == TRICKY_SEQ_ID) {
                 f32 trickyOffsetX, trickyOffsetZ, trickyDistanceSquared;
                 if (targetDistanceSquared < 30625.0f) {
                     TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, TUMBLEWEED_TRICKY_COMMAND_KIND,
@@ -683,8 +683,8 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
                 state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
             } else {
                 if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, &sphereIndex, &hitVolume) != 0 &&
-                    hitObject->anim.seqId != obj->anim.seqId) {
-                    if (obj->anim.seqId == TUMBLEWEED_TYPE_3) {
+                    hitObject->anim.romDefNo != obj->anim.romDefNo) {
+                    if (obj->anim.romDefNo == TUMBLEWEED_TYPE_3) {
                         state->flags |= TUMBLEWEED_EFFECT_FLAGS_BURST_PUFF;
                         state->flags &= ~TUMBLEWEED_EFFECT_FLAG_HIT_PULSE;
                         state->phase = TUMBLEWEED_PHASE_PICKUP_APPROACH;
@@ -715,7 +715,7 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
                     state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
                 } else {
                     if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, &sphereIndex, &hitVolume) != 0 &&
-                        hitObject->anim.seqId != obj->anim.seqId) {
+                        hitObject->anim.romDefNo != obj->anim.romDefNo) {
                         state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
                     }
                 }
@@ -863,7 +863,7 @@ void tumbleweed_updateEffects(GameObject* obj) {
     int spawnCount;
 
     if ((state->flags & TUMBLEWEED_EFFECT_FLAG_BURST) != 0) {
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case TUMBLEWEED_TYPE_3:
         case TUMBLEWEED_TYPE_1:
         case TUMBLEWEED_TYPE_4:
@@ -890,7 +890,7 @@ void tumbleweed_updateEffects(GameObject* obj) {
     }
 
     if ((state->flags & TUMBLEWEED_EFFECT_FLAG_PUFF) != 0) {
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case TUMBLEWEED_TYPE_3:
         case TUMBLEWEED_TYPE_1:
         case TUMBLEWEED_TYPE_4:
@@ -928,7 +928,7 @@ void tumbleweed_updateEffects(GameObject* obj) {
 }
 
 void tumbleweed_update(GameObject* obj) {
-    if (obj->anim.seqId == TUMBLEWEED_TYPE_1) {
+    if (obj->anim.romDefNo == TUMBLEWEED_TYPE_1) {
         tumbleweed_updateTargetedStateMachine(obj);
     } else {
         tumbleweed_updateStateMachine(obj);
@@ -957,7 +957,7 @@ void tumbleweed_init(GameObject* obj, TumbleweedPlacement* placement) {
     ObjGroup_AddObject((int)obj, TUMBLEWEED_SECONDARY_OBJECT_GROUP);
     ObjHits_DisableObject(obj);
     ObjMsg_AllocQueue((void*)obj, 1);
-    if (obj->anim.seqId == TUMBLEWEED_TYPE_3) {
+    if (obj->anim.romDefNo == TUMBLEWEED_TYPE_3) {
         state->flags |= TUMBLEWEED_EFFECT_FLAG_HIT_PULSE;
     }
 }

@@ -167,7 +167,7 @@ void suntemple_update(GameObject* obj)
             gameObj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
 
-        if (gameObj->anim.seqId == SUNTEMPLE_SEQ_TIMER_LOCKOUT && gameTimerIsRunning() != 0)
+        if (gameObj->anim.romDefNo == SUNTEMPLE_SEQ_TIMER_LOCKOUT && gameTimerIsRunning() != 0)
         {
             gameObj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
@@ -178,7 +178,7 @@ void suntemple_update(GameObject* obj)
             {
                 if (cfg->triggerSlot != -1)
                 {
-                    if (gameObj->anim.seqId == SUNTEMPLE_SEQ_WC_INV_USE)
+                    if (gameObj->anim.romDefNo == SUNTEMPLE_SEQ_WC_INV_USE)
                     {
                         if (state->mapEventMode == 1 && (mainGetBit(SUNTEMPLE_GAMEBIT_WC_INV_A) != 0 ||
                                                          mainGetBit(SUNTEMPLE_GAMEBIT_WC_INV_B) != 0))

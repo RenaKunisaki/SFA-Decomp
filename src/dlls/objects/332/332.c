@@ -524,7 +524,7 @@ void babyCloudRunner_init(GameObject* obj, BabyCloudRunnerPlacement* placement) 
         ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP);
     } else {
         state->runnerIndex = placement->runnerGameBit - GAMEBIT_CFRelated02FC;
-        if (obj->anim.seqId == BABYCLOUDRUNNER_AMBIENT_OBJECT_ID) {
+        if (obj->anim.romDefNo == BABYCLOUDRUNNER_AMBIENT_OBJECT_ID) {
             state->runnerIndex = -1;
             state->curveSpeed = 3.0f;
             state->mutterSfxTable = gBabyCloudRunnerMutterSfxTableSpecial;

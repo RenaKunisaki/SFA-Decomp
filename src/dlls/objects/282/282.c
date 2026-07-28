@@ -39,7 +39,7 @@ void decoration11a_hitDetect(GameObject* obj) {
     f32 axisDelta;
     f32 axisDistanceSquared;
 
-    modelId = obj->anim.seqId;
+    modelId = obj->anim.romDefNo;
     if (modelId != DECORATION11A_MODEL_A && modelId != DECORATION11A_MODEL_B && modelId != DECORATION11A_MODEL_C) {
         return;
     }
@@ -149,7 +149,7 @@ void decoration11a_init(GameObject* obj, Decoration11APlacement* placement) {
         obj->anim.rootMotionScale *= obj->anim.modelInstance->rootMotionScaleBase;
     }
     {
-        s16 modelId = obj->anim.seqId;
+        s16 modelId = obj->anim.romDefNo;
         if (modelId != DECORATION11A_MODEL_A && modelId != DECORATION11A_MODEL_B && modelId != DECORATION11A_MODEL_C) {
             return;
         }

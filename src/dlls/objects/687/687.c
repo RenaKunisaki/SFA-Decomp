@@ -7,7 +7,7 @@
  * hit polling, TREE_FLAG_AMBIENT_EFFECTS spawns up to three drifting
  * ambient effect objects tracked along the object's path points, and
  * TREE_FLAG_PLAYER_PROXIMITY_BURST fires a burst when the player crosses
- * the proximity radius. seqId selects an effect-colour profile index into
+ * the proximity radius. romDefNo selects an effect-colour profile index into
  * gTreeEffectColors.
  *
  * The ambient effect objects are driven through an interface at +0x68
@@ -313,7 +313,7 @@ void tree_init(GameObject* obj, TreeSetup* setup)
     {
         state->flags |= TREE_FLAG_HIT_ENABLED;
     }
-    switch (obj->anim.seqId)
+    switch (obj->anim.romDefNo)
     {
     case TREE_SEQID_SMALL_FERN:
         state->effectProfileIndex = 0xa;

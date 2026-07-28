@@ -143,7 +143,7 @@ int chukChuk_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
             void* sibling = (void*)objects[objectIndex];
-            if (sibling != (void*)obj && ((GameObject*)sibling)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
+            if (sibling != (void*)obj && ((GameObject*)sibling)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
                 int siblingState =
                     (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)->getControlMode(sibling, 0);
                 if (siblingState > maxSiblingState) {
@@ -279,7 +279,7 @@ int chukChuk_updateWindupState(GameObject* obj, GroundBaddieState* state) {
         state->baddie.moveDone = 0;
     }
     if ((state->baddie.moveEventFlags & 1) == 0) {
-        if (((GameObject*)Obj_GetPlayerObject())->anim.seqId != 0) {
+        if (((GameObject*)Obj_GetPlayerObject())->anim.romDefNo != 0) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
         } else {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_swd);
@@ -313,7 +313,7 @@ int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state) {
         for (; objectIndex < objectCount; objectIndex++) {
             void* sibling = (void*)objects[objectIndex];
 
-            if (sibling != obj && ((GameObject*)sibling)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
+            if (sibling != obj && ((GameObject*)sibling)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
                 (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)
                     ->handleMessage(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }
@@ -323,13 +323,13 @@ int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state) {
         childState = (*(DllCEStaffInterface**)((GameObject*)playerChild)->anim.dll)
                          ->getHitReactValue((GameObject*)playerChild);
         if (childState != 0) {
-            if (player->anim.seqId != 0) {
+            if (player->anim.romDefNo != 0) {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
             } else {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_95);
             }
         } else {
-            if (player->anim.seqId != 0) {
+            if (player->anim.romDefNo != 0) {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
             } else {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_swd);
@@ -363,7 +363,7 @@ int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state) {
             int siblingAddress = objects[objectIndex];
 
             if ((void*)siblingAddress != (void*)obj &&
-                ((GameObject*)siblingAddress)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
+                ((GameObject*)siblingAddress)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
                 (*(DllCESiblingInterface**)((GameObject*)siblingAddress)->anim.dll)
                     ->handleMessage((GameObject*)siblingAddress, DLL_CE_MESSAGE_RELEASE, 0);
             }
@@ -425,7 +425,7 @@ int chukChuk_updateAttackState(GameObject* obj, GroundBaddieState* state) {
         for (; objectIndex < objectCount; objectIndex++) {
             void* sibling = (void*)objects[objectIndex];
 
-            if (sibling != obj && ((GameObject*)sibling)->anim.seqId == DLL_CE_SIBLING_SEQ_ID) {
+            if (sibling != obj && ((GameObject*)sibling)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
                 (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)
                     ->handleMessage(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }

@@ -514,13 +514,13 @@ GameObject* trickyFindNearestUsableBaddie(GameObject* origin, f32 maxRadius, int
         if (ObjGroup_ContainsObject(*objs, TRICKY_BADDIE_TARGET_OBJGROUP) == 0 && obj_extra > 0.0f && v1 == 0 &&
             v2 != 0)
         {
-            if (((GameObject*)*objs)->anim.seqId != TRICKY_SEQID_WHIRLPOOL)
+            if (((GameObject*)*objs)->anim.romDefNo != TRICKY_SEQID_WHIRLPOOL)
             {
                 if ((*gMapEventInterface)->shouldNotSaveTime(*(int*)((char*)data + 0x14)) != 0)
                 {
                     if (allowSpecialTypes == 0)
                     {
-                        s16 m = ((GameObject*)*objs)->anim.seqId;
+                        s16 m = ((GameObject*)*objs)->anim.romDefNo;
                         if (m == TRICKY_SEQID_VAMBAT || m == TRICKY_SEQID_WB ||
                             m == DLL437_SEQUENCE_ID_SC_BABY_LIGHTFOOT || m == TRICKY_SEQID_PINPON)
                             continue;
@@ -663,7 +663,7 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 #define SKEETLA_PARTICLE_SPARK_A       0xca
 #define SKEETLA_PARTICLE_SPARK_B       0xcb
 
-/* attacker seqId that triggers the staff-impact sfx (retail OBJECTS.bin). */
+/* attacker romDefNo that triggers the staff-impact sfx (retail OBJECTS.bin). */
 #define SKEETLA_ATTACKER_SEQID_STAFF 0x69
 /* "staff" (DLL 0xE2) */
 #define SKEETLA_PARTICLE_SPAWN_FLAGS   0x200001
@@ -868,7 +868,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
 
     lastContactObj = (void*)((GameObject*)obj)->anim.hitReactState->activeHit;
     if ((((GameObject*)obj)->anim.hitReactState->flags & OBJHITS_PRIORITY_STATE_PAIR_RESPONSE_APPLIED) == 0 ||
-        (((GameObject*)lastContactObj)->anim.seqId == 0x1f))
+        (((GameObject*)lastContactObj)->anim.romDefNo == 0x1f))
     {
         lastContactObj = NULL;
     }
@@ -926,7 +926,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     case 0xc:
         objfx_spawnHitEmitterAtPos(hitPosPtr, 8, 0xff, 0x20, 0x20);
         objDoHitParticleFx(obj, 0.014f, lightArgs, 4, 0);
-        if (((GameObject*)lastContactObj)->anim.seqId == SKEETLA_ATTACKER_SEQID_STAFF)
+        if (((GameObject*)lastContactObj)->anim.romDefNo == SKEETLA_ATTACKER_SEQID_STAFF)
         {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_stftest_var);
         }
@@ -1105,7 +1105,7 @@ char sSkeetlaVelDebugFmt[] = "Vel %f\n";
  * this many linked route candidates (status[8] / f32 bestDistances[8]). */
 
 
-/* attacker seqId that triggers the staff-impact sfx (retail OBJECTS.bin). */
+/* attacker romDefNo that triggers the staff-impact sfx (retail OBJECTS.bin). */
 
 
 static inline int skeetla_isInWater(u8* state)
@@ -1817,12 +1817,12 @@ void skeetla_spawnLinkedSparks(u8* obj)
     args.y = ((TrickyState*)state)->sparkPos0Y;
     args.z = ((TrickyState*)state)->sparkPos0Z;
     args.objectId = ((GameObject*)obj)->anim.rotX;
-    if (linkedObj->anim.seqId == SKEETLA_LINKED_SOURCE_ID_OBJ_A)
+    if (linkedObj->anim.romDefNo == SKEETLA_LINKED_SOURCE_ID_OBJ_A)
     {
         args.sourceId =
             (u8)(*(u32(**)(u8*))(*(int*)(*(int*)&linkedObj->anim.dll) + 0x28))((u8*)linkedObj);
     }
-    else if (linkedObj->anim.seqId == SKEETLA_LINKED_SOURCE_ID_OBJ_B)
+    else if (linkedObj->anim.romDefNo == SKEETLA_LINKED_SOURCE_ID_OBJ_B)
     {
         args.sourceId =
             (u8)(*(u32(**)(u8*))(*(int*)(*(int*)&linkedObj->anim.dll) + 0x28))((u8*)linkedObj);
@@ -3840,7 +3840,7 @@ void trickyGrowl(void* obj, void* trickyState)
  *
  * trickyFindCirclingTarget       - picks the object Tricky should circle:
  *                                   the current follow target if it is the
- *                                   special seqId 0x6a3 actor, else the
+ *                                   special romDefNo 0x6a3 actor, else the
  *                                   player's lock-on target, validated
  *                                   against ObjGroup 3 by a triangle-
  *                                   inequality distance test.
@@ -3866,7 +3866,7 @@ void trickyGrowl(void* obj, void* trickyState)
    "TrickyFood" and "flameblast"). */
 #define ANIMOBJD2_TRICKY_FOOD_OBJ_ID 0x17b
 #define ANIMOBJD2_FLAMEBLAST_OBJ_ID  0x4f0
-/* seqId of the special actor Tricky circles when it is the current follow target (docblock: "the special seqId 0x6a3 actor") */
+/* romDefNo of the special actor Tricky circles when it is the current follow target (docblock: "the special romDefNo 0x6a3 actor") */
 #define ANIMOBJD2_CIRCLE_TARGET_SEQID 0x6a3
 
 /* trickyUpdateCircling circling substate machine (TrickyState.substate; this object's
@@ -4264,7 +4264,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         void** p;
         GameObject* tgt;
         GameObject* found = trickyFindNearestUsableBaddie(t->playerObj, 150.0f, 0);
-        if (found != NULL && found->anim.seqId == ANIMOBJD2_CIRCLE_TARGET_SEQID)
+        if (found != NULL && found->anim.romDefNo == ANIMOBJD2_CIRCLE_TARGET_SEQID)
         {
             tgt = found;
         }
@@ -4380,7 +4380,7 @@ void* trickyFindCirclingTarget(GameObject* obj, void* state)
     f32 d1, d2, d3;
 
     target = (GameObject*)((TrickyState*)state)->followObj;
-    if (target->anim.seqId == ANIMOBJD2_CIRCLE_TARGET_SEQID)
+    if (target->anim.romDefNo == ANIMOBJD2_CIRCLE_TARGET_SEQID)
     {
         return target;
     }
@@ -8506,7 +8506,7 @@ int Tricky_updateSideCommandPrompts(int obj)
                 cmdByte = *(char*)(ref + 0x74c);
                 if (cmdByte == '\0')
                 {
-                    if (((GameObject*)*(int*)(ref + 0x748))->anim.seqId == TRICKY_OBJ_BLUE_MUSHROOM)
+                    if (((GameObject*)*(int*)(ref + 0x748))->anim.romDefNo == TRICKY_OBJ_BLUE_MUSHROOM)
                     {
                         promptB = true;
                     }
@@ -9200,7 +9200,7 @@ void Tricky_update(int obj)
                     trickyState->commandPhase = 1;
                     trickySelectQueuedCommandTarget(trickyState, 1);
                     TRICKY_VOICE(obj, 0x13c, 0);
-                    switch (trickyState->followObj->anim.seqId)
+                    switch (trickyState->followObj->anim.romDefNo)
                     {
                     case 0x1ca:
                         if (**(u8**)state < 4)
@@ -9300,7 +9300,7 @@ void Tricky_update(int obj)
                         trickyState->commandPhase = 3;
                         if (trickySelectQueuedCommandTarget(trickyState, 3) != 0)
                         {
-                            switch (trickyState->followObj->anim.seqId)
+                            switch (trickyState->followObj->anim.romDefNo)
                             {
                             case 0x36:
                             case 0x104:
@@ -9342,7 +9342,7 @@ void Tricky_update(int obj)
                         trickyState->commandPhase = 4;
                         trickySelectQueuedCommandTarget(trickyState, 4);
                         trickyState->stateIndex = 7;
-                        switch (trickyState->followObj->anim.seqId)
+                        switch (trickyState->followObj->anim.romDefNo)
                         {
                         case 0x1c9:
                             *(void**)&trickyState->unk724 = dimicewall_countdownCallback;

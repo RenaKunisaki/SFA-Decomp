@@ -68,7 +68,7 @@ void dll413_hitDetect(GameObject* obj) {
     if (lastHitObject == NULL) {
         return;
     }
-    if (lastHitObject->anim.seqId == DLL413_IGNORED_HIT_SEQUENCE_ID) {
+    if (lastHitObject->anim.romDefNo == DLL413_IGNORED_HIT_SEQUENCE_ID) {
         return;
     }
 

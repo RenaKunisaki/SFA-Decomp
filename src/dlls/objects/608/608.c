@@ -361,7 +361,7 @@ void ProximityMine_init(GameObject* obj, ProximityMineDef* def)
     ProximityMineState* state;
 
     state = obj->extra;
-    if (obj->anim.seqId == PROXIMITYMINE_OBJ)
+    if (obj->anim.romDefNo == PROXIMITYMINE_OBJ)
     {
         def->mode = PROXIMITYMINE_SPAWN_PROXIMITY;
     }

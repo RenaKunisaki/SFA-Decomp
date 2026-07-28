@@ -1100,7 +1100,7 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     GXSetTevSwapMode(GX_TEVSTAGE2, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE2, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    if (((GameObject*)this)->anim.seqId == 0x755)
+    if (((GameObject*)this)->anim.romDefNo == 0x755)
     {
         GXSetCullMode(GX_CULL_FRONT);
     }

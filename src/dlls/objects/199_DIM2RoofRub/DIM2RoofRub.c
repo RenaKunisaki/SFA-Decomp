@@ -110,9 +110,9 @@ void dim2roofrub_spawnEffects(GameObject* obj) {
         effectParams.posZ = 0.64f * (-2.6f * obj->anim.rootMotionScale);
         objfx_spawnLightPulse(obj, 0.025f * obj->anim.rootMotionScale, 1, 0, pulseCount, 0.7f, &effectParams);
     }
-    if (obj->anim.seqId == DIM2ROOFRUB_SEQID_SLIDE) {
+    if (obj->anim.romDefNo == DIM2ROOFRUB_SEQID_SLIDE) {
         objfx_spawnDirectionalBurst(obj, 7, 1.0f, 5, 1, 10, 6.0f, NULL, 0x20000000);
-    } else if (obj->anim.seqId == DIM2ROOFRUB_SEQID_TREAD) {
+    } else if (obj->anim.romDefNo == DIM2ROOFRUB_SEQID_TREAD) {
         ObjModel* model = Obj_GetActiveModel(obj);
 
         model->textureRefs->swapSelector = 2;

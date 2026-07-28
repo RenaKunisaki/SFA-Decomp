@@ -156,7 +156,7 @@ StaffCollisionInterface** gBaddieStaffCollisionInterface;
 /* camera mode DLL 0x49 = dll_0049_cameramodecombat */
 #define ENEMY_CAMMODE_COMBAT 0x49
 
-/* enemy defNos (anim.seqId) - names read from retail OBJECTS.bin at def+0x91;
+/* enemy defNos (anim.romDefNo) - names read from retail OBJECTS.bin at def+0x91;
    every id below gates to this file's own DLL 0xC9 */
 #define ENEMY_SHARPCLAW_GR_OBJ     0x11
 #define ENEMY_GUARDCLAW_OBJ        0xd8
@@ -517,7 +517,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                 sector = (u32)(u16)diff >> 13;
                 hDist = sqrtf(dp[0] * dp[0] + dp[2] * dp[2]);
                 vDist = sqrtf(dp[1] * dp[1]);
-                switch ((obj)->anim.seqId)
+                switch ((obj)->anim.romDefNo)
                 {
                 case 0x11:
                 case 0x13a:
@@ -861,7 +861,7 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
     ((ObjPlacement*)setup)->color[3] = ((ObjPlacement*)parentSetup)->color[3];
     nearest = (int)Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     gTrickyNearestObject = nearest;
-    if ((((GameObject*)nearest)->anim.seqId == TRICKY_OBJ_APPLE) || (((GameObject*)nearest)->anim.seqId == TRICKY_CHILD_OBJ_ENERGY_EGG))
+    if ((((GameObject*)nearest)->anim.romDefNo == TRICKY_OBJ_APPLE) || (((GameObject*)nearest)->anim.romDefNo == TRICKY_CHILD_OBJ_ENERGY_EGG))
     {
         (*(void (**)(int, f32, f32, f32))(*(int*)(*(int*)&((GameObject*)nearest)->anim.dll) + 0x2c))(
             nearest, 0.0f, 1.0f, 0.0f);
@@ -923,7 +923,7 @@ u8 baddie_canSeeTarget(GameObject* obj, TrickyState* state, void* from, void* to
         probe.y = *(f32*)((int)from + 4);
         probe.z = *(f32*)((int)from + 8);
         keepGroundOffset = 1;
-        setupId = (obj)->anim.seqId;
+        setupId = (obj)->anim.romDefNo;
         if (((((setupId != 0x613) && (setupId != 0x642)) && (setupId != 0x3fe)) &&
              ((setupId != 0x7c6) && (setupId != 0x7c8))) &&
             ((setupId != 0x251) && (setupId != 0x851)))
@@ -995,7 +995,7 @@ void baddie_updateSightQuadrants(GameObject* obj, TrickyState* state, f32 radius
         probe.x = obj->anim.worldPosX - (radius * mathSinf(angle));
         probe.y = obj->anim.worldPosY;
         probe.z = obj->anim.worldPosZ - (radius * mathCosf(angle));
-        setupId = obj->anim.seqId;
+        setupId = obj->anim.romDefNo;
         if (((((setupId != 0x613) && (setupId != 0x642)) && (setupId != 0x3fe)) &&
              ((setupId != 0x7c6) && (setupId != 0x7c8))) &&
             ((setupId != 0x251) && (setupId != 0x851)))
@@ -1225,7 +1225,7 @@ void enemyObjAnimUpdate(short* obj, int state)
         if ((flags & 0x400) != 0)
         {
             ((TrickyState*)state)->actionId = 3;
-            switch (((GameObject*)obj)->anim.seqId)
+            switch (((GameObject*)obj)->anim.romDefNo)
             {
             case ENEMY_SHARPCLAW_GR_OBJ:
             case ENEMY_SHARPCLAW_SN_OBJ:
@@ -1302,7 +1302,7 @@ void enemyObjAnimUpdate(short* obj, int state)
         else
         {
             ((TrickyState*)state)->actionId = 4;
-            switch (((GameObject*)obj)->anim.seqId)
+            switch (((GameObject*)obj)->anim.romDefNo)
             {
             case ENEMY_SHARPCLAW_GR_OBJ:
             case ENEMY_SHARPCLAW_SN_OBJ:
@@ -1413,7 +1413,7 @@ void enemyObjAnimUpdate(short* obj, int state)
     else
     {
         ((TrickyState*)state)->actionId = 5;
-        switch (((GameObject*)obj)->anim.seqId)
+        switch (((GameObject*)obj)->anim.romDefNo)
         {
         case ENEMY_SHARPCLAW_GR_OBJ:
         case ENEMY_SHARPCLAW_SN_OBJ:
@@ -1887,7 +1887,7 @@ int enemy_SeqFn(GameObject* node, int unused, ObjAnimUpdateState* animUpdate)
             }
             break;
         case 2:
-            if (node->anim.seqId == ENEMY_BOSSGENERAL_OBJ)
+            if (node->anim.romDefNo == ENEMY_BOSSGENERAL_OBJ)
                 *(u16*)(sub + 0x2b6) = 0x7a5;
             else
                 *(u16*)(sub + 0x2b6) = 0x33;
@@ -2476,7 +2476,7 @@ void baddieAfterUpdateBonesCb(GameObject* obj, int* bones)
 {
     BaddieAfterUpdateBonesCbState* state = obj->extra;
     int v = *bones;
-    switch (obj->anim.seqId)
+    switch (obj->anim.romDefNo)
     {
     case ENEMY_HAGABONMK2_OBJ:
         ObjModelChain_Update(bones, v, (ObjModelChain*)state->tailBoneChain, crawler_rotateVectorYaw);
@@ -2519,7 +2519,7 @@ void enemy_free(GameObject* obj, int flag)
         mm_free((void*)*(int*)state);
         *(int*)state = 0;
     }
-    switch ((obj)->anim.seqId)
+    switch ((obj)->anim.romDefNo)
     {
     case ENEMY_HAGABONMK2_OBJ:
         hagabonMK2_stopLoopSfx((int)obj, state);
@@ -2950,7 +2950,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
         (obj)->objectFlags |= ((EnemyPlacement*)setup)->objectFlagBits & 7;
         ((EnemyState*)state)->current = ((EnemyPlacement*)setup)->hitPoints;
         (obj)->animEventCallback = enemy_SeqFn;
-        switch ((obj)->anim.seqId)
+        switch ((obj)->anim.romDefNo)
         {
         case ENEMY_SHARPCLAW_GR_OBJ:
         case ENEMY_SHARPCLAW_SN_OBJ:
@@ -3058,7 +3058,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
             state[0x25f] = 1;
         }
         if ((((EnemyState*)state)->flags2E4 & 0x8000022) != 0 || ((EnemyPlacement*)setup)->unk34 != 0 ||
-            (obj)->anim.seqId == ENEMY_VAMBAT_OBJ || (obj)->anim.seqId == ENEMY_FIREBAT_OBJ)
+            (obj)->anim.romDefNo == ENEMY_VAMBAT_OBJ || (obj)->anim.romDefNo == ENEMY_FIREBAT_OBJ)
         {
             ((EnemyState*)state)->flags |= 0x40000;
         }

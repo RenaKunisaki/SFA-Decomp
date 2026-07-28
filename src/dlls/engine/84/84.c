@@ -53,11 +53,11 @@ void dll_54_update(CameraObject* camera)
             for (; i < count; i++)
             {
                 GameObject* o = (GameObject*)arr[i];
-                if (o->anim.seqId == DLL54_LOOKAT_SEQID)
+                if (o->anim.romDefNo == DLL54_LOOKAT_SEQID)
                 {
                     gCameraMode54State->lookAtObj = o;
                 }
-                else if (o->anim.seqId == DLL54_ORIGIN_SEQID)
+                else if (o->anim.romDefNo == DLL54_ORIGIN_SEQID)
                 {
                     gCameraMode54State->originObj = o;
                 }

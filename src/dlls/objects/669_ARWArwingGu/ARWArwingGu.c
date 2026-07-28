@@ -2,8 +2,8 @@
  * ARWArwingGu (DLL 669) - the Arwing's attached "gear" models in the
  * on-rails flight sections: the twin laser guns (def 0x610 / 0x615), the
  * bomb model (def 0x611) and the engine/escort model (def 0x606). One DLL
- * drives all of them, branching on the object's seqId. getExtraSize and
- * update therefore return / interpret a different state shape per seqId:
+ * drives all of them, branching on the object's romDefNo. getExtraSize and
+ * update therefore return / interpret a different state shape per romDefNo:
  *   0x606  engine - scrolls a texture animation (8-byte texture state)
  *   0x610/0x615 guns - count down a "just fired" visible timer, then hide
  *   0x611  bomb - fades alpha in or out toward a target (1-byte fadeIn flag)
@@ -16,7 +16,7 @@
 #include "main/model.h"
 #include "main/objtexture.h"
 
-/* object def numbers (== seqId) of the Arwing's attached models */
+/* object def numbers (== romDefNo) of the Arwing's attached models */
 enum
 {
     ARWGU_DEF_ENGINE = 0x606, /* escort / engine, animated texture */
@@ -82,7 +82,7 @@ void arwarwinggu_applyTextureFrame(GameObject* obj)
 
 int ARWArwingGu_getExtraSize(GameObject* obj)
 {
-    switch (obj->anim.seqId)
+    switch (obj->anim.romDefNo)
     {
     case ARWGU_DEF_ENGINE:
         return 8;
@@ -126,7 +126,7 @@ void ARWArwingGu_update(GameObject* obj)
 {
     ObjAnimComponent* objAnim = &(obj)->anim;
 
-    switch ((obj)->anim.seqId)
+    switch ((obj)->anim.romDefNo)
     {
     case ARWGU_DEF_ENGINE:
     {
@@ -183,7 +183,7 @@ void ARWArwingGu_update(GameObject* obj)
 
 void ARWArwingGu_init(GameObject* obj)
 {
-    if (obj->anim.seqId == ARWGU_DEF_ENGINE)
+    if (obj->anim.romDefNo == ARWGU_DEF_ENGINE)
     {
         return;
     }

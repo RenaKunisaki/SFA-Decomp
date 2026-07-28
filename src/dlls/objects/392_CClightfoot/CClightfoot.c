@@ -514,7 +514,7 @@ void ccLightfoot_update(GameObject* obj) {
         }
     } else {
         if (ObjHits_GetPriorityHit(obj, &hitObjectHandle, 0, 0) != 0) {
-            move = ((GameObject*)hitObjectHandle)->anim.seqId;
+            move = ((GameObject*)hitObjectHandle)->anim.romDefNo;
             if (move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_A || move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_B) {
                 Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
             }

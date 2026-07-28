@@ -43,7 +43,7 @@ static inline u8 iceBall_isOwnerActive(GameObject* owner) {
 }
 
 void iceBall_handleSurfaceImpact(GameObject* obj) {
-    s16 sequenceId = obj->anim.seqId;
+    s16 sequenceId = obj->anim.romDefNo;
     int particleIndex;
 
     if (sequenceId == 0x2cb) {
@@ -68,7 +68,7 @@ void iceBall_handleCharacterImpact(GameObject* obj) {
     CameraShake_Enable();
     CameraShake_SetOffset(1.0f);
     Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_lummy311_26a);
-    sequenceId = obj->anim.seqId;
+    sequenceId = obj->anim.romDefNo;
     if (sequenceId == 0x2cb) {
         if (obj->ownerObj != NULL) {
             if (iceBall_isOwnerActive(obj->ownerObj)) {

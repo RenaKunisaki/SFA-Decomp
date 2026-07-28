@@ -489,7 +489,7 @@ void getVisibleObjects(s8* opacity)
                         if ((tf & 0x800000) != 0 && (((GameObject*)o)->colorFadeFlags & OBJ_COLOR_FADE_FLAG_ACTIVE) == 0)
                         {
                             key |= 0x40000000LL;
-                            key |= (((GameObject*)o)->anim.seqId & 0x3ff) << 20;
+                            key |= (((GameObject*)o)->anim.romDefNo & 0x3ff) << 20;
                         }
                         gVisibleObjectSortKeys[gVisibleObjectSortKeyCount] =
                             (i & 0x3ff) | (((sortDepth & 0x3ff) << 10) | key);

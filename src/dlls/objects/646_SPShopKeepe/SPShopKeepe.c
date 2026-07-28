@@ -777,7 +777,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
             ((ShopkeeperState*)state)->opacity = 0xFF;
             break;
         case 4:
-            if (((GameObject*)player)->anim.seqId == 0)
+            if (((GameObject*)player)->anim.romDefNo == 0)
             {
                 warpToMap(0xF, 0);
             }

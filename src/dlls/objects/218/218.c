@@ -277,7 +277,7 @@ void pollenfragment_update(GameObject* obj)
                                            1.0f);
         obj->anim.rotZ = obj->anim.rotZ + framesThisStep * 0x500;
     }
-    else if (obj->anim.seqId == POLLEN_FRAGMENT_OBJECT_ID)
+    else if (obj->anim.romDefNo == POLLEN_FRAGMENT_OBJECT_ID)
     {
         t = 5.0f * lbl_803DBD48;
         obj->anim.rotX = t * (f32)(u32)framesThisStep + (f32)(int)obj->anim.rotX;
@@ -290,7 +290,7 @@ void pollenfragment_update(GameObject* obj)
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, POLLENFRAGMENT_HIT_VOLUME_SLOT, 1, 0);
     ObjHits_EnableObject(obj);
     hit = (void*)((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject;
-    if (hit != NULL && ((GameObject*)hit)->anim.seqId != obj->anim.seqId &&
+    if (hit != NULL && ((GameObject*)hit)->anim.romDefNo != obj->anim.romDefNo &&
         hit != *(void**)&((PollenFragmentExtra*)extra)->ownerObj)
     {
         ((PollenFragmentExtra*)extra)->timer = 0.0f;

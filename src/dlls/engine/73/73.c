@@ -214,7 +214,7 @@ void CameraModeCombat_update(CameraObject* cam)
                         classId = tgt->anim.classId;
                         if (classId == 0x1c || classId == 0x6d || classId == 0x2a)
                         {
-                            if (tgt->anim.seqId == CAMCOMBAT_SEQID_DIM_BOSS)
+                            if (tgt->anim.romDefNo == CAMCOMBAT_SEQID_DIM_BOSS)
                             {
                                 ty += 20.0f;
                             }

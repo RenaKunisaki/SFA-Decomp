@@ -43,7 +43,7 @@ void CameraModeCloudRunner_update(CameraObject* camera)
     focus = playerGetFocusObject(target);
     if (focus != NULL)
     {
-        if (focus->anim.seqId == CLOUDRUNNER_CURVE_TAG)
+        if (focus->anim.romDefNo == CLOUDRUNNER_CURVE_TAG)
         {
             mxin.x = focus->anim.worldPosX;
             mxin.y = focus->anim.worldPosY;

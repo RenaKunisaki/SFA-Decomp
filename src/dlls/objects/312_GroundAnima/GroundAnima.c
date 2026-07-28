@@ -65,7 +65,7 @@ f32 GroundAnimator_applyPress(GameObject* obj, GameObject* target) {
             GameObject* linkedObject;
             state->sinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * (f32)(u32)placement->maxSinkDepth;
             linkedObject = state->linkedObject;
-            switch (linkedObject->anim.seqId) {
+            switch (linkedObject->anim.romDefNo) {
             case GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID:
                 mmpMoonRock_setFrozen(linkedObject, 0);
                 break;
@@ -280,7 +280,7 @@ void GroundAnimator_update(GameObject* obj) {
                 (GameObject*)ObjGroup_FindNearestObject(GROUND_ANIMATOR_TARGET_OBJECT_GROUP, obj, &searchDistance);
             linkedObject = state->linkedObject;
             if (linkedObject != NULL) {
-                switch (state->linkedObject->anim.seqId) {
+                switch (state->linkedObject->anim.romDefNo) {
                 case GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID:
                     if ((state->flags & GROUND_ANIMATOR_STATE_COMPLETE) == 0) {
                         mmpMoonRock_setFrozen((GameObject*)(linkedObject), 1);
@@ -327,7 +327,7 @@ void GroundAnimator_update(GameObject* obj) {
                 state->previousSinkDepth = maxSinkDepth;
                 state->sinkDepth = maxSinkDepth;
                 if (state->linkedObject != NULL && state->linkedObject->extra != NULL) {
-                    switch (state->linkedObject->anim.seqId) {
+                    switch (state->linkedObject->anim.romDefNo) {
                     case GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID:
                         mmpMoonRock_setFrozen(state->linkedObject, 0);
                         break;

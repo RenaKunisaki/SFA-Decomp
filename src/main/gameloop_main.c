@@ -786,8 +786,8 @@ void gameLoop(void)
                 for (; i < gGameLoopButtonObjectCount; i++)
                 {
                     objRenderModelAndHitVolumes((GameObject*)*p, 0, 0, 0, 0, 1.0f);
-                    if (((GameObject*)*p)->anim.seqId == GAMELOOP_SEQID_DIE_FOX ||
-                        ((GameObject*)*p)->anim.seqId == GAMELOOP_SEQID_DIE_KRYSTAL)
+                    if (((GameObject*)*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_FOX ||
+                        ((GameObject*)*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_KRYSTAL)
                     {
                         objRenderFuzz((int*)*p);
                     }

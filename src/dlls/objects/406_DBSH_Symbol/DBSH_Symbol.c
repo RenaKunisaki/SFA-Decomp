@@ -87,7 +87,7 @@ int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjAnimUpdateSta
         objectList = ObjList_GetObjects(&objectIndex, &objectCount);
         while (objectIndex < objectCount) {
             *(int*)&state->partnerSymbol = objectList[objectIndex];
-            if (state->partnerSymbol->anim.seqId == DBSH_SYMBOL_PARTNER_SEQUENCE_ID) {
+            if (state->partnerSymbol->anim.romDefNo == DBSH_SYMBOL_PARTNER_SEQUENCE_ID) {
                 break;
             }
             objectIndex++;

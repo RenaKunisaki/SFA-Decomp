@@ -78,7 +78,7 @@ u32 lbl_8031A054[3] = {0, 0, 0};
 
 int dll_19_isBaddieControlObject(GameObject* obj)
 {
-    s16 v = (obj)->anim.seqId;
+    s16 v = (obj)->anim.romDefNo;
     switch (v)
     {
     case 341:
@@ -268,7 +268,7 @@ void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg
     ((GroundBaddieState*)state)->gameBitA = *(s16*)(config + 24);
     if (((GroundBaddieState*)state)->gameBitA != -1)
     {
-        if (obj->anim.seqId == 636)
+        if (obj->anim.romDefNo == 636)
         {
             obj->userData1 = (mainGetBit(((GroundBaddieState*)state)->gameBitA) == 0);
         }

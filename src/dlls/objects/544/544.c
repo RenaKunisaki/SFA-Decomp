@@ -97,7 +97,7 @@ void VFP_DoorSwitch_hitDetect(void)
 void VFP_DoorSwitch_update(GameObject* obj)
 {
     VfpDoorSwitchState* state;
-    if ((obj)->anim.seqId != VFP_DOORSWITCH_LIFTIND_OBJ)
+    if ((obj)->anim.romDefNo != VFP_DOORSWITCH_LIFTIND_OBJ)
     {
         vfpdoorswitch_updateExplodingVariant(obj);
         return;
@@ -129,7 +129,7 @@ void VFP_DoorSwitch_init(GameObject* obj, int data)
         state->exploded = 1;
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
     }
-    if (obj->anim.seqId == VFP_DOORSWITCH_LIFTIND_OBJ && state->activated != 0)
+    if (obj->anim.romDefNo == VFP_DOORSWITCH_LIFTIND_OBJ && state->activated != 0)
     {
         *&obj->anim.bankIndex = 1;
     }

@@ -136,7 +136,7 @@ void DBprotection_updateFlight(GameObject* obj) {
         objects = ObjList_GetObjects(&objIndex, &objCount);
         for (t = objIndex; t < objCount; t++) {
             otherObj = objects[t];
-            if (otherObj->anim.seqId == DBPROTECTION_TRICKY_TARGET_SEQID) {
+            if (otherObj->anim.romDefNo == DBPROTECTION_TRICKY_TARGET_SEQID) {
                 state->targetObj = otherObj;
                 t = objCount;
             }
@@ -992,7 +992,7 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             int end;
             int* arr = ObjList_GetObjects(&start, &end);
             for (i = start; i < end; i++) {
-                if (((GameObject*)arr[i])->anim.seqId == SBGALLEON_ROMLIST_LINKED) {
+                if (((GameObject*)arr[i])->anim.romDefNo == SBGALLEON_ROMLIST_LINKED) {
                     state->linkedActor = arr[i];
                     i = end;
                 }

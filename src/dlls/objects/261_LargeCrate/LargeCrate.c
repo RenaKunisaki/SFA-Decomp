@@ -519,7 +519,7 @@ void LargeCrate_update(GameObject* obj) {
                     if (Sfx_IsPlayingFromObject(0, (u16)state->hitSfxId) == 0) {
                         Sfx_PlayFromObject((int)obj, (u16)state->hitSfxId);
                     }
-                    if (obj->anim.seqId == LARGECRATE_SEQUENCE_VARIANT_A) {
+                    if (obj->anim.romDefNo == LARGECRATE_SEQUENCE_VARIANT_A) {
                         state->spinSpeed = randomGetRange(LARGECRATE_SPIN_SPEED_MIN, LARGECRATE_SPIN_SPEED_MAX);
                     }
                 } else {
@@ -585,7 +585,7 @@ void LargeCrate_init(GameObject* obj, LargeCratePlacement* placement) {
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     obj->anim.rotX = (s16)((int)placement->rotXByte << 8);
 
-    value = obj->anim.seqId;
+    value = obj->anim.romDefNo;
     if (value == LARGECRATE_SEQUENCE_VARIANT_A) {
         state->dropType = variantARemap.entries[state->dropType];
         state->hitSfxId = LARGECRATE_VARIANT_A_HIT_SFX;
@@ -603,7 +603,7 @@ void LargeCrate_init(GameObject* obj, LargeCratePlacement* placement) {
     state->slidePhase = slidePhase;
     state->homeX = obj->anim.localPosX;
 
-    if (obj->anim.seqId == LARGECRATE_SEQUENCE_VARIANT_C) {
+    if (obj->anim.romDefNo == LARGECRATE_SEQUENCE_VARIANT_C) {
         state->damageThreshold = 0;
     } else {
         state->damageThreshold = 2;

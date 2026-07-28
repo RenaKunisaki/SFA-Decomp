@@ -147,7 +147,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
     desc = (GameObject*)(((BaddieState*)state)->contactObj);
     if (desc != NULL)
     {
-        switch (desc->anim.seqId)
+        switch (desc->anim.romDefNo)
         {
         case 0x5d:
         case 0x99:
@@ -191,7 +191,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
         v.z = vec[2];
         if (flags & 1)
         {
-            if (obj->anim.classId == 1 || obj->anim.seqId == 0x416)
+            if (obj->anim.classId == 1 || obj->anim.romDefNo == 0x416)
             {
                 playerEarthWalkerAudioFn_8006f950((u8*)obj, (f32*)&v, i & 1, sfx);
             }
@@ -551,7 +551,7 @@ void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
     {
         gWaterFxBank = *(u8*)&((GameObject*)obj)->anim.bankIndex;
     }
-    else if (((GameObject*)obj)->anim.seqId == 0x416)
+    else if (((GameObject*)obj)->anim.romDefNo == 0x416)
     {
         gWaterFxBank = 3;
     }

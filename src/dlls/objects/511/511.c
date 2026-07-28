@@ -33,7 +33,7 @@ int dll_1FF_getExtraSize(void) {
 }
 
 int dll_1FF_getObjectTypeId(GameObject* obj) {
-    if (obj->anim.seqId == DLL1FF_SPECIAL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DLL1FF_SPECIAL_SEQUENCE_ID) {
         return DLL1FF_OBJECT_TYPE_SPECIAL;
     }
     return DLL1FF_OBJECT_TYPE_DEFAULT;

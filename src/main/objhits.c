@@ -2886,7 +2886,7 @@ extern f32 gObjLibBlinkAnglePiDivisor;
 #define OBJLIB_BLINK_LEFT_JOINT_TAG  5
 #define OBJLIB_BLINK_RIGHT_JOINT_TAG 4
 
-/* hit-object seqId that triggers the staff-impact sfx (retail OBJECTS.bin). */
+/* hit-object romDefNo that triggers the staff-impact sfx (retail OBJECTS.bin). */
 #define OBJLIB_HITOBJ_SEQID_STAFF 0x69 /* "staff" (DLL 0xE2) */
 #define OBJPATH_POINTS_OFFSET        0x2c
 #define OBJPATH_POINT_COUNT_OFFSET   0x58
@@ -4096,7 +4096,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
     {
         obj = (GameObject*)objects[objectIndex];
         if (((obj != sender) || (includeSender == 0)) &&
-            ((obj->anim.seqId == (s16)targetId || (matchAny != 0))) &&
+            ((obj->anim.romDefNo == (s16)targetId || (matchAny != 0))) &&
             ((Vec_distance(&s->anim.worldPosX, &obj->anim.worldPosX) < radius &&
               (obj != 0x0)) &&
              (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0)))
@@ -4113,7 +4113,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
             else
             {
                 debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId,
-                            (int)obj->anim.seqId, (int)s->anim.seqId);
+                            (int)obj->anim.romDefNo, (int)s->anim.romDefNo);
             }
         }
     }
@@ -4139,7 +4139,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
         {
             obj = (GameObject*)objects[objectIndex];
             if (((obj != sender) || ((maskedFlags & OBJMSG_SEND_INCLUDE_SENDER) == 0)) &&
-                (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.seqId))) &&
+                (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.romDefNo))) &&
                 ((obj != 0x0 &&
                   (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0))))
             {
@@ -4155,7 +4155,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
                 else
                 {
                     debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId,
-                                (int)obj->anim.seqId, (int)((GameObject*)sender)->anim.seqId);
+                                (int)obj->anim.romDefNo, (int)((GameObject*)sender)->anim.romDefNo);
                 }
             }
         }
@@ -4182,7 +4182,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
                 else
                 {
                     debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId,
-                                (int)obj->anim.seqId, (int)((GameObject*)sender)->anim.seqId);
+                                (int)obj->anim.romDefNo, (int)((GameObject*)sender)->anim.romDefNo);
                 }
             }
         }
@@ -4215,8 +4215,8 @@ u32 ObjMsg_SendToObject(GameObject* obj, u32 message, void* sender, u32 param)
             queue->count = queue->count + 1;
             return queue->count;
         }
-        debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId, (int)obj->anim.seqId,
-                    (int)((GameObject*)senderObj)->anim.seqId);
+        debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId, (int)obj->anim.romDefNo,
+                    (int)((GameObject*)senderObj)->anim.romDefNo);
     }
     return 0;
 }
@@ -4329,7 +4329,7 @@ int ObjHits_PollPriorityHitEffectWithCooldown(GameObject* obj, u32 hitFxMode, u3
             (*effectResource)
                 ->spawn(OBJHITREACT_HIT_EFFECT_PARENT_NONE, OBJHITREACT_HIT_EFFECT_MODE, &effectParams,
                         OBJHITREACT_HIT_EFFECT_SPAWN_FLAGS, OBJHITREACT_HIT_EFFECT_NO_SOURCE, &effectArgs);
-            if (((sfxId != 0) && (hitObject != 0)) && (((GameObject*)hitObject)->anim.seqId == OBJLIB_HITOBJ_SEQID_STAFF))
+            if (((sfxId != 0) && (hitObject != 0)) && (((GameObject*)hitObject)->anim.romDefNo == OBJLIB_HITOBJ_SEQID_STAFF))
             {
                 Sfx_PlayFromObject((u32)obj, sfxId);
             }
@@ -4557,7 +4557,7 @@ GameObject* ObjList_FindNearestObjectByDefNo(GameObject* obj, int defNo, float* 
         while (objectIndex < objectCount)
         {
             otherObj = *walker;
-            if (((defNo == ((GameObject*)otherObj)->anim.seqId) && ((int)obj != otherObj)) &&
+            if (((defNo == ((GameObject*)otherObj)->anim.romDefNo) && ((int)obj != otherObj)) &&
                 (distanceSq = vec3f_distanceSquared(&(obj)->anim.worldPosX, &((GameObject*)otherObj)->anim.worldPosX),
                  distanceSq < *maxDistanceSq))
             {
@@ -6480,7 +6480,7 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag)
     }
     else if ((s8)flag != 0)
     {
-        switch (obj->anim.seqId)
+        switch (obj->anim.romDefNo)
         {
         case 0:
         case 0x1f:

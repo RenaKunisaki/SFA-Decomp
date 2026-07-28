@@ -411,21 +411,21 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
 }
 
 int DIMCannon_getExtraSize(GameObject* obj) {
-    if (obj->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         return sizeof(DimCannonBallState);
     }
     return sizeof(DimCannonState);
 }
 
 int DIMCannon_getObjectTypeId(GameObject* obj) {
-    if (obj->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         return 0x0;
     }
     return 0x0;
 }
 
 void DIMCannon_free(GameObject* obj) {
-    if (obj->anim.seqId != DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo != DIM_CANNON_BALL_SEQUENCE_ID) {
         ((void (*)(void))((int**)*gGameUIInterface)[0x18])();
         Resource_Release(lbl_803DDB50);
         lbl_803DDB50 = NULL;
@@ -442,7 +442,7 @@ void DIMCannon_render(GameObject* obj, int renderArg2, int renderArg3, int rende
     (void)unusedVisible;
 
     placement = *(DimCannonPlacement**)&obj->anim.placementData;
-    if (obj->anim.seqId != DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo != DIM_CANNON_BALL_SEQUENCE_ID) {
         state = obj->extra;
         savedRotationX = obj->anim.rotX;
         obj->anim.rotX = (s16)(placement->rotationXByte << 8);
@@ -462,7 +462,7 @@ void DIMCannon_update(GameObject* obj) {
     GameObject* player;
     DimCannonPlacement* placement = *(DimCannonPlacement**)&obj->anim.placementData;
 
-    if (obj->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         DIMwooddoor_updateFallingDebris(obj);
         return;
     }
@@ -584,7 +584,7 @@ void DIMCannon_update(GameObject* obj) {
 void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
     ObjMsg_AllocQueue(obj, 4);
 
-    if (obj->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         DimCannonBallState* state;
         int* hitState;
         obj->userData1 = 0;

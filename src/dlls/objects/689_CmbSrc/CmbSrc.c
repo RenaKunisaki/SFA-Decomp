@@ -12,7 +12,7 @@
  * hit charge to [0, CMBSRC_MAX_HIT_CHARGE].
  *
  * Per-instance behaviour is driven by the placement's flags /
- * behaviorFlags / seqId (CMBSRC_MAP_*, CMBSRC_BEHAVIOR_*, CMBSRC_SEQ_*)
+ * behaviorFlags / romDefNo (CMBSRC_MAP_*, CMBSRC_BEHAVIOR_*, CMBSRC_SEQ_*)
  * defined in dll_02B1_cmbsrc.h.
  */
 #include "main/dll/partfx_interface.h"
@@ -218,7 +218,7 @@ void cmbsrc_updateVisuals(GameObject* cmbsrc, CmbSrcState* sourceState)
     }
     if ((cmbsrc->objectFlags & OBJECT_OBJFLAG_RENDERED) || (sourceState->flags & CMBSRC_STATE_EXTERNAL_ACTIVE))
     {
-        switch (cmbsrc->anim.seqId)
+        switch (cmbsrc->anim.romDefNo)
         {
         case CMBSRC_SEQ_THUSTER_SOURCE:
             if (sourceState->active == 1)
@@ -248,7 +248,7 @@ void cmbsrc_updateVisuals(GameObject* cmbsrc, CmbSrcState* sourceState)
                 }
             }
             vec[0] = 0.0f;
-            if (cmbsrc->anim.seqId == CMBSRC_SEQ_TWALL)
+            if (cmbsrc->anim.romDefNo == CMBSRC_SEQ_TWALL)
             {
                 if (sourceState->active == 0)
                 {
@@ -494,7 +494,7 @@ void cmbsrc_init(GameObject* cmbsrc, CmbSrcMapData* mapData)
     CmbSrcState* state = cmbsrc->extra;
     int lightVariant;
 
-    switch (cmbsrc->anim.seqId)
+    switch (cmbsrc->anim.romDefNo)
     {
     case CMBSRC_SEQ_THUSTER_SOURCE:
         lightVariant = 1;
@@ -540,7 +540,7 @@ void cmbsrc_init(GameObject* cmbsrc, CmbSrcMapData* mapData)
         if (state->light != NULL)
         {
             modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
-            if (cmbsrc->anim.seqId == CMBSRC_SEQ_THUSTER_SOURCE)
+            if (cmbsrc->anim.romDefNo == CMBSRC_SEQ_THUSTER_SOURCE)
             {
                 modelLightStruct_setPosition(state->light, 0.0f, 0.0f, 0.0f);
             }

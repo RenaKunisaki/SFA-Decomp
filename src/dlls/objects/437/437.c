@@ -884,7 +884,7 @@ void dll437_update(GameObject* obj) {
         }
     }
 
-    if (obj->anim.seqId == DLL437_SEQUENCE_ID_SC_BABY_LIGHTFOOT && inner->groundBaddie.gameBitA != -1) {
+    if (obj->anim.romDefNo == DLL437_SEQUENCE_ID_SC_BABY_LIGHTFOOT && inner->groundBaddie.gameBitA != -1) {
         switch (((Dll437Placement*)workValue)->base.mapId) {
         case 0x4993F:
         case 0x49940:
