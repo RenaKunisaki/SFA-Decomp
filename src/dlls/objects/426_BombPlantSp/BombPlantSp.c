@@ -1,274 +1,238 @@
-/* DLL 0x01AA - BombPlantSp [0x801D3378-0x801D3FF4). */
+/*
+ * BombPlantSp (DLL 0x1AA) - the bomb-spore projectile spawned by BombPlant.
+ *
+ * A surface hit shortens the fuse. Player contact starts the pickup-message
+ * handshake; otherwise the spore detonates when its fuse expires.
+ */
+#include "dlls/objects/426_BombPlantSp.h"
+
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
+#include "main/dll/path_control_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
-#include "main/vecmath.h"
-#include "game/objects/object.h"
-#include "main/obj_message.h"
+#include "main/gamebit_ids.h"
+#include "main/gameloop_gamebit_api.h"
 #include "main/model_light.h"
-#include "sys/objects/lifecycle.h"
-#include "main/audio/sfx.h"
-#include "sys/objects.h"
-#include "main/objhits.h"
+#include "main/obj_message.h"
 #include "main/objfx.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/path_control_interface.h"
-#include "main/dll/dll_01AA_bombplantspore.h"
-#include "main/gameloop_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dlls/object_descriptor.h"
-#include "game/objects/object_setup.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
-u8 lbl_803DBFC0[8] = {0x40, 0xA0, 0, 0, 0, 0, 0, 0};
-u8 lbl_80326D98[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+#define BOMB_PLANT_SPORE_MESSAGE_IN_RANGE 0x7000A
+#define BOMB_PLANT_SPORE_MESSAGE_DETONATE 0x7000B
 
-typedef struct BombplantsporePlacement
-{
-    ObjPlacement base;
-    u8 pad18[0x1A - 0x18];
-    s16 angleSpread;
-    s16 baseAngle;
-    u8 pad1E[0x20 - 0x1E];
-} BombplantsporePlacement;
+#define BOMB_PLANT_SPORE_PATH_CONTACT_MASK 0x11
+#define BOMB_PLANT_SPORE_PATH_FLAGS        0x40002
+#define BOMB_PLANT_SPORE_PATH_PARAM        5
 
-typedef struct BombPlantSporeStateFlags
-{
+#define BOMB_PLANT_SPORE_EXPLOSION_PARTICLE_COUNT 10
+#define BOMB_PLANT_SPORE_MESSAGE_QUEUE_LENGTH     2
+
+/* Burst spawned per particle on detonation. */
+#define BOMB_PLANT_SPORE_PARTFX_EXPLOSION 0x3F3
+/* Effect spawned once when the spore is created. */
+#define BOMB_PLANT_SPORE_PARTFX_SPAWN 0x3F1
+
+/* Retail OBJECTS.bin remap aliases ignored as friendly/contact objects. */
+#define BOMB_PLANT_SPORE_BOMB_PLANT_ALIAS_ID   0x36D
+#define BOMB_PLANT_SPORE_GROUND_QUAKE_ALIAS_ID 0x63C
+
+typedef struct BombPlantSporeFlags {
     u8 hitSurface : 1;
     u8 waitingForDetonateAck : 1;
-    u8 unused : 6;
-} BombPlantSporeStateFlags;
+    u8 unknown : 6;
+} BombPlantSporeFlags;
 
-#define BOMBPLANT_GAME_BIT_AVAILABLE_SPORES     0x66c
-#define BOMBPLANTSPORE_MSG_DETONATE             0x7000b
-#define BOMBPLANTSPORE_MSG_HIT_PLAYER           0x7000a
-#define BOMBPLANTSPORE_PLAYER_DAMAGE_TYPE       0x18e
-#define BOMBPLANTSPORE_EXPLOSION_PARTICLE_COUNT 10
+STATIC_ASSERT(sizeof(BombPlantSporeFlags) == 1);
 
-/* burst spawned per particle on detonation (MSG_DETONATE / fuse timeout) */
-#define BOMBPLANTSPORE_PARTFX_EXPLOSION 0x3f3
-/* effect spawned once when the spore is created in BombPlantSpore_init */
-#define BOMBPLANTSPORE_PARTFX_SPAWN 0x3f1
+#define BOMB_PLANT_SPORE_FLAGS(state) ((BombPlantSporeFlags*)&(state)->flags)
 
-#define BOMBPLANTSPORE_OBJFLAG_HIDDEN             0x4000
-#define BOMBPLANTSPORE_OBJFLAG_HITDETECT_DISABLED 0x2000
+u8 gBombPlantSporePathSetupData[8] = {0x40, 0xA0, 0, 0, 0, 0, 0, 0};
+u8 gBombPlantSporePathPointData[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-#define BOMBPLANTSPORE_FLAGS(state) ((BombPlantSporeStateFlags*)&(state)->stateFlags)
-
-extern const f32 lbl_803E5390;
-extern const f32 lbl_803E5394;
+extern const f32 gBombPlantSporeRandomDivisor;
+extern const f32 gBombPlantSporeZero;
 extern const f32 gBombPlantSporePi;
 extern const f32 gBombPlantSporeAngleHalfPeriod;
-extern const f32 lbl_803E53A8;
-extern const f32 lbl_803E53AC;
-extern f32 lbl_803E53B0;
-extern const f32 lbl_803E53B4;
-extern f32 lbl_803E5388;
-extern const f32 lbl_803E538C;
-extern const f32 lbl_803E53B8;
-extern const f32 lbl_803E53BC;
-extern f32 lbl_803E53C0;
-extern const f32 lbl_803E53C4;
-extern const f32 lbl_803E53C8;
-extern f64 lbl_803E53D0;
-extern f64 lbl_803E53D8;
-extern f32 lbl_803E53E0;
+extern const f32 gBombPlantSporeSpinChangeTime;
+extern const f32 gBombPlantSporeHalf;
+extern f32 gBombPlantSporeOne;
+extern const f32 gBombPlantSporeDriftAmplitudeApproachRate;
+extern f32 gBombPlantSporeLightAttenuationNear;
+extern const f32 gBombPlantSporeLightAttenuationFar;
+extern const f32 gBombPlantSporeExplosionParticleScale;
+extern const f32 gBombPlantSporeDetonationLingerTime;
+extern f32 gBombPlantSporeImpactFuseTime;
+extern const f32 gBombPlantSporeParticleAlphaBase;
+extern const f32 gBombPlantSporeParticleAlphaFadeRate;
+extern f64 gBombPlantSporeParticleScaleBase;
+extern f64 gBombPlantSporeParticleScaleFadeRate;
+extern f32 gBombPlantSporeGravity;
 extern f32 gBombPlantSporeMinVelocityY;
 extern const f32 gBombPlantSporeVelocityDamping;
-extern const f32 lbl_803E53EC;
-extern f32 lbl_803E53F0;
-extern const f32 lbl_803E53F4;
+extern const f32 gBombPlantSporeDriftSpeedApproachRate;
+extern f32 gBombPlantSporeFuseTime;
+extern const f32 gBombPlantSporeInitialVelocityY;
 
-int BombPlantSpore_getExtraSize(void)
-{
-    return 0x2b4;
+int BombPlantSpore_getExtraSize(void) {
+    return sizeof(BombPlantSporeState);
 }
 
-void BombPlantSpore_free(GameObject* obj)
-{
+void BombPlantSpore_free(GameObject* obj) {
     BombPlantSporeState* state;
     ModelLightStruct* light;
 
     state = obj->extra;
     (*gExpgfxInterface)->freeSource((u32)obj);
     light = state->light;
-    if (light != NULL)
-    {
+    if (light != NULL) {
         ModelLightStruct_free(light);
         state->light = NULL;
     }
 }
 
-void bombplantspore_startDriftBurst(GameObject* obj, BombPlantSporeState* state);
-void bombplantspore_updateDrift(GameObject* obj, BombPlantSporeState* state);
-
-void bombplantspore_startDriftBurst(GameObject* obj, BombPlantSporeState* state)
-{
+void BombPlantSpore_startDriftBurst(GameObject* obj, BombPlantSporeState* state) {
     s16 baseAngle;
-    BombplantsporePlacement* params;
+    BombPlantSporePlacement* placement;
     s32 angleDelta;
 
-    params = (BombplantsporePlacement*)obj->anim.placementData;
-    baseAngle = params->baseAngle;
+    placement = (BombPlantSporePlacement*)obj->anim.placementData;
+    baseAngle = placement->behavior.baseAngle;
 
-    state->spinTimer = (f32)(int)randomGetRange(0x1e, 0x2d);
+    state->spinTimer = (f32)(int)randomGetRange(0x1E, 0x2D);
 
-    state->driftTimer = state->spinTimer + (f32)(int)randomGetRange(0x78, 0xb4);
+    state->driftTimer = state->spinTimer + (f32)(int)randomGetRange(0x78, 0xB4);
 
     state->burstDriftAngle = (s16)(state->currentSpinAngle + randomGetRange(-2000, 2000));
     angleDelta = (s32)state->burstDriftAngle - (u16)baseAngle;
-    if (0x8000 < angleDelta)
-    {
-        angleDelta -= 0xffff;
+    if (0x8000 < angleDelta) {
+        angleDelta -= 0xFFFF;
     }
-    if (angleDelta < -0x8000)
-    {
-        angleDelta += 0xffff;
+    if (angleDelta < -0x8000) {
+        angleDelta += 0xFFFF;
     }
-    if (angleDelta > params->angleSpread)
-    {
-        state->burstDriftAngle = (s16)(baseAngle + params->angleSpread);
+    if (angleDelta > placement->behavior.angleSpread) {
+        state->burstDriftAngle = (s16)(baseAngle + placement->behavior.angleSpread);
     }
-    if (angleDelta < -(s32)params->angleSpread)
-    {
-        state->burstDriftAngle = (s16)(baseAngle - params->angleSpread);
+    if (angleDelta < -(s32)placement->behavior.angleSpread) {
+        state->burstDriftAngle = (s16)(baseAngle - placement->behavior.angleSpread);
     }
 
-    state->driftSpeedTarget = (f32)(int)randomGetRange(900, 0x514) / lbl_803E5390;
-    state->driftSpeed = lbl_803E5394;
+    state->driftSpeedTarget = (f32)(int)randomGetRange(900, 0x514) / gBombPlantSporeRandomDivisor;
+    state->driftSpeed = gBombPlantSporeZero;
 
-    state->driftSin =
-        mathSinf((gBombPlantSporePi * (f32)state->burstDriftAngle) / gBombPlantSporeAngleHalfPeriod);
-    state->driftCos =
-        mathCosf((gBombPlantSporePi * (f32)state->burstDriftAngle) / gBombPlantSporeAngleHalfPeriod);
+    state->driftSin = mathSinf((gBombPlantSporePi * (f32)state->burstDriftAngle) / gBombPlantSporeAngleHalfPeriod);
+    state->driftCos = mathCosf((gBombPlantSporePi * (f32)state->burstDriftAngle) / gBombPlantSporeAngleHalfPeriod);
 }
 
-void bombplantspore_updateDrift(GameObject* obj, BombPlantSporeState* state)
-{
+void BombPlantSpore_updateDrift(GameObject* obj, BombPlantSporeState* state) {
     s16 baseAngle;
-    BombplantsporePlacement* params;
+    BombPlantSporePlacement* placement;
     s32 angleDelta;
 
-    params = (BombplantsporePlacement*)obj->anim.placementData;
-    baseAngle = params->baseAngle;
+    placement = (BombPlantSporePlacement*)obj->anim.placementData;
+    baseAngle = placement->behavior.baseAngle;
 
-    if (randomGetRange(0, 100) < 10 && state->spinChangeTimer <= lbl_803E5394)
-    {
+    if (randomGetRange(0, 100) < 10 && state->spinChangeTimer <= gBombPlantSporeZero) {
         state->spinAngle = randomGetRange(2000, 4000);
-        if (randomGetRange(0, 1) != 0)
-        {
+        if (randomGetRange(0, 1) != 0) {
             state->spinAngle = -state->spinAngle;
         }
         state->spinAngle += state->currentSpinAngle;
         angleDelta = (s32)state->spinAngle - (u16)baseAngle;
-        if (angleDelta > 0x8000)
-        {
-            angleDelta -= 0xffff;
+        if (angleDelta > 0x8000) {
+            angleDelta -= 0xFFFF;
         }
-        if (angleDelta < -0x8000)
-        {
-            angleDelta += 0xffff;
+        if (angleDelta < -0x8000) {
+            angleDelta += 0xFFFF;
         }
-        if (angleDelta > params->angleSpread)
-        {
-            state->spinAngle = (s16)(baseAngle + params->angleSpread);
+        if (angleDelta > placement->behavior.angleSpread) {
+            state->spinAngle = (s16)(baseAngle + placement->behavior.angleSpread);
         }
-        if (angleDelta < -(s32)params->angleSpread)
-        {
-            state->spinAngle = (s16)(baseAngle - params->angleSpread);
+        if (angleDelta < -(s32)placement->behavior.angleSpread) {
+            state->spinAngle = (s16)(baseAngle - placement->behavior.angleSpread);
         }
-        state->spinChangeTimer = lbl_803E53A8;
+        state->spinChangeTimer = gBombPlantSporeSpinChangeTime;
     }
 
-    if (randomGetRange(0, 100) < 10 && state->spinChangeTimer <= lbl_803E5394)
-    {
-        state->randomPhase =
-            state->driftAmplitude + (f32)(int)randomGetRange(-200, 200) / lbl_803E5390;
-        if (state->randomPhase < lbl_803E53AC)
-        {
-            state->randomPhase = lbl_803E53AC;
-        }
-        else if (state->randomPhase > lbl_803E53B0)
-        {
-            state->randomPhase = lbl_803E53B0;
+    if (randomGetRange(0, 100) < 10 && state->spinChangeTimer <= gBombPlantSporeZero) {
+        state->driftAmplitudeTarget =
+            state->driftAmplitude + (f32)(int)randomGetRange(-200, 200) / gBombPlantSporeRandomDivisor;
+        if (state->driftAmplitudeTarget < gBombPlantSporeHalf) {
+            state->driftAmplitudeTarget = gBombPlantSporeHalf;
+        } else if (state->driftAmplitudeTarget > gBombPlantSporeOne) {
+            state->driftAmplitudeTarget = gBombPlantSporeOne;
         }
     }
 
     angleDelta = (s32)state->spinAngle - (u16)state->currentSpinAngle;
-    if (angleDelta > 0x8000)
-    {
-        angleDelta -= 0xffff;
+    if (angleDelta > 0x8000) {
+        angleDelta -= 0xFFFF;
     }
-    if (angleDelta < -0x8000)
-    {
-        angleDelta += 0xffff;
+    if (angleDelta < -0x8000) {
+        angleDelta += 0xFFFF;
     }
     state->currentSpinAngle += (angleDelta * framesThisStep) >> 4;
     {
         f32 amplitude;
-        f32 amplitudeStep =
-            (state->randomPhase - (amplitude = state->driftAmplitude)) * lbl_803E53B4;
+        f32 amplitudeStep = (state->driftAmplitudeTarget - (amplitude = state->driftAmplitude)) *
+                            gBombPlantSporeDriftAmplitudeApproachRate;
         state->driftAmplitude = amplitudeStep * timeDelta + amplitude;
     }
 
-    state->driftBaseX =
-        state->driftAmplitude *
-        mathSinf((gBombPlantSporePi * (f32)state->currentSpinAngle) / gBombPlantSporeAngleHalfPeriod);
-    state->driftBaseZ =
-        state->driftAmplitude *
-        mathCosf((gBombPlantSporePi * (f32)state->currentSpinAngle) / gBombPlantSporeAngleHalfPeriod);
+    state->driftBaseX = state->driftAmplitude *
+                        mathSinf((gBombPlantSporePi * (f32)state->currentSpinAngle) / gBombPlantSporeAngleHalfPeriod);
+    state->driftBaseZ = state->driftAmplitude *
+                        mathCosf((gBombPlantSporePi * (f32)state->currentSpinAngle) / gBombPlantSporeAngleHalfPeriod);
 }
 
-void BombPlantSpore_update(GameObject* obj)
-{
+void BombPlantSpore_update(GameObject* obj) {
     BombPlantSporeState* state;
     s32 particleAlpha;
     s16 hitId;
-    void* hitObj;
+    GameObject* contactObj;
     int poppedMessage;
     u32 poppedSender;
     int hitObject;
-    void* playerObj;
-    int detonateMessage;
+    GameObject* player;
     int i;
     int j;
 
     state = obj->extra;
-    if ((state->stateFlags >> 6 & 1) != 0u)
-    {
-        while (ObjMsg_Pop(obj, (u32*)&poppedMessage, &poppedSender, NULL) != 0)
-        {
-            switch (poppedMessage)
-            {
-            case BOMBPLANTSPORE_MSG_DETONATE:
-                gameBitIncrement(BOMBPLANT_GAME_BIT_AVAILABLE_SPORES);
+    if (BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck != 0) {
+        while (ObjMsg_Pop(obj, (u32*)&poppedMessage, &poppedSender, NULL) != 0) {
+            switch (poppedMessage) {
+            case BOMB_PLANT_SPORE_MESSAGE_DETONATE:
+                gameBitIncrement(GAMEBIT_ITEM_BombSpore_Count);
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_gemrun0122);
                 (*gExpgfxInterface)->freeSource((u32)obj);
-                for (i = 0; i < BOMBPLANTSPORE_EXPLOSION_PARTICLE_COUNT; i++)
-                {
-                    objfx_spawnDirectionalBurst(obj, 5, lbl_803E53B0, 7, 1, 0x3c, lbl_803E53B8, NULL, 0);
-                    (*gPartfxInterface)->spawnObject(obj, BOMBPLANTSPORE_PARTFX_EXPLOSION, NULL, 4, -1, NULL);
+                for (i = 0; i < BOMB_PLANT_SPORE_EXPLOSION_PARTICLE_COUNT; i++) {
+                    objfx_spawnDirectionalBurst(obj, 5, gBombPlantSporeOne, 7, 1, 0x3C,
+                                                gBombPlantSporeExplosionParticleScale, NULL, 0);
+                    (*gPartfxInterface)->spawnObject(obj, BOMB_PLANT_SPORE_PARTFX_EXPLOSION, NULL, 4, -1, NULL);
                 }
-                modelLightStruct_setEnabled(state->light, 0, lbl_803E53AC);
-                state->detonateTimer = lbl_803E53BC;
+                modelLightStruct_setEnabled(state->light, 0, gBombPlantSporeHalf);
+                state->detonateTimer = gBombPlantSporeDetonationLingerTime;
                 obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
                 ObjHits_DisableObject(obj);
-                BOMBPLANTSPORE_FLAGS(state)->waitingForDetonateAck = 0;
+                BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck = 0;
                 break;
             }
         }
-        if ((state->stateFlags >> 6 & 1) != 0u)
-        {
+        if (BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck != 0) {
             return;
         }
     }
 
-    if (state->detonateTimer != lbl_803E5394)
-    {
-        *(s16*)obj += framesThisStep * 0x40;
+    if (state->detonateTimer != gBombPlantSporeZero) {
+        obj->anim.rotX += framesThisStep * 0x40;
         state->detonateTimer -= timeDelta;
-        if (state->detonateTimer <= lbl_803E5394)
-        {
+        if (state->detonateTimer <= gBombPlantSporeZero) {
             Obj_FreeObject(obj);
         }
         return;
@@ -276,151 +240,133 @@ void BombPlantSpore_update(GameObject* obj)
 
     {
         f32 fuse = state->fuseTimer;
-        f32 fuseCap = lbl_803E53C0;
-        if (fuse < fuseCap)
-        {
-            particleAlpha = (s32) - (lbl_803E53C8 * fuse - lbl_803E53C4);
-            objfx_spawnDirectionalBurst(obj, 5, lbl_803E53B0, 7, 1, particleAlpha & 0xff,
-                                        (f32)(lbl_803E53D8 * (double)(fuseCap - fuse) + lbl_803E53D0), NULL, 0);
+        f32 fuseCap = gBombPlantSporeImpactFuseTime;
+        if (fuse < fuseCap) {
+            particleAlpha = (s32) - (gBombPlantSporeParticleAlphaFadeRate * fuse - gBombPlantSporeParticleAlphaBase);
+            objfx_spawnDirectionalBurst(obj, 5, gBombPlantSporeOne, 7, 1, particleAlpha & 0xFF,
+                                        (f32)(gBombPlantSporeParticleScaleFadeRate * (double)(fuseCap - fuse) +
+                                              gBombPlantSporeParticleScaleBase),
+                                        NULL, 0);
         }
     }
     ObjHits_GetPriorityHit(obj, &hitObject, 0, 0);
-    hitObj = *(void**)obj->anim.hitReactState;
-    if (BOMBPLANTSPORE_FLAGS(state)->hitSurface == 0)
-    {
+    contactObj = *(GameObject**)obj->anim.hitReactState;
+    if (BOMB_PLANT_SPORE_FLAGS(state)->hitSurface == 0) {
         state->driftTimer -= timeDelta;
-        if (state->driftTimer < *(f32*)&lbl_803E5394)
-        {
-            state->driftTimer = lbl_803E5394;
+        if (state->driftTimer < *(f32*)&gBombPlantSporeZero) {
+            state->driftTimer = gBombPlantSporeZero;
         }
         state->spinChangeTimer -= timeDelta;
-        if (state->spinChangeTimer < *(f32*)&lbl_803E5394)
-        {
-            state->spinChangeTimer = lbl_803E5394;
+        if (state->spinChangeTimer < *(f32*)&gBombPlantSporeZero) {
+            state->spinChangeTimer = gBombPlantSporeZero;
         }
-        *(s16*)obj += state->yawStep;
-        obj->anim.velocityY = lbl_803E53E0 * timeDelta + obj->anim.velocityY;
-        if (obj->anim.velocityY < *(f32*)&gBombPlantSporeMinVelocityY)
-        {
+        obj->anim.rotX += state->yawStep;
+        obj->anim.velocityY = gBombPlantSporeGravity * timeDelta + obj->anim.velocityY;
+        if (obj->anim.velocityY < *(f32*)&gBombPlantSporeMinVelocityY) {
             obj->anim.velocityY = gBombPlantSporeMinVelocityY;
         }
-        if (obj->anim.velocityY > lbl_803E5394)
-        {
+        if (obj->anim.velocityY > gBombPlantSporeZero) {
             obj->anim.velocityY *= gBombPlantSporeVelocityDamping;
         }
-        if (obj->anim.velocityY < lbl_803E5394)
-        {
+        if (obj->anim.velocityY < gBombPlantSporeZero) {
             ObjHits_EnableObject(obj);
         }
-        bombplantspore_updateDrift(obj, state);
-        if (randomGetRange(0, 100) < 5 && state->driftTimer <= lbl_803E5394)
-        {
-            bombplantspore_startDriftBurst(obj, state);
+        BombPlantSpore_updateDrift(obj, state);
+        if (randomGetRange(0, 100) < 5 && state->driftTimer <= gBombPlantSporeZero) {
+            BombPlantSpore_startDriftBurst(obj, state);
         }
         {
             f32 st = state->spinTimer - timeDelta;
             state->spinTimer = st;
-            if (st <= lbl_803E5394)
-            {
+            if (st <= gBombPlantSporeZero) {
                 state->driftSin *= gBombPlantSporeVelocityDamping;
                 state->driftCos *= gBombPlantSporeVelocityDamping;
-                state->spinTimer = lbl_803E5394;
-            }
-            else
-            {
+                state->spinTimer = gBombPlantSporeZero;
+            } else {
                 f32 driftSpeed;
-                f32 driftStep = (state->driftSpeedTarget - (driftSpeed = state->driftSpeed)) * lbl_803E53EC;
+                f32 driftStep = (state->driftSpeedTarget - (driftSpeed = state->driftSpeed)) *
+                                gBombPlantSporeDriftSpeedApproachRate;
                 state->driftSpeed = driftStep * timeDelta + driftSpeed;
             }
         }
         obj->anim.velocityX = state->driftSin * state->driftSpeed + state->driftBaseX;
         obj->anim.velocityZ = state->driftCos * state->driftSpeed + state->driftBaseZ;
-        objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
-                obj->anim.velocityZ * timeDelta);
-        (*gPathControlInterface)->update(obj, state->pathState, timeDelta);
-        (*gPathControlInterface)->apply(obj, state->pathState);
-        (*gPathControlInterface)->advance(obj, state->pathState, timeDelta);
-        if (hitObj != NULL && (hitId = ((GameObject*)hitObj)->anim.seqId, hitId != 0x36d) && hitId != 0x198 &&
-            hitId != 0x63c)
-        {
+        objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta, obj->anim.velocityZ * timeDelta);
+        (*gPathControlInterface)->update(obj, &state->path, timeDelta);
+        (*gPathControlInterface)->apply(obj, &state->path);
+        (*gPathControlInterface)->advance(obj, &state->path, timeDelta);
+        if (contactObj != NULL && (hitId = contactObj->anim.seqId, hitId != BOMB_PLANT_SPORE_BOMB_PLANT_ALIAS_ID) &&
+            hitId != BOMB_PLANT_SPORE_OBJECT_ID && hitId != BOMB_PLANT_SPORE_GROUND_QUAKE_ALIAS_ID) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_eatthefood16);
-            BOMBPLANTSPORE_FLAGS(state)->hitSurface = 1;
-            if (state->fuseTimer > *(f32*)&lbl_803E53C0)
-            {
-                state->fuseTimer = lbl_803E53C0;
+            BOMB_PLANT_SPORE_FLAGS(state)->hitSurface = 1;
+            if (state->fuseTimer > *(f32*)&gBombPlantSporeImpactFuseTime) {
+                state->fuseTimer = gBombPlantSporeImpactFuseTime;
             }
         }
-        if ((*(s8*)((u8*)state + 0x268) & 0x11) != 0)
-        {
-            BOMBPLANTSPORE_FLAGS(state)->hitSurface = 1;
-            if (state->fuseTimer > *(f32*)&lbl_803E53C0)
-            {
-                state->fuseTimer = lbl_803E53C0;
+        if ((state->path.contactFlags & BOMB_PLANT_SPORE_PATH_CONTACT_MASK) != 0) {
+            BOMB_PLANT_SPORE_FLAGS(state)->hitSurface = 1;
+            if (state->fuseTimer > *(f32*)&gBombPlantSporeImpactFuseTime) {
+                state->fuseTimer = gBombPlantSporeImpactFuseTime;
             }
         }
     }
-    playerObj = Obj_GetPlayerObject();
-    if (hitObj == playerObj)
-    {
-        state->damageType = BOMBPLANTSPORE_PLAYER_DAMAGE_TYPE;
-        ObjMsg_SendToObject(hitObj, BOMBPLANTSPORE_MSG_HIT_PLAYER, obj, (u32)state);
-        BOMBPLANTSPORE_FLAGS(state)->waitingForDetonateAck = 1;
-    }
-    else
-    {
+    player = Obj_GetPlayerObject();
+    if (contactObj == player) {
+        state->pickupMsgBitId = GAMEBIT_SawBombSpore;
+        ObjMsg_SendToObject(contactObj, BOMB_PLANT_SPORE_MESSAGE_IN_RANGE, obj, (u32)state);
+        BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck = 1;
+    } else {
         f32 fuse = state->fuseTimer - timeDelta;
         state->fuseTimer = fuse;
-        if (fuse <= lbl_803E5394)
-        {
+        if (fuse <= gBombPlantSporeZero) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_en_majring2);
             (*gExpgfxInterface)->freeSource((u32)obj);
-            for (j = 0; j < BOMBPLANTSPORE_EXPLOSION_PARTICLE_COUNT; j++)
-            {
-                objfx_spawnDirectionalBurst(obj, 5, lbl_803E53B0, 7, 1, 0x3c, lbl_803E53B8, NULL, 0);
-                (*gPartfxInterface)->spawnObject(obj, BOMBPLANTSPORE_PARTFX_EXPLOSION, NULL, 4, -1, NULL);
+            for (j = 0; j < BOMB_PLANT_SPORE_EXPLOSION_PARTICLE_COUNT; j++) {
+                objfx_spawnDirectionalBurst(obj, 5, gBombPlantSporeOne, 7, 1, 0x3C,
+                                            gBombPlantSporeExplosionParticleScale, NULL, 0);
+                (*gPartfxInterface)->spawnObject(obj, BOMB_PLANT_SPORE_PARTFX_EXPLOSION, NULL, 4, -1, NULL);
             }
-            modelLightStruct_setEnabled(state->light, 0, lbl_803E53AC);
-            state->detonateTimer = lbl_803E53BC;
+            modelLightStruct_setEnabled(state->light, 0, gBombPlantSporeHalf);
+            state->detonateTimer = gBombPlantSporeDetonationLingerTime;
             obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
             ObjHits_DisableObject(obj);
         }
     }
 }
 
-
-void BombPlantSpore_init(GameObject* obj, void* param2)
-{
+void BombPlantSpore_init(GameObject* obj, BombPlantSporePlacement* placement) {
     BombPlantSporeState* state;
     ModelLightStruct* light;
-    f32 randomPhase;
-    u32 randAsDouble[2];
-    u8 events[8];
+    u8 pathParam[8];
 
-    state = (obj)->extra;
-    events[0] = 5;
-    state->fuseTimer = lbl_803E53F0;
-    (obj)->objectFlags |= (BOMBPLANTSPORE_OBJFLAG_HIDDEN | BOMBPLANTSPORE_OBJFLAG_HITDETECT_DISABLED);
-    (obj)->anim.velocityY = lbl_803E53F4;
+    (void)placement;
+
+    state = obj->extra;
+    pathParam[0] = BOMB_PLANT_SPORE_PATH_PARAM;
+    state->fuseTimer = gBombPlantSporeFuseTime;
+    obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
+    obj->anim.velocityY = gBombPlantSporeInitialVelocityY;
     ObjHits_DisableObject(obj);
-    state->spinAngle = randomGetRange(0, 0xffff);
+    state->spinAngle = randomGetRange(0, 0xFFFF);
 
-    state->randomPhase = (f32)(int)randomGetRange(0, 1000) / lbl_803E5390;
+    state->driftAmplitudeTarget = (f32)(int)randomGetRange(0, 1000) / gBombPlantSporeRandomDivisor;
 
-    (*gPathControlInterface)->init(state->pathState, 0, 0x40002, 1);
-    (*gPathControlInterface)->setup(state->pathState, 1, lbl_80326D98, lbl_803DBFC0, events);
-    (*gPathControlInterface)->attachObject(obj, state->pathState);
-    (*gPartfxInterface)->spawnObject(obj, BOMBPLANTSPORE_PARTFX_SPAWN, NULL, 4, -1, NULL);
+    (*gPathControlInterface)->init(&state->path, 0, BOMB_PLANT_SPORE_PATH_FLAGS, 1);
+    (*gPathControlInterface)
+        ->setup(&state->path, 1, gBombPlantSporePathPointData, gBombPlantSporePathSetupData, pathParam);
+    (*gPathControlInterface)->attachObject(obj, &state->path);
+    (*gPartfxInterface)->spawnObject(obj, BOMB_PLANT_SPORE_PARTFX_SPAWN, NULL, 4, -1, NULL);
 
     light = objCreateLight(obj, 1);
-    if (light != NULL)
-    {
+    if (light != NULL) {
         modelLightStruct_setLightKind(light, MODEL_LIGHT_KIND_POINT);
-        modelLightStruct_setDiffuseColor(light, 0xff, 0, 0xff, 0);
+        modelLightStruct_setDiffuseColor(light, 0xFF, 0, 0xFF, 0);
         lightSetFieldBC_8001db14(light, 1);
-        modelLightStruct_setDistanceAttenuation(light, lbl_803E5388, lbl_803E538C);
+        modelLightStruct_setDistanceAttenuation(light, gBombPlantSporeLightAttenuationNear,
+                                                gBombPlantSporeLightAttenuationFar);
     }
     state->light = light;
-    ObjMsg_AllocQueue(obj, 2);
+    ObjMsg_AllocQueue(obj, BOMB_PLANT_SPORE_MESSAGE_QUEUE_LENGTH);
     state->yawStep = randomGetRange(-0x200, 0x200);
 }
 
