@@ -86,8 +86,8 @@ extern int gGameTextFontTexRowPitch;
 extern GameTextStateElem gGameTextCharsets[];
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 
-void dvdCancelCallback_8001b39c(s32 result, DVDCommandBlock* block);
-void gameTextOpenCallback_8001b3d0(s32 status, DVDFileInfo* fileInfo);
+void gameTextLoadCancelCallback(s32 result, DVDCommandBlock* block);
+void gameTextLoadCompleteCallback(s32 status, DVDFileInfo* fileInfo);
 
 void gameTextLoadDir(int dirId)
 {
@@ -308,7 +308,7 @@ void gameTextRun(void)
                          sMapDirectoryNameTable[dirId], sLanguageNameTable[languageId].name);
                 setFileInfo(&freeSlot->fileInfo);
                 freeSlot->loadHandle = loadFileByPathAsync(gameTextBase->path,
-                                                           &freeSlot->loadedSize, 1, gameTextOpenCallback_8001b3d0);
+                                                           &freeSlot->loadedSize, 1, gameTextLoadCompleteCallback);
                 setFileInfo(NULL);
                 pending->dirId = GAMETEXT_INVALID_DIR;
                 pending->languageId = GAMETEXT_INVALID_LANGUAGE;
@@ -662,7 +662,7 @@ void loadGameTextSequence(int sequenceSlotDir, int sequenceId)
             if (slot->state == 1)
             {
                 slot->state = 4;
-                DVDCancelAsync(&slot->fileInfo.cb, dvdCancelCallback_8001b39c);
+                DVDCancelAsync(&slot->fileInfo.cb, gameTextLoadCancelCallback);
             }
             if (slot->state == 3 && slot->active != 0)
             {
@@ -698,7 +698,7 @@ void loadGameTextSequence(int sequenceSlotDir, int sequenceId)
             ((LanguageName*)(languageTable + languageTableOffset))->name);
     setFileInfo(&slot->fileInfo);
     slot->loadHandle = loadFileByPathAsync(gameTextBase->path,
-                                           &slot->loadedSize, 1, gameTextOpenCallback_8001b3d0);
+                                           &slot->loadedSize, 1, gameTextLoadCompleteCallback);
     setFileInfo(NULL);
     testAndSet_onlyUseHeap3(oldHeap);
 }
@@ -742,7 +742,7 @@ void gameTextLoadForCurMap(int sourceId)
             if (slot->state == 1)
             {
                 slot->state = 4;
-                DVDCancelAsync(&slot->fileInfo.cb, dvdCancelCallback_8001b39c);
+                DVDCancelAsync(&slot->fileInfo.cb, gameTextLoadCancelCallback);
             }
             if (slot->state == 3 && slot->active != 0)
             {
@@ -788,7 +788,7 @@ void gameTextLoadForCurMap(int sourceId)
                 sMapDirectoryNameTable[slotDir], sLanguageNameTable[slotLang].name);
         setFileInfo(&freeSlot->fileInfo);
         freeSlot->loadHandle = loadFileByPathAsync((char*)(gameTextBase + GAMETEXT_PATH_BUFFER_OFFSET),
-                                                   &freeSlot->loadedSize, 1, gameTextOpenCallback_8001b3d0);
+                                                   &freeSlot->loadedSize, 1, gameTextLoadCompleteCallback);
         setFileInfo(NULL);
         *dirPtr = GAMETEXT_INVALID_DIR;
         *langPtr = GAMETEXT_INVALID_LANGUAGE;
@@ -1142,7 +1142,7 @@ void setLanguageFn_8001ad64(GameTextLoadSlot* req)
 
 
 
-void dvdCancelCallback_8001b39c(s32 result, DVDCommandBlock* block)
+void gameTextLoadCancelCallback(s32 result, DVDCommandBlock* block)
 {
     int i;
     GameTextLoadSlot* slot = curGameTexts;
@@ -1158,7 +1158,7 @@ void dvdCancelCallback_8001b39c(s32 result, DVDCommandBlock* block)
     }
 }
 
-void gameTextOpenCallback_8001b3d0(s32 status, DVDFileInfo* fileInfo)
+void gameTextLoadCompleteCallback(s32 status, DVDFileInfo* fileInfo)
 {
     int i;
     GameTextLoadSlot* slot = curGameTexts;
