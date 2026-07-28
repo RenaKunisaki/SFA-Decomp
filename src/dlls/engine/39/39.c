@@ -4,7 +4,7 @@
 
 #define EFFECT_FLAG_HAS_SRC 0x200000
 
-EffectSrcParams gEffect14SharedSrcParams;
+PartFxSpawnParams gEffect14SharedSrcParams;
 
 
 ObjectDescriptor6 Effect14_funcs = {
@@ -20,9 +20,9 @@ ObjectDescriptor6 Effect14_funcs = {
     (ObjectDescriptorCallback)Effect14_func05_nop,
 };
 
-int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByte, u16* extraArgs)
+int Effect14_func04(GameObject* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, u16* extraArgs)
 {
-    EffectSrcParams rotCtx;
+    PartFxSpawnParams rotCtx;
     EffectSpawnParams p;
     u32 hasOffset;
 
@@ -37,13 +37,13 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         {
             return -1;
         }
-        p.sourcePosX = src->x;
-        p.sourcePosY = src->y;
-        p.sourcePosZ = src->z;
-        p.sourceScale = src->w;
-        p.rot2 = src->rot2;
-        p.rot1 = src->rot1;
-        p.rot0 = src->rot0;
+        p.sourcePosX = src->posX;
+        p.sourcePosY = src->posY;
+        p.sourcePosZ = src->posZ;
+        p.sourceScale = src->scale;
+        p.rot2 = src->rotZ;
+        p.rot1 = src->rotY;
+        p.rot0 = src->rotX;
         p.srcFlag = srcByte;
     }
     p.flagsA = 0;
@@ -366,25 +366,25 @@ int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
     case 0x4c5:
         if (src == NULL)
         {
-            gEffect14SharedSrcParams.x = 0.0f;
-            gEffect14SharedSrcParams.y = 0.0f;
-            gEffect14SharedSrcParams.z = 0.0f;
-            gEffect14SharedSrcParams.w = 1.0f;
-            gEffect14SharedSrcParams.rot0 = 0;
-            gEffect14SharedSrcParams.rot1 = 0;
-            gEffect14SharedSrcParams.rot2 = 0;
+            gEffect14SharedSrcParams.posX = 0.0f;
+            gEffect14SharedSrcParams.posY = 0.0f;
+            gEffect14SharedSrcParams.posZ = 0.0f;
+            gEffect14SharedSrcParams.scale = 1.0f;
+            gEffect14SharedSrcParams.rotX = 0;
+            gEffect14SharedSrcParams.rotY = 0;
+            gEffect14SharedSrcParams.rotZ = 0;
         }
         p.velX = 0.01f * (f32)randomGetRange(-0x14, 0x14);
         p.velY = 0.01f * (f32)randomGetRange(-0x14, 0x14);
         p.velZ = -0.5f * (f32)randomGetRange(10, 0x1e);
-        rotCtx.x = 0.0f;
-        rotCtx.y = 0.0f;
-        rotCtx.z = 0.0f;
-        rotCtx.w = 1.0f;
-        rotCtx.rot2 = obj->anim.rotZ;
-        rotCtx.rot1 = obj->anim.rotY;
-        rotCtx.rot0 = obj->anim.rotX;
-        vecRotateZXY(&rotCtx.rotation.x, &p.velX);
+        rotCtx.posX = 0.0f;
+        rotCtx.posY = 0.0f;
+        rotCtx.posZ = 0.0f;
+        rotCtx.scale = 1.0f;
+        rotCtx.rotZ = obj->anim.rotZ;
+        rotCtx.rotY = obj->anim.rotY;
+        rotCtx.rotX = obj->anim.rotX;
+        vecRotateZXY(&rotCtx.rotX, &p.velX);
         p.flagsA = 0x3000000;
         p.flagsB = 0x200000;
         p.scale = 0.01f;

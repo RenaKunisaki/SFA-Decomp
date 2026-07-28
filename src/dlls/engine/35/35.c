@@ -19,7 +19,7 @@ f32 gEffect10TickScrollPhaseB = 0.3f;
 #define EFFECT10_FLAGA_POS_RELATIVE 0x1
 #define EFFECT10_FLAGA_UNK2         0x2
 
-EffectSrcParams gEffect10DefaultSrcParams;
+PartFxSpawnParams gEffect10DefaultSrcParams;
 
 ObjectDescriptor6 Effect10_funcs = {
     0,
@@ -34,7 +34,7 @@ ObjectDescriptor6 Effect10_funcs = {
     (ObjectDescriptorCallback)Effect10_func05,
 };
 
-int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByte, f32* extraParam)
+int Effect10_func04(s16* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, f32* extraParam)
 {
     EffectSpawnParams p;
     u32 hasSrc;
@@ -60,13 +60,13 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         {
             return -1;
         }
-        p.sourcePosX = src->x;
-        p.sourcePosY = src->y;
-        p.sourcePosZ = src->z;
-        p.sourceScale = src->w;
-        p.rot2 = src->rot2;
-        p.rot1 = src->rot1;
-        p.rot0 = src->rot0;
+        p.sourcePosX = src->posX;
+        p.sourcePosY = src->posY;
+        p.sourcePosZ = src->posZ;
+        p.sourceScale = src->scale;
+        p.rot2 = src->rotZ;
+        p.rot1 = src->rotY;
+        p.rot0 = src->rotX;
         p.srcFlag = srcByte;
     }
     p.flagsA = 0;
@@ -94,39 +94,39 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
     p.unk40 = 0;
     if (src == NULL)
     {
-        gEffect10DefaultSrcParams.x = 0.0f;
-        gEffect10DefaultSrcParams.y = 0.0f;
-        gEffect10DefaultSrcParams.z = 0.0f;
-        gEffect10DefaultSrcParams.w = 1.0f;
-        gEffect10DefaultSrcParams.rot0 = 0;
-        gEffect10DefaultSrcParams.rot1 = 0;
-        gEffect10DefaultSrcParams.rot2 = 0;
+        gEffect10DefaultSrcParams.posX = 0.0f;
+        gEffect10DefaultSrcParams.posY = 0.0f;
+        gEffect10DefaultSrcParams.posZ = 0.0f;
+        gEffect10DefaultSrcParams.scale = 1.0f;
+        gEffect10DefaultSrcParams.rotX = 0;
+        gEffect10DefaultSrcParams.rotY = 0;
+        gEffect10DefaultSrcParams.rotZ = 0;
         src = &gEffect10DefaultSrcParams;
     }
     switch (id)
     {
     case 0x32a:
-        p.count = (int)(50.0f * src->w + 20.0f);
+        p.count = (int)(50.0f * src->scale + 20.0f);
         p.scale = 0.0008f * (f32)(int)p.count;
         p.flagsA = 0x8100200;
         p.kind = 0x57;
-        p.sourcePosX = src->x;
-        p.sourcePosY = src->y;
-        p.sourcePosZ = src->z;
+        p.sourcePosX = src->posX;
+        p.sourcePosY = src->posY;
+        p.sourcePosZ = src->posZ;
         p.sourceScale = 1.0f;
         p.rot2 = 0;
         p.rot1 = 0;
-        p.rot0 = src->rot0;
+        p.rot0 = src->rotX;
         p.alpha = 0xff;
         break;
     case 0x32b:
-        p.count = (int)(src->w * (f32)randomGetRange(0x96, 0xc8) + 50.0f);
+        p.count = (int)(src->scale * (f32)randomGetRange(0x96, 0xc8) + 50.0f);
         p.scale = 0.00014f * (f32)(int)p.count;
         p.flagsA = 0x8100200;
         p.kind = 0x56;
-        p.sourcePosX = src->x;
-        p.sourcePosY = src->y;
-        p.sourcePosZ = src->z;
+        p.sourcePosX = src->posX;
+        p.sourcePosY = src->posY;
+        p.sourcePosZ = src->posZ;
         p.sourceScale = 1.0f;
         p.rot2 = 0;
         p.rot1 = 0;
@@ -138,9 +138,9 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         p.count = 200;
         p.flagsA = 0x8100200;
         p.kind = 0x56;
-        p.sourcePosX = src->x;
-        p.sourcePosY = src->y;
-        p.sourcePosZ = src->z;
+        p.sourcePosX = src->posX;
+        p.sourcePosY = src->posY;
+        p.sourcePosZ = src->posZ;
         p.sourceScale = 1.0f;
         p.rot2 = 0;
         p.rot1 = 0;
@@ -181,13 +181,13 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         break;
     }
     case 0x32f:
-        p.posX = src->x;
-        p.posY = src->y;
-        p.posZ = src->z;
+        p.posX = src->posX;
+        p.posY = src->posY;
+        p.posZ = src->posZ;
         p.velX = 0.0035f * (f32)randomGetRange(-100, 100);
         p.velY = 0.0035f * (f32)randomGetRange(-100, 100);
         p.velZ = 0.0035f * (f32)randomGetRange(-100, 100);
-        p.scale = src->w * (0.00065f * (f32)randomGetRange(4, 5));
+        p.scale = src->scale * (0.00065f * (f32)randomGetRange(4, 5));
         p.count = randomGetRange(0xf, 0x23);
         p.alpha = 0xff;
         p.flagsA = 0x80110;
@@ -195,13 +195,13 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         p.kind = 0xc79;
         break;
     case 0x330:
-        p.posX = 0.001f * (f32)randomGetRange(-100, 100) + src->x;
-        p.posY = 0.001f * (f32)randomGetRange(-100, 100) + src->y;
-        p.posZ = 0.001f * (f32)randomGetRange(-100, 100) + src->z;
+        p.posX = 0.001f * (f32)randomGetRange(-100, 100) + src->posX;
+        p.posY = 0.001f * (f32)randomGetRange(-100, 100) + src->posY;
+        p.posZ = 0.001f * (f32)randomGetRange(-100, 100) + src->posZ;
         p.velX = 0.005f * (f32)randomGetRange(-100, 100);
         p.velY = 0.005f * (f32)randomGetRange(-100, 100);
         p.velZ = 0.005f * (f32)randomGetRange(-100, 100);
-        p.scale = 0.004f * src->w;
+        p.scale = 0.004f * src->scale;
         p.count = randomGetRange(0xf, 0x23);
         p.alpha = 0xff;
         p.flagsA = 0x80100;
@@ -426,10 +426,10 @@ int Effect10_func04(s16* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByt
         p.alpha = randomGetRange(0x96, 200);
         break;
     case 0x346:
-        p.posX = src->x;
-        p.posY = src->y;
-        p.posZ = src->z;
-        p.scale = 0.001f * (f32)randomGetRange(5, 0x19) + src->w;
+        p.posX = src->posX;
+        p.posY = src->posY;
+        p.posZ = src->posZ;
+        p.scale = 0.001f * (f32)randomGetRange(5, 0x19) + src->scale;
         p.count = 0x1e0;
         p.linkGroup = 0;
         p.flagsA = 0x480014;

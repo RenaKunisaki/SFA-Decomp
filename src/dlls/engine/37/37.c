@@ -4,7 +4,7 @@
 
 #define EFFECT_FLAG_HAS_SRC 0x200000
 
-EffectSrcParams gEffect12DefaultSrc;
+PartFxSpawnParams gEffect12DefaultSrc;
 
 ObjectDescriptor6 Effect12_funcs = {
     0,
@@ -19,9 +19,9 @@ ObjectDescriptor6 Effect12_funcs = {
     (ObjectDescriptorCallback)Effect12_func05_nop,
 };
 
-int Effect12_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByte, f32* auxParam)
+int Effect12_func04(GameObject* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, f32* auxParam)
 {
-    EffectSrcParams local;
+    PartFxSpawnParams local;
     EffectSpawnParams p;
     u32 hasOffset;
 
@@ -36,13 +36,13 @@ int Effect12_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
         {
             return -1;
         }
-        p.sourcePosX = src->x;
-        p.sourcePosY = src->y;
-        p.sourcePosZ = src->z;
-        p.sourceScale = src->w;
-        p.rot2 = src->rot2;
-        p.rot1 = src->rot1;
-        p.rot0 = src->rot0;
+        p.sourcePosX = src->posX;
+        p.sourcePosY = src->posY;
+        p.sourcePosZ = src->posZ;
+        p.sourceScale = src->scale;
+        p.rot2 = src->rotZ;
+        p.rot1 = src->rotY;
+        p.rot0 = src->rotX;
         p.srcFlag = srcByte;
     }
     p.flagsA = 0;
@@ -80,20 +80,20 @@ int Effect12_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
     case 0x483:
         if (src == NULL)
         {
-            gEffect12DefaultSrc.x = 0.0f;
-            gEffect12DefaultSrc.y = 0.0f;
-            gEffect12DefaultSrc.z = 0.0f;
-            gEffect12DefaultSrc.w = 1.0f;
-            gEffect12DefaultSrc.rot0 = 0;
-            gEffect12DefaultSrc.rot1 = 0;
-            gEffect12DefaultSrc.rot2 = 0;
+            gEffect12DefaultSrc.posX = 0.0f;
+            gEffect12DefaultSrc.posY = 0.0f;
+            gEffect12DefaultSrc.posZ = 0.0f;
+            gEffect12DefaultSrc.scale = 1.0f;
+            gEffect12DefaultSrc.rotX = 0;
+            gEffect12DefaultSrc.rotY = 0;
+            gEffect12DefaultSrc.rotZ = 0;
             src = &gEffect12DefaultSrc;
         }
         p.posX = (f32)randomGetRange(-10, 10);
         p.posZ = (f32)randomGetRange(-10, 10);
-        p.velX = 0.02f * src->w * (f32)randomGetRange(-100, 100);
-        p.velY = 0.02f * src->w * (f32)randomGetRange(0x28, 0x50);
-        p.velZ = 0.02f * src->w * (f32)randomGetRange(-100, 100);
+        p.velX = 0.02f * src->scale * (f32)randomGetRange(-100, 100);
+        p.velY = 0.02f * src->scale * (f32)randomGetRange(0x28, 0x50);
+        p.velZ = 0.02f * src->scale * (f32)randomGetRange(-100, 100);
         p.scale = 0.03f;
         p.count = 0x3c;
         p.flagsA = 0x81080200;
@@ -104,18 +104,18 @@ int Effect12_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
     case 0x484:
         if (src == NULL)
         {
-            gEffect12DefaultSrc.x = 0.0f;
-            gEffect12DefaultSrc.y = 0.0f;
-            gEffect12DefaultSrc.z = 0.0f;
-            gEffect12DefaultSrc.w = 1.0f;
-            gEffect12DefaultSrc.rot0 = 0;
-            gEffect12DefaultSrc.rot1 = 0;
-            gEffect12DefaultSrc.rot2 = 0;
+            gEffect12DefaultSrc.posX = 0.0f;
+            gEffect12DefaultSrc.posY = 0.0f;
+            gEffect12DefaultSrc.posZ = 0.0f;
+            gEffect12DefaultSrc.scale = 1.0f;
+            gEffect12DefaultSrc.rotX = 0;
+            gEffect12DefaultSrc.rotY = 0;
+            gEffect12DefaultSrc.rotZ = 0;
             src = &gEffect12DefaultSrc;
         }
-        p.velX = 0.03f * src->w * (f32)randomGetRange(-100, 100);
-        p.velY = 0.03f * src->w * (f32)randomGetRange(0x14, 0x50);
-        p.velZ = 0.03f * src->w * (f32)randomGetRange(-100, 100);
+        p.velX = 0.03f * src->scale * (f32)randomGetRange(-100, 100);
+        p.velY = 0.03f * src->scale * (f32)randomGetRange(0x14, 0x50);
+        p.velZ = 0.03f * src->scale * (f32)randomGetRange(-100, 100);
         p.scale = 0.01f;
         p.count = 0x3c;
         p.flagsB = 0x200000;
@@ -126,20 +126,20 @@ int Effect12_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
     case 0x485:
         if (src == NULL)
         {
-            gEffect12DefaultSrc.x = 0.0f;
-            gEffect12DefaultSrc.y = 0.0f;
-            gEffect12DefaultSrc.z = 0.0f;
-            gEffect12DefaultSrc.w = 1.0f;
-            gEffect12DefaultSrc.rot0 = 0;
-            gEffect12DefaultSrc.rot1 = 0;
-            gEffect12DefaultSrc.rot2 = 0;
+            gEffect12DefaultSrc.posX = 0.0f;
+            gEffect12DefaultSrc.posY = 0.0f;
+            gEffect12DefaultSrc.posZ = 0.0f;
+            gEffect12DefaultSrc.scale = 1.0f;
+            gEffect12DefaultSrc.rotX = 0;
+            gEffect12DefaultSrc.rotY = 0;
+            gEffect12DefaultSrc.rotZ = 0;
             src = &gEffect12DefaultSrc;
         }
         p.posX = (f32)randomGetRange(-10, 10);
         p.posZ = (f32)randomGetRange(-10, 10);
-        p.velX = 0.02f * src->w * (f32)randomGetRange(-100, 100);
-        p.velY = 0.02f * src->w * (f32)randomGetRange(0x28, 0x50);
-        p.velZ = 0.02f * src->w * (f32)randomGetRange(-100, 100);
+        p.velX = 0.02f * src->scale * (f32)randomGetRange(-100, 100);
+        p.velY = 0.02f * src->scale * (f32)randomGetRange(0x28, 0x50);
+        p.velZ = 0.02f * src->scale * (f32)randomGetRange(-100, 100);
         p.scale = 0.03f;
         p.count = 0x3c;
         p.flagsA = 0x81080200;
@@ -232,13 +232,13 @@ int Effect12_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
     case 0x48c:
         if (src == NULL)
         {
-            gEffect12DefaultSrc.x = 0.0f;
-            gEffect12DefaultSrc.y = 0.0f;
-            gEffect12DefaultSrc.z = 0.0f;
-            gEffect12DefaultSrc.w = 1.0f;
-            gEffect12DefaultSrc.rot0 = 0;
-            gEffect12DefaultSrc.rot1 = 0;
-            gEffect12DefaultSrc.rot2 = 0;
+            gEffect12DefaultSrc.posX = 0.0f;
+            gEffect12DefaultSrc.posY = 0.0f;
+            gEffect12DefaultSrc.posZ = 0.0f;
+            gEffect12DefaultSrc.scale = 1.0f;
+            gEffect12DefaultSrc.rotX = 0;
+            gEffect12DefaultSrc.rotY = 0;
+            gEffect12DefaultSrc.rotZ = 0;
         }
         if (auxParam == NULL)
         {
@@ -268,14 +268,14 @@ int Effect12_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8
             p.velX = 0.02f * (f32)randomGetRange(-0x28, 0x28);
             p.velY = 0.04f * (f32)randomGetRange(-10, 0x1e);
             p.velZ = 0.04f * (f32)randomGetRange(0, 0x28);
-            local.x = 0.0f;
-            local.y = 0.0f;
-            local.z = 0.0f;
-            local.w = 1.0f;
-            local.rot2 = 0;
-            local.rot1 = 0;
-            local.rot0 = obj->anim.rotX;
-            vecRotateZXY(&local.rotation.x, &p.velX);
+            local.posX = 0.0f;
+            local.posY = 0.0f;
+            local.posZ = 0.0f;
+            local.scale = 1.0f;
+            local.rotZ = 0;
+            local.rotY = 0;
+            local.rotX = obj->anim.rotX;
+            vecRotateZXY(&local.rotX, &p.velX);
             p.scale = 0.02f;
             p.count = 100;
             p.alpha = 0xff;

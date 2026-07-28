@@ -3,9 +3,9 @@
 
 #include "types.h"
 #include "game/objects/object.h"
-#include "main/dll/effectsrcparams_struct.h"
+#include "main/dll/partfx_interface.h"
 
-int Effect14_func04(GameObject* obj, int id, EffectSrcParams* src, u32 flags, u8 srcByte, u16* extraArgs);
+int Effect14_func04(GameObject* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, u16* extraArgs);
 void Effect14_func05_nop(void);
 void Effect14_func03_nop(void);
 void Effect14_release(void);
