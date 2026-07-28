@@ -1,3 +1,4 @@
+#include "sys/objects/lifecycle.h"
 #include "dlls/objects/328_CFGuardian.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -28,6 +29,7 @@
 #include "main/objseq.h"
 #include "main/pad_api.h"
 #include "main/track_dolphin_api.h"
+#include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "track/intersect_api.h"

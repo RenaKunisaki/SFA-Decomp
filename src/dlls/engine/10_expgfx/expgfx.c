@@ -195,6 +195,7 @@ void viewFinderSetZoomTo50(void)
  * constants in the DLL's shared .sdata2 pool.
  */
 #include "main/dll/partfx_interface.h"
+#include "dolphin/gx/GXGeometry.h"
 
 u8 gExpgfxStaticData[48] = {
     192, 160, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0,

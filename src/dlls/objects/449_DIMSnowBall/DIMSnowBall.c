@@ -3,6 +3,7 @@
  * path defined by gDimSnowballCoords, plays a jingle on sharp course changes,
  * and drives a hit-detect object that clears its target on impact.
  */
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
 #include "sys/objects.h"
 #include "main/audio/sfx_ids.h"

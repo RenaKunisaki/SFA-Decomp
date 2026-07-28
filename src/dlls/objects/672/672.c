@@ -16,6 +16,7 @@
  * Per-mode timing/particle parameters come from gRingModeParams[mode]
  * (RingTable); the optional glow is a ModelLightStruct.
  */
+#include "main/gameloop_gamebit_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"

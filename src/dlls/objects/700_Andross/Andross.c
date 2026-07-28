@@ -18,6 +18,7 @@
  * moves, 0x12 the spawn cooldown, 0x108..0x10D the six random hit cues, and
  * 0x405/0x4B1/1 the clear/credits transition.
  */
+#include "main/audio/music_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/pi_dolphin_api.h"
 #include "main/map_load.h"

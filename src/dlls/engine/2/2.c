@@ -63,6 +63,7 @@
 #include "main/maketex_yield_api.h"
 #include "dolphin/os.h"
 #include "main/pi_dolphin_api.h"
+#include "main/audio/music_api.h"
 
 extern char sMemoryCardFileNameString[];
 
