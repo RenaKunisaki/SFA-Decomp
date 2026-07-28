@@ -295,6 +295,7 @@
 #include "dlls/objects/499_SB_MiniFire.h"
 #include "dlls/objects/500.h"
 #include "dlls/objects/501.h"
+#include "dlls/objects/502.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -401,7 +402,7 @@ extern ResourceDescriptor gDrEnergyDiscObjDescriptor, gDrGeneratorObjDescriptor,
 extern ResourceDescriptor gDrakorHoverPadObjDescriptor, gDrakorMissileObjDescriptor;
 extern ResourceDescriptor gEarthWalkerObjDescriptor, gExplodePlanObjDescriptor;
 extern ResourceDescriptor gFireFlyObjDescriptor, gFireObjDescriptor;
-extern ResourceDescriptor gFirePipeObjDescriptor, gFlagObjDescriptor;
+extern ResourceDescriptor gFirePipeObjDescriptor;
 extern ResourceDescriptor gGmMazeWellObjDescriptor;
 extern ResourceDescriptor gHighTopObjDescriptor;
 extern ResourceDescriptor gKtFallingrocksObjDescriptor;
@@ -1608,7 +1609,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSB_MiniFireObjDescriptor,
     (ResourceDescriptor*)&gDll500ObjDescriptor,
     (ResourceDescriptor*)&gDll501ObjDescriptor,
-    &gFlagObjDescriptor,
+    (ResourceDescriptor*)&gDll502ObjDescriptor,
     &gSB_ShipGunBrokeObjDescriptor,
     &gWM_GalleonObjDescriptor,
     &gWM_ObjCreatorObjDescriptor,
