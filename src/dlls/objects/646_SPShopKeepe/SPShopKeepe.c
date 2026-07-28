@@ -713,7 +713,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     seq->freeCallback = (ObjAnimSequenceFreeCallback)DRlaserturret_startTimedChallenge;
     seq->flags &= ~0x20;
     speed = 0.0f;
-    ((ShopkeeperState*)state2)->animSpeed = speed;
+    ((ShopkeeperState*)state2)->baddie.animSpeedA = speed;
     ((ShopkeeperState*)state)->flags9D4 |= SHOPKEEPER_FLAG_FACING;
     if (advance != 0)
     {
@@ -957,7 +957,7 @@ void ShopKeeper_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visib
     int state = *(int*)&(obj)->extra;
     f32 fxParams[4];
     fxParams[0] = 1.0f;
-    if (((ShopkeeperState*)state)->controlMode != 7 && visible != 0)
+    if (((ShopkeeperState*)state)->baddie.controlMode != 7 && visible != 0)
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         dll_2E_setTargetFromPathPoint(obj, (MoveLibState*)(state + 0x35c), 0);
@@ -1002,7 +1002,7 @@ void ShopKeeper_update(GameObject* obj)
     }
     ((ShopkeeperState*)state)->playerMoney = playerGetMoney(player);
     (*gPlayerInterface)->update((void*)obj, (void*)state, timeDelta, timeDelta, lbl_803AD068, &lbl_803DDC58);
-    dll_2E_updateLookAt(obj, (MoveLibState*)(state + 0x35C));
+    dll_2E_updateLookAt(obj, &((ShopkeeperState*)state)->moveLib);
     characterDoEyeAnims(obj, &((ShopkeeperState*)state)->eyeAnimState);
     (obj)->anim.alpha = ((ShopkeeperState*)state)->opacity;
 }
@@ -1018,7 +1018,7 @@ void ShopKeeper_init(GameObject* obj)
     ((ShopkeeperState*)state)->opacity = 0xFF;
     ((ShopkeeperState*)state)->textTimer = 300.0f;
     dll_2E_initState(obj, (MoveLibState*)(state + 0x35C), -0x1C71, 0x3555, 2);
-    ((ShopkeeperState*)state)->unk96D |= 0x12;
+    ((ShopkeeperState*)state)->moveLib.modeBits |= 0x12;
 }
 
 void ShopKeeper_release(void)

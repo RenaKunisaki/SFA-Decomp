@@ -78,7 +78,7 @@ void dll_28B_update(GameObject* obj)
     GameObject* player = Obj_GetPlayerObject();
 
     state->playerDistance = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
-    state->objectFlagsMirror |= OBJFLAG_BIT_2000000;
+    state->baddie.flags0 |= OBJFLAG_BIT_2000000;
     dt = timeDelta;
     (*gPlayerInterface)->update(obj, state, dt, dt, gDll28BStateHandlers, gDll28BSubstateHandlers);
     if ((state->flagsAC0 & 1) != 0)
@@ -90,7 +90,7 @@ void dll_28B_update(GameObject* obj)
         state->moveLib.modeBits |= 1;
     }
     dll_2E_updateLookAt(obj, &state->moveLib);
-    characterDoEyeAnims(obj, state->eyeAnim);
+    characterDoEyeAnims(obj, &state->eyeAnimState);
     xform.x = obj->anim.localPosX;
     xform.y = obj->anim.localPosY;
     xform.z = obj->anim.localPosZ;

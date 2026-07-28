@@ -2,19 +2,15 @@
 #define MAIN_DLL_SHOPKEEPERSTATE_STRUCT_H_
 
 #include "types.h"
+#include "main/dll/baddie_state.h"
+#include "main/dll/dll_002E_moveLib.h"
 #include "main/model_engine.h"
 #include "main/objprint_character_api.h"
 
 typedef struct ShopkeeperState
 {
-    u8 pad000[0x274];
-    s16 controlMode; /* 0x274: shared BaddieState control mode (!= 7 gates render) */
-    u8 pad276[0x280 - 0x276];
-    f32 animSpeed; /* 0x280 */
-    u8 pad284[0x35C - 0x284];
-    u8 dll2EBlock[0x96D - 0x35C]; /* 0x35c: dll_2E look-controller block (address-used) */
-    u8 unk96D; /* 0x96d */
-    u8 pad96E[0x980 - 0x96E];
+    BaddieState baddie;
+    MoveLibState moveLib; /* 0x35c: dll_2E look-controller block */
     CharacterEyeAnimState eyeAnimState; /* 0x980: head-aim / eye-blink record (characterDoEyeAnims) */
     u8 pad9A8[0x9B0 - 0x9A8];
     RingBufferQueue* msgStack; /* 0x9b0: queued state messages */

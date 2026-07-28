@@ -3,15 +3,16 @@
 
 #include "global.h"
 #include "main/dll/curve_walker.h"
+#include "main/dll/baddie_state.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "game/objects/object.h"
 
 typedef struct Dll28BState
 {
-    int objectFlagsMirror;
-    u8 pad4[0x35C - 0x4];
+    BaddieState baddie;
     MoveLibState moveLib;
-    u8 eyeAnim[0x9B0 - 0x980];
+    CharacterEyeAnimState eyeAnimState;
+    u8 pad9A8[0x9B0 - 0x9A8];
     RomCurveWalker route;
     f32 playerDistance;
     u8 padABC[0xAC0 - 0xABC];
@@ -26,7 +27,7 @@ typedef struct Dll28BMoveBlendData
 
 STATIC_ASSERT(sizeof(Dll28BState) == 0xAC4);
 STATIC_ASSERT(offsetof(Dll28BState, moveLib) == 0x35C);
-STATIC_ASSERT(offsetof(Dll28BState, eyeAnim) == 0x980);
+STATIC_ASSERT(offsetof(Dll28BState, eyeAnimState) == 0x980);
 STATIC_ASSERT(offsetof(Dll28BState, route) == 0x9B0);
 STATIC_ASSERT(offsetof(Dll28BState, playerDistance) == 0xAB8);
 STATIC_ASSERT(offsetof(Dll28BState, flagsAC0) == 0xAC0);
