@@ -460,7 +460,7 @@ void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj)
 #define TRIGGER_CMD_OVERRIDE_DISABLED 0x20 /* run even when SFLAG_DISABLED is set */
 #define TRIGGER_SFLAG_SEED_TARGET 0x40 /* first hit: seed target position from current, not previous */
 
-void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq)
+void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
 {
     char* desc = (char*)&gTriggerObjDescriptor;
     u8* state = obj->extra;
@@ -681,11 +681,11 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq
                     }
                     break;
                 case 10:
-                    getEnvfxAct(obj, seqObj, (u16)((p[2] << 8) | p[3]), distSq);
-                    OSReport(desc + 0x68, (int)obj->anim.classId, (p[2] << 8) | p[3], distSq);
+                    getEnvfxAct(obj, seqObj, (u16)((p[2] << 8) | p[3]), range);
+                    OSReport(desc + 0x68, (int)obj->anim.classId, (p[2] << 8) | p[3], range);
                     break;
                 case 0xd:
-                    getLActions(obj, seqObj, (u16)((p[2] << 8) | p[3]), legCode, distSq, 0);
+                    getLActions(obj, seqObj, (u16)((p[2] << 8) | p[3]), legCode, range, 0);
                     break;
                 case 0xb:
                     switch (p[2])
@@ -729,7 +729,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq
                         case 0x230:
                             if (((TriggerPlacement*)tbl)->triggerId == id)
                             {
-                                objInterpretSeq((GameObject*)t2, seqObj, legCode, distSq);
+                                objInterpretSeq((GameObject*)t2, seqObj, legCode, range);
                             }
                             break;
                         }
