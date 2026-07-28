@@ -2422,7 +2422,7 @@ void andross_init(GameObject* obj, ObjPlacement* setup)
     createNewShadowDistortionTexture();
     i = (int)Obj_GetActiveModel(obj);
     model = *(int*)i;
-    for (i = 0, val = i; i < *(u8*)(model + 0xf8); i++)
+    for (i = 0, val = i; i < ((ModelFileHeader*)model)->renderOpCount; i++)
     {
         ObjModel_GetRenderOp((ModelFileHeader*)model, i)->alphaOverride = val;
     }
