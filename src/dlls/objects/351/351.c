@@ -32,10 +32,10 @@ void attractor_getTarget(GameObject* obj, GameObject** outTarget) {
     *outTarget = target;
 }
 
-int attractor_setScale(GameObject* obj) {
+int attractor_func0A(GameObject* obj) {
     AttractorPlacement* placement = (AttractorPlacement*)obj->anim.placementData;
     if (placement->mode != ATTRACTOR_MODE_NONE) {
-        return placement->scale;
+        return placement->unknown1A;
     }
     return 0;
 }
@@ -95,6 +95,6 @@ ObjectDescriptor12 gAttractorObjDescriptor = {
     (ObjectDescriptorCallback)attractor_free,
     (ObjectDescriptorCallback)attractor_getObjectTypeId,
     attractor_getExtraSize,
-    (ObjectDescriptorCallback)attractor_setScale,
+    (ObjectDescriptorCallback)attractor_func0A,
     (ObjectDescriptorCallback)attractor_getTarget,
 };
