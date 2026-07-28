@@ -779,12 +779,14 @@ STATIC_ASSERT(offsetof(ShackleSwingState, lastPitch) == 0x49C);
 
 int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
 {
-    ShackleSwingState* s = state;
     GameObject* o = (GameObject*)obj;
+    ShackleSwingState* s = state;
     int hitResult;
     int yawDelta;
     f32 fade;
+    f32 zero;
 
+    zero = 0.0f;
     {
         f32 dx = o->anim.localPosX;
         f32 dz = o->anim.localPosZ;
@@ -793,7 +795,7 @@ int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
         fade = 180.0f - sqrtf(dx * dx + dz * dz);
     }
 
-    if (s->distanceFade != 0.0f)
+    if (s->distanceFade != zero)
     {
         fade = fade + (((fade - 40.0f) < 0.0f)
                            ? 0.0f
@@ -806,7 +808,7 @@ int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
 
     hitResult = (*gCheckpointInterface)->advanceRoute((u8*)state, &s->collider, fade, s->colliderMode, 1, 0);
 
-    (*gCheckpointInterface)->getRouteHeading((GameObject*)obj, &s->collider);
+    (*gCheckpointInterface)->getRouteHeading((GameObject*)o, &s->collider);
 
     (*gCheckpointInterface)->queueRouteRankItem((CheckpointRankItem*)&s->collider);
 
