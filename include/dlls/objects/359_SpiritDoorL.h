@@ -54,8 +54,7 @@ STATIC_ASSERT(sizeof(SpiritDoorLockPlacement) == 0x24);
 int SpiritDoorLock_getExtraSize(void);
 int SpiritDoorLock_getObjectTypeId(void);
 void SpiritDoorLock_free(GameObject* obj);
-void SpiritDoorLock_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
-                           s8 visible);
+void SpiritDoorLock_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void SpiritDoorLock_hitDetect(void);
 void SpiritDoorLock_update(GameObject* obj);
 void SpiritDoorLock_init(GameObject* obj, const SpiritDoorLockPlacement* placement, int startHidden);
