@@ -116,6 +116,7 @@ void DBprotection_updateFlight(GameObject* obj) {
     f32 ambB;
     f32 threshold;
     f32 dx;
+    f32 wander;
     f32 speedTarget;
     f32 zero;
     f32 mtx[17];
@@ -191,10 +192,10 @@ void DBprotection_updateFlight(GameObject* obj) {
         state->wanderA = -(amp * timeDelta - state->wanderA);
         state->wanderB = -(amp * timeDelta - state->wanderB);
     }
-    dx = state->wanderA;
-    state->wanderA = (dx < 0.0f) ? 0.0f : (dx > 35.0f) ? 35.0f : dx;
-    dx = state->wanderB;
-    state->wanderB = (dx < 0.0f) ? 0.0f : (dx > 35.0f) ? 35.0f : dx;
+    wander = state->wanderA;
+    state->wanderA = (wander < 0.0f) ? 0.0f : (wander > 35.0f) ? 35.0f : wander;
+    wander = state->wanderB;
+    state->wanderB = (wander < 0.0f) ? 0.0f : (wander > 35.0f) ? 35.0f : wander;
     switch (state->phase) {
     case 0:
         camShake = 120.0f;

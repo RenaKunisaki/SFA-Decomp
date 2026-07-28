@@ -811,6 +811,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     int flag;
     int zero;
     int* ptr;
+    int* keys;
     s16* vec;
     f32 frac;
     int msg0[3];
@@ -989,11 +990,11 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     }
     if (flag != 0)
     {
-        ptr = objGetLookAtJointKeys();
+        keys = objGetLookAtJointKeys();
         zero = 0;
-        for (q = 1, ptr = ptr + 1; q < 9; ptr++, q++)
+        for (q = 1, keys = keys + 1; q < 9; keys++, q++)
         {
-            vec = objModelGetVecFn_800395d8(obj, *ptr);
+            vec = objModelGetVecFn_800395d8(obj, *keys);
             if (vec != 0)
             {
                 vec[2] = zero;
