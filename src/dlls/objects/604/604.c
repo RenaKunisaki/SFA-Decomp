@@ -1,5 +1,6 @@
 /* DLL 604: SnowClaw-family object callbacks. */
 
+#include "dlls/objects/364.h"
 #include "main/audio/sfx.h"
 #include "main/dll/objfx_api.h"
 #include "dlls/object_descriptor.h"
@@ -82,19 +83,6 @@ STATIC_ASSERT(offsetof(SnowclawState, dropIndex) == 0xA2);
 STATIC_ASSERT(offsetof(SnowclawState, health) == 0xA4);
 STATIC_ASSERT(offsetof(SnowclawState, moveIdBase) == 0xA8);
 
-typedef struct SnowclawMountInterface
-{
-    void* pad00[4];
-    void (*render)(GameObject* mount, int renderArg2, int renderArg3, int renderArg4, int renderArg5, int visible);
-    void* pad14[5];
-    void (*getPosition)(GameObject* mount, f32* x, f32* y, f32* z);
-    void* pad2C[3];
-    int (*getRiderMode)(GameObject* mount);
-    void (*setRiderMode)(GameObject* mount, int mode);
-    void (*func12)(GameObject* mount, f32* out, int* outNegative);
-    f32 (*getNormalizedSpeed)(GameObject* mount, f32* out);
-} SnowclawMountInterface;
-
 typedef struct SnowclawTargetInterface
 {
     void* pad00[8];
@@ -102,16 +90,10 @@ typedef struct SnowclawTargetInterface
     int (*getState)(GameObject* target);
 } SnowclawTargetInterface;
 
-STATIC_ASSERT(offsetof(SnowclawMountInterface, render) == 0x10);
-STATIC_ASSERT(offsetof(SnowclawMountInterface, getPosition) == 0x28);
-STATIC_ASSERT(offsetof(SnowclawMountInterface, getRiderMode) == 0x38);
-STATIC_ASSERT(offsetof(SnowclawMountInterface, setRiderMode) == 0x3C);
-STATIC_ASSERT(offsetof(SnowclawMountInterface, func12) == 0x40);
-STATIC_ASSERT(offsetof(SnowclawMountInterface, getNormalizedSpeed) == 0x44);
 STATIC_ASSERT(offsetof(SnowclawTargetInterface, setState) == 0x20);
 STATIC_ASSERT(offsetof(SnowclawTargetInterface, getState) == 0x24);
 
-#define SNOWCLAW_MOUNT_INTERFACE(mount)   (*(SnowclawMountInterface**)((GameObject*)(mount))->anim.dll)
+#define SNOWCLAW_MOUNT_INTERFACE(mount)   (*(IMSnowClawMountInterface**)((GameObject*)(mount))->anim.dll)
 #define SNOWCLAW_TARGET_INTERFACE(target) (*(SnowclawTargetInterface**)((GameObject*)(target))->anim.dll)
 
 typedef struct
