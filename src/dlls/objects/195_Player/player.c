@@ -228,7 +228,7 @@ int fn_802AB1D0(GameObject* obj);
 void playerCastSpell(int a, int b, int c);
 void fn_802AB5A4(GameObject* obj, int p2, int flags);
 void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player);
-int fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv);
+void fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv);
 void fn_802ABFBC(GameObject* obj, int state, PlayerState* inner);
 void fn_802AC32C(int p1, int p2, int p3);
 void playerSetMovingAnims(int p1, int obj);
@@ -13393,7 +13393,7 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
     }
 }
 
-int fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv)
+void fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv)
 {
     int d = ((PlayerState*)inner)->targetYaw - (u16)((PlayerState*)inner)->prevTargetYaw;
     int near;
@@ -13451,7 +13451,6 @@ int fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv)
     }
     {
         int r0;
-        int h;
         if (!((((u32)((PlayerState*)inner)->flags3F1 >> 5) & 1) || (((u32)((PlayerState*)inner)->flags3F0 >> 4) & 1)))
         {
             r0 = ((PlayerState*)inner)->targetYawRate;
@@ -13468,30 +13467,30 @@ int fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv)
         {
             r0 = 0x28;
         }
-        h = g + r0 * 0xb6;
-        if (h < -0x3ffc)
+        g += r0 * 0xb6;
+        if (g < -0x3ffc)
         {
-            h = -0x3ffc;
+            g = -0x3ffc;
         }
-        else if (h > 0x3ffc)
+        else if (g > 0x3ffc)
         {
-            h = 0x3ffc;
+            g = 0x3ffc;
         }
-        h = h - (u16)((PlayerState*)inner)->bodyLeanAngle;
-        if (h > 0x8000)
-            h -= 0xffff;
-        if (h < -0x8000)
-            h += 0xffff;
-        h = (int)((f32)(int)h * 0.15f);
-        if (h < -0x16c)
+        g = g - (u16)((PlayerState*)inner)->bodyLeanAngle;
+        if (g > 0x8000)
+            g -= 0xffff;
+        if (g < -0x8000)
+            g += 0xffff;
+        g = (int)((f32)(int)g * 0.15f);
+        if (g < -0x16c)
         {
-            h = -0x16c;
+            g = -0x16c;
         }
-        else if (h > 0x16c)
+        else if (g > 0x16c)
         {
-            h = 0x16c;
+            g = 0x16c;
         }
-        ((PlayerState*)inner)->bodyLeanAngle = (f32)(int)h * timeDelta + (f32)(int)*(s16*)((int)inner + 0x4D4);
+        ((PlayerState*)inner)->bodyLeanAngle = (f32)(int)g * timeDelta + (f32)(int)*(s16*)((int)inner + 0x4D4);
         ((PlayerState*)inner)->bodyLeanHalf = ((PlayerState*)inner)->bodyLeanAngle / 2;
     }
     {
