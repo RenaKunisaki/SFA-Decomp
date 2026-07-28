@@ -115,7 +115,7 @@ STATIC_ASSERT(sizeof(BabyCloudRunnerState) == 0x248);
 int babyCloudRunner_updateBurrowAnimation(GameObject* obj);
 void babyCloudRunner_turnTowardTarget(GameObject* obj, GameObject* target, BabyCloudRunnerState* state, int playMove);
 int babyCloudRunner_tryCapture(void* object);
-int babyCloudRunner_setScale(GameObject* obj);
+int babyCloudRunner_func0A(GameObject* obj);
 int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
 int babyCloudRunner_getExtraSize(void);
 int babyCloudRunner_getObjectTypeId(void);

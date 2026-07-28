@@ -179,7 +179,7 @@ int babyCloudRunner_tryCapture(void* object) {
     return 0;
 }
 
-int babyCloudRunner_setScale(GameObject* obj) {
+int babyCloudRunner_func0A(GameObject* obj) {
     BabyCloudRunnerState* state = obj->extra;
     return !(state->captureFlags & BABYCLOUDRUNNER_CAPTURE_ACTIVE);
 }
@@ -201,7 +201,7 @@ ObjectDescriptor12 gBabyCloudRunnerObjDescriptor = {
     (ObjectDescriptorCallback)babyCloudRunner_free,
     (ObjectDescriptorCallback)babyCloudRunner_getObjectTypeId,
     babyCloudRunner_getExtraSize,
-    (ObjectDescriptorCallback)babyCloudRunner_setScale,
+    (ObjectDescriptorCallback)babyCloudRunner_func0A,
     (ObjectDescriptorCallback)babyCloudRunner_tryCapture,
 };
 
