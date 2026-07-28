@@ -1074,7 +1074,7 @@ more as they are recovered.
 | 0x1F6 | dlls/objects/502/502.c | include/dlls/objects/502.h |
 | 0x1F7 | dlls/objects/503_SB_ShipGunB/SB_ShipGunB.c | include/dlls/objects/503_SB_ShipGunB.h |
 | 0x1F8 | dlls/objects/504_WM_Galleon/WM_Galleon.c | include/dlls/objects/504_WM_Galleon.h |
-| 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
+| 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/dlls/objects/505_WM_ObjCreat.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | main/dll/dll_0259_sbcloudrunner.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |

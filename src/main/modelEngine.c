@@ -298,6 +298,7 @@
 #include "dlls/objects/502.h"
 #include "dlls/objects/503_SB_ShipGunB.h"
 #include "dlls/objects/504_WM_Galleon.h"
+#include "dlls/objects/505_WM_ObjCreat.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -436,7 +437,7 @@ extern ResourceDescriptor gWCLevelContObjDescriptor,
     gWCPushBlockObjDescriptor, gWCTempleBriObjDescriptor,
     gWCTileObjDescriptor;
 extern ResourceDescriptor gWM_GeneralScalesObjDescriptor, gWM_LaserTargetObjDescriptor,
-    gWM_LevelControlObjDescriptor, gWM_ObjCreatorObjDescriptor, gWM_PlanetsObjDescriptor;
+    gWM_LevelControlObjDescriptor, gWM_PlanetsObjDescriptor;
 extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gWM_WallCrawlerObjDescriptor,
     gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqobjectObjDescriptor,
     gWM_seqpointObjDescriptor;
@@ -1613,7 +1614,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll502ObjDescriptor,
     (ResourceDescriptor*)&gSB_ShipGunBrokeObjDescriptor,
     (ResourceDescriptor*)&gWM_GalleonObjDescriptor,
-    &gWM_ObjCreatorObjDescriptor,
+    (ResourceDescriptor*)&gWM_ObjCreatorObjDescriptor,
     &gWM_seqobjectObjDescriptor,
     &dll_1FB,
     &gLaserBeamObjDescriptor,

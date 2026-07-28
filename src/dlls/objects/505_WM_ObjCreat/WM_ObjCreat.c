@@ -9,177 +9,171 @@
  * spawnTimer from spawnPeriod + randomGetRange(0, spawnJitter); most
  * modes gate on the placement game bit (-1 = always).
  */
+#include "dlls/objects/505_WM_ObjCreat.h"
+
 #include "dlls/objects/301_LFXEmitter.h"
 #include "dlls/objects/504_WM_Galleon.h"
 
 #include "game/objects/object.h"
+#include "main/dll/WM/dll_0211_wmwallcrawler.h"
 #include "main/dll/partfx_interface.h"
+#include "main/dll/vecrotatezxy.h"
+#include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/object_render.h"
+#include "main/obj_group.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-#include "main/frame_timing.h"
-#include "main/vecmath.h"
-#include "main/obj_group.h"
-#include "main/dll/WM/dll_0211_wmwallcrawler.h"
-#include "main/dll/WC/dll_01F9_wmobjcreator.h"
-#include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 
-STATIC_ASSERT(sizeof(WmObjCreatorState) == 0x8);
-
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, gameBit) == 0x18);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnMode) == 0x1A);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnPeriod) == 0x1C);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, yaw) == 0x1E);
-STATIC_ASSERT(offsetof(WmObjCreatorPlacement, spawnJitter) == 0x1F);
-STATIC_ASSERT(sizeof(WmObjCreatorPlacement) == 0x24);
-
-typedef struct WmRockSpawnSetup
-{
+/*
+ * These setup records model the complete allocation widths used below. Field
+ * meanings belong to the spawned objects; unrecovered fields remain opaque.
+ */
+typedef struct WMRockSpawnSetup {
     ObjPlacement base;
-    s8 yawByte; /* 0x18: creator's own rotX high byte */
-    u8 pad19[5];
-    s16 unk1E; /* 0x1E: -1 */
-} WmRockSpawnSetup;
+    s8 yawByte;
+    u8 unknown19[5];
+    s16 unknown1E;
+    u8 unknown20[4];
+} WMRockSpawnSetup;
 
-STATIC_ASSERT(offsetof(WmRockSpawnSetup, unk1E) == 0x1E);
+STATIC_ASSERT(offsetof(WMRockSpawnSetup, yawByte) == 0x18);
+STATIC_ASSERT(offsetof(WMRockSpawnSetup, unknown1E) == 0x1E);
+STATIC_ASSERT(sizeof(WMRockSpawnSetup) == 0x24);
 
-typedef struct HoodedZyckSpawnSetup
-{
+typedef struct WMWallCrawlerSpawnSetup {
+    WmwallcrawlerMapData base;
+    u8 unknown20[4];
+} WMWallCrawlerSpawnSetup;
+
+STATIC_ASSERT(offsetof(WMWallCrawlerSpawnSetup, base) == 0x00);
+STATIC_ASSERT(sizeof(WMWallCrawlerSpawnSetup) == 0x24);
+
+typedef struct HoodedZyckSpawnSetup {
     ObjPlacement base;
-    s16 triggerGameBit; /* 0x18: the creator's own gate bit, handed on */
-    s16 gameBit2;       /* 0x1A */
-    u8 pad1C[6];
-    s16 droppedItemId; /* 0x22 */
-    u8 pad24[6];
-    s8 yawByte; /* 0x2A: random heading */
+    s16 triggerGameBit;
+    s16 unknown1A;
+    u8 unknown1C[6];
+    s16 droppedItemId;
+    u8 unknown24[6];
+    s8 yawByte;
+    u8 unknown2B[0x38 - 0x2B];
 } HoodedZyckSpawnSetup;
 
-STATIC_ASSERT(offsetof(HoodedZyckSpawnSetup, gameBit2) == 0x1A);
+STATIC_ASSERT(offsetof(HoodedZyckSpawnSetup, triggerGameBit) == 0x18);
+STATIC_ASSERT(offsetof(HoodedZyckSpawnSetup, unknown1A) == 0x1A);
 STATIC_ASSERT(offsetof(HoodedZyckSpawnSetup, droppedItemId) == 0x22);
 STATIC_ASSERT(offsetof(HoodedZyckSpawnSetup, yawByte) == 0x2A);
+STATIC_ASSERT(sizeof(HoodedZyckSpawnSetup) == 0x38);
 
-/* romlist object types this creator spawns (names from the retail
-   OBJECTS.bin; the handling DLL ids confirm the targets). */
-enum
-{
-    WMOBJCREATOR_SPAWN_WM_GALLEON = 0x139,     /* dll 0x1F8 wmgalleon */
-    WMOBJCREATOR_SPAWN_LFX_EMITTER = 0x263,    /* dll 0x12D lfxemitter */
-    WMOBJCREATOR_SPAWN_WM_WALLCRAWLER = 0x275, /* dll 0x211 wmwallcrawler */
-    WMOBJCREATOR_SPAWN_HOODED_ZYCK = 0x4AC,    /* dll 0x0C9 enemy */
-    WMOBJCREATOR_SPAWN_WM_ROCK = 0x2BC         /* dll 0x12A */
+enum {
+    /* Creator modes selected by the placement record. */
+    WMOBJCREATOR_MODE_GALLEON = 0,
+    WMOBJCREATOR_MODE_EAST_EMITTER = 1,
+    WMOBJCREATOR_MODE_WEST_EMITTER = 2,
+    WMOBJCREATOR_MODE_SCATTER_EMITTERS = 4,
+    WMOBJCREATOR_MODE_WALL_CRAWLER = 5,
+    WMOBJCREATOR_MODE_FALLING_ROCK = 6,
+    WMOBJCREATOR_MODE_RANDOM_EMITTER = 7,
+    WMOBJCREATOR_MODE_HOODED_ZYCK = 8,
+
+    /* Spawned object IDs from retail OBJECTS.bin. */
+    WMOBJCREATOR_SPAWN_WM_GALLEON = 0x139,
+    WMOBJCREATOR_SPAWN_LFX_EMITTER = 0x263,
+    WMOBJCREATOR_SPAWN_WM_WALLCRAWLER = 0x275,
+    WMOBJCREATOR_SPAWN_HOODED_ZYCK = 0x4AC,
+    WMOBJCREATOR_SPAWN_WM_ROCK = 0x2BC
 };
 
-/* gate for the galleon spawn: set once the palace approach has run */
-#define GAMEBIT_WM_GALLEON_GONE 0x78
+/* Particle effects emitted by the one-shot spawn modes. */
+#define WMOBJCREATOR_PARTFX_DEBRIS            0x1A6
+#define WMOBJCREATOR_PARTFX_SCATTER_TRAIL     0x1A7
+#define WMOBJCREATOR_PARTFX_HOODED_ZYCK_SPAWN 0x1C3
 
-#define WMOBJCREATOR_PARTFX_DEBRIS 0x1a6 /* debris-particle burst under the falling WM_rock (case 6) */
+s32 gWMObjCreatorWallCrawlerSpawnCount;
 
-int lbl_803DDC68;       /* live WM_WallCraw population counter */
-int WM_ObjCreator_getExtraSize(void);
-int WM_ObjCreator_getObjectTypeId(void);
-void WM_ObjCreator_free(void);
-void WM_ObjCreator_render(int obj, int p2, int p3, int p4, int p5, s8 visible);
-void WM_ObjCreator_hitDetect(void);
-void WM_ObjCreator_update(GameObject* obj);
-void WM_ObjCreator_init(GameObject* obj, s8* def);
-void WM_ObjCreator_release(void);
-void WM_ObjCreator_initialise(void);
-
+/* Retail data order places this descriptor before WM_ObjCreator_update's jump table. */
 ObjectDescriptor gWM_ObjCreatorObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)WM_ObjCreator_initialise,
-    (ObjectDescriptorCallback)WM_ObjCreator_release,
+    WM_ObjCreator_initialise,
+    WM_ObjCreator_release,
     0,
     (ObjectDescriptorCallback)WM_ObjCreator_init,
     (ObjectDescriptorCallback)WM_ObjCreator_update,
-    (ObjectDescriptorCallback)WM_ObjCreator_hitDetect,
+    WM_ObjCreator_hitDetect,
     (ObjectDescriptorCallback)WM_ObjCreator_render,
-    (ObjectDescriptorCallback)WM_ObjCreator_free,
+    WM_ObjCreator_free,
     (ObjectDescriptorCallback)WM_ObjCreator_getObjectTypeId,
-    (ObjectDescriptorExtraSizeCallback)WM_ObjCreator_getExtraSize,
+    WM_ObjCreator_getExtraSize,
 };
 
-int WM_ObjCreator_getExtraSize(void)
-{
-    return 0x8;
-}
-int WM_ObjCreator_getObjectTypeId(void)
-{
-    return 0x0;
+int WM_ObjCreator_getExtraSize(void) {
+    return sizeof(WMObjCreatorState);
 }
 
-void WM_ObjCreator_free(void)
-{
+int WM_ObjCreator_getObjectTypeId(void) {
+    return 0;
 }
 
-void WM_ObjCreator_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+void WM_ObjCreator_free(void) {
 }
 
-void WM_ObjCreator_hitDetect(void)
-{
+void WM_ObjCreator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 visibleFlag = visible;
+
+    if (visibleFlag != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    }
 }
 
-void WM_ObjCreator_update(GameObject* obj)
-{
-    /* setup/spawned/n are FN-SCOPE on purpose: live-range splitting
-       re-creates per-arm webs in the retail saved-reg spread, where
-       block locals coalesce (#108 crack; case 1 and case 4's setup
-       really were block-scope - see below). */
+void WM_ObjCreator_hitDetect(void) {
+}
+
+void WM_ObjCreator_update(GameObject* obj) {
+    /*
+     * These locals intentionally span switch arms. Splitting their lifetimes
+     * changes MWCC's nonvolatile-register allocation.
+     */
     ObjPlacement* setup;
     GameObject* spawned;
-    int n;
-    WmObjCreatorPlacement* placement;
-    WmObjCreatorState* state;
-    int count;
-    struct
-    {
-        s16 dir[3];
-        s16 pad;
-        f32 pos[4]; /* [0] scale, [1] velX, [2] velY, [3] velZ */
-    } vec;
+    int remainingCount;
+    WMObjCreatorPlacementView* placement;
+    WMObjCreatorState* state;
+    int objectCount;
+    VecRotateZXYArg particleArgs;
 
-    placement = (WmObjCreatorPlacement*)obj->anim.placementData;
+    placement = (WMObjCreatorPlacementView*)obj->anim.placementData;
     state = obj->extra;
-    if (Obj_IsLoadingLocked() != 0)
-    {
-        switch (placement->spawnMode)
-        {
-        case 0: /* one-shot WM_Galleon at the placement, at most one alive */
-        {
-            int* objs;
-            int k;
-            /* dead-on-this-path state recycled as the spawn-ok flag
-                   (#119: lands the flag web in state's r29 = retail) */
-            state = (WmObjCreatorState*)0;
-            if (obj->userData2 == 0)
-            {
-                state = (WmObjCreatorState*)1;
-                if (mainGetBit(GAMEBIT_WM_GALLEON_GONE) != 0)
-                {
-                    state = (WmObjCreatorState*)0;
+    if (Obj_IsLoadingLocked() != 0) {
+        switch (placement->spawnMode) {
+        /* Spawn one WM_Galleon at the placement, unless one is already alive. */
+        case WMOBJCREATOR_MODE_GALLEON: {
+            u32* groupObjects;
+            int objectIndex;
+            /*
+             * state is dead on this path and intentionally reused as the
+             * spawn-allowed flag. A separate local changes register allocation.
+             */
+            state = NULL;
+            if (obj->userData2 == 0) {
+                state = (WMObjCreatorState*)1;
+                if (mainGetBit(GAMEBIT_WM_Galleon_despawn) != 0) {
+                    state = NULL;
                 }
-                objs = (int*)ObjGroup_GetObjects(3, &count);
-                k = 0;
-                while (k < count && (s8)(int)state)
-                {
-                    if (((GameObject*)*objs)->anim.seqId == WMOBJCREATOR_SPAWN_WM_GALLEON)
-                    {
-                        state = (WmObjCreatorState*)0;
+                groupObjects = ObjGroup_GetObjects(3, &objectCount);
+                objectIndex = 0;
+                while (objectIndex < objectCount && (s8)(int)state != 0) {
+                    if (((GameObject*)*groupObjects)->anim.seqId == WMOBJCREATOR_SPAWN_WM_GALLEON) {
+                        state = NULL;
                     }
-                    objs += 1;
-                    k += 1;
+                    groupObjects++;
+                    objectIndex++;
                 }
             }
-            if ((s8)(int)state)
-            {
+            if ((s8)(int)state != 0) {
                 setup = Obj_AllocObjectSetup(sizeof(WMGalleonSetup), WMOBJCREATOR_SPAWN_WM_GALLEON);
                 setup->posX = placement->base.posX;
                 setup->posY = placement->base.posY;
@@ -192,20 +186,17 @@ void WM_ObjCreator_update(GameObject* obj)
                 ((WMGalleonSetup*)setup)->unknown1A = 2;
                 ((WMGalleonSetup*)setup)->rotationXByte = placement->yaw;
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
-                if ((u32)spawned != 0)
-                {
+                if (spawned != NULL) {
                     spawned->userData1 = 8;
                 }
                 obj->userData2 = 1;
             }
             break;
         }
-        case 1: /* periodic LFXEmitter at the creator, drifting east */
+        case WMOBJCREATOR_MODE_EAST_EMITTER:
             if ((mainGetBit(state->gameBit) != 0 || state->gameBit == -1) &&
-                (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0))
-            {
-                ObjPlacement* setup =
-                    Obj_AllocObjectSetup(sizeof(LFXEmitterPlacement), WMOBJCREATOR_SPAWN_LFX_EMITTER);
+                (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0)) {
+                ObjPlacement* setup = Obj_AllocObjectSetup(sizeof(LFXEmitterPlacement), WMOBJCREATOR_SPAWN_LFX_EMITTER);
                 setup->color[0] = 0x20;
                 setup->color[1] = 2;
                 setup->color[3] = 0xff;
@@ -219,37 +210,33 @@ void WM_ObjCreator_update(GameObject* obj)
                 ((LFXEmitterPlacement*)setup)->spinPitch = 0;
                 ((LFXEmitterPlacement*)setup)->spinYaw = randomGetRange(-500, 500) + 0x5dc;
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
-                if ((u32)spawned != 0)
-                {
+                if (spawned != NULL) {
                     spawned->anim.velocityX = 10.0f + (f32)randomGetRange(0, 10);
                 }
                 state->spawnTimer = state->spawnPeriod + randomGetRange(0, state->spawnJitter);
             }
             break;
-        case 5: /* periodic WM_WallCraw near the creator (cut content) */
+        case WMOBJCREATOR_MODE_WALL_CRAWLER:
             if ((mainGetBit(state->gameBit) != 0 || state->gameBit == -1) &&
-                (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0))
-            {
-                setup = Obj_AllocObjectSetup(0x24, WMOBJCREATOR_SPAWN_WM_WALLCRAWLER);
-                ((WmwallcrawlerMapData*)setup)->rotXByte = randomGetRange(-0x7f, 0x7e);
+                (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0)) {
+                setup = Obj_AllocObjectSetup(sizeof(WMWallCrawlerSpawnSetup), WMOBJCREATOR_SPAWN_WM_WALLCRAWLER);
+                ((WMWallCrawlerSpawnSetup*)setup)->base.rotXByte = randomGetRange(-0x7f, 0x7e);
                 setup->posX = obj->anim.localPosX + (f32)randomGetRange(-100, 100);
                 setup->posY = obj->anim.localPosY;
                 setup->posZ = obj->anim.localPosZ + (f32)randomGetRange(-100, 100);
-                ((WmwallcrawlerMapData*)setup)->triggerRadius = 0x31;
-                ((WmwallcrawlerMapData*)setup)->heightOffset = 200;
+                ((WMWallCrawlerSpawnSetup*)setup)->base.triggerRadius = 0x31;
+                ((WMWallCrawlerSpawnSetup*)setup)->base.heightOffset = 200;
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
-                if ((u32)spawned != 0)
-                {
-                    lbl_803DDC68 += 1;
+                if (spawned != NULL) {
+                    gWMObjCreatorWallCrawlerSpawnCount += 1;
                 }
                 state->spawnTimer = state->spawnPeriod + randomGetRange(0, state->spawnJitter);
             }
             break;
-        case 8: /* one-shot HoodedZyck on the gate bit (bit is consumed) */
+        case WMOBJCREATOR_MODE_HOODED_ZYCK:
             if ((mainGetBit(state->gameBit) != 0 || state->gameBit == -1) &&
-                (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0))
-            {
-                setup = Obj_AllocObjectSetup(0x38, WMOBJCREATOR_SPAWN_HOODED_ZYCK);
+                (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0)) {
+                setup = Obj_AllocObjectSetup(sizeof(HoodedZyckSpawnSetup), WMOBJCREATOR_SPAWN_HOODED_ZYCK);
                 mainSetBits(state->gameBit, 0);
                 ((HoodedZyckSpawnSetup*)setup)->yawByte = randomGetRange(-0x7f, 0x7e);
                 setup->posX = obj->anim.localPosX;
@@ -258,17 +245,16 @@ void WM_ObjCreator_update(GameObject* obj)
                 ((HoodedZyckSpawnSetup*)setup)->triggerGameBit = state->gameBit;
                 ((HoodedZyckSpawnSetup*)setup)->droppedItemId = 1;
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
-                if ((u32)spawned != 0)
-                {
-                    (*gPartfxInterface)->spawnObject((void*)obj, 0x1c3, NULL, 2, -1, NULL);
+                if (spawned != NULL) {
+                    (*gPartfxInterface)
+                        ->spawnObject((void*)obj, WMOBJCREATOR_PARTFX_HOODED_ZYCK_SPAWN, NULL, 2, -1, NULL);
                 }
                 state->spawnTimer = state->spawnPeriod + randomGetRange(0, state->spawnJitter);
             }
             break;
-        case 2: /* periodic LFXEmitter at the placement, drifting west */
+        case WMOBJCREATOR_MODE_WEST_EMITTER:
             if ((mainGetBit(state->gameBit) != 0 || state->gameBit == -1) &&
-                (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0))
-            {
+                (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0)) {
                 setup = Obj_AllocObjectSetup(sizeof(LFXEmitterPlacement), WMOBJCREATOR_SPAWN_LFX_EMITTER);
                 setup->color[0] = 4;
                 setup->color[1] = 2;
@@ -281,22 +267,18 @@ void WM_ObjCreator_update(GameObject* obj)
                 ((LFXEmitterPlacement*)setup)->spinRoll = randomGetRange(-500, 500) + 0x5dc;
                 ((LFXEmitterPlacement*)setup)->spinYaw = randomGetRange(-500, 500) + 0x5dc;
                 spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
-                if ((u32)spawned != 0)
-                {
+                if (spawned != NULL) {
                     spawned->anim.velocityX = -30.0f - (f32)randomGetRange(0, 10);
                 }
                 state->spawnTimer = state->spawnPeriod + randomGetRange(0, state->spawnJitter);
             }
             break;
-        case 4: /* two scattering LFXEmitters on the gate bit, with an
-                   attached particle trail each (bit is consumed) */
-            if (mainGetBit(state->gameBit) != 0 || state->gameBit == -1)
-            {
-                n = 2;
-                do
-                {
+        case WMOBJCREATOR_MODE_SCATTER_EMITTERS:
+            if (mainGetBit(state->gameBit) != 0 || state->gameBit == -1) {
+                remainingCount = 2;
+                do {
                     ObjPlacement* setup;
-                    n -= 1;
+                    remainingCount--;
                     setup = Obj_AllocObjectSetup(sizeof(LFXEmitterPlacement), WMOBJCREATOR_SPAWN_LFX_EMITTER);
                     setup->color[0] = 0x20;
                     setup->color[1] = 2;
@@ -312,29 +294,29 @@ void WM_ObjCreator_update(GameObject* obj)
                     ((LFXEmitterPlacement*)setup)->spinYaw = 0;
                     ((LFXEmitterPlacement*)setup)->followCurve = 0;
                     spawned = Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
-                    if ((u32)spawned != 0)
-                    {
+                    if (spawned != NULL) {
                         ((LFXEmitterState*)spawned->extra)->flags |= LFXEMITTER_FLAG_DAMP_Y_VELOCITY;
                         spawned->anim.velocityX = 0.1f * (f32)randomGetRange(-0x23, 0x23);
                         spawned->anim.velocityZ = 0.1f * (f32)randomGetRange(-0x23, 0x23);
                         spawned->anim.velocityY = 0.0f;
-                        vec.pos[0] = 1.0f;
-                        vec.dir[0] = 0;
-                        vec.dir[1] = 0;
-                        vec.dir[2] = 0;
-                        vec.pos[1] = spawned->anim.velocityX;
-                        vec.pos[3] = spawned->anim.velocityZ;
-                        vec.pos[2] = 0.0f;
-                        (*gPartfxInterface)->spawnObject((void*)spawned, 0x1a7, &vec, 0x10000, -1, NULL);
+                        particleArgs.pos[0] = 1.0f;
+                        particleArgs.dir[0] = 0;
+                        particleArgs.dir[1] = 0;
+                        particleArgs.dir[2] = 0;
+                        particleArgs.pos[1] = spawned->anim.velocityX;
+                        particleArgs.pos[3] = spawned->anim.velocityZ;
+                        particleArgs.pos[2] = 0.0f;
+                        (*gPartfxInterface)
+                            ->spawnObject((void*)spawned, WMOBJCREATOR_PARTFX_SCATTER_TRAIL, &particleArgs, 0x10000, -1,
+                                          NULL);
                     }
-                } while (n != 0);
+                } while (remainingCount != 0);
                 mainSetBits(state->gameBit, 0);
             }
             break;
-        case 7: /* periodic LFXEmitter around the placement, random config */
+        case WMOBJCREATOR_MODE_RANDOM_EMITTER:
             if ((mainGetBit(state->gameBit) != 0 || state->gameBit == -1) &&
-                (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0))
-            {
+                (state->spawnTimer -= framesThisStep, state->spawnTimer <= 0)) {
                 setup = Obj_AllocObjectSetup(sizeof(LFXEmitterPlacement), WMOBJCREATOR_SPAWN_LFX_EMITTER);
                 setup->color[0] = 4;
                 setup->color[1] = 2;
@@ -350,30 +332,28 @@ void WM_ObjCreator_update(GameObject* obj)
                 state->spawnTimer = state->spawnPeriod + randomGetRange(0, state->spawnJitter);
             }
             break;
-        case 6: /* falling WM_rock above the creator + a debris-particle
-                   burst (bit is consumed) */
-            if (mainGetBit(state->gameBit) != 0 || state->gameBit == -1)
-            {
-                setup = Obj_AllocObjectSetup(0x24, WMOBJCREATOR_SPAWN_WM_ROCK);
+        case WMOBJCREATOR_MODE_FALLING_ROCK:
+            if (mainGetBit(state->gameBit) != 0 || state->gameBit == -1) {
+                setup = Obj_AllocObjectSetup(sizeof(WMRockSpawnSetup), WMOBJCREATOR_SPAWN_WM_ROCK);
                 setup->posX = obj->anim.localPosX + (f32)randomGetRange(-0x104, 0x104);
                 setup->posY = 200.0f + obj->anim.localPosY;
                 setup->posZ = obj->anim.localPosZ + (f32)randomGetRange(-0x50, 0x50);
                 setup->color[0] = 0x20;
                 setup->color[1] = 2;
                 setup->color[3] = 0xff;
-                ((WmRockSpawnSetup*)setup)->unk1E = 0xffff;
-                ((WmRockSpawnSetup*)setup)->yawByte = obj->anim.rotX >> 8;
+                ((WMRockSpawnSetup*)setup)->unknown1E = 0xffff;
+                ((WMRockSpawnSetup*)setup)->yawByte = obj->anim.rotX >> 8;
                 Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
-                for (n = randomGetRange(2, 5); n != 0; n -= 1)
-                {
-                    vec.pos[0] = 1.0f;
-                    vec.dir[0] = 0;
-                    vec.dir[1] = 0;
-                    vec.dir[2] = 0;
-                    vec.pos[1] = (f32)randomGetRange(-200, 200);
-                    vec.pos[3] = (f32)randomGetRange(-0x14, 0x14);
-                    vec.pos[2] = 200.0f;
-                    (*gPartfxInterface)->spawnObject((void*)obj, WMOBJCREATOR_PARTFX_DEBRIS, &vec, 0x10002, -1, NULL);
+                for (remainingCount = randomGetRange(2, 5); remainingCount != 0; remainingCount--) {
+                    particleArgs.pos[0] = 1.0f;
+                    particleArgs.dir[0] = 0;
+                    particleArgs.dir[1] = 0;
+                    particleArgs.dir[2] = 0;
+                    particleArgs.pos[1] = (f32)randomGetRange(-200, 200);
+                    particleArgs.pos[3] = (f32)randomGetRange(-0x14, 0x14);
+                    particleArgs.pos[2] = 200.0f;
+                    (*gPartfxInterface)
+                        ->spawnObject((void*)obj, WMOBJCREATOR_PARTFX_DEBRIS, &particleArgs, 0x10002, -1, NULL);
                 }
                 mainSetBits(state->gameBit, 0);
             }
@@ -382,10 +362,9 @@ void WM_ObjCreator_update(GameObject* obj)
     }
 }
 
-void WM_ObjCreator_init(GameObject* obj, s8* def)
-{
-    WmObjCreatorPlacement* placement = (WmObjCreatorPlacement*)def;
-    WmObjCreatorState* state = obj->extra;
+void WM_ObjCreator_init(GameObject* obj, const WMObjCreatorPlacementView* placement) {
+    WMObjCreatorState* state = obj->extra;
+
     obj->anim.rotX = (s16)((s32)placement->yaw << 8);
     state->gameBit = placement->gameBit;
     state->spawnPeriod = placement->spawnPeriod;
@@ -393,10 +372,8 @@ void WM_ObjCreator_init(GameObject* obj, s8* def)
     state->spawnJitter = (s16)(s32)placement->spawnJitter;
 }
 
-void WM_ObjCreator_release(void)
-{
+void WM_ObjCreator_release(void) {
 }
 
-void WM_ObjCreator_initialise(void)
-{
+void WM_ObjCreator_initialise(void) {
 }
