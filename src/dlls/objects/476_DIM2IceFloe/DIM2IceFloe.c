@@ -5,13 +5,8 @@
  */
 #include "dlls/objects/476_DIM2IceFloe.h"
 
-#include "game/objects/object.h"
-#include "main/curve.h"
-#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
-#include "main/objhits.h"
 #include "main/object_render.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define DIM2_ICE_FLOE_FLAG_CURVE_READY   0x01

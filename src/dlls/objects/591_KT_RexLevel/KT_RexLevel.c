@@ -14,13 +14,9 @@
  */
 #include "main/render_envfx_api.h"
 #include "main/gamebits.h"
-#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 #include "main/sky_api.h"
-#include "main/gamebit_ids.h"
-#include "main/dll/DR/dll_024F_ktrexlevel.h"
-#include "main/lightmap_render_control_api.h"
 
 int lbl_803DDD40;
 

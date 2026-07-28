@@ -6,15 +6,9 @@
  */
 #include "dlls/objects/484_MAGICMaker.h"
 
-#include "dlls/objects/237.h"
 #include "dlls/objects/255.h"
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "main/gamebits_api.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 

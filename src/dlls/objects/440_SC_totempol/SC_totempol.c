@@ -5,17 +5,12 @@
 
 #include "dlls/objects/440_SC_totempol.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/model_engine.h"
-#include "main/obj_list.h"
-#include "main/objanim.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
 
 #define SC_TOTEM_POLE_RECORD_COUNT 3
 

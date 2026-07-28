@@ -12,10 +12,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/dll_0299.h"
 #include "main/dll_000A_expgfx.h"
-#include "game/objects/object.h"
 #include "main/resource.h"
-#include "main/vecmath.h"
-#include "dlls/object_descriptor.h"
 
 void* lbl_803DDD80;
 

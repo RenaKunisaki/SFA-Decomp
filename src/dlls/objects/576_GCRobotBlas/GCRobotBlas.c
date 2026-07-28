@@ -11,9 +11,7 @@
  * sizeof(GCRobotBlastState).
  */
 #include "main/dll/blastflags4_types.h"
-#include "game/objects/object.h"
 #include "main/objfx.h"
-#include "main/objanim_update.h"
 #include "main/dll/dll_0240_gcrobotblast.h"
 
 STATIC_ASSERT(sizeof(GCRobotBlastState) == 0x8);

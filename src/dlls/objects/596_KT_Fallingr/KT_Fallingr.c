@@ -11,13 +11,11 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/gamebits.h"
-#include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/vecmath.h"
 
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/DR/dll_0254_ktfallingrocks.h"
-#include "main/audio/sfx_play_legacy_api.h"
 
 int ktfallingrocks_getExtraSize(void)
 {

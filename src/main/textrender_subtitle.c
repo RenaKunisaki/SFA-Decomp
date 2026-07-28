@@ -1,17 +1,7 @@
-#include "track/intersect_render_setup_api.h"
 #include "main/gametext_api.h"
 #define GAMETEXT_COLOR_U8
-#include "main/gametext_color_api.h"
-#include "main/gametext_charset_api.h"
-#include "main/gametext_shared_internal.h"
-#include "main/mm.h"
 #include "main/texture.h"
-#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/frame_timing.h"
-#include "main/textrender_api.h"
 #include "main/textrender_internal.h"
-#include "string.h"
 
 void subtitleBuildLineTable(void)
 {

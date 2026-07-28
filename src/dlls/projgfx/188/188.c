@@ -6,7 +6,6 @@
  * code, so this projectile type has been disabled in retail.
  */
 #include "dolphin/os.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00BC_projquakeshock.h"
 
 #define PROJECTILE_UNSUPPORTED_RETURN -1

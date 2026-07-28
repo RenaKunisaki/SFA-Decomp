@@ -6,14 +6,10 @@
 
 #include "dlls/objects/475.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/objhits_types.h"
 #include "sys/objects.h"
 
 enum {

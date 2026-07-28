@@ -14,20 +14,12 @@
  *    "sequence done" bit when all four are set;
  *  - two music latches driven through SCGameBitLatch_Update.
  */
-#include "dlls/object_descriptor.h"
-#include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
-#include "main/audio/music_api.h"
-#include "main/rcp_dolphin_api.h"
-#include "main/map_load.h"
 #include "main/render_envfx_api.h"
-#include "game/objects/object.h"
 #include "dlls/objects/430_SH_LevelCon.h"
-#include "main/obj_group.h"
 #include "main/sky_api.h"
-#include "main/lightmap_api.h"
 #include "main/dll/VF/dll_0216_vfplevelcontrol.h"
 
 int lbl_803DC148 = 0x82;

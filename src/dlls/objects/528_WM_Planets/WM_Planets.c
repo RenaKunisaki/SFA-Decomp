@@ -5,12 +5,9 @@
  * randomized rates.
  */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
 #include "main/dll/WM/dll_0210_wmplanets.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/vecmath.h"
-#include "sys/objects.h"
 
 const u32 lbl_802C2500[4] = {0, 0, 0, 0};
 

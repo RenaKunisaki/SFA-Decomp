@@ -6,10 +6,8 @@
  * 0x68+0x38) to link the companion.
  */
 #include "sys/objects/lifecycle.h"
-#include "main/gamebit_ids.h"
 #include "dlls/object_descriptor.h"
 #include "main/object_render.h"
-#include "game/objects/object.h"
 #include "main/gamebits.h"
 
 enum

@@ -15,15 +15,11 @@
  * event is currently ready.
  */
 #include "dlls/object_descriptor.h"
-#include "main/dll/dll_0015_save_settings.h"
 #include "main/dll/DR/dll_0250_ktrex.h"
-#include "main/audio/music_api.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
-#include "main/shader_api.h"
 #include "main/objprint_render_api.h"
-#include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/objseq.h"
 #include "main/textrender_api.h"

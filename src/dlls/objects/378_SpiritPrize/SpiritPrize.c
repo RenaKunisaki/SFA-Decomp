@@ -1,13 +1,10 @@
 #include "dlls/objects/378_SpiritPrize.h"
 
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/objfx_api.h"
 #include "main/frame_timing.h"
-#include "main/lightmap_api.h"
 #include "main/obj_list.h"
 #include "main/object_render.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 extern u8 lbl_803DB411;

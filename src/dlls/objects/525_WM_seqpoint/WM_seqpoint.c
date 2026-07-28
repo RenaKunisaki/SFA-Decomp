@@ -12,13 +12,9 @@
  * DLLs (0x143) and the palace sun (0x21D).
  */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
 #include "main/dll/WM/dll_020D_wmseqpoint.h"
-#include "main/dll/player_api.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
-#include "main/objanim_update.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
 #include "main/render_envfx_api.h"

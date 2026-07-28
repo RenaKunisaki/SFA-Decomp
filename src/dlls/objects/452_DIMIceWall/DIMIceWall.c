@@ -7,13 +7,8 @@
 #include "dlls/objects/452_DIMIceWall.h"
 
 #include "dlls/objects/288_TrickyGuard.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
-#include "main/gamebits_api.h"
-#include "main/objprint_render_api.h"
-#include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
 
 #define DIM_ICE_WALL_SILENT_MAP_ID 7433

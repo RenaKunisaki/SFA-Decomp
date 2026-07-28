@@ -1,12 +1,7 @@
 #include "main/dfplightni.h"
 #include "sys/objects.h"
 #include "main/newclouds.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
-#include "main/audio/sfx_limited_object_api.h"
-#include "main/gamebits_api.h"
-#include "main/mm.h"
-#include "main/vecmath.h"
 
 #define DFPLIGHTNI_TIMER_MAX 1000.0f
 #define DFPLIGHTNI_TIMER_INACTIVE_MAX 1010.0f

@@ -8,17 +8,12 @@
 #include "dlls/objects/455_DIMLavaSmas.h"
 
 #include "dlls/objects/446.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits_api.h"
 #include "main/lightmap_api.h"
-#include "main/map_block.h"
 #include "main/objanim_update.h"
-#include "main/objhits.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
-#include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_map_api.h"
 
 enum DimLavaSmashPhase {

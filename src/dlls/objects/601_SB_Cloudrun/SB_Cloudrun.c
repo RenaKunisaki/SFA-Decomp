@@ -18,17 +18,12 @@
  * "(d - 0x10000) + 1" forms below are the shortest-arc angle wrap-clamps.
  */
 
-#include "game/objects/object.h"
-#include "main/obj_path.h"
-#include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "main/dll/cloudaction_interface.h"
 #include "main/dll/WC/WCpushblock.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
 #include "main/dll/partfx_interface.h"
-#include "main/audio/sfx_ids.h"
-#include "dolphin/mtx/mtx_legacy.h"
 #include "main/shader_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll_000A_expgfx.h"

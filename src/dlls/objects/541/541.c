@@ -21,9 +21,6 @@
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/dll/expgfx_interface.h"
-#include "main/pad_api.h"
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
 #include "main/dll/VF/dll_021D_vfplift.h"
 
 #define VFPLIFT1_OBJTYPE             0x3b7

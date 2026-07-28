@@ -9,14 +9,10 @@
  * skips render).
  */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
-#include "main/audio/sfx_play_legacy_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/WM/dll_020A_wmgeneralscales.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
-#include "main/obj_link.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

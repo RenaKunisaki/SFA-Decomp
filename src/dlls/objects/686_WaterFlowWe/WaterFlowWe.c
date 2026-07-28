@@ -20,10 +20,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_02AE_waterflowwe.h"
 #include "main/frame_timing.h"
-#include "game/objects/object.h"
-#include "main/objanim.h"
-#include "main/obj_group.h"
-#include "main/vecmath.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 

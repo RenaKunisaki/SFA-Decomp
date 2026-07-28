@@ -7,7 +7,6 @@
  * around the player; free releases the flame and the optional linked
  * object.
  */
-#include "dlls/object_descriptor.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/WM/dll_0204_wmtorch.h"
 #include "main/dll/dll_0063_dll63func0.h"
@@ -16,7 +15,6 @@
 #include "main/dll_000A_expgfx.h"
 #include "main/resource.h"
 #include "main/vecmath.h"
-#include "sys/objects.h"
 
 #define WMTORCH_OBJFLAG_HITDETECT_DISABLED 0x2000
 

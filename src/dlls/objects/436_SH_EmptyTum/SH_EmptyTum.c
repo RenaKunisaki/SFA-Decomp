@@ -8,7 +8,6 @@
 
 #include "dlls/objects/436_SH_EmptyTum.h"
 
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/objhits.h"
 

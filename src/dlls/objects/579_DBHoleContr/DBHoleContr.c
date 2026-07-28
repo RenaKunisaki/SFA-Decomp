@@ -1,16 +1,11 @@
 /* DBHoleContr (DLL 0x243) */
-#include "game/objects/object.h"
-#include "main/object_update_list.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/dbholecontrol1state_struct.h"
 #include "main/objseq.h"
 #include "main/gamebits.h"
-#include "main/obj_message.h"
 #include "sys/objects.h"
 #include "main/dll/dll_0243_dbholecontrol1.h"
-#include "string.h"
 #include "main/lightmap.h"
 
 STATIC_ASSERT(sizeof(DbHoleControl1State) == 0xC);

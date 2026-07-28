@@ -12,12 +12,9 @@
  */
 #include "dlls/objects/498_SB_CageKyte.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define SB_CAGE_KYTE_CHIRP_TIMER_MIN 400

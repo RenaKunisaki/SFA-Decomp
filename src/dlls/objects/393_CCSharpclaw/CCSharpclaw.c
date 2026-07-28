@@ -7,16 +7,12 @@
  */
 #include "dlls/objects/393_CCSharpclaw.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/minimap_api.h"
-#include "main/obj_trigger.h"
 #include "main/objfx.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"

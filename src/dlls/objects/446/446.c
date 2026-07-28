@@ -7,16 +7,12 @@
 #include "dlls/objects/446.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/model_light.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define DIM_LAVA_DEBRIS_SEQUENCE_ID       0x1FA

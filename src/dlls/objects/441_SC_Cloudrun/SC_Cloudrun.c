@@ -5,12 +5,9 @@
 
 #include "dlls/objects/441_SC_Cloudrun.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_legacy_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_02B1_cmbsrc.h"
-#include "main/obj_link.h"
 #include "main/obj_list.h"
 #include "main/object_render.h"
 #include "sys/objects.h"

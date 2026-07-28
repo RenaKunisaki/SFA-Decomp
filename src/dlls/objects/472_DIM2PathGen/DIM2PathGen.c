@@ -7,13 +7,10 @@
 #include "dlls/objects/472_DIM2PathGen.h"
 
 #include "dlls/objects/471_DIM2SnowBal.h"
-#include "game/objects/object.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "main/obj_group.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define DIM2_PATH_GENERATOR_FLAG_SPAWN_TOGGLE 0x01
 #define DIM2_PATH_GENERATOR_FLAG_CURVE_BUILT  0x02

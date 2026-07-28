@@ -13,18 +13,11 @@
 #include "dlls/objects/496_SB_KyteCage.h"
 
 #include "dolphin/pad.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/objanim.h"
-#include "main/obj_list.h"
-#include "main/obj_link.h"
 #include "main/objprint_api.h"
 #include "main/objseq.h"
-#include "main/pad_api.h"
-#include "main/render_lactions_api.h"
 
 /* objType of the loose Kyte child the cage attaches */
 #define SB_KYTECAGE_KYTE_OBJECT_TYPE 0x121

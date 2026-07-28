@@ -9,12 +9,10 @@
  *    delay drops from its placed height down by a fixed offset (with a
  *    buzzing sfx) and latches at the bottom.
  */
-#include "dlls/object_descriptor.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/objseq.h"
 #include "main/dll/expgfx_interface.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/VF/dll_021C_vfpladders.h"
 

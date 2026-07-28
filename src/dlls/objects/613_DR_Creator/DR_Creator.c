@@ -6,18 +6,14 @@
  * facing (DR_Creator_update) or a randomised spread
  * (DR_Creator_SeqFn).
  */
-#include "dlls/object_descriptor.h"
 #include "main/dll/DR/dll_0265_drcreator.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/debug.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "game/objects/object.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
-#include "game/objects/object_setup.h"
 #include "main/objseq.h"
-#include "main/vecmath.h"
 
 #define DRCREATOR_CHILD_OBJ_DRHOMINGMIS 1725
 #define DRCREATOR_INIT_CLEAR_GAMEBIT 0x5DD

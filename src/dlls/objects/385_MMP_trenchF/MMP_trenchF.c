@@ -10,7 +10,6 @@
 #include "main/dll/expgfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "main/vecmath.h"
 
 #define MMP_TRENCH_FX_PARTICLE_BURST      0x71F
 #define MMP_TRENCH_FX_PARTICLE_AMBIENT    0x720

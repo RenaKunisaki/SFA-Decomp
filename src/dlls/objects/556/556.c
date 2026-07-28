@@ -25,7 +25,6 @@
  */
 #include "main/dll/dll22cstate_struct.h"
 #include "sys/objects.h"
-#include "main/render_lactions_api.h"
 #include "main/dll/dfpobjcreatorstate_struct.h"
 #include "main/dll/dbholecontrol1state_struct.h"
 #include "main/dll/dfptorchstate_struct.h"
@@ -34,8 +33,6 @@
 #include "main/dll/dbstealerwormcontrol_struct.h"
 #include "main/dll/blastflags4_types.h"
 #include "main/dll/dfp_types.h"
-#include "game/objects/object_setup.h"
-#include "game/objects/object.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx_trigger_ids.h"

@@ -22,14 +22,7 @@
 #include "dolphin/ai.h"
 #include "dolphin/os.h"
 #include "dolphin/vi/vifuncs.h"
-#include "main/dll/FRONT/attract_movie.h"
-#include "main/dll/FRONT/n_options.h"
 #include "main/dll/FRONT/dll_3B.h"
-#include "main/dll/FRONT/picmenu.h"
-#include "main/audio_decode_thread.h"
-#include "main/attract_movie_api.h"
-#include "main/fileio.h"
-#include "dolphin/os/OSMessage.h"
 
 typedef struct AttractMovieControl
 {

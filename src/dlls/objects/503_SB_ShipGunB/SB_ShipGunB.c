@@ -10,8 +10,6 @@
  */
 #include "dlls/objects/503_SB_ShipGunB.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 

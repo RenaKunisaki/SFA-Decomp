@@ -4,9 +4,7 @@
  */
 #include "dlls/objects/397_MMSH_Scales.h"
 
-#include "game/objects/object.h"
 #include "main/dll/dll_0004_dummy04.h"
-#include "main/obj_list.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

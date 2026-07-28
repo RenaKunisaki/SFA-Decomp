@@ -6,9 +6,6 @@
  */
 #include "dlls/objects/471_DIM2SnowBal.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_keep_alive_api.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/curve.h"
 #include "main/dll/partfx_interface.h"
@@ -18,7 +15,6 @@
 #include "main/object_render.h"
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define DIM2_SNOWBALL_SHARPCLAW_SEQUENCE_ID 214

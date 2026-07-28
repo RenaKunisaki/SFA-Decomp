@@ -6,13 +6,9 @@
  */
 #include "dlls/objects/465_DIMTruthHor.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
-#include "main/gamebits_api.h"
-#include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
 
 #define DIM_TRUTH_HORN_ICE_SHATTER_DELAY         20.0f

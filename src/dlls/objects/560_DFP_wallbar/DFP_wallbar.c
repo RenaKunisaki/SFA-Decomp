@@ -3,13 +3,10 @@
  * Its callbacks retain the recovered chuka_* names for the moving
  * wall/floor bar driven by the shared baddie state machine.
  */
-#include "game/objects/object.h"
-#include "sys/objects.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/baddie/chuka.h"
 #include "main/gamebits.h"
 #include "main/obj_list.h"
-#include "main/gamebit_ids.h"
 #include "main/dll/DF/dll_0230_dfpwallbar.h"
 
 #define DFPWALLBAR_OBJFLAG_HIDDEN 0x4000

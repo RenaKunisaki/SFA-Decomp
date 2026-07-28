@@ -19,14 +19,10 @@
  */
 #include "main/game_ui_interface.h"
 #include "main/gamebits.h"
-#include "main/maketex_api.h"
-#include "sys/objects.h"
 #include "main/objfx.h"
 #include "main/dll/dll_02B6_cnthitobjec.h"
-#include "main/objhits.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 
 static int sCntHitSourcesProfile0[2] = {0xf, 0xe};
 static int sCntHitSourceProfile1 = 5;

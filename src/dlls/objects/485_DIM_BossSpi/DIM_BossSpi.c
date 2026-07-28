@@ -6,19 +6,14 @@
  */
 #include "dlls/objects/485_DIM_BossSpi.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_shake_api.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/model.h"
-#include "main/model_light.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
 #include "main/pad_api.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define DIMBOSSSPIT_PHASE_FLIGHT                     0

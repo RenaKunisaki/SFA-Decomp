@@ -21,18 +21,12 @@
  * 17; subtypes 16-20).
  */
 #include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/object_update_list.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/debug.h"
-#include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "sys/objects.h"
-#include "main/track_bbox_api.h"
-#include "main/lightmap_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
-#include "main/dll/baddie_state.h"
 #include "main/dll/dll22cstate_struct.h"
 #include "main/dll/dfpobjcreatorstate_struct.h"
 #include "main/dll/dbholecontrol1state_struct.h"

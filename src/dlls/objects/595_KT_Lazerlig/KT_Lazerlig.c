@@ -9,9 +9,7 @@
  * light lit. The light is freed when the object is destroyed.
  */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
 #include "main/gamebits.h"
-#include "main/model_light.h"
 #include "main/dll/DR/dll_0253_ktlazerlight.h"
 
 int ktlazerlight_getExtraSize(void)

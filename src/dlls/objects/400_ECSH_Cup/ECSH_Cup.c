@@ -6,15 +6,11 @@
  */
 #include "dlls/objects/400_ECSH_Cup.h"
 
-#include "game/objects/object.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
 #include "main/objseq.h"
-#include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 

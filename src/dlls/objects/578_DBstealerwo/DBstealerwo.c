@@ -18,10 +18,8 @@
  * and adds map time (dbstealerworm_stateHandlerA06). chuka is the linked
  * thrown sub-object.
  */
-#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/objfx_api.h"
-#include "main/objanim.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/object_render.h"

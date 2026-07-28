@@ -12,13 +12,9 @@
  * The placement variant (0..2) selects both the displayed model and the
  * particle-burst model.
  */
-#include "dlls/object_descriptor.h"
 #include "main/frame_timing.h"
-#include "main/vecmath_distance_api.h"
 #include "main/gamebits.h"
 #include "main/dll/expgfx_interface.h"
-#include "main/objhits.h"
-#include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/objfx.h"
 #include "main/audio/sfx_trigger_ids.h"

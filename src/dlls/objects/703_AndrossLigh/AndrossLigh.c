@@ -12,16 +12,11 @@
  * symbol table); it is a sub-object whose lifetime is driven externally.
  */
 #include "dolphin/mtx.h"
-#include "main/camera.h"
 #include "main/frame_timing.h"
-#include "main/mm.h"
 #include "sys/objects.h"
 #include "main/newclouds.h"
 #include "main/shader_api.h"
 #include "main/dll/dll_02BF_androssligh.h"
-#include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "dolphin/mtx/vec.h"
 
 enum
 {

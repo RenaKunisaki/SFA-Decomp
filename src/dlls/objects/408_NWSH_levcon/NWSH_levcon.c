@@ -7,16 +7,10 @@
  */
 #include "dlls/objects/408_NWSH_levcon.h"
 
-#include "game/objects/object.h"
-#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/dll/player_api.h"
 #include "main/gamebit_ids.h"
-#include "main/gamebits_api.h"
-#include "main/map_load.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
-#include "main/pi_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "main/sky_api.h"
 #include "sys/objects.h"

@@ -7,8 +7,6 @@
  */
 #include "main/dll/dll_02B4_cntcounter.h"
 #include "main/gamebits.h"
-#include "main/model_engine.h"
-#include "dlls/object_descriptor.h"
 
 int CntCounter_getExtraSize(void)
 {

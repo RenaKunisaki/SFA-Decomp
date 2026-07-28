@@ -9,7 +9,6 @@
 #include "main/fcos16_approx_api.h"
 #include "main/fsin16_approx_api.h"
 #include "main/object_render.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define WORLD_ASTEROIDS_CENTER_OBJECT_ID   0x42FE7

@@ -9,21 +9,11 @@
  * placement def ids 0x477E3 / 0x4A946 / 0x4A947) and toggles / scrolls
  * them per frame.
  */
-#include "main/pi_dolphin_api.h"
-#include "main/rcp_dolphin_api.h"
-#include "main/model_engine.h"
-#include "main/map_load.h"
 #include "main/frame_timing.h"
-#include "main/objanim_update.h"
 #include "main/obj_list.h"
 #include "main/screen_transition.h"
 #include "main/sky_api.h"
-#include "main/lightmap_api.h"
-#include "main/dll/dll_029B_arwingandrossstuff.h"
-#include "main/dll/dll_02C0_front.h"
 #include "main/render_envfx_api.h"
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_02BB_gflevelcon.h"
 #include "main/gametext_show_api.h"

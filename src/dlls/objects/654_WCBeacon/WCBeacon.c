@@ -20,12 +20,10 @@
 #include "main/dll/WC/WCbeacon.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
 #include "main/objseq.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 
 #define WCBEACON_RENDER_TYPE_BASE  0x400
 #define WCBEACON_RENDER_TYPE_SHIFT 0xb

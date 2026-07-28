@@ -17,17 +17,12 @@
  */
 #include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
-#include "main/dll/DR/dll_0251_ktrexfloorswitch.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/newclouds.h"
-#include "game/objects/object.h"
-#include "main/vecmath.h"
 
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/DR/dll_0252_ktlazerwall.h"
-#include "main/audio/sfx_play_legacy_api.h"
-#include "main/mm.h"
 
 void ktrexfloorswitch_spawnEnergyArc(GameObject* obj, f32 scale, int angle)
 {

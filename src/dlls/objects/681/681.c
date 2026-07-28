@@ -17,12 +17,6 @@
  */
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/model_light.h"
-#include "main/obj_group.h"
-#include "main/sky.h"
-#include "game/objects/object.h"
-#include "main/modellight_api.h"
-#include "sys/objects.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/LGT/dll_02A9_lgtpointlight.h"
 

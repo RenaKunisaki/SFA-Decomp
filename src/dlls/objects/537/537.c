@@ -9,11 +9,8 @@
  * clamping at each end. init seeds the object's rotX and the state's
  * game bit from the placement record; free releases its expgfx source.
  */
-#include "dlls/object_descriptor.h"
 #include "main/gamebits.h"
 #include "main/dll/expgfx_interface.h"
-#include "game/objects/object_setup.h"
-#include "game/objects/object.h"
 #include "main/dll/dll_0219.h"
 
 #define DLL_219_MOVING_OBJECT_ID   0x3a6

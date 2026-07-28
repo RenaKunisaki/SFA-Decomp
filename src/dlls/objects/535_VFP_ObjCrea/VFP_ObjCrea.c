@@ -16,11 +16,8 @@
 #include "main/dll/partfx_interface.h"
 #include "sys/objects/lifecycle.h"
 #include "main/frame_timing.h"
-#include "main/vecmath.h"
 #include "main/gamebits.h"
-#include "game/objects/object.h"
 #include "sys/objects.h"
-#include "game/objects/object_setup.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/VF/dll_0217_vfpobjcreator.h"
 

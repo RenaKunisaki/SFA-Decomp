@@ -1,7 +1,5 @@
 #include "dlls/objects/412.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/foodbag.h"
 #include "main/frame_timing.h"

@@ -7,13 +7,9 @@
 
 #include "dlls/objects/328_CFGuardian.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "game/objects/object.h"
-#include "main/audio/music_api.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
 
 #define DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION     3163

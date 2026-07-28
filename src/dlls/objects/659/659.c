@@ -27,18 +27,13 @@
  * hitDetect helper.
  */
 #include "main/dll/dll_0293_suntemple.h"
-#include "main/objprint_render_api.h"
 #include "main/game_timer.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebits.h"
-#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
-#include "main/shader_api.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 
 const Vec3f lbl_802C25D8 = {-6318.10009765625f, -1232.0f, -5884.0f};
 

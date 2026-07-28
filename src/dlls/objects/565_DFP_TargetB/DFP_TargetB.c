@@ -4,15 +4,10 @@
  * and reports completion.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/audio/sfx_keep_alive_api.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_ids.h"
 #include "main/object_render.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "game/objects/object.h"
 #include "main/track_bbox_api.h"
-#include "main/objhits.h"
 #include "main/objfx.h"
 #include "main/mapEvent.h"
 #include "main/model.h"

@@ -5,16 +5,12 @@
  */
 #include "dlls/objects/477_DIM2Icicle.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/waterfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "main/objhits.h"
 #include "main/object_render.h"
 #include "main/track_dolphin_api.h"
-#include "main/vecmath.h"
 
 #define DIM2ICICLE_RELEASE_HIT_TYPE   0xE
 #define DIM2ICICLE_WATER_SURFACE_TYPE 0xE

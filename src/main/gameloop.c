@@ -1,15 +1,7 @@
 #include "main/dll/partfx_interface.h"
 #include "dolphin/os.h"
 #include "main/gametext_box_api.h"
-#include "main/gametext_command_api.h"
-#include "main/gametext_show_api.h"
-#include "main/gametext_show_str_api.h"
-#include "main/pi_data_file_api.h"
-#include "main/pi_flush_api.h"
-#include "track/intersect_card_api.h"
 #include "dolphin/pad.h"
-#include "dolphin/os/OSRtc.h"
-#include "main/gametext_color_api.h"
 
 u8 framesThisStep = 1;
 u8 lbl_803DB411 = 1;
@@ -21,7 +13,6 @@ u8 lbl_803DB424 = 0xFF;
 u8 gGameLoopResetComboDebounce = 10;
 int lbl_803DB428 = 0xAA;
 int lbl_803DB42C = 0x16A;
-#include "dolphin/vi.h"
 #include "dolphin/dvd.h"
 #include "dolphin/gx/GXFrameBuffer.h"
 #include "main/asset_load.h"

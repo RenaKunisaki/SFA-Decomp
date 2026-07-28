@@ -12,19 +12,12 @@
  * callback shows the HUD, displays NPC dialogue 0x468, then hides the HUD.
  */
 #include "main/dll/dll_02B6_cnthitobjec.h"
-#include "main/objprint_render_api.h"
-#include "main/dll/dll_02B7_mcupgrade.h"
-#include "main/dll/dll_02B8_mcupgradema.h"
-#include "main/dll/tricky_api.h"
 #include "main/dll/mcupgrade_state.h"
 #include "main/dll/player_api.h"
 #include "main/gamebits.h"
-#include "game/objects/object.h"
 #include "main/game_ui_interface.h"
 #include "sys/objects.h"
-#include "main/obj_trigger.h"
 #include "main/objseq.h"
-#include "dlls/object_descriptor.h"
 
 void mcupgrade_update(GameObject* obj)
 {

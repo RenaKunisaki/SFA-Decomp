@@ -5,13 +5,11 @@
  */
 #include "dlls/objects/501.h"
 
-#include "game/objects/object.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/objfx.h"
 #include "main/model_light.h"
 #include "main/obj_list.h"
 #include "main/object_render.h"
-#include "sys/objects/lifecycle.h"
 
 #define DLL501_OBJECT_TYPE_ID           0xB
 #define DLL501_FIRE_SEQ_ID              0x171

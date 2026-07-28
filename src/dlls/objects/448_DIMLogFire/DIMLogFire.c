@@ -5,9 +5,6 @@
 
 #include "dlls/objects/448_DIMLogFire.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/partfx_interface.h"
@@ -17,7 +14,6 @@
 #include "main/model_light.h"
 #include "main/objanim_update.h"
 #include "main/objfx.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
 #include "main/objhits.h"
 #include "main/vecmath.h"

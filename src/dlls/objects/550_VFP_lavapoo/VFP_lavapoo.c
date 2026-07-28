@@ -1,15 +1,12 @@
 /* VFP_lavapoo (DLL 0x0226) */
 #include "dlls/object_descriptor.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/objprint_api.h"
 #include "main/objtexture.h"
-#include "main/vecmath.h"
 
 #define VFP_LAVAPOOL_OBJFLAG_RENDERED 0x800
 #define VFP_LAVAPOOL_PARTFX          0x3a2

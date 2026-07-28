@@ -9,8 +9,6 @@
  * system, flashing a light-blue hit effect on a cooldown.
  */
 #include "main/dll/dll_02B0_brokenpipe.h"
-#include "game/objects/object.h"
-#include "main/objhits.h"
 
 int brokenpipe_getExtraSize(void)
 {

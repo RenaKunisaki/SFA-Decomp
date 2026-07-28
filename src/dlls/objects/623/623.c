@@ -13,14 +13,9 @@
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/dll_02B5_timer.h"
 #include "main/gamebits_api.h"
-#include "game/objects/object.h"
-#include "main/obj_group.h"
-#include "main/objhits.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
 #include "main/object_render.h"
-#include "main/object_update_list.h"
-#include "dlls/object_descriptor.h"
 
 #define DRGENERATOR_OBJGROUP 0x3
 #define DRGENERATOR_OBJ      0x716

@@ -1,8 +1,6 @@
 /* VFP_corepla (DLL 0x0223) */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
 #include "main/dll/expgfx_interface.h"
-#include "main/gamebit_ids.h"
 #include "main/gamebits.h"
 #include "main/object_render_legacy.h"
 #include "game/objects/object_setup.h"

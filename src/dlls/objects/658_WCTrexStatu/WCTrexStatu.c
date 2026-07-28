@@ -12,13 +12,9 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/WC/dll_0292_wctrexstatu.h"
 #include "main/gamebits.h"
-#include "game/objects/object.h"
 #include "main/mapEventTypes.h"
-#include "main/objanim_update.h"
 #include "main/objtexture.h"
-#include "main/vecmath.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 
 #define WCTREXSTATU_CALLBACK_TRIGGER 1
 

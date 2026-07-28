@@ -11,21 +11,8 @@
 
 #define BADDIE_MOVE_STATUS_SIGNED
 
-#include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
-#include "game/objects/object_setup.h"
-#include "main/model_engine.h"
-#include "sys/objects/lifecycle.h"
-#include "main/dll/dll_80136a40.h"
-#include "main/debug.h"
 #include "main/render_envfx_api.h"
-#include "game/objects/object.h"
-#include "main/model.h"
-#include "main/maketex_api.h"
-#include "main/objprint_api.h"
 #include "main/objprint_character_api.h"
-#include "main/objprint_render_api.h"
-#include "main/dll/player_api.h"
 #include "dlls/objects/229_Shield.h"
 #include "dlls/objects/284.h"
 #include "dlls/objects/315_WallAnimato.h"

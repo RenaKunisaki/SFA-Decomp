@@ -2,7 +2,6 @@
 #include "dlls/object_descriptor.h"
 #include "main/game_ui_interface.h"
 #include "main/mapEventTypes.h"
-#include "main/objprint_render_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "game/objects/object_setup.h"

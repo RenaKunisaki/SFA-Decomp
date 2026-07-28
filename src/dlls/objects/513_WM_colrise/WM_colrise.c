@@ -7,7 +7,6 @@
  * placement height + 120 and plays its rumble; otherwise it sinks
  * 0.125/tick back to placement height.
  */
-#include "dlls/object_descriptor.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/WM/dll_0201_wmcolrise.h"
 #include "main/frame_timing.h"

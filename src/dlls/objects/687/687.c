@@ -16,18 +16,11 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/objects/279_AppleOnTree.h"
 #include "main/frame_timing.h"
-#include "sys/objects/lifecycle.h"
-#include "main/objanim.h"
 #include "main/objHitReact.h"
-#include "main/obj_path.h"
-#include "main/vecmath.h"
 #include "main/shader_api.h"
-#include "main/objprint_api.h"
 #include "main/dll/dll_02AF_tree.h"
-#include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
 #include "main/object_render.h"
 
 /* tree variant seqIds (retail OBJECTS.bin names, all DLL 0x2AF) */

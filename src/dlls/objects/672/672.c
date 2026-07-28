@@ -16,18 +16,12 @@
  * Per-mode timing/particle parameters come from gRingModeParams[mode]
  * (RingTable); the optional glow is a ModelLightStruct.
  */
-#include "main/gameloop_gamebit_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx.h"
 #include "main/frame_timing.h"
-#include "main/model_light.h"
-#include "dlls/object_descriptor.h"
-#include "main/objhits.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
-#include "main/dll/ARW/dll_029F_arwbombcoll.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/dll/dll_02A0_ring.h"
 #include "main/object_render.h"

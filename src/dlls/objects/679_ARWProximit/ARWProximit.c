@@ -9,17 +9,10 @@
  * early by a player shot. The placement's textVariant selects which warning
  * / taunt text lines are shown.
  */
-#include "main/dll/headdisplay.h"
 #include "main/frame_timing.h"
-#include "game/objects/object.h"
-#include "main/maketex_timer_api.h"
 #include "main/model_light.h"
-#include "main/modellight_api.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
 #include "main/dll/ARW/dll_02A7_arwproximit.h"
-#include "main/dll/ARW/dll_029A_arwarwing.h"
-#include "sys/objects.h"
 #include "dlls/object_descriptor.h"
 #include "main/vecmath.h"
 #include "main/object_render.h"

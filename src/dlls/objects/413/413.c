@@ -1,14 +1,11 @@
 /* DLL 0x19D (slot 413) - moving particle-effect object. */
 #include "dlls/objects/413.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/objhits.h"
-#include "main/render_lactions_api.h"
 
 #define DLL413_HIT_VOLUME_SLOT              0xE
 #define DLL413_DEFAULT_HIT_TYPE             1

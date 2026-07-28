@@ -5,7 +5,6 @@
  */
 #include "dlls/objects/479.h"
 
-#include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"

@@ -7,14 +7,12 @@
 #include "dlls/objects/398_MMSH_WaterS.h"
 
 #include "dlls/objects/316_XYZAnimator.h"
-#include "game/objects/object.h"
 #include "main/debug.h"
 #include "main/dll/player_state.h"
 #include "main/dll/waterfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/objhits.h"
 #include "main/track_dolphin_api.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define MMSH_WATER_SPIKE_HIT_VOLUME_SLOT 9

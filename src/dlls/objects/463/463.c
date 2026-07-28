@@ -5,8 +5,6 @@
  */
 #include "dlls/objects/463.h"
 
-#include "game/objects/object.h"
-#include "main/gamebits_api.h"
 #include "main/object_render.h"
 
 int dll_1CF_getExtraSize(void) {

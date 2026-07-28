@@ -8,9 +8,6 @@
 #include "dlls/objects/425_BombPlant.h"
 
 #include "dlls/objects/426_BombPlantSp.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_keep_alive_api.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
@@ -18,7 +15,6 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
 #include "main/objseq.h"
 #include "main/shader_api.h"
 #include "main/vec_types.h"

@@ -4,13 +4,8 @@
 #include "global.h"
 #include "main/dll/FRONT/attract_movie.h"
 #include "main/dll/FRONT/picmenu.h"
-#include "main/attract_movie_api.h"
-#include "dolphin/thp/THPDecode.h"
-#include "string.h"
 #include "dolphin/os/OSInterrupt.h"
-#include "dolphin/os/OSMessage.h"
 #include "dolphin/os/OSThread.h"
-#include "dolphin/thp/THPPlayer.h"
 
 enum
 {

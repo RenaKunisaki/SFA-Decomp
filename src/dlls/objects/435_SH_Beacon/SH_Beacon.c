@@ -10,18 +10,13 @@
  */
 #include "dlls/objects/435_SH_Beacon.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_looped_object_api.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/gameloop_gamebit_api.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
 #include "main/objseq.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

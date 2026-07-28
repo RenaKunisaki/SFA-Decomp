@@ -1,9 +1,7 @@
 #include "global.h"
 #include "main/fileio.h"
 #include "main/frame_timing.h"
-#include "main/gameloop_api.h"
 #include "main/pad.h"
-#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
 #include "dolphin/pad.h"
 
 u8 gPadStickRepeatDelay = 5;

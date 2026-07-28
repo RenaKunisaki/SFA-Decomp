@@ -7,8 +7,6 @@
 #include "dlls/objects/453_DIMBarrier.h"
 
 #include "dlls/objects/454_DIMCannon.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"

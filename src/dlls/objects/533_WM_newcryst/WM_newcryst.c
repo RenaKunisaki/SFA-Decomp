@@ -5,16 +5,12 @@
  * to finale sequence events.
  */
 #include "dolphin/mtx/mtx_legacy.h"
-#include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
 #include "main/camera.h"
 #include "main/dll/WM/dll_0215_wmnewcrystal.h"
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
-#include "main/objanim_update.h"
 #include "main/objfx.h"
-#include "main/obj_path.h"
 #include "main/object_render.h"
 
 #define WMNEWCRYSTAL_GAMEBIT_ACTIVE     0xd27

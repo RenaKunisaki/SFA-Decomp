@@ -7,10 +7,8 @@
 
 #include "dlls/objects/456_DIMBridgeCo.h"
 
-#include "game/objects/object.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/obj_group.h"
 #include "main/objanim_update.h"
 #include "main/object_render.h"
 #include "main/objseq.h"

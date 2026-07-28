@@ -7,7 +7,6 @@
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/resource.h"
-#include "main/vecmath.h"
 
 #define VFP_LAVASTAR_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define VFP_LAVASTAR_RESOURCE_ID                 0xa6

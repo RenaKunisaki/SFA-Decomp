@@ -12,8 +12,6 @@
  * speeds.
  */
 #include "main/frame_timing.h"
-#include "game/objects/object.h"
-#include "main/model_light.h"
 #include "main/texture.h"
 #include "main/dll/LGT/dll_02AB_lgtprojectedlight.h"
 #include "dlls/object_descriptor.h"

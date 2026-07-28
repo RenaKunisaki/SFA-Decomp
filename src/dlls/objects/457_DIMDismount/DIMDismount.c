@@ -6,11 +6,8 @@
 #include "dlls/objects/457_DIMDismount.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "game/objects/object.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/obj_group.h"
-#include "main/objprint_render_api.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "sys/objects.h"

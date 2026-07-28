@@ -1,13 +1,5 @@
-#include "main/frame_timing.h"
-#include "main/gametext_api.h"
-#include "main/gametext_command_api.h"
-#include "main/gametext_show_api.h"
 #include "main/gametext_internal.h"
 #include "main/gametext_shared_internal.h"
-#include "main/mm.h"
-#include "main/rcp_dolphin_api.h"
-#include "main/textrender_api.h"
-#include "main/audio/sfx_trigger_ids.h"
 
 /* In-string formatting control codes (Unicode PUA). */
 #define TEXT_CTRL_SCALE 0xf8f4

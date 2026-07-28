@@ -23,21 +23,14 @@
  * each use - that spelling reproduces the retail register colouring; see the
  * CLAUDE.md matching notes.
  */
-#include "main/audio/music_api.h"
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/pi_dolphin_api.h"
-#include "main/rcp_dolphin_api.h"
-#include "main/map_load.h"
 #include "dolphin/mtx.h"
 #include "main/camera_interface.h"
 #include "main/camera.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/loaded_file_flags.h"
 #include "main/mapEventTypes.h"
-#include "main/maketex_sequence_api.h"
-#include "main/model_light.h"
 #include "main/objhits.h"
 #include "main/pad.h"
 #include "main/screen_transition.h"

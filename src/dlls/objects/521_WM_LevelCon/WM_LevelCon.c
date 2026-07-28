@@ -10,21 +10,12 @@
  * gWmLevelControlBlendFactor blend factor (held at 1.0 during restore progress,
  * decaying 0.02/tick after) is up.
  */
-#include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
-#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
 #include "dlls/objects/430_SH_LevelCon.h"
-#include "main/dll/WM/dll_020A_wmgeneralscales.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
-#include "main/gametext_show_api.h"
-#include "main/lightmap_render_control_api.h"
-#include "main/map_load.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
-#include "main/objseq_api.h"
 #include "main/pi_dolphin_api.h"
 #include "main/sky_api.h"
 #include "main/textrender_api.h"

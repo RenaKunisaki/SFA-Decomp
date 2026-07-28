@@ -10,12 +10,9 @@
 #include "dlls/objects/459_DIMWoodDoor.h"
 
 #include "dlls/objects/454_DIMCannon.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "main/objanim.h"
 #include "main/object_render.h"
 
 #define DIM_WOOD_DOOR_FADE_OBJECT_ID          0x338

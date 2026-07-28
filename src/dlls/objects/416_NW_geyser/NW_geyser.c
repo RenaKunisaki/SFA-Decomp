@@ -9,14 +9,10 @@
  */
 #include "dlls/objects/416_NW_geyser.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_looped_object_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/mapEventTypes.h"
-#include "main/objhits.h"
 #include "main/objseq.h"
-#include "main/objseq_control.h"
 #include "main/objtexture.h"
 
 #define NW_GEYSER_DISABLE_GAMEBIT    0xA

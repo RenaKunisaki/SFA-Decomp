@@ -9,21 +9,11 @@
  * Y, fades alpha back in and re-enables collision). On each phase change it
  * reports to the level controller. state->flags: 1|2 bookkeeping, 4 armed.
  */
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/track_dolphin_api.h"
 #include "dolphin/mtx.h"
-#include "main/camera.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
-#include "main/vecmath.h"
-#include "main/dll/path_control_interface.h"
 #include "main/dll/WC/dll_0298_wcfloortile.h"
-#include "main/debug.h"
-#include "game/objects/object.h"
-#include "main/dll/ARW/arwing_state.h"
-#include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/dll/ARW/dll_029C_arwarwingbo.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"

@@ -5,7 +5,6 @@
  * returns the unsupported sentinel; release/initialise are empty stubs.
  */
 #include "dolphin/os.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00B5_projenergise2.h"
 
 #define PROJENERGISE2_UNSUPPORTED -1

@@ -10,8 +10,6 @@
  * despawns itself.
  */
 #include "main/objtexture.h"
-#include "game/objects/object.h"
-#include "main/obj_group.h"
 #include "main/dll/SP/dll_0289_spitembeam.h"
 #include "dlls/object_descriptor.h"
 

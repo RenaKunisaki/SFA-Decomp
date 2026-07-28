@@ -4,21 +4,13 @@
  * Each crawler waits at its spawn point, dives toward a nearby target,
  * and then attacks or retreats according to its variant flags.
  */
-#include "main/object_update_list.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/WM/dll_0211_wmwallcrawler.h"
 #include "main/dll/partfx_interface.h"
-#include "main/dll/path_control_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/maketex_random_api.h"
-#include "main/maketex_timer_api.h"
-#include "main/obj_group.h"
-#include "main/obj_message.h"
-#include "main/objhits.h"
 #include "main/object_render.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"

@@ -14,8 +14,6 @@
  * different light position and glow scale); seqId 0x717 takes the same
  * zero-Y-offset fx path in update.
  */
-#include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/LGT/dll_0206_lightsource.h"
 #include "main/dll/partfx_interface.h"
@@ -25,7 +23,6 @@
 #include "main/model_light.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
 
 #define LIGHTSOURCE_OBJFLAG_HITDETECT_DISABLED 0x2000
 #define LIGHTSOURCE_OBJFLAG_RENDERED           0x800

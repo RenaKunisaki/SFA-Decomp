@@ -8,16 +8,12 @@
  */
 #include "dlls/objects/418_NW_tricky.h"
 
-#include "game/objects/object.h"
 #include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_stop_channel_api.h"
 #include "main/dll/dll_00C9_enemy.h"
-#include "main/dll/dll_80136a40.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/mapEventTypes.h"
-#include "main/obj_group.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

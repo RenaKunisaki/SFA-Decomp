@@ -11,14 +11,11 @@
 
 #include "dlls/objects/237.h"
 #include "dlls/objects/454_DIMCannon.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/resource.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define DLL1CE_SEQUENCE_ID_DIM_HUT_DOOR          0x334
 #define DLL1CE_KEY_SEQUENCE_ID_DIM_SNOW_HORN     0x18f

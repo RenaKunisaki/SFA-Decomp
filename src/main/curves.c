@@ -2,7 +2,6 @@
 #include "main/debug.h"
 #include "main/frame_timing.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 
 int gCurveCachedSampleCount = -1;
 

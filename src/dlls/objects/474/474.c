@@ -8,16 +8,11 @@
 #include "dlls/objects/474.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/savegame_object_api.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
-#include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 
 int dll_1DA_getExtraSize(void) {

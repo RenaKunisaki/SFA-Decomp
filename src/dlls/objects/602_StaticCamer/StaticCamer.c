@@ -10,9 +10,6 @@
  * are no-ops. The object carries no per-frame logic and reserves 8 bytes
  * of extra state.
  */
-#include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
 #include "main/dll/dll_025A_staticcamera.h"
 

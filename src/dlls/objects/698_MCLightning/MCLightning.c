@@ -2,15 +2,10 @@
  * MCLightning (DLL 0x2BA) - a sequence-driven lightning-bolt effect.
  */
 #include "main/frame_timing.h"
-#include "main/mm.h"
 #include "main/newclouds.h"
-#include "main/objanim_update.h"
 #include "main/objfx.h"
 #include "main/obj_group.h"
 #include "main/dll/dll_02BA_mclightning.h"
-#include "game/objects/object.h"
-#include "main/dll/mclightning_state.h"
-#include "dlls/object_descriptor.h"
 
 #define MCLIGHTNING_OBJGROUP 0x48
 

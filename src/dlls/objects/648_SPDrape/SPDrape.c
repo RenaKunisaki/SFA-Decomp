@@ -10,10 +10,6 @@
  * machine keyed on the active animation move; it rustles (sfx 0x13f),
  * swings (0x140) and flutters (0x141) and re-opens if the player lingers.
  */
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_stop_channel_api.h"
-#include "main/vecmath.h"
-#include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/camera.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"

@@ -6,19 +6,15 @@
  * the player stands in the correct scoring zone (matched against
  * requiredScore); a wrong zone trips game bit 0x5e5 to reset.
  */
-#include "dlls/object_descriptor.h"
 #include "main/dll_000A_expgfx.h"
-#include "game/objects/object.h"
 #include "main/dll/baddie/dll_022F_dfpfloorbar.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "game/objects/object_setup.h"
 #include "main/mapEvent.h"
 #include "main/obj_list.h"
 #include "sys/objects.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
-#include "main/gamebit_ids.h"
 
 typedef struct DfpfloorbarPlacement
 {

@@ -10,8 +10,6 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
-#include "sys/objects.h"
 
 int WM_LaserTarget_getExtraSize(void)
 {

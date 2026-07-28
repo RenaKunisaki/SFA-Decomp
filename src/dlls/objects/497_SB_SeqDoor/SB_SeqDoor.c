@@ -1,7 +1,6 @@
 /* SB_SeqDoor (DLL 0x01F1) - a sequence-controlled Ship Battle door. */
 #include "dlls/objects/497_SB_SeqDoor.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
 #include "main/objseq.h"

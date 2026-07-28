@@ -5,11 +5,8 @@
  */
 #include "dlls/objects/481_DIM_BossGut.h"
 
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/objanim.h"
-#include "sys/objects.h"
 
 #define DIM_BOSS_GUT_OBJECT_SLOT    0x5A
 #define DIM_BOSS_GUT_ANIMATION_STEP 0.005f

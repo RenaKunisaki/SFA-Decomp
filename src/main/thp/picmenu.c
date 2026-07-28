@@ -6,10 +6,6 @@
  */
 #include "dolphin/ai.h"
 #include "main/dll/FRONT/attract_movie.h"
-#include "dolphin/thp/THPPlayer.h"
-#include "string.h"
-#include "main/fileio.h"
-#include "main/dll/FRONT/picmenu.h"
 #include "main/dll/FRONT/n_options.h"
 #include "dolphin/os/OSCache.h"
 #include "dolphin/os/OSInterrupt.h"

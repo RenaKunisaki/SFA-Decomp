@@ -4,9 +4,6 @@
  */
 #include "dlls/objects/442_SC_totempuz.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_limited_object_api.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
@@ -14,7 +11,6 @@
 #include "main/obj_list.h"
 #include "main/objHitReact_types.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
 #include "main/objtexture.h"
 #include "main/object_render.h"
 #include "main/shader_api.h"

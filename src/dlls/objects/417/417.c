@@ -2,13 +2,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/objects/209_TumbleWeedB.h"
-#include "main/audio/sfx_channel_query_api.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/curve.h"
-#include "main/dll/dll_0000_gameui_api.h"
-#include "main/dll/dll_00C9_enemy.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/path_control_interface.h"
 #include "main/dll/player_target.h"

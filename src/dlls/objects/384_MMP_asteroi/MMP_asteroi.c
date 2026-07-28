@@ -7,19 +7,14 @@
 #include "dlls/objects/384_MMP_asteroi.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_channel_volume_api.h"
-#include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_shake_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/lightmap_render_control_api.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
-#include "main/pad_api.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define MMP_ASTEROID_RE_ANIM_EVENT_LIGHTS_OFF        0

@@ -13,14 +13,12 @@
  */
 #include "main/dll/SP/dll_0287_spscarab.h"
 #include "main/frame_timing.h"
-#include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/track_bbox_api.h"
 #include "main/objfx.h"
 #include "main/vecmath.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 
 typedef struct
 {

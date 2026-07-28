@@ -1,8 +1,6 @@
 /* WCBouncyCra (DLL 652) */
 #include "main/dll/WC/dll_028C_wcbouncycra.h"
 #include "main/frame_timing.h"
-#include "game/objects/object.h"
-#include "main/obj_group.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 

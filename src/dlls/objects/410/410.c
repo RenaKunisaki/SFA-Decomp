@@ -1,8 +1,6 @@
 /* DLL 0x19A (slot 410) - timed child-object spawner. */
 #include "dlls/objects/410.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_placement.h"
 #include "main/dll/baddie_state.h"

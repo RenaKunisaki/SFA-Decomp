@@ -5,11 +5,8 @@
  */
 #include "dlls/objects/502.h"
 
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/objanim.h"
-#include "sys/objects.h"
 
 enum {
     DLL502_SEQUENCE_FLUTTER = 0x187,

@@ -1,10 +1,8 @@
 /* CRCloudRace (DLL 605): CloudRunner race controller. */
 
 #include "main/crcloudrace.h"
-#include "main/pi_dolphin_api.h"
 #include "main/audio/music_api.h"
 #include "main/rcp_dolphin_api.h"
-#include "main/map_load.h"
 #include "main/dll/player_api.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/mapEventTypes.h"
@@ -12,9 +10,6 @@
 #include "main/render_envfx_api.h"
 #include "sys/objects.h"
 #include "main/object_render.h"
-#include "main/maketex_timer_api.h"
-#include "game/objects/object.h"
-#include "main/obj_group.h"
 #include "dlls/objects/440_SC_totempol.h"
 
 ObjectDescriptor gCrCloudRaceObjDescriptor = {

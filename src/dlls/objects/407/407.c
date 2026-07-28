@@ -2,10 +2,6 @@
 #include "dlls/objects/407.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_channel_query_api.h"
-#include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
 #include "main/dll/expgfx_interface.h"
@@ -13,7 +9,6 @@
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "main/objhits.h"
 #include "main/resource.h"
 #include "main/shader_api.h"
 #include "main/vecmath.h"

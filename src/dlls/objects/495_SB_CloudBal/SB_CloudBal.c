@@ -9,19 +9,13 @@
  */
 #include "dlls/objects/495_SB_CloudBal.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/objfx.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
-#include "main/modellight_api.h"
 #include "main/object_render.h"
-#include "main/objhits_types.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 /*
  * The broader model-light header adds another enum source-position anchor.

@@ -6,9 +6,6 @@
 
 #include "dlls/objects/449_DIMSnowBall.h"
 
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"

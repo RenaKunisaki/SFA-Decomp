@@ -5,10 +5,8 @@
 
 #include "dlls/objects/451_DIMGate.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
 
 #define DIM_GATE_TRIGGER_SEQUENCE_ID 399
 

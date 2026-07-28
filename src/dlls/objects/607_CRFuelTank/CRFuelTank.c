@@ -1,12 +1,8 @@
 /* CRFuelTank (DLL 607): CloudRunner fuel-tank object callbacks. */
 
-#include "main/maketex_timer_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/crfueltank.h"
-#include "main/proximitymine.h"
 #include "main/gamebits.h"
-#include "main/objhits.h"
-#include "sys/objects.h"
 
 #define CRFUELTANK_HIT_VOLUME_SLOT 0x1d
 

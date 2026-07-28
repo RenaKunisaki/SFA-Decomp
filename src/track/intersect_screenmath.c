@@ -2,9 +2,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx.h"
 #include "track/intersect.h"
-#include "track/intersect_depth_read_api.h"
-#include "main/trig.h"
-#include "main/vecmath.h"
 
 
 static const f32 gGxPi = 3.1415927f;

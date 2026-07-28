@@ -6,7 +6,6 @@
  * empty stubs.
  */
 #include "dolphin/os/OSReport.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00BE_projtesla.h"
 
 int projtesla_doUnsupported(void)

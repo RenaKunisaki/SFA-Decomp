@@ -8,10 +8,6 @@
 #include "dlls/objects/420.h"
 
 #include "dlls/objects/419.h"
-#include "game/objects/object.h"
-#include "main/dll/player_api.h"
-#include "main/obj_group.h"
-#include "main/objhits.h"
 #include "sys/objects.h"
 
 #define NW_ICE_COLLISION_ALPHA_THRESHOLD 0xC0

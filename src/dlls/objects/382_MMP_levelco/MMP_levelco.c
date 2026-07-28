@@ -6,18 +6,11 @@
  */
 #include "dlls/objects/382_MMP_levelco.h"
 
-#include "game/objects/object.h"
-#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/dll/savegame_load_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/gametext_show_api.h"
-#include "main/lightmap_api.h"
-#include "main/map_load.h"
 #include "main/object_render.h"
-#include "main/pi_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "main/sky_api.h"
 #include "sys/objects.h"

@@ -4,14 +4,9 @@
  */
 #include "dlls/objects/388.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_stop_channel_api.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/frame_timing.h"
-#include "main/obj_link.h"
-#include "main/obj_list.h"
 #include "main/object_render.h"
-#include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
 #define DLL_184_ANIM_EVENT_CREATE_CHILD  1

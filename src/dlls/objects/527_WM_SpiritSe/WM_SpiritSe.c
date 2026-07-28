@@ -5,7 +5,6 @@
  * its visibility game bit is set.
  */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
 #include "main/dll/WM/dll_020F_wmspiritset.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"

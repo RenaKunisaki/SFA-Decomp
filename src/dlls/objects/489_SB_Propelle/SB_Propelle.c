@@ -12,17 +12,10 @@
 #include "dlls/objects/489_SB_Propelle.h"
 
 #include "dlls/objects/488_SB_Galleon.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_keep_alive_api.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
-#include "main/obj_path.h"
-#include "main/vecmath.h"
-#include "sys/objects.h"
 
 /* anim.seqId tag identifying a live propeller (vs. a placeholder stand-in) */
 #define SB_PROPELLER_SEQ_ID 0x69c

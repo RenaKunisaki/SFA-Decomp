@@ -9,10 +9,7 @@
  * player's staff glow from sequence events.
  */
 #include "main/dll/dll_02B9_mcstaffeffe.h"
-#include "game/objects/object.h"
 #include "main/objfx.h"
-#include "main/dll/mcstaffeffe_state.h"
-#include "dlls/object_descriptor.h"
 
 void mcstaffeffe_render(GameObject* staffEffect)
 {

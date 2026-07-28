@@ -1,16 +1,11 @@
 /* WM_Galleon (DLL 0x01F8) - the World Map galleon. */
 #include "dlls/objects/504_WM_Galleon.h"
 
-#include "game/objects/object.h"
 #include "main/dll/dll_0011_screens.h"
-#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
-#include "main/render_lactions_api.h"
-#include "main/resource.h"
-#include "main/track_dolphin_api.h"
 #include "sys/objects.h"
 
 u32 lbl_803DC0F0 = 3;

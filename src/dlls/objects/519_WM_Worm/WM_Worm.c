@@ -9,7 +9,6 @@
  * frames in obj->userData1 before it may fire again. Out of range it snaps
  * back to its recorded home position.
  */
-#include "dlls/object_descriptor.h"
 #include "main/dll/WM/dll_0207_wmworm.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"

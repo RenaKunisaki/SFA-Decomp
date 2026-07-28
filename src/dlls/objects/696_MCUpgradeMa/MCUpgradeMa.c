@@ -14,16 +14,9 @@
  * the object's configured level, or clears it.
  */
 #include "main/dll/dll_02B8_mcupgradema.h"
-#include "main/objprint_render_api.h"
-#include "main/dll/dll_02B9_mcstaffeffe.h"
-#include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/player_objects.h"
-#include "dlls/object_descriptor.h"
-#include "main/dll/mcupgrade_state.h"
-#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "sys/objects.h"
-#include "main/obj_trigger.h"
 #include "main/objseq.h"
 
 void mcupgradema_update(GameObject* obj)

@@ -15,11 +15,7 @@
  */
 #include "main/dll/dll_02AD_softbody.h"
 #include "main/frame_timing.h"
-#include "game/objects/object.h"
-#include "main/objanim.h"
-#include "main/objhits.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 
 f32 gSoftBodySlowPhase;
 f32 gSoftBodyFastPhase;

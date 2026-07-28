@@ -8,13 +8,9 @@
  * The 0x1A flag byte is a BitFlags8 whose b0 = "active" (chain visible
  * and rattling).
  */
-#include "main/audio/sfx_play_api.h"
 #include "dolphin/mtx/mtx_legacy.h"
-#include "game/objects/object.h"
-#include "main/model.h"
 #include "main/obj_group.h"
 #include "main/object_render.h"
-#include "main/objprint_render_api.h"
 #include "main/objseq.h"
 #include "dlls/object_descriptor.h"
 
@@ -22,9 +18,6 @@
 
 #include "main/dll/DR/dll_026E_drshackle.h"
 #include "main/dll/DR/dr_types.h"
-#include "main/audio/sfx_channel_query_api.h"
-#include "main/gamebits_api.h"
-#include "main/obj_path.h"
 #include "main/vecmath.h"
 
 int lbl_803DDD70;

@@ -7,8 +7,6 @@
 #include "main/mapEvent.h"
 #include "main/object_render.h"
 #include "main/vecmath.h"
-#include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 typedef struct PressureswitchPlacement
 {

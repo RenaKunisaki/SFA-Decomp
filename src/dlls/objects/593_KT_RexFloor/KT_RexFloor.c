@@ -13,19 +13,13 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DR/dll_0251_ktrexfloorswitch.h"
 
-#include "dolphin/mtx/mtx_legacy.h"
-#include "main/newclouds.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
-#include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/objtexture.h"
-#include "main/vecmath.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/dll/DR/dll_024F_ktrexlevel.h"
 
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebit_ids.h"
 

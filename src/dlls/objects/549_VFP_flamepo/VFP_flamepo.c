@@ -1,10 +1,6 @@
 /* VFP_flamepo (DLL 0x0225) */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
-#include "game/objects/object_setup.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
-#include "main/objprint_render_api.h"
 #include "sys/objects/lifecycle.h"
 
 #define VFP_FLAMEPOINT_OBJFLAG_HIDDEN             0x4000

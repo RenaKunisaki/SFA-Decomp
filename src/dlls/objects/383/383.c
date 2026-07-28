@@ -2,7 +2,6 @@
 
 #include "dlls/objects/383.h"
 
-#include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits_api.h"
 #include "main/objseq.h"

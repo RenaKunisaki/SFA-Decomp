@@ -1,7 +1,6 @@
 #include "dlls/objects/409.h"
 
 #include "dolphin/pad.h"
-#include "game/objects/object.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_006A_dll6afunc0.h"
 #include "main/dll/foodbag.h"
@@ -11,8 +10,6 @@
 #include "main/gamebits_api.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
-#include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/pad.h"
 #include "main/render_envfx_api.h"

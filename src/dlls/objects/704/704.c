@@ -17,21 +17,13 @@
  * / nameEntryTextDrawFunc, writing through GXWGFifo). showCredits gates
  * the credits sequence; getCurUiDll selects the active front-end UI DLL.
  */
-#include "main/gamebits_api.h"
-#include "main/dll/dll_02C0_front.h"
-#include "main/dll/front_game_text_box_api.h"
 #include "main/dll/FRONT/n_options.h"
 #include "main/texture.h"
 #include "main/frame_timing.h"
 #include "main/gametext_box_api.h"
-#include "main/gametext_command_api.h"
-#include "main/gametext_show_api.h"
 #include "main/textrender_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/audio/music_api.h"
-#include "main/audio/sfx_play_legacy_api.h"
-#include "track/intersect_hud_api.h"
-#include "main/audio/sfx_stop_object_api.h"
 #include "main/object_render.h"
 #include "main/model_engine.h"
 #include "main/model_engine_ui_api.h"

@@ -11,8 +11,6 @@
  */
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "game/objects/object.h"
-#include "main/objanim.h"
 #include "main/objtexture.h"
 #include "dlls/object_descriptor.h"
 

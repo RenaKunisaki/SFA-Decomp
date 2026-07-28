@@ -2,16 +2,10 @@
 #include "main/pi_dolphin.h"
 #include "main/frame_timing.h"
 #include "game/objects/object.h"
-#include "main/object_transform.h"
 #include "main/pause_menu_api.h"
-#include "main/rcp_dolphin_api.h"
 #include "main/shader_api.h"
-#include "main/vecmath.h"
-#include "track/intersect_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/gx/GXEnum.h"
 #include "dolphin/gx/GXLegacy.h"
-#include "dolphin/gx/GXStruct.h"
 #include "dolphin/mtx/mtx_legacy.h"
 
 f32 gCameraNearPlane = 2.5f;

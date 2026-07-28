@@ -8,13 +8,11 @@
  */
 #include "dlls/objects/493_SB_FireBall.h"
 
-#include "game/objects/object.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/objfx.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/objhits_types.h"
 
 #define SB_FIREBALL_SPIN_STEP -800
 

@@ -10,15 +10,10 @@
  * it fires a burst of flame particles, fades its alpha out, and frees
  * itself once it falls past the floor.
  */
-#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
-#include "main/track_dolphin_api.h"
 #include "main/frame_timing.h"
-#include "main/vecmath.h"
 #include "main/object_render.h"
 #include "main/dll/expgfx_interface.h"
-#include "game/objects/object.h"
-#include "main/rcp_dolphin_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/VF/dll_0218_vfpminifire.h"
 

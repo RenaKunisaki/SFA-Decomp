@@ -7,19 +7,14 @@
 #include "dlls/objects/426_BombPlantSp.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/path_control_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
-#include "main/gameloop_gamebit_api.h"
 #include "main/model_light.h"
-#include "main/obj_message.h"
 #include "main/objfx.h"
-#include "main/objhits.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define BOMB_PLANT_SPORE_MESSAGE_IN_RANGE 0x7000A

@@ -2,14 +2,9 @@
 
 #include "main/mapEvent.h"
 #include "main/spellstone.h"
-#include "main/spellstone_idle.h"
-#include "game/objects/object.h"
-#include "main/obj_group.h"
-#include "main/object_update_list.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "main/vecmath.h"
-#include "main/objhits.h"
 
 int spellstone_idleCallback(void)
 {

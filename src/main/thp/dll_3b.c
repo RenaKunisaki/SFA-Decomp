@@ -1,11 +1,7 @@
 #include "main/dll/FRONT/dll_3B.h"
 #include "dolphin/os.h"
-#include "dolphin/thp/THPAudio.h"
 #include "main/dll/FRONT/picmenu.h"
-#include "dolphin/os/OSMessage.h"
 #include "dolphin/os/OSThread.h"
-#include "main/audio_decode_thread.h"
-#include "string.h"
 
 /*
  * dll_3b (FRONT 0x3B) - attract-movie audio decode thread support.

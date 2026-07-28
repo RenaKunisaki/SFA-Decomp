@@ -11,19 +11,13 @@
  * offset 4.
  */
 #include "main/dll/dll_002E_moveLib.h"
-#include "game/objects/object.h"
-#include "main/mm.h"
 #include "main/newclouds.h"
 #include "sys/objects.h"
-#include "game/objects/object_setup.h"
-#include "main/vecmath.h"
 #include "dlls/object_descriptor.h"
 
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/lightningeffect.h"
 
 #include "main/dll/DR/dll_027C_drlightbea.h"
-#include "sys/objects/lifecycle.h"
 
 
 int DR_LightBea_getExtraSize(void)

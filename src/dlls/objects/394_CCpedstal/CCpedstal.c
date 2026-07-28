@@ -10,10 +10,7 @@
 #include "game/objects/object.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/gameloop_gamebit_api.h"
-#include "main/obj_trigger.h"
 #include "main/objseq.h"
-#include "sys/objects.h"
 
 #define CC_PEDESTAL_GAMEBIT_0DC5             0xDC5
 #define CC_PEDESTAL_SOURCE_ACTIVATED_GAMEBIT 0xAA

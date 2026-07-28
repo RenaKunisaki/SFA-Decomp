@@ -16,16 +16,10 @@
 #include "main/camera.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/model_light.h"
-#include "main/objanim_update.h"
 #include "main/dll/WC/dll_0295_wcapertures.h"
-#include "main/dll/player_api.h"
-#include "game/objects/object.h"
-#include "main/modellight_api.h"
 #include "sys/objects.h"
 #include "main/model.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 
 
 #define WCAPERTURES_EXTRA_SIZE        8

@@ -7,17 +7,12 @@
  */
 #include "dlls/objects/395_CClevcontro.h"
 
-#include "game/objects/object.h"
-#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
-#include "main/dll/savegame_load_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/gametext_show_api.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
 #include "main/objfx.h"

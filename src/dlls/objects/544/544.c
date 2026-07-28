@@ -1,17 +1,14 @@
 /* DLL 0x0220 */
 #include "dlls/object_descriptor.h"
 #include "dolphin/mtx/vec.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/objanim.h"
 #include "main/objanim_internal.h"
 #include "main/object_render_legacy.h"
 #include "main/objfx.h"
-#include "sys/objects.h"
 #include "game/objects/object_setup.h"
 
 #define VFPDOORSWITCH_OBJFLAG_HITDETECT_DISABLED 0x2000

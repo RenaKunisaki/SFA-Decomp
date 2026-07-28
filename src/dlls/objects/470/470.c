@@ -7,9 +7,6 @@
 
 #include "dlls/objects/470.h"
 
-#include "game/objects/object.h"
-#include "main/asset_load.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
@@ -17,9 +14,7 @@
 #include "main/model.h"
 #include "main/mm.h"
 #include "main/object_render.h"
-#include "main/objhits.h"
 #include "main/objtexture.h"
-#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define DLL1D6_ACTION_SLOT_COUNT  4

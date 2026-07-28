@@ -7,7 +7,6 @@
  */
 #include "dlls/objects/422_SH_tricky.h"
 
-#include "game/objects/object.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "sys/objects/lifecycle.h"

@@ -1,14 +1,9 @@
 /* DR_EarthCal (DLL 641) */
-#include "main/dll/tricky_api.h"
 #include "main/dll/player_api.h"
 #include "main/dll/DR/dll_0281_drearthcal.h"
-#include "game/objects/object.h"
 #include "main/objfx.h"
 #include "sys/objects.h"
-#include "main/obj_group.h"
-#include "main/obj_trigger.h"
 #include "main/objseq.h"
-#include "dlls/object_descriptor.h"
 
 #define DREARTHCAL_OBJFLAG_RENDERED 0x800
 

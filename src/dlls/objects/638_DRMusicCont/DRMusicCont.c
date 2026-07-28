@@ -16,13 +16,9 @@
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/render_envfx_api.h"
-#include "main/gamebit_ids.h"
-#include "game/objects/object.h"
 #include "main/newclouds.h"
 #include "main/sky_api.h"
-#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "dlls/object_descriptor.h"
 
 #include "main/dll/DR/dll_027E_drmusiccont.h"
 #include "main/object_render.h"

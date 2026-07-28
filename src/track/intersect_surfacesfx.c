@@ -4,10 +4,7 @@
 #include "main/dll/baddie_state.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/waterfx_interface.h"
-#include "game/objects/object.h"
-#include "main/newshadows_audio_api.h"
 #include "sys/objects.h"
-#include "main/vecmath.h"
 #include "track/intersect.h"
 
 typedef struct

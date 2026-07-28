@@ -7,17 +7,13 @@
  * collision with a flash + cooldown, and on reaching zero health flips to
  * the defeated state, signalling andross and the lightning object.
  */
-#include "main/dll/dll_02BC_andross.h"
 #include "main/dll/dll_02BE_androssbrain.h"
 #include "main/dll/dll_02BF_androssligh.h"
-#include "game/objects/object.h"
 #include "main/game_ui_interface.h"
 #include "main/frame_timing.h"
-#include "main/objhits.h"
 #include "sys/objects.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 
 static const f32 gAndrossBrainRenderScale[2] = {1.0f, 0.0f};
 

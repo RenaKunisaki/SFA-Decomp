@@ -1,14 +1,10 @@
 #include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/objanim_update.h"
-#include "main/shader_api.h"
 #include "main/lightmap_api.h"
 #include "main/dll/WC/dll_0296_wctempledia.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
-#include "dlls/object_descriptor.h"
 
 s16 gWcTempleDiaGameBitsA[4] = {0x2F8, 0x2D1, 0x2D2, 0};
 s16 gWcTempleDiaGameBitsB[4] = {0x203, 0x2EC, 0x2EF, 0};

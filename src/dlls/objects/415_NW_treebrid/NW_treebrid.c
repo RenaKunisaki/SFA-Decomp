@@ -6,11 +6,8 @@
  */
 #include "dlls/objects/415_NW_treebrid.h"
 
-#include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits_api.h"
-#include "main/obj_group.h"
-#include "main/obj_path.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
 

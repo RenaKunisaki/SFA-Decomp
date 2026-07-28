@@ -7,7 +7,6 @@
 
 #include "dlls/objects/434_SH_staffHaz.h"
 
-#include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 

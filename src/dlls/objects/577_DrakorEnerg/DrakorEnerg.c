@@ -15,12 +15,7 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/drakorenergystate_struct.h"
-#include "dolphin/mtx/mtx_legacy.h"
-#include "main/dll/dll_0282_barrelgener.h"
 #include "main/vecmath.h"
-#include "game/objects/object.h"
-#include "main/dll/objfx.h"
-#include "main/dll/player_api.h"
 #include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"

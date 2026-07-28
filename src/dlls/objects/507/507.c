@@ -1,16 +1,12 @@
 /* DLL 0x01FB */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
-#include "main/dll/dll_01FB_dll1fb.h"
 #include "main/dll/dll1fbsetup_struct.h"
 #include "main/dll/dll1fbstate_struct.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/objanim_update.h"
-#include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
-#include "main/pad_api.h"
 
 #define PAD_BUTTON_A 0x100
 

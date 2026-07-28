@@ -4,8 +4,6 @@
  * placement template, gated by a gamebit and a spawn-period timer.
  */
 #include "main/dll/dfpobjcreatorstate_struct.h"
-#include "game/objects/object_setup.h"
-#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "sys/objects/lifecycle.h"

@@ -8,12 +8,9 @@
 #include "dlls/objects/391_CCqueen.h"
 
 #include "dlls/objects/390_CCgasventCo.h"
-#include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/objanim.h"
-#include "main/objprint_character_api.h"
 #include "main/object_render.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"

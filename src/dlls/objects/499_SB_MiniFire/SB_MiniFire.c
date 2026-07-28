@@ -9,18 +9,13 @@
  */
 #include "dlls/objects/499_SB_MiniFire.h"
 
-#include "game/objects/object.h"
-#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_0075_dll75func0.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
-#include "main/rcp_dolphin_api.h"
 #include "main/resource.h"
-#include "main/vecmath.h"
 
 int gSbMiniFireResourceVariant = 1;
 

@@ -5,21 +5,15 @@
  * lazerwall challenge handlers, the DR laser-turret callbacks, and the
  * shopkeeper object implementation.
  */
-#include "main/dll_000A_expgfx.h"
 #include "main/track_dolphin_api.h"
 #include "main/dll/DR/DRlaserturret.h"
 #include "main/dll/trex_lazerwall.h"
-#include "main/dll/dll_801e66dc.h"
 #include "main/dll/dll_0004_dummy04.h"
-#include "main/dll/player_api.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/dll/tricky_api.h"
 #include "main/dll/boneparticleeffect_interface.h"
 #include "main/dll/shopkeeperstate_struct.h"
 #include "main/dll/pushcartstate97_types.h"
 #include "main/frame_timing.h"
-#include "game/objects/object.h"
-#include "main/gametext_show_api.h"
 #include "main/gamebits.h"
 #include "main/mapEvent.h"
 #include "main/model_engine.h"

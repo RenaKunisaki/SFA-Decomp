@@ -12,7 +12,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
-#include "main/obj_group.h"
 #include "main/objseq.h"
 #include "dlls/object_descriptor.h"
 

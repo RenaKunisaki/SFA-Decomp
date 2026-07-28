@@ -1,16 +1,13 @@
 /* VFPDragHead (DLL 0x0222) */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/objhits.h"
-#include "main/pi_dolphin_api.h"
 #include "main/resource.h"
 #include "game/objects/object_setup.h"
-#include "main/vecmath.h"
 
 #define VFPDRAGHEAD_OBJFLAG_HIDDEN             0x4000
 #define VFPDRAGHEAD_OBJFLAG_HITDETECT_DISABLED 0x2000

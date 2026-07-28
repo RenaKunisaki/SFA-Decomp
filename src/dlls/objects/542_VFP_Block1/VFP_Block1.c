@@ -1,9 +1,7 @@
 /* VFP_Block1 (DLL 0x021E) */
 #include "dlls/object_descriptor.h"
-#include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/expgfx_interface.h"
-#include "main/dll/VF/dll_021E_vfpblock1.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "game/objects/object_setup.h"
