@@ -235,7 +235,6 @@ u32 mainGetBit(int eventId)
 void mainSetBits(int eventId, int value)
 {
     s16 id;
-    u8 flags;
     u8* base;
     int limit;
     int end;
@@ -270,8 +269,7 @@ void mainSetBits(int eventId, int value)
     {
         return;
     }
-    flags = gGameBitTable[id * 4 + 2];
-    switch (flags >> GAMEBIT_FLAG_BANK_SHIFT)
+    switch (gGameBitTable[id * 4 + 2] >> GAMEBIT_FLAG_BANK_SHIFT)
     {
     case 0:
         base = gGameBitSaveData + 0xef0;
@@ -290,7 +288,7 @@ void mainSetBits(int eventId, int value)
         limit = 0xac;
         break;
     }
-    if (flags & GAMEBIT_FLAG_SYNC)
+    if (gGameBitTable[id * 4 + 2] & GAMEBIT_FLAG_SYNC)
     {
         gameBitFn_800ea2e0(gGameBitTable[id * 4 + 3]);
     }
