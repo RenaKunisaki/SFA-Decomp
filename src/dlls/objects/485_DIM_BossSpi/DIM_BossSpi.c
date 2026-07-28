@@ -1,290 +1,267 @@
 /*
- * dimbossspit (DLL 0x1E5) - the DIM boss spit-ball projectile object.
- * Launched from the boss, the spit ball drifts under gravity, spinning on all
- * axes, and spawns particle trail fx each frame.  On contact it transitions to
- * a burst phase (DIMbossspit_updateBurst): camera shake, rumble, expanding
- * transparent sphere hitbox, and a shrinking hit volume.  Carries a green glow
- * light whose intensity flickers frame-by-frame.
+ * DIM_BossSpi (DLL 0x1E5) - DarkIce Mines boss spit projectile.
+ * The projectile tumbles under gravity and emits a particle trail until
+ * contact, then expands, fades, shakes the camera, rumbles, and changes its
+ * spherical hitbox while its green glow flickers.
  */
-#include "main/dll/partfx_interface.h"
-#include "main/dll_000A_expgfx.h"
-#include "main/frame_timing.h"
+#include "dlls/objects/485_DIM_BossSpi.h"
+
+#include "game/objects/object.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_shake_api.h"
+#include "main/dll/expgfx_interface.h"
+#include "main/dll/partfx_interface.h"
+#include "main/frame_timing.h"
+#include "main/model.h"
+#include "main/model_light.h"
+#include "main/object_render.h"
+#include "main/objhits.h"
 #include "main/pad_api.h"
 #include "main/vecmath.h"
-#include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "main/object_render.h"
 #include "sys/objects.h"
-#include "main/model.h"
 #include "sys/objects/lifecycle.h"
-#include "main/audio/sfx.h"
-#include "main/model_light.h"
-#include "main/audio/sfx_ids.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/objhits.h"
-#include "main/dll/DIM/dll_01E5_dimbossspit.h"
 
-/* Partfx by phase (state unk0): FLIGHT_TRAIL streams while the spit ball flies
- * (state 0); BURST is the continuous expanding fx during the burst (takes the
- * &radius param). The ignition ids 0x340/0x4bb are left raw - interchangeable
- * one-shot pair on the burst-start tick (state==1). */
-#define DIMBOSSSPIT_PARTFX_FLIGHT_TRAIL 0x4ba
-#define DIMBOSSSPIT_PARTFX_BURST        0x4bc
-#define DIMBOSSSPIT_HIT_VOLUME_SLOT_5   5
-#define DIMBOSSSPIT_HIT_VOLUME_SLOT_9   9
+#define DIMBOSSSPIT_PHASE_FLIGHT                     0
+#define DIMBOSSSPIT_BURST_START_FRAME                1
+#define DIMBOSSSPIT_PARTFX_BURST_START               0x340
+#define DIMBOSSSPIT_PARTFX_BURST_FLASH               0x4BB
+#define DIMBOSSSPIT_PARTFX_FLIGHT_TRAIL              0x4BA
+#define DIMBOSSSPIT_PARTFX_BURST                     0x4BC
+#define DIMBOSSSPIT_PARTFX_MODE                      1
+#define DIMBOSSSPIT_PARTFX_MODEL_NONE                -1
+#define DIMBOSSSPIT_BURST_START_PARTICLE_COUNT       0x12
+#define DIMBOSSSPIT_FLIGHT_TRAIL_PARTICLE_COUNT      3
+#define DIMBOSSSPIT_HIT_VOLUME_SLOT_FLIGHT_AND_BURST 5
+#define DIMBOSSSPIT_HIT_VOLUME_SLOT_FADE             9
+#define DIMBOSSSPIT_HIT_TYPE_FLIGHT                  4
+#define DIMBOSSSPIT_HIT_TYPE_BURST                   2
+#define DIMBOSSSPIT_HIT_TYPE_FADE                    1
+#define DIMBOSSSPIT_FLIGHT_RADIUS                    10
+#define DIMBOSSSPIT_BURST_SCALE_STEP                 0.2f
+#define DIMBOSSSPIT_BURST_ROT_X_STEP                 0xAAA
+#define DIMBOSSSPIT_BURST_ROT_YZ_STEP                0x38E
+#define DIMBOSSSPIT_BURST_EFFECT_END_FRAME           0x200
+#define DIMBOSSSPIT_BURST_FREE_FRAME                 0x22A
+#define DIMBOSSSPIT_BURST_ALPHA_MAX                  0xFF
+#define DIMBOSSSPIT_BURST_ALPHA_SCALE                255.0f
+#define DIMBOSSSPIT_BURST_ALPHA_FRAMES               64.0f
+#define DIMBOSSSPIT_BURST_RADIUS_START               0x94
+#define DIMBOSSSPIT_BURST_RADIUS_BASE                0x40
+#define DIMBOSSSPIT_BURST_MIN_HIT_RADIUS             10.0f
+#define DIMBOSSSPIT_CONTACT_Y_OFFSET                 10.0f
+#define DIMBOSSSPIT_FLIGHT_ROT_X_SPEED               910.0f
+#define DIMBOSSSPIT_FLIGHT_ROT_YZ_SPEED              364.0f
+#define DIMBOSSSPIT_LIFETIME_FRAMES                  0xB4
+#define DIMBOSSSPIT_GLOW_RANDOMIZE_THRESHOLD         0x0C
+#define DIMBOSSSPIT_GLOW_RANDOM_MIN                  -12
+#define DIMBOSSSPIT_GLOW_RANDOM_MAX                  12
+#define DIMBOSSSPIT_GLOW_ALPHA_MAX                   0xFF
 
-typedef struct DIMbossspitUpdateBurstState
-{
-    u8 pad0[0x4 - 0x0];
-    ModelLightStruct* light;
-    u8 pad8[0x3DC - 0x8];
-    s32 unk3DC;
-    u8 pad3E0[0x400 - 0x3E0];
-    u16 unk400;
-    u8 pad402[0x40C - 0x402];
-    s32 unk40C;
-} DIMbossspitUpdateBurstState;
-
-typedef struct DIMbossspitState
-{
-    s16 unk0;
-    s16 unk2;
-    ModelLightStruct* light;
-    u8 pad8[0x3DC - 0x8];
-    s32 unk3DC;
-    u8 pad3E0[0x400 - 0x3E0];
-    u16 unk400;
-    u8 pad402[0x40C - 0x402];
-    s32 unk40C;
-} DIMbossspitState;
-
-void DIMbossspit_updateBurst(GameObject* obj)
-{
-    int state;
+void DIMbossspit_updateBurst(GameObject* obj) {
+    int stateAddress;
     s16 burstTimer;
     int alphaFade;
     int alpha;
     int radius;
     int i;
 
-    state = *(int*)&(obj)->extra;
-    (obj)->anim.rootMotionScale += 0.2f;
-    (obj)->anim.rotX += 0xaaa;
-    (obj)->anim.rotZ += 0x38e;
-    (obj)->anim.rotY += 0x38e;
-    if (*(s16*)state == 1)
-    {
+    stateAddress = *(int*)&obj->extra;
+    obj->anim.rootMotionScale += DIMBOSSSPIT_BURST_SCALE_STEP;
+    obj->anim.rotX += DIMBOSSSPIT_BURST_ROT_X_STEP;
+    obj->anim.rotZ += DIMBOSSSPIT_BURST_ROT_YZ_STEP;
+    obj->anim.rotY += DIMBOSSSPIT_BURST_ROT_YZ_STEP;
+    if (((DIMbossSpitState*)stateAddress)->burstTimer == DIMBOSSSPIT_BURST_START_FRAME) {
         i = 0;
-        do
-        {
-            (*gPartfxInterface)->spawnObject((void*)obj, 0x340, NULL, 1, -1, NULL);
+        do {
+            (*gPartfxInterface)
+                ->spawnObject(obj, DIMBOSSSPIT_PARTFX_BURST_START, NULL, DIMBOSSSPIT_PARTFX_MODE,
+                              DIMBOSSSPIT_PARTFX_MODEL_NONE, NULL);
             i = i + 1;
-        } while (i < 0x12);
-        (*gPartfxInterface)->spawnObject((void*)obj, 0x4bb, NULL, 1, -1, NULL);
+        } while (i < DIMBOSSSPIT_BURST_START_PARTICLE_COUNT);
+        (*gPartfxInterface)
+            ->spawnObject(obj, DIMBOSSSPIT_PARTFX_BURST_FLASH, NULL, DIMBOSSSPIT_PARTFX_MODE,
+                          DIMBOSSSPIT_PARTFX_MODEL_NONE, NULL);
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_gcexp1_c);
         Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy311);
         CameraShake_SetAllMagnitudes(3.0f);
         doRumble(12.0f);
-        if (((DIMbossspitUpdateBurstState*)state)->light != NULL)
-        {
-            modelLightStruct_setEnabled(((DIMbossspitUpdateBurstState*)state)->light, 0, 1.0f);
+        if (((DIMbossSpitState*)stateAddress)->light != NULL) {
+            modelLightStruct_setEnabled(((DIMbossSpitState*)stateAddress)->light, 0, 1.0f);
         }
     }
-    *(s16*)state += framesThisStep;
-    burstTimer = *(s16*)state;
-    if (burstTimer > 0x200)
-    {
-        if (burstTimer > 0x22a)
-        {
+    ((DIMbossSpitState*)stateAddress)->burstTimer += framesThisStep;
+    burstTimer = ((DIMbossSpitState*)stateAddress)->burstTimer;
+    if (burstTimer > DIMBOSSSPIT_BURST_EFFECT_END_FRAME) {
+        if (burstTimer > DIMBOSSSPIT_BURST_FREE_FRAME) {
             Obj_FreeObject(obj);
         }
         return;
     }
-    alphaFade = (int)(255.0f * ((f32)(s32)burstTimer / 64.0f));
-    alpha = 0xff - alphaFade;
-    radius = 0x94 - (burstTimer >> 2);
-    if (alpha >= 0)
-    {
-        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIMBOSSSPIT_HIT_VOLUME_SLOT_5, 2, 0);
-        ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, (s16)((radius - 0x40) >> 1));
-        (obj)->anim.alpha = alpha;
-    }
-    else
-    {
-        if (((DIMbossspitUpdateBurstState*)state)->light != NULL)
-        {
-            ModelLightStruct_free(((DIMbossspitUpdateBurstState*)state)->light);
-            ((DIMbossspitUpdateBurstState*)state)->light = NULL;
+    alphaFade = (int)(DIMBOSSSPIT_BURST_ALPHA_SCALE * ((f32)(s32)burstTimer / DIMBOSSSPIT_BURST_ALPHA_FRAMES));
+    alpha = DIMBOSSSPIT_BURST_ALPHA_MAX - alphaFade;
+    radius = DIMBOSSSPIT_BURST_RADIUS_START - (burstTimer >> 2);
+    if (alpha >= 0) {
+        ObjHits_SetHitVolumeSlot(&obj->anim, DIMBOSSSPIT_HIT_VOLUME_SLOT_FLIGHT_AND_BURST, DIMBOSSSPIT_HIT_TYPE_BURST,
+                                 0);
+        ObjHitbox_SetSphereRadius(&obj->anim, (s16)((radius - DIMBOSSSPIT_BURST_RADIUS_BASE) >> 1));
+        obj->anim.alpha = alpha;
+    } else {
+        if (((DIMbossSpitState*)stateAddress)->light != NULL) {
+            ModelLightStruct_free(((DIMbossSpitState*)stateAddress)->light);
+            ((DIMbossSpitState*)stateAddress)->light = NULL;
         }
-        (obj)->anim.alpha = 0;
-        if ((f32)(s32)((radius - 0x40) >> 1) > 10.0f)
-        {
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIMBOSSSPIT_HIT_VOLUME_SLOT_9, 1, 0);
-            ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, (s16)((radius - 0x40) >> 1));
+        obj->anim.alpha = 0;
+        if ((f32)(s32)((radius - DIMBOSSSPIT_BURST_RADIUS_BASE) >> 1) > DIMBOSSSPIT_BURST_MIN_HIT_RADIUS) {
+            ObjHits_SetHitVolumeSlot(&obj->anim, DIMBOSSSPIT_HIT_VOLUME_SLOT_FADE, DIMBOSSSPIT_HIT_TYPE_FADE, 0);
+            ObjHitbox_SetSphereRadius(&obj->anim, (s16)((radius - DIMBOSSSPIT_BURST_RADIUS_BASE) >> 1));
         }
     }
-    (*gPartfxInterface)->spawnObject((void*)obj, DIMBOSSSPIT_PARTFX_BURST, NULL, 1, -1, &radius);
+    (*gPartfxInterface)
+        ->spawnObject(obj, DIMBOSSSPIT_PARTFX_BURST, NULL, DIMBOSSSPIT_PARTFX_MODE, DIMBOSSSPIT_PARTFX_MODEL_NONE,
+                      &radius);
 }
 
 const f32 gDimBossSpitGravity[1] = {0.07f};
 const f32 gDimBossSpitVelocityDamping[1] = {0.97f};
 
-int DIMbossspit_getExtraSize(void)
-{
-    return 0x8;
+int DIMbossspit_getExtraSize(void) {
+    return sizeof(DIMbossSpitState);
 }
 
-int DIMbossspit_getObjectTypeId(void)
-{
-    return 0x0;
+int DIMbossspit_getObjectTypeId(void) {
+    return 0;
 }
 
-void DIMbossspit_free(GameObject* objArg)
-{
+void DIMbossspit_free(GameObject* objArg) {
     GameObject* obj = objArg;
-    DIMbossspitState* state;
+    DIMbossSpitState* state;
     ModelLightStruct* light;
 
     state = obj->extra;
     light = state->light;
-    if (light != NULL)
-    {
+    if (light != NULL) {
         ModelLightStruct_free(light);
     }
     (*gExpgfxInterface)->freeSource2((u32)obj);
     return;
 }
 
-void DIMbossspit_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    ModelLightStruct* light;
+void DIMbossspit_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    ModelLightStruct* stateOrLight;
 
-    light = obj->extra;
-    if (visible != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-        light = ((DIMbossspitState*)light)->light;
-        if (((light != 0) && (light->glowType != 0)) && (light->enabled != 0))
-        {
-            queueGlowRender(light);
+    stateOrLight = obj->extra;
+    if (visible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        stateOrLight = ((DIMbossSpitState*)stateOrLight)->light;
+        if (((stateOrLight != 0) && (stateOrLight->glowType != 0)) && (stateOrLight->enabled != 0)) {
+            queueGlowRender(stateOrLight);
         }
     }
     return;
 }
 
-void DIMbossspit_hitDetect(void)
-{
+void DIMbossspit_hitDetect(void) {
 }
 
-void DIMbossspit_update(GameObject* obj)
-{
-    int state;
+void DIMbossspit_update(GameObject* obj) {
+    int stateAddress;
     int i;
     s16 glowAlpha;
-    ModelLightStruct* p;
+    ModelLightStruct* light;
 
-    state = *(int*)&(obj)->extra;
-    if (*(s16*)state == 0)
-    {
-        (obj)->userData1 -= framesThisStep;
-        if ((obj)->userData1 < 0)
-        {
+    stateAddress = *(int*)&obj->extra;
+    if (*(s16*)stateAddress == DIMBOSSSPIT_PHASE_FLIGHT) {
+        obj->userData1 -= framesThisStep;
+        if (obj->userData1 < 0) {
             Obj_FreeObject(obj);
             return;
         }
-        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIMBOSSSPIT_HIT_VOLUME_SLOT_5, 4, 0);
-        ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 10);
-        (obj)->anim.velocityY = (obj)->anim.velocityY - gDimBossSpitGravity[0] * timeDelta;
-        (obj)->anim.velocityY = (obj)->anim.velocityY * gDimBossSpitVelocityDamping[0];
-        (obj)->anim.rotX = 910.0f * timeDelta + (f32)(obj)->anim.rotX;
-        (obj)->anim.rotZ = 364.0f * timeDelta + (f32)(obj)->anim.rotZ;
-        (obj)->anim.rotY = 364.0f * timeDelta + (f32)(obj)->anim.rotY;
-        objMove((GameObject*)obj, (obj)->anim.velocityX * timeDelta, (obj)->anim.velocityY * timeDelta,
-                (obj)->anim.velocityZ * timeDelta);
+        ObjHits_SetHitVolumeSlot(&obj->anim, DIMBOSSSPIT_HIT_VOLUME_SLOT_FLIGHT_AND_BURST, DIMBOSSSPIT_HIT_TYPE_FLIGHT,
+                                 0);
+        ObjHitbox_SetSphereRadius(&obj->anim, DIMBOSSSPIT_FLIGHT_RADIUS);
+        obj->anim.velocityY = obj->anim.velocityY - gDimBossSpitGravity[0] * timeDelta;
+        obj->anim.velocityY = obj->anim.velocityY * gDimBossSpitVelocityDamping[0];
+        obj->anim.rotX = DIMBOSSSPIT_FLIGHT_ROT_X_SPEED * timeDelta + (f32)obj->anim.rotX;
+        obj->anim.rotZ = DIMBOSSSPIT_FLIGHT_ROT_YZ_SPEED * timeDelta + (f32)obj->anim.rotZ;
+        obj->anim.rotY = DIMBOSSSPIT_FLIGHT_ROT_YZ_SPEED * timeDelta + (f32)obj->anim.rotY;
+        objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta, obj->anim.velocityZ * timeDelta);
         i = 0;
-        do
-        {
-            (*gPartfxInterface)->spawnObject((void*)obj, DIMBOSSSPIT_PARTFX_FLIGHT_TRAIL, NULL, 1, -1, NULL);
+        do {
+            (*gPartfxInterface)
+                ->spawnObject(obj, DIMBOSSSPIT_PARTFX_FLIGHT_TRAIL, NULL, DIMBOSSSPIT_PARTFX_MODE,
+                              DIMBOSSSPIT_PARTFX_MODEL_NONE, NULL);
             i = i + 1;
-        } while (i < 3);
-        if ((*(ObjHitsPriorityState**)&(obj)->anim.hitReactState)->contactFlags != 0)
-        {
-            (obj)->anim.localPosX = (*(ObjHitsPriorityState**)&(obj)->anim.hitReactState)->contactPosX;
-            (obj)->anim.localPosY = (*(ObjHitsPriorityState**)&(obj)->anim.hitReactState)->contactPosY - (10.0f);
-            (obj)->anim.localPosZ = (*(ObjHitsPriorityState**)&(obj)->anim.hitReactState)->contactPosZ;
-            *(s16*)state = 1;
+        } while (i < DIMBOSSSPIT_FLIGHT_TRAIL_PARTICLE_COUNT);
+        if (((ObjHitsPriorityState*)obj->anim.hitReactState)->contactFlags != 0) {
+            obj->anim.localPosX = ((ObjHitsPriorityState*)obj->anim.hitReactState)->contactPosX;
+            obj->anim.localPosY =
+                ((ObjHitsPriorityState*)obj->anim.hitReactState)->contactPosY - DIMBOSSSPIT_CONTACT_Y_OFFSET;
+            obj->anim.localPosZ = ((ObjHitsPriorityState*)obj->anim.hitReactState)->contactPosZ;
+            *(s16*)stateAddress = DIMBOSSSPIT_BURST_START_FRAME;
         }
-    }
-    else
-    {
+    } else {
         DIMbossspit_updateBurst(obj);
     }
-    p = ((DIMbossspitState*)state)->light;
-    if (p != NULL && p->glowType != 0 && p->enabled != 0)
-    {
-        glowAlpha = (s16)(p->glowAlpha + p->glowAlphaStep);
-        if (glowAlpha < 0)
-        {
+    light = ((DIMbossSpitState*)stateAddress)->light;
+    if (light != NULL && light->glowType != 0 && light->enabled != 0) {
+        glowAlpha = (s16)(light->glowAlpha + light->glowAlphaStep);
+        if (glowAlpha < 0) {
             glowAlpha = 0;
-            p->glowAlphaStep = 0;
-        }
-        else if (glowAlpha > 0xc)
-        {
-            glowAlpha = (s16)(glowAlpha + randomGetRange(-12, 12));
-            if (glowAlpha > 0xff)
-            {
-                glowAlpha = 0xff;
-                ((DIMbossspitState*)state)->light->glowAlphaStep = 0;
+            light->glowAlphaStep = 0;
+        } else if (glowAlpha > DIMBOSSSPIT_GLOW_RANDOMIZE_THRESHOLD) {
+            glowAlpha = (s16)(glowAlpha + randomGetRange(DIMBOSSSPIT_GLOW_RANDOM_MIN, DIMBOSSSPIT_GLOW_RANDOM_MAX));
+            if (glowAlpha > DIMBOSSSPIT_GLOW_ALPHA_MAX) {
+                glowAlpha = DIMBOSSSPIT_GLOW_ALPHA_MAX;
+                ((DIMbossSpitState*)stateAddress)->light->glowAlphaStep = 0;
             }
         }
-        ((DIMbossspitState*)state)->light->glowAlpha = glowAlpha;
+        ((DIMbossSpitState*)stateAddress)->light->glowAlpha = glowAlpha;
     }
     return;
 }
 
-void DIMbossspit_init(GameObject* obj)
-{
+void DIMbossspit_init(GameObject* obj) {
     u8* state = obj->extra;
 
-    ((DIMbossspitState*)state)->light = objCreateLight((void*)obj, 1);
-    if (((DIMbossspitState*)state)->light != NULL)
-    {
-        modelLightStruct_setLightKind(((DIMbossspitState*)state)->light, MODEL_LIGHT_KIND_POINT);
-        modelLightStruct_setDiffuseColor(((DIMbossspitState*)state)->light, 0, 255, 0, 0);
-        modelLightStruct_setSpecularColor(((DIMbossspitState*)state)->light, 0, 255, 0, 0);
-        modelLightStruct_setDistanceAttenuation(((DIMbossspitState*)state)->light, 180.0f, 200.0f);
-        lightSetField4D(((DIMbossspitState*)state)->light, 1);
-        modelLightStruct_setEnabled(((DIMbossspitState*)state)->light, 1, 0.0f);
-        modelLightStruct_setAffectsAabbLightSelection(((DIMbossspitState*)state)->light, 1);
-        modelLightStruct_setupGlow(((DIMbossspitState*)state)->light, 0, 0, 255, 0, 127, 50.0f);
-        modelLightStruct_setGlowProjectionRadius(((DIMbossspitState*)state)->light, 100.0f);
+    ((DIMbossSpitState*)state)->light = objCreateLight(obj, 1);
+    if (((DIMbossSpitState*)state)->light != NULL) {
+        modelLightStruct_setLightKind(((DIMbossSpitState*)state)->light, MODEL_LIGHT_KIND_POINT);
+        modelLightStruct_setDiffuseColor(((DIMbossSpitState*)state)->light, 0, 255, 0, 0);
+        modelLightStruct_setSpecularColor(((DIMbossSpitState*)state)->light, 0, 255, 0, 0);
+        modelLightStruct_setDistanceAttenuation(((DIMbossSpitState*)state)->light, 180.0f, 200.0f);
+        lightSetField4D(((DIMbossSpitState*)state)->light, 1);
+        modelLightStruct_setEnabled(((DIMbossSpitState*)state)->light, 1, 0.0f);
+        modelLightStruct_setAffectsAabbLightSelection(((DIMbossSpitState*)state)->light, 1);
+        modelLightStruct_setupGlow(((DIMbossSpitState*)state)->light, 0, 0, 255, 0, 127, 50.0f);
+        modelLightStruct_setGlowProjectionRadius(((DIMbossSpitState*)state)->light, 100.0f);
     }
-    obj->userData1 = 0xb4;
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, 0, 0, 0);
-    ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, 0);
-    ((DIMbossspitState*)state)->unk0 = 0;
-    ((DIMbossspitState*)state)->unk2 = 0;
+    obj->userData1 = DIMBOSSSPIT_LIFETIME_FRAMES;
+    ObjHits_SetHitVolumeSlot(&obj->anim, 0, 0, 0);
+    ObjHitbox_SetSphereRadius(&obj->anim, 0);
+    ((DIMbossSpitState*)state)->phase = DIMBOSSSPIT_PHASE_FLIGHT;
+    ((DIMbossSpitState*)state)->unknown02 = 0;
     ObjHits_EnableObject(obj);
     ObjModel_SetPostRenderCallback(Obj_GetActiveModel(obj), postRenderSetAlphaBlendState);
 }
 
-void DIMbossspit_release(void)
-{
+void DIMbossspit_release(void) {
 }
 
-void DIMbossspit_initialise(void)
-{
+void DIMbossspit_initialise(void) {
 }
 
 ObjectDescriptor gDIM_BossSpitObjDescriptor = {
-    0, 0, 0, OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)DIMbossspit_initialise,
-    (ObjectDescriptorCallback)DIMbossspit_release,
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
+    DIMbossspit_initialise,
+    DIMbossspit_release,
     0,
     (ObjectDescriptorCallback)DIMbossspit_init,
     (ObjectDescriptorCallback)DIMbossspit_update,
-    (ObjectDescriptorCallback)DIMbossspit_hitDetect,
+    DIMbossspit_hitDetect,
     (ObjectDescriptorCallback)DIMbossspit_render,
     (ObjectDescriptorCallback)DIMbossspit_free,
     (ObjectDescriptorCallback)DIMbossspit_getObjectTypeId,
