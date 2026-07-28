@@ -178,19 +178,17 @@ void waterfx_drawSplashBurst(WaterParticle* s)
     for (; i < 8; i++)
     {
         f32 life = s->life;
-        f32 ph = WATERFX_PHASE_START;
-        f32 bandOfs = WATERFX_BAND_OFFSET_SCALE * ((f32)i / WATERFX_BAND_COUNT);
+        f32 ph;
         f32 dd;
         f32 lim;
         f32 sc;
         f32 fade;
         f32 alpha;
-        f32 phb;
-        phb = ph + bandOfs;
-        ph = phb * life;
+        ph = WATERFX_PHASE_START + WATERFX_BAND_OFFSET_SCALE * ((f32)i / WATERFX_BAND_COUNT);
+        ph = ph * life;
         dd = ph - 0.5f;
         fade = -(WATERFX_FADE_CURVE_SCALE * (dd * dd) - 1.0f);
-        lim = WATERFX_BAND_LIMIT_BASE + bandOfs;
+        lim = WATERFX_BAND_LIMIT_BASE + WATERFX_BAND_OFFSET_SCALE * ((f32)i / WATERFX_BAND_COUNT);
         if (life < lim)
         {
             alpha = 1.0f;
