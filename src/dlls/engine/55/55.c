@@ -273,8 +273,6 @@ int optionsMenu_openSelectedSubmenu(int action, int option)
 
 /* gOptionsActivePanel active-panel id and gOptionsLayoutRefreshFrames render-stale countdown
    are owned by dll_0037_optionsscreen.c */
-extern s8 gOptionsActivePanel;
-extern s8 gOptionsLayoutRefreshFrames;
 
 void languageMenuInit(void)
 {
@@ -328,8 +326,6 @@ void languageMenuInit(void)
  * are cached in gOptionsMenuItems[]. gOptionsLayoutRefreshFrames is set to 2 by both builders;
  * its exact role is unconfirmed.
  */
-extern s8 gOptionsActivePanel;
-extern s8 gOptionsLayoutRefreshFrames;
 
 typedef struct OptionsMenuPanels
 {
