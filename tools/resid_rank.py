@@ -626,18 +626,26 @@ def consumers():
     Intersecting the missing exports against this index is what makes the
     BLOCKED verdict mean `a sibling needs this', not `retail happened to name
     it'.
+
+    The two failure directions are not symmetric.  Over-blocking parks a
+    flippable unit; under-blocking sends someone at a flip that breaks the DOL.
+    So an empty or unreadable object list is treated as `no information' rather
+    than as `nothing consumes anything' -- `None` here makes every missing
+    export block again, which is exactly the old, conservative behaviour.
     """
     global _CONSUMERS
     if _CONSUMERS is None:
+        objs = [ROOT / o for o in link_objects()]
+        objs = [p for p in objs if p.exists()]
+        if not objs:
+            _CONSUMERS = False
+            return None
         idx = {}
-        for o in link_objects():
-            p = ROOT / o
-            if not p.exists():
-                continue
+        for p in objs:
             for n in undefined(p):
-                idx.setdefault(n, set()).add(o)
+                idx.setdefault(n, set()).add(str(p.relative_to(ROOT)))
         _CONSUMERS = idx
-    return _CONSUMERS
+    return _CONSUMERS or None
 
 
 def missing_exports(ours, tgt):
@@ -650,10 +658,11 @@ def missing_exports(ours, tgt):
     leaves the image when the unit flips.
     """
     miss = exports(tgt) - exports(ours)
-    if not miss:
-        return set(), set()
     idx = consumers()
-    mine = {str(Path(ours).relative_to(ROOT)), str(Path(tgt).relative_to(ROOT))}
+    if not miss or idx is None:
+        return miss, set()
+    mine = {str(Path(ours).resolve().relative_to(ROOT.resolve())),
+            str(Path(tgt).resolve().relative_to(ROOT.resolve()))}
     block = {n for n in miss if idx.get(n, set()) - mine}
     return block, miss - block
 
@@ -815,7 +824,7 @@ def cmd_rank(args):
         for n, block, free in held:
             print(f"    {n}  blocking: {' '.join(block)}")
             for b in block:
-                by = sorted(consumers().get(b, ()))[:4]
+                by = sorted((consumers() or {}).get(b, ()))[:4]
                 print(f"        {b} <- {' '.join(by)}")
 
 
