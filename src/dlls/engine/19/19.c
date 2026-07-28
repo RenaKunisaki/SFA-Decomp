@@ -1,7 +1,7 @@
 #include "main/dll/waterfx.h"
 #include "main/dll/ppcwgpipe_struct.h"
 #include "dolphin/gx/GXLegacyDecls.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/sky_interface.h"
 #include "main/shader_api.h"
@@ -186,10 +186,10 @@ static f32 waterfxBandEnvelope(f32 frac, f32 life, f32* phaseOut, f32* alphaOut)
  */
 void waterfx_drawSplashBurst(WaterParticle* s)
 {
-    f32 mtxD[12];
-    f32 scale[12];
-    f32 mtxB[12];
-    f32 mtxC[12];
+    Mtx mtxD;
+    Mtx scale;
+    Mtx mtxB;
+    Mtx mtxC;
     int mtxIdx;
     u8* colorOut;
     int i;
@@ -228,8 +228,8 @@ void waterfx_drawSplashBurst(WaterParticle* s)
         PSMTXConcat(scale, mtxD, mtxD);
         PSMTXTrans(mtxC, s->x - playerMapOffsetX, s->y, s->z - playerMapOffsetZ);
         PSMTXConcat(mtxC, mtxD, mtxD);
-        PSMTXConcat(Camera_GetViewMatrix(), mtxD, mtxD);
-        GXLoadPosMtxImm(mtxD, mtxIdx);
+        PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), mtxD, mtxD);
+        GXLoadPosMtxImm((f32*)mtxD, mtxIdx);
         *(u32*)(colorOut + 0x18) = (u8)(int)(WATERFX_ALPHA_MAX * alpha);
         mtxIdx += 3;
         colorOut += 4;
@@ -313,7 +313,7 @@ void waterfx_buildSplashDisplayList(void)
 int waterfx_consumePendingImpactNearPoint(f32* vec, f32 dist)
 {
     if (gWaterfxPendingImpactPositionValid != 0 &&
-        PSVECSquareDistance(vec, gWaterfxPendingImpactPosition) < dist * dist)
+        PSVECSquareDistance((Vec*)vec, (Vec*)gWaterfxPendingImpactPosition) < dist * dist)
     {
         gWaterfxPendingImpactPositionValid = 0;
         return 1;

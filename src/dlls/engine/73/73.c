@@ -3,7 +3,7 @@
  */
 #include "main/camera_interface.h"
 #include "main/resource.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "main/camera.h"
 #include "main/dll/CAM/camcombat_state.h"
 #include "main/dll/DR/dr_types.h"
@@ -95,7 +95,7 @@ static void camCombatTraceMove(f32* prevPos, CameraObject* camera, u8* trace)
 
 void CameraModeCombat_update(CameraObject* cam)
 {
-    f32 vec[3];
+    Vec vec;
     f32 prevZ;
     f32 prevY;
     f32 prevX;
@@ -103,7 +103,7 @@ void CameraModeCombat_update(CameraObject* cam)
     f32 ty;
     f32 dx;
     f32 dz;
-    f32 n[3];
+    Vec n;
     u8 trace[116];
     CameraViewSlot* view = Camera_GetCurrentViewSlot();
     GameObject* tgt;
@@ -329,19 +329,19 @@ void CameraModeCombat_update(CameraObject* cam)
                             sinAngle = mathSinf((3.1415927f * (f32)(s32)cam->anim.rotX) / 32768.0f);
                             cosAngle = mathCosf((3.1415927f * (f32)(s32)cam->anim.rotX) / 32768.0f);
                             t = gCamCombatState->followDistance * sinAngle;
-                            n[0] = px + t;
+                            n.x = px + t;
                             t = gCamCombatState->followDistance * cosAngle;
-                            n[2] = pz - t;
+                            n.z = pz - t;
                             dy *= 0.6f;
                             dy = ty - dy;
                             dy = dy + gCamCombatState->heightOffset;
                             step = interpolate(cam->anim.worldPosY - dy, 0.05f, timeDelta);
-                            n[1] = cam->anim.worldPosY - step;
-                            PSVECSubtract(n, &cam->anim.worldPosX, vec);
-                            mag = PSVECMag(vec);
+                            n.y = cam->anim.worldPosY - step;
+                            PSVECSubtract(&n, &cam->anim.worldPos, &vec);
+                            mag = PSVECMag(&vec);
                             if (mag > 0.0f)
                             {
-                                PSVECNormalize(vec, vec);
+                                PSVECNormalize(&vec, &vec);
                             }
                             if (cam->blendProgress <= 0.0f)
                             {
@@ -362,11 +362,11 @@ void CameraModeCombat_update(CameraObject* cam)
                                     mag = lim;
                                 }
                             }
-                            PSVECScale(vec, vec,
+                            PSVECScale(&vec, &vec,
                                        (mag < 0.0f)
                                            ? 0.0f
                                            : ((mag > 20.0f) ? 20.0f : mag));
-                            PSVECAdd(&cam->anim.worldPosX, vec, &cam->anim.worldPosX);
+                            PSVECAdd(&cam->anim.worldPos, &vec, &cam->anim.worldPos);
                             camCombatTraceMove(&prevX, (CameraObject*)cam, trace);
                             t = 0.1f * dz + focus->anim.worldPosZ;
                             fb = view->x - (0.1f * dx + focus->anim.worldPosX);

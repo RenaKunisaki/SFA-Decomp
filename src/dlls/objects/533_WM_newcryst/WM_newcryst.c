@@ -4,7 +4,7 @@
  * The crystal variants emit orbiting or directional effects and react
  * to finale sequence events.
  */
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "main/camera.h"
 #include "main/dll/WM/dll_0215_wmnewcrystal.h"
 #include "main/dll/partfx_interface.h"
@@ -29,7 +29,7 @@ int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
 {
     WmNewCrystalState* state;
     WmNewCrystalParticleParams params;
-    f32 cameraDelta[3];
+    Vec cameraDelta;
     int i;
 
     state = obj->extra;
@@ -38,10 +38,10 @@ int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
         switch (animUpdate->eventIds[i])
         {
         case WMNEWCRYSTAL_EVENT_DETONATE:
-            PSVECSubtract(&Camera_GetCurrentViewSlot()->position.x, &obj->anim.localPosX, cameraDelta);
-            PSVECNormalize(cameraDelta, cameraDelta);
-            PSVECScale(cameraDelta, cameraDelta, 100.0f);
-            PSVECAdd(&obj->anim.localPosX, cameraDelta, &obj->anim.localPosX);
+            PSVECSubtract(&Camera_GetCurrentViewSlot()->position, &obj->anim.localPos, &cameraDelta);
+            PSVECNormalize(&cameraDelta, &cameraDelta);
+            PSVECScale(&cameraDelta, &cameraDelta, 100.0f);
+            PSVECAdd(&obj->anim.localPos, &cameraDelta, &obj->anim.localPos);
             obj->anim.worldPosX = obj->anim.localPosX;
             obj->anim.worldPosY = obj->anim.localPosY;
             obj->anim.worldPosZ = obj->anim.localPosZ;

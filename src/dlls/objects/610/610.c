@@ -15,7 +15,7 @@
 #include "main/model.h"
 #include "main/dll/dll_0262_drakormissile.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/frame_timing.h"
 #include "main/model_light.h"
@@ -259,8 +259,8 @@ void drakormissile_update(int obj)
     GameObject* o = (GameObject*)obj;
     DrakorMissileState* state = o->extra;
     int moving;
-    f32 toTarget[3];
-    f32 dir[3];
+    Vec toTarget;
+    Vec dir;
     GameObject* hitObj;
     int hit;
     GameObject* lastHit;
@@ -298,16 +298,15 @@ void drakormissile_update(int obj)
         if (player->anim.velocityX != (mag = 0.0f) ||
             player->anim.velocityY != mag || player->anim.velocityZ != mag)
         {
-            mag = PSVECMag((f32*)&player->anim.velocityX);
+            mag = PSVECMag(&player->anim.velocity);
         }
         mag = lbl_803DC2B8 + mag;
-        Obj_PredictInterceptPoint(player, mag, (const Vec3f*)&o->anim.localPosX,
-                                  (Vec3f*)toTarget);
-        PSVECSubtract(toTarget, (f32*)(obj + 0xc), dir);
-        PSVECNormalize(dir, dir);
-        PSVECScale(dir, dir, mag * lbl_803DC2B4);
-        PSVECScale((f32*)((char*)obj + 0x24), (f32*)((char*)obj + 0x24), lbl_803DC2B0);
-        PSVECAdd((f32*)(obj + 0x24), dir, (f32*)(obj + 0x24));
+        Obj_PredictInterceptPoint(player, mag, &o->anim.localPos, &toTarget);
+        PSVECSubtract(&toTarget, &o->anim.localPos, &dir);
+        PSVECNormalize(&dir, &dir);
+        PSVECScale(&dir, &dir, mag * lbl_803DC2B4);
+        PSVECScale(&o->anim.velocity, &o->anim.velocity, lbl_803DC2B0);
+        PSVECAdd(&o->anim.velocity, &dir, &o->anim.velocity);
         mag = sqrtf(o->anim.velocityX * o->anim.velocityX +
                     o->anim.velocityZ * o->anim.velocityZ);
         {

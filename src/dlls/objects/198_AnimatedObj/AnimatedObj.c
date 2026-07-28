@@ -7,7 +7,7 @@
  * child in response to sequence events.
  */
 #include "dlls/objects/198_AnimatedObj.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx.h"
 #include "main/camera_interface.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/frame_timing.h"
@@ -44,19 +44,19 @@ void animatedobj_free(GameObject* obj, int clearSequence) {
 
 void animatedobj_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 unusedVisible) {
     AnimatedObjState* state;
-    f32 worldMatrix[12];
-    f32 playerTranslation[12];
-    f32 translatedWorld[12];
-    f32 inverseCameraTranslation[12];
-    f32 flipY[12];
-    f32 flipZ[12];
-    f32 cameraTranslation[12];
-    f32 cameraMatrix[12];
-    f32 cameraWithoutTranslation[12];
-    f32 cameraFlippedY[12];
-    f32 cameraFlippedYZ[12];
-    f32 mirroredCamera[12];
-    f32 renderMatrix[12];
+    Mtx worldMatrix;
+    Mtx playerTranslation;
+    Mtx translatedWorld;
+    Mtx inverseCameraTranslation;
+    Mtx flipY;
+    Mtx flipZ;
+    Mtx cameraTranslation;
+    Mtx cameraMatrix;
+    Mtx cameraWithoutTranslation;
+    Mtx cameraFlippedY;
+    Mtx cameraFlippedYZ;
+    Mtx mirroredCamera;
+    Mtx renderMatrix;
 
     (void)unusedVisible;
     state = obj->extra;
@@ -64,7 +64,7 @@ void animatedobj_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, 
         AnimatedObjPlacement* placement;
         GameObject* camera;
 
-        Obj_BuildWorldTransformMatrix(obj, worldMatrix, 0);
+        Obj_BuildWorldTransformMatrix(obj, (f32*)worldMatrix, 0);
         placement = (AnimatedObjPlacement*)obj->anim.placementData;
         PSMTXTrans(playerTranslation, -(placement->base.posX - playerMapOffsetX), -placement->base.posY,
                    -(placement->base.posZ - playerMapOffsetZ));
@@ -72,13 +72,13 @@ void animatedobj_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, 
         camera = (GameObject*)(*gCameraInterface)->getCamera();
         camera->anim.rotY += 0x8000;
         camera->anim.rootMotionScale = 1.0f;
-        Obj_BuildWorldTransformMatrix(camera, cameraMatrix, 0);
+        Obj_BuildWorldTransformMatrix(camera, (f32*)cameraMatrix, 0);
         camera->anim.rotY += 0x8000;
         camera->anim.rootMotionScale = 0.0f;
-        PSMTXTrans(inverseCameraTranslation, -cameraMatrix[3], -cameraMatrix[7], -cameraMatrix[11]);
+        PSMTXTrans(inverseCameraTranslation, -cameraMatrix[0][3], -cameraMatrix[1][3], -cameraMatrix[2][3]);
         PSMTXRotRad(flipY, 'y', 3.1415927f);
         PSMTXRotRad(flipZ, 'z', 3.1415927f);
-        PSMTXTrans(cameraTranslation, cameraMatrix[3], cameraMatrix[7], cameraMatrix[11]);
+        PSMTXTrans(cameraTranslation, cameraMatrix[0][3], cameraMatrix[1][3], cameraMatrix[2][3]);
         PSMTXConcat(inverseCameraTranslation, cameraMatrix, cameraWithoutTranslation);
         PSMTXConcat(flipY, cameraWithoutTranslation, cameraFlippedY);
         PSMTXConcat(flipZ, cameraFlippedY, cameraFlippedYZ);

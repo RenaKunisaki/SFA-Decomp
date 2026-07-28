@@ -21,7 +21,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/ai.h"
 #include "dolphin/dvd.h"
-#include "dolphin/mtx/mtx_legacy.h"
+#include "dolphin/mtx/vec.h"
 #include "dolphin/os/OSRtc.h"
 
 u8 gSfxTriggerExtraTable[8] = {1, 2, 4, 8, 0x10, 0x20, 0x40, 0};
@@ -940,24 +940,24 @@ void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
 
 f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta)
 {
-    f32 v[3];
+    Vec v;
     f32 t;
     double t2;
-    f32* listener;
+    Vec* listener;
     GameObject* player = Obj_GetPlayerObject();
-    void* slot = Camera_GetCurrentViewSlot();
+    CameraViewSlot* slot = Camera_GetCurrentViewSlot();
     int seqNo = getCurSeqNo();
 
     if (player != NULL && seqNo == 0)
     {
-        listener = &player->anim.worldPosX;
+        listener = &player->anim.worldPos;
     }
     else if (slot != NULL)
     {
         if (player != NULL)
         {
-            PSVECSubtract((f32*)((u8*)slot + 0x44), &player->anim.worldPosX, v);
-            t = (PSVECMag(v) - 150.0f) / 250.0f;
+            PSVECSubtract(&slot->worldPosition, &player->anim.worldPos, &v);
+            t = (PSVECMag(&v) - 150.0f) / 250.0f;
             if (1.0 < (t > 0.0 ? t : 0.0))
             {
                 t2 = 1.0;
@@ -966,21 +966,21 @@ f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta)
             {
                 t2 = (t > 0.0 ? t : 0.0);
             }
-            PSVECScale(v, v, t2);
-            PSVECAdd(&player->anim.worldPosX, v, v);
-            listener = v;
+            PSVECScale(&v, &v, t2);
+            PSVECAdd(&player->anim.worldPos, &v, &v);
+            listener = &v;
         }
         else
         {
-            listener = (f32*)((u8*)slot + 0x44);
+            listener = &slot->worldPosition;
         }
     }
     else
     {
         return 0.0f;
     }
-    PSVECSubtract(listener, soundPos, outDelta);
-    return PSVECMag(outDelta);
+    PSVECSubtract(listener, (Vec*)soundPos, (Vec*)outDelta);
+    return PSVECMag((Vec*)outDelta);
 }
 
 SfxObjectChannel* Sfx_FindObjectChannel(u32 obj, u32 channel, u16 sfxId, s32 mode)
