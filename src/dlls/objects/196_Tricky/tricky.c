@@ -2271,9 +2271,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 {
                     if (wg != 0)
                     {
-                        int pref = (int)state;
+                        int pref;
                         
-                        for (i = 0; i < 4; pref += 2, i++)
+                        for (i = 0, pref = (int)state; i < 4; pref += 2, i++)
                         {
                             if (*(s16*)(pref + 152) == tp)
                             {
@@ -2299,9 +2299,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                     {
                         if ((u32)trickyPatch != 0)
                         {
-                            int pref = (int)state;
+                            int pref;
                             
-                            for (i = 0; i < 4; pref += 2, i++)
+                            for (i = 0, pref = (int)state; i < 4; pref += 2, i++)
                             {
                                 if (*(s16*)(pref + 152) == trickyPatch)
                                 {
@@ -2327,9 +2327,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                 {
                     if (wg != 0)
                     {
-                        int pref = (int)state;
+                        int pref;
                         
-                        for (i = 0; i < 4; pref += 2, i++)
+                        for (i = 0, pref = (int)state; i < 4; pref += 2, i++)
                         {
                             if (*(s16*)(pref + 152) == tp)
                             {
@@ -2409,9 +2409,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                         }
                         else
                         {
-                            int pref = (int)state;
+                            int pref;
                             
-                            for (i = 0; i < 4; pref += 2, i++)
+                            for (i = 0, pref = (int)state; i < 4; pref += 2, i++)
                             {
                                 if (*(s16*)(pref + 152) == targetWg)
                                 {
@@ -2433,9 +2433,9 @@ int trickyFn_8013b368(GameObject* obj, f32 vel, TrickyState* state)
                         {
                             if (targetWg == state->activeWalkGroup)
                             {
-                                int pref = (int)state;
+                                int pref;
                                 
-                                for (i = 0; i < 4; pref += 2, i++)
+                                for (i = 0, pref = (int)state; i < 4; pref += 2, i++)
                                 {
                                     if (*(s16*)(pref + 152) == p)
                                     {
