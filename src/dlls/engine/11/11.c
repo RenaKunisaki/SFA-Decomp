@@ -135,21 +135,21 @@ void partfx_freeEffectsBySequence(s16 a, int b);
 #define MODGFX_ZERO 0.0f
 #define MODGFX_ONE  1.0f
 
-s16 dll_0B_func04(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16* d, int textureAssetId,
+s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16* d, int textureAssetId,
                   void* textureResource);
 
 #define gModgfxSpawnContext (*(ModgfxSpawnContext*)gModgfxSpawnContextStorage)
-s16 dll_0B_func18(void)
+s16 dll_0B_getLastSpawnHandle(void)
 {
     return gModgfxLastSpawnHandle;
 }
 
-void dll_0B_func17(u32 flags)
+void dll_0B_addSequenceFlags(u32 flags)
 {
     gModgfxSpawnContext.flags |= flags;
 }
 
-void dll_0B_func16(void* a, void* b, void* c, void* d, void* e, int f, void* g)
+void dll_0B_spawnSequence(void* a, void* b, void* c, void* d, void* e, int f, void* g)
 {
     gModgfxSpawnContext.pendingSpawns = gModgfxPendingSpawnQueue;
     gModgfxSpawnContext.pendingSpawnCount = gModgfxPendingSpawnWriteCursor - gModgfxPendingSpawnStartCursor;
@@ -176,32 +176,32 @@ void dll_0B_func16(void* a, void* b, void* c, void* d, void* e, int f, void* g)
             gModgfxSpawnContext.posZ += ((ObjAnimComponent*)a)->localPosZ;
         }
     }
-    gModgfxLastSpawnHandle = dll_0B_func04(&gModgfxSpawnContext, 0, (int)c, b, (int)e, d, f, g);
+    gModgfxLastSpawnHandle = dll_0B_spawnEffect(&gModgfxSpawnContext, 0, (int)c, b, (int)e, d, f, g);
 }
 
-void dll_0B_func15(void* params)
+void dll_0B_setSequenceParams(void* params)
 {
     memcpy(gModgfxSpawnContext.sequenceParams, params, 0xe);
 }
 
-void dll_0B_func14(s16 value)
+void dll_0B_setSequenceParamValue(s16 value)
 {
     u8* state = gModgfxSpawnContextStorage;
     state = state + gModgfxSequenceParamIndex * 2;
     *(s16*)(state + 0x46) = value;
 }
 
-void dll_0B_func13(s16 x)
+void dll_0B_setSequenceParamIndex(s16 x)
 {
     gModgfxSequenceParamIndex = x;
 }
 
-void dll_0B_func12(void)
+void dll_0B_nextSequenceParam(void)
 {
     gModgfxSequenceParamIndex++;
 }
 
-void dll_0B_func11(int modelOrResource, float posX, float posY, float posZ, s16 param14, int param10)
+void dll_0B_addSequenceSpawn(int modelOrResource, float posX, float posY, float posZ, s16 param14, int param10)
 {
     u32 sequenceIndex = gModgfxSequenceParamIndex;
     gModgfxPendingSpawnWriteCursor->sequenceIndex = sequenceIndex;
@@ -214,7 +214,7 @@ void dll_0B_func11(int modelOrResource, float posX, float posY, float posZ, s16 
     gModgfxPendingSpawnWriteCursor++;
 }
 
-void dll_0B_func10(void)
+void dll_0B_resetSequenceSpawns(void)
 {
     ModgfxPendingSpawn* cursor = gModgfxPendingSpawnQueue;
     gModgfxPendingSpawnStartCursor = cursor;
@@ -222,7 +222,7 @@ void dll_0B_func10(void)
     gModgfxSequenceParamIndex = 0;
 }
 
-void dll_0B_func0F(int source, u8 mode, u8 flagByte, int word40, int word3C)
+void dll_0B_beginSequence(int source, u8 mode, u8 flagByte, int word40, int word3C)
 {
     f32 fz;
     f32 fz2;
@@ -676,7 +676,7 @@ void partfx_freeEffectsBySequence(s16 sequenceId, int forceAll)
 }
 /* Flag every active effect whose owner object has the 0x800 state bit
  * by setting its frameUpdated flag. */
-void dll_0B_func0E(void)
+void dll_0B_markSourceFrameUpdated(void)
 {
     PartfxEffectState* effect;
     GameObject* sourceObject;
@@ -727,7 +727,7 @@ void dll_0B_func0B(void)
     lbl_803DD282++;
 }
 
-void dll_0B_func0A(s16* p)
+void dll_0B_releaseHandle(s16* p)
 {
     PartfxEffectState** arr = (PartfxEffectState**)gPartfxActiveEffects;
     int i;
@@ -741,7 +741,7 @@ void dll_0B_func0A(s16* p)
     *p = -1;
 }
 
-int dll_0B_func09(void* a0, int a1, int a2, u8 a3, void* a4)
+int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
 {
     u8 ar;
     u8 ag;
@@ -1081,7 +1081,7 @@ int dll_0B_func09(void* a0, int a1, int a2, u8 a3, void* a4)
     return 0;
 }
 
-void dll_0B_func08(void* param)
+void dll_0B_detachSource(void* param)
 {
     PartfxEffectState** arr = (PartfxEffectState**)gPartfxActiveEffects;
     int i;
@@ -1119,7 +1119,7 @@ void dll_0B_func08(void* param)
     }
 }
 
-void dll_0B_func07(void* source)
+void dll_0B_freeSourceEffects(void* source)
 {
     PartfxEffectState** arr = (PartfxEffectState**)gPartfxActiveEffects;
     int i;
@@ -1161,7 +1161,7 @@ static inline int modgfx_findFreeEffectSlot(void** p, int found, int i)
     return -1;
 }
 
-void dll_0B_func06(void)
+void dll_0B_releaseAll(void)
 {
     partfx_freeEffectsBySequence(0, 1);
 }
@@ -1173,7 +1173,7 @@ typedef void (*ExpResFn6)(void*, int, void*, int, int, void*);
 
 #define PENDING_SPAWNS ((char*)*(int**)((char*)eff + 0x9c))
 
-void dll_0B_func05(void)
+void dll_0B_updateActiveEffects(void)
 {
     int emOff;
     int emIdx;
@@ -1592,7 +1592,7 @@ void dll_0B_func05(void)
     }
 }
 
-s16 dll_0B_func04(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16* d, int textureAssetId,
+s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16* d, int textureAssetId,
                   void* textureResource)
 {
     int base0;
@@ -1947,25 +1947,25 @@ Dll0BDescriptorTable lbl_8030FCA8 = {{0x00000000,
                                       (u32)dll_0B_release,
                                       0x00000000,
                                       (u32)dll_0B_onMapSetup,
-                                      (u32)dll_0B_func04,
-                                      (u32)dll_0B_func05,
-                                      (u32)dll_0B_func06,
-                                      (u32)dll_0B_func07,
-                                      (u32)dll_0B_func08,
-                                      (u32)dll_0B_func09,
-                                      (u32)dll_0B_func0A,
+                                      (u32)dll_0B_spawnEffect,
+                                      (u32)dll_0B_updateActiveEffects,
+                                      (u32)dll_0B_releaseAll,
+                                      (u32)dll_0B_freeSourceEffects,
+                                      (u32)dll_0B_detachSource,
+                                      (u32)dll_0B_renderEffects,
+                                      (u32)dll_0B_releaseHandle,
                                       (u32)dll_0B_func0B,
                                       (u32)dll_0B_func0C,
                                       (u32)dll_0B_func0D,
-                                      (u32)dll_0B_func0E,
-                                      (u32)dll_0B_func0F,
-                                      (u32)dll_0B_func10,
-                                      (u32)dll_0B_func11,
-                                      (u32)dll_0B_func12,
-                                      (u32)dll_0B_func13,
-                                      (u32)dll_0B_func14,
-                                      (u32)dll_0B_func15,
-                                      (u32)dll_0B_func16,
-                                      (u32)dll_0B_func17,
-                                      (u32)dll_0B_func18,
+                                      (u32)dll_0B_markSourceFrameUpdated,
+                                      (u32)dll_0B_beginSequence,
+                                      (u32)dll_0B_resetSequenceSpawns,
+                                      (u32)dll_0B_addSequenceSpawn,
+                                      (u32)dll_0B_nextSequenceParam,
+                                      (u32)dll_0B_setSequenceParamIndex,
+                                      (u32)dll_0B_setSequenceParamValue,
+                                      (u32)dll_0B_setSequenceParams,
+                                      (u32)dll_0B_spawnSequence,
+                                      (u32)dll_0B_addSequenceFlags,
+                                      (u32)dll_0B_getLastSpawnHandle,
                                       0x00000000}};
