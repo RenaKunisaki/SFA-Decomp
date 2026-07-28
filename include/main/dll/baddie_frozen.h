@@ -20,7 +20,7 @@ void battleDroidUpdateWhileFrozen(int obj, u8* state, int attacker, int hit, int
 void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void hagabonMK2_updateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 
-void rachnopUpdateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
+void rachnopUpdateWhileFrozen(GameObject* obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void spittingEbaUpdateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void whirlpool_updateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);
 void snowworm_updateWhileFrozen(int obj, u8* state, int attacker, int hit, int p5, int p6, Vec* hitPos, int sector);

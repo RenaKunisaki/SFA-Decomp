@@ -303,7 +303,7 @@ int DRlaserturret_updateIdle(GameObject* obj, DRLaserTurretAnimState* animState)
         }
         return DR_LASERTURRET_STATE_CONTINUE;
     }
-    shopKeeperRotateFn_801e7c4c((s16*)obj, playerObj, 0);
+    shopKeeperRotateFn_801e7c4c(obj, playerObj, 0);
     obj->anim.localPosY = state->bobAmplitude *
                  mathSinf((double)(3.1415927f * (float)(u32)state->bobPhase / 32768.0f)) +
              state->bobBaseY;
@@ -413,7 +413,7 @@ int DRlaserturret_updateTracking(GameObject* obj, DRLaserTurretAnimState* animSt
         }
         return DR_LASERTURRET_STATE_CONTINUE;
     }
-    t = shopKeeperRotateFn_801e7c4c((s16*)obj, playerObj, 0);
+    t = shopKeeperRotateFn_801e7c4c(obj, playerObj, 0);
     rate = 0.02f;
     if (t > 80.0f)
     {
@@ -837,15 +837,15 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     return 0;
 }
 
-f32 shopKeeperRotateFn_801e7c4c(s16* obj, void* player, int mode)
+f32 shopKeeperRotateFn_801e7c4c(GameObject* obj, GameObject* player, int mode)
 {
     f32 dist;
     f32 dx;
     f32 dz;
     int diff;
 
-    dx = ((GameObject*)player)->anim.localPosX - ((GameObject*)obj)->anim.localPosX;
-    dz = ((GameObject*)player)->anim.localPosZ - ((GameObject*)obj)->anim.localPosZ;
+    dx = player->anim.localPosX - obj->anim.localPosX;
+    dz = player->anim.localPosZ - obj->anim.localPosZ;
     dist = sqrtf(dx * dx + dz * dz);
     if (dist)
     {
@@ -857,11 +857,11 @@ f32 shopKeeperRotateFn_801e7c4c(s16* obj, void* player, int mode)
         diff = getAngle(dx, dz) & 0xffff;
         if (mode != 0)
         {
-            *obj = diff;
+            obj->anim.rotX = diff;
         }
         else
         {
-            diff = diff - (u16)*obj;
+            diff = diff - (u16)obj->anim.rotX;
             if (diff > 0x8000)
             {
                 diff -= 0xFFFF;
@@ -882,7 +882,7 @@ f32 shopKeeperRotateFn_801e7c4c(s16* obj, void* player, int mode)
             {
                 diff = 0;
             }
-            *obj = (s16)((f32)(diff >> 3) * timeDelta + (f32) * (s16*)obj);
+            obj->anim.rotX = (s16)((f32)(diff >> 3) * timeDelta + (f32) * (s16*)obj);
         }
     }
     return dist;
@@ -992,7 +992,7 @@ void ShopKeeper_update(GameObject* obj)
     }
     if ((((ShopkeeperState*)state)->flags9D4 & SHOPKEEPER_FLAG_FACING) != 0)
     {
-        shopKeeperRotateFn_801e7c4c((s16*)obj, player, 1);
+        shopKeeperRotateFn_801e7c4c(obj, player, 1);
     }
     (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase;
     if (*(void**)&((ShopkeeperState*)state)->vendorObj == NULL)

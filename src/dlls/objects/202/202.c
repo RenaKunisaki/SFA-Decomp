@@ -3731,7 +3731,7 @@ u8 gShadowHunterHitReactionSeq[0x40] = {
 
 extern f32 gDusterWallProbeOffsets[];
 
-void rachnopUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int wpad0, int wpad1, Vec* wpad2, int wpad3)
+void rachnopUpdateWhileFrozen(GameObject* obj, u8* state, int unused, int eventKind, int wpad0, int wpad1, Vec* wpad2, int wpad3)
 {
     if (eventKind == 0x10)
     {
@@ -3740,19 +3740,19 @@ void rachnopUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int
     else if (eventKind != 0x11)
     {
         ((BaddieState*)state)->reactionFlags = ((BaddieState*)state)->reactionFlags | 8;
-        Sfx_PlayFromObject(obj, SFXTRIG_baddie_zyck_lash_254);
+        Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_zyck_lash_254);
         ((BaddieState*)state)->hitCounter = 0;
     }
     return;
 }
 
-void rachnopUpdateIdle(int* obj, int state)
+void rachnopUpdateIdle(GameObject* obj, int state)
 {
     int cond;
 
     if (((BaddieState*)state)->userData1 == 0)
     {
-        rachnopFindWallPlane((GameObject*)obj, state);
+        rachnopFindWallPlane(obj, state);
     }
     else
     {
@@ -3770,13 +3770,13 @@ void rachnopUpdateIdle(int* obj, int state)
     return;
 }
 
-void rachnopUpdateApproach(int* obj, int state)
+void rachnopUpdateApproach(GameObject* obj, int state)
 {
     int cond;
 
     if (((BaddieState*)state)->userData1 == 0)
     {
-        rachnopFindWallPlane((GameObject*)obj, state);
+        rachnopFindWallPlane(obj, state);
     }
     else if ((((GameObject*)((BaddieState*)state)->trackedObj)->anim.classId == 1) &&
              (cond = fn_80295CBC((GameObject*)(*(int*)&((BaddieState*)state)->trackedObj)), cond != 0))
@@ -3795,7 +3795,7 @@ void rachnopUpdateApproach(int* obj, int state)
     return;
 }
 
-void rachnopUpdateAttack(int* obj, int state)
+void rachnopUpdateAttack(GameObject* obj, int state)
 {
     short move;
     int cond;
@@ -3804,13 +3804,13 @@ void rachnopUpdateAttack(int* obj, int state)
 
     if (((BaddieState*)state)->userData1 == 0)
     {
-        rachnopFindWallPlane((GameObject*)obj, state);
+        rachnopFindWallPlane(obj, state);
     }
     else if ((((GameObject*)((BaddieState*)state)->trackedObj)->anim.classId == 1) &&
              (cond = fn_80295CBC((GameObject*)(*(int*)&((BaddieState*)state)->trackedObj)), cond != 0))
     {
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DUSTER_HIT_VOLUME_SLOT, 1, 0);
-        move = ((GameObject*)obj)->anim.currentMove;
+        move = obj->anim.currentMove;
         if (move == 3)
         {
             fireflyLanternSteerTowardTarget((short*)obj, state, 0x19, (double)lbl_803E2A00);
@@ -3819,9 +3819,9 @@ void rachnopUpdateAttack(int* obj, int state)
         {
             fireflyLanternSteerTowardTarget((short*)obj, state, 0x19, (double)0.5f);
         }
-        fireflyLanternGetTargetAngleAndDistance((GameObject*)obj, state, outIds, outVec);
+        fireflyLanternGetTargetAngleAndDistance(obj, state, outIds, outVec);
         if (((((BaddieState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0) ||
-            ((outIds[0] < 0x5dc && (((GameObject*)obj)->anim.currentMove != 1))))
+            ((outIds[0] < 0x5dc && (obj->anim.currentMove != 1))))
         {
             if (outIds[0] < 0x5dc)
             {

@@ -426,8 +426,8 @@ int DIMbossAnim_returnToIdleWhenDone(int obj, int runtime) {
     return 0;
 }
 
-int DIMbossAnim_selectTargetControlMode(int* obj) {
-    int* state = ((GameObject*)obj)->extra;
+int DIMbossAnim_selectTargetControlMode(GameObject* obj) {
+    int* state = obj->extra;
     switch (((GroundBaddieState*)state)->targetState) {
     case 1:
         return 5;
@@ -707,7 +707,7 @@ int DIMbossHitDetect_applyForwardMove(int* obj, u8* state, f32 weight) {
     return 0;
 }
 
-int DIMbossHitDetect_resetIdleMove(int* obj, u8* state) {
+int DIMbossHitDetect_resetIdleMove(GameObject* obj, u8* state) {
     if (*(s8*)&((BaddieState*)state)->moveJustStartedA != 0) {
         f32 fz;
         if (*(s8*)&((BaddieState*)state)->moveJustStartedA != 0) {
@@ -717,7 +717,7 @@ int DIMbossHitDetect_resetIdleMove(int* obj, u8* state) {
         fz = 0.0f;
         ((BaddieState*)state)->animSpeedA = fz;
         ((BaddieState*)state)->animSpeedB = fz;
-        ((GameObject*)obj)->anim.activeMove = -1;
+        obj->anim.activeMove = -1;
     }
     return 0;
 }

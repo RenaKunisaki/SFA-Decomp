@@ -419,7 +419,7 @@ enum
  * bird's yaw/pitch/roll, clamps to the steer limits, advances the
  * flap/glide animation, and fires the forward burst on a fresh A press. */
 
-void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
+void SB_CloudRunner_UpdateSteer(GameObject* obj, SBCloudRunnerState* state)
 {
     WCAnimEvents events;
     int doSpawn;
@@ -429,16 +429,16 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
     int clampedRot;
     f32 spd;
 
-    yawTarget = (-((SBCloudRunnerState*)state)->stickY * 6000) / 70;
-    pitchTarget = (-((SBCloudRunnerState*)state)->stickX * 12000) / 70;
+    yawTarget = (-state->stickY * 6000) / 70;
+    pitchTarget = (-state->stickX * 12000) / 70;
 
     {
-        f32 t = (f32)(((SBCloudRunnerState*)state)->stickX << 3) / 3.0f;
-        ((SBCloudRunnerState*)state)->rotXAccum = -(t * timeDelta - (f32)((SBCloudRunnerState*)state)->rotXAccum);
+        f32 t = (f32)(state->stickX << 3) / 3.0f;
+        state->rotXAccum = -(t * timeDelta - (f32)state->rotXAccum);
     }
-    ((SBCloudRunnerState*)state)->rotXAccum -= (((SBCloudRunnerState*)state)->rotXAccum * framesThisStep) >> 5;
+    state->rotXAccum -= (state->rotXAccum * framesThisStep) >> 5;
 
-    angleDelta = yawTarget - (u16)((GameObject*)obj)->anim.rotY;
+    angleDelta = yawTarget - (u16)obj->anim.rotY;
     if (angleDelta > 0x8000)
     {
         angleDelta = (angleDelta - 0x10000) + 1;
@@ -447,9 +447,9 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
     {
         angleDelta = (angleDelta + 0x10000) - 1;
     }
-    ((GameObject*)obj)->anim.rotY = 0.05f * ((f32)angleDelta * timeDelta) + (f32) * (s16*)(int)(obj + 1);
+    obj->anim.rotY = 0.05f * ((f32)angleDelta * timeDelta) + (f32) * ((s16*)obj + 1);
 
-    angleDelta = pitchTarget - (u16) * (s16*)(state + 0x2e);
+    angleDelta = pitchTarget - (u16)state->rotZ;
     if (angleDelta > 0x8000)
     {
         angleDelta = (angleDelta - 0x10000) + 1;
@@ -458,25 +458,25 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
     {
         angleDelta = (angleDelta + 0x10000) - 1;
     }
-    ((SBCloudRunnerState*)state)->rotZ =
-        0.05f * ((f32)angleDelta * timeDelta) + (f32) * (s16*)(int)(state + 0x2e);
+    state->rotZ =
+        0.05f * ((f32)angleDelta * timeDelta) + (f32) * (s16*)((u8*)state + 0x2e);
 
-    clampedRot = ((GameObject*)obj)->anim.rotY;
+    clampedRot = obj->anim.rotY;
     clampedRot = (clampedRot < -8000) ? -8000 : ((clampedRot > 8000) ? 8000 : clampedRot);
-    ((GameObject*)obj)->anim.rotY = clampedRot;
+    obj->anim.rotY = clampedRot;
 
-    clampedRot = ((SBCloudRunnerState*)state)->rotZ;
+    clampedRot = state->rotZ;
     clampedRot = (clampedRot < -13000) ? -13000 : ((clampedRot > 13000) ? 13000 : clampedRot);
-    ((SBCloudRunnerState*)state)->rotZ = clampedRot;
+    state->rotZ = clampedRot;
 
-    ((GameObject*)obj)->anim.rotX = ((SBCloudRunnerState*)state)->rotXAccum + 0x4000;
-    ((GameObject*)obj)->anim.rotZ = ((SBCloudRunnerState*)state)->rotZ;
+    obj->anim.rotX = state->rotXAccum + 0x4000;
+    obj->anim.rotZ = state->rotZ;
 
     events.sfxFlag = 0;
-    spd = 3.0517578e-6f * (f32)((GameObject*)obj)->anim.rotY + 0.015f;
+    spd = 3.0517578e-6f * (f32)obj->anim.rotY + 0.015f;
     if (spd > 0.013f)
     {
-        if (((GameObject*)obj)->anim.currentMove != CLOUDRUNNER_MOVE_FLAP)
+        if (obj->anim.currentMove != CLOUDRUNNER_MOVE_FLAP)
         {
             ObjAnim_SetCurrentMove((int)obj, CLOUDRUNNER_MOVE_FLAP, 0.0f, 0);
         }
@@ -484,16 +484,16 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
     else
     {
         spd = 0.015f;
-        if (((GameObject*)obj)->anim.currentMove != CLOUDRUNNER_MOVE_GLIDE)
+        if (obj->anim.currentMove != CLOUDRUNNER_MOVE_GLIDE)
         {
             ObjAnim_SetCurrentMove((int)obj, CLOUDRUNNER_MOVE_GLIDE, 0.0f, 0);
         }
     }
     ObjAnim_AdvanceCurrentMove((int)obj, spd, timeDelta, (ObjAnimEventList*)&events);
 
-    ((GameObject*)obj)->anim.localPosX = ((SBCloudRunnerState*)state)->spawnPosX;
-    ((GameObject*)obj)->anim.localPosY = ((SBCloudRunnerState*)state)->spawnPosY;
-    ((GameObject*)obj)->anim.localPosZ = ((SBCloudRunnerState*)state)->spawnPosZ;
+    obj->anim.localPosX = state->spawnPosX;
+    obj->anim.localPosY = state->spawnPosY;
+    obj->anim.localPosZ = state->spawnPosZ;
 
     if (events.sfxFlag)
     {
@@ -501,33 +501,33 @@ void SB_CloudRunner_UpdateSteer(s16* obj, u8* state)
     }
 
     doSpawn = 0;
-    if (((WCButtonFlag*)(state + 0x80))->held)
+    if (((WCButtonFlag*)((u8*)state + 0x80))->held)
     {
         if ((getButtonsHeld(0) & A_BUTTON_MASK) == 0)
         {
-            ((WCButtonFlag*)(state + 0x80))->held = 0;
+            ((WCButtonFlag*)((u8*)state + 0x80))->held = 0;
         }
-        else if (((SBCloudRunnerState*)state)->burstCooldown == 0)
+        else if (state->burstCooldown == 0)
         {
             doSpawn = 1;
-            ((SBCloudRunnerState*)state)->burstCooldown = A_BURST_COOLDOWN_FRAMES;
+            state->burstCooldown = A_BURST_COOLDOWN_FRAMES;
         }
     }
     else
     {
         if ((getButtonsHeld(0) & A_BUTTON_MASK) != 0)
         {
-            ((WCButtonFlag*)(state + 0x80))->held = 1;
-            if (((SBCloudRunnerState*)state)->burstCooldown < A_BURST_READY_THRESHOLD)
+            ((WCButtonFlag*)((u8*)state + 0x80))->held = 1;
+            if (state->burstCooldown < A_BURST_READY_THRESHOLD)
             {
                 doSpawn = 1;
-                ((SBCloudRunnerState*)state)->burstCooldown = A_BURST_COOLDOWN_FRAMES;
+                state->burstCooldown = A_BURST_COOLDOWN_FRAMES;
             }
         }
     }
     if (doSpawn)
     {
-        WCPushBlock_SpawnFromPath((GameObject*)obj, state);
+        WCPushBlock_SpawnFromPath(obj, (u8*)state);
     }
 }
 
@@ -820,7 +820,7 @@ void SB_CloudRunner_update(GameObject* obj)
     switch (state->rideSubState)
     {
     case RIDE_SUBSTATE_STEER:
-        SB_CloudRunner_UpdateSteer((s16*)obj, (u8*)state);
+        SB_CloudRunner_UpdateSteer(obj, state);
         SB_CloudRunner_HandlePriorityHit(obj, state);
         break;
     case RIDE_SUBSTATE_TILT:

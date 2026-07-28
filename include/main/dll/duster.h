@@ -5,9 +5,9 @@
 #include "game/objects/object.h"
 #include "main/dll/duster_api.h"
 
-void rachnopUpdateApproach(int* obj, int state);
-void rachnopUpdateAttack(int* obj, int state);
-void rachnopUpdateIdle(int* obj, int state);
+void rachnopUpdateApproach(GameObject* obj, int state);
+void rachnopUpdateAttack(GameObject* obj, int state);
+void rachnopUpdateIdle(GameObject* obj, int state);
 void spittingEbaUpdateIdle(GameObject* obj, int state);
 void spittingEbaUpdateEngaged(GameObject* obj, int state);
 

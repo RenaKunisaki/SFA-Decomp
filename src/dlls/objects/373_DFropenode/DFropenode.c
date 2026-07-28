@@ -379,23 +379,23 @@ DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f3
     return rope;
 }
 
-void dfropenode_setMinY(int obj, float value) {
-    ((DFropenodeExtra*)((GameObject*)obj)->extra)->minY = value;
+void dfropenode_setMinY(GameObject* obj, float value) {
+    ((DFropenodeExtra*)obj->extra)->minY = value;
 }
 
-int dfropenode_isVisible(int obj) {
-    DFropenodeExtra* extra = ((DFropenodeExtra*)((GameObject*)obj)->extra);
+int dfropenode_isVisible(GameObject* obj) {
+    DFropenodeExtra* extra = ((DFropenodeExtra*)obj->extra);
 
     return (s16)(extra->hidden == 0);
 }
 
-void dfropenode_setVisible(int obj, int value) {
+void dfropenode_setVisible(GameObject* obj, int value) {
     u32 bit;
     u8 bitByte;
     DFropenodeExtra* extra;
     void* linkedObj;
 
-    extra = ((DFropenodeExtra*)((GameObject*)obj)->extra);
+    extra = ((DFropenodeExtra*)obj->extra);
     bit = (value == 0);
     bitByte = bit;
     extra->hidden = bitByte;
@@ -406,12 +406,12 @@ void dfropenode_setVisible(int obj, int value) {
     }
 }
 
-int dfropenode_getAngle(int obj) {
-    return ((DFropenodeExtra*)((GameObject*)obj)->extra)->angle;
+int dfropenode_getAngle(GameObject* obj) {
+    return ((DFropenodeExtra*)obj->extra)->angle;
 }
 
-void dfropenode_clearLinkedObj(int obj) {
-    ((DFropenodeExtra*)((GameObject*)obj)->extra)->linkedObj = 0;
+void dfropenode_clearLinkedObj(GameObject* obj) {
+    ((DFropenodeExtra*)obj->extra)->linkedObj = 0;
 }
 
 f32 DFRope_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY,

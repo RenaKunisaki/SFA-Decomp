@@ -575,7 +575,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                     pinPon_updateWhileFrozen(obj, (BaddieState*)state, attacker, hit, hitArg, hitCount, &hitPos, sector);
                     break;
                 case 0x25d:
-                    rachnopUpdateWhileFrozen((int)obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
+                    rachnopUpdateWhileFrozen(obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
                     break;
                 case 0x4d7:
                     wbUpdateWhileFrozen((int)obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
@@ -1282,7 +1282,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 pinPon_updateEngaged((GameObject*)(obj), (int*)state);
                 break;
             case ENEMY_RACHNOP_OBJ:
-                rachnopUpdateAttack((int*)obj, state);
+                rachnopUpdateAttack((GameObject*)obj, state);
                 break;
             case ENEMY_SPITTINGEBA_OBJ:
                 spittingEbaUpdateEngaged((GameObject*)(obj), state);
@@ -1359,7 +1359,7 @@ void enemyObjAnimUpdate(short* obj, int state)
                 pinPon_updateEngaged((GameObject*)(obj), (int*)state);
                 break;
             case ENEMY_RACHNOP_OBJ:
-                rachnopUpdateApproach((int*)obj, state);
+                rachnopUpdateApproach((GameObject*)obj, state);
                 break;
             case ENEMY_SPITTINGEBA_OBJ:
                 spittingEbaUpdateEngaged((GameObject*)(obj), state);
@@ -1470,7 +1470,7 @@ void enemyObjAnimUpdate(short* obj, int state)
             pinPon_updateIdle((GameObject*)(obj), state);
             break;
         case ENEMY_RACHNOP_OBJ:
-            rachnopUpdateIdle((int*)obj, state);
+            rachnopUpdateIdle((GameObject*)obj, state);
             break;
         case ENEMY_SPITTINGEBA_OBJ:
             spittingEbaUpdateIdle((GameObject*)(obj), state);

@@ -67,7 +67,7 @@ typedef struct DIMbossTopState {
 } DIMbossTopState;
 
 typedef struct DIMbossAnimHandlerTable {
-    int (*selectTargetControlMode)(int* obj);
+    int (*selectTargetControlMode)(GameObject* obj);
     int (*returnToIdleWhenDone)(int obj, int state);
     int (*hasMoveDone)(int unused, int* state);
     int (*finishDefeat)(GameObject* obj, int state);
@@ -76,7 +76,7 @@ typedef struct DIMbossAnimHandlerTable {
 } DIMbossAnimHandlerTable;
 
 typedef struct DIMbossHitDetectAnimHandlerTable {
-    int (*resetIdleMove)(int* obj, u8* state);
+    int (*resetIdleMove)(GameObject* obj, u8* state);
     int (*applyForwardMove)(int* obj, u8* state, f32 weight);
     int (*trackTargetMove)(GameObject* obj, int state, f32 weight);
     int (*randomSwipe)(GameObject* obj, int state, f32 weight);
@@ -204,7 +204,7 @@ int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, int state);
 int DIMbossAnim_finishDefeat(GameObject* obj, int state);
 int DIMbossAnim_hasMoveDone(int unused, int* state);
 int DIMbossAnim_returnToIdleWhenDone(int obj, int state);
-int DIMbossAnim_selectTargetControlMode(int* obj);
+int DIMbossAnim_selectTargetControlMode(GameObject* obj);
 
 int DIMbossHitDetect_tonsilSlam(GameObject* obj, int state);
 int DIMbossHitDetect_liftSlam(GameObject* obj, int state);
@@ -217,7 +217,7 @@ int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, int state, f32 weigh
 int DIMbossHitDetect_randomSwipe(GameObject* obj, int state, f32 weight);
 int DIMbossHitDetect_trackTargetMove(GameObject* obj, int state, f32 weight);
 int DIMbossHitDetect_applyForwardMove(int* obj, u8* state, f32 weight);
-int DIMbossHitDetect_resetIdleMove(int* obj, u8* state);
+int DIMbossHitDetect_resetIdleMove(GameObject* obj, u8* state);
 
 void DIM2icicle_spawnBlueWhiteEffect(DIMbossEffectMarker* source, f32* velocity);
 void DIM2icicle_createStateLight(GameObject* obj, u8 isGreen);

@@ -182,7 +182,7 @@ typedef struct DIMbossTopState {
 } DIMbossTopState;
 
 typedef struct DIMbossAnimHandlerTable {
-  int (*selectTargetControlMode)(int *obj);
+  int (*selectTargetControlMode)(GameObject *obj);
   int (*returnToIdleWhenDone)(int obj, int state);
   int (*hasMoveDone)(int unused, int *state);
   int (*finishDefeat)(GameObject *obj, int state);
@@ -191,7 +191,7 @@ typedef struct DIMbossAnimHandlerTable {
 } DIMbossAnimHandlerTable;
 
 typedef struct DIMbossHitDetectAnimHandlerTable {
-  int (*resetIdleMove)(int *obj, u8 *state);
+  int (*resetIdleMove)(GameObject *obj, u8 *state);
   int (*applyForwardMove)(int *obj, u8 *state, f32 weight);
   int (*trackTargetMove)(GameObject *obj, int state, f32 weight);
   int (*randomSwipe)(GameObject *obj, int state, f32 weight);
