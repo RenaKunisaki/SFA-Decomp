@@ -23,12 +23,12 @@ enum
 };
 
 extern char lbl_803A57C0[0x50C];
-extern s32 lbl_803DD660;
-extern AIDCallback lbl_803DD668;
-extern s32 lbl_803DD66C;
-extern u32 lbl_803DD670;
-extern u32 lbl_803DD674;
-extern u32 lbl_803DD678;
+extern s32 gAttractMovieAudioActive;
+extern AIDCallback gAttractMovieAudioPrevDmaCallback;
+extern s32 gAttractMovieAudioMode;
+extern u32 gAttractMovieAudioMixSourceAddr;
+extern u32 gAttractMovieAudioPendingSourceAddr;
+extern u32 gAttractMovieAudioDmaBufferIndex;
 
 BOOL movieLoad(const char* fileName, void* onMemory)
 {
@@ -36,7 +36,7 @@ BOOL movieLoad(const char* fileName, void* onMemory)
     s32 result;
     u32 i;
 
-    if (lbl_803DD660 == 0)
+    if (gAttractMovieAudioActive == 0)
     {
         return 0;
     }
@@ -138,12 +138,12 @@ BOOL movieLoad(const char* fileName, void* onMemory)
 void AttractMovieAudio_Shutdown(void)
 {
     u32 saved = OSDisableInterrupts();
-    if (lbl_803DD668 != (AIDCallback)0)
+    if (gAttractMovieAudioPrevDmaCallback != (AIDCallback)0)
     {
-        AIRegisterDMACallback(lbl_803DD668);
+        AIRegisterDMACallback(gAttractMovieAudioPrevDmaCallback);
     }
     OSRestoreInterrupts(saved);
-    lbl_803DD660 = 0;
+    gAttractMovieAudioActive = 0;
 }
 
 BOOL AttractMovieAudio_Init(int audioMode)
@@ -162,17 +162,17 @@ BOOL AttractMovieAudio_Init(int audioMode)
     }
 
     saved = OSDisableInterrupts();
-    lbl_803DD66C = audioMode;
-    lbl_803DD678 = 0;
-    lbl_803DD674 = 0;
-    lbl_803DD670 = 0;
+    gAttractMovieAudioMode = audioMode;
+    gAttractMovieAudioDmaBufferIndex = 0;
+    gAttractMovieAudioPendingSourceAddr = 0;
+    gAttractMovieAudioMixSourceAddr = 0;
     dmaCallback = AttractMovieAudio_DmaCallback;
     oldCb = AIRegisterDMACallback(dmaCallback);
-    lbl_803DD668 = oldCb;
+    gAttractMovieAudioPrevDmaCallback = oldCb;
 
     if (oldCb == (AIDCallback)0)
     {
-        if (lbl_803DD66C != 0)
+        if (gAttractMovieAudioMode != 0)
         {
             AIRegisterDMACallback((AIDCallback)0);
             OSRestoreInterrupts(saved);
@@ -182,15 +182,15 @@ BOOL AttractMovieAudio_Init(int audioMode)
 
     OSRestoreInterrupts(saved);
 
-    if (lbl_803DD66C == 0)
+    if (gAttractMovieAudioMode == 0)
     {
         memset((char*)(int)lbl_803A57C0, 0, ATTRACT_MOVIE_AUDIO_DMA_BUFFER_BYTES);
         DCFlushRange((char*)(int)lbl_803A57C0, ATTRACT_MOVIE_AUDIO_DMA_BUFFER_BYTES);
-        AIInitDMA((u32)((char*)(int)lbl_803A57C0 + lbl_803DD678 * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
+        AIInitDMA((u32)((char*)(int)lbl_803A57C0 + gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
                   ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         AIStartDMA();
     }
 
-    lbl_803DD660 = 1;
+    gAttractMovieAudioActive = 1;
     return 1;
 }

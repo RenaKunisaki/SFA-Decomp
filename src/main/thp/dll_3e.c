@@ -83,11 +83,11 @@ void InitAllMessageQueue(void);
 
 u8 gAttractMovieLoopCompleted;
 OSMessage lbl_803DD67C;
-u32 lbl_803DD678;
-u32 lbl_803DD674;
-u32 lbl_803DD670;
-s32 lbl_803DD66C;
-AIDCallback lbl_803DD668;
+u32 gAttractMovieAudioDmaBufferIndex;
+u32 gAttractMovieAudioPendingSourceAddr;
+u32 gAttractMovieAudioMixSourceAddr;
+s32 gAttractMovieAudioMode;
+AIDCallback gAttractMovieAudioPrevDmaCallback;
 static VIRetraceCallback OldVIPostCallback;
 
 static void PlayControl(u32 retraceCount)
