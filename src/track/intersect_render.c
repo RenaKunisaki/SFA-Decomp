@@ -1920,7 +1920,13 @@ u32 objCallback_80074d04(int handle, void* model)
         dist = px * px + py * py + pz * pz;
         if (dist > 0.0f)
         {
-            dist = distortSqrtf(dist);
+            volatile float root;
+            double guess = __frsqrte((double)dist);
+            guess = 0.5 * guess * (3.0 - guess * guess * dist);
+            guess = 0.5 * guess * (3.0 - guess * guess * dist);
+            guess = 0.5 * guess * (3.0 - guess * guess * dist);
+            root = (float)(dist * guess);
+            dist = root;
         }
         f31_val = 200.0f / dist;
         if (f31_val > lbl_803DEEE4)

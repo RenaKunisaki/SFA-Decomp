@@ -44,15 +44,10 @@ int gObjLookAtTurnRateDivisor = 100;
 f32 gObjMouthBlendFrames = 20.0f;
 
 
-extern f32 lbl_803DE9D8;
-extern f32 lbl_803DE9DC;
-extern f32 lbl_803DE9E0;
-extern f32 lbl_803DE9E4;
 
 
 
 extern f32 lbl_803DE9A4;
-extern f32 lbl_803DE9C8;
 extern f32 lbl_803DE99C;
 
 void objAnimFn_80038f38(GameObject* obj, char* state)
@@ -83,7 +78,7 @@ void objAnimFn_80038f38(GameObject* obj, char* state)
     }
     else
     {
-        ((ObjSoundState*)state)->timer = lbl_803DE9C8;
+        ((ObjSoundState*)state)->timer = -1.0f;
         ((ObjSoundState*)state)->pitch = 0;
         if (((ObjSoundState*)state)->blendWeight > lbl_803DE9A4)
         {
@@ -163,7 +158,7 @@ void objAudioFn_80039270(u32 obj, void* p, u16 sfxId)
     if (Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0)
     {
         Sfx_PlayFromObjectChannel(obj, 0x10, sfxId);
-        ((ObjSoundState*)p)->timer = lbl_803DE9C8;
+        ((ObjSoundState*)p)->timer = -1.0f;
         ((ObjSoundState*)p)->pitch = -0x500;
         ((ObjSoundState*)p)->active = 1;
         ((ObjSoundState*)p)->blendWeight = lbl_803DE99C;
@@ -184,7 +179,7 @@ void objSoundFn_800392f0(GameObject* obj, ObjSoundState* state, ObjSoundDef* sou
     if (force != 0 || Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) == 0)
     {
         Sfx_PlayFromObjectChannel((u32)obj, 0x10, sfx);
-        state->timer = lbl_803DE9C8;
+        state->timer = -1.0f;
         state->pitch = (s16)(-pitch);
         state->active = 1;
         state->blendWeight = lbl_803DE99C;
@@ -431,10 +426,10 @@ int characterTrackJointYaw(s16* curve, s16* state)
     s16 lo;
     s16 hi;
 
-    buf[0] = lbl_803DE9D8;
-    buf[1] = lbl_803DE9D8;
-    buf[2] = lbl_803DE9DC;
-    buf[3] = lbl_803DE9E0;
+    buf[0] = 10.0f;
+    buf[1] = 10.0f;
+    buf[2] = 500.0f;
+    buf[3] = -500.0f;
 
     lo = curve[10];
     hi = curve[11];
@@ -482,7 +477,7 @@ void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val)
     int flag;
 
     masked = (curve[13] >> 8) & 0xff;
-    if (val > lbl_803DE9E4)
+    if (val > 0.1f)
     {
         flag = 1;
     }
@@ -575,7 +570,6 @@ void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val)
 
 
 
-extern f32 lbl_803DE9E8;
 
 void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val)
 {
@@ -583,7 +577,7 @@ void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val)
     int flag;
 
     masked = (curve[13] >> 8) & 0xff;
-    if (val > lbl_803DE9E4)
+    if (val > 0.1f)
     {
         flag = 1;
     }
@@ -685,7 +679,7 @@ void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val)
                 {
                     f32 nv;
                     state[1] = t * (f32)(curve[11] - n) + n;
-                    nv = -(lbl_803DE9E8 * timeDelta - *(f32*)((char*)curve + 0x10));
+                    nv = -(0.01f * timeDelta - *(f32*)((char*)curve + 0x10));
                     *(f32*)((char*)curve + 0x10) = nv;
                     if (nv < lo)
                     {
@@ -746,7 +740,7 @@ void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 
         {
             val = -val;
         }
-        if (val <= lbl_803DE9E4)
+        if (val <= 0.1f)
         {
             characterHeadLookIdle(obj, (s16*)state, found, val);
         }
@@ -755,7 +749,7 @@ void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 
             characterHeadLookAlert((int)obj, (s16*)state, found, val);
         }
         state->headTrackMode = (s16)(u16)(u8)state->headTrackMode;
-        if (val > lbl_803DE9E4)
+        if (val > 0.1f)
         {
             flag = 1;
         }
@@ -855,11 +849,11 @@ s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* pos, u8* p4, s1
                 s16 lim;
                 if (n2 % 2 != 0)
                 {
-                    lim = (s16)(*(f32*)&gObjPrintDegToAngle * (f32)sp2[i]);
+                    lim = (s16)(182.04f * (f32)sp2[i]);
                 }
                 else
                 {
-                    lim = (s16)(*(f32*)&gObjPrintDegToAngle * (f32)spd[i]);
+                    lim = (s16)(182.04f * (f32)spd[i]);
                 }
                 v = src[n2];
                 dst[n2] = v;
@@ -885,7 +879,7 @@ s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* pos, u8* p4, s1
             ((ObjJointTrackPair*)p4)->yaw.angle = dst[0];
             characterTrackJointYaw((s16*)p4, found[0]);
             ((ObjJointTrackPair*)p4)->pitch.angle = dst[1];
-            characterTrackJointPitch((s16*)(p4 + 0x30), found[0], lbl_803DE9D8, lbl_803DE9DC);
+            characterTrackJointPitch((s16*)(p4 + 0x30), found[0], 10.0f, 500.0f);
             p4 += 0x60;
         }
         else
@@ -897,13 +891,13 @@ s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* pos, u8* p4, s1
             int t2;
             int lim3;
 
-            lim = (d1 < framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)-spd[i]) / gObjLookAtTurnRateDivisor))
-                      ? framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)-spd[i]) / gObjLookAtTurnRateDivisor)
-                      : ((d1 > framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)spd[i]) / gObjLookAtTurnRateDivisor))
-                             ? framesThisStep * ((s16)(s32)(gObjPrintDegToAngle * (f32)spd[i]) / gObjLookAtTurnRateDivisor)
+            lim = (d1 < framesThisStep * ((s16)(s32)(182.04f * (f32)-spd[i]) / gObjLookAtTurnRateDivisor))
+                      ? framesThisStep * ((s16)(s32)(182.04f * (f32)-spd[i]) / gObjLookAtTurnRateDivisor)
+                      : ((d1 > framesThisStep * ((s16)(s32)(182.04f * (f32)spd[i]) / gObjLookAtTurnRateDivisor))
+                             ? framesThisStep * ((s16)(s32)(182.04f * (f32)spd[i]) / gObjLookAtTurnRateDivisor)
                              : d1);
             d2 = (s16)((s16)((fv[0] + dst[1]) >> 1) - fv[0]);
-            t2 = (s16)(s32)(*(f32*)&gObjPrintDegToAngle * (f32)sp2[i]);
+            t2 = (s16)(s32)(182.04f * (f32)sp2[i]);
             lim3 =
                 (d2 < framesThisStep * (-t2 / (gObjLookAtTurnRateDivisor << 1)))
                     ? framesThisStep * (-t2 / (gObjLookAtTurnRateDivisor << 1))
@@ -942,7 +936,7 @@ int characterTrackJointList(GameObject* objArg, int* keyList, int countArg, u8* 
     {
         found = objFindJointVecByKey(obj, *keys);
         total += characterTrackJointYaw((s16*)p4, found);
-        total += characterTrackJointPitch((s16*)(p4 + 0x30), found, lbl_803DE9D8, lbl_803DE9DC);
+        total += characterTrackJointPitch((s16*)(p4 + 0x30), found, 10.0f, 500.0f);
         keys++;
         i++;
         p4 += 0x60;
@@ -1117,10 +1111,10 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
             }
             ang[1] = (s16)((s16)getAngle(dist, dz) - 0x3fff);
 
-            a = (s16)(gObjPrintDegToAngle * a);
+            a = (s16)(182.04f * a);
             channel = p3;
             ap = ang;
-            prodB = gObjPrintDegToAngle * b;
+            prodB = 182.04f * b;
             minB = -(s16)(s32)prodB;
             negA = -a;
             for (i = 0; i < 2; i++)
@@ -1183,7 +1177,7 @@ void characterSetHeadYawToTarget(GameObject* obj, GameObject* target, CharacterE
             (s16)((s16)getAngle((obj)->anim.localPosX - target->anim.localPosX,
                                 (obj)->anim.localPosZ - target->anim.localPosZ) -
                   (obj)->anim.rotX);
-        maxAngle = (s16)(gObjPrintDegToAngle * maxAngle);
+        maxAngle = (s16)(182.04f * maxAngle);
         if (state->headYaw > maxAngle)
         {
             state->headYaw = maxAngle;

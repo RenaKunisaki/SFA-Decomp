@@ -90,6 +90,7 @@ main/gametext.c:
 	.text       start:0x80015BC8 end:0x8001628C
 	.data       start:0x802C6E98 end:0x802C8D40
 	.sdata      start:0x803DB2B0 end:0x803DB378
+	.sdata2     start:0x803DE6F0 end:0x803DE700
 
 main/gametext_measurebyid.c:
 	.text       start:0x8001628C end:0x800163C4
@@ -112,6 +113,7 @@ main/textrender_gettext.c:
 main/textrender_run.c:
 	.text       start:0x80019970 end:0x8001B7B8
 	.sbss       start:0x803DC968 end:0x803DC9F0
+	.sdata2     start:0x803DE720 end:0x803DE730
 
 main/textrender_subtitle.c:
 	.text       start:0x8001B7B8 end:0x8001BB78
@@ -190,6 +192,7 @@ main/objprint.c:
 	.data       start:0x802CAE88 end:0x802CAED0
 	.sdata      start:0x803DB460 end:0x803DB468
 	.sbss       start:0x803DCC08 end:0x803DCC20
+	.sdata2     start:0x803DE9C8 end:0x803DE9F0
 
 main/objprint_dolphin.c:
 	.text       start:0x8003BB84 end:0x8003E060
@@ -1217,7 +1220,7 @@ dlls/engine/70/70.c:
 	.text       start:0x80109748 end:0x80109B04
 	.data       start:0x80319C28 end:0x80319C58
 	.sbss       start:0x803DD550 end:0x803DD554
-	.sdata2     start:0x803E1868 end:0x803E1874
+	.sdata2     start:0x803E1840 end:0x803E1874
 
 dlls/engine/72/72.c:
 	.text       start:0x80109B04 end:0x8010A104
@@ -1314,7 +1317,7 @@ dlls/engine/86/86.c:
 	.text       start:0x80110E30 end:0x801115E4
 	.data       start:0x80319F88 end:0x80319FB8
 	.bss        start:0x803A43C0 end:0x803A4420
-	.sdata2     start:0x803E1BB8 end:0x803E1BE0
+	.sdata2     start:0x803E1BA0 end:0x803E1BE0
 
 dlls/engine/87/87.c:
 	.text       start:0x801115E4 end:0x80111D14
@@ -1426,7 +1429,7 @@ dlls/engine/56/56.c:
 	.text       start:0x8011D51C end:0x8011D854
 	.data       start:0x8031AD20 end:0x8031ADD0
 	.sbss       start:0x803DD710 end:0x803DD728
-	.sdata2     start:0x803E1DF8 end:0x803E1E00
+	.sdata2     start:0x803E1DF0 end:0x803E1E00
 
 dlls/engine/57/57.c:
 	.text       start:0x8011D854 end:0x8011D900
@@ -1494,7 +1497,7 @@ dlls/engine/65/65.c:
 	.bss        start:0x803A9DD0 end:0x803A9F50
 	.sdata      start:0x803DBBF8 end:0x803DBC08
 	.sbss       start:0x803DD978 end:0x803DD990
-	.sdata2     start:0x803E22D0 end:0x803E22D8
+	.sdata2     start:0x803E22D0 end:0x803E22E4
 
 dlls/objects/704/704.c:
 	.text       start:0x80134870 end:0x80136A40
@@ -2713,6 +2716,7 @@ dlls/objects/373_DFropenode/DFropenode.c:
 	.rodata     start:0x802C2358 end:0x802C23B8
 	.data       start:0x80325E00 end:0x80325F20
 	.sdata      start:0x803DBF40 end:0x803DBF60
+	.sdata2     start:0x803E4DE0 end:0x803E4DF8
 
 dlls/objects/374_DFSH_Door1S/DFSH_Door1S.c:
 	.data       start:0x80325F20 end:0x80325F50
@@ -2937,7 +2941,7 @@ dlls/objects/432_SH_swapston/SH_swapston.c:
 dlls/objects/430_SH_LevelCon/SH_LevelCon.c:
 	.text       start:0x801D7BA8 end:0x801D981C
 	.data       start:0x80327618 end:0x803277A8
-	.sdata2     start:0x803E54B0 end:0x803E54C0
+	.sdata2     start:0x803E54B0 end:0x803E54C4
 
 dlls/objects/431_SH_swaplift/SH_swaplift.c:
 	.text       start:0x801D981C end:0x801D9B1C
@@ -2948,7 +2952,7 @@ dlls/objects/431_SH_swaplift/SH_swaplift.c:
 dlls/objects/433_SH_staff/SH_staff.c:
 	.text       start:0x801D9B1C end:0x801DA8C4
 	.data       start:0x803277E0 end:0x8032784C
-	.sdata2     start:0x803E5500 end:0x803E5518
+	.sdata2     start:0x803E54D0 end:0x803E5518
 
 dlls/objects/434_SH_staffHaz/SH_staffHaz.c:
 	.text       start:0x801DA8C4 end:0x801DA954
@@ -3032,6 +3036,8 @@ dlls/objects/488_SB_Galleon/SB_Galleon.c:
 	.data       start:0x80327BE0 end:0x80327C88
 	.sdata      start:0x803DC078 end:0x803DC090
 	.sbss       start:0x803DDC18 end:0x803DDC40
+	.sdata2     start:0x803E57C0 end:0x803E5810
+	.sdata2     start:0x803E56C8 end:0x803E57C0
 
 dlls/objects/489_SB_Propelle/SB_Propelle.c:
 	.text       start:0x801E2570 end:0x801E2B28
@@ -3580,7 +3586,7 @@ dlls/objects/588_BossDrakor_/BossDrakor_.c:
 dlls/objects/468_WORLDAstero/WORLDAstero.c:
 	.text       start:0x8020C278 end:0x8020C5EC
 	.data       start:0x8032A140 end:0x8032A178
-	.sdata2     start:0x803E65D8 end:0x803E65E0
+	.sdata2     start:0x803E65D8 end:0x803E65EC
 
 dlls/objects/466_WORLDplanet/WORLDplanet.c:
 	.text       start:0x8020C5EC end:0x8020D9E4
@@ -3831,7 +3837,7 @@ dlls/objects/643_DR_BarrelGr/DR_BarrelGr.c:
 	.text       start:0x802227EC end:0x80223004
 	.data       start:0x8032AE88 end:0x8032AEC0
 	.sdata      start:0x803DC3B0 end:0x803DC3B8
-	.sdata2     start:0x803E6CC8 end:0x803E6CD0
+	.sdata2     start:0x803E6CC8 end:0x803E6CD4
 
 dlls/objects/650/650.c:
 	.text       start:0x80223004 end:0x80223D18
@@ -3853,13 +3859,13 @@ dlls/objects/652_WCBouncyCra/WCBouncyCra.c:
 dlls/objects/656_WCPushBlock/WCPushBlock.c:
 	.text       start:0x802243F4 end:0x802251B4
 	.data       start:0x8032AFB0 end:0x8032B108
-	.sdata2     start:0x803E6D98 end:0x803E6DA0
+	.sdata2     start:0x803E6D98 end:0x803E6DA4
 
 dlls/objects/653_WCLevelCont/WCLevelCont.c:
 	.text       start:0x802251B4 end:0x802272C8
 	.data       start:0x8032B108 end:0x8032B178
 	.bss        start:0x803AD298 end:0x803AD320
-	.sdata2     start:0x803E6DC8 end:0x803E6DD0
+	.sdata2     start:0x803E6DC8 end:0x803E6DDC
 
 dlls/objects/654_WCBeacon/WCBeacon.c:
 	.text       start:0x802272C8 end:0x802276AC
@@ -3906,7 +3912,7 @@ dlls/objects/662_WCTempleDia/WCTempleDia.c:
 	.text       start:0x802293F8 end:0x8022999C
 	.data       start:0x8032B348 end:0x8032B398
 	.sdata      start:0x803DC3B8 end:0x803DC3C8
-	.sdata2     start:0x803E6E50 end:0x803E6E6C
+	.sdata2     start:0x803E6E48 end:0x803E6E6C
 
 dlls/objects/663_WCTempleBri/WCTempleBri.c:
 	.text       start:0x8022999C end:0x8022A298
@@ -4720,7 +4726,7 @@ musyx/runtime/hw_volume.c:
 	extab       start:0x80005B80 end:0x80005BA0
 	extabindex  start:0x800064D0 end:0x80006500
 	.text       start:0x8028383C end:0x80283BA0
-	.sdata2     start:0x803E78E0 end:0x803E78E4
+	.sdata2     start:0x803E78E0 end:0x803E78E8
 
 musyx/runtime/hw_input.c:
 	extab       start:0x80005BA0 end:0x80005BA8
@@ -5029,7 +5035,7 @@ dolphin/MSL_C/PPCEABI/bare/H/e_atan2.c:
 
 dolphin/MSL_C/PPCEABI/bare/H/s_tan.c:
 	.text       start:0x80292D3C end:0x80292DC0
-	.sdata2     start:0x803E7C10 end:0x803E7C18
+	.sdata2     start:0x803E7C00 end:0x803E7C18
 
 dolphin/MSL_C/PPCEABI/bare/H/rand.c:
 	.text       start:0x80292DC0 end:0x80292DEC
@@ -5037,6 +5043,7 @@ dolphin/MSL_C/PPCEABI/bare/H/rand.c:
 
 dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.c:
 	.text       start:0x80292DEC end:0x8029312C
+	.sdata2     start:0x803E7C18 end:0x803E7C1C
 
 dolphin/MSL_C/PPCEABI/bare/H/k_tan.c:
 	.text       start:0x8029312C end:0x80293234
@@ -5044,9 +5051,11 @@ dolphin/MSL_C/PPCEABI/bare/H/k_tan.c:
 
 main/trig.c:
 	.text       start:0x80293234 end:0x80293DA4
+	.sdata2     start:0x803E7C80 end:0x803E7C84
 
 dolphin/MSL_C/PPCEABI/bare/H/math_80293da4.c:
 	.text       start:0x80293DA4 end:0x80294098
+	.sdata2     start:0x803E7D60 end:0x803E7D74
 
 dolphin/MSL_C/PPCEABI/bare/H/s_floor.c:
 	.text       start:0x80294098 end:0x80294204

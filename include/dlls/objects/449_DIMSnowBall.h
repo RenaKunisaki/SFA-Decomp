@@ -7,6 +7,7 @@
 #include "global.h"
 
 #define DIM_SNOWBALL_PATH_COORDINATE_COUNT 2994
+#define DIM_SNOWBALL_SEQUENCE_ID           0x196
 
 typedef struct DimSnowBallPlacement {
     union {

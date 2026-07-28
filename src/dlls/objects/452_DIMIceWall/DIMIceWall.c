@@ -1,100 +1,95 @@
 /*
- * DIMIceWall (DLL 0x1C4) - ice wall object for Dinosaur Island Mission.
- * On shatter (hp reaches zero), emits particle bursts and latches a gamebit;
- * while intact, allows Tricky to push through it.
+ * DIMIceWall (DLL 0x1C4) - breakable DarkIce Mines ice wall.
+ * When its hit points reach zero, it emits two particle bursts and latches a
+ * game bit; while intact, it offers Tricky's contextual command.
  */
+
+#include "dlls/objects/452_DIMIceWall.h"
+
 #include "dlls/objects/288_TrickyGuard.h"
-#include "main/dll/partfx_interface.h"
-#include "main/dll/DIM/dll_01C4_dimicewall.h"
-#include "main/dll/dimicewallstate_struct.h"
-#include "main/objprint_render_api.h"
-#include "sys/objects/lifecycle.h"
 #include "game/objects/object.h"
-#include "dlls/object_descriptor.h"
-#include "game/objects/object_setup.h"
-#include "main/gamebits.h"
-#include "sys/objects.h"
-#include "main/audio/sfx.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/partfx_interface.h"
+#include "main/gamebits_api.h"
+#include "main/objprint_render_api.h"
 #include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
-#define DIMICEWALL_OBJFLAG_HIDDEN 0x4000
+#define DIM_ICE_WALL_SILENT_MAP_ID 7433
 
-#define DIMICEWALL_MAPID_NO_SFX 7433
+#define DIM_ICE_WALL_SHATTER_SCALE_DIVISOR 50.0f
+#define DIM_ICE_WALL_RANDOM_OFFSET_SCALE   0.1f
 
-typedef struct DimicewallPlacement
-{
-    ObjPlacement head; /* 0x00..0x17 (mapId at 0x14) */
-    s8 rotXByte;
-    s8 shatterScale;
-    s16 hp;
-    u8 pad1C[0x1E - 0x1C];
-    s16 shatterGameBit;
-} DimicewallPlacement;
+#define DIM_ICE_WALL_HORIZONTAL_RANDOM_MIN (-250)
+#define DIM_ICE_WALL_HORIZONTAL_RANDOM_MAX 250
+#define DIM_ICE_WALL_VERTICAL_RANDOM_MIN   0
+#define DIM_ICE_WALL_VERTICAL_RANDOM_MAX   450
 
-STATIC_ASSERT(offsetof(DimicewallPlacement, rotXByte) == 0x18);
-STATIC_ASSERT(offsetof(DimicewallPlacement, shatterScale) == 0x19);
-STATIC_ASSERT(offsetof(DimicewallPlacement, hp) == 0x1A);
-STATIC_ASSERT(offsetof(DimicewallPlacement, shatterGameBit) == 0x1E);
-STATIC_ASSERT(sizeof(DimicewallState) == 0x2);
+#define DIM_ICE_WALL_PRIMARY_PARTICLE_COUNT   45
+#define DIM_ICE_WALL_PRIMARY_PARTICLE_ID      2041
+#define DIM_ICE_WALL_SECONDARY_PARTICLE_COUNT 25
+#define DIM_ICE_WALL_SECONDARY_PARTICLE_ID    2042
+#define DIM_ICE_WALL_PARTICLE_SPAWN_MODE      2
 
+int dimicewall_countdownCallback(GameObject* obj, int delta) {
+    DimIceWallState* state = obj->extra;
 
-int dimicewall_countdownCallback(GameObject* obj, int delta)
-{
-    DimicewallState* inner = (obj)->extra;
-    inner->hp = (s8)(inner->hp - delta);
-    return inner->hp <= 0;
+    state->hitPoints = (s8)(state->hitPoints - delta);
+    return state->hitPoints <= 0;
 }
 
-int dimicewall_getExtraSize(void)
-{
-    return 0x2;
+int dimicewall_getExtraSize(void) {
+    return sizeof(DimIceWallState);
 }
 
-void dimicewall_update(GameObject* obj)
-{
-    DimicewallState* state = obj->extra;
-    DimicewallPlacement* placement = (DimicewallPlacement*)obj->anim.placementData;
+void dimicewall_update(GameObject* obj) {
+    DimIceWallState* state = obj->extra;
+    DimIceWallPlacement* placement = (DimIceWallPlacement*)obj->anim.placementData;
+
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-    if (state->shattered == 0)
-    {
-        if (state->hp <= 0)
-        {
-            PartFxSpawnParams desc;
+    if (state->shattered == 0) {
+        if (state->hitPoints <= 0) {
+            PartFxSpawnParams spawnParams;
             int i;
-            desc.scale = (f32)placement->shatterScale / 50.0f;
-            desc.posZ = 0.0f;
-            for (i = 45; i != 0; i--)
-            {
-                desc.posX = desc.scale * (0.1f * (f32)(int)randomGetRange(-250, 250));
-                desc.posY = desc.scale * (0.1f * (f32)(int)randomGetRange(0, 450));
-                (*gPartfxInterface)->spawnObject((int*)obj, 2041, &desc, 2, -1, NULL);
+
+            spawnParams.scale = (f32)placement->shatterScale / DIM_ICE_WALL_SHATTER_SCALE_DIVISOR;
+            spawnParams.posZ = 0.0f;
+            for (i = DIM_ICE_WALL_PRIMARY_PARTICLE_COUNT; i != 0; i--) {
+                spawnParams.posX = spawnParams.scale * (DIM_ICE_WALL_RANDOM_OFFSET_SCALE *
+                                                        (f32)(int)randomGetRange(DIM_ICE_WALL_HORIZONTAL_RANDOM_MIN,
+                                                                                 DIM_ICE_WALL_HORIZONTAL_RANDOM_MAX));
+                spawnParams.posY = spawnParams.scale * (DIM_ICE_WALL_RANDOM_OFFSET_SCALE *
+                                                        (f32)(int)randomGetRange(DIM_ICE_WALL_VERTICAL_RANDOM_MIN,
+                                                                                 DIM_ICE_WALL_VERTICAL_RANDOM_MAX));
+                (*gPartfxInterface)
+                    ->spawnObject((int*)obj, DIM_ICE_WALL_PRIMARY_PARTICLE_ID, &spawnParams,
+                                  DIM_ICE_WALL_PARTICLE_SPAWN_MODE, -1, NULL);
             }
-            for (i = 25; i != 0; i--)
-            {
-                desc.posX = desc.scale * (0.1f * (f32)(int)randomGetRange(-250, 250));
-                desc.posY = desc.scale * (0.1f * (f32)(int)randomGetRange(0, 450));
-                (*gPartfxInterface)->spawnObject((int*)obj, 2042, &desc, 2, -1, NULL);
+            for (i = DIM_ICE_WALL_SECONDARY_PARTICLE_COUNT; i != 0; i--) {
+                spawnParams.posX = spawnParams.scale * (DIM_ICE_WALL_RANDOM_OFFSET_SCALE *
+                                                        (f32)(int)randomGetRange(DIM_ICE_WALL_HORIZONTAL_RANDOM_MIN,
+                                                                                 DIM_ICE_WALL_HORIZONTAL_RANDOM_MAX));
+                spawnParams.posY = spawnParams.scale * (DIM_ICE_WALL_RANDOM_OFFSET_SCALE *
+                                                        (f32)(int)randomGetRange(DIM_ICE_WALL_VERTICAL_RANDOM_MIN,
+                                                                                 DIM_ICE_WALL_VERTICAL_RANDOM_MAX));
+                (*gPartfxInterface)
+                    ->spawnObject((int*)obj, DIM_ICE_WALL_SECONDARY_PARTICLE_ID, &spawnParams,
+                                  DIM_ICE_WALL_PARTICLE_SPAWN_MODE, -1, NULL);
             }
-            if ((u32)placement->head.mapId != DIMICEWALL_MAPID_NO_SFX)
-            {
+            if ((u32)placement->base.mapId != DIM_ICE_WALL_SILENT_MAP_ID) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_bounce1);
             }
             state->shattered = 1;
-            if (placement->shatterGameBit != -1)
-            {
+            if (placement->shatterGameBit != -1) {
                 mainSetBits(placement->shatterGameBit, 1);
             }
-        }
-        else
-        {
+        } else {
             GameObject* tricky = getTrickyObject();
-            if (tricky != NULL)
-            {
-                if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
-                {
-                    (*(TrickyGuardInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(
-                        tricky, obj, 1, 4);
+
+            if (tricky != NULL) {
+                if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
+                    (*(TrickyGuardInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(tricky, obj, 1, 4);
                 }
                 obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
                 objRenderFn_80041018(obj);
@@ -103,16 +98,15 @@ void dimicewall_update(GameObject* obj)
     }
 }
 
-void dimicewall_init(GameObject* obj, DimicewallPlacement* placement)
-{
-    DimicewallState* state = obj->extra;
-    state->hp = (s8)placement->hp;
-    if (placement->shatterGameBit != -1)
-    {
+void dimicewall_init(GameObject* obj, DimIceWallPlacement* placement) {
+    DimIceWallState* state = obj->extra;
+
+    state->hitPoints = (s8)placement->hitPoints;
+    if (placement->shatterGameBit != -1) {
         state->shattered = mainGetBit(placement->shatterGameBit);
     }
-    obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
-    obj->objectFlags |= DIMICEWALL_OBJFLAG_HIDDEN;
+    obj->anim.rotX = (s16)((s32)placement->rotationXByte << 8);
+    obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
 }
 
 ObjectDescriptor gDIMIceWallObjDescriptor = {

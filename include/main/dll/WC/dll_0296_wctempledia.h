@@ -45,7 +45,6 @@ extern s16 gWcTempleDiaGameBitsA[4];
 extern s16 gWcTempleDiaGameBitsB[4];
 extern f32 gWcTempleDiaTargetSpeedTableA[3];
 extern f32 gWcTempleDiaTargetSpeedTableB[3];
-extern f32 gWcTempleDiaSpeedLerpRate;
 extern f32 lbl_803E6E58;
 extern f32 lbl_803E6E5C;
 extern f32 lbl_803E6E60;

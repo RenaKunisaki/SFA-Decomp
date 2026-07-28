@@ -200,8 +200,8 @@ void waterfx_drawSplashBurst(WaterParticle* s)
     colorOut = (u8*)s;
     for (; i < 8; i++)
     {
-        f32 life = s->life;
         f32 ph;
+        f32 life = s->life;
         f32 dd;
         f32 lim;
         f32 sc;

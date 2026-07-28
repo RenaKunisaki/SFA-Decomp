@@ -4,11 +4,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/trig.h"
 
-extern float lbl_803E7D60;
-extern float lbl_803E7D64;
-extern float lbl_803E7D68;
-extern float lbl_803E7D6C;
-extern float lbl_803E7D70;
 extern float lbl_803E7D74;
 extern float lbl_803E7D78;
 extern float lbl_803E7D7C;
@@ -36,13 +31,13 @@ float mathSinfFast(float angle) {
 
     switch (quadrant & 6) {
         case 0:
-            return reducedAngle * (lbl_803E7D64 * reducedSquared + lbl_803E7D60);
+            return reducedAngle * (-0.07768012f * reducedSquared + 0.7846358f);
         case 2:
-            return (lbl_803E7D70 * reducedSquared + lbl_803E7D6C) * reducedSquared + lbl_803E7D68;
+            return reducedSquared * (0.015371595f * reducedSquared + -0.30824488f) + 0.99999f;
         case 4:
-            return -(reducedAngle * (lbl_803E7D64 * reducedSquared + lbl_803E7D60));
+            return -(reducedAngle * (-0.07768012f * reducedSquared + 0.7846358f));
         default:
-            return -(reducedSquared * (lbl_803E7D70 * reducedSquared + lbl_803E7D6C) + lbl_803E7D68);
+            return -(reducedSquared * (0.015371595f * reducedSquared + -0.30824488f) + 0.99999f);
     }
 }
 
