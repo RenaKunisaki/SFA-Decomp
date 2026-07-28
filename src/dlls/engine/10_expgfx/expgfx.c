@@ -2434,7 +2434,6 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     GameObject* player;
     GameObject* tricky;
     u8* nextCacheBuf;
-    u8 cacheParity;
     u32 resource;
     s8* activeCountScan;
     int curPool;
@@ -2505,6 +2504,8 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     pool = nextActivePool;
     if (pool != -1)
     {
+        u8 cacheParity;
+
         copyToCache(cache, (void*)runtime->slotPoolBases[pool], EXPGFX_POOL_CACHE_LINE_COUNT);
         cacheParity = 1;
         curCacheBuf = (ExpgfxSlot*)(cache);
