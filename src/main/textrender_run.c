@@ -46,7 +46,7 @@ int lbl_803DC9D4;
 int lbl_803DC9D0;
 void* gCurTextBox;
 int lbl_803DC9C8;
-char* lbl_803DC9C4;
+char* gGameTextCommandStringCursor;
 int lbl_803DC9C0;
 int gGameTextMeasureOnly;
 int gGameTextBoundsMinY;
@@ -63,12 +63,12 @@ f32 gGameTextScale;
 int gGameTextRevealActive;
 int gGameTextDrawnCharIndex;
 f32 gGameTextRevealProgress;
-u8 lbl_803DC992;
-u8 lbl_803DC991;
-u8 lbl_803DC990;
+u8 gGameTextShadowColorR;
+u8 gGameTextShadowColorG;
+u8 gGameTextShadowColorB;
 int gGameTextShadowOffsetX;
 int gGameTextShadowOffsetY;
-int lbl_803DC984;
+int gGameTextShadowEnabled;
 u8 lbl_803DC980;
 int gGameTextBufferIndex;
 int gCurTextBuffer;
@@ -464,16 +464,16 @@ void gameTextRun(void)
             lbl_803DC9A8 = 0;
             break;
         case 12:
-            lbl_803DC984 = cmd->arg0;
+            gGameTextShadowEnabled = cmd->arg0;
             break;
         case 14:
         {
             u8 e1, e2;
             e2 = cmd->arg2;
             e1 = cmd->arg1;
-            lbl_803DC992 = cmd->arg0;
-            lbl_803DC991 = e1;
-            lbl_803DC990 = e2;
+            gGameTextShadowColorR = cmd->arg0;
+            gGameTextShadowColorG = e1;
+            gGameTextShadowColorB = e2;
             break;
         }
         case 13:
@@ -502,7 +502,7 @@ void gameTextRun(void)
         Sfx_StopFromObject(0, SFXTRIG_clock_loop);
     }
     gGameTextCommandCount = 0;
-    lbl_803DC9C4 = gameTextBase->commandStringBuffer;
+    gGameTextCommandStringCursor = gameTextBase->commandStringBuffer;
 
     i = 0x94;
     textBox = &gTextBoxes[148];
@@ -618,17 +618,17 @@ void gameTextInitFn_8001a234(void)
     gGameTextColorB = 0xff;
     gGameTextColorA = 0xff;
     gGameTextCommandCount = 0;
-    lbl_803DC9C4 = (char*)(gameTextBase + GAMETEXT_COMMAND_STRING_BUFFER_OFFSET);
+    gGameTextCommandStringCursor = (char*)(gameTextBase + GAMETEXT_COMMAND_STRING_BUFFER_OFFSET);
     gGameTextBufferIndex = 0;
     textWindow = gameTextBase + 0x40;
     gGameTextLastEntry = textWindow;
     gCurTextBuffer = *(int*)*(void**)(textWindow + 8);
-    lbl_803DC992 = 0;
-    lbl_803DC991 = 0;
-    lbl_803DC990 = 0;
+    gGameTextShadowColorR = 0;
+    gGameTextShadowColorG = 0;
+    gGameTextShadowColorB = 0;
     gGameTextShadowOffsetX = 5;
     gGameTextShadowOffsetY = 5;
-    lbl_803DC984 = 1;
+    gGameTextShadowEnabled = 1;
     lbl_803DC980 = 0;
     gameTextLoadGraphicsFn_8001a918();
     curGameTextDir = 3;

@@ -5,7 +5,7 @@
 
 struct TextDisplayState;
 
-extern char* lbl_803DC9C4;
+extern char* gGameTextCommandStringCursor;
 extern int gGameTextBoundsMaxX;
 extern int gGameTextBoundsMinX;
 extern int gGameTextBoundsMaxY;
@@ -21,11 +21,11 @@ extern u16 lbl_803DC9A8;
 extern void* gGameTextStringStore;
 extern f32 lbl_803DE704;
 extern f32 lbl_803DE708;
-extern int lbl_803DC984;
+extern int gGameTextShadowEnabled;
 extern f32 gGameTextScale;
-extern u8 lbl_803DC990;
-extern u8 lbl_803DC991;
-extern u8 lbl_803DC992;
+extern u8 gGameTextShadowColorB;
+extern u8 gGameTextShadowColorG;
+extern u8 gGameTextShadowColorR;
 extern u8 sGameTextFallbackDefs[];
 extern f32 gGameTextRevealProgress;
 extern int gGameTextDrawnCharIndex;

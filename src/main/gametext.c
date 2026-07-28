@@ -201,8 +201,8 @@ void gameTextShowStr(char* text, int box, int cursorX, int cursorY)
         i = gGameTextCommandCount++;
         e = &gGameTextCommandSlots[i];
         e->opcode = 7;
-        buf = lbl_803DC9C4;
-        lbl_803DC9C4 = gameStrcpy(buf, text) + 1;
+        buf = gGameTextCommandStringCursor;
+        gGameTextCommandStringCursor = gameStrcpy(buf, text) + 1;
         e->arg0 = (int)buf;
         e->arg1 = box;
         e->arg2 = cursorX;
@@ -249,15 +249,15 @@ void gameTextRenderStrs(char* str, int boxIdx)
             slot->alignment = 0;
             closeAtEnd = 1;
         }
-        if (lbl_803DC984 == 1 && gGameTextMeasureOnly == 0)
+        if (gGameTextShadowEnabled == 1 && gGameTextMeasureOnly == 0)
         {
             u8 save7 = gGameTextColorR;
             u8 save6 = gGameTextColorG;
             u8 save5 = gGameTextColorB;
             f32 saveColor = gGameTextScale;
-            gGameTextColorR = lbl_803DC992;
-            gGameTextColorG = lbl_803DC991;
-            gGameTextColorB = lbl_803DC990;
+            gGameTextColorR = gGameTextShadowColorR;
+            gGameTextColorG = gGameTextShadowColorG;
+            gGameTextColorB = gGameTextShadowColorB;
             textRenderStr(lines[i], slot, slot->cursorX, slot->cursorY, lineH, 1);
             gGameTextColorR = save7;
             gGameTextColorG = save6;
@@ -291,8 +291,8 @@ void gameTextAppendStr(char* str, int box)
         i = gGameTextCommandCount++;
         e = &gGameTextCommandSlots[i];
         e->opcode = 6;
-        buf = lbl_803DC9C4;
-        lbl_803DC9C4 = gameStrcpy(buf, str) + 1;
+        buf = gGameTextCommandStringCursor;
+        gGameTextCommandStringCursor = gameStrcpy(buf, str) + 1;
         e->arg0 = (int)buf;
         e->arg1 = box;
     }
@@ -306,8 +306,8 @@ void gameTextShowTimeStr(char* str)
     i = gGameTextCommandCount++;
     e = &gGameTextCommandSlots[i];
     e->opcode = 5;
-    buf = lbl_803DC9C4;
-    lbl_803DC9C4 = gameStrcpy(buf, str) + 1;
+    buf = gGameTextCommandStringCursor;
+    gGameTextCommandStringCursor = gameStrcpy(buf, str) + 1;
     e->arg0 = (int)buf;
 }
 
