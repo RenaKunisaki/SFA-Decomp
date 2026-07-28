@@ -1,5 +1,5 @@
 #include "game/objects/object.h"
-#include "main/dll/effectspawnparams_struct.h"
+#include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/dll_0024_effect11.h"
 
@@ -20,7 +20,7 @@ ObjectDescriptor6 Effect11_funcs = {
 
 int Effect11_func04(s16* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte)
 {
-    EffectSpawnParams p;
+    PartFxSpawn p;
     u32 hasOffset;
 
     if (obj == NULL)

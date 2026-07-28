@@ -1,6 +1,6 @@
 #include "game/objects/object.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
-#include "main/dll/effectspawnparams_struct.h"
+#include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_0023_effect10.h"
@@ -36,7 +36,7 @@ ObjectDescriptor6 Effect10_funcs = {
 
 int Effect10_func04(s16* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, f32* extraParam)
 {
-    EffectSpawnParams p;
+    PartFxSpawn p;
     u32 hasSrc;
 
     gEffect10ScrollPhaseA += 0.001f;

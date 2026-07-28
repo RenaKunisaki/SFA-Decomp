@@ -1,4 +1,4 @@
-#include "main/dll/effectspawnparams_struct.h"
+#include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/dll_0027_effect14.h"
 
@@ -23,7 +23,7 @@ ObjectDescriptor6 Effect14_funcs = {
 int Effect14_func04(GameObject* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, u16* extraArgs)
 {
     PartFxSpawnParams rotCtx;
-    EffectSpawnParams p;
+    PartFxSpawn p;
     u32 hasOffset;
 
     if (obj == NULL)

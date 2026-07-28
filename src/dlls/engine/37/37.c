@@ -1,4 +1,4 @@
-#include "main/dll/effectspawnparams_struct.h"
+#include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/dll_0025_effect12.h"
 
@@ -22,7 +22,7 @@ ObjectDescriptor6 Effect12_funcs = {
 int Effect12_func04(GameObject* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, f32* auxParam)
 {
     PartFxSpawnParams local;
-    EffectSpawnParams p;
+    PartFxSpawn p;
     u32 hasOffset;
 
     if (obj == NULL)
