@@ -345,15 +345,15 @@ void Camera_UpdateShakeAndFarPlane(void)
     {
         expTerm = Camera_Expf(-slot->shakeFalloff * (shakeTimer = slot->shakeTimer), 20);
 
-        phaseScale = lbl_803DE5FC * slot->shakeDuration;
-        sinePhase = (gCameraPi * (phaseScale * shakeTimer)) / lbl_803DE600;
+        phaseScale = 65535.0f * slot->shakeDuration;
+        sinePhase = (gCameraPi * (phaseScale * shakeTimer)) / 32768.0f;
         slot->shakeMagnitude = slot->shakeMagnitudeTarget * expTerm * mathCosf(sinePhase);
         if ((slot->shakeMagnitude < gCameraShakeStopThreshold) && (slot->shakeMagnitude > gCameraShakeStopThresholdNeg))
         {
             slot->shakeMagnitude = lbl_803DE60C;
             slot->shakeActive = -1;
         }
-        slot->shakeTimer += timeDelta / lbl_803DE610;
+        slot->shakeTimer += timeDelta / 60.0f;
     }
 }
 
@@ -919,12 +919,12 @@ void Camera_ApplyEffectDepthViewport(void)
 
     if (renderMode->field_rendering != 0)
     {
-        GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE640,
+        GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.075f),
                             lbl_803DE5F0, gViewportJitterField);
     }
     else
     {
-        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE640,
+        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.075f),
                       lbl_803DB26C);
     }
 }
@@ -935,12 +935,12 @@ void Camera_ApplyTransparentViewport(void)
 
     if (renderMode->field_rendering != 0)
     {
-        GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE644,
+        GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.01f),
                             lbl_803DE5F0, gViewportJitterField);
     }
     else
     {
-        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE644,
+        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.01f),
                       lbl_803DE5F0);
     }
 }
@@ -951,12 +951,12 @@ void Camera_ApplyDecalViewport(void)
 
     if (renderMode->field_rendering != 0)
     {
-        GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE648,
+        GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.05f),
                             lbl_803DE5F0, gViewportJitterField);
     }
     else
     {
-        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE648,
+        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.05f),
                       lbl_803DE5F0);
     }
 }
@@ -1095,7 +1095,7 @@ void Camera_InitState(void)
         slot->shakeMagnitude = lbl_803DE60C;
         slot->parentObject = NULL;
         slot->unk5A = 0;
-        slot->fovY = lbl_803DE610;
+        slot->fovY = 60.0f;
     }
 
     gCameraCurrentViewIndex = 0;
@@ -1105,7 +1105,7 @@ void Camera_InitState(void)
     cameraViewportYOffset = 0;
     gCameraFarPlane = gCameraDefaultFarPlane;
     gCameraFarPlaneTransitionFramesLeft = 0;
-    gCameraFovY = lbl_803DE610;
+    gCameraFovY = 60.0f;
     gCameraProjectionMode = 0;
 
     if (gCameraProjectionMode == 1)
@@ -1119,7 +1119,7 @@ void Camera_InitState(void)
         C_MTXLightPerspective((f32*)lbl_80396850, gCameraFovY, gCameraAspectRatio, 0.4f, 0.4f, 0.5f,
                               0.5f);
         C_MTXLightPerspective((f32*)lbl_803967F0, gCameraFovY, gCameraAspectRatio, 0.5f, 0.5f, 0.5f, 0.5f);
-        C_MTXLightPerspective((f32*)lbl_80396820, gCameraFovY, gCameraAspectRatio, 0.5f, lbl_803DE630, 0.5f, 0.5f);
+        C_MTXLightPerspective((f32*)lbl_80396820, gCameraFovY, gCameraAspectRatio, 0.5f, (-0.5f), 0.5f, 0.5f);
     }
     GXSetProjection((f32*)(base + 5824), gCameraProjectionMode);
 

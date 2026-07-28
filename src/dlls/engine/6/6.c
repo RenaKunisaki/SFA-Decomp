@@ -61,30 +61,16 @@ STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
 extern const f32 lbl_803DF108;
 extern const f32 lbl_803DF10C;
 extern const f32 lbl_803DF110;
-extern f32 lbl_803DF114;
-extern f32 lbl_803DF11C;
-extern f32 lbl_803DF120;
-extern f32 lbl_803DF138;
 extern f32 lbl_803DF13C;
 extern f32 lbl_803DF140;
-extern const f32 lbl_803DF144;
 extern int lbl_803DB610;
 extern s8 gSky2DrawMode;
 extern u8* gSky2State;
-extern f32 lbl_803DF14C;
-extern f32 lbl_803DF148;
 extern const f32 lbl_803DF15C;
 extern const f32 lbl_803DF160;
 extern const f32 lbl_803DF168;
-extern const f32 lbl_803DF16C;
 extern const f32 lbl_803DF170;
-extern const f32 lbl_803DF174;
-extern const f32 lbl_803DF178;
-extern const f32 lbl_803DF17C;
-extern const f32 lbl_803DF180;
 extern const f32 lbl_803DF184;
-extern const f32 lbl_803DF188;
-extern const f32 lbl_803DF18C;
 extern u16 lbl_803E8460;
 extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];
@@ -192,12 +178,12 @@ void sky2ResetStateFromConfig(u8* cfg, u8 flags)
         *(int*)((&gSky2State)[idx] + 0x3c) = ((Sky2Config*)cfg)->fadeDurationA;
         *(int*)((&gSky2State)[idx] + 0x48) = 1;
         *(int*)((&gSky2State)[idx] + 8) = ((Sky2Config*)cfg)->skyTexId0;
-        *(f32*)((&gSky2State)[idx] + 0x5c) = lbl_803DF114 / (f32)(u32)((Sky2Config*)cfg)->fadeDurationA;
+        *(f32*)((&gSky2State)[idx] + 0x5c) = 1.0f / (f32)(u32)((Sky2Config*)cfg)->fadeDurationA;
     }
     else
     {
         *(int*)((&gSky2State)[idx] + 0x3c) = 0;
-        *(f32*)((&gSky2State)[idx] + 0x5c) = lbl_803DF114;
+        *(f32*)((&gSky2State)[idx] + 0x5c) = 1.0f;
     }
     if (((Sky2Config*)cfg)->fadeDurationB == 0)
     {
@@ -207,14 +193,14 @@ void sky2ResetStateFromConfig(u8* cfg, u8 flags)
     {
         *(int*)((&gSky2State)[idx] + 0x40) = ((Sky2Config*)cfg)->fadeDurationB;
         *(f32*)((&gSky2State)[idx] + 0x58) =
-            255.0f / (lbl_803DF11C * ((f32)(u32)((Sky2Config*)cfg)->fadeDurationB / lbl_803DF120));
+            255.0f / (60.0f * ((f32)(u32)((Sky2Config*)cfg)->fadeDurationB / 10.0f));
         *(int*)((&gSky2State)[idx] + 0xc) = 0x5dc;
-        *(f32*)((&gSky2State)[idx] + 0x60) = lbl_803DF114 / (f32)(u32)((Sky2Config*)cfg)->fadeDurationB;
+        *(f32*)((&gSky2State)[idx] + 0x60) = 1.0f / (f32)(u32)((Sky2Config*)cfg)->fadeDurationB;
     }
     else
     {
         *(int*)((&gSky2State)[idx] + 0x40) = 0;
-        *(f32*)((&gSky2State)[idx] + 0x60) = lbl_803DF114;
+        *(f32*)((&gSky2State)[idx] + 0x60) = 1.0f;
     }
     *(int*)((&gSky2State)[idx] + 0x44) = 0;
 }
@@ -232,7 +218,7 @@ void sky2StepSlotAnim(int slot)
     int flag1;
 
     anim = *(SkySlotAnim**)(&gSky2State + slot);
-    if (anim->t >= (dur = lbl_803DF114))
+    if (anim->t >= (dur = 1.0f))
     {
         anim->flags4 &= ~0x100;
         zero = lbl_803DF108;
@@ -257,7 +243,7 @@ void sky2StepSlotAnim(int slot)
     {
         if (anim->b315 != 0)
         {
-            len = lbl_803DF11C * ((f32)anim->frameCount / lbl_803DF120);
+            len = 60.0f * ((f32)anim->frameCount / 10.0f);
             if (lbl_803DF108 == len)
             {
                 len = dur;
@@ -331,7 +317,7 @@ int sky2GetFogFadeAlpha(void)
         return 0xff;
     }
     y = *(f32*)(state + 0x14);
-    if (y < lbl_803DF138)
+    if (y < 950.0f)
     {
         return 0;
     }
@@ -339,7 +325,7 @@ int sky2GetFogFadeAlpha(void)
     {
         return 0xff;
     }
-    return (int)(255.0f * ((y - lbl_803DF138) / lbl_803DF140));
+    return (int)(255.0f * ((y - 950.0f) / lbl_803DF140));
 }
 
 void dll_06_func0C_nop(void)
@@ -383,7 +369,7 @@ void sky2BlendTowardTargetColor(s32* red, s32* green, s32* blue)
 
     fy = (f32)(targetY - oldY);
     fz = (f32)(targetZ - oldZ);
-    *red = (s32)((f32)(targetX - oldX) * (blend = lbl_803DF144 * blend) + oldX);
+    *red = (s32)((f32)(targetX - oldX) * (blend = 0.25f * blend) + oldX);
     *green = (s32)(fy * blend + oldY);
     *blue = (s32)(fz * blend + oldZ);
 }
@@ -429,13 +415,13 @@ void sky2ApplyModelTint(GameObject* obj)
         {
             alpha = 255;
         }
-        else if (v > lbl_803DF148)
+        else if (v > 15.0f)
         {
             alpha = 0;
         }
         else
         {
-            alpha = (int)(255.0f - 255.0f * (v / lbl_803DF148));
+            alpha = (int)(255.0f - 255.0f * (v / 15.0f));
         }
         Obj_SetModelColorOverrideRecursive(obj, (u8) * (int*)(s + 0x24), (u8) * (int*)(s + 0x28),
                                            (u8) * (int*)(s + 0x2c), (u8)alpha, 1);
@@ -461,13 +447,13 @@ void sky2ApplyTextColor(int obj)
             {
                 alpha = 255;
             }
-            else if (v > lbl_803DF148)
+            else if (v > 15.0f)
             {
                 alpha = 0;
             }
             else
             {
-                alpha = (int)(255.0f - 255.0f * (v / lbl_803DF148));
+                alpha = (int)(255.0f - 255.0f * (v / 15.0f));
             }
             setTextColor((void*)obj, (u8) * (int*)(s + 0x24), (u8) * (int*)(s + 0x28),
                          (u8) * (int*)(s + 0x2c), (u8)alpha);
@@ -495,12 +481,12 @@ void sky2ApplyFog(int obj)
         s = gSky2State;
         if (*(f32*)(s + 0x14) == *(f32*)(s + 0x18))
         {
-            *(f32*)(s + 0x14) = *(f32*)(s + 0x14) - lbl_803DF14C;
+            *(f32*)(s + 0x14) = *(f32*)(s + 0x14) - 20.0f;
         }
         s = gSky2State;
         if (*(f32*)(s + 0x14) > *(f32*)(s + 0x18))
         {
-            *(f32*)(s + 0x14) = *(f32*)(s + 0x18) - lbl_803DF14C;
+            *(f32*)(s + 0x14) = *(f32*)(s + 0x18) - 20.0f;
         }
         s = gSky2State;
         fogSetRange(*(f32*)(s + 0x14), *(f32*)(s + 0x18));
@@ -571,7 +557,7 @@ void sky2_run(void)
         dst = lbl_8039A7B8;
         dst[0] = z;
         dst[1] = z;
-        one = lbl_803DF114;
+        one = 1.0f;
         dst[2] = one;
         c150 = -0.707f;
         dst[3] = c150;
@@ -607,7 +593,7 @@ void sky2_run(void)
     q.x = zv;
     q.y = zv;
     q.z = zv;
-    q.w = lbl_803DF114;
+    q.w = 1.0f;
     q.rx = -cam->yaw;
     q.rz = 0;
     q.ry = 0;
@@ -664,9 +650,9 @@ void sky2_run(void)
                 {
                     t = lbl_803DF108;
                 }
-                if (t > lbl_803DF114)
+                if (t > 1.0f)
                 {
-                    t = lbl_803DF114;
+                    t = 1.0f;
                 }
                 step = lbl_803DF160;
                 if (t <= step)
@@ -674,14 +660,14 @@ void sky2_run(void)
                     u = t / step;
                     k = 0;
                 }
-                else if (t <= lbl_803DF144)
+                else if (t <= 0.25f)
                 {
                     u = (t - step) / step;
                     k = 1;
                 }
                 else if (t <= 0.375f)
                 {
-                    u = (t - lbl_803DF144) / step;
+                    u = (t - 0.25f) / step;
                     k = 2;
                 }
                 else if (t <= lbl_803DF168)
@@ -689,24 +675,24 @@ void sky2_run(void)
                     u = (t - 0.375f) / step;
                     k = 3;
                 }
-                else if (t <= lbl_803DF16C)
+                else if (t <= 0.625f)
                 {
                     u = (t - lbl_803DF168) / step;
                     k = 4;
                 }
                 else if (t <= lbl_803DF170)
                 {
-                    u = (t - lbl_803DF16C) / step;
+                    u = (t - 0.625f) / step;
                     k = 5;
                 }
-                else if (t <= lbl_803DF174)
+                else if (t <= 0.875f)
                 {
                     u = (t - lbl_803DF170) / step;
                     k = 6;
                 }
                 else
                 {
-                    u = (t - lbl_803DF174) / step;
+                    u = (t - 0.875f) / step;
                     k = 7;
                 }
                 r = Curve_EvalCatmullRom(*pp + (off1 = k * 4) + 0x70, u, 0);
@@ -730,9 +716,9 @@ void sky2_run(void)
                     {
                         d = 0xffff - d;
                     }
-                    att = (lbl_803DF178 - d) / lbl_803DF178;
+                    att = (32767.0f - d) / 32767.0f;
                     att -= lbl_803DF170;
-                    att /= lbl_803DF144;
+                    att /= 0.25f;
                     if (att > best.x)
                     {
                         if (best.x > best.y)
@@ -805,7 +791,7 @@ void sky2_run(void)
                     *(f32*)(*pp + 0x6c) = frzero;
                     diff = sb - sa;
                     *(f32*)(*pp + 0x68) = randomGetRange((int)(-diff * lbl_803DF168), (int)(diff * lbl_803DF168));
-                    *(f32*)(*pp + 0x64) = lbl_803DF17C * randomGetRange(1, 10);
+                    *(f32*)(*pp + 0x64) = 0.05f * randomGetRange(1, 10);
                 }
                 else if (((SkySlotAnim*)p)->b314 == 1)
                 {
@@ -830,17 +816,17 @@ void sky2_run(void)
                         *(f32*)(*pp + 0x6c) = lbl_803DF108;
                         amp = (s16)(int)(sb - sa);
                         *(f32*)(*pp + 0x68) = randomGetRange(-amp / 2, amp / 2);
-                        *(f32*)(*pp + 0x64) = lbl_803DF17C * randomGetRange(1, 10);
+                        *(f32*)(*pp + 0x64) = 0.05f * randomGetRange(1, 10);
                     }
                 }
             }
-            if (sb > lbl_803DF180)
+            if (sb > 2000.0f)
             {
-                sb = lbl_803DF180;
+                sb = 2000.0f;
             }
             if (sa > sb)
             {
-                sa = sb - lbl_803DF114;
+                sa = sb - 1.0f;
             }
             if (sa <= lbl_803DF108)
             {
@@ -871,8 +857,8 @@ void sky2_run(void)
                     *(int*)(*pp + 0x30) = 0xff;
                     *(int*)(*pp + 0x34) = 0xff;
                     *(int*)(*pp + 0x38) = 0xff;
-                    *(f32*)(*pp + 0x1c) = lbl_803DF188;
-                    *(f32*)(*pp + 0x20) = lbl_803DF18C;
+                    *(f32*)(*pp + 0x1c) = 1950.0f;
+                    *(f32*)(*pp + 0x20) = 2005.0f;
                 }
             }
             else if ((flags & 4) != 0)
@@ -887,8 +873,8 @@ void sky2_run(void)
                     *(int*)(*pp + 0x24) = 0xff;
                     *(int*)(*pp + 0x28) = 0xff;
                     *(int*)(*pp + 0x2c) = 0xff;
-                    *(f32*)(*pp + 0x14) = lbl_803DF188;
-                    *(f32*)(*pp + 0x18) = lbl_803DF18C;
+                    *(f32*)(*pp + 0x14) = 1950.0f;
+                    *(f32*)(*pp + 0x18) = 2005.0f;
                 }
             }
             else
