@@ -14,6 +14,7 @@
  * (vtable slots 0x24 = setPosition, 0x28 = getState).
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "dlls/objects/279_AppleOnTree.h"
 #include "main/frame_timing.h"
 #include "sys/objects/lifecycle.h"
 #include "main/objanim.h"
@@ -28,8 +29,6 @@
 #include "main/objfx.h"
 #include "main/objhits.h"
 #include "main/object_render.h"
-
-#define TREE_CHILD_OBJ_APPLE_ON_TREE     0x210 /* retail "AppleOnTree" (DLL 0x117) */
 
 /* tree variant seqIds (retail OBJECTS.bin names, all DLL 0x2AF) */
 #define TREE_SEQID_SMALL_FERN      0x798 /* "smallfern" */
@@ -61,8 +60,8 @@ void tree_spawnAmbientEffect(GameObject* obj, TreeState* state, s8 index)
 
     if (Obj_IsLoadingLocked())
     {
-        effectSetup = (TreeAmbientEffectSetup*)Obj_AllocObjectSetup(TREE_AMBIENT_EFFECT_SETUP_SIZE,
-                                                                    TREE_CHILD_OBJ_APPLE_ON_TREE);
+        effectSetup =
+            (TreeAmbientEffectSetup*)Obj_AllocObjectSetup(TREE_AMBIENT_EFFECT_SETUP_SIZE, APPLE_ON_TREE_OBJECT_ID);
         effectSetup->base.color[0] = setup->base.color[0];
         effectSetup->base.color[2] = setup->base.color[2];
         effectSetup->base.color[1] = setup->base.color[1];
