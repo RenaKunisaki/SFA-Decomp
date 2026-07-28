@@ -389,7 +389,7 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
     void* p = ((BaddieState*)state)->targetObj;
     if (p != NULL)
     {
-        characterSetHeadYawToTarget(obj, (GameObject*)p, (CharacterEyeAnimState*)inner->eyeAnimState, 0x19);
+        characterSetHeadYawToTarget(obj, (GameObject*)p, &inner->eyeAnimState, 0x19);
     }
     if (((BaddieState*)state)->moveDone != 0 ||
         ((BaddieState*)state)->moveJustStartedA != 0)
@@ -420,7 +420,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
     GameObject* target = playerState->targetObj;
     if (target != NULL)
     {
-        characterSetHeadYawToTarget(obj, target, (CharacterEyeAnimState*)actor->eyeAnimState, 0x19);
+        characterSetHeadYawToTarget(obj, target, &actor->eyeAnimState, 0x19);
     }
     if (obj->userData2 == 0)
     {
@@ -514,39 +514,39 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
 
 int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv)
 {
-    int inner = *(int*)&obj->extra;
-    void* p = ((PlayerState*)state)->baddie.targetObj;
-    int a4;
-    s16* moves;
-    f32* blends;
+    GroundBaddieState* inner = obj->extra;
+    void* p = ((BaddieState*)state)->targetObj;
+    Dll437ControlState* a4;
+    const s16* moves;
+    const f32* blends;
     if (p != NULL)
     {
-        characterSetHeadYawToTarget(obj, (GameObject*)p, (CharacterEyeAnimState*)(inner + 0x3ac), 0x19);
+        characterSetHeadYawToTarget(obj, (GameObject*)p, &inner->eyeAnimState, 0x19);
     }
-    a4 = *(int*)((char*)inner + 0x40c);
-    moves = *(s16**)((char*)a4 + 0);
-    blends = *(f32**)((char*)a4 + 4);
-    if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0 ||
-        *(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
+    a4 = inner->control;
+    moves = a4->moveIds;
+    blends = a4->moveSpeeds;
+    if (((BaddieState*)state)->moveJustStartedA != 0 ||
+        ((BaddieState*)state)->moveDone != 0)
     {
-        *(u8*)((char*)a4 + 0x2c) = 0;
-        *(u16*)((char*)a4 + 0x24) += 1;
-        if (moves[*(u16*)((char*)a4 + 0x24)] == -1)
+        a4->completionCountdown = 0;
+        a4->moveIndex += 1;
+        if (moves[a4->moveIndex] == -1)
         {
-            *(u16*)((char*)a4 + 0x24) = 0;
+            a4->moveIndex = 0;
         }
-        if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
+        if (((BaddieState*)state)->moveJustStartedA != 0)
         {
             obj->anim.currentMoveProgress = (f32)randomGetRange(0, 0x63) / 100.0f;
-            ObjAnim_SetCurrentMove((int)obj, moves[*(u16*)((char*)a4 + 0x24)], obj->anim.currentMoveProgress,
+            ObjAnim_SetCurrentMove((int)obj, moves[a4->moveIndex], obj->anim.currentMoveProgress,
                                    0);
         }
         else
         {
-            ObjAnim_SetCurrentMove((int)obj, moves[*(u16*)((char*)a4 + 0x24)], 0.0f, 0);
+            ObjAnim_SetCurrentMove((int)obj, moves[a4->moveIndex], 0.0f, 0);
         }
     }
-    ((PlayerState*)state)->baddie.moveSpeed = blends[*(u16*)((char*)a4 + 0x24)];
+    ((BaddieState*)state)->moveSpeed = blends[a4->moveIndex];
     (*gPlayerInterface)->updateAnimRootMotion(obj, (void*)state, fv, 0);
     return 0;
 }
@@ -727,7 +727,7 @@ void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int st
     }
     else
     {
-        characterDoEyeAnims((GameObject*)obj, inner->eyeAnimState);
+        characterDoEyeAnims((GameObject*)obj, &inner->eyeAnimState);
         ((BaddieState*)state)->targetObj = Obj_GetPlayerObject();
         v = sub->mapId;
         if (v >= 0x49942 || v < 0x4993f)

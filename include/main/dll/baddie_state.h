@@ -3,6 +3,7 @@
 
 #include "ghidra_import.h"
 #include "global.h"
+#include "main/objprint_character_api.h"
 #include "main/voxmaps.h"
 
 struct GameObject;
@@ -216,7 +217,8 @@ typedef struct GroundBaddieState {
     BaddieState baddie;
     RouteNav routeNav; /* 0x35c: route destination/current/target and update budget */
     RouteState routeState; /* 0x384: allocated route nodes, heap, and recovered path */
-    u8 eyeAnimState[0x3DC - 0x3AC];
+    CharacterEyeAnimState eyeAnimState; /* 0x3ac: head-aim / eye-blink record (characterDoEyeAnims / characterSetHeadYawToTarget) */
+    u8 pad3D4[0x3DC - 0x3D4];
     void *path; /* rom-curve/path record */
     int savedObjC0; /* obj+0xC0 swap slot around the player-interface update */
     u8 unk3E4[4];

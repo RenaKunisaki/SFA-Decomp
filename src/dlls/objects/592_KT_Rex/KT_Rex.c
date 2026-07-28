@@ -1592,7 +1592,7 @@ void ktrex_update(GameObject* obj)
         }
         runtime->baddie.targetDistance = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
     }
-    characterDoEyeAnims(obj, gKTRexRuntime->eyeAnimState);
+    characterDoEyeAnims(obj, &gKTRexRuntime->eyeAnimState);
     zm[0] = 0;
     zc[0] = zm[0];
     bitA = gKTRexLaneEnabledGameBits;

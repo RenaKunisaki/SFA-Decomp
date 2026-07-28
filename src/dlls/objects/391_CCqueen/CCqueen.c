@@ -67,7 +67,7 @@ void ccQueen_update(GameObject* obj) {
     } else {
         ObjAnim_AdvanceCurrentMove((int)obj, CC_QUEEN_MOVE_STEP_SCALE, timeDelta, NULL);
         dll_2E_updateLookAt(obj, &state->moveLib);
-        characterDoEyeAnims(obj, state->eyeAnimState);
+        characterDoEyeAnims(obj, &state->eyeAnimState);
     }
 }
 

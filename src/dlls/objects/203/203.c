@@ -247,7 +247,7 @@ void dll_CB_advanceAI(GameObject* obj, GroundBaddieState* objectState, GroundBad
         delta[2] = targetObj->anim.worldPosZ - obj->anim.worldPosZ;
         state->baddie.targetDistance = sqrtf(delta[2] * delta[2] + (delta[0] * delta[0] + delta[1] * delta[1]));
     }
-    characterDoEyeAnims(obj, objectState->eyeAnimState);
+    characterDoEyeAnims(obj, &objectState->eyeAnimState);
     if ((objectState->configFlags & 1) == 0) {
         (*gBaddieControlInterface)
             ->pollCameraTarget(obj, state, &objectState->flags400, 2, 3, objectState->soundIdB, objectState->soundIdA);
