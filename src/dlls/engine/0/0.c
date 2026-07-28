@@ -546,7 +546,7 @@ extern f32 gHudBButtonGlyphY;
 extern f32 gHudBButtonIconX;
 extern const f32 lbl_803E2010;
 extern f32 gHudYButtonIconX;
-void drawFn_8011e8d8(void* tex, f32 x, f32 y, int a, u8 b, int w, int h, int off, int m);
+void pauseMenuDrawTextureRegion(void* tex, f32 x, f32 y, int a, u8 b, int w, int h, int off, int m);
 void pauseMenuDrawElement(void* tex, f32 x, f32 y, int a, u8 b, int c, int d);
 void drawFn_8011eb3c(void* tex, f32 x, f32 y, int a, u8 b, int c, int w, int h, int m);
 extern s16 gCMenuForcedSelIndex;
@@ -1145,7 +1145,7 @@ void pauseMenuTextDrawFn(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1,
     GXWGFifo.f32 = u0;
     GXWGFifo.f32 = v1;
 }
-void drawFn_8011e8d8(void* this, f32 f1, f32 f2, int p4, u8 p5, int p6, int p7, int p8, int p9)
+void pauseMenuDrawTextureRegion(void* this, f32 f1, f32 f2, int p4, u8 p5, int p6, int p7, int p8, int p9)
 {
     f32 u1, u0, v0, v1;
     pauseMenuMapFn_8011de20(this, p5, p4, 0);
@@ -2363,7 +2363,7 @@ void hudDrawMagicBar(u8 alpha, int elemAlpha, u8 flags)
         tex = hudTextures[0x29];
         if (flags)
         {
-            drawFn_8011e8d8(tex, seg1 + 0x1c + lbl_803DBAD0, lbl_803DBAD4, elemAlpha, alpha, rem1, 0x12, seg1, 0);
+            pauseMenuDrawTextureRegion(tex, seg1 + 0x1c + lbl_803DBAD0, lbl_803DBAD4, elemAlpha, alpha, rem1, 0x12, seg1, 0);
         }
         else
         {
@@ -2412,7 +2412,7 @@ void hudDrawMagicBar(u8 alpha, int elemAlpha, u8 flags)
         tex = hudTextures[0x2D];
         if (flags)
         {
-            drawFn_8011e8d8(tex, middleCapacity + (seg4 + 0x24) + lbl_803DBAD0, lbl_803DBAD4, elemAlpha, alpha, rem4,
+            pauseMenuDrawTextureRegion(tex, middleCapacity + (seg4 + 0x24) + lbl_803DBAD0, lbl_803DBAD4, elemAlpha, alpha, rem4,
                             0x12, seg4, 0);
         }
         else
@@ -2455,7 +2455,7 @@ void hudDrawMagicBar(u8 alpha, int elemAlpha, u8 flags)
         tex = hudTextures[0x31];
         if (flags)
         {
-            drawFn_8011e8d8(tex, previewFirstWidth + 0x1c + lbl_803DBAD0, lbl_803DBAD4, elemAlpha, alpha, seg1, 0x12,
+            pauseMenuDrawTextureRegion(tex, previewFirstWidth + 0x1c + lbl_803DBAD0, lbl_803DBAD4, elemAlpha, alpha, seg1, 0x12,
                             previewFirstWidth, 0);
         }
         else
@@ -4680,7 +4680,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         {
             randomWidth = randomGetRange(0, 0x1e) * 2;
             randomHeight = randomGetRange(0, 0x1e) * 2;
-            drawFn_8011e8d8(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff,
+            pauseMenuDrawTextureRegion(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff,
                             (u8)((s16)panelAlpha / 2), 0x230, 0x190, randomHeight, randomWidth);
             model = Obj_GetActiveModel(lbl_803DD860[1]);
             objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
@@ -4742,7 +4742,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         {
             randomWidth = randomGetRange(0, 0x1e) * 2;
             randomHeight = randomGetRange(0, 0x1e) * 2;
-            drawFn_8011e8d8(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff, (u8)((s16)alpha / 2),
+            pauseMenuDrawTextureRegion(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff, (u8)((s16)alpha / 2),
                             0x230, 0x190, randomHeight, randomWidth);
             model = Obj_GetActiveModel(lbl_803DD860[1]);
             objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
@@ -4822,7 +4822,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         {
             randomWidth = randomGetRange(0, 0x1e) * 2;
             randomHeight = randomGetRange(0, 0x1e) * 2;
-            drawFn_8011e8d8(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff, (u8)((s16)alpha / 2),
+            pauseMenuDrawTextureRegion(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff, (u8)((s16)alpha / 2),
                             0x230, 0x190, randomHeight, randomWidth);
             model = Obj_GetActiveModel(lbl_803DD860[1]);
             objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
@@ -5041,7 +5041,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
     {
         s32 rnd1 = randomGetRange(0, 0x1e) * 2;
         s32 rnd2 = randomGetRange(0, 0x1e) * 2;
-        drawFn_8011e8d8(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff, (u8)((s16)alpha / 2),
+        pauseMenuDrawTextureRegion(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff, (u8)((s16)alpha / 2),
                         0x230, 0x190, rnd2, rnd1);
         model = Obj_GetActiveModel(lbl_803DD860[1]);
         objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
