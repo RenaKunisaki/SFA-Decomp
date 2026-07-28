@@ -193,10 +193,12 @@ void gunpowderBarrel_setPlayerHeldState(GameObject* obj, u8 heldByPlayer) {
 
 void gunpowderBarrel_addThrowVelocity(GameObject* obj, f32* velocity) {
     GunpowderBarrelState* state = obj->extra;
-    if (state->heldByCarryInterface != 0)
+    if (state->heldByCarryInterface != 0) {
         return;
-    if (state->fuseFrames != 0)
+    }
+    if (state->fuseFrames != 0) {
         return;
+    }
     state->throwVelocityY = state->throwVelocityY + velocity[1];
     state->throwVelocityX = state->throwVelocityX + velocity[0];
     state->throwVelocityZ = state->throwVelocityZ + velocity[2];
