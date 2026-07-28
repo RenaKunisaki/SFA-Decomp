@@ -4819,6 +4819,10 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
             warpToMap(*(s16*)(cmd + 2) & 0xfff, 0);
             break;
         case 7:
+            if (flag8 != 0)
+            {
+                break;
+            }
             break;
         case 8:
             if (flag8 != 0)
