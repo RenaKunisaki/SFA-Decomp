@@ -312,7 +312,6 @@ extern u32 gNewShadowSnowFlashTexture;
 extern Texture* lbl_803DCFC8;
 extern Texture* gNewShadowRingTexture;
 extern Texture* gNewShadowLightningTexture;
-extern Texture* gNewShadowHeavyFogTexture;
 extern Texture* gNewShadowDistortionTexture;
 extern Texture* gNewShadowRadialTexture;
 extern u32 gNewShadowRampTexture;
@@ -345,7 +344,6 @@ u8 lbl_8030E8B0[0xD8] = {
 extern u8 gNewShadowCasterCount;
 extern CameraViewSlot* gNewShadowCurrentViewSlot;
 extern f32 gNewShadowReflectionScrollY, gNewShadowReflectionScrollX;
-extern u8 lbl_803DCF80;
 extern u16 lbl_803DCFA0;
 extern int gNewShadowLightAngleX, gNewShadowLightAngleY;
 
@@ -634,8 +632,6 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
     }
     DCFlushRange(data, size * size);
 }
-
-extern u32 gNewShadowFrameTextures[NEW_SHADOW_FRAME_COUNT];
 
 void renderObjectShadowTexture(GameObject* obj)
 {
@@ -1084,8 +1080,6 @@ void newshadows_getShadowTextureTable4x8(Texture*** tableOut, int* columnsOut, i
     *columnsOut = 4;
     *rowsOut = 8;
 }
-
-extern Texture* gNewShadowNoiseTexFrames[0x10];
 
 void getNewShadowNoiseTextureFrames(Texture*** tableOut, int* frameCountOut)
 {

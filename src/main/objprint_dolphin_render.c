@@ -79,7 +79,6 @@ extern u32 lbl_803DB468;
 extern f32 lbl_803DEA28;
 extern f32 lbl_803DEA2C;
 extern f32 lbl_803DEA30;
-extern f32 lbl_803DEA04;
 extern f32 lbl_803DEA1C;
 
 
@@ -105,19 +104,12 @@ typedef struct IndTexMtx23
 STATIC_ASSERT(sizeof(IndTexMtx23) == 0x18);
 
 
-extern s32 lbl_803DCC44;
-extern u8 lbl_803DCC3E;
 extern u8 lbl_803DCC3D;
 extern u32 lbl_803DB470;
-extern u32 lbl_803DB468;
 extern int lbl_803DB498;
 extern int lbl_803DB49C;
-extern f32 lbl_803DEA28;
-extern f32 lbl_803DEA2C;
-extern f32 lbl_803DEA30;
 extern f32 lbl_803DEA34;
 extern f32 lbl_803DEA38;
-extern f32 lbl_803DEA1C;
 
 int modelRenderCb_8003c268(int obj, int* model, int ropIdx);
 
@@ -132,22 +124,12 @@ extern int lbl_803DB490;
 
 int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx);
 
-extern ModelLightStruct* lbl_803DCC64;
-extern u8 lbl_803DCC60;
-extern s32 lbl_803DCC5C;
 extern u8 gObjOverrideColor[3];
 extern GXColor gObjCurChanColor;
 extern f32 gObjShadowDist;
 extern u8 gObjShadowNear;
-extern s32 lbl_803DCC48;
-extern s32 lbl_803DCC44;
 extern s32 gObjFuzzStep;
-extern u8 lbl_803DCC3E;
-extern u8 lbl_803DCC3D;
-extern u8 gObjAlphaCompareThreshold;
 extern f32 gObjFuzzPhase;
-extern u8 lbl_803DCC36;
-extern u8 lbl_803DCC35;
 extern u8 lbl_803DCC34;
 extern u32 gObjCachedModel;
 extern u32 gObjCachedTexture;
@@ -157,9 +139,7 @@ extern u8 gObjOverrideColorPending;
 extern u32 curObjMtx;
 extern u8 lbl_803DCC20;
 
-extern u32 lbl_803DB468;
 extern u32 gObjGxDefaultChanColor;
-extern u32 lbl_803DB470;
 extern u32 gObjGxVtxDescCache;
 extern u8 gObjGxBlendModeCache;
 extern u8 gObjGxZCompLocCache;
@@ -169,11 +149,6 @@ extern u8 gObjGxZCompareCache;
 extern u8 gObjGxCullModeCache;
 extern u8 gObjGxKColorCache[4];
 extern u8 gObjShadowColor[4];
-extern int lbl_803DB48C;
-extern int lbl_803DB490;
-extern ObjPrintGXColor lbl_803DB494;
-extern int lbl_803DB498;
-extern int lbl_803DB49C;
 
 
 void objRenderShadow2(int* obj, int* obj2, u8* m, int p4);
@@ -203,8 +178,6 @@ typedef struct ObjModelRenderOp
     u32 flags;
 } ObjModelRenderOp;
 extern volatile int gAssetLoadInFlightFlags;
-extern f32 lbl_803DEA04;
-extern f32 lbl_803DEA1C;
 typedef struct
 {
     u8* data;
@@ -212,7 +185,6 @@ typedef struct
     int pos;
 } MtxBitStream;
 typedef u8 (*ObjModelRenderCb)(int* obj, int* am, int p3);
-extern f32 lbl_803DEA38;
 extern f32 lbl_803DEA4C;
 extern f32 lbl_803DEA50;
 extern f32 lbl_803DEA54;
@@ -233,10 +205,6 @@ s32 mapCheckCurBlocks(int v);
 #define SHADER_FLAG_FORCE_BLEND        0x40000000
 
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
-
-extern u8 lbl_803DCC3D;
-extern s32 lbl_803DCC44;
-extern f32 lbl_803DEA34;
 
 void objRenderFuzzFn_8003d6f8(void* objArg);
 extern f32 lbl_803DEA60;

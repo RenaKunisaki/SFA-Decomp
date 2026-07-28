@@ -83,8 +83,6 @@
 #include "main/dll/player_api.h"
 
 
-extern u8 framesThisStep;
-extern f32 timeDelta;
 extern int gGameLoopPendingUiDllId;
 extern f32 gGameLoopMusicFadeTimer;
 extern u8 gGameLoopResetComboDebounce;

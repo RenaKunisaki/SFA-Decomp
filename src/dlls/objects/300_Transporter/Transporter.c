@@ -266,8 +266,6 @@ typedef enum TransporterSequenceEvent {
     TRANSPORTER_EVENT_RESTORE_ENVIRONMENT = 8,
 } TransporterSequenceEvent;
 
-extern s16 lbl_803DCEB8;
-
 void Transporter_init(GameObject* obj, TransporterPlacement* placement);
 void Transporter_update(GameObject* obj);
 void Transporter_hitDetect(int obj);

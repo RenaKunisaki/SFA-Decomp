@@ -80,7 +80,6 @@ extern u32 lbl_803DB468;
 extern f32 lbl_803DEA28;
 extern f32 lbl_803DEA2C;
 extern f32 lbl_803DEA30;
-extern f32 lbl_803DEA04;
 extern f32 lbl_803DEA1C;
 
 int objNormalizeRotationMatrix(f32* matrix, f32* out)
@@ -304,21 +303,14 @@ const IndTexMtx23 lbl_802C1B28 = {{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f}}};
 const IndTexMtx23 lbl_802C1B40 = {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
 const IndTexMtx23 lbl_802C1B58 = {{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f}}};
 
-extern s32 lbl_803DCC44;
-extern u8 lbl_803DCC3E;
 extern u8 lbl_803DCC3D;
 extern u32 lbl_803DE9FC;
 extern u32 lbl_803DEA00;
 extern u32 lbl_803DB470;
-extern u32 lbl_803DB468;
 extern int lbl_803DB498;
 extern int lbl_803DB49C;
-extern f32 lbl_803DEA28;
-extern f32 lbl_803DEA2C;
-extern f32 lbl_803DEA30;
 extern f32 lbl_803DEA34;
 extern f32 lbl_803DEA38;
-extern f32 lbl_803DEA1C;
 
 int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
 {
@@ -837,8 +829,6 @@ typedef struct ObjModelRenderOp
     u8 pad38[0x3C - 0x38];
     u32 flags;
 } ObjModelRenderOp;
-extern f32 lbl_803DEA04;
-extern f32 lbl_803DEA1C;
 typedef struct
 {
     u8* data;
@@ -846,7 +836,6 @@ typedef struct
     int pos;
 } MtxBitStream;
 typedef u8 (*ObjModelRenderCb)(int* obj, int* am, int p3);
-extern f32 lbl_803DEA38;
 
 int getLoadedFileFlags(int slot);
 s32 mapCheckCurBlocks(int v);
@@ -862,10 +851,7 @@ s32 mapCheckCurBlocks(int v);
 
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 
-extern u8 lbl_803DCC3D;
-extern s32 lbl_803DCC44;
 extern u32 lbl_803DE9F0;
-extern f32 lbl_803DEA34;
 
 void objRenderFuzzFn_8003d6f8(void* objArg)
 {
