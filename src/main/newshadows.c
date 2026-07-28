@@ -75,7 +75,7 @@
 #include "main/dll/modgfx.h"
 #include "dolphin/gx/GXFrameBuffer.h"
 extern Texture* gNewShadowHeavyFogTexture;
-extern u8 lbl_803DCF80;
+extern u8 gNewShadowHeavyFogIntensity;
 
 #define READ_TEXTURE_U16(address) (*(u16*)(address))
 #define WRITE_TEXTURE_U16(address, value) (*(u16*)(address) = (value))
@@ -259,7 +259,7 @@ void updateHeavyFogTexture(int intensity)
         }
     }
     memcpyToCache((u8*)gNewShadowHeavyFogTexture + 0x60, cache, 0);
-    lbl_803DCF80 = intensity;
+    gNewShadowHeavyFogIntensity = intensity;
 }
 
 Camera* gNewShadowCurrentViewSlot;
@@ -269,8 +269,8 @@ u32 gNewShadowReflectionTexture2;
 u32 gNewShadowDiskTexture;
 u32 gNewShadowSmallDiskTexture;
 u32 gNewShadowBumpTexture;
-u32 lbl_803DCFCC;
-Texture* lbl_803DCFC8;
+u32 gNewShadowWhirlpoolTexture;
+Texture* gNewShadowHeatHazeTexture;
 u32 gNewShadowSnowFlashTexture;
 Texture* gNewShadowRadialTexture;
 Texture* gNewShadowDistortionTexture;
@@ -279,8 +279,8 @@ Texture* gNewShadowLightningTexture;
 Texture* gNewShadowRingTexture;
 f32 gNewShadowReflectionScrollX;
 f32 gNewShadowReflectionScrollY;
-f32 lbl_803DCFA4;
-u16 lbl_803DCFA0;
+f32 gNewShadowDistortionWaveOffset;
+u16 gNewShadowDistortionWavePhase;
 u32 gNewShadowRampTexture;
 u32 gNewShadowInverseRampTexture;
 u32 gNewShadowReflectionGradientTexture;
@@ -288,7 +288,7 @@ u32 gNewShadowFalloffTexture;
 u8 gNewShadowFrameIndex;
 int gNewShadowLightAngleY;
 int gNewShadowLightAngleX;
-u8 lbl_803DCF80;
+u8 gNewShadowHeavyFogIntensity;
 Texture* gNewShadowReflectionTexture;
 u8 gNewShadowCasterCount;
 
@@ -310,7 +310,7 @@ extern u32 gNewShadowReflectionGradientTexture;
 extern u32 gNewShadowInverseRampTexture;
 extern u32 gNewShadowFalloffTexture;
 extern u32 gNewShadowSnowFlashTexture;
-extern Texture* lbl_803DCFC8;
+extern Texture* gNewShadowHeatHazeTexture;
 extern Texture* gNewShadowRingTexture;
 extern Texture* gNewShadowLightningTexture;
 extern Texture* gNewShadowDistortionTexture;
@@ -320,9 +320,9 @@ extern u32 gNewShadowDiskTexture;
 extern u32 gNewShadowReflectionTexture2;
 extern Texture* gNewShadowCausticTexture;
 extern f32 gNewShadowReflectionScrollY;
-extern f32 lbl_803DCFA4;
+extern f32 gNewShadowDistortionWaveOffset;
 extern u32 gNewShadowBumpTexture;
-extern u32 lbl_803DCFCC;
+extern u32 gNewShadowWhirlpoolTexture;
 extern u32 gNewShadowReflectionSmallTexture;
 extern u8 gNewShadowFrameIndex;
 u8 lbl_8030E8B0[0xD8] = {
@@ -344,7 +344,7 @@ u8 lbl_8030E8B0[0xD8] = {
 extern u8 gNewShadowCasterCount;
 extern Camera* gNewShadowCurrentViewSlot;
 extern f32 gNewShadowReflectionScrollY, gNewShadowReflectionScrollX;
-extern u16 lbl_803DCFA0;
+extern u16 gNewShadowDistortionWavePhase;
 extern int gNewShadowLightAngleX, gNewShadowLightAngleY;
 
 extern inline float sqrtf(float x)
@@ -1062,7 +1062,7 @@ void getNewShadowSnowFlashTexture(u32* p)
 }
 void getNewShadowHeatHazeTexture(Texture** p)
 {
-    *p = lbl_803DCFC8;
+    *p = gNewShadowHeatHazeTexture;
 }
 void getNewShadowRingTexture(Texture** out)
 {
@@ -1129,7 +1129,7 @@ Texture* gNewShadowNoiseTexFrames[0x10];
 
 f32 getNewShadowDistortionWaveOffset(void)
 {
-    return lbl_803DCFA4;
+    return gNewShadowDistortionWaveOffset;
 }
 
 void loadNewShadowBumpTexture(int texMapId)
@@ -1140,7 +1140,7 @@ void loadNewShadowBumpTexture(int texMapId)
 void selectWhirlpoolTexture(int id)
 {
     register int idCopy = id;
-    Texture* p = (Texture*)lbl_803DCFCC;
+    Texture* p = (Texture*)gNewShadowWhirlpoolTexture;
     if (p->preloaded != 0)
     {
         struct _GXTexObj* obj = textureGetGXTexObj(p);
@@ -1255,8 +1255,8 @@ void maybeHudFn_8006c91c(void)
     }
     gNewShadowCasterCount = 0;
     gNewShadowCurrentViewSlot = Camera_GetCurrent();
-    lbl_803DCFA0 = lbl_803DCFA0 + framesThisStep * 0x28a;
-    lbl_803DCFA4 = 0.2f * mathSinfHighPrecision(6.284f * (f32)(u32)lbl_803DCFA0 / 65536.0f);
+    gNewShadowDistortionWavePhase = gNewShadowDistortionWavePhase + framesThisStep * 0x28a;
+    gNewShadowDistortionWaveOffset = 0.2f * mathSinfHighPrecision(6.284f * (f32)(u32)gNewShadowDistortionWavePhase / 65536.0f);
     mapClearBlockEdgeFlags();
     gNewShadowFrameIndex = (gNewShadowFrameIndex + 1) % NEW_SHADOW_FRAME_COUNT;
     if (isHeavyFogEnabled())
@@ -1270,7 +1270,7 @@ void maybeHudFn_8006c91c(void)
             v = 0x40;
         else
             v = (int)(64.0f * (hi - z) / (hi - lo));
-        if ((u8)v != lbl_803DCF80)
+        if ((u8)v != gNewShadowHeavyFogIntensity)
             updateHeavyFogTexture((u8)v);
     }
 }
@@ -1949,8 +1949,8 @@ void allocLotsOfTextures(void)
     }
     DCFlushRange((void*)(gNewShadowBumpTexture + 0x60), ((Texture*)gNewShadowBumpTexture)->dataSize);
 
-    lbl_803DCFCC = (u32)textureLoadAsset(0x5b0);
-    lbl_803DCFC8 = textureLoadAsset(0x600);
+    gNewShadowWhirlpoolTexture = (u32)textureLoadAsset(0x5b0);
+    gNewShadowHeatHazeTexture = textureLoadAsset(0x600);
     gNewShadowSnowFlashTexture = (u32)textureLoadAsset(0xc18);
 
     gNewShadowRampTexture = (int)textureAlloc(0x100, 4, 1, 0, 0, 0, 0, 0, 0);
