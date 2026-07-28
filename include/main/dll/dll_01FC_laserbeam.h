@@ -10,7 +10,7 @@ void LaserBeam_free(GameObject* obj);
 void LaserBeam_render(void);
 void LaserBeam_hitDetect(void);
 void LaserBeam_update(int obj);
-void LaserBeam_init(s16* obj, char* arg);
+void LaserBeam_init(GameObject* obj, char* arg);
 void LaserBeam_release(void);
 void LaserBeam_initialise(void);
 

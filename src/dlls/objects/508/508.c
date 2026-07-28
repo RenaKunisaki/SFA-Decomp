@@ -377,13 +377,13 @@ void LaserBeam_update(int obj2)
 }
 
 
-void LaserBeam_init(s16* obj, char* arg)
+void LaserBeam_init(GameObject* obj, char* arg)
 {
     LaserBeamState* state;
 
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     ObjMsg_AllocQueue(obj, 2);
-    *obj = (s16)((s32)((LaserBeamPlacement*)arg)->spawnYaw << 8);
+    obj->anim.rotX = (s16)((s32)((LaserBeamPlacement*)arg)->spawnYaw << 8);
     if (((LaserBeamPlacement*)arg)->firePeriod == 0)
     {
         state->firePeriod = (s16)(randomGetRange(-80, 80) + 400);
