@@ -419,7 +419,7 @@ void arwarwing_updateFlightPhysics(GameObject* obj, ArwingState* state)
     rateStep = (int)(f32)((int)((f32)angDelta * arwing->rotXGain) - arwing->rotXRate);
     rateStep = (rateStep < -0x32) ? -0x32 : ((rateStep > 0x32) ? 0x32 : rateStep);
     arwing->rotXRate = (int)((f32)rateStep * timeDelta + (f32)((ArwingState*)arwing)->rotXRate);
-    arwing->rotXCur = (int)((f32)arwing->rotXRate * timeDelta + arwing->rotXCur);
+    arwing->rotXCur = (f32)arwing->rotXRate * timeDelta + arwing->rotXCur;
 
     angDelta = arwing->rotYTarget - (u16)arwing->rotYCur;
     if (angDelta > 0x8000)
@@ -429,7 +429,7 @@ void arwarwing_updateFlightPhysics(GameObject* obj, ArwingState* state)
     rateStep = (int)(f32)((int)((f32)angDelta * arwing->rotYGain) - arwing->rotYRate);
     rateStep = (rateStep < -0x32) ? -0x32 : ((rateStep > 0x32) ? 0x32 : rateStep);
     arwing->rotYRate = (int)((f32)rateStep * timeDelta + (f32)((ArwingState*)arwing)->rotYRate);
-    arwing->rotYCur = (int)((f32)arwing->rotYRate * timeDelta + arwing->rotYCur);
+    arwing->rotYCur = (f32)arwing->rotYRate * timeDelta + arwing->rotYCur;
 
     angDelta = arwing->rotZTarget - (u16)arwing->rotZCur;
     if (angDelta > 0x8000)
@@ -439,7 +439,7 @@ void arwarwing_updateFlightPhysics(GameObject* obj, ArwingState* state)
     rateStep = (int)((f32)(int)((f32)angDelta * arwing->rotZGain) - arwing->rotZRate);
     rateStep = (rateStep < -0x64) ? -0x64 : ((rateStep > 0x64) ? 0x64 : rateStep);
     arwing->rotZRate = rateStep * timeDelta + ((ArwingState*)arwing)->rotZRate;
-    arwing->rotZCur = (int)(arwing->rotZRate * timeDelta + arwing->rotZCur);
+    arwing->rotZCur = arwing->rotZRate * timeDelta + arwing->rotZCur;
 
     if (arwing->mode == 0)
     {
@@ -518,9 +518,9 @@ void arwarwing_updateFlightPhysics(GameObject* obj, ArwingState* state)
     (obj)->anim.localPosY =
         arwing->bobBlend * (arwing->bobYAmp * mathSinf(3.1415927f * (f32)(u32)arwing->bobYPhase / 32768.0f)) +
         (obj)->anim.localPosY;
-    arwing->bobRotZPhase = (arwing->bobRotZRate * timeDelta + (f32)(u32)arwing->bobRotZPhase);
-    arwing->bobXPhase = (arwing->bobXRate * timeDelta + (f32)(u32)arwing->bobXPhase);
-    arwing->bobYPhase = (arwing->bobYRate * timeDelta + (f32)(u32)arwing->bobYPhase);
+    arwing->bobRotZPhase = arwing->bobRotZRate * timeDelta + (f32)(u32)arwing->bobRotZPhase;
+    arwing->bobXPhase = arwing->bobXRate * timeDelta + (f32)(u32)arwing->bobXPhase;
+    arwing->bobYPhase = arwing->bobYRate * timeDelta + (f32)(u32)arwing->bobYPhase;
     arwarwing_clampToFlightBounds(obj, state);
 }
 
@@ -1717,7 +1717,7 @@ void arwarwing_update(GameObject* obj)
             (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
             spawnExplosion((GameObject*)(int)obj, 100.0f, 1, 0, 1, 1, 0, 1, 0);
         }
-        state->rotZCur = (int)(lbl_803E6F6C * timeDelta + (f32)state->rotZCur);
+        state->rotZCur = lbl_803E6F6C * timeDelta + (f32)state->rotZCur;
         (obj)->anim.rotZ = (s16)state->rotZCur;
         state->velY = state->velY - 0.1f * timeDelta;
         objMove((GameObject*)obj, state->velX * timeDelta, state->velY * timeDelta,

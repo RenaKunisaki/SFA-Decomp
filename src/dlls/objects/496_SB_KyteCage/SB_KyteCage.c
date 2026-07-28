@@ -104,7 +104,7 @@ void SB_KyteCage_hitDetect(void) {
 void SB_KyteCage_update(GameObject* obj) {
     SBKyteCageState* state = obj->extra;
 
-    obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+    obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
     if (state->kyte == NULL) {
         GameObject** objects;
         int count;

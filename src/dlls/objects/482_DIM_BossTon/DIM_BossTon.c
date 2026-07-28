@@ -205,7 +205,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjAnimUpdateState* an
             lbl_803DDBA4 = 0.0f;
             updateState->animFinished = 0;
             ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
-            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             mainSetBits(DIMBOSS_GAMEBIT_ICICLE_DEFEATED, 0);
             if (gDIMbosstonsilRoutePhase >= DIMBOSSTONSIL_ROUTE_HIGH_THRESHOLD) {
                 mainSetBits(DIMBOSSTONSIL_GAMEBIT_ROUTE_HIGH, 1);
@@ -238,7 +238,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjAnimUpdateState* an
             lbl_803DDB98 = 0.0f;
             updateState->animFinished = 0;
             ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
-            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             mainSetBits(DIMBOSS_GAMEBIT_ICICLE_DEFEATED, 0);
             if (gDIMbosstonsilRoutePhase == DIMBOSSTONSIL_ROUTE_SPLIT_THRESHOLD) {
                 mainSetBits(DIMBOSSTONSIL_GAMEBIT_ROUTE_LOW, 1);

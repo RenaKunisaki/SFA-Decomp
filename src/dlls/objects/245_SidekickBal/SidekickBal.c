@@ -232,7 +232,7 @@ void SidekickBall_update(GameObject* obj) {
     int triggered;
 
     state = (SidekickBallState*)*(int*)&obj->extra;
-    obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+    obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
     state->onPathPoint = 0;
 
     player = Obj_GetPlayerObject();
@@ -262,7 +262,7 @@ void SidekickBall_update(GameObject* obj) {
         trickyBallMove(obj);
         /* Fall through to process player interaction triggers. */
     case SIDEKICK_BALL_HELD:
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
         triggered = 0;
         if ((buttonGetDisabled(0) & PAD_BUTTON_A) == 0u && obj->userData2 == 0 && ObjTrigger_IsSet((int)obj) != 0) {
             ObjHits_DisableObject(obj);

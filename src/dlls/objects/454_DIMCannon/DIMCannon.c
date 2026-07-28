@@ -390,7 +390,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
                 state->mode = DIM_CANNON_MODE_WAIT_FOR_RESET;
                 *(u8*)&state->chargeTimer = 0x3c;
                 animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A;
-                obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+                obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
                 if (Sfx_IsPlayingFromObjectChannel((u32)obj, 8) != 0) {
                     Sfx_IsPlayingFromObjectChannel((u32)obj, 0);
                 }
@@ -468,7 +468,7 @@ void DIMCannon_update(GameObject* obj) {
     }
 
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_DISABLED) && mainGetBit(placement->resetGameBit)) {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
     }
 
     state = obj->extra;

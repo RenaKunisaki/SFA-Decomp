@@ -136,7 +136,7 @@ static inline u32 Expgfx_GetSlotTableIndex(const ExpgfxSlot* slot)
 
 static inline void Expgfx_SetSlotTableIndex(ExpgfxSlot* slot, u8 tableIndex)
 {
-    slot->encodedTableIndex = (u8)((tableIndex << 1) | (slot->encodedTableIndex & 1));
+    slot->encodedTableIndex = (tableIndex << 1) | (slot->encodedTableIndex & 1);
 }
 
 static inline ExpgfxSlot* Expgfx_GetSlot(int poolIndex, int slotIndex)
@@ -2354,11 +2354,11 @@ void expgfx_initSlotQuad(void* slotPtr)
 
     if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_SCALE_FROM_ZERO) != 0)
     {
-        slot->scaleCurrent = ((f32)slot->scaleStep * step + (f32)slot->scaleCurrent);
+        slot->scaleCurrent = (f32)slot->scaleStep * step + (f32)slot->scaleCurrent;
     }
     else if ((slot->renderFlags & EXPGFX_RENDER_SCALE_OVER_LIFETIME) != 0)
     {
-        slot->scaleCurrent = ((f32)slot->scaleCurrent - (f32)slot->scaleStep * step);
+        slot->scaleCurrent = (f32)slot->scaleCurrent - (f32)slot->scaleStep * step;
     }
 
     if (resource == 0)

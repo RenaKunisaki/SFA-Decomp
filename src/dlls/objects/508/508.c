@@ -169,7 +169,7 @@ void LaserBeam_update(GameObject* obj) {
     beamDirectionZ = mathSinf((gLaserBeamObjPi * (f32)(int)obj->anim.rotX) / gLaserBeamObjAngleToRadScale);
     beamPlane = -(obj->anim.localPosX * beamDirectionX + obj->anim.localPosZ * beamDirectionZ);
     player = Obj_GetPlayerObject();
-    state->damageCooldown = (s8)(state->damageCooldown - framesThisStep);
+    state->damageCooldown = state->damageCooldown - framesThisStep;
     if (state->damageCooldown <= 0) {
         state->damageCooldown = 0;
     } else if (state->beamKind == 0 && state->effectHandle != -1) {

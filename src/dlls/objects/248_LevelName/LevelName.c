@@ -84,7 +84,7 @@ void LevelName_update(GameObject* obj) {
         }
         break;
     case LEVELNAME_PHASE_SLIDE_IN:
-        state->bannerY = (s16)(state->bannerY + framesThisStep * LEVELNAME_BANNER_Y_STEP);
+        state->bannerY = state->bannerY + framesThisStep * LEVELNAME_BANNER_Y_STEP;
         if (state->bannerY > LEVELNAME_BANNER_Y_MAX) {
             state->bannerY = LEVELNAME_BANNER_Y_MAX;
             state->phase = LEVELNAME_PHASE_HOLD;
@@ -103,7 +103,7 @@ void LevelName_update(GameObject* obj) {
         break;
     }
     case LEVELNAME_PHASE_SLIDE_OUT:
-        state->bannerY = (s16)(state->bannerY - framesThisStep * LEVELNAME_BANNER_Y_STEP);
+        state->bannerY = state->bannerY - framesThisStep * LEVELNAME_BANNER_Y_STEP;
         if (state->bannerY < 0) {
             state->bannerY = 0;
             state->phase = LEVELNAME_PHASE_IDLE;

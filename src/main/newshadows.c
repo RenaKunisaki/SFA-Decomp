@@ -1255,7 +1255,7 @@ void maybeHudFn_8006c91c(void)
     }
     gNewShadowCasterCount = 0;
     gNewShadowCurrentViewSlot = Camera_GetCurrent();
-    lbl_803DCFA0 = (u16)(lbl_803DCFA0 + framesThisStep * 0x28a);
+    lbl_803DCFA0 = lbl_803DCFA0 + framesThisStep * 0x28a;
     lbl_803DCFA4 = 0.2f * mathSinfHighPrecision(6.284f * (f32)(u32)lbl_803DCFA0 / 65536.0f);
     mapClearBlockEdgeFlags();
     gNewShadowFrameIndex = (gNewShadowFrameIndex + 1) % NEW_SHADOW_FRAME_COUNT;

@@ -80,7 +80,7 @@ void Menu_addItemEx(int resultId, int unused2, int unused3, int itemWidth, int d
     {
         gMenuSelectedId = resultId;
     }
-    gMenuTotalWidth = (s16)((s32)gMenuTotalWidth + itemWidth);
+    gMenuTotalWidth = (s32)gMenuTotalWidth + itemWidth;
     gMenuItemCount++;
 }
 
@@ -90,7 +90,7 @@ void Menu_addItem(int resultId, int unused2, int itemWidth, int defaultIndex)
     {
         gMenuSelectedId = resultId;
     }
-    gMenuTotalWidth = (s16)((s32)gMenuTotalWidth + itemWidth);
+    gMenuTotalWidth = (s32)gMenuTotalWidth + itemWidth;
     gMenuItemCount++;
 }
 void Menu_open(int unused, int v)

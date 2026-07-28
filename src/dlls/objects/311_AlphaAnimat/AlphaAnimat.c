@@ -120,7 +120,7 @@ void AlphaAnimator_update(GameObject* obj) {
     switch (mode) {
     case ALPHA_ANIMATOR_MODE_ONESHOT:
         if (placement->startAlpha > placement->targetAlpha) {
-            state->alphaLevel = (s16)(state->alphaLevel - placement->rate * framesThisStep);
+            state->alphaLevel = state->alphaLevel - placement->rate * framesThisStep;
             if (state->alphaLevel <= placement->targetAlpha) {
                 state->alphaLevel = placement->targetAlpha;
                 if (placement->completionGameBit != -1) {
@@ -129,7 +129,7 @@ void AlphaAnimator_update(GameObject* obj) {
                 state->completedCycles += 1;
             }
         } else {
-            state->alphaLevel = (s16)(state->alphaLevel + placement->rate * framesThisStep);
+            state->alphaLevel = state->alphaLevel + placement->rate * framesThisStep;
             if (state->alphaLevel >= placement->targetAlpha) {
                 state->alphaLevel = placement->targetAlpha;
                 if (placement->completionGameBit != -1) {
@@ -141,12 +141,12 @@ void AlphaAnimator_update(GameObject* obj) {
         break;
     case ALPHA_ANIMATOR_MODE_PINGPONG:
         if (placement->startAlpha > placement->targetAlpha) {
-            state->alphaLevel = (s16)(state->alphaLevel - placement->rate * framesThisStep);
+            state->alphaLevel = state->alphaLevel - placement->rate * framesThisStep;
             if (state->alphaLevel < placement->targetAlpha) {
-                state->alphaLevel = (s16)(placement->startAlpha - (int)(placement->targetAlpha - state->alphaLevel));
+                state->alphaLevel = placement->startAlpha - (int)(placement->targetAlpha - state->alphaLevel);
             }
         } else {
-            state->alphaLevel = (s16)(state->alphaLevel + placement->rate * framesThisStep);
+            state->alphaLevel = state->alphaLevel + placement->rate * framesThisStep;
             alphaLevel = state->alphaLevel;
             if (alphaLevel > placement->startAlpha) {
                 alphaLevel -= placement->targetAlpha;
@@ -157,7 +157,7 @@ void AlphaAnimator_update(GameObject* obj) {
     case ALPHA_ANIMATOR_MODE_GATED:
         if (state->gameBitValue != 0) {
             if (placement->startAlpha > placement->targetAlpha) {
-                state->alphaLevel = (s16)(state->alphaLevel - placement->rate * framesThisStep);
+                state->alphaLevel = state->alphaLevel - placement->rate * framesThisStep;
                 if (state->alphaLevel > placement->targetAlpha) {
                     return;
                 }
@@ -167,7 +167,7 @@ void AlphaAnimator_update(GameObject* obj) {
                 }
                 state->completedCycles += 1;
             } else {
-                state->alphaLevel = (s16)(state->alphaLevel + placement->rate * framesThisStep);
+                state->alphaLevel = state->alphaLevel + placement->rate * framesThisStep;
                 if (state->alphaLevel < placement->targetAlpha) {
                     return;
                 }
@@ -179,7 +179,7 @@ void AlphaAnimator_update(GameObject* obj) {
             }
         } else {
             if (placement->startAlpha > placement->targetAlpha) {
-                state->alphaLevel = (s16)(state->alphaLevel + placement->rate * framesThisStep);
+                state->alphaLevel = state->alphaLevel + placement->rate * framesThisStep;
                 if (state->alphaLevel < placement->startAlpha) {
                     return;
                 }
@@ -189,7 +189,7 @@ void AlphaAnimator_update(GameObject* obj) {
                 }
                 state->completedCycles += 1;
             } else {
-                state->alphaLevel = (s16)(state->alphaLevel - placement->rate * framesThisStep);
+                state->alphaLevel = state->alphaLevel - placement->rate * framesThisStep;
                 if (state->alphaLevel > placement->startAlpha) {
                     return;
                 }

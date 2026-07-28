@@ -192,7 +192,7 @@ int FXEmit_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* ani
             FXEmit_emitEffect(obj);
         }
         if (animUpdate->eventIds[i] == FXEMIT_EVENT_TOGGLE_SEQUENCE) {
-            state->sequenceRotate = (u8)(1 - state->sequenceRotate);
+            state->sequenceRotate = 1 - state->sequenceRotate;
         }
         animUpdate->eventIds[i] = 0;
     }

@@ -50,7 +50,7 @@ int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     }
     switch (animUpdate->triggerCommand) {
     case DIM_LOG_FIRE_ANIM_COMMAND_TOGGLE_SMOKE:
-        state->smokeEnabled = (u8)(state->smokeEnabled ^ 1);
+        state->smokeEnabled = state->smokeEnabled ^ 1;
         break;
     case DIM_LOG_FIRE_ANIM_COMMAND_SET_GAMEBIT:
         mainSetBits(DIM_LOG_FIRE_ANIM_GAMEBIT, 1);
@@ -72,7 +72,7 @@ int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
 int dimlogfire_countdownCallback(GameObject* obj, int delta) {
     DimLogFireState* state = obj->extra;
 
-    state->remainingStrength = (s8)(state->remainingStrength - delta);
+    state->remainingStrength = state->remainingStrength - delta;
     return state->remainingStrength <= 0;
 }
 

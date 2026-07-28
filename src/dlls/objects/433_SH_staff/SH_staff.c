@@ -332,21 +332,21 @@ int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* a
             hudFn_8011f38c(1);
             break;
         case SHSTAFF_EVENT_SPAWN_EVEN_HAZE:
-            state->hazeFlags = (u8)(state->hazeFlags | SHSTAFF_HAZE_FLAG_SPAWN_EVEN);
+            state->hazeFlags = state->hazeFlags | SHSTAFF_HAZE_FLAG_SPAWN_EVEN;
             break;
         case SHSTAFF_EVENT_SPAWN_ODD_HAZE:
-            state->hazeFlags = (u8)(state->hazeFlags | SHSTAFF_HAZE_FLAG_SPAWN_ODD);
+            state->hazeFlags = state->hazeFlags | SHSTAFF_HAZE_FLAG_SPAWN_ODD;
             break;
         case SHSTAFF_EVENT_FADE_HAZE_OUT:
-            state->hazeFlags = (u8)(state->hazeFlags | SHSTAFF_HAZE_FLAG_FADE_OUT);
+            state->hazeFlags = state->hazeFlags | SHSTAFF_HAZE_FLAG_FADE_OUT;
             state->hazeFadeTimer = 60.0f;
             break;
         case SHSTAFF_EVENT_CONVERGE_HAZE:
-            state->hazeFlags = (u8)(state->hazeFlags | SHSTAFF_HAZE_FLAG_CONVERGE);
+            state->hazeFlags = state->hazeFlags | SHSTAFF_HAZE_FLAG_CONVERGE;
             state->hazeFadeTimer = 0.0f;
             break;
         case SHSTAFF_EVENT_FINISH_HAZE_EFFECT:
-            state->hazeFlags = (u8)(state->hazeFlags | SHSTAFF_HAZE_FLAG_FADE_OUT);
+            state->hazeFlags = state->hazeFlags | SHSTAFF_HAZE_FLAG_FADE_OUT;
             state->hazeFlags =
                 (u8)(state->hazeFlags | SHSTAFF_HAZE_FLAG_EVEN_COMPLETE | SHSTAFF_HAZE_FLAG_ODD_COMPLETE);
             state->hazeFadeTimer = SHSTAFF_FADE_OUT_TIMER_INIT;
@@ -376,7 +376,7 @@ void sh_staff_deactivate(GameObject* obj, ShStaffState* state, int clearChildren
     player = (int)Obj_GetPlayerObject();
     ObjHits_DisableObject(obj);
     obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
-    obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+    obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
 
     if (clearChildren != 0) {
         staffToggle((GameObject*)player, 1);

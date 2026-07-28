@@ -189,7 +189,7 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
             }
             if (state->currentTrackOffset >= SC_TOTEM_STRENGTH_WIN_TRACK_OFFSET &&
                 state->currentTrackOffset <= SC_TOTEM_STRENGTH_LOSS_TRACK_OFFSET) {
-                state->currentTrackOffset = (int)((f32)state->currentTrackOffset + state->offsetVelocity);
+                state->currentTrackOffset = (f32)state->currentTrackOffset + state->offsetVelocity;
             }
             diff = ((f32)state->prevTrackOffset - state->currentTrackOffset) / 40.0f;
             if (state->currentTrackOffset < SC_TOTEM_STRENGTH_WIN_TRACK_OFFSET) {

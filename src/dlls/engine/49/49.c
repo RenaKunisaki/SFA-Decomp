@@ -765,7 +765,7 @@ void Minimap_drawCompassBlip(void)
     {
         objRender(0, 0, 0, 0, gMinimapBlipObjects[i], 1);
         model = Obj_GetActiveModel((GameObject*)gMinimapBlipObjects[i]);
-        model->bufferFlags = (u16)(model->bufferFlags & ~0x8);
+        model->bufferFlags = model->bufferFlags & ~0x8;
         gMinimapBlipObjects[i]->anim.renderAlpha = 255;
     }
     viewFn_80129c74();

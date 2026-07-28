@@ -517,7 +517,7 @@ void worldobj_init(GameObject* obj, const WorldObjSetup* setup) {
         obj->anim.rootMotionScale = obj->anim.rootMotionScale * state->scale;
         state->spinXStep = randomGetRange(0xa, 0x19);
         if (randomGetRange(0, 1) != 0) {
-            state->spinXStep = (s8)(-state->spinXStep);
+            state->spinXStep = -state->spinXStep;
             state->orbitAngle = 0x8000;
         }
         base = (f32)randomGetRange(0xc8, 0x190);

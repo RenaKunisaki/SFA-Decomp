@@ -108,7 +108,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             }
             if (reverse != 0)
             {
-                texture->offsetS = (s16)(texture->offsetS - (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
+                texture->offsetS = texture->offsetS - (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt);
                 if ((f32)texture->offsetS <= VORTEX_ZERO)
                 {
                     texture->offsetS += 10000;
@@ -116,7 +116,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             }
             else
             {
-                texture->offsetS = (s16)(texture->offsetS + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
+                texture->offsetS = texture->offsetS + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt);
                 if (texture->offsetS >= 10000)
                 {
                     texture->offsetS -= 10000;
@@ -160,7 +160,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         texture = objFindTexture((GameObject*)obj, 0, 0);
         if (texture != NULL)
         {
-            texture->offsetS = (s16)(texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt));
+            texture->offsetS = texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt);
         }
         obj->anim.rotX = (s16)(obj->anim.rotX + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
         if (texture->offsetS >= 10000)
@@ -196,7 +196,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         texture = objFindTexture((GameObject*)obj, 0, 0);
         if (texture != NULL)
         {
-            texture->offsetS = (s16)(texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt));
+            texture->offsetS = texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt);
         }
         obj->anim.rotX = (s16)(obj->anim.rotX + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
         if (texture->offsetS >= 10000)

@@ -45,7 +45,7 @@ int nwGeyser_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateStat
     }
     texture = objFindTexture(obj, 0, 0);
     objFindTexture(obj, 1, 0);
-    texture->offsetT = (s16)(texture->offsetT + (s32)(sNwGeyserTextureScrollParams.unitsPerSecond * timeDelta));
+    texture->offsetT = texture->offsetT + (s32)(sNwGeyserTextureScrollParams.unitsPerSecond * timeDelta);
     if (texture->offsetT > NW_GEYSER_TEXTURE_SCROLL_PERIOD) {
         texture->offsetT -= NW_GEYSER_TEXTURE_SCROLL_PERIOD;
     }

@@ -74,7 +74,7 @@ void lightsource_update(GameObject* obj) {
     case LIGHTSOURCE_MODE_INTERACTIVE:
         state->litPrev = state->lit;
         if (ObjHits_GetPriorityHit(obj, NULL, NULL, NULL) != 0) {
-            state->lit = (u8)(1 - state->lit);
+            state->lit = 1 - state->lit;
         }
         if (state->lit != state->litPrev) {
             if (state->lit != 0) {

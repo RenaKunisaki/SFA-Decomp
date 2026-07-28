@@ -34,7 +34,7 @@ int cfPrisonCage_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateStat
     CfPrisonCagePlacement* placement = (CfPrisonCagePlacement*)obj->anim.placement;
 
     if (mainGetBit(placement->openedGameBit) != 0) {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A;
         return 0;
     }
@@ -49,13 +49,13 @@ int cfPrisonCage_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateStat
         }
     }
     if (mainGetBit(GAMEBIT_ITEM_PrisonKey_Got) != 0) {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
     } else {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
         if ((*gGameUIInterface)->isItemBeingUsed(GAMEBIT_ITEM_PrisonKey_Got) != 0) {
-            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             (*gObjectTriggerInterface)->runSequence(CFPRISONCAGE_SWITCH_OPEN_SEQUENCE_ID, obj, -1);
         }
     }

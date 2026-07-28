@@ -292,7 +292,7 @@ int GXFlush_(u8 visible, int unused)
     GXSetDrawSync(gGxDrawSyncToken);
     GXCopyDisp(renderFrameBuffer, 1);
     GXFlush();
-    gGxDrawSyncToken = (u16)(gGxDrawSyncToken + 1);
+    gGxDrawSyncToken = gGxDrawSyncToken + 1;
     if (renderFrameBuffer == (next = externalFrameBuffer0))
     {
         next = externalFrameBuffer1;
