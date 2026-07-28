@@ -1258,12 +1258,6 @@ u8 sGameTextFallbackDefs[0x280];
 u32 sSubtitleCtrlCmdScratch[0x240];
 GameTextSlot gGameTextCommandSlots[0xA00 / sizeof(GameTextSlot)];
 
-void* jumptable_802C9DD4[12] = {
-    (void*)((u8*)textRenderStr + 0x408), (void*)((u8*)textRenderStr + 0x508), (void*)((u8*)textRenderStr + 0x508),
-    (void*)((u8*)textRenderStr + 0x438), (void*)((u8*)textRenderStr + 0x440), (void*)((u8*)textRenderStr + 0x450),
-    (void*)((u8*)textRenderStr + 0x460), (void*)((u8*)textRenderStr + 0x470), (void*)((u8*)textRenderStr + 0x508),
-    (void*)((u8*)textRenderStr + 0x508), (void*)((u8*)textRenderStr + 0x508), (void*)((u8*)textRenderStr + 0x480),
-};
 void* jumptable_802C9E84[16] = {
     (void*)((u8*)gameTextRun + 0x54C), (void*)((u8*)gameTextRun + 0x3B8), (void*)((u8*)gameTextRun + 0x3C8),
     (void*)((u8*)gameTextRun + 0x354), (void*)((u8*)gameTextRun + 0x388), (void*)((u8*)gameTextRun + 0x3DC),
