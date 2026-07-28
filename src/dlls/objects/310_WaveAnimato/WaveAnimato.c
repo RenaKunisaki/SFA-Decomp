@@ -210,8 +210,8 @@ void WaveAnimator_init(GameObject* obj, WaveAnimatorPlacement* placement) {
     state->originY = placement->originY;
     state->spanX = placement->spanX;
     state->spanY = placement->spanY;
-    state->ampX = (f32)placement->ampX;
-    state->ampY = (f32)placement->ampY;
+    state->ampX = placement->ampX;
+    state->ampY = placement->ampY;
     state->period = placement->period;
     state->gridN = placement->gridN;
     scale = (1.0f);

@@ -745,7 +745,7 @@ void SH_LevelControl_init(GameObject* obj) {
     u32 objectFlags;
 
     obj->animEventCallback = SH_LevelControl_sequenceCallback;
-    objectFlags = (u32)obj->objectFlags | OBJECT_OBJFLAG_HIDDEN;
+    objectFlags = obj->objectFlags | OBJECT_OBJFLAG_HIDDEN;
     obj->objectFlags = objectFlags;
     obj->userData2 = 3;
 

@@ -1477,7 +1477,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, u8* data)
             gCamcontrolModeSettings->targetUpperHeightOffset = fVal;
             gCamcontrolModeSettings->targetMinDistance = (f32)(u32)p->minDistance;
             gCamcontrolModeSettings->targetMaxDistance = (f32)(u32)p->maxDistance;
-            gCamcontrolModeSettings->fov = (f32)p->fov;
+            gCamcontrolModeSettings->fov = p->fov;
             gCamcontrolModeSettings->targetSlideRightAmount = (f32)(u32)p->slideRight;
             gCamcontrolModeSettings->targetSlideLeftAmount = (f32)(u32)p->slideLeft;
             uVal = p->distanceAdjustRate;

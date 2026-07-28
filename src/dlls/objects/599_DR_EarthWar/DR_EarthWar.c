@@ -300,7 +300,7 @@ static void DR_EarthWarrior_setupPathState(u8* pathState, DREarthWarriorInitData
 {
     (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, (void*)gDREarthWarriorPathSetupParam);
     s->aimAccumY = 0.0f;
-    s->aimHalfY = (f32)(s32)s->yawTurnDir;
+    s->aimHalfY = (f32)s->yawTurnDir;
 }
 
 void DR_EarthWarrior_func23(GameObject* obj, int mode)
@@ -554,7 +554,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
         *(u32*)&q->unk360 |= 0x1000000LL;
         ((EarthWarriorState*)state)->baddie.moveSpeed = 0.0165f;
         {
-            s16 yaw = (32768.0f * (obj)->anim.currentMoveProgress + (f32)(s32)q->leapStartYaw);
+            s16 yaw = (32768.0f * (obj)->anim.currentMoveProgress + (f32)q->leapStartYaw);
             *(s16*)&q->appliedYaw = yaw;
             q->savedYaw = yaw;
         }
@@ -625,7 +625,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
     {
         if (q->frameCounter < 0x96)
         {
-            f32 v = interpolate((f32)(s32)q->yawTurnProgress,
+            f32 v = interpolate((f32)q->yawTurnProgress,
                                 1.0f / q->yawSmoothDivisor, timeDelta);
             f32 cap = timeDelta * (q->yawStepScale * q->yawStepRate);
             if (v > cap)
@@ -641,7 +641,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
         }
         if (q->frameCounter < 0x96)
         {
-            f32 v = interpolate((f32)(s32)q->frameCounter,
+            f32 v = interpolate((f32)q->frameCounter,
                                 1.0f / q->currentYawSmoothDivisor, timeDelta);
             f32 cap = q->currentYawStepRate * timeDelta;
             if (v > cap)
@@ -854,7 +854,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
         ((BaddieState*)baddie)->moveSpeed = 0.005f;
     }
     {
-        f32 v = interpolate((f32)(s32)q->yawTurnProgress, 1.0f / q->yawSmoothDivisor, timeDelta);
+        f32 v = interpolate((f32)q->yawTurnProgress, 1.0f / q->yawSmoothDivisor, timeDelta);
         f32 cap = timeDelta * (q->yawStepScale * q->yawStepRate);
         v = (v < cap) ? v : cap;
         if (q->yawTurnDir < 0)
@@ -864,7 +864,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
         *(s16*)&q->appliedYaw = (182.044f * v + (f32)(s32)q->appliedYaw);
     }
     {
-        f32 v = interpolate((f32)(s32)q->frameCounter, 1.0f / q->currentYawSmoothDivisor, timeDelta);
+        f32 v = interpolate((f32)q->frameCounter, 1.0f / q->currentYawSmoothDivisor, timeDelta);
         f32 cap = q->currentYawStepRate * timeDelta;
         v = (v < cap) ? v : cap;
         if (q->turnDegrees < 0)

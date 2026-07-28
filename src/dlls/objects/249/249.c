@@ -119,7 +119,7 @@ void ProjectileSwitch_hitDetect(GameObject* obj) {
             texture->textureId = PROJECTILE_SWITCH_TEXTURE_OFF;
         }
         updatedState->isOn = 0;
-        mainSetBits((int)switchState->gameBitId, 0);
+        mainSetBits(switchState->gameBitId, 0);
     } else {
         updatedState = obj->extra;
         if (obj->anim.mapEventSlot == PROJECTILE_SWITCH_SPECIAL_MAP_EVENT_SLOT) {
@@ -132,7 +132,7 @@ void ProjectileSwitch_hitDetect(GameObject* obj) {
             texture->textureId = PROJECTILE_SWITCH_TEXTURE_ON;
         }
         updatedState->isOn = 1;
-        mainSetBits((int)switchState->gameBitId, 1);
+        mainSetBits(switchState->gameBitId, 1);
         if ((placement->modelIndexAndMode & PROJECTILE_SWITCH_MODE_MASK) == PROJECTILE_SWITCH_MODE_TIMED_RESET) {
             switchState->autoResetTimerFrames =
                 PROJECTILE_SWITCH_FRAMES_PER_SECOND *
@@ -148,7 +148,7 @@ void ProjectileSwitch_update(GameObject* obj) {
 
     switchState = obj->extra;
     if (switchState->isOn != 0) {
-        if (mainGetBit((int)switchState->gameBitId) == 0) {
+        if (mainGetBit(switchState->gameBitId) == 0) {
             updatedState = obj->extra;
             texture = objFindTexture(obj, 0, 0);
             if (texture != NULL) {
@@ -157,7 +157,7 @@ void ProjectileSwitch_update(GameObject* obj) {
             updatedState->isOn = 0;
         }
     } else {
-        if (mainGetBit((int)switchState->gameBitId) != 0) {
+        if (mainGetBit(switchState->gameBitId) != 0) {
             updatedState = obj->extra;
             texture = objFindTexture(obj, 0, 0);
             if (texture != NULL) {
@@ -170,7 +170,7 @@ void ProjectileSwitch_update(GameObject* obj) {
         switchState->autoResetTimerFrames = switchState->autoResetTimerFrames - (f32)(u32)framesThisStep;
         if (switchState->autoResetTimerFrames <= 0.0f) {
             switchState->autoResetTimerFrames = 0.0f;
-            mainSetBits((int)switchState->gameBitId, 0);
+            mainSetBits(switchState->gameBitId, 0);
         }
     }
 }
@@ -210,7 +210,7 @@ void ProjectileSwitch_init(GameObject* obj, ProjectileSwitchPlacement* placement
     } else {
         switchState->gameBitId = placement->gameBitId;
     }
-    switchState->isOn = mainGetBit((int)switchState->gameBitId);
+    switchState->isOn = mainGetBit(switchState->gameBitId);
     if (switchState->isOn != 0) {
         switchState = obj->extra;
         texture = objFindTexture(obj, 0, 0);

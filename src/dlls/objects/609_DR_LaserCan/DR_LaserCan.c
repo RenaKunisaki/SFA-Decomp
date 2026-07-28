@@ -241,7 +241,7 @@ int drlasercannon_aimAtTarget(GameObject* self, GameObject* target, DrLaserCanno
         wrapDelta = (wrapDelta < -gLaserCannonMaxAimStep)
                         ? -gLaserCannonMaxAimStep
                         : (s16)((wrapDelta > gLaserCannonMaxAimStep) ? gLaserCannonMaxAimStep : wrapDelta);
-        vec->x = (s16)((f32)vec->x + interpolate((f32)wrapDelta, 0.25f, timeDelta));
+        vec->x = (s16)(vec->x + interpolate((f32)wrapDelta, 0.25f, timeDelta));
     }
     /* Report whether yaw is still far (> 0x100) from the target, i.e. not yet on-aim. */
     delta = self->anim.rotX - out->yaw;

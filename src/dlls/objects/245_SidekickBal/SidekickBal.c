@@ -443,7 +443,7 @@ void SidekickBall_init(GameObject* obj) {
     state->fadeTimer = 0.0f;
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
-    state->primaryRadius = (f32)hitState->primaryRadius;
+    state->primaryRadius = hitState->primaryRadius;
     (*gPathControlInterface)->init(state, 0, SIDEKICKBALL_PATH_CONFIG, 1);
     (*gPathControlInterface)->setLocalPointCollision(state, 1, gSidekickBallPathPointData, &state->primaryRadius, 1);
     (*gPathControlInterface)->setup(state, 1, gSidekickBallPathPointData, &state->primaryRadius, &pathFlag);

@@ -183,9 +183,9 @@ void CameraModeClimb_init(CameraObject* camera, int mode, s8* args)
         gCamClimbState->startMaxHeight = gCamClimbState->maxHeight;
         gCamClimbState->startDistance = gCamClimbState->targetDistance;
         gCamClimbState->targetRelativePosition = (u16)(int)(gCamClimbDegreesToBinaryAngle * (f32)a->relativePosition);
-        gCamClimbState->endMinHeight = (f32)a->minHeight;
-        gCamClimbState->endMaxHeight = (f32)a->maxHeight;
-        gCamClimbState->endDistance = (f32)a->distance;
+        gCamClimbState->endMinHeight = a->minHeight;
+        gCamClimbState->endMaxHeight = a->maxHeight;
+        gCamClimbState->endDistance = a->distance;
         gCamClimbState->transitionTimer = (s16)a->duration;
         gCamClimbState->transitionDuration = (s16)a->duration;
         break;

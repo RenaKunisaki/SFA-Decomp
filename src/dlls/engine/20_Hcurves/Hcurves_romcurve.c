@@ -138,7 +138,7 @@ extern u8 gObjfsaWalkGroupActive[0xB8];
     }                                                                                                                  \
     pl->normalX = (s16)(32767.0f * dxn);                                                                \
     pl->normalZ = (s16)(32767.0f * dzn);                                                                \
-    *(po) = -((f32)pl->normalX * (XA) + (f32)pl->normalZ * (ZA))
+    *(po) = -(pl->normalX * (XA) + pl->normalZ * (ZA))
 
 static f32 RomCurve_scaleTangent(f32 t)
 {

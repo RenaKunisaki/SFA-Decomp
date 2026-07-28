@@ -624,12 +624,12 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
             case TEXT_ALIGN_RIGHT:
                 spaceExtra = lbl_803DE704;
                 gameTextMeasureString(p, gGameTextScale, &measW, NULL, 0, 0, -1);
-                x = win->x + ((f32)win->width - measW);
+                x = win->x + (win->width - measW);
                 break;
             case TEXT_ALIGN_CENTER:
                 spaceExtra = lbl_803DE704;
                 gameTextMeasureString(p, gGameTextScale, &measW, NULL, 0, 0, -1);
-                x = (f32)win->width - measW;
+                x = win->width - measW;
                 x = x * lbl_803DE70C + win->x;
                 break;
             case TEXT_ALIGN_JUSTIFY:
@@ -653,7 +653,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                         acc += getControlCharLen(innerCh) * 2;
                     }
                 }
-                spaceExtra = ((f32)win->width - measW) / spaceCount;
+                spaceExtra = (win->width - measW) / spaceCount;
                 break;
             }
             }

@@ -476,7 +476,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
     if (challenge->animationIndex < 4)
     {
         int meterPosition =
-            (s16)(90.0f * mathSinf(3.1415927f * (f32)challenge->phase / 32768.0f));
+            (s16)(90.0f * mathSinf(3.1415927f * challenge->phase / 32768.0f));
         u16 successRange = (int)(90.0f * controls->scales[challenge->difficulty]);
         if (obj->userData2 == 0)
         {
@@ -526,7 +526,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
             challenge->previousPhase2 = challenge->previousPhase;
             fearTestMeterSetRange(
                 0x60, (u8)(int)(96.0f * controls->scales[challenge->difficulty]),
-                (int)(90.0f * mathSinf(3.1415927f * (f32)challenge->phase / 32768.0f)));
+                (int)(90.0f * mathSinf(3.1415927f * challenge->phase / 32768.0f)));
             fearTestMeterSetFadeIn(1);
             setAButtonIcon(6);
         }

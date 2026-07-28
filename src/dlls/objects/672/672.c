@@ -531,7 +531,7 @@ void ring_init(GameObject* obj, RingPlacement* setup)
         ObjHits_DisableObject(obj);
     }
     state->linkId = p->linkId;
-    state->pullHeight = (f32)p->pullHeight / 10.0f;
+    state->pullHeight = p->pullHeight / 10.0f;
     state->origX = (obj)->anim.localPosX;
     state->origY = (obj)->anim.localPosY;
     if (p->modeFlag != 0)

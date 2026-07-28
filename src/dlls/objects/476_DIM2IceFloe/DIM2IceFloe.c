@@ -125,7 +125,7 @@ void dim2icefloe_init(GameObject *obj, int p)
     Dim2IceFloePlacement* placement = (Dim2IceFloePlacement*)p;
     Dim2IceFloeState* sub = (Dim2IceFloeState*)(obj)->extra;
     sub->targetId = placement->base.mapId;
-    sub->curveStep = (f32)placement->curveStep / 100.0f;
+    sub->curveStep = placement->curveStep / 100.0f;
     sub->yawJitter = (f32)(s32)
     randomGetRange(-0x1e, 0x1e);
     placement->base.mapId = -1;

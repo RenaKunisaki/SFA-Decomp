@@ -411,12 +411,12 @@ void GroundAnimator_update(GameObject* obj) {
 void GroundAnimator_init(GameObject* obj, GroundAnimatorPlacement* placement) {
     GroundAnimatorState* state = obj->extra;
     state->modelVariant = (u8)placement->modelVariant;
-    state->yOffset = (f32)placement->yOffset;
+    state->yOffset = placement->yOffset;
     state->previousSinkDepth = (-1.0f);
-    state->radius = (f32)placement->radius;
+    state->radius = placement->radius;
     if (placement->blockId != 0) {
         if (mainGetBit(placement->sunkGameBit) != 0) {
-            state->sinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * (f32)placement->maxSinkDepth;
+            state->sinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth;
             state->flags |= GROUND_ANIMATOR_STATE_COMPLETE;
         }
         ObjGroup_AddObject((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);

@@ -145,7 +145,7 @@ void lavaball1bf_init(GameObject* obj, const DimLavaBallPlacement* placement) {
 
     obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
     state = obj->extra;
-    state->firePeriod = (f32)placement->firePeriod;
+    state->firePeriod = placement->firePeriod;
     state->fireTimer = 0.0f;
     state->pendingEnabled = placement->pendingEnabled;
     state->triggeredLaunchUsed = mainGetBit(placement->triggeredLaunchGameBit);

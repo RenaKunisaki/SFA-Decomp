@@ -80,7 +80,7 @@ void KT_Torch_init(GameObject* obj, KTTorchPlacement* placement) {
         objAnim->bankIndex = 0;
     }
     ObjAnim_SetCurrentMove((int)obj, placement->animationIndex,
-                           (initialAnimationProgress = (f32)placement->initialAnimationProgress,
+                           (initialAnimationProgress = placement->initialAnimationProgress,
                             initialAnimationProgress *= KT_TORCH_INITIAL_ANIMATION_PROGRESS_FACTOR),
                            0);
     {

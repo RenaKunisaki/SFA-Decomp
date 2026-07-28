@@ -259,7 +259,7 @@ void DR_CageWith_init(GameObject* obj, DrcagewithPlacement* placement)
             mainSetBits(0x7aa, 5);
         }
         obj->anim.rotX = (s16)(placement->initRotXByte << 8);
-        state->unk8 = (f32)placement->unk1C;
+        state->unk8 = placement->unk1C;
         state->unk10 = (f32)placement->unk1A / 10.0f;
         state->linkedObject = NULL;
         fz = 0.0f;

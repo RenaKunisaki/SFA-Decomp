@@ -86,9 +86,9 @@ void EffectBox_update(GameObject* obj) {
         yawSin = mathSinf((EFFECTBOX_PI * (f32)(-(placement->rotYaw << 8))) / EFFECTBOX_ANGLE_SCALE);
         pitchCos = mathCosf((EFFECTBOX_PI * (f32)(-(placement->rotPitch << 8))) / EFFECTBOX_ANGLE_SCALE);
         pitchSin = mathSinf((EFFECTBOX_PI * (f32)(-(placement->rotPitch << 8))) / EFFECTBOX_ANGLE_SCALE);
-        extentX = (f32)placement->extentX;
+        extentX = placement->extentX;
         extentY = (f32)(placement->extentY << 1);
-        extentZ = (f32)placement->extentZ;
+        extentZ = placement->extentZ;
         switch (placement->targetMode) {
         case EFFECTBOX_TARGET_PLAYER:
             singleTarget = Obj_GetPlayerObject();
@@ -163,7 +163,7 @@ void EffectBox_init(GameObject* obj, EffectBoxPlacement* placement) {
     } else {
         obj->userData2 = EFFECTBOX_NO_GAME_BIT;
     }
-    objectFlags = (u32)obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
+    objectFlags = obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     obj->objectFlags = objectFlags;
 }
 

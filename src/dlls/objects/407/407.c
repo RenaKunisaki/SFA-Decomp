@@ -264,7 +264,7 @@ void dll407_init(GameObject* obj, const Dll407Placement* placement) {
     state = obj->extra;
     obj->anim.rotX = (s16)((placement->rotationParam & 0x3Fu) << 10);
     if (placement->scale > 0) {
-        obj->anim.rootMotionScale = (f32)placement->scale / 8192.0f;
+        obj->anim.rootMotionScale = placement->scale / 8192.0f;
     } else {
         obj->anim.rootMotionScale = 0.1f;
     }
