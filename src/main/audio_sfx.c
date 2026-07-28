@@ -790,7 +790,7 @@ SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 p
 
 void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
 {
-    void* slot;
+    CameraViewSlot* slot;
     int level;
     f32 dist;
     f32 near;
@@ -818,9 +818,9 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
         objectChannel->handle = (u32)-1;
         return;
     }
-    Sfx_RotateVectorByAngles(0, 0, -*(s16*)((u8*)slot + 0x54), delta);
-    Sfx_RotateVectorByAngles(*(s16*)slot, 0, 0, delta);
-    Sfx_RotateVectorByAngles(0, -*(s16*)((u8*)slot + 0x52), 0, delta);
+    Sfx_RotateVectorByAngles(0, 0, -slot->worldRoll, delta);
+    Sfx_RotateVectorByAngles(slot->yaw, 0, 0, delta);
+    Sfx_RotateVectorByAngles(0, -slot->worldPitch, 0, delta);
     if (dist > 0.01f)
     {
         f32 scale;
