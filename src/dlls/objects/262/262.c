@@ -236,7 +236,7 @@ void Scarab_free(GameObject* obj) {
     (void)obj;
 }
 
-void Scarab_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 renderState) {
+void Scarab_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     ScarabState* state;
     ObjModel* model;
     u8* shellColors;
@@ -262,15 +262,15 @@ void Scarab_render(GameObject* obj, int arg1, int arg2, int arg3, int arg4, s8 r
 
     if (state->despawnTimer == 0) {
         if (obj->userData2 != 0) {
-            if (renderState != -1) {
+            if (visible != -1) {
                 return;
             }
-        } else if (renderState == 0) {
+        } else if (visible == 0) {
             return;
         }
 
-        objRenderModelAndHitVolumes(obj, arg1, arg2, arg3, arg4, 1.0f);
-        if ((renderState != 0) && (obj->anim.alpha != 0)) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        if ((visible != 0) && (obj->anim.alpha != 0)) {
             objfx_spawnDirectionalBurst(obj, 5, 1.0f, state->burstModel, 1, SCARAB_DIRECTIONAL_BURST_CHANCE,
                                         2.5f, 0, 0);
         }
