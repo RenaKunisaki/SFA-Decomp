@@ -12,7 +12,6 @@
  * The animEventCallback snapshots tracked-tile positions or resets the
  * object and clears solvedBit.
  */
-#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/objanim_update.h"
@@ -22,7 +21,6 @@
 #include "main/dll/WC/dll_028F_wcpressures.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 

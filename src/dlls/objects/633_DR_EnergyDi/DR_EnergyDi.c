@@ -9,7 +9,6 @@
  * animation move 1.0f. init seeds the spawn rotation from the
  * placement and primes the activated/texture state from the active bit.
  */
-#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "game/objects/object.h"
@@ -17,7 +16,6 @@
 #include "main/objtexture.h"
 #include "dlls/object_descriptor.h"
 
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 
 #include "main/dll/DR/dll_0279_drenergydisc.h"

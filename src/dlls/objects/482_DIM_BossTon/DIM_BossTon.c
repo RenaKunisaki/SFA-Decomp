@@ -8,7 +8,6 @@
 #include "dlls/objects/480_DIM_Boss.h"
 #include "game/objects/object.h"
 #include "main/audio/music_api.h"
-#include "main/audio/sfx.h"
 #include "main/camera_shake_api.h"
 #include "main/dll/baddie_control_interface.h"
 #include "main/dll/partfx_interface.h"

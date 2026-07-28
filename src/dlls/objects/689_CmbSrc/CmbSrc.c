@@ -16,7 +16,6 @@
  * defined in dll_02B1_cmbsrc.h.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/audio/sfx.h"
 #include "main/camera.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"

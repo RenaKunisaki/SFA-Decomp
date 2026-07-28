@@ -8,7 +8,6 @@
 #include "dlls/object_descriptor.h"
 #include "sys/objects.h"
 #include "main/vecmath.h"
-#include "main/dll/modgfx.h"
 #include "main/maketex_random_api.h"
 #include "main/dll/dll_0020_effect7.h"
 

@@ -12,7 +12,6 @@
 #include "dlls/objects/428_SH_queenear.h"
 
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_0000_gameui_api.h"

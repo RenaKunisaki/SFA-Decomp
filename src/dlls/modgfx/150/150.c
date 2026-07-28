@@ -14,7 +14,6 @@
 #include "game/objects/object.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
-#include "main/dll/savegame.h"
 #include "main/gamebits.h"
 #include "main/dll/dll_0096_dll96func0.h"
 #include "main/vecmath.h"

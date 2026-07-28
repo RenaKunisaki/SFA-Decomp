@@ -13,7 +13,6 @@
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/dll/player_api.h"
 #include "main/mapEventTypes.h"
-#include "main/audio/sfx_ids.h"
 #include "main/gamebits.h"
 #include "main/gamebit_ids.h"
 #include "main/obj_group.h"
@@ -23,7 +22,6 @@
 #include "main/lightmap_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/audio/sfx.h"
 #include "main/dll/DF/dll_0229_dfplevelcontrol.h"
 
 s16 gDFPLevelControlMapAct1Timer = 0x82;

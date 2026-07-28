@@ -16,7 +16,6 @@
  */
 #include "dlls/object_descriptor.h"
 #include "sys/objects.h"
-#include "main/audio/sfx.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/objseq.h"

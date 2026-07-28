@@ -8,7 +8,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
 #include "main/camera_shake_api.h"
@@ -22,7 +21,6 @@
 #include "main/objtexture.h"
 #include "main/render_envfx_api.h"
 #include "main/vecmath.h"
-#include "sys/objects/lifecycle.h"
 
 s16 gWmSunEnvfxTimer;
 s16 lbl_803DDCAE;

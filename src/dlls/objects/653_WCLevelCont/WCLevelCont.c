@@ -19,7 +19,6 @@
 #include "dlls/object_descriptor.h"
 #include "main/frame_timing.h"
 #include "main/objseq.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx_play_legacy_api.h"
 #include "main/vecmath.h"

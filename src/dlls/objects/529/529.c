@@ -8,7 +8,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/WM/dll_0211_wmwallcrawler.h"
 #include "main/dll/partfx_interface.h"

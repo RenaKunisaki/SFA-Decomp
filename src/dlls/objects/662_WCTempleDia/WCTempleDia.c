@@ -6,7 +6,6 @@
 #include "main/lightmap_api.h"
 #include "main/dll/WC/dll_0296_wctempledia.h"
 #include "game/objects/object.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"

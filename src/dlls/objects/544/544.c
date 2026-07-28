@@ -2,7 +2,6 @@
 #include "dlls/object_descriptor.h"
 #include "dolphin/mtx/vec.h"
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
 #include "main/dll/expgfx_interface.h"

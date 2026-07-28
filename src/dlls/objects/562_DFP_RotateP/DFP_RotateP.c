@@ -2,7 +2,6 @@
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
 #include "main/objhits.h"
 #include "sys/objects/lifecycle.h"

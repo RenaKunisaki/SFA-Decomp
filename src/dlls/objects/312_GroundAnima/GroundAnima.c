@@ -8,7 +8,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/os/OSCache.h"
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"

@@ -26,7 +26,6 @@
 #include "main/objhits.h"
 #include "main/objfx.h"
 #include "main/obj_group.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_025B_msplantings.h"
 #include "main/frame_timing.h"

@@ -7,7 +7,6 @@
 #include "main/frame_timing.h"
 #include "dlls/object_descriptor.h"
 #include "main/vecmath.h"
-#include "main/dll/modgfx.h"
 #include "main/maketex_random_api.h"
 #include "main/dll/dll_0021_effect8.h"
 

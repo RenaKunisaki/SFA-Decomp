@@ -46,7 +46,6 @@
 #include "main/textrender_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 union SClanternAnimEvents {
     ObjAnimEventList list;

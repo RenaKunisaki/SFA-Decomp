@@ -46,7 +46,6 @@
 #include "dlls/object_descriptor.h"
 #include "string.h"
 #include "dlls/objects/210.h"
-#include "sys/objects/lifecycle.h"
 #include "main/obj_message.h"
 #include "main/gamebits.h"
 #include "game/objects/object_setup.h"

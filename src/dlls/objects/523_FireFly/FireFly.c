@@ -14,7 +14,6 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/curve_eval.h"
 #include "main/dll/LGT/LGTcontrollight.h"
@@ -32,7 +31,6 @@
 #include "main/objfx.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 /* Per-frame angular step bounds (1/65536-turn units). */
 #define FIREFLY_ANGLE_STEP_MIN 0x1f4

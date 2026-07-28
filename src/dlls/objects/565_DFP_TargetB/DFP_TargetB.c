@@ -18,7 +18,6 @@
 #include "main/model.h"
 #include "main/dll/path_control_interface.h"
 #include "main/dll/dll_0235_dfptargetblock.h"
-#include "main/gamebits.h"
 #include "main/vecmath.h"
 #include "main/frame_timing.h"
 

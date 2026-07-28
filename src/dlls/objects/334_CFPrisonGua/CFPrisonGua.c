@@ -3,7 +3,6 @@
 #include "dlls/objects/334_CFPrisonGua.h"
 
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/objfx_api.h"
 #include "main/dll/player_api.h"

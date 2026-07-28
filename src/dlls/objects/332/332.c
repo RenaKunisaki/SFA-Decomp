@@ -3,7 +3,6 @@
 #include "dlls/objects/332.h"
 
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_00C9_enemy.h"
 #include "main/dll/dll_002E_moveLib.h"

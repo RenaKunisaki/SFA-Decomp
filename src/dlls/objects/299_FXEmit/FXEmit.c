@@ -6,7 +6,6 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/debug.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"

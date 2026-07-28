@@ -9,7 +9,6 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
-#include "sys/objects/lifecycle.h"
 
 #define DIM_BOSS_ICE_SMASH_OBJECT_TYPE_BASE       0x400
 #define DIM_BOSS_ICE_SMASH_OBJECT_TYPE_BANK_SHIFT 11

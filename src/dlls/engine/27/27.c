@@ -6,7 +6,6 @@
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
-#include "main/dll/modgfx.h"
 #include "main/maketex_random_api.h"
 #include "main/dll/dll_001B_effect2.h"
 

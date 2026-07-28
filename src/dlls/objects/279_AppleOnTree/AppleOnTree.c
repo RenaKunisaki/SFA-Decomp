@@ -22,7 +22,6 @@
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define APPLE_ON_TREE_FLAG_INACTIVE           0x02
 #define APPLE_ON_TREE_FLAG_PICKUP_PENDING     0x04

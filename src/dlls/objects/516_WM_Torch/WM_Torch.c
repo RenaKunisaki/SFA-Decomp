@@ -8,7 +8,6 @@
  * object.
  */
 #include "dlls/object_descriptor.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/WM/dll_0204_wmtorch.h"
 #include "main/dll/dll_0063_dll63func0.h"
@@ -18,7 +17,6 @@
 #include "main/resource.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define WMTORCH_OBJFLAG_HITDETECT_DISABLED 0x2000
 

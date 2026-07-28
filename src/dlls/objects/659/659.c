@@ -36,7 +36,6 @@
 #include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
-#include "main/pad.h"
 #include "main/shader_api.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"

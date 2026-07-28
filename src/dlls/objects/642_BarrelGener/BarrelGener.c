@@ -12,13 +12,9 @@
  */
 #include "dlls/objects/344.h"
 
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx.h"
-#include "main/audio/sfx.h"
-#include "main/curve.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/mm.h"
 #include "main/model_light.h"
 #include "main/objanim.h"
 #include "main/obj_group.h"
@@ -34,7 +30,6 @@
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/newclouds.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"

@@ -22,7 +22,6 @@
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/shader_api.h"
-#include "main/pad.h"
 #include "main/objprint_render_api.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"

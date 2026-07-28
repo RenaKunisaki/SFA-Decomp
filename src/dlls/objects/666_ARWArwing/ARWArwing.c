@@ -30,7 +30,6 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/map_load.h"
 #include "dolphin/mtx.h"
-#include "main/audio/sfx.h"
 #include "main/camera_interface.h"
 #include "main/camera.h"
 #include "main/frame_timing.h"
@@ -57,7 +56,6 @@
 #include "main/obj_link.h"
 #include "main/obj_list.h"
 #include "main/obj_path.h"
-#include "main/audio/sfx_ids.h"
 #include "main/gamebit_ids.h"
 
 #include "main/dll/ARW/arwing_state.h"

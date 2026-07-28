@@ -2,7 +2,6 @@
 #include "dlls/objects/315_WallAnimato.h"
 
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"

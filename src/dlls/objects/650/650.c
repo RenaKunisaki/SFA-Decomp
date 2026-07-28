@@ -33,7 +33,6 @@
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "sys/objects.h"
-#include "main/audio/sfx.h"
 #include "main/curve.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
@@ -43,7 +42,6 @@
 #include "main/objanim.h"
 #include "main/objHitReact.h"
 #include "main/objseq.h"
-#include "main/pad.h"
 #include "main/vecmath.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/dll_002E_moveLib.h"

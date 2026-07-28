@@ -5,7 +5,6 @@
 #include "dlls/objects/311_AlphaAnimat.h"
 
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"

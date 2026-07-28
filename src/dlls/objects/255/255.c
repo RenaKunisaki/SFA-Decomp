@@ -16,7 +16,6 @@
 #include "main/dll/player_api.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
-#include "main/gamebits.h"
 #include "main/model.h"
 #include "main/obj_link.h"
 #include "main/obj_message.h"
@@ -25,7 +24,6 @@
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define MAGICGEM_MSG_IN_RANGE    0x7000A /* Sent to the player when a gem enters pickup range. */
 #define MAGICGEM_MSG_PICKUP      0x7000B /* Awards magic and starts the collection burst. */

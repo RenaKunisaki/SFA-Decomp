@@ -10,7 +10,6 @@
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
 #include "main/dll/baddie/dll_022F_dfpfloorbar.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "game/objects/object_setup.h"
 #include "main/mapEvent.h"
@@ -19,7 +18,6 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
-#include "main/audio/sfx.h"
 #include "main/gamebit_ids.h"
 
 typedef struct DfpfloorbarPlacement

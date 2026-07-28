@@ -9,7 +9,6 @@
 #include "main/vecmath.h"
 #include "track/intersect_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/gx/GXEnum.h"
 #include "dolphin/gx/GXLegacy.h"
 #include "dolphin/gx/GXStruct.h"

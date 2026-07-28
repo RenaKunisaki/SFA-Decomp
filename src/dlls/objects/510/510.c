@@ -1,6 +1,5 @@
 /* DLL 0x01FE */
 #include "dlls/object_descriptor.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_01FE_pressureswitch.h"
 #include "main/frame_timing.h"

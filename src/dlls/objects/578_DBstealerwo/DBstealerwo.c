@@ -37,7 +37,6 @@
 #include "main/mapEventTypes.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
-#include "main/audio/sfx_ids.h"
 #include "main/dll/baddie_state.h"
 #include "main/objseq.h"
 #include "main/objfx.h"

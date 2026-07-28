@@ -18,7 +18,6 @@
  * "(d - 0x10000) + 1" forms below are the shortest-arc angle wrap-clamps.
  */
 
-#include "main/audio/sfx.h"
 #include "game/objects/object.h"
 #include "main/obj_path.h"
 #include "sys/objects/lifecycle.h"

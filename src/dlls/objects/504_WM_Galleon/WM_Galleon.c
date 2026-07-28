@@ -5,7 +5,6 @@
 #include "main/dll/dll_0011_screens.h"
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"
-#include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
 #include "main/objseq.h"

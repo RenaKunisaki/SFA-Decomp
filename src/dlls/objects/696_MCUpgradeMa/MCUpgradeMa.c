@@ -21,7 +21,6 @@
 #include "dlls/object_descriptor.h"
 #include "main/dll/mcupgrade_state.h"
 #include "game/objects/object.h"
-#include "main/dll/mcstaffeffe_state.h"
 #include "main/gamebits.h"
 #include "sys/objects.h"
 #include "main/obj_trigger.h"

@@ -25,7 +25,6 @@
  * (changing them swings the model and the flame); `glowLight` is the
  * point-light that tracks the emitter.
  */
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_limited_object_api.h"
 #include "main/maketex_timer_api.h"
 #include "main/vecmath.h"

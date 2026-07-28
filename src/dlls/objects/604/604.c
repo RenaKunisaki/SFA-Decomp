@@ -16,7 +16,6 @@
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "main/obj_query.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/objhits.h"
 #include "main/objfx.h"

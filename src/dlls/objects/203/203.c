@@ -25,7 +25,6 @@
 #include "main/voxmaps.h"
 #include "string.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define DLL_CB_OBJGROUP                     3
 #define DLL_CB_FLAG400_PENDING_HIT_REACTION 0x2

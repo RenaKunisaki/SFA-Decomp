@@ -22,7 +22,6 @@
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
-#include "main/game_timer.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/objhits.h"
@@ -37,7 +36,6 @@
 #include "main/dll/WC/dll_028D_wclevelcont.h"
 #include "main/dll/WC/dll_028C_wcbouncycra.h"
 #include "main/dll/WC/dll_0290_wcpushblock.h"
-#include "string.h"
 #include "main/dll/player_api.h"
 #include "game/objects/object.h"
 #include "main/objfx.h"

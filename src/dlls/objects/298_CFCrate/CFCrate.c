@@ -10,7 +10,6 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
@@ -24,7 +23,6 @@
 #include "main/objtexture.h"
 #include "main/render_lactions_api.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 /*
  * seqId values resolved through the active EN OBJINDEX.bin and OBJECTS.bin.

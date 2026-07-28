@@ -5,7 +5,6 @@
 #include "dlls/objects/488_SB_Galleon.h"
 
 #include "dlls/objects/489_SB_Propelle.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_channel_query_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"

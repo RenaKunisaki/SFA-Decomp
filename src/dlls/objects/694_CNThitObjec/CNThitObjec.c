@@ -17,7 +17,6 @@
  * mcupgrade_SeqFn is part of this DOL-confirmed TU and is installed as an
  * anim-event callback by the following MCUpgrade DLL.
  */
-#include "main/audio/sfx.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebits.h"
 #include "main/maketex_api.h"
@@ -25,7 +24,6 @@
 #include "main/objfx.h"
 #include "main/dll/dll_02B6_cnthitobjec.h"
 #include "main/objhits.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"

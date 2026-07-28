@@ -17,7 +17,6 @@
 #include "main/dll/boneparticleeffect_interface.h"
 #include "main/dll/shopkeeperstate_struct.h"
 #include "main/dll/pushcartstate97_types.h"
-#include "main/audio/sfx.h"
 #include "main/frame_timing.h"
 #include "game/objects/object.h"
 #include "main/gametext_show_api.h"

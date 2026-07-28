@@ -11,7 +11,6 @@
 #include "game/objects/object.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/DR/dll_0268_drcagecontrol.h"
 #include "dlls/object_descriptor.h"

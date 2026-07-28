@@ -1,6 +1,5 @@
 /* DLL 606: SpellStone-family object callbacks. */
 
-#include "main/gamebits.h"
 #include "main/mapEvent.h"
 #include "main/spellstone.h"
 #include "main/spellstone_idle.h"

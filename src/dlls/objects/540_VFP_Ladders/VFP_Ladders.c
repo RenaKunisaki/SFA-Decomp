@@ -11,12 +11,10 @@
  */
 #include "dlls/object_descriptor.h"
 #include "main/frame_timing.h"
-#include "main/audio/sfx.h"
 #include "main/gamebits.h"
 #include "main/objseq.h"
 #include "main/dll/expgfx_interface.h"
 #include "game/objects/object.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/VF/dll_021C_vfpladders.h"
 

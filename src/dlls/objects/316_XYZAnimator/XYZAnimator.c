@@ -13,7 +13,6 @@
 #include "main/object_render.h"
 #include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_api.h"
-#include "main/track_dolphin_sky_api.h"
 
 typedef struct XyzAnimatorPolygonGroup {
     u16 firstTriangle;

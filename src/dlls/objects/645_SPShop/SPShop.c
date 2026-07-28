@@ -11,7 +11,6 @@
 #include "sys/objects.h"
 #include "main/mapEvent.h"
 #include "main/objseq.h"
-#include "main/gamebits.h"
 #include "main/gameloop_gamebit_api.h"
 #include "main/gamebit_ids.h"
 #include "main/vecmath.h"

@@ -7,7 +7,6 @@
 #include "main/curve.h"
 #include "main/camera_object.h"
 #include "main/dll/CAM/camera_mode_4f_state.h"
-#include "main/dll/CAM/camcloudrunner_state.h"
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"

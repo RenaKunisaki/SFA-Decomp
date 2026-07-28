@@ -22,7 +22,6 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
-#include "main/audio/sfx.h"
 #include "sys/objects.h"
 #include "game/objects/object.h"
 #include "main/objhits.h"
@@ -37,8 +36,6 @@
 #include "game/objects/object_setup.h"
 #include "main/dll/trickycurve_state.h"
 #include "main/dll/TrickyCurve.h"
-#include "main/mapEvent.h"
-#include "main/dll/sfxplayer.h"
 #include "main/gamebit_ids.h"
 #include "dlls/object_descriptor.h"
 #include "main/vecmath.h"

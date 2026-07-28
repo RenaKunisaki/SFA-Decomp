@@ -4,14 +4,11 @@
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"
-#include "main/audio/sfx.h"
-#include "main/dll/modgfx.h"
 #include "main/gamebits.h"
 #include "main/mm.h"
 #include "main/texture.h"
 #include "main/model.h"
 #include "track/intersect_api.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebit_ids.h"
 #include "main/frame_timing.h"
@@ -23,7 +20,6 @@
 #include "dolphin/gx/GXLegacyDecls.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/rcp_dolphin_api.h"
-#include "main/lightmap.h"
 
 s16 gBoneParticleEffectTimer;
 s32 gBoneParticleScrollOffset;

@@ -28,7 +28,6 @@
 #include "dlls/object_descriptor.h"
 #include "main/model_light.h"
 #include "main/objhits.h"
-#include "sys/objects/lifecycle.h"
 
 f32 lbl_803DBD48 = 1024.0f;
 f32 lbl_803DBD4C = 512.0f;

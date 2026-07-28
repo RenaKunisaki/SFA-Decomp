@@ -6,7 +6,6 @@
 #include "main/dll/crate2.h"
 #include "main/dll/crate.h"
 #include "main/gamebits.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 

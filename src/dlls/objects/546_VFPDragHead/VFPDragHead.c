@@ -9,7 +9,6 @@
 #include "main/objhits.h"
 #include "main/pi_dolphin_api.h"
 #include "main/resource.h"
-#include "sys/objects/lifecycle.h"
 #include "game/objects/object_setup.h"
 #include "main/vecmath.h"
 

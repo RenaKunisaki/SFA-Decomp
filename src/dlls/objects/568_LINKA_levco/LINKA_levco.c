@@ -21,7 +21,6 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/model_engine.h"
 #include "main/map_load.h"
-#include "main/audio/sfx.h"
 #include "main/gamebits.h"
 #include "main/mm.h"
 #include "main/object_render.h"

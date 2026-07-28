@@ -21,7 +21,6 @@
 #include "main/objhits.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "sys/objects/lifecycle.h"
 
 #define BOMB_PLANT_SPORE_MESSAGE_IN_RANGE 0x7000A
 #define BOMB_PLANT_SPORE_MESSAGE_DETONATE 0x7000B

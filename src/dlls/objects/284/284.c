@@ -10,7 +10,6 @@
 #include "game/objects/object.h"
 #include "main/audio/sfx_play_legacy_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_80136a40.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"

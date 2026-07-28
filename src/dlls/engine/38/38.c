@@ -1,5 +1,4 @@
 #include "main/dll/partfx_interface.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
@@ -7,7 +6,6 @@
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/waterfx_interface.h"
-#include "main/audio/sfx.h"
 #include "main/dll/dll_0026_effect13.h"
 #include "main/vecmath.h"
 

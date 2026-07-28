@@ -9,7 +9,6 @@
 #include "dlls/objects/297_CampFire.h"
 
 #include "game/objects/object.h"
-#include "main/audio/sfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"

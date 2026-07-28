@@ -2,7 +2,6 @@
 
 #include "dlls/objects/345.h"
 
-#include "game/objects/object.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
 #include "main/map_block.h"

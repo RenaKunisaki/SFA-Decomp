@@ -10,7 +10,6 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
-#include "main/gamebits.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 

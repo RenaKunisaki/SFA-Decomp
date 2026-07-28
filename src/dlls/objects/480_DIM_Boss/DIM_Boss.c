@@ -11,7 +11,6 @@
 #include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/audio/sfx.h"
-#include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
 #include "main/dll/baddie_control_interface.h"
