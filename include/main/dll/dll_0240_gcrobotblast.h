@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 #include "global.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "game/objects/object_setup.h"
 
 typedef struct GCRobotBlastPlacement
@@ -13,7 +13,7 @@ typedef struct GCRobotBlastPlacement
     s8 mode;
 } GCRobotBlastPlacement;
 
-int GCRobotBlast_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int GCRobotBlast_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int GCRobotBlast_getExtraSize(void);
 int GCRobotBlast_getObjectTypeId(void);
 void GCRobotBlast_free(void);

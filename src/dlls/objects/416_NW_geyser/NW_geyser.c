@@ -36,7 +36,7 @@ STATIC_ASSERT(offsetof(NwGeyserTextureScrollParams, unknown04) == 0x04);
 
 static const NwGeyserTextureScrollParams sNwGeyserTextureScrollParams = {512.0f, 0.0f};
 
-int nwGeyser_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int nwGeyser_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     ObjTextureRuntimeSlot* texture;
 
     (void)unusedArg;
@@ -50,7 +50,7 @@ int nwGeyser_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateStat
         texture->offsetT -= NW_GEYSER_TEXTURE_SCROLL_PERIOD;
     }
     animUpdate->flags = (s16)(animUpdate->savedFlags & ~NW_GEYSER_SEQUENCE_FLAG_TEXTURE_SCROLL);
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     return 0;
 }
 

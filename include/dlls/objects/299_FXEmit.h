@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef enum FXEmitEffectBank {
     FXEMIT_EFFECT_BANK_PARTICLE = 0,
@@ -95,7 +95,7 @@ STATIC_ASSERT(offsetof(FXEmitState, pad1D) == 0x1D);
 STATIC_ASSERT(sizeof(FXEmitState) == 0x20);
 
 void FXEmit_emitEffect(GameObject* obj);
-int FXEmit_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int FXEmit_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int FXEmit_getExtraSize(void);
 int FXEmit_getObjectTypeId(void);
 void FXEmit_free(GameObject* obj);

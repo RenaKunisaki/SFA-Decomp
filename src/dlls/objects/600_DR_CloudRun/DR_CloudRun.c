@@ -28,7 +28,6 @@
 #include "main/gamebits.h"
 #include "main/game_ui_interface.h"
 #include "main/mapEventTypes.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/resource.h"
 #include "main/dll/path_control_interface.h"
@@ -927,7 +926,7 @@ int DR_CloudRunner_stateHandler00(GameObject* obj)
     ((ByteFlags*)&inner->flagsBC0)->b10 = inner->airTimeRemaining > 0;
     return 3;
 }
-int DR_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int DR_CloudRunner_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     CloudRunnerState* inner = obj->extra;
     int local = 1;

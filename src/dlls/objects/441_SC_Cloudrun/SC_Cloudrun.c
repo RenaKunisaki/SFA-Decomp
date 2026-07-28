@@ -78,7 +78,7 @@ void sc_cloudrunnera_update(int obj) {
     objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
     if (objectIndex != 0 && ((GameObject*)obj)->seqIndex == SC_CLOUDRUNNER_A_SEQUENCE_PENDING) {
         int sequenceOwner;
-        register s32 sequenceSlot = *(s8*)&sequence->slot;
+        register s32 slot = *(s8*)&sequence->slot;
         int* objects;
         int participantLimit;
         int sequenceSlotCopy;
@@ -88,13 +88,13 @@ void sc_cloudrunnera_update(int obj) {
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         participantCount = 0;
         objectIndex = 0;
-        sequenceSlotCopy = sequenceSlot;
+        sequenceSlotCopy = slot;
         participantLimit = objectCount;
         for (; objectIndex < participantLimit; objectIndex++) {
             int otherObject = *objects;
             s16 sequenceIndex = ((GameObject*)otherObject)->seqIndex;
 
-            if (sequenceIndex == sequenceSlot) {
+            if (sequenceIndex == slot) {
                 sequenceOwner = otherObject;
             }
             if (sequenceIndex == SC_CLOUDRUNNER_A_SEQUENCE_PENDING &&

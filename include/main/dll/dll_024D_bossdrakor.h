@@ -7,7 +7,7 @@
 #include "main/dll/curve_walker.h"
 #include "main/objprint_sound_api.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "global.h"
 #include "game/objects/object_setup.h"
 
@@ -101,7 +101,7 @@ int bossdrakor_getExtraSize(void);
 void bossdrakor_update(GameObject* obj);
 void bossdrakor_free(GameObject* obj);
 void bossdrakor_hitDetect(GameObject* obj);
-int bossdrakor_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void bossdrakor_handleActionEvent(GameObject* obj, BossDrakorState* state, int action);
 void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state);
 int bossdrakor_chooseNextMove(GameObject* obj, f32* speedOut);

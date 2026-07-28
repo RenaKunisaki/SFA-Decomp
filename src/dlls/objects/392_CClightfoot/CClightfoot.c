@@ -97,7 +97,7 @@ STATIC_ASSERT(offsetof(CCLightfootAnimTable, phaseFlags) == 0x00);
 STATIC_ASSERT(offsetof(CCLightfootAnimTable, moveIds) == 0x10);
 STATIC_ASSERT(offsetof(CCLightfootAnimTable, moveSpeeds) == 0x20);
 
-int ccLightfoot_animationEventCallback(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int ccLightfoot_animationEventCallback(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     CCLightfootState* state = obj->extra;
 
     if (animUpdate->eventCount != 0) {

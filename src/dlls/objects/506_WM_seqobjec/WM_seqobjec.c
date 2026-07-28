@@ -17,7 +17,7 @@
 
 u8 gWMSeqObjectToggleState;
 
-int WM_seqobject_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int WM_seqobject_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int eventIndex;
 
     (void)obj;
@@ -27,8 +27,8 @@ int WM_seqobject_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpda
             gWMSeqObjectToggleState = 1 - gWMSeqObjectToggleState;
         }
     }
-    animUpdate->triggerCommand = 0;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->unk80 = 0;
+    animUpdate->movementState = 0;
     return 0;
 }
 

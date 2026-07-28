@@ -8,7 +8,7 @@
 #define DLL_115_STATE_SIZE 0x2
 #define DLL_115_STEP_COUNT 8
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 typedef enum Dll115Step {
     DLL_115_STEP_IDLE = DLL_115_STEP_COUNT,
@@ -50,7 +50,7 @@ STATIC_ASSERT(offsetof(Dll115State, step) == 0x0);
 STATIC_ASSERT(offsetof(Dll115State, flags) == 0x1);
 STATIC_ASSERT(sizeof(Dll115State) == DLL_115_STATE_SIZE);
 
-int dll_115_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dll_115_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dll_115_getExtraSize(void);
 int dll_115_getObjectTypeId(void);
 void dll_115_free(GameObject* obj);

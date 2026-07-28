@@ -2,7 +2,6 @@
 
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 
 #define IM_MULTI_SEQ_GROUP                     0xF
@@ -17,7 +16,7 @@
 #define IM_MULTI_SEQ_MODEL_SCALE               1.0f
 #define IM_MULTI_SEQ_STATE_ADVANCE_PENDING     0x01
 
-int IMMultiSeq_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateState* animUpdate) {
+int IMMultiSeq_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate) {
     IMMultiSeqState* state;
     IMMultiSeqPlacement* placement;
     int step;
@@ -26,8 +25,8 @@ int IMMultiSeq_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateStat
 
     state = obj->extra;
     placement = (IMMultiSeqPlacement*)obj->anim.placementData;
-    animUpdate->hitVolumePair = animUpdate->activeHitVolumePair;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->flags = animUpdate->savedFlags;
+    animUpdate->movementState = 0;
     if (obj->seqIndex == IM_MULTI_SEQ_SEQUENCE_INDEX_NONE) {
         return 0;
     }

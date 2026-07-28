@@ -220,13 +220,13 @@ void dim2roofrub_update(GameObject* obj) {
         if (result != 0 && obj->seqIndex == -2) {
             int sequenceIndex = sequence->slot;
             GameObject** objects;
-            int sequenceSlot;
+            int slot;
             int siblingCount;
             GameObject* sequenceOwner = NULL;
 
             objects = ObjList_GetObjects(&result, &objectCount);
             result = siblingCount = 0;
-            sequenceSlot = sequenceIndex;
+            slot = sequenceIndex;
             for (; result < objectCount; result++) {
                 GameObject* other = *objects;
 
@@ -236,7 +236,7 @@ void dim2roofrub_update(GameObject* obj) {
                 if (other->seqIndex == -2 && other->anim.classId == DIM2ROOFRUB_SEQUENCE_CLASS_ID) {
                     ObjSeqState* otherSequence = &((DIM2RoofRubState*)other->extra)->sequence;
 
-                    if (sequenceSlot == otherSequence->slot) {
+                    if (slot == otherSequence->slot) {
                         siblingCount++;
                     }
                 }
@@ -244,7 +244,7 @@ void dim2roofrub_update(GameObject* obj) {
             }
             if (siblingCount <= 1 && sequenceOwner != NULL && sequenceOwner->seqIndex != -1) {
                 sequenceOwner->seqIndex = -1;
-                (*gObjectTriggerInterface)->endSequence(sequenceSlot);
+                (*gObjectTriggerInterface)->endSequence(slot);
             }
             obj->seqIndex = -1;
         }

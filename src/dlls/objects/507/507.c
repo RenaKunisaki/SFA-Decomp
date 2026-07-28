@@ -20,7 +20,7 @@
 #define DLL1FB_MESSAGE_QUEUE_CAPACITY           4
 #define DLL1FB_MOVE_GROUP_OFFSET                0x100
 
-int dll507_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int dll507_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     Dll1FBState* state = obj->extra;
     s16 triggerMode = state->triggerMode;
     u8 interactionFlags;
@@ -31,8 +31,8 @@ int dll507_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* an
         interactionFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
         obj->anim.resetHitboxFlags = interactionFlags;
     }
-    animUpdate->activeHitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->savedFlags = -1;
+    animUpdate->movementState = 0;
     return 0;
 }
 

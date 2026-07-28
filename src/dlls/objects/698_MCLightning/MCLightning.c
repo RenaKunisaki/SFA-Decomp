@@ -9,7 +9,7 @@
 
 #define MCLIGHTNING_OBJGROUP 0x48
 
-int mclightning_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int mclightning_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     McLightningState* state = obj->extra;
     int i;

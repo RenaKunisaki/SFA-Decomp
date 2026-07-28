@@ -77,16 +77,16 @@ static void dll_16C_advanceLinkedMove(GameObject* obj, GameObject* mount) {
     ObjAnim_AdvanceCurrentMove((int)obj, moveStep, (f32)(u32)framesThisStep, NULL);
 }
 
-int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
+int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate) {
     GameObject* mount;
     IMSnowClawState* state = obj->extra;
     IMSnowClawDropObjectTable dropObjectTable;
 
     state->mountAlpha = IM_SNOW_CLAW_FULL_ALPHA;
     mount = state->mount;
-    if (animUpdate->triggerCommand == 3) {
+    if (animUpdate->unk80 == 3) {
         state->dropObjectIndex = -1;
-        animUpdate->triggerCommand = 0;
+        animUpdate->unk80 = 0;
     }
     dropObjectTable = gIMSnowClawDropObjectTable;
 
@@ -111,9 +111,9 @@ int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateSt
         }
     }
 
-    animUpdate->hitVolumePair = animUpdate->activeHitVolumePair;
+    animUpdate->flags = animUpdate->savedFlags;
 
-    if (mount != NULL && animUpdate->triggerCommand == 2) {
+    if (mount != NULL && animUpdate->unk80 == 2) {
         state->unknown04 = 1.0f;
         state->mountSnapX = state->pathPointX;
         state->mountSnapY = state->pathPointY;
@@ -123,16 +123,16 @@ int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateSt
         if (obj->anim.modelState != NULL) {
             obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
         }
-        animUpdate->hitVolumePair &= ~4;
-        animUpdate->triggerCommand = 0;
-    } else if (mount != NULL && animUpdate->triggerCommand == 1) {
+        animUpdate->flags &= ~4;
+        animUpdate->unk80 = 0;
+    } else if (mount != NULL && animUpdate->unk80 == 1) {
         (*(IMSnowClawMountInterface**)mount->anim.dll)->setRiderMode(mount, 0);
-        animUpdate->triggerCommand = 0;
+        animUpdate->unk80 = 0;
     }
 
     if (mount != NULL) {
         if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getRiderMode(mount) == 2) {
-            animUpdate->hitVolumePair &= ~3;
+            animUpdate->flags &= ~3;
         }
     }
     return 0;

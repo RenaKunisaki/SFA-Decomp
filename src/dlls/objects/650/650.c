@@ -54,7 +54,7 @@ static const f32 gWcEarthWalkerApproachPlayerDistance = 200.0f;
 static const f32 gWcEarthWalkerChaseMoveSpeed = 0.012f;
 static const f32 gWcEarthWalkerWalkMoveSpeed = 0.005f;
 
-int earthwalker_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate, int shouldAdvanceMove)
+int earthwalker_SeqFn(int obj, int unused, ObjSeqState* animUpdate, int shouldAdvanceMove)
 {
     GameObject* ewObj = (GameObject*)obj;
     EarthWalkerState* ewState = ewObj->extra;

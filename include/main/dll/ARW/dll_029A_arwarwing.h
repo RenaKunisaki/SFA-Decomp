@@ -4,7 +4,7 @@
 #include "global.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/vec_types.h"
 #include "main/dll/ARW/arwing_state.h"
 
@@ -120,7 +120,7 @@ void arwarwing_resetFlightState(GameObject* obj);
 void arwarwing_updateThrusters(GameObject* obj, ArwingState* state);
 void arwarwing_handlePathDamage(GameObject* obj, ArwingState* state);
 void arwarwing_handleObjectDamage(GameObject* obj, ArwingState* state);
-int arwarwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int arwarwing_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void arwarwing_init(GameObject* obj);
 void arwarwing_readControls(GameObject* obj, ArwingState* state);
 void arwarwing_updateBarrelRoll(GameObject* obj, ArwingState* state);

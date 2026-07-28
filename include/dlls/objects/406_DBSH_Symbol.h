@@ -3,7 +3,7 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct DBSHSymbolFlags {
     u8 spinCompleted : 1;
@@ -42,7 +42,7 @@ STATIC_ASSERT(offsetof(DBSHSymbolState, unknown21) == 0x21);
 extern u8 gDBSHSymbolScuffSfxEnabled;
 extern ObjectDescriptor gDBSHSymbolObjDescriptor;
 
-int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjAnimUpdateState* animUpdate);
+int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjSeqState* animUpdate);
 int dbshSymbol_getExtraSize(void);
 void dbshSymbol_free(void);
 void dbshSymbol_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);

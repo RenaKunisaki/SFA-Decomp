@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 #include "dlls/objects/430_SH_LevelCon.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct CCLevelControlPlacement {
     ObjPlacement base;
@@ -33,7 +33,7 @@ STATIC_ASSERT(offsetof(CCLevelControlState, mapAct) == 0x0C);
 extern SkyEnvFxRampTables gCCLevelControlEnvFxRampTables;
 extern ObjectDescriptor gCCLevelControlObjDescriptor;
 
-int ccLevelControl_animationEventCallback(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);
+int ccLevelControl_animationEventCallback(GameObject* obj, int unusedArg, ObjSeqState* animUpdate);
 int ccLevelControl_getExtraSize(void);
 void ccLevelControl_free(void);
 void ccLevelControl_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,

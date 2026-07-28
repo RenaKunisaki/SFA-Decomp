@@ -3,7 +3,7 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct DepthOfFieldPointState {
     u8 enabled : 1; /* 0x00 bit 0: blur filter currently active */
@@ -16,7 +16,7 @@ STATIC_ASSERT(offsetof(DepthOfFieldPointState, useArea) == 0x1);
 STATIC_ASSERT(offsetof(DepthOfFieldPointState, bigger) == 0x2);
 STATIC_ASSERT(sizeof(DepthOfFieldPointState) == 0x3);
 
-int depthoffieldpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int depthoffieldpoint_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int depthoffieldpoint_getExtraSize(void);
 void depthoffieldpoint_update(GameObject* obj);
 void depthoffieldpoint_init(GameObject* obj);

@@ -177,7 +177,7 @@ ObjectDescriptor gLanded_ArwingObjDescriptor = {
     landed_arwing_getExtraSize,
 };
 
-int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int eventIndex;
     LandedArwingPlacement* placement;
     LandedArwingObjectState* state;

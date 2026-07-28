@@ -96,23 +96,23 @@ void spiritPrize_update(GameObject* obj) {
     objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
     if (objectIndex != 0 && obj->seqIndex == -2) {
         GameObject* matchingObj;
-        int sequenceSlot;
+        int slot;
         int scanLimit[1];
         int slotArg[1];
         int duplicateCount[1];
 
-        sequenceSlot = state->sequence.slot;
+        slot = state->sequence.slot;
         matchingObj = NULL;
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         scanLimit[0] = 0;
         slotArg[0] = 0;
         duplicateCount[0] = 0;
         objectIndex = duplicateCount[0];
-        slotArg[0] = (u32)sequenceSlot;
+        slotArg[0] = (u32)slot;
         scanLimit[0] = objectCount;
         while (objectIndex < scanLimit[0]) {
             candidateObj = objects[objectIndex];
-            if (candidateObj->seqIndex == sequenceSlot) {
+            if (candidateObj->seqIndex == slot) {
                 matchingObj = candidateObj;
             }
             if (candidateObj->seqIndex == -2 && candidateObj->anim.classId == SPIRIT_PRIZE_SEQUENCE_CLASS_ID &&

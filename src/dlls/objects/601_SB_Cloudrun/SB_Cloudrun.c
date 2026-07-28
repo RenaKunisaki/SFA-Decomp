@@ -520,7 +520,7 @@ void SB_CloudRunner_UpdateSteer(GameObject* obj, SBCloudRunnerState* state)
 }
 
 
-int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     SBCloudRunnerState* state = obj->extra;
     GameObject* player = Obj_GetPlayerObject();
@@ -540,7 +540,7 @@ int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
             state->done = 1;
         }
     }
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
     return 0;
 }

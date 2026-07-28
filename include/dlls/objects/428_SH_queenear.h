@@ -10,7 +10,7 @@
 #define QUEEN_EARTH_WALKER_MOVE_COUNT                6
 #define QUEEN_EARTH_WALKER_MOVE_SPEED_COUNT          5
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 typedef struct QueenEarthWalkerPlacement {
     ObjPlacement base;
@@ -71,7 +71,7 @@ extern s16 gQueenEarthWalkerMoveTable[QUEEN_EARTH_WALKER_MOVE_COUNT];
 extern f32 gQueenEarthWalkerMoveSpeedTable[QUEEN_EARTH_WALKER_MOVE_SPEED_COUNT];
 extern ObjectDescriptor gSH_queenearthwalkerObjDescriptor;
 
-int sh_queenearthwalker_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);
+int sh_queenearthwalker_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate);
 void sh_queenearthwalker_updatePortal(GameObject* obj, QueenEarthWalkerState* state);
 void sh_queenearthwalker_updateFeeding(GameObject* obj, QueenEarthWalkerState* state);
 int sh_queenearthwalker_getExtraSize(void);

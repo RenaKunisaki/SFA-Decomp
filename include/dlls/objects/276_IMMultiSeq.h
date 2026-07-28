@@ -8,7 +8,7 @@
 #define IM_MULTI_SEQ_STATE_SIZE 0x2
 #define IM_MULTI_SEQ_STEP_COUNT 4
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 /* Only the accessed placement prefix is recovered; the complete retail width is not established. */
 typedef struct IMMultiSeqPlacement {
@@ -42,7 +42,7 @@ STATIC_ASSERT(offsetof(IMMultiSeqState, step) == 0x0);
 STATIC_ASSERT(offsetof(IMMultiSeqState, flags) == 0x1);
 STATIC_ASSERT(sizeof(IMMultiSeqState) == IM_MULTI_SEQ_STATE_SIZE);
 
-int IMMultiSeq_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateState* animUpdate);
+int IMMultiSeq_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate);
 int IMMultiSeq_getExtraSize(void);
 int IMMultiSeq_getObjectTypeId(void);
 void IMMultiSeq_free(GameObject* obj);

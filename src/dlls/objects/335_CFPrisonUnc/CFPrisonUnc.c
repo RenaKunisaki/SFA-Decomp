@@ -27,12 +27,12 @@
 
 #define CFPRISONUNCLE_ANIM_STEP 0.005f
 
-int cfPrisonUncle_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int cfPrisonUncle_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     CfPrisonUncleState* state = obj->extra;
     if (state->magicGranted != 0) {
         return 0;
     }
-    if (animUpdate->triggerCommand == CFPRISONUNCLE_TRIGGER_MAGIC) {
+    if (animUpdate->unk80 == CFPRISONUNCLE_TRIGGER_MAGIC) {
         state->magicGranted = 1;
         playerAddRemoveMagic(Obj_GetPlayerObject(), CFPRISONUNCLE_MAGIC_REWARD);
     }

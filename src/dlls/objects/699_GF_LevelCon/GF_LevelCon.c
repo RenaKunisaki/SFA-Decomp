@@ -107,7 +107,7 @@ void gf_levelcon_findLinkedObjects(GameObject* obj)
     }
 }
 
-int gf_levelcon_SeqFn(GameObject* obj, int eventId, ObjAnimUpdateState* animUpdate)
+int gf_levelcon_SeqFn(GameObject* obj, int eventId, ObjSeqState* animUpdate)
 {
     GfLevelconHandleScriptEventsState* state = obj->extra;
     int i;
@@ -115,7 +115,7 @@ int gf_levelcon_SeqFn(GameObject* obj, int eventId, ObjAnimUpdateState* animUpda
     f32 skyGreen;
     f32 skyBlue;
 
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (i = 0; i < animUpdate->eventCount; i++)
     {
         switch (animUpdate->eventIds[i])

@@ -19,7 +19,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/model.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/objtexture.h"
 #include "sys/objects.h"
@@ -87,16 +87,16 @@ void dimmagicbridge_scrollTextureChannels(int obj, u8* stateBytes) {
     state->wavePhaseB = phase;
 }
 
-int dimmagicbridge_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int dimmagicbridge_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int segmentIndex;
     int glowIndex;
     u8* stateBytes = (obj)->extra;
     DimMagicBridgeState* state = (DimMagicBridgeState*)stateBytes;
-    animUpdate->sequenceEventActive = 0;
-    animUpdate->hitVolumePair &= ~0x40;
+    animUpdate->movementState = 0;
+    animUpdate->flags &= ~0x40;
     dimmagicbridge_scrollTextureChannels((int)obj, stateBytes);
-    if (animUpdate->triggerCommand == 1) {
-        animUpdate->triggerCommand = 0;
+    if (animUpdate->unk80 == 1) {
+        animUpdate->unk80 = 0;
         state->ignited = 1;
     }
     if (state->ignited != 0) {

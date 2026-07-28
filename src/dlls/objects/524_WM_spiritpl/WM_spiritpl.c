@@ -80,7 +80,7 @@ void wmspiritplace_onSeqFree(void)
 {
 }
 
-int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
+int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjSeqState* actor)
 {
     int i;
     WmSpiritPlaceState* state;
@@ -95,7 +95,7 @@ int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
         (*gPartfxInterface)->spawnObject((void*)obj, WMSPIRITPLACE_PARTFX, fxPos, 2, -1, NULL);
     }
 
-    actor->sequenceEventActive = 0;
+    actor->movementState = 0;
     obj->anim.resetHitboxFlags =
         (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
     actor->freeCallback = (ObjAnimSequenceFreeCallback)wmspiritplace_onSeqFree;

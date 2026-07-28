@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define WM_GALLEON_OBJECT_ID 0x139
 
@@ -44,7 +44,7 @@ STATIC_ASSERT(offsetof(WMGalleonState, unknown0D) == 0x0D);
 STATIC_ASSERT(offsetof(WMGalleonState, savedRotationX) == 0x0E);
 STATIC_ASSERT(sizeof(WMGalleonState) == 0x10);
 
-int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int WM_Galleon_getExtraSize(void);
 int WM_Galleon_getObjectTypeId(void);
 void WM_Galleon_free(GameObject* obj, int leavingMap);

@@ -41,13 +41,13 @@
 #define WCPRESSURES_TEXTURE_PRESSED 1
 #define WCPRESSURES_TEXTURE_SHIFT   8
 
-int wcpressures_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int wcpressures_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     WCPressuresState* state = (WCPressuresState*)obj->extra;
     WCPressuresSetup* setup = (WCPressuresSetup*)obj->anim.placementData;
     u8 i;
 
-    if (animUpdate->triggerCommand == WCPRESSURES_CALLBACK_SNAPSHOT_TILES)
+    if (animUpdate->unk80 == WCPRESSURES_CALLBACK_SNAPSHOT_TILES)
     {
         for (i = 0; i < WCPRESSURES_TRACKED_COUNT; i++)
         {
@@ -57,9 +57,9 @@ int wcpressures_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
                 state->savedPos[i].z = state->objects[i]->anim.localPosZ;
             }
         }
-        animUpdate->triggerCommand = WCPRESSURES_CALLBACK_NONE;
+        animUpdate->unk80 = WCPRESSURES_CALLBACK_NONE;
     }
-    else if (animUpdate->triggerCommand == WCPRESSURES_CALLBACK_RESET)
+    else if (animUpdate->unk80 == WCPRESSURES_CALLBACK_RESET)
     {
         for (i = 0; i < WCPRESSURES_TRACKED_COUNT; i++)
         {
@@ -71,7 +71,7 @@ int wcpressures_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
         obj->anim.localPosY = setup->base.posY;
         obj->anim.localPosZ = setup->base.posZ;
         mainSetBits(setup->solvedBit, 0);
-        animUpdate->triggerCommand = WCPRESSURES_CALLBACK_NONE;
+        animUpdate->unk80 = WCPRESSURES_CALLBACK_NONE;
     }
 
     return 0;

@@ -6,7 +6,7 @@
 #include "game/objects/object_setup.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 enum {
     DBSH_GAMEBIT_SYMBOL_RISE_COMPLETE = 0x16A,
@@ -57,7 +57,7 @@ STATIC_ASSERT(offsetof(DBSHShrineState, unknown16) == 0x16);
 extern ObjectDescriptor gDBSHShrineObjDescriptor;
 
 void dbshShrine_updateHoverMotion(GameObject* obj);
-int dbshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dbshShrine_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dbshShrine_getExtraSize(void);
 int dbshShrine_getObjectTypeId(void);
 void dbshShrine_free(GameObject* obj);

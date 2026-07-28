@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "main/objprint_character_api.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/objprint_sound_api.h"
 
 typedef struct CfPrisonUncleState {
@@ -35,7 +35,7 @@ STATIC_ASSERT(offsetof(CfPrisonUncleState, magicGranted) == 0x74);
 STATIC_ASSERT(offsetof(CfPrisonUncleState, pad75) == 0x75);
 STATIC_ASSERT(sizeof(CfPrisonUncleState) == 0xA8);
 
-int cfPrisonUncle_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int cfPrisonUncle_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int cfPrisonUncle_getExtraSize(void);
 int cfPrisonUncle_getObjectTypeId(void);
 void cfPrisonUncle_free(void);

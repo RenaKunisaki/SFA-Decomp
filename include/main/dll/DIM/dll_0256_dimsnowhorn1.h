@@ -6,7 +6,7 @@
 #include "ghidra_import.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/dll_002E_moveLib.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct SnowHornEntry
 {
@@ -96,7 +96,7 @@ int DIMSnowHorn1_getDismountSide(GameObject* obj);
 int DIMSnowHorn1_canDismount(GameObject* obj);
 void DIMSnowHorn1_getRiderPosition(GameObject* obj, f32* out_x, f32* out_y, f32* out_z);
 int DIMSnowHorn1_getMountSide(GameObject* obj);
-int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void DIMSnowHorn1_handleRiderScale(GameObject* obj, f32 scale);
 int DIMSnowHorn1_canMount(GameObject* obj);
 int DIMSnowHorn1_getExtraSize(void);

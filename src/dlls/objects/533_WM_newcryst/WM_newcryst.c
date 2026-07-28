@@ -25,7 +25,7 @@ enum
     WMNEWCRYSTAL_EVENT_STOP_GREEN_BURSTS = 2
 };
 
-int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     WmNewCrystalState* state;
     WmNewCrystalParticleParams params;

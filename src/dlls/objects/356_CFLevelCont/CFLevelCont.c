@@ -38,7 +38,7 @@ const CfLevelControlRestartPoint gCfLevelControlRestartPoint = {
     {746.81787109375f, 1309.0f, -16378.33984375f},
     0.0f,
 };
-int cflevelcontrol_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int cflevelcontrol_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int eventIndex;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         int eventId = animUpdate->eventIds[eventIndex];

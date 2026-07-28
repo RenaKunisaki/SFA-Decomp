@@ -7,7 +7,7 @@
 
 #define SEQ_OBJECT_STATE_SIZE 0x3
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 /* Only the accessed placement prefix is recovered; the complete retail width is not established. */
 typedef struct SeqObjectPlacement {
@@ -54,7 +54,7 @@ STATIC_ASSERT(offsetof(SeqObjectState, pad02) == 0x2);
 STATIC_ASSERT(sizeof(SeqObjectState) == SEQ_OBJECT_STATE_SIZE);
 
 void objCallOnLoadCallback(GameObject* obj);
-int SeqObject_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateState* animUpdate);
+int SeqObject_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate);
 int SeqObject_getExtraSize(void);
 int SeqObject_getObjectTypeId(void);
 void SeqObject_free(GameObject* obj);

@@ -4,7 +4,7 @@
 #include "game/objects/object.h"
 #include "global.h"
 #include "main/vec_types.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/dll/DR/cloudrunner_state.h"
 #include "game/objects/object_setup.h"
 
@@ -73,7 +73,7 @@ void DR_CloudRunner_free(GameObject* obj);
 void DR_CloudRunner_initialise(void);
 void DR_CloudRunner_render(GameObject* p1, int p2, int p3, int p4, int p5, s8 vis);
 void DR_CloudRunner_setFlightState(GameObject* obj, int param);
-int DR_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int DR_CloudRunner_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void DR_CloudRunner_getCameraPosition(int obj, f32* a, f32* b, f32* c);
 void DR_CloudRunner_init(GameObject* obj, int p2);
 void DR_CloudRunner_func23(GameObject* obj, int mode, int* out);

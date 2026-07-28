@@ -5,7 +5,7 @@
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/curve_types.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/objprint_character_api.h"
 
 #define NW_MAMMOTH_PLACEMENT_SIZE   0x24
@@ -89,7 +89,7 @@ STATIC_ASSERT(offsetof(NwMammothState, animEvents) == 0x440);
 STATIC_ASSERT(offsetof(NwMammothState, pathPoints) == 0x45C);
 
 f32* NW_mammoth_getSpawnPosition(GameObject* obj);
-int NW_mammoth_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);
+int NW_mammoth_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate);
 void NW_mammoth_updateEyeTracking(GameObject* obj, NwMammothState* state, int enabled);
 int NW_mammoth_getExtraSize(void);
 void NW_mammoth_free(GameObject* obj);

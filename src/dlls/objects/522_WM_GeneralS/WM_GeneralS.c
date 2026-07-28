@@ -18,7 +18,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/obj_link.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -73,7 +73,7 @@ ObjectDescriptor gWM_GeneralScalesObjDescriptor = {
     WM_GeneralScales_getExtraSize,
 };
 
-int WM_GeneralScales_sequenceCallback(int objectHandle, int unusedArg2, ObjAnimUpdateState* animUpdate) {
+int WM_GeneralScales_sequenceCallback(int objectHandle, int unusedArg2, ObjSeqState* animUpdate) {
     WmGeneralScalesState* state;
     int eventIndex;
     u8 partfxOutput[WM_GENERAL_SCALES_PARTFX_OUTPUT_SIZE];

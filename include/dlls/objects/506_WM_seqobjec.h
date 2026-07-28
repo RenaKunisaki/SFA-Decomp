@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct WMSeqObjectState {
     u8 unknown00;
@@ -27,7 +27,7 @@ STATIC_ASSERT(offsetof(WMSeqObjectPlacementView, base) == 0x00);
 STATIC_ASSERT(offsetof(WMSeqObjectPlacementView, rotationXByte) == 0x18);
 STATIC_ASSERT(offsetof(WMSeqObjectPlacementView, mode) == 0x19);
 
-int WM_seqobject_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int WM_seqobject_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int WM_seqobject_getExtraSize(void);
 int WM_seqobject_getObjectTypeId(void);
 void WM_seqobject_free(void);

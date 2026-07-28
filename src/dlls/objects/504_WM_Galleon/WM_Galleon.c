@@ -53,13 +53,13 @@ ObjectDescriptor gWM_GalleonObjDescriptor = {
     WM_Galleon_getExtraSize,
 };
 
-int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int eventIndex;
 
     (void)unused;
     lbl_803DC0F0 = framesThisStep;
-    animUpdate->hitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->flags = -1;
+    animUpdate->movementState = 0;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         switch (animUpdate->eventIds[eventIndex]) {
         case WM_GALLEON_COMMAND_OPENED:

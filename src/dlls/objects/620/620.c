@@ -34,7 +34,7 @@ int DR_CageWith_func0A(GameObject* obj)
     return state->unk30;
 }
 
-int DR_CageWith_toggleRopeStateCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int DR_CageWith_toggleRopeStateCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     DrcagewithState* state = obj->extra;
     int i;

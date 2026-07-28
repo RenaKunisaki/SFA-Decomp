@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define SC_TOTEM_BOND_GAMEBIT_COUNT 8
 
@@ -51,7 +51,7 @@ STATIC_ASSERT(offsetof(ScTotemBondState, unknown27) == 0x27);
 STATIC_ASSERT(sizeof(ScTotemBondState) == 0x28);
 
 void sc_totembond_spawnGameBitOrbs(GameObject* obj, ScTotemBondState* state, f32 radius);
-u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpdate);
+u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate);
 int sc_totembond_getExtraSize(void);
 int sc_totembond_getObjectTypeId(void);
 void sc_totembond_free(GameObject* obj);

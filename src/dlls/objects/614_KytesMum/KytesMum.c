@@ -248,7 +248,7 @@ int kytesmum_spawnInteractionCallback(GameObject* obj)
     return 0;
 }
 
-int kytesmum_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int kytesmum_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     KytesMumRuntime* runtime = obj->extra;
     KytesMumSetup* setup;

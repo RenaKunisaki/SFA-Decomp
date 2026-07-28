@@ -24,7 +24,7 @@
 #include "main/objprint_character_api.h"
 #include "main/object_render.h"
 #include "main/obj_path.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/newshadows_audio_api.h"
 #include "main/dll/path_control_interface.h"
@@ -845,7 +845,7 @@ void SHthorntail_updateLevelControlMode0(GameObject* obj, SHthorntailState* runt
     SHthorntail_updateState(obj, runtime);
 }
 
-u32 SHthorntail_updateLevelControlState(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+u32 SHthorntail_updateLevelControlState(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     SHthorntailState* runtime;
     int randomIdleWait;
     int impactHandled;
@@ -871,7 +871,7 @@ u32 SHthorntail_updateLevelControlState(GameObject* obj, int unused, ObjAnimUpda
         if (impactHandled != 0) {
             return 0;
         }
-        animUpdate->hitVolumePair &= ~SHTHORNTAIL_LEVELCONTROL_COLLISION_FLAG;
+        animUpdate->flags &= ~SHTHORNTAIL_LEVELCONTROL_COLLISION_FLAG;
         characterDoEyeAnims((GameObject*)obj, &runtime->eyeAnimState);
     }
     runtime->activeMoveValid = 0;

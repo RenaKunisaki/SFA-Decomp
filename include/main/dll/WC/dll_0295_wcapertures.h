@@ -6,7 +6,7 @@
 #include "main/model_light.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct WCAperturesSetup
 {
@@ -47,7 +47,7 @@ void wcapertures_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 void wcapertures_hitDetect(GameObject* obj);
 void wcapertures_release(void);
 void wcapertures_initialise(void);
-int wcapertures_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int wcapertures_interactCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void wcapertures_init(GameObject* obj, WCAperturesSetup* setup);
 void wcapertures_update(GameObject* obj);
 

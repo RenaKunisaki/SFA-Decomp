@@ -7,7 +7,7 @@
 #include "main/dll/baddie_state.h"
 #include "main/objprint_character_api.h"
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 /* The active-target snowmines2 placement is a fixed nine-word (0x24-byte) record. */
 typedef struct Dim2PrisonMammothPlacement {
@@ -54,7 +54,7 @@ int dim2prisonmammoth_stateHandler03(GameObject* obj, Dim2PrisonMammothState* st
 int dim2prisonmammoth_stateHandler02(GameObject* obj, Dim2PrisonMammothState* state);
 int dim2prisonmammoth_stateHandler01(GameObject* obj, Dim2PrisonMammothState* state);
 int dim2prisonmammoth_stateHandler00(GameObject* obj);
-int dim2prisonmammoth_SeqFn(GameObject* obj, int unusedState, ObjAnimUpdateState* animUpdate);
+int dim2prisonmammoth_SeqFn(GameObject* obj, int unusedState, ObjSeqState* animUpdate);
 int dim2prisonmammoth_getExtraSize(void);
 int dim2prisonmammoth_getObjectTypeId(void);
 void dim2prisonmammoth_free(void);

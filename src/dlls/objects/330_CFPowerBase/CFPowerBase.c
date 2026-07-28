@@ -25,7 +25,7 @@ typedef enum CfPowerBaseIndex {
     CFPOWERBASE_INDEX_BLUE = 2,
 } CfPowerBaseIndex;
 
-int cfPowerBase_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int cfPowerBase_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     CfPowerBaseState* state = obj->extra;
     u32 messageSender;
     u32 message;

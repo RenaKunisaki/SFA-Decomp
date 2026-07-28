@@ -1205,7 +1205,7 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
     }
 }
 
-void DIM2icicle_updateCombatState(GameObject* obj, ObjAnimUpdateState* animUpdate, DIMbossRuntime* runtime,
+void DIM2icicle_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMbossRuntime* runtime,
                                   DIMbossRuntime* updateRuntime) {
     DIMbossTopState* topState;
     GameObject* gameObj;
@@ -1361,7 +1361,7 @@ typedef struct DIMbossBaddieControlInterface {
                       s16 p7, int p8, s8 p9);
     void (*applyHitReact)(GameObject* obj, DIMbossRuntime* runtime, f32 amount, s8 flag);
     int (*updateState)(GameObject* obj, DIMbossRuntime* runtime, u8 checkDead);
-    int (*updateHitDetect)(GameObject* obj, ObjAnimUpdateState* animUpdate, DIMbossRuntime* runtime,
+    int (*updateHitDetect)(GameObject* obj, ObjSeqState* animUpdate, DIMbossRuntime* runtime,
                            DIMbossHitDetectAnimHandlerTable* hitDetectAnimTable, DIMbossAnimHandlerTable* animTable,
                            int flags);
     u8 pad38[0x40 - 0x38];
@@ -1385,7 +1385,7 @@ typedef struct DIMbossObjectTriggerInterface {
     u8 pad4C[0x50 - 0x4C];
     void (*spawnObject)(int objectType, int spawnMode, GameObject* parent, int timer);
     u8 pad54[0x58 - 0x54];
-    void (*triggerEvent)(ObjAnimUpdateState* animUpdate, int eventId);
+    void (*triggerEvent)(ObjSeqState* animUpdate, int eventId);
 } DIMbossObjectTriggerInterface;
 
 static inline DIMbossBaddieControlInterface* DIMboss_GetBaddieControlInterface(void) {
@@ -1404,7 +1404,7 @@ static inline DIMbossObjectTriggerInterface* DIMboss_GetObjectTriggerInterface(v
     return (DIMbossObjectTriggerInterface*)*gObjectTriggerInterface;
 }
 
-int DIMboss_updateState(GameObject* obj, u32 state, ObjAnimUpdateState* animUpdate) {
+int DIMboss_updateState(GameObject* obj, u32 state, ObjSeqState* animUpdate) {
     DIMbossRuntime* runtime;
     DIMbossPlacementView* config;
     DIMbossTopState* topState;
@@ -1589,13 +1589,13 @@ int DIMboss_updateState(GameObject* obj, u32 state, ObjAnimUpdateState* animUpda
         case 0:
             break;
         case 2:
-            animUpdate->hitVolumePair = 0;
+            animUpdate->flags = 0;
             DIM2icicle_updateCombatState(obj, animUpdate, runtime, runtime);
             if (runtime->hitReactMode == 1) {
                 runtime->field270 = 0;
                 DIMboss_GetPlayerInterface()->applyHitReact(obj, runtime, 1.0f, 1.0f, &animScratch->hitDetectAnimTable,
                                                             &animScratch->animTable);
-                animUpdate->sequenceEventActive = 0;
+                animUpdate->movementState = 0;
             }
             break;
         case 1:

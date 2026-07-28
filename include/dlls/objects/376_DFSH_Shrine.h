@@ -6,7 +6,7 @@
 #include "game/objects/object_setup.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct DFSHShrineHoverState {
     ModelLightStruct* light;
@@ -76,7 +76,7 @@ extern u16 gDFSHShrineRewardTable[50];
 extern ObjectDescriptor gDFSHShrineObjDescriptor;
 
 void dfshShrine_updateHoverMotion(int objArg);
-int dfshShrine_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
+int dfshShrine_processAnimEvents(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate);
 int dfshShrine_getExtraSize(void);
 int dfshShrine_getObjectTypeId(void);
 void dfshShrine_free(GameObject* obj);

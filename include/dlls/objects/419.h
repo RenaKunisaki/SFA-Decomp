@@ -3,13 +3,13 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define DLL1A3_OBJECT_GROUP_ID 0x3D
 
 extern ObjectDescriptor gDll1A3ObjDescriptor;
 
-int dll419_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjAnimUpdateState* unusedAnimUpdate);
+int dll419_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjSeqState* unusedAnimUpdate);
 int dll419_getExtraSize(void);
 int dll419_getObjectTypeId(void);
 void dll419_free(GameObject* obj);

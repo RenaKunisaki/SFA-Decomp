@@ -63,14 +63,14 @@ ObjectDescriptor gDll199ObjDescriptor = {
     dll409_getExtraSize,
 };
 
-int dll409_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int dll409_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     Dll199State* state;
     int i;
     u8 eventId;
 
     state = obj->extra;
-    animUpdate->activeHitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->savedFlags = -1;
+    animUpdate->movementState = 0;
     if (state->channel3BrightnessDelta != 0) {
         state->channel3Brightness += state->channel3BrightnessDelta;
         if (state->channel3Brightness <= 1 && state->channel3BrightnessDelta <= 0) {
@@ -142,11 +142,11 @@ int dll409_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* an
     switch ((int)state->phase) {
     case 7:
         if ((getButtonsHeld(0) & PAD_BUTTON_A) != 0u) {
-            (*gObjectTriggerInterface)->endSequence(animUpdate->sequenceSlot);
+            (*gObjectTriggerInterface)->endSequence(animUpdate->slot);
             state->phase = 8;
             state->actionTimer = 0;
         } else if ((getButtonsHeld(0) & PAD_BUTTON_B) != 0u) {
-            (*gObjectTriggerInterface)->endSequence(animUpdate->sequenceSlot);
+            (*gObjectTriggerInterface)->endSequence(animUpdate->slot);
             state->phase = 7;
             state->actionTimer = 0;
         }

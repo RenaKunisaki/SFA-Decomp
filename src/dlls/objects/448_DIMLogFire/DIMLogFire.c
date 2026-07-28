@@ -13,7 +13,7 @@
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/model.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
 #include "main/objhits.h"
@@ -38,7 +38,7 @@
 #define DIM_LOG_FIRE_TRICKY_COMMAND_KIND 1
 #define DIM_LOG_FIRE_TRICKY_COMMAND_TYPE 4
 
-int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     DimLogFireState* state = obj->extra;
 
     (void)unused;
@@ -48,7 +48,7 @@ int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     } else {
         Sfx_StopObjectChannel((u32)obj, 64);
     }
-    switch (animUpdate->triggerCommand) {
+    switch (animUpdate->unk80) {
     case DIM_LOG_FIRE_ANIM_COMMAND_TOGGLE_SMOKE:
         state->smokeEnabled = state->smokeEnabled ^ 1;
         break;
@@ -65,7 +65,7 @@ int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     } else {
         Sfx_StopObjectChannel((u32)obj, 1);
     }
-    animUpdate->triggerCommand = 0;
+    animUpdate->unk80 = 0;
     return 0;
 }
 

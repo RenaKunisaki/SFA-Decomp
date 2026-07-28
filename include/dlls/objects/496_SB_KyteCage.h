@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /* SB_KyteCage_getExtraSize() allocates this complete 0x08-byte state. */
 typedef struct SBKyteCageState {
@@ -32,7 +32,7 @@ STATIC_ASSERT(sizeof(SBKyteCageState) == 0x08);
 STATIC_ASSERT(offsetof(SBKyteCagePlacementView, base) == 0x00);
 STATIC_ASSERT(offsetof(SBKyteCagePlacementView, rotXByte) == 0x18);
 
-int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int SB_KyteCage_getExtraSize(void);
 int SB_KyteCage_getObjectTypeId(void);
 void SB_KyteCage_free(GameObject* obj);

@@ -28,9 +28,9 @@
 #define WM_COLRISE_SINK_SPEED         0.125f
 #define WM_COLRISE_MOVE_SFX_CHANNEL   8
 
-int WM_colrise_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
-    animUpdate->hitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+int WM_colrise_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
+    animUpdate->flags = -1;
+    animUpdate->movementState = 0;
     return 0;
 }
 

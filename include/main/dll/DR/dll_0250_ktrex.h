@@ -7,7 +7,7 @@
 #include "main/dll/baddie_state.h"
 #include "main/model_engine.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/shader_api.h"
 
 #define KTREX_LIGHTNING_COUNT 5
@@ -140,7 +140,7 @@ extern f32 gKTRexTurnCurvePhaseByLane[];
 extern s16 gGmMazeWellQuestBits[];
 
 void ktrex_initialiseStateHandlerTables(void);
-int ktrex_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int ktrex_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void ktrex_updateAttackEffects(GameObject* obj);
 void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime);
 int ktrex_updateArenaPathProgress(GroundBaddieState* runtime);

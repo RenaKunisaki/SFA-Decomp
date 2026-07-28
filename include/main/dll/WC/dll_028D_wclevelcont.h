@@ -4,7 +4,7 @@
 #include "global.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "game/objects/object.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct WCLevelContInterface WCLevelContInterface;
 
@@ -143,7 +143,7 @@ void wclevelcont_update(GameObject* obj);
 void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state);
 int wclevelcont_traceMoveA(GameObject* obj, s16 x, s16 y, f32* outX, f32* outZ, int dx, int dy);
 void wclevelcont_updateAct1State(GameObject* obj, WcLevelControlState* state);
-int wclevelcont_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int wclevelcont_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int wclevelcont_traceMoveB(GameObject* obj, s16 x, s16 y, f32* outX, f32* outZ, int dx, int dy);
 void wclevelcont_init(GameObject* obj);
 void wclevelcont_release(void);

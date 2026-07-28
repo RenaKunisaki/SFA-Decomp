@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 #include "global.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct DrshacklePlacement
 {
@@ -53,7 +53,7 @@ STATIC_ASSERT(sizeof(DrshackleState) == 0x20);
 extern int gDrShackleRotZOffset;
 extern int lbl_803DDD70;
 
-int drshackle_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int drshackle_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int drshackle_func0B(GameObject* obj);
 int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int e, int f);
 int drshackle_getExtraSize(void);

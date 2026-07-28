@@ -8,7 +8,7 @@
 
 #include "game/objects/object.h"
 
-int dll419_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjAnimUpdateState* unusedAnimUpdate) {
+int dll419_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjSeqState* unusedAnimUpdate) {
     (void)unusedObj;
     (void)unusedArg;
     (void)unusedAnimUpdate;

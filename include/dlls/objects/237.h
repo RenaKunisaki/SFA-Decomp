@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-struct ObjAnimUpdateState;
+struct ObjSeqState;
 
 /* ObjGroup slot containing the collectible object family. */
 #define COLLECTIBLE_OBJECT_GROUP 4
@@ -190,7 +190,7 @@ int collectible_getIsHidden(GameObject* obj);
 void collectible_applyPickup(GameObject* obj);
 void collectible_updateLooseMotion(GameObject* obj);
 void collectible_updateIdleMotion(GameObject* obj);
-int collectible_SeqFn(GameObject* obj, int unused, struct ObjAnimUpdateState* animUpdate);
+int collectible_SeqFn(GameObject* obj, int unused, struct ObjSeqState* animUpdate);
 void collectible_checkProximityPickup(GameObject* obj, u8* state);
 int collectible_getExtraSize(void);
 int collectible_getObjectTypeId(void);

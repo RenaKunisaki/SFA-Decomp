@@ -7,7 +7,7 @@
 
 #define SHSTAFF_HAZE_CHILD_COUNT 10
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 typedef struct ShStaffPlacement {
     ObjPlacement base;
@@ -49,7 +49,7 @@ STATIC_ASSERT(offsetof(ShStaffState, fizzSfxTimer) == 0x70);
 int sh_staff_getExtraSize(void);
 void sh_staff_free(GameObject* obj, int freeArg);
 void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
-int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void sh_staff_deactivate(GameObject* obj, ShStaffState* state, int clearChildren);
 void sh_staff_update(GameObject* obj);
 

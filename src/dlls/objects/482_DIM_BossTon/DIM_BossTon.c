@@ -182,7 +182,7 @@ void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state) {
 #define DIMBOSSTONSIL_ROUTE_HIGH_THRESHOLD  7
 #define DIMBOSSTONSIL_ROUTE_SPLIT_THRESHOLD 3
 
-void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjAnimUpdateState* animUpdate, DIMbosstonsilState* state,
+void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjSeqState* animUpdate, DIMbosstonsilState* state,
                                          DIMbosstonsilState* updateState) {
     f32 timer;
 
@@ -269,7 +269,7 @@ f32 gDIMbosstonsilRouteDelayTimer;
 s8 gDIMbosstonsilRoutePhase;
 ModelLightStruct* gDIMbosstonsilLight;
 
-int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpdate) {
+int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
     DIMbosstonsilState* state;
     const DIMbosstonsilPlacementView* config;
     u8 red;
@@ -357,13 +357,13 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpd
         hitReactionMode = state->hitReactionMode;
         switch (hitReactionMode) {
         case 2:
-            animUpdate->hitVolumePair = 0;
+            animUpdate->flags = 0;
             dimBossTonsil_newState_hitFightMain(obj, animUpdate, state, state);
             if (state->hitReactionMode == 1) {
                 state->hitReactionSubstate = 0;
                 (*gPlayerInterface)
                     ->update(obj, state, 1.0f, 1.0f, &gDIMbosstonsilStateHandlers, &gDIMbosstonsilSubstateHandlers);
-                animUpdate->sequenceEventActive = 0;
+                animUpdate->movementState = 0;
             }
             break;
         case 1:
@@ -376,8 +376,8 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpd
             break;
         case 0:
         default:
-            animUpdate->hitVolumePair = -1;
-            animUpdate->hitVolumePair &= ~0x40;
+            animUpdate->flags = -1;
+            animUpdate->flags &= ~0x40;
             break;
         }
     }

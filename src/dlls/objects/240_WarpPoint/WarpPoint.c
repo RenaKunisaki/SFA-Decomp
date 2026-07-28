@@ -21,7 +21,6 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
@@ -50,17 +49,17 @@
 extern s16 lbl_803DCEB8;
 extern u8 lbl_803DCDE0;
 
-int WarpPoint_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int WarpPoint_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     WarpPointPlacement* placement = (WarpPointPlacement*)obj->anim.placementData;
 
     (void)unused;
 
     if (placement->mode != WARPPOINT_MODE_GATED_WARP) {
-        if (animUpdate->triggerCommand == WARPPOINT_ANIM_TRIGGER_WARP) {
+        if (animUpdate->unk80 == WARPPOINT_ANIM_TRIGGER_WARP) {
             int targetMapId = (s8) * (u8*)&placement->targetMapId;
             if (targetMapId > WARPPOINT_NO_TARGET_MAP) {
                 warpToMap(targetMapId, 1);
-                animUpdate->triggerCommand = WARPPOINT_ANIM_TRIGGER_NONE;
+                animUpdate->unk80 = WARPPOINT_ANIM_TRIGGER_NONE;
             }
         }
     }

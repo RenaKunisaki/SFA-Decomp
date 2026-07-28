@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /*
  * Only the placement prefix consumed by this DLL is modeled. The active-target
@@ -43,7 +43,7 @@ STATIC_ASSERT(offsetof(Dll1FBState, hideModel) == 0x09);
 STATIC_ASSERT(offsetof(Dll1FBState, unknown0A) == 0x0A);
 STATIC_ASSERT(sizeof(Dll1FBState) == 0x0C);
 
-int dll507_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dll507_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dll507_getExtraSize(void);
 int dll507_getObjectTypeId(void);
 void dll507_free(void);

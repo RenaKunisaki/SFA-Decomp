@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "game/objects/object.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/dll/DR/dr_types.h"
 
 typedef struct DrcagewithPlacement
@@ -49,7 +49,7 @@ STATIC_ASSERT(offsetof(DrcagewithState, ropeFlags) == 0x31);
 STATIC_ASSERT(sizeof(DrcagewithState) == 0x34);
 
 int DR_CageWith_func0A(GameObject* obj);
-int DR_CageWith_toggleRopeStateCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int DR_CageWith_toggleRopeStateCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int DR_CageWith_getExtraSize(void);
 int DR_CageWith_getObjectTypeId(void);
 void DR_CageWith_free(GameObject* obj, int arg);

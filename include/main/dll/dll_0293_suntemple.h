@@ -5,7 +5,7 @@
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/vec_types.h"
 
 typedef struct SunTempleSetup
@@ -47,7 +47,7 @@ int suntemple_getObjectTypeId(void);
 void suntemple_free(void);
 void suntemple_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void suntemple_hitDetect(GameObject* obj);
-int suntemple_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int suntemple_interactCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void suntemple_init(GameObject* obj, SunTempleSetup* setup);
 void suntemple_update(GameObject* obj);
 void suntemple_release(void);

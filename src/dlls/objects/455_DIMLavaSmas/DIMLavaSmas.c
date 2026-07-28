@@ -11,9 +11,8 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits_api.h"
 #include "main/lightmap_api.h"
-#include "main/objanim_update.h"
-#include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/object_render.h"
 #include "main/track_dolphin_map_api.h"
 
 enum DimLavaSmashPhase {
@@ -56,7 +55,7 @@ void dimlavasmash_setBlockSurfaceFlags(MapBlockData* map, int disable, int surfa
     }
 }
 
-int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int* def;
     int hit;
     MapBlockData* block;
@@ -85,7 +84,7 @@ int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpda
             }
         }
     } else {
-        if (animUpdate->triggerCommand == DIM_LAVA_SMASH_ANIM_COMMAND_COMPLETE) {
+        if (animUpdate->unk80 == DIM_LAVA_SMASH_ANIM_COMMAND_COMPLETE) {
             mainSetBits(((DimLavaSmashPlacement*)def)->triggerGameBit, 1);
             ((DimLavaSmashState*)state)->phase = DIM_LAVA_SMASH_PHASE_COMPLETE;
         }

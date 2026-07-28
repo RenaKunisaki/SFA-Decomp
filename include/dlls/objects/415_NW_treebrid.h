@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /*
  * Partial placement view. The init callback proves the fields through 0x1E,
@@ -45,7 +45,7 @@ STATIC_ASSERT(offsetof(NwTreeBridgeState, pathTarget) == 0x08);
 
 extern ObjectDescriptor gNWTreeBridgeObjDescriptor;
 
-int nwTreeBridge_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);
+int nwTreeBridge_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate);
 int nwTreeBridge_getExtraSize(void);
 void nwTreeBridge_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
                          s8 unusedVisible);

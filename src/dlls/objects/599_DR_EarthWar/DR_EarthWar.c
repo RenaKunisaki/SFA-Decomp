@@ -10,7 +10,6 @@
 #include "main/objHitReact.h"
 #include "main/objhits.h"
 #include "main/objanim.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/resource.h"
 #include "main/dll/path_control_interface.h"
@@ -846,7 +845,7 @@ int DR_EarthWarrior_stateHandler00(GameObject* obj)
     return 2;
 }
 
-int DR_EarthWarrior_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int DR_EarthWarrior_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     EarthWarriorState* inner = (obj)->extra;
     int i;

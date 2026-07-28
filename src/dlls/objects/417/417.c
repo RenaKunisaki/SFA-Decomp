@@ -149,7 +149,7 @@ f32* NW_mammoth_getSpawnPosition(GameObject* obj) {
     return &((NwMammothState*)obj->extra)->spawnPosX;
 }
 
-int NW_mammoth_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int NW_mammoth_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     NwMammothState* state;
     void* audioEvents;
     void* audioPoints;
@@ -165,8 +165,8 @@ int NW_mammoth_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateSt
     }
     if ((state->runtimeFlags & NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH) != 0) {
         state->playerDistanceSq = 0.0f;
-        animUpdate->hitVolumePair = animUpdate->hitVolumePair & ~8;
-        animUpdate->hitVolumePair = animUpdate->hitVolumePair & ~0x40;
+        animUpdate->flags = animUpdate->flags & ~8;
+        animUpdate->flags = animUpdate->flags & ~0x40;
         NW_mammoth_updateEyeTracking(obj, state, 1);
     }
     audioEvents = &state->animEvents;

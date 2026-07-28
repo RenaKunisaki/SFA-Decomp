@@ -23,7 +23,6 @@
 #include "track/intersect_card_api.h"
 #include "main/textrender_api.h"
 #include "main/objseq_api.h"
-#include "main/objanim_update.h"
 #include "main/fileio.h"
 #include "main/audio/stream_api.h"
 #include "main/audio/audio_control_api.h"
@@ -963,14 +962,14 @@ int ObjSeq_StartPreparedStream(int slot)
     return 1;
 }
 
-int animatedObjGetSeqId(ObjAnimUpdateState* state)
+int animatedObjGetSeqId(ObjSeqState* state)
 {
-    return gObjSeqSlotSeqIdTable[state->sequenceSlot] - 1;
+    return gObjSeqSlotSeqIdTable[state->slot] - 1;
 }
 
-int ObjSeq_SetSlotValue(ObjAnimUpdateState* state, int value)
+int ObjSeq_SetSlotValue(ObjSeqState* state, int value)
 {
-    gObjSeqSlotValues[(s8)state->sequenceSlot] = (s16)value;
+    gObjSeqSlotValues[(s8)state->slot] = (s16)value;
     return 1;
 }
 
@@ -1441,7 +1440,7 @@ typedef struct ObjSeqAnimPlacement
     s16 unk1A;
     s16 targetType;
     u8 pad1E;
-    s8 sequenceSlot;
+    s8 slot;
     u8 unk20;
     u8 unk21;
     s8 startOnLoad;
@@ -1475,7 +1474,7 @@ STATIC_ASSERT(sizeof(ObjSeqStreamMapEntry) == 8);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, animDataIndex) == 0x18);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, unk1A) == 0x1A);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, targetType) == 0x1C);
-STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, sequenceSlot) == 0x1F);
+STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, slot) == 0x1F);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, unk20) == 0x20);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, unk21) == 0x21);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, startOnLoad) == 0x22);
@@ -2056,7 +2055,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
                 setup->base.posY = obj->anim.localPosY;
                 setup->base.posZ = obj->anim.localPosZ;
             }
-            setup->sequenceSlot = slot;
+            setup->slot = slot;
             setup->startOnLoad = 1;
             setup->unk24 = (*(u16*)(walk2 + 4) & 0xf00) >> 8;
             setup->base.color[0] = 2;
@@ -2728,7 +2727,7 @@ void ObjSeq_objLoadAnimdata(ObjSeqState* seq, ObjSeqAnimPlacement* placement)
     seq->animCount = (s16)(((hdr.dataSize >> 2) - hdr.commandCount) >> 1);
     seq->animEntries = seq->cmds + hdr.commandCount * 4;
 
-    seq->slot = placement->sequenceSlot;
+    seq->slot = placement->slot;
     if (seq->slot > -1)
     {
         runBgState->conditionFlags[seq->slot] = 0;

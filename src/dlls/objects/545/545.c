@@ -4,7 +4,6 @@
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render_legacy.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
@@ -36,13 +35,13 @@ typedef struct SeqPointState
 
 STATIC_ASSERT(sizeof(SeqPointState) == 0x10);
 
-int SeqPoint_SeqFn(GameObject* obj, int param2, ObjAnimUpdateState* ctx)
+int SeqPoint_SeqFn(GameObject* obj, int param2, ObjSeqState* ctx)
 {
     SeqPointState* state = obj->extra;
     int i;
 
-    ctx->activeHitVolumePair = -1;
-    ctx->sequenceEventActive = 0;
+    ctx->savedFlags = -1;
+    ctx->movementState = 0;
     for (i = 0; i < ctx->eventCount; i++)
     {
         switch (state->sequenceId)

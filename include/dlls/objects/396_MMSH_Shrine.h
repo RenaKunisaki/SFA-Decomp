@@ -6,7 +6,7 @@
 #include "game/objects/object_setup.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct MMSHShrinePlacement {
     ObjPlacement base;
@@ -56,7 +56,7 @@ extern ObjectDescriptor gMMSHShrineObjDescriptor;
 
 void mmshShrine_updateHoverMotion(GameObject* obj);
 int mmshShrine_updateFearSway(GameObject* obj);
-int mmshShrine_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);
+int mmshShrine_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate);
 int mmshShrine_getExtraSize(void);
 int mmshShrine_getObjectTypeId(void);
 void mmshShrine_free(GameObject* obj);

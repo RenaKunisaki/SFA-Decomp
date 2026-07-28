@@ -788,9 +788,9 @@ int cfguardian_updateMain(GameObject* obj) {
 /* cfguardian_sequenceCallback: the Queen's sequence message handler.
  * Persists position on a negative cue, otherwise picks the active/idle
  * heading pair and routes a move request; on the magic-grant cue
- * (triggerCommand 2) it refills the player's magic. Returns 1 if the move
+ * (unk80 2) it refills the player's magic. Returns 1 if the move
  * was consumed. */
-int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int* movePair;
     CfGuardianSequenceMoves sequenceMoves;
     CfGuardianState* state = obj->extra;
@@ -810,7 +810,7 @@ int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState*
             return 1;
         }
     }
-    if (animUpdate->triggerCommand == 2) {
+    if (animUpdate->unk80 == 2) {
         playerAddRemoveMagic(Obj_GetPlayerObject(), CFGUARDIAN_MAGIC_GRANT_AMOUNT);
     }
     return 0;

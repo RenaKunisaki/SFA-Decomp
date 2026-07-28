@@ -16,7 +16,7 @@ STATIC_ASSERT(sizeof(DbHoleControl1State) == 0xC);
 
 int lbl_803DDCE0;
 
-int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     ObjPlacement* childPlacement;
     void* res;

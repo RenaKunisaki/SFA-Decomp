@@ -5,7 +5,7 @@
 #include "global.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 extern char sDrCreatorTimeFormat[];
 extern ObjectDescriptor gDrCreatorObjDescriptor;
@@ -80,7 +80,7 @@ STATIC_ASSERT(offsetof(DrcreatorState, spawnTimer) == 0x8);
 STATIC_ASSERT(offsetof(DrcreatorState, flags) == 0x18);
 STATIC_ASSERT(sizeof(DrcreatorState) == 0x1C);
 
-int DR_Creator_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int DR_Creator_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int DR_Creator_getExtraSize(void);
 int DR_Creator_getObjectTypeId(void);
 void DR_Creator_free(void);

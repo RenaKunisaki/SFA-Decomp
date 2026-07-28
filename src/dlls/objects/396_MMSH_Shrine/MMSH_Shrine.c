@@ -253,7 +253,7 @@ int mmshShrine_updateFearSway(GameObject* obj) {
     return 0;
 }
 
-int mmshShrine_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int mmshShrine_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     MMSHShrineState* state;
     u8 command;
     GameObject* player;
@@ -262,7 +262,7 @@ int mmshShrine_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateSt
     state = obj->extra;
     player = Obj_GetPlayerObject();
     animUpdate->savedFlags = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
 
     for (i = 0; i < (int)(u32)animUpdate->eventCount; i++) {
         command = animUpdate->eventIds[i];

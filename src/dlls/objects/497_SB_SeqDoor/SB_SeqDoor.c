@@ -8,11 +8,11 @@
 #define SB_SEQDOOR_SEQ_ID        0x173
 #define SB_SEQDOOR_OPEN_SEQUENCE 0
 
-int SB_SeqDoor_SeqFn(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int SB_SeqDoor_SeqFn(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     if (obj->anim.romDefNo != SB_SEQDOOR_SEQ_ID) {
         animUpdate->flags = -2;
     }
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     return 0;
 }
 

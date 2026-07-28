@@ -3,7 +3,7 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /* SB_Galleon_getExtraSize() allocates this complete 0xB4-byte state. */
 typedef struct SBGalleonState {
@@ -165,7 +165,7 @@ int DBprotection_getCameraState(GameObject* obj);
 void DBprotection_updateShield(GameObject* obj);
 void SB_Galleon_onSeqFree(GameObject* obj);
 void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state);
-int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 GameObject* getSbGalleon(void);
 int SB_Galleon_func0E(GameObject* obj);
 u8 SB_Galleon_getDamagePhase(GameObject* obj);

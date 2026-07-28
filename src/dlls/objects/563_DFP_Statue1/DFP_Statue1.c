@@ -24,15 +24,15 @@
 #define GAMEBIT_SFXPLAYER_VARIANT_C 0x670
 #define GAMEBIT_SFXPLAYER_VARIANT_D 0x9f5
 
-u32 sfxplayer_updateState(int obj, u32 unused, ObjAnimUpdateState* animUpdate)
+u32 sfxplayer_updateState(int obj, u32 unused, ObjSeqState* animUpdate)
 {
     int event;
     SfxplayerState* state;
     int i;
 
     state = ((GameObject*)obj)->extra;
-    animUpdate->hitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->flags = -1;
+    animUpdate->movementState = 0;
     for (i = 0; i < animUpdate->eventCount; i++)
     {
         event = animUpdate->eventIds[i];

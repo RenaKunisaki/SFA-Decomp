@@ -150,7 +150,7 @@ void gpshShrine_updateHoverMotion(GameObject* obj) {
     }
 }
 
-int gpshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int gpshShrine_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     GPSHShrineState* state;
     GameObject* player;
     int i;
@@ -160,7 +160,7 @@ int gpshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState
     state = obj->extra;
     player = Obj_GetPlayerObject();
     animUpdate->savedFlags = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
 
     for (i = 0; i < animUpdate->eventCount; i++) {
         event = animUpdate->eventIds[i];

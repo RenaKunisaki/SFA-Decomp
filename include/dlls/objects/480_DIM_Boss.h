@@ -8,7 +8,7 @@
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/dll/partfx_interface.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define DIMBOSS_RUNTIME_SIZE            0x4C8
 #define DIMBOSS_GAMEBIT_ICICLE_DEFEATED 0x20E
@@ -224,10 +224,10 @@ void DIM2icicle_createStateLight(GameObject* obj, u8 isGreen);
 void DIM2icicle_updateBossSequenceEffects(GameObject* obj, DIMbossRuntime* runtime);
 void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime* runtime);
 void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState);
-void DIM2icicle_updateCombatState(GameObject* obj, ObjAnimUpdateState* animUpdate, DIMbossRuntime* runtime,
+void DIM2icicle_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMbossRuntime* runtime,
                                   DIMbossRuntime* updateRuntime);
 
-int DIMboss_updateState(GameObject* obj, u32 state, ObjAnimUpdateState* animUpdate);
+int DIMboss_updateState(GameObject* obj, u32 state, ObjSeqState* animUpdate);
 void DIMboss_func0B(void);
 int DIMboss_getControlMode(GameObject* obj);
 int DIMboss_getExtraSize(void);

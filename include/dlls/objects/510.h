@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /*
  * Only the placement prefix consumed by this DLL is modeled. The active-target
@@ -51,7 +51,7 @@ STATIC_ASSERT(offsetof(PressureSwitchState, flags) == 0x06);
 STATIC_ASSERT(offsetof(PressureSwitchState, unknown07) == 0x07);
 STATIC_ASSERT(sizeof(PressureSwitchState) == 0x08);
 
-int PressureSwitch_SeqFn(GameObject* unusedObj, int unused, ObjAnimUpdateState* animUpdate);
+int PressureSwitch_SeqFn(GameObject* unusedObj, int unused, ObjSeqState* animUpdate);
 int PressureSwitch_getExtraSize(void);
 int PressureSwitch_getObjectTypeId(void);
 void PressureSwitch_free(void);

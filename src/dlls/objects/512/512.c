@@ -19,7 +19,6 @@
 #include "main/game_ui_interface.h"
 #include "main/mapEventTypes.h"
 #include "main/objHitReact.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/pad_api.h"
@@ -295,7 +294,7 @@ void dll_200_updateMapAct1(GameObject* obj) {
     }
 }
 
-int dll_200_processMapAct1Events(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate, int unusedArg4) {
+int dll_200_processMapAct1Events(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate, int unusedArg4) {
     Dll200State* state;
     GameObject* player;
     int eventIndex;
@@ -324,7 +323,7 @@ int dll_200_processMapAct1Events(GameObject* obj, int unusedArg2, ObjAnimUpdateS
     return 0;
 }
 
-int dll_200_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate, int unusedArg4) {
+int dll_200_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate, int unusedArg4) {
     u8 mapAct;
     int eventIndex;
     Dll200State* state;

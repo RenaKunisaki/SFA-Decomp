@@ -49,7 +49,7 @@
 #define WCAPERTURES_LIGHT_BLUE_LO 0x4d
 #define WCAPERTURES_LIGHT_BLUE_HI 0x96
 
-int wcapertures_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int wcapertures_interactCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int i;
     WCAperturesState* state = obj->extra;

@@ -137,7 +137,7 @@ void sc_totembond_spawnGameBitOrbs(GameObject* obj, ScTotemBondState* state, f32
     }
 }
 
-u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpdate) {
+u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
     ScTotemBondState* state;
     int countForEvent2;
     int startForEvent2;
@@ -150,7 +150,7 @@ u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpda
     (void)unused;
 
     state = obj->extra;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         eventId = animUpdate->eventIds[eventIndex];
         switch (eventId) {

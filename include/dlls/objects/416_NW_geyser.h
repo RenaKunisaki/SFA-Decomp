@@ -3,11 +3,11 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 extern ObjectDescriptor gNWGeyserObjDescriptor;
 
-int nwGeyser_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);
+int nwGeyser_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate);
 void nwGeyser_free(GameObject* obj);
 void nwGeyser_update(GameObject* obj);
 void nwGeyser_init(GameObject* obj);

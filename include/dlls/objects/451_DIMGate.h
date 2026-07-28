@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 typedef enum DimGateMode {
     DIM_GATE_MODE_CLOSED = 0,
@@ -35,7 +35,7 @@ STATIC_ASSERT(sizeof(DimGatePlacement) == 0x24);
 STATIC_ASSERT(offsetof(DimGateState, mode) == 0x00);
 STATIC_ASSERT(sizeof(DimGateState) == 0x01);
 
-int dimgate_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dimgate_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dimgate_getExtraSize(void);
 int dimgate_getObjectTypeId(void);
 void dimgate_free(void);

@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define DLL199_STATE_SIZE 0x14
 
@@ -53,7 +53,7 @@ STATIC_ASSERT(offsetof(Dll199State, unknown13) == 0x13);
 extern u32 gDll199Event9Result;
 extern ObjectDescriptor gDll199ObjDescriptor;
 
-int dll409_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dll409_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dll409_getExtraSize(void);
 int dll409_getObjectTypeId(void);
 void dll409_free(GameObject* obj);

@@ -52,7 +52,7 @@ void dll500_render(GameObject* obj, int renderArg2, int renderArg3, int renderAr
     }
 }
 
-int dll500_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int dll500_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     PartFxSpawnParams spawnParams;
     int frameIndex;
 
@@ -62,7 +62,7 @@ int dll500_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* an
     } else {
         animUpdate->sequenceControlFlags = OBJSEQ_CONTROL_CLEAR_LATCH_A;
     }
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     animUpdate->flags = -1;
     animUpdate->flags &= ~0x20;
 

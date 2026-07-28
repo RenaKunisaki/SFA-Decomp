@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 
-struct ObjAnimUpdateState;
+struct ObjSeqState;
 
 typedef struct IMIceMountainState {
     u8 eventState;
@@ -33,7 +33,7 @@ STATIC_ASSERT(sizeof(IMIceMountainState) == 0x14);
 void IMIceMountain_enterWorldMap(GameObject* obj);
 void IMIceMountain_exitWorldMap(GameObject* obj, IMIceMountainState* state);
 void IMIceMountain_updateEventState(GameObject* obj);
-int IMIceMountain_sequenceCallback(GameObject* obj, int unused, const struct ObjAnimUpdateState* animUpdate);
+int IMIceMountain_sequenceCallback(GameObject* obj, int unused, const struct ObjSeqState* animUpdate);
 int IMIceMountain_getExtraSize(void);
 int IMIceMountain_getObjectTypeId(void);
 void IMIceMountain_free(void);

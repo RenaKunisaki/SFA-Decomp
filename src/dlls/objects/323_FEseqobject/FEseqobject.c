@@ -41,7 +41,7 @@ static inline void FEseqobject_spawnEffect(GameObject* obj, PartFxSpawnParams* p
                       FESEQOBJECT_PARTICLE_MODEL_NONE, NULL);
 }
 
-int FEseqobject_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int FEseqobject_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     PartFxSpawnParams effect;
     register GameObject* self = obj;
     int receiver;
@@ -136,7 +136,7 @@ int FEseqobject_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
             }
         }
     }
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     return 0;
 }
 

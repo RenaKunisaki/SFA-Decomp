@@ -6,7 +6,7 @@
 #include "game/objects/object_setup.h"
 
 typedef struct ModelLightStruct ModelLightStruct;
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 typedef struct DimLogFirePlacement {
     ObjPlacement base;
@@ -62,7 +62,7 @@ STATIC_ASSERT(offsetof(DimLogFireState, unknown20) == 0x20);
 STATIC_ASSERT(offsetof(DimLogFireState, unknown21) == 0x21);
 STATIC_ASSERT(sizeof(DimLogFireState) == 0x24);
 
-int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dimlogfire_countdownCallback(GameObject* obj, int delta);
 int DIMLogFire_getExtraSize(void);
 int DIMLogFire_getObjectTypeId(void);

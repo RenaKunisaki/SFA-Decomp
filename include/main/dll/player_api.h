@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 #include "main/dll/baddie_state.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/dll/player_staff_api.h"
 
 #define PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE 0x4000
@@ -89,6 +89,6 @@ void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner);
 void Lightfoot_ResetScriptedPosition(GameObject* obj);
 void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner);
 void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int state);
-int Lightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int Lightfoot_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 
 #endif /* MAIN_DLL_PLAYER_API_H_ */

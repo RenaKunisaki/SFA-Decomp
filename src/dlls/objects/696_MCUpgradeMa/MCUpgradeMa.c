@@ -44,7 +44,7 @@ void mcupgradema_init(GameObject* obj)
     obj->animEventCallback = mcupgradema_SeqFn;
 }
 
-int mcstaffeffe_SeqFn(GameObject* staffEffect, int unused, ObjAnimUpdateState* animUpdate)
+int mcstaffeffe_SeqFn(GameObject* staffEffect, int unused, ObjSeqState* animUpdate)
 {
     GameObject* player;
     GameObject* staff;

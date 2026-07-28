@@ -197,7 +197,7 @@ ObjectDescriptor12 gBabyCloudRunnerObjDescriptor = {
     (ObjectDescriptorCallback)babyCloudRunner_tryCapture,
 };
 
-int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     GameObject* player;
     BabyCloudRunnerPlacement* placement = (BabyCloudRunnerPlacement*)obj->anim.placement;
     s8 inRange;
@@ -210,7 +210,7 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateS
     if (obj->seqIndex == BABYCLOUDRUNNER_SEQUENCE_CAPTURED) {
         return 0;
     }
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     player = Obj_GetPlayerObject();
     dx = player->anim.localPosX - placement->base.posX;
     dz = player->anim.localPosZ - placement->base.posZ;
@@ -271,7 +271,7 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateS
         break;
     case 0:
     case 8:
-        animUpdate->hitVolumePair &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
+        animUpdate->flags &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
         yaw = Obj_GetYawDeltaToObject(obj, player, 0);
         characterAimHeadAtTarget(obj, player, &state->eyeAnimState, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;
@@ -282,7 +282,7 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateS
         }
         break;
     case 5:
-        animUpdate->hitVolumePair &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
+        animUpdate->flags &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
         yaw = Obj_GetYawDeltaToObject(obj, (GameObject*)getTrickyObject(), 0);
         characterAimHeadAtTarget(obj, getTrickyObject(), &state->eyeAnimState, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;

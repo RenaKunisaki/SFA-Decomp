@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef enum SlidingDoorMode {
     SLIDING_DOOR_MODE_CLOSED = 0,
@@ -42,7 +42,7 @@ STATIC_ASSERT(offsetof(SlidingDoorPlacement, gateGameBit) == 0x22);
 
 STATIC_ASSERT(sizeof(SlidingDoorState) == 0x01);
 
-int slidingDoor_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int slidingDoor_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int slidingDoor_getExtraSize(void);
 int slidingDoor_getObjectTypeId(void);
 void slidingDoor_free(void);

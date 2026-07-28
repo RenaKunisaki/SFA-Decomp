@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 #include "global.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "game/objects/object_setup.h"
 
 typedef struct WmSeqPointState
@@ -48,7 +48,7 @@ STATIC_ASSERT(offsetof(WmSeqPointMapData, disableGameBit) == 0x20);
 STATIC_ASSERT(sizeof(WmSeqPointMapData) == 0x24);
 
 void wmseqpoint_onSeqFree(GameObject* obj);
-int wmseqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor);
+int wmseqpoint_SeqFn(GameObject* obj, int unused, ObjSeqState* actor);
 int wmseqpoint_getExtraSize(void);
 int wmseqpoint_getObjectTypeId(void);
 void wmseqpoint_free(void);

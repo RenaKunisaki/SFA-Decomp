@@ -1009,7 +1009,7 @@ void arwarwing_clearAimSnapshot(GameObject* obj)
     (*(ArwingState**)&obj->extra)->aimSnapshotValid = 0;
 }
 
-int arwarwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int arwarwing_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int i;
     ArwingState* state = obj->extra;

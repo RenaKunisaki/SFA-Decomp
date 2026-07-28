@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 #include "dlls/objects/430_SH_LevelCon.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/vec_types.h"
 
 #define CFLEVELCONTROL_RESET_GAME_BIT_COUNT       23
@@ -57,7 +57,7 @@ STATIC_ASSERT(offsetof(CfLevelControlRestartPoint, position) == 0x00);
 STATIC_ASSERT(offsetof(CfLevelControlRestartPoint, unused) == 0x0C);
 STATIC_ASSERT(sizeof(CfLevelControlRestartPoint) == 0x10);
 
-int cflevelcontrol_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int cflevelcontrol_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int cflevelcontrol_getExtraSize(void);
 int cflevelcontrol_getObjectTypeId(void);
 void cflevelcontrol_free(GameObject* obj);

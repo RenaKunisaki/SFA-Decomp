@@ -120,7 +120,7 @@ void dfshShrine_updateHoverMotion(int objArg) {
     }
 }
 
-int dfshShrine_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
+int dfshShrine_processAnimEvents(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate) {
     GameObject* objLocal;
     DFSHShrineHoverState* state;
     GameObject* player;
@@ -130,7 +130,7 @@ int dfshShrine_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateS
     objLocal = obj;
     state = objLocal->extra;
     player = Obj_GetPlayerObject();
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (i = 0; i < animUpdate->eventCount; i++) {
         cmd = animUpdate->eventIds[i];
         if (cmd != 0) {

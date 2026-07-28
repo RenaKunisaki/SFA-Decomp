@@ -2,7 +2,6 @@
 
 #include "dolphin/os.h"
 #include "game/objects/object.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 
 #define SEQ_OBJ2_GROUP                               0xF
@@ -75,7 +74,7 @@ extern const char sSeqObjNeedBitClearDuringSequenceFormat[];
 extern const char sSeqObjDiagnosticFormats[];
 extern const char sSeqObjNeedAndUsedBitFormat[];
 
-int SeqObj2_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateState* animUpdate) {
+int SeqObj2_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate) {
     SeqObjectPlacement* placement;
     SeqObj2State* state;
     int eventIndex;

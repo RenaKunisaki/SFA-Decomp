@@ -5,7 +5,7 @@
 #include "game/objects/object.h"
 #include "main/mapEventTypes.h"
 #include "dlls/object_descriptor.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define LINKA_LEVCONTROL_OBJECT_DEF_ID 0x0342
 #define LINKA_LEVCONTROL_DLL_ID 0x0238
@@ -15,7 +15,7 @@
 
 extern ObjectDescriptor gFireObjDescriptor;
 
-int LinkALevControl_seqFn(GameObject *obj, int unused, ObjAnimUpdateState *animUpdate);
+int LinkALevControl_seqFn(GameObject *obj, int unused, ObjSeqState *animUpdate);
 int LinkALevControl_getExtraSize(void);
 int LinkALevControl_getObjectTypeId(void);
 void LinkALevControl_free(void);

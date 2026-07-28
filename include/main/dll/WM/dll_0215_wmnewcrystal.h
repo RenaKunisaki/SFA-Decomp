@@ -5,7 +5,7 @@
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct WmNewCrystalState
 {
@@ -33,7 +33,7 @@ STATIC_ASSERT(offsetof(WmNewCrystalParticleParams, pathPoint) == 0x06);
 STATIC_ASSERT(offsetof(WmNewCrystalParticleParams, x) == 0x0C);
 STATIC_ASSERT(sizeof(WmNewCrystalParticleParams) == 0x18);
 
-int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor);
+int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjSeqState* actor);
 int WM_newcrystal_getExtraSize(void);
 int WM_newcrystal_getObjectTypeId(void);
 void WM_newcrystal_free(void);

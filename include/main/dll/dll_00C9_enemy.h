@@ -5,7 +5,7 @@
 #include "ghidra_import.h"
 #include "global.h"
 #include "main/dll/duster_api.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 struct ModelLightStruct;
 struct ObjModelChain;
@@ -224,7 +224,7 @@ void FUN_8014c690(u64 param_1, double param_2, double param_3, u64 param_4, u64 
                   u64 param_8, u32 param_9, u32 param_10, int param_11);
 void FUN_8014c694(u64 param_1, u64 param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
                   u64 param_8, int param_9);
-int enemy_SeqFn(GameObject* node, int unused, ObjAnimUpdateState* animUpdate);
+int enemy_SeqFn(GameObject* node, int unused, ObjSeqState* animUpdate);
 int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int maxCount, EnemyTargetSearchResult* results);
 void tricky_handleDefeat(GameObject* obj, int state);
 void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit);

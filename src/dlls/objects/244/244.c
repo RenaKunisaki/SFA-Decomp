@@ -78,7 +78,7 @@ ObjectDescriptor gDoorF4ObjDescriptor = {
     DoorF4_getExtraSize,                              /* getExtraSize */
 };
 
-int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
+int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
     int message;
     int objectCount;
     int objectIndex;
@@ -106,7 +106,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate) {
     state = ((GameObject*)obj)->extra;
     signedDistance = 0.0f;
     objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     playerObj = Obj_GetPlayerObject();
     deltaX = playerObj->anim.localPosX - placement->base.posX;
     deltaZ = playerObj->anim.localPosZ - placement->base.posZ;
