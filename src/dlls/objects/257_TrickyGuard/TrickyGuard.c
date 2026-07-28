@@ -26,7 +26,7 @@ void TrickyGuard_update(GameObject* obj) {
     if (tricky == NULL) {
         return;
     }
-    if ((u8)TRICKY_INTERFACE(tricky)->isGuarding(tricky) != 0) {
+    if (TRICKY_INTERFACE(tricky)->isGuarding(tricky) != 0) {
         return;
     }
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {

@@ -35,7 +35,7 @@ typedef struct TrickyCompanionInterface
     int (*requestMoveToObject)(GameObject* tricky, GameObject* target);
     void (*requestRecall)(GameObject* tricky);
     u8 (*isPlayingBall)(GameObject* tricky);
-    int (*isGuarding)(GameObject* tricky);
+    u8 (*isGuarding)(GameObject* tricky);
     int (*getCurrentCommandType)(GameObject* tricky, int* commandType);
 } TrickyCompanionInterface;
 
