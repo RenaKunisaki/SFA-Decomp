@@ -84,11 +84,17 @@ typedef struct StageCountTable
 } StageCountTable;
 
 extern volatile s32 gSaveCardState;
-extern u8 lbl_803DD059;
-extern u32 gSaveCardSerialHi;
-extern u32 gSaveCardSerialLo;
-extern u32 gSaveCardChecksumHi;
-extern u32 gSaveCardChecksumLo;
+
+u8* gSaveCardImageBuffer;
+u8 lbl_803DD05A;
+u8 lbl_803DD059;
+u8 gSaveCardRetry;
+u32 gSaveCardChecksumLo;
+u32 gSaveCardChecksumHi;
+u32 gSaveCardSerialLo;
+u32 gSaveCardSerialHi;
+char* lbl_803DD044;
+void* lbl_803DD040;
 typedef struct RippleEntry
 {
     f32 x, y, z;
@@ -121,7 +127,6 @@ STATIC_ASSERT(offsetof(WaterFxState, textures) == 0x10);
 STATIC_ASSERT(offsetof(WaterFxState, ripples) == 0x20);
 STATIC_ASSERT(offsetof(WaterFxState, quads) == 0x1020);
 STATIC_ASSERT(sizeof(WaterFxState) == 0x4820);
-extern u8 gSaveCardRetry;
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);

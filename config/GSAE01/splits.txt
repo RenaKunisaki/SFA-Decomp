@@ -338,6 +338,7 @@ track/intersect_render.c:
 track/intersect_memcard.c:
 	.text       start:0x8007D670 end:0x8007E77C
 	.data       start:0x8030EAB8 end:0x8030EB58
+	.sbss       start:0x803DD040 end:0x803DD060
 	.sdata2     start:0x803DEF90 end:0x803DEFA0
 
 dlls/engine/2/2.c:
@@ -4543,7 +4544,7 @@ musyx/runtime/synth.c:
 	extabindex  start:0x80005D5C end:0x80005E64
 	.text       start:0x8026F53C end:0x80272610
 	.bss        start:0x803BCD90 end:0x803BE378
-	.sbss       start:0x803DE238 end:0x803DE280
+	.sbss       start:0x803DE218 end:0x803DE280
 	.sdata2     start:0x803E7798 end:0x803E77D8
 
 musyx/runtime/synth_control.c:
