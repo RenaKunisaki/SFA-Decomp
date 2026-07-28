@@ -1013,11 +1013,11 @@ int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
 
 
 
-u8 isOvercast(void);
 
-void setStarsHidden(int v);
 
-void setPendingMapLoad(int v);
+
+
+
 
 
 

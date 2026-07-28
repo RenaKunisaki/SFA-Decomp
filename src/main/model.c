@@ -1865,9 +1865,9 @@ int ObjModel_HasActiveBlendChannels(ObjModel* model)
     }
     return 0;
 }
+
 typedef f32 Mtx[3][4];
 
-void ObjModel_SetBlendChannelTargets(ObjModel* model, int channel, int a, int b, f32 weight, int flags);
 void ObjModel_SetBlendChannelWeight(ObjModel* model, int channel, f32 weight)
 {
     ObjModelBlendChannel* ch;
@@ -2870,7 +2870,6 @@ void ObjModel_InitResourceCaches(void)
     lbl_803DCB58 = 0;
 }
 
-void ObjModel_InitScratchBuffers(void);
 
 void ObjModel_InitScratchBuffers(void)
 {

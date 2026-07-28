@@ -204,21 +204,9 @@ typedef struct QuakeFxParams
     f32 f2;
     f32 f3;
 } QuakeFxParams;
-int staff_getExtraSize(void);
-int staff_getObjectTypeId(void);
-s32 staff_getSwipeTextureIndex(GameObject* obj);
-void staff_func10(GameObject* obj, s32 v);
-void staff_setHitReactValue(GameObject* obj, s32 v);
-void staff_updateSwipe(GameObject* obj, int p4, int p5);
-void staff_addHitReactValue(GameObject* obj, s32 delta);
-void staff_startSwipe(GameObject* obj, s16 idx, f32 f1, f32 f2);
-void staff_free(GameObject* obj);
-void staff_release(void);
-void staff_init(GameObject* obj);
-void staff_initialise(void);
+
 #define GXWGFifo (*(volatile PPCWGPipe*)0xCC008000)
 
-void staff_hitDetectGeometry(GameObject* obj);
 static inline void swipePos3f32(const f32 x, const f32 y, const f32 z)
 {
     GXWGFifo.f32 = x;
@@ -237,7 +225,6 @@ static inline void swipeTexCoord2f32(const f32 s, const f32 t)
     GXWGFifo.f32 = s;
     GXWGFifo.f32 = t;
 }
-void staff_update(GameObject* obj);
 
 
 void quakeSpellFn_8016cee8(GameObject* obj, GameObject* player)

@@ -717,25 +717,31 @@ void drawPartialTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int
 
 
 /*
+ * Caller-coloured asset blit. Same mechanic as drawTexture but the K0
  * color comes from a writable GXColor the caller passes in (we apply the
  * gHudTintAlpha alpha tint to it in place). The flag arg picks between
  * "raster passthrough" (TevColorIn 0xF/0xF/0xF/0xE) and "K-tint replace"
  * (TevColorIn 0xF/0xE/0x8/0xF).
  */
-void hudDrawColored(int obj, int x, int y, u32* color, int scale, int flag);
+
 /*
  * Quad-from-asset blit: takes an "asset record" (with width at +0xA,
  * height at +0xC, and an optional second-stage flag at +0x50), a per-
  * call alpha multiplier, screen-pos (sx, sy), and a u16 size scale.
  * Composes K0 from RGB(255,255,255) plus the global alpha tint
  * (alpha * gHudTintAlpha >> 8); if the asset opts in, layers a second
+ * tex stage that further K-multiplies by the texture. Final width and
  * height are 4 * asset_dim * scale >> 8 in screen pixels at z=-8.
+ */
 void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale);
+
 
 /*
  * Fullscreen 640x480 texture-tinted quad with shape-controlled alpha:
+ * `flag != 0` lights the screen with three pre-set GXColors stamped into
  * K0/T1/T2; `flag == 0` instead does a single K0 modulate where K0's
  * alpha is the caller's byte divided by 4. Builds a per-call 3x4 tex
+ * coord matrix that scales the source texture by 1/sx and 1/sy with a
  * sub-pixel offset baked from -320.0f/50.
  */
 
@@ -747,15 +753,11 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale);
 void OSReport(const char* msg, ...);
 
 
-int _saveGame(int slot, void* save, void* data);
-
-int maybeTryLoadSave(void* data);
 
 
-int cardProbe(u8 retry);
 
 
-void showMemCardError(u8 err);
+
 
 /*
  * Per-frame "blocking" dialog renderer driven by the card-write retry
@@ -766,7 +768,6 @@ void showMemCardError(u8 err);
  * cached prompt id in lbl_803DB708, then routes the OK/Cancel/back text
  * to gameTextShowAt based on the dialog kind passed in.
  */
-void cardShowLoadingMsg(u8 kind);
 
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from _saveGame.
@@ -774,14 +775,12 @@ void cardShowLoadingMsg(u8 kind);
  * into the card-IO buffer (lbl_803DD044), then asks saveGame_doWrite(2) to
  * commit; if that fails it falls back to saveGame_doWrite(1).
  */
-int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
 
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from maybeTryLoadSave.
  * Copies the 0xE4-byte block at offset 0x1F14 in the card buffer (held in
  * lbl_803DD044) into the caller-supplied destination.
  */
-int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
 /* .bss block 0x80391DC0-0x803967C0 */

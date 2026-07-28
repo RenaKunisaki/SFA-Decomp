@@ -742,6 +742,7 @@ char sMapAssetPathFormats[0x78] =
     "%s/animcurv.bin\0%s/animcurv.tab\0%s/voxmap.bin\0\0\0warlock/voxmap.bin\0\0%s/voxmap.tab\0\0"
     "\0%s/mod%d.zlb.bin\0\0\0\0%s/mod%d.tab";
 void gxPerfFn_8004a77c(int);
+extern void* renderFrameBuffer;
 extern void* externalFrameBuffer0;
 extern void* externalFrameBuffer1;
 extern u8 gLoadingScreenTextures[];
@@ -750,9 +751,6 @@ extern int gPendingDvdReadCount;
 extern volatile int gAssetLoadCompletedFlags;
 extern void* displayFrameBuffer;
 extern RingBufferQueue gVideoFlipQueue;
-void piRomLoadSection(int romOffset, int mapIndex, int destBuf);
-int GXFlush_(u8 visible, int unused);
-void waitNextFrame(void);
 
 
 void* mapLoadDataFile(int mapId, int fileId)

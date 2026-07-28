@@ -750,11 +750,10 @@ extern u32 gCMenuButtons;
 extern s8 gCMenuCloseSfx;
 
 
-void GameUI_frameEnd(void);
+
 void cMenuSelectItemByTarget(int idx, s16 target, s8 flag);
 void cMenuSelectFirstEnabledItem(int idx, s8 flag);
-void GameUI_release(void);
-void pauseMenuSetupTitle(s32 fade_target, u8 idx, u8 flags, u8 q);
+
 
 void cMenuPlayTrickyCommandSfx(int obj)
 {
@@ -5195,6 +5194,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
     Camera_RebuildProjectionMatrix();
     Camera_ApplyFullViewport();
 }
+
 void pauseMenuDrawSideRails(s32 alpha)
 {
     f32 phase;
@@ -5205,12 +5205,14 @@ void pauseMenuDrawSideRails(s32 alpha)
     s8 i;
 
     phase = 6.0f * mathSinf(lbl_803E1EC8 * (lbl_803DD748 * 1000.0f) / lbl_803E1E94);
+
     for (i = 10; i >= 0; i -= 2)
     {
         pauseMenuDrawElement(((HudTextures*)hudTextures)->tex11C, 20.0f, 280.0f,
                              x = (s16)((0xf5 - i) - lbl_803DD75C), alpha, 0x200, 0);
         pauseMenuDrawElement(((HudTextures*)hudTextures)->tex11C, lbl_803E20C0, 280.0f, x, alpha, 0x200, 0);
     }
+
     j = 10;
     brightness = lbl_803E20C4 - phase * lbl_803E1E6C;
     for (; j >= 0; j -= 10)
@@ -5233,35 +5235,15 @@ void pauseMenuDrawGrid(int alpha);
 void pauseMenuDrawGridCell(u8 i, int alpha, int flag);
 void timeListDraw(int unused1, int unused2, int unused3);
 void highScoreScreenDraw(int p1, int p2, int p3);
-int registerNewScore(s8 tableId, int score, u8 kind, int mode);
 void boxDrawFn_8012975c(int unused1, int unused2, int unused3);
-void pauseMenuDoSave(void);
-void viewFn_80129c74(void);
-void viewFn_80129cbc(f32 fov, f32 x, f32 y);
-void perspectiveFn_80129db4(void);
-void pauseMenuFn_80129ee0(void);
 int pauseMenuGridFn_8012b4c4(void);
 int pauseMenuIsFox(void);
 void timeListFn_8012be84(void);
-void pauseMenuAnimateCarousel(void);
-void pauseMenuInit(void);
 void mapScreenDrawHud(int unused1, int unused2, int unused3);
 void drawWorldMapHud(void);
-void setShowWorldMapHud(u8 param);
-u8 pauseMenuGetTokenConfirmFlag(void);
-u8 getWorldMapVoiceoverTimer(void);
 void setWorldMapVoiceoverActive(u32 val);
-void timeListFn_8012df14(void);
 void cMenuRun(void);
 void npcTalkFn_8012e880(void);
-s32 isTalkingToNpc(void);
-void GameUI_finishNpcDialogue(void);
-void GameUI_gameTextShowNpcDialogue(s32 id, s32 unusedA, s32 unusedB, s32 do_input_disable);
-void GameUI_showMinimapInfoText(s32 textId, s32 posY, s32 posX);
-void GameUI_requestPlayerStatsSnapshot(void);
-void GameUI_unselectAllItems(void);
-s16 GameUI_getSubpageGamebit(void);
-s32 CMenu_GetState(void);
 
 /* Draws the pause-menu task-hint panel: the framed backing (corners/edges via
  * pauseMenuDrawElement/drawFn_8011eb3c) plus a six-segment progress bar whose
@@ -9069,11 +9051,6 @@ void GameUI_release(void)
 
 
 /* Forward declarations. */
-void textureFreeFn_8012fcec(void);
-void Pause_SetDisabled(u8 v);
-void Pause_ResetMenuFrameCounter(void);
-void CMenu_SetFadeCounter(s16 v);
-void GameUI_initialise(void);
 
 void textureFreeFn_8012fcec(void)
 {

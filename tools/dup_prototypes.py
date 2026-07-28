@@ -39,7 +39,16 @@ PROTO = re.compile(r"^([A-Za-z_][\w \t\*]*?)\b([A-Za-z_]\w*)\s*\(([^;{)]*)\)\s*;
 
 
 def strip_comments(text: str) -> str:
-    return COMMENT.sub(" ", text)
+    """Blank out comments WITHOUT changing line count.
+
+    Replacing a block comment with a single space collapses the lines it spanned,
+    which silently shifts every line number after it -- and a wrong deletion of a
+    COMMENT line still passes an md5 gate, because comments do not reach codegen.
+    Keep the newlines.
+    """
+    def blank(m: re.Match) -> str:
+        return re.sub(r"[^\n]", " ", m.group(0))
+    return COMMENT.sub(blank, text)
 
 
 def norm_type(t: str) -> str:
