@@ -6,7 +6,7 @@
 
 typedef struct ObjSoundState
 {
-    u8 active;
+    s8 active;
     u8 pad01[3];
     f32 blendWeight;
     u8 pad08[4];

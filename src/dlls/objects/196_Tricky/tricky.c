@@ -9606,7 +9606,7 @@ void Tricky_update(int obj)
         characterUpdateHeadLook((GameObject*)obj, &trickyState->eyeAnimState, 0.0f);
         characterDoEyeAnims((GameObject*)obj, &trickyState->eyeAnimState);
     }
-    objSoundUpdateMouth((GameObject*)obj, (char*)&trickyState->soundState);
+    objSoundUpdateMouth((GameObject*)obj, &trickyState->soundState);
     {
         f32* pathCursor;
         TrickyState* pathState;

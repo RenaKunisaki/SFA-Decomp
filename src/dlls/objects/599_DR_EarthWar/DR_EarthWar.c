@@ -1314,7 +1314,7 @@ void DR_EarthWarrior_update(GameObject* obj)
         DR_EarthWarrior_runController(obj, framesThisStep, -1);
     }
     characterDoEyeAnims(obj, &inner->eyeAnimState);
-    objSoundUpdateMouth(obj, (char*)&inner->modelSoundState);
+    objSoundUpdateMouth(obj, &inner->modelSoundState);
     dll_2E_updateLookAt(obj, (MoveLibState*)((char*)inner + 0x3ec));
     if ((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
     {

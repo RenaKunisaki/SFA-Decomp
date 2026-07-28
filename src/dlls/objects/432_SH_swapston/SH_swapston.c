@@ -618,7 +618,7 @@ void warpstone_update(int obj) {
         }
     }
 
-    objSoundUpdateMouth((GameObject*)obj, (char*)(state + offsetof(WarpStoneState, soundState)));
+    objSoundUpdateMouth((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)));
     characterDoEyeAnims((GameObject*)obj, (void*)(state + offsetof(WarpStoneState, eyeAnimState)));
     if (mainGetBit(GAMEBIT_SH_SawWarpStoneIntro) == 0) {
         ((WarpStoneState*)state)->activated = 0;

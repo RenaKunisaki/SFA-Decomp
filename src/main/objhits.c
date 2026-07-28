@@ -5047,17 +5047,17 @@ char sObjMsgOverflowInObjectWarning[64] = "objmsg (%x): overflow in object %d de
 int gObjLookAtTurnRateDivisor = 100;
 f32 gObjMouthBlendFrames = 20.0f;
 
-void objSoundUpdateMouth(GameObject* obj, char* state)
+void objSoundUpdateMouth(GameObject* obj, ObjSoundState* state)
 {
     s16* found;
     int timer;
 
-    timer = (s32)((ObjSoundState*)state)->timer;
+    timer = (s32)state->timer;
     found = objFindJointVecByKey(obj, 1);
 
-    if (*(s8*)state != 0)
+    if (state->active != 0)
     {
-        *(s8*)state = 0;
+        state->active = 0;
     }
     else if (Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) != 0)
     {
@@ -5067,20 +5067,20 @@ void objSoundUpdateMouth(GameObject* obj, char* state)
             if (timer < 0)
             {
                 Sfx_StopObjectChannel((u32)obj, 0x10);
-                ((ObjSoundState*)state)->blendWeight = 0.0f;
-                ((ObjSoundState*)state)->pitch = 0;
+                state->blendWeight = 0.0f;
+                state->pitch = 0;
             }
-            ((ObjSoundState*)state)->timer = timer;
+            state->timer = timer;
         }
     }
     else
     {
-        ((ObjSoundState*)state)->timer = -1.0f;
-        ((ObjSoundState*)state)->pitch = 0;
-        if (((ObjSoundState*)state)->blendWeight > 0.0f)
+        state->timer = -1.0f;
+        state->pitch = 0;
+        if (state->blendWeight > 0.0f)
         {
             ObjModel* pi;
-            ((ObjSoundState*)state)->blendWeight = 0.0f;
+            state->blendWeight = 0.0f;
             pi = (ObjModel*)OBJPRINT_ACTIVE_BANK(obj);
             if (pi->file->morphTargetCount != 0)
             {
@@ -5092,7 +5092,7 @@ void objSoundUpdateMouth(GameObject* obj, char* state)
 
     if (found != NULL)
     {
-        found[0] = (s16)((found[0] + ((ObjSoundState*)state)->pitch) >> 1);
+        found[0] = (s16)((found[0] + state->pitch) >> 1);
     }
 }
 

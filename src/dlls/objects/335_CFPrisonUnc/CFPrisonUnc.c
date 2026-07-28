@@ -130,7 +130,7 @@ void cfPrisonUncle_update(GameObject* obj) {
             *modelVector = CFPRISONUNCLE_HEAD_VECTOR_ANGLE;
             (*gObjectTriggerInterface)->runSequence(CFPRISONUNCLE_SEQUENCE_DIALOGUE, obj, -1);
         } else {
-            objSoundUpdateMouth(obj, (char*)&state->soundState);
+            objSoundUpdateMouth(obj, &state->soundState);
             ObjAnim_AdvanceCurrentMove((int)obj, CFPRISONUNCLE_ANIM_STEP, (f32)(u32)framesThisStep, 0);
         }
     } else {

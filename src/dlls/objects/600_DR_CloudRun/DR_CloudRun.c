@@ -1236,7 +1236,7 @@ void DR_CloudRunner_update(GameObject* obj)
         inner->moveFlags &= ~1;
     }
     dll_2E_updateLookAt(obj, (MoveLibState*)((char*)inner + 0x4c4));
-    objSoundUpdateMouth(obj, (char*)&inner->modelSoundState);
+    objSoundUpdateMouth(obj, &inner->modelSoundState);
     characterHeadLookCalm(obj, (s16*)&inner->eyeAnimState, 0.0f);
     characterDoEyeAnims(obj, &inner->eyeAnimState);
     if ((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)

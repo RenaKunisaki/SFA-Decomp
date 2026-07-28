@@ -914,7 +914,7 @@ void bossdrakor_update(GameObject* obj)
     {
     objSoundStart((u32)obj, &drakorState->soundState, 0x2ff);
     }
-    objSoundUpdateMouth(obj, (char*)&drakorState->soundState);
+    objSoundUpdateMouth(obj, &drakorState->soundState);
     if (((BossDrakorState*)state)->flags198.b04)
     {
         player = Obj_GetPlayerObject();

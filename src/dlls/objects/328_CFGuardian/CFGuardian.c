@@ -777,7 +777,7 @@ int cfguardian_updateMain(GameObject* obj) {
     if (randomChanceOneIn(CFGUARDIAN_CHATTER_CHANCE_DENOMINATOR) != 0) {
         objSoundStartTimed(obj, &state->soundState, CFGUARDIAN_SFX_CHATTER, CFGUARDIAN_CHATTER_PITCH, -1, 0);
     }
-    objSoundUpdateMouth(obj, (char*)&state->soundState);
+    objSoundUpdateMouth(obj, &state->soundState);
     characterDoEyeAnims(obj, state->eyeBlock);
     if (state->questState != mainGetBit(GAMEBIT_CFGUARDIAN_QUEST_STATE)) {
         mainSetBits(GAMEBIT_CFGUARDIAN_QUEST_STATE, state->questState);

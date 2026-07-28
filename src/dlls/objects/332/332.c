@@ -371,7 +371,7 @@ void babyCloudRunner_update(GameObject* obj) {
                 u16 sfxId = state->mutterSfxTable[randomGetRange(0, BABYCLOUDRUNNER_MUTTER_SFX_COUNT - 1)];
                 objSoundStart((int)obj, &state->soundState, sfxId);
             }
-            objSoundUpdateMouth(obj, (char*)&state->soundState);
+            objSoundUpdateMouth(obj, &state->soundState);
             if (state->runnerState == BABYCLOUDRUNNER_STATE_FOLLOW_CURVE ||
                 state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
                 f32 speed = state->curveSpeed;
