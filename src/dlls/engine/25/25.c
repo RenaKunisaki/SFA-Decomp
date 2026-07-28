@@ -1075,7 +1075,7 @@ void dll_19_updateMovementBlend(GameObject* obj, void* state, void* unusedState,
 
 /* Constrains a follow point against the object's facing plane and returns
  * the lateral offset of the result. */
-f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, char* st)
+f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, GameObject* mover)
 {
     f32 dist;
     f32 fz;
@@ -1085,8 +1085,8 @@ f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, char* st)
     f32 dx;
     f32 dz;
 
-    dx = ((BaddieState*)st)->posY - px;
-    dz = *(f32*)(st + 0x20) - pz;
+    dx = mover->anim.worldPosX - px;
+    dz = mover->anim.worldPosZ - pz;
     dist = sqrtf(dx * dx + dz * dz);
     if (dist < range)
     {
@@ -1096,14 +1096,15 @@ f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, char* st)
         s = mathSinf(3.1415927f * (f32)(obj)->anim.rotX / 32768.0f);
         c = mathCosf(3.1415927f * (f32)(obj)->anim.rotX / 32768.0f);
         base = -(s * (px - s) + c * (pz - c));
-        d1 = base + (s * ((BaddieState*)st)->posY + c * *(f32*)(st + 0x20));
-        d2 = base + (s * *(f32*)(st + 0x8c) + c * *(f32*)(st + 0x94));
+        d1 = base + (s * mover->anim.worldPosX + c * mover->anim.worldPosZ);
+        d2 = base + (s * mover->anim.previousWorldPosX + c * mover->anim.previousWorldPosZ);
         if (d1 > 0.0f && d2 <= 1.0f)
         {
-            ((BaddieState*)st)->posY = ((BaddieState*)st)->posY - s * d1;
-            *(f32*)(st + 0x20) = *(f32*)(st + 0x20) - c * d1;
-            Obj_TransformWorldPointToLocal(((BaddieState*)st)->posY, ((BaddieState*)st)->posZ, *(f32*)(st + 0x20),
-                                           (f32*)(st + 0xc), (f32*)(st + 0x10), (f32*)(st + 0x14), *(u32*)(st + 0x30));
+            mover->anim.worldPosX = mover->anim.worldPosX - s * d1;
+            mover->anim.worldPosZ = mover->anim.worldPosZ - c * d1;
+            Obj_TransformWorldPointToLocal(mover->anim.worldPosX, mover->anim.worldPosY, mover->anim.worldPosZ,
+                                           &mover->anim.localPosX, &mover->anim.localPosY, &mover->anim.localPosZ,
+                                           mover->anim.parentAddress);
         }
         else if (d2 > 1.0f)
         {
@@ -1112,8 +1113,8 @@ f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, char* st)
     }
     if (dist < range)
     {
-        fx = ((BaddieState*)st)->posY;
-        fz = *(f32*)(st + 0x20);
+        fx = mover->anim.worldPosX;
+        fz = mover->anim.worldPosZ;
     }
     else
     {
