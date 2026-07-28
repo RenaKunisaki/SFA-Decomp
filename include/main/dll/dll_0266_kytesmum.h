@@ -77,6 +77,6 @@ extern const s32 gKytesMumTriggerIds[3];
 extern int gKytesMumQuestIdleSfxTable[];
 extern u8 gKytesMumMoveSets[];
 extern s16 gKytesMumRoamEventSfxTable[4];
-extern s16 lbl_803DC2D0[4];
+extern s16 gKytesMumQuestEventSfxTable[4];
 
 #endif /* MAIN_DLL_DLL_0266_KYTESMUM_H_ */
