@@ -4,6 +4,7 @@
 #include "game/objects/object.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/baddie_state.h"
 #include "main/dll/foodbag.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
@@ -15,55 +16,66 @@
 typedef struct Dll410SpawnSetup {
     ObjPlacement base;
     s16 gameBit;
-    u8 unknown1A[0x22 - 0x1A];
+    s16 gameBit2;
+    s16 unknown1C;
+    s16 unknown1E;
+    s16 unknown20;
     s16 droppedItemId;
-    u8 unknown24[0x27 - 0x24];
+    s16 unknown24;
+    u8 unknown26;
     u8 initialWeaponId;
-    u8 unknown28;
+    u8 objectFlagBits;
     u8 aggroRangeByte;
     s8 initialYaw;
     u8 flags;
-    u8 unknown2C[0x2E - 0x2C];
+    s16 respawnEnabled;
     s8 triggerSequenceId;
-    u8 unknown2F;
+    u8 healthByte;
     s16 unknown30;
-    u8 linkIndex;
-    u8 unknown33[0x38 - 0x33];
+    u8 hitPoints;
+    u8 unknown33;
+    u16 unknown34;
+    u8 unknown36[0x38 - 0x36];
 } Dll410SpawnSetup;
 
 STATIC_ASSERT(sizeof(Dll410SpawnSetup) == 0x38);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, base) == 0x00);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, gameBit) == 0x18);
-STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown1A) == 0x1A);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, gameBit2) == 0x1A);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown1C) == 0x1C);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown1E) == 0x1E);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown20) == 0x20);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, droppedItemId) == 0x22);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown24) == 0x24);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown26) == 0x26);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, initialWeaponId) == 0x27);
-STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown28) == 0x28);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, objectFlagBits) == 0x28);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, aggroRangeByte) == 0x29);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, initialYaw) == 0x2A);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, flags) == 0x2B);
-STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown2C) == 0x2C);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, respawnEnabled) == 0x2C);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, triggerSequenceId) == 0x2E);
-STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown2F) == 0x2F);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, healthByte) == 0x2F);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown30) == 0x30);
-STATIC_ASSERT(offsetof(Dll410SpawnSetup, linkIndex) == 0x32);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, hitPoints) == 0x32);
 STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown33) == 0x33);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown34) == 0x34);
+STATIC_ASSERT(offsetof(Dll410SpawnSetup, unknown36) == 0x36);
 
-#define DLL410_EFFECT_RESOURCE_ID      0x82
-#define DLL410_RESET_GAMEBIT           0x5B9
-#define DLL410_TRIGGER_GAMEBIT_BASE    0x1CD
-#define DLL410_DROPPED_ITEM_GAMEBIT    0x1CE
-#define DLL410_CHILD_GAMEBIT           0x1E7
-#define DLL410_CHILD_OBJECT_ID         0x2D0
-#define DLL410_CHILD_DROPPED_ITEM_ID   0x49
-#define DLL410_CHILD_INITIAL_WEAPON_ID 1
-#define DLL410_CHILD_AGGRO_RANGE       0xFF
-#define DLL410_CHILD_FLAGS             2
-#define DLL410_SPAWN_TIMER             100
-#define DLL410_FULL_ALPHA              0xFF
-#define DLL410_RENDER_SCALE            1.0f
-#define DLL410_CHILD_EXTRA_BYTE_OFFSET 0x404
-#define DLL410_CHILD_EXTRA_BYTE_VALUE  0x20
+#define DLL410_EFFECT_RESOURCE_ID          0x82
+#define DLL410_RESET_GAMEBIT               0x5B9
+#define DLL410_TRIGGER_GAMEBIT_BASE        0x1CD
+#define DLL410_DROPPED_ITEM_GAMEBIT        0x1CE
+#define DLL410_CHILD_GAMEBIT               0x1E7
+#define DLL410_CHILD_OBJECT_ID             0x2D0
+#define DLL410_CHILD_DROPPED_ITEM_ID       0x49
+#define DLL410_CHILD_INITIAL_WEAPON_ID     1
+#define DLL410_CHILD_AGGRO_RANGE           0xFF
+#define DLL410_CHILD_FLAGS                 2
+#define DLL410_SPAWN_TIMER                 100
+#define DLL410_FULL_ALPHA                  0xFF
+#define DLL410_RENDER_SCALE                1.0f
+#define DLL410_CHILD_DISABLE_CAMERA_TARGET 0x20
 
 int dll410_getExtraSize(void) {
     return sizeof(Dll410State);
@@ -138,18 +150,14 @@ void dll410_update(GameObject* obj) {
             spawnSetup->aggroRangeByte = DLL410_CHILD_AGGRO_RANGE;
             spawnSetup->triggerSequenceId = -1;
             {
-                int linkIndex;
+                int hitPoints;
 
-                linkIndex = placement->triggerGameBitOffset;
-                spawnSetup->linkIndex = linkIndex;
+                hitPoints = placement->triggerGameBitOffset;
+                spawnSetup->hitPoints = hitPoints;
             }
             child = Obj_SetupObject(&spawnSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
             if (child != NULL && child->extra != NULL) {
-                /*
-                 * Retail writes beyond the spawned SC_levelcon object's 0x24-byte
-                 * state. Keep the out-of-bounds byte access explicit.
-                 */
-                *((u8*)child->extra + DLL410_CHILD_EXTRA_BYTE_OFFSET) = DLL410_CHILD_EXTRA_BYTE_VALUE;
+                ((GroundBaddieState*)child->extra)->configFlags = DLL410_CHILD_DISABLE_CAMERA_TARGET;
             }
             state->spawnTimer = DLL410_SPAWN_TIMER;
             state->spawnTimerRate = 0;
