@@ -4,6 +4,7 @@
 #include "dlls/objects/480_DIM_Boss.h"
 
 #include "dlls/objects/478_DIM2LavaCon.h"
+#include "dlls/objects/482_DIM_BossTon.h"
 #include "dolphin/mtx/mtx_legacy.h"
 #include "dolphin/os/OSReport.h"
 #include "game/objects/object.h"
@@ -89,8 +90,6 @@
 #define DIMBOSS_DEFEAT_TIMER_START       10
 
 #define DIMBOSS_GAMEBIT_DEFEAT_STATE_B          0x17
-#define DIMBOSS_GAMEBIT_TONSIL_HIT_COUNT        0x20C
-#define DIMBOSS_GAMEBIT_ICICLE_DEFEATED         0x20E
 #define DIMBOSS_GAMEBIT_RENDER_PAUSE            0x210
 #define DIMBOSS_GAMEBIT_LIGHTFOOT_SNOWBALL_GATE 0x9E
 /*
@@ -1727,7 +1726,7 @@ void DIMboss_update(GameObject* obj) {
                 runtime->stateFlags &= ~DIMBOSS_STATE_FLAG_START_MOVE;
                 obj->anim.resetHitboxFlags &= ~DIMBOSS_OBJECT_FLAG_HIDDEN;
                 obj->anim.resetHitboxFlags |= DIMBOSS_OBJECT_FLAG_ACTIVE;
-                gameBitCount = mainGetBit(DIMBOSS_GAMEBIT_TONSIL_HIT_COUNT);
+                gameBitCount = mainGetBit(DIMBOSSTONSIL_HIT_GAMEBIT);
                 if (gameBitCount >= 3) {
                     runtime->phase = DIMBOSS_PHASE_GAMEBIT_COUNT_MET;
                     runtime->animMode = 3;

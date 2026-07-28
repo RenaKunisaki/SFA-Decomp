@@ -10,7 +10,8 @@
 #include "main/model_light.h"
 #include "main/objanim_update.h"
 
-#define DIMBOSS_RUNTIME_SIZE 0x4C8
+#define DIMBOSS_RUNTIME_SIZE            0x4C8
+#define DIMBOSS_GAMEBIT_ICICLE_DEFEATED 0x20E
 
 typedef union DIMbossSteamFlags {
     u8 raw;

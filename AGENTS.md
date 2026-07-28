@@ -217,6 +217,11 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   specific name without testing codegen. MWCC can assign different nonvolatile registers even when
   the lifetimes do not overlap; if the split changes codegen, retain one neutrally named local and
   let each use site supply the meaning.
+- Do not delete an unused static helper or collapse a semantic enum into macros in an already-exact
+  TU without comparing the raw object hash and symbol table. Even when MWCC emits no body and
+  objdiff still reports every function and section exact, removing the source-position anchor can
+  renumber anonymous symbols. Retain a compact documented anchor or the clearer declaration when
+  the cosmetic rewrite changes object identity.
 - Preserve TU-global declaration order while renaming or retyping symbols, especially mixed-width
   `.sbss` and `.sdata` objects. Objdiff can report zero-filled sections and symbol-normalized
   relocations as exact while MWCC has changed the symbols' packed offsets; inspect object symbol

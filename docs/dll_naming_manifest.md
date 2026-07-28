@@ -525,7 +525,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1DF | — | COMPLETE | dlls/objects/479/479.c | = (canonical) | Exact complete nine-function TU with its terminal numbered descriptor, allocation-backed and fully asserted 0x28-byte state, fully asserted callback-visible placement prefix, canonical unit header and canonical hit-detection-disable flag, and exact 88-byte data image; active EN has no recovered retail basename or object definitions for this DLL, no complete placement width is claimed, and the generated numeric source path remains unchanged |
 | 0x1E0 | DIM_Boss | COMPLETE | dlls/objects/480_DIM_Boss/DIM_Boss.c | = (canonical) | Exact complete 37-function TU with its proven non-terminal 0x40-byte descriptor position, allocation-backed and fully asserted 0x4C8-byte owner state, separately asserted 0xB8-byte shared control view with explicit boss/icicle unions, callback-visible placement prefix, canonical unit header and shared DIM2 area-music gamebit contract, and exact emitted section bytes and relocations; the generated source path remains unchanged |
 | 0x1E1 | DIM_BossGut | COMPLETE | dlls/objects/481_DIM_BossGut/DIM_BossGut.c | = (canonical) | Exact complete ten-function TU with its terminal descriptor, proven zero-byte extra state, canonical unit header and object-animation API, and exact 68-byte data image; no placement layout is claimed, and the generated source path remains unchanged |
-| 0x1E2 | DIM_BossTon | COMPLETE | dlls/objects/482_DIM_BossTon/DIM_BossTon.c | = (canonical) | Retail basename is truncated |
+| 0x1E2 | DIM_BossTon | COMPLETE | dlls/objects/482_DIM_BossTon/DIM_BossTon.c | = (canonical) | Exact complete eighteen-function TU with its terminal 0x40-byte descriptor, allocation-backed and fully asserted 0x410-byte ground-baddie state, explicit 0x84-byte move-scratch span, callback-visible placement prefix, canonical unit header and shared tonsil-hit and icicle-defeat gamebit contracts, and exact 168-byte data image; active-target retail placement inputs are unavailable in this checkout, so no complete placement width is claimed, the retail basename is truncated, and the generated source path remains unchanged |
 | 0x1E3 | DIM_BossGut | COMPLETE | dlls/objects/483_DIM_BossGut/DIM_BossGut.c | = (canonical) | Retail basename is truncated |
 | 0x1E4 | MAGICMaker | COMPLETE | dlls/objects/484_MAGICMaker/MAGICMaker.c | = (canonical) | — |
 | 0x1E5 | DIM_BossSpi | COMPLETE | dlls/objects/485_DIM_BossSpi/DIM_BossSpi.c | = (canonical) | Retail basename is truncated |
@@ -1052,7 +1052,7 @@ more as they are recovered.
 | 0x1DF | dlls/objects/479/479.c | include/dlls/objects/479.h |
 | 0x1E0 | dlls/objects/480_DIM_Boss/DIM_Boss.c | include/dlls/objects/480_DIM_Boss.h |
 | 0x1E1 | dlls/objects/481_DIM_BossGut/DIM_BossGut.c | include/dlls/objects/481_DIM_BossGut.h |
-| 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |
+| 0x1E2 | dlls/objects/482_DIM_BossTon/DIM_BossTon.c | include/dlls/objects/482_DIM_BossTon.h |
 | 0x1F9 | dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c | include/main/dll/WC/dll_01F9_wmobjcreator.h |
 | 0x22F | main/dll/dll_022F_dfpfloorbar.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
 | 0x235 | main/dll/dll_0235_dfptargetblock.c | include/main/dll/dll_0235_dfptargetblock.h |
