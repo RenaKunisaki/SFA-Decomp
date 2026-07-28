@@ -7,6 +7,7 @@
  */
 
 #include "main/dll/SH/dll_01B0_shswapston.h"
+#include "dlls/objects/429_SH_thorntai.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/SC/SCchieflightfoot.h"
 #include "sys/objects.h"
@@ -109,15 +110,15 @@ ObjectDescriptor gWarpStoneObjDescriptor = {
     warpstone_getExtraSize,
 };
 
-void SHthorntail_updateDustEffects(SHthorntailObject* obj)
+void SHthorntail_updateDustEffects(GameObject* obj)
 {
     void* playerObj;
-    SHthorntailRuntime* runtime;
+    SHthorntailState* runtime;
     int burstCount;
     SHthorntailDustEffectParams effectParams;
 
     playerObj = Obj_GetPlayerObject();
-    runtime = obj->runtime;
+    runtime = obj->extra;
     effectParams.position.x = 0.0f;
     effectParams.position.y = 55.0f;
     effectParams.position.z = 0.0f;
@@ -533,7 +534,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj)
         }
     }
 
-    SHthorntail_updateDustEffects((SHthorntailObject*)obj);
+    SHthorntail_updateDustEffects(obj);
     return 0;
 }
 

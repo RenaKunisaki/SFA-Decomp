@@ -66,6 +66,7 @@
 #include "main/frustum.h"
 #include "dlls/objects/245_SidekickBal.h"
 #include "dlls/objects/417_NW_mammoth.h"
+#include "dlls/objects/429_SH_thorntai.h"
 #include "main/dll/tricky_substates.h"
 #include "dlls/objects/209_TumbleWeedB.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
@@ -5900,8 +5901,6 @@ void fn_8014187C(void)
 /* GameCube controller button mask */
 #define PAD_BUTTON_A 0x100
 
-#define THORNTAIL_OBJGROUP 0x4d /* DLL 0x1AD shthorntail */
-
 /* child objects spawned by this TU (retail OBJECTS.bin names) */
 #define TRICKY_CHILD_OBJ_FOOD       0x17b /* "TrickyFood" */
 
@@ -7377,7 +7376,7 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
     lo = 1;
     hi = 3;
     arr[0] = lbl_803E2524;
-    found = (u8*)ObjGroup_FindNearestObject(THORNTAIL_OBJGROUP, (GameObject*)obj, arr);
+    found = (u8*)ObjGroup_FindNearestObject(SHTHORNTAIL_OBJECT_GROUP, (GameObject*)obj, arr);
     if (found != NULL && (((GameObject*)found)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
     {
         lo = 0;

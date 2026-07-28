@@ -223,6 +223,7 @@
 #include "dlls/objects/426_BombPlantSp.h"
 #include "dlls/objects/427_BombPlantin.h"
 #include "dlls/objects/428_SH_queenear.h"
+#include "dlls/objects/429_SH_thorntai.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -361,8 +362,7 @@ extern ResourceDescriptor gSB_ShipHeadObjDescriptor, gSB_ShipMastObjDescriptor, 
     gSC_MusicTreeObjDescriptor, gSC_levelcontrolObjDescriptor, gSC_totembondObjDescriptor, gSC_totempoleObjDescriptor,
     gSC_totempuzzleObjDescriptor;
 extern ResourceDescriptor gSC_totemstrengthObjDescriptor, gSH_BeaconObjDescriptor, gSH_EmptyTumbleWObjDescriptor,
-    gSH_LevelControlObjDescriptor, gSH_staffHazeObjDescriptor,
-    gSH_staffObjDescriptor, gSH_thorntailObjDescriptor;
+    gSH_LevelControlObjDescriptor, gSH_staffHazeObjDescriptor, gSH_staffObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
 extern ResourceDescriptor gSfxplayerObjDescriptor, gShipBattleObjDescriptor, gShopItemObjDescriptor,
@@ -1486,7 +1486,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gBombPlantSporeObjDescriptor,
     (ResourceDescriptor*)&gBombPlantingSpotObjDescriptor,
     (ResourceDescriptor*)&gSH_queenearthwalkerObjDescriptor,
-    &gSH_thorntailObjDescriptor,
+    (ResourceDescriptor*)&gSH_thorntailObjDescriptor,
     &gSH_LevelControlObjDescriptor,
     &gWarpStoneLiftObjDescriptor,
     &gWarpStoneObjDescriptor,

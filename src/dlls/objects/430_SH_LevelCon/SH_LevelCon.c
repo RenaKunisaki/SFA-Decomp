@@ -30,6 +30,7 @@
 #include "game/objects/object.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/sky_api.h"
+#include "main/sky_interface.h"
 #include "main/sky.h"
 #include "main/objseq.h"
 #include "main/screen_transition.h"

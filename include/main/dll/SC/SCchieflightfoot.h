@@ -1,10 +1,8 @@
 #ifndef MAIN_DLL_SC_SCCHIEFLIGHTFOOT_H_
 #define MAIN_DLL_SC_SCCHIEFLIGHTFOOT_H_
 
-#include "ghidra_import.h"
+#include "game/objects/object_fwd.h"
 
-#include "main/dll/SH/SHthorntail_internal.h"
-
-void SHthorntail_updateDustEffects(SHthorntailObject *obj);
+void SHthorntail_updateDustEffects(GameObject *obj);
 
 #endif /* MAIN_DLL_SC_SCCHIEFLIGHTFOOT_H_ */
