@@ -6,7 +6,7 @@
 typedef struct TextDisplayState TextDisplayState;
 
 void gameTextAppendStr(char* str, int box);
-void gameTextFn_80016c18(int textId, int arg);
+void gameTextQueueReveal(int textId, int arg);
 void gameTextFreePhrase(int* phrase);
 void gameTextMeasureFn_800163c4(char* str, int boxIdx, int x, int y, int* outMinX, int* outMaxX, int* outMinY,
                                 int* outMaxY);

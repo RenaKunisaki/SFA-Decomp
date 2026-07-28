@@ -1594,7 +1594,7 @@ void trackSetLinesEnabledByParam(int matchVal, GameObject* obj, int flag)
     }
 }
 
-void objFn_80065604(void)
+void trackTickDynamicSlotCooldowns(void)
 {
     u32 cur;
     int idx;

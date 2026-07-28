@@ -48,6 +48,6 @@ void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg
                    f32 pathRadius);
 void dll_19_changeWeapon(u8* cam, u8* ctx);
 f32 dll_19_getHealthFraction(GameObject* obj);
-int dll_19_func1B(GameObject* obj);
+int dll_19_isBaddieControlObject(GameObject* obj);
 
 #endif

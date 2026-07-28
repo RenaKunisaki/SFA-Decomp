@@ -38,7 +38,7 @@ char* gameStrcpy(char* dst, char* src);
 void* gameTextGetCurBox(void);
 void gameTextMeasureStringBounds(char* str, int boxIdx, int* outMinX, int* outMaxX, int* outMinY, int* outMaxY);
 void gameTextRenderStrs(char* str, int boxIdx);
-void textDisplayFn_800168dc(int textId, struct TextDisplayState* state);
-void gameTextFn_8001658c(int textId, int x, int y);
+void gameTextTickReveal(int textId, struct TextDisplayState* state);
+void gameTextRenderById(int textId, int x, int y);
 
 #endif /* MAIN_GAMETEXT_SHARED_INTERNAL_H_ */

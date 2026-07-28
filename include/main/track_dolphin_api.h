@@ -67,7 +67,7 @@ void* mapBlockGetEdge(int* obj, int idx);
 void gxErrorFn_80060b40(void);
 struct MapBlockData* MapBlock_loadFromFile(int blockId);
 void setMapBlockFlag(void);
-void objFn_80065604(void);
+void trackTickDynamicSlotCooldowns(void);
 void setupToRenderMapBlock(struct MapBlockData* block, void* posMtx);
 void renderMapBlock(struct MapBlockData* block, u8 type);
 void shadowBeginFrame(void);

@@ -236,7 +236,7 @@ void creditsStart_(void)
         alpha = 0xff;
     }
     gameTextSetColor(0xff, 0xff, 0xff, alpha);
-    gameTextFn_80016810(gCreditEntries[gTitleScreenCreditIndex].textId, 0, 0);
+    gameTextShowAt(gCreditEntries[gTitleScreenCreditIndex].textId, 0, 0);
     gTitleScreenCreditsElapsed += lbl_803DB411;
     gTitleScreenCreditTimer += lbl_803DB411;
     if (gTitleScreenCreditTimer < gCreditEntries[gTitleScreenCreditIndex].duration)

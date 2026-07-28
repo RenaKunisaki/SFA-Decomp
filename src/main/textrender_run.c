@@ -411,10 +411,10 @@ void gameTextRun(void)
             break;
         }
         case 1:
-            textDisplayFn_800168dc(cmd->arg0, (struct TextDisplayState*)cmd->arg1);
+            gameTextTickReveal(cmd->arg0, (struct TextDisplayState*)cmd->arg1);
             break;
         case 2:
-            gameTextFn_8001658c(cmd->arg0, cmd->arg1, cmd->arg2);
+            gameTextRenderById(cmd->arg0, cmd->arg1, cmd->arg2);
             break;
         case 5:
         {

@@ -99,7 +99,7 @@ void WarpstoneUI_showUI(int arg)
     case 3:
     case 5:
         gameTextSetColor(0xff, 0xff, 0xff, lbl_803DD97C);
-        gameTextFn_80016810(0x3dd, 200, lbl_803DBBF8);
+        gameTextShowAt(0x3dd, 200, lbl_803DBBF8);
         break;
     case 1:
         drawTexture(lbl_803DD980, (f32)(int)(lbl_803DBBFC - 0x1d), (f32)(int)(lbl_803DBC00 + 0xd), lbl_803DD97C, 0xff);
@@ -110,7 +110,7 @@ void WarpstoneUI_showUI(int arg)
         break;
     case 4:
         gameTextSetColor(0xff, 0xff, 0xff, lbl_803DD97C);
-        gameTextFn_80016810(0x3dd, 200, lbl_803DBC04);
+        gameTextShowAt(0x3dd, 200, lbl_803DBC04);
         if (gWarpStoneUiMenuActive == 0)
         {
             itemCount = WarpstoneUI_getMenuItems((WarpstoneMenuItem*)gWarpStoneUiMenuItemTemplates,

@@ -278,11 +278,11 @@ void cardShowMessage(void)
         held = getButtonsHeld(0);
         if (ok)
         {
-            gameTextFn_80016810(0x495, 0, 0xc8);
+            gameTextShowAt(0x495, 0, 0xc8);
         }
         else
         {
-            gameTextFn_80016810(0x493, 0, 0xc8);
+            gameTextShowAt(0x493, 0, 0xc8);
         }
         if (held & PAD_BUTTON_A)
         {

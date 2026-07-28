@@ -53,7 +53,7 @@ void gameTextMeasureById(int id, int a, int b, int* outMinX, int* outMaxX, int* 
     gGameTextBoundsMaxX = 0;
     gGameTextBoundsMinY = 0x7FFFFFFF;
     gGameTextBoundsMaxY = 0;
-    gameTextFn_8001658c(id, a, b);
+    gameTextRenderById(id, a, b);
     gGameTextMeasureOnly = 0;
     if (outMinY != NULL)
     {

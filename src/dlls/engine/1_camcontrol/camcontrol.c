@@ -1176,7 +1176,7 @@ void camcontrol_updateTargetFeedback(void)
                 targetDistance = CAMCONTROL_NORMALIZED_MAX;
                 break;
             default:
-                result = dll_19_func1B((GameObject*)target);
+                result = dll_19_isBaddieControlObject((GameObject*)target);
                 if (result != 0)
                 {
                     targetDistance = (*gBaddieControlInterface)->getHealthFraction((GameObject*)target);

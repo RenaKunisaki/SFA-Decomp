@@ -4754,7 +4754,7 @@ void showMemCardError(u8 err);
  * pipeline; on each frame either lets the active controller draw its own
  * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored over the
  * cached prompt id in lbl_803DB708, then routes the OK/Cancel/back text
- * to gameTextFn_80016810 based on the dialog kind passed in.
+ * to gameTextShowAt based on the dialog kind passed in.
  */
 void cardShowLoadingMsg(u8 kind);
 

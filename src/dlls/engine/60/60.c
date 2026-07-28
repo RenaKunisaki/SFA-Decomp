@@ -448,7 +448,7 @@ void Link_render(void)
                 if ((drawItem->flags & LINK_FLAG_DRAW_BLACK_SHADOW) != 0)
                 {
                     gameTextSetColor(0, 0, 0, (u8)(((linkCount_803dd90e + 1) * linkItemOpacity) >> 8));
-                    gameTextFn_80016810(drawItem->textId, 2, 2);
+                    gameTextShowAt(drawItem->textId, 2, 2);
                 }
 
                 if ((drawItem->flags & LINK_FLAG_SELECTED_COLOR) != 0)

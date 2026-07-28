@@ -4747,7 +4747,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
     case 1:
         gameTextSetColor(0xff, 0xff, 0xff, 0xff);
         gameTextLoadDir(0xb);
-        gameTextFn_80016810(0x3dd, 0xc8, 0x12c);
+        gameTextShowAt(0x3dd, 0xc8, 0x12c);
     case 2:
         pauseMenuDoSave();
         break;
@@ -4882,9 +4882,9 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             }
             else
             {
-                gameTextFn_80016810(0x515, 0xc8, 0x96);
+                gameTextShowAt(0x515, 0xc8, 0x96);
             }
-            gameTextFn_80016810(0x3de, 0xc8, 0x154);
+            gameTextShowAt(0x3de, 0xc8, 0x154);
             lbl_803DBA8A = 0x100;
             gameTextSetDrawFunc(0);
             Camera_SetCurrentViewIndex(0);
@@ -4941,19 +4941,19 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             {
             case 7:
             case 9:
-                gameTextFn_80016810(0x3cf, 0xc8, 0x118);
-                gameTextFn_80016810(0x3e1, 0xc8, 0x96);
+                gameTextShowAt(0x3cf, 0xc8, 0x118);
+                gameTextShowAt(0x3e1, 0xc8, 0x96);
                 break;
             case 6:
             case 10:
-                gameTextFn_80016810(0x3ce, 0xc8, 0x96);
+                gameTextShowAt(0x3ce, 0xc8, 0x96);
                 break;
             case 8:
             {
                 MapEventInterface* mapEvents = *gMapEventInterface;
                 PauseMenuCharacterState* characterState = mapEvents->getCurCharacterState();
                 characterCount = lbl_803E1E04;
-                gameTextFn_80016810(0x3e0, 0xc8, 0x118);
+                gameTextShowAt(0x3e0, 0xc8, 0x118);
                 sprintf(characterCount.text, lbl_803DBB68, characterState->healCount);
                 lbl_803DBA8C = lbl_803E1E64;
                 gameTextShowStr(characterCount.text, 0x93, 0x14a, 0xdc);
@@ -4988,7 +4988,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                 {
                     gameTextSetColor(0xff, 0xff, 0xff, 0xff);
                 }
-                gameTextFn_80016810(0x3cd, 0, 0xc8);
+                gameTextShowAt(0x3cd, 0, 0xc8);
                 if (lbl_803DD7D8 != 0)
                 {
                     gameTextSetColor(0xff, 0xff, 0xff, 0xff);
@@ -4997,7 +4997,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                 {
                     gameTextSetColor(0x96, 0x96, 0x96, 0xff);
                 }
-                gameTextFn_80016810(0x3cc, 0, 0xc8);
+                gameTextShowAt(0x3cc, 0, 0xc8);
                 gameTextSetDrawFunc(0);
                 model = Obj_GetActiveModel(lbl_803DD860[1]);
                 objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
@@ -5030,13 +5030,13 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         switch (lbl_803DD758)
         {
         case 0:
-            gameTextFn_80016810(0x43a, 0, 0xb4);
+            gameTextShowAt(0x43a, 0, 0xb4);
             break;
         case 1:
         {
             s32 textX;
             s16* taskTextIds;
-            gameTextFn_80016810(0x440, 0, 0x78);
+            gameTextShowAt(0x440, 0, 0x78);
             gameTextMeasureById(0x440, 0, 0, &tokenLeft, &tokenRight, &tokenTop, &tokenBottom);
             textX = (tokenBottom - tokenTop) + 5;
             {
@@ -5050,11 +5050,11 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                 textX = textWidth + textX;
             }
             textX += 5;
-            gameTextFn_80016810(0x441, 0, textX + 0x78);
+            gameTextShowAt(0x441, 0, textX + 0x78);
             gameTextMeasureById(0x441, 0, 0, &tokenLeft, &tokenRight, &tokenTop, &tokenBottom);
             textX += tokenBottom - tokenTop;
             taskTextIds = &statusTable->tokens[0].alt;
-            gameTextFn_80016810(taskTextIds[lbl_803DD756 * 4], 0, textX + 0x78);
+            gameTextShowAt(taskTextIds[lbl_803DD756 * 4], 0, textX + 0x78);
             gameTextMeasureById(taskTextIds[lbl_803DD756 * 4], 0, 0, &tokenLeft, &tokenRight, &tokenTop,
                                 &tokenBottom);
             {
@@ -5062,25 +5062,25 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                 textX = textWidth + textX;
             }
             textX += 0xa;
-            gameTextFn_80016810(0x442, 0, textX + 0x78);
+            gameTextShowAt(0x442, 0, textX + 0x78);
             gameTextMeasureById(0x442, 0, 0, &tokenLeft, &tokenRight, &tokenTop, &tokenBottom);
             textX += tokenBottom - tokenTop;
-            gameTextFn_80016810(0x43a, 0, textX + 0x82);
+            gameTextShowAt(0x43a, 0, textX + 0x82);
             break;
         }
         case 2:
         {
             s16* taskTextIds;
             s32 textX;
-            gameTextFn_80016810(0x443, 0, 0xa0);
+            gameTextShowAt(0x443, 0, 0xa0);
             gameTextMeasureById(0x443, 0, 0, &tokenLeft, &tokenRight, &tokenTop, &tokenBottom);
             textX = (tokenBottom - tokenTop) + 5;
             taskTextIds = &statusTable->tokens[0].alt;
-            gameTextFn_80016810(taskTextIds[lbl_803DD756 * 4], 0, textX + 0xa0);
+            gameTextShowAt(taskTextIds[lbl_803DD756 * 4], 0, textX + 0xa0);
             gameTextMeasureById(taskTextIds[lbl_803DD756 * 4], 0, 0, &tokenLeft, &tokenRight, &tokenTop,
                                 &tokenBottom);
             textX += tokenBottom - tokenTop;
-            gameTextFn_80016810(0x444, 0, textX + 0xaa);
+            gameTextShowAt(0x444, 0, textX + 0xaa);
             break;
         }
         }
@@ -5482,10 +5482,10 @@ void pauseMenuDrawGrid(int alpha)
     case 8:
     case 9:
     case 10:
-        gameTextFn_80016810(0x3e8, 0xc8, 0x154);
+        gameTextShowAt(0x3e8, 0xc8, 0x154);
         break;
     default:
-        gameTextFn_80016810(0x3dd, 0xc8, 0x154);
+        gameTextShowAt(0x3dd, 0xc8, 0x154);
         break;
     }
     if (lbl_803DD75C != 0)
@@ -5504,8 +5504,8 @@ void pauseMenuDrawGrid(int alpha)
         {
             tx = 0xdc;
         }
-        gameTextFn_80016810(lbl_803DD824[lbl_803DD7D8].f14, 0xc8, tx);
-        gameTextFn_80016810(0x3de, 0xc8, 0x154);
+        gameTextShowAt(lbl_803DD824[lbl_803DD7D8].f14, 0xc8, tx);
+        gameTextShowAt(0x3de, 0xc8, 0x154);
     }
     if (lbl_803DD75C == 0)
     {
@@ -5694,7 +5694,7 @@ void timeListDraw(int unused1, int unused2, int unused3)
             a = 0xff;
             b = pulse;
         }
-        gameTextFn_80016810(0x2f7, 0, 5);
+        gameTextShowAt(0x2f7, 0, 5);
         gameTextSetColor(a, a, a, 0xff);
         gameTextShow(0x2f8);
         gameTextSetColor(b, b, b, 0xff);
@@ -5761,8 +5761,8 @@ void highScoreScreenDraw(int p1, int p2, int p3)
     drawScaledTexture(((HudTextures*)hudTextures)->tex28, (f32)left, (f32)(y + h), 0xff, 0x100, 5, 5, 2);
 
     gameTextSetColor(0xff, 0xff, 0xff, 0xff);
-    gameTextFn_80016810(0x345, 0, 0xa);
-    gameTextFn_80016810(gHighScoreTitleIdTable[gHighScoreActiveTableId].titleId, 0, 0x28);
+    gameTextShowAt(0x345, 0, 0xa);
+    gameTextShowAt(gHighScoreTitleIdTable[gHighScoreActiveTableId].titleId, 0, 0x28);
 
     {
         u8 k;
@@ -5795,7 +5795,7 @@ void highScoreScreenDraw(int p1, int p2, int p3)
             }
         }
     }
-    gameTextFn_80016810(0x346, 0, 0x104);
+    gameTextShowAt(0x346, 0, 0x104);
 }
 
 /* Pickup-pickup state hook: latches the
@@ -7573,7 +7573,7 @@ void mapScreenDrawHud(int unused1, int unused2, int unused3)
                 phaseB += 0x1f40;
             }
         }
-        gameTextFn_80016810(0x3dd, 0x64, 0x15e);
+        gameTextShowAt(0x3dd, 0x64, 0x15e);
     }
     else
     {
@@ -8584,7 +8584,7 @@ void GameUI_hudDraw(int a, int b, int c)
             }
             else
             {
-                gameTextFn_80016c18(curGameText, (int)lbl_803A9440);
+                gameTextQueueReveal(curGameText, (int)lbl_803A9440);
             }
         }
         pauseMenuDrawText(a, b, c);
@@ -8630,7 +8630,7 @@ void GameUI_hudDraw(int a, int b, int c)
                 }
                 else
                 {
-                    gameTextFn_80016c18(curGameText, (int)lbl_803A9440);
+                    gameTextQueueReveal(curGameText, (int)lbl_803A9440);
                 }
             }
             drawTrickyHudOverlay(a, b, c);

@@ -95,7 +95,7 @@ void gameTextMeasureStringBounds(char* str, int boxIdx, int* outMinX, int* outMa
     box->cursorY = savedY;
 }
 
-void gameTextFn_8001658c(int a, int b, int c)
+void gameTextRenderById(int a, int b, int c)
 {
     GameTextDef* def = (GameTextDef*)gameTextGet(a);
     TextSlot* slot;
@@ -203,13 +203,13 @@ void gameTextFn_8001658c(int a, int b, int c)
     gGameTextColorA = save4;
 }
 
-void gameTextFn_80016810(int a, int b, int c)
+void gameTextShowAt(int a, int b, int c)
 {
     int i;
     GameTextSlot* e;
     if (gameTextDrawFunc != NULL)
     {
-        gameTextFn_8001658c(a, b, c);
+        gameTextRenderById(a, b, c);
     }
     else
     {
@@ -228,7 +228,7 @@ void gameTextShow(int a)
     GameTextSlot* e;
     if (gameTextDrawFunc != NULL)
     {
-        gameTextFn_8001658c(a, 0, 0);
+        gameTextRenderById(a, 0, 0);
     }
     else
     {
@@ -256,7 +256,7 @@ static inline int gameTextCtrlCharLen(u32 c)
     return 0;
 }
 
-void textDisplayFn_800168dc(int textId, TextDisplayState* state)
+void gameTextTickReveal(int textId, TextDisplayState* state)
 {
     GameTextDef* def;
     s32 charCount;
@@ -378,7 +378,7 @@ void textDisplayFn_800168dc(int textId, TextDisplayState* state)
     gameTextRenderStrs(def->strings[state->charIndex], 0x7c);
 }
 
-void gameTextFn_80016c18(int a, int b)
+void gameTextQueueReveal(int a, int b)
 {
     int i = gGameTextCommandCount++;
     GameTextSlot* e = &gGameTextCommandSlots[i];

@@ -81,7 +81,7 @@ const Dll19ChildObjectIdTable lbl_802C2190 = {{0x23, 0x69, 0x33, 0x64, 0x1D}};
 u32 lbl_8031A048[3] = {0, 0, 0};
 u32 lbl_8031A054[3] = {0, 0, 0};
 
-int dll_19_func1B(GameObject* obj)
+int dll_19_isBaddieControlObject(GameObject* obj)
 {
     s16 v = (obj)->anim.seqId;
     switch (v)

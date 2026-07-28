@@ -2425,7 +2425,7 @@ void Obj_UpdateAllObjects(u8 flags)
     timeStop = updateFlags & 1;
     if (timeStop == 0)
     {
-        objFn_80065604();
+        trackTickDynamicSlotCooldowns();
     }
     Obj_UpdateModelBlendStates();
     ObjHitReact_ResetActiveObjects(gObjCount);
