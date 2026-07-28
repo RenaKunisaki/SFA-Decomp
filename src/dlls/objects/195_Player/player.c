@@ -1,6 +1,7 @@
 #define BADDIE_MOVE_STATUS_SIGNED
 
 #include "main/dll/modgfx_interface.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object_setup.h"
 #include "main/model_engine.h"
@@ -5822,7 +5823,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
         }
         if (inner->curAnimId != 0x48 && inner->curAnimId != 0x47)
         {
-            cameraSetInterpMode(2);
+            Camera_setBlendCurveMode(2);
             (*gCameraInterface)->setMode(0x52, 1, 0, 8, col.v, 0x1e, 0xff);
         }
         inner->stickDirection = 0;
@@ -13420,7 +13421,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
         }
         if (!((ByteFlags*)((char*)inner + 0x3f1))->b10)
         {
-            cameraSetInterpMode(2);
+            Camera_setBlendCurveMode(2);
             (*gCameraInterface)->setMode(0x52, 1, 0, 8, camp.v, 0x1e, 0xff);
             if (gPlayerFrameCounter - gPlayerLastSfxFrame > 2)
             {
@@ -14787,7 +14788,7 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
                         f1->b10 = 0;
                     }
                 }
-                cameraSetInterpMode(2);
+                Camera_setBlendCurveMode(2);
                 (*gCameraInterface)->setMode(0x52, 1, 0, 0, NULL, 0x2d, 0xff);
                 ((ByteFlags*)((char*)state + 0x3f6))->b40 = 1;
                 (*gPlayerInterface)->setState(obj, (void*)state, 0x2a);

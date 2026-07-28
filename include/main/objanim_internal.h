@@ -212,7 +212,10 @@ typedef struct ObjDefHitVolume {
   s16 posZ;
   u8 bounds[4];
   u8 flags;
-  s8 priority;
+  union {
+    s8 priority;
+    u8 priorityUnsigned;
+  };
   s8 jointIndices[2];
   u8 pad14[0x18 - 0x14];
 } ObjDefHitVolume;
@@ -567,6 +570,7 @@ STATIC_ASSERT(sizeof(ObjDefHitVolume) == 0x18);
 STATIC_ASSERT(offsetof(ObjDefHitVolume, bounds) == 0x0C);
 STATIC_ASSERT(offsetof(ObjDefHitVolume, flags) == 0x10);
 STATIC_ASSERT(offsetof(ObjDefHitVolume, priority) == 0x11);
+STATIC_ASSERT(offsetof(ObjDefHitVolume, priorityUnsigned) == 0x11);
 STATIC_ASSERT(offsetof(ObjDefHitVolume, jointIndices) == 0x12);
 STATIC_ASSERT(sizeof(ObjHitVolumeRuntimeTransform) == 0x18);
 STATIC_ASSERT(sizeof(ObjHitVolumeRuntimeBounds) == 0x05);

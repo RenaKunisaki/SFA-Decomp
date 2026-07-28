@@ -32,7 +32,7 @@ typedef struct CameraInterface {
     CameraUpdateFn update;
     CameraGetFn getCamera;
     CameraGetModeFn getMode;
-    void *(*getFollowPos)(void);
+    void *(*getActiveHandler)(void);
     void *(*getDefaultHandlerEntry)(void);
     CameraSetModeFn setMode;
     void *(*getCamActionsBinEntry)(int actionNo);
@@ -59,6 +59,8 @@ typedef struct CameraInterface {
 
 STATIC_ASSERT(offsetof(CameraInterface, getCamera) == 0x0C);
 STATIC_ASSERT(offsetof(CameraInterface, getMode) == 0x10);
+STATIC_ASSERT(offsetof(CameraInterface, getActiveHandler) == 0x14);
+STATIC_ASSERT(offsetof(CameraInterface, getDefaultHandlerEntry) == 0x18);
 STATIC_ASSERT(offsetof(CameraInterface, setMode) == 0x1C);
 STATIC_ASSERT(offsetof(CameraInterface, loadTriggeredCamAction) == 0x24);
 STATIC_ASSERT(offsetof(CameraInterface, setFocus) == 0x28);

@@ -1,7 +1,9 @@
+#include "main/dll/CAM/dll_0001_camcontrol.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx/vec.h"
 #include "dolphin/os.h"
-#include "main/dll/dll_BB.h"
+#include "dolphin/pad.h"
 #include "main/dll/dll_0042_unk.h"
 #include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/dll_0048_cameramodestatic.h"
@@ -21,18 +23,14 @@
 #include "main/resource.h"
 #include "main/dll/dll_0019_dll19func0.h"
 #include "main/dll/baddie_control_interface.h"
-#include "main/dll/dll_8B.h"
-#include "main/dll/dll_B2.h"
-#include "main/dll/dll_B3.h"
-#include "main/dll/dll_B4.h"
 #include "main/dll/dll_B7.h"
-#include "main/dll/dll_B8.h"
-#include "main/dll/dll_BC.h"
 #include "main/dll/player_api.h"
 #include "main/dll/tricky_api.h"
 #include "main/camera.h"
+#include "main/camera_interface.h"
 #include "main/model.h"
 #include "main/model_light.h"
+#include "main/mldf_fileid.h"
 #include "main/obj_list.h"
 #include "main/object_render.h"
 #include "main/rcp_dolphin_api.h"
@@ -43,56 +41,129 @@
 #include "track/intersect_api.h"
 #include "track/intersect_depth_state_api.h"
 
-typedef struct CamcontrolIconRenderOp
-{
-    u8 pad00[0x24];
-    s32 textureId;
-    u8 pad28;
-    u8 variantId;
-} CamcontrolIconRenderOp;
+struct CamcontrolTriggeredAction {
+    s8 actionKind;
+    u8 pad01[0x0C];
+    u8 triggerMode;
+    u8 pad0E[2];
+};
 
-typedef struct CamcontrolLockIconRenderOp
-{
-    u8 pad00[0x24];
-    s32 textureId;
-    u8 pad28;
+STATIC_ASSERT(sizeof(CamcontrolTriggeredAction) == 0x10);
+STATIC_ASSERT(offsetof(CamcontrolTriggeredAction, triggerMode) == 0x0D);
+
+typedef struct CamcontrolQueuedActionParam {
+    u32 actionIndex;
+    u8 noBlendFlag;
+} CamcontrolQueuedActionParam;
+
+STATIC_ASSERT(sizeof(CamcontrolQueuedActionParam) == 0x08);
+STATIC_ASSERT(offsetof(CamcontrolQueuedActionParam, noBlendFlag) == 0x04);
+
+enum CamcontrolTriggeredActionKind {
+    CAMCONTROL_TRIGGERED_ACTION_KIND_DEFAULT,
+    CAMCONTROL_TRIGGERED_ACTION_KIND_TRIGGERED
+};
+
+enum CamcontrolActionConstants {
+    CAMCONTROL_ACTION_NO_NONE,
+    CAMCONTROL_FALLBACK_ACTION_NO = 1,
+    CAMCONTROL_ACTION_HEAP = 0x0F,
+    CAMCONTROL_DEFAULT_BLEND_FRAMES = 0x78,
+    CAMCONTROL_SAVED_ACTION_NONE = -1
+};
+
+typedef struct CamcontrolHandlerVTable {
+    void (*func00)(void);
+    void (*activate)(CamcontrolCameraState* camera, int startFlags, void* actionData);
+    void (*update)(CamcontrolCameraState* camera);
+    void (*release)(CamcontrolCameraState* camera);
+    void (*actionCallback)(void* actionData, int dataSize);
+} CamcontrolHandlerVTable;
+
+typedef struct CamcontrolHandler {
+    CamcontrolHandlerVTable* vtable;
+} CamcontrolHandler;
+
+typedef struct CamcontrolHandlerEntry {
+    u16 actionId;
+    u8 pad02[2];
+    CamcontrolHandler* handler;
+    u8 priority;
+    u8 pad09[3];
+} CamcontrolHandlerEntry;
+
+STATIC_ASSERT(sizeof(CamcontrolHandlerVTable) == 0x14);
+STATIC_ASSERT(sizeof(CamcontrolHandler) == 0x04);
+STATIC_ASSERT(sizeof(CamcontrolHandlerEntry) == 0x0C);
+STATIC_ASSERT(offsetof(CamcontrolHandlerEntry, handler) == 0x04);
+STATIC_ASSERT(offsetof(CamcontrolHandlerEntry, priority) == 0x08);
+
+enum CamcontrolHandlerConstants {
+    CAMCONTROL_HANDLER_PRIORITY_DYNAMIC = 1,
+    CAMCONTROL_HANDLER_RESOURCE_TYPE = 4,
+    CAMCONTROL_HANDLER_CAPACITY = 20
+};
+
+typedef struct CamcontrolStateStorage {
+    CamcontrolCameraState state;
+    u8 pad144[4];
+} CamcontrolStateStorage;
+
+STATIC_ASSERT(sizeof(CamcontrolStateStorage) == 0x148);
+STATIC_ASSERT(offsetof(CamcontrolStateStorage, state) == 0x00);
+
+typedef union CamcontrolReticleRenderVariant {
+    u8 iconVariant;
     u8 distanceTier;
-} CamcontrolLockIconRenderOp;
+} CamcontrolReticleRenderVariant;
 
-#define RETICLE_BANK_LOCKON  0
-#define RETICLE_BANK_DEFAULT 1
-#define RETICLE_BANK_CONTEXT 2
+typedef struct CamcontrolReticleRenderFields {
+    u8 pad00[0x29];
+    CamcontrolReticleRenderVariant variant;
+} CamcontrolReticleRenderFields;
 
-#define ICON_VARIANT_PRESS_A        1
-#define LOCK_ICON_DIM_ALPHA_SCALE   0x60
-#define CAMCONTROL_LOCK_ICON_OBJ    0x1FE
-#define CAMCONTROL_OBJFLAG_RENDERED 0x800
-#define CAMCONTROL_OBJFLAG_FREED    0x40
+STATIC_ASSERT(sizeof(CamcontrolReticleRenderVariant) == 0x01);
+STATIC_ASSERT(offsetof(CamcontrolReticleRenderFields, variant) == 0x29);
+
+typedef union CamcontrolReticleRenderOp {
+    ModelRenderOp model;
+    CamcontrolReticleRenderFields reticle;
+} CamcontrolReticleRenderOp;
+
+STATIC_ASSERT(sizeof(CamcontrolReticleRenderOp) == sizeof(ModelRenderOp));
+STATIC_ASSERT(offsetof(CamcontrolReticleRenderOp, reticle.variant.iconVariant) == 0x29);
+STATIC_ASSERT(offsetof(CamcontrolReticleRenderOp, reticle.variant.distanceTier) == 0x29);
+
+enum CamcontrolReticleBank {
+    CAMCONTROL_RETICLE_BANK_LOCKON,
+    CAMCONTROL_RETICLE_BANK_DEFAULT,
+    CAMCONTROL_RETICLE_BANK_CONTEXT
+};
+
+enum CamcontrolReticleState {
+    CAMCONTROL_TARGET_RETICLE_STATE_INACTIVE,
+    CAMCONTROL_TARGET_RETICLE_STATE_ACTIVE = 3
+};
+
+enum CamcontrolTargetConstants {
+    CAMCONTROL_CAMERA_TARGET_FLAG_PROMPT_SUPPRESSED = 0x20,
+    CAMCONTROL_HELP_TEXT_NONE = -1
+};
+
+enum CamcontrolReticleConstants {
+    CAMCONTROL_RETICLE_ICON_VARIANT_PRESS_A = 1,
+    CAMCONTROL_RETICLE_DIM_ALPHA_SCALE = 0x60,
+    CAMCONTROL_RETICLE_SPIN_STEP = 0x400,
+    CAMCONTROL_RETICLE_OBJECT_ID = 0x1FE
+};
+
+extern char sCamcontrolTriggeredCamActionLoadWarning[];
 
 s16 gCamcontrolTargetHelpTextId = -1;
 u16 gCamcontrolTargetClassMask = 0xFFFF;
-char sDllBBTimeDebugFormat[] = "t=%f\n";
+char sCamcontrolBlendDebugFormat[] = "t=%f\n";
 
-#define CAMCONTROL_RETICLE_ROOT_MOTION_SCALE   0.4f
-#define CAMCONTROL_NORMALIZED_MAX              1.0f
-#define CAMCONTROL_NORMALIZED_MIN              0.0f
-#define CAMCONTROL_TARGET_DISTANCE_TIER1       0.25f
-#define CAMCONTROL_TARGET_DISTANCE_TIER2       0.5f
-#define CAMCONTROL_TARGET_DISTANCE_TIER3       0.75f
-#define CAMCONTROL_RETICLE_LIGHT_DIR_Z         -0.78f
-#define CAMCONTROL_FOCUS_DELTA_MIN             -100.0f
-#define CAMCONTROL_FOCUS_DELTA_MAX             20.0f
-#define CAMCONTROL_FOCUS_MOVE_AVERAGE_DAMPING  0.2f
-#define CAMCONTROL_BLEND_INTERPOLATE_RATE      0.22f
-#define CAMCONTROL_BLEND_MAX_RATE              3.0f
-#define CAMCONTROL_RETICLE_FADE_OUT_STEP       -0.04f
-#define CAMCONTROL_RETICLE_FADE_IN_STEP        0.04f
-#define CAMCONTROL_RETICLE_ALPHA_SCALE         255.0f
-#define CAMCONTROL_RETICLE_SPIN_STEP_PER_FRAME 1024.0f
-#define CAMCONTROL_MIN_TARGET_DISTANCE         5.0f
-#define CAMCONTROL_DEFAULT_FOV_Y               60.0f
-
-u8* pCamera;
+CamcontrolCameraState* gCamcontrolCamera;
 u8 gCamcontrolHandlerCount;
 CamcontrolHandlerEntry* gCamcontrolCurrentHandler;
 s32 gCamcontrolActiveActionId;
@@ -115,192 +186,175 @@ f32 gCamcontrolSavedFocusLocalZ;
 f32 gCamcontrolSavedFocusWorldX;
 f32 gCamcontrolSavedFocusWorldY;
 f32 gCamcontrolSavedFocusWorldZ;
-f32 lbl_803DD4D0;
+f32 gCamcontrolFovY;
 u32 lbl_803DD4CC;
 s8 lbl_803DD4CB;
 s8 gCamcontrolTargetState;
 u16 gCamcontrolReticleSpin;
-void* lbl_803DD4C4;
-s16 lbl_803DD4C0;
-CamcontrolReticleObject* gCamcontrolTargetReticle;
+void* gCamcontrolReticleLight;
+s16 gCamcontrolLetterboxYOffset;
+GameObject* gCamcontrolTargetReticle;
 s8 gCamcontrolTargetChanged;
 
-u8 gCamcontrolStateStorage[0x148];
-CamcontrolHandlerEntry* gCamcontrolHandlerEntries[20];
+CamcontrolStateStorage gCamcontrolStateStorage;
+CamcontrolHandlerEntry* gCamcontrolHandlerEntries[CAMCONTROL_HANDLER_CAPACITY];
 
-void* lbl_80319A88[35] = {(void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x001d0000,
-                          Camera_initialise,
-                          Camera_release,
-                          (void*)0x00000000,
-                          Camera_init,
-                          Camera_update,
-                          Camera_get,
-                          Camera_getMode,
-                          Camera_GetFollowPos,
-                          Camera_getDefaultHandlerEntry,
-                          Camera_setMode,
-                          Camera_getCamActionsBinEntry,
-                          camcontrol_loadTriggeredCamAction,
-                          Camera_setFocus,
-                          Camera_overridePos,
-                          Camera_moveBy,
-                          camcontrol_initialise,
-                          camcontrol_getRelativePosition,
-                          Camera_getOverrideTarget,
-                          Camera_getTarget,
-                          Camera_setTargetFlag2,
-                          Camera_setTarget,
-                          Camera_setTargetReticleOverride,
-                          Camera_isZooming,
-                          camcontrol_updateTargetFeedback,
-                          Camera_minimapShowHelpTextForTarget,
-                          Camera_setLetterbox,
-                          camcontrol_release,
-                          Camera_getMinimapInfoText,
-                          Camera_applyFrameFlags,
-                          Camera_applyTargetFlags,
-                          camcontrol_queueSavedAction};
+CamcontrolResourceDescriptor gCamcontrolResourceDescriptor = {
+    {
+        0x00000000,
+        0x00000000,
+        0x00000000,
+        0x001d0000,
+    },
+    (ResourceDescriptorCallback)Camera_initialise,
+    (ResourceDescriptorCallback)Camera_release,
+    {
+        {0},
+        Camera_init,
+        Camera_update,
+        Camera_get,
+        Camera_getMode,
+        Camera_getActiveHandler,
+        Camera_getDefaultHandlerEntry,
+        (CameraSetModeFn)Camera_setMode,
+        (void* (*)(int))Camera_getCamActionsBinEntry,
+        camcontrol_loadTriggeredCamAction,
+        Camera_setFocus,
+        Camera_overridePos,
+        Camera_moveBy,
+        camcontrol_initialise,
+        camcontrol_getRelativePosition,
+        Camera_getOverrideTarget,
+        Camera_getTarget,
+        Camera_setTargetFlag2,
+        Camera_setTarget,
+        Camera_setTargetReticleOverride,
+        Camera_isZooming,
+        camcontrol_updateTargetFeedback,
+        Camera_minimapShowHelpTextForTarget,
+        Camera_setLetterbox,
+        camcontrol_release,
+        Camera_getMinimapInfoText,
+        Camera_applyFrameFlags,
+        Camera_applyTargetFlags,
+    },
+    camcontrol_queueSavedAction,
+};
 
-int cameraGetTargetType(void)
-{
-    return CAMCONTROL_CAMERA->targetKind;
+int Camera_getTargetKind(void) {
+    return gCamcontrolCamera->targetKind;
 }
 
-int Camera_getMinimapInfoText(void)
-{
+int Camera_getMinimapInfoText(void) {
     return gCamcontrolTargetHelpTextId;
 }
 
-void camcontrol_updateTargetReticle(CamcontrolTargetObject* fallbackTarget, int unused2, u32 renderArg2,
-                                    u32 renderArg3, u32 renderArg4, u32 renderArg5)
-{
+void camcontrol_updateTargetReticle(GameObject* fallbackTarget, int unused2, u32 renderArg2, u32 renderArg3,
+                                    u32 renderArg4, u32 renderArg5) {
     int savedReticleState;
     u8 savedReticleAlpha;
     GameObject* reticle;
-    GameObject* targetObject;
-    CamcontrolTargetObject* target;
+    GameObject* target;
     ObjHitVolumeRuntimeTransform* slot;
-    ObjAnimBank* activeBank;
+    ObjModel* activeModel;
     u8 idx;
     int bank;
     int paletteIdx;
 
-    reticle = (GameObject*)gCamcontrolTargetReticle;
+    reticle = gCamcontrolTargetReticle;
     target = fallbackTarget;
-    if ((u32)CAMCONTROL_CAMERA->targetReticleOverride != 0)
-    {
-        target = (CamcontrolTargetObject*)CAMCONTROL_CAMERA->targetReticleOverride;
+    if ((u32)gCamcontrolCamera->targetReticleOverride != 0) {
+        target = gCamcontrolCamera->targetReticleOverride;
         savedReticleState = gCamcontrolTargetState;
         gCamcontrolTargetState = CAMCONTROL_TARGET_RETICLE_STATE_ACTIVE;
         savedReticleAlpha = reticle->anim.alpha;
         reticle->anim.alpha = 0xFF;
     }
 
-    if (target != NULL)
-    {
-        targetObject = (GameObject*)target;
-        if (targetObject->anim.hitVolumeTransforms == NULL)
+    if (target != NULL) {
+        if (target->anim.hitVolumeTransforms == NULL) {
             return;
+        }
 
-        idx = target->targetSetupIndex;
-        slot = &targetObject->anim.hitVolumeTransforms[idx];
+        idx = target->hitVolumeIndex;
+        slot = &target->anim.hitVolumeTransforms[idx];
 
-        switch (targetObject->anim.hitVolumeBounds[idx].flags & CAMCONTROL_TARGET_KIND_MASK)
-        {
+        switch (target->anim.hitVolumeBounds[idx].flags & CAMCONTROL_TARGET_KIND_MASK) {
         case CAMCONTROL_TARGET_KIND_LOCKON:
-            bank = RETICLE_BANK_LOCKON;
+            bank = CAMCONTROL_RETICLE_BANK_LOCKON;
             break;
         case CAMCONTROL_TARGET_KIND_CONTEXT_A:
         case CAMCONTROL_TARGET_KIND_CONTEXT_B:
-            bank = RETICLE_BANK_CONTEXT;
+            bank = CAMCONTROL_RETICLE_BANK_CONTEXT;
             break;
         default:
-            bank = RETICLE_BANK_DEFAULT;
+            bank = CAMCONTROL_RETICLE_BANK_DEFAULT;
             break;
         }
 
-        paletteIdx = target->targetPaletteIndex;
-        if (paletteIdx >= 4)
+        paletteIdx = target->hintTextIdx;
+        if (paletteIdx >= 4) {
             paletteIdx = 0;
-        gCamcontrolTargetHelpTextId = targetObject->anim.modelInstance->helpTextIds[paletteIdx];
+        }
+        gCamcontrolTargetHelpTextId = target->anim.modelInstance->helpTextIds[paletteIdx];
 
         reticle->anim.worldPosX = slot->jointX;
         reticle->anim.worldPosY = slot->jointY;
         reticle->anim.worldPosZ = slot->jointZ;
         reticle->anim.bankIndex = bank;
 
-        reticle->anim.parent = targetObject->anim.parent;
-        if (reticle->anim.parent != NULL)
-        {
+        reticle->anim.parent = target->anim.parent;
+        if (reticle->anim.parent != NULL) {
             Obj_TransformWorldPointToLocal(reticle->anim.worldPosX, reticle->anim.worldPosY, reticle->anim.worldPosZ,
                                            &reticle->anim.localPosX, &reticle->anim.localPosY, &reticle->anim.localPosZ,
                                            reticle->anim.parent);
-        }
-        else
-        {
+        } else {
             reticle->anim.localPosX = reticle->anim.worldPosX;
             reticle->anim.localPosY = reticle->anim.worldPosY;
             reticle->anim.localPosZ = reticle->anim.worldPosZ;
         }
         reticle->anim.rotY = 0;
         reticle->anim.rotZ = 0;
-        reticle->anim.rootMotionScale = CAMCONTROL_RETICLE_ROOT_MOTION_SCALE;
-        ((u8*)reticle)[0x37] = reticle->anim.alpha;
-        objRenderModelAndHitVolumes(reticle, renderArg2, renderArg3, renderArg4, renderArg5, CAMCONTROL_NORMALIZED_MAX);
-    }
-    else
-    {
+        reticle->anim.rootMotionScale = 0.4f;
+        reticle->anim.renderAlpha = reticle->anim.alpha;
+        objRenderModelAndHitVolumes(reticle, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+    } else {
         reticle->anim.parent = NULL;
     }
 
-    activeBank = reticle->anim.banks[reticle->anim.bankIndex];
-    *(u16*)((u8*)activeBank + 0x18) = (u16)(*(u16*)((u8*)activeBank + 0x18) & ~8);
+    activeModel = reticle->anim.modelBanks[reticle->anim.bankIndex];
+    activeModel->bufferFlags = (u16)(activeModel->bufferFlags & ~8);
 
-    if ((u32)CAMCONTROL_CAMERA->targetReticleOverride != 0)
-    {
+    if ((u32)gCamcontrolCamera->targetReticleOverride != 0) {
         gCamcontrolTargetState = savedReticleState;
         reticle->anim.alpha = savedReticleAlpha;
     }
 }
 
-int aButtonIconTexCb(GameObject* obj, void** objPtr, u32 renderOpIdx)
-{
-    CamcontrolIconRenderOp* renderOp;
+int camcontrol_aButtonIconTextureCallback(GameObject* obj, void** objPtr, u32 renderOpIdx) {
+    CamcontrolReticleRenderOp* renderOp;
     GXColor color; /* r/g/b intentionally left unset: callee reads only alpha for this op */
 
-    renderOp = (CamcontrolIconRenderOp*)ObjModel_GetRenderOp((ModelFileHeader*)*objPtr, renderOpIdx);
+    renderOp = (CamcontrolReticleRenderOp*)ObjModel_GetRenderOp((ModelFileHeader*)*objPtr, renderOpIdx);
     Rcp_ResetTextureStageState();
-    if (renderOp->variantId == ICON_VARIANT_PRESS_A)
-    {
-        if ((CAMCONTROL_CAMERA->targetFlags & CAMCONTROL_CAMERA_TARGET_FLAG_ACCEPTS_INPUT) == 0)
-        {
+    if (renderOp->reticle.variant.iconVariant == CAMCONTROL_RETICLE_ICON_VARIANT_PRESS_A) {
+        if ((gCamcontrolCamera->targetFlags & CAMCONTROL_CAMERA_TARGET_FLAG_PROMPT_SUPPRESSED) == 0) {
             color.a = 0;
-        }
-        else
-        {
+        } else {
             color.a = obj->anim.alpha;
         }
-    }
-    else
-    {
+    } else {
         color.a = obj->anim.alpha;
     }
-    if (CAMCONTROL_CAMERA->targetKind == CAMCONTROL_TARGET_KIND_SUPPRESSED)
-    {
+    if (gCamcontrolCamera->targetKind == CAMCONTROL_TARGET_KIND_SUPPRESSED) {
         color.a = 0;
     }
-    addTexLayerStageKAlpha(textureIdxToPtr(renderOp->textureId), NULL, 0, &color);
+    addTexLayerStageKAlpha(textureIdxToPtr(renderOp->model.textureId), NULL, 0, &color);
     Rcp_ApplyTextureStageCounts();
-    if (color.a < 0xff)
-    {
+    if (color.a < 0xff) {
         GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
         gxSetZMode_(1, GX_LEQUAL, 0);
-    }
-    else
-    {
+    } else {
         GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
         gxSetZMode_(1, GX_LEQUAL, 1);
     }
@@ -310,62 +364,46 @@ int aButtonIconTexCb(GameObject* obj, void** objPtr, u32 renderOpIdx)
     return 1;
 }
 
-int lockIconTexCb(GameObject* obj, int* modelPtr, int renderOpIdx)
-{
-    CamcontrolLockIconRenderOp* renderOp;
+int camcontrol_lockIconTextureCallback(GameObject* obj, int* modelPtr, int renderOpIdx) {
+    CamcontrolReticleRenderOp* renderOp;
     u8 tier;
     GXColor color;
     f32 dist;
     int alphaVal;
 
-    renderOp = (CamcontrolLockIconRenderOp*)ObjModel_GetRenderOp((ModelFileHeader*)*modelPtr, renderOpIdx);
-    dist = CAMCONTROL_CAMERA->targetDistance;
-    if (dist <= CAMCONTROL_NORMALIZED_MIN)
-    {
+    renderOp = (CamcontrolReticleRenderOp*)ObjModel_GetRenderOp((ModelFileHeader*)*modelPtr, renderOpIdx);
+    dist = gCamcontrolCamera->targetDistance;
+    if (dist <= 0.0f) {
         tier = 4;
-    }
-    else if (dist <= CAMCONTROL_TARGET_DISTANCE_TIER1)
-    {
+    } else if (dist <= 0.25f) {
         tier = 3;
-    }
-    else if (dist <= CAMCONTROL_TARGET_DISTANCE_TIER2)
-    {
+    } else if (dist <= 0.5f) {
         tier = 2;
-    }
-    else if (dist <= CAMCONTROL_TARGET_DISTANCE_TIER3)
-    {
+    } else if (dist <= 0.75f) {
         tier = 1;
-    }
-    else
-    {
+    } else {
         tier = 0;
     }
     Rcp_ResetTextureStageState();
-    if (renderOp->distanceTier <= tier)
-    {
+    if (renderOp->reticle.variant.distanceTier <= tier) {
         color.r = 0;
         color.g = 0;
         color.b = 0;
-        alphaVal = ((obj->anim.alpha + 1) * LOCK_ICON_DIM_ALPHA_SCALE) >> 8;
+        alphaVal = ((obj->anim.alpha + 1) * CAMCONTROL_RETICLE_DIM_ALPHA_SCALE) >> 8;
         color.a = alphaVal;
-        addTexLayerStageKAlpha(textureIdxToPtr(renderOp->textureId), NULL, 0, &color);
-    }
-    else
-    {
+        addTexLayerStageKAlpha(textureIdxToPtr(renderOp->model.textureId), NULL, 0, &color);
+    } else {
         color.r = 0xff;
         color.g = 0xff;
         color.b = 0xff;
         color.a = obj->anim.alpha;
-        addTexLayerStageKAlpha(textureIdxToPtr(renderOp->textureId), NULL, 0, &color);
+        addTexLayerStageKAlpha(textureIdxToPtr(renderOp->model.textureId), NULL, 0, &color);
     }
     Rcp_ApplyTextureStageCounts();
-    if (obj->anim.alpha < 0xff || renderOp->distanceTier <= tier)
-    {
+    if (obj->anim.alpha < 0xff || renderOp->reticle.variant.distanceTier <= tier) {
         GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
         gxSetZMode_(1, GX_LEQUAL, 0);
-    }
-    else
-    {
+    } else {
         GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
         gxSetZMode_(1, GX_LEQUAL, 1);
     }
@@ -375,55 +413,51 @@ int lockIconTexCb(GameObject* obj, int* modelPtr, int renderOpIdx)
     return 1;
 }
 
-void lockIconInit(void)
-{
-    if (gCamcontrolTargetReticle == NULL)
-    {
-        gCamcontrolTargetReticle = (CamcontrolReticleObject*)Obj_SetupObject(
-            Obj_AllocObjectSetup(0x18, CAMCONTROL_LOCK_ICON_OBJ), 4, -1, -1, NULL);
-        ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel((GameObject*)gCamcontrolTargetReticle), lockIconTexCb);
-        gCamcontrolTargetReticle->anim.bankIndex = CAMCONTROL_RETICLE_ICON_LOCKON;
-        ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel((GameObject*)gCamcontrolTargetReticle), aButtonIconTexCb);
-        gCamcontrolTargetReticle->anim.bankIndex = CAMCONTROL_RETICLE_ICON_A_BUTTON;
-        ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel((GameObject*)gCamcontrolTargetReticle), aButtonIconTexCb);
+void camcontrol_initialiseTargetReticle(void) {
+    if (gCamcontrolTargetReticle == NULL) {
+        gCamcontrolTargetReticle =
+            Obj_SetupObject(Obj_AllocObjectSetup(0x18, CAMCONTROL_RETICLE_OBJECT_ID), 4, -1, -1, NULL);
+        ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel(gCamcontrolTargetReticle),
+                                   camcontrol_lockIconTextureCallback);
+        gCamcontrolTargetReticle->anim.bankIndex = CAMCONTROL_RETICLE_BANK_DEFAULT;
+        ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel(gCamcontrolTargetReticle),
+                                   camcontrol_aButtonIconTextureCallback);
+        gCamcontrolTargetReticle->anim.bankIndex = CAMCONTROL_RETICLE_BANK_CONTEXT;
+        ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel(gCamcontrolTargetReticle),
+                                   camcontrol_aButtonIconTextureCallback);
         lightSetColor(1, 0x32, 0x3C, 0x28);
-        lbl_803DD4C4 = objCreateLight(NULL, 1);
-        if (lbl_803DD4C4 != NULL)
-        {
-            modelLightStruct_setLightKind(lbl_803DD4C4, MODEL_LIGHT_KIND_DIRECTIONAL);
-            modelLightStruct_setObjectLightMaskIndex(lbl_803DD4C4, 1);
-            objSetEventName(lbl_803DD4C4, 1);
-            modelLightStruct_setDirection(lbl_803DD4C4, CAMCONTROL_NORMALIZED_MAX, CAMCONTROL_NORMALIZED_MIN,
-                                          CAMCONTROL_RETICLE_LIGHT_DIR_Z);
-            modelLightStruct_setDiffuseColor(lbl_803DD4C4, 0xB4, 0xC8, 0xFF, 0xFF);
+        gCamcontrolReticleLight = objCreateLight(NULL, 1);
+        if (gCamcontrolReticleLight != NULL) {
+            modelLightStruct_setLightKind(gCamcontrolReticleLight, MODEL_LIGHT_KIND_DIRECTIONAL);
+            modelLightStruct_setObjectLightMaskIndex(gCamcontrolReticleLight, 1);
+            objSetEventName(gCamcontrolReticleLight, 1);
+            modelLightStruct_setDirection(gCamcontrolReticleLight, 1.0f, 0.0f, -0.78f);
+            modelLightStruct_setDiffuseColor(gCamcontrolReticleLight, 0xB4, 0xC8, 0xFF, 0xFF);
         }
     }
 }
 
-static inline int camcontrol_isTargetCandidate(GameObject* obj, ObjHitVolumeRuntimeBounds* data)
-{
+static inline int camcontrol_isTargetCandidate(GameObject* obj, ObjHitVolumeRuntimeBounds* data) {
     int accept;
     if (data != NULL && obj->anim.alpha == 0xff && !(obj->anim.resetHitboxFlags & 0x28) &&
-        ((obj->objectFlags & CAMCONTROL_OBJFLAG_RENDERED) || (obj->anim.modelInstance->flags & 1)) &&
-        !(obj->anim.flags & OBJANIM_FLAG_HIDDEN) && !(obj->objectFlags & CAMCONTROL_OBJFLAG_FREED) &&
+        ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) || (obj->anim.modelInstance->flags & 1)) &&
+        !(obj->anim.flags & OBJANIM_FLAG_HIDDEN) && !(obj->objectFlags & OBJECT_OBJFLAG_FREED) &&
         (gCamcontrolTargetClassMask &
-         ((accept = 1) << (data[obj->hitVolumeIndex].flags & CAMCONTROL_TARGET_KIND_MASK))))
-    {
+         ((accept = 1) << (data[obj->hitVolumeIndex].flags & CAMCONTROL_TARGET_KIND_MASK)))) {
         return accept;
     }
     return 0;
 }
 
-CamcontrolTargetObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAnimComponent* focus)
-{
+GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAnimComponent* focus) {
     int objIndex;
     int objCount;
     u8 occOut[4];
     f32 worldFrom[3];
     f32 worldTo[3];
-    int gridFrom[3];
-    int gridTo[3];
-    int traceOut[3];
+    int gridFromStorage[3];
+    int gridToStorage[3];
+    int traceOutStorage[3];
     GameObject* targets[8];
     f32 dist[8];
     GameObject** ptr;
@@ -446,40 +480,31 @@ CamcontrolTargetObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraS
     bestPri = -1;
     count = 0;
     player = Obj_GetPlayerObject();
-    if (player == NULL || focus == NULL || gCamcontrolActiveActionId == 0x44 || objAnimFn_80296328(player) == 0)
-    {
+    if (player == NULL || focus == NULL || gCamcontrolActiveActionId == 0x44 || objAnimFn_80296328(player) == 0) {
         return NULL;
     }
     ptr = (GameObject**)ObjList_GetObjects(&objIndex, &objCount);
     idx = objIndex;
     ptr += idx;
-    for (; idx < objCount; ptr++, idx++)
-    {
+    for (; idx < objCount; ptr++, idx++) {
         obj = *ptr;
         data = obj->anim.hitVolumeBounds;
         accept = camcontrol_isTargetCandidate(obj, data);
-        if (accept == 0)
-        {
+        if (accept == 0) {
             continue;
         }
-        if ((int)*(u8*)&obj->anim.modelInstance->hitVolumes[obj->hitVolumeIndex].priority < bestPri)
-        {
+        if ((int)obj->anim.modelInstance->hitVolumes[obj->hitVolumeIndex].priorityUnsigned < bestPri) {
             continue;
         }
-        if ((obj->anim.resetHitboxFlags & 0x80) || (data[obj->hitVolumeIndex].flags & 0x80))
-        {
-            dy = CAMCONTROL_NORMALIZED_MIN;
-        }
-        else
-        {
+        if ((obj->anim.resetHitboxFlags & 0x80) || (data[obj->hitVolumeIndex].flags & 0x80)) {
+            dy = 0.0f;
+        } else {
             dy = focus->worldPosY - obj->anim.hitVolumeTransforms[obj->hitVolumeIndex].centerY;
         }
-        if (!(dy > CAMCONTROL_FOCUS_DELTA_MIN))
-        {
+        if (!(dy > -100.0f)) {
             continue;
         }
-        if (!(dy < CAMCONTROL_FOCUS_DELTA_MAX))
-        {
+        if (!(dy < 20.0f)) {
             continue;
         }
         dx = focus->worldPosX - obj->anim.hitVolumeTransforms[obj->hitVolumeIndex].centerX;
@@ -487,73 +512,68 @@ CamcontrolTargetObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraS
         distsq = dx * dx + dz * dz;
         entry = &data[obj->hitVolumeIndex];
         range = (f32)(int)(entry->bounds[2] << 2);
-        if (!(distsq < range * range))
-        {
+        if (!(distsq < range * range)) {
             continue;
         }
         canTarget = 1;
         if ((entry->flags & CAMCONTROL_TARGET_KIND_MASK) == CAMCONTROL_TARGET_KIND_A_BUTTON_HINT &&
-            playerIsTargetSuppressed((GameObject*)(player)) != 0)
-        {
+            playerIsTargetSuppressed(player) != 0) {
             canTarget = 0;
         }
-        if (canTarget == 0)
-        {
+        if (canTarget == 0) {
             continue;
         }
-        bestPri = *(u8*)&obj->anim.modelInstance->hitVolumes[obj->hitVolumeIndex].priority;
+        bestPri = obj->anim.modelInstance->hitVolumes[obj->hitVolumeIndex].priorityUnsigned;
         i = 0;
         while (i < count &&
-               (int)*(u8*)&targets[i]->anim.modelInstance->hitVolumes[targets[i]->hitVolumeIndex].priority > bestPri)
-        {
+               (int)targets[i]->anim.modelInstance->hitVolumes[targets[i]->hitVolumeIndex].priorityUnsigned > bestPri) {
             i++;
         }
         while (i < count && dist[i] < distsq &&
-               bestPri == (int)*(u8*)&targets[i]->anim.modelInstance->hitVolumes[targets[i]->hitVolumeIndex].priority)
-        {
+               bestPri ==
+                   (int)targets[i]->anim.modelInstance->hitVolumes[targets[i]->hitVolumeIndex].priorityUnsigned) {
             i++;
         }
-        for (k = count; k > i; k--)
-        {
+        for (k = count; k > i; k--) {
             dist[k] = dist[k - 1];
             targets[k] = targets[k - 1];
         }
         dist[i] = distsq;
         targets[i] = obj;
         count++;
-        if (count == 8)
-        {
+        if (count == 8) {
             break;
         }
     }
-    if (count > 0)
-    {
+    if (count > 0) {
         best = targets[0];
         row = best->anim.modelInstance->hitVolumes;
         row += best->hitVolumeIndex;
-        if (row->flags & 0x20)
-        {
+        if (row->flags & 0x20) {
             worldFrom[0] = focus->worldPosX;
-            worldFrom[1] = CAMCONTROL_FOCUS_DELTA_MAX + focus->worldPosY;
+            worldFrom[1] = 20.0f + focus->worldPosY;
             worldFrom[2] = focus->worldPosZ;
             worldTo[0] = best->anim.hitVolumeTransforms[best->hitVolumeIndex].jointX;
             worldTo[1] = best->anim.hitVolumeTransforms[best->hitVolumeIndex].jointY;
             worldTo[2] = best->anim.hitVolumeTransforms[best->hitVolumeIndex].jointZ;
-            voxmaps_worldToGrid(worldFrom, (s16*)gridFrom);
-            voxmaps_worldToGrid(worldTo, (s16*)gridTo);
-            if ((u8)voxmaps_traceLine((VoxPos*)gridFrom, (VoxPos*)gridTo, (VoxPos*)traceOut, occOut, 0) == 0 &&
-                occOut[0] != 1)
-            {
+            /*
+             * These remain 12-byte stack slots: narrowing them to VoxPos changes MWCC's retail stack layout.
+             * The voxmap APIs access only the leading three s16 coordinates.
+             */
+            voxmaps_worldToGrid(worldFrom, (s16*)gridFromStorage);
+            voxmaps_worldToGrid(worldTo, (s16*)gridToStorage);
+            if ((u8)voxmaps_traceLine((VoxPos*)gridFromStorage, (VoxPos*)gridToStorage, (VoxPos*)traceOutStorage,
+                                      occOut, 0) == 0 &&
+                occOut[0] != 1) {
                 return NULL;
             }
         }
-        return (CamcontrolTargetObject*)targets[0];
+        return targets[0];
     }
     return NULL;
 }
 
-void camcontrol_updateMoveAverage(CamcontrolCameraState* cameraState, ObjAnimComponent* focus)
-{
+void camcontrol_updateMoveAverage(CamcontrolCameraState* cameraState, ObjAnimComponent* focus) {
     Vec3f* velocity;
     f32 mag;
     f32 root;
@@ -575,13 +595,12 @@ void camcontrol_updateMoveAverage(CamcontrolCameraState* cameraState, ObjAnimCom
     cameraState->focusMoveHistory[3] = move4;
     velocity = &focus->velocity;
     mag = PSVECMag(velocity);
-    if (mag > CAMCONTROL_NORMALIZED_MIN)
-    {
+    if (mag > 0.0f) {
         root = sqrtf(mag);
         mag = root;
     }
     cameraState->focusMoveHistory[4] = mag;
-    minMove = CAMCONTROL_NORMALIZED_MIN;
+    minMove = 0.0f;
     cameraState->focusMoveAverage = minMove;
     move0 = cameraState->focusMoveHistory[0];
     cameraState->focusMoveAverage += move0;
@@ -593,27 +612,22 @@ void camcontrol_updateMoveAverage(CamcontrolCameraState* cameraState, ObjAnimCom
     cameraState->focusMoveAverage += move3;
     move4 = cameraState->focusMoveHistory[4];
     cameraState->focusMoveAverage += move4;
-    cameraState->focusMoveAverage *= CAMCONTROL_FOCUS_MOVE_AVERAGE_DAMPING;
+    cameraState->focusMoveAverage *= 0.2f;
     average = cameraState->focusMoveAverage;
-    if (average < minMove)
-    {
+    if (average < minMove) {
         cameraState->focusMoveAverage = -average;
     }
 }
 
-
-static inline int camcontrol_findHandlerIndex(u16 actionId)
-{
+static inline int camcontrol_findHandlerIndex(u16 actionId) {
     int handlerCount;
     register CamcontrolHandlerEntry** handlerEntry;
     int handlerIndex;
 
     handlerIndex = 0;
     handlerEntry = gCamcontrolHandlerEntries;
-    for (handlerCount = gCamcontrolHandlerCount; 0 < handlerCount; handlerCount--)
-    {
-        if (actionId == (*handlerEntry)->actionId)
-        {
+    for (handlerCount = gCamcontrolHandlerCount; 0 < handlerCount; handlerCount--) {
+        if (actionId == (*handlerEntry)->actionId) {
             return handlerIndex;
         }
         handlerEntry++;
@@ -622,20 +636,16 @@ static inline int camcontrol_findHandlerIndex(u16 actionId)
     return -1;
 }
 
-void camcontrol_activateHandler(u16 actionId, void* actionData)
-{
+void camcontrol_activateHandler(u16 actionId, void* actionData) {
     CamcontrolHandlerEntry* entry;
     int idx;
     int n;
     int priority;
 
-    if (gCamcontrolCurrentHandler != NULL)
-    {
-        if (gCamcontrolActiveActionId != actionId)
-        {
-            gCamcontrolCurrentHandler->handler->vtable->release(pCamera);
-            if (gCamcontrolCurrentHandler->priority == CAMCONTROL_HANDLER_PRIORITY_DYNAMIC)
-            {
+    if (gCamcontrolCurrentHandler != NULL) {
+        if (gCamcontrolActiveActionId != actionId) {
+            gCamcontrolCurrentHandler->handler->vtable->release(gCamcontrolCamera);
+            if (gCamcontrolCurrentHandler->priority == CAMCONTROL_HANDLER_PRIORITY_DYNAMIC) {
                 idx = gCamcontrolCurrentHandlerIndex;
                 Resource_Release(gCamcontrolHandlerEntries[idx]->handler);
                 mm_free(gCamcontrolHandlerEntries[idx]);
@@ -651,13 +661,12 @@ void camcontrol_activateHandler(u16 actionId, void* actionData)
     idx = camcontrol_findHandlerIndex(actionId);
     gCamcontrolCurrentHandlerIndex = idx;
 
-    if (idx == -1)
-    {
-        CamcontrolHandlerEntry* new_entry;
+    if (idx == -1) {
+        CamcontrolHandlerEntry* newEntry;
         priority = gCamcontrolQueuedActionPriority;
-        new_entry = mmAlloc(CAMCONTROL_HANDLER_ENTRY_SIZE, CAMCONTROL_ACTION_HEAP, 0);
+        newEntry = mmAlloc(sizeof(CamcontrolHandlerEntry), CAMCONTROL_ACTION_HEAP, 0);
         n = gCamcontrolHandlerCount;
-        gCamcontrolHandlerEntries[n] = new_entry;
+        gCamcontrolHandlerEntries[n] = newEntry;
         gCamcontrolHandlerCount++;
         entry = gCamcontrolHandlerEntries[n];
         entry->actionId = actionId;
@@ -666,15 +675,12 @@ void camcontrol_activateHandler(u16 actionId, void* actionData)
         gCamcontrolCurrentHandlerIndex = gCamcontrolHandlerCount - 1;
     }
 
-    if (gCamcontrolCurrentHandlerIndex != -1)
-    {
+    if (gCamcontrolCurrentHandlerIndex != -1) {
         entry = gCamcontrolHandlerEntries[gCamcontrolCurrentHandlerIndex];
         gCamcontrolCurrentHandler = entry;
         gCamcontrolActiveActionId = entry->actionId;
-        entry->handler->vtable->activate(pCamera, gCamcontrolQueuedActionStartFlags, actionData);
-    }
-    else
-    {
+        entry->handler->vtable->activate(gCamcontrolCamera, gCamcontrolQueuedActionStartFlags, actionData);
+    } else {
         gCamcontrolCurrentHandler = NULL;
         gCamcontrolActiveActionId = -1;
     }
@@ -683,35 +689,32 @@ void camcontrol_activateHandler(u16 actionId, void* actionData)
     gCamcontrolActiveActionStartFlags = gCamcontrolQueuedActionStartFlags;
 }
 
-void firstPersonZoomOutOnExit(u8 blendFrames, u8 blendFlags)
-{
+void firstPersonZoomOutOnExit(u8 blendFrames, u8 blendFlags) {
     Camera* vs;
     f32 blendProgress;
 
     Camera_GetCurrent();
-    blendProgress = CAMCONTROL_NORMALIZED_MAX;
-    CAMCONTROL_CAMERA->blendProgress = blendProgress;
-    CAMCONTROL_CAMERA->blendStep = blendProgress / (float)blendFrames;
-    CAMCONTROL_CAMERA->queuedBlendFlags = blendFlags;
+    blendProgress = 1.0f;
+    gCamcontrolCamera->blendProgress = blendProgress;
+    gCamcontrolCamera->blendStep = blendProgress / (float)blendFrames;
+    gCamcontrolCamera->queuedBlendFlags = blendFlags;
 
     vs = Camera_GetCurrent();
-    CAMCONTROL_CAMERA->blendStartX = vs->x;
-    CAMCONTROL_CAMERA->blendStartY = vs->y;
-    CAMCONTROL_CAMERA->blendStartZ = vs->z;
-    CAMCONTROL_CAMERA->blendStartYaw = vs->yaw;
-    CAMCONTROL_CAMERA->blendStartPitch = vs->pitch;
-    CAMCONTROL_CAMERA->blendStartRoll = vs->roll;
+    gCamcontrolCamera->blendStartX = vs->x;
+    gCamcontrolCamera->blendStartY = vs->y;
+    gCamcontrolCamera->blendStartZ = vs->z;
+    gCamcontrolCamera->blendStartYaw = vs->yaw;
+    gCamcontrolCamera->blendStartPitch = vs->pitch;
+    gCamcontrolCamera->blendStartRoll = vs->roll;
 
-    CAMCONTROL_CAMERA->blendStartFovY = Camera_GetFovY();
+    gCamcontrolCamera->blendStartFovY = Camera_GetFovY();
 }
 
-void cameraSetInterpMode(u8 mode)
-{
-    CAMCONTROL_CAMERA->blendCurveMode = mode;
+void Camera_setBlendCurveMode(u8 mode) {
+    gCamcontrolCamera->blendCurveMode = mode;
 }
 
-void camcontrol_applyState(CamcontrolCameraState* camera)
-{
+void camcontrol_applyState(CamcontrolCameraState* camera) {
     f32 prog;
     f32 clamped;
     Camera* view;
@@ -725,278 +728,216 @@ void camcontrol_applyState(CamcontrolCameraState* camera)
     view->yaw = camera->yaw;
     view->pitch = camera->pitch;
     view->roll = camera->roll;
-    if (((camera->smoothingFlags >> 7) & 1) != 0u)
-    {
+    if (((camera->smoothingFlags >> 7) & 1) != 0u) {
         PSVECSubtract((Vec*)&camera->worldX, (Vec*)&view->x, (Vec*)delta);
         mag = PSVECMag((Vec*)delta);
-        if (mag > CAMCONTROL_NORMALIZED_MIN)
-        {
+        if (mag > 0.0f) {
             PSVECNormalize((Vec*)delta, (Vec*)delta);
         }
-        blendFactor = interpolate(mag, CAMCONTROL_BLEND_INTERPOLATE_RATE, timeDelta);
-        mag = (blendFactor < CAMCONTROL_NORMALIZED_MIN)
-                  ? CAMCONTROL_NORMALIZED_MIN
-                  : ((blendFactor > CAMCONTROL_BLEND_MAX_RATE * timeDelta) ? CAMCONTROL_BLEND_MAX_RATE * timeDelta : blendFactor);
+        blendFactor = interpolate(mag, 0.22f, timeDelta);
+        mag = (blendFactor < 0.0f) ? 0.0f : ((blendFactor > 3.0f * timeDelta) ? 3.0f * timeDelta : blendFactor);
         view->x = mag * delta[0] + view->x;
         view->y = mag * delta[1] + view->y;
         view->z = mag * delta[2] + view->z;
-    }
-    else
-    {
+    } else {
         view->x = camera->worldX;
         view->y = camera->worldY;
         view->z = camera->worldZ;
     }
-    lbl_803DD4D0 = camera->fovY;
-    if (camera->blendProgress > CAMCONTROL_NORMALIZED_MIN)
-    {
+    gCamcontrolFovY = camera->fovY;
+    if (camera->blendProgress > 0.0f) {
         camera->blendProgress = -(camera->blendStep * timeDelta - camera->blendProgress);
         prog = camera->blendProgress;
-        clamped = CAMCONTROL_NORMALIZED_MIN;
-        clamped = (prog < clamped) ? clamped : ((prog > CAMCONTROL_NORMALIZED_MAX) ? CAMCONTROL_NORMALIZED_MAX : prog);
+        clamped = 0.0f;
+        clamped = (prog < clamped) ? clamped : ((prog > 1.0f) ? 1.0f : prog);
         camera->blendProgress = clamped;
-        if (CAMCONTROL_CAMERA->blendCurveMode == 2)
-        {
-            mag = CAMCONTROL_NORMALIZED_MAX - camera->blendProgress * camera->blendProgress * camera->blendProgress;
+        if (gCamcontrolCamera->blendCurveMode == 2) {
+            mag = 1.0f - camera->blendProgress * camera->blendProgress * camera->blendProgress;
+        } else if (gCamcontrolCamera->blendCurveMode == 1) {
+            mag = 1.0f - camera->blendProgress * camera->blendProgress;
+        } else {
+            mag = 1.0f - camera->blendProgress;
         }
-        else if (CAMCONTROL_CAMERA->blendCurveMode == 1)
-        {
-            mag = CAMCONTROL_NORMALIZED_MAX - camera->blendProgress * camera->blendProgress;
-        }
-        else
-        {
-            mag = CAMCONTROL_NORMALIZED_MAX - camera->blendProgress;
-        }
-        blendFactor = (mag < CAMCONTROL_NORMALIZED_MIN)
-                          ? CAMCONTROL_NORMALIZED_MIN
-                          : ((mag > CAMCONTROL_NORMALIZED_MAX) ? CAMCONTROL_NORMALIZED_MAX : mag);
-        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_X) != 0)
-        {
+        blendFactor = (mag < 0.0f) ? 0.0f : ((mag > 1.0f) ? 1.0f : mag);
+        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_X) != 0) {
             view->x = blendFactor * (view->x - camera->blendStartX) + camera->blendStartX;
         }
-        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_Y) != 0)
-        {
+        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_Y) != 0) {
             view->y = blendFactor * (view->y - camera->blendStartY) + camera->blendStartY;
         }
-        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_Z) != 0)
-        {
+        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_Z) != 0) {
             view->z = blendFactor * (view->z - camera->blendStartZ) + camera->blendStartZ;
         }
-        OSReport(sDllBBTimeDebugFormat, blendFactor);
-        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_YAW) != 0)
-        {
+        OSReport(sCamcontrolBlendDebugFormat, blendFactor);
+        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_YAW) != 0) {
             camera->blendDeltaYaw = camera->blendStartYaw - (u16)view->yaw;
-            if (0x8000 < camera->blendDeltaYaw)
-            {
+            if (0x8000 < camera->blendDeltaYaw) {
                 camera->blendDeltaYaw = (camera->blendDeltaYaw - 0x10000) + 1;
             }
-            if (camera->blendDeltaYaw < -0x8000)
-            {
+            if (camera->blendDeltaYaw < -0x8000) {
                 camera->blendDeltaYaw = (camera->blendDeltaYaw + 0x10000) - 1;
             }
             itmp = (int)((f32)camera->blendDeltaYaw * blendFactor);
             view->yaw = camera->blendStartYaw - itmp;
         }
-        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_PITCH) != 0)
-        {
+        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_PITCH) != 0) {
             camera->blendDeltaPitch = camera->blendStartPitch - (u16)view->pitch;
-            if (0x8000 < camera->blendDeltaPitch)
-            {
+            if (0x8000 < camera->blendDeltaPitch) {
                 camera->blendDeltaPitch = (camera->blendDeltaPitch - 0x10000) + 1;
             }
-            if (camera->blendDeltaPitch < -0x8000)
-            {
+            if (camera->blendDeltaPitch < -0x8000) {
                 camera->blendDeltaPitch = (camera->blendDeltaPitch + 0x10000) - 1;
             }
             itmp = (int)((f32)camera->blendDeltaPitch * blendFactor);
             view->pitch = camera->blendStartPitch - itmp;
         }
-        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_ROLL) != 0)
-        {
+        if ((camera->queuedBlendFlags & CAMCONTROL_BLEND_ROLL) != 0) {
             camera->blendDeltaRoll = camera->blendStartRoll - (u16)view->roll;
-            if (0x8000 < camera->blendDeltaRoll)
-            {
+            if (0x8000 < camera->blendDeltaRoll) {
                 camera->blendDeltaRoll = (camera->blendDeltaRoll - 0x10000) + 1;
             }
-            if (camera->blendDeltaRoll < -0x8000)
-            {
+            if (camera->blendDeltaRoll < -0x8000) {
                 camera->blendDeltaRoll = (camera->blendDeltaRoll + 0x10000) - 1;
             }
             itmp = (int)((f32)camera->blendDeltaRoll * blendFactor);
             view->roll = camera->blendStartRoll - itmp;
         }
     }
-    Camera_SetFovY(lbl_803DD4D0);
+    Camera_SetFovY(gCamcontrolFovY);
     Camera_UpdateForObject(view);
     loadMapForCameraPos(camera->worldX, camera->worldY, camera->worldZ);
-    lbl_803DD4C0 = Camera_GetViewportYOffset();
-    if ((int)lbl_803DD4C0 != camera->letterboxTargetOffset)
-    {
-        if ((int)lbl_803DD4C0 < camera->letterboxTargetOffset)
-        {
-            lbl_803DD4C0 = lbl_803DD4C0 + camera->letterboxStep * (int)timeDelta;
-            if ((int)lbl_803DD4C0 > camera->letterboxTargetOffset)
-            {
-                lbl_803DD4C0 = camera->letterboxTargetOffset;
+    gCamcontrolLetterboxYOffset = Camera_GetViewportYOffset();
+    if ((int)gCamcontrolLetterboxYOffset != camera->letterboxTargetOffset) {
+        if ((int)gCamcontrolLetterboxYOffset < camera->letterboxTargetOffset) {
+            gCamcontrolLetterboxYOffset = gCamcontrolLetterboxYOffset + camera->letterboxStep * (int)timeDelta;
+            if ((int)gCamcontrolLetterboxYOffset > camera->letterboxTargetOffset) {
+                gCamcontrolLetterboxYOffset = camera->letterboxTargetOffset;
+            }
+        } else {
+            gCamcontrolLetterboxYOffset = gCamcontrolLetterboxYOffset - camera->letterboxStep * (int)timeDelta;
+            if ((int)gCamcontrolLetterboxYOffset < camera->letterboxTargetOffset) {
+                gCamcontrolLetterboxYOffset = camera->letterboxTargetOffset;
             }
         }
-        else
-        {
-            lbl_803DD4C0 = lbl_803DD4C0 - camera->letterboxStep * (int)timeDelta;
-            if ((int)lbl_803DD4C0 < camera->letterboxTargetOffset)
-            {
-                lbl_803DD4C0 = camera->letterboxTargetOffset;
-            }
-        }
-        Camera_SetViewportYOffset(lbl_803DD4C0);
+        Camera_SetViewportYOffset(gCamcontrolLetterboxYOffset);
     }
     camera->letterboxTargetOffset = 0;
     Camera_UpdateViewMatrices();
 }
 
-void camcontrol_applyQueuedAction(void)
-{
+void camcontrol_applyQueuedAction(void) {
     Camera* view;
     f32 blendStep;
 
-    if (gCamcontrolQueuedActionPending != '\0')
-    {
-        if (gCamcontrolQueuedActionBlendFrames > 1)
-        {
-            blendStep = CAMCONTROL_NORMALIZED_MAX / gCamcontrolQueuedActionBlendFrames;
-            if ((blendStep <= CAMCONTROL_NORMALIZED_MIN) || (blendStep > CAMCONTROL_NORMALIZED_MAX))
-            {
+    if (gCamcontrolQueuedActionPending != '\0') {
+        if (gCamcontrolQueuedActionBlendFrames > 1) {
+            blendStep = 1.0f / gCamcontrolQueuedActionBlendFrames;
+            if ((blendStep <= 0.0f) || (blendStep > 1.0f)) {
                 blendStep = 1.0f;
             }
-            CAMCONTROL_CAMERA->blendProgress = 1.0f;
-            CAMCONTROL_CAMERA->blendStep = blendStep;
-            CAMCONTROL_CAMERA->queuedBlendFlags = gCamcontrolQueuedActionMode;
-        }
-        else
-        {
-            CAMCONTROL_CAMERA->blendProgress = CAMCONTROL_NORMALIZED_MIN;
-            CAMCONTROL_CAMERA->queuedBlendFlags = 0;
+            gCamcontrolCamera->blendProgress = 1.0f;
+            gCamcontrolCamera->blendStep = blendStep;
+            gCamcontrolCamera->queuedBlendFlags = gCamcontrolQueuedActionMode;
+        } else {
+            gCamcontrolCamera->blendProgress = 0.0f;
+            gCamcontrolCamera->queuedBlendFlags = 0;
         }
         view = Camera_GetCurrent();
-        if (CAMCONTROL_NORMALIZED_MAX == CAMCONTROL_CAMERA->blendProgress)
-        {
-            CAMCONTROL_CAMERA->blendStartX = view->x;
-            CAMCONTROL_CAMERA->blendStartY = view->y;
-            CAMCONTROL_CAMERA->blendStartZ = view->z;
-            CAMCONTROL_CAMERA->blendStartYaw = view->yaw;
-            CAMCONTROL_CAMERA->blendStartPitch = view->pitch;
-            CAMCONTROL_CAMERA->blendStartRoll = view->roll;
-            CAMCONTROL_CAMERA->blendStartFovY = Camera_GetFovY();
-        }
-        else
-        {
-            CAMCONTROL_CAMERA->yaw = view->yaw;
-            CAMCONTROL_CAMERA->pitch = view->pitch;
-            CAMCONTROL_CAMERA->roll = view->roll;
-            CAMCONTROL_CAMERA->fovY = Camera_GetFovY();
+        if (1.0f == gCamcontrolCamera->blendProgress) {
+            gCamcontrolCamera->blendStartX = view->x;
+            gCamcontrolCamera->blendStartY = view->y;
+            gCamcontrolCamera->blendStartZ = view->z;
+            gCamcontrolCamera->blendStartYaw = view->yaw;
+            gCamcontrolCamera->blendStartPitch = view->pitch;
+            gCamcontrolCamera->blendStartRoll = view->roll;
+            gCamcontrolCamera->blendStartFovY = Camera_GetFovY();
+        } else {
+            gCamcontrolCamera->yaw = view->yaw;
+            gCamcontrolCamera->pitch = view->pitch;
+            gCamcontrolCamera->roll = view->roll;
+            gCamcontrolCamera->fovY = Camera_GetFovY();
         }
         gCamcontrolSavedActionId = gCamcontrolActiveActionId;
         gCamcontrolSavedActionPriority = gCamcontrolActiveActionPriority;
         gCamcontrolSavedActionStartFlags = gCamcontrolActiveActionStartFlags;
         camcontrol_activateHandler((u16)gCamcontrolQueuedActionId, gCamcontrolQueuedActionData);
         gCamcontrolQueuedActionPending = '\0';
-        if (gCamcontrolQueuedActionData != NULL)
-        {
+        if (gCamcontrolQueuedActionData != NULL) {
             mm_free(gCamcontrolQueuedActionData);
             gCamcontrolQueuedActionData = NULL;
         }
     }
 }
 
-void Camera_applyTargetFlags(int targetFlagMode)
-{
-    CAMCONTROL_CAMERA->targetFlags = (u8)(CAMCONTROL_CAMERA->targetFlags | ((targetFlagMode << 3) & 0x18));
+void Camera_applyTargetFlags(int targetFlagMode) {
+    gCamcontrolCamera->targetFlags = (u8)(gCamcontrolCamera->targetFlags | ((targetFlagMode << 3) & 0x18));
 }
 
-void Camera_setTargetFlag2(int enable)
-{
-    if (enable != 0)
-    {
-        CAMCONTROL_CAMERA->targetFlags = (u8)(CAMCONTROL_CAMERA->targetFlags | 2);
-    }
-    else
-    {
-        CAMCONTROL_CAMERA->targetFlags = (u8)(CAMCONTROL_CAMERA->targetFlags & ~2);
+void Camera_setTargetFlag2(int enable) {
+    if (enable != 0) {
+        gCamcontrolCamera->targetFlags = (u8)(gCamcontrolCamera->targetFlags | 2);
+    } else {
+        gCamcontrolCamera->targetFlags = (u8)(gCamcontrolCamera->targetFlags & ~2);
     }
 }
 
-void Camera_applyFrameFlags(int flags)
-{
-    CAMCONTROL_CAMERA->frameFlags = (u8)(CAMCONTROL_CAMERA->frameFlags | flags);
+void Camera_applyFrameFlags(int flags) {
+    gCamcontrolCamera->frameFlags = (u8)(gCamcontrolCamera->frameFlags | flags);
 }
 
-void Camera_setLetterbox(int yOffset, int applyNow)
-{
-    if (yOffset > CAMCONTROL_CAMERA->letterboxTargetOffset)
-    {
-        CAMCONTROL_CAMERA->letterboxTargetOffset = yOffset;
-        CAMCONTROL_CAMERA->letterboxStep = 2;
-        if (applyNow != 0)
-        {
+void Camera_setLetterbox(int yOffset, int applyNow) {
+    if (yOffset > gCamcontrolCamera->letterboxTargetOffset) {
+        gCamcontrolCamera->letterboxTargetOffset = yOffset;
+        gCamcontrolCamera->letterboxStep = 2;
+        if (applyNow != 0) {
             Camera_SetViewportYOffset((s16)yOffset);
         }
     }
 }
 
-void Camera_minimapShowHelpTextForTarget(int renderArg2, int renderArg3, int renderArg4, int renderArg5)
-{
-    if (isFrontEndUiActive() == 0)
-    {
+void Camera_minimapShowHelpTextForTarget(int renderArg2, int renderArg3, int renderArg4, int renderArg5) {
+    if (isFrontEndUiActive() == 0) {
         gCamcontrolTargetHelpTextId = CAMCONTROL_HELP_TEXT_NONE;
-        camcontrol_updateTargetReticle((CamcontrolTargetObject*)CAMCONTROL_CAMERA->targetReticleFocus,
-                                       gCamcontrolActiveActionId == 0x49, renderArg2, renderArg3, renderArg4, renderArg5);
-        CAMCONTROL_CAMERA->targetReticleOverride = 0;
+        camcontrol_updateTargetReticle(gCamcontrolCamera->targetReticleFocus, gCamcontrolActiveActionId == 0x49,
+                                       renderArg2, renderArg3, renderArg4, renderArg5);
+        gCamcontrolCamera->targetReticleOverride = NULL;
     }
 }
 
-void camcontrol_setAButtonIconForTarget(void)
-{
-    CamcontrolTargetObject* target = (CamcontrolTargetObject*)CAMCONTROL_CAMERA->currentTarget;
+void camcontrol_setAButtonIconForTarget(void) {
+    GameObject* target = gCamcontrolCamera->currentTarget;
     int kind;
 
-    if (isFrontEndUiActive() != 0)
+    if (isFrontEndUiActive() != 0) {
         return;
-    if (target == NULL)
+    }
+    if (target == NULL) {
         return;
+    }
 
-    kind = target->targetSetup[target->targetSetupIndex].targetKind & CAMCONTROL_TARGET_KIND_MASK;
-    if (kind == CAMCONTROL_TARGET_KIND_TALK_ICON)
-    {
-        if (target->classId == 6)
-        {
-            setAButtonIcon(CAMCONTROL_A_BUTTON_ICON_TALK_NPC);
+    kind = target->anim.hitVolumeBounds[target->hitVolumeIndex].flags & CAMCONTROL_TARGET_KIND_MASK;
+    if (kind == CAMCONTROL_TARGET_KIND_TALK_ICON) {
+        if (target->anim.classId == 6) {
+            setAButtonIcon(A_BUTTON_ICON_TALK_NPC);
+        } else {
+            setAButtonIcon(A_BUTTON_ICON_TALK_OBJECT);
         }
-        else
-        {
-            setAButtonIcon(CAMCONTROL_A_BUTTON_ICON_TALK_OBJECT);
-        }
-    }
-    else if (kind == CAMCONTROL_TARGET_KIND_A_BUTTON_HINT)
-    {
-        setAButtonIcon(CAMCONTROL_A_BUTTON_ICON_HINT);
-    }
-    else if (kind == CAMCONTROL_TARGET_KIND_CONTEXT_B_ICON)
-    {
-        setAButtonIcon(CAMCONTROL_A_BUTTON_ICON_CONTEXT_B);
+    } else if (kind == CAMCONTROL_TARGET_KIND_A_BUTTON_HINT) {
+        setAButtonIcon(A_BUTTON_ICON_HINT);
+    } else if (kind == CAMCONTROL_TARGET_KIND_CONTEXT_B_ICON) {
+        setAButtonIcon(A_BUTTON_ICON_CONTEXT_B);
     }
 }
 
-static inline u32 camcontrol_GetTargetKind(CamcontrolTargetObject* target)
-{
-    return target->targetSetup[target->targetSetupIndex].targetKind & CAMCONTROL_TARGET_KIND_MASK;
+static inline u32 camcontrol_getTargetKind(GameObject* target) {
+    return target->anim.hitVolumeBounds[target->hitVolumeIndex].flags & CAMCONTROL_TARGET_KIND_MASK;
 }
 
-void camcontrol_updateTargetFeedback(void)
-{
+void camcontrol_updateTargetFeedback(void) {
     u32 targetKind;
     s16 objType;
     f32 alphaScale;
-    CamcontrolTargetObject* target;
+    GameObject* target;
     ObjAnimComponent* reticle;
     u8 buttonPressed;
     int result;
@@ -1004,139 +945,98 @@ void camcontrol_updateTargetFeedback(void)
     u32 buttonMask;
     f32 targetDistance;
 
-    target = (CamcontrolTargetObject*)CAMCONTROL_CAMERA->currentTarget;
+    target = gCamcontrolCamera->currentTarget;
     reticle = &gCamcontrolTargetReticle->anim;
     buttonPressed = false;
-    if (reticle == NULL)
-    {
+    if (reticle == NULL) {
         return;
     }
     result = isFrontEndUiActive();
-    switch (result)
-    {
+    switch (result) {
     case 0:
-        if ((gCamcontrolTargetChanged != '\0') && (gCamcontrolTargetChanged = '\0', target != NULL))
-        {
-            targetKind = CAMCONTROL_CAMERA->targetKind;
-            if (targetKind == CAMCONTROL_TARGET_KIND_LOCKON)
-            {
+        if ((gCamcontrolTargetChanged != '\0') && (gCamcontrolTargetChanged = '\0', target != NULL)) {
+            targetKind = gCamcontrolCamera->targetKind;
+            if (targetKind == CAMCONTROL_TARGET_KIND_LOCKON) {
                 Sfx_PlayFromObject(0, SFXTRIG_headcam_out);
-                objShowButtonGlow(reticle, CAMCONTROL_NORMALIZED_MAX, 2);
-            }
-            else if ((targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_A) ||
-                     (targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_B))
-            {
+                objShowButtonGlow(reticle, 1.0f, 2);
+            } else if ((targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_A) ||
+                       (targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_B)) {
                 Sfx_PlayFromObject(0, SFXTRIG_lockon2_on);
-                objShowButtonGlow(reticle, CAMCONTROL_NORMALIZED_MAX, 3);
-            }
-            else if (targetKind != CAMCONTROL_TARGET_KIND_SUPPRESSED)
-            {
+                objShowButtonGlow(reticle, 1.0f, 3);
+            } else if (targetKind != CAMCONTROL_TARGET_KIND_SUPPRESSED) {
                 Sfx_PlayFromObject(0, SFXTRIG_sc_scabshortish32);
-                objShowButtonGlow(reticle, CAMCONTROL_NORMALIZED_MAX, 1);
+                objShowButtonGlow(reticle, 1.0f, 1);
             }
         }
-        if (target != NULL)
-        {
-            target->targetFlags = target->targetFlags | CAMCONTROL_TARGET_FLAG_RETICLE_TOUCHING;
+        if (target != NULL) {
+            target->anim.resetHitboxFlags = target->anim.resetHitboxFlags | INTERACT_FLAG_IN_RANGE;
             buttons = getButtonsJustPressed(0);
-            buttonMask = CAMCONTROL_TARGET_BUTTON_PRIMARY;
-            targetKind = camcontrol_GetTargetKind(target);
-            if ((targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_A) || (targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_B))
-            {
-                buttonMask = CAMCONTROL_TARGET_BUTTON_CONTEXT;
+            buttonMask = PAD_BUTTON_A;
+            targetKind = camcontrol_getTargetKind(target);
+            if ((targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_A) || (targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_B)) {
+                buttonMask = (PAD_BUTTON_A | PAD_BUTTON_Y);
             }
-            if ((buttons & buttonMask) != 0)
-            {
+            if ((buttons & buttonMask) != 0) {
                 buttonPressed = true;
             }
-            if ((target->targetFlags & CAMCONTROL_TARGET_FLAG_ACCEPTS_INPUT) == 0)
-            {
-                if (buttonPressed)
-                {
-                    target->targetFlags = target->targetFlags | CAMCONTROL_TARGET_FLAG_INPUT_PRESSED;
+            if ((target->anim.resetHitboxFlags & INTERACT_FLAG_PROMPT_SUPPRESSED) == 0) {
+                if (buttonPressed) {
+                    target->anim.resetHitboxFlags = target->anim.resetHitboxFlags | INTERACT_FLAG_ACTIVATED;
                 }
-            }
-            else if ((buttonPressed) && (result = isTalkingToNpc(), result == 0))
-            {
+            } else if ((buttonPressed) && (result = isTalkingToNpc(), result == 0)) {
                 Sfx_PlayFromObject(0, SFXTRIG_sc_clock_timesup);
             }
         }
-        if (gCamcontrolTargetState == '\0')
-        {
-            if (reticle->currentMoveProgress <= CAMCONTROL_NORMALIZED_MIN)
-            {
-                if (target != NULL)
-                {
-                    CAMCONTROL_CAMERA->targetReticleFocus = (int)target;
-                    CAMCONTROL_CAMERA->targetKind = camcontrol_GetTargetKind(target);
+        if (gCamcontrolTargetState == '\0') {
+            if (reticle->currentMoveProgress <= 0.0f) {
+                if (target != NULL) {
+                    gCamcontrolCamera->targetReticleFocus = target;
+                    gCamcontrolCamera->targetKind = camcontrol_getTargetKind(target);
                     gCamcontrolTargetState = CAMCONTROL_TARGET_RETICLE_STATE_ACTIVE;
                     gCamcontrolTargetChanged = true;
+                } else {
+                    gCamcontrolCamera->targetReticleFocus = NULL;
                 }
-                else
-                {
-                    CAMCONTROL_CAMERA->targetReticleFocus = 0;
-                }
+            } else {
+                ObjAnim_AdvanceCurrentMove((int)reticle, -0.04f, timeDelta, NULL);
             }
-            else
-            {
-                ObjAnim_AdvanceCurrentMove((int)reticle, CAMCONTROL_RETICLE_FADE_OUT_STEP,
-                                                                            timeDelta, NULL);
-            }
-        }
-        else if (((u32)CAMCONTROL_CAMERA->targetReticleFocus != (u32)target) &&
-                 (reticle->currentMoveProgress >= CAMCONTROL_NORMALIZED_MAX))
-        {
+        } else if (((u32)gCamcontrolCamera->targetReticleFocus != (u32)target) &&
+                   (reticle->currentMoveProgress >= 1.0f)) {
             gCamcontrolTargetState = CAMCONTROL_TARGET_RETICLE_STATE_INACTIVE;
-            if (target != NULL)
-            {
-                ObjAnim_SetMoveProgress((ObjAnimComponent*)reticle, CAMCONTROL_NORMALIZED_MIN);
+            if (target != NULL) {
+                ObjAnim_SetMoveProgress(reticle, 0.0f);
             }
-            if (target == NULL)
-            {
-                targetKind = CAMCONTROL_CAMERA->targetKind;
-                if (targetKind == CAMCONTROL_TARGET_KIND_LOCKON)
-                {
+            if (target == NULL) {
+                targetKind = gCamcontrolCamera->targetKind;
+                if (targetKind == CAMCONTROL_TARGET_KIND_LOCKON) {
                     Sfx_PlayFromObject(0, SFXTRIG_strafe_active);
-                }
-                else if ((targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_A) ||
-                         (targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_B))
-                {
+                } else if ((targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_A) ||
+                           (targetKind == CAMCONTROL_TARGET_KIND_CONTEXT_B)) {
                     Sfx_PlayFromObject(0, SFXTRIG_lockon2_off);
-                }
-                else if (targetKind != CAMCONTROL_TARGET_KIND_SUPPRESSED)
-                {
+                } else if (targetKind != CAMCONTROL_TARGET_KIND_SUPPRESSED) {
                     Sfx_PlayFromObject(0, SFXTRIG_sc_gemrun1022);
                 }
             }
+        } else {
+            ObjAnim_AdvanceCurrentMove((int)reticle, 0.04f, timeDelta, NULL);
         }
-        else
-        {
-            ObjAnim_AdvanceCurrentMove((int)reticle, CAMCONTROL_RETICLE_FADE_IN_STEP,
-                                                                        timeDelta, NULL);
-        }
-        result = Obj_IsObjectAlive((GameObject*)CAMCONTROL_CAMERA->targetReticleFocus);
-        if (result == 0)
-        {
-            CAMCONTROL_CAMERA->targetReticleFocus = 0;
+        result = Obj_IsObjectAlive(gCamcontrolCamera->targetReticleFocus);
+        if (result == 0) {
+            gCamcontrolCamera->targetReticleFocus = NULL;
         }
         if ((gCamcontrolTargetState == CAMCONTROL_TARGET_RETICLE_STATE_ACTIVE) &&
-            ((u32)CAMCONTROL_CAMERA->targetReticleFocus != 0))
-        {
-            target = (CamcontrolTargetObject*)CAMCONTROL_CAMERA->targetReticleFocus;
-            if ((target->targetFlags & CAMCONTROL_TARGET_FLAG_ACCEPTS_INPUT) != 0)
-            {
-                CAMCONTROL_CAMERA->targetFlags =
-                    CAMCONTROL_CAMERA->targetFlags | CAMCONTROL_CAMERA_TARGET_FLAG_ACCEPTS_INPUT;
+            ((u32)gCamcontrolCamera->targetReticleFocus != 0)) {
+            target = gCamcontrolCamera->targetReticleFocus;
+            if ((target->anim.resetHitboxFlags & INTERACT_FLAG_PROMPT_SUPPRESSED) != 0) {
+                gCamcontrolCamera->targetFlags =
+                    gCamcontrolCamera->targetFlags | CAMCONTROL_CAMERA_TARGET_FLAG_PROMPT_SUPPRESSED;
+            } else {
+                gCamcontrolCamera->targetFlags =
+                    gCamcontrolCamera->targetFlags & ~CAMCONTROL_CAMERA_TARGET_FLAG_PROMPT_SUPPRESSED;
             }
-            else
-            {
-                CAMCONTROL_CAMERA->targetFlags =
-                    CAMCONTROL_CAMERA->targetFlags & ~CAMCONTROL_CAMERA_TARGET_FLAG_ACCEPTS_INPUT;
-            }
-            target = (CamcontrolTargetObject*)CAMCONTROL_CAMERA->targetReticleFocus;
-            objType = target->objType;
-            switch (objType)
-            {
+            target = gCamcontrolCamera->targetReticleFocus;
+            objType = target->anim.romDefNo;
+            switch (objType) {
             case 0x11:
             case 0xd8:
             case 0x13a:
@@ -1164,172 +1064,135 @@ void camcontrol_updateTargetFeedback(void)
             case 0x842:
             case 0x84b:
             case 0x851:
-                targetDistance = enemy_getHealthFraction((GameObject*)target);
+                targetDistance = enemy_getHealthFraction(target);
                 break;
             case 0x3de:
             case 0x49f:
-                targetDistance = LargeCrate_getReticleDistance((GameObject*)target);
+                targetDistance = LargeCrate_getReticleDistance(target);
                 break;
             case 0x31:
-                targetDistance = CAMCONTROL_NORMALIZED_MAX;
+                targetDistance = 1.0f;
                 break;
             default:
-                result = dll_19_isBaddieControlObject((GameObject*)target);
-                if (result != 0)
-                {
-                    targetDistance = (*gBaddieControlInterface)->getHealthFraction((GameObject*)target);
-                }
-                else
-                {
-                    targetDistance = CAMCONTROL_NORMALIZED_MAX;
+                result = dll_19_isBaddieControlObject(target);
+                if (result != 0) {
+                    targetDistance = (*gBaddieControlInterface)->getHealthFraction(target);
+                } else {
+                    targetDistance = 1.0f;
                 }
                 break;
             }
-            if (targetDistance <= CAMCONTROL_NORMALIZED_MIN &&
-                CAMCONTROL_CAMERA->targetDistance > CAMCONTROL_NORMALIZED_MIN)
-            {
-                objShowButtonGlow(reticle, CAMCONTROL_NORMALIZED_MAX, 4);
+            if (targetDistance <= 0.0f && gCamcontrolCamera->targetDistance > 0.0f) {
+                objShowButtonGlow(reticle, 1.0f, 4);
+            } else if (targetDistance <= 0.25f && gCamcontrolCamera->targetDistance > 0.25f) {
+                objShowButtonGlow(reticle, 1.0f, 4);
+            } else if (targetDistance <= 0.5f && gCamcontrolCamera->targetDistance > 0.5f) {
+                objShowButtonGlow(reticle, 1.0f, 4);
+            } else if (targetDistance <= 0.75f && gCamcontrolCamera->targetDistance > 0.75f) {
+                objShowButtonGlow(reticle, 1.0f, 4);
             }
-            else if (targetDistance <= CAMCONTROL_TARGET_DISTANCE_TIER1 &&
-                     CAMCONTROL_CAMERA->targetDistance > CAMCONTROL_TARGET_DISTANCE_TIER1)
-            {
-                objShowButtonGlow(reticle, CAMCONTROL_NORMALIZED_MAX, 4);
-            }
-            else if (targetDistance <= CAMCONTROL_TARGET_DISTANCE_TIER2 &&
-                     CAMCONTROL_CAMERA->targetDistance > CAMCONTROL_TARGET_DISTANCE_TIER2)
-            {
-                objShowButtonGlow(reticle, CAMCONTROL_NORMALIZED_MAX, 4);
-            }
-            else if (targetDistance <= CAMCONTROL_TARGET_DISTANCE_TIER3 &&
-                     CAMCONTROL_CAMERA->targetDistance > CAMCONTROL_TARGET_DISTANCE_TIER3)
-            {
-                objShowButtonGlow(reticle, CAMCONTROL_NORMALIZED_MAX, 4);
-            }
-            CAMCONTROL_CAMERA->targetDistance = targetDistance;
+            gCamcontrolCamera->targetDistance = targetDistance;
         }
-        alphaScale = CAMCONTROL_RETICLE_ALPHA_SCALE * reticle->currentMoveProgress;
-        alphaScale = (alphaScale < CAMCONTROL_NORMALIZED_MIN)
-                         ? CAMCONTROL_NORMALIZED_MIN
-                         : ((alphaScale > CAMCONTROL_RETICLE_ALPHA_SCALE) ? CAMCONTROL_RETICLE_ALPHA_SCALE : alphaScale);
+        alphaScale = 255.0f * reticle->currentMoveProgress;
+        alphaScale = (alphaScale < 0.0f) ? 0.0f : ((alphaScale > 255.0f) ? 255.0f : alphaScale);
         reticle->alpha = alphaScale;
         gCamcontrolReticleSpin = CAMCONTROL_RETICLE_SPIN_STEP;
-        *(s16*)&reticle->rotX = (CAMCONTROL_RETICLE_SPIN_STEP_PER_FRAME * timeDelta + (float)reticle->rotX);
+        reticle->rotX = (s16)(1024.0f * timeDelta + (float)reticle->rotX);
         break;
     }
 }
 
-int Camera_isZooming(void)
-{
-    return CAMCONTROL_CAMERA->blendProgress > CAMCONTROL_NORMALIZED_MIN;
+int Camera_isZooming(void) {
+    return gCamcontrolCamera->blendProgress > 0.0f;
 }
 
-void Camera_setTargetReticleOverride(int target)
-{
-    CAMCONTROL_CAMERA->targetReticleOverride = target;
+void Camera_setTargetReticleOverride(int target) {
+    gCamcontrolCamera->targetReticleOverride = (GameObject*)target;
 }
 
-void Camera_setTarget(int target)
-{
-    CAMCONTROL_CAMERA->overrideTarget = target;
-    CAMCONTROL_CAMERA->currentTarget = target;
+void Camera_setTarget(int target) {
+    gCamcontrolCamera->overrideTarget = (GameObject*)target;
+    gCamcontrolCamera->currentTarget = (GameObject*)target;
 }
 
-int Camera_getTarget(void)
-{
-    return CAMCONTROL_CAMERA->currentTarget;
+int Camera_getTarget(void) {
+    return (int)gCamcontrolCamera->currentTarget;
 }
 
-int Camera_getOverrideTarget(void)
-{
-    return CAMCONTROL_CAMERA->overrideTarget;
+int Camera_getOverrideTarget(void) {
+    return (int)gCamcontrolCamera->overrideTarget;
 }
 
 void camcontrol_getRelativePosition(void* targetObj, f32* outX, f32* outY, f32* outZ, f32* outDistanceXZ,
-                                    f32 heightOffset, int useLocalPosition)
-{
+                                    f32 heightOffset, int useLocalPosition) {
     ObjAnimComponent* focusObj;
     ObjAnimComponent* target;
 
-    focusObj = CAMCONTROL_CAMERA->focusObj;
+    focusObj = gCamcontrolCamera->focusObj;
     target = targetObj;
-    if (useLocalPosition != 0)
-    {
+    if (useLocalPosition != 0) {
         *outX = target->localPosX - focusObj->localPosX;
         *outY = target->localPosY - (focusObj->localPosY + heightOffset);
         *outZ = target->localPosZ - focusObj->localPosZ;
-    }
-    else
-    {
+    } else {
         *outX = target->worldPosX - focusObj->worldPosX;
         *outY = target->worldPosY - (focusObj->worldPosY + heightOffset);
         *outZ = target->worldPosZ - focusObj->worldPosZ;
     }
-    if (outDistanceXZ != NULL)
-    {
+    if (outDistanceXZ != NULL) {
         *outDistanceXZ = *outX * *outX + *outZ * *outZ;
-        if (*outDistanceXZ > CAMCONTROL_NORMALIZED_MIN)
-        {
+        if (*outDistanceXZ > 0.0f) {
             *outDistanceXZ = sqrtf(*outDistanceXZ);
         }
-        if (*outDistanceXZ < CAMCONTROL_MIN_TARGET_DISTANCE)
-        {
-            *outDistanceXZ = CAMCONTROL_MIN_TARGET_DISTANCE;
+        if (*outDistanceXZ < 5.0f) {
+            *outDistanceXZ = 5.0f;
         }
     }
     return;
 }
 
-void camcontrol_initialise(f32 numerator, f32* dst, f32 denominator, f32 minValue, f32 y, f32 z)
-{
+void camcontrol_initialise(f32 numerator, f32* dst, f32 denominator, f32 minValue, f32 y, f32 z) {
     f32 ratio;
 
     ratio = numerator / denominator;
-    if (ratio < minValue)
-    {
+    if (ratio < minValue) {
         ratio = minValue;
     }
     dst[0] = ratio;
     dst[1] = y;
-    dst[2] = CAMCONTROL_NORMALIZED_MIN;
+    dst[2] = 0.0f;
     dst[3] = z;
 }
 
-void Camera_moveBy(f32 x, f32 y, f32 z)
-{
-    CAMCONTROL_CAMERA->localX += x;
-    CAMCONTROL_CAMERA->localY += y;
-    CAMCONTROL_CAMERA->localZ += z;
+void Camera_moveBy(f32 x, f32 y, f32 z) {
+    gCamcontrolCamera->localX += x;
+    gCamcontrolCamera->localY += y;
+    gCamcontrolCamera->localZ += z;
 }
 
-void Camera_overridePos(f32 x, f32 y, f32 z)
-{
-    CAMCONTROL_CAMERA->overrideWorldPosPending = 1;
-    CAMCONTROL_CAMERA->overrideWorldX = x;
-    CAMCONTROL_CAMERA->overrideWorldY = y;
-    CAMCONTROL_CAMERA->overrideWorldZ = z;
+void Camera_overridePos(f32 x, f32 y, f32 z) {
+    gCamcontrolCamera->overrideWorldPosPending = 1;
+    gCamcontrolCamera->overrideWorldX = x;
+    gCamcontrolCamera->overrideWorldY = y;
+    gCamcontrolCamera->overrideWorldZ = z;
 }
 
-void Camera_setFocus(void* target, int flags)
-{
-    if (target == CAMCONTROL_CAMERA->focusObj)
-    {
+void Camera_setFocus(void* target, int flags) {
+    if (target == gCamcontrolCamera->focusObj) {
         return;
     }
-    CAMCONTROL_CAMERA->focusObj = target;
+    gCamcontrolCamera->focusObj = target;
 }
 
-static inline CamcontrolHandlerEntry* camcontrol_findDefaultHandler(void)
-{
+static inline CamcontrolHandlerEntry* camcontrol_findDefaultHandler(void) {
     int handlerCount;
     register CamcontrolHandlerEntry** handlerEntry;
     int handlerIndex;
 
     handlerIndex = 0;
     handlerEntry = gCamcontrolHandlerEntries;
-    for (handlerCount = gCamcontrolHandlerCount; 0 < handlerCount; handlerCount--)
-    {
-        if ((*handlerEntry)->actionId == CAMCONTROL_ACTION_DEFAULT)
-        {
+    for (handlerCount = gCamcontrolHandlerCount; 0 < handlerCount; handlerCount--) {
+        if ((*handlerEntry)->actionId == CAMCONTROL_ACTION_DEFAULT) {
             return gCamcontrolHandlerEntries[handlerIndex];
         }
         handlerEntry++;
@@ -1338,8 +1201,7 @@ static inline CamcontrolHandlerEntry* camcontrol_findDefaultHandler(void)
     return NULL;
 }
 
-void camcontrol_loadTriggeredCamAction(int triggerType, int actionNo, int triggerMode)
-{
+void camcontrol_loadTriggeredCamAction(int triggerType, int actionNo, int triggerMode) {
     CamcontrolHandlerEntry* defaultHandler;
     int blendFrames;
     CamcontrolTriggeredAction* camAction;
@@ -1347,37 +1209,30 @@ void camcontrol_loadTriggeredCamAction(int triggerType, int actionNo, int trigge
     CamcontrolQueuedActionParam triggerType1Param;
     CamcontrolQueuedActionParam triggerType2Param;
 
-    switch (triggerType)
-    {
+    switch (triggerType) {
     case CAMCONTROL_TRIGGER_KIND_LOAD_ACTION:
         break;
     case CAMCONTROL_TRIGGER_KIND_QUEUE_TYPE1:
         triggerType1Param.actionIndex = actionNo & CAMCONTROL_ACTION_INDEX_MASK;
         triggerType1Param.noBlendFlag = actionNo & CAMCONTROL_ACTION_FLAG_NO_BLEND;
-        CAMCONTROL_CAMERA->blendCurveMode = 1;
-        if (triggerType1Param.noBlendFlag != 0)
-        {
+        gCamcontrolCamera->blendCurveMode = 1;
+        if (triggerType1Param.noBlendFlag != 0) {
             blendFrames = 0;
-        }
-        else
-        {
+        } else {
             blendFrames = CAMCONTROL_DEFAULT_BLEND_FRAMES;
         }
-        Camera_setMode(CAMCONTROL_ACTION_TRIGGER_TYPE1, 1, 0, CAMCONTROL_QUEUED_ACTION_PARAM_SIZE, &triggerType1Param,
+        Camera_setMode(CAMCONTROL_ACTION_TRIGGER_TYPE1, 1, 0, sizeof(CamcontrolQueuedActionParam), &triggerType1Param,
                        blendFrames, CAMCONTROL_QUEUE_SENTINEL);
         return;
     case CAMCONTROL_TRIGGER_KIND_QUEUE_TYPE2:
         triggerType2Param.actionIndex = actionNo & CAMCONTROL_ACTION_INDEX_MASK;
         triggerType2Param.noBlendFlag = (u8)(actionNo & CAMCONTROL_ACTION_FLAG_NO_BLEND);
-        if (triggerType2Param.noBlendFlag != 0)
-        {
+        if (triggerType2Param.noBlendFlag != 0) {
             blendFrames = 0;
-        }
-        else
-        {
+        } else {
             blendFrames = CAMCONTROL_DEFAULT_BLEND_FRAMES;
         }
-        Camera_setMode(CAMCONTROL_ACTION_TRIGGER_TYPE2, 1, 0, CAMCONTROL_QUEUED_ACTION_PARAM_SIZE, &triggerType2Param,
+        Camera_setMode(CAMCONTROL_ACTION_TRIGGER_TYPE2, 1, 0, sizeof(CamcontrolQueuedActionParam), &triggerType2Param,
                        blendFrames, CAMCONTROL_QUEUE_SENTINEL);
         return;
     case CAMCONTROL_TRIGGER_KIND_DEFAULT_ACTION:
@@ -1389,23 +1244,18 @@ void camcontrol_loadTriggeredCamAction(int triggerType, int actionNo, int trigge
                        CAMCONTROL_QUEUE_SENTINEL);
         return;
     }
-    if (actionNo != CAMCONTROL_ACTION_NO_NONE)
-    {
-        if (actionNo == CAMCONTROL_ACTION_NO_NONE)
-        {
+    if (actionNo != CAMCONTROL_ACTION_NO_NONE) {
+        if (actionNo == CAMCONTROL_ACTION_NO_NONE) {
             camAction = NULL;
-        }
-        else
-        {
-            camAction = (CamcontrolTriggeredAction*)mmAlloc(CAMCONTROL_ACTION_RECORD_SIZE, CAMCONTROL_ACTION_HEAP, 0);
-            if (camAction != NULL)
-            {
-                actionOffset = (actionNo - 1) * CAMCONTROL_ACTION_RECORD_SIZE;
-                getTabEntry(camAction, CAMCONTROL_ACTION_FILE_ID, actionOffset, CAMCONTROL_ACTION_RECORD_SIZE);
+        } else {
+            camAction =
+                (CamcontrolTriggeredAction*)mmAlloc(sizeof(CamcontrolTriggeredAction), CAMCONTROL_ACTION_HEAP, 0);
+            if (camAction != NULL) {
+                actionOffset = (actionNo - 1) * sizeof(CamcontrolTriggeredAction);
+                getTabEntry(camAction, MLDF_FILEID_CAMACTIO_BIN, actionOffset, sizeof(CamcontrolTriggeredAction));
             }
         }
-        if (camAction == NULL)
-        {
+        if (camAction == NULL) {
             return;
         }
         camAction->triggerMode = triggerMode;
@@ -1413,39 +1263,30 @@ void camcontrol_loadTriggeredCamAction(int triggerType, int actionNo, int trigge
         if (((((int)gCamcontrolActiveActionId != CAMCONTROL_ACTION_DEFAULT) &&
               ((int)gCamcontrolActiveActionId != CAMCONTROL_ACTION_TRIGGERED)) &&
              ((int)gCamcontrolActiveActionId != CAMCONTROL_ACTION_TRIGGER_TYPE1)) &&
-            ((int)gCamcontrolActiveActionId != CAMCONTROL_ACTION_TRIGGER_TYPE2))
-        {
+            ((int)gCamcontrolActiveActionId != CAMCONTROL_ACTION_TRIGGER_TYPE2)) {
             defaultHandler = camcontrol_findDefaultHandler();
-            defaultHandler->handler->vtable->actionCallback(camAction, CAMCONTROL_ACTION_RECORD_SIZE);
-        }
-        else
-        {
-            switch (camAction->actionKind)
-            {
+            defaultHandler->handler->vtable->actionCallback(camAction, sizeof(CamcontrolTriggeredAction));
+        } else {
+            switch (camAction->actionKind) {
             case CAMCONTROL_TRIGGERED_ACTION_KIND_DEFAULT:
             default:
-                Camera_setMode(CAMCONTROL_ACTION_DEFAULT, 0, 2, CAMCONTROL_ACTION_RECORD_SIZE, camAction, 0,
+                Camera_setMode(CAMCONTROL_ACTION_DEFAULT, 0, 2, sizeof(CamcontrolTriggeredAction), camAction, 0,
                                CAMCONTROL_QUEUE_SENTINEL);
                 break;
             case CAMCONTROL_TRIGGERED_ACTION_KIND_TRIGGERED:
-                Camera_setMode(CAMCONTROL_ACTION_TRIGGERED, 1, 2, CAMCONTROL_ACTION_RECORD_SIZE, camAction, 0,
+                Camera_setMode(CAMCONTROL_ACTION_TRIGGERED, 1, 2, sizeof(CamcontrolTriggeredAction), camAction, 0,
                                CAMCONTROL_QUEUE_SENTINEL);
                 break;
             }
         }
         mm_free(camAction);
-    }
-    else
-    {
+    } else {
         OSReport(sCamcontrolTriggeredCamActionLoadWarning, actionNo);
-        camAction = (CamcontrolTriggeredAction*)mmAlloc(CAMCONTROL_ACTION_RECORD_SIZE, CAMCONTROL_ACTION_HEAP, 0);
-        if (camAction != NULL)
-        {
-            getTabEntry(camAction, CAMCONTROL_ACTION_FILE_ID, CAMCONTROL_FALLBACK_ACTION_FILE_OFFSET,
-                        CAMCONTROL_ACTION_RECORD_SIZE);
+        camAction = (CamcontrolTriggeredAction*)mmAlloc(sizeof(CamcontrolTriggeredAction), CAMCONTROL_ACTION_HEAP, 0);
+        if (camAction != NULL) {
+            getTabEntry(camAction, MLDF_FILEID_CAMACTIO_BIN, 0, sizeof(CamcontrolTriggeredAction));
         }
-        if (camAction == NULL)
-        {
+        if (camAction == NULL) {
             return;
         }
         camAction->triggerMode = triggerMode;
@@ -1453,22 +1294,18 @@ void camcontrol_loadTriggeredCamAction(int triggerType, int actionNo, int trigge
         if (((((int)gCamcontrolActiveActionId != CAMCONTROL_ACTION_DEFAULT) &&
               ((int)gCamcontrolActiveActionId != CAMCONTROL_ACTION_TRIGGERED)) &&
              ((int)gCamcontrolActiveActionId != CAMCONTROL_ACTION_TRIGGER_TYPE1)) &&
-            ((int)gCamcontrolActiveActionId != CAMCONTROL_ACTION_TRIGGER_TYPE2))
-        {
+            ((int)gCamcontrolActiveActionId != CAMCONTROL_ACTION_TRIGGER_TYPE2)) {
             defaultHandler = camcontrol_findDefaultHandler();
-            defaultHandler->handler->vtable->actionCallback(camAction, CAMCONTROL_ACTION_RECORD_SIZE);
-        }
-        else
-        {
-            switch (camAction->actionKind)
-            {
+            defaultHandler->handler->vtable->actionCallback(camAction, sizeof(CamcontrolTriggeredAction));
+        } else {
+            switch (camAction->actionKind) {
             case CAMCONTROL_TRIGGERED_ACTION_KIND_DEFAULT:
             default:
-                Camera_setMode(CAMCONTROL_ACTION_DEFAULT, 0, 2, CAMCONTROL_ACTION_RECORD_SIZE, camAction, 0,
+                Camera_setMode(CAMCONTROL_ACTION_DEFAULT, 0, 2, sizeof(CamcontrolTriggeredAction), camAction, 0,
                                CAMCONTROL_QUEUE_SENTINEL);
                 break;
             case CAMCONTROL_TRIGGERED_ACTION_KIND_TRIGGERED:
-                Camera_setMode(CAMCONTROL_ACTION_TRIGGERED, 1, 2, CAMCONTROL_ACTION_RECORD_SIZE, camAction, 0,
+                Camera_setMode(CAMCONTROL_ACTION_TRIGGERED, 1, 2, sizeof(CamcontrolTriggeredAction), camAction, 0,
                                CAMCONTROL_QUEUE_SENTINEL);
                 break;
             }
@@ -1478,69 +1315,55 @@ void camcontrol_loadTriggeredCamAction(int triggerType, int actionNo, int trigge
     return;
 }
 
-CamcontrolTriggeredAction* Camera_getCamActionsBinEntry(int actionNo)
-{
+CamcontrolTriggeredAction* Camera_getCamActionsBinEntry(int actionNo) {
     CamcontrolTriggeredAction* camAction;
 
-    if (actionNo == CAMCONTROL_ACTION_NO_NONE)
-    {
+    if (actionNo == CAMCONTROL_ACTION_NO_NONE) {
         return NULL;
     }
-    camAction = mmAlloc(CAMCONTROL_ACTION_RECORD_SIZE, CAMCONTROL_ACTION_HEAP, 0);
-    if (camAction != NULL)
-    {
-        getTabEntry(camAction, CAMCONTROL_ACTION_FILE_ID, (actionNo - 1) * CAMCONTROL_ACTION_RECORD_SIZE,
-                    CAMCONTROL_ACTION_RECORD_SIZE);
+    camAction = mmAlloc(sizeof(CamcontrolTriggeredAction), CAMCONTROL_ACTION_HEAP, 0);
+    if (camAction != NULL) {
+        getTabEntry(camAction, MLDF_FILEID_CAMACTIO_BIN, (actionNo - 1) * sizeof(CamcontrolTriggeredAction),
+                    sizeof(CamcontrolTriggeredAction));
     }
     return camAction;
 }
 
-void camcontrol_release(void* camAction, int recordSize)
-{
+void camcontrol_release(void* camAction, int recordSize) {
     CamcontrolHandlerEntry* currentHandler;
 
     currentHandler = gCamcontrolCurrentHandler;
-    if (currentHandler != NULL)
-    {
+    if (currentHandler != NULL) {
         currentHandler->handler->vtable->actionCallback(camAction, recordSize);
     }
 }
 
-void camcontrol_queueSavedAction(int blendFrames, u8 queueMode)
-{
-    if (gCamcontrolSavedActionId != CAMCONTROL_SAVED_ACTION_NONE)
-    {
+void camcontrol_queueSavedAction(int blendFrames, u8 queueMode) {
+    if (gCamcontrolSavedActionId != CAMCONTROL_SAVED_ACTION_NONE) {
         Camera_setMode(gCamcontrolSavedActionId, gCamcontrolSavedActionPriority, gCamcontrolSavedActionStartFlags, 0, 0,
                        blendFrames, queueMode);
     }
     return;
 }
 
-void Camera_setMode(s32 actionId, int priority, int startFlags, int dataSize, void* data, int blendFrames, u8 queueMode)
-{
-    if (gCamcontrolQueuedActionData != NULL)
-    {
+void Camera_setMode(s32 actionId, int priority, int startFlags, int dataSize, void* data, int blendFrames,
+                    u8 queueMode) {
+    if (gCamcontrolQueuedActionData != NULL) {
         mm_free(gCamcontrolQueuedActionData);
         gCamcontrolQueuedActionData = NULL;
         gCamcontrolQueuedActionPending = 0;
     }
     gCamcontrolQueuedActionId = actionId;
     gCamcontrolQueuedActionBlendFrames = blendFrames;
-    if (data != NULL)
-    {
+    if (data != NULL) {
         gCamcontrolQueuedActionData = mmAlloc(dataSize, CAMCONTROL_ACTION_HEAP, 0);
         memcpy(gCamcontrolQueuedActionData, data, dataSize);
-    }
-    else
-    {
+    } else {
         gCamcontrolQueuedActionData = NULL;
     }
-    if (actionId == CAMCONTROL_ACTION_DEFAULT)
-    {
+    if (actionId == CAMCONTROL_ACTION_DEFAULT) {
         gCamcontrolQueuedActionPriority = 0;
-    }
-    else
-    {
+    } else {
         gCamcontrolQueuedActionPriority = priority;
     }
     gCamcontrolQueuedActionStartFlags = startFlags;
@@ -1549,168 +1372,147 @@ void Camera_setMode(s32 actionId, int priority, int startFlags, int dataSize, vo
     return;
 }
 
-
-
-void* Camera_getDefaultHandlerEntry(void)
-{
+void* Camera_getDefaultHandlerEntry(void) {
     int i;
 
     i = 0;
-    for (; i < gCamcontrolHandlerCount; i++)
-    {
-        if (gCamcontrolHandlerEntries[i]->actionId == CAMCONTROL_ACTION_DEFAULT)
-        {
+    for (; i < gCamcontrolHandlerCount; i++) {
+        if (gCamcontrolHandlerEntries[i]->actionId == CAMCONTROL_ACTION_DEFAULT) {
             return gCamcontrolHandlerEntries[i];
         }
     }
     return NULL;
 }
 
-void* Camera_GetFollowPos(void)
-{
+void* Camera_getActiveHandler(void) {
     return gCamcontrolCurrentHandler;
 }
 
-int Camera_getMode(void)
-{
+int Camera_getMode(void) {
     return gCamcontrolActiveActionId;
 }
 
-void* Camera_get(void)
-{
-    return pCamera;
+void* Camera_get(void) {
+    return gCamcontrolCamera;
 }
 
-#define camera CAMCONTROL_CAMERA
-void Camera_update(u8 framesThisStep)
-{
+void Camera_update(u8 framesThisStep) {
     ObjAnimComponent* focus;
     u8 textActive;
-    CamcontrolTargetObject* target;
+    GameObject* target;
 
-    if (isFrontEndUiActive() != 0)
-    {
+    if (isFrontEndUiActive() != 0) {
         textActive = 1;
-    }
-    else
-    {
+    } else {
         textActive = 0;
     }
-    focus = camera->focusObj;
-    if (focus == NULL)
-    {
-        camera->currentTarget = 0;
-        camera->overrideTarget = 0;
-    }
-    else
-    {
+    focus = gCamcontrolCamera->focusObj;
+    if (focus == NULL) {
+        gCamcontrolCamera->currentTarget = NULL;
+        gCamcontrolCamera->overrideTarget = NULL;
+    } else {
         gCamcontrolSavedFocusLocalX = focus->localPosX;
         gCamcontrolSavedFocusLocalY = focus->localPosY;
         gCamcontrolSavedFocusLocalZ = focus->localPosZ;
         gCamcontrolSavedFocusWorldX = focus->worldPosX;
         gCamcontrolSavedFocusWorldY = focus->worldPosY;
         gCamcontrolSavedFocusWorldZ = focus->worldPosZ;
-        camcontrol_updateMoveAverage(camera, focus);
-        if (camera->overrideWorldPosPending != 0)
-        {
-            focus->worldPosX = camera->overrideWorldX;
-            focus->worldPosY = camera->overrideWorldY;
-            focus->worldPosZ = camera->overrideWorldZ;
+        camcontrol_updateMoveAverage(gCamcontrolCamera, focus);
+        if (gCamcontrolCamera->overrideWorldPosPending != 0) {
+            focus->worldPosX = gCamcontrolCamera->overrideWorldX;
+            focus->worldPosY = gCamcontrolCamera->overrideWorldY;
+            focus->worldPosZ = gCamcontrolCamera->overrideWorldZ;
             Obj_TransformWorldPointToLocal(focus->worldPosX, focus->worldPosY, focus->worldPosZ, &focus->localPosX,
                                            &focus->localPosY, &focus->localPosZ, (GameObject*)focus->parent);
-            camera->overrideWorldPosPending = 0;
+            gCamcontrolCamera->overrideWorldPosPending = 0;
         }
-        if (camera->localFrameObj != focus->parent)
-        {
-            Obj_TransformLocalPointToWorld(camera->localX, camera->localY, camera->localZ, &camera->worldX,
-                                           &camera->worldY, &camera->worldZ, (GameObject*)camera->localFrameObj);
-            Obj_TransformLocalPointToWorld(camera->prevLocalX, camera->prevLocalY, camera->prevLocalZ,
-                                           &camera->prevWorldX, &camera->prevWorldY, &camera->prevWorldZ,
-                                           (GameObject*)camera->localFrameObj);
-            Obj_TransformWorldPointToLocal(camera->worldX, camera->worldY, camera->worldZ, &camera->localX,
-                                           &camera->localY, &camera->localZ, (GameObject*)focus->parent);
-            Obj_TransformWorldPointToLocal(camera->prevWorldX, camera->prevWorldY, camera->prevWorldZ,
-                                           &camera->prevLocalX, &camera->prevLocalY, &camera->prevLocalZ,
+        if (gCamcontrolCamera->localFrameObj != focus->parent) {
+            Obj_TransformLocalPointToWorld(gCamcontrolCamera->localX, gCamcontrolCamera->localY,
+                                           gCamcontrolCamera->localZ, &gCamcontrolCamera->worldX,
+                                           &gCamcontrolCamera->worldY, &gCamcontrolCamera->worldZ,
+                                           gCamcontrolCamera->localFrameObj);
+            Obj_TransformLocalPointToWorld(gCamcontrolCamera->prevLocalX, gCamcontrolCamera->prevLocalY,
+                                           gCamcontrolCamera->prevLocalZ, &gCamcontrolCamera->prevWorldX,
+                                           &gCamcontrolCamera->prevWorldY, &gCamcontrolCamera->prevWorldZ,
+                                           gCamcontrolCamera->localFrameObj);
+            Obj_TransformWorldPointToLocal(gCamcontrolCamera->worldX, gCamcontrolCamera->worldY,
+                                           gCamcontrolCamera->worldZ, &gCamcontrolCamera->localX,
+                                           &gCamcontrolCamera->localY, &gCamcontrolCamera->localZ,
                                            (GameObject*)focus->parent);
-            camera->localFrameObj = focus->parent;
+            Obj_TransformWorldPointToLocal(gCamcontrolCamera->prevWorldX, gCamcontrolCamera->prevWorldY,
+                                           gCamcontrolCamera->prevWorldZ, &gCamcontrolCamera->prevLocalX,
+                                           &gCamcontrolCamera->prevLocalY, &gCamcontrolCamera->prevLocalZ,
+                                           (GameObject*)focus->parent);
+            gCamcontrolCamera->localFrameObj = focus->parent;
         }
-        if (focus->parent != NULL)
-        {
+        if (focus->parent != NULL) {
             focus->rotX += ((ObjAnimComponent*)focus->parent)->rotX;
         }
         camcontrol_applyQueuedAction();
-        if (gCamcontrolCurrentHandler != 0)
-        {
-            gCamcontrolCurrentHandler->handler->vtable->update((void*)pCamera);
-            Obj_TransformLocalPointToWorld(camera->localX, camera->localY, camera->localZ, &camera->worldX,
-                                           &camera->worldY, &camera->worldZ, (GameObject*)camera->localFrameObj);
-            camcontrol_applyState(camera);
+        if (gCamcontrolCurrentHandler != 0) {
+            gCamcontrolCurrentHandler->handler->vtable->update(gCamcontrolCamera);
+            Obj_TransformLocalPointToWorld(gCamcontrolCamera->localX, gCamcontrolCamera->localY,
+                                           gCamcontrolCamera->localZ, &gCamcontrolCamera->worldX,
+                                           &gCamcontrolCamera->worldY, &gCamcontrolCamera->worldZ,
+                                           gCamcontrolCamera->localFrameObj);
+            camcontrol_applyState(gCamcontrolCamera);
         }
         camcontrol_applyQueuedAction();
-        if (textActive == 0)
-        {
-            if (camera->overrideTarget == 0u)
-            {
-                target = camcontrol_findBestTarget(camera, focus);
-                camera->currentTarget = (int)target;
-            }
-            else
-            {
-                camera->currentTarget = camera->overrideTarget;
+        if (textActive == 0) {
+            if (gCamcontrolCamera->overrideTarget == NULL) {
+                target = camcontrol_findBestTarget(gCamcontrolCamera, focus);
+                gCamcontrolCamera->currentTarget = target;
+            } else {
+                gCamcontrolCamera->currentTarget = gCamcontrolCamera->overrideTarget;
             }
         }
-        camera->prevLocalX = camera->localX;
-        camera->prevLocalY = camera->localY;
-        camera->prevLocalZ = camera->localZ;
-        camera->prevWorldX = camera->worldX;
-        camera->prevWorldY = camera->worldY;
-        camera->prevWorldZ = camera->worldZ;
-        camera->frameFlags = 0;
+        gCamcontrolCamera->prevLocalX = gCamcontrolCamera->localX;
+        gCamcontrolCamera->prevLocalY = gCamcontrolCamera->localY;
+        gCamcontrolCamera->prevLocalZ = gCamcontrolCamera->localZ;
+        gCamcontrolCamera->prevWorldX = gCamcontrolCamera->worldX;
+        gCamcontrolCamera->prevWorldY = gCamcontrolCamera->worldY;
+        gCamcontrolCamera->prevWorldZ = gCamcontrolCamera->worldZ;
+        gCamcontrolCamera->frameFlags = 0;
         focus->localPosX = gCamcontrolSavedFocusLocalX;
         focus->localPosY = gCamcontrolSavedFocusLocalY;
         focus->localPosZ = gCamcontrolSavedFocusLocalZ;
         focus->worldPosX = gCamcontrolSavedFocusWorldX;
         focus->worldPosY = gCamcontrolSavedFocusWorldY;
         focus->worldPosZ = gCamcontrolSavedFocusWorldZ;
-        if (focus->parent != NULL)
-        {
+        if (focus->parent != NULL) {
             focus->rotX -= ((ObjAnimComponent*)focus->parent)->rotX;
         }
     }
     return;
 }
-#undef camera
 
-void Camera_init(void* focus, f32 x, f32 y, f32 z)
-{
-    memset((void*)pCamera, 0, sizeof(CamcontrolCameraState));
-    CAMCONTROL_CAMERA->localX = x;
-    CAMCONTROL_CAMERA->localY = y;
-    CAMCONTROL_CAMERA->localZ = z;
-    CAMCONTROL_CAMERA->worldX = x;
-    CAMCONTROL_CAMERA->worldY = y;
-    CAMCONTROL_CAMERA->worldZ = z;
-    CAMCONTROL_CAMERA->prevLocalX = x;
-    CAMCONTROL_CAMERA->prevLocalY = y;
-    CAMCONTROL_CAMERA->prevLocalZ = z;
-    CAMCONTROL_CAMERA->prevWorldX = x;
-    CAMCONTROL_CAMERA->prevWorldY = y;
-    CAMCONTROL_CAMERA->prevWorldZ = z;
-    CAMCONTROL_CAMERA->focusObj = focus;
-    CAMCONTROL_CAMERA->fovY = CAMCONTROL_DEFAULT_FOV_Y;
+void Camera_init(void* focus, f32 x, f32 y, f32 z) {
+    memset(gCamcontrolCamera, 0, sizeof(CamcontrolCameraState));
+    gCamcontrolCamera->localX = x;
+    gCamcontrolCamera->localY = y;
+    gCamcontrolCamera->localZ = z;
+    gCamcontrolCamera->worldX = x;
+    gCamcontrolCamera->worldY = y;
+    gCamcontrolCamera->worldZ = z;
+    gCamcontrolCamera->prevLocalX = x;
+    gCamcontrolCamera->prevLocalY = y;
+    gCamcontrolCamera->prevLocalZ = z;
+    gCamcontrolCamera->prevWorldX = x;
+    gCamcontrolCamera->prevWorldY = y;
+    gCamcontrolCamera->prevWorldZ = z;
+    gCamcontrolCamera->focusObj = focus;
+    gCamcontrolCamera->fovY = 60.0f;
     gCamcontrolTargetState = CAMCONTROL_TARGET_RETICLE_STATE_INACTIVE;
 }
 
-void Camera_release(void)
-{
+void Camera_release(void) {
     voxmaps_resetLoadedMaps();
     lbl_803DD4CB = -1;
 }
 
-void Camera_initialise(void)
-{
-    pCamera = gCamcontrolStateStorage;
-    memset((void*)pCamera, 0, sizeof(CamcontrolCameraState));
+void Camera_initialise(void) {
+    gCamcontrolCamera = &gCamcontrolStateStorage.state;
+    memset(gCamcontrolCamera, 0, sizeof(CamcontrolCameraState));
     voxmaps_initialise();
     gCamcontrolActiveActionId = -1;
     gCamcontrolCurrentHandlerIndex = -1;
@@ -1719,6 +1521,5 @@ void Camera_initialise(void)
     lbl_803DD4CB = -1;
     gCamcontrolTargetClassMask = 0xffff;
 }
-
 
 char sCamcontrolTriggeredCamActionLoadWarning[] = "<camcontrol.c>  failed to load triggered camaction actionno %d\n";

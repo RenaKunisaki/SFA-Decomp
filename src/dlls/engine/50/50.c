@@ -3,6 +3,7 @@
 #include "dolphin/gx/GXGet.h"
 #include "main/textrender_api.h"
 #include "main/fileio.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "dlls/object_descriptor.h"
 
 f32 lbl_803DD5F4;
@@ -226,7 +227,7 @@ void TitleScreenInit_initialise(void)
     clearForceLoadImmediately();
     loadSunAndMoon();
     gameUiLoadResources();
-    lockIconInit();
+    camcontrol_initialiseTargetReticle();
     warpToMap(TITLESCREENINIT_MAP_WARP, 0);
 }
 

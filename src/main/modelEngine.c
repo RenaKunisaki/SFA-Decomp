@@ -319,6 +319,7 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -492,7 +493,7 @@ extern ResourceDescriptor lbl_80319598, lbl_803195E8, lbl_80319638, lbl_80319688
     lbl_80319768, lbl_803197B0;
 extern ResourceDescriptor lbl_803197F8, lbl_80319840, lbl_80319888, lbl_803198D8, lbl_80319920, lbl_80319968,
     lbl_803199B0, lbl_803199F8;
-extern ResourceDescriptor lbl_80319A40, lbl_80319A88, lbl_80319B58, lbl_80319B98, lbl_80319BC8, gCameraModeViewfinderDescriptor,
+extern ResourceDescriptor lbl_80319A40, lbl_80319B58, lbl_80319B98, lbl_80319BC8, gCameraModeViewfinderDescriptor,
     gCameraModeDebugDescriptor, gCameraModeStaticDescriptor;
 extern ResourceDescriptor gCameraModeTestStrengthDescriptor, gCameraModeCombatDescriptor, gCameraModeShipBattleDescriptor, gCameraModeClimbDescriptor, lbl_80319D78,
     gCameraModeNpcSpeakDescriptor,
@@ -1127,7 +1128,7 @@ void initGameTimer(void)
 
 ResourceDescriptor* gResourceDescriptors[] = {
     &lbl_8031C020,
-    &lbl_80319A88,
+    (ResourceDescriptor*)&gCamcontrolResourceDescriptor,
     &lbl_8030EE34,
     &lbl_803112E8,
     &lbl_80311378,

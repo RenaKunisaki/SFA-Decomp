@@ -24,7 +24,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
-#include "main/dll/dll_B8.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "string.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/dll/player_api.h"
