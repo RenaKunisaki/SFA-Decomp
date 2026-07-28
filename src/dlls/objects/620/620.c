@@ -110,6 +110,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
     f32 maxDist;
     int i;
     ObjPlacement* spawned;
+    GameObject* child;
     GameObject* nearest;
     f32 angVel;
     f32 clamped;
@@ -144,10 +145,10 @@ void DR_CageWith_hitDetect(GameObject* obj)
             spawned->posX = (obj)->anim.localPosX;
             spawned->posY = (obj)->anim.localPosY;
             spawned->posZ = (obj)->anim.localPosZ;
-            spawned = (ObjPlacement*)Obj_SetupObject(spawned, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
-            ((GameObject*)spawned)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-            ((GameObject*)spawned)->userData1 = 1;
-            state->spawnedObject = (GameObject*)spawned;
+            child = Obj_SetupObject(spawned, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+            child->anim.flags |= OBJANIM_FLAG_HIDDEN;
+            child->userData1 = 1;
+            state->spawnedObject = child;
             return;
         }
     }
