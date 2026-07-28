@@ -96,23 +96,23 @@ void AlphaAnimator_update(GameObject* obj) {
     }
     if (mode == ALPHA_ANIMATOR_MODE_GATED) {
         state->gameBitValue = mainGetBit(placement->triggerGameBit);
-        if ((s8)state->completedCycles > 2 && (s8)state->gameBitValue != (s8)state->previousGameBitValue) {
+        if (state->completedCycles > 2 && state->gameBitValue != state->previousGameBitValue) {
             if ((placement->modeFlags >> ALPHA_ANIMATOR_SFX_ENABLE_SHIFT) != 0) {
                 Sfx_PlayFromObject((u32)obj, placement->sfxId);
             }
             state->completedCycles = 0;
             state->previousGameBitValue = state->gameBitValue;
         }
-        if ((s8)state->completedCycles > 2) {
+        if (state->completedCycles > 2) {
             return;
         }
     } else {
-        if ((s8)state->completedCycles > 2) {
+        if (state->completedCycles > 2) {
             return;
         }
-        if ((s8)state->gameBitValue == 0) {
+        if (state->gameBitValue == 0) {
             state->gameBitValue = mainGetBit(placement->triggerGameBit);
-            if ((s8)state->gameBitValue == 0) {
+            if (state->gameBitValue == 0) {
                 return;
             }
             if ((placement->modeFlags >> ALPHA_ANIMATOR_SFX_ENABLE_SHIFT) != 0) {
@@ -158,7 +158,7 @@ void AlphaAnimator_update(GameObject* obj) {
         }
         break;
     case ALPHA_ANIMATOR_MODE_GATED:
-        if ((s8)state->gameBitValue != 0) {
+        if (state->gameBitValue != 0) {
             if (placement->startAlpha > placement->targetAlpha) {
                 state->alphaLevel = (s16)(state->alphaLevel - placement->rate * framesThisStep);
                 if (state->alphaLevel > placement->targetAlpha) {
@@ -223,7 +223,7 @@ void AlphaAnimator_update(GameObject* obj) {
 }
 
 void AlphaAnimator_init(GameObject* obj) {
-    *(s8*)&((AlphaAnimatorState*)obj->extra)->previousGameBitValue = -1;
+    ((AlphaAnimatorState*)obj->extra)->previousGameBitValue = -1;
 }
 
 void AlphaAnimator_release(void) {

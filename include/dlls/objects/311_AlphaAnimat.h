@@ -37,8 +37,8 @@ typedef struct AlphaAnimatorState {
     s16 alphaLevel;          /* 0x14 */
     u8 active;               /* 0x16 */
     s8 gameBitValue;         /* 0x17 */
-    u8 completedCycles;      /* 0x18 */
-    u8 previousGameBitValue; /* 0x19 */
+    s8 completedCycles;      /* 0x18 */
+    s8 previousGameBitValue; /* 0x19 */
     u8 pad1A[2];             /* 0x1A */
 } AlphaAnimatorState;
 
