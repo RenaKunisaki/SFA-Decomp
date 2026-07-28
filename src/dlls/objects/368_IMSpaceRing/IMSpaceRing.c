@@ -8,6 +8,8 @@
 
 #define IM_SPACE_RING_SPIN_AXIS(obj) ((obj)->userData1)
 
+GameObject* gIMSpaceRingLeader;
+
 int imSpaceRing_getExtraSize(void) {
     return 0;
 }

@@ -111,6 +111,7 @@ main/textrender_gettext.c:
 
 main/textrender_run.c:
 	.text       start:0x80019970 end:0x8001B7B8
+	.sbss       start:0x803DC968 end:0x803DC9F0
 
 main/textrender_subtitle.c:
 	.text       start:0x8001B7B8 end:0x8001BB78
@@ -2478,6 +2479,7 @@ dlls/objects/367_IMSpaceThru/IMSpaceThru.c:
 dlls/objects/368_IMSpaceRing/IMSpaceRing.c:
 	.text       start:0x801AE984 end:0x801AEAE4
 	.data       start:0x80323868 end:0x803238A0
+	.sbss       start:0x803DDB48 end:0x803DDB4C
 	.sdata2     start:0x803E47B8 end:0x803E47BC
 
 dlls/objects/369_IMSpaceRing/IMSpaceRing.c:
@@ -4829,6 +4831,7 @@ Runtime.PPCEABI.H/GCN_mem_alloc.c:
 	.text       start:0x802867BC end:0x8028685C
 	.rodata     start:0x802C2920 end:0x802C2938
 	.bss        start:0x803D6920 end:0x803D6920
+	.sbss       start:0x803DE3E8 end:0x803DE3EC
 
 dolphin/TRK_MINNOW_DOLPHIN/mainloop.c:
 	.text       start:0x8028685C end:0x80286954
@@ -4967,6 +4970,7 @@ dolphin/MSL_C/PPCEABI/bare/H/file_io.c:
 
 dolphin/MSL_C/PPCEABI/bare/H/FILE_POS.c:
 	.text       start:0x8028EE18 end:0x8028F0E4
+	.sbss       start:0x803DE408 end:0x803DE40C
 
 dolphin/MSL_C/PPCEABI/bare/H/mbstring.c:
 	.text       start:0x8028F0E4 end:0x8028F228

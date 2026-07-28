@@ -1,6 +1,8 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/ansi_files.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/errno.h"
 
+int errno;
+
 inline fpos_t _ftell(FILE* file) {
     int charsInUndoBuffer = 0;
     fpos_t position;

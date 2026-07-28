@@ -1,6 +1,6 @@
 #include "dolphin/os.h"
 
-extern int lbl_803DE3E8;  // lives in sbss outside this TU's range
+int lbl_803DE3E8;
 
 const double lbl_802C2920[3] = {
     0.0,
