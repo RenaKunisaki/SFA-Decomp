@@ -921,7 +921,7 @@ int dll_0B_func09(void* a0, int a1, int a2, u8 a3, void* a4)
                 dirZ = view->worldZ -
                        ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.worldPosZ;
                 dscale = sqrtf(dirX * dirX + dirZ * dirZ);
-                if (dscale != MODGFX_ZERO)
+                if (dscale)
                 {
                     dirX = dirX / dscale;
                     dirZ = dirZ / dscale;
