@@ -1530,7 +1530,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/434_SH_staffHaz/SH_staffHaz.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/435_SH_Beacon/SH_Beacon.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/436_SH_EmptyTum/SH_EmptyTum.c"),
-            Object(NonMatching, "dlls/objects/437/437.c"),
+            Object(MatchingFor("GSAE01"), "dlls/objects/437/437.c", mw_version="GC/1.3", cflags=[*cflags_dll_noopt, "-inline", "noauto"]),
             Object(MatchingFor("GSAE01"), "dlls/objects/438_SC_levelcon/SC_levelcon.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/439/439.c", cflags=cflags_dll_noopt_nocse_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/440_SC_totempol/SC_totempol.c", cflags=cflags_dll_noopt_noautoinline),

@@ -15,13 +15,7 @@
 #include "main/maketex_timer_api.h"
 #include "game/objects/object.h"
 #include "main/obj_group.h"
-#include "main/dll/SC/sc_shared.h"
-
-typedef struct SCTotemPoleVtable
-{
-    u8 pad00[SC_VT_HANDLE_EVENT];
-    void (*handleEvent)(int obj, int eventId);
-} SCTotemPoleVtable;
+#include "dlls/objects/440_SC_totempol.h"
 
 ObjectDescriptor gCrCloudRaceObjDescriptor = {
     0,
@@ -68,7 +62,7 @@ void crcloudrace_updateCompletionState(CrCloudRaceObject* obj, CrCloudRaceState*
             near = (GameObject*)ObjGroup_FindNearestObject(CRCLOUDRACE_NEARBY_TOTEM_GROUP, (GameObject*)obj, &dist);
             if (near != NULL)
             {
-                ((SCTotemPoleVtable*)*near->anim.dll)->handleEvent((int)near, 1);
+                ((ScTotemPoleInterfaceVTable*)*near->anim.dll)->handleEvent(near, 1);
             }
             state->phase = CRCLOUDRACE_PHASE_RESET_TO_START;
         }

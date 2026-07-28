@@ -17,7 +17,7 @@
 #include "main/objseq.h"
 #include "main/screen_transition.h"
 #include "main/dll/DB/DBrockfall.h"
-#include "main/dll/SC/sc_shared.h"
+#include "dlls/objects/440_SC_totempol.h"
 #include "main/dll/SC/sctotembond.h"
 #include "main/obj_list.h"
 #include "main/pad.h"
@@ -117,11 +117,13 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
             list = ObjList_GetObjects(&idx2, &cnt2);
             for (; idx2 < cnt2; idx2++)
             {
-                if ((GameObject*)list[idx2] != self && ((GameObject*)list[idx2])->anim.seqId == SC_SEQ_TOTEMPOLE)
+                if ((GameObject*)list[idx2] != self &&
+                    ((GameObject*)list[idx2])->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID)
                 {
                     totemObj = list[idx2];
                     ((void (*)(int, int)) *
-                     (void**)((char*)*((GameObject*)totemObj)->anim.dll + SC_VT_HANDLE_EVENT))(totemObj, 2);
+                     (void**)((char*)*((GameObject*)totemObj)->anim.dll +
+                              SC_TOTEM_POLE_HANDLE_EVENT_VTABLE_OFFSET))(totemObj, 2);
                     break;
                 }
             }
@@ -130,11 +132,13 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
             list = ObjList_GetObjects(&idx3, &cnt3);
             for (; idx3 < cnt3; idx3++)
             {
-                if ((GameObject*)list[idx3] != self && ((GameObject*)list[idx3])->anim.seqId == SC_SEQ_TOTEMPOLE)
+                if ((GameObject*)list[idx3] != self &&
+                    ((GameObject*)list[idx3])->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID)
                 {
                     totemObj = list[idx3];
                     ((void (*)(int, int)) *
-                     (void**)((char*)*((GameObject*)totemObj)->anim.dll + SC_VT_HANDLE_EVENT))(totemObj, 3);
+                     (void**)((char*)*((GameObject*)totemObj)->anim.dll +
+                              SC_TOTEM_POLE_HANDLE_EVENT_VTABLE_OFFSET))(totemObj, 3);
                     break;
                 }
             }
@@ -218,11 +222,13 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
                 list = ObjList_GetObjects(&idx4, &cnt4);
                 for (; idx4 < cnt4; idx4++)
                 {
-                    if ((GameObject*)list[idx4] != self && ((GameObject*)list[idx4])->anim.seqId == SC_SEQ_TOTEMPOLE)
+                    if ((GameObject*)list[idx4] != self &&
+                        ((GameObject*)list[idx4])->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID)
                     {
                         totemObj = list[idx4];
                         ((void (*)(int, int)) *
-                         (void**)((char*)*((GameObject*)totemObj)->anim.dll + SC_VT_HANDLE_EVENT))(totemObj, 4);
+                         (void**)((char*)*((GameObject*)totemObj)->anim.dll +
+                                  SC_TOTEM_POLE_HANDLE_EVENT_VTABLE_OFFSET))(totemObj, 4);
                         break;
                     }
                 }
@@ -244,11 +250,13 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
                 list = ObjList_GetObjects(&idx5, &cnt5);
                 for (; idx5 < cnt5; idx5++)
                 {
-                    if ((GameObject*)list[idx5] != self && ((GameObject*)list[idx5])->anim.seqId == SC_SEQ_TOTEMPOLE)
+                    if ((GameObject*)list[idx5] != self &&
+                        ((GameObject*)list[idx5])->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID)
                     {
                         totemObj = list[idx5];
                         ((void (*)(int, int)) *
-                         (void**)((char*)*((GameObject*)totemObj)->anim.dll + SC_VT_HANDLE_EVENT))(totemObj, 4);
+                         (void**)((char*)*((GameObject*)totemObj)->anim.dll +
+                                  SC_TOTEM_POLE_HANDLE_EVENT_VTABLE_OFFSET))(totemObj, 4);
                         break;
                     }
                 }

@@ -7,6 +7,7 @@
 
 #include "dlls/objects/438_SC_levelcon.h"
 
+#include "dlls/objects/440_SC_totempol.h"
 #include "game/objects/object.h"
 #include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
@@ -44,11 +45,6 @@ u16 gScLevelControlTotemComboSequence[4] = {
 #define SC_LEVEL_CONTROL_MAP_SWAPCIRCLE 0xE
 
 #define SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_COMPLETE 0x80
-#define SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_FRONT     0x81
-#define SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_LEFT      0x82
-#define SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_RIGHT     0x83
-#define SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_REAR      0x84
-
 #define SC_LEVEL_CONTROL_ENVFX_A 0x4F
 #define SC_LEVEL_CONTROL_ENVFX_B 0x50
 #define SC_LEVEL_CONTROL_ENVFX_C 0x245
@@ -230,10 +226,10 @@ void sc_levelcontrol_update(GameObject* obj) {
             state->exitTimer = 0.0f;
             mainSetBits(0x2b8, 0);
             mainSetBits(0x4bd, 1);
-            mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_FRONT, 0);
-            mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_LEFT, 0);
-            mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_RIGHT, 0);
-            mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_REAR, 0);
+            mainSetBits(SC_TOTEM_POLE_GAMEBIT_FRONT, 0);
+            mainSetBits(SC_TOTEM_POLE_GAMEBIT_LEFT, 0);
+            mainSetBits(SC_TOTEM_POLE_GAMEBIT_RIGHT, 0);
+            mainSetBits(SC_TOTEM_POLE_GAMEBIT_REAR, 0);
             mainSetBits(0x63e, 1);
             mainSetBits(0x7cf, 1);
         }
@@ -247,10 +243,10 @@ void sc_levelcontrol_update(GameObject* obj) {
             state->exitTimer = 0.0f;
             mainSetBits(0x2b8, 0);
             mainSetBits(0x4bd, 1);
-            mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_FRONT, 0);
-            mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_LEFT, 0);
-            mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_RIGHT, 0);
-            mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_REAR, 0);
+            mainSetBits(SC_TOTEM_POLE_GAMEBIT_FRONT, 0);
+            mainSetBits(SC_TOTEM_POLE_GAMEBIT_LEFT, 0);
+            mainSetBits(SC_TOTEM_POLE_GAMEBIT_RIGHT, 0);
+            mainSetBits(SC_TOTEM_POLE_GAMEBIT_REAR, 0);
         }
     }
     state->playerMapCell = coordsToMapCell(player->anim.localPosX, player->anim.localPosZ);
@@ -428,10 +424,10 @@ void sc_levelcontrol_init(GameObject* obj) {
     mainSetBits(0x60f, 1);
     mainSetBits(0x2b8, 0);
     mainSetBits(0x4bd, 1);
-    mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_FRONT, 0);
-    mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_LEFT, 0);
-    mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_RIGHT, 0);
-    mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_POLE_REAR, 0);
+    mainSetBits(SC_TOTEM_POLE_GAMEBIT_FRONT, 0);
+    mainSetBits(SC_TOTEM_POLE_GAMEBIT_LEFT, 0);
+    mainSetBits(SC_TOTEM_POLE_GAMEBIT_RIGHT, 0);
+    mainSetBits(SC_TOTEM_POLE_GAMEBIT_REAR, 0);
     state->helpTextTimer = 300.0f;
     fogNear = -1200.0f;
     state->fogNear = -1200.0f;

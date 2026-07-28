@@ -27,7 +27,7 @@
 #include "main/game_ui_interface.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/SC/sctotembond.h"
-#include "main/dll/SC/sc_shared.h"
+#include "dlls/objects/440_SC_totempol.h"
 #include "main/obj_list.h"
 #include "main/objseq.h"
 #include "main/screen_transition.h"
@@ -181,9 +181,10 @@ u32 sc_totembond_SeqFn(ScTotemBondObject* obj, u32 unused, ObjAnimUpdateState* a
             for (; startForEvent2 < countForEvent2; startForEvent2++)
             {
                 if ((ScTotemBondObject*)objects[startForEvent2] != obj &&
-                    ((ScTotemBondObject*)objects[startForEvent2])->objectType == SC_SEQ_TOTEMPOLE)
+                    ((ScTotemBondObject*)objects[startForEvent2])->objectType == SC_TOTEM_POLE_SEQUENCE_ID)
                 {
-                    (*(VtableFn*)(**(int**)(objects[startForEvent2] + 0x68) + SC_VT_HANDLE_EVENT))(
+                    (*(VtableFn*)(**(int**)(objects[startForEvent2] + 0x68) +
+                                   SC_TOTEM_POLE_HANDLE_EVENT_VTABLE_OFFSET))(
                         objects[startForEvent2], 2);
                     break;
                 }
@@ -195,9 +196,10 @@ u32 sc_totembond_SeqFn(ScTotemBondObject* obj, u32 unused, ObjAnimUpdateState* a
             for (; startForEvent3 < countForEvent3; startForEvent3++)
             {
                 if ((ScTotemBondObject*)objects[startForEvent3] != obj &&
-                    ((ScTotemBondObject*)objects[startForEvent3])->objectType == SC_SEQ_TOTEMPOLE)
+                    ((ScTotemBondObject*)objects[startForEvent3])->objectType == SC_TOTEM_POLE_SEQUENCE_ID)
                 {
-                    (*(VtableFn*)(**(int**)(objects[startForEvent3] + 0x68) + SC_VT_HANDLE_EVENT))(
+                    (*(VtableFn*)(**(int**)(objects[startForEvent3] + 0x68) +
+                                   SC_TOTEM_POLE_HANDLE_EVENT_VTABLE_OFFSET))(
                         objects[startForEvent3], 1);
                     break;
                 }
