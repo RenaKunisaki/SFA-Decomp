@@ -302,6 +302,7 @@
 #include "dlls/objects/506_WM_seqobjec.h"
 #include "dlls/objects/507.h"
 #include "dlls/objects/508.h"
+#include "dlls/objects/509_WM_LaserTar.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -438,8 +439,7 @@ extern ResourceDescriptor gVFP_lavapoolObjDescriptor, gVFP_lavastarObjDescriptor
 extern ResourceDescriptor gWCLevelContObjDescriptor,
     gWCPushBlockObjDescriptor, gWCTempleBriObjDescriptor,
     gWCTileObjDescriptor;
-extern ResourceDescriptor gWM_GeneralScalesObjDescriptor, gWM_LaserTargetObjDescriptor,
-    gWM_LevelControlObjDescriptor, gWM_PlanetsObjDescriptor;
+extern ResourceDescriptor gWM_GeneralScalesObjDescriptor, gWM_LevelControlObjDescriptor, gWM_PlanetsObjDescriptor;
 extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_TorchObjDescriptor, gWM_WallCrawlerObjDescriptor,
     gWM_WormObjDescriptor, gWM_colriseObjDescriptor, gWM_newcrystalObjDescriptor, gWM_seqpointObjDescriptor;
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWaterFlowWeObjDescriptor;
@@ -1619,7 +1619,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWM_seqobjectObjDescriptor,
     (ResourceDescriptor*)&gDll507ObjDescriptor,
     (ResourceDescriptor*)&gLaserBeamObjDescriptor,
-    &gWM_LaserTargetObjDescriptor,
+    (ResourceDescriptor*)&gWM_LaserTargetObjDescriptor,
     &gPressureSwitchObjDescriptor,
     &dll_1FF,
     &dll_200,
