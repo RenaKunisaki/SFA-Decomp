@@ -99,7 +99,7 @@ int hightop_stateHandler10(GameObject* obj, HighTopRuntime* stateArg)
     if (stateArg->baddie.moveJustStartedA != 0)
     {
         rt->substate = 3;
-        *(int*)((char*)stateArg + 0) |= 0x1000000;
+        stateArg->baddie.flags0 |= 0x1000000;
     }
     if (mainGetBit(GAMEBIT_ITEM_NWKey_Got2) != 0)
     {
@@ -648,7 +648,7 @@ int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
     *(u32*)stateArg = *(u32*)stateArg | 0x200000;
     if (stateArg->baddie.inputMagnitude < 0.05f)
     {
-        *(s16*)((char*)stateArg + 0x334) = 0;
+        stateArg->baddie.turnRateAbs = 0;
         stateArg->baddie.turnRate = 0;
         stateArg->baddie.inputMagnitude = 0.0f;
     }
@@ -662,7 +662,7 @@ int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
     {
         (obj)->anim.rotX = (182.0f * (((f32)d336 * dt) / 36.0f) + (f32) * (s16*)obj);
     }
-    conv = (int)(182.04445f * ((f32) * (s16*)((char*)stateArg + 0x336) * dt));
+    conv = (int)(182.04445f * ((f32) stateArg->baddie.turnRate * dt));
     vec = (s16*)objModelGetVecFn_800395d8(obj, 9);
     if (vec != 0)
     {
@@ -760,10 +760,10 @@ int hightop_stateHandler01(GameObject* obj, HighTopRuntime* stateArg)
     (obj)->anim.velocityX = zero;
     (obj)->anim.velocityY = zero;
     (obj)->anim.velocityZ = zero;
-    *(int*)((char*)stateArg + 0) |= 0x200000;
+    stateArg->baddie.flags0 |= 0x200000;
     if (stateArg->baddie.moveJustStartedA != 0)
     {
-        *(s16*)((char*)stateArg + 0x338) = 0;
+        stateArg->baddie.controlTimer = 0;
         stateArg->baddie.moveSpeed = 0.005f;
         stateArg->baddie.velSmoothTime = 18.0f;
         if ((obj)->anim.currentMove != gHighTopBandMoveIds[0])
@@ -773,7 +773,7 @@ int hightop_stateHandler01(GameObject* obj, HighTopRuntime* stateArg)
     }
     if (stateArg->baddie.inputMagnitude < 0.1f)
     {
-        *(s16*)((char*)stateArg + 0x334) = 0;
+        stateArg->baddie.turnRateAbs = 0;
         stateArg->baddie.turnRate = 0;
         stateArg->baddie.inputMagnitude = 0.0f;
     }

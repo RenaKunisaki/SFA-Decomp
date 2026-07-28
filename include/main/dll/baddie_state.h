@@ -78,7 +78,7 @@ typedef struct BaddieState {
     u8 unk27C[0x280 - 0x27C];
     f32 animSpeedA; /* anim blend speed pair */
     f32 animSpeedB;
-    u8 unk288[4];
+    f32 animSpeedY; /* vertical companion of animSpeedA/animSpeedB: dll_000F feeds the triple to Matrix_TransformPoint as (animSpeedB, animSpeedY, -animSpeedA), i.e. local (x,y,z), and only when flags0 bit 0x10000 is set - the bit player_advanceMove raises when the move's root motion drives Y */
     f32 moveInputZ;
     f32 moveInputX;
     f32 animSpeedC; /* third of the animSpeed family - stored in lockstep with animSpeedB (z = K; animSpeedC = z; animSpeedB = z), scaled with animSpeedA and obj+0x28 */
@@ -94,9 +94,10 @@ typedef struct BaddieState {
      * nudgePos{X,Y,Z} * increment into the model matrix translation. */
     f32 nudgeYawProgress;
     f32 nudgePosProgress;
-    u8 pad2B0[0x2B8 - 0x2B0];
+    u8 pad2B0[0x2B4 - 0x2B0];
+    f32 rootMotionDelta; /* raw per-frame root-motion component for the axis the move selects, stored undivided when the caller asks for displacement rather than velocity (dll_000F player_advanceMove, flags bit 0x10); the consumer scales it by timeDelta itself */
     f32 velSmoothTime; /* first-order velocity smoothing divisor: vel += t * (target - vel) / velSmoothTime */
-    u8 pad2BC[0x2C0 - 0x2BC];
+    f32 moveTargetDistance; /* planar distance to the current move destination or curve point (dll_000F player_moveTowardPoint / player_followCurve); below it the input is damped, and player_updateCurve zeroes it when there is no curve */
     f32 targetDistance; /* sqrtf dist to targetObj (scarab/campfire/anim/iceBaddie); also (s32)-compared */
     u8 unk2C4[0x2D0 - 0x2C4];
     void *targetObj; /* current attack/aggro target */
@@ -129,14 +130,20 @@ typedef struct BaddieState {
     u8 unk320[0x32E - 0x320];
     s16 stateTimer; /* count-up dt-accumulating timer, gated > 0x78, reset to 0 on state entry */
     s16 cameraYaw;
-    u8 unk332[4];
+    u8 unk332[2];
+    s16 turnRateAbs; /* abs(turnRate), written alongside it by dll_000F player_steerFromInput; the rideable-mount handlers (DIMSnowHorn1, HighTop, DR_CloudRunner) compare it against a turn threshold and clear it with turnRate when the stick falls under the deadzone */
     s16 turnRate; /* s16 angle units/sec: *yaw += k * (turnRate * timeDelta / speed) */
     s16 controlTimer; /* primary control-state timer; reset on mode entry and accumulated each update */
-    u8 unk33A[0x346 - 0x33A];
+    u8 unk33A[0x33C - 0x33A];
+    s32 curveId; /* active ROM curve, -1 = none; dll_000F player_findCurve stores gRomCurveInterface->find() here and player_updateCurve resolves it back through getById each frame */
+    u8 unk340[0x344 - 0x340];
+    s8 curveSearchFilter; /* type filter passed as the last argument of gRomCurveInterface->find() when picking curveId */
+    u8 unk345;
     s8 moveDone; /* set when the current move completes; SeqFns chain the next mode off it */
     u8 unk347[2];
     u8 hasTarget; /* cleared with death/reset */
-    u8 unk34A[2];
+    u8 unk34A;
+    u8 inputSector; /* quadrant of the stick heading relative to the actor's facing: 0 while the stick is inside the deadzone, else 1..4 from (4 - ((diff - 0x6000) / 0x4000)) in dll_000F player_steerFromInput; player.c switches the approach/turn move on it and copies it into PlayerState.moveChainIndex */
     s8 movementFlags; /* root-motion / velocity handling flags for the shared player controller */
     s8 stateTag; /* per-tick state/mode index (written each tick; compared ==1/==3 across the baddie cluster + player) */
     u8 unk34E;

@@ -2933,7 +2933,7 @@ int playerState37(GameObject* obj, int state)
     int inner = *(int*)&obj->extra;
     u8 v;
     ((ByteFlags*)((char*)inner + 0x3f6))->b20 = 1;
-    v = *(u8*)((char*)state + 0x34b);
+    v = ((PlayerState*)state)->baddie.inputSector;
     if (v == 3)
     {
         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029782C;
@@ -3713,7 +3713,7 @@ int playerState31(GameObject* obj, int p2)
             state29 = 0x1a;
         }
     }
-    if (*(u8*)((char*)p2 + 0x34b) == 2 && ((PlayerState*)p2)->baddie.inputMagnitude > 0.3f)
+    if (((PlayerState*)p2)->baddie.inputSector == 2 && ((PlayerState*)p2)->baddie.inputMagnitude > 0.3f)
     {
         ObjAnim_SetCurrentMove((int)obj, gPlayerMoveSlotTable[((s16*)((char*)inner->moveSlots + 2))[(u8)state30 * 88]],
                                0.0f, 0);
@@ -3805,7 +3805,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
     }
     if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x400) != 0)
     {
-        u8 sel = *(u8*)((char*)state + 0x34b);
+        u8 sel = ((PlayerState*)state)->baddie.inputSector;
         if (sel == 1)
         {
             inner->moveSlotIndex = 8;
@@ -3851,7 +3851,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
     }
     if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
     {
-        if (*(u8*)((char*)state + 0x34b) == 2 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
+        if (((PlayerState*)state)->baddie.inputSector == 2 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
         {
             inner->moveSlotIndex = 1;
             ObjAnim_SetCurrentMove(
@@ -3860,7 +3860,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029BC08;
             return 0x27;
         }
-        if (*(u8*)((char*)state + 0x34b) == 3 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
+        if (((PlayerState*)state)->baddie.inputSector == 3 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
         {
             inner->moveSlotIndex = 4;
             ObjAnim_SetCurrentMove(
@@ -3869,7 +3869,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029BC08;
             return 0x27;
         }
-        if (*(u8*)((char*)state + 0x34b) == 1 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
+        if (((PlayerState*)state)->baddie.inputSector == 1 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
         {
             inner->moveSlotIndex = 3;
             ObjAnim_SetCurrentMove(
@@ -3878,7 +3878,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029BC08;
             return 0x27;
         }
-        if (*(u8*)((char*)state + 0x34b) == 4 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
+        if (((PlayerState*)state)->baddie.inputSector == 4 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
         {
             inner->moveSlotIndex = 2;
             ObjAnim_SetCurrentMove(
@@ -4908,7 +4908,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
                     *(int*)&((PlayerState*)state)->baddie.unk31C =
                         *(int*)&((PlayerState*)state)->baddie.unk31C & ~0x100;
                     buttonDisable(0, PAD_BUTTON_A);
-                    inner->moveChainIndex = *(u8*)((char*)state + 0x34b);
+                    inner->moveChainIndex = ((PlayerState*)state)->baddie.inputSector;
                 }
                 if ((*(u8*)((char*)state + 0x34a) & 4) != 0 && (*(u8*)((char*)state + 0x34a) & 2) != 0)
                 {
@@ -8587,7 +8587,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
             ((PlayerState*)inner)->moveStartZ;
         (*gPlayerInterface)->updateAnimRootMotion((void*)obj, (void*)state, fv, 0x14);
         ((GameObject*)obj)->anim.localPosY =
-            *(f32*)((char*)state + 0x2b4) * timeDelta + ((GameObject*)obj)->anim.localPosY;
+            ((PlayerState*)state)->baddie.rootMotionDelta * timeDelta + ((GameObject*)obj)->anim.localPosY;
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
             f32 v;
@@ -15719,7 +15719,7 @@ void fn_802B0EA4(GameObject* obj, int inner, int state)
     }
     if (((PlayerState*)state)->baddie.inputMagnitude < 0.05f)
     {
-        *(u8*)((char*)state + 0x34b) = 0;
+        ((PlayerState*)state)->baddie.inputSector = 0;
     }
     else
     {
@@ -15732,7 +15732,7 @@ void fn_802B0EA4(GameObject* obj, int inner, int state)
         {
             d = d - 0xffff;
         }
-        *(u8*)((char*)state + 0x34b) = (u8)(4 - d / 0x4000);
+        ((PlayerState*)state)->baddie.inputSector = (u8)(4 - d / 0x4000);
     }
     d = ((PlayerState*)inner)->inputHeading - (u16)((PlayerState*)inner)->targetYaw;
     if (d > 0x8000)
