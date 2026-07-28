@@ -183,7 +183,7 @@ void pathcam_buildWindowSamples(int* nodes, f32* o1, f32* o2, f32* o3, f32* o4, 
     int step;
     f32* axisOut;
     int axis;
-    f32 wrap, d, near, lower, upper, v0, v1;
+    f32 d, upper, v0, v1;
     RomCurveNode* pts[4];
 
     i = 0;

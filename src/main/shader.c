@@ -1708,7 +1708,6 @@ void beginLoadingMap(void)
     int j;
     s8* a;
     s8* b;
-    int k2, k3;
     int mapKind;
     f32* p;
     f32 px, py, pz;

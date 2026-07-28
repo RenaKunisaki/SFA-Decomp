@@ -2074,7 +2074,7 @@ f32 SnowBike_func13(GameObject* obj, f32* out)
 void SnowBike_getPlayerAnim(GameObject* obj, f32* outFloat, s32* outBool)
 {
     int state = *(int*)&obj->extra;
-    f32 value, r;
+    f32 value;
     *outFloat = ((SnowBikeMountState*)state)->unk414 / 400.0f;
     value = *outFloat;
     *outFloat = (value < -1.0f) ? -1.0f : ((value > 1.0f) ? 1.0f : value);

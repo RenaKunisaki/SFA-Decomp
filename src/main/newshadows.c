@@ -1376,7 +1376,7 @@ void evalNoisePlacements(f32 px, f32 pz, f32 frame, f32* placements, int count, 
         f32 over = 0.0f;
         if (frame < place[0])
         {
-            f32 mx, mz, t, s0, tmp, p2lo, d2, sq, ratio, frac, depth;
+            f32 mx, mz, t, s0, tmp, p2lo, sq, ratio, frac, depth;
             t = lbl_803DED3C + (place[0] - frame) / place[0];
             if (t > 1.0f)
                 t = 1.0f;
