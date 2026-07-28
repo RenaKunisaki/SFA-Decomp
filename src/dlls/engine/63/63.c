@@ -13,7 +13,7 @@ char lbl_803DBBF0[] = "%2d";
 
 #define DLL3F_TEXTURE_ID 0x47A
 
-extern void* lbl_803DD960;
+void* lbl_803DD960;
 
 void dll_3F_updateTimerReadout(void* obj)
 {

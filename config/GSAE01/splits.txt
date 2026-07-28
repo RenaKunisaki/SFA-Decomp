@@ -201,6 +201,7 @@ main/objprint_dolphin_render.c:
 	.text       start:0x8003E494 end:0x800443CC
 	.data       start:0x802CAED0 end:0x802CAF48
 	.bss        start:0x80342E10 end:0x8035EF48
+	.sbss       start:0x803DCC94 end:0x803DCC98
 
 main/pi_dolphin.c:
 	.text       start:0x800443CC end:0x80049B2C
@@ -638,6 +639,7 @@ dlls/engine/23/23.c:
 dlls/engine/17/17.c:
 	.text       start:0x800EA174 end:0x800EA774
 	.data       start:0x803119E0 end:0x80311C08
+	.bss        start:0x803A4218 end:0x803A4228
 	.sbss       start:0x803DD4A0 end:0x803DD4B0
 
 dlls/engine/47/47.c:
@@ -1412,6 +1414,7 @@ dlls/engine/54/54.c:
 dlls/engine/55/55.c:
 	.text       start:0x8011BFC8 end:0x8011D51C
 	.data       start:0x8031A8F8 end:0x8031AD20
+	.bss        start:0x803A87D0 end:0x803A87F0
 	.sdata      start:0x803DBA28 end:0x803DBA30
 	.sbss       start:0x803DD6F8 end:0x803DD710
 	.sdata2     start:0x803E1DD0 end:0x803E1DF0
@@ -1472,6 +1475,7 @@ dlls/engine/63/63.c:
 	.text       start:0x80133F70 end:0x80134098
 	.data       start:0x8031C5F8 end:0x8031C620
 	.sdata      start:0x803DBBF0 end:0x803DBBF8
+	.sbss       start:0x803DD960 end:0x803DD968
 	.sdata2     start:0x803E22A0 end:0x803E22A4
 
 dlls/engine/64/64.c:
@@ -2752,6 +2756,7 @@ dlls/objects/398_MMSH_WaterS/MMSH_WaterS.c:
 dlls/objects/399_ECSH_Shrine/ECSH_Shrine.c:
 	.text       start:0x801C5990 end:0x801C6E0C
 	.data       start:0x80326208 end:0x80326324
+	.sbss       start:0x803DDBC0 end:0x803DDBC8
 	.sdata2     start:0x803E4F90 end:0x803E4FF4
 
 dlls/objects/401_ECSH_Creato/ECSH_Creato.c:
@@ -3185,6 +3190,7 @@ dlls/objects/507/507.c:
 dlls/objects/508/508.c:
 	.text       start:0x801F0AE4 end:0x801F160C
 	.data       start:0x803287B8 end:0x803287F0
+	.sbss       start:0x803DDC80 end:0x803DDC88
 	.sdata2     start:0x803E5D10 end:0x803E5D58
 
 dlls/objects/510/510.c:
@@ -4213,6 +4219,7 @@ dolphin/os/__ppc_eabi_init.c:
 dolphin/db/db.c:
 	.text       start:0x80246D68 end:0x80246E54
 	.data       start:0x8032D818 end:0x8032D830
+	.sbss       start:0x803DDE98 end:0x803DDEA0
 
 dolphin/mtx/mtx.c:
 	.text       start:0x80246E54 end:0x80247494

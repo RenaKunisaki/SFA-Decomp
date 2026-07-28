@@ -178,8 +178,8 @@ typedef enum ECSHShrinePhase {
     ECSH_SHRINE_PHASE_FAIL = 10,
 } ECSHShrinePhase;
 
-extern int lbl_803DDBC0;
-extern GameObject* gECSHShrineActiveObject;
+GameObject* gECSHShrineActiveObject;
+int lbl_803DDBC0;
 extern u32 lbl_803E8470;
 
 ECSHShrineCupPosition gECSHShrineCupPositions[ECSH_SHRINE_CUP_COUNT] = {0};

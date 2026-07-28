@@ -3262,7 +3262,7 @@ int isRomListLoading(void)
 }
 
 
-extern s32 gObjTableFileRequestFlags;
+s32 gObjTableFileRequestFlags;
 
 u32 loadTableFiles(void)
 {

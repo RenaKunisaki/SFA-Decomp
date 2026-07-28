@@ -1,7 +1,8 @@
 #include <dolphin/db.h>
 #include <dolphin/os.h>
 
-extern int DBVerbose;
+int DBVerbose;
+DBInterface* __DBInterface;
 char sDBExceptionDestinationMessage[] = "DBExceptionDestination\n";
 
 void DBInit(void) {

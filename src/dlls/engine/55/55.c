@@ -43,6 +43,8 @@ typedef struct OptionsScreenPanelConfig {
 
 extern OptionsScreenPanelConfig gOptionsPanelTable[4];
 
+TitleMenuItem* gOptionsMenuItems[8];
+
 /*
  * dll_4e - options-menu setting callbacks (audio panel, gameplay panel,
  * submenu selector).

@@ -17,7 +17,7 @@ u32 lbl_803DD4A8;
 u32 lbl_803DD4A4;
 u32 lbl_803DD4A0;
 
-extern u8 lbl_803A4218[];
+u8 lbl_803A4218[0x10];
 extern u8 lbl_803119E0[];
 
 #define TASK_HINT_MAP ((s16*)lbl_803119E0)

@@ -80,7 +80,7 @@ STATIC_ASSERT(offsetof(LaserBeamState, beamKind) == 0x4e);
 static const f32 gLaserBeamObjPi = 3.1415927f;
 static const f32 gLaserBeamObjAngleToRadScale = 32768.0f;
 
-extern Dll81Interface** gLaserBeamObjModgfxResource;
+Dll81Interface** gLaserBeamObjModgfxResource;
 
 void LaserBeam_update(int obj2)
 {
