@@ -12,7 +12,7 @@ typedef struct PlayerModelChainEntry
 } PlayerModelChainEntry;
 
 extern void* gPlayerPathObject;
-extern u8 gPlayerSubState;
+extern u8 gPlayerModelChainStyle;
 extern void* gPlayerSpawnedObjects[];
 extern StaffCollisionInterface** gPlayerResource;
 extern int gPlayerPendingHealth;
@@ -193,7 +193,7 @@ extern f32 lbl_803DC6D8;
 extern f32 lbl_803DC6DC;
 extern f32 lbl_803DC6E0;
 extern f32 lbl_803DC6E4;
-extern u8 lbl_803DE42C;
+extern u8 gPlayerIceSpellSustaining;
 extern f32 lbl_803DE430;
 extern f32 lbl_803DE438;
 extern f32 lbl_803DE43C;

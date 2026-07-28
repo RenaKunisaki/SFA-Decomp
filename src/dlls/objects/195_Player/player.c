@@ -340,7 +340,7 @@ void playerUpdateTail(int unused1, int* unused2, f32* vec, int unused3, int mode
     f32 mtx1[12];
     f32 mtx2[12];
 
-    switch (gPlayerSubState)
+    switch (gPlayerModelChainStyle)
     {
     case 0:
         gPlayerModelChainOriginX = 0.12f;
@@ -3742,7 +3742,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
     } pfx;
     f32 timer;
 
-    if (lbl_803DE42C != 0)
+    if (gPlayerIceSpellSustaining != 0)
     {
         Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_whit3_c);
         timer = inner->stateTimer - timeDelta;
@@ -3774,8 +3774,8 @@ int playerState30(GameObject* obj, int state, f32 fv)
             int z[2];
             void** p[1];
             z[0] = 0;
-            lbl_803DE42C = z[0];
-            z[1] = lbl_803DE42C;
+            gPlayerIceSpellSustaining = z[0];
+            z[1] = gPlayerIceSpellSustaining;
             p[0] = gPlayerSpawnedObjects;
             do
             {
@@ -3937,7 +3937,7 @@ void fn_8029A4A8(GameObject* obj, int p2)
     }
 
     z[0] = 0;
-    lbl_803DE42C = z[0];
+    gPlayerIceSpellSustaining = z[0];
     for (z[1] = z[0]; z[1] < 7; z[1]++)
     {
         if (gPlayerSpawnedObjects[z[1]] != NULL)
@@ -4044,7 +4044,7 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
     }
     setAButtonIcon(6);
     setBButtonIcon(0xa);
-    if (lbl_803DE42C != 0)
+    if (gPlayerIceSpellSustaining != 0)
     {
         Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_whit3_c);
         timer = inner->stateTimer - timeDelta;
@@ -4075,7 +4075,7 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
         {
             int z[2];
             void** p[1];
-            z[1] = z[0] = lbl_803DE42C = 0;
+            z[1] = z[0] = gPlayerIceSpellSustaining = 0;
             p[0] = gPlayerSpawnedObjects;
             do
             {
@@ -4188,7 +4188,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
         f32 z;
     } pfx;
 
-    if (lbl_803DE42C != 0)
+    if (gPlayerIceSpellSustaining != 0)
     {
         Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_whit3_c);
         timer = inner->stateTimer - timeDelta;
@@ -4220,7 +4220,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
             int z[2];
             void** p[1];
             inner->animState = -1;
-            z[0] = lbl_803DE42C = z[1] = 0;
+            z[0] = gPlayerIceSpellSustaining = z[1] = 0;
             p[0] = gPlayerSpawnedObjects;
             do
             {
@@ -4310,7 +4310,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
                     int v;
                     playerCastIceSpell(obj);
                     gPlayerHeldButtonMask = b28;
-                    lbl_803DE42C = 1;
+                    gPlayerIceSpellSustaining = 1;
                     lbl_803DE430 = 0.0f;
                     inner->stateTimer = 15.0f;
                     sub2 = *(int*)((char*)*(int*)&obj->extra + 0x35c);
@@ -4423,7 +4423,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
             }
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_AIM_READY;
         }
-        if (lbl_803DE42C != 0)
+        if (gPlayerIceSpellSustaining != 0)
         {
             f32 x;
             Sfx_KeepAliveLoopedObjectSound(obj, SFXTRIG_whit3_c);
@@ -4456,7 +4456,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
             {
                 int z[2];
                 void** p[1];
-                z[1] = lbl_803DE42C = z[0] = 0;
+                z[1] = gPlayerIceSpellSustaining = z[0] = 0;
                 p[0] = gPlayerSpawnedObjects;
                 do
                 {
@@ -4535,7 +4535,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
                         int v;
                         playerCastIceSpell((GameObject*)obj);
                         gPlayerHeldButtonMask = b28;
-                        lbl_803DE42C = 1;
+                        gPlayerIceSpellSustaining = 1;
                         lbl_803DE430 = 0.0f;
                         inner->stateTimer = 15.0f;
                         sub2 = *(int*)((char*)*(int*)&((GameObject*)obj)->extra + 0x35c);
@@ -4568,7 +4568,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
     default:
         ObjAnim_SetCurrentMove(obj, 0x43e, 0.0f, 0);
         ((PlayerState*)state)->baddie.moveSpeed = 0.015f;
-        lbl_803DE42C = 0;
+        gPlayerIceSpellSustaining = 0;
         lbl_803DE430 = 0.0f;
         break;
     }
@@ -4777,7 +4777,7 @@ void fn_8029BC08(GameObject* obj)
     {
         objSetAnimField48to0((GameObject*)gPlayerPathObject);
     }
-    gPlayerSubState = 1;
+    gPlayerModelChainStyle = 1;
 }
 
 int playerState27(GameObject* obj, int state, f32 fv)
@@ -4830,7 +4830,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
     }
     path = (int)gPlayerPathObject;
     *(s8*)&((PlayerState*)state)->baddie.stateTag = 1;
-    gPlayerSubState = 5;
+    gPlayerModelChainStyle = 5;
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA == 0)
     {
         if (lbl_803DE459 != 0)
@@ -5200,14 +5200,14 @@ void fn_8029C8C8(GameObject* obj, int p2)
         inner->yawRate = 0;
         inner->yawRateSigned = 0;
     }
-    gPlayerSubState = 1;
+    gPlayerModelChainStyle = 1;
     if (((PlayerState*)p2)->baddie.controlMode != 0x24 && ((PlayerState*)p2)->baddie.controlMode != 0x25 &&
-        lbl_803DE42C != 0)
+        gPlayerIceSpellSustaining != 0)
     {
         int z[2];
         inner->animState = -1;
         z[0] = 0;
-        lbl_803DE42C = z[0];
+        gPlayerIceSpellSustaining = z[0];
         for (z[1] = z[0]; z[1] < 7; z[1]++)
         {
             if (gPlayerSpawnedObjects[z[1]] != NULL)
@@ -5233,7 +5233,7 @@ int playerState25(int obj, int state, f32 fv)
 
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
-        gPlayerSubState = 5;
+        gPlayerModelChainStyle = 5;
     }
     r = playerState28((GameObject*)obj, state, fv);
     if (r != 0)
@@ -5397,7 +5397,7 @@ int playerState24(GameObject* obj, int state, f32 fv)
         inner->smoothVelZ = zero;
         ((PlayerState*)state)->baddie.moveSpeed = 0.012f;
         ((PlayerState*)state)->baddie.animSpeedC = zero;
-        gPlayerSubState = 5;
+        gPlayerModelChainStyle = 5;
     }
 
     r = playerState28(obj, state, fv);
@@ -5717,7 +5717,7 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
 
 PlayerModelChainEntry lbl_803DC660 = {lbl_80332EC0, 5};
 PlayerModelChainEntry* gPlayerModelChainConfig = &lbl_803DC660;
-u8 gPlayerSubState = 1;
+u8 gPlayerModelChainStyle = 1;
 f32 gPlayerModelChainOriginX = 0.12f;
 f32 gPlayerModelChainOriginY = 0.675f;
 f32 gPlayerModelChainOriginZ = 0.15f;
@@ -5747,7 +5747,7 @@ f32 lbl_803DC6E4 = 0.05f;
 int gPlayerModelChain;
 int gPlayerPendingHealth;
 int gPlayerHeldObject;
-u8 lbl_803DE42C;
+u8 gPlayerIceSpellSustaining;
 f32 lbl_803DE430;
 GameObject* gPlayerInteractTarget;
 f32 lbl_803DE438;
@@ -9702,7 +9702,7 @@ int playerStateIceSpell(int obj, int state, f32 fv)
         void** p;
         int z[2];
         z[0] = 0;
-        lbl_803DE42C = z[0];
+        gPlayerIceSpellSustaining = z[0];
         z[1] = z[0];
         p = gPlayerSpawnedObjects;
         for (; z[1] < 7; z[1]++)
@@ -9790,7 +9790,7 @@ void playerStagedRestoreDefaultControl(GameObject* obj, int state)
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
         ObjHits_SyncObjectPositionIfDirty(obj);
     }
-    gPlayerSubState = 1;
+    gPlayerModelChainStyle = 1;
 }
 
 int playerStateMoving(int obj, int state, f32 fv)
@@ -12632,7 +12632,7 @@ void playerDie(GameObject* obj)
     ((ByteFlags*)((char*)inner + 0x3f3))->b04 = 0;
     ((ByteFlags*)((char*)inner + 0x3f3))->b02 = 1;
     z[0] = 0;
-    lbl_803DE42C = z[0];
+    gPlayerIceSpellSustaining = z[0];
     for (z[1] = z[0]; z[1] < 7; z[1]++)
     {
         if (gPlayerSpawnedObjects[z[1]] != NULL)
@@ -14292,7 +14292,7 @@ void fn_802AE650(GameObject* obj, int state, int p3)
     {
         short tmp;
         ((ByteFlags*)((char*)state + 0x3f0))->b10 = 0;
-        gPlayerSubState = 1;
+        gPlayerModelChainStyle = 1;
         ((ByteFlags*)((char*)state + 0x3f1))->b02 = 1;
         ((ByteFlags*)((char*)state + 0x3f1))->b08 = 1;
         *(u8*)&((PlayerState*)state)->gaitLevel = 0xc;
@@ -14501,7 +14501,7 @@ void fn_802AED2C(GameObject* obj, int state, int p3)
     ((PlayerState*)state)->targetYawRateSigned = 0;
     ((PlayerState*)state)->yawRate = 0;
     ((PlayerState*)state)->targetYawRate = 0;
-    gPlayerSubState = 4;
+    gPlayerModelChainStyle = 4;
     ((PlayerState*)state)->isHoldingObject = 0;
     if (((PlayerState*)state)->heldObj != NULL)
     {
@@ -14976,11 +14976,11 @@ void playerRunActiveSpells(GameObject* obj, int state)
         }
         break;
     case GAMEBIT_STAFF_ABILITY_FREEZE_BLAST:
-        if (lbl_803DE42C != 0 && getCurSeqNo() != 0)
+        if (gPlayerIceSpellSustaining != 0 && getCurSeqNo() != 0)
         {
             ((PlayerState*)state)->animState = -1;
             z[0] = 0;
-            lbl_803DE42C = z[0];
+            gPlayerIceSpellSustaining = z[0];
             z[1] = z[0];
             p = gPlayerSpawnedObjects;
             for (; z[1] < 7; z[1]++)
@@ -15614,19 +15614,19 @@ void playerDoEyeAnims(GameObject* obj, int state)
     {
         if (((ByteFlags*)((char*)state + 0x3f1))->b20)
         {
-            gPlayerSubState = 5;
+            gPlayerModelChainStyle = 5;
         }
         else
         {
             if (fn_80295A04(obj, 2) == 0 && (s8) * (s8*)(((PlayerState*)state)->playerStatus) > 4 &&
-                gPlayerSubState == 1 && randomGetRange(0, 0x12c) == 1)
+                gPlayerModelChainStyle == 1 && randomGetRange(0, 0x12c) == 1)
             {
-                gPlayerSubState = 2;
+                gPlayerModelChainStyle = 2;
                 doBlink = 1;
             }
-            if (doBlink == 0 && gPlayerSubState == 2 && randomGetRange(0, 5) == 1)
+            if (doBlink == 0 && gPlayerModelChainStyle == 2 && randomGetRange(0, 5) == 1)
             {
-                gPlayerSubState = 1;
+                gPlayerModelChainStyle = 1;
             }
         }
         {
@@ -17276,10 +17276,10 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 ObjModelChain_SetEnabled((ObjModelChain*)gPlayerModelChain, 0);
                 break;
             case 0x21:
-                gPlayerSubState = 2;
+                gPlayerModelChainStyle = 2;
                 break;
             case 0x22:
-                gPlayerSubState = 1;
+                gPlayerModelChainStyle = 1;
                 break;
             case 0x1a:
                 if (*(u32*)&((PlayerState*)inner)->interactObject != 0)
@@ -17425,9 +17425,9 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     {
         characterDoEyeAnims((GameObject*)obj, (char*)inner + 0x364);
     }
-    if (gPlayerSubState == 2)
+    if (gPlayerModelChainStyle == 2)
     {
-        gPlayerSubState = 1;
+        gPlayerModelChainStyle = 1;
     }
     if (((GameObject*)gPlayerPathObject)->anim.classId == 0x2d)
     {
