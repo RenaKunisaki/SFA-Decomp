@@ -688,8 +688,8 @@ void Camera_UpdateProjection(void* viewportArg, int unused)
         u8 savedViewIndex = gCameraCurrentViewIndex;
 
         gCameraCurrentViewIndex = viewIndex;
-        viewport = &base[viewIndex & 0xff];
-        gxSetScissorRect(0, 0, viewport->scissorX, viewport->scissorY, viewport->scissorX2, viewport->scissorY2);
+        gxSetScissorRect(0, 0, base[viewIndex & 0xff].scissorX, base[viewIndex & 0xff].scissorY,
+                         base[viewIndex & 0xff].scissorX2, base[viewIndex & 0xff].scissorY2);
 
         viewport = (CameraViewportEntry*)gCameraViewportEntries;
         activeViewIndex = gCameraCurrentViewIndex;
