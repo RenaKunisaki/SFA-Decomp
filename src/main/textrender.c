@@ -689,7 +689,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
             u0 = lbl_803DE714 * -fx0 + u0;
             fx0 = lbl_803DE704;
         }
-        if (fy0 < *(f32*)&lbl_803DE704 && fy1 > lbl_803DE704)
+        if (fy0 < 0.0f && fy1 > lbl_803DE704)
         {
             v0 = lbl_803DE714 * -fy0 + v0;
             fy0 = lbl_803DE704;

@@ -163,7 +163,7 @@ void updateVisibleGeometry(void)
     st.rotY = -cam->worldPitch;
     st.rotZ = cam->worldRoll;
     setMatrixFromObjectPos(m, &st);
-    Matrix_TransformPoint(m, lbl_803DEBCC, *(f32*)&lbl_803DEBCC, lbl_803DEC00, &ox, &oy, &oz);
+    Matrix_TransformPoint(m, 0.0f, 0.0f, lbl_803DEC00, &ox, &oy, &oz);
     gViewFrustumPlanes[0].normalX = ox;
     gViewFrustumPlanes[n = 0].normalY = oy;
     gViewFrustumPlanes[n = 0].normalZ = oz;

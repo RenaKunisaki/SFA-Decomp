@@ -3122,7 +3122,7 @@ int ViewFrustum_IsSphereVisible(float* center, float radius)
         plane = &gViewFrustumPlanes[i];
         dot = plane->distance + (plane->normalZ * (center[2] - offZ) +
                                  (center[1] * plane->normalY + plane->normalX * (center[0] - offX)));
-        if (radius + dot < *(f32*)&lbl_803DEBCC)
+        if (radius + dot < 0.0f)
             return 0;
     }
     return 1;
@@ -3226,7 +3226,7 @@ int objUpdateOpacity(GameObject* obj)
             if (prod + (plane->distance + (plane->normalZ * (obj->anim.worldPosZ - offZ) +
                                            (obj->anim.worldPosY * plane->normalY +
                                             plane->normalX * (obj->anim.worldPosX - offX)))) <
-                *(f32*)&lbl_803DEBCC)
+                0.0f)
                 return 0;
         }
     }
