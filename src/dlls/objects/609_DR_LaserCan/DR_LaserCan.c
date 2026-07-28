@@ -78,6 +78,12 @@ s16 gLaserCannonMaxAimStep = 0x400;
 #define DR_LASERCANNON_WARNING_HIDE_MODE   5
 #define DR_LASERCANNON_WARNING_HIT_MODE    6
 
+typedef struct DrLaserCannonTrickyInterfaceVTable
+{
+    void* callbacks[10];                                                                                 /* 0x00 */
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType); /* 0x28 */
+} DrLaserCannonTrickyInterfaceVTable;
+
 typedef struct DrLaserCannonState
 {
     int beamObject;
@@ -110,6 +116,7 @@ STATIC_ASSERT(offsetof(DrLaserCannonState, lastHitObject) == DR_LASERCANNON_STAT
 STATIC_ASSERT(offsetof(DrLaserCannonState, muzzleX) == DR_LASERCANNON_STATE_MUZZLE_X);
 STATIC_ASSERT(offsetof(DrLaserCannonState, curveFollow) == DR_LASERCANNON_STATE_CURVE_FOLLOW);
 STATIC_ASSERT(offsetof(DrLaserCannonState, animStepScale) == DR_LASERCANNON_STATE_ANIM_STEP_SCALE);
+STATIC_ASSERT(offsetof(DrLaserCannonTrickyInterfaceVTable, sideCommandEnable) == 0x28);
 STATIC_ASSERT(offsetof(DrLaserCannonState, trickyCooldown) == DR_LASERCANNON_STATE_TRICKY_COOLDOWN);
 STATIC_ASSERT(offsetof(DrLaserCannonState, reloadTimer) == DR_LASERCANNON_STATE_RELOAD_TIMER);
 STATIC_ASSERT(offsetof(DrLaserCannonState, aim) == DR_LASERCANNON_STATE_AIM);
@@ -569,10 +576,10 @@ void DR_LaserCannon_update(GameObject* obj)
         }
     }
     {
-        int tricky = (int)getTrickyObject();
-        if ((void*)tricky != NULL)
+        GameObject* tricky = getTrickyObject();
+        if (tricky != NULL)
         {
-            (*(void (**)(int, void*, int, int))(*(int*)(*(int*)((char*)tricky + 0x68)) + 0x28))(tricky, obj, 1, 2);
+            (*(DrLaserCannonTrickyInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(tricky, obj, 1, 2);
         }
     }
     hit = ObjAnim_AdvanceCurrentMove((int)obj, state->animStepScale, timeDelta, 0);

@@ -963,7 +963,7 @@ int dll_0B_func09(void* a0, int a1, int a2, u8 a3, void* a4)
                  ((int)((PartfxEffectState*)p[slot])->flags & 0x4000))
         {
             setTextColor(a0, 0xff, 0xff, 0xff,
-                         *(u8*)((char*)((PartfxEffectState*)p[slot])->sourceObject + 0x37));
+                         ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.renderAlpha);
         }
         else
         {

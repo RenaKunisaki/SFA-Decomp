@@ -25,6 +25,11 @@ typedef struct ShBeaconFlags {
     u8 : 7;
 } ShBeaconFlags;
 
+typedef struct ShBeaconTrickyInterfaceVTable {
+    void* callbacks[10];                                                                                 /* 0x00 */
+    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType); /* 0x28 */
+} ShBeaconTrickyInterfaceVTable;
+
 typedef struct ShBeaconState {
     GameObject* twinkleObject;
     f32 pulseTimer;
@@ -54,6 +59,7 @@ STATIC_ASSERT(offsetof(ShBeaconState, mode) == 0x14);
 STATIC_ASSERT(offsetof(ShBeaconState, flags) == 0x15);
 STATIC_ASSERT(offsetof(ShBeaconState, unknown16) == 0x16);
 STATIC_ASSERT(sizeof(ShBeaconState) == 0x18);
+STATIC_ASSERT(offsetof(ShBeaconTrickyInterfaceVTable, sideCommandEnable) == 0x28);
 
 int sh_beacon_sequenceCallback(GameObject* obj);
 int sh_beacon_resetFadeTimerCallback(GameObject* obj);

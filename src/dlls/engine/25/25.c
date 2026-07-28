@@ -156,19 +156,19 @@ void dll_19_func19(u8* cam, u8* ctx)
     {
         return;
     }
-    if (*(void**)&((GameObject*)cam)->childObjs[0] != NULL)
+    if (((GameObject*)cam)->childObjs[0] != NULL)
     {
-        Obj_FreeObject(*(GameObject**)&((GameObject*)cam)->childObjs[0]);
-        *(int*)&((GameObject*)cam)->childObjs[0] = 0;
+        Obj_FreeObject(((GameObject*)cam)->childObjs[0]);
+        ((GameObject*)cam)->childObjs[0] = NULL;
     }
     if (Obj_IsLoadingLocked() != 0)
     {
         if ((s8)ctx[1031] > 0)
         {
             ObjPlacement* setup = Obj_AllocObjectSetup(24, childObjectIds.ids[(s8)ctx[1031] - 1]);
-            *(int*)&((GameObject*)cam)->childObjs[0] =
-                (int)Obj_SetupObject(setup, 4, -1, -1, ((GameObject*)cam)->anim.parent);
-            *(u16*)(*(int*)&((GameObject*)cam)->childObjs[0] + 0xb0) = ((GameObject*)cam)->objectFlags & 7;
+            ((GameObject*)cam)->childObjs[0] =
+                Obj_SetupObject(setup, 4, -1, -1, ((GameObject*)cam)->anim.parent);
+            ((GameObject*)((GameObject*)cam)->childObjs[0])->objectFlags = ((GameObject*)cam)->objectFlags & 7;
         }
         ctx[1033] = ctx[1031];
     }

@@ -67,7 +67,7 @@ void sh_beacon_free(GameObject* obj, int keepChild) {
 void sh_beacon_update(GameObject* obj) {
     ShBeaconState* state;
     int placementAddress;
-    int trickyObjectAddress;
+    GameObject* tricky;
     ObjPlacement* twinklePlacement;
     int pulseMode;
     ShBeaconState* ignitingState;
@@ -134,9 +134,9 @@ void sh_beacon_update(GameObject* obj) {
         } else {
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
-        trickyObjectAddress = (int)getTrickyObject();
-        if (((void*)trickyObjectAddress != NULL) && ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)) {
-            (*(VtableFn*)(*(int*)(*(int*)(trickyObjectAddress + 0x68)) + 0x28))(trickyObjectAddress, obj, 1, 4);
+        tricky = getTrickyObject();
+        if ((tricky != NULL) && ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)) {
+            (*(ShBeaconTrickyInterfaceVTable**)tricky->anim.dll)->sideCommandEnable(tricky, obj, 1, 4);
         }
     } else {
         if ((mainGetBit(GAMEBIT_ITEM_MoonPassKey_Got) != 0) ||

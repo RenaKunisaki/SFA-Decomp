@@ -114,7 +114,7 @@ void andross_spawnBombCollector(GameObject* obj, AndrossState* state)
             if (state->effectHandle != NULL)
             {
                 state->effectHandle->anim.alpha = 0xff;
-                *(u8*)((int)state->effectHandle + 0x37) = 0xff;
+                state->effectHandle->anim.renderAlpha = 0xff;
                 state->effectLifetime = 0x12c;
             }
         }
