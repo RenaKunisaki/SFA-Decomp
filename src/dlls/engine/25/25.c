@@ -32,11 +32,11 @@
 #include "main/dll/dll_0004_dummy04.h"
 
 GameObject* gDll19NearestObj;
-u32 lbl_803DD5E0;
+f32 gDll19SegmentRadius;
 s8 gDll19SeqStallCount;
 f32 gDll19SeqMinDist;
 
-u32 lbl_803DB9E0 = 0x41C80000;
+f32 gDll19LocalPointRadius = 25.0f;
 
 typedef struct Dll19Placement
 {
@@ -73,8 +73,8 @@ const union Dll19ConstU32 gDll19DefaultCurveMode = { 2 };
 
 
 const Dll19ChildObjectIdTable lbl_802C2190 = {{0x23, 0x69, 0x33, 0x64, 0x1D}};
-u32 lbl_8031A048[3] = {0, 0, 0};
-u32 lbl_8031A054[3] = {0, 0, 0};
+f32 gDll19SegmentLocalPoints[3] = {0.0f, 0.0f, 0.0f};
+f32 gDll19LocalPointPositions[3] = {0.0f, 0.0f, 0.0f};
 
 int dll_19_isBaddieControlObject(GameObject* obj)
 {
@@ -236,10 +236,10 @@ void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg
     {
         (*gPathControlInterface)->init(path, 0, 0, 0);
     }
-    (*gPathControlInterface)->setLocalPointCollision(path, 1, lbl_8031A054, &lbl_803DB9E0, 4);
+    (*gPathControlInterface)->setLocalPointCollision(path, 1, gDll19LocalPointPositions, &gDll19LocalPointRadius, 4);
     if ((flags & 4) != 0)
     {
-        (*gPathControlInterface)->setup(path, 1, lbl_8031A048, &lbl_803DD5E0, &byteLocal);
+        (*gPathControlInterface)->setup(path, 1, gDll19SegmentLocalPoints, &gDll19SegmentRadius, &byteLocal);
     }
     (*gPathControlInterface)->attachObject((void*)obj, path);
     ((GroundBaddieState*)state)->configFlags = config[43];
