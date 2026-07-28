@@ -33,17 +33,6 @@ typedef struct CurvesHitScratch
     u8 unk55[0x13];
 } CurvesHitScratch;
 
-typedef struct CurvesSaveGameObjectPosition
-{
-    u32 objectId;
-    f32 x;
-    f32 y;
-    f32 z;
-} CurvesSaveGameObjectPosition;
-
-#define SAVEGAME_OBJECT_POSITION_COUNT  0x3f
-#define SAVEGAME_OBJECT_POSITION_OFFSET 0x168
-
 #define CURVES_ONE                        1.0f
 #define CURVES_SURFACE_NORMAL_Z_THRESHOLD 0.707f
 #define CURVES_RAISED_TRACE_OFFSET        18.0f
@@ -1748,13 +1737,13 @@ void* getLastSavedGameTexts(void)
 int pushable_savePos(GameObject* obj)
 {
     int i;
-    CurvesSaveGameObjectPosition* position;
+    SaveGameObjectPosition* position;
     u32 objectId;
     f32 savedX;
 
     for (i = 0; i < SAVEGAME_OBJECT_POSITION_COUNT; i++)
     {
-        position = &((CurvesSaveGameObjectPosition*)gSaveGameData)[i];
+        position = &((SaveGameObjectPosition*)gSaveGameData)[i];
         objectId = ((RomCurveDef*)obj->anim.placementData)->id;
         if (objectId == *(u32*)((u8*)&position->objectId + SAVEGAME_OBJECT_POSITION_OFFSET))
         {

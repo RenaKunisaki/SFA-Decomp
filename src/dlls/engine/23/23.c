@@ -58,8 +58,6 @@ STATIC_ASSERT(offsetof(SaveGameData, timeEntryCount) == 0x6EC);
 STATIC_ASSERT(offsetof(SaveGameData, timeEntries) == 0x6F0);
 STATIC_ASSERT(sizeof(SaveGameData) == 0xF70);
 
-#define SAVEGAME_OBJECT_POSITION_COUNT        0x3f
-#define SAVEGAME_OBJECT_POSITION_OFFSET       0x168
 #define SAVEGAME_OBJECT_POSITION_DIRTY_OFFSET 0x20158
 #define SAVEGAME_LIVE_BUFFER_SIZE             0xf70
 #define SAVEGAME_ACTIVE_SIZE                  0x6ec
@@ -82,14 +80,6 @@ enum
     SAVEGAME_EMPTY_TASK_HINT = -1,
     SAVEGAME_DEFAULT_VOLUME = 0x7f,
 };
-
-typedef struct SaveGameObjectPosition
-{
-    u32 objectId;
-    f32 x;
-    f32 y;
-    f32 z;
-} SaveGameObjectPosition;
 
 typedef struct SaveGameImage
 {
