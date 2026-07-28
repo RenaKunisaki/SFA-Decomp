@@ -1030,7 +1030,6 @@ config.libs = [
             Object(NonMatching, "musyx/runtime/synth_seq_dispatch.c", extra_cflags=["-fp_contract", "off"]),
             Object(MatchingFor("GSAE01"), "musyx/runtime/mcmd_data.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/synth_seq_queue.c"),
-            Object(NonMatching, "musyx/runtime/synth_channel_scale.c", extra_cflags=["-fp_contract", "off"]),
             Object(NonMatching, "musyx/runtime/synth.c", extra_cflags=["-fp_contract", "off"]),
             Object(MatchingFor("GSAE01"), "musyx/runtime/synth_control.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/snd_synth_api.c"),
