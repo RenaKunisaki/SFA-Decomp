@@ -152,7 +152,7 @@ typedef struct SaveSelectInfo
     u32 playTime;
     void* taskTexts[5];
     u8 valid;
-    u8 active;
+    u8 chaptersUnlocked;
     u8 pad22[2];
 } SaveSelectInfo;
 
@@ -698,7 +698,7 @@ int saveSelect_getInfo(void* outPtr)
                 {
                     info->taskTexts[i] = gameTextGetPhrase(taskIds[i] + 0xf4, 0);
                 }
-                info->active = 0;
+                info->chaptersUnlocked = 0;
                 info->valid = save[SAVEGAME_NEW_FILE_FLAG_OFFSET];
             }
             else

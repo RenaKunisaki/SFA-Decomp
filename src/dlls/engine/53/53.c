@@ -43,7 +43,7 @@
  * sequences: a debug-text unlock sequence and a per-slot save cheat. Each
  * sequence is 5 entries long; a 16-frame input timer resets a partial
  * match. Completing the debug sequence sets enableDebugText; completing
- * the save sequence stamps cheatFlag=5 on the current save slot.
+ * the save sequence stamps chaptersUnlocked=5 on the current save slot.
  *
  * saveSelect_drawText() renders the selected slot's summary: the two side
  * textures, the slot name, completion percent, formatted play time
@@ -117,7 +117,7 @@ void saveFileSelect_checkCheatCodes(void)
     }
     if (saveFileSelect_saveCheatProgress == CHEAT_SEQUENCE_LEN)
     {
-        saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].cheatFlag = 5;
+        saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].chaptersUnlocked = 5;
         saveFileSelect_saveDirty = 1;
         Sfx_PlayFromObject(0, SFXTRIG_cam90_c);
     }
@@ -153,10 +153,10 @@ void saveSelect_drawText(int unused, int alpha)
     sprintf(buf, sFrontendTimeFormat, hours, (u32)(u8)minutes, (u32)(u8)seconds);
     gameTextShowStr(buf, 0x43, 0, 0);
 
-    sprintf(buf, sFrontendSingleDigitFormat, saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].lifeCount);
+    sprintf(buf, sFrontendSingleDigitFormat, saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].rankB);
     gameTextShowStr(buf, 0x44, 0, 0);
 
-    sprintf(buf, sFrontendSingleDigitFormat, saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].magicCount);
+    sprintf(buf, sFrontendSingleDigitFormat, saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].rankA);
     gameTextShowStr(buf, 0x45, 0, 0);
 }
 
@@ -423,7 +423,7 @@ void saveSelectGoToChapterSelect(void)
         panel = &gSaveSelectPanels[SAVE_SELECT_PANEL_CHAPTER_SELECT];
         for (i = 0; i < 6; i++)
         {
-            if (i > saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].cheatFlag)
+            if (i > saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].chaptersUnlocked)
             {
                 panel->entries[i].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
             }
@@ -431,7 +431,7 @@ void saveSelectGoToChapterSelect(void)
             {
                 panel->entries[i].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
             }
-            if (i <= saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].cheatFlag + -1 && i < 5)
+            if (i <= saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].chaptersUnlocked + -1 && i < 5)
             {
                 panel->entries[i].pad18[3] = (s8)(i + 1);
             }
@@ -474,11 +474,11 @@ void saveSelectFn_8011a70c(void)
     for (i = gSaveSelectInfoStartSlot[0]; i < 3; i++)
     {
         sprintf(saveFileSelect_saveSlots[i].name, sFrontendStringFormat, lbl_803DBA20);
-        saveFileSelect_saveSlots[i].magicCount = 0;
-        saveFileSelect_saveSlots[i].lifeCount = 0;
+        saveFileSelect_saveSlots[i].rankA = 0;
+        saveFileSelect_saveSlots[i].rankB = 0;
         saveFileSelect_saveSlots[i].completionPercent = 0;
         saveFileSelect_saveSlots[i].playTimeSeconds = 0;
-        saveFileSelect_saveSlots[i].cheatFlag = 0;
+        saveFileSelect_saveSlots[i].chaptersUnlocked = 0;
     }
 }
 

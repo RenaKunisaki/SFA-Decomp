@@ -6,13 +6,13 @@
 typedef struct FrontendSaveSlot {
     char name[4];
     u8 completionPercent;
-    u8 magicCount;
-    u8 lifeCount;
+    u8 rankA;
+    u8 rankB;
     u8 pad07;
     u32 playTimeSeconds;
     char* taskTexts[5];
     u8 isOccupied;
-    u8 cheatFlag;
+    u8 chaptersUnlocked;
     u8 pad22[0x24 - 0x22];
 } FrontendSaveSlot;
 
