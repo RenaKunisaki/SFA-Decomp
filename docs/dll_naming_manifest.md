@@ -476,7 +476,7 @@ Expansion status over the 448 named dlls: COMPLETE 117, CONFIRMED 276, GUESSED 3
 | 0x1AE | SH_LevelControl | COMPLETE | dlls/objects/430_SH_LevelCon/SH_LevelCon.c | = (canonical) | — |
 | 0x1AF | SH_swaplift | COMPLETE | dlls/objects/431_SH_swaplift/SH_swaplift.c | = (canonical) | — |
 | 0x1B0 | SH_swapston | COMPLETE | dlls/objects/432_SH_swapston/SH_swapston.c | = (canonical) | — |
-| 0x1B1 | SH_staff | COMPLETE | dlls/objects/433_SH_staff/SH_staff.c | = (canonical) | — |
+| 0x1B1 | SH_staff | COMPLETE | dlls/objects/433_SH_staff/SH_staff.c | = (canonical) | Exact complete six-function TU with its proven early descriptor and compiler jump table, allocation-backed 0x74-byte state, recovered placement fields, canonical unit header, and full constant pool; the generated source path remains unchanged |
 | 0x1B2 | SH_staffHaz | COMPLETE | dlls/objects/434_SH_staffHaz/SH_staffHaz.c | = (canonical) | — |
 | 0x1B3 | SH_Beacon | COMPLETE | dlls/objects/435_SH_Beacon/SH_Beacon.c | = (canonical) | — |
 | 0x1B4 | SH_EmptyTum | COMPLETE | dlls/objects/436_SH_EmptyTum/SH_EmptyTum.c | = (canonical) | — |
@@ -1003,6 +1003,7 @@ blocked units will surface more when carved.
 | 0x1AE | dlls/objects/430_SH_LevelCon/SH_LevelCon.c | include/dlls/objects/430_SH_LevelCon.h |
 | 0x1AF | dlls/objects/431_SH_swaplift/SH_swaplift.c | include/dlls/objects/431_SH_swaplift.h |
 | 0x1B0 | dlls/objects/432_SH_swapston/SH_swapston.c | include/dlls/objects/432_SH_swapston.h |
+| 0x1B1 | dlls/objects/433_SH_staff/SH_staff.c | include/dlls/objects/433_SH_staff.h |
 | 0x1E0 | main/dll/dll_01E0_dimboss.c | include/main/dll/DIM/dll_01E0_dimboss.h |
 | 0x1E1 | main/dll/dll_01E1_dimbossgut.c | include/main/dll/DIM/dll_01E1_dimbossgut.h |
 | 0x1E2 | main/dll/dll_01E2_dimbosstonsil.c | include/main/dll/dll_01E2_dimbosstonsil.h |
