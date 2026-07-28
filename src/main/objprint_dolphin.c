@@ -1133,11 +1133,11 @@ void objFn_8003dc50(u8* obj, u8* model)
         {
             if (f & 1)
             {
-                GXSetChanMatColor(chan, *(GXColor*)&lbl_803DB468);
+                GXSetChanMatColor(chan & 0xff, *(GXColor*)&lbl_803DB468);
             }
             else
             {
-                GXSetChanMatColor(chan, *(GXColor*)&gObjGxDefaultChanColor);
+                GXSetChanMatColor(chan & 0xff, *(GXColor*)&gObjGxDefaultChanColor);
             }
         }
         {
