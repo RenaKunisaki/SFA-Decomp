@@ -1463,7 +1463,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/359_SpiritDoorL/SpiritDoorL.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/360_HoloPoint/HoloPoint.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/361_IMIceMounta/IMIceMounta.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "dlls/objects/362_CRrockfall/CRrockfall.c", cflags=cflags_dll_noopt_noprop_noautoinline),
+            Object(Matching, "dlls/objects/362_CRrockfall/CRrockfall.c", cflags=cflags_dll_noopt_noprop_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/363/363.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/364/364.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/365_IMIcePillar/IMIcePillar.c"),
