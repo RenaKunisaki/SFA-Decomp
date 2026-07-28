@@ -24,7 +24,7 @@ int dll419_getObjectTypeId(void) {
 }
 
 void dll419_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, DLL419_OBJECT_GROUP_ID);
+    ObjGroup_RemoveObject((int)obj, DLL1A3_OBJECT_GROUP_ID);
 }
 
 void dll419_render(GameObject* unusedObj, int unusedArg2, int unusedArg3, int unusedArg4, int unusedArg5,
@@ -47,7 +47,7 @@ void dll419_update(GameObject* unusedObj) {
 void dll419_init(GameObject* obj) {
     obj->animEventCallback = dll419_processAnimEvents;
     obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
-    ObjGroup_AddObject((int)obj, DLL419_OBJECT_GROUP_ID);
+    ObjGroup_AddObject((int)obj, DLL1A3_OBJECT_GROUP_ID);
 }
 
 void dll419_release(void) {
@@ -56,7 +56,7 @@ void dll419_release(void) {
 void dll419_initialise(void) {
 }
 
-ObjectDescriptor gDll419ObjDescriptor = {
+ObjectDescriptor gDll1A3ObjDescriptor = {
     0,
     0,
     0,

@@ -3,8 +3,8 @@
 
 #include "global.h"
 
-#define DLL352_NULL_DESCRIPTOR_WORD_COUNT 2
+#define DLL160_NULL_DESCRIPTOR_WORD_COUNT 2
 
-extern u32 gDll352NullResourceDescriptor[DLL352_NULL_DESCRIPTOR_WORD_COUNT];
+extern u32 gDll160NullResourceDescriptor[DLL160_NULL_DESCRIPTOR_WORD_COUNT];
 
 #endif /* DLLS_OBJECTS_352_H_ */

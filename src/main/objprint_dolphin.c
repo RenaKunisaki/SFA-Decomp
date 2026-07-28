@@ -571,7 +571,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
         s10.b = v;
         s10.g = v;
         s10.r = v;
-        s10.a = obj->anim.pad37[0] - 0xff;
+        s10.a = obj->anim.renderAlpha - 0xff;
     }
     GXSetTevColorS10(GX_TEVREG2, s10);
     PSMTXScale(mtx3, -0.5f, -0.5f, 0.0f);

@@ -249,6 +249,7 @@ typedef struct PauseMenuCharacterState
 {
     u8 pad0[9];
     u8 healCount;
+    u8 healCountMax; /* the pause-menu status line prints "x %d/%d" from this pair */
 } PauseMenuCharacterState;
 
 typedef struct GameUiIndirectMatrix
@@ -934,9 +935,9 @@ void cutSceneFn_8011dd30(void)
 void showDeathMenu(void)
 {
     MapEventInterface* mapEvents = *gMapEventInterface;
-    int* r = mapEvents->getCurCharacterState();
+    PauseMenuCharacterState* r = mapEvents->getCurCharacterState();
     pauseMenuInit();
-    if (*((u8*)r + 9) != 0)
+    if (r->healCount != 0)
     {
         pauseMenuState = 8;
     }
@@ -5040,7 +5041,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
     s32 alpha;
     s32 ty;
     ObjModel* model;
-    int* info;
+    PauseMenuCharacterState* info;
     f32 timer;
 
     pauseMenuDoSave();
@@ -5133,7 +5134,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
         gameTextSetColor(0xff, 0xff, 0xff, ty & 0xff);
         lbl_803DBA8A = (s16)(0xff - lbl_803DD75C);
         lbl_803DBA8C = 1.5f;
-        sprintf(buf, lbl_803DBB70, *(u8*)((u8*)info + 9), *(u8*)((u8*)info + 0xa));
+        sprintf(buf, lbl_803DBB70, info->healCount, info->healCountMax);
         gameTextShowStr(buf, 0x93, 0x14a, 0xdc);
         if (lbl_803DD734 != 0)
         {

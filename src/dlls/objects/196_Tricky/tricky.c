@@ -522,7 +522,7 @@ GameObject* trickyFindNearestUsableBaddie(GameObject* origin, f32 maxRadius, int
                     {
                         s16 m = ((GameObject*)*objs)->anim.romDefNo;
                         if (m == TRICKY_SEQID_VAMBAT || m == TRICKY_SEQID_WB ||
-                            m == DLL437_SEQUENCE_ID_SC_BABY_LIGHTFOOT || m == TRICKY_SEQID_PINPON)
+                            m == DLL1B5_SEQUENCE_ID_SC_BABY_LIGHTFOOT || m == TRICKY_SEQID_PINPON)
                             continue;
                     }
                     {
@@ -2239,7 +2239,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
     }
     else
     {
-        ulink = walkGroupFn_800db3e4(&obj->anim.worldPosX, target, state->activeWalkGroup);
+        ulink = Objfsa_GetWalkGroupIndexForMove(&obj->anim.worldPosX, target, state->activeWalkGroup);
         if (ulink != 0)
         {
             state->movementState = TRICKY_MOVE_WALK_FREE;

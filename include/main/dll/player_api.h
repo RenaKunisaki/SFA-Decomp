@@ -41,7 +41,7 @@ int fn_80296464(GameObject* player);
 int playerGetSurfaceType(GameObject* player);
 void playerAddMaxMagic(GameObject* player, int delta);
 void fn_80296BBC(GameObject* player);
-void fn_802972B4(GameObject* player, u32* outEffects, f32* outA, f32* outB, f32* outC, u16* outSfx);
+void fn_802972B4(GameObject* player, u32* outEffects, f32* outA, f32* outB, f32* outC, u16* outHitStunFrames);
 GameObject* playerGetFocusObject(GameObject* player);
 int playerGetMoney(GameObject* player);
 int playerHasSpell(GameObject* obj, int spell);
@@ -84,7 +84,7 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv);
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv);
 int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv);
 void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieState* inner,
-                                                 struct Dll437ControlState* animState);
+                                                 struct Dll1B5ControlState* animState);
 void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner);
 void Lightfoot_ResetScriptedPosition(GameObject* obj);
 void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner);

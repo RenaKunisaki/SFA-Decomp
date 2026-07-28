@@ -447,7 +447,7 @@ void saveSelectGoToChapterSelect(void)
         gSaveSelectChapter = 0;
     }
 }
-void saveSelectFn_8011a70c(void)
+void saveSelect_loadSlotSummaries(void)
 {
     int i;
     FrontendSaveSlot* slots = saveFileSelect_saveSlotsBase;
@@ -488,7 +488,7 @@ void saveSelectGoToChooseSlot(int arg)
         p = tmp;
     }
 
-    saveSelectFn_8011a70c();
+    saveSelect_loadSlotSummaries();
     saveSelectSetupMenuItems(p);
 
     for (i = 0; i < 1; i++)
@@ -893,7 +893,7 @@ void SaveSelectScreen_initialise(void)
     }
     else
     {
-        saveSelectFn_8011a70c();
+        saveSelect_loadSlotSummaries();
         saveFileSelect_saveSlots = saveFileSelect_saveSlotsBase;
         if (gSaveSelectPanelIndex != -1)
         {

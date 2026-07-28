@@ -57,7 +57,7 @@ void NW_ice_update(GameObject* obj) {
             obj->objectFlags = (u16)(obj->objectFlags & ~0x100);
         }
     } else {
-        pairedObjects = (GameObject**)ObjGroup_GetObjects(DLL419_OBJECT_GROUP_ID, &objectCount);
+        pairedObjects = (GameObject**)ObjGroup_GetObjects(DLL1A3_OBJECT_GROUP_ID, &objectCount);
         placement = (NwIcePlacement*)obj->anim.placementData;
         for (objectIndex = 0, candidatePtr = pairedObjects; objectIndex < objectCount; candidatePtr++, objectIndex++) {
             candidateObject = *candidatePtr;

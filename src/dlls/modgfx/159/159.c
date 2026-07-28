@@ -5,7 +5,7 @@
  * dll_9F_func03 fills a stack command buffer with up to 17 GfxCmd entries
  * (an optional leading entry keyed off *sourceObj, then a fixed 16-entry
  * body) plus a header of colours, position, scale and seven halfwords read
- * from the effect's data table (gDll9fEffectDataTable). The base draw flags
+ * from the effect's data table (gDll9FEffectDataTable). The base draw flags
  * (0xC0104C0) are OR'd with the caller's flags; bit 0 means "position the
  * effect", taken from the GameObject's world position when sourceObj is set,
  * otherwise from posSource+0xC. The float constants (lbl_803E14xx) are the
@@ -23,12 +23,12 @@
 /* fl bit 0: derive effect position from sourceObj / posSource */
 #define DLL9F_FLAG_POSITIONED 0x1
 
-extern u8 gDll9fEffectDataTable[];
+extern u8 gDll9FEffectDataTable[];
 
 void dll_9F_func03(short* sourceObj, int variant, int posSource, u32 flags)
 {
     ModgfxSpawnPacket buf;
-    u8* tab = gDll9fEffectDataTable;
+    u8* tab = gDll9FEffectDataTable;
     GfxCmd* base = buf.entries;
     GfxCmd* e = base;
     int head = *sourceObj;
@@ -212,7 +212,7 @@ void dll_9F_func00_nop(void)
 {
 }
 
-u8 gDll9fEffectDataTable[520] = {
+u8 gDll9FEffectDataTable[520] = {
     0,   0,   3,  232, 0,   0,   0,   0,   0,   0,   3,   98,  1,  244, 0,   0,   0,   22,  0,   0,   3,   98,  254,
     12,  0,   0,  0,   44,  0,   0,   0,   0,   252, 24,  0,   0,  0,   63,  0,   0,   252, 158, 254, 12,  0,   0,
     0,   44,  0,  0,   252, 158, 1,   244, 0,   0,   0,   22,  0,  0,   0,   0,   3,   232, 0,   0,   0,   0,   0,

@@ -67,6 +67,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
 #include "main/dll/dll_024D_bossdrakor.h"
+#include "main/dll/dll_024E_drakordthornbush.h"
 #include "dlls/object_descriptor.h"
 
 f32 lbl_803DC188 = 3.0f;
@@ -94,7 +95,7 @@ typedef struct BossDrakorSpellStoneInterface
 } BossDrakorSpellStoneInterface;
 
 STATIC_ASSERT(offsetof(BossDrakorSpellStoneInterface, setState) == 0x20);
-#define BOSSDRAKOR_CHILD_OBJ_ATTACK  0x709 /* spawnAttackObjects: BossdrakorPlacement (airMeterMax/curveAdvanceStep) */
+#define BOSSDRAKOR_CHILD_OBJ_ATTACK  0x709 /* THORNBUSH_SEQ_LIGHTNING - spawnAttackObjects fills a DrakordThornbushPlacement */
 #define BOSSDRAKOR_ENVFX_A 0x144
 #define BOSSDRAKOR_ENVFX_B 0x10d
 #define BOSSDRAKOR_ENVFX_C 0x10e
@@ -377,9 +378,9 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                     setup->posX = s->homePosX;
                     setup->posY = s->homePosY;
                     setup->posZ = s->homePosZ;
-                    ((BossdrakorPlacement*)setup)->airMeterMax = 0x3c;
-                    ((BossdrakorPlacement*)setup)->unk1C = lbl_803DC194;
-                    ((BossdrakorPlacement*)setup)->curveAdvanceStep = lbl_803DC190;
+                    ((DrakordThornbushPlacement*)setup)->regrowDelay = 0x3c;
+                    ((DrakordThornbushPlacement*)setup)->baseRadius = lbl_803DC194;
+                    ((DrakordThornbushPlacement*)setup)->spawnHealth = lbl_803DC190;
                     loadObjectAtObject(obj, setup);
                     Sfx_PlayFromObject((int)obj, SFXTRIG__UNK);
                 }

@@ -5,13 +5,13 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-typedef struct Dll413Placement {
+typedef struct Dll19DPlacement {
     ObjPlacement base;
     u8 unknown18;
     s8 variant;
-} Dll413Placement;
+} Dll19DPlacement;
 
-typedef struct Dll413State {
+typedef struct Dll19DState {
     u8 unknown00[0x08];
     f32 positionX;
     f32 positionY;
@@ -24,27 +24,27 @@ typedef struct Dll413State {
     u16 spinPhase;
     u8 flags;
     u8 unknown37;
-} Dll413State;
+} Dll19DState;
 
-STATIC_ASSERT(offsetof(Dll413Placement, base) == 0x00);
-STATIC_ASSERT(offsetof(Dll413Placement, unknown18) == 0x18);
-STATIC_ASSERT(offsetof(Dll413Placement, variant) == 0x19);
+STATIC_ASSERT(offsetof(Dll19DPlacement, base) == 0x00);
+STATIC_ASSERT(offsetof(Dll19DPlacement, unknown18) == 0x18);
+STATIC_ASSERT(offsetof(Dll19DPlacement, variant) == 0x19);
 
-STATIC_ASSERT(sizeof(Dll413State) == 0x38);
-STATIC_ASSERT(offsetof(Dll413State, unknown00) == 0x00);
-STATIC_ASSERT(offsetof(Dll413State, positionX) == 0x08);
-STATIC_ASSERT(offsetof(Dll413State, positionY) == 0x0C);
-STATIC_ASSERT(offsetof(Dll413State, positionZ) == 0x10);
-STATIC_ASSERT(offsetof(Dll413State, unknown14) == 0x14);
-STATIC_ASSERT(offsetof(Dll413State, angularVelocityZ) == 0x2C);
-STATIC_ASSERT(offsetof(Dll413State, angularVelocityX) == 0x2E);
-STATIC_ASSERT(offsetof(Dll413State, effectTimer) == 0x30);
-STATIC_ASSERT(offsetof(Dll413State, despawnTimer) == 0x32);
-STATIC_ASSERT(offsetof(Dll413State, spinPhase) == 0x34);
-STATIC_ASSERT(offsetof(Dll413State, flags) == 0x36);
-STATIC_ASSERT(offsetof(Dll413State, unknown37) == 0x37);
+STATIC_ASSERT(sizeof(Dll19DState) == 0x38);
+STATIC_ASSERT(offsetof(Dll19DState, unknown00) == 0x00);
+STATIC_ASSERT(offsetof(Dll19DState, positionX) == 0x08);
+STATIC_ASSERT(offsetof(Dll19DState, positionY) == 0x0C);
+STATIC_ASSERT(offsetof(Dll19DState, positionZ) == 0x10);
+STATIC_ASSERT(offsetof(Dll19DState, unknown14) == 0x14);
+STATIC_ASSERT(offsetof(Dll19DState, angularVelocityZ) == 0x2C);
+STATIC_ASSERT(offsetof(Dll19DState, angularVelocityX) == 0x2E);
+STATIC_ASSERT(offsetof(Dll19DState, effectTimer) == 0x30);
+STATIC_ASSERT(offsetof(Dll19DState, despawnTimer) == 0x32);
+STATIC_ASSERT(offsetof(Dll19DState, spinPhase) == 0x34);
+STATIC_ASSERT(offsetof(Dll19DState, flags) == 0x36);
+STATIC_ASSERT(offsetof(Dll19DState, unknown37) == 0x37);
 
-extern ObjectDescriptor gDll413ObjDescriptor;
+extern ObjectDescriptor gDll19DObjDescriptor;
 
 int dll413_getExtraSize(void);
 int dll413_getObjectTypeId(void);
