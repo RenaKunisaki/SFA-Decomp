@@ -1,11 +1,11 @@
 #include "dolphin.h"
 
-extern u8 lbl_803326E8[];
+extern u8 __lower_map[];
 
 int tolower(int x) {
     if (x == -1) {
         return -1;
     }
 
-    return lbl_803326E8[(u8)x];
+    return __lower_map[(u8)x];
 }

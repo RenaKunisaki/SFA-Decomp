@@ -2,7 +2,7 @@
 
 int lbl_803DE3E8;
 
-const double lbl_802C2920[3] = {
+const double __constants[3] = {
     0.0,
     4294967296.0,
     2147483648.0,
