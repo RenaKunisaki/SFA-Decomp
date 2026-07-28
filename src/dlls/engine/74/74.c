@@ -80,10 +80,8 @@ void CameraModeShipBattle_update(short* cam)
     }
     if (mode != 2 && mode != 5)
     {
-        fa = (f32)focus->anim.rotZ / 3367.0f;
-        gCamShipBattleState->smoothedZOffset = -(fa * timeDelta - gCamShipBattleState->smoothedZOffset);
-        fa = (f32)focus->anim.rotY / 1365.0f;
-        gCamShipBattleState->smoothedYOffset = -(fa * timeDelta - gCamShipBattleState->smoothedYOffset);
+        gCamShipBattleState->smoothedZOffset = -((f32)focus->anim.rotZ / 3367.0f * timeDelta - gCamShipBattleState->smoothedZOffset);
+        gCamShipBattleState->smoothedYOffset = -((f32)focus->anim.rotY / 1365.0f * timeDelta - gCamShipBattleState->smoothedYOffset);
         state = gCamShipBattleState;
         fc = 0.02f;
         fb = state->smoothedZOffset;
@@ -97,10 +95,8 @@ void CameraModeShipBattle_update(short* cam)
     }
     else
     {
-        fa = (f32)focus->anim.rotZ / 3367.0f;
-        gCamShipBattleState->smoothedZOffset = -(fa * timeDelta - gCamShipBattleState->smoothedZOffset);
-        fa = (f32)focus->anim.rotY / 1365.0f;
-        gCamShipBattleState->smoothedYOffset = -(fa * timeDelta - gCamShipBattleState->smoothedYOffset);
+        gCamShipBattleState->smoothedZOffset = -((f32)focus->anim.rotZ / 3367.0f * timeDelta - gCamShipBattleState->smoothedZOffset);
+        gCamShipBattleState->smoothedYOffset = -((f32)focus->anim.rotY / 1365.0f * timeDelta - gCamShipBattleState->smoothedYOffset);
         state = gCamShipBattleState;
         fc = 0.02f;
         fb = state->smoothedZOffset;
