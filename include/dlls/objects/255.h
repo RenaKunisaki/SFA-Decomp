@@ -4,33 +4,14 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
+#include "dlls/objects/237.h"
 
-#define MAGICGEM_PLACEMENT_SIZE 0x30
 #define MAGICGEM_STATE_SIZE     0x288
 
 #define MAGICGEM_DEF_GREEN  0x2C4
 #define MAGICGEM_DEF_RED    0x2CD
 #define MAGICGEM_DEF_YELLOW 0x2CE
 #define MAGICGEM_DEF_BLUE   0x2CF
-
-/*
- * Dynamically spawned gems use this complete 0x30-byte setup record.
- * MagicPlant allocates it directly; MagicDust_init consumes bankIndex and
- * spawnMode.
- */
-typedef struct MagicGemPlacement {
-    ObjPlacement base; /* 0x00 */
-    u8 pad18[2];       /* 0x18 */
-    u8 unk1A;          /* 0x1A */
-    u8 pad1B;          /* 0x1B */
-    s16 hideGameBit;   /* 0x1C bit set on collect so the gem stays gone */
-    u8 pad1E[6];       /* 0x1E */
-    s16 visibilityGameBit; /* 0x24 gem is active only while this bit is set */
-    u8 bankIndex;      /* 0x26 */
-    u8 pad27[5];       /* 0x27 */
-    s16 counterGameBit; /* 0x2C bit incremented on collect (>0 = active) */
-    s16 spawnMode;     /* 0x2E */
-} MagicGemPlacement;
 
 #define MAGICGEM_FLAG_BURST1        0x01 /* First timed particle-burst phase. */
 #define MAGICGEM_FLAG_SETTLED       0x02 /* At rest after repeated bounces. */
@@ -67,19 +48,6 @@ typedef struct MagicGemState {
     u8 pad282[6];            /* 0x282 */
 } MagicGemState;
 
-STATIC_ASSERT(offsetof(MagicGemPlacement, base) == 0x0);
-STATIC_ASSERT(offsetof(MagicGemPlacement, pad18) == 0x18);
-STATIC_ASSERT(offsetof(MagicGemPlacement, unk1A) == 0x1A);
-STATIC_ASSERT(offsetof(MagicGemPlacement, pad1B) == 0x1B);
-STATIC_ASSERT(offsetof(MagicGemPlacement, hideGameBit) == 0x1C);
-STATIC_ASSERT(offsetof(MagicGemPlacement, pad1E) == 0x1E);
-STATIC_ASSERT(offsetof(MagicGemPlacement, visibilityGameBit) == 0x24);
-STATIC_ASSERT(offsetof(MagicGemPlacement, bankIndex) == 0x26);
-STATIC_ASSERT(offsetof(MagicGemPlacement, pad27) == 0x27);
-STATIC_ASSERT(offsetof(MagicGemPlacement, counterGameBit) == 0x2C);
-STATIC_ASSERT(offsetof(MagicGemPlacement, spawnMode) == 0x2E);
-STATIC_ASSERT(sizeof(MagicGemPlacement) == MAGICGEM_PLACEMENT_SIZE);
-
 STATIC_ASSERT(offsetof(MagicGemState, pad000) == 0x0);
 STATIC_ASSERT(offsetof(MagicGemState, contactNormalY) == 0x6C);
 STATIC_ASSERT(offsetof(MagicGemState, pad070) == 0x70);
@@ -106,7 +74,7 @@ int MagicDust_getExtraSize(void);
 void MagicDust_free(GameObject* obj);
 void MagicDust_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 unusedVisible);
 void MagicDust_update(GameObject* obj);
-void MagicDust_init(GameObject* obj, MagicGemPlacement* placement);
+void MagicDust_init(GameObject* obj, CollectibleSetup* placement);
 
 extern ObjectDescriptor gMagicGemObjDescriptor;
 

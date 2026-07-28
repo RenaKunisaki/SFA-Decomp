@@ -107,6 +107,13 @@ STATIC_ASSERT(offsetof(CollectibleState, bounceHitFlag) == 0x2B1);
 STATIC_ASSERT(offsetof(CollectibleState, pad2B2) == 0x2B2);
 STATIC_ASSERT(sizeof(CollectibleState) == 0x2B8);
 
+/*
+ * The 0x30-byte setup record shared by the whole pickup family. Spawners
+ * (LargeCrate, SmallBasket, MagicPlant, 247, 462, engine/25) allocate it
+ * and write the same block - unk1A = 0x14, the three game bits set to -1
+ * and the base position - before Obj_SetupObject; the spawned object's
+ * init reads modelIndex and spawnMode back out of it.
+ */
 typedef struct CollectibleSetup {
     ObjPlacement base;     /* 0x00 */
     u8 pad18;              /* 0x18 */
@@ -119,7 +126,7 @@ typedef struct CollectibleSetup {
     u8 rotYByte;           /* 0x22 initial anim.rotY (<<8) */
     u8 rotZByte;           /* 0x23 initial anim.rotZ (<<8) */
     s16 visibilityGameBit; /* 0x24 item is active only while this bit is set */
-    s8 modelIndex;         /* 0x26 model bank index */
+    u8 modelIndex;         /* 0x26 model bank index */
     u8 useColor;           /* 0x27 nonzero applies the RGB tint below */
     u8 colorR;             /* 0x28 */
     u8 colorG;             /* 0x29 */

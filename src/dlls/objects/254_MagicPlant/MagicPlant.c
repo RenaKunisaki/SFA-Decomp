@@ -203,7 +203,7 @@ void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlaceme
 }
 
 void MagicPlant_spawnChild(GameObject* obj, int objectId) {
-    MagicGemPlacement* placement;
+    CollectibleSetup* placement;
     GameObject* childObj;
     u8* placementData;
     MagicPlantState* state;
@@ -211,7 +211,7 @@ void MagicPlant_spawnChild(GameObject* obj, int objectId) {
     placementData = *(u8**)&obj->anim.placementData;
     state = obj->extra;
     if ((u8)Obj_IsLoadingLocked() != 0) {
-        placement = (MagicGemPlacement*)Obj_AllocObjectSetup(sizeof(MagicGemPlacement), objectId);
+        placement = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), objectId);
         placement->unk1A = MAGICPLANT_CHILD_UNK1A;
         placement->counterGameBit = MAGICPLANT_CHILD_SENTINEL;
         placement->hideGameBit = MAGICPLANT_CHILD_SENTINEL;

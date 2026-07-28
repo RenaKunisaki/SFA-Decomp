@@ -330,7 +330,7 @@ void MagicDust_update(GameObject* obj) {
     }
 }
 
-void MagicDust_init(GameObject* obj, MagicGemPlacement* placement) {
+void MagicDust_init(GameObject* obj, CollectibleSetup* placement) {
     s16 mode;
     u32 randomValue;
     GameObject* player;
@@ -371,7 +371,7 @@ void MagicDust_init(GameObject* obj, MagicGemPlacement* placement) {
         obj->anim.alpha = MAGICGEM_MIN_ALPHA;
         obj->anim.velocityY = -((f32)(int)randomGetRange(0x8C, 0x96) / MAGICGEM_RANDOM_Y_SPEED_SCALE);
     }
-    obj->anim.bankIndex = placement->bankIndex;
+    obj->anim.bankIndex = placement->modelIndex;
     if (obj->anim.bankIndex >= obj->anim.modelInstance->modelCount) {
         obj->anim.bankIndex = 0;
     }
