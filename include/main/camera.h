@@ -112,9 +112,9 @@ extern f32 gCameraOrthoTop;
 extern f32 lbl_803DE60C;
 extern f32 gCameraDefaultFarPlane;
 extern f32 gCameraDefaultPosition;
-extern f32 lbl_803DB26C;
+extern f32 gCameraEffectViewportFarZ;
 extern u32 gViewportJitterField;
-extern s16 lbl_803DC88A;
+extern u16 gCameraPerspectiveNorm;
 
 void Obj_RotateLocalOffsetByYaw(f32* local, f32* out, s8 yawIndex);
 

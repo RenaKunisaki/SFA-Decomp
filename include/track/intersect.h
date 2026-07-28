@@ -18,7 +18,7 @@ void drawFn_8006f500(void);
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void waterFxSetDisabled(int disabled);
 void waterFxInit(void);
-void matrixFn_8006ff0c(float* param_6, short* param_7, f32 param_1, f32 param_2, f32 param_3, f32 param_4, f32 param_5);
+void mtx44Perspective(f32* matrix, u16* perspectiveNorm, f32 fovY, f32 aspect, f32 nearPlane, f32 farPlane, f32 scale);
 void normalize(f32* x, f32* y, f32* z);
 void mtx44Identity(f32* matrix);
 void resetSomeGxFlags(void);

@@ -12,7 +12,7 @@
 f32 gCameraNearPlane = 2.5f;
 f32 gCameraFarPlane = 10000.0f;
 f32 gCameraAspectRatio = 1.3333334f;
-f32 lbl_803DB26C = 1.0f;
+f32 gCameraEffectViewportFarZ = 1.0f;
 
 f32 gCameraFarPlaneTransitionStart;
 f32 gCameraFarPlaneTransitionTarget;
@@ -24,7 +24,7 @@ f32 gCameraOrthoRight;
 s32 gCameraProjectionMode;
 u8 gCameraCurrentViewIndex;
 u8 gCameraShakeEnabled;
-s16 lbl_803DC88A;
+u16 gCameraPerspectiveNorm;
 s8 gObjTransformMatrixSlot;
 s16 cameraViewportYOffset;
 s16 gCameraViewportYOffset;
@@ -868,7 +868,8 @@ void Camera_ApplyEffectDepthViewport(void) {
         GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.075f),
                             lbl_803DE5F0, gViewportJitterField);
     } else {
-        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.075f), lbl_803DB26C);
+        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.075f),
+                      gCameraEffectViewportFarZ);
     }
 }
 
@@ -1032,8 +1033,8 @@ void Camera_InitState(void) {
     }
     GXSetProjection(storage->projectionMatrix, gCameraProjectionMode);
 
-    matrixFn_8006ff0c(storage->worldMatrix + 32, &lbl_803DC88A, gCameraFovY, gCameraAspectRatio, gCameraNearPlane,
-                      gCameraFarPlane, lbl_803DE5F0);
+    mtx44Perspective(storage->worldMatrix + 32, &gCameraPerspectiveNorm, gCameraFovY, gCameraAspectRatio,
+                     gCameraNearPlane, gCameraFarPlane, lbl_803DE5F0);
     copyMatrix44(storage->worldMatrix + 32, storage->yawTransforms[33]);
 }
 
