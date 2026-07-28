@@ -1130,7 +1130,7 @@ void objFreeObjDef(u8* obj, int flag)
 
         type = ((GameObject*)obj)->anim.defId;
         refCounts = gObjFileRefCount;
-        if (refCounts[type] == 0)
+        if (refCounts[((GameObject*)obj)->anim.defId] == 0)
         {
             debugPrintf(sObjFreeObjdefError);
         }
