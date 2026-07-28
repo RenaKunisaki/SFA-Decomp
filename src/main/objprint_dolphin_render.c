@@ -245,63 +245,6 @@ extern f32 lbl_803DEA64;
 extern f32 lbl_803DEA68;
 extern f32 lbl_803DEA6C;
 
-
-void objMtxFn_80041104(f32* mtx, f32* out, s16* in, int flag, int* obj, int e)
-{
-    f32 m[16];
-    MatrixTransform blk;
-    f32 v[3];
-    f32 res[3];
-    v[0] = in[0];
-    v[1] = in[1];
-    v[2] = in[2];
-    if (e != 0)
-    {
-        v[0] *= 0.00390625f;
-        v[1] *= 0.00390625f;
-        v[2] *= 0.00390625f;
-    }
-    if (mtx != NULL)
-    {
-        if (flag != 0)
-        {
-            out[0] = mtx[3] + v[0];
-            out[1] = mtx[7] + v[1];
-            out[2] = mtx[11] + v[2];
-        }
-        else
-        {
-            PSMTXMultVec((MtxPtr)mtx, (Vec*)v, (Vec*)res);
-            out[0] = res[0];
-            out[1] = res[1];
-            out[2] = res[2];
-        }
-        out[0] += playerMapOffsetX;
-        out[2] += playerMapOffsetZ;
-    }
-    else
-    {
-        blk.x = ((GameObject*)obj)->anim.worldPosX;
-        blk.y = ((GameObject*)obj)->anim.worldPosY;
-        blk.z = ((GameObject*)obj)->anim.worldPosZ;
-        if (flag != 0)
-        {
-            blk.rotX = 0;
-            blk.rotY = 0;
-            blk.rotZ = 0;
-        }
-        else
-        {
-            blk.rotX = ((GameObject*)obj)->anim.rotX;
-            blk.rotY = ((GameObject*)obj)->anim.rotY;
-            blk.rotZ = ((GameObject*)obj)->anim.rotZ;
-        }
-        blk.scale = lbl_803DEA1C;
-        setMatrixFromObjectPos(m, &blk);
-        Matrix_TransformPoint(m, v[0], v[1], v[2], &out[0], &out[1], &out[2]);
-    }
-}
-
 typedef union
 {
     u8 u8;
@@ -320,7 +263,54 @@ extern u8 gObjGxPosMtxIdTable[12];
 void objFn_8003dc50(u8* obj, u8* model);
 void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx);
 void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8 nrm, u8 tex, u8 skip);
-void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4);
+void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
+{
+    u32 flags = 0;
+    if (hdr[0xf3] > 1)
+    {
+        flags |= 1;
+    }
+    {
+        u32 w;
+        int pos = bs->pos;
+        int off = pos >> 3;
+        u8* p;
+        w = bs->data[off];
+        p = (u8*)(off + (char*)bs->data);
+        w |= p[1] << 8;
+        w |= p[2] << 16;
+        bs->pos = pos + 1;
+        flags |= ((int)(w >> (pos & 7)) & 1) ? 2 : 0;
+    }
+    {
+        u32 w;
+        int pos = bs->pos;
+        int off = pos >> 3;
+        u8* p;
+        w = bs->data[off];
+        p = (u8*)(off + (char*)bs->data);
+        w |= p[1] << 8;
+        w |= p[2] << 16;
+        bs->pos = pos + 1;
+        flags |= ((int)(w >> (pos & 7)) & 1) ? 4 : 0;
+    }
+    if (gObjGxVtxDescCache != flags)
+    {
+        GXClearVtxDesc();
+        if (flags & 1)
+        {
+            GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
+        }
+        else
+        {
+            GXSetCurrentMtx(gObjGxPosMtxIdTable[0]);
+        }
+        GXSetVtxDesc(GX_VA_POS, (flags & 2) ? GX_INDEX16 : GX_INDEX8);
+        GXSetVtxDesc(GX_VA_TEX0, (flags & 4) ? GX_INDEX16 : GX_INDEX8);
+        gObjGxVtxDescCache = flags;
+    }
+}
+
 void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5, u8* out1, u8* out2)
 {
     int next;
@@ -1267,53 +1257,6 @@ typedef void (*ObjShadowCb)(int* obj, int* am, f32* wm);
 extern f32 gObjBoneMtxBuffer[0xC00];
 
 
-void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
-{
-    u32 flags = 0;
-    if (hdr[0xf3] > 1)
-    {
-        flags |= 1;
-    }
-    {
-        u32 w;
-        int pos = bs->pos;
-        int off = pos >> 3;
-        u8* p;
-        w = bs->data[off];
-        p = (u8*)(off + (char*)bs->data);
-        w |= p[1] << 8;
-        w |= p[2] << 16;
-        bs->pos = pos + 1;
-        flags |= ((int)(w >> (pos & 7)) & 1) ? 2 : 0;
-    }
-    {
-        u32 w;
-        int pos = bs->pos;
-        int off = pos >> 3;
-        u8* p;
-        w = bs->data[off];
-        p = (u8*)(off + (char*)bs->data);
-        w |= p[1] << 8;
-        w |= p[2] << 16;
-        bs->pos = pos + 1;
-        flags |= ((int)(w >> (pos & 7)) & 1) ? 4 : 0;
-    }
-    if (gObjGxVtxDescCache != flags)
-    {
-        GXClearVtxDesc();
-        if (flags & 1)
-        {
-            GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
-        }
-        else
-        {
-            GXSetCurrentMtx(gObjGxPosMtxIdTable[0]);
-        }
-        GXSetVtxDesc(GX_VA_POS, (flags & 2) ? GX_INDEX16 : GX_INDEX8);
-        GXSetVtxDesc(GX_VA_TEX0, (flags & 4) ? GX_INDEX16 : GX_INDEX8);
-        gObjGxVtxDescCache = flags;
-    }
-}
 
 void objRenderShadow2(int* obj, int* obj2, u8* m, int p4)
 {
@@ -2010,6 +1953,63 @@ void objRenderFn_80041018(GameObject* obj)
 }
 
 
+void objMtxFn_80041104(f32* mtx, f32* out, s16* in, int flag, int* obj, int e)
+{
+    f32 m[16];
+    MatrixTransform blk;
+    f32 v[3];
+    f32 res[3];
+    v[0] = in[0];
+    v[1] = in[1];
+    v[2] = in[2];
+    if (e != 0)
+    {
+        v[0] *= 0.00390625f;
+        v[1] *= 0.00390625f;
+        v[2] *= 0.00390625f;
+    }
+    if (mtx != NULL)
+    {
+        if (flag != 0)
+        {
+            out[0] = mtx[3] + v[0];
+            out[1] = mtx[7] + v[1];
+            out[2] = mtx[11] + v[2];
+        }
+        else
+        {
+            PSMTXMultVec((MtxPtr)mtx, (Vec*)v, (Vec*)res);
+            out[0] = res[0];
+            out[1] = res[1];
+            out[2] = res[2];
+        }
+        out[0] += playerMapOffsetX;
+        out[2] += playerMapOffsetZ;
+    }
+    else
+    {
+        blk.x = ((GameObject*)obj)->anim.worldPosX;
+        blk.y = ((GameObject*)obj)->anim.worldPosY;
+        blk.z = ((GameObject*)obj)->anim.worldPosZ;
+        if (flag != 0)
+        {
+            blk.rotX = 0;
+            blk.rotY = 0;
+            blk.rotZ = 0;
+        }
+        else
+        {
+            blk.rotX = ((GameObject*)obj)->anim.rotX;
+            blk.rotY = ((GameObject*)obj)->anim.rotY;
+            blk.rotZ = ((GameObject*)obj)->anim.rotZ;
+        }
+        blk.scale = lbl_803DEA1C;
+        setMatrixFromObjectPos(m, &blk);
+        Matrix_TransformPoint(m, v[0], v[1], v[2], &out[0], &out[1], &out[2]);
+    }
+}
+
+
 
 void objSetOverrideColor(u8 r, u8 g, u8 b)
 {
@@ -2156,6 +2156,41 @@ void objRenderFuzz(int* obj)
     }
 }
 
+void objRenderShadow(void* obj)
+{
+    if (lbl_803DEA04 == ((GameObject*)obj)->anim.rootMotionScale)
+    {
+        curObjMtx = 0;
+        return;
+    }
+    {
+        int* m = *(int**)Obj_GetActiveModel((GameObject*)obj);
+        if (((ModelFileHeader*)m)->shadowDisplayListCount != 0)
+        {
+            objRenderShadow2(obj, obj, (u8*)m, 1);
+        }
+        else
+        {
+            modelDoRenderInstrs(obj, obj, (u8*)m, 1);
+        }
+    }
+    if (((GameObject*)obj)->anim.classId == 1)
+    {
+        u8* iter;
+        int i = 0;
+        iter = (u8*)obj;
+        for (; i < ((GameObject*)obj)->childCount; i++)
+        {
+            int* child = *(int**)&((GameObject*)iter)->childObjs[0];
+            if (child != NULL)
+            {
+                objRenderChild(child, obj, 1);
+            }
+            iter += 4;
+        }
+    }
+}
+
 typedef struct
 {
     f32 pos[3];
@@ -2265,42 +2300,6 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
         else
         {
             objRenderShadow(child);
-        }
-    }
-}
-
-
-void objRenderShadow(void* obj)
-{
-    if (lbl_803DEA04 == ((GameObject*)obj)->anim.rootMotionScale)
-    {
-        curObjMtx = 0;
-        return;
-    }
-    {
-        int* m = *(int**)Obj_GetActiveModel((GameObject*)obj);
-        if (((ModelFileHeader*)m)->shadowDisplayListCount != 0)
-        {
-            objRenderShadow2(obj, obj, (u8*)m, 1);
-        }
-        else
-        {
-            modelDoRenderInstrs(obj, obj, (u8*)m, 1);
-        }
-    }
-    if (((GameObject*)obj)->anim.classId == 1)
-    {
-        u8* iter;
-        int i = 0;
-        iter = (u8*)obj;
-        for (; i < ((GameObject*)obj)->childCount; i++)
-        {
-            int* child = *(int**)&((GameObject*)iter)->childObjs[0];
-            if (child != NULL)
-            {
-                objRenderChild(child, obj, 1);
-            }
-            iter += 4;
         }
     }
 }
@@ -2522,11 +2521,6 @@ static inline int loadedFileFlags(int slot)
     OSRestoreInterrupts(s);
     return v;
 }
-int getLoadedFileFlags(int slot)
-{
-    return loadedFileFlags(slot);
-}
-
 extern u8 gResourceFileTable[0x160];
 
 void defragMemory(int mode)
@@ -3188,33 +3182,6 @@ static inline s32 mapCheckCurBlocksImpl(int v)
     return -1;
 }
 
-s32 mapCheckCurBlocks(int v)
-{
-    return mapCheckCurBlocksImpl(v);
-}
-
-int loadMapAndParent(int mapId)
-{
-    int idx;
-    int parent;
-    if (mapId >= 0x4b)
-    {
-        idx = 5;
-    }
-    else
-    {
-        idx = sMapFileNameIndexRemapTable[mapId];
-    }
-    parent = sMapFileNameAdjacencyTable[idx];
-    if (parent != -1 && mapCheckCurBlocksImpl(parent) == -1)
-    {
-        mapLoadDataFiles(parent);
-        return parent;
-    }
-    mapLoadDataFiles(idx);
-    return idx;
-}
-
 void mapLoadDataFiles(int mapIdx)
 {
     if (sMapFileNameAdjacencyTable[mapIdx] != -1)
@@ -3239,6 +3206,28 @@ void mapLoadDataFiles(int mapIdx)
 }
 
 
+int loadMapAndParent(int mapId)
+{
+    int idx;
+    int parent;
+    if (mapId >= 0x4b)
+    {
+        idx = 5;
+    }
+    else
+    {
+        idx = sMapFileNameIndexRemapTable[mapId];
+    }
+    parent = sMapFileNameAdjacencyTable[idx];
+    if (parent != -1 && mapCheckCurBlocksImpl(parent) == -1)
+    {
+        mapLoadDataFiles(parent);
+        return parent;
+    }
+    mapLoadDataFiles(idx);
+    return idx;
+}
+
 void clearLoadedFileFlags_blocks1(void)
 {
     int s = OSDisableInterrupts();
@@ -3259,6 +3248,11 @@ void setLoadedFileFlags_blocks1(void)
 int isRomListLoading(void)
 {
     return gRomListLoadInFlight;
+}
+
+int getLoadedFileFlags(int slot)
+{
+    return loadedFileFlags(slot);
 }
 
 
@@ -3942,6 +3936,11 @@ int mergeTableFiles(void* table, int id, int idx, int count_)
     return 1;
 }
 #undef MAPTBLP
+
+s32 mapCheckCurBlocks(int v)
+{
+    return mapCheckCurBlocksImpl(v);
+}
 
 
 f32 gObjJointMtxTemp[24] = {

@@ -653,6 +653,10 @@ void Obj_BuildWorldTransformMatrix(GameObject* obj, f32* mtx, int flags)
     }
 }
 
+ObjModel* Obj_GetActiveModel(GameObject* obj)
+{
+    return (ObjModel*)obj->anim.banks[obj->anim.bankIndex];
+}
 
 ObjModel* Obj_GetActiveModel(GameObject* obj)
 {
