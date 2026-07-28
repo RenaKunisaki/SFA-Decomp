@@ -10778,7 +10778,6 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
     int moveFlags;
     int useSecondary;
     int axisOffset;
-    f32* sampledPosition;
     int blendWeight;
     f32 baseDistance, blendDistance, blendFactor;
     f32 jointPosition[3];
@@ -10818,8 +10817,7 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
                                       jointPosition, jointRotation);
     }
     axisOffset = (u8)axis << 2;
-    sampledPosition = jointPosition;
-    baseDistance = *(f32*)((char*)sampledPosition + axisOffset);
+    baseDistance = *(f32*)((char*)jointPosition + axisOffset);
     if (baseDistance < 0.0f)
     {
         baseDistance = -baseDistance;
@@ -10836,7 +10834,7 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
         ObjModel_SampleJointTransform(model, 1, 2, samplePhase, ((GameObject*)obj)->anim.rootMotionScale,
                                       jointPosition, jointRotation);
     }
-    blendDistance = *(f32*)((char*)sampledPosition + axisOffset);
+    blendDistance = *(f32*)((char*)jointPosition + axisOffset);
     if (blendDistance < 0.0f)
     {
         blendDistance = -blendDistance;
