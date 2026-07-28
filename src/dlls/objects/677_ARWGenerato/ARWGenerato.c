@@ -42,13 +42,13 @@ void arwgenerato_spawnSquadronShipA(GameObject* obj, ARWGeneratorState* state, A
         newObj = (ArwSquadronSetup*)Obj_AllocObjectSetup(SPAWN_EXTRA_SIZE, OBJ_ID_SQUADRON_SHIP_A);
         newObj->base.posX =
             obj->anim.localPosX +
-            (f32)(int)randomGetRange(-*(s8*)&setup->spreadX, *(s8*)&setup->spreadX);
+            (f32)(int)randomGetRange(-setup->spreadX, setup->spreadX);
         newObj->base.posY =
             obj->anim.localPosY +
-            (f32)(int)randomGetRange(-*(s8*)&setup->spreadY, *(s8*)&setup->spreadY);
+            (f32)(int)randomGetRange(-setup->spreadY, setup->spreadY);
         newObj->base.posZ =
             obj->anim.localPosZ +
-            (f32)(int)randomGetRange(-*(s8*)&setup->spreadZ, *(s8*)&setup->spreadZ);
+            (f32)(int)randomGetRange(-setup->spreadZ, setup->spreadZ);
         newObj->rotZByte = 0;
         newObj->rotYByte = 0;
         newObj->rotXByte = 0;
@@ -73,13 +73,13 @@ void arwgenerato_spawnSquadronShipB(GameObject* obj, ARWGeneratorState* state, A
         newObj = (ArwSquadronSetup*)Obj_AllocObjectSetup(SPAWN_EXTRA_SIZE, OBJ_ID_SQUADRON_SHIP_B);
         newObj->base.posX =
             obj->anim.localPosX +
-            (f32)(int)randomGetRange(-*(s8*)&setup->spreadX, *(s8*)&setup->spreadX);
+            (f32)(int)randomGetRange(-setup->spreadX, setup->spreadX);
         newObj->base.posY =
             obj->anim.localPosY +
-            (f32)(int)randomGetRange(-*(s8*)&setup->spreadY, *(s8*)&setup->spreadY);
+            (f32)(int)randomGetRange(-setup->spreadY, setup->spreadY);
         newObj->base.posZ =
             obj->anim.localPosZ +
-            (f32)(int)randomGetRange(-*(s8*)&setup->spreadZ, *(s8*)&setup->spreadZ);
+            (f32)(int)randomGetRange(-setup->spreadZ, setup->spreadZ);
         newObj->rotZByte = 0;
         newObj->rotYByte = 0;
         newObj->rotXByte = 0;

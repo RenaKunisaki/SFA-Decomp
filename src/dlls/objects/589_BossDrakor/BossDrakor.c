@@ -83,7 +83,7 @@ s16 lbl_803DC19A = 0x2D8;
 #define BOSSDRAKOR_AIRMETER_BGTEXTURE 0x63e /* HUD air-meter background texture id */
 #define DRAKORHOVERPAD_OBJGROUP 0x46 /* DLL 0x271 drakorhoverpad */
 #define BOSSDRAKOR_CHILD_OBJ_MISSILE 0x70f /* drakormissile (drakormissile_startActiveLaunch) */
-#define BOSSDRAKOR_CHILD_OBJ_ATTACK  0x709 /* spawnAttackObjects: BossdrakorPlacement (airMeterMax/curveStartIndex) */
+#define BOSSDRAKOR_CHILD_OBJ_ATTACK  0x709 /* spawnAttackObjects: BossdrakorPlacement (airMeterMax/curveAdvanceStep) */
 #define BOSSDRAKOR_OBJFLAG_RENDERED 0x800
 #define BOSSDRAKOR_ENVFX_A 0x144
 #define BOSSDRAKOR_ENVFX_B 0x10d
@@ -368,7 +368,7 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, int state, int action)
                     setup->posZ = s->homePosZ;
                     ((BossdrakorPlacement*)setup)->airMeterMax = 0x3c;
                     ((BossdrakorPlacement*)setup)->unk1C = lbl_803DC194;
-                    ((BossdrakorPlacement*)setup)->curveStartIndex = lbl_803DC190;
+                    ((BossdrakorPlacement*)setup)->curveAdvanceStep = lbl_803DC190;
                     loadObjectAtObject(obj, setup);
                     Sfx_PlayFromObject((int)obj, SFXTRIG__UNK);
                 }
@@ -726,7 +726,7 @@ void bossdrakor_update(GameObject* obj)
         }
     }
     moveResult = Obj_UpdateRomCurveFollowVelocityIndexed(
-        obj, (RomCurveWalker*)((char*)state + 0x28), drakorState->curveIndex,
+        obj, (RomCurveWalker*)((char*)state + 0x28), drakorState->curveAdvanceStep,
         lbl_803E6568, lbl_803E6520, 1, &drakorState->curveFollowState);
     if (((DrakorFlags*)((char*)state + 0x198))->b40)
     {
@@ -942,9 +942,9 @@ void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init)
     int inner = *(int*)&(obj)->extra;
     f32 fz;
     BossDrakorState* s = (BossDrakorState*)inner;
-    if (init->curveStartIndex == 0)
+    if (init->curveAdvanceStep == 0)
     {
-        init->curveStartIndex = 0xa;
+        init->curveAdvanceStep = 0xa;
     }
     if (init->airMeterMax <= 0)
     {
@@ -952,7 +952,7 @@ void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init)
     }
     s->unk0C = 0;
     ((DrakorFlags*)((char*)inner + 0x198))->b80 = 0;
-    s->curveIndex = (f32)(u32)init->curveStartIndex;
+    s->curveAdvanceStep = (f32)(u32)init->curveAdvanceStep;
     s->airMeterHandle = init->airMeterMax;
     fz = lbl_803E6510;
     s->attackTimerDuration = fz;

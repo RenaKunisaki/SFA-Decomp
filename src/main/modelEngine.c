@@ -262,6 +262,8 @@
 #include "dlls/objects/466_WORLDplanet.h"
 #include "dlls/objects/467.h"
 #include "dlls/objects/468_WORLDAstero.h"
+#include "dlls/objects/469_DIM2Conveyo.h"
+#include "dlls/objects/470.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -343,7 +345,7 @@ char sModelEngineTimerDotText[] = ".";
 #define MODELENGINE_TIMER_RUNNING   4
 
 extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19;
-extern ResourceDescriptor dll_1D6, dll_1DA, dll_1DB, dll_1FB;
+extern ResourceDescriptor dll_1DA, dll_1DB, dll_1FB;
 extern ResourceDescriptor dll_1FF, dll_200, dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
 extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
@@ -354,8 +356,7 @@ extern ResourceDescriptor gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDB_eggObjDescriptor, gDBstealerwormObjDescriptor,
     gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor, gDFP_TorchObjDescriptor;
-extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, gDIM2ConveyorObjDescriptor,
-    gDIM2IceFloeObjDescriptor;
+extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor, gDIM2IceFloeObjDescriptor;
 extern ResourceDescriptor gDIM2IcicleObjDescriptor, gDIM2LavaControlObjDescriptor, gDIM2PathGeneratorObjDescriptor,
     gDIM2PrisonMammothObjDescriptor, gDIM2SnowBallObjDescriptor;
 extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor, gDIM_BossGut2ObjDescriptor, gDIM_BossGutObjDescriptor,
@@ -1553,8 +1554,8 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gWorldPlanetObjDescriptor,
     (ResourceDescriptor*)&gWorldObjObjDescriptor,
     (ResourceDescriptor*)&gWorldAsteroidsObjDescriptor,
-    &gDIM2ConveyorObjDescriptor,
-    &dll_1D6,
+    (ResourceDescriptor*)&gDIM2ConveyorObjDescriptor,
+    (ResourceDescriptor*)&gDll1D6ObjDescriptor,
     &gDIM2SnowBallObjDescriptor,
     &gDIM2PathGeneratorObjDescriptor,
     &gDIM2PrisonMammothObjDescriptor,

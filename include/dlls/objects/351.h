@@ -15,16 +15,16 @@ typedef struct AttractorPlacement {
     ObjPlacement base;
     s8 rotXByte;
     s8 mode; /* AttractorMode */
-    s16 scale;
+    s16 unknown1A;
 } AttractorPlacement;
 
 STATIC_ASSERT(offsetof(AttractorPlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(AttractorPlacement, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(AttractorPlacement, mode) == 0x19);
-STATIC_ASSERT(offsetof(AttractorPlacement, scale) == 0x1A);
+STATIC_ASSERT(offsetof(AttractorPlacement, unknown1A) == 0x1A);
 
 void attractor_getTarget(GameObject* obj, GameObject** outTarget);
-int attractor_setScale(GameObject* obj);
+int attractor_func0A(GameObject* obj);
 int attractor_getExtraSize(void);
 int attractor_getObjectTypeId(void);
 void attractor_free(GameObject* obj);

@@ -1,4 +1,5 @@
 #include "musyx/hw_init.h"
+#include "musyx/hw_samplemem.h"
 #include "musyx/hw_dspctrl.h"
 
 #include "musyx/dsp_voice_state.h"
@@ -12,10 +13,12 @@
 #include "musyx/sal_ai.h"
 #include "musyx/snd3d.h"
 
-extern u8 salTimeOffset;
-extern u8 salNumVoices;
-extern u8 salAuxFrame;
-extern u8 salFrame;
+u8 salFrame;
+u8 salAuxFrame;
+u8 salNumVoices;
+u8 salMaxStudioNum;
+SalHooks salHooks;
+u8 salTimeOffset;
 void snd_handle_irq(void)
 {
     u32 timeOffset;

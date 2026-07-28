@@ -19,9 +19,9 @@ typedef struct ARWGeneratorSetup
     s8 velocityY;
     s8 velocityZ;
     u8 pad1F[3];
-    u8 spreadX;
-    u8 spreadY;
-    u8 spreadZ;
+    s8 spreadX;
+    s8 spreadY;
+    s8 spreadZ;
     u8 spawnMode;
 } ARWGeneratorSetup;
 

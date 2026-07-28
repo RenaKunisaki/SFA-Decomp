@@ -16,6 +16,7 @@ extern u8 salMaxStudioNum;
 
 DSPstudioinfo dspStudio[8];
 DSPvoice* voices[64];
+SndMessageCallback salMessageCallback;
 
 extern u16* dspCmdLastLoad;
 extern u16* dspCmdLastBase;

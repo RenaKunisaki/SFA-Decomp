@@ -24,7 +24,7 @@ typedef struct BossdrakorPlacement
 {
     ObjPlacement base;
     u8 pad18[0x19 - 0x18];
-    u8 curveStartIndex;
+    u8 curveAdvanceStep;
     s16 airMeterMax;
     s16 unk1C;
     s16 defeatedGameBit;
@@ -32,7 +32,7 @@ typedef struct BossdrakorPlacement
 
 typedef struct BossDrakorState
 {
-    f32 curveIndex;
+    f32 curveAdvanceStep;
     u8 pad04[8];
     int unk0C;
     f32 attackTimer;

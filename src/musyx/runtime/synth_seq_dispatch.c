@@ -57,6 +57,15 @@ typedef struct
 
 extern u8 synthITDDefault[];
 
+SynthVoice* gSynthQueuedVoices;
+SynthVoice* gSynthAllocatedVoices;
+SynthVoice* gSynthFreeVoices;
+u32 gSynthNextHandle;
+u8 gSynthCurrentFadeOutState;
+u32 gSynthCurrentVoiceSlotIndex;
+SynthCallbackLink* gSynthFreeCallbacks;
+SynthVoice* gSynthCurrentVoice;
+
 static inline void seqInitStream(SynthSequenceStream* stream, u32 streamDataOffset)
 {
     u16 delta;

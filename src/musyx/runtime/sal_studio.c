@@ -10,13 +10,24 @@
 #include "musyx/sal_studio.h"
 
 
-extern void* dspCmdBuffer;
-extern void* dspITDBuffer;
-extern s32* dspSurround;
-extern u32 dspARAMZeroBuffer;
 extern DSPstudioinfo dspStudio[8];
 extern u8 salMaxStudioNum;
 extern u8 salNumVoices;
+
+DSPvoice* dspVoice;
+void* dspITDBuffer;
+s32* dspSurround;
+void* dspCmdBuffer;
+u32 dspHRTFOn;
+u16* dspCmdList;
+u16 dspCmdFirstSize;
+u16* dspCmdPtr;
+u16* dspCmdMaxPtr;
+u16* dspCmdCurBase;
+u16 dspCmdLastSize;
+u16* dspCmdLastBase;
+u16* dspCmdLastLoad;
+u32 dspARAMZeroBuffer;
 
 u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2)
 {

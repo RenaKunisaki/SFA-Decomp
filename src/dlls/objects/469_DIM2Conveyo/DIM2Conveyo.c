@@ -1,172 +1,148 @@
 /*
  * DIM2Conveyo (DLL 0x1D5) - DIM 2 conveyor belt object.
- * Scrolls two texture channels on a conveyor mesh using
- * sin/cos of a placement-defined rotation angle. For map id 0x49B23 (the dual-direction belt),
- * manages forward/reverse direction via game bits 3163/3164 with a timed swap (swapTimer). Adds
- * itself to object group 22; music track 0xDF is kept alive while the belt is moving. */
+ * Supplies a placement-oriented scroll vector to objects standing on its
+ * conveyor surface. One map variant can periodically reverse that vector.
+ */
+#include "dlls/objects/469_DIM2Conveyo.h"
+
+#include "dlls/objects/328_CFGuardian.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
+#include "game/objects/object.h"
 #include "main/audio/music_api.h"
-#include "main/dll/dim2conveyorstate_struct.h"
-#include "main/dll/DIM/dll_01D5_dim2conveyor.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/object_render.h"
-#include "main/obj_group.h"
-#include "main/gamebits.h"
 #include "main/frame_timing.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/audio/sfx.h"
+#include "main/gamebits_api.h"
+#include "main/obj_group.h"
+#include "main/object_render.h"
 
-STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
+#define DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION     3163
+#define DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION     3164
+#define DIM2CONVEYOR_GAMEBIT_DIRECTION_SWAP_ENABLED 3169
+#define DIM2CONVEYOR_SINGLE_DIRECTION_MAP_ID        7849
+#define DIM2CONVEYOR_DUAL_DIRECTION_MAP_ID          0x49B23
+#define DIM2CONVEYOR_MUSIC_TRACK_ID                 0xDF
 
-#define GAMEBIT_CONVEYOR_FORWARD   3163
-#define GAMEBIT_CONVEYOR_REVERSE   3164
-#define GAMEBIT_CONVEYOR_SWAP      3169
-#define MAP_ID_SINGLE_BELT         7849
-#define MAP_ID_DUAL_BELT           0x49B23
-#define OBJ_GROUP_CONVEYORS        22
-#define MUSIC_TRACK_CONVEYOR       0xdf
-
-void dim2conveyor_getScrollVector(GameObject* obj, int unused, f32* outX, f32* outY)
-{
+void dim2conveyor_getScrollVector(GameObject* obj, GameObject* caller, f32 unused, f32* outX, f32* outZ) {
     Dim2ConveyorState* state = obj->extra;
-    int id;
-    if (state->musicHoldTimer == 0)
-    {
-        Music_Trigger(MUSIC_TRACK_CONVEYOR, 1);
+    s32 mapId;
+
+    if (state->musicHoldTimer == 0) {
+        Music_Trigger(DIM2CONVEYOR_MUSIC_TRACK_ID, 1);
     }
     state->musicHoldTimer = 20;
-    id = ((Dim2ConveyorPlacement*)obj->anim.placementData)->base.mapId;
-    switch (id)
-    {
-    case MAP_ID_SINGLE_BELT:
+    mapId = ((const Dim2ConveyorPlacement*)obj->anim.placementData)->base.mapId;
+    switch (mapId) {
+    case DIM2CONVEYOR_SINGLE_DIRECTION_MAP_ID:
         *outX = state->scrollX;
-        *outY = state->scrollY;
+        *outZ = state->scrollZ;
         break;
-    case MAP_ID_DUAL_BELT:
-        if (mainGetBit(GAMEBIT_CONVEYOR_REVERSE) != 0 && mainGetBit(GAMEBIT_CONVEYOR_FORWARD) == 0)
-        {
+    case DIM2CONVEYOR_DUAL_DIRECTION_MAP_ID:
+        if (mainGetBit(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION) != 0 &&
+            mainGetBit(DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION) == 0) {
             *outX = state->scrollX;
-            *outY = state->scrollY;
+            *outZ = state->scrollZ;
         }
-        if (mainGetBit(GAMEBIT_CONVEYOR_FORWARD) != 0 && mainGetBit(GAMEBIT_CONVEYOR_REVERSE) == 0)
-        {
+        if (mainGetBit(DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION) != 0 &&
+            mainGetBit(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION) == 0) {
             *outX = -state->scrollX;
-            *outY = -state->scrollY;
+            *outZ = -state->scrollZ;
         }
-        if (mainGetBit(GAMEBIT_CONVEYOR_FORWARD) != 0)
-        {
-            mainSetBits(GAMEBIT_CONVEYOR_REVERSE, 0);
+        if (mainGetBit(DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION) != 0) {
+            mainSetBits(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION, 0);
         }
-        if (mainGetBit(GAMEBIT_CONVEYOR_FORWARD) == 0)
-        {
-            mainSetBits(GAMEBIT_CONVEYOR_REVERSE, 1);
+        if (mainGetBit(DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION) == 0) {
+            mainSetBits(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION, 1);
         }
         break;
     default:
         *outX = state->scrollX;
-        *outY = state->scrollY;
+        *outZ = state->scrollZ;
         break;
     }
 }
 
-int dim2conveyor_getExtraSize(void)
-{
+int dim2conveyor_getExtraSize(void) {
     return sizeof(Dim2ConveyorState);
 }
 
-int dim2conveyor_getObjectTypeId(void)
-{
+int dim2conveyor_getObjectTypeId(void) {
     return 0;
 }
 
-void dim2conveyor_free(GameObject* obj)
-{
-    ObjGroup_RemoveObject((int)obj, OBJ_GROUP_CONVEYORS);
+void dim2conveyor_free(GameObject* obj) {
+    ObjGroup_RemoveObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
 }
 
-void dim2conveyor_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
-{
-    s32 v = visible;
-    if (v != 0)
-    {
-        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+void dim2conveyor_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+    s32 isVisible = visible;
+
+    if (isVisible != 0) {
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
-void dim2conveyor_hitDetect(void)
-{
+void dim2conveyor_hitDetect(void) {
 }
 
-void dim2conveyor_update(GameObject* obj)
-{
+void dim2conveyor_update(GameObject* obj) {
     Dim2ConveyorState* state = obj->extra;
+
     Sfx_PlayFromObject((int)obj, SFXTRIG_mv_liftloop);
-    if (state->musicHoldTimer != 0)
-    {
+    if (state->musicHoldTimer != 0) {
         state->musicHoldTimer = state->musicHoldTimer - 1;
-        if (state->musicHoldTimer == 0)
-        {
-            Music_Trigger(MUSIC_TRACK_CONVEYOR, 0);
+        if (state->musicHoldTimer == 0) {
+            Music_Trigger(DIM2CONVEYOR_MUSIC_TRACK_ID, 0);
         }
     }
-    switch (((Dim2ConveyorPlacement*)obj->anim.placementData)->base.mapId)
-    {
-    case MAP_ID_DUAL_BELT:
-        if (mainGetBit(GAMEBIT_CONVEYOR_SWAP) != 0)
-        {
-            state->swapTimer = state->swapTimer + timeDelta;
-            if (state->swapTimer > 100.0f)
-            {
-                if (mainGetBit(GAMEBIT_CONVEYOR_FORWARD) != 0)
-                {
-                    mainSetBits(GAMEBIT_CONVEYOR_REVERSE, 1);
-                    mainSetBits(GAMEBIT_CONVEYOR_FORWARD, 0);
+    switch (((const Dim2ConveyorPlacement*)obj->anim.placementData)->base.mapId) {
+    case DIM2CONVEYOR_DUAL_DIRECTION_MAP_ID:
+        if (mainGetBit(DIM2CONVEYOR_GAMEBIT_DIRECTION_SWAP_ENABLED) != 0) {
+            state->directionSwapTimer = state->directionSwapTimer + timeDelta;
+            if (state->directionSwapTimer > 100.0f) {
+                if (mainGetBit(DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION) != 0) {
+                    mainSetBits(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION, 1);
+                    mainSetBits(DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION, 0);
+                } else if (mainGetBit(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION) != 0) {
+                    mainSetBits(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION, 0);
+                    mainSetBits(DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION, 1);
                 }
-                else if (mainGetBit(GAMEBIT_CONVEYOR_REVERSE) != 0)
-                {
-                    mainSetBits(GAMEBIT_CONVEYOR_REVERSE, 0);
-                    mainSetBits(GAMEBIT_CONVEYOR_FORWARD, 1);
-                }
-                state->swapTimer = 0.0f;
+                state->directionSwapTimer = 0.0f;
             }
         }
-        if (mainGetBit(GAMEBIT_CONVEYOR_FORWARD) != 0)
-        {
-            mainSetBits(GAMEBIT_CONVEYOR_REVERSE, 0);
+        if (mainGetBit(DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION) != 0) {
+            mainSetBits(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION, 0);
         }
-        if (mainGetBit(GAMEBIT_CONVEYOR_FORWARD) == 0)
-        {
-            mainSetBits(GAMEBIT_CONVEYOR_REVERSE, 1);
+        if (mainGetBit(DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION) == 0) {
+            mainSetBits(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION, 1);
         }
         break;
-    case MAP_ID_SINGLE_BELT:
+    case DIM2CONVEYOR_SINGLE_DIRECTION_MAP_ID:
         break;
     }
 }
 
-void dim2conveyor_init(GameObject* obj, Dim2ConveyorPlacement* placement)
-{
+void dim2conveyor_init(GameObject* obj, const Dim2ConveyorPlacement* placement) {
     f32 scale = (f32)placement->scrollSpeed / 5.0f;
     Dim2ConveyorState* state;
-    obj->anim.rotX = (s16)(placement->rotXByte << 8);
+
+    obj->anim.rotX = (s16)(placement->rotationXByte << 8);
     state = obj->extra;
     state->scrollX = scale * mathSinf(3.1415927f * (f32)obj->anim.rotX / 32768.0f);
-    state->scrollY = scale * mathCosf(3.1415927f * (f32)obj->anim.rotX / 32768.0f);
-    state->swapTimer = 0.0f;
+    state->scrollZ = scale * mathCosf(3.1415927f * (f32)obj->anim.rotX / 32768.0f);
+    state->directionSwapTimer = 0.0f;
     state->musicHoldTimer = 0;
-    ObjGroup_AddObject((u32)obj, OBJ_GROUP_CONVEYORS);
+    ObjGroup_AddObject((u32)obj, CFGUARDIAN_OBJECT_GROUP);
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
-    if (placement->base.mapId == MAP_ID_DUAL_BELT)
-    {
-        mainSetBits(GAMEBIT_CONVEYOR_REVERSE, 1);
+    if (placement->base.mapId == DIM2CONVEYOR_DUAL_DIRECTION_MAP_ID) {
+        mainSetBits(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION, 1);
     }
 }
 
-void dim2conveyor_release(void)
-{
+void dim2conveyor_release(void) {
 }
 
-void dim2conveyor_initialise(void)
-{
+void dim2conveyor_initialise(void) {
 }
 
 ObjectDescriptor11WithPadding gDIM2ConveyorObjDescriptor = {
