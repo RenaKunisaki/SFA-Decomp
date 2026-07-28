@@ -6,6 +6,7 @@
 #include "dolphin/mtx/mtx_legacy.h"
 #include "main/camera.h"
 #include "main/dll/CAM/camcombat_state.h"
+#include "main/dll/DR/dr_types.h"
 #include "main/dll/CAM/cutCam.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
@@ -16,17 +17,6 @@ CameraModeCombatState* gCamCombatState;
 
 #define CAMCOMBAT_SEQID_DIM_BOSS 0x200 /* retail "DIM_Boss" (DLL 0x1E0) */
 #define CAMERAMODECOMBAT_CAMACTION_DEFAULT 0x42
-
-typedef struct {
-    u8 b0 : 1;
-    u8 b1 : 1;
-    u8 b2 : 1;
-    u8 b3 : 1;
-    u8 b4 : 1;
-    u8 b5 : 1;
-    u8 b6 : 1;
-    u8 b7 : 1;
-} CameraModeCombatFlags;
 
 void camCombatIntroEvalPos(CameraObject* camera, float* outX, float* outY, float* outZ, f32* targetY)
 {
@@ -95,7 +85,7 @@ void CameraModeCombat_free(CameraObject* camera)
     mm_free(gCamCombatState);
     gCamCombatState = 0;
     Rcp_DisableBlurFilter();
-    ((CameraModeCombatFlags*)&camera->smoothingFlags)->b0 = 0;
+    ((BitFlags8*)&camera->smoothingFlags)->b0 = 0;
 }
 
 static void camCombatTraceMove(f32* prevPos, CameraObject* camera, u8* trace)
