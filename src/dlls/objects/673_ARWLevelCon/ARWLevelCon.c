@@ -171,7 +171,7 @@ void arwlevelcon_update(GameObject* obj)
     }
     if (state->ringChoiceTriggered == 0)
     {
-        MapRomList* mapBlock = mapBlockFn_800592e4();
+        MapRomList* mapBlock = mapGetCurrentRomList();
         if (arwing->anim.localPosZ - mapBlock->worldZ > 35200.0f &&
             arwarwing_isDead(arwing) == 0 && arwarwing_isExplodingOrWarping(arwing) == 0)
         {

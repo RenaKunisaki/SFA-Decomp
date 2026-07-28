@@ -8238,7 +8238,7 @@ int tricky_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate)
             if ((mainGetBit(GAMEBIT_Tricky_LoadBadge) != 0 && *(void**)&((TrickyState*)state)->spawnedChild == NULL) &&
                 Obj_IsLoadingLocked())
             {
-                mapBlockFn_80059c2c(blockFlags);
+                mapGetLoadedMapFlags(blockFlags);
                 if (blockFlags[0xd] != 0)
                 {
                     setup = (int)Obj_AllocObjectSetup(0x20, TRICKY_CHILD_OBJ_BADGE_A);
@@ -9034,7 +9034,7 @@ void Tricky_update(int obj)
     if (mainGetBit(GAMEBIT_Tricky_LoadBadge) != 0 && *(void**)&trickyState->spawnedChild == NULL &&
         Obj_IsLoadingLocked())
     {
-        mapBlockFn_80059c2c(blockFlags);
+        mapGetLoadedMapFlags(blockFlags);
         if (blockFlags[0xd] != 0)
         {
             setup = (int)Obj_AllocObjectSetup(0x20, TRICKY_CHILD_OBJ_BADGE_A);

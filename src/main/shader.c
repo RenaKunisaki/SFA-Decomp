@@ -2599,7 +2599,7 @@ void initMaps(void)
 
 extern int lbl_803DB648;
 
-MapRomList* mapBlockFn_800592e4(void)
+MapRomList* mapGetCurrentRomList(void)
 {
     char* p = (char*)lbl_803822A0[0];
     int v = *(s16*)(p + 0x594);
@@ -2964,7 +2964,7 @@ char sTrackPiLockedFormat[] = "track piLocked %x\n";
 
 char sTrackCellCoordFormat[] = " cellx %i celly %i cellz %i ";
 
-void mapBlockFn_80059c2c(u8* outFlags)
+void mapGetLoadedMapFlags(u8* outFlags)
 {
     int i;
     int outer;
@@ -3312,7 +3312,7 @@ void mapDebugRender(int* state)
     }
 }
 
-int mapRectFn_8005a728(int bx, int bz, MapBlockData* block)
+int mapBlockIsInViewFrustum(int bx, int bz, MapBlockData* block)
 {
     f32 a1, a2, b1, b2, c1, c2;
     f32 p3;
@@ -3433,7 +3433,7 @@ void frustumPlanes_updateAabbCornerIndices(FrustumPlane* planes, int count)
 
 extern FrustumPlane gPlayerRelativeFrustumPlanes[];
 extern f32 lbl_803DEBF4;
-void playerVecFn_8005a9b0(void)
+void buildPlayerRelativeFrustumPlanes(void)
 {
     Vec tmp;
     Vec camPos;

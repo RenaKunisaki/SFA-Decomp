@@ -1264,7 +1264,7 @@ void walkgroupFindExitPointFn_800dc398(void)
     s32* linkId;
     ObjfsaPatch* ep;
     patchBase[0] = gObjfsaPatches;
-    mapBlockFn_80059c2c(blockFlags);
+    mapGetLoadedMapFlags(blockFlags);
 
     checksum = 1;
     for (flagIndex = 0; flagIndex < 120; flagIndex++)

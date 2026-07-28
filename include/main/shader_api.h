@@ -40,8 +40,8 @@ typedef enum MapType
 } MapType;
 
 MapCellEntry* mapGetCellEntry(int x, int z);
-MapRomList* mapBlockFn_800592e4(void);
-void mapBlockFn_80059c2c(u8* outFlags);
+MapRomList* mapGetCurrentRomList(void);
+void mapGetLoadedMapFlags(u8* outFlags);
 s32 getCurMapType(void);
 void mapTextureOverrideSetValue(int type, Texture* texture, int frame);
 int objUpdateOpacity(struct GameObject* obj);
@@ -54,7 +54,7 @@ void unloadMap(void);
 void beginLoadingMap(void);
 void goToNextMapLayer(void);
 void goToPrevMapLayer(void);
-void playerVecFn_8005a9b0(void);
+void buildPlayerRelativeFrustumPlanes(void);
 s32 getCurMapLayer(void);
 void mapUnloadRomListPage(int pageIndex);
 void mapFn_80057d24(int a, int b, int* o0, int* o1, int* o2, int* o3, int f1, int f2, int idx);

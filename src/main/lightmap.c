@@ -686,7 +686,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
                         continue;
                     }
                 }
-                if (idx > -1 && mapRectFn_8005a728(row, col, block) != 0)
+                if (idx > -1 && mapBlockIsInViewFrustum(row, col, block) != 0)
                 {
                     lbl_803DCE58 = rowF;
                     colF = gMapBlockWorldSize * (f32)col;
@@ -912,7 +912,7 @@ void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad
     }
     Camera_UpdateProjection(NULL, 0);
     updateVisibleGeometry();
-    playerVecFn_8005a9b0();
+    buildPlayerRelativeFrustumPlanes();
     Camera_EnableViewYOffset();
     Camera_UpdateViewMatrices();
     Camera_RebuildProjectionMatrix();

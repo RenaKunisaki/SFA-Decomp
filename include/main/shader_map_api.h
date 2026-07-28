@@ -7,7 +7,7 @@
 
 void mapLoadForObject(int mapId, GameObject* obj);
 void mapDebugRender(int* state);
-int mapRectFn_8005a728(int bx, int bz, struct MapBlockData* block);
+int mapBlockIsInViewFrustum(int bx, int bz, struct MapBlockData* block);
 void loadMapForCameraPos(float x, float y, float z);
 MapTextureOverride* mapTextureOverrideGetEntry(int idx);
 

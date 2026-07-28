@@ -1733,7 +1733,7 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
     rt->baddie.hitPoints = 3;
     gKTRexResource = Resource_Acquire(0x5a, 1);
     (obj)->userData2 = 0;
-    gKTRexMapBlock = mapBlockFn_800592e4();
+    gKTRexMapBlock = mapGetCurrentRomList();
     gKTRexState->light = objCreateLight(0, 1);
     if (gKTRexState->light != 0)
     {
