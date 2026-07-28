@@ -1833,7 +1833,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "main/lightmap_initmapblocks.c", cflags=[*cflags_dll_noopt_nocse_noprop, "-inline", "noauto"]),
             Object(NonMatching, "main/lightmap_draw.c", cflags=cflags_dll_noopt_noautoinline, section_alignments={".data": 4}),
             Object(NonMatching, "main/objhits.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "main/objprint.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "main/objprint.c", cflags=cflags_dll_noopt_nodead_noautoinline),
             Object(NonMatching, "main/objprint_dolphin.c", cflags=[*cflags_dll_noopt_noloopinv_nolifetimes_zerodata, "-inline", "noauto"]),
             Object(MatchingFor("GSAE01"), "main/objprint_dolphin_loadmtxs.c", cflags=[*cflags_dll_noopt_noloopinv_nolifetimes_noprop_zerodata, "-inline", "noauto"]),
             Object(NonMatching, "main/objprint_dolphin_render.c", cflags=[*cflags_dll_noopt_noloopinv_nolifetimes_zerodata, "-inline", "noauto"]),
