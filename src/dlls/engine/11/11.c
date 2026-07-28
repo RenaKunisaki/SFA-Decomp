@@ -480,36 +480,34 @@ void modgfx_stepPosition(int state, int cmd, int reinit)
 
 /* Integer-vector lerp setup. On the reinit step, snap or step-interpolate the rotation offset triple
  * toward the rounded params, then advance it by the per-step delta. */
-void modgfx_stepS16VectorLerp(int* obj, f32* params, int reinit)
+void modgfx_stepS16VectorLerp(ModgfxState* state, f32* params, int reinit)
 {
     if (reinit == 1)
     {
         s16 tx = params[1];
         s16 ty = params[2];
         s16 tz = params[3];
-        if (((ModgfxState*)obj)->blendFrameCount != 0)
+        if (state->blendFrameCount != 0)
         {
-            ((ModgfxState*)obj)->rotStepZ =
-                (s16)((tx - ((ModgfxState*)obj)->rotOffsetZ) / ((ModgfxState*)obj)->blendFrameCount);
-            ((ModgfxState*)obj)->rotStepY =
-                (s16)((ty - ((ModgfxState*)obj)->rotOffsetY) / ((ModgfxState*)obj)->blendFrameCount);
-            ((ModgfxState*)obj)->rotStepX =
-                (s16)((tz - ((ModgfxState*)obj)->rotOffsetX) / ((ModgfxState*)obj)->blendFrameCount);
+            state->rotStepZ = (s16)((tx - state->rotOffsetZ) / state->blendFrameCount);
+            state->rotStepY = (s16)((ty - state->rotOffsetY) / state->blendFrameCount);
+            state->rotStepX = (s16)((tz - state->rotOffsetX) / state->blendFrameCount);
         }
         else
         {
-            ((ModgfxState*)obj)->rotOffsetZ = tx;
-            ((ModgfxState*)obj)->rotStepZ = 0;
-            ((ModgfxState*)obj)->rotOffsetY = ty;
-            ((ModgfxState*)obj)->rotStepY = 0;
-            ((ModgfxState*)obj)->rotOffsetX = tz;
-            ((ModgfxState*)obj)->rotStepX = 0;
+            state->rotOffsetZ = tx;
+            state->rotStepZ = 0;
+            state->rotOffsetY = ty;
+            state->rotStepY = 0;
+            state->rotOffsetX = tz;
+            state->rotStepX = 0;
         }
     }
-    ((ModgfxState*)obj)->rotOffsetZ += ((ModgfxState*)obj)->rotStepZ;
-    ((ModgfxState*)obj)->rotOffsetY += ((ModgfxState*)obj)->rotStepY;
-    ((ModgfxState*)obj)->rotOffsetX += ((ModgfxState*)obj)->rotStepX;
+    state->rotOffsetZ += state->rotStepZ;
+    state->rotOffsetY += state->rotStepY;
+    state->rotOffsetX += state->rotStepX;
 }
+
 void modgfx_stepVertexAlpha(ModgfxState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex)
 {
     int alphaIndex = channelIndex * 2;

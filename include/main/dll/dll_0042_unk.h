@@ -40,7 +40,7 @@ void firstperson_updatePitch(f32 targetY, f32 dist, CameraObject* camera);
 void CameraModeNormal_follow(CameraObject* camera, ObjAnimComponent* target);
 void CameraModeNormal_copyToCurrent(CamcontrolFirstPersonActionSettings* settings);
 void CameraModeNormal_free(CameraObject* camera);
-void CameraModeNormal_update(u8* obj);
+void CameraModeNormal_update(CameraObject* camera);
 void CameraModeNormal_init(CameraObject* cam, int mode, u8* data);
 void CameraModeNormal_release(void);
 void CameraModeNormal_initialise(void);

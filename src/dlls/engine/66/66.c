@@ -1171,9 +1171,8 @@ void CameraModeNormal_free(CameraObject* camera)
     gCamcontrolModeSettings->wallAvoidanceFlags.b6 = 0;
 }
 
-void CameraModeNormal_update(u8* obj)
+void CameraModeNormal_update(CameraObject* camera)
 {
-    CameraObject* camera = (CameraObject*)obj;
     GameObject* target[1];
     float fa;
     int val;
