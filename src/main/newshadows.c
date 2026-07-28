@@ -1174,7 +1174,8 @@ void selectWhirlpoolTexture(int id)
     Texture* p = (Texture*)lbl_803DCFCC;
     if (p->preloaded != 0)
     {
-        GXLoadTexObjPreLoaded(textureGetGXTexObj(p), textureGetGXTexRegion(p), idCopy);
+        struct _GXTexObj* obj = textureGetGXTexObj(p);
+        GXLoadTexObjPreLoaded(obj, textureGetGXTexRegion(p), idCopy);
     }
     else
     {
@@ -1188,7 +1189,8 @@ void selectReflectionTexture(int id)
     Texture* p = gNewShadowReflectionTexture;
     if (p->preloaded != 0)
     {
-        GXLoadTexObjPreLoaded(textureGetGXTexObj(p), textureGetGXTexRegion(p), idCopy);
+        struct _GXTexObj* obj = textureGetGXTexObj(p);
+        GXLoadTexObjPreLoaded(obj, textureGetGXTexRegion(p), idCopy);
     }
     else
     {
@@ -1222,7 +1224,8 @@ void loadNewShadowSmallReflectionTexture(int id)
     Texture* p = (Texture*)gNewShadowReflectionSmallTexture;
     if (p->preloaded != 0)
     {
-        GXLoadTexObjPreLoaded(textureGetGXTexObj(p), textureGetGXTexRegion(p), idCopy);
+        struct _GXTexObj* obj = textureGetGXTexObj(p);
+        GXLoadTexObjPreLoaded(obj, textureGetGXTexRegion(p), idCopy);
     }
     else
     {
@@ -1238,8 +1241,8 @@ void drawReflectionTexture(void)
     GXCopyTex((char*)gNewShadowReflectionSmallTexture + 0x60, GX_TRUE);
     if (((Texture*)gNewShadowReflectionSmallTexture)->preloaded != 0)
     {
-        GXPreLoadEntireTexture(textureGetGXTexObj((Texture*)gNewShadowReflectionSmallTexture),
-                               textureGetGXTexRegion((Texture*)gNewShadowReflectionSmallTexture));
+        struct _GXTexObj* obj = textureGetGXTexObj((Texture*)gNewShadowReflectionSmallTexture);
+        GXPreLoadEntireTexture(obj, textureGetGXTexRegion((Texture*)gNewShadowReflectionSmallTexture));
     }
 }
 
@@ -1253,13 +1256,13 @@ void updateReflectionTextures(void)
     GXCopyTex((char*)gNewShadowReflectionTexture2 + 0x60, GX_FALSE);
     if (gNewShadowReflectionTexture->preloaded != 0)
     {
-        GXPreLoadEntireTexture(textureGetGXTexObj(gNewShadowReflectionTexture),
-                               textureGetGXTexRegion(gNewShadowReflectionTexture));
+        struct _GXTexObj* obj = textureGetGXTexObj(gNewShadowReflectionTexture);
+        GXPreLoadEntireTexture(obj, textureGetGXTexRegion(gNewShadowReflectionTexture));
     }
     if (((Texture*)gNewShadowReflectionTexture2)->preloaded != 0)
     {
-        GXPreLoadEntireTexture(textureGetGXTexObj((Texture*)gNewShadowReflectionTexture2),
-                               textureGetGXTexRegion((Texture*)gNewShadowReflectionTexture2));
+        struct _GXTexObj* obj = textureGetGXTexObj((Texture*)gNewShadowReflectionTexture2);
+        GXPreLoadEntireTexture(obj, textureGetGXTexRegion((Texture*)gNewShadowReflectionTexture2));
     }
     if (gNewShadowReflectionTexture->preloaded == 0 ||
         ((Texture*)gNewShadowReflectionTexture2)->preloaded == 0)
