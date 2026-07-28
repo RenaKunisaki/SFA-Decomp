@@ -2,8 +2,13 @@
 #define MAIN_LIGHTMAP_INTERNAL_H_
 
 #include "main/dll/ppcwgpipe_struct.h"
-#include "main/f32pair.h"
 #include "types.h"
+
+typedef struct
+{
+    f32 lo;
+    f32 hi;
+} F32Pair;
 
 typedef struct EnvironmentUpdateInterface
 {
