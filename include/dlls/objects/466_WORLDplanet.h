@@ -7,6 +7,10 @@
 
 #define WORLDPLANET_PLANET_COUNT 5
 
+typedef enum WorldPlanetSharedObjectId {
+    WORLDPLANET_BRIEFING_PORTRAIT_OBJECT_ID = 0x43077,
+} WorldPlanetSharedObjectId;
+
 typedef enum WorldPlanetSlot {
     WORLDPLANET_SLOT_WALLED_CITY = 0,
     WORLDPLANET_SLOT_CLOUDRUNNER = 1,
