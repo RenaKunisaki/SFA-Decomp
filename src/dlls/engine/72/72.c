@@ -1,151 +1,131 @@
 /*
  * DLL 72 / 0x48 - static camera mode.
  */
-#include "main/camera_interface.h"
-#include "main/camera_object.h"
-#include "main/object_transform.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/CAM/camstatic_state.h"
-#include "main/frame_timing.h"
 #include "main/dll/dll_0048_cameramodestatic.h"
-#include "main/resource.h"
+
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/camera_interface.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
+#include "main/dll/dll_025A_staticcamera.h"
+#include "main/frame_timing.h"
+#include "main/mm.h"
+#include "main/obj_group.h"
+#include "main/object_transform.h"
+#include "main/vecmath.h"
 
 CameraModeStaticState* gCameraModeStaticState;
 
-#define CAMSTATIC_CAMMODE_DEFAULT 0x42
-
-
-void* camStaticFindNearestAnchor(f32 x, f32 y, f32 z, int filter1, int filter2)
-{
-    int* list;
+GameObject* camStaticFindNearestAnchor(f32 x, f32 y, f32 z, int anchorId, int classId) {
+    GameObject** cursor;
     int i;
-    void* best;
-    f32 bestDist;
+    GameObject* nearest;
+    f32 nearestDistance;
     int count;
-    GameObject* obj;
-    int* tmpList;
-    f32 dx, dy, dz;
-    f32 yy;
-    f32 dist;
+    GameObject* candidate;
+    GameObject** objects;
+    f32 dx;
+    f32 dy;
+    f32 dz;
+    f32 squaredY;
+    f32 distance;
 
-    bestDist = 100000.0f;
-    best = NULL;
-    tmpList = (int*)objGetAllOfType(7, &count);
-    for (i = 0, list = tmpList; i < count; i++)
-    {
-        obj = (GameObject*)*list;
-        if (obj->anim.classId == filter2 &&
-            *(u8*)(obj->anim.placementDataAddress + 0x18) == filter1)
-        {
-            dx = x - obj->anim.worldPosX;
-            dy = y - obj->anim.worldPosY;
-            dz = z - obj->anim.worldPosZ;
-            yy = dy * dy;
-            dist = sqrtf(yy + dx * dx + dz * dz);
-            if (dist < bestDist)
-            {
-                bestDist = dist;
-                best = obj;
+    nearestDistance = 100000.0f;
+    nearest = NULL;
+    objects = (GameObject**)objGetAllOfType(STATIC_CAMERA_OBJECT_GROUP, &count);
+    for (i = 0, cursor = objects; i < count; i++) {
+        candidate = *cursor;
+        if (candidate->anim.classId == classId &&
+            ((StaticCameraPlacement*)candidate->anim.placementData)->anchorId == anchorId) {
+            dx = x - candidate->anim.worldPosX;
+            dy = y - candidate->anim.worldPosY;
+            dz = z - candidate->anim.worldPosZ;
+            squaredY = dy * dy;
+            distance = sqrtf(squaredY + dx * dx + dz * dz);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearest = candidate;
             }
         }
-        list++;
+        cursor++;
     }
-    return best;
+    return nearest;
 }
 
-void CameraModeStatic_copyToCurrent(void)
-{
+void CameraModeStatic_copyToCurrent(void) {
 }
 
-void CameraModeStatic_free(void)
-{
+void CameraModeStatic_free(void) {
     mm_free(gCameraModeStaticState);
-    gCameraModeStaticState = 0;
+    gCameraModeStaticState = NULL;
 }
 
-void CameraModeStatic_update(short* camObj)
-{
+void CameraModeStatic_update(CameraObject* camera) {
     int angle;
     u32 pitch;
-    int placement;
-    int viewObj;
+    StaticCameraPlacement* placement;
+    GameObject* target;
+    int rollDelta;
     f32 dx;
     f32 dy;
     f32 dz;
 
-    if (gCameraModeStaticState->missingObject != 0)
-    {
-        (*gCameraInterface)->setMode(CAMSTATIC_CAMMODE_DEFAULT, 0, 1, 0, NULL, 0, 0xff);
-    }
-    else
-    {
-        viewObj = *(int*)(camObj + 0x52);
-        placement = (int)gCameraModeStaticState->staticObject->anim.placementData;
-        if ((((CameraModeStaticPlacement*)placement)->flags & 1) == 0)
-        {
-            *camObj = ((CameraModeStaticPlacement*)placement)->yaw + 0x8000;
+    if (gCameraModeStaticState->missingAnchor != 0) {
+        (*gCameraInterface)->setMode(CAMCONTROL_ACTION_DEFAULT, 0, 1, 0, NULL, 0, 0xff);
+    } else {
+        target = (GameObject*)camera->anim.targetObj;
+        placement = (StaticCameraPlacement*)gCameraModeStaticState->anchor->anim.placementData;
+        if ((placement->modeFlags & CAMERA_MODE_STATIC_TRACK_YAW) == 0) {
+            camera->anim.rotX = placement->cameraModeRotation.yaw + 0x8000;
         }
-        if ((((CameraModeStaticPlacement*)placement)->flags & 2) == 0)
-        {
-            camObj[1] = ((CameraModeStaticPlacement*)placement)->pitch;
+        if ((placement->modeFlags & CAMERA_MODE_STATIC_TRACK_PITCH) == 0) {
+            camera->anim.rotY = placement->cameraModeRotation.pitch;
         }
-        if ((((CameraModeStaticPlacement*)placement)->flags & 4) == 0)
-        {
-            camObj[2] = ((CameraModeStaticPlacement*)placement)->roll;
+        if ((placement->modeFlags & CAMERA_MODE_STATIC_TRACK_ROLL) == 0) {
+            camera->anim.rotZ = placement->cameraModeRotation.roll;
         }
-        ((CameraObject*)camObj)->anim.worldPosX = gCameraModeStaticState->staticObject->anim.worldPosX;
-        ((CameraObject*)camObj)->anim.worldPosY = gCameraModeStaticState->staticObject->anim.worldPosY;
-        ((CameraObject*)camObj)->anim.worldPosZ = gCameraModeStaticState->staticObject->anim.worldPosZ;
-        ((CameraObject*)camObj)->fov = (float)(u32)((CameraModeStaticPlacement*)placement)->fovByte;
-        dx = ((CameraObject*)camObj)->anim.worldPosX - *(float*)(viewObj + 0x18);
-        dy = ((CameraObject*)camObj)->anim.worldPosY - *(float*)(viewObj + 0x1c);
-        dz = ((CameraObject*)camObj)->anim.worldPosZ - *(float*)(viewObj + 0x20);
-        if ((((CameraModeStaticPlacement*)placement)->flags & 1) != 0)
-        {
+        camera->anim.worldPosX = gCameraModeStaticState->anchor->anim.worldPosX;
+        camera->anim.worldPosY = gCameraModeStaticState->anchor->anim.worldPosY;
+        camera->anim.worldPosZ = gCameraModeStaticState->anchor->anim.worldPosZ;
+        camera->fov = (f32)(u32)placement->fov;
+        dx = camera->anim.worldPosX - target->anim.worldPosX;
+        dy = camera->anim.worldPosY - target->anim.worldPosY;
+        dz = camera->anim.worldPosZ - target->anim.worldPosZ;
+        if ((placement->modeFlags & CAMERA_MODE_STATIC_TRACK_YAW) != 0) {
             angle = getAngle(dx, dz);
-            *camObj = 0x8000 - angle;
+            camera->anim.rotX = 0x8000 - angle;
         }
-        if ((((CameraModeStaticPlacement*)placement)->flags & 2) != 0)
-        {
+        if ((placement->modeFlags & CAMERA_MODE_STATIC_TRACK_PITCH) != 0) {
             pitch = getAngle(dy, sqrtf(dx * dx + dz * dz)) & 0xffff;
-            angle = (pitch - (int)((CameraModeStaticPlacement*)placement)->pitch) - (u32)(u16)camObj[1];
-            if (0x8000 < angle)
-            {
+            angle = (pitch - (int)placement->cameraModeRotation.pitch) - (u32)(u16)camera->anim.rotY;
+            if (0x8000 < angle) {
                 angle = angle + -0xffff;
             }
-            if (angle < -0x8000)
-            {
+            if (angle < -0x8000) {
                 angle = angle + 0xffff;
             }
-            camObj[1] += (int)(angle * framesThisStep) >> 3;
+            camera->anim.rotY += (int)(angle * framesThisStep) >> 3;
         }
-        if ((((CameraModeStaticPlacement*)placement)->flags & 4) != 0)
-        {
-            viewObj = camObj[2] - (u32)(u16) * (short*)(viewObj + 4);
-            if (0x8000 < viewObj)
-            {
-                viewObj = viewObj + -0xffff;
+        if ((placement->modeFlags & CAMERA_MODE_STATIC_TRACK_ROLL) != 0) {
+            rollDelta = camera->anim.rotZ - (u32)(u16)target->anim.rotZ;
+            if (0x8000 < rollDelta) {
+                rollDelta = rollDelta + -0xffff;
             }
-            if (viewObj < -0x8000)
-            {
-                viewObj = viewObj + 0xffff;
+            if (rollDelta < -0x8000) {
+                rollDelta = rollDelta + 0xffff;
             }
-            camObj[2] += (int)(viewObj * framesThisStep) >> 3;
+            camera->anim.rotZ += (int)(rollDelta * framesThisStep) >> 3;
         }
-        Obj_TransformWorldPointToLocal(
-            ((CameraObject*)camObj)->anim.worldPosX, ((CameraObject*)camObj)->anim.worldPosY,
-            ((CameraObject*)camObj)->anim.worldPosZ, &((CameraObject*)camObj)->anim.localPosX,
-            &((CameraObject*)camObj)->anim.localPosY, &((CameraObject*)camObj)->anim.localPosZ,
-            (GameObject*)((CameraObject*)camObj)->anim.parentAddress);
+        Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
+                                       &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
+                                       (GameObject*)camera->anim.parent);
     }
     return;
 }
 
-void CameraModeStatic_init(u8* cam, int p2, int* p3)
-{
-    u8* setup;
-    GameObject* state;
-    GameObject* best;
+void CameraModeStatic_init(CameraObject* camera, int unused, const int* anchorId) {
+    StaticCameraPlacement* placement;
+    GameObject* target;
+    GameObject* anchor;
     s16 yaw;
     s16 pitch;
     s16 roll;
@@ -153,80 +133,68 @@ void CameraModeStatic_init(u8* cam, int p2, int* p3)
     f32 dy;
     f32 dz;
 
-    state = ((CameraObject*)cam)->anim.targetObj;
-    if (gCameraModeStaticState == NULL)
-    {
-        gCameraModeStaticState = (CameraModeStaticState*)mmAlloc(sizeof(CameraModeStaticState), 15, 0);
+    target = (GameObject*)camera->anim.targetObj;
+    if (gCameraModeStaticState == NULL) {
+        gCameraModeStaticState = (CameraModeStaticState*)mmAlloc(sizeof(CameraModeStaticState), 0xF, 0);
     }
     gCameraModeStaticState->active = 1;
-    gCameraModeStaticState->missingObject = 0;
-    best = (GameObject*)camStaticFindNearestAnchor(state->anim.worldPosX, state->anim.worldPosY, state->anim.worldPosZ, *p3, 18);
-    if (best == NULL)
-    {
-        gCameraModeStaticState->missingObject = 1;
+    gCameraModeStaticState->missingAnchor = 0;
+    anchor = camStaticFindNearestAnchor(target->anim.worldPosX, target->anim.worldPosY, target->anim.worldPosZ,
+                                        *anchorId, STATIC_CAMERA_CLASS_ID);
+    if (anchor == NULL) {
+        gCameraModeStaticState->missingAnchor = 1;
         return;
     }
-    gCameraModeStaticState->staticObject = best;
-    setup = (u8*)best->anim.placementData;
-    dx = best->anim.worldPosX - state->anim.worldPosX;
-    dy = best->anim.worldPosY - state->anim.worldPosY;
-    dz = best->anim.worldPosZ - state->anim.worldPosZ;
-    if ((((CameraModeStaticPlacement*)setup)->flags & 1) != 0)
-    {
+    gCameraModeStaticState->anchor = anchor;
+    placement = (StaticCameraPlacement*)anchor->anim.placementData;
+    dx = anchor->anim.worldPosX - target->anim.worldPosX;
+    dy = anchor->anim.worldPosY - target->anim.worldPosY;
+    dz = anchor->anim.worldPosZ - target->anim.worldPosZ;
+    if ((placement->modeFlags & CAMERA_MODE_STATIC_TRACK_YAW) != 0) {
         yaw = 0x8000 - getAngle(dx, dz);
+    } else {
+        yaw = placement->cameraModeRotation.yaw + 0x8000;
     }
-    else
-    {
-        yaw = ((CameraModeStaticPlacement*)setup)->yaw + 0x8000;
-    }
-    if ((((CameraModeStaticPlacement*)setup)->flags & 2) != 0)
-    {
+    if ((placement->modeFlags & CAMERA_MODE_STATIC_TRACK_PITCH) != 0) {
         pitch = (s16)getAngle(dy, sqrtf(dx * dx + dz * dz));
-        pitch -= ((CameraModeStaticPlacement*)setup)->pitch;
+        pitch -= placement->cameraModeRotation.pitch;
+    } else {
+        pitch = placement->cameraModeRotation.pitch;
     }
-    else
-    {
-        pitch = ((CameraModeStaticPlacement*)setup)->pitch;
-    }
-    if ((((CameraModeStaticPlacement*)setup)->flags & 4) != 0)
-    {
-        roll = state->anim.rotZ;
-    }
-    else
-    {
-        roll = ((CameraModeStaticPlacement*)setup)->roll;
+    if ((placement->modeFlags & CAMERA_MODE_STATIC_TRACK_ROLL) != 0) {
+        roll = target->anim.rotZ;
+    } else {
+        roll = placement->cameraModeRotation.roll;
     }
     {
-        f32 fov = (f32)(u32)((CameraModeStaticPlacement*)setup)->fovByte;
-        ((CameraObject*)cam)->anim.worldPosX = best->anim.worldPosX;
-        ((CameraObject*)cam)->anim.worldPosY = best->anim.worldPosY;
-        ((CameraObject*)cam)->anim.worldPosZ = best->anim.worldPosZ;
-        ((CameraObject*)cam)->anim.rotX = yaw;
-        ((CameraObject*)cam)->anim.rotY = pitch;
-        ((CameraObject*)cam)->anim.rotZ = roll;
-        ((CameraObject*)cam)->fov = fov;
+        f32 fov = (f32)(u32)placement->fov;
+        camera->anim.worldPosX = anchor->anim.worldPosX;
+        camera->anim.worldPosY = anchor->anim.worldPosY;
+        camera->anim.worldPosZ = anchor->anim.worldPosZ;
+        camera->anim.rotX = yaw;
+        camera->anim.rotY = pitch;
+        camera->anim.rotZ = roll;
+        camera->fov = fov;
     }
-    Obj_TransformWorldPointToLocal(((CameraObject*)cam)->anim.worldPosX, ((CameraObject*)cam)->anim.worldPosY,
-                                   ((CameraObject*)cam)->anim.worldPosZ, &((CameraObject*)cam)->anim.localPosX,
-                                   &((CameraObject*)cam)->anim.localPosY, &((CameraObject*)cam)->anim.localPosZ,
-                                   (GameObject*)((CameraObject*)cam)->anim.parentAddress);
+    Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
+                                   &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
+                                   (GameObject*)camera->anim.parent);
 }
 
-void CameraModeStatic_release(void)
-{
+void CameraModeStatic_release(void) {
 }
 
-void CameraModeStatic_initialise(void)
-{
+void CameraModeStatic_initialise(void) {
 }
 
-ResourceDescriptorCallbacks8 gCameraModeStaticDescriptor = {
+CameraModeStaticDescriptor gCameraModeStaticDescriptor = {
     {0x00000000, 0x00000000, 0x00000000, 0x00060000},
-    {(ResourceDescriptorCallback)CameraModeStatic_initialise,
-     (ResourceDescriptorCallback)CameraModeStatic_release,
-     0x00000000,
-     (ResourceDescriptorCallback)CameraModeStatic_init,
-     (ResourceDescriptorCallback)CameraModeStatic_update,
-     (ResourceDescriptorCallback)CameraModeStatic_free,
-     (ResourceDescriptorCallback)CameraModeStatic_copyToCurrent,
-     0x00000000}};
+    CameraModeStatic_initialise,
+    CameraModeStatic_release,
+    NULL,
+    CameraModeStatic_init,
+    CameraModeStatic_update,
+    CameraModeStatic_free,
+    CameraModeStatic_copyToCurrent,
+    NULL,
+};
