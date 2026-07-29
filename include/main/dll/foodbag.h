@@ -3,7 +3,6 @@
 
 #include "ghidra_import.h"
 
-void dll_85_func03(int param_1,int param_2,int param_3,u32 param_4);
 void dll_86_func00_nop(void);
 void dll_86_func01_nop(void);
 void dll_86_func03(int param_1,int param_2,int param_3,u32 param_4);
