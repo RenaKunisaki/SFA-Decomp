@@ -6,35 +6,26 @@
  * logs the "no longer supported" string and returns the failure sentinel.
  * The slot is kept so the DLL id stays valid.
  */
-#include "dolphin/os/OSReport.h"
 #include "main/dll/dll_00AB_projdummy.h"
-#include "dlls/object_descriptor.h"
+#include "dolphin/os/OSReport.h"
 
-#define PROJECTILE_UNSUPPORTED_RETURN -1
-
-ObjectDescriptor4 projdummy_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)projdummy_initialise,
-    (ObjectDescriptorCallback)projdummy_release,
-    0,
-    (ObjectDescriptorCallback)projdummy_doUnsupported,
+ProjdummyResourceDescriptor gProjdummyResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projdummy_initialise,
+    projdummy_release,
+    NULL,
+    projdummy_doUnsupported,
 };
 
 char sProjdummyDoNoLongerSupported[] = "<projdummy Do>No Longer supported \n";
 
-int projdummy_doUnsupported(void)
-{
+int projdummy_doUnsupported(void) {
     OSReport(sProjdummyDoNoLongerSupported);
-    return PROJECTILE_UNSUPPORTED_RETURN;
+    return -1;
 }
 
-void projdummy_release(void)
-{
+void projdummy_release(void) {
 }
 
-void projdummy_initialise(void)
-{
+void projdummy_initialise(void) {
 }
