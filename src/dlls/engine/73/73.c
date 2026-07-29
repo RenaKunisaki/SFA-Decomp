@@ -8,7 +8,7 @@
 #include "dolphin/pad.h"
 #include "main/camera.h"
 #include "main/camera_interface.h"
-#include "main/dll/CAM/cutCam.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "main/dll/DR/dr_types.h"
 #include "main/dll/player_api.h"

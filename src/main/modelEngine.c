@@ -320,6 +320,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
 #include "main/dll/dll_0043_cameramodestaffanim.h"
 #include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/CAM/dll_0045_camTalk.h"
@@ -341,6 +342,7 @@
 #include "main/dll/dll_0055_cameramode.h"
 #include "main/dll/dll_0056_cameramodearwing.h"
 #include "main/dll/dll_0057_cameramodetitle.h"
+#include "main/dll/dll_0058_dummy58.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -491,7 +493,7 @@ extern ResourceDescriptor lbl_803114B0, lbl_803114D8, lbl_803115F8, dll_15_funcs
 extern ResourceDescriptor lbl_80311E80, dll_5C_funcs, dll_5D_funcs, dll_5E_funcs, dll_5F_funcs, dll_60_funcs,
     dll_61_funcs, dll_62_funcs;
 extern ResourceDescriptor dll_63_funcs, dll_64_funcs, dll_65_funcs, dll_A3_funcs, dll_66_funcs, dll_67_funcs,
-    dll_68_funcs, lbl_803137D8;
+    dll_68_funcs;
 extern ResourceDescriptor dll_69_funcs, dll_6A_funcs, dll_6B_funcs, Dummy6C_funcs, dll_6D_funcs, dll_6E_funcs,
     dll_6F_funcs, dll_70_funcs;
 extern ResourceDescriptor dll_71_funcs, dll_72_funcs, dll_73_funcs, dll_74_funcs, dll_75_funcs, dll_76_funcs,
@@ -514,7 +516,7 @@ extern ResourceDescriptor lbl_80319598, lbl_803195E8, lbl_80319638, lbl_80319688
     lbl_80319768, lbl_803197B0;
 extern ResourceDescriptor lbl_803197F8, lbl_80319840, projquakeshock_funcs, lbl_803198D8, projtesla_funcs, lbl_80319968,
     lbl_803199B0, lbl_803199F8;
-extern ResourceDescriptor lbl_80319A40, lbl_80319B58;
+extern ResourceDescriptor lbl_80319A40;
 extern ResourceDescriptor lbl_8031A148;
 extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode_funcs, lbl_8031A82C, EnterSaveNameScreen_funcs, OptionsScreen_funcs,
     lbl_8031ADA4, Dummy39_funcs;
@@ -1209,7 +1211,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &dll_3F_funcs,
     &gCreditsDescriptor,
     &gWarpStoneUiDescriptor,
-    &lbl_80319B58,
+    (ResourceDescriptor*)&gCameraModeNormalDescriptor,
     (ResourceDescriptor*)&gCameraModeStaffAnimDescriptor,
     (ResourceDescriptor*)&gCameraModeViewfinderDescriptor,
     (ResourceDescriptor*)&gCameraModeTalkDescriptor,
@@ -1231,7 +1233,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCameraMode55Descriptor,
     (ResourceDescriptor*)&gCameraModeArwingDescriptor,
     (ResourceDescriptor*)&gCameraModeTitleDescriptor,
-    &lbl_803137D8,
+    (ResourceDescriptor*)&gDummy58Descriptor,
     &dll_59_funcs,
     &StaffCollision_funcs,
     &lbl_80311E80,

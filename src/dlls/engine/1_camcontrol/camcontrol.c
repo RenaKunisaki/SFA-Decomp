@@ -4,7 +4,6 @@
 #include "dolphin/mtx/vec.h"
 #include "dolphin/os.h"
 #include "dolphin/pad.h"
-#include "main/dll/dll_0042_unk.h"
 #include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/dll_0048_cameramodestatic.h"
 #include "main/dll/dll_02C0_front_api.h"

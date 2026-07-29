@@ -54,7 +54,13 @@ typedef enum SurfaceType {
 } SurfaceType;
 
 typedef struct PlayerState {
-    BaddieState baddie;
+    union {
+        BaddieState baddie;
+        struct {
+            u8 padCameraSlideVector[0x1A4];
+            Vec3f cameraSlideVector;
+        };
+    };
     int playerStatus; /* PlayerStatus*; kept integer while raw decomp arithmetic remains */
     int flags360; /* player state flag word; bits 2/0x2000/0x800000/0x2000000... */
     u8 pad364[0x3C4 - 0x364];
@@ -416,6 +422,8 @@ typedef struct PlayerState {
     u8 pad8DA[0x8DC - 0x8DA];
     int triggerGameBitPtr; /* 0x8dc: pointer (from ObjMsg 0x7000a param) to the sequence-trigger's s16 descriptor; *ptr = gamebit index (mainGetBit/mainSetBits), *(ptr+2) copied into unk688 */
 } PlayerState;
+
+STATIC_ASSERT(offsetof(PlayerState, cameraSlideVector) == 0x1A4);
 
 STATIC_ASSERT(sizeof(PlayerState) == 0x8E0);
 STATIC_ASSERT(offsetof(PlayerStatus, magic) == 0x4);
