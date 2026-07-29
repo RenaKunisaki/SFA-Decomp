@@ -1733,6 +1733,89 @@ int objGetTotalDataSize(void* tmpl, u8* def, s16* data, int flags)
     return roundUpTo32(size);
 }
 
+void Obj_RegisterObject(GameObject* obj, int flags)
+{
+    ObjAnimComponent* object;
+    int id;
+    int prev;
+    int cur;
+    int off;
+
+    object = &obj->anim;
+    if (object->parent != NULL)
+    {
+        Obj_TransformLocalPointToWorld(object->localPosX, object->localPosY, object->localPosZ, &object->worldPosX,
+                                       &object->worldPosY, &object->worldPosZ, object->parent);
+    }
+    else
+    {
+        object->worldPosX = object->localPosX;
+        object->worldPosY = object->localPosY;
+        object->worldPosZ = object->localPosZ;
+    }
+    object->previousWorldPosX = object->worldPosX;
+    object->previousWorldPosY = object->worldPosY;
+    object->previousWorldPosZ = object->worldPosZ;
+    object->previousLocalPosX = object->localPosX;
+    object->previousLocalPosY = object->localPosY;
+    object->previousLocalPosZ = object->localPosZ;
+    Obj_RunInitCallback(obj, (int)object->placementData, 0);
+    if (object->hitReactState != NULL)
+    {
+        ((ObjHitsPriorityState*)object->hitReactState)->localPosX = object->localPosX;
+        ((ObjHitsPriorityState*)object->hitReactState)->localPosY = object->localPosY;
+        ((ObjHitsPriorityState*)object->hitReactState)->localPosZ = object->localPosZ;
+        ((ObjHitsPriorityState*)object->hitReactState)->worldPosX = object->localPosX;
+        ((ObjHitsPriorityState*)object->hitReactState)->worldPosY = object->localPosY;
+        ((ObjHitsPriorityState*)object->hitReactState)->worldPosZ = object->localPosZ;
+    }
+    id = object->modelInstance->mapLoadObjectId;
+    if (id > -1)
+    {
+        mapLoadForObject(id, obj);
+    }
+    if (object->modelInstance->flags & 0x40)
+    {
+        objAddObjectType((u32)obj, OBJECT_OBJGROUP_HITBOX);
+        if (object->activeHitboxMode != 0x5a && (object->modelInstance->flags & 0x40))
+        {
+            object->activeHitboxMode = 0x5a;
+        }
+    }
+    else
+    {
+        if (object->activeHitboxMode == 0)
+        {
+            object->activeHitboxMode = 0x50;
+        }
+    }
+    if (flags & 1)
+    {
+        obj->objectFlags |= OBJECT_FLAG_IN_UPDATE_LIST;
+        gObjList[gObjCount++] = obj;
+        if (obj->objectFlags & OBJECT_FLAG_IN_UPDATE_LIST)
+        {
+            prev = 0;
+            cur = gObjUpdateList.head;
+            off = gObjUpdateList.nextOffset;
+            while (cur != 0 && object->activeHitboxMode < ((GameObject*)cur)->anim.activeHitboxMode)
+            {
+                prev = cur;
+                cur = *(int*)(cur + off);
+            }
+            objListAdd(&gObjUpdateList, prev, (int)obj);
+        }
+    }
+    if (object->modelInstance->group8RegistrationCount > 0)
+    {
+        objAddObjectType((u32)obj, OBJECT_OBJGROUP_GROUP8);
+    }
+    if (object->modelInstance->flags & 1)
+    {
+        gObjPartitionPivot = 0;
+    }
+}
+
 
 void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int unused)
 {
@@ -2626,89 +2709,6 @@ int loadModLines(int idx, s16* outCount)
     mm_free(hdr);
     *outCount = (u32)size / 20;
     return result;
-}
-
-void Obj_RegisterObject(GameObject* obj, int flags)
-{
-    ObjAnimComponent* object;
-    int id;
-    int prev;
-    int cur;
-    int off;
-
-    object = &obj->anim;
-    if (object->parent != NULL)
-    {
-        Obj_TransformLocalPointToWorld(object->localPosX, object->localPosY, object->localPosZ, &object->worldPosX,
-                                       &object->worldPosY, &object->worldPosZ, object->parent);
-    }
-    else
-    {
-        object->worldPosX = object->localPosX;
-        object->worldPosY = object->localPosY;
-        object->worldPosZ = object->localPosZ;
-    }
-    object->previousWorldPosX = object->worldPosX;
-    object->previousWorldPosY = object->worldPosY;
-    object->previousWorldPosZ = object->worldPosZ;
-    object->previousLocalPosX = object->localPosX;
-    object->previousLocalPosY = object->localPosY;
-    object->previousLocalPosZ = object->localPosZ;
-    Obj_RunInitCallback(obj, (int)object->placementData, 0);
-    if (object->hitReactState != NULL)
-    {
-        ((ObjHitsPriorityState*)object->hitReactState)->localPosX = object->localPosX;
-        ((ObjHitsPriorityState*)object->hitReactState)->localPosY = object->localPosY;
-        ((ObjHitsPriorityState*)object->hitReactState)->localPosZ = object->localPosZ;
-        ((ObjHitsPriorityState*)object->hitReactState)->worldPosX = object->localPosX;
-        ((ObjHitsPriorityState*)object->hitReactState)->worldPosY = object->localPosY;
-        ((ObjHitsPriorityState*)object->hitReactState)->worldPosZ = object->localPosZ;
-    }
-    id = object->modelInstance->mapLoadObjectId;
-    if (id > -1)
-    {
-        mapLoadForObject(id, obj);
-    }
-    if (object->modelInstance->flags & 0x40)
-    {
-        objAddObjectType((u32)obj, OBJECT_OBJGROUP_HITBOX);
-        if (object->activeHitboxMode != 0x5a && (object->modelInstance->flags & 0x40))
-        {
-            object->activeHitboxMode = 0x5a;
-        }
-    }
-    else
-    {
-        if (object->activeHitboxMode == 0)
-        {
-            object->activeHitboxMode = 0x50;
-        }
-    }
-    if (flags & 1)
-    {
-        obj->objectFlags |= OBJECT_FLAG_IN_UPDATE_LIST;
-        gObjList[gObjCount++] = obj;
-        if (obj->objectFlags & OBJECT_FLAG_IN_UPDATE_LIST)
-        {
-            prev = 0;
-            cur = gObjUpdateList.head;
-            off = gObjUpdateList.nextOffset;
-            while (cur != 0 && object->activeHitboxMode < ((GameObject*)cur)->anim.activeHitboxMode)
-            {
-                prev = cur;
-                cur = *(int*)(cur + off);
-            }
-            objListAdd(&gObjUpdateList, prev, (int)obj);
-        }
-    }
-    if (object->modelInstance->group8RegistrationCount > 0)
-    {
-        objAddObjectType((u32)obj, OBJECT_OBJGROUP_GROUP8);
-    }
-    if (object->modelInstance->flags & 1)
-    {
-        gObjPartitionPivot = 0;
-    }
 }
 
 void Obj_RunInitCallback(GameObject* obj, int cb, int unused)
