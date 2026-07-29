@@ -362,7 +362,7 @@ typedef struct WarpDestination
 
 extern u8 gRcpPendingWarpDest[];
 extern u8 gRcpWarpTransitionType;
-extern u8 lbl_803DCA40;
+extern u8 gGameLoopFullMapUnloadPending;
 
 void loadNextMap(void)
 {
@@ -401,7 +401,7 @@ void loadNextMap(void)
             gArrivedWarpIndex = gPendingWarpIndex;
             gPendingWarpIndex = -1;
             gWarpArrivalTimer = 8;
-            lbl_803DCA40 = 1;
+            gGameLoopFullMapUnloadPending = 1;
             blankScreen(1);
         }
     }
