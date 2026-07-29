@@ -782,8 +782,8 @@ void sky2_run(void)
                     ((SkySlotAnim*)p)->b314 = 1;
                     frzero = lbl_803DF108;
                     *(f32*)(*pp + 0x6c) = frzero;
-                    diff = sb - sa;
-                    *(f32*)(*pp + 0x68) = randomGetRange((int)(-diff * lbl_803DF168), (int)(diff * lbl_803DF168));
+                    diff = -(sb - sa);
+                    *(f32*)(*pp + 0x68) = randomGetRange((int)(diff * lbl_803DF168), (int)(-diff * lbl_803DF168));
                     *(f32*)(*pp + 0x64) = 0.05f * randomGetRange(1, 10);
                 }
                 else if (((SkySlotAnim*)p)->b314 == 1)
