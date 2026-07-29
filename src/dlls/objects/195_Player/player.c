@@ -134,7 +134,7 @@ int playerState41(GameObject* obj, int state, f32 fv);
 int playerState40(int p1, int obj);
 int playerState3F(int obj, int state);
 int playerStateNop3E(void);
-void fn_8029782C(GameObject* obj);
+void playerStagedEndGuardAndMarkTeleported(GameObject* obj);
 int playerState3D(int obj, int state, f32 fv);
 int playerState3C(GameObject* obj, int state, f32 fv);
 int playerState3B(GameObject* obj, int state, f32 fv);
@@ -2519,7 +2519,7 @@ int playerStateNop3E(void)
     return 0x0;
 }
 
-void fn_8029782C(GameObject* obj)
+void playerStagedEndGuardAndMarkTeleported(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
@@ -2809,7 +2809,7 @@ int playerState39(GameObject* obj, int state, f32 fv)
     f32 k;
     s16 hdr;
 
-    *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_KNOCKBACK;
+    *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_GUARDING;
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
         ((PlayerState*)state)->baddie.moveSpeed = 0.01f;
@@ -2931,20 +2931,20 @@ int playerState37(GameObject* obj, int state)
     v = ((PlayerState*)state)->baddie.inputSector;
     if (v == 3)
     {
-        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029782C;
+        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedEndGuardAndMarkTeleported;
         return 0x3c;
     }
     if (v == 4)
     {
-        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029782C;
+        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedEndGuardAndMarkTeleported;
         return 0x3e;
     }
     if (v == 1)
     {
-        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029782C;
+        *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedEndGuardAndMarkTeleported;
         return 0x3b;
     }
-    *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029782C;
+    *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedEndGuardAndMarkTeleported;
     return 0x39;
 }
 
@@ -4745,7 +4745,7 @@ int playerState28(GameObject* obj, int state, f32 fv)
         if ((padGetTriggers(0) & 0x20) != 0)
         {
             ((ByteFlags*)((char*)inner + 0x3f6))->b20 = 1;
-            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029782C;
+            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedEndGuardAndMarkTeleported;
             return 0x3a;
         }
     }
@@ -9925,7 +9925,7 @@ int playerStateMoving(int obj, int state, f32 fv)
         else if ((fl >> 1 & 1) != 0)
         {
             int leave;
-            *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_KNOCKBACK;
+            *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_GUARDING;
             {
                 f32 z = 0.0f;
                 ((PlayerState*)state)->baddie.animSpeedC = z;

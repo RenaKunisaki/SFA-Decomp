@@ -25,7 +25,7 @@ typedef struct PlayerStatus {
  */
 /* PlayerState.flags360 bit names. */
 #define PLAYER_FLAG_AIM_READY 0x400         /* aim-screen coords valid: set after aim-position calc, gates the aimScreenX/Y getter */
-#define PLAYER_FLAG_KNOCKBACK 0x800         /* knockback latched/in-progress: clear->init knockback timers, set->suppress further knockback damage */
+#define PLAYER_FLAG_GUARDING 0x800         /* player is holding a guard: the damage handler applies knockback only when this is clear, and when it is set forces damage to 0 and latches the blocked-hit reaction instead. Set (never cleared in decompiled source) by playerState39 and by the guard-hold branch of playerStateMoving, both of which re-assert it every frame while they run. */
 #define PLAYER_FLAG_WATER_SPLASH_PENDING 0x20000 /* queued water-entry FX: set on water-entry, gates spawnSplashBurst/spawnRipple then self-clears */
 #define PLAYER_FLAG_WORLDPOS_OVERRIDE 0x8000000 /* anim.modelState overrideWorldPos active: gates the localPos<->overrideWorldPos swap during render */
 #define PLAYER_FLAG_LOCKED 0x200000         /* player controls locked (set/cleared by playerLock; gates pad-input processing) */
