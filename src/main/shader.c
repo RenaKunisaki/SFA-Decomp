@@ -2426,7 +2426,7 @@ void doPendingMapLoads(void)
                             if (romListSlot->romlist != NULL)
                             {
                                 s16 sl = romListSlot->slot;
-                                mapBuildRomListIndex(romListSlot->romlist, (MapRomListIndex*)(base + sl * 0x8C + 0x4208), sl, 1);
+                                mapBuildRomListIndex(romListSlot->romlist, &((MapRomListIndex*)(base + 0x4208))[sl], sl, 1);
                                 mm_free(romListSlot->romlist);
                                 *(int*)(sl * 4 + 0x83A8 + (char*)base) = 0;
                             }
