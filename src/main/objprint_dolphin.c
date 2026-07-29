@@ -332,7 +332,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
             return 0;
         }
         lbl_803DCC3E = 1;
-        objFuzzSetupGxStateZZ((void*)obj);
+        objFuzzSetupGxState((void*)obj);
         return 1;
     }
     lbl_803DCC3E = 1;
@@ -794,7 +794,7 @@ const int lbl_802C1B70[56] = {
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 
 
-void objFuzzSetupGxStateZZ(void* objArg)
+void objFuzzSetupGxState(void* objArg)
 {
     ModelLightStruct* renderHandle;
     int obj = (int)objArg;
@@ -2947,7 +2947,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
     }
     else if (m2 != 0)
     {
-        objFuzzSetupGxStateZZ(obj);
+        objFuzzSetupGxState(obj);
     }
     else
     {

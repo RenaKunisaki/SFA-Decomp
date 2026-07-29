@@ -43,6 +43,22 @@ class, where the emitted code genuinely must not move.
     For a rename the gate is instead:
       * tools/unitfuzzy.py <unit> identical before and after, and
       * full tools/locked_ninja.sh EXIT=0.
+
+
+SCOPE -- what this tool can and cannot gate
+-------------------------------------------
+It gates changes that must not alter codegen: deletions of dead declarations,
+retypes, comment and formatting edits.
+
+It CANNOT gate a rename.  A symbol name is *in* the object, so any rename
+legitimately reports CHANGED -- gate those with `tools/pairing_check.py` plus
+`tools/unitfuzzy.py`, per docs/rename_safety.md.
+
+Baseline compiles use HEAD's include tree (`head_include_tree()`), not the
+worktree's, so a change that also edits a header is compared like-for-like.
+Before that fix such a change made the BASELINE fail to compile and the tool
+printed `FAIL/<md5>` -- while exiting 0, i.e. silent success.  A failed compile
+now always counts as `bad`, in every mode including `--md5`.
 """
 
 from __future__ import annotations
