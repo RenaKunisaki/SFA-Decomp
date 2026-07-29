@@ -314,7 +314,7 @@ int objPosToMapBlockIdx(f32 x, f32 y, f32 z)
     return -1;
 }
 
-extern void* lbl_803DCEA0;
+extern void* gCurRomListPage;
 
 int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type, int* out_lastpage)
 {
@@ -332,7 +332,7 @@ int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type,
         page = *pp[0];
         if (page == NULL) continue;
 
-        lbl_803DCEA0 = page;
+        gCurRomListPage = page;
         p = (int*)page->objects;
         inner_idx = 0;
         total_offset = 0;
@@ -346,7 +346,7 @@ int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type,
                 if (out_outer != NULL) *out_outer = outer;
                 if (out_type != NULL)
                 {
-                    *out_type = (int)*(s8*)((char*)lbl_803DCEA0 + 0x19);
+                    *out_type = (int)*(s8*)((char*)gCurRomListPage + 0x19);
                 }
                 if (out_lastpage != NULL)
                 {

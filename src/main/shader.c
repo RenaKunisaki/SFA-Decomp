@@ -109,7 +109,7 @@ s16 gVisibleObjectSortKeyCount;
 u16 lbl_803DCEAC;
 Camera* lbl_803DCEA8;
 s8 curMapType;
-void* lbl_803DCEA0;
+void* gCurRomListPage;
 MapBlockData** gMapBlocks;
 u8 gMapBlockCount;
 s16* gMapBlockIds;
@@ -2618,7 +2618,7 @@ MapRomList* mapGetCurrentRomList(void)
             return res;
         }
         lbl_803DB648 = v;
-        lbl_803DCEA0 = res;
+        gCurRomListPage = res;
         return res;
     }
 }
@@ -3038,12 +3038,12 @@ int mapProcessRomList(int slot)
     entry->romlist = (void*)rl;
     *(int*)(slot * 4 + 0x83A8 + (char*)base) = rl;
     ((s16*)((char*)base + 0x4190))[i * 4] = slot;
-    lbl_803DCEA0 = entry->romlist;
+    gCurRomListPage = entry->romlist;
     rects = (s16*)(*(int*)(base + 0x417C) + slot * 10);
-    ((MapRomListPage*)lbl_803DCEA0)->mapLayer = *(u8*)(*(int*)(base + 0x4184) + slot);
-    ((MapRomListPage*)lbl_803DCEA0)->worldX = gMapBlockWorldSize * (f32)(rects[0] + *(s16*)((char*)lbl_803DCEA0 + 4));
-    ((MapRomListPage*)lbl_803DCEA0)->worldZ = gMapBlockWorldSize * (f32)(rects[2] + *(s16*)((char*)lbl_803DCEA0 + 6));
-    cur = lbl_803DCEA0;
+    ((MapRomListPage*)gCurRomListPage)->mapLayer = *(u8*)(*(int*)(base + 0x4184) + slot);
+    ((MapRomListPage*)gCurRomListPage)->worldX = gMapBlockWorldSize * (f32)(rects[0] + *(s16*)((char*)gCurRomListPage + 4));
+    ((MapRomListPage*)gCurRomListPage)->worldZ = gMapBlockWorldSize * (f32)(rects[2] + *(s16*)((char*)gCurRomListPage + 6));
+    cur = gCurRomListPage;
     dz = cur->worldZ;
     dx = cur->worldX;
     if (cur != 0)
@@ -3074,36 +3074,36 @@ int mapGetRomListAndOffsets(int p1, int flag)
     int i;
 
     mapsBinGetRomlistSize(offset0, &v0, &v1, &v2, words);
-    lbl_803DCEA0 = mmAlloc(tailLen + (v0 + 7 >> 3) + 0x401 + v2, 5, 0);
-    fileLoadToBufferOffset(MLDF_FILEID_MAPS_BIN, lbl_803DCEA0, offset0, tailLen);
+    gCurRomListPage = mmAlloc(tailLen + (v0 + 7 >> 3) + 0x401 + v2, 5, 0);
+    fileLoadToBufferOffset(MLDF_FILEID_MAPS_BIN, gCurRomListPage, offset0, tailLen);
 
-    ((MapRomListPage*)lbl_803DCEA0)->unk0C = (void*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 4) + (words << 2)) - offset0);
-    ((MapRomListPage*)lbl_803DCEA0)->unk14 = (void*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 8) + (words << 2)) - offset0);
-    ((MapRomListPage*)lbl_803DCEA0)->unk30 = (void*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0xc) + (words << 2)) - offset0);
-    ((MapRomListPage*)lbl_803DCEA0)->unk2C = (void*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x10) + (words << 2)) - offset0);
-    ((MapRomListPage*)lbl_803DCEA0)->unk34 = (void*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x14) + (words << 2)) - offset0);
-    ((MapRomListPage*)lbl_803DCEA0)->objects = (ObjPlacement*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x18) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->unk0C = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 4) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->unk14 = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 8) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->unk30 = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0xc) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->unk2C = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x10) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->unk34 = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x14) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->objects = (ObjPlacement*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x18) + (words << 2)) - offset0);
 
-    piRomLoadSection(*(int*)((lbl_803DCE7C + 0x18) + (words << 2)), p1, (int)((MapRomListPage*)lbl_803DCEA0)->objects);
-    ((MapRomListPage*)lbl_803DCEA0)->loadedObjectBits = (u8*)((*(int*)((lbl_803DCE7C + 0x1c) + (words << 2)) + v2) + (int)lbl_803DCEA0 - offset0);
+    piRomLoadSection(*(int*)((lbl_803DCE7C + 0x18) + (words << 2)), p1, (int)((MapRomListPage*)gCurRomListPage)->objects);
+    ((MapRomListPage*)gCurRomListPage)->loadedObjectBits = (u8*)((*(int*)((lbl_803DCE7C + 0x1c) + (words << 2)) + v2) + (int)gCurRomListPage - offset0);
 
     for (i = 0; i < (v0 + 7 >> 3) + 1; i++)
     {
-        ((MapRomListPage*)lbl_803DCEA0)->loadedObjectBits[i] = 0;
+        ((MapRomListPage*)gCurRomListPage)->loadedObjectBits[i] = 0;
     }
     {
         f32 fillVal = lbl_803DEBCC;
-        ((MapRomListPage*)lbl_803DCEA0)->worldX = fillVal;
-        ((MapRomListPage*)lbl_803DCEA0)->worldZ = fillVal;
+        ((MapRomListPage*)gCurRomListPage)->worldX = fillVal;
+        ((MapRomListPage*)gCurRomListPage)->worldZ = fillVal;
     }
-    ((MapRomListPage*)lbl_803DCEA0)->unk18 = 0;
-    ((MapRomListPage*)lbl_803DCEA0)->mapLayer = 0;
+    ((MapRomListPage*)gCurRomListPage)->unk18 = 0;
+    ((MapRomListPage*)gCurRomListPage)->mapLayer = 0;
     if (flag == 0)
     {
-        mapBuildRomListIndex(lbl_803DCEA0, &gMapRomListIndexes[p1], p1, 0);
+        mapBuildRomListIndex(gCurRomListPage, &gMapRomListIndexes[p1], p1, 0);
         (*gMapEventInterface)->updateObjGroups(p1);
     }
-    return (int)lbl_803DCEA0;
+    return (int)gCurRomListPage;
 }
 
 extern f32 lbl_803DEBEC;
