@@ -6,15 +6,6 @@
 struct GameObject;
 struct PartFxSpawnParams;
 
-typedef s16 (*Dll83SpawnFn)(void* sourceObj, int variant, struct PartFxSpawnParams* posSource, u32 flags,
-                            int owner, void* unused);
-
-typedef struct Dll83Interface
-{
-    void* reserved;
-    Dll83SpawnFn spawn;
-} Dll83Interface;
-
 typedef s16 (*Dll84SpawnFn)(void* sourceObj, int variant, struct PartFxSpawnParams* posSource, u32 flags,
                             int owner, void* unused);
 
@@ -24,11 +15,8 @@ typedef struct Dll84Interface
     Dll84SpawnFn spawn;
 } Dll84Interface;
 
-STATIC_ASSERT(offsetof(Dll83Interface, spawn) == 0x04);
 STATIC_ASSERT(offsetof(Dll84Interface, spawn) == 0x04);
 
-s16 dll_83_func03(void* sourceObj, int variant, struct PartFxSpawnParams* posSource, u32 flags, int owner,
-                  void* unused);
 s16 dll_84_func03(void* sourceObj, int variant, struct PartFxSpawnParams* posSource, u32 flags, int owner,
                   void* unused);
 void dll_85_func03(int param_1,int param_2,int param_3,u32 param_4);
