@@ -117,11 +117,6 @@ int DIMbosstonsil_startIdleHitReaction(GameObject* obj, DIMbosstonsilState* stat
     state->recoveryTimer = 0.01f;
     return 0;
 }
-/* Source-position anchor for MWCC's anonymous symbol numbering. */
-static int DIMbosstonsil_isWithinLightRange(f32 dist) {
-    return dist > 30.0f && dist < 50.0f;
-}
-
 void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state) {
     int hitObj;
     int modelPart;

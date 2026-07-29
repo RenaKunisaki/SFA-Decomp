@@ -916,10 +916,6 @@ void SHthorntail_render(GameObject* obj, int renderArg2, int renderArg3, int ren
     } while (pointIndex < SHTHORNTAIL_RENDER_PATH_POINT_COUNT);
 }
 
-static void SHthorntail_applyGravity(GameObject* obj) {
-    obj->anim.velocityY = -(0.17f * timeDelta - obj->anim.velocityY);
-}
-
 void SHthorntail_update(int obj) {
     u8* stateTables;
     SHthorntailState* runtime;

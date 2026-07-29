@@ -63,20 +63,6 @@ void imSnowClaw_syncMountTransform(GameObject* obj, GameObject* mount, int rende
     obj->anim.velocityZ = mount->anim.velocityZ;
 }
 
-static void dll_16C_advanceLinkedMove(GameObject* obj, GameObject* mount) {
-    int moveNegative;
-    f32 moveStep;
-    f32 moveAmount;
-
-    if (obj->anim.currentMove != IM_SNOW_CLAW_MOVE_ID) {
-        ObjAnim_SetCurrentMove((int)obj, IM_SNOW_CLAW_MOVE_ID, 0.0f, 0);
-    }
-    (*(IMSnowClawMountInterface**)mount->anim.dll)->getNormalizedSpeed(mount, &moveStep);
-    moveStep = 0.01f;
-    (*(IMSnowClawMountInterface**)mount->anim.dll)->func12(mount, &moveAmount, &moveNegative);
-    ObjAnim_AdvanceCurrentMove((int)obj, moveStep, (f32)(u32)framesThisStep, NULL);
-}
-
 int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate) {
     GameObject* mount;
     IMSnowClawState* state = obj->extra;

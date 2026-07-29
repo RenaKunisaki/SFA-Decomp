@@ -1860,7 +1860,6 @@ dlls/objects/278_WM_Column/WM_Column.c:
 dlls/objects/279_AppleOnTree/AppleOnTree.c:
 	.text       start:0x8017D818 end:0x8017EC10
 	.data       start:0x80321498 end:0x803214F8
-	.sdata2     start:0x803E37C8 end:0x803E3848
 
 dlls/objects/252/252.c:
 	.text       start:0x8017EC10 end:0x8017EF6C
@@ -2456,7 +2455,6 @@ dlls/objects/364/364.c:
 	.text       start:0x801AD7E4 end:0x801AE0EC
 	.rodata     start:0x802C2308 end:0x802C2318
 	.data       start:0x80323740 end:0x80323778
-	.sdata2     start:0x803E4748 end:0x803E4768
 
 dlls/objects/365_IMIcePillar/IMIcePillar.c:
 	.text       start:0x801AE0EC end:0x801AE144
@@ -2679,7 +2677,6 @@ dlls/objects/482_DIM_BossTon/DIM_BossTon.c:
 dlls/objects/483_DIM_BossGut/DIM_BossGut.c:
 	.text       start:0x801BEEA0 end:0x801BF8D8
 	.data       start:0x80325C70 end:0x80325CB0
-	.sdata2     start:0x803E4CD0 end:0x803E4D34
 
 dlls/objects/485_DIM_BossSpi/DIM_BossSpi.c:
 	.text       start:0x801BF8D8 end:0x801BFFF4
@@ -3139,7 +3136,6 @@ dlls/objects/648_SPDrape/SPDrape.c:
 	.text       start:0x801E9328 end:0x801E97DC
 	.data       start:0x80328450 end:0x803284A4
 	.sdata      start:0x803DC0B0 end:0x803DC0B8
-	.sdata2     start:0x803E5AA0 end:0x803E5AD8
 
 dlls/objects/649_SPitembeam/SPitembeam.c:
 	.text       start:0x801E97DC end:0x801E991C
@@ -5118,7 +5114,6 @@ dlls/objects/437/437.c:
 	.data       start:0x80334EE8 end:0x80335030
 	.bss        start:0x803DB0D0 end:0x803DB0F0
 	.sdata      start:0x803DC6F0 end:0x803DC72C
-	.sdata2     start:0x803E8178 end:0x803E822C
 
 dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:
 	.text       start:0x802B9780 end:0x802BC0D0

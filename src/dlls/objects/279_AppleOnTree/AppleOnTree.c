@@ -64,14 +64,6 @@ static inline void appleontree_markFallen(GameObject* obj) {
     }
 }
 
-static void appleontree_setFallScale(AppleOnTreeState* state, f32 fallProgress) {
-    if (fallProgress >= 1.0f) {
-        state->fallScale = 1.0f;
-    } else {
-        state->fallScale = 0.75f * fallProgress + 0.25f;
-    }
-}
-
 ObjectDescriptor13 gAppleOnTreeObjDescriptor = {
     0,
     0,

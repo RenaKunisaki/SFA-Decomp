@@ -575,13 +575,6 @@ void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieSt
  * collision query tests. Low byte = behaviour flags; the high bits select the
  * map-surface type (consumed by mapLoadBlocksFn_800685cc).
  */
-static void Lightfoot_RearmScuffBurst(GameObject* obj, f32* timer, f32* params)
-{
-    *timer = *timer + 15.0f;
-    params[1] = 35.0f;
-    objfx_spawnPulseBurst(obj, 0.2f * obj->anim.rootMotionScale, 3, 3, 0, params);
-}
-
 void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
 {
     if (inner->eventFlags & 4)
