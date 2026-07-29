@@ -230,9 +230,7 @@ def surplus_fns(ours_obj, retail_obj):
 
     A pool word retail has nowhere is only a MISCODED literal if the two
     objects hold the same code. An extra function mints its own constants, so
-    it accounts for surplus pool words without any literal being wrong -- 226's
-    pi/2, pi and 32768 are all minted by staffQuakeSpellAdvance, which retail's
-    226 does not contain.
+    it accounts for surplus pool words without any literal being wrong.
     """
     def fns(p):
         r = subprocess.run([OBJDUMP, '-t', p], capture_output=True)

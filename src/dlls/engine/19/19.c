@@ -121,29 +121,6 @@ void waterfx_setupSplashDropPointRender(void)
     GXSetTevKColor(GX_KCOLOR0, col);
 }
 
-static f32 waterfxBandEnvelope(f32 frac, f32 life, f32* phaseOut, f32* alphaOut)
-{
-    f32 ph;
-    f32 dd;
-    f32 fade;
-    f32 lim;
-
-    ph = (WATERFX_PHASE_START + WATERFX_BAND_OFFSET_SCALE * frac) * life;
-    dd = ph - WATERFX_RIPPLE_FADE_RATE;
-    fade = WATERFX_ONE - WATERFX_FADE_CURVE_SCALE * (dd * dd);
-    lim = WATERFX_BAND_LIMIT_BASE + WATERFX_BAND_OFFSET_SCALE * frac;
-    if (life < lim)
-    {
-        *alphaOut = WATERFX_ONE;
-    }
-    else
-    {
-        *alphaOut = (WATERFX_ONE - life) / (WATERFX_ONE - lim);
-    }
-    *phaseOut = ph;
-    return fade;
-}
-
 /*
  * Renders one splash burst as a ring of 8 expanding, fading sprite bands.
  * For each of the 8 bands it builds a model-view matrix (scaled by the burst

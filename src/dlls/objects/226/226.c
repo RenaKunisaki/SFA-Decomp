@@ -443,15 +443,6 @@ void staffSetGlow(GameObject* obj, u8 attackType, u8 enable)
 }
 
 
-static void staffQuakeSpellAdvance(StaffQuakeSpellState* q)
-{
-    q->scale += 5.5f;
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade += -4.0f;
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius *= 0.97f;
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale *= 1.01f;
-    ((GameObject*)q->object)->anim.rootMotionScale += 0.07f;
-}
-
 void staffStartQuakeSpell(f32* pos)
 {
     GameObject* player;
