@@ -70,15 +70,15 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
     u32 cls;
     u8* mtx;
     GameObject* gobj;
-    u8* base;
+    u8* effectDataBytes;
     f32* scaleA;
     f32* scaleB;
     f32* scaleC;
-    u8* idp;
-    void** grp;
-    void** grp2;
-    int slot;
-    f32 k2002;
+    u8* jointIdCursor;
+    void** updateBufferCursor;
+    void** drawBufferCursor;
+    int bufferIndex;
+    f32 jointPositionScale;
     f32 one;
     f32 zero;
     f32 dx;
@@ -86,7 +86,7 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
     f32 dz;
 
     gobj = (GameObject*)obj;
-    base = (u8*)gBoneParticleConfigTable;
+    effectDataBytes = (u8*)gBoneParticleConfigTable;
     if (mainGetBit(GAMEBIT_TRICKYCURVE_PLAYER_HIT) != 0)
     {
         mainSetBits(GAMEBIT_TRICKYCURVE_PLAYER_HIT, 0);
@@ -120,20 +120,20 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
         gBoneParticleDrift = BONE_PARTICLE_DRIFT_MIN;
         Sfx_PlayFromObject((u32)gobj, SFXTRIG_id_282);
     }
-    slot = 0;
-    grp2 = gBoneParticleEffectBuffers;
-    grp = gBoneParticleEffectBuffers;
-    for (; slot < BONE_PARTICLE_EFFECT_BUFFER_COUNT; slot++)
+    bufferIndex = 0;
+    drawBufferCursor = gBoneParticleEffectBuffers;
+    updateBufferCursor = gBoneParticleEffectBuffers;
+    for (; bufferIndex < BONE_PARTICLE_EFFECT_BUFFER_COUNT; bufferIndex++)
     {
-        if (slot != 5)
+        if (bufferIndex != 5)
         {
-            gBoneParticleStageIndex = slot;
+            gBoneParticleStageIndex = bufferIndex;
             row = 0;
             j = 0;
-            idp = base + 0x5b4;
+            jointIdCursor = effectDataBytes + 0x5b4;
             zero = (0.0f);
             one = (1.0f);
-            k2002 = 20.02f;
+            jointPositionScale = 20.02f;
             while (j < 5)
             {
                 vtx.x = zero;
@@ -146,7 +146,7 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
                 mtx = model->jointMatrices[model->bufferFlags & 1];
                 {
                     u8* bp;
-                    bp = base + gBoneParticleStageIndex * 5;
+                    bp = effectDataBytes + gBoneParticleStageIndex * 5;
                     bp = bp + j;
                     id = bp[0x5b4];
                 }
@@ -157,67 +157,68 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
                 dx = dx - gobj->anim.localPosX;
                 dy = dy - gobj->anim.localPosY;
                 dz = dz - gobj->anim.localPosZ;
-                dx = dx * k2002;
+                dx = dx * jointPositionScale;
                 if (id == 0x1d || id == 0x1d)
                 {
                     dy = 20.02f * (8.0f + dy);
                 }
                 else
                 {
-                    dy = dy * k2002;
+                    dy = dy * jointPositionScale;
                 }
-                dz = dz * k2002;
+                dz = dz * jointPositionScale;
                 Matrix_TransformPoint((f32*)mtx, vtx.x, vtx.y, vtx.z, &vtx.x, &vtx.y, &vtx.z);
                 k = 0;
-                scaleA = (f32*)(base + 0x90);
-                scaleB = (f32*)base;
-                scaleC = (f32*)(base + 0x120);
+                scaleA = (f32*)(effectDataBytes + 0x90);
+                scaleB = (f32*)effectDataBytes;
+                scaleC = (f32*)(effectDataBytes + 0x120);
                 while (k < 4)
                 {
                     u8* idr;
                     f32 sc;
-                    id = *(u8*)(idp + gBoneParticleStageIndex * 5);
-                    idr = base;
+                    id = *(u8*)(jointIdCursor + gBoneParticleStageIndex * 5);
+                    idr = effectDataBytes;
                     idr = idr + id;
                     cls = idr[0x590];
                     if (cls == 0)
                     {
-                        vtx.x = scaleA[0] * (sc = *(f32*)(base + id * 4 + 0x5d8));
+                        vtx.x = scaleA[0] * (sc = *(f32*)(effectDataBytes + id * 4 + 0x5d8));
                         vtx.y = scaleA[1] * sc;
-                        vtx.z = scaleA[2] * *(f32*)(base + id * 4 + 0x664);
+                        vtx.z = scaleA[2] * *(f32*)(effectDataBytes + id * 4 + 0x664);
                     }
                     else if (cls == 1)
                     {
-                        vtx.x = scaleB[0] * (sc = *(f32*)(base + id * 4 + 0x5d8));
+                        vtx.x = scaleB[0] * (sc = *(f32*)(effectDataBytes + id * 4 + 0x5d8));
                         vtx.y = scaleB[1] * sc;
-                        vtx.z = scaleB[2] * *(f32*)(base + id * 4 + 0x664);
+                        vtx.z = scaleB[2] * *(f32*)(effectDataBytes + id * 4 + 0x664);
                     }
                     else if (cls == 2)
                     {
-                        vtx.x = scaleC[0] * (sc = *(f32*)(base + id * 4 + 0x5d8));
+                        vtx.x = scaleC[0] * (sc = *(f32*)(effectDataBytes + id * 4 + 0x5d8));
                         vtx.y = scaleC[1] * sc;
-                        vtx.z = scaleC[2] * *(f32*)(base + id * 4 + 0x664);
+                        vtx.z = scaleC[2] * *(f32*)(effectDataBytes + id * 4 + 0x664);
                     }
                     Matrix_TransformPoint((f32*)mtx, vtx.x, vtx.y, vtx.z, &vtx.x, &vtx.y, &vtx.z);
                     vtx.x = vtx.x + playerMapOffsetX;
                     vtx.z = vtx.z + playerMapOffsetZ;
-                    ((ParticleSlot*)*grp)[k + row].posX = dx + (vtx.x - gobj->anim.localPosX);
-                    ((ParticleSlot*)*grp)[k + row].posY = dy + (vtx.y - gobj->anim.localPosY);
-                    ((ParticleSlot*)*grp)[k + row].posZ = dz + (vtx.z - gobj->anim.localPosZ);
-                    ((ParticleSlot*)*grp)[k + row].alpha = 0x9b;
-                    ((ParticleSlot*)*grp)[k + row].texV =
-                        (s16)(((ParticleSlot*)(base + 0x1b0))[k + row].texV - (gBoneParticleScrollOffset << 2));
+                    ((ParticleSlot*)*updateBufferCursor)[k + row].posX = dx + (vtx.x - gobj->anim.localPosX);
+                    ((ParticleSlot*)*updateBufferCursor)[k + row].posY = dy + (vtx.y - gobj->anim.localPosY);
+                    ((ParticleSlot*)*updateBufferCursor)[k + row].posZ = dz + (vtx.z - gobj->anim.localPosZ);
+                    ((ParticleSlot*)*updateBufferCursor)[k + row].alpha = 0x9b;
+                    ((ParticleSlot*)*updateBufferCursor)[k + row].texV =
+                        (s16)(((ParticleSlot*)(effectDataBytes + 0x1b0))[k + row].texV -
+                              (gBoneParticleScrollOffset << 2));
                     scaleA += 3;
                     scaleB += 3;
                     scaleC += 3;
                     k += 1;
                 }
                 row += 4;
-                idp += 1;
+                jointIdCursor += 1;
                 j += 1;
             }
         }
-        grp += 1;
+        updateBufferCursor += 1;
     }
     vtx.x = gobj->anim.localPosX;
     vtx.y = gobj->anim.localPosY;
@@ -260,8 +261,8 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
         i = 0;
         do
         {
-            lightmapDrawTriangleList(*grp2, (u8*)(base + 0x2f0), 0x20);
-            grp2 += 1;
+            lightmapDrawTriangleList(*drawBufferCursor, (u8*)(effectDataBytes + 0x2f0), 0x20);
+            drawBufferCursor += 1;
             i += 1;
         } while (i < BONE_PARTICLE_EFFECT_BUFFER_COUNT);
     }
