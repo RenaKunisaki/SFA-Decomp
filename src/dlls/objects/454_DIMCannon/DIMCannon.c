@@ -59,7 +59,7 @@ static void DIMCannon_explodeBall(GameObject* obj, DimCannonBallState* state) {
     obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
 }
 
-void DIMwooddoor_updateFallingDebris(GameObject* obj) {
+void DIMCannon_updateBall(GameObject* obj) {
     DimCannonBallState* state = obj->extra;
     switch (state->mode) {
     case DIM_CANNON_BALL_MODE_FALLING: {
@@ -102,7 +102,7 @@ void DIMwooddoor_updateFallingDebris(GameObject* obj) {
     }
 }
 
-void DIMwooddoor_spawnShard(GameObject* obj, u8 variant) {
+void DIMCannon_spawnBall(GameObject* obj, u8 variant) {
     DimCannonPlacement* placement;
     DimCannonState* state;
     DimCannonBallState* ballState;
@@ -167,7 +167,7 @@ void DIMwooddoor_spawnShard(GameObject* obj, u8 variant) {
     Sfx_PlayFromObject(objHandle, SFXTRIG_tr_jrumbalp);
 }
 
-void DIMwooddoor_updateShardAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 targetZ, f32 unusedDistance) {
+void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 targetZ, f32 unusedDistance) {
     DimCannonState* state;
     DimCannonPlacement* placement;
     s16* modelRotation;
@@ -359,7 +359,8 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 state->airMeterCharge = gDimCannonMaxCharge;
             }
             (*gGameUIInterface)->runAirMeter(state->airMeterCharge);
-            state->launchSpeed = (f32)state->airMeterCharge * gDimCannonLaunchSpeedPerCharge + gDimCannonLaunchSpeedBase;
+            state->launchSpeed =
+                (f32)state->airMeterCharge * gDimCannonLaunchSpeedPerCharge + gDimCannonLaunchSpeedBase;
             if ((getButtonsJustPressedIfNotBusy(0) & PAD_BUTTON_A) || state->airMeterCharge == gDimCannonMaxCharge) {
                 if (state->launchDelay <= 0 && Player_GetCurrentMagic((int)player) >= 1) {
                     buttonDisable(0, PAD_BUTTON_A);
@@ -368,7 +369,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                     state->airMeterCharge = 0;
                 }
             }
-            DIMwooddoor_spawnShard(obj, 1);
+            DIMCannon_spawnBall(obj, 1);
             if (obj->anim.mapEventSlot == DIM_CANNON_PLAYER_CONTROLLED_MAP_EVENT_SLOT && state->hasActivated == 0 &&
                 mainGetBit(GAMEBIT_DIM_CannonRelated0C17) && mainGetBit(GAMEBIT_DIM_CannonRelated0A21)) {
                 state->hasActivated = 1;
@@ -464,7 +465,7 @@ void DIMCannon_update(GameObject* obj) {
     DimCannonPlacement* placement = *(DimCannonPlacement**)&obj->anim.placementData;
 
     if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
-        DIMwooddoor_updateFallingDebris(obj);
+        DIMCannon_updateBall(obj);
         return;
     }
 
@@ -511,8 +512,8 @@ void DIMCannon_update(GameObject* obj) {
         break;
     }
     case DIM_CANNON_MODE_ARMED:
-        DIMwooddoor_updateShardAim(obj, *(f32*)&state->aimTargetXBits, *(f32*)&state->aimTargetYBits, state->aimTargetZ,
-                                   state->targetDistance);
+        DIMCannon_updateAim(obj, *(f32*)&state->aimTargetXBits, *(f32*)&state->aimTargetYBits, state->aimTargetZ,
+                            state->targetDistance);
         if (mainGetBit(placement->resetGameBit)) {
             state->mode = DIM_CANNON_MODE_WAIT_FOR_RESET;
         } else if (state->targetPlayer != 0 && !mainGetBit(placement->holdGameBit)) {
@@ -563,9 +564,9 @@ void DIMCannon_update(GameObject* obj) {
             }
             state->targetDistance =
                 getXZDistance(&obj->anim.worldPosX, &((GameObject*)state->targetPlayer)->anim.worldPosX);
-            DIMwooddoor_updateShardAim(obj, *(f32*)&state->aimTargetXBits, *(f32*)&state->aimTargetYBits,
-                                       state->aimTargetZ, state->targetDistance);
-            DIMwooddoor_spawnShard(obj, 0);
+            DIMCannon_updateAim(obj, *(f32*)&state->aimTargetXBits, *(f32*)&state->aimTargetYBits, state->aimTargetZ,
+                                state->targetDistance);
+            DIMCannon_spawnBall(obj, 0);
             {
                 f32 playerDistance = state->targetDistance;
                 int triggerDistance = placement->triggerRange * lbl_803DBF0C;

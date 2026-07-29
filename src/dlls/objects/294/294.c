@@ -24,6 +24,8 @@
  * Trigger_render/update/release/initialise are stubs; Trigger_free stops
  * any sfx the trigger started.
  */
+#include "dlls/objects/294.h"
+
 #include "main/frame_timing.h"
 #include "main/texture.h"
 #include "sys/objects/lifecycle.h"
@@ -51,7 +53,6 @@
 #include "main/dll/dll_0126_trigger.h"
 #include "main/dll/dll_02B5_timer.h"
 #include "main/dll/headdisplay.h"
-#include "main/dll/mmp_gyservent.h"
 #include "main/sky.h"
 #include "main/dll/dll_80198a00.h"
 #include "main/dll/dll_0126_trigger_api.h"
@@ -80,16 +81,14 @@ ObjectDescriptor gTriggerObjDescriptor = {
 };
 
 char sMoonrockTriggerIdentFormat[] = "!!!!!!!!!!! TRIGGER %d  ident %d\n";
-char sTriggerDebugTextBlock[] =
-    "initialise\n\0"
-    "Trigger [%d], Environment Effect, Action Num [%d], Range [%d]\0\0\0"
-    "^^^^^^^^\n^^^^^^^^\nLOAD %d\n\0\0"
-    "^^^^^^^^\n^^^^^^^^\nFREE %d\n\0\0"
-    "^^^^^^^^\n^^^^^^^^\nLEVELLOCKED level %d  bucket %d\n\0\0"
-    "^^^^^^^^\n^^^^^^^^\nLEVELUNLOCKED level %d  bucket %d\n\0\0\0";
+char sTriggerDebugTextBlock[] = "initialise\n\0"
+                                "Trigger [%d], Environment Effect, Action Num [%d], Range [%d]\0\0\0"
+                                "^^^^^^^^\n^^^^^^^^\nLOAD %d\n\0\0"
+                                "^^^^^^^^\n^^^^^^^^\nFREE %d\n\0\0"
+                                "^^^^^^^^\n^^^^^^^^\nLEVELLOCKED level %d  bucket %d\n\0\0"
+                                "^^^^^^^^\n^^^^^^^^\nLEVELUNLOCKED level %d  bucket %d\n\0\0\0";
 
-typedef struct MmpTriggerPlaneState
-{
+typedef struct MmpTriggerPlaneState {
     u8 header[0xC];     /* 0x00 */
     f32 normalX;        /* 0x0C plane normal */
     f32 normalY;        /* 0x10 */
@@ -110,8 +109,7 @@ STATIC_ASSERT(offsetof(MmpTriggerPlaneState, mtx) == 0x38);
 
 #define MOONROCK_ANGLE_TO_RADIANS(angle) ((3.1415927f * (f32)(s32)(-(angle))) / 32768.0f)
 
-void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj)
-{
+void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj) {
     MmpTriggerPlaneState* state;
     f32 hitDistance;
     int queryType;
@@ -121,37 +119,28 @@ void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj)
 
     queryType = 0x17;
     state = (MmpTriggerPlaneState*)obj->extra;
-    curveHit = (*gRomCurveInterface)->find(
-        state->ptB[0], state->ptB[1], state->ptB[2], &queryType, 1,
-        *(s16*)(*(u8**)&obj->anim.placementData + 0x38));
-    frontBlocked = (*gRomCurveInterface)->isPointInsideLoop(
-        curveHit, state->ptB[0], state->ptB[1], state->ptB[2], &hitDistance);
-    rearBlocked = (*gRomCurveInterface)->isPointInsideLoop(
-        curveHit, state->ptA[0], state->ptA[1], state->ptA[2], &hitDistance);
+    curveHit = (*gRomCurveInterface)
+                   ->find(state->ptB[0], state->ptB[1], state->ptB[2], &queryType, 1,
+                          *(s16*)(*(u8**)&obj->anim.placementData + 0x38));
+    frontBlocked =
+        (*gRomCurveInterface)->isPointInsideLoop(curveHit, state->ptB[0], state->ptB[1], state->ptB[2], &hitDistance);
+    rearBlocked =
+        (*gRomCurveInterface)->isPointInsideLoop(curveHit, state->ptA[0], state->ptA[1], state->ptA[2], &hitDistance);
 
-    if (frontBlocked != 0)
-    {
-        if (rearBlocked == 0)
-        {
+    if (frontBlocked != 0) {
+        if (rearBlocked == 0) {
             objInterpretSeq(obj, seqObj, 1, (int)hitDistance);
-        }
-        else
-        {
+        } else {
             objInterpretSeq(obj, seqObj, 2, (int)hitDistance);
         }
-    }
-    else if (rearBlocked != 0)
-    {
+    } else if (rearBlocked != 0) {
         objInterpretSeq(obj, seqObj, -1, (int)hitDistance);
-    }
-    else
-    {
+    } else {
         objInterpretSeq(obj, seqObj, -2, (int)hitDistance);
     }
 }
 
-int triggerPointInBox(GameObject* obj, f32* point)
-{
+int triggerPointInBox(GameObject* obj, f32* point) {
     u8* data;
     f32 pointX;
     f32 pointY;
@@ -187,29 +176,24 @@ int triggerPointInBox(GameObject* obj, f32* point)
     localY = relY * pitchCos - forward * pitchSin;
     localZ = relY * pitchSin + forward * pitchCos;
 
-    if (localX < 0.0f)
-    {
+    if (localX < 0.0f) {
         localX = -localX;
     }
-    if (localY < 0.0f)
-    {
+    if (localY < 0.0f) {
         localY = -localY;
     }
-    if (localZ < 0.0f)
-    {
+    if (localZ < 0.0f) {
         localZ = -localZ;
     }
 
     if ((localX <= (f32)(s32)(data[0x3a] << 1)) && (localY <= (f32)(s32)(data[0x3b] << 1)) &&
-        (localZ <= (f32)(s32)(data[0x3c] << 1)))
-    {
+        (localZ <= (f32)(s32)(data[0x3c] << 1))) {
         return 1;
     }
     return 0;
 }
 
-void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj)
-{
+void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj) {
     f32 ny;
     MmpTriggerPlaneState* state;
     s8 triggerState;
@@ -252,17 +236,13 @@ void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj)
     farY = state->ptB[1];
     farDist = planeBase + (normalZ * farZ + (normalX * farX + normalY * farY));
 
-    if (farDist < 0.0f)
-    {
+    if (farDist < 0.0f) {
         triggerState = (nearDist < 0.0f) ? 2 : 1;
-    }
-    else
-    {
+    } else {
         triggerState = (nearDist < 0.0f) ? -1 : -2;
     }
 
-    if ((triggerState == 1) || (triggerState == -1))
-    {
+    if ((triggerState == 1) || (triggerState == -1)) {
         deltaX = farX - nearX;
         deltaY = farY - nearY;
         deltaZ = farZ - nearZ;
@@ -275,8 +255,7 @@ void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj)
         PSMTXMultVec(state->mtx, &localPos, &localPos);
 
         if ((localPos.x >= -state->clipHalfExtent) && (localPos.x <= state->clipHalfExtent) &&
-            (localPos.y >= -state->clipHalfExtent) && (localPos.y <= state->clipHalfExtent))
-        {
+            (localPos.y >= -state->clipHalfExtent) && (localPos.y <= state->clipHalfExtent)) {
             OSReport(sMoonrockTriggerIdentFormat, triggerState, *(u32*)(data + 0x14));
             objInterpretSeq(obj, seqObj, triggerState, (int)farDist);
         }
@@ -287,18 +266,16 @@ void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj)
 #define MMP_GYSERVENT_DEBUG_IDENT 0x46a31
 
 /* placement (WmSpiritPlaceMapData) byte offsets read at setup / per-frame */
-#define MMP_GYSERVENT_PLACE_REACH    0x3a /* eruption reach scale byte */
-#define MMP_GYSERVENT_PLACE_SPEED    0x3b /* per-frame speed byte */
-#define MMP_GYSERVENT_PLACE_ROTX     0x3d /* rotX (low 6 bits) */
-#define MMP_GYSERVENT_PLACE_ROTY     0x3e /* rotY */
-#define MMP_GYSERVENT_PLACE_IDENT    0x14 /* ObjPlacement.ident */
+#define MMP_GYSERVENT_PLACE_REACH 0x3a /* eruption reach scale byte */
+#define MMP_GYSERVENT_PLACE_SPEED 0x3b /* per-frame speed byte */
+#define MMP_GYSERVENT_PLACE_ROTX  0x3d /* rotX (low 6 bits) */
+#define MMP_GYSERVENT_PLACE_ROTY  0x3e /* rotY */
+#define MMP_GYSERVENT_PLACE_IDENT 0x14 /* ObjPlacement.ident */
 
-void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement)
-{
+void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement) {
     MmpGyserventState* state;
     MatrixTransform xf;
-    union
-    {
+    union {
         f32 m[16];
         f64 a8;
     } rotU;
@@ -326,8 +303,7 @@ void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement)
     state->planeNormalX = outX;
     state->planeNormalY = outY;
     state->planeNormalZ = outZ;
-    state->planeOffset =
-        -(obj->anim.worldPosZ * outZ + (obj->anim.worldPosX * outX + obj->anim.worldPosY * outY));
+    state->planeOffset = -(obj->anim.worldPosZ * outZ + (obj->anim.worldPosX * outX + obj->anim.worldPosY * outY));
 
     xf.rotX = (s16)-obj->anim.rotX;
     xf.rotY = (s16)-obj->anim.rotY;
@@ -341,15 +317,14 @@ void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement)
 
     state->reach = 100.0f * obj->anim.rootMotionScale;
     state->nearRadiusSq = (145.0f * obj->anim.rootMotionScale) * (145.0f * obj->anim.rootMotionScale);
-    if (placement->base.ident == MMP_GYSERVENT_DEBUG_IDENT)
-    {
+    if (placement->base.ident == MMP_GYSERVENT_DEBUG_IDENT) {
         OSReport(sTriggerDebugTextBlock);
     }
 #undef rotMtx
 }
 
-void objSeqMoveFn_80199188(GameObject* obj, GameObject* seqObj)
-{
+/* Classify the target against the two vertical endpoint cylinders used by trigger type 0x230. */
+void triggerEvalEndpointCylinders(GameObject* obj, GameObject* seqObj) {
     f32 distSqA;
     f32 dyB;
     f32 dyA;
@@ -371,27 +346,20 @@ void objSeqMoveFn_80199188(GameObject* obj, GameObject* seqObj)
     distSqB = state->reachBZ - (obj)->anim.worldPosZ;
     distSqB = t * t + distSqB * distSqB;
     t = state->nearRadiusSq;
-    if ((distSqB < t) && (((dyB < 0.0f) ? -dyB : dyB) < speed))
-    {
+    if ((distSqB < t) && (((dyB < 0.0f) ? -dyB : dyB) < speed)) {
         nearEnd = false;
-        if (distSqA < t)
-        {
+        if (distSqA < t) {
             dyA = (dyA < 0.0f) ? -dyA : dyA;
-            if (dyA < speed)
-            {
+            if (dyA < speed) {
                 nearEnd = true;
             }
         }
         leg = nearEnd ? 2 : 1;
-    }
-    else
-    {
+    } else {
         nearEnd = false;
-        if (distSqA < t)
-        {
+        if (distSqA < t) {
             dyA = (dyA < 0.0f) ? -dyA : dyA;
-            if (dyA < speed)
-            {
+            if (dyA < speed) {
                 nearEnd = true;
             }
         }
@@ -400,8 +368,8 @@ void objSeqMoveFn_80199188(GameObject* obj, GameObject* seqObj)
     objInterpretSeq(obj, seqObj, leg, distSqB);
 }
 
-void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj)
-{
+/* Classify the target against the two endpoint spheres used by trigger type 0x4B. */
+void triggerEvalEndpointSpheres(GameObject* obj, GameObject* seqObj) {
     MmpGyserventState* state;
     f32 dx0, dy0, dz0, d0;
     f32 dx1, dy1, dz1, d1;
@@ -419,12 +387,9 @@ void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj)
     dz1 = state->reachBZ - (obj)->anim.worldPosZ;
     d1 = dx1 * dx1 + dy1 * dy1 + dz1 * dz1;
 
-    if (d1 < state->nearRadiusSq)
-    {
+    if (d1 < state->nearRadiusSq) {
         cat = (d0 < state->nearRadiusSq) ? 2 : 1;
-    }
-    else
-    {
+    } else {
         cat = (d0 < state->nearRadiusSq) ? -1 : -2;
     }
     objInterpretSeq(obj, seqObj, cat, d1);
@@ -433,25 +398,24 @@ void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj)
 #define TARGET_OBJGROUP                 0xf  /* player-target group; nearest object gets the trigger's sequence */
 #define TRICKY_TARGET_OBJGROUP          0x32 /* nearest object searched from the tricky object */
 #define TRICKY_TARGET_OBJGROUP_FALLBACK 0x31 /* fallback group when TRICKY_TARGET_OBJGROUP has none */
-#define TRIGGER_ENVFX_A0 0x134
-#define TRIGGER_ENVFX_A1 0x135
-#define TRIGGER_ENVFX_A2 0x142
-#define TRIGGER_ENVFX_B0 0x136
-#define TRIGGER_ENVFX_B1 0x137
-#define TRIGGER_ENVFX_B2 0x143
-#define TRIGGER_SFLAG_ENTERED     0x01 /* enter-direction command list has run (latch) */
-#define TRIGGER_SFLAG_EXITED      0x02 /* exit-direction command list has run (latch) */
-#define TRIGGER_SFLAG_DISABLED    0x04 /* trigger's game bit was already set at init: fire enter once */
-#define TRIGGER_CMD_ON_ENTER          0x01 /* run when activation direction is enter (legCode > 0) */
-#define TRIGGER_CMD_ON_EXIT           0x02 /* run when activation direction is exit (legCode < 0) */
-#define TRIGGER_CMD_ONCE_ENTER        0x04 /* enter leg runs only once (latched vs SFLAG_ENTERED) */
-#define TRIGGER_CMD_ONCE_EXIT         0x08 /* exit leg runs only once (latched vs SFLAG_EXITED) */
-#define TRIGGER_CMD_UNCONDITIONAL     0x10 /* ignore enter/exit gating */
-#define TRIGGER_CMD_OVERRIDE_DISABLED 0x20 /* run even when SFLAG_DISABLED is set */
-#define TRIGGER_SFLAG_SEED_TARGET 0x40 /* first hit: seed target position from current, not previous */
+#define TRIGGER_ENVFX_A0                0x134
+#define TRIGGER_ENVFX_A1                0x135
+#define TRIGGER_ENVFX_A2                0x142
+#define TRIGGER_ENVFX_B0                0x136
+#define TRIGGER_ENVFX_B1                0x137
+#define TRIGGER_ENVFX_B2                0x143
+#define TRIGGER_SFLAG_ENTERED           0x01 /* enter-direction command list has run (latch) */
+#define TRIGGER_SFLAG_EXITED            0x02 /* exit-direction command list has run (latch) */
+#define TRIGGER_SFLAG_DISABLED          0x04 /* trigger's game bit was already set at init: fire enter once */
+#define TRIGGER_CMD_ON_ENTER            0x01 /* run when activation direction is enter (legCode > 0) */
+#define TRIGGER_CMD_ON_EXIT             0x02 /* run when activation direction is exit (legCode < 0) */
+#define TRIGGER_CMD_ONCE_ENTER          0x04 /* enter leg runs only once (latched vs SFLAG_ENTERED) */
+#define TRIGGER_CMD_ONCE_EXIT           0x08 /* exit leg runs only once (latched vs SFLAG_EXITED) */
+#define TRIGGER_CMD_UNCONDITIONAL       0x10 /* ignore enter/exit gating */
+#define TRIGGER_CMD_OVERRIDE_DISABLED   0x20 /* run even when SFLAG_DISABLED is set */
+#define TRIGGER_SFLAG_SEED_TARGET       0x40 /* first hit: seed target position from current, not previous */
 
-void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
-{
+void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range) {
     char* desc = (char*)&gTriggerObjDescriptor;
     u8* state = obj->extra;
     u8* p = (u8*)(obj->anim.placementDataAddress + 0x18);
@@ -473,565 +437,462 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
     int id;
     GameObject** objects;
 
-    for (; i < 8; i++, p += 4)
-    {
-        if (p[1] == 0)
-        {
+    for (; i < 8; i++, p += 4) {
+        if (p[1] == 0) {
             continue;
         }
         sflags = *state;
-        if ((sflags & TRIGGER_SFLAG_DISABLED) != 0 && (*p & TRIGGER_CMD_OVERRIDE_DISABLED) == 0)
-        {
+        if ((sflags & TRIGGER_SFLAG_DISABLED) != 0 && (*p & TRIGGER_CMD_OVERRIDE_DISABLED) == 0) {
             continue;
         }
         b = *p;
-        if ((b & TRIGGER_CMD_UNCONDITIONAL) == 0)
-        {
-            if (legCode == 1)
-            {
-                if ((b & TRIGGER_CMD_ON_ENTER) == 0)
-                {
+        if ((b & TRIGGER_CMD_UNCONDITIONAL) == 0) {
+            if (legCode == 1) {
+                if ((b & TRIGGER_CMD_ON_ENTER) == 0) {
                     continue;
                 }
-                if ((sflags & TRIGGER_SFLAG_ENTERED) != 0 && (b & TRIGGER_CMD_ONCE_ENTER) == 0)
-                {
+                if ((sflags & TRIGGER_SFLAG_ENTERED) != 0 && (b & TRIGGER_CMD_ONCE_ENTER) == 0) {
                     continue;
                 }
-            }
-            else if (legCode == -1)
-            {
-                if ((b & TRIGGER_CMD_ON_EXIT) == 0)
-                {
+            } else if (legCode == -1) {
+                if ((b & TRIGGER_CMD_ON_EXIT) == 0) {
                     continue;
                 }
-                if ((sflags & TRIGGER_SFLAG_EXITED) != 0 && (b & TRIGGER_CMD_ONCE_EXIT) == 0)
-                {
+                if ((sflags & TRIGGER_SFLAG_EXITED) != 0 && (b & TRIGGER_CMD_ONCE_EXIT) == 0) {
                     continue;
                 }
-            }
-            else
-            {
+            } else {
                 continue;
             }
-        }
-        else if ((b & TRIGGER_CMD_ON_ENTER) != 0)
-        {
-            if (legCode < 0)
-            {
+        } else if ((b & TRIGGER_CMD_ON_ENTER) != 0) {
+            if (legCode < 0) {
                 continue;
             }
-        }
-        else if ((b & TRIGGER_CMD_ON_EXIT) != 0 && legCode > 0)
-        {
+        } else if ((b & TRIGGER_CMD_ON_EXIT) != 0 && legCode > 0) {
             continue;
         }
-        switch (p[1])
-        {
-                case 1:
-                    switch (p[2])
-                    {
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
-                        break;
-                    case 8:
-                        t = (int)Obj_GetPlayerObject();
-                        if ((void*)t != NULL)
-                        {
-                            playerSetStateValue((GameObject*)t, 1, 0.0f);
-                        }
-                        break;
-                    case 9:
-                        t = (int)Obj_GetPlayerObject();
-                        if ((void*)t != NULL)
-                        {
-                            playerSetStateValue((GameObject*)t, 10, 0.0f);
-                        }
-                        break;
-                    case 10:
-                        t = (int)Obj_GetPlayerObject();
-                        if ((void*)t != NULL)
-                        {
-                            playerSetStateValue((GameObject*)t, 0xb, 0.0f);
-                        }
-                        break;
-                    case 0xb:
-                        t = (int)Obj_GetPlayerObject();
-                        if ((void*)t != NULL)
-                        {
-                            playerSetStateValue((GameObject*)t, 1, 14.0f);
-                        }
-                        break;
-                    }
-                    break;
-                case 4:
-                    if (legCode >= 0)
-                    {
-                        Sfx_PlayFromObject((u32)obj, (u16)((p[2] << 8) | p[3]));
-                    }
-                    else
-                    {
-                        Sfx_StopFromObject((u32)obj, (u16)((p[2] << 8) | p[3]));
-                    }
-                    break;
-                case 6:
-                    (*gCameraInterface)->loadTriggeredCamAction(p[2], p[3], 0);
-                    break;
-                case 8:
-                    switch (p[2])
-                    {
-                    case 0:
-                        if (p[3] > 1)
-                        {
-                            p[3] = 1;
-                        }
-                        setDrawCloudsAndLights(p[3]);
-                        break;
-                    case 1:
-                        if (p[3] > 1)
-                        {
-                            p[3] = 1;
-                        }
-                        gameFlagFn_8005ce6c(p[3]);
-                        break;
-                    case 2:
-                        if (p[3] > 1)
-                        {
-                            p[3] = 1;
-                        }
-                        setDrawLights(p[3]);
-                        break;
-                    case 3:
-                        if (p[3] > 1)
-                        {
-                            p[3] = 1;
-                        }
-                        (*gCloudActionInterface)->func09Nop(p[3]);
-                        break;
-                    case 4:
-                        (*gPlayerShadowInterface)->setMode(p[3]);
-                        break;
-                    case 5:
-                        waterFxSetDisabled(p[3]);
-                        break;
-                    case 6:
-                        if (p[3] != 0)
-                        {
-                            skySetSlotFlag80(7, 1);
-                        }
-                        else
-                        {
-                            skySetSlotFlag80(7, 0);
-                        }
-                        break;
-                    case 7:
-                        if (p[3] != 0)
-                        {
-                            gameFlagFn_8005cd24(1);
-                        }
-                        else
-                        {
-                            gameFlagFn_8005cd24(0);
-                        }
-                        break;
-                    case 8:
-                        if (p[3] != 0)
-                        {
-                            Rcp_EnableHeatEffect();
-                        }
-                        else
-                        {
-                            Rcp_DisableHeatEffect();
-                        }
-                        break;
-                    case 9:
-                        skySetLightIndex(skyGetCurrentLightIndex() ^ 1, (f32)(u32)p[3]);
-                        break;
-                    case 10:
-                        skySetLightIndex(0, (f32)(u32)p[3]);
-                        break;
-                    case 0xb:
-                        skySetLightIndex(1, (f32)(u32)p[3]);
-                        break;
-                    }
-                    break;
-                case 5:
-                    if (!((TriggerState*)state)->rangeSq)
-                    {
-                        break;
-                    }
-                    if (((TriggerState*)state)->rangeSq)
-                    {
-                        break;
-                    }
-                    break;
-                case 10:
-                    getEnvfxAct(obj, seqObj, (u16)((p[2] << 8) | p[3]), range);
-                    OSReport(desc + 0x68, (int)obj->anim.classId, (p[2] << 8) | p[3], range);
-                    break;
-                case 0xd:
-                    getLActions(obj, seqObj, (u16)((p[2] << 8) | p[3]), legCode, range, 0);
-                    break;
-                case 0xb:
-                    switch (p[2])
-                    {
-                    case 0:
-                    case 3:
-                        t = objGetNearestTypeTo(TARGET_OBJGROUP, obj, 0);
-                        if ((void*)t != NULL)
-                        {
-                            (*gObjectTriggerInterface)->runSequence(p[3], (void*)t, -1);
-                        }
-                        break;
-                    case 1:
-                        (*gObjectTriggerInterface)->setFlag(p[3], 1);
-                        break;
-                    case 2:
-                        (*gObjectTriggerInterface)->setFlag(p[3], 0);
-                        break;
-                    }
-                    break;
-                case 0xc:
-                    id = (u16)((p[2] << 8) | p[3]);
-                    objects = ObjList_GetObjects(&first, &count);
-                    for (; first < count; first++)
-                    {
-                        t2 = (int)objects[first];
-                        tbl = *(int**)(t2 + 0x4c);
-                        if (tbl == NULL)
-                        {
-                            continue;
-                        }
-                        switch (((TriggerPlacement*)tbl)->typeId)
-                        {
-                        case 0x4b:
-                        case 0x4c:
-                        case 0x4d:
-                        case 0x4e:
-                        case 0x4f:
-                        case 0x50:
-                        case 0x54:
-                        case 0x230:
-                            if (((TriggerPlacement*)tbl)->triggerId == id)
-                            {
-                                objInterpretSeq((GameObject*)t2, seqObj, legCode, range);
-                            }
-                            break;
-                        }
-                    }
-                    break;
-                case 0x10:
-                    Obj_SetActiveModelIndex(Obj_GetPlayerObject(), p[2]);
-                    break;
-                case 0x12:
-                    op = (u16)((p[2] << 8) | p[3]);
-                    bit = op & 0x3fff;
-                    v = mainGetBit(bit);
-                    sel = op >> 14 & 3;
-                    if (sel == 0)
-                    {
-                        v = 0;
-                    }
-                    else if (sel == 1)
-                    {
-                        v = 0xffffffff;
-                    }
-                    else if (sel == 2)
-                    {
-                        v = ~v;
-                    }
-                    mainSetBits(bit, v);
-                    break;
-                case 0x21:
-                    op = (u16)((p[2] << 8) | p[3]);
-                    bit = op & 0x1fff;
-                    v = mainGetBit(bit);
-                    v ^= 1 << (op >> 13 & 7);
-                    mainSetBits(bit, v);
-                    break;
-                case 0x13:
-                    (*gMapEventInterface)
-                        ->setObjGroupStatus((int)obj->anim.mapEventSlot, (p[2] << 8) | p[3], 1);
-                    break;
-                case 0x27:
-                    id = (p[2] << 8) | p[3];
-                    mapLoadDataFiles(id);
-                    loadModelAndAnimTabs();
-                    OSReport(desc + 0xa8, id);
-                    break;
-                case 0x28:
-                    id = (p[2] << 8) | p[3];
-                    mapUnload(id, 0x20000000);
-                    OSReport(desc + 0xc4, id);
-                    break;
-                case 0x2e:
-                    defragMemory(0);
-                    break;
-                case 0x2a:
-                    lockLevel(p[2], p[3]);
-                    OSReport(desc + 0xe0, p[2], p[3]);
-                    break;
-                case 0x2b:
-                    unlockLevel(p[2], p[3], 0);
-                    OSReport(desc + 0x114, p[2], p[3]);
-                    break;
-                case 0x2f:
-                    t = objGetNearestTypeTo(TIMER_OBJECT_GROUP, obj, 0);
-                    if ((void*)t != NULL)
-                    {
-                        timer_addDuration((GameObject*)(t), p[3] * 0x3c);
-                    }
-                    break;
-                case 0x14:
-                    (*gMapEventInterface)
-                        ->setObjGroupStatus((int)obj->anim.mapEventSlot, (p[2] << 8) | p[3], 0);
-                    break;
-                case 0x22:
-                    id = (p[2] << 8) | p[3];
-                    groupStatus =
-                        (u8)(*gMapEventInterface)->getObjGroupStatus((int)obj->anim.mapEventSlot, id);
-                    (*gMapEventInterface)
-                        ->setObjGroupStatus((int)obj->anim.mapEventSlot, id, groupStatus ^ 1);
-                    break;
-                case 0x15:
-                    t = (int)getTablesBinEntry((u16)((p[2] << 8) | p[3]) + 2);
-                    if ((void*)t != NULL)
-                    {
-                        for (tbl = (int*)t; *tbl != -1; tbl++)
-                        {
-                            if ((void*)getLoadedTexture(*tbl) == NULL)
-                            {
-                                crash(0x32, 3, 0, *tbl, 0, 0, 0, 0);
-                            }
-                        }
-                    }
-                    break;
-                case 0x16:
-                    t = (int)getTablesBinEntry((u16)((p[2] << 8) | p[3]) + 2);
-                    if ((void*)t != NULL)
-                    {
-                        for (tbl = (int*)t; *tbl != -1; tbl++)
-                        {
-                            t2 = (int)getLoadedTexture(*tbl);
-                            if ((void*)t2 != NULL)
-                            {
-                                textureFree((Texture*)((u8*)t2));
-                            }
-                        }
-                    }
-                    break;
-                case 0x18:
-                    (*gMapEventInterface)->setMapAct((int)obj->anim.mapEventSlot, (p[2] << 8) | p[3]);
-                    break;
-                case 0x1a:
-                    (*gMapEventInterface)->setObjGroupStatus(p[3], p[2], 1);
-                    break;
-                case 0x1b:
-                    (*gMapEventInterface)->setObjGroupStatus(p[3], p[2], 0);
-                    break;
-                case 0x1e:
-                    (*gMapEventInterface)->setMapAct(p[3], p[2]);
-                    break;
-                case 0x11:
-                    mainSetBits(GAMEBIT_TrickyTalk, (p[2] << 8) | p[3]);
-                    break;
-                case 0x1f:
-                    t = (int)Obj_GetPlayerObject();
-                    angleDiff = obj->anim.rotX - (u16) * (s16*)t;
-                    if (angleDiff > 0x8000)
-                    {
-                        angleDiff = (angleDiff - 0x10000) + 1;
-                    }
-                    if (angleDiff < -0x8000)
-                    {
-                        angleDiff = (angleDiff + 0x10000) - 1;
-                    }
-                    if (angleDiff >= 0)
-                    {
-                        ang = angleDiff;
-                    }
-                    else
-                    {
-                        ang = -angleDiff;
-                    }
-                    if (ang > 0x4000)
-                    {
-                        (*gMapEventInterface)
-                            ->savePoint((int)obj + 0xc, (int)(s16)(obj->anim.rotX + 0x8000), p[3],
-                                        getCurMapLayer());
-                    }
-                    else
-                    {
-                        (*gMapEventInterface)
-                            ->savePoint((int)obj + 0xc, (int)obj->anim.rotX, p[3], getCurMapLayer());
-                    }
-                    break;
-                case 0x20:
-                    if (p[2] == 0)
-                    {
-                        goToNextMapLayer();
-                    }
-                    else
-                    {
-                        goToPrevMapLayer();
-                    }
-                    break;
-                case 0x23:
-                    switch (p[2])
-                    {
-                    case 0:
-                        (*gMapEventInterface)
-                            ->restartPoint((void*)((int)obj + 0xc), (int)obj->anim.rotX,
-                                           getCurMapLayer(), 0);
-                        break;
-                    case 1:
-                        (*gMapEventInterface)->clearRestartPoint();
-                        break;
-                    case 2:
-                        (*gMapEventInterface)->gotoRestartPoint();
-                        break;
-                    case 3:
-                        (*gMapEventInterface)
-                            ->restartPoint((void*)((int)obj + 0xc), (int)obj->anim.rotX,
-                                           getCurMapLayer(), 1);
-                        break;
-                    }
-                    break;
-                case 0x26:
-                    t = (int)getTrickyObject();
-                    if ((void*)t != NULL)
-                    {
-                        switch (p[2])
-                        {
-                        case 0:
-                            (*(VtableFn*)(**(int**)(t + 0x68) + 0x3c))(t);
-                            break;
-                        case 1:
-                            Obj_FreeObject(getTrickyObject());
-                            break;
-                        case 2:
-                            t2 = objGetNearestTypeTo(TRICKY_TARGET_OBJGROUP, (GameObject*)t, 0);
-                            if ((void*)t2 == NULL)
-                            {
-                                t2 = objGetNearestTypeTo(TRICKY_TARGET_OBJGROUP_FALLBACK, (GameObject*)t, 0);
-                            }
-                            if ((void*)t2 != NULL)
-                            {
-                                (*(VtableFn*)(**(int**)(t + 0x68) + 0x38))(t, t2);
-                            }
-                            break;
-                        case 3:
-                            mainSetBits(GAMEBIT_NoBallsAllowed, 0);
-                            break;
-                        case 4:
-                            mainSetBits(GAMEBIT_NoBallsAllowed, 1);
-                            break;
-                        }
-                    }
-                    break;
-                case 0x1c:
-                    switch (p[2])
-                    {
-                    case 0:
-                        mainSetBits(GAMEBIT_ENV_disableDayFX1, p[3] == 0);
-                        break;
-                    case 1:
-                        mainSetBits(GAMEBIT_ENV_disableDayFX2, p[3] == 0);
-                        break;
-                    case 2:
-                        mainSetBits(GAMEBIT_ENV_disableDayFX3, p[3] == 0);
-                        break;
-                    case 3:
-                        switch (p[3])
-                        {
-                        case 0:
-                            mainSetBits(GAMEBIT_ENV_isOutdoor, 1);
-                            getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A0, 0);
-                            getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A1, 0);
-                            getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A2, 0);
-                            break;
-                        case 1:
-                            mainSetBits(GAMEBIT_ENV_isOutdoor, 0);
-                            getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A0, 0);
-                            getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A1, 0);
-                            getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A2, 0);
-                            skyRefreshPlayerEnvFx();
-                            break;
-                        case 2:
-                            mainSetBits(GAMEBIT_ENV_isOutdoor, 1);
-                            getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_B0, 0);
-                            getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_B1, 0);
-                            getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_B2, 0);
-                            break;
-                        }
-                        break;
-                    }
-                    break;
-                case 0x1d:
-                    if (p[2] != 0)
-                    {
-                        mainSetBits(GAMEBIT_ITEM_DinoHorn_Disabled, 0);
-                        mainSetBits(GAMEBIT_ITEM_Firefly_Disabled, 0);
-                        mainSetBits(GAMEBIT_Tricky_CantFeed, 0);
-                    }
-                    else
-                    {
-                        mainSetBits(GAMEBIT_ITEM_DinoHorn_Disabled, 1);
-                        mainSetBits(GAMEBIT_ITEM_Firefly_Disabled, 1);
-                        mainSetBits(GAMEBIT_Tricky_CantFeed, 1);
-                    }
-                    break;
-                case 0x2c:
-                    *(f32*)seqObj->extra = 0.1f * (f32)(s32)((p[2] << 8) | p[3]);
-                    break;
-                case 0x2d:
-                    t = (int)Obj_GetPlayerObject();
-                    if ((void*)t != NULL)
-                    {
-                        (*gGameUIInterface)->showNpcDialogue((p[2] << 8) | p[3], 0x14, 0x8c, 1);
-                    }
-                    else if ((void*)getArwing() != NULL)
-                    {
-                        headDisplayOpen((p[2] << 8) | p[3]);
+        switch (p[1]) {
+        case 1:
+            switch (p[2]) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                break;
+            case 8:
+                t = (int)Obj_GetPlayerObject();
+                if ((void*)t != NULL) {
+                    playerSetStateValue((GameObject*)t, 1, 0.0f);
+                }
+                break;
+            case 9:
+                t = (int)Obj_GetPlayerObject();
+                if ((void*)t != NULL) {
+                    playerSetStateValue((GameObject*)t, 10, 0.0f);
+                }
+                break;
+            case 10:
+                t = (int)Obj_GetPlayerObject();
+                if ((void*)t != NULL) {
+                    playerSetStateValue((GameObject*)t, 0xb, 0.0f);
+                }
+                break;
+            case 0xb:
+                t = (int)Obj_GetPlayerObject();
+                if ((void*)t != NULL) {
+                    playerSetStateValue((GameObject*)t, 1, 14.0f);
+                }
+                break;
+            }
+            break;
+        case 4:
+            if (legCode >= 0) {
+                Sfx_PlayFromObject((u32)obj, (u16)((p[2] << 8) | p[3]));
+            } else {
+                Sfx_StopFromObject((u32)obj, (u16)((p[2] << 8) | p[3]));
+            }
+            break;
+        case 6:
+            (*gCameraInterface)->loadTriggeredCamAction(p[2], p[3], 0);
+            break;
+        case 8:
+            switch (p[2]) {
+            case 0:
+                if (p[3] > 1) {
+                    p[3] = 1;
+                }
+                setDrawCloudsAndLights(p[3]);
+                break;
+            case 1:
+                if (p[3] > 1) {
+                    p[3] = 1;
+                }
+                gameFlagFn_8005ce6c(p[3]);
+                break;
+            case 2:
+                if (p[3] > 1) {
+                    p[3] = 1;
+                }
+                setDrawLights(p[3]);
+                break;
+            case 3:
+                if (p[3] > 1) {
+                    p[3] = 1;
+                }
+                (*gCloudActionInterface)->func09Nop(p[3]);
+                break;
+            case 4:
+                (*gPlayerShadowInterface)->setMode(p[3]);
+                break;
+            case 5:
+                waterFxSetDisabled(p[3]);
+                break;
+            case 6:
+                if (p[3] != 0) {
+                    skySetSlotFlag80(7, 1);
+                } else {
+                    skySetSlotFlag80(7, 0);
+                }
+                break;
+            case 7:
+                if (p[3] != 0) {
+                    gameFlagFn_8005cd24(1);
+                } else {
+                    gameFlagFn_8005cd24(0);
+                }
+                break;
+            case 8:
+                if (p[3] != 0) {
+                    Rcp_EnableHeatEffect();
+                } else {
+                    Rcp_DisableHeatEffect();
+                }
+                break;
+            case 9:
+                skySetLightIndex(skyGetCurrentLightIndex() ^ 1, (f32)(u32)p[3]);
+                break;
+            case 10:
+                skySetLightIndex(0, (f32)(u32)p[3]);
+                break;
+            case 0xb:
+                skySetLightIndex(1, (f32)(u32)p[3]);
+                break;
+            }
+            break;
+        case 5:
+            if (!((TriggerState*)state)->rangeSq) {
+                break;
+            }
+            if (((TriggerState*)state)->rangeSq) {
+                break;
+            }
+            break;
+        case 10:
+            getEnvfxAct(obj, seqObj, (u16)((p[2] << 8) | p[3]), range);
+            OSReport(desc + 0x68, (int)obj->anim.classId, (p[2] << 8) | p[3], range);
+            break;
+        case 0xd:
+            getLActions(obj, seqObj, (u16)((p[2] << 8) | p[3]), legCode, range, 0);
+            break;
+        case 0xb:
+            switch (p[2]) {
+            case 0:
+            case 3:
+                t = objGetNearestTypeTo(TARGET_OBJGROUP, obj, 0);
+                if ((void*)t != NULL) {
+                    (*gObjectTriggerInterface)->runSequence(p[3], (void*)t, -1);
+                }
+                break;
+            case 1:
+                (*gObjectTriggerInterface)->setFlag(p[3], 1);
+                break;
+            case 2:
+                (*gObjectTriggerInterface)->setFlag(p[3], 0);
+                break;
+            }
+            break;
+        case 0xc:
+            id = (u16)((p[2] << 8) | p[3]);
+            objects = ObjList_GetObjects(&first, &count);
+            for (; first < count; first++) {
+                t2 = (int)objects[first];
+                tbl = *(int**)(t2 + 0x4c);
+                if (tbl == NULL) {
+                    continue;
+                }
+                switch (((TriggerPlacement*)tbl)->typeId) {
+                case 0x4b:
+                case 0x4c:
+                case 0x4d:
+                case 0x4e:
+                case 0x4f:
+                case 0x50:
+                case 0x54:
+                case 0x230:
+                    if (((TriggerPlacement*)tbl)->triggerId == id) {
+                        objInterpretSeq((GameObject*)t2, seqObj, legCode, range);
                     }
                     break;
                 }
+            }
+            break;
+        case 0x10:
+            Obj_SetActiveModelIndex(Obj_GetPlayerObject(), p[2]);
+            break;
+        case 0x12:
+            op = (u16)((p[2] << 8) | p[3]);
+            bit = op & 0x3fff;
+            v = mainGetBit(bit);
+            sel = op >> 14 & 3;
+            if (sel == 0) {
+                v = 0;
+            } else if (sel == 1) {
+                v = 0xffffffff;
+            } else if (sel == 2) {
+                v = ~v;
+            }
+            mainSetBits(bit, v);
+            break;
+        case 0x21:
+            op = (u16)((p[2] << 8) | p[3]);
+            bit = op & 0x1fff;
+            v = mainGetBit(bit);
+            v ^= 1 << (op >> 13 & 7);
+            mainSetBits(bit, v);
+            break;
+        case 0x13:
+            (*gMapEventInterface)->setObjGroupStatus((int)obj->anim.mapEventSlot, (p[2] << 8) | p[3], 1);
+            break;
+        case 0x27:
+            id = (p[2] << 8) | p[3];
+            mapLoadDataFiles(id);
+            loadModelAndAnimTabs();
+            OSReport(desc + 0xa8, id);
+            break;
+        case 0x28:
+            id = (p[2] << 8) | p[3];
+            mapUnload(id, 0x20000000);
+            OSReport(desc + 0xc4, id);
+            break;
+        case 0x2e:
+            defragMemory(0);
+            break;
+        case 0x2a:
+            lockLevel(p[2], p[3]);
+            OSReport(desc + 0xe0, p[2], p[3]);
+            break;
+        case 0x2b:
+            unlockLevel(p[2], p[3], 0);
+            OSReport(desc + 0x114, p[2], p[3]);
+            break;
+        case 0x2f:
+            t = objGetNearestTypeTo(TIMER_OBJECT_GROUP, obj, 0);
+            if ((void*)t != NULL) {
+                timer_addDuration((GameObject*)(t), p[3] * 0x3c);
+            }
+            break;
+        case 0x14:
+            (*gMapEventInterface)->setObjGroupStatus((int)obj->anim.mapEventSlot, (p[2] << 8) | p[3], 0);
+            break;
+        case 0x22:
+            id = (p[2] << 8) | p[3];
+            groupStatus = (u8)(*gMapEventInterface)->getObjGroupStatus((int)obj->anim.mapEventSlot, id);
+            (*gMapEventInterface)->setObjGroupStatus((int)obj->anim.mapEventSlot, id, groupStatus ^ 1);
+            break;
+        case 0x15:
+            t = (int)getTablesBinEntry((u16)((p[2] << 8) | p[3]) + 2);
+            if ((void*)t != NULL) {
+                for (tbl = (int*)t; *tbl != -1; tbl++) {
+                    if ((void*)getLoadedTexture(*tbl) == NULL) {
+                        crash(0x32, 3, 0, *tbl, 0, 0, 0, 0);
+                    }
+                }
+            }
+            break;
+        case 0x16:
+            t = (int)getTablesBinEntry((u16)((p[2] << 8) | p[3]) + 2);
+            if ((void*)t != NULL) {
+                for (tbl = (int*)t; *tbl != -1; tbl++) {
+                    t2 = (int)getLoadedTexture(*tbl);
+                    if ((void*)t2 != NULL) {
+                        textureFree((Texture*)((u8*)t2));
+                    }
+                }
+            }
+            break;
+        case 0x18:
+            (*gMapEventInterface)->setMapAct((int)obj->anim.mapEventSlot, (p[2] << 8) | p[3]);
+            break;
+        case 0x1a:
+            (*gMapEventInterface)->setObjGroupStatus(p[3], p[2], 1);
+            break;
+        case 0x1b:
+            (*gMapEventInterface)->setObjGroupStatus(p[3], p[2], 0);
+            break;
+        case 0x1e:
+            (*gMapEventInterface)->setMapAct(p[3], p[2]);
+            break;
+        case 0x11:
+            mainSetBits(GAMEBIT_TrickyTalk, (p[2] << 8) | p[3]);
+            break;
+        case 0x1f:
+            t = (int)Obj_GetPlayerObject();
+            angleDiff = obj->anim.rotX - (u16) * (s16*)t;
+            if (angleDiff > 0x8000) {
+                angleDiff = (angleDiff - 0x10000) + 1;
+            }
+            if (angleDiff < -0x8000) {
+                angleDiff = (angleDiff + 0x10000) - 1;
+            }
+            if (angleDiff >= 0) {
+                ang = angleDiff;
+            } else {
+                ang = -angleDiff;
+            }
+            if (ang > 0x4000) {
+                (*gMapEventInterface)
+                    ->savePoint((int)obj + 0xc, (int)(s16)(obj->anim.rotX + 0x8000), p[3], getCurMapLayer());
+            } else {
+                (*gMapEventInterface)->savePoint((int)obj + 0xc, (int)obj->anim.rotX, p[3], getCurMapLayer());
+            }
+            break;
+        case 0x20:
+            if (p[2] == 0) {
+                goToNextMapLayer();
+            } else {
+                goToPrevMapLayer();
+            }
+            break;
+        case 0x23:
+            switch (p[2]) {
+            case 0:
+                (*gMapEventInterface)->restartPoint((void*)((int)obj + 0xc), (int)obj->anim.rotX, getCurMapLayer(), 0);
+                break;
+            case 1:
+                (*gMapEventInterface)->clearRestartPoint();
+                break;
+            case 2:
+                (*gMapEventInterface)->gotoRestartPoint();
+                break;
+            case 3:
+                (*gMapEventInterface)->restartPoint((void*)((int)obj + 0xc), (int)obj->anim.rotX, getCurMapLayer(), 1);
+                break;
+            }
+            break;
+        case 0x26:
+            t = (int)getTrickyObject();
+            if ((void*)t != NULL) {
+                switch (p[2]) {
+                case 0:
+                    (*(VtableFn*)(**(int**)(t + 0x68) + 0x3c))(t);
+                    break;
+                case 1:
+                    Obj_FreeObject(getTrickyObject());
+                    break;
+                case 2:
+                    t2 = objGetNearestTypeTo(TRICKY_TARGET_OBJGROUP, (GameObject*)t, 0);
+                    if ((void*)t2 == NULL) {
+                        t2 = objGetNearestTypeTo(TRICKY_TARGET_OBJGROUP_FALLBACK, (GameObject*)t, 0);
+                    }
+                    if ((void*)t2 != NULL) {
+                        (*(VtableFn*)(**(int**)(t + 0x68) + 0x38))(t, t2);
+                    }
+                    break;
+                case 3:
+                    mainSetBits(GAMEBIT_NoBallsAllowed, 0);
+                    break;
+                case 4:
+                    mainSetBits(GAMEBIT_NoBallsAllowed, 1);
+                    break;
+                }
+            }
+            break;
+        case 0x1c:
+            switch (p[2]) {
+            case 0:
+                mainSetBits(GAMEBIT_ENV_disableDayFX1, p[3] == 0);
+                break;
+            case 1:
+                mainSetBits(GAMEBIT_ENV_disableDayFX2, p[3] == 0);
+                break;
+            case 2:
+                mainSetBits(GAMEBIT_ENV_disableDayFX3, p[3] == 0);
+                break;
+            case 3:
+                switch (p[3]) {
+                case 0:
+                    mainSetBits(GAMEBIT_ENV_isOutdoor, 1);
+                    getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A0, 0);
+                    getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A1, 0);
+                    getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A2, 0);
+                    break;
+                case 1:
+                    mainSetBits(GAMEBIT_ENV_isOutdoor, 0);
+                    getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A0, 0);
+                    getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A1, 0);
+                    getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_A2, 0);
+                    skyRefreshPlayerEnvFx();
+                    break;
+                case 2:
+                    mainSetBits(GAMEBIT_ENV_isOutdoor, 1);
+                    getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_B0, 0);
+                    getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_B1, 0);
+                    getEnvfxAct(Obj_GetPlayerObject(), Obj_GetPlayerObject(), TRIGGER_ENVFX_B2, 0);
+                    break;
+                }
+                break;
+            }
+            break;
+        case 0x1d:
+            if (p[2] != 0) {
+                mainSetBits(GAMEBIT_ITEM_DinoHorn_Disabled, 0);
+                mainSetBits(GAMEBIT_ITEM_Firefly_Disabled, 0);
+                mainSetBits(GAMEBIT_Tricky_CantFeed, 0);
+            } else {
+                mainSetBits(GAMEBIT_ITEM_DinoHorn_Disabled, 1);
+                mainSetBits(GAMEBIT_ITEM_Firefly_Disabled, 1);
+                mainSetBits(GAMEBIT_Tricky_CantFeed, 1);
+            }
+            break;
+        case 0x2c:
+            *(f32*)seqObj->extra = 0.1f * (f32)(s32)((p[2] << 8) | p[3]);
+            break;
+        case 0x2d:
+            t = (int)Obj_GetPlayerObject();
+            if ((void*)t != NULL) {
+                (*gGameUIInterface)->showNpcDialogue((p[2] << 8) | p[3], 0x14, 0x8c, 1);
+            } else if ((void*)getArwing() != NULL) {
+                headDisplayOpen((p[2] << 8) | p[3]);
+            }
+            break;
+        }
     }
-    if (legCode > 0)
-    {
+    if (legCode > 0) {
         *state |= TRIGGER_SFLAG_ENTERED;
         mainSetBits(((TriggerState*)state)->gameBit, 1);
-    }
-    else if (legCode < 0)
-    {
+    } else if (legCode < 0) {
         *state |= TRIGGER_SFLAG_EXITED;
     }
 }
 
-int Trigger_getExtraSize(void)
-{
+int Trigger_getExtraSize(void) {
     return 0xac;
 }
-int Trigger_getObjectTypeId(void)
-{
+int Trigger_getObjectTypeId(void) {
     return 0x0;
 }
 
-void Trigger_free(GameObject* obj)
-{
+void Trigger_free(GameObject* obj) {
     u8 i;
     u8* entry = *(u8**)&(obj)->anim.placementData + 0x18;
     i = 0;
 
-    while (i < 8)
-    {
-        if ((entry[0] & (TRIGGER_CMD_ON_ENTER | TRIGGER_CMD_ON_EXIT)) != 0 && entry[1] != 3 && entry[1] == 4)
-        {
+    while (i < 8) {
+        if ((entry[0] & (TRIGGER_CMD_ON_ENTER | TRIGGER_CMD_ON_EXIT)) != 0 && entry[1] != 3 && entry[1] == 4) {
             Sfx_StopFromObject((u32)obj, (u16)((entry[2] << 8) | entry[3]));
         }
         i++;
@@ -1053,12 +914,10 @@ void Trigger_free(GameObject* obj)
  * placementData+0x18). Gates whether the entry runs for a given activation leg.
  */
 
-void Trigger_render(void)
-{
+void Trigger_render(void) {
 }
 
-void Trigger_hitDetect(GameObject* obj)
-{
+void Trigger_hitDetect(GameObject* obj) {
     u8* state = (obj)->extra;
     u8* def = *(u8**)&(obj)->anim.placementData;
     GameObject* triggerObj;
@@ -1073,57 +932,41 @@ void Trigger_hitDetect(GameObject* obj)
     f32 dist[1];
 
     dist[0] = 200.0f;
-    if (((TriggerPlacement*)def)->triggerId <= 0 || ((TriggerPlacement*)def)->typeId == 0xf4)
-    {
+    if (((TriggerPlacement*)def)->triggerId <= 0 || ((TriggerPlacement*)def)->typeId == 0xf4) {
         triggerObj = Obj_GetPlayerObject();
-        if (triggerObj != NULL)
-        {
+        if (triggerObj != NULL) {
             inside = (int)playerGetFocusObject(triggerObj);
-            if ((void*)inside != NULL)
-            {
+            if ((void*)inside != NULL) {
                 triggerObj = (GameObject*)inside;
             }
-        }
-        else
-        {
+        } else {
             triggerObj = getArwing();
         }
         trickyObj = getTrickyObject();
-        if (triggerObj != NULL || trickyObj != NULL)
-        {
-            if ((*state & TRIGGER_SFLAG_DISABLED) != 0)
-            {
+        if (triggerObj != NULL || trickyObj != NULL) {
+            if ((*state & TRIGGER_SFLAG_DISABLED) != 0) {
                 objInterpretSeq(obj, triggerObj, 1, 0);
                 *state &= ~TRIGGER_SFLAG_DISABLED;
                 *state |= TRIGGER_SFLAG_ENTERED;
-            }
-            else
-            {
+            } else {
                 ok = 1;
                 targetKind = ((TriggerPlacement*)def)->target;
-                if (targetKind > 2)
-                {
+                if (targetKind > 2) {
                     target = (GameObject*)objGetNearestTypeTo(targetKind - 1, obj, dist);
-                    if (target == NULL)
-                    {
+                    if (target == NULL) {
                         ok = 0;
                     }
-                }
-                else
-                {
-                    switch (targetKind)
-                    {
+                } else {
+                    switch (targetKind) {
                     case 0:
                         target = triggerObj;
-                        if (triggerObj == NULL)
-                        {
+                        if (triggerObj == NULL) {
                             ok = 0;
                         }
                         break;
                     case 1:
                         target = trickyObj;
-                        if (trickyObj == NULL)
-                        {
+                        if (trickyObj == NULL) {
                             ok = 0;
                         }
                         break;
@@ -1132,12 +975,9 @@ void Trigger_hitDetect(GameObject* obj)
                         break;
                     }
                 }
-                if (ok)
-                {
-                    if ((*state & TRIGGER_SFLAG_SEED_TARGET) != 0)
-                    {
-                        switch (((TriggerPlacement*)def)->target)
-                        {
+                if (ok) {
+                    if ((*state & TRIGGER_SFLAG_SEED_TARGET) != 0) {
+                        switch (((TriggerPlacement*)def)->target) {
                         case 2:
                             ((TriggerState*)state)->targetPosX = target->anim.worldPosX;
                             ((TriggerState*)state)->targetPosY = target->anim.worldPosY;
@@ -1156,15 +996,12 @@ void Trigger_hitDetect(GameObject* obj)
                             break;
                         }
                         *state &= ~TRIGGER_SFLAG_SEED_TARGET;
-                    }
-                    else
-                    {
+                    } else {
                         ((TriggerState*)state)->targetPosX = ((TriggerState*)state)->prevTargetPosX;
                         ((TriggerState*)state)->targetPosY = ((TriggerState*)state)->prevTargetPosY;
                         ((TriggerState*)state)->targetPosZ = ((TriggerState*)state)->prevTargetPosZ;
                     }
-                    switch (((TriggerPlacement*)def)->target)
-                    {
+                    switch (((TriggerPlacement*)def)->target) {
                     case 0:
                     case 1:
                     case 2:
@@ -1179,98 +1016,77 @@ void Trigger_hitDetect(GameObject* obj)
                         break;
                     }
                 }
-                switch (((TriggerPlacement*)def)->typeId)
-                {
+                switch (((TriggerPlacement*)def)->typeId) {
                 case 0x4b:
-                    if (ok)
-                    {
-                        objSeqFn_801992ec(obj, target);
+                    if (ok) {
+                        triggerEvalEndpointSpheres(obj, target);
                     }
                     break;
                 case 0x230:
-                    if (ok)
-                    {
-                        objSeqMoveFn_80199188(obj, target);
+                    if (ok) {
+                        triggerEvalEndpointCylinders(obj, target);
                     }
                     break;
                 case 0x4c:
                     ok2 = 1;
                     if (((TriggerState*)state)->gateBits[0] != -1 &&
-                        mainGetBit(((TriggerState*)state)->gateBits[0]) == 0u)
-                    {
+                        mainGetBit(((TriggerState*)state)->gateBits[0]) == 0u) {
                         ok2 = 0;
                     }
-                    if (ok2 && ok)
-                    {
+                    if (ok2 && ok) {
                         triggerEvalPlaneCrossing(obj, target);
                     }
                     break;
                 case 0x4e:
                     ((TriggerState*)state)->timer = *(int*)&((TriggerState*)state)->timer + framesThisStep;
-                    if (((TriggerState*)state)->timer >= (u32)((TriggerPlacement*)def)->triggerDelayFrames)
-                    {
+                    if (((TriggerState*)state)->timer >= (u32)((TriggerPlacement*)def)->triggerDelayFrames) {
                         objInterpretSeq(obj, 0, 1, 0);
                     }
                     break;
                 case 0x4d:
-                    if (ok)
-                    {
+                    if (ok) {
                         TriggerState* st = (TriggerState*)(obj)->extra;
                         inside = triggerPointInBox(obj, &st->prevTargetPosX);
                         wasInside = triggerPointInBox(obj, &st->targetPosX);
-                        if (inside != 0)
-                        {
-                            if (wasInside == 0)
-                            {
+                        if (inside != 0) {
+                            if (wasInside == 0) {
                                 objInterpretSeq(obj, target, 1, 0);
-                            }
-                            else
-                            {
+                            } else {
                                 objInterpretSeq(obj, target, 2, 0);
                             }
-                        }
-                        else if (wasInside != 0)
-                        {
+                        } else if (wasInside != 0) {
                             objInterpretSeq(obj, target, -1, 0);
-                        }
-                        else
-                        {
+                        } else {
                             objInterpretSeq(obj, target, -2, 0);
                         }
                     }
                     break;
                 case 0x50:
                     objInterpretSeq(obj, triggerObj, 1, 0);
-                    if (return1_800202BC() != 0)
-                    {
+                    if (return1_800202BC() != 0) {
                         Obj_FreeObject(obj);
                     }
                     break;
                 case 0x54:
                     ok = 1;
                     i = 0;
-                    while (i < 4 && ok)
-                    {
+                    while (i < 4 && ok) {
                         s16 gate = ((TriggerState*)state)->gateBits[i];
-                        if (gate != -1 && mainGetBit(gate) == 0u)
-                        {
+                        if (gate != -1 && mainGetBit(gate) == 0u) {
                             ok = 0;
                         }
                         i++;
                     }
-                    if (ok && ((TriggerFlags8A*)(state + 0x8a))->bit7 == 0)
-                    {
+                    if (ok && ((TriggerFlags8A*)(state + 0x8a))->bit7 == 0) {
                         ((TriggerFlags8A*)(state + 0x8a))->bit7 = 1;
                         objInterpretSeq(obj, triggerObj, 1, 0);
                     }
-                    if (!ok)
-                    {
+                    if (!ok) {
                         ((TriggerFlags8A*)(state + 0x8a))->bit7 = 0;
                     }
                     break;
                 case 0xf4:
-                    if (ok)
-                    {
+                    if (ok) {
                         triggerEvalCurveLoop(obj, target);
                     }
                     break;
@@ -1280,19 +1096,16 @@ void Trigger_hitDetect(GameObject* obj)
     }
 }
 
-void Trigger_update(void)
-{
+void Trigger_update(void) {
 }
 
-void Trigger_init(GameObject* obj, u8* params)
-{
+void Trigger_init(GameObject* obj, u8* params) {
     u8* state;
     f32 range;
 
     objSetSlot(obj, 0x28);
     state = obj->extra;
-    switch (((TriggerPlacement*)params)->typeId)
-    {
+    switch (((TriggerPlacement*)params)->typeId) {
     case 0x4b:
         range = (f32)(s32)(((TriggerPlacement*)params)->size[0] * 2);
         ((TriggerState*)state)->rangeSq = range * range;
@@ -1331,18 +1144,14 @@ void Trigger_init(GameObject* obj, u8* params)
         break;
     }
     ((TriggerState*)state)->gameBit = ((TriggerPlacement*)params)->gameBitSrc;
-    if ((int)mainGetBit(((TriggerState*)state)->gameBit) == 1)
-    {
+    if ((int)mainGetBit(((TriggerState*)state)->gameBit) == 1) {
         state[0] = (u8)(state[0] | TRIGGER_SFLAG_DISABLED);
     }
     state[0] = (u8)(state[0] | TRIGGER_SFLAG_SEED_TARGET);
 }
 
-void Trigger_release(void)
-{
+void Trigger_release(void) {
 }
 
-void Trigger_initialise(void)
-{
+void Trigger_initialise(void) {
 }
-

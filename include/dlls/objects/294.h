@@ -1,12 +1,11 @@
-#ifndef MAIN_DLL_MMP_GYSERVENT_H_
-#define MAIN_DLL_MMP_GYSERVENT_H_
+#ifndef DLLS_OBJECTS_294_H_
+#define DLLS_OBJECTS_294_H_
 
 #include "global.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 
-typedef struct MMPTriggerGeyserPlacement
-{
+typedef struct MMPTriggerGeyserPlacement {
     ObjPlacement base;
     u8 unknown18[0x3A - 0x18];
     u8 reachScale;
@@ -21,8 +20,7 @@ STATIC_ASSERT(offsetof(MMPTriggerGeyserPlacement, speed) == 0x3B);
 STATIC_ASSERT(offsetof(MMPTriggerGeyserPlacement, rotX) == 0x3D);
 STATIC_ASSERT(offsetof(MMPTriggerGeyserPlacement, rotY) == 0x3E);
 
-typedef struct MmpGyserventState
-{
+typedef struct MmpGyserventState {
     u8 pad0[0x4 - 0x0];
     f32 nearRadiusSq; /* 0x04: squared near-distance threshold */
     u8 pad8[0xC - 0x8];
@@ -47,7 +45,7 @@ STATIC_ASSERT(offsetof(MmpGyserventState, reachBX) == 0x28);
 STATIC_ASSERT(offsetof(MmpGyserventState, reach) == 0x34);
 
 void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement);
-void objSeqMoveFn_80199188(GameObject* obj, GameObject* seqObj);
-void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj);
+void triggerEvalEndpointCylinders(GameObject* obj, GameObject* seqObj);
+void triggerEvalEndpointSpheres(GameObject* obj, GameObject* seqObj);
 
-#endif /* MAIN_DLL_MMP_GYSERVENT_H_ */
+#endif /* DLLS_OBJECTS_294_H_ */
