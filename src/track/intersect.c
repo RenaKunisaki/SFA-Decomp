@@ -338,30 +338,30 @@ f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 #include "track/intersect_internal.h"
 
 /* Per-frame alpha decrement of the two water-effect pools. */
-void timeFn_8006f400(f32 step)
-{
+void timeFn_8006f400(f32 step) {
     int i;
-    SplashQuad* quads;
-    RippleEntry* ripples;
+    SplashQuad* quad;
+    RippleEntry* ripple;
+    u8 alpha;
 
-    quads = gWaterSplashQuads;
-    ripples = gWaterRipples;
-
-    for (i = 0; i < 256; i++)
-    {
-        if (quads[i].alpha != 0)
-        {
-            if (quads[i].alpha - step <= 0.0f)
-                quads[i].alpha = 0;
-            else
-                quads[i].alpha -= step;
+    for (i = 0; i < 256; i++) {
+        quad = &gWaterSplashQuads[i];
+        ripple = &gWaterRipples[i];
+        alpha = quad->alpha;
+        if (alpha != 0) {
+            if (alpha - step <= 0.0f) {
+                quad->alpha = 0;
+            } else {
+                quad->alpha -= step;
+            }
         }
-        if (ripples[i].alpha != 0)
-        {
-            if (ripples[i].alpha - step <= 0.0f)
-                ripples[i].alpha = 0;
-            else
-                ripples[i].alpha -= step;
+        alpha = ripple->alpha;
+        if (alpha != 0) {
+            if (alpha - step <= 0.0f) {
+                ripple->alpha = 0;
+            } else {
+                ripple->alpha -= step;
+            }
         }
     }
 }
