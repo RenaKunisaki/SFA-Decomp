@@ -9,7 +9,7 @@
 
 #include "main/debug.h"
 #include "main/dll/dll_0004_dummy04.h"
-#include "main/dll/dll_006A_dll6afunc0.h"
+#include "main/dll/dll_006A_modgfx.h"
 #include "main/dll/foodbag.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/frame_timing.h"
