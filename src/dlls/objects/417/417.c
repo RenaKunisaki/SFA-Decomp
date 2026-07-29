@@ -14,7 +14,7 @@
 #include "main/gamebits_api.h"
 #include "main/gameloop_gamebit_api.h"
 #include "main/newshadows_audio_api.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/obj_trigger.h"
 #include "main/object_render.h"

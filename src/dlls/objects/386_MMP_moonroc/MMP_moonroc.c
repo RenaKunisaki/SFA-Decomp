@@ -21,7 +21,7 @@
 #include "main/gamebits_api.h"
 #include "main/lightmap_api.h"
 #include "main/mapEventTypes.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/objfx.h"
 #include "main/objhits.h"

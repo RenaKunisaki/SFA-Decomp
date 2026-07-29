@@ -28,7 +28,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/game_ui_interface.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_trigger.h"
 #include "main/objanim.h"
 #include "main/objhits.h"

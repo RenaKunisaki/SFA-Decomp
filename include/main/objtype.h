@@ -1,5 +1,5 @@
-#ifndef MAIN_OBJ_GROUP_H_
-#define MAIN_OBJ_GROUP_H_
+#ifndef MAIN_OBJTYPE_H_
+#define MAIN_OBJTYPE_H_
 
 #include "global.h"
 
@@ -15,4 +15,4 @@ int objGetObjectType(u32 obj);
 void objAddObjectType(int obj, int group);
 void objTypeInit(void);
 
-#endif /* MAIN_OBJ_GROUP_H_ */
+#endif /* MAIN_OBJTYPE_H_ */

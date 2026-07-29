@@ -21,7 +21,7 @@
 #include "main/model_engine.h"
 #include "main/model_engine_ui_api.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_path.h"
 #include "main/obj_query.h"

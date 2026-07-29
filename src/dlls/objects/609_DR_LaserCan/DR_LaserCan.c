@@ -19,7 +19,7 @@
 #include "main/gamebits_api.h"
 #include "game/objects/object.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_path.h"
 #include "main/objanim.h"

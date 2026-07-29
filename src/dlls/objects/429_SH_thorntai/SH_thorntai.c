@@ -11,7 +11,7 @@
 #include "main/audio/sfx.h"
 #include "dlls/object_descriptor.h"
 #include "sys/objects.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/dll/dll_00C9_enemy.h"
 #include "dolphin/os.h"
 #include "game/objects/object.h"

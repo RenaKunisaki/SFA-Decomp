@@ -37,7 +37,7 @@
 #include "main/objprint_character_api.h"
 #include "main/dll/dll_00C9_enemy.h"
 #include "main/pad.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "dolphin/pad.h"
 
 f32 gDIMSnowHorn1ModelMtx[16];

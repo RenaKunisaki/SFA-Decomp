@@ -52,7 +52,7 @@ extern char sTrackLoadBlockOverrunError[];
 #include "main/fileio.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/track_dolphin_api.h"
 #include "dolphin/os/OSCache.h"

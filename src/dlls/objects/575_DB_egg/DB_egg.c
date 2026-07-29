@@ -37,7 +37,7 @@
 #include "main/dll/dbstealerwormcontrol_struct.h"
 #include "main/dll/blastflags4_types.h"
 #include "main/dll/dfp_types.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/waterfx_interface.h"

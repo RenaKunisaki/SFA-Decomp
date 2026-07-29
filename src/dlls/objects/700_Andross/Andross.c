@@ -36,7 +36,7 @@
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/obj_path.h"
 #include "main/dll/dll_02BC_andross.h"

@@ -45,7 +45,7 @@
 #include "main/player_control_interface.h"
 #include "main/objprint_api.h"
 #include "main/vecmath.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #define OBJ_YAW_DELTA_RETURNS_S16

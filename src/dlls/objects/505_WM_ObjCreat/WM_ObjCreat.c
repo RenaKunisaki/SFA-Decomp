@@ -20,7 +20,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 

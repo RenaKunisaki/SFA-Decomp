@@ -4,7 +4,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/newclouds.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/objfx.h"
 
 #define LIGHTNING_AGE_ROUND_BIAS             0.5f

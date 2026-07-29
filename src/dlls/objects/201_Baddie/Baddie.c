@@ -18,7 +18,7 @@
 #include "main/dll/baddie_placement.h"
 #include "main/dll/baddie_setmove.h"
 #include "main/dll/boneparticleeffect_interface.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/objprint_character_api.h"
 #include "sys/objects/lifecycle.h"

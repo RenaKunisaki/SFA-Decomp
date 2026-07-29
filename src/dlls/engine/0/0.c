@@ -8,7 +8,7 @@
 #include "main/pi_dolphin.h"
 #include "main/dll/player_api.h"
 #include "game/objects/object.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/model.h"
 #include "sys/objects.h"
 #include "main/objprint_render_api.h"

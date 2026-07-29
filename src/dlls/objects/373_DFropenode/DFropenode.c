@@ -13,7 +13,7 @@
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/sky.h"
 #include "main/texture.h"

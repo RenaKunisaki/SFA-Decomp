@@ -45,7 +45,7 @@
 #include "main/lightmap_api.h"
 #include "main/maketex_api.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/object_render.h"
 #include "main/objfx.h"

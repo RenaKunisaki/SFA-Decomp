@@ -30,7 +30,7 @@
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/player_api.h"
 #include "main/track_dolphin_api.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/objprint_render_api.h"
 #include "main/object_render_legacy.h"
 #include "main/dll/WC/dll_0259_sbcloudrunner.h"

@@ -9,7 +9,7 @@
 #include "main/dll/dll_025A_staticcamera.h"
 #include "main/frame_timing.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
 

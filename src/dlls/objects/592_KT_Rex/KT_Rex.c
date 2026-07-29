@@ -12,7 +12,7 @@
 #include "main/map_load.h"
 #include "main/mapEventTypes.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #include "main/objanim.h"

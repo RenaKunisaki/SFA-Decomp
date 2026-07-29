@@ -23,7 +23,7 @@
 #include "main/map_load.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/objseq_api.h"
 #include "main/pi_dolphin_api.h"
 #include "main/sky_api.h"

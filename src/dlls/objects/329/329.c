@@ -7,7 +7,7 @@
 #include "main/dll/player_motion.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"

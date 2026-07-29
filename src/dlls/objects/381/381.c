@@ -8,7 +8,7 @@
 #include "main/camera_shake_api.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "main/vecmath.h"

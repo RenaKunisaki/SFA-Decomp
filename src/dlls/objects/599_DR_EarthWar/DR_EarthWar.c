@@ -13,7 +13,7 @@
 #include "main/objseq.h"
 #include "main/resource.h"
 #include "main/dll/path_control_interface.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_path.h"
 #include "main/frame_timing.h"

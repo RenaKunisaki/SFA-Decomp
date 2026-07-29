@@ -13,7 +13,7 @@
 #include "main/game_ui_interface.h"
 #include "main/maketex_random_api.h"
 #include "main/maketex_sequence_api.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_trigger.h"
 #include "main/object_render.h"

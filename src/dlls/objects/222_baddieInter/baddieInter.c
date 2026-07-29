@@ -6,7 +6,7 @@
  */
 #include "dlls/objects/222_BaddieInterestP.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 #include "main/sky_interface.h"
 #include "main/vecmath.h"

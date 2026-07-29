@@ -4,7 +4,7 @@
 #include "dlls/objects/504_WM_Galleon.h"
 #include "game/objects/object.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/screen_transition.h"

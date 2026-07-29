@@ -24,7 +24,7 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/objseq.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/objhits.h"
 #include "main/object_render.h"

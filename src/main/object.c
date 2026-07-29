@@ -24,7 +24,7 @@
 #include "main/object_transform.h"
 #include "main/objHitReact.h"
 #include "main/obj_contact.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/objhits.h"
 #include "main/objseq.h"

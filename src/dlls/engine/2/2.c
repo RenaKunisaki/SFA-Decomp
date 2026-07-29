@@ -57,7 +57,7 @@
 #include "main/sky_interface.h"
 #include "main/dll/player_api.h"
 #include "main/dll/player_status.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/pad.h"
 #include "main/gamebit_ids.h"

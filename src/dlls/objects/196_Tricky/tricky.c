@@ -10,7 +10,7 @@
 
 #include "main/dll/partfx_interface.h"
 #include "main/vecmath.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/dll/ppcwgpipe_struct.h"
 #include "main/dll/baddie_control_interface.h"

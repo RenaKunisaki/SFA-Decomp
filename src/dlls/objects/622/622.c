@@ -9,7 +9,7 @@
  * and rattling).
  */
 #include "dolphin/mtx/vec.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
 #include "dlls/object_descriptor.h"

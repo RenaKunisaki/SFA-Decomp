@@ -18,7 +18,7 @@
 #include "main/frame_timing.h"
 #include "main/lightmap_api.h"
 #include "main/maketex_timer_api.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_message.h"
 #include "main/obj_query.h"

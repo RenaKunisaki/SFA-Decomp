@@ -4,7 +4,7 @@
 #include "main/frame_timing.h"
 #include "main/newclouds.h"
 #include "main/objfx.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/dll/dll_02BA_mclightning.h"
 
 #define MCLIGHTNING_OBJGROUP 0x48

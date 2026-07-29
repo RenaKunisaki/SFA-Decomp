@@ -31,7 +31,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "game/objects/object.h"
 #include "main/objhits.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_update_list.h"
 #include "main/objfx.h"
 #include "sys/objects/lifecycle.h"

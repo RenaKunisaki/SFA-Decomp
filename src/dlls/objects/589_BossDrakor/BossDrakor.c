@@ -19,7 +19,7 @@
  * placement (defeatedGameBit). Defeat anim events warp to map 0x79 and restore the HUD.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_path.h"
 #include "main/obj_query.h"

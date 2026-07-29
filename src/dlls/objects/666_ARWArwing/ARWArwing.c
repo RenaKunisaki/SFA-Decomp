@@ -45,7 +45,7 @@
 #include "main/modellight_api.h"
 #include "main/objfx.h"
 #include "sys/objects.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_list.h"
 #include "main/obj_path.h"

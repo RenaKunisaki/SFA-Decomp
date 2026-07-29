@@ -16,7 +16,7 @@
 #include "main/mapEventTypes.h"
 #include "main/model_light.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/pi_dolphin_api.h"

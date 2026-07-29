@@ -28,7 +28,7 @@
 #include "main/mm.h"
 #include "main/model.h"
 #include "main/model_light.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #include "main/object_render.h"

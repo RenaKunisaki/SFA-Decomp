@@ -32,7 +32,7 @@
 #include "main/resource.h"
 #include "main/dll/path_control_interface.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/dll/dll_0282_barrelgener.h"

@@ -15,7 +15,7 @@
 #include "main/gamebits.h"
 #include "main/maketex_api.h"
 #include "main/model.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/object_render.h"

@@ -7,7 +7,7 @@
 #include "main/frame_timing.h"
 #include "main/dll/player_api.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
