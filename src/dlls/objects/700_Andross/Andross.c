@@ -131,7 +131,7 @@ void andross_steerAsteroids(GameObject* obj, AndrossState* state)
     int defNo;
 
     {
-        u32* objList = ObjGroup_GetObjects(2, &count);
+        u32* objList = objGetAllOfType(2, &count);
         for (i = 0, objs = (int*)objList; i < count; i++)
         {
             cur = *objs;

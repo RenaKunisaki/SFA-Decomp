@@ -5,14 +5,14 @@
 
 struct GameObject;
 
-int ObjGroup_ContainsObject(u32 obj, int group);
-int ObjGroup_FindNearestObjectToPoint(int group, f32* point, f32* maxDistance);
-struct GameObject* ObjGroup_FindNearestObjectForObject(int group, struct GameObject* obj, f32* maxDistance);
-int ObjGroup_FindNearestObject(int group, struct GameObject* obj, f32* maxDistance);
-u32* ObjGroup_GetObjects(int group, int* countOut);
-void ObjGroup_RemoveObject(int obj, int group);
-int ObjGroup_GetObjectGroup(u32 obj);
-void ObjGroup_AddObject(int obj, int group);
-void ObjGroup_ClearAll(void);
+int objIsObjectType(u32 obj, int group);
+int objGetNearestType(int group, f32* point, f32* maxDistance);
+struct GameObject* objGetNearestTypeToExcludingSelf(int group, struct GameObject* obj, f32* maxDistance);
+int objGetNearestTypeTo(int group, struct GameObject* obj, f32* maxDistance);
+u32* objGetAllOfType(int group, int* countOut);
+void objFreeObjectType(int obj, int group);
+int objGetObjectType(u32 obj);
+void objAddObjectType(int obj, int group);
+void objTypeInit(void);
 
 #endif /* MAIN_OBJ_GROUP_H_ */

@@ -470,7 +470,7 @@ GameObject* trickyFindNearestUsableBaddie(GameObject* origin, f32 maxRadius, int
 
     bestDistSq = maxRadius;
     closest = 0;
-    tmpList = (int*)ObjGroup_GetObjects(3, &count);
+    tmpList = (int*)objGetAllOfType(3, &count);
     bestDistSq = bestDistSq * bestDistSq;
     i = 0;
     objs = tmpList;
@@ -511,7 +511,7 @@ GameObject* trickyFindNearestUsableBaddie(GameObject* origin, f32 maxRadius, int
             v2 = mainGetBit(g2);
         }
 
-        if (ObjGroup_ContainsObject(*objs, TRICKY_BADDIE_TARGET_OBJGROUP) == 0 && obj_extra > 0.0f && v1 == 0 &&
+        if (objIsObjectType(*objs, TRICKY_BADDIE_TARGET_OBJGROUP) == 0 && obj_extra > 0.0f && v1 == 0 &&
             v2 != 0)
         {
             if (((GameObject*)*objs)->anim.romDefNo != TRICKY_SEQID_WHIRLPOOL)
@@ -934,7 +934,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     }
 
     if ((coordsToMapCell(((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosZ) == 0xe) ||
-        ((u32)ObjGroup_FindNearestObject(SKEETLA_TARGET_OBJGROUP, (GameObject*)obj, &nearestDistance) != 0u))
+        ((u32)objGetNearestTypeTo(SKEETLA_TARGET_OBJGROUP, (GameObject*)obj, &nearestDistance) != 0u))
     {
         state->pathControlFlags &= ~4;
     }
@@ -1949,7 +1949,7 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint)
     f32 scale;
     int i;
 
-    objects = (void**)ObjGroup_GetObjects(SIDEREPEL_OBJGROUP, &count);
+    objects = (void**)objGetAllOfType(SIDEREPEL_OBJGROUP, &count);
     for (i = 0, op = objects, scale = 0.1f; i < count; i++)
     {
         obj = *op;
@@ -3501,7 +3501,7 @@ void tricky_stateGoToWarpPoint(u8* self, u8* state)
         return;
     }
 
-    objsList = (u8**)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, &count);
+    objsList = (u8**)objGetAllOfType(TRICKYWARP_OBJ_GROUP, &count);
     i = 0;
     objs = objsList;
     rejectDist = 2500.0f;
@@ -3612,7 +3612,7 @@ int trickyShouldGoToWarpPoint(u8* tricky, u8* state)
         result = 1;
     }
 
-    if ((u8*)ObjGroup_FindNearestObject(PRESSURESWITCHFB_REMOVE_GROUP_ID, (GameObject*)tricky, &dist) != NULL)
+    if ((u8*)objGetNearestTypeTo(PRESSURESWITCHFB_REMOVE_GROUP_ID, (GameObject*)tricky, &dist) != NULL)
     {
         return 0;
     }
@@ -4293,7 +4293,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         }
         else
         {
-            void** list = (void**)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, &count);
+            void** list = (void**)objGetAllOfType(TRICKYWARP_OBJ_GROUP, &count);
             int i = 0;
             p = list;
             for (; i < count; i++)
@@ -4402,7 +4402,7 @@ void* trickyFindCirclingTarget(GameObject* obj, void* state)
     target = (GameObject*)playerGetTargetObject(((TrickyState*)state)->playerObj);
     if (target != NULL)
     {
-        list = (void**)ObjGroup_GetObjects(3, &count);
+        list = (void**)objGetAllOfType(3, &count);
         for (i = 0; i < count; i++)
         {
             if ((GameObject*)*list == target)
@@ -5176,7 +5176,7 @@ static inline int trickyGuardIsBaddieTargetValid(TrickyRuntime* trickyState)
     int* list;
     int i;
 
-    list = (int*)ObjGroup_GetObjects(TRICKY_GUARD_APPROACH_GROUP, &count);
+    list = (int*)objGetAllOfType(TRICKY_GUARD_APPROACH_GROUP, &count);
     for (i = 0; (s16)i < count; i++)
     {
         if ((u32)*list == target)
@@ -5472,7 +5472,7 @@ int trickyGuardFindBaddieTarget(TrickyRuntime* trickyState)
     int* groupObjects;
     u32 best = 0;
 
-    groupObjects = (int*)ObjGroup_GetObjects(TRICKY_GUARD_APPROACH_GROUP, &count);
+    groupObjects = (int*)objGetAllOfType(TRICKY_GUARD_APPROACH_GROUP, &count);
     i = 0;
     list = groupObjects;
     for (; (s16)i < count; i++)
@@ -7529,7 +7529,7 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
     lo = 1;
     hi = 3;
     arr[0] = 200.0f;
-    found = (u8*)ObjGroup_FindNearestObject(SHTHORNTAIL_OBJECT_GROUP, (GameObject*)obj, arr);
+    found = (u8*)objGetNearestTypeTo(SHTHORNTAIL_OBJECT_GROUP, (GameObject*)obj, arr);
     if (found != NULL && (((GameObject*)found)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
     {
         lo = 0;
@@ -8013,7 +8013,7 @@ u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state)
     int i;
 
     result = 0;
-    objs = (int*)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, count);
+    objs = (int*)objGetAllOfType(TRICKYWARP_OBJ_GROUP, count);
     d = getXZDistance(&state->playerObj->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX);
     if ((d >= 360000.0f) || (state->cooldownA > 0.0f))
     {
@@ -8738,7 +8738,7 @@ void Tricky_free(int obj, int shouldKeepFlameChildren)
     freeAndNull((void**)&((TrickyState*)state)->pathSearches[6].nodes);
     freeAndNull((void**)&((TrickyState*)state)->pathSearches[7].nodes);
     freeAndNull((void**)&((TrickyState*)state)->pathSearches[8].nodes);
-    ObjGroup_RemoveObject(obj, TRICKY_OBJGROUP);
+    objFreeObjectType(obj, TRICKY_OBJGROUP);
     (*gExpgfxInterface)->freeSource(objId);
     if ((shouldKeepFlameChildren == 0) &&
         ((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_FLAME_CHILDREN_ACTIVE) != 0))
@@ -8883,7 +8883,7 @@ void Tricky_hitDetect(GameObject* obj)
     if ((((TrickyState*)state)->statusFlags >> 5 & 1) != 0u)
     {
         {
-            GameObject** t = (GameObject**)ObjGroup_GetObjects(XYZ_ANIMATOR_OBJECT_GROUP, count);
+            GameObject** t = (GameObject**)objGetAllOfType(XYZ_ANIMATOR_OBJECT_GROUP, count);
             i = 0;
             objects = t;
         }
@@ -9831,7 +9831,7 @@ void Tricky_init(GameObject* obj)
         mainSetBits(GAMEBIT_ITEM_TrickyBall_Usable, 1);
     }
     (obj)->animEventCallback = tricky_SeqFn;
-    ObjGroup_AddObject((int)obj, TRICKY_OBJGROUP);
+    objAddObjectType((int)obj, TRICKY_OBJGROUP);
     trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[0]);
     trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[1]);
     trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[2]);

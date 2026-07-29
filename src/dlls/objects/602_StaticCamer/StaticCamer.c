@@ -26,7 +26,7 @@ int StaticCamera_getObjectTypeId(void)
 
 void StaticCamera_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject((int)obj, STATICCAMERA_OBJGROUP);
+    objFreeObjectType((int)obj, STATICCAMERA_OBJGROUP);
 }
 
 void StaticCamera_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -59,7 +59,7 @@ void StaticCamera_init(GameObject* obj, StaticCameraPlacement* params, int defer
     state->unk1 = 0;
     if (deferAdd == 0)
     {
-        ObjGroup_AddObject((int)obj, STATICCAMERA_OBJGROUP);
+        objAddObjectType((int)obj, STATICCAMERA_OBJGROUP);
     }
 }
 

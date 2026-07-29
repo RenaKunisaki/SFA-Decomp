@@ -51,7 +51,7 @@ int dll_28B_getObjectTypeId(void)
 
 void dll_28B_free(int obj)
 {
-    ObjGroup_RemoveObject(obj, DLL28B_OBJ_GROUP);
+    objFreeObjectType(obj, DLL28B_OBJ_GROUP);
 }
 
 void dll_28B_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -121,7 +121,7 @@ void dll_28B_init(GameObject* obj)
     state->moveLib.modeBits |= 0x22;
     (*gRomCurveInterface)->initCurve(&state->route, obj, gDll28BCurveInitParam, &curveParam, -1);
     (*gPlayerInterface)->init(obj, state, 4, 4);
-    ObjGroup_AddObject((int)obj, DLL28B_OBJ_GROUP);
+    objAddObjectType((int)obj, DLL28B_OBJ_GROUP);
 }
 
 void dll_28B_release_nop(void)

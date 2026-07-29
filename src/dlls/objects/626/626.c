@@ -357,7 +357,7 @@ int hightop_stateHandler07(GameObject* obj, HighTopRuntime* stateArg)
         rt->substate = 5;
         stateArg->baddie.moveSpeed = 0.004f;
         rt->lookController.modeBits &= ~1;
-        ObjGroup_RemoveObject((int)obj, HIGHTOP_OBJGROUP);
+        objFreeObjectType((int)obj, HIGHTOP_OBJGROUP);
     }
     if (stateArg->baddie.moveDone != 0)
     {
@@ -986,8 +986,8 @@ int HighTop_getObjectTypeId(void)
 
 void HighTop_free(int obj)
 {
-    ObjGroup_RemoveObject(obj, ARWARWING_OBJGROUP);
-    ObjGroup_RemoveObject(obj, HIGHTOP_OBJGROUP);
+    objFreeObjectType(obj, ARWARWING_OBJGROUP);
+    objFreeObjectType(obj, HIGHTOP_OBJGROUP);
     (*gGameUIInterface)->airMeterShutdown();
 }
 
@@ -1010,7 +1010,7 @@ void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible)
         dll_2E_setTargetFromPathPoint((GameObject*)obj, &runtime->lookController, 0);
         if (runtime->flagsC49.b1 != 0)
         {
-            int** t = (int**)ObjGroup_GetObjects(55, &count);
+            int** t = (int**)objGetAllOfType(55, &count);
             for (i = 0, list = t; i < count; i++)
             {
                 int idx = (*(int (**)(int*))((char*)**(int***)((char*)*list + 0x68) + 0x24))(*list);
@@ -1199,8 +1199,8 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     {
         *(int*)&node->flags |= 0xa10;
     }
-    ObjGroup_AddObject((int)obj, ARWARWING_OBJGROUP);
-    ObjGroup_AddObject((int)obj, HIGHTOP_OBJGROUP);
+    objAddObjectType((int)obj, ARWARWING_OBJGROUP);
+    objAddObjectType((int)obj, HIGHTOP_OBJGROUP);
     (*gPlayerInterface)->init(obj, runtime, 11, 1);
     runtime->baddie.gravity = 0.17f;
     pathState = (u8*)&runtime->baddie + 4;

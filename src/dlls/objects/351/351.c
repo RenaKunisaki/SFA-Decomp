@@ -46,7 +46,7 @@ int attractor_getObjectTypeId(void) {
 }
 
 void attractor_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, ATTRACTOR_OBJECT_GROUP);
+    objFreeObjectType((int)obj, ATTRACTOR_OBJECT_GROUP);
 }
 
 void attractor_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
@@ -63,7 +63,7 @@ void attractor_update(void) {
 }
 
 void attractor_init(GameObject* obj, AttractorPlacement* placement) {
-    ObjGroup_AddObject((int)obj, ATTRACTOR_OBJECT_GROUP);
+    objAddObjectType((int)obj, ATTRACTOR_OBJECT_GROUP);
     {
         s8 rotation = placement->rotXByte;
         s16 rotX = rotation << 8;

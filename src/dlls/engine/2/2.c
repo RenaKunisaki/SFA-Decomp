@@ -2986,7 +2986,7 @@ void ObjSeq_updateCamera(void)
                 case 0x57:
                     (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_TITLE, 0, 3, 0, NULL, 0, 0);
                     (*gCameraInterface)
-                        ->setFocus(*(void**)(void*)ObjGroup_GetObjects(OBJSEQ_TARGET_OBJGROUP, &groupObjCount), 0);
+                        ->setFocus(*(void**)(void*)objGetAllOfType(OBJSEQ_TARGET_OBJGROUP, &groupObjCount), 0);
                     break;
                 default:
                     if (gObjSeqCamModeArgB == 0)

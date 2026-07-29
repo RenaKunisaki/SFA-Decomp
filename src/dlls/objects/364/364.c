@@ -240,7 +240,7 @@ void imSnowClaw_update(GameObject* obj) {
         int objectIndex;
         int mountSeqId;
 
-        objects = (GameObject**)ObjGroup_GetObjects(IM_SNOW_CLAW_MOUNT_OBJECT_GROUP, &objectCount);
+        objects = (GameObject**)objGetAllOfType(IM_SNOW_CLAW_MOUNT_OBJECT_GROUP, &objectCount);
         switch (obj->anim.romDefNo) {
         case IM_SNOW_CLAW_SEQ_ID:
         case IM_SNOW_CLAW_RENDER_GATE_SEQ_ID:

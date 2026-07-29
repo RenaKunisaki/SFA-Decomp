@@ -137,7 +137,7 @@ void gunpowderBarrel_launchAtTarget(GameObject* obj, u8 usePlayerStrength) {
         placement = (GunpowderBarrelPlacement*)obj->anim.placement;
         generator = NULL;
         if (placement->generatorLinkId != 0) {
-            generators = ObjGroup_GetObjects(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
+            generators = objGetAllOfType(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
             index = 0;
             generatorIter = generators;
             for (; index < generatorCount; index++) {
@@ -148,7 +148,7 @@ void gunpowderBarrel_launchAtTarget(GameObject* obj, u8 usePlayerStrength) {
                 generatorIter++;
             }
         } else {
-            generator = (GameObject*)ObjGroup_FindNearestObject(BARREL_GENERATOR_OBJECT_GROUP, obj, 0);
+            generator = (GameObject*)objGetNearestTypeTo(BARREL_GENERATOR_OBJECT_GROUP, obj, 0);
         }
         if (generator != NULL) {
             originalX = obj->anim.localPosX;
@@ -220,7 +220,7 @@ void gunpowderBarrel_homeOnTarget(GameObject* obj, s16 rotYModeArg, s16 rotZMode
     GameObject* target;
     f32 searchRadius = 300.0f;
     player = Obj_GetPlayerObject();
-    target = (GameObject*)ObjGroup_FindNearestObject(DBHOLE_CONTROL1_OBJECT_GROUP, obj, &searchRadius);
+    target = (GameObject*)objGetNearestTypeTo(DBHOLE_CONTROL1_OBJECT_GROUP, obj, &searchRadius);
     if (target == NULL) {
         return;
     }
@@ -309,7 +309,7 @@ void gunpowderBarrel_triggerExplosion(GameObject* obj) {
             placement = (GunpowderBarrelPlacement*)obj->anim.placement;
             generator = NULL;
             if (placement->generatorLinkId != 0) {
-                generators = ObjGroup_GetObjects(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
+                generators = objGetAllOfType(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
                 index = 0;
                 generatorIter = generators;
                 for (; index < generatorCount; index++) {
@@ -320,7 +320,7 @@ void gunpowderBarrel_triggerExplosion(GameObject* obj) {
                     generatorIter++;
                 }
             } else {
-                generator = (GameObject*)ObjGroup_FindNearestObject(BARREL_GENERATOR_OBJECT_GROUP, obj, 0);
+                generator = (GameObject*)objGetNearestTypeTo(BARREL_GENERATOR_OBJECT_GROUP, obj, 0);
             }
             if (generator != NULL) {
                 f32 originalX, originalY, originalZ;
@@ -351,7 +351,7 @@ void gunpowderBarrel_triggerExplosion(GameObject* obj) {
         state->fuseFrames = 1;
         state->heldFlags.held = 0;
         /* Preserve the distinct pointer-to-integer conversion at this call. */
-        ObjGroup_RemoveObject((u32)(void*)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
+        objFreeObjectType((u32)(void*)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
         if (obj->anim.parent != 0) {
             state->radiusGrowthPerFrame = 2.2f;
         } else {
@@ -498,8 +498,8 @@ void gunpowderBarrel_free(GameObject* obj, int keepLinkedTimer) {
             state->linkedTimerObject = NULL;
         }
     }
-    ObjGroup_RemoveObject((int)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
-    ObjGroup_RemoveObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
+    objFreeObjectType((int)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
+    objFreeObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
     if (state->fuseFrames != 0) {
         (*gExpgfxInterface)->freeSource2((u32)obj);
     }
@@ -599,7 +599,7 @@ void gunpowderBarrel_hitDetect(int obj) {
 
         if (state->heldFlags.playerHeld != 0 && collision.hit.kind == 3) {
             gunpowderBarrel_setPlayerHeldState((GameObject*)obj, 0);
-            ObjGroup_RemoveObject(obj, CFGUARDIAN_OBJECT_GROUP);
+            objFreeObjectType(obj, CFGUARDIAN_OBJECT_GROUP);
         } else {
             collisionNormal[0] = collision.hit.normalX;
             collisionNormal[1] = collision.hit.normalY;
@@ -676,7 +676,7 @@ void gunpowderBarrel_update(GameObject* obj) {
     if (obj->childObjs[0] == NULL) {
         f32 timerRange = 50.0f;
         if ((u32)(state->linkedTimerObject =
-                      (GameObject*)ObjGroup_FindNearestObject(TIMER_OBJECT_GROUP, obj, &timerRange)) != 0 &&
+                      (GameObject*)objGetNearestTypeTo(TIMER_OBJECT_GROUP, obj, &timerRange)) != 0 &&
             timer_isEffectMode(state->linkedTimerObject) != 0 && state->linkedTimerObject->ownerObj == NULL) {
             ObjLink_AttachChild(obj, state->linkedTimerObject, 0);
         }
@@ -699,7 +699,7 @@ void gunpowderBarrel_update(GameObject* obj) {
             case GUNPOWDER_BARREL_MESSAGE_PLAYER_RELEASED:
                 gunpowderBarrel_setPlayerHeldState(obj, 0);
                 if (messageArgument != 0) {
-                    ObjGroup_AddObject((u32)obj, CFGUARDIAN_OBJECT_GROUP);
+                    objAddObjectType((u32)obj, CFGUARDIAN_OBJECT_GROUP);
                 }
                 break;
             }
@@ -732,7 +732,7 @@ void gunpowderBarrel_update(GameObject* obj) {
             if (placement->generatorLinkId != 0) {
                 int generatorCount;
                 u32* generatorIter;
-                generators = ObjGroup_GetObjects(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
+                generators = objGetAllOfType(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
                 index = 0;
                 generatorIter = generators;
                 for (; index < generatorCount; index++) {
@@ -743,7 +743,7 @@ void gunpowderBarrel_update(GameObject* obj) {
                     generatorIter++;
                 }
             } else {
-                generator = ObjGroup_FindNearestObject(BARREL_GENERATOR_OBJECT_GROUP, obj, 0);
+                generator = objGetNearestTypeTo(BARREL_GENERATOR_OBJECT_GROUP, obj, 0);
             }
             if (generator == 0) {
                 Obj_RemoveFromUpdateList(obj);
@@ -813,10 +813,10 @@ void gunpowderBarrel_update(GameObject* obj) {
                 obj->anim.localPosZ =
                     gGunpowderBarrelReleaseOffset * -mathCosf(3.1415927f * (f32)player->anim.rotX / 32768.0f) +
                     obj->anim.localPosZ;
-                ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
+                objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
             }
             /* Re-register after every release transition. */
-            ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
+            objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
         }
         gunpowderBarrel_updatePhysics(obj);
     } else {
@@ -825,7 +825,7 @@ void gunpowderBarrel_update(GameObject* obj) {
             if (state->linkedTimerObject != NULL) {
                 timer_forceStart(state->linkedTimerObject);
             }
-            ObjGroup_RemoveObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
+            objFreeObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
         }
         state->heldByCarryInterface = 1;
         state->heldFlags.pendingThrowVelocityCapture = 1;
@@ -854,8 +854,8 @@ void gunpowderBarrel_init(GameObject* obj, GunpowderBarrelPlacement* placement) 
 
     ((GunpowderBarrelState*)obj->extra)->unknown07 |= 2;
     (*gCarryableInterface)->init(obj, state, GUNPOWDER_BARREL_CARRYABLE_MODE);
-    ObjGroup_AddObject((int)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
-    ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
+    objAddObjectType((int)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
+    objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
     ObjMsg_AllocQueue(obj, GUNPOWDER_BARREL_MESSAGE_QUEUE_CAPACITY);
     obj->userData2 = 0;
     state->homingHeadingA = 0;

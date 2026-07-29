@@ -207,7 +207,7 @@ void GroundAnimator_free(GameObject* obj, int flags) {
     if (state->falloffBuffer != NULL) {
         mm_free(state->falloffBuffer);
     }
-    ObjGroup_RemoveObject((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
+    objFreeObjectType((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
 }
 
 void GroundAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
@@ -277,7 +277,7 @@ void GroundAnimator_update(GameObject* obj) {
         if (state->linkedObject == NULL) {
             searchDistance = (100.0f);
             state->linkedObject =
-                (GameObject*)ObjGroup_FindNearestObject(GROUND_ANIMATOR_TARGET_OBJECT_GROUP, obj, &searchDistance);
+                (GameObject*)objGetNearestTypeTo(GROUND_ANIMATOR_TARGET_OBJECT_GROUP, obj, &searchDistance);
             linkedObject = state->linkedObject;
             if (linkedObject != NULL) {
                 switch (state->linkedObject->anim.romDefNo) {
@@ -411,7 +411,7 @@ void GroundAnimator_init(GameObject* obj, GroundAnimatorPlacement* placement) {
             state->sinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth;
             state->flags |= GROUND_ANIMATOR_STATE_COMPLETE;
         }
-        ObjGroup_AddObject((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
+        objAddObjectType((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
         if (placement->sfxIndex > 1) {
             placement->sfxIndex = 0;
         }

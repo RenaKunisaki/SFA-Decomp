@@ -48,7 +48,7 @@ int spellstone_getObjectTypeId(void)
 
 void spellstone_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject((u32)obj, SPELLSTONE_OBJGROUP);
+    objFreeObjectType((u32)obj, SPELLSTONE_OBJGROUP);
     return;
 }
 
@@ -131,7 +131,7 @@ void spellstone_init(GameObject* obj)
     SpellStoneState* state;
 
     state = obj->extra;
-    ObjGroup_AddObject((u32)obj, SPELLSTONE_OBJGROUP);
+    objAddObjectType((u32)obj, SPELLSTONE_OBJGROUP);
     state->state = SPELLSTONE_STATE_IDLE;
     obj->animEventCallback = spellstone_idleCallback;
     return;

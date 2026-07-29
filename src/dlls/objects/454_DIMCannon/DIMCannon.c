@@ -429,7 +429,7 @@ void DIMCannon_free(GameObject* obj) {
         Resource_Release(gDimCannonResource);
         gDimCannonResource = NULL;
     }
-    ObjGroup_RemoveObject((int)obj, DIM_CANNON_OBJECT_GROUP);
+    objFreeObjectType((int)obj, DIM_CANNON_OBJECT_GROUP);
 }
 
 void DIMCannon_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,

@@ -1646,7 +1646,7 @@ void DIMboss_free(GameObject* obj) {
     mainSetBits(GAMEBIT_DIM_TriggerLostInBlizzard, 0);
     obj->anim.resetHitboxFlags &= ~DIMBOSS_OBJECT_FLAG_ACTIVE;
     CameraShake_Disable();
-    ObjGroup_RemoveObject((int)obj, DIMBOSS_OBJGROUP);
+    objFreeObjectType((int)obj, DIMBOSS_OBJGROUP);
     childObject = obj->childObjs[0];
     if (childObject != NULL) {
         Obj_FreeObject(childObject);

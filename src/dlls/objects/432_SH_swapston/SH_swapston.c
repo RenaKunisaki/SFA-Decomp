@@ -568,7 +568,7 @@ void warpstone_update(int obj) {
     if (((WarpStoneFlags*)(state + offsetof(WarpStoneState, behaviorFlags)))->lookAtPlayer != 0) {
         target = (int)Obj_GetPlayerObject();
     } else {
-        target = ObjGroup_FindNearestObject(WARPSTONE_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
+        target = objGetNearestTypeTo(WARPSTONE_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
     }
 
     ((GameObject*)obj)->anim.localPosY += gWarpStoneHeadAimHeightOffset;

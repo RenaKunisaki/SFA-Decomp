@@ -288,7 +288,7 @@ void kytesmum_free(int obj)
     KytesMumSetup* setup = (KytesMumSetup*)((GameObject*)obj)->anim.placementData;
     if (setup->mode != 0)
     {
-        ObjGroup_RemoveObject(obj, KYTESMUM_OBJGROUP);
+        objFreeObjectType(obj, KYTESMUM_OBJGROUP);
     }
 }
 
@@ -367,7 +367,7 @@ void kytesmum_update(GameObject* obj)
     kytesmum_playAnimationEventSfx((u32)obj, runtime->animEvents, runtime->eventSfxTable);
     characterDoEyeAnims(obj, &runtime->eyeAnimState);
     objSoundUpdateMouth(obj, &runtime->modelSoundState);
-    nearest = ObjGroup_FindNearestObject(KYTESMUM_TARGET_OBJGROUP, obj, &nearDist);
+    nearest = objGetNearestTypeTo(KYTESMUM_TARGET_OBJGROUP, obj, &nearDist);
     if ((void*)nearest != NULL)
     {
         TRICKY_INTERFACE(nearest)
@@ -398,7 +398,7 @@ void kytesmum_init(GameObject* obj, KytesMumSetup* setup)
         runtime->moveSet = &moveSets[1];
         runtime->updateCallback = (KytesMumUpdateCallback)kytesmum_updateNearPlayerCallback;
         runtime->eventSfxTable = (s16*)&gKytesMumRoamEventSfxTable;
-        ObjGroup_AddObject((int)obj, KYTESMUM_OBJGROUP);
+        objAddObjectType((int)obj, KYTESMUM_OBJGROUP);
         if (runtime->questComplete != 0)
         {
             Obj_RemoveFromUpdateList(obj);

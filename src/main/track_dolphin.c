@@ -1032,7 +1032,7 @@ int objBboxFn_800640cc(f32* startPos, f32* endPos, f32 radius, int flags, TrackB
         memcpy(worldStart, startPos, 0xc);
         memcpy(worldEnd, endPos, 0xc);
     }
-    objects = ObjGroup_GetObjects(6, &count);
+    objects = objGetAllOfType(6, &count);
     for (i = 0; i < count; i++)
     {
         GameObject* target = (GameObject*)objects[i];

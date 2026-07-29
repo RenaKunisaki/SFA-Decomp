@@ -105,7 +105,7 @@ void EffectBox_update(GameObject* obj) {
             targetCount = 1;
             break;
         case EFFECTBOX_TARGET_GROUP:
-            targets = (GameObject**)ObjGroup_GetObjects(EFFECTBOX_TARGET_OBJECT_GROUP, &targetCount);
+            targets = (GameObject**)objGetAllOfType(EFFECTBOX_TARGET_OBJECT_GROUP, &targetCount);
             if (targets == NULL) {
                 return;
             }

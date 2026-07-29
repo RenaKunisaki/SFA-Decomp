@@ -84,7 +84,7 @@ void wctile_update(GameObject* obj)
 
     if ((void*)state->controller == NULL)
     {
-        state->controller = (GameObject*)ObjGroup_FindNearestObject(WCTILE_CONTROLLER_GROUP, obj, &nearest);
+        state->controller = (GameObject*)objGetNearestTypeTo(WCTILE_CONTROLLER_GROUP, obj, &nearest);
         objAnim->alpha = 0;
         return;
     }

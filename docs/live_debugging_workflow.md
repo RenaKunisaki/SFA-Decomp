@@ -194,7 +194,7 @@ A reviewer's instinct to "tidy up" often collides with matching reality. Things 
   stayed byte-identical) — but **test it**; the TU header may note it keeps helpers
   as out-of-line `bl`s.
 - **Identical if/else arms and duplicated calls can be faithful.** Both the
-  "both arms store the same const" branch and the "double `ObjGroup_AddObject`" we
+  "both arms store the same const" branch and the "double `objAddObjectType`" we
   flagged were **real in the retail asm** (two `R_PPC_EMB_SDA21` relocs / two
   adjacent `bl`s). Check `function_objdump.py` before "fixing" — then leave a comment
   so it isn't re-flagged.

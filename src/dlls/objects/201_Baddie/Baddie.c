@@ -796,7 +796,7 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
                 (obj)->anim.worldPosZ = ((ObjPlacement*)parentSetup)->posZ;
             }
             nearestDistance = 750.0f;
-            gTrickyNearestObject = ObjGroup_FindNearestObject(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDistance);
+            gTrickyNearestObject = objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDistance);
             (obj)->anim.worldPosX = savedX;
             (obj)->anim.worldPosY = savedY;
             (obj)->anim.worldPosZ = savedZ;
@@ -1963,7 +1963,7 @@ int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int max, Enem
     resultCount = 0;
     if ((flags & 1) != 0)
     {
-        tgt = (GameObject*)ObjGroup_FindNearestObject(ENEMY_OBJGROUP, obj, &radius);
+        tgt = (GameObject*)objGetNearestTypeTo(ENEMY_OBJGROUP, obj, &radius);
         out->obj = tgt;
         if (tgt != 0)
         {
@@ -2013,7 +2013,7 @@ int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int max, Enem
     else
     {
         radius = radius * radius;
-        arr = (GameObject**)ObjGroup_GetObjects(ENEMY_OBJGROUP, &count);
+        arr = (GameObject**)objGetAllOfType(ENEMY_OBJGROUP, &count);
         if (count != 0)
         {
             i = 0;
@@ -2513,9 +2513,9 @@ void enemy_free(GameObject* obj, int flag)
         hagabonMK2_stopLoopSfx((int)obj, state);
         break;
     case ENEMY_WHIRLPOOL_OBJ:
-        if (ObjGroup_ContainsObject((u32)obj, ENEMY_OBJGROUP_SECONDARY) != 0)
+        if (objIsObjectType((u32)obj, ENEMY_OBJGROUP_SECONDARY) != 0)
         {
-            ObjGroup_RemoveObject((int)obj, ENEMY_OBJGROUP_SECONDARY);
+            objFreeObjectType((int)obj, ENEMY_OBJGROUP_SECONDARY);
         }
         break;
     }
@@ -2533,7 +2533,7 @@ void enemy_free(GameObject* obj, int flag)
         }
     }
     (*gExpgfxInterface)->freeSource((int)obj);
-    ObjGroup_RemoveObject((int)obj, ENEMY_OBJGROUP);
+    objFreeObjectType((int)obj, ENEMY_OBJGROUP);
 }
 
 void enemy_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -3015,7 +3015,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
         {
             ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 & -39;
         }
-        ObjGroup_AddObject((int)obj, ENEMY_OBJGROUP);
+        objAddObjectType((int)obj, ENEMY_OBJGROUP);
         ((EnemyState*)state)->prevActionId = 7;
         ((EnemyState*)state)->actionId = 2;
         if (*(void**)state == NULL)

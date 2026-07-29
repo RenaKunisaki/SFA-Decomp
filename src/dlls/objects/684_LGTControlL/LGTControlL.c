@@ -59,7 +59,7 @@ void ControlLight_update(GameObject* obj)
             int count;
             int i;
             GameObject* lightObj;
-            GameObject** objs = (GameObject**)ObjGroup_GetObjects(LGT_POINTLIGHT_GROUP, &count);
+            GameObject** objs = (GameObject**)objGetAllOfType(LGT_POINTLIGHT_GROUP, &count);
             GameObject** lightIter;
             for (i = 0, lightIter = objs; i < count; i++)
             {
@@ -79,7 +79,7 @@ void ControlLight_update(GameObject* obj)
             GameObject* lightObj;
             int i;
             int invBit;
-            GameObject** objs = (GameObject**)ObjGroup_GetObjects(LGT_POINTLIGHT_GROUP, &count);
+            GameObject** objs = (GameObject**)objGetAllOfType(LGT_POINTLIGHT_GROUP, &count);
             GameObject** lightIter;
             i = 0, lightIter = objs;
             invBit = bit == 0;

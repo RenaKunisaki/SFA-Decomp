@@ -19,7 +19,7 @@ int TrickyGuardSpot_getExtraSize(void) {
 }
 
 void TrickyGuardSpot_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, TRICKY_GUARD_SPOT_GROUP);
+    objFreeObjectType((int)obj, TRICKY_GUARD_SPOT_GROUP);
 }
 
 void TrickyGuardSpot_render(void) {
@@ -64,7 +64,7 @@ void TrickyGuardSpot_update(GameObject* obj) {
 void TrickyGuardSpot_init(GameObject* obj, TrickyGuardSpotPlacement* placement) {
     TrickyGuardSpotState* state = obj->extra;
 
-    ObjGroup_AddObject((int)obj, TRICKY_GUARD_SPOT_GROUP);
+    objAddObjectType((int)obj, TRICKY_GUARD_SPOT_GROUP);
     state->guardTimer = placement->guardDurationSeconds * TRICKY_GUARD_SPOT_FRAMES_PER_SECOND;
     obj->anim.rotX = (s16)(s32)placement->rotationX;
 }

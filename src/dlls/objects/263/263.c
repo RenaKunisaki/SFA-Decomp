@@ -412,7 +412,7 @@ void windLift107_init(GameObject* obj, WindLift107Placement* placement) {
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->skeletonHitMask = WINDLIFT107_HIT_MASK;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectHitMask = WINDLIFT107_HIT_MASK;
     ObjHits_DisableObject(obj);
-    ObjGroup_AddObject((int)obj, WINDLIFT107_OBJECT_GROUP_ID);
+    objAddObjectType((int)obj, WINDLIFT107_OBJECT_GROUP_ID);
     state->disableTimer = 0;
     state->throwState = WINDLIFT107_THROW_NONE;
     {

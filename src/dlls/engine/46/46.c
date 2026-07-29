@@ -72,7 +72,7 @@ int dll_2E_getCurveActionTargetAimed(int idx, MoveLibTarget* out)
         out->x = p->base.x;
         out->y = p->base.y;
         out->z = p->base.z;
-        q = (GameObject*)ObjGroup_FindNearestObjectToPoint(MOVELIB_TARGET_OBJGROUP, &out->x, &range);
+        q = (GameObject*)objGetNearestType(MOVELIB_TARGET_OBJGROUP, &out->x, &range);
         if (q != NULL)
         {
             out->angle = (s16)atan2i((int)(q->anim.localPosX - out->x), (int)(q->anim.localPosZ - out->z));
@@ -577,7 +577,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
         {
             targetObj = s->lockTarget;
             target = (u32)(targetObj != NULL ? targetObj
-                                             : (targetObj = (void*)ObjGroup_FindNearestObject(MOVELIB_TARGET_OBJGROUP,
+                                             : (targetObj = (void*)objGetNearestTypeTo(MOVELIB_TARGET_OBJGROUP,
                                                                                               obj, (f32*)&sv)));
             if (targetObj != NULL)
             {

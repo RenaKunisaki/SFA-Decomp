@@ -4624,7 +4624,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
         if (playerFindNearestFirefly(Obj_GetPlayerObject()) != 0)
         {
             range = 100.0f;
-            other = (GameObject*)ObjGroup_FindNearestObject(LANTERNFIREFLY_OBJGROUP, obj, &range);
+            other = (GameObject*)objGetNearestTypeTo(LANTERNFIREFLY_OBJGROUP, obj, &range);
             if (other != NULL)
             {
                 s16 yaw = Obj_GetYawDeltaToObject(obj, other, &range);
@@ -6685,7 +6685,7 @@ void iceBaddie_enterWhirlpoolGroup(GameObject* obj, EnemyState* state)
 
     if (state->userData2 == 0)
     {
-        ObjGroup_AddObject((int)obj, ICEBADDIE_OBJGROUP_SECONDARY);
+        objAddObjectType((int)obj, ICEBADDIE_OBJGROUP_SECONDARY);
         state->userData2 = 1;
     }
     ObjHits_SetHitVolumeSlot(&obj->anim, ICEBADDIE_HIT_VOLUME_SLOT, 1, 0);
@@ -6698,7 +6698,7 @@ void iceBaddie_leaveWhirlpoolGroup(GameObject* obj, EnemyState* state)
 {
     if (state->userData2 != 0)
     {
-        ObjGroup_RemoveObject((int)obj, ICEBADDIE_OBJGROUP_SECONDARY);
+        objFreeObjectType((int)obj, ICEBADDIE_OBJGROUP_SECONDARY);
         state->userData2 = 0;
     }
     *(u16*)obj = (float)(int)(obj)->anim.rotX - 256.0f * timeDelta;
@@ -7702,7 +7702,7 @@ void iceBaddie_free(GameObject* obj) {
     GroundBaddieState* state = obj->extra;
 
     CameraShake_Disable();
-    ObjGroup_RemoveObject((int)obj, ICEBADDIE_OBJGROUP);
+    objFreeObjectType((int)obj, ICEBADDIE_OBJGROUP);
     {
         GameObject* child = (GameObject*)obj->childObjs[0];
         if (child != NULL) {

@@ -981,7 +981,7 @@ void Minimap_frameStart(void)
                     gMinimapZoomSfxActive = 0;
                 }
                 gMinimapRadarTarget =
-                    (GameObject*)ObjGroup_FindNearestObject(FUEL_CELL_OBJECT_GROUP, (GameObject*)player, &dist);
+                    (GameObject*)objGetNearestTypeTo(FUEL_CELL_OBJECT_GROUP, (GameObject*)player, &dist);
                 if ((void*)gMinimapRadarTarget != NULL)
                 {
                     if (dist < 500.0f)

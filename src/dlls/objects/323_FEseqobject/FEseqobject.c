@@ -98,7 +98,7 @@ int FEseqobject_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         if ((animUpdate->sequenceControlFlags & OBJSEQ_CONTROL_SUPPRESS_MESSAGES) == 0) {
             switch (message) {
             case FESEQOBJECT_MESSAGE_IN_1:
-                receivers = (int*)ObjGroup_GetObjects(FESEQOBJECT_RECEIVER_OBJECT_GROUP, &receiverCount);
+                receivers = (int*)objGetAllOfType(FESEQOBJECT_RECEIVER_OBJECT_GROUP, &receiverCount);
                 for (i = 0; i < receiverCount; i++) {
                     if (((GameObject*)receivers[i])->anim.romDefNo == FESEQOBJECT_RECEIVER_SEQ_ID) {
                         receiver = receivers[i];
@@ -110,7 +110,7 @@ int FEseqobject_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 }
                 break;
             case FESEQOBJECT_MESSAGE_IN_2:
-                receivers = (int*)ObjGroup_GetObjects(FESEQOBJECT_RECEIVER_OBJECT_GROUP, &receiverCount);
+                receivers = (int*)objGetAllOfType(FESEQOBJECT_RECEIVER_OBJECT_GROUP, &receiverCount);
                 for (i = 0; i < receiverCount; i++) {
                     if (((GameObject*)receivers[i])->anim.romDefNo == FESEQOBJECT_RECEIVER_SEQ_ID) {
                         receiver = receivers[i];
@@ -122,7 +122,7 @@ int FEseqobject_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 }
                 break;
             case FESEQOBJECT_MESSAGE_IN_3:
-                receivers = (int*)ObjGroup_GetObjects(FESEQOBJECT_RECEIVER_OBJECT_GROUP, &receiverCount);
+                receivers = (int*)objGetAllOfType(FESEQOBJECT_RECEIVER_OBJECT_GROUP, &receiverCount);
                 for (i = 0; i < receiverCount; i++) {
                     if (((GameObject*)receivers[i])->anim.romDefNo == FESEQOBJECT_RECEIVER_SEQ_ID) {
                         receiver = receivers[i];

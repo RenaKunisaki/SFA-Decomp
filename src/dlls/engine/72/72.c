@@ -30,7 +30,7 @@ void* camStaticFindNearestAnchor(f32 x, f32 y, f32 z, int filter1, int filter2)
 
     bestDist = 100000.0f;
     best = NULL;
-    tmpList = (int*)ObjGroup_GetObjects(7, &count);
+    tmpList = (int*)objGetAllOfType(7, &count);
     for (i = 0, list = tmpList; i < count; i++)
     {
         obj = (GameObject*)*list;

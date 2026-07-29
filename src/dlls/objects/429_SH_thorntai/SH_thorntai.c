@@ -194,7 +194,7 @@ int SHthorntail_HasNearbyPendingEventObject(GameObject* obj) {
         }
         linkedConfigRow = (u32*)((u8*)linkedConfigRow + SHTHORNTAIL_LINKED_CONFIG_ROW_BYTES);
     }
-    objects = (GameObject**)ObjGroup_GetObjects(SHTHORNTAIL_LINKED_EVENT_OBJECT_GROUP, &count);
+    objects = (GameObject**)objGetAllOfType(SHTHORNTAIL_LINKED_EVENT_OBJECT_GROUP, &count);
     for (index = 0; index < count; index++) {
         if ((objects[index]->anim.romDefNo == SHTHORNTAIL_OBJECT_TYPE_ID) &&
             ((SHTHORNTAIL_PLACEMENT(objects[index])->configToken == gSHthorntailDataTables[groupIndex][1]) ||
@@ -893,7 +893,7 @@ void SHthorntail_free(GameObject* obj) {
     if (activeConfigToken == placement->configToken) {
         gSHthorntailActiveConfigToken = SHTHORNTAIL_CONFIG_TOKEN_NONE;
     }
-    ObjGroup_RemoveObject((int)obj, SHTHORNTAIL_OBJECT_GROUP);
+    objFreeObjectType((int)obj, SHTHORNTAIL_OBJECT_GROUP);
 }
 
 void SHthorntail_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
@@ -1137,5 +1137,5 @@ void SHthorntail_init(GameObject* obj, const SHthorntailPlacement* placement) {
     obj->animEventCallback = SHthorntail_updateLevelControlState;
     dll_2E_initState((GameObject*)obj, (MoveLibState*)runtime, 0xffffdc72, 0x2aaa, 3);
     dll_2E_setReattackDelay((MoveLibState*)runtime, 400, 0x78);
-    ObjGroup_AddObject((int)obj, SHTHORNTAIL_OBJECT_GROUP);
+    objAddObjectType((int)obj, SHTHORNTAIL_OBJECT_GROUP);
 }

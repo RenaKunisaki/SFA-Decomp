@@ -26,7 +26,7 @@ int ccGasVent_getExtraSize(void) {
 }
 
 void ccGasVent_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, CC_GAS_VENT_OBJECT_GROUP);
+    objFreeObjectType((int)obj, CC_GAS_VENT_OBJECT_GROUP);
 }
 
 void ccGasVent_render(void) {
@@ -37,7 +37,7 @@ void ccGasVent_update(GameObject* obj) {
     CCGasVentState* state = obj->extra;
 
     if (mainGetBit(CC_GAS_VENT_ACTIVE_GAMEBIT) != 0) {
-        ObjGroup_FindNearestObject(CC_GAS_VENT_BLOCKER_OBJECT_GROUP, obj, &blockerDistance);
+        objGetNearestTypeTo(CC_GAS_VENT_BLOCKER_OBJECT_GROUP, obj, &blockerDistance);
         switch (state->phase) {
         case CC_GAS_VENT_PHASE_BLOCKED:
             if (blockerDistance >= CC_GAS_VENT_BLOCK_DISTANCE) {
@@ -58,7 +58,7 @@ void ccGasVent_update(GameObject* obj) {
 }
 
 void ccGasVent_init(GameObject* obj) {
-    ObjGroup_AddObject((int)obj, CC_GAS_VENT_OBJECT_GROUP);
+    objAddObjectType((int)obj, CC_GAS_VENT_OBJECT_GROUP);
 }
 
 ObjectDescriptor gCCGasVentObjDescriptor = {

@@ -998,7 +998,7 @@ void ShopKeeper_update(GameObject* obj)
     if (*(void**)&((ShopkeeperState*)state)->vendorObj == NULL)
     {
         ((ShopkeeperState*)state)->vendorObj =
-            ObjGroup_FindNearestObject(SPSHOPKEEPER_TARGET_OBJGROUP, obj, &dist);
+            objGetNearestTypeTo(SPSHOPKEEPER_TARGET_OBJGROUP, obj, &dist);
     }
     ((ShopkeeperState*)state)->playerMoney = playerGetMoney(player);
     (*gPlayerInterface)->update((void*)obj, (void*)state, timeDelta, timeDelta, gShopKeeperStateHandlers, &gShopKeeperDefaultStateHandler);

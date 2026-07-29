@@ -51,11 +51,11 @@ int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 
     if (mainGetBit(((Dbholecontrol1Placement*)data)->hideGameBit) != 0 || lbl_803DDCE0 != 0)
     {
-        objs = (int*)ObjGroup_GetObjects(DBEGG_OBJGROUP, &count);
+        objs = (int*)objGetAllOfType(DBEGG_OBJGROUP, &count);
         ObjMsg_SendToObjects(0, 3, obj, 17, 0);
         while (count-- != 0)
         {
-            ObjGroup_RemoveObject(*objs++, DBEGG_OBJGROUP);
+            objFreeObjectType(*objs++, DBEGG_OBJGROUP);
         }
         return 4;
     }
@@ -73,7 +73,7 @@ int dbholecontrol1_getObjectTypeId(void)
 
 void dbholecontrol1_free(int obj)
 {
-    ObjGroup_RemoveObject(obj, DBHOLE_CONTROL1_OBJECT_GROUP);
+    objFreeObjectType(obj, DBHOLE_CONTROL1_OBJECT_GROUP);
 }
 
 void dbholecontrol1_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -106,7 +106,7 @@ void dbholecontrol1_update(GameObject* obj)
 void dbholecontrol1_init(GameObject* obj, u8* params)
 {
     DbHoleControl1State* state = obj->extra;
-    ObjGroup_AddObject((int)obj, DBHOLE_CONTROL1_OBJECT_GROUP);
+    objAddObjectType((int)obj, DBHOLE_CONTROL1_OBJECT_GROUP);
     *(s16*)obj = (s16)((s8)((Dbholecontrol1Placement*)params)->unk18 << 8);
     obj->animEventCallback = dbholecontrol1_SeqFn;
     state->gameBitA = ((Dbholecontrol1Placement*)params)->gameBitA;

@@ -37,7 +37,7 @@ int WM_Column_getObjectTypeId(void) {
 }
 
 void WM_Column_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, WM_COLUMN_GROUP);
+    objFreeObjectType((int)obj, WM_COLUMN_GROUP);
     (*gCarryableInterface)->free(obj);
 }
 
@@ -79,7 +79,7 @@ void WM_Column_update(GameObject* obj) {
         }
 
         player = Obj_GetPlayerObject();
-        ObjGroup_FindNearestObject(WM_COLUMN_TARGET_GROUP, obj, &nearestDistance);
+        objGetNearestTypeTo(WM_COLUMN_TARGET_GROUP, obj, &nearestDistance);
         playerStateFlags = playerGetStateFlag310(player);
         if ((playerStateFlags & PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE) != 0 &&
             nearestDistance > WM_COLUMN_DROP_TARGET_MIN_DISTANCE) {
@@ -136,7 +136,7 @@ void WM_Column_init(GameObject* obj, WMColumnPlacement* placement) {
         obj->anim.bankIndex = WM_COLUMN_DEFAULT_MODEL_BANK;
     }
     (*gCarryableInterface)->init(obj, state, WM_COLUMN_CARRYABLE_INIT_ARG);
-    ObjGroup_AddObject((int)obj, WM_COLUMN_GROUP);
+    objAddObjectType((int)obj, WM_COLUMN_GROUP);
 }
 
 void WM_Column_release(void) {

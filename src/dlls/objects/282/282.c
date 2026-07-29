@@ -45,7 +45,7 @@ void decoration11a_hitDetect(GameObject* obj) {
     }
 
     state = obj->extra;
-    objectCursor = (GameObject**)ObjGroup_GetObjects(DECORATION11A_COLLISION_OBJECT_GROUP, &objectCount);
+    objectCursor = (GameObject**)objGetAllOfType(DECORATION11A_COLLISION_OBJECT_GROUP, &objectCount);
     while (objectCount != 0) {
         if (Vec_distance(&(*objectCursor)->anim.worldPosX, &obj->anim.worldPosX) < state->boundingRadius) {
             if ((*objectCursor)->anim.hitReactState != NULL) {

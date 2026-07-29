@@ -59,8 +59,8 @@ int DR_CloudPer_getObjectTypeId(void)
 
 void DR_CloudPer_free(int obj)
 {
-    ObjGroup_RemoveObject(obj, DRCLOUDPER_GROUP_TRIGGER);
-    ObjGroup_RemoveObject(obj, DRCLOUDPER_GROUP_SURFACE);
+    objFreeObjectType(obj, DRCLOUDPER_GROUP_TRIGGER);
+    objFreeObjectType(obj, DRCLOUDPER_GROUP_SURFACE);
 }
 
 void DR_CloudPer_render(void)
@@ -81,8 +81,8 @@ void DR_CloudPer_init(int obj, int setup)
     DrCloudPerSetup* setupData;
     DrCloudPerState* state;
 
-    ObjGroup_AddObject(obj, DRCLOUDPER_GROUP_TRIGGER);
-    ObjGroup_AddObject(obj, DRCLOUDPER_GROUP_SURFACE);
+    objAddObjectType(obj, DRCLOUDPER_GROUP_TRIGGER);
+    objAddObjectType(obj, DRCLOUDPER_GROUP_SURFACE);
     cloud = (GameObject*)obj;
     setupData = (DrCloudPerSetup*)setup;
     {

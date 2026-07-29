@@ -161,7 +161,7 @@ void WM_ObjCreator_update(GameObject* obj) {
                 if (mainGetBit(GAMEBIT_WM_Galleon_despawn) != 0) {
                     state = NULL;
                 }
-                groupObjects = ObjGroup_GetObjects(3, &objectCount);
+                groupObjects = objGetAllOfType(3, &objectCount);
                 objectIndex = 0;
                 while (objectIndex < objectCount && (s8)(int)state != 0) {
                     if (((GameObject*)*groupObjects)->anim.romDefNo == WM_GALLEON_OBJECT_ID) {

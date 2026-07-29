@@ -108,7 +108,7 @@ void DIM2PathGenerator_update(GameObject* obj) {
     toggle = state->flags & DIM2_PATH_GENERATOR_FLAG_SPAWN_TOGGLE;
     state->spawnTimer = state->spawnPeriod;
     state->flags &= ~DIM2_PATH_GENERATOR_FLAG_SPAWN_TOGGLE;
-    objects = (int**)ObjGroup_GetObjects(DIM2_PATH_GENERATOR_SNOWBALL_GROUP, &count);
+    objects = (int**)objGetAllOfType(DIM2_PATH_GENERATOR_SNOWBALL_GROUP, &count);
     for (objectIndex = 0; objectIndex < count; objectIndex++) {
         if (state->spawnTypes[toggle] == ((GameObject*)objects[objectIndex])->anim.romDefNo) {
             int* childPlacementData = *(int**)((char*)objects[objectIndex] + 0x4c);
@@ -120,8 +120,8 @@ void DIM2PathGenerator_update(GameObject* obj) {
             ((Dim2SnowBallPlacement*)childPlacementData)->base.ident = placement->base.ident;
             (*(void (**)(int*, int*, int))(**(int**)((char*)objects[objectIndex] + 0x68) + 4))(objects[objectIndex],
                                                                                                childPlacementData, 1);
-            ObjGroup_RemoveObject((int)objects[objectIndex], DIM2_PATH_GENERATOR_SNOWBALL_GROUP);
-            ObjGroup_GetObjects(DIM2_PATH_GENERATOR_SNOWBALL_GROUP, &count);
+            objFreeObjectType((int)objects[objectIndex], DIM2_PATH_GENERATOR_SNOWBALL_GROUP);
+            objGetAllOfType(DIM2_PATH_GENERATOR_SNOWBALL_GROUP, &count);
             for (poolIndex = 0; poolIndex < count; poolIndex++) {
             }
             state->flags |= (toggle ^ 1) & DIM2_PATH_GENERATOR_FLAG_SPAWN_TOGGLE;

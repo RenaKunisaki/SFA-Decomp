@@ -2,7 +2,7 @@
  * WCPushBlock (DLL 656) - the sliding push-block puzzle object in the
  * Walled City (WC). Two block variants (anim.bankIndex: VARIANT_A vs B)
  * ride a shared tile grid owned by a separate level-controller object,
- * found via ObjGroup_FindNearestObject on controller group
+ * found via objGetNearestTypeTo on controller group
  * WCPUSHBLOCK_CONTROLLER_GROUP; the controller's WCLevelContInterface
  * (vtable at controller+0x68) does all tile<->world mapping, move tracing
  * and tile-occupancy writes (A/B method pairs).
@@ -166,7 +166,7 @@ void wcpushblock_update(GameObject* obj)
     if ((void*)WCPUSHBLOCK_CONTROLLER(state) == 0)
     {
         WCPUSHBLOCK_CONTROLLER(state) =
-            (GameObject*)ObjGroup_FindNearestObject(WCPUSHBLOCK_CONTROLLER_GROUP, obj, &range);
+            (GameObject*)objGetNearestTypeTo(WCPUSHBLOCK_CONTROLLER_GROUP, obj, &range);
         objAnim->alpha = 0;
         return;
     }

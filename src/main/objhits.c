@@ -3713,7 +3713,7 @@ void ObjHits_InitWorkBuffers(void)
     return;
 }
 
-int ObjGroup_ContainsObject(u32 obj, int group)
+int objIsObjectType(u32 obj, int group)
 {
     u32* entry;
     u32 index;
@@ -3737,7 +3737,7 @@ int ObjGroup_ContainsObject(u32 obj, int group)
     return (u32)(halfDiff - limitXorIndex) >> 0x1f;
 }
 
-int ObjGroup_FindNearestObjectToPoint(int group, float* point, float* maxDistance)
+int objGetNearestType(int group, float* point, float* maxDistance)
 {
     u32* entry;
     u32 nearest;
@@ -3776,7 +3776,7 @@ int ObjGroup_FindNearestObjectToPoint(int group, float* point, float* maxDistanc
     return nearest;
 }
 
-GameObject* ObjGroup_FindNearestObjectForObject(int group, GameObject* obj, float* maxDistance)
+GameObject* objGetNearestTypeToExcludingSelf(int group, GameObject* obj, float* maxDistance)
 {
     u32* entry;
     GameObject* nearest;
@@ -3822,7 +3822,7 @@ GameObject* ObjGroup_FindNearestObjectForObject(int group, GameObject* obj, floa
     return nearest;
 }
 
-int ObjGroup_FindNearestObject(int group, GameObject* obj, float* maxDistance)
+int objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance)
 {
     u32* entry;
     u32 nearest;
@@ -3870,7 +3870,7 @@ int ObjGroup_FindNearestObject(int group, GameObject* obj, float* maxDistance)
     return nearest;
 }
 
-u32* ObjGroup_GetObjects(int group, int* countOut)
+u32* objGetAllOfType(int group, int* countOut)
 {
     if ((group < 0) || (group >= OBJGROUP_COUNT))
     {
@@ -3881,7 +3881,7 @@ u32* ObjGroup_GetObjects(int group, int* countOut)
     return (u32*)(gObjGroupObjects + gObjGroupOffsets.offsets[group]);
 }
 
-void ObjGroup_RemoveObject(int obj, int group)
+void objFreeObjectType(int obj, int group)
 {
     u8* offset;
     u8 count;
@@ -3925,7 +3925,7 @@ void ObjGroup_RemoveObject(int obj, int group)
     }
 }
 
-int ObjGroup_GetObjectGroup(u32 obj)
+int objGetObjectType(u32 obj)
 {
     int group;
     int objectIndex;
@@ -3947,7 +3947,7 @@ int ObjGroup_GetObjectGroup(u32 obj)
     return 0;
 }
 
-void ObjGroup_AddObject(int obj, int group)
+void objAddObjectType(int obj, int group)
 {
     u8* offset;
     int count;
@@ -3999,7 +3999,7 @@ void ObjGroup_AddObject(int obj, int group)
     }
 }
 
-void ObjGroup_ClearAll(void)
+void objTypeInit(void)
 {
     memset(gObjGroupOffsets.offsets, 0, sizeof(gObjGroupOffsets.offsets));
     gObjGroupObjectCount = 0;

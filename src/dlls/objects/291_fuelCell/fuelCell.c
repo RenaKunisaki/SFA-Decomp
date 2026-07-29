@@ -62,7 +62,7 @@ void FuelCell_free(GameObject* obj) {
     }
 
     if (state->flags.active) {
-        ObjGroup_RemoveObject((int)obj, FUEL_CELL_OBJECT_GROUP);
+        objFreeObjectType((int)obj, FUEL_CELL_OBJECT_GROUP);
     }
 }
 
@@ -113,7 +113,7 @@ void FuelCell_render(GameObject* obj, int p2, int p3, int p4, int p5) {
             } else if (!spawnedLightning && getHudHiddenFrameCount() == 0) {
                 GameObject* target;
                 if (randomGetRange(0, FUEL_CELL_LINK_ROLL_MAX) == 0 && !state->flags.alternateEffects) {
-                    fuelCells = (GameObject**)ObjGroup_GetObjects(FUEL_CELL_OBJECT_GROUP, &fuelCellCount);
+                    fuelCells = (GameObject**)objGetAllOfType(FUEL_CELL_OBJECT_GROUP, &fuelCellCount);
                     for (j = 0; j < fuelCellCount; j++) {
                         GameObject* other = fuelCells[j];
                         u8 canLink;
@@ -190,7 +190,7 @@ void FuelCell_update(GameObject* obj) {
                 if (!state->flags.active) {
                     Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_pk_fuelcell_fizz);
                     state->flags.active = 1;
-                    ObjGroup_AddObject((int)obj, FUEL_CELL_OBJECT_GROUP);
+                    objAddObjectType((int)obj, FUEL_CELL_OBJECT_GROUP);
                 } else if (state->flags.resetPosition) {
                     obj->anim.localPosX = placement->base.posX;
                     obj->anim.localPosY = placement->base.posY;
@@ -211,7 +211,7 @@ void FuelCell_update(GameObject* obj) {
         } else if (state->flags.active) {
             state->flags.active = 0;
             Sfx_RemoveLoopedObjectSound((u32)obj, SFXTRIG_pk_fuelcell_fizz);
-            ObjGroup_RemoveObject((int)obj, FUEL_CELL_OBJECT_GROUP);
+            objFreeObjectType((int)obj, FUEL_CELL_OBJECT_GROUP);
         }
     }
 }

@@ -53,7 +53,7 @@ void PointLight_free(GameObject* obj)
     {
         ModelLightStruct_free(state->light);
     }
-    ObjGroup_RemoveObject((int)obj, LGT_POINTLIGHT_GROUP);
+    objFreeObjectType((int)obj, LGT_POINTLIGHT_GROUP);
 }
 
 void PointLight_render(GameObject* obj)
@@ -194,7 +194,7 @@ void PointLight_init(GameObject* obj, PointLightSetup* setup)
         }
     }
 
-    ObjGroup_AddObject((int)obj, LGT_POINTLIGHT_GROUP);
+    objAddObjectType((int)obj, LGT_POINTLIGHT_GROUP);
 }
 
 void PointLight_release(void)

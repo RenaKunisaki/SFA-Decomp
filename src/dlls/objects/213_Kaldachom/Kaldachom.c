@@ -613,7 +613,7 @@ void kaldachom_free(GameObject* obj) {
     KaldachomState* state;
 
     state = obj->extra;
-    ObjGroup_RemoveObject((int)obj, KALDACHOM_OBJECT_GROUP);
+    objFreeObjectType((int)obj, KALDACHOM_OBJECT_GROUP);
     (*gBaddieControlInterface)->releaseState(obj, state, 0x20);
 }
 

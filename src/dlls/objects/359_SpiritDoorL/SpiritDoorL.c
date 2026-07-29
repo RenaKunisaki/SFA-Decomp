@@ -135,7 +135,7 @@ void SpiritDoorLock_update(GameObject* obj) {
         if (cameraMode != SPIRIT_DOOR_LOCK_SILENT_CAMERA_MODE) {
             Sfx_KeepAliveLoopedObjectSound((int)obj, SPIRIT_DOOR_LOCK_LOOP_SFX);
         }
-        orbitObjects = (GameObject**)ObjGroup_GetObjects(SPIRIT_DOOR_SPIRIT_OBJECT_GROUP, &orbitCount);
+        orbitObjects = (GameObject**)objGetAllOfType(SPIRIT_DOOR_SPIRIT_OBJECT_GROUP, &orbitCount);
         angleStep = SPIRIT_DOOR_LOCK_FULL_TURN / state->orbitCount;
         angle = state->spinAngle;
         orbitOffset[1] = gSpiritDoorLockOrbitOffsetY;

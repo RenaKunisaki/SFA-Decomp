@@ -72,7 +72,7 @@ void DR_CageWith_free(GameObject* obj, int arg)
         state->spawnedObject->userData1 = 0;
         Obj_FreeObject(state->spawnedObject);
     }
-    ObjGroup_RemoveObject((int)obj, DRCAGEWITH_OBJGROUP);
+    objFreeObjectType((int)obj, DRCAGEWITH_OBJGROUP);
 }
 
 void DR_CageWith_render(GameObject* obj, int p2, int p3, int p4, int p5, char visible)
@@ -159,7 +159,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
             ObjHits_DisableObject(obj);
             (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
             bf31->b0 = 1;
-            nearest = (GameObject*)ObjGroup_FindNearestObject(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
+            nearest = (GameObject*)objGetNearestTypeTo(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
             if (nearest != NULL && nearest->anim.romDefNo == DRCAGEWITH_CLOUDRUNNER_OBJ)
             {
                 nearest->userData1 = 0;
@@ -186,7 +186,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
         if (state->spawnedObject != NULL)
         {
             state->spawnedObject->anim.rotZ = (s16)state->angularVel;
-            nearest = (GameObject*)ObjGroup_FindNearestObject(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
+            nearest = (GameObject*)objGetNearestTypeTo(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
             if (nearest != NULL && nearest->anim.romDefNo == DRCAGEWITH_CLOUDRUNNER_OBJ)
             {
                 nearest->userData1 = 1;
@@ -261,7 +261,7 @@ void DR_CageWith_init(GameObject* obj, DrcagewithPlacement* placement)
         state->unk18 = fz;
         state->unk1C = fz;
         state->unk20 = fz;
-        ObjGroup_AddObject((int)obj, DRCAGEWITH_OBJGROUP);
+        objAddObjectType((int)obj, DRCAGEWITH_OBJGROUP);
     }
 }
 
