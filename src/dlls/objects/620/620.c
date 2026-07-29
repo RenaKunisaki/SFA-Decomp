@@ -6,6 +6,7 @@
  * object. The placement supplies setup flags and the game bit
  * that marks the cage already opened (openedGameBit).
  */
+#include "main/dll/DR/dll_0258_drcloudrunner.h"
 #include "main/dll/DR/dll_026C_drcagewith.h"
 #include "main/vecmath.h"
 #include "main/frame_timing.h"
@@ -21,12 +22,9 @@
 #define DRCAGEWITH_CHILD_OBJ 1143
 #define DRCAGEWITH_CAGE_NOROPE_OBJ 2154
 #define DRCAGEWITH_CAGE_ROPE_OBJ 2155
-/* the caged CloudRunner itself; corroborated by the GAMEBIT_DR_RescuedCloudRunner guard. */
-#define DRCAGEWITH_CLOUDRUNNER_OBJ 1049 /* "DR_CloudRun" (DLL 600) */
-
 #define DRCAGEWITH_OBJGROUP 0x18
 
-#define DRCAGEWITH_TARGET_OBJGROUP 0xa /* nearest group-10 object (romDefNo 1049) linked as the cage target */
+#define DRCAGEWITH_TARGET_OBJGROUP 0xa /* nearest group-10 CloudRunner linked as the cage target */
 
 int DR_CageWith_func0A(GameObject* obj)
 {
@@ -160,7 +158,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
             (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
             bf31->b0 = 1;
             nearest = (GameObject*)objGetNearestTypeTo(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
-            if (nearest != NULL && nearest->anim.romDefNo == DRCAGEWITH_CLOUDRUNNER_OBJ)
+            if (nearest != NULL && nearest->anim.romDefNo == DR_CLOUDRUNNER_OBJECT_ID)
             {
                 nearest->userData1 = 0;
                 state->linkedObject = NULL;
@@ -187,7 +185,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
         {
             state->spawnedObject->anim.rotZ = (s16)state->angularVel;
             nearest = (GameObject*)objGetNearestTypeTo(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
-            if (nearest != NULL && nearest->anim.romDefNo == DRCAGEWITH_CLOUDRUNNER_OBJ)
+            if (nearest != NULL && nearest->anim.romDefNo == DR_CLOUDRUNNER_OBJECT_ID)
             {
                 nearest->userData1 = 1;
                 state->linkedObject = nearest;

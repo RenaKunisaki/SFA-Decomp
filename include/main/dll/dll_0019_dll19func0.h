@@ -5,7 +5,6 @@
 #include "main/mm.h"
 #include "main/objseq.h"
 #include "main/camera_interface.h"
-#include "main/dll/CAM/camcloudrunner_state.h"
 #include "game/objects/object_setup.h"
 #include "main/mapEvent.h"
 #include "main/dll/path_control_interface.h"

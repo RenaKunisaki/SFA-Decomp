@@ -1,160 +1,155 @@
 /*
  * DLL 83 / 0x53 - CloudRunner camera mode.
  */
-#include "main/resource.h"
-#include "main/object_transform.h"
-#include "main/dll/player_api.h"
-#include "main/dll/CAM/camcloudrunner_state.h"
-#include "main/dll/player_motion.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_0053_cameramodecloudrunner.h"
+
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "game/objects/object.h"
+#include "main/dll/DR/dll_0258_drcloudrunner.h"
+#include "main/dll/player_api.h"
+#include "main/dll/player_motion.h"
+#include "main/mm.h"
+#include "main/object_transform.h"
+#include "main/vecmath.h"
 
 CameraModeCloudRunnerState* gCameraModeCloudRunnerState;
 
 f32 gCameraModeCloudRunnerTargetHeightOffset = 15.0f;
 int gCameraModeCloudRunnerRollScale = -4;
 
-#define CLOUDRUNNER_CURVE_TAG 1049
-
-
-void CameraModeCloudRunner_copyToCurrent(void)
-{
+void CameraModeCloudRunner_copyToCurrent(void) {
 }
 
-void CameraModeCloudRunner_free(void)
-{
+void CameraModeCloudRunner_free(void) {
     mm_free(gCameraModeCloudRunnerState);
     gCameraModeCloudRunnerState = NULL;
 }
 
-void CameraModeCloudRunner_update(CameraObject* camera)
-{
+void CameraModeCloudRunner_update(CameraObject* camera) {
     GameObject* target = (GameObject*)camera->anim.targetObj;
     GameObject* focus;
-    s16 tgtYaw;
-    s16 tgtPitch;
-    f32 baseX, baseY, baseZ;
-    f32 cosYaw, sinYaw, cosPitch, sinPitch;
+    s16 targetYaw;
+    s16 targetPitch;
+    f32 focusX;
+    f32 focusY;
+    f32 focusZ;
+    f32 yawX;
+    f32 yawZ;
+    f32 pitchHorizontalScale;
+    f32 pitchVerticalScale;
     f32 radius;
-    f32 rx, ry, rs;
-    MatrixTransform mxin;
-    f32 matrix[16];
+    f32 xOffset;
+    f32 yOffset;
+    f32 horizontalRadius;
+    MatrixTransform focusTransform;
+    f32 focusMatrix[16];
 
-    Player_GetAimAngles((int)target, &tgtYaw, &tgtPitch);
+    Player_GetAimAngles((int)target, &targetYaw, &targetPitch);
     focus = playerGetFocusObject(target);
-    if (focus != NULL)
-    {
-        if (focus->anim.romDefNo == CLOUDRUNNER_CURVE_TAG)
-        {
-            mxin.x = focus->anim.worldPosX;
-            mxin.y = focus->anim.worldPosY;
-            mxin.z = focus->anim.worldPosZ;
-            mxin.rotX = focus->anim.rotX;
-            mxin.rotY = focus->anim.rotY;
-            mxin.rotZ = focus->anim.rotZ;
-            mxin.scale = 1.0f;
-            setMatrixFromObjectPos(matrix, &mxin);
-            Matrix_TransformPoint(matrix, 0.0f, 65.0f, -10.0f, &baseX, &baseY, &baseZ);
+    if (focus != NULL) {
+        if (focus->anim.romDefNo == DR_CLOUDRUNNER_OBJECT_ID) {
+            focusTransform.x = focus->anim.worldPosX;
+            focusTransform.y = focus->anim.worldPosY;
+            focusTransform.z = focus->anim.worldPosZ;
+            focusTransform.rotX = focus->anim.rotX;
+            focusTransform.rotY = focus->anim.rotY;
+            focusTransform.rotZ = focus->anim.rotZ;
+            focusTransform.scale = 1.0f;
+            setMatrixFromObjectPos(focusMatrix, &focusTransform);
+            Matrix_TransformPoint(focusMatrix, 0.0f, 65.0f, -10.0f, &focusX, &focusY, &focusZ);
+        } else {
+            focusX = target->anim.worldPosX;
+            focusY = target->anim.worldPosY + gCameraModeCloudRunnerTargetHeightOffset;
+            focusZ = target->anim.worldPosZ;
         }
-        else
-        {
-            baseX = target->anim.worldPosX;
-            baseY = target->anim.worldPosY + gCameraModeCloudRunnerTargetHeightOffset;
-            baseZ = target->anim.worldPosZ;
-        }
-    }
-    else
-    {
-        baseX = target->anim.worldPosX;
-        baseY = target->anim.worldPosY + gCameraModeCloudRunnerTargetHeightOffset;
-        baseZ = target->anim.worldPosZ;
+    } else {
+        focusX = target->anim.worldPosX;
+        focusY = target->anim.worldPosY + gCameraModeCloudRunnerTargetHeightOffset;
+        focusZ = target->anim.worldPosZ;
     }
 
-    tgtYaw = (s16)((0x8000 - target->anim.rotX) + tgtYaw);
-    tgtYaw = (s16)(tgtYaw - (u16)camera->anim.rotX);
-    if (tgtYaw > 0x8000)
-    {
-        tgtYaw = tgtYaw - 0xffff;
+    targetYaw = (s16)((0x8000 - target->anim.rotX) + targetYaw);
+    targetYaw = (s16)(targetYaw - (u16)camera->anim.rotX);
+    if (targetYaw > 0x8000) {
+        targetYaw = targetYaw - 0xffff;
     }
-    if (tgtYaw < -0x8000)
-    {
-        tgtYaw = tgtYaw + 0xffff;
+    if (targetYaw < -0x8000) {
+        targetYaw = targetYaw + 0xffff;
     }
-    camera->anim.rotX += tgtYaw;
+    camera->anim.rotX += targetYaw;
 
-    tgtPitch = (s16)(tgtPitch - (u16)camera->anim.rotY);
-    if (tgtPitch > 0x8000)
-    {
-        tgtPitch = tgtPitch - 0xffff;
+    targetPitch = (s16)(targetPitch - (u16)camera->anim.rotY);
+    if (targetPitch > 0x8000) {
+        targetPitch = targetPitch - 0xffff;
     }
-    if (tgtPitch < -0x8000)
-    {
-        tgtPitch = tgtPitch + 0xffff;
+    if (targetPitch < -0x8000) {
+        targetPitch = targetPitch + 0xffff;
     }
-    camera->anim.rotY += tgtPitch;
+    camera->anim.rotY += targetPitch;
 
     camera->anim.rotZ = (s16)(target->anim.rotZ * gCameraModeCloudRunnerRollScale);
 
-    cosYaw = mathSinf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
-    sinYaw = mathCosf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
-    cosPitch = mathCosf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
-    sinPitch = mathSinf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
+    yawX = mathSinf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
+    yawZ = mathCosf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
+    pitchHorizontalScale = mathCosf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
+    pitchVerticalScale = mathSinf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
     radius = gCameraModeCloudRunnerState->radius;
-    ry = radius * sinPitch;
-    rs = radius * cosPitch;
-    rx = rs * sinYaw;
-    rs = rs * cosYaw;
-    camera->anim.worldPosX = baseX + rx;
-    camera->anim.worldPosY = baseY + ry;
-    camera->anim.worldPosZ = baseZ + rs;
+    yOffset = radius * pitchVerticalScale;
+    horizontalRadius = radius * pitchHorizontalScale;
+    xOffset = horizontalRadius * yawZ;
+    horizontalRadius = horizontalRadius * yawX;
+    camera->anim.worldPosX = focusX + xOffset;
+    camera->anim.worldPosY = focusY + yOffset;
+    camera->anim.worldPosZ = focusZ + horizontalRadius;
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
                                    (GameObject*)camera->anim.parentAddress);
 }
 
-void CameraModeCloudRunner_init(int* camera, int radius, f32* focus)
-{
-    int* targetObj = (int*)((GameObject*)camera)->anim.targetObj;
-    if (gCameraModeCloudRunnerState == NULL)
-    {
+void CameraModeCloudRunner_init(CameraObject* camera, int fallbackRadius, CameraModeCloudRunnerInitParams* params) {
+    int* targetObj = (int*)camera->anim.targetObj;
+
+    if (gCameraModeCloudRunnerState == NULL) {
         gCameraModeCloudRunnerState = (CameraModeCloudRunnerState*)mmAlloc(sizeof(CameraModeCloudRunnerState), 15, 0);
     }
     {
         f32 computedRadius;
-        if (focus != NULL)
-        {
-            gCameraModeCloudRunnerState->focusX = focus[0];
-            gCameraModeCloudRunnerState->focusY = focus[1];
-            gCameraModeCloudRunnerState->focusZ = focus[2];
-            computedRadius = focus[3];
-        }
-        else
-        {
+        if (params != NULL) {
+            gCameraModeCloudRunnerState->focusX = params->focusX;
+            gCameraModeCloudRunnerState->focusY = params->focusY;
+            gCameraModeCloudRunnerState->focusZ = params->focusZ;
+            computedRadius = params->radius;
+        } else {
             gCameraModeCloudRunnerState->focusX = ((GameObject*)targetObj)->anim.worldPosX;
             gCameraModeCloudRunnerState->focusY = ((GameObject*)targetObj)->anim.worldPosY;
             gCameraModeCloudRunnerState->focusZ = ((GameObject*)targetObj)->anim.worldPosZ;
-            computedRadius = radius;
+            computedRadius = fallbackRadius;
         }
         gCameraModeCloudRunnerState->radius = computedRadius;
     }
-    getAngle(((GameObject*)camera)->anim.worldPosX - gCameraModeCloudRunnerState->focusX,
-             ((GameObject*)camera)->anim.worldPosZ - gCameraModeCloudRunnerState->focusZ);
+    getAngle(camera->anim.worldPosX - gCameraModeCloudRunnerState->focusX,
+             camera->anim.worldPosZ - gCameraModeCloudRunnerState->focusZ);
     {
-        GameObject* target = (GameObject*)((GameObject*)camera)->anim.targetObj;
+        GameObject* target = (GameObject*)camera->anim.targetObj;
         f32* state = (f32*)gCameraModeCloudRunnerState;
         getAngle(target->anim.worldPosX - state[0], target->anim.worldPosZ - state[2]);
     }
 }
 
-void CameraModeCloudRunner_release(void)
-{
+void CameraModeCloudRunner_release(void) {
 }
 
-void CameraModeCloudRunner_initialise(void)
-{
+void CameraModeCloudRunner_initialise(void) {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319EF8 = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
-        {(ResourceDescriptorCallback)CameraModeCloudRunner_initialise, (ResourceDescriptorCallback)CameraModeCloudRunner_release,
-        0x00000000, (ResourceDescriptorCallback)CameraModeCloudRunner_init, (ResourceDescriptorCallback)CameraModeCloudRunner_update,
-        (ResourceDescriptorCallback)CameraModeCloudRunner_free, (ResourceDescriptorCallback)CameraModeCloudRunner_copyToCurrent, 0x00000000}};
+CameraModeCloudRunnerDescriptor gCameraModeCloudRunnerDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    CameraModeCloudRunner_initialise,
+    CameraModeCloudRunner_release,
+    NULL,
+    CameraModeCloudRunner_init,
+    CameraModeCloudRunner_update,
+    CameraModeCloudRunner_free,
+    CameraModeCloudRunner_copyToCurrent,
+    NULL,
+};

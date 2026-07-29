@@ -1,6 +1,7 @@
 #include "main/camera_interface.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_004C_camDebug.h"
+#include "main/dll/dll_0053_cameramodecloudrunner.h"
 #include "main/debug.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
@@ -1547,7 +1548,6 @@ f32 objCurveInterpolate(ObjCurveKey* keys, int count, int frame);
 #define OBJSEQ_CAMMODE_COMBAT       0x49 /* dll_0049_cameramodecombat */
 #define OBJSEQ_CAMMODE_SHIPBATTLE   0x4a /* dll_004A_cameramodeshipbattle */
 #define OBJSEQ_CAMMODE_CAMDEBUG     0x4c /* dll_004C_camDebug */
-#define OBJSEQ_CAMMODE_CLOUDRUNNER  0x53 /* dll_0053_cameramodecloudrunner */
 #define OBJSEQ_CAMMODE_ARWING       0x56 /* dll_0056_cameramodearwing */
 #define OBJSEQ_CAMMODE_TITLE        0x57 /* dll_0057_cameramodetitle */
 
@@ -2969,8 +2969,8 @@ void ObjSeq_updateCamera(void)
                         ->setMode(OBJSEQ_CAMMODE_COMBAT, 1, 0, gObjSeqCamModeArgB, &gObjSeqCamModeArgC,
                                   gObjSeqCamModeArgD, 0xff);
                     break;
-                case 0x53:
-                    (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_CLOUDRUNNER, 1, 0, 0, NULL, 0, 0xff);
+                case CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID:
+                    (*gCameraInterface)->setMode(CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID, 1, 0, 0, NULL, 0, 0xff);
                     break;
                 case 0x56:
                     (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_ARWING, 1, gObjSeqCamModeArgB, 0, NULL, 0, 0);

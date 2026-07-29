@@ -3,6 +3,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "main/dll/dll_0052_cameramodeforcebehind.h"
+#include "main/dll/dll_0053_cameramodecloudrunner.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object_setup.h"
 #include "main/model_engine.h"
@@ -6354,7 +6355,8 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
         f32 z = 0.0f;
         inner->aimInputX = z;
         inner->aimInputZ = z;
-        (*gCameraInterface)->setMode(0x53, 1, sub != NULL ? 0x12 : -2, 0, NULL, 0, 0xff);
+        (*gCameraInterface)
+            ->setMode(CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID, 1, sub != NULL ? 0x12 : -2, 0, NULL, 0, 0xff);
         ObjAnim_SetCurrentMove((int)obj, 0x43e, 0.0f, 0);
         ((PlayerState*)state)->baddie.moveSpeed = 0.015f;
         inner->actionCooldown = 0.0f;
@@ -6783,7 +6785,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
             break;
         case 0x419:
             inner->moveSequence = (int)(base + 0x420);
-            (*gCameraInterface)->setMode(0x53, 1, 0, 0, NULL, 0x2d, 0xff);
+            (*gCameraInterface)->setMode(CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID, 1, 0, 0, NULL, 0x2d, 0xff);
             break;
         case 0x416:
             inner->moveSequence = (int)(base + 0x438);
@@ -17109,7 +17111,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 }
                 else if ((u32)gb != 0 && arrayIndexOf((int*)(tbl + 0x160), 4, ((GameObject*)gb)->anim.romDefNo) != -1)
                 {
-                    (*gObjectTriggerInterface)->setCamVars(0x53, 0, 0, 0);
+                    (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID, 0, 0, 0);
                 }
                 else
                 {
