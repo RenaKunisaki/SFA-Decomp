@@ -583,7 +583,7 @@ void sceneDrawTransparentPolys(void)
             {
                 if (playerIsDisguised(item.object) == 0)
                 {
-                    fn_802B4ED8(item.object, 1, 1);
+                    playerRenderFuzz(item.object, 1, 1);
                 }
             }
             else

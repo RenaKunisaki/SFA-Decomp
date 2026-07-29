@@ -69,7 +69,7 @@ void playerSetOverrideParentSlack(GameObject* player);
 void cameraGetPrevPos2(GameObject* player, f32* outX, f32* outY, f32* outZ);
 void objSetAnimStateFlags(GameObject* obj, int flag, int set);
 void playerInitFuncPtrsEntry(void);
-void fn_802B4ED8(GameObject* obj, int state, int mode);
+void playerRenderFuzz(GameObject* obj, int p2, int fuzzPass);
 void fn_802B4DE0(GameObject* obj, int flag);
 void playerUpdateWhileTimeStopped(int obj);
 void objLoadPlayerFromSave(int obj);

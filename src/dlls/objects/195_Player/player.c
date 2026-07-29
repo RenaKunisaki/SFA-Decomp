@@ -17565,7 +17565,7 @@ void fn_802B4DE0(GameObject* obj, int p2)
 }
 
 
-void fn_802B4ED8(GameObject* obj, int p2, int mode)
+void playerRenderFuzz(GameObject* obj, int p2, int fuzzPass)
 {
     PlayerState* inner = obj->extra;
     f32 sx, sy, sz;
@@ -17611,7 +17611,7 @@ void fn_802B4ED8(GameObject* obj, int p2, int mode)
         obj->anim.modelState->overrideWorldPosZ = sz;
     }
     obj->anim.localPosY = obj->anim.localPosY + inner->sinkOffsetY;
-    m = (u32)(mode & 0xff);
+    m = (u32)(fuzzPass & 0xff);
     if (m == 1)
     {
         objRenderFuzz((int*)obj);
