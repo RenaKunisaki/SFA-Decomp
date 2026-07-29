@@ -1315,8 +1315,6 @@ void trackIntersect(void)
     int sourceOffset;
     int blockIndex;
     int rowOffset;
-    int orderOffset;
-    int orderIndex;
     int sourceIndex;
     int endpoint;
     int gridX, gridZ;
@@ -1522,12 +1520,10 @@ void trackIntersect(void)
     }
 
     previousType = -1;
-    orderIndex = 0;
-    orderOffset = orderIndex;
-    for (; orderIndex < gIntersectLineCount; orderOffset += 2, orderIndex++)
+    for (i = 0, lineOffset = i; i < gIntersectLineCount; lineOffset += 2, i++)
     {
         segmentType =
-            (s16)((s8) * (u8*)(lbl_803DCF34 + *(s16*)(gIntersectLineIndexTable + orderOffset) * 0x10 + 3) &
+            (s16)((s8) * (u8*)(lbl_803DCF34 + *(s16*)(gIntersectLineIndexTable + lineOffset) * 0x10 + 3) &
                   0x3f);
         if (segmentType >= 0x14)
         {
@@ -1536,7 +1532,7 @@ void trackIntersect(void)
         }
         if (previousType != segmentType)
         {
-            u16 v = orderIndex;
+            u16 v = i;
             int ti = segmentType * 2;
             gIntersectSegmentTypeTable[ti] = v;
             if (previousType != -1)
