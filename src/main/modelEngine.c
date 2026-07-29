@@ -429,6 +429,7 @@
 #include "main/dll/dll_00AC_projmagicstream.h"
 #include "main/dll/dll_00AD_projmagicemmit1.h"
 #include "main/dll/dll_00AE_projroombeam.h"
+#include "main/dll/dll_00AF_projlightning1.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -575,7 +576,7 @@ extern ResourceDescriptor Effect9_funcs, Effect10_funcs, Effect11_funcs, Effect1
 extern ResourceDescriptor Effect17_funcs, Effect18_funcs, Effect19_funcs, Effect20_funcs, lbl_803112E8, lbl_80311340,
     lbl_80311378, lbl_80311438;
 extern ResourceDescriptor lbl_803114B0, lbl_803114D8, lbl_803115F8, dll_15_funcs, lbl_80311900, lbl_80311BE0;
-extern ResourceDescriptor projlightning1_funcs, lbl_803194F8, lbl_80319548;
+extern ResourceDescriptor lbl_803194F8, lbl_80319548;
 extern ResourceDescriptor lbl_80319598, lbl_803195E8, lbl_80319638, lbl_80319688, lbl_803196D8, projenergise2_funcs,
     lbl_80319768, lbl_803197B0;
 extern ResourceDescriptor lbl_803197F8, lbl_80319840, projquakeshock_funcs, lbl_803198D8, projtesla_funcs, lbl_80319968,
@@ -1384,7 +1385,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gProjmagicstreamResourceDescriptor,
     (ResourceDescriptor*)&gProjmagicemmit1ResourceDescriptor,
     (ResourceDescriptor*)&gProjroombeamResourceDescriptor,
-    &projlightning1_funcs,
+    (ResourceDescriptor*)&gProjlightning1ResourceDescriptor,
     &lbl_803194F8,
     &lbl_80319548,
     &lbl_80319768,
