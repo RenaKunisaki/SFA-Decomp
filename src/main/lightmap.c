@@ -80,7 +80,7 @@ extern f32 lbl_803DEBCC;
 extern f32 lbl_803DEBDC;
 extern f32 lbl_803DEC00;
 extern f32 gLightmapDegToBamScale;
-extern F32Pair lbl_803DEC08;
+extern f32 lbl_803DEC08;
 extern f32 lbl_803DEC0C;
 extern FrustumPlane gViewFrustumPlanes[];
 
@@ -175,7 +175,7 @@ void updateVisibleGeometry(void)
     tt = fcos16HighPrecision(fov);
     ratio = fsin16HighPrecision(fov) / tt;
     ratio2 = ratio * ratio;
-    ff = lbl_803DEC08.lo;
+    ff = lbl_803DEC08;
     tt = ff * ratio2;
     tt = atanf(sqrtf(ff * tt + ratio2));
     ff = mathSinfHighPrecision(tt);
