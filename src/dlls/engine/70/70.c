@@ -1,33 +1,29 @@
 /*
  * DLL 70 / 0x46 - debug camera mode.
  */
-#include "main/camera_interface.h"
-#include "main/object_transform.h"
-#include "main/dll/CAM/camdebug_state.h"
-#include "main/dll/CAM/camstatic_state.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_0046_cameramodedebug.h"
-#include "main/pad.h"
-#include "main/resource.h"
+
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/pad.h"
+#include "game/objects/object.h"
+#include "main/camera_interface.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
+#include "main/mm.h"
+#include "main/object_transform.h"
+#include "main/pad.h"
 
-CameraModeDebugState* gCamDebugState;
+CameraModeDebugState* gCameraModeDebugState;
 
-#define CAMCONTROL_ACTION_DEFAULT 0x42
-
-void CameraModeDebug_copyToCurrent_nop(void)
-{
+void CameraModeDebug_copyToCurrent_nop(void) {
 }
 
-void CameraModeDebug_free(void)
-{
-    mm_free(gCamDebugState);
-    gCamDebugState = 0;
+void CameraModeDebug_free(void) {
+    mm_free(gCameraModeDebugState);
+    gCameraModeDebugState = NULL;
 }
 
-void CameraModeDebug_update(CameraObject* cam)
-{
-    GameObject* state;
+void CameraModeDebug_update(CameraObject* camera) {
+    GameObject* target;
     u16 held;
     f32 move;
     f32 absMove;
@@ -36,92 +32,85 @@ void CameraModeDebug_update(CameraObject* cam)
     f32 radius;
 
     move = 0.0f;
-    state = (GameObject*)cam->anim.targetObj;
+    target = (GameObject*)camera->anim.targetObj;
     held = getButtonsHeld(0);
-    if (((u16)getButtonsJustPressed(0) & PAD_BUTTON_RIGHT) != 0)
-    {
+    if (((u16)getButtonsJustPressed(0) & PAD_BUTTON_RIGHT) != 0) {
         (*gCameraInterface)->setMode(CAMCONTROL_ACTION_DEFAULT, 0, 1, 0, NULL, 0, 0xff);
         return;
     }
-    if ((held & PAD_BUTTON_UP) != 0)
-    {
-        move = -0.04f * gCamDebugState->orbitRadius;
+    if ((held & PAD_BUTTON_UP) != 0) {
+        move = -0.04f * gCameraModeDebugState->orbitRadius;
     }
-    if ((held & PAD_BUTTON_DOWN) != 0)
-    {
-        move = 0.04f * gCamDebugState->orbitRadius;
+    if ((held & PAD_BUTTON_DOWN) != 0) {
+        move = 0.04f * gCameraModeDebugState->orbitRadius;
     }
     absMove = (move < 0.0f) ? -move : move;
     {
-        CameraModeDebugState* st = gCamDebugState;
-        f32 vel = st->radiusVelocity;
+        CameraModeDebugState* state = gCameraModeDebugState;
+        f32 vel = state->radiusVelocity;
         absVel = (vel < 0.0f) ? -vel : vel;
         factor = (absVel > absMove) ? 0.3f : 0.08f;
-        st->radiusVelocity = factor * (move - vel) + st->radiusVelocity;
+        state->radiusVelocity = factor * (move - vel) + state->radiusVelocity;
     }
-    gCamDebugState->orbitRadius = gCamDebugState->orbitRadius + gCamDebugState->radiusVelocity;
-    if (gCamDebugState->orbitRadius < 20.0f)
-    {
-        gCamDebugState->orbitRadius = 20.0f;
+    gCameraModeDebugState->orbitRadius = gCameraModeDebugState->orbitRadius + gCameraModeDebugState->radiusVelocity;
+    if (gCameraModeDebugState->orbitRadius < 20.0f) {
+        gCameraModeDebugState->orbitRadius = 20.0f;
     }
-    if (gCamDebugState->orbitRadius > 2000.0f)
-    {
-        gCamDebugState->orbitRadius = 2000.0f;
+    if (gCameraModeDebugState->orbitRadius > 2000.0f) {
+        gCameraModeDebugState->orbitRadius = 2000.0f;
     }
     {
         u16 dx = (u16)(padGetCX(0) * 3);
         u16 dy = (u16)(padGetCY(0) * 3);
-        cam->anim.rotX = (s16)(cam->anim.rotX - dx);
-        cam->anim.rotY = (s16)(cam->anim.rotY + dy);
+        camera->anim.rotX = (s16)(camera->anim.rotX - dx);
+        camera->anim.rotY = (s16)(camera->anim.rotY + dy);
     }
     {
-        f32 cosYaw = mathSinf(3.1415927f * (f32)(s32)(cam->anim.rotX - 0x4000) / 32768.0f);
-        f32 sinYaw = mathCosf(3.1415927f * (f32)(s32)(cam->anim.rotX - 0x4000) / 32768.0f);
-        f32 cosPitch = mathCosf(3.1415927f * (f32)(s32)cam->anim.rotY / 32768.0f);
-        f32 sinPitch = mathSinf(3.1415927f * (f32)(s32)cam->anim.rotY / 32768.0f);
+        f32 cosYaw = mathSinf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
+        f32 sinYaw = mathCosf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
+        f32 cosPitch = mathCosf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
+        f32 sinPitch = mathSinf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
         f32 vy, h, px;
-        radius = gCamDebugState->orbitRadius;
+        radius = gCameraModeDebugState->orbitRadius;
         vy = radius * sinPitch;
         h = radius * cosPitch;
         px = h * sinYaw;
         h = h * cosYaw;
-        cam->anim.worldPosX = state->anim.worldPosX + px;
+        camera->anim.worldPosX = target->anim.worldPosX + px;
         {
-            f32 base28 = 20.0f + state->anim.worldPosY;
-            cam->anim.worldPosY = base28 + vy;
+            f32 base28 = 20.0f + target->anim.worldPosY;
+            camera->anim.worldPosY = base28 + vy;
         }
-        cam->anim.worldPosZ = state->anim.worldPosZ + h;
+        camera->anim.worldPosZ = target->anim.worldPosZ + h;
     }
-    Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ, &cam->anim.localPosX,
-                                   &cam->anim.localPosY, &cam->anim.localPosZ, (GameObject*)cam->anim.parentAddress);
+    Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
+                                   &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
+                                   (GameObject*)camera->anim.parent);
 }
 
-void CameraModeDebug_init(void)
-{
-    if (gCamDebugState == NULL)
-    {
-        gCamDebugState = (CameraModeDebugState*)mmAlloc(sizeof(CameraModeDebugState), 0xf, 0);
+void CameraModeDebug_init(void) {
+    if (gCameraModeDebugState == NULL) {
+        gCameraModeDebugState = (CameraModeDebugState*)mmAlloc(sizeof(CameraModeDebugState), 0xf, 0);
     }
-    gCamDebugState->orbitRadius = 50.0f;
-    gCamDebugState->radiusVelocity = 0.0f;
+    gCameraModeDebugState->orbitRadius = 50.0f;
+    gCameraModeDebugState->radiusVelocity = 0.0f;
     return;
 }
 
-void CameraModeDebug_release_nop(void)
-{
+void CameraModeDebug_release_nop(void) {
 }
 
-void CameraModeDebug_initialise_nop(void)
-{
+void CameraModeDebug_initialise_nop(void) {
 }
 
-ResourceDescriptorCallbacks8 gCameraModeDebugDescriptor = {
+CameraModeDebugDescriptor gCameraModeDebugDescriptor = {
     {0x00000000, 0x00000000, 0x00000000, 0x00060000},
-    {(ResourceDescriptorCallback)CameraModeDebug_initialise_nop,
-     (ResourceDescriptorCallback)CameraModeDebug_release_nop,
-     0x00000000,
-     (ResourceDescriptorCallback)CameraModeDebug_init,
-     (ResourceDescriptorCallback)CameraModeDebug_update,
-     (ResourceDescriptorCallback)CameraModeDebug_free,
-     (ResourceDescriptorCallback)CameraModeDebug_copyToCurrent_nop,
-     0x00000000}};
+    CameraModeDebug_initialise_nop,
+    CameraModeDebug_release_nop,
+    NULL,
+    CameraModeDebug_init,
+    CameraModeDebug_update,
+    CameraModeDebug_free,
+    CameraModeDebug_copyToCurrent_nop,
+    NULL,
+};
