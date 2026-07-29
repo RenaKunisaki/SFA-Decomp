@@ -945,7 +945,7 @@ void objRenderAttachment(u8* obj, int* p2)
     }
 }
 
-void objFn_8003dc50(u8* obj, u8* model)
+void objSetupLightChannels(u8* model, u8* obj)
 {
     int t2;
     int t10;
@@ -960,7 +960,7 @@ void objFn_8003dc50(u8* obj, u8* model)
 
     count = 0;
     lbl_803DCC5C = 0;
-    b = ((ModelFileHeader*)obj)->flags24;
+    b = ((ModelFileHeader*)model)->flags24;
     t2 = b & 2;
     if (t2)
     {
@@ -972,7 +972,7 @@ void objFn_8003dc50(u8* obj, u8* model)
     }
     t10 = b & 0x10;
     chan = t10 ? 4 : 0;
-    if (((ModelFileHeader*)obj)->shaderFlags & 2)
+    if (((ModelFileHeader*)model)->shaderFlags & 2)
     {
         if (t2 || t10)
         {
@@ -994,7 +994,7 @@ void objFn_8003dc50(u8* obj, u8* model)
         modelLightChannels_reset(0);
         ch = chan;
         modelLightChannel_configure(ch, 0, en2);
-        f = ((ModelFileHeader*)obj)->shaderFlags;
+        f = ((ModelFileHeader*)model)->shaderFlags;
         if (!(f & 9))
         {
             int mode;
@@ -1007,11 +1007,11 @@ void objFn_8003dc50(u8* obj, u8* model)
             {
                 int l;
                 mode = 6;
-                l = OBJPRINT_MODEL_DEF(model)->modelLightMaskIndex;
+                l = OBJPRINT_MODEL_DEF(obj)->modelLightMaskIndex;
                 if (l == 0)
                 {
-                    skyApplyLightSlot(((GameObject*)model)->lightColorSlot);
-                    skyGetAmbientColor(((GameObject*)model)->lightColorSlot, &c.r, &c.g, &c.b);
+                    skyApplyLightSlot(((GameObject*)obj)->lightColorSlot);
+                    skyGetAmbientColor(((GameObject*)obj)->lightColorSlot, &c.r, &c.g, &c.b);
                 }
                 else
                 {
@@ -1021,10 +1021,10 @@ void objFn_8003dc50(u8* obj, u8* model)
                 GXSetChanAmbColor(ch, c);
             }
             {
-                u32 nl = (*(u8**)(model + 0x50))[0x8c];
+                u32 nl = (*(u8**)(obj + 0x50))[0x8c];
                 if (nl != 0)
                 {
-                    modelLightStruct_selectObjectLights((GameObject*)model, larr, nl, &count, mode);
+                    modelLightStruct_selectObjectLights((GameObject*)obj, larr, nl, &count, mode);
                 }
             }
             if (count == 0)
@@ -1042,7 +1042,7 @@ void objFn_8003dc50(u8* obj, u8* model)
                 p = larr;
                 for (; i < count; i++)
                 {
-                    modelLightStruct_loadChannelLight(ch, *p, (GameObject*)model);
+                    modelLightStruct_loadChannelLight(ch, *p, (GameObject*)obj);
                     p++;
                 }
             }
@@ -1059,11 +1059,11 @@ void objFn_8003dc50(u8* obj, u8* model)
             }
         }
         {
-            u32 nf = ((ModelFileHeader*)obj)->texMtxCount;
+            u32 nf = ((ModelFileHeader*)model)->texMtxCount;
             if (nf != 0)
             {
-                modelLightStruct_selectObjectLights((GameObject*)model, &lbl_803DCC64, nf, &lbl_803DCC5C, 8);
-                if ((OBJPRINT_MODEL_DEF(model)->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW) || gObjShadowNear)
+                modelLightStruct_selectObjectLights((GameObject*)obj, &lbl_803DCC64, nf, &lbl_803DCC5C, 8);
+                if ((OBJPRINT_MODEL_DEF(obj)->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW) || gObjShadowNear)
                 {
                     lbl_803DCC5C = 0;
                 }
@@ -1093,7 +1093,7 @@ void objFn_8003dc50(u8* obj, u8* model)
                             *sp = 3;
                         }
                         modelLightChannel_configure(*sp, 2, 0);
-                        modelLightStruct_loadChannelLight(*sp, *lp, (GameObject*)model);
+                        modelLightStruct_loadChannelLight(*sp, *lp, (GameObject*)obj);
                         GXSetChanAmbColor(*sp, *(GXColor*)&lbl_803DB470);
                         GXSetChanMatColor(*sp, *(GXColor*)&lbl_803DB468);
                         lp++;
@@ -1104,7 +1104,7 @@ void objFn_8003dc50(u8* obj, u8* model)
         }
         modelLightChannels_applyGXControls();
         {
-            u8 b5f = OBJPRINT_MODEL_DEF(model)->renderFlags;
+            u8 b5f = OBJPRINT_MODEL_DEF(obj)->renderFlags;
             if ((b5f & 4) || gObjShadowNear)
             {
                 lbl_803DCC5C = 2;
@@ -1389,7 +1389,7 @@ extern f32 lbl_803DEA6C;
 extern u8 gObjGxPosMtxIdTable[12];
 
 
-void objFn_8003dc50(u8* obj, u8* model);
+void objSetupLightChannels(u8* model, u8* obj);
 void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx);
 void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8 nrm, u8 tex, u8 skip);
 void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
@@ -2952,7 +2952,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     else
     {
         Camera_RebuildProjectionMatrix();
-        objFn_8003dc50(m, (u8*)obj);
+        objSetupLightChannels(m, (u8*)obj);
         if (((ModelFileHeader*)m)->flags & 0x100)
         {
             GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&lbl_803DB468);
