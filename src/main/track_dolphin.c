@@ -3515,7 +3515,7 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 queryMa
 
                 desc->firstTriangle = (s16)((cur - (int)gTrackTriangleBuffer) / 0x4c);
                 desc->object = resetObj;
-                cur = trackBuildModelTriangles(cur, desc, (int)model, 1.0f, f31, f29, f27, f30, f28, f26, a);
+                cur = trackBuildModelTriangles(cur, desc, (int)model, 1.0f, f31, f29, f27, f30, f28, f26, queryMask);
                 desc++;
                 if ((u32)cur >= gTrackTriangleBufferEnd)
                     break;
