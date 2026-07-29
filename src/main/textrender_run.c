@@ -621,7 +621,7 @@ void gameTextInitFn_8001a234(void)
     gGameTextShadowOffsetY = 5;
     gGameTextShadowEnabled = 1;
     lbl_803DC980 = 0;
-    gameTextLoadGraphicsFn_8001a918();
+    gameTextBuildSystemFontAtlas();
     curGameTextDir = 3;
     gGameTextStringStore = (void*)mmCreateMemoryStore(0x800);
 }
@@ -797,7 +797,7 @@ void gameTextLoadForCurMap(int sourceId)
     testAndSet_onlyUseHeap3(oldHeap);
 }
 
-void gameTextLoadGraphicsFn_8001a918(void)
+void gameTextBuildSystemFontAtlas(void)
 {
     int wbytes;
     u8* base30;
