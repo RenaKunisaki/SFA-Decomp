@@ -71,7 +71,7 @@
 #include "dolphin/os.h"
 #include "string.h"
 
-extern s32 lbl_803DCC48;
+extern s32 gModelMtxCacheState;
 extern s32 gObjFuzzLayerIndex;
 extern u8 lbl_803DCC3E;
 extern u32 lbl_803DB468;
@@ -194,7 +194,7 @@ void modelBuildPosNrmMtxs(u8* def, int* model, f32* mtxA, f32* mtxB)
         mid += 3;
         dstB += 3;
     }
-    lbl_803DCC48 = 2;
+    gModelMtxCacheState = 2;
 }
 
 void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model)
@@ -277,11 +277,11 @@ void modelInitMtxs(ModelFileHeader* def, ObjModel* model)
         {
             copyToCache((void*)cache, (void*)mtx, rem);
         }
-        lbl_803DCC48 = 1;
+        gModelMtxCacheState = 1;
     }
     else
     {
-        lbl_803DCC48 = 3;
+        gModelMtxCacheState = 3;
     }
 }
 
@@ -740,7 +740,7 @@ u8 gObjOverrideColor[3];
 GXColor gObjCurChanColor;
 f32 gObjShadowDist;
 u8 gObjShadowNear;
-s32 lbl_803DCC48;
+s32 gModelMtxCacheState;
 s32 gObjFuzzLayerIndex;
 s32 gObjFuzzStep;
 u8 lbl_803DCC3E;
@@ -1117,7 +1117,7 @@ void objFn_8003dc50(u8* obj, u8* model)
     }
 }
 
-extern s32 lbl_803DCC48;
+extern s32 gModelMtxCacheState;
 
 #include "main/objprint_dolphin_internal.h"
 
@@ -1127,7 +1127,7 @@ extern u8 gObjGxPosMtxIdTable[12];
 void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
 {
     char* cache = (char*)getCache();
-    if (lbl_803DCC48 == 1)
+    if (gModelMtxCacheState == 1)
     {
         char* c2 = (char*)getCache();
         char* src;
@@ -1143,7 +1143,7 @@ void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
             src += 0x40;
             dst += 0x30;
         }
-        lbl_803DCC48 = 2;
+        gModelMtxCacheState = 2;
     }
     {
         u8* tbl[1];
@@ -1178,7 +1178,7 @@ void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
                 bs->pos = pos + 8;
                 idx = (w >> (pos & 7)) & 0xff;
             }
-            if (lbl_803DCC48 == 2)
+            if (gModelMtxCacheState == 2)
             {
                 GXLoadPosMtxImm((const f32 (*)[4])(cache + idx * 0x30), *tbl[0]);
             }
@@ -1198,7 +1198,7 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
     char* cache;
     tbl[0] = gObjGxPosMtxIdTable;
     cache = (char*)getCache();
-    if (lbl_803DCC48 == 1)
+    if (gModelMtxCacheState == 1)
     {
         if (skip == 0)
         {
@@ -1219,7 +1219,7 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
                 hdr += 0x40;
                 dst += 0x30;
             }
-            lbl_803DCC48 = 2;
+            gModelMtxCacheState = 2;
         }
     }
     {
@@ -1259,7 +1259,7 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
                 bs->pos = pos + 8;
                 idx = (w >> (pos & 7)) & 0xff;
             }
-            if (lbl_803DCC48 == 2)
+            if (gModelMtxCacheState == 2)
             {
                 u8* pm = (u8*)(cache + idx * 0x30);
                 u8* nm = pm + 0x12c0;
@@ -1299,7 +1299,7 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
     }
 }
 
-extern s32 lbl_803DCC48;
+extern s32 gModelMtxCacheState;
 extern s32 gObjFuzzLayerIndex;
 extern u8 lbl_803DCC3E;
 extern u32 lbl_803DB468;
@@ -2243,14 +2243,14 @@ void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
             }
             else
             {
-                lbl_803DCC48 = 1;
+                gModelMtxCacheState = 1;
             }
         }
         else
         {
             ObjModel_ToggleMatrixBuffer((ObjModel*)am);
             PSMTXCopy((MtxPtr)gObjJointMtxTemp, (MtxPtr)(f32*)ObjModel_GetJointMatrix((u8*)am, 0));
-            lbl_803DCC48 = 3;
+            gModelMtxCacheState = 3;
         }
         {
             u8* att = *(u8**)&((GameObject*)obj)->anim.hitReactState;
