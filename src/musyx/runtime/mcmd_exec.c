@@ -271,7 +271,7 @@ static inline void varSet(McmdVoiceState* state, u8 useExCtrl, u8 index, s16 val
 }
 
 /*
- * Perform 16-bit register arithmetic with saturation.
+ * Write a synth register, routing high registers to the EX controller bank.
  */
 void varSet32(McmdVoiceState* state, u32 useExCtrl, u8 index, s32 value)
 {
@@ -306,10 +306,6 @@ static inline u32 ExecuteTrap(McmdVoiceState* sv, u8 trapType)
 }
 
 /*
- * Queue a message onto the voice owning a vid handle, resuming its
- * message-trap macro stream when armed.
- */
-/*
  * Key off one voice identified by a full voice handle.
  */
 static inline int SendSingleKeyOff(u32 voiceid)
@@ -328,6 +324,10 @@ static inline int SendSingleKeyOff(u32 voiceid)
     return -1;
 }
 
+/*
+ * Queue a message onto the voice owning a vid handle, resuming its
+ * message-trap macro stream when armed.
+ */
 static inline u32 macPostMessage(u32 vid, u32 mesg)
 {
     McmdVoiceState* sv;
@@ -579,7 +579,8 @@ static inline void mcmdSetupLFO(McmdVoiceState* svoice, McmdCommandArgs* cstep)
 }
 
 /*
- * Run the active macro command stream for one voice (MusyX macHandleActive).
+ * Assign a voice to a key group, evicting existing group members according to
+ * the command's kill mode.
  */
 void mcmdSetKeyGroup(McmdVoiceState* state, McmdCommandArgs* args)
 {
@@ -613,7 +614,7 @@ void mcmdSetKeyGroup(McmdVoiceState* state, McmdCommandArgs* args)
 }
 
 /*
- * Write a synth register, routing high registers to the EX controller bank.
+ * Run the active macro command stream for one voice.
  */
 void macHandleActive(McmdVoiceState* sv)
 {
@@ -1403,10 +1404,6 @@ void TimeQueueAdd(McmdVoiceState* state)
 /*
  * Remove a voice from the time queue and clear its scheduled wake time.
  */
-
-/*
- * Move a yielded voice back onto the active voice list.
- */
 void TimeQueueRemove(McmdVoiceState* sv, u32 disableUpdate)
 {
     if (*(u64*)&sv->wakeTimeHi != 0)
@@ -1437,7 +1434,7 @@ void TimeQueueRemove(McmdVoiceState* sv, u32 disableUpdate)
 }
 
 /*
- * Detach a voice from the active list and optionally stop it cold.
+ * Move a yielded voice back onto the active voice list.
  */
 void macMakeActive(McmdVoiceState* sv)
 {
@@ -1476,7 +1473,8 @@ void macMakeActive(McmdVoiceState* sv)
 }
 
 /*
- * Allocate a voice and start a macro on it (MusyX macStart).
+ * Detach a voice from the active list and move it to the requested scheduler
+ * state.
  */
 void macMakeInactive(McmdVoiceState* sv, int newState)
 {
@@ -1529,7 +1527,7 @@ void macMakeInactive(McmdVoiceState* sv, int newState)
 }
 
 /*
- * Reset the macro scheduler state and every voice slot.
+ * Allocate a voice and start a macro on it.
  */
 u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 panning, u8 midi, u8 midiSet,
              u8 section, u16 step, u16 trackid, u8 new_vid, u8 vGroup, u8 studio, u32 itd)
@@ -1652,6 +1650,10 @@ u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, 
 
     return 0xffffffff;
 }
+
+/*
+ * Reset the macro scheduler state and every voice slot.
+ */
 void macInit(void)
 {
     u32 i;
