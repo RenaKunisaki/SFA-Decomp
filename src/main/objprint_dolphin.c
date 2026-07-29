@@ -1785,7 +1785,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
     }
     return ok;
 }
-u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
+u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
 {
     int* op;
     u32* refs;
@@ -2999,7 +2999,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
             u32 idx;
             if ((passMask == 0 || passMask == 4 || passMask == 8) && lbl_803DCC20 == 0)
             {
-                idx = objRenderFn_8003edf4((u8*)obj, m, am, &bs);
+                idx = objSetupRenderOpGxState((u8*)obj, m, am, &bs);
                 op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
             }
             else
@@ -3895,7 +3895,7 @@ void animCurvReadCb(s32 result, DVDFileInfo* fileInfo)
     }
 }
 
-u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs);
+u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs);
 
 
 void animCurvTabReadCb(s32 result, DVDFileInfo* fileInfo)
