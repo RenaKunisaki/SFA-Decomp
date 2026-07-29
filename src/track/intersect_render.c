@@ -64,9 +64,9 @@ extern f32 lbl_803DB6B4;
 extern f32 lbl_803DB6B8;
 extern GXColor lbl_803DB6BC;
 extern f32 lbl_803DB6C0;
-extern f32 lbl_803DB6C4;
-extern f32 lbl_803DB6C8;
-extern f32 lbl_803DB6CC;
+extern f32 gDistortionTexCoordScale;
+extern f32 gDistortionAlphaRadius;
+extern f32 gDistortionIndMtxRadius;
 extern f32 lbl_803DEEE4;
 extern GXColor lbl_803DB6D0;
 extern GXColor lbl_803DB6D4;
@@ -925,7 +925,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
 
     PSMTXTrans(mtx_a0, 0.5f * (-proj5) - 0.5f, 0.5f * proj4 - 0.5f, 0.0f);
     {
-        f32 s = lbl_803DB6C4;
+        f32 s = gDistortionTexCoordScale;
         PSMTXScale(mtx_70, s / proj2, s / proj1, 0.0f);
     }
     PSMTXConcat(mtx_70, mtx_a0, mtx_d0);
@@ -935,7 +935,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 
     {
-        f32 r2 = lbl_803DB6C8 / radius;
+        f32 r2 = gDistortionAlphaRadius / radius;
         f32 sr;
         sr = (r2 > 0.0f) ? distortSqrtf(r2) : r2;
         if (sr > 1.0f)
@@ -961,7 +961,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     selectTexture(handle3, 3);
 
     {
-        f32 ind_s = lbl_803DB6CC / radius;
+        f32 ind_s = gDistortionIndMtxRadius / radius;
         if (ind_s > 0.5f)
             ind_s = 0.5f;
         indMtx[0] = ind_s;
