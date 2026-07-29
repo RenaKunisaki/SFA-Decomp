@@ -312,7 +312,7 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
         eventId = animUpdate->eventIds[eventIndex];
         switch (eventId) {
         case DIMBOSSTONSIL_ANIM_EVENT_START_STEAM:
-            skyFn_80089710(7, 1, 0);
+            skySetLightsEnabled(7, 1, 0);
             skySetLightDirection(7, -0.1f, -0.1f, 1.0f);
             skySetBaseColor(7, 0xff, 0xb4, 0xb4, 0x7f, 0x28);
             getEnvfxAct(obj, obj, DIMBOSSTONSIL_STEAM_ENVFX, 0);

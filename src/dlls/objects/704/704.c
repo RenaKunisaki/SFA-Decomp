@@ -905,7 +905,7 @@ void TitleScreen_update(GameObject* obj)
         if (gTitleScreenSetupDone == 0)
         {
             getEnvfxAct(0, 0, FRONT_ENVFX_TITLE, 0);
-            skyFn_80089710(7, 1, 0);
+            skySetLightsEnabled(7, 1, 0);
             skySetBaseColor(7, 0x4b, 0x64, 0x78, 0, 0);
             skySetLightDirection(7, 1.0f, -1.0f, -1.0f);
             (*gCameraInterface)->setFocus(obj, 0);

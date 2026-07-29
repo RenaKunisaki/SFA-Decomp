@@ -265,7 +265,7 @@ void Rcp_UpdateDistortionTextures(void)
     GXSetChanAmbColor(GX_COLOR0A0, gRcpDistortAmbColor);
     GXSetChanAmbColor(GX_COLOR1A1, gRcpDistortAmbColor);
     GXSetTexCopyDst(0x20, 0x20, GX_TF_RGBA8, GX_FALSE);
-    modelTextureFn_80089970(2);
+    skyApplyLightSlot(2);
     i = 0;
     slots[0] = (u8*)gRcpDistortSlots;
     for (; i < 6; i++)
@@ -318,7 +318,7 @@ void Rcp_UpdateDistortionTextures(void)
             ((RcpDistortSlot*)slots[0])[i].mode == 0 && gRcpDistortGroup == ((RcpDistortSlot*)slots[0])[i].group)
         {
             model[0] = ((RcpDistortSlot*)slots[0])[i].model;
-            modelTextureFn_80089970(2 - (i - 3));
+            skyApplyLightSlot(2 - (i - 3));
             gxLoadObjectLights((GameObject*)model[0], lights);
             lightGetColor(0, &outColor.r, &outColor.g, &outColor.b);
             GXSetChanAmbColor(GX_COLOR0, outColor);

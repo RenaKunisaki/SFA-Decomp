@@ -958,7 +958,7 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
     if (((Dim2IcicleWarpFlags*)&topState->steamFlags)->pending) {
         getEnvfxAct(0, 0, DIM2ICICLE_ENVFX_A, 0);
         getEnvfxAct(0, 0, DIM2ICICLE_ENVFX_B, 0);
-        skyFn_80089710(7, 1, 0);
+        skySetLightsEnabled(7, 1, 0);
         skySetLightDirection(7, 0.2f, -0.3f, -1.0f);
         skySetBaseColor(7, 0xa0, 0xa0, 0xff, 0x7f, 0x28);
         ((Dim2IcicleWarpFlags*)&topState->steamFlags)->pending = 0;
@@ -1748,7 +1748,7 @@ void DIMboss_update(GameObject* obj) {
                 if (topState->steamFlags.bits.sfxPending != 0) {
                     getEnvfxAct(0, 0, DIMBOSS_ENVFX_A, 0);
                     getEnvfxAct(0, 0, DIMBOSS_ENVFX_B, 0);
-                    skyFn_80089710(7, 1, 0);
+                    skySetLightsEnabled(7, 1, 0);
                     skySetLightDirection(7, 0.2f, -0.3f, -1.0f);
                     skySetBaseColor(7, 0xa0, 0xa0, 0xff, 0x7f, 0x28);
                     topState->steamFlags.bits.sfxPending = 0;

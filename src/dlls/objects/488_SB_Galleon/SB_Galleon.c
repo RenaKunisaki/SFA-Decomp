@@ -884,7 +884,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
     setDrawLights(0);
     skySetOverrideLightColorEnabled(1);
     skySetOverrideLightColor(0x29, 0x4b, 0xa9);
-    skyFn_80089710(SBGALLEON_SKY_LIGHT_SLOT, 1, 0);
+    skySetLightsEnabled(SBGALLEON_SKY_LIGHT_SLOT, 1, 0);
     if (lightningGetRemainingFraction() > 0.0f) {
         gSbGalleonSkyBlendHold = 1.0f;
         gSbGalleonSkyBlendFactor = 1.0f;

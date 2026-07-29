@@ -861,7 +861,7 @@ void skySetBaseColor(int flags, u8 red, u8 green, u8 blue, u8 ambientScale, u8 l
     }
 }
 
-void skyFn_80089710(int flags, u8 enabled, int startComplete)
+void skySetLightsEnabled(int flags, u8 enabled, int startComplete)
 {
     u8* sky;
     u32 flagBit;
@@ -966,7 +966,7 @@ void getAmbientColor(int slot, u8* red, u8* green, u8* blue)
     *blue = gSkyState[offset + 0x7a];
 }
 
-void textureColorFn_8008991c(int slot, u8* red, u8* green, u8* blue)
+void skyGetAmbientColor(int slot, u8* red, u8* green, u8* blue)
 {
     u8* sky;
     int offset;
@@ -986,7 +986,7 @@ void textureColorFn_8008991c(int slot, u8* red, u8* green, u8* blue)
     *blue = gSkyState[offset + 0x8a];
 }
 
-void modelTextureFn_80089970(int slot)
+void skyApplyLightSlot(int slot)
 {
     int offset;
     u8* sky;
@@ -1135,7 +1135,7 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
     gSkyState[slot * 0xa4 + 0xc0] = blendAlpha;
 }
 
-void skyFn_8008a04c(void)
+void skyUpdateLightingFromTimeOfDay(void)
 {
     int part;
     int red;
@@ -1284,7 +1284,7 @@ void skyFn_8008a04c(void)
     }
 }
 
-void skyFn_8008a500(void)
+void skyUpdateShadowLightDirection(void)
 {
     f32 dot;
     f32 len;
@@ -1883,8 +1883,8 @@ void renderSky(int a, int b, int c, int d, int visible)
     {
         renderSunAndMoon(a, b, c, d, visible);
     }
-    skyFn_8008a500();
-    skyFn_8008a04c();
+    skyUpdateShadowLightDirection();
+    skyUpdateLightingFromTimeOfDay();
 }
 
 void skyUpdateTimeOfDay(void)
@@ -2018,8 +2018,8 @@ void skyLoadLights(void)
     skyResetState();
     skySetSlotFlag80(7, 0);
     skySetLightIndex(0, 0.0f);
-    skyFn_8008a500();
-    skyFn_8008a04c();
+    skyUpdateShadowLightDirection();
+    skyUpdateLightingFromTimeOfDay();
     gSkySunDirection[0] = 0.0f;
     gSkySunDirection[1] = (-1.0f);
     gSkySunDirection[2] = 0.0f;

@@ -116,7 +116,7 @@ int gWorldPlanetSelectConfirmTimer;
 f32 lbl_803DDD00;
 
 void worldplanet_updateMapLighting(GameObject* obj) {
-    skyFn_80089710(WORLDPLANET_SKY_LIGHT_MASK, 1, 0);
+    skySetLightsEnabled(WORLDPLANET_SKY_LIGHT_MASK, 1, 0);
 
     gWorldPlanetLightingLerpT = 0.0f;
 

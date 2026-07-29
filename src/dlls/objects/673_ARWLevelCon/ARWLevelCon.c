@@ -132,7 +132,7 @@ void arwlevelcon_update(GameObject* obj)
 
     if (state->skyConfigured == 0)
     {
-        skyFn_80089710(7, 1, 0);
+        skySetLightsEnabled(7, 1, 0);
         if (state->alternateRoute != 0)
         {
             skySetBaseColor(7, 0xaa, 0x78, 0xff, 0x69, 0x40);
