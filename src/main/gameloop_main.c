@@ -363,9 +363,8 @@ void checkReset(void)
         }
         if (pressed != 0 && gGameLoopResetComboDebounce == 0)
         {
-            t = gGameLoopResetHoldTimer + 1.0f;
-            gGameLoopResetHoldTimer = t;
-            if (t >= 3e+01f)
+            gGameLoopResetHoldTimer += 1.0f;
+            if (gGameLoopResetHoldTimer >= 3e+01f)
             {
                 gameState = GAME_STATE_RESETPRESSED;
             }
@@ -529,7 +528,7 @@ void cutsceneFadeInOut(int enter)
     cutsceneEnterExit(enter, 1);
 }
 
-u8 lbl_8033C3B8[0x3E8];
+extern u8 lbl_8033C3B8[0x3E8];
 typedef struct GameLoopRenderModeStorage
 {
     GXRenderModeObj mode;
@@ -1000,4 +999,6 @@ int main(int argc, char** argv)
     } while (1);
 }
 
-char sMainFinishedInitMessage[15] = "finished init\n";
+u8 lbl_8033C3B8[0x3E8];
+
+char sMainFinishedInitMessage[16] = "finished init\n";

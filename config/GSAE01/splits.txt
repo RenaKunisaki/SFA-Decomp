@@ -154,6 +154,7 @@ main/gameloop_main.c:
 
 main/vecmath.c:
 	.text       start:0x80021370 end:0x80022948
+	.sdata2     start:0x803DE7C0 end:0x803DE814
 
 main/mm.c:
 	.text       start:0x80022948 end:0x8002430C
@@ -190,7 +191,7 @@ main/objhits.c:
 	.bss        start:0x803408F8 end:0x80342E10
 	.sdata      start:0x803DB450 end:0x803DB468
 	.sbss       start:0x803DCC08 end:0x803DCC20
-	.sdata2     start:0x803DE9C8 end:0x803DE9F0
+	.sdata2     start:0x803DE910 end:0x803DE9F0
 
 main/objprint_dolphin.c:
 	.text       start:0x8003BB84 end:0x800443CC
@@ -213,6 +214,7 @@ main/boot_logo.c:
 main/pi_videoinit.c:
 	.text       start:0x80049B2C end:0x8004AA24
 	.data       start:0x8030C858 end:0x8030C880
+	.sdata2     start:0x803DEA70 end:0x803DEAA4
 
 main/pi_pathsearch.c:
 	.text       start:0x8004AA24 end:0x8004B658
@@ -340,6 +342,7 @@ dlls/engine/5/5.c:
 	.data       start:0x8030F2C8 end:0x8030F4A0
 	.bss        start:0x8039A7A8 end:0x8039A7B8
 	.sbss       start:0x803DD128 end:0x803DD180
+	.sdata2     start:0x803DF058 end:0x803DF108
 
 dlls/engine/6/6.c:
 	.text       start:0x8008C974 end:0x8008ED88
@@ -348,6 +351,7 @@ dlls/engine/6/6.c:
 	.bss        start:0x8039A7B8 end:0x8039A818
 	.sdata      start:0x803DB750 end:0x803DB760
 	.sbss       start:0x803DD180 end:0x803DD190
+	.sdata2     start:0x803DF108 end:0x803DF198
 
 dlls/engine/7/7.c:
 	.text       start:0x8008ED88 end:0x80093AE0
@@ -356,6 +360,7 @@ dlls/engine/7/7.c:
 	.bss        start:0x8039A818 end:0x8039A900
 	.sdata      start:0x803DB760 end:0x803DB770
 	.sbss       start:0x803DD190 end:0x803DD1D0
+	.sdata2     start:0x803DF198 end:0x803DF280
 
 main/skystars.c:
 	.text       start:0x80093AE0 end:0x8009436C
@@ -1203,6 +1208,7 @@ dlls/engine/68/68.c:
 	.data       start:0x80319BF8 end:0x80319C28
 	.sdata      start:0x803DB9A0 end:0x803DB9A8
 	.sbss       start:0x803DD548 end:0x803DD550
+	.sdata2     start:0x803E17C0 end:0x803E1840
 
 dlls/engine/70/70.c:
 	.text       start:0x80109748 end:0x80109B04
@@ -1305,7 +1311,7 @@ dlls/engine/86/86.c:
 	.text       start:0x80110E30 end:0x801115E4
 	.data       start:0x80319F88 end:0x80319FB8
 	.bss        start:0x803A43C0 end:0x803A4420
-	.sdata2     start:0x803E1BB8 end:0x803E1BE0
+	.sdata2     start:0x803E1BA0 end:0x803E1BE0
 
 dlls/engine/87/87.c:
 	.text       start:0x801115E4 end:0x80111D14
@@ -1493,6 +1499,7 @@ dlls/objects/704/704.c:
 	.bss        start:0x803A9F50 end:0x803AA018
 	.sdata      start:0x803DBC08 end:0x803DBC10
 	.sbss       start:0x803DD990 end:0x803DD9D8
+	.sdata2     start:0x803E22E8 end:0x803E238C
 
 main/dll_80136a40.c:
 	.text       start:0x80136A40 end:0x80138908
@@ -2221,6 +2228,7 @@ dlls/objects/332/332.c:
 	.text       start:0x8019E3F4 end:0x8019F540
 	.data       start:0x80322B28 end:0x80322BA8
 	.sdata      start:0x803DBE28 end:0x803DBE50
+	.sdata2     start:0x803E4218 end:0x803E425C
 
 dlls/objects/333_LaserBeam/LaserBeam.c:
 	.sdata      start:0x803DBE50 end:0x803DBE58
@@ -3025,7 +3033,7 @@ dlls/objects/488_SB_Galleon/SB_Galleon.c:
 	.data       start:0x80327BE0 end:0x80327C88
 	.sdata      start:0x803DC078 end:0x803DC090
 	.sbss       start:0x803DDC18 end:0x803DDC40
-	.sdata2     start:0x803E57C0 end:0x803E5810
+	.sdata2     start:0x803E56C8 end:0x803E5810
 
 dlls/objects/489_SB_Propelle/SB_Propelle.c:
 	.text       start:0x801E2570 end:0x801E2B28
@@ -3561,6 +3569,7 @@ dlls/objects/589_BossDrakor/BossDrakor.c:
 	.text       start:0x8020A1C8 end:0x8020BAB4
 	.data       start:0x80329F90 end:0x8032A0D8
 	.sdata      start:0x803DC188 end:0x803DC1A0
+	.sdata2     start:0x803E6510 end:0x803E6588
 
 dlls/objects/590/590.c:
 	.text       start:0x8020BAB4 end:0x8020C278
@@ -5026,6 +5035,7 @@ dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.c:
 
 main/acosf.c:
 	.text       start:0x80291F44 end:0x802927A4
+	.sdata2     start:0x803E79C0 end:0x803E7AB8
 
 dolphin/MSL_C/PPCEABI/bare/H/e_sqrt.c:
 	.text       start:0x802927A4 end:0x80292D3C
@@ -5053,6 +5063,7 @@ main/trig.c:
 
 main/sincosf.c:
 	.text       start:0x80293C64 end:0x80293DA4
+	.sdata2     start:0x803E7D40 end:0x803E7D60
 
 dolphin/MSL_C/PPCEABI/bare/H/math_80293da4.c:
 	.text       start:0x80293DA4 end:0x8029454C
