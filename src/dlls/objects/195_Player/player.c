@@ -16636,8 +16636,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         }
         else if (c == 4)
         {
-            f32 dz;
             f32 dy;
+            f32 dz;
             f32 dx;
             int d;
             seq->flags &= ~0x4c;
