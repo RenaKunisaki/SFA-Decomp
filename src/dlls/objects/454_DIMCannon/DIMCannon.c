@@ -15,6 +15,7 @@
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
+#include "main/dll/dll_0051_cameramodecannon.h"
 #include "main/dll/player_api.h"
 #include "main/dll/player_status.h"
 #include "main/dll/tricky_api.h"
@@ -40,7 +41,6 @@
 #define DIM_CANNON_BALL_HIT_VOLUME_SLOT             5
 #define DIM_CANNON_OBJECT_GROUP                     3
 #define DIM_CANNON_AIR_METER_BACKGROUND_TEXTURE     0x5d5
-#define DIM_CANNON_CAMERA_MODE                      0x51 /* dll_0051_cameramodecannon */
 #define DIM_CANNON_RELEASE_CAMERA_MODE              0x42 /* default gameplay camera */
 #define DIM_CANNON_PLAYER_CONTROLLED_MAP_EVENT_SLOT 0x13
 
@@ -291,11 +291,13 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         setBButtonIcon(0x17);
         setHudForceShowMask(1);
         cameraMode = (*gCameraInterface)->getMode();
-        if (cameraMode != DIM_CANNON_CAMERA_MODE && cameraMode != 0x4c) {
-            GameObject* focusObj = obj;
-            (*gCameraInterface)->setMode(DIM_CANNON_CAMERA_MODE, 1, 0, 4, &focusObj, 0x32, 0xff);
+        if (cameraMode != CAMERA_MODE_CANNON_RESOURCE_ID && cameraMode != 0x4c) {
+            CameraModeCannonInitParams cameraParams;
+            cameraParams.target = obj;
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_CANNON_RESOURCE_ID, 1, 0, sizeof(cameraParams), &cameraParams, 0x32, 0xff);
         }
-        if (cameraMode != DIM_CANNON_CAMERA_MODE) {
+        if (cameraMode != CAMERA_MODE_CANNON_RESOURCE_ID) {
             return 0;
         }
         modelRotation = objModelGetVecFn_800395d8(obj, 0);
@@ -491,11 +493,12 @@ void DIMCannon_update(GameObject* obj) {
         if (chargeTimer > 0) {
             state->chargeTimer = (s8)(chargeTimer - framesThisStep);
         } else if (obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) {
-            GameObject* focusObj;
+            CameraModeCannonInitParams cameraParams;
             state->airMeterCharge = 0;
             state->shutdownTimer = 0;
-            focusObj = obj;
-            (*gCameraInterface)->setMode(DIM_CANNON_CAMERA_MODE, 1, 0, 4, &focusObj, 0x32, 0xff);
+            cameraParams.target = obj;
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_CANNON_RESOURCE_ID, 1, 0, sizeof(cameraParams), &cameraParams, 0x32, 0xff);
             buttonDisable(0, PAD_BUTTON_A);
             state->mode = DIM_CANNON_MODE_PLAYER_CONTROLLED;
             (*gObjectTriggerInterface)->runSequence(0, obj, -1);
