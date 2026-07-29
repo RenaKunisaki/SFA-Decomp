@@ -1,18 +1,57 @@
 /*
- * DLL 130 / 0x82 - a foodbag-family modgfx effect builder.
- * dll_82_func03 is the effect spawn; func00/func01 are the DLL's empty slots.
+ * DLL 130 / 0x82 - a layered object-spawn modgfx effect spawner.
  */
+#include "main/dll/dll_0082_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/dll/fb_cmd.h"
-#include "dlls/object_descriptor.h"
+#include "main/dll/modgfx_types.h"
 
-/* spawnEffect effect ids per variant (textureAssetId arg). */
-#define DLL82_EFFECT_ID_VARIANT3_4 0xd9
-#define DLL82_EFFECT_ID_DEFAULT    0x2e
+typedef struct Dll82EffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} Dll82EffectVertex;
 
-u8 lbl_80315770[520] = {
+STATIC_ASSERT(offsetof(Dll82EffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(Dll82EffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(Dll82EffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(Dll82EffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(Dll82EffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(Dll82EffectVertex) == 0x0A);
+
+typedef struct Dll82EffectResourceView {
+    Dll82EffectVertex vertices[21];
+    u8 padD2[2];
+    s16 triangles[24][3];
+    s16 firstSevenVertexIndices[7];
+    s16 opaque172;
+    s16 middleSevenVertexIndices[7];
+    s16 opaque182;
+    u8 opaqueIndexData184[0x2C];
+    s16 allVertexIndices[21];
+    s16 opaque1DA;
+    u8 opaqueIndexData1DC[0x1C];
+    s16 sequenceParams[7];
+    s16 opaqueTail;
+} Dll82EffectResourceView;
+
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, vertices) == 0x000);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, padD2) == 0x0D2);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, triangles) == 0x0D4);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, firstSevenVertexIndices) == 0x164);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, opaque172) == 0x172);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, middleSevenVertexIndices) == 0x174);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, opaque182) == 0x182);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, opaqueIndexData184) == 0x184);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, allVertexIndices) == 0x1B0);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, opaque1DA) == 0x1DA);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, opaqueIndexData1DC) == 0x1DC);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, sequenceParams) == 0x1F8);
+STATIC_ASSERT(offsetof(Dll82EffectResourceView, opaqueTail) == 0x206);
+STATIC_ASSERT(sizeof(Dll82EffectResourceView) == 0x208);
+
+u8 gDll82EffectResourceData[sizeof(Dll82EffectResourceView)] = {
     0,   0,   0,   0,   3,   232, 0,   0,   0,   0,   3,   98,  0,   0,   1,   244, 0,   11,  0,   0,   3,   98,  0,
     0,   254, 12,  0,   22,  0,   0,   0,   0,   0,   0,   252, 24,  0,   32,  0,   0,   252, 158, 0,   0,   254, 12,
     0,   22,  0,   0,   252, 158, 0,   0,   1,   244, 0,   11,  0,   0,   0,   0,   0,   0,   3,   232, 0,   0,   0,
@@ -37,188 +76,171 @@ u8 lbl_80315770[520] = {
     10,  0,   11,  0,   12,  0,   13,  0,   14,  0,   15,  0,   16,  0,   17,  0,   18,  0,   19,  0,   20,  0,   0,
     0,   20,  0,   40,  0,   20,  0,   0,   0,   0,   0,   0,   0,   0};
 
-void dll_82_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, int modelId,
-                   void* extraArg)
-{
-    FbBuf buf;
-    u8* base = (u8*)(int)lbl_80315770;
-    FbCmd* e;
+void dll_82_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, int modelId,
+                        void* extraArg) {
+    ModgfxPointerSpawnPacket packet;
+    u8* resourceData = (u8*)(int)gDll82EffectResourceData;
+    GfxCmd* commands;
     f32 originOffset = 0.0f;
-    if (variant == 1 || variant == 4)
-    {
-        *(s16*)(base + 0x1fc) = 0x50;
+    if (variant == 1 || variant == 4) {
+        *(s16*)&resourceData[offsetof(Dll82EffectResourceView, sequenceParams[2])] = 0x50;
     }
-    if (variant == 2)
-    {
-        *(s16*)(base + 0x1fc) = 0x6e;
+    if (variant == 2) {
+        *(s16*)&resourceData[offsetof(Dll82EffectResourceView, sequenceParams[2])] = 0x6e;
     }
-    e = buf.entries;
-    e[0].layer = 0;
-    e[0].flags = 0x15;
-    e[0].tex = base + 0x1b0;
-    e[0].mode = 0x4;
-    e[0].x = originOffset;
-    e[0].y = originOffset;
-    e[0].z = originOffset;
-    e[1].layer = 0;
-    e[1].flags = 0x15;
-    e[1].tex = base + 0x1b0;
-    e[1].mode = 0x2;
-    e[1].x = 0.85f;
-    e[1].y = 0.08f;
-    e[1].z = 0.85f;
-    e[2].layer = 1;
-    e[2].flags = 0x15;
-    e[2].tex = base + 0x1b0;
-    e[2].mode = 0x2;
-    e[2].x = 1.0f;
-    e[2].y = 10.0f;
-    e[2].z = 1.0f;
-    e[3].layer = 1;
-    e[3].flags = 0x7;
-    e[3].tex = base + 0x164;
-    e[3].mode = 0x4;
-    e[3].x = 255.0f;
-    e[3].y = originOffset;
-    e[3].z = originOffset;
-    e[4].layer = 1;
-    e[4].flags = 0x7;
-    e[4].tex = base + 0x174;
-    e[4].mode = 0x4;
-    e[4].x = 55.0f;
-    e[4].y = originOffset;
-    e[4].z = originOffset;
-    e[5].layer = 1;
-    e[5].flags = 0x15;
-    e[5].tex = base + 0x1b0;
-    e[5].mode = 0x4000;
-    e[5].x = 4.0f;
-    e[5].y = 2.0f;
-    e[5].z = originOffset;
-    e[6].layer = 2;
-    e[6].flags = 0x1e;
-    e[6].tex = NULL;
-    e[6].mode = 0x20000;
-    e[6].x = 1.0f;
-    e[6].y = originOffset;
-    e[6].z = originOffset;
-    e[7].layer = 2;
-    e[7].flags = 0x15;
-    e[7].tex = base + 0x1b0;
-    e[7].mode = 0x2;
-    e[7].x = 2.0f;
-    e[7].y = 1.0f;
-    e[7].z = 2.0f;
-    e[8].layer = 2;
-    e[8].flags = 0x15;
-    e[8].tex = base + 0x1b0;
-    e[8].mode = 0x4000;
-    e[8].x = 4.0f;
-    e[8].y = 2.0f;
-    e[8].z = originOffset;
-    e[9].layer = 3;
-    e[9].flags = 0x15;
-    e[9].tex = base + 0x1b0;
-    e[9].mode = 0x2;
-    e[9].x = 2.0f;
-    e[9].y = 1.0f;
-    e[9].z = 2.0f;
-    e[10].layer = 3;
-    e[10].flags = 0x15;
-    e[10].tex = base + 0x1b0;
-    e[10].mode = 0x4000;
-    e[10].x = 4.0f;
-    e[10].y = 2.0f;
-    e[10].z = originOffset;
-    e[11].layer = 3;
-    e[11].flags = 0x7;
-    e[11].tex = base + 0x164;
-    e[11].mode = 0x4;
-    e[11].x = originOffset;
-    e[11].y = originOffset;
-    e[11].z = originOffset;
-    e[12].layer = 3;
-    e[12].flags = 0x7;
-    e[12].tex = base + 0x174;
-    e[12].mode = 0x4;
-    e[12].x = originOffset;
-    e[12].y = originOffset;
-    e[12].z = originOffset;
-    e[13].layer = 3;
-    e[13].flags = 0x1e;
-    e[13].tex = NULL;
-    e[13].mode = 0x20000;
-    e[13].x = 1.0f;
-    e[13].y = originOffset;
-    e[13].z = originOffset;
-    buf.v58 = 0;
-    buf.ctx = (int)sourceObj;
-    buf.v44 = variant;
-    buf.pos[0] = originOffset;
-    buf.pos[1] = originOffset;
-    buf.pos[2] = originOffset;
-    buf.col[0] = originOffset;
-    buf.col[1] = originOffset;
-    buf.col[2] = originOffset;
-    buf.scale = 1.0f;
-    buf.v40 = 2;
-    buf.v3c = 7;
-    buf.v59 = 0xe;
-    buf.v5a = 0;
-    buf.v5b = 0xa;
-    buf.count = (FbCmd*)((u8*)e + 0x150) - e;
-    buf.hw[0] = *(s16*)(base + 0x1f8);
-    buf.hw[1] = *(s16*)(base + 0x1fa);
-    buf.hw[2] = *(s16*)(base + 0x1fc);
-    buf.hw[3] = *(s16*)(base + 0x1fe);
-    buf.hw[4] = *(s16*)(base + 0x200);
-    buf.hw[5] = *(s16*)(base + 0x202);
-    buf.hw[6] = *(s16*)(base + 0x204);
-    buf.cmds = e;
-    buf.flags = 0xc010480;
-    buf.flags |= spawnFlags;
-    if ((buf.flags & 1) != 0)
-    {
-        if (sourceObj != NULL)
-        {
-            buf.pos[0] = originOffset + sourceObj->anim.worldPosX;
-            buf.pos[1] = originOffset + sourceObj->anim.worldPosY;
-            buf.pos[2] = originOffset + sourceObj->anim.worldPosZ;
-        }
-        else
-        {
-            buf.pos[0] = originOffset + spawnParams->posX;
-            buf.pos[1] = originOffset + spawnParams->posY;
-            buf.pos[2] = originOffset + spawnParams->posZ;
+    commands = packet.entries;
+    commands[0].layer = 0;
+    commands[0].flags = 0x15;
+    commands[0].tex = &resourceData[offsetof(Dll82EffectResourceView, allVertexIndices)];
+    commands[0].mode = 0x4;
+    commands[0].x = originOffset;
+    commands[0].y = originOffset;
+    commands[0].z = originOffset;
+    commands[1].layer = 0;
+    commands[1].flags = 0x15;
+    commands[1].tex = &resourceData[offsetof(Dll82EffectResourceView, allVertexIndices)];
+    commands[1].mode = 0x2;
+    commands[1].x = 0.85f;
+    commands[1].y = 0.08f;
+    commands[1].z = 0.85f;
+    commands[2].layer = 1;
+    commands[2].flags = 0x15;
+    commands[2].tex = &resourceData[offsetof(Dll82EffectResourceView, allVertexIndices)];
+    commands[2].mode = 0x2;
+    commands[2].x = 1.0f;
+    commands[2].y = 10.0f;
+    commands[2].z = 1.0f;
+    commands[3].layer = 1;
+    commands[3].flags = 0x7;
+    commands[3].tex = &resourceData[offsetof(Dll82EffectResourceView, firstSevenVertexIndices)];
+    commands[3].mode = 0x4;
+    commands[3].x = 255.0f;
+    commands[3].y = originOffset;
+    commands[3].z = originOffset;
+    commands[4].layer = 1;
+    commands[4].flags = 0x7;
+    commands[4].tex = &resourceData[offsetof(Dll82EffectResourceView, middleSevenVertexIndices)];
+    commands[4].mode = 0x4;
+    commands[4].x = 55.0f;
+    commands[4].y = originOffset;
+    commands[4].z = originOffset;
+    commands[5].layer = 1;
+    commands[5].flags = 0x15;
+    commands[5].tex = &resourceData[offsetof(Dll82EffectResourceView, allVertexIndices)];
+    commands[5].mode = 0x4000;
+    commands[5].x = 4.0f;
+    commands[5].y = 2.0f;
+    commands[5].z = originOffset;
+    commands[6].layer = 2;
+    commands[6].flags = 0x1e;
+    commands[6].tex = NULL;
+    commands[6].mode = 0x20000;
+    commands[6].x = 1.0f;
+    commands[6].y = originOffset;
+    commands[6].z = originOffset;
+    commands[7].layer = 2;
+    commands[7].flags = 0x15;
+    commands[7].tex = &resourceData[offsetof(Dll82EffectResourceView, allVertexIndices)];
+    commands[7].mode = 0x2;
+    commands[7].x = 2.0f;
+    commands[7].y = 1.0f;
+    commands[7].z = 2.0f;
+    commands[8].layer = 2;
+    commands[8].flags = 0x15;
+    commands[8].tex = &resourceData[offsetof(Dll82EffectResourceView, allVertexIndices)];
+    commands[8].mode = 0x4000;
+    commands[8].x = 4.0f;
+    commands[8].y = 2.0f;
+    commands[8].z = originOffset;
+    commands[9].layer = 3;
+    commands[9].flags = 0x15;
+    commands[9].tex = &resourceData[offsetof(Dll82EffectResourceView, allVertexIndices)];
+    commands[9].mode = 0x2;
+    commands[9].x = 2.0f;
+    commands[9].y = 1.0f;
+    commands[9].z = 2.0f;
+    commands[10].layer = 3;
+    commands[10].flags = 0x15;
+    commands[10].tex = &resourceData[offsetof(Dll82EffectResourceView, allVertexIndices)];
+    commands[10].mode = 0x4000;
+    commands[10].x = 4.0f;
+    commands[10].y = 2.0f;
+    commands[10].z = originOffset;
+    commands[11].layer = 3;
+    commands[11].flags = 0x7;
+    commands[11].tex = &resourceData[offsetof(Dll82EffectResourceView, firstSevenVertexIndices)];
+    commands[11].mode = 0x4;
+    commands[11].x = originOffset;
+    commands[11].y = originOffset;
+    commands[11].z = originOffset;
+    commands[12].layer = 3;
+    commands[12].flags = 0x7;
+    commands[12].tex = &resourceData[offsetof(Dll82EffectResourceView, middleSevenVertexIndices)];
+    commands[12].mode = 0x4;
+    commands[12].x = originOffset;
+    commands[12].y = originOffset;
+    commands[12].z = originOffset;
+    commands[13].layer = 3;
+    commands[13].flags = 0x1e;
+    commands[13].tex = NULL;
+    commands[13].mode = 0x20000;
+    commands[13].x = 1.0f;
+    commands[13].y = originOffset;
+    commands[13].z = originOffset;
+    packet.modeByte = 0;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = variant;
+    packet.position[0] = originOffset;
+    packet.position[1] = originOffset;
+    packet.position[2] = originOffset;
+    packet.velocity[0] = originOffset;
+    packet.velocity[1] = originOffset;
+    packet.velocity[2] = originOffset;
+    packet.scale = 1.0f;
+    packet.drawGroupCount = 2;
+    packet.drawGroupStride = 7;
+    packet.initialStateByte = 0xe;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0xa;
+    packet.commandCount = (GfxCmd*)((u8*)commands + 0x150) - commands;
+    packet.sequenceParams[0] = *(s16*)&resourceData[offsetof(Dll82EffectResourceView, sequenceParams[0])];
+    packet.sequenceParams[1] = *(s16*)&resourceData[offsetof(Dll82EffectResourceView, sequenceParams[1])];
+    packet.sequenceParams[2] = *(s16*)&resourceData[offsetof(Dll82EffectResourceView, sequenceParams[2])];
+    packet.sequenceParams[3] = *(s16*)&resourceData[offsetof(Dll82EffectResourceView, sequenceParams[3])];
+    packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll82EffectResourceView, sequenceParams[4])];
+    packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll82EffectResourceView, sequenceParams[5])];
+    packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll82EffectResourceView, sequenceParams[6])];
+    packet.commands = commands;
+    packet.flags = 0xc010480;
+    packet.flags |= spawnFlags;
+    if ((packet.flags & 1) != 0) {
+        if (sourceObj != NULL) {
+            packet.position[0] = originOffset + sourceObj->anim.worldPosX;
+            packet.position[1] = originOffset + sourceObj->anim.worldPosY;
+            packet.position[2] = originOffset + sourceObj->anim.worldPosZ;
+        } else {
+            packet.position[0] = originOffset + spawnParams->posX;
+            packet.position[1] = originOffset + spawnParams->posY;
+            packet.position[2] = originOffset + spawnParams->posZ;
         }
     }
-    if (variant == 3 || variant == 4)
-    {
+    if (variant == 3 || variant == 4) {
         (*gModgfxInterface)
-            ->spawnEffect(&buf, 0, 0x15, (u8*)(int)lbl_80315770, 0x18, base + 0xd4, DLL82_EFFECT_ID_VARIANT3_4, 0);
-    }
-    else
-    {
+            ->spawnEffect(&packet, 0, 0x15, (u8*)(int)gDll82EffectResourceData, 0x18,
+                          &resourceData[offsetof(Dll82EffectResourceView, triangles)], 0xd9, 0);
+    } else {
         (*gModgfxInterface)
-            ->spawnEffect(&buf, 0, 0x15, (u8*)(int)lbl_80315770, 0x18, base + 0xd4, DLL82_EFFECT_ID_DEFAULT, 0);
+            ->spawnEffect(&packet, 0, 0x15, (u8*)(int)gDll82EffectResourceData, 0x18,
+                          &resourceData[offsetof(Dll82EffectResourceView, triangles)], 0x2e, 0);
     }
 }
 
-void dll_82_func01_nop(void)
-{
+void dll_82_release(void) {
 }
 
-void dll_82_func00_nop(void)
-{
+void dll_82_initialise(void) {
 }
 
-ObjectDescriptor4 dll_82_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)dll_82_func00_nop,
-    (ObjectDescriptorCallback)dll_82_func01_nop,
-    0,
-    (ObjectDescriptorCallback)dll_82_func03,
+Dll82ResourceDescriptor gDll82ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_82_initialise, dll_82_release, NULL, dll_82_spawnEffect,
 };

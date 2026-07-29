@@ -1,7 +1,7 @@
 #include "dlls/objects/412.h"
 
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/foodbag.h"
+#include "main/dll/dll_0082_modgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
