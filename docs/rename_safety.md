@@ -171,6 +171,7 @@ ordered by how cheap they are to rule out.
 | `git status` says `M`, but `git diff` on the file is **empty** | **stat-dirty index** — our own step-3 `touch` commands updated mtimes without changing content. Can also make `git merge` refuse with "local changes would be overwritten". | `git update-index --refresh`. Nothing to investigate. |
 | `pairing_check` reports a retail-only symbol **and the name IS in `src/`/`include/`** | **stale object** — the source is already correct, only our `.o` is behind. Labelled `[STALE OBJECT]` by the tool. | `touch` the source, rebuild that object **by name**. Do **not** edit the source. |
 | `pairing_check` reports a retail-only symbol **and the name is nowhere in `src/`/`include/`** | **genuine partial rename** — `symbols.txt` and the source really disagree. Labelled `[partial rename]`. | Rename in the C source to match. |
+| `pairing_check` reports N retail-only, then 0 on a re-run, with nothing changed | **torn read** — the scan sampled the object tree while a peer lane was rebuilding into it. **No cheap tell; a single reading is not evidence.** | Fixed at source: the tool now takes the same directory mutex as `locked_ninja.sh` and re-reads to confirm any non-zero verdict, printing `TORN READ` (exit 2) if two locked scans disagree. If you see that, something outside `locked_ninja.sh` is writing `build/GSAE01/`. |
 
 A corollary of the middle row: a unit can carry an **understated** score for a
 long time without any symptom at all. `main/objprint_dolphin.c` read 99.78250
@@ -178,6 +179,34 @@ for an unknown period and jumped to **99.88340** the moment an unrelated rename
 forced a by-name rebuild — the rename could not have changed codegen. So a
 by-name rebuild sweep is worth doing as post-merge hygiene, not only after a
 rename.
+
+## Measuring a true baseline
+
+A green full `locked_ninja.sh` does **not** mean your objects are current — see
+the stale-object race. So a baseline measured right after one can be fiction.
+**Rebuild the units you are about to measure by name, then measure.** Two
+independent observations of the same corollary: `main/objprint_dolphin.c` read
+99.78250 for an unknown period and jumped to 99.88340 on the first by-name
+rebuild, and an `engine/2` baseline taken straight after a green build showed a
+phantom +0.06 that was actually a peer's already-committed fix (95.737 →
+99.211, matching their commit message).
+
+**Verify the rebuild list actually ran, and count it.** `xargs` over a units
+list dies on entries with no ninja target (e.g. `dolphin/os/__start.c`) and
+**silently truncates the rest** — which reproduces exactly the staleness step 4
+exists to prevent. Non-empty output is not sufficient: check the rebuilt count
+matches the number of objects you expected.
+
+## Two side effects of the whole-tree carry rule
+
+- **An empty commit is normal.** If the owning lane commits a batch inside your
+  gate window, your carry commit can come out with nothing in it. Harmless.
+- **Never mutate a tracked file for a probe.** Anything dirty when a peer gates
+  gets swept into *their* commit. A temporary rename probe of mine
+  (`objFuzzSetupGxState` → `…ZZ`, reverted seconds later) was carried into
+  `88b2013d53`, landing a genuine partial rename in HEAD: source said `…ZZ`
+  while `symbols.txt` said the real name. Repaired in `805619805e`. Probe on
+  copies under the scratchpad, or in a file no build consumes.
 
 ## Safe subset
 
