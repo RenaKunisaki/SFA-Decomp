@@ -2,6 +2,7 @@
 
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
+#include "main/dll/dll_0052_cameramodeforcebehind.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object_setup.h"
 #include "main/model_engine.h"
@@ -311,14 +312,9 @@ typedef struct PlayerIntPair
     int v[2];
 } PlayerIntPair;
 
-typedef struct PlayerF32Pair
-{
-    f32 v[2];
-} PlayerF32Pair;
-
 static const PlayerIntPair sPlayerKnockFxIds = {{6, 8}};
-static const PlayerF32Pair sPlayerCamRange = {{60.0f, 37.0f}};
-static const PlayerF32Pair sPlayerColRange = {{65.0f, 35.0f}};
+static const CameraModeForceBehindInitParams sPlayerCamRange = {60.0f, 37.0f};
+static const CameraModeForceBehindInitParams sPlayerColRange = {65.0f, 35.0f};
 
 const u8 lbl_802C2B30[12][16] = {
     {0x40, 0x02, 0x01}, {0x40, 0x03, 0x01, 0x02}, {0x40, 0x04, 0x05, 0x06},
@@ -5800,7 +5796,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     f32 xc;
     f32 yc;
     f32 yOut;
-    PlayerF32Pair col = sPlayerColRange;
+    CameraModeForceBehindInitParams col = sPlayerColRange;
 
     setAButtonIcon(0xf);
     if (*(s8*)&state->baddie.moveJustStartedA != 0)
@@ -5819,7 +5815,8 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
         if (inner->curAnimId != 0x48 && inner->curAnimId != 0x47)
         {
             Camera_setBlendCurveMode(2);
-            (*gCameraInterface)->setMode(0x52, 1, 0, 8, col.v, 0x1e, 0xff);
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_FORCE_BEHIND_RESOURCE_ID, 1, 0, sizeof(col), &col, 0x1e, 0xff);
         }
         inner->stickDirection = 0;
         inner->latchedStickDir = 0;
@@ -13361,7 +13358,7 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
 {
     int r;
     int ok;
-    PlayerF32Pair camp = sPlayerCamRange;
+    CameraModeForceBehindInitParams camp = sPlayerCamRange;
     MatrixTransform pos;
     u8 buf[52];
     f32 mtx[16];
@@ -13417,7 +13414,8 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
         if (!((ByteFlags*)((char*)inner + 0x3f1))->b10)
         {
             Camera_setBlendCurveMode(2);
-            (*gCameraInterface)->setMode(0x52, 1, 0, 8, camp.v, 0x1e, 0xff);
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_FORCE_BEHIND_RESOURCE_ID, 1, 0, sizeof(camp), &camp, 0x1e, 0xff);
             if (gPlayerFrameCounter - gPlayerLastSfxFrame > 2)
             {
                 Sfx_PlayFromObject(obj, SFXTRIG_headcam_in);
@@ -14784,7 +14782,7 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
                     }
                 }
                 Camera_setBlendCurveMode(2);
-                (*gCameraInterface)->setMode(0x52, 1, 0, 0, NULL, 0x2d, 0xff);
+                (*gCameraInterface)->setMode(CAMERA_MODE_FORCE_BEHIND_RESOURCE_ID, 1, 0, 0, NULL, 0x2d, 0xff);
                 ((ByteFlags*)((char*)state + 0x3f6))->b40 = 1;
                 (*gPlayerInterface)->setState(obj, (void*)state, 0x2a);
                 *(int*)&((PlayerState*)state)->baddie.unk304 = (int)playerStagedEndIceSpellAndRestoreCamera;
