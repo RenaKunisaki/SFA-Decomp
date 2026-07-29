@@ -85,6 +85,8 @@ s16 lbl_803DC19A = 0x2D8;
 #define DRAKORHOVERPAD_OBJGROUP 0x46 /* DLL 0x271 drakorhoverpad */
 #define BOSSDRAKOR_CHILD_OBJ_MISSILE 0x70f /* drakormissile (drakormissile_startActiveLaunch) */
 
+#define BOSSDRAKOR_DEG_TO_ANGLE (65536.0f / 360.0f)
+
 #define BOSSDRAKOR_SPELLSTONE_STATE_HELD 2
 #define BOSSDRAKOR_SPELLSTONE_STATE_IDLE 0
 
@@ -894,8 +896,8 @@ void bossdrakor_update(GameObject* obj)
         shakeScaleZ = drakorState->shakeScaleZ;
         shake = drakorState->shakeAmount;
         tblRes = objGetLookAtJointKeys();
-        shakeX = (s16)(gBossDrakorDegToAngle * shake);
-        shakeY = (s16)(gBossDrakorDegToAngle * (shake * shakeScaleZ));
+        shakeX = (s16)(BOSSDRAKOR_DEG_TO_ANGLE * shake);
+        shakeY = (s16)(BOSSDRAKOR_DEG_TO_ANGLE * (shake * shakeScaleZ));
         i = 0;
         tbl = tblRes;
         do
