@@ -133,7 +133,7 @@ void EffectBox_update(GameObject* obj) {
                         case EFFECTBOX_TARGET_TRICKY:
                             break;
                         case EFFECTBOX_TARGET_PLAYER:
-                            fn_80295918(target, EFFECTBOX_PLAYER_ACTION, (f32)placement->actionArg);
+                            playerSetStateValue(target, EFFECTBOX_PLAYER_ACTION, (f32)placement->actionArg);
                             break;
                         case EFFECTBOX_TARGET_GROUP:
                             ((EffectBoxTargetInterface*)*target->anim.dll)->applyAction(target, placement->actionArg);

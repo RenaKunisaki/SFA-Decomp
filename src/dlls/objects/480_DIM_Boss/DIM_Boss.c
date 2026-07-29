@@ -1156,7 +1156,7 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
         } else {
             if (playerState->targetObj == NULL) {
                 player = Obj_GetPlayerObject();
-                if (fn_80295A04(player, 1) != 0) {
+                if (playerGetStateValue(player, 1) != 0) {
                     (*gBaddieControlInterface)
                         ->startHitReaction((GameObject*)obj, playerState, (char*)state + 0x35c,
                                            *(s16*)((char*)state + 0x3f4), NULL, 2, 10, -1, -1);

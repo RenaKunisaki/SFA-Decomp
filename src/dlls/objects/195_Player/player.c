@@ -224,7 +224,7 @@ void playerDrawTeleportAnim(GameObject* obj);
 void fn_802AAF80(GameObject* obj, int inner, int a, int b, int c);
 int fn_802AB1D0(GameObject* obj);
 void playerCastSpell(int a, int b, int c);
-void fn_802AB5A4(GameObject* obj, int p2, int flags);
+void playerRefreshCollisionState(GameObject* obj, int p2, int flags);
 void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player);
 void fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv);
 void fn_802ABFBC(GameObject* obj, int state, PlayerState* inner);
@@ -1236,7 +1236,7 @@ s16 gPlayerSpellGameBits[52] = {
     -10486, 15564, -13107, 15564, -13107, 15428, -25690, 15333, 24642, 15379, 29884, 15379,  29884,
 };
 
-void fn_80295918(GameObject* obj, int sel, f32 fval)
+void playerSetStateValue(GameObject* obj, int sel, f32 fval)
 {
     int state = *(int*)&obj->extra;
     int iv = (int)fval;
@@ -1265,7 +1265,7 @@ void fn_80295918(GameObject* obj, int sel, f32 fval)
 }
 
 
-int fn_80295A04(GameObject* obj, int sel)
+int playerGetStateValue(GameObject* obj, int sel)
 {
     int state = *(int*)&obj->extra;
     switch (sel)
@@ -1335,7 +1335,7 @@ void objSetPos(GameObject* obj, f32 f1, f32 f2, f32 f3)
     obj->anim.previousLocalPosZ = f3;
     obj->anim.worldPosZ = f3;
     obj->anim.localPosZ = f3;
-    fn_802AB5A4(obj, inner, 7);
+    playerRefreshCollisionState(obj, inner, 7);
     (*gPlayerInterface)->setState(obj, (void*)inner, 1);
     *(int*)&((PlayerState*)inner)->baddie.unk304 = (int)playerStagedRestoreDefaultControl;
 }
@@ -2176,7 +2176,7 @@ void fn_80296D20(GameObject* obj, GameObject* parentObj)
         if (type == 0xa || type == 0xc)
         {
             ((PlayerState*)state)->baddie.flags4 &= ~0x100000;
-            fn_802AB5A4((GameObject*)obj, (int)inner, 5);
+            playerRefreshCollisionState((GameObject*)obj, (int)inner, 5);
             ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
             ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
             ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
@@ -3606,7 +3606,7 @@ int playerStateStaffBoost(GameObject* obj, int state, f32 fv)
         inner->yaw = inner->targetYaw;
         staffactivated_calcInteractionTargetXZ(gPlayerInteractTarget, &((GameObject*)obj)->anim.localPosX,
                                                &((GameObject*)obj)->anim.localPosZ);
-        fn_802AB5A4(obj, (int)inner, 7);
+        playerRefreshCollisionState(obj, (int)inner, 7);
         ((PlayerState*)state)->baddie.flags4 |= 0x8000000;
         fromVec[0] = obj->anim.localPosX;
         fromVec[1] = 10.0f + obj->anim.localPosY;
@@ -6319,7 +6319,7 @@ int playerState1B(GameObject* obj, int state, f32 fv)
     }
     PSVECScale((Vec*)((char*)inner + 0x634), (Vec*)vec, inner->traveledDistance);
     PSVECAdd((Vec*)((char*)inner + 0x61c), (Vec*)vec, &obj->anim.localPos);
-    fn_802AB5A4(obj, (int)inner, 7);
+    playerRefreshCollisionState(obj, (int)inner, 7);
     return 0;
 }
 
@@ -6604,7 +6604,7 @@ int playerState19(GameObject* obj, int state)
         ObjAnim_WriteStateWord(&obj->anim, OBJANIM_STATE_INDEX_CURRENT,
                                OBJANIM_STATE_WORD_EVENT_COUNTDOWN, 0);
         (*(void (*)(int, int))(*(int*)(*(int*)*(int*)((char*)sub + 0x68) + 0x3c)))(sub, 0);
-        fn_802AB5A4(obj, (int)inner, 7);
+        playerRefreshCollisionState(obj, (int)inner, 7);
         ObjHits_EnableObject(obj);
         inner->focusObject = NULL;
         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
@@ -6960,7 +6960,7 @@ int playerStateClimbDownFromWall(GameObject* obj, int state)
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, 0.0f,
                                        obj->anim.worldPosZ, &obj->anim.localPosX, &outY,
                                        &obj->anim.localPosZ, obj->anim.parent);
-        fn_802AB5A4(obj, (int)inner, 5);
+        playerRefreshCollisionState(obj, (int)inner, 5);
         ObjAnim_SetCurrentMove((int)obj, *(s16*)inner->moveAnimTable, 0.0f, 1);
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
@@ -6970,7 +6970,7 @@ int playerStateClimbDownFromWall(GameObject* obj, int state)
     t2 = obj->anim.localPosY - inner->moveOffsetY * (1.0f - obj98);
     t3 = inner->moveOffsetZ * obj98 + obj->anim.localPosZ;
     (*gCameraInterface)->overridePos(t1, t2, t3);
-    fn_802AB5A4(obj, (int)inner, 5);
+    playerRefreshCollisionState(obj, (int)inner, 5);
     return 0;
 }
 
@@ -7034,7 +7034,7 @@ int playerStateClimbUpFromWall(GameObject* obj, int state)
         Obj_TransformWorldPointToLocal(obj->anim.worldPosX, 0.0f,
                                        obj->anim.worldPosZ, &obj->anim.localPosX, &outY,
                                        &obj->anim.localPosZ, obj->anim.parent);
-        fn_802AB5A4(obj, (int)inner, 5);
+        playerRefreshCollisionState(obj, (int)inner, 5);
         ObjAnim_SetCurrentMove((int)obj, *(s16*)inner->moveAnimTable, 0.0f, 1);
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
@@ -7044,7 +7044,7 @@ int playerStateClimbUpFromWall(GameObject* obj, int state)
     t2 = obj->anim.localPosY - inner->moveOffsetY * (1.0f - obj98);
     t3 = inner->moveOffsetZ * obj98 + obj->anim.localPosZ;
     (*gCameraInterface)->overridePos(t1, t2, t3);
-    fn_802AB5A4(obj, (int)inner, 5);
+    playerRefreshCollisionState(obj, (int)inner, 5);
     return 0;
 }
 
@@ -7460,7 +7460,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
                           inner->moveOffsetY * sp + obj->anim.localPosY,
                           inner->moveOffsetZ * sp + obj->anim.localPosZ);
     }
-    fn_802AB5A4(obj, (int)inner, 5);
+    playerRefreshCollisionState(obj, (int)inner, 5);
     return 0;
 }
 
@@ -7568,7 +7568,7 @@ int playerStateClimbOntoWall(GameObject* obj, int state)
                       inner->moveOffsetY * obj->anim.currentMoveProgress +
                           obj->anim.localPosY,
                       obj->anim.localPosZ);
-    fn_802AB5A4(obj, (int)inner, 5);
+    playerRefreshCollisionState(obj, (int)inner, 5);
     return 0;
 }
 
@@ -7647,7 +7647,7 @@ int playerState11(GameObject* obj, int state)
     case 0x41a:
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
-            fn_802AB5A4(obj, inner + 4, 5);
+            playerRefreshCollisionState(obj, inner + 4, 5);
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
             return -0x13;
         }
@@ -7671,7 +7671,7 @@ int playerState11(GameObject* obj, int state)
         break;
     }
     }
-    fn_802AB5A4(obj, inner + 4, 5);
+    playerRefreshCollisionState(obj, inner + 4, 5);
     return 0;
 }
 
@@ -7686,11 +7686,11 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
         ((PlayerState*)state)->baddie.moveSpeed = 0.025f;
         inner->moveStartPosY = obj->anim.localPosY;
         obj->anim.localPosY = inner->savedPosY;
-        fn_802AB5A4(obj, (int)inner, 5);
+        playerRefreshCollisionState(obj, (int)inner, 5);
     }
     if (inner->waterDepth > 25.0f)
     {
-        fn_802AB5A4(obj, (int)inner, 5);
+        playerRefreshCollisionState(obj, (int)inner, 5);
         fn_802AE83C((int)obj, (int)inner, state);
         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
         return 2;
@@ -7753,7 +7753,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                     obj->anim.velocityX = zero;
                     obj->anim.velocityY = zero;
                     obj->anim.velocityZ = zero;
-                    fn_802AB5A4(obj, (int)inner, 5);
+                    playerRefreshCollisionState(obj, (int)inner, 5);
                     ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
                     ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
                     ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
@@ -7831,7 +7831,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                                            obj->anim.worldPosZ, &obj->anim.localPosX,
                                            &local, &obj->anim.localPosZ,
                                            obj->anim.parent);
-            fn_802AB5A4(obj, (int)inner, 5);
+            playerRefreshCollisionState(obj, (int)inner, 5);
             ObjAnim_SetCurrentMove((int)obj, *(s16*)(inner->moveAnimTable), 0.0f, 1);
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
@@ -7868,7 +7868,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
         }
         (*gCameraInterface)->overridePos(cx, cy, czOut);
     }
-    fn_802AB5A4(obj, (int)inner, 5);
+    playerRefreshCollisionState(obj, (int)inner, 5);
     return 0;
 }
 
@@ -7927,7 +7927,7 @@ int playerStateOnLadder(int obj, int state)
         ((PlayerState*)state)->baddie.flags4 |= 0x8000000;
         if (((PlayerState*)inner)->waterDepth > 25.0f)
         {
-            fn_802AB5A4((GameObject*)obj, inner, 5);
+            playerRefreshCollisionState((GameObject*)obj, inner, 5);
             fn_802AE83C(obj, inner, state);
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
             return 2;
@@ -8028,11 +8028,11 @@ int playerStateOnLadder(int obj, int state)
                                            ((GameObject*)obj)->anim.parent);
             if (gPlayerCurrentMoveId == 6 || gPlayerCurrentMoveId == 7)
             {
-                fn_802AB5A4((GameObject*)obj, inner, 7);
+                playerRefreshCollisionState((GameObject*)obj, inner, 7);
             }
             else
             {
-                fn_802AB5A4((GameObject*)obj, inner, 5);
+                playerRefreshCollisionState((GameObject*)obj, inner, 5);
             }
             ObjAnim_SetCurrentMove(obj, **(s16**)((char*)inner + 0x3f8), 0.0f, 1);
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
@@ -8215,7 +8215,7 @@ int playerStateOnLadder(int obj, int state)
                                 *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
                                 ((PlayerState*)inner)->heldObj = 0;
                             }
-                            fn_802AB5A4((GameObject*)obj, inner, 5);
+                            playerRefreshCollisionState((GameObject*)obj, inner, 5);
                             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
                             return 3;
                         }
@@ -8342,7 +8342,7 @@ int playerStateOnLadder(int obj, int state)
         }
         (*gCameraInterface)->overridePos(x, y, zzOut);
     }
-    fn_802AB5A4((GameObject*)obj, inner, 5);
+    playerRefreshCollisionState((GameObject*)obj, inner, 5);
     return 0;
 }
 
@@ -8520,7 +8520,7 @@ int playerStateClimbOntoLadder(GameObject* obj, int state, f32 fv)
                               (inner->climbTargetY - obj->anim.localPosY) +
                           obj->anim.localPosY,
                       obj->anim.localPosZ);
-    fn_802AB5A4(obj, (int)inner, 5);
+    playerRefreshCollisionState(obj, (int)inner, 5);
     return 0;
 }
 
@@ -8703,7 +8703,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
             ((GameObject*)obj)->anim.velocityX = z;
             ((GameObject*)obj)->anim.velocityZ = z;
             ((PlayerState*)state)->baddie.flags4 &= ~0x100000;
-            fn_802AB5A4((GameObject*)obj, inner, 5);
+            playerRefreshCollisionState((GameObject*)obj, inner, 5);
             ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
             ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
             ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
@@ -8748,7 +8748,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
         if (((GameObject*)obj)->anim.currentMoveProgress > 0.99f)
         {
             ((PlayerState*)state)->baddie.flags4 &= ~0x100000;
-            fn_802AB5A4((GameObject*)obj, inner, 5);
+            playerRefreshCollisionState((GameObject*)obj, inner, 5);
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
             return 2;
@@ -8805,7 +8805,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
         ObjAnim_SetCurrentMove(obj, lbl_80332EF0[gPlayerCurrentMoveId], 0.0f, 0);
         ((PlayerState*)state)->baddie.moveSpeed = blend;
     }
-    fn_802AB5A4((GameObject*)obj, inner, 5);
+    playerRefreshCollisionState((GameObject*)obj, inner, 5);
     return 0;
 }
 
@@ -8845,7 +8845,7 @@ int playerState0B(GameObject* obj, int state)
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
             ((PlayerState*)state)->baddie.flags4 &= ~0x100000;
-            fn_802AB5A4(obj, (int)inner, 5);
+            playerRefreshCollisionState(obj, (int)inner, 5);
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
             return 2;
@@ -8933,7 +8933,7 @@ int playerState0B(GameObject* obj, int state)
         inner->moveStartZ;
     Object_ObjAnimSetSecondaryBlendMove(&obj->anim, lbl_80332EF0[gPlayerCurrentMoveId + 2],
                                         inner->secondaryBlendAmount);
-    fn_802AB5A4(obj, (int)inner, 5);
+    playerRefreshCollisionState(obj, (int)inner, 5);
     return 0;
 }
 
@@ -9005,7 +9005,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
             ObjAnim_SetCurrentMove((int)obj, lbl_80332EF0[6], 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.008f;
             gPlayerCurrentMoveId = 6;
-            fn_802AB5A4(obj, inner + 4, 5);
+            playerRefreshCollisionState(obj, inner + 4, 5);
             *(int*)&((PlayerState*)state)->baddie.unk308 = 0;
             return 0xd;
         }
@@ -9074,7 +9074,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
     }
     }
     ((PlayerState*)inner)->cameraFlags |= 4;
-    fn_802AB5A4(obj, inner + 4, 5);
+    playerRefreshCollisionState(obj, inner + 4, 5);
     return 0;
 }
 
@@ -9108,7 +9108,7 @@ int playerState09(GameObject* obj, int state)
             ObjAnim_SetCurrentMove((int)obj, lbl_80332EF0[6], fz, 0);
             gPlayerCurrentMoveId = 6;
             ((PlayerState*)state)->baddie.moveSpeed = 0.008f;
-            fn_802AB5A4(obj, inner + 4, 5);
+            playerRefreshCollisionState(obj, inner + 4, 5);
             *(int*)&((PlayerState*)state)->baddie.unk308 = 0;
             return 0xd;
         }
@@ -9154,7 +9154,7 @@ int playerState09(GameObject* obj, int state)
         break;
     }
     }
-    fn_802AB5A4(obj, inner + 4, 5);
+    playerRefreshCollisionState(obj, inner + 4, 5);
     return 0;
 }
 
@@ -12018,7 +12018,7 @@ void fn_802A93F4(GameObject* obj, int p2, int p3)
     obj->anim.velocityY = 0.0f;
     if ((*(s16*)((char*)p3 + 0x6e) & 1) != 0)
     {
-        fn_802AB5A4(obj, (int)inner, 7);
+        playerRefreshCollisionState(obj, (int)inner, 7);
     }
     ObjModelChain_SetEnabled((ObjModelChain*)gPlayerModelChain, 1);
     inner->timeScaleMode = 2;
@@ -12322,7 +12322,7 @@ void fn_802A9D0C(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8)
     ((GameObject*)p1)->anim.velocityX = *(f32*)((char*)p3 + 0x24);
     ((GameObject*)p1)->anim.velocityY = *(f32*)((char*)p3 + 0x28);
     ((GameObject*)p1)->anim.velocityZ = *(f32*)((char*)p3 + 0x2c);
-    fn_802AB5A4((GameObject*)p1, p2, 7);
+    playerRefreshCollisionState((GameObject*)p1, p2, 7);
 }
 
 void fn_802AA014(GameObject* obj, int state, f32 aimInputZ, f32 zero)
@@ -12946,7 +12946,7 @@ void playerCastSpell(int a, int b, int c)
     ((PlayerState*)b)->animState = c;
 }
 
-void fn_802AB5A4(GameObject* obj, int p2, int flags)
+void playerRefreshCollisionState(GameObject* obj, int p2, int flags)
 {
     u8 f = (u8)flags;
     char* q = (char*)p2 + 4;
@@ -15613,7 +15613,7 @@ void playerDoEyeAnims(GameObject* obj, int state)
         }
         else
         {
-            if (fn_80295A04(obj, 2) == 0 && (s8) * (s8*)(((PlayerState*)state)->playerStatus) > 4 &&
+            if (playerGetStateValue(obj, 2) == 0 && (s8) * (s8*)(((PlayerState*)state)->playerStatus) > 4 &&
                 gPlayerModelChainStyle == 1 && randomGetRange(0, 0x12c) == 1)
             {
                 gPlayerModelChainStyle = 2;
@@ -18176,7 +18176,7 @@ void playerUpdate(GameObject* obj)
                 obj->anim.velocityY = z;
                 obj->anim.velocityZ = z;
             }
-            fn_802AB5A4(obj, inner, 0xff);
+            playerRefreshCollisionState(obj, inner, 0xff);
         }
         else
         {
@@ -18464,7 +18464,7 @@ void objLoadPlayerFromSave(int obj)
     (*gPathControlInterface)->setLocalPointCollision(pathState, 1, base + 0x130, &lbl_803DC6C0, 1);
     (*gPathControlInterface)->setup(pathState, 2, base + 0x118, lbl_803DC6B8, lbl_803DC6A4);
     pathState[0x258] = 0x64;
-    fn_802AB5A4((GameObject*)obj, inner, 0xff);
+    playerRefreshCollisionState((GameObject*)obj, inner, 0xff);
     Player_GetObjHitsState((GameObject*)(obj))->trackContactMask = 0x29;
     ((GameObject*)obj)->anim.alpha = 0xff;
     if (((GameObject*)obj)->anim.modelState != NULL)

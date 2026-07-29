@@ -75,7 +75,7 @@ int gCurTextBuffer;
 u8* gGameTextLastEntry;
 int gGameTextFallbackBuf;
 GameTextDrawFunc gameTextDrawFunc;
-u8 lbl_803DC968;
+u8 gGameTextFontIsSjis;
 
 void setLanguageFn_8001ad64(GameTextLoadSlot* slot);
 
@@ -827,13 +827,13 @@ void gameTextLoadGraphicsFn_8001a918(void)
         sizeA = 0x3000;
         sizeB = 0x10120;
         curLanguage = 0;
-        lbl_803DC968 = 0;
+        gGameTextFontIsSjis = 0;
         break;
     case 1:
         sizeA = 0x4d000;
         sizeB = 0x90ee4;
         curLanguage = 4;
-        lbl_803DC968 = 1;
+        gGameTextFontIsSjis = 1;
         break;
     }
     bufA = mmAlloc(sizeA, 0x1a, 0);
@@ -841,7 +841,7 @@ void gameTextLoadGraphicsFn_8001a918(void)
     OSLoadFont(bufB, bufA);
     if (charset->glyphCount == 0)
     {
-        if (lbl_803DC968)
+        if (gGameTextFontIsSjis)
         {
             charset->glyphs = (TextGlyph*)fontData;
             charset->glyphCount = 0x55;
@@ -868,7 +868,7 @@ void gameTextLoadGraphicsFn_8001a918(void)
     y = 0;
     while (count--)
     {
-        if (lbl_803DC968)
+        if (gGameTextFontIsSjis)
         {
             int c;
             u32 val;

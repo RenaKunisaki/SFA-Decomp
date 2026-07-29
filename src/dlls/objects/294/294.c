@@ -553,28 +553,28 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                         t = (int)Obj_GetPlayerObject();
                         if ((void*)t != NULL)
                         {
-                            fn_80295918((GameObject*)t, 1, 0.0f);
+                            playerSetStateValue((GameObject*)t, 1, 0.0f);
                         }
                         break;
                     case 9:
                         t = (int)Obj_GetPlayerObject();
                         if ((void*)t != NULL)
                         {
-                            fn_80295918((GameObject*)t, 10, 0.0f);
+                            playerSetStateValue((GameObject*)t, 10, 0.0f);
                         }
                         break;
                     case 10:
                         t = (int)Obj_GetPlayerObject();
                         if ((void*)t != NULL)
                         {
-                            fn_80295918((GameObject*)t, 0xb, 0.0f);
+                            playerSetStateValue((GameObject*)t, 0xb, 0.0f);
                         }
                         break;
                     case 0xb:
                         t = (int)Obj_GetPlayerObject();
                         if ((void*)t != NULL)
                         {
-                            fn_80295918((GameObject*)t, 1, 14.0f);
+                            playerSetStateValue((GameObject*)t, 1, 14.0f);
                         }
                         break;
                     }

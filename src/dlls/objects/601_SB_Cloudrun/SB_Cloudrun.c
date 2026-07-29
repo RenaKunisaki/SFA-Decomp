@@ -536,7 +536,7 @@ int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
         if (animUpdate->eventIds[i] == 1)
         {
             objHitDetectFn_80062e84(player, state->targetObj, 0);
-            fn_80295918(player, 5, 0.0f);
+            playerSetStateValue(player, 5, 0.0f);
             state->done = 1;
         }
     }

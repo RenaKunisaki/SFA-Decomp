@@ -246,7 +246,7 @@ int optionsMenu_openSelectedSubmenu(int action, int option)
  * options front-end: it tears down any previously-active panel, marks
  * panel 3 (misc) active (gOptionsActivePanel), and creates the language menu
  * row through the title-menu item interface. When cheat 3 is unlocked
- * and not already shown (lbl_803DC968), it links in and creates a second
+ * and the system font encoding is not SJIS, it links in and creates a second
  * row reflecting that cheat's active state; otherwise that row is hidden.
  * The created rows are focused through the title-menu item interface,
  * laid out through the title-menu link interface, and the panel's
@@ -277,7 +277,7 @@ void languageMenuInit(void)
         gTitleMenuItemInterface->vtable->createWithWindow(0x36b, 0x22, 0, 1,
                                                          (s16)(gOptionsSaveData->subtitlesEnabled == 0));
 
-    if (isCheatUnlocked(LANGUAGE_MENU_CHEAT_ID) != 0 && lbl_803DC968 == 0)
+    if (isCheatUnlocked(LANGUAGE_MENU_CHEAT_ID) != 0 && gGameTextFontIsSjis == 0)
     {
         panel->entries[panel->count - 2].pad18[3] = panel->count - 1;
         panel->entries[panel->count - 1].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;

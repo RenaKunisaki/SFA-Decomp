@@ -1007,7 +1007,7 @@ extern s16 gTitleScreenTextureIds[];
 /* Copyright/title text box shown by titleScreenShowCopyright (docblock: "push text box 0x3d9"). */
 
 /* Reset state bytes, load the main texture (asset 0x647 or 0xC5 depending on
- * lbl_803DC968), identity the matrix, then load the 19-entry texture table
+ * gGameTextFontIsSjis), identity the matrix, then load the 19-entry texture table
  * from the id list at gTitleScreenTextureIds into gTitleScreenTextures. */
 void TitleScreen_initialise(void)
 {
@@ -1016,7 +1016,7 @@ void TitleScreen_initialise(void)
     gTitleScreenMenuSelection = 0;
     gTitleScreenPrevMenuActive = -1;
     gTitleScreenMenuActive = 0;
-    if (lbl_803DC968 != 0)
+    if (gGameTextFontIsSjis != 0)
     {
         gTitleScreenMainTex = textureLoadAsset(FRONT_MAIN_TEXTURE_ID_A);
     }

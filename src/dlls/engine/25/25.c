@@ -482,7 +482,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
             {
                 if (((BaddieState*)baddieState)->targetObj == NULL)
                 {
-                    if (fn_80295A04(player, 1) != 0)
+                    if (playerGetStateValue(player, 1) != 0)
                     {
                         ((BaddieState*)baddieState)->targetObj = player;
                         ((BaddieState*)baddieState)->hasTarget = 0;
@@ -744,7 +744,7 @@ GameObject* dll_19_findAggroTarget(GameObject* self, void* state, f32 frange, in
                 {
                     found = 1;
                 }
-                if (fn_80295A04(obj, 1) == 0)
+                if (playerGetStateValue(obj, 1) == 0)
                 {
                     found = 0;
                 }
@@ -796,7 +796,7 @@ int dll_19_shouldDropTarget(GameObject* obj, void* state, f32 distThreshold, int
             {
                 result = 1;
             }
-            else if (fn_80295A04(player, 1) == 0)
+            else if (playerGetStateValue(player, 1) == 0)
             {
                 result = 1;
             }

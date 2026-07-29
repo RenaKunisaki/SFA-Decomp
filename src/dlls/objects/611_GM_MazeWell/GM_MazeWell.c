@@ -145,7 +145,7 @@ void GM_MazeWell_update(GameObject* obj)
         {
             if ((*gGameUIInterface)->isItemBeingUsed(*questBitPtr) != 0)
             {
-                if (lbl_803DC968 != 0)
+                if (gGameTextFontIsSjis != 0)
                 {
                     state = obj->extra;
                     switch (i)

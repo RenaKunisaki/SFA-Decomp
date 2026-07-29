@@ -74,7 +74,7 @@ void runLoadingScreens(void)
         }
 
         textureSlot = gTitleScreenInitLoadingTextures[0];
-        if (lbl_803DC968 != 0)
+        if (gGameTextFontIsSjis != 0)
         {
             colorBuf.bytes[0] = 0;
             colorBuf.bytes[1] = 0x46;

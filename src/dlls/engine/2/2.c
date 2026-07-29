@@ -396,7 +396,7 @@ void loadMemCardImages(void)
     u64 a2[1];
 
     a[0] = 0;
-    if (lbl_803DC968 != 0)
+    if (gGameTextFontIsSjis != 0)
     {
         gSaveCardImageBuffer[0x00] = 0x83;
         gSaveCardImageBuffer[0x01] = 0x58;

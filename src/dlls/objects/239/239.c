@@ -211,7 +211,7 @@ int pushable_updateCurtain(int obj, PushableState* state) {
 
     placement = ((GameObject*)obj)->anim.placementDataAddress;
     player = Obj_GetPlayerObject();
-    if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (fn_80295A04(player, 10) != 0)) {
+    if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (playerGetStateValue(player, 10) != 0)) {
         Sfx_StopObjectChannel(obj, 8);
         return 0;
     }
@@ -1184,7 +1184,7 @@ void pushable_update(GameObject* obj) {
         return;
     }
     player = Obj_GetPlayerObject();
-    if ((player != NULL && fn_80295A04(player, 10) != 0) || (state->flags & PUSHABLE_FLAG_AIRBORNE) != 0) {
+    if ((player != NULL && playerGetStateValue(player, 10) != 0) || (state->flags & PUSHABLE_FLAG_AIRBORNE) != 0) {
         state->savePosDelay = PUSHABLE_ACTIVE_SAVE_DELAY;
     }
     if (state->savePosDelay != 0) {
