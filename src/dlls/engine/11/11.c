@@ -1595,18 +1595,21 @@ void dll_0B_updateActiveEffects(void)
 s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16* d, int textureAssetId,
                   void* textureResource)
 {
-    int base0;
-    int total = 0;
     int off;
-    int i = 0;
-    int found = i;
+    int i;
     int spawnCount;
     int divThresh;
-    int slot = modgfx_findFreeEffectSlot(gPartfxActiveEffects, found, i);
+    int slot;
     f32 fz434;
     f32 fz430;
     PartfxEffectState** arr;
+    int base0;
+    int total;
 
+    total = 0;
+    i = 0;
+    off = i;
+    slot = modgfx_findFreeEffectSlot(gPartfxActiveEffects, off, i);
     if (slot == -1)
     {
         return 0;
@@ -1672,13 +1675,14 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
     }
     if ((st->flags & 0x800) == 0)
     {
-        int k;
-        for (k = 0; k < 3; k++)
+        for (i = 0, off = i; i < 3; off += 4, i++)
         {
-            u8* dstc = (u8*)arr[slot]->colorBuffers[k];
-            int j = 0;
+            u8* dstc = *(u8**)((u8*)arr[slot] + 0x84 + off);
+            int j;
             int bias = 0;
-            s16* sd = d;
+            s16* sd;
+            j = 0;
+            sd = d;
             for (; j < e; j++)
             {
                 if ((st->flags & 0x8000000) && j == divThresh)
@@ -1709,10 +1713,9 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
 
     if ((st->flags & 0x800) == 0)
     {
-        int k;
-        for (k = 0; k < 3; k++)
+        for (i = 0, off = i; i < 3; off += 4, i++)
         {
-            u8* dstv = (u8*)arr[slot]->vertexBuffers[k];
+            u8* dstv = *(u8**)((u8*)arr[slot] + 0x78 + off);
             int j;
             s16* sb = b;
             for (j = 0; j < c; j++)
@@ -1768,7 +1771,7 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
 
     {
         u8* dst = arr[slot]->auxSequenceBuffer;
-        for (i = 0, off = 0; i < arr[slot]->emitterCount; off += 0x18, i++)
+        for (i = 0, off = i; i < arr[slot]->emitterCount; off += 0x18, i++)
         {
             ((ModgfxPendingSpawn*)((u8*)arr[slot]->emitterCommands + off))
                 ->sequenceIndex = ((ModgfxPendingSpawn*)((u8*)st->pendingSpawns + off))->sequenceIndex;
