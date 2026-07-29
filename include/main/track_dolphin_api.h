@@ -36,11 +36,17 @@ struct MapBlockData;
 enum HitQueryMask
 {
     HITQUERY_TEST_OBJECT_HITBOXES = 0x01,  /* also test reset-object hitboxes, not just map triangles */
+    /* keep only near-horizontal triangles: mapLoadBlocksFn_800685cc drops any
+     * triangle whose plane normal Y is within +-0.707 (cos 45deg) of zero */
+    HITQUERY_HORIZONTAL_SURFACES_ONLY = 0x04,
     HITQUERY_REUSE_TRIANGLE_BUFFER = 0x10, /* reuse the loaded map-triangle buffer (skip block reload) */
     HITQUERY_SKIP_CULLED_OBJECTS = 0x80,   /* skip objects whose modelInstance flag 0x01000000 is set */
-    /* Composite the player's ladder/climb probe issues: a climb-typed map
-     * surface, map triangles only (no 0x01 -> no object hitboxes). */
-    HITQUERY_CLIMB_SURFACE = 0x204,
+    /* Composite the player's ladder/climb probe issues: floor-like surfaces
+     * only, and 0x200 to drop the triangle-group class carrying group flag 8.
+     * No 0x01, so map triangles only. The probe narrows the result to normal
+     * Y > 0.707 and reads the rung heights, so it selects horizontal surfaces
+     * by geometry - there is no climb surface type. */
+    HITQUERY_CLIMB_SURFACE = 0x200 | HITQUERY_HORIZONTAL_SURFACES_ONLY,
 };
 
 typedef struct ObjModel ObjModel;
