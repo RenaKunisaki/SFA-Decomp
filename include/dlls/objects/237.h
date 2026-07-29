@@ -111,7 +111,7 @@ STATIC_ASSERT(sizeof(CollectibleState) == 0x2B8);
  * The 0x30-byte setup record shared by the whole pickup family. Spawners
  * (LargeCrate, SmallBasket, MagicPlant, 247, 462, engine/25) allocate it
  * and write the same block - unk1A = 0x14, the three game bits set to -1
- * and the base position - before Obj_SetupObject; the spawned object's
+ * and the base position - before objSetupObject; the spawned object's
  * init reads modelIndex and spawnMode back out of it.
  */
 typedef struct CollectibleSetup {

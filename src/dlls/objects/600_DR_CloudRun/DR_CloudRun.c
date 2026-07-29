@@ -220,7 +220,7 @@ void DR_CloudRunner_fireProjectile(GameObject* obj)
     setup->posX = inner->spawnPosX;
     setup->posY = inner->spawnPosY;
     setup->posZ = inner->spawnPosZ;
-    newObj = Obj_SetupObject(setup, 5, -1, -1, NULL);
+    newObj = objSetupObject(setup, 5, -1, -1, NULL);
     if (newObj == NULL)
     {
         return;
@@ -330,7 +330,7 @@ int DR_CloudRunner_stateHandler06(GameObject* obj, CloudRunnerState* baddie)
         setup->posX = inner->spawnPosX;
         setup->posY = inner->spawnPosY;
         setup->posZ = inner->spawnPosZ;
-        newObj = Obj_SetupObject(setup, 5, -1, -1, NULL);
+        newObj = objSetupObject(setup, 5, -1, -1, NULL);
         if (newObj != NULL)
         {
             s1.mat[1] = 0.0f;

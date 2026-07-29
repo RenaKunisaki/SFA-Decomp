@@ -145,7 +145,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
             spawned->posX = (obj)->anim.localPosX;
             spawned->posY = (obj)->anim.localPosY;
             spawned->posZ = (obj)->anim.localPosZ;
-            child = Obj_SetupObject(spawned, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+            child = objSetupObject(spawned, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
             child->anim.flags |= OBJANIM_FLAG_HIDDEN;
             child->userData1 = 1;
             state->spawnedObject = child;

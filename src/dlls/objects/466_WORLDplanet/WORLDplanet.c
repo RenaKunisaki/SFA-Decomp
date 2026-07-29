@@ -255,7 +255,7 @@ void worldplanet_update(GameObject* obj) {
             setup->base.posX = (obj)->anim.localPosX;
             setup->base.posY = (obj)->anim.localPosY;
             setup->base.posZ = (obj)->anim.localPosZ;
-            Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, NULL);
+            objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, NULL);
         }
     }
     if (state->foxSpawnTimer < 0) {

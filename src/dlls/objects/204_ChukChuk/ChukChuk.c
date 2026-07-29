@@ -59,7 +59,7 @@ void chukChuk_spawnAimedIceBall(GameObject* obj) {
         projectilePlacement->color[0] = 1;
         projectilePlacement->color[1] = 4;
         projectilePlacement->color[3] = 0xff;
-        projectile = Obj_SetupObject(projectilePlacement, 5, -1, -1, NULL);
+        projectile = objSetupObject(projectilePlacement, 5, -1, -1, NULL);
         if (projectile != NULL) {
             player = Obj_GetPlayerObject();
             projectile->anim.velocityX = (player->anim.localPosX - obj->anim.localPosX) / (travelTime = 42.0f);

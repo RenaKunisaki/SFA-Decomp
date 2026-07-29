@@ -2071,7 +2071,7 @@ void dbstealerworm_launchIceBall(GameObject* obj, int baddie)
         setup->color[1] = 1;
         setup->color[2] = 0xff;
         setup->color[3] = 0xff;
-        newObj = Obj_SetupObject(setup, 5, (obj)->anim.mapEventSlot, -1, NULL);
+        newObj = objSetupObject(setup, 5, (obj)->anim.mapEventSlot, -1, NULL);
         if (newObj != NULL)
         {
             t = ((BaddieState*)baddie)->targetDistance / 200.0f;

@@ -534,7 +534,7 @@ void chukChuk_spawnIceBall(GameObject* obj, GroundBaddieState* state) {
         setup->color[1] = 1;
         setup->color[2] = 0xff;
         setup->color[3] = 0xff;
-        projectile = Obj_SetupObject(setup, 5, -1, -1, 0);
+        projectile = objSetupObject(setup, 5, -1, -1, 0);
         if (projectile != NULL) {
             distanceRatio = state->baddie.targetDistance / (f32)(u32)state->aggroRange;
             duration = 50.0f * distanceRatio;

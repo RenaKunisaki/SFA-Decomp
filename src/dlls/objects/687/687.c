@@ -72,7 +72,7 @@ void tree_spawnAmbientEffect(GameObject* obj, TreeState* state, s8 index)
         effectSetup->modelId = -1;
         effectSetup->sourceObject = 0;
         ts->ambientEffectHandles[idx] =
-            (int)Obj_SetupObject(&effectSetup->base, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+            (int)objSetupObject(&effectSetup->base, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 }
 

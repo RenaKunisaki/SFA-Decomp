@@ -394,7 +394,7 @@ int camcontrol_lockIconTextureCallback(GameObject* obj, int* modelPtr, int rende
 void camcontrol_initialiseTargetReticle(void) {
     if (gCamcontrolTargetReticle == NULL) {
         gCamcontrolTargetReticle =
-            Obj_SetupObject(Obj_AllocObjectSetup(0x18, CAMCONTROL_RETICLE_OBJECT_ID), 4, -1, -1, NULL);
+            objSetupObject(Obj_AllocObjectSetup(0x18, CAMCONTROL_RETICLE_OBJECT_ID), 4, -1, -1, NULL);
         ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel(gCamcontrolTargetReticle),
                                    camcontrol_lockIconTextureCallback);
         gCamcontrolTargetReticle->anim.bankIndex = CAMCONTROL_RETICLE_BANK_DEFAULT;

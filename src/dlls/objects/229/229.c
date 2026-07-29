@@ -107,7 +107,7 @@ GameObject* Shield_spawnOmniShield(GameObject* obj, f32 rootMotionScale) {
     setup->color[0] = 1;
     setup->color[1] = 1;
     setup->color[3] = 255;
-    shield = Obj_SetupObject(setup, 5, -1, -1, 0);
+    shield = objSetupObject(setup, 5, -1, -1, 0);
     if (shield != NULL) {
         shield->anim.rootMotionScale = rootMotionScale;
     }

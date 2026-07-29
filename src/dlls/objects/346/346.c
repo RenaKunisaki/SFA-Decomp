@@ -62,7 +62,7 @@ GameObject* explodable_spawnFragmentObject(GameObject* obj, int fragmentObjectId
         (s8)(int)(20.0f * (obj->anim.rootMotionScale / obj->anim.modelInstance->rootMotionScaleBase));
     fragmentPlacement->lifetimeFrames = chunk->launchDelayBase;
     fragmentPlacement->floorOffsetRaw = (int)chunk->height;
-    return Obj_SetupObject((ObjPlacement*)fragmentPlacement, EXPLODABLE_FRAGMENT_SETUP_MODE, obj->anim.mapEventSlot, -1,
+    return objSetupObject((ObjPlacement*)fragmentPlacement, EXPLODABLE_FRAGMENT_SETUP_MODE, obj->anim.mapEventSlot, -1,
                            NULL);
 }
 

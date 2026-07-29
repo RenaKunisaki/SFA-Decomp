@@ -150,7 +150,7 @@ void dll_19_changeWeapon(u8* cam, u8* ctx)
         {
             ObjPlacement* setup = Obj_AllocObjectSetup(24, childObjectIds.ids[(s8)ctx[1031] - 1]);
             ((GameObject*)cam)->childObjs[0] =
-                Obj_SetupObject(setup, 4, -1, -1, ((GameObject*)cam)->anim.parent);
+                objSetupObject(setup, 4, -1, -1, ((GameObject*)cam)->anim.parent);
             ((GameObject*)((GameObject*)cam)->childObjs[0])->objectFlags = ((GameObject*)cam)->objectFlags & 7;
         }
         ctx[1033] = ctx[1031];
@@ -634,7 +634,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
     setup->base.color[2] = state[6];
     setup->base.color[1] = state[5];
     setup->base.color[3] = state[7];
-    gDll19NearestObj = Obj_SetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1, source->anim.parent);
+    gDll19NearestObj = objSetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1, source->anim.parent);
     return gDll19NearestObj;
 }
 

@@ -75,7 +75,7 @@ void dimsnowball1c2_update(GameObject* obj) {
                     (f32)(u32)placement->childRotationParam1CBase +
                     (f32)randomGetRange(DIM_SNOWBALL_SPAWNER_RANDOM_MIN, DIM_SNOWBALL_SPAWNER_RANDOM_MAX) /
                         DIM_SNOWBALL_SPAWNER_RANDOM_DIVISOR;
-                Obj_SetupObject(&setup->base, DIM_SNOWBALL_SPAWNER_SETUP_FLAGS, obj->anim.mapEventSlot, -1, 0);
+                objSetupObject(&setup->base, DIM_SNOWBALL_SPAWNER_SETUP_FLAGS, obj->anim.mapEventSlot, -1, 0);
                 state->spawnCountdown = state->spawnPeriod;
             }
         }

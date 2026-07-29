@@ -202,7 +202,7 @@ void SB_ShipHead_update(GameObject* obj) {
         ((ObjPlacement*)placementBytes)->posX = spawnX;
         ((ObjPlacement*)placementBytes)->posY = spawnY;
         ((ObjPlacement*)placementBytes)->posZ = spawnZ;
-        result = (int)Obj_SetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
+        result = (int)objSetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
         deltaX = player->anim.worldPosX - ((GameObject*)result)->anim.localPosX;
         deltaY = (player->anim.worldPosY - gSbShipHeadFireballSpeed) - ((GameObject*)result)->anim.localPosY;
         deltaZ = player->anim.worldPosZ - ((GameObject*)result)->anim.localPosZ;
@@ -224,7 +224,7 @@ void SB_ShipHead_update(GameObject* obj) {
         placementBytes[5] = 1;
         placementBytes[6] = 0xff;
         placementBytes[7] = 0xff;
-        Obj_SetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
+        objSetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
     }
     result = ObjAnim_AdvanceCurrentMove((int)obj, gSbShipHeadAnimAdvanceRate, timeDelta, NULL);
     if ((object->anim.currentMove == 1) && (result != 0)) {

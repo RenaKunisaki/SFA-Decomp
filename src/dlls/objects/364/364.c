@@ -100,7 +100,7 @@ int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* an
             s8 dropObjectIndex = state->dropObjectIndex;
 
             if (dropObjectIndex > 0) {
-                obj->childObjs[0] = Obj_SetupObject(
+                obj->childObjs[0] = objSetupObject(
                     Obj_AllocObjectSetup(IM_SNOW_CLAW_CHILD_SETUP_SIZE, dropObjectTable.objectIds[dropObjectIndex - 1]),
                     4, -1, -1, obj->anim.parent);
                 obj->childCount = 1;
@@ -223,7 +223,7 @@ void imSnowClaw_update(GameObject* obj) {
             s8 dropObjectIndex = state->dropObjectIndex;
 
             if (dropObjectIndex > 0) {
-                obj->childObjs[0] = Obj_SetupObject(
+                obj->childObjs[0] = objSetupObject(
                     Obj_AllocObjectSetup(IM_SNOW_CLAW_CHILD_SETUP_SIZE, dropObjectTable.objectIds[dropObjectIndex - 1]),
                     4, -1, -1, obj->anim.parent);
                 obj->childCount = 1;

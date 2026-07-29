@@ -240,7 +240,7 @@ void SB_ShipGun_update(GameObject* obj) {
                 cannonballSetup->color[2] = SB_SHIPGUN_CANNONBALL_COLOR_BLUE;
                 cannonballSetup->color[3] = SB_SHIPGUN_CANNONBALL_COLOR_ALPHA;
                 cannonball =
-                    Obj_SetupObject(cannonballSetup, SB_SHIPGUN_CANNONBALL_SETUP_FLAGS, 0xffffffff, 0xffffffff, 0);
+                    objSetupObject(cannonballSetup, SB_SHIPGUN_CANNONBALL_SETUP_FLAGS, 0xffffffff, 0xffffffff, 0);
                 cloudRunner = state->cloudRunner;
                 deltaX = cloudRunner->anim.worldPosX - obj->anim.worldPosX;
                 deltaY = cloudRunner->anim.worldPosY - (obj->anim.worldPosY - 25.0f);

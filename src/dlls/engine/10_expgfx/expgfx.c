@@ -1787,7 +1787,7 @@ void spawnDimExplosion(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u8 flag
                 }
             }
         }
-        Obj_SetupObject(&setup->base, 5, ((ObjAnimComponent*)src)->mapEventSlot, -1, NULL);
+        objSetupObject(&setup->base, 5, ((ObjAnimComponent*)src)->mapEventSlot, -1, NULL);
     }
 }
 
@@ -1838,7 +1838,7 @@ void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 
                 }
             }
         }
-        Obj_SetupObject(&setup->base, 5, src->anim.mapEventSlot, -1, NULL);
+        objSetupObject(&setup->base, 5, src->anim.mapEventSlot, -1, NULL);
     }
 }
 

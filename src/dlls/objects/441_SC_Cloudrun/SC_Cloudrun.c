@@ -142,7 +142,7 @@ void sc_cloudrunnera_update(int obj) {
             setup->flags = CMBSRC_MAP_START_ACTIVE;
             setup->behaviorFlags = 0;
             child =
-                Obj_SetupObject(&setup->base, SC_CLOUDRUNNER_A_CHILD_SETUP_FLAGS, ((GameObject*)obj)->anim.mapEventSlot,
+                objSetupObject(&setup->base, SC_CLOUDRUNNER_A_CHILD_SETUP_FLAGS, ((GameObject*)obj)->anim.mapEventSlot,
                                 SC_CLOUDRUNNER_A_NO_OBJECT_INDEX, ((GameObject*)obj)->anim.parent);
             child->anim.flags = (s16)(child->anim.flags | OBJANIM_FLAG_HIDDEN);
             ObjLink_AttachChild((GameObject*)obj, child, 0);

@@ -130,7 +130,7 @@ void mmshScales_init(GameObject* obj, const MMSHScalesPlacement* placement) {
     childSetup->base.color[0] = MMSH_SCALES_CHILD_COLOR_RED;
     childSetup->base.color[1] = MMSH_SCALES_CHILD_COLOR_GREEN;
     childSetup->base.color[3] = MMSH_SCALES_CHILD_COLOR_ALPHA;
-    obj->childObjs[0] = Obj_SetupObject(&childSetup->base, MMSH_SCALES_CHILD_SETUP_FLAGS, MMSH_SCALES_NO_MAP_LAYER,
+    obj->childObjs[0] = objSetupObject(&childSetup->base, MMSH_SCALES_CHILD_SETUP_FLAGS, MMSH_SCALES_NO_MAP_LAYER,
                                         MMSH_SCALES_NO_OBJECT_INDEX, NULL);
     ((GameObject*)obj->childObjs[0])->anim.rootMotionScale *= MMSH_SCALES_CHILD_SCALE;
 }

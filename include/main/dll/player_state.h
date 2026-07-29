@@ -112,7 +112,7 @@ typedef struct PlayerState {
     int paramCurve4; /* curve-data ptr (base+0x6f4); feeds unk434 */
     int leanCurve;   /* Catmull-Rom curve-data ptr indexed by targetYawRateSigned (lean), feeds leanCurveScale */
     u8 pad468[0x46C - 0x468];
-    int spawnedObject; /* object handle from Obj_SetupObject (player-spawned, e.g. staff/projectile setup) */
+    int spawnedObject; /* object handle from objSetupObject (player-spawned, e.g. staff/projectile setup) */
     f32 inputMagnitude;
     int inputHeading;
     s16 targetYaw; /* desired heading; copied into yaw when applied */

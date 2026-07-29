@@ -1080,7 +1080,7 @@ void HighTop_hitDetect(GameObject* obj)
                 spawn->effectId = HIGHTOP_DEATH_EFFECT_ID;
                 spawn->unk1C = 0;
                 spawn->gameBit = -1;
-                Obj_SetupObject(&spawn->base, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+                objSetupObject(&spawn->base, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
             }
             (obj)->anim.rotY = 0;
             (obj)->anim.rotZ = 0;

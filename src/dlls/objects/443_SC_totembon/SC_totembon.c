@@ -126,7 +126,7 @@ void sc_totembond_spawnGameBitOrbs(GameObject* obj, ScTotemBondState* state, f32
             setup->activeGameBit = gTotemBondRingGameBits[orbIndex];
             setup->rotationByte = (s8)(((obj->anim.rotX + 0x8000) + angleOffset) >> 8);
             setup->unknown32 = 1;
-            Obj_SetupObject(&setup->base, 5, -1, -1, 0);
+            objSetupObject(&setup->base, 5, -1, -1, 0);
             orbIndex++;
             if (orbIndex > 7) {
                 orbIndex = 0;

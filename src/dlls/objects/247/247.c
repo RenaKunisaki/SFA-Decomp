@@ -176,7 +176,7 @@ void dll_F7_update(GameObject* obj) {
             setup->unk1A = 3;
             setup->counterGameBit = -1;
             setup->visibilityGameBit = -1;
-            Obj_SetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            objSetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         } else {
             GameObject* collectible;
 

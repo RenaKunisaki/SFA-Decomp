@@ -458,7 +458,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
         if (s->dropIndex > 0 && Obj_IsLoadingLocked() != 0)
         {
             obj->childObjs[0] =
-                Obj_SetupObject(Obj_AllocObjectSetup(
+                objSetupObject(Obj_AllocObjectSetup(
                                          0x18, tbl.objectIds[s->dropIndex]), 4,
                                      obj->anim.mapEventSlot, -1, obj->anim.parent);
             obj->childCount = 1;
@@ -725,7 +725,7 @@ void snowclaw_update(GameObject* obj)
         if (s->dropIndex > 0 && Obj_IsLoadingLocked() != 0)
         {
             obj->childObjs[0] =
-                Obj_SetupObject(Obj_AllocObjectSetup(
+                objSetupObject(Obj_AllocObjectSetup(
                                          0x18, dropTable.objectIds[s->dropIndex]), 4,
                                      obj->anim.mapEventSlot, -1, obj->anim.parent);
             obj->childCount = 1;

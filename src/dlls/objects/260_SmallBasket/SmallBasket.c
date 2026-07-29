@@ -242,7 +242,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((ObjPlacement*)childPlacement)->posY = obj->anim.localPosY;
         ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 0x190;
-        child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        child = (u8*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = 3.0f;
             ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
@@ -291,7 +291,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((ObjPlacement*)childPlacement)->posY = obj->anim.localPosY;
         ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 0x190;
-        child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        child = (u8*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = 3.0f;
             ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
@@ -340,7 +340,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((ObjPlacement*)childPlacement)->posY = obj->anim.localPosY;
         ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 0x7D0;
-        child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        child = (u8*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = 3.0f;
             ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
@@ -402,7 +402,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
             ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
         }
         ((CollectibleSetup*)childPlacement)->visibilityGameBit = -1;
-        child = (u8*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        child = (u8*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = 3.0f;
             ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];

@@ -141,7 +141,7 @@ static void LargeCrate_spawnPickup(GameObject* obj) {
         ((LargeCratePickupPlacement*)childPlacement)->base.color[2] = 200;
         ((LargeCratePickupPlacement*)childPlacement)->unk20 = -1;
         ((LargeCratePickupPlacement*)childPlacement)->unk1A = 0x7F;
-        Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, (void*)obj->anim.parentAddress);
+        objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, (void*)obj->anim.parentAddress);
     }
 }
 
@@ -224,7 +224,7 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         ((ScarabPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
         ((ScarabPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 400;
-        child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
+        child = (char*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)obj->anim.parentAddress);
         ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
         ((GameObject*)child)->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
@@ -268,7 +268,7 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         ((ScarabPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
         ((ScarabPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 400;
-        child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
+        child = (char*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)obj->anim.parentAddress);
         ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
         ((GameObject*)child)->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
@@ -312,7 +312,7 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         ((ScarabPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
         ((ScarabPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 2000;
-        child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
+        child = (char*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)obj->anim.parentAddress);
         ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
         ((GameObject*)child)->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
@@ -363,7 +363,7 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         ((CollectibleSetup*)childPlacement)->base.posY = 5.0f + obj->anim.localPosY;
         ((CollectibleSetup*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((CollectibleSetup*)childPlacement)->visibilityGameBit = -1;
-        child = (char*)Obj_SetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
+        child = (char*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)obj->anim.parentAddress);
         (*(CollectibleInterface**)((GameObject*)child)->anim.dll)
             ->startBounceMotion((GameObject*)child, 0.0f, 1.0f, 0.0f);

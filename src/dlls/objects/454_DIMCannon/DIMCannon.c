@@ -130,7 +130,7 @@ void DIMwooddoor_spawnShard(GameObject* obj, u8 variant) {
     ballPlacement->base.posY = state->launchOriginY;
     ballPlacement->base.posZ = state->launchOriginZ;
 
-    ball = Obj_SetupObject(&ballPlacement->base, 5, obj->anim.mapEventSlot, -1, 0);
+    ball = objSetupObject(&ballPlacement->base, 5, obj->anim.mapEventSlot, -1, 0);
     ballState = ball->extra;
     ballState->parent = obj;
     ballState->variant = variant;
