@@ -109,6 +109,21 @@ extern f32 lbl_8030EA70[2][3];
 extern f32 lbl_8030EA88[2][3];
 extern f32 lbl_8030EAA0[2][3];
 
+extern inline float sqrtf(float x)
+{
+    volatile float y;
+    if (x > 0.0f)
+    {
+        double guess = __frsqrte((double)x);
+        guess = 0.5 * guess * (3.0 - guess * guess * x);
+        guess = 0.5 * guess * (3.0 - guess * guess * x);
+        guess = 0.5 * guess * (3.0 - guess * guess * x);
+        y = (float)(x * guess);
+        return y;
+    }
+    return x;
+}
+
 int cardDeleteSaveFile(void);
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
 void showMemCardError(u8 err);
@@ -1835,17 +1850,7 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
         px = mtx_8c[0][3];
         py = mtx_8c[1][3];
         pz = mtx_8c[2][3];
-        dist = px * px + py * py + pz * pz;
-        if (dist > 0.0f)
-        {
-            volatile float root;
-            double guess = __frsqrte((double)dist);
-            guess = 0.5 * guess * (3.0 - guess * guess * dist);
-            guess = 0.5 * guess * (3.0 - guess * guess * dist);
-            guess = 0.5 * guess * (3.0 - guess * guess * dist);
-            root = (float)(dist * guess);
-            dist = root;
-        }
+        dist = sqrtf(px * px + py * py + pz * pz);
         f31_val = 200.0f / dist;
         if (f31_val > 1.0f)
             f31_val = 1.0f;
