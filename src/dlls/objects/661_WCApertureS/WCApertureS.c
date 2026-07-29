@@ -91,16 +91,6 @@ void wcapertures_free(GameObject* obj)
     }
 }
 
-static void wcapertures_setGlowEnabled(GameObject* obj, u8 enabled)
-{
-    WCAperturesState* state = obj->extra;
-
-    if (state->light != NULL)
-    {
-        modelLightStruct_setEnabled(state->light, enabled, 0.0f);
-    }
-}
-
 void wcapertures_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     WCAperturesState* state = (obj)->extra;

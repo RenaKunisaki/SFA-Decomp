@@ -22,10 +22,6 @@
 
 void* gCrRockfallResource;
 
-static int crrockfall_isTriggerNear(f32 xz, f32 dy, u32 range) {
-    return xz > 0.0f && xz < 4.0f * (f32)range && dy < 300.0f;
-}
-
 f32 crrockfall_findFloorY(GameObject* obj) {
     CrRockfallState* state = obj->extra;
     TrackGroundHit** list;

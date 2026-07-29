@@ -113,15 +113,6 @@ void ARWArwingGu_hitDetect(void)
 {
 }
 
-static f32 arwarwinggu_clampAlpha(f32 alpha)
-{
-    if (alpha > 255.0f)
-        alpha = 255.0f;
-    else if (alpha < 0.0f)
-        alpha = 0.0f;
-    return alpha;
-}
-
 void ARWArwingGu_update(GameObject* obj)
 {
     ObjAnimComponent* objAnim = &(obj)->anim;

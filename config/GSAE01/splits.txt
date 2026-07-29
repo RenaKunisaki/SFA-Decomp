@@ -2444,7 +2444,6 @@ dlls/objects/362_CRrockfall/CRrockfall.c:
 	.text       start:0x801ACCFC end:0x801AD440
 	.data       start:0x803236B8 end:0x80323708
 	.sbss       start:0x803DDB40 end:0x803DDB44
-	.sdata2     start:0x803E46E8 end:0x803E4734
 
 dlls/objects/363/363.c:
 	.text       start:0x801AD440 end:0x801AD7E4
@@ -2898,7 +2897,6 @@ dlls/objects/424_SH_killermu/SH_killermu.c:
 dlls/objects/425_BombPlant/BombPlant.c:
 	.text       start:0x801D286C end:0x801D3378
 	.data       start:0x80326D20 end:0x80326D98
-	.sdata2     start:0x803E5358 end:0x803E5384
 
 dlls/objects/426_BombPlantSp/BombPlantSp.c:
 	.text       start:0x801D3378 end:0x801D3FF4
@@ -3896,7 +3894,6 @@ dlls/objects/665/665.c:
 dlls/objects/661_WCApertureS/WCApertureS.c:
 	.text       start:0x80228EDC end:0x802293F8
 	.data       start:0x8032B310 end:0x8032B348
-	.sdata2     start:0x803E6E28 end:0x803E6E44
 
 dlls/objects/662_WCTempleDia/WCTempleDia.c:
 	.text       start:0x802293F8 end:0x8022999C
@@ -3931,12 +3928,10 @@ dlls/objects/667/667.c:
 dlls/objects/668_ARWArwingBo/ARWArwingBo.c:
 	.text       start:0x8022ECE0 end:0x8022F1D8
 	.data       start:0x8032B640 end:0x8032B678
-	.sdata2     start:0x803E7040 end:0x803E7058
 
 dlls/objects/669_ARWArwingGu/ARWArwingGu.c:
 	.text       start:0x8022F1D8 end:0x8022F52C
 	.data       start:0x8032B678 end:0x8032B6B0
-	.sdata2     start:0x803E7058 end:0x803E7070
 
 dlls/objects/670/670.c:
 	.text       start:0x8022F52C end:0x8022F558

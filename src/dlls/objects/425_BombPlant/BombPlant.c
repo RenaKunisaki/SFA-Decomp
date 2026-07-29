@@ -91,10 +91,6 @@ int BombPlant_animEventCallback(GameObject* obj) {
     return 0;
 }
 
-static int BombPlant_isPlayerBeyondGrowRange(f32 distanceSquared) {
-    return distanceSquared > BOMB_PLANT_GROW_RANGE_SQ;
-}
-
 static inline void BombPlant_tryBeginGrow(GameObject* obj, BombPlantState* state) {
     GameObject* player;
     f32 distanceSquared;

@@ -74,11 +74,6 @@ STATIC_ASSERT(sizeof(ScTotemBondLightfootSetup) == 0x38);
 #define SC_TOTEM_BOND_CAMERA_DISTANCE  72.0f
 #define SC_TOTEM_BOND_ROTATION_SPEED   512.0f
 
-static void sc_totembond_respawnOrbRing(GameObject* obj, ScTotemBondState* state) {
-    sc_totembond_spawnGameBitOrbs(obj, state, SC_TOTEM_BOND_INITIAL_RADIUS);
-    state->spawnTimer = SC_TOTEM_BOND_SPAWN_DELAY;
-}
-
 static inline void sc_totembond_beginOrbGame(GameObject* obj, ScTotemBondState* state) {
     state->active = 1;
     obj->anim.rotX = 0x3FFF;

@@ -47,23 +47,6 @@ ObjectDescriptor gARWArwingBoObjDescriptor = {
     (ObjectDescriptorExtraSizeCallback)arwarwingbo_getExtraSize,
 };
 
-static void arwarwingbo_detonate(GameObject* obj)
-{
-    ObjAnimComponent* objAnim = &obj->anim;
-    ArwingBombState* state = obj->extra;
-
-    arwarwing_clearActiveBomb(getArwing());
-    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_awghitobj16_2a5);
-    state->explosionTimer = 100.0f;
-    state->control.fuseTimer = 0.0f;
-    objAnim->alpha = 0;
-    (*(ObjHitsPriorityState**)&objAnim->hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
-    spawnExplosion(obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
-    ObjHitbox_SetSphereRadius(&obj->anim, 0x280);
-    ObjHits_SetHitVolumeSlot(&obj->anim, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
-    objAnim->velocityZ = objAnim->velocityY = objAnim->velocityX = 0.0f;
-}
-
 void arwprojectile_launchForward(GameObject* obj, f32 lifetime)
 {
     ArwProjectileState* state = obj->extra;

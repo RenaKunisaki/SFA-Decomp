@@ -71,16 +71,6 @@ void wctemplebri_updateModelWarp(GameObject* obj, WCTempleBriState* state)
     state->wavePhaseB = phase;
 }
 
-static s16 wctemplebri_deformedCoordX(s16 z, s16 x, f32 minZ, int phase)
-{
-    int wave = (u16)(int)(65535.0f * ((f32)z / minZ));
-    int idx = wave + phase;
-
-    if (x > 0)
-        return (s16)(256.0f * mathSinf(3.1415927f * idx / 32768.0f) + (f32)x);
-    return (s16)((f32)x - 256.0f * mathSinf(3.1415927f * idx / 32768.0f));
-}
-
 static inline void wctemplebri_deformVertex(ObjModel* model, ModelFileHeader* modelBase, WCTempleBriState* state, int i)
 {
     s16* curr = ObjModel_GetCurrentVertexCoords(model, i);
