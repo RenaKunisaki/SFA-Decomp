@@ -1445,14 +1445,14 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
     int next;
     int back;
     GXClearVtxDesc();
-    if (hdr[0xf3] > 1)
+    if (((ModelFileHeader*)hdr)->jointCount > 1)
     {
         GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
         next = 1;
         back = 8;
         if (p3[0] != 0 || p3[1] != 0)
         {
-            if (*(u32*)&((ModelFileHeader*)m)->texCoords != 0)
+            if (((Shader*)m)->auxTextureIndex != 0)
             {
                 GXSetVtxDesc(GX_VA_TEX0MTXIDX, GX_DIRECT);
                 next = 3;
@@ -1523,7 +1523,7 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
         bs->pos = pos + 1;
         GXSetVtxDesc(GX_VA_POS, (((int)(w >> (pos & 7)) & 1) ? GX_INDEX16 : GX_INDEX8));
     }
-    if (m[0x40] & 1)
+    if (((Shader*)m)->vtxAttrFlags & 1)
     {
         int b;
         {
@@ -1538,7 +1538,7 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
             bs->pos = pos + 1;
             b = (w >> (pos & 7)) & 1;
         }
-        if (hdr[0x24] & 8)
+        if (((ModelFileHeader*)hdr)->flags24 & 8)
         {
             GXSetVtxDesc(GX_VA_NBT, b ? GX_INDEX16 : GX_INDEX8);
         }
@@ -1552,7 +1552,7 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
     {
         *out1 = 0;
     }
-    if (m[0x40] & 2)
+    if (((Shader*)m)->vtxAttrFlags & 2)
     {
         u32 w;
         int pos = bs->pos;
@@ -1581,7 +1581,7 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
             b = (w >> (pos & 7)) & 1;
         }
         i = 0;
-        for (; i < m[0x41]; i++)
+        for (; i < ((Shader*)m)->layerCount; i++)
         {
             GXSetVtxDesc(i + GX_VA_TEX0, b ? GX_INDEX16 : GX_INDEX8);
         }
@@ -1624,7 +1624,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
         int i;
         u8 cnt;
         cnt = 0;
-        for (i = 0; i < shader[0x41]; i++)
+        for (i = 0; i < ((Shader*)shader)->layerCount; i++)
         {
             u8* l = Shader_getLayer(shader, i);
             if (l[4] & 0x80)
@@ -1640,7 +1640,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
     layerIdx = 0;
     colp = &gObjCurChanColor.r;
     {
-        for (; layerIdx < shader[0x41]; layerIdx++)
+        for (; layerIdx < ((Shader*)shader)->layerCount; layerIdx++)
         {
             layer = Shader_getLayer(shader, layerIdx);
             if ((layer[4] & 0x80) == mask)
@@ -1659,7 +1659,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     addLitColorStage(hasBaseTexture);
                     return 1;
                 }
-                alpha = ((((GameObject*)obj)->anim.renderAlpha + 1) * shader[0xc]) >> 8;
+                alpha = ((((GameObject*)obj)->anim.renderAlpha + 1) * ((Shader*)shader)->alpha) >> 8;
                 if (*(u32*)layer != 0)
                 {
                     f32 (*mtxp)[4];
@@ -1723,7 +1723,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     else if (p5 != 0)
                     {
                         colp[3] = color[3];
-                        if (shader[0x40] & 0x10)
+                        if (((Shader*)shader)->vtxAttrFlags & 0x10)
                         {
                             addTexLayerStageKColor(tex, mtxp, (u8)fl, &gObjCurChanColor);
                         }
@@ -1734,7 +1734,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     }
                     else
                     {
-                        if (shader[0x40] & 0x10)
+                        if (((Shader*)shader)->vtxAttrFlags & 0x10)
                         {
                             addTexLayerStage(tex, mtxp, (u8)fl);
                             if (color[3] < 0xff)
@@ -1765,7 +1765,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     }
                     else
                     {
-                        if (shader[0x40] & 0x10)
+                        if (((Shader*)shader)->vtxAttrFlags & 0x10)
                         {
                             addVertexColorStage();
                             if (color[3] < 0xff)
@@ -1953,7 +1953,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     {
         u8 hl;
-        if (modelRenderFn_8003e98c(obj, (u8*)op, refs, 0x80, hl = ((((ModelFileHeader*)p2)->shaderFlags & 2) && !(p2[0x24] & 2)),
+        if (modelRenderFn_8003e98c(obj, (u8*)op, refs, 0x80, hl = ((((ModelFileHeader*)p2)->shaderFlags & 2) && !(((ModelFileHeader*)p2)->flags24 & 2)),
                                    nlay) == 0)
         {
             u8 hasBaseTexture;
