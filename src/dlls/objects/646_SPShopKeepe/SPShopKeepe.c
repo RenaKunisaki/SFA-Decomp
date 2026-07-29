@@ -1014,7 +1014,7 @@ void ShopKeeper_init(GameObject* obj)
     (obj)->animEventCallback = ShopKeeper_SeqFn;
     (obj)->anim.modelState->flags |= 0x810;
     ((ShopkeeperState*)state)->unk9B8 = 0.1f * (f32)(s32)randomGetRange(0xF, 0x23);
-    ((ShopkeeperState*)state)->msgStack = allocModelStruct_800139e8(4, 4);
+    ((ShopkeeperState*)state)->msgStack = Queue_Alloc(4, 4);
     ((ShopkeeperState*)state)->opacity = 0xFF;
     ((ShopkeeperState*)state)->textTimer = 300.0f;
     dll_2E_initState(obj, (MoveLibState*)(state + 0x35C), -0x1C71, 0x3555, 2);

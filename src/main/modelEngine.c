@@ -525,7 +525,7 @@ void* gResourceLoadedHandles[0x2C1];
 u16 gResourceRefCounts[0x2C2];
 char gModelEngineTextBuf[0x10];
 
-RingBufferQueue* allocModelStruct_800139e8(int capacity, int elemSize)
+RingBufferQueue* Queue_Alloc(int capacity, int elemSize)
 {
     RingBufferQueue* queue = mmAlloc(elemSize * capacity + sizeof(RingBufferQueue), 0x1a, 0);
     queue->data = (u8*)queue + sizeof(RingBufferQueue);

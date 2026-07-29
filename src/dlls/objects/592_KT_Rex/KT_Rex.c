@@ -1687,7 +1687,7 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
         (obj)->anim.modelState->flags |= 0x810;
     }
     gKTRexState = gKTRexRuntime->control;
-    gKTRexState->stack = allocModelStruct_800139e8(4, 4);
+    gKTRexState->stack = Queue_Alloc(4, 4);
     yaw = (s16)((s8)arg[0x2a] << 8);
     (obj)->anim.rotX = yaw;
     gKTRexState->homeYaw = yaw;
