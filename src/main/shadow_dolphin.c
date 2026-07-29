@@ -629,13 +629,9 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
         GXBegin(GX_TRIANGLES, GX_VTXFMT0, modelState->shadowRenderResource->vertexCount & 0xffff);
         for (i = 0; i < modelState->shadowRenderResource->vertexCount; i++)
         {
-            Vec3s* vertex = &modelState->shadowRenderResource->vertices[i];
-            s16 z = vertex->z;
-            s16 y = vertex->y;
-            s16 x = vertex->x;
-            GXWGFifo.s16 = x;
-            GXWGFifo.s16 = y;
-            GXWGFifo.s16 = z;
+            GXPosition3s16(modelState->shadowRenderResource->vertices[i].x,
+                           modelState->shadowRenderResource->vertices[i].y,
+                           modelState->shadowRenderResource->vertices[i].z);
         }
     }
     else
@@ -650,9 +646,12 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
             for (k = 0; k < 3; k++)
             {
                 Vec3f* v1 = &vertices[w0 + k];
-                f32 b2 = v1->z;
-                f32 b1 = v1->y;
-                f32 b0 = v1->x;
+                f32 b1;
+                f32 b2;
+                f32 b0;
+                b2 = v1->z;
+                b1 = v1->y;
+                b0 = v1->x;
                 GXWGFifo.f32 = b0;
                 GXWGFifo.f32 = b1;
                 GXWGFifo.f32 = b2;
