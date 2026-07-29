@@ -5,7 +5,7 @@
 #include "main/gameloop_gamebit_api.h"
 #include "main/hud_visibility_api.h"
 
-extern u8 lbl_803DB424;
+extern u8 gSaveGameEnabled;
 typedef struct LinkInterface LinkInterface;
 extern LinkInterface* gTitleMenuLinkInterface;
 

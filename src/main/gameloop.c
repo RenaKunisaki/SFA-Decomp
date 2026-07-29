@@ -9,7 +9,7 @@ f32 timeDelta = 1.0f;
 f32 oneOverTimeDelta = 1.0f;
 int gGameLoopPendingUiDllId = -1;
 f32 gGameLoopMusicFadeTimer = -30.0f;
-u8 lbl_803DB424 = 0xFF;
+u8 gSaveGameEnabled = 0xFF;
 u8 gGameLoopResetComboDebounce = 10;
 int gAskProgressiveScanYesX = 0xAA;
 int gAskProgressiveScanNoX = 0x16A;
@@ -301,7 +301,7 @@ void cardShowMessage(void)
         else if (ok && (held & PAD_BUTTON_B))
         {
             buttonDisable(0, PAD_BUTTON_B);
-            lbl_803DB424 = 0;
+            gSaveGameEnabled = 0;
             hudHiddenFrameCount = 0;
             timeStop = 0;
             Sfx_SetObjectSoundsPaused(0);

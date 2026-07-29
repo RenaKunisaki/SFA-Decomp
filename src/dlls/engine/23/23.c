@@ -23,7 +23,7 @@
 #include "main/pad.h"
 
 u32 pRestartPoint;
-u8* lbl_803DD498;
+u8* gSaveGameWorkBuffer;
 s8 gSaveGameMapActCacheIdx[2];
 static int sSaveGameUnused0;
 int gSaveGameObjGroupCacheIdx[2];
@@ -338,7 +338,7 @@ void gplaySaveGame(int param)
     gSaveGameCurrentSlot = param;
     if (gSaveGameData[0x22] == 0)
     {
-        memcpy(lbl_803DD498, gSaveGameData, 0x564);
+        memcpy(gSaveGameWorkBuffer, gSaveGameData, 0x564);
         if (pRestartPoint != 0)
         {
             memcpy((void*)pRestartPoint, gSaveGameData, 0x564);
@@ -348,22 +348,22 @@ void gplaySaveGame(int param)
     {
         gSaveGameCurrentSlot = 0;
     }
-    if ((s8)lbl_803DD498[0] < 1)
+    if ((s8)gSaveGameWorkBuffer[0] < 1)
     {
-        lbl_803DD498[0] = 1;
+        gSaveGameWorkBuffer[0] = 1;
     }
-    if ((s8)lbl_803DD498[0xc] < 1)
+    if ((s8)gSaveGameWorkBuffer[0xc] < 1)
     {
-        lbl_803DD498[0xc] = 1;
+        gSaveGameWorkBuffer[0xc] = 1;
     }
-    _saveGame((u8)gSaveGameCurrentSlot, lbl_803DD498, saveData);
+    _saveGame((u8)gSaveGameCurrentSlot, gSaveGameWorkBuffer, saveData);
 }
 
 void titleDoLoadSave(void)
 {
     OSSetSaveRegion(0, 0);
-    gSaveGameCurrentSlot = (s8)((lbl_803DD498[0x21] & 0x60) >> 5);
-    lbl_803DD498[0x21] = lbl_803DD498[0x21] & ~0xE0;
+    gSaveGameCurrentSlot = (s8)((gSaveGameWorkBuffer[0x21] & 0x60) >> 5);
+    gSaveGameWorkBuffer[0x21] = gSaveGameWorkBuffer[0x21] & ~0xE0;
     (*gMapEventInterface)->gotoSavegame();
 }
 
@@ -371,7 +371,7 @@ void saveGame_save(void)
 {
     if (gSaveGameData[0x22] == 0)
     {
-        memcpy(lbl_803DD498, gSaveGameData, 0x564);
+        memcpy(gSaveGameWorkBuffer, gSaveGameData, 0x564);
         if (pRestartPoint != 0)
         {
             memcpy((void*)pRestartPoint, gSaveGameData, 0x564);
@@ -381,15 +381,15 @@ void saveGame_save(void)
     {
         gSaveGameCurrentSlot = 0;
     }
-    if ((s8)lbl_803DD498[0] < 1)
+    if ((s8)gSaveGameWorkBuffer[0] < 1)
     {
-        lbl_803DD498[0] = 1;
+        gSaveGameWorkBuffer[0] = 1;
     }
-    if ((s8)lbl_803DD498[0xc] < 1)
+    if ((s8)gSaveGameWorkBuffer[0xc] < 1)
     {
-        lbl_803DD498[0xc] = 1;
+        gSaveGameWorkBuffer[0xc] = 1;
     }
-    _saveGame((u8)gSaveGameCurrentSlot, lbl_803DD498, saveData);
+    _saveGame((u8)gSaveGameCurrentSlot, gSaveGameWorkBuffer, saveData);
 }
 
 void clearSaveGameLoadingFlag(void)
@@ -418,21 +418,21 @@ int trySaveGame(int slot)
 
     gSaveGameCurrentSlot = slot;
     memset(gSaveGameData, 0, SAVEGAME_LIVE_BUFFER_SIZE);
-    if ((lbl_803DD498[0x21] & 0x80) == 0)
+    if ((gSaveGameWorkBuffer[0x21] & 0x80) == 0)
     {
-        memset(lbl_803DD498, 0, SAVEGAME_ACTIVE_SIZE);
+        memset(gSaveGameWorkBuffer, 0, SAVEGAME_ACTIVE_SIZE);
     }
 
-    loaded = loadSaveGame((u8)gSaveGameCurrentSlot, lbl_803DD498);
+    loaded = loadSaveGame((u8)gSaveGameCurrentSlot, gSaveGameWorkBuffer);
     if (loaded != 0)
     {
-        if (lbl_803DD498[0x21] == 0)
+        if (gSaveGameWorkBuffer[0x21] == 0)
         {
             loaded = gplayNewGame(sGameplayFoxName, (u8)gSaveGameCurrentSlot);
         }
         else
         {
-            memcpy(gSaveGameData, lbl_803DD498, SAVEGAME_ACTIVE_SIZE);
+            memcpy(gSaveGameData, gSaveGameWorkBuffer, SAVEGAME_ACTIVE_SIZE);
         }
     }
     else
@@ -507,9 +507,9 @@ s8 slot;
     defaultPos = gSaveGameDefaultPosition;
 
     memset(gSaveGameData, 0, SAVEGAME_LIVE_BUFFER_SIZE);
-    if ((lbl_803DD498[SAVEGAME_NEW_FILE_FLAG_OFFSET] & 0x80) == 0)
+    if ((gSaveGameWorkBuffer[SAVEGAME_NEW_FILE_FLAG_OFFSET] & 0x80) == 0)
     {
-        memset(lbl_803DD498, 0, SAVEGAME_ACTIVE_SIZE);
+        memset(gSaveGameWorkBuffer, 0, SAVEGAME_ACTIVE_SIZE);
     }
 
     save = gSaveGameData;
@@ -587,13 +587,13 @@ s8 slot;
         gSaveGameData[SAVEGAME_PLAYER_NAME_OFFSET + 3] = '\0';
     }
 
-    memcpy(lbl_803DD498, gSaveGameData, SAVEGAME_ACTIVE_SIZE);
+    memcpy(gSaveGameWorkBuffer, gSaveGameData, SAVEGAME_ACTIVE_SIZE);
     if (slot != -1)
     {
         gSaveGameCurrentSlot = slot;
         if (name != NULL)
         {
-            return _saveGame((u8)slot, lbl_803DD498, saveData);
+            return _saveGame((u8)slot, gSaveGameWorkBuffer, saveData);
         }
     }
     return 0;
@@ -908,7 +908,7 @@ void SaveGame_setMapActLut(int val, int idx)
 void updateSavedHealth(void)
 {
     int idx = ((SaveGameData*)gSaveGameData)->currentCharacter * 12;
-    *((u8*)gSaveGameData + idx) = lbl_803DD498[idx];
+    *((u8*)gSaveGameData + idx) = gSaveGameWorkBuffer[idx];
 }
 f32 SaveGame_getPlayTime(void)
 {
@@ -941,7 +941,7 @@ void SaveGame_updateTimes(void)
     }
     if (((SaveGameData*)gSaveGameData)->taskCount > 5)
         *(u8*)0 = 0; /* assert: task count <= 5 */
-    if (((SaveGameData*)lbl_803DD498)->taskCount > 5)
+    if (((SaveGameData*)gSaveGameWorkBuffer)->taskCount > 5)
         *(u8*)0 = 0; /* assert: task count <= 5 */
 }
 
@@ -1089,7 +1089,7 @@ void SaveGame_gplayGotoRestartPoint(void)
     }
     else
     {
-        memcpy(gSaveGameData, lbl_803DD498, SAVEGAME_ACTIVE_SIZE);
+        memcpy(gSaveGameData, gSaveGameWorkBuffer, SAVEGAME_ACTIVE_SIZE);
     }
     loadMapForCurrentSaveGame();
 }
@@ -1129,11 +1129,11 @@ void SaveGame_gplayRestartPoint(f32* pos, s16 angle, int b691, int flag)
 
 void SaveGame_gplayGotoSavegame(void)
 {
-    if ((s8)lbl_803DD498[0] < 1)
-        lbl_803DD498[0] = 1;
-    if ((s8)lbl_803DD498[0xc] < 1)
-        lbl_803DD498[0xc] = 1;
-    memcpy(gSaveGameData, lbl_803DD498, SAVEGAME_ACTIVE_SIZE);
+    if ((s8)gSaveGameWorkBuffer[0] < 1)
+        gSaveGameWorkBuffer[0] = 1;
+    if ((s8)gSaveGameWorkBuffer[0xc] < 1)
+        gSaveGameWorkBuffer[0xc] = 1;
+    memcpy(gSaveGameData, gSaveGameWorkBuffer, SAVEGAME_ACTIVE_SIZE);
     loadMapForCurrentSaveGame();
 }
 
@@ -1149,7 +1149,7 @@ void SaveGame_gplaySavePoint(f32* pos, s16 angle, int flags, int mapByte)
     {
         if (flags & 1)
         {
-            memcpy(lbl_803DD498, base, 0x5d8);
+            memcpy(gSaveGameWorkBuffer, base, 0x5d8);
             if (pRestartPoint != 0)
             {
                 memcpy((void*)pRestartPoint, gSaveGameData, 0x5d8);
@@ -1162,7 +1162,7 @@ void SaveGame_gplaySavePoint(f32* pos, s16 angle, int flags, int mapByte)
             SAVEGAME_CHARACTER_POSITION(base)->z = pos[2];
             SAVEGAME_CHARACTER_POSITION(base)->angle = (s8)(angle >> 8);
             SAVEGAME_CHARACTER_POSITION(base)->map = mapByte;
-            memcpy(lbl_803DD498, base, SAVEGAME_ACTIVE_SIZE);
+            memcpy(gSaveGameWorkBuffer, base, SAVEGAME_ACTIVE_SIZE);
             if (pRestartPoint != 0)
             {
                 mm_free((void*)pRestartPoint);
@@ -1190,9 +1190,9 @@ void SaveGame_initialise(void)
 {
     s8* base = (s8*)gTransientMapBits;
     memset(base + 0x328, 0, SAVEGAME_LIVE_BUFFER_SIZE);
-    if (!(lbl_803DD498[0x21] & 0x80))
+    if (!(gSaveGameWorkBuffer[0x21] & 0x80))
     {
-        memset(lbl_803DD498, 0, SAVEGAME_ACTIVE_SIZE);
+        memset(gSaveGameWorkBuffer, 0, SAVEGAME_ACTIVE_SIZE);
     }
     pRestartPoint = 0;
     gSaveGameMapActCacheIdx[0] = -1;

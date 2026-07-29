@@ -920,7 +920,7 @@ void showDeathMenu(void)
     {
         pauseMenuState = 8;
     }
-    else if (lbl_803DB424 != 0)
+    else if (gSaveGameEnabled != 0)
     {
         pauseMenuState = 9;
     }
@@ -5821,7 +5821,7 @@ void pauseMenuDoSave(void)
     Camera_ApplyFullViewport();
     if (lbl_803DD778 & 0x10)
     {
-        if (lbl_803DB424 != 0)
+        if (gSaveGameEnabled != 0)
         {
             gameTextSetColor(0xff, 0xff, 0xff, 0xff);
             gameTextShow(0x46e);
@@ -5972,7 +5972,7 @@ void pauseMenuUpdate(void)
     {
         menuMin = 4;
     }
-    if (lbl_803DB424 == 0 || getNextTaskHintText() < 3 ||
+    if (gSaveGameEnabled == 0 || getNextTaskHintText() < 3 ||
         (player != 0 &&
          coordsToMapCell(player->anim.localPosX, player->anim.localPosZ) == 0 && playerGetFocusObject(player) != NULL))
     {
@@ -6563,7 +6563,7 @@ void pauseMenuUpdate(void)
                 switch (state)
                 {
                 case 8:
-                    if (lbl_803DB424 != 0)
+                    if (gSaveGameEnabled != 0)
                     {
                         pauseMenuState = 9;
                     }
@@ -7109,7 +7109,7 @@ void pauseMenuAnimateCarousel(void)
     {
         flag = 1;
     }
-    if (lbl_803DB424 == 0 || (u16)getNextTaskHintText() < 3 || flag == 0)
+    if (gSaveGameEnabled == 0 || (u16)getNextTaskHintText() < 3 || flag == 0)
     {
         count -= 1;
         last = 4;
@@ -8873,7 +8873,7 @@ void GameUI_frameEnd(void)
         gPauseMenuTransitionStarted = 0;
         cutsceneFadeInOut(0);
         unlockLevel(0, 0, 1);
-        lbl_803DB424 = 0xff;
+        gSaveGameEnabled = 0xff;
         loadUiDll(4);
         warpToMap(0x12, 0);
         Obj_ResetObjectSystem();

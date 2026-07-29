@@ -45,7 +45,7 @@ extern TitleMenuTextEntry gTitleMenuEntries[4];
 extern TitleMenuTextEntry sNAttractModeStringBlock[1];
 extern u8 gOptionsRequestedPanel;
 
-extern u8* lbl_803DD498;
+extern u8* gSaveGameWorkBuffer;
 
 void TitleMenu_render(int obj)
 {
@@ -97,7 +97,7 @@ void TitleMenu_frameEnd(void)
     {                                                                                                                  \
         int result;                                                                                                    \
         result = loadGameOptions();                                                                                    \
-        if ((result == 0) && (lbl_803DB424 != 0))                                                                      \
+        if ((result == 0) && (gSaveGameEnabled != 0))                                                                      \
         {                                                                                                              \
             cardCreateSaveFile(1);                                                                                     \
         }                                                                                                              \
@@ -117,12 +117,12 @@ int TitleMenu_run(void)
 
     previousFadeTimer = gTitleMenuLoadDelay;
     frames = framesThisStep;
-    if (lbl_803DB424 == 0xfe)
+    if (gSaveGameEnabled == 0xfe)
     {
         TitleMenu_ReloadSaveSettings();
-        if (lbl_803DB424 == 0xfe)
+        if (gSaveGameEnabled == 0xfe)
         {
-            lbl_803DB424 = 1;
+            gSaveGameEnabled = 1;
         }
     }
     if ((gAttractMovieAutoplayEnabled == 0) && (gTitleMenuInputCooldown == 0))
@@ -199,12 +199,12 @@ int TitleMenu_run(void)
             gTitleMenuLinkInterface->vtable->setSelected(0);
             gAttractMoviePlaybackEnabled = 0;
             (*gCameraInterface)->releaseAction((void*)0, 1);
-            if (lbl_803DB424 == 0xff)
+            if (gSaveGameEnabled == 0xff)
             {
                 TitleMenu_ReloadSaveSettings();
-                if (lbl_803DB424 == 0xff)
+                if (gSaveGameEnabled == 0xff)
                 {
-                    lbl_803DB424 = 1;
+                    gSaveGameEnabled = 1;
                 }
             }
         }
@@ -371,7 +371,7 @@ void TitleMenu_initialise(void)
     int i;
     int mode;
 
-    if ((lbl_803DD498[0x21] & 0x80) != 0)
+    if ((gSaveGameWorkBuffer[0x21] & 0x80) != 0)
     {
         gAttractMovieAutoplayEnabled = 0;
     }
@@ -379,7 +379,7 @@ void TitleMenu_initialise(void)
     {
         gAttractMovieAutoplayEnabled = 1;
     }
-    if (lbl_803DB424 >= 0xfe)
+    if (gSaveGameEnabled >= 0xfe)
     {
         cardSetIdentityCheckEnabled(0);
     }

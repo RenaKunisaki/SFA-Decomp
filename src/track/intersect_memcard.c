@@ -699,12 +699,12 @@ void showMemCardError(u8 err)
                 gSaveCardRetry = 1;
                 break;
             case 2:
-                lbl_803DB424 = 0;
+                gSaveGameEnabled = 0;
                 gSaveCardState = 0xd;
                 break;
             case 3:
                 setGameState(6);
-                lbl_803DB424 = 0;
+                gSaveGameEnabled = 0;
                 gSaveCardState = 0xd;
                 break;
             case 4:
