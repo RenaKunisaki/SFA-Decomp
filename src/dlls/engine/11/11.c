@@ -1603,6 +1603,7 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
     f32 fz434;
     f32 fz430;
     PartfxEffectState** arr;
+    int emitterAddress;
     int base0;
     int total;
 
@@ -1759,8 +1760,10 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
     arr[slot]->stageDurations[4] = st->sequenceParams[4];
     arr[slot]->stageDurations[5] = st->sequenceParams[5];
     arr[slot]->stageDurations[6] = st->sequenceParams[6];
-    arr[slot]->emitterCommands =
-        (u8*)(base0 + (int)arr[slot]->inlineData + 0x100);
+    emitterAddress = base0;
+    emitterAddress += (int)arr[slot]->inlineData;
+    emitterAddress += 0x100;
+    arr[slot]->emitterCommands = (u8*)emitterAddress;
     arr[slot]->auxSequenceBuffer = NULL;
     if (total != 0)
     {
