@@ -527,8 +527,8 @@ int cullVisibleShadowTriangles(GameObject* obj, void* u1, void* u2, int count, V
     return gShadowVisibleCount > 0;
 }
 
-void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObject* obj, int triangleCount, void* p7,
-                       void* buf48, f32 f)
+void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObject* obj, int triangleCount,
+                             void* unusedDrawScratch, void* unusedBounds, f32 unusedYOffset)
 {
     u8 col[4];
     Vec3f savedWorldPos;
