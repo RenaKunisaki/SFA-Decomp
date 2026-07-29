@@ -528,7 +528,7 @@ void cutsceneFadeInOut(int enter)
     cutsceneEnterExit(enter, 1);
 }
 
-u8 lbl_8033C3B8[0x3E8];
+extern u8 lbl_8033C3B8[0x3E8];
 typedef struct GameLoopRenderModeStorage
 {
     GXRenderModeObj mode;
@@ -998,5 +998,7 @@ int main(int argc, char** argv)
         gameLoop();
     } while (1);
 }
+
+u8 lbl_8033C3B8[0x3E8];
 
 char sMainFinishedInitMessage[16] = "finished init\n";
