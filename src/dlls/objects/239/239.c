@@ -10,7 +10,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
 #include "main/debug.h"
-#include "main/dll/dll_005B_modgfxfunc03.h"
+#include "main/dll/dll_005B_modgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/maketex_api.h"
@@ -264,7 +264,7 @@ void pushable_initWcPushBlock(GameObject* obj, PushableState* state) {
 }
 
 int pushable_updateMagicGem(GameObject* obj, PushableState* state) {
-    ModgfxFunc03Interface** effectInterface;
+    Dll5BInterface** effectInterface;
     u8 nearTarget;
     ObjTextureRuntimeSlot* texture;
     f32 value;

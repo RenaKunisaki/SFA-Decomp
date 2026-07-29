@@ -8,7 +8,7 @@
 #include "dlls/objects/237.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_005A_staffcollision.h"
-#include "main/dll/dll_005B_modgfxfunc03.h"
+#include "main/dll/dll_005B_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/mapEventTypes.h"
@@ -80,7 +80,7 @@ STATIC_ASSERT(offsetof(DllF7State, alternateMode) == 0xB);
 STATIC_ASSERT(sizeof(DllF7State) == 0xC);
 
 StaffCollisionInterface** gDllF7Resource5A;
-ModgfxFunc03Interface** gDllF7Resource5B;
+Dll5BInterface** gDllF7Resource5B;
 
 int dll_F7_getExtraSize(void) {
     return sizeof(DllF7State);

@@ -28,8 +28,8 @@
 #define MIKABOMB_CAMERA_SHAKE_DURATION  10.0f
 #define MIKABOMB_CAMERA_SHAKE_FALLOFF   6.0f
 
-const ModgfxSpawnCountRange gMikaBombExplosionSpawnCountRange = {(MIKABOMB_EXPLOSION_SPAWN_MIN << 16) |
-                                                                 MIKABOMB_EXPLOSION_SPAWN_MAX};
+const Dll5BSpawnCountRange gMikaBombExplosionSpawnCountRange = {MIKABOMB_EXPLOSION_SPAWN_MIN,
+                                                                MIKABOMB_EXPLOSION_SPAWN_MAX};
 
 ObjectDescriptor gMikaBombObjDescriptor = {
     0,
@@ -101,8 +101,8 @@ void MikaBomb_update(GameObject* obj) {
     }
 
     if (obj->anim.alpha == 0xff || state->exploded != 0) {
-        ModgfxSpawnCountRange playerSpawnCountRange;
-        ModgfxSpawnCountRange groundSpawnCountRange;
+        Dll5BSpawnCountRange playerSpawnCountRange;
+        Dll5BSpawnCountRange groundSpawnCountRange;
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, MIKABOMB_HIT_VOLUME_SLOT, 1, 0);
         ObjHits_EnableObject(obj);
         if (((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject != 0 &&
