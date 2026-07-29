@@ -623,19 +623,18 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
             modelState->shadowRenderResource->vertices[i].z = kf * vertices[i].z;
         }
     }
-    if (modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED)
-    {
+    if (modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED) {
+        u32 vertexOffset;
+        Vec3s* vertex;
         u32 i;
         GXBegin(GX_TRIANGLES, GX_VTXFMT0, modelState->shadowRenderResource->vertexCount & 0xffff);
-        for (i = 0; i < modelState->shadowRenderResource->vertexCount; i++)
-        {
-            GXPosition3s16(modelState->shadowRenderResource->vertices[i].x,
-                           modelState->shadowRenderResource->vertices[i].y,
-                           modelState->shadowRenderResource->vertices[i].z);
+        i = 0;
+        vertexOffset = i;
+        for (; i < modelState->shadowRenderResource->vertexCount; i++, vertexOffset += sizeof(Vec3s)) {
+            vertex = (Vec3s*)((u8*)modelState->shadowRenderResource->vertices + vertexOffset);
+            GXPosition3s16(vertex->x, vertex->y, vertex->z);
         }
-    }
-    else
-    {
+    } else {
         int i;
         int w0;
         GXBegin(GX_TRIANGLES, GX_VTXFMT2, (triangleCount * 3) & 0xffff);
