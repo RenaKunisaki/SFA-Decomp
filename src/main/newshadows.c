@@ -689,12 +689,14 @@ void sortShadowEntriesDescending(ShadowSortEntry* arr, int count);
 
 void renderShadows(int unused0, int unused1, int unused2)
 {
+    NewShadowCaster* casterPtr;
     f32 *mc54p;
+    f32* vAzp;
+    f32* vAyp;
+    Texture** texture;
     f32 dirY, dirZ, vAy, dirX, sCamX, sCamY;
     int savedRotY;
     s16 savedRotX;
-    Texture** texture;
-    NewShadowCaster* casterPtr;
     f32 om100[24];
     Mtx mTrans, mScale;
     Mtx44 mOrtho;
@@ -708,12 +710,12 @@ void renderShadows(int unused0, int unused1, int unused2)
     f32 sCamZ, savedFovY, vAx, vAz, orthoHalf;
     int slotIdx, texIdx;
     s8 casterIdx;
+    int w;
     GameObject* obj;
     s16 savedRotZ;
     ObjModelState* modelState;
     NewShadowCastSlot* castSlot;
     MtxPtr viewMtx;
-    int screenW;
 
     if (gNewShadowCasterCount == 0)
         return;
@@ -736,18 +738,19 @@ void renderShadows(int unused0, int unused1, int unused2)
     v30.z = 0.0f;
     buildShadowVolumeBox(&v30.x, om100, 2.0f);
     mapGetBlocks(&layerTables, &blocks);
+    texIdx = 0;
     slotIdx = 0;
     casterIdx = 0;
-    texIdx = 0;
     casterPtr = shadowData->casters;
     mc54p = &mc54[0];
+    vAzp = &vA.x + 2;
+    vAyp = &vA.x + 1;
     for (; casterIdx < gNewShadowCasterCount && casterIdx < NEW_SHADOW_MAX_CASTERS; casterPtr++, casterIdx++)
     {
         u8 alpha;
         u8 kind;
         obj = casterPtr->obj;
         modelState = obj->anim.modelState;
-        screenW = 0;
         Camera_SetCurrentViewIndex(0);
         alpha = objShadowUpdateAlpha(obj, framesThisStep);
         Camera_SetCurrentViewIndex(1);
@@ -765,7 +768,7 @@ void renderShadows(int unused0, int unused1, int unused2)
         castSlot->alpha = alpha;
         if ((u8)texIdx < NEW_SHADOW_MAX_CAST_TEXTURES && (kind = casterPtr->flags) != 0)
         {
-            int w;
+            int screenW;
             if ((u8)texIdx < 3)
             {
                 w = 0x100;
@@ -790,7 +793,7 @@ void renderShadows(int unused0, int unused1, int unused2)
                 w = obj->anim.modelState->shadowTexture->width;
                 screenW = w;
             }
-            skyGetObjectLightDirection(obj, &vA.x, &vA.y, &vA.z);
+            skyGetObjectLightDirection(obj, &vA.x, vAyp, vAzp);
             dot24.x = -modelState->shadowOffsetX;
             dot24.y = -modelState->shadowOffsetY;
             dot24.z = -modelState->shadowOffsetZ;
