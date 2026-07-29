@@ -1005,7 +1005,7 @@ void objFreeObjDef(u8* obj, int flag)
         break;
     }
     gTitleMenuControlInterface->vtable->func15(obj);
-    (*gExpgfxInterface)->freeOwner3((u32)obj);
+    (*gExpgfxInterface)->freeOwner3((u32)(GameObject*)obj);
     if (((ObjAnimComponent*)obj)->modelInstance->flags & OBJMODEL_FLAG_SKIP_RESET_UPDATE)
     {
         ObjGroup_RemoveObject((u32)obj, OBJECT_OBJGROUP_HITBOX);
