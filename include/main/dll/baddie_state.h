@@ -60,7 +60,7 @@ typedef struct BaddieState {
     void *contactObj; /* GameObject*; its anim.romDefNo (0x5d/0x99/0x1db/0x223) switches a sfx override (intersect.c) */
     u8 unkC8[0x118 - 0xC8];
     f32 unk118; /* a local-space point carried through a reparent exactly like
-        anim.localPos: player.c fn_80296EB4 pushes it to world space through the old
+        anim.localPos: player.c playerReparentPreservingWorldTransform pushes it to world space through the old
         parent and pulls it back through the new one. No other reader in the tree. */
     f32 unk11C;
     f32 unk120;

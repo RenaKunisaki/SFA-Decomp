@@ -2163,7 +2163,7 @@ void playerHeal(GameObject* obj)
     inner->moveVariantIndex = 0xff;
 }
 
-void fn_80296D20(GameObject* obj, GameObject* parentObj)
+void playerReleaseLedgeGrabOn(GameObject* obj, GameObject* parentObj)
 {
     int state = (int)((GameObject*)obj)->extra;
     PlayerState* inner = ((GameObject*)obj)->extra;
@@ -2209,7 +2209,7 @@ void fn_80296D20(GameObject* obj, GameObject* parentObj)
     }
 }
 
-void fn_80296EB4(GameObject* obj, GameObject* newParent)
+void playerReparentPreservingWorldTransform(GameObject* obj, GameObject* newParent)
 {
     GameObject* oldParent = obj->anim.parent;
     int a0;

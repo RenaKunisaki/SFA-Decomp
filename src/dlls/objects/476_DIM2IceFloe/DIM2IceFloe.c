@@ -89,7 +89,7 @@ void dim2icefloe_update(GameObject* obj) {
                 if (obj->anim.localPosY < state->curve.sample[1]) {
                     ObjHits_DisableObject(obj);
                     obj->objectFlags |= 0x100;
-                    fn_80296D20(Obj_GetPlayerObject(), obj);
+                    playerReleaseLedgeGrabOn(Obj_GetPlayerObject(), obj);
                 }
                 if (obj->anim.localPosY < state->curve.sample[1] - DIM2_ICE_FLOE_SINK_FREE_DISTANCE) {
                     Obj_FreeObject(obj);

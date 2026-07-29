@@ -45,7 +45,7 @@ void NW_ice_update(GameObject* obj) {
 
         if (state->pairedIceObject->anim.alpha < NW_ICE_COLLISION_ALPHA_THRESHOLD) {
             ObjHits_DisableObject(obj);
-            fn_80296D20(Obj_GetPlayerObject(), obj);
+            playerReleaseLedgeGrabOn(Obj_GetPlayerObject(), obj);
         } else {
             ObjHits_EnableObject(obj);
         }

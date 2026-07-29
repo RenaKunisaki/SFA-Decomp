@@ -273,7 +273,7 @@ void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
 
     if (obj->anim.classId == 1)
     {
-        fn_80296EB4(obj, newParent);
+        playerReparentPreservingWorldTransform(obj, newParent);
         return;
     }
 

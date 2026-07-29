@@ -62,7 +62,7 @@ int playerIsNotAttacking(GameObject* player);
 int objAnimFn_80296328(GameObject* player);
 f32 playerGetProbeHitDist(GameObject* player);
 int playerIsDead(GameObject* obj);
-void fn_80296D20(GameObject* player, GameObject* parentObj);
+void playerReleaseLedgeGrabOn(GameObject* player, GameObject* parentObj);
 void playerSetInCutscene(GameObject* player);
 void playerSetCutsceneCameraFlag(GameObject* player);
 void playerSetOverrideParentSlack(GameObject* player);
@@ -73,7 +73,7 @@ void fn_802B4ED8(GameObject* obj, int state, int mode);
 void fn_802B4DE0(GameObject* obj, int flag);
 void playerUpdateWhileTimeStopped(int obj);
 void objLoadPlayerFromSave(int obj);
-void fn_80296EB4(GameObject* obj, GameObject* newParent);
+void playerReparentPreservingWorldTransform(GameObject* obj, GameObject* newParent);
 
 int Lightfoot_UpdateProximityInteractionState(int obj, int state);
 int Lightfoot_UpdateCompletionInteraction(int obj, int state);
