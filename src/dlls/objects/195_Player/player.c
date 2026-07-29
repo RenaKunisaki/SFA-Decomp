@@ -537,23 +537,6 @@ static inline void Player_ApplyStatusDamage(GameObject* obj, int param)
 /* Number of directional sweep probes (parallel dirs[13]/dirMasks[13] tables). */
 #define PLAYER_SWEEP_DIR_COUNT 13
 
-/*
- * Probe for a climbable map surface (a HITQUERY_CLIMB_SURFACE collision hit) and,
- * if one is found near the player, seed the climb state at `dst` (PlayerState's
- * climb block: climbStepCount = surface height / step size, climbStepHeight,
- * climbStep) and return 1; return 0 when no ladder is in range. Called per
- * candidate direction from the player move handler.
- */
-enum HitQueryMask
-{
-    HITQUERY_TEST_OBJECT_HITBOXES = 0x01,  /* also test reset-object hitboxes, not just map triangles */
-    HITQUERY_REUSE_TRIANGLE_BUFFER = 0x10, /* reuse the loaded map-triangle buffer (skip block reload) */
-    HITQUERY_SKIP_CULLED_OBJECTS = 0x80,   /* skip objects whose modelInstance flag 0x01000000 is set */
-    /* Composite the player's ladder/climb probe issues: a climb-typed map
-     * surface, map triangles only (no 0x01 -> no object hitboxes). */
-    HITQUERY_CLIMB_SURFACE = 0x204,
-};
-
 void playerUpdatePathEffectCountdown(GameObject* obj, int inner)
 {
     f32 outvec[3];
@@ -11384,6 +11367,13 @@ void fn_802A81B8(GameObject* obj, int state, f32* out)
     }
 }
 
+/*
+ * Probe for a climbable map surface (a HITQUERY_CLIMB_SURFACE collision hit) and,
+ * if one is found near the player, seed the climb state at `dst` (PlayerState's
+ * climb block: climbStepCount = surface height / step size, climbStepHeight,
+ * climbStep) and return 1; return 0 when no ladder is in range. Called per
+ * candidate direction from the player move handler.
+ */
 int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag)
 {
     TrackGroundHit** hits;

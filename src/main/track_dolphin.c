@@ -233,7 +233,7 @@ int findSurfaceInYRange(GameObject* obj, f32 x, f32 lo, f32 z, f32 hi, f32* outS
         hi = lo;
         lo = t;
     }
-    n = hitDetectFn_80065e50(obj, x, lo, z, &arr, 0, 1);
+    n = hitDetectFn_80065e50(obj, x, lo, z, &arr, 0, HITQUERY_TEST_OBJECT_HITBOXES);
     *outSurfaceY = lo;
     *outSurfaceObj = NULL;
     for (i = 0; i < n; i++)

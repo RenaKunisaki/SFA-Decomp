@@ -33,6 +33,16 @@ STATIC_ASSERT(sizeof(TrackQueryBounds) == 0x18);
 
 struct Shader;
 struct MapBlockData;
+enum HitQueryMask
+{
+    HITQUERY_TEST_OBJECT_HITBOXES = 0x01,  /* also test reset-object hitboxes, not just map triangles */
+    HITQUERY_REUSE_TRIANGLE_BUFFER = 0x10, /* reuse the loaded map-triangle buffer (skip block reload) */
+    HITQUERY_SKIP_CULLED_OBJECTS = 0x80,   /* skip objects whose modelInstance flag 0x01000000 is set */
+    /* Composite the player's ladder/climb probe issues: a climb-typed map
+     * surface, map triangles only (no 0x01 -> no object hitboxes). */
+    HITQUERY_CLIMB_SURFACE = 0x204,
+};
+
 typedef struct ObjModel ObjModel;
 
 int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount);
