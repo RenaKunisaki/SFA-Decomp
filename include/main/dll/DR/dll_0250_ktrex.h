@@ -2,7 +2,7 @@
 #define MAIN_DLL_DR_DLL_0250_KTREX_H_
 
 #include "global.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "game/objects/object.h"
 #include "main/dll/baddie_state.h"
 #include "main/model_engine.h"

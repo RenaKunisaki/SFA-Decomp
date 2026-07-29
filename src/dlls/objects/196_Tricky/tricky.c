@@ -79,7 +79,7 @@
 #include "main/dll/tricky_api.h"
 #include "main/objprint_api.h"
 #include "main/dll/objfx_api.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/audio/sfx_limited_object_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/object_render.h"

@@ -15221,7 +15221,7 @@ void fn_802AFB0C(int obj, int inner, int state)
                 desc.rx = 0;
                 desc.ry = 0;
                 desc.rz = 0;
-                (*gPlayerResource)->spawn((u8*)obj, 0, (PartFxSpawnParams*)&desc, 1, -1, &col);
+                (*gPlayerResource)->spawn((GameObject*)obj, 0, (PartFxSpawnParams*)&desc, 1, -1, &col);
                 if (gPlayerResource != NULL)
                 {
                     Resource_Release(gPlayerResource);

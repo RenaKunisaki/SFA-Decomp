@@ -35,7 +35,7 @@
 #include "track/intersect_api.h"
 #include "main/lightmap.h"
 #include "main/dll/dll_80136a40.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/camera_shake_api.h"
 #include "main/dll/boneparticleeffect_interface.h"
 #include "main/dll/expgfx_resource_api.h"

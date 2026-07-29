@@ -1081,7 +1081,7 @@ void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime)
         msg.w[1] += randomGetRange(0, 0x9b);
         msg.w[2] += randomGetRange(0, 0x9b);
         (*gKTRexResource)
-            ->spawn((u8*)obj, 0, (PartFxSpawnParams*)&gKTRexEffectSpawnWork, 1, -1,
+            ->spawn(obj, 0, (PartFxSpawnParams*)&gKTRexEffectSpawnWork, 1, -1,
                     (StaffCollisionColorArgs*)msg.w);
         gKTRexContactEffectCooldown = 0x3c;
     }

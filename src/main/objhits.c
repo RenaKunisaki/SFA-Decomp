@@ -20,7 +20,7 @@
 #include "main/objanim_internal.h"
 #include "main/objfx.h"
 #include "main/objHitReact_types.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/resource.h"
 #include "dolphin/os/OSReport.h"
 #include "dolphin/mtx.h"

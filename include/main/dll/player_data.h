@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_PLAYER_DATA_H_
 #define MAIN_DLL_PLAYER_DATA_H_
 
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "game/objects/object.h"
 #include "main/lightmap_api.h"
 

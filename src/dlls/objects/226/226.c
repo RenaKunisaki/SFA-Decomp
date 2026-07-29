@@ -39,7 +39,7 @@
 #include "dolphin/gx/GXEnum.h"
 #include "string.h"
 #include "main/dll/dll_00E2_staff_api.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebit_ids.h"
 #include "main/frame_timing.h"

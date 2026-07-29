@@ -7,7 +7,7 @@
 #include "dlls/objects/247.h"
 #include "dlls/objects/237.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/dll/dll_005B_modgfxfunc03.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/frame_timing.h"

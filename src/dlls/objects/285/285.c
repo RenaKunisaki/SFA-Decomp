@@ -7,7 +7,7 @@
  */
 #include "dlls/objects/285.h"
 #include "dlls/objects/237.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/game_ui_interface.h"
 #include "main/objHitReact_types.h"
 #include "main/objseq.h"

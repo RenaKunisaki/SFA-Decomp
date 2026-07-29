@@ -12,7 +12,7 @@
 #include "main/dll/objfx_api.h"
 #include "main/objfx.h"
 #include "main/newshadows_audio_api.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/object_render.h"
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
