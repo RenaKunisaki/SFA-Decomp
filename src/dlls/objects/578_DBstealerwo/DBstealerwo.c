@@ -2328,7 +2328,7 @@ void dbstealerworm_update(GameObject* objp)
     {
         grp = (DbWormMsgGroup*)(tbl + ((DbstealerwormPlacement*)data)->cfgTableIndex * 8);
         grp = (DbWormMsgGroup*)((char*)grp + 0x15c);
-        ((DbStealerwormControl*)sub)->msgStack = allocModelStruct_800139e8(0x14, 0xc);
+        ((DbStealerwormControl*)sub)->msgStack = Queue_Alloc(0x14, 0xc);
         n = grp->count;
         for (; n != 0;)
         {

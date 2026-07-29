@@ -104,7 +104,7 @@ class Elf:
         return None
 
 
-ROOT = "/Users/zcanann/Documents/Projects/SFA-Decomp"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OBJDIR = os.path.join(ROOT, "build/GSAE01/obj")
 # Ghidra-import names encode the address they were lifted from: lbl_803DEA04,
 # DAT_803dd8bd, D_8035F680. Used only for UND symbols (a locally DEFINED symbol
