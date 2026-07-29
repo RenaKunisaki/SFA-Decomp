@@ -16496,7 +16496,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
 {
     int tbl = (int)lbl_80332EC0;
     PlayerSeqPlacement* placement = (PlayerSeqPlacement*)((GameObject*)obj2)->anim.placementData;
-    PlayerState* inner = ((GameObject*)obj)->extra;
+    int inner = (int)((GameObject*)obj)->extra;
     int result = 0;
     int va;
     int vb;
@@ -16514,7 +16514,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     {
         Shield_setMode(gPlayerStaffObject, 0);
     }
-    playerStaffInit((GameObject*)obj, (int)inner);
+    playerStaffInit((GameObject*)obj, inner);
     if (*(void**)&gPlayerEggObject == NULL && Obj_IsLoadingLocked() != 0)
     {
         ObjLink_AttachChild((GameObject*)obj,
@@ -16526,7 +16526,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     if (*(void**)&gPlayerEggObject != NULL)
     {
         *(int*)&((GameObject*)gPlayerEggObject)->anim.parent = *(int*)&((GameObject*)obj)->anim.parent;
-        if (inner->characterId == 0)
+        if (((PlayerState*)inner)->characterId == 0)
         {
             *(s16*)(gPlayerEggObject + 6) |= 0x4000;
         }
@@ -16541,33 +16541,33 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         ObjPath_GetPointWorldPosition((GameObject*)obj, 4, &gPlayerStaffObject->anim.localPosX,
                                       &gPlayerStaffObject->anim.localPosY, &gPlayerStaffObject->anim.localPosZ, 0);
     }
-    if ((((u32) inner->flags3F3 >> 3 & 1) != 0 || inner->animState == 0x40) &&
-        ((u32) inner->flags3F4 >> 7 & 1) == 0)
+    if ((((u32) ((PlayerState*)inner)->flags3F3 >> 3 & 1) != 0 || ((PlayerState*)inner)->animState == 0x40) &&
+        ((u32) ((PlayerState*)inner)->flags3F4 >> 7 & 1) == 0)
     {
         playerSetDisguised((GameObject*)obj, 0);
-        inner->animState = -1;
+        ((PlayerState*)inner)->animState = -1;
     }
     ObjHits_DisableObject((GameObject*)obj);
-    *(u32*)&inner->flags360 &= ~PLAYER_FLAG_HITDETECT;
+    *(u32*)&((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_HITDETECT;
     if ((s8)seq->movementState != 0)
     {
         s8 c;
-        *(u32*)&inner->flags360 &= ~PLAYER_FLAG_AIM_READY;
+        *(u32*)&((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_AIM_READY;
         {
             f32 fz = 0.0f;
-            inner->knockbackTimer = fz;
-            inner->knockbackHitTimer = fz;
+            ((PlayerState*)inner)->knockbackTimer = fz;
+            ((PlayerState*)inner)->knockbackHitTimer = fz;
         }
         if (((u32) * (u8*)((char*)inner + 0x3f2) >> 7 & 1) == 0)
         {
-            if (gPlayerPathObject != NULL && ((u32) inner->flags3F4 >> 6 & 1) != 0)
+            if (gPlayerPathObject != NULL && ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0)
             {
-                inner->staffActionRequest = 1;
+                ((PlayerState*)inner)->staffActionRequest = 1;
                 ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
             }
-            inner->isHoldingObject = 0;
+            ((PlayerState*)inner)->isHoldingObject = 0;
             {
-                GameObject* p = inner->heldObj;
+                GameObject* p = ((PlayerState*)inner)->heldObj;
                 if (p != NULL)
                 {
                     s16 sp = p->anim.romDefNo;
@@ -16579,9 +16579,9 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     {
                         Carryable_putDownAndSavePos(p);
                     }
-                    *(s16*)((char*)inner->heldObj + 6) &= ~0x4000;
-                    *(int*)((char*)inner->heldObj + 0xf8) = 0;
-                    inner->heldObj = 0;
+                    *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) &= ~0x4000;
+                    *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                    ((PlayerState*)inner)->heldObj = 0;
                 }
             }
         }
@@ -16594,7 +16594,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 seq->posOffsetX = ((GameObject*)obj)->anim.localPosX - ((GameObject*)obj2)->anim.localPosX;
                 seq->posOffsetY = ((GameObject*)obj)->anim.localPosY - ((GameObject*)obj2)->anim.localPosY;
                 seq->posOffsetZ = ((GameObject*)obj)->anim.localPosZ - ((GameObject*)obj2)->anim.localPosZ;
-                seq->rotOffsetX = inner->targetYaw - (u16) * (s16*)obj2;
+                seq->rotOffsetX = ((PlayerState*)inner)->targetYaw - (u16) * (s16*)obj2;
                 if (seq->rotOffsetX > 0x8000)
                 {
                     seq->rotOffsetX = seq->rotOffsetX - 0xffff;
@@ -16629,10 +16629,10 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 seq->movementState = 0;
             }
             ((GameObject*)obj)->anim.activeMove = -1;
-            inner->bodyLeanHalf = 0;
-            inner->headPitch = 0;
-            inner->bodyLeanAngle = 0;
-            inner->headYaw = 0;
+            ((PlayerState*)inner)->bodyLeanHalf = 0;
+            ((PlayerState*)inner)->headPitch = 0;
+            ((PlayerState*)inner)->bodyLeanAngle = 0;
+            ((PlayerState*)inner)->headYaw = 0;
         }
         else if (c == 4)
         {
@@ -16680,8 +16680,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             {
                 d += 0xffff;
             }
-            inner->bodyLeanAimBase = -*(s16*)(va + 2);
-            inner->headYawAimBase = -*(s16*)va;
+            ((PlayerState*)inner)->bodyLeanAimBase = -*(s16*)(va + 2);
+            ((PlayerState*)inner)->headYawAimBase = -*(s16*)va;
             if (d >= 0)
             {
                 if (d > 0x2aaa)
@@ -16760,12 +16760,12 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 }
                 if (((PlayerState*)inner)->focusObject != NULL)
                 {
-                    (*gPlayerInterface)->setState((void*)obj, inner, 0x18);
+                    (*gPlayerInterface)->setState((void*)obj, (void*)inner, 0x18);
                     *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))playerStagedClearActiveMove;
                 }
                 else
                 {
-                    (*gPlayerInterface)->setState((void*)obj, inner, 1);
+                    (*gPlayerInterface)->setState((void*)obj, (void*)inner, 1);
                     *(void (**)(int, int))((char*)inner + 0x304) = (void (*)(int, int))playerStagedRestoreDefaultControl;
                     ((PlayerState*)inner)->baddie.prevControlMode = 1;
                 }
@@ -16781,9 +16781,9 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     seq->posOffsetScale = 1.0f;
                 }
                 prev = seq->posOffsetScale - prev;
-                ((PlayerState*)inner)->targetYaw += (s16)(prev * (f32) inner->aimTurnYaw);
+                ((PlayerState*)inner)->targetYaw += (s16)(prev * (f32) ((PlayerState*)inner)->aimTurnYaw);
                 *(s16*)obj = ((PlayerState*)inner)->yaw = ((PlayerState*)inner)->targetYaw;
-                dd = inner->bodyLeanAimBase - (u16) inner->bodyLeanAimDelta;
+                dd = ((PlayerState*)inner)->bodyLeanAimBase - (u16) ((PlayerState*)inner)->bodyLeanAimDelta;
                 if (dd > 0x8000)
                 {
                     dd = dd - 0xffff;
@@ -16792,8 +16792,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 {
                     dd = dd + 0xffff;
                 }
-                *(s16*)(va + 2) = (s16)((f32)dd * seq->posOffsetScale + (f32) inner->bodyLeanAimBase);
-                dd = inner->headYawAimBase - (u16) inner->headYawAimDelta;
+                *(s16*)(va + 2) = (s16)((f32)dd * seq->posOffsetScale + (f32) ((PlayerState*)inner)->bodyLeanAimBase);
+                dd = ((PlayerState*)inner)->headYawAimBase - (u16) ((PlayerState*)inner)->headYawAimDelta;
                 if (dd > 0x8000)
                 {
                     dd = dd - 0xffff;
@@ -16802,9 +16802,9 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 {
                     dd = dd + 0xffff;
                 }
-                *(s16*)va = (s16)((f32)dd * seq->posOffsetScale + (f32) inner->headYawAimBase);
-                *(s16*)(vb + 2) = (s16)((f32) inner->bodyLeanHalf * ((one = 1.0f) - seq->posOffsetScale));
-                *(s16*)(vb + 4) = (s16)((f32) inner->headPitch * (one - seq->posOffsetScale));
+                *(s16*)va = (s16)((f32)dd * seq->posOffsetScale + (f32) ((PlayerState*)inner)->headYawAimBase);
+                *(s16*)(vb + 2) = (s16)((f32) ((PlayerState*)inner)->bodyLeanHalf * ((one = 1.0f) - seq->posOffsetScale));
+                *(s16*)(vb + 4) = (s16)((f32) ((PlayerState*)inner)->headPitch * (one - seq->posOffsetScale));
                 ((GameObject*)obj)->anim.rotZ = *(s16*)(vb + 4) / 4;
                 ((PlayerState*)inner)->bodyLeanAngle = *(s16*)(va + 2);
                 ((PlayerState*)inner)->headYaw = -*(s16*)va;
@@ -16897,10 +16897,10 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     ((GameObject*)obj)->userData1 = 0;
                     ((PlayerState*)inner)->baddie.cameraYaw = 0;
                     ((PlayerState*)inner)->baddie.physicsActive = 1;
-                    inner->baddie.flags4 = inner->baddie.flags4 & ~0x100000;
+                    ((PlayerState*)inner)->baddie.flags4 = ((PlayerState*)inner)->baddie.flags4 & ~0x100000;
                     ((PlayerState*)inner)->emissionState = 0;
-                    fn_802B0EA4((GameObject*)(obj), (int)inner, (int)inner);
-                    (*gPlayerInterface)->update((void*)obj, inner, timeDelta, timeDelta, gPlayerStateHandlers,
+                    fn_802B0EA4((GameObject*)(obj), inner, inner);
+                    (*gPlayerInterface)->update((void*)obj, (void*)inner, timeDelta, timeDelta, gPlayerStateHandlers,
                         &gPlayerDefaultStateHandler);
                 }
             }
@@ -16921,17 +16921,17 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 ((GameObject*)obj)->userData1 = 0;
                 ((PlayerState*)inner)->baddie.cameraYaw = 0;
                 ((PlayerState*)inner)->baddie.physicsActive = 1;
-                inner->baddie.flags4 = inner->baddie.flags4 & ~0x100000;
+                ((PlayerState*)inner)->baddie.flags4 = ((PlayerState*)inner)->baddie.flags4 & ~0x100000;
                 ((PlayerState*)inner)->emissionState = 0;
-                fn_802B0EA4((GameObject*)(obj), (int)inner, (int)inner);
-                (*gPlayerInterface)->update((void*)obj, inner, timeDelta, timeDelta, gPlayerStateHandlers,
+                fn_802B0EA4((GameObject*)(obj), inner, inner);
+                (*gPlayerInterface)->update((void*)obj, (void*)inner, timeDelta, timeDelta, gPlayerStateHandlers,
                     &gPlayerDefaultStateHandler);
             }
             lbl_803DE468 = dist;
         }
         if ((s8)seq->movementState == 0)
         {
-            (*gPlayerInterface)->setState((void*)obj, inner, 1);
+            (*gPlayerInterface)->setState((void*)obj, (void*)inner, 1);
             *(void (**)(int, int))((char*)inner + 0x304) = (void (*)(int, int))playerStagedRestoreDefaultControl;
             ((PlayerState*)inner)->baddie.prevControlMode = 1;
         }
@@ -16939,7 +16939,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     else
     {
         seq->flags |= seq->savedFlags & ~0x400;
-        inner->baddie.movementFlags = 0;
+        ((PlayerState*)inner)->baddie.movementFlags = 0;
         {
             f32 fz2 = 0.0f;
             ((PlayerState*)inner)->baddie.moveInputX = fz2;
@@ -16950,7 +16950,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         *(int*)&((PlayerState*)inner)->baddie.unk318 = 0;
         if (seq->flags & 1)
         {
-            inner->baddie.flags4 |= 0x100000;
+            ((PlayerState*)inner)->baddie.flags4 |= 0x100000;
             ((PlayerState*)inner)->baddie.physicsActive = 0;
         }
         for (vb = 0; vb < seq->eventCount; vb++)
@@ -17038,12 +17038,12 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     }
                     if (arrayIndexOf((int*)(tbl + 0x160), 4, ((GameObject*)va)->anim.romDefNo) != -1)
                     {
-                        (*gPlayerInterface)->setState((void*)obj, inner, 0x1a);
+                        (*gPlayerInterface)->setState((void*)obj, (void*)inner, 0x1a);
                         *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))playerStagedClearActiveMove;
                     }
                     else
                     {
-                        (*gPlayerInterface)->setState((void*)obj, inner, 0x18);
+                        (*gPlayerInterface)->setState((void*)obj, (void*)inner, 0x18);
                         *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))playerStagedClearActiveMove;
                     }
                 }
@@ -17062,12 +17062,12 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 ((PlayerState*)inner)->moveSequence = 0;
                 if ((u32)obj2 != 0 && ((GameObject*)obj2)->anim.romDefNo == 0x22)
                 {
-                    (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, (int)inner, 0x16);
+                    (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, inner, 0x16);
                     *(int*)&((PlayerState*)inner)->baddie.unk304 = 0;
                 }
                 else
                 {
-                    (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, (int)inner, 0x18);
+                    (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, inner, 0x18);
                     *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))playerStagedClearActiveMove;
                 }
                 break;
@@ -17093,7 +17093,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             }
             case 6:
                 (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_VIEWFINDER_RESOURCE_ID, 0, 0, 0);
-                (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, (int)inner, 0x17);
+                (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, inner, 0x17);
                 *(int*)&((PlayerState*)inner)->baddie.unk304 = 0;
                 break;
             case 7:
@@ -17115,14 +17115,14 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 break;
             }
             case 0xa:
-                if (gPlayerPathObject != NULL && ((u32) inner->flags3F4 >> 6 & 1) != 0)
+                if (gPlayerPathObject != NULL && ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0)
                 {
                     ((PlayerState*)inner)->staffActionRequest = 2;
                     ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
                 }
                 break;
             case 0x18:
-                if (gPlayerPathObject != NULL && ((u32) inner->flags3F4 >> 6 & 1) != 0)
+                if (gPlayerPathObject != NULL && ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0)
                 {
                     ((PlayerState*)inner)->staffActionRequest = 0;
                     ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
@@ -17227,11 +17227,11 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 staffToggle((GameObject*)(obj), 0);
                 break;
             case 0x1d:
-                (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, (int)inner, 0x1a);
+                (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, inner, 0x1a);
                 *(void (**)(int))((char*)inner + 0x304) = (void (*)(int))playerStagedClearActiveMove;
                 break;
             case 0x1e:
-                (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, (int)inner, 1);
+                (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, inner, 1);
                 *(void (**)(int, int))((char*)inner + 0x304) = (void (*)(int, int))playerStagedRestoreDefaultControl;
                 break;
             case 0x1f:
@@ -17399,8 +17399,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     {
         objSetAnimField48to0((GameObject*)gPlayerPathObject);
     }
-    staffAnimate(obj, inner, timeDelta);
-    if (gPlayerPathObject != NULL && ((u32) inner->flags3F4 >> 6 & 1) != 0)
+    staffAnimate(obj, (void*)inner, timeDelta);
+    if (gPlayerPathObject != NULL && ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0)
     {
         ((GameObject*)gPlayerPathObject)->objectFlags &= ~7;
         if (((PlayerState*)inner)->staffGrown == 0)
