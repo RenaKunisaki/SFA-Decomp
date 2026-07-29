@@ -208,7 +208,7 @@ int fn_802A8680(int p1, int p2, void* src, f32* vec, int out, int flag);
 int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance);
 void fn_802A93F4(GameObject* obj, int p2, int p3);
 void playerCastIceSpell(GameObject* unused);
-int fn_802A97D0(GameObject* obj, int p2);
+int playerCanUseStaffBooster(GameObject* obj, int p2);
 int playerCanCastPortalOpenSpell(GameObject* obj, int p2);
 int playerCanCastQuakeSpell(GameObject* obj, int p2);
 int playerCanCastBlasterSpell(GameObject* obj, int p2, int p3);
@@ -12099,7 +12099,7 @@ void playerCastIceSpell(GameObject* unused)
     }
 }
 
-int fn_802A97D0(GameObject* obj, int p2)
+int playerCanUseStaffBooster(GameObject* obj, int p2)
 {
     PlayerState* inner = obj->extra;
     void* slot;
@@ -14796,7 +14796,7 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
             }
             break;
         case 0x957:
-            if (fn_802A97D0(obj, state) != 0)
+            if (playerCanUseStaffBooster(obj, state) != 0)
             {
                 playerCastSpell((int)obj, state, ((PlayerState*)state)->queuedItemCommand);
             }
@@ -14921,7 +14921,7 @@ void playerRunActiveSpells(GameObject* obj, int state)
     {
         mainSetBits(GAMEBIT_ITEM_PortalSpell_Disabled, 1);
     }
-    if (fn_802A97D0(obj, state) != 0)
+    if (playerCanUseStaffBooster(obj, state) != 0)
     {
         mainSetBits(GAMEBIT_ITEM_StaffBooster_Disabled, 0);
     }
