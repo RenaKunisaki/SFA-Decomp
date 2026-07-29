@@ -147,12 +147,7 @@ ObjectDescriptor gARWArwingObjDescriptor = {
     (ObjectDescriptorExtraSizeCallback)arwarwing_getExtraSize,
 };
 
-static inline f32 clampPos(f32 v, f32 lo, f32 hi)
-{
-    return (v < lo) ? lo : ((v > hi) ? hi : v);
-}
-
-static inline f32 clampNeg(f32 v, f32 lo, f32 hi)
+static inline f32 arwarwing_clampTrim(f32 v, f32 lo, f32 hi)
 {
     return (v < lo) ? lo : ((v > hi) ? hi : v);
 }
@@ -194,10 +189,10 @@ void arwarwing_readControls(GameObject* obj, ArwingState* state)
     }
     aw->rTriggerTrim = (f32)padGetRTrigger(0) / 150.0f;
     trim = aw->rTriggerTrim;
-    aw->rTriggerTrim = clampPos(trim, 0.0f, 1.0f);
+    aw->rTriggerTrim = arwarwing_clampTrim(trim, 0.0f, 1.0f);
     aw->lTriggerTrim = -(f32)padGetLTrigger(0) / 150.0f;
     trim = aw->lTriggerTrim;
-    aw->lTriggerTrim = clampNeg(trim, -1.0f, 0.0f);
+    aw->lTriggerTrim = arwarwing_clampTrim(trim, -1.0f, 0.0f);
     aw->inputFlags = getButtonsJustPressed(0);
     aw->inputFlagsPrev = getButtonsJustPressedIfNotBusy(0);
     aw->inputFlags2 = getButtonsHeld(0);

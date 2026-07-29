@@ -21,7 +21,7 @@
  *  - 0xE4/0xE5/0xE6/0xEB: object.c bookkeeping bytes
  *  - 0xF4/0xF8 s32: userData1/userData2, generic per-instance scratch
  *  - 0xFC/0x100/0x104 f32: object.c
- * The record extends past 0x108; total size unverified - do not take
+ * The record extends past 0x10C; total size unverified - do not take
  * sizeof(GameObject) or index arrays of it.
  *
  * Width discipline (per CLAUDE.md recipe #77): the pointer fields here
@@ -87,6 +87,12 @@ struct GameObject {
         anim.velocity in the localPos integration */
     f32 externalVelY;
     f32 externalVelZ;
+    void* afterBonesCallback; /* obj+0x108: run by the render path immediately
+        after ObjModel_UpdateAnimMatrices has rebuilt the bone matrices, and
+        only for the object that owns them. Every installer allocates an
+        ObjModelChain first, then points this at the routine that advances it
+        (baddieAfterUpdateBonesCb, playerDoTailAnims,
+        dim2prisonmammoth_updateModelChain). */
 };
 
 STATIC_ASSERT(offsetof(GameObject, objectFlags) == 0xB0);

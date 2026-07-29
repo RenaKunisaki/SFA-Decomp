@@ -1404,7 +1404,7 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     }
     inner->sub.modelChain = ObjModelChain_Alloc(&gEarthWarriorTailChainDesc, 1);
     ObjModelChain_SetOrigin(inner->sub.modelChain, 0.15f, 0.75f, -0.05f);
-    *(int*)((char*)obj + 0x108) = (int)dim2prisonmammoth_updateModelChain;
+    obj->afterBonesCallback = dim2prisonmammoth_updateModelChain;
     ObjModelChain_SetEnabled(inner->sub.modelChain, 1);
 }
 

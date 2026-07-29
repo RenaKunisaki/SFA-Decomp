@@ -643,13 +643,13 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
             slot = (u8*)((StaffState*)swipe)->activeSlot;
             count = (int)(2.0f * *(f32*)(model2 + 0x14));
             prog = ((StaffSwipeSlot*)slot)->lengthScale * *(f32*)(model2 + 0x14);
-            if (slot[0x14] & 1)
+            if (((StaffSwipeSlot*)slot)->flags & 1)
             {
                 ((StaffState*)swipe)->anchorX = obj->anim.worldPosX;
                 ((StaffState*)swipe)->anchorY = obj->anim.worldPosY;
                 ((StaffState*)swipe)->anchorZ = obj->anim.worldPosZ;
                 ((StaffState*)swipe)->progress = 0.0f;
-                slot[0x14] &= ~1;
+                ((StaffSwipeSlot*)slot)->flags &= ~1;
             }
             sw = ((StaffState*)swipe)->progress;
             m4 = *(f32*)(model2 + 4);

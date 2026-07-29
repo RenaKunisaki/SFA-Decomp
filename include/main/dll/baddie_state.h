@@ -84,7 +84,9 @@ typedef struct BaddieState {
  * riders/controllers to enable ground handling. */
 #define BADDIE_SURFACE_HAS_NEARBY_FLOOR 0x10
     s8 surfaceFlags; /* per-frame ground/surface contact flags, same field the dll_00C9 enemy view calls surfaceFlags; bits 0x1/0x2/0x10/0x20 are ground-contact channels (mask 0x33 = "touching ground at all") */
-    u8 unk265[0x270 - 0x265];
+    u8 unk265[0x26C - 0x265];
+    s16 unk26C; /* the shared player-interface init writes its two mode arguments here */
+    s16 unk26E;
     s16 substate; /* CA-family substate 0..5; gates the map-event re-register when != 3 */
     s16 prevSubstate; /* latched from substate for change detection (prevSubstate = startState in objseq) */
     s16 controlMode; /* current control move/mode; gPlayerInterface[5](obj,state,N) requests N */
@@ -159,7 +161,7 @@ typedef struct BaddieState {
     s16 controlTimer; /* primary control-state timer; reset on mode entry and accumulated each update */
     u8 unk33A[0x33C - 0x33A];
     s32 curveId; /* active ROM curve, -1 = none; dll_000F player_findCurve stores gRomCurveInterface->find() here and player_updateCurve resolves it back through getById each frame */
-    u8 unk340[0x344 - 0x340];
+    s32 unk340; /* initialised to -1 next to curveId */
     s8 curveSearchFilter; /* type filter passed as the last argument of gRomCurveInterface->find() when picking curveId */
     u8 unk345;
     s8 moveDone; /* set when the current move completes; SeqFns chain the next mode off it */
@@ -175,7 +177,9 @@ typedef struct BaddieState {
     s8 hitPoints; /* remaining hit points; decremented on hit, < 1 = dead */
     u8 unk355;
     u8 moveEventFlags; /* one-shot move-progress event latches (bit1/bit2: SFX fired once past a progress threshold) */
-    u8 unk357[0x35C - 0x357];
+    u8 unk357;
+    u8 unk358;
+    u8 unk359[0x35C - 0x359];
 } BaddieState;
 
 STATIC_ASSERT(sizeof(BaddieState) == 0x35C);

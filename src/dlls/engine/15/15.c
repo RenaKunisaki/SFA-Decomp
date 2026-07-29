@@ -1047,15 +1047,15 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
 
 void player_init(void* unused, void* obj, int a, int b)
 {
-    memset(obj, 0, 0x35c);
-    *(s16*)((char*)obj + 0x26c) = a;
-    *(s16*)((char*)obj + 0x26e) = b;
+    memset(obj, 0, sizeof(BaddieState));
+    ((BaddieState*)obj)->unk26C = a;
+    ((BaddieState*)obj)->unk26E = b;
     ((BaddieState*)obj)->moveJustStartedA = 1;
     ((BaddieState*)obj)->moveJustStartedB = 1;
     ((BaddieState*)obj)->velSmoothTime = PLAYER_MOVE_TIMER_LIMIT;
     ((BaddieState*)obj)->curveId = -1;
-    *(s32*)((char*)obj + 0x340) = -1;
-    *(u8*)((char*)obj + 0x358) = 0;
+    ((BaddieState*)obj)->unk340 = -1;
+    ((BaddieState*)obj)->unk358 = 0;
 }
 
 void player_release(void)
