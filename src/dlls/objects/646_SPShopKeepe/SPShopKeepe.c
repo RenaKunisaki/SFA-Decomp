@@ -789,21 +789,21 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
         case 5:
             if (getCurUiDll() == 0x10)
             {
-                uiDll = getDLL16();
+                uiDll = getCurUiDllInterface();
                 (*uiDll)->setState(0);
             }
             break;
         case 6:
             if (getCurUiDll() == 0x10)
             {
-                uiDll = getDLL16();
+                uiDll = getCurUiDllInterface();
                 (*uiDll)->setState(2);
             }
             break;
         case 7:
             if (getCurUiDll() == 0x10)
             {
-                uiDll = getDLL16();
+                uiDll = getCurUiDllInterface();
                 (*uiDll)->setState(4);
             }
             break;

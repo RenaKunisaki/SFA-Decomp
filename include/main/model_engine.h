@@ -99,7 +99,7 @@ void curUiDllDraw(int a, int b, int c, int d);
 void uiDll_runFrameEndAndLoadNext(void);
 int uiDll_runFrameStartAndLoadNext(void);
 void setCurUiDll(int idx);
-UiDllVTable** getDLL16(void);
+UiDllVTable** getCurUiDllInterface(void);
 void initGameTimer(void);
 void gameTimerRun(void* context);
 

@@ -2,6 +2,7 @@
 
 ```
 Lane C39, derived on origin/staging @ 0eaa172f02.
+Lane C40 closed three of the four open rows by body read (dll.c, objlib.c, footsteps.c, menu.c).
 
 HOW THIS WAS DERIVED (so the next lane can re-run / extend it)
 -------------------------------------------------------------
@@ -154,18 +155,59 @@ fonts.c           (29) main/textrender.c + textrender_run.c      [L1 11][BODY]
 main.c            (34) main/gameloop_main.c + main/gameloop.c    [L1 22][BODY] DP mainLoop etc.
                        + main/modelEngine.c (the game timer)     == SFA gameLoop / gameUpdate /
     main / getGameState / setGameState / checkReset / cutsceneEnterExit / blankScreen.
-dll.c             (12) main/modelEngine.c (partial)              [?] DP dllLoad/dllFree/dllInit/
-    dllLoadFromTab/dllReplaceLoadedDLLs/dllThrowFault.  SFA's GC port moved most DLL loading into
-    the OSLink path; only the UI-DLL slice (getDLL16 / loadUiDll / setCurUiDll / uiDll_run*) and
-    Resource_Acquire/Release survive in modelEngine.c.  NOT SETTLED - see OPEN ROWS.
+dll.c             (12) main/modelEngine.c (the load/free API only) [BODY] SETTLED at the CALL
+    level: DP's `dllLoad(u16 idOrIdx, u16 exportCount)` / `dllFree(void*)` are SFA's
+    `Resource_Acquire(u16 id, int)` / `Resource_Release(void*)`.  Proof is positional, not
+    nominal: DP menuDoMenuSwap and SFA loadUiDll are the same function statement for statement,
+    and where DP writes `dllFree(gActiveMenuDLL)` / `dllLoad(gMenuDLLIDs[i], 1)` SFA writes
+    `Resource_Release(gModelEngineCurUiDllRes)` / `Resource_Acquire(id, 1)` - same slots, same
+    literal 1, same surrounding statements.  The RELOCATION half (dllRelocate / dllLoadFromTab /
+    dllFindExecutingDLL / dllReplaceLoadedDLLs / dllThrowFault) has NO counterpart in any
+    decompiled SFA source: OSLink/OSUnlink are declared in the SDK headers but never defined in
+    the DOL, and SFA's DLLs are copied into four fixed banks (src/dlls/README.md) so there is
+    nothing to relocate.  Whatever performs the bank copy is reached through the
+    gResourceDescriptors `acquire` callback and is not in this tree.
 objexpr.c         (28) dlls/engine/10_expgfx/expgfx.c            [STR: retail says "expgfx.c:"]
-objlib.c          (14) main/obj_movelib.c (partial)              [?] DP's touch-callback half
-    (objInvokeTouchCallbacks / objRemoveTouchCallback{,sForObj}) is NOT in obj_movelib.c;
-    only the space-transform half lines up.  NOT SETTLED - see OPEN ROWS.
+objlib.c          (14) main/obj_movelib.c + main/objhits.c       [BODY] SETTLED, split two ways.
+    The space-transform half is obj_movelib.c; the TOUCH-CALLBACK half is objhits.c (which
+    already holds DP objmsg.c), statement for statement:
+      objRegisterTouchCallback     == ObjContact_AddCallback           (same NULL guards, same
+                                      duplicate-pair scan, same cap of 16, ++ on both objects)
+      objRemoveTouchCallbacksForObj== ObjContact_RemoveObjectCallbacks (same `!= 15 && != 0`
+                                      compaction from the tail)
+      objInvokeTouchCallbacks      == ObjContact_DispatchCallbacks     (same two ref counters,
+                                      same both-orderings test)
+      DP Object.unkD9              == SFA GameObject.contactRefCount
+      DP sObjectPairCallbacks/sCallbackPairIndex == gObjContactCallbacks/gObjContactCallbackCount
+    DP's two-object `objRemoveTouchCallback(obj, otherObj)` has NO counterpart in our tree - the
+    other three are all that survive.
 objtype.c          (5) main/object.c (partial)                   [?] no `objType*` symbol survives.
-footsteps.c       (10) (unlocated)                               OPEN ROW.  SFA has per-DLL
-    `*_spawnFootstepEffects` and gDb*FootstepSfx data but no central footsteps module found.
-menu.c            (27) main/thp/picmenu.c / n_options.c          [?] OPEN ROW.
+footsteps.c       (10) main/newshadows.c + track/intersect.c     [BODY] SETTLED for the SFX half;
+    the DECAL half is GONE.  DP `footstepsGetSfxBank(bank)` returns one of gFootstepSfxBank1..5;
+    SFA fuses the bank pick and the lookup and writes the SAME switch out TWICE - newshadows.c
+    `audioPickSoundEffect_8006ed24` and track/intersect.c `objAudioFn_8006ef38` both select
+    gSurfaceSfxTable + {0, 0x14, 0x28, 0x3c, 0x50, 0x64, 0x78, 0x8c, 0xa0} from the same u8
+    `type`, with case 7 as the default in both.  gSurfaceSfxTable (0xD8 bytes) accounts exactly:
+    9 banks x 10 u16 sfx ids (0x00..0xB3) + a 0x23-entry surfaceType->column map at 0xB4, which
+    is what `base[idx + 0xb4]`, `idx < 0x23` reads.  player_state.h already binds
+    footstepSoundId+surfaceType to that picker.  DP's footprint DECALS (TEXTABLE_18/19/1A
+    Footprint1..3, the +/-3 quads, footstepsInit/Clear/TurnOn, the per-frame display lists) have
+    NO counterpart anywhere in the tree: the GC port dropped them.
+menu.c            (27) main/modelEngine.c (the UI-DLL switcher)  [BODY] SETTLED - and NOT
+    engine/0, which is what the token lens ranks first (99.4) purely on the word "menu".
+    DP's menu module is SFA's UI-DLL block, statement for statement:
+      menuSet          == loadUiDll                    menuGetCurrent  == getCurUiDll
+      menuGetPrevious  == getPrevUiDll                 menuGetActiveDLL== getCurUiDllInterface
+      menuUpdate1      == uiDll_runFrameStartAndLoadNext
+      menuUpdate2      == uiDll_runFrameEndAndLoadNext
+      menuDraw         == curUiDllDraw    - DP takes FOUR pointers (gdl, mtxs, vtxs, pols) and
+                                            forwards THREE to the vtable; SFA's takes four ints
+                                            and forwards three.  That arity fingerprint alone
+                                            settles the row.
+      menuDoMenuSwap   == the swap block, hand-inlined at all three SFA sites
+      gActiveMenuDLL/gCurrentMenuID/gNextMenuID/gPreviousMenuID/gMenuDLLIDs
+        == gModelEngineCurUiDllRes / curUiDll / gModelEnginePendingUiDll /
+           gModelEnginePrevUiDll / gModelEngineUiDllResourceIds
 lfx.c / envfx.c    (3) main/skystars.c / render.c(getEnvfxAct)   [?] SFA render.c literally has
     getEnvfxAct / getEnvfxActImmediately - DP's envfx.c is 2 functions.  Weak but suggestive.
 scheduler.c       (20) (none)                                    N64 OS scheduler; GC uses OS/VI.
@@ -181,7 +223,9 @@ SFA UNITS WITH NO DP COUNTERPART (GameCube-only work)
   main/shader_dolphin.c        the GX/TEV shader-stage builder (N64 had no TEV)
   track/intersect_memcard.c    GameCube memory-card save/load (N64 used the controller pak)
   track/intersect_mtx44.c, track/intersect_screenmath.c   GX matrix/screen helpers
-  main/modelEngine.c (most), main/gametext*.c (localisation), main/thp/*  (THP movie player)
+  main/gametext*.c (localisation), main/thp/*  (THP movie player)
+  main/modelEngine.c is NOT one of these - it carries DP menu.c and DP dll.c's load/free API;
+  only its model-list / ring-buffer / game-timer parts are GameCube-only.
   main/acosf.c / trig.c / sincosf.c / vecmath.c   MSL/PS math
   src/musyx/**                 MusyX
 
@@ -194,10 +238,14 @@ SFA UNITS WITH NO DP COUNTERPART (GameCube-only work)
 
 OPEN ROWS (state, do not guess)
 -------------------------------
-  1. DP dll.c  -> where did dllLoad/dllFree/dllReplaceLoadedDLLs land in SFA?
-  2. DP objlib.c's touch-callback half (objInvokeTouchCallbacks & friends).
-  3. DP footsteps.c and menu.c.
-  4. DP objtype.c: SFA has no surviving `objType*`; the type index may be inside object.c.
+  1. DP objtype.c: SFA has no surviving `objType*`; the type index may be inside object.c.
+  2. Where the DLL bank copy actually happens (see the dll.c row): the gResourceDescriptors
+     `acquire` callbacks are data, and the code they reach is not in any decompiled TU.
+
+  Rows 1-3 of the previous edition (dll.c, objlib.c's touch half, footsteps.c + menu.c) are
+  CLOSED above.  Method note for whoever extends this: the IDF token lens (L1) put DP menu.c on
+  engine/0 with a 2x margin and it was WRONG - the shared token was just "menu".  L1 nominates,
+  L4 (body read) decides; never land an L1 row without one.
 
 HANDED OVER (analysis done here, the file belongs to another lane)
 ------------------------------------------------------------------

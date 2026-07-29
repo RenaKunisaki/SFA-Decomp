@@ -418,7 +418,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
         case 0x10:
         case 0x11:
             if (getCurUiDll() == 0x10) {
-                UiDllVTable** uiDll = getDLL16();
+                UiDllVTable** uiDll = getCurUiDllInterface();
                 (*uiDll)->setState(animUpdate->eventIds[i] - 0xd);
             }
             mainSetBits(((WarpStoneState*)state)->sequenceGameBit, 1);

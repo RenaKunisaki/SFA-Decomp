@@ -49,7 +49,7 @@ typedef struct
     Vec pos;
 } SplashFxParams;
 
-extern u8 lbl_8030E8B0[];
+extern u8 gSurfaceSfxTable[];
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
@@ -69,7 +69,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
     int n;
     GameObject* desc;
 
-    tbl = lbl_8030E8B0;
+    tbl = gSurfaceSfxTable;
     switch (type)
     {
     case 1:
@@ -231,7 +231,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
 
 void* surfaceSfxGetRecord(u32 i)
 {
-    u8* base = lbl_8030E8B0;
+    u8* base = gSurfaceSfxTable;
     switch (i)
     {
     case 1:
