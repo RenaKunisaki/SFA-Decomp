@@ -66,8 +66,7 @@ void subtitleUpdateAndDraw(int a)
                 mm_free(cmds);
                 mmSetFreeDelay(delay);
             }
-            gSubtitleLineIndex++;
-            if (gSubtitleLineIndex + 1 >= gSubtitleLineCount)
+            if (++gSubtitleLineIndex + 1 >= gSubtitleLineCount)
             {
                 subtitleStop();
                 if (gGameTextSequenceMode != 0)
@@ -106,9 +105,9 @@ void mainLoopDoGameText(void)
 
 void subtitleStop(void)
 {
+    int oldDelay;
     void** slot;
     int i;
-    int oldDelay;
     int dir;
 
     if (gSubtitleActive != 0)
