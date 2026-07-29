@@ -6,7 +6,7 @@
 
 void pauseMenuDraw(int arg1, int arg2, int arg3);
 void pauseMenuDrawStatus(void);
-void pauseMenuDrawStatus_801274A0(GameObject* arg1);
+void pauseMenuDrawStatusPage(GameObject* player);
 void pauseMenuUpdate(void);
 void pauseMenuDrawSideRails(s32 alpha);
 

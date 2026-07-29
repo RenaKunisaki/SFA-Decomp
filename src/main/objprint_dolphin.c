@@ -1364,7 +1364,7 @@ extern u8 gObjGxKColorCache[4];
 extern u8 gObjShadowColor[4];
 
 
-void objRenderShadow2(int* obj, int* obj2, u8* m, int p4);
+void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
 void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
 void objRenderChild(int* child, int* parent, u8 isShadow);
 
@@ -2385,7 +2385,7 @@ extern f32 gObjBoneMtxBuffer[0xC00];
 
 
 
-void objRenderShadow2(int* obj, int* obj2, u8* m, int p4)
+void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
 {
     int done;
     f32 cm[16];
@@ -3298,7 +3298,7 @@ void objRenderShadow(void* obj)
         int* m = *(int**)Obj_GetActiveModel((GameObject*)obj);
         if (((ModelFileHeader*)m)->shadowDisplayListCount != 0)
         {
-            objRenderShadow2(obj, obj, (u8*)m, 1);
+            objRenderShadowModel(obj, obj, (u8*)m, 1);
         }
         else
         {

@@ -4722,7 +4722,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         }
         break;
     case 5:
-        pauseMenuDrawStatus_801274A0(player);
+        pauseMenuDrawStatusPage(player);
         break;
     case 4:
         pauseMenuDoSave();
@@ -5013,7 +5013,7 @@ static inline void pauseMenuSetSpellStoneIcons(GridEntry* entries, u8 count)
     }
 }
 
-void pauseMenuDrawStatus_801274A0(GameObject* arg1)
+void pauseMenuDrawStatusPage(GameObject* player)
 {
     s8 i8;
     s32 ty1;
@@ -5096,7 +5096,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
             f64 tmp = (double)(s16)ty2 * (lbl_803E2080 - (double)lbl_803DD75C);
             ty = (s32)(tmp * lbl_803E2088);
         }
-        pauseMenuDrawTaskHintPanel(arg1, ty);
+        pauseMenuDrawTaskHintPanel(player, ty);
         spellStoneCount = mainGetBit(GAMEBIT_ITEM_SpellStone3_Got);
         usedSpellStoneCount = mainGetBit(GAMEBIT_ITEM_SpellStone1_Used);
         spellStoneCount += mainGetBit(GAMEBIT_ITEM_SpellStone2_Used);
