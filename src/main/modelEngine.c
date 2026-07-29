@@ -329,6 +329,7 @@
 #include "main/dll/dll_004D_cameramodenpcspeak.h"
 #include "main/dll/dll_004E_cameramodeworldmap.h"
 #include "main/dll/dll_004F_cameramode.h"
+#include "main/dll/dll_0050_cameramodecrawl.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -504,7 +505,7 @@ extern ResourceDescriptor lbl_803197F8, lbl_80319840, projquakeshock_funcs, lbl_
     lbl_803199B0, lbl_803199F8;
 extern ResourceDescriptor lbl_80319A40, lbl_80319B58, lbl_80319B98, gCameraModeViewfinderDescriptor;
 extern ResourceDescriptor gCameraModeTestStrengthDescriptor, gCameraModeCombatDescriptor;
-extern ResourceDescriptor gCameraModeCrawlDescriptor, lbl_80319E98, lbl_80319EC8, lbl_80319EF8, lbl_80319F58, lbl_80319F88,
+extern ResourceDescriptor lbl_80319E98, lbl_80319EC8, lbl_80319EF8, lbl_80319F58, lbl_80319F88,
     gCameraModeTitleDescriptor, lbl_8031A148;
 extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode_funcs, lbl_8031A82C, EnterSaveNameScreen_funcs, OptionsScreen_funcs,
     lbl_8031ADA4, Dummy39_funcs;
@@ -1213,7 +1214,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCameraModeNpcSpeakDescriptor,
     (ResourceDescriptor*)&gCameraModeWorldMapDescriptor,
     (ResourceDescriptor*)&gCameraMode4FDescriptor,
-    &gCameraModeCrawlDescriptor,
+    (ResourceDescriptor*)&gCameraModeCrawlDescriptor,
     &lbl_80319E98,
     &lbl_80319EC8,
     &lbl_80319EF8,
