@@ -96,6 +96,9 @@ GlyphResource802CA100 gGameTextBoxEdgeTexSrc = {
     },
 };
 
+Texture* gGameTextBoxFrameTextures[5];
+Texture* gSubtitleBoxTextures[3];
+
 void boxDrawFn_8001c5ac(u16* strPtr, int boxId, u8* box);
 
 void subtitleStart(int x)
