@@ -111,7 +111,7 @@ Camera* lbl_803DCEA8;
 s8 curMapType;
 void* lbl_803DCEA0;
 MapBlockData** gMapBlocks;
-u8 lbl_803DCE98;
+u8 gMapBlockCount;
 s16* gMapBlockIds;
 s16 lbl_803DCE90;
 u8* gMapBlockRefCounts;
@@ -122,8 +122,8 @@ int lbl_803DCE7C;
 u8* lbl_803DCE78;
 int lbl_803DCE74;
 s16 lbl_803DCE70;
-MapTextureOverride* lbl_803DCE6C;
-MapTextureScroll* lbl_803DCE68;
+MapTextureOverride* gMapTextureOverrides;
+MapTextureScroll* gMapTextureScrolls;
 f32 gShaderLoadCenterX;
 f32 gShaderLoadCenterY;
 f32 gShaderLoadCenterZ;
@@ -1133,7 +1133,7 @@ void mapUpdateCameraPosByTransformSpace(void)
 
 MapTextureOverride* mapTextureOverrideGetEntry(int idx)
 {
-    return &lbl_803DCE6C[idx];
+    return &gMapTextureOverrides[idx];
 }
 
 s16* return0_80056694(MapBlockData* wpad0, int wpad1)
@@ -1152,17 +1152,17 @@ void mapTextureOverrideRelease(Texture* texture, int type)
 
     for (i = 0; i < 80; i++)
     {
-        entryTexture = lbl_803DCE6C[i].texture;
-        if (entryTexture == texture && lbl_803DCE6C[i].type == type &&
-            lbl_803DCE6C[i].refCount > 0)
+        entryTexture = gMapTextureOverrides[i].texture;
+        if (entryTexture == texture && gMapTextureOverrides[i].type == type &&
+            gMapTextureOverrides[i].refCount > 0)
         {
-            lbl_803DCE6C[i].refCount -= 1;
-            if (lbl_803DCE6C[i].refCount == 0)
+            gMapTextureOverrides[i].refCount -= 1;
+            if (gMapTextureOverrides[i].refCount == 0)
             {
-                lbl_803DCE6C[i].frame = 0;
-                lbl_803DCE6C[i].type = 0;
-                lbl_803DCE6C[i].texture = NULL;
-                lbl_803DCE6C[i].flags = 0;
+                gMapTextureOverrides[i].frame = 0;
+                gMapTextureOverrides[i].type = 0;
+                gMapTextureOverrides[i].texture = NULL;
+                gMapTextureOverrides[i].flags = 0;
             }
         }
     }
@@ -1179,7 +1179,7 @@ int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type)
 
     found = -1;
     idx = 0;
-    base = lbl_803DCE6C;
+    base = gMapTextureOverrides;
     for (; idx < 80; idx++)
     {
         if (base[idx].refCount != 0)
@@ -1199,7 +1199,7 @@ int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type)
     }
     found = -1;
     idx2 = 0;
-    base = lbl_803DCE6C;
+    base = gMapTextureOverrides;
     for (; idx2 < 80; idx2++)
     {
         if (base[idx2].refCount == 0)
@@ -1211,10 +1211,10 @@ int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type)
     if (found != -1)
     {
         base[found].refCount = 1;
-        lbl_803DCE6C[found].frame = 0;
-        lbl_803DCE6C[found].flags = flags;
-        lbl_803DCE6C[found].texture = texture;
-        lbl_803DCE6C[found].type = type;
+        gMapTextureOverrides[found].frame = 0;
+        gMapTextureOverrides[found].flags = flags;
+        gMapTextureOverrides[found].texture = texture;
+        gMapTextureOverrides[found].type = type;
         return found;
     }
     OSReport(sTrackGlobalTexanimOverflowError);
@@ -1229,11 +1229,11 @@ void mapTextureOverrideSetValue(int type, Texture* texture, int frame)
 
     for (i = 0; i < 80; i++)
     {
-        if (lbl_803DCE6C[i].refCount > 0 &&
-            lbl_803DCE6C[i].texture == texture &&
-            type == lbl_803DCE6C[i].type)
+        if (gMapTextureOverrides[i].refCount > 0 &&
+            gMapTextureOverrides[i].texture == texture &&
+            type == gMapTextureOverrides[i].type)
         {
-            lbl_803DCE6C[i].frame = frame;
+            gMapTextureOverrides[i].frame = frame;
         }
     }
 }
@@ -1241,14 +1241,14 @@ void mapTextureOverrideSetValue(int type, Texture* texture, int frame)
 void mapTextureScrollGetOffset(int idx, float* outX, float* outY)
 {
     f32 divisor;
-    *outX = lbl_803DCE68[idx].offsetX / (divisor = lbl_803DEBC8);
-    *outY = lbl_803DCE68[idx].offsetY / divisor;
+    *outX = gMapTextureScrolls[idx].offsetX / (divisor = lbl_803DEBC8);
+    *outY = gMapTextureScrolls[idx].offsetY / divisor;
 }
 
 void mapTextureScrollSetStep(int idx, int xStep, int yStep, int texWidthFixed, int texHeightFixed,
                              int secondaryXStep, int secondaryYStep, int texWidthFixed2, int texHeightFixed2)
 {
-    MapTextureScroll* e = &lbl_803DCE68[idx];
+    MapTextureScroll* e = &gMapTextureScrolls[idx];
     e->xStep = (s16)((xStep << 16) / (texWidthFixed >> 6));
     e->yStep = (s16)((yStep << 16) / (texHeightFixed >> 6));
 }
@@ -1350,7 +1350,7 @@ int mapTextureScrollAcquire(int xStep, int yStep, int texWidthFixed, int texHeig
     f32 init;
 
     idx = 0;
-    entry = base = lbl_803DCE68;
+    entry = base = gMapTextureScrolls;
     for (; idx < 0x3a; idx++)
     {
         if (entry->xStep == xStep && entry->yStep == yStep)
@@ -1390,7 +1390,7 @@ void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer)
 
     i = 0;
     arr = gMapBlockIds;
-    count = lbl_803DCE98;
+    count = gMapBlockCount;
     for (; i < count; i++)
     {
         if (*arr == -1)
@@ -1399,8 +1399,8 @@ void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer)
     }
     if (i == count)
     {
-        lbl_803DCE98++;
-        if (lbl_803DCE98 == 0x40)
+        gMapBlockCount++;
+        if (gMapBlockCount == 0x40)
         {
             OSReport(sTrackLoadBlockOverrunError);
         }
@@ -1458,7 +1458,7 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
 
     j = 0;
     arr = gMapBlockIds;
-    for (; j < lbl_803DCE98; j++)
+    for (; j < gMapBlockCount; j++)
     {
         if (blockId == *arr)
         {
@@ -1534,8 +1534,8 @@ void unloadMap(void)
                             scrollSlot = shaderLayer->scrollMtx;
                             if (scrollSlot != 0xff)
                             {
-                                if (lbl_803DCE68[scrollSlot].refCount != 0)
-                                    lbl_803DCE68[scrollSlot].refCount -= 1;
+                                if (gMapTextureScrolls[scrollSlot].refCount != 0)
+                                    gMapTextureScrolls[scrollSlot].refCount -= 1;
                             }
                             if (shaderLayer->overrideType != 0)
                                 mapTextureOverrideRelease(shaderLayer->texture, shaderLayer->overrideType);
@@ -1553,7 +1553,7 @@ void unloadMap(void)
             }
         }
     }
-    lbl_803DCE98 = 0;
+    gMapBlockCount = 0;
     Obj_ResetObjectSystem();
     for (i = 0; i < ROM_LIST_PAGE_COUNT; i++)
     {
@@ -1740,7 +1740,7 @@ void beginLoadingMap(void)
         *(s16*)((char*)gMapBlockIds + j * 2) = -1;
         gMapBlocks[j] = NULL;
     }
-    lbl_803DCE98 = 0;
+    gMapBlockCount = 0;
     gShaderRomListSlotCount = 0;
     mapKind = (*gMapEventInterface)->getCurChar();
     p = (f32*)(*gMapEventInterface)->getCurCharPos();
@@ -2037,7 +2037,7 @@ void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rec
     }
 }
 
-/* 16-byte texture-override table entry (array at lbl_803DCE6C, 80 slots). */
+/* 16-byte texture-override table entry (array at gMapTextureOverrides, 80 slots). */
 
 void goToPrevMapLayer(void)
 {
@@ -2468,8 +2468,8 @@ void doPendingMapLoads(void)
                                         scrollSlot = shaderLayer->scrollMtx;
                                         if (scrollSlot != 0xff)
                                         {
-                                            if (lbl_803DCE68[scrollSlot].refCount != 0)
-                                                lbl_803DCE68[scrollSlot].refCount -= 1;
+                                            if (gMapTextureScrolls[scrollSlot].refCount != 0)
+                                                gMapTextureScrolls[scrollSlot].refCount -= 1;
                                         }
                                         if (shaderLayer->overrideType != 0)
                                             mapTextureOverrideRelease(shaderLayer->texture,
@@ -3270,7 +3270,7 @@ void mapDebugRender(int* state)
         else
         {
             ci = tbl[bx + bz * 16];
-            if (ci < 0 || ci >= lbl_803DCE98)
+            if (ci < 0 || ci >= gMapBlockCount)
             {
                 blk = 0;
             }

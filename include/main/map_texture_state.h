@@ -30,7 +30,7 @@ typedef struct MapTextureScroll
 STATIC_ASSERT(sizeof(MapTextureOverride) == 0x10);
 STATIC_ASSERT(sizeof(MapTextureScroll) == 0x10);
 
-extern MapTextureOverride* lbl_803DCE6C;
-extern MapTextureScroll* lbl_803DCE68;
+extern MapTextureOverride* gMapTextureOverrides;
+extern MapTextureScroll* gMapTextureScrolls;
 
 #endif /* MAIN_MAP_TEXTURE_STATE_H_ */

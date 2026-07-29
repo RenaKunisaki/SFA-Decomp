@@ -51,7 +51,7 @@ void sceneDrawTransparentPolys(void);
 
 extern f32 lbl_803DEBFC;
 
-extern u8 lbl_803DCE98; /* count of allocated blocks */
+extern u8 gMapBlockCount; /* count of allocated blocks */
 
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);

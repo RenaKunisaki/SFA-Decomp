@@ -717,7 +717,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                 int layerTextureId = layer->textureIndex;
                 MapTextureOverride* overrides;
                 overrideIdx = 0;
-                overrides = (MapTextureOverride*)(int)lbl_803DCE6C;
+                overrides = (MapTextureOverride*)(int)gMapTextureOverrides;
                 overrideEntry = overrides;
                 for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                 {
@@ -740,9 +740,9 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         }
         if (layer->scrollMtx != 0xff)
         {
-            tx = *(float*)((int)lbl_803DCE68 + ((u32)layer->scrollMtx << 4)) / 1048576.0f;
+            tx = *(float*)((int)gMapTextureScrolls + ((u32)layer->scrollMtx << 4)) / 1048576.0f;
             PSMTXTrans(texMatrix, tx,
-                       *(float*)((int)lbl_803DCE68 + 4 + ((u32)layer->scrollMtx << 4)) /
+                       *(float*)((int)gMapTextureScrolls + 4 + ((u32)layer->scrollMtx << 4)) /
                            1048576.0f,
                        0.0f);
             texMtx = texMatrix;
@@ -764,7 +764,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                 int layerTextureId = layer->textureIndex;
                 MapTextureOverride* overrides;
                 overrideIdx = 0;
-                overrides = (MapTextureOverride*)(int)lbl_803DCE6C;
+                overrides = (MapTextureOverride*)(int)gMapTextureOverrides;
                 overrideEntry = overrides;
                 for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                 {
@@ -787,9 +787,9 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         }
         if (layer->scrollMtx != 0xff)
         {
-            tx = *(float*)((int)lbl_803DCE68 + ((u32)layer->scrollMtx << 4)) / 1048576.0f;
+            tx = *(float*)((int)gMapTextureScrolls + ((u32)layer->scrollMtx << 4)) / 1048576.0f;
             PSMTXTrans(texMatrix, tx,
-                       *(float*)((int)lbl_803DCE68 + 4 + ((u32)layer->scrollMtx << 4)) /
+                       *(float*)((int)gMapTextureScrolls + 4 + ((u32)layer->scrollMtx << 4)) /
                            1048576.0f,
                        0.0f);
             texMtx = texMatrix;
@@ -816,7 +816,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                     {
                         MapTextureOverride* overrides;
                         overrideIdx = 0;
-                        overrides = (MapTextureOverride*)(int)lbl_803DCE6C;
+                        overrides = (MapTextureOverride*)(int)gMapTextureOverrides;
                         overrideEntry = overrides;
                         for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                         {
@@ -839,9 +839,9 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                     if (layer->scrollMtx != 0xff)
                     {
                         int scrollOffset = (u32)layer->scrollMtx * 0x10;
-                        tx = *(float*)((u8*)lbl_803DCE68 + scrollOffset) / 1048576.0f;
+                        tx = *(float*)((u8*)gMapTextureScrolls + scrollOffset) / 1048576.0f;
                         PSMTXTrans(texMatrix, tx,
-                                   *(float*)((u8*)lbl_803DCE68 + scrollOffset + 4) / 1048576.0f,
+                                   *(float*)((u8*)gMapTextureScrolls + scrollOffset + 4) / 1048576.0f,
                                    0.0f);
                         texMtx = texMatrix;
                     }
@@ -1044,7 +1044,7 @@ extern u32 gSunFlareScissorWidth;
 extern u32 gSunFlareScissorHeight;
 extern u8 lbl_803DCE06;
 extern ModelLightStruct* gGlowLightList[];
-extern u8 lbl_803DCE98;
+extern u8 gMapBlockCount;
 extern int lbl_803DCE80;
 extern int gMapBlockIndexCount;
 extern int* gMapBlockIndexList;
@@ -1722,7 +1722,7 @@ void gxErrorFn_80060b40(void)
     int i;
 
     i = 0;
-    n = lbl_803DCE98;
+    n = gMapBlockCount;
     for (; i < n; i++)
     {
     }
@@ -1745,7 +1745,7 @@ void mapClearBlockEdgeFlags(void)
     int j;
     MapBlockData* block;
 
-    for (i = 0; i < lbl_803DCE98; i++)
+    for (i = 0; i < gMapBlockCount; i++)
     {
         block = gMapBlocks[i];
         if (block != NULL)

@@ -84,7 +84,7 @@ extern F32Pair lbl_803DEC08;
 extern f32 lbl_803DEC0C;
 extern FrustumPlane gViewFrustumPlanes[];
 
-extern u8 lbl_803DCE98; /* count of allocated blocks */
+extern u8 gMapBlockCount; /* count of allocated blocks */
 extern f32 lbl_803DEC18;
 extern u32 lbl_803DCE34;
 extern f32 lbl_803DEC10;
@@ -205,7 +205,7 @@ void updateVisibleGeometry(void)
 
 MapBlockData* mapGetBlock(int i)
 {
-    if (i < 0 || i >= lbl_803DCE98) return 0;
+    if (i < 0 || i >= gMapBlockCount) return 0;
     return gMapBlocks[i];
 }
 
@@ -223,7 +223,7 @@ MapBlockData* mapGetBlockAtPos(int x, int y, int layer)
     s32 idx;
     if (x < 0 || y < 0 || x >= 0x10 || y >= 0x10) return 0;
     idx = table[x + (y << 4)];
-    if (idx < 0 || idx >= lbl_803DCE98) return 0;
+    if (idx < 0 || idx >= gMapBlockCount) return 0;
     return gMapBlocks[idx];
 }
 
@@ -958,7 +958,7 @@ void updateEnvironment(int mode)
         off = i = 0;
         for (; i < 80; off += sizeof(MapTextureOverride), i++)
         {
-            textureOverride = (MapTextureOverride*)((u8*)lbl_803DCE6C + off);
+            textureOverride = (MapTextureOverride*)((u8*)gMapTextureOverrides + off);
             if (textureOverride->refCount != 0 && (tex = textureOverride->texture) != NULL &&
                 tex->animationFrameCount != 0x100 && tex->animationFrameStep != 0)
             {
@@ -968,7 +968,7 @@ void updateEnvironment(int mode)
 
         for (i = 0; i < 58; i++)
         {
-            textureScroll = &lbl_803DCE68[i];
+            textureScroll = &gMapTextureScrolls[i];
             if (textureScroll->refCount != 0)
             {
                 deltaY = textureScroll->yStep * (deltaTime = timeDelta);

@@ -35,7 +35,7 @@ void sceneDrawTransparentPolys(void);
 #include "main/render_flags.h"
 
 
-extern u8 lbl_803DCE98; /* count of allocated blocks */
+extern u8 gMapBlockCount; /* count of allocated blocks */
 extern s16* gMapBlockIds;
 extern u8* gMapBlockRefCounts;
 extern void* lbl_803DCE78;
@@ -200,11 +200,11 @@ void initMapBlocks(void)
     lbl_803DCEB8 = -2;
 
     tmp = mmAlloc(0x500, 5, 0);
-    lbl_803DCE6C = tmp;
+    gMapTextureOverrides = tmp;
     memset(tmp, 0, 0x500);
 
     tmp = mmAlloc(0x3a0, 5, 0);
-    lbl_803DCE68 = tmp;
+    gMapTextureScrolls = tmp;
     memset(tmp, 0, 0x3a0);
 
     memset(mb + 0x8818, 0, 0xfa0);
