@@ -93,7 +93,7 @@ int arwlevelcon_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
                 textId = 4;
                 break;
             }
-            gameTextFn_80125ba4(textId);
+            headDisplayOpen(textId);
         }
     }
     return 0;

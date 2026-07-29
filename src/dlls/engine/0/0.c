@@ -742,7 +742,7 @@ extern const f32 lbl_803E21D0;
 extern s16 gHudTextureIds[];
 extern int gGameUiScreenWidthOffset;
 void npcTalkFn_8012e880(void);
-int pauseMenuGridFn_8012b4c4(void);
+int pauseMenuUpdateMapScroll(void);
 void drawWorldMapHud(void);
 void timeListDraw(int a, int b, int c);
 void cMenuRun(void);
@@ -4224,7 +4224,7 @@ void drawTrickyHudOverlay(int obj, int unused1, int unused2)
  *    side viewport, then composites the static-wave border texture and
  *    corner/edge frame tiles (hudTextures[10..13,84]).
  *  - headDisplayFreeModels: frees the six cached head-display model objects.
- *  - gameTextFn_80125ba4: opens the head display for entry idx (clamped
+ *  - headDisplayOpen: opens the head display for entry idx (clamped
  *    0..0x14), kicking off the matching audio stream (gHeadDisplayEntryTable
  *    table, 0xC-byte records: int streamId, u16 textId@+4, u16 box@+8,
  *    u8 npcDialogue@+7) and either an NPC dialogue bubble or a text box.
@@ -4412,7 +4412,7 @@ void headDisplayDraw(void)
     }
 }
 
-void gameTextFn_80125ba4(int idx)
+void headDisplayOpen(int idx)
 {
     int boxId;
     int textId;
@@ -5236,7 +5236,7 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag);
 void timeListDraw(int unused1, int unused2, int unused3);
 void highScoreScreenDraw(int p1, int p2, int p3);
 void boxDrawFn_8012975c(int unused1, int unused2, int unused3);
-int pauseMenuGridFn_8012b4c4(void);
+int pauseMenuUpdateMapScroll(void);
 int pauseMenuIsFox(void);
 void timeListPromptUpdate(void);
 void mapScreenDrawHud(int unused1, int unused2, int unused3);
@@ -5927,7 +5927,7 @@ static inline void pauseMenuFreeIconTextures(CMenuHud* hud)
 }
 
 /* Pause menu master state machine. */
-void pauseMenuFn_80129ee0(void)
+void pauseMenuUpdate(void)
 {
     PauseTbl* tbl = (PauseTbl*)lbl_8031AE20;
     CMenuHud* hud = (CMenuHud*)lbl_803A87F0;
@@ -6353,7 +6353,7 @@ void pauseMenuFn_80129ee0(void)
         case 3:
             if (lbl_803DD760 > lbl_803E2160 || lbl_803DD764 > lbl_803E2160)
             {
-                int r = pauseMenuGridFn_8012b4c4();
+                int r = pauseMenuUpdateMapScroll();
                 if (lbl_803DD7C4 != 0)
                 {
                     lbl_803DD824 = tbl->gridBD0;
@@ -6417,7 +6417,7 @@ void pauseMenuFn_80129ee0(void)
                     }
                 }
                 pauseMenuRunSubmenu(r);
-                pauseMenuFn_8012b77c();
+                pauseMenuUpdateFadeAndBack();
             }
             else
             {
@@ -6434,7 +6434,7 @@ void pauseMenuFn_80129ee0(void)
         case 5:
             if (lbl_803DD760 > lbl_803E2160 || lbl_803DD764 > lbl_803E2160)
             {
-                int r = pauseMenuGridFn_8012b4c4();
+                int r = pauseMenuUpdateMapScroll();
                 if (lbl_803DD7C4 != 0)
                 {
                     lbl_803DD824 = tbl->gridF70;
@@ -6508,7 +6508,7 @@ void pauseMenuFn_80129ee0(void)
                     hud->textures3A8[0x16] = textureLoadAsset(texId);
                     hud->texIds358[0x16] = texId;
                 }
-                pauseMenuFn_8012b77c();
+                pauseMenuUpdateFadeAndBack();
             }
             else
             {
@@ -6524,7 +6524,7 @@ void pauseMenuFn_80129ee0(void)
                 lbl_803DD730 = getNextTaskHintText();
                 lbl_803DD770 = 0;
                 lbl_803DD772 = 0;
-                pauseMenuFn_8012b77c();
+                pauseMenuUpdateFadeAndBack();
                 if (lbl_803DD7A4 == 0 || lbl_803DD7A4->identifier == 0xffff)
                 {
                     lbl_803DD7A4 = saveGameGetCurHint();
@@ -6550,7 +6550,7 @@ void pauseMenuFn_80129ee0(void)
             {
                 lbl_803DD824 = tbl->gridF10;
                 pauseMenuRunSubmenu(0);
-                pauseMenuFn_8012b77c();
+                pauseMenuUpdateFadeAndBack();
                 if ((btn & PAD_BUTTON_A) && lbl_803DD764 > lbl_803E2160)
                 {
                     Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up);
@@ -6689,7 +6689,7 @@ void pauseMenuFn_80129ee0(void)
                     lbl_803DD764 = (-0.1f);
                     gPauseMenuTokenConfirmFlag = 0;
                 }
-                pauseMenuFn_8012b77c();
+                pauseMenuUpdateFadeAndBack();
             }
             else
             {
@@ -6705,7 +6705,7 @@ void pauseMenuFn_80129ee0(void)
 /* Pause-menu grid cursor stepper. Reads the
  * C-stick X axis, derives a one-step direction, and tweens the grid cursor
  * offsets toward the next cell, clamping when the tween crosses zero. */
-int pauseMenuGridFn_8012b4c4(void)
+int pauseMenuUpdateMapScroll(void)
 {
     int ret = 0;
     s8 cx = padGetCX(0);
@@ -6804,7 +6804,7 @@ int pauseMenuIsFox(void)
     return 1;
 }
 
-void pauseMenuFn_8012b77c(void)
+void pauseMenuUpdateFadeAndBack(void)
 {
     u32 btn = getButtonsJustPressed(0) & 0xffff;
     f32 speed = lbl_803DD764;
@@ -8569,7 +8569,7 @@ void GameUI_frameEnd(void)
         lbl_803DD898 &= 0xfff0fff7;
     }
 
-    pauseMenuFn_80129ee0();
+    pauseMenuUpdate();
     if (gHighScoreActiveTableId >= 0)
     {
         if (((u16)getButtonsJustPressed(0)) & PAD_BUTTON_A)
@@ -9052,7 +9052,7 @@ void GameUI_release(void)
 
 /* Forward declarations. */
 
-void textureFreeFn_8012fcec(void)
+void GameUI_releaseMenuResources(void)
 {
     GameUiHud* gameUi = (GameUiHud*)lbl_803A87F0;
 
