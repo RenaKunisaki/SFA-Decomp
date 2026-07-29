@@ -108,6 +108,16 @@ sweeps are provably flat, and "narrow band" means the assignment is **predictabl
 steerable** — a 120-permutation sweep on `worldplanet_update` (recorded) and a 120-permutation
 sweep on `playerUpdate` both returned zero movement.
 
+**Measure band width per FUNCTION, not per scope.** A narrow local trio inside a large function
+is **not** the narrow-band regime, and inside one the model can invert. `player_SeqFn` (7416 B)
+has an `f32 dz; f32 dy; f32 dx;` trio in a nested block, and the whole function's FP band is
+only f29-f31 — it looks like a textbook 3-wide case. Retail's homes match *first-declared ->
+f31* on the original `dz, dy, dx` order, yet our build only reproduced them after swapping to
+`dy, dz, dx` — **the inverse of what the model predicts**. The band is shared across several
+nested scopes, so it is a whole-function allocation problem wearing a narrow-band disguise.
+Check the function's band width before trusting the rule, and treat a scope-local trio as
+unpredictable regardless of how few values it holds.
+
 ### 3. Store width — `u16*` drops a redundant `extsh`
 
 **Shape.** `*(s16*)dst = <int expr>;` makes MWCC sign-extend before a `sth` that truncates
@@ -314,6 +324,14 @@ reach the emitted operand order; MWCC canonicalises before it matters. If a comm
 transposed, the knob is the cast lever above, not the source text.
 
 ## Gate reminders that cost real score today
+
+- **A fuzzy drop can be the signature of a now-correct allocation.** `player_SeqFn` held a
+  spurious 12th saved register; removing it gave retail's exact 11-wide band and took the
+  function's **structural regions to 0** — but the unit read **0.029 lower**, because the *wrong*
+  12-wide band happened to align more register numbers with retail than the correct 11-wide one
+  does. Judge a change on **`matched_data`, `matched_code`, `matched_functions` and the
+  structural-region count**, never on fuzzy alone. In that instance fuzzy fell while
+  `matched_data` went 12.276% -> 100% (+8232 bytes) and a function flipped to matching.
 
 - **A per-function `fn_flag_probe` MATCH is not a unit-level win.** The probe scores one
   function and is blind to what the flag does to the rest of the TU. On `subtitle.c` the
