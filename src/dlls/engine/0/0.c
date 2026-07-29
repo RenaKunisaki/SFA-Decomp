@@ -1842,7 +1842,7 @@ void drawViewFinderHud(void)
     {
         char buf[56];
         f64 waveBaseOffset;
-        f32 gridX, gridStep, wavePhase, nextWavePhase, nextGridX;
+        f32 gridX, wavePhase, nextWavePhase, nextGridX;
         f32 angleDivisor, gridSpacing, waveCenterX, angleScale, gridAlpha;
         f32 reticleY = (f32)(lbl_803E1EF0 * ((fovY - lbl_803E1EF8) / lbl_803E1F00) + 3.390625f);
         f32 reticleTopY = -(lbl_803E1F0C * gViewFinderFadeLevel) + 410.0f;
@@ -1880,8 +1880,8 @@ void drawViewFinderHud(void)
                     wavePhase = waveCenterX - gridX;
                     cosine = lbl_803DBAE4 * mathCosf(angleScale * (wavePhase * lbl_803DBAE0) / angleDivisor);
                     currentY = (f32)(gViewFinderBaseY + (waveBaseOffset + cosine));
-                    gridStep = nextGridX - gridX;
-                    drawViewFinderSegment(gridX, currentY, nextGridX, nextY, gridStep, nextY - currentY,
+                    drawViewFinderSegment(gridX, currentY, nextGridX, nextY, nextGridX - gridX,
+                                          nextY - currentY,
                                           lbl_803E1E68, alpha);
                 }
                 {
@@ -1892,7 +1892,8 @@ void drawViewFinderHud(void)
                     nextY = (f32)(gViewFinderBaseY + (lbl_803E1F40 + cosine));
                     cosine = lbl_803DBAE4 * mathCosf(angleScale * (wavePhase * lbl_803DBAE0) / angleDivisor);
                     currentY = (f32)(gViewFinderBaseY + (lbl_803E1F40 + cosine));
-                    drawViewFinderSegment(gridX, currentY, nextGridX, nextY, gridStep, nextY - currentY,
+                    drawViewFinderSegment(gridX, currentY, nextGridX, nextY, nextGridX - gridX,
+                                          nextY - currentY,
                                           lbl_803E1E68, alpha);
                 }
                 {
@@ -1903,7 +1904,8 @@ void drawViewFinderHud(void)
                     nextY = gViewFinderBaseY + (480.0f + cosine);
                     cosine = lbl_803DBAE4 * mathCosf(angleScale * (wavePhase * lbl_803DBAE0) / angleDivisor);
                     currentY = gViewFinderBaseY + (480.0f + cosine);
-                    drawViewFinderSegment(gridX, currentY, nextGridX, nextY, gridStep, nextY - currentY,
+                    drawViewFinderSegment(gridX, currentY, nextGridX, nextY, nextGridX - gridX,
+                                          nextY - currentY,
                                           lbl_803E1E68, alpha);
                 }
             }
