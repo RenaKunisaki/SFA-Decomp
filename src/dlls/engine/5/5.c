@@ -103,15 +103,12 @@ extern int gSkyObjectsInitialized;
 extern f32 gSkyOverrideLightIntensity;
 extern u8 gSkyOverrideLightDirectionEnabled;
 extern f32 gSkyOverrideLightDirection[];
-extern const f32 lbl_803DF058;
 extern const f32 gSkySecondsPerDay;
 extern u16 gSkySunAlpha;
 extern u16 gSkyMoonAlpha;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
 const SkyVec3 gSkyBaseSunDirection = {0.0f, 0.0f, 4600.0f};
 const SkyVec3 gSkyBaseMoonDirection = {0.0f, 0.0f, 4600.0f};
-extern const f32 lbl_803DF0B4;
-extern const f32 lbl_803DF0C0;
 extern u8 colorScale;
 extern u8 gSkySunPositionPrev;
 extern f32 gSkySunDirection[];
@@ -1193,7 +1190,7 @@ void skyUpdateLightingFromTimeOfDay(void)
             lightIntensityCurve = &((f32*)((u8*)vec + 0x2c))[part];
             greenCurveOffset = (part + 7) * 4;
             blueCurveOffset = (part + 0xe) * 4;
-            zero = lbl_803DF058;
+            zero = 0.0f;
             dayStart = 18000.0f;
             off = i * 0xa4;
             if ((u32)((gSkyState[off + 0xc1] >> 7) & 1) != 0)
@@ -1432,7 +1429,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             riseT = 1.0f - (riseT - 1.0f);
         }
-        scale = -(lbl_803DF0B4 * riseT - 1.0f);
+        scale = -(0.55f * riseT - 1.0f);
         vec[0] = 2.0f * sunDir.x;
         vec[1] = 2.0f * sunDir.y;
         vec[2] = 2.0f * sunDir.z;
@@ -1462,12 +1459,12 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         }
         else
         {
-            moonT = time2 + lbl_803DF0C0;
+            moonT = time2 + 10800.0f;
         }
         moonTC = moonT / 28800.0f;
-        if (moonTC < lbl_803DF058)
+        if (moonTC < 0.0f)
         {
-            moonTC = lbl_803DF058;
+            moonTC = 0.0f;
         }
         else if (moonTC > 1.0f)
         {
@@ -1475,7 +1472,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         }
         if (moonTC < 0.1f)
         {
-            if (moonTC < lbl_803DF058)
+            if (moonTC < 0.0f)
             {
                 gSkyMoonAlpha = 0;
             }
@@ -1513,7 +1510,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             riseT = 1.0f - (riseT - 1.0f);
         }
-        scale = -(lbl_803DF0B4 * riseT - 1.0f);
+        scale = -(0.55f * riseT - 1.0f);
         vec[0] = 2.0f * moonDir.x;
         vec[1] = 2.0f * moonDir.y;
         vec[2] = 2.0f * moonDir.z;
