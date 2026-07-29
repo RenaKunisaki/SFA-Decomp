@@ -105,14 +105,15 @@ void mainLoopDoGameText(void)
 
 void subtitleStop(void)
 {
-    int oldDelay;
+    int none;
     void** slot;
     int i;
+    int oldDelay;
     int dir;
 
     if (gSubtitleActive != 0)
     {
-        gSubtitleActive = 0;
+        gSubtitleActive = none = 0;
         i = 0;
         slot = gSubtitleLineTable;
         while (i < gSubtitleBlockCount)
@@ -122,7 +123,7 @@ void subtitleStop(void)
                 oldDelay = mmSetFreeDelay(0);
                 mm_free(*slot);
                 mmSetFreeDelay(oldDelay);
-                *slot = NULL;
+                *slot = (void*)none;
             }
             slot++;
             i++;
