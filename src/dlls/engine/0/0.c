@@ -1827,7 +1827,7 @@ void drawViewFinderHud(void)
     gViewFinderFadeLevel = fadeLevel;
     if (!fadeLevel)
         return;
-    gViewFinderBaseY = (f32)(3.390625f - lbl_803E1EB8 * fadeLevel);
+    gViewFinderBaseY = (f32)(100.0 - lbl_803E1EB8 * fadeLevel);
     gViewFinderCamAngle = -view->yaw;
 
     drawViewFinderHorizontal(10.0f, 0.0f, 200.0f, 260.0f, 270.0f, fadeLevel);
@@ -1844,7 +1844,7 @@ void drawViewFinderHud(void)
         f64 waveBaseOffset;
         f32 gridX, wavePhase, nextWavePhase, nextGridX;
         f32 angleDivisor, gridSpacing, waveCenterX, angleScale, gridAlpha;
-        f32 reticleY = (f32)(lbl_803E1EF0 * ((fovY - lbl_803E1EF8) / lbl_803E1F00) + 3.390625f);
+        f32 reticleY = (f32)(lbl_803E1EF0 * ((fovY - lbl_803E1EF8) / lbl_803E1F00) + 100.0);
         f32 reticleTopY = -(lbl_803E1F0C * gViewFinderFadeLevel) + 410.0f;
         f32 viewScale;
         drawViewFinderSegment(580.0f, reticleTopY, 580.0f, 410.0f,
@@ -4144,7 +4144,7 @@ void cMenuRotateFn_80124d80(void)
         *(s16*)gCMenuRingObjs[2] = rot;
         *(s16*)gCMenuRingFrontObjs[2] = rot;
         best = cMenuMinRingAbs();
-        r = (s16)(int)-(lbl_803E2030 * best - 3.7480469f);
+        r = (s16)(int)-(lbl_803E2030 * best - 255.0);
         lbl_803DD8D4 = (r > 0) ? r : 0;
     }
     cur = lbl_803DD79C;
@@ -4158,7 +4158,7 @@ void cMenuRotateFn_80124d80(void)
     *(s16*)gCMenuRingObjs[2] = rot;
     *(s16*)gCMenuRingFrontObjs[2] = rot;
     best = cMenuMinRingAbs();
-    r = (s16)(int)-(lbl_803E2030 * best - 3.7480469f);
+    r = (s16)(int)-(lbl_803E2030 * best - 255.0);
     lbl_803DD8D4 = (r > 0) ? r : 0;
 }
 
@@ -4666,7 +4666,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         lbl_803DD752 = (u16)(lbl_803DD74C * mathCosfHighPrecision(lbl_803DD748 * lbl_803DBA44) + lbl_803DBA54);
         lbl_803DD754 = (u16)(lbl_803DBA50 * mathCosfHighPrecision(lbl_803DD748 * lbl_803DBA48) + lbl_803DD7BC);
         lbl_803DBA3C = (f32)(lbl_803E2070 * lbl_803DD760);
-        lbl_803DBA34 = (f32)(1.65f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
+        lbl_803DBA34 = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
         pauseMenuSetHoloTransform(lbl_803E1E3C, lbl_803DBA34, lbl_803DBA38, lbl_803DBA3C, lbl_803DD750, lbl_803DD752,
                     lbl_803DD754);
         model = Obj_GetActiveModel(lbl_803DD860[0]);
@@ -4733,7 +4733,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         lbl_803DD752 = (u16)(lbl_803DD74C * mathCosfHighPrecision(lbl_803DD748 * lbl_803DBA44) + lbl_803DBA54);
         lbl_803DD754 = (u16)(lbl_803DBA50 * mathCosfHighPrecision(lbl_803DD748 * lbl_803DBA48) + lbl_803DD7BC);
         lbl_803DBA3C = (f32)(lbl_803E2070 * lbl_803DD760);
-        lbl_803DBA34 = (f32)(1.65f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
+        lbl_803DBA34 = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
         pauseMenuSetHoloTransform(lbl_803E1E3C, lbl_803DBA34, lbl_803DBA38, lbl_803DBA3C, lbl_803DD750, lbl_803DD752,
                     lbl_803DD754);
         model = Obj_GetActiveModel(lbl_803DD860[0]);
@@ -4813,7 +4813,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         lbl_803DD752 = (u16)(lbl_803DD74C * mathCosfHighPrecision(lbl_803DD748 * lbl_803DBA44) + lbl_803DBA54);
         lbl_803DD754 = (u16)(lbl_803DBA50 * mathCosfHighPrecision(lbl_803DD748 * lbl_803DBA48) + lbl_803DD7BC);
         lbl_803DBA3C = (f32)(lbl_803E2070 * lbl_803DD760);
-        lbl_803DBA34 = (f32)(1.65f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
+        lbl_803DBA34 = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
         pauseMenuSetHoloTransform(lbl_803E1E3C, lbl_803DBA34, lbl_803DBA38, lbl_803DBA3C, lbl_803DD750, lbl_803DD752,
                     lbl_803DD754);
         model = Obj_GetActiveModel(lbl_803DD860[0]);
@@ -4923,7 +4923,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         lbl_803DD752 = (u16)(lbl_803DD74C * mathCosfHighPrecision(lbl_803DD748 * lbl_803DBA44) + lbl_803DBA54);
         lbl_803DD754 = (u16)(lbl_803DBA50 * mathCosfHighPrecision(lbl_803DD748 * lbl_803DBA48) + lbl_803DD7BC);
         lbl_803DBA3C = (f32)(lbl_803E2070 * lbl_803DD760);
-        lbl_803DBA34 = (f32)(1.65f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
+        lbl_803DBA34 = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
         pauseMenuSetHoloTransform(lbl_803E1E3C, lbl_803DBA34, lbl_803DBA38, lbl_803DBA3C, lbl_803DD750, lbl_803DD752,
                     lbl_803DD754);
         model = Obj_GetActiveModel(lbl_803DD860[0]);
@@ -5031,7 +5031,7 @@ void pauseMenuDrawStatus_801274A0(GameObject* arg1)
     lbl_803DD752 = (u16)(lbl_803DD74C * mathCosfHighPrecision(lbl_803DD748 * lbl_803DBA44) + lbl_803DBA54);
     lbl_803DD754 = (u16)(lbl_803DBA50 * mathCosfHighPrecision(lbl_803DD748 * lbl_803DBA48) + lbl_803DD7BC);
     lbl_803DBA3C = lbl_803E2070 * lbl_803DD760;
-    lbl_803DBA34 = 1.65f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760);
+    lbl_803DBA34 = 0.3f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760);
     pauseMenuSetHoloTransform(lbl_803E1E3C, lbl_803DBA34, lbl_803DBA38, lbl_803DBA3C, lbl_803DD750, lbl_803DD752,
                 lbl_803DD754);
     model = Obj_GetActiveModel(lbl_803DD860[0]);
@@ -5727,9 +5727,9 @@ void boxDrawFn_8012975c(int unused1, int unused2, int unused3)
     for (segment = 2, fade = 0xaa; segment >= 0; segment--)
     {
         drawTexture(((HudTextures*)hudTextures)->tex114,
-                    (f32)(3.8164062f + (offset = lbl_803E2150 * phase)), (f32)(y = 0x5f - phase / 4),
+                    (f32)(324.0 + (offset = lbl_803E2150 * phase)), (f32)(y = 0x5f - phase / 4),
                     (u8)(drawAlpha = 0xff - fade), (u16)(scale = phase * 2 + 0xbb));
-        drawScaledTexture(((HudTextures*)hudTextures)->tex114, (f32)(3.7753906f - offset), y, drawAlpha & 0xff,
+        drawScaledTexture(((HudTextures*)hudTextures)->tex114, (f32)(282.0 - offset), y, drawAlpha & 0xff,
                           (u16)scale, 0x18, 0x34, 1);
         phase = (phase + 3) & 0x1f;
         fade -= 0x55;
@@ -5738,9 +5738,9 @@ void boxDrawFn_8012975c(int unused1, int unused2, int unused3)
     for (segment = 2, fade = 0xaa; segment >= 0; segment--)
     {
         drawTexture(((HudTextures*)hudTextures)->tex114,
-                    (f32)(3.8164062f + (offset = lbl_803E2150 * phase)), (f32)(y = 0x5f - phase / 4),
+                    (f32)(324.0 + (offset = lbl_803E2150 * phase)), (f32)(y = 0x5f - phase / 4),
                     (u8)(drawAlpha = 0xff - fade), (u16)(scale = phase * 2 + 0xbb));
-        drawScaledTexture(((HudTextures*)hudTextures)->tex114, (f32)(3.7753906f - offset), y, drawAlpha & 0xff,
+        drawScaledTexture(((HudTextures*)hudTextures)->tex114, (f32)(282.0 - offset), y, drawAlpha & 0xff,
                           (u16)scale, 0x18, 0x34, 1);
         phase = (phase + 3) & 0x1f;
         fade -= 0x55;
