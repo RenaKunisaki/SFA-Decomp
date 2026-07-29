@@ -67,7 +67,6 @@ extern f32 gFrozenWhirlpoolTexScale;
 extern f32 gDistortionTexCoordScale;
 extern f32 gDistortionAlphaRadius;
 extern f32 gDistortionIndMtxRadius;
-extern f32 lbl_803DEEE4;
 extern GXColor lbl_803DB6D0;
 extern GXColor lbl_803DB6D4;
 extern GXColor lbl_803DB6D8;
@@ -1654,8 +1653,8 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
     PSMTXScale(mtx_30, lbl_803DB6B0, lbl_803DB6B0, 1.0f);
     PSMTXConcat(mtx_30, gCameraLightPerspectiveFlipYMatrix, mtx_90);
-    PSMTXTrans(mtx_30, 0.5f * (lbl_803DEEE4 - lbl_803DB6B0),
-               0.5f * (lbl_803DEEE4 - lbl_803DB6B0), 0.0f);
+    PSMTXTrans(mtx_30, 0.5f * (1.0f - lbl_803DB6B0),
+               0.5f * (1.0f - lbl_803DB6B0), 0.0f);
     PSMTXConcat(mtx_30, mtx_90, mtx_90);
     GXLoadTexMtxImm(mtx_90, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_TRUE, GX_PTTEXMTX6);
