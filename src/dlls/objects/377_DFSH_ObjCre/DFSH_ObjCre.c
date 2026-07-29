@@ -106,7 +106,7 @@ void dfshObjCreator_update(GameObject* obj) {
         sharpClawSetup->aggroRangeByte = 0xFF;
         sharpClawSetup->triggerSequenceId = -1;
         sharpClawSetup->unk34 = 0xFFFF;
-        Obj_SetupObject(&sharpClawSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        objSetupObject(&sharpClawSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         state->spawnTimer = DFSH_OBJ_CREATOR_SPAWN_TIMER;
         state->spawnTimerRate = 0;
     }

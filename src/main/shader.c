@@ -526,7 +526,7 @@ void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObjec
                     vis = (s8*)bm2->loadedObjectBits;
                     vis[visByte] |= bit;
                 }
-                Obj_SetupObject((ObjPlacement*)obj, 1, mapId, objIndex, parent);
+                objSetupObject((ObjPlacement*)obj, 1, mapId, objIndex, parent);
             }
         }
         objIndex++;
@@ -989,7 +989,7 @@ void mapLoadUnloadObjects(int flag)
                                 *(s8*)&pg->loadedObjectBits[ix2] = pg->loadedObjectBits[ix2] & ~msk;
                                 *(s8*)&pg->loadedObjectBits[ix2] = pg->loadedObjectBits[ix2] | msk;
                             }
-                            Obj_SetupObject((ObjPlacement*)objStart, 1, list[i], bit, NULL);
+                            objSetupObject((ObjPlacement*)objStart, 1, list[i], bit, NULL);
                         }
                         bit++;
                         mask <<= 1;
@@ -1079,7 +1079,7 @@ void mapLoadUnloadObjects(int flag)
                                 *(s8*)(*(int*)(pg3 + 0x10) + ix3) = *(u8*)(*(int*)(pg3 + 0x10) + ix3) & ~msk3;
                                 *(s8*)(*(int*)(pg3 + 0x10) + ix3) = *(u8*)(*(int*)(pg3 + 0x10) + ix3) | msk3;
                             }
-                            Obj_SetupObject((ObjPlacement*)cur, 1, mid2, bit, obj2);
+                            objSetupObject((ObjPlacement*)cur, 1, mid2, bit, obj2);
                         }
                         bit++;
                         cur += *(u8*)(cur + 2) * 4;

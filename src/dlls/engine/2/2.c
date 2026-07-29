@@ -2072,7 +2072,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             {
                 setup->base.objectId = objSeqObjs;
             }
-            newObj = Obj_SetupObject(&setup->base, 5, -1, -1, parent);
+            newObj = objSetupObject(&setup->base, 5, -1, -1, parent);
             newObj->seqIndex = -2;
             seq = newObj->extra;
             ((ObjSeqState*)seq)->heading = heading;

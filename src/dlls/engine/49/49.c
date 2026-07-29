@@ -788,7 +788,7 @@ void Minimap_setupCompassBlip(void)
     scale = 0.05f;
     for (; i < 2; i++)
     {
-        gMinimapBlipObjects[i] = (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(32, MINIMAP_COMMAND_MENU_OBJ_BASE + i), 4, -1, -1, 0);
+        gMinimapBlipObjects[i] = (GameObject*)objSetupObject(Obj_AllocObjectSetup(32, MINIMAP_COMMAND_MENU_OBJ_BASE + i), 4, -1, -1, 0);
         ((GameObject*)gMinimapBlipObjects[i])->anim.localPosX = posX;
         ((GameObject*)gMinimapBlipObjects[i])->anim.localPosY = posY;
         ((GameObject*)gMinimapBlipObjects[i])->anim.localPosX = center;

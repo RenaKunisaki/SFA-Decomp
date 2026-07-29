@@ -405,7 +405,7 @@ void kaldachom_spawnDustEffects(GameObject* obj, KaldachomControl* control) {
         ((ObjPlacement*)work)->color[1] = placement->base.color[1];
         ((ObjPlacement*)work)->color[2] = placement->base.color[2];
         ((ObjPlacement*)work)->color[3] = placement->base.color[3];
-        work = (int)Obj_SetupObject((ObjPlacement*)work, 5, 0xffffffff, 0xffffffff, 0);
+        work = (int)objSetupObject((ObjPlacement*)work, 5, 0xffffffff, 0xffffffff, 0);
         control->spawnedDustObj = (void*)work;
         ((GameObject*)control->spawnedDustObj)->anim.rootMotionScale = gKaldachomDustSpawnScratch;
     }
@@ -439,7 +439,7 @@ void kaldachom_spawnMouthProjectile(GameObject* obj, KaldachomState* state, u8 u
         setup->color[1] = 4;
         setup->color[2] = 0xff;
         setup->color[3] = 0xff;
-        projectile = Obj_SetupObject(setup, 5, 0xffffffff, 0xffffffff, 0);
+        projectile = objSetupObject(setup, 5, 0xffffffff, 0xffffffff, 0);
         if (projectile != NULL) {
             travelTime = 60.0f * (state->ground.baddie.targetDistance / (f32)(u32)state->aggroRange);
             projectile->anim.velocityX = (state->targetObj->anim.localPosX - setup->posX) / travelTime;

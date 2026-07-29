@@ -156,7 +156,7 @@ void staffactivated_spawnMapEventDebris(GameObject* obj) {
             scarabPlacement->base.posZ = state->targetZ;
             scarabPlacement->activeTimer = STAFF_ACTIVATED_SCARAB_ACTIVE_FRAMES;
 
-            scarab = Obj_SetupObject(&scarabPlacement->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            scarab = objSetupObject(&scarabPlacement->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
             scarab->anim.velocityX = obj->anim.localPosX - player->anim.localPosX;
             scarab->anim.velocityZ = obj->anim.localPosZ - player->anim.localPosZ;
 

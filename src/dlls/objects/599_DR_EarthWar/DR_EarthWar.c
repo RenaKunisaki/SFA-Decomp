@@ -1240,7 +1240,7 @@ void DR_EarthWarrior_update(GameObject* obj)
     if (inner->helperObj == NULL && Obj_IsLoadingLocked() != 0)
     {
         ObjPlacement* setup = Obj_AllocObjectSetup(0x18, DREARTHWARRIOR_CHILD_OBJ_HELPER);
-        GameObject* newObj = Obj_SetupObject(setup, 4, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+        GameObject* newObj = objSetupObject(setup, 4, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
         ObjLink_AttachChild(obj, newObj, 2);
         inner->helperObj = newObj;
     }

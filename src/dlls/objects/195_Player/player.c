@@ -9342,7 +9342,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
                 setup->posX = player->anim.localPosX;
                 setup->posY = player->anim.localPosY;
                 setup->posZ = player->anim.localPosZ;
-                att = Obj_SetupObject(setup, 4, player->anim.mapEventSlot, -1, player->anim.parent);
+                att = objSetupObject(setup, 4, player->anim.mapEventSlot, -1, player->anim.parent);
                 gPlayerChildObject = att;
             }
             ObjLink_AttachChild((GameObject*)obj, (GameObject*)att, 1);
@@ -9367,7 +9367,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
             setup->posY = 15.0f + obj->anim.localPosY;
             setup->posZ = obj->anim.localPosZ;
             *(u8*)((char*)setup + 0x19) = 1;
-            Obj_SetupObject(setup, 5, -1, -1, obj->anim.parent);
+            objSetupObject(setup, 5, -1, -1, obj->anim.parent);
         }
         (*(void (*)(void))(*(int*)((char*)*gGameUIInterface + 0x10)))();
         return 0;
@@ -12094,7 +12094,7 @@ void playerCastIceSpell(GameObject* unused)
             setup->color[3] = 0xff;
             *(s16*)((char*)setup + 0x1a) = (s16)(i * 3);
             *(s16*)((char*)setup + 0x1c) = 0;
-            gPlayerSpawnedObjects[i] = Obj_SetupObject(setup, 5, -1, -1, NULL);
+            gPlayerSpawnedObjects[i] = objSetupObject(setup, 5, -1, -1, NULL);
         }
     }
 }
@@ -12351,7 +12351,7 @@ void fn_802AA014(GameObject* obj, int state, f32 aimInputZ, f32 zero)
         setup->posY = *(f32*)((char*)slot + 0x10);
         setup->posZ = *(f32*)((char*)slot + 0x14);
         Sfx_PlayFromObject((int)obj, SFXTRIG_staff_rocket_hitdirt);
-        o = Obj_SetupObject(setup, 5, -1, -1, NULL);
+        o = objSetupObject(setup, 5, -1, -1, NULL);
         if (o != NULL)
         {
             *(s16*)((char*)o + 6) |= 0x2000;
@@ -12412,7 +12412,7 @@ void fn_802AA2B0(int obj, int state, f32 unused, f32 yoff)
         setup->posX = x0 + yoff;
         setup->posY = y0 + yoff;
         setup->posZ = z0 + yoff;
-        setup = (ObjPlacement*)Obj_SetupObject(setup, 5, -1, -1, NULL);
+        setup = (ObjPlacement*)objSetupObject(setup, 5, -1, -1, NULL);
         if (setup == NULL)
         {
             linkEffect = 0;
@@ -12478,7 +12478,7 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
         {
             *(s16*)((char*)setup + 0x1a) = 1;
         }
-        fb = Obj_SetupObject(setup, 5, -1, -1, NULL);
+        fb = objSetupObject(setup, 5, -1, -1, NULL);
         if (fb == NULL)
         {
             return;
@@ -12623,7 +12623,7 @@ void playerDie(GameObject* obj)
     ((ObjPlacement*)setup)->posX = obj->anim.localPosX;
     ((ObjPlacement*)setup)->posY = obj->anim.localPosY;
     ((ObjPlacement*)setup)->posZ = obj->anim.localPosZ;
-    inner->spawnedObject = (int)Obj_SetupObject(setup, 5, -1, -1, NULL);
+    inner->spawnedObject = (int)objSetupObject(setup, 5, -1, -1, NULL);
     ((ByteFlags*)((char*)inner + 0x3f3))->b04 = 0;
     ((ByteFlags*)((char*)inner + 0x3f3))->b02 = 1;
     z[0] = 0;
@@ -15474,7 +15474,7 @@ void playerStaffInit(GameObject* obj, int state)
 
     if (gPlayerPathObject == NULL && Obj_IsLoadingLocked())
     {
-        child = Obj_SetupObject(Obj_AllocObjectSetup(0x18, 0x69), 4, -1, -1, obj->anim.parent);
+        child = objSetupObject(Obj_AllocObjectSetup(0x18, 0x69), 4, -1, -1, obj->anim.parent);
         gPlayerPathObject = child;
         ObjLink_AttachChild(obj, child, 2);
     }
@@ -16548,7 +16548,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     {
         ObjLink_AttachChild((GameObject*)obj,
                             (GameObject*)(gPlayerEggObject =
-                                (int)Obj_SetupObject(Obj_AllocObjectSetup(0x18, 0x66a), 4, -1, -1,
+                                (int)objSetupObject(Obj_AllocObjectSetup(0x18, 0x66a), 4, -1, -1,
                                                      ((GameObject*)obj)->anim.parent)),
                             3);
     }
@@ -16563,7 +16563,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     if (gPlayerStaffObject == NULL && Obj_IsLoadingLocked() != 0)
     {
         gPlayerStaffObject =
-            (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(0x24, 0x773), 5, -1, -1, ((GameObject*)obj)->anim.parent);
+            (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x24, 0x773), 5, -1, -1, ((GameObject*)obj)->anim.parent);
     }
     if (gPlayerStaffObject != NULL)
     {
@@ -18207,7 +18207,7 @@ void playerUpdate(GameObject* obj)
             playerStaffInit(obj, inner);
             if ((u32)gPlayerEggObject == 0 && Obj_IsLoadingLocked() != 0)
             {
-                gPlayerEggObject = (int)Obj_SetupObject(Obj_AllocObjectSetup(0x18, 0x66a), 4, -1, -1,
+                gPlayerEggObject = (int)objSetupObject(Obj_AllocObjectSetup(0x18, 0x66a), 4, -1, -1,
                                                         obj->anim.parent);
                 ObjLink_AttachChild(obj, (GameObject*)gPlayerEggObject, 3);
             }
@@ -18221,7 +18221,7 @@ void playerUpdate(GameObject* obj)
             }
             if (gPlayerStaffObject == NULL && Obj_IsLoadingLocked() != 0)
             {
-                gPlayerStaffObject = (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(0x24, 0x773), 5, -1, -1,
+                gPlayerStaffObject = (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x24, 0x773), 5, -1, -1,
                                                                   obj->anim.parent);
             }
             if (gPlayerStaffObject != NULL)

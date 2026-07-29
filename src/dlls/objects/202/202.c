@@ -1675,7 +1675,7 @@ GameObject* gcRobotLight_init(GameObject* obj, int childId)
     ((ObjPlacement*)setup)->posZ = obj->anim.localPosZ;
     ((Seq11EChildSetup*)setup)->unk19 = 0;
     ((Seq11EChildSetup*)setup)->unk20 = 149;
-    return Obj_SetupObject((ObjPlacement*)setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+    return objSetupObject((ObjPlacement*)setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
 }
 
 Seq11ERow gSeq11EStateTable[6] = {
@@ -2402,7 +2402,7 @@ void kooshy_spawnProjectile(GameObject* obj, int state)
         fx->color[1] = 1;
         fx->color[2] = 0xff;
         fx->color[3] = 0xff;
-        newObj = (int)Obj_SetupObject(fx, 5, -1, -1, 0);
+        newObj = (int)objSetupObject(fx, 5, -1, -1, 0);
         if ((void*)newObj != NULL)
         {
             ((GameObject*)newObj)->anim.velocityX =
@@ -3831,7 +3831,7 @@ void spittingEbaSpawnPollen(GameObject* obj, int state)
         ((ObjPlacement*)setup)->color[1] = 1;
         ((ObjPlacement*)setup)->color[2] = 0xff;
         ((ObjPlacement*)setup)->color[3] = 0xff;
-        ref = (int)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, 0);
+        ref = (int)objSetupObject((ObjPlacement*)setup, 5, -1, -1, 0);
         if ((void*)ref != NULL)
         {
             ((GameObject*)ref)->anim.velocityX = velXZ;
@@ -5057,7 +5057,7 @@ void firecrawler_spawnFireHole(GameObject* obj, u8* state)
         setup->startOffset = 0;
         setup->flags = 3;
         setup->pad23 = 0;
-        child = Obj_SetupObject(&setup->base, 5, -1, -1, 0);
+        child = objSetupObject(&setup->base, 5, -1, -1, 0);
         if (child != NULL)
         {
             ObjLink_AttachChild(obj, child, 0);
@@ -5080,7 +5080,7 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
         ((ObjPlacement*)setup)->color[1] = 4;
         ((ObjPlacement*)setup)->color[2] = 0xff;
         ((ObjPlacement*)setup)->color[3] = 0xff;
-        child = (GameObject*)((int)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, 0));
+        child = (GameObject*)((int)objSetupObject((ObjPlacement*)setup, 5, -1, -1, 0));
         if ((u32)child != 0)
         {
             f32 dur = 60.0f * ((f32)((EnemyState*)state)->targetDist / ((EnemyState*)state)->aggroRange);
@@ -6415,7 +6415,7 @@ void snowworm_spawnProjectile(GameObject* obj)
         ((ObjPlacement*)setup)->color[0] = 1;
         ((ObjPlacement*)setup)->color[1] = 4;
         ((ObjPlacement*)setup)->color[3] = 0xff;
-        setup = (int*)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, 0);
+        setup = (int*)objSetupObject((ObjPlacement*)setup, 5, -1, -1, 0);
         if (setup != NULL)
         {
             ((GameObject*)setup)->anim.velocityX =
@@ -7448,7 +7448,7 @@ void iceBaddie_spawnIceBall(GameObject* obj, IceBaddieControl* control) {
         setup->base.color[3] = 255;
         setup->gameBit = -1;
         setup->secondaryGameBit = -1;
-        projectile = Obj_SetupObject(&setup->base, 5, -1, -1, NULL);
+        projectile = objSetupObject(&setup->base, 5, -1, -1, NULL);
         if (projectile != NULL) {
             projectile->anim.velocityX = control->projectileVelocity[0];
             projectile->anim.velocityY = control->projectileVelocity[1];

@@ -116,7 +116,7 @@ void gpshObjCreator_update(GameObject* obj) {
         childSetup->base.objectId = (s16)(state->childTypeIndex + GPSH_OBJ_CREATOR_CHILD_OBJECT_ID_BASE);
         childSetup->yawByte = (u8)(obj->anim.rotX >> GPSH_OBJ_CREATOR_YAW_SHIFT);
         childSetup->unknown1A = gGPSHObjCreatorChildParam1AValues[state->childTypeIndex];
-        Obj_SetupObject(&childSetup->base, GPSH_OBJ_CREATOR_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
+        objSetupObject(&childSetup->base, GPSH_OBJ_CREATOR_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
                         GPSH_OBJ_CREATOR_NO_OBJECT_INDEX, obj->anim.parent);
     }
 }

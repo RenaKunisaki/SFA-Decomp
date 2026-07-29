@@ -368,7 +368,7 @@ void landed_arwing_update(GameObject* obj) {
     player = Obj_GetPlayerObject();
     if (state->childObject == NULL) {
         if (Obj_IsLoadingLocked() != 0) {
-            child = (GameObject*)Obj_SetupObject(
+            child = (GameObject*)objSetupObject(
                 Obj_AllocObjectSetup(LANDED_ARWING_CHILD_OBJECT_SETUP_SIZE, LANDED_ARWING_GADGET_OBJECT_ID), 4, -1, -1,
                 0);
             state->childObject = child;
@@ -459,7 +459,7 @@ void landed_arwing_updateHitReaction(GameObject* obj, LandedArwingHitReactionSta
                         setup->posY = yOffset + obj->anim.localPosY;
                         setup->posZ = obj->anim.localPosZ;
                         setup->color[0] = 1;
-                        Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+                        objSetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                         spawnIndex++;
                     }
                 }

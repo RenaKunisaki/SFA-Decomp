@@ -686,7 +686,7 @@ void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner)
         if (animState->weaponDefNo > 0)
         {
             setup = Obj_AllocObjectSetup(0x20, animState->weaponDefNo);
-            child = Obj_SetupObject(setup, 4, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            child = objSetupObject(setup, 4, obj->anim.mapEventSlot, -1, obj->anim.parent);
             ObjLink_AttachChild(obj, child, 0);
             animState->weaponDefNoSentinel = animState->weaponDefNo;
         }

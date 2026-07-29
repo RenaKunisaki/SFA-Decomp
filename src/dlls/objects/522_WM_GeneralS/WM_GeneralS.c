@@ -129,7 +129,7 @@ int WM_GeneralScales_sequenceCallback(int objectHandle, int unusedArg2, ObjSeqSt
                 setup->base.color[1] = WM_GENERAL_SCALES_SWORD_COLOR_GREEN;
                 setup->base.color[3] = WM_GENERAL_SCALES_SWORD_COLOR_ALPHA;
                 ObjLink_AttachChild((GameObject*)objectHandle,
-                                    Obj_SetupObject(&setup->base, WM_GENERAL_SCALES_SWORD_SETUP_FLAGS,
+                                    objSetupObject(&setup->base, WM_GENERAL_SCALES_SWORD_SETUP_FLAGS,
                                                     WM_GENERAL_SCALES_SWORD_MAP_LAYER_NONE,
                                                     WM_GENERAL_SCALES_SWORD_OBJECT_NONE, NULL),
                                     0);

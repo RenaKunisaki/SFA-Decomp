@@ -105,7 +105,7 @@ void dll410_update(GameObject* obj) {
                 hitPoints = placement->triggerGameBitOffset;
                 spawnSetup->hitPoints = hitPoints;
             }
-            child = Obj_SetupObject(&spawnSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            child = objSetupObject(&spawnSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
             if (child != NULL && child->extra != NULL) {
                 ((GroundBaddieState*)child->extra)->configFlags = DLL19A_CHILD_DISABLE_CAMERA_TARGET;
             }

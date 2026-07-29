@@ -94,7 +94,7 @@ void imSpaceRingGenerator_update(GameObject* obj) {
                 ringPlacement->base.color[2] = placement->color[2];
                 ringPlacement->base.color[1] = 1;
                 ringPlacement->base.color[3] = 0xFF;
-                Obj_SetupObject(&ringPlacement->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+                objSetupObject(&ringPlacement->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
             }
             IM_SPACE_RING_GENERATOR_HAS_SPAWNED(obj) = 1;
         }

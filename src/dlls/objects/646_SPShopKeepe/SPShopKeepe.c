@@ -915,7 +915,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
         ((ShopkeeperSpawnSetup*)setup)->base.ident = ((ShopkeeperState*)state)->vendorObj;
-        Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+        objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 
     for (i = 0; i < count; i++)
@@ -932,7 +932,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
         ((ShopkeeperSpawnSetup*)setup)->kind = 1;
         ((ShopkeeperSpawnSetup*)setup)->base.ident = ((ShopkeeperState*)state)->vendorObj;
-        Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+        objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 }
 

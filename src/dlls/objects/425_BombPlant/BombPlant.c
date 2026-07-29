@@ -143,7 +143,7 @@ void BombPlant_spawnSpore(GameObject* obj, BombPlantState* unusedState) {
         spore->base.color[0] = 2;
         spore->spawn.spawnYaw = (s16)((s32)placement->sporeYaw << 8);
         spore->spawn.rotXSeed = obj->anim.rotX;
-        Obj_SetupObject(&spore->base, 5, -1, -1, NULL);
+        objSetupObject(&spore->base, 5, -1, -1, NULL);
     }
 }
 

@@ -159,7 +159,7 @@ s8 tumbleweedbush_spawnSibling(GameObject* obj) {
     }
 
     {
-        GameObject* spawnedObj = Obj_SetupObject((ObjPlacement*)newPlacement, TUMBLEWEED_BUSH_SIBLING_SETUP_FLAGS,
+        GameObject* spawnedObj = objSetupObject((ObjPlacement*)newPlacement, TUMBLEWEED_BUSH_SIBLING_SETUP_FLAGS,
                                                  obj->anim.mapEventSlot, -1, obj->anim.parent);
 
         state->pieceObjects[freePieceIndex] = spawnedObj;

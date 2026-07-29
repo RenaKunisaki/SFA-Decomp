@@ -36,7 +36,7 @@ int dll_184_handleAnimEvents(GameObject* obj, const ObjSeqState* sequence) {
                 Obj_FreeObject(child);
             }
             childSetup = (Dll184ChildSetup*)Obj_AllocObjectSetup(sizeof(Dll184ChildSetup), obj->userData2);
-            child = Obj_SetupObject(&childSetup->base, 4, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            child = objSetupObject(&childSetup->base, 4, obj->anim.mapEventSlot, -1, obj->anim.parent);
             ObjLink_AttachChild(obj, child, 0);
             break;
         case DLL_184_ANIM_EVENT_REMOVE_CHILD:

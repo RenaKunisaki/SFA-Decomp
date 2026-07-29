@@ -137,7 +137,7 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
     setup->group = 1;
     ObjPath_GetPointWorldPosition(path, WCPUSHBLOCK_SPAWN_PATH_POINT, &setup->x, &setup->y, &setup->z, 0);
 
-    block = (GameObject*)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, NULL);
+    block = (GameObject*)objSetupObject((ObjPlacement*)setup, 5, -1, -1, NULL);
     if (block == NULL)
     {
         return;

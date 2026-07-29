@@ -99,7 +99,7 @@ void sc_musictree_spawnAmbientEffect(GameObject* obj, ScMusicTreeState* state, i
         effectPlacement->despawnGameBit = SC_MUSIC_TREE_AMBIENT_EFFECT_NO_DESPAWN_BIT;
         effectPlacement->unk18 = 0;
         state->ambientEffectHandles[pathIndex] =
-            (int)Obj_SetupObject(&effectPlacement->base, 5, -1, -1, (void*)obj->anim.parentAddress);
+            (int)objSetupObject(&effectPlacement->base, 5, -1, -1, (void*)obj->anim.parentAddress);
     }
 }
 

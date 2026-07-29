@@ -811,14 +811,14 @@ void gameUiLoadResources(void)
         z = lbl_803E1E44;
         for (; i < 3; i++)
         {
-            *ringModels = Obj_SetupObject(Obj_AllocObjectSetup(0x20, CMENU_CHILD_OBJ_RING_MODEL), 4, -1, -1, NULL);
+            *ringModels = objSetupObject(Obj_AllocObjectSetup(0x20, CMENU_CHILD_OBJ_RING_MODEL), 4, -1, -1, NULL);
             (*ringModels)->anim.localPosX = x;
             (*ringModels)->anim.localPosY = y;
             (*ringModels)->anim.localPosZ = z;
             (*ringModels)->anim.rotX = rotation;
             (*ringModels)->anim.bankIndex = i;
             ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel(*ringModels), cMenuRingModelRenderFn);
-            *ringIcons = Obj_SetupObject(Obj_AllocObjectSetup(0x20, CMENU_CHILD_OBJ_RING_ICON), 4, -1, -1, NULL);
+            *ringIcons = objSetupObject(Obj_AllocObjectSetup(0x20, CMENU_CHILD_OBJ_RING_ICON), 4, -1, -1, NULL);
             (*ringIcons)->anim.localPosX = x;
             (*ringIcons)->anim.localPosY = y;
             (*ringIcons)->anim.localPosZ = z;
@@ -833,7 +833,7 @@ void gameUiLoadResources(void)
             GameObject* communicator;
             GameUiObjectPair* communicatorObjects;
 
-            communicator = Obj_SetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_COMMUNICATOR), 4, -1, -1, NULL);
+            communicator = objSetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_COMMUNICATOR), 4, -1, -1, NULL);
             communicatorObjects = (GameUiObjectPair*)lbl_803DD868;
             communicatorObjects->objects[0] = communicator;
             communicatorObjects->objects[0]->anim.localPosX = lbl_803E1E3C;
@@ -842,7 +842,7 @@ void gameUiLoadResources(void)
             communicatorObjects->objects[0]->anim.rotX = 0x7447;
             communicatorObjects->objects[0]->anim.rootMotionScale = lbl_803E1E50;
 
-            communicator = Obj_SetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_WORLD_COMM), 4, -1, -1, NULL);
+            communicator = objSetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_WORLD_COMM), 4, -1, -1, NULL);
             communicatorObjects = (GameUiObjectPair*)lbl_803DD868;
             communicatorObjects->objects[1] = communicator;
             communicatorObjects->objects[1]->anim.localPosX = lbl_803E1E3C;
@@ -852,7 +852,7 @@ void gameUiLoadResources(void)
             communicatorObjects->objects[1]->anim.rootMotionScale = 0.01f;
         }
 
-        object = Obj_SetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_COMM_CUBE), 4, -1, -1, NULL);
+        object = objSetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_COMM_CUBE), 4, -1, -1, NULL);
         lbl_803DD860[0] = object;
         ObjModel_SetRenderCallback((u8*)object->anim.banks[0], pauseMenuHoloRenderFn);
 
@@ -860,7 +860,7 @@ void gameUiLoadResources(void)
             GameObject* communicatorCube;
             GameUiObjectPair* communicatorCubes;
 
-            communicatorCube = Obj_SetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_COMM_CUBE_FRONT), 4, -1, -1, NULL);
+            communicatorCube = objSetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_COMM_CUBE_FRONT), 4, -1, -1, NULL);
             communicatorCubes = (GameUiObjectPair*)lbl_803DD860;
             communicatorCubes->objects[1] = communicatorCube;
             ObjModel_SetRenderCallback((u8*)communicatorCubes->objects[1]->anim.banks[0], pauseMenuHoloRenderFn);
@@ -874,7 +874,7 @@ void gameUiLoadResources(void)
         addressLimit = 0x90000000;
         for (; j < 6; j++)
         {
-            *menuObjects = Obj_SetupObject(Obj_AllocObjectSetup(0x20, *ids), 4, -1, -1, NULL);
+            *menuObjects = objSetupObject(Obj_AllocObjectSetup(0x20, *ids), 4, -1, -1, NULL);
             (*menuObjects)->anim.localPosX = z;
             (*menuObjects)->anim.localPosY = y;
             (*menuObjects)->anim.localPosZ = y;
@@ -893,7 +893,7 @@ void gameUiLoadResources(void)
             GameUiProjballSetup* setup = (GameUiProjballSetup*)Obj_AllocObjectSetup(0x24, GAMEUI_CHILD_OBJ_PROJBALL);
 
             setup->active = 1;
-            lbl_803DD85C = Obj_SetupObject(&setup->placement, 4, -1, -1, NULL);
+            lbl_803DD85C = objSetupObject(&setup->placement, 4, -1, -1, NULL);
         }
         gameUiResourcesLoaded = 1;
     }
@@ -4498,7 +4498,7 @@ void pauseMenuCreateHeads(void)
             if (gHeadDisplayModelObjs[i] == NULL)
             {
                 gHeadDisplayModelObjs[i] =
-                    (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(0x20, lbl_8031BF90[i]), 4, -1, -1, NULL);
+                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, lbl_8031BF90[i]), 4, -1, -1, NULL);
                 f = lbl_803E1E3C;
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.localPosX = f;
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.localPosY = f;
@@ -7198,7 +7198,7 @@ void pauseMenuInit(void)
     {
         if (i < 4 && lbl_803A9410[i] == NULL)
         {
-            lbl_803A9410[i] = Obj_SetupObject(Obj_AllocObjectSetup(0x20, lbl_8031BF90[i]), 4, -1, -1, NULL);
+            lbl_803A9410[i] = objSetupObject(Obj_AllocObjectSetup(0x20, lbl_8031BF90[i]), 4, -1, -1, NULL);
             lbl_803A9410[i]->anim.localPosX = 0.0f;
             lbl_803A9410[i]->anim.localPosY = -5.0f;
             lbl_803A9410[i]->anim.localPosZ = -5.0f;

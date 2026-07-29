@@ -162,7 +162,7 @@ typedef struct CharSpawn
 #define OBJECT_FLAG_IN_UPDATE_LIST 0x10 /* registered in gObjList / gObjUpdateList */
 #define OBJECT_FLAG_FREED          0x40 /* Obj_FreeObject ran (double-free guard) */
 
-/* ObjGroup ids (registered/unregistered in Obj_SetupObject / Obj_FreeObject) */
+/* ObjGroup ids (registered/unregistered in objSetupObject / Obj_FreeObject) */
 #define OBJECT_OBJGROUP_HITBOX 6 /* joined when modelInstance flags & 0x40 (SKIP_RESET_UPDATE) */
 #define OBJECT_OBJGROUP_GROUP8 8 /* joined when modelInstance->group8RegistrationCount > 0 */
 
@@ -963,7 +963,7 @@ ObjPlacement* Obj_AllocObjectSetup(int size, int type)
     p->size = size;
     return p;
 }
-void objFreeObjDef(u8* obj, int flag)
+void objFreeObjdef(u8* obj, int flag)
 {
     int defs[40];
     void (*fp)(u8*, int);
@@ -1197,7 +1197,7 @@ static inline void Obj_FreeDeferredObjects(void)
         void* p = gObjDeferredFreeList[i];
         if (p != NULL)
         {
-            objFreeObjDef(p, 0);
+            objFreeObjdef(p, 0);
             gObjDeferredFreeList[i] = NULL;
         }
     }
@@ -1541,7 +1541,7 @@ void Obj_FreeObject(GameObject* obj)
     }
     else
     {
-        objFreeObjDef((u8*)obj, !gObjDefCaptureMode);
+        objFreeObjdef((u8*)obj, !gObjDefCaptureMode);
     }
 }
 
@@ -2125,7 +2125,7 @@ void ObjAnim_LoadMoveEvents(u8* obj, int dummy, ObjAnimEventTable* eventTable, u
     }
 }
 
-GameObject* Obj_SetupObject(ObjPlacement* data, int flags, int mapLayer, int objIndex, void* parent)
+GameObject* objSetupObject(ObjPlacement* data, int flags, int mapLayer, int objIndex, void* parent)
 {
     GameObject* obj;
     if (getLoadedFileFlags(0) & 0x100000)
@@ -2317,7 +2317,7 @@ void Obj_FlushDeferredFreeList(void)
         void* p = gObjDeferredFreeList[i];
         if (p != NULL)
         {
-            objFreeObjDef(p, 0);
+            objFreeObjdef(p, 0);
             gObjDeferredFreeList[i] = NULL;
         }
     }

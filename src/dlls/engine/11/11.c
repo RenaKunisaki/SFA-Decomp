@@ -1321,7 +1321,7 @@ void dll_0B_updateActiveEffects(void)
                         ((ObjPlacement*)o)->posX = tmpl.posX;
                         ((ObjPlacement*)o)->posY = tmpl.posY;
                         ((ObjPlacement*)o)->posZ = tmpl.posZ;
-                        *(int*)eff = (int)Obj_SetupObject((ObjPlacement*)o, 5, -1, -1, NULL);
+                        *(int*)eff = (int)objSetupObject((ObjPlacement*)o, 5, -1, -1, NULL);
                         *(int*)(*(int*)eff + 0xf8) = 1;
                     }
                     else if (*(void**)eff != NULL)

@@ -113,7 +113,7 @@ void lavaball1bf_update(GameObject* obj) {
         projectilePlacement->verticalSpeed = placement->verticalSpeed;
         projectilePlacement->horizontalSpeed = placement->horizontalSpeed;
         projectilePlacement->targetObjectId = placement->projectileTargetObjectId;
-        state->projectile = Obj_SetupObject((ObjPlacement*)setupHandle, DIM_LAVA_BALL_PROJECTILE_SETUP_FLAGS,
+        state->projectile = objSetupObject((ObjPlacement*)setupHandle, DIM_LAVA_BALL_PROJECTILE_SETUP_FLAGS,
                                             obj->anim.mapEventSlot, -1, NULL);
     }
     projectile = state->projectile;

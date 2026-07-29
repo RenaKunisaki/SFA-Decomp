@@ -356,7 +356,7 @@ void ccLightfoot_update(GameObject* obj) {
             state->phase = CC_LIGHTFOOT_PHASE_DESPAWN;
         } else {
             if (Obj_IsLoadingLocked() != 0) {
-                state->attachedWeapon = Obj_SetupObject(
+                state->attachedWeapon = objSetupObject(
                     Obj_AllocObjectSetup(CC_LIGHTFOOT_WEAPON_SETUP_SIZE, CC_LIGHTFOOT_WEAPON_OBJECT_DEF), 5, -1, -1,
                     obj->anim.parent);
                 ObjLink_AttachChild(obj, state->attachedWeapon, 0);

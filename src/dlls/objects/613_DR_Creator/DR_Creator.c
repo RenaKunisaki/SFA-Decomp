@@ -49,7 +49,7 @@ int DR_Creator_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
                 setup->base.color[2] = 255;
                 setup->base.color[3] = 255;
                 setup->projectileVariant = 2;
-                projectile = Obj_SetupObject(&setup->base, 5, -1, -1, NULL);
+                projectile = objSetupObject(&setup->base, 5, -1, -1, NULL);
                 if (projectile != NULL)
                 {
                     projectile->anim.rotY = 0;
@@ -132,7 +132,7 @@ void DR_Creator_update(GameObject* obj)
                     {
                         setup->projectileVariant = 1;
                     }
-                    projectile = Obj_SetupObject(&setup->base, 5, -1, -1, NULL);
+                    projectile = objSetupObject(&setup->base, 5, -1, -1, NULL);
                     if (projectile != NULL)
                     {
                         projectile->anim.rotY = 0;

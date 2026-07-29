@@ -28,7 +28,7 @@ void sideload_update(GameObject* obj) {
         setup->posX = obj->anim.localPosX;
         setup->posY = obj->anim.localPosY;
         setup->posZ = obj->anim.localPosZ;
-        tricky = Obj_SetupObject(setup, SIDELOAD_SETUP_FLAGS, -1, -1, NULL);
+        tricky = objSetupObject(setup, SIDELOAD_SETUP_FLAGS, -1, -1, NULL);
         tricky->anim.rotX = (s16)(placement->childRotXByte << 8);
     }
 }

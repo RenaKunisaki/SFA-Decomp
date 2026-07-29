@@ -145,7 +145,7 @@ u8 Pollen_burst(GameObject* obj) {
         fragmentSetup->color[1] = 1;
         fragmentSetup->color[2] = 0xff;
         fragmentSetup->color[3] = 0xff;
-        fragment = Obj_SetupObject(fragmentSetup, POLLEN_FRAGMENT_SETUP_KIND, -1, -1, NULL);
+        fragment = objSetupObject(fragmentSetup, POLLEN_FRAGMENT_SETUP_KIND, -1, -1, NULL);
         if (fragment != NULL) {
             fragment->anim.rotY = 0;
             fragment->anim.rotX = randomGetRange(0, POLLEN_FRAGMENT_RANDOM_ANGLE_MAX);

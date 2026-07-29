@@ -93,7 +93,7 @@ void VFP_ObjCreator_update(GameObject* obj)
             setupBuf->unk1A = (s16)(randomGetRange(-0x1f4, 0x1f4) + 0x5dc);
             setupBuf->unk1C = (s16)(randomGetRange(-0x1f4, 0x1f4) + 0x5dc);
             setupBuf->unk24 = 0;
-            spawned = Obj_SetupObject(&setupBuf->base, 5, obj->anim.mapEventSlot, -1,
+            spawned = objSetupObject(&setupBuf->base, 5, obj->anim.mapEventSlot, -1,
                                       obj->anim.parent);
             if (spawned == NULL)
             {
@@ -126,7 +126,7 @@ void VFP_ObjCreator_update(GameObject* obj)
             setupBuf->base.color[3] = placement->base.color[3];
             setupBuf->unk1E = -1;
             setupBuf->unk20 = -1;
-            spawned = Obj_SetupObject(&setupBuf->base, 5, obj->anim.mapEventSlot, -1,
+            spawned = objSetupObject(&setupBuf->base, 5, obj->anim.mapEventSlot, -1,
                                       obj->anim.parent);
             if (spawned == NULL)
             {

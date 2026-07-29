@@ -391,7 +391,7 @@ void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
                     Obj_FreeObject(gCloudActionRuntime.mainCloudObj);
                 }
                 gCloudActionRuntime.mainCloudObj =
-                    (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(0x20, tbl->mainCloudAssetIds[state[0x5d]]),
+                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, tbl->mainCloudAssetIds[state[0x5d]]),
                                                  4, -1, -1, 0);
                 gCloudActionRuntime.mainCloudAssetId = tbl->mainCloudAssetIds[state[0x5d]];
             }
@@ -417,7 +417,7 @@ void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
                     Obj_FreeObject(gCloudActionRuntime.upperCloudObj);
                 }
                 gCloudActionRuntime.upperCloudObj =
-                    (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(0x20, tbl->upperCloudAssetIds[state[0x5b]]),
+                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, tbl->upperCloudAssetIds[state[0x5b]]),
                                                  4, -1, -1, 0);
                 gCloudActionRuntime.upperCloudAssetId = tbl->upperCloudAssetIds[state[0x5b]];
             }
@@ -443,7 +443,7 @@ void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
                     Obj_FreeObject(gCloudActionRuntime.lowerCloudObj);
                 }
                 gCloudActionRuntime.lowerCloudObj =
-                    (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(0x20, tbl->lowerCloudAssetIds[state[0x5a]]),
+                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, tbl->lowerCloudAssetIds[state[0x5a]]),
                                                  4, -1, -1, 0);
                 gCloudActionRuntime.lowerCloudAssetId = tbl->lowerCloudAssetIds[state[0x5a]];
             }

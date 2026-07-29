@@ -492,7 +492,7 @@ void staffStartQuakeSpell(f32* pos)
         ((ObjPlacement*)setup)->posY = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posY;
         ((ObjPlacement*)setup)->posZ = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ;
         ((StaffQuakeSpellState*)gStaffQuakeSpellState)->object =
-            (int*)Obj_SetupObject((ObjPlacement*)setup, 5, player->anim.mapEventSlot, -1,
+            (int*)objSetupObject((ObjPlacement*)setup, 5, player->anim.mapEventSlot, -1,
                                   player->anim.parent);
         if (mainGetBit(GAMEBIT_STAFF_ABILITY_SUPER_QUAKE) != 0)
         {

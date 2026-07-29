@@ -849,7 +849,7 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
     ((ObjPlacement*)setup)->color[2] = ((ObjPlacement*)parentSetup)->color[2];
     ((ObjPlacement*)setup)->color[1] = ((ObjPlacement*)parentSetup)->color[1];
     ((ObjPlacement*)setup)->color[3] = ((ObjPlacement*)parentSetup)->color[3];
-    nearest = (int)Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+    nearest = (int)objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     gTrickyNearestObject = nearest;
     if ((((GameObject*)nearest)->anim.romDefNo == TRICKY_OBJ_APPLE) || (((GameObject*)nearest)->anim.romDefNo == TRICKY_CHILD_OBJ_ENERGY_EGG))
     {
@@ -880,7 +880,7 @@ void baddieInstantiateWeapon(GameObject* obj, int state)
             {
                 setup = (int)Obj_AllocObjectSetup(0x20, ((EnemyState*)state)->weaponRomDefNo);
                 *(u8*)(setup + 5) = *(u8*)(setup + 5) | (((BaddieInstantiateWeaponPlacement*)parentSetup)->unk5 & 0x18);
-                child = Obj_SetupObject((ObjPlacement*)setup, 4, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+                child = objSetupObject((ObjPlacement*)setup, 4, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
                 ObjLink_AttachChild(obj, child, 0);
                 ((EnemyState*)state)->spawnedWeaponRomDefNo = ((EnemyState*)state)->weaponRomDefNo;
             }

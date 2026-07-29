@@ -146,7 +146,7 @@ void DIM2PathGenerator_update(GameObject* obj) {
         np->unknown1A = placement->childUnknown1A;
         np->unknown1C = placement->childUnknown1C;
         np->base.ident = placement->base.ident;
-        Obj_SetupObject((ObjPlacement*)np, 5, obj->anim.mapEventSlot, -1, NULL);
+        objSetupObject((ObjPlacement*)np, 5, obj->anim.mapEventSlot, -1, NULL);
         state->flags |= (toggle ^ 1) & DIM2_PATH_GENERATOR_FLAG_SPAWN_TOGGLE;
     }
 }
