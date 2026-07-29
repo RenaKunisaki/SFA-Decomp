@@ -2781,7 +2781,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             node = trickySelectRouteEntry((u8*)state, state->route.nodeA4, dir & 0xff);
             if (node != 0)
             {
-                curveFn_800da23c(&state->route, node);
+                RomCurve_advanceToNextSegment(&state->route, node);
                 type = ((ObjfsaRomCurveDef*)state->route.node9C)->unk1A;
                 switch (type)
                 {
@@ -2920,7 +2920,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             }
             else
             {
-                curveFn_800da23c(&state->route, nextRouteNode);
+                RomCurve_advanceToNextSegment(&state->route, nextRouteNode);
                 node = state->route.nodeA0;
                 state->dirX = node->x - obj->anim.worldPosX;
                 state->dirZ = node->z - obj->anim.worldPosZ;
@@ -3140,7 +3140,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             }
             else
             {
-                curveFn_800da23c(&state->route, nextRouteNode);
+                RomCurve_advanceToNextSegment(&state->route, nextRouteNode);
                 node = state->route.nodeA0;
                 state->dirX = node->x - obj->anim.worldPosX;
                 state->dirZ = node->z - obj->anim.worldPosZ;
@@ -3261,7 +3261,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             }
             else
             {
-                curveFn_800da23c(&state->route, nextRouteNode);
+                RomCurve_advanceToNextSegment(&state->route, nextRouteNode);
                 node = state->route.nodeA0;
                 state->dirX = node->x - obj->anim.worldPosX;
                 state->dirZ = node->z - obj->anim.worldPosZ;
@@ -5925,7 +5925,7 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
                 link++;
             }
 
-            curveFn_800da23c(&ts->route, (void*)targetNode);
+            RomCurve_advanceToNextSegment(&ts->route, (void*)targetNode);
         }
 
         speed = ts->speed;

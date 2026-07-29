@@ -1739,7 +1739,7 @@ void objfx_shakeCameraByDistance(GameObject* obj, f32 shakeRange)
     }
 }
 
-void DIMexplosionFn_8009a96c(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 flag10, u8 doShake,
+void spawnDimExplosion(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 flag10, u8 doShake,
                              u8 flag20, u8 f1cinit)
 {
     DimExplosionPlacement* setup;

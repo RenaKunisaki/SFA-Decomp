@@ -136,8 +136,12 @@ Renames are **not** byte-neutral and `tools/byteneutral.py` cannot gate them
    and `gap_03_8028C964_text` in `targimpl.c` — foreign-toolchain blobs.)
 5. `python3 tools/unitfuzzy.py <unit>` on **every unit from step 1**, not just
    the one you edited.
-6. **Commit the ENTIRE dirty tree, not just your files** — and name in the
-   message which batches you carried that were not yours.
+6. `git update-index --refresh` **first**, then **commit the ENTIRE dirty tree,
+   not just your files** — and name in the message which batches you carried
+   that were not yours. The refresh matters: without it, stat-dirty entries
+   (first row of the table below) look exactly like foreign work waiting to be
+   carried, and you will write a commit message describing batches that do not
+   exist.
 
 ### Why step 6 commits foreign work on purpose
 

@@ -11,7 +11,7 @@ typedef struct ObjModel ObjModel;
 extern ModelLightStruct* lbl_803DCC64;
 
 void objRender(int a, int b, int c, int d, GameObject* obj, int flag);
-void objRenderFuzzFn_8003d6f8(void* obj);
+void objFuzzSetupGxState(void* obj);
 void objRenderShadow(void* obj);
 void objRenderShadowIfVisible(GameObject* obj, int a, int b, int c, int d, int e);
 void objRenderFn_8003d980(u8* obj, int* model);

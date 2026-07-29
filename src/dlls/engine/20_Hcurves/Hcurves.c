@@ -386,7 +386,7 @@ static inline f32 RomCurveNode_GetHermiteTangent(void** nodePtr, int angleOffset
     return 2.0f * trig;
 }
 
-int curveFn_800da23c(RomCurveWalker* state, void* targetCurve)
+int RomCurve_advanceToNextSegment(RomCurveWalker* state, void* targetCurve)
 {
     char* stateBytes;
 
@@ -523,7 +523,7 @@ int RomCurve_setupHermiteSegment(RomCurveWalker* state, void* fromCurve, void* t
         state->hermZ2[3] = RomCurveNode_GetHermiteTangent(&state->nodeA4, 0x2c, 1);
     }
 
-    if (curveFn_800da23c(state, targetCurve) != 0)
+    if (RomCurve_advanceToNextSegment(state, targetCurve) != 0)
     {
         return 1;
     }
