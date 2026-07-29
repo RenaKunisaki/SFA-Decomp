@@ -136,6 +136,44 @@ Renames are **not** byte-neutral and `tools/byteneutral.py` cannot gate them
    and `gap_03_8028C964_text` in `targimpl.c` — foreign-toolchain blobs.)
 5. `python3 tools/unitfuzzy.py <unit>` on **every unit from step 1**, not just
    the one you edited.
+6. **Commit the ENTIRE dirty tree, not just your files** — and name in the
+   message which batches you carried that were not yours.
+
+### Why step 6 commits foreign work on purpose
+
+Three lanes share one `config/GSAE01/symbols.txt`. "Commit only your own files"
+deadlocks: your rename needs its `symbols.txt` line, that line sits beside
+someone else's, and committing source without the line leaves the retail carve
+holding a name your source no longer defines — the exact retail-only failure
+this document exists to prevent. Waiting does not help either: a foreign batch
+can land *during* your ~2-minute gate, which happened three times before the
+rule changed.
+
+**The gate is the safety check.** A half-applied foreign batch either fails the
+build or shows up as a retail-only symbol, so a green gate means every dirty
+batch in the tree is internally consistent and safe to snapshot together. Do not
+reason about whether a peer's batch looks finished — the gate already answered.
+
+Still forbidden: reverting or stashing a peer's work, and committing on a red
+gate.
+
+## Three ways this tree lies to you about state
+
+All three look like damage and none of them is. Check in this order — they are
+ordered by how cheap they are to rule out.
+
+| symptom | real cause | fix |
+|---|---|---|
+| `git status` says `M`, but `git diff` on the file is **empty** | **stat-dirty index** — our own step-3 `touch` commands updated mtimes without changing content. Can also make `git merge` refuse with "local changes would be overwritten". | `git update-index --refresh`. Nothing to investigate. |
+| `pairing_check` reports a retail-only symbol **and the name IS in `src/`/`include/`** | **stale object** — the source is already correct, only our `.o` is behind. Labelled `[STALE OBJECT]` by the tool. | `touch` the source, rebuild that object **by name**. Do **not** edit the source. |
+| `pairing_check` reports a retail-only symbol **and the name is nowhere in `src/`/`include/`** | **genuine partial rename** — `symbols.txt` and the source really disagree. Labelled `[partial rename]`. | Rename in the C source to match. |
+
+A corollary of the middle row: a unit can carry an **understated** score for a
+long time without any symptom at all. `main/objprint_dolphin.c` read 99.78250
+for an unknown period and jumped to **99.88340** the moment an unrelated rename
+forced a by-name rebuild — the rename could not have changed codegen. So a
+by-name rebuild sweep is worth doing as post-merge hygiene, not only after a
+rename.
 
 ## Safe subset
 
