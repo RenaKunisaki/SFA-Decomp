@@ -3,6 +3,7 @@
 ```
 Lane C39, derived on origin/staging @ 0eaa172f02.
 Lane C40 closed three of the four open rows by body read (dll.c, objlib.c, footsteps.c, menu.c).
+Lane C41 closed objtype.c (retail-string lens) and refined lighting.c.
 
 HOW THIS WAS DERIVED (so the next lane can re-run / extend it)
 -------------------------------------------------------------
@@ -98,10 +99,19 @@ objmsg.c           (6) main/objhits.c  (folded in)               [BODY, EXACT 6<
     objMesgQueue  ==  SFA ObjMsg_SendToObject / ObjMsg_SendToObjects /
     ObjMsg_SendToNearbyObjects / ObjMsg_Peek / ObjMsg_Pop / ObjMsg_AllocQueue.
 model.c           (39) main/model.c  (+ main/modelEngine.c)      [L1 38][STR]
-lighting.c        (16) main/modellight.c                         [?] L1 is diluted because SFA
-    renamed the whole module to `modelLightStruct_*`; DP's lightSetAmbient / lightSetDimAmbient /
-    lightInit / lightBlockSphereMapping / lightModelSphereMapping / lightUseSkyLight are the
-    role vocabulary to check our generic `lightSetFieldBC_*` against.
+lighting.c        (16) main/modellight.c + dlls/engine/5          [?] REFINED, still not settled.
+    DP's lighting.c is TWO things and only one of them is modellight.c.  The light-EMITTER object
+    API (DP lightClearEmitters and the per-light record) is main/modellight.c, which SFA renamed
+    wholesale to `modelLightStruct_*` (create/free + ~30 projection/specular/glow accessors) -
+    that is why L1 is diluted.  The AMBIENT / SKY-LIGHT half (DP lightInit, lightGetAmbient,
+    lightDimAmbient, lightUpdateSkyLight, lightSetInside/lightGetInside, lightAmbientDL) has no
+    counterpart in modellight.c at all; the matching vocabulary lives in the sky DLL,
+    dlls/engine/5 (skySetAmbientColor / getAmbientColor / skyGetAmbientColor / skySetLightSlot /
+    skySetLightDirection / skySetLightColor / skySetLightsEnabled / skyApplyLightSlot).  The
+    sphere-mapping pair (lightModelSphereMapping / lightBlockSphereMapping) was rewritten for GX
+    and now lives in the TEV builders (addSphereMapTexStage / addSphereMapLitStages,
+    shader_dolphin.c).  Settle this row by reading engine/5 skySetLightSlot against DP
+    lightUpdateSkyLight before lifting any name.
 texture.c         (19) main/texture.c  (+ main/tex_dolphin.c)    [L1]
 rcp.c             (21) main/rcp_dolphin.c + main/intersect_screenmath.c  [L1 17 / 9]
     plus the `Rcp_*` functions that ended up in shader.c and texture.c.  DP rcpClearScreen /
@@ -181,7 +191,34 @@ objlib.c          (14) main/obj_movelib.c + main/objhits.c       [BODY] SETTLED,
       DP sObjectPairCallbacks/sCallbackPairIndex == gObjContactCallbacks/gObjContactCallbackCount
     DP's two-object `objRemoveTouchCallback(obj, otherObj)` has NO counterpart in our tree - the
     other three are all that survive.
-objtype.c          (5) main/object.c (partial)                   [?] no `objType*` symbol survives.
+objtype.c          (8) main/objhits.c  (folded in)               [BODY, EXACT 8<->9][RETAIL STRING]
+    SETTLED, and it carries the strongest evidence in this table: SFA's own `main.dol` contains
+    "objAddObjectType: Reached MAXTYPES!!" and the function that OSReports it is
+    `ObjGroup_AddObject`.  Retail's noun for an SFA "object group" is therefore **object type**,
+    and objhits.c holds DP's whole objtype.c module (as it already holds objmsg.c and objlib.c's
+    touch half).  The storage is the same three objects: DP gObjectTypeIndices[66] /
+    gObjectTypeListCount / gObjectTypeList[256]  ==  SFA gObjGroupOffsets.offsets /
+    gObjGroupObjectCount / gObjGroupObjects, i.e. a prefix-sum index array over one flat list.
+      DP objAddObjectType   == ObjGroup_AddObject      statement for statement: same
+          `type < 0 || type >= 65` guard, same MAXTYPES guard + printf, same duplicate scan over
+          [idx[t], idx[t+1]), same `insert = (end==start) ? start : end-1`, same shift-up loop,
+          same `for (t+1 .. 66) idx[t]++` suffix bump.
+      DP objFreeObjectType  == ObjGroup_RemoveObject   same guard, same linear find, same
+          shift-down compaction, same suffix decrement.  DP's rodata carries
+          "objFreeObjectType: obj romdefno %d, type %d\n".
+      DP objGetAllOfType    == ObjGroup_GetObjects     identical body (out-of-range -> *count=0,
+          return NULL; else *count = idx[i+1]-idx[i], return &list[idx[i]]).
+      DP objIsObjectType    == ObjGroup_ContainsObject identical body - DP's odd
+          `ret = i < iend` / while-break shape is what our xor+shift boolean tail decompiles to.
+      DP objTypeInit        == ObjGroup_ClearAll       zero the index array, zero the count.
+      DP objGetNearestType(s32 type, Vec3f*, f32*) == ObjGroup_FindNearestObjectToPoint - same
+          three parameters in the same order, same *distance-squared seed, same sqrtf on exit.
+      SFA's ObjGroup_GetObjectGroup (find which list an object sits in) has NO DP counterpart.
+    ** NOT resolved: which of DP's two (type, Object*, f32*) nearest functions is which. **
+      DP has objGetNearestTypeTo (does NOT skip `object`) and objGetNearestTypeToExcludingSelf
+      (skips it); SFA has ObjGroup_FindNearestObjectForObject (returns GameObject*) and
+      ObjGroup_FindNearestObject (returns int) and **both skip self**, so the distinguishing
+      feature DP names them by does not exist on our side.  Do not guess the suffix.
 footsteps.c       (10) main/newshadows.c + track/intersect.c     [BODY] SETTLED for the SFX half;
     the DECAL half is GONE.  DP `footstepsGetSfxBank(bank)` returns one of gFootstepSfxBank1..5;
     SFA fuses the bank pick and the lookup and writes the SAME switch out TWICE - newshadows.c
@@ -238,17 +275,33 @@ SFA UNITS WITH NO DP COUNTERPART (GameCube-only work)
 
 OPEN ROWS (state, do not guess)
 -------------------------------
-  1. DP objtype.c: SFA has no surviving `objType*`; the type index may be inside object.c.
-  2. Where the DLL bank copy actually happens (see the dll.c row): the gResourceDescriptors
+  1. Where the DLL bank copy actually happens (see the dll.c row): the gResourceDescriptors
      `acquire` callbacks are data, and the code they reach is not in any decompiled TU.
+  2. DP lighting.c's ambient/sky half vs dlls/engine/5 (see that row) - nominated, not read.
+  3. The two-way assignment inside the objtype.c row (which SFA nearest-finder is DP's
+     objGetNearestTypeTo and which is objGetNearestTypeToExcludingSelf) - both of ours skip self.
 
-  Rows 1-3 of the previous edition (dll.c, objlib.c's touch half, footsteps.c + menu.c) are
-  CLOSED above.  Method note for whoever extends this: the IDF token lens (L1) put DP menu.c on
-  engine/0 with a 2x margin and it was WRONG - the shared token was just "menu".  L1 nominates,
-  L4 (body read) decides; never land an L1 row without one.
+  Previously open: dll.c, objlib.c's touch half, footsteps.c, menu.c (closed by C40) and
+  objtype.c (closed above by C41).  Method note for whoever extends this: the IDF token lens (L1)
+  put DP menu.c on engine/0 with a 2x margin and it was WRONG - the shared token was just "menu".
+  L1 nominates, L4 (body read) decides; never land an L1 row without one.  The objtype.c row is
+  the other direction: L1 could not see it at all (SFA renamed every symbol Group-for-Type), and
+  it fell out of a `main.dol` STRING search.  Run the string lens FIRST on any row L1 misses.
 
 HANDED OVER (analysis done here, the file belongs to another lane)
 ------------------------------------------------------------------
+  The nine `ObjGroup_*` functions in src/main/objhits.c should carry retail's "object type"
+  vocabulary, not "group" - `ObjGroup_AddObject` is retail's own `objAddObjectType` (it prints
+  that name).  The evidenced mapping is in the objtype.c row above: AddObject->objAddObjectType
+  [SFA retail string], RemoveObject->objFreeObjectType [DP rodata string + exact body],
+  ClearAll->objTypeInit, GetObjects->objGetAllOfType, ContainsObject->objIsObjectType,
+  FindNearestObjectToPoint->objGetNearestType [all four: exact DP body], and
+  GetObjectGroup->objGetObjectType [ours, no DP counterpart].  C41 did NOT execute it: two of the
+  nine (the (type, Object*, f32*) nearest pair) cannot be assigned from DP without guessing a
+  suffix, and the substitution is ~480 tokens across 165 files plus symbols.txt, which needs one
+  owner and one commit.  Whoever takes it must do it TWO-SIDED (src + config/GSAE01/symbols.txt)
+  in a single commit, and must decide the two open assignments or keep those two descriptive.
+
   `objBboxFn_800640cc` (src/main/track_dolphin.c, held by B32 body-only; called from player.c
   (A39/A40), tricky.c, 211, 423, LanternFire, WM_Galleon) is DP's `trackGetLineIntersect`:
   ten parameters, identical types in identical order, identical body role.  A two-sided rename
