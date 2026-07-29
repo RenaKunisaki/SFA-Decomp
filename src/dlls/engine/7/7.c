@@ -1578,7 +1578,7 @@ void newclouds_run(void)
     u8 activeCount;
     int off;
     u8* p;
-    f32* m;
+    f32* viewRotationMatrix;
     f32 mag;
     f32 t;
     f32 rot;
@@ -1599,7 +1599,7 @@ void newclouds_run(void)
         f32 f18;
         f32 f1c;
     } args;
-    f32 mtx[12];
+    Mtx mtx;
 
     clouds = (void**)gNewCloudLayerTextures;
     i = 0;
@@ -1855,7 +1855,7 @@ void newclouds_run(void)
                 ((f32*)clouds)[55] = -1.0f;
                 ((f32*)clouds)[56] = zero;
             }
-            m = Camera_GetViewRotationMatrix();
+            viewRotationMatrix = Camera_GetViewRotationMatrix();
             if (((NewCloud*)nearestCloud)->cloudType == 0)
             {
                 lbl_803DD190 = 0.125f * (-0.12f * timeDelta) + lbl_803DD190;
@@ -1863,7 +1863,7 @@ void newclouds_run(void)
                 lbl_803DD199 = 0xf9;
                 lbl_803DD19A = 0xfd;
                 lbl_803DB768 = 5.0f;
-                PSMTXIdentity((MtxPtr)mtx);
+                PSMTXIdentity(mtx);
             }
             else
             {
@@ -1872,13 +1872,11 @@ void newclouds_run(void)
                 lbl_803DD199 = 0xf8;
                 lbl_803DD19A = 0xfc;
                 lbl_803DB768 = 1.0f;
-                PSMTXRotRad((MtxPtr)mtx, 'z', rot);
+                PSMTXRotRad(mtx, 'z', rot);
             }
-            PSMTXConcat((MtxPtr)m, (MtxPtr)mtx, (MtxPtr)mtx);
-            {
-                f32* m = (f32*)mtx;
-                PSMTXMultVec((MtxPtr)m, (Vec*)((u32)clouds + 0xd8), (Vec*)((u32)clouds + 0xd8));
-            }
+            PSMTXConcat((MtxPtr)viewRotationMatrix, mtx, mtx);
+            PSMTXMultVec(mtx, (Vec*)((u32)clouds + 0xd8),
+                         (Vec*)((u32)clouds + 0xd8));
             if (lbl_803DD190 < -16.0f)
             {
                 lbl_803DD190 += 16.0f;
