@@ -536,11 +536,11 @@ void lightmapDrawQueuedObject(GameObject* obj)
         shadow = (ObjModelState*)(obj->anim.modelState);
         if (shadow != NULL && shadow->shadowCastSlot != NULL)
         {
-            objShadowFn_80062498(obj, 0, 0, framesThisStep);
+            objShadowRender(obj, 0, 0, framesThisStep);
         }
         else if (((ObjAnimComponent*)obj)->modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH)
         {
-            objDrawFn_80061654(obj, model);
+            objDrawGroundShadow(obj, model);
         }
         Camera_ApplyFullViewport();
     }
@@ -593,12 +593,12 @@ void sceneDrawTransparentPolys(void)
             break;
         case 2:
             Camera_ApplyDecalViewport();
-            objShadowFn_80062498(entries[i].arg0.object, 0, 0, framesThisStep);
+            objShadowRender(entries[i].arg0.object, 0, 0, framesThisStep);
             Camera_ApplyFullViewport();
             break;
         case 3:
             Camera_ApplyDecalViewport();
-            objDrawFn_80061654(entries[i].arg0.object, Obj_GetActiveModel(entries[i].arg0.object));
+            objDrawGroundShadow(entries[i].arg0.object, Obj_GetActiveModel(entries[i].arg0.object));
             Camera_ApplyFullViewport();
             break;
         case 4:

@@ -35,7 +35,7 @@ struct MapShader;
 struct MapBlockData;
 typedef struct ObjModel ObjModel;
 
-int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameCount);
+int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount);
 int trackIntersectRebuildPending(void);
 int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset,
                                          f32* outNormal, int kinds);
@@ -73,7 +73,7 @@ void renderMapBlock(struct MapBlockData* block, u8 type);
 void shadowBeginFrame(void);
 void shadowVolumeBeginFrame(void);
 void trackInvalidateDynamicSlotsForObject(GameObject* target);
-void objDrawFn_80061654(GameObject* obj, ObjModel* model);
+void objDrawGroundShadow(GameObject* obj, ObjModel* model);
 int findSurfaceInYRange(GameObject* obj, f32 x, f32 lo, f32 z, f32 hi, f32* outSurfaceY,
                         GameObject** outSurfaceObj);
 void renderGlows(void);

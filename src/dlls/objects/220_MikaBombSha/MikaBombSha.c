@@ -54,7 +54,7 @@ void MikaBombShadow_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg
 
     if (visible32 != 0) {
         if (obj->anim.modelState->shadowCastSlot != NULL) {
-            (void)objShadowFn_80062498(obj, 0, 0, framesThisStep);
+            (void)objShadowRender(obj, 0, 0, framesThisStep);
         }
     }
 }

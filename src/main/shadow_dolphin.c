@@ -120,7 +120,7 @@ void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8);
  * write pointers to the buffer picked by this frame's flip index. */
 void vecGetRanges(f32* pts, f32* base, f32 scale, int* out);
 
-int objShadowFn_80062378(GameObject* obj, u8 param);
+int objShadowGetFadedAlpha(GameObject* obj, u8 param);
 
 
 f32 gShadowVolumeBoxCorners[0x19];
@@ -292,7 +292,7 @@ void buildGroundShadowQuad(s16* out, GameObject* obj)
     }
 }
 
-void objDrawFn_80061654(GameObject* obj, ObjModel* model)
+void objDrawGroundShadow(GameObject* obj, ObjModel* model)
 {
     s16* shadowVerts;
     u8 alpha;
@@ -308,7 +308,7 @@ void objDrawFn_80061654(GameObject* obj, ObjModel* model)
     }
     if (*(u8*)((u8*)shadowVerts + 0x18) != 0xff)
     {
-        alpha = (u8)objShadowFn_80062378(obj, 0x96);
+        alpha = (u8)objShadowGetFadedAlpha(obj, 0x96);
         kColor.a = alpha;
         if (alpha != 0)
         {
@@ -527,7 +527,7 @@ int cullVisibleShadowTriangles(GameObject* obj, void* u1, void* u2, int count, V
     return gShadowVisibleCount > 0;
 }
 
-void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* obj, int triangleCount, void* p7,
+void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObject* obj, int triangleCount, void* p7,
                        void* buf48, f32 f)
 {
     u8 col[4];
@@ -667,7 +667,7 @@ void objDrawFn_80061f0c(Vec3f* vertices, ObjModelState* modelState, GameObject* 
     }
 }
 
-int objShadowFn_80062378(GameObject* obj, u8 param)
+int objShadowGetFadedAlpha(GameObject* obj, u8 param)
 {
     int lo;
     int hi;
@@ -703,7 +703,7 @@ int objShadowFn_80062378(GameObject* obj, u8 param)
     }
 }
 
-int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameCount)
+int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount)
 {
     ObjModelState* modelState;
     Vec3f* cache;
@@ -767,7 +767,7 @@ int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameC
         cullVisibleShadowTriangles(obj, buf48, bufA8, idxOut, (Vec3f*)gShadowVolumeBuffer, cache,
                     (TrackShadowTriangle*)gShadowDrawScratch, 0x555);
     }
-    objDrawFn_80061f0c(cache, modelState, obj, gShadowVisibleCount, &drawScratch, buf48, yOff);
+    objDrawShadowCasterMesh(cache, modelState, obj, gShadowVisibleCount, &drawScratch, buf48, yOff);
     return 0;
 }
 
@@ -804,7 +804,7 @@ u8 objShadowUpdateAlpha(GameObject* obj, int delta)
     f31 = (1.0f / 16384.0f) * (f32)*alphaStep;
     f31 = gShadowAlphaScale * f31;
     {
-        f32 tint = objShadowFn_80062378(obj, modelState->shadowTintA);
+        f32 tint = objShadowGetFadedAlpha(obj, modelState->shadowTintA);
         v = (s16)(int)(tint * f31);
     }
     if (v > 0xff)

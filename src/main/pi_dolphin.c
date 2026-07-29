@@ -741,7 +741,7 @@ void* jumptable_802CC254[73] = {
 char sMapAssetPathFormats[0x78] =
     "%s/animcurv.bin\0%s/animcurv.tab\0%s/voxmap.bin\0\0\0warlock/voxmap.bin\0\0%s/voxmap.tab\0\0"
     "\0%s/mod%d.zlb.bin\0\0\0\0%s/mod%d.tab";
-void gxPerfFn_8004a77c(int);
+void gxSetGPMetricsEnabled(int);
 extern void* renderFrameBuffer;
 extern void* externalFrameBuffer0;
 extern void* externalFrameBuffer1;
@@ -4140,7 +4140,7 @@ void videoSwapFrameBuffers(u32 retraceCount)
             Queue_Peek(&gVideoFlipQueue, tok);
             GXEnableBreakPt((void*)tok[0]);
         }
-        gxPerfFn_8004a77c(1);
+        gxSetGPMetricsEnabled(1);
     }
 }
 

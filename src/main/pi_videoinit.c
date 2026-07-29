@@ -363,7 +363,7 @@ void logGpuHang(void)
     }
 }
 
-void gxPerfFn_8004a77c(int enabled)
+void gxSetGPMetricsEnabled(int enabled)
 {
     if ((u8)enabled != 0)
     {
@@ -392,7 +392,7 @@ void gxPerfFn_8004a77c(int enabled)
 void gxTransformFn_8004a83c(void)
 {
     gGpuHangRecoveryEnabled = 0;
-    gxPerfFn_8004a77c(0);
+    gxSetGPMetricsEnabled(0);
 }
 
 char sThreadStateAttrSuspendFormat[] = "thread: state=%d attr=%d suspend=%d\n";
