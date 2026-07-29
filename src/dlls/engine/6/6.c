@@ -53,25 +53,13 @@ u8 lbl_803DB758 = 1;
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
 extern u8 gSkyConfigFieldIndices[];
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
-extern const f32 lbl_803DF108;
-extern const f32 lbl_803DF10C;
-extern const f32 lbl_803DF110;
-extern f32 lbl_803DF13C;
-extern f32 lbl_803DF140;
 extern int lbl_803DB610;
 extern s8 gSky2DrawMode;
 extern u8* gSky2State;
-extern const f32 lbl_803DF15C;
-extern const f32 lbl_803DF160;
-extern const f32 lbl_803DF168;
-extern const f32 lbl_803DF170;
-extern const f32 lbl_803DF184;
 extern u16 lbl_803E8460;
 extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];
 const SkyVec3 lbl_802C1F98 = {-1000.0f, -1000.0f, -1000.0f};
-extern f32 lbl_803DF190;
-extern f32 lbl_803DF194;
 
 
 
@@ -133,20 +121,20 @@ void sky2ResetStateFromConfig(u8* cfg, u8 flags)
     (&gSky2State)[idx][0x317] = 1;
     for (i = 0; i < 0x21; i++)
     {
-        *(f32*)((&gSky2State)[idx] + i * 4 + 0x178) = lbl_803DF108;
+        *(f32*)((&gSky2State)[idx] + i * 4 + 0x178) = 0.0f;
     }
     for (i = 0; i < 0x21; i++)
     {
-        *(f32*)((&gSky2State)[idx] + i * 4 + 0x70) = lbl_803DF108;
+        *(f32*)((&gSky2State)[idx] + i * 4 + 0x70) = 0.0f;
     }
     for (i = 0; i < 0x16; i++)
     {
-        *(f32*)((&gSky2State)[idx] + i * 4 + 0x2ac) = lbl_803DF108;
+        *(f32*)((&gSky2State)[idx] + i * 4 + 0x2ac) = 0.0f;
     }
     for (i = 0; i < SKY_CONFIG_FIELD_COUNT; i++)
     {
-        *(f32*)((&gSky2State)[idx] + i * 4 + 0x1fc) = lbl_803DF10C;
-        *(f32*)((&gSky2State)[idx] + i * 4 + 0x228) = lbl_803DF110;
+        *(f32*)((&gSky2State)[idx] + i * 4 + 0x1fc) = 1400.0f;
+        *(f32*)((&gSky2State)[idx] + i * 4 + 0x228) = 1600.0f;
     }
     for (i = 0; i < SKY_CONFIG_FIELD_COUNT; i++)
     {
@@ -158,10 +146,10 @@ void sky2ResetStateFromConfig(u8* cfg, u8 flags)
     }
     *(u16*)((&gSky2State)[idx] + 4) = cfg[0x58];
     *(u16*)((&gSky2State)[idx] + 6) = ((Sky2Config*)cfg)->flags2;
-    *(f32*)((&gSky2State)[idx] + 0x64) = lbl_803DF108;
-    *(f32*)((&gSky2State)[idx] + 0x68) = lbl_803DF108;
+    *(f32*)((&gSky2State)[idx] + 0x64) = 0.0f;
+    *(f32*)((&gSky2State)[idx] + 0x68) = 0.0f;
     *(s8*)((&gSky2State)[idx] + 0x314) = -1;
-    *(f32*)((&gSky2State)[idx] + 0x6c) = lbl_803DF108;
+    *(f32*)((&gSky2State)[idx] + 0x6c) = 0.0f;
     if (((Sky2Config*)cfg)->fadeDurationA == 0)
     {
         ((Sky2Config*)cfg)->fadeDurationA = 1;
@@ -214,7 +202,7 @@ void sky2StepSlotAnim(int slot)
     if (anim->t >= (dur = 1.0f))
     {
         anim->flags4 &= ~0x100;
-        zero = lbl_803DF108;
+        zero = 0.0f;
         (*(SkySlotAnim**)(&gSky2State + slot))->step = zero;
         (*(SkySlotAnim**)(&gSky2State + slot))->t = zero;
         (*(SkySlotAnim**)(&gSky2State + slot))->prevT = dur;
@@ -237,7 +225,7 @@ void sky2StepSlotAnim(int slot)
         if (anim->b315 != 0)
         {
             len = 60.0f * ((f32)anim->frameCount / 10.0f);
-            if (lbl_803DF108 == len)
+            if (0.0f == len)
             {
                 len = dur;
             }
@@ -270,7 +258,7 @@ void sky2StepSlotAnim(int slot)
         anim = *(SkySlotAnim**)(&gSky2State + slot);
         flags = anim->flags4;
         flag1 = flags & 1;
-        if (flag1 != 0 && (bv = anim->blend) > (zero = lbl_803DF108))
+        if (flag1 != 0 && (bv = anim->blend) > (zero = 0.0f))
         {
             anim->blend = -(255.0f * anim->t - bv);
             if ((*(SkySlotAnim**)(&gSky2State + slot))->blend < zero)
@@ -303,6 +291,7 @@ int sky2GetFogFadeAlpha(void)
 {
     u8* state;
     f32 y;
+    int alpha;
 
     state = gSky2State;
     if (state == NULL)
@@ -312,13 +301,17 @@ int sky2GetFogFadeAlpha(void)
     y = *(f32*)(state + 0x14);
     if (y < 950.0f)
     {
-        return 0;
+        alpha = 0;
     }
-    if (y > lbl_803DF13C)
+    else if (y > 1210.0f)
     {
-        return 0xff;
+        alpha = 0xff;
     }
-    return (int)(255.0f * ((y - 950.0f) / lbl_803DF140));
+    else
+    {
+        alpha = (int)(255.0f * ((y - 950.0f) / 200.0f));
+    }
+    return alpha;
 }
 
 void dll_06_func0C_nop(void)
@@ -338,7 +331,7 @@ void sky2BlendTowardTargetColor(s32* red, s32* green, s32* blue)
     f32 fy;
     f32 fz;
 
-    blend = lbl_803DF108;
+    blend = 0.0f;
     state = (Dll06InterpState*)gSky2State;
     if (state == NULL)
     {
@@ -404,7 +397,7 @@ void sky2ApplyModelTint(GameObject* obj)
     if (lbl_803DB750 == 0 && (*(u16*)((s = gSky2State) + 4) & 1) == 0)
     {
         v = *(f32*)(s + 0x14);
-        if (v < lbl_803DF108)
+        if (v < 0.0f)
         {
             alpha = 255;
         }
@@ -436,7 +429,7 @@ void sky2ApplyTextColor(int obj)
         if (lbl_803DB750 == 0 && (*(u16*)(s + 4) & 1) == 0)
         {
             v = *(f32*)(s + 0x14);
-            if (v < lbl_803DF108)
+            if (v < 0.0f)
             {
                 alpha = 255;
             }
@@ -535,7 +528,7 @@ void sky2_run(void)
     f32 scale;
 
     best = lbl_802C1F98;
-    r = lbl_803DF108;
+    r = 0.0f;
     g = r;
     b = r;
     sa = r;
@@ -546,7 +539,7 @@ void sky2_run(void)
     getAmbientColor(0, &red, &green, &blue);
     if (lbl_803DB758 != 0)
     {
-        z = lbl_803DF108;
+        z = 0.0f;
         dst = lbl_8039A7B8;
         dst[0] = z;
         dst[1] = z;
@@ -579,7 +572,7 @@ void sky2_run(void)
         lbl_803DB758 = 0;
     }
     cam = Camera_GetCurrent();
-    zv = lbl_803DF108;
+    zv = 0.0f;
     vec[0] = zv;
     vec[1] = zv;
     vec[2] = (-1.0f);
@@ -618,8 +611,8 @@ void sky2_run(void)
                 if ((*(u16*)&((GameObject*)p)->anim.rotZ & 1) == 0) {
                     ((SkySlotAnim*)p)->blend = -(timeDelta * *(f32*)(p + 0x58) - ((SkySlotAnim*)p)->blend);
                     frzero = ((SkySlotAnim*)*pp)->blend;
-                    if (frzero < lbl_803DF108) {
-                        ((SkySlotAnim*)*pp)->blend = lbl_803DF108;
+                    if (frzero < 0.0f) {
+                        ((SkySlotAnim*)*pp)->blend = 0.0f;
                     }
                 }
             }
@@ -639,15 +632,15 @@ void sky2_run(void)
             else if ((*(u16*)&((GameObject*)p)->anim.flags & 0x20) != 0)
             {
                 (*gSkyInterface)->getTimeOfDay(&height);
-                if ((t = height / lbl_803DF15C) < lbl_803DF108)
+                if ((t = height / 86400.0f) < 0.0f)
                 {
-                    t = lbl_803DF108;
+                    t = 0.0f;
                 }
                 if (t > 1.0f)
                 {
                     t = 1.0f;
                 }
-                step = lbl_803DF160;
+                step = 0.125f;
                 if (t <= step)
                 {
                     u = t / step;
@@ -663,24 +656,24 @@ void sky2_run(void)
                     u = (t - 0.25f) / step;
                     k = 2;
                 }
-                else if (t <= lbl_803DF168)
+                else if (t <= 0.5f)
                 {
                     u = (t - 0.375f) / step;
                     k = 3;
                 }
                 else if (t <= 0.625f)
                 {
-                    u = (t - lbl_803DF168) / step;
+                    u = (t - 0.5f) / step;
                     k = 4;
                 }
-                else if (t <= lbl_803DF170)
+                else if (t <= 0.75f)
                 {
                     u = (t - 0.625f) / step;
                     k = 5;
                 }
                 else if (t <= 0.875f)
                 {
-                    u = (t - lbl_803DF170) / step;
+                    u = (t - 0.75f) / step;
                     k = 6;
                 }
                 else
@@ -710,7 +703,7 @@ void sky2_run(void)
                         d = 0xffff - d;
                     }
                     att = (32767.0f - d) / 32767.0f;
-                    att -= lbl_803DF170;
+                    att -= 0.75f;
                     att /= 0.25f;
                     if (att > best.x)
                     {
@@ -729,8 +722,8 @@ void sky2_run(void)
                     }
                     k++;
                 } while (k < 8);
-                z2 = lbl_803DF108;
-                if (best.x > z2)
+                z2 = 0.0f;
+                if (z2 < best.x)
                 {
                     p = *pp + (off1 = idx.best * 4);
                     r = *(f32*)&((GameObject*)p)->anim.textureSlots * best.x + r;
@@ -753,26 +746,26 @@ void sky2_run(void)
             {
                 r = 255.0f;
             }
-            else if (r < lbl_803DF108)
+            else if (r < 0.0f)
             {
-                r = lbl_803DF108;
+                r = 0.0f;
             }
             cmax = 255.0f;
             if (g > 255.0f)
             {
                 g = cmax;
             }
-            else if (g < lbl_803DF108)
+            else if (g < 0.0f)
             {
-                g = lbl_803DF108;
+                g = 0.0f;
             }
             if (b > 255.0f)
             {
                 b = cmax;
             }
-            else if (b < lbl_803DF108)
+            else if (b < 0.0f)
             {
-                b = lbl_803DF108;
+                b = 0.0f;
             }
             p = *pp;
             if ((*(u16*)&((GameObject*)p)->anim.flags & 0x40) != 0)
@@ -780,10 +773,10 @@ void sky2_run(void)
                 if (((SkySlotAnim*)p)->b314 == -1)
                 {
                     ((SkySlotAnim*)p)->b314 = 1;
-                    frzero = lbl_803DF108;
+                    frzero = 0.0f;
                     *(f32*)(*pp + 0x6c) = frzero;
                     diff = -(sb - sa);
-                    *(f32*)(*pp + 0x68) = randomGetRange((int)(diff * lbl_803DF168), (int)(-diff * lbl_803DF168));
+                    *(f32*)(*pp + 0x68) = randomGetRange((int)(diff * 0.5f), (int)(-diff * 0.5f));
                     *(f32*)(*pp + 0x64) = 0.05f * randomGetRange(1, 10);
                 }
                 else if (((SkySlotAnim*)p)->b314 == 1)
@@ -804,9 +797,9 @@ void sky2_run(void)
                     *(f32*)&((GameObject*)p)->anim.jointPoseData = hv - *(f32*)&((GameObject*)p)->anim.modelState;
                     p = *pp;
                     frzero = *(f32*)&((GameObject*)p)->anim.jointPoseData;
-                    if (frzero < lbl_803DF108) {
+                    if (frzero < 0.0f) {
                         ((SkySlotAnim*)p)->b314 = (s8)(1 - ((SkySlotAnim*)p)->b314);
-                        *(f32*)(*pp + 0x6c) = lbl_803DF108;
+                        *(f32*)(*pp + 0x6c) = 0.0f;
                         amp = (s16)(int)(sb - sa);
                         *(f32*)(*pp + 0x68) = randomGetRange(-amp / 2, amp / 2);
                         *(f32*)(*pp + 0x64) = 0.05f * randomGetRange(1, 10);
@@ -821,7 +814,7 @@ void sky2_run(void)
             {
                 sa = sb - 1.0f;
             }
-            if (sa <= lbl_803DF108)
+            if (sa <= 0.0f)
             {
                 setStarsHidden(1);
             }
@@ -833,7 +826,7 @@ void sky2_run(void)
             flags = *(u16*)&((GameObject*)p)->anim.rotZ;
             if ((flags & 8) == 0)
             {
-                scale = (f32)(red + green + blue) / lbl_803DF184;
+                scale = (f32)(red + green + blue) / 765.0f;
                 r *= scale;
                 g *= scale;
                 b *= scale;
@@ -903,8 +896,8 @@ void sky2_onMapSetup(void)
     (&lbl_803DB610)[1] = -1;
     i = 0;
     slot = (void**)&gSky2State;
-    a = lbl_803DF190;
-    b = lbl_803DF194;
+    a = 1150.0f;
+    b = 1205.0f;
     for (; i < 2; i++)
     {
         if (*slot == NULL)
@@ -963,7 +956,7 @@ void sky2_update(int a, int b, u8* cfg)
             }
             *(u16*)((&gSky2State)[b1] + 4) = ((Sky2Config*)cfg)->flags | 0x100;
             (&gSky2State)[b1][0x315] = 1;
-            *(f32*)((&gSky2State)[b1] + 0x304) = lbl_803DF108;
+            *(f32*)((&gSky2State)[b1] + 0x304) = 0.0f;
         }
         else if ((flags58 & 0x20) != 0)
         {
@@ -973,7 +966,7 @@ void sky2_update(int a, int b, u8* cfg)
         {
             *(u16*)((&gSky2State)[b1] + 4) = ((Sky2Config*)cfg)->flags | 0x100;
             (&gSky2State)[b1][0x315] = 1;
-            *(f32*)((&gSky2State)[b1] + 0x304) = lbl_803DF108;
+            *(f32*)((&gSky2State)[b1] + 0x304) = 0.0f;
             for (i = 0; i < SKY_CONFIG_FIELD_COUNT; i++)
             {
                 *(f32*)((&gSky2State)[b1] + i * 4 + 0xf4) = (f32)(u32)cfg[gSkyConfigFieldIndices[i] + 0xc];
