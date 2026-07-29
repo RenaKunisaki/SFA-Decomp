@@ -5,29 +5,30 @@
 
 /*
  * SkyState - the global sky/time-of-day state block pointed to by
- * gSkyState (sky.c). Three 0xA4-byte light slots (sun/moon/...) sit
- * between the header and the time-of-day globals. Only fields with
+ * gSkyState (sky.c). Three 0xA4-byte light slots sit between the
+ * header and the time-of-day globals; each slot carries a sun and a
+ * moon direction and colour plus the ambient colour. Only fields with
  * read/write evidence in sky.c are named; everything else is padded.
  */
 typedef struct SkyLight {
     u8 unk00[0x58];
-    u8 ambientR;
-    u8 ambientG;
-    u8 ambientB;
+    u8 sunColorR;
+    u8 sunColorG;
+    u8 sunColorB;
     u8 unk5B;
     u8 overrideAmbientR;
     u8 overrideAmbientG;
     u8 overrideAmbientB;
     u8 unk5F;
-    u8 scaledAmbientR;
-    u8 scaledAmbientG;
-    u8 scaledAmbientB;
+    u8 moonColorR;
+    u8 moonColorG;
+    u8 moonColorB;
     u8 unk63;
     u8 unk64;
     u8 unk65[3];
-    u8 lightR;
-    u8 lightG;
-    u8 lightB;
+    u8 ambientR;
+    u8 ambientG;
+    u8 ambientB;
     u8 unk6B;
     u8 overrideLightR;
     u8 overrideLightG;
