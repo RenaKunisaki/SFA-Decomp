@@ -181,7 +181,7 @@ float powf(float base, float power)
     if (base < 0.0f) {
         integerPower = power;
         fractionalPower = power - (int)power;
-        if (fractionalPower != 0.0f) {
+        if (fractionalPower) {
             return lbl_803DC648;
         }
 
