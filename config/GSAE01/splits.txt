@@ -1582,14 +1582,14 @@ dlls/objects/207_CannonClaw/CannonClaw.c:
 
 dlls/objects/209_TumbleWeedB/TumbleWeedB.c:
 	.text       start:0x801631C8 end:0x801650D0
-	.data       start:0x803201E8 end:0x80320380
+	.data       start:0x803201E8 end:0x803202E8
 	.sdata      start:0x803DBD40 end:0x803DBD48
 	.sbss       start:0x803DDA80 end:0x803DDA84
 	.sdata2     start:0x803E2F40 end:0x803E2FD4
 
 dlls/objects/211/211.c:
 	.text       start:0x801650D0 end:0x801675E0
-	.data       start:0x80320380 end:0x803203B8
+	.data       start:0x803202E8 end:0x803203B8
 	.bss        start:0x803AC638 end:0x803AC668
 	.sbss       start:0x803DDA88 end:0x803DDA90
 	.sdata2     start:0x803E2FD8 end:0x803E304C

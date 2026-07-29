@@ -122,7 +122,5 @@ void tumbleweed_init(GameObject* obj, TumbleweedPlacement* placement);
 extern f32 gTumbleweedCollisionPoint[3];
 extern f32 gTumbleweedCollisionPointData[2];
 extern ObjectDescriptor16WithPadding gTumbleweedObjDescriptor;
-extern int lbl_803202E8[30];
-extern u8 lbl_80320360[32];
 
 #endif /* DLLS_OBJECTS_210_H_ */
