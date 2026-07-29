@@ -6,26 +6,26 @@
  * logs the "no longer supported" string and returns the failure sentinel.
  * The slot is kept so the DLL id stays valid.
  */
-#include "dolphin/os/OSReport.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00AC_projmagicstream.h"
+#include "dolphin/os/OSReport.h"
 
-DllDescriptorTable lbl_803193C0 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projmagicstream_initialise, projmagicstream_release, (void*)0x00000000,
-                                    projmagicstream_doUnsupported}};
+ProjmagicstreamResourceDescriptor gProjmagicstreamResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projmagicstream_initialise,
+    projmagicstream_release,
+    NULL,
+    projmagicstream_doUnsupported,
+};
 
 char sProjmagicstreamDoNoLongerSupported[] = "<projmagicstream Do>No Longer supported \n";
 
-int projmagicstream_doUnsupported(void)
-{
+int projmagicstream_doUnsupported(void) {
     OSReport(sProjmagicstreamDoNoLongerSupported);
-    return -1; /* failure sentinel */
+    return -1;
 }
 
-void projmagicstream_release(void)
-{
+void projmagicstream_release(void) {
 }
 
-void projmagicstream_initialise(void)
-{
+void projmagicstream_initialise(void) {
 }
