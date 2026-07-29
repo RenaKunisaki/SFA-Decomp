@@ -14,6 +14,7 @@
 #include "string.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_0042_unk.h"
+#include "main/dll/dll_0043_cameramodestaffanim.h"
 #include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/dll_0049_cameramodecombat.h"
 #include "dolphin/os.h"
@@ -26,7 +27,6 @@ u8 gCutCamBboxBlocked;
 #define PAD_TRIGGER_Z 0x10
 #define PAD_TRIGGER_L 0x40
 
-#define CAMMODE_CLIMB 0x43
 int camcontrol_traceMove(float* fromPos, float* toPos, float* outPos, u8* traceWork, char traceMode, u8 runTrace,
                          u8 runBbox, float radius)
 {
@@ -155,7 +155,7 @@ void camcontrol_updateTargetAction(CameraObject* camera, GameObject* target)
     short classId;
     u16 buttons;
     int cond;
-    CamcontrolAction43Payload action43Payload;
+    CameraModeStaffAnimSettings staffAnimSettings;
     CameraModeViewfinderSettings viewfinderSettings;
 
     if (target->pendingParentObj == NULL)
@@ -188,10 +188,12 @@ void camcontrol_updateTargetAction(CameraObject* camera, GameObject* target)
             if (((cond == 0) && (buttons = padGetTriggersPressed(0), (buttons & PAD_TRIGGER_L) != 0)) &&
                 ((camera->anim.flags & 4) == 0))
             {
-                action43Payload.action = 5;
-                action43Payload.enabled = 1;
-                action43Payload.immediate = 1;
-                (*gCameraInterface)->setMode(CAMMODE_CLIMB, 1, 0, 4, &action43Payload, 0, 0xff);
+                staffAnimSettings.approachThresholdDegrees = 5;
+                staffAnimSettings.turnGate = 1;
+                staffAnimSettings.snapToTarget = 1;
+                (*gCameraInterface)
+                    ->setMode(CAMERA_MODE_STAFF_ANIM_RESOURCE_ID, 1, 0, sizeof(CameraModeStaffAnimSettings),
+                              &staffAnimSettings, 0, 0xff);
             }
         }
     }

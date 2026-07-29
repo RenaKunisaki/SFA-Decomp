@@ -2,6 +2,7 @@
 
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
+#include "main/dll/dll_0043_cameramodestaffanim.h"
 #include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/dll_0052_cameramodeforcebehind.h"
 #include "main/dll/dll_0053_cameramodecloudrunner.h"
@@ -3397,16 +3398,13 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
         lbl_803DE460 = 0.0f;
         if (inner->curAnimId != 0x48 && inner->curAnimId != 0x47)
         {
-            struct
-            {
-                s16 a;
-                u8 b;
-                u8 c;
-            } shk;
-            shk.a = 0;
-            shk.b = 0;
-            shk.c = 1;
-            (*gCameraInterface)->setMode(0x43, 1, 0, 4, &shk, 0, 0xff);
+            CameraModeStaffAnimSettings cameraSettings;
+            cameraSettings.approachThresholdDegrees = 0;
+            cameraSettings.turnGate = 0;
+            cameraSettings.snapToTarget = 1;
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_STAFF_ANIM_RESOURCE_ID, 1, 0, sizeof(CameraModeStaffAnimSettings),
+                          &cameraSettings, 0, 0xff);
         }
         break;
     }
@@ -3612,16 +3610,13 @@ int playerStateStaffBoost(GameObject* obj, int state, f32 fv)
         inner->chargeLevel = 0.0f;
         if (inner->curAnimId != 0x48 && inner->curAnimId != 0x47)
         {
-            struct
-            {
-                s16 a;
-                u8 b;
-                u8 c;
-            } shk;
-            shk.a = 0;
-            shk.b = 0;
-            shk.c = 1;
-            (*gCameraInterface)->setMode(0x43, 1, 0, 4, &shk, 0, 0xff);
+            CameraModeStaffAnimSettings cameraSettings;
+            cameraSettings.approachThresholdDegrees = 0;
+            cameraSettings.turnGate = 0;
+            cameraSettings.snapToTarget = 1;
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_STAFF_ANIM_RESOURCE_ID, 1, 0, sizeof(CameraModeStaffAnimSettings),
+                          &cameraSettings, 0, 0xff);
         }
         break;
     }
@@ -9022,16 +9017,13 @@ int playerStateGrabLedge(GameObject* obj, int state)
         ((PlayerState*)state)->baddie.moveSpeed = 0.015f;
         if (((PlayerState*)inner)->curAnimId != 0x48 && ((PlayerState*)inner)->curAnimId != 0x47)
         {
-            struct
-            {
-                s16 a;
-                u8 b;
-                u8 c;
-            } shk;
-            shk.a = 0;
-            shk.b = 0;
-            shk.c = 1;
-            (*gCameraInterface)->setMode(0x43, 1, 0, 4, &shk, 0, 0xff);
+            CameraModeStaffAnimSettings cameraSettings;
+            cameraSettings.approachThresholdDegrees = 0;
+            cameraSettings.turnGate = 0;
+            cameraSettings.snapToTarget = 1;
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_STAFF_ANIM_RESOURCE_ID, 1, 0, sizeof(CameraModeStaffAnimSettings),
+                          &cameraSettings, 0, 0xff);
         }
         if (*(void**)((char*)inner + 0x4c4) != NULL)
         {
