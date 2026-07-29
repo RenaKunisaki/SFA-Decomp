@@ -34,18 +34,18 @@ void addPointLightAccumStages(f32 scale, int* color, f32* position);
 void addFirstPointLightStages(f32 scale, int* color, f32* position, u8* chanColor);
 void addPointLightDirectStages(f32 scale, int* color, f32* position);
 void addSignedOverlayTexStage(u8* texture, void* texMtx, u8* color);
-void textureFn_8004ff20(void* texture, f32* texMtx, void* color, int unused);
+void addSphereMapLitStages(void* texture, f32* texMtx, void* color, int unused);
 void addTexLayerStagesLit(void* texture, void* texMtx);
-void gxTextureFn_80050e28(u8 mode);
-int textureFn_80050ad8(void* texture, int stageCount, u8 mode, u32 indirectTextureId);
-void textureFn_80051348(void* textureRef, u8 objectFlags);
+void addLitColorStage(u8 mode);
+int addEnvMapBumpStages(void* texture, int stageCount, u8 mode, u32 indirectTextureId);
+void addSphereMapTexStage(void* textureRef, u8 objectFlags);
 void addLightTexReg2Stage(void* textureRef, u8 hasBaseTexture, u8 mode);
 void addAlphaLitColorReg2Stage(u8 mode);
 void addCastShadowTevStages(u8* objectInstance);
 void addProjectedLightTevStage(u8* texture, void* texMtx, int stageMode, int componentMode, int variant);
 void addEnvMapTexCoord(int scale);
-void textureFn_8004c330(void* texture, void* texMtx);
-void gxTextureFn_8004d5b4(void* renderOp);
+void addWarpedNoiseTevStages(void* texture, void* texMtx);
+void addRenderOpFadeStage(void* renderOp);
 
 void mapsBinGetRomlistSize(int idx, int* out1, int* out2, int* out3, int p5);
 

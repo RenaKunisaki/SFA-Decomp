@@ -69,7 +69,7 @@
 #include "main/dll/FRONT/n_options.h"
 #include "main/lightmap_render_queue_api.h"
 
-u8 lbl_803DB638[4] = {0x20, 0x20, 0x20, 0};
+u8 gCloudLayerOverlayColor[4] = {0x20, 0x20, 0x20, 0};
 int gTexShaderAmbColor = -1;
 int gTexLightmapAmbColor = -1;
 s8 gTexIndMtxScaleExp = -2;
@@ -938,7 +938,7 @@ MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRe
     flags = SHADER_FLAGS(shader);
     if ((flags & 0x20) != 0 && (lightList = lbl_803DCE34) != 0)
     {
-        addSignedOverlayTexStage((u8*)lightList, &gCloudLayerTexMatrix, lbl_803DB638);
+        addSignedOverlayTexStage((u8*)lightList, &gCloudLayerTexMatrix, gCloudLayerOverlayColor);
     }
     else if ((flags & 0x40) != 0)
     {

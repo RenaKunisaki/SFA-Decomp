@@ -948,7 +948,7 @@ void gameUiSetupTexturedQuadTev(void* this, u8 a, s16 b, int c)
     GXSetNumTexGens(1);
     GXSetNumIndStages(0);
     GXSetNumChans(0);
-    textureFn_8004c264((Texture*)this, 0);
+    selectTextureWithSecondary((Texture*)this, 0);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     GXSetTevKColor(GX_KCOLOR0, colB);

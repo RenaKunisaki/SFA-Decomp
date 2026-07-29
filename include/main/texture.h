@@ -81,7 +81,7 @@ static inline struct _GXTexRegion* textureGetGXTexRegion(Texture* texture)
 
 void *textureLoadAsset(int asset);
 void textureFree(Texture *texture);
-void textureFn_8004c264(Texture *texture, int mapId);
+void selectTextureWithSecondary(Texture *texture, int mapId);
 void selectTexture(Texture *texture, int mapId);
 
 #endif

@@ -301,9 +301,9 @@ int Lightfoot_UpdateWanderSteering(GameObject* obj, int state, f32 fv)
         ((BaddieState*)state)->moveDone != 0)
     {
         u8 r;
-        if (*(u8*)((char*)sub + 0x2c) != 0)
+        if (sub->completionCountdown != 0)
         {
-            *(u8*)((char*)sub + 0x2c) -= 1;
+            sub->completionCountdown -= 1;
         }
         else
         {
@@ -314,23 +314,23 @@ int Lightfoot_UpdateWanderSteering(GameObject* obj, int state, f32 fv)
                 if (r & 4)
                 {
                     obj->anim.rotX += 0x7ff8;
-                    *(u8*)((char*)sub + 0x2c) = 3;
+                    sub->completionCountdown = 3;
                 }
                 else if (r & 2)
                 {
                     obj->anim.rotX -= 0x3ffc;
-                    *(u8*)((char*)sub + 0x2c) = 3;
+                    sub->completionCountdown = 3;
                 }
                 else if (r & 8)
                 {
                     obj->anim.rotX += 0x3ffc;
-                    *(u8*)((char*)sub + 0x2c) = 3;
+                    sub->completionCountdown = 3;
                 }
             }
         }
         ObjAnim_SetCurrentMove((int)obj, 0x14, 0.0f, 0);
     }
-    if (*(u8*)((char*)sub + 0x2c) == 0)
+    if (sub->completionCountdown == 0)
     {
         obj->anim.rotX +=
             (s16)((f32)(s32)((u16) * (u16*)((char*)sub + 0x20) - 0x7fff) * timeDelta / 4.0f);

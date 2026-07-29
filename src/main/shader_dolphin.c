@@ -295,7 +295,7 @@ void* Shader_getLayer(void* base, int idx)
 {
     return (u8*)base + idx * 8 + 0x24;
 }
-void textureFn_8004c264(Texture* texture, int mapId)
+void selectTextureWithSecondary(Texture* texture, int mapId)
 {
     void* base;
     if (texture == NULL)
@@ -331,7 +331,7 @@ void selectTexture(Texture* texture, int mapId)
         GXLoadTexObj(base, mapId);
     }
 }
-void textureFn_8004c330(void* p1, void* mtx)
+void addWarpedNoiseTevStages(void* p1, void* mtx)
 {
     IndTexMtx23 m;
     f32 sx;
@@ -728,7 +728,7 @@ void addShadowFalloffTevStages(void)
     gRcpNumTexGens += 2;
 }
 
-void gxTextureFn_8004d5b4(void* p1)
+void addRenderOpFadeStage(void* p1)
 {
     u8 buf[3];
     u8 b = *(u8*)((char*)p1 + 0x43);
@@ -1693,7 +1693,7 @@ void addSignedOverlayTexStage(u8* texSrc, void* texMtx, u8* color)
     gRcpNumTexGens++;
 }
 
-void textureFn_8004ff20(void* p1, f32* wpad0, void* wpad1, int wpad2)
+void addSphereMapLitStages(void* p1, f32* wpad0, void* wpad1, int wpad2)
 {
     if (p1 != 0)
     {
@@ -1965,7 +1965,7 @@ void addEnvMapTexCoord(int scale)
     gRcpNumTexGens++;
 }
 
-int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
+int addEnvMapBumpStages(void* p1, int p2, u8 p3, u32 p4)
 {
     struct piIndMtx indmtx;
     f32 mtx[3][4];
@@ -2043,7 +2043,7 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
 
 
 
-void gxTextureFn_80050e28(u8 mode)
+void addLitColorStage(u8 mode)
 {
     GXSetTevDirect(gRcpNextTevStage);
     GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
@@ -2167,7 +2167,7 @@ void addLightTexReg2Stage(void* p1, u8 flag2, u8 flag3)
 
 
 
-void textureFn_80051348(void* p1, u8 p2)
+void addSphereMapTexStage(void* p1, u8 p2)
 {
     f32 mtxB[3][4];
     f32 mtxA[3][4];

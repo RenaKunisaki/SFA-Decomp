@@ -1656,7 +1656,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     {
                         hasBaseTexture = 0;
                     }
-                    gxTextureFn_80050e28(hasBaseTexture);
+                    addLitColorStage(hasBaseTexture);
                     return 1;
                 }
                 alpha = ((((GameObject*)obj)->anim.renderAlpha + 1) * shader[0xc]) >> 8;
@@ -1840,12 +1840,12 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         {
             nl += 1;
         }
-        envtex = textureFn_80050ad8(t, nl, ((u8*)op)[0x42], ((ObjModelRenderOp*)op)->indirectTextureId);
+        envtex = addEnvMapBumpStages(t, nl, ((u8*)op)[0x42], ((ObjModelRenderOp*)op)->indirectTextureId);
         envtex &= 0xff;
     }
     if (refs[0] != 0)
     {
-        textureFn_80051348((void*)refs[0], ((GameObject*)obj)->unkF1);
+        addSphereMapTexStage((void*)refs[0], ((GameObject*)obj)->unkF1);
     }
     if (refs[1] != 0)
     {
@@ -1965,7 +1965,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             {
                 hasBaseTexture = 0;
             }
-            gxTextureFn_80050e28(hasBaseTexture);
+            addLitColorStage(hasBaseTexture);
         }
         if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_DECAL_LAYER)
         {
@@ -1976,7 +1976,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
                 texSlotGetScroll(obj, l1[5], &tx, &ty);
                 PSMTXTrans((MtxPtr)m2, tx, ty, 0.0f);
             }
-            textureFn_8004c330(textureIdxToPtr(*(u32*)l1), m2);
+            addWarpedNoiseTevStages(textureIdxToPtr(*(u32*)l1), m2);
         }
         modelRenderFn_8003e98c(obj, (u8*)op, refs, 0, hl, nlay);
     }
@@ -1996,7 +1996,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     if (OBJPRINT_MODEL_DEF(obj)->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER)
     {
-        gxTextureFn_8004d5b4(op);
+        addRenderOpFadeStage(op);
     }
     {
         u8 e5 = ((GameObject*)obj)->colorFadeFlags;

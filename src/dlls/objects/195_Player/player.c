@@ -4879,33 +4879,33 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
             {
                 if (obj->anim.currentMoveProgress > *(f32*)(slot + 0x28))
                 {
-                    *(u8*)((char*)state + 0x34a) = *(u8*)((char*)state + 0x34a) | 2;
+                    ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A | 2;
                     if (*(u8*)((inner->moveSlots + 0x6c) + (u32)inner->moveSlotIndex * 0xb0) != 0u)
                     {
-                        *(u8*)((char*)state + 0x34a) = *(u8*)((char*)state + 0x34a) | 4;
+                        ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A | 4;
                         inner->moveChainIndex = 0;
                     }
                 }
                 if (obj->anim.currentMoveProgress >
                     *(f32*)((inner->moveSlots + 0x20) + (u32)inner->moveSlotIndex * 0xb0))
                 {
-                    *(u8*)((char*)state + 0x34a) = *(u8*)((char*)state + 0x34a) | 1;
+                    ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A | 1;
                 }
                 if (obj->anim.currentMoveProgress >
                     *(f32*)((inner->moveSlots + 0x24) + (u32)inner->moveSlotIndex * 0xb0))
                 {
-                    *(u8*)((char*)state + 0x34a) = *(u8*)((char*)state + 0x34a) & ~1;
+                    ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A & ~1;
                 }
                 if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0 &&
-                    (*(u8*)((char*)state + 0x34a) & 1) != 0)
+                    (((PlayerState*)state)->baddie.unk34A & 1) != 0)
                 {
-                    *(u8*)((char*)state + 0x34a) = *(u8*)((char*)state + 0x34a) | 4;
+                    ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A | 4;
                     *(int*)&((PlayerState*)state)->baddie.unk31C =
                         *(int*)&((PlayerState*)state)->baddie.unk31C & ~0x100;
                     buttonDisable(0, PAD_BUTTON_A);
                     inner->moveChainIndex = ((PlayerState*)state)->baddie.inputSector;
                 }
-                if ((*(u8*)((char*)state + 0x34a) & 4) != 0 && (*(u8*)((char*)state + 0x34a) & 2) != 0)
+                if ((((PlayerState*)state)->baddie.unk34A & 4) != 0 && (((PlayerState*)state)->baddie.unk34A & 2) != 0)
                 {
                     f32 v = (f32)(u8)enemy_getFreezeRecoverSeconds((GameObject*)((PlayerState*)state)->baddie.targetObj);
                     int slot2 = inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0;
@@ -4982,7 +4982,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
                 *(f32*)((inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0) + 0x68), 0);
             ObjAnim_SetCurrentEventStepFrames(&obj->anim, 2);
         }
-        *(u8*)((char*)state + 0x34a) = *(u8*)((char*)state + 0x34a) & ~0xef;
+        ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A & ~0xef;
         ((PlayerState*)state)->baddie.moveSpeed = *(f32*)((inner->moveSlots + 0x1c) + (u32)inner->moveSlotIndex * 0xb0);
         inner->unk824 = ((PlayerState*)state)->baddie.moveSpeed;
         inner->cutsceneEnded = 0;
@@ -14001,7 +14001,7 @@ int fn_802ADC08(GameObject* obj, int inner, int p3)
         ((ByteFlags*)((char*)inner + 0x3f2))->b10 = 1;
     }
     if (obj->anim.worldPosY <= ((PlayerState*)inner)->fallThresholdY ||
-        ((*(s8*)((char*)p3 + 0x264) & 2) && (*(s8*)((char*)p3 + 0x264) & 0x20) == 0) || *(u8*)((char*)p3 + 0x262) != 0)
+        ((((PlayerState*)p3)->baddie.surfaceFlags & 2) && (((PlayerState*)p3)->baddie.surfaceFlags & 0x20) == 0) || ((PlayerState*)p3)->baddie.groundContact != 0)
     {
         void* sub;
         ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
@@ -16121,10 +16121,10 @@ void fn_802B1E5C(GameObject* obj, int state, int cfg, f32 dt)
     clamp = lbl_803E7EA4;
     pushX = lbl_803E7EA4;
     pushZ = lbl_803E7EA4;
-    if ((*(s8*)((char*)cfg + 0x264) & 0x10) != 0)
+    if ((((PlayerState*)cfg)->baddie.surfaceFlags & 0x10) != 0)
     {
         ((ByteFlags*)((char*)state + 0x3f1))->b01 = 1;
-        ((PlayerState*)state)->surfaceType = *(u8*)((char*)cfg + 0xbc);
+        ((PlayerState*)state)->surfaceType = ((PlayerState*)cfg)->baddie.paletteSlot;
         switch (((PlayerState*)state)->surfaceType)
         {
         case SURFACE_ICE:
@@ -18005,7 +18005,7 @@ void playerDoHitDetection(int obj)
         }
         if (*(s8*)&((PlayerState*)inner)->baddie.physicsActive == 1 && (((PlayerState*)inner)->baddie.flags4 & 0x100000) == 0)
         {
-            if ((*(u32*)&((PlayerState*)inner)->flags360 & 0x2000) == 0 && (*(s8*)((char*)inner + 0x264) & 0x33) != 0)
+            if ((*(u32*)&((PlayerState*)inner)->flags360 & 0x2000) == 0 && (((PlayerState*)inner)->baddie.surfaceFlags & 0x33) != 0)
             {
                 ((GameObject*)obj)->anim.velocityY =
                     (((GameObject*)obj)->anim.worldPosY - ((GameObject*)obj)->anim.previousWorldPosY) / dt;
@@ -18037,8 +18037,8 @@ void playerDoHitDetection(int obj)
                     ((GameObject*)obj)->anim.velocityZ =
                         (((GameObject*)obj)->anim.worldPosZ - ((GameObject*)obj)->anim.previousWorldPosZ) / dt;
                 }
-                if (((*(s8*)((char*)inner + 0x264) & 2) != 0 && (*(s8*)((char*)inner + 0x264) & 0x20) == 0) ||
-                    *(u8*)((char*)inner + 0x262) != 0 || (Player_GetObjHitsState((GameObject*)(obj))->flags & 8) != 0)
+                if (((((PlayerState*)inner)->baddie.surfaceFlags & 2) != 0 && (((PlayerState*)inner)->baddie.surfaceFlags & 0x20) == 0) ||
+                    ((PlayerState*)inner)->baddie.groundContact != 0 || (Player_GetObjHitsState((GameObject*)(obj))->flags & 8) != 0)
                 {
                     if (((PlayerState*)inner)->rumbleCooldown <= 0.0f &&
                         ((PlayerState*)inner)->baddie.animSpeedA > 1.8928598f)

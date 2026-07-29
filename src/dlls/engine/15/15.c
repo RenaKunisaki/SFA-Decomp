@@ -820,7 +820,7 @@ void player_setState(void* ctx, void* p, int new_state)
         }
         *(void**)&((BaddieState*)p)->unk304 = *(void**)&((BaddieState*)p)->unk308;
     }
-    *(s16*)((char*)p + 0x338) = 0;
+    ((BaddieState*)p)->controlTimer = 0;
     ((BaddieState*)p)->moveJustStartedA = 1;
     ((BaddieState*)p)->stateTag = 0;
     ((BaddieState*)p)->movementFlags = 0;
@@ -1018,7 +1018,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
         (*gPathControlInterface)->apply(pos, state + 0x4);
         (*gPathControlInterface)->advance(pos, state + 0x4, pathDt);
 
-        if (((s32) * (s8*)(state + 0x264) & 0x10) != 0)
+        if (((s32)((BaddieState*)state)->surfaceFlags & 0x10) != 0)
         {
             *(u32*)state |= 0x40000;
         }
@@ -1029,7 +1029,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
 
         if ((*(int*)state & 0x800000) != 0)
         {
-            if (((s32) * (s8*)(state + 0x264) & 2) != 0 || *(u8*)(state + 0x262) != 0)
+            if (((s32)((BaddieState*)state)->surfaceFlags & 2) != 0 || ((BaddieState*)state)->groundContact != 0)
             {
                 ((GameObject*)pos)->anim.velocityX =
                     (((GameObject*)pos)->anim.localPosX - *(f32*)((int)((GameObject*)pos)->anim.hitReactState + 0x10)) /
