@@ -2340,8 +2340,8 @@ void ObjHits_Update(int objectCount)
     u8 skeletonScratchD[100];
     u8 skeletonScratchE[100];
     int listObj;
-    ObjHitsSweepEntry* nextEntry;
     ObjHitsSweepEntry** entrySlot;
+    ObjHitsSweepEntry* nextEntry;
     int slotIndex;
     int obj;
     ObjHitsPriorityState* objState;
