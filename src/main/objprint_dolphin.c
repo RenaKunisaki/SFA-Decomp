@@ -2430,7 +2430,7 @@ void objRenderShadow2(int* obj, int* obj2, u8* m, int p4)
                 ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, wm);
             }
             {
-                ObjShadowCb cb = *(ObjShadowCb*)((char*)obj + 0x108);
+                ObjShadowCb cb = (ObjShadowCb)((GameObject*)obj)->afterBonesCallback;
                 if (cb != NULL && obj2 == obj)
                 {
                     cb(obj, am, wm);
@@ -2753,7 +2753,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
                 ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, wm);
             }
             {
-                ObjShadowCb cb = *(ObjShadowCb*)((char*)obj + 0x108);
+                ObjShadowCb cb = (ObjShadowCb)((GameObject*)obj)->afterBonesCallback;
                 if (cb != NULL && obj2 == obj)
                 {
                     cb(obj, am, wm);

@@ -1898,7 +1898,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             GameObject* newObj;
             int flag;
 
-            if (*(s8*)((char*)def + 0x2a) != 0)
+            if ((s8)def->rotX != 0)
             {
                 attached = 1;
             }
@@ -1908,7 +1908,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             }
             newObj = gcRobotLight_init(obj, 0x639);
             flag = 0;
-            if (*(s8*)((char*)def + 0x2a) != 0 && !(((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW))
+            if ((s8)def->rotX != 0 && !(((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW))
             {
                 flag = 1;
             }
