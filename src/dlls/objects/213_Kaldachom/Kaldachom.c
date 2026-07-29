@@ -78,6 +78,9 @@ u8 gKaldachomHitLightWork[0x18];
 KaldachomStateHandler gKaldachomStateHandlersB[6];
 KaldachomStateHandler gKaldachomStateHandlersA[8];
 
+s16 gKaldachomMoves[6] = {0, 0, 1, 1, 2, 0};
+
+f32 gKaldachomMoveSpeeds[5] = {0.004f, 0.006f, 0.01f, 0.01f, 0.01f};
 
 ObjectDescriptor12 gKaldachomObjDescriptor = {
     0,
