@@ -234,7 +234,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     handle1 = *(int*)Shader_getLayer(renderOp, 0);
     selectTexture((Texture*)textureIdxToPtr(handle1), 0);
     selectReflectionTexture(1);
-    tex2 = textureIdxToPtr(((ModelRenderOp*)renderOp)->layer0TextureId);
+    tex2 = textureIdxToPtr(((Shader*)renderOp)->auxTextureIndex);
     wrapBit = (((Texture*)tex2)->maxLod - ((Texture*)tex2)->minLod > 0) ? GX_TRUE : GX_FALSE;
     GXInitTexObj((void*)((u8*)tex2 + 0x20), (u8*)tex2 + 0x60, ((Texture*)tex2)->width, ((Texture*)tex2)->height,
                  ((Texture*)tex2)->format, GX_REPEAT, GX_REPEAT, wrapBit);
@@ -317,8 +317,8 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     else
     {
         u8 zCompLoc = 1;
-        if (((u8*)obj_a)[0x37] < 0xFF || (((ModelRenderOp*)renderOp)->flags & 0x40000000) != 0 ||
-            ((ModelRenderOp*)renderOp)->alpha < 0xFF)
+        if (((u8*)obj_a)[0x37] < 0xFF || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
+            ((Shader*)renderOp)->alpha < 0xFF)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
             if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -364,7 +364,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
         }
         else
         {
-            if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+            if ((((Shader*)renderOp)->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -423,7 +423,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
         }
-        if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+        if ((((Shader*)renderOp)->flags & 0x400) != 0)
         {
             zCompLoc = 0;
         }
@@ -434,7 +434,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
             gGxZCompLocValid = 1;
         }
     }
-    if ((((ModelRenderOp*)renderOp)->flags & 0x8) != 0)
+    if ((((Shader*)renderOp)->flags & 0x8) != 0)
     {
         GXSetCullMode(GX_CULL_BACK);
     }
@@ -1168,7 +1168,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     GXSetNumTexGens(3);
     GXSetNumTevStages(2);
 
-    alpha_byte = (((ModelRenderOp*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
+    alpha_byte = (((Shader*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
     temp.a = alpha_byte;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
@@ -1184,8 +1184,8 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     {
         u8 zCompLoc = 1;
         int ref1;
-        if (((u8*)obj_a)[0x37] < 0xff || (((ModelRenderOp*)renderOp)->flags & 0x40000000) != 0 ||
-            ((ModelRenderOp*)renderOp)->alpha < 0xff)
+        if (((u8*)obj_a)[0x37] < 0xff || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
+            ((Shader*)renderOp)->alpha < 0xff)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
             if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -1233,7 +1233,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
         }
         else
         {
-            if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+            if ((((Shader*)renderOp)->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -1292,7 +1292,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
         }
-        if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+        if ((((Shader*)renderOp)->flags & 0x400) != 0)
         {
             zCompLoc = 0;
         }
@@ -1562,7 +1562,7 @@ int moonFxCb_80074110(u8* obj, int* objB, int slot)
     GXSetNumTevStages(3);
     GXSetNumIndStages(0);
     selectTexture(tex, 0);
-    colorK.a = (((ModelRenderOp*)op)->alpha * obj[0x37]) >> 8;
+    colorK.a = (((Shader*)op)->alpha * obj[0x37]) >> 8;
     GXSetTevKColor(GX_KCOLOR0, colorK);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevDirect(GX_TEVSTAGE0);
@@ -1659,7 +1659,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     GXLoadTexMtxImm(mtx_90, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_TRUE, GX_PTTEXMTX6);
 
-    alpha_byte = (((ModelRenderOp*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
+    alpha_byte = (((Shader*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
     temp.a = alpha_byte;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
@@ -1678,8 +1678,8 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     else
     {
         u8 zCompLoc = 1;
-        if (((u8*)obj_a)[0x37] < 0xff || (((ModelRenderOp*)renderOp)->flags & 0x40000000) != 0 ||
-            ((ModelRenderOp*)renderOp)->alpha < 0xff)
+        if (((u8*)obj_a)[0x37] < 0xff || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
+            ((Shader*)renderOp)->alpha < 0xff)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
             if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -1730,7 +1730,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
         }
         else
         {
-            if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+            if ((((Shader*)renderOp)->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -1789,7 +1789,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
         }
-        if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+        if ((((Shader*)renderOp)->flags & 0x400) != 0)
         {
             zCompLoc = 0;
         }
@@ -1800,7 +1800,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
             gGxZCompLocValid = 1;
         }
     }
-    if ((((ModelRenderOp*)renderOp)->flags & 0x8) != 0)
+    if ((((Shader*)renderOp)->flags & 0x8) != 0)
     {
         GXSetCullMode(GX_CULL_BACK);
     }

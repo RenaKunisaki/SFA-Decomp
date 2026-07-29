@@ -7,31 +7,67 @@
 
 typedef struct GameObject GameObject;
 
-typedef struct ModelRenderOp
+typedef struct ShaderLayer
+{
+    union {
+        s32 textureIndex;
+        Texture* texture;
+    };
+    u8 typeBits;
+    u8 materialId;
+    u8 scrollMtx;
+    u8 unk7;
+} ShaderLayer;
+
+STATIC_ASSERT(sizeof(ShaderLayer) == 0x08);
+STATIC_ASSERT(offsetof(ShaderLayer, typeBits) == 0x04);
+STATIC_ASSERT(offsetof(ShaderLayer, materialId) == 0x05);
+STATIC_ASSERT(offsetof(ShaderLayer, scrollMtx) == 0x06);
+
+typedef struct Shader
 {
     u8 pad00[0x0C];
     u8 alpha;
-    u8 pad0D[0x24 - 0x0D];
+    u8 pad0D[0x18 - 0x0D];
     s32 textureId;
-    u8 unk28;
-    u8 layerCount;
-    u8 pad2A[0x34 - 0x2A];
-    s32 layer0TextureId;
-    s32 layer1TextureId;
+    u32 unk1C;
+    u8 pad20[0x22 - 0x20];
+    u8 reg2Alpha;
+    u8 pad23;
+    ShaderLayer layers[2];
+    union {
+        u32 auxTextureIndex;
+        Texture* auxTexture;
+    };
+    s32 unk38;
     u32 flags;
-    u8 pad40;
-    u8 mode;
-    u8 pad42;
+    u8 vtxAttrFlags;
+    u8 layerCount;
+    u8 envMapParams;
     u8 alphaOverride;
-} ModelRenderOp;
+} Shader;
 
-STATIC_ASSERT(sizeof(ModelRenderOp) == 0x44);
-STATIC_ASSERT(offsetof(ModelRenderOp, textureId) == 0x24);
-STATIC_ASSERT(offsetof(ModelRenderOp, layerCount) == 0x29);
-STATIC_ASSERT(offsetof(ModelRenderOp, layer0TextureId) == 0x34);
-STATIC_ASSERT(offsetof(ModelRenderOp, flags) == 0x3C);
-STATIC_ASSERT(offsetof(ModelRenderOp, mode) == 0x41);
-STATIC_ASSERT(offsetof(ModelRenderOp, alphaOverride) == 0x43);
+STATIC_ASSERT(sizeof(Shader) == 0x44);
+STATIC_ASSERT(offsetof(Shader, alpha) == 0x0C);
+STATIC_ASSERT(offsetof(Shader, textureId) == 0x18);
+STATIC_ASSERT(offsetof(Shader, unk1C) == 0x1C);
+STATIC_ASSERT(offsetof(Shader, reg2Alpha) == 0x22);
+STATIC_ASSERT(offsetof(Shader, layers) == 0x24);
+STATIC_ASSERT(offsetof(Shader, auxTextureIndex) == 0x34);
+STATIC_ASSERT(offsetof(Shader, unk38) == 0x38);
+STATIC_ASSERT(offsetof(Shader, flags) == 0x3C);
+STATIC_ASSERT(offsetof(Shader, vtxAttrFlags) == 0x40);
+STATIC_ASSERT(offsetof(Shader, layerCount) == 0x41);
+STATIC_ASSERT(offsetof(Shader, envMapParams) == 0x42);
+STATIC_ASSERT(offsetof(Shader, alphaOverride) == 0x43);
+
+/* Shader.flags bits */
+#define SHADER_FLAG_BACKFACE_CULL      0x8
+#define SHADER_FLAG_PROJECTED_TEX_PASS 0x100
+#define SHADER_FLAG_ALPHA_TEST_OPAQUE  0x400
+#define SHADER_FLAG_WATER_CAUSTIC      0x20000
+#define SHADER_FLAG_DECAL_LAYER        0x100000
+#define SHADER_FLAG_FORCE_BLEND        0x40000000
 
 typedef struct ModelRenderOpTextureRefs
 {
@@ -70,7 +106,7 @@ typedef struct ModelFileHeader {
     u8 *normals;  /* 3 or 9 bytes each, normalCount */
     u8 *colors;   /* GX_VA_CLR0 array, stride 2 */
     u8 *texCoords; /* GX_VA_TEX0/TEX1 array, stride 4 */
-    ModelRenderOp *renderOps;
+    Shader *renderOps;
     u8 *jointData;
     u8 *jointBlendData; /* 0x40: per-joint blend/pivot table (stride joff); [+0..8]=pivot XYZ (PSMTXTrans to/from origin for scale-fuzz), [+0xc]=scale divisor; passed to ObjModel_BlendVertexStream; offset->ptr relocated on load */
     u8 unk44[0x10];
@@ -287,7 +323,7 @@ void ObjModel_SetPostRenderCallback(ObjModel* model, void* callback);
 void* ObjModel_GetRenderCallback(ObjModel* model);
 void* ObjModel_GetPostRenderCallback(ObjModel* model);
 Texture* ObjModel_GetTexture(ModelFileHeader* modelFile, int textureIndex);
-ModelRenderOp* ObjModel_GetRenderOp(ModelFileHeader* modelFile, int renderOpIndex);
+Shader* ObjModel_GetRenderOp(ModelFileHeader* modelFile, int renderOpIndex);
 ModelRenderOpTextureRefs* ObjModel_GetRenderOpTextureRefs(ObjModel* model, int renderOpIndex);
 
 STATIC_ASSERT(offsetof(ObjModel, bufferFlags) == 0x18);

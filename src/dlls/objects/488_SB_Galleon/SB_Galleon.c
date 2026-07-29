@@ -872,7 +872,7 @@ enum SbGalleonCameraState {
 void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
     ObjModel* activeModel;
     int renderOpIndex;
-    ModelRenderOp* renderOp;
+    Shader* renderOp;
     SkyVec3 primaryLightDirection;
     SkyVec3 alternateLightDirection;
     SkyVec3 overrideDirectionStart;
@@ -957,7 +957,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
         f32 alphaScale = 255.0f;
         for (; renderOpIndex < activeModel->file->renderOpCount; renderOpIndex++) {
             renderOp = ObjModel_GetRenderOp(activeModel->file, renderOpIndex);
-            if (renderOp->layerCount == 1) {
+            if (renderOp->layers[0].materialId == 1) {
                 renderOp->alpha = alphaScale * gSbGalleonSkyBlendFactor;
             }
         }

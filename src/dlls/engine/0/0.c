@@ -3885,12 +3885,12 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
 }
 int cMenuRingModelRenderFn(GameObject* obj, int block, int idx)
 {
-    ModelRenderOp* renderOp;
+    Shader* renderOp;
     GXColor cfg = { 0xFF, 0xFF, 0xFF, 0xFF };
-    renderOp = (ModelRenderOp*)ObjModel_GetRenderOp((ModelFileHeader*)*(int*)block, idx);
+    renderOp = (Shader*)ObjModel_GetRenderOp((ModelFileHeader*)*(int*)block, idx);
     Rcp_ResetTextureStageState();
     cfg.a = obj->anim.renderAlpha;
-    addTexLayerStageSwizzled(textureIdxToPtr(renderOp->textureId), NULL, 0, &cfg, 0, 1);
+    addTexLayerStageSwizzled(textureIdxToPtr(renderOp->layers[0].textureIndex), NULL, 0, &cfg, 0, 1);
     Rcp_ApplyTextureStageCounts();
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     gxSetZMode_(0, GX_ALWAYS, 0);
@@ -3904,7 +3904,7 @@ int cMenuRingIconRenderFn(GameObject* obj, int block, int idx)
     int slotIdx;
     void* tex;
     GXColor cfg = { 0xFF, 0xFF, 0xFF, 0xFF };
-    slotIdx = ObjModel_GetRenderOp((ModelFileHeader*)*(int*)block, idx)->layerCount - 1;
+    slotIdx = ObjModel_GetRenderOp((ModelFileHeader*)*(int*)block, idx)->layers[0].materialId - 1;
     Rcp_ResetTextureStageState();
     if (slotIdx >= 0 && slotIdx <= 6 && (tex = gCMenuRingIconTextures[slotIdx]) != 0)
     {

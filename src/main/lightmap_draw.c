@@ -406,7 +406,7 @@ void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* v
     int cursor;
     u32 v;
     int* base;
-    struct MapShader* newR;
+    struct Shader* newR;
     int nibble;
     int i;
     u8* s0;
@@ -442,7 +442,7 @@ void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* 
     int state[5];
     Mtx m;
     int countShifted;
-    struct MapShader* newR;
+    struct Shader* newR;
     int cursor;
     u32 v;
     int* base;
@@ -483,7 +483,7 @@ void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, f
 {
     int state[5];
     int countShifted;
-    struct MapShader* newR;
+    struct Shader* newR;
     int cursor;
     u32 v;
     int* base;

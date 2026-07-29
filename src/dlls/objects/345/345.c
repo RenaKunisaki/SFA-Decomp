@@ -34,17 +34,17 @@ int blasted_activateMapLayer(GameObject* obj, int mapLayerId) {
             }
         }
         for (shaderIndex = 0; shaderIndex < block->shaderCount; shaderIndex++) {
-            MapShader* shader = mapBlockGetShader(block, shaderIndex);
+            Shader* shader = mapBlockGetShader(block, shaderIndex);
             u8* layerCursor;
             int layerIndex;
             layerIndex = 0;
             layerCursor = (u8*)shader;
             for (; layerIndex < shader->layerCount; layerIndex++) {
-                if (*(u8*)(layerCursor + offsetof(MapShader, layers) + offsetof(MapShaderLayer, mapLayerId)) ==
+                if (*(u8*)(layerCursor + offsetof(Shader, layers) + offsetof(ShaderLayer, materialId)) ==
                     mapLayerId) {
                     shader->flags |= BLASTED_SHADER_DISABLE_FLAG;
                 }
-                layerCursor += sizeof(MapShaderLayer);
+                layerCursor += sizeof(ShaderLayer);
             }
         }
     }

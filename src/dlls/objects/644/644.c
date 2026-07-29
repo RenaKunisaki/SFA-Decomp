@@ -116,7 +116,7 @@ void shopitem_renderSparkle(GameObject* obj, int p2, int p3, int p4, int p5)
         objfx_spawnDirectionalBurst(obj, 5, 1.0f, 1, 1, 0x14, 4.5f, NULL, 0);
     }
     {
-        ModelRenderOp* renderOp = ObjModel_GetRenderOp(Obj_GetActiveModel(obj)->file, 0);
+        Shader* renderOp = ObjModel_GetRenderOp(Obj_GetActiveModel(obj)->file, 0);
         renderOp->alphaOverride = 0x7F;
     }
     objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);

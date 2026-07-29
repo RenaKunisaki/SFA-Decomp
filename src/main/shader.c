@@ -1499,12 +1499,12 @@ void unloadMap(void)
 {
     MapBlockData* block;
     int j;
-    MapShaderLayer* shaderLayer;
+    ShaderLayer* shaderLayer;
     int i;
     int layer;
     s8* cur;
     s8 mapType;
-    MapShader* shader;
+    Shader* shader;
     int k;
     u32 scrollSlot;
 
@@ -1537,8 +1537,8 @@ void unloadMap(void)
                                 if (gMapTextureScrolls[scrollSlot].refCount != 0)
                                     gMapTextureScrolls[scrollSlot].refCount -= 1;
                             }
-                            if (shaderLayer->overrideType != 0)
-                                mapTextureOverrideRelease(shaderLayer->texture, shaderLayer->overrideType);
+                            if (shaderLayer->materialId != 0)
+                                mapTextureOverrideRelease(shaderLayer->texture, shaderLayer->materialId);
                         }
                     }
                     for (j = 0; j < block->textureCount; j++)
@@ -2453,8 +2453,8 @@ void doPendingMapLoads(void)
                             if (gMapBlockRefCounts[blockId] == 0)
                             {
                                 MapBlockData* block = gMapBlocks[blockId];
-                                MapShader* shader;
-                                MapShaderLayer* shaderLayer;
+                                Shader* shader;
+                                ShaderLayer* shaderLayer;
                                 int k;
                                 u32 scrollSlot;
                                 gMapBlockIds[blockId] = -1;
@@ -2471,9 +2471,9 @@ void doPendingMapLoads(void)
                                             if (gMapTextureScrolls[scrollSlot].refCount != 0)
                                                 gMapTextureScrolls[scrollSlot].refCount -= 1;
                                         }
-                                        if (shaderLayer->overrideType != 0)
+                                        if (shaderLayer->materialId != 0)
                                             mapTextureOverrideRelease(shaderLayer->texture,
-                                                                      shaderLayer->overrideType);
+                                                                      shaderLayer->materialId);
                                     }
                                 }
                                 for (n = 0; n < block->textureCount; n++)

@@ -31,7 +31,7 @@ typedef struct TrackQueryBounds
 
 STATIC_ASSERT(sizeof(TrackQueryBounds) == 0x18);
 
-struct MapShader;
+struct Shader;
 struct MapBlockData;
 typedef struct ObjModel ObjModel;
 
@@ -58,7 +58,7 @@ void trackGetGridOrigin(int** outOrigin);
 void trackGetTriangleBuffer(int* outCount, int* outTable);
 void mapInitFn_80069990(void);
 void trackIntersect(void);
-void mapBlockRender_setVtxDcrs(u8 doSetup, struct MapBlockData* block, struct MapShader* shader,
+void mapBlockRender_setVtxDcrs(u8 doSetup, struct MapBlockData* block, struct Shader* shader,
                                ModelRenderInstrsState* state);
 void initTextures(void);
 void mapClearBlockEdgeFlags(void);

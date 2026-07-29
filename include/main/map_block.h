@@ -2,8 +2,7 @@
 #define MAIN_MAP_BLOCK_H_
 
 #include "global.h"
-
-typedef struct Texture Texture;
+#include "main/model.h"
 
 typedef union MapTextureRef
 {
@@ -45,56 +44,6 @@ typedef struct MapHitLine
 
 STATIC_ASSERT(sizeof(MapHitLine) == 0x14);
 
-/*
- * MapBlockData - the record returned by mapGetBlock(). Field widths
- * mirror the deref widths observed in mmp_barrel.c / mmp_moonrock.c /
- * track_dolphin.c; unobserved ranges are padded (positional unkNN
- * names, true size unverified - do not take sizeof).
- */
-typedef struct MapShaderLayer
-{
-    union {
-        s32 textureIndex;
-        s32 texId;
-        Texture* texture;
-    };
-    u8 typeBits;
-    union {
-        u8 overrideType;
-        u8 overrideByte;
-        u8 mapLayerId;
-    };
-    union {
-        u8 scrollMtx;
-        u8 mtxIndex;
-    };
-    u8 unk7;
-} MapShaderLayer;
-
-STATIC_ASSERT(offsetof(MapShaderLayer, mapLayerId) == 0x05);
-STATIC_ASSERT(sizeof(MapShaderLayer) == 0x08);
-
-typedef struct MapShader
-{
-    u8 pad0[0x24];
-    MapShaderLayer layers[2];
-    union {
-        s32 auxTextureIndex;
-        Texture* auxTexture;
-    };
-    u8 pad38[0x3C - 0x38];
-    u32 flags;
-    u8 pad40;
-    u8 layerCount;
-    u8 pad42[2];
-} MapShader;
-
-STATIC_ASSERT(sizeof(MapShader) == 0x44);
-STATIC_ASSERT(offsetof(MapShader, layers) == 0x24);
-STATIC_ASSERT(offsetof(MapShader, auxTexture) == 0x34);
-STATIC_ASSERT(offsetof(MapShader, flags) == 0x3C);
-STATIC_ASSERT(offsetof(MapShader, layerCount) == 0x41);
-
 typedef struct MapPolygonGroup
 {
     u8 pad00[0x10];
@@ -108,6 +57,12 @@ typedef enum MapBlockFlag {
     MAP_BLOCK_FLAG_LOADED = 0x0008,
 } MapBlockFlag;
 
+/*
+ * MapBlockData - the record returned by mapGetBlock(). Field widths
+ * mirror the deref widths observed in mmp_barrel.c / mmp_moonrock.c /
+ * track_dolphin.c; unobserved ranges are padded (positional unkNN
+ * names, true size unverified - do not take sizeof).
+ */
 typedef struct MapBlockData {
     void* unk0;
     u16 flags4; /* 0x04: MapBlockFlag plus an unidentified bit toggled per tick */
@@ -121,7 +76,7 @@ typedef struct MapBlockData {
     u8* vertices; /* 0x58: base of the packed VertexS16 array (stride 6) */
     void* vertexColors; /* 0x5C: RGBA4444 (stride 2) */
     void* vertexTexCoords; /* 0x60: vec2s (stride 4) */
-    MapShader* shaders; /* 0x64: count = shaderCount @0xA2 */
+    Shader* shaders; /* 0x64: count = shaderCount @0xA2 */
     MapBlockBoundsRec* displayLists; /* 0x68: count = edgeCount @0xA1 */
     u8 pad6C[0x70 - 0x6C];
     MapHitLine* hits; /* 0x70: from HITS.bin; 0 in file, populated by MapBlock_initHits */
@@ -157,6 +112,6 @@ STATIC_ASSERT(offsetof(MapBlockData, shaderCount) == 0xA2);
 extern MapBlockData** gMapBlocks;
 extern s8* gMapBlockLayerTables[];
 
-MapShader* mapBlockGetShader(MapBlockData* block, int index);
+Shader* mapBlockGetShader(MapBlockData* block, int index);
 
 #endif

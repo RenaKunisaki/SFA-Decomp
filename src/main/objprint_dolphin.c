@@ -324,7 +324,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     mtxA = lbl_802C1B40;
     mtxB = lbl_802C1B58;
     rop = (u8*)ObjModel_GetRenderOp((ModelFileHeader*)*model, ropIdx);
-    if ((((ModelRenderOp*)rop)->flags & 0x200) == 0)
+    if ((((Shader*)rop)->flags & 0x200) == 0)
     {
         if ((gObjFuzzLayerIndex & 3) != 0)
         {
@@ -389,7 +389,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     GXSetTevAlphaIn(GX_TEVSTAGE2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
     GXSetTevColorOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    selectTexture((Texture*)(textureIdxToPtr(((ModelRenderOp*)rop)->layer1TextureId)), 2);
+    selectTexture((Texture*)(textureIdxToPtr(((Shader*)rop)->unk38)), 2);
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD3, GX_TEXMAP2);
     GXSetIndTexCoordScale(1, 0, 0);
@@ -509,7 +509,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     mtxA = lbl_802C1B10;
     mtxB = lbl_802C1B28;
     rop = (u8*)ObjModel_GetRenderOp(model->file, ropIdx);
-    if ((((ModelRenderOp*)rop)->flags & 0x200) == 0)
+    if ((((Shader*)rop)->flags & 0x200) == 0)
     {
         lbl_803DCC3E = 0;
         return 0;
@@ -670,7 +670,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     GXSetTevAlphaOp(stage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVPREV);
     if (*(void**)(rop + 0x38) != NULL)
     {
-        selectTexture((Texture*)(textureIdxToPtr(((ModelRenderOp*)rop)->layer1TextureId)), 2);
+        selectTexture((Texture*)(textureIdxToPtr(((Shader*)rop)->unk38)), 2);
         GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
         GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD3, GX_TEXMAP2);
         GXSetIndTexCoordScale(1, 0, 0);
@@ -1645,7 +1645,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
             layer = Shader_getLayer(shader, layerIdx);
             if ((layer[4] & 0x80) == mask)
             {
-                if ((((ObjModelRenderOp*)shader)->flags & SHADER_FLAG_DECAL_LAYER) && layerIdx == 1)
+                if ((((Shader*)shader)->flags & SHADER_FLAG_DECAL_LAYER) && layerIdx == 1)
                 {
                     u8 hasBaseTexture;
                     if (p3[0] != 0)
@@ -1828,9 +1828,9 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     refs = (u32*)ObjModel_GetRenderOpTextureRefs((ObjModel*)am, idx);
     Rcp_ResetTextureStageState();
     envtex = 0;
-    if ((refs[0] != 0 || refs[1] != 0) && ((ObjModelRenderOp*)op)->envTextureId != 0)
+    if ((refs[0] != 0 || refs[1] != 0) && ((Shader*)op)->auxTextureIndex != 0)
     {
-        void* t = textureIdxToPtr(((ObjModelRenderOp*)op)->envTextureId);
+        void* t = textureIdxToPtr(((Shader*)op)->auxTextureIndex);
         int nl = lbl_803DCC5C + 1;
         if (refs[0] != 0)
         {
@@ -1840,7 +1840,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         {
             nl += 1;
         }
-        envtex = addEnvMapBumpStages(t, nl, ((u8*)op)[0x42], ((ObjModelRenderOp*)op)->indirectTextureId);
+        envtex = addEnvMapBumpStages(t, nl, ((u8*)op)[0x42], ((Shader*)op)->layers[0].textureIndex);
         envtex &= 0xff;
     }
     if (refs[0] != 0)
@@ -1849,7 +1849,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     if (refs[1] != 0)
     {
-        if (((ObjModelRenderOp*)op)->unk1C != 0)
+        if (((Shader*)op)->unk1C != 0)
         {
             color[0] = 0xff;
             color[1] = 0xff;
@@ -1945,7 +1945,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     {
         u32 t18;
-        if ((t18 = ((ObjModelRenderOp*)op)->textureId) != 0 && ((ObjModelRenderOp*)op)->unk1C == 0 && refs[1] != 0)
+        if ((t18 = ((Shader*)op)->textureId) != 0 && ((Shader*)op)->unk1C == 0 && refs[1] != 0)
         {
             textureIdxToPtr(t18);
             addTexModulateReg2Stage();
@@ -1967,7 +1967,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             }
             addLitColorStage(hasBaseTexture);
         }
-        if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_DECAL_LAYER)
+        if (((Shader*)op)->flags & SHADER_FLAG_DECAL_LAYER)
         {
             u8* l1 = Shader_getLayer((u8*)op, 1);
             {
@@ -1985,7 +1985,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         getColor803dd01c(fogc);
         renderHeavyFog(fogc);
     }
-    if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_PROJECTED_TEX_PASS)
+    if (((Shader*)op)->flags & SHADER_FLAG_PROJECTED_TEX_PASS)
     {
         f32* vm = Camera_GetViewMatrix();
         Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
@@ -2009,7 +2009,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             addColorFadeStage((GXColor*)color);
         }
     }
-    if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_WATER_CAUSTIC)
+    if (((Shader*)op)->flags & SHADER_FLAG_WATER_CAUSTIC)
     {
         AttractMovie_AddVideoTevStages();
     }
@@ -2023,7 +2023,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         else
         {
             u8 zon = 1;
-            if (((GameObject*)obj)->anim.renderAlpha < 0xff || (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_FORCE_BLEND) || shad)
+            if (((GameObject*)obj)->anim.renderAlpha < 0xff || (((Shader*)op)->flags & SHADER_FLAG_FORCE_BLEND) || shad)
             {
                 u16 f2;
                 GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
@@ -2045,7 +2045,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
                     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
                 }
             }
-            else if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
+            else if (((Shader*)op)->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if (((ModelFileHeader*)p2)->flags & 0x400)
@@ -2071,14 +2071,14 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
                 }
                 GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
-            if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
+            if (((Shader*)op)->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
             {
                 zon = 0;
             }
             gxSetPeControl_ZCompLoc_(zon);
         }
     }
-    if (((ObjModelRenderOp*)op)->flags & 8)
+    if (((Shader*)op)->flags & 8)
     {
         GXSetCullMode(GX_CULL_BACK);
     }
@@ -2097,7 +2097,7 @@ void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
     u32 alpha;
     u8 cull;
     u32 sf;
-    if (((GameObject*)obj)->anim.renderAlpha < 0xff || ((sf = ((ObjModelRenderOp*)shader)->flags) & SHADER_FLAG_FORCE_BLEND))
+    if (((GameObject*)obj)->anim.renderAlpha < 0xff || ((sf = ((Shader*)shader)->flags) & SHADER_FLAG_FORCE_BLEND))
     {
         blend = 1;
         if (((ModelFileHeader*)m)->flags & 0x400)
@@ -2154,7 +2154,7 @@ void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
         zcomploc = 1;
         alpha = 0;
     }
-    if (((ObjModelRenderOp*)shader)->flags & SHADER_FLAG_BACKFACE_CULL)
+    if (((Shader*)shader)->flags & SHADER_FLAG_BACKFACE_CULL)
     {
         cull = 1;
     }

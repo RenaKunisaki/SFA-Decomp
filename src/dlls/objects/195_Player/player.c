@@ -17734,8 +17734,8 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
                 ModelFileHeader* m = Obj_GetActiveModel((GameObject*)obj)->file;
                 for (i = 0; i < m->renderOpCount; i++)
                 {
-                    ModelRenderOp* op = ObjModel_GetRenderOp(m, i);
-                    if (op->mode == 2)
+                    Shader* op = ObjModel_GetRenderOp(m, i);
+                    if (op->layerCount == 2)
                     {
                         Shader_getLayer(op, 1);
                         gPlayerHeldObject = (int)op;

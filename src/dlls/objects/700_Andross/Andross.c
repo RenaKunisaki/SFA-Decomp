@@ -456,7 +456,7 @@ int andross_SeqFn(GameObject* obj)
     f32 fade;
     f32 alpha;
     int model;
-    ModelRenderOp* op;
+    Shader* op;
 
     state->fadeAlpha = gAndrossZero;
     fade = state->fadeAlpha;
@@ -536,7 +536,7 @@ void andross_update(int obj)
     GameObject** spawnSlot;
     AndrossState* signalState;
     ModelFileHeader* model = NULL;
-    ModelRenderOp* renderOp;
+    Shader* renderOp;
     AndrossChildSetup* childSetup;
     int rotationDelta;
     u32 val;

@@ -2249,7 +2249,7 @@ s16* ObjModel_GetBaseVertexCoords(ModelFileHeader* modelFile, int vertexIndex)
     return (s16*)(modelFile->vertices + vertexIndex * 6);
 }
 
-ModelRenderOp* ObjModel_GetRenderOp(ModelFileHeader* model, int renderOpIndex)
+Shader* ObjModel_GetRenderOp(ModelFileHeader* model, int renderOpIndex)
 {
     return &model->renderOps[renderOpIndex];
 }
@@ -2655,7 +2655,7 @@ void ObjModel_RelocateModelData(u8* m)
     }
     if (*(u32*)&((ModelFileHeader*)m)->renderOps)
     {
-        ((ModelFileHeader*)m)->renderOps = (ModelRenderOp*)(m + *(u32*)&((ModelFileHeader*)m)->renderOps);
+        ((ModelFileHeader*)m)->renderOps = (Shader*)(m + *(u32*)&((ModelFileHeader*)m)->renderOps);
     }
     for (i = 0; i < ((ModelFileHeader*)m)->displayListCount + ((ModelFileHeader*)m)->shadowDisplayListCount; i++)
     {
