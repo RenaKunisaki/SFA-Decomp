@@ -51,7 +51,7 @@ void subtitleBuildLineTable(void)
             q = args[2] / 60;
             s[0]->times[gSubtitleLineCount] = (f32)(args[1] + args[0] * 60 + q);
         }
-        strLines = textMeasureFn_80016c9c(str, (f32)(u32) * (u16*)(win + 2), *(f32*)(win + 0xc), &count, NULL);
+        strLines = gameTextWrapLines(str, (f32)(u32) * (u16*)(win + 2), *(f32*)(win + 0xc), &count, NULL);
         if (strLines != NULL)
         {
             for (k = 0; k < count; k++)

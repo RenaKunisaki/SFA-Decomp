@@ -226,7 +226,7 @@ void gameTextRenderStrs(char* str, int boxIdx)
             gameTextDrawBox(NULL, (int)str, slot);
         }
     }
-    lines = textMeasureFn_80016c9c(str, (f32)(u32)slot->width, slot->scale, &count, &lineH);
+    lines = gameTextWrapLines(str, (f32)(u32)slot->width, slot->scale, &count, &lineH);
     if (lines == NULL)
     {
         slot->cursorY = (s16)(lineH * count + slot->cursorY);

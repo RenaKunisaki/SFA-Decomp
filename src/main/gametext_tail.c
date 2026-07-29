@@ -409,7 +409,7 @@ void gameTextFreePhrase(int* p)
         ((void**)p)[5] = NULL;
     }
 }
-char** textMeasureFn_80016c9c(char* str, f32 width, f32 height, int* outCount, f32* outLineH)
+char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* outLineH)
 {
     int cursor;
     int* boundary;
