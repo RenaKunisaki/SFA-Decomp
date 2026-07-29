@@ -1165,18 +1165,18 @@ void intersectModLineBuild(IntersectModLineObject* obj)
 {
     s16 pointLinks[0xd48];
     IntersectLine* line;
-    int seg;
-    int segCount;
+    int lineIndex;
+    int sourceLineCount;
     MapHitLine* sourceLine;
-    int off;
-    int li;
-    s16 prev;
+    int lineOffset;
+    int outputLineIndex;
+    s16 previousGroup;
 
     mapBlockFlag = 1;
     gIntersectLineCount = 0;
     gIntersectPointCount = 0;
-    segCount = obj->sourceLineCount;
-    for (seg = 0, sourceLine = obj->sourceLines; seg < segCount; sourceLine++, seg++)
+    sourceLineCount = obj->sourceLineCount;
+    for (lineIndex = 0, sourceLine = obj->sourceLines; lineIndex < sourceLineCount; sourceLine++, lineIndex++)
     {
         int i;
         if (gIntersectLineCount < 0x5dc)
@@ -1205,19 +1205,19 @@ void intersectModLineBuild(IntersectModLineObject* obj)
         }
     }
     {
-        li = 0;
-        off = li;
-        for (; li < gIntersectLineCount; off += 0x10, li++)
+        outputLineIndex = 0;
+        lineOffset = outputLineIndex;
+        for (; outputLineIndex < gIntersectLineCount; lineOffset += 0x10, outputLineIndex++)
         {
             int pointLinkIndex;
             s16* firstPointLinks;
             s16* secondPointLinks;
-            line = (IntersectLine*)((u8*)lbl_803DCF34 + off);
+            line = (IntersectLine*)((u8*)lbl_803DCF34 + lineOffset);
             pointLinkIndex = line->pt[0] * 2;
             firstPointLinks = &pointLinks[pointLinkIndex];
-            if (firstPointLinks[0] > -1 && firstPointLinks[0] != li)
+            if (firstPointLinks[0] > -1 && firstPointLinks[0] != outputLineIndex)
                 line->adj[0] = firstPointLinks[0];
-            else if (firstPointLinks[1] > -1 && firstPointLinks[1] != li)
+            else if (firstPointLinks[1] > -1 && firstPointLinks[1] != outputLineIndex)
                 line->adj[0] = firstPointLinks[1];
             else
                 line->adj[0] = -1;
@@ -1225,9 +1225,9 @@ void intersectModLineBuild(IntersectModLineObject* obj)
                 pointLinkIndex = line->pt[1] * 2;
                 secondPointLinks = &pointLinks[pointLinkIndex];
             }
-            if (secondPointLinks[0] > -1 && secondPointLinks[0] != li)
+            if (secondPointLinks[0] > -1 && secondPointLinks[0] != outputLineIndex)
                 line->adj[1] = secondPointLinks[0];
-            else if (secondPointLinks[1] > -1 && secondPointLinks[1] != li)
+            else if (secondPointLinks[1] > -1 && secondPointLinks[1] != outputLineIndex)
                 line->adj[1] = secondPointLinks[1];
             else
                 line->adj[1] = -1;
@@ -1243,8 +1243,8 @@ void intersectModLineBuild(IntersectModLineObject* obj)
         for (k = 0; k < 40; k++)
             (*(u8**)&obj->groupRanges)[k] = 0xff;
     }
-    prev = -1;
-    for (li = 0; li < gIntersectLineCount; li++)
+    previousGroup = -1;
+    for (outputLineIndex = 0; outputLineIndex < gIntersectLineCount; outputLineIndex++)
     {
         s16 best = 0;
         u8* base;
@@ -1262,45 +1262,45 @@ void intersectModLineBuild(IntersectModLineObject* obj)
             grp = 1;
             debugPrintf(sTrackIntersectFuncOverflowFormat, 1);
         }
-        if ((s16)grp != prev)
+        if ((s16)grp != previousGroup)
         {
-            obj->groupRanges[grp][0] = li;
-            if (prev != -1)
-                obj->groupRanges[prev][1] = li;
-            prev = grp;
+            obj->groupRanges[grp][0] = outputLineIndex;
+            if (previousGroup != -1)
+                obj->groupRanges[previousGroup][1] = outputLineIndex;
+            previousGroup = grp;
         }
         {
             int m;
             s16 bestLine;
             bestLine = best;
-            for (m = 0; m < li; m++)
+            for (m = 0; m < outputLineIndex; m++)
             {
                 if (obj->lines[m].adj[0] == bestLine)
-                    obj->lines[m].adj[0] = li;
+                    obj->lines[m].adj[0] = outputLineIndex;
                 if (obj->lines[m].adj[1] == bestLine)
-                    obj->lines[m].adj[1] = li;
+                    obj->lines[m].adj[1] = outputLineIndex;
             }
         }
         {
             s16 bestLine;
             bestLine = best;
-            for (seg = 0; seg < gIntersectLineCount; seg++) {
-                line = &((IntersectLine*)lbl_803DCF34)[seg];
+            for (lineIndex = 0; lineIndex < gIntersectLineCount; lineIndex++) {
+                line = &((IntersectLine*)lbl_803DCF34)[lineIndex];
                 if (line->kind != 0x14) {
                     if (bestLine == line->adj[0]) {
-                        line->adj[0] = li;
+                        line->adj[0] = outputLineIndex;
                     }
-                    if (bestLine == ((IntersectLine*)lbl_803DCF34)[seg].adj[1]) {
-                        ((IntersectLine*)lbl_803DCF34)[seg].adj[1] = li;
+                    if (bestLine == ((IntersectLine*)lbl_803DCF34)[lineIndex].adj[1]) {
+                        ((IntersectLine*)lbl_803DCF34)[lineIndex].adj[1] = outputLineIndex;
                     }
                 }
             }
         }
-        memcpy(&obj->lines[li], (char*)lbl_803DCF34 + best * 0x10, 0x10);
+        memcpy(&obj->lines[outputLineIndex], (char*)lbl_803DCF34 + best * 0x10, 0x10);
         *(u8*)(lbl_803DCF34 + best * 0x10 + 3) = 0x14;
     }
-    if ((s16)prev != -1)
-        obj->groupRanges[prev][1] = gIntersectLineCount;
+    if ((s16)previousGroup != -1)
+        obj->groupRanges[previousGroup][1] = gIntersectLineCount;
     memcpy(obj->points, lbl_803DCF38, gIntersectPointCount * 0xc);
     gIntersectLineCount = 0;
     gIntersectPointCount = 0;
