@@ -879,6 +879,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     f32 matrix[16];
     int keepPathControls;
     int attachment;
+    f32* axes;
     int mapBlock;
     int overrideObj;
     f32 dx;
@@ -917,7 +918,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
 
     *(u32*)state |= 0x8000;
 
-    if (*(void**)(state + 0x27c) != NULL)
+    if (((BaddieState*)state)->orientationAxesOut != NULL)
     {
         localTransform.rotX = ((GameObject*)pos)->anim.rotX;
         localTransform.rotY = ((GameObject*)pos)->anim.rotY;
@@ -928,15 +929,15 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
         localTransform.z = PLAYER_MOVE_ZERO;
         setMatrixFromObjectPos(matrix, &localTransform);
 
-        attachment = *(int*)(state + 0x27c);
-        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, (f32*)(attachment + 0x0),
-                              (f32*)(attachment + 0x4), (f32*)(attachment + 0x8));
-        attachment = *(int*)(state + 0x27c);
-        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, (f32*)(attachment + 0xc),
-                              (f32*)(attachment + 0x10), (f32*)(attachment + 0x14));
-        attachment = *(int*)(state + 0x27c);
-        Matrix_TransformPoint(matrix, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, (f32*)(attachment + 0x18),
-                              (f32*)(attachment + 0x1c), (f32*)(attachment + 0x20));
+        axes = ((BaddieState*)state)->orientationAxesOut;
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, &axes[0], &axes[1],
+                              &axes[2]);
+        axes = ((BaddieState*)state)->orientationAxesOut;
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, &axes[3], &axes[4],
+                              &axes[5]);
+        axes = ((BaddieState*)state)->orientationAxesOut;
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, &axes[6], &axes[7],
+                              &axes[8]);
     }
 
     if ((*(int*)state & 0x1000000) == 0)

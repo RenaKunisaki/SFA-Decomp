@@ -283,7 +283,10 @@ typedef struct PlayerState {
     u8 pad6E6[0x6E8 - 0x6E6];
     int moveSequence; /* pointer to the active s16 move/anim descriptor (entries at +2/+8/+a) */
     u8 moveSequenceFlags; /* behavior bits 0x1/0x4/0x8 selecting blend/progress handling */
-    u8 pad6ED[0x768 - 0x6ED];
+    u8 pad6ED[0x6F0 - 0x6ED];
+    f32 orientationAxes[9]; /* 0x6F0: the actor's world orientation axes, refreshed
+        each update through BaddieState.orientationAxesOut (+Z, +Y, +X) */
+    u8 pad714[0x768 - 0x714];
     f32 savedPosX;
     f32 savedPosY;
     f32 savedPosZ;

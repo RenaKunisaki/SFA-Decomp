@@ -480,11 +480,6 @@ typedef struct
     int a[6];
 } UiMsgBlock;
 
-static inline u32 playerLoadPendingHitBits(char* p)
-{
-    return *(u32*)p;
-}
-
 typedef struct
 {
     u8 pad[0x5d];
@@ -1276,7 +1271,7 @@ int fn_80295A04(GameObject* obj, int sel)
     switch (sel)
     {
     case 1:
-        if ((*(int*)((char*)state + 0x310) & 0x1000) != 0 ||
+        if ((((PlayerState*)state)->baddie.queuedBitMask & 0x1000) != 0 ||
             (obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)
             return 0;
         return 1;
@@ -2250,8 +2245,8 @@ void fn_80296EB4(GameObject* obj, GameObject* newParent)
         a3 = Angle_AddWrappedS16(inner->prevTargetYaw, (s16*)oldParent);
         a4 = Angle_AddWrappedS16(inner->prevYaw, (s16*)oldParent);
         a5 = Angle_AddWrappedS16(inner->lastInputHeading, (s16*)oldParent);
-        Obj_TransformLocalPointToWorld(*(f32*)((char*)inner + 0x118), *(f32*)((char*)inner + 0x11c),
-                                       *(f32*)((char*)inner + 0x120), &s.wp0[0], &s.wp0[1], &s.wp0[2], oldParent);
+        Obj_TransformLocalPointToWorld(inner->baddie.unk118, inner->baddie.unk11C,
+                                       inner->baddie.unk120, &s.wp0[0], &s.wp0[1], &s.wp0[2], oldParent);
     }
     else
     {
@@ -2269,9 +2264,9 @@ void fn_80296EB4(GameObject* obj, GameObject* newParent)
         a3 = inner->prevTargetYaw;
         a4 = inner->prevYaw;
         a5 = inner->lastInputHeading;
-        s.wp0[0] = *(f32*)((char*)inner + 0x118);
-        s.wp0[1] = *(f32*)((char*)inner + 0x11c);
-        s.wp0[2] = *(f32*)((char*)inner + 0x120);
+        s.wp0[0] = inner->baddie.unk118;
+        s.wp0[1] = inner->baddie.unk11C;
+        s.wp0[2] = inner->baddie.unk120;
     }
     if (newParent != NULL)
     {
@@ -2289,8 +2284,8 @@ void fn_80296EB4(GameObject* obj, GameObject* newParent)
         inner->prevTargetYaw = Angle_SubWrappedS16(a3, (s16*)newParent);
         inner->prevYaw = Angle_SubWrappedS16(a4, (s16*)newParent);
         inner->lastInputHeading = Angle_SubWrappedS16(a5, (s16*)newParent);
-        Obj_TransformWorldPointToLocal(s.wp0[0], s.wp0[1], s.wp0[2], (f32*)((char*)inner + 0x118),
-                                       (f32*)((char*)inner + 0x11c), (f32*)((char*)inner + 0x120), newParent);
+        Obj_TransformWorldPointToLocal(s.wp0[0], s.wp0[1], s.wp0[2], &inner->baddie.unk118,
+                                       &inner->baddie.unk11C, &inner->baddie.unk120, newParent);
     }
     else
     {
@@ -2308,9 +2303,9 @@ void fn_80296EB4(GameObject* obj, GameObject* newParent)
         inner->prevTargetYaw = a3;
         inner->prevYaw = a4;
         inner->lastInputHeading = a5;
-        *(f32*)((char*)inner + 0x118) = s.wp0[0];
-        *(f32*)((char*)inner + 0x11c) = s.wp0[1];
-        *(f32*)((char*)inner + 0x120) = s.wp0[2];
+        inner->baddie.unk118 = s.wp0[0];
+        inner->baddie.unk11C = s.wp0[1];
+        inner->baddie.unk120 = s.wp0[2];
     }
     obj->anim.worldPosX = s.wp[0];
     obj->anim.worldPosY = s.wp[1];
@@ -2348,7 +2343,7 @@ void playerSetOverrideParentSlack(GameObject* obj)
 u32 playerGetStateFlag310(GameObject* obj)
 {
     int inner = *(int*)&obj->extra;
-    return *(int*)((char*)inner + 0x310);
+    return ((PlayerState*)inner)->baddie.queuedBitMask;
 }
 
 GameObject* playerGetFocusObject(GameObject* obj)
@@ -5936,7 +5931,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     }
     if (((ByteFlags*)((char*)inner + 0x3f3))->b80 == 0 &&
         ((*(int*)&state->baddie.unk318 & 0x100) == 0 || inner->stickEdgeLatch != 0 ||
-         (((ByteFlags*)((char*)inner + 0x3f1))->b01 == 0 && *(f32*)((char*)state + 0x1b0) >= 15.0f)))
+         (((ByteFlags*)((char*)inner + 0x3f1))->b01 == 0 && ((PlayerState*)state)->baddie.unk1B0 >= 15.0f)))
     {
         if (inner->stickDirection != 0)
         {
@@ -13451,7 +13446,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
     }
     gPlayerFrameCounter = gPlayerFrameCounter + 1;
     if (!((ByteFlags*)((char*)inner + 0x3f0))->b20 && ((PlayerState*)inner)->waterDepth > 25.0f &&
-        *(f32*)((char*)state + 0x1b0) < 120.0f)
+        ((PlayerState*)state)->baddie.unk1B0 < 120.0f)
     {
         fn_802AE83C(obj, inner, state);
         return 0;
@@ -13460,7 +13455,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
         if (!((ByteFlags*)((char*)inner + 0x3f0))->b20 && !((ByteFlags*)((char*)inner + 0x3f0))->b08 &&
             !((ByteFlags*)((char*)inner + 0x3f0))->b04)
         {
-            if (((ByteFlags*)((char*)inner + 0x3f1))->b01 || *(f32*)((char*)state + 0x1b0) < 15.0f)
+            if (((ByteFlags*)((char*)inner + 0x3f1))->b01 || ((PlayerState*)state)->baddie.unk1B0 < 15.0f)
             {
                 ((PlayerState*)inner)->staffHoldFrames = 0;
             }
@@ -13520,7 +13515,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
         }
         if (ok != 0 && ((PlayerState*)inner)->heldObj != NULL && ((PlayerState*)inner)->isHoldingObject == 0)
         {
-            if ((*(int*)((char*)state + 0x310) & 0x4000) != 0)
+            if ((((PlayerState*)state)->baddie.queuedBitMask & 0x4000) != 0)
             {
                 *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerResetMoveTables;
                 return 7;
@@ -13906,7 +13901,7 @@ int fn_802AD2F4(GameObject* obj, int inner, int state)
     }
     if (((ByteFlags*)(((char*)inner) + 0x3f0))->b01 == 0)
     {
-        if ((*((f32*)(((char*)state) + 0x1b0))) < 40.0f)
+        if (((PlayerState*)state)->baddie.unk1B0 < 40.0f)
         {
             ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 1;
         }
@@ -18254,12 +18249,11 @@ void playerUpdate(GameObject* obj)
             }
             ((PlayerState*)inner)->probeHitDist = 100000.0f;
             ((PlayerState*)inner)->cameraFlags = 0;
-            *(int*)((char*)inner + 0x310) = 0;
+            ((PlayerState*)inner)->baddie.queuedBitMask = 0;
             bits = (u8*)inner;
             for (i = 0; i < ((PlayerState*)inner)->queuedBitCount; i++)
             {
-                u32 acc = playerLoadPendingHitBits((char*)inner + 0x310);
-                *(u32*)((char*)inner + 0x310) = acc | (1 << bits[i + 0x8b9]);
+                ((PlayerState*)inner)->baddie.queuedBitMask |= 1 << bits[i + 0x8b9];
             }
             *(u32*)&((PlayerState*)inner)->flags360 &= 0xfffff4ff;
             dt = *(f32*)&timeDelta;
@@ -18360,7 +18354,7 @@ void playerUpdate(GameObject* obj)
             {
                 (*gMapEventInterface)->gotoRestartPoint();
             }
-            if (((ByteFlags*)((char*)inner + 0x3f3))->b20 == 0 && (*(int*)((char*)inner + 0x310) & 1) != 0)
+            if (((ByteFlags*)((char*)inner + 0x3f3))->b20 == 0 && (((PlayerState*)inner)->baddie.queuedBitMask & 1) != 0)
             {
                 int po = (int)obj;
                 if (Sfx_IsPlayingFromObject(
@@ -18464,7 +18458,7 @@ void objLoadPlayerFromSave(int obj)
     ((PlayerState*)inner)->animSoundId = ((PlayerState*)inner)->walkAnimSoundId;
     ((PlayerState*)inner)->unk8BF = 0;
     (*gPlayerInterface)->init((void*)obj, (void*)inner, 0x42, 1);
-    *(int*)((char*)inner + 0x27c) = inner + 0x6f0;
+    ((PlayerState*)inner)->baddie.orientationAxesOut = ((PlayerState*)inner)->orientationAxes;
     pathState = (u8*)&((PlayerState*)inner)->baddie + 4;
     (*gPathControlInterface)->init(pathState, 1, 0x400a7, 1);
     (*gPathControlInterface)->setLocalPointCollision(pathState, 1, base + 0x130, &lbl_803DC6C0, 1);

@@ -57,10 +57,18 @@ typedef struct BaddieState {
     u8 paletteSlot; /* indexes the palette table (paletteIndex = gIceBaddiePaletteIndexTable[slot]) */
     u8 unkBD[0xC4 - 0xBD];
     void *contactObj; /* GameObject*; its anim.romDefNo (0x5d/0x99/0x1db/0x223) switches a sfx override (intersect.c) */
-    u8 unkC8[0x19C - 0xC8];
+    u8 unkC8[0x118 - 0xC8];
+    f32 unk118; /* a local-space point carried through a reparent exactly like
+        anim.localPos: player.c fn_80296EB4 pushes it to world space through the old
+        parent and pulls it back through the new one. No other reader in the tree. */
+    f32 unk11C;
+    f32 unk120;
+    u8 unk124[0x19C - 0x124];
     s16 spawnRotY; /* pair copied into the spawn-setup shorts; restored into anim.rotY */
     s16 spawnRotZ; /* restored into anim.rotZ */
-    u8 unk1A0[0x1B4 - 0x1A0];
+    u8 unk1A0[0x1B0 - 0x1A0];
+    f32 unk1B0; /* player.c compares it against 15 / 40 / 120 to gate landing and
+        state-exit branches */
     f32 waterDepth; /* compared > threshold to fire the waterfx splash path (intersect.c) */
     u8 unk1B8[0x25B - 0x1B8];
     s8 contactSfxMuted; /* nonzero suppresses contact sfx unless contactSfxFlags bit 0x10 (intersect.c) */
@@ -75,7 +83,11 @@ typedef struct BaddieState {
     s16 stateId; /* active player/control state id, written when a state handler starts */
     s8 moveJustStartedA; /* one-shot, tested at SeqFn entry */
     s8 moveJustStartedB; /* one-shot, secondary channel (death/cleanup handlers) */
-    u8 unk27C[0x280 - 0x27C];
+    void* orientationAxesOut; /* 0x27C: optional destination for the actor's world
+        orientation axes. When non-NULL the shared controller writes three unit
+        vectors there each update - +Z at +0x00, +Y at +0x0C, +X at +0x18 - by
+        transforming the unit axes through the object's rotation matrix. player.c
+        points it at PlayerState.orientationAxes. */
     f32 animSpeedA; /* anim blend speed pair */
     f32 animSpeedB;
     f32 animSpeedY; /* vertical companion of animSpeedA/animSpeedB: dll_000F feeds the triple to Matrix_TransformPoint as (animSpeedB, animSpeedY, -animSpeedA), i.e. local (x,y,z), and only when flags0 bit 0x10000 is set - the bit player_advanceMove raises when the move's root motion drives Y */
@@ -115,7 +127,9 @@ typedef struct BaddieState {
         int stateHandler; /* player state callback address */
         BaddieStateExitFn nextStateExitFn;
     };
-    u8 unk30C[8];
+    u8 unk30C[4];
+    s32 queuedBitMask; /* 0x310: rebuilt every tick - zeroed, then OR'd with (1 << id)
+        for each of the queuedBitCount queued bit ids; readers test bits 0x1/0x1000/0x4000 */
 /* eventFlags bit: anim-event footstep - the anim/event stream latches it, and
  * the per-family update readers test-then-clear it to fire the footstep/climb
  * contact SFX. */
