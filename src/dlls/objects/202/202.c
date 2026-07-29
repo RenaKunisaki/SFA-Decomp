@@ -3665,7 +3665,7 @@ void rachnopUpdateIdle(GameObject* obj, int state)
     else
     {
         if ((((GameObject*)((EnemyState*)state)->trackedObj)->anim.classId == 1) &&
-            (cond = fn_80295CBC((GameObject*)(((EnemyState*)state)->trackedObj)), cond != 0))
+            (cond = playerIsClimbingWall((GameObject*)(((EnemyState*)state)->trackedObj)), cond != 0))
         {
             ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 & ~0x10000LL;
         }
@@ -3687,7 +3687,7 @@ void rachnopUpdateApproach(GameObject* obj, int state)
         rachnopFindWallPlane(obj, state);
     }
     else if ((((GameObject*)((EnemyState*)state)->trackedObj)->anim.classId == 1) &&
-             (cond = fn_80295CBC((GameObject*)(((EnemyState*)state)->trackedObj)), cond != 0))
+             (cond = playerIsClimbingWall((GameObject*)(((EnemyState*)state)->trackedObj)), cond != 0))
     {
         fireflyLanternSteerTowardTarget((short*)obj, state, 0x19, (double)(0.5f));
         if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
@@ -3715,7 +3715,7 @@ void rachnopUpdateAttack(GameObject* obj, int state)
         rachnopFindWallPlane(obj, state);
     }
     else if ((((GameObject*)((EnemyState*)state)->trackedObj)->anim.classId == 1) &&
-             (cond = fn_80295CBC((GameObject*)(((EnemyState*)state)->trackedObj)), cond != 0))
+             (cond = playerIsClimbingWall((GameObject*)(((EnemyState*)state)->trackedObj)), cond != 0))
     {
         ObjHits_SetHitVolumeSlot(&obj->anim, DUSTER_HIT_VOLUME_SLOT, 1, 0);
         move = obj->anim.currentMove;

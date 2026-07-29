@@ -193,7 +193,7 @@ void CameraModeCombat_update(CameraObject* cam)
                 if (hitVolumes != NULL)
                 {
                     range = (f32)(s32)((u32)tgt->anim.modelInstance->hitVolumes[0].bounds[1] << 2);
-                    if (((u16)getButtonsJustPressed(0) & PAD_BUTTON_B) && fn_8029630C(focus) != 0)
+                    if (((u16)getButtonsJustPressed(0) & PAD_BUTTON_B) && playerIsNotAttacking(focus) != 0)
                     {
                         if (cam->targetObj != NULL)
                         {

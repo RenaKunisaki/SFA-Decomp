@@ -1384,7 +1384,7 @@ static int playerIsInDeepWater(GameObject* obj)
     return inner->waterDepth > 10.0f;
 }
 
-int fn_80295C5C(GameObject* obj)
+int playerIsQuakeShockwaveActive(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return inner->baddie.controlMode == 0x36 && ((ByteFlags*)((char*)inner + 0x3f3))->b10;
@@ -1402,7 +1402,7 @@ static int playerIsAtFullSpeed(GameObject* obj)
     return inner->targetAnimSpeed >= 1.0f;
 }
 
-int fn_80295CBC(GameObject* obj)
+int playerIsClimbingWall(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return inner->baddie.controlMode == 0x13;
@@ -1676,7 +1676,7 @@ int objFn_802962b4(GameObject* obj)
     return 0;
 }
 
-int fn_8029630C(GameObject* obj)
+int playerIsNotAttacking(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return inner->baddie.controlMode != 0x26;
@@ -1819,7 +1819,7 @@ int playerSetHeldObject(GameObject* obj, GameObject* heldObj)
     return inner->heldObj != NULL;
 }
 
-int fn_8029669C(GameObject* obj)
+int playerIsThrowing(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return inner->baddie.controlMode == 7;
@@ -2093,7 +2093,7 @@ int objGetAnimState80A(GameObject* obj)
     return 0;
 }
 
-void fn_80296BBC(GameObject* obj)
+void playerDisableHitDetect(GameObject* obj)
 {
     int inner = *(int*)&obj->extra;
     *(u32*)&((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_HITDETECT;

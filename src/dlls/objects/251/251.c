@@ -230,7 +230,7 @@ void PressureSwitchFB_update(GameObject* obj) {
         isMoving = 0;
         if ((state->contactTimer != 0) && (state->flags.update.latched == 0)) {
             if (state->flags.update.active != 0) {
-                if (fn_80295C5C(Obj_GetPlayerObject()) != 0) {
+                if (playerIsQuakeShockwaveActive(Obj_GetPlayerObject()) != 0) {
                     state->flags.update.released = 0;
                 }
             }

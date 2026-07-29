@@ -795,7 +795,7 @@ void gunpowderBarrel_update(GameObject* obj) {
             if (fn_802966B4(player) != 0) {
                 /* Set down in place. */
                 ObjHits_SyncObjectPositionIfDirty(obj);
-            } else if (fn_8029669C(player) != 0) {
+            } else if (playerIsThrowing(player) != 0) {
                 /* Launch at the selected target. */
                 ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
                 gunpowderBarrel_launchAtTarget(obj, 1);

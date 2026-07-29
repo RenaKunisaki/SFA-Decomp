@@ -729,7 +729,7 @@ void SmallBasket_update(GameObject* obj) {
                 }
                 if (((state->carryState == SMALLBASKET_CARRY_HELD) && (obj->userData2 == 0)) ||
                     ((state->disguiseGated != 0) && (playerIsDisguised(player) == 0))) {
-                    if (fn_8029669C(player) != 0) {
+                    if (playerIsThrowing(player) != 0) {
                         state->carryState = SMALLBASKET_CARRY_IDLE;
                         state->throwState = SMALLBASKET_THROW_LAUNCHED;
                         obj->anim.velocityY =
