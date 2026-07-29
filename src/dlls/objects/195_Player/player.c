@@ -10827,10 +10827,10 @@ s16 fn_802A71E0(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int*
 
 char sNotOnGroundFailureMessage[] = "FAIL ON NOT ON GROUND\n";
 
-int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32 fv, u32 mask)
+int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32 fv, u32 probeMask)
 {
     f32* dir;
-    int objCount;
+    int focusCandidateCount;
     f32 nearDist;
     f32 rot[3];
     f32 vec[3];
@@ -10879,7 +10879,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     sc0p[2] = 50.0f * vec[2];
     *(u32*)&((PlayerState*)state)->flags360 &= ~PLAYER_FLAG_LEDGE_DETECTED;
     for (i = 0; i < 13; i++) {
-        if ((mask & dirMasks[i]) == 0)
+        if ((probeMask & dirMasks[i]) == 0)
         {
             continue;
         }
@@ -11306,19 +11306,19 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             break;
         }
     }
-    if ((*(int*)&((PlayerState*)state2)->baddie.unk31C & 0x100) != 0 && (mask & 0x200) != 0)
+    if ((*(int*)&((PlayerState*)state2)->baddie.unk31C & 0x100) != 0 && (probeMask & 0x200) != 0)
     {
-        int* objs = (int*)objGetAllOfType(10, &objCount);
-        int k2;
-        for (k2 = 0; k2 < objCount; k2++)
+        int* focusCandidates = (int*)objGetAllOfType(10, &focusCandidateCount);
+        int candidateIndex;
+        for (candidateIndex = 0; candidateIndex < focusCandidateCount; candidateIndex++)
         {
-            int cur = *objs;
-            if ((*(int (*)(int, int)) * (int*)((char*)*(int*)*(int*)(cur + 0x68) + 0x20))(cur, obj) != 0)
+            int candidate = *focusCandidates;
+            if ((*(int (*)(int, int)) * (int*)((char*)*(int*)*(int*)(candidate + 0x68) + 0x20))(candidate, obj) != 0)
             {
-                ((PlayerState*)state)->focusObject = (GameObject*)cur;
+                ((PlayerState*)state)->focusObject = (GameObject*)candidate;
                 return 0xa;
             }
-            objs++;
+            focusCandidates++;
         }
     }
     return -1;
