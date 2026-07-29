@@ -28,6 +28,9 @@ numbers.
 Three things this must get right, because each one alone manufactures a census
 of phantom defects:
 
+  * READ THE OPCODE AT THE INSTRUCTION WORD, not at the raw reloc offset (see
+    f64_operands); half the IMM16 relocations are recorded at the immediate
+    field, and reading four bytes from there straddles two instructions.
   * GATE ON `lfd`. Reading 8 bytes at every reloc target also swallows a 4-byte
     float plus whatever pool word happens to follow it, and for powers of two
     the high-word relation is degenerate (an f32 0.5 at 0x3f000000 "matches" a
@@ -67,9 +70,16 @@ def f64_operands(path, RA):
     txt = o.text()
     out = {}
     for off, typ, nm, add, shndx, val, sz in o.text_relocs():
-        if off + 4 > len(txt):
+        # Reloc offsets are not uniform: R_PPC_EMB_SDA21 is recorded at the
+        # instruction WORD, ADDR16_HA/LO at the 16-bit immediate FIELD two bytes
+        # into it. Reading the opcode at the raw offset straddles two
+        # instructions for the latter and yields nonsense, which silently
+        # dropped 292 lfd sites -- every double reached through a lis/lfd pair
+        # rather than through the SDA base.
+        w = off & ~3
+        if w + 4 > len(txt):
             continue
-        if (struct.unpack(">I", txt[off:off + 4])[0] >> 26) not in LFD:
+        if (struct.unpack(">I", txt[w:w + 4])[0] >> 26) not in LFD:
             continue
         a = RA.get(nm)
         if a is None:
