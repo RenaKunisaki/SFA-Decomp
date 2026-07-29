@@ -507,11 +507,6 @@ extern u32 lbl_803DCFF4;
 
 
 
-extern f32 lbl_803DEE58;
-
-
-
-
 #include "track/intersect_internal.h"
 
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
@@ -558,7 +553,7 @@ void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
         axis.x = 1.0f;
         axis.y = 0.0f;
         axis.z = 0.0f;
-        if (__fabs(PSVECDotProduct(&norm, &axis)) >= lbl_803DEE58)
+        if (__fabsf(PSVECDotProduct(&norm, &axis)) >= 0.9f)
         {
             axis.x = 0.0f;
             axis.z = 1.0f;

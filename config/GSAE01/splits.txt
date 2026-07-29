@@ -305,7 +305,7 @@ track/intersect.c:
 	.bss        start:0x80391DC0 end:0x80396918
 	.sdata      start:0x803DB678 end:0x803DB700
 	.sbss       start:0x803DCFF0 end:0x803DD040
-	.sdata2     start:0x803DEE28 end:0x803DEE2C
+	.sdata2     start:0x803DEE20 end:0x803DEE68
 
 track/intersect_screenmath.c:
 	.text       start:0x8006FDF8 end:0x80070234
