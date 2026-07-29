@@ -1,5 +1,7 @@
 #define BADDIE_MOVE_STATUS_SIGNED
 
+#include "main/dll/player.h"
+
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "main/dll/dll_0043_cameramodestaffanim.h"
@@ -92,6 +94,7 @@
 #include "main/byte_flags.h"
 #include "main/pad.h"
 #include "dolphin/mtx.h"
+#include "dolphin/pad.h"
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTransform.h"
 #include "string.h"
@@ -108,7 +111,7 @@
 #include "main/obj_query.h"
 #include "main/player_eye_anim.h"
 #include "main/dll/dll_029B_arwingandrossstuff.h"
-#include "main/dll/player.h"
+#include "main/dll/player_data.h"
 #include "main/dll/tricky_api.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -127,7 +130,29 @@ typedef struct PlayerSeqPlacement {
 
 STATIC_ASSERT(offsetof(PlayerSeqPlacement, movementEnabled) == 0x20);
 
-#define LANTERNFIREFLY_OBJGROUP 0x30 /* DLL 0x10C lanternfirefly */
+typedef struct MoveTable {
+    u8 pad[0x7ac];
+    s16 moves[8];
+    f32 blend[8];
+    f32 angles[8];
+} MoveTable;
+
+typedef struct EmitPlane {
+    f32 nx;
+    f32 ny;
+    f32 nz;
+    f32 d;
+} EmitPlane;
+
+STATIC_ASSERT(sizeof(MoveTable) == 0x7fc);
+STATIC_ASSERT(sizeof(EmitPlane) == 0x10);
+
+/* the player object's own group (joined at init, left on free) */
+#define PLAYER_OBJGROUP 0x25
+/* groups owned by other DLLs the player queries */
+#define BABYCLOUDRUNNER_OBJGROUP 0x20 /* DLL 0x14C babycloudrunner (secondary) */
+#define LANTERNFIREFLY_OBJGROUP  0x30 /* DLL 0x10C lanternfirefly */
+#define MAGICPLANT_OBJGROUP_B    0x3e /* DLL 0xFE magicplant (group B) */
 
 void playerUpdateTail(int unused1, int* unused2, f32* vec, int unused3, int mode, f32 angle);
 void playerDoTailAnims(int obj, void* statep);
@@ -412,21 +437,6 @@ static inline ObjHitsPriorityState* Player_GetObjHitsState(GameObject* obj)
 {
     return (ObjHitsPriorityState*)obj->anim.hitReactState;
 }
-/* the player object's own group (joined at init, left on free) */
-#define PLAYER_CLAMP(v, lo, hi) ((v) < (lo) ? (lo) : ((v) > (hi) ? (hi) : (v)))
-
-#define PLAYER_OBJGROUP 0x25
-/* groups owned by other DLLs the player queries */
-#define BABYCLOUDRUNNER_OBJGROUP 0x20 /* DLL 0x14C babycloudrunner (secondary) */
-#define MAGICPLANT_OBJGROUP_B    0x3e /* DLL 0xFE magicplant (group B) */
-
-/* GameCube controller button masks (tested against PlayerState.buttons* fields) */
-#define PAD_BUTTON_A  0x100
-#define PAD_BUTTON_B  0x200
-#define PAD_BUTTON_X  0x400
-#define PAD_BUTTON_Y  0x800
-#define PAD_TRIGGER_L 0x40
-
 
 typedef struct
 {
@@ -533,10 +543,6 @@ static inline void Player_ApplyStatusDamage(GameObject* obj, int param)
         playerDie(obj);
     }
 }
-
-
-/* Number of directional sweep probes (parallel dirs[13]/dirMasks[13] tables). */
-#define PLAYER_SWEEP_DIR_COUNT 13
 
 void playerUpdatePathEffectCountdown(GameObject* obj, int inner)
 {
@@ -6357,7 +6363,10 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
     {
         f32 c;
         void* hit;
-        c = PLAYER_CLAMP(((PlayerState*)state)->baddie.moveInputZ / 56.0f, -1.5f, 1.5f);
+        c = (((PlayerState*)state)->baddie.moveInputZ / 56.0f) < -1.5f ? -1.5f
+            : (((PlayerState*)state)->baddie.moveInputZ / 56.0f) > 1.5f
+                ? 1.5f
+                : ((PlayerState*)state)->baddie.moveInputZ / 56.0f;
         hit = *(void**)((char*)inner + 0x7f0);
         if (hit != NULL && *(s16*)((char*)hit + 0x46) == 0x484)
         {
@@ -10869,8 +10878,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     sc0p[1] = 50.0f * vec[1];
     sc0p[2] = 50.0f * vec[2];
     *(u32*)&((PlayerState*)state)->flags360 &= ~PLAYER_FLAG_LEDGE_DETECTED;
-    for (i = 0; i < PLAYER_SWEEP_DIR_COUNT; i++)
-    {
+    for (i = 0; i < 13; i++) {
         if ((mask & dirMasks[i]) == 0)
         {
             continue;

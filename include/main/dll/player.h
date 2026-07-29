@@ -1,42 +1,10 @@
 #ifndef MAIN_DLL_PLAYER_H_
 #define MAIN_DLL_PLAYER_H_
 
-#include "game/objects/object_setup.h"
-#include "game/objects/object.h"
-#include "main/audio/sfx_ids.h"
-#include "main/objfx.h"
-#include "main/screen_transition.h"
-#include "main/dll/player_api.h"
-#include "main/dll/player_data.h"
-#include "main/dll/player_state.h"
+#include "game/objects/object_fwd.h"
+#include "global.h"
 
-typedef struct
-{
-    u8 pad[0x7ac];
-    s16 moves[8];
-    f32 blend[8];
-    f32 angles[8];
-} MoveTable;
-STATIC_ASSERT(sizeof(MoveTable) == 0x7fc);
-
-typedef struct
-{
-    f32 nx;
-    f32 ny;
-    f32 nz;
-    f32 d;
-} EmitPlane;
-STATIC_ASSERT(sizeof(EmitPlane) == 0x10);
-
-typedef struct
-{
-    u8 pad00[0x60];
-    s16 anims[14];
-    f32 blends[25];
-    u16 bits[8];
-    f32 scales[16];
-} EmitCtrlTbl;
-STATIC_ASSERT(sizeof(EmitCtrlTbl) == 0x130);
+struct PlayerState;
 
 int fn_802AD2F4(GameObject* obj, int inner, int state);
 void playerUpdate(GameObject* obj);
@@ -51,7 +19,7 @@ int playerStateOnLadder(int obj, int state);
 int playerStateClimbWall(GameObject* obj, int state);
 int playerStateAimStaff(int obj, int state, f32 fv);
 int playerStateAttack(GameObject* obj, int state, f32 fv);
-int playerState1D(int obj, PlayerState* state, f32 fv);
+int playerState1D(int obj, struct PlayerState* state, f32 fv);
 int playerStateIdle(int obj, int state, f32 fv);
 int playerState08(GameObject* obj, int state, f32 fv);
 

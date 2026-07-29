@@ -71,7 +71,7 @@
 #include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/dll/dll_029B_arwingandrossstuff.h"
-#include "main/dll/player.h"
+#include "main/dll/player_data.h"
 #include "main/dll/tricky_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
@@ -103,6 +103,16 @@
 #define DLL1B5_WEAPON_DEF_1 0x6F1
 #define DLL1B5_WEAPON_DEF_2 0x6F2
 #define DLL1B5_OBJECT_GROUP 3
+
+typedef struct Dll1B5ButtonTimingTables {
+    u8 pad00[0x60];
+    s16 anims[14];
+    f32 blends[25];
+    u16 gameBits[8];
+    f32 meterScales[16];
+} Dll1B5ButtonTimingTables;
+
+STATIC_ASSERT(sizeof(Dll1B5ButtonTimingTables) == 0x130);
 
 int Lightfoot_UpdateProximityInteractionState(int obj, int state)
 {
@@ -407,7 +417,7 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
 {
     const Dll1B5Placement* placement;
-    EmitCtrlTbl* controls = (EmitCtrlTbl*)&lbl_80334EE8;
+    Dll1B5ButtonTimingTables* controls = (Dll1B5ButtonTimingTables*)&lbl_80334EE8;
     GroundBaddieState* actor = obj->extra;
     Dll1B5ButtonTimingControlState* challenge = actor->control;
     BaddieState* playerState = (BaddieState*)state;
@@ -426,7 +436,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
     {
         int meterPosition =
             (s16)(90.0f * mathSinf(3.1415927f * challenge->phase / 32768.0f));
-        u16 successRange = (int)(90.0f * controls->scales[challenge->difficulty]);
+        u16 successRange = (int)(90.0f * controls->meterScales[challenge->difficulty]);
         if (obj->userData2 == 0)
         {
             if ((s16)challenge->phase * (s16)challenge->previousPhase < 0)
@@ -463,7 +473,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
             int index;
             u16* gameBit;
             challenge->difficulty = 0;
-            for (index = 0, gameBit = controls->bits; index < 8; gameBit++, index++)
+            for (index = 0, gameBit = controls->gameBits; index < 8; gameBit++, index++)
             {
                 if (mainGetBit(*gameBit) != 0)
                 {
@@ -474,7 +484,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
             challenge->previousPhase = challenge->phase;
             challenge->previousPhase2 = challenge->previousPhase;
             fearTestMeterSetRange(
-                0x60, (u8)(int)(96.0f * controls->scales[challenge->difficulty]),
+                0x60, (u8)(int)(96.0f * controls->meterScales[challenge->difficulty]),
                 (int)(90.0f * mathSinf(3.1415927f * challenge->phase / 32768.0f)));
             fearTestMeterSetFadeIn(1);
             setAButtonIcon(6);
