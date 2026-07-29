@@ -363,9 +363,8 @@ void checkReset(void)
         }
         if (pressed != 0 && gGameLoopResetComboDebounce == 0)
         {
-            t = gGameLoopResetHoldTimer + 1.0f;
-            gGameLoopResetHoldTimer = t;
-            if (t >= 3e+01f)
+            gGameLoopResetHoldTimer += 1.0f;
+            if (gGameLoopResetHoldTimer >= 3e+01f)
             {
                 gameState = GAME_STATE_RESETPRESSED;
             }
@@ -1000,4 +999,4 @@ int main(int argc, char** argv)
     } while (1);
 }
 
-char sMainFinishedInitMessage[15] = "finished init\n";
+char sMainFinishedInitMessage[16] = "finished init\n";
