@@ -6,26 +6,28 @@
  * message and returns the failure sentinel, while release/initialise are
  * empty stubs that keep the DLL loadable.
  */
-#include "dolphin/os/OSReport.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00BD_projsunshock.h"
+#include "dolphin/os/OSReport.h"
 
-int projsunshock_doUnsupported(void)
-{
+extern char sProjsunshockDoNoLongerSupported[];
+
+int projsunshock_doUnsupported(void) {
     OSReport(sProjsunshockDoNoLongerSupported);
     return -1;
 }
 
-void projsunshock_release(void)
-{
+void projsunshock_release(void) {
 }
 
-void projsunshock_initialise(void)
-{
+void projsunshock_initialise(void) {
 }
 
-DllDescriptorTable lbl_803198D8 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projsunshock_initialise, projsunshock_release, (void*)0x00000000,
-                                    projsunshock_doUnsupported}};
+ProjsunshockResourceDescriptor gProjsunshockResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projsunshock_initialise,
+    projsunshock_release,
+    NULL,
+    projsunshock_doUnsupported,
+};
 
 char sProjsunshockDoNoLongerSupported[] = "<projsunshock Do>No Longer supported \n";
