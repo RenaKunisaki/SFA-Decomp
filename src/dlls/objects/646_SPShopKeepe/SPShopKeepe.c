@@ -899,7 +899,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
 
     (*gMapEventInterface)->setObjGroupStatus((s32)(obj)->anim.mapEventSlot, 6, 1);
 
-    hitDetectFn_800658a4(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, &groundHeight,
+    trackGetNearestGroundOffset(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, &groundHeight,
                          0);
 
     for (i = 0; i < count; i++)

@@ -65,7 +65,7 @@ void VFP_MiniFire_update(GameObject* obj)
 
     if (0.0f == state->baseY)
     {
-        hitDetectFn_800658a4(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, (f32*)state,
+        trackGetNearestGroundOffset(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, (f32*)state,
                              0);
         state->baseY = (obj)->anim.localPosY - state->baseY;
     }

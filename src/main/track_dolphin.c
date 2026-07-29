@@ -1711,7 +1711,7 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
     return 1;
 }
 
-int hitDetectFn_800658a4(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundY, int flag)
+int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset, int flag)
 {
     TrackGroundHit** arr;
     int n;
@@ -1746,10 +1746,10 @@ int hitDetectFn_800658a4(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundY, 
                 bestIdx = i;
             }
         }
-        *outGroundY = y - arr[bestIdx]->height;
+        *outGroundOffset = y - arr[bestIdx]->height;
         return 0;
     }
-    *outGroundY = 0.0f;
+    *outGroundOffset = 0.0f;
     return 1;
 }
 

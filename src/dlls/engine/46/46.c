@@ -258,7 +258,7 @@ int dll_2E_advanceAlongRoute(GameObject* obj, RomCurveWalker* route, f32 phase, 
     ObjAnim_SampleRootCurvePhase(&obj->anim, phase, rootOut);
     if (*flags & 1)
     {
-        if (hitDetectFn_800658a4(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, &ground,
+        if (trackGetNearestGroundOffset(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, &ground,
                                  0) == 0)
         {
             (obj)->anim.localPosY -= ground;
@@ -298,7 +298,7 @@ int dll_2E_moveToTarget(GameObject* obj, const MoveLibTarget* target, f32 speed,
         obj->anim.localPosZ = target->z;
         if (*flags & 1)
         {
-            if (hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &ground, 0) ==
+            if (trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &ground, 0) ==
                 0)
             {
                 obj->anim.localPosY -= ground;
@@ -312,7 +312,7 @@ int dll_2E_moveToTarget(GameObject* obj, const MoveLibTarget* target, f32 speed,
     obj->anim.velocityZ = dz * (speed * timeDelta);
     if (*flags & 1)
     {
-        if (hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &ground, 0) == 0)
+        if (trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &ground, 0) == 0)
         {
             obj->anim.localPosY -= ground;
         }

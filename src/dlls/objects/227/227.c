@@ -379,7 +379,7 @@ void Fireball_update(GameObject* obj) {
         if ((state->stateFlags & FIREBALL_FLAG_GRAVITY) != 0) {
             f32 ground;
             state->posY -= 2.0f * timeDelta;
-            if (hitDetectFn_800658a4(obj, state->posX, state->posY, state->posZ, &ground, 0) == 0) {
+            if (trackGetNearestGroundOffset(obj, state->posX, state->posY, state->posZ, &ground, 0) == 0) {
                 ground -= 10.0f;
                 if (ground < 0.0f && ground > -15.0f) {
                     state->posY -= ground;

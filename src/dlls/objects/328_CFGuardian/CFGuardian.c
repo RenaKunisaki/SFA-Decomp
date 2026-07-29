@@ -300,7 +300,7 @@ int cfguardian_flyAlongPath(GameObject* obj, RomCurveWalker* walker, f32 speed, 
         if (pathComplete != 0) {
             obj->userData1 = -1;
         }
-        if (hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &groundDistance,
+        if (trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &groundDistance,
                                  0) == 0) {
             obj->anim.localPosY = obj->anim.localPosY - groundDistance;
         }
@@ -485,7 +485,7 @@ int cfguardian_updateMain(GameObject* obj) {
                     obj->anim.velocityZ = zero;
                 }
                 obj->anim.localPosY = obj->anim.velocityY * timeDelta + obj->anim.localPosY;
-                hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
+                trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                      &groundDistance, 0);
                 obj->anim.rotX = (s16)((0xc0 << (obj->anim.rotX + 8)) >> 1);
                 ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_IMMOVABLE;

@@ -176,7 +176,7 @@ void ProximityMine_update(GameObject* obj)
         {
             if (state->mode == PROXIMITYMINE_MODE_ARMED)
             {
-                hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY,
+                trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY,
                                      obj->anim.localPosZ, &groundY, 0);
                 obj->anim.localPosY -= groundY;
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_id_2e6);

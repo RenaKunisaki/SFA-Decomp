@@ -4885,7 +4885,7 @@ void ObjSeq_SetupInitialPlaybackState(GameObject* obj, GameObject** seqObj, u8* 
 
     ObjSeq_UpdateCurvePosition(obj, seq);
     if ((s8)((ObjSeqState*)seq)->groundSnapEnabled == 1 &&
-        hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY,
+        trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY,
                              obj->anim.localPosZ, groundY, 0) == 0)
     {
         obj->anim.localPosY =
@@ -4985,7 +4985,7 @@ void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* pla
                 ObjSeq_UpdateCurvePosition(obj, seq);
             }
             if ((s8)((ObjSeqState*)seq)->groundSnapEnabled == 1 &&
-                hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY,
+                trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY,
                                      obj->anim.localPosZ, groundY, 0) == 0)
             {
                 obj->anim.localPosY =
@@ -6322,7 +6322,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
         }
         ObjSeq_UpdateCurvePosition(obj, seq);
         if ((s8)state->groundSnapEnabled == 1 &&
-            hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY,
+            trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY,
                                  obj->anim.localPosZ, &groundY, 0) == 0)
         {
             obj->anim.localPosY =

@@ -817,7 +817,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
 
     if (doGroundSnap != 0)
     {
-        hitDetectFn_800658a4((GameObject*)obj, ((GameObject*)obj)->anim.worldPosX, ((GameObject*)obj)->anim.worldPosY,
+        trackGetNearestGroundOffset((GameObject*)obj, ((GameObject*)obj)->anim.worldPosX, ((GameObject*)obj)->anim.worldPosY,
                              ((GameObject*)obj)->anim.worldPosZ, &hitOffsetY, 0);
         ((GameObject*)obj)->anim.localPosY -= hitOffsetY;
         state->heightUpdateActive = 0;
