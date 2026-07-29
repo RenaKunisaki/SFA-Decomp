@@ -343,6 +343,7 @@
 #include "main/dll/dll_0056_cameramodearwing.h"
 #include "main/dll/dll_0057_cameramodetitle.h"
 #include "main/dll/dll_0058_dummy58.h"
+#include "main/dll/dll_0059_dll59func0.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -489,7 +490,7 @@ extern ResourceDescriptor Effect9_funcs, Effect10_funcs, Effect11_funcs, Effect1
 extern ResourceDescriptor Effect17_funcs, Effect18_funcs, Effect19_funcs, Effect20_funcs, lbl_803112E8, lbl_80311340,
     lbl_80311378, lbl_80311438;
 extern ResourceDescriptor lbl_803114B0, lbl_803114D8, lbl_803115F8, dll_15_funcs, lbl_80311900, lbl_80311BE0,
-    dll_59_funcs, StaffCollision_funcs;
+    StaffCollision_funcs;
 extern ResourceDescriptor lbl_80311E80, dll_5C_funcs, dll_5D_funcs, dll_5E_funcs, dll_5F_funcs, dll_60_funcs,
     dll_61_funcs, dll_62_funcs;
 extern ResourceDescriptor dll_63_funcs, dll_64_funcs, dll_65_funcs, dll_A3_funcs, dll_66_funcs, dll_67_funcs,
@@ -1234,7 +1235,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCameraModeArwingDescriptor,
     (ResourceDescriptor*)&gCameraModeTitleDescriptor,
     (ResourceDescriptor*)&gDummy58Descriptor,
-    &dll_59_funcs,
+    (ResourceDescriptor*)&gDll59ResourceDescriptor,
     &StaffCollision_funcs,
     &lbl_80311E80,
     &dll_5C_funcs,
