@@ -261,7 +261,6 @@ extern u8 gGxBreakPtEnabled;
 extern u8 gVideoBlackScreenFrameCount;
 extern u16 gGxDrawSyncToken;
 extern OSStopwatch gFrameStopwatch;
-extern f32 physicsTimeScale;
 extern u8 framesThisStepUnclamped;
 
 #include "main/dll/ppcwgpipe_struct.h"
@@ -409,7 +408,7 @@ void waitNextFrame(void)
         (u64)OSCheckStopwatch(&gFrameStopwatch) / (f32)(u32)((*(u32*)0x800000f8 >> 2) / 1000);
     OSResetStopwatch(&gFrameStopwatch);
     OSStartStopwatch(&gFrameStopwatch);
-    timeDelta = physicsTimeScale * (0.001f * gFrameElapsedMs);
+    timeDelta = 60.0f * (0.001f * gFrameElapsedMs);
     if (gDvdErrorPauseActive != 0)
     {
         timeDelta = 0.0f;

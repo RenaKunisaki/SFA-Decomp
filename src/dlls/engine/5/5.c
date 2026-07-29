@@ -104,22 +104,13 @@ extern f32 gSkyOverrideLightIntensity;
 extern u8 gSkyOverrideLightDirectionEnabled;
 extern f32 gSkyOverrideLightDirection[];
 extern const f32 lbl_803DF058;
-extern const f32 gSkyDayStartTime;
 extern const f32 gSkySecondsPerDay;
-extern const f32 gSkyInitialTimeOfDay;
 extern u16 gSkySunAlpha;
 extern u16 gSkyMoonAlpha;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
 const SkyVec3 gSkyBaseSunDirection = {0.0f, 0.0f, 4600.0f};
 const SkyVec3 gSkyBaseMoonDirection = {0.0f, 0.0f, 4600.0f};
-extern const f32 gSkySunMoonFarPlane;
-extern const f32 gSkySunArcDuration;
-extern const f32 gSkySunFadeInThreshold;
-extern const f32 gSkyAlphaFadeScale;
-extern const f32 gSkySunFadeOutThreshold;
-extern const f32 gSkySunRiseDuration;
 extern const f32 lbl_803DF0B4;
-extern const f32 gSkySunMoonScale;
 extern const f32 lbl_803DF0C0;
 extern u8 colorScale;
 extern u8 gSkySunPositionPrev;
@@ -127,8 +118,6 @@ extern f32 gSkySunDirection[];
 extern f32 gSkyMoonDirection[];
 extern u8 gSkyColorBlendTable[];
 extern int lbl_803E8458;
-extern const f32 gSkyPi;
-
 int return0_80088758(void)
 {
     return 0x0;
@@ -1205,7 +1194,7 @@ void skyUpdateLightingFromTimeOfDay(void)
             greenCurveOffset = (part + 7) * 4;
             blueCurveOffset = (part + 0xe) * 4;
             zero = lbl_803DF058;
-            dayStart = gSkyDayStartTime;
+            dayStart = 18000.0f;
             off = i * 0xa4;
             if ((u32)((gSkyState[off + 0xc1] >> 7) & 1) != 0)
             {
@@ -1319,7 +1308,7 @@ void skyUpdateShadowLightDirection(void)
         gSkyMoonDirection[1] = gSkyMoonDirection[1] / len;
         gSkyMoonDirection[2] = gSkyMoonDirection[2] / len;
         time = ((SkyState*)gSkyState)->timeOfDay;
-        if (time >= gSkyDayStartTime && time <= 75600.0f)
+        if (time >= 18000.0f && time <= 75600.0f)
         {
             if (gSkyOverrideLightDirectionEnabled != 0)
             {
@@ -1391,10 +1380,10 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
     if (cam != NULL && gSkyState != NULL)
     {
         far = Camera_GetFarPlane();
-        Camera_SetFarPlane(gSkySunMoonFarPlane, 0);
+        Camera_SetFarPlane(15000.0f, 0);
         Camera_RebuildProjectionMatrix();
         sky = (SkyState*)gSkyState;
-        sunT = (sky->timeOfDay - gSkyDayStartTime) / gSkySunArcDuration;
+        sunT = (sky->timeOfDay - 18000.0f) / 57600.0f;
         if (sunT < 0.0f)
         {
             sunT = 0.0f;
@@ -1403,7 +1392,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             sunT = 1.0f;
         }
-        if (sunT < gSkySunFadeInThreshold)
+        if (sunT < 0.1f)
         {
             if (sunT < 0.0f)
             {
@@ -1411,12 +1400,12 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             }
             else
             {
-                *(s16*)&gSkySunAlpha = (gSkyAlphaFadeScale * sunT);
+                *(s16*)&gSkySunAlpha = (2550.0f * sunT);
             }
         }
         else
         {
-            if (sunT > gSkySunFadeOutThreshold)
+            if (sunT > 0.9f)
             {
                 if (sunT > 1.0f)
                 {
@@ -1425,7 +1414,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
                 else
                 {
                     *(s16*)&gSkySunAlpha =
-                        (gSkyAlphaFadeScale * (gSkySunFadeInThreshold - (sunT - gSkySunFadeOutThreshold)));
+                        (2550.0f * (0.1f - (sunT - 0.9f)));
                 }
             }
             else
@@ -1434,7 +1423,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             }
         }
         sunT *= 32676.0f;
-        riseT = (sky->timeOfDay - gSkyDayStartTime) / gSkySunRiseDuration;
+        riseT = (sky->timeOfDay - 18000.0f) / 28800.0f;
         if (riseT < 0.0f)
         {
             riseT = 0.0f;
@@ -1461,7 +1450,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         ((GameObject*)gSkySunObject)->anim.localPosX = cam->worldX + (f32)(s16)(int)vec[0];
         ((GameObject*)gSkySunObject)->anim.localPosY = cam->worldY + (f32)(s16)(int)vec[1];
         ((GameObject*)gSkySunObject)->anim.localPosZ = cam->worldZ + (f32)(s16)(int)vec[2];
-        ((GameObject*)gSkySunObject)->anim.rootMotionScale = gSkySunMoonScale * scale;
+        ((GameObject*)gSkySunObject)->anim.rootMotionScale = 400.0f * scale;
         *(s16*)gSkySunObject = 0x10000 - cam->yaw;
         ((GameObject*)gSkySunObject)->anim.rotY = cam->pitch;
         ((GameObject*)gSkySunObject)->anim.rotZ = 0;
@@ -1475,7 +1464,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             moonT = time2 + lbl_803DF0C0;
         }
-        moonTC = moonT / gSkySunRiseDuration;
+        moonTC = moonT / 28800.0f;
         if (moonTC < lbl_803DF058)
         {
             moonTC = lbl_803DF058;
@@ -1484,7 +1473,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             moonTC = 1.0f;
         }
-        if (moonTC < gSkySunFadeInThreshold)
+        if (moonTC < 0.1f)
         {
             if (moonTC < lbl_803DF058)
             {
@@ -1492,12 +1481,12 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             }
             else
             {
-                *(s16*)&gSkyMoonAlpha = (gSkyAlphaFadeScale * moonTC);
+                *(s16*)&gSkyMoonAlpha = (2550.0f * moonTC);
             }
         }
         else
         {
-            if (moonTC > gSkySunFadeOutThreshold)
+            if (moonTC > 0.9f)
             {
                 if (moonTC > 1.0f)
                 {
@@ -1506,7 +1495,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
                 else
                 {
                     *(s16*)&gSkyMoonAlpha =
-                        (gSkyAlphaFadeScale * (gSkySunFadeInThreshold - (moonTC - gSkySunFadeOutThreshold)));
+                        (2550.0f * (0.1f - (moonTC - 0.9f)));
                 }
             }
             else
@@ -1541,7 +1530,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         ((GameObject*)gSkyMoonObject)->anim.localPosX = cam->worldX + (f32)(s16)(int)vec[0];
         ((GameObject*)gSkyMoonObject)->anim.localPosY = cam->worldY + (f32)(s16)(int)vec[1];
         ((GameObject*)gSkyMoonObject)->anim.localPosZ = cam->worldZ + (f32)(s16)(int)vec[2];
-        ((GameObject*)gSkyMoonObject)->anim.rootMotionScale = gSkySunMoonScale * scale;
+        ((GameObject*)gSkyMoonObject)->anim.rootMotionScale = 400.0f * scale;
         ((GameObject*)gSkyMoonObject)->anim.rotX = 0x10000 - cam->yaw;
         ((GameObject*)gSkyMoonObject)->anim.rotY = cam->pitch;
         vis = 0;
@@ -1733,7 +1722,7 @@ void skyRenderTimeOfDayBackdrop(void)
         texHeightF = (f32)(u32) * (u16*)(texC + 0xc);
         sinProd = texHeightF * frac / 180.0f;
         sinProd *= 3.0f;
-        sinProd *= mathCosf(gSkyPi * (f32)-cam->worldRoll / 32768.0f);
+        sinProd *= mathCosf(3.1415927f * (f32)-cam->worldRoll / 32768.0f);
         ang0 = texHeightF / 2.0f - 6.0f - 3.0f * (texHeightF * cam->worldPitch) / 32768.0f;
         angle = ang0 + sinProd;
         angle *= 32.0f;
@@ -1805,17 +1794,17 @@ int getSunPos(f32* outTime)
     }
 
     time = ((SkyState*)gSkyState)->timeOfDay;
-    if (time >= 75600.0f || time < gSkyDayStartTime)
+    if (time >= 75600.0f || time < 18000.0f)
     {
         if (outTime != NULL)
         {
             if (time >= 75600.0f)
             {
-                *outTime = gSkyDayStartTime + (time - 75600.0f);
+                *outTime = 18000.0f + (time - 75600.0f);
             }
             else
             {
-                *outTime = gSkyDayStartTime - time;
+                *outTime = 18000.0f - time;
             }
         }
         return 1;
@@ -2061,7 +2050,7 @@ void skyResetState(void)
     ((SkyState*)gSkyState)->timer = randomGetRange(0, 0x1c);
     ((SkyState*)gSkyState)->unk252 = 0xc;
     ((SkyState*)gSkyState)->unk253 = 0;
-    ((SkyState*)gSkyState)->timeOfDay = gSkyInitialTimeOfDay;
+    ((SkyState*)gSkyState)->timeOfDay = 43200.0f;
     ((SkyState*)gSkyState)->clockTime = 0xb4;
     ((SkyState*)gSkyState)->sunYaw = 10000.0f;
     ((SkyState*)gSkyState)->timeOfDayRate = (f32)((SkyState*)gSkyState)->clockTime / 60.0f;

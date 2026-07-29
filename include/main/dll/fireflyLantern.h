@@ -9,7 +9,4 @@ void pinPon_updateEngaged(GameObject* obj, int* state);
 void pinPon_init(GameObject* obj, void* state);
 void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* outAngle, float* outDistance);
 u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 maxDistance);
-
-extern f32 gFireflyLanternTargetHeightOffset;
-
 #endif /* MAIN_DLL_FIREFLYLANTERN_H_ */

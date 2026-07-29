@@ -18,7 +18,6 @@ typedef struct ObjHitReactMoveEntry {
 extern char sObjHitReactHitstateFrameString[];
 extern char sObjHitReactSphereOverflowString[];
 extern char sObjHitReactResetString[7];
-extern f32 gObjHitReactAltEffectScale;
 extern int gObjHitReactResetObjectCount;
 extern ObjAnimComponent **gObjHitReactResetObjects;
 

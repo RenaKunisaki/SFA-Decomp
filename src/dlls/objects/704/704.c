@@ -126,8 +126,6 @@ extern TitleAnimMoves gTitleScreenAnimMoves[];
 extern f32 hudMatrix[4][4];
 extern u8 framesThisStepUnclamped;
 extern f32 lbl_803E2300;
-extern f32 gTitleScreenPi;
-
 void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
 {
     s8* sarr = (s8*)arr;
@@ -333,7 +331,7 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
         gTitleScreenPulseTimer = m - 100.0f;
     }
     gTitleScreenPulseAlpha =
-        127.0f * mathCosf(gTitleScreenPi * (2.0f * gTitleScreenPulseTimer) / 100.0f) + 128.0f;
+        127.0f * mathCosf(3.142f * (2.0f * gTitleScreenPulseTimer) / 100.0f) + 128.0f;
     if (gTitleScreenCursorY > 0.0f)
     {
         f32 (*m2)[4] = (f32 (*)[4])gTitleScreenMtx;

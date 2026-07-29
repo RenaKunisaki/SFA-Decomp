@@ -54,9 +54,6 @@ typedef struct CameraModeViewfinderInitArgs
 extern f32 lbl_803E17C0;
 extern f32 lbl_803E17D0;
 extern f32 lbl_803E1804;
-extern f32 gCamViewfinderBrightnessScale;
-extern f32 gCamViewfinderPi;
-
 void firstPersonPlaceCamera(GameObject* focus, int resetClamp)
 {
     register GameObject* self = focus;
@@ -286,7 +283,7 @@ int firstPersonEnter(CameraObject* cam, s16* p2)
     {
         flag = 1;
     }
-    conv = (int)(gCamViewfinderBrightnessScale * cam->blendProgress);
+    conv = (int)(255.0f * cam->blendProgress);
     state = (GameObject*)cam->anim.targetObj;
     if (conv < 1)
     {
@@ -492,7 +489,7 @@ void CameraModeViewfinder_update(CameraObject* obj)
             {
                 fade = 1.0f;
             }
-            brightness = (int)(gCamViewfinderBrightnessScale * fade);
+            brightness = (int)(255.0f * fade);
         }
         targetObj = (GameObject*)obj->anim.targetObj;
         if (brightness < 1)
@@ -633,8 +630,8 @@ void CameraModeViewfinder_init(CameraObject* obj, int mode, int* args)
         dz = dz / dist;
     }
     firstPersonPlaceCamera((GameObject*)camObj, 1);
-    cosv = -mathSinf((gCamViewfinderPi * camObj[0]) / 32768.0f);
-    sinv = -mathCosf((gCamViewfinderPi * camObj[0]) / 32768.0f);
+    cosv = -mathSinf((3.1415927f * camObj[0]) / 32768.0f);
+    sinv = -mathCosf((3.1415927f * camObj[0]) / 32768.0f);
     gViewfinderState->posXCurve.start = obj->anim.worldPosX;
     gViewfinderState->posXCurve.end = gViewfinderState->camPosX;
     gViewfinderState->posXCurve.startTangent = -dz * spinRate;

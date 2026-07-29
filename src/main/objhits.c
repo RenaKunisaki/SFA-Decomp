@@ -67,11 +67,6 @@ ObjHitsSweepEntry* gObjHitsSweepEntryPtrs[OBJHITS_SWEEP_ENTRY_CAPACITY];
 ObjHitsSweepEntry gObjHitsSweepEntries[OBJHITS_SWEEP_ENTRY_CAPACITY];
 ObjHitsContactScratchEntry gObjHitsContactScratch[OBJHITS_CONTACT_SCRATCH_COUNT];
 extern ObjHitsPriorityWorkSlot* gObjHitsPriorityHitStates;
-extern f32 gObjHitsSweepSortSentinel;
-extern f32 gObjHitsResponseClampMin;
-extern f32 gObjHitsResponseClampMax;
-extern f32 gObjHitsPi;
-extern f32 gObjHitsAngleHalfPeriod;
 extern f32 gObjHitsResponseDominanceRatio;
 
 typedef struct ObjHitsVec3
@@ -1832,10 +1827,10 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
         {
             angleB += 0xffff;
         }
-        cosVal = mathCosf((gObjHitsPi * angleA) / gObjHitsAngleHalfPeriod);
+        cosVal = mathCosf((3.1415927f * angleA) / 32768.0f);
         cosSq = cosVal * cosVal;
         weightA = stateA->lateralResponseWeight * cosSq + stateA->axialResponseWeight * (gObjHitsScalarOne - cosSq);
-        cosVal = mathCosf((gObjHitsPi * angleB) / gObjHitsAngleHalfPeriod);
+        cosVal = mathCosf((3.1415927f * angleB) / 32768.0f);
         cosSq = cosVal * cosVal;
         weightB = stateB->lateralResponseWeight * cosSq + stateB->axialResponseWeight * (gObjHitsScalarOne - cosSq);
         if (weightA < weightB * gObjHitsResponseDominanceRatio)
@@ -2113,19 +2108,19 @@ void ObjHits_CheckSkeletonPair(int objA, int objB, void* hits, void* scratchB, v
                                                outAxial, response);
             }
             response[0] =
-                ((responseX = response[0]) < *(f32*)&gObjHitsResponseClampMin)
-                    ? *(f32*)&gObjHitsResponseClampMin
-                    : ((responseX > *(f32*)&gObjHitsResponseClampMax) ? *(f32*)&gObjHitsResponseClampMax : responseX);
+                ((responseX = response[0]) < -10.0f)
+                    ? -10.0f
+                    : ((responseX > 10.0f) ? 10.0f : responseX);
             responseY = response[1];
             response[1] =
-                (responseY < *(f32*)&gObjHitsResponseClampMin)
-                    ? *(f32*)&gObjHitsResponseClampMin
-                    : ((responseY > *(f32*)&gObjHitsResponseClampMax) ? *(f32*)&gObjHitsResponseClampMax : responseY);
+                (responseY < -10.0f)
+                    ? -10.0f
+                    : ((responseY > 10.0f) ? 10.0f : responseY);
             responseZ = response[2];
             response[2] =
-                (responseZ < *(f32*)&gObjHitsResponseClampMin)
-                    ? *(f32*)&gObjHitsResponseClampMin
-                    : ((responseZ > *(f32*)&gObjHitsResponseClampMax) ? *(f32*)&gObjHitsResponseClampMax : responseZ);
+                (responseZ < -10.0f)
+                    ? -10.0f
+                    : ((responseZ > 10.0f) ? 10.0f : responseZ);
             ObjHits_ApplyPairResponse(objA, objB, response[0], response[1], (f32)(f64)response[2], 0);
         }
     }
@@ -2159,19 +2154,19 @@ void ObjHits_CheckSkeletonPair(int objA, int objB, void* hits, void* scratchB, v
                                                outAxial, response);
             }
             response[0] =
-                ((responseX = response[0]) < *(f32*)&gObjHitsResponseClampMin)
-                    ? *(f32*)&gObjHitsResponseClampMin
-                    : ((responseX > *(f32*)&gObjHitsResponseClampMax) ? *(f32*)&gObjHitsResponseClampMax : responseX);
+                ((responseX = response[0]) < -10.0f)
+                    ? -10.0f
+                    : ((responseX > 10.0f) ? 10.0f : responseX);
             responseY = response[1];
             response[1] =
-                (responseY < *(f32*)&gObjHitsResponseClampMin)
-                    ? *(f32*)&gObjHitsResponseClampMin
-                    : ((responseY > *(f32*)&gObjHitsResponseClampMax) ? *(f32*)&gObjHitsResponseClampMax : responseY);
+                (responseY < -10.0f)
+                    ? -10.0f
+                    : ((responseY > 10.0f) ? 10.0f : responseY);
             responseZ = response[2];
             response[2] =
-                (responseZ < *(f32*)&gObjHitsResponseClampMin)
-                    ? *(f32*)&gObjHitsResponseClampMin
-                    : ((responseZ > *(f32*)&gObjHitsResponseClampMax) ? *(f32*)&gObjHitsResponseClampMax : responseZ);
+                (responseZ < -10.0f)
+                    ? -10.0f
+                    : ((responseZ > 10.0f) ? 10.0f : responseZ);
             ObjHits_ApplyPairResponse(objA, objB, response[0], response[1], (f32)(f64)response[2], 0);
         }
     }
@@ -2365,8 +2360,8 @@ void ObjHits_Update(int objectCount)
 
     objectList = ObjList_GetObjects(&startIndex, &listCount);
     sweepEntries = gObjHitsSweepEntries;
-    sweepEntries->minX = gObjHitsSweepSortSentinel;
-    sweepEntries->maxX = gObjHitsSweepSortSentinel;
+    sweepEntries->minX = -36288576.0f;
+    sweepEntries->maxX = -36288576.0f;
     gObjHitsSweepEntryPtrs[0] = sweepEntries;
     slotCount = 1;
     entrySlotBase = &gObjHitsSweepEntryPtrs[1];
@@ -2652,7 +2647,7 @@ u32 ObjHitReact_Update(int obj, ObjHitReactEntry* reactionEntryTable, u32 reacti
             }
             else
             {
-                objDoHitParticleFx((void*)obj, gObjHitReactAltEffectScale, &effectParams, OBJHITREACT_ALT_EFFECT_COUNT,
+                objDoHitParticleFx((void*)obj, 0.014f, &effectParams, OBJHITREACT_ALT_EFFECT_COUNT,
                                     NULL);
             }
         }
@@ -2846,12 +2841,6 @@ ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEnt
 extern void* gObjHitsWorkBuffer;
 extern u8 gObjectTypeListCount;
 extern int gObjContactCallbackCount;
-extern f32 OBJLIB_UNIT_SCALE;
-extern f32 gObjLibAnglePiNumerator;
-extern f32 gObjLibAngleUnitDivisor;
-extern f32 gObjLibBlinkAngleUnitScale;
-extern f32 gObjLibBlinkAnglePiDivisor;
-
 #define OBJMSG_QUEUE_OFFSET        0xdc
 #define OBJMSG_SEND_INCLUDE_SENDER 0x1
 #define OBJMSG_SEND_MATCH_ANY      0x2
@@ -4316,7 +4305,7 @@ int ObjHits_PollPriorityHitEffectWithCooldown(GameObject* obj, u32 hitFxMode, u3
         {
             effectParams.posX = effectParams.posX + playerMapOffsetX;
             effectParams.posZ = effectParams.posZ + playerMapOffsetZ;
-            effectParams.scale = OBJLIB_UNIT_SCALE;
+            effectParams.scale = 1.0f;
             effectParams.rotZ = 0;
             effectParams.rotY = 0;
             effectParams.rotX = 0;
@@ -4649,7 +4638,7 @@ void ObjPath_GetPointLocalMtx(GameObject* obj, int pointIndex, float* mtxOut)
     transform.rotX = pathPoint->rotX;
     transform.rotY = pathPoint->rotY;
     transform.rotZ = pathPoint->rotZ;
-    transform.scale = OBJLIB_UNIT_SCALE;
+    transform.scale = 1.0f;
     setMatrixFromObjectTransposed(&transform, mtxOut);
     return;
 }
@@ -4797,14 +4786,14 @@ u32 ObjHitRegion_FindContainingId(f32 x, f32 y, f32 z)
             {
                 if (entry->type == OBJHITREGION_ROM_ENTRY_TYPE)
                 {
-                    f32 yawSin = mathSinf(gObjLibAnglePiNumerator * (f32) -
-                                          (s32)((u32)entry->yaw << 8) / gObjLibAngleUnitDivisor);
-                    f32 yawCos = mathCosf(gObjLibAnglePiNumerator * (f32) -
-                                          (s32)((u32)entry->yaw << 8) / gObjLibAngleUnitDivisor);
-                    f32 pitchSin = mathSinf(gObjLibAnglePiNumerator * (f32) -
-                                            (s32)((u32)entry->pitch << 8) / gObjLibAngleUnitDivisor);
-                    f32 pitchCos = mathCosf(gObjLibAnglePiNumerator * (f32) -
-                                            (s32)((u32)entry->pitch << 8) / gObjLibAngleUnitDivisor);
+                    f32 yawSin = mathSinf(3.1415927f * (f32) -
+                                          (s32)((u32)entry->yaw << 8) / 32768.0f);
+                    f32 yawCos = mathCosf(3.1415927f * (f32) -
+                                          (s32)((u32)entry->yaw << 8) / 32768.0f);
+                    f32 pitchSin = mathSinf(3.1415927f * (f32) -
+                                            (s32)((u32)entry->pitch << 8) / 32768.0f);
+                    f32 pitchCos = mathCosf(3.1415927f * (f32) -
+                                            (s32)((u32)entry->pitch << 8) / 32768.0f);
                     f32 deltaZ;
                     f32 deltaY;
                     f32 deltaX;
@@ -5022,10 +5011,10 @@ void playerEyeAnimFn_80038988(int obj, int blinkState, u16 flags)
     phase = 0.09856f * bs->timer;
     wave = 0.25f * mathCosfHighPrecision(phase);
     wave = wave * bs->amount / 255.0f;
-    rotation = (gObjLibBlinkAngleUnitScale * (leftScale * wave)) / gObjLibBlinkAnglePiDivisor;
+    rotation = (32768.0f * (leftScale * wave)) / 3.142f;
     *(s16*)(playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_LEFT_JOINT_TAG) + 2) = rotation;
 
-    rotation = (gObjLibBlinkAngleUnitScale * (rightScale * wave)) / gObjLibBlinkAnglePiDivisor;
+    rotation = (32768.0f * (rightScale * wave)) / 3.142f;
     *(s16*)(playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_RIGHT_JOINT_TAG) + 2) = -rotation;
 }
 

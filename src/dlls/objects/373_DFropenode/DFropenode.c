@@ -28,11 +28,6 @@
 
 #define DFBARREL_NODE_LINKS_OFFSET 0x28
 #define DFROPENODE_OBJGROUP        0x17
-
-extern f32 gRopeNodeDamping;
-extern const f32 gRopeNodeBoundsMargin;
-extern f32 gRopeNodeLiftHeight;
-extern f32 gRopeNodeMaxDistance;
 extern const f32 lbl_803E4DFC;
 
 int gRopeNodeTextureAssetIds[2] = {0x3CA, 0x5DD};
@@ -466,7 +461,7 @@ int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32
     if (worldX < extra->minX || worldX > extra->maxX || worldZ < extra->minZ || worldZ > extra->maxZ) {
         return 0;
     }
-    *distanceOut = gRopeNodeMaxDistance;
+    *distanceOut = 10000.0f;
     localX = worldX - obj->anim.localPosX;
     localY = worldY - obj->anim.localPosY;
     localZ = worldZ - obj->anim.localPosZ;
@@ -631,7 +626,7 @@ int dfropenode_syncRopeToEndpoints(GameObject* obj) {
     length = sqrtf(dx * dx + dy * dy + dz * dz);
     length = length / (f32)(extra->rope->count - 1);
     link = extra->rope->links;
-    extra->rope->damping = gRopeNodeDamping;
+    extra->rope->damping = 0.1f;
     for (i = 0; i < extra->rope->count - 1; i++, link++) {
         link->restLength = length;
     }
@@ -665,7 +660,7 @@ int dfropenode_syncRopeToEndpoints(GameObject* obj) {
         }
     }
 
-    extra->minX = extra->minX - (margin = gRopeNodeBoundsMargin);
+    extra->minX = extra->minX - (margin = 25.0f);
     extra->minZ -= margin;
     extra->maxX += margin;
     extra->maxZ += margin;
@@ -891,10 +886,10 @@ void dfropenode_update(GameObject* obj) {
             extra->maxZ = temp;
         }
         {
-            extra->minX -= gRopeNodeBoundsMargin;
-            extra->minZ -= gRopeNodeBoundsMargin;
-            extra->maxX += gRopeNodeBoundsMargin;
-            extra->maxZ += gRopeNodeBoundsMargin;
+            extra->minX -= 25.0f;
+            extra->minZ -= 25.0f;
+            extra->maxX += 25.0f;
+            extra->maxZ += 25.0f;
         }
 
         baseX = obj->anim.localPosX;
@@ -903,7 +898,7 @@ void dfropenode_update(GameObject* obj) {
         linkedX = linkedObj->anim.localPosX;
         linkedY = linkedObj->anim.localPosY;
         linkedZ = linkedObj->anim.localPosZ;
-        liftedY = gRopeNodeLiftHeight + baseY;
+        liftedY = 20.0f + baseY;
 
         normalX = liftedY * (baseZ - linkedZ) + (baseY * (linkedZ - baseZ) + (linkedY * (baseZ - baseZ)));
         normalY = baseZ * (baseX - linkedX) + (baseZ * (linkedX - baseX) + (linkedZ * (baseX - baseX)));
