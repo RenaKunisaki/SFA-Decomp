@@ -408,6 +408,7 @@
 #include "main/dll/dll_0097_modgfx.h"
 #include "main/dll/dll_0098_modgfx.h"
 #include "main/dll/dll_0099_modgfx.h"
+#include "main/dll/dll_009A_modgfx.h"
 #include "main/dll/dll_00A3_modgfx.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
@@ -555,8 +556,7 @@ extern ResourceDescriptor Effect9_funcs, Effect10_funcs, Effect11_funcs, Effect1
 extern ResourceDescriptor Effect17_funcs, Effect18_funcs, Effect19_funcs, Effect20_funcs, lbl_803112E8, lbl_80311340,
     lbl_80311378, lbl_80311438;
 extern ResourceDescriptor lbl_803114B0, lbl_803114D8, lbl_803115F8, dll_15_funcs, lbl_80311900, lbl_80311BE0;
-extern ResourceDescriptor dll_9A_funcs, dll_9B_funcs, dll_9C_funcs, dll_9D_funcs, dll_9E_funcs, dll_9F_funcs,
-    dll_A0_funcs;
+extern ResourceDescriptor dll_9B_funcs, dll_9C_funcs, dll_9D_funcs, dll_9E_funcs, dll_9F_funcs, dll_A0_funcs;
 extern ResourceDescriptor dll_A1_funcs, dll_A2_funcs, DummyA4_funcs, dll_A5_funcs, dll_A6_funcs, dll_A7_funcs,
     dll_A8_funcs, dll_A9_funcs;
 extern ResourceDescriptor dll_AA_funcs, projdummy_funcs, lbl_803193C0, lbl_80319410, lbl_80319460, projlightning1_funcs,
@@ -1348,7 +1348,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll97ResourceDescriptor,
     (ResourceDescriptor*)&gDll98ResourceDescriptor,
     (ResourceDescriptor*)&gDll99ResourceDescriptor,
-    &dll_9A_funcs,
+    (ResourceDescriptor*)&gDll9AResourceDescriptor,
     &dll_9B_funcs,
     &dll_9C_funcs,
     &dll_9D_funcs,
