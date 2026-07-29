@@ -564,18 +564,18 @@ static inline void mcmdSetupLFO(McmdVoiceState* svoice, McmdCommandArgs* cstep)
 {
     u32 time;
     u32 phase;
-    u8 n;
+    u8 controllerIndex;
 
-    n = (u8)(cstep->flags >> 8);
+    controllerIndex = (u8)(cstep->flags >> 8);
     time = (u16)(cstep->flags >> 0x10);
     sndConvertMs(&time);
-    if (svoice->exCtrls[n].rampFrames != 0)
+    if (svoice->exCtrls[controllerIndex].rampFrames != 0)
     {
         phase = (u16)cstep->value;
         sndConvertMs(&phase);
-        svoice->exCtrls[n].unk00 = phase;
+        svoice->exCtrls[controllerIndex].unk00 = phase;
     }
-    svoice->exCtrls[n].rampFrames = time;
+    svoice->exCtrls[controllerIndex].rampFrames = time;
 }
 
 /*
