@@ -99,15 +99,6 @@ static inline u8 ktrex_hasLaneLerpOvershot(void)
     return 0;
 }
 
-static u8 ktrex_isLaneLerpSettled(void)
-{
-    if (gKTRexState->laneLerpT - gKTRexState->laneFrac > 0.1f)
-    {
-        return 0;
-    }
-    return 1;
-}
-
 int ktrex_isPlayerInLaneThreatRange(GameObject* obj);
 
 int ktrex_shouldAdvanceArenaPhase(void)

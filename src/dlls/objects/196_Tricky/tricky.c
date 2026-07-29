@@ -404,19 +404,6 @@ void tricky_updateModelVariantFade(int obj, int state)
 
 /* Set bit 0x80000000 of obj->_b8->_54
  * and store 20.0f into obj->_b8->_808. */
-static int trickyEventTimeExpired(TrickyState* state)
-{
-    if (-100000.0f == state->eventTime)
-    {
-        return 1;
-    }
-    if ((state->currentTime - state->eventTime) > 8.0f)
-    {
-        return 1;
-    }
-    return 0;
-}
-
 void trickyImpress(GameObject* obj)
 {
     TrickyImpressState* b = ((GameObject*)obj)->extra;
@@ -666,14 +653,6 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 /* "staff" (DLL 0xE2) */
 #define SKEETLA_PARTICLE_SPAWN_FLAGS   0x200001
 #define SKEETLA_PARTICLE_RANDOM_RATE   4
-static f32 trickyApproachSpeedStep(f32 speed, f32 target)
-{
-    if (speed > target)
-    {
-        return -0.15f;
-    }
-    return 0.05f;
-}
 void fn_8014187C();
 void tricky_updateBallRoll();
 void fn_8014128C();
@@ -951,29 +930,6 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     ((GameObject*)obj)->anim.rotZ = state->pathRotZ;
 }
 
-static f32 trickyRouteTurnRate(f32 distance)
-{
-    f32 rate;
-    f32 limit;
-
-    rate = 0.02f;
-    limit = 600.0f;
-    if (distance > limit)
-    {
-        rate = 0.005f;
-    }
-    return rate;
-}
-
-static f32 trickyRouteStep(RomCurveWalker* route)
-{
-    if (route->reverse != 0)
-    {
-        return -2.0f;
-    }
-    return 2.0f;
-}
-
 int trickyAdvanceRouteTargetAhead(GameObject* obj, RomCurveWalker* route, f32 speed)
 {
     f32 limit;
@@ -1166,16 +1122,6 @@ static inline void skeetla_playFootstepSfx(u8* obj, u16 sfxId)
     {
         objSoundStartTimed((GameObject*)obj, &((TrickyState*)state)->soundState, sfxId, 0x500, -1, 0);
     }
-}
-
-static f32 trickyBinAngleToRadians(int binAngle)
-{
-    f32 halfTurn;
-    f32 scale;
-
-    halfTurn = 3.1415927f;
-    scale = 32768.0f;
-    return halfTurn * (f32)binAngle / scale;
 }
 
 int moveTricky(GameObject* obj, f32* targetPos)

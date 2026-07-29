@@ -1236,23 +1236,6 @@ static inline s16 DIMSnowHorn1_angleTo(GameObject* obj, char* found)
     return angleDelta;
 }
 
-static void DIMSnowHorn1_updateOverridePos(GameObject* obj)
-{
-    MatrixTransform v;
-    f32 matrix[16];
-
-    v.x = (obj)->anim.localPosX;
-    v.y = (obj)->anim.localPosY;
-    v.z = (obj)->anim.localPosZ;
-    v.rotX = (obj)->anim.rotX;
-    v.rotY = (obj)->anim.rotY;
-    v.rotZ = (obj)->anim.rotZ;
-    v.scale = 1.0f;
-    setMatrixFromObjectPos(matrix, &v);
-    Matrix_TransformPoint(matrix, 0.0f, -30.0f, -20.0f, &(obj)->anim.modelState->overrideWorldPosX,
-                          &(obj)->anim.modelState->overrideWorldPosY, &(obj)->anim.modelState->overrideWorldPosZ);
-}
-
 void DIMSnowHorn1_update(GameObject* obj)
 {
     f32 nearDist;

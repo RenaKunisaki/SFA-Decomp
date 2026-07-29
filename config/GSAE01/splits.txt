@@ -136,7 +136,6 @@ main/modellight.c:
 	.bss        start:0x8033BE60 end:0x8033BF88
 	.sdata      start:0x803DB408 end:0x803DB410
 	.sbss       start:0x803DCA30 end:0x803DCA38
-	.sdata2     start:0x803DE750 end:0x803DE7A8
 
 main/gameloop.c:
 	.text       start:0x8001F54C end:0x8001FD88
@@ -1516,7 +1515,6 @@ dlls/objects/196_Tricky/tricky.c:
 	.data       start:0x8031D2E8 end:0x8031DBD8
 	.sdata      start:0x803DBC40 end:0x803DBC58
 	.sbss       start:0x803DDA48 end:0x803DDA50
-	.sdata2     start:0x803E23C0 end:0x803E2554
 
 dlls/objects/201_Baddie/Baddie.c:
 	.text       start:0x80148C18 end:0x8014E1DC
@@ -1746,7 +1744,6 @@ dlls/objects/233_Setuppoint/Setuppoint.c:
 dlls/objects/237/237.c:
 	.text       start:0x80171D14 end:0x80173224
 	.data       start:0x80320C58 end:0x80320CB8
-	.sdata2     start:0x803E3440 end:0x803E34A4
 
 dlls/objects/255/255.c:
 	.text       start:0x80173224 end:0x80173F80
@@ -3643,7 +3640,6 @@ dlls/objects/592_KT_Rex/KT_Rex.c:
 	.bss        start:0x803AD158 end:0x803AD1C8
 	.sdata      start:0x803DC250 end:0x803DC2A0
 	.sbss       start:0x803DDD48 end:0x803DDD5C
-	.sdata2     start:0x803E67B0 end:0x803E6854
 
 dlls/objects/593_KT_RexFloor/KT_RexFloor.c:
 	.text       start:0x80215A3C end:0x802164D0
@@ -5113,7 +5109,6 @@ dlls/objects/195_Player/player.c:
 	.bss        start:0x803DAEF0 end:0x803DB0D0
 	.sdata      start:0x803DC660 end:0x803DC6E8
 	.sbss       start:0x803DE420 end:0x803DE4C0
-	.sdata2     start:0x803E7E68 end:0x803E8178
 
 dlls/objects/585/585.c:
 	.sdata      start:0x803DC6E8 end:0x803DC6F0

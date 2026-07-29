@@ -1355,12 +1355,6 @@ int playerIsInWater(GameObject* obj)
     return inner->waterDepth > 2.0f;
 }
 
-static int playerIsInDeepWater(GameObject* obj)
-{
-    PlayerState* inner = obj->extra;
-    return inner->waterDepth > 10.0f;
-}
-
 int playerIsQuakeShockwaveActive(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
@@ -1371,12 +1365,6 @@ int playerFindNearestFirefly(GameObject* player)
 {
     f32 dist = 300.0f;
     return objGetNearestTypeTo(LANTERNFIREFLY_OBJGROUP, player, &dist);
-}
-
-static int playerIsAtFullSpeed(GameObject* obj)
-{
-    PlayerState* inner = obj->extra;
-    return inner->targetAnimSpeed >= 1.0f;
 }
 
 int playerIsClimbingWall(GameObject* obj)

@@ -134,10 +134,6 @@ int collectible_getIsHidden(GameObject* obj) {
     return obj->userData1;
 }
 
-static f32 collectible_getRotX(GameObject* obj) {
-    return (f32)obj->anim.rotX;
-}
-
 PPCWGPipe GXWGFifo : (0xCC008000);
 
 void collectible_applyPickup(GameObject* obj) {
@@ -225,14 +221,6 @@ void collectible_applyPickup(GameObject* obj) {
     }
     obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
     obj->userData1 = 1;
-}
-
-static void collectible_updateSeqEffects(GameObject* obj) {
-    switch (obj->anim.romDefNo) {
-    case COLLECTIBLE_SEQ_ID_MOON_SEED:
-        objfx_spawnDirectionalBurst(obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
-        break;
-    }
 }
 
 void collectible_updateLooseMotion(GameObject* obj) {

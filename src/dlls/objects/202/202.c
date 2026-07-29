@@ -1985,32 +1985,6 @@ enum MikaladonVerticalPhase
 #define MIKALADON_AMBIENT_SFX_MIN_DELAY 60
 #define MIKALADON_AMBIENT_SFX_MAX_DELAY 120
 
-static inline f32 mikaladon_randomAmbientSfxDelay(void)
-{
-    return (f32)(int)randomGetRange(MIKALADON_AMBIENT_SFX_MIN_DELAY, MIKALADON_AMBIENT_SFX_MAX_DELAY);
-}
-
-static inline void mikaladon_spawnDrop(GameObject* obj)
-{
-    MikaladonDropSetup* setup;
-    GameObject* spawned;
-
-    setup = (MikaladonDropSetup*)Obj_AllocObjectSetup(sizeof(MikaladonDropSetup), SEQOBJ11E_GCROBOT_DROP_OBJ);
-    setup->base.posX = obj->anim.localPosX;
-    setup->base.posY = MIKALADON_DROP_HEIGHT_OFFSET + obj->anim.localPosY;
-    setup->base.posZ = obj->anim.localPosZ;
-    setup->base.color[0] = 1;
-    setup->base.color[1] = 1;
-    setup->base.color[2] = 0xff;
-    setup->base.color[3] = 0xff;
-    spawned = loadObjectAtObject(obj, &setup->base);
-    if (spawned != NULL)
-    {
-        spawned->ownerObj = obj;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_id_249);
-    }
-}
-
 /* mikaladon_update: firefly hover update: circle drift, bob between heights,
  * periodically drop a spawned object, ambient sfx timers. */
 void mikaladon_update(GameObject* obj, MikaladonState* state)
@@ -2174,14 +2148,6 @@ void vambat_updateWhileFrozen(int obj, u8* state, int unused, int msgFlag, int w
             Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_wingflap);
             bs->current = 0;
         }
-    }
-}
-
-static void vambat_resetAmbientSfxTimer(u8* state)
-{
-    if (*(f32*)(state + 0x328) <= 0.0f)
-    {
-        *(f32*)(state + 0x328) = 60.0f;
     }
 }
 
