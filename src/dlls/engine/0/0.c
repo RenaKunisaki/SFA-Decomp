@@ -385,7 +385,7 @@ extern int lbl_803DD730;
 extern s16 lbl_803DD770;
 extern f32 lbl_803DD760;
 extern GameObject* lbl_803A9410[6];
-extern u8 lbl_803DD75B;
+extern u8 gTimeListPromptSelection;
 extern s16 lbl_803DD772;
 extern s8 pauseMenuFrameCounter;
 extern CMenuSection gCMenuSections[];
@@ -1365,7 +1365,7 @@ void gameUiResetMenuState(void)
     lbl_803DD760 = lbl_803E1E3C;
     gameUiFreeHudAnims(lbl_803A9410);
     gTrickyHudShowNearestInfo = 0;
-    lbl_803DD75B = 0;
+    gTimeListPromptSelection = 0;
     lbl_803DD772 = 0;
     pauseMenuFrameCounter = 0x3c;
     gHudForceShowMask = 0;
@@ -2899,7 +2899,7 @@ void pauseMenuDrawStatus(void)
     if ((((gHudForceShowMask & 1) != 0) ||
          ((lbl_803E1E3C == (*gScreenTransitionInterface)->getProgress()) &&
           ((*gCameraInterface)->getMode() != CAMMODE_VIEWFINDER) &&
-           ((player->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) == 0) && (getHudHiddenFrameCount() == 0) && (lbl_803DD75B == 0))) &&
+           ((player->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) == 0) && (getHudHiddenFrameCount() == 0) && (gTimeListPromptSelection == 0))) &&
         (pauseMenuState == 0))
     {
         lbl_803DD83C = 8.5f * timeDelta + lbl_803DD83C;
@@ -5238,7 +5238,7 @@ void highScoreScreenDraw(int p1, int p2, int p3);
 void boxDrawFn_8012975c(int unused1, int unused2, int unused3);
 int pauseMenuGridFn_8012b4c4(void);
 int pauseMenuIsFox(void);
-void timeListFn_8012be84(void);
+void timeListPromptUpdate(void);
 void mapScreenDrawHud(int unused1, int unused2, int unused3);
 void drawWorldMapHud(void);
 void setWorldMapVoiceoverActive(u32 val);
@@ -5568,7 +5568,7 @@ void timeListDraw(int unused1, int unused2, int unused3)
         gTimeListPulseAngle += gTimeListPulseAngleStep;
         ang = gTimeListPulseAngle;
         pulse = (int)(gTimeListPulseAmplitude * fsin16Precise((u16)ang) + gTimeListPulseBias);
-        if (lbl_803DD75B == 1)
+        if (gTimeListPromptSelection == 1)
         {
             a = pulse;
             b = 0xff;
@@ -6097,7 +6097,7 @@ void pauseMenuFn_80129ee0(void)
                 canOpen = 0;
             }
             if ((btn & PAD_BUTTON_MENU) && pauseMenuFrameCounter == 0 && pauseDisabled == 0 &&
-                (*gScreenTransitionInterface)->getProgress() == lbl_803E1E3C && canOpen != 0 && lbl_803DD75B == 0 &&
+                (*gScreenTransitionInterface)->getProgress() == lbl_803E1E3C && canOpen != 0 && gTimeListPromptSelection == 0 &&
                 getHudHiddenFrameCount() == 0)
             {
                 pauseMenuFrameCounter = 0x3c;
@@ -7014,13 +7014,13 @@ void pauseMenuRunSubmenu(int p1)
     }
 }
 
-void timeListFn_8012be84(void)
+void timeListPromptUpdate(void)
 {
     s32 buttons;
     u8 prev_state;
     u8 buf[16];
 
-    prev_state = lbl_803DD75B;
+    prev_state = gTimeListPromptSelection;
     if (pauseMenuState != 0)
         return;
 
@@ -7033,21 +7033,21 @@ void timeListFn_8012be84(void)
         int analog = buf[0];
         if ((s8)analog == 1)
         {
-            lbl_803DD75B = 1;
+            gTimeListPromptSelection = 1;
         }
         if ((s8)analog == -1)
         {
-            lbl_803DD75B = 2;
+            gTimeListPromptSelection = 2;
         }
     }
-    if (lbl_803DD75B != prev_state)
+    if (gTimeListPromptSelection != prev_state)
     {
         Sfx_PlayFromObject(0, SFXTRIG_sc_lockedon22);
     }
     if ((buttons & PAD_BUTTON_A) != 0)
     {
         buttonDisable(0, PAD_BUTTON_A);
-        if (lbl_803DD75B == 1)
+        if (gTimeListPromptSelection == 1)
         {
             mainSetBits(0x2b3, 1);
         }
@@ -7055,7 +7055,7 @@ void timeListFn_8012be84(void)
         {
             mainSetBits(0x781, 1);
         }
-        lbl_803DD75B = 0;
+        gTimeListPromptSelection = 0;
         cutsceneFadeInOut(0);
         (*gCameraInterface)->loadTriggeredCamAction(3, 0x80, 1);
         pauseMenuFrameCounter = 0x3c;
@@ -7064,7 +7064,7 @@ void timeListFn_8012be84(void)
     if ((buttons & PAD_BUTTON_B) != 0)
     {
         buttonDisable(0, PAD_BUTTON_B);
-        lbl_803DD75B = 0;
+        gTimeListPromptSelection = 0;
         cutsceneFadeInOut(0);
         (*gCameraInterface)->loadTriggeredCamAction(3, 0x80, 1);
         pauseMenuFrameCounter = 0x3c;
@@ -7854,13 +7854,12 @@ void pauseMenuSetupTitle(s32 fade_target, u8 idx, u8 flags, u8 q)
     lbl_803DBA60 = fade_target;
 }
 
-/* Death sequence trigger: latches the
- * "dead/cleanup" byte at lbl_803DD75B and dispatches vtable slot +0x24
- * on the singleton at gCameraInterface with the worm-death event id 0x94,
- * then runs the standard player-input-disable + alpha-fade-to-FF pair. */
-void timeListFn_8012df14(void)
+/* Opens the two-option time-list prompt: highlights the first option, swings the
+ * camera onto the triggered action 0x94, fades in and freezes the game clock.
+ * timeListPromptUpdate then drives it until the player answers. */
+void timeListPromptOpen(void)
 {
-    lbl_803DD75B = 1;
+    gTimeListPromptSelection = 1;
     (*gCameraInterface)->loadTriggeredCamAction(1, 0x94, 1);
     cutsceneFadeInOut(1);
     setTimeStop(0xff);
@@ -7905,7 +7904,7 @@ void cMenuRun(void)
 
     if ((*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
         (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0 ||
-        shouldCloseCMenu != 0 || lbl_803DD75B != 0)
+        shouldCloseCMenu != 0 || gTimeListPromptSelection != 0)
     {
         gCMenuButtons |= PAD_BUTTON_B;
     }
@@ -8519,7 +8518,7 @@ void GameUI_hudDraw(int a, int b, int c)
             }
             drawTrickyHudOverlay(a, b, c);
         }
-        if (lbl_803DD75B != 0)
+        if (gTimeListPromptSelection != 0)
         {
             timeListDraw(a, b, c);
         }
@@ -8584,8 +8583,8 @@ void GameUI_frameEnd(void)
 
     if (player != 0)
     {
-        if (lbl_803DD75B != 0)
-            timeListFn_8012be84();
+        if (gTimeListPromptSelection != 0)
+            timeListPromptUpdate();
 
         if (playerGetFocusObject(player) != NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
             (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0)
@@ -8606,7 +8605,7 @@ void GameUI_frameEnd(void)
 
         if (playerGetFocusObject(player) != NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
             (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || shouldCloseCMenu != 0 ||
-            pauseMenuState != 0 || getHudHiddenFrameCount() != 0 || lbl_803DD75B != 0)
+            pauseMenuState != 0 || getHudHiddenFrameCount() != 0 || gTimeListPromptSelection != 0)
         {
             allowCStickTarget = 0;
             gCMenuButtons |= PAD_BUTTON_B;
@@ -9266,7 +9265,7 @@ f32 lbl_803DD764;
 f32 lbl_803DD760;
 s8 lbl_803DD75E;
 s16 lbl_803DD75C;
-u8 lbl_803DD75B;
+u8 gTimeListPromptSelection;
 u8 gTrickyHudShowNearestInfo;
 u8 gPauseMenuTokenConfirmFlag;
 u8 lbl_803DD758;

@@ -7,7 +7,7 @@ int cMenuGetSelectedItem(void);
 void drawHudBox(s16 x, s16 y, s16 width, s16 height, u8 alpha, u8 flags);
 u8 pauseMenuGetTokenConfirmFlag(void);
 int registerNewScore(s8 tableId, int score, u8 kind, int mode);
-void timeListFn_8012df14(void);
+void timeListPromptOpen(void);
 void textureFreeFn_8012fcec(void);
 void gameUiEndOverlayView(void);
 void CMenu_SetFadeCounter(s16 value);
