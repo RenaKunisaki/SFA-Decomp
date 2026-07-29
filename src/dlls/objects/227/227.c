@@ -7,7 +7,6 @@
 #include "dlls/objects/227_Fireball.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/waterfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
@@ -38,6 +37,10 @@
 #define FIREBALL_HIT_STATE(obj) ((ObjHitsPriorityState*)(obj)->anim.hitReactState)
 
 u8 gFireballColorIndexTable[8] = {0, 2, 4, 0, 0, 0, 0, 0};
+
+u8 gFireballLightColors[4][3] = {
+    {0xFF, 0x20, 0x20}, {0x20, 0xFF, 0x20}, {0x20, 0x20, 0xFF}, {0x00, 0x00, 0x00},
+};
 
 ObjectDescriptor10WithPadding gFireballObjDescriptor = {
     {

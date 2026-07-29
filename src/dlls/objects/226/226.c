@@ -877,11 +877,6 @@ ObjectDescriptor23 gStaffObjDescriptor = {
     (ObjectDescriptorCallback)staff_getSwipeTextureIndex,
 };
 
-u8 gFireballLightColors[4][3] = {
-    {0xFF, 0x20, 0x20}, {0x20, 0xFF, 0x20}, {0x20, 0x20, 0xFF}, {0x00, 0x00, 0x00},
-};
-
-
 s32 staff_getSwipeTextureIndex(GameObject* obj)
 {
     return ((StaffState*)obj->extra)->swipeTextureIndex;
