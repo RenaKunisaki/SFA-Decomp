@@ -937,8 +937,12 @@ void bossdrakor_update(GameObject* obj)
             {
                 d += 0xffff;
             }
-            step = (d < -(framesThisStep << 8)) ? -(framesThisStep << 8)
-                                                : ((d > (framesThisStep << 8)) ? (framesThisStep << 8) : d);
+            if (d < -(framesThisStep << 8)) {
+                step = -(framesThisStep << 8);
+            } else {
+                int innerStep = (d > (framesThisStep << 8)) ? (framesThisStep << 8) : d;
+                step = innerStep;
+            }
             vec[0] += (s16)step;
         }
     }
