@@ -123,7 +123,7 @@ int gf_levelcon_SeqFn(GameObject* obj, int eventId, ObjSeqState* animUpdate)
         case GFLEVELCON_SEQEV_NONE:
             break;
         case GFLEVELCON_SEQEV_SKY_PRESET_A:
-            skyFn_80089710(7, 1, 0);
+            skySetLightsEnabled(7, 1, 0);
             skySetBaseColor(7, 0x96, 0xc8, 0xf0, 0, 0);
             skySetLightDirection(7, -0.1f, -0.5f, -0.2f);
             getEnvfxAct(obj, obj, GFLEVELCON_ENVFX_A, 0);
@@ -132,7 +132,7 @@ int gf_levelcon_SeqFn(GameObject* obj, int eventId, ObjSeqState* animUpdate)
             state->promptTimer = 476.0f;
             break;
         case GFLEVELCON_SEQEV_SKY_PRESET_B:
-            skyFn_80089710(7, 1, 0);
+            skySetLightsEnabled(7, 1, 0);
             skyRed = 112.5f;
             skyGreen = 150.0f;
             skyBlue = 180.0f;
@@ -155,7 +155,7 @@ int gf_levelcon_SeqFn(GameObject* obj, int eventId, ObjSeqState* animUpdate)
             }
             break;
         case GFLEVELCON_SEQEV_SKY_PRESET_C:
-            skyFn_80089710(7, 1, 0);
+            skySetLightsEnabled(7, 1, 0);
             skySetBaseColor(7, 0x96, 0xc8, 0xf0, 0, 0);
             skySetLightDirection(7, 1.0f, -1.0f, -0.5f);
             getEnvfxAct(obj, obj, GFLEVELCON_ENVFX_C, 0);
@@ -175,13 +175,13 @@ int gf_levelcon_SeqFn(GameObject* obj, int eventId, ObjSeqState* animUpdate)
             creditsStart();
             break;
         case GFLEVELCON_SEQEV_SKY_PRESET_D:
-            skyFn_80089710(7, 1, 0);
+            skySetLightsEnabled(7, 1, 0);
             skySetBaseColor(7, 0x96, 0xc8, 0xf0, 0, 0);
             skySetLightDirection(7, 0.5f, -1.0f, -0.5f);
             getEnvfxAct(obj, obj, GFLEVELCON_ENVFX_A, 0);
             break;
         case GFLEVELCON_SEQEV_SKY_PRESET_E:
-            skyFn_80089710(7, 1, 0);
+            skySetLightsEnabled(7, 1, 0);
             skyRed = 112.5f;
             skyGreen = 150.0f;
             skyBlue = 180.0f;

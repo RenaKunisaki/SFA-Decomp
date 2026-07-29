@@ -6,7 +6,7 @@
 extern u8 pauseMenuState;
 
 u8 pauseMenuGetState(void);
-void pauseMenuFn_8012b77c(void);
+void pauseMenuUpdateFadeAndBack(void);
 void pauseMenuRunSubmenu(int submenu);
 void pauseMenuDrawText(int unused1, int unused2, int unused3);
 void gameTextFadeOut(void);

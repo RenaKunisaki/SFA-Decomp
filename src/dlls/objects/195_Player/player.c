@@ -181,7 +181,7 @@ void playerStagedClearActiveMove(GameObject* obj);
 int playerStateOnBike(GameObject* obj, int state);
 int playerState17(int p1, int state);
 int playerStateMountBike(GameObject* obj, int state, f32 fv);
-void fn_8029FFD0(GameObject* obj, int p2);
+void playerStagedRestoreCameraUnlessClimbing(GameObject* obj, int p2);
 void objUpdateHitboxPos(int obj);
 int playerStateClimbDownFromWall(GameObject* obj, int state);
 int playerStateClimbUpFromWall(GameObject* obj, int state);
@@ -6878,7 +6878,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
     return 0;
 }
 
-void fn_8029FFD0(GameObject* obj, int p2)
+void playerStagedRestoreCameraUnlessClimbing(GameObject* obj, int p2)
 {
     PlayerState* inner = obj->extra;
     s16 v = ((PlayerState*)p2)->baddie.controlMode;
@@ -6930,7 +6930,7 @@ int playerStateClimbDownFromWall(GameObject* obj, int state)
         inner->moveOffsetZ = inner->groundNormalZ * buf1[2];
         obj->anim.localPosY = inner->spanBottomY;
         ((PlayerState*)state)->baddie.stateId = 0x15;
-        inner->stateHandler = (int)fn_8029FFD0;
+        inner->stateHandler = (int)playerStagedRestoreCameraUnlessClimbing;
     }
     {
         int ex = *(int*)&obj->extra;
@@ -7008,7 +7008,7 @@ int playerStateClimbUpFromWall(GameObject* obj, int state)
         inner->moveOffsetZ = inner->groundNormalZ * buf1[2];
         obj->anim.localPosY = inner->spanTopY;
         ((PlayerState*)state)->baddie.stateId = 0x14;
-        inner->stateHandler = (int)fn_8029FFD0;
+        inner->stateHandler = (int)playerStagedRestoreCameraUnlessClimbing;
     }
     {
         int ex = *(int*)&obj->extra;
@@ -7262,7 +7262,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
                         f32 m = (frac < 0.0f) ? 0.0f : ((frac > 1.0f) ? 1.0f : frac);
                         inner->animEventState = (s16)(16384.0f * m);
                         inner->moveOffsetY = m;
-                        state->baddie.stateHandler = (int)fn_8029FFD0;
+                        state->baddie.stateHandler = (int)playerStagedRestoreCameraUnlessClimbing;
                         return 0x15;
                     }
                 }
@@ -7286,7 +7286,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
                         f32 m = (frac < 0.0f) ? 0.0f : ((frac > 1.0f) ? 1.0f : frac);
                         inner->animEventState = (s16)(16384.0f * m);
                         inner->moveOffsetY = m;
-                        state->baddie.stateHandler = (int)fn_8029FFD0;
+                        state->baddie.stateHandler = (int)playerStagedRestoreCameraUnlessClimbing;
                         return 0x16;
                     }
                 }
@@ -7496,7 +7496,7 @@ int playerStateClimbOntoWall(GameObject* obj, int state)
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
         ((PlayerState*)state)->baddie.stateId = 0x12;
-        inner->stateHandler = (int)fn_8029FFD0;
+        inner->stateHandler = (int)playerStagedRestoreCameraUnlessClimbing;
         if (gPlayerPathObject != NULL)
         {
             if (((ByteFlags*)((char*)inner + 0x3f4))->b40)
@@ -7562,7 +7562,7 @@ int playerStateClimbOntoWall(GameObject* obj, int state)
     {
         if (obj->anim.currentMoveProgress >= 1.0f)
         {
-            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029FFD0;
+            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
             return 0x14;
         }
     }
@@ -7653,7 +7653,7 @@ int playerState11(GameObject* obj, int state)
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
             fn_802AB5A4(obj, inner + 4, 5);
-            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029FFD0;
+            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
             return -0x13;
         }
         break;
@@ -8059,7 +8059,7 @@ int playerStateOnLadder(int obj, int state)
         {
             if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0 && ((PlayerState*)inner)->climbStep > 3)
             {
-                *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029FFD0;
+                *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
                 return -0x10;
             }
             break;
@@ -8071,7 +8071,7 @@ int playerStateOnLadder(int obj, int state)
         }
         if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0 && ((PlayerState*)inner)->climbStep > 3)
         {
-            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029FFD0;
+            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
             return -0x10;
         }
         if (1.0f == ((GameObject*)obj)->anim.currentMoveProgress)
@@ -8420,7 +8420,7 @@ int playerStateClimbOntoLadder(GameObject* obj, int state, f32 fv)
             ((PlayerState*)state)->baddie.animSpeedA = z;
             ((PlayerState*)state)->baddie.animSpeedB = z;
             ((PlayerState*)state)->baddie.stateId = 0xe;
-            inner->stateHandler = (int)fn_8029FFD0;
+            inner->stateHandler = (int)playerStagedRestoreCameraUnlessClimbing;
             vb.sp1c = z;
         }
         if (flag)
@@ -8498,7 +8498,7 @@ int playerStateClimbOntoLadder(GameObject* obj, int state, f32 fv)
         if (obj->anim.currentMoveProgress > 0.9f)
         {
             Object_ObjAnimAdvanceMove((int)obj, ((PlayerState*)state)->baddie.moveSpeed, fv, NULL);
-            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029FFD0;
+            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
             return 0x10;
         }
     }
@@ -9208,14 +9208,14 @@ int playerState08(GameObject* obj, int state, f32 fv)
         case 0:
             if (((ByteFlags*)((char*)inner + 0x3f1))->b01)
             {
-                *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029FFD0;
+                *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
                 return 0xf;
             }
             break;
         case 9:
             if (((ByteFlags*)((char*)inner + 0x3f1))->b01)
             {
-                *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029FFD0;
+                *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
                 return 0x13;
             }
             break;
@@ -13634,7 +13634,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
                 if (mid >= lo && mid <= hi)
                 {
                     doRumble(10.0f);
-                    *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029FFD0;
+                    *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
                     return 0x12;
                 }
             }
@@ -17310,7 +17310,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 ((PlayerState*)inner)->pendingFxFlags ^= 2;
                 break;
             case 0x27:
-                hudFn_8011f38c(1);
+                setHudForceShowMask(1);
                 break;
             case 0x28:
             {
@@ -17363,7 +17363,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 break;
             }
             case 0x29:
-                hudFn_8011f38c(0);
+                setHudForceShowMask(0);
                 break;
             case 0x2a:
                 if ((*gMapEventInterface)->getMapAct(0xb) == 7)

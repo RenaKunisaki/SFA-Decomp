@@ -82,7 +82,7 @@ void arwproximit_update(GameObject* obj)
             arwing = (GameObject*)Obj_GetPlayerObject();
         if (Vec_distance(&objAnim->worldPosX, &arwing->anim.worldPosX) < ARW_PROXIMITY_TAUNT_DISTANCE)
         {
-            gameTextFn_80125ba4(0xb);
+            headDisplayOpen(0xb);
             state->textVariant = 0;
         }
     }
@@ -138,9 +138,9 @@ void arwproximit_update(GameObject* obj)
             if (state->textVariant == 2)
             {
                 if (randomGetRange(0, 1) != 0)
-                    gameTextFn_80125ba4(0xf);
+                    headDisplayOpen(0xf);
                 else
-                    gameTextFn_80125ba4(0xc);
+                    headDisplayOpen(0xc);
             }
         }
         break;
@@ -193,7 +193,7 @@ void arwproximit_update(GameObject* obj)
         {
             arwarwing_addScore(getArwing(), 0xa);
             if (state->textVariant == 3)
-                gameTextFn_80125ba4(0xe);
+                headDisplayOpen(0xe);
             if (state->light != NULL)
                 modelLightStruct_setEnabled(state->light, 0, gArwProximitZero[0]);
             spawnExplosion((GameObject*)(int)obj, gArwProximitExplosionRadius[0], 1, 0, 0, 0, 0, 0, 1);

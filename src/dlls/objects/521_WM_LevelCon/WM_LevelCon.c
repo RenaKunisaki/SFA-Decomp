@@ -123,17 +123,17 @@ void WM_LevelControl_updateSkyLighting(GameObject* obj) {
     if (skyColorActive != 0) {
         skySetOverrideLightColorEnabled(0);
         skySetOverrideLightDirectionEnabled(0);
-        skyFn_80089710(7, 0, 1);
+        skySetLightsEnabled(7, 0, 1);
         return;
     }
 
     skySetOverrideLightColorEnabled(1);
     skySetOverrideLightColor(0x88, 0xB7, 0xBA);
     if ((obj->userData1 & 4) == 0) {
-        skyFn_80089710(1, 1, 0);
+        skySetLightsEnabled(1, 1, 0);
         obj->userData1 |= 4;
     } else {
-        skyFn_80089710(1, 1, 1);
+        skySetLightsEnabled(1, 1, 1);
     }
 
     /*

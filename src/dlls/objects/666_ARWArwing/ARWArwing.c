@@ -1160,10 +1160,10 @@ int arwarwing_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
                              state->collectedRings, 2);
             break;
         case 0xd:
-            gameTextFn_80125ba4(0x13);
+            headDisplayOpen(0x13);
             break;
         case 0xe:
-            gameTextFn_80125ba4(0x14);
+            headDisplayOpen(0x14);
             break;
         }
     }

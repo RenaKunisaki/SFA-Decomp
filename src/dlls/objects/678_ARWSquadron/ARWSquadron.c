@@ -320,7 +320,7 @@ void arwsquadron_handleDamage(GameObject* obj, ArwSquadronState* squad)
                     squad->phase = ARW_SQUADRON_STATE_DISABLED;
                     squad->phase = ARW_SQUADRON_STATE_DEAD;
                     if (squad->dialogueVariant == 3)
-                        gameTextFn_80125ba4(0xe);
+                        headDisplayOpen(0xe);
                 }
                 else
                 {
@@ -430,9 +430,9 @@ void ARWSquadron_update(GameObject* obj)
         if (arwsquadron_isPlayerWithinRangeZ(obj, 2700.0f))
         {
             if (randomGetRange(0, 1) != 0)
-                gameTextFn_80125ba4(0x10);
+                headDisplayOpen(0x10);
             else
-                gameTextFn_80125ba4(0xd);
+                headDisplayOpen(0xd);
             state->dialogueVariant = 0;
         }
     }

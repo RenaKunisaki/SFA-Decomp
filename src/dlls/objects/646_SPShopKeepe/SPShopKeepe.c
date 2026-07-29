@@ -252,7 +252,7 @@ int TREX_Lazerwall_updateTimedChallenge(GameObject* obj)
     if (isGameTimerDisabled() != 0 || now >= limit || elapsed != 0)
     {
         gameTimerStop();
-        hudFn_8011f6f0(0);
+        setTrickyHudShowNearestInfo(0);
         mainSetBits(GAMEBIT_LAZERWALL_RUNNING, 0);
 
         if (now >= limit)
@@ -264,7 +264,7 @@ int TREX_Lazerwall_updateTimedChallenge(GameObject* obj)
             mainSetBits(GAMEBIT_LAZERWALL_LOSE, 1);
         }
 
-        hudFn_8011f38c(2);
+        setHudForceShowMask(2);
 
         (*gMapEventInterface)->setObjGroupStatus((s32)(obj)->anim.mapEventSlot, 6, 0);
 
@@ -622,7 +622,7 @@ void DRlaserturret_startTimedChallenge(GameObject* obj)
         int* target;
         gameTimerInit(0x11, 0x1e);
         timerSetToCountUp();
-        hudFn_8011f6f0(1);
+        setTrickyHudShowNearestInfo(1);
         mainSetBits(DR_LASERTURRET_GAMEBIT_TIMER_STARTED, 1);
         target = state->linkedTarget;
         (**(VtableFn***)((char*)target + 0x68))[0x4c / 4](target, state->digitCount);
@@ -630,7 +630,7 @@ void DRlaserturret_startTimedChallenge(GameObject* obj)
     }
     else
     {
-        hudFn_8011f38c(0);
+        setHudForceShowMask(0);
     }
     state->flags = 0;
 }

@@ -324,7 +324,7 @@ void sc_levelcontrol_update(GameObject* obj) {
     if (state->animEventState == 0) {
         if (mainGetBit(0x60e) != 0) {
             mainSetBits(0x60e, 0);
-            timeListFn_8012df14();
+            timeListPromptOpen();
         }
     } else if (state->animEventState == 5) {
         if (mainGetBit(0x60e) != 0) {

@@ -289,7 +289,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         player = Obj_GetPlayerObject();
         setAButtonIcon(0x16);
         setBButtonIcon(0x17);
-        hudFn_8011f38c(1);
+        setHudForceShowMask(1);
         cameraMode = (*gCameraInterface)->getMode();
         if (cameraMode != DIM_CANNON_CAMERA_MODE && cameraMode != 0x4c) {
             GameObject* focusObj = obj;
@@ -383,7 +383,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             }
             if (shouldExit != 0 || (getButtonsJustPressed(0) & PAD_BUTTON_B)) {
                 buttonDisable(0, PAD_BUTTON_B);
-                hudFn_8011f38c(0);
+                setHudForceShowMask(0);
                 (*gGameUIInterface)->airMeterShutdown();
                 (*gCameraInterface)->setMode(DIM_CANNON_RELEASE_CAMERA_MODE, 0, 1, 0, NULL, 0, 0xff);
                 state->mode = DIM_CANNON_MODE_WAIT_FOR_RESET;

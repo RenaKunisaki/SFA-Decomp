@@ -353,7 +353,7 @@ extern const f32 lbl_803E1E48;
 extern const f32 lbl_803E1E50;
 extern const f32 lbl_803E1E54;
 extern u8 gHudMagicCostPreview;
-extern u8 lbl_803DD792;
+extern u8 gHudForceShowMask;
 extern u8 gTrickyHudShowNearestInfo;
 extern s16 gFearTestMeterFadeIn;
 extern s16 aButtonIcon;
@@ -385,7 +385,7 @@ extern int lbl_803DD730;
 extern s16 lbl_803DD770;
 extern f32 lbl_803DD760;
 extern GameObject* lbl_803A9410[6];
-extern u8 lbl_803DD75B;
+extern u8 gTimeListPromptSelection;
 extern s16 lbl_803DD772;
 extern s8 pauseMenuFrameCounter;
 extern CMenuSection gCMenuSections[];
@@ -742,7 +742,7 @@ extern const f32 lbl_803E21D0;
 extern s16 gHudTextureIds[];
 extern int gGameUiScreenWidthOffset;
 void npcTalkFn_8012e880(void);
-int pauseMenuGridFn_8012b4c4(void);
+int pauseMenuUpdateMapScroll(void);
 void drawWorldMapHud(void);
 void timeListDraw(int a, int b, int c);
 void cMenuRun(void);
@@ -936,7 +936,7 @@ void showDeathMenu(void)
 
 extern char lbl_803A8830[0x120];
 
-void pauseMenuMapFn_8011de20(void* this, u8 a, s16 b, int c)
+void gameUiSetupTexturedQuadTev(void* this, u8 a, s16 b, int c)
 {
     GXColor colA = { 0xC0, 0xC0, 0xFF, 0x80 };
     GXColor colB = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -1148,7 +1148,7 @@ void pauseMenuTextDrawFn(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1,
 void pauseMenuDrawTextureRegion(void* this, f32 f1, f32 f2, int p4, u8 p5, int p6, int p7, int p8, int p9)
 {
     f32 u1, u0, v0, v1;
-    pauseMenuMapFn_8011de20(this, p5, p4, 0);
+    gameUiSetupTexturedQuadTev(this, p5, p4, 0);
     f1 = 4.0f * f1;
     f2 = 4.0f * f2;
     u0 = (f32)(u32)p8 / ((Texture*)this)->width;
@@ -1184,7 +1184,7 @@ void drawFn_8011eb3c(void* this, f32 f1, f32 f2, int p4, u8 p5, int p6, int p7, 
     f32 ua, ub, va, vb, tu, tv;
     u32 dx, dy;
     u8 flags = p9;
-    pauseMenuMapFn_8011de20(this, p5, p4, flags & 4);
+    gameUiSetupTexturedQuadTev(this, p5, p4, flags & 4);
     dx = ((u32)(p7 << 2) * (u16)p6) >> 8;
     dy = ((u32)(p8 << 2) * (u16)p6) >> 8;
     f1 = 4.0f * f1;
@@ -1239,7 +1239,7 @@ void pauseMenuDrawElement(void* element, f32 fx, f32 fy, int depthZ, u8 paletteI
     u8 drawFlags = flags & 4;
     int dx, dy;
     f32 c0, c1;
-    pauseMenuMapFn_8011de20(element, paletteIndex, depthZ, drawFlags);
+    gameUiSetupTexturedQuadTev(element, paletteIndex, depthZ, drawFlags);
     dx = (((Texture*)element)->width << 2) * (u16)scalePercent / 256;
     dy = (((Texture*)element)->height << 2) * (u16)scalePercent / 256;
     fx = 4.0f * fx;
@@ -1365,10 +1365,10 @@ void gameUiResetMenuState(void)
     lbl_803DD760 = lbl_803E1E3C;
     gameUiFreeHudAnims(lbl_803A9410);
     gTrickyHudShowNearestInfo = 0;
-    lbl_803DD75B = 0;
+    gTimeListPromptSelection = 0;
     lbl_803DD772 = 0;
     pauseMenuFrameCounter = 0x3c;
-    lbl_803DD792 = 0;
+    gHudForceShowMask = 0;
 }
 
 u8 pauseMenuGetState(void)
@@ -1395,9 +1395,9 @@ void arwingHudSetVisible(u32 x)
     }
     arwingHudAlpha = 0xff;
 }
-void hudFn_8011f38c(u8 x)
+void setHudForceShowMask(u8 x)
 {
-    lbl_803DD792 = x;
+    gHudForceShowMask = x;
 }
 void resetYbutton(void)
 {
@@ -1496,7 +1496,7 @@ void fearTestMeterSetRange(u8 a, u8 b, s16 c)
     fearTestMeterInnerHalfWidth = b;
     fearTestMeterMarkerX = c;
 }
-void hudFn_8011f6f0(u8 x)
+void setTrickyHudShowNearestInfo(u8 x)
 {
     gTrickyHudShowNearestInfo = x;
 }
@@ -2896,10 +2896,10 @@ void pauseMenuDrawStatus(void)
     statuses[HUD_STATUS_FUEL_CELLS] = mainGetBit(GAMEBIT_ITEM_FuelCell_Count);
     statuses[HUD_STATUS_SCARABS] = playerGetMoney(player);
     statuses[HUD_STATUS_TRICKY_ENERGY] = *trickyEnergy;
-    if ((((lbl_803DD792 & 1) != 0) ||
+    if ((((gHudForceShowMask & 1) != 0) ||
          ((lbl_803E1E3C == (*gScreenTransitionInterface)->getProgress()) &&
           ((*gCameraInterface)->getMode() != CAMMODE_VIEWFINDER) &&
-           ((player->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) == 0) && (getHudHiddenFrameCount() == 0) && (lbl_803DD75B == 0))) &&
+           ((player->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) == 0) && (getHudHiddenFrameCount() == 0) && (gTimeListPromptSelection == 0))) &&
         (pauseMenuState == 0))
     {
         lbl_803DD83C = 8.5f * timeDelta + lbl_803DD83C;
@@ -2935,7 +2935,7 @@ void pauseMenuDrawStatus(void)
                 if ((((f32*)(base + 0xAFC))[animationSlot] >= lbl_803E1E3C && ((player->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) == 0) &&
                       (pauseMenuState == 0) && (airMeter == NULL) && (getHudHiddenFrameCount() == 0) &&
                       ((*gCameraInterface)->getMode() != CAMMODE_VIEWFINDER)) ||
-                    ((animationSlot == HUD_STATUS_SCARABS) && ((lbl_803DD792 & 2) != 0)))
+                    ((animationSlot == HUD_STATUS_SCARABS) && ((gHudForceShowMask & 2) != 0)))
                 {
                     flashThreshold = 8.5f * timeDelta + ((f32*)(base + 0xAC8))[animationSlot];
                     ((f32*)(base + 0xAC8))[animationSlot] = flashThreshold;
@@ -4224,7 +4224,7 @@ void drawTrickyHudOverlay(int obj, int unused1, int unused2)
  *    side viewport, then composites the static-wave border texture and
  *    corner/edge frame tiles (hudTextures[10..13,84]).
  *  - headDisplayFreeModels: frees the six cached head-display model objects.
- *  - gameTextFn_80125ba4: opens the head display for entry idx (clamped
+ *  - headDisplayOpen: opens the head display for entry idx (clamped
  *    0..0x14), kicking off the matching audio stream (gHeadDisplayEntryTable
  *    table, 0xC-byte records: int streamId, u16 textId@+4, u16 box@+8,
  *    u8 npcDialogue@+7) and either an NPC dialogue bubble or a text box.
@@ -4412,7 +4412,7 @@ void headDisplayDraw(void)
     }
 }
 
-void gameTextFn_80125ba4(int idx)
+void headDisplayOpen(int idx)
 {
     int boxId;
     int textId;
@@ -5236,9 +5236,9 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag);
 void timeListDraw(int unused1, int unused2, int unused3);
 void highScoreScreenDraw(int p1, int p2, int p3);
 void boxDrawFn_8012975c(int unused1, int unused2, int unused3);
-int pauseMenuGridFn_8012b4c4(void);
+int pauseMenuUpdateMapScroll(void);
 int pauseMenuIsFox(void);
-void timeListFn_8012be84(void);
+void timeListPromptUpdate(void);
 void mapScreenDrawHud(int unused1, int unused2, int unused3);
 void drawWorldMapHud(void);
 void setWorldMapVoiceoverActive(u32 val);
@@ -5568,7 +5568,7 @@ void timeListDraw(int unused1, int unused2, int unused3)
         gTimeListPulseAngle += gTimeListPulseAngleStep;
         ang = gTimeListPulseAngle;
         pulse = (int)(gTimeListPulseAmplitude * fsin16Precise((u16)ang) + gTimeListPulseBias);
-        if (lbl_803DD75B == 1)
+        if (gTimeListPromptSelection == 1)
         {
             a = pulse;
             b = 0xff;
@@ -5927,7 +5927,7 @@ static inline void pauseMenuFreeIconTextures(CMenuHud* hud)
 }
 
 /* Pause menu master state machine. */
-void pauseMenuFn_80129ee0(void)
+void pauseMenuUpdate(void)
 {
     PauseTbl* tbl = (PauseTbl*)lbl_8031AE20;
     CMenuHud* hud = (CMenuHud*)lbl_803A87F0;
@@ -6097,7 +6097,7 @@ void pauseMenuFn_80129ee0(void)
                 canOpen = 0;
             }
             if ((btn & PAD_BUTTON_MENU) && pauseMenuFrameCounter == 0 && pauseDisabled == 0 &&
-                (*gScreenTransitionInterface)->getProgress() == lbl_803E1E3C && canOpen != 0 && lbl_803DD75B == 0 &&
+                (*gScreenTransitionInterface)->getProgress() == lbl_803E1E3C && canOpen != 0 && gTimeListPromptSelection == 0 &&
                 getHudHiddenFrameCount() == 0)
             {
                 pauseMenuFrameCounter = 0x3c;
@@ -6353,7 +6353,7 @@ void pauseMenuFn_80129ee0(void)
         case 3:
             if (lbl_803DD760 > lbl_803E2160 || lbl_803DD764 > lbl_803E2160)
             {
-                int r = pauseMenuGridFn_8012b4c4();
+                int r = pauseMenuUpdateMapScroll();
                 if (lbl_803DD7C4 != 0)
                 {
                     lbl_803DD824 = tbl->gridBD0;
@@ -6417,7 +6417,7 @@ void pauseMenuFn_80129ee0(void)
                     }
                 }
                 pauseMenuRunSubmenu(r);
-                pauseMenuFn_8012b77c();
+                pauseMenuUpdateFadeAndBack();
             }
             else
             {
@@ -6434,7 +6434,7 @@ void pauseMenuFn_80129ee0(void)
         case 5:
             if (lbl_803DD760 > lbl_803E2160 || lbl_803DD764 > lbl_803E2160)
             {
-                int r = pauseMenuGridFn_8012b4c4();
+                int r = pauseMenuUpdateMapScroll();
                 if (lbl_803DD7C4 != 0)
                 {
                     lbl_803DD824 = tbl->gridF70;
@@ -6508,7 +6508,7 @@ void pauseMenuFn_80129ee0(void)
                     hud->textures3A8[0x16] = textureLoadAsset(texId);
                     hud->texIds358[0x16] = texId;
                 }
-                pauseMenuFn_8012b77c();
+                pauseMenuUpdateFadeAndBack();
             }
             else
             {
@@ -6524,7 +6524,7 @@ void pauseMenuFn_80129ee0(void)
                 lbl_803DD730 = getNextTaskHintText();
                 lbl_803DD770 = 0;
                 lbl_803DD772 = 0;
-                pauseMenuFn_8012b77c();
+                pauseMenuUpdateFadeAndBack();
                 if (lbl_803DD7A4 == 0 || lbl_803DD7A4->identifier == 0xffff)
                 {
                     lbl_803DD7A4 = saveGameGetCurHint();
@@ -6550,7 +6550,7 @@ void pauseMenuFn_80129ee0(void)
             {
                 lbl_803DD824 = tbl->gridF10;
                 pauseMenuRunSubmenu(0);
-                pauseMenuFn_8012b77c();
+                pauseMenuUpdateFadeAndBack();
                 if ((btn & PAD_BUTTON_A) && lbl_803DD764 > lbl_803E2160)
                 {
                     Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up);
@@ -6689,7 +6689,7 @@ void pauseMenuFn_80129ee0(void)
                     lbl_803DD764 = (-0.1f);
                     gPauseMenuTokenConfirmFlag = 0;
                 }
-                pauseMenuFn_8012b77c();
+                pauseMenuUpdateFadeAndBack();
             }
             else
             {
@@ -6705,7 +6705,7 @@ void pauseMenuFn_80129ee0(void)
 /* Pause-menu grid cursor stepper. Reads the
  * C-stick X axis, derives a one-step direction, and tweens the grid cursor
  * offsets toward the next cell, clamping when the tween crosses zero. */
-int pauseMenuGridFn_8012b4c4(void)
+int pauseMenuUpdateMapScroll(void)
 {
     int ret = 0;
     s8 cx = padGetCX(0);
@@ -6804,7 +6804,7 @@ int pauseMenuIsFox(void)
     return 1;
 }
 
-void pauseMenuFn_8012b77c(void)
+void pauseMenuUpdateFadeAndBack(void)
 {
     u32 btn = getButtonsJustPressed(0) & 0xffff;
     f32 speed = lbl_803DD764;
@@ -7014,13 +7014,13 @@ void pauseMenuRunSubmenu(int p1)
     }
 }
 
-void timeListFn_8012be84(void)
+void timeListPromptUpdate(void)
 {
     s32 buttons;
     u8 prev_state;
     u8 buf[16];
 
-    prev_state = lbl_803DD75B;
+    prev_state = gTimeListPromptSelection;
     if (pauseMenuState != 0)
         return;
 
@@ -7033,21 +7033,21 @@ void timeListFn_8012be84(void)
         int analog = buf[0];
         if ((s8)analog == 1)
         {
-            lbl_803DD75B = 1;
+            gTimeListPromptSelection = 1;
         }
         if ((s8)analog == -1)
         {
-            lbl_803DD75B = 2;
+            gTimeListPromptSelection = 2;
         }
     }
-    if (lbl_803DD75B != prev_state)
+    if (gTimeListPromptSelection != prev_state)
     {
         Sfx_PlayFromObject(0, SFXTRIG_sc_lockedon22);
     }
     if ((buttons & PAD_BUTTON_A) != 0)
     {
         buttonDisable(0, PAD_BUTTON_A);
-        if (lbl_803DD75B == 1)
+        if (gTimeListPromptSelection == 1)
         {
             mainSetBits(0x2b3, 1);
         }
@@ -7055,7 +7055,7 @@ void timeListFn_8012be84(void)
         {
             mainSetBits(0x781, 1);
         }
-        lbl_803DD75B = 0;
+        gTimeListPromptSelection = 0;
         cutsceneFadeInOut(0);
         (*gCameraInterface)->loadTriggeredCamAction(3, 0x80, 1);
         pauseMenuFrameCounter = 0x3c;
@@ -7064,7 +7064,7 @@ void timeListFn_8012be84(void)
     if ((buttons & PAD_BUTTON_B) != 0)
     {
         buttonDisable(0, PAD_BUTTON_B);
-        lbl_803DD75B = 0;
+        gTimeListPromptSelection = 0;
         cutsceneFadeInOut(0);
         (*gCameraInterface)->loadTriggeredCamAction(3, 0x80, 1);
         pauseMenuFrameCounter = 0x3c;
@@ -7854,13 +7854,12 @@ void pauseMenuSetupTitle(s32 fade_target, u8 idx, u8 flags, u8 q)
     lbl_803DBA60 = fade_target;
 }
 
-/* Death sequence trigger: latches the
- * "dead/cleanup" byte at lbl_803DD75B and dispatches vtable slot +0x24
- * on the singleton at gCameraInterface with the worm-death event id 0x94,
- * then runs the standard player-input-disable + alpha-fade-to-FF pair. */
-void timeListFn_8012df14(void)
+/* Opens the two-option time-list prompt: highlights the first option, swings the
+ * camera onto the triggered action 0x94, fades in and freezes the game clock.
+ * timeListPromptUpdate then drives it until the player answers. */
+void timeListPromptOpen(void)
 {
-    lbl_803DD75B = 1;
+    gTimeListPromptSelection = 1;
     (*gCameraInterface)->loadTriggeredCamAction(1, 0x94, 1);
     cutsceneFadeInOut(1);
     setTimeStop(0xff);
@@ -7905,7 +7904,7 @@ void cMenuRun(void)
 
     if ((*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
         (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0 ||
-        shouldCloseCMenu != 0 || lbl_803DD75B != 0)
+        shouldCloseCMenu != 0 || gTimeListPromptSelection != 0)
     {
         gCMenuButtons |= PAD_BUTTON_B;
     }
@@ -8519,7 +8518,7 @@ void GameUI_hudDraw(int a, int b, int c)
             }
             drawTrickyHudOverlay(a, b, c);
         }
-        if (lbl_803DD75B != 0)
+        if (gTimeListPromptSelection != 0)
         {
             timeListDraw(a, b, c);
         }
@@ -8570,7 +8569,7 @@ void GameUI_frameEnd(void)
         lbl_803DD898 &= 0xfff0fff7;
     }
 
-    pauseMenuFn_80129ee0();
+    pauseMenuUpdate();
     if (gHighScoreActiveTableId >= 0)
     {
         if (((u16)getButtonsJustPressed(0)) & PAD_BUTTON_A)
@@ -8584,8 +8583,8 @@ void GameUI_frameEnd(void)
 
     if (player != 0)
     {
-        if (lbl_803DD75B != 0)
-            timeListFn_8012be84();
+        if (gTimeListPromptSelection != 0)
+            timeListPromptUpdate();
 
         if (playerGetFocusObject(player) != NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
             (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0)
@@ -8606,7 +8605,7 @@ void GameUI_frameEnd(void)
 
         if (playerGetFocusObject(player) != NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
             (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || shouldCloseCMenu != 0 ||
-            pauseMenuState != 0 || getHudHiddenFrameCount() != 0 || lbl_803DD75B != 0)
+            pauseMenuState != 0 || getHudHiddenFrameCount() != 0 || gTimeListPromptSelection != 0)
         {
             allowCStickTarget = 0;
             gCMenuButtons |= PAD_BUTTON_B;
@@ -9053,7 +9052,7 @@ void GameUI_release(void)
 
 /* Forward declarations. */
 
-void textureFreeFn_8012fcec(void)
+void GameUI_releaseMenuResources(void)
 {
     GameUiHud* gameUi = (GameUiHud*)lbl_803A87F0;
 
@@ -9237,7 +9236,7 @@ short gCMenuScrollTimer;
 u8 cMenuOpen;
 u8 gPauseMenuTransitionStarted;
 u8 cMenuEnabled;
-u8 lbl_803DD792;
+u8 gHudForceShowMask;
 s16 gCMenuPrevStickY;
 short lbl_803DD78E;
 s16 lbl_803DD78C;
@@ -9266,7 +9265,7 @@ f32 lbl_803DD764;
 f32 lbl_803DD760;
 s8 lbl_803DD75E;
 s16 lbl_803DD75C;
-u8 lbl_803DD75B;
+u8 gTimeListPromptSelection;
 u8 gTrickyHudShowNearestInfo;
 u8 gPauseMenuTokenConfirmFlag;
 u8 lbl_803DD758;

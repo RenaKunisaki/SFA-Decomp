@@ -1010,8 +1010,8 @@ void objFn_8003dc50(u8* obj, u8* model)
                 l = OBJPRINT_MODEL_DEF(model)->modelLightMaskIndex;
                 if (l == 0)
                 {
-                    modelTextureFn_80089970(((GameObject*)model)->lightColorSlot);
-                    textureColorFn_8008991c(((GameObject*)model)->lightColorSlot, &c.r, &c.g, &c.b);
+                    skyApplyLightSlot(((GameObject*)model)->lightColorSlot);
+                    skyGetAmbientColor(((GameObject*)model)->lightColorSlot, &c.r, &c.g, &c.b);
                 }
                 else
                 {

@@ -227,7 +227,7 @@ int gMinimapLoadedMapId;
 u8 gMinimapBlipPulse;
 u8 gMinimapRadarInited;
 u8 gMinimapAreaNameDelay;
-extern u8 lbl_803DD75B;
+extern u8 gTimeListPromptSelection;
 
 const MinimapColor gMinimapCompassColor = {0x00FF0000};
 const MinimapColor gMinimapBaseColor = {0xFFFF0000};
@@ -352,7 +352,7 @@ int Minimap_update(void)
         if ((*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER || (gMinimapEnabled == 0 && lbl_803DD7BA == 0) ||
             Camera_GetViewportYOffset() != 0 ||
             (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
-            objIsCurModelNotZero(player) == 0 || pauseMenuState != 0 || lbl_803DD75B != 0)
+            objIsCurModelNotZero(player) == 0 || pauseMenuState != 0 || gTimeListPromptSelection != 0)
         {
             mapTextureId = 0;
             gMinimapFadeAlpha -= 0x20;

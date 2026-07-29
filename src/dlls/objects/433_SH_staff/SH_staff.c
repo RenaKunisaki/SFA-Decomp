@@ -328,7 +328,7 @@ int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpda
             state->phase = SHSTAFF_PHASE_CARRY_LOCAL;
             break;
         case SHSTAFF_EVENT_SHOW_STAFF_HUD:
-            hudFn_8011f38c(1);
+            setHudForceShowMask(1);
             break;
         case SHSTAFF_EVENT_SPAWN_EVEN_HAZE:
             state->hazeFlags = state->hazeFlags | SHSTAFF_HAZE_FLAG_SPAWN_EVEN;
@@ -449,7 +449,7 @@ void sh_staff_update(GameObject* obj) {
             mainSetBits(GAMEBIT_STAFF_PICKUP_MAP_UNLOADED, 1);
         }
     }
-    hudFn_8011f38c(0);
+    setHudForceShowMask(0);
     state->hazeClimbT = 0.01f * timeDelta + state->hazeClimbT;
     if (state->hazeClimbT > 1.0f) {
         state->hazeClimbT = 0.0f;

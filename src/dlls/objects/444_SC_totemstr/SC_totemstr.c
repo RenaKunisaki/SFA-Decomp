@@ -206,7 +206,7 @@ int platform1_control(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 }
                 sc_totembond_insertOrderedGameBit(gScTotemStrengthRecordGameBits,
                                                   gameTimerGetElapsedMilliseconds() / 10.0f);
-                hudFn_8011f38c(0);
+                setHudForceShowMask(0);
                 if (state->sequenceIndex > 0) {
                     ObjSeq_takeXrotChanged(state->sequenceIndex);
                 }
@@ -226,7 +226,7 @@ int platform1_control(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                         break;
                     }
                 }
-                hudFn_8011f38c(0);
+                setHudForceShowMask(0);
                 if (state->sequenceIndex > 0) {
                     ObjSeq_takeXrotChanged(state->sequenceIndex);
                 }
@@ -363,7 +363,7 @@ void sc_totemstrength_update(GameObject* obj) {
                 state->flags = (u8)(state->flags & ~SC_TOTEM_STRENGTH_TRIGGER_FLAG_01);
             } else if (step == 1) {
                 mainSetBits(SC_TOTEM_STRENGTH_GAMEBIT_SEQUENCE_ACTIVE, 1);
-                hudFn_8011f38c(1);
+                setHudForceShowMask(1);
                 state->sequenceIndex = (*gObjectTriggerInterface)->runSequence(0, obj, -1);
             } else if (step == 2) {
                 state->transitionStep = 0;

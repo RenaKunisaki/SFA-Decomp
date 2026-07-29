@@ -2803,7 +2803,7 @@ void enemy_update(GameObject* obj)
     }
     if ((((EnemyState*)state)->controlFlags & 0x8000) != 0)
     {
-        hudFn_8011f38c(0);
+        setHudForceShowMask(0);
         (*gPathControlInterface)->attachObject(obj, state + 4);
         ((EnemyState*)state)->controlFlags &= ~0x8003;
         if ((((EnemyState*)state)->flags2E4 & 0x20000) != 0)

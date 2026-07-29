@@ -182,7 +182,7 @@ void shopitem_onSeqFree(GameObject* obj)
             b->flag_80 = 1;
         }
     }
-    hudFn_8011f38c(0);
+    setHudForceShowMask(0);
     {
         int* vptr2 = (int*)((ShopItemState*)state)->vendorObj;
         int* cls2 = **(int***)((char*)vptr2 + 0x68);
@@ -355,7 +355,7 @@ void shopitem_update(GameObject* obj)
                 }
                 if (money >= price)
                 {
-                    hudFn_8011f38c(3);
+                    setHudForceShowMask(3);
                     (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
                 }
                 else

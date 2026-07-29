@@ -1007,7 +1007,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                     }
                     else if ((void*)getArwing() != NULL)
                     {
-                        gameTextFn_80125ba4((p[2] << 8) | p[3]);
+                        headDisplayOpen((p[2] << 8) | p[3]);
                     }
                     break;
                 }

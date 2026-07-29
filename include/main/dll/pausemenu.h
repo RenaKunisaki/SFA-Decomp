@@ -7,7 +7,7 @@
 void pauseMenuDraw(int arg1, int arg2, int arg3);
 void pauseMenuDrawStatus(void);
 void pauseMenuDrawStatus_801274A0(GameObject* arg1);
-void pauseMenuFn_80129ee0(void);
+void pauseMenuUpdate(void);
 void pauseMenuDrawSideRails(s32 alpha);
 
 #endif /* MAIN_DLL_PAUSEMENU_H_ */
