@@ -5,7 +5,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/camera_interface.h"
-#include "main/dll/dll_0042_unk.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "main/frame_timing.h"
 #include "main/mm.h"
 #include "main/obj_list.h"
@@ -43,7 +43,7 @@ void CameraMode54_update(CameraObject* camera) {
     s16 angleDelta;
 
     if (gCameraMode54State->exitRequested != 0) {
-        (*gCameraInterface)->setMode(CAMERA_MODE_NORMAL_RESOURCE_ID, 0, 1, 0, NULL, 0, 0xff);
+        (*gCameraInterface)->setMode(CAMCONTROL_ACTION_DEFAULT, 0, 1, 0, NULL, 0, 0xff);
     } else {
         if (gCameraMode54State->lookAtObj == NULL) {
             int* objects = (int*)ObjList_GetObjects(&objectIndex, &objectCount);

@@ -5,7 +5,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/camera_interface.h"
-#include "main/dll/CAM/cutCam.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
 #include "main/frame_timing.h"
 #include "main/mm.h"
 #include "main/object_transform.h"
@@ -49,7 +49,7 @@ void CameraModeClimb_update(CameraObject* camera) {
     f32 distance;
     f32 traceFrom[3];
     f32 traceOut[3];
-    u8 traceWork[CAMCONTROL_TRACE_WORK_SIZE];
+    u8 traceWork[sizeof(CamcontrolTraceWork)];
 
     target = (GameObject*)camera->anim.targetObj;
     if (gCameraModeClimbState->transitionTimer != 0) {

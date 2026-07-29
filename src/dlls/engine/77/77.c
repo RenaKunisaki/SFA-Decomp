@@ -4,7 +4,7 @@
 #include "main/dll/dll_004D_cameramodenpcspeak.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/dll/CAM/cutCam.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
 #include "main/frame_timing.h"
 #include "main/maketex_api.h"
 #include "main/mm.h"
@@ -138,7 +138,7 @@ void CameraModeNpcSpeak_init(CameraObject* camera, int unused, CameraModeNpcSpea
     int positiveOrbitDelta, negativeOrbitDelta;
     GameObject* focusedNpc;
     f32 cameraZ, cameraY, cameraX;
-    u8 traceWork[CAMCONTROL_TRACE_WORK_SIZE];
+    u8 traceWork[sizeof(CamcontrolTraceWork)];
 
     if (gCameraModeNpcSpeakState == NULL) {
         gCameraModeNpcSpeakState = (CameraModeNpcSpeakState*)mmAlloc(sizeof(CameraModeNpcSpeakState), 15, 0);

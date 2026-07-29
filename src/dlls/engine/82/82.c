@@ -5,7 +5,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object.h"
-#include "main/dll/CAM/cutCam.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
 #include "main/dll/player_motion.h"
 #include "main/frame_timing.h"
 #include "main/object_transform.h"

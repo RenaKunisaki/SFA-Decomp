@@ -9,7 +9,7 @@
 #include "main/camera_interface.h"
 #include "main/curve.h"
 #include "main/debug.h"
-#include "main/dll/dll_0042_unk.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
 #include "main/mm.h"
@@ -544,7 +544,7 @@ void CameraModePath_update(CameraObject* cam) {
     f32 fov[4];
 
     if (gCameraModePathState->pathFailed != 0) {
-        (*gCameraInterface)->setMode(CAMERA_MODE_NORMAL_RESOURCE_ID, 0, 1, 0, NULL, 0, 0xff);
+        (*gCameraInterface)->setMode(CAMCONTROL_ACTION_DEFAULT, 0, 1, 0, NULL, 0, 0xff);
     } else {
         obj = cam->anim.targetObj;
         getButtonsJustPressed(0);
