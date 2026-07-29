@@ -623,7 +623,7 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
             mode = 4;
         }
         collision->localPointHitMask |=
-            objBboxFn_800640cc(&collision->localPointTarget[0][zoff[0]], &collision->localPointWorld[0][zoff[0]],
+            trackGetLineIntersect(&collision->localPointTarget[0][zoff[0]], &collision->localPointWorld[0][zoff[0]],
                                collision->localPointRadii[pointIndex], mode,
                                (TrackBBoxHit*)collision->localHitPlanes, obj,
                                (u8)collision->primaryHitType,
@@ -640,7 +640,7 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
             {
                 mode = 4;
             }
-            objBboxFn_800640cc(&collision->localPointTarget[0][zoff[0]], &collision->localPointWorld[0][zoff[0]],
+            trackGetLineIntersect(&collision->localPointTarget[0][zoff[0]], &collision->localPointWorld[0][zoff[0]],
                                collision->localPointRadii[pointIndex], mode,
                                (TrackBBoxHit*)collision->localHitPlanes, obj,
                                (u8)collision->secondaryHitType, -1, 0, (s8)collision->activeTimer);

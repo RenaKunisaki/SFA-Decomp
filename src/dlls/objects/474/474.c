@@ -80,7 +80,7 @@ void dll_1DA_update(GameObject* obj) {
     }
 
     objMove(obj, obj->anim.velocityX * timeDelta, 0.0f, obj->anim.velocityZ * timeDelta);
-    hitCount = objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 6.5f, 1, &collision, obj, 8, -1,
+    hitCount = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 6.5f, 1, &collision, obj, 8, -1,
                                   0xff, 0);
     if (hitCount != 0) {
         inverseVelocityX = -obj->anim.velocityX;

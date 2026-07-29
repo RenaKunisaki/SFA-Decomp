@@ -458,7 +458,7 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
                                   probeCoordinates[pointIndex * 3 + 2], &worldPoints[pointIndex * 3],
                                   &worldPoints[pointIndex * 3 + 1], &worldPoints[pointIndex * 3 + 2]);
             if ((1 << pointIndex & PUSHABLE_POINT_MASK) != 0) {
-                if (objBboxFn_800640cc((f32*)&state->cornerWorld[pointIndex], &worldPoints[pointIndex * 3],
+                if (trackGetLineIntersect((f32*)&state->cornerWorld[pointIndex], &worldPoints[pointIndex * 3],
                                        PUSHABLE_COLLISION_RADIUS, 1, &collision, obj, 8, 0xd, (u8)(pointIndex + 3),
                                        10) == 0) {
                     unresolvedMask = (s8)(unresolvedMask & ~(1 << pointIndex));
@@ -730,7 +730,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
         hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
         blocked = hitDetectFn_80067958(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
         if (blocked == 0) {
-            blocked = objBboxFn_800640cc(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
+            blocked = trackGetLineIntersect(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
         if (blocked != 0) {
             f32 pushAmount;
@@ -751,7 +751,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
         hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
         blocked = hitDetectFn_80067958(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
         if (blocked == 0) {
-            blocked = objBboxFn_800640cc(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
+            blocked = trackGetLineIntersect(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
         if (blocked != 0) {
             f32 pushAmount;
@@ -772,7 +772,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
         hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
         blocked = hitDetectFn_80067958(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
         if (blocked == 0) {
-            blocked = objBboxFn_800640cc(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
+            blocked = trackGetLineIntersect(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
         if (blocked != 0) {
             f32 pushAmount;

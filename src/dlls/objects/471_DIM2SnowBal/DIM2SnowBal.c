@@ -139,7 +139,7 @@ void dim2snowball_update(GameObject* obj) {
             obj->anim.velocityZ = obj->anim.velocityZ * damping;
             objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                     obj->anim.velocityZ * timeDelta);
-            collided = objBboxFn_800640cc(&obj->anim.previousLocalPosX, (f32*)((char*)obj + 0xc), 36.0f, 0, NULL, obj,
+            collided = trackGetLineIntersect(&obj->anim.previousLocalPosX, (f32*)((char*)obj + 0xc), 36.0f, 0, NULL, obj,
                                           8, -1, 0, 0);
             if (collided != 0) {
                 obj->anim.velocityX = -obj->anim.velocityX;

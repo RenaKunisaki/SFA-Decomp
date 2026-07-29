@@ -255,7 +255,7 @@ int fn_802AB1D0(GameObject* obj);
 void playerCastSpell(int a, int b, int c);
 void playerRefreshCollisionState(GameObject* obj, int p2, int flags);
 void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player);
-void fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv);
+void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* player, f32 turnInput);
 void fn_802ABFBC(GameObject* obj, int state, PlayerState* inner);
 void fn_802AC32C(int p1, int p2, int p3);
 void playerSetMovingAnims(int p1, int obj);
@@ -2455,7 +2455,7 @@ int playerState41(GameObject* obj, int state, f32 fv)
         inner->targetYaw = (s16)((f32)(s16)inner->targetYaw + 182.044f * (ryaw / 32.0f));
         inner->yaw = inner->targetYaw;
     }
-    fn_802ABAE8(obj, state, (int)inner, 0.0f);
+    playerUpdateLookAndLean(obj, (BaddieState*)state, inner, 0.0f);
     return 0;
 }
 
@@ -3587,7 +3587,7 @@ int playerStateStaffBoost(GameObject* obj, int state, f32 fv)
         toVec[0] = fromVec[0] - 100.0f * mathSinf(3.1415927f * (f32)(int)inner->targetYaw / 32768.0f);
         toVec[1] = fromVec[1];
         toVec[2] = fromVec[2] - 100.0f * mathCosf(3.1415927f * (f32)(int)inner->targetYaw / 32768.0f);
-        if (objBboxFn_800640cc(fromVec, toVec, 0.0f, 3, (TrackBBoxHit*)hitBuf, obj, 1, 1, 0xff, 0) != 0)
+        if (trackGetLineIntersect(fromVec, toVec, 0.0f, 3, (TrackBBoxHit*)hitBuf, obj, 1, 1, 0xff, 0) != 0)
         {
             gPlayerStaffBoostTargetY = *(f32*)(hitBuf + 0x3c) - 30.0f;
         }
@@ -7106,7 +7106,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
             pnt[1] = inner->savedPosY;
             pnt[2] = -(30.0f * inner->groundNormalZ - inner->savedPosZ);
             {
-                int r = objBboxFn_800640cc(&inner->savedPosX, pnt, 0.0f, 3,
+                int r = trackGetLineIntersect(&inner->savedPosX, pnt, 0.0f, 3,
                                            (TrackBBoxHit*)&hit, obj, 1, 3, 0xff, 0);
                 if (r != 0)
                 {
@@ -7313,7 +7313,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
                         dst[0] = -(ph * inner->groundNormalX - pnt[0]);
                         dst[1] = pnt[1];
                         dst[2] = -(ph * inner->groundNormalZ - pnt[2]);
-                        if (objBboxFn_800640cc(pnt, dst, 0.0f, 3, NULL, obj, 1, 3, 0xff, 0) != 0)
+                        if (trackGetLineIntersect(pnt, dst, 0.0f, 3, NULL, obj, 1, 3, 0xff, 0) != 0)
                         {
                             mask = mask | 1 << i;
                         }
@@ -7340,7 +7340,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
                         dst[0] = -(dy * inner->groundNormalX - pnt[0]);
                         dst[1] = pnt[1];
                         dst[2] = -(dy * inner->groundNormalZ - pnt[2]);
-                        if (objBboxFn_800640cc(pnt, dst, 0.0f, 3, NULL, obj, 1, 3, 0xff, 0) != 0)
+                        if (trackGetLineIntersect(pnt, dst, 0.0f, 3, NULL, obj, 1, 3, 0xff, 0) != 0)
                         {
                             mask = mask | 1 << (i + 2);
                         }
@@ -10364,7 +10364,7 @@ int playerStateMoving(int obj, int state, f32 fv)
             }
         }
     }
-    fn_802ABAE8((GameObject*)obj, state, inner, t);
+    playerUpdateLookAndLean((GameObject*)obj, (BaddieState*)state, (PlayerState*)inner, t);
     return 0;
 }
 
@@ -11026,7 +11026,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             end[1] = ((GameObject*)obj)->anim.localPosY;
             end[2] = ((GameObject*)obj)->anim.localPosZ;
         }
-        hit = objBboxFn_800640cc(start, end, 0.0f, 3, &buf, (GameObject*)obj, 1, dirs[i],
+        hit = trackGetLineIntersect(start, end, 0.0f, 3, &buf, (GameObject*)obj, 1, dirs[i],
                                 0xff, 10);
         if (flagA != 0 && hit != 0)
         {
@@ -11094,7 +11094,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
                 end[1] = ((GameObject*)obj)->anim.localPosY;
                 end[2] = ((GameObject*)obj)->anim.localPosZ;
             }
-            hit = objBboxFn_800640cc(start, end, 0.0f, 3, &buf, (GameObject*)obj, 1,
+            hit = trackGetLineIntersect(start, end, 0.0f, 3, &buf, (GameObject*)obj, 1,
                                     dirs[i], 0xff, 10);
         }
         if (hit == 0)
@@ -13051,115 +13051,102 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
     }
 }
 
-void fn_802ABAE8(GameObject* obj, int state, int inner, f32 fv)
-{
-    int d = ((PlayerState*)inner)->targetYaw - (u16)((PlayerState*)inner)->prevTargetYaw;
+void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* player, f32 turnInput) {
+    int d = player->targetYaw - (u16)player->prevTargetYaw;
     int near;
     int g;
-    if (d > 0x8000)
+    if (d > 0x8000) {
         d -= 0xffff;
-    if (d < -0x8000)
+    }
+    if (d < -0x8000) {
         d += 0xffff;
-    if ((((u32)((PlayerState*)inner)->flags3F1 >> 5) & 1) || (((u32)((PlayerState*)inner)->flags3F0 >> 4) & 1))
-    {
+    }
+    if ((((u32)player->flags3F1 >> 5) & 1) || (((u32)player->flags3F0 >> 4) & 1)) {
         d = 0;
     }
     {
-        f32 f2 = 0.5f * (((PlayerState*)state)->baddie.animSpeedC - 0.4f) + 1.0f;
-        if (f2 < 0.0f)
-        {
+        f32 f2 = 0.5f * (baddie->animSpeedC - 0.4f) + 1.0f;
+        if (f2 < 0.0f) {
             f2 = 0.0f;
         }
         d = (int)((f32)(int)d * (1.5f * f2));
         d = (d < -0xccc) ? -0xccc : ((d > 0xccc) ? 0xccc : d);
     }
-    d -= (u16)((PlayerState*)inner)->headPitch;
-    if (d > 0x8000)
+    d -= (u16)player->headPitch;
+    if (d > 0x8000) {
         d = d - 0xffff;
-    if (d < -0x8000)
+    }
+    if (d < -0x8000) {
         d = d + 0xffff;
-    ((PlayerState*)inner)->headPitch =
-        (f32)(int)((PlayerState*)inner)->headPitch + interpolate((f32)(int)d, 0.15f, timeDelta);
+    }
+    player->headPitch = (f32)(int)player->headPitch + interpolate((f32)(int)d, 0.15f, timeDelta);
     near = fn_802AB1D0(obj);
-    if ((u32)near != 0 && (((u32)((PlayerState*)inner)->flags3F0 >> 7) & 1) == 0 &&
-        (((u32)((PlayerState*)inner)->flags3F0 >> 6) & 1) == 0 &&
-        (((u32)((PlayerState*)inner)->flags3F0 >> 4) & 1) == 0 &&
-        (((u32)((PlayerState*)inner)->flags3F0 >> 5) & 1) == 0)
-    {
+    if ((u32)near != 0 && (((u32)player->flags3F0 >> 7) & 1) == 0 && (((u32)player->flags3F0 >> 6) & 1) == 0 &&
+        (((u32)player->flags3F0 >> 4) & 1) == 0 && (((u32)player->flags3F0 >> 5) & 1) == 0) {
         int gd = (u16)getAngle(-(*(f32*)((char*)near + 0xc) - obj->anim.localPosX),
                                -(*(f32*)((char*)near + 0x14) - obj->anim.localPosZ)) -
-                 (u16)((PlayerState*)inner)->targetYaw;
+                 (u16)player->targetYaw;
         f32 t;
         f32 f5;
-        if (gd > 0x8000)
+        if (gd > 0x8000) {
             gd -= 0xffff;
-        if (gd < -0x8000)
+        }
+        if (gd < -0x8000) {
             gd += 0xffff;
-        t = 1.0f - (((PlayerState*)state)->baddie.animSpeedC - 0.4f) /
-                               (((PlayerState*)inner)->maxSpeed - 0.4f);
-        f5 = 40.0f * ((t < 0.0f) ? 0.0f : ((t > 1.0f) ? 1.0f : t)) +
-             45.0f;
-        g = (int)(((f32)(int)gd < 182.0f * -f5)
-                      ? 182.0f * -f5
-                      : (((f32)(int)gd > 182.0f * f5) ? 182.0f * f5 : (f32)(int)gd));
-    }
-    else
-    {
+        }
+        t = 1.0f - (baddie->animSpeedC - 0.4f) / (player->maxSpeed - 0.4f);
+        f5 = 40.0f * ((t < 0.0f) ? 0.0f : ((t > 1.0f) ? 1.0f : t)) + 45.0f;
+        g = (int)(((f32)(int)gd < 182.0f * -f5) ? 182.0f * -f5
+                                                : (((f32)(int)gd > 182.0f * f5) ? 182.0f * f5 : (f32)(int)gd));
+    } else {
         g = 0;
     }
     {
         int r0;
         f32 k;
-        if (!((((u32)((PlayerState*)inner)->flags3F1 >> 5) & 1) || (((u32)((PlayerState*)inner)->flags3F0 >> 4) & 1)))
-        {
-            r0 = ((PlayerState*)inner)->targetYawRate;
-        }
-        else
-        {
+        if (!((((u32)player->flags3F1 >> 5) & 1) || (((u32)player->flags3F0 >> 4) & 1))) {
+            r0 = player->targetYawRate;
+        } else {
             r0 = 0;
         }
-        if (r0 < -0x28)
-        {
+        if (r0 < -0x28) {
             r0 = -0x28;
-        }
-        else if (r0 > 0x28)
-        {
+        } else if (r0 > 0x28) {
             r0 = 0x28;
         }
         g += r0 * 0xb6;
-        if (g < -0x3ffc)
-        {
+        if (g < -0x3ffc) {
             g = -0x3ffc;
-        }
-        else if (g > 0x3ffc)
-        {
+        } else if (g > 0x3ffc) {
             g = 0x3ffc;
         }
-        g = g - (u16)((PlayerState*)inner)->bodyLeanAngle;
-        if (g > 0x8000)
+        g = g - (u16)player->bodyLeanAngle;
+        if (g > 0x8000) {
             g -= 0xffff;
-        if (g < -0x8000)
-            g += 0xffff;
-        g = (int)((f32)(int)g * (k = 0.15f));
-        if (g < -0x16c)
-        {
-            g = -0x16c;
         }
-        else if (g > 0x16c)
-        {
+        if (g < -0x8000) {
+            g += 0xffff;
+        }
+        g = (int)((f32)(int)g * (k = 0.15f));
+        if (g < -0x16c) {
+            g = -0x16c;
+        } else if (g > 0x16c) {
             g = 0x16c;
         }
-        ((PlayerState*)inner)->bodyLeanAngle = (f32)(int)g * timeDelta + (f32)(int)*(s16*)((int)inner + 0x4D4);
-        ((PlayerState*)inner)->bodyLeanHalf = ((PlayerState*)inner)->bodyLeanAngle / 2;
+        player->bodyLeanAngle =
+            (f32)(int)g * timeDelta + (f32)(int)*(s16*)((char*)player + offsetof(PlayerState, bodyLeanAngle));
+        player->bodyLeanHalf = player->bodyLeanAngle / 2;
     }
     {
-        int k = (int)(182.0f * (10.0f * -fv));
-        k -= (u16)((PlayerState*)inner)->headYaw;
-        if (k > 0x8000)
+        int k = (int)(182.0f * (10.0f * -turnInput));
+        k -= (u16)player->headYaw;
+        if (k > 0x8000) {
             k -= 0xffff;
-        if (k < -0x8000)
+        }
+        if (k < -0x8000) {
             k += 0xffff;
-        ((PlayerState*)inner)->headYaw = *(s16*)((int)inner + 0x4D6) + k;
+        }
+        player->headYaw = *(s16*)((char*)player + offsetof(PlayerState, headYaw)) + k;
     }
 }
 

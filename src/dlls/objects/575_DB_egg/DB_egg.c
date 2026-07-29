@@ -480,7 +480,7 @@ void dbegg_hitDetect(GameObject* obj)
         void* hitFrom = &(obj)->anim.previousLocalPosX;
         void* hitTo = &(obj)->anim.localPosX;
         f32 hitRadius = 9.0f;
-        if (objBboxFn_800640cc(hitFrom, hitTo, hitRadius, 1, NULL, obj, 8, -1, 0xff, 0) != 0)
+        if (trackGetLineIntersect(hitFrom, hitTo, hitRadius, 1, NULL, obj, 8, -1, 0xff, 0) != 0)
         {
             (obj)->anim.velocityX -= 0.95f * (obj)->anim.velocityX;
             (obj)->anim.velocityZ -= 0.95f * (obj)->anim.velocityZ;

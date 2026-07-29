@@ -1001,7 +1001,7 @@ u8 querySlot;
     return NULL;
 }
 
-int objBboxFn_800640cc(f32* startPos, f32* endPos, f32 radius, int flags, TrackBBoxHit* out, GameObject* self,
+int trackGetLineIntersect(f32* startPos, f32* endPos, f32 radius, int flags, TrackBBoxHit* out, GameObject* self,
                       s8 lineMask, s8 segment, int slot, s8 yTolerance)
 {
     f32 worldStart[3];

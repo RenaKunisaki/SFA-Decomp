@@ -9778,15 +9778,15 @@ void Tricky_init(GameObject* obj)
     }
     (obj)->animEventCallback = tricky_SeqFn;
     objAddObjectType((int)obj, TRICKY_OBJGROUP);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[0]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[1]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[2]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[3]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[4]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[5]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[6]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[7]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[8]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[0]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[1]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[2]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[3]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[4]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[5]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[6]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[7]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[8]);
     ((TrickyState*)state)->progressPtr = (*gMapEventInterface)->getTrickyEnergy();
     ((TrickyState*)state)->playerObj = Obj_GetPlayerObject();
     ((TrickyState*)state)->stateIndex = 0;

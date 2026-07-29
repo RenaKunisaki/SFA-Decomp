@@ -463,7 +463,7 @@ int SmallBasket_resolveCollision(GameObject* obj) {
     TrackQueryBounds sweptBounds;
 
     hitState = *(ObjHitsPriorityState**)&obj->anim.hitReactState;
-    if (objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX, (0.1f), 1, NULL, obj, 1, -1,
+    if (trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX, (0.1f), 1, NULL, obj, 1, -1,
                            SMALLBASKET_TRACK_MASK, 0) != 0) {
         hitState->contactFlags |= OBJHITS_CONTACT_FLAG_KIND0;
         hitState->localPosX = obj->anim.previousLocalPosX;

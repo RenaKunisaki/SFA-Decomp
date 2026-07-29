@@ -14,7 +14,7 @@
  *    vs s16 unkB4 on GameObject (anim.c/baddieControl/objseq).
  *  - 0xB8: f32 probePos[0] here - initialized from worldPosX
  *    (camcontrol.c:864) and passed as a float* vec3 into the
- *    swept-sphere queries (attention.c -> objBboxFn_800640cc /
+ *    swept-sphere queries (attention.c -> trackGetLineIntersect /
  *    hitDetect_calcSweptSphereBounds) - vs the per-class extra-state
  *    POINTER on GameObject. Cameras carry no extra-state block.
  * Shared-head evidence: camera.c walks anim.parent (0x30), reads

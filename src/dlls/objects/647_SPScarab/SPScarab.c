@@ -4,7 +4,7 @@
  * type 1151 = this object).
  *
  * Each scarab is launched along its facing angle, falls under gravity and
- * bounces off geometry (objBboxFn_800640cc + Vec3_ReflectAgainstNormal),
+ * bounces off geometry (trackGetLineIntersect + Vec3_ReflectAgainstNormal),
  * resting on a placement-supplied ground height. When the player comes
  * within pickupRadius it plays its pickup sfx, emits collection particles,
  * marks itself for despawn and notifies the owning shop object through its
@@ -86,7 +86,7 @@ void SPScarab_update(GameObject* obj)
     f32 distance;
     f32 phase;
     f32 outV[3];
-    f32 hit_buf[24]; /* objBboxFn_800640cc collision output */
+    f32 hit_buf[24]; /* trackGetLineIntersect collision output */
 
     state = (SpscarabState*)obj->extra;
     placement = (SpscarabPlacement*)obj->anim.placementData;
@@ -112,7 +112,7 @@ void SPScarab_update(GameObject* obj)
         obj->anim.velocityY = 0.0f;
     }
 
-    if (objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 3.0f, 0,
+    if (trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 3.0f, 0,
                            (TrackBBoxHit*)&hit_buf[0], obj, 8, -1, 0xff, 0xa) != 0)
     {
         Vec3_ReflectAgainstNormal((f32*)&hit_buf[7], &obj->anim.velocityX, outV);

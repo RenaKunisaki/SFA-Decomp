@@ -61,7 +61,7 @@ void duster_hitDetect(GameObject* obj) {
     TrackBBoxHit hit;
     int hitResult;
     state = obj->extra;
-    hitResult = objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 6.0f, 2,
+    hitResult = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 6.0f, 2,
                                    &hit, obj, 8, -1, 255, 0);
     if (hitResult != 0) {
         state->priorityHit = 1;

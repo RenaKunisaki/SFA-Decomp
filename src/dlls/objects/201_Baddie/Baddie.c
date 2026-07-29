@@ -939,7 +939,7 @@ u8 baddie_canSeeTarget(GameObject* obj, EnemyState* state, void* from, void* to)
     }
     if ((visible != 0) && ((state->flags2E4 & ENEMY_FLAG2E4_BBOX_BLOCKS_SIGHT) != 0))
     {
-        if (objBboxFn_800640cc((f32*)from, (f32*)&probe, 1.0f, 0, &bboxHit, obj,
+        if (trackGetLineIntersect((f32*)from, (f32*)&probe, 1.0f, 0, &bboxHit, obj,
                                state->unk261, -1, 0, 0) != 0)
         {
             visible = 0;
@@ -1013,7 +1013,7 @@ void baddie_updateSightQuadrants(GameObject* obj, EnemyState* state, f32 radius)
         }
         if ((visible != 0) && ((state->flags2E4 & ENEMY_FLAG2E4_BBOX_BLOCKS_SIGHT) != 0))
         {
-            if (objBboxFn_800640cc(&obj->anim.worldPosX, (f32*)&probe, 1.0f, 0, &bboxHit,
+            if (trackGetLineIntersect(&obj->anim.worldPosX, (f32*)&probe, 1.0f, 0, &bboxHit,
                                    obj,
                                    state->unk261, -1, 0, 0) != 0)
             {

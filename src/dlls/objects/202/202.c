@@ -3348,7 +3348,7 @@ void rachnopFindWallPlane(GameObject* obj, int state)
         minv[0] = obj->anim.localPosX - probeOffsets[i * 2 + 0];
         minv[1] = obj->anim.localPosY;
         minv[2] = obj->anim.localPosZ - probeOffsets[i * 2 + 1];
-        didHit = objBboxFn_800640cc(maxv, minv, 0.0f, 3, (TrackBBoxHit*)hit,
+        didHit = trackGetLineIntersect(maxv, minv, 0.0f, 3, (TrackBBoxHit*)hit,
                                     obj, 5, 3, 0xff, 0);
     }
     if (didHit != 0)
@@ -4455,7 +4455,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
         toPos[0] = (obj)->anim.localPosX - 10.0f * sinYaw;
         toPos[1] = 5.0f + (obj)->anim.localPosY;
         toPos[2] = (obj)->anim.localPosZ - 10.0f * cosYaw;
-        groundHit = objBboxFn_800640cc(fromPos, toPos, 0.0f, 3, (TrackBBoxHit*)hitOut,
+        groundHit = trackGetLineIntersect(fromPos, toPos, 0.0f, 3, (TrackBBoxHit*)hitOut,
                                        obj,
                                        (u32) * (u8*)(state + 0x261),
                                        0xffffffff, 0xff, 0);
@@ -4550,7 +4550,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
         tgtA[0] = -(10.0f * sinA - obj->anim.localPosX);
         tgtA[1] = 5.0f + obj->anim.localPosY;
         tgtA[2] = -(10.0f * cosA - obj->anim.localPosZ);
-        noHit = !(u8)objBboxFn_800640cc(posA, tgtA, 0.0f, 3, (TrackBBoxHit*)bufA, obj,
+        noHit = !(u8)trackGetLineIntersect(posA, tgtA, 0.0f, 3, (TrackBBoxHit*)bufA, obj,
                                         ((EnemyState*)state)->unk261, -1, 0xff, 0);
         ang =
             getAngle(
@@ -4600,7 +4600,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
                     tgtB[0] = -(10.0f * sinB - obj->anim.localPosX);
                     tgtB[1] = 5.0f + obj->anim.localPosY;
                     tgtB[2] = -(10.0f * cosB - obj->anim.localPosZ);
-                    if ((u8)objBboxFn_800640cc(posB, tgtB, 0.0f, 3, (TrackBBoxHit*)bufB, obj,
+                    if ((u8)trackGetLineIntersect(posB, tgtB, 0.0f, 3, (TrackBBoxHit*)bufB, obj,
                                                *(u8*)(state + 0x261), -1, 0xff, 0) == 0)
                     {
                         if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)

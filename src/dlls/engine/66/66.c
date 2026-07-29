@@ -60,7 +60,7 @@ int camcontrol_traceMove(f32* fromPos, f32* toPos, f32* outPos, u8* traceWork, c
     *(s16*)(traceWork + offsetof(CamcontrolTraceWork, hitCount)) = 0;
     blocked = 0;
     if (runBbox != 0) {
-        blocked = objBboxFn_800640cc(fromPos, outPos, radius, 1, NULL, NULL, 0x10, 0xffffffff, 0xff, 0);
+        blocked = trackGetLineIntersect(fromPos, outPos, radius, 1, NULL, NULL, 0x10, 0xffffffff, 0xff, 0);
     } else {
         blocked = 0;
     }
@@ -552,7 +552,7 @@ void CameraModeNormal_updateVerticalBounds(CameraObject* camera, int flags, int 
         *(f32*)(cameraAddr + (int)offsetof(CameraObject, anim.hitVolumeTransforms)) = range;
         *(s8*)(cameraAddr + (int)offsetof(CameraObject, anim.previousLocalPosY)) = -1;
         *(s8*)(cameraAddr + (int)offsetof(CameraObject, anim.previousLocalPosZ)) = collisionFlag;
-        res = objBboxFn_800640cc(&camera->probePosX, &camera->anim.worldPosX, range, 1, NULL, NULL, 0x10, 0xffffffff,
+        res = trackGetLineIntersect(&camera->probePosX, &camera->anim.worldPosX, range, 1, NULL, NULL, 0x10, 0xffffffff,
                                  0xff, 0);
         camera->cameraCollisionActive = res;
         pos[0] = camera->anim.worldPosX;

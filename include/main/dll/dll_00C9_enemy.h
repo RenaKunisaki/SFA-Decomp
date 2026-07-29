@@ -27,7 +27,7 @@ typedef struct EnemyState {
     u8 unk1BC[0x25F - 0x1BC];
     s8 physicsActive; /* floor-response pass enables the per-frame ground snap / footstep audio */
     u8 unk260;
-    u8 unk261; /* bbox trace filter handed to objBboxFn_800640cc */
+    u8 unk261; /* bbox trace filter handed to trackGetLineIntersect */
     u8 unk262[0x264 - 0x262];
     s8 surfaceFlags; /* ENEMY_SURFACE_FLAG_* */
     u8 unk265[0x29C - 0x265];

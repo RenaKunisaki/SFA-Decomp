@@ -591,7 +591,7 @@ void gunpowderBarrel_hitDetect(int obj) {
     }
 
     if (state->heldByCarryInterface == 0 &&
-        objBboxFn_800640cc(&barrel->anim.previousLocalPosX, &barrel->anim.localPosX, 8.0f, 1, &collision.hit,
+        trackGetLineIntersect(&barrel->anim.previousLocalPosX, &barrel->anim.localPosX, 8.0f, 1, &collision.hit,
                            (GameObject*)obj, 8, -1, 0xff, 0) != 0) {
         if (collision.hit.kind == 0x14) {
             state->detonationTrigger = GUNPOWDER_BARREL_DETONATION_TRIGGER_IMPACT;

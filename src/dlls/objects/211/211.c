@@ -1344,7 +1344,7 @@ void dll_D3_update(GameObject* obj)
 
     if (((LandedArwingMovementFlags*)&extra->flags92)->hitSurfaceType13 == 0u && extra->surfaceMode == 6)
     {
-        hitCount = objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
+        hitCount = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
                                       6.0f, 0, (TrackBBoxHit*)hitResult, obj, -0x7c, -1, 0xff,
                                       0);
         if (hitCount != 0 && *(s8*)((char*)hitResult + 0x50) == 13)

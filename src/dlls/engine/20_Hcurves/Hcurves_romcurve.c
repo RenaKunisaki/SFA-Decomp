@@ -943,7 +943,7 @@ int curves_findNearObj(GameObject* obj, int* curveTypes, int typeCount, int acti
                     voxmaps_worldToGrid(curvePos, curveGrid);
                     traceResult = voxmaps_traceLine((VoxPos*)curveGrid, (VoxPos*)objGrid, NULL, &traceHit, 0);
                     if (((traceHit == 1) || (traceResult != 0)) &&
-                        (((int (*)(f32*, f32*, f32, int, TrackBBoxHit*, GameObject*, s8, int, int, int))objBboxFn_800640cc)(
+                        (((int (*)(f32*, f32*, f32, int, TrackBBoxHit*, GameObject*, s8, int, int, int))trackGetLineIntersect)(
                              &(obj)->anim.localPosX, curvePos, ROMCURVE_ONE, 0, (TrackBBoxHit*)bboxHit, obj,
                              bboxMode, -1, 0, 0) == 0))
                     {
@@ -959,7 +959,7 @@ int curves_findNearObj(GameObject* obj, int* curveTypes, int typeCount, int acti
                     voxmaps_worldToGrid(curvePos, curveGrid);
                     traceResult = voxmaps_traceLine((VoxPos*)curveGrid, (VoxPos*)objGrid, NULL, &traceHit, 0);
                     if (((traceHit == 1) || (traceResult != 0)) &&
-                        (((int (*)(f32*, f32*, f32, int, TrackBBoxHit*, GameObject*, s8, int, int, int))objBboxFn_800640cc)(
+                        (((int (*)(f32*, f32*, f32, int, TrackBBoxHit*, GameObject*, s8, int, int, int))trackGetLineIntersect)(
                              &(obj)->anim.localPosX, curvePos, ROMCURVE_ONE, 0, (TrackBBoxHit*)bboxHit, obj,
                              bboxMode, -1, 0, 0) == 0))
                     {

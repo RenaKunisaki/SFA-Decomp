@@ -356,7 +356,7 @@ void Scarab_update(GameObject* obj) {
                 collisionDetected = 1;
             }
             if (collisionDetected == 0) {
-                collisionDetected = objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
+                collisionDetected = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
                                                        1.0f, 0, &collisionScratch.bboxHit, obj, 8, -1, 0, 0);
             }
             if (collisionDetected != 0) {
@@ -541,7 +541,7 @@ void Scarab_update(GameObject* obj) {
                     ObjAnim_SampleRootCurvePhase(&obj->anim, speed, &animationPhase);
                     ObjAnim_AdvanceCurrentMove((int)obj, animationPhase, timeDelta, NULL);
                 }
-                collisionDetected = objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
+                collisionDetected = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
                                                        1.0f, 0, &collisionScratch.bboxHit, obj, 8, -1, 0, 0);
                 {
                     ScarabSweepSphere* sphere;

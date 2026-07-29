@@ -90,7 +90,7 @@ void mmpMoonRock_handleImpact(GameObject* obj) {
     state = obj->extra;
     hit = ObjHits_GetPriorityHit(obj, &priorityObjectOut, 0, 0);
     if (hit == 0) {
-        hit = objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 8.0f, 1, &hitScratch, obj, 1, -1,
+        hit = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 8.0f, 1, &hitScratch, obj, 1, -1,
                                  0xff, 0);
     }
     if ((hit != 0) || ((((ObjHitsPriorityState*)(obj)->anim.hitReactState)->contactFlags != 0 &&
