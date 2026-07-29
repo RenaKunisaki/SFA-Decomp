@@ -150,11 +150,6 @@ void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj)
     }
 }
 
-static f32 moonrockAngleToRadians(s16 angle)
-{
-    return MOONROCK_ANGLE_TO_RADIANS(angle);
-}
-
 int triggerPointInBox(GameObject* obj, f32* point)
 {
     u8* data;
@@ -351,11 +346,6 @@ void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement)
         OSReport(sTriggerDebugTextBlock);
     }
 #undef rotMtx
-}
-
-static f32 triggerRangeToModelScale(f32 range)
-{
-    return range / 55.4256f;
 }
 
 void objSeqMoveFn_80199188(GameObject* obj, GameObject* seqObj)

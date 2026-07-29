@@ -247,13 +247,6 @@ int cfguardian_isNotPathFlying(GameObject* obj) {
     return (state->stateFlags & CFGUARDIAN_STATE_PATH_FLYING) == 0;
 }
 
-static f32 cfguardian_pathFraction(int pointIndex, int pointCount) {
-    if (pointCount == 0) {
-        return 0.0f;
-    }
-    return (f32)pointIndex / (f32)pointCount;
-}
-
 /* cfguardian_flyAlongPath: fly the guardian along a rom-curve path. On the first
  * tick (userData1 == 0) it steers to the nearest curve point then opens the
  * curve walker; thereafter it advances the walker, snaps the object to

@@ -258,13 +258,6 @@ void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state);
 
 static const u8 gDREarthWarriorPathSetupParam[4] = {1, 1, 1, 1};
 
-static void DR_EarthWarrior_setupPathState(u8* pathState, DREarthWarriorInitData* base, EarthWarriorSub* s)
-{
-    (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, (void*)gDREarthWarriorPathSetupParam);
-    s->aimAccumY = 0.0f;
-    s->aimHalfY = (f32)s->yawTurnDir;
-}
-
 void DR_EarthWarrior_func23(GameObject* obj, int mode)
 {
     EarthWarriorState* inner = (obj)->extra;
@@ -323,15 +316,6 @@ int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state)
         s->flags8D8 |= 8;
     }
     return 0;
-}
-
-static void DR_EarthWarrior_slowTurn(GameObject* obj, EarthWarriorSub* q, BaddieState* baddie)
-{
-    baddie->moveSpeed = 0.02f;
-    q->yawSmoothDivisor *= 2.0f;
-    q->yawStepScale *= 0.5f;
-    q->targetAnimSpeed *= 0.75f;
-    q->appliedYaw = (s16)(32768.0f * (obj)->anim.currentMoveProgress);
 }
 
 void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state)

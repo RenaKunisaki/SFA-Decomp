@@ -132,19 +132,6 @@ void player_followCurve(GameObject* obj, int* state, f32 cx, f32 cz, f32 t, int 
     }
 }
 
-static f32 player_clampUnitScale(f32 value)
-{
-    if (value > PLAYER_MOVE_ONE)
-    {
-        value = PLAYER_MOVE_ONE;
-    }
-    if (value < PLAYER_MOVE_ZERO)
-    {
-        value = PLAYER_MOVE_ZERO;
-    }
-    return value;
-}
-
 void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
 {
     int flags;
