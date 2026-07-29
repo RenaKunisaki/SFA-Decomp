@@ -243,12 +243,10 @@ void subtitleLoadBoxTextures(int mode)
 
 void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box)
 {
-    int c6y1;
-    int c6y0;
     int c6x1;
     int c6x0;
-    int c3y1;
-    int c3y0;
+    int c6y1;
+    int c6y0;
     int c3x1;
     s16 savedY;
     s16 savedX;
@@ -263,6 +261,8 @@ void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box)
     u16 w7;
     u16 h7;
     int c3x0;
+    int c3y1;
+    int c3y0;
     int y2;
     int w2;
     int xw;
