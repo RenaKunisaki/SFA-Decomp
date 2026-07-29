@@ -98,10 +98,10 @@ f32 gMapSavedPlayerOffsetZ;
 int gShaderCurMapEventId;
 int gShaderGameTextLoadedMapId;
 int gMapCurRomListSlot;
-u8 lbl_803DCEBD;
+u8 gWarpRequested;
 u8 gRcpWarpTransitionType;
-s16 lbl_803DCEBA;
-s16 lbl_803DCEB8;
+s16 gPendingWarpIndex;
+s16 gArrivedWarpIndex;
 s16 lbl_803DCEB6;
 s16 lbl_803DCEB4;
 int gMapBlockIndexCount;
@@ -165,7 +165,7 @@ s8 gShaderRomListSlotCount;
 u32 renderFlags;
 int* gMapBlockIndexList;
 s8 curMapLayer;
-u8 lbl_803DCDE0;
+u8 gWarpArrivalTimer;
 f32 playerMapOffsetZ;
 f32 playerMapOffsetX;
 int gMapBlockOriginZ;
@@ -368,20 +368,20 @@ void loadNextMap(void)
 {
     u8* pos;
     pos = (*gMapEventInterface)->getCurCharPos();
-    if (lbl_803DCEB8 != -1)
+    if (gArrivedWarpIndex != -1)
     {
-        lbl_803DCDE0 -= 1;
-        if ((s8)lbl_803DCDE0 < 0)
+        gWarpArrivalTimer -= 1;
+        if ((s8)gWarpArrivalTimer < 0)
         {
-            if (lbl_803DCEB8 > -1 && (s8)gRcpWarpTransitionType != 0)
+            if (gArrivedWarpIndex > -1 && (s8)gRcpWarpTransitionType != 0)
             {
                 (*gScreenTransitionInterface)->step(3, 1);
             }
-            lbl_803DCEB8 = -1;
+            gArrivedWarpIndex = -1;
             Pause_SetDisabled(0);
         }
     }
-    if ((s8)lbl_803DCEBD != 0)
+    if ((s8)gWarpRequested != 0)
     {
         if ((*gScreenTransitionInterface)->isFinished() != 0 || (s8)gRcpWarpTransitionType == 0)
         {
@@ -391,16 +391,16 @@ void loadNextMap(void)
             (*gSkyInterface)->loadLights();
             (*gNewCloudsInterface)->onMapSetup();
             gameUiResetMenuState();
-            lbl_803DCEBD = 0;
+            gWarpRequested = 0;
             *(f32*)(pos + 0) = ((WarpDestination*)gRcpPendingWarpDest)->x;
             *(f32*)(pos + 4) = ((WarpDestination*)gRcpPendingWarpDest)->y;
             *(f32*)(pos + 8) = ((WarpDestination*)gRcpPendingWarpDest)->z;
             *(s8*)(pos + 0xd) = (s8)((WarpDestination*)gRcpPendingWarpDest)->layer;
             *(s8*)(pos + 0xc) = (s8)((WarpDestination*)gRcpPendingWarpDest)->angle;
             mapReload();
-            lbl_803DCEB8 = lbl_803DCEBA;
-            lbl_803DCEBA = -1;
-            lbl_803DCDE0 = 8;
+            gArrivedWarpIndex = gPendingWarpIndex;
+            gPendingWarpIndex = -1;
+            gWarpArrivalTimer = 8;
             lbl_803DCA40 = 1;
             blankScreen(1);
         }
@@ -416,8 +416,8 @@ void warpToMap(int idx, s8 transType)
     ((WarpDestination*)gRcpPendingWarpDest)->z = ((WarpDestination*)p)->z;
     ((WarpDestination*)gRcpPendingWarpDest)->layer = ((WarpDestination*)p)->layer;
     ((WarpDestination*)gRcpPendingWarpDest)->angle = ((WarpDestination*)p)->angle;
-    lbl_803DCEBA = (s16)idx;
-    lbl_803DCEBD = 1;
+    gPendingWarpIndex = (s16)idx;
+    gWarpRequested = 1;
     *(s8*)&gRcpWarpTransitionType = transType;
     if (transType != 0)
     {
@@ -1718,10 +1718,10 @@ void beginLoadingMap(void)
     char buf[0x110];
 
     base = gLightmapDrawQueue;
-    if (lbl_803DCEB8 == -1)
+    if (gArrivedWarpIndex == -1)
     {
-        lbl_803DCEB8 = -2;
-        lbl_803DCDE0 = 8;
+        gArrivedWarpIndex = -2;
+        gWarpArrivalTimer = 8;
     }
     (*gObjectTriggerInterface)->onMapSetup();
     mapInitFn_80069990();
@@ -1788,7 +1788,7 @@ void beginLoadingMap(void)
     cam->y = p[1];
     cam->z = p[2];
     mapSetupPlayer();
-    lbl_803DCEBD = 0;
+    gWarpRequested = 0;
     (*gWaterfxInterface)->onMapSetup();
     (*gProjgfxInterface)->onMapSetup();
     (*gModgfxInterface)->onMapSetup();
@@ -1801,7 +1801,7 @@ void beginLoadingMap(void)
     (*gNewCloudsInterface)->onMapSetup();
     waterFxInit();
     player = (char*)Obj_GetPlayerObject();
-    if (lbl_803DCEB8 == -2 && player != 0 && (mapKind == 0 || mapKind == 1))
+    if (gArrivedWarpIndex == -2 && player != 0 && (mapKind == 0 || mapKind == 1))
     {
         s16 cam2 = SaveGame_getCamActionNo();
         if (cam2 != -1)

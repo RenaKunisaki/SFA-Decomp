@@ -43,8 +43,8 @@ extern void* lbl_803DCE7C;
 extern void* lbl_803DCE80;
 extern void* lbl_803DCE84;
 extern s16 lbl_803DCE90;
-extern s16 lbl_803DCEBA;
-extern s16 lbl_803DCEB8;
+extern s16 gPendingWarpIndex;
+extern s16 gArrivedWarpIndex;
 
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -196,8 +196,8 @@ void initMapBlocks(void)
         lbl_803DCE90++;
     }
     lbl_803DCE90--;
-    lbl_803DCEBA = -1;
-    lbl_803DCEB8 = -2;
+    gPendingWarpIndex = -1;
+    gArrivedWarpIndex = -2;
 
     tmp = mmAlloc(0x500, 5, 0);
     gMapTextureOverrides = tmp;
