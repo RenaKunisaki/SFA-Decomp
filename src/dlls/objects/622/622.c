@@ -35,13 +35,13 @@ static inline int* DrShackle_GetActiveModel(void* obj)
 int drshackle_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     char* state = obj->extra;
-    DrshacklePlacement* placement = *(DrshacklePlacement**)state;
+    GameObject* pathObj = ((DrshackleState*)state)->pathSlots[0];
     int i;
-    if (placement != 0)
+    if (pathObj != 0)
     {
-        placement->posX = obj->anim.localPosX;
-        placement->posY = obj->anim.localPosY;
-        placement->posZ = obj->anim.localPosZ;
+        pathObj->anim.localPosX = obj->anim.localPosX;
+        pathObj->anim.localPosY = obj->anim.localPosY;
+        pathObj->anim.localPosZ = obj->anim.localPosZ;
     }
     for (i = 0; i < animUpdate->eventCount; i++)
     {
@@ -204,8 +204,8 @@ void drshackle_update(GameObject* obj)
             {
                 if (*(u8*)(sub + 0x18) == placement->pathObjGroupBase + j * 4)
                 {
-                    ((DrshackleState*)state)->pathSlots[j] = *list;
-                    (*gObjectTriggerInterface)->runSequence(0, (void*)((DrshackleState*)state)->pathSlots[j], -1);
+                    ((DrshackleState*)state)->pathSlots[j] = (GameObject*)*list;
+                    (*gObjectTriggerInterface)->runSequence(0, ((DrshackleState*)state)->pathSlots[j], -1);
                 }
             }
             list++;
@@ -222,7 +222,7 @@ void drshackle_init(GameObject* obj, char* arg)
     char* state = (obj)->extra;
     ObjGroup_AddObject((int)obj, DRSHACKLE_OBJGROUP);
     ((BitFlags8*)(state + 0x1a))->b0 = (mainGetBit(((DrshacklePlacement*)arg)->activeGameBit) == 0);
-    ((DrshackleState*)state)->pathPointA = arg[0x18] % 2;
+    ((DrshackleState*)state)->pathPointA = ((DrshacklePlacement*)arg)->startPathPoint % 2;
     (obj)->animEventCallback = drshackle_SeqFn;
     if (((DrshacklePlacement*)arg)->quarterTurns == 1)
     {

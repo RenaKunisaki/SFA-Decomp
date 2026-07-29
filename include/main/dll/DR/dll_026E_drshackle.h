@@ -2,16 +2,14 @@
 #define MAIN_DLL_DR_DLL_026E_DRSHACKLE_H_
 
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "global.h"
 #include "main/objseq.h"
 
 typedef struct DrshacklePlacement
 {
-    u8 pad0[0xC - 0x0];
-    f32 posX; /* 0x0C */
-    f32 posY; /* 0x10 */
-    f32 posZ; /* 0x14 */
-    u8 pad18[0x19 - 0x18];
+    ObjPlacement base;
+    s8 startPathPoint;    /* 0x18: seeds pathPointA (only its parity is used) */
     s8 unk19;             /* 0x19: reported by drshackle_func0B */
     s16 pathObjGroupBase; /* 0x1A: base id of the path objects this chain binds */
     s16 quarterTurns;     /* 0x1C: rotZ in quarter turns; ==1 also selects two slots */
@@ -20,7 +18,7 @@ typedef struct DrshacklePlacement
 
 typedef struct DrshackleState
 {
-    s32 pathSlots[2]; /* 0x00: path-object pointer slots (one per slot) */
+    GameObject* pathSlots[2]; /* 0x00: the path-point objects this chain is bound to */
     union {
         struct
         {
@@ -39,7 +37,7 @@ typedef struct DrshackleState
     u8 pad1D[0x20 - 0x1D];
 } DrshackleState;
 
-STATIC_ASSERT(offsetof(DrshacklePlacement, posX) == 0x0C);
+STATIC_ASSERT(offsetof(DrshacklePlacement, startPathPoint) == 0x18);
 STATIC_ASSERT(offsetof(DrshacklePlacement, unk19) == 0x19);
 STATIC_ASSERT(offsetof(DrshacklePlacement, pathObjGroupBase) == 0x1A);
 STATIC_ASSERT(offsetof(DrshacklePlacement, quarterTurns) == 0x1C);

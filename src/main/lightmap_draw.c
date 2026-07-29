@@ -538,7 +538,7 @@ void lightmapDrawQueuedObject(GameObject* obj)
         {
             objShadowRender(obj, 0, 0, framesThisStep);
         }
-        else if (((ObjAnimComponent*)obj)->modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH)
+        else if (obj->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH)
         {
             objDrawGroundShadow(obj, model);
         }

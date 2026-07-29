@@ -83,7 +83,7 @@ void CameraModeArwing_update(GameObject* obj)
     obj->anim.worldPosZ = ((GameObject*)targetObj)->anim.worldPosZ + ((CameraArwingWork*)gCamArwingWork)->
         posZOffset;
 
-    if ((s8)targetObj[0xac] != 0x26)
+    if (((GameObject*)targetObj)->anim.mapEventSlot != 0x26)
     {
         f32 t = ((CameraArwingWork*)gCamArwingWork)->zEaseNum / ((CameraArwingWork*)gCamArwingWork)->zEaseDenom;
         t = t - 1.0f;
