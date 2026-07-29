@@ -1178,7 +1178,6 @@ extern int gObjDefCaptureMode;
 extern GameObject* gEffectBoxObjects[20];
 
 void Obj_RegisterObject(GameObject* obj, int b);
-int loadModLines(int n, s16* out);
 
 extern char sObjUnknownTypeUsingDummyObjectWarning[];
 
@@ -1186,8 +1185,32 @@ extern char sObjUnknownTypeUsingDummyObjectWarning[];
 extern u8 gObjCameraSetupBlock[32];
 
 extern char sObjFreeNonExistentObjectWarning[];
-void Obj_RunInitCallback(GameObject* obj, int cb, int unused);
-void ObjAnim_LoadMoveEvents(u8* obj, int dummy, ObjAnimEventTable* eventTable, u32 moveId, u8 load);
+
+int loadModLines(int idx, s16* outCount)
+{
+    int result;
+    int* hdr;
+    int size;
+    int start;
+
+    result = 0;
+    if (idx > (getDataFileSize(MLDF_FILEID_MODLINES_TAB) - 4) >> 2)
+    {
+        return 0;
+    }
+    hdr = mmAlloc(0x10, 0x1a, 0);
+    fileLoadToBufferOffset(MLDF_FILEID_MODLINES_TAB, hdr, idx << 2, 8);
+    start = hdr[0];
+    size = hdr[1] - hdr[0];
+    if (size > 0)
+    {
+        result = (int)mmAlloc(size, 5, 0);
+        fileLoadToBufferOffset(MLDF_FILEID_MODLINES_BIN, (void*)result, start, size);
+    }
+    mm_free(hdr);
+    *outCount = (u32)size / 20;
+    return result;
+}
 
 static inline void Obj_FreeDeferredObjects(void)
 {
@@ -1206,6 +1229,7 @@ static inline void Obj_FreeDeferredObjects(void)
 
 u8* loadObjectFile(int id)
 {
+    extern int loadModLines(int idx, s16* outCount);
     int size;
     int base;
     u8* buf;
@@ -1307,6 +1331,43 @@ void objGetWeaponDa(u8* obj, int objType, ObjWeaponDaTable* weaponDaTable, int k
             else
             {
                 fileLoadToBufferOffset(MLDF_FILEID_WEAPONDA_BIN, weaponDaTable->entries, da2, weaponDaTable->byteCount);
+            }
+            return;
+        }
+        i += 3;
+    }
+}
+
+void ObjAnim_LoadMoveEvents(u8* obj, int dummy, ObjAnimEventTable* eventTable, u32 moveId, u8 load)
+{
+    int i;
+    s16* tbl;
+    s16 da2;
+
+    tbl = ((GameObject*)obj)->anim.modelInstance->eventMoveTable;
+    eventTable->byteCount = 0;
+    if (tbl == NULL)
+    {
+        return;
+    }
+    i = 0;
+    while (tbl[i] != -1)
+    {
+        if (tbl[i] == (int)moveId)
+        {
+            da2 = tbl[i + 1];
+            eventTable->byteCount = tbl[i + 2];
+            if (eventTable->byteCount > 0x50)
+            {
+                eventTable->byteCount = 0x50;
+            }
+            if (load == 0)
+            {
+                getTabEntry(eventTable->entries, MLDF_FILEID_OBJEVENT_BIN, da2, eventTable->byteCount);
+            }
+            else
+            {
+                fileLoadToBufferOffset(MLDF_FILEID_OBJEVENT_BIN, eventTable->entries, da2, eventTable->byteCount);
             }
             return;
         }
@@ -1441,6 +1502,51 @@ void Obj_UpdateObject(GameObject* obj)
     if (*(void**)((u8*)obj + 0x58) != NULL)
     {
         *(u8*)(*(u8**)((u8*)obj + 0x58) + 0x10f) = 0;
+    }
+}
+
+void Obj_RunInitCallback(GameObject* obj, int cb, int unused)
+{
+    s16 mode = obj->anim.romDefNo;
+    switch (mode)
+    {
+    case 0x1f:
+    case 0:
+        objLoadPlayerFromSave((int)obj);
+        break;
+    default:
+    {
+        int* p = (int*)obj->anim.dll;
+        if (p != NULL)
+        {
+            int fn = ((int*)*p)[1];
+            if (fn != -1 && (void*)fn != NULL)
+            {
+                ((void (*)(GameObject*))fn)(obj);
+            }
+        }
+        break;
+    }
+    }
+    {
+        ObjModelState* modelState = obj->anim.modelState;
+        if (modelState != NULL)
+        {
+            modelState->flags |= OBJ_MODEL_STATE_SHADOW_INIT_CALLBACK_RAN;
+        }
+    }
+    {
+        f32 zero;
+        obj->anim.previousLocalPosX = obj->anim.localPosX;
+        obj->anim.previousLocalPosY = obj->anim.localPosY;
+        obj->anim.previousLocalPosZ = obj->anim.localPosZ;
+        obj->anim.previousWorldPosX = obj->anim.localPosX;
+        obj->anim.previousWorldPosY = obj->anim.localPosY;
+        obj->anim.previousWorldPosZ = obj->anim.localPosZ;
+        zero = lbl_803DE88C;
+        obj->externalVelX = zero;
+        obj->externalVelY = zero;
+        obj->externalVelZ = zero;
     }
 }
 
@@ -1735,6 +1841,7 @@ int objGetTotalDataSize(void* tmpl, u8* def, s16* data, int flags)
 
 void Obj_RegisterObject(GameObject* obj, int flags)
 {
+    extern void Obj_RunInitCallback(GameObject* obj, int cb, int unused);
     ObjAnimComponent* object;
     int id;
     int prev;
@@ -1819,6 +1926,7 @@ void Obj_RegisterObject(GameObject* obj, int flags)
 
 void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int unused)
 {
+    extern void ObjAnim_LoadMoveEvents(u8* obj, int dummy, ObjAnimEventTable* eventTable, u32 moveId, u8 load);
     int id;
     int offsets[20];
     void* models[20];
@@ -2169,43 +2277,6 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     }
     obj->parent = parent;
     return obj;
-}
-
-void ObjAnim_LoadMoveEvents(u8* obj, int dummy, ObjAnimEventTable* eventTable, u32 moveId, u8 load)
-{
-    int i;
-    s16* tbl;
-    s16 da2;
-
-    tbl = ((GameObject*)obj)->anim.modelInstance->eventMoveTable;
-    eventTable->byteCount = 0;
-    if (tbl == NULL)
-    {
-        return;
-    }
-    i = 0;
-    while (tbl[i] != -1)
-    {
-        if (tbl[i] == (int)moveId)
-        {
-            da2 = tbl[i + 1];
-            eventTable->byteCount = tbl[i + 2];
-            if (eventTable->byteCount > 0x50)
-            {
-                eventTable->byteCount = 0x50;
-            }
-            if (load == 0)
-            {
-                getTabEntry(eventTable->entries, MLDF_FILEID_OBJEVENT_BIN, da2, eventTable->byteCount);
-            }
-            else
-            {
-                fileLoadToBufferOffset(MLDF_FILEID_OBJEVENT_BIN, eventTable->entries, da2, eventTable->byteCount);
-            }
-            return;
-        }
-        i += 3;
-    }
 }
 
 GameObject* objSetupObject(ObjPlacement* data, int flags, int mapLayer, int objIndex, void* parent)
@@ -2683,75 +2754,4 @@ void Obj_InitObjectSystem(void)
     gObjPartitionPivot = 0;
     objTypeInit();
     ObjHits_ResetWorkBuffers();
-}
-
-int loadModLines(int idx, s16* outCount)
-{
-    int result;
-    int* hdr;
-    int size;
-    int start;
-
-    result = 0;
-    if (idx > (getDataFileSize(MLDF_FILEID_MODLINES_TAB) - 4) >> 2)
-    {
-        return 0;
-    }
-    hdr = mmAlloc(0x10, 0x1a, 0);
-    fileLoadToBufferOffset(MLDF_FILEID_MODLINES_TAB, hdr, idx << 2, 8);
-    start = hdr[0];
-    size = hdr[1] - hdr[0];
-    if (size > 0)
-    {
-        result = (int)mmAlloc(size, 5, 0);
-        fileLoadToBufferOffset(MLDF_FILEID_MODLINES_BIN, (void*)result, start, size);
-    }
-    mm_free(hdr);
-    *outCount = (u32)size / 20;
-    return result;
-}
-
-void Obj_RunInitCallback(GameObject* obj, int cb, int unused)
-{
-    s16 mode = obj->anim.romDefNo;
-    switch (mode)
-    {
-    case 0x1f:
-    case 0:
-        objLoadPlayerFromSave((int)obj);
-        break;
-    default:
-    {
-        int* p = (int*)obj->anim.dll;
-        if (p != NULL)
-        {
-            int fn = ((int*)*p)[1];
-            if (fn != -1 && (void*)fn != NULL)
-            {
-                ((void (*)(GameObject*))fn)(obj);
-            }
-        }
-        break;
-    }
-    }
-    {
-        ObjModelState* modelState = obj->anim.modelState;
-        if (modelState != NULL)
-        {
-            modelState->flags |= OBJ_MODEL_STATE_SHADOW_INIT_CALLBACK_RAN;
-        }
-    }
-    {
-        f32 zero;
-        obj->anim.previousLocalPosX = obj->anim.localPosX;
-        obj->anim.previousLocalPosY = obj->anim.localPosY;
-        obj->anim.previousLocalPosZ = obj->anim.localPosZ;
-        obj->anim.previousWorldPosX = obj->anim.localPosX;
-        obj->anim.previousWorldPosY = obj->anim.localPosY;
-        obj->anim.previousWorldPosZ = obj->anim.localPosZ;
-        zero = lbl_803DE88C;
-        obj->externalVelX = zero;
-        obj->externalVelY = zero;
-        obj->externalVelZ = zero;
-    }
 }
