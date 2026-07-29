@@ -4,7 +4,7 @@
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_006A_modgfx.h"
 #include "main/dll/dll_0083_modgfx.h"
-#include "main/dll/foodbag.h"
+#include "main/dll/dll_0084_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
