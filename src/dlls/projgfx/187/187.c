@@ -10,26 +10,28 @@
  * projquakeshock, etc.) which return the -1 unsupported sentinel, wallpower
  * returns 0.
  */
-#include "dolphin/os/OSReport.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00BB_projwallpower.h"
+#include "dolphin/os/OSReport.h"
 
-int projwallpower_doUnsupported(void)
-{
+extern char sProjwallpowerDoNoLongerSupported[];
+
+int projwallpower_doUnsupported(void) {
     OSReport(sProjwallpowerDoNoLongerSupported);
     return 0;
 }
 
-void projwallpower_release(void)
-{
+void projwallpower_release(void) {
 }
 
-void projwallpower_initialise(void)
-{
+void projwallpower_initialise(void) {
 }
 
-DllDescriptorTable lbl_80319840 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projwallpower_initialise, projwallpower_release, (void*)0x00000000,
-                                    projwallpower_doUnsupported}};
+ProjwallpowerResourceDescriptor gProjwallpowerResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projwallpower_initialise,
+    projwallpower_release,
+    NULL,
+    projwallpower_doUnsupported,
+};
 
 char sProjwallpowerDoNoLongerSupported[] = "<projwallpower Do>No Longer supported \n";
