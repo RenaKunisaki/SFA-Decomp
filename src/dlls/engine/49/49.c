@@ -20,6 +20,7 @@
 #include "main/frame_timing.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_0031_minimap.h"
+#include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/minimap_api.h"
 #include "main/textrender_api.h"
 #include "main/pause_menu_api.h"
@@ -44,8 +45,6 @@ f32 gMinimapZoomStepMax = 1.05f;
 f32 gMinimapZoomStep = 1.0f;
 int gMinimapPrevAreaNameId = -1;
 f32 gMinimapWorldToTexScale = 0.08f;
-
-#define CAMMODE_VIEWFINDER 0x44
 
 #define MINIMAP_TEXTURE_COMPASS 0xBE5
 
@@ -349,7 +348,8 @@ int Minimap_update(void)
         {
             mapTextureId = 0;
         }
-        if ((*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER || (gMinimapEnabled == 0 && lbl_803DD7BA == 0) ||
+        if ((*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
+            (gMinimapEnabled == 0 && lbl_803DD7BA == 0) ||
             Camera_GetViewportYOffset() != 0 ||
             (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
             objIsCurModelNotZero(player) == 0 || pauseMenuState != 0 || gTimeListPromptSelection != 0)
@@ -845,7 +845,7 @@ void Minimap_frameStart(void)
 
     sfx = 0;
     player = (int)Obj_GetPlayerObject();
-    if ((void*)player == NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
+    if ((void*)player == NULL || (*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
         Camera_GetViewportYOffset() != 0 || (((GameObject*)player)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
         objIsCurModelNotZero((void*)player) == 0 || pauseMenuState != 0)
     {

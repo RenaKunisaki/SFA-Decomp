@@ -14,6 +14,7 @@
 #include "string.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_0042_unk.h"
+#include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/dll_0049_cameramodecombat.h"
 #include "dolphin/os.h"
 #include "main/resource.h"
@@ -26,9 +27,6 @@ u8 gCutCamBboxBlocked;
 #define PAD_TRIGGER_L 0x40
 
 #define CAMMODE_CLIMB 0x43
-#define CAMMODE_VIEWFINDER 0x44
-
-
 int camcontrol_traceMove(float* fromPos, float* toPos, float* outPos, u8* traceWork, char traceMode, u8 runTrace,
                          u8 runBbox, float radius)
 {
@@ -158,7 +156,7 @@ void camcontrol_updateTargetAction(CameraObject* camera, GameObject* target)
     u16 buttons;
     int cond;
     CamcontrolAction43Payload action43Payload;
-    CamcontrolAction44Payload action44Payload;
+    CameraModeViewfinderSettings viewfinderSettings;
 
     if (target->pendingParentObj == NULL)
     {
@@ -176,11 +174,13 @@ void camcontrol_updateTargetAction(CameraObject* camera, GameObject* target)
         else if ((((buttons & PAD_TRIGGER_Z) != 0) && (target->anim.classId == 1)) &&
                  (cond = playerIsInNormalControl((GameObject*)target), cond != 0))
         {
-            action44Payload.distance = gCamcontrolModeSettings->minDistance;
-            action44Payload.yOffset = gCamcontrolModeSettings->lowerHeightOffset;
-            action44Payload.height = gCamcontrolModeSettings->targetHeight;
+            viewfinderSettings.radius = gCamcontrolModeSettings->minDistance;
+            viewfinderSettings.yOffset = gCamcontrolModeSettings->lowerHeightOffset;
+            viewfinderSettings.height = gCamcontrolModeSettings->targetHeight;
             Camera_setBlendCurveMode(0);
-            (*gCameraInterface)->setMode(CAMMODE_VIEWFINDER, 1, 0, 0xc, &action44Payload, 0xf, 0xfe);
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_VIEWFINDER_RESOURCE_ID, 1, 0, sizeof(CameraModeViewfinderSettings),
+                          &viewfinderSettings, 0xf, 0xfe);
         }
         else
         {

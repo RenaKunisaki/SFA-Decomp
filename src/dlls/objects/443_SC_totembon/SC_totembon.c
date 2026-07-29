@@ -11,6 +11,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
+#include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebits_api.h"
@@ -53,7 +54,6 @@ STATIC_ASSERT(offsetof(ScTotemBondLightfootSetup, unknown32) == 0x32);
 STATIC_ASSERT(offsetof(ScTotemBondLightfootSetup, unknown33) == 0x33);
 STATIC_ASSERT(sizeof(ScTotemBondLightfootSetup) == 0x38);
 
-#define SC_TOTEM_BOND_CAMERA_MODE_VIEWFINDER 0x44
 #define SC_TOTEM_BOND_CAMERA_MODE_DEFAULT    0x42
 
 #define SC_TOTEM_BOND_MAP_SWAPCIRCLE 0xE
@@ -156,7 +156,7 @@ u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
         switch (eventId) {
         case 1:
             state->eventFlags |= SC_TOTEM_BOND_EVENT_START_ORBS;
-            (*gObjectTriggerInterface)->setCamVars(SC_TOTEM_BOND_CAMERA_MODE_VIEWFINDER, 1, 0, 0);
+            (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_VIEWFINDER_RESOURCE_ID, 1, 0, 0);
             break;
         case 2:
             objects = ObjList_GetObjects(&startForEvent2, &countForEvent2);

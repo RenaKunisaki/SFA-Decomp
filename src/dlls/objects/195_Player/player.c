@@ -2,6 +2,7 @@
 
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
+#include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/dll_0052_cameramodeforcebehind.h"
 #include "main/dll/dll_0053_cameramodecloudrunner.h"
 #include "main/dll/partfx_interface.h"
@@ -17121,7 +17122,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 break;
             }
             case 6:
-                (*gObjectTriggerInterface)->setCamVars(0x44, 0, 0, 0);
+                (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_VIEWFINDER_RESOURCE_ID, 0, 0, 0);
                 (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, (int)inner, 0x17);
                 *(int*)&((PlayerState*)inner)->baddie.unk304 = 0;
                 break;

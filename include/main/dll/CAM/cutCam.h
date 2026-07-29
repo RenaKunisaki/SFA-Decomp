@@ -11,12 +11,6 @@ typedef struct CamcontrolAction43Payload {
   u8 immediate;
 } CamcontrolAction43Payload;
 
-typedef struct CamcontrolAction44Payload {
-  f32 distance;
-  f32 yOffset;
-  s16 height;
-} CamcontrolAction44Payload;
-
 #define CAMCONTROL_TRACE_RADIUS_OFFSET 0x40
 #define CAMCONTROL_TRACE_BBOX_HIT_OFFSET 0x50
 #define CAMCONTROL_TRACE_MODE_OFFSET 0x54
