@@ -206,7 +206,7 @@ int playerState00(int obj, int state);
 void fn_802A81B8(GameObject* obj, int state, f32* out);
 int fn_802A8680(int p1, int p2, void* src, f32* vec, int out, int flag);
 int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance);
-void fn_802A93F4(GameObject* obj, int p2, int p3);
+void playerRestoreAfterSequence(GameObject* obj, int p2, int p3);
 void playerCastIceSpell(GameObject* unused);
 int playerCanUseStaffBooster(GameObject* obj, int p2);
 int playerCanCastPortalOpenSpell(GameObject* obj, int p2);
@@ -11994,7 +11994,7 @@ int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance)
     return 0;
 }
 
-void fn_802A93F4(GameObject* obj, int p2, int p3)
+void playerRestoreAfterSequence(GameObject* obj, int p2, int p3)
 {
     PlayerState* inner = obj->extra;
     f32 dist;
@@ -16538,7 +16538,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
 
     va = (int)objModelGetVecFn_800395d8((GameObject*)(obj), 0);
     vb = (int)objModelGetVecFn_800395d8((GameObject*)(obj), 9);
-    seq->freeCallback = (ObjAnimSequenceFreeCallback)fn_802A93F4;
+    seq->freeCallback = (ObjAnimSequenceFreeCallback)playerRestoreAfterSequence;
     if (gPlayerStaffObject != NULL)
     {
         Shield_setMode(gPlayerStaffObject, 0);

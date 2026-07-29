@@ -113,8 +113,16 @@ class BuildInfo:
         return self._by_src.get(src.replace("\\", "/"))
 
 
-def compile_md5(content: bytes, src: str, info: BuildInfo, workdir: Path) -> str:
-    """Compile `content` as if it were `src`. Returns an md5, or 'FAIL'."""
+def compile_md5(content: bytes, src: str, info: BuildInfo, workdir: Path,
+                head_includes: bool = False) -> str:
+    """Compile `content` as if it were `src`. Returns an md5, or 'FAIL'.
+
+    `head_includes` compiles against HEAD's include tree instead of the
+    worktree's.  Without it the baseline compile of HEAD's .c resolves headers
+    against your MODIFIED headers, so any change that renames a header field,
+    macro or declaration makes the baseline fail to compile -- and the tool
+    reports FAIL for a change that is in fact byte-neutral.
+    """
     got = info.get(src)
     if got is None:
         return "NOBUILD"
@@ -134,12 +142,44 @@ def compile_md5(content: bytes, src: str, info: BuildInfo, workdir: Path) -> str
     if SJIS.is_file():
         argv.append(str(SJIS))
     argv.append(str(cc))
-    argv += shlex.split(cflags)
+    flags = shlex.split(cflags)
+    if head_includes:
+        tree = head_include_tree()
+        if tree is not None:
+            out = []
+            i = 0
+            while i < len(flags):
+                if flags[i] == "-i" and i + 1 < len(flags) and \
+                        flags[i + 1] in ("include", "./include"):
+                    out += ["-i", str(tree / "include")]
+                    i += 2
+                else:
+                    out.append(flags[i])
+                    i += 1
+            flags = out
+    argv += flags
     argv += ["-c", "-o", str(ofile), str(cfile)]
     subprocess.run(argv, cwd=REPO, capture_output=True, text=True)
     if not ofile.is_file() or ofile.stat().st_size == 0:
         return "FAIL"
     return hashlib.md5(ofile.read_bytes()).hexdigest()
+
+
+_HEAD_TREE: list = []
+
+
+def head_include_tree() -> Path | None:
+    """Materialise HEAD's `include/` once, for like-for-like baseline compiles."""
+    if _HEAD_TREE:
+        return _HEAD_TREE[0]
+    d = Path(tempfile.mkdtemp(prefix="bn_headinc_"))
+    r = subprocess.run(f"git archive HEAD include | tar -x -C {shlex.quote(str(d))}",
+                       cwd=REPO, shell=True, capture_output=True)
+    if r.returncode != 0 or not (d / "include").is_dir():
+        _HEAD_TREE.append(None)
+        return None
+    _HEAD_TREE.append(d)
+    return d
 
 
 def head_bytes(src: str) -> bytes | None:
@@ -178,20 +218,23 @@ def main() -> int:
         for src in dict.fromkeys(srcs):
             cur = (REPO / src).read_bytes()
             if args.md5:
-                print(f"{compile_md5(cur, src, info, work)}  {src}")
+                m = compile_md5(cur, src, info, work)
+                print(f"{m}  {src}")
+                if m in ("FAIL", "NOCC", "NOBUILD"):
+                    bad += 1          # a failed compile is never a pass
                 continue
             old = head_bytes(src)
             if old is None:
                 print(f"?? not in HEAD          {src}")
                 bad += 1
                 continue
-            a = compile_md5(old, src, info, work)
+            a = compile_md5(old, src, info, work, head_includes=True)
             b = compile_md5(cur, src, info, work)
             # A gate may not flake. If the two versions disagree, re-compile the
             # baseline and require the compiler to have been deterministic before
             # believing the difference is real.
             if a != b and a not in ("FAIL", "NOCC", "NOBUILD"):
-                if compile_md5(old, src, info, work) != a:
+                if compile_md5(old, src, info, work, head_includes=True) != a:
                     print(f"NONDET   compiler not reproducible  {src}")
                     bad += 1
                     continue
