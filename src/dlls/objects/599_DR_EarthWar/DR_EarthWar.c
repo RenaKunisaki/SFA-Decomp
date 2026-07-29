@@ -318,42 +318,34 @@ int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state)
     return 0;
 }
 
-void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state)
-{
-    EarthWarriorSub* s = (EarthWarriorSub*)sub;
-    int angle;
-    int delta;
-    s16* vec0;
-    s16* vec9;
-    f32 aimScale;
-    angle = s->yawTurnDir << 1;
-    if (angle < -0x41)
-    {
-        delta = -0x41;
+void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state) {
+    EarthWarriorSub* warrior = (EarthWarriorSub*)sub;
+    int targetAngle;
+    int angleDelta;
+    s16* primaryLookBone;
+    s16* secondaryLookBone;
+    f32 responseScale;
+    targetAngle = warrior->yawTurnDir << 1;
+    if (targetAngle < -0x41) {
+        angleDelta = -0x41;
+    } else if (targetAngle > 0x41) {
+        angleDelta = 0x41;
+    } else {
+        angleDelta = targetAngle;
     }
-    else if (angle > 0x41)
-    {
-        delta = 0x41;
+    angleDelta = angleDelta * 0xb6;
+    angleDelta -= (u16)warrior->aimAccumY;
+    if (angleDelta > 0x8000) {
+        angleDelta = angleDelta - 0xffff;
     }
-    else
-    {
-        delta = angle;
+    if (angleDelta < -0x8000) {
+        angleDelta = angleDelta + 0xffff;
     }
-    delta = delta * 0xb6;
-    delta -= (u16)s->aimAccumY;
-    if (delta > 0x8000)
-    {
-        delta = delta - 0xffff;
-    }
-    if (delta < -0x8000)
-    {
-        delta = delta + 0xffff;
-    }
-    aimScale = 0.15f;
-    delta = (int)((f32)delta * aimScale);
-    delta = (delta < -0x16c) ? -0x16c : ((delta > 0x16c) ? 0x16c : delta);
-    s->aimAccumY = delta * timeDelta + (f32)(s32)*(s16*)&s->aimAccumY;
-    s->aimHalfY = s->aimAccumY / 2;
+    responseScale = 0.15f;
+    angleDelta = (int)((f32)angleDelta * responseScale);
+    angleDelta = (angleDelta < -0x16c) ? -0x16c : ((angleDelta > 0x16c) ? 0x16c : angleDelta);
+    warrior->aimAccumY = angleDelta * timeDelta + (f32)(s32) * (s16*)&warrior->aimAccumY;
+    warrior->aimHalfY = warrior->aimAccumY / 2;
     {
         f32 step;
         f32 scale;
@@ -362,46 +354,41 @@ void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state)
         ph = (f32)(s32)((BaddieState*)state)->spawnRotY / 8192.0f;
         scale = 182.0f;
         step = 10.0f;
-        delta = (int)(scale * (step * -((ph < -1.0f) ? -1.0f : ((ph > 1.0f) ? 1.0f : ph))));
-        delta -= (u16)s->aimAccumX;
+        angleDelta = (int)(scale * (step * -((ph < -1.0f) ? -1.0f : ((ph > 1.0f) ? 1.0f : ph))));
+        angleDelta -= (u16)warrior->aimAccumX;
     }
-    if (delta > 0x8000)
-    {
-        delta = delta - 0xffff;
+    if (angleDelta > 0x8000) {
+        angleDelta = angleDelta - 0xffff;
     }
-    if (delta < -0x8000)
-    {
-        delta = delta + 0xffff;
+    if (angleDelta < -0x8000) {
+        angleDelta = angleDelta + 0xffff;
     }
-    s->aimAccumX += delta;
-    vec0 = objModelGetVecFn_800395d8(obj, 0);
-    vec9 = objModelGetVecFn_800395d8(obj, 9);
+    warrior->aimAccumX += angleDelta;
+    primaryLookBone = objModelGetVecFn_800395d8(obj, 0);
+    secondaryLookBone = objModelGetVecFn_800395d8(obj, 9);
     objModelGetVecFn_800395d8(obj, 4);
     objModelGetVecFn_800395d8(obj, 5);
-    if (vec0 != NULL)
-    {
-        int sv;
-        vec0[0] = -s->aimAccumX;
-        vec0[1] = s->aimAccumY / 2;
-        sv = vec0[1];
-        sv = (sv < -4000) ? -4000 : ((sv > 4000) ? 4000 : sv);
-        vec0[1] = sv;
-        vec0[2] = 0;
+    if (primaryLookBone != NULL) {
+        int clampedY;
+        primaryLookBone[0] = -warrior->aimAccumX;
+        primaryLookBone[1] = warrior->aimAccumY / 2;
+        clampedY = primaryLookBone[1];
+        clampedY = (clampedY < -4000) ? -4000 : ((clampedY > 4000) ? 4000 : clampedY);
+        primaryLookBone[1] = clampedY;
+        primaryLookBone[2] = 0;
     }
-    if (vec9 != NULL)
-    {
-        int sv;
-        int t;
-        vec9[1] = s->aimHalfY;
-        sv = vec9[1];
-        sv = (sv < -3000) ? -3000 : ((sv > 3000) ? 3000 : sv);
-        vec9[1] = sv;
-        t = s->aimHalfY;
-        if (t < 0)
-        {
-            t = -t;
+    if (secondaryLookBone != NULL) {
+        int clampedY;
+        int absoluteHalfY;
+        secondaryLookBone[1] = warrior->aimHalfY;
+        clampedY = secondaryLookBone[1];
+        clampedY = (clampedY < -3000) ? -3000 : ((clampedY > 3000) ? 3000 : clampedY);
+        secondaryLookBone[1] = clampedY;
+        absoluteHalfY = warrior->aimHalfY;
+        if (absoluteHalfY < 0) {
+            absoluteHalfY = -absoluteHalfY;
         }
-        vec9[0] = (s16)(t >> 1);
+        secondaryLookBone[0] = (s16)(absoluteHalfY >> 1);
     }
 }
 int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state);
