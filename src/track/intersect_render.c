@@ -61,9 +61,9 @@ extern u32 lbl_803DB6A8;
 extern f32 gCausticReflectionDiskScale;
 extern f32 lbl_803DB6B0;
 extern f32 lbl_803DB6B4;
-extern f32 lbl_803DB6B8;
-extern GXColor lbl_803DB6BC;
-extern f32 lbl_803DB6C0;
+extern f32 gFrozenReflectionNormalScale;
+extern GXColor gFrozenTintColor;
+extern f32 gFrozenWhirlpoolTexScale;
 extern f32 gDistortionTexCoordScale;
 extern f32 gDistortionAlphaRadius;
 extern f32 gDistortionIndMtxRadius;
@@ -1099,7 +1099,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     Camera_RebuildProjectionMatrix();
 }
 
-int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
+int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
 {
     Mtx mtx_54;
     Mtx mtx_24;
@@ -1123,7 +1123,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
 
     if (model == 0 || ((ModelFileHeader*)model)->normalCount != 0)
     {
-        PSMTXScale(mtx_54, lbl_803DB6B8, lbl_803DB6B8, 0.0f);
+        PSMTXScale(mtx_54, gFrozenReflectionNormalScale, gFrozenReflectionNormalScale, 0.0f);
         mtx_54[2][3] = 1.0f;
         PSMTXTrans(mtx_24, 0.5f, 0.5f, 0.0f);
         PSMTXConcat(mtx_24, mtx_54, mtx_54);
@@ -1138,7 +1138,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
     GXLoadTexMtxImm(mtx_54, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX6);
 
-    PSMTXScale(mtx_54, lbl_803DB6C0, lbl_803DB6C0, 0.0f);
+    PSMTXScale(mtx_54, gFrozenWhirlpoolTexScale, gFrozenWhirlpoolTexScale, 0.0f);
     mtx_54[2][3] = 1.0f;
     GXLoadTexMtxImm(mtx_54, GX_PTTEXMTX5, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX5);
@@ -1173,7 +1173,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
     temp.a = alpha_byte;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
-    GXSetTevKColor(GX_KCOLOR1, lbl_803DB6BC);
+    GXSetTevKColor(GX_KCOLOR1, gFrozenTintColor);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K1);
 
     pcb = (void (*)(void*, void**, int))ObjModel_GetPostRenderCallback((ObjModel*)obj_b);
