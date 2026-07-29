@@ -133,29 +133,29 @@ void modelApplyBoneTransform(u8* p, u8* out, u16 n, u8** pd, u8** pe, int f, u16
             {
                 b = modelBoneTransforms_next(b, &bx, &by, &bz);
                 a = modelBoneTransforms_next(a, &ax, &ay, &az);
-                *(s16*)out = ((u32)(ax * wHi + bx * f) >> 16) + *(s16*)p;
-                *(s16*)(out + 2) = ((u32)(ay * wHi + by * f) >> 16) + *(s16*)(p + 2);
-                *(s16*)(out + 4) = ((u32)(az * wHi + bz * f) >> 16) + *(s16*)(p + 4);
+                *(u16*)out = ((u32)(ax * wHi + bx * f) >> 16) + *(s16*)p;
+                *(u16*)(out + 2) = ((u32)(ay * wHi + by * f) >> 16) + *(s16*)(p + 2);
+                *(u16*)(out + 4) = ((u32)(az * wHi + bz * f) >> 16) + *(s16*)(p + 4);
             }
             else
             {
                 a = modelBoneTransforms_next(a, &ax, &ay, &az);
-                *(s16*)out = ((u32)(ax * wHi) >> 16) + *(s16*)p;
-                *(s16*)(out + 2) = ((u32)(ay * wHi) >> 16) + *(s16*)(p + 2);
-                *(s16*)(out + 4) = ((u32)(az * wHi) >> 16) + *(s16*)(p + 4);
+                *(u16*)out = ((u32)(ax * wHi) >> 16) + *(s16*)p;
+                *(u16*)(out + 2) = ((u32)(ay * wHi) >> 16) + *(s16*)(p + 2);
+                *(u16*)(out + 4) = ((u32)(az * wHi) >> 16) + *(s16*)(p + 4);
             }
         }
         else if (i >= bIdx)
         {
             b = modelBoneTransforms_next(b, &bx, &by, &bz);
-            *(s16*)out = ((u32)(bx * f) >> 16) + *(s16*)p;
-            *(s16*)(out + 2) = ((u32)(by * f) >> 16) + *(s16*)(p + 2);
-            *(s16*)(out + 4) = ((u32)(bz * f) >> 16) + *(s16*)(p + 4);
+            *(u16*)out = ((u32)(bx * f) >> 16) + *(s16*)p;
+            *(u16*)(out + 2) = ((u32)(by * f) >> 16) + *(s16*)(p + 2);
+            *(u16*)(out + 4) = ((u32)(bz * f) >> 16) + *(s16*)(p + 4);
         }
         else
         {
             *(u32*)out = *(u32*)p;
-            *(s16*)(out + 4) = *(s16*)(p + 4);
+            *(u16*)(out + 4) = *(s16*)(p + 4);
         }
         p += 6;
         out += 6;
