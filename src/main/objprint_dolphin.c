@@ -1365,7 +1365,7 @@ extern u8 gObjShadowColor[4];
 
 
 void objRenderShadow2(int* obj, int* obj2, u8* m, int p4);
-void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode);
+void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
 void objRenderChild(int* child, int* parent, u8 isShadow);
 
 extern volatile int gAssetLoadInFlightFlags;
@@ -2634,7 +2634,7 @@ void objRenderShadow2(int* obj, int* obj2, u8* m, int p4)
 }
 extern u8 gObjGxTexMtxIdTable[12];
 
-void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
+void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
 {
     int joff;
     f32 fm[16];
@@ -2649,10 +2649,10 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
     u8 o8;
     int* am;
     f32* vm;
-    int mode8;
-    int m4;
+    int passMaskCopy;
+    int fuzzPass;
     int m2;
-    int m1;
+    int shadowPass;
     u8 did;
     int* op;
     u32* refs;
@@ -2716,13 +2716,13 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
         objGetColor(((GameObject*)obj)->lightColorSlot, &gObjCurChanColor.r, &gObjCurChanColor.g,
                     &gObjCurChanColor.b);
     }
-    mode8 = mode;
-    m4 = mode8 & 4;
-    if (m4 || (mode8 & 8))
+    passMaskCopy = passMask;
+    fuzzPass = passMaskCopy & 4;
+    if (fuzzPass || (passMaskCopy & 8))
     {
         fade = lbl_803DEA4C;
     }
-    else if (mode8 & 2)
+    else if (passMaskCopy & 2)
     {
         fade = lbl_803DEA50;
     }
@@ -2738,7 +2738,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             {
                 PSMTXIdentity((MtxPtr)im);
                 ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, im);
-                if (m4 == 0)
+                if (fuzzPass == 0)
                 {
                     modelInitBoneMtxs2((ObjModel*)am, wm, gObjBoneMtxBuffer);
                 }
@@ -2765,7 +2765,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             ObjModel_ToggleMatrixBuffer((ObjModel*)am);
             PSMTXCopy((MtxPtr)wm, (MtxPtr)(f32*)ObjModel_GetJointMatrix((u8*)am, 0));
         }
-        if ((m4 == 0 && (mode8 & 8) == 0) || gObjFuzzLayerIndex == 0)
+        if ((fuzzPass == 0 && (passMaskCopy & 8) == 0) || gObjFuzzLayerIndex == 0)
         {
             if (((ModelFileHeader*)m)->morphTargetCount != 0)
             {
@@ -2810,8 +2810,8 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
         }
         ((ObjModel*)am)->bufferFlags |= 8;
     }
-    m2 = mode8 & 2;
-    if (m2 || m4 || (mode8 & 8))
+    m2 = passMaskCopy & 2;
+    if (m2 || fuzzPass || (passMaskCopy & 8))
     {
         int j;
         f32 one;
@@ -2855,7 +2855,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
     }
     if (*(u32*)&((ModelFileHeader*)m)->vertexAnimEntries != 0)
     {
-        if (m4 || m2 || (mode8 & 8))
+        if (fuzzPass || m2 || (passMaskCopy & 8))
         {
             f32 sc2 = 1.0f + (lbl_803DEA54 * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
             PSMTXTrans((MtxPtr)tm, -*(f32*)(m + 0x44), -*(f32*)(m + 0x48), -*(f32*)(m + 0x4c));
@@ -2882,8 +2882,8 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             GXLoadTexMtxImm((const f32 (*)[4])fm, gObjGxTexMtxIdTable[9], 0);
         }
     }
-    m1 = mode8 & 1;
-    if (m1 != 0)
+    shadowPass = passMaskCopy & 1;
+    if (shadowPass != 0)
     {
         GXSetNumTexGens(0);
         GXSetNumTevStages(1);
@@ -2992,12 +2992,12 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
         switch (op4)
         {
         case 3:
-            modelRenderFn_setVtxDescr(m, (u8*)op, refs, &bs, mode, &o9, &o8);
+            modelRenderFn_setVtxDescr(m, (u8*)op, refs, &bs, passMask, &o9, &o8);
             break;
         case 1:
         {
             u32 idx;
-            if ((mode == 0 || mode == 4 || mode == 8) && lbl_803DCC20 == 0)
+            if ((passMask == 0 || passMask == 4 || passMask == 8) && lbl_803DCC20 == 0)
             {
                 idx = objRenderFn_8003edf4((u8*)obj, m, am, &bs);
                 op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
@@ -3018,7 +3018,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             break;
         }
         case 2:
-            if ((mode != 4 && mode != 8) || lbl_803DCC3E != 0)
+            if ((passMask != 4 && passMask != 8) || lbl_803DCC3E != 0)
             {
                 u8* dl;
                 u32 w;
@@ -3037,7 +3037,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             }
             break;
         case 4:
-            renderOpMatrix(m, am, &bs, sm, vm, o9, o8, m1);
+            renderOpMatrix(m, am, &bs, sm, vm, o9, o8, shadowPass);
             break;
         case 5:
             done = 1;
