@@ -2140,6 +2140,9 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
     switch (fileId)
     {
     case 0xd:
+        /* This file family does not use the caller's entry index. Reuse its
+           local for one protected snapshot: both the BIN and TAB reads for a
+           slot must finish before its merged table pointer is usable. */
         intr = OSDisableInterrupts();
         entryIndex = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(intr);

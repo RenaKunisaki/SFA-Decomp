@@ -630,12 +630,12 @@ static inline void fillBoxRows(u8* map, int* box)
 
 void renderSceneGeometry(u8 renderType, s8* order)
 {
-    u8 map[256];
+    u8 cellMask[256];
     int box0[4];
     int box1[4];
     int box2[4];
     int box3[4];
-    u8* mp;
+    u8* cellMaskPtr;
     s8** layerTablePtr;
     int* layerFlagPtr;
     int idx;
@@ -647,7 +647,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
     s8* table;
     f32 worldSize;
     f32 rowF, colF;
-    int cell;
+    int cellIndex;
 
     layer = 4;
     layerTablePtr = &gMapBlockLayerTables[4];
@@ -659,19 +659,19 @@ void renderSceneGeometry(u8 renderType, s8* order)
         gMapLayerCellStates = (s8*)*layerFlagPtr;
         mapGetBlockGridRects(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
                        gMapCurRomListSlot);
-        mp = map;
-        for (k = 0; k != ARRAY_COUNT(map); k += 4)
+        cellMaskPtr = cellMask;
+        for (k = 0; k != ARRAY_COUNT(cellMask); k += 4)
         {
-            mp[0] = 0;
-            mp[1] = 0;
-            mp[2] = 0;
-            mp[3] = 0;
-            mp += 4;
+            cellMaskPtr[0] = 0;
+            cellMaskPtr[1] = 0;
+            cellMaskPtr[2] = 0;
+            cellMaskPtr[3] = 0;
+            cellMaskPtr += 4;
         }
-        fillBoxRows(map, box0);
-        fillBoxRows(map, box1);
-        fillBoxRows(map, box2);
-        fillBoxRows(map, box3);
+        fillBoxRows(cellMask, box0);
+        fillBoxRows(cellMask, box1);
+        fillBoxRows(cellMask, box2);
+        fillBoxRows(cellMask, box3);
         for (oi = 0; oi < 16; oi++)
         {
             row = order[oi];
@@ -680,8 +680,8 @@ void renderSceneGeometry(u8 renderType, s8* order)
             for (; ii < 16; ii++)
             {
                 col = order[ii];
-                cell = row + col * 0x10;
-                idx = table[cell];
+                cellIndex = row + col * 0x10;
+                idx = table[cellIndex];
                 if (idx < 0)
                 {
                     block = NULL;
@@ -690,7 +690,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
                 {
                     block = gMapBlocks[idx];
                     block->flags4 ^= 1;
-                    if (map[cell] == 0)
+                    if (cellMask[cellIndex] == 0)
                     {
                         continue;
                     }

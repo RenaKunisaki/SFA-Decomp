@@ -97,7 +97,7 @@ void initViewport(void)
 {
     C_MTXOrtho(hudMatrix, 0.0f, 480.0f, 0.0f, 640.0f, 1.0f, 100.0f);
 }
-void videoInit(void* wpad0, int wpad1)
+void videoInit(void* unusedRenderMode, int unusedArg)
 {
     GXFifoObj fifo;
     f32 mtx[3][4];
@@ -228,6 +228,7 @@ void videoInit(void* wpad0, int wpad1)
     GXSetCurrentMtx(GX_PNMTX0);
     C_MTXOrtho(hudMatrix, -23.0f, 502.0f, 0.0f, 640.0f, 1.0f, 100.0f);
     GXSetMisc(GX_MT_XF_FLUSH, 8);
+    /* Mark performance-monitor events and disable speculative cache access. */
     PPCMtmsr(PPCMfmsr() | MSR_PM);
     PPCMthid0(PPCMfhid0() | HID0_SPD);
 }
