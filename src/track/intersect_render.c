@@ -58,7 +58,7 @@ extern u32 lbl_803DB69C;
 extern GXColor lbl_803DB6A0;
 extern GXColor lbl_803DB6A4;
 extern u32 lbl_803DB6A8;
-extern f32 lbl_803DB6AC;
+extern f32 gCausticReflectionDiskScale;
 extern f32 lbl_803DB6B0;
 extern f32 lbl_803DB6B4;
 extern f32 lbl_803DB6B8;
@@ -1812,7 +1812,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     return 1;
 }
 
-u32 objCallback_80074d04(int handle, void* model)
+u32 objCausticReflectionRenderCb(int handle, void* model)
 {
 
     Mtx mtx_ec;
@@ -1907,12 +1907,12 @@ u32 objCallback_80074d04(int handle, void* model)
     GXSetIndTexMtx(2, (f32(*)[3])indMtx_2c, -4);
     GXSetTevIndirect(1, 1, 0, 7, 2, 0, 0, 1, 0, 0);
 
-    ((f32*)mtx_8c)[0] = lbl_803DB6AC;
+    ((f32*)mtx_8c)[0] = gCausticReflectionDiskScale;
     ((f32*)mtx_8c)[1] = 0.0f;
     ((f32*)mtx_8c)[2] = 0.0f;
     ((f32*)mtx_8c)[3] = 0.5f;
     ((f32*)mtx_8c)[4] = 0.0f;
-    ((f32*)mtx_8c)[5] = lbl_803DB6AC;
+    ((f32*)mtx_8c)[5] = gCausticReflectionDiskScale;
     ((f32*)mtx_8c)[6] = 0.0f;
     ((f32*)mtx_8c)[7] = 0.5f;
     ((f32*)mtx_8c)[8] = 0.0f;
