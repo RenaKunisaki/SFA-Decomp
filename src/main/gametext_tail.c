@@ -409,6 +409,42 @@ void gameTextFreePhrase(int* p)
         ((void**)p)[5] = NULL;
     }
 }
+static inline char* gameTextBreakLine(char* dst, char** buffer, int lineIdx)
+{
+    char* q;
+    int k;
+    int charLen2;
+    u32 ch;
+
+    q = dst;
+    for (;;)
+    {
+        k = 6;
+        do
+        {
+            ch = utf8GetNextChar((u8*)(dst - k), &charLen2);
+            if (k != charLen2)
+            {
+                continue;
+            }
+            if (isSpace(ch))
+            {
+                int j = charLen2;
+                while (j-- != 0)
+                {
+                    *--dst = 0;
+                }
+                break;
+            }
+            q[1] = q[0];
+            q[0] = 0;
+            dst = q + 1;
+            *(char**)((char*)buffer + ((lineIdx + 1) << 2)) = dst++;
+            return dst;
+        } while (--k > 0);
+    }
+}
+
 char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* outLineH)
 {
     int cursor;
@@ -430,8 +466,6 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
     f32 penX;
     int charLen;
     int i;
-    int k;
-    int charLen2;
     u32 ch;
     lineCount = 0;
     lineOff = 0;
@@ -581,35 +615,7 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
         *dst++ = *src;
         if (charPos == boundary[1])
         {
-            char* q;
-            dst--;
-            do
-            {
-                q = dst;
-                k = 6;
-                do
-                {
-                    ch = utf8GetNextChar((u8*)(dst - k), &charLen2);
-                    if (k != charLen2)
-                    {
-                        continue;
-                    }
-                    if (isSpace(ch))
-                    {
-                        int j = charLen2;
-                        while (j-- != 0)
-                        {
-                            *--dst = 0;
-                        }
-                        break;
-                    }
-                    q[1] = q[0];
-                    q[0] = 0;
-                    dst = q + 1;
-                    *(char**)((char*)buffer + ((lineIdx + 1) << 2)) = dst++;
-                    break;
-                } while (--k > 0);
-            } while (dst <= q);
+            dst = gameTextBreakLine(dst - 1, buffer, lineIdx);
             boundary++;
             lineIdx++;
         }
