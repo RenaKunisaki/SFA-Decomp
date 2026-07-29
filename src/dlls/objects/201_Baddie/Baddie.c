@@ -8,6 +8,7 @@
  */
 #include "dlls/objects/237.h"
 #include "main/camera_interface.h"
+#include "main/dll/dll_0049_cameramodecombat.h"
 #include "main/dll/objfx_api.h"
 #include "main/objfx.h"
 #include "main/newshadows_audio_api.h"
@@ -145,9 +146,6 @@ StaffCollisionInterface** gBaddieStaffCollisionInterface;
 /* object groups: the enemy's own group / secondary group left on a message */
 #define ENEMY_OBJGROUP           3
 #define ENEMY_OBJGROUP_SECONDARY 0x50
-
-/* camera mode DLL 0x49 = dll_0049_cameramodecombat */
-#define ENEMY_CAMMODE_COMBAT 0x49
 
 /* enemy defNos (anim.romDefNo) - names read from retail OBJECTS.bin at def+0x91;
    every id below gates to this file's own DLL 0xC9 */
@@ -1881,7 +1879,7 @@ int enemy_SeqFn(GameObject* node, int unused, ObjSeqState* animUpdate)
                 *(u16*)(sub + 0x2b6) = 0x33;
             break;
         case 3:
-            (*gObjectTriggerInterface)->setCamVars(ENEMY_CAMMODE_COMBAT, 4, (int)node, 0x3c);
+            (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_COMBAT_RESOURCE_ID, 4, (int)node, 0x3c);
             break;
         case 6:
             if (((EnemyState*)sub)->tailSimHandle != NULL)

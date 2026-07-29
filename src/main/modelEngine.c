@@ -324,6 +324,7 @@
 #include "main/dll/dll_0046_cameramodedebug.h"
 #include "main/dll/dll_0047_cameramodepath.h"
 #include "main/dll/dll_0048_cameramodestatic.h"
+#include "main/dll/dll_0049_cameramodecombat.h"
 #include "main/dll/dll_004A_cameramodeshipbattle.h"
 #include "main/dll/dll_004B_cameramodeclimb.h"
 #include "main/dll/dll_004C_camDebug.h"
@@ -512,7 +513,6 @@ extern ResourceDescriptor lbl_80319598, lbl_803195E8, lbl_80319638, lbl_80319688
 extern ResourceDescriptor lbl_803197F8, lbl_80319840, projquakeshock_funcs, lbl_803198D8, projtesla_funcs, lbl_80319968,
     lbl_803199B0, lbl_803199F8;
 extern ResourceDescriptor lbl_80319A40, lbl_80319B58, lbl_80319B98, gCameraModeViewfinderDescriptor;
-extern ResourceDescriptor gCameraModeCombatDescriptor;
 extern ResourceDescriptor lbl_8031A148;
 extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode_funcs, lbl_8031A82C, EnterSaveNameScreen_funcs, OptionsScreen_funcs,
     lbl_8031ADA4, Dummy39_funcs;
@@ -1214,7 +1214,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCameraModeDebugDescriptor,
     (ResourceDescriptor*)&gCameraModePathDescriptor,
     (ResourceDescriptor*)&gCameraModeStaticDescriptor,
-    &gCameraModeCombatDescriptor,
+    (ResourceDescriptor*)&gCameraModeCombatDescriptor,
     (ResourceDescriptor*)&gCameraModeShipBattleDescriptor,
     (ResourceDescriptor*)&gCameraModeClimbDescriptor,
     (ResourceDescriptor*)&gCameraModeFixedDescriptor,
