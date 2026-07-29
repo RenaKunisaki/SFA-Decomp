@@ -6,28 +6,28 @@
  * logs the "no longer supported" string and returns the failure sentinel.
  * The slot is kept so the DLL id stays valid.
  */
-#include "dolphin/os/OSReport.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00AE_projroombeam.h"
+#include "dolphin/os/OSReport.h"
 
-#define PROJECTILE_UNSUPPORTED_RETURN -1
+extern char sProjroombeamDoNoLongerSupported[];
 
-int projroombeam_doUnsupported(void)
-{
+int projroombeam_doUnsupported(void) {
     OSReport(sProjroombeamDoNoLongerSupported);
-    return PROJECTILE_UNSUPPORTED_RETURN;
+    return -1;
 }
 
-void projroombeam_release(void)
-{
+void projroombeam_release(void) {
 }
 
-void projroombeam_initialise(void)
-{
+void projroombeam_initialise(void) {
 }
 
-DllDescriptorTable lbl_80319460 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projroombeam_initialise, projroombeam_release, (void*)0x00000000,
-                                    projroombeam_doUnsupported}};
+ProjroombeamResourceDescriptor gProjroombeamResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projroombeam_initialise,
+    projroombeam_release,
+    NULL,
+    projroombeam_doUnsupported,
+};
 
 char sProjroombeamDoNoLongerSupported[] = "<projroombeam Do>No Longer supported \n";
