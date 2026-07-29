@@ -1,19 +1,24 @@
 /*
- * DLL 119 / 0x77 - particle-effect spawner.
- *
- * dll_77_func03 builds a 6-command GfxCmd list and hands it to
- * gModgfxInterface->spawnEffect; the two nop leaves are the DLL's
- * empty func00/func01 entry points.
+ * DLL 119 / 0x77 - a fixed-command modgfx effect spawner.
  */
+#include "main/dll/dll_0077_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
 #include "main/dll/modgfx_types.h"
-#include "dlls/object_descriptor.h"
 
-s16 lbl_80314980[8] = {0, 155, 200, 1, 155, 0, 0, 0};
+typedef struct Dll77SequenceParamBlock {
+    s16 params[7];
+    s16 opaqueTail;
+} Dll77SequenceParamBlock;
 
-/* referenced via *(f32*)& so the 0.0 base keeps its additive fadds (a literal
-   0.0f + pos folds away) and the pool stays in address order */
+STATIC_ASSERT(offsetof(Dll77SequenceParamBlock, params) == 0x00);
+STATIC_ASSERT(offsetof(Dll77SequenceParamBlock, opaqueTail) == 0x0E);
+STATIC_ASSERT(sizeof(Dll77SequenceParamBlock) == 0x10);
+
+Dll77SequenceParamBlock gDll77SequenceParams = {
+    {0, 155, 200, 1, 155, 0, 0},
+    0,
+};
+
 static const f32 gDll77Cmd0X = 999.0f;
 static const f32 gDll77Cmd0Y = 85.0f;
 static const f32 gDll77Cmd0Z = 86.0f;
@@ -21,113 +26,99 @@ static const f32 gDll77Zero = 0.0f;
 static const f32 gDll77CmdY = 200.0f;
 static const f32 gDll77Scale = 1.0f;
 
-void dll_77_func03(int sourceObj, int variant, int posSource, u32 flags)
-{
-    ModgfxSpawnPacket buf;
-    GfxCmd* e = buf.entries;
-    int ctx;
-    e[0].layer = 0;
-    e[0].flags = 0x8c;
-    e[0].tex = NULL;
-    e[0].mode = 0x20000000;
-    e[0].x = *(f32*)&gDll77Cmd0X;
-    e[0].y = *(f32*)&gDll77Cmd0Y;
-    e[0].z = *(f32*)&gDll77Cmd0Z;
-    e[1].layer = 0;
-    e[1].flags = 0;
-    e[1].tex = NULL;
-    e[1].mode = 0x80000;
-    e[1].x = *(f32*)&gDll77Zero;
-    e[1].y = *(f32*)&gDll77CmdY;
-    e[1].z = *(f32*)&gDll77Zero;
-    e[2].layer = 1;
-    e[2].flags = 0;
-    e[2].tex = NULL;
-    e[2].mode = 0x80000;
-    e[2].x = *(f32*)&gDll77Zero;
-    e[2].y = *(f32*)&gDll77Zero;
-    e[2].z = *(f32*)&gDll77Zero;
-    e[3].layer = 3;
-    e[3].flags = 1;
-    e[3].tex = NULL;
-    e[3].mode = 0x2000;
-    e[3].x = *(f32*)&gDll77Zero;
-    e[3].y = *(f32*)&gDll77Zero;
-    e[3].z = *(f32*)&gDll77Zero;
-    e[4].layer = 4;
-    e[4].flags = 0;
-    e[4].tex = NULL;
-    e[4].mode = 0x80000;
-    e[4].x = *(f32*)&gDll77Zero;
-    e[4].y = *(f32*)&gDll77CmdY;
-    e[4].z = *(f32*)&gDll77Zero;
-    e[5].layer = 5;
-    e[5].flags = 0;
-    e[5].tex = NULL;
-    e[5].mode = 0x20000000;
-    e[5].x = *(f32*)&gDll77Cmd0X;
-    e[5].y = *(f32*)&gDll77Cmd0Y;
-    e[5].z = *(f32*)&gDll77Cmd0Z;
-    buf.v58 = 0;
-    ctx = sourceObj;
-    buf.ctx = ctx;
-    buf.v44 = variant;
-    buf.pos[0] = *(f32*)&gDll77Zero;
-    buf.pos[1] = *(f32*)&gDll77Zero;
-    buf.pos[2] = *(f32*)&gDll77Zero;
-    buf.col[0] = *(f32*)&gDll77Zero;
-    buf.col[1] = *(f32*)&gDll77Zero;
-    buf.col[2] = *(f32*)&gDll77Zero;
-    buf.scale = *(f32*)&gDll77Scale;
-    buf.v40 = 0;
-    buf.v3c = 0;
-    buf.v59 = 0;
-    buf.v5a = 0;
-    buf.v5b = 0;
-    buf.count = (e + 6) - buf.entries;
-    buf.hw[0] = lbl_80314980[0];
-    buf.hw[1] = lbl_80314980[1];
-    buf.hw[2] = lbl_80314980[2];
-    buf.hw[3] = lbl_80314980[3];
-    buf.hw[4] = lbl_80314980[4];
-    buf.hw[5] = lbl_80314980[5];
-    buf.hw[6] = lbl_80314980[6];
-    buf.cmds = buf.entries;
-    buf.flags = 0x10c00;
-    buf.flags |= flags;
-    if ((buf.flags & 1) != 0)
-    {
-        if ((u32)ctx != 0)
-        {
-            buf.pos[0] = *(f32*)&gDll77Zero + ((GameObject*)ctx)->anim.worldPosX;
-            buf.pos[1] = *(f32*)&gDll77Zero + ((GameObject*)ctx)->anim.worldPosY;
-            buf.pos[2] = *(f32*)&gDll77Zero + ((GameObject*)ctx)->anim.worldPosZ;
-        }
-        else
-        {
-            buf.pos[0] = *(f32*)&gDll77Zero + ((PartFxSpawnParams*)posSource)->posX;
-            buf.pos[1] = *(f32*)&gDll77Zero + ((PartFxSpawnParams*)posSource)->posY;
-            buf.pos[2] = *(f32*)&gDll77Zero + ((PartFxSpawnParams*)posSource)->posZ;
+void dll_77_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
+    ModgfxSpawnPacket packet;
+    GfxCmd* commands = packet.entries;
+    int context;
+    commands[0].layer = 0;
+    commands[0].flags = 0x8c;
+    commands[0].tex = NULL;
+    commands[0].mode = 0x20000000;
+    commands[0].x = *(f32*)&gDll77Cmd0X;
+    commands[0].y = *(f32*)&gDll77Cmd0Y;
+    commands[0].z = *(f32*)&gDll77Cmd0Z;
+    commands[1].layer = 0;
+    commands[1].flags = 0;
+    commands[1].tex = NULL;
+    commands[1].mode = 0x80000;
+    commands[1].x = *(f32*)&gDll77Zero;
+    commands[1].y = *(f32*)&gDll77CmdY;
+    commands[1].z = *(f32*)&gDll77Zero;
+    commands[2].layer = 1;
+    commands[2].flags = 0;
+    commands[2].tex = NULL;
+    commands[2].mode = 0x80000;
+    commands[2].x = *(f32*)&gDll77Zero;
+    commands[2].y = *(f32*)&gDll77Zero;
+    commands[2].z = *(f32*)&gDll77Zero;
+    commands[3].layer = 3;
+    commands[3].flags = 1;
+    commands[3].tex = NULL;
+    commands[3].mode = 0x2000;
+    commands[3].x = *(f32*)&gDll77Zero;
+    commands[3].y = *(f32*)&gDll77Zero;
+    commands[3].z = *(f32*)&gDll77Zero;
+    commands[4].layer = 4;
+    commands[4].flags = 0;
+    commands[4].tex = NULL;
+    commands[4].mode = 0x80000;
+    commands[4].x = *(f32*)&gDll77Zero;
+    commands[4].y = *(f32*)&gDll77CmdY;
+    commands[4].z = *(f32*)&gDll77Zero;
+    commands[5].layer = 5;
+    commands[5].flags = 0;
+    commands[5].tex = NULL;
+    commands[5].mode = 0x20000000;
+    commands[5].x = *(f32*)&gDll77Cmd0X;
+    commands[5].y = *(f32*)&gDll77Cmd0Y;
+    commands[5].z = *(f32*)&gDll77Cmd0Z;
+    packet.modeByte = 0;
+    context = (int)sourceObj;
+    packet.ctx = context;
+    packet.sourceMode = variant;
+    packet.position[0] = *(f32*)&gDll77Zero;
+    packet.position[1] = *(f32*)&gDll77Zero;
+    packet.position[2] = *(f32*)&gDll77Zero;
+    packet.velocity[0] = *(f32*)&gDll77Zero;
+    packet.velocity[1] = *(f32*)&gDll77Zero;
+    packet.velocity[2] = *(f32*)&gDll77Zero;
+    packet.scale = *(f32*)&gDll77Scale;
+    packet.drawGroupCount = 0;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 0;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0;
+    packet.commandCount = (commands + 6) - packet.entries;
+    packet.sequenceParams[0] = gDll77SequenceParams.params[0];
+    packet.sequenceParams[1] = gDll77SequenceParams.params[1];
+    packet.sequenceParams[2] = gDll77SequenceParams.params[2];
+    packet.sequenceParams[3] = gDll77SequenceParams.params[3];
+    packet.sequenceParams[4] = gDll77SequenceParams.params[4];
+    packet.sequenceParams[5] = gDll77SequenceParams.params[5];
+    packet.sequenceParams[6] = gDll77SequenceParams.params[6];
+    packet.commands = packet.entries;
+    packet.flags = 0x10c00;
+    packet.flags |= spawnFlags;
+    if ((packet.flags & 1) != 0) {
+        if ((u32)context != 0) {
+            packet.position[0] = *(f32*)&gDll77Zero + ((GameObject*)context)->anim.worldPosX;
+            packet.position[1] = *(f32*)&gDll77Zero + ((GameObject*)context)->anim.worldPosY;
+            packet.position[2] = *(f32*)&gDll77Zero + ((GameObject*)context)->anim.worldPosZ;
+        } else {
+            packet.position[0] = *(f32*)&gDll77Zero + spawnParams->posX;
+            packet.position[1] = *(f32*)&gDll77Zero + spawnParams->posY;
+            packet.position[2] = *(f32*)&gDll77Zero + spawnParams->posZ;
         }
     }
-    (*gModgfxInterface)->spawnEffect(&buf, 0, 0, 0, 0, 0, 0, 0);
+    (*gModgfxInterface)->spawnEffect(&packet, 0, 0, 0, 0, 0, 0, 0);
 }
 
-void dll_77_func01_nop(void)
-{
+void dll_77_release(void) {
 }
 
-void dll_77_func00_nop(void)
-{
+void dll_77_initialise(void) {
 }
 
-ObjectDescriptor4 dll_77_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)dll_77_func00_nop,
-    (ObjectDescriptorCallback)dll_77_func01_nop,
-    0,
-    (ObjectDescriptorCallback)dll_77_func03,
+Dll77ResourceDescriptor gDll77ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_77_initialise, dll_77_release, NULL, dll_77_spawnEffect,
 };

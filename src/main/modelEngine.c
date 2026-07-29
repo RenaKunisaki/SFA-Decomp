@@ -373,6 +373,7 @@
 #include "main/dll/dll_0074_modgfx.h"
 #include "main/dll/dll_0075_modgfx.h"
 #include "main/dll/dll_0076_modgfx.h"
+#include "main/dll/dll_0077_modgfx.h"
 #include "main/dll/dll_00A3_modgfx.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
@@ -520,7 +521,7 @@ extern ResourceDescriptor Effect9_funcs, Effect10_funcs, Effect11_funcs, Effect1
 extern ResourceDescriptor Effect17_funcs, Effect18_funcs, Effect19_funcs, Effect20_funcs, lbl_803112E8, lbl_80311340,
     lbl_80311378, lbl_80311438;
 extern ResourceDescriptor lbl_803114B0, lbl_803114D8, lbl_803115F8, dll_15_funcs, lbl_80311900, lbl_80311BE0;
-extern ResourceDescriptor dll_77_funcs, dll_78_funcs;
+extern ResourceDescriptor dll_78_funcs;
 extern ResourceDescriptor dll_79_funcs, dll_7A_funcs, dll_7B_funcs, dll_7C_funcs, dll_7D_funcs, dll_7E_funcs,
     dll_7F_funcs, dll_80_funcs;
 extern ResourceDescriptor dll_81_funcs, dll_82_funcs, dll_83_funcs, dll_84_funcs, dll_85_funcs, dll_86_funcs,
@@ -1287,7 +1288,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll74ResourceDescriptor,
     (ResourceDescriptor*)&gDll75ResourceDescriptor,
     (ResourceDescriptor*)&gDll76ResourceDescriptor,
-    &dll_77_funcs,
+    (ResourceDescriptor*)&gDll77ResourceDescriptor,
     &dll_78_funcs,
     &dll_79_funcs,
     &dll_7A_funcs,
