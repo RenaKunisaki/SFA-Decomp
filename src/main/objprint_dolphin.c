@@ -298,7 +298,7 @@ extern u32 lbl_803DB470;
 extern int lbl_803DB498;
 extern int lbl_803DB49C;
 
-int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
+int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
 {
     Mtx mtx4;
     Mtx mtx3;
@@ -484,7 +484,7 @@ static inline int shaderProjDisabled(ModelLightStruct* light)
     return flag;
 }
 
-int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
+int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
 {
     Mtx mtx4;
     Mtx mtx3;
@@ -3164,7 +3164,7 @@ void objRenderFuzzShells(int* obj)
     model = (int*)Obj_GetActiveModel((GameObject*)obj);
     savedMtx = curObjMtx;
     lbl_803DCC3D = gObjFuzzPhase;
-    ObjModel_SetRenderCallback((u8*)model, modelRenderCb_8003c268);
+    ObjModel_SetRenderCallback((u8*)model, objFuzzShellRenderCb);
     for (gObjFuzzLayerIndex = 0; gObjFuzzLayerIndex < 16; gObjFuzzLayerIndex += gObjFuzzStep)
     {
         modelDoRenderInstrs(obj, ((GameObject*)obj)->ownerObj ? ((GameObject*)obj)->ownerObj : obj, (u8*)*model, 8);
@@ -3276,7 +3276,7 @@ void objRenderFuzz(int* obj)
         }
         model = (int*)Obj_GetActiveModel((GameObject*)obj);
         savedMtx = curObjMtx;
-        ObjModel_SetRenderCallback((u8*)model, shaderFuzzFn_8003cc1c);
+        ObjModel_SetRenderCallback((u8*)model, objFuzzRenderCb);
         for (gObjFuzzLayerIndex = 0; gObjFuzzLayerIndex < n; gObjFuzzLayerIndex++)
         {
             modelDoRenderInstrs(obj, ((GameObject*)obj)->ownerObj ? ((GameObject*)obj)->ownerObj : obj, (u8*)*model, 4);
