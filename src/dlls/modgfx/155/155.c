@@ -25,7 +25,8 @@ typedef struct Dll9BEffectResourceView {
     u8 opaqueD2[2];
     s16 triangles[24][3];
     u8 opaque164[0x4C];
-    s16 allVertexIndices[22];
+    s16 allVertexIndices[21];
+    s16 opaque1DA;
     s16 lastFourteenVertexIndices[14];
     s16 sequenceParams[7];
     s16 opaqueTail;
@@ -36,6 +37,7 @@ STATIC_ASSERT(offsetof(Dll9BEffectResourceView, opaqueD2) == 0x0D2);
 STATIC_ASSERT(offsetof(Dll9BEffectResourceView, triangles) == 0x0D4);
 STATIC_ASSERT(offsetof(Dll9BEffectResourceView, opaque164) == 0x164);
 STATIC_ASSERT(offsetof(Dll9BEffectResourceView, allVertexIndices) == 0x1B0);
+STATIC_ASSERT(offsetof(Dll9BEffectResourceView, opaque1DA) == 0x1DA);
 STATIC_ASSERT(offsetof(Dll9BEffectResourceView, lastFourteenVertexIndices) == 0x1DC);
 STATIC_ASSERT(offsetof(Dll9BEffectResourceView, sequenceParams) == 0x1F8);
 STATIC_ASSERT(offsetof(Dll9BEffectResourceView, opaqueTail) == 0x206);
