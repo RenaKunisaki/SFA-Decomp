@@ -955,8 +955,9 @@ void updateEnvironment(int mode)
         (*gSkyInterface)->updateTimeOfDay();
         (*gNewCloudsInterface)->run();
 
-        off = i = 0;
-        for (; i < 80; off += sizeof(MapTextureOverride), i++)
+        i = 0;
+        off = 0;
+        for (; i < 80; i++)
         {
             textureOverride = (MapTextureOverride*)((u8*)gMapTextureOverrides + off);
             if (textureOverride->refCount != 0 && (tex = textureOverride->texture) != NULL &&
@@ -964,11 +965,14 @@ void updateEnvironment(int mode)
             {
                 textureUpdateAnimationFrame(tex, &textureOverride->flags, &textureOverride->frame);
             }
+            off += sizeof(MapTextureOverride);
         }
 
-        for (i = 0; i < 58; i++)
+        i = 0;
+        off = 0;
+        for (; i < 58; i++)
         {
-            textureScroll = &gMapTextureScrolls[i];
+            textureScroll = (MapTextureScroll*)((u8*)gMapTextureScrolls + off);
             if (textureScroll->refCount != 0)
             {
                 deltaY = textureScroll->yStep * (deltaTime = timeDelta);
@@ -977,6 +981,7 @@ void updateEnvironment(int mode)
                 textureScroll->offsetX = x + deltaX;
                 textureScroll->offsetY = textureScroll->offsetY + deltaY;
             }
+            off += sizeof(MapTextureScroll);
         }
 
         loadNextMap();
