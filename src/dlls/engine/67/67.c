@@ -1,4 +1,5 @@
 #include "main/dll/CAM/pathcam.h"
+#include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/dll_0049_cameramodecombat.h"
 #include "main/object_transform.h"
 #include "main/camera_interface.h"
@@ -150,8 +151,7 @@ typedef struct CameraModeStaffAnimSettings
 
 typedef void (*CameraBoundsFn)(CameraObject* camera, GameObject* target, f32 min, f32 max);
 
-#define CAMMODE_DEFAULT    0x42
-#define CAMMODE_VIEWFINDER 0x44
+#define CAMMODE_DEFAULT 0x42
 
 void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
 {
@@ -164,12 +164,7 @@ void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
     int canView;
     void* lockSlot;
     void* pendingParent;
-    struct
-    {
-        f32 x;
-        f32 z;
-        s16 y;
-    } actionPayload;
+    CameraModeViewfinderSettings viewfinderSettings;
 
     pendingParent = target->pendingParentObj;
     if (pendingParent != NULL)
@@ -204,11 +199,12 @@ void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
         return;
     }
     path = gCamcontrolPathState;
-    actionPayload.x = path->actionParamX;
-    actionPayload.z = path->actionParamZ;
-    actionPayload.y = path->actionParamY;
+    viewfinderSettings.radius = path->actionParamX;
+    viewfinderSettings.yOffset = path->actionParamZ;
+    viewfinderSettings.height = path->actionParamY;
     cam = *gCameraInterface;
-    cam->setMode(CAMMODE_VIEWFINDER, 1, 0, 0xc, &actionPayload, 0, 0xff);
+    cam->setMode(CAMERA_MODE_VIEWFINDER_RESOURCE_ID, 1, 0, sizeof(CameraModeViewfinderSettings),
+                 &viewfinderSettings, 0, 0xff);
 }
 
 void CameraModeStaffAnim_copyToCurrent(void)

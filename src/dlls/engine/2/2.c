@@ -1,5 +1,6 @@
 #include "main/camera_interface.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/dll_0047_cameramodepath.h"
 #include "main/dll/dll_0049_cameramodecombat.h"
 #include "main/dll/dll_004C_camDebug.h"
@@ -1545,7 +1546,6 @@ f32 objCurveInterpolate(ObjCurveKey* keys, int count, int frame);
 #define OBJSEQ_KRYSTAL_OBJ 0x1f
 
 #define OBJSEQ_CAMMODE_DEFAULT      0x42 /* default gameplay cameramode DLL */
-#define OBJSEQ_CAMMODE_VIEWFINDER   0x44 /* dll_0044 viewfinder */
 #define OBJSEQ_CAMMODE_CAMTALK      0x45 /* dll_0045_camTalk */
 #define OBJSEQ_CAMMODE_STATIC       0x48 /* dll_0048_cameramodestatic */
 #define OBJSEQ_CAMMODE_SHIPBATTLE   0x4a /* dll_004A_cameramodeshipbattle */
@@ -1586,13 +1586,6 @@ extern u8 lbl_8039944C[];
 extern u8 framesThisStepUnclamped;
 int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmd, s8 flags, void* out);
 void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* placement);
-
-typedef struct CamFloats
-{
-    f32 a;
-    f32 b;
-    s16 c;
-} CamFloats;
 
 typedef struct CamMode
 {
@@ -2819,7 +2812,7 @@ char sObjLoadAnimdataNullACRomTabWarning[45] = "<objLoadAnimdata>  Warning ACRom
 void ObjSeq_updateCamera(void)
 {
     CameraModeFixedPose cameraPose;
-    CamFloats fblock;
+    CameraModeViewfinderSettings viewfinderSettings;
     CameraModePathSettings pathSettings;
     CamMode mode48;
     int groupObjCount;
@@ -2949,20 +2942,24 @@ void ObjSeq_updateCamera(void)
                 case 0x45:
                     (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_CAMTALK, 1, 0, 0, NULL, gObjSeqCamModeArgD, 0xff);
                     break;
-                case 0x44:
+                case CAMERA_MODE_VIEWFINDER_RESOURCE_ID:
                     if (gObjSeqCamModeArgB != 0)
                     {
-                        fblock.a = 90.0f;
-                        fblock.b = 20.0f;
-                        fblock.c = 5;
-                        (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_VIEWFINDER, 1, 1, 0xc, &fblock, 0, 0xff);
+                        viewfinderSettings.radius = 90.0f;
+                        viewfinderSettings.yOffset = 20.0f;
+                        viewfinderSettings.height = 5;
+                        (*gCameraInterface)
+                            ->setMode(CAMERA_MODE_VIEWFINDER_RESOURCE_ID, 1, 1,
+                                      sizeof(CameraModeViewfinderSettings), &viewfinderSettings, 0, 0xff);
                     }
                     else
                     {
-                        fblock.a = 90.0f;
-                        fblock.b = 20.0f;
-                        fblock.c = 0x1e;
-                        (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_VIEWFINDER, 1, 0, 0xc, &fblock, 0, 0xff);
+                        viewfinderSettings.radius = 90.0f;
+                        viewfinderSettings.yOffset = 20.0f;
+                        viewfinderSettings.height = 0x1e;
+                        (*gCameraInterface)
+                            ->setMode(CAMERA_MODE_VIEWFINDER_RESOURCE_ID, 1, 0,
+                                      sizeof(CameraModeViewfinderSettings), &viewfinderSettings, 0, 0xff);
                     }
                     break;
                 case CAMERA_MODE_COMBAT_RESOURCE_ID:

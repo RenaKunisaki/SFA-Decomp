@@ -86,6 +86,7 @@
 #undef INTERSECT_HUD_ALPHA_U8
 #include "main/dll/dll_0011_screens.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
+#include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/player_spirit_api.h"
 #include "main/loaded_file_flags.h"
 #include "main/fsin16_approx_api.h"
@@ -471,7 +472,6 @@ char lbl_803DBB90[] = "%s%.2d:";
 char lbl_803DBB98[] = "%s%.2d";
 char sHighScoreRowFormat[] = "%06d\n";
 char sHighScoreStarMark[] = "x10";
-#define CAMMODE_VIEWFINDER 0x44
 #define CAMMODE_WORLDMAP 0x4e
 #define GAMEUI_OBJFLAG_PARENT_SLACK 0x1000
 #define GAMEUI_TEXTURE_BLINK 1280
@@ -2900,7 +2900,7 @@ void pauseMenuDrawStatus(void)
     statuses[HUD_STATUS_TRICKY_ENERGY] = *trickyEnergy;
     if ((((gHudForceShowMask & 1) != 0) ||
          ((lbl_803E1E3C == (*gScreenTransitionInterface)->getProgress()) &&
-          ((*gCameraInterface)->getMode() != CAMMODE_VIEWFINDER) &&
+          ((*gCameraInterface)->getMode() != CAMERA_MODE_VIEWFINDER_RESOURCE_ID) &&
            ((player->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) == 0) && (getHudHiddenFrameCount() == 0) && (gTimeListPromptSelection == 0))) &&
         (pauseMenuState == 0))
     {
@@ -2936,7 +2936,7 @@ void pauseMenuDrawStatus(void)
             case HUD_STATUS_FUEL_CELLS:
                 if ((((f32*)(base + 0xAFC))[animationSlot] >= lbl_803E1E3C && ((player->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) == 0) &&
                       (pauseMenuState == 0) && (airMeter == NULL) && (getHudHiddenFrameCount() == 0) &&
-                      ((*gCameraInterface)->getMode() != CAMMODE_VIEWFINDER)) ||
+                      ((*gCameraInterface)->getMode() != CAMERA_MODE_VIEWFINDER_RESOURCE_ID)) ||
                     ((animationSlot == HUD_STATUS_SCARABS) && ((gHudForceShowMask & 2) != 0)))
                 {
                     flashThreshold = 8.5f * timeDelta + ((f32*)(base + 0xAC8))[animationSlot];
@@ -4182,7 +4182,7 @@ void drawTrickyHudOverlay(int obj, int unused1, int unused2)
         gTrickyHudActionMask = 0;
     }
     drawViewFinderHud();
-    if ((*gCameraInterface)->getMode() != CAMMODE_VIEWFINDER &&
+    if ((*gCameraInterface)->getMode() != CAMERA_MODE_VIEWFINDER_RESOURCE_ID &&
         (player->objectFlags & CMENU_OBJFLAG_PARENT_SLACK) == 0 && pauseMenuState == 0 &&
         (void*)tricky != 0 && getHudHiddenFrameCount() == 0)
     {
@@ -7887,7 +7887,7 @@ void cMenuRun(void)
         return;
     }
 
-    if ((*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
+    if ((*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
         (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0)
     {
         buttonDisable(0, 0xe0800);
@@ -7904,7 +7904,7 @@ void cMenuRun(void)
     gCMenuButtons = btn;
     btn16 = btn;
 
-    if ((*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
+    if ((*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
         (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0 ||
         shouldCloseCMenu != 0 || gTimeListPromptSelection != 0)
     {
@@ -8588,7 +8588,7 @@ void GameUI_frameEnd(void)
         if (gTimeListPromptSelection != 0)
             timeListPromptUpdate();
 
-        if (playerGetFocusObject(player) != NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
+        if (playerGetFocusObject(player) != NULL || (*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
             (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || pauseMenuState != 0)
         {
             buttonDisable(0, 0xf0000);
@@ -8605,7 +8605,7 @@ void GameUI_frameEnd(void)
             }
         }
 
-        if (playerGetFocusObject(player) != NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
+        if (playerGetFocusObject(player) != NULL || (*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
             (player->objectFlags & GAMEUI_OBJFLAG_PARENT_SLACK) != 0 || shouldCloseCMenu != 0 ||
             pauseMenuState != 0 || getHudHiddenFrameCount() != 0 || gTimeListPromptSelection != 0)
         {
