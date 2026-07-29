@@ -18,8 +18,8 @@ typedef enum WarpPointMode {
 typedef struct WarpPointPlacement {
     ObjPlacement base;     /* 0x00 */
     u8 yawByte;            /* 0x18 */
-    s8 hintId;             /* 0x19 */
-    s8 targetMapId;        /* 0x1A */
+    s8 arrivalWarpId;      /* 0x19 */
+    s8 warpId;             /* 0x1A */
     s8 sequenceId;         /* 0x1B */
     s8 enabled;            /* 0x1C */
     s8 mode;               /* 0x1D: WarpPointMode */
@@ -42,8 +42,8 @@ typedef struct WarpPointState {
 
 STATIC_ASSERT(offsetof(WarpPointPlacement, base) == 0x0);
 STATIC_ASSERT(offsetof(WarpPointPlacement, yawByte) == 0x18);
-STATIC_ASSERT(offsetof(WarpPointPlacement, hintId) == 0x19);
-STATIC_ASSERT(offsetof(WarpPointPlacement, targetMapId) == 0x1A);
+STATIC_ASSERT(offsetof(WarpPointPlacement, arrivalWarpId) == 0x19);
+STATIC_ASSERT(offsetof(WarpPointPlacement, warpId) == 0x1A);
 STATIC_ASSERT(offsetof(WarpPointPlacement, sequenceId) == 0x1B);
 STATIC_ASSERT(offsetof(WarpPointPlacement, enabled) == 0x1C);
 STATIC_ASSERT(offsetof(WarpPointPlacement, mode) == 0x1D);
