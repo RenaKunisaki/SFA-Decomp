@@ -641,6 +641,11 @@ int hightop_stateHandler03(GameObject* obj, HighTopRuntime* state)
     return 0;
 }
 
+static inline int hightopAbs(int v)
+{
+    return v >= 0 ? v : -v;
+}
+
 int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
 {
     s16 d336;
@@ -663,7 +668,7 @@ int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
         stateArg->baddie.inputMagnitude = 0.0f;
     }
     d336 = stateArg->baddie.turnRate;
-    if ((d336 >= 0 ? d336 : -d336) > state->turnRateThreshold)
+    if (state->turnRateThreshold < hightopAbs(d336))
     {
         conv = (int)(182.04445f * ((f32)d336 * dt));
         (obj)->anim.rotX = (s16)((obj)->anim.rotX + ((s16)conv >> 5));
