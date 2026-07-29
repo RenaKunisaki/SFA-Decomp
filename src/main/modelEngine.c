@@ -324,6 +324,7 @@
 #include "main/dll/dll_0046_cameramodedebug.h"
 #include "main/dll/dll_0048_cameramodestatic.h"
 #include "main/dll/dll_004A_cameramodeshipbattle.h"
+#include "main/dll/dll_004B_cameramodeclimb.h"
 #include "main/dll/dll_004C_camDebug.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
@@ -499,8 +500,7 @@ extern ResourceDescriptor lbl_80319598, lbl_803195E8, lbl_80319638, lbl_80319688
 extern ResourceDescriptor lbl_803197F8, lbl_80319840, projquakeshock_funcs, lbl_803198D8, projtesla_funcs, lbl_80319968,
     lbl_803199B0, lbl_803199F8;
 extern ResourceDescriptor lbl_80319A40, lbl_80319B58, lbl_80319B98, gCameraModeViewfinderDescriptor;
-extern ResourceDescriptor gCameraModeTestStrengthDescriptor, gCameraModeCombatDescriptor, gCameraModeClimbDescriptor,
-    gCameraModeNpcSpeakDescriptor,
+extern ResourceDescriptor gCameraModeTestStrengthDescriptor, gCameraModeCombatDescriptor, gCameraModeNpcSpeakDescriptor,
     gCameraModeWorldMapDescriptor, lbl_80319E38;
 extern ResourceDescriptor gCameraModeCrawlDescriptor, lbl_80319E98, lbl_80319EC8, lbl_80319EF8, lbl_80319F58, lbl_80319F88,
     gCameraModeTitleDescriptor, lbl_8031A148;
@@ -1206,7 +1206,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCameraModeStaticDescriptor,
     &gCameraModeCombatDescriptor,
     (ResourceDescriptor*)&gCameraModeShipBattleDescriptor,
-    &gCameraModeClimbDescriptor,
+    (ResourceDescriptor*)&gCameraModeClimbDescriptor,
     (ResourceDescriptor*)&gCameraModeFixedDescriptor,
     &gCameraModeNpcSpeakDescriptor,
     &gCameraModeWorldMapDescriptor,
