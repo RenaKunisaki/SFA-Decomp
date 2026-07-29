@@ -1069,7 +1069,7 @@ int getPrevUiDll(void)
     return gModelEnginePrevUiDll;
 }
 
-UiDllVTable** getDLL16(void)
+UiDllVTable** getCurUiDllInterface(void)
 {
     return gModelEngineCurUiDllRes;
 }
