@@ -1606,7 +1606,7 @@ static inline void texSlotGetScroll(u8* obj, u32 jid, f32* txp, f32* typ)
     }
     *typ = *txp = 0.0f;
 }
-u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
+u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
 {
     u16 alpha;
     u8* colp;
@@ -1953,7 +1953,7 @@ u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     {
         u8 hl;
-        if (modelRenderFn_8003e98c(obj, (u8*)op, refs, 0x80, hl = ((((ModelFileHeader*)p2)->shaderFlags & 2) && !(((ModelFileHeader*)p2)->flags24 & 2)),
+        if (addShaderLayerStages(obj, (u8*)op, refs, 0x80, hl = ((((ModelFileHeader*)p2)->shaderFlags & 2) && !(((ModelFileHeader*)p2)->flags24 & 2)),
                                    nlay) == 0)
         {
             u8 hasBaseTexture;
@@ -1978,7 +1978,7 @@ u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             }
             addWarpedNoiseTevStages(textureIdxToPtr(*(u32*)l1), m2);
         }
-        modelRenderFn_8003e98c(obj, (u8*)op, refs, 0, hl, nlay);
+        addShaderLayerStages(obj, (u8*)op, refs, 0, hl, nlay);
     }
     if (isHeavyFogEnabled() && !(((ModelFileHeader*)p2)->flags & 0x100))
     {
