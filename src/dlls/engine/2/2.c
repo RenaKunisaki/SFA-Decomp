@@ -68,7 +68,7 @@ extern char sMemoryCardFileNameString[];
 
 volatile u32 gSaveCardState = 0xD;
 char* sMemoryCardFileName = sMemoryCardFileNameString;
-int lbl_803DB708 = 0x404040FF;
+int gSaveCardBackdropColor = 0x404040FF;
 
 typedef struct SeqRunFlags
 {
@@ -153,7 +153,7 @@ extern int gObjSeqTimedStreamSlot;
 
 int saveGameReadSlotCb(u8 idx, int unused, void* dst)
 {
-    memcpy(dst, (void*)(lbl_803DD044 + idx * 1772 + 2640), 1772);
+    memcpy(dst, (void*)(gSaveCardIoBuffer + idx * 1772 + 2640), 1772);
     return 0;
 }
 
@@ -170,7 +170,7 @@ int saveGame_doWrite(int slot)
     int result;
     int offset;
 
-    p = (u64*)lbl_803DD044;
+    p = (u64*)gSaveCardIoBuffer;
     x[0] = 0;
     a[0] = 1;
     for (i[0] = (int)x[0]; (int)i[0] < 0x3ff; i[0]++)
@@ -181,21 +181,21 @@ int saveGame_doWrite(int slot)
     chk = x[0] ^ (a[0] + 13);
     ((u32*)p)[0x7ff] = (u32)chk;
     ((u32*)p)[0x7fe] = (u32)(chk >> 32);
-    DCFlushRange((void*)lbl_803DD044, 0x2000);
-    result = CARDWrite(&gSaveCardFileInfo.fileInfo, (void*)lbl_803DD044, 0x2000, offset = (u8)slot << 13);
+    DCFlushRange((void*)gSaveCardIoBuffer, 0x2000);
+    result = CARDWrite(&gSaveCardFileInfo.fileInfo, (void*)gSaveCardIoBuffer, 0x2000, offset = (u8)slot << 13);
     if (result == -5)
     {
         CARDDelete(0, sMemoryCardFileName);
     }
     if (result == 0)
     {
-        DCInvalidateRange((void*)lbl_803DD044, 0x2000);
-        result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)lbl_803DD044, 0x2000, offset);
+        DCInvalidateRange((void*)gSaveCardIoBuffer, 0x2000);
+        result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)gSaveCardIoBuffer, 0x2000, offset);
         if (result == 0)
         {
             u64 x2[1];
             u64 a2[1];
-            p = (u64*)lbl_803DD044;
+            p = (u64*)gSaveCardIoBuffer;
             x2[0] = 0;
             a2[0] = 1;
             for (i[0] = (int)x2[0]; (int)i[0] < 0x3ff; i[0]++)
@@ -231,7 +231,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     void* m;
 
     m = mmAlloc(0x2000, -1, 0);
-    lbl_803DD044 = (char*)m;
+    gSaveCardIoBuffer = (char*)m;
     if (m == NULL)
     {
         gSaveCardState = 8;
@@ -239,25 +239,25 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     }
     if (saveGame(writeImages) == 0)
     {
-        mm_free((void*)lbl_803DD044);
-        lbl_803DD044 = 0;
+        mm_free((void*)gSaveCardIoBuffer);
+        gSaveCardIoBuffer = 0;
         return 0;
     }
-    DCInvalidateRange((void*)lbl_803DD044, 0x2000);
-    result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)lbl_803DD044, 0x2000, 0x2000);
+    DCInvalidateRange((void*)gSaveCardIoBuffer, 0x2000);
+    result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)gSaveCardIoBuffer, 0x2000, 0x2000);
     if (result == CARD_RESULT_READY)
     {
-        c = saveGame_checksum((u64*)lbl_803DD044, 0x3ff);
+        c = saveGame_checksum((u64*)gSaveCardIoBuffer, 0x3ff);
         chk = c;
-        if (c != *(u64*)(lbl_803DD044 + 0x1ff8))
+        if (c != *(u64*)(gSaveCardIoBuffer + 0x1ff8))
         {
-            DCInvalidateRange((void*)lbl_803DD044, 0x2000);
-            result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)lbl_803DD044, 0x2000, 0x4000);
+            DCInvalidateRange((void*)gSaveCardIoBuffer, 0x2000);
+            result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)gSaveCardIoBuffer, 0x2000, 0x4000);
             if (result == CARD_RESULT_READY)
             {
-                c = saveGame_checksum((u64*)lbl_803DD044, 0x3ff);
+                c = saveGame_checksum((u64*)gSaveCardIoBuffer, 0x3ff);
                 chk = c;
-                if (c == *(u64*)(lbl_803DD044 + 0x1ff8))
+                if (c == *(u64*)(gSaveCardIoBuffer + 0x1ff8))
                 {
                     result = saveGame_doWrite(1);
                 }
@@ -298,16 +298,16 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
         m = gSaveCardImageBuffer = mmAlloc(0x4000, -1, 0);
         if (m == NULL)
         {
-            if (lbl_803DD05A != 0)
+            if (gSaveCardFileOpen != 0)
             {
-                lbl_803DD05A = 0;
+                gSaveCardFileOpen = 0;
                 CARDClose(&gSaveCardFileInfo.fileInfo);
             }
             CARDUnmount(0);
-            mm_free(lbl_803DD040);
-            lbl_803DD040 = NULL;
-            mm_free((void*)lbl_803DD044);
-            lbl_803DD044 = 0;
+            mm_free(gSaveCardWorkArea);
+            gSaveCardWorkArea = NULL;
+            mm_free((void*)gSaveCardIoBuffer);
+            gSaveCardIoBuffer = 0;
             gSaveCardState = 8;
             return 0;
         }
@@ -315,7 +315,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
         if (result == CARD_RESULT_READY)
         {
             chk2 = saveGame_checksum((u64*)gSaveCardImageBuffer, 0x400);
-            if (chk2 != *(u64*)(lbl_803DD044 + 0xa40))
+            if (chk2 != *(u64*)(gSaveCardIoBuffer + 0xa40))
             {
                 if ((u8)writeImages != 0)
                 {
@@ -334,10 +334,10 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
                     if (result == CARD_RESULT_READY)
                     {
                         t = *(u64*)(gSaveCardImageBuffer + 0x2a40);
-                        if (t != *(u64*)(lbl_803DD044 + 0xa40))
+                        if (t != *(u64*)(gSaveCardIoBuffer + 0xa40))
                         {
                             int writeResult;
-                            *(u64*)(lbl_803DD044 + 0xa40) = t;
+                            *(u64*)(gSaveCardIoBuffer + 0xa40) = t;
                             writeResult = saveGame_doWrite(2);
                             if (writeResult == 0)
                             {
@@ -355,16 +355,16 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     {
         result = cb(cbA, cbB, cbC, cbD);
     }
-    if (lbl_803DD05A != 0)
+    if (gSaveCardFileOpen != 0)
     {
-        lbl_803DD05A = 0;
+        gSaveCardFileOpen = 0;
         CARDClose(&gSaveCardFileInfo.fileInfo);
     }
     CARDUnmount(0);
-    mm_free(lbl_803DD040);
-    lbl_803DD040 = NULL;
-    mm_free((void*)lbl_803DD044);
-    lbl_803DD044 = 0;
+    mm_free(gSaveCardWorkArea);
+    gSaveCardWorkArea = NULL;
+    mm_free((void*)gSaveCardIoBuffer);
+    gSaveCardIoBuffer = 0;
     switch (result)
     {
     case -5:
@@ -523,7 +523,7 @@ int saveGame(int writeImages)
     }
     else
     {
-        if ((lbl_803DD040 = mmAlloc(0xa000, -1, 0)) == NULL)
+        if ((gSaveCardWorkArea = mmAlloc(0xa000, -1, 0)) == NULL)
         {
             gSaveCardState = 8;
             ok = 0;
@@ -538,7 +538,7 @@ int saveGame(int writeImages)
         return 0;
     }
     gSaveCardState = 0;
-    result = CARDMount(0, lbl_803DD040, (CARDCallback)cardSetStatusNoCard2);
+    result = CARDMount(0, gSaveCardWorkArea, (CARDCallback)cardSetStatusNoCard2);
     if (result == CARD_RESULT_BROKEN)
     {
         result = CARDCheck(0);
@@ -585,7 +585,7 @@ int saveGame(int writeImages)
         }
         if (result == CARD_RESULT_READY)
         {
-            lbl_803DD05A = 1;
+            gSaveCardFileOpen = 1;
         }
     }
     if (result == CARD_RESULT_READY)
@@ -619,8 +619,8 @@ int saveGame(int writeImages)
         {
             gSaveCardState = 8;
             CARDUnmount(0);
-            mm_free(lbl_803DD040);
-            lbl_803DD040 = NULL;
+            mm_free(gSaveCardWorkArea);
+            gSaveCardWorkArea = NULL;
             return 0;
         }
     }
@@ -716,14 +716,14 @@ int saveGame(int writeImages)
         ret = 0;
         break;
     }
-    if (lbl_803DD05A != 0)
+    if (gSaveCardFileOpen != 0)
     {
-        lbl_803DD05A = 0;
+        gSaveCardFileOpen = 0;
         CARDClose(&gSaveCardFileInfo.fileInfo);
     }
     CARDUnmount(0);
-    mm_free(lbl_803DD040);
-    lbl_803DD040 = NULL;
+    mm_free(gSaveCardWorkArea);
+    gSaveCardWorkArea = NULL;
     return ret;
 }
 

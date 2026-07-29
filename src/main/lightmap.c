@@ -816,7 +816,7 @@ void sceneDraw(void)
     GXSetChanAmbColor(GX_COLOR0, c);
     GXSetNumChans(1);
     renderSceneGeometry(0, gMapBlockDrawOrderFrontToBack);
-    renderResetFn_8003fc60();
+    objRenderInvalidateStateCache();
     renderObjects(buf);
     if (CameraShake_IsActive() != 0 || (int)bEnableMotionBlur != 0)
     {

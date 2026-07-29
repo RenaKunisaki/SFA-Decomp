@@ -530,7 +530,7 @@ void lightmapDrawQueuedObject(GameObject* obj)
     {
         ObjModelState* shadow;
         (*gModgfxInterface)->renderEffects(NULL, 0, 0, 1, obj);
-        renderResetFn_8003fc60();
+        objRenderInvalidateStateCache();
         objRender(0, 0, 0, 0, obj, 1);
         Camera_ApplyDecalViewport();
         shadow = (ObjModelState*)(obj->anim.modelState);

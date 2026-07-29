@@ -2361,7 +2361,7 @@ void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
 }
 
 
-void renderResetFn_8003fc60(void)
+void objRenderInvalidateStateCache(void)
 {
     gObjRenderSetupDone = 0;
     gObjCachedTexture = 0;

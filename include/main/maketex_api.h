@@ -6,10 +6,10 @@
 struct ObjSeqState;
 
 extern char* sMemoryCardFileName;
-extern int lbl_803DB708;
-extern void* lbl_803DD040;
-extern char* lbl_803DD044;
-extern u8 lbl_803DD05A;
+extern int gSaveCardBackdropColor;
+extern void* gSaveCardWorkArea;
+extern char* gSaveCardIoBuffer;
+extern u8 gSaveCardFileOpen;
 
 typedef int (*SaveGameCallback)(int arg0, int arg1, void* arg2, void* arg3);
 

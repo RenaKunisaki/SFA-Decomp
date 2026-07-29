@@ -4728,8 +4728,8 @@ void showMemCardError(u8 err);
  * loops in _saveGame, maybeTryLoadSave, loadSaveGame and cardCreateSaveFile.
  * Pumps 60 frames of the GX/dialog
  * pipeline; on each frame either lets the active controller draw its own
- * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored over the
- * cached prompt id in lbl_803DB708, then routes the OK/Cancel/back text
+ * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored
+ * tinting the reflection texture with gSaveCardBackdropColor, then routes the OK/Cancel/back text
  * to gameTextShowAt based on the dialog kind passed in.
  */
 void cardShowLoadingMsg(u8 kind);
@@ -4737,7 +4737,7 @@ void cardShowLoadingMsg(u8 kind);
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from _saveGame.
  * Stages a per-slot 0x6EC-byte block plus the shared 0xE4-byte trailer
- * into the card-IO buffer (lbl_803DD044), then asks saveGame_doWrite(2) to
+ * into the card-IO buffer (gSaveCardIoBuffer), then asks saveGame_doWrite(2) to
  * commit; if that fails it falls back to saveGame_doWrite(1).
  */
 int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
@@ -4745,7 +4745,7 @@ int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from maybeTryLoadSave.
  * Copies the 0xE4-byte block at offset 0x1F14 in the card buffer (held in
- * lbl_803DD044) into the caller-supplied destination.
+ * gSaveCardIoBuffer) into the caller-supplied destination.
  */
 int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 

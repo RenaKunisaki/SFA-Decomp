@@ -335,7 +335,7 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
             }
         }
     }
-    renderResetFn_8003fc60();
+    objRenderInvalidateStateCache();
 }
 
 void explosion_hitDetect(void) {

@@ -18,7 +18,7 @@ void objRenderFn_8003d980(u8* obj, int* model);
 void objRenderFuzz(int* obj);
 void objRenderFn_800413d4(int* obj);
 void objRenderFuzzShells(int* obj);
-void renderResetFn_8003fc60(void);
+void objRenderInvalidateStateCache(void);
 void objSetRenderingShadowPass(u8 enabled);
 void objRenderFn_80041018(GameObject* obj);
 void objSetOverrideColor(u8 red, u8 green, u8 blue);
