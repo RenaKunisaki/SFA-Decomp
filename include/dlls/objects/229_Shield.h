@@ -8,6 +8,17 @@
 #define SHIELD_SEGMENT_COUNT       4
 #define SHIELD_SEGMENT_TABLE_COUNT 16
 
+typedef enum ShieldMode {
+    SHIELD_MODE_STANDARD_FADE_OUT_SHORT = 0,
+    SHIELD_MODE_STANDARD_FADE_IN_SHORT = 1,
+    SHIELD_MODE_STANDARD_FADE_OUT_LONG = 2,
+    SHIELD_MODE_STANDARD_FADE_IN_LONG = 3,
+    SHIELD_MODE_OMNI_ACTIVE = 4,
+    SHIELD_MODE_INIT_OMNI = 5,
+    SHIELD_MODE_OMNI_HIT = 6,
+    SHIELD_MODE_INIT_STANDARD = 7,
+} ShieldMode;
+
 typedef struct ShieldState {
     ModelLightStruct* light;                /* 0x00 */
     f32 fadeValue;                          /* 0x04 */
