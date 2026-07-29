@@ -1885,11 +1885,11 @@ void ObjHits_DetectObjectPair(int objA, int objB)
     f32 yB;
     f32 tmp;
     ObjHitsPriorityState* stateB;
-    f32 sy;
+    f32 sx;
     char vertical;
     int distClamped;
     f32 cx;
-    f32 sx;
+    f32 sy;
     f32 sz;
 
     stateA = (ObjHitsPriorityState*)((GameObject*)objA)->anim.hitReactState;
@@ -1991,25 +1991,25 @@ void ObjHits_DetectObjectPair(int objA, int objB)
         {
             sy = gObjHitsScalarZero;
         }
-        segSq = sy * sy + sx * sx + sz * sz;
+        segSq = sx * sx + sy * sy + sz * sz;
         if (segSq > gObjHitsScalarOne)
         {
             cx = ((GameObject*)objB)->anim.worldPosX - stateA->worldPosX;
             cz = ((GameObject*)objB)->anim.worldPosZ - stateA->worldPosZ;
             cy = ((GameObject*)objB)->anim.worldPosY - stateA->worldPosY;
-            segSq = (sy * cy + sx * cx + sz * cz) / segSq;
+            segSq = (sx * cx + sy * cy + sz * cz) / segSq;
             if ((segSq >= gObjHitsScalarZero) && (segSq <= gObjHitsScalarOne))
             {
                 f32 oz;
                 f32 ox;
                 f32 oy;
 
-                oz = (segSq * sz + stateA->worldPosZ) - ((GameObject*)objB)->anim.worldPosZ;
-                oz = oz * oz;
-                ox = (segSq * sx + stateA->worldPosX) - ((GameObject*)objB)->anim.worldPosX;
-                ox = ox * ox;
-                oy = (segSq * sy + stateA->worldPosY) - ((GameObject*)objB)->anim.worldPosY;
-                oy = oy * oy;
+                tmp = (segSq * sz + stateA->worldPosZ) - ((GameObject*)objB)->anim.worldPosZ;
+                oz = tmp * tmp;
+                tmp = (segSq * sx + stateA->worldPosX) - ((GameObject*)objB)->anim.worldPosX;
+                ox = tmp * tmp;
+                tmp = (segSq * sy + stateA->worldPosY) - ((GameObject*)objB)->anim.worldPosY;
+                oy = tmp * tmp;
                 dist = sqrtf(oz + (ox + oy));
             }
         }
