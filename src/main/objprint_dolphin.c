@@ -165,7 +165,7 @@ int objMatrixToRotation(f32* m, s16* outA, s16* outB, s16* outC)
 }
 
 
-void modelMtxFn_8003be38(u8* def, int* model, f32* mtxA, f32* mtxB)
+void modelBuildPosNrmMtxs(u8* def, int* model, f32* mtxA, f32* mtxB)
 {
     void* cache;
     int count;
@@ -852,7 +852,7 @@ extern PPCWGPipe GXWGFifo : (0xCC008000);
 
 extern u8 gObjGxPosMtxIdTable[12];
 
-void objRenderFn_8003d980(u8* obj, int* p2)
+void objRenderAttachment(u8* obj, int* p2)
 {
     f32 wm[16];
     f32 cm[16];
@@ -1202,7 +1202,7 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
     {
         if (skip == 0)
         {
-            modelMtxFn_8003be38(hdr, model, mtx, m1);
+            modelBuildPosNrmMtxs(hdr, model, mtx, m1);
         }
         else
         {

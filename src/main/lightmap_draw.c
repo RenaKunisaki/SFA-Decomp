@@ -524,7 +524,7 @@ void lightmapDrawQueuedObject(GameObject* obj)
     ObjModel* model = Obj_GetActiveModel(obj);
     if (model->renderAttachment != NULL)
     {
-        objRenderFn_8003d980((u8*)obj, (int*)model);
+        objRenderAttachment((u8*)obj, (int*)model);
     }
     else
     {
