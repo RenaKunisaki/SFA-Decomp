@@ -1,5 +1,6 @@
 #include "main/camera_interface.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/dll_0047_cameramodepath.h"
 #include "main/dll/dll_004C_camDebug.h"
 #include "main/dll/dll_0053_cameramodecloudrunner.h"
 #include "main/dll/dll_0056_cameramodearwing.h"
@@ -1545,7 +1546,6 @@ f32 objCurveInterpolate(ObjCurveKey* keys, int count, int frame);
 #define OBJSEQ_CAMMODE_DEFAULT      0x42 /* default gameplay cameramode DLL */
 #define OBJSEQ_CAMMODE_VIEWFINDER   0x44 /* dll_0044 viewfinder */
 #define OBJSEQ_CAMMODE_CAMTALK      0x45 /* dll_0045_camTalk */
-#define OBJSEQ_CAMMODE_TESTSTRENGTH 0x47 /* dll_0047_cameramodeteststrength */
 #define OBJSEQ_CAMMODE_STATIC       0x48 /* dll_0048_cameramodestatic */
 #define OBJSEQ_CAMMODE_COMBAT       0x49 /* dll_0049_cameramodecombat */
 #define OBJSEQ_CAMMODE_SHIPBATTLE   0x4a /* dll_004A_cameramodeshipbattle */
@@ -2820,7 +2820,7 @@ void ObjSeq_updateCamera(void)
 {
     CameraModeFixedPose cameraPose;
     CamFloats fblock;
-    CamMode mode47;
+    CameraModePathSettings pathSettings;
     CamMode mode48;
     int groupObjCount;
     GameObject* obj;
@@ -2917,11 +2917,12 @@ void ObjSeq_updateCamera(void)
             {
                 switch (gObjSeqCamMode)
                 {
-                case 0x47:
-                    mode47.mode = gObjSeqCamModeArgB;
-                    mode47.flag = gObjSeqCamModeArgC;
+                case CAMERA_MODE_PATH_RESOURCE_ID:
+                    pathSettings.pathTag = gObjSeqCamModeArgB;
+                    pathSettings.skipTransition = gObjSeqCamModeArgC;
                     (*gCameraInterface)
-                        ->setMode(OBJSEQ_CAMMODE_TESTSTRENGTH, 1, 3, 8, &mode47, gObjSeqCamModeArgD, 0xff);
+                        ->setMode(CAMERA_MODE_PATH_RESOURCE_ID, 1, 3, sizeof(CameraModePathSettings), &pathSettings,
+                                  gObjSeqCamModeArgD, 0xff);
                     break;
                 case 0x48:
                     mode48.mode = gObjSeqCamModeArgB;
@@ -3272,7 +3273,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
         }
         break;
     case 20:
-        gObjSeqCamMode = 0x47;
+        gObjSeqCamMode = CAMERA_MODE_PATH_RESOURCE_ID;
         gObjSeqCamModeArgB = cmdArg & 0x7f;
         gObjSeqCamModeArgC = 1;
         gObjSeqCamModeArgD = 0x78;

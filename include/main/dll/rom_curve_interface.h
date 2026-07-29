@@ -31,6 +31,7 @@ typedef struct RomCurvePathNode
   s16 sampleB;
   s16 sampleC;
   s8 sampleD;
+  u8 cameraFlags;
 } RomCurvePathNode;
 
 STATIC_ASSERT(offsetof(RomCurvePathNode, x) == 0x08);
@@ -39,6 +40,8 @@ STATIC_ASSERT(offsetof(RomCurvePathNode, directionMask) == 0x1B);
 STATIC_ASSERT(offsetof(RomCurvePathNode, links) == 0x1C);
 STATIC_ASSERT(offsetof(RomCurvePathNode, tag0) == 0x31);
 STATIC_ASSERT(offsetof(RomCurvePathNode, sampleA) == 0x34);
+STATIC_ASSERT(offsetof(RomCurvePathNode, cameraFlags) == 0x3B);
+STATIC_ASSERT(sizeof(RomCurvePathNode) == 0x3C);
 
 typedef void (*RomCurveVoidFn)(void);
 typedef RomCurveDef **(*RomCurveGetCurvesFn)(int *outCount);
