@@ -12,7 +12,7 @@
 typedef struct DrakordThornbushPlacement
 {
     ObjPlacement base;
-    u8 pad18[0x19 - 0x18];
+    s8 rotYByte;     /* 0x18: initial Y rotation in 1/256 turns (anim.rotY = byte << 8) */
     u8 spawnHealth;  /* 0x19: initial hit points */
     s16 regrowDelay; /* 0x1A: frames before regrow (0 = no respawn) */
     s16 baseRadius;  /* 0x1C: base hit-sphere radius */

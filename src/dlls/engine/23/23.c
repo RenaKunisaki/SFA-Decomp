@@ -65,6 +65,16 @@ STATIC_ASSERT(sizeof(SaveGameData) == 0xF70);
 #define SAVEGAME_CURRENT_CHARACTER_OFFSET     0x20
 #define SAVEGAME_NEW_FILE_FLAG_OFFSET         0x21
 #define SAVEGAME_CHARACTER_POSITION_OFFSET    0x684
+/* 5 gametext phrase ids for the "last saved game" task hints shown on the
+ * file-select card; engine/21 getLastSavedGameTexts() hands out the same
+ * block, and each id is offset by 0xf4 before gameTextGetPhrase. */
+#define SAVEGAME_TASK_HINT_IDS_OFFSET         0x558
+/* completion score out of SAVEGAME_COMPLETION_SCORE_MAX; drives the
+ * file-select percentage and the two rank digits. A new file starts at 1. */
+#define SAVEGAME_COMPLETION_SCORE_OFFSET      0x55d
+#define SAVEGAME_COMPLETION_SCORE_MAX         0xbb
+/* how many of the five task-hint slots are filled */
+#define SAVEGAME_TASK_HINT_COUNT_OFFSET       0x55e
 #define SAVE_SCORE_FILE_STRIDE                0x28
 #define SAVE_SCORE_TABLE_OFFSET               0x1c
 #define SAVE_SCORE_ENTRY_COUNT                5
@@ -557,7 +567,7 @@ s8 slot;
             SAVEGAME_CHARACTER_POSITION_OFFSET + 4) = defaultPos.y;
     *(f32*)(gSaveGameData + gSaveGameData[SAVEGAME_CURRENT_CHARACTER_OFFSET] * 0x10 +
             SAVEGAME_CHARACTER_POSITION_OFFSET + 8) = defaultPos.z;
-    gSaveGameData[0x55d] = 1;
+    gSaveGameData[SAVEGAME_COMPLETION_SCORE_OFFSET] = 1;
 
     if (name != NULL)
     {
@@ -610,53 +620,53 @@ int saveSelect_getInfo(void* outPtr)
             {
                 memcpy(info, save + SAVEGAME_PLAYER_NAME_OFFSET, sizeof(info->name));
 
-                info->percentComplete = (u8)((save[0x55d] * 100) / 0xbb);
-                if (save[0x55d] > 0xb3)
+                info->percentComplete = (u8)((save[SAVEGAME_COMPLETION_SCORE_OFFSET] * 100) / SAVEGAME_COMPLETION_SCORE_MAX);
+                if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0xb3)
                 {
                     info->rankA = 6;
                     info->rankB = 4;
                 }
-                else if (save[0x55d] > 0xb0)
+                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0xb0)
                 {
                     info->rankA = 5;
                     info->rankB = 4;
                 }
-                else if (save[0x55d] > 0xa1)
+                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0xa1)
                 {
                     info->rankA = 4;
                     info->rankB = 4;
                 }
-                else if (save[0x55d] > 0x8a)
+                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x8a)
                 {
                     info->rankA = 4;
                     info->rankB = 3;
                 }
-                else if (save[0x55d] > 0x81)
+                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x81)
                 {
                     info->rankA = 3;
                     info->rankB = 3;
                 }
-                else if (save[0x55d] > 0x71)
+                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x71)
                 {
                     info->rankA = 3;
                     info->rankB = 2;
                 }
-                else if (save[0x55d] > 0x62)
+                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x62)
                 {
                     info->rankA = 2;
                     info->rankB = 2;
                 }
-                else if (save[0x55d] > 0x48)
+                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x48)
                 {
                     info->rankA = 2;
                     info->rankB = 1;
                 }
-                else if (save[0x55d] > 0x3d)
+                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x3d)
                 {
                     info->rankA = 1;
                     info->rankB = 1;
                 }
-                else if (save[0x55d] > 8)
+                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 8)
                 {
                     info->rankA = 1;
                     info->rankB = 0;
@@ -673,8 +683,8 @@ int saveSelect_getInfo(void* outPtr)
                 info->taskTexts[2] = NULL;
                 info->taskTexts[3] = NULL;
                 info->taskTexts[4] = NULL;
-                taskIds = save + 0x558;
-                for (i = 0; i < save[0x55e]; i++)
+                taskIds = save + SAVEGAME_TASK_HINT_IDS_OFFSET;
+                for (i = 0; i < save[SAVEGAME_TASK_HINT_COUNT_OFFSET]; i++)
                 {
                     info->taskTexts[i] = gameTextGetPhrase(taskIds[i] + 0xf4, 0);
                 }

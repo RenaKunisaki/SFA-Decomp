@@ -105,7 +105,7 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
         gBoneParticleEffectTimer = 0xf;
         Sfx_PlayFromObject((u32)gobj, SFXTRIG_id_281);
     }
-    model = (ObjModel*)((ObjAnimComponent*)gobj)->banks[((ObjAnimComponent*)gobj)->bankIndex];
+    model = (ObjModel*)gobj->anim.banks[gobj->anim.bankIndex];
     if (gBoneParticleStageIndex > 6)
     {
         gBoneParticleStageIndex = 0;
