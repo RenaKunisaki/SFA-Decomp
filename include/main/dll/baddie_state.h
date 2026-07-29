@@ -1,6 +1,7 @@
 #ifndef MAIN_DLL_BADDIE_STATE_H_
 #define MAIN_DLL_BADDIE_STATE_H_
 
+#include "game/objects/object_setup.h"
 #include "ghidra_import.h"
 #include "global.h"
 #include "main/objprint_character_api.h"
@@ -192,6 +193,47 @@ STATIC_ASSERT(offsetof(BaddieState, moveDone) == 0x346);
 STATIC_ASSERT(offsetof(BaddieState, hitPoints) == 0x354);
 
 /*
+ * GroundBaddiePlacement - the placement/setup record every ground baddie is
+ * spawned from, i.e. the `config` argument of
+ * BaddieControlInterface.initGroundBaddie. Decoded from
+ * dll_19_initGroundBaddie (engine/25), the shared controller that reads the
+ * whole record on behalf of every ground-baddie class: each field below is
+ * named after the GroundBaddieState member the controller copies it into,
+ * or after the object field it drives. Per-class re-uses exist (202's
+ * crawler reads unk28 as a root-motion scale, hoodedZyck reads aggression as
+ * a distance scale), so the class-specific slots stay unnamed.
+ */
+typedef struct GroundBaddiePlacement {
+    ObjPlacement base; /* 0x00: standard object placement; base.ident gates the map-event save time */
+    s16 gameBitA;      /* 0x18: mainGetBit gate -> obj->userData1 (inverted for romDefNo 636) */
+    s16 gameBitC;      /* 0x1a */
+    s16 gameBitD;      /* 0x1c: 202's paid-trigger baddie sets it on payment */
+    s16 soundIdB;      /* 0x1e */
+    s16 soundIdA;      /* 0x20 */
+    s16 triggerId;     /* 0x22 */
+    s16 unk24;         /* 0x24 */
+    u8 pad26;          /* 0x26 */
+    u8 unk27;          /* 0x27 */
+    u8 unk28;          /* 0x28 */
+    u8 aggroRange;     /* 0x29: scaled <<3 into GroundBaddieState.aggroRange */
+    u8 rotX;           /* 0x2a: 1/256-turn heading, sign-extended and <<8 into obj->anim.rotX */
+    u8 flags;          /* 0x2b: GroundBaddieState.configFlags */
+    s16 unk2C;         /* 0x2c */
+    s8 sequenceId;     /* 0x2e: -1 leaves the baddie dormant (obj->userData2 = 1) */
+    u8 aggression;     /* 0x2f */
+    s16 gameBitB;      /* 0x30: set 0 at init */
+    u8 hitPoints;      /* 0x32: 0 means the default 6 */
+    u8 pad33;          /* 0x33 */
+} GroundBaddiePlacement;
+
+STATIC_ASSERT(offsetof(GroundBaddiePlacement, gameBitA) == 0x18);
+STATIC_ASSERT(offsetof(GroundBaddiePlacement, aggroRange) == 0x29);
+STATIC_ASSERT(offsetof(GroundBaddiePlacement, flags) == 0x2B);
+STATIC_ASSERT(offsetof(GroundBaddiePlacement, sequenceId) == 0x2E);
+STATIC_ASSERT(offsetof(GroundBaddiePlacement, gameBitB) == 0x30);
+STATIC_ASSERT(sizeof(GroundBaddiePlacement) == 0x34);
+
+/*
  * GroundBaddieState - BaddieState plus the route/config tail shared by the
  * ground-bug baddie cluster (scarab dll_CA/CB/CE, iceBaddie; treasurechest
  * and lightfoot reference the same tail offsets). The 0x35C+ region is
@@ -214,7 +256,7 @@ typedef struct GroundBaddieState {
     s16 gameBitA; /* set 1 on trigger */
     s16 gameBitB; /* set 1 / cleared 0; also passed to interface[10] */
     s16 gameBitC; /* gate; checked != -1 + mainGetBit */
-    u8 unk3F8[2];
+    s16 gameBitD; /* 0x3f8: copy of GroundBaddiePlacement.gameBitD */
     s16 soundIdA; /* config-sourced sound-id (config+32); played via interface[+8]
         on the stop/cleanup path (dll19func12) and passed with soundIdB to the
         route/move interface [+0x3c] (dllcb/dllce/icebaddie) */

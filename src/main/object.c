@@ -1924,7 +1924,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
             modelInitBones(obj->scale, obj->models[idx]);
             if (((ObjModelInstance*)obj->def)->flags & OBJDEF_FLAG_DEFERRED_RENDER)
             {
-                ObjModel_SetRenderCallback(obj->models[idx], objCallback_80074d04);
+                ObjModel_SetRenderCallback(obj->models[idx], objCausticReflectionRenderCb);
             }
             else
             {
@@ -1955,7 +1955,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
             modelInitBones(obj->scale, obj->models[i]);
             if (((ObjModelInstance*)obj->def)->flags & OBJDEF_FLAG_DEFERRED_RENDER)
             {
-                ObjModel_SetRenderCallback(obj->models[i], objCallback_80074d04);
+                ObjModel_SetRenderCallback(obj->models[i], objCausticReflectionRenderCb);
             }
             else
             {

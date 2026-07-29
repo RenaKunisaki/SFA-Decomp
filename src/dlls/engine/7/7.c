@@ -1275,7 +1275,14 @@ void snowCloudComputeDrift(f32* out, f32* pos, f32 scale)
     out[2] = out[2] * scale;
 }
 
-extern char lbl_8030F500[];
+u8 lbl_8030F500[160] = {255, 206, 0,   0,   255, 206, 255, 206, 0, 100, 255, 206, 0, 50,  0, 100, 255, 206, 0, 50,
+                        0,   0,   255, 206, 255, 206, 0,   0,   0, 50,  255, 206, 0, 100, 0, 50,  0,   50,  0, 100,
+                        0,   50,  0,   50,  0,   0,   0,   50,  0, 0,   0,   0,   0, 0,   0, 6,   0,   0,   0, 2,
+                        0,   0,   0,   8,   0,   0,   0,   2,   0, 0,   0,   16,  0, 0,   0, 8,   0,   0,   0, 32,
+                        0,   0,   0,   40,  0,   0,   0,   48,  0, 0,   0,   1,   0, 0,   0, 2,   0,   0,   0, 2,
+                        0,   0,   0,   4,   0,   0,   0,   3,   0, 0,   0,   6,   0, 0,   0, 6,   0,   0,   0, 12,
+                        0,   0,   0,   12,  0,   0,   0,   24,  0, 0,   0,   24,  0, 0,   0, 32,  0,   0,   0, 32,
+                        0,   0,   0,   40,  0,   0,   0,   40,  0, 0,   0,   48,  0, 0,   0, 48,  0,   0,   0, 56};
 extern const f32 gNewCloudType0Height;
 extern const f32 gNewCloudType0Scale;
 extern const f32 lbl_803DF244;
@@ -1294,7 +1301,7 @@ void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
     int (*sizeRange)[2];
     int (*spinRange)[2];
 
-    strs = lbl_8030F500;
+    strs = (char*)lbl_8030F500;
     ok = 1;
     id = params->cloudIndex;
     if (gNewClouds[id] != NULL)

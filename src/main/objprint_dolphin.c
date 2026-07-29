@@ -883,7 +883,7 @@ void objRenderFn_8003d980(u8* obj, int* p2)
     cm[11] = 0.0f;
     PSMTXConcat((MtxPtr)cm, (MtxPtr)sm, (MtxPtr)cm);
     GXLoadTexMtxImm((const f32 (*)[4])cm, 0x1e, 0);
-    gxTextureFn_80072dfc(obj, (void**)mdl, 0);
+    objFrozenRenderCb(obj, (void**)mdl, 0);
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_NRM, GX_DIRECT);

@@ -186,7 +186,7 @@ void dll_19_releaseState(GameObject* obj, void* state, u8 flag)
     }
 }
 
-void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg0, int moveArg1, int pathFlags,
+void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8* state, int moveArg0, int moveArg1, int pathFlags,
                    u8 initFlags, f32 pathRadius)
 {
     u8 flags;
@@ -212,17 +212,17 @@ void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg
     ((BaddieState*)state)->hasTarget = 0;
     ((BaddieState*)state)->animSpeedA = 0.0f;
     ((BaddieState*)state)->animSpeedB = 0.0f;
-    if (config[50] != 0)
+    if (config->hitPoints != 0)
     {
-        *(s8*)&((BaddieState*)state)->hitPoints = (s8)config[50];
+        *(s8*)&((BaddieState*)state)->hitPoints = (s8)config->hitPoints;
     }
     else
     {
         ((BaddieState*)state)->hitPoints = 6;
     }
-    ((GroundBaddieState*)state)->gameBitB = *(s16*)(config + 48);
-    ((GroundBaddieState*)state)->gameBitC = *(s16*)(config + 26);
-    *(s16*)(state + 1016) = *(s16*)(config + 28);
+    ((GroundBaddieState*)state)->gameBitB = config->gameBitB;
+    ((GroundBaddieState*)state)->gameBitC = config->gameBitC;
+    ((GroundBaddieState*)state)->gameBitD = config->gameBitD;
     if (((GroundBaddieState*)state)->gameBitB != -1)
     {
         mainSetBits(((GroundBaddieState*)state)->gameBitB, 0);
@@ -242,16 +242,16 @@ void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg
         (*gPathControlInterface)->setup(path, 1, gDll19SegmentLocalPoints, &gDll19SegmentRadius, &byteLocal);
     }
     (*gPathControlInterface)->attachObject((void*)obj, path);
-    ((GroundBaddieState*)state)->configFlags = config[43];
-    ((GroundBaddieState*)state)->triggerId = *(s16*)(config + 34);
-    ((GroundBaddieState*)state)->aggression = config[47];
-    state[1031] = config[39];
-    state[1032] = config[40];
+    ((GroundBaddieState*)state)->configFlags = config->flags;
+    ((GroundBaddieState*)state)->triggerId = config->triggerId;
+    ((GroundBaddieState*)state)->aggression = config->aggression;
+    state[1031] = config->unk27;
+    state[1032] = config->unk28;
     obj->objectFlags = obj->objectFlags | ((s8)state[1032] & 7);
     if ((flags & 8) != 0)
     {
-        ((GroundBaddieState*)state)->soundIdA = *(s16*)(config + 32);
-        ((GroundBaddieState*)state)->soundIdB = *(s16*)(config + 30);
+        ((GroundBaddieState*)state)->soundIdA = config->soundIdA;
+        ((GroundBaddieState*)state)->soundIdB = config->soundIdB;
     }
     else
     {
@@ -259,13 +259,13 @@ void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg
         ((GroundBaddieState*)state)->soundIdB = 0;
     }
     ((GroundBaddieState*)state)->flags400 = 0;
-    ((GroundBaddieState*)state)->aggroRange = (u16)(config[41] << 3);
+    ((GroundBaddieState*)state)->aggroRange = (u16)(config->aggroRange << 3);
     ((GroundBaddieState*)state)->subMode = 0;
     *(f32*)(state + 996) = pathRadius;
-    obj->anim.rotX = (s16)((s8)config[42] << 8);
+    obj->anim.rotX = (s16)((s8)config->rotX << 8);
     obj->anim.alpha = 255;
     obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
-    ((GroundBaddieState*)state)->gameBitA = *(s16*)(config + 24);
+    ((GroundBaddieState*)state)->gameBitA = config->gameBitA;
     if (((GroundBaddieState*)state)->gameBitA != -1)
     {
         if (obj->anim.romDefNo == 636)
@@ -281,7 +281,7 @@ void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg
     {
         obj->userData1 = 0;
     }
-    if ((*gMapEventInterface)->shouldNotSaveTime(*(int*)(config + 20)) == 0)
+    if ((*gMapEventInterface)->shouldNotSaveTime(config->base.ident) == 0)
     {
         obj->userData1 = 1;
     }
@@ -293,7 +293,7 @@ void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg
     }
     obj->anim.flags = obj->anim.flags & ~OBJANIM_FLAG_HIDDEN;
     ObjHits_EnableObject(obj);
-    if ((s8)config[46] == -1)
+    if (config->sequenceId == -1)
     {
         obj->userData2 = 1;
     }

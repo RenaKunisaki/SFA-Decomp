@@ -1313,7 +1313,7 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
 
 void sharpClawInit(int obj, u8* state)
 {
-    u8* setup = (u8*)((GameObject*)obj)->anim.placementData;
+    GroundBaddiePlacement* setup = (GroundBaddiePlacement*)((GameObject*)obj)->anim.placementData;
     f32 fz;
     f32 fz2;
     int z;
@@ -1337,7 +1337,7 @@ void sharpClawInit(int obj, u8* state)
     switch (((GameObject*)obj)->anim.romDefNo)
     {
     case 314:
-        if (*(s8*)(setup + 0x27) != 0)
+        if ((s8)setup->unk27 != 0)
         {
             *(s16*)(state + 0x2b6) = 51;
         }
@@ -1346,7 +1346,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 0;
         break;
     case 17:
-        if (*(s8*)(setup + 0x27) != 0)
+        if ((s8)setup->unk27 != 0)
         {
             *(s16*)(state + 0x2b6) = 51;
         }
@@ -1355,7 +1355,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 1;
         break;
     case 1505:
-        if (*(s8*)(setup + 0x27) != 0)
+        if ((s8)setup->unk27 != 0)
         {
             *(s16*)(state + 0x2b6) = 1529;
         }
@@ -1364,7 +1364,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 2;
         break;
     case 1463:
-        if (*(s8*)(setup + 0x27) != 0)
+        if ((s8)setup->unk27 != 0)
         {
             *(s16*)(state + 0x2b6) = 1530;
         }
@@ -1373,7 +1373,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 3;
         break;
     case 1464:
-        if (*(s8*)(setup + 0x27) != 0)
+        if ((s8)setup->unk27 != 0)
         {
             *(s16*)(state + 0x2b6) = 1534;
         }
@@ -1382,7 +1382,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 4;
         break;
     case 1465:
-        if (*(s8*)(setup + 0x27) != 0)
+        if ((s8)setup->unk27 != 0)
         {
             *(s16*)(state + 0x2b6) = 51;
         }
@@ -1391,7 +1391,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 1;
         break;
     case 1958:
-        if (*(s8*)(setup + 0x27) != 0)
+        if ((s8)setup->unk27 != 0)
         {
             *(s16*)(state + 0x2b6) = 1957;
         }
@@ -1412,7 +1412,7 @@ void sharpClawInit(int obj, u8* state)
         ObjModelChain_SetEnabled((ObjModelChain*)*(int*)(state + 0x36c), 1);
         break;
     }
-    if (*(s8*)(setup + 0x2e) != -1)
+    if (setup->sequenceId != -1)
     {
         ((EnemyState*)state)->controlFlags |= 1;
     }
@@ -1421,16 +1421,16 @@ void sharpClawInit(int obj, u8* state)
 void groundBaddieHandlePaidTrigger(int obj, u8* state)
 {
     GameObject* player;
-    u8* setup;
+    GroundBaddiePlacement* setup;
 
     player = Obj_GetPlayerObject();
-    setup = (u8*)((GameObject*)obj)->anim.placementData;
+    setup = (GroundBaddiePlacement*)((GameObject*)obj)->anim.placementData;
     if ((*gGameUIInterface)->isItemBeingUsed(446) != 0)
     {
         if (player != NULL && playerGetMoney(player) >= 25)
         {
             playerAddMoney(player, -25);
-            mainSetBits(*(s16*)(setup + 0x1c), 1);
+            mainSetBits(setup->gameBitD, 1);
             *(u16*)(state + 0x338) = gGroundBaddieTriggerResponseSeq[2];
             ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             setHudForceShowMask(2);
@@ -1632,7 +1632,7 @@ void guardClaw_update(GameObject* obj, u8* state)
 
 void guardClaw_init(GameObject* obj, u8* state)
 {
-    int* sub = *(int**)&(obj)->anim.placementData;
+    GroundBaddiePlacement* sub = *(GroundBaddiePlacement**)&(obj)->anim.placementData;
     f32 fz;
     ((EnemyState*)state)->sightRange = 200.0f;
     ((EnemyState*)state)->aggroRange = 300.0f;
@@ -1648,7 +1648,7 @@ void guardClaw_init(GameObject* obj, u8* state)
     ((EnemyState*)state)->moveSpeedScale1 = fz;
     ((EnemyState*)state)->moveId2 = 0;
     ((EnemyState*)state)->moveSpeedScale2 = fz;
-    if (*((s8*)sub + 0x2e) != -1)
+    if (sub->sequenceId != -1)
     {
         *(int*)&((EnemyState*)state)->controlFlags |= 1;
     }
@@ -1692,10 +1692,10 @@ extern f32 gGcRobotPatrolCatchCooldown;
 
 void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wpad0, int wpad1, Vec* wpad2, int wpad3)
 {
-    int sub;
+    GroundBaddiePlacement* sub;
     f32 fz;
 
-    sub = ((GameObject*)obj)->anim.placementDataAddress;
+    sub = (GroundBaddiePlacement*)((GameObject*)obj)->anim.placementData;
     if (msg == 16 || msg == 17)
     {
         return;
@@ -1703,7 +1703,7 @@ void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, in
     Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_pole1_c_23);
     Sfx_PlayFromObject((u32)obj, SFXTRIG_en_lrope_powerdown);
     ((EnemyState*)state)->flags2E8 |= 0x8;
-    *(f32*)(state + 0x32c) = (f32)(u32)(u16) * (s16*)(sub + 0x2c);
+    *(f32*)(state + 0x32c) = (f32)(u32)(u16)sub->unk2C;
     baddieSetMove((GameObject*)obj, (int)state, 1, 2.5f, 0, 0);
     ((EnemyState*)state)->flags2E4 &= ~0x20LL;
     fz = 0.0f;
@@ -1726,13 +1726,13 @@ typedef struct
 
 void gcRobotPatrol_update(GameObject* obj, u8* state)
 {
-    int* def;
+    GroundBaddiePlacement* def;
     RomCurveWalker* path;
     int attached;
     s16 spd;
     SeqFxParams fx;
 
-    def = *(int**)&obj->anim.placementData;
+    def = *(GroundBaddiePlacement**)&obj->anim.placementData;
     path = *(RomCurveWalker**)state;
     if (*(f32*)(state + 0x32c) > 0.0f)
     {
@@ -1773,7 +1773,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
         }
         obj->anim.velocityX = (path->posX - obj->anim.localPosX) / timeDelta;
         obj->anim.velocityZ = (path->posZ - obj->anim.localPosZ) / timeDelta;
-        step = (s8) * ((u8*)def + 0x2a);
+        step = (s8)def->rotX;
         if (step == 0)
         {
             baddieTurnTowardPoint(obj, (int)state, path->posX, path->posZ, 0xf, 0);
@@ -1821,7 +1821,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
     }
     else
     {
-        if (obj->anim.localPosY - ((ObjPlacement*)def)->posY < -0.4f)
+        if (obj->anim.localPosY - def->base.posY < -0.4f)
         {
             if (Sfx_IsPlayingFromObject((u32)obj, SFXTRIG_dn_boar1_c_18d) == 0)
             {
@@ -1833,7 +1833,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
         {
             ((EnemyState*)state)->userData1 = 0;
         }
-        obj->anim.rotX += *(s8*)((char*)def + 0x2a);
+        obj->anim.rotX += (s8)def->rotX;
     }
     if (((EnemyState*)state)->userData1 != 0)
     {
@@ -1866,7 +1866,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
     {
         GameObject* child2;
 
-        if (*(s8*)((char*)def + 0x2e) != -1 && (child2 = obj->childObjs[0]) != 0 &&
+        if (def->sequenceId != -1 && (child2 = obj->childObjs[0]) != 0 &&
             gcRobotLightBeam_isPlayerCaught(child2) != 0)
         {
             ObjHits_RecordObjectHit(Obj_GetPlayerObject(), obj, 0x16, 2, 0);
@@ -4555,7 +4555,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
     f32 sinB;
 
     {
-        u8 n = *(u8*)(obj->anim.placementDataAddress + 0x2f);
+        u8 n = ((GroundBaddiePlacement*)obj->anim.placementData)->aggression;
         scale = n;
         if (0.0f == n)
         {
@@ -4798,7 +4798,7 @@ void hoodedZyck_init(GameObject* obj, EnemyState* st)
     f32 base_v;
     u32 flags;
     u32 amt;
-    amt = *((u8*)((int*)obj->anim.placementDataAddress) + 0x2f);
+    amt = ((GroundBaddiePlacement*)obj->anim.placementData)->aggression;
     ratio = amt;
     if (0.0f == amt)
     {
@@ -5973,10 +5973,10 @@ void crawler_update(GameObject* obj, u8* state)
 /* crawler_initModelVariant: crawler-family variant init. Dispatches on obj->modelType
  * (offset 0x46): values 0x6a2/0x6a3/0x6a4 each pick a different float +
  * byte tuple to seed state[0x2a8..0x322]. The trailing block sets
- * shared state floats and computes obj->anim.rootMotionScale from params[0x28]. */
+ * shared state floats and computes obj->anim.rootMotionScale from params->unk28. */
 void crawler_initModelVariant(GameObject* obj, u8* state)
 {
-    u8* params = (u8*)obj->anim.placementData;
+    GroundBaddiePlacement* params = (GroundBaddiePlacement*)obj->anim.placementData;
     ((EnemyState*)state)->flags2E4 = 0xb;
     ((EnemyState*)state)->flags2E4 |= 0x400b0LL;
     ((EnemyState*)state)->flags2E4 |= 0x40001040LL;
@@ -6026,11 +6026,11 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
     ((EnemyState*)state)->gravity = 0.17f;
     ((EnemyState*)state)->drag = 0.97f;
     ((EnemyState*)state)->pathStep *= 10.0f;
-    if ((s8)params[0x2e] != -1)
+    if (params->sequenceId != -1)
     {
         ((EnemyState*)state)->controlFlags |= 1;
     }
-    obj->anim.rootMotionScale = 0.5f + ((f32)(s32)(s8)params[0x28] / 127.0f);
+    obj->anim.rootMotionScale = 0.5f + ((f32)(s32)(s8)params->unk28 / 127.0f);
 }
 
 extern int gHagabonMK2CurveInitData[2];
@@ -7734,13 +7734,13 @@ void iceBaddie_hitDetect(GameObject* obj) {
 
 void iceBaddie_update(GameObject* obj, int unusedA, int unusedB) {
     GroundBaddieState* objectState;
-    IceBaddiePlacement* placement;
+    GroundBaddiePlacement* placement;
 
     (void)unusedA;
     (void)unusedB;
 
     objectState = obj->extra;
-    placement = (IceBaddiePlacement*)obj->anim.placementData;
+    placement = (GroundBaddiePlacement*)obj->anim.placementData;
     if (obj->userData1 != 0) {
         if ((objectState->baddie.substate != 3 || (objectState->configFlags & 1) != 0) &&
             (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) != 0) {
@@ -7777,7 +7777,7 @@ void iceBaddie_update(GameObject* obj, int unusedA, int unusedB) {
     }
 }
 
-void iceBaddie_init(GameObject* obj, IceBaddiePlacement* placement, int flags) {
+void iceBaddie_init(GameObject* obj, GroundBaddiePlacement* placement, int flags) {
     GroundBaddieState* objectState;
     u8 mode;
 

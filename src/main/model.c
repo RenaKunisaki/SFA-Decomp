@@ -2279,7 +2279,7 @@ void ObjModel_EnableDefaultRenderCallback(void* object, ObjModel* model, f32* mt
 {
     if (model->renderAttachment == NULL)
     {
-        model->renderCallback = gxTextureFn_80072dfc;
+        model->renderCallback = objFrozenRenderCb;
     }
 }
 
