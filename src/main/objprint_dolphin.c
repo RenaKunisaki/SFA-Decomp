@@ -2773,12 +2773,17 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             }
             if (did != 0)
             {
-                int vtx;
-                vtx = ((ObjModel*)am)->vtxBufDirty != 0
-                    ? ((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1]
-                    : *(int*)&((ModelFileHeader*)m)->vertices;
+                u8* vtx;
+                if (((ObjModel*)am)->vtxBufDirty != 0)
+                {
+                    vtx = (u8*)((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1];
+                }
+                else
+                {
+                    vtx = *(u8**)&((ModelFileHeader*)m)->vertices;
+                }
                 ObjModel_BlendVertexStream(
-                    (u8*)gObjBoneMtxBuffer, m + 0x88, (u8*)vtx,
+                    (u8*)gObjBoneMtxBuffer, m + 0x88, vtx,
                     (int*)*(int*)&((ModelFileHeader*)am)->jointBlendData,
                     (u8*)((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1]);
                 ObjModel_BlendNormalStream((u8*)gObjBoneMtxBuffer, m + 0xac,
@@ -2990,29 +2995,28 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             modelRenderFn_setVtxDescr(m, (u8*)op, refs, &bs, mode, &o9, &o8);
             break;
         case 1:
-            if (mode == 0 || mode == 4 || mode == 8)
+        {
+            u32 idx;
+            if ((mode == 0 || mode == 4 || mode == 8) && lbl_803DCC20 == 0)
             {
-                u32 idx;
-                if (lbl_803DCC20 == 0)
-                {
-                    idx = objRenderFn_8003edf4((u8*)obj, m, am, &bs);
-                    op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
-                }
-                else
-                {
-                    u32 w;
-                    int pos = bs.pos;
-                    u8* p = (u8*)((pos >> 3) + (int)bs.data);
-                    w = p[0];
-                    w |= p[1] << 8;
-                    w |= p[2] << 16;
-                    bs.pos = pos + 6;
-                    idx = (w >> (pos & 7)) & 0x3f;
-                    op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
-                }
-                refs = (u32*)ObjModel_GetRenderOpTextureRefs((ObjModel*)am, idx);
+                idx = objRenderFn_8003edf4((u8*)obj, m, am, &bs);
+                op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
             }
+            else
+            {
+                u32 w;
+                int pos = bs.pos;
+                u8* p = (u8*)((pos >> 3) + (int)bs.data);
+                w = p[0];
+                w |= p[1] << 8;
+                w |= p[2] << 16;
+                bs.pos = pos + 6;
+                idx = (w >> (pos & 7)) & 0x3f;
+                op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
+            }
+            refs = (u32*)ObjModel_GetRenderOpTextureRefs((ObjModel*)am, idx);
             break;
+        }
         case 2:
             if ((mode != 4 && mode != 8) || lbl_803DCC3E != 0)
             {
