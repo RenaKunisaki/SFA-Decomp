@@ -8,8 +8,8 @@
 
 #define PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE 0x4000
 
-int fn_80296240(GameObject* player);
-int objFn_802962b4(GameObject* obj);
+int playerIsInNormalControlUndisguisedOnLand(GameObject* player);
+int playerIsInNormalControl(GameObject* obj);
 void playerSetStateValue(GameObject* player, int selector, f32 value);
 int playerGetStateValue(GameObject* obj, int selector);
 int fn_80295C0C(GameObject* obj);

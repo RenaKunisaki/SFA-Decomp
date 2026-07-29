@@ -8529,7 +8529,7 @@ int Tricky_updateSideCommandPrompts(int obj)
             (bitVal = mainGetBit(GAMEBIT_ITEM_TrickyBall_Usable), bitVal != 0))
         {
             ref = (int)Obj_GetPlayerObject();
-            ref = fn_80296240((GameObject*)(ref));
+            ref = playerIsInNormalControlUndisguisedOnLand((GameObject*)(ref));
             if ((ref != 0) && (bitVal = mainGetBit(GAMEBIT_NoBallsAllowed), bitVal == 0))
             {
                 if (playerGetFlags3F0Bit5(((TrickyState*)state)->playerObj) == 0)

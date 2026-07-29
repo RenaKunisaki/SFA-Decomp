@@ -1637,7 +1637,7 @@ int Obj_IsParentSlackClear(GameObject* obj)
     return (obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0;
 }
 
-int fn_80296240(GameObject* obj)
+int playerIsInNormalControlUndisguisedOnLand(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     ByteFlags* f = (ByteFlags*)((char*)inner + 0x3f0);
@@ -1654,7 +1654,7 @@ int fn_80296240(GameObject* obj)
     return 0;
 }
 
-int objFn_802962b4(GameObject* obj)
+int playerIsInNormalControl(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     ByteFlags* f = (ByteFlags*)((char*)inner + 0x3f0);
@@ -3951,7 +3951,7 @@ void playerStagedEndIceSpellAndRestoreCamera(GameObject* obj, int p2)
 int playerStateFireLaser(int obj, int state, f32 fv)
 {
     PlayerState* inner = ((GameObject*)obj)->extra;
-    int r = fn_802AC7DC(obj, state, (int)inner, fv);
+    int r = playerCheckCommonTransitions(obj, state, (int)inner, fv);
     if (r != 0)
     {
         return r;
@@ -4032,7 +4032,7 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
         obj->anim.velocityY = z;
         obj->anim.velocityZ = z;
     }
-    r = fn_802AC7DC((int)obj, state, (int)inner, fv);
+    r = playerCheckCommonTransitions((int)obj, state, (int)inner, fv);
     if (r != 0)
     {
         return r;
@@ -4336,7 +4336,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
     f32 spin;
     PartFxSpawnParams pfx;
 
-    r = fn_802AC7DC(obj, state, (int)inner, fv);
+    r = playerCheckCommonTransitions(obj, state, (int)inner, fv);
     if (r != 0)
     {
         return r;
@@ -4579,7 +4579,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
 int playerStateStopAimStaff(int obj, int state, f32 fv)
 {
     PlayerState* inner = ((GameObject*)obj)->extra;
-    int r = fn_802AC7DC(obj, state, (int)inner, fv);
+    int r = playerCheckCommonTransitions(obj, state, (int)inner, fv);
     if (r != 0)
     {
         return r;
@@ -4607,7 +4607,7 @@ int playerStateStopAimStaff(int obj, int state, f32 fv)
 int playerStateStartAimStaff(GameObject* obj, int state, f32 fv)
 {
     PlayerState* inner = obj->extra;
-    int r = fn_802AC7DC((int)obj, state, (int)inner, fv);
+    int r = playerCheckCommonTransitions((int)obj, state, (int)inner, fv);
     u32 b;
     if (r != 0)
     {
@@ -4723,7 +4723,7 @@ int playerState28(GameObject* obj, int state, f32 fv)
         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
         return 2;
     }
-    v = fn_802AC7DC((int)obj, state, (int)inner, fv);
+    v = playerCheckCommonTransitions((int)obj, state, (int)inner, fv);
     if (v != 0)
     {
         if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
@@ -9812,7 +9812,7 @@ int playerStateMoving(int obj, int state, f32 fv)
         ((ByteFlags*)((char*)inner + 0x3f2))->b10 = 1;
     }
     {
-        int r = fn_802AC7DC(obj, state, inner, fv);
+        int r = playerCheckCommonTransitions(obj, state, inner, fv);
         if (r != 0)
         {
             return r;
@@ -10445,7 +10445,7 @@ int playerStateIdle(int obj, int state, f32 fv)
         ((GameObject*)obj)->anim.velocityZ = z;
     }
     {
-        int r = fn_802AC7DC(obj, state, inner, fv);
+        int r = playerCheckCommonTransitions(obj, state, inner, fv);
         if (r != 0)
         {
             return r;
@@ -13357,7 +13357,7 @@ void fn_802AC32C(int p1, int p2, int p3)
     ((PlayerState*)p3)->headYaw = (f32)((PlayerState*)p3)->headYaw * powfBitEstimate(0.85f, timeDelta);
 }
 
-int fn_802AC7DC(int obj, int state, int inner, f32 fv)
+int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
 {
     int r;
     int ok;

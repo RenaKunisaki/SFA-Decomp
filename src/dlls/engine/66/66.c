@@ -173,7 +173,7 @@ void camcontrol_updateTargetAction(CameraObject* camera, GameObject* target)
             (*gCameraInterface)->setMode(CAMMODE_COMBAT, 1, 0, 4, &camera->currentTarget, 0x3c, 0xff);
         }
         else if ((((buttons & PAD_TRIGGER_Z) != 0) && (target->anim.classId == 1)) &&
-                 (cond = objFn_802962b4((GameObject*)target), cond != 0))
+                 (cond = playerIsInNormalControl((GameObject*)target), cond != 0))
         {
             action44Payload.distance = gCamcontrolModeSettings->minDistance;
             action44Payload.yOffset = gCamcontrolModeSettings->lowerHeightOffset;

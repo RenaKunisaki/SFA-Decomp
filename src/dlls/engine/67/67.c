@@ -198,7 +198,7 @@ void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
     {
         return;
     }
-    canView = objFn_802962b4(target);
+    canView = playerIsInNormalControl(target);
     if (canView == 0)
     {
         return;
