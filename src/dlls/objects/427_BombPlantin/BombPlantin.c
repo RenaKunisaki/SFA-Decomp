@@ -39,7 +39,7 @@ void BombPlantingSpot_update(GameObject* obj) {
 
     if (mainGetBit(placement->plantedGameBit) == 0) {
         obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-        objRenderFn_80041018(obj);
+        objUpdateHitVolumeTransforms(obj);
     } else {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }

@@ -196,7 +196,7 @@ void GM_MazeWell_update(GameObject* obj)
         }
     }
 
-    ((void (*)(int))objRenderFn_80041018)((int)obj);
+    ((void (*)(int))objUpdateHitVolumeTransforms)((int)obj);
 }
 
 void GM_MazeWell_init(GameObject* obj)

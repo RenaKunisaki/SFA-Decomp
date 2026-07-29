@@ -77,7 +77,7 @@ void dll_224_hitDetect(GameObject* obj)
 {
     if (obj->anim.hitVolumeTransforms != NULL)
     {
-        objRenderFn_80041018(obj);
+        objUpdateHitVolumeTransforms(obj);
     }
 }
 

@@ -475,7 +475,7 @@ void Transporter_hitDetect(int obj) {
         ((GameObject*)self)->anim.resetHitboxFlags &= ~(INTERACT_FLAG_DISABLED | INTERACT_FLAG_PROMPT_SUPPRESSED);
         state->flags |= TRANSPORTER_FLAG_INTERACTIVE;
         if (((GameObject*)self)->anim.hitVolumeTransforms != NULL) {
-            objRenderFn_80041018((GameObject*)self);
+            objUpdateHitVolumeTransforms((GameObject*)self);
         }
         return;
     }
@@ -493,7 +493,7 @@ void Transporter_hitDetect(int obj) {
             state->flags |= TRANSPORTER_FLAG_INTERACTIVE;
         }
         if (((GameObject*)self)->anim.hitVolumeTransforms != NULL) {
-            objRenderFn_80041018((GameObject*)self);
+            objUpdateHitVolumeTransforms((GameObject*)self);
         }
         return;
     }

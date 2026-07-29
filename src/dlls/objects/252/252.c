@@ -41,7 +41,7 @@ void dll_FC_hitDetect(GameObject* obj) {
     if (anim->hitVolumeTransforms == NULL) {
         return;
     }
-    objRenderFn_80041018(obj);
+    objUpdateHitVolumeTransforms(obj);
 }
 
 void dll_FC_update(GameObject* obj) {

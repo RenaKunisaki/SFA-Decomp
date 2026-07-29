@@ -75,7 +75,7 @@ void MagicCaveBottom_update(GameObject* obj) {
                     ->runSequence(MAGIC_CAVE_BOTTOM_SECONDARY_WARP_SEQUENCE, obj, MAGIC_CAVE_BOTTOM_SEQUENCE_ARG_NONE);
             }
         } else {
-            objRenderFn_80041018(obj);
+            objUpdateHitVolumeTransforms(obj);
         }
         break;
     case MAGIC_CAVE_BOTTOM_PHASE_WARP:

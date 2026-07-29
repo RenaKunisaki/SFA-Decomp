@@ -60,7 +60,7 @@ void DIMDismountPoint_render(GameObject* obj, int renderArg2, int renderArg3, in
                              s8 visible) {
     if (visible == 0 || obj->userData2 != 0) {
         if (obj->userData2 != 0) {
-            objRenderFn_80041018(obj);
+            objUpdateHitVolumeTransforms(obj);
         }
     } else {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
@@ -90,7 +90,7 @@ void DIMDismountPoint_update(GameObject* obj) {
         }
     }
     if ((obj->anim.modelInstance->flags & OBJDEF_FLAG_HAS_MODELS) != 0 && obj->anim.hitVolumeTransforms != NULL) {
-        objRenderFn_80041018(obj);
+        objUpdateHitVolumeTransforms(obj);
     }
 }
 

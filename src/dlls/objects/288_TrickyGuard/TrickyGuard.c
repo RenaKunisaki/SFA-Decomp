@@ -52,7 +52,7 @@ void TrickyGuardSpot_update(GameObject* obj) {
                                                                     TRICKY_GUARD_COMMAND_TYPE);
             }
             obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
-            objRenderFn_80041018(obj);
+            objUpdateHitVolumeTransforms(obj);
         }
     } else if (tricky != NULL) {
         TRICKY_INTERFACE(tricky)->requestRecall(tricky);

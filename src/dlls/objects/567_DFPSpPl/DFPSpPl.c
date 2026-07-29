@@ -43,7 +43,7 @@ void DFPSpPl_update(GameObject* obj)
     {
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
     }
-    objRenderFn_80041018(obj);
+    objUpdateHitVolumeTransforms(obj);
     if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
     {
         mode = (u8)(*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);

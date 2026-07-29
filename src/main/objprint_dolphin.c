@@ -3047,9 +3047,9 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
 }
 
 
-void objMtxFn_80041104(f32* mtx, f32* out, s16* in, int flag, int* obj, int e);
+void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, int* obj, int e);
 
-void objRenderFn_80041018(GameObject* obj)
+void objUpdateHitVolumeTransforms(GameObject* obj)
 {
     ObjDefHitVolume* p;
     ObjHitVolumeRuntimeTransform* q;
@@ -3075,8 +3075,8 @@ void objRenderFn_80041018(GameObject* obj)
             {
                 mtx = NULL;
             }
-            objMtxFn_80041104(NULL, &q->centerX, &p->posX, base->flags & 0x10, (int*)obj, 0);
-            objMtxFn_80041104((f32*)mtx, &q->jointX, &p->jointOffsetX, base->flags & 0x10, (int*)obj, 1);
+            objTransformHitVolumePoint(NULL, &q->centerX, &p->posX, base->flags & 0x10, (int*)obj, 0);
+            objTransformHitVolumePoint((f32*)mtx, &q->jointX, &p->jointOffsetX, base->flags & 0x10, (int*)obj, 1);
             p++;
             q++;
         }
@@ -3084,7 +3084,7 @@ void objRenderFn_80041018(GameObject* obj)
 }
 
 
-void objMtxFn_80041104(f32* mtx, f32* out, s16* in, int flag, int* obj, int e)
+void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, int* obj, int e)
 {
     f32 m[16];
     MatrixTransform blk;

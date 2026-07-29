@@ -128,7 +128,7 @@ void WallAnimator_update(GameObject* obj) {
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
                 TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 1);
             }
-            objRenderFn_80041018(obj);
+            objUpdateHitVolumeTransforms(obj);
         }
     } else {
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED;

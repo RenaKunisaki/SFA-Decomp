@@ -90,7 +90,7 @@ void VFP_flamepoint_update(GameObject* obj)
                                                                    VFP_FLAMEPOINT_TRICKY_COMMAND_TYPE);
                     }
                     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-                    objRenderFn_80041018(obj);
+                    objUpdateHitVolumeTransforms(obj);
                 }
             }
         }

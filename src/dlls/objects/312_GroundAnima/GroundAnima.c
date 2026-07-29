@@ -397,7 +397,7 @@ void GroundAnimator_update(GameObject* obj) {
     } else {
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
     }
-    objRenderFn_80041018(obj);
+    objUpdateHitVolumeTransforms(obj);
 }
 
 void GroundAnimator_init(GameObject* obj, GroundAnimatorPlacement* placement) {

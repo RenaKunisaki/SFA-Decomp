@@ -66,7 +66,7 @@ void DR_Chimmey_update(GameObject* obj)
                     TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 4);
                 }
                 obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-                objRenderFn_80041018(obj);
+                objUpdateHitVolumeTransforms(obj);
             }
         }
     }

@@ -40,7 +40,7 @@ void VFP_SpellPlace_update(int obj)
     {
         spellPlace->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
-    objRenderFn_80041018((GameObject*)obj);
+    objUpdateHitVolumeTransforms((GameObject*)obj);
     if (spellPlace->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
     {
         mode = (*gMapEventInterface)->getMapAct((int)spellPlace->anim.mapEventSlot);

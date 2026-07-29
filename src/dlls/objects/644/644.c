@@ -406,7 +406,7 @@ void shopitem_update(GameObject* obj)
         }
         if (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_DISABLED) == 0)
         {
-            objRenderFn_80041018(obj);
+            objUpdateHitVolumeTransforms(obj);
         }
     }
 }

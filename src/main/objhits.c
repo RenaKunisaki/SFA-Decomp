@@ -6420,7 +6420,7 @@ void objRenderModelAndHitVolumes(GameObject* obj, int p2, int p3, int p4, int p5
         objRenderModel(obj);
         if (obj->anim.hitVolumeTransforms != NULL)
         {
-            objRenderFn_80041018(obj);
+            objUpdateHitVolumeTransforms(obj);
         }
     }
 }
@@ -6465,7 +6465,7 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag)
             objRenderModel(obj);
             if (obj->anim.hitVolumeTransforms != NULL)
             {
-                objRenderFn_80041018(obj);
+                objUpdateHitVolumeTransforms(obj);
             }
         }
     }
@@ -6483,7 +6483,7 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag)
                 objRenderModel(obj);
                 if (obj->anim.hitVolumeTransforms != NULL)
                 {
-                    objRenderFn_80041018(obj);
+                    objUpdateHitVolumeTransforms(obj);
                 }
             }
             break;
