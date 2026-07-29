@@ -3077,19 +3077,19 @@ int mapGetRomListAndOffsets(int p1, int flag)
     lbl_803DCEA0 = mmAlloc(tailLen + (v0 + 7 >> 3) + 0x401 + v2, 5, 0);
     fileLoadToBufferOffset(MLDF_FILEID_MAPS_BIN, lbl_803DCEA0, offset0, tailLen);
 
-    *(int*)((char*)lbl_803DCEA0 + 0xc) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 4) + (words << 2)) - offset0;
-    *(int*)((char*)lbl_803DCEA0 + 0x14) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 8) + (words << 2)) - offset0;
-    *(int*)((char*)lbl_803DCEA0 + 0x30) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0xc) + (words << 2)) - offset0;
-    *(int*)((char*)lbl_803DCEA0 + 0x2c) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x10) + (words << 2)) - offset0;
-    *(int*)((char*)lbl_803DCEA0 + 0x34) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x14) + (words << 2)) - offset0;
-    *(int*)((char*)lbl_803DCEA0 + 0x20) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x18) + (words << 2)) - offset0;
+    ((MapRomListPage*)lbl_803DCEA0)->unk0C = (void*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 4) + (words << 2)) - offset0);
+    ((MapRomListPage*)lbl_803DCEA0)->unk14 = (void*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 8) + (words << 2)) - offset0);
+    ((MapRomListPage*)lbl_803DCEA0)->unk30 = (void*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0xc) + (words << 2)) - offset0);
+    ((MapRomListPage*)lbl_803DCEA0)->unk2C = (void*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x10) + (words << 2)) - offset0);
+    ((MapRomListPage*)lbl_803DCEA0)->unk34 = (void*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x14) + (words << 2)) - offset0);
+    ((MapRomListPage*)lbl_803DCEA0)->objects = (ObjPlacement*)((int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x18) + (words << 2)) - offset0);
 
-    piRomLoadSection(*(int*)((lbl_803DCE7C + 0x18) + (words << 2)), p1, *(int*)((char*)lbl_803DCEA0 + 0x20));
-    *(int*)((char*)lbl_803DCEA0 + 0x10) = (*(int*)((lbl_803DCE7C + 0x1c) + (words << 2)) + v2) + (int)lbl_803DCEA0 - offset0;
+    piRomLoadSection(*(int*)((lbl_803DCE7C + 0x18) + (words << 2)), p1, (int)((MapRomListPage*)lbl_803DCEA0)->objects);
+    ((MapRomListPage*)lbl_803DCEA0)->loadedObjectBits = (u8*)((*(int*)((lbl_803DCE7C + 0x1c) + (words << 2)) + v2) + (int)lbl_803DCEA0 - offset0);
 
     for (i = 0; i < (v0 + 7 >> 3) + 1; i++)
     {
-        *(u8*)(*(int*)((char*)lbl_803DCEA0 + 0x10) + i) = 0;
+        ((MapRomListPage*)lbl_803DCEA0)->loadedObjectBits[i] = 0;
     }
     {
         f32 fillVal = lbl_803DEBCC;

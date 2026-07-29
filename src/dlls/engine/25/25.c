@@ -1048,7 +1048,7 @@ void dll_19_updateMovementBlend(GameObject* obj, void* state, void* unusedState,
     if (st->inputMagnitude < 0.005f)
     {
         f32 rest;
-        *(s16*)((char*)st + 0x334) = 0;
+        st->turnRateAbs = 0;
         st->turnRate = 0;
         rest = 0.0f;
         st->inputMagnitude = rest;

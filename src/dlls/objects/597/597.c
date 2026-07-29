@@ -1419,7 +1419,7 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
     {
         yawDelta = yawDelta + 0xffff;
     }
-    st->yaw = *(s16*)((char*)st + 0x40e) + yawDelta;
+    st->yaw += yawDelta;
     st->yawCurrent = st->yawCurrent + yawDelta;
     obj[1] = obj[1] + ((int)st->unk310 >> ival);
     obj[2] = obj[2] + ((int)st->unk312 >> ival);

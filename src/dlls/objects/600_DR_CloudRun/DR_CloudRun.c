@@ -661,7 +661,7 @@ int DR_CloudRunner_stateHandler05(GameObject* obj, CloudRunnerState* baddie, f32
         obj->anim.localPosZ = inner->lastPosZ;
         objMove(obj, obj->anim.velocityX, obj->anim.velocityY,
                 obj->anim.velocityZ);
-        if ((*(s8*)((char*)baddie + 0x264) & 0x10) && (int)(idx & 0xfe) == 0)
+        if ((baddie->baddie.surfaceFlags & 0x10) && (int)(idx & 0xfe) == 0)
         {
             obj->anim.velocityY = -0.1f;
             return 3;

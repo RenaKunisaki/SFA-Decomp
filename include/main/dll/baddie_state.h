@@ -75,7 +75,15 @@ typedef struct BaddieState {
     u8 unk25C[0x25F - 0x25C];
     s8 physicsActive; /* enables the free-fall physics path: gravity integration (velY -= g*dt), floor bounce response; set when thrown/spat */
     s8 contactSfxFlags; /* bit 0x10 allows contact sfx while contactSfxMuted is set (intersect.c) */
-    u8 unk261[0x270 - 0x261];
+    u8 unk261[0x262 - 0x261];
+    u8 groundContact; /* nonzero while the actor is resting on a surface this frame; the shared controller and player.c re-derive velocity from the position delta when it or surfaceFlags bit 2 is set */
+    u8 unk263;
+/* surfaceFlags bit: a floor was found within the ground-probe distance. Set and
+ * cleared by the shared floor scan in dll_00C9 (Baddie.c), consumed by the
+ * riders/controllers to enable ground handling. */
+#define BADDIE_SURFACE_HAS_NEARBY_FLOOR 0x10
+    s8 surfaceFlags; /* per-frame ground/surface contact flags, same field the dll_00C9 enemy view calls surfaceFlags; bits 0x1/0x2/0x10/0x20 are ground-contact channels (mask 0x33 = "touching ground at all") */
+    u8 unk265[0x270 - 0x265];
     s16 substate; /* CA-family substate 0..5; gates the map-event re-register when != 3 */
     s16 prevSubstate; /* latched from substate for change detection (prevSubstate = startState in objseq) */
     s16 controlMode; /* current control move/mode; gPlayerInterface[5](obj,state,N) requests N */

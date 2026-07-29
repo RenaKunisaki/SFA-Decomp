@@ -1130,14 +1130,14 @@ void DR_EarthWarrior_hitDetect(GameObject* obj)
         }
         if (*(int*)inner & 0x800000)
         {
-            if ((*(u8*)((char*)inner + 0x262) != 0 || (*(s8*)((char*)inner + 0x264) & 0xf0)) &&
+            if ((inner->baddie.groundContact != 0 || (inner->baddie.surfaceFlags & 0xf0)) &&
                 inner->sub.footstepCooldown <= 0.0f && inner->baddie.animSpeedA > 3.408f)
             {
                 doRumble((f32)(int)randomGetRange(2, 5));
                 inner->sub.footstepCooldown = 30.0f;
                 Sfx_PlayFromObject((int)obj, SFXTRIG_foot_run_jingle4);
             }
-            if (*(u8*)((char*)inner + 0x262) != 0 ||
+            if (inner->baddie.groundContact != 0 ||
                 (((ObjHitsPriorityState*)obj->anim.hitReactState)->flags & 8))
             {
                 f32 spd;
@@ -1297,7 +1297,7 @@ void DR_EarthWarrior_update(GameObject* obj)
             }
         }
     }
-    *(s8*)((char*)inner + 0x264) |= 0x10;
+    inner->baddie.surfaceFlags |= 0x10;
     {
         f32 saved = (obj)->anim.velocityY;
         (obj)->anim.velocityY = 0.0f;
