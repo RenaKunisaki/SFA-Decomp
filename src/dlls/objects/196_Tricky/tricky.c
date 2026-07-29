@@ -3923,7 +3923,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
 {
     char* str = lbl_8031D2E8;
     u8 ok;
-    int go;
+    int hasTarget;
     int* best = NULL;
     f32 bestd = 0.0f;
     int count;
@@ -3938,15 +3938,15 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         if ((t->followObj = trickyFindNearestUsableBaddie(t->playerObj, 150.0f, 0)) != NULL)
         {
             TRICKY_RETARGET((u8*)t, t->followObj);
-            go = 1;
+            hasTarget = 1;
         }
         else
         {
             t->stateIndex = 1;
-            t->substate = go = 0;
+            t->substate = hasTarget = 0;
             TRICKY_RESET_TAIL((u8*)t)
         }
-        if (go != 0)
+        if (hasTarget != 0)
         {
             if (*(int*)&t->stateFlags728 == 0)
             {
@@ -4015,15 +4015,15 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         if ((t->followObj = trickyFindNearestUsableBaddie(t->playerObj, 150.0f, 0)) != NULL)
         {
             TRICKY_RETARGET((u8*)t, t->followObj);
-            go = 1;
+            hasTarget = 1;
         }
         else
         {
             t->stateIndex = 1;
-            t->substate = go = 0;
+            t->substate = hasTarget = 0;
             TRICKY_RESET_TAIL((u8*)t)
         }
-        if (go != 0)
+        if (hasTarget != 0)
         {
             if (*(int*)&t->stateFlags728 == 0)
             {
@@ -4140,15 +4140,15 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         if ((t->followObj = trickyFindNearestUsableBaddie(t->playerObj, 150.0f, 0)) != NULL)
         {
             TRICKY_RETARGET((u8*)t, t->followObj);
-            go = 1;
+            hasTarget = 1;
         }
         else
         {
             t->stateIndex = 1;
-            t->substate = go = 0;
+            t->substate = hasTarget = 0;
             TRICKY_RESET_TAIL((u8*)t)
         }
-        if (go != 0 && ok != 1)
+        if (hasTarget != 0 && ok != 1)
         {
             trickyRequestMove((int)gobj, 0x34, 0.005f, 0x4000000);
             t->stateFlags |= TRICKY_STATE_RESET_FLAG_10;
