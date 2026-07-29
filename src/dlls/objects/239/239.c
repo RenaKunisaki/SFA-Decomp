@@ -199,12 +199,6 @@ ObjectDescriptor14 gPushableObjDescriptor = {
 char sPushPullObjectHitpointOverflow[] = "PUSHPULL OBJECT: hitpoint overflow\n";
 const PushableRadii gPushableDefaultBox = {{0.0f, 0.0f, 0.0f, 0.0f}};
 
-static void pushableClampToZero(f32* value) {
-    if (*value <= PUSHABLE_ZERO) {
-        *value = PUSHABLE_ZERO;
-    }
-}
-
 int pushable_updateCurtain(int obj, PushableState* state) {
     int placement;
     GameObject* player;

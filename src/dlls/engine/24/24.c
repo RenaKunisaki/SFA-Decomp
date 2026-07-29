@@ -42,13 +42,6 @@ f32 gBoneParticleDriftVelocity[2] = {10.0f, 0.0f};
 #define BONE_PARTICLE_DRIFT_MIN      -500.0f
 #define BONE_PARTICLE_DRIFT_REBOUND  -1.0f
 
-
-static inline int* Modgfx_GetActiveModel(void* obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (int*)objAnim->banks[objAnim->bankIndex];
-}
-
 void boneParticleEffect_func08_nop(void)
 {
 }

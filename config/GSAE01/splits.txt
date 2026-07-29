@@ -1759,7 +1759,6 @@ dlls/objects/239/239.c:
 	.data       start:0x80320D48 end:0x80320DB8
 	.bss        start:0x803AC6E0 end:0x803AC780
 	.sbss       start:0x803DDAB8 end:0x803DDAC0
-	.sdata2     start:0x803E3528 end:0x803E35D8
 
 dlls/objects/240_WarpPoint/WarpPoint.c:
 	.text       start:0x80176FC4 end:0x8017779C
@@ -3144,7 +3143,6 @@ dlls/objects/597/597.c:
 	.bss        start:0x803AD088 end:0x803AD0C0
 	.sdata      start:0x803DC0B8 end:0x803DC0EC
 	.sbss       start:0x803DDC60 end:0x803DDC68
-	.sdata2     start:0x803E5AE0 end:0x803E5C6C
 
 dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c:
 	.text       start:0x801EE088 end:0x801EF360
@@ -4089,7 +4087,6 @@ dlls/objects/700_Andross/Andross.c:
 	.data       start:0x8032C088 end:0x8032C270
 	.sdata      start:0x803DC430 end:0x803DC4F0
 	.sbss       start:0x803DDDB8 end:0x803DDDD0
-	.sdata2     start:0x803E7490 end:0x803E759C
 
 dlls/objects/701/701.c:
 	.text       start:0x8023F05C end:0x8023FC8C
