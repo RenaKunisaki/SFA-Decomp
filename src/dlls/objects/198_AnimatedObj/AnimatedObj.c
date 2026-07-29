@@ -33,7 +33,7 @@ void animatedobj_free(GameObject* obj, int clearSequence) {
     gTitleMenuControlInterfaceCopy->vtable->func05(obj, 0xffff, 0, 0, 0);
     Sfx_RemoveLoopedObjectSoundForObject((u32)obj);
     Sfx_StopObjectChannel((int)obj, 0x7f);
-    if (obj->anim.seqId == ANIMATEDOBJ_SEQID_ANIM_KRYSTAL && obj->childCount != 0) {
+    if (obj->anim.romDefNo == ANIMATEDOBJ_SEQID_ANIM_KRYSTAL && obj->childCount != 0) {
         Obj_FreeObject(obj->childObjs[0]);
         ObjLink_DetachChild(obj, obj->childObjs[0]);
     }
@@ -99,7 +99,7 @@ void animatedobj_update(GameObject* obj) {
     GameObject* sequenceOwner;
     ObjSeqState* sequence;
     GameObject** objects;
-    int sequenceSlot;
+    int slot;
     int siblingCount;
     GameObject* other;
     int eventIndex;
@@ -115,7 +115,7 @@ void animatedobj_update(GameObject* obj) {
             objects = ObjList_GetObjects(&result, &objectCount);
             siblingCount = 0;
             result = 0;
-            sequenceSlot = (s8)sequenceIndex;
+            slot = (s8)sequenceIndex;
             while (result < objectCount) {
                 other = *objects;
                 if (other->seqIndex == sequenceIndex) {
@@ -123,7 +123,7 @@ void animatedobj_update(GameObject* obj) {
                 }
                 if (other->seqIndex == -2 && other->anim.classId == ANIMATEDOBJ_CLASS_ID) {
                     sequence = &((AnimatedObjState*)other->extra)->sequence;
-                    if (sequenceSlot == sequence->slot) {
+                    if (slot == sequence->slot) {
                         siblingCount++;
                     }
                 }
@@ -132,13 +132,13 @@ void animatedobj_update(GameObject* obj) {
             }
             if (siblingCount <= 1 && sequenceOwner != NULL && sequenceOwner->seqIndex != -1) {
                 sequenceOwner->seqIndex = -1;
-                (*gObjectTriggerInterface)->endSequence(sequenceSlot);
+                (*gObjectTriggerInterface)->endSequence(slot);
             }
             obj->seqIndex = -1;
             obj->objectFlags |= OBJECT_OBJFLAG_UPDATE_DISABLED;
             obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         }
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case ANIMATEDOBJ_SEQID_ANIM_KRYSTAL: {
             for (eventIndex = 0; eventIndex < sequence->eventCount; eventIndex++) {
                 switch (sequence->eventIds[eventIndex]) {

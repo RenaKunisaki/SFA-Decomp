@@ -54,7 +54,7 @@ ObjectDescriptor gCFPrisonGuardObjDescriptor = {
     cfPrisonGuard_getExtraSize,
 };
 
-int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     GameObject* player;
     CfPrisonGuardState* state = obj->extra;
     s8 uncleFlewOff;
@@ -66,7 +66,7 @@ int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateSta
     u32 messageArgument = 0;
     CfPrisonGuardPlacement* placement = (CfPrisonGuardPlacement*)obj->anim.placement;
 
-    switch (animUpdate->triggerCommand) {
+    switch (animUpdate->unk80) {
     case CFPRISONGUARD_TRIGGER_ALARM_RAMP_RESET:
         state->alarmRamp = 0.0f;
         break;
@@ -162,12 +162,12 @@ int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateSta
         return CFPRISONGUARD_SEQUENCE_TRANSITION;
     }
     state->uncleFlewOffLatch = uncleFlewOff;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     while (ObjMsg_Pop(obj, &message, &messageSender, &messageArgument) != 0) {
     }
-    if (animUpdate->triggerCommand == CFPRISONGUARD_TRIGGER_LACTION) {
+    if (animUpdate->unk80 == CFPRISONGUARD_TRIGGER_LACTION) {
         getLActions(obj, obj, CFPRISONGUARD_LACTION_ID, 0, 0, 0);
-        animUpdate->triggerCommand = 0;
+        animUpdate->unk80 = 0;
     }
     return 0;
 }
@@ -193,7 +193,7 @@ void cfPrisonGuard_render(GameObject* obj, int renderArg2, int renderArg3, int r
         if (alarmRamp > 0.0f) {
             state->alarmRamp = 0.01f * (f32)(u32)framesThisStep + alarmRamp;
             if (state->alarmRamp < CFPRISONGUARD_ALARM_PARTICLE_LIMIT) {
-                objParticleFn_80099d84(obj, 1.0f, CFPRISONGUARD_ALARM_PARTICLE_EFFECT, state->alarmRamp, NULL);
+                objDoParticleFx(obj, 1.0f, CFPRISONGUARD_ALARM_PARTICLE_EFFECT, state->alarmRamp, NULL);
             }
         }
     }

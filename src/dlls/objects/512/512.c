@@ -19,7 +19,6 @@
 #include "main/game_ui_interface.h"
 #include "main/mapEventTypes.h"
 #include "main/objHitReact.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/pad_api.h"
@@ -151,7 +150,7 @@ void dll_200_updateMapAct2(GameObject* obj) {
     itemSet = gDll200WanderItemSet;
     obj->anim.localPosY = state->homeY;
     if (mainGetBit(GAMEBIT_WM_FoundKrystal) != 0) {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
         if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0 &&
             (*gGameUIInterface)->isOneOfItemsBeingUsed(itemSet.itemIds, DLL200_ITEM_COUNT) > -1) {
             mainSetBits(0x4d1, 1);
@@ -160,7 +159,7 @@ void dll_200_updateMapAct2(GameObject* obj) {
             buttonDisable(0, PAD_BUTTON_A);
         }
     } else {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         if (state->behaviorTimer <= 0) {
             switch (randomGetRange(1, 4)) {
             case 1:
@@ -295,14 +294,14 @@ void dll_200_updateMapAct1(GameObject* obj) {
     }
 }
 
-int dll_200_processMapAct1Events(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate, int unusedArg4) {
+int dll_200_processMapAct1Events(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate, int unusedArg4) {
     Dll200State* state;
     GameObject* player;
     int eventIndex;
 
     player = Obj_GetPlayerObject();
     state = obj->extra;
-    obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+    obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
 
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         u8 sequenceMode = state->sequenceMode;
@@ -324,7 +323,7 @@ int dll_200_processMapAct1Events(GameObject* obj, int unusedArg2, ObjAnimUpdateS
     return 0;
 }
 
-int dll_200_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate, int unusedArg4) {
+int dll_200_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate, int unusedArg4) {
     u8 mapAct;
     int eventIndex;
     Dll200State* state;
@@ -339,11 +338,11 @@ int dll_200_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState
     case DLL200_MAP_ACT_WANDER:
         break;
     case DLL200_MAP_ACT_RENDER_GATED:
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         break;
     case DLL200_MAP_ACT_IDLE:
         state = obj->extra;
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
             switch (animUpdate->eventIds[eventIndex]) {
             case 0:
@@ -413,7 +412,7 @@ void dll_200_update(int objectHandle) {
             dll_200_updateMapAct2(obj);
             break;
         case DLL200_MAP_ACT_RENDER_GATED:
-            obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             if (obj->anim.currentMove != 2) {
                 ObjAnim_SetCurrentMove(objectHandle, 2, 0.0f, 0);
             }

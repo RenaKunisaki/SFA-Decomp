@@ -219,7 +219,7 @@ void mmpMoonRock_reconcilePlacement(GameObject* obj, u8 place, u8 mode) {
     list = ObjList_GetObjects(&i, &count);
     for (; i < count; i++) {
         u32 otherObj = list[i];
-        if (otherObj != (u32)obj && ((GameObject*)otherObj)->anim.seqId == MMP_GEYSER_VENT_SEQUENCE_ID &&
+        if (otherObj != (u32)obj && ((GameObject*)otherObj)->anim.romDefNo == MMP_GEYSER_VENT_SEQUENCE_ID &&
             Vec_distance(&obj->anim.worldPosX, (void*)(otherObj + 0x18)) < 40.0f) {
             ventPlacement = (MMPGeyserVentPlacement*)((GameObject*)list[i])->anim.placementData;
             rockPlacement = (MMPMoonRockPlacement*)obj->anim.placementData;
@@ -370,8 +370,8 @@ void mmpMoonRock_update(GameObject* obj) {
                 mmpMoonRock_reconcilePlacement(obj, 1, 1);
             } else {
                 obj->anim.alpha = (u8)(int)(255.0f * (1.0f - state->resetTimer / MMP_MOON_ROCK_RESET_DURATION));
-                objParticleFn_80099d84(obj, 0.5f, 2, 1.0f - state->resetTimer / MMP_MOON_ROCK_RESET_DURATION, 0);
-                objParticleFn_80099d84(obj, 0.5f, 2, 1.0f - state->resetTimer / MMP_MOON_ROCK_RESET_DURATION, 0);
+                objDoParticleFx(obj, 0.5f, 2, 1.0f - state->resetTimer / MMP_MOON_ROCK_RESET_DURATION, 0);
+                objDoParticleFx(obj, 0.5f, 2, 1.0f - state->resetTimer / MMP_MOON_ROCK_RESET_DURATION, 0);
             }
         }
         return;
@@ -419,7 +419,7 @@ void mmpMoonRock_update(GameObject* obj) {
             minimumSpacing = 40.0f;
             for (; i < count; i++) {
                 GameObject* otherRock = (GameObject*)*list;
-                if (otherRock != obj && otherRock->anim.seqId == MMP_MOON_ROCK_SEQUENCE_ID &&
+                if (otherRock != obj && otherRock->anim.romDefNo == MMP_MOON_ROCK_SEQUENCE_ID &&
                     Vec_xzDistance(&obj->anim.worldPosX, &otherRock->anim.worldPosX) < minimumSpacing) {
                     (*gCarryableInterface)->setDropDisabled((void*)stateAddress, 1);
                     spacingClear = 0;

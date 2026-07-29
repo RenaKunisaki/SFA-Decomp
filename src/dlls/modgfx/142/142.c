@@ -17,6 +17,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL8E_EFFECT_ID 0x26a
@@ -204,6 +205,13 @@ u8 gDll8EEffectVtxColorTable[32] = {0, 0,  0, 230, 5, 20, 0, 0, 0, 31, 0, 0,  25
                                     0, 31, 0, 31,  0, 0,  0, 0, 0, 0,  0, 15, 0,   16, 0, 0};
 s16 gDll8EEffectHwParams[8] = {0, 140, 140, 0, 0, 0, 0, 0};
 
-u32 lbl_80316C70[8] = {
-    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_8E_func00_nop, (u32)dll_8E_func01_nop,
-    0x00000000, (u32)dll_8E_func03};
+ObjectDescriptor4 dll_8E_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_8E_func00_nop,
+    (ObjectDescriptorCallback)dll_8E_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_8E_func03,
+};

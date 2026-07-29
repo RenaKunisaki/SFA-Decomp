@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 #include "ghidra_import.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 int TrickyCurve_getExtraSize(void);
 int TrickyCurve_getObjectTypeId(void);
@@ -19,7 +19,7 @@ void TrickyCurve_updateEffectRingTrigger(u64 param_1, u64 param_2, u64 param_3, 
                                          u64 param_7, u64 param_8);
 void TrickyCurve_updateEffectHandleRing(GameObject* obj);
 int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex);
-int TrickyCurve_activateEffectHandleRing(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int TrickyCurve_activateEffectHandleRing(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void TrickyCurve_updateState(u64 param_1, u64 param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
                              u64 param_8, int param_9);
 

@@ -28,9 +28,9 @@ STATIC_ASSERT(sizeof(ScreensInterfaceVTable) == 0x10);
 extern ScreensInterface* gScreensInterface;
 
 void loadTaskTexts(void);
-int hintTextMapFn_800ea264(void);
+int hintTextLoadTaskMapTexts(void);
 u8 getCurTaskHintTextMap(void);
-void gameBitFn_800ea2e0(u8 id);
+void taskHintRecordCompletedTask(u8 id);
 void screens_initialise(void);
 void screens_release(void);
 void screens_remove(void);

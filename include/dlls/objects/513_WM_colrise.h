@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /* Only the accessed placement prefix is recovered; the complete retail width is not established. */
 typedef struct WMColrisePlacementView {
@@ -31,7 +31,7 @@ STATIC_ASSERT(offsetof(WMColriseState, raiseTimer) == 0x02);
 STATIC_ASSERT(offsetof(WMColriseState, unknown03) == 0x03);
 STATIC_ASSERT(sizeof(WMColriseState) == 0x04);
 
-int WM_colrise_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int WM_colrise_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int WM_colrise_getExtraSize(void);
 int WM_colrise_getObjectTypeId(void);
 void WM_colrise_free(void);

@@ -142,7 +142,7 @@ void videoInit(void* wpad0, int wpad1)
                   1.0f);
     GXSetFieldMode(gRenderModeObj->field_rendering, gRenderModeObj->xfbHeight < gRenderModeObj->viHeight);
     GXSetScissor(0, 0, gRenderModeObj->fbWidth, gRenderModeObj->efbHeight);
-    GXSetDispCopyDst(gRenderModeObj->fbWidth, (u16)gDispCopyYScaleLines);
+    GXSetDispCopyDst(gRenderModeObj->fbWidth, gDispCopyYScaleLines);
     if (gRenderModeObj->aa != 0)
     {
         GXSetPixelFmt(GX_PF_RGB565_Z16, GX_ZC_LINEAR);
@@ -292,8 +292,11 @@ int GXFlush_(u8 visible, int unused)
     GXSetDrawSync(gGxDrawSyncToken);
     GXCopyDisp(renderFrameBuffer, 1);
     GXFlush();
-    gGxDrawSyncToken = (u16)(gGxDrawSyncToken + 1);
-    next = renderFrameBuffer == externalFrameBuffer0 ? externalFrameBuffer1 : externalFrameBuffer0;
+    gGxDrawSyncToken = gGxDrawSyncToken + 1;
+    if (renderFrameBuffer == (next = externalFrameBuffer0))
+    {
+        next = externalFrameBuffer1;
+    }
     renderFrameBuffer = next;
     if (visible != 0 && gVideoBlackScreenFrameCount != 0)
     {
@@ -328,6 +331,7 @@ void logGpuHang(void)
     u8 cmdRdy;
     u8 readIdle;
     u8 fifoErr;
+    u8 readIdleVal;
 
     GXReadXfRasMetric(&topPerf0, &topClks, &topPerf1, &topClks2);
     GXReadXfRasMetric(&botPerf0, &botClks, &botPerf1, &botClks2);
@@ -345,11 +349,11 @@ void logGpuHang(void)
     {
         OSReport(strs + 0x4011c);
     }
-    else if (readIdle == 0 && xfStuck != 0 && cmdStuck != 0 && rdIdle != 0)
+    else if ((readIdleVal = readIdle) == 0 && xfStuck != 0 && cmdStuck != 0 && rdIdle != 0)
     {
         OSReport(strs + 0x40144);
     }
-    else if (cmdRdy != 0 && readIdle != 0 && xfStuck != 0 && cmdStuck != 0 && rdIdle != 0 && cmdIdle != 0)
+    else if (cmdRdy != 0 && readIdleVal != 0 && xfStuck != 0 && cmdStuck != 0 && rdIdle != 0 && cmdIdle != 0)
     {
         OSReport(strs + 0x4016c);
     }
@@ -396,7 +400,9 @@ char sThreadStateAttrSuspendFormat[] = "thread: state=%d attr=%d suspend=%d\n";
 void waitNextFrame(void)
 {
     int lvl;
+    f32 dt;
     u32 frames;
+    u8 step;
 
     OSStopStopwatch(&gFrameStopwatch);
     gFrameElapsedMs =
@@ -412,19 +418,21 @@ void waitNextFrame(void)
     {
         timeDelta = 6.0f;
     }
-    if (timeDelta > 0.1f)
+    dt = timeDelta;
+    if (dt > 0.1f)
     {
-        oneOverTimeDelta = 1.0f / timeDelta;
+        oneOverTimeDelta = 1.0f / dt;
     }
     else
     {
         oneOverTimeDelta = 1.0f;
     }
-    frames = (int)(timeDelta + gFrameStepRemainder) & 0xff;
-    framesThisStep = frames;
-    gFrameStepRemainder = (timeDelta + gFrameStepRemainder) - (f32)(u32)framesThisStep;
-    lbl_803DB411 = frames;
-    if (framesThisStep < 1)
+    step = (int)(dt + gFrameStepRemainder);
+    framesThisStep = step;
+    frames = step & 0xff;
+    gFrameStepRemainder = (dt + gFrameStepRemainder) - (f32)frames;
+    lbl_803DB411 = step;
+    if (frames < 1)
     {
         framesThisStep = 1;
     }

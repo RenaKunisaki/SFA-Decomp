@@ -17,8 +17,6 @@ void magicmaker_release(void);
 void magicmaker_initialise(void);
 
 extern u16 gMagicMakerSpawnObjectIds[MAGICMAKER_SPAWN_OBJECT_COUNT];
-extern const f32 gMagicMakerRenderScale[1];
-extern const f32 gMagicMakerSpawnHeightOffset[1];
 extern ObjectDescriptor10WithPadding gMAGICMakerObjDescriptor;
 
 #endif /* DLLS_OBJECTS_484_MAGICMAKER_H_ */

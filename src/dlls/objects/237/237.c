@@ -19,7 +19,7 @@
 #include "main/obj_hit_region.h"
 #include "main/obj_message.h"
 #include "main/obj_trigger.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
@@ -169,7 +169,7 @@ void collectible_applyPickup(GameObject* obj) {
     }
     switch (modelSetup->pickupCategory) {
     case COLLECTIBLE_PICKUP_CATEGORY_ITEM:
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case 0x5A:
             Sfx_PlayFromObject((u32)obj, SFXTRIG_lockoff22);
             itemPickupDoParticleFx(obj, 1.0f, 2, 40);
@@ -201,7 +201,7 @@ void collectible_applyPickup(GameObject* obj) {
         }
         break;
     case COLLECTIBLE_PICKUP_CATEGORY_HEALTH:
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case COLLECTIBLE_ITEM_ENERGY_EGG:
             Sfx_PlayFromObject((u32)Obj_GetPlayerObject(), SFXTRIG_lockoff22);
             playerAddHealth(Obj_GetPlayerObject(), 4);
@@ -228,7 +228,7 @@ void collectible_applyPickup(GameObject* obj) {
 }
 
 static void collectible_updateSeqEffects(GameObject* obj) {
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case COLLECTIBLE_SEQ_ID_MOON_SEED:
         objfx_spawnDirectionalBurst(obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
         break;
@@ -237,7 +237,7 @@ static void collectible_updateSeqEffects(GameObject* obj) {
 
 void collectible_updateLooseMotion(GameObject* obj) {
     u8* state = obj->extra;
-    if (obj->anim.seqId == COLLECTIBLE_SEQ_ID_MOON_SEED) {
+    if (obj->anim.romDefNo == COLLECTIBLE_SEQ_ID_MOON_SEED) {
         objMove(obj, 0.0f, obj->anim.velocityY * framesThisStep, 0.0f);
     } else {
         u32 frameCount = framesThisStep;
@@ -295,7 +295,7 @@ void collectible_updateLooseMotion(GameObject* obj) {
 void collectible_updateIdleMotion(GameObject* obj) {
     u8* state = obj->extra;
 
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case COLLECTIBLE_ITEM_ENERGY_EGG:
         if ((((CollectibleState*)state)->spinTimer -= framesThisStep) <= 0) {
             ((CollectibleState*)state)->spinSpeed = (f32)(s32)randomGetRange(600, 800);
@@ -334,7 +334,7 @@ void collectible_updateIdleMotion(GameObject* obj) {
     }
 }
 
-int collectible_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int collectible_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     CollectibleState* state = obj->extra;
     PartFxSpawnParams spawn;
     int particleIndex;
@@ -350,14 +350,14 @@ int collectible_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
             (u8)(mainGetBit((s32)((CollectibleState*)state)->visibilityGameBit) == 0);
     }
     if (((CollectibleState*)state)->visibilityBitClear == 0) {
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case COLLECTIBLE_SEQ_ID_MOON_SEED:
             objfx_spawnDirectionalBurst(obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
             break;
         }
     }
 
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         u8 eventId = animUpdate->eventIds[eventIndex];
         if (eventId == COLLECTIBLE_SEQUENCE_EVENT_LAUNCH) {
@@ -415,7 +415,7 @@ void collectible_checkProximityPickup(GameObject* obj, u8* state) {
     if (verticalDistance < 100.0f && distance < ((CollectibleState*)state)->pickupRadius &&
         Obj_IsParentSlackClear(player) != 0) {
         ((CollectibleState*)state)->pickupMsgValue = -1;
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case COLLECTIBLE_ITEM_ENERGY_EGG:
             if (mainGetBit(GAMEBIT_SawBigHealth) == 0) {
                 ObjMsg_SendToObject(player, COLLECTIBLE_MSG_IN_RANGE, (void*)obj,
@@ -487,14 +487,14 @@ void collectible_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, 
     f32 zero = 0.0f;
 
     if (visible != 0 && ((CollectibleState*)state)->despawnTimer == zero && obj->userData1 == 0 &&
-        (obj->anim.seqId == COLLECTIBLE_SEQ_ID_TRUTH_HORN || ((CollectibleState*)state)->visibilityBitClear == 0)) {
+        (obj->anim.romDefNo == COLLECTIBLE_SEQ_ID_TRUTH_HORN || ((CollectibleState*)state)->visibilityBitClear == 0)) {
         if ((obj->anim.modelInstance->flags & COLLECTIBLE_MODEL_FLAG_COLOR) != 0 &&
             ((CollectibleState*)state)->useColor != 0) {
             objSetColorFilter(((CollectibleState*)state)->colorR, ((CollectibleState*)state)->colorG,
                         ((CollectibleState*)state)->colorB);
         }
         objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
-        if (obj->anim.seqId == COLLECTIBLE_SEQ_ID_FIRE_CRYSTAL) {
+        if (obj->anim.romDefNo == COLLECTIBLE_SEQ_ID_FIRE_CRYSTAL) {
             objfx_spawnDirectionalBurst(obj, 7, 1.0f, 5, 1, 10, 4.0f, NULL, 0x20000000);
         }
     }
@@ -534,7 +534,7 @@ void collectible_update(GameObject* obj) {
     if (((CollectibleState*)state)->visibilityBitClear != 0 || state[offsetof(CollectibleState, disabled)] != 0) {
         return;
     }
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case COLLECTIBLE_SEQ_ID_MOON_SEED:
         objfx_spawnDirectionalBurst(obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
         break;
@@ -562,7 +562,7 @@ void collectible_update(GameObject* obj) {
             break;
         }
     }
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case COLLECTIBLE_SEQ_ID_NW_FOOD:
         hideFrames = ((CollectibleState*)state)->hideFrames;
         if (hideFrames != 0) {
@@ -634,7 +634,7 @@ void collectible_init(GameObject* obj, CollectibleSetup* setup) {
     ((CollectibleState*)state)->hitRegionId = COLLECTIBLE_HIT_REGION_UNRESOLVED;
     ((CollectibleState*)state)->bounceTimer = 0;
     ((CollectibleState*)state)->visibilityGameBit = setup->visibilityGameBit;
-    ((CollectibleState*)state)->mapId = setup->base.mapId;
+    ((CollectibleState*)state)->mapId = setup->base.ident;
     ((CollectibleState*)state)->basePosX = obj->anim.localPosX;
     ((CollectibleState*)state)->basePosY = obj->anim.localPosY;
     ((CollectibleState*)state)->basePosZ = obj->anim.localPosZ;
@@ -667,7 +667,7 @@ void collectible_init(GameObject* obj, CollectibleSetup* setup) {
             ((CollectibleState*)state)->colorG = setup->colorG;
             ((CollectibleState*)state)->colorB = setup->colorB;
         }
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case COLLECTIBLE_ITEM_ENERGY_EGG:
             ((CollectibleState*)state)->unk40 = 0.0f;
             ((CollectibleState*)state)->lifetimeTimer = COLLECTIBLE_INITIAL_LIFETIME;

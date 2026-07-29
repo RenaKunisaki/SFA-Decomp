@@ -81,7 +81,7 @@ void lightning_update(GameObject* obj) {
             objects = ObjGroup_GetObjects(LIGHTNING_OBJECT_GROUP, &objectCount);
             objectIndex = 0;
             while (objectIndex < objectCount) {
-                u32 linkedMapId = ((GameObject*)objects[objectIndex])->anim.placement->mapId;
+                u32 linkedMapId = ((GameObject*)objects[objectIndex])->anim.placement->ident;
                 if (linkedMapId == state->linkedMapId) {
                     break;
                 }
@@ -98,7 +98,7 @@ void lightning_update(GameObject* obj) {
             targetSlot = &objects[objectIndex];
             effect = lightningCreate((const Vec3f*)start,
                                      (const Vec3f*)(*targetSlot + offsetof(GameObject, anim.localPos)), state->radiusX,
-                                     state->radiusY, lifetime, state->width, (u8)(state->flags.alternateStyle ? 1 : 0));
+                                     state->radiusY, lifetime, state->width, (state->flags.alternateStyle ? 1 : 0));
             state->effect = effect;
             state->ageTimer = 0.0f;
             if ((state->modeBits.mode & LIGHTNING_MODE_HIT_EFFECT) != 0) {

@@ -100,7 +100,7 @@ void wmseqpoint_onSeqFree(GameObject* obj)
     }
 }
 
-int wmseqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
+int wmseqpoint_SeqFn(GameObject* obj, int unused, ObjSeqState* actor)
 {
     WmSeqPointState* state;
     GameObject* player;
@@ -108,7 +108,7 @@ int wmseqpoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* actor)
 
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    actor->sequenceEventActive = 0;
+    actor->movementState = 0;
     actor->freeCallback = (ObjAnimSequenceFreeCallback)wmseqpoint_onSeqFree;
 
     for (i = 0; i < actor->eventCount; i++)

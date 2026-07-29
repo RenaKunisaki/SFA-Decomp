@@ -312,7 +312,7 @@ void BombPlant_update(GameObject* obj) {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_ladderslide16);
                 hitPosition.x += playerMapOffsetX;
                 hitPosition.z += playerMapOffsetZ;
-                objLightFn_8009a1dc(obj, 0.014f, &lightPosition, 1, 0);
+                objDoHitParticleFx(obj, 0.014f, &lightPosition, 1, 0);
                 Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
                 state->stateIndex = BOMB_PLANT_STATE_EXPLODING;
                 state->flags |= BOMB_PLANT_STATE_FLAG_JUST_ENTERED;

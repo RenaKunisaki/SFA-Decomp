@@ -1,14 +1,14 @@
 
-asm void TRK_flush_cache(register void* param_1, register int param_2)
+asm void TRK_flush_cache(register void* addr, register int nBytes)
 {
 #ifdef __MWERKS__ // clang-format off
 	nofralloc
 
 	lis r5, 0xFFFF
 	ori r5, r5, 0xFFF1
-	and r5, r5, param_1
-	subf r3, r5, param_1
-	add r4, param_2, r3
+	and r5, r5, addr
+	subf r3, r5, addr
+	add r4, nBytes, r3
 
 loop:
 	dcbst 0, r5

@@ -1,4 +1,4 @@
-/* DLL 639 */
+/* DLL 0x027F */
 #include "global.h"
 
-u32 lbl_803DC390[2] = {0};
+u32 gDll27FNullResourceDescriptor[2] = {0};

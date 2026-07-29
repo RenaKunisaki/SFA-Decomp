@@ -82,11 +82,11 @@ extern f32 lbl_803DEC28;
 extern int lbl_803DEBB0;
 extern ModelLightStruct* gTexDimmedLightList[2];
 extern ModelLightStruct* gTexBlockLightList[2];
-extern int lbl_803DCE30;
+extern int gLightmapDrawQueueCount;
 extern int* lbl_803DCE34;
 extern int gTexIndMtxTable[];
-extern u8 lbl_8037E0C0[];
-extern int lbl_80382008[5];
+extern u8 gLightmapDrawQueue[];
+extern u8 gCloudLayerTexMatrix[0x30];
 #define FRUSTUM_PLANE_COUNT 5
 u8 gRcpPendingWarpDest[0x10];
 FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
@@ -96,7 +96,7 @@ extern int gTexLightmapFogColor;
 
 /*
  * TexShadowRow - 0x10-stride rows of the pending-shadow queue at the head of
- * lbl_8037E0C0 (indexed by lbl_803DCE30, bumped after each lightmapQueueShadowRow push).
+ * gLightmapDrawQueue (indexed by gLightmapDrawQueueCount, bumped after each lightmapQueueShadowRow push).
  * mapBlockRender_callList writes type (4/5 = object shadow, 6 = indirect
  * lightmap) into the queued shadow row.
  */
@@ -421,10 +421,10 @@ u32 frustumTestAabbWithPlaneOffsets(f32 minX, f32 maxX, f32 minY, f32 maxY, f32 
         }
         if ((nearX * plane[i].normalX + nearY * plane[i].normalY + nearZ * plane[i].normalZ + plane[i].distance +
                  planeOffsets[i] <
-             lbl_803DEBCC) &&
+             0.0f) &&
             (farX * plane[i].normalX + farY * plane[i].normalY + farZ * plane[i].normalZ + plane[i].distance +
                  planeOffsets[i] <
-             lbl_803DEBCC))
+             0.0f))
             return 0;
     }
     return 1;
@@ -482,9 +482,9 @@ u8 mapBlockBounds_ComputeAndTestPlanes(MapBlockBoundsRec* bounds, struct MapBloc
             farZ = *maxZ;
         }
         if ((planes->distance + (nearX * planes->normalX + nearY * planes->normalY + nearZ * planes->normalZ) <
-             lbl_803DEBCC) &&
+             0.0f) &&
             (planes->distance + (farX * planes->normalX + farY * planes->normalY + farZ * planes->normalZ) <
-             lbl_803DEBCC))
+             0.0f))
         {
             return 0;
         }
@@ -517,7 +517,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
         u8* texGlobals;
         MapBlockBoundsRec* bounds[1];
 
-        texGlobals = lbl_8037E0C0;
+        texGlobals = gLightmapDrawQueue;
         bitPos = state->bit;
         {
             int off = bitPos >> 3;
@@ -548,8 +548,8 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
                 lightmapQueueShadowRow(bounds[0], block, bounds[0]->selector);
                 shadowType = 5;
                 *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
-                         lbl_803DCE30 * sizeof(TexShadowRow)) = shadowType;
-                lbl_803DCE30 = lbl_803DCE30 + 1;
+                         gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
+                gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
             else if (((flags & 0x40000000) != 0) || ((flags & 0x2000) != 0))
             {
@@ -558,8 +558,8 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
                 lightmapQueueShadowRow(bounds[0], block, bounds[0]->selector);
                 shadowType = 4;
                 *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
-                         lbl_803DCE30 * sizeof(TexShadowRow)) = shadowType;
-                lbl_803DCE30 = lbl_803DCE30 + 1;
+                         gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
+                gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
         }
         else
@@ -683,8 +683,8 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
                 lightmapQueueShadowRow(bounds[0], block, 0x17);
                 shadowType = 6;
                 *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
-                         lbl_803DCE30 * sizeof(TexShadowRow)) = shadowType;
-                lbl_803DCE30 = lbl_803DCE30 + 1;
+                         gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
+                gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
         }
     }
@@ -744,7 +744,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
             PSMTXTrans(texMatrix, tx,
                        *(float*)((int)lbl_803DCE68 + 4 + ((u32)layer->scrollMtx << 4)) /
                            1048576.0f,
-                       lbl_803DEBCC);
+                       0.0f);
             texMtx = texMatrix;
         }
         else
@@ -791,7 +791,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
             PSMTXTrans(texMatrix, tx,
                        *(float*)((int)lbl_803DCE68 + 4 + ((u32)layer->scrollMtx << 4)) /
                            1048576.0f,
-                       lbl_803DEBCC);
+                       0.0f);
             texMtx = texMatrix;
         }
         else
@@ -842,7 +842,7 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                         tx = *(float*)((u8*)lbl_803DCE68 + scrollOffset) / 1048576.0f;
                         PSMTXTrans(texMatrix, tx,
                                    *(float*)((u8*)lbl_803DCE68 + scrollOffset + 4) / 1048576.0f,
-                                   lbl_803DEBCC);
+                                   0.0f);
                         texMtx = texMatrix;
                     }
                     else
@@ -938,7 +938,7 @@ MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRe
     flags = SHADER_FLAGS(shader);
     if ((flags & 0x20) != 0 && (lightList = lbl_803DCE34) != 0)
     {
-        addSignedOverlayTexStage((u8*)lightList, &lbl_80382008, lbl_803DB638);
+        addSignedOverlayTexStage((u8*)lightList, &gCloudLayerTexMatrix, lbl_803DB638);
     }
     else if ((flags & 0x40) != 0)
     {
@@ -1133,7 +1133,6 @@ void mapBlockRender_setVtxDcrs(u8 doSetup, MapBlockData* block, MapShader* shade
     }
 }
 
-void setupToRenderMapBlock(MapBlockData* block, void* posMtx);
 
 void setupToRenderMapBlock(MapBlockData* block, void* posMtx)
 {
@@ -1143,12 +1142,12 @@ void setupToRenderMapBlock(MapBlockData* block, void* posMtx)
 
     GXLoadPosMtxImm((const f32 (*)[4])posMtx, GX_PNMTX0);
     PSMTXCopy((MtxPtr)posMtx, tmp);
-    fc = lbl_803DEBCC;
+    fc = 0.0f;
     tmp[0][3] = fc;
     tmp[1][3] = fc;
     tmp[2][3] = fc;
     GXLoadNrmMtxImm(tmp, GX_PNMTX0);
-    PSMTXConcat((MtxPtr)lbl_803967F0, (MtxPtr)posMtx, out);
+    PSMTXConcat((MtxPtr)gCameraLightPerspectiveMatrix, (MtxPtr)posMtx, out);
     GXLoadTexMtxImm(out, GX_TEXMTX2, GX_MTX3x4);
     GXSetArray(GX_VA_POS, block->vertices, 6);
     GXSetArray(GX_VA_CLR0, block->vertexColors, 2);
@@ -1269,7 +1268,7 @@ void renderGlows(void)
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
     gxTevResetStages();
-    gxTextureFn_800794e0();
+    gxTevColor1TexAlphaStage();
     gxTevCommitStages();
     GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, fogCol);
     gxSetAdditiveBlendNoZTest();
@@ -1285,13 +1284,13 @@ void renderGlows(void)
         cam.y = *(f32*)((char*)viewMtx + 0x24);
         cam.z = *(f32*)((char*)viewMtx + 0x28);
         sunDot = PSVECDotProduct(&dir, &cam);
-        if (sunDot > lbl_803DEBCC)
+        if (sunDot > 0.0f)
         {
             int occ;
             f32 fade;
             skyBuildSunModelMatrix(sunMtx);
             Camera_ProjectWorldPointWithOffset(sunMtx[0][3], sunMtx[1][3], sunMtx[2][3], 100.0f, &px, &py, &pz);
-            Camera_NdcToScreen(px, py, pz, &sx, &sy, &sz);
+            Camera_ClipToScreen(px, py, pz, &sx, &sy, &sz);
             gSunFlareScissorX = sx - 0x10;
             gSunFlareScissorWidth = 0x20;
             gSunFlareScissorY = sy - 0x10;
@@ -1323,7 +1322,7 @@ void renderGlows(void)
                 fade = -0.0125f;
             gSunFlareFade = gSunFlareFade + fade;
             sunDot = sunDot * gSunFlareFade;
-            if (sunDot > lbl_803DEBCC)
+            if (sunDot > 0.0f)
             {
                 PSMTXConcat((MtxPtr)viewMtx, sunMtx, sunMtx);
                 GXLoadPosMtxImm((const f32 (*)[4])sunMtx, GX_PNMTX0);
@@ -1331,7 +1330,7 @@ void renderGlows(void)
                 selectTexture((Texture*)((int)skyGetSkyTexture()), 0);
                 getAmbientColor(0, &amb[0], &amb[1], &amb[2]);
                 sunDot = (f32)(u32)sunAlpha * sunDot;
-                _gxSetTevColor2(amb[0], amb[1], amb[2], (int)(lbl_803DEBFC * sunDot));
+                _gxSetTevColor2(amb[0], amb[1], amb[2], (int)(0.5f * sunDot));
                 alpha = 255.0f - 0.9f * sunDot;
                 fade = 20000.0f * sunDot;
                 sunDot = fade * lbl_803DEC40;
@@ -1368,7 +1367,7 @@ void renderGlows(void)
             e = gGlowLightList[i];
             Camera_ProjectWorldPointWithOffset(e->worldX - playerMapOffsetX, e->worldY, e->worldZ - playerMapOffsetZ,
                                                e->glowProjectionRadius, &px, &py, &pz);
-            Camera_NdcToScreen(px, py, pz, &sx, &sy, &sz);
+            Camera_ClipToScreen(px, py, pz, &sx, &sy, &sz);
             d = depthReadRequestPoll(sx, sy, e);
             if (sz <= d && pauseMenuGetState() == 0)
                 e->glowAlphaStep = 0x10;
@@ -1376,7 +1375,7 @@ void renderGlows(void)
                 e->glowAlphaStep = -0x10;
         }
         GXSetCurrentMtx(GX_IDENTITY);
-        gxTextureFn_800794e0();
+        gxTevColor1TexAlphaStage();
         gxSetAdditiveBlendNoZTest();
         for (i = 0; i < lbl_803DCE06; i++)
         {

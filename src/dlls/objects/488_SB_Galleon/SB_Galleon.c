@@ -53,7 +53,7 @@
 #define DBPROTECTION_TRICKY_TARGET_SEQID 0x8c
 #define DBPROTECTION_GAMEBIT_DIVE_ACTIVE 0xf1e
 
-extern s8 lbl_803DDC2C;
+extern s8 gDBprotectionTransitionPending;
 extern f32 gDBprotPi;
 extern f32 gDBprotAngleUnit;
 extern f32 lbl_803E56F8;
@@ -116,6 +116,7 @@ void DBprotection_updateFlight(GameObject* obj) {
     f32 ambB;
     f32 threshold;
     f32 dx;
+    f32 wander;
     f32 speedTarget;
     f32 zero;
     f32 mtx[17];
@@ -135,7 +136,7 @@ void DBprotection_updateFlight(GameObject* obj) {
         objects = ObjList_GetObjects(&objIndex, &objCount);
         for (t = objIndex; t < objCount; t++) {
             otherObj = objects[t];
-            if (otherObj->anim.seqId == DBPROTECTION_TRICKY_TARGET_SEQID) {
+            if (otherObj->anim.romDefNo == DBPROTECTION_TRICKY_TARGET_SEQID) {
                 state->targetObj = otherObj;
                 t = objCount;
             }
@@ -191,10 +192,10 @@ void DBprotection_updateFlight(GameObject* obj) {
         state->wanderA = -(amp * timeDelta - state->wanderA);
         state->wanderB = -(amp * timeDelta - state->wanderB);
     }
-    dx = state->wanderA;
-    state->wanderA = (dx < 0.0f) ? 0.0f : (dx > 35.0f) ? 35.0f : dx;
-    dx = state->wanderB;
-    state->wanderB = (dx < 0.0f) ? 0.0f : (dx > 35.0f) ? 35.0f : dx;
+    wander = state->wanderA;
+    state->wanderA = (wander < 0.0f) ? 0.0f : (wander > 35.0f) ? 35.0f : wander;
+    wander = state->wanderB;
+    state->wanderB = (wander < 0.0f) ? 0.0f : (wander > 35.0f) ? 35.0f : wander;
     switch (state->phase) {
     case 0:
         camShake = 120.0f;
@@ -761,18 +762,18 @@ void DBprotection_updateShield(GameObject* obj) {
     if (mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_ARMED) != 0 &&
         mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_USED) == 0 &&
         mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_READY) != 0) {
-        lbl_803DDC2C = 1;
+        gDBprotectionTransitionPending = 1;
         mainSetBits(DBPROTECTION_GAMEBIT_TRANSITION_USED, 1);
         (*gScreenTransitionInterface)->start(0xa, 1);
     }
 
     DBprotection_updateEnvfxGameBits((u8*)state);
 
-    if (lbl_803DDC2C != 0 && (*gScreenTransitionInterface)->isFinished() != 0) {
+    if (gDBprotectionTransitionPending != 0 && (*gScreenTransitionInterface)->isFinished() != 0) {
         (*gScreenTransitionInterface)->step(0x50, 1);
         (*gObjectTriggerInterface)->runSequence(1, obj, -1);
         state->cameraState = 3;
-        lbl_803DDC2C = 0;
+        gDBprotectionTransitionPending = 0;
     }
 
     (*gCloudActionInterface)->func12Nop(-25.0f, 0.0f);
@@ -822,7 +823,7 @@ u8 gSbGalleonSkyColorA[4];
 u8 gSbGalleonSkyColorB[4];
 u8 gSbGalleonSkyColorC[4];
 u8 gSbGalleonSkyLightIntensity;
-s8 lbl_803DDC2C;
+s8 gDBprotectionTransitionPending;
 f32 gSbGalleonSkyBlendFactor;
 f32 gSbGalleonSkyBlendHold;
 GameObject* gSbGalleon;
@@ -963,7 +964,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
     }
 }
 
-int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     SBGalleonState* state = obj->extra;
     int i;
 
@@ -991,7 +992,7 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
             int end;
             int* arr = ObjList_GetObjects(&start, &end);
             for (i = start; i < end; i++) {
-                if (((GameObject*)arr[i])->anim.seqId == SBGALLEON_ROMLIST_LINKED) {
+                if (((GameObject*)arr[i])->anim.romDefNo == SBGALLEON_ROMLIST_LINKED) {
                     state->linkedActor = arr[i];
                     i = end;
                 }
@@ -1066,8 +1067,8 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate
     state->posX = obj->anim.localPosX;
     state->posY = obj->anim.localPosY;
     state->posZ = obj->anim.localPosZ;
-    animUpdate->hitVolumePair = animUpdate->activeHitVolumePair;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->flags = animUpdate->savedFlags;
+    animUpdate->movementState = 0;
     return 0;
 }
 

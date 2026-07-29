@@ -40,9 +40,9 @@
 #define PRESSURE_SWITCH_RISE_SPEED               0.125f
 #define PRESSURE_SWITCH_INITIAL_PRESS_DEPTH      25.0f
 
-int PressureSwitch_SeqFn(GameObject* unusedObj, int unused, ObjAnimUpdateState* animUpdate) {
-    animUpdate->hitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+int PressureSwitch_SeqFn(GameObject* unusedObj, int unused, ObjSeqState* animUpdate) {
+    animUpdate->flags = -1;
+    animUpdate->movementState = 0;
     return 0;
 }
 
@@ -102,13 +102,13 @@ void PressureSwitch_update(GameObject* obj) {
         contactHeightThreshold = PRESSURE_SWITCH_CONTACT_HEIGHT_THRESHOLD;
         for (; contactIndex < (contactState = obj->anim.hitboxTransformState)->contactObjectCount; contactIndex++) {
             GameObject* contact = contactState->contactObjects[contactIndex];
-            if (contact->anim.seqId == PRESSURE_SWITCH_TRIGGER_SEQ_ID) {
+            if (contact->anim.romDefNo == PRESSURE_SWITCH_TRIGGER_SEQ_ID) {
                 state->flags.triggerObjectPresent = 1;
             }
             if (contact->anim.localPosY - obj->anim.localPosY > contactHeightThreshold) {
                 state->holdTimer = PRESSURE_SWITCH_HOLD_FRAMES;
             }
-            if (state->chimeLatch == 0 && contact != NULL && contact->anim.seqId == PRESSURE_SWITCH_CHIME_SEQ_ID) {
+            if (state->chimeLatch == 0 && contact != NULL && contact->anim.romDefNo == PRESSURE_SWITCH_CHIME_SEQ_ID) {
                 if (isPlayerFar == 0) {
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_mpick1_b);
                 }
@@ -198,17 +198,17 @@ void PressureSwitch_update(GameObject* obj) {
 
 void PressureSwitch_init(GameObject* obj, const PressureSwitchPlacementView* placement) {
     PressureSwitchState* state;
-    u32 mapId;
+    u32 ident;
 
     state = obj->extra;
     obj->animEventCallback = PressureSwitch_SeqFn;
     obj->anim.rotX = (s16)((s32)placement->rotationXHighByte << 8);
     state->retriggerTimer = (s16)(placement->retriggerDelay * PRESSURE_SWITCH_RETRIGGER_FRAMES_PER_SEC);
     state->chimeLatch = 0;
-    mapId = obj->anim.placement->mapId;
-    if (mapId == 0x1F1A) {
+    ident = obj->anim.placement->ident;
+    if (ident == 0x1F1A) {
         state->mapGameBit = GAMEBIT_WM_SwitchDoorOpen;
-    } else if (mapId == 0x47293) {
+    } else if (ident == 0x47293) {
         state->mapGameBit = 0xF46;
     } else {
         state->mapGameBit = -1;

@@ -24,7 +24,7 @@
 #include "main/objprint_character_api.h"
 #include "main/object_render.h"
 #include "main/obj_path.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/newshadows_audio_api.h"
 #include "main/dll/path_control_interface.h"
@@ -196,7 +196,7 @@ int SHthorntail_HasNearbyPendingEventObject(GameObject* obj) {
     }
     objects = (GameObject**)ObjGroup_GetObjects(SHTHORNTAIL_LINKED_EVENT_OBJECT_GROUP, &count);
     for (index = 0; index < count; index++) {
-        if ((objects[index]->anim.seqId == SHTHORNTAIL_OBJECT_TYPE_ID) &&
+        if ((objects[index]->anim.romDefNo == SHTHORNTAIL_OBJECT_TYPE_ID) &&
             ((SHTHORNTAIL_PLACEMENT(objects[index])->configToken == gSHthorntailDataTables[groupIndex][1]) ||
              (SHTHORNTAIL_PLACEMENT(objects[index])->configToken == gSHthorntailDataTables[groupIndex][2]) ||
              (SHTHORNTAIL_PLACEMENT(objects[index])->configToken == gSHthorntailDataTables[groupIndex][3]))) {
@@ -845,7 +845,7 @@ void SHthorntail_updateLevelControlMode0(GameObject* obj, SHthorntailState* runt
     SHthorntail_updateState(obj, runtime);
 }
 
-u32 SHthorntail_updateLevelControlState(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+u32 SHthorntail_updateLevelControlState(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     SHthorntailState* runtime;
     int randomIdleWait;
     int impactHandled;
@@ -871,7 +871,7 @@ u32 SHthorntail_updateLevelControlState(GameObject* obj, int unused, ObjAnimUpda
         if (impactHandled != 0) {
             return 0;
         }
-        animUpdate->hitVolumePair &= ~SHTHORNTAIL_LEVELCONTROL_COLLISION_FLAG;
+        animUpdate->flags &= ~SHTHORNTAIL_LEVELCONTROL_COLLISION_FLAG;
         characterDoEyeAnims((GameObject*)obj, &runtime->eyeAnimState);
     }
     runtime->activeMoveValid = 0;
@@ -1101,8 +1101,6 @@ void SHthorntail_init(GameObject* obj, const SHthorntailPlacement* placement) {
     u32 randomTime;
     u8* moveScratch;
     u32 outA[2];
-    u32 outB;
-    u32 stackPad;
 
     runtime = obj->extra;
     outA[0] = lbl_803E5410;

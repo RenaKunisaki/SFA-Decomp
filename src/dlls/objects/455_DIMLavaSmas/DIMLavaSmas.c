@@ -11,9 +11,8 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits_api.h"
 #include "main/lightmap_api.h"
-#include "main/objanim_update.h"
-#include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/object_render.h"
 #include "main/track_dolphin_map_api.h"
 
 enum DimLavaSmashPhase {
@@ -56,7 +55,7 @@ void dimlavasmash_setBlockSurfaceFlags(MapBlockData* map, int disable, int surfa
     }
 }
 
-int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int* def;
     int hit;
     MapBlockData* block;
@@ -72,7 +71,7 @@ int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpda
             hitState = (ObjHitsPriorityState*)(obj)->anim.hitReactState;
             hitState->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
             if (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0) {
-                if (((GameObject*)hit)->anim.seqId == DIM_LAVA_PROJECTILE_SEQUENCE_ID) {
+                if (((GameObject*)hit)->anim.romDefNo == DIM_LAVA_PROJECTILE_SEQUENCE_ID) {
                     ((DimLavaSmashState*)state)->phase = DIM_LAVA_SMASH_PHASE_SMASHING;
                     Sfx_PlayFromObject((int)obj, SFXTRIG_en_mushsporedisp22);
                     block =
@@ -85,7 +84,7 @@ int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpda
             }
         }
     } else {
-        if (animUpdate->triggerCommand == DIM_LAVA_SMASH_ANIM_COMMAND_COMPLETE) {
+        if (animUpdate->unk80 == DIM_LAVA_SMASH_ANIM_COMMAND_COMPLETE) {
             mainSetBits(((DimLavaSmashPlacement*)def)->triggerGameBit, 1);
             ((DimLavaSmashState*)state)->phase = DIM_LAVA_SMASH_PHASE_COMPLETE;
         }

@@ -104,7 +104,6 @@ extern f32 gMapSavedPlayerOffsetX;
 extern f32 gMapSavedPlayerOffsetZ;
 
 void setGQR7Packed(int a, int b, int c, int d);
-void setGQR6_2(int a, int b, int c, int d);
 u8* modelBoneTransforms_next(u8* stream, int* dx, int* dy, int* dz);
 static inline void* modelGetBoneMtx(ObjModel* model, int idx);
 void ObjModel_TransformVerticesWithTranslation(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
@@ -434,17 +433,15 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
             work.cachedMoves[1] = channel->cachedMoves[1];
             work.cachedMoves[2] = channel->cachedMoves[2];
             work.cachedMoves[3] = channel->cachedMoves[3];
+            j = 0;
+            while (j < slotCount)
             {
-                u16* cacheSlot = channel->cacheSlots;
-
-                for (j = 0; j < slotCount; j++)
-                {
-                    work.cacheSlots[j] = cacheSlot[j];
-                    work.frameTypes[j] = channel->frameTypes[j];
-                    work.frameLengths[j] = channel->frameLengths[j];
-                    work.framePhases[j] = channel->framePhases[j];
-                    work.frameData[j] = channel->frameData[j];
-                }
+                work.cacheSlots[j] = channel->cacheSlots[j];
+                work.frameTypes[j] = channel->frameTypes[j];
+                work.frameLengths[j] = channel->frameLengths[j];
+                work.framePhases[j] = channel->framePhases[j];
+                work.frameData[j] = channel->frameData[j];
+                j++;
             }
             work.eventCountdown = channel->eventCountdown;
             modelAnimUpdateChannels(file, &work, slotCount);
@@ -1871,7 +1868,6 @@ int ObjModel_HasActiveBlendChannels(ObjModel* model)
 
 typedef f32 Mtx[3][4];
 
-void ObjModel_SetBlendChannelTargets(ObjModel* model, int channel, int a, int b, f32 weight, int flags);
 void ObjModel_SetBlendChannelWeight(ObjModel* model, int channel, f32 weight)
 {
     ObjModelBlendChannel* ch;
@@ -1953,7 +1949,6 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
     u8* mtx;
     u8* hitReact;
     u8* samples;
-    u8* src;
     Vec vec;
     f32 zero;
     f32 motionScale;
@@ -2040,7 +2035,8 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
             ((GameObject*)prevObj)->anim.localPosX = vec.x + playerMapOffsetX;
             ((GameObject*)prevObj)->anim.localPosY = vec.y;
             ((GameObject*)prevObj)->anim.localPosZ = vec.z + playerMapOffsetZ;
-            Obj_GetWorldPosition((u32)prevObj, (f32 *)(prevObj + 0x18), (f32 *)(prevObj + 0x1c), (f32 *)(prevObj + 0x20));
+            Obj_GetWorldPosition((GameObject*)prevObj, (f32 *)(prevObj + 0x18), (f32 *)(prevObj + 0x1c),
+                                 (f32 *)(prevObj + 0x20));
         }
         vec.x = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 8);
         vec.y = *(f32*)(*(u8**)(hdrOwner + 0x58) + off[0] + 0xc);
@@ -2874,7 +2870,6 @@ void ObjModel_InitResourceCaches(void)
     lbl_803DCB58 = 0;
 }
 
-void ObjModel_InitScratchBuffers(void);
 
 void ObjModel_InitScratchBuffers(void)
 {
@@ -2918,6 +2913,7 @@ void ObjModel_BlendNormalStream(u8* mtxs, u8* job, u8* animData, u8** outs, int 
         u32 i;
         u32 nextSlot;
         u8* chunkDst;
+        u8* lastChunk;
 
         chunk = *(u8**)(job + 0xc);
         vtxWords = (u32)((chunk[0x73] << 5) + 0x1f) >> 5;
@@ -2927,11 +2923,13 @@ void ObjModel_BlendNormalStream(u8* mtxs, u8* job, u8* animData, u8** outs, int 
         copyToCache(*(u8**)((int)gModelCacheBuffersA + 4), *(u8**)(chunk + 0x64), weightWords);
         for (i = 0; i < (u32)(((ModelFileHeader*)job)->flags - 1); i++)
         {
+            int nextVtxWords;
+
             chunk = *(u8**)(job + 0xc) + i * 0x74;
-            vtxWords = (u32)((chunk[0xe7] << 5) + 0x1f) >> 5;
+            nextVtxWords = (u32)((chunk[0xe7] << 5) + 0x1f) >> 5;
             nextSlot = (i + 1) & 1;
-            copyToCache(gModelCacheBuffersA[(u8)(nextSlot * 2)], animData + *(int*)(chunk + 0xd4), vtxWords);
-            chunkWords[(i + 1) & 1] = vtxWords;
+            copyToCache(gModelCacheBuffersA[(u8)(nextSlot * 2)], animData + *(int*)(chunk + 0xd4), nextVtxWords);
+            chunkWords[(i + 1) & 1] = nextVtxWords;
             {
                 u8* nextChunk;
                 int nextWeightWords = (u32)(((nextChunk = *(u8**)(job + 0xc) + i * 0x74)[0xe3] << 5) + 0x1f) >> 5;
@@ -2959,26 +2957,26 @@ void ObjModel_BlendNormalStream(u8* mtxs, u8* job, u8* animData, u8** outs, int 
                 memcpyToCache(chunkDst, gModelCacheBuffersA[(u8)((i & 1) * 2)], chunkWords[i & 1]);
             }
         }
-        chunk = *(u8**)(job + 0xc) + i * 0x74;
+        lastChunk = *(u8**)(job + 0xc) + i * 0x74;
         cacheQueueWait(0);
         if ((u8)quad)
         {
             chunkDst = outs[i];
-            ObjModel_TransformQuadVerticesLinear(mtxs + chunk[0x6c] * 0x30, mtxs + chunk[0x6d] * 0x30,
+            ObjModel_TransformQuadVerticesLinear(mtxs + lastChunk[0x6c] * 0x30, mtxs + lastChunk[0x6d] * 0x30,
                                                  gModelCacheBuffersA[(u8)((i & 1) * 2) + 1],
-                                                 chunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
-                                                 chunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
-                                                 *(u16*)(chunk + 0x70));
+                                                 lastChunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
+                                                 lastChunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
+                                                 *(u16*)(lastChunk + 0x70));
             memcpyToCache(chunkDst, gModelCacheBuffersA[(u8)((i & 1) * 2)], chunkWords[i & 1]);
         }
         else
         {
             chunkDst = outs[i];
-            ObjModel_TransformVerticesLinear(mtxs + chunk[0x6c] * 0x30, mtxs + chunk[0x6d] * 0x30,
+            ObjModel_TransformVerticesLinear(mtxs + lastChunk[0x6c] * 0x30, mtxs + lastChunk[0x6d] * 0x30,
                                              gModelCacheBuffersA[(u8)((i & 1) * 2) + 1],
-                                             chunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
-                                             chunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
-                                             *(u16*)(chunk + 0x70));
+                                             lastChunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
+                                             lastChunk[0x72] + (int)gModelCacheBuffersA[(u8)((i & 1) * 2)],
+                                             *(u16*)(lastChunk + 0x70));
             memcpyToCache(chunkDst, gModelCacheBuffersA[(u8)((i & 1) * 2)], chunkWords[i & 1]);
         }
         cacheQueueWait(0);

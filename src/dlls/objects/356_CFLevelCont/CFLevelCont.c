@@ -38,7 +38,7 @@ const CfLevelControlRestartPoint gCfLevelControlRestartPoint = {
     {746.81787109375f, 1309.0f, -16378.33984375f},
     0.0f,
 };
-int cflevelcontrol_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int cflevelcontrol_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int eventIndex;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         int eventId = animUpdate->eventIds[eventIndex];
@@ -212,7 +212,7 @@ void cflevelcontrol_init(GameObject* obj, CfLevelControlPlacement* unusedPlaceme
     state->flags.unknown40 = 0;
     obj->animEventCallback = cflevelcontrol_sequenceCallback;
     mainSetBits(GAMEBIT_CFRelated0983,
-                ((CfLevelControlPlacement*)obj->anim.placementData)->base.mapId != CFLEVELCONTROL_SPECIAL_MAP_ID);
+                ((CfLevelControlPlacement*)obj->anim.placementData)->base.ident != CFLEVELCONTROL_SPECIAL_MAP_ID);
     if (mainGetBit(GAMEBIT_CFRelated02FE) == 0) {
         for (gameBitIndex = 0; gameBitIndex < CFLEVELCONTROL_RESET_GAME_BIT_COUNT; gameBitIndex++) {
             mainSetBits(gCfLevelControlResetGameBits[gameBitIndex], 0);

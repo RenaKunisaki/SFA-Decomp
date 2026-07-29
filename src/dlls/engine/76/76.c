@@ -2,6 +2,7 @@
  * DLL 76 / 0x4C.
  */
 #include "main/resource.h"
+#include "main/object_transform.h"
 #include "main/dll/dll_004C_camDebug.h"
 
 void CameraModeFixed_copyToCurrent(void)
@@ -25,7 +26,7 @@ void CameraModeFixed_init(CameraObject* camera, int unused, CameraObject* src)
         camera->anim.worldPosZ = src->anim.worldPosZ;
         Obj_TransformWorldPointToLocal(src->anim.worldPosX, src->anim.worldPosY, src->anim.worldPosZ,
                                        &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                       (u32)camera->anim.parent);
+                                       camera->anim.parent);
         camera->anim.rotX = src->anim.rotX;
         camera->anim.rotY = src->anim.rotY;
         camera->anim.rotZ = src->anim.rotZ;

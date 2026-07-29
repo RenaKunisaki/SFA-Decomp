@@ -12,6 +12,7 @@
  */
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 
 extern u8 lbl_80319168[];
 
@@ -74,5 +75,16 @@ u8 lbl_80319168[492] = {
     2,   0,   3,   0,   4,   0,   5,   0,   6,   0,   7,   0,   8,   0,   9,   0,   10,  0,   11,  0,   12,  0,   13,
     0,   14,  0,   15,  0,   16,  0,   17,  0,   18,  0,   19,  0,   20,  0,   0,   0,   0,   0,   5,   0,   30,  0,
     40,  0,   0,   0,   0,   0,   0,   0,   0};
-void* lbl_80319354[9] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000, dll_AA_func00_nop,
-                         dll_AA_func01_nop, (void*)0x00000000, dll_AA_func03,     (void*)0x00000000};
+ObjectDescriptor4WithPadding dll_AA_funcs = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+        (ObjectDescriptorCallback)dll_AA_func00_nop,
+        (ObjectDescriptorCallback)dll_AA_func01_nop,
+        0,
+        (ObjectDescriptorCallback)dll_AA_func03,
+    },
+    0,
+};

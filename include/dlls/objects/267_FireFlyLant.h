@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define FIREFLY_LANTERN_CHILD_CAPACITY 6
 #define FIREFLY_LANTERN_STATE_SIZE     0x24
@@ -52,7 +52,7 @@ STATIC_ASSERT(offsetof(FireFlyLanternState, pad22) == 0x22);
 STATIC_ASSERT(sizeof(FireFlyLanternState) == FIREFLY_LANTERN_STATE_SIZE);
 
 GameObject* FireFlyLantern_spawnFireFly(GameObject* obj);
-int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int FireFlyLantern_getExtraSize(void);
 int FireFlyLantern_getObjectTypeId(void);
 void FireFlyLantern_free(GameObject* obj);

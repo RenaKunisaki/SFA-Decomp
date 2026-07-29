@@ -264,7 +264,6 @@ static inline s16 varGetSigned(McmdVoiceState* state, u32 useExCtrl, u8 index)
     return (s16)varGet32(state, useExCtrl, index);
 }
 
-void varSet32(McmdVoiceState* state, u32 useExCtrl, u8 index, s32 value);
 
 static inline void varSet(McmdVoiceState* state, u8 useExCtrl, u8 index, s16 value)
 {
@@ -398,7 +397,6 @@ void mcmdSendMessage(McmdVoiceState* state, McmdCommandArgs* args)
     u32 targetInstrument;
     u8 i;
     McmdVoiceState* voiceState;
-    u32 targetVoice;
 
     value = mcmdVarGet32Legacy(state, 0, (args->value >> 8) & 0xff);
 
@@ -1405,7 +1403,6 @@ void TimeQueueAdd(McmdVoiceState* state)
 /*
  * Remove a voice from the time queue and clear its scheduled wake time.
  */
-void TimeQueueRemove(McmdVoiceState* sv, u32 disableUpdate);
 
 /*
  * Move a yielded voice back onto the active voice list.

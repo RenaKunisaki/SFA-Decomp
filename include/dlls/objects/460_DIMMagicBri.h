@@ -7,7 +7,7 @@
 
 #define DIM_MAGIC_BRIDGE_SEGMENT_COUNT 10
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 /* The sole active-target retail placement is a fixed 9-word (0x24-byte) record. */
 typedef struct DimMagicBridgePlacement {
@@ -55,7 +55,7 @@ STATIC_ASSERT(sizeof(DimMagicBridgeState) == 0x68);
 
 void dimmagicbridge_updateVertexWave(GameObject* obj, u8* stateBytes);
 void dimmagicbridge_scrollTextureChannels(int obj, u8* stateBytes);
-int dimmagicbridge_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dimmagicbridge_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dimmagicbridge_getExtraSize(void);
 int dimmagicbridge_getObjectTypeId(void);
 void dimmagicbridge_free(void);

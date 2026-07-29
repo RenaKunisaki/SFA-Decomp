@@ -52,7 +52,7 @@ GameObject* FireFlyLantern_spawnFireFly(GameObject* obj) {
     return loadObjectAtObject(obj, &setup->base);
 }
 
-int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     FireFlyLanternState* state;
     GameObject* child;
     int eventIndex;
@@ -158,7 +158,7 @@ void FireFlyLantern_init(GameObject* obj, FireFlyLanternPlacement* placement) {
     state = obj->extra;
     obj->animEventCallback = FireFlyLantern_SeqFn;
     player = Obj_GetPlayerObject();
-    if (player->anim.seqId != 0) {
+    if (player->anim.romDefNo != 0) {
         state->countGameBit = GAMEBIT_ITEM_Firefly_Count;
     } else {
         state->countGameBit = GAMEBIT_ITEM_FireflyNotShown_Count;

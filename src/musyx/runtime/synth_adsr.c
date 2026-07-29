@@ -92,7 +92,7 @@ int adsrAdvancePhase(ADSR_VARS* adsr)
                 {
                     idx = 0;
                 }
-                adsr->currentVolume = lbl_8032F618[idx] << 16;
+                adsr->currentVolume = voiceAdsrVolumeTable[idx] << 16;
                 adsr->currentDelta = 0;
                 break;
             }
@@ -219,7 +219,7 @@ u32 adsrHandle(ADSR_VARS* adsr, u16* out1, u16* out2)
                 {
                     idx = 0;
                 }
-                *(int*)&adsr->currentVolume = lbl_8032F618[idx] << 16;
+                *(int*)&adsr->currentVolume = voiceAdsrVolumeTable[idx] << 16;
             }
             outVal = v8 >> 16;
             *out1 = outVal;

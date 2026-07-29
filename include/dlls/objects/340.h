@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct CfPrisonCagePlacement {
     ObjPlacement base;
@@ -21,7 +21,7 @@ STATIC_ASSERT(offsetof(CfPrisonCagePlacement, pad1B) == 0x1B);
 STATIC_ASSERT(offsetof(CfPrisonCagePlacement, pad1C) == 0x1C);
 STATIC_ASSERT(sizeof(CfPrisonCagePlacement) == 0x28);
 
-int cfPrisonCage_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int cfPrisonCage_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int cfPrisonCage_getExtraSize(void);
 int cfPrisonCage_getObjectTypeId(GameObject* obj);
 void cfPrisonCage_free(void);

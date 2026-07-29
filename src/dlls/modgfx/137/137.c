@@ -12,6 +12,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
+#include "dlls/object_descriptor.h"
 
 u8 lbl_803DB908[8] = {0};
 
@@ -168,5 +169,13 @@ void dll_89_func00_nop(void)
 {
 }
 
-void* lbl_80316630[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_89_func00_nop, dll_89_func01_nop, (void*)0x00000000, dll_89_func03};
+ObjectDescriptor4 dll_89_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_89_func00_nop,
+    (ObjectDescriptorCallback)dll_89_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_89_func03,
+};

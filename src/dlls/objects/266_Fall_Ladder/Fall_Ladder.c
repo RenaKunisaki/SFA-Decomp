@@ -39,7 +39,7 @@
 #define FALL_LADDER_BOUNCE_DAMPING 0.3f
 #define FALL_LADDER_SETTLE_SPEED   0.01f
 
-int Fall_Ladders_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int Fall_Ladders_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     (void)obj;
     (void)unused;
     (void)animUpdate;
@@ -71,7 +71,7 @@ void Fall_Ladders_update(GameObject* obj) {
 
     placement = (FallLadderPlacement*)obj->anim.placementData;
     state = obj->extra;
-    if (obj->anim.seqId == FALL_LADDER_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == FALL_LADDER_SEQUENCE_ID) {
         if (mainGetBit(state->triggerGameBit) != 0 && mainGetBit(state->baseGameBit) == 0) {
             (*gObjectTriggerInterface)->runSequence(FALL_LADDER_TRIGGER_SEQUENCE, obj, FALL_LADDER_SEQUENCE_FLAGS);
         }

@@ -3,11 +3,11 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 extern ObjectDescriptor gNWSHLevelControlObjDescriptor;
 
-int nwshLevelControl_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjAnimUpdateState* animUpdate);
+int nwshLevelControl_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjSeqState* animUpdate);
 int nwshLevelControl_getExtraSize(void);
 int nwshLevelControl_getObjectTypeId(void);
 void nwshLevelControl_free(GameObject* unusedObj);

@@ -1,7 +1,7 @@
 /*
  * DragonRock Palace floor bar (DLL 0x22F; "DFP_floorbar") - a rising/
  * falling floor bar in the spell puzzle. It links to the puzzle
- * controller object (seqId 0x431) to read the per-mode required score
+ * controller object (romDefNo 0x431) to read the per-mode required score
  * table, lowers itself while sequence game bits are set, and raises when
  * the player stands in the correct scoring zone (matched against
  * requiredScore); a wrong zone trips game bit 0x5e5 to reset.
@@ -29,8 +29,8 @@ typedef struct DfpfloorbarPlacement
     s16 completionGameBit; /* 0x20 */
 } DfpfloorbarPlacement;
 
-/* anim.seqId of the puzzle controller object this bar links to (docblock:
- * "the puzzle controller object (seqId 0x431)"). */
+/* anim.romDefNo of the puzzle controller object this bar links to (docblock:
+ * "the puzzle controller object (romDefNo 0x431)"). */
 #define DFPFLOORBAR_CONTROLLER_SEQID 0x431
 
 int dfpfloorbar_SeqFn(void)
@@ -139,7 +139,7 @@ void DFP_Floorbar_update(GameObject* obj)
         idx = idx_init;
         for (; idx < count; idx++)
         {
-            if (((GameObject*)items[idx])->anim.seqId == DFPFLOORBAR_CONTROLLER_SEQID)
+            if (((GameObject*)items[idx])->anim.romDefNo == DFPFLOORBAR_CONTROLLER_SEQID)
             {
                 state->linkedObject = (int*)items[idx];
                 idx = count;

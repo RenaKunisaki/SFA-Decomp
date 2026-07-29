@@ -87,7 +87,7 @@ typedef struct SnowBikeState {
     s8 riderMode;              /* 0x421: rider mode */
     s8 routeRank;           /* 0x422: current checkpoint-route rank */
     u8 pad423;
-    f32 impactShakeTimer;   /* 0x424: accumulates timeDelta while grounded; drives doRumble + CameraShake_SetAllMagnitudes */
+    f32 impactShakeTimer;   /* 0x424: accumulates timeDelta while grounded; drives doRumble + CameraShake_SetOffset */
     union {
         u8 flags428;        /* 0x428: SnowBikeFlags overlay byte */
         SnowBikeRouteFlags routeFlags;

@@ -94,7 +94,7 @@ static inline void wctemplebri_deformVertex(ObjModel* model, ModelFileHeader* mo
         curr[0] = (s16)((f32)base[0] - 256.0f * mathSinf(3.1415927f * idx / 32768.0f));
 }
 
-int wctemplebri_SeqFn(GameObject* obj, int p2, ObjAnimUpdateState* animUpdate)
+int wctemplebri_SeqFn(GameObject* obj, int p2, ObjSeqState* animUpdate)
 {
     ObjAnimComponent* objAnim = &obj->anim;
     WCTempleBriSetup* setup = (WCTempleBriSetup*)obj->anim.placementData;
@@ -103,11 +103,11 @@ int wctemplebri_SeqFn(GameObject* obj, int p2, ObjAnimUpdateState* animUpdate)
     int i;
     WCTempleBriState* state = obj->extra;
 
-    animUpdate->sequenceEventActive = 0;
-    animUpdate->activeHitVolumePair &= ~WCTEMPLEBRI_PAYLOAD_BLOCK_FLAG;
-    animUpdate->hitVolumePair &= ~WCTEMPLEBRI_PAYLOAD_BLOCK_FLAG;
+    animUpdate->movementState = 0;
+    animUpdate->savedFlags &= ~WCTEMPLEBRI_PAYLOAD_BLOCK_FLAG;
+    animUpdate->flags &= ~WCTEMPLEBRI_PAYLOAD_BLOCK_FLAG;
     wctemplebri_updateModelWarp(obj, state);
-    if (animUpdate->triggerCommand == WCTEMPLEBRI_PAYLOAD_TRIGGER)
+    if (animUpdate->unk80 == WCTEMPLEBRI_PAYLOAD_TRIGGER)
     {
         state->active = 1;
     }
@@ -141,7 +141,7 @@ int wctemplebri_getExtraSize(void)
 
 int wctemplebri_getObjectTypeId(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     int modelIndex = ((WCTempleBriSetup*)obj->anim.placementData)->modelIndex;
     int modelCount = objAnim->modelInstance->modelCount;
 
@@ -223,7 +223,7 @@ void wctemplebri_update(GameObject* obj)
 
 void wctemplebri_init(GameObject* obj, WCTempleBriSetup* setup)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     WCTempleBriState* state;
     ObjModel* model;
     int i;

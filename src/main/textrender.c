@@ -69,11 +69,7 @@ extern CtrlCharEntry gGameTextCtrlCodeArgCounts[];
 
 extern u32 sSubtitleCtrlCmdScratch[];
 
-void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang);
 void translateToDinoLanguage(u8* str);
-void gameTextSetWindow(u8* textBox);
-int GameText_CountPrintableChars(u8* str);
-int GameText_FindControlCodeArgs(u8* str, u32 target, int* out);
 
 /*
  * The disc-error/loading screens' self-contained resources: the SJIS->glyph
@@ -693,7 +689,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
             u0 = lbl_803DE714 * -fx0 + u0;
             fx0 = lbl_803DE704;
         }
-        if (fy0 < *(f32*)&lbl_803DE704 && fy1 > lbl_803DE704)
+        if (fy0 < 0.0f && fy1 > lbl_803DE704)
         {
             v0 = lbl_803DE714 * -fy0 + v0;
             fy0 = lbl_803DE704;
@@ -911,7 +907,6 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
     int charLen;
     int n2;
     int i;
-    int cnt;
     u8* p;
     TextGlyph* g;
     u8* tbl;

@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /*
  * All 56 retail EN placements across the AreaFXEmit and TAreaFXEmit
@@ -75,7 +75,7 @@ STATIC_ASSERT(sizeof(AreaFXEmitState) == 0x20);
 
 void AreaFXEmit_emitBurst(GameObject* obj, int count);
 void AreaFXEmit_emitEffect(GameObject* obj);
-int AreaFXEmit_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int AreaFXEmit_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int AreaFXEmit_getExtraSize(void);
 int AreaFXEmit_getObjectTypeId(void);
 void AreaFXEmit_free(GameObject* obj);

@@ -14,6 +14,7 @@
 #include "main/dll/screenfx_types.h"
 #include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 
 extern u32 lbl_80317B98[];
 
@@ -236,6 +237,13 @@ void dll_9A_func00_nop(void)
 }
 
 u32 lbl_80317B98[8] = {0x000000e6, 0x07080000, 0x001f0000, 0xff1a0708, 0x001f001f, 0x00000000, 0x0000000f, 0x00100000};
-u32 lbl_80317BB8[8] = {
-    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_9A_func00_nop, (u32)dll_9A_func01_nop,
-    0x00000000, (u32)dll_9A_func03};
+ObjectDescriptor4 dll_9A_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_9A_func00_nop,
+    (ObjectDescriptorCallback)dll_9A_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_9A_func03,
+};

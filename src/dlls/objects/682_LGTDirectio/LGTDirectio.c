@@ -21,7 +21,7 @@
 #include "main/dll/LGT/dll_02AA_lgtdirectionallight.h"
 #include "main/object_render.h"
 
-const f32 lbl_802C2608[4] = {0.0f, 0.0f, 1.0f, 0.0f};
+const f32 gDirectionalLightInitialDirection[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 const f32 gDirectionalLightInitialFadeDuration = 0.0f;
 
 #define DIRECTIONALLIGHT_FLAG_USE_AMBIENT_COLOR 0x01
@@ -253,7 +253,7 @@ void directionallight_init(GameObject* obj, DirectionalLightSetup* setup)
     DirectionalLightSetup* setupData = setup;
     DirectionalLightState* state = (obj)->extra;
 
-    vec = *(Vec3f*)lbl_802C2608;
+    vec = *(Vec3f*)gDirectionalLightInitialDirection;
 
     (obj)->anim.rotX = (s16)(setupData->rotXByte << 8);
     (obj)->anim.rotY = (s16)(setupData->rotYByte << 8);

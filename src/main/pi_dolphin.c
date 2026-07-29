@@ -751,9 +751,6 @@ extern int gPendingDvdReadCount;
 extern volatile int gAssetLoadCompletedFlags;
 extern void* displayFrameBuffer;
 extern RingBufferQueue gVideoFlipQueue;
-void piRomLoadSection(int romOffset, int mapIndex, int destBuf);
-int GXFlush_(u8 visible, int unused);
-void waitNextFrame(void);
 
 
 void* mapLoadDataFile(int mapId, int fileId)
@@ -1944,6 +1941,8 @@ void* mapLoadDataFile(int mapId, int fileId)
             return result;
         }
         {
+            DVDFileInfo* fi;
+
             if (MLDF_ID(0x20) == mapId)
             {
                 slot = 0x20;

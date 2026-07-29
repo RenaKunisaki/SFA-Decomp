@@ -4,11 +4,9 @@
 #include "main/audio/sfx.h"
 #include "main/debug.h"
 #include "main/camera_interface.h"
-#include "main/dll/CAM/dll_0045_camTalk.h"
 #include "main/dll/CAM/viewfinder_state.h"
 #include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "dlls/objects/488_SB_Galleon.h"
-#include "main/dll/CAM/cambike_state.h"
 #include "main/dll/viewfinder.h"
 #include "main/gamebits.h"
 #include "main/mm.h"
@@ -24,7 +22,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
-#include "main/dll/dll_B8.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "string.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/dll/player_api.h"
@@ -83,7 +81,7 @@ void firstPersonPlaceCamera(GameObject* focus, int resetClamp)
     else
     {
         gViewfinderState->camPosX = self->anim.worldPosX;
-        gViewfinderState->camPosY = lbl_803E17C0 + self->anim.worldPosY;
+        gViewfinderState->camPosY = 35.0f + self->anim.worldPosY;
         gViewfinderState->camPosZ = self->anim.worldPosZ;
         gViewfinderState->clampedPosY = gViewfinderState->camPosY;
     }
@@ -94,7 +92,7 @@ void firstPersonPlaceCamera(GameObject* focus, int resetClamp)
         if (galleonState == 2)
         {
             localOffset[0] = self->anim.worldPosX - galleon->anim.worldPosX;
-            localOffset[1] = (lbl_803E17C0 + self->anim.worldPosY) - galleon->anim.worldPosY;
+            localOffset[1] = (35.0f + self->anim.worldPosY) - galleon->anim.worldPosY;
             localOffset[2] = self->anim.worldPosZ - galleon->anim.worldPosZ;
             vecRotateZXY(&galleon->anim.rotX, localOffset);
             gViewfinderState->camPosX = galleon->anim.worldPosX + localOffset[0];
@@ -109,7 +107,6 @@ void firstPersonExit(CameraObject* camera)
 {
     register CameraObject* self = camera;
     GameObject* target;
-    CameraModeBikeState* st;
     float tangent;
     float dx;
     float dz;
@@ -333,11 +330,11 @@ int firstPersonEnter(CameraObject* cam, s16* p2)
         {
             if (start < 0.0f)
             {
-                gViewfinderState->yawCurve.start += lbl_803E17D0;
+                gViewfinderState->yawCurve.start += 65535.0f;
             }
             else if (end < 0.0f)
             {
-                gViewfinderState->yawCurve.end += lbl_803E17D0;
+                gViewfinderState->yawCurve.end += 65535.0f;
             }
         }
         {
@@ -580,7 +577,7 @@ void CameraModeViewfinder_update(CameraObject* obj)
     logPrintf(sCam5BYDebugFormat, obj->anim.worldPosY);
     Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
                                    obj->anim.worldPosZ, &obj->anim.localPosX, &obj->anim.localPosY,
-                                   &obj->anim.localPosZ, (int)obj->anim.parent);
+                                   &obj->anim.localPosZ, obj->anim.parent);
 }
 
 void CameraModeViewfinder_init(CameraObject* obj, int mode, int* args)
@@ -678,11 +675,11 @@ void CameraModeViewfinder_init(CameraObject* obj, int mode, int* args)
     {
         if (gViewfinderState->yawCurve.start < 0.0f)
         {
-            gViewfinderState->yawCurve.start += lbl_803E17D0;
+            gViewfinderState->yawCurve.start += 65535.0f;
         }
         else if (gViewfinderState->yawCurve.end < 0.0f)
         {
-            gViewfinderState->yawCurve.end += lbl_803E17D0;
+            gViewfinderState->yawCurve.end += 65535.0f;
         }
     }
     gViewfinderState->pitchCurve.start = obj->anim.rotY;
@@ -717,7 +714,7 @@ void CameraModeViewfinder_initialise(void)
 {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319BF8 = {
+ResourceDescriptorCallbacks8 gCameraModeViewfinderDescriptor = {
     {0x00000000, 0x00000000, 0x00000000, 0x00060000},
     {(ResourceDescriptorCallback)CameraModeViewfinder_initialise,
      (ResourceDescriptorCallback)CameraModeViewfinder_release,

@@ -304,7 +304,7 @@ void andross_processPartHits(GameObject* obj, AndrossState* stateData)
         }
         case 3:
         {
-            if (((GameObject*)hitObj)->anim.seqId == ARW_ARWING_BOMB_OBJ)
+            if (((GameObject*)hitObj)->anim.romDefNo == ARW_ARWING_BOMB_OBJ)
             {
                 if (stateData->partHitTimer[ht] == 0 && stateData->partHealth[ht] != 0 && stateData->actionState == 0xc)
                 {
@@ -1805,7 +1805,7 @@ void andross_update(int obj)
                 if (state->spawnedObj != NULL)
                 {
                     state->spawnedObj->anim.alpha = 0xff;
-                    state->spawnedObj->anim.pad37[0] = 0xff;
+                    state->spawnedObj->anim.renderAlpha = 0xff;
                     state->spawnedObjLifetime = gAndrossSpawnedObjectLifetime;
                 }
             }

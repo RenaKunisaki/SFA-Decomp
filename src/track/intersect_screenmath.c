@@ -11,7 +11,6 @@ static const f32 gGxPi = 3.1415927f;
 extern int lbl_803DD03C;
 extern int lbl_803968C0[];
 
-void mtx44Identity(f32* mat);
 
 /* Queues a GXPeekZ read at (x,y) tagged by an opaque requestKey (callers pass
  * any unique value - object ptrs, loop indices, even a function address) and
@@ -76,46 +75,40 @@ void clearScreenWidth(void)
     screenWidth = 0;
 }
 
-void matrixFn_8006ff0c(float* mat, short* out, f32 fov, f32 aspect, f32 near, f32 far, f32 scale)
-{
+void mtx44Perspective(f32* matrix, u16* perspectiveNorm, f32 fovY, f32 aspect, f32 nearPlane, f32 farPlane,
+                      f32 scale) {
     f32 angle;
     f32 tan;
     int i;
 
-    mtx44Identity((f32*)mat);
+    mtx44Identity(matrix);
 
-    angle = (f32)(s32)(91.022f * fov) * gGxPi / 32768.0f;
+    angle = (f32)(s32)(91.022f * fovY) * gGxPi / 32768.0f;
     tan = mathCosf(angle) / mathSinf(angle);
-    mat[0] = tan / aspect;
-    mat[5] = tan;
-    mat[10] = -near / (far - near);
-    mat[11] = -1.0f;
-    mat[14] = -near * far / (far - near);
-    mat[15] = 0.0f;
+    matrix[0] = tan / aspect;
+    matrix[5] = tan;
+    matrix[10] = -nearPlane / (farPlane - nearPlane);
+    matrix[11] = -1.0f;
+    matrix[14] = -nearPlane * farPlane / (farPlane - nearPlane);
+    matrix[15] = 0.0f;
 
-    for (i = 0; i < 16; i++)
-    {
-        mat[i] *= scale;
+    for (i = 0; i < 16; i++) {
+        matrix[i] *= scale;
     }
 
-    if (out != NULL)
-    {
-        if ((f32)(near + far) <= 2.0f)
-        {
-            *(u16*)out = 0xFFFF;
-        }
-        else
-        {
-            *(s16*)out = (s16)(131072.0f / (near + far));
-            if (*(u16*)out == 0)
-            {
-                *out = 1;
+    if (perspectiveNorm != NULL) {
+        if ((f32)(nearPlane + farPlane) <= 2.0f) {
+            *perspectiveNorm = 0xFFFF;
+        } else {
+            *perspectiveNorm = (u16)(131072.0f / (nearPlane + farPlane));
+            if (*perspectiveNorm == 0) {
+                *perspectiveNorm = 1;
             }
         }
     }
-    gFogNearZ = __fabs(near);
-    gFogFarZ = __fabs(far);
-    C_MTXPerspective((void*)lbl_803968C0, fov, aspect, gFogNearZ, gFogFarZ);
+    gFogNearZ = __fabs(nearPlane);
+    gFogFarZ = __fabs(farPlane);
+    C_MTXPerspective((void*)lbl_803968C0, fovY, aspect, gFogNearZ, gFogFarZ);
     lbl_803DD03C = 0;
 }
 

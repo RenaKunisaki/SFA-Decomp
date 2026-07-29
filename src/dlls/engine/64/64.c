@@ -2,13 +2,14 @@
 #include "main/frame_timing.h"
 #include "main/textrender_api.h"
 #include "main/dll/dll_0040_credits.h"
+#include "dlls/object_descriptor.h"
 
 #define CREDITS_TEXTURE_ID 0xC5
 
-void* lbl_803DD974;
-u8 lbl_803DD970;
-void* lbl_803DD96C;
-f32 lbl_803DD968;
+void* gCreditsTexture;
+u8 gCreditsPageIndex;
+void* gCreditsText;
+f32 gCreditsElapsedTime;
 CreditsPage gCreditsPages[] = {
     {
         {
@@ -143,23 +144,23 @@ int Credits_frameStart(void)
     u8 alpha;
     int off[1];
 
-    idx = lbl_803DD970;
+    idx = gCreditsPageIndex;
     if (idx < 10)
     {
-        elapsed = lbl_803DD968 + timeDelta;
-        lbl_803DD968 = elapsed;
+        elapsed = gCreditsElapsedTime + timeDelta;
+        gCreditsElapsedTime = elapsed;
         if (elapsed >= gCreditsPages[idx].endTime)
         {
-            lbl_803DD970 = idx + 1;
+            gCreditsPageIndex = idx + 1;
         }
-        if (lbl_803DD970 < 10)
+        if (gCreditsPageIndex < 10)
         {
             i = 0;
             off[0] = 0;
-            cur = *(f32*)&lbl_803DD968;
-            for (; i < gCreditsPages[lbl_803DD970].count; off[0] += 16, i++)
+            cur = *(f32*)&gCreditsElapsedTime;
+            for (; i < gCreditsPages[gCreditsPageIndex].count; off[0] += 16, i++)
             {
-                line = (CreditsLine*)((char*)gCreditsPages[lbl_803DD970].lines + off[0]);
+                line = (CreditsLine*)((char*)gCreditsPages[gCreditsPageIndex].lines + off[0]);
                 if (cur < line->t0)
                 {
                     alpha = 0;
@@ -199,7 +200,7 @@ int Credits_frameStart(void)
                     alpha = 0;
                 }
                 line->alpha = alpha;
-                if (cur >= line->t0 && cur <= line->t3 && cur >= gCreditsPages[lbl_803DD970].scrollStartTime)
+                if (cur >= line->t0 && cur <= line->t3 && cur >= gCreditsPages[gCreditsPageIndex].scrollStartTime)
                 {
                     line->y = 8.0f * (timeDelta / 60.0f) + line->y;
                 }
@@ -211,17 +212,26 @@ int Credits_frameStart(void)
 
 void Credits_release(void)
 {
-    textureFree((Texture*)(lbl_803DD974));
+    textureFree((Texture*)(gCreditsTexture));
 }
 
 void Credits_initialise(void)
 {
-    lbl_803DD974 = textureLoadAsset(CREDITS_TEXTURE_ID);
-    lbl_803DD96C = gameTextGet(0x1FD);
-    lbl_803DD970 = 0;
-    lbl_803DD968 = 0.0f;
+    gCreditsTexture = textureLoadAsset(CREDITS_TEXTURE_ID);
+    gCreditsText = gameTextGet(0x1FD);
+    gCreditsPageIndex = 0;
+    gCreditsElapsedTime = 0.0f;
 }
 
-void* lbl_8031CC10[10] = {(void*)0x00000000,  (void*)0x00000000, (void*)0x00000000, (void*)0x00050000,
-                          Credits_initialise, Credits_release,   (void*)0x00000000, Credits_frameStart,
-                          Credits_frameEnd,   Credits_render};
+ObjectDescriptor6 gCreditsDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_6_SLOTS,
+    (ObjectDescriptorCallback)Credits_initialise,
+    (ObjectDescriptorCallback)Credits_release,
+    0,
+    (ObjectDescriptorCallback)Credits_frameStart,
+    (ObjectDescriptorCallback)Credits_frameEnd,
+    (ObjectDescriptorCallback)Credits_render,
+};

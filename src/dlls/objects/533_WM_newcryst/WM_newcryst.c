@@ -25,7 +25,7 @@ enum
     WMNEWCRYSTAL_EVENT_STOP_GREEN_BURSTS = 2
 };
 
-int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     WmNewCrystalState* state;
     WmNewCrystalParticleParams params;
@@ -38,7 +38,7 @@ int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
         switch (animUpdate->eventIds[i])
         {
         case WMNEWCRYSTAL_EVENT_DETONATE:
-            PSVECSubtract(&Camera_GetCurrentViewSlot()->position, &obj->anim.localPos, &cameraDelta);
+            PSVECSubtract(&Camera_GetCurrent()->position, &obj->anim.localPos, &cameraDelta);
             PSVECNormalize(&cameraDelta, &cameraDelta);
             PSVECScale(&cameraDelta, &cameraDelta, 100.0f);
             PSVECAdd(&obj->anim.localPos, &cameraDelta, &obj->anim.localPos);
@@ -47,7 +47,7 @@ int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
             obj->anim.worldPosZ = obj->anim.localPosZ;
             spawnExplosion(obj, 100.0f, 1, 1, 0, 0, 0, 0, 0);
             obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
-            if (obj->anim.seqId == WMNEWCRYSTAL_OBJECT_BLUE)
+            if (obj->anim.romDefNo == WMNEWCRYSTAL_OBJECT_BLUE)
             {
                 mainSetBits(WMNEWCRYSTAL_GAMEBIT_ACTIVE, 0);
             }
@@ -63,7 +63,7 @@ int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
         return 0;
     }
 
-    if (obj->anim.seqId == WMNEWCRYSTAL_OBJECT_BLUE)
+    if (obj->anim.romDefNo == WMNEWCRYSTAL_OBJECT_BLUE)
     {
         if (mainGetBit(WMNEWCRYSTAL_GAMEBIT_AMBIENT_FX) == 0)
         {
@@ -73,7 +73,7 @@ int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpd
         objfx_spawnCrystalOrbitEffects(obj, state->fxState, 640.0f, 36.0f, -60.0f, 5.0f, 100.0f, 1);
         objfx_spawnCrystalOrbitEffects(obj, state->secondaryFxState, 640.0f, 36.0f, 60.0f, 5.0f, 0.0f, 1);
     }
-    else if (obj->anim.seqId == WMNEWCRYSTAL_OBJECT_GREEN && state->greenBurstsActive != 0)
+    else if (obj->anim.romDefNo == WMNEWCRYSTAL_OBJECT_GREEN && state->greenBurstsActive != 0)
     {
         ObjPath_GetPointLocalPosition((GameObject*)obj, 0, &params.x, &params.y, &params.z);
         params.x *= obj->anim.rootMotionScale;

@@ -18,7 +18,7 @@
 s16 gBoneParticleEffectTimer;
 s32 gBoneParticleScrollOffset;
 s16 gBoneParticleStageIndex;
-s32 lbl_803DD2B0;
+s32 gBoneParticleJointIndex;
 f32 gBoneParticleDrift;
 void* gBoneParticleTextureB;
 void* gBoneParticleTextureA;
@@ -90,7 +90,6 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
     void** grp;
     void** grp2;
     int slot;
-    s32 idx;
     f32 k2002;
     f32 one;
     f32 zero;
@@ -111,9 +110,9 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
     {
         gBoneParticleStageIndex = 0;
     }
-    if (lbl_803DD2B0 > model->file->jointCount - 1)
+    if (gBoneParticleJointIndex > model->file->jointCount - 1)
     {
-        lbl_803DD2B0 = 0;
+        gBoneParticleJointIndex = 0;
     }
     gBoneParticleScrollOffset = gBoneParticleScrollOffset + framesThisStep;
     if (gBoneParticleScrollOffset > 0x1f)

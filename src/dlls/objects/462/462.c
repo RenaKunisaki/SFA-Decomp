@@ -79,7 +79,7 @@ void dll_1CE_update(GameObject* obj) {
             }
         }
     }
-    if (obj->anim.seqId == DLL1CE_SEQUENCE_ID_DIM_HUT_DOOR) {
+    if (obj->anim.romDefNo == DLL1CE_SEQUENCE_ID_DIM_HUT_DOOR) {
         return;
     }
     {
@@ -96,8 +96,8 @@ void dll_1CE_update(GameObject* obj) {
             GameObject* contact =
                 *(GameObject**)((u8*)contactState + contactOffset + offsetof(ObjHitboxTransformState, contactObjects));
 
-            if (contact->anim.seqId == DLL1CE_KEY_SEQUENCE_ID_DIM_SNOW_HORN ||
-                contact->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+            if (contact->anim.romDefNo == DLL1CE_KEY_SEQUENCE_ID_DIM_SNOW_HORN ||
+                contact->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
                 keyFound = 1;
                 break;
             }

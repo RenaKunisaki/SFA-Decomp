@@ -679,7 +679,7 @@ int audioInit(void)
     SalHooks hooks;
     int reverbWork;
     int delay;
-    int v;
+    int group;
 
     hooks = gAudioMemHooks;
     if (!gAudioInitStarted)
@@ -787,12 +787,12 @@ int audioInit(void)
         (gAudioCompletedLoadFlags & AUDIO_LOAD_S_PROJECT) && (gAudioCompletedLoadFlags & AUDIO_LOAD_S_POOL) &&
         (gAudioCompletedLoadFlags & AUDIO_LOAD_S_SAMPLE_DIR) && (gAudioCompletedLoadFlags & AUDIO_LOAD_S_SAMPLE_BUF))
     {
-        for (v = 1; v <= 0x37; v++)
+        for (group = 1; group <= 0x37; group++)
         {
-            if (sndPushGroup(gAudioStarfoxSProjectDataHandle, v, gAudioStarfoxSSampleBufferHandle,
+            if (sndPushGroup(gAudioStarfoxSProjectDataHandle, group, gAudioStarfoxSSampleBufferHandle,
                              gAudioStarfoxSSampleDirectoryHandle, gAudioStarfoxSPoolDataHandle) == 0)
             {
-                OSReport(base + 0x2c8, v);
+                OSReport(base + 0x2c8, group);
             }
         }
         delay = mmSetFreeDelay(0);
@@ -868,7 +868,7 @@ void Music_PlayTrackByIndex(int index)
 {
     MusicTrigger* trigger = Music_FindTriggerById(MUSICTRIG_dark_ice_boss_1_ec);
     Music_StopChannelsByPriorityGroup(3, MUSIC_CHANNEL_STOP_DEFAULT, 0);
-    trigger->track = *(s16*)((u8*)sMusicTrackTable + (index << 4));
+    trigger->track = sMusicTrackTable[index].id;
     Music_Trigger(MUSICTRIG_dark_ice_boss_1_ec, 1);
 }
 
@@ -920,7 +920,7 @@ void Music_StopChannelsByPriorityGroup(int priorityGroupMask, MusicChannelStopMo
                     }
                     else
                     {
-                        sndSeqVolume(0, (u16)(fadeTime < 500 ? 500 : fadeTime), ch->seqHandle, 1);
+                        sndSeqVolume(0, (fadeTime < 500 ? 500 : fadeTime), ch->seqHandle, 1);
                         ch->status = 2;
                     }
                 }
@@ -968,7 +968,7 @@ void Music_Trigger(int id, int arg)
         {
             return;
         }
-        sndSeqVolume((u8)channel->volume, trigger->fadeTime, channel->seqHandle, 0);
+        sndSeqVolume(channel->volume, trigger->fadeTime, channel->seqHandle, 0);
     }
     else if (channel != NULL)
     {
@@ -984,7 +984,7 @@ void Music_Trigger(int id, int arg)
             channel->status = 5;
             return;
         }
-        sndSeqVolume(0, (u16)(i < 0x1f4 ? 0x1f4 : i), channel->seqHandle, 1);
+        sndSeqVolume(0, (i < 0x1f4 ? 0x1f4 : i), channel->seqHandle, 1);
         channel->status = 2;
     }
 }
@@ -1150,7 +1150,7 @@ void Music_Update(void)
                         else
                         {
                             sndSeqVolume(
-                                0, (u16)(activeVol < 0x1f4 ? 0x1f4 : activeVol), ch->seqHandle, 1);
+                                0, (activeVol < 0x1f4 ? 0x1f4 : activeVol), ch->seqHandle, 1);
                             ch->status = 2;
                         }
                     }
@@ -1160,8 +1160,8 @@ void Music_Update(void)
                     if (ch->status != 3)
                     {
                         sndSeqVolume(
-                            0, (u16)(activeVol < 0x1f4 ? 0x1f4 : activeVol), ch->seqHandle,
-                            (u8)(ch->priorityGroup != 0 ? 0 : 2));
+                            0, (activeVol < 0x1f4 ? 0x1f4 : activeVol), ch->seqHandle,
+                            (ch->priorityGroup != 0 ? 0 : 2));
                         ch->status = 3;
                     }
                 }
@@ -1172,7 +1172,7 @@ void Music_Update(void)
                         sndSeqMute(ch->seqHandle, -1, -1);
                         sndSeqContinue(ch->seqHandle);
                         sndSeqVolume(
-                            (u8)ch->volume, (u16)(s2VolA < 0x1f4 ? 0x1f4 : s2VolA),
+                            ch->volume, (s2VolA < 0x1f4 ? 0x1f4 : s2VolA),
                             ch->seqHandle, 0);
                         ch->status = 1;
                     }
@@ -1191,7 +1191,7 @@ void Music_Update(void)
                         else
                         {
                             sndSeqVolume(
-                                0, (u16)(lowVol < 0x1f4 ? 0x1f4 : lowVol), ch->seqHandle, 1);
+                                0, (lowVol < 0x1f4 ? 0x1f4 : lowVol), ch->seqHandle, 1);
                             ch->status = 2;
                         }
                     }
@@ -1201,8 +1201,8 @@ void Music_Update(void)
                     if (ch->status != 3)
                     {
                         sndSeqVolume(
-                            0, (u16)(lowVol < 0x1f4 ? 0x1f4 : lowVol), ch->seqHandle,
-                            (u8)(ch->priorityGroup != 0 ? 0 : 2));
+                            0, (lowVol < 0x1f4 ? 0x1f4 : lowVol), ch->seqHandle,
+                            (ch->priorityGroup != 0 ? 0 : 2));
                         ch->status = 3;
                     }
                 }
@@ -1213,7 +1213,7 @@ void Music_Update(void)
                         sndSeqMute(ch->seqHandle, -1, -1);
                         sndSeqContinue(ch->seqHandle);
                         sndSeqVolume(
-                            (u8)ch->volume, (u16)(s2VolB < 0x1f4 ? 0x1f4 : s2VolB),
+                            ch->volume, (s2VolB < 0x1f4 ? 0x1f4 : s2VolB),
                             ch->seqHandle, 0);
                         ch->status = 1;
                     }
@@ -1232,9 +1232,10 @@ s32 Music_GetActivePriority(void)
 
 u8 musicInitMidiWad(void)
 {
-    int track, j;
+    int track;
     MusicChannel* ch;
     MusicTrackSlot* table;
+    int j;
     MusicTrackSlot* found;
     u32 size;
     int arenaOffset;

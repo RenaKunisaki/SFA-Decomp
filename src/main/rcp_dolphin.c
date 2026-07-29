@@ -40,11 +40,6 @@ u8 gRcpWarpDistortListBuilt;
 
 GXColor gRcpDistortAmbColor = {0, 0, 0, 0};
 GXColor gRcpDistortMatColor = {0xff, 0xff, 0xff, 0xff};
-typedef struct F32Pair
-{
-    f32 lo;
-    f32 hi;
-} F32Pair;
 extern u8 gRcpWarpDistortListBuilt;
 extern u32 gRcpWarpDistortListSize;
 typedef struct RcpDistortSlot
@@ -73,7 +68,6 @@ extern void* gRcpDistortTexture;
 extern u8 gRcpDistortGroup;
 static const f32 gRcpScreenWidth = 640.0f;
 static const f32 gRcpScreenHeight = 480.0f;
-void* textureLoadAsset(int asset);
 void* textureAlloc(u16 w, u16 h, int fmt, u8 mip, u8 maxLod, u8 wrapS, u8 wrapT, u8 minFilter, u8 magFilter);
 static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** lights);
 
@@ -99,8 +93,6 @@ static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** ligh
 }
 
 void addVertexColorKAlphaStage(GXColor* param);
-void Rcp_ApplyTextureStageCounts(void);
-void Rcp_ResetTextureStageState(void);
 int Rcp_SetupDistortionLights(int model, f32* params);
 static const f32 gRcpDistortScaleA[1] = {2.146452f};
 static const f32 gRcpDistortPowExp[1] = {2.520326f};
@@ -250,14 +242,13 @@ void Rcp_UpdateDistortionTextures(void)
     union
     {
         Mtx m;
-        f64 a8;
     } mtxu;
 #define mtx mtxu.m
     ModelLightStruct* lights[8];
     GXColor outColor;
     GXColor texColor;
     GXColor matColor;
-    u8* e;
+    RcpDistortSlot* e;
     u8* slots[1];
     int i;
     int clearSlot;
@@ -309,16 +300,16 @@ void Rcp_UpdateDistortionTextures(void)
     GXSetChanMatColor(GX_COLOR0, gRcpDistortMatColor);
     clearSlot = 5;
     k = 5;
-    e = (u8*)gRcpDistortSlots + 0x8c;
+    e = &gRcpDistortSlots[5];
     group = gRcpDistortGroup;
     for (; k >= 0; k--)
     {
-        if (*(u16*)(*(u8**)e + 0xe) != 0 && e[0x1b] == 0 && group == e[0x1a])
+        if (((Texture*)e->texture)->refCount != 0 && e->mode == 0 && group == e->group)
         {
             clearSlot = k;
             break;
         }
-        e -= 0x1c;
+        e--;
     }
     i = 0;
     for (; i < 6; i++)

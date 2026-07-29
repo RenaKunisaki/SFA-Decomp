@@ -7,7 +7,7 @@
 #include "main/dll/curve_walker.h"
 #include "main/objprint_sound_api.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "global.h"
 #include "game/objects/object_setup.h"
 
@@ -65,30 +65,7 @@ STATIC_ASSERT(offsetof(BossDrakorState, soundState) == 0x130);
 STATIC_ASSERT(sizeof(BossDrakorState) == 0x1a4);
 
 extern f32 lbl_803E6510;
-extern f32 lbl_803E6514;
-extern f32 lbl_803E6518;
-extern f32 lbl_803E651C;
-extern f32 lbl_803E6520;
 extern f32 gBossDrakorDegToAngle;
-extern f32 lbl_803E6534;
-extern f32 lbl_803E6538;
-extern f32 lbl_803E653C;
-extern f32 lbl_803E6540;
-extern f32 lbl_803E6544;
-extern f32 lbl_803E6548;
-extern f32 lbl_803E654C;
-extern f32 lbl_803E6550;
-extern f32 lbl_803E6554;
-extern f32 lbl_803E6558;
-extern f32 lbl_803E655C;
-extern f32 lbl_803E6560;
-extern f32 lbl_803E6564;
-extern f32 lbl_803E6568;
-extern f32 lbl_803E656C;
-extern f32 lbl_803E6570;
-extern f32 lbl_803E6574;
-extern f32 lbl_803E6578;
-extern f32 lbl_803E657C;
 
 extern f32 lbl_803DC188;
 extern f32 lbl_803DC18C;
@@ -124,7 +101,7 @@ int bossdrakor_getExtraSize(void);
 void bossdrakor_update(GameObject* obj);
 void bossdrakor_free(GameObject* obj);
 void bossdrakor_hitDetect(GameObject* obj);
-int bossdrakor_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void bossdrakor_handleActionEvent(GameObject* obj, BossDrakorState* state, int action);
 void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state);
 int bossdrakor_chooseNextMove(GameObject* obj, f32* speedOut);

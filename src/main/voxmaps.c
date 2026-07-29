@@ -3,6 +3,7 @@
 #include "main/lightmap_api.h"
 #include "main/model_engine.h"
 #include "main/mm.h"
+#include "main/object_transform.h"
 #include "main/pi_dolphin.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/shader_api.h"
@@ -70,7 +71,7 @@ static inline int voxmaps_findRouteNode(RouteState* state, s16* box, int* flagOu
     return -1;
 }
 
-void voxmapsFn_80010ff4(struct RouteState* state, VoxBoxArg* srcBox, int parentNodeIndex, u16 count, s16* box)
+void voxmaps_visitRouteNeighbor(struct RouteState* state, VoxBoxArg* srcBox, int parentNodeIndex, u16 count, s16* box)
 {
     int foundIdx;
     int savedFlag;
@@ -381,17 +382,17 @@ void voxmaps_expandRouteNeighbors(RouteState* state, VoxBoxArg* box, int parentN
     neighbor[1] = box->y;
     neighbor[2] = box->z;
     neighbor[0] += 2;
-    voxmapsFn_80010ff4(state, box, parentNodeIndex, nextCost, neighbor);
+    voxmaps_visitRouteNeighbor(state, box, parentNodeIndex, nextCost, neighbor);
     neighbor[0] -= 4;
     neighbor[1] = box->y;
-    voxmapsFn_80010ff4(state, box, parentNodeIndex, nextCost, neighbor);
+    voxmaps_visitRouteNeighbor(state, box, parentNodeIndex, nextCost, neighbor);
     neighbor[0] += 2;
     neighbor[2] += 2;
     neighbor[1] = box->y;
-    voxmapsFn_80010ff4(state, box, parentNodeIndex, nextCost, neighbor);
+    voxmaps_visitRouteNeighbor(state, box, parentNodeIndex, nextCost, neighbor);
     neighbor[2] -= 4;
     neighbor[1] = box->y;
-    voxmapsFn_80010ff4(state, box, parentNodeIndex, nextCost, neighbor);
+    voxmaps_visitRouteNeighbor(state, box, parentNodeIndex, nextCost, neighbor);
 }
 
 int voxmaps_traceTraversableRoute(s16* dest, s16* start, s16* lastReachableOut)
@@ -668,7 +669,7 @@ int voxmaps_buildRouteWaypoints(RouteState* state, int maxPathPoints)
                 if (gVoxMapsTransformObj != 0)
                 {
                     Obj_TransformLocalPointToWorld(waypoint[0], waypoint[1], waypoint[2], &waypoint[0], &waypoint[1], &waypoint[2],
-                                                   gVoxMapsTransformObj);
+                                                   (GameObject*)gVoxMapsTransformObj);
                 }
                 state->pathPoints[pathCount * 3 + 0] = (f32)((int)waypoint[0] + 5);
                 state->pathPoints[pathCount * 3 + 1] = (f32)(int)waypoint[1];
@@ -695,7 +696,7 @@ int voxmaps_buildRouteWaypoints(RouteState* state, int maxPathPoints)
         if (gVoxMapsTransformObj != 0)
         {
             Obj_TransformLocalPointToWorld(waypoint[0], waypoint[1], waypoint[2], &waypoint[0], &waypoint[1], &waypoint[2],
-                                           gVoxMapsTransformObj);
+                                           (GameObject*)gVoxMapsTransformObj);
         }
         state->pathPoints[pathCount * 3 + 0] = (f32)((int)waypoint[0] + 5);
         state->pathPoints[pathCount * 3 + 1] = (f32)(int)waypoint[1];
@@ -1123,7 +1124,7 @@ void voxmaps_worldToGrid(f32* in, s16* out)
     sz = in[2];
     if (gVoxMapsTransformObj != 0)
     {
-        Obj_TransformWorldPointToLocal(sx, sy, sz, &sx, &sy, &sz, gVoxMapsTransformObj);
+        Obj_TransformWorldPointToLocal(sx, sy, sz, &sx, &sy, &sz, (GameObject*)gVoxMapsTransformObj);
     }
     ix = sx;
     iy = sy;
@@ -1156,7 +1157,8 @@ void voxmaps_gridToWorld(f32* out, s16* grid)
     out[2] = v;
     if (gVoxMapsTransformObj != 0)
     {
-        Obj_TransformLocalPointToWorld(out[0], out[1], out[2], out, &out[1], &out[2], gVoxMapsTransformObj);
+        Obj_TransformLocalPointToWorld(out[0], out[1], out[2], out, &out[1], &out[2],
+                                       (GameObject*)gVoxMapsTransformObj);
     }
 }
 /* Rank the occupancy bitmap: count set bits in the (ySlot) row up to the cell at
@@ -1243,7 +1245,8 @@ int* voxmaps_updateActiveMap(VoxPos* obj)
     }
     if (blockId != -1)
     {
-        for (slot = 0, foundSlot = -1; slot < VOXMAP_SLOT_COUNT; slot++)
+        foundSlot = -1;
+        for (slot = 0; slot < VOXMAP_SLOT_COUNT; slot++)
         {
             if (blockId == vm->blockId[slot])
             {

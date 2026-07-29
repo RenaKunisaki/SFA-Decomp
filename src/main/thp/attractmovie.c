@@ -1,6 +1,6 @@
 /*
  * attractmovie (DLL 0x44) - THP video playback for the attract / title-screen
- * demo movie.  The player singleton (lbl_803A5D60) is populated by
+ * demo movie.  The player singleton (gAttractMoviePlayer) is populated by
  * AttractMovie_OpenFile (not in this TU).  This TU owns the three exported
  * entry-points called by the front-end after the file is opened:
  *   AttractMovie_AssignBuffers - hand caller-allocated read, texture and audio
@@ -23,7 +23,7 @@ int AttractMovie_AssignBuffers(void* movieOrReadBuffer, void* yTextureBuffer, vo
     u32 uvTextureSize;
     u32 i;
 
-    player = &lbl_803A5D60;
+    player = &gAttractMoviePlayer;
     if (player->isOpen != 0 && player->state == 0)
     {
         if (player->isOnMemory != 0)
@@ -42,7 +42,7 @@ int AttractMovie_AssignBuffers(void* movieOrReadBuffer, void* yTextureBuffer, vo
             }
         }
 
-        player = &lbl_803A5D60;
+        player = &gAttractMoviePlayer;
         yTextureSize = ALIGN_NEXT_32(player->videoInfo.xSize * player->videoInfo.ySize);
         uvTextureSize = ALIGN_NEXT_32((player->videoInfo.xSize * player->videoInfo.ySize) >> 2);
         for (i = 0; i < 3; i++)
@@ -56,7 +56,7 @@ int AttractMovie_AssignBuffers(void* movieOrReadBuffer, void* yTextureBuffer, vo
             curr += uvTextureSize;
         }
 
-        player = &lbl_803A5D60;
+        player = &gAttractMoviePlayer;
         if (player->audioExists != 0)
         {
             player->audioBuffer[0].buffer = audioBuffer;
@@ -75,7 +75,7 @@ int AttractMovie_AssignBuffers(void* movieOrReadBuffer, void* yTextureBuffer, vo
             }
         }
 
-        lbl_803A5D60.thpWorkArea = thpWorkBuffer;
+        gAttractMoviePlayer.thpWorkArea = thpWorkBuffer;
         return 1;
     }
     return 0;
@@ -88,7 +88,7 @@ void AttractMovie_GetBufferSizes(u32* movieOrReadBufferSize, int* yTextureBuffer
     u32 movieOrReadSize;
     int size;
 
-    player = &lbl_803A5D60;
+    player = &gAttractMoviePlayer;
     if (player->isOpen != 0)
     {
         if (player->isOnMemory != 0)
@@ -100,7 +100,7 @@ void AttractMovie_GetBufferSizes(u32* movieOrReadBufferSize, int* yTextureBuffer
             movieOrReadSize = ALIGN_NEXT_32(player->header.mBufferSize) * 10;
         }
         *movieOrReadBufferSize = movieOrReadSize;
-        player = &lbl_803A5D60;
+        player = &gAttractMoviePlayer;
         *yTextureBufferSize = ALIGN_NEXT_32(player->videoInfo.xSize * player->videoInfo.ySize) * 3;
         *uTextureBufferSize = ALIGN_NEXT_32((u32)(player->videoInfo.xSize * player->videoInfo.ySize) >> 2) * 3;
         *vTextureBufferSize = ALIGN_NEXT_32((u32)(player->videoInfo.xSize * player->videoInfo.ySize) >> 2) * 3;
@@ -129,7 +129,7 @@ int AttractMovie_CloseFile(void)
 {
     AttractMoviePlayer* player;
 
-    player = &lbl_803A5D60;
+    player = &gAttractMoviePlayer;
     if ((player->isOpen != 0) && (player->state == 0))
     {
         player->isOpen = 0;

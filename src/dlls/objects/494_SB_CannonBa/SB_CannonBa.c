@@ -96,7 +96,7 @@ void SB_CannonBall_hitDetect(GameObject* obj) {
         if (target == NULL) {
             return;
         }
-        objectType = target->anim.seqId;
+        objectType = target->anim.romDefNo;
         if (objectType == SB_CLOUDBALL_ALIAS_OBJECT_TYPE) {
             return;
         }

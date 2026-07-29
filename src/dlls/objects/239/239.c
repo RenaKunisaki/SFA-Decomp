@@ -17,13 +17,12 @@
 #include "main/model.h"
 #include "main/obj_group.h"
 #include "main/obj_message.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/object_transform.h"
 #include "main/object_update_list.h"
 #include "main/objhits.h"
 #include "main/objprint_api.h"
-#include "main/objseq.h"
 #include "main/objtexture.h"
 #include "main/resource.h"
 #include "main/track_bbox_api.h"
@@ -173,8 +172,8 @@ STATIC_ASSERT(offsetof(PushableCollisionProbe, unk2C) == 0x2C);
 STATIC_ASSERT(offsetof(PushableCollisionProbe, pad2E) == 0x2E);
 STATIC_ASSERT(sizeof(PushableCollisionProbe) == 0x30);
 
-int gPushableSavedMapIdCount;
-int gPushableSavedMapIds[0x28];
+int gPushableSavedIdentCount;
+int gPushableSavedIdents[0x28];
 
 ObjectDescriptor14 gPushableObjDescriptor = {
     0,                                                  /* reserved0 */
@@ -240,7 +239,7 @@ int pushable_updateCurtain(int obj, PushableState* state) {
 void pushable_initWcPushBlock(GameObject* obj, PushableState* state) {
     PushableObjectDef* placement = (PushableObjectDef*)obj->anim.placementData;
 
-    switch (placement->base.mapId) {
+    switch (placement->base.ident) {
     case PUSHABLE_WC_MAP_ID_HIT_10:
         state->requiredHitId = 10;
         break;
@@ -477,7 +476,7 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
                         state->flags |= PUSHABLE_FLAG_RESTORED;
                         gameBit = placement->gameBit;
                         if (gameBit > PUSHABLE_NO_GAME_BIT) {
-                            switch (obj->anim.seqId) {
+                            switch (obj->anim.romDefNo) {
                             case PUSHABLE_SEQ_ID_MAGIC_GEM_411:
                             case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
                                 break;
@@ -551,7 +550,7 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
     memcpy(state->cornerWorld, worldPoints, state->pointCount * sizeof(Vec3f));
 }
 
-u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjAnimUpdateState* animUpdate) {
+u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjSeqState* animUpdate) {
     u32 gameBitValue;
     GameObject* player;
     PushableState* state;
@@ -565,7 +564,7 @@ u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjAnimUpdateState*
     if (obj->seqIndex != -1) {
         (*gCameraInterface)->setTargetReticleOverride((int)obj);
     }
-    animUpdate->activeHitVolumePair = -1;
+    animUpdate->savedFlags = -1;
     if ((s8)animUpdate->movementState != 0) {
         if ((s8)animUpdate->movementState != 2) {
             animUpdate->posOffsetScale = PUSHABLE_UNIT_SCALE;
@@ -603,7 +602,7 @@ u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjAnimUpdateState*
     if (obj->userData2 == 0) {
         obj->userData2 = PUSHABLE_SEQUENCE_DEFAULT_USERDATA;
     }
-    if ((obj->anim.seqId == PUSHABLE_SEQ_ID_MAGIC_GEM_21E) || (obj->anim.seqId == PUSHABLE_SEQ_ID_MAGIC_GEM_411)) {
+    if ((obj->anim.romDefNo == PUSHABLE_SEQ_ID_MAGIC_GEM_21E) || (obj->anim.romDefNo == PUSHABLE_SEQ_ID_MAGIC_GEM_411)) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         if ((0 < obj->anim.hitboxTransformState->contactObjectCount) &&
             ((((GameObject*)obj->anim.hitboxTransformState->contactObjects[0])->anim.classId ==
@@ -645,16 +644,16 @@ void pushable_handleMsgs(GameObject* obj, int unused) {
             state->msgSenderObj = messageSender;
             break;
         case PUSHABLE_MSG_FREE:
-            if ((obj->anim.seqId != PUSHABLE_SEQ_ID_MAGIC_GEM_21E) &&
-                (obj->anim.seqId != PUSHABLE_SEQ_ID_MAGIC_GEM_411)) {
+            if ((obj->anim.romDefNo != PUSHABLE_SEQ_ID_MAGIC_GEM_21E) &&
+                (obj->anim.romDefNo != PUSHABLE_SEQ_ID_MAGIC_GEM_411)) {
                 Obj_FreeObject(obj);
             }
             break;
         case PUSHABLE_MSG_MAGIC_GEM_DISTANCE:
-            if (obj->anim.seqId == PUSHABLE_SEQ_ID_MAGIC_GEM_21E) {
+            if (obj->anim.romDefNo == PUSHABLE_SEQ_ID_MAGIC_GEM_21E) {
                 state->magicGemDistanceThreshold = *(f32*)messageParam;
             }
-            if (obj->anim.seqId == PUSHABLE_SEQ_ID_MAGIC_GEM_411) {
+            if (obj->anim.romDefNo == PUSHABLE_SEQ_ID_MAGIC_GEM_411) {
                 state->magicGemDistanceThreshold = *(f32*)messageParam;
             }
             break;
@@ -844,7 +843,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
             for (; pointIndex < state->pointCount; pointIndex++) {
                 Obj_TransformLocalPointToWorld(*(f32*)((char*)localPoint + 0x18), *(f32*)((char*)localPoint + 0x1c),
                                                *(f32*)((char*)localPoint + 0x20), worldPoint, worldPoint + 1,
-                                               worldPoint + 2, (u32)obj);
+                                               worldPoint + 2, obj);
                 delta[0] = obj->anim.localPosX - worldPoint[0];
                 delta[1] = obj->anim.localPosY - worldPoint[1];
                 delta[2] = obj->anim.localPosZ - worldPoint[2];
@@ -869,7 +868,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
                 movedState->flags = flags & ~PUSHABLE_FLAG_RESTORED;
                 gameBit = placement->gameBit;
                 if (gameBit > -1) {
-                    switch (obj->anim.seqId) {
+                    switch (obj->anim.romDefNo) {
                     case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
                         break;
                     case PUSHABLE_SEQ_ID_MAGIC_GEM_411:
@@ -936,8 +935,8 @@ int pushable_getObjectTypeId(void) {
 void pushable_free(GameObject* obj) {
     PushableObjectDef* placement = (PushableObjectDef*)obj->anim.placementData;
     PushableState* state = obj->extra;
-    s16 sequenceId = obj->anim.seqId;
-    int savedMapIndex;
+    s16 sequenceId = obj->anim.romDefNo;
+    int savedIdentIndex;
 
     switch (sequenceId) {
     case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
@@ -955,10 +954,10 @@ void pushable_free(GameObject* obj) {
         break;
     }
     if ((state->flags & PUSHABLE_FLAG_RESTORED) != 0) {
-        int mapId = placement->base.mapId;
-        savedMapIndex = gPushableSavedMapIdCount;
-        gPushableSavedMapIdCount = savedMapIndex + 1;
-        gPushableSavedMapIds[savedMapIndex] = mapId;
+        int ident = placement->base.ident;
+        savedIdentIndex = gPushableSavedIdentCount;
+        gPushableSavedIdentCount = savedIdentIndex + 1;
+        gPushableSavedIdents[savedIdentIndex] = ident;
     }
     ObjGroup_RemoveObject((int)obj, PUSHABLE_OBJECT_GROUP);
 }
@@ -966,7 +965,7 @@ void pushable_free(GameObject* obj) {
 void pushable_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
     if (visible != 0) {
         PushableState* state = obj->extra;
-        switch (obj->anim.seqId) {
+        switch (obj->anim.romDefNo) {
         case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
             if (mainGetBit(state->gameBit) == 0) {
                 break;
@@ -1059,7 +1058,7 @@ void pushable_hitDetect(GameObject* obj) {
         }
     }
     state->moveFlags.pushPromptEnabled = 1;
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case PUSHABLE_SEQ_ID_DIM2_ICE_BLOCK:
         if (mainGetBit(GAMEBIT_PushableRelated0272) != 0) {
             return;
@@ -1089,7 +1088,7 @@ void pushable_hitDetect(GameObject* obj) {
         Obj_BuildTransformMatrices(obj);
         for (i = 0; i < state->pointCount; i++) {
             Obj_TransformLocalPointToWorld(state->cornerLocal[i].x, state->cornerLocal[i].y, state->cornerLocal[i].z,
-                                           &worldPoints[i].x, &worldPoints[i].y, &worldPoints[i].z, (u32)obj);
+                                           &worldPoints[i].x, &worldPoints[i].y, &worldPoints[i].z, obj);
         }
         hitDetect_calcSweptSphereBounds(&sweep, (f32*)state->cornerWorld, (f32*)worldPoints, radii.values,
                                         PUSHABLE_MAX_POINTS);
@@ -1158,7 +1157,7 @@ void pushable_hitDetect(GameObject* obj) {
     for (i = 0; i < state->pointCount; i++) {
         Obj_TransformLocalPointToWorld(state->probeLocal[i].x, state->probeLocal[i].y, state->probeLocal[i].z,
                                        &state->cornerWorld[i].x, &state->cornerWorld[i].y, &state->cornerWorld[i].z,
-                                       (u32)obj);
+                                       obj);
     }
 }
 
@@ -1195,7 +1194,7 @@ void pushable_update(GameObject* obj) {
             pushable_savePos(obj);
         }
     }
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
         if (pushable_updateMagicGem(obj, state) == 0) {
             break;
@@ -1227,7 +1226,7 @@ void pushable_update(GameObject* obj) {
         break;
     }
     {
-        s16 sequenceId = obj->anim.seqId;
+        s16 sequenceId = obj->anim.romDefNo;
         if (sequenceId != PUSHABLE_SEQ_ID_VFP_BLOCK2 && sequenceId != PUSHABLE_SEQ_ID_5AE &&
             sequenceId != PUSHABLE_SEQ_ID_DIM2_ICE_BLOCK && state->savePosEnabled != 0 &&
             (state->flags & PUSHABLE_FLAG_NO_GROUND_CONTACT) == 0) {
@@ -1244,7 +1243,7 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
     f32* modelMtx;
     f32 vertex[3];
 
-    if (setup->base.mapId == PUSHABLE_FORCE_HIT_ID_MAP) {
+    if (setup->base.ident == PUSHABLE_FORCE_HIT_ID_MAP) {
         setup->requiredHitId = 1;
     } else {
         setup->requiredHitId = PUSHABLE_NO_HIT_ID;
@@ -1359,7 +1358,7 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
         }
     }
     state->savePosEnabled = 1;
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
         pushable_initMagicGem(obj, state);
         break;
@@ -1392,8 +1391,8 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
         }
     }
     state->flags = state->flags | PUSHABLE_FLAG_INITIALIZED;
-    if (arrayIndexOf(gPushableSavedMapIds, gPushableSavedMapIdCount, setup->base.mapId) != -1) {
+    if (arrayIndexOf(gPushableSavedIdents, gPushableSavedIdentCount, setup->base.ident) != -1) {
         state->flags = state->flags | PUSHABLE_FLAG_RESTORED;
-        arrayRemoveUnordered(gPushableSavedMapIds, &gPushableSavedMapIdCount, setup->base.mapId);
+        arrayRemoveUnordered(gPushableSavedIdents, &gPushableSavedIdentCount, setup->base.ident);
     }
 }

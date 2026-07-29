@@ -399,7 +399,7 @@ void dll_CB_update(GameObject* obj) {
     if ((state->flags400 & DLL_CB_FLAG400_PENDING_HIT_REACTION) != 0) {
         (*gBaddieControlInterface)
             ->startHitReaction(obj, state, &state->routeNav, state->gameBitB, &state->subMode, 0, 0, 0, 1);
-        state->flags400 = (u16)(state->flags400 & ~DLL_CB_FLAG400_PENDING_HIT_REACTION);
+        state->flags400 = state->flags400 & ~DLL_CB_FLAG400_PENDING_HIT_REACTION;
     }
     if ((*gBaddieControlInterface)->isObjectValid(obj, state, 1) == 0) {
         return;
@@ -411,7 +411,7 @@ void dll_CB_update(GameObject* obj) {
     }
     if (Curve_AdvanceAlongPath((Curve*)path, state->baddie.animSpeedA) != 0 || path->atSegmentEnd != 0) {
         if ((*gRomCurveInterface)->goNextPoint(path) != 0) {
-            state->flags400 = (u16)(state->flags400 & ~BADDIE_FLAG400_PATH_ACTIVE);
+            state->flags400 = state->flags400 & ~BADDIE_FLAG400_PATH_ACTIVE;
         }
     }
     state->baddie.animSpeedA = *(volatile const f32*)&gDllCBDefaultAnimSpeed;

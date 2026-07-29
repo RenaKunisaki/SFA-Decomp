@@ -220,7 +220,7 @@ void dim_levelcontrol_init(GameObject* obj) {
         obj->userData1 = 1;
     }
     for (taskHintIndex = 1; taskHintIndex <= 38; taskHintIndex++) {
-        gameBitFn_800ea2e0(taskHintIndex);
+        taskHintRecordCompletedTask(taskHintIndex);
     }
     state->lostInBlizzardDialogueFired = mainGetBit(DIM_LEVEL_CONTROL_INITIAL_DIALOGUE_GAMEBIT);
     mainSetBits(DIM_LEVEL_CONTROL_GAMEBIT_0F0A, 0);

@@ -46,7 +46,7 @@ void crfueltank_hitDetect(GameObject* obj)
     if ((hitState != NULL) && (hitState->lastHitObject != 0))
     {
         hitObj = (GameObject*)hitState->lastHitObject;
-        if (hitObj->anim.seqId == CRFUELTANK_TRIGGER_OBJ)
+        if (hitObj->anim.romDefNo == CRFUELTANK_TRIGGER_OBJ)
         {
             ObjHits_DisableObject(obj);
             Sfx_PlayFromObject((u32)Obj_GetPlayerObject(), SFXTRIG_ar_barrel16);

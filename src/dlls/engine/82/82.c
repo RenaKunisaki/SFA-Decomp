@@ -2,6 +2,7 @@
  * DLL 82 / 0x52 - force-behind camera mode.
  */
 #include "main/resource.h"
+#include "main/object_transform.h"
 #include "main/dll/player_motion.h"
 #include "main/dll/CAM/cutCam.h"
 #include "main/frame_timing.h"
@@ -96,7 +97,7 @@ void CameraModeForceBehind_update(CameraObject* camera)
     camcontrol_traceFromTarget(&camera->anim.worldPosX, target, &camera->anim.worldPosX, &camera->anim.rotY);
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   camera->anim.parentAddress);
+                                   (GameObject*)camera->anim.parentAddress);
 }
 
 const f32 gCamForceBehindEaseRate[1] = {0.25f};

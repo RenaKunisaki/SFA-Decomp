@@ -205,28 +205,8 @@ typedef struct QuakeFxParams
     f32 f3;
 } QuakeFxParams;
 
-void staff_func0F(void);
-void staff_func0E(void);
-void staff_func0B(void);
-void staff_func0A(void);
-void staff_render(void);
-void staff_hitDetect(void);
-int staff_getExtraSize(void);
-int staff_getObjectTypeId(void);
-s16 staff_getHitReactValue(GameObject* obj);
-s32 staff_getSwipeTextureIndex(GameObject* obj);
-void staff_func10(GameObject* obj, s32 v);
-void staff_setHitReactValue(GameObject* obj, s32 v);
-void staff_updateSwipe(GameObject* obj, int p4, int p5);
-void staff_addHitReactValue(GameObject* obj, s32 delta);
-void staff_startSwipe(GameObject* obj, s16 idx, f32 f1, f32 f2);
-void staff_free(GameObject* obj);
-void staff_release(void);
-void staff_init(GameObject* obj);
-void staff_initialise(void);
 #define GXWGFifo (*(volatile PPCWGPipe*)0xCC008000)
 
-void staff_hitDetectGeometry(GameObject* obj);
 static inline void swipePos3f32(const f32 x, const f32 y, const f32 z)
 {
     GXWGFifo.f32 = x;
@@ -245,7 +225,6 @@ static inline void swipeTexCoord2f32(const f32 s, const f32 t)
     GXWGFifo.f32 = s;
     GXWGFifo.f32 = t;
 }
-void staff_update(GameObject* obj);
 
 
 void quakeSpellFn_8016cee8(GameObject* obj, GameObject* player)
@@ -489,7 +468,7 @@ void staffStartQuakeSpell(f32* pos)
     ((StaffQuakeSpellState*)gStaffQuakeSpellState)->scale = 1.0f;
     ((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius = 0.4f;
     ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale = 1.0f;
-    CameraShake_Start(5.0f, 10.0f, 4.0f);
+    CameraShake_StartDampened(5.0f, 10.0f, 4.0f);
     player = Obj_GetPlayerObject();
     if (player != NULL && Obj_IsLoadingLocked() != 0)
     {
@@ -545,7 +524,7 @@ void staffDrawQuakeSpellRing(void)
         f32 z;
         quakeSpellTextureFn_8007366c((int)((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade);
         memcpy(mView, Camera_GetViewMatrix(), 0x30);
-        PSMTXRotRad(mRot, 'x', *(f32*)&gStaffHalfPi);
+        PSMTXRotRad(mRot, 'x', gStaffHalfPi);
         scale = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->scale;
         PSMTXScale(mScale, scale, scale * ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale, scale);
         PSMTXConcat(mScale, mRot, mScale);
@@ -653,7 +632,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
         {
             ang += **(s16**)&obj->anim.parent;
         }
-        angle = (*(f32*)&gStaffPi * (f32)(int)-ang) / *(f32*)&gStaffAngleUnitScale;
+        angle = (gStaffPi * (f32)(int)-ang) / gStaffAngleUnitScale;
         sinv = mathSinf(angle);
         cosv = mathCosf(angle);
         model2 = *(u8**)((char*)Obj_GetActiveModel(obj) + 0x2c);
@@ -898,10 +877,8 @@ ObjectDescriptor23 gStaffObjDescriptor = {
     (ObjectDescriptorCallback)staff_getSwipeTextureIndex,
 };
 
-u32 lbl_80320978[] = {
-    0xFF202020,
-    0xFF202020,
-    0xFF000000,
+u8 gFireballLightColors[4][3] = {
+    {0xFF, 0x20, 0x20}, {0x20, 0xFF, 0x20}, {0x20, 0x20, 0xFF}, {0x00, 0x00, 0x00},
 };
 
 

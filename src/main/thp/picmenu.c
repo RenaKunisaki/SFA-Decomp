@@ -22,13 +22,13 @@ enum
     THP_COMPONENT_AUDIO = 1
 };
 
-extern char lbl_803A57C0[0x50C];
-extern s32 lbl_803DD660;
-extern AIDCallback lbl_803DD668;
-extern s32 lbl_803DD66C;
-extern u32 lbl_803DD670;
-extern u32 lbl_803DD674;
-extern u32 lbl_803DD678;
+extern char gAttractMovieAudioDmaBuffer[0x50C];
+extern s32 gAttractMovieAudioActive;
+extern AIDCallback gAttractMovieAudioPrevDmaCallback;
+extern s32 gAttractMovieAudioMode;
+extern u32 gAttractMovieAudioMixSourceAddr;
+extern u32 gAttractMovieAudioPendingSourceAddr;
+extern u32 gAttractMovieAudioDmaBufferIndex;
 
 BOOL movieLoad(const char* fileName, void* onMemory)
 {
@@ -36,86 +36,86 @@ BOOL movieLoad(const char* fileName, void* onMemory)
     s32 result;
     u32 i;
 
-    if (lbl_803DD660 == 0)
+    if (gAttractMovieAudioActive == 0)
     {
         return 0;
     }
 
-    if (((AttractMoviePlayer*)&lbl_803A5D60)->isOpen != 0)
+    if (gAttractMoviePlayer.isOpen != 0)
     {
         return 0;
     }
 
-    memset(&((AttractMoviePlayer*)&lbl_803A5D60)->videoInfo, 0, sizeof(AttractMovieVideoInfo));
-    memset(&((AttractMoviePlayer*)&lbl_803A5D60)->audioInfo, 0, sizeof(AttractMovieAudioInfo));
+    memset(&gAttractMoviePlayer.videoInfo, 0, sizeof(AttractMovieVideoInfo));
+    memset(&gAttractMoviePlayer.audioInfo, 0, sizeof(AttractMovieAudioInfo));
 
-    if (!DVDOpen(fileName, (DVDFileInfo*)&lbl_803A5D60))
+    if (!DVDOpen(fileName, &gAttractMoviePlayer.fileInfo))
     {
         return 0;
     }
 
-    result = DVDRead((DVDFileInfo*)&lbl_803A5D60, gPicMenuDvdReadBuffer, 0x40, 0);
+    result = DVDRead(&gAttractMoviePlayer.fileInfo, gPicMenuDvdReadBuffer, 0x40, 0);
     if (result < 0)
     {
-        DVDClose((DVDFileInfo*)&lbl_803A5D60);
+        DVDClose(&gAttractMoviePlayer.fileInfo);
         return 0;
     }
 
-    memcpy(&((AttractMoviePlayer*)&lbl_803A5D60)->header, gPicMenuDvdReadBuffer,
-           sizeof(((AttractMoviePlayer*)&lbl_803A5D60)->header));
+    memcpy(&gAttractMoviePlayer.header, gPicMenuDvdReadBuffer,
+           sizeof(gAttractMoviePlayer.header));
 
-    if (strcmp(((AttractMoviePlayer*)&lbl_803A5D60)->header.mMagic, sPicMenuThpMagic) != 0)
+    if (strcmp(gAttractMoviePlayer.header.mMagic, sPicMenuThpMagic) != 0)
     {
-        DVDClose((DVDFileInfo*)&lbl_803A5D60);
+        DVDClose(&gAttractMoviePlayer.fileInfo);
         return 0;
     }
 
-    if (((AttractMoviePlayer*)&lbl_803A5D60)->header.mVersion != THP_VERSION_1_0)
+    if (gAttractMoviePlayer.header.mVersion != THP_VERSION_1_0)
     {
-        DVDClose((DVDFileInfo*)&lbl_803A5D60);
+        DVDClose(&gAttractMoviePlayer.fileInfo);
         return 0;
     }
 
     {
-        u32 compOff = ((AttractMoviePlayer*)&lbl_803A5D60)->header.mCompInfoDataOffsets;
+        u32 compOff = gAttractMoviePlayer.header.mCompInfoDataOffsets;
 
-        result = DVDRead((DVDFileInfo*)&lbl_803A5D60, gPicMenuDvdReadBuffer, 0x20, compOff);
+        result = DVDRead(&gAttractMoviePlayer.fileInfo, gPicMenuDvdReadBuffer, 0x20, compOff);
         if (result < 0)
         {
-            DVDClose((DVDFileInfo*)&lbl_803A5D60);
+            DVDClose(&gAttractMoviePlayer.fileInfo);
             return 0;
         }
 
-        memcpy(&((AttractMoviePlayer*)&lbl_803A5D60)->compInfo, gPicMenuDvdReadBuffer, sizeof(THPFrameCompInfo));
+        memcpy(&gAttractMoviePlayer.compInfo, gPicMenuDvdReadBuffer, sizeof(THPFrameCompInfo));
         readOff = compOff + sizeof(THPFrameCompInfo);
-        ((AttractMoviePlayer*)&lbl_803A5D60)->audioExists = 0;
+        gAttractMoviePlayer.audioExists = 0;
     }
 
-    for (i = 0; i < ((AttractMoviePlayer*)&lbl_803A5D60)->compInfo.mNumComponents; i++)
+    for (i = 0; i < gAttractMoviePlayer.compInfo.mNumComponents; i++)
     {
-        switch (((AttractMoviePlayer*)&lbl_803A5D60)->compInfo.mFrameComp[i])
+        switch (gAttractMoviePlayer.compInfo.mFrameComp[i])
         {
         case THP_COMPONENT_VIDEO:
-            result = DVDRead((DVDFileInfo*)&lbl_803A5D60, gPicMenuDvdReadBuffer, 0x20, readOff);
+            result = DVDRead(&gAttractMoviePlayer.fileInfo, gPicMenuDvdReadBuffer, 0x20, readOff);
             if (result < 0)
             {
-                DVDClose((DVDFileInfo*)&lbl_803A5D60);
+                DVDClose(&gAttractMoviePlayer.fileInfo);
                 return 0;
             }
-            memcpy(&((AttractMoviePlayer*)&lbl_803A5D60)->videoInfo, gPicMenuDvdReadBuffer,
+            memcpy(&gAttractMoviePlayer.videoInfo, gPicMenuDvdReadBuffer,
                    sizeof(AttractMovieVideoInfo));
             readOff += sizeof(AttractMovieVideoInfo);
             break;
         case THP_COMPONENT_AUDIO:
-            result = DVDRead((DVDFileInfo*)&lbl_803A5D60, gPicMenuDvdReadBuffer, 0x20, readOff);
+            result = DVDRead(&gAttractMoviePlayer.fileInfo, gPicMenuDvdReadBuffer, 0x20, readOff);
             if (result < 0)
             {
-                DVDClose((DVDFileInfo*)&lbl_803A5D60);
+                DVDClose(&gAttractMoviePlayer.fileInfo);
                 return 0;
             }
-            memcpy(&((AttractMoviePlayer*)&lbl_803A5D60)->audioInfo, gPicMenuDvdReadBuffer,
+            memcpy(&gAttractMoviePlayer.audioInfo, gPicMenuDvdReadBuffer,
                    sizeof(AttractMovieAudioInfo));
-            ((AttractMoviePlayer*)&lbl_803A5D60)->audioExists = 1;
+            gAttractMoviePlayer.audioExists = 1;
             readOff += sizeof(AttractMovieAudioInfo);
             break;
         default:
@@ -123,14 +123,14 @@ BOOL movieLoad(const char* fileName, void* onMemory)
         }
     }
 
-    ((AttractMoviePlayer*)&lbl_803A5D60)->internalState = 0;
-    ((AttractMoviePlayer*)&lbl_803A5D60)->state = 0;
-    ((AttractMoviePlayer*)&lbl_803A5D60)->playFlags = 0;
-    ((AttractMoviePlayer*)&lbl_803A5D60)->isOnMemory = (s32)onMemory;
-    ((AttractMoviePlayer*)&lbl_803A5D60)->isOpen = 1;
-    ((AttractMoviePlayer*)&lbl_803A5D60)->curVolume = 127.0f;
-    ((AttractMoviePlayer*)&lbl_803A5D60)->targetVolume = 127.0f;
-    ((AttractMoviePlayer*)&lbl_803A5D60)->rampCount = 0;
+    gAttractMoviePlayer.internalState = 0;
+    gAttractMoviePlayer.state = 0;
+    gAttractMoviePlayer.playFlags = 0;
+    gAttractMoviePlayer.isOnMemory = (s32)onMemory;
+    gAttractMoviePlayer.isOpen = 1;
+    gAttractMoviePlayer.curVolume = 127.0f;
+    gAttractMoviePlayer.targetVolume = 127.0f;
+    gAttractMoviePlayer.rampCount = 0;
 
     return 1;
 }
@@ -138,12 +138,12 @@ BOOL movieLoad(const char* fileName, void* onMemory)
 void AttractMovieAudio_Shutdown(void)
 {
     u32 saved = OSDisableInterrupts();
-    if (lbl_803DD668 != (AIDCallback)0)
+    if (gAttractMovieAudioPrevDmaCallback != (AIDCallback)0)
     {
-        AIRegisterDMACallback(lbl_803DD668);
+        AIRegisterDMACallback(gAttractMovieAudioPrevDmaCallback);
     }
     OSRestoreInterrupts(saved);
-    lbl_803DD660 = 0;
+    gAttractMovieAudioActive = 0;
 }
 
 BOOL AttractMovieAudio_Init(int audioMode)
@@ -152,9 +152,9 @@ BOOL AttractMovieAudio_Init(int audioMode)
     AIDCallback oldCb;
     register AIDCallback dmaCallback;
 
-    memset((AttractMoviePlayer*)((char*)(int)lbl_803A57C0 + 0x5A0), 0, sizeof(AttractMoviePlayer));
-    OSInitMessageQueue((OSMessageQueue*)((char*)(int)lbl_803A57C0 + 0x50C),
-                       (void*)((char*)(int)lbl_803A57C0 + ATTRACT_MOVIE_AUDIO_DMA_BUFFER_BYTES), 3);
+    memset((AttractMoviePlayer*)((char*)(int)gAttractMovieAudioDmaBuffer + 0x5A0), 0, sizeof(AttractMoviePlayer));
+    OSInitMessageQueue((OSMessageQueue*)((char*)(int)gAttractMovieAudioDmaBuffer + 0x50C),
+                       (void*)((char*)(int)gAttractMovieAudioDmaBuffer + ATTRACT_MOVIE_AUDIO_DMA_BUFFER_BYTES), 3);
 
     if (!THPInit())
     {
@@ -162,17 +162,17 @@ BOOL AttractMovieAudio_Init(int audioMode)
     }
 
     saved = OSDisableInterrupts();
-    lbl_803DD66C = audioMode;
-    lbl_803DD678 = 0;
-    lbl_803DD674 = 0;
-    lbl_803DD670 = 0;
+    gAttractMovieAudioMode = audioMode;
+    gAttractMovieAudioDmaBufferIndex = 0;
+    gAttractMovieAudioPendingSourceAddr = 0;
+    gAttractMovieAudioMixSourceAddr = 0;
     dmaCallback = AttractMovieAudio_DmaCallback;
     oldCb = AIRegisterDMACallback(dmaCallback);
-    lbl_803DD668 = oldCb;
+    gAttractMovieAudioPrevDmaCallback = oldCb;
 
     if (oldCb == (AIDCallback)0)
     {
-        if (lbl_803DD66C != 0)
+        if (gAttractMovieAudioMode != 0)
         {
             AIRegisterDMACallback((AIDCallback)0);
             OSRestoreInterrupts(saved);
@@ -182,15 +182,15 @@ BOOL AttractMovieAudio_Init(int audioMode)
 
     OSRestoreInterrupts(saved);
 
-    if (lbl_803DD66C == 0)
+    if (gAttractMovieAudioMode == 0)
     {
-        memset((char*)(int)lbl_803A57C0, 0, ATTRACT_MOVIE_AUDIO_DMA_BUFFER_BYTES);
-        DCFlushRange((char*)(int)lbl_803A57C0, ATTRACT_MOVIE_AUDIO_DMA_BUFFER_BYTES);
-        AIInitDMA((u32)((char*)(int)lbl_803A57C0 + lbl_803DD678 * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
+        memset((char*)(int)gAttractMovieAudioDmaBuffer, 0, ATTRACT_MOVIE_AUDIO_DMA_BUFFER_BYTES);
+        DCFlushRange((char*)(int)gAttractMovieAudioDmaBuffer, ATTRACT_MOVIE_AUDIO_DMA_BUFFER_BYTES);
+        AIInitDMA((u32)((char*)(int)gAttractMovieAudioDmaBuffer + gAttractMovieAudioDmaBufferIndex * ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE),
                   ATTRACT_MOVIE_AUDIO_DMA_BUFFER_SIZE);
         AIStartDMA();
     }
 
-    lbl_803DD660 = 1;
+    gAttractMovieAudioActive = 1;
     return 1;
 }

@@ -14,7 +14,7 @@ typedef struct CCPedestalPlacement {
 
 STATIC_ASSERT(sizeof(CCPedestalPlacement) == 0x20);
 STATIC_ASSERT(offsetof(CCPedestalPlacement, base) == 0x00);
-STATIC_ASSERT(offsetof(CCPedestalPlacement, base.mapId) == 0x14);
+STATIC_ASSERT(offsetof(CCPedestalPlacement, base.ident) == 0x14);
 STATIC_ASSERT(offsetof(CCPedestalPlacement, unknown18) == 0x18);
 STATIC_ASSERT(offsetof(CCPedestalPlacement, rotXByte) == 0x1A);
 STATIC_ASSERT(offsetof(CCPedestalPlacement, unknown1B) == 0x1B);

@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "main/model_light.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define GPSH_SHRINE_RESET_SYMBOL_CREATORS_GAMEBIT  0x5AF
 #define GPSH_SHRINE_ACTIVATE_SYMBOL_SPAWNS_GAMEBIT 0x148
@@ -59,7 +59,7 @@ STATIC_ASSERT(offsetof(GPSHShrineState, unknown17) == 0x17);
 extern ObjectDescriptor gGPSHShrineObjDescriptor;
 
 void gpshShrine_updateHoverMotion(GameObject* obj);
-int gpshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int gpshShrine_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int gpshShrine_getExtraSize(void);
 int gpshShrine_getObjectTypeId(void);
 void gpshShrine_free(GameObject* obj);

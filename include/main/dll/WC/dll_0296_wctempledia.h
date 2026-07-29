@@ -5,7 +5,7 @@
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct WCTempleDiaSetup
 {
@@ -52,7 +52,7 @@ int wctempledia_getObjectTypeId(void);
 void wctempledia_free(void);
 void wctempledia_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void wctempledia_hitDetect(void);
-int wctempledia_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int wctempledia_interactCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void wctempledia_update(GameObject* obj);
 void wctempledia_init(GameObject* obj, WCTempleDiaSetup* setup);
 void wctempledia_release(void);

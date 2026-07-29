@@ -5,7 +5,7 @@
 #include "main/objprint_character_api.h"
 #include "game/objects/object.h"
 #include "main/objHitReact.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/dll/curve_walker.h"
 
 /* Extra block used by the DLL 0x28B state handlers compiled into this TU.
@@ -68,7 +68,7 @@ void earthwalker_hitDetect(GameObject* obj);
 void earthwalker_release(void);
 void earthwalker_initialise(void);
 void earthwalker_update(int obj);
-int earthwalker_SeqFn(int obj, int unused, ObjAnimUpdateState* animUpdate, int shouldAdvanceMove);
+int earthwalker_SeqFn(int obj, int unused, ObjSeqState* animUpdate, int shouldAdvanceMove);
 void earthwalker_init(GameObject* obj, int setup);
 
 struct BaddieState;

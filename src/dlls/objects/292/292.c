@@ -105,7 +105,7 @@ void DeathGas_init(GameObject* obj) {
     register DeathGasState* state = obj->extra;
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HIDDEN);
     state->effectRadius = 10000.0f;
-    if (obj->anim.seqId != DEATH_GAS_NO_FOG_OBJECT_ID) {
+    if (obj->anim.romDefNo != DEATH_GAS_NO_FOG_OBJECT_ID) {
         return;
     }
     state->flags.suppressFog = 1;

@@ -7,7 +7,7 @@
 
 #define TREASURE_CHEST_OBJECT_STATE_SIZE 0x1
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 /* Only the accessed placement prefix is recovered; the complete retail width is not established. */
 typedef struct TreasureChestPlacement {
@@ -35,7 +35,7 @@ STATIC_ASSERT(offsetof(TreasureChestPlacement, openedGameBit) == 0x1E);
 
 STATIC_ASSERT(sizeof(TreasureChestObjectState) == TREASURE_CHEST_OBJECT_STATE_SIZE);
 
-int TreasureChest_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int TreasureChest_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int TreasureChest_getExtraSize(void);
 int TreasureChest_getObjectTypeId(void);
 void TreasureChest_free(void);

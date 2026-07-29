@@ -53,7 +53,7 @@
 #define LINKA_LEVCONTROL_EXTRA_SIZE 4
 
 
-int LinkALevControl_seqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int LinkALevControl_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int stateIndex;
     u8 mode;

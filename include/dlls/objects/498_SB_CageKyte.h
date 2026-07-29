@@ -3,7 +3,7 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct SBCageKyteState {
     s16 chirpTimer;
@@ -12,7 +12,7 @@ typedef struct SBCageKyteState {
 STATIC_ASSERT(offsetof(SBCageKyteState, chirpTimer) == 0x00);
 STATIC_ASSERT(sizeof(SBCageKyteState) == 0x02);
 
-int SB_CageKyte_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int SB_CageKyte_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int SB_CageKyte_getExtraSize(void);
 int SB_CageKyte_getObjectTypeId(void);
 void SB_CageKyte_free(void);

@@ -13,6 +13,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLLA9_EFFECT_ID 0x586
@@ -205,5 +206,13 @@ u8 lbl_80319028[288] = {
     0,   2,   0,   3,   0, 4,   0, 5,   0,   6,   0,   0,   0, 7,   0,   8,   0,   9,   0,   10,  0,   11,  0,   12,
     0,   13,  0,   0,   0, 0,   0, 1,   0,   2,   0,   3,   0, 4,   0,   5,   0,   6,   0,   7,   0,   8,   0,   9,
     0,   10,  0,   11,  0, 12,  0, 13,  0,   0,   0,   150, 0, 250, 0,   1,   0,   50,  0,   0,   0,   0,   0,   0};
-void* lbl_80319148[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_A9_func00_nop, dll_A9_func01_nop, (void*)0x00000000, dll_A9_func03};
+ObjectDescriptor4 dll_A9_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_A9_func00_nop,
+    (ObjectDescriptorCallback)dll_A9_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_A9_func03,
+};

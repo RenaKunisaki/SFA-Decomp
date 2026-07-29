@@ -3,9 +3,9 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
-int DIM_BossGut_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int DIM_BossGut_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int DIM_BossGut_getExtraSize(void);
 int DIM_BossGut_getObjectTypeId(void);
 void DIM_BossGut_free(void);

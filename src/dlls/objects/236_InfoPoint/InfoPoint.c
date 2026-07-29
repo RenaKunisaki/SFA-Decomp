@@ -8,9 +8,8 @@
 #include "dlls/objects/236_InfoPoint.h"
 #include "dolphin/pad.h"
 #include "main/gametext_internal.h"
-#include "main/objanim_update.h"
-#include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/object_render.h"
 #include "main/textrender_api.h"
 #include "main/texture.h"
 
@@ -28,7 +27,7 @@
 #define INFOPOINT_SEQUENCE_STATE_SET   0xFF
 #define INFOPOINT_SEQUENCE_STATE_CLEAR 0
 
-int InfoPoint_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int InfoPoint_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     InfoPointState* state;
     int i;
 

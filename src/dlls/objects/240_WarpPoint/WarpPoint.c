@@ -21,16 +21,15 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 
-/* placement mapIds that arm the one-shot save-point recording at init */
+/* placement idents that arm the one-shot save-point recording at init */
 #define WARPPOINT_MAP_SAVE_A 0x4B675
 #define WARPPOINT_MAP_SAVE_B 0x46882
 
-/* seqId variant that records a save point (sets GAMEBIT_WarpPointRelatedD53
+/* romDefNo variant that records a save point (sets GAMEBIT_WarpPointRelatedD53
    and calls the map-event savePoint) before running its sequence. */
 #define WARPPOINT_SEQ_ID_SAVEPOINT 0x27E
 
@@ -50,17 +49,17 @@
 extern s16 lbl_803DCEB8;
 extern u8 lbl_803DCDE0;
 
-int WarpPoint_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int WarpPoint_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     WarpPointPlacement* placement = (WarpPointPlacement*)obj->anim.placementData;
 
     (void)unused;
 
     if (placement->mode != WARPPOINT_MODE_GATED_WARP) {
-        if (animUpdate->triggerCommand == WARPPOINT_ANIM_TRIGGER_WARP) {
+        if (animUpdate->unk80 == WARPPOINT_ANIM_TRIGGER_WARP) {
             int targetMapId = (s8) * (u8*)&placement->targetMapId;
             if (targetMapId > WARPPOINT_NO_TARGET_MAP) {
                 warpToMap(targetMapId, 1);
-                animUpdate->triggerCommand = WARPPOINT_ANIM_TRIGGER_NONE;
+                animUpdate->unk80 = WARPPOINT_ANIM_TRIGGER_NONE;
             }
         }
     }
@@ -121,7 +120,7 @@ void WarpPoint_update(GameObject* obj) {
             distance = sqrtf(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
             if (state->sequenceTriggered == 0 && placement->enabled != 0 && distance < state->triggerRadius &&
                 player->anim.parentAddress == obj->anim.parentAddress) {
-                if (obj->anim.seqId == WARPPOINT_SEQ_ID_SAVEPOINT) {
+                if (obj->anim.romDefNo == WARPPOINT_SEQ_ID_SAVEPOINT) {
                     mainSetBits(GAMEBIT_WarpPointRelatedD53, 1);
                     (*gMapEventInterface)
                         ->savePoint((int)&player->anim.localPosX, player->anim.rotX, 0, getCurMapLayer());
@@ -225,7 +224,7 @@ void WarpPoint_init(GameObject* obj, WarpPointPlacement* placement) {
     if (placement->mode == WARPPOINT_MODE_GATED_WARP) {
         state->warpDelay = 0;
     }
-    if (placement->base.mapId == WARPPOINT_MAP_SAVE_A || placement->base.mapId == WARPPOINT_MAP_SAVE_B) {
+    if (placement->base.ident == WARPPOINT_MAP_SAVE_A || placement->base.ident == WARPPOINT_MAP_SAVE_B) {
         placement->savePointArmed = 1;
     } else {
         placement->savePointArmed = 0;

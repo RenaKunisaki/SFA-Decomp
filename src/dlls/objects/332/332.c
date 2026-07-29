@@ -197,7 +197,7 @@ ObjectDescriptor12 gBabyCloudRunnerObjDescriptor = {
     (ObjectDescriptorCallback)babyCloudRunner_tryCapture,
 };
 
-int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     GameObject* player;
     BabyCloudRunnerPlacement* placement = (BabyCloudRunnerPlacement*)obj->anim.placement;
     s8 inRange;
@@ -210,7 +210,7 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateS
     if (obj->seqIndex == BABYCLOUDRUNNER_SEQUENCE_CAPTURED) {
         return 0;
     }
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     player = Obj_GetPlayerObject();
     dx = player->anim.localPosX - placement->base.posX;
     dz = player->anim.localPosZ - placement->base.posZ;
@@ -271,7 +271,7 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateS
         break;
     case 0:
     case 8:
-        animUpdate->hitVolumePair &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
+        animUpdate->flags &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
         yaw = Obj_GetYawDeltaToObject(obj, player, 0);
         characterAimHeadAtTarget(obj, player, &state->eyeAnimState, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;
@@ -282,7 +282,7 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateS
         }
         break;
     case 5:
-        animUpdate->hitVolumePair &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
+        animUpdate->flags &= ~BABYCLOUDRUNNER_SEQUENCE_HIT_VOLUME_FLAG;
         yaw = Obj_GetYawDeltaToObject(obj, (GameObject*)getTrickyObject(), 0);
         characterAimHeadAtTarget(obj, getTrickyObject(), &state->eyeAnimState, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
         obj->anim.rotX += (s16)yaw / 8;
@@ -519,12 +519,12 @@ void babyCloudRunner_init(GameObject* obj, BabyCloudRunnerPlacement* placement) 
     if (mainGetBit(placement->runnerGameBit) != 0) {
         ObjHits_DisableObject(obj);
         obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
-        state->captureFlags = (u8)(state->captureFlags & ~BABYCLOUDRUNNER_CAPTURE_ACTIVE);
+        state->captureFlags = state->captureFlags & ~BABYCLOUDRUNNER_CAPTURE_ACTIVE;
         Obj_RemoveFromUpdateList(obj);
         ObjGroup_RemoveObject((int)obj, BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP);
     } else {
         state->runnerIndex = placement->runnerGameBit - GAMEBIT_CFRelated02FC;
-        if (obj->anim.seqId == BABYCLOUDRUNNER_AMBIENT_OBJECT_ID) {
+        if (obj->anim.romDefNo == BABYCLOUDRUNNER_AMBIENT_OBJECT_ID) {
             state->runnerIndex = -1;
             state->curveSpeed = 3.0f;
             state->mutterSfxTable = gBabyCloudRunnerMutterSfxTableSpecial;

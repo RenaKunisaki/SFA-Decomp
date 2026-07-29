@@ -3,11 +3,11 @@
 
 #include "main/dll/mcstaffeffe_state.h"
 #include "dlls/object_descriptor.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 extern ObjectDescriptor gMCStaffEffeObjDescriptor;
 
-int mcstaffeffe_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int mcstaffeffe_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void mcstaffeffe_render(GameObject* obj);
 void mcstaffeffe_update(void);
 void mcstaffeffe_init(GameObject* obj, McStaffEffectSetup* setup);

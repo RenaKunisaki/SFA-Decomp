@@ -580,7 +580,7 @@ void OptionsScreen_render(int arg)
         fade = ((int)((u8)alpha & 0x7f) << 1) & 0xff;
     }
 
-    gameTextBoxFn_80134d40(fade, 0, 0);
+    titleScreenDrawMenuFrame(fade, 0, 0);
     if (panel[5] != 0xffff)
     {
         gameTextSetColor(0xff, 0xff, 0xff, 0xff);

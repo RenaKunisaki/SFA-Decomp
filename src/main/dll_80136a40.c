@@ -2,7 +2,7 @@
  * dll_80136a40 - EN v1.0 retargeted system/debug leaves.
  *
  * A grab-bag of low-level support code linked into this DLL:
- *   - The fatal-error display thread (errDisplayThreadMain) plus its installer
+ *   - The fatal-error display thread (errorThreadFunc) plus its installer
  *     (errDisplayInstallHandlers / errDisplayHandler): OSSetErrorHandler hooks dump the
  *     exception type, DSISR/SRR0, the stack trace and a full GPR/SPR
  *     register window straight into the external framebuffers, flipping
@@ -56,8 +56,8 @@ extern u16* externalFrameBuffer0;
 
 u16 gErrExceptionType;
 OSContext* gErrContext;
-u32 lbl_803DDA38;
-u32 lbl_803DDA34;
+u32 gErrDsisr;
+u32 gErrDar;
 u16* debugDrawFrameBuffer;
 u16* debugFrameBuffer;
 u8 enableDebugText;
@@ -173,7 +173,6 @@ static inline void errDisplayFillBackdrop(void)
         x++;
     } while (x < 0x280);
 }
-void* errDisplayThreadMain(void* unused);
 
 int debugPrintDrawGlyph(int unused, int c)
 {
@@ -234,7 +233,7 @@ int debugPrintDrawGlyph(int unused, int c)
     {
         px = (int)((f32)debugPrintXpos * (gDebugScaleX + gDebugScaleBiasX));
         py = (int)((f32)debugPrintYpos * (gDebugScaleY + gDebugScaleBiasY));
-        gxDebugTextureFn_80078c1c();
+        gxSetDebugTextMode();
         textRenderChar(px << 2, py << 2,
                        (int)(4.0f * ((f32)c * (gDebugScaleX + gDebugScaleBiasX) + px)),
                        (int)(4.0f * (10.0f * (gDebugScaleY + gDebugScaleBiasY) + py)),
@@ -551,7 +550,7 @@ void debugPrintDraw(int ctx)
         gDebugPrintOriginY = 0x20;
         gDebugMarginBottom = sh - 0x20;
     }
-    gxDebugTextureFn_80078c1c();
+    gxSetDebugTextMode();
     p = debugLogBuffer;
     tx = gDebugPrintOriginX;
     debugPrintXpos = tx;
@@ -734,7 +733,7 @@ void errDisplayInstallHandlers(void)
     OSSetErrorHandler(OS_ERROR_PROTECTION, (OSErrorHandler)errDisplayHandler);
     OSSetErrorHandler(OS_ERROR_ISI, (OSErrorHandler)errDisplayHandler);
     OSSetErrorHandler(OS_ERROR_ALIGNMENT, (OSErrorHandler)errDisplayHandler);
-    OSCreateThread(&gErrDisplayThread, errDisplayThreadMain, 0, gErrDisplayThreadStack + 4096, 4096, 0,
+    OSCreateThread(&gErrDisplayThread, errorThreadFunc, 0, gErrDisplayThreadStack + 4096, 4096, 0,
                    OS_THREAD_ATTR_DETACH);
 }
 
@@ -743,7 +742,7 @@ void reportAllocFail(int region0SizeKb, int region0FreeKb, int region1SizeKb, in
                      int largestFree1)
 {
 }
-void* errDisplayThreadMain(void* unused)
+void* errorThreadFunc(void* unused)
 {
     char* strs = (char*)gDebugFontGlyphs;
     void* (*self[1])(void*);
@@ -751,7 +750,6 @@ void* errDisplayThreadMain(void* unused)
     u32* sp;
     int depth;
     int hold;
-    int x;
     int h, h2;
     int b;
     ErrStackFrame* frame;
@@ -775,7 +773,7 @@ void* errDisplayThreadMain(void* unused)
         GXSetBreakPtCallback(NULL);
         __GXAbortWaitPECopyDone();
         OSRestoreInterrupts(lvl);
-        self[0] = errDisplayThreadMain;
+        self[0] = errorThreadFunc;
         while (1)
         {
             if (enableDebugText != 0)
@@ -966,7 +964,7 @@ void errDisplayHandler(OSError error, OSContext* context, u32 dsisr, u32 dar)
 {
     gErrExceptionType = error;
     gErrContext = context;
-    lbl_803DDA38 = dsisr;
-    lbl_803DDA34 = dar;
+    gErrDsisr = dsisr;
+    gErrDar = dar;
     OSResumeThread(&gErrDisplayThread);
 }

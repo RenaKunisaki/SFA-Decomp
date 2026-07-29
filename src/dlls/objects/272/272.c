@@ -6,7 +6,6 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
 
@@ -43,7 +42,7 @@
 #define DOOR_MOVEMENT_SFX_358          275
 #define DOOR_ENDPOINT_SFX_358          504
 
-int Door_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int Door_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int eventIndex;
     DoorState* state;
     DoorPlacement* placement;
@@ -199,7 +198,7 @@ void Door_init(GameObject* obj, DoorPlacement* placement) {
     if (mainGetBit(placement->closeReadyGameBit) != 0) {
         state->closeFlags |= DOOR_CLOSE_FLAG_READY;
     }
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case DOOR_SEQUENCE_1101: {
         s32 subtype = obj->anim.mapEventSlot;
         switch (subtype) {

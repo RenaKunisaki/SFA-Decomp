@@ -75,7 +75,7 @@
 #include "main/dll/modgfx.h"
 #include "dolphin/gx/GXFrameBuffer.h"
 extern Texture* gNewShadowHeavyFogTexture;
-extern u8 lbl_803DCF80;
+extern u8 gNewShadowHeavyFogIntensity;
 
 #define READ_TEXTURE_U16(address) (*(u16*)(address))
 #define WRITE_TEXTURE_U16(address, value) (*(u16*)(address) = (value))
@@ -259,18 +259,18 @@ void updateHeavyFogTexture(int intensity)
         }
     }
     memcpyToCache((u8*)gNewShadowHeavyFogTexture + 0x60, cache, 0);
-    lbl_803DCF80 = intensity;
+    gNewShadowHeavyFogIntensity = intensity;
 }
 
-CameraViewSlot* gNewShadowCurrentViewSlot;
+Camera* gNewShadowCurrentViewSlot;
 u32 gNewShadowReflectionSmallTexture;
 Texture* gNewShadowCausticTexture;
 u32 gNewShadowReflectionTexture2;
 u32 gNewShadowDiskTexture;
 u32 gNewShadowSmallDiskTexture;
 u32 gNewShadowBumpTexture;
-u32 lbl_803DCFCC;
-Texture* lbl_803DCFC8;
+u32 gNewShadowWhirlpoolTexture;
+Texture* gNewShadowHeatHazeTexture;
 u32 gNewShadowSnowFlashTexture;
 Texture* gNewShadowRadialTexture;
 Texture* gNewShadowDistortionTexture;
@@ -279,8 +279,8 @@ Texture* gNewShadowLightningTexture;
 Texture* gNewShadowRingTexture;
 f32 gNewShadowReflectionScrollX;
 f32 gNewShadowReflectionScrollY;
-f32 lbl_803DCFA4;
-u16 lbl_803DCFA0;
+f32 gNewShadowDistortionWaveOffset;
+u16 gNewShadowDistortionWavePhase;
 u32 gNewShadowRampTexture;
 u32 gNewShadowInverseRampTexture;
 u32 gNewShadowReflectionGradientTexture;
@@ -288,7 +288,7 @@ u32 gNewShadowFalloffTexture;
 u8 gNewShadowFrameIndex;
 int gNewShadowLightAngleY;
 int gNewShadowLightAngleX;
-u8 lbl_803DCF80;
+u8 gNewShadowHeavyFogIntensity;
 Texture* gNewShadowReflectionTexture;
 u8 gNewShadowCasterCount;
 
@@ -310,7 +310,7 @@ extern u32 gNewShadowReflectionGradientTexture;
 extern u32 gNewShadowInverseRampTexture;
 extern u32 gNewShadowFalloffTexture;
 extern u32 gNewShadowSnowFlashTexture;
-extern Texture* lbl_803DCFC8;
+extern Texture* gNewShadowHeatHazeTexture;
 extern Texture* gNewShadowRingTexture;
 extern Texture* gNewShadowLightningTexture;
 extern Texture* gNewShadowDistortionTexture;
@@ -320,9 +320,9 @@ extern u32 gNewShadowDiskTexture;
 extern u32 gNewShadowReflectionTexture2;
 extern Texture* gNewShadowCausticTexture;
 extern f32 gNewShadowReflectionScrollY;
-extern f32 lbl_803DCFA4;
+extern f32 gNewShadowDistortionWaveOffset;
 extern u32 gNewShadowBumpTexture;
-extern u32 lbl_803DCFCC;
+extern u32 gNewShadowWhirlpoolTexture;
 extern u32 gNewShadowReflectionSmallTexture;
 extern u8 gNewShadowFrameIndex;
 u8 lbl_8030E8B0[0xD8] = {
@@ -342,9 +342,9 @@ u8 lbl_8030E8B0[0xD8] = {
     0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x09, 0x00,
 };
 extern u8 gNewShadowCasterCount;
-extern CameraViewSlot* gNewShadowCurrentViewSlot;
+extern Camera* gNewShadowCurrentViewSlot;
 extern f32 gNewShadowReflectionScrollY, gNewShadowReflectionScrollX;
-extern u16 lbl_803DCFA0;
+extern u16 gNewShadowDistortionWavePhase;
 extern int gNewShadowLightAngleX, gNewShadowLightAngleY;
 
 extern inline float sqrtf(float x)
@@ -701,7 +701,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     f32 mc54[3], mc48[3];
     Vec vA, v30;
     Vec dot24, proj;
-    CameraViewSlot* slot;
+    Camera* slot;
     NewShadowData* shadowData = (NewShadowData*)gNewShadowEntries;
     void* layerTables;
     u32 blocks;
@@ -717,10 +717,10 @@ void renderShadows(int unused0, int unused1, int unused2)
 
     if (gNewShadowCasterCount == 0)
         return;
-    Camera_DisableViewYOffset();
+    CameraShake_Disable();
     sortShadowEntriesDescending((ShadowSortEntry*)shadowData->casters, gNewShadowCasterCount);
     Camera_SetCurrentViewIndex(1);
-    slot = Camera_GetCurrentViewSlot();
+    slot = Camera_GetCurrent();
     savedFovY = Camera_GetFovY();
     Camera_SetFovY(gNewShadowFovY);
     Camera_SetAspectRatio(1.0f);
@@ -999,7 +999,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     Camera_UpdateViewMatrices();
     Camera_RebuildProjectionMatrix();
     Camera_ApplyFullViewport();
-    Camera_EnableViewYOffset();
+    CameraShake_Enable();
 }
 
 extern NewShadowCaster gNewShadowCasterTable[NEW_SHADOW_MAX_QUEUED_CASTERS];
@@ -1062,7 +1062,7 @@ void getNewShadowSnowFlashTexture(u32* p)
 }
 void getNewShadowHeatHazeTexture(Texture** p)
 {
-    *p = lbl_803DCFC8;
+    *p = gNewShadowHeatHazeTexture;
 }
 void getNewShadowRingTexture(Texture** out)
 {
@@ -1129,7 +1129,7 @@ Texture* gNewShadowNoiseTexFrames[0x10];
 
 f32 getNewShadowDistortionWaveOffset(void)
 {
-    return lbl_803DCFA4;
+    return gNewShadowDistortionWaveOffset;
 }
 
 void loadNewShadowBumpTexture(int texMapId)
@@ -1140,7 +1140,7 @@ void loadNewShadowBumpTexture(int texMapId)
 void selectWhirlpoolTexture(int id)
 {
     register int idCopy = id;
-    Texture* p = (Texture*)lbl_803DCFCC;
+    Texture* p = (Texture*)gNewShadowWhirlpoolTexture;
     if (p->preloaded != 0)
     {
         struct _GXTexObj* obj = textureGetGXTexObj(p);
@@ -1254,9 +1254,9 @@ void maybeHudFn_8006c91c(void)
             gNewShadowReflectionScrollY = gNewShadowReflectionScrollY - 256.0f;
     }
     gNewShadowCasterCount = 0;
-    gNewShadowCurrentViewSlot = Camera_GetCurrentViewSlot();
-    lbl_803DCFA0 = (u16)(lbl_803DCFA0 + framesThisStep * 0x28a);
-    lbl_803DCFA4 = 0.2f * mathSinfHighPrecision(6.284f * (f32)(u32)lbl_803DCFA0 / 65536.0f);
+    gNewShadowCurrentViewSlot = Camera_GetCurrent();
+    gNewShadowDistortionWavePhase = gNewShadowDistortionWavePhase + framesThisStep * 0x28a;
+    gNewShadowDistortionWaveOffset = 0.2f * mathSinfHighPrecision(6.284f * (f32)(u32)gNewShadowDistortionWavePhase / 65536.0f);
     mapClearBlockEdgeFlags();
     gNewShadowFrameIndex = (gNewShadowFrameIndex + 1) % NEW_SHADOW_FRAME_COUNT;
     if (isHeavyFogEnabled())
@@ -1270,7 +1270,7 @@ void maybeHudFn_8006c91c(void)
             v = 0x40;
         else
             v = (int)(64.0f * (hi - z) / (hi - lo));
-        if ((u8)v != lbl_803DCF80)
+        if ((u8)v != gNewShadowHeavyFogIntensity)
             updateHeavyFogTexture((u8)v);
     }
 }
@@ -1319,13 +1319,13 @@ void createNewShadowDistortionTexture(void)
     f32 dist;
     f32 s;
     f32 t;
+    f32 normY;
     gNewShadowDistortionTexture = textureAlloc(0x100, 0x100, 3, 0, 0, 0, 0, 1, 1);
     for (y = 0; y < 0x100; y++)
     {
         x = 0;
         yhi = (y >> 2) * 0x20;
         ylo = (y & 3) * 2;
-        dirY = y - 127.5f;
         for (; x < 0x100; x++)
         {
             u8* rowBase;
@@ -1336,9 +1336,10 @@ void createNewShadowDistortionTexture(void)
             tileRow = rowBase + yhi;
             tileRow += (x & 3) * 8;
             texel = tileRow + (x >> 2) * 0x800;
+            dirY = y - 127.5f;
             dirX = x - 127.5f;
             dist = sqrtf(dirY * dirY + dirX * dirX);
-            dirY /= dist;
+            normY = dirY / dist;
             dirX /= dist;
             if (dist <= 112.0f)
             {
@@ -1349,12 +1350,12 @@ void createNewShadowDistortionTexture(void)
             {
                 s = 0.0f;
             }
-            dirY *= s;
+            normY *= s;
             dirX *= s;
-            dirY = lbl_803DEDC0 * dirY + lbl_803DEDBC;
+            normY = lbl_803DEDC0 * normY + lbl_803DEDBC;
             dirX = lbl_803DEDC0 * dirX + lbl_803DEDBC;
             ((NewShadowVectorTexel*)(texel + 0x60))->packedXY =
-                (u16)((int)dirX | (((int)dirY & 0xffff) << 8));
+                (u16)((int)dirX | (((int)normY & 0xffff) << 8));
         }
     }
     DCFlushRange(gNewShadowDistortionTexture + 1, gNewShadowDistortionTexture->dataSize);
@@ -1376,7 +1377,7 @@ void evalNoisePlacements(f32 px, f32 pz, f32 frame, f32* placements, int count, 
         f32 over = 0.0f;
         if (frame < place[0])
         {
-            f32 mx, mz, t, s0, tmp, p2lo, d2, sq, ratio, frac, depth;
+            f32 mx, mz, t, s0, tmp, p2lo, sq, ratio, frac, depth;
             t = lbl_803DED3C + (place[0] - frame) / place[0];
             if (t > 1.0f)
                 t = 1.0f;
@@ -1825,6 +1826,7 @@ void allocLotsOfTextures(void)
     f32 cx;
     f32 d2;
     f32 v;
+    int bumpRowOff;
 
     u8 saved = testAndSet_onlyUseHeap3(1);
 
@@ -1892,10 +1894,10 @@ void allocLotsOfTextures(void)
             f32 inv = 1.0f / mx;
             for (j = 0; j < 0x40; j++)
             {
-                int rowoff, lowoff;
+                int lowoff;
                 f32 fj, fj2;
                 i = 0;
-                rowoff = (j >> 2) * 0x20;
+                bumpRowOff = (j >> 2) * 0x20;
                 lowoff = (j & 3) * 2;
                 fj = j - 32.0f;
                 fj2 = (f32)(j + 1) - 32.0f;
@@ -1907,7 +1909,7 @@ void allocLotsOfTextures(void)
                     int bi, ci, ai;
                     rowCoord = fj * lbl_803DEDFC;
                     rc2 = fj2 * lbl_803DEDFC;
-                    dst += rowoff;
+                    dst += bumpRowOff;
                     dst += (i & 3) * 8;
                     dst += (i >> 2) * 0x200;
                     cc = (f32)i - 32.0f;
@@ -1948,8 +1950,8 @@ void allocLotsOfTextures(void)
     }
     DCFlushRange((void*)(gNewShadowBumpTexture + 0x60), ((Texture*)gNewShadowBumpTexture)->dataSize);
 
-    lbl_803DCFCC = (u32)textureLoadAsset(0x5b0);
-    lbl_803DCFC8 = textureLoadAsset(0x600);
+    gNewShadowWhirlpoolTexture = (u32)textureLoadAsset(0x5b0);
+    gNewShadowHeatHazeTexture = textureLoadAsset(0x600);
     gNewShadowSnowFlashTexture = (u32)textureLoadAsset(0xc18);
 
     gNewShadowRampTexture = (int)textureAlloc(0x100, 4, 1, 0, 0, 0, 0, 0, 0);

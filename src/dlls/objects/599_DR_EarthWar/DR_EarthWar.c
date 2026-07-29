@@ -10,7 +10,6 @@
 #include "main/objHitReact.h"
 #include "main/objhits.h"
 #include "main/objanim.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/resource.h"
 #include "main/dll/path_control_interface.h"
@@ -226,7 +225,7 @@ extern ObjModelChainDesc* gEarthWarriorTailChainDesc;
 #define DREARTHWARRIOR_OBJFLAG_PARENT_SLACK 0x1000
 
 #define DREARTHWARRIOR_CHILD_OBJ_HELPER   0x6f5
-/* attacker seqId whose hits are ignored here (retail OBJECTS.bin). */
+/* attacker romDefNo whose hits are ignored here (retail OBJECTS.bin). */
 #define DREARTHWARRIOR_ATTACKER_SEQID_SWORD 0x23 /* "sword" (DLL 0xE2) */
 #define DREARTHWARRIOR_EFFECT_RESOURCE_ID 0x5a /* shared effect resource -> gEarthWarriorResource */
 
@@ -459,8 +458,8 @@ int DR_EarthWarrior_stateHandler03(GameObject* obj, int baddie)
             if (inner->sub.health <= 0)
             {
                 inner->sub.unk8EC = lbl_803DC76C;
-                Camera_EnableViewYOffset();
-                CameraShake_SetAllMagnitudes(1.0f);
+                CameraShake_Enable();
+                CameraShake_SetOffset(1.0f);
                 playerAddHealth(Obj_GetPlayerObject(), -1);
                 inner->sub.health = 0;
             }
@@ -712,7 +711,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
         if ((skip != 0 || (void*)q->prevMoveTable != (void*)q->moveTable ||
              (obj)->anim.currentMove !=
                  *(s16*)(q->moveTable + q->attackPhase * 2)) &&
-            (ObjAnim_GetCurrentEventCountdown((ObjAnimComponent*)obj) == 0 ||
+            (ObjAnim_GetCurrentEventCountdown(&obj->anim) == 0 ||
              ((ByteFlags*)&q->flags3F2)->b10 != 0))
         {
             if ((obj)->anim.currentMove == 0x14)
@@ -726,7 +725,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
     if (!((ByteFlags*)&q->flags3F0)->b80 && !((ByteFlags*)&q->flags3F0)->b40 &&
         !((ByteFlags*)&inner->sub.flags994)->b01)
     {
-        if (ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj,
+        if (ObjAnim_SampleRootCurvePhase(&obj->anim,
                                          ((EarthWarriorState*)state)->baddie.animSpeedC,
                                          (f32*)(state + 0x2a0)) == 0)
         {
@@ -803,7 +802,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
         (obj)->anim.currentMove == *(s16*)(q->moveTable + 0x32))
     {
         if (((BaddieState*)baddie)->moveDone != 0 &&
-            ObjAnim_GetCurrentEventCountdown((ObjAnimComponent*)obj) == 0 &&
+            ObjAnim_GetCurrentEventCountdown(&obj->anim) == 0 &&
             !((ByteFlags*)&inner->sub.flags994)->b01)
         {
             ObjAnim_SetCurrentMove((int)obj, moveId, 0.0f, 0);
@@ -846,7 +845,7 @@ int DR_EarthWarrior_stateHandler00(GameObject* obj)
     return 2;
 }
 
-int DR_EarthWarrior_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int DR_EarthWarrior_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     EarthWarriorState* inner = (obj)->extra;
     int i;
@@ -1099,7 +1098,7 @@ void DR_EarthWarrior_hitDetect(GameObject* obj)
                     return;
                 }
                 Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&hx, 5.0f);
-                if (hit == 0x1a || hitObj == Obj_GetPlayerObject() || ((GameObject*)hitObj)->anim.seqId == DREARTHWARRIOR_ATTACKER_SEQID_SWORD)
+                if (hit == 0x1a || hitObj == Obj_GetPlayerObject() || ((GameObject*)hitObj)->anim.romDefNo == DREARTHWARRIOR_ATTACKER_SEQID_SWORD)
                 {
                     return;
                 }
@@ -1189,7 +1188,7 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
     int slot;
     Obj_GetPlayerObject();
     sub = inner + 0xb58;
-    slot = (int)Camera_GetCurrentViewSlot();
+    slot = (int)Camera_GetCurrent();
     ((EarthWarriorState*)inner)->baddie.hitPoints = 0;
     ((EarthWarriorState*)inner)->baddie.flags0 &= ~0x8000;
     if (((EarthWarriorState*)inner)->sub.rideState == 2)
@@ -1489,10 +1488,10 @@ u8 gDREarthWarriorRowIndices[960] = {
     64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154,
 };
 
-s32 lbl_8033566C[4] = {0x17, 0x18, 0x19, 0x1A};
+s32 gEarthWarriorTailChainJointIndices[4] = {0x17, 0x18, 0x19, 0x1A};
 
-ObjModelChainDesc lbl_803DC760 = {lbl_8033566C, 4};
-ObjModelChainDesc* gEarthWarriorTailChainDesc = &lbl_803DC760;
+ObjModelChainDesc gEarthWarriorTailChain = {gEarthWarriorTailChainJointIndices, 4};
+ObjModelChainDesc* gEarthWarriorTailChainDesc = &gEarthWarriorTailChain;
 
 ObjectDescriptor24WithPadding gDR_EarthWarriorObjDescriptor = {
     {

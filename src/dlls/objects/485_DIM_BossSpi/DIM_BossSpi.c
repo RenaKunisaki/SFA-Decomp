@@ -78,7 +78,7 @@ void DIMbossspit_updateBurst(GameObject* obj) {
                           DIMBOSSSPIT_PARTFX_MODEL_NONE, NULL);
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_gcexp1_c);
         Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy311);
-        CameraShake_SetAllMagnitudes(3.0f);
+        CameraShake_SetOffset(3.0f);
         doRumble(12.0f);
         if (((DIMbossSpitState*)stateAddress)->light != NULL) {
             modelLightStruct_setEnabled(((DIMbossSpitState*)stateAddress)->light, 0, 1.0f);
@@ -116,8 +116,6 @@ void DIMbossspit_updateBurst(GameObject* obj) {
                       &radius);
 }
 
-const f32 gDimBossSpitGravity[1] = {0.07f};
-const f32 gDimBossSpitVelocityDamping[1] = {0.97f};
 
 int DIMbossspit_getExtraSize(void) {
     return sizeof(DIMbossSpitState);
@@ -142,14 +140,15 @@ void DIMbossspit_free(GameObject* objArg) {
 }
 
 void DIMbossspit_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
-    ModelLightStruct* stateOrLight;
+    DIMbossSpitState* state;
+    ModelLightStruct* light;
 
-    stateOrLight = obj->extra;
+    state = obj->extra;
     if (visible != 0) {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
-        stateOrLight = ((DIMbossSpitState*)stateOrLight)->light;
-        if (((stateOrLight != 0) && (stateOrLight->glowType != 0)) && (stateOrLight->enabled != 0)) {
-            queueGlowRender(stateOrLight);
+        light = state->light;
+        if (((light != 0) && (light->glowType != 0)) && (light->enabled != 0)) {
+            queueGlowRender(light);
         }
     }
     return;
@@ -174,8 +173,8 @@ void DIMbossspit_update(GameObject* obj) {
         ObjHits_SetHitVolumeSlot(&obj->anim, DIMBOSSSPIT_HIT_VOLUME_SLOT_FLIGHT_AND_BURST, DIMBOSSSPIT_HIT_TYPE_FLIGHT,
                                  0);
         ObjHitbox_SetSphereRadius(&obj->anim, DIMBOSSSPIT_FLIGHT_RADIUS);
-        obj->anim.velocityY = obj->anim.velocityY - gDimBossSpitGravity[0] * timeDelta;
-        obj->anim.velocityY = obj->anim.velocityY * gDimBossSpitVelocityDamping[0];
+        obj->anim.velocityY = obj->anim.velocityY - 0.07f * timeDelta;
+        obj->anim.velocityY *= 0.97f;
         obj->anim.rotX = DIMBOSSSPIT_FLIGHT_ROT_X_SPEED * timeDelta + (f32)obj->anim.rotX;
         obj->anim.rotZ = DIMBOSSSPIT_FLIGHT_ROT_YZ_SPEED * timeDelta + (f32)obj->anim.rotZ;
         obj->anim.rotY = DIMBOSSSPIT_FLIGHT_ROT_YZ_SPEED * timeDelta + (f32)obj->anim.rotY;

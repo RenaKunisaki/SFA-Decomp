@@ -44,11 +44,11 @@
 #include "main/mm.h"
 #include "main/model_light.h"
 
-f32 lbl_803DC340 = -0.01f;
-f32 lbl_803DC344 = 0.3f;
-s16 lbl_803DC348 = 0x3C;
-f32 lbl_803DC34C = 60.0f;
-int lbl_803DC350 = 0x0A;
+f32 gFirePipeEffectScale = -0.01f;
+f32 gFirePipeEffectVelocityY = 0.3f;
+s16 gFirePipeCycleTimerThreshold = 0x3C;
+f32 gFirePipeGlowScale = 60.0f;
+int gFirePipeEmitTimerReset = 0x0A;
 
 #define FIREPIPE_OBJGROUP 0x4a
 
@@ -199,7 +199,7 @@ void firepipe_updateState(GameObject* obj)
     else
     {
         priorityHit = ObjHits_GetPriorityHit(obj, 0, 0, 0);
-        switch (obj->anim.seqId)
+        switch (obj->anim.romDefNo)
         {
         case FIREPIPE_OBJ_BOSSDRAKOR_FIRE:
             if ((priorityHit == 0xf) || (priorityHit == 0xe))
@@ -250,7 +250,7 @@ void firepipe_updateState(GameObject* obj)
                         }
                         else
                         {
-                            s16toFloat(&ex2->cycleTimer, (s16)(md2->startOffset * 0x3c));
+                            s16toFloat(&ex2->cycleTimer, (md2->startOffset * 0x3c));
                             if (md2->startOffset >= md2->cycleTime)
                             {
                                 ((FirePipeBitFlags*)&ex2->flags)->emitting = 0;
@@ -259,7 +259,7 @@ void firepipe_updateState(GameObject* obj)
                     }
                     else
                     {
-                        s16toFloat(&ex2->cycleTimer, (s16)(cycleTime * 0x3c));
+                        s16toFloat(&ex2->cycleTimer, (cycleTime * 0x3c));
                     }
                 }
             }
@@ -295,7 +295,7 @@ void firepipe_updateState(GameObject* obj)
 
         if ((timerIsActive(&extra->cycleTimer) != 0) && (flags->emitting == 0))
         {
-            if (extra->cycleTimer < lbl_803DC348)
+            if (extra->cycleTimer < gFirePipeCycleTimerThreshold)
             {
                 if ((extra->glowLight == 0) && (flags->glowEnabled != 0))
                 {
@@ -304,15 +304,15 @@ void firepipe_updateState(GameObject* obj)
                     {
                         modelLightStruct_setEnabled(extra->glowLight, 0, 0.0f);
                         modelLightStruct_setEnabled(extra->glowLight, 1, 1.0f);
-                        if (obj->anim.seqId == FIREPIPE_OBJ_ICE_HOLE)
+                        if (obj->anim.romDefNo == FIREPIPE_OBJ_ICE_HOLE)
                         {
                             modelLightStruct_setupGlow(extra->glowLight, 0, 0, 0xb4, 0xff, 0x64,
-                                                       lbl_803DC34C * obj->anim.rootMotionScale);
+                                                       gFirePipeGlowScale * obj->anim.rootMotionScale);
                         }
                         else
                         {
                             modelLightStruct_setupGlow(extra->glowLight, 0, 0xff, 0x80, 0, 0x64,
-                                                       lbl_803DC34C * obj->anim.rootMotionScale);
+                                                       gFirePipeGlowScale * obj->anim.rootMotionScale);
                         }
                         modelLightStruct_setPosition(extra->glowLight, 0.0f, 0.0f, 3.0f);
                         radius = 240.0f * obj->anim.rootMotionScale;
@@ -345,7 +345,7 @@ void firepipe_updateState(GameObject* obj)
         {
             if (mapData->cycleTime != 0)
             {
-                s16toFloat(&extra->cycleTimer, (s16)(mapData->cycleTime * 0x3c));
+                s16toFloat(&extra->cycleTimer, (mapData->cycleTime * 0x3c));
             }
             flags->emitting = (flags->emitting == 0);
         }
@@ -379,10 +379,10 @@ void firepipe_updateState(GameObject* obj)
             effectObj->anim.localPosZ = obj->anim.localPosZ;
             effectObj->anim.rotX = obj->anim.rotX;
             effectObj->anim.rotY = obj->anim.rotY;
-            effectObj->anim.velocityY = lbl_803DC344;
+            effectObj->anim.velocityY = gFirePipeEffectVelocityY;
         }
         storeZeroToFloatParam(&extra->emitTimer);
-        s16toFloat(&extra->emitTimer, lbl_803DC350);
+        s16toFloat(&extra->emitTimer, gFirePipeEmitTimerReset);
     }
 
     if (flags->emitting != 0)
@@ -458,7 +458,7 @@ void firepipe_render(GameObject* obj, int p1, int p2, int p3, int p4, char visib
 
 void firepipe_update(GameObject* obj)
 {
-    obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+    obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
     firepipe_updateState(obj);
 }
 
@@ -519,12 +519,12 @@ void firepipe_init(GameObject* obj, FirePipeMapData* mapData)
         }
         extra->clearVolumeA = 0;
         extra->clearVolumeB = 0;
-        switch (obj->anim.seqId)
+        switch (obj->anim.romDefNo)
         {
         case FIREPIPE_OBJ_ICE_HOLE:
             extra->effectType = FIREPIPE_EFFECT_TYPE_ICE_HOLE;
             extra->effectMode = 1;
-            extra->effectScale = lbl_803DC340;
+            extra->effectScale = gFirePipeEffectScale;
             break;
         case FIREPIPE_OBJ_STEAM_HOLE_FI:
             extra->effectType = FIREPIPE_EFFECT_TYPE_STEAM_HOLE_FI;
@@ -546,7 +546,7 @@ void firepipe_init(GameObject* obj, FirePipeMapData* mapData)
         default:
             extra->effectType = FIREPIPE_EFFECT_TYPE_FLAME;
             extra->effectMode = 0;
-            extra->effectScale = -lbl_803DC340;
+            extra->effectScale = -gFirePipeEffectScale;
             extra->clearVolumeA = 0x32c;
             extra->clearVolumeB = 0x32e;
             break;

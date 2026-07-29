@@ -4,6 +4,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "dlls/object_descriptor.h"
 
 u8 lbl_803DB898[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 lbl_803DB8A0[8] = {0, 0, 0, 1, 0, 2, 0, 0};
@@ -183,6 +184,16 @@ u8 lbl_80311DA8[100] = {0, 30, 0, 0, 0, 0,   0, 0,  0, 31, 255, 226, 0, 0, 0, 0,
                         0, 15, 0, 0, 7, 208, 0, 8,  0, 0,  255, 241, 0, 0, 7, 208, 0,   8,   0, 0,  0, 0, 0, 1,  0, 2,
                         0, 1,  0, 3, 0, 2,   0, 0,  0, 80, 0,   0,   0, 0, 0, 0,   0,   0,   0, 0,  0, 0};
 
-void* lbl_80311E0C[9] = {(void*)0x00000000, (void*)0x00000000,     (void*)0x00000000,
-                         (void*)0x00030000, (void*)0x00000000,     (void*)0x00000000,
-                         (void*)0x00000000, StaffCollision_func03, (void*)0x00000000};
+ObjectDescriptor4WithPadding StaffCollision_funcs = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+        0,
+        0,
+        0,
+        (ObjectDescriptorCallback)StaffCollision_func03,
+    },
+    0,
+};

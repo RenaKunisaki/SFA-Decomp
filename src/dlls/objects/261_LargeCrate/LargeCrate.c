@@ -172,7 +172,7 @@ void LargeCrate_updateConveyorSlide(GameObject* obj, LargeCrateState* state) {
         obj->anim.velocityX = -(f32)slideAngle / state->slidePhase;
         if ((previousVelocityX <= 0.0f && obj->anim.velocityX >= 0.0f) ||
             (previousVelocityX >= 0.0f && obj->anim.velocityX <= 0.0f)) {
-            linkedId = placement->mapId;
+            linkedId = placement->ident;
             linkedIdOffset = linkedId - LARGECRATE_LINKED_ID_BASE;
             if ((linkedIdOffset == LARGECRATE_ROB_WAVE_ID_65D7) ||
                 ((linkedIdOffset - LARGECRATE_ROB_WAVE_ID_65D5) <=
@@ -406,7 +406,7 @@ void LargeCrate_render(GameObject* obj, int renderArg2, int renderArg3, int rend
 
     state = obj->extra;
     placement = (LargeCratePlacement*)obj->anim.placementData;
-    if (((*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId) == 0) ||
+    if (((*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) == 0) ||
         (((breakTimer = state->breakTimer) != 0) && (breakTimer <= LARGECRATE_BREAK_FRAMES)) ||
         (state->hiddenTimer > 0.0f)) {
         obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
@@ -449,7 +449,7 @@ void LargeCrate_update(GameObject* obj) {
     if (obj->anim.parent != NULL) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
-    if ((*gMapEventInterface)->shouldNotSaveTime(placement->base.mapId) == 0) {
+    if ((*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) == 0) {
         ObjHits_DisableObject(obj);
     } else {
         if (state->hiddenTimer > (zero = 0.0f)) {
@@ -479,7 +479,7 @@ void LargeCrate_update(GameObject* obj) {
                 if ((state->breakTimer -= framesThisStep) <= 0) {
                     if (state->respawnDelay > 0) {
                         state->hiddenTimer = 1.0f;
-                        (*gMapEventInterface)->addTime(placement->base.mapId, (f32)state->respawnDelay);
+                        (*gMapEventInterface)->addTime(placement->base.ident, (f32)state->respawnDelay);
                     } else {
                         state->hiddenTimer = 1.0f;
                     }
@@ -514,12 +514,12 @@ void LargeCrate_update(GameObject* obj) {
                 Obj_SetModelColorFadeRecursive(obj, 0xF, 200, 0, 0, 1);
                 effectParams.posX = effectParams.posX + playerMapOffsetX;
                 effectParams.posZ = effectParams.posZ + playerMapOffsetZ;
-                objLightFn_8009a1dc((void*)obj, LARGECRATE_EFFECT_SCALE, &effectParams, 1, 0);
+                objDoHitParticleFx((void*)obj, LARGECRATE_EFFECT_SCALE, &effectParams, 1, 0);
                 if (state->damageTaken < state->damageThreshold) {
                     if (Sfx_IsPlayingFromObject(0, (u16)state->hitSfxId) == 0) {
                         Sfx_PlayFromObject((int)obj, (u16)state->hitSfxId);
                     }
-                    if (obj->anim.seqId == LARGECRATE_SEQUENCE_VARIANT_A) {
+                    if (obj->anim.romDefNo == LARGECRATE_SEQUENCE_VARIANT_A) {
                         state->spinSpeed = randomGetRange(LARGECRATE_SPIN_SPEED_MIN, LARGECRATE_SPIN_SPEED_MAX);
                     }
                 } else {
@@ -585,7 +585,7 @@ void LargeCrate_init(GameObject* obj, LargeCratePlacement* placement) {
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     obj->anim.rotX = (s16)((int)placement->rotXByte << 8);
 
-    value = obj->anim.seqId;
+    value = obj->anim.romDefNo;
     if (value == LARGECRATE_SEQUENCE_VARIANT_A) {
         state->dropType = variantARemap.entries[state->dropType];
         state->hitSfxId = LARGECRATE_VARIANT_A_HIT_SFX;
@@ -603,7 +603,7 @@ void LargeCrate_init(GameObject* obj, LargeCratePlacement* placement) {
     state->slidePhase = slidePhase;
     state->homeX = obj->anim.localPosX;
 
-    if (obj->anim.seqId == LARGECRATE_SEQUENCE_VARIANT_C) {
+    if (obj->anim.romDefNo == LARGECRATE_SEQUENCE_VARIANT_C) {
         state->damageThreshold = 0;
     } else {
         state->damageThreshold = 2;

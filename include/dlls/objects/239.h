@@ -6,7 +6,7 @@
 #include "game/objects/object_setup.h"
 #include "main/vec_types.h"
 
-struct ObjAnimUpdateState;
+struct ObjSeqState;
 
 typedef struct PushableMoveFlags {
     u8 activelyPushed : 1;
@@ -154,7 +154,7 @@ void pushable_initWcPushBlock(GameObject* obj, PushableState* state);
 int pushable_updateMagicGem(GameObject* obj, PushableState* state);
 void pushable_initMagicGem(GameObject* obj, PushableState* state);
 void pushable_resolveCollisions(GameObject* obj, PushableState* state);
-u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, struct ObjAnimUpdateState* animUpdate);
+u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, struct ObjSeqState* animUpdate);
 void pushable_handleMsgs(GameObject* obj, int unused);
 int pushable_isRestored(GameObject* obj);
 void pushable_setModelFlag(GameObject* obj, int modelNo);
@@ -168,8 +168,8 @@ void pushable_hitDetect(GameObject* obj);
 void pushable_update(GameObject* obj);
 void pushable_init(GameObject* obj, PushableObjectDef* setup);
 
-extern int gPushableSavedMapIdCount;
-extern int gPushableSavedMapIds[0x28];
+extern int gPushableSavedIdentCount;
+extern int gPushableSavedIdents[0x28];
 extern char sPushPullObjectHitpointOverflow[];
 extern const PushableRadii gPushableDefaultBox;
 extern ObjectDescriptor14 gPushableObjDescriptor;

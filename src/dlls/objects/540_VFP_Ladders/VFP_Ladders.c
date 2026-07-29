@@ -26,7 +26,7 @@ enum
     VFPLADDERS_PHASE_SETTLED = 2
 };
 
-int vfpladders_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int vfpladders_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     return 0x0;
 }
@@ -62,7 +62,7 @@ void VFP_Ladders_update(GameObject* obj)
     setup = (VfpLaddersSetup*)(obj)->anim.placementData;
     state = (obj)->extra;
 
-    if ((obj)->anim.seqId == VFPLADDERS_TRIGGER_SEQID)
+    if ((obj)->anim.romDefNo == VFPLADDERS_TRIGGER_SEQID)
     {
         if (mainGetBit(state->triggerGameBit) != 0)
         {

@@ -286,7 +286,7 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state)
         sub->animSpeed = 0.1f;
     }
 
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, LANDED_ARWING_OBJECT_PAIR_PRIORITY, LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME, -1);
+    ObjHits_SetHitVolumeSlot(&obj->anim, LANDED_ARWING_OBJECT_PAIR_PRIORITY, LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME, -1);
     ((ObjHitsPriorityState *)obj->anim.hitReactState)->objectPairPriority = LANDED_ARWING_OBJECT_PAIR_PRIORITY;
     ((ObjHitsPriorityState *)obj->anim.hitReactState)->objectPairHitVolume = LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME;
     ObjHits_RegisterActiveHitVolumeObject(obj);
@@ -426,8 +426,6 @@ typedef struct LandedArwingMovementFlags
     u8 hitSurfaceType13 : 1;
 } LandedArwingMovementFlags;
 
-void landedarwing_resolveSurfaceCollision(GameObject* obj, LandedArwingState* state, f32* hit, f32* end);
-void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f32 targetY, f32 targetZ, f32 blend);
 void landedarwing_buildSurfaceOrientationMatrix(f32* out, f32* forward, f32* up);
 
 u32 landedarwing_updateMovementState(GameObject* obj, u32* params)
@@ -447,7 +445,7 @@ u32 landedarwing_updateMovementState(GameObject* obj, u32* params)
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
         state->animSpeed = 0.0f;
     }
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, STAFFACTION_HIT_VOLUME_SLOT, 1, -1);
+    ObjHits_SetHitVolumeSlot(&obj->anim, STAFFACTION_HIT_VOLUME_SLOT, 1, -1);
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairPriority = 9;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairHitVolume = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);
@@ -476,9 +474,6 @@ u32 landedarwing_updateMovementState(GameObject* obj, u32* params)
 void landedarwing_updateAirborneMotion(GameObject* obj, LandedArwingState* state)
 {
     f32 radius;
-    f32 dx;
-    f32 dy;
-    f32 dz;
     f32 start[3];
     f32 end[3];
     TrackQueryBounds bounds;
@@ -1323,7 +1318,7 @@ void dll_D3_update(GameObject* obj)
             *(f32*)((char*)gStaffActionHitLightParams + 0xc) = obj->anim.localPosX;
             *(f32*)((char*)gStaffActionHitLightParams + 0x10) = obj->anim.localPosY;
             *(f32*)((char*)gStaffActionHitLightParams + 0x14) = obj->anim.localPosZ;
-            objLightFn_8009a1dc(obj, 0.014f, gStaffActionHitLightParams, 1, 0);
+            objDoHitParticleFx(obj, 0.014f, gStaffActionHitLightParams, 1, 0);
         }
     }
 

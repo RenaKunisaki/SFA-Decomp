@@ -338,7 +338,7 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
 #define DBSTEALERWORM_HIT_VOLUME_SLOT 10
 
 /* fx-spawn work record: a fake ObjAnimComponent head handed to
- * objLightFn_8009a1dc / the partfx interface (same family as ktrex's
+ * objDoHitParticleFx / the partfx interface (same family as ktrex's
  * gKTRexEffectSpawnWork). */
 typedef struct DbWormEffectSpawnWork
 {
@@ -763,7 +763,7 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
     {
         if ((u32)best != (u32)obj)
         {
-            if (((GameObject*)best)->anim.seqId == DBSTEALERWORM_SEQID)
+            if (((GameObject*)best)->anim.romDefNo == DBSTEALERWORM_SEQID)
             {
                 *(int*)&baddie->targetObj = best;
                 if (randomGetRange(0, n) == 0)
@@ -811,6 +811,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     int flag;
     int zero;
     int* ptr;
+    int* keys;
     s16* vec;
     f32 frac;
     int msg0[3];
@@ -854,7 +855,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     ptr = (int*)ObjGroup_GetObjects(DBSTEALERWORM_OBJGROUP, &cnt2);
     for (i = 0, objs = ptr; i < cnt2; i++)
     {
-        if (((GameObject*)*objs)->anim.seqId == DBSTEALERWORM_SEQID)
+        if (((GameObject*)*objs)->anim.romDefNo == DBSTEALERWORM_SEQID)
         {
             tmpB = (**(int (**)(int, int, int))(*(int*)(*(int*)(*objs + 0x68)) + 0x24))(*objs, 0x83, 0);
             if ((u32)tmpB == q)
@@ -989,11 +990,11 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     }
     if (flag != 0)
     {
-        ptr = objGetLookAtJointKeys();
+        keys = objGetLookAtJointKeys();
         zero = 0;
-        for (q = 1, ptr = ptr + 1; q < 9; ptr++, q++)
+        for (q = 1, keys = keys + 1; q < 9; keys++, q++)
         {
-            vec = objModelGetVecFn_800395d8(obj, *ptr);
+            vec = objModelGetVecFn_800395d8(obj, *keys);
             if (vec != 0)
             {
                 vec[2] = zero;
@@ -2271,7 +2272,7 @@ void dbstealerworm_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
             if ((state->flags400 & 0x60) != 0)
             {
-                objParticleFn_80099d84(obj, 1.0f, 3, state->glowAlpha, 0);
+                objDoParticleFx(obj, 1.0f, 3, state->glowAlpha, 0);
             }
             path = *(char**)&sub->linkedObj;
             if (path != NULL && *(void**)(path + 0x50) != NULL)
@@ -2400,7 +2401,7 @@ void dbstealerworm_update(GameObject* objp)
                     st->posX = obj->anim.localPosX;
                     st->posY = obj->anim.localPosY;
                     st->posZ = obj->anim.localPosZ;
-                    objLightFn_8009a1dc((void*)obj, 0.014f, st, 1, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, st, 1, 0);
                 }
                 if (((GroundBaddieState*)blob)->targetState == 0)
                 {
@@ -2504,40 +2505,65 @@ void DBstealerwo_setFuncPtrs_80203c78(void)
     gDBStealerWormStateHandlersB[6] = (int)dbstealerworm_stateHandlerB06;
 }
 
-u32 gDbStealerwormScriptStealEggThrowToWorm[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
-                        0x00000009, 0x00000000, 0x00000024, 0x00000008, 0x00000000, 0x00000003,
-                        0x0000000a, 0x00000000, 0x00000003, 0x00000001, 0x00000000, 0x00000000};
-u32 gDbStealerwormScriptStealEggThrowToGroup30[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
-                        0x00000009, 0x00000000, 0x00000024, 0x00000008, 0x00000000, 0x0000001e,
-                        0x0000000a, 0x00000000, 0x0000001e, 0x00000001, 0x00000000, 0x00000000};
-u32 gDbStealerwormScriptStealEggCarryToGroup30[15] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
-                        0x00000009, 0x00000000, 0x00000024, 0x00000007, 0x00000000, 0x0000001e,
-                        0x00000001, 0x00000000, 0x00000000};
-u32 gDbStealerwormScriptStealEggThrowToGroup0[18] = {0x00000000, 0x00000000, 0x00000000, 0x00000007, 0x00000000, 0x00000024,
-                        0x00000009, 0x00000000, 0x00000024, 0x00000008, 0x00000000, 0x00000000,
-                        0x0000000a, 0x00000000, 0x00000000, 0x00000001, 0x00000000, 0x00000000};
-u32 gDbStealerwormScriptWaitForEgg[9] = {0x00000000, 0x00000000, 0x00000000, 0x0000000b, 0x00000000, 0x00000024,
-                       0x00000001, 0x00000000, 0x00000000};
-u32 gDbStealerwormScriptKillTarget[9] = {0x00000000, 0x00000000, 0x00000000, 0x0000000f, 0x00000000, 0x00000000,
-                       0x00000001, 0x00000000, 0x00000000};
-u32 gDbStealerwormScriptTable[72] = {(u32)gDbStealerwormScriptStealEggThrowToWorm, 0x00060000, (u32)gDbStealerwormScriptStealEggThrowToGroup30, 0x00060000,
+typedef enum DbStealerwormCmd
+{
+    DBSTEALERWORM_CMD_POP_OUT_OF_GROUND,
+    DBSTEALERWORM_CMD_BURST_INTO_GROUND,
+    DBSTEALERWORM_CMD_BITE_ATTACK,
+    DBSTEALERWORM_CMD_STAND_STILL,
+    DBSTEALERWORM_CMD_STAND_AND_SPIT,
+    DBSTEALERWORM_CMD_HIT_FIGHT_MAIN,
+    DBSTEALERWORM_CMD_FIGHT_DIE,
+    DBSTEALERWORM_CMD_RUNTO_OBJECT,
+    DBSTEALERWORM_CMD_RUNTO_THROW_OBJ,
+    DBSTEALERWORM_CMD_PICKUP_OBJECT,
+    DBSTEALERWORM_CMD_THROW_AT_OBJECT,
+    DBSTEALERWORM_CMD_WAIT_FOR_OBJECT,
+    DBSTEALERWORM_CMD_WAIT_FOR_THROW,
+    DBSTEALERWORM_CMD_TRY_TO_CATCH,
+    DBSTEALERWORM_CMD_CATCH_OBJECT,
+    DBSTEALERWORM_CMD_KILL_OBJECT
+} DbStealerwormCmd;
+
+#define DBSTEALERWORM_CMD_COUNT 16
+
+u32 gDbStealerwormScriptStealEggThrowToWorm[18] = {DBSTEALERWORM_CMD_POP_OUT_OF_GROUND, 0, 0,
+                        DBSTEALERWORM_CMD_RUNTO_OBJECT, 0, DBEGG_OBJGROUP,
+                        DBSTEALERWORM_CMD_PICKUP_OBJECT, 0, DBEGG_OBJGROUP,
+                        DBSTEALERWORM_CMD_RUNTO_THROW_OBJ, 0, DBSTEALERWORM_OBJGROUP,
+                        DBSTEALERWORM_CMD_THROW_AT_OBJECT, 0, DBSTEALERWORM_OBJGROUP,
+                        DBSTEALERWORM_CMD_BURST_INTO_GROUND, 0, 0};
+u32 gDbStealerwormScriptStealEggThrowToGroup30[18] = {DBSTEALERWORM_CMD_POP_OUT_OF_GROUND, 0, 0,
+                        DBSTEALERWORM_CMD_RUNTO_OBJECT, 0, DBEGG_OBJGROUP,
+                        DBSTEALERWORM_CMD_PICKUP_OBJECT, 0, DBEGG_OBJGROUP,
+                        DBSTEALERWORM_CMD_RUNTO_THROW_OBJ, 0, 30,
+                        DBSTEALERWORM_CMD_THROW_AT_OBJECT, 0, 30,
+                        DBSTEALERWORM_CMD_BURST_INTO_GROUND, 0, 0};
+u32 gDbStealerwormScriptStealEggCarryToGroup30[15] = {DBSTEALERWORM_CMD_POP_OUT_OF_GROUND, 0, 0,
+                        DBSTEALERWORM_CMD_RUNTO_OBJECT, 0, DBEGG_OBJGROUP,
+                        DBSTEALERWORM_CMD_PICKUP_OBJECT, 0, DBEGG_OBJGROUP,
+                        DBSTEALERWORM_CMD_RUNTO_OBJECT, 0, 30,
+                        DBSTEALERWORM_CMD_BURST_INTO_GROUND, 0, 0};
+u32 gDbStealerwormScriptStealEggThrowToGroup0[18] = {DBSTEALERWORM_CMD_POP_OUT_OF_GROUND, 0, 0,
+                        DBSTEALERWORM_CMD_RUNTO_OBJECT, 0, DBEGG_OBJGROUP,
+                        DBSTEALERWORM_CMD_PICKUP_OBJECT, 0, DBEGG_OBJGROUP,
+                        DBSTEALERWORM_CMD_RUNTO_THROW_OBJ, 0, 0,
+                        DBSTEALERWORM_CMD_THROW_AT_OBJECT, 0, 0,
+                        DBSTEALERWORM_CMD_BURST_INTO_GROUND, 0, 0};
+u32 gDbStealerwormScriptWaitForEgg[9] = {DBSTEALERWORM_CMD_POP_OUT_OF_GROUND, 0, 0,
+                       DBSTEALERWORM_CMD_WAIT_FOR_OBJECT, 0, DBEGG_OBJGROUP,
+                       DBSTEALERWORM_CMD_BURST_INTO_GROUND, 0, 0};
+u32 gDbStealerwormScriptKillTarget[9] = {DBSTEALERWORM_CMD_POP_OUT_OF_GROUND, 0, 0,
+                       DBSTEALERWORM_CMD_KILL_OBJECT, 0, 0,
+                       DBSTEALERWORM_CMD_BURST_INTO_GROUND, 0, 0};
+u32 gDbStealerwormScriptTable[12] = {(u32)gDbStealerwormScriptStealEggThrowToWorm, 0x00060000, (u32)gDbStealerwormScriptStealEggThrowToGroup30, 0x00060000,
                         (u32)gDbStealerwormScriptStealEggCarryToGroup30, 0x00050000, (u32)gDbStealerwormScriptStealEggThrowToGroup0, 0x00060000,
-                        (u32)gDbStealerwormScriptWaitForEgg, 0x00030000, (u32)gDbStealerwormScriptKillTarget, 0x00030000,
-                        0x706f704f, 0x75744f66, 0x47726f75, 0x6e640062,
-                        0x75727374, 0x496e746f, 0x47726f75, 0x6e006269,
-                        0x74654174, 0x7461636b, 0x20202020, 0x00737461,
-                        0x6e645374, 0x696c6c20, 0x20202000, 0x7374616e,
-                        0x64416e64, 0x53706974, 0x20200068, 0x69744669,
-                        0x6768744d, 0x61696e20, 0x20006669, 0x6768745f,
-                        0x64696520, 0x20202020, 0x0072756e, 0x746f5f4f,
-                        0x626a6563, 0x74202000, 0x72756e74, 0x6f5f5468,
-                        0x726f774f, 0x626a0070, 0x69636b75, 0x705f4f62,
-                        0x6a656374, 0x20007468, 0x726f775f, 0x41744f62,
-                        0x6a656374, 0x00776169, 0x745f666f, 0x724f626a,
-                        0x65637400, 0x57616974, 0x5f666f72, 0x5f746872,
-                        0x6f770074, 0x72795f74, 0x6f5f6361, 0x74636820,
-                        0x20006361, 0x7463685f, 0x4f626a65, 0x63742020,
-                        0x004b696c, 0x6c5f4f62, 0x6a656374, 0x20202000};
+                        (u32)gDbStealerwormScriptWaitForEgg, 0x00030000, (u32)gDbStealerwormScriptKillTarget, 0x00030000};
+char gDbStealerwormCommandNames[DBSTEALERWORM_CMD_COUNT][15] = {
+    "popOutOfGround", "burstIntoGroun", "biteAttack    ", "standStill    ",
+    "standAndSpit  ", "hitFightMain  ", "fight_die     ", "runto_Object  ",
+    "runto_ThrowObj", "pickup_Object ", "throw_AtObject", "wait_forObject",
+    "Wait_for_throw", "try_to_catch  ", "catch_Object  ", "Kill_Object   "};
 int gDbStealerwormDeathFootstepSfx[3] = {0x000001ed, 0x000001ed, 0x000001ec};
 int gDbStealerwormBurrowFootstepSfx[4] = {0x00000000, 0x000001f0, 0x000001f1, 0x000001f1};
 

@@ -30,10 +30,6 @@ u32 lbl_803DD18C;
 u32 lbl_803DD188;
 u8* gSky2State;
 s8 gSky2DrawMode;
-extern void* lbl_803DD13C;
-extern void* lbl_803DD138;
-extern void* lbl_803DD134;
-extern void* lbl_803DD130;
 
 s8 lbl_803DB750 = 1;
 int lbl_803DB754 = 1;
@@ -84,7 +80,6 @@ void skyGetCurrentAmbientAndLightColors(u8* ambientRed, u8* ambientGreen, u8* am
                                         u8* lightBlue);
 
 
-void getAmbientColor(int slot, u8* red, u8* green, u8* blue);
 
 
 void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,
@@ -124,7 +119,6 @@ void sky2GetTargetColor(int* red, int* green, int* blue, f32* blend)
 void sky2ResetStateFromConfig(u8* cfg, u8 flags)
 {
     int i;
-    u8* p2;
     int idx;
 
     if (((Sky2Config*)cfg)->flags & 0x80)
@@ -502,7 +496,7 @@ void sky2_run(void)
     u8 red;
     u8 green;
     u8 blue;
-    CameraViewSlot* cam;
+    Camera* cam;
     u8** pp;
     int i;
     u8* p;
@@ -584,7 +578,7 @@ void sky2_run(void)
         dst[23] = c154;
         lbl_803DB758 = 0;
     }
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     zv = lbl_803DF108;
     vec[0] = zv;
     vec[1] = zv;

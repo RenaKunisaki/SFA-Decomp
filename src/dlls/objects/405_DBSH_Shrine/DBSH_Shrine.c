@@ -140,7 +140,7 @@ void dbshShrine_updateHoverMotion(GameObject* obj) {
     }
 }
 
-int dbshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int dbshShrine_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     DBSHShrineState* state = obj->extra;
     GameObject* player;
     int i;
@@ -149,7 +149,7 @@ int dbshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState
     (void)unused;
     player = Obj_GetPlayerObject();
     animUpdate->savedFlags = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
 
     for (i = 0; i < animUpdate->eventCount; i++) {
         event = animUpdate->eventIds[i];
@@ -223,7 +223,7 @@ void dbshShrine_render(GameObject* obj, int renderArg2, int renderArg3, int rend
             modelLightStruct_setEnabled(state->light, 1, 1.0f);
         }
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
-        objParticleFn_80099d84(obj, 1.0f, 7, 1.0f, state->light);
+        objDoParticleFx(obj, 1.0f, 7, 1.0f, state->light);
     }
 }
 

@@ -713,7 +713,7 @@ int ktrex_stateHandlerA01(GameObject* obj, GroundBaddieState* runtime)
             Music_Trigger(MUSICTRIG_mammoth_walk, 0);
             Music_Trigger(MUSICTRIG_menu_page, 0);
             Music_Trigger(MUSICTRIG_guard_theme, 0);
-            ((ObjAnimComponent*)obj)->bankIndex = 1;
+            (&obj->anim)->bankIndex = 1;
             mainSetBits(GAMEBIT_WC_Unk0564, 1);
             mainSetBits(GAMEBIT_WC_ObjGroups, 0);
             (*gMapEventInterface)->setObjGroupStatus(13, 0, 1);
@@ -978,7 +978,7 @@ int ktrex_stateHandlerB01(GameObject* obj, GroundBaddieState* runtime)
     }
     dx = oneOverTimeDelta * (gKTRexState->posX - (obj)->anim.localPosX);
     dz = oneOverTimeDelta * (gKTRexState->posZ - (obj)->anim.localPosZ);
-    ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, sqrtf(dx * dx + dz * dz),
+    ObjAnim_SampleRootCurvePhase(&obj->anim, sqrtf(dx * dx + dz * dz),
                                  &runtime->baddie.moveSpeed);
     (obj)->anim.localPosX = gKTRexState->posX;
     (obj)->anim.localPosZ = gKTRexState->posZ;
@@ -997,7 +997,7 @@ int ktrex_stateHandlerB00(GameObject* obj, GroundBaddieState* runtime)
 
 static inline f32* KTRex_GetActiveContactPointTable(GameObject* obj)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     u8* model = (u8*)objAnim->banks[objAnim->bankIndex];
     return *(f32**)(model + 0x50);
 }
@@ -1036,7 +1036,7 @@ void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime)
     {
         return;
     }
-    contactPoints = *(f32**)((u8*)((ObjAnimComponent*)obj)->banks[((ObjAnimComponent*)obj)->bankIndex] + 0x50);
+    contactPoints = *(f32**)((u8*)(&obj->anim)->banks[(&obj->anim)->bankIndex] + 0x50);
     if (runtime->baddie.hitPoints != 0 && (hitType == 3 || hitType == 2) &&
         (gKTRexState->timerFA & 0x10) != 0 && hit == 5)
     {
@@ -1144,8 +1144,8 @@ void ktrex_updateAttackEffects(GameObject* obj)
     if ((gKTRexState->phaseFlags & 0x20000) != 0)
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_en_fireup_c);
-        Camera_EnableViewYOffset();
-        CameraShake_SetAllMagnitudes(2.0f * mag);
+        CameraShake_Enable();
+        CameraShake_SetOffset(2.0f * mag);
     }
     if ((gKTRexState->timerFA & 0x10) != 0)
     {
@@ -1173,8 +1173,8 @@ void ktrex_updateAttackEffects(GameObject* obj)
         doRumble(4.0f);
         if (mag > 0.1f)
         {
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(mag);
+            CameraShake_Enable();
+            CameraShake_SetOffset(mag);
             mainSetBits(0x554, 1);
         }
     }
@@ -1184,8 +1184,8 @@ void ktrex_updateAttackEffects(GameObject* obj)
         Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexfoot11_91);
         if (mag > 0.1f)
         {
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(2.0f * mag);
+            CameraShake_Enable();
+            CameraShake_SetOffset(2.0f * mag);
             mainSetBits(0x554, 1);
         }
     }
@@ -1195,8 +1195,8 @@ void ktrex_updateAttackEffects(GameObject* obj)
         Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexfoot11_92);
         if (mag > 0.1f)
         {
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(3.0f * mag);
+            CameraShake_Enable();
+            CameraShake_SetOffset(3.0f * mag);
             mainSetBits(0x554, 1);
         }
     }
@@ -1277,10 +1277,10 @@ void ktrex_updateAttackEffects(GameObject* obj)
     }
 }
 
-int ktrex_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int ktrex_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int i;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (i = 0; i < animUpdate->eventCount; i++)
     {
         switch (animUpdate->eventIds[i])
@@ -1647,7 +1647,7 @@ void ktrex_update(GameObject* obj)
     ktrex_updateContactEffects(obj, runtime);
     ktrex_updateAttackEffects(obj);
     (*gBaddieControlInterface)->updateGravity(obj, runtime, 0.0f, 0);
-    ObjHits_SetHitVolumeMasks((ObjAnimComponent*)obj, 24, 2, 0x1fffff);
+    ObjHits_SetHitVolumeMasks(&obj->anim, 24, 2, 0x1fffff);
     (*gPlayerInterface)->update((void*)obj, runtime, timeDelta, timeDelta, gKTRexStateHandlersB,
                                 gKTRexStateHandlersA);
     obj->anim.localPosY = gKTRexState->posY;

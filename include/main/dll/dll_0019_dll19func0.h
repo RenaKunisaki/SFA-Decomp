@@ -20,7 +20,7 @@
 
 void dll_19_func03_nop(void);
 void dll_19_func04_nop(void);
-f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, char* st);
+f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, GameObject* mover);
 void dll_19_updateMovementBlend(GameObject* obj, void* state, void* unusedState, f32 cap, f32 speed);
 void dll_19_getTargetGeometry(GameObject* obj, GameObject* target, int div, u16* outYaw, u16* outDelta, u16* outDist);
 u8 dll_19_getClearDirectionMask(GameObject* obj, void* state, f32 dist);

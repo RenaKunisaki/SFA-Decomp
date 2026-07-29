@@ -11,7 +11,6 @@
 #include "main/gamebits.h"
 #include "main/model.h"
 #include "main/objHitReact.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/pad_api.h"
@@ -144,13 +143,13 @@ int dim2prisonmammoth_stateHandler00(GameObject* obj) {
     }
 }
 
-int dim2prisonmammoth_SeqFn(GameObject* obj, int unusedState, ObjAnimUpdateState* animUpdate) {
+int dim2prisonmammoth_SeqFn(GameObject* obj, int unusedState, ObjSeqState* animUpdate) {
     MatrixTransform transform;
     f32 matrix[16];
     Dim2PrisonMammothState* state;
 
-    animUpdate->sequenceEventActive = 0;
-    animUpdate->hitVolumePair = animUpdate->activeHitVolumePair;
+    animUpdate->movementState = 0;
+    animUpdate->flags = animUpdate->savedFlags;
     state = obj->extra;
     (*gPlayerInterface)->setState((void*)obj, (void*)state, 2);
 

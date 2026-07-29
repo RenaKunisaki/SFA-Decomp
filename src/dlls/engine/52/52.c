@@ -41,7 +41,7 @@ u8 gTitleMenuSelection;
 s32 gAttractMovieState;
 
 
-extern TitleMenuTextEntry lbl_8031A214[4];
+extern TitleMenuTextEntry gTitleMenuEntries[4];
 extern TitleMenuTextEntry sNAttractModeStringBlock[1];
 extern u8 gOptionsRequestedPanel;
 
@@ -62,7 +62,7 @@ void TitleMenu_render(int obj)
     {
         gameTextSetDrawFunc(titleScreenTextDrawFunc);
         titleScreenPositionElements(-380.0f + (f32)(gTitleMenuSelectionFade * 0x1a4) / 255.0f, 254.0f);
-        gameTextBoxFn_80134d40(0, 0, 0);
+        titleScreenDrawMenuFrame(0, 0, 0);
         (*gScreenTransitionInterface)->getProgress();
         gTitleMenuLinkInterface->vtable->setOpacity(0xff);
         gTitleMenuLinkInterface->vtable->render(obj);
@@ -83,14 +83,14 @@ void TitleMenu_frameEnd(void)
         {                                                                                                              \
             if (i == (entry))                                                                                          \
             {                                                                                                          \
-                lbl_8031A214[i].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;                                                \
+                gTitleMenuEntries[i].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;                                                \
             }                                                                                                          \
             else                                                                                                       \
             {                                                                                                          \
-                lbl_8031A214[i].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;                                                 \
+                gTitleMenuEntries[i].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;                                                 \
             }                                                                                                          \
         }                                                                                                              \
-        gTitleMenuLinkInterface->vtable->copyItems(lbl_8031A214);                                                      \
+        gTitleMenuLinkInterface->vtable->copyItems(gTitleMenuEntries);                                                      \
     } while (0)
 #define TitleMenu_ReloadSaveSettings()                                                                                 \
     do                                                                                                                 \
@@ -130,7 +130,7 @@ int TitleMenu_run(void)
         n_attractmode_releaseMovieBuffers();
         loadUiDll(1);
         doNothing_onSaveSelectScreenExit();
-        titleScreenFn_801368d4();
+        titleScreenDisableActors();
         buttons = mmSetFreeDelay(0);
         mapUnload(0x3d, 0x20000000);
         mmSetFreeDelay(buttons);
@@ -312,17 +312,17 @@ int TitleMenu_run(void)
         if (menuId == 1)
         {
             gTitleMenuLinkInterface->vtable->free();
-            gTitleMenuLinkInterface->vtable->setup(lbl_8031A214, 9, 5, NULL, 0, 0, 0x14, 200, 0xff, 0xff, 0xff,
+            gTitleMenuLinkInterface->vtable->setup(gTitleMenuEntries, 9, 5, NULL, 0, 0, 0x14, 200, 0xff, 0xff, 0xff,
                                                    0xff);
             gTitleMenuPanelOpen = 1;
         }
     }
     else
     {
-        titleScreenFn_801368c4(gTitleMenuSelection);
+        titleScreenSetMenuSelection(gTitleMenuSelection);
         if ((menuId == 1) && (gTitleMenuSelectionFade == TITLE_MENU_SELECTION_FADE_MAX))
         {
-            titleScreenFn_801368a4(1);
+            titleScreenSetMenuActive(1);
             gTitleMenuLoadDelay = 1;
             Link_setNavigationEnabled(1);
             Sfx_PlayFromObject(0, SFXTRIG_crf_babyflute);
@@ -346,7 +346,7 @@ int TitleMenu_run(void)
             }
             return 0;
         }
-        titleScreenFn_801368a4(0);
+        titleScreenSetMenuActive(0);
     }
     return 0;
 }
@@ -395,11 +395,11 @@ void TitleMenu_initialise(void)
     }
     else
     {
-        gTitleMenuLinkInterface->vtable->setup(lbl_8031A214, 4, 0, NULL, 0, 0, 0x14, 200, 0xff, 0xff, 0xff, 0xff);
+        gTitleMenuLinkInterface->vtable->setup(gTitleMenuEntries, 4, 0, NULL, 0, 0, 0x14, 200, 0xff, 0xff, 0xff, 0xff);
         gTitleMenuPanelOpen = 1;
     }
     gTitleMenuLinkInterface->vtable->setSelected(gTitleMenuSelection);
-    titleScreenFn_801368a4(0);
+    titleScreenSetMenuActive(0);
 
     mode = getPrevUiDll();
     if ((((mode == 0xd) || (mode = getPrevUiDll(), mode == 7)) || (mode = getPrevUiDll(), mode == 6)) ||
@@ -418,14 +418,14 @@ void TitleMenu_initialise(void)
     {
         if (i == gTitleMenuSelection)
         {
-            lbl_8031A214[i].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
+            gTitleMenuEntries[i].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
         }
         else
         {
-            lbl_8031A214[i].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
+            gTitleMenuEntries[i].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
         }
     }
-    gTitleMenuLinkInterface->vtable->copyItems(lbl_8031A214);
+    gTitleMenuLinkInterface->vtable->copyItems(gTitleMenuEntries);
     gAttractMoviePreparePending = 0;
     gAttractMovieRetraceCountdown = 0;
     gAttractMovieReplayCountdown = 1;
@@ -469,7 +469,7 @@ TitleMenuTextEntry sNAttractModeStringBlock[1] = {
     },
 };
 
-TitleMenuTextEntry lbl_8031A214[4] = {
+TitleMenuTextEntry gTitleMenuEntries[4] = {
     {0x0331,
      {0x00, 0x11, 0x01, 0x40, 0x01, 0x0a, 0x00, 0x00, 0x01, 0x40, 0x00, 0xb4, 0x00, 0x00},
      -1,
@@ -499,7 +499,7 @@ TitleMenuTextEntry lbl_8031A214[4] = {
      {0x00, 0x00, 0x02, 0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
 };
-u32 lbl_8031A304[43] = {0x00000000,
+u32 n_attractmode_funcs[43] = {0x00000000,
                         0x00000000,
                         0x00000000,
                         0x00050000,

@@ -26,7 +26,7 @@
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 
-int lbl_803DC398 = 0x14;
+int gBarrelGenerReleaseFrameOffset = 0x14;
 
 #define GAMEBIT_BARRELGENER_TRIGGERED 0xadb
 
@@ -43,7 +43,7 @@ void barrelgener_queueObjectRelease(GameObject* obj, GameObject* queuedObj, int 
     state->queuedObject = queuedObj;
     state->releaseAnimPlaying = 0;
     storeZeroToFloatParam(&state->releaseTimer);
-    s16toFloat(&state->releaseTimer, (s16)(releaseFrame - lbl_803DC398));
+    s16toFloat(&state->releaseTimer, (s16)(releaseFrame - gBarrelGenerReleaseFrameOffset));
 }
 
 int barrelgener_getExtraSize(void)

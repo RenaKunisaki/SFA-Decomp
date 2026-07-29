@@ -7,7 +7,7 @@
  *    (envfx 0x10c..0x10e + skySetLightIndex), gated by a global game bit;
  *  - per-map-event-state logic (the map-act value 0..3 returned by the
  *    map-event interface), each state counting down the shared timer
- *    lbl_803DC148 and rolling up groups of progress bits into summary
+ *    gVfpLevelControlTimer and rolling up groups of progress bits into summary
  *    bits;
  *  - the spell-tablet ordered-sequence puzzle (VFP_LevelControl_updateSpellTabletPuzzle), which
  *    requires the four step bits to light in order and grants the
@@ -22,7 +22,7 @@
 #include "main/sky_api.h"
 #include "main/dll/VF/dll_0216_vfplevelcontrol.h"
 
-int lbl_803DC148 = 0x82;
+int gVfpLevelControlTimer = 0x82;
 
 #define VFPLEVELCONTROL_OBJGROUP 9
 
@@ -147,12 +147,12 @@ void VFP_LevelControl_update(GameObject* obj)
     case 0:
         break;
     case 1:
-        if (lbl_803DC148 != 0)
+        if (gVfpLevelControlTimer != 0)
         {
-            lbl_803DC148 -= (s16)(int)timeDelta;
-            if (lbl_803DC148 <= 0)
+            gVfpLevelControlTimer -= (s16)(int)timeDelta;
+            if (gVfpLevelControlTimer <= 0)
             {
-                lbl_803DC148 = 0;
+                gVfpLevelControlTimer = 0;
             }
         }
         Obj_GetPlayerObject();
@@ -166,23 +166,23 @@ void VFP_LevelControl_update(GameObject* obj)
         }
         break;
     case 2:
-        if (lbl_803DC148 != 0)
+        if (gVfpLevelControlTimer != 0)
         {
-            lbl_803DC148 -= (s16)(int)timeDelta;
-            if (lbl_803DC148 <= 0)
+            gVfpLevelControlTimer -= (s16)(int)timeDelta;
+            if (gVfpLevelControlTimer <= 0)
             {
-                lbl_803DC148 = 0;
+                gVfpLevelControlTimer = 0;
             }
         }
         VFP_LevelControl_updateSpellTabletPuzzle(obj);
         break;
     case 3:
-        if (lbl_803DC148 != 0)
+        if (gVfpLevelControlTimer != 0)
         {
-            lbl_803DC148 -= (s16)(int)timeDelta;
-            if (lbl_803DC148 <= 0)
+            gVfpLevelControlTimer -= (s16)(int)timeDelta;
+            if (gVfpLevelControlTimer <= 0)
             {
-                lbl_803DC148 = 0;
+                gVfpLevelControlTimer = 0;
             }
         }
         Obj_GetPlayerObject();
@@ -208,7 +208,7 @@ void VFP_LevelControl_init(GameObject* obj, VfpLevelControlSetup* setup)
     {
         state->areaMode = setup->areaMode;
     }
-    lbl_803DC148 = VFP_TIMER_INIT;
+    gVfpLevelControlTimer = VFP_TIMER_INIT;
     (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
     state->unk02[4] = 0;
     state->unk02[5] = 0;
@@ -235,7 +235,7 @@ void VFP_LevelControl_release(void)
 
 void VFP_LevelControl_initialise(void)
 {
-    lbl_803DC148 = VFP_TIMER_INIT;
+    gVfpLevelControlTimer = VFP_TIMER_INIT;
 }
 
 ObjectDescriptor gVFP_LevelControlObjDescriptor = {

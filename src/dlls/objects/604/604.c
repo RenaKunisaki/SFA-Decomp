@@ -1,5 +1,6 @@
 /* DLL 604: SnowClaw-family object callbacks. */
 
+#include "dlls/objects/364.h"
 #include "main/audio/sfx.h"
 #include "main/dll/objfx_api.h"
 #include "dlls/object_descriptor.h"
@@ -22,14 +23,14 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/shader_api.h"
 
-f32 lbl_803DC218 = 1.0f;
-f32 lbl_803DC21C = -15.0f;
-int lbl_803DC220 = 3;
-f32 lbl_803DC224 = 0.006f;
+f32 gSnowClawPulseScale = 1.0f;
+f32 gSnowClawPulseOffsetY = -15.0f;
+int gSnowClawPulseInterval = 3;
+f32 gSnowClawMoveStepScaleBase = 0.006f;
 
 /* object group queried to find this object's target */
 #define SNOWCLAW_TARGET_OBJGROUP 0x1e
-/* object group scanned by seqId to find this object's linked mount object */
+/* object group scanned by romDefNo to find this object's linked mount object */
 #define SNOWCLAW_MOUNT_OBJGROUP 0xa
 /* drop-bomb child spawned by snowclaw_spawnDropBomb (obj id 0x5ff) */
 #define SNOWCLAW_CHILD_OBJ_DROP_BOMB 0x5ff
@@ -82,19 +83,6 @@ STATIC_ASSERT(offsetof(SnowclawState, dropIndex) == 0xA2);
 STATIC_ASSERT(offsetof(SnowclawState, health) == 0xA4);
 STATIC_ASSERT(offsetof(SnowclawState, moveIdBase) == 0xA8);
 
-typedef struct SnowclawMountInterface
-{
-    void* pad00[4];
-    void (*render)(GameObject* mount, int renderArg2, int renderArg3, int renderArg4, int renderArg5, int visible);
-    void* pad14[5];
-    void (*getPosition)(GameObject* mount, f32* x, f32* y, f32* z);
-    void* pad2C[3];
-    int (*getRiderMode)(GameObject* mount);
-    void (*setRiderMode)(GameObject* mount, int mode);
-    void (*func12)(GameObject* mount, f32* out, int* outNegative);
-    f32 (*getNormalizedSpeed)(GameObject* mount, f32* out);
-} SnowclawMountInterface;
-
 typedef struct SnowclawTargetInterface
 {
     void* pad00[8];
@@ -102,16 +90,10 @@ typedef struct SnowclawTargetInterface
     int (*getState)(GameObject* target);
 } SnowclawTargetInterface;
 
-STATIC_ASSERT(offsetof(SnowclawMountInterface, render) == 0x10);
-STATIC_ASSERT(offsetof(SnowclawMountInterface, getPosition) == 0x28);
-STATIC_ASSERT(offsetof(SnowclawMountInterface, getRiderMode) == 0x38);
-STATIC_ASSERT(offsetof(SnowclawMountInterface, setRiderMode) == 0x3C);
-STATIC_ASSERT(offsetof(SnowclawMountInterface, func12) == 0x40);
-STATIC_ASSERT(offsetof(SnowclawMountInterface, getNormalizedSpeed) == 0x44);
 STATIC_ASSERT(offsetof(SnowclawTargetInterface, setState) == 0x20);
 STATIC_ASSERT(offsetof(SnowclawTargetInterface, getState) == 0x24);
 
-#define SNOWCLAW_MOUNT_INTERFACE(mount)   (*(SnowclawMountInterface**)((GameObject*)(mount))->anim.dll)
+#define SNOWCLAW_MOUNT_INTERFACE(mount)   (*(IMSnowClawMountInterface**)((GameObject*)(mount))->anim.dll)
 #define SNOWCLAW_TARGET_INTERFACE(target) (*(SnowclawTargetInterface**)((GameObject*)(target))->anim.dll)
 
 typedef struct
@@ -150,7 +132,7 @@ u8 gSnowClawMoveTable[] = {
     0x00, 0x00, 0x01, 0x70, 0x00, 0x00, 0x01, 0x6F, 0x00, 0x00, 0x03, 0xE8, 0x00, 0x00, 0x03, 0xEA,
 };
 
-s32 lbl_8032A340[4] = {150, 200, 300, 400};
+s32 gSnowClawAttackTimerByRank[4] = {150, 200, 300, 400};
 
 u32 gSnowClawHurtSfxTable[8] = {0x2EF, 0x2EE, 0x2ED, 0x2EC, 0x2EB, 0x0497049C, 0x03A2049C, 0x07D007D1};
 
@@ -254,7 +236,7 @@ void snowclaw_updateMountAttack(GameObject* obj, GameObject* mount)
 
     inner = (obj)->extra;
     movePhase = SNOWCLAW_MOUNT_INTERFACE(mount)->getNormalizedSpeed(mount, &moveStep);
-    moveStep = lbl_803DC224 + 2.0f * (movePhase * lbl_803DC224);
+    moveStep = gSnowClawMoveStepScaleBase + 2.0f * (movePhase * gSnowClawMoveStepScaleBase);
     SNOWCLAW_MOUNT_INTERFACE(mount)->func12(mount, &mountPhase, &mountFlag);
     magnitude = (int)(16384.0f * mountPhase);
     if (magnitude < 0)
@@ -264,12 +246,12 @@ void snowclaw_updateMountAttack(GameObject* obj, GameObject* mount)
 
     if (mountFlag != 0 && (obj)->anim.currentMove == inner->moveIdBase)
     {
-        Object_ObjAnimSetSecondaryBlendMove((ObjAnimComponent*)obj, inner->moveIdBase + 1,
+        Object_ObjAnimSetSecondaryBlendMove(&obj->anim, inner->moveIdBase + 1,
                                             magnitude);
     }
     else
     {
-        Object_ObjAnimSetSecondaryBlendMove((ObjAnimComponent*)obj, inner->moveIdBase + 2,
+        Object_ObjAnimSetSecondaryBlendMove(&obj->anim, inner->moveIdBase + 2,
                                             magnitude);
     }
 
@@ -371,7 +353,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
     {
         ObjHits_DisableObject((GameObject*)*(int*)inner);
     }
-    if (obj->seqIndex != -1 && (obj->anim.seqId == SNOWCLAW_SEQID_IM_SNOWCLAW || obj->anim.seqId == SNOWCLAW_SEQID_IM_SNOWCLAW2) &&
+    if (obj->seqIndex != -1 && (obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW || obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW2) &&
         mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0)
     {
         (*gObjectTriggerInterface)->endSequence(obj->seqIndex);
@@ -552,7 +534,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
         {
             obj->anim.renderAlpha = s->mountAlpha;
         }
-        if ((obj)->childCount == 0 && (obj)->anim.seqId == SNOWCLAW_SEQID_CR_SNOWCLAW &&
+        if ((obj)->childCount == 0 && (obj)->anim.romDefNo == SNOWCLAW_SEQID_CR_SNOWCLAW &&
             ((SnowclawAaFlags*)&s->flags)->b0 != 0)
         {
             near = ObjGroup_FindNearestObject(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
@@ -577,7 +559,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
             {
                 ((SnowclawAaFlags*)&s->flags)->flag6 = 0;
             }
-            objParticleFn_80099d84(obj, 1.0f, 3, s->particleAlpha, 0);
+            objDoParticleFx(obj, 1.0f, 3, s->particleAlpha, 0);
         }
     }
 }
@@ -622,7 +604,7 @@ void snowclaw_hitDetect(GameObject* obj)
                 {
                     SNOWCLAW_MOUNT_INTERFACE(sub2)->setRiderMode((GameObject*)sub2, 0);
                 }
-                if (obj->anim.seqId == SNOWCLAW_SEQID_CR_SNOWCLAW)
+                if (obj->anim.romDefNo == SNOWCLAW_SEQID_CR_SNOWCLAW)
                 {
                     near = (int*)ObjGroup_FindNearestObject(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
                     if (near != 0)
@@ -631,7 +613,7 @@ void snowclaw_hitDetect(GameObject* obj)
                         SNOWCLAW_TARGET_INTERFACE(near)->setState((GameObject*)near, 2);
                     }
                 }
-                if (obj->anim.seqId == SNOWCLAW_SEQID_IM_SNOWCLAW || obj->anim.seqId == SNOWCLAW_SEQID_IM_SNOWCLAW2)
+                if (obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW || obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW2)
                 {
                     (*gObjectTriggerInterface)->runSequence(0, (void*)obj, 1);
                 }
@@ -754,10 +736,10 @@ void snowclaw_update(GameObject* obj)
     if (*(void**)inner == NULL)
     {
         objects = ObjGroup_GetObjects(SNOWCLAW_MOUNT_OBJGROUP, &objectCount);
-        targetType = seqPairTableLookup(gSnowClawMoveTable, 6, obj->anim.seqId);
+        targetType = seqPairTableLookup(gSnowClawMoveTable, 6, obj->anim.romDefNo);
         for (i = 0; i < objectCount; i++)
         {
-            if (((GameObject*)objects[i])->anim.seqId == targetType)
+            if (((GameObject*)objects[i])->anim.romDefNo == targetType)
             {
                 *(int*)inner = objects[i];
                 i = objectCount;
@@ -778,7 +760,7 @@ void snowclaw_update(GameObject* obj)
         choice = randomGetRange(0, 1);
         s->pendingMoveId = s->moveIdBase + 5;
         turnSign = (u32)(s16)Obj_GetYawDeltaToObject(obj, Obj_GetPlayerObject(), 0) >> 31;
-        if (turnSign == 0 || obj->anim.seqId == SNOWCLAW_SEQID_CR_SNOWCLAW)
+        if (turnSign == 0 || obj->anim.romDefNo == SNOWCLAW_SEQID_CR_SNOWCLAW)
         {
             ObjAnim_SetCurrentMove((int)obj, s->moveIdBase + 6, 0.0f, 0);
             snowclaw_spawnDropBomb((GameObject*)(*(int*)inner), obj, (u8)choice, 2);
@@ -789,7 +771,7 @@ void snowclaw_update(GameObject* obj)
             snowclaw_spawnDropBomb((GameObject*)(*(int*)inner), obj, (u8)choice, 0);
         }
         s16toFloat((f32*)(inner + offsetof(SnowclawState, attackTimer)),
-                   (s16)lbl_8032A340[SnowBike_getRouteRank((GameObject*)(*(int*)inner)) - 1]);
+                   gSnowClawAttackTimerByRank[SnowBike_getRouteRank((GameObject*)(*(int*)inner)) - 1]);
     }
 
     sub = *(int**)inner;
@@ -810,14 +792,14 @@ void snowclaw_update(GameObject* obj)
         *(SnowClawPulse4*)pulseModes = *pulseSrc;
         pulseIndex = 3 - s->health;
         i = s->tickCounter++;
-        if ((i % lbl_803DC220) != 0)
+        if ((i % gSnowClawPulseInterval) != 0)
         {
             pulseVec[0] = 0.0f;
-            pulseVec[1] = lbl_803DC21C;
+            pulseVec[1] = gSnowClawPulseOffsetY;
             pulseVec[2] = 0.0f;
             pulseType = &pulseTypes[pulseIndex];
             pulseMode = &pulseModes[pulseIndex];
-            objfx_spawnPulseBurst(obj, lbl_803DC218, (u8)*pulseType, (u8)*pulseMode, 0, pulseVec);
+            objfx_spawnPulseBurst(obj, gSnowClawPulseScale, (u8)*pulseType, (u8)*pulseMode, 0, pulseVec);
         }
     }
 }
@@ -840,7 +822,7 @@ void snowclaw_init(GameObject* obj, s8* init)
     inner->dropIndex = init[0x27];
     inner->health = 4;
     inner->hitCooldown = -1;
-    switch ((obj)->anim.seqId)
+    switch ((obj)->anim.romDefNo)
     {
     case 0x16d:
     case 0x170:
@@ -862,7 +844,7 @@ void snowclaw_init(GameObject* obj, s8* init)
     inner->attackDelay = 0x64;
     inner->unk30 = 0.006f;
     storeZeroToFloatParam(&inner->attackTimer);
-    s16toFloat(&inner->attackTimer, (s16) * (int*)(table + 0x3c));
+    s16toFloat(&inner->attackTimer, * (int*)(table + 0x3c));
     seqPairTablePrepare((u8*)(int)gSnowClawMoveTable, 6);
     gSnowClawDropBombAngle = 0x96;
     ((SnowclawAaFlags*)&inner->flags)->b0 = 0;

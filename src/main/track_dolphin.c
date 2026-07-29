@@ -273,7 +273,7 @@ void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
 
     if (obj->anim.classId == 1)
     {
-        fn_80296EB4(obj, (int)newParent);
+        fn_80296EB4(obj, newParent);
         return;
     }
 
@@ -284,12 +284,12 @@ void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
         Obj_TransformLocalPointToWorld(obj->anim.localPosX, obj->anim.localPosY,
                                        obj->anim.localPosZ, &obj->anim.worldPosX,
                                        &obj->anim.worldPosY, &obj->anim.worldPosZ,
-                                       (u32)oldParent);
+                                       oldParent);
         Obj_TransformLocalPointToWorld(obj->anim.previousLocalPosX, obj->anim.previousLocalPosY,
                                        obj->anim.previousLocalPosZ, &obj->anim.previousWorldPosX,
-                                       &obj->anim.previousWorldPosY, &obj->anim.previousWorldPosZ, (u32)oldParent);
+                                       &obj->anim.previousWorldPosY, &obj->anim.previousWorldPosZ, oldParent);
         Obj_TransformLocalVectorToWorld(obj->anim.velocityX, 0.0f,
-                                        obj->anim.velocityZ, &dirX, (f32*)dirBuf, &dirZ, (u32)oldParent);
+                                        obj->anim.velocityZ, &dirX, (f32*)dirBuf, &dirZ, oldParent);
         yawSum = oldParent->anim.rotX + obj->anim.rotX;
     }
     else
@@ -306,13 +306,13 @@ void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
             Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
                                            obj->anim.worldPosZ, &obj->anim.localPosX,
                                            &obj->anim.localPosY, &obj->anim.localPosZ,
-                                           (u32)obj->anim.parent);
+                                           obj->anim.parent);
             Obj_TransformWorldPointToLocal(obj->anim.previousWorldPosX, obj->anim.previousWorldPosY,
                                            obj->anim.previousWorldPosZ, &obj->anim.previousLocalPosX,
                                            &obj->anim.previousLocalPosY, &obj->anim.previousLocalPosZ,
-                                           (u32)obj->anim.parent);
+                                           obj->anim.parent);
             Obj_TransformWorldVectorToLocal(dirX, 0.0f, dirZ, &obj->anim.velocityX, (f32*)dirBuf,
-                                            &obj->anim.velocityZ, (u32)obj->anim.parent);
+                                            &obj->anim.velocityZ, obj->anim.parent);
             yawSum = yawSum - ((GameObject*)obj->anim.parent)->anim.rotX;
             if (yawSum > 0x8000)
                 yawSum -= 0xffff;
@@ -1011,7 +1011,7 @@ int objBboxFn_800640cc(f32* startPos, f32* endPos, f32 radius, int flags, TrackB
     u32* objects;
     int count;
     int i;
-    u32 mtx;
+    u32 parentAddress;
 
     lbl_803DCF4C = 0;
     if (out != NULL)
@@ -1019,12 +1019,13 @@ int objBboxFn_800640cc(f32* startPos, f32* endPos, f32 radius, int flags, TrackB
         out->surfaceType = -1;
         out->kind = -1;
     }
-    mtx = (self != NULL) ? (u32)self->anim.parent : 0;
-    if (mtx != 0)
+    parentAddress = (self != NULL) ? (u32)self->anim.parent : 0;
+    if (parentAddress != 0)
     {
         Obj_TransformLocalPointToWorld(startPos[0], startPos[1], startPos[2], &worldStart[0], &worldStart[1],
-                                       &worldStart[2], mtx);
-        Obj_TransformLocalPointToWorld(endPos[0], endPos[1], endPos[2], &worldEnd[0], &worldEnd[1], &worldEnd[2], mtx);
+                                       &worldStart[2], (GameObject*)parentAddress);
+        Obj_TransformLocalPointToWorld(endPos[0], endPos[1], endPos[2], &worldEnd[0], &worldEnd[1], &worldEnd[2],
+                                       (GameObject*)parentAddress);
     }
     else
     {
@@ -1085,14 +1086,14 @@ int objBboxFn_800640cc(f32* startPos, f32* endPos, f32 radius, int flags, TrackB
         else
         {
             Obj_TransformWorldPointToLocal(worldStart[0], worldStart[1], worldStart[2], &localStart[0], &localStart[1],
-                                           &localStart[2], (int)target);
+                                           &localStart[2], (GameObject*)(int)target);
         }
         Obj_TransformWorldPointToLocal(worldEnd[0], worldEnd[1], worldEnd[2], &localEnd[0], &localEnd[1], &localEnd[2],
-                                       (int)target);
+                                       (GameObject*)(int)target);
         if (trackSweepCircleAgainstLines(localStart, localEnd, radius, flags, out, target, lineMask, segment, yTolerance,
                                          self) != 0)
             Obj_TransformLocalPointToWorld(localEnd[0], localEnd[1], localEnd[2], &worldEnd[0], &worldEnd[1],
-                                           &worldEnd[2], (int)target);
+                                           &worldEnd[2], (GameObject*)(int)target);
         if (trackDynamicSlotEnabled(slot))
         {
             entry = trackAllocDynamicSlot(self, target, slot);
@@ -1124,16 +1125,16 @@ int objBboxFn_800640cc(f32* startPos, f32* endPos, f32 radius, int flags, TrackB
         if (out->object != NULL)
         {
             Obj_TransformLocalPointToWorld(out->lineStartX, out->lineStartY, out->lineStartZ, &out->lineStartX,
-                                           &out->lineStartY, &out->lineStartZ, (u32)out->object);
+                                           &out->lineStartY, &out->lineStartZ, (GameObject*)(u32)out->object);
             Obj_TransformLocalPointToWorld(out->lineEndX, out->lineEndY, out->lineEndZ, &out->lineEndX,
-                                           &out->lineEndY, &out->lineEndZ, (u32)out->object);
+                                           &out->lineEndY, &out->lineEndZ, (GameObject*)(u32)out->object);
         }
-        if (mtx != 0)
+        if (parentAddress != 0)
         {
             Obj_TransformWorldPointToLocal(out->lineStartX, out->lineStartY, out->lineStartZ, &out->lineStartX,
-                                           &out->lineStartY, &out->lineStartZ, mtx);
+                                           &out->lineStartY, &out->lineStartZ, (GameObject*)parentAddress);
             Obj_TransformWorldPointToLocal(out->lineEndX, out->lineEndY, out->lineEndZ, &out->lineEndX,
-                                           &out->lineEndY, &out->lineEndZ, mtx);
+                                           &out->lineEndY, &out->lineEndZ, (GameObject*)parentAddress);
         }
         out->normalX = out->lineEndZ - out->lineStartZ;
         out->normalY = 0.0f;
@@ -1151,9 +1152,9 @@ int objBboxFn_800640cc(f32* startPos, f32* endPos, f32 radius, int flags, TrackB
     }
     if (lbl_803DCF4C != 0)
     {
-        if (mtx != 0)
+        if (parentAddress != 0)
             Obj_TransformWorldPointToLocal(worldEnd[0], worldEnd[1], worldEnd[2], &endPos[0], &endPos[1], &endPos[2],
-                                           mtx);
+                                           (GameObject*)parentAddress);
         else
             memcpy(endPos, worldEnd, 0xc);
     }
@@ -1426,6 +1427,7 @@ void trackIntersect(void)
     {
         int pointIndex;
         s16* pointEdges;
+        s16* pointEdges2;
         s16 adjacentLine;
 
         line = (IntersectLine*)(lbl_803DCF34 + i * 16);
@@ -1449,15 +1451,15 @@ void trackIntersect(void)
             }
         }
         pointIndex = line->pt[1] * 2;
-        pointEdges = &edges[pointIndex];
-        adjacentLine = pointEdges[0];
+        pointEdges2 = &edges[pointIndex];
+        adjacentLine = pointEdges2[0];
         if (adjacentLine > -1 && adjacentLine != i)
         {
             line->adj[1] = adjacentLine;
         }
         else
         {
-            adjacentLine = pointEdges[1];
+            adjacentLine = pointEdges2[1];
             if (adjacentLine > -1 && adjacentLine != i)
             {
                 line->adj[1] = adjacentLine;
@@ -3462,7 +3464,6 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
             {
                 ObjHitsPriorityState* hitState;
                 ObjHitboxTransformState* transformState;
-                int n;
                 int hdr;
                 f32 r, c;
 
@@ -3472,7 +3473,7 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
                 hitState = (ObjHitsPriorityState*)resetObj->hitReactState;
                 if (hitState == NULL)
                     continue;
-                transformState = ((ObjHitbox*)resetObj)->transformState;
+                transformState = resetObj->hitboxTransformState;
                 if (transformState == NULL)
                     continue;
                 if (transformState->resetFrames != 0)
@@ -3502,15 +3503,15 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
                 if (f27 > c + r)
                     continue;
 
-                desc->currentCollisionMatrix = (f32*)((ObjHitbox*)resetObj)->transformState->matrices +
-                                               ((((ObjHitbox*)resetObj)->transformState->activeMatrixIndex + 2) << 4);
-                desc->currentMatrix = (f32*)((ObjHitbox*)resetObj)->transformState->matrices +
-                                      (((ObjHitbox*)resetObj)->transformState->activeMatrixIndex << 4);
+                desc->currentCollisionMatrix = (f32*)resetObj->hitboxTransformState->matrices +
+                                               ((resetObj->hitboxTransformState->activeMatrixIndex + 2) << 4);
+                desc->currentMatrix = (f32*)resetObj->hitboxTransformState->matrices +
+                                      (resetObj->hitboxTransformState->activeMatrixIndex << 4);
                 desc->alternateCollisionMatrix =
-                    (f32*)((ObjHitbox*)resetObj)->transformState->matrices +
-                    (((((ObjHitbox*)resetObj)->transformState->activeMatrixIndex ^ 1) + 2) << 4);
-                desc->alternateMatrix = (f32*)((ObjHitbox*)resetObj)->transformState->matrices +
-                                        ((((ObjHitbox*)resetObj)->transformState->activeMatrixIndex ^ 1) << 4);
+                    (f32*)resetObj->hitboxTransformState->matrices +
+                    (((resetObj->hitboxTransformState->activeMatrixIndex ^ 1) + 2) << 4);
+                desc->alternateMatrix = (f32*)resetObj->hitboxTransformState->matrices +
+                                        ((resetObj->hitboxTransformState->activeMatrixIndex ^ 1) << 4);
 
                 desc->firstTriangle = (s16)((cur - (int)gTrackTriangleBuffer) / 0x4c);
                 desc->object = resetObj;

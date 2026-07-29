@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /* Retail placement records are 0x20 bytes; the puzzle index is byte 0x1B. */
 typedef struct ScTotemPuzzlePlacement {
@@ -37,7 +37,7 @@ STATIC_ASSERT(offsetof(ScTotemPuzzleState, stepIndex) == 0x10);
 STATIC_ASSERT(offsetof(ScTotemPuzzleState, flags) == 0x12);
 STATIC_ASSERT(sizeof(ScTotemPuzzleState) == 0x14);
 
-int sc_totempuzzle_animEventCallback(GameObject* unusedObj, int unused, ObjAnimUpdateState* unusedAnimUpdate);
+int sc_totempuzzle_animEventCallback(GameObject* unusedObj, int unused, ObjSeqState* unusedAnimUpdate);
 u8 sc_totempuzzle_checkSolvedSequence(GameObject* obj, ScTotemPuzzleState* state);
 int sc_totempuzzle_getExtraSize(void);
 int sc_totempuzzle_getObjectTypeId(void);

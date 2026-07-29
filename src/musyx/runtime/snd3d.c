@@ -28,9 +28,9 @@
         }                                                                                                              \
     } while (0)
 
-u8 lbl_803DE36D;
-u8 lbl_803DE36C;
-u8 lbl_803DE36B;
+u8 s3dSortedCnt;
+u8 s3dActiveCnt;
+u8 s3dGroupCnt;
 u8 lbl_803DE36A;
 u8 snd_max_studios;
 u8 snd_base_studio;
@@ -60,9 +60,9 @@ void s3dHandle(void)
     }
 
     s3dCallCnt = S3D_UPDATE_SKIP_TICKS;
-    lbl_803DE36B = 0;
-    lbl_803DE36C = 0;
-    lbl_803DE36D = 0;
+    s3dGroupCnt = 0;
+    s3dActiveCnt = 0;
+    s3dSortedCnt = 0;
     emitter = s3dEmitterRoot;
 
     for (; emitter != (Snd3DEmitter*)0x0; emitter = next)

@@ -17,8 +17,8 @@
  *    write it as a 4-byte color block; alpha often biased down to fade.
  *  - 0x08/0x0C/0x10 f32: placement position (187/350/178 dll sites +
  *    engine consensus)
- *  - 0x14 s32 mapId: 157 dll sites; name follows the established
- *    TexScrollPlacement convention (dlls/objects/texscroll_types.h)
+ *  - 0x14 s32 ident: the placement's unique identifier; retail's own
+ *    word, from the trigger debug line "!!!!!!!!!!! TRIGGER %d  ident %d"
  * Everything from 0x18 on is class-specific - per-family
  * <Family>Placement structs carry those fields by embedding this head
  * (struct { ObjPlacement base; ... }).
@@ -53,11 +53,11 @@ typedef struct ObjPlacement {
     f32 posX;
     f32 posY;
     f32 posZ;
-    s32 mapId;
+    s32 ident;
 } ObjPlacement;
 
 STATIC_ASSERT(offsetof(ObjPlacement, posX) == 0x8);
-STATIC_ASSERT(offsetof(ObjPlacement, mapId) == 0x14);
+STATIC_ASSERT(offsetof(ObjPlacement, ident) == 0x14);
 STATIC_ASSERT(sizeof(ObjPlacement) == 0x18);
 
 #endif /* GAME_OBJECTS_OBJECT_SETUP_H_ */

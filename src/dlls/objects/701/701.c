@@ -209,7 +209,7 @@ ObjectDescriptor gAndrossHandObjDescriptor = {
 
 void AndrossHand_update(int obj)
 {
-    f32 fScale = lbl_803DC4F8;
+    f32 fScale = gAndrossHandAngleOffset;
     GameObject* o = (GameObject*)obj;
     AndrossHandState* state = o->extra;
     u8 changed = 0;
@@ -249,17 +249,17 @@ void AndrossHand_update(int obj)
         }
         prevVel = state->zSpringVelocity;
         state->zSpringVelocity =
-            prevVel + ((-state->zSpringOffset / lbl_803DC4FC - prevVel) / gAndrossHandSpringDivisor);
+            prevVel + ((-state->zSpringOffset / gAndrossHandSpringOffsetDivisor - prevVel) / gAndrossHandSpringDivisor);
         state->zSpringOffset = state->zSpringOffset + state->zSpringVelocity;
 
         angle = 3.1415927f * (f32)(s16)(int)((f32)state->androssObj->anim.rotX + fScale) /
                 32768.0f;
         fScale = mathSinf(angle);
         cosAngle = mathCosf(angle);
-        o->anim.localPosX = lbl_803DC4F0 * fScale + state->androssObj->anim.localPosX;
-        o->anim.localPosY = state->androssObj->anim.localPosY + lbl_803DC4F4;
+        o->anim.localPosX = gAndrossHandOrbitRadius * fScale + state->androssObj->anim.localPosX;
+        o->anim.localPosY = state->androssObj->anim.localPosY + gAndrossHandYOffset;
         o->anim.localPosZ =
-            state->zSpringOffset + (lbl_803DC4F0 * cosAngle + state->androssObj->anim.localPosZ);
+            state->zSpringOffset + (gAndrossHandOrbitRadius * cosAngle + state->androssObj->anim.localPosZ);
     }
 
     {
@@ -478,10 +478,10 @@ void AndrossHand_init(int obj, AndrossHandSetup* setup)
 
 int gAndrossHandShotPitch[2];
 
-f32 lbl_803DC4F0 = 400.0f;
-f32 lbl_803DC4F4 = -100.0f;
-f32 lbl_803DC4F8 = -20000.0f;
-int lbl_803DC4FC = 20;
+f32 gAndrossHandOrbitRadius = 400.0f;
+f32 gAndrossHandYOffset = -100.0f;
+f32 gAndrossHandAngleOffset = -20000.0f;
+int gAndrossHandSpringOffsetDivisor = 20;
 int gAndrossHandSpringDivisor = 10;
 int gAndrossHandShotInterval = 2;
 int gAndrossHandHitImpulse = 20;

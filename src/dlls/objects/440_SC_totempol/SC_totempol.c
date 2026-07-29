@@ -133,7 +133,7 @@ void sc_totempole_update(GameObject* obj) {
                 allPolesLit = 1;
                 objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
                 for (; objectIndex < objectCount; objectIndex++) {
-                    if (objects[objectIndex] != obj && objects[objectIndex]->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID) {
+                    if (objects[objectIndex] != obj && objects[objectIndex]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                         (*(ScTotemPoleInterfaceVTable**)objects[objectIndex]->anim.dll)
                             ->handleEvent(objects[objectIndex], SC_TOTEM_POLE_EVENT_ALL_LIT);
                         break;
@@ -160,7 +160,7 @@ void sc_totempole_update(GameObject* obj) {
 void sc_totempole_init(GameObject* obj, const ScTotemPolePlacement* placement) {
     ScTotemPoleState* state = obj->extra;
 
-    switch (placement->base.mapId) {
+    switch (placement->base.ident) {
     case SC_TOTEM_POLE_MAP_ID_REAR:
         state->litGameBit = SC_TOTEM_POLE_GAMEBIT_REAR;
         break;

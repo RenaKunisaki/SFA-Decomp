@@ -33,8 +33,8 @@
 #include "main/audio/sfx_trigger_ids.h"
 
 f32 lbl_803DDD68;
-f32 lbl_803DC2A8 = 5.0f;
-s16 lbl_803DC2AC = 0x80;
+f32 gLaserCannonAdvanceSpeed = 5.0f;
+s16 gLaserCannonPitchStep = 0x80;
 s16 gLaserCannonMaxAimStep = 0x400;
 
 #define DRLASERCANNON_OBJFLAG_PARENT_SLACK 0x1000
@@ -126,13 +126,6 @@ STATIC_ASSERT(offsetof(DrLaserCannonState, flags) == DR_LASERCANNON_STATE_FLAGS)
 STATIC_ASSERT(offsetof(DrLaserCannonState, bobPhase) == DR_LASERCANNON_STATE_BOB_PHASE);
 STATIC_ASSERT(sizeof(DrLaserCannonState) == DR_LASERCANNON_EXTRA_SIZE);
 
-typedef struct DrLaserCannonJointRotation
-{
-    s16 x;
-    s16 y;
-    s16 z;
-} DrLaserCannonJointRotation;
-
 static f32 drlasercannon_aimStepFraction(s16 step, s16 limit)
 {
     return (f32)step / (f32)limit;
@@ -143,7 +136,7 @@ static const f32 gLaserCannonAngleRateScale = 32768.0f / 180.0f;
 int drlasercannon_aimAtTarget(GameObject* self, GameObject* target, DrLaserCannonAim* out, int maxRate, f32* eyePos)
 {
     s16 negClampS;
-    DrLaserCannonJointRotation* vec;
+    Vec3s* vec;
     f32 d[3];
     f32* dp;
     f32 horiz;
@@ -155,7 +148,7 @@ int drlasercannon_aimAtTarget(GameObject* self, GameObject* target, DrLaserCanno
     s16 wrapDelta;
 
     /* Fetch the barrel's secondary rotation vector (pitch channel) from the model. */
-    vec = (DrLaserCannonJointRotation*)objModelGetVecFn_800395d8(self, 0xb);
+    vec = (Vec3s*)objModelGetVecFn_800395d8(self, 0xb);
     if (vec == NULL)
     {
         return 0;
@@ -178,7 +171,7 @@ int drlasercannon_aimAtTarget(GameObject* self, GameObject* target, DrLaserCanno
     /* Desired yaw from the ground-plane heading, pitch from height over horizontal range. */
     yaw = getAngle(dp[0], dp[2]);
     pitch = (s16)getAngle(dp[1], horiz);
-    if (self->anim.seqId == DR_LASERCANNON_PITCH_FLIP_TYPE)
+    if (self->anim.romDefNo == DR_LASERCANNON_PITCH_FLIP_TYPE)
     {
         pitch = (s16)-pitch;
     }
@@ -340,14 +333,14 @@ void DR_LaserCannon_hitDetect(GameObject* obj)
     hit = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, 0, &hitVolume, &hitPosX, &hitPosY, &hitPosZ);
     if (state->flags.b6 != 0)
     {
-        if (hit != 0 && ((GameObject*)hitObject)->anim.seqId != state->hitExcludeType &&
+        if (hit != 0 && ((GameObject*)hitObject)->anim.romDefNo != state->hitExcludeType &&
             state->warningObject != NULL)
         {
             Shield_setMode(state->warningObject, DR_LASERCANNON_WARNING_HIT_MODE);
         }
     }
     else if (((u32)(hit - 0xe) <= 1 || hit == 5) && (void*)state->lastHitObject != (void*)hitObject &&
-             ((GameObject*)hitObject)->anim.seqId != state->hitExcludeType)
+             ((GameObject*)hitObject)->anim.romDefNo != state->hitExcludeType)
     {
         state->lastHitObject = hitObject;
         state->health -= hitVolume;
@@ -465,7 +458,7 @@ void DR_LaserCannon_update(GameObject* obj)
         else
         {
             s16* v;
-            (obj)->anim.rotX += lbl_803DC2AC;
+            (obj)->anim.rotX += gLaserCannonPitchStep;
             v = (s16*)objModelGetVecFn_800395d8(obj, 0xb);
             v[0] = (s16)(v[0] >> 1);
         }
@@ -553,7 +546,7 @@ void DR_LaserCannon_update(GameObject* obj)
     }
     if (state->flags.b5 != 0)
     {
-        Obj_UpdateRomCurveFollowVelocity(obj, &state->curveFollow, 0.1f * lbl_803DC2A8, 200.0f,
+        Obj_UpdateRomCurveFollowVelocity(obj, &state->curveFollow, 0.1f * gLaserCannonAdvanceSpeed, 200.0f,
                                          10.0f, 1);
         objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                 obj->anim.velocityZ * timeDelta);

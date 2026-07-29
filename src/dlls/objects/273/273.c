@@ -4,7 +4,6 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 
 #define DOOR_LOCK_OBJECT_GROUP                       0xF
@@ -41,22 +40,22 @@
 #define DOOR_LOCK_CUSTOM_RENDER_ENABLED              1
 #define DOOR_LOCK_HIDDEN_ALPHA                       0
 
-int DoorLock_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int DoorLock_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     DoorLockPlacement* placement;
 
     (void)unused;
 
     placement = (DoorLockPlacement*)obj->anim.placementData;
-    if (animUpdate->triggerCommand != DOOR_LOCK_TRIGGER_COMMAND_NONE) {
+    if (animUpdate->unk80 != DOOR_LOCK_TRIGGER_COMMAND_NONE) {
         if ((placement->flags & DOOR_LOCK_FLAG_CALLBACK_SETS_UNLOCKED) != 0 &&
-            animUpdate->triggerCommand == DOOR_LOCK_TRIGGER_COMMAND_SET_UNLOCKED) {
+            animUpdate->unk80 == DOOR_LOCK_TRIGGER_COMMAND_SET_UNLOCKED) {
             mainSetBits(placement->unlockedGameBit, DOOR_LOCK_UNLOCKED);
         }
-        if (animUpdate->triggerCommand == DOOR_LOCK_TRIGGER_COMMAND_YIELD_QUEUED &&
+        if (animUpdate->unk80 == DOOR_LOCK_TRIGGER_COMMAND_YIELD_QUEUED &&
             placement->queuedSequenceId != DOOR_LOCK_QUEUED_SEQUENCE_ID_NONE) {
             (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, placement->queuedSequenceId);
         }
-        animUpdate->triggerCommand = DOOR_LOCK_TRIGGER_COMMAND_NONE;
+        animUpdate->unk80 = DOOR_LOCK_TRIGGER_COMMAND_NONE;
     }
     obj->userData2 = DOOR_LOCK_CUSTOM_RENDER_DISABLED;
     return 0;

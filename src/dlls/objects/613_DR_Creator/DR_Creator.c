@@ -18,7 +18,7 @@
 #define DRCREATOR_CHILD_OBJ_DRHOMINGMIS 1725
 #define DRCREATOR_INIT_CLEAR_GAMEBIT 0x5DD
 
-int DR_Creator_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int DR_Creator_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int i;
     DrcreatorPlacement* placement = (DrcreatorPlacement*)obj->anim.placementData;

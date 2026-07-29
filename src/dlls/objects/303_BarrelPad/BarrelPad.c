@@ -36,12 +36,12 @@ void BarrelPad_hitDetect(void) {
 void BarrelPad_update(GameObject* obj) {
     PartFxSpawnParams particleArgs;
 
-    if (obj->anim.seqId == BARRELPAD_SEQ_LAUNCH_ACTIVE) {
+    if (obj->anim.romDefNo == BARRELPAD_SEQ_LAUNCH_ACTIVE) {
         particleArgs.posX = 0.0f;
         particleArgs.posY = 8.0f;
         particleArgs.posZ = 0.0f;
         objfx_spawnArcedBurst(obj, 5, 0.75f, 5, 2, 0x19, 12.0f, 12.0f, 2.0f, &particleArgs, 0);
-    } else if (obj->anim.seqId == BARRELPAD_SEQ_LAUNCH_SECONDARY) {
+    } else if (obj->anim.romDefNo == BARRELPAD_SEQ_LAUNCH_SECONDARY) {
         particleArgs.posX = 0.0f;
         particleArgs.posY = 6.0f;
         particleArgs.posZ = 0.0f;

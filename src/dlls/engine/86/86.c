@@ -2,6 +2,7 @@
  * DLL 86 / 0x56 - Arwing camera mode.
  */
 #include "main/camera_interface.h"
+#include "main/object_transform.h"
 #include "dolphin/mtx/vec.h"
 #include "main/resource.h"
 #include "main/frame_timing.h"
@@ -187,7 +188,7 @@ void CameraModeArwing_update(GameObject* obj)
                                    obj->anim.worldPosZ,
                                    &obj->anim.localPosX, &obj->anim.localPosY,
                                    &obj->anim.localPosZ,
-                                   obj->anim.parentAddress);
+                                   (GameObject*)obj->anim.parentAddress);
 }
 void CameraModeArwing_init(GameObject* obj, int mode, int unused)
 {

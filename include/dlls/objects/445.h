@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /*
  * Shared by the SC_paypoint and SPWell object definitions. Both retail
@@ -41,7 +41,7 @@ STATIC_ASSERT(offsetof(PaymentKioskState, promptState) == 0x02);
 STATIC_ASSERT(sizeof(PaymentKioskState) == 0x03);
 
 u32 PaymentKiosk_testEvent(GameObject* obj, int unused, int eventId);
-int PaymentKiosk_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int PaymentKiosk_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int PaymentKiosk_getExtraSize(void);
 int PaymentKiosk_getObjectTypeId(void);
 void PaymentKiosk_free(void);

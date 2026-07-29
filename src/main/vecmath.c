@@ -333,7 +333,6 @@ void mtxRotateByVec3s(f32* mtx, const void* transform)
     mtx[15] = 1.0f;
 }
 
-extern f32 lbl_803DE808;
 extern f32 lbl_803DE80C;
 
 void mtx44ScaleRow1(f32* p, f32 s)
@@ -624,7 +623,7 @@ void Vec3_ReflectAgainstNormal(f32* normal, f32* velocity, f32* out)
 {
     f32 yProduct = normal[1] * velocity[1];
     f32 dot = yProduct + normal[0] * velocity[0] + normal[2] * velocity[2];
-    if (dot > lbl_803DE808)
+    if (dot > 0.0f)
     {
         out[0] = velocity[0];
         out[1] = velocity[1];

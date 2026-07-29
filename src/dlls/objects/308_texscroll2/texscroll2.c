@@ -13,8 +13,8 @@
 
 #define TEXSCROLL2_TEXTURE_TABLE_ID 0x0E
 
-#define TEXSCROLL2_GAME_BIT_GATED_MAP_A 0x49B2F
-#define TEXSCROLL2_GAME_BIT_GATED_MAP_B 0x49B67
+#define TEXSCROLL2_GAME_BIT_GATED_IDENT_A 0x49B2F
+#define TEXSCROLL2_GAME_BIT_GATED_IDENT_B 0x49B67
 
 #define TEXSCROLL2_TEXTURE_FIXED_SHIFT 6
 #define TEXSCROLL2_RENDER_SCALE        1.0f
@@ -67,8 +67,8 @@ void TexScroll2_applyMapTextureScroll(GameObject* obj, TexScroll2State* state) {
                 texHeightFixed = (s32)(u32)texture->height << TEXSCROLL2_TEXTURE_FIXED_SHIFT;
                 if (*(u8*)((char*)material + offsetof(MapShader, layers) + offsetof(MapShaderLayer, scrollMtx)) !=
                     MAP_TEXTURE_SCROLL_SLOT_UNALLOCATED) {
-                    int mapId = ((TexScrollPlacement*)obj->anim.placementData)->base.mapId;
-                    if (mapId == TEXSCROLL2_GAME_BIT_GATED_MAP_A || mapId == TEXSCROLL2_GAME_BIT_GATED_MAP_B) {
+                    int ident = ((TexScrollPlacement*)obj->anim.placementData)->base.ident;
+                    if (ident == TEXSCROLL2_GAME_BIT_GATED_IDENT_A || ident == TEXSCROLL2_GAME_BIT_GATED_IDENT_B) {
                         if (mainGetBit(state->gameBit) != 0) {
                             mapTextureScrollSetStep((s32) * (u8*)((char*)material + offsetof(MapShader, layers) +
                                                                   offsetof(MapShaderLayer, scrollMtx)),
@@ -120,13 +120,13 @@ void TexScroll2_update(GameObject* obj) {
     TexScroll2State* state;
     MapBlockData* block;
     TexScrollPlacement* placement;
-    int mapId;
+    int ident;
 
     state = obj->extra;
     block = mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
     placement = (TexScrollPlacement*)obj->anim.placementData;
-    mapId = placement->base.mapId;
-    if (mapId == TEXSCROLL2_GAME_BIT_GATED_MAP_A || mapId == TEXSCROLL2_GAME_BIT_GATED_MAP_B) {
+    ident = placement->base.ident;
+    if (ident == TEXSCROLL2_GAME_BIT_GATED_IDENT_A || ident == TEXSCROLL2_GAME_BIT_GATED_IDENT_B) {
         if (block != NULL) {
             if (mainGetBit(state->gameBit) != *(u32*)&state->previousGameBitValue && state->needsApply == 0) {
                 TexScroll2_applyMapTextureScroll(obj, state);

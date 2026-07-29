@@ -6,7 +6,7 @@
 #include "global.h"
 #include "main/objanim_internal.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/objprint_sound_api.h"
 
 typedef int (*KytesMumUpdateCallback)(int obj);
@@ -65,7 +65,7 @@ void kytesmum_render(GameObject* obj, int p2, int p3, int p4, int p5, char visib
 void kytesmum_free(int obj);
 int kytesmum_spawnInteractionCallback(GameObject* obj);
 int kytesmum_updateInteractionRangeCallback(GameObject* obj, int unused, u8* arg);
-int kytesmum_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int kytesmum_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void kytesmum_init(GameObject* obj, KytesMumSetup* setup);
 int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg);
 int kytesmum_updateQuestStateCallback(GameObject* obj, int unused, u8* arg);
@@ -77,6 +77,6 @@ extern const s32 gKytesMumTriggerIds[3];
 extern int gKytesMumQuestIdleSfxTable[];
 extern u8 gKytesMumMoveSets[];
 extern s16 gKytesMumRoamEventSfxTable[4];
-extern s16 lbl_803DC2D0[4];
+extern s16 gKytesMumQuestEventSfxTable[4];
 
 #endif /* MAIN_DLL_DLL_0266_KYTESMUM_H_ */

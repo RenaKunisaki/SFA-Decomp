@@ -104,11 +104,11 @@ void sc_musictree_spawnAmbientEffect(GameObject* obj, ScMusicTreeState* state, i
 }
 
 void sc_musictree_handleHitObject(GameObject* obj, ScMusicTreeState* state, int unusedEffectType) {
-    int mapId = ((ObjPlacement*)obj->anim.placementData)->mapId;
+    int ident = ((ObjPlacement*)obj->anim.placementData)->ident;
 
     (void)unusedEffectType;
 
-    switch (mapId) {
+    switch (ident) {
     case SC_MUSIC_TREE_MAP_TOTEM_1:
         Sfx_PlayFromObject((int)obj, SFXTRIG_sdrstp_c);
         Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
@@ -236,7 +236,7 @@ void sc_musictree_update(GameObject* obj) {
             if ((state->flags & (SC_MUSIC_TREE_FLAG_PRIORITY_HIT | SC_MUSIC_TREE_FLAG_SATELLITES)) != 0) {
                 hitPosition[0] = hitPosition[0] + playerMapOffsetX;
                 hitPosition[2] = hitPosition[2] + playerMapOffsetZ;
-                objLightFn_8009a1dc((void*)obj, 0.014f, effectPosition, 1, 0);
+                objDoHitParticleFx((void*)obj, 0.014f, effectPosition, 1, 0);
                 Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
                 sc_musictree_handleHitObject(obj, state, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK);
             } else {

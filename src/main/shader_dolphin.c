@@ -238,6 +238,12 @@ void chooseTevKonstSelectors(void* params, u8 colorEnabled, u8 alphaEnabled, int
 }
 
 
+static void setHeatEffectInverted(void)
+{
+    gHeatEffectScale = -1.0f;
+}
+
+
 void setHeatEffectParams(u8 alpha, f32 scale)
 {
     gHeatEffectColor.a = alpha;
@@ -246,6 +252,14 @@ void setHeatEffectParams(u8 alpha, f32 scale)
     {
         gHeatEffectScale = 1.0f;
     }
+}
+
+
+static void setDefaultHeavyFogParams(void)
+{
+    lbl_803DCD3C = 0.0f;
+    lbl_803DCD38 = 0.8f;
+    lbl_803DCD34 = 0.9f;
 }
 
 
@@ -373,7 +387,7 @@ void textureFn_8004c330(void* p1, void* mtx)
     {
         GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     }
-    GXSetIndTexMtx(GX_ITM_0, m.v, (s8)lbl_803DB5F4);
+    GXSetIndTexMtx(GX_ITM_0, m.v, lbl_803DB5F4);
     GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord, gRcpNextTexMap);
     GXSetTevIndirect(gRcpNextTevStage, gRcpNextIndTexStage, 0, 7, 1, 0, 0, 0, 0, 3);
     chooseTevKonstSelectors(lbl_803DB5F8, 1, 0, &out_c, &out_8);
@@ -775,7 +789,7 @@ void addWavyCausticTevStage(void)
             GXLoadTexObj(obj, id);
         }
     }
-    GXLoadTexMtxImm(lbl_80396820, gRcpNextPostTexMtx, 0);
+    GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, gRcpNextPostTexMtx, 0);
     GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
     GXSetTevOrder(gRcpNextTevStage, gRcpNextTexCoord, gRcpNextTexMap, GX_COLOR_NULL);
     GXSetTevColorIn(gRcpNextTevStage, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
@@ -1974,7 +1988,7 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
         u32 div;
         int p2v = (p3 & 0xf) * 4 + 1;
         texptr = (Texture*)(textureIdxToPtr(p4));
-        div = (u32) texptr->width / (u32)(*(u16*)((char*)p1 + 0xa) * p2v);
+        div = (u32) texptr->width / (u32)(((Texture*)p1)->width * p2v);
         if (div != 0)
         {
             GXSetIndTexCoordScale(gRcpNextIndTexStage, lbl_8030CEE0[div - 1], lbl_8030CEE0[div - 1]);

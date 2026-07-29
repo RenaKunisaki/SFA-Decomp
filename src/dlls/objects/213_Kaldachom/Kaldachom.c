@@ -410,7 +410,8 @@ void kaldachom_spawnDustEffects(GameObject* obj, KaldachomControl* control) {
 
 void kaldachom_spawnMouthProjectile(GameObject* obj, KaldachomState* state, u8 useUpperMouthPoint) {
     KaldachomControl* control;
-    ObjPlacement* placement;
+    KaldachomPlacement* placement;
+    ObjPlacement* setup;
     GameObject* projectile;
     f32 yJitter;
     f32 travelTime;
@@ -418,31 +419,31 @@ void kaldachom_spawnMouthProjectile(GameObject* obj, KaldachomState* state, u8 u
     f32 mouthY;
 
     control = state->control;
-    placement = (ObjPlacement*)obj->anim.placementData;
+    placement = (KaldachomPlacement*)obj->anim.placementData;
     if (Obj_IsLoadingLocked() != 0) {
-        heightOffset = 0.5f + (f32)(s32)((KaldachomPlacement*)placement)->scale / 15.0f;
-        placement = Obj_AllocObjectSetup(0x24, KALDACHOM_CHILD_OBJ_MOUTH_PROJECTILE);
+        heightOffset = 0.5f + (f32)(s32)placement->scale / 15.0f;
+        setup = Obj_AllocObjectSetup(0x24, KALDACHOM_CHILD_OBJ_MOUTH_PROJECTILE);
         if (useUpperMouthPoint != 0) {
-            placement->posX = control->upperMouthPosX;
-            placement->posY = control->upperMouthPosY;
-            placement->posZ = control->upperMouthPosZ;
+            setup->posX = control->upperMouthPosX;
+            setup->posY = control->upperMouthPosY;
+            setup->posZ = control->upperMouthPosZ;
         } else {
-            placement->posX = control->lowerMouthPosX;
-            placement->posY = control->lowerMouthPosY;
-            placement->posZ = control->lowerMouthPosZ;
+            setup->posX = control->lowerMouthPosX;
+            setup->posY = control->lowerMouthPosY;
+            setup->posZ = control->lowerMouthPosZ;
         }
-        placement->color[0] = 1;
-        placement->color[1] = 4;
-        placement->color[2] = 0xff;
-        placement->color[3] = 0xff;
-        projectile = Obj_SetupObject(placement, 5, 0xffffffff, 0xffffffff, 0);
+        setup->color[0] = 1;
+        setup->color[1] = 4;
+        setup->color[2] = 0xff;
+        setup->color[3] = 0xff;
+        projectile = Obj_SetupObject(setup, 5, 0xffffffff, 0xffffffff, 0);
         if (projectile != NULL) {
             travelTime = 60.0f * (state->ground.baddie.targetDistance / (f32)(u32)state->aggroRange);
-            projectile->anim.velocityX = (state->targetObj->anim.localPosX - placement->posX) / travelTime;
+            projectile->anim.velocityX = (state->targetObj->anim.localPosX - setup->posX) / travelTime;
             yJitter = (f32)(s32)randomGetRange(-10, 10);
             mouthY = 10.0f * heightOffset + state->targetObj->anim.localPosY;
-            projectile->anim.velocityY = (mouthY + yJitter - placement->posY) / travelTime;
-            projectile->anim.velocityZ = (state->targetObj->anim.localPosZ - placement->posZ) / travelTime;
+            projectile->anim.velocityY = (mouthY + yJitter - setup->posY) / travelTime;
+            projectile->anim.velocityZ = (state->targetObj->anim.localPosZ - setup->posZ) / travelTime;
         }
     }
 }
@@ -527,7 +528,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                                             gKaldachomHitLightWork);
         if (hitResult != 0) {
             if ((hitResult != 0x10) && (hitResult != 0x11)) {
-                objLightFn_8009a1dc((void*)obj, 0.014f, gKaldachomHitLightWork, 3, 0);
+                objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 3, 0);
                 (*gPlayerInterface)->setState(obj, (void*)stateAddress, 4);
                 ((GroundBaddieState*)stateAddress)->baddie.hitPoints -= 1;
                 Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
@@ -554,7 +555,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                         0, 1, gKaldachomHitLightWork, 0x401, -1, (KaldachomCombatParams*)((u8*)&stack + 0xc));
                     fn_802961FC(playerObj, 2);
                     (*gPlayerInterface)->setState(obj, (void*)stateAddress, 5);
-                    objLightFn_8009a1dc((void*)obj, 0.014f, gKaldachomHitLightWork, 4, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 4, 0);
                     Sfx_PlayFromObject((int)obj, SFXTRIG_swdout1);
                 }
             } else {
@@ -563,7 +564,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                     ((GroundBaddieState*)stateAddress)->baddie.moveJustStartedB = 1;
                     ((GroundBaddieState*)stateAddress)->baddie.moveJustStartedA = 1;
                     ((GroundBaddieState*)stateAddress)->baddie.substate = 1;
-                    objLightFn_8009a1dc((void*)obj, 0.014f, gKaldachomHitLightWork, 1, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 1, 0);
                     Sfx_PlayFromObject((int)obj, SFXTRIG_stftest);
                     Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_rach_call3);
                 }
@@ -626,7 +627,7 @@ void kaldachom_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, in
             }
             objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
             if ((state->flags400 & 0x60) != 0) {
-                objParticleFn_80099d84(obj, 1.0f, 3, state->glowAlpha, 0);
+                objDoParticleFx(obj, 1.0f, 3, state->glowAlpha, 0);
             }
             control = state->control;
             ObjPath_GetPointWorldPosition(obj, 2, &control->upperMouthPosX, &control->upperMouthPosY,
@@ -654,15 +655,16 @@ void kaldachom_update(GameObject* obj) {
     GameObject* player;
     int texture;
     int ref;
+    ObjPlacement* placement;
     KaldachomState* objectState;
     f32 scrollPhase;
 
     objectState = obj->extra;
-    ref = obj->anim.placementDataAddress;
+    placement = (ObjPlacement*)obj->anim.placementDataAddress;
     if (obj->userData1 != 0) {
         if ((objectState->substate != 3) &&
-            (cond = (*gMapEventInterface)->shouldNotSaveTime(((ObjPlacement*)ref)->mapId), cond != 0)) {
-            (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)ref, (u8*)objectState, 8, 6, 0, 0x26, 20.0f);
+            (cond = (*gMapEventInterface)->shouldNotSaveTime(placement->ident), cond != 0)) {
+            (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)placement, (u8*)objectState, 8, 6, 0, 0x26, 20.0f);
             objectState->targetState = 0;
             Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy211);
             ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);

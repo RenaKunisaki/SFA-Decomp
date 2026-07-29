@@ -522,7 +522,7 @@ void ARWSquadron_update(GameObject* obj)
         if (flags->attackWindowOpen)
         {
             ArwSquadronSetup* volleyPlacement = *(ArwSquadronSetup**)&obj->anim.placementData;
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, ARWSQUADRON_HIT_VOLUME_SLOT, state->hitVolumeMode, 0);
+            ObjHits_SetHitVolumeSlot(&obj->anim, ARWSQUADRON_HIT_VOLUME_SLOT, state->hitVolumeMode, 0);
             if (state->variant == ARW_SQUADRON_VARIANT_FIGHTER)
                 arwsquadron_updateVolley(obj, state, volleyPlacement);
         }
@@ -615,7 +615,7 @@ void ARWSquadron_init(GameObject* obj, ArwSquadronSetup* setup)
         fxScale = 4.0f;
         state->fireFxScale = fxScale;
         flags->attackWindowOpen = 1;
-        switch (obj->anim.seqId)
+        switch (obj->anim.romDefNo)
         {
         case ARW_SQUADRON_SEQID_SHIP_TWIN:
             state->muzzleCount = 1;

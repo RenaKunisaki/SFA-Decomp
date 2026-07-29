@@ -109,8 +109,8 @@ def main() -> int:
         return 0
     print(f"{u['name']}  fuzzy={fz:.5f}")
     fns = u.get("functions") or []
-    for f in sorted(fns, key=lambda f: float(f["fuzzy_match_percent"])):
-        pct = float(f["fuzzy_match_percent"])
+    for f in sorted(fns, key=lambda f: float(f.get("fuzzy_match_percent") or 0.0)):
+        pct = float(f.get("fuzzy_match_percent") or 0.0)
         if args.symbol and f["name"] not in args.symbol:
             continue
         if args.symbol or args.all or pct < 100.0:

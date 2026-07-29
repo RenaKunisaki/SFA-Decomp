@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "main/dll/partfx_interface.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct IMAnimSpaceState {
     s16 blinkTimer;
@@ -20,7 +20,7 @@ STATIC_ASSERT(sizeof(IMAnimSpaceState) == 0x04);
 void imAnimSpace_modelMtxCallback(void);
 u32 imAnimSpace_getEventFlag(GameObject* obj);
 int imAnimSpace_isSubmodelEnabled(GameObject* obj, int bitIndex);
-int imAnimSpace_sequenceCallback(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
+int imAnimSpace_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate);
 int imAnimSpace_getExtraSize(void);
 int imAnimSpace_getObjectTypeId(void);
 void imAnimSpace_free(GameObject* obj);

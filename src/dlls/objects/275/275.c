@@ -2,7 +2,6 @@
 
 #include "dolphin/os.h"
 #include "game/objects/object.h"
-#include "main/objanim_update.h"
 #include "main/objseq.h"
 
 #define SEQ_OBJ2_GROUP                               0xF
@@ -75,7 +74,7 @@ extern const char sSeqObjNeedBitClearDuringSequenceFormat[];
 extern const char sSeqObjDiagnosticFormats[];
 extern const char sSeqObjNeedAndUsedBitFormat[];
 
-int SeqObj2_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateState* animUpdate) {
+int SeqObj2_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate) {
     SeqObjectPlacement* placement;
     SeqObj2State* state;
     int eventIndex;
@@ -90,11 +89,11 @@ int SeqObj2_animEventCallback(GameObject* obj, int* unused, ObjAnimUpdateState* 
         switch (eventId) {
         case SEQ_OBJ2_ANIM_EVENT_CLEAR_REQUIRED_BIT:
             mainSetBits(placement->requiredGameBit, SEQ_OBJ2_GAME_BIT_CLEAR);
-            OSReport(sSeqObjNeedBitClearDuringSequenceFormat, placement->base.mapId);
+            OSReport(sSeqObjNeedBitClearDuringSequenceFormat, placement->base.ident);
             break;
         case SEQ_OBJ2_ANIM_EVENT_SET_USED_BIT:
             mainSetBits(placement->usedGameBit, SEQ_OBJ2_GAME_BIT_SET);
-            OSReport(sSeqObjDiagnosticFormats, placement->base.mapId);
+            OSReport(sSeqObjDiagnosticFormats, placement->base.ident);
             break;
         }
     }
@@ -133,13 +132,13 @@ void SeqObj2_update(GameObject* obj) {
     if ((state->flags & SEQ_OBJ2_STATE_PREEMPT_SEQUENCE) != 0) {
         if ((placement->flags & SEQ_OBJ2_FLAG_CLEAR_REQUIRED_BEFORE_PREEMPT) != 0) {
             mainSetBits(placement->requiredGameBit, SEQ_OBJ2_GAME_BIT_CLEAR);
-            OSReport(data->needBitClearBeforePreempt, placement->base.mapId);
+            OSReport(data->needBitClearBeforePreempt, placement->base.ident);
         }
         if ((placement->flags & SEQ_OBJ2_FLAG_SET_USED_BEFORE_PREEMPT) != 0) {
             mainSetBits(placement->usedGameBit, SEQ_OBJ2_GAME_BIT_SET);
-            OSReport(data->usedBitSetBeforePreempt, placement->base.mapId);
+            OSReport(data->usedBitSetBeforePreempt, placement->base.ident);
         }
-        OSReport(data->aboutToPreemptSequence, placement->base.mapId, placement->sequenceParam);
+        OSReport(data->aboutToPreemptSequence, placement->base.ident, placement->sequenceParam);
         (*gObjectTriggerInterface)->preempt((int)obj, placement->preemptSequenceId);
         sequenceParam = placement->sequenceParam;
         (*gObjectTriggerInterface)->runSequence(placement->sequenceId, obj, sequenceParam);
@@ -147,11 +146,11 @@ void SeqObj2_update(GameObject* obj) {
     } else if ((state->flags & SEQ_OBJ2_STATE_SEQUENCE_FINISHED) != 0) {
         if ((placement->flags & SEQ_OBJ2_FLAG_CLEAR_REQUIRED_AFTER_SEQUENCE) != 0) {
             mainSetBits(placement->requiredGameBit, SEQ_OBJ2_GAME_BIT_CLEAR);
-            OSReport(data->needBitClearAfterSequence, placement->base.mapId);
+            OSReport(data->needBitClearAfterSequence, placement->base.ident);
         }
         if ((placement->flags & SEQ_OBJ2_FLAG_SET_USED_AFTER_SEQUENCE) != 0) {
             mainSetBits(placement->usedGameBit, SEQ_OBJ2_GAME_BIT_SET);
-            OSReport(data->usedBitSetAfterSequence, placement->base.mapId);
+            OSReport(data->usedBitSetAfterSequence, placement->base.ident);
         }
         state->flags = (u8)(state->flags & ~SEQ_OBJ2_STATE_SEQUENCE_FINISHED);
     } else {
@@ -161,13 +160,13 @@ void SeqObj2_update(GameObject* obj) {
              mainGetBit(placement->usedGameBit) == SEQ_OBJ2_GAME_BIT_CLEAR_UNSIGNED)) {
             if ((placement->flags & SEQ_OBJ2_FLAG_CLEAR_REQUIRED_BEFORE_SEQUENCE) != 0) {
                 mainSetBits(placement->requiredGameBit, SEQ_OBJ2_GAME_BIT_CLEAR);
-                OSReport(data->needBitClearBeforeSequence, placement->base.mapId);
+                OSReport(data->needBitClearBeforeSequence, placement->base.ident);
             }
             if ((placement->flags & SEQ_OBJ2_FLAG_SET_USED_BEFORE_SEQUENCE) != 0) {
                 mainSetBits(placement->usedGameBit, SEQ_OBJ2_GAME_BIT_SET);
-                OSReport(data->usedBitSetBeforeSequence, placement->base.mapId);
+                OSReport(data->usedBitSetBeforeSequence, placement->base.ident);
             }
-            OSReport(data->aboutToStartSequence, placement->base.mapId);
+            OSReport(data->aboutToStartSequence, placement->base.ident);
             (*gObjectTriggerInterface)->runSequence(placement->sequenceId, obj, SEQ_OBJ2_SEQUENCE_ARG_NONE);
         }
     }
@@ -177,7 +176,7 @@ void SeqObj2_init(GameObject* obj, SeqObjectPlacement* placement) {
     SeqObj2State* state;
 
     state = obj->extra;
-    OSReport(sSeqObjNeedAndUsedBitFormat, placement->base.mapId, placement->requiredGameBit, placement->usedGameBit);
+    OSReport(sSeqObjNeedAndUsedBitFormat, placement->base.ident, placement->requiredGameBit, placement->usedGameBit);
     obj->anim.rotX = (s16)((u32)placement->initialYaw << SEQ_OBJ2_ROTATION_SHIFT);
     obj->animEventCallback = SeqObj2_animEventCallback;
     if (placement->preemptSequenceId > SEQ_OBJ2_PREEMPT_SEQUENCE_ID_NONE) {

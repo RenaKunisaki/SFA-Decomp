@@ -115,7 +115,7 @@ void cnthitobjec_hitDetect(GameObject* obj)
             {
                 amount = s->explosionSize;
             }
-            model = ((CntHitObjectSetup*)(obj)->anim.placementData)->base.mapId;
+            model = ((CntHitObjectSetup*)(obj)->anim.placementData)->base.ident;
             if (model != CNTHIT_MODEL_NO_EXPLOSION_A && model != CNTHIT_MODEL_NO_EXPLOSION_B &&
                 model != CNTHIT_MODEL_NO_EXPLOSION_C && model != CNTHIT_MODEL_NO_EXPLOSION_D)
             {
@@ -154,7 +154,7 @@ void cnthitobjec_update(GameObject* obj)
         state->remainingHealth = setup->startHealth;
         if (setup->mode != CNTHIT_MODE_VISIBLE_OBJECT)
         {
-            ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, setup->explosionSize);
+            ObjHitbox_SetSphereRadius(&obj->anim, setup->explosionSize);
         }
     }
 }
@@ -165,12 +165,12 @@ void cnthitobjec_init(GameObject* obj, CntHitObjectSetup* setup)
     CntHitObjectSetup* setupData = setup;
 
     state->remainingHealth = 0;
-    setupData->hitSourceProfile = (s8)((u32)setupData->hitSourceProfile % CNTHIT_PROFILE_COUNT);
+    setupData->hitSourceProfile = (u32)setupData->hitSourceProfile % CNTHIT_PROFILE_COUNT;
     state->allowedHitSources = sCntHitSourcesByProfile[setupData->hitSourceProfile];
     state->allowedHitSourceCount = sCntHitSourceCounts[setupData->hitSourceProfile];
     if (state->allowedHitSources == &sCntHitSourceProfile1)
     {
-        ObjHits_ClearSourceMask((ObjAnimComponent*)obj, 8);
+        ObjHits_ClearSourceMask(&obj->anim, 8);
     }
     if (setupData->mode == CNTHIT_MODE_VISIBLE_OBJECT)
     {

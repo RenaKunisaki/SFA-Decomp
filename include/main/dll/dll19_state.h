@@ -30,7 +30,10 @@ typedef struct Dll19State
     s16 unk334;
     u8 pad336[0x354 - 0x336];
     s8 progressNumerator;
-    u8 pad355[0x3F4 - 0x355];
+    u8 pad355[0x3E8 - 0x355];
+    f32 oscValue;
+    f32 oscVelocity;
+    u8 pad3F0[0x3F4 - 0x3F0];
     s16 unk3F4;
     u8 pad3F6[0x400 - 0x3F6];
     u16 flags;

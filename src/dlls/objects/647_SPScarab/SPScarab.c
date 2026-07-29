@@ -156,7 +156,7 @@ void SPScarab_init(GameObject* obj, SpscarabPlacement* def)
     int model;
     SpscarabPalette paletteBytes;
 
-    objAnim = (ObjAnimComponent*)obj;
+    objAnim = &obj->anim;
     state = (SpscarabState*)obj->extra;
     {
         const u16* palettePair = &gSpScarabPaletteBytesA;

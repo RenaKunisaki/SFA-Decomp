@@ -53,11 +53,11 @@ f32 gMMPAsteroidIntensityHeightTable[4] = {0.0f, 0.0f, 10.0f, 50.0f};
 PartFxSpawnParams gMMPAsteroidDustSpawnParams;
 int gMMPAsteroidDustHeightParam;
 
-int mmpAsteroidRe_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
+int mmpAsteroidRe_processAnimEvents(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate) {
     MMPAsteroidReState* state = obj->extra;
     int eventIndex;
 
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         u8 eventId = animUpdate->eventIds[eventIndex];
 
@@ -195,7 +195,7 @@ void mmpAsteroidRe_update(GameObject* obj) {
                 count--;
             } while (count != 0);
             spawnExplosion(obj, 100.0f, 1, 1, 0, 1, 0, 1, 0);
-            CameraShake_Start(5.0f, 10.0f, 4.0f);
+            CameraShake_StartDampened(5.0f, 10.0f, 4.0f);
             {
                 f32 rumble = 22.0f;
                 doRumble(rumble);

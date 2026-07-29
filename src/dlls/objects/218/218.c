@@ -21,8 +21,8 @@
 #include "main/model_light.h"
 #include "main/objhits.h"
 
-f32 lbl_803DBD48 = 1024.0f;
-f32 lbl_803DBD4C = 512.0f;
+f32 gPollenFragmentSpinRateX = 1024.0f;
+f32 gPollenFragmentSpinRateY = 512.0f;
 
 typedef struct
 {
@@ -41,28 +41,28 @@ typedef struct
     u8 usePath : 1;    /* 0x12 bit 4 */
 } PollenFragmentDef;
 
-PollenFragmentConfig lbl_80320538 = {
+PollenFragmentConfig gPollenFragmentConfig0 = {
     0x0000, 0x049F, 0x00B9, 0x04BA, 0x04BA, -1, 0.2f, 0x0000, 0xC000,
 };
 
-PollenFragmentConfig lbl_8032054C = {
+PollenFragmentConfig gPollenFragmentConfig1 = {
     0x02FA, 0x02FB, 0x0496, 0x068F, 0x068F, 0x068F, 0.4f, 0x0026, 0x7000,
 };
 
-PollenFragmentConfig lbl_80320560 = {
+PollenFragmentConfig gPollenFragmentConfig2 = {
     0x02FA, 0x02FB, 0x0496, 0x068F, 0x068F, 0x068F, 0.4f, 0x0026, 0x2000,
 };
 
-PollenFragmentConfig lbl_80320574 = {
+PollenFragmentConfig gPollenFragmentConfig3 = {
     0x02FA, 0x02FB, 0x0496, 0x068F, 0x068F, -1, 0.2f, 0x0000, 0x2000,
 };
 
-PollenFragmentConfig lbl_80320588 = {
+PollenFragmentConfig gPollenFragmentConfig4 = {
     0x02FA, 0x02FB, 0x0496, 0x068F, 0x068F, 0x068F, 0.4f, 0x0026, 0x3000,
 };
 
-PollenFragmentConfig* lbl_8032059C[] = {
-    &lbl_80320538, &lbl_8032054C, &lbl_80320560, &lbl_80320574, &lbl_80320588,
+PollenFragmentConfig* gPollenFragmentConfigs[] = {
+    &gPollenFragmentConfig0, &gPollenFragmentConfig1, &gPollenFragmentConfig2, &gPollenFragmentConfig3, &gPollenFragmentConfig4,
 };
 
 typedef struct PollenFragmentExtra
@@ -277,20 +277,20 @@ void pollenfragment_update(GameObject* obj)
                                            1.0f);
         obj->anim.rotZ = obj->anim.rotZ + framesThisStep * 0x500;
     }
-    else if (obj->anim.seqId == POLLEN_FRAGMENT_OBJECT_ID)
+    else if (obj->anim.romDefNo == POLLEN_FRAGMENT_OBJECT_ID)
     {
-        t = 5.0f * lbl_803DBD48;
+        t = 5.0f * gPollenFragmentSpinRateX;
         obj->anim.rotX = t * (f32)(u32)framesThisStep + (f32)(int)obj->anim.rotX;
         obj->anim.rotY =
-            lbl_803DBD4C * (f32)(u32)framesThisStep + (f32)(int)obj->anim.rotY;
+            gPollenFragmentSpinRateY * (f32)(u32)framesThisStep + (f32)(int)obj->anim.rotY;
     }
     Sfx_KeepAliveLoopedObjectSound((int)obj, (u16)(((PollenFragmentExtra*)extra)->def)->loopSfx);
     objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
             obj->anim.velocityZ * timeDelta);
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, POLLENFRAGMENT_HIT_VOLUME_SLOT, 1, 0);
+    ObjHits_SetHitVolumeSlot(&obj->anim, POLLENFRAGMENT_HIT_VOLUME_SLOT, 1, 0);
     ObjHits_EnableObject(obj);
     hit = (void*)((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject;
-    if (hit != NULL && ((GameObject*)hit)->anim.seqId != obj->anim.seqId &&
+    if (hit != NULL && ((GameObject*)hit)->anim.romDefNo != obj->anim.romDefNo &&
         hit != *(void**)&((PollenFragmentExtra*)extra)->ownerObj)
     {
         ((PollenFragmentExtra*)extra)->timer = 0.0f;
@@ -325,7 +325,7 @@ void pollenfragment_init(GameObject* obj, int config)
     pollenType = *(s8*)(config + 0x19);
     pollenType = (pollenType < 0) ? 0 : ((pollenType > 5u) ? 5 : pollenType);
     *(s8*)(config + 0x19) = pollenType;
-    state[7] = (u32)lbl_8032059C[*(char*)(config + 0x19)];
+    state[7] = (u32)gPollenFragmentConfigs[*(char*)(config + 0x19)];
     if ((int)*(short*)state[7] != 0)
     {
         Sfx_PlayFromObjectLimited((u32)obj, (int)*(short*)state[7] & 0xffff, 3);

@@ -366,7 +366,7 @@ STATIC_ASSERT(sizeof(SBCloudRunnerState) == 0x84);
 
 #define SBCLOUDRUNNER_OBJGROUP 0xa
 
-/* object type ids (anim.seqId at obj+0x46) */
+/* object type ids (anim.romDefNo at obj+0x46) */
 #define SBCLOUDRUNNER_OBJ_TYPE  0x43 /* SB_CloudRunner_getObjectTypeId */
 #define CLOUDRUNNER_TARGET_TYPE 0x8E /* laser-lockable target */
 #define HIT_TYPE_INVULNERABLE   281  /* hit objects of this type ignore the laser */
@@ -403,8 +403,7 @@ enum
 #define COLORFADE_RUMBLE_PRESET 4000 /* anim.rotY written on a fade hit */
 
 
-/* Analog-stick steering update for the cloudrunner ride (target 0x801EE668;
- * Ghidra split this body as FUN_801eeafc). Integrates stick X/Y into the
+/* Analog-stick steering update for the cloudrunner ride. Integrates stick X/Y into the
  * bird's yaw/pitch/roll, clamps to the steer limits, advances the
  * flap/glide animation, and fires the forward burst on a fresh A press. */
 
@@ -521,7 +520,7 @@ void SB_CloudRunner_UpdateSteer(GameObject* obj, SBCloudRunnerState* state)
 }
 
 
-int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     SBCloudRunnerState* state = obj->extra;
     GameObject* player = Obj_GetPlayerObject();
@@ -541,7 +540,7 @@ int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
             state->done = 1;
         }
     }
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
     return 0;
 }
@@ -564,7 +563,7 @@ void SB_CloudRunner_HandlePriorityHit(GameObject* obj, SBCloudRunnerState* state
     {
         if (objGetFlagsE5_2((u8*)obj) == 0)
         {
-            if (hitObj->anim.seqId != HIT_TYPE_INVULNERABLE)
+            if (hitObj->anim.romDefNo != HIT_TYPE_INVULNERABLE)
             {
                 Obj_SetModelColorFadeRecursive(obj, 175, 200, 0, 0, 1);
                 doRumble(10.0f);
@@ -579,7 +578,7 @@ void SB_CloudRunner_HandlePriorityHit(GameObject* obj, SBCloudRunnerState* state
                 args.v[0] = 0;
                 args.v[1] = 0;
                 args.v[2] = 0;
-                if (hitObj->anim.seqId == HIT_TYPE_BURST)
+                if (hitObj->anim.romDefNo == HIT_TYPE_BURST)
                 {
                     (*gPartfxInterface)->spawnObject((void*)obj, PARTFX_HIT_FLASH, &args, PARTFX_SPAWN_FLAGS, -1, NULL);
                     (*gPartfxInterface)->spawnObject((void*)obj, PARTFX_HIT_FLASH, &args, PARTFX_SPAWN_FLAGS, -1, NULL);
@@ -792,7 +791,7 @@ void SB_CloudRunner_update(GameObject* obj)
         for (i = 0; i < count; i++)
         {
             GameObject* o = (GameObject*)(objs[i]);
-            if (o->anim.seqId == CLOUDRUNNER_TARGET_TYPE)
+            if (o->anim.romDefNo == CLOUDRUNNER_TARGET_TYPE)
             {
                 state->targetObj = o;
                 i = count;

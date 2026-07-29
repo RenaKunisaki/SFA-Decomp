@@ -12,14 +12,14 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 
-s32 lbl_803DC230 = 40;
-f32 lbl_803DC234 = 50.0f;
-u8 lbl_803DC238 = 0x80;
-f32 lbl_803DC23C = 50.0f;
-u8 lbl_803DC240 = 0x80;
-f32 lbl_803DC244 = 15.0f;
-f32 lbl_803DC248 = 0.5f;
-f32 lbl_803DC24C = 0.5f;
+s32 gProximityMineLifespanFrames = 40;
+f32 gProximityMineGlowScale = 50.0f;
+u8 gProximityMineGlowAlpha = 0x80;
+f32 gProximityMineResetGlowScale = 50.0f;
+u8 gProximityMineResetGlowAlpha = 0x80;
+f32 gProximityMineLaunchDistDivisor = 15.0f;
+f32 gProximityMineLaunchSpeedBias = 0.5f;
+f32 gProximityMineExplosionRadiusScale = 0.5f;
 
 #define PROXIMITYMINE_PARTFX 0x51c
 
@@ -44,16 +44,16 @@ void ProximityMine_expire(GameObject* obj)
     s16toFloat(&state->renderTimer, 10);
     state->mode = PROXIMITYMINE_MODE_EXPIRED;
     ObjHits_EnableObject(obj);
-    ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
+    ObjHits_MarkObjectPositionDirty(&obj->anim);
     storeZeroToFloatParam(&state->resetTimer);
     objfx_shakeCameraByDistance(obj, 200.0f);
     {
         f32 triggerRadiusDelta = state->triggerDistance - 30.0f;
-        spawnExplosion(obj, 60.0f + triggerRadiusDelta * lbl_803DC24C, 1, 1, 0, 1, 0, 1,
+        spawnExplosion(obj, 60.0f + triggerRadiusDelta * gProximityMineExplosionRadiusScale, 1, 1, 0, 1, 0, 1,
                        0);
     }
-    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, state->triggerDistance, -5, 10);
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, PROXIMITYMINE_HIT_VOLUME_SLOT, 1, 0);
+    ObjHitbox_SetCapsuleBounds(&obj->anim, state->triggerDistance, -5, 10);
+    ObjHits_SetHitVolumeSlot(&obj->anim, PROXIMITYMINE_HIT_VOLUME_SLOT, 1, 0);
     ObjHits_EnableObject(obj);
     if (state->effectHandle != NULL)
     {
@@ -207,7 +207,7 @@ void ProximityMine_update(GameObject* obj)
             if (state->effectHandle != NULL)
             {
                 state->effectHandle->enabled = brightness;
-                modelLightStruct_setupGlow(state->effectHandle, 0, 0xff, 0, 0, lbl_803DC238, lbl_803DC234);
+                modelLightStruct_setupGlow(state->effectHandle, 0, 0xff, 0, 0, gProximityMineGlowAlpha, gProximityMineGlowScale);
                 {
                     ModelLightStruct* fx = state->effectHandle;
                     modelLightStruct_setPosition(fx, 0.0f, obj->anim.hitboxScale, 0.0f);
@@ -225,7 +225,7 @@ void ProximityMine_update(GameObject* obj)
                 state->effectHandle = modelLightStruct_createPointLight(obj, 0xff, 0, 0, 0);
                 if (state->effectHandle != NULL)
                 {
-                    modelLightStruct_setupGlow(state->effectHandle, 0, 0xff, 0, 0, lbl_803DC240, lbl_803DC23C);
+                    modelLightStruct_setupGlow(state->effectHandle, 0, 0xff, 0, 0, gProximityMineResetGlowAlpha, gProximityMineResetGlowScale);
                     {
                         ModelLightStruct* fx = state->effectHandle;
                         modelLightStruct_setPosition(fx, 0.0f, obj->anim.hitboxScale, 0.0f);
@@ -272,8 +272,8 @@ void ProximityMine_update(GameObject* obj)
             dist = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
             state->mode = PROXIMITYMINE_MODE_FLIGHT;
             obj->anim.velocityX = 0.0f;
-            obj->anim.velocityY = sqrtf(dist) / lbl_803DC244 + 1.1f * lbl_803DC248;
-            obj->anim.velocityZ = -1.1f * lbl_803DC248 - sqrtf(dist) / lbl_803DC244;
+            obj->anim.velocityY = sqrtf(dist) / gProximityMineLaunchDistDivisor + 1.1f * gProximityMineLaunchSpeedBias;
+            obj->anim.velocityZ = -1.1f * gProximityMineLaunchSpeedBias - sqrtf(dist) / gProximityMineLaunchDistDivisor;
             zero = 0.0f;
             params.x = zero;
             params.y = zero;
@@ -319,7 +319,7 @@ void ProximityMine_update(GameObject* obj)
             {
                 ObjHits_EnableObject(obj);
             }
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, PROXIMITYMINE_HIT_VOLUME_SLOT, 1, 0);
+            ObjHits_SetHitVolumeSlot(&obj->anim, PROXIMITYMINE_HIT_VOLUME_SLOT, 1, 0);
             if (state->effectHandle != NULL)
             {
                 if ((state->effectHandle->enabled != 0) && (state->effectVisible == 0))
@@ -361,7 +361,7 @@ void ProximityMine_init(GameObject* obj, ProximityMineDef* def)
     ProximityMineState* state;
 
     state = obj->extra;
-    if (obj->anim.seqId == PROXIMITYMINE_OBJ)
+    if (obj->anim.romDefNo == PROXIMITYMINE_OBJ)
     {
         def->mode = PROXIMITYMINE_SPAWN_PROXIMITY;
     }
@@ -377,7 +377,7 @@ void ProximityMine_init(GameObject* obj, ProximityMineDef* def)
     s16toFloat(&state->initTimer, 5);
     obj->anim.rotX = def->angleSeed << 8;
     storeZeroToFloatParam(&state->lifespanTimer);
-    s16toFloat(&state->lifespanTimer, (s16)lbl_803DC230);
+    s16toFloat(&state->lifespanTimer, (s16)gProximityMineLifespanFrames);
     state->flashMode = 0;
     state->triggerDistance = 30.0f;
     state->effectVisible = 0;
@@ -405,7 +405,7 @@ void ProximityMine_init(GameObject* obj, ProximityMineDef* def)
         storeZeroToFloatParam(&state->bounceTimer);
         break;
     }
-    state->scaleStep = (3.0f * obj->anim.rootMotionScale) / lbl_803DC230;
+    state->scaleStep = (3.0f * obj->anim.rootMotionScale) / gProximityMineLifespanFrames;
     state->targetObj = NULL;
     state->effectHandle = NULL;
     return;

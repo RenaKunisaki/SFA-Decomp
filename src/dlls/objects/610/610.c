@@ -100,7 +100,7 @@ void drakormissile_startActiveLaunch(GameObject* obj)
     (obj)->anim.rootMotionScale = 0.5f * (obj)->anim.modelInstance->rootMotionScaleBase;
     state->timer = DRAKORMISSILE_ACTIVE_TIMER;
     ObjHits_SetTargetMask(obj, DRAKORMISSILE_TARGET_MASK);
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DRAKORMISSILE_HIT_VOLUME_SLOT, 1, 0);
+    ObjHits_SetHitVolumeSlot(&obj->anim, DRAKORMISSILE_HIT_VOLUME_SLOT, 1, 0);
     Sfx_PlayFromObject((int)obj, DRAKORMISSILE_ACTIVE_SFX_A);
     Sfx_PlayFromObject((int)obj, DRAKORMISSILE_ACTIVE_SFX_B);
 }
@@ -217,12 +217,11 @@ void drakormissile_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
     s16 savedRotY;
     int i;
     DrakorMissileState* state = (obj)->extra;
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     if (visible != 0 && state->state != DRAKORMISSILE_STATE_FADEOUT)
     {
         f32 savedScale;
         int* model;
-        char* m;
         savedRotZ = (obj)->anim.rotZ;
         savedRotY = (obj)->anim.rotY;
         savedScale = (obj)->anim.rootMotionScale;
@@ -346,7 +345,7 @@ void drakormissile_update(int obj)
             expired = 1;
         }
         nearHit = 0;
-        if (lastHit != NULL && lastHit->anim.seqId != DRAKORMISSILE_IGNORE_OBJECT_TYPE)
+        if (lastHit != NULL && lastHit->anim.romDefNo != DRAKORMISSILE_IGNORE_OBJECT_TYPE)
         {
             nearHit = 1;
         }
@@ -361,7 +360,7 @@ void drakormissile_update(int obj)
                 result |= 1;
             }
         }
-        if (hitObj != NULL && hitObj->anim.seqId == DRAKORMISSILE_IGNORE_OBJECT_TYPE)
+        if (hitObj != NULL && hitObj->anim.romDefNo == DRAKORMISSILE_IGNORE_OBJECT_TYPE)
         {
             result = 0;
         }

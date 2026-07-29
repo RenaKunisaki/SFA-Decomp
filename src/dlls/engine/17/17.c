@@ -4,17 +4,17 @@
 #include "main/textrender_api.h"
 #include "main/gametext_api.h"
 
-u32 lbl_803DD4AC;
+u32 gScreenDataId;
 u32 lbl_803DD4A8;
-u32 lbl_803DD4A4;
-u32 lbl_803DD4A0;
+u32 gScreenDataSize;
+u32 gScreenDataBuffer;
 
-u8 lbl_803A4218[0x10];
-extern u8 lbl_803119E0[];
+u8 gTaskTextDirIds[0x10];
+extern u8 gTaskHintMapData[];
 
-#define TASK_HINT_MAP ((s16*)lbl_803119E0)
+#define TASK_HINT_MAP ((s16*)gTaskHintMapData)
 
-void hintTextFn_800ea174(u8* out)
+void hintTextGetAvailableMaps(u8* out)
 {
     u8* texts = getLastSavedGameTexts();
     s16 i;
@@ -37,11 +37,11 @@ void* saveGameGetCurHint(void)
     return gameTextGet((s32)texts[5] + 0xf4);
 }
 
-int hintTextMapFn_800ea264(void)
+int hintTextLoadTaskMapTexts(void)
 {
     int ret = getCurGameText();
     u8* texts = getLastSavedGameTexts();
-    gameTextLoadDir(lbl_803A4218[TASK_HINT_MAP[texts[5]]]);
+    gameTextLoadDir(gTaskTextDirIds[TASK_HINT_MAP[texts[5]]]);
     return ret;
 }
 
@@ -85,7 +85,7 @@ static inline int setTaskBit(u8 id)
     return 1;
 }
 
-void gameBitFn_800ea2e0(u8 id)
+void taskHintRecordCompletedTask(u8 id)
 {
     u8* texts;
     u8 wasNew;
@@ -150,7 +150,7 @@ void loadTaskTexts(void)
     int idx;
     u8* dst;
     int n = 0xd;
-    dst = &lbl_803A4218[0xd];
+    dst = &gTaskTextDirIds[0xd];
     while (dst--, n-- != 0)
     {
         *dst = 0xff;
@@ -166,7 +166,7 @@ void loadTaskTexts(void)
             idx = (name[9] - '0') * 100 + (name[10] - '0') * 10 + (name[11] - '0');
             if (idx < 0xd)
             {
-                lbl_803A4218[idx] = i;
+                gTaskTextDirIds[idx] = i;
             }
         }
     }
@@ -174,23 +174,23 @@ void loadTaskTexts(void)
 
 void screens_run(int unused)
 {
-    if (lbl_803DD4A0 != 0)
+    if (gScreenDataBuffer != 0)
     {
-        mm_free((void*)lbl_803DD4A0);
-        lbl_803DD4A0 = 0;
-        lbl_803DD4A4 = 0;
-        lbl_803DD4AC = (u32)-1;
+        mm_free((void*)gScreenDataBuffer);
+        gScreenDataBuffer = 0;
+        gScreenDataSize = 0;
+        gScreenDataId = (u32)-1;
     }
 }
 
 void screens_remove(void)
 {
-    if (lbl_803DD4A0 != 0)
+    if (gScreenDataBuffer != 0)
     {
-        mm_free((void*)lbl_803DD4A0);
-        lbl_803DD4A0 = 0;
-        lbl_803DD4AC = (u32)-1;
-        lbl_803DD4A4 = 0;
+        mm_free((void*)gScreenDataBuffer);
+        gScreenDataBuffer = 0;
+        gScreenDataId = (u32)-1;
+        gScreenDataSize = 0;
         lbl_803DD4A8 = 0;
     }
 }
@@ -198,10 +198,9 @@ void screens_remove(void)
 void screens_show(int id)
 {
     int* asset = NULL;
-    int* p;
     int count;
     int offset, size;
-    if ((int)lbl_803DD4AC != id)
+    if ((int)gScreenDataId != id)
     {
         loadAssetFileById((void**)&asset, MLDF_FILEID_SCREENS_TAB);
         count = 0;
@@ -213,16 +212,16 @@ void screens_show(int id)
             id = 0;
         offset = asset[id];
         size = asset[id + 1] - offset;
-        if (size != (int)lbl_803DD4A4)
+        if (size != (int)gScreenDataSize)
         {
-            if (lbl_803DD4A0 != 0)
-                mm_free((void*)lbl_803DD4A0);
-            lbl_803DD4A0 = (u32)mmAlloc(size, 2, 0);
+            if (gScreenDataBuffer != 0)
+                mm_free((void*)gScreenDataBuffer);
+            gScreenDataBuffer = (u32)mmAlloc(size, 2, 0);
         }
-        lbl_803DD4A4 = size;
-        getTabEntry((void*)lbl_803DD4A0, MLDF_FILEID_SCREENS_BIN, offset, size);
+        gScreenDataSize = size;
+        getTabEntry((void*)gScreenDataBuffer, MLDF_FILEID_SCREENS_BIN, offset, size);
         mm_free(asset);
-        lbl_803DD4AC = id;
+        gScreenDataId = id;
     }
     lbl_803DD4A8 = 1;
 }
@@ -233,13 +232,13 @@ void screens_release(void)
 
 void screens_initialise(void)
 {
-    lbl_803DD4AC = (u32)-1;
-    lbl_803DD4A0 = 0;
-    lbl_803DD4A4 = 0;
+    gScreenDataId = (u32)-1;
+    gScreenDataBuffer = 0;
+    gScreenDataSize = 0;
     lbl_803DD4A8 = 0;
 }
 
-u8 lbl_803119E0[512] = {
+u8 gTaskHintMapData[512] = {
     255, 255, 0,   0,   0,   0,   0,   0,   0,   0,   255, 255, 255, 255, 0,   0,   0,   0,   0,   6,   0,   6,   0,
     6,   0,   6,   0,   6,   0,   6,   255, 255, 255, 255, 0,   2,   0,   2,   0,   5,   0,   5,   0,   5,   0,   5,
     0,   6,   255, 255, 255, 255, 0,   6,   0,   6,   0,   6,   0,   6,   0,   6,   0,   6,   255, 255, 0,   5,   255,

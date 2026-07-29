@@ -109,18 +109,6 @@ typedef struct TrackShadowTriangle
     u8 pad11[3];
 } TrackShadowTriangle;
 
-typedef struct AngleXf
-{
-    s16 rotX;
-    s16 rotY;
-    s16 rotZ;
-    s16 pad6;
-    f32 scale;
-    f32 tx;
-    f32 ty;
-    f32 tz;
-} AngleXf;
-
 #include "main/dll/ppcwgpipe_struct.h"
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -134,7 +122,6 @@ void vecGetRanges(f32* pts, f32* base, f32 scale, int* out);
 
 int objShadowFn_80062378(GameObject* obj, u8 param);
 
-void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale);
 
 f32 gShadowVolumeBoxCorners[0x19];
 f32 gPrevSunDir[3];
@@ -176,15 +163,15 @@ static f32 shadowGetSunMagnitude(void)
 
 void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale)
 {
-    AngleXf xf;
+    MatrixTransform xf;
     f32 ax;
     f32 az;
     int i;
     int rotY;
 
-    xf.tx = 0.0f;
-    xf.ty = 0.0f;
-    xf.tz = 0.0f;
+    xf.x = 0.0f;
+    xf.y = 0.0f;
+    xf.z = 0.0f;
     xf.scale = 1.0f;
     xf.rotZ = 0;
     ax = __fabsf(direction[0]);
@@ -279,7 +266,7 @@ void buildGroundShadowQuad(s16* out, GameObject* obj)
         PSVECCrossProduct(&c, &a, &b);
         PSVECNormalize(&b, &b);
         PSVECNormalize(&c, &c);
-        scale = 0.5f * ((ObjAnimComponent*)obj)->modelState->shadowScale;
+        scale = 0.5f * (&obj->anim)->modelState->shadowScale;
         PSVECScale(&b, &b, scale);
         PSVECScale(&c, &c, scale);
         nd = -dist;
@@ -360,7 +347,7 @@ void objDrawFn_80061654(GameObject* obj, ObjModel* model)
             GXSetCullMode(GX_CULL_NONE);
             GXSetCurrentMtx(GX_PNMTX9);
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-            selectTexture((Texture*)((int)((ObjAnimComponent*)obj)->modelState->shadowTexture), 0);
+            selectTexture((Texture*)((int)(&obj->anim)->modelState->shadowTexture), 0);
             GXBegin(GX_QUADS, GX_VTXFMT6, 4);
             GXPosition3s16(shadowVerts[0], shadowVerts[1], shadowVerts[2]);
             GXTexCoord2s16(0, 0);

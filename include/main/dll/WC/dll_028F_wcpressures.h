@@ -5,7 +5,7 @@
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define WCPRESSURES_TRACKED_COUNT 10
 
@@ -66,7 +66,7 @@ STATIC_ASSERT(offsetof(WCPressuresSetup, activateBit) == 0x20);
 extern ObjectDescriptor gWCPressureSObjDescriptor;
 extern char sWCPressuresActivateFormat[];
 int wcpressures_getExtraSize(void);
-int wcpressures_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int wcpressures_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int wcpressures_getObjectTypeId(GameObject* obj);
 void wcpressures_free(GameObject* obj);
 void wcpressures_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);

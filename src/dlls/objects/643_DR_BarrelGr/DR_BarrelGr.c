@@ -27,7 +27,7 @@
 #include "dlls/object_descriptor.h"
 #include "dolphin/mtx/vec.h"
 
-f32 lbl_803DC3B0 = 2.0f;
+f32 gDRBarrelGrThrowScale = 2.0f;
 f32 gDrBarrelGenGrabYOffset = -50.0f;
 
 enum DrbarrelgrMode
@@ -208,7 +208,7 @@ void DR_BarrelGr_update(GameObject* obj)
                 PSVECNormalize((const Vec*)throwDir, (Vec*)throwDir);
             }
         }
-        PSVECScale((const Vec*)throwDir, (Vec*)throwDir, lbl_803DC3B0);
+        PSVECScale((const Vec*)throwDir, (Vec*)throwDir, gDRBarrelGrThrowScale);
         gunpowderBarrel_addThrowVelocity(state->heldBarrel, throwDir);
         if (PSVECDistance((const Vec*)&state->grabX, (const Vec*)&state->heldBarrel->anim.localPosX) < 1.0f ||
             state->heldBarrel->anim.localPosY > state->grabY)

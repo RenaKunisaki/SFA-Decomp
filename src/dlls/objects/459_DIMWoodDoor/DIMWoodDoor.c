@@ -83,8 +83,8 @@ void dimwooddoor2_update(GameObject* obj) {
         for (contactIndex = 0; contactIndex < obj->anim.hitboxTransformState->contactObjectCount; contactIndex++) {
             GameObject* contact = obj->anim.hitboxTransformState->contactObjects[contactIndex];
 
-            if (contact->anim.seqId == DIM_WOOD_DOOR_SNOW_HORN_SEQUENCE_ID ||
-                contact->anim.seqId == DIM_CANNON_BALL_SEQUENCE_ID) {
+            if (contact->anim.romDefNo == DIM_WOOD_DOOR_SNOW_HORN_SEQUENCE_ID ||
+                contact->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
                 triggerFound = 1;
                 break;
             }

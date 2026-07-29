@@ -152,7 +152,7 @@ void FXEmit_emitEffect(GameObject* obj) {
                 (*gPartfxInterface)->spawnObject(obj, state->effectId, NULL, spawnFlags, -1, NULL);
             }
         } else if (effectBank == FXEMIT_EFFECT_BANK_MODEL) {
-            resource = Resource_Acquire((u16)(state->effectId + FXEMIT_MODEL_RESOURCE_ID_BASE), 1);
+            resource = Resource_Acquire((state->effectId + FXEMIT_MODEL_RESOURCE_ID_BASE), 1);
             if (state->emitRate > 0) {
                 for (i = 0; i < state->emitRate; i++) {
                     ((FXEmitModelResource*)resource)->vtable->spawnEffect(obj, 0, 0, spawnFlags, -1, 0);
@@ -162,7 +162,7 @@ void FXEmit_emitEffect(GameObject* obj) {
             }
             Resource_Release(resource);
         } else if (effectBank == FXEMIT_EFFECT_BANK_PROJECTILE) {
-            resource = Resource_Acquire((u16)(state->effectId + FXEMIT_PROJECTILE_RESOURCE_ID_BASE), 1);
+            resource = Resource_Acquire((state->effectId + FXEMIT_PROJECTILE_RESOURCE_ID_BASE), 1);
             if (state->emitRate > 0) {
                 for (i = 0; i < state->emitRate; i++) {
                     ((FXEmitProjectileResource*)resource)
@@ -179,7 +179,7 @@ void FXEmit_emitEffect(GameObject* obj) {
     }
 }
 
-int FXEmit_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int FXEmit_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     FXEmitState* state;
     FXEmitPlacement* placement;
     int i;
@@ -192,7 +192,7 @@ int FXEmit_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* ani
             FXEmit_emitEffect(obj);
         }
         if (animUpdate->eventIds[i] == FXEMIT_EVENT_TOGGLE_SEQUENCE) {
-            state->sequenceRotate = (u8)(1 - state->sequenceRotate);
+            state->sequenceRotate = 1 - state->sequenceRotate;
         }
         animUpdate->eventIds[i] = 0;
     }

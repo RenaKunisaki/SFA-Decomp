@@ -3,7 +3,7 @@
  * the Arwing in the on-rails sections. A pickup fades in once the Arwing is
  * close ahead, can oscillate along the X or Y axis (route modes 1/3 and
  * 4/5), spins, and watches for the Arwing passing through it. The reward on
- * collection depends on the object's seqId (health, max-health, score,
+ * collection depends on the object's romDefNo (health, max-health, score,
  * ring, laser upgrade, bomb, and the 0x6D8-0x6DB collectibles) and on the
  * pickup's "mode" (handled in Ring_onCollect). Rings also feed
  * the ring-count gate driven by arwlevelcon. Collision is checked two ways:
@@ -147,7 +147,7 @@ void ARWBombColl_update(GameObject* obj)
             {
                 int hit;
                 if (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0 && (u32)hit != 0 &&
-                    (((GameObject*)hit)->anim.seqId == 0x604 || ((GameObject*)hit)->anim.seqId == ARW_ARWING_BOMB_OBJ))
+                    (((GameObject*)hit)->anim.romDefNo == 0x604 || ((GameObject*)hit)->anim.romDefNo == ARW_ARWING_BOMB_OBJ))
                 {
                     arwarwing_addScore(arw, 0xf);
                     flags->shotOpen = 1;
@@ -164,7 +164,7 @@ void ARWBombColl_update(GameObject* obj)
             }
             if (arw != NULL && flags->collected != 0)
             {
-                switch (obj->anim.seqId)
+                switch (obj->anim.romDefNo)
                 {
                 case 0x609:
                     Sfx_PlayFromObject((int)obj, SFXTRIG_ar_ring_pickup);

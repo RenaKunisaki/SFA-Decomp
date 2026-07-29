@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 #include "main/dll/baddie_state.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/dll/player_staff_api.h"
 
 #define PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE 0x4000
@@ -41,7 +41,7 @@ int fn_80296464(GameObject* player);
 int playerGetSurfaceType(GameObject* player);
 void playerAddMaxMagic(GameObject* player, int delta);
 void fn_80296BBC(GameObject* player);
-void fn_802972B4(GameObject* player, u32* outEffects, f32* outA, f32* outB, f32* outC, u16* outSfx);
+void fn_802972B4(GameObject* player, u32* outEffects, f32* outA, f32* outB, f32* outC, u16* outHitStunFrames);
 GameObject* playerGetFocusObject(GameObject* player);
 int playerGetMoney(GameObject* player);
 int playerHasSpell(GameObject* obj, int spell);
@@ -73,8 +73,7 @@ void fn_802B4ED8(GameObject* obj, int state, int mode);
 void fn_802B4DE0(GameObject* obj, int flag);
 void playerUpdateWhileTimeStopped(int obj);
 void objLoadPlayerFromSave(int obj);
-/* The raw integer parent preserves the matched player implementation's signed comparisons. */
-void fn_80296EB4(GameObject* obj, int newParent);
+void fn_80296EB4(GameObject* obj, GameObject* newParent);
 
 int Lightfoot_UpdateProximityInteractionState(int obj, int state);
 int Lightfoot_UpdateCompletionInteraction(int obj, int state);
@@ -85,11 +84,11 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv);
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv);
 int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv);
 void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieState* inner,
-                                                 struct Dll437ControlState* animState);
+                                                 struct Dll1B5ControlState* animState);
 void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner);
 void Lightfoot_ResetScriptedPosition(GameObject* obj);
 void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner);
 void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int state);
-int Lightfoot_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int Lightfoot_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 
 #endif /* MAIN_DLL_PLAYER_API_H_ */

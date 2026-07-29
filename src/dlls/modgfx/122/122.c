@@ -10,6 +10,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
+#include "dlls/object_descriptor.h"
 
 /* spawnEffect effect ids per variant (textureAssetId arg). */
 #define DLL7A_EFFECT_ID_VARIANT0 0x156
@@ -157,6 +158,13 @@ void dll_7A_func00_nop(void)
 {
 }
 
-u32 lbl_80314C90[8] = {
-    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_7A_func00_nop, (u32)dll_7A_func01_nop,
-    0x00000000, (u32)dll_7A_func03};
+ObjectDescriptor4 dll_7A_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_7A_func00_nop,
+    (ObjectDescriptorCallback)dll_7A_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_7A_func03,
+};

@@ -23,68 +23,68 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 
-#define DLL411_TARGET_OBJGROUP 0xE
+#define DLL19B_TARGET_OBJGROUP 0xE
 
-#define DLL411_ENVFX_A 0xC3
-#define DLL411_ENVFX_B 0x14
+#define DLL19B_ENVFX_A 0xC3
+#define DLL19B_ENVFX_B 0x14
 
-#define DLL411_BRIGHTNESS_CHANNEL_A 2
-#define DLL411_BRIGHTNESS_CHANNEL_B 3
-#define DLL411_BRIGHTNESS_A_MIN     12
-#define DLL411_BRIGHTNESS_B_MIN     1
-#define DLL411_BRIGHTNESS_B_NEAR    30
-#define DLL411_BRIGHTNESS_MAX       70
-#define DLL411_BRIGHTNESS_EVENT     100
-#define DLL411_BRIGHTNESS_FADE_RATE (-3)
-#define DLL411_BRIGHTNESS_RISE_RATE 1
+#define DLL19B_BRIGHTNESS_CHANNEL_A 2
+#define DLL19B_BRIGHTNESS_CHANNEL_B 3
+#define DLL19B_BRIGHTNESS_A_MIN     12
+#define DLL19B_BRIGHTNESS_B_MIN     1
+#define DLL19B_BRIGHTNESS_B_NEAR    30
+#define DLL19B_BRIGHTNESS_MAX       70
+#define DLL19B_BRIGHTNESS_EVENT     100
+#define DLL19B_BRIGHTNESS_FADE_RATE (-3)
+#define DLL19B_BRIGHTNESS_RISE_RATE 1
 
-#define DLL411_NEAREST_DISTANCE_INITIAL 1000.0f
-#define DLL411_NEAREST_DISTANCE_MAX     300.0f
-#define DLL411_NEAREST_DISTANCE_MIN     100.0f
-#define DLL411_DISTANCE_BLEND_SPAN      200.0f
-#define DLL411_RENDER_SCALE             1.0f
+#define DLL19B_NEAREST_DISTANCE_INITIAL 1000.0f
+#define DLL19B_NEAREST_DISTANCE_MAX     300.0f
+#define DLL19B_NEAREST_DISTANCE_MIN     100.0f
+#define DLL19B_DISTANCE_BLEND_SPAN      200.0f
+#define DLL19B_RENDER_SCALE             1.0f
 
-#define DLL411_MESSAGE_FADE           0x30005
-#define DLL411_MESSAGE_LIGHT          0x30006
-#define DLL411_MESSAGE_LIGHT_RATE     0x10
-#define DLL411_MESSAGE_QUEUE_CAPACITY 4
+#define DLL19B_MESSAGE_FADE           0x30005
+#define DLL19B_MESSAGE_LIGHT          0x30006
+#define DLL19B_MESSAGE_LIGHT_RATE     0x10
+#define DLL19B_MESSAGE_QUEUE_CAPACITY 4
 
-#define DLL411_RESOURCE_EFFECT_A    0x83
-#define DLL411_RESOURCE_EFFECT_B    0x84
-#define DLL411_RESOURCE_PARTICLE    0x6A
-#define DLL411_PARTICLE_SPAWN_FLAGS 0x402
+#define DLL19B_RESOURCE_EFFECT_A    0x83
+#define DLL19B_RESOURCE_EFFECT_B    0x84
+#define DLL19B_RESOURCE_PARTICLE    0x6A
+#define DLL19B_PARTICLE_SPAWN_FLAGS 0x402
 
-#define DLL411_SEQUENCE_START   0
-#define DLL411_SEQUENCE_RESOLVE 1
-#define DLL411_SEQUENCE_TIMEOUT 2
+#define DLL19B_SEQUENCE_START   0
+#define DLL19B_SEQUENCE_RESOLVE 1
+#define DLL19B_SEQUENCE_TIMEOUT 2
 
-#define DLL411_DEFAULT_ACTIVATION_DISTANCE 10
-#define DLL411_WAIT_EVENT_TIMER            160
-#define DLL411_RESOLVE_TIMER               200
-#define DLL411_INITIAL_DISPLAY_TIMER       200
-#define DLL411_UNKNOWN10_INITIAL           200
-#define DLL411_RESET_DELAY                 400
-#define DLL411_TIMEOUT_DELAY               10
-#define DLL411_COUNTDOWN_START             4000
+#define DLL19B_DEFAULT_ACTIVATION_DISTANCE 10
+#define DLL19B_WAIT_EVENT_TIMER            160
+#define DLL19B_RESOLVE_TIMER               200
+#define DLL19B_INITIAL_DISPLAY_TIMER       200
+#define DLL19B_UNKNOWN10_INITIAL           200
+#define DLL19B_RESET_DELAY                 400
+#define DLL19B_TIMEOUT_DELAY               10
+#define DLL19B_COUNTDOWN_START             4000
 
-typedef enum Dll411AnimEvent {
-    DLL411_ANIM_EVENT_ENVFX_A = 1,
-    DLL411_ANIM_EVENT_ENVFX_OVERRIDE = 2,
-    DLL411_ANIM_EVENT_PENDING = 3,
-    DLL411_ANIM_EVENT_COMPLETE = 4,
-    DLL411_ANIM_EVENT_RESET = 5,
-    DLL411_ANIM_EVENT_GAMEBIT_01D2_SET = 6,
-    DLL411_ANIM_EVENT_GAMEBIT_01D2_CLEAR = 7,
-    DLL411_ANIM_EVENT_GAMEBIT_0127_SET = 8,
-    DLL411_ANIM_EVENT_GAMEBIT_0128_SET = 9,
-    DLL411_ANIM_EVENT_BRIGHTNESS = 11,
-} Dll411AnimEvent;
+typedef enum Dll19BAnimEvent {
+    DLL19B_ANIM_EVENT_ENVFX_A = 1,
+    DLL19B_ANIM_EVENT_ENVFX_OVERRIDE = 2,
+    DLL19B_ANIM_EVENT_PENDING = 3,
+    DLL19B_ANIM_EVENT_COMPLETE = 4,
+    DLL19B_ANIM_EVENT_RESET = 5,
+    DLL19B_ANIM_EVENT_GAMEBIT_01D2_SET = 6,
+    DLL19B_ANIM_EVENT_GAMEBIT_01D2_CLEAR = 7,
+    DLL19B_ANIM_EVENT_GAMEBIT_0127_SET = 8,
+    DLL19B_ANIM_EVENT_GAMEBIT_0128_SET = 9,
+    DLL19B_ANIM_EVENT_BRIGHTNESS = 11,
+} Dll19BAnimEvent;
 
 /* Engine-owned environment-effect override; this unit consumes its first word. */
 extern int lbl_803DB610;
-u32 gDll411ShaderResult;
+u32 gDll19BShaderResult;
 
-ObjectDescriptor gDll411ObjDescriptor = {
+ObjectDescriptor gDll19BObjDescriptor = {
     0,
     0,
     0,
@@ -101,76 +101,76 @@ ObjectDescriptor gDll411ObjDescriptor = {
     dll411_getExtraSize,
 };
 
-int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
-    Dll411State* state;
+int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
+    Dll19BState* state;
     int eventIndex;
 
     (void)unusedArg;
     state = obj->extra;
-    animUpdate->hitVolumePair = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->flags = -1;
+    animUpdate->movementState = 0;
 
     if (state->brightnessBVelocity != 0) {
         state->brightnessB += state->brightnessBVelocity;
-        if (state->brightnessB <= DLL411_BRIGHTNESS_B_MIN && state->brightnessBVelocity <= 0) {
-            state->brightnessB = DLL411_BRIGHTNESS_B_MIN;
+        if (state->brightnessB <= DLL19B_BRIGHTNESS_B_MIN && state->brightnessBVelocity <= 0) {
+            state->brightnessB = DLL19B_BRIGHTNESS_B_MIN;
             state->brightnessBVelocity = 0;
-        } else if (state->brightnessB >= DLL411_BRIGHTNESS_MAX && state->brightnessBVelocity >= 0) {
-            state->brightnessB = DLL411_BRIGHTNESS_MAX;
+        } else if (state->brightnessB >= DLL19B_BRIGHTNESS_MAX && state->brightnessBVelocity >= 0) {
+            state->brightnessB = DLL19B_BRIGHTNESS_MAX;
             state->brightnessBVelocity = 0;
         }
-        gTitleMenuControlInterface->vtable->func11(DLL411_BRIGHTNESS_CHANNEL_B, (u8)state->brightnessB);
+        gTitleMenuControlInterface->vtable->func11(DLL19B_BRIGHTNESS_CHANNEL_B, (u8)state->brightnessB);
     }
 
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         u8 eventId = animUpdate->eventIds[eventIndex];
         if (eventId != 0) {
             switch (eventId) {
-            case DLL411_ANIM_EVENT_ENVFX_A:
-                getEnvfxAct(obj, obj, DLL411_ENVFX_A, 0);
+            case DLL19B_ANIM_EVENT_ENVFX_A:
+                getEnvfxAct(obj, obj, DLL19B_ENVFX_A, 0);
                 break;
-            case DLL411_ANIM_EVENT_ENVFX_OVERRIDE:
+            case DLL19B_ANIM_EVENT_ENVFX_OVERRIDE:
                 if (lbl_803DB610 == -1) {
-                    getEnvfxAct(obj, obj, DLL411_ENVFX_B, 0);
+                    getEnvfxAct(obj, obj, DLL19B_ENVFX_B, 0);
                 } else {
-                    getEnvfxAct(obj, obj, (u16)lbl_803DB610, 0);
+                    getEnvfxAct(obj, obj, lbl_803DB610, 0);
                 }
                 break;
-            case DLL411_ANIM_EVENT_PENDING:
+            case DLL19B_ANIM_EVENT_PENDING:
                 state->pendingEvent = 1;
                 break;
-            case DLL411_ANIM_EVENT_COMPLETE:
-                state->phase = DLL411_PHASE_COMPLETE;
+            case DLL19B_ANIM_EVENT_COMPLETE:
+                state->phase = DLL19B_PHASE_COMPLETE;
                 state->pendingEvent = 2;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
                 mainSetBits(0x1d2, 0);
                 mainSetBits(0x126, 1);
-                state->brightnessBVelocity = DLL411_BRIGHTNESS_FADE_RATE;
+                state->brightnessBVelocity = DLL19B_BRIGHTNESS_FADE_RATE;
                 break;
-            case DLL411_ANIM_EVENT_RESET:
-                state->phase = DLL411_PHASE_RESET;
+            case DLL19B_ANIM_EVENT_RESET:
+                state->phase = DLL19B_PHASE_RESET;
                 state->pendingEvent = 3;
-                state->brightnessBVelocity = DLL411_BRIGHTNESS_FADE_RATE;
+                state->brightnessBVelocity = DLL19B_BRIGHTNESS_FADE_RATE;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
                 break;
-            case DLL411_ANIM_EVENT_GAMEBIT_01D2_SET:
+            case DLL19B_ANIM_EVENT_GAMEBIT_01D2_SET:
                 mainSetBits(0x1d2, 1);
                 break;
-            case DLL411_ANIM_EVENT_GAMEBIT_01D2_CLEAR:
+            case DLL19B_ANIM_EVENT_GAMEBIT_01D2_CLEAR:
                 mainSetBits(0x1d2, 0);
-                state->brightnessBVelocity = DLL411_BRIGHTNESS_FADE_RATE;
+                state->brightnessBVelocity = DLL19B_BRIGHTNESS_FADE_RATE;
                 break;
-            case DLL411_ANIM_EVENT_GAMEBIT_0128_SET:
+            case DLL19B_ANIM_EVENT_GAMEBIT_0128_SET:
                 mainSetBits(0x128, 1);
-                if (gDll411ShaderResult == 0) {
-                    gDll411ShaderResult = return0_8005669C(1);
+                if (gDll19BShaderResult == 0) {
+                    gDll19BShaderResult = return0_8005669C(1);
                 }
                 break;
-            case DLL411_ANIM_EVENT_GAMEBIT_0127_SET:
+            case DLL19B_ANIM_EVENT_GAMEBIT_0127_SET:
                 mainSetBits(0x127, 1);
                 break;
-            case DLL411_ANIM_EVENT_BRIGHTNESS:
-                state->brightnessB = DLL411_BRIGHTNESS_EVENT;
+            case DLL19B_ANIM_EVENT_BRIGHTNESS:
+                state->brightnessB = DLL19B_BRIGHTNESS_EVENT;
                 gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2d, 0x50, (u8)state->brightnessB, 0);
                 break;
             }
@@ -181,7 +181,7 @@ int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState*
 }
 
 int dll411_getExtraSize(void) {
-    return sizeof(Dll411State);
+    return sizeof(Dll19BState);
 }
 
 int dll411_getObjectTypeId(void) {
@@ -194,7 +194,7 @@ void dll411_free(GameObject* obj) {
 
 void dll411_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     if (visible != 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DLL411_RENDER_SCALE);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DLL19B_RENDER_SCALE);
     }
 }
 
@@ -204,10 +204,10 @@ void dll411_hitDetect(void) {
 char sDll411CountdownFormat[] = "time %d\n";
 
 void dll411_update(GameObject* obj) {
-    Dll411State* state;
+    Dll19BState* state;
     GameObject* player;
     GameObject* nearestObject;
-    Dll411State* messageState;
+    Dll19BState* messageState;
     int value;
     f32 positionDelta;
     f32 distance;
@@ -217,41 +217,41 @@ void dll411_update(GameObject* obj) {
 
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    distance = DLL411_NEAREST_DISTANCE_INITIAL;
+    distance = DLL19B_NEAREST_DISTANCE_INITIAL;
     messageState = obj->extra;
     messageFlags = 0;
     while (ObjMsg_Pop(obj, (u32*)&messageId, (u32*)&messageParam, (u32*)&messageFlags) != 0) {
         switch (messageId) {
-        case DLL411_MESSAGE_FADE:
-            messageState->brightnessAVelocity = DLL411_BRIGHTNESS_FADE_RATE;
+        case DLL19B_MESSAGE_FADE:
+            messageState->brightnessAVelocity = DLL19B_BRIGHTNESS_FADE_RATE;
             break;
-        case DLL411_MESSAGE_LIGHT:
-            messageState->brightnessAVelocity = DLL411_MESSAGE_LIGHT_RATE;
+        case DLL19B_MESSAGE_LIGHT:
+            messageState->brightnessAVelocity = DLL19B_MESSAGE_LIGHT_RATE;
             break;
         }
     }
     mainSetBits(0x127, 1);
     if ((value = state->brightnessAVelocity) != 0) {
         state->brightnessA += (s16)value;
-        if (state->brightnessA <= DLL411_BRIGHTNESS_A_MIN) {
-            state->brightnessA = DLL411_BRIGHTNESS_A_MIN;
+        if (state->brightnessA <= DLL19B_BRIGHTNESS_A_MIN) {
+            state->brightnessA = DLL19B_BRIGHTNESS_A_MIN;
             state->brightnessAVelocity = 0;
-        } else if (state->brightnessA >= DLL411_BRIGHTNESS_MAX) {
-            state->brightnessA = DLL411_BRIGHTNESS_MAX;
+        } else if (state->brightnessA >= DLL19B_BRIGHTNESS_MAX) {
+            state->brightnessA = DLL19B_BRIGHTNESS_MAX;
             state->brightnessAVelocity = 0;
         }
-        gTitleMenuControlInterface->vtable->func11(DLL411_BRIGHTNESS_CHANNEL_A, state->brightnessA & 0xff);
+        gTitleMenuControlInterface->vtable->func11(DLL19B_BRIGHTNESS_CHANNEL_A, state->brightnessA & 0xff);
     }
     if ((value = state->brightnessBVelocity) != 0) {
         state->brightnessB += (s16)value;
-        if (state->brightnessB <= DLL411_BRIGHTNESS_B_MIN && state->brightnessBVelocity <= 0) {
-            state->brightnessB = DLL411_BRIGHTNESS_B_MIN;
+        if (state->brightnessB <= DLL19B_BRIGHTNESS_B_MIN && state->brightnessBVelocity <= 0) {
+            state->brightnessB = DLL19B_BRIGHTNESS_B_MIN;
             state->brightnessBVelocity = 0;
-        } else if (state->brightnessB >= DLL411_BRIGHTNESS_MAX && state->brightnessBVelocity >= 0) {
-            state->brightnessB = DLL411_BRIGHTNESS_MAX;
+        } else if (state->brightnessB >= DLL19B_BRIGHTNESS_MAX && state->brightnessBVelocity >= 0) {
+            state->brightnessB = DLL19B_BRIGHTNESS_MAX;
             state->brightnessBVelocity = 0;
         }
-        gTitleMenuControlInterface->vtable->func11(DLL411_BRIGHTNESS_CHANNEL_B, state->brightnessB & 0xff);
+        gTitleMenuControlInterface->vtable->func11(DLL19B_BRIGHTNESS_CHANNEL_B, state->brightnessB & 0xff);
     }
     if (state->timer > 0) {
         state->timer -= framesThisStep;
@@ -263,44 +263,44 @@ void dll411_update(GameObject* obj) {
             }
         }
     } else {
-        nearestObject = (GameObject*)ObjGroup_FindNearestObject(DLL411_TARGET_OBJGROUP, player, &distance);
-        if (nearestObject != NULL && distance < DLL411_NEAREST_DISTANCE_MAX && distance > DLL411_NEAREST_DISTANCE_MIN) {
+        nearestObject = (GameObject*)ObjGroup_FindNearestObject(DLL19B_TARGET_OBJGROUP, player, &distance);
+        if (nearestObject != NULL && distance < DLL19B_NEAREST_DISTANCE_MAX && distance > DLL19B_NEAREST_DISTANCE_MIN) {
             positionDelta = nearestObject->anim.localPosZ - player->anim.localPosZ;
             if (positionDelta <= 0.0f) {
                 if (positionDelta < 0.0f) {
                     positionDelta *= -1.0f;
                 }
-                if (state->brightnessB != DLL411_BRIGHTNESS_B_NEAR) {
-                    state->brightnessB = DLL411_BRIGHTNESS_B_NEAR;
+                if (state->brightnessB != DLL19B_BRIGHTNESS_B_NEAR) {
+                    state->brightnessB = DLL19B_BRIGHTNESS_B_NEAR;
                 }
                 value = (int)((f32)state->brightnessB *
-                              ((positionDelta - DLL411_NEAREST_DISTANCE_MIN) / DLL411_DISTANCE_BLEND_SPAN));
+                              ((positionDelta - DLL19B_NEAREST_DISTANCE_MIN) / DLL19B_DISTANCE_BLEND_SPAN));
                 if ((s16)value < 1) {
                     value = 1;
                 }
-                gTitleMenuControlInterface->vtable->func11(DLL411_BRIGHTNESS_CHANNEL_B, value & 0xff);
+                gTitleMenuControlInterface->vtable->func11(DLL19B_BRIGHTNESS_CHANNEL_B, value & 0xff);
                 value = (int)((f32)state->brightnessA *
-                              ((DLL411_DISTANCE_BLEND_SPAN - (positionDelta - DLL411_NEAREST_DISTANCE_MIN)) /
-                               DLL411_DISTANCE_BLEND_SPAN));
+                              ((DLL19B_DISTANCE_BLEND_SPAN - (positionDelta - DLL19B_NEAREST_DISTANCE_MIN)) /
+                               DLL19B_DISTANCE_BLEND_SPAN));
                 if ((s16)value < 1) {
                     value = 1;
                 }
-                gTitleMenuControlInterface->vtable->func11(DLL411_BRIGHTNESS_CHANNEL_A, value & 0xff);
+                gTitleMenuControlInterface->vtable->func11(DLL19B_BRIGHTNESS_CHANNEL_A, value & 0xff);
             }
         }
         switch (state->phase) {
-        case DLL411_PHASE_IDLE:
+        case DLL19B_PHASE_IDLE:
             if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < state->activationDistance) {
-                state->phase = DLL411_PHASE_WAIT_EVENT;
+                state->phase = DLL19B_PHASE_WAIT_EVENT;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
-                (*gObjectTriggerInterface)->runSequence(DLL411_SEQUENCE_START, obj, -1);
+                (*gObjectTriggerInterface)->runSequence(DLL19B_SEQUENCE_START, obj, -1);
                 {
-                    Dll83Interface** res = Resource_Acquire(DLL411_RESOURCE_EFFECT_A, 1);
+                    Dll83Interface** res = Resource_Acquire(DLL19B_RESOURCE_EFFECT_A, 1);
                     (*res)->spawn(obj, 1, NULL, 1, -1, NULL);
                     Resource_Release(res);
                 }
                 {
-                    Dll84Interface** res = Resource_Acquire(DLL411_RESOURCE_EFFECT_B, 1);
+                    Dll84Interface** res = Resource_Acquire(DLL19B_RESOURCE_EFFECT_B, 1);
                     (*res)->spawn(obj, 0, NULL, 1, -1, NULL);
                     Resource_Release(res);
                 }
@@ -308,13 +308,13 @@ void dll411_update(GameObject* obj) {
                 (*gModgfxInterface)->releaseHandle(&state->gfxHandle);
             }
             break;
-        case DLL411_PHASE_WAIT_EVENT:
+        case DLL19B_PHASE_WAIT_EVENT:
             if (state->pendingEvent == 1) {
-                state->phase = DLL411_PHASE_COUNTDOWN;
-                state->timer = DLL411_WAIT_EVENT_TIMER;
+                state->phase = DLL19B_PHASE_COUNTDOWN;
+                state->timer = DLL19B_WAIT_EVENT_TIMER;
             }
             break;
-        case DLL411_PHASE_COUNTDOWN:
+        case DLL19B_PHASE_COUNTDOWN:
             if (state->unlockCount == 0 && mainGetBit(GAMEBIT_WM_KrazTest1TorchesActive) == 0) {
                 mainSetBits(GAMEBIT_WM_KrazTest1TorchesActive, 1);
             }
@@ -326,80 +326,80 @@ void dll411_update(GameObject* obj) {
             logPrintf(sDll411CountdownFormat, state->countdown);
             if (state->countdown <= 0) {
                 mainSetBits(0x1d4, 1);
-                (*gObjectTriggerInterface)->runSequence(DLL411_SEQUENCE_TIMEOUT, obj, -1);
-                state->timer = DLL411_TIMEOUT_DELAY;
-                state->phase = DLL411_PHASE_RESET;
+                (*gObjectTriggerInterface)->runSequence(DLL19B_SEQUENCE_TIMEOUT, obj, -1);
+                state->timer = DLL19B_TIMEOUT_DELAY;
+                state->phase = DLL19B_PHASE_RESET;
                 gTitleMenuControlInterface->vtable->onSelectSave(3, 0x35, 0x50, state->brightnessB & 0xff, 0);
-                state->brightnessBVelocity = DLL411_BRIGHTNESS_RISE_RATE;
+                state->brightnessBVelocity = DLL19B_BRIGHTNESS_RISE_RATE;
                 mainSetBits(GAMEBIT_WM_KrazTest1TorchesActive, 0);
             } else if (state->unlockCount == 1) {
-                state->phase = DLL411_PHASE_RESOLVE;
-                state->timer = DLL411_RESOLVE_TIMER;
-                state->brightnessBVelocity = DLL411_BRIGHTNESS_FADE_RATE;
+                state->phase = DLL19B_PHASE_RESOLVE;
+                state->timer = DLL19B_RESOLVE_TIMER;
+                state->brightnessBVelocity = DLL19B_BRIGHTNESS_FADE_RATE;
             }
             break;
-        case DLL411_PHASE_RESOLVE:
+        case DLL19B_PHASE_RESOLVE:
             if (mainGetBit(0x1d1) != 0) {
                 state->brightnessB = 1;
                 gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2c, 0x50, state->brightnessB & 0xff, 0);
-                state->brightnessBVelocity = DLL411_BRIGHTNESS_RISE_RATE;
+                state->brightnessBVelocity = DLL19B_BRIGHTNESS_RISE_RATE;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
-                state->phase = DLL411_PHASE_DONE;
+                state->phase = DLL19B_PHASE_DONE;
             } else {
                 playerCancelSpell(player, -1);
                 mainSetBits(0x126, 0);
                 gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2a, 0x50, state->brightnessB & 0xff, 0);
-                state->brightnessBVelocity = DLL411_BRIGHTNESS_RISE_RATE;
-                (*gObjectTriggerInterface)->runSequence(DLL411_SEQUENCE_RESOLVE, obj, -1);
-                state->phase = DLL411_PHASE_COMPLETE;
+                state->brightnessBVelocity = DLL19B_BRIGHTNESS_RISE_RATE;
+                (*gObjectTriggerInterface)->runSequence(DLL19B_SEQUENCE_RESOLVE, obj, -1);
+                state->phase = DLL19B_PHASE_COMPLETE;
             }
             break;
-        case DLL411_PHASE_COMPLETE:
+        case DLL19B_PHASE_COMPLETE:
             if (mainGetBit(0xfd) == 0) {
                 mainSetBits(0xfd, 1);
             }
             mainSetBits(0x1d2, 0);
             mainSetBits(0x127, 0);
-            state->phase = DLL411_PHASE_DONE;
+            state->phase = DLL19B_PHASE_DONE;
             gTitleMenuControlInterface->vtable->onSelectSave(3, 0x2c, 0x50, state->brightnessB & 0xff, 0);
             break;
-        case DLL411_PHASE_RESET:
-            state->phase = DLL411_PHASE_IDLE;
+        case DLL19B_PHASE_RESET:
+            state->phase = DLL19B_PHASE_IDLE;
             state->pendingEvent = 0;
-            state->timer = DLL411_RESET_DELAY;
+            state->timer = DLL19B_RESET_DELAY;
             mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
             mainSetBits(0x126, 1);
             mainSetBits(0x127, 1);
             {
-                Dll6AInterface** handle = Resource_Acquire(DLL411_RESOURCE_PARTICLE, 1);
-                state->gfxHandle = (*handle)->spawn(obj, 2, NULL, DLL411_PARTICLE_SPAWN_FLAGS, -1, NULL);
+                Dll6AInterface** handle = Resource_Acquire(DLL19B_RESOURCE_PARTICLE, 1);
+                state->gfxHandle = (*handle)->spawn(obj, 2, NULL, DLL19B_PARTICLE_SPAWN_FLAGS, -1, NULL);
                 Resource_Release(handle);
             }
             mainSetBits(0x1d8, 0);
             state->unlockCount = 0;
-            state->countdown = DLL411_COUNTDOWN_START;
+            state->countdown = DLL19B_COUNTDOWN_START;
             mainSetBits(0x1d4, 0);
             break;
         }
     }
 }
 
-void dll411_init(GameObject* obj, const Dll411Placement* placement) {
-    register Dll411State* state;
+void dll411_init(GameObject* obj, const Dll19BPlacement* placement) {
+    register Dll19BState* state;
     Dll6AInterface** particleResource;
 
     state = obj->extra;
     obj->anim.rotX = 0;
-    state->activationDistance = DLL411_DEFAULT_ACTIVATION_DISTANCE;
+    state->activationDistance = DLL19B_DEFAULT_ACTIVATION_DISTANCE;
     if (placement->activationDistancePacked > 0) {
         state->activationDistance = (s16)(placement->activationDistancePacked >> 8);
     }
-    state->phase = DLL411_PHASE_IDLE;
+    state->phase = DLL19B_PHASE_IDLE;
     state->pendingEvent = 0;
     state->timer = 0;
     state->unlockCount = 0;
     obj->animEventCallback = dll411_processAnimEvents;
-    ObjMsg_AllocQueue(obj, DLL411_MESSAGE_QUEUE_CAPACITY);
+    ObjMsg_AllocQueue(obj, DLL19B_MESSAGE_QUEUE_CAPACITY);
     mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
     mainSetBits(0x1d2, 0);
     mainSetBits(0x126, 1);
@@ -408,17 +408,17 @@ void dll411_init(GameObject* obj, const Dll411Placement* placement) {
     mainSetBits(GAMEBIT_STAFF_ABILITY_SHARPCLAW_DISGUISE, 1);
     mainSetBits(GAMEBIT_ITEM_DeletedSpell1D7, 1);
     mainSetBits(0x1d8, 0);
-    state->brightnessA = DLL411_BRIGHTNESS_A_MIN;
-    state->brightnessB = DLL411_BRIGHTNESS_B_NEAR;
-    state->timer = DLL411_INITIAL_DISPLAY_TIMER;
+    state->brightnessA = DLL19B_BRIGHTNESS_A_MIN;
+    state->brightnessB = DLL19B_BRIGHTNESS_B_NEAR;
+    state->timer = DLL19B_INITIAL_DISPLAY_TIMER;
     gTitleMenuControlInterface->vtable->onSelectSave(2, 0x2b, 0x50, 1, 0);
     state->brightnessAVelocity = 0;
     state->brightnessBVelocity = 0;
     state->timerDisplayTriggered = 0;
-    state->unknown10 = DLL411_UNKNOWN10_INITIAL;
-    state->countdown = DLL411_COUNTDOWN_START;
-    particleResource = Resource_Acquire(DLL411_RESOURCE_PARTICLE, 1);
-    state->gfxHandle = (*particleResource)->spawn(obj, 1, NULL, DLL411_PARTICLE_SPAWN_FLAGS, -1, NULL);
+    state->unknown10 = DLL19B_UNKNOWN10_INITIAL;
+    state->countdown = DLL19B_COUNTDOWN_START;
+    particleResource = Resource_Acquire(DLL19B_RESOURCE_PARTICLE, 1);
+    state->gfxHandle = (*particleResource)->spawn(obj, 1, NULL, DLL19B_PARTICLE_SPAWN_FLAGS, -1, NULL);
     Resource_Release(particleResource);
     obj->anim.worldPosX = obj->anim.localPosX;
     obj->anim.worldPosY = obj->anim.localPosY;

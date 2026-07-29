@@ -84,7 +84,7 @@ void BaddieInterestP_update(GameObject* obj) {
                 candidatePlacement = (BaddieInterestPPlacement*)candidate->anim.placementData;
                 if (candidatePlacement != NULL) {
                     foundTarget = 0;
-                    if (targetLinkId == *(u32*)&candidatePlacement->base.mapId || targetLinkId == 0) {
+                    if (targetLinkId == *(u32*)&candidatePlacement->base.ident || targetLinkId == 0) {
                         foundTarget = 1;
                     }
                 } else {
@@ -108,7 +108,7 @@ void BaddieInterestP_update(GameObject* obj) {
                                     if ((int)placement->doneGameBit != BADDIE_INTEREST_GAME_BIT_NONE) {
                                         mainSetBits((int)placement->doneGameBit, 1);
                                     }
-                                    switch (target->anim.seqId) {
+                                    switch (target->anim.romDefNo) {
                                     case 0x11:
                                     case 0x13a:
                                     case 0x5b7:
@@ -130,7 +130,7 @@ void BaddieInterestP_update(GameObject* obj) {
                                         if ((int)placement->doneGameBit != BADDIE_INTEREST_GAME_BIT_NONE) {
                                             mainSetBits((int)placement->doneGameBit, 1);
                                         }
-                                        switch (target->anim.seqId) {
+                                        switch (target->anim.romDefNo) {
                                         case 0x11:
                                         case 0x13a:
                                         case 0x5b7:
@@ -152,7 +152,7 @@ void BaddieInterestP_update(GameObject* obj) {
                                         if ((int)placement->doneGameBit != BADDIE_INTEREST_GAME_BIT_NONE) {
                                             mainSetBits((int)placement->doneGameBit, 1);
                                         }
-                                        switch (target->anim.seqId) {
+                                        switch (target->anim.romDefNo) {
                                         case 0x11:
                                         case 0x13a:
                                         case 0x5b7:

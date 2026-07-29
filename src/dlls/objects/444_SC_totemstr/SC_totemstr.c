@@ -63,7 +63,7 @@ int gTotemStrengthDeactivateTimer;
  * events, advances the rope from A-button presses, drives both pull animations
  * and their sounds, and starts the ending transition when either side wins.
  */
-int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int platform1_control(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     GameObject* self;
     ScTotemStrengthState* state;
     GameObject* playerObject;
@@ -98,7 +98,7 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
     objects = ObjList_GetObjects(&idx1, &cnt1);
     while (idx1 < cnt1) {
         state->linkedObject = objects[idx1++];
-        if (state->linkedObject->anim.seqId == SC_TOTEM_STRENGTH_ANCHOR_SEQUENCE_ID) {
+        if (state->linkedObject->anim.romDefNo == SC_TOTEM_STRENGTH_ANCHOR_SEQUENCE_ID) {
             idx1 = cnt1;
         }
     }
@@ -116,7 +116,7 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
         case 3:
             objects = ObjList_GetObjects(&idx2, &cnt2);
             for (; idx2 < cnt2; idx2++) {
-                if (objects[idx2] != self && objects[idx2]->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID) {
+                if (objects[idx2] != self && objects[idx2]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                     totemPole = objects[idx2];
                     (*(ScTotemPoleInterfaceVTable**)totemPole->anim.dll)->handleEvent(totemPole, 2);
                     break;
@@ -126,7 +126,7 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
         case 4:
             objects = ObjList_GetObjects(&idx3, &cnt3);
             for (; idx3 < cnt3; idx3++) {
-                if (objects[idx3] != self && objects[idx3]->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID) {
+                if (objects[idx3] != self && objects[idx3]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                     totemPole = objects[idx3];
                     (*(ScTotemPoleInterfaceVTable**)totemPole->anim.dll)->handleEvent(totemPole, 3);
                     break;
@@ -166,8 +166,8 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
             ObjAnim_SetCurrentMove((int)totemPole, SC_TOTEM_STRENGTH_IDLE_PULL_MOVE,
                                    totemPole->anim.currentMoveProgress, 0);
         }
-        animUpdate->hitVolumePair = -1;
-        animUpdate->sequenceEventActive = 0;
+        animUpdate->flags = -1;
+        animUpdate->movementState = 0;
         Sfx_KeepAliveLoopedObjectSound((u32)obj, SFXTRIG_blockscrape_lp);
         for (i = 0; i < framesThisStep; i++) {
             if (state->linkedObject == NULL) {
@@ -189,7 +189,7 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
             }
             if (state->currentTrackOffset >= SC_TOTEM_STRENGTH_WIN_TRACK_OFFSET &&
                 state->currentTrackOffset <= SC_TOTEM_STRENGTH_LOSS_TRACK_OFFSET) {
-                state->currentTrackOffset = (int)((f32)state->currentTrackOffset + state->offsetVelocity);
+                state->currentTrackOffset = (f32)state->currentTrackOffset + state->offsetVelocity;
             }
             diff = ((f32)state->prevTrackOffset - state->currentTrackOffset) / 40.0f;
             if (state->currentTrackOffset < SC_TOTEM_STRENGTH_WIN_TRACK_OFFSET) {
@@ -198,7 +198,7 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
                 state->flags = (u8)(state->flags | SC_TOTEM_STRENGTH_FLAG_WON);
                 objects = ObjList_GetObjects(&idx4, &cnt4);
                 for (; idx4 < cnt4; idx4++) {
-                    if (objects[idx4] != self && objects[idx4]->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID) {
+                    if (objects[idx4] != self && objects[idx4]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                         totemPole = objects[idx4];
                         (*(ScTotemPoleInterfaceVTable**)totemPole->anim.dll)->handleEvent(totemPole, 4);
                         break;
@@ -220,7 +220,7 @@ int platform1_control(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
                 state->flags = (u8)(state->flags | SC_TOTEM_STRENGTH_FLAG_LOST);
                 objects = ObjList_GetObjects(&idx5, &cnt5);
                 for (; idx5 < cnt5; idx5++) {
-                    if (objects[idx5] != self && objects[idx5]->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID) {
+                    if (objects[idx5] != self && objects[idx5]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                         totemPole = objects[idx5];
                         (*(ScTotemPoleInterfaceVTable**)totemPole->anim.dll)->handleEvent(totemPole, 4);
                         break;

@@ -473,7 +473,7 @@ int cfguardian_updateMain(GameObject* obj) {
             }
         } else if (state->chatterState == CFGUARDIAN_CHATTER_PLAYING) {
             state->chatterState = CFGUARDIAN_CHATTER_READY;
-            state->chatterAlt = (s8)((state->chatterAlt + 1) % 2);
+            state->chatterAlt = (state->chatterAlt + 1) % 2;
         }
         break;
     case CFGUARDIAN_STATE_LANDING: /* free-fall to the ground, then settle at the curve home */
@@ -611,7 +611,7 @@ int cfguardian_updateMain(GameObject* obj) {
             }
             if (state->chatterState == CFGUARDIAN_CHATTER_PLAYING) {
                 state->chatterState = CFGUARDIAN_CHATTER_READY;
-                state->chatterAlt = (s8)((state->chatterAlt + 1) % 2);
+                state->chatterAlt = (state->chatterAlt + 1) % 2;
             }
         } else {
             if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
@@ -648,7 +648,7 @@ int cfguardian_updateMain(GameObject* obj) {
             }
             if (state->chatterState == CFGUARDIAN_CHATTER_PLAYING) {
                 state->chatterState = CFGUARDIAN_CHATTER_READY;
-                state->chatterAlt = (s8)((state->chatterAlt + 1) % 2);
+                state->chatterAlt = (state->chatterAlt + 1) % 2;
             }
         } else {
             if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
@@ -788,9 +788,9 @@ int cfguardian_updateMain(GameObject* obj) {
 /* cfguardian_sequenceCallback: the Queen's sequence message handler.
  * Persists position on a negative cue, otherwise picks the active/idle
  * heading pair and routes a move request; on the magic-grant cue
- * (triggerCommand 2) it refills the player's magic. Returns 1 if the move
+ * (unk80 2) it refills the player's magic. Returns 1 if the move
  * was consumed. */
-int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int* movePair;
     CfGuardianSequenceMoves sequenceMoves;
     CfGuardianState* state = obj->extra;
@@ -810,7 +810,7 @@ int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState*
             return 1;
         }
     }
-    if (animUpdate->triggerCommand == 2) {
+    if (animUpdate->unk80 == 2) {
         playerAddRemoveMagic(Obj_GetPlayerObject(), CFGUARDIAN_MAGIC_GRANT_AMOUNT);
     }
     return 0;
@@ -879,7 +879,7 @@ void cfguardian_init(GameObject* obj, CfGuardianPlacement* placement) {
     state->moveSpeed = 0.0f;
     state->unknownA90 = 6;
     state->stateFlags = 0;
-    state->flags611 = (u8)(state->flags611 | 0x28);
+    state->flags611 = state->flags611 | 0x28;
     state->chatterState = CFGUARDIAN_CHATTER_READY;
     state->chatterAlt = 0;
     state->chatterPick = 0;
@@ -898,7 +898,7 @@ void cfguardian_init(GameObject* obj, CfGuardianPlacement* placement) {
     dll_2E_setReattackDelay(&state->moveLib, 0x12c, 0x64);
     dll_2E_setMoveTables(&state->moveLib, &hitboxTemplateB, &hitboxTemplateA, 4);
     seqPairTablePrepare(gCfGuardianSeqStreamTable, CFGUARDIAN_SEQUENCE_TABLE_ENTRY_COUNT);
-    state->flags611 = (u8)(state->flags611 | 0x2);
+    state->flags611 = state->flags611 | 0x2;
 }
 
 void cfguardian_release(void) {

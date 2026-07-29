@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct MoonSeedBushPlacement {
     ObjPlacement base;
@@ -40,7 +40,7 @@ STATIC_ASSERT(offsetof(MoonSeedBushState, updateFlags) == 0x01);
 
 extern ObjectDescriptor gMoonSeedBushObjDescriptor;
 
-int moonSeedBush_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate);
+int moonSeedBush_processAnimEvents(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate);
 int moonSeedBush_getExtraSize(void);
 int moonSeedBush_getObjectTypeId(void);
 void moonSeedBush_free(void);

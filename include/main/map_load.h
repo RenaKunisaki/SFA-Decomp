@@ -4,9 +4,9 @@
 #include "types.h"
 
 int loadMapAndParent(int mapId);
-int lockLevel(s32 val, int idx);
+int lockLevel(s32 level, int bucket);
 int mapUnload(int mapId, int flags);
-int unlockLevel(s32 val, int idx, int flag);
+int unlockLevel(s32 level, int bucket, int flag);
 void defragMemory(int mode);
 void mapLoadDataFiles(int mapIdx);
 void setForceLoadImmediately(void);

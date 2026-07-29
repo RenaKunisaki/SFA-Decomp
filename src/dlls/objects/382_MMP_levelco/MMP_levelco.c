@@ -37,12 +37,12 @@
 SCGameBitLatchState gMMPLevelControlMusicLatch;
 f32 gMMPLevelControlTextCountdown;
 
-int mmpLevelControl_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
+int mmpLevelControl_processAnimEvents(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate) {
     GameObject* player;
     int i;
 
     player = Obj_GetPlayerObject();
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (i = 0; i < animUpdate->eventCount; i++) {
         u8 eventId = animUpdate->eventIds[i];
 

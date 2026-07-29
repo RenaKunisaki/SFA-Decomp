@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef enum TransporterFlag {
     TRANSPORTER_FLAG_INTERACTIVE = 0x01,
@@ -27,7 +27,7 @@ typedef enum TransporterTriggerMode {
 
 /*
  * Retail EN romlists prove that all 35 Transporter placements use this
- * complete 0x24-byte layout. The object's identity is stored in base.mapId.
+ * complete 0x24-byte layout. The object's identity is stored in base.ident.
  */
 typedef struct TransporterPlacement {
     ObjPlacement base; /* 0x00 */
@@ -73,7 +73,7 @@ STATIC_ASSERT(sizeof(TransporterState) == 0x10);
 void Transporter_updateEffects(GameObject* obj);
 void Transporter_updateInteraction(GameObject* obj);
 
-int Transporter_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int Transporter_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int Transporter_getExtraSize(void);
 void Transporter_render(void);
 void Transporter_hitDetect(int obj);

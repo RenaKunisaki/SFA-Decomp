@@ -6,7 +6,7 @@
  * and advances both phases by timeDelta each frame, wrapping each at
  * 1.0f; every softbody then samples one of the two phases to
  * pick its current animation move. Which phase is used depends on the
- * object's seqId: moves in [0x6AF,0x6B2) use the first phase, all
+ * object's romDefNo: moves in [0x6AF,0x6B2) use the first phase, all
  * others use the second.
  *
  * init applies the placement's packed 1/256-turn rotations and optional
@@ -27,7 +27,7 @@ GameObject* gSoftBodyPhaseDriver;
 #define SOFTBODY_ROTATION_SHIFT    8
 #define SOFTBODY_SCALE_DIVISOR     255.0f
 
-/* seqId range whose moves are driven by the first shared phase */
+/* romDefNo range whose moves are driven by the first shared phase */
 #define SOFTBODY_MOVE_PHASE_A_FIRST 0x6af
 #define SOFTBODY_MOVE_PHASE_A_END   0x6b2
 
@@ -85,7 +85,7 @@ void SoftBody_update(GameObject* obj)
         }
     }
 
-    switch (object->anim.seqId)
+    switch (object->anim.romDefNo)
     {
     case SOFTBODY_MOVE_PHASE_A_FIRST:
     case SOFTBODY_MOVE_PHASE_A_FIRST + 1:
@@ -119,7 +119,7 @@ void SoftBody_init(GameObject* obj, SoftBodySetup* setup)
     ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
     if (object->anim.hitReactState != NULL)
     {
-        ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj,
+        ObjHitbox_SetSphereRadius(&obj->anim,
                                   (s16)((f32)((ObjHitsPriorityState*)object->anim.hitReactState)->primaryRadius *
                                         object->anim.rootMotionScale));
     }

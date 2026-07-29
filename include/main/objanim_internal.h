@@ -212,7 +212,10 @@ typedef struct ObjDefHitVolume {
   s16 posZ;
   u8 bounds[4];
   u8 flags;
-  s8 priority;
+  union {
+    s8 priority;
+    u8 priorityUnsigned;
+  };
   s8 jointIndices[2];
   u8 pad14[0x18 - 0x14];
 } ObjDefHitVolume;
@@ -323,7 +326,7 @@ typedef struct ObjDef {
   u8 defaultModelVariant;
   u8 fallbackHitSphereRadius;
   u8 secondaryHitboxShapeFlags;
-  u8 pad91[0x94 - 0x91];
+  char name[0x94 - 0x91];
 } ObjDef;
 
 typedef ObjDef ObjModelInstance;
@@ -426,15 +429,12 @@ typedef struct ObjAnimComponent {
                        released through mapUnloadRomListPage */
   s8 transformMatrixIndex;
   u8 alpha;
-  union {
-    u8 renderAlpha;
-    u8 pad37[0x38 - 0x37];
-  };
+  u8 renderAlpha;
   void *next; /* 0x38: intrusive object-list link (wiki ObjInstance.next); list not ordered */
   f32 loadDistance; /* 0x3C: wiki ObjInstance.loadDistance (same value as cullDistance2) */
   f32 cullDistance2; /* 0x40: wiki ObjInstance.cullDistance2 - camera-distance opacity term */
   s16 classId;
-  s16 seqId;
+  s16 romDefNo;
   s16 defId;
   u8 pad4A[0x4C - 0x4A];
   union {
@@ -570,6 +570,7 @@ STATIC_ASSERT(sizeof(ObjDefHitVolume) == 0x18);
 STATIC_ASSERT(offsetof(ObjDefHitVolume, bounds) == 0x0C);
 STATIC_ASSERT(offsetof(ObjDefHitVolume, flags) == 0x10);
 STATIC_ASSERT(offsetof(ObjDefHitVolume, priority) == 0x11);
+STATIC_ASSERT(offsetof(ObjDefHitVolume, priorityUnsigned) == 0x11);
 STATIC_ASSERT(offsetof(ObjDefHitVolume, jointIndices) == 0x12);
 STATIC_ASSERT(sizeof(ObjHitVolumeRuntimeTransform) == 0x18);
 STATIC_ASSERT(sizeof(ObjHitVolumeRuntimeBounds) == 0x05);
@@ -709,7 +710,7 @@ STATIC_ASSERT(offsetof(ObjAnimComponent, next) == 0x38);
 STATIC_ASSERT(offsetof(ObjAnimComponent, loadDistance) == 0x3C);
 STATIC_ASSERT(offsetof(ObjAnimComponent, cullDistance2) == 0x40);
 STATIC_ASSERT(offsetof(ObjAnimComponent, classId) == 0x44);
-STATIC_ASSERT(offsetof(ObjAnimComponent, seqId) == 0x46);
+STATIC_ASSERT(offsetof(ObjAnimComponent, romDefNo) == 0x46);
 STATIC_ASSERT(offsetof(ObjAnimComponent, defId) == 0x48);
 STATIC_ASSERT(offsetof(ObjAnimComponent, placementData) == 0x4C);
 STATIC_ASSERT(offsetof(ObjAnimComponent, placement) == 0x4C);

@@ -19,12 +19,12 @@ typedef struct PollenFragmentConfig
     u16 flags;
 } PollenFragmentConfig;
 
-extern PollenFragmentConfig lbl_80320538;
-extern PollenFragmentConfig lbl_8032054C;
-extern PollenFragmentConfig lbl_80320560;
-extern PollenFragmentConfig lbl_80320574;
-extern PollenFragmentConfig lbl_80320588;
-extern PollenFragmentConfig* lbl_8032059C[];
+extern PollenFragmentConfig gPollenFragmentConfig0;
+extern PollenFragmentConfig gPollenFragmentConfig1;
+extern PollenFragmentConfig gPollenFragmentConfig2;
+extern PollenFragmentConfig gPollenFragmentConfig3;
+extern PollenFragmentConfig gPollenFragmentConfig4;
+extern PollenFragmentConfig* gPollenFragmentConfigs[];
 extern ObjectDescriptor gPollenFragmentObjDescriptor;
 
 int pollenfragment_getExtraSize(void);

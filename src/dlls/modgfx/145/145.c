@@ -11,6 +11,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL91_EFFECT_ID 0x45
@@ -233,6 +234,16 @@ u8 gDll91Func0ResourceBlob[420] = {
     0,   12,  0,   14,  0,   16,  0,   0,   0,   9,   0,   11,  0, 13,  0,   15,  0,   17,  0,   0,   0,   0,   0, 45,
     0,   0,   0,   18,  0,   18,  0,   0,   0,   30,  0,   0,
 };
-u32 lbl_8031719C[9] = {
-    0x00000000, 0x00000000,         0x00000000, 0x00030000, (u32)dll_91_func00_nop, (u32)dll_91_func01_nop,
-    0x00000000, (u32)dll_91_func03, 0x00000000};
+ObjectDescriptor4WithPadding dll_91_funcs = {
+    {
+        0,
+        0,
+        0,
+        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+        (ObjectDescriptorCallback)dll_91_func00_nop,
+        (ObjectDescriptorCallback)dll_91_func01_nop,
+        0,
+        (ObjectDescriptorCallback)dll_91_func03,
+    },
+    0,
+};

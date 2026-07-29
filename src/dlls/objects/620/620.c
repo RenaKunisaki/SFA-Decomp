@@ -26,7 +26,7 @@
 
 #define DRCAGEWITH_OBJGROUP 0x18
 
-#define DRCAGEWITH_TARGET_OBJGROUP 0xa /* nearest group-10 object (seqId 1049) linked as the cage target */
+#define DRCAGEWITH_TARGET_OBJGROUP 0xa /* nearest group-10 object (romDefNo 1049) linked as the cage target */
 
 int DR_CageWith_func0A(GameObject* obj)
 {
@@ -34,7 +34,7 @@ int DR_CageWith_func0A(GameObject* obj)
     return state->unk30;
 }
 
-int DR_CageWith_toggleRopeStateCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int DR_CageWith_toggleRopeStateCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     DrcagewithState* state = obj->extra;
     int i;
@@ -110,6 +110,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
     f32 maxDist;
     int i;
     ObjPlacement* spawned;
+    GameObject* child;
     GameObject* nearest;
     f32 angVel;
     f32 clamped;
@@ -122,10 +123,10 @@ void DR_CageWith_hitDetect(GameObject* obj)
 
     if (bf31->b1 != 0)
     {
-        objParticleFn_80099d84(obj, 1.5f, 6, 1.0f, NULL);
+        objDoParticleFx(obj, 1.5f, 6, 1.0f, NULL);
     }
 
-    if ((obj)->anim.seqId == DRCAGEWITH_CAGE_NOROPE_OBJ || (obj)->anim.seqId == DRCAGEWITH_CAGE_ROPE_OBJ)
+    if ((obj)->anim.romDefNo == DRCAGEWITH_CAGE_NOROPE_OBJ || (obj)->anim.romDefNo == DRCAGEWITH_CAGE_ROPE_OBJ)
     {
         if (mainGetBit(GAMEBIT_DR_RescuedCloudRunner) != 0)
         {
@@ -141,13 +142,13 @@ void DR_CageWith_hitDetect(GameObject* obj)
             spawned->color[0] = 2;
             spawned->color[1] = 1;
             spawned->color[1] = (u8)(spawned->color[1] | (placement->flags & 0x18));
-            ((GameObject*)spawned)->anim.rootMotionScale = (obj)->anim.localPosX;
-            ((GameObject*)spawned)->anim.localPosX = (obj)->anim.localPosY;
-            ((GameObject*)spawned)->anim.localPosY = (obj)->anim.localPosZ;
-            spawned = (ObjPlacement*)Obj_SetupObject(spawned, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
-            ((GameObject*)spawned)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-            ((GameObject*)spawned)->userData1 = 1;
-            state->spawnedObject = (GameObject*)spawned;
+            spawned->posX = (obj)->anim.localPosX;
+            spawned->posY = (obj)->anim.localPosY;
+            spawned->posZ = (obj)->anim.localPosZ;
+            child = Obj_SetupObject(spawned, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+            child->anim.flags |= OBJANIM_FLAG_HIDDEN;
+            child->userData1 = 1;
+            state->spawnedObject = child;
             return;
         }
     }
@@ -159,7 +160,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
             (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
             bf31->b0 = 1;
             nearest = (GameObject*)ObjGroup_FindNearestObject(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
-            if (nearest != NULL && nearest->anim.seqId == DRCAGEWITH_CLOUDRUNNER_OBJ)
+            if (nearest != NULL && nearest->anim.romDefNo == DRCAGEWITH_CLOUDRUNNER_OBJ)
             {
                 nearest->userData1 = 0;
                 state->linkedObject = NULL;
@@ -186,7 +187,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
         {
             state->spawnedObject->anim.rotZ = (s16)state->angularVel;
             nearest = (GameObject*)ObjGroup_FindNearestObject(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
-            if (nearest != NULL && nearest->anim.seqId == DRCAGEWITH_CLOUDRUNNER_OBJ)
+            if (nearest != NULL && nearest->anim.romDefNo == DRCAGEWITH_CLOUDRUNNER_OBJ)
             {
                 nearest->userData1 = 1;
                 state->linkedObject = nearest;
@@ -230,7 +231,7 @@ void DR_CageWith_init(GameObject* obj, DrcagewithPlacement* placement)
     s16 type;
     f32 fz;
     obj->animEventCallback = DR_CageWith_toggleRopeStateCallback;
-    type = obj->anim.seqId;
+    type = obj->anim.romDefNo;
     if (type == 0x86a || type == 0x86b)
     {
         if (mainGetBit(GAMEBIT_DR_RescuedCloudRunner) == 0)

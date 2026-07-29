@@ -113,14 +113,14 @@ u32 lavaball1be_isInactive(GameObject* obj) {
 }
 
 int lavaball1be_getExtraSize(GameObject* obj) {
-    if (obj->anim.seqId == DIM_LAVA_DEBRIS_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_LAVA_DEBRIS_SEQUENCE_ID) {
         return 0;
     }
     return sizeof(DimLavaProjectileState);
 }
 
 int lavaball1be_getObjectTypeId(GameObject* obj) {
-    if (obj->anim.seqId == DIM_LAVA_DEBRIS_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_LAVA_DEBRIS_SEQUENCE_ID) {
         return 0;
     }
     return 2;
@@ -153,7 +153,7 @@ void lavaball1be_update(GameObject* obj) {
     DimLavaProjectileState* state;
     ObjHitsPriorityState* hitState;
 
-    if (obj->anim.seqId == DIM_LAVA_DEBRIS_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_LAVA_DEBRIS_SEQUENCE_ID) {
         obj->anim.localPosX = obj->anim.velocityX * timeDelta + obj->anim.localPosX;
         obj->anim.localPosY = obj->anim.velocityY * timeDelta + obj->anim.localPosY;
         obj->anim.localPosZ = obj->anim.velocityZ * timeDelta + obj->anim.localPosZ;
@@ -228,7 +228,7 @@ void lavaball1be_update(GameObject* obj) {
 void lavaball1be_init(GameObject* obj, DimLavaProjectilePlacement* placement) {
     DimLavaProjectileState* state;
 
-    if (obj->anim.seqId == DIM_LAVA_DEBRIS_SEQUENCE_ID) {
+    if (obj->anim.romDefNo == DIM_LAVA_DEBRIS_SEQUENCE_ID) {
         DimLavaDebrisLaunch launch;
 
         launch.velocity = gDimLavaDebrisBaseVec;

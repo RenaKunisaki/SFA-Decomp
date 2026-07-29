@@ -5,11 +5,11 @@
 #include "main/model_engine.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 
-char lbl_803DBBF0[] = "%2d";
+char sDll3FTimerFormat[] = "%2d";
 
 #define DLL3F_TEXTURE_ID 0x47A
 
-void* lbl_803DD960;
+void* gDll3FTexture;
 
 void dll_3F_updateTimerReadout(void* obj)
 {
@@ -41,7 +41,7 @@ void dll_3F_updateTimerReadout(void* obj)
     {
         elapsed = 0;
     }
-    sprintf(buf, lbl_803DBBF0, elapsed);
+    sprintf(buf, sDll3FTimerFormat, elapsed);
 }
 
 void dll_3F_frameEnd_nop(void)
@@ -55,12 +55,12 @@ int dll_3F_frameStart_ret_0(void)
 
 void dll_3F_release(void)
 {
-    textureFree((Texture*)(lbl_803DD960));
+    textureFree((Texture*)(gDll3FTexture));
 }
 
 void dll_3F_initialise(void)
 {
-    lbl_803DD960 = textureLoadAsset(DLL3F_TEXTURE_ID);
+    gDll3FTexture = textureLoadAsset(DLL3F_TEXTURE_ID);
 }
 
 PPCWGPipe GXWGFifo : (0xCC008000);

@@ -765,7 +765,7 @@ void Minimap_drawCompassBlip(void)
     {
         objRender(0, 0, 0, 0, gMinimapBlipObjects[i], 1);
         model = Obj_GetActiveModel((GameObject*)gMinimapBlipObjects[i]);
-        model->bufferFlags = (u16)(model->bufferFlags & ~0x8);
+        model->bufferFlags = model->bufferFlags & ~0x8;
         gMinimapBlipObjects[i]->anim.renderAlpha = 255;
     }
     viewFn_80129c74();
@@ -834,7 +834,7 @@ void Minimap_frameStart(void)
     u16 sfx;
     int held;
     int pressed;
-    CameraViewSlot* slot;
+    Camera* slot;
     int targetAngle;
     s16 angleDelta;
     s16 areaNameId;
@@ -996,7 +996,7 @@ void Minimap_frameStart(void)
                     {
                         gMinimapBlipPulse = 0;
                     }
-                    slot = Camera_GetCurrentViewSlot();
+                    slot = Camera_GetCurrent();
                     targetAngle =
                         getAngle(((GameObject*)gMinimapRadarTarget)->anim.localPosX - ((GameObject*)player)->anim.localPosX,
                                  ((GameObject*)gMinimapRadarTarget)->anim.localPosZ - ((GameObject*)player)->anim.localPosZ);

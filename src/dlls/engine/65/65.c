@@ -9,13 +9,14 @@
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_0041_warpstoneui.h"
+#include "main/resource.h"
 #include "main/gameloop_api.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
 #include "string.h"
 
 int lbl_803DBBF8 = 0x140;
-int lbl_803DBBFC = 0x136;
-int lbl_803DBC00 = 0x10E;
+int gWarpStoneUiTextureX = 0x136;
+int gWarpStoneUiTextureY = 0x10E;
 int lbl_803DBC04 = 0x140;
 
 #define WARPSTONEUI_TEXTURE_A 0x4FA
@@ -27,8 +28,8 @@ int lbl_803DBC04 = 0x140;
 
 u8 warpstoneUIState[8];
 void* lbl_803DD984;
-void* lbl_803DD980;
-f32 lbl_803DD97C;
+void* gWarpStoneUiTexture;
+f32 gWarpStoneUiFadeAlpha;
 int gWarpStoneUiMenuActive;
 extern u8 gWarpStoneUiMenuItemTemplates[];
 
@@ -63,14 +64,13 @@ int WarpstoneUI_getMenuItems(const WarpstoneMenuItem* templates, WarpstoneMenuIt
     {
         if (mainGetBit(entries[entry].bit) != 0)
         {
-            memcpy(items, &templates[entry], sizeof(WarpstoneMenuItem));
-            lastDst = items;
-            items->y = yStart + slot * 0x2a;
-            items->previousItem = slot - 1;
-            items->nextItem = slot + 1;
+            memcpy(&items[slot], &templates[entry], sizeof(WarpstoneMenuItem));
+            lastDst = &items[slot];
+            items[slot].y = yStart + slot * 0x2a;
+            items[slot].previousItem = slot - 1;
+            items[slot].nextItem = slot + 1;
             selectedIndices[0] = entry;
             selectedIndices++;
-            items++;
             slot++;
         }
     }
@@ -98,18 +98,18 @@ void WarpstoneUI_showUI(int arg)
     case 2:
     case 3:
     case 5:
-        gameTextSetColor(0xff, 0xff, 0xff, lbl_803DD97C);
+        gameTextSetColor(0xff, 0xff, 0xff, gWarpStoneUiFadeAlpha);
         gameTextShowAt(0x3dd, 200, lbl_803DBBF8);
         break;
     case 1:
-        drawTexture(lbl_803DD980, (f32)(int)(lbl_803DBBFC - 0x1d), (f32)(int)(lbl_803DBC00 + 0xd), lbl_803DD97C, 0xff);
-        gameTextSetColor(0xff, 0xff, 0xff, lbl_803DD97C);
+        drawTexture(gWarpStoneUiTexture, (f32)(int)(gWarpStoneUiTextureX - 0x1d), (f32)(int)(gWarpStoneUiTextureY + 0xd), gWarpStoneUiFadeAlpha, 0xff);
+        gameTextSetColor(0xff, 0xff, 0xff, gWarpStoneUiFadeAlpha);
         gameTextShow(0x37c);
         gameTextShow(0x37d);
         gameTextShow(0x37e);
         break;
     case 4:
-        gameTextSetColor(0xff, 0xff, 0xff, lbl_803DD97C);
+        gameTextSetColor(0xff, 0xff, 0xff, gWarpStoneUiFadeAlpha);
         gameTextShowAt(0x3dd, 200, lbl_803DBC04);
         if (gWarpStoneUiMenuActive == 0)
         {
@@ -148,20 +148,20 @@ int WarpstoneUI_frameStart(void)
     f32 alpha;
     if (warpstoneUIState[0] == 0)
     {
-        lbl_803DD97C = lbl_803DD97C - (8.0f * timeDelta);
+        gWarpStoneUiFadeAlpha = gWarpStoneUiFadeAlpha - (8.0f * timeDelta);
     }
     else
     {
-        lbl_803DD97C = lbl_803DD97C + (8.0f * timeDelta);
+        gWarpStoneUiFadeAlpha = gWarpStoneUiFadeAlpha + (8.0f * timeDelta);
     }
-    alpha = lbl_803DD97C;
+    alpha = gWarpStoneUiFadeAlpha;
     if (alpha > 255.0f)
     {
-        lbl_803DD97C = 255.0f;
+        gWarpStoneUiFadeAlpha = 255.0f;
     }
     else if (alpha < 0.0f)
     {
-        lbl_803DD97C = 0.0f;
+        gWarpStoneUiFadeAlpha = 0.0f;
     }
     return 0;
 }
@@ -169,14 +169,14 @@ int WarpstoneUI_frameStart(void)
 void WarpstoneUI_release(void)
 {
     textureFree((Texture*)(lbl_803DD984));
-    textureFree((Texture*)(lbl_803DD980));
+    textureFree((Texture*)(gWarpStoneUiTexture));
 }
 
 void WarpstoneUI_initialise(void)
 {
     lbl_803DD984 = textureLoadAsset(WARPSTONEUI_TEXTURE_A);
-    lbl_803DD980 = textureLoadAsset(WARPSTONEUI_TEXTURE_B);
-    lbl_803DD97C = 0.0f;
+    gWarpStoneUiTexture = textureLoadAsset(WARPSTONEUI_TEXTURE_B);
+    gWarpStoneUiFadeAlpha = 0.0f;
 }
 
 u8 gWarpStoneUiMenuItemTemplates[] = {
@@ -201,15 +201,8 @@ u8 gWarpStoneUiMenuItemTemplates[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-u32 lbl_8031CDB8[12] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00060000,
-                        (u32)WarpstoneUI_initialise,
-                        (u32)WarpstoneUI_release,
-                        0x00000000,
-                        (u32)WarpstoneUI_frameStart,
-                        (u32)WarpstoneUI_frameEnd,
-                        (u32)WarpstoneUI_showUI,
-                        (u32)WarpstoneUI_setState,
-                        0x00000000};
+ResourceDescriptorCallbacks8 gWarpStoneUiDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    {(ResourceDescriptorCallback)WarpstoneUI_initialise, (ResourceDescriptorCallback)WarpstoneUI_release, 0x00000000,
+     (ResourceDescriptorCallback)WarpstoneUI_frameStart, (ResourceDescriptorCallback)WarpstoneUI_frameEnd,
+     (ResourceDescriptorCallback)WarpstoneUI_showUI, (ResourceDescriptorCallback)WarpstoneUI_setState, 0x00000000}};

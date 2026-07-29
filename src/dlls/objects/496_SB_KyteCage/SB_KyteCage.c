@@ -50,7 +50,7 @@ enum {
     SB_KYTECAGE_SEQEV_LATCH_2 = 2
 };
 
-int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     SBKyteCageState* state;
     int i;
 
@@ -68,15 +68,15 @@ int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
         i++;
     }
 
-    animUpdate->hitVolumePair = -4;
+    animUpdate->flags = -4;
     if (obj->seqIndex != -1) {
-        animUpdate->hitVolumePair &= ~4;
+        animUpdate->flags &= ~4;
         if (ObjAnim_AdvanceCurrentMove((int)obj, SB_KYTECAGE_ANIMATION_RATE, timeDelta, NULL) != 0) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_gdtur2_c);
         }
     }
 
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     return 0;
 }
 
@@ -104,7 +104,7 @@ void SB_KyteCage_hitDetect(void) {
 void SB_KyteCage_update(GameObject* obj) {
     SBKyteCageState* state = obj->extra;
 
-    obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+    obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
     if (state->kyte == NULL) {
         GameObject** objects;
         int count;
@@ -112,7 +112,7 @@ void SB_KyteCage_update(GameObject* obj) {
         objects = (GameObject**)ObjList_GetObjects(&i, &count);
         for (i = 0; i < count; i++) {
             GameObject* child = objects[i];
-            if (child->anim.seqId == SB_KYTECAGE_KYTE_OBJECT_TYPE) {
+            if (child->anim.romDefNo == SB_KYTECAGE_KYTE_OBJECT_TYPE) {
                 state->kyte = child;
                 ObjLink_AttachChild(obj, state->kyte, 1);
                 i = count;

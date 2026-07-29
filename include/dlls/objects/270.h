@@ -20,8 +20,8 @@ typedef struct DeathSeqState {
     f32 savedCameraZ;         /* 0x0C */
     f32 cameraDistance;       /* 0x10 */
     f32 cameraDistanceTarget; /* 0x14 */
-    s32 savedCameraYaw;       /* 0x18: sign-extended CameraViewSlot yaw */
-    s32 savedCameraPitch;     /* 0x1C: sign-extended CameraViewSlot pitch */
+    s32 savedCameraYaw;       /* 0x18: sign-extended Camera yaw */
+    s32 savedCameraPitch;     /* 0x1C: sign-extended Camera pitch */
     DeathSeqStateFlags flags; /* 0x20 */
     u8 pad21[3];              /* 0x21 */
 } DeathSeqState;

@@ -9,7 +9,7 @@ typedef struct MoonSeedPlantingSpotPlacement
     u8 pad0[0xC - 0x0];
     f32 posY; /* 0x0c: planted-spot Y position */
     u8 pad10[0x14 - 0x10];
-    s32 mapId; /* 0x14: ObjPlacement head mapId */
+    s32 ident; /* 0x14: ObjPlacement head ident */
     u8 pad18[0x1F - 0x18];
     u8 rotByte; /* 0x1f: rotX in 1/256 turns */
 } MoonSeedPlantingSpotPlacement;

@@ -6,7 +6,6 @@
 #include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
-#include "main/objanim_update.h"
 
 typedef struct DfpStatue1State {
   s16 triggerSfxId;

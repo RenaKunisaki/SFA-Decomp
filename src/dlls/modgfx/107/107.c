@@ -8,6 +8,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
+#include "dlls/object_descriptor.h"
 
 /* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
 #define DLL6B_EFFECT_ID 0x5e
@@ -120,7 +121,13 @@ void dll_6B_func00_nop(void)
 {
 }
 
-u32 lbl_80313AB0[8] = {
-    0x00000000, 0x00000000,        0x00000000, 0x00030000, (u32)dll_6B_func00_nop, (u32)dll_6B_func01_nop,
-    0x00000000, (u32)dll_6B_func03,
+ObjectDescriptor4 dll_6B_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_6B_func00_nop,
+    (ObjectDescriptorCallback)dll_6B_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_6B_func03,
 };

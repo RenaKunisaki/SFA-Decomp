@@ -99,7 +99,7 @@ void screenTransition_drawWhiteWipe(int p1, int p2, int p3, u8 r, u8 g, u8 b)
     s32 viewHeight;
 
     GXGetScissor(&sx, &sy, &sw, &sh);
-    Camera_GetCurrentViewport(&vx, &vy, &vr, &vb);
+    Camera_GetFullViewportRect(&vx, &vy, &vr, &vb);
     viewWidth = vr - vx;
     width = viewWidth & 0xffff;
     viewHeight = vb - vy;

@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 #include "main/modellight_api.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 #define FIREBALL_ROTATION_COUNT 5
 
@@ -92,7 +92,7 @@ STATIC_ASSERT(offsetof(FireballState, pad72) == 0x72);
 STATIC_ASSERT(sizeof(FireballState) == 0x74);
 
 u8 Fireball_getColorIndex(GameObject* obj);
-int Fireball_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int Fireball_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void Fireball_homeToTarget(GameObject* obj, FireballState* state, GameObject* target);
 int Fireball_getExtraSize(void);
 int Fireball_getObjectTypeId(void);

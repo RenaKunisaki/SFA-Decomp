@@ -183,7 +183,7 @@ void pathcam_buildWindowSamples(int* nodes, f32* o1, f32* o2, f32* o3, f32* o4, 
     int step;
     f32* axisOut;
     int axis;
-    f32 wrap, d, near, lower, upper, v0, v1;
+    f32 d, upper, v0, v1;
     RomCurveNode* pts[4];
 
     i = 0;
@@ -808,7 +808,7 @@ void CameraModeTestStrength_update(CameraObject* cam)
         Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY,
                                        cam->anim.worldPosZ, &cam->anim.localPosX,
                                        &cam->anim.localPosY, &cam->anim.localPosZ,
-                                       cam->anim.parentAddress);
+                                       (GameObject*)cam->anim.parentAddress);
     }
 }
 
@@ -922,7 +922,7 @@ void CameraModeTestStrength_init(CameraObject* cam, int param2, int* param3)
         Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY,
                                        cam->anim.worldPosZ, &cam->anim.localPosX,
                                        &cam->anim.localPosY, &cam->anim.localPosZ,
-                                       cam->anim.parentAddress);
+                                       (GameObject*)cam->anim.parentAddress);
         cam->anim.rotX = pitch;
         cam->anim.rotY = yaw;
         cam->anim.rotZ = roll;
@@ -939,7 +939,7 @@ void CameraModeTestStrength_initialise(void)
 {
 }
 
-ResourceDescriptorCallbacks7 lbl_80319C88 = {
+ResourceDescriptorCallbacks7 gCameraModeTestStrengthDescriptor = {
     {0x00000000, 0x00000000, 0x00000000, 0x00060000},
     {(ResourceDescriptorCallback)CameraModeTestStrength_initialise,
      (ResourceDescriptorCallback)CameraModeTestStrength_release,

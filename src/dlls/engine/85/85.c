@@ -8,7 +8,7 @@
 #include "main/frame_timing.h"
 #include "main/dll/dll_0055_cameramodeperv.h"
 
-CameraModePervState* lbl_803DD5C8;
+CameraModePervState* gCameraModePervState;
 
 
 void CameraModePerv_copyToCurrent(void)
@@ -17,22 +17,22 @@ void CameraModePerv_copyToCurrent(void)
 
 void CameraModePerv_free(void)
 {
-    mm_free((void*)lbl_803DD5C8);
-    lbl_803DD5C8 = NULL;
+    mm_free((void*)gCameraModePervState);
+    gCameraModePervState = NULL;
 }
 
 void CameraModePerv_update(CameraObject* camera)
 {
     GameObject* target = (GameObject*)camera->anim.targetObj;
 
-    lbl_803DD5C8->timer -= 0.2f * timeDelta;
-    if (lbl_803DD5C8->timer < 20.0f)
+    gCameraModePervState->timer -= 0.2f * timeDelta;
+    if (gCameraModePervState->timer < 20.0f)
     {
-        lbl_803DD5C8->timer = 20.0f;
+        gCameraModePervState->timer = 20.0f;
     }
     camera->anim.localPosX =
         target->anim.worldPosX - 5.0f * mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
-    camera->anim.localPosY = lbl_803DD5C8->cameraY;
+    camera->anim.localPosY = gCameraModePervState->cameraY;
     camera->anim.localPosZ =
         target->anim.worldPosZ - 5.0f * mathCosf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
     camera->anim.rotX = 0;
@@ -43,12 +43,12 @@ void CameraModePerv_update(CameraObject* camera)
 void CameraModePerv_init(CameraObject* camera)
 {
 
-    if (lbl_803DD5C8 == NULL)
+    if (gCameraModePervState == NULL)
     {
-        lbl_803DD5C8 = (CameraModePervState*)mmAlloc(sizeof(CameraModePervState), 15, 0);
+        gCameraModePervState = (CameraModePervState*)mmAlloc(sizeof(CameraModePervState), 15, 0);
     }
-    lbl_803DD5C8->timer = 100.0f;
-    lbl_803DD5C8->cameraY = ((GameObject*)camera->anim.targetObj)->anim.worldPosY - 200.0f;
+    gCameraModePervState->timer = 100.0f;
+    gCameraModePervState->cameraY = ((GameObject*)camera->anim.targetObj)->anim.worldPosY - 200.0f;
 }
 
 void CameraModePerv_release(void)

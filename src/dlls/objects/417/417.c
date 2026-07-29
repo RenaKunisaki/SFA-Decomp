@@ -149,7 +149,7 @@ f32* NW_mammoth_getSpawnPosition(GameObject* obj) {
     return &((NwMammothState*)obj->extra)->spawnPosX;
 }
 
-int NW_mammoth_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int NW_mammoth_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     NwMammothState* state;
     void* audioEvents;
     void* audioPoints;
@@ -160,13 +160,13 @@ int NW_mammoth_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateSt
     if ((state->runtimeFlags & NW_MAMMOTH_RUNTIME_RESET_PATH) == 0) {
         Sfx_StopObjectChannel((int)obj, 0x7f);
         state->pathSpeed = 0.0f;
-        state->runtimeFlags = (u8)(state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_MENU_LOCK);
-        state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_RESET_PATH);
+        state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_MENU_LOCK;
+        state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_RESET_PATH;
     }
     if ((state->runtimeFlags & NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH) != 0) {
         state->playerDistanceSq = 0.0f;
-        animUpdate->hitVolumePair = (s16)(animUpdate->hitVolumePair & ~8);
-        animUpdate->hitVolumePair = (s16)(animUpdate->hitVolumePair & ~0x40);
+        animUpdate->flags = animUpdate->flags & ~8;
+        animUpdate->flags = animUpdate->flags & ~0x40;
         NW_mammoth_updateEyeTracking(obj, state, 1);
     }
     audioEvents = &state->animEvents;
@@ -294,7 +294,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
         }
         if (ObjTrigger_IsSet((int)obj) != 0) {
             (*gObjectTriggerInterface)->runSequence(3, (void*)nearestObj, -1);
-            state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK);
+            state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK;
             state->stateIndex = 0xd;
             mainSetBits(GAMEBIT_NW_ReturnedTo, 1);
             mainSetBits(0xd32, 1);
@@ -349,7 +349,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
             state->triggerList = gNwMammothGatekeeperCollectionTriggerList;
             if (state->trackedObject == NULL) {
                 short* setup = obj->anim.placementData;
-                if (tw2 != NULL && tw2->anim.seqId == 0x3fb) {
+                if (tw2 != NULL && tw2->anim.romDefNo == 0x3fb) {
                     if (getXZDistance(&obj->anim.worldPosX, &tw2->anim.worldPosX) <
                         (f32)(s32)(setup[0xC] * setup[0xC])) {
                         if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0) {
@@ -367,7 +367,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
         }
         if (!(state->runtimeFlags & NW_MAMMOTH_RUNTIME_UI_MESSAGE)) {
             (*gGameUIInterface)->initAirMeter(NW_MAMMOTH_AIR_METER_MAX_VALUE, NW_MAMMOTH_AIR_METER_BG_TEXTURE);
-            state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_UI_MESSAGE);
+            state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_UI_MESSAGE;
         }
         break;
     }
@@ -408,7 +408,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
             (*gScreenTransitionInterface)->start(0x14, 1);
             state->stateIndex = 0x12;
             mainSetBits(0xd32, 0);
-            state->runtimeFlags = (u8)(state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_UI_MESSAGE);
+            state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_UI_MESSAGE;
             (*gGameUIInterface)->airMeterSetShutdown();
         }
         break;
@@ -530,7 +530,7 @@ void NW_mammoth_updateArtifactQuest(GameObject* obj, NwMammothState* state, NwMa
     case 4:
         state->triggerList = gNwMammothArtifactState4TriggerList;
         if (ObjTrigger_IsSetById((int)obj, 418) != 0) {
-            state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK);
+            state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK;
             mainSetBits(GAMEBIT_SnowHornArtifact19D, 1);
             mainSetBits(GAMEBIT_ITEM_NWSnowHornArtifact_Used, 1);
             mainSetBits(GAMEBIT_ITEM_SnowHornArtifactEE5, 1);
@@ -571,7 +571,7 @@ void NW_mammoth_updateFeedQuest(GameObject* obj, NwMammothState* state, NwMammot
                 mainSetBits(GAMEBIT_ITEM_AlpineRoot_Used, 1);
                 gameBitDecrement(GAMEBIT_ITEM_IMAlpineRoot_Count);
                 (*gObjectTriggerInterface)->runSequence(2, obj, -1);
-                state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK);
+                state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK;
                 state->stateIndex = 2;
             }
             break;
@@ -590,7 +590,7 @@ void NW_mammoth_updateFeedQuest(GameObject* obj, NwMammothState* state, NwMammot
             gameBitDecrement(GAMEBIT_ITEM_IMAlpineRoot_Count);
             (*gObjectTriggerInterface)->runSequence(4, obj, -1);
             state->stateIndex = 3;
-            state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK);
+            state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK;
         }
         break;
     case 3:
@@ -653,7 +653,7 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
     state = (NwMammothState*)obj->extra;
     placement = (NwMammothPlacement*)obj->anim.placementData;
     if ((state->runtimeFlags & NW_MAMMOTH_RUNTIME_RESET_PATH) != 0) {
-        state->runtimeFlags = (u8)(state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_RESET_PATH);
+        state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_RESET_PATH;
     }
     state->playerObject = Obj_GetPlayerObject();
     if (state->playerObject == NULL) {
@@ -700,9 +700,9 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
         break;
     }
     if ((tables[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_PATH_CONTROL) != 0) {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED;
     } else {
-        obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED);
+        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         if (((tables[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_MENU_ACTION) != 0) &&
             (cMenuGetSelectedItem() != -1)) {
             Obj_SetActiveHitVolumeBounds((GameObject*)obj, 0, 0, 0, 0, 4);
@@ -721,17 +721,17 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
         state->animStepScale = tables[0]->stateMoveStepScales[state->stateIndex];
     }
     if (ObjAnim_AdvanceCurrentMove((int)obj, state->animStepScale, timeDelta, &state->animEvents) != 0) {
-        state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_ANIM_ENDED);
+        state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_ANIM_ENDED;
     } else {
-        state->runtimeFlags = (u8)(state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_ANIM_ENDED);
+        state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_ANIM_ENDED;
     }
     objAudioFn_8006ef38((GameObject*)obj, &state->animEvents, 8, state->pathPoints, state->pathState, 1.0f, 1.0f);
     NW_mammoth_updateEyeTracking(obj, state,
                                  tables[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_TRIGGER_REFRESH);
-    state->runtimeFlags = (u8)(state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH);
+    state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH;
     if (((state->runtimeFlags & NW_MAMMOTH_RUNTIME_MENU_LOCK) == 0) && (ObjTrigger_IsSet((int)obj) != 0)) {
         triggerIndex = randomGetRange(NW_MAMMOTH_TRIGGER_RANDOM_MIN, *state->triggerList);
-        state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH);
+        state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH;
         (*gObjectTriggerInterface)->runSequence(state->triggerList[triggerIndex], obj, -1);
     }
     if ((state->runtimeFlags & NW_MAMMOTH_RUNTIME_PATH_CONTROL) != 0) {
@@ -755,10 +755,10 @@ void NW_mammoth_init(GameObject* obj, NwMammothPlacement* placement, int isReloa
     state->animStepScale = gNwMammothDefaultAnimStepScale;
     switch (placement->behaviorMode) {
     case 0:
-        state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_PATH_CONTROL);
+        state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_PATH_CONTROL;
         break;
     case 2:
-        state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_PATH_CONTROL);
+        state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_PATH_CONTROL;
         if (mainGetBit(GAMEBIT_SnowHornArtifact19F) != 0) {
             state->stateIndex = 6;
         } else if (mainGetBit(GAMEBIT_SnowHornArtifact19D) != 0) {
@@ -770,7 +770,7 @@ void NW_mammoth_init(GameObject* obj, NwMammothPlacement* placement, int isReloa
     case 1:
     case 3:
         curveParam = NW_MAMMOTH_CURVE_PARAM;
-        state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_PATH_CONTROL);
+        state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_PATH_CONTROL;
         if ((u8)(*gRomCurveInterface)->initCurve(&state->curveState.curve, obj, 1000.0f, &curveParam, -1) == 0) {
             obj->anim.localPosX = state->curveState.curve.sample[0];
             obj->anim.localPosZ = state->curveState.curve.sample[2];
@@ -786,7 +786,7 @@ void NW_mammoth_init(GameObject* obj, NwMammothPlacement* placement, int isReloa
             state->stateIndex = 0xc;
             if (state->uiMessageCount >= 3) {
                 (*gGameUIInterface)->initAirMeter(NW_MAMMOTH_AIR_METER_MAX_VALUE, NW_MAMMOTH_AIR_METER_BG_TEXTURE);
-                state->runtimeFlags = (u8)(state->runtimeFlags | NW_MAMMOTH_RUNTIME_UI_MESSAGE);
+                state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_UI_MESSAGE;
                 state->stateIndex = 0x11;
             }
         } else {

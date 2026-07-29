@@ -3,7 +3,8 @@
 
 #include "game/objects/object.h"
 #include "global.h"
-#include "main/objanim_update.h"
+#include "main/vec_types.h"
+#include "main/objseq.h"
 #include "main/dll/DR/cloudrunner_state.h"
 #include "game/objects/object_setup.h"
 
@@ -11,45 +12,16 @@
 typedef struct DRCloudRunnerPlacement
 {
     ObjPlacement base;
-    u8 pad18[0x1A - 0x18];
-    s16 airMeterCapacity; /* 0x1A: initial air meter capacity */
-    u8 pad1C[0x1E - 0x1C];
+    s8 spawnRot; /* 0x18: initial facing, shifted left 8 into anim.rotX */
+    u8 spawnVariant; /* 0x19: -> CloudRunnerState.spawnVariant */
+    s16 airMeterCapacity; /* 0x1A: initial air meter capacity -> CloudRunnerState.airTimeRemaining */
+    s16 pathSpeedTenths; /* 0x1C: rom-curve follow speed in tenths -> CloudRunnerState.pathFollowSpeed */
     s16 enableGameBit; /* 0x1E: game bit that enables the mount */
 } DRCloudRunnerPlacement;
 
-/* overlay onto CloudRunnerState for the fields it does not yet name */
-typedef struct DRCloudRunnerState
-{
-    u8 pad0[0xAD5 - 0x0];
-    u8 flagsAD5;
-    u8 padAD6[0xB50 - 0xAD6];
-    f32 unkB50;
-    u8 padB54[0xBAE - 0xB54];
-    s16 unkBAE;
-    s16 altMoveEnabled; /* 0xBB0: from placement+0x1a; when set, move 0x203 switches to alternate move 0x20c */
-    u8 padBB2[0xBB4 - 0xBB2];
-    u8 spawnVariant;
-    u8 padBB5[0xBC4 - 0xBB5];
-    s8 unkBC4;
-    u8 padBC5[0xBC8 - 0xBC5];
-} DRCloudRunnerState;
-
+STATIC_ASSERT(offsetof(DRCloudRunnerPlacement, spawnRot) == 0x18);
 STATIC_ASSERT(offsetof(DRCloudRunnerPlacement, airMeterCapacity) == 0x1A);
 STATIC_ASSERT(offsetof(DRCloudRunnerPlacement, enableGameBit) == 0x1E);
-STATIC_ASSERT(offsetof(DRCloudRunnerState, flagsAD5) == 0xAD5);
-STATIC_ASSERT(offsetof(DRCloudRunnerState, unkB50) == 0xB50);
-STATIC_ASSERT(offsetof(DRCloudRunnerState, unkBAE) == 0xBAE);
-STATIC_ASSERT(offsetof(DRCloudRunnerState, altMoveEnabled) == 0xBB0);
-STATIC_ASSERT(offsetof(DRCloudRunnerState, spawnVariant) == 0xBB4);
-STATIC_ASSERT(offsetof(DRCloudRunnerState, unkBC4) == 0xBC4);
-STATIC_ASSERT(sizeof(DRCloudRunnerState) == 0xBC8);
-
-typedef struct
-{
-    f32 x;
-    f32 y;
-    f32 z;
-} Vec3x;
 
 extern void* gDRCloudRunnerStateHandlers[];
 extern void* gDRCloudRunnerDefaultStateHandler;
@@ -60,7 +32,7 @@ extern const s16 gDRCloudRunnerGameBitIds[4];
 extern const int gDRCloudRunnerCurveIds[4];
 extern u8 gDRCloudRunnerMoveParamTable[];
 extern int gDRCloudRunnerAirMeterBaseline;
-extern const Vec3x gDRCloudRunnerVecTable[];
+extern const Vec3f gDRCloudRunnerVecTable[];
 extern s16 gDRCloudRunnerRollAngleLimits;
 
 extern char sOnCloudFormat[];
@@ -101,7 +73,7 @@ void DR_CloudRunner_free(GameObject* obj);
 void DR_CloudRunner_initialise(void);
 void DR_CloudRunner_render(GameObject* p1, int p2, int p3, int p4, int p5, s8 vis);
 void DR_CloudRunner_setFlightState(GameObject* obj, int param);
-int DR_CloudRunner_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int DR_CloudRunner_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void DR_CloudRunner_getCameraPosition(int obj, f32* a, f32* b, f32* c);
 void DR_CloudRunner_init(GameObject* obj, int p2);
 void DR_CloudRunner_func23(GameObject* obj, int mode, int* out);

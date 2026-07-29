@@ -37,7 +37,7 @@
 #define NW_TREE_BRIDGE_MEDIUM_BURST_COUNT            100
 #define NW_TREE_BRIDGE_SMALL_BURST_COUNT             5
 
-int nwTreeBridge_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int nwTreeBridge_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     NwTreeBridgeState* state;
     int eventIndex;
     int particlesRemaining;
@@ -60,7 +60,7 @@ int nwTreeBridge_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdate
             break;
         case NW_TREE_BRIDGE_EVENT_MEDIUM_BURST:
             particlesRemaining = NW_TREE_BRIDGE_MEDIUM_BURST_COUNT;
-            if (obj->anim.seqId == NW_TREE_BRIDGE_SPECIAL_OBJECT_SEQUENCE_ID) {
+            if (obj->anim.romDefNo == NW_TREE_BRIDGE_SPECIAL_OBJECT_SEQUENCE_ID) {
                 do {
                     (*gPartfxInterface)
                         ->spawnObject(obj, NW_TREE_BRIDGE_MEDIUM_SPECIAL_PARTICLE_ID, NULL,
@@ -85,7 +85,7 @@ int nwTreeBridge_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdate
             break;
         case NW_TREE_BRIDGE_EVENT_SMALL_BURST:
             particlesRemaining = NW_TREE_BRIDGE_SMALL_BURST_COUNT;
-            if (obj->anim.seqId == NW_TREE_BRIDGE_SPECIAL_OBJECT_SEQUENCE_ID) {
+            if (obj->anim.romDefNo == NW_TREE_BRIDGE_SPECIAL_OBJECT_SEQUENCE_ID) {
                 do {
                     (*gPartfxInterface)
                         ->spawnObject(obj, NW_TREE_BRIDGE_SMALL_SPECIAL_PARTICLE_ID, NULL, NW_TREE_BRIDGE_PARTICLE_MODE,

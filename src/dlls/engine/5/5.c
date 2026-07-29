@@ -158,7 +158,7 @@ void doNothing_800887C8(void)
 
 void skyRefreshPlayerEnvFx(void)
 {
-    skyApplyPlayerEnvFx((u8)mainGetBit(GAMEBIT_ENV_dayNo));
+    skyApplyPlayerEnvFx(mainGetBit(GAMEBIT_ENV_dayNo));
 }
 
 void skySetEnvFxFlags(u8 value)
@@ -222,22 +222,22 @@ void skyUpdateEnvFx(void)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, (u16)((s16*)lbl_803DD130)[b], 0);
+            getEnvfxActImmediately(0, 0, ((s16*)lbl_803DD130)[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, (u16)((s16*)lbl_803DD130)[b], 0);
+            getEnvfxAct(0, 0, ((s16*)lbl_803DD130)[b], 0);
         }
     }
     if ((u32)lbl_803DD13C != 0 && (gSkyEnvFxFlags & SKY_ENVFX_GROUP_B) != 0)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, (u16)((s16*)lbl_803DD13C)[b], 0);
+            getEnvfxActImmediately(0, 0, ((s16*)lbl_803DD13C)[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, (u16)((s16*)lbl_803DD13C)[b], 0);
+            getEnvfxAct(0, 0, ((s16*)lbl_803DD13C)[b], 0);
         }
     }
     if ((u32)lbl_803DD138 != 0 && (gSkyEnvFxFlags & SKY_ENVFX_GROUP_C) != 0 &&
@@ -245,11 +245,11 @@ void skyUpdateEnvFx(void)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, (u16)((s16*)lbl_803DD138)[b], 0);
+            getEnvfxActImmediately(0, 0, ((s16*)lbl_803DD138)[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, (u16)((s16*)lbl_803DD138)[b], 0);
+            getEnvfxAct(0, 0, ((s16*)lbl_803DD138)[b], 0);
         }
     }
     skyApplyPlayerEnvFx(b);
@@ -291,11 +291,11 @@ void skyApplyPlayerEnvFx(u8 idx)
     {
         if (gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE)
         {
-            getEnvfxActImmediately(player, player, (u16)val, 0);
+            getEnvfxActImmediately(player, player, val, 0);
         }
         else
         {
-            getEnvfxAct(player, player, (u16)val, 0);
+            getEnvfxAct(player, player, val, 0);
         }
     }
 }
@@ -340,33 +340,33 @@ typedef struct SkyDllInterface {
     u32 reserved1;
     u32 reserved2;
     u32 slotCountAndFlags;
-    ObjectDescriptorCallback slot00;
-    ObjectDescriptorCallback slot01;
-    ObjectDescriptorCallback slot02;
-    ObjectDescriptorCallback slot03;
-    ObjectDescriptorCallback slot04;
-    ObjectDescriptorCallback slot05;
-    ObjectDescriptorCallback slot06;
-    ObjectDescriptorCallback slot07;
-    ObjectDescriptorCallback slot08;
-    ObjectDescriptorCallback slot09;
-    ObjectDescriptorCallback slot0A;
-    ObjectDescriptorCallback slot0B;
-    ObjectDescriptorCallback slot0C;
-    ObjectDescriptorCallback slot0D;
-    ObjectDescriptorCallback slot0E;
-    ObjectDescriptorCallback slot0F;
-    ObjectDescriptorCallback slot10;
-    ObjectDescriptorCallback slot11;
-    ObjectDescriptorCallback slot12;
-    ObjectDescriptorCallback slot13;
-    ObjectDescriptorCallback slot14;
+    ObjectDescriptorCallback updateEnvfxAct;
+    ObjectDescriptorCallback loadLights;
+    ObjectDescriptorCallback updateTimeOfDay;
+    ObjectDescriptorCallback render;
+    ObjectDescriptorCallback getTimeOfDay;
+    ObjectDescriptorCallback getClockTime;
+    ObjectDescriptorCallback nop1;
+    ObjectDescriptorCallback getTransitionTimer;
+    ObjectDescriptorCallback getSunPosition;
+    ObjectDescriptorCallback setTimeOfDay;
+    ObjectDescriptorCallback return0;
+    ObjectDescriptorCallback timeToDayHourMinute;
+    ObjectDescriptorCallback getVisibility;
+    ObjectDescriptorCallback renderTimeOfDayBackdrop;
+    ObjectDescriptorCallback getCurrentTextureColor;
+    ObjectDescriptorCallback getCurrentAmbientAndLightColors;
+    ObjectDescriptorCallback nop2;
+    ObjectDescriptorCallback nop3;
+    ObjectDescriptorCallback setDayNo;
+    ObjectDescriptorCallback getDayNo;
+    ObjectDescriptorCallback return0b;
     ObjectDescriptorCallback slot15;
     ObjectDescriptorCallback slot16;
     ObjectDescriptorCallback slot17;
 } SkyDllInterface;
 
-SkyDllInterface lbl_8030F414 = {
+SkyDllInterface sky_funcs = {
     0,
     0,
     0,
@@ -479,7 +479,7 @@ void skySetLightIndex(int mode, f32 brightness)
     {
         ((SkyState*)gSkyState)->previousLightIndex = ((SkyState*)gSkyState)->currentLightIndex;
         ((SkyState*)gSkyState)->currentLightIndex = mode;
-        unset = lbl_803DF058;
+        unset = 0.0f;
         if (brightness != unset)
         {
             ((SkyState*)gSkyState)->lightBlendRate = 1.0f / (60.0f * brightness);
@@ -720,7 +720,7 @@ void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z)
                 dir.y = obj->anim.worldPosY - ly;
                 dir.z = obj->anim.worldPosZ - lz;
                 mag = PSVECMag(&dir);
-                if (mag > lbl_803DF058)
+                if (mag > 0.0f)
                 {
                     mag = 1.0f / mag;
                     PSVECScale(&dir, &dir, mag);
@@ -745,9 +745,9 @@ void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z)
         {
             if (gSkyState == NULL)
             {
-                *x = lbl_803DF058;
+                *x = 0.0f;
                 *y = (-1.0f);
-                *z = lbl_803DF058;
+                *z = 0.0f;
             }
             else
             {
@@ -887,7 +887,7 @@ void skyFn_80089710(int flags, u8 enabled, int startComplete)
                 }
                 else
                 {
-                    ((SkyState*)sky)->lights[flagBit].unk9C = lbl_803DF058;
+                    ((SkyState*)sky)->lights[flagBit].unk9C = 0.0f;
                 }
             }
             sky = gSkyState;
@@ -904,7 +904,7 @@ void skyGetSunLightDirection(int slot, f32* x, f32* y, f32* z)
 
     if (gSkyState == NULL)
     {
-        fallback = lbl_803DF058;
+        fallback = 0.0f;
         *x = fallback;
         *y = (-1.0f);
         *z = fallback;
@@ -1294,7 +1294,7 @@ void skyFn_8008a500(void)
     {
         dot = gSkySunDirection[2] * gSkySunDirection[2] +
               (gSkySunDirection[0] * gSkySunDirection[0] + gSkySunDirection[1] * gSkySunDirection[1]);
-        if (lbl_803DF058 != dot)
+        if (0.0f != dot)
         {
             len = sqrtf(dot);
         }
@@ -1307,7 +1307,7 @@ void skyFn_8008a500(void)
         gSkySunDirection[2] = gSkySunDirection[2] / len;
         dot = gSkyMoonDirection[2] * gSkyMoonDirection[2] +
               (gSkyMoonDirection[0] * gSkyMoonDirection[0] + gSkyMoonDirection[1] * gSkyMoonDirection[1]);
-        if (lbl_803DF058 != dot)
+        if (0.0f != dot)
         {
             len = sqrtf(dot);
         }
@@ -1356,7 +1356,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
     SkyVec3 sunDir;
     SkyVec3 moonDir;
     int v;
-    CameraViewSlot* cam;
+    Camera* cam;
     f32 far;
     f32 yaw;
     f32 scale;
@@ -1369,20 +1369,20 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
     u8* model;
     SkyState* sky;
 
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     sunDir = gSkyBaseSunDirection;
     moonDir = gSkyBaseMoonDirection;
     v = 0;
-    q1.x = lbl_803DF058;
-    q1.y = lbl_803DF058;
-    q1.z = lbl_803DF058;
+    q1.x = 0.0f;
+    q1.y = 0.0f;
+    q1.z = 0.0f;
     q1.w = 1.0f;
     q1.rz = 0;
     q1.ry = 0;
     q1.rx = 0;
-    q2.x = lbl_803DF058;
-    q2.y = lbl_803DF058;
-    q2.z = lbl_803DF058;
+    q2.x = 0.0f;
+    q2.y = 0.0f;
+    q2.z = 0.0f;
     q2.w = 1.0f;
     q2.rz = 0;
     q2.ry = 0;
@@ -1395,9 +1395,9 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         Camera_RebuildProjectionMatrix();
         sky = (SkyState*)gSkyState;
         sunT = (sky->timeOfDay - gSkyDayStartTime) / gSkySunArcDuration;
-        if (sunT < lbl_803DF058)
+        if (sunT < 0.0f)
         {
-            sunT = lbl_803DF058;
+            sunT = 0.0f;
         }
         else if (sunT > 1.0f)
         {
@@ -1435,9 +1435,9 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         }
         sunT *= 32676.0f;
         riseT = (sky->timeOfDay - gSkyDayStartTime) / gSkySunRiseDuration;
-        if (riseT < lbl_803DF058)
+        if (riseT < 0.0f)
         {
-            riseT = lbl_803DF058;
+            riseT = 0.0f;
         }
         else if (riseT > 1.0f)
         {
@@ -1516,9 +1516,9 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         }
         moonTC *= 32676.0f;
         riseT = moonT / 14400.0f;
-        if (riseT < lbl_803DF058)
+        if (riseT < 0.0f)
         {
-            riseT = lbl_803DF058;
+            riseT = 0.0f;
         }
         else if (riseT > 1.0f)
         {
@@ -1542,11 +1542,11 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         ((GameObject*)gSkyMoonObject)->anim.localPosY = cam->worldY + (f32)(s16)(int)vec[1];
         ((GameObject*)gSkyMoonObject)->anim.localPosZ = cam->worldZ + (f32)(s16)(int)vec[2];
         ((GameObject*)gSkyMoonObject)->anim.rootMotionScale = gSkySunMoonScale * scale;
-        *(s16*)gSkyMoonObject = 0x10000 - cam->yaw;
+        ((GameObject*)gSkyMoonObject)->anim.rotX = 0x10000 - cam->yaw;
         ((GameObject*)gSkyMoonObject)->anim.rotY = cam->pitch;
         vis = 0;
         ((GameObject*)gSkyMoonObject)->anim.rotZ = 0;
-        ((u8*)gSkyMoonObject)[0x37] = *(s16*)&gSkyMoonAlpha;
+        ((GameObject*)gSkyMoonObject)->anim.renderAlpha = *(s16*)&gSkyMoonAlpha;
         if (gSkySunObject->anim.renderAlpha != 0)
         {
             if (gSkyState != NULL)
@@ -1560,7 +1560,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
                 objRender(a, b, c, d, (GameObject*)gSkySunObject, 1);
             }
         }
-        if (((u8*)gSkyMoonObject)[0x37] != 0)
+        if (((GameObject*)gSkyMoonObject)->anim.renderAlpha != 0)
         {
             if (gSkyState != NULL)
             {
@@ -1588,7 +1588,7 @@ void skyRenderTimeOfDayBackdrop(void)
     int texA;
     int texB;
     u8* texC;
-    CameraViewSlot* cam;
+    Camera* cam;
     GameObject* player;
     int cell;
     u8* tbl;
@@ -1727,7 +1727,7 @@ void skyRenderTimeOfDayBackdrop(void)
         gradB = channel[idxB];
         gSkyCurrentAmbientColor.b = (u8)(int)(tc * (f32)(gradB - gradA) + (f32)(u32)gradA);
         texC = (u8*)sky[((SkyTimeBlend*)sky)->texSel + 2];
-        cam = Camera_GetCurrentViewSlot();
+        cam = Camera_GetCurrent();
         frac = Camera_GetFovY();
         frac = frac / 2.0f;
         texHeightF = (f32)(u32) * (u16*)(texC + 0xc);
@@ -1757,7 +1757,7 @@ void skyRenderTimeOfDayBackdrop(void)
         sinProd *= 2.0f;
         texHeight = ((Texture*)texC)->height;
         v = angle / (32.0f * (f32)texHeight);
-        skyDrawFn_80075d5c(0, 0, (screenRes & 0xffff) << 2, (screenRes >> 16) << 2, 0.0f, v,
+        drawOrthoTexturedQuad(0, 0, (screenRes & 0xffff) << 2, (screenRes >> 16) << 2, 0.0f, v,
                            1.0f, v - sinProd / (f32)texHeight, -0x18f);
     }
 }
@@ -1799,7 +1799,7 @@ int getSunPos(f32* outTime)
     {
         if (outTime != NULL)
         {
-            *outTime = lbl_803DF058;
+            *outTime = 0.0f;
         }
         return 0;
     }
@@ -1852,7 +1852,7 @@ void skyGetClockTime(f32* time)
     sky = gSkyState;
     if (sky == NULL)
     {
-        *time = lbl_803DF058;
+        *time = 0.0f;
     }
     else
     {
@@ -1871,7 +1871,7 @@ void getTimeOfDay(f32* time)
     sky = gSkyState;
     if (sky == NULL)
     {
-        *time = lbl_803DF058;
+        *time = 0.0f;
         return;
     }
     *time = ((SkyState*)sky)->timeOfDay;
@@ -1898,7 +1898,7 @@ void skyUpdateTimeOfDay(void)
     u8* p;
     int idx;
 
-    time = lbl_803DF058;
+    time = 0.0f;
     env = saveGameGetEnvState();
     if (gSkyState == NULL || gSkyObjectsInitialized == 0)
     {
@@ -1912,7 +1912,7 @@ void skyUpdateTimeOfDay(void)
             {
                 ((SkyState*)gSkyState)->timeOfDay = ((SkyState*)gSkyState)->timeOfDay - gSkySecondsPerDay;
             }
-            else if (((SkyState*)gSkyState)->timeOfDay < lbl_803DF058)
+            else if (((SkyState*)gSkyState)->timeOfDay < 0.0f)
             {
                 ((SkyState*)gSkyState)->timeOfDay = ((SkyState*)gSkyState)->timeOfDay + gSkySecondsPerDay;
             }
@@ -1957,11 +1957,11 @@ void skyUpdateTimeOfDay(void)
             ((SkyState*)gSkyState)->fadeFactor -= ((SkyState*)gSkyState)->fadeRate * timeDelta;
             val = ((SkyState*)gSkyState)->fadeFactor;
             ((SkyState*)gSkyState)->fadeFactor =
-                (val < lbl_803DF058) ? lbl_803DF058 : ((val > 1.0f) ? 1.0f : val);
+                (val < 0.0f) ? 0.0f : ((val > 1.0f) ? 1.0f : val);
             ((SkyState*)gSkyState)->lightBlendFactor += ((SkyState*)gSkyState)->lightBlendRate * timeDelta;
             val = ((SkyState*)gSkyState)->lightBlendFactor;
             ((SkyState*)gSkyState)->lightBlendFactor =
-                (val < lbl_803DF058) ? lbl_803DF058 : ((val > 1.0f) ? 1.0f : val);
+                (val < 0.0f) ? 0.0f : ((val > 1.0f) ? 1.0f : val);
         }
     }
 }
@@ -2017,15 +2017,15 @@ void skyLoadLights(void)
     }
     skyResetState();
     skySetSlotFlag80(7, 0);
-    skySetLightIndex(0, lbl_803DF058);
+    skySetLightIndex(0, 0.0f);
     skyFn_8008a500();
     skyFn_8008a04c();
-    gSkySunDirection[0] = lbl_803DF058;
+    gSkySunDirection[0] = 0.0f;
     gSkySunDirection[1] = (-1.0f);
-    gSkySunDirection[2] = lbl_803DF058;
-    gSkyMoonDirection[0] = lbl_803DF058;
+    gSkySunDirection[2] = 0.0f;
+    gSkyMoonDirection[0] = 0.0f;
     gSkyMoonDirection[1] = (-1.0f);
-    gSkyMoonDirection[2] = lbl_803DF058;
+    gSkyMoonDirection[2] = 0.0f;
     gSkySkyTexture = textureLoadAsset(SKY_TEXTURE_SKY);
 }
 
@@ -2108,12 +2108,12 @@ void skyResetState(void)
         gSkyState[iofs + 0x88] = 0xff;
         gSkyState[iofs + 0x89] = 0xff;
         gSkyState[iofs + 0x8a] = 0xff;
-        *(f32*)(gSkyState + iofs + 0x90) = lbl_803DF058;
+        *(f32*)(gSkyState + iofs + 0x90) = 0.0f;
         *(f32*)(gSkyState + iofs + 0x94) = (-1.0f);
-        *(f32*)(gSkyState + iofs + 0x98) = lbl_803DF058;
-        *(f32*)(gSkyState + iofs + 0x9c) = lbl_803DF058;
+        *(f32*)(gSkyState + iofs + 0x98) = 0.0f;
+        *(f32*)(gSkyState + iofs + 0x9c) = 0.0f;
         *(f32*)(gSkyState + iofs + 0xa0) = (-1.0f);
-        *(f32*)(gSkyState + iofs + 0xa4) = lbl_803DF058;
+        *(f32*)(gSkyState + iofs + 0xa4) = 0.0f;
         ((SkyBlendStateFlags*)(gSkyState + iofs + 0xc1))->active = 0;
         *(f32*)(gSkyState + iofs + 0xa8) = 0.2f;
         *(f32*)(gSkyState + iofs + 0xac) = 1.0f;
@@ -2237,7 +2237,7 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
         }
         if (((Sky2Config*)cfg)->cloudBlendMode != 0)
         {
-            skySetSlotFlag80(mask, (u8)(((Sky2Config*)cfg)->cloudBlendMode > 2 ? 1 : 0));
+            skySetSlotFlag80(mask, (((Sky2Config*)cfg)->cloudBlendMode > 2 ? 1 : 0));
         }
         vis = ((Sky2Config*)cfg)->visibility;
         for (i = 0; i < 2; i++)
@@ -2279,7 +2279,7 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
             }
             else
             {
-                ((SkyState*)gSkyState)->fadeFactor = lbl_803DF058;
+                ((SkyState*)gSkyState)->fadeFactor = 0.0f;
             }
         }
         cloudMode = ((SkyBlendStateFlags*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0xc1))->cloud;

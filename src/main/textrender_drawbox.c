@@ -187,12 +187,12 @@ int setSubtitlesEnabled(int enabled)
     gSubtitlesEnabled = enabled;
     if (enabled == 0)
     {
-        subtitleFn_8001b700();
+        subtitleStop();
     }
     return old;
 }
 
-void gameTextInitFn_8001bd14(void)
+void subtitleInit(void)
 {
     int i;
     int zero;

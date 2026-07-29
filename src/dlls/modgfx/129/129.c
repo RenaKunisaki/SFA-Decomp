@@ -15,6 +15,7 @@
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/dll/fb_cmd.h"
+#include "dlls/object_descriptor.h"
 
 /* spawnEffect effect ids per variant. */
 #define DLL81_EFFECT_ID_VARIANT1E    0x3e9
@@ -320,5 +321,13 @@ void dll_81_func00_nop(void)
 {
 }
 
-void* lbl_80315750[8] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                         dll_81_func00_nop, dll_81_func01_nop, (void*)0x00000000, dll_81_func03};
+ObjectDescriptor4 dll_81_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
+    (ObjectDescriptorCallback)dll_81_func00_nop,
+    (ObjectDescriptorCallback)dll_81_func01_nop,
+    0,
+    (ObjectDescriptorCallback)dll_81_func03,
+};

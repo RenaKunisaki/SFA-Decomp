@@ -20,7 +20,7 @@
 #define SB_CAGE_KYTE_CHIRP_TIMER_MIN 400
 #define SB_CAGE_KYTE_CHIRP_TIMER_MAX 600
 
-int SB_CageKyte_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int SB_CageKyte_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int holdTimer = obj->userData1;
 
     (void)unused;
@@ -28,8 +28,8 @@ int SB_CageKyte_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdat
         obj->userData1 = holdTimer - 1;
     }
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-    animUpdate->hitVolumePair = -2;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->flags = -2;
+    animUpdate->movementState = 0;
     return 0;
 }
 

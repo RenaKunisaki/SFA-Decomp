@@ -38,7 +38,7 @@ void TrickyGuardSpot_update(GameObject* obj) {
     obj->anim.resetHitboxFlags = (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
     stateFlags->trickyInRange = 0;
     if (tricky != NULL) {
-        if ((u8)TRICKY_INTERFACE(tricky)->isGuarding(tricky) != 0) {
+        if (TRICKY_INTERFACE(tricky)->isGuarding(tricky) != 0) {
             if (Vec_xzDistance(&obj->anim.worldPosX, &tricky->anim.worldPosX) < (f32)(s32)placement->triggerRadius) {
                 state->guardTimer = state->guardTimer - framesThisStep;
                 stateFlags->trickyInRange = 1;
@@ -46,7 +46,7 @@ void TrickyGuardSpot_update(GameObject* obj) {
         }
     }
     if (state->guardTimer != 0) {
-        if (tricky != NULL && (u8)TRICKY_INTERFACE(tricky)->isGuarding(tricky) == 0) {
+        if (tricky != NULL && TRICKY_INTERFACE(tricky)->isGuarding(tricky) == 0) {
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
                 TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, TRICKY_GUARD_COMMAND_KIND,
                                                                     TRICKY_GUARD_COMMAND_TYPE);

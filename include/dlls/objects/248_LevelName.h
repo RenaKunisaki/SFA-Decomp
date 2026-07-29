@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 struct GameTextDef;
 
@@ -50,7 +50,7 @@ STATIC_ASSERT(offsetof(LevelNameState, phase) == 0x14);
 STATIC_ASSERT(offsetof(LevelNameState, pad15) == 0x15);
 STATIC_ASSERT(sizeof(LevelNameState) == 0x18);
 
-int LevelName_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int LevelName_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int LevelName_getExtraSize(void);
 int LevelName_getObjectTypeId(void);
 void LevelName_free(void);

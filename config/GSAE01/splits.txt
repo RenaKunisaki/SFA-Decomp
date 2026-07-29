@@ -134,6 +134,7 @@ main/modellight.c:
 	.bss        start:0x8033BE60 end:0x8033BF88
 	.sdata      start:0x803DB408 end:0x803DB410
 	.sbss       start:0x803DCA30 end:0x803DCA38
+	.sdata2     start:0x803DE750 end:0x803DE7A8
 
 main/gameloop.c:
 	.text       start:0x8001F54C end:0x8001FD88
@@ -231,6 +232,7 @@ main/shader_dolphin.c:
 	.bss        start:0x803779A0 end:0x803779C0
 	.sdata      start:0x803DB5E8 end:0x803DB600
 	.sbss       start:0x803DCD28 end:0x803DCD98
+	.sdata2     start:0x803DEAB0 end:0x803DEB44
 
 main/rcp_dolphin.c:
 	.text       start:0x80052974 end:0x800536C0
@@ -1853,6 +1855,7 @@ dlls/objects/278_WM_Column/WM_Column.c:
 dlls/objects/279_AppleOnTree/AppleOnTree.c:
 	.text       start:0x8017D818 end:0x8017EC10
 	.data       start:0x80321498 end:0x803214F8
+	.sdata2     start:0x803E37C8 end:0x803E3848
 
 dlls/objects/252/252.c:
 	.text       start:0x8017EC10 end:0x8017EF6C

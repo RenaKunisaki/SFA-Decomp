@@ -20,7 +20,7 @@
 
 #define MOON_SEED_BUSH_UPDATE_FLAG_RUN_SEQUENCE 1
 
-int moonSeedBush_processAnimEvents(GameObject* obj, int unusedArg2, ObjAnimUpdateState* animUpdate) {
+int moonSeedBush_processAnimEvents(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate) {
     MoonSeedBushState* state = obj->extra;
     const MoonSeedBushPlacement* placement = (const MoonSeedBushPlacement*)obj->anim.placementData;
     int eventIndex;

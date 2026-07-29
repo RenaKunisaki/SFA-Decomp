@@ -168,9 +168,9 @@ void mmshShrine_updateHoverMotion(GameObject* obj) {
         return;
     }
 
-    state->orbitPhaseA = (s16)(state->orbitPhaseA + (int)(MMSH_SHRINE_ORBIT_RATE_A * timeDelta));
-    state->orbitPhaseB = (s16)(state->orbitPhaseB + (int)(MMSH_SHRINE_ORBIT_RATE_B * timeDelta));
-    state->orbitPhaseC = (s16)(state->orbitPhaseC + (int)(MMSH_SHRINE_ORBIT_RATE_C * timeDelta));
+    state->orbitPhaseA = state->orbitPhaseA + (int)(MMSH_SHRINE_ORBIT_RATE_A * timeDelta);
+    state->orbitPhaseB = state->orbitPhaseB + (int)(MMSH_SHRINE_ORBIT_RATE_B * timeDelta);
+    state->orbitPhaseC = state->orbitPhaseC + (int)(MMSH_SHRINE_ORBIT_RATE_C * timeDelta);
 
     obj->anim.localPosY =
         MMSH_SHRINE_ORBIT_HEIGHT +
@@ -253,7 +253,7 @@ int mmshShrine_updateFearSway(GameObject* obj) {
     return 0;
 }
 
-int mmshShrine_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
+int mmshShrine_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
     MMSHShrineState* state;
     u8 command;
     GameObject* player;
@@ -262,7 +262,7 @@ int mmshShrine_processAnimEvents(GameObject* obj, int unusedArg, ObjAnimUpdateSt
     state = obj->extra;
     player = Obj_GetPlayerObject();
     animUpdate->savedFlags = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
 
     for (i = 0; i < (int)(u32)animUpdate->eventCount; i++) {
         command = animUpdate->eventIds[i];
@@ -377,7 +377,7 @@ void mmshShrine_render(GameObject* obj, int renderArg2, int renderArg3, int rend
             modelLightStruct_setEnabled(state->light, MMSH_SHRINE_LIGHT_ENABLED, MMSH_SHRINE_LIGHT_FADE_DURATION);
         }
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, MMSH_SHRINE_RENDER_SCALE);
-        objParticleFn_80099d84(obj, MMSH_SHRINE_PARTICLE_SCALE, MMSH_SHRINE_PARTICLE_TYPE,
+        objDoParticleFx(obj, MMSH_SHRINE_PARTICLE_SCALE, MMSH_SHRINE_PARTICLE_TYPE,
                                MMSH_SHRINE_PARTICLE_EXTRA_SCALE, state->light);
     }
 }

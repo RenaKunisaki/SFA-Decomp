@@ -45,7 +45,7 @@ STATIC_ASSERT(offsetof(ADSR_VARS, aMode) == 0x26);
 
 /* ADSR_VARS.mode - envelope curve family */
 #define ADSR_MODE_LINEAR 0 /* linear ramps */
-#define ADSR_MODE_DLS 1    /* DLS volume curve (lbl_8032F618 / 0xC1-step index) */
+#define ADSR_MODE_DLS 1    /* DLS volume curve; 0xC1-step index into voiceAdsrVolumeTable */
 
 /* ADSR_VARS.aMode - DLS attack interpolation */
 #define ADSR_ATTACK_MODE_LINEAR 0
@@ -57,7 +57,7 @@ STATIC_ASSERT(offsetof(ADSR_VARS, aMode) == 0x26);
 #define ADSR_STATE_HOLD 3    /* held at sustain; volume frozen */
 #define ADSR_STATE_RELEASE 4 /* ramp current -> 0, then done */
 
-extern u16 lbl_8032F618[];
+extern u16 voiceAdsrVolumeTable[];
 extern u8 voiceAdsrDecayTable[];
 extern f32 voiceAdsrSustainTable[];
 

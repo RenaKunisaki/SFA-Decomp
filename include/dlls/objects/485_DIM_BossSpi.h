@@ -31,8 +31,6 @@ void DIMbossspit_init(GameObject* obj);
 void DIMbossspit_release(void);
 void DIMbossspit_initialise(void);
 
-extern const f32 gDimBossSpitGravity[1];
-extern const f32 gDimBossSpitVelocityDamping[1];
 extern ObjectDescriptor gDIM_BossSpitObjDescriptor;
 
 #endif /* DLLS_OBJECTS_485_DIM_BOSSSPI_H_ */

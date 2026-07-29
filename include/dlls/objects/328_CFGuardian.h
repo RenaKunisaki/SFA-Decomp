@@ -8,7 +8,7 @@
 #include "main/dll/curve_walker.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/objanim.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/objprint_sound_api.h"
 
 typedef struct RomCurveDef RomCurveDef;
@@ -93,7 +93,7 @@ int cfguardian_flyAlongPath(GameObject* obj, RomCurveWalker* walker, f32 speed, 
 int cfguardian_steerToward(GameObject* obj, MoveLibTarget* target, f32 speed, f32* outPhase);
 RomCurveDef* cfguardian_findRomCurvePointNearObject(GameObject* obj, int curveGroup, f32* outPosition, int mode);
 int cfguardian_updateMain(GameObject* obj);
-int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int cfguardian_getExtraSize(void);
 int cfguardian_getObjectTypeId(void);
 void cfguardian_free(GameObject* obj, int keep);

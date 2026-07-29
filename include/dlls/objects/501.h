@@ -11,32 +11,32 @@
  * retail placement width is not available, so this does not claim a complete
  * record size.
  */
-typedef struct Dll501PlacementView {
+typedef struct Dll1F5PlacementView {
     ObjPlacement base;
     s16 segmentIndex;
     s16 gameBit;
     u8 unknown1C[0x08];
     u8 dampingDivisor;
-} Dll501PlacementView;
+} Dll1F5PlacementView;
 
 /*
  * The object-trigger interface operates on the common ObjSeqState prefix.
  * This DLL's allocation contract proves eight additional opaque bytes.
  */
-typedef struct Dll501State {
+typedef struct Dll1F5State {
     ObjSeqState sequence;
     u8 unknown138[0x08];
-} Dll501State;
+} Dll1F5State;
 
-STATIC_ASSERT(offsetof(Dll501PlacementView, base) == 0x00);
-STATIC_ASSERT(offsetof(Dll501PlacementView, segmentIndex) == 0x18);
-STATIC_ASSERT(offsetof(Dll501PlacementView, gameBit) == 0x1A);
-STATIC_ASSERT(offsetof(Dll501PlacementView, unknown1C) == 0x1C);
-STATIC_ASSERT(offsetof(Dll501PlacementView, dampingDivisor) == 0x24);
+STATIC_ASSERT(offsetof(Dll1F5PlacementView, base) == 0x00);
+STATIC_ASSERT(offsetof(Dll1F5PlacementView, segmentIndex) == 0x18);
+STATIC_ASSERT(offsetof(Dll1F5PlacementView, gameBit) == 0x1A);
+STATIC_ASSERT(offsetof(Dll1F5PlacementView, unknown1C) == 0x1C);
+STATIC_ASSERT(offsetof(Dll1F5PlacementView, dampingDivisor) == 0x24);
 
-STATIC_ASSERT(offsetof(Dll501State, sequence) == 0x00);
-STATIC_ASSERT(offsetof(Dll501State, unknown138) == 0x138);
-STATIC_ASSERT(sizeof(Dll501State) == 0x140);
+STATIC_ASSERT(offsetof(Dll1F5State, sequence) == 0x00);
+STATIC_ASSERT(offsetof(Dll1F5State, unknown138) == 0x138);
+STATIC_ASSERT(sizeof(Dll1F5State) == 0x140);
 
 int dll501_getExtraSize(void);
 int dll501_getObjectTypeId(void);
@@ -48,6 +48,6 @@ void dll501_init(GameObject* obj, int placement);
 void dll501_release(void);
 void dll501_initialise(void);
 
-extern ObjectDescriptor gDll501ObjDescriptor;
+extern ObjectDescriptor gDll1F5ObjDescriptor;
 
 #endif /* DLLS_OBJECTS_501_H_ */

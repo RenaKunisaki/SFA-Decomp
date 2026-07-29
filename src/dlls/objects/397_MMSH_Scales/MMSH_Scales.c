@@ -60,7 +60,7 @@ void mmshScales_hitDetect(void) {
 }
 
 void mmshScales_update(GameObject* obj) {
-    int sequenceSlot;
+    int slot;
     GameObject** objects;
     GameObject* otherObj;
     GameObject* sequenceOwner;
@@ -73,13 +73,13 @@ void mmshScales_update(GameObject* obj) {
         (((MMSHScalesPlacement*)obj->anim.placementData)->animDataIndex != MMSH_SCALES_ANIM_DATA_NONE)) {
         objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
         if (objectIndex != 0 && obj->seqIndex == MMSH_SCALES_SEQUENCE_PENDING) {
-            sequenceSlot = ((MMSHScalesState*)obj->extra)->sequence.slot;
+            slot = ((MMSHScalesState*)obj->extra)->sequence.slot;
             sequenceOwner = NULL;
             objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
             siblingCount = 0;
-            for (objectIndex = 0, groupSlot = (int)(s8)sequenceSlot; objectIndex < objectCount; objectIndex++) {
+            for (objectIndex = 0, groupSlot = (int)(s8)slot; objectIndex < objectCount; objectIndex++) {
                 otherObj = *objects;
-                if (otherObj->seqIndex == sequenceSlot) {
+                if (otherObj->seqIndex == slot) {
                     sequenceOwner = otherObj;
                 }
                 if ((otherObj->seqIndex == MMSH_SCALES_SEQUENCE_PENDING &&

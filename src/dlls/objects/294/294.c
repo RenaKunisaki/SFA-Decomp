@@ -80,7 +80,7 @@ ObjectDescriptor gTriggerObjDescriptor = {
 };
 
 char sMoonrockTriggerIdentFormat[] = "!!!!!!!!!!! TRIGGER %d  ident %d\n";
-char lbl_8032253C[] =
+char sTriggerDebugTextBlock[] =
     "initialise\n\0"
     "Trigger [%d], Environment Effect, Action Num [%d], Range [%d]\0\0\0"
     "^^^^^^^^\n^^^^^^^^\nLOAD %d\n\0\0"
@@ -288,17 +288,17 @@ void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj)
     }
 }
 
-/* placement instance id (+0x14) of the one vent that emits a debug OSReport */
-#define MMP_GYSERVENT_DEBUG_INSTANCE_ID 0x46a31
+/* ObjPlacement.ident of the one vent that emits a debug OSReport */
+#define MMP_GYSERVENT_DEBUG_IDENT 0x46a31
 
 /* placement (WmSpiritPlaceMapData) byte offsets read at setup / per-frame */
 #define MMP_GYSERVENT_PLACE_REACH    0x3a /* eruption reach scale byte */
 #define MMP_GYSERVENT_PLACE_SPEED    0x3b /* per-frame speed byte */
 #define MMP_GYSERVENT_PLACE_ROTX     0x3d /* rotX (low 6 bits) */
 #define MMP_GYSERVENT_PLACE_ROTY     0x3e /* rotY */
-#define MMP_GYSERVENT_PLACE_INSTANCE 0x14 /* instance id */
+#define MMP_GYSERVENT_PLACE_IDENT    0x14 /* ObjPlacement.ident */
 
-void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
+void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement)
 {
     MmpGyserventState* state;
     MatrixTransform xf;
@@ -307,9 +307,9 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
         f32 m[16];
         f64 a8;
     } rotU;
+    f32 outX;
     f32 outY;
     f32 outZ;
-    f32 outX;
     f32 posMtx[16];
 #define rotMtx rotU.m
 
@@ -327,12 +327,12 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
     xf.y = 0.0f;
     xf.z = 0.0f;
     setMatrixFromObjectPos(posMtx, &xf);
-    Matrix_TransformPoint(posMtx, 0.0f, 0.0f, 1.0f, &outY, &outZ, &outX);
-    state->planeNormalX = outY;
-    state->planeNormalY = outZ;
-    state->planeNormalZ = outX;
+    Matrix_TransformPoint(posMtx, 0.0f, 0.0f, 1.0f, &outX, &outY, &outZ);
+    state->planeNormalX = outX;
+    state->planeNormalY = outY;
+    state->planeNormalZ = outZ;
     state->planeOffset =
-        -(obj->anim.worldPosZ * outX + (obj->anim.worldPosX * outY + obj->anim.worldPosY * outZ));
+        -(obj->anim.worldPosZ * outZ + (obj->anim.worldPosX * outX + obj->anim.worldPosY * outY));
 
     xf.rotX = (s16)-obj->anim.rotX;
     xf.rotY = (s16)-obj->anim.rotY;
@@ -346,9 +346,9 @@ void objFn_80198fa4(GameObject* obj, MMPTriggerGeyserPlacement* placement)
 
     state->reach = 100.0f * obj->anim.rootMotionScale;
     state->nearRadiusSq = (145.0f * obj->anim.rootMotionScale) * (145.0f * obj->anim.rootMotionScale);
-    if (placement->base.mapId == MMP_GYSERVENT_DEBUG_INSTANCE_ID)
+    if (placement->base.ident == MMP_GYSERVENT_DEBUG_IDENT)
     {
-        OSReport(lbl_8032253C);
+        OSReport(sTriggerDebugTextBlock);
     }
 #undef rotMtx
 }
@@ -460,7 +460,7 @@ void objSeqFn_801992ec(GameObject* obj, GameObject* seqObj)
 #define TRIGGER_CMD_OVERRIDE_DISABLED 0x20 /* run even when SFLAG_DISABLED is set */
 #define TRIGGER_SFLAG_SEED_TARGET 0x40 /* first hit: seed target position from current, not previous */
 
-void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq)
+void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
 {
     char* desc = (char*)&gTriggerObjDescriptor;
     u8* state = obj->extra;
@@ -681,11 +681,11 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq
                     }
                     break;
                 case 10:
-                    getEnvfxAct(obj, seqObj, (u16)((p[2] << 8) | p[3]), distSq);
-                    OSReport(desc + 0x68, (int)obj->anim.classId, (p[2] << 8) | p[3], distSq);
+                    getEnvfxAct(obj, seqObj, (u16)((p[2] << 8) | p[3]), range);
+                    OSReport(desc + 0x68, (int)obj->anim.classId, (p[2] << 8) | p[3], range);
                     break;
                 case 0xd:
-                    getLActions(obj, seqObj, (u16)((p[2] << 8) | p[3]), legCode, distSq, 0);
+                    getLActions(obj, seqObj, (u16)((p[2] << 8) | p[3]), legCode, range, 0);
                     break;
                 case 0xb:
                     switch (p[2])
@@ -729,7 +729,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int distSq
                         case 0x230:
                             if (((TriggerPlacement*)tbl)->triggerId == id)
                             {
-                                objInterpretSeq((GameObject*)t2, seqObj, legCode, distSq);
+                                objInterpretSeq((GameObject*)t2, seqObj, legCode, range);
                             }
                             break;
                         }
@@ -1080,7 +1080,6 @@ void Trigger_hitDetect(GameObject* obj)
     int wasInside;
     int i;
     u8 targetKind;
-    s16 ty;
     f32 dist[1];
 
     dist[0] = 200.0f;
@@ -1314,7 +1313,7 @@ void Trigger_init(GameObject* obj, u8* params)
         break;
     case 0x4c:
         ((TriggerState*)state)->gateBits[0] = ((TriggerPlacement*)params)->gateBitSrc[0];
-        objFn_80198fa4(obj, (MMPTriggerGeyserPlacement*)params);
+        MmpGyservent_setup(obj, (MMPTriggerGeyserPlacement*)params);
         break;
     case 0x230:
         ((TriggerState*)state)->rangeSq = (f32)(s32)(((TriggerPlacement*)params)->size[0] * 2);

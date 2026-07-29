@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 /*
  * Only the placement prefix consumed by this DLL is modeled. The active-target
@@ -21,7 +21,7 @@ STATIC_ASSERT(offsetof(SBSeqDoorPlacementView, base) == 0x00);
 STATIC_ASSERT(offsetof(SBSeqDoorPlacementView, rotXByte) == 0x18);
 STATIC_ASSERT(offsetof(SBSeqDoorPlacementView, bankSelect) == 0x19);
 
-int SB_SeqDoor_SeqFn(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);
+int SB_SeqDoor_SeqFn(GameObject* obj, int unusedArg, ObjSeqState* animUpdate);
 int SB_SeqDoor_getExtraSize(void);
 int SB_SeqDoor_getObjectTypeId(void);
 void SB_SeqDoor_free(void);

@@ -27,6 +27,7 @@
 #include "main/shader_api.h"
 #include "dolphin/gx/GXTransform.h"
 #include "string.h"
+#include "main/gametext_internal.h"
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
@@ -38,9 +39,6 @@ typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, i
 
 char sMemoryCardFileNameString[20] = "Star Fox Adventures";
 
-int cardDeleteSaveFile(void);
-void cardGetMessage(u32* buttons, u32* texts, u32* count);
-void showMemCardError(u8 err);
 
 
 extern volatile s32 gSaveCardState;
@@ -60,11 +58,6 @@ void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
 void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
-int cardProbe(u8 retry);
-void showMemCardError(u8 err);
-void cardShowLoadingMsg(u8 kind);
-int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
-int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
@@ -127,7 +120,7 @@ void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 
 void loadReflectionTexMtxs(void)
 {
-    f32* base = (f32*)&lbl_803967C0;
+    f32* base = (f32*)&gCameraModelViewMatrix;
     Mtx tmp;
     PSMTXConcat((void*)(base + 36), (void*)(int)base, tmp);
     GXLoadTexMtxImm(tmp, GX_TEXMTX0, GX_MTX3x4);
@@ -609,7 +602,7 @@ void showMemCardError(u8 err)
     int i;
     int j;
     int yy;
-    char* t;
+    GameTextDef* t;
     int v;
 
     sel = 0;
@@ -646,11 +639,11 @@ void showMemCardError(u8 err)
         gameTextSetColor(0xff, 0xc0, 0x40, 0xff);
         for (i = 0, m = msgs, y = 0x64; i < count + 1; m++, y += 0x14, i++)
         {
-            t = (char*)gameTextGet(*m);
+            t = (GameTextDef*)gameTextGet(*m);
             yy = y + ((i > 0) ? 0x64 : 0);
-            for (j = 0; j < *(u16*)(t + 2); j++)
+            for (j = 0; j < t->count; j++)
             {
-                gameTextShowStr((*(char***)(t + 8))[j], 0, 0, yy);
+                gameTextShowStr(t->strings[j], 0, 0, yy);
                 yy += 0x18;
             }
             if (i == sel)
@@ -837,4 +830,3 @@ int saveGameReadGlobalsCb(int saveId, int size, void* dst)
 
 
 /* .bss block 0x80391DC0-0x803967C0 */
-

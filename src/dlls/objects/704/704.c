@@ -1,7 +1,7 @@
 /*
  * DLL 704 (0x2C0) - the title/attract-mode front-end object and its
  * UI. gTitleScreenObjDescriptor drives the title-screen actor: init
- * seeds anim moves per seqId (0x77d..0x780 = the four pilots on the Great
+ * seeds anim moves per romDefNo (0x77d..0x780 = the four pilots on the Great
  * Fox bridge - retail OBJECTS.bin names FrontFox/FrontPeppy/FrontSlippy/
  * FrontRob; 0x781/0x78a are both retail-named FrontPilots: the group
  * actor and the attract camera/movie), update runs the actor
@@ -11,7 +11,7 @@
  *
  * Standalone leaf entry points cover the credits roll (creditsStart /
  * creditsStart_, walking gCreditEntries with fade-in/out), the
- * copyright/title text layout (gameTextBoxFn_80134d40,
+ * copyright/title text layout (titleScreenDrawMenuFrame,
  * titleScreenShowCopyright, titleScreenPositionElements), and the GX
  * quad emitters for the title and name-entry text (titleScreenTextDrawFunc
  * / nameEntryTextDrawFunc, writing through GXWGFifo). showCredits gates
@@ -87,7 +87,7 @@ typedef struct TitlescreenState
     f32 unk20;
     u8 pad24[0x30 - 0x24];
     u8 animPhase; /* 0x30: anim state-machine phase (0-5); also the move index passed to ObjAnim_SetCurrentMove */
-    s8 poseIndex; /* 0x31: per-actor pose index (seqId - FRONT_SEQID_FOX), or -2 for non-pilot actors */
+    s8 poseIndex; /* 0x31: per-actor pose index (romDefNo - FRONT_SEQID_FOX), or -2 for non-pilot actors */
     u8 pad32[0x34 - 0x32];
     f32 moveProgress;
 } TitlescreenState;
@@ -137,7 +137,7 @@ void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
     for (i = 0; i < sarr[0x1b]; i++)
     {
         s8 t;
-        switch (obj->anim.seqId)
+        switch (obj->anim.romDefNo)
         {
         case FRONT_SEQID_FOX:
             t = sarr[i + 0x13];
@@ -266,7 +266,7 @@ void creditsStart(void)
 
 /* Predicate. Returns 1 when the value from getCurUiDll is in {2..6} or
  * equals 7, else 0. */
-int gameTextFn_80134be8(void)
+int isFrontEndUiActive(void)
 {
     int x = getCurUiDll();
     if ((u32)(x - 2) <= 4 || x == 7)
@@ -314,10 +314,7 @@ void titleScreenShowCopyright(u8 arg)
 
 void* gTitleScreenTextures[TITLE_SCREEN_TEXTURE_COUNT];
 
-/* Free the main buffer at gTitleScreenMainTex and walk the 19-slot table at
- * gTitleScreenTextures releasing each non-null entry, then clear the busy
- * byte at gTitleScreenSetupDone. */
-void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
+void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
 {
     int i;
     Texture* tex;
@@ -327,7 +324,6 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
     Texture** texs2;
     f32 m;
     f32 sc3;
-    int a;
     u16 boxIndex;
     int idx;
     int yb;
@@ -343,6 +339,7 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
     if (gTitleScreenCursorY > 0.0f)
     {
         f32 (*m2)[4] = (f32 (*)[4])gTitleScreenMtx;
+        Texture* tex;
         int xb;
         int yb;
         int y;
@@ -352,16 +349,16 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
         tex = texs[4];
         drawScaledTexture(tex, (f32)(int)(xb + 0x5a + (texs2 = (Texture**)gTitleScreenTextures)[6]->width),
                           (f32)(y = yb - 0x10), alpha, 0x100, tex->width,
-                          (u32)(lbl_803E2300 * gTitleScreenCursorY) + 0x10, 0);
+                          (u32)(268.0f * gTitleScreenCursorY) + 0x10, 0);
         tex = texs2[6];
         drawScaledTexture(tex, (f32)(int)(xb + 0x5a), (f32)(y = yb - 0x10), 0xff, 0x100, tex->width,
-                          (u32)(lbl_803E2300 * gTitleScreenCursorY) + 0x10, 0);
+                          (u32)(268.0f * gTitleScreenCursorY) + 0x10, 0);
         tex = texs2[6];
         drawScaledTexture(tex, (f32)(int)(xb + 0x57 + texs[4]->width + tex->width), (f32)(y = yb - 0x10), 0xff, 0x100,
-                          tex->width, (u32)(lbl_803E2300 * gTitleScreenCursorY) + 0x10, 1);
+                          tex->width, (u32)(268.0f * gTitleScreenCursorY) + 0x10, 1);
         tex = (Texture*)gTitleScreenTextures[0];
         drawScaledTexture(tex, (f32)(int)(xb + 0x23), (f32)(y = yb - 0x10), 0xff, 0x100, tex->width,
-                          (u32)(lbl_803E2300 * gTitleScreenCursorY) + 0x10, 0);
+                          (u32)(268.0f * gTitleScreenCursorY) + 0x10, 0);
     }
     mtx = (f32*)gTitleScreenMtx;
     {
@@ -378,9 +375,9 @@ void gameTextBoxFn_80134d40(int alpha, int hideHighlight, u32 showArrows)
         int yb = (int)mtx[7];
         f32 cy = gTitleScreenCursorY;
         int a = (cy > 0.0f) ? 0xff : gTitleScreenPulseAlpha;
-        drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), -6.0f + (lbl_803E2300 * cy + (f32)(int)yb),
+        drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), -6.0f + (268.0f * cy + (f32)(int)yb),
                     0xff, 0xff);
-        drawTexture(texs2[7], (f32)(int)(xb + 0xa1), 16.0f + (lbl_803E2300 * gTitleScreenCursorY + (f32)(int)yb),
+        drawTexture(texs2[7], (f32)(int)(xb + 0xa1), 16.0f + (268.0f * gTitleScreenCursorY + (f32)(int)yb),
                     a, 0xff);
     }
     gameTextSetColor(0xff, 0xff, 0xff, (int)((f64)gTitleScreenPulseAlpha * (1.0 - gTitleScreenCursorY)));
@@ -553,21 +550,21 @@ int TitleScreen_getExtraSize(void)
     return 56;
 }
 
-/* Returns 74 if seqId is in [1917, 1920], else returns 0. */
+/* Returns 74 if romDefNo is in [1917, 1920], else returns 0. */
 int TitleScreen_getObjectTypeId(GameObject* obj)
 {
-    s16 v = obj->anim.seqId;
+    s16 v = obj->anim.romDefNo;
     if (v >= 1917 && v < 1921)
         return 74;
     return 0;
 }
 
-/* If seqId == FRONT_SEQID_FOX, trigger Music_Trigger(MUSICTRIG_lose_ice_race, 0)
+/* If romDefNo == FRONT_SEQID_FOX, trigger Music_Trigger(MUSICTRIG_lose_ice_race, 0)
  * and clear showCredits. */
 
 void TitleScreen_free(GameObject* obj)
 {
-    if (obj->anim.seqId == FRONT_SEQID_FOX)
+    if (obj->anim.romDefNo == FRONT_SEQID_FOX)
     {
         Music_Trigger(MUSICTRIG_lose_ice_race, 0);
         showCredits = 0;
@@ -628,19 +625,19 @@ void TitleScreen_update(GameObject* obj)
         if (state->poseIndex != gTitleScreenMenuSelection && gTitleScreenMenuActive == 0 &&
             (phase = state->animPhase) != 0 && phase != 4 && phase != 3)
         {
-            if (obj->anim.seqId == FRONT_SEQID_FOX || obj->anim.seqId == FRONT_SEQID_ROB)
+            if (obj->anim.romDefNo == FRONT_SEQID_FOX || obj->anim.romDefNo == FRONT_SEQID_ROB)
             {
                 state->animPhase = 3;
                 ObjAnim_SetCurrentMove(objHandle, 1, 1.0f, 0);
                 state->moveProgress =
-                    gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[3];
+                    gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX].moves[3];
             }
             else
             {
                 state->animPhase = 0;
                 ObjAnim_SetCurrentMove(objHandle, 0, 0.0f, 0);
                 state->moveProgress =
-                    gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[0];
+                    gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX].moves[0];
             }
         }
         if (state->poseIndex == gTitleScreenMenuSelection && gTitleScreenMenuActive != 0 &&
@@ -649,15 +646,15 @@ void TitleScreen_update(GameObject* obj)
             state->animPhase = 1;
             ObjAnim_SetCurrentMove(objHandle, 1, 0.0f, 0);
             state->moveProgress =
-                gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[1];
-            if (obj->anim.seqId == FRONT_SEQID_PEPPY)
+                gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX].moves[1];
+            if (obj->anim.romDefNo == FRONT_SEQID_PEPPY)
             {
                 Sfx_StopFromObject((u32)obj, SFXTRIG_fend_pep_snoreout);
                 Sfx_StopFromObject((u32)obj, SFXTRIG_fend_pep_snorein);
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_pep_wakeup);
             }
         }
-        t = obj->anim.seqId;
+        t = obj->anim.romDefNo;
         if (t == 0x7a7)
         {
             obj->anim.rotX = 10.0f * timeDelta + (f32)obj->anim.rotX;
@@ -688,16 +685,16 @@ void TitleScreen_update(GameObject* obj)
                     state->animPhase = 2;
                     ObjAnim_SetCurrentMove(objHandle, 2, 0.0f, 0);
                     state->moveProgress =
-                        gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[2];
+                        gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX].moves[2];
                 }
                 else if (state->animPhase == 3)
                 {
                     state->animPhase = 0;
                     ObjAnim_SetCurrentMove(objHandle, 0, 0.0f, 0);
                     state->moveProgress =
-                        gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[0];
+                        gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX].moves[0];
                 }
-                else if (obj->anim.seqId >= FRONT_SEQID_FOX && obj->anim.seqId < FRONT_SEQID_PILOTS)
+                else if (obj->anim.romDefNo >= FRONT_SEQID_FOX && obj->anim.romDefNo < FRONT_SEQID_PILOTS)
                 {
                     if (randomGetRange(0, 4) == 0)
                     {
@@ -706,7 +703,7 @@ void TitleScreen_update(GameObject* obj)
                             state->animPhase = 4;
                             ObjAnim_SetCurrentMove(objHandle, randomGetRange(3, 4), 0.0f, 0);
                             state->moveProgress =
-                                gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX]
+                                gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX]
                                     .moves[1 + obj->anim.currentMove];
                         }
                         else
@@ -714,7 +711,7 @@ void TitleScreen_update(GameObject* obj)
                             state->animPhase = 5;
                             ObjAnim_SetCurrentMove(objHandle, randomGetRange(5, 6), 0.0f, 0);
                             state->moveProgress =
-                                gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX]
+                                gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX]
                                     .moves[1 + obj->anim.currentMove];
                         }
                     }
@@ -726,21 +723,21 @@ void TitleScreen_update(GameObject* obj)
                             state->animPhase = 0;
                             ObjAnim_SetCurrentMove(objHandle, 0, 0.0f, 0);
                             state->moveProgress =
-                                gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[0];
+                                gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX].moves[0];
                         }
                         else if (phase == 5)
                         {
                             state->animPhase = 2;
                             ObjAnim_SetCurrentMove(objHandle, 2, 0.0f, 0);
                             state->moveProgress =
-                                gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[2];
+                                gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX].moves[2];
                         }
                     }
                 }
             }
             titleScreenPlayActorSfx(obj, buf);
         }
-        t = obj->anim.seqId;
+        t = obj->anim.romDefNo;
         if (t == FRONT_SEQID_PEPPY && ((phase = state->animPhase) == 0 || phase == 4))
         {
             characterCloseEyes(obj, state);
@@ -760,7 +757,7 @@ void TitleScreen_update(GameObject* obj)
         gTitleScreenPrevMenuSelection = -1;
         gTitleScreenPrevMenuActive = -1;
         phaseSel = state->animPhase;
-        t = obj->anim.seqId;
+        t = obj->anim.romDefNo;
         switch (t)
         {
         case FRONT_SEQID_FOX:
@@ -801,7 +798,7 @@ void TitleScreen_update(GameObject* obj)
                         Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_slip_fingersnap);
                         row[phaseSel * 3] = 1;
                     }
-                    p = gTitleScreenSfxFlagGrid + (obj->anim.seqId - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
+                    p = gTitleScreenSfxFlagGrid + (obj->anim.romDefNo - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
                     if (*p != 0)
                     {
                         if (obj->anim.currentMoveProgress < 0.65f)
@@ -844,7 +841,7 @@ void TitleScreen_update(GameObject* obj)
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_armout);
                     row[phaseSel * 3] = 1;
                 }
-                p = gTitleScreenSfxFlagGrid + (obj->anim.seqId - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
+                p = gTitleScreenSfxFlagGrid + (obj->anim.romDefNo - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
                 if (*p != 0)
                 {
                     if (obj->anim.currentMoveProgress < 0.7f)
@@ -855,7 +852,7 @@ void TitleScreen_update(GameObject* obj)
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
                     *p = 1;
                 }
-                p = gTitleScreenSfxFlagGrid + (obj->anim.seqId - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 2;
+                p = gTitleScreenSfxFlagGrid + (obj->anim.romDefNo - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 2;
                 if (*p != 0)
                 {
                     if (obj->anim.currentMoveProgress < 0.8f)
@@ -879,7 +876,7 @@ void TitleScreen_update(GameObject* obj)
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
                     row[phaseSel * 3] = 1;
                 }
-                p = gTitleScreenSfxFlagGrid + (obj->anim.seqId - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
+                p = gTitleScreenSfxFlagGrid + (obj->anim.romDefNo - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
                 if (*p != 0)
                 {
                     if (obj->anim.currentMoveProgress < 0.6f)
@@ -890,7 +887,7 @@ void TitleScreen_update(GameObject* obj)
                     Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
                     *p = 1;
                 }
-                p = gTitleScreenSfxFlagGrid + (obj->anim.seqId - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 2;
+                p = gTitleScreenSfxFlagGrid + (obj->anim.romDefNo - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 2;
                 if (*p != 0)
                 {
                     if (obj->anim.currentMoveProgress < 0.9f)
@@ -919,20 +916,20 @@ void TitleScreen_update(GameObject* obj)
 }
 
 
-/* Seed the object's state from its seqId, pick the anim move and blend
+/* Seed the object's state from its romDefNo, pick the anim move and blend
  * float per id range, and for the attract id install the movie draw
  * callback. */
 void TitleScreen_init(GameObject* obj, u8* def)
 {
     TitlescreenState* state = (TitlescreenState*)obj->extra;
-    s16 seqId;
+    s16 romDefNo;
     state->animPhase = 0;
     obj->anim.rotX = (s16)((s8)def[0x18] << 8);
-    seqId = obj->anim.seqId;
-    if (seqId >= FRONT_SEQID_FOX && seqId < FRONT_SEQID_PILOTS)
+    romDefNo = obj->anim.romDefNo;
+    if (romDefNo >= FRONT_SEQID_FOX && romDefNo < FRONT_SEQID_PILOTS)
     {
-        state->poseIndex = (s8)(seqId - FRONT_SEQID_FOX);
-        state->moveProgress = gTitleScreenAnimMoves[obj->anim.seqId - FRONT_SEQID_FOX].moves[0];
+        state->poseIndex = (s8)(romDefNo - FRONT_SEQID_FOX);
+        state->moveProgress = gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX].moves[0];
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
     }
     else
@@ -940,12 +937,12 @@ void TitleScreen_init(GameObject* obj, u8* def)
         f32 blendFloat = 0.0f;
         state->moveProgress = blendFloat;
         state->poseIndex = -2;
-        seqId = obj->anim.seqId;
-        if (seqId == FRONT_SEQID_PILOTS_ATTRACT)
+        romDefNo = obj->anim.romDefNo;
+        if (romDefNo == FRONT_SEQID_PILOTS_ATTRACT)
         {
             ObjAnim_SetCurrentMove((int)obj, 1, blendFloat, 0);
         }
-        else if (seqId == FRONT_SEQID_PILOTS)
+        else if (romDefNo == FRONT_SEQID_PILOTS)
         {
             ObjAnim_SetCurrentMove((int)obj, 0, 1.0f, 0);
             ObjModel_SetRenderCallback((u8*)obj->anim.banks[0], AttractMovie_DrawTextureCallback);
@@ -955,7 +952,7 @@ void TitleScreen_init(GameObject* obj, u8* def)
 
 /* Two-byte state push: if arg differs from gTitleScreenMenuActive, save old to
  * gTitleScreenPrevMenuActive and set new. */
-void titleScreenFn_801368a4(s8 arg)
+void titleScreenSetMenuActive(s8 arg)
 {
     s8 cur;
     if (arg == (cur = gTitleScreenMenuActive))
@@ -968,18 +965,21 @@ u8 gTitleScreenSfxFlagGrid[0x48];
 
 /* Two-byte state push (no equality check): copy gTitleScreenMenuSelection to
  * gTitleScreenPrevMenuSelection and write new value. */
-void titleScreenFn_801368c4(s8 arg)
+void titleScreenSetMenuSelection(s8 arg)
 {
     gTitleScreenPrevMenuSelection = gTitleScreenMenuSelection;
     gTitleScreenMenuSelection = arg;
 }
 
-void titleScreenFn_801368d4(void)
+void titleScreenDisableActors(void)
 {
     gTitleScreenActorsEnabled = 0;
 }
 
 
+/* Free the main buffer at gTitleScreenMainTex and walk the 19-slot table at
+ * gTitleScreenTextures releasing each non-null entry, then clear the busy
+ * byte at gTitleScreenSetupDone. */
 void TitleScreen_release(void)
 {
     int i;

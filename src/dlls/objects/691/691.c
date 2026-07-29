@@ -92,7 +92,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         return;
     }
 
-    if (obj->anim.seqId == VORTEX_OBJ_WNDLIFTS || obj->anim.seqId == VORTEX_OBJ_WNDLIFTC)
+    if (obj->anim.romDefNo == VORTEX_OBJ_WNDLIFTS || obj->anim.romDefNo == VORTEX_OBJ_WNDLIFTC)
     {
         texture = objFindTexture((GameObject*)obj, 0, 0);
         if (texture != NULL)
@@ -108,7 +108,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             }
             if (reverse != 0)
             {
-                texture->offsetS = (s16)(texture->offsetS - (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
+                texture->offsetS = texture->offsetS - (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt);
                 if ((f32)texture->offsetS <= VORTEX_ZERO)
                 {
                     texture->offsetS += 10000;
@@ -116,7 +116,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             }
             else
             {
-                texture->offsetS = (s16)(texture->offsetS + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
+                texture->offsetS = texture->offsetS + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt);
                 if (texture->offsetS >= 10000)
                 {
                     texture->offsetS -= 10000;
@@ -155,12 +155,12 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         obj->anim.rotX = objRotY;
         obj->anim.localPosY = objY;
     }
-    else if (obj->anim.seqId == VORTEX_OBJ_DIMPIT)
+    else if (obj->anim.romDefNo == VORTEX_OBJ_DIMPIT)
     {
         texture = objFindTexture((GameObject*)obj, 0, 0);
         if (texture != NULL)
         {
-            texture->offsetS = (s16)(texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt));
+            texture->offsetS = texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt);
         }
         obj->anim.rotX = (s16)(obj->anim.rotX + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
         if (texture->offsetS >= 10000)
@@ -196,7 +196,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         texture = objFindTexture((GameObject*)obj, 0, 0);
         if (texture != NULL)
         {
-            texture->offsetS = (s16)(texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt));
+            texture->offsetS = texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt);
         }
         obj->anim.rotX = (s16)(obj->anim.rotX + (int)(VORTEX_TEXTURE_SCROLL_SPEED * dt));
         if (texture->offsetS >= 10000)
@@ -251,7 +251,7 @@ void Vortex_update(GameObject* obj)
         state->flags.active = mainGetBit(setup->activeGameBit);
     }
 
-    if (obj->anim.seqId == VORTEX_OBJ_SKYVORTC || obj->anim.seqId == VORTEX_OBJ_SKYVORTS)
+    if (obj->anim.romDefNo == VORTEX_OBJ_SKYVORTC || obj->anim.romDefNo == VORTEX_OBJ_SKYVORTS)
     {
         if (state->flags.active != 0)
         {
@@ -302,7 +302,7 @@ void Vortex_init(GameObject* obj, VortexSetup* setup)
     {
         state->flags.active = mainGetBit(setup->activeGameBit);
     }
-    if (o->anim.seqId == VORTEX_OBJ_WNDLIFTS)
+    if (o->anim.romDefNo == VORTEX_OBJ_WNDLIFTS)
     {
         for (i = 0; i < 2; i++)
         {
@@ -311,7 +311,7 @@ void Vortex_init(GameObject* obj, VortexSetup* setup)
             state->angles[i] = randomGetRange(-0x7fff, 0x7fff);
         }
     }
-    else if (o->anim.seqId == VORTEX_OBJ_WNDLIFTC)
+    else if (o->anim.romDefNo == VORTEX_OBJ_WNDLIFTC)
     {
         for (i = 0; i < 2; i++)
         {
@@ -320,7 +320,7 @@ void Vortex_init(GameObject* obj, VortexSetup* setup)
             state->angles[i] = randomGetRange(-0x7fff, 0x7fff);
         }
     }
-    else if (o->anim.seqId == VORTEX_OBJ_DIMPIT)
+    else if (o->anim.romDefNo == VORTEX_OBJ_DIMPIT)
     {
         for (i = 0; i < 3; i++)
         {

@@ -183,7 +183,7 @@ int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex)
     return 1;
 }
 
-int TrickyCurve_activateEffectHandleRing(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int TrickyCurve_activateEffectHandleRing(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     SfxplayerState* state = (SfxplayerState*)obj->extra;
     int i;

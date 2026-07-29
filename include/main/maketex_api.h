@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 
-struct ObjAnimUpdateState;
+struct ObjSeqState;
 
 extern char* sMemoryCardFileName;
 extern int lbl_803DB708;
@@ -33,7 +33,7 @@ void ObjSeq_setGlobal2(s16 x);
 int ObjSeq_SetObjs(int objs, int arg, int flags);
 int ObjSeq_setOverridePos(f32 x, f32 y, f32 z);
 int ObjSeq_SetCoordinateSpace(int unused, int space);
-int ObjSeq_TurnToFacePlayer(GameObject* obj, struct ObjAnimUpdateState* state, s16 turnDegrees, s16 yawThreshold,
+int ObjSeq_TurnToFacePlayer(GameObject* obj, struct ObjSeqState* state, s16 turnDegrees, s16 yawThreshold,
                             s16 maxAngle, s16 animRight, s16 animLeft);
 
 #endif /* MAIN_MAKETEX_API_H_ */

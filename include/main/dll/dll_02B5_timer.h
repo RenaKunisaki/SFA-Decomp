@@ -50,8 +50,8 @@ STATIC_ASSERT(offsetof(TimerState, mode) == 0x0C);
 STATIC_ASSERT(offsetof(TimerState, flags) == 0x0D);
 STATIC_ASSERT(sizeof(TimerState) == 0x20);
 
-extern f32 lbl_803DC418;
-extern f32 lbl_803DC41C;
+extern f32 gTimerGlowScale;
+extern f32 gTimerTextureScrollScale;
 
 int timer_getExtraSize(void);
 void timer_free(GameObject* obj);

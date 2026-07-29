@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct CfPowerBasePlacement {
     ObjPlacement base;
@@ -42,7 +42,7 @@ STATIC_ASSERT(offsetof(CfPowerBaseState, baseIndex) == 0x04);
 STATIC_ASSERT(offsetof(CfPowerBaseState, pad05) == 0x05);
 STATIC_ASSERT(sizeof(CfPowerBaseState) == 0x06);
 
-int cfPowerBase_sequenceCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int cfPowerBase_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int cfPowerBase_getExtraSize(void);
 int cfPowerBase_getObjectTypeId(void);
 void cfPowerBase_free(void);

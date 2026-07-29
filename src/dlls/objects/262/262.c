@@ -245,7 +245,7 @@ void Scarab_render(GameObject* obj, int renderArg2, int renderArg3, int renderAr
 
     state = obj->extra;
     model = Obj_GetActiveModel(obj);
-    if (obj->anim.seqId == SCARAB_OBJECT_RAIN) {
+    if (obj->anim.romDefNo == SCARAB_OBJECT_RAIN) {
         colorIndex = 0;
         shellColors = gScarabRainColorCycle;
         for (; colorIndex < SCARAB_RAIN_COLOR_COUNT; colorIndex++) {
@@ -363,31 +363,31 @@ void Scarab_update(GameObject* obj) {
                 obj->anim.rotZ = 0;
                 state->phase = SCARAB_PHASE_GROUNDED;
                 state->spawnYaw = obj->anim.rotX;
-                if (obj->anim.seqId == SCARAB_OBJECT_GREEN) {
+                if (obj->anim.romDefNo == SCARAB_OBJECT_GREEN) {
                     {
                         f32 bounceScale = 0.15f;
                         state->velocityX = bounceScale * obj->anim.velocityX;
                         state->velocityZ = bounceScale * obj->anim.velocityZ;
                     }
-                } else if (obj->anim.seqId == SCARAB_OBJECT_RED) {
+                } else if (obj->anim.romDefNo == SCARAB_OBJECT_RED) {
                     {
                         f32 bounceScale = 0.65f;
                         state->velocityX = bounceScale * obj->anim.velocityX;
                         state->velocityZ = bounceScale * obj->anim.velocityZ;
                     }
-                } else if (obj->anim.seqId == SCARAB_OBJECT_GOLD) {
+                } else if (obj->anim.romDefNo == SCARAB_OBJECT_GOLD) {
                     {
                         f32 bounceScale = 1.2f;
                         state->velocityX = bounceScale * obj->anim.velocityX;
                         state->velocityZ = bounceScale * obj->anim.velocityZ;
                     }
-                } else if (obj->anim.seqId == SCARAB_OBJECT_RAIN) {
+                } else if (obj->anim.romDefNo == SCARAB_OBJECT_RAIN) {
                     {
                         f32 bounceScale = 0.45f;
                         state->velocityX = bounceScale * obj->anim.velocityX;
                         state->velocityZ = bounceScale * obj->anim.velocityZ;
                     }
-                } else if (obj->anim.seqId == SCARAB_OBJECT_BLUE_BEAN) {
+                } else if (obj->anim.romDefNo == SCARAB_OBJECT_BLUE_BEAN) {
                     f32 zero = 0.0f;
                     state->velocityX = zero;
                     state->velocityZ = zero;
@@ -493,7 +493,7 @@ void Scarab_update(GameObject* obj) {
                 } else {
                     obj->anim.localPosY = state->baseY;
                 }
-                if (obj->anim.seqId != SCARAB_OBJECT_RAIN) {
+                if (obj->anim.romDefNo != SCARAB_OBJECT_RAIN) {
                     obj->anim.rotX = (s16)(obj->anim.rotX + randomGetRange(-1460, 1460));
                 }
                 obj->anim.velocityX = state->velocityX;
@@ -590,7 +590,7 @@ void Scarab_update(GameObject* obj) {
                     state->fleeTimer = 0;
                 }
             }
-            if ((state->fleeTimer != 0 || obj->anim.seqId != SCARAB_OBJECT_RAIN) &&
+            if ((state->fleeTimer != 0 || obj->anim.romDefNo != SCARAB_OBJECT_RAIN) &&
                 Vec_xzDistance(&player->anim.worldPosX, &obj->anim.worldPosX) < 25.0f) {
                 deltaY = obj->anim.localPosY - player->anim.localPosY;
                 deltaY = (deltaY >= 0.0f) ? deltaY : -deltaY;
@@ -615,7 +615,7 @@ void Scarab_update(GameObject* obj) {
                     itemPickupDoParticleFx(obj, 1.0f, state->particleId, SCARAB_PICKUP_PARTICLE_COUNT);
                 }
             }
-            if (state->fleeTimer == 0 && obj->anim.seqId == SCARAB_OBJECT_RAIN) {
+            if (state->fleeTimer == 0 && obj->anim.romDefNo == SCARAB_OBJECT_RAIN) {
                 if (Vec_xzDistance(&player->anim.worldPosX, &obj->anim.worldPosX) < 20.0f) {
                     deltaY = obj->anim.localPosY - player->anim.localPosY;
                     deltaY = (deltaY >= 0.0f) ? deltaY : -deltaY;
@@ -635,7 +635,7 @@ void Scarab_update(GameObject* obj) {
                     state->fleeTimer = SCARAB_FLEE_TIMER;
                     Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c);
                 }
-            } else if (state->fleeTimer != 0 && obj->anim.seqId == SCARAB_OBJECT_RAIN &&
+            } else if (state->fleeTimer != 0 && obj->anim.romDefNo == SCARAB_OBJECT_RAIN &&
                        ObjHits_GetPriorityHit(obj, 0, 0, 0) == SCARAB_TRIGGER_HIT_KIND) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_46);
                 rainMoneyValues = gScarabMoneyValues;
@@ -656,7 +656,7 @@ void Scarab_init(GameObject* obj, const ScarabPlacement* placement) {
     state->riseLimit = randomGetRange(0x32, 0x64);
     state->baseY = placement->base.posY;
     model = Obj_GetActiveModel(obj);
-    switch (obj->anim.seqId) {
+    switch (obj->anim.romDefNo) {
     case SCARAB_OBJECT_GREEN:
         model->textureRefs->swapSelector = gScarabGreenColors[randomGetRange(0, 2)];
         state->pickupSfxId = 0x41;

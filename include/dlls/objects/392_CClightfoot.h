@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct CCLightfootPlacement {
     ObjPlacement base;
@@ -48,7 +48,7 @@ STATIC_ASSERT(offsetof(CCLightfootState, idleSfxTimer) == 0x14);
 
 extern ObjectDescriptor gCCLightfootObjDescriptor;
 
-int ccLightfoot_animationEventCallback(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate);
+int ccLightfoot_animationEventCallback(GameObject* obj, int unusedArg, ObjSeqState* animUpdate);
 int ccLightfoot_getExtraSize(void);
 void ccLightfoot_free(GameObject* obj, int keepWeapon);
 void ccLightfoot_selectCombatPhase(CCLightfootState* state, GameObject* targetObject, f32 distanceSquared);

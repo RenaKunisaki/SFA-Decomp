@@ -92,9 +92,9 @@ extern u16 lbl_803DCEAC;
 extern u8 lbl_803DCE06;
 extern s32 heatEffectIntensity;
 extern u8 gLightmapScreenImageEnabled;
-extern s8 lbl_8030E65C[];
-extern s8 lbl_8030E66C[];
-extern int lbl_8038228C[];
+extern s8 gMapBlockDrawOrderFrontToBack[];
+extern s8 gMapBlockDrawOrderBackToFront[];
+extern int gMapBlockCellStateTables[];
 extern s8* gMapLayerCellStates;
 extern s32 gMapCurRomListSlot;
 extern f32 lbl_803DCE58;
@@ -128,7 +128,7 @@ static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 
 void updateVisibleGeometry(void)
 {
-    CameraViewSlot* cam;
+    Camera* cam;
     int n;
     int i;
     f32 tt, ff, ss;
@@ -142,7 +142,7 @@ void updateVisibleGeometry(void)
     MatrixTransform st;
     f32 m[17];
 
-    cam = Camera_GetCurrentViewSlot();
+    cam = Camera_GetCurrent();
     if ((renderFlags & RENDERFLAG_WIDESCREEN) != 0 || (renderFlags & RENDERFLAG_DRAW_DISTANCE) != 0)
     {
         scale = Camera_GetFovY() / lbl_803DEBF8;
@@ -163,7 +163,7 @@ void updateVisibleGeometry(void)
     st.rotY = -cam->worldPitch;
     st.rotZ = cam->worldRoll;
     setMatrixFromObjectPos(m, &st);
-    Matrix_TransformPoint(m, lbl_803DEBCC, *(f32*)&lbl_803DEBCC, lbl_803DEC00, &ox, &oy, &oz);
+    Matrix_TransformPoint(m, 0.0f, 0.0f, lbl_803DEC00, &ox, &oy, &oz);
     gViewFrustumPlanes[0].normalX = ox;
     gViewFrustumPlanes[n = 0].normalY = oy;
     gViewFrustumPlanes[n = 0].normalZ = oz;
@@ -209,8 +209,8 @@ MapBlockData* mapGetBlock(int i)
     return gMapBlocks[i];
 }
 
-extern u32 lbl_8037E0C0[];
-extern s32 lbl_803DCE30;
+extern u32 gLightmapDrawQueue[];
+extern s32 gLightmapDrawQueueCount;
 
 s8* mapGetBlockIdx(int layer)
 {
@@ -239,7 +239,7 @@ extern s16 gVisibleObjectSortKeyCount;
 
 
 
-extern s16* lbl_803822A0[];
+extern s16* gMapBlockCellEntryTables[];
 extern f32 gMapBlockWorldSize;
 extern int gMapBlockOriginX;
 extern int gMapBlockOriginZ;
@@ -250,7 +250,7 @@ int coordsToMapCell(f32 x, f32 z)
     int iz = (int)(fastFloorf(z / gMapBlockWorldSize) - (f32)gMapBlockOriginZ);
     if (ix < 0 || ix >= 16) return -1;
     if (iz < 0 || iz >= 16) return -1;
-    return *(s16*)((char*)lbl_803822A0[0] + (ix + iz * 16) * 12);
+    return *(s16*)((char*)gMapBlockCellEntryTables[0] + (ix + iz * 16) * 12);
 }
 
 void mapGetBlockOriginForPos(f32 x, f32 y, f32 z, f32* outX, f32* outZ)
@@ -403,7 +403,6 @@ void getVisibleObjects(s8* opacity)
     int j;
     u8* interactState;
     int* model;
-    ObjModelInstance* modelDef;
     u32 tf;
     u32 mode;
     s16 t;
@@ -489,7 +488,7 @@ void getVisibleObjects(s8* opacity)
                         if ((tf & 0x800000) != 0 && (((GameObject*)o)->colorFadeFlags & OBJ_COLOR_FADE_FLAG_ACTIVE) == 0)
                         {
                             key |= 0x40000000LL;
-                            key |= (((GameObject*)o)->anim.seqId & 0x3ff) << 20;
+                            key |= (((GameObject*)o)->anim.romDefNo & 0x3ff) << 20;
                         }
                         gVisibleObjectSortKeys[gVisibleObjectSortKeyCount] =
                             (i & 0x3ff) | (((sortDepth & 0x3ff) << 10) | key);
@@ -499,8 +498,8 @@ void getVisibleObjects(s8* opacity)
                             (((GameObject*)o)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
                             renderShadowType3(o, 7, 0x50);
-                            lbl_8037E0C0[lbl_803DCE30 * 4 + 3] = 1;
-                            lbl_803DCE30++;
+                            gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 1;
+                            gLightmapDrawQueueCount++;
                         }
                     }
                     else
@@ -515,14 +514,14 @@ void getVisibleObjects(s8* opacity)
                             mode = 7;
                         }
                         renderShadowType3(o, mode, 0);
-                        lbl_8037E0C0[lbl_803DCE30 * 4 + 3] = 0;
-                        lbl_803DCE30++;
+                        gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 0;
+                        gLightmapDrawQueueCount++;
                         if ((((ObjAnimComponent*)o)->modelInstance->renderFlags & 0x20) != 0 &&
                             (((GameObject*)o)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
                             renderShadowType3(o, 7, 0x50);
-                            lbl_8037E0C0[lbl_803DCE30 * 4 + 3] = 1;
-                            lbl_803DCE30++;
+                            gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 1;
+                            gLightmapDrawQueueCount++;
                         }
                     }
                 }
@@ -552,15 +551,18 @@ void renderObjects(s8* opacity)
     u32 flags;
     int idx;
     u8* obj;
-    u8* state;
     int* p;
     int slot;
     int* objects;
     LightmapDrawQueue* qbase;
     LightmapQEnt* q;
+    LightmapQEnt* qe;
+    LightmapDrawQueue* dq;
+    int qi;
+    u32 shadowKind;
 
-    qbase = (LightmapDrawQueue*)lbl_8037E0C0;
-    q = (LightmapQEnt*)lbl_8037E0C0;
+    qbase = (LightmapDrawQueue*)gLightmapDrawQueue;
+    q = (LightmapQEnt*)gLightmapDrawQueue;
     objects = ObjList_GetObjects((int*)0, 0);
     for (i = 1, kp = (u32*)((u8*)qbase + 0x8818) + 1; i < gVisibleObjectSortKeyCount; kp++, i++)
     {
@@ -573,7 +575,8 @@ void renderObjects(s8* opacity)
             {
                 slot = gLightmapDeferredObjectCount;
                 gLightmapDeferredObjectCount = slot + 1;
-                *(u32*)((u8*)qbase->deferred + slot * 4) = (u32)obj;
+                dq = (LightmapDrawQueue*)&((u32*)qbase)[slot];
+                dq->deferred[0] = (u32)obj;
             }
         }
         else
@@ -587,16 +590,22 @@ void renderObjects(s8* opacity)
             if (p != NULL && ((GameObject*)obj)->anim.modelState->shadowCastSlot != NULL)
             {
                 renderShadowType3(obj, 0x13, 0);
-                *(u32*)((u8*)&q->d + lbl_803DCE30 * 16) = 2;
-                lbl_803DCE30++;
+                shadowKind = 2;
+                qi = gLightmapDrawQueueCount;
+                qe = &q[qi];
+                qe->d = shadowKind;
+                gLightmapDrawQueueCount = qi + 1;
             }
             else if (((GameObject*)obj)->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH && (((GameObject*)obj)->anim.flags
                 & OBJANIM_FLAG_HIDDEN) == 0 && (((GameObject*)obj)->anim.modelState->flags &
                 OBJ_MODEL_STATE_SHADOW_VISIBLE))
             {
                 renderShadowType3(obj, 0x13, 0);
-                *(u32*)((u8*)&q->d + lbl_803DCE30 * 16) = 3;
-                lbl_803DCE30++;
+                shadowKind = 3;
+                qi = gLightmapDrawQueueCount;
+                qe = &q[qi];
+                qe->d = shadowKind;
+                gLightmapDrawQueueCount = qi + 1;
             }
         }
     }
@@ -642,13 +651,13 @@ void renderSceneGeometry(u8 renderType, s8* order)
 
     layer = 4;
     layerTablePtr = &gMapBlockLayerTables[4];
-    layerFlagPtr = &lbl_8038228C[4];
+    layerFlagPtr = &gMapBlockCellStateTables[4];
     do
     {
         worldSize = gMapBlockWorldSize;
         table = *layerTablePtr;
         gMapLayerCellStates = (s8*)*layerFlagPtr;
-        mapFn_80057d24(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
+        mapGetBlockGridRects(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
                        gMapCurRomListSlot);
         mp = map;
         for (k = 0; k != ARRAY_COUNT(map); k += 4)
@@ -734,7 +743,7 @@ void sceneDraw(void)
     f32 skyB;
     s8 buf[616];
 
-    q = (char*)lbl_8037E0C0;
+    q = (char*)gLightmapDrawQueue;
     lbl_803DCE34 = (u32)cloudGetLayerTextureSize(&skyA, &skyB);
     if (lbl_803DCE34 != 0)
     {
@@ -760,7 +769,7 @@ void sceneDraw(void)
     lbl_803DCEAC = 0;
     lbl_803DCE06 = 0;
     drawReflectionTexture();
-    lbl_803DCE30 = 0;
+    gLightmapDrawQueueCount = 0;
     getVisibleObjects(buf);
     Rcp_UpdateDistortionTextures();
     perspectiveFn_80129db4();
@@ -806,7 +815,7 @@ void sceneDraw(void)
     GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
     GXSetChanAmbColor(GX_COLOR0, c);
     GXSetNumChans(1);
-    renderSceneGeometry(0, lbl_8030E65C);
+    renderSceneGeometry(0, gMapBlockDrawOrderFrontToBack);
     renderResetFn_8003fc60();
     renderObjects(buf);
     if (CameraShake_IsActive() != 0 || (int)bEnableMotionBlur != 0)
@@ -835,24 +844,24 @@ void sceneDraw(void)
         cursor += 4;
     }
     renderParticles();
-    renderSceneGeometry(1, lbl_8030E66C);
-    renderSceneGeometry(2, lbl_8030E66C);
-    if (lbl_803DCE30 == 1000)
+    renderSceneGeometry(1, gMapBlockDrawOrderBackToFront);
+    renderSceneGeometry(2, gMapBlockDrawOrderBackToFront);
+    if (gLightmapDrawQueueCount == 1000)
     {
         sceneDrawTransparentPolys();
-        lbl_803DCE30 = 0;
+        gLightmapDrawQueueCount = 0;
     }
-    *(u32*)(((int)q + 8) + lbl_803DCE30 * 16) = 0x78000000;
-    *(u32*)(((int)q + 12) + lbl_803DCE30 * 16) = 8;
-    lbl_803DCE30 = lbl_803DCE30 + 1;
-    if (lbl_803DCE30 == 1000)
+    *(u32*)(((int)q + 8) + gLightmapDrawQueueCount * 16) = 0x78000000;
+    *(u32*)(((int)q + 12) + gLightmapDrawQueueCount * 16) = 8;
+    gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
+    if (gLightmapDrawQueueCount == 1000)
     {
         sceneDrawTransparentPolys();
-        lbl_803DCE30 = 0;
+        gLightmapDrawQueueCount = 0;
     }
-    *(u32*)(((int)q + 8) + lbl_803DCE30 * 16) = 0x50000000;
-    *(u32*)(((int)q + 12) + lbl_803DCE30 * 16) = 9;
-    lbl_803DCE30 = lbl_803DCE30 + 1;
+    *(u32*)(((int)q + 8) + gLightmapDrawQueueCount * 16) = 0x50000000;
+    *(u32*)(((int)q + 12) + gLightmapDrawQueueCount * 16) = 9;
+    gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
     sceneDrawTransparentPolys();
     (*gModgfxInterface)->markSourceFrameUpdated(buf);
     (*gModgfxInterface)->renderEffects(NULL, 0, 0, 0, NULL);
@@ -913,13 +922,13 @@ void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad
     Camera_UpdateProjection(NULL, 0);
     updateVisibleGeometry();
     buildPlayerRelativeFrustumPlanes();
-    Camera_EnableViewYOffset();
+    CameraShake_Enable();
     Camera_UpdateViewMatrices();
     Camera_RebuildProjectionMatrix();
     updateLights();
-    lbl_803DCEA8 = (int)Camera_GetCurrentViewSlot();
+    lbl_803DCEA8 = (int)Camera_GetCurrent();
     sceneDraw();
-    screenFn_8000e944(NULL);
+    Camera_SetupFullscreenViewport(NULL);
     renderFlags &= ~2LL;
 }
 
@@ -1005,13 +1014,10 @@ int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
 
 
 
-u8 isOvercast(void);
 
 
-void setStarsHidden(int v);
 
 
-void setPendingMapLoad(int v);
 
 
 
@@ -1055,5 +1061,4 @@ void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, f
 void lightmapDrawQueuedObject(GameObject* obj);
 
 void sceneDrawTransparentPolys(void);
-
 

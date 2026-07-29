@@ -9,7 +9,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/object_transform.h"
 
-CameraModeCrawlState* lbl_803DD598;
+CameraModeCrawlState* gCameraModeCrawlState;
 
 
 void CameraModeCrawl_copyToCurrent(void* param1, int param2)
@@ -58,14 +58,14 @@ void CameraModeCrawl_copyToCurrent(void* param1, int param2)
     Obj_TransformWorldPointToLocal(((CameraObject*)obj)->anim.worldPosX, ((CameraObject*)obj)->anim.worldPosY,
                                    ((CameraObject*)obj)->anim.worldPosZ, &((GameObject*)obj)->anim.localPosX,
                                    &((GameObject*)obj)->anim.localPosY, &((GameObject*)obj)->anim.localPosZ,
-                                   ((CameraObject*)obj)->anim.parentAddress);
-    lbl_803DD598->flags.useDefaultHandler = 1;
+                                   (GameObject*)((CameraObject*)obj)->anim.parentAddress);
+    gCameraModeCrawlState->flags.useDefaultHandler = 1;
 }
 
 void CameraModeCrawl_free(void)
 {
-    mm_free((void*)lbl_803DD598);
-    lbl_803DD598 = NULL;
+    mm_free((void*)gCameraModeCrawlState);
+    gCameraModeCrawlState = NULL;
 }
 
 void CameraModeCrawl_update(CameraObject* camera)
@@ -79,7 +79,7 @@ void CameraModeCrawl_update(CameraObject* camera)
     {
         return;
     }
-    if (lbl_803DD598->flags.useDefaultHandler == 0)
+    if (gCameraModeCrawlState->flags.useDefaultHandler == 0)
     {
         camera->anim.worldPosX =
             13.0f * mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f) + target->anim.worldPosX;
@@ -126,15 +126,15 @@ void CameraModeCrawl_update(CameraObject* camera)
     }
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   camera->anim.parentAddress);
+                                   (GameObject*)camera->anim.parentAddress);
 }
 
 void CameraModeCrawl_init(void)
 {
-    if (lbl_803DD598 == NULL)
+    if (gCameraModeCrawlState == NULL)
     {
-        lbl_803DD598 = (CameraModeCrawlState*)mmAlloc(sizeof(CameraModeCrawlState), 15, 0);
-        memset(lbl_803DD598, 0, sizeof(CameraModeCrawlState));
+        gCameraModeCrawlState = (CameraModeCrawlState*)mmAlloc(sizeof(CameraModeCrawlState), 15, 0);
+        memset(gCameraModeCrawlState, 0, sizeof(CameraModeCrawlState));
     }
 }
 
@@ -146,7 +146,7 @@ void CameraModeCrawl_initialise(void)
 {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319E68 = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
+ResourceDescriptorCallbacks8 gCameraModeCrawlDescriptor = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
         {(ResourceDescriptorCallback)CameraModeCrawl_initialise, (ResourceDescriptorCallback)CameraModeCrawl_release,
         0x00000000, (ResourceDescriptorCallback)CameraModeCrawl_init, (ResourceDescriptorCallback)CameraModeCrawl_update,
         (ResourceDescriptorCallback)CameraModeCrawl_free, (ResourceDescriptorCallback)CameraModeCrawl_copyToCurrent, 0x00000000}};

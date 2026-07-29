@@ -7,7 +7,7 @@
 #include "global.h"
 
 typedef struct MapBlockData MapBlockData;
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 /* All four active-target retail placements are fixed 9-word (0x24-byte) records. */
 typedef struct DimLavaSmashPlacement {
@@ -43,7 +43,7 @@ STATIC_ASSERT(offsetof(DimLavaSmashState, phase) == 0x02);
 STATIC_ASSERT(sizeof(DimLavaSmashState) == 0x03);
 
 void dimlavasmash_setBlockSurfaceFlags(MapBlockData* map, int disable, int surfaceType);
-int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dimlavasmash_getExtraSize(void);
 int dimlavasmash_getObjectTypeId(void);
 void dimlavasmash_free(void);

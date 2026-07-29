@@ -137,7 +137,7 @@ void WaterFallSpray_init(GameObject* obj, WaterFallSprayPlacement* placement) {
     obj->anim.rotX = initialRotX;
     obj->userData1 = 0;
     obj->animEventCallback = WaterFallSpray_sequenceCallback;
-    mapId = ((WaterFallSprayPlacement*)obj->anim.placement)->base.mapId;
+    mapId = ((WaterFallSprayPlacement*)obj->anim.placement)->base.ident;
     switch (mapId) {
     case WATERFALLSPRAY_ALT_SFX_MAP_ID_MIN:
     case WATERFALLSPRAY_ALT_SFX_MAP_ID_END - 1:

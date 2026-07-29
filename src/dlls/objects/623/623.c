@@ -22,7 +22,7 @@
 #define DRGENERATOR_WALL_OBJ 0x72e
 #define DRGENERATOR_PARTFX   0x690
 
-int drgenerator_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int drgenerator_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int i;
     for (i = 0; i < animUpdate->eventCount; i++)
@@ -97,7 +97,7 @@ void drgenerator_hitDetect(GameObject* obj)
     }
     state->flags.b0 = 1;
     mainSetBits(placement->completionGameBit, 1);
-    if ((obj)->anim.seqId == DRGENERATOR_OBJ &&
+    if ((obj)->anim.romDefNo == DRGENERATOR_OBJ &&
         (found = (void*)ObjGroup_FindNearestObject(TIMER_OBJECT_GROUP, obj, NULL)) != NULL)
     {
         timer_addDuration((GameObject*)found, state->timerDuration);
@@ -121,7 +121,7 @@ void drgenerator_update(GameObject* obj)
     {
         if (state->flags.b3 == 0 && mainGetBit(placement->watchGameBit) == 0)
         {
-            if ((obj)->anim.seqId != DRGENERATOR_WALL_OBJ)
+            if ((obj)->anim.romDefNo != DRGENERATOR_WALL_OBJ)
             {
                 (*gObjectTriggerInterface)->runSequence(4, (void*)obj, -1);
             }
@@ -132,7 +132,7 @@ void drgenerator_update(GameObject* obj)
         }
         if (state->flags.b3 != 0 && mainGetBit(placement->watchGameBit) != 0)
         {
-            if ((obj)->anim.seqId != DRGENERATOR_WALL_OBJ)
+            if ((obj)->anim.romDefNo != DRGENERATOR_WALL_OBJ)
             {
                 (*gObjectTriggerInterface)->runSequence(3, (void*)obj, -1);
             }
@@ -156,7 +156,7 @@ void drgenerator_init(GameObject* obj, DrgeneratorPlacement* placement)
 {
     DrgeneratorState* state = (obj)->extra;
     f32 fv;
-    if ((obj)->anim.seqId == DRGENERATOR_WALL_OBJ)
+    if ((obj)->anim.romDefNo == DRGENERATOR_WALL_OBJ)
     {
         ObjTextureRuntimeSlot* t;
         (obj)->animEventCallback = drgenerator_SeqFn;

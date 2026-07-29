@@ -17,9 +17,9 @@
 #include "main/object_render.h"
 #include "main/objfx.h"
 
-/* anim.seqId tag identifying a live propeller (vs. a placeholder stand-in) */
+/* anim.romDefNo tag identifying a live propeller (vs. a placeholder stand-in) */
 #define SB_PROPELLER_SEQ_ID 0x69c
-/* a second SB object's seqId the propeller ignores when scanning hits */
+/* a second SB object's romDefNo the propeller ignores when scanning hits */
 #define SB_OTHER_SEQ_ID 0x9a
 
 /* propeller sound effects (SB-specific ids, no shared name) */
@@ -31,10 +31,10 @@
 #define SB_PROPELLER_PARTFX_SMOKE  0x9f  /* smokeTimer-gated smoke burst at the hub */
 #define SB_PROPELLER_PARTFX_DEBRIS 0x7aa /* bankIndex==1 debris trail from path point 0 */
 
-u32 lbl_803DDC40;
+u32 gSbPropellerObject;
 
 u32 sbGetPropeller(void) {
-    return lbl_803DDC40;
+    return gSbPropellerObject;
 }
 
 int SB_Propeller_getExtraSize(void) {
@@ -50,10 +50,10 @@ void SB_Propeller_render(GameObject* obj, int renderArg2, int renderArg3, int re
 }
 
 void SB_Propeller_hitDetect(GameObject* obj) {
-    if (obj->anim.seqId != SB_PROPELLER_SEQ_ID) {
+    if (obj->anim.romDefNo != SB_PROPELLER_SEQ_ID) {
         return;
     }
-    obj->anim.rotZ = ((GameObject*)lbl_803DDC40)->anim.rotZ;
+    obj->anim.rotZ = ((GameObject*)gSbPropellerObject)->anim.rotZ;
 }
 
 void SB_Propeller_update(GameObject* obj) {
@@ -70,7 +70,7 @@ void SB_Propeller_update(GameObject* obj) {
     state = obj->extra;
     galleonStage = SB_GALLEON_VTBL(obj->anim.parentAddress)->getStage(obj->anim.parentAddress);
     galleonPhase = SB_GALLEON_VTBL(obj->anim.parentAddress)->getPhase(obj->anim.parentAddress);
-    if (state->health != 0 && galleonPhase < 6 && obj->anim.seqId != SB_PROPELLER_SEQ_ID) {
+    if (state->health != 0 && galleonPhase < 6 && obj->anim.romDefNo != SB_PROPELLER_SEQ_ID) {
         Sfx_KeepAliveLoopedObjectSound((int)obj, SB_PROPELLER_SFX_LOOP);
     }
     cameraState = DBprotection_getCameraState((GameObject*)obj->anim.parent);
@@ -101,7 +101,7 @@ void SB_Propeller_update(GameObject* obj) {
     }
     if (obj->anim.parent != NULL) {
         parentTimer = ((GameObject*)obj->anim.parent)->userData1;
-        if (obj->anim.seqId != SB_PROPELLER_SEQ_ID && parentTimer < 4) {
+        if (obj->anim.romDefNo != SB_PROPELLER_SEQ_ID && parentTimer < 4) {
             state->spinBlend = state->spinRate / 1600.0f;
             if (state->spinBlend < 0.0f) {
                 state->spinBlend = -state->spinBlend;
@@ -116,10 +116,10 @@ void SB_Propeller_update(GameObject* obj) {
         }
         if (galleonPhase == 1 && ObjHits_GetPriorityHit(obj, &hitObjectAddress, 0, 0) != 0 && obj->userData1 == 0 &&
             (void*)hitObjectAddress != NULL && (void*)hitObjectAddress != (void*)Obj_GetPlayerObject() &&
-            ((GameObject*)hitObjectAddress)->anim.seqId != SB_PROPELLER_SEQ_ID &&
-            ((GameObject*)hitObjectAddress)->anim.seqId != SB_OTHER_SEQ_ID &&
+            ((GameObject*)hitObjectAddress)->anim.romDefNo != SB_PROPELLER_SEQ_ID &&
+            ((GameObject*)hitObjectAddress)->anim.romDefNo != SB_OTHER_SEQ_ID &&
             (obj->userData1 = 0x14, obj->anim.parent != NULL) && (galleonStage == 2 || galleonStage == 5) &&
-            obj->anim.seqId == SB_PROPELLER_SEQ_ID) {
+            obj->anim.romDefNo == SB_PROPELLER_SEQ_ID) {
             Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
             Sfx_PlayFromObject((int)obj, SB_PROPELLER_SFX_HIT);
             state->health -= 1;
@@ -155,8 +155,8 @@ void SB_Propeller_init(GameObject* obj, SBPropellerPlacementView* placement) {
     state->spinRate = 1200;
     state->health = 4;
     obj->anim.bankIndex = (s8)placement->modelBankIndex;
-    if (obj->anim.seqId != SB_PROPELLER_SEQ_ID) {
-        lbl_803DDC40 = (u32)obj;
+    if (obj->anim.romDefNo != SB_PROPELLER_SEQ_ID) {
+        gSbPropellerObject = (u32)obj;
     }
 }
 

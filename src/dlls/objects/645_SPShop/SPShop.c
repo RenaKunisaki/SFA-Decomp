@@ -13,11 +13,11 @@
 
 #define SPSHOP_OBJGROUP 9
 
-/* number of ShopItemRow entries in lbl_80327FD0
+/* number of ShopItemRow entries in gShopItemRows
    (data symbol size 0x2D0 / sizeof(ShopItemRow)(0xc) == 0x3c). */
 #define SHOP_ITEM_ROW_COUNT 0x3c
 
-/* Row indices ("No" column) into lbl_80327FD0 / ShopItemRow. Only the
+/* Row indices ("No" column) into gShopItemRows / ShopItemRow. Only the
    non-omitted rows are named; unlisted indices in [0, SHOP_ITEM_ROW_COUNT)
    are all-zero/unused rows. */
 enum ShopItemIndex
@@ -59,7 +59,7 @@ enum ShopItemIndex
 #define SPSHOP_ENVFX_A 0x1c8
 #define SPSHOP_ENVFX_B 0x1cb
 
-u8 lbl_80327FD0[] = {
+u8 gShopItemRows[] = {
     0x03, 0x02, 0x02, 0x03, 0x00, 0x00, 0x00, 0x95, 0xFF, 0xFF, 0x00, 0x3F,
     0x0A, 0x07, 0x08, 0x0A, 0x00, 0x00, 0x00, 0x95, 0xFF, 0xFF, 0x00, 0x40,
     0x06, 0x04, 0x05, 0x06, 0x00, 0x00, 0x00, 0x95, 0xFF, 0xFF, 0x00, 0x41,
@@ -231,7 +231,7 @@ void shop_buyItem(GameObject* obj, int price)
         break;
     }
 
-    items = lbl_80327FD0 + 8;
+    items = gShopItemRows + 8;
     boughtBit = *(s16*)(items + state->itemIndex * 0xc);
     if (boughtBit != -1)
     {
@@ -254,7 +254,7 @@ s16 shop_getItemTextId(GameObject* obj, int idx)
 {
     if (idx >= 0 && idx < SHOP_ITEM_ROW_COUNT)
     {
-        ShopItemRow* rows = (ShopItemRow*)lbl_80327FD0;
+        ShopItemRow* rows = (ShopItemRow*)gShopItemRows;
         return rows[idx].textId;
     }
     return 0;
@@ -264,7 +264,7 @@ int shop_getItemPrice(GameObject* obj, int idx)
 {
     if (idx >= 0 && idx < SHOP_ITEM_ROW_COUNT)
     {
-        return ((ShopItemRow*)lbl_80327FD0)[idx].price;
+        return ((ShopItemRow*)gShopItemRows)[idx].price;
     }
     return 0;
 }
@@ -273,7 +273,7 @@ u8 shop_getItemSpecialPrice(GameObject* obj, int idx)
 {
     if (idx >= 0 && idx < SHOP_ITEM_ROW_COUNT)
     {
-        return lbl_80327FD0[idx * 0xc + 0x4];
+        return gShopItemRows[idx * 0xc + 0x4];
     }
     return 0;
 }
@@ -282,13 +282,13 @@ u8 shop_getItemMinPrice(GameObject* obj, int idx)
 {
     if (idx >= 0 && idx < SHOP_ITEM_ROW_COUNT)
     {
-        return lbl_80327FD0[idx * 0xc + 0x5];
+        return gShopItemRows[idx * 0xc + 0x5];
     }
     return 0;
 }
 
 /* Returns 1 when shop item's "bought"
- * GameBit (slot at lbl_80327FD0[idx*12 + 8]) is set; else 0. */
+ * GameBit (slot at gShopItemRows[idx*12 + 8]) is set; else 0. */
 int shop_isItemBought(GameObject* obj, int idx)
 {
 
@@ -296,7 +296,7 @@ int shop_isItemBought(GameObject* obj, int idx)
     int result;
     Obj_GetPlayerObject();
     result = 0;
-    slot = ((ShopItemRow*)lbl_80327FD0)[idx].boughtBit;
+    slot = ((ShopItemRow*)gShopItemRows)[idx].boughtBit;
     if (slot != -1 && mainGetBit(slot) != 0u)
     {
         result = 1;
@@ -305,7 +305,7 @@ int shop_isItemBought(GameObject* obj, int idx)
 }
 
 /* Returns 1 unless the item's
- * "available" GameBit gate (lbl_80327FD0[idx*12 + 6]) is present and
+ * "available" GameBit gate (gShopItemRows[idx*12 + 6]) is present and
  * unset.  (i.e. open by default, gated when slot != -1.) */
 int shop_isItemAvailable(GameObject* obj, int idx)
 {
@@ -314,7 +314,7 @@ int shop_isItemAvailable(GameObject* obj, int idx)
     int result;
     Obj_GetPlayerObject();
     result = 0;
-    slot = ((ShopItemRow*)lbl_80327FD0)[idx].availBit;
+    slot = ((ShopItemRow*)gShopItemRows)[idx].availBit;
     if (slot == -1 || mainGetBit(slot) != 0u)
     {
         result = 1;
@@ -409,7 +409,7 @@ static inline void shop_initBody(GameObject* obj, int objDef)
 
     ((ShopBuyItemState*)obj->extra)->itemIndex = -1;
     ObjGroup_AddObject((int)obj, SPSHOP_OBJGROUP);
-    for (i = 0, item = lbl_80327FD0; i < SHOP_ITEM_ROW_COUNT; i++)
+    for (i = 0, item = gShopItemRows; i < SHOP_ITEM_ROW_COUNT; i++)
     {
         item[5] = item[randomGetRange(0, 2) + 1];
         item += 0xc;

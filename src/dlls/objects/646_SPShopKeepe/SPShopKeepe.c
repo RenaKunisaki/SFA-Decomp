@@ -85,7 +85,7 @@ ObjectDescriptor gShopKeeperObjDescriptor = {
 
 const RomCurveSearchPair gShopKeeperCurveSearchKinds = {0xC, 0x1C};
 
-void* lbl_803AD068[8];
+void* gShopKeeperStateHandlers[8];
 
 s16 gDrLaserTurretIdleAnimMoves[2] = {0x13, 0x11};
 f32 gDrLaserTurretIdleAnimStepScales[2] = {0.01f, 0.0125f};
@@ -645,7 +645,7 @@ STATIC_ASSERT(sizeof(ShopkeeperState) == 0x9D8);
 STATIC_ASSERT(offsetof(ShopkeeperState, msgStack) == 0x9B0);
 
 /* Obj_AllocObjectSetup(36,...) buffer composed in ShopKeeper_spawnScarabs. Head is the
- * common ObjPlacement; mapId slot (0x14) is repurposed as an int (vendorObj),
+ * common ObjPlacement; ident slot (0x14) is repurposed as an int (vendorObj),
  * tail (0x18..0x1B) is file-local. */
 typedef struct ShopkeeperSpawnSetup
 {
@@ -673,7 +673,7 @@ enum
     SHOPKEEPER_FLAG_TICK = 0x20       /* per-frame tick effect this frame */
 };
 
-void* lbl_803DDC58;
+void* gShopKeeperDefaultStateHandler;
 
 int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
 {
@@ -777,7 +777,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
             ((ShopkeeperState*)state)->opacity = 0xFF;
             break;
         case 4:
-            if (((GameObject*)player)->anim.seqId == 0)
+            if (((GameObject*)player)->anim.romDefNo == 0)
             {
                 warpToMap(0xF, 0);
             }
@@ -914,7 +914,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[3] = 255;
         ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
-        ((ShopkeeperSpawnSetup*)setup)->base.mapId = ((ShopkeeperState*)state)->vendorObj;
+        ((ShopkeeperSpawnSetup*)setup)->base.ident = ((ShopkeeperState*)state)->vendorObj;
         Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 
@@ -931,7 +931,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
         ((ShopkeeperSpawnSetup*)setup)->kind = 1;
-        ((ShopkeeperSpawnSetup*)setup)->base.mapId = ((ShopkeeperState*)state)->vendorObj;
+        ((ShopkeeperSpawnSetup*)setup)->base.ident = ((ShopkeeperState*)state)->vendorObj;
         Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 }
@@ -1001,7 +1001,7 @@ void ShopKeeper_update(GameObject* obj)
             ObjGroup_FindNearestObject(SPSHOPKEEPER_TARGET_OBJGROUP, obj, &dist);
     }
     ((ShopkeeperState*)state)->playerMoney = playerGetMoney(player);
-    (*gPlayerInterface)->update((void*)obj, (void*)state, timeDelta, timeDelta, lbl_803AD068, &lbl_803DDC58);
+    (*gPlayerInterface)->update((void*)obj, (void*)state, timeDelta, timeDelta, gShopKeeperStateHandlers, &gShopKeeperDefaultStateHandler);
     dll_2E_updateLookAt(obj, &((ShopkeeperState*)state)->moveLib);
     characterDoEyeAnims(obj, &((ShopkeeperState*)state)->eyeAnimState);
     (obj)->anim.alpha = ((ShopkeeperState*)state)->opacity;
@@ -1027,14 +1027,14 @@ void ShopKeeper_release(void)
 
 void ShopKeeper_initialise(void)
 {
-    lbl_803AD068[0] = DRlaserturret_startLinkedTarget;
-    lbl_803AD068[1] = DRlaserturret_updateTracking;
-    lbl_803AD068[2] = DRlaserturret_updateIdle;
-    lbl_803AD068[3] = TREX_Lazerwall_updateTimedChallenge;
-    lbl_803AD068[4] = TREX_Lazerwall_waitForStartBit;
-    lbl_803AD068[5] = TREX_Lazerwall_popQueuedState;
-    lbl_803AD068[6] = ShopKeeper_popQueuedState;
-    lbl_803AD068[7] = return0_801E66E4;
-    lbl_803DDC58 = return0_801E66DC;
+    gShopKeeperStateHandlers[0] = DRlaserturret_startLinkedTarget;
+    gShopKeeperStateHandlers[1] = DRlaserturret_updateTracking;
+    gShopKeeperStateHandlers[2] = DRlaserturret_updateIdle;
+    gShopKeeperStateHandlers[3] = TREX_Lazerwall_updateTimedChallenge;
+    gShopKeeperStateHandlers[4] = TREX_Lazerwall_waitForStartBit;
+    gShopKeeperStateHandlers[5] = TREX_Lazerwall_popQueuedState;
+    gShopKeeperStateHandlers[6] = ShopKeeper_popQueuedState;
+    gShopKeeperStateHandlers[7] = return0_801E66E4;
+    gShopKeeperDefaultStateHandler = return0_801E66DC;
 }
 

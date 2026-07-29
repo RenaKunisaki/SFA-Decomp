@@ -25,19 +25,12 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "dolphin/mtx/vec.h"
 #include "main/objfx.h"
+#include "main/dll/baddie_state.h"
 
 f32 lbl_803DC3A0 = 2.0f;
 f32 lbl_803DC3A4 = 0.2f;
 f32 lbl_803DC3A8 = 20.0f;
 u16 lbl_803DC3AC = 0x40;
-
-typedef struct ObjUpdateRomCurveFollowVelocityState
-{
-    u8 pad0[0x28C - 0x0];
-    f32 velX;
-    f32 velZ;
-    u8 pad294[0x298 - 0x294];
-} ObjUpdateRomCurveFollowVelocityState;
 
 int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int count, f32 intensity,
                                ModelLight** light)
@@ -87,7 +80,7 @@ int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int c
             pos[2] += 0.001f * (intensity * (f32)(int)(randomGetRange(0, 0x7d0) - 0x3e8));
             entries[i] =
                 lightningCreate((const Vec3f*)&obj->anim.localPosX, (const Vec3f*)pos, lbl_803DC3A0,
-                                           lbl_803DC3A4, lbl_803DC3A8, (u8)lbl_803DC3AC, 0);
+                                           lbl_803DC3A4, lbl_803DC3A8, lbl_803DC3AC, 0);
             spawned = 1;
         }
     }
@@ -170,8 +163,6 @@ void voxmaps_traceScaledVectorEnd(f32* out, void* origin, f32* dir, f32 scale)
     int gridA[2];
     int gridB[2];
     int gridOut[2];
-    int e0;
-    int e1;
 
     PSVECNormalize((const Vec*)dir, (Vec*)dir);
     PSVECScale((const Vec*)dir, (Vec*)scaled, scale);
@@ -194,7 +185,7 @@ void Obj_SpawnHitLightAndFade(GameObject* obj, const Vec3f* pos, f32 scale)
     s.vec[0] = pos->x + playerMapOffsetX;
     s.vec[1] = pos->y;
     s.vec[2] = pos->z + playerMapOffsetZ;
-    objLightFn_8009a1dc(obj, 0.014f, &s, 1, 0);
+    objDoHitParticleFx(obj, 0.014f, &s, 1, 0);
     Obj_SetModelColorFadeRecursive(obj, 0x5a, 0xc8, 0, 0, 1);
 }
 
@@ -296,14 +287,14 @@ int Obj_UpdateRomCurveFollowVelocityIndexed(GameObject* obj, RomCurveWalker* rou
     delta[2] = route->posZ - obj->anim.localPosZ;
     if ((u8)flag == 0)
     {
-        ObjUpdateRomCurveFollowVelocityState* state = obj->extra;
+        BaddieState* state = obj->extra;
         s16 raw;
         delta[0] = obj->anim.localPosX - route->posX;
         delta[2] = obj->anim.localPosZ - route->posZ;
         raw = (s16)getAngle(delta[0], delta[2]);
         ang = Obj_HeadingRadians(raw);
-        state->velZ = speed * -mathSinf(ang);
-        state->velX = speed * -mathCosf(ang);
+        state->moveInputX = speed * -mathSinf(ang);
+        state->moveInputZ = speed * -mathCosf(ang);
     }
     else
     {
@@ -344,14 +335,14 @@ int Obj_UpdateRomCurveFollowVelocity(GameObject* obj, RomCurveWalker* route, f32
     delta[2] = route->posZ - obj->anim.localPosZ;
     if ((u8)flag == 0)
     {
-        ObjUpdateRomCurveFollowVelocityState* state = obj->extra;
+        BaddieState* state = obj->extra;
         s16 raw;
         delta[0] = obj->anim.localPosX - route->posX;
         delta[2] = obj->anim.localPosZ - route->posZ;
         raw = (s16)getAngle(delta[0], delta[2]);
         ang = Obj_HeadingRadians(raw);
-        state->velZ = speed * -mathSinf(ang);
-        state->velX = speed * -mathCosf(ang);
+        state->moveInputX = speed * -mathSinf(ang);
+        state->moveInputZ = speed * -mathCosf(ang);
     }
     else
     {

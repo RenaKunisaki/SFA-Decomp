@@ -21,7 +21,7 @@
 #include "main/vecmath.h"
 
 int lbl_803DDD70;
-int lbl_803DC2F0 = -32768;
+int gDrShackleRotZOffset = -32768;
 
 #define DRSHACKLE_OBJGROUP  0x37
 #define DFROPENODE_OBJGROUP 0x17 /* DLL 373 dfropenode (path nodes) */
@@ -32,7 +32,7 @@ static inline int* DrShackle_GetActiveModel(void* obj)
     return (int*)objAnim->banks[objAnim->bankIndex];
 }
 
-int drshackle_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int drshackle_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     char* state = obj->extra;
     DrshacklePlacement* placement = *(DrshacklePlacement**)state;
@@ -77,7 +77,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
     int i;
     BitFlags8* bf = (BitFlags8*)(p + 0x1a);
     DrshacklePlacement* placement;
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
 
     if (bf->b0 == 0)
     {
@@ -114,7 +114,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
         f32 mag;
         jointPos[1] = 0.0f;
         mag = PSVECMag((Vec*)jointPos);
-        obj->anim.rotZ = (s16)(lbl_803DC2F0 + getAngle(jointPos[0], jointPos[2]));
+        obj->anim.rotZ = (s16)(gDrShackleRotZOffset + getAngle(jointPos[0], jointPos[2]));
         obj->anim.rotY = (s16)(lbl_803DDD70 + getAngle(mag, savedY));
         objSetCurrentMatrix(ObjPath_GetPointModelMtx((GameObject*)a, b));
     }
@@ -152,7 +152,6 @@ void drshackle_free(int obj)
 
 void drshackle_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
 {
-    int* ptr;
     u8* state = obj->extra;
     int i;
     if (((BitFlags8*)(state + 0x1a))->b0 == 0 && visible != 0)

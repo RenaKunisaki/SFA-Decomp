@@ -150,7 +150,7 @@ void gpshShrine_updateHoverMotion(GameObject* obj) {
     }
 }
 
-int gpshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int gpshShrine_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     GPSHShrineState* state;
     GameObject* player;
     int i;
@@ -160,7 +160,7 @@ int gpshShrine_processAnimEvents(GameObject* obj, int unused, ObjAnimUpdateState
     state = obj->extra;
     player = Obj_GetPlayerObject();
     animUpdate->savedFlags = -1;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
 
     for (i = 0; i < animUpdate->eventCount; i++) {
         event = animUpdate->eventIds[i];
@@ -231,7 +231,7 @@ void gpshShrine_render(GameObject* obj, int renderArg2, int renderArg3, int rend
             modelLightStruct_setEnabled(state->light, 1, 1.0f);
         }
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
-        objParticleFn_80099d84(obj, 1.0f, 7, 1.0f, state->light);
+        objDoParticleFx(obj, 1.0f, 7, 1.0f, state->light);
     }
 }
 

@@ -7,8 +7,8 @@
  * velocity (gravity/launch supplied by dll_2A3_setVelocity). It self-frees once
  * its lifetime decays past a threshold.
  *
- * lbl_803DDD90 is a live-instance refcount (bumped on init, dropped on
- * free); lbl_803DDD94 is a once-per-frame "an instance updated" flag,
+ * gDll2A3InstanceCount is a live-instance refcount (bumped on init, dropped on
+ * free); gDll2A3UpdatedThisFrame is a once-per-frame "an instance updated" flag,
  * cleared by hitDetect and set by the first update.
  */
 #include "main/frame_timing.h"
@@ -16,8 +16,8 @@
 #include "main/dll/ARW/dll_02A3.h"
 #include "main/object_render.h"
 
-int lbl_803DDD94;
-int lbl_803DDD90;
+int gDll2A3UpdatedThisFrame;
+int gDll2A3InstanceCount;
 
 void dll_2A3_setSpeed(GameObject* obj, int speed)
 {
@@ -44,7 +44,7 @@ int dll_2A3_getObjectTypeId(void)
 
 void dll_2A3_free(void)
 {
-    lbl_803DDD90 = lbl_803DDD90 - 1;
+    gDll2A3InstanceCount = gDll2A3InstanceCount - 1;
 }
 
 void dll_2A3_render(GameObject* obj, int p2, int p3, int p4, int p5)
@@ -54,7 +54,7 @@ void dll_2A3_render(GameObject* obj, int p2, int p3, int p4, int p5)
 
 void dll_2A3_hitDetect(void)
 {
-    lbl_803DDD94 = 0;
+    gDll2A3UpdatedThisFrame = 0;
 }
 
 void dll_2A3_update(GameObject* obj)
@@ -90,9 +90,9 @@ void dll_2A3_update(GameObject* obj)
     objMove((GameObject*)obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
             obj->anim.velocityZ * timeDelta);
 
-    if (lbl_803DDD94 == 0)
+    if (gDll2A3UpdatedThisFrame == 0)
     {
-        lbl_803DDD94 = 1;
+        gDll2A3UpdatedThisFrame = 1;
     }
 }
 
@@ -107,7 +107,7 @@ void dll_2A3_init(GameObject* obj)
     state->spinRateX = randomGetRange(-0x32, 0x32);
     state->spinRateY = randomGetRange(-0x32, 0x32);
     state->spinRateZ = randomGetRange(-0x32, 0x32);
-    lbl_803DDD90 = lbl_803DDD90 + 1;
+    gDll2A3InstanceCount = gDll2A3InstanceCount + 1;
 }
 
 void dll_2A3_release_nop(void)

@@ -49,7 +49,6 @@ const ModelLightCornerBlock gModelLightCornerBlock = {{
     -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f,
     -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f}};
 
-extern f32 lbl_803DE790;
 extern ModelLightStruct* gModelLightList[0x32];
 
 static inline void modelLightRemoveAndFree(ModelLightStruct* light)
@@ -243,6 +242,11 @@ u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* light, Game
     return 1;
 }
 
+static void modelLightStruct_resetProjectionFarZ(ModelLightStruct* light)
+{
+    light->projectionFarZ = 500.0f;
+}
+
 f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj)
 {
     f32 delta[3];
@@ -280,6 +284,11 @@ f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj
     return amount;
 }
 f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj);
+
+static f32 modelLightColorComponentToScale(u8 component)
+{
+    return component / 255.0f;
+}
 
 void modelLightStruct_updateColorFade(ModelLightStruct* light)
 {
@@ -379,7 +388,6 @@ void modelLightStruct_startColorFade(ModelLightStruct* light, int mode, s16 fram
     }
 }
 
-void modelLightStruct_startColorFade(ModelLightStruct* light, int mode, s16 frames);
 
 void modelLightStruct_updateGlowAlpha(ModelLightStruct* light)
 {
@@ -502,8 +510,8 @@ void modelLightStruct_setupOrthoProjection(ModelLightStruct* obj, f32 top, f32 b
     obj->projectionLeft = left;
     obj->projectionRight = right;
     obj->projectionType = 0;
-    fScale = scaleS * lbl_803DE790;
-    eScale = scaleT * lbl_803DE790;
+    fScale = scaleS / 2.0f;
+    eScale = scaleT / 2.0f;
     C_MTXLightOrtho((MtxPtr)obj->lightProjectionTexMtx, obj->projectionTop, obj->projectionBottom, obj->projectionLeft,
                     obj->projectionRight, fScale, eScale, fScale, eScale);
     C_MTXLightOrtho((MtxPtr)obj->lightProjectionClipMtx, obj->projectionTop, obj->projectionBottom, obj->projectionLeft,
@@ -526,7 +534,7 @@ void modelLightStruct_setSpecularAttenuation(ModelLightStruct* obj, f32 scale, f
 
     obj->specularAttenuationScale = scale;
     obj->specularBrightness = brightness;
-    atten = obj->specularAttenuationScale * lbl_803DE790;
+    atten = obj->specularAttenuationScale / 2.0f;
     GXInitLightAttn(&obj->specularLightObj, 0.0f, 0.0f, 1.0f, atten, 0.0f, 1.0f - atten);
 }
 
@@ -635,9 +643,9 @@ void modelLightStruct_setLightKind(ModelLightStruct* p, int v)
     p->lightKind = v;
 }
 
-void objSetEventName(ModelLightStruct* light, int name)
+void objSetEventName(ModelLightStruct* light, int mode)
 {
-    ((GameObject*)light)->anim.eventTable = (void*)name;
+    light->transformMode = mode;
 }
 
 void modelLightStruct_setObjectLightMaskIndex(ModelLightStruct* p, int n)
@@ -913,7 +921,7 @@ ModelLightStruct* objAllocLight(void* owner)
     light->specularColor[3] = 0xff;
     light->specularAttenuationScale = 4.0f;
     light->specularBrightness = 255.0f;
-    atten = light->specularAttenuationScale * lbl_803DE790;
+    atten = light->specularAttenuationScale / 2.0f;
     GXInitLightAttn(&light->specularLightObj, 0.0f, 0.0f, 1.0f, atten, 0.0f, 1.0f - atten);
     modelLightStruct_startColorFade(light, 0, 0);
     light->diffuseFadeTargetColor[0] = 0xff;

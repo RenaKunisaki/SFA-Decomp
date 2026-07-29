@@ -104,8 +104,8 @@ void Pollen_update(GameObject* obj) {
         if (((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject != 0 &&
             (((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject == (u32)Obj_GetPlayerObject() ||
              ((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject == (u32)getTrickyObject())) {
-            Camera_EnableViewYOffset();
-            CameraShake_SetAllMagnitudes(1.0f);
+            CameraShake_Enable();
+            CameraShake_SetOffset(1.0f);
             Sfx_PlayFromObject((int)obj, SFXTRIG_id_b6);
             obj->anim.alpha = 0;
             state->despawnTimer = POLLEN_DESPAWN_DELAY;

@@ -43,13 +43,13 @@ u16 gScLevelControlTotemComboSequence[4] = {
 #define SC_LEVEL_CONTROL_ENVFX_D 0x246
 #define SC_LEVEL_CONTROL_ENVFX_E 0x51
 
-int sc_levelcontrol_processAnimEventsCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate) {
+int sc_levelcontrol_processAnimEventsCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     ScLevelControlState* state = obj->extra;
     int i;
 
     (void)unused;
 
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (i = 0; i < (int)(u32)animUpdate->eventCount; i++) {
         int eventId = animUpdate->eventIds[i];
         switch (eventId) {

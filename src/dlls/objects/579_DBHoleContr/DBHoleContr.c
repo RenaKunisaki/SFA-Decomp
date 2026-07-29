@@ -16,7 +16,7 @@ STATIC_ASSERT(sizeof(DbHoleControl1State) == 0xC);
 
 int lbl_803DDCE0;
 
-int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     ObjPlacement* childPlacement;
     void* res;
@@ -42,7 +42,7 @@ int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUp
             childPlacement->posX = obj->anim.localPosX;
             childPlacement->posY = obj->anim.localPosY;
             childPlacement->posZ = obj->anim.localPosZ;
-            childPlacement->mapId = -1;
+            childPlacement->ident = -1;
             *(s16*)((u8*)childPlacement + 0x1A) = 149;
             loadObjectAtObject(obj, childPlacement);
             break;

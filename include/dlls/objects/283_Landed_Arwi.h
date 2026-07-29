@@ -8,7 +8,7 @@
 #define LANDED_ARWING_OBJECT_STATE_SIZE       0x1C
 #define LANDED_ARWING_HIT_REACTION_STATE_SIZE 0x24
 
-typedef struct ObjAnimUpdateState ObjAnimUpdateState;
+typedef struct ObjSeqState ObjSeqState;
 
 /* Only the accessed placement prefix is recovered; the complete retail width is not established. */
 typedef struct LandedArwingPlacement {
@@ -82,7 +82,7 @@ void landed_arwing_renderPathEffects(GameObject* obj);
 int landed_arwing_getExtraSize(void);
 void landed_arwing_free(GameObject* obj);
 void landed_arwing_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
-int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int Landed_Arwing_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void landed_arwing_update(GameObject* obj);
 void landed_arwing_init(GameObject* obj, LandedArwingPlacement* placement);
 void landed_arwing_updateHitReaction(GameObject* obj, LandedArwingHitReactionState* state);

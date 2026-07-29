@@ -35,7 +35,7 @@
 #include "main/objtexture.h"
 #include "main/object_render.h"
 
-const Vec3f lbl_802C25D8 = {-6318.10009765625f, -1232.0f, -5884.0f};
+const Vec3f gSunTempleRestartPos = {-6318.10009765625f, -1232.0f, -5884.0f};
 
 /* interact-prompt bits live in anim.resetHitboxFlags (INTERACT_FLAG_*). */
 
@@ -57,12 +57,12 @@ const Vec3f lbl_802C25D8 = {-6318.10009765625f, -1232.0f, -5884.0f};
 #define SUNTEMPLE_GAMEBIT_WC_INV_C    0x202
 #define SUNTEMPLE_GAMEBIT_WC_INV_D    0x243
 
-int suntemple_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int suntemple_interactCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     GameObject* gameObj = obj;
     SunTempleSetup* cfg = (SunTempleSetup*)gameObj->anim.placementData;
     int i;
-    Vec3f restartPos = lbl_802C25D8;
+    Vec3f restartPos = gSunTempleRestartPos;
 
     gameObj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     for (i = 0; i < animUpdate->eventCount; i++)
@@ -167,7 +167,7 @@ void suntemple_update(GameObject* obj)
             gameObj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
 
-        if (gameObj->anim.seqId == SUNTEMPLE_SEQ_TIMER_LOCKOUT && gameTimerIsRunning() != 0)
+        if (gameObj->anim.romDefNo == SUNTEMPLE_SEQ_TIMER_LOCKOUT && gameTimerIsRunning() != 0)
         {
             gameObj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
@@ -178,7 +178,7 @@ void suntemple_update(GameObject* obj)
             {
                 if (cfg->triggerSlot != -1)
                 {
-                    if (gameObj->anim.seqId == SUNTEMPLE_SEQ_WC_INV_USE)
+                    if (gameObj->anim.romDefNo == SUNTEMPLE_SEQ_WC_INV_USE)
                     {
                         if (state->mapEventMode == 1 && (mainGetBit(SUNTEMPLE_GAMEBIT_WC_INV_A) != 0 ||
                                                          mainGetBit(SUNTEMPLE_GAMEBIT_WC_INV_B) != 0))

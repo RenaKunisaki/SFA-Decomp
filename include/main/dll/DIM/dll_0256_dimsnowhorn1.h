@@ -6,7 +6,7 @@
 #include "ghidra_import.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/dll_002E_moveLib.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 typedef struct SnowHornEntry
 {
@@ -58,10 +58,10 @@ typedef struct DIMSnowHorn1State
 STATIC_ASSERT(sizeof(DIMSnowHorn1State) == 0xD0C);
 STATIC_ASSERT(offsetof(DIMSnowHorn1State, countdownTimer) == 0xA84);
 
-extern f32 lbl_80335128[];
-extern s16 lbl_803DC73C[2];
-extern f32 lbl_803DC740[2];
-extern s16 lbl_803DC748[4];
+extern f32 gDIMSnowHorn1LocomotionSpeedRanges[];
+extern s16 gDIMSnowHorn1MoveIds[2];
+extern f32 gDIMSnowHorn1MoveSpeeds[2];
+extern s16 gDIMSnowHorn1LocomotionMoveIds[4];
 
 extern f32 gDIMSnowHorn1ModelMtx[16];
 extern void* gDIMSnowHorn1DefaultStateHandler;
@@ -96,7 +96,7 @@ int DIMSnowHorn1_getDismountSide(GameObject* obj);
 int DIMSnowHorn1_canDismount(GameObject* obj);
 void DIMSnowHorn1_getRiderPosition(GameObject* obj, f32* out_x, f32* out_y, f32* out_z);
 int DIMSnowHorn1_getMountSide(GameObject* obj);
-int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int DIMSnowHorn1_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void DIMSnowHorn1_handleRiderScale(GameObject* obj, f32 scale);
 int DIMSnowHorn1_canMount(GameObject* obj);
 int DIMSnowHorn1_getExtraSize(void);

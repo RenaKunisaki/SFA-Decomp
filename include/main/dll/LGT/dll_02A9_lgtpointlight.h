@@ -6,7 +6,7 @@
 #include "main/vec_types.h"
 #include "game/objects/object_setup.h"
 
-extern const f32 lbl_802C25F8[4];
+extern const f32 gPointLightInitialDirection[4];
 
 typedef struct PointLightState
 {

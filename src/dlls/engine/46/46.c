@@ -713,7 +713,6 @@ int moveLibTurnToFaceTarget(GameObject* obj, GameObject* targetObj, int* turning
     int turnAmount;
     u32 ret;
     f32 distance;
-    void* secondary;
     s16 turnDelta;
 
     jointKeys = objGetLookAtJointKeys();

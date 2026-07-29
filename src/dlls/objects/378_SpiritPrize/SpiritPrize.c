@@ -51,9 +51,9 @@ void spiritPrize_render(GameObject* obj, int renderArg2, int renderArg3, int ren
     if (isVisible != 0) {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
         if (state->useDetachedLight != 0) {
-            objParticleFn_80099d84(obj, 1.0f, SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE, 1.0f, state->light);
+            objDoParticleFx(obj, 1.0f, SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE, 1.0f, state->light);
         } else {
-            objParticleFn_80099d84(obj, 1.0f, SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE, 1.0f, NULL);
+            objDoParticleFx(obj, 1.0f, SPIRIT_PRIZE_LIGHT_PARTICLE_TYPE, 1.0f, NULL);
         }
     }
 }
@@ -78,7 +78,7 @@ void spiritPrize_update(GameObject* obj) {
     if (placement->animDataIndex == -1) {
         return;
     }
-    if (placement->base.mapId == SPIRIT_PRIZE_DISABLED_MAP_ID) {
+    if (placement->base.ident == SPIRIT_PRIZE_DISABLED_MAP_ID) {
         return;
     }
 
@@ -96,23 +96,23 @@ void spiritPrize_update(GameObject* obj) {
     objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
     if (objectIndex != 0 && obj->seqIndex == -2) {
         GameObject* matchingObj;
-        int sequenceSlot;
+        int slot;
         int scanLimit[1];
         int slotArg[1];
         int duplicateCount[1];
 
-        sequenceSlot = state->sequence.slot;
+        slot = state->sequence.slot;
         matchingObj = NULL;
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         scanLimit[0] = 0;
         slotArg[0] = 0;
         duplicateCount[0] = 0;
         objectIndex = duplicateCount[0];
-        slotArg[0] = (u32)sequenceSlot;
+        slotArg[0] = (u32)slot;
         scanLimit[0] = objectCount;
         while (objectIndex < scanLimit[0]) {
             candidateObj = objects[objectIndex];
-            if (candidateObj->seqIndex == sequenceSlot) {
+            if (candidateObj->seqIndex == slot) {
                 matchingObj = candidateObj;
             }
             if (candidateObj->seqIndex == -2 && candidateObj->anim.classId == SPIRIT_PRIZE_SEQUENCE_CLASS_ID &&
@@ -149,7 +149,7 @@ void spiritPrize_init(GameObject* obj, const SpiritPrizePlacement* placement) {
     int loadedAnimDataIndexPlusOne;
 
     state = obj->extra;
-    if (placement->base.mapId == SPIRIT_PRIZE_DISABLED_MAP_ID) {
+    if (placement->base.ident == SPIRIT_PRIZE_DISABLED_MAP_ID) {
         return;
     }
     state->sequence.gameBit = placement->sequenceGameBit;
@@ -167,7 +167,7 @@ void spiritPrize_init(GameObject* obj, const SpiritPrizePlacement* placement) {
         }
         obj->userData1 = placement->animDataIndex + 1;
     }
-    if (obj->anim.seqId != SPIRIT_PRIZE_BOUND_LIGHT_SEQ_ID) {
+    if (obj->anim.romDefNo != SPIRIT_PRIZE_BOUND_LIGHT_SEQ_ID) {
         state->useDetachedLight = 1;
     }
     if (state->light == NULL) {
@@ -179,7 +179,7 @@ void spiritPrize_init(GameObject* obj, const SpiritPrizePlacement* placement) {
         }
     }
     obj->anim.alpha = 0;
-    obj->anim.pad37[0] = 0;
+    obj->anim.renderAlpha = 0;
     state->ambientSfxTimer =
         (f32)(s32)randomGetRange(SPIRIT_PRIZE_AMBIENT_SFX_MIN_DELAY, SPIRIT_PRIZE_AMBIENT_SFX_MAX_DELAY);
 }

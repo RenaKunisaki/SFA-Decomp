@@ -110,7 +110,7 @@ void sc_totembond_spawnGameBitOrbs(GameObject* obj, ScTotemBondState* state, f32
         while (i < SC_TOTEM_BOND_GAMEBIT_COUNT) {
             definition = (const u8*)obj->anim.placementData;
             setup = (ScTotemBondLightfootSetup*)Obj_AllocObjectSetup(sizeof(ScTotemBondLightfootSetup),
-                                                                     DLL437_SEQUENCE_ID_SC_LIGHTFOOT);
+                                                                     DLL1B5_SEQUENCE_ID_SC_LIGHTFOOT);
             setup->base.posX = radius * mathSinf((3.1415927f * (f32)(s32)(obj->anim.rotX + angleOffset)) / 32768.0f) +
                                obj->anim.localPosX;
             setup->base.posY = obj->anim.localPosY;
@@ -121,7 +121,7 @@ void sc_totembond_spawnGameBitOrbs(GameObject* obj, ScTotemBondState* state, f32
             setup->base.color[2] = definition[0x06];
             setup->base.color[3] = SC_TOTEM_BOND_LIGHTFOOT_ALPHA;
             setup->unknown18 = -1;
-            setup->completionGameBit = DLL437_COMPLETION_GAMEBIT_SC_TOTEM_BOND;
+            setup->completionGameBit = DLL1B5_COMPLETION_GAMEBIT_SC_TOTEM_BOND;
             setup->eventGameBit = gTotemBondOrbGameBits[orbIndex];
             setup->activeGameBit = gTotemBondRingGameBits[orbIndex];
             setup->rotationByte = (s8)(((obj->anim.rotX + 0x8000) + angleOffset) >> 8);
@@ -137,7 +137,7 @@ void sc_totembond_spawnGameBitOrbs(GameObject* obj, ScTotemBondState* state, f32
     }
 }
 
-u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpdate) {
+u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
     ScTotemBondState* state;
     int countForEvent2;
     int startForEvent2;
@@ -150,7 +150,7 @@ u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpda
     (void)unused;
 
     state = obj->extra;
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
         eventId = animUpdate->eventIds[eventIndex];
         switch (eventId) {
@@ -162,7 +162,7 @@ u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpda
             objects = ObjList_GetObjects(&startForEvent2, &countForEvent2);
             for (; startForEvent2 < countForEvent2; startForEvent2++) {
                 if (objects[startForEvent2] != obj &&
-                    objects[startForEvent2]->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID) {
+                    objects[startForEvent2]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                     (*(ScTotemPoleInterfaceVTable**)objects[startForEvent2]->anim.dll)
                         ->handleEvent(objects[startForEvent2], 2);
                     break;
@@ -174,7 +174,7 @@ u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjAnimUpdateState* animUpda
             objects = ObjList_GetObjects(&startForEvent3, &countForEvent3);
             for (; startForEvent3 < countForEvent3; startForEvent3++) {
                 if (objects[startForEvent3] != obj &&
-                    objects[startForEvent3]->anim.seqId == SC_TOTEM_POLE_SEQUENCE_ID) {
+                    objects[startForEvent3]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                     (*(ScTotemPoleInterfaceVTable**)objects[startForEvent3]->anim.dll)
                         ->handleEvent(objects[startForEvent3], 1);
                     break;
@@ -266,8 +266,8 @@ void sc_totembond_update(GameObject* obj) {
                 return;
             }
         } else {
-            if (mainGetBit(DLL437_COMPLETION_GAMEBIT_SC_TOTEM_BOND) != 0) {
-                mainSetBits(DLL437_COMPLETION_GAMEBIT_SC_TOTEM_BOND, 0);
+            if (mainGetBit(DLL1B5_COMPLETION_GAMEBIT_SC_TOTEM_BOND) != 0) {
+                mainSetBits(DLL1B5_COMPLETION_GAMEBIT_SC_TOTEM_BOND, 0);
                 availableCount = sc_totembond_gatherAvailableOrbs(availableOrbs, 0, 0);
                 if (availableCount == 0) {
                     allOrbsCollected = 1;

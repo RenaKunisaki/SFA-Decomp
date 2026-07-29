@@ -24,6 +24,7 @@
 #include "main/object_render.h"
 #include "main/debug.h"
 #include "main/dll/dll_002E_moveLib.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/game_ui_interface.h"
@@ -39,21 +40,8 @@
 #include "main/vecmath.h"
 #include "dolphin/pad.h"
 
-typedef struct KytesMumTrickyInterface
-{
-    void* unknown00[10];
-    void (*sideCommandEnable)(GameObject* tricky, GameObject* target, int commandKind, int commandType);
-    void* unknown2C[2];
-    void (*commandPlayBall)(GameObject* tricky, int enabled, GameObject* target);
-} KytesMumTrickyInterface;
-
-STATIC_ASSERT(offsetof(KytesMumTrickyInterface, sideCommandEnable) == 0x28);
-STATIC_ASSERT(offsetof(KytesMumTrickyInterface, commandPlayBall) == 0x34);
-
-#define KYTESMUM_TRICKY_INTERFACE(tricky) ((KytesMumTrickyInterface*)*((GameObject*)(tricky))->anim.dll)
-
 s16 gKytesMumRoamEventSfxTable[4] = {0x1B4, 0x1B5, 0x1B6, 0};
-s16 lbl_803DC2D0[4] = {0x336, 0x337, 0x337, 0};
+s16 gKytesMumQuestEventSfxTable[4] = {0x336, 0x337, 0x337, 0};
 
 #define KYTESMUM_OBJGROUP        0x3
 #define KYTESMUM_TARGET_OBJGROUP 0x1
@@ -231,7 +219,7 @@ int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
             runtime->animSpeed = 0.006f;
             if (tricky != 0)
             {
-                KYTESMUM_TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 0, NULL);
+                TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 0, NULL);
             }
         }
     }
@@ -239,7 +227,7 @@ int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
     {
         ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->hitVolumePriority = 0xb;
         ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->hitVolumeId = 4;
-        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, KYTESMUM_HIT_VOLUME_SLOT, 4, 7);
+        ObjHits_SetHitVolumeSlot(&obj->anim, KYTESMUM_HIT_VOLUME_SLOT, 4, 7);
         ObjHits_RegisterActiveHitVolumeObject(obj);
     }
     return 0;
@@ -260,7 +248,7 @@ int kytesmum_spawnInteractionCallback(GameObject* obj)
     return 0;
 }
 
-int kytesmum_animEventCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int kytesmum_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     KytesMumRuntime* runtime = obj->extra;
     KytesMumSetup* setup;
@@ -382,7 +370,7 @@ void kytesmum_update(GameObject* obj)
     nearest = ObjGroup_FindNearestObject(KYTESMUM_TARGET_OBJGROUP, obj, &nearDist);
     if ((void*)nearest != NULL)
     {
-        (*(KytesMumTrickyInterface**)((GameObject*)nearest)->anim.dll)
+        TRICKY_INTERFACE(nearest)
             ->sideCommandEnable((GameObject*)nearest, obj, KYTESMUM_TRICKY_COMMAND_KIND,
                                 KYTESMUM_TRICKY_COMMAND_TYPE);
     }
@@ -425,7 +413,7 @@ void kytesmum_init(GameObject* obj, KytesMumSetup* setup)
         mainSetBits(0x933, 0);
         runtime->moveSet = &moveSets[2];
         runtime->updateCallback = (KytesMumUpdateCallback)kytesmum_updateQuestStateCallback;
-        runtime->eventSfxTable = lbl_803DC2D0;
+        runtime->eventSfxTable = gKytesMumQuestEventSfxTable;
         obj->animEventCallback = kytesmum_updateInteractionRangeCallback;
         break;
     }

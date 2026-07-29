@@ -246,7 +246,6 @@ void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model)
     }
 }
 
-void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model);
 
 void modelInitMtxs(ModelFileHeader* def, ObjModel* model)
 {
@@ -358,7 +357,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
     PSMTXScale(mtx3, -0.5f, -0.5f, 0.0f);
-    PSMTXTrans(mtx2, lbl_803DEA28, *(f32*)&lbl_803DEA28, 1.0f);
+    PSMTXTrans(mtx2, 0.5f, 0.5f, 1.0f);
     PSMTXConcat(mtx2, mtx3, mtx3);
     GXLoadTexMtxImm(mtx3, GX_PTTEXMTX1, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTTEXMTX1);
@@ -373,7 +372,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     getNewShadowCausticTexture((u32*)&t164);
     selectTexture((Texture*)((void*)t164), 4);
     newshadows_getReflectionScrollOffsets(&sx, &sy);
-    PSMTXTrans(mtxR, lbl_803DEA28 * sx, *(f32*)&lbl_803DEA28 * sy, 0.0f);
+    PSMTXTrans(mtxR, 0.5f * sx, 0.5f * sy, 0.0f);
     mtxR[0][0] = 1.0f;
     mtxR[1][1] = 1.0f;
     GXLoadTexMtxImm(mtxR, GX_PTTEXMTX2, GX_MTX3x4);
@@ -571,11 +570,11 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
         s10.b = v;
         s10.g = v;
         s10.r = v;
-        s10.a = obj->anim.pad37[0] - 0xff;
+        s10.a = obj->anim.renderAlpha - 0xff;
     }
     GXSetTevColorS10(GX_TEVREG2, s10);
     PSMTXScale(mtx3, -0.5f, -0.5f, 0.0f);
-    PSMTXTrans(mtx2, lbl_803DEA28, *(f32*)&lbl_803DEA28, 1.0f);
+    PSMTXTrans(mtx2, 0.5f, 0.5f, 1.0f);
     PSMTXConcat(mtx2, mtx3, mtx3);
     GXLoadTexMtxImm(mtx3, GX_PTTEXMTX1, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTTEXMTX1);
@@ -652,7 +651,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     getNewShadowCausticTexture((u32*)&texRef4);
     selectTexture((Texture*)((void*)texRef4), 4);
     newshadows_getReflectionScrollOffsets(&sx, &sy);
-    PSMTXTrans(mtxR, lbl_803DEA28 * sx, *(f32*)&lbl_803DEA28 * sy, 0.0f);
+    PSMTXTrans(mtxR, 0.5f * sx, 0.5f * sy, 0.0f);
     mtxR[0][0] = 1.0f;
     mtxR[1][1] = 1.0f;
     GXLoadTexMtxImm(mtxR, GX_PTTEXMTX2, GX_MTX3x4);
@@ -1124,7 +1123,6 @@ extern s32 lbl_803DCC48;
 
 extern u8 gObjGxPosMtxIdTable[12];
 
-void modelMtxFn_8003be38(u8* def, int* model, f32* mtxA, f32* mtxB);
 
 void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
 {
@@ -1173,7 +1171,7 @@ void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
                 u32 w;
                 int pos = bs->pos;
                 int off = pos >> 3;
-                u8* p = (u8*)(off + (char*)bs->data);
+                u8* p = (u8*)(off + (int)bs->data);
                 w = p[0];
                 w |= p[1] << 8;
                 w |= p[2] << 16;
@@ -1254,7 +1252,7 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
                 u32 w;
                 int pos = bs->pos;
                 int off = pos >> 3;
-                u8* p = (u8*)(off + (char*)bs->data);
+                u8* p = (u8*)(off + (int)bs->data);
                 w = p[0];
                 w |= p[1] << 8;
                 w |= p[2] << 16;
@@ -1313,13 +1311,11 @@ extern f32 gObjPrintNegHalfPi;
 extern const f32 gObjPrintAngleUnitScale;
 extern const f32 gObjPrintTwoPi;
 
-int objMatrixToRotation(f32* m, s16* outA, s16* outB, s16* outC);
 
 
 
 
 
-void modelInitMtxs(ModelFileHeader* def, ObjModel* model);
 
 #include "main/objprint_dolphin_internal.h"
 
@@ -1330,7 +1326,6 @@ extern int lbl_803DB498;
 extern int lbl_803DB49C;
 extern f32 lbl_803DEA38;
 
-int modelRenderCb_8003c268(int obj, int* model, int ropIdx);
 
 extern ObjPrintGXColor lbl_803DB494;
 extern u8 lbl_803DCC35;
@@ -1341,7 +1336,6 @@ extern int lbl_803DB48C;
 extern int lbl_803DB490;
 
 
-int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx);
 
 extern u8 gObjOverrideColor[3];
 extern GXColor gObjCurChanColor;
@@ -1381,14 +1375,11 @@ extern f32 lbl_803DEA54;
 extern s16 gDefragDelayFrames;
 extern u32 gAssetLoadCompletedFlags;
 
-int getLoadedFileFlags(int slot);
-s32 mapCheckCurBlocks(int v);
 
 
 
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 
-void objRenderFuzzFn_8003d6f8(void* objArg);
 extern f32 lbl_803DEA64;
 extern f32 lbl_803DEA6C;
 
@@ -1999,7 +1990,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         f32* vm = Camera_GetViewMatrix();
         Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
         PSMTXConcat((MtxPtr)vm, (MtxPtr)wm, (MtxPtr)t1);
-        PSMTXConcat((MtxPtr)(f32*)lbl_803967F0, (MtxPtr)t1, (MtxPtr)t2);
+        PSMTXConcat((MtxPtr)(f32*)gCameraLightPerspectiveMatrix, (MtxPtr)t1, (MtxPtr)t2);
         GXLoadTexMtxImm((const f32 (*)[4])t2, 0x24, 0);
         addSmallReflectionTevStage();
     }
@@ -3220,17 +3211,17 @@ void objRenderFuzz(int* obj)
     u32 savedMtx;
     u8 strong;
     f32 dx, dy, dz, dist;
-    CameraViewSlot* cam = Camera_GetCurrentViewSlot();
+    Camera* cam = Camera_GetCurrent();
     if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) ||
         ((GameObject*)obj)->anim.mapEventSlot == 0x3f ||
-        ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_FOX ||
-        ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_KRYSTAL)
+        ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_FOX ||
+        ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_KRYSTAL)
     {
         strong = 1;
         if (((GameObject*)obj)->anim.classId == 1 ||
-            ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_FRONT_FOX ||
-            ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_FOX ||
-            ((GameObject*)obj)->anim.seqId == OBJPRINT_SEQID_DIE_KRYSTAL)
+            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_FRONT_FOX ||
+            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_FOX ||
+            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_KRYSTAL)
         {
             maxN = 0xf;
         }
@@ -3365,7 +3356,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
     }
     if (OBJPRINT_MODEL_DEF(child)->renderFlags & 8)
     {
-        CameraViewSlot* cam = Camera_GetCurrentViewSlot();
+        Camera* cam = Camera_GetCurrent();
         blk.scale = ((GameObject*)child)->anim.rootMotionScale;
         dx = ((GameObject*)child)->anim.localPosX - cam->x;
         dz = ((GameObject*)child)->anim.localPosZ - cam->z;
@@ -3395,7 +3386,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
     }
     if (isShadow == 0)
     {
-        void* space;
+        GameObject* space;
         ((GameObject*)child)->anim.worldPosX = m2[3] + playerMapOffsetX;
         ((GameObject*)child)->anim.worldPosY = m2[7];
         ((GameObject*)child)->anim.worldPosZ = m2[11] + playerMapOffsetZ;
@@ -3405,7 +3396,7 @@ void objRenderChild(int* child, int* parent, u8 isShadow)
             Obj_TransformWorldPointToLocal(((GameObject*)child)->anim.worldPosX, ((GameObject*)child)->anim.worldPosY,
                                            ((GameObject*)child)->anim.worldPosZ, &((GameObject*)child)->anim.localPosX,
                                            &((GameObject*)child)->anim.localPosY, &((GameObject*)child)->anim.localPosZ,
-                                           (u32)space);
+                                           space);
         }
         else
         {
@@ -3501,24 +3492,24 @@ void objRenderModel(GameObject* obj)
         return;
     }
     {
-        s16 seqId = obj->anim.seqId;
-        if (seqId == 0x6a8)
+        s16 romDefNo = obj->anim.romDefNo;
+        if (romDefNo == 0x6a8)
             return;
-        if (seqId == 0x6a9)
+        if (romDefNo == 0x6a9)
             return;
-        if (seqId == 0x6aa)
+        if (romDefNo == 0x6aa)
             return;
-        if (seqId == 0x6ab)
+        if (romDefNo == 0x6ab)
             return;
-        if (seqId == 0x6ac)
+        if (romDefNo == 0x6ac)
             return;
-        if (seqId == 0x752)
+        if (romDefNo == 0x752)
             return;
     }
     Camera_ProjectWorldPointWithOffset(
         obj->anim.localPosX - playerMapOffsetX, obj->anim.localPosY, obj->anim.localPosZ - playerMapOffsetZ,
         obj->anim.hitboxScale * obj->anim.rootMotionScale, &px, &py, &pz);
-    Camera_NdcToScreen(px, py, pz, &sx, &sy, &sz);
+    Camera_ClipToScreen(px, py, pz, &sx, &sy, &sz);
     if (sz <= depthReadRequestPoll(sx, sy, obj))
     {
         obj->anim.modelState->shadowAlphaStep = 0x20;
@@ -4299,7 +4290,6 @@ void modelsTabReadCb(s32 result, DVDFileInfo* fileInfo)
     }
 }
 
-void mapLoadDataFiles(int mapIdx);
 
 extern int sMapFileNameIndexRemapTable[];
 
@@ -4467,7 +4457,7 @@ u32 loadTableFiles(void)
     return gAssetLoadInFlightFlags;
 }
 
-int unlockLevel(s32 val, int idx, int flag)
+int unlockLevel(s32 level, int bucket, int flag)
 {
     s32 cur;
     if (flag == 1)
@@ -4476,22 +4466,22 @@ int unlockLevel(s32 val, int idx, int flag)
         gObjLevelLockSlots[1] = -2;
         return -1;
     }
-    cur = gObjLevelLockSlots[idx];
-    if (val == cur || cur == -2)
+    cur = gObjLevelLockSlots[bucket];
+    if (level == cur || cur == -2)
     {
-        gObjLevelLockSlots[idx] = -2;
+        gObjLevelLockSlots[bucket] = -2;
         return -1;
     }
     return cur;
 }
 
 
-int lockLevel(s32 val, int idx)
+int lockLevel(s32 level, int bucket)
 {
-    s32 cur = gObjLevelLockSlots[idx];
+    s32 cur = gObjLevelLockSlots[bucket];
     if (cur == -2)
     {
-        gObjLevelLockSlots[idx] = val;
+        gObjLevelLockSlots[bucket] = level;
         return -1;
     }
     return cur;

@@ -136,7 +136,7 @@ static inline u32 Expgfx_GetSlotTableIndex(const ExpgfxSlot* slot)
 
 static inline void Expgfx_SetSlotTableIndex(ExpgfxSlot* slot, u8 tableIndex)
 {
-    slot->encodedTableIndex = (u8)((tableIndex << 1) | (slot->encodedTableIndex & 1));
+    slot->encodedTableIndex = (tableIndex << 1) | (slot->encodedTableIndex & 1);
 }
 
 static inline ExpgfxSlot* Expgfx_GetSlot(int poolIndex, int slotIndex)
@@ -905,7 +905,7 @@ void objfx_spawnLightPulse(GameObject* obj, f32 scale, int type, int a3, int mod
                                                (obj)->anim.worldPosZ - playerMapOffsetZ, 10.0f, &ndc[2],
                                                &ndc[1], &ndc[0]);
         }
-        Camera_NdcToScreen(ndc[2], ndc[1], ndc[0], &screenPos[2], &screenPos[1], &screenPos[0]);
+        Camera_ClipToScreen(ndc[2], ndc[1], ndc[0], &screenPos[2], &screenPos[1], &screenPos[0]);
         depth = depthReadRequestPoll(screenPos[2], screenPos[1], obj);
         if (screenPos[0] > depth)
         {
@@ -1325,7 +1325,7 @@ void objfx_spawnPulseBurst(void* obj, f32 scale, int type, int count, int mode, 
         }
     }
 }
-void projectileParticleFxFn_80099660(void* obj, f32 scaleArg, int mode)
+void projectileDoParticleFx(void* obj, f32 scaleArg, int mode)
 {
     ObjFxParticleParams params;
     f32 tailScale;
@@ -1510,7 +1510,7 @@ void itemPickupDoParticleFx(void* obj, f32 scale, int mode, u8 count)
     }
 }
 
-void objParticleFn_80099d84(GameObject* obj, f32 scale, int type, f32 extraScale, ModelLightStruct* light)
+void objDoParticleFx(GameObject* obj, f32 scale, int type, f32 extraScale, ModelLightStruct* light)
 {
     ObjFxParticleParams params;
     f32 lightYOffset = 40.0f;
@@ -1588,7 +1588,7 @@ void objParticleFn_80099d84(GameObject* obj, f32 scale, int type, f32 extraScale
     }
 }
 
-void objLightFn_8009a1dc(void* obj, f32 scale, void* origin, u8 type, void* light)
+void objDoHitParticleFx(void* obj, f32 scale, void* origin, u8 type, void* light)
 {
     u8 spawnArgs[16];
     u8 remaining;
@@ -1733,7 +1733,7 @@ void objfx_shakeCameraByDistance(GameObject* obj, f32 shakeRange)
         if (dist <= shakeRange)
         {
             f32 falloff = 1.0f - dist / shakeRange;
-            CameraShake_Start(5.0f * falloff, 10.0f * falloff, 4.0f);
+            CameraShake_StartDampened(5.0f * falloff, 10.0f * falloff, 4.0f);
             doRumble(22.0f * falloff);
         }
     }
@@ -1782,7 +1782,7 @@ void DIMexplosionFn_8009a96c(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u
                 if (d <= 300.0f)
                 {
                     f32 t = 1.0f - d / 300.0f;
-                    CameraShake_Start(5.0f * t, 10.0f * t, 4.0f);
+                    CameraShake_StartDampened(5.0f * t, 10.0f * t, 4.0f);
                     doRumble(22.0f * t);
                 }
             }
@@ -1833,7 +1833,7 @@ void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 
                 if (d <= 300.0f)
                 {
                     f32 t = 1.0f - d / 300.0f;
-                    CameraShake_Start(5.0f * t, 10.0f * t, 4.0f);
+                    CameraShake_StartDampened(5.0f * t, 10.0f * t, 4.0f);
                     doRumble(22.0f * t);
                 }
             }
@@ -2132,7 +2132,6 @@ void expgfxRemoveAll(void)
     expgfxRemoveAllBody();
 }
 
-void expgfxRemoveAll(void);
 
 static inline void expgfxSetSlotResult(s16* poolIndexOut, s16* slotIndexOut,
                                        s16 poolIndex, s16 slotIndex)
@@ -2300,7 +2299,7 @@ void expgfx_initSlotQuad(void* slotPtr)
     ExpgfxSlot* slot;
     ExpgfxTableEntry* entry;
     ExpgfxQuadVertex* quad;
-    ExpgfxQuadTemplateVertex* quadTemplate;
+    Vec3s* quadTemplate;
     u32 resource;
     u32 behaviorFlags;
     s16 texT1;
@@ -2354,11 +2353,11 @@ void expgfx_initSlotQuad(void* slotPtr)
 
     if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_SCALE_FROM_ZERO) != 0)
     {
-        slot->scaleCurrent = ((f32)slot->scaleStep * step + (f32)slot->scaleCurrent);
+        slot->scaleCurrent = (f32)slot->scaleStep * step + (f32)slot->scaleCurrent;
     }
     else if ((slot->renderFlags & EXPGFX_RENDER_SCALE_OVER_LIFETIME) != 0)
     {
-        slot->scaleCurrent = ((f32)slot->scaleCurrent - (f32)slot->scaleStep * step);
+        slot->scaleCurrent = (f32)slot->scaleCurrent - (f32)slot->scaleStep * step;
     }
 
     if (resource == 0)
@@ -2426,7 +2425,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     ExpgfxStaticDataLayout* staticData;
     s16 slotIdx;
     ExpgfxSlot* slot;
-    ExpgfxQuadTemplateVertex* quadTemplate;
+    Vec3s* quadTemplate;
     s16 texT1;
     s16 texT0;
     s16 texS1;
@@ -2434,12 +2433,10 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     GameObject* player;
     GameObject* tricky;
     u8* nextCacheBuf;
-    u8 cacheParity;
     u32 resource;
     s8* activeCountScan;
     int curPool;
     u32* maskPtr;
-    void* cache;
     ExpgfxSlot* curCacheBuf;
     u8* curPoolBuf;
     ObjAnimComponent* srcObj;
@@ -2447,6 +2444,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     int ambRPlus1;
     int ambGPlus1;
     int ambBPlus1;
+    void* cache;
     u8 ambientScaled[3]; /* BGR order: [2]=R, [1]=G, [0]=B */
     ExpgfxRotateParams rotParams;
     f32 workVec[3];
@@ -2505,10 +2503,12 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     pool = nextActivePool;
     if (pool != -1)
     {
+        u8 cacheParity;
+
         copyToCache(cache, (void*)runtime->slotPoolBases[pool], EXPGFX_POOL_CACHE_LINE_COUNT);
         cacheParity = 1;
         curCacheBuf = (ExpgfxSlot*)(cache);
-        Camera_GetCurrentViewSlot();
+        Camera_GetCurrent();
         if (tricky != NULL)
         {
             trickyRange = trickyGetAnimSpeed(tricky);
@@ -3486,7 +3486,6 @@ int expgfx_addToTable(u32 resourceHandle, u32 sourceId, u32 attachedTableKey, s1
     return EXPGFX_INVALID_TABLE_INDEX;
 }
 
-int expgfx_addToTable(u32 resourceHandle, u32 sourceId, u32 attachedTableKey, s16 resourceId);
 
 int expgfx_updateSourceFrameFlags(void* sourceObject)
 {
@@ -3503,7 +3502,7 @@ int expgfx_updateSourceFrameFlags(void* sourceObject)
 
     for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds[0]++, flagWalk++, poolIndex++)
     {
-        if ((((ObjAnimComponent*)sourceObject)->seqId == EXPGFX_SOURCE_SEQID_MATCH_ALL) ||
+        if ((((ObjAnimComponent*)sourceObject)->romDefNo == EXPGFX_SOURCE_SEQID_MATCH_ALL) ||
             (*poolSourceIds[0] == sourceObject))
         {
             s64 frameBit;
@@ -3563,7 +3562,6 @@ int expgfx_func09(void)
     return 0;
 }
 
-int expgfx_addToTable(u32 resourceHandle, u32 sourceId, u32 attachedTableKey, s16 resourceId);
 
 void expgfx_renderSourcePools(int sourceId, int sourceMode)
 {
@@ -3620,9 +3618,8 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     int slotIndex;
     int alpha;
     ObjAnimComponent* sourceObject;
-    u32 renderFlags;
     u32 stateBitsValue;
-    CameraViewSlot* cameraSlot;
+    Camera* cameraSlot;
     f32 halfLifeFrames;
     f32 scaleSize;
     f32 centerX, centerY, centerZ;
@@ -3665,14 +3662,14 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     GXSetCullMode(GX_CULL_NONE);
     viewMatrix = (MtxPtr)Camera_GetViewMatrix();
     GXLoadPosMtxImm(viewMatrix, GX_PNMTX0);
-    PSMTXCopy(viewMatrix, lbl_803967C0);
+    PSMTXCopy(viewMatrix, gCameraModelViewMatrix);
     loadReflectionTexMtxs();
     _gxSetFogParams();
     if ((short)renderModeSetOrGet(-1) == 1)
     {
         return;
     }
-    cameraSlot = Camera_GetCurrentViewSlot();
+    cameraSlot = Camera_GetCurrent();
     _textSetColor(0, 0xff, 0xff, 0xff, 0xff);
     alphaMode = -1;
     blendMode = -1;
@@ -4099,7 +4096,6 @@ void expgfx_free(u32 sourceId)
     ExpgfxTableEntry* tableEntry;
     u32* slotPoolBases[1];
     ExpgfxRuntimeDataLayout* runtime;
-    int tableIndex;
     u32* poolSourceIds[1];
     int poolIndex;
     ExpgfxSlot* slot;
@@ -4176,14 +4172,12 @@ void expgfx_resetAllPools(void)
     s16* poolSlotTypeIds[1];
     u32* poolSourceIds[1];
     u8* poolFrameFlags[1];
-    int resourceIndex;
     int activeBit;
     int poolIndex;
     ExpgfxResourceEntry* resourceEntry;
     ExpgfxTableEntry* tableEntry;
     ExpgfxStaticDataLayout* staticData;
     u32* slotPoolBases[1];
-    int tableIndex;
     ExpgfxRuntimeDataLayout* runtime[1];
     int slotIndex;
     ExpgfxSlot* slot;
@@ -4324,7 +4318,6 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
     s16 texS1 = 0;
     s16 texS0 = 0;
     f32 scaleVal;
-    u8* poolSourceModesByte;
     u8 sourceModeValue;
 
     ExpgfxQuadVertex* quadVertices;
@@ -4523,7 +4516,6 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
             f32 dx;
             f32 dz;
             f32 distSq;
-            f32 inv;
             playerObj = (GameObject*)Obj_GetPlayerObject();
             slot->renderFlags = slot->renderFlags ^ (EXPGFX_RENDER_AIM_AT_ACTOR + 0LL);
             if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_AIM_VELOCITY_TOWARD_PLAYER) != 0)

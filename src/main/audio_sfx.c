@@ -741,7 +741,6 @@ SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 p
                                          int globalCtrlDisabled)
 {
     SfxObjectChannel* ch;
-    s32 i;
     u32 handle;
 
     if ((int)audioFlagFn_8000a188(4) != 0)
@@ -790,7 +789,7 @@ SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 p
 
 void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
 {
-    void* slot;
+    Camera* slot;
     int level;
     f32 dist;
     f32 near;
@@ -798,7 +797,7 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
     f32 volf;
     f32 delta[3];
 
-    slot = Camera_GetCurrentViewSlot();
+    slot = Camera_GetCurrent();
     if (slot == NULL || objectChannel == NULL)
     {
         return;
@@ -818,9 +817,9 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
         objectChannel->handle = (u32)-1;
         return;
     }
-    Sfx_RotateVectorByAngles(0, 0, -*(s16*)((u8*)slot + 0x54), delta);
-    Sfx_RotateVectorByAngles(*(s16*)slot, 0, 0, delta);
-    Sfx_RotateVectorByAngles(0, -*(s16*)((u8*)slot + 0x52), 0, delta);
+    Sfx_RotateVectorByAngles(0, 0, -slot->worldRoll, delta);
+    Sfx_RotateVectorByAngles(slot->yaw, 0, 0, delta);
+    Sfx_RotateVectorByAngles(0, -slot->worldPitch, 0, delta);
     if (dist > 0.01f)
     {
         f32 scale;
@@ -945,7 +944,7 @@ f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta)
     double t2;
     Vec* listener;
     GameObject* player = Obj_GetPlayerObject();
-    CameraViewSlot* slot = Camera_GetCurrentViewSlot();
+    Camera* slot = Camera_GetCurrent();
     int seqNo = getCurSeqNo();
 
     if (player != NULL && seqNo == 0)

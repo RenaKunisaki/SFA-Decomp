@@ -101,6 +101,6 @@ typedef struct AttractMoviePlayer {
     u8 pad1A4[4];
 } AttractMoviePlayer;
 
-extern AttractMoviePlayer lbl_803A5D60;
+extern AttractMoviePlayer gAttractMoviePlayer;
 
 #endif /* MAIN_DLL_FRONT_ATTRACT_MOVIE_H_ */

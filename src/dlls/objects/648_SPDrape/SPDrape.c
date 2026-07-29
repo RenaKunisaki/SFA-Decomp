@@ -112,7 +112,7 @@ void spdrape_update(GameObject* obj)
             ObjAnim_SetCurrentMove((int)obj, **(u8**)&state->moveTable, 0.0f, 0);
             state->animSpeed = 0.0175f;
             Sfx_PlayFromObject((int)obj, SFXTRIG_cagesqk11);
-            Camera_GetCurrentViewSlot();
+            Camera_GetCurrent();
         }
         break;
     case 1: /* opening: hold while near, close once the player leaves */
@@ -172,7 +172,7 @@ void spdrape_update(GameObject* obj)
         {
             ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
             state->animSpeed = 0.0072f;
-            Camera_GetCurrentViewSlot();
+            Camera_GetCurrent();
         }
         break;
     }

@@ -54,7 +54,7 @@ void wctempledia_syncPartVisibility(GameObject* obj, u8 mask)
     }
 }
 
-int wctempledia_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate)
+int wctempledia_interactCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     WCTempleDiaState* state = obj->extra;
 
@@ -65,9 +65,9 @@ int wctempledia_interactCallback(GameObject* obj, int unused, ObjAnimUpdateState
         state->currentSpeed = scaled * timeDelta + cs;
     }
     obj->anim.rotZ = (s16)(timeDelta * state->currentSpeed + (f32)obj->anim.rotZ);
-    animUpdate->sequenceEventActive = 0;
-    animUpdate->activeHitVolumePair &= ~WCTEMPLE_DIA_PAYLOAD_BLOCK_FLAG;
-    animUpdate->hitVolumePair &= ~WCTEMPLE_DIA_PAYLOAD_BLOCK_FLAG;
+    animUpdate->movementState = 0;
+    animUpdate->savedFlags &= ~WCTEMPLE_DIA_PAYLOAD_BLOCK_FLAG;
+    animUpdate->flags &= ~WCTEMPLE_DIA_PAYLOAD_BLOCK_FLAG;
     return 0;
 }
 
@@ -172,7 +172,7 @@ void wctempledia_update(GameObject* obj)
 
 void wctempledia_init(GameObject* obj, WCTempleDiaSetup* setup)
 {
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
+    ObjAnimComponent* objAnim = &obj->anim;
     WCTempleDiaState* state = obj->extra;
     int i;
 

@@ -8,7 +8,7 @@
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
 #include "main/mapEventTypes.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin_api.h"
@@ -199,7 +199,7 @@ void IMIceMountain_updateEventState(GameObject* obj) {
     }
 }
 
-int IMIceMountain_sequenceCallback(GameObject* obj, int unused, const ObjAnimUpdateState* animUpdate) {
+int IMIceMountain_sequenceCallback(GameObject* obj, int unused, const ObjSeqState* animUpdate) {
     IMIceMountainState* state = obj->extra;
     int i;
 
@@ -297,7 +297,7 @@ void IMIceMountain_init(GameObject* obj) {
 
     obj->animEventCallback = IMIceMountain_sequenceCallback;
     for (i = 1; i <= IM_ICE_MOUNTAIN_GAME_BIT_RESET_COUNT; i++) {
-        gameBitFn_800ea2e0(i);
+        taskHintRecordCompletedTask(i);
     }
     state->warningTextTimer = IM_ICE_MOUNTAIN_WARNING_DURATION;
     (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 1, 0);

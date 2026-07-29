@@ -8,11 +8,11 @@
 #define SB_SEQDOOR_SEQ_ID        0x173
 #define SB_SEQDOOR_OPEN_SEQUENCE 0
 
-int SB_SeqDoor_SeqFn(GameObject* obj, int unusedArg, ObjAnimUpdateState* animUpdate) {
-    if (obj->anim.seqId != SB_SEQDOOR_SEQ_ID) {
+int SB_SeqDoor_SeqFn(GameObject* obj, int unusedArg, ObjSeqState* animUpdate) {
+    if (obj->anim.romDefNo != SB_SEQDOOR_SEQ_ID) {
         animUpdate->flags = -2;
     }
-    animUpdate->sequenceEventActive = 0;
+    animUpdate->movementState = 0;
     return 0;
 }
 
@@ -37,7 +37,7 @@ void SB_SeqDoor_hitDetect(void) {
 }
 
 void SB_SeqDoor_update(GameObject* obj) {
-    if (obj->anim.seqId == SB_SEQDOOR_SEQ_ID) {
+    if (obj->anim.romDefNo == SB_SEQDOOR_SEQ_ID) {
         if (obj->userData1 == 0) {
             if (mainGetBit(GAMEBIT_SB_DoorOpen) != 0u) {
                 (*gObjectTriggerInterface)->runSequence(SB_SEQDOOR_OPEN_SEQUENCE, obj, -1);

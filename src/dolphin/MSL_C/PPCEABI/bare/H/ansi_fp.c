@@ -96,7 +96,6 @@ void __timesdec(decimal* result, const decimal* x, const decimal* y) {
     unsigned long accumulator = 0;
     unsigned char mantissa[SIGDIGLEN * 2];
     int i = x->sig.length + y->sig.length - 1;
-    unsigned char* pDigit;
     unsigned char* ip = mantissa + i + 1;
     unsigned char* ep = ip;
 

@@ -4,11 +4,11 @@
 #include "main/dll/mcupgrade_state.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
-#include "main/objanim_update.h"
+#include "main/objseq.h"
 
 extern ObjectDescriptor gMCUpgradeMaObjDescriptor;
 
-int mcupgradema_SeqFn(GameObject* obj, int unused, ObjAnimUpdateState* animUpdate);
+int mcupgradema_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void mcupgradema_update(GameObject* obj);
 void mcupgradema_init(GameObject* obj);
 

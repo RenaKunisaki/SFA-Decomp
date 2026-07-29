@@ -1717,7 +1717,7 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
     *(int*)stateB = objA;
     if (animA->parent != NULL)
     {
-        Obj_TransformWorldVectorToLocal(x, y, z, &localAx, &localAy, &localAz, (int)animA->parent);
+        Obj_TransformWorldVectorToLocal(x, y, z, &localAx, &localAy, &localAz, animA->parent);
     }
     else
     {
@@ -1727,7 +1727,7 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
     }
     if (animB->parent != NULL)
     {
-        Obj_TransformWorldVectorToLocal(x, y, z, &localBx, &localBy, &localBz, (int)animB->parent);
+        Obj_TransformWorldVectorToLocal(x, y, z, &localBx, &localBy, &localBz, animB->parent);
     }
     else
     {
@@ -1750,7 +1750,7 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
         else
         {
             Obj_TransformLocalPointToWorld(animA->localPosX, animA->localPosY, animA->localPosZ, &animA->worldPosX,
-                                           &animA->worldPosY, &animA->worldPosZ, (int)animA->parent);
+                                           &animA->worldPosY, &animA->worldPosZ, animA->parent);
         }
     }
     else if ((animB->classId == 1) && (stateB->lateralResponseWeight != 0) &&
@@ -1768,7 +1768,7 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
         else
         {
             Obj_TransformLocalPointToWorld(animB->localPosX, animB->localPosY, animB->localPosZ, &animB->worldPosX,
-                                           &animB->worldPosY, &animB->worldPosZ, (int)animB->parent);
+                                           &animB->worldPosY, &animB->worldPosZ, animB->parent);
         }
     }
     else if (stateB->lateralResponseWeight == 0)
@@ -1787,7 +1787,7 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
             else
             {
                 Obj_TransformLocalPointToWorld(animA->localPosX, animA->localPosY, animA->localPosZ, &animA->worldPosX,
-                                               &animA->worldPosY, &animA->worldPosZ, (int)animA->parent);
+                                               &animA->worldPosY, &animA->worldPosZ, animA->parent);
             }
         }
     }
@@ -1807,7 +1807,7 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
             else
             {
                 Obj_TransformLocalPointToWorld(animB->localPosX, animB->localPosY, animB->localPosZ, &animB->worldPosX,
-                                               &animB->worldPosY, &animB->worldPosZ, (int)animB->parent);
+                                               &animB->worldPosY, &animB->worldPosZ, animB->parent);
             }
         }
     }
@@ -1859,13 +1859,13 @@ void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag
         animA->localPosY = animA->localPosY - localAy * blend;
         animA->localPosZ = animA->localPosZ - localAz * blend;
         Obj_TransformLocalPointToWorld(animA->localPosX, animA->localPosY, animA->localPosZ, &animA->worldPosX,
-                                       &animA->worldPosY, &animA->worldPosZ, (int)animA->parent);
+                                       &animA->worldPosY, &animA->worldPosZ, animA->parent);
         invBlend = gObjHitsScalarOne - blend;
         animB->localPosX = localBx * invBlend + animB->localPosX;
         animB->localPosY = localBy * invBlend + animB->localPosY;
         animB->localPosZ = localBz * invBlend + animB->localPosZ;
         Obj_TransformLocalPointToWorld(animB->localPosX, animB->localPosY, animB->localPosZ, &animB->worldPosX,
-                                       &animB->worldPosY, &animB->worldPosZ, (int)animB->parent);
+                                       &animB->worldPosY, &animB->worldPosZ, animB->parent);
     }
 }
 
@@ -2340,7 +2340,6 @@ void ObjHits_Update(int objectCount)
     u8 skeletonScratchD[100];
     u8 skeletonScratchE[100];
     int listObj;
-    ObjHitsPriorityState* listState;
     ObjHitsSweepEntry* nextEntry;
     ObjHitsSweepEntry** entrySlot;
     int slotIndex;
@@ -2376,6 +2375,8 @@ void ObjHits_Update(int objectCount)
     for (; objectCount > 0; objectCount--)
     {
         {
+            ObjHitsPriorityState* listState;
+
             listObj = *objectList;
             listState = (ObjHitsPriorityState*)((GameObject*)listObj)->anim.hitReactState;
             if (listState != NULL)
@@ -2544,7 +2545,7 @@ void ObjHits_Update(int objectCount)
         {
             Obj_TransformLocalPointToWorld(objState->localPosX, objState->localPosY, objState->localPosZ,
                                            &objState->worldPosX, &objState->worldPosY, &objState->worldPosZ,
-                                           (int)((GameObject*)obj)->anim.parent);
+                                           ((GameObject*)obj)->anim.parent);
         }
         else
         {
@@ -2651,7 +2652,7 @@ u32 ObjHitReact_Update(int obj, ObjHitReactEntry* reactionEntryTable, u32 reacti
             }
             else
             {
-                objLightFn_8009a1dc((void*)obj, gObjHitReactAltEffectScale, &effectParams, OBJHITREACT_ALT_EFFECT_COUNT,
+                objDoHitParticleFx((void*)obj, gObjHitReactAltEffectScale, &effectParams, OBJHITREACT_ALT_EFFECT_COUNT,
                                     NULL);
             }
         }
@@ -2885,7 +2886,7 @@ extern f32 gObjLibBlinkAnglePiDivisor;
 #define OBJLIB_BLINK_LEFT_JOINT_TAG  5
 #define OBJLIB_BLINK_RIGHT_JOINT_TAG 4
 
-/* hit-object seqId that triggers the staff-impact sfx (retail OBJECTS.bin). */
+/* hit-object romDefNo that triggers the staff-impact sfx (retail OBJECTS.bin). */
 #define OBJLIB_HITOBJ_SEQID_STAFF 0x69 /* "staff" (DLL 0xE2) */
 #define OBJPATH_POINTS_OFFSET        0x2c
 #define OBJPATH_POINT_COUNT_OFFSET   0x58
@@ -3307,7 +3308,7 @@ void ObjHits_RefreshObjectState(GameObject* object)
             if (((activeBank->animDef->flags & OBJANIM_DEF_FLAG_SKELETON_HITBOXES) == 0) ||
                 (*(void**)(((int*)activeBank) + 5) == 0))
             {
-                hitState->shapeFlags = *(u8*)((int)hitState + 0x62) & ~OBJHITS_SHAPE_SKELETON;
+                hitState->shapeFlags &= ~OBJHITS_SHAPE_SKELETON;
             }
         }
         hitState->lateralResponseWeight = obj->modelInstance->lateralResponseWeight;
@@ -3515,7 +3516,6 @@ void ObjHits_AddContactObject(GameObject* obj, GameObject* contactObj)
     int contactObjectIndex;
     int contactObjectCount;
     int contactOffset;
-    int contactStore;
     int i;
     int storeState;
     int transformState;
@@ -4095,7 +4095,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
     {
         obj = (GameObject*)objects[objectIndex];
         if (((obj != sender) || (includeSender == 0)) &&
-            ((obj->anim.seqId == (s16)targetId || (matchAny != 0))) &&
+            ((obj->anim.romDefNo == (s16)targetId || (matchAny != 0))) &&
             ((Vec_distance(&s->anim.worldPosX, &obj->anim.worldPosX) < radius &&
               (obj != 0x0)) &&
              (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0)))
@@ -4112,7 +4112,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
             else
             {
                 debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId,
-                            (int)obj->anim.seqId, (int)s->anim.seqId);
+                            (int)obj->anim.romDefNo, (int)s->anim.romDefNo);
             }
         }
     }
@@ -4138,7 +4138,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
         {
             obj = (GameObject*)objects[objectIndex];
             if (((obj != sender) || ((maskedFlags & OBJMSG_SEND_INCLUDE_SENDER) == 0)) &&
-                (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.seqId))) &&
+                (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.romDefNo))) &&
                 ((obj != 0x0 &&
                   (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0))))
             {
@@ -4154,7 +4154,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
                 else
                 {
                     debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId,
-                                (int)obj->anim.seqId, (int)((GameObject*)sender)->anim.seqId);
+                                (int)obj->anim.romDefNo, (int)((GameObject*)sender)->anim.romDefNo);
                 }
             }
         }
@@ -4181,7 +4181,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
                 else
                 {
                     debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId,
-                                (int)obj->anim.seqId, (int)((GameObject*)sender)->anim.seqId);
+                                (int)obj->anim.romDefNo, (int)((GameObject*)sender)->anim.romDefNo);
                 }
             }
         }
@@ -4214,8 +4214,8 @@ u32 ObjMsg_SendToObject(GameObject* obj, u32 message, void* sender, u32 param)
             queue->count = queue->count + 1;
             return queue->count;
         }
-        debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId, (int)obj->anim.seqId,
-                    (int)((GameObject*)senderObj)->anim.seqId);
+        debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId, (int)obj->anim.romDefNo,
+                    (int)((GameObject*)senderObj)->anim.romDefNo);
     }
     return 0;
 }
@@ -4328,7 +4328,7 @@ int ObjHits_PollPriorityHitEffectWithCooldown(GameObject* obj, u32 hitFxMode, u3
             (*effectResource)
                 ->spawn(OBJHITREACT_HIT_EFFECT_PARENT_NONE, OBJHITREACT_HIT_EFFECT_MODE, &effectParams,
                         OBJHITREACT_HIT_EFFECT_SPAWN_FLAGS, OBJHITREACT_HIT_EFFECT_NO_SOURCE, &effectArgs);
-            if (((sfxId != 0) && (hitObject != 0)) && (((GameObject*)hitObject)->anim.seqId == OBJLIB_HITOBJ_SEQID_STAFF))
+            if (((sfxId != 0) && (hitObject != 0)) && (((GameObject*)hitObject)->anim.romDefNo == OBJLIB_HITOBJ_SEQID_STAFF))
             {
                 Sfx_PlayFromObject((u32)obj, sfxId);
             }
@@ -4512,7 +4512,7 @@ int ObjTrigger_IsSet(int objPtr)
     flags = buttonGetDisabled(0);
     if ((flags & OBJTRIGGER_BUTTON_DISABLE_FLAG) == 0)
     {
-        triggerFlags = *(u8*)((int)obj + OBJTRIGGER_FLAGS_OFFSET);
+        triggerFlags = obj->anim.resetHitboxFlags;
         flagEnabled = triggerFlags & OBJTRIGGER_CURRENT_ENABLE_FLAG;
         if (flagEnabled != 0)
         {
@@ -4556,7 +4556,7 @@ GameObject* ObjList_FindNearestObjectByDefNo(GameObject* obj, int defNo, float* 
         while (objectIndex < objectCount)
         {
             otherObj = *walker;
-            if (((defNo == ((GameObject*)otherObj)->anim.seqId) && ((int)obj != otherObj)) &&
+            if (((defNo == ((GameObject*)otherObj)->anim.romDefNo) && ((int)obj != otherObj)) &&
                 (distanceSq = vec3f_distanceSquared(&(obj)->anim.worldPosX, &((GameObject*)otherObj)->anim.worldPosX),
                  distanceSq < *maxDistanceSq))
             {
@@ -6327,6 +6327,7 @@ void staffMtxFn_8003b620(int staffArg, GameObject* objArg, int modelArg, int a, 
     int k;
     char* q;
     Vec* vp;
+    Vec* vp0;
     int i;
     char* base;
     u8* model;
@@ -6345,7 +6346,8 @@ void staffMtxFn_8003b620(int staffArg, GameObject* objArg, int modelArg, int a, 
         k = 1;
         off = 0x18;
         q = base;
-        vp = (Vec*)va;
+        vp0 = (Vec*)va;
+        vp = vp0;
 
         while (i < *(s16*)(base + 0xb0))
         {
@@ -6369,7 +6371,7 @@ void staffMtxFn_8003b620(int staffArg, GameObject* objArg, int modelArg, int a, 
             {
                 ChildEnt* row = (ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off);
                 int idx2 = row->joints[OBJPRINT_ACTIVE_BANK_INDEX(staff)];
-                MtxPtr mtx2 = (MtxPtr)(*(char**)(model + ((((ObjModel*)model)->bufferFlags & 1) * 4) + 0xc) + idx2 * 0x40);
+                MtxPtr mtx2 = (MtxPtr)(idx2 * 0x40 + *(int*)(model + ((((ObjModel*)model)->bufferFlags & 1) * 4) + 0xc));
                 vb.x = row->pos[0];
                 vb.y = ((ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off))->pos[1];
                 vb.z = ((ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off))->pos[2];
@@ -6384,6 +6386,7 @@ void staffMtxFn_8003b620(int staffArg, GameObject* objArg, int modelArg, int a, 
             off += 0x30;
             q += 4;
             i++;
+            vp = vp0;
         }
 
         if (*(s16*)(base + 0xb0) != 0)
@@ -6479,7 +6482,7 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag)
     }
     else if ((s8)flag != 0)
     {
-        switch (obj->anim.seqId)
+        switch (obj->anim.romDefNo)
         {
         case 0:
         case 0x1f:

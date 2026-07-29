@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-struct ObjAnimUpdateState;
+struct ObjSeqState;
 
 typedef enum WarpPointMode {
     WARPPOINT_MODE_PROXIMITY = 0,
@@ -63,7 +63,7 @@ STATIC_ASSERT(offsetof(WarpPointState, savePointRecorded) == 0xD);
 STATIC_ASSERT(offsetof(WarpPointState, pad0E) == 0xE);
 STATIC_ASSERT(sizeof(WarpPointState) == 0x10);
 
-int WarpPoint_animEventCallback(GameObject* obj, int unused, struct ObjAnimUpdateState* animUpdate);
+int WarpPoint_animEventCallback(GameObject* obj, int unused, struct ObjSeqState* animUpdate);
 int WarpPoint_getExtraSize(void);
 int WarpPoint_getObjectTypeId(void);
 void WarpPoint_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible);

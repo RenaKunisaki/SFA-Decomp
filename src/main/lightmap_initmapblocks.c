@@ -71,7 +71,7 @@ static inline void GXTexCoord2s16(const s16 s, const s16 t)
 static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 
 
-extern u32 lbl_8037E0C0[];
+extern u32 gLightmapDrawQueue[];
 
 
 
@@ -112,8 +112,8 @@ void sceneDraw(void);
 
 void initMapBlocks(void)
 {
-    u8* mb = (u8*)lbl_8037E0C0;
-    MapLayerBuffers* buffers = (MapLayerBuffers*)lbl_8037E0C0;
+    u8* mb = (u8*)gLightmapDrawQueue;
+    MapLayerBuffers* buffers = (MapLayerBuffers*)gLightmapDrawQueue;
     u32 zero;
     u32* q;
     u16* p;

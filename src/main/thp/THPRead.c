@@ -63,8 +63,8 @@ void* THPRead_Reader(void* unused)
 
     base = gPicMenuReadThreadArea;
     i = 0;
-    readOff = lbl_803A5D60.initOffset;
-    readSize = lbl_803A5D60.initReadSize;
+    readOff = gAttractMoviePlayer.initOffset;
+    readSize = gAttractMoviePlayer.initReadSize;
 
     while (1)
     {
@@ -74,12 +74,12 @@ void* THPRead_Reader(void* unused)
         OSReceiveMessage((OSMessageQueue*)(base + 0x13C8), &msgVal, OS_MESSAGE_BLOCK);
         req = (AttractMovieReadBuffer*)msgVal;
 
-        res = DVDReadPrio(&lbl_803A5D60.fileInfo, req->ptr, readSize, readOff, 2);
+        res = DVDReadPrio(&gAttractMoviePlayer.fileInfo, req->ptr, readSize, readOff, 2);
         if (res != (s32)readSize)
         {
             if (res == -1)
             {
-                lbl_803A5D60.dvdError = -1;
+                gAttractMoviePlayer.dvdError = -1;
             }
             if (i == 0)
             {
@@ -95,14 +95,14 @@ void* THPRead_Reader(void* unused)
         readSize = *(u32*)req->ptr;
 
         {
-            u32 cols = lbl_803A5D60.header.mNumFrames;
-            u32 bOff = lbl_803A5D60.initReadFrame;
+            u32 cols = gAttractMoviePlayer.header.mNumFrames;
+            u32 bOff = gAttractMoviePlayer.initReadFrame;
             u32 pos = (i + bOff) % cols;
             if (pos == cols - 1)
             {
-                if (lbl_803A5D60.playFlags & 1)
+                if (gAttractMoviePlayer.playFlags & 1)
                 {
-                    readOff = lbl_803A5D60.header.mMovieDataOffsets;
+                    readOff = gAttractMoviePlayer.header.mMovieDataOffsets;
                 }
                 else
                 {

@@ -6,7 +6,7 @@
 /*
  * dll_3b (FRONT 0x3B) - attract-movie audio decode thread support.
  *
- * Backs the THP attract-movie player (AttractMoviePlayer lbl_803A5D60,
+ * Backs the THP attract-movie player (AttractMoviePlayer gAttractMoviePlayer,
  * attract_movie.h). A worker thread decodes audio frames
  * out of a THP stream and hands finished sample buffers to the player's
  * mixer through two message queues:
@@ -70,15 +70,15 @@ void AttractMovieAudio_Decode(void* readBufferArg)
 
     readBuffer = (AttractMovieReadBuffer*)readBufferArg;
     audioFrameSizes = (u32*)(readBuffer->ptr + THP_FRAME_HEADER_SIZE);
-    audioFrame = readBuffer->ptr + (lbl_803A5D60.compInfo.mNumComponents * sizeof(u32)) + THP_FRAME_HEADER_SIZE;
+    audioFrame = readBuffer->ptr + (gAttractMoviePlayer.compInfo.mNumComponents * sizeof(u32)) + THP_FRAME_HEADER_SIZE;
     {
         AttractMovieAudioBuffer* received;
         OSReceiveMessage(&gAttractMovieFreeAudioQueueAndStack.queue, &received, OS_MESSAGE_BLOCK);
         audioBuf[0] = received;
     }
-    for (track = 0; track < lbl_803A5D60.compInfo.mNumComponents; track++)
+    for (track = 0; track < gAttractMoviePlayer.compInfo.mNumComponents; track++)
     {
-        switch (lbl_803A5D60.compInfo.mFrameComp[track])
+        switch (gAttractMoviePlayer.compInfo.mFrameComp[track])
         {
         case THP_FRAME_COMP_AUDIO:
             audioBuf[0]->validSample = THPAudioDecode(audioBuf[0]->buffer, audioFrame, 0);
@@ -101,7 +101,7 @@ void* AudioDecoderForOnMemory(void* param)
     register int frame;
     AttractMovieReadBuffer readBuffer;
 
-    player = &lbl_803A5D60;
+    player = &gAttractMoviePlayer;
     stride = player->frameStride;
     readBuffer.ptr = param;
     frame = 0;
