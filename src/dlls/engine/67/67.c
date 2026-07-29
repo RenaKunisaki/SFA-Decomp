@@ -1,4 +1,5 @@
 #include "main/dll/CAM/pathcam.h"
+#include "main/dll/dll_0049_cameramodecombat.h"
 #include "main/object_transform.h"
 #include "main/camera_interface.h"
 #include "main/dll/CAM/camcontrol_path_state.h"
@@ -151,7 +152,6 @@ typedef void (*CameraBoundsFn)(CameraObject* camera, GameObject* target, f32 min
 
 #define CAMMODE_DEFAULT    0x42
 #define CAMMODE_VIEWFINDER 0x44
-#define CAMMODE_COMBAT     0x49
 
 void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
 {
@@ -185,7 +185,7 @@ void camcontrol_updatePathTargetAction(CameraObject* camera, GameObject* target)
     {
         lockSlot = &camera->currentTarget;
         cam = *gCameraInterface;
-        cam->setMode(CAMMODE_COMBAT, 1, 0, 4, lockSlot, 0x3c, 0xff);
+        cam->setMode(CAMERA_MODE_COMBAT_RESOURCE_ID, 1, 0, 4, lockSlot, 0x3c, 0xff);
         return;
     }
     zPressed = buttons & PAD_TRIGGER_Z;

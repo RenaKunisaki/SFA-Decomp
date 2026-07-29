@@ -1,6 +1,7 @@
 #include "main/camera_interface.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_0047_cameramodepath.h"
+#include "main/dll/dll_0049_cameramodecombat.h"
 #include "main/dll/dll_004C_camDebug.h"
 #include "main/dll/dll_0053_cameramodecloudrunner.h"
 #include "main/dll/dll_0056_cameramodearwing.h"
@@ -1547,7 +1548,6 @@ f32 objCurveInterpolate(ObjCurveKey* keys, int count, int frame);
 #define OBJSEQ_CAMMODE_VIEWFINDER   0x44 /* dll_0044 viewfinder */
 #define OBJSEQ_CAMMODE_CAMTALK      0x45 /* dll_0045_camTalk */
 #define OBJSEQ_CAMMODE_STATIC       0x48 /* dll_0048_cameramodestatic */
-#define OBJSEQ_CAMMODE_COMBAT       0x49 /* dll_0049_cameramodecombat */
 #define OBJSEQ_CAMMODE_SHIPBATTLE   0x4a /* dll_004A_cameramodeshipbattle */
 #define OBJSEQ_CAMMODE_CAMDEBUG     0x4c /* dll_004C_camDebug */
 
@@ -2965,9 +2965,9 @@ void ObjSeq_updateCamera(void)
                         (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_VIEWFINDER, 1, 0, 0xc, &fblock, 0, 0xff);
                     }
                     break;
-                case 0x49:
+                case CAMERA_MODE_COMBAT_RESOURCE_ID:
                     (*gCameraInterface)
-                        ->setMode(OBJSEQ_CAMMODE_COMBAT, 1, 0, gObjSeqCamModeArgB, &gObjSeqCamModeArgC,
+                        ->setMode(CAMERA_MODE_COMBAT_RESOURCE_ID, 1, 0, gObjSeqCamModeArgB, &gObjSeqCamModeArgC,
                                   gObjSeqCamModeArgD, 0xff);
                     break;
                 case CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID:

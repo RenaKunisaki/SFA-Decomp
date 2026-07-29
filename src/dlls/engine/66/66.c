@@ -14,6 +14,7 @@
 #include "string.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_0042_unk.h"
+#include "main/dll/dll_0049_cameramodecombat.h"
 #include "dolphin/os.h"
 #include "main/resource.h"
 
@@ -26,7 +27,6 @@ u8 gCutCamBboxBlocked;
 
 #define CAMMODE_CLIMB 0x43
 #define CAMMODE_VIEWFINDER 0x44
-#define CAMMODE_COMBAT 0x49
 
 
 int camcontrol_traceMove(float* fromPos, float* toPos, float* outPos, u8* traceWork, char traceMode, u8 runTrace,
@@ -170,7 +170,8 @@ void camcontrol_updateTargetAction(CameraObject* camera, GameObject* target)
             ((camera->targetFlags & 2) != 0))
         {
             Camera_setBlendCurveMode(1);
-            (*gCameraInterface)->setMode(CAMMODE_COMBAT, 1, 0, 4, &camera->currentTarget, 0x3c, 0xff);
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_COMBAT_RESOURCE_ID, 1, 0, 4, &camera->currentTarget, 0x3c, 0xff);
         }
         else if ((((buttons & PAD_TRIGGER_Z) != 0) && (target->anim.classId == 1)) &&
                  (cond = playerIsInNormalControl((GameObject*)target), cond != 0))
