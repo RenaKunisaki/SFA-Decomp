@@ -1627,7 +1627,7 @@ void setMapBlockFlag(void)
     mapBlockFlag = 0x1;
 }
 
-int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDepth, int kinds)
+int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDepth, int queryMask)
 {
     TrackGroundHit** arr;
     int n;
@@ -1635,7 +1635,7 @@ int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDept
     f32 best;
     f32 cur;
 
-    n = hitDetectFn_80065e50(obj, x, y, z, &arr, 0, kinds);
+    n = hitDetectFn_80065e50(obj, x, y, z, &arr, 0, queryMask);
     if (n != 0)
     {
         TrackGroundHit** arrp;
@@ -1666,7 +1666,7 @@ int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDept
 }
 
 int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset,
-                                         f32* outNormal, int kinds)
+                                         f32* outNormal, int queryMask)
 {
     TrackGroundHit** hits;
     int hitCount;
@@ -1675,7 +1675,7 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
     f32 firstDistance;
     f32 bestDistance;
 
-    hitCount = hitDetectFn_80065e50(obj, x, y, z, &hits, 0, kinds);
+    hitCount = hitDetectFn_80065e50(obj, x, y, z, &hits, 0, queryMask);
     if (hitCount != 0)
     {
         firstDistance = hits[0]->height;
@@ -1711,7 +1711,7 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
     return 1;
 }
 
-int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset, int flag)
+int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset, int queryMask)
 {
     TrackGroundHit** arr;
     int n;
@@ -1720,7 +1720,7 @@ int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGr
     f32 best;
     f32 cur;
 
-    n = hitDetectFn_80065e50(obj, x, y, z, &arr, 0, flag);
+    n = hitDetectFn_80065e50(obj, x, y, z, &arr, 0, queryMask);
     if (n != 0)
     {
         cur = arr[0]->height;
@@ -1859,7 +1859,7 @@ void trackCollectGroundHits(TrackTriangle* triStart, TrackTriangle* triEnd, Trac
     }
 }
 
-int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int submode)
+int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask)
 {
     u8* base = (u8*)gIntersectSegmentTypeTable;
     TrackBlockDescriptor* desc = (TrackBlockDescriptor*)(base + 0x424);
@@ -1879,7 +1879,7 @@ int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit***
         conv[4] = (int)(10000.0f + y);
         conv[2] = z;
         conv[5] = z;
-        hitDetectFn_800691c0(obj, (TrackQueryBounds*)conv, submode, 1);
+        hitDetectFn_800691c0(obj, (TrackQueryBounds*)conv, queryMask, 1);
     }
     else
     {
@@ -3418,7 +3418,7 @@ u8 doEdges;
     return cur;
 }
 
-void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int b)
+void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 queryMask, int b)
 {
     f32 f31 = (f32)(ranges->minX - 5);
     f32 f30 = (f32)(ranges->maxX + 5);
@@ -3445,14 +3445,14 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 a, int 
         desc++;
         descEnd = &gTrackBlockDescriptors[20];
         gTrackTriangleBufferEnd = (u32)(gTrackTriangleBuffer + 1200);
-        masked = a & 0xffff;
+        masked = queryMask & 0xffff;
         if ((masked & 0x10) != 0)
         {
             cur = (int)gTrackTriangleBuffer;
         }
         else
         {
-            cur = mapLoadBlocksFn_800685cc((int)gTrackTriangleBuffer, f31, f29, f27, f30, f28, f26, a, b);
+            cur = mapLoadBlocksFn_800685cc((int)gTrackTriangleBuffer, f31, f29, f27, f30, f28, f26, queryMask, b);
         }
         if ((u32)cur < gTrackTriangleBufferEnd && (masked & 1) && obj != NULL)
         {
