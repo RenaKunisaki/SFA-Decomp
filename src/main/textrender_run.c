@@ -77,7 +77,7 @@ int gGameTextFallbackBuf;
 GameTextDrawFunc gameTextDrawFunc;
 u8 gGameTextFontIsSjis;
 
-void setLanguageFn_8001ad64(GameTextLoadSlot* slot);
+void gameTextFinalizeLoad(GameTextLoadSlot* slot);
 
 extern u16 gGameTextSjisGlyphTable[];
 extern char sGameTextMapPathFormat[];
@@ -230,7 +230,7 @@ void gameTextRun(void)
     {
         if (slot->state == 2)
         {
-            setLanguageFn_8001ad64(slot);
+            gameTextFinalizeLoad(slot);
         }
         slot++;
     } while (i-- != 0);
@@ -971,7 +971,9 @@ void gameTextLoadGraphicsFn_8001a918(void)
     charset->mode = 2;
 }
 
-void setLanguageFn_8001ad64(GameTextLoadSlot* req)
+/* Install a completed language/charset load, upload its textures, and compact
+   the relocatable text tables. */
+void gameTextFinalizeLoad(GameTextLoadSlot* req)
 {
     int** slot;
     u16* p;
