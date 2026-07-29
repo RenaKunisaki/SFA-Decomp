@@ -54,11 +54,6 @@
 #define DBPROTECTION_GAMEBIT_DIVE_ACTIVE 0xf1e
 
 extern s8 gDBprotectionTransitionPending;
-extern f32 gDBprotPi;
-extern f32 gDBprotAngleUnit;
-extern f32 lbl_803E56F8;
-extern f32 lbl_803E56FC;
-extern f32 lbl_803E5748;
 
 ObjectDescriptor15 gSB_GalleonObjDescriptor = {
     0,
@@ -203,18 +198,18 @@ void DBprotection_updateFlight(GameObject* obj) {
         (*gCameraInterface)->releaseAction(&camShake, 0);
         ((GameObject*)obj)->userData1 = 1;
         tx = ((SBGalleonState*)state)->homeX - 1600.0f;
-        tz = 150.0f * mathCosf((gDBprotPi * (f32)((SBGalleonState*)state)->bobPhase) / gDBprotAngleUnit) +
+        tz = 150.0f * mathCosf((3.14159265f * (f32)((SBGalleonState*)state)->bobPhase) / 32768.0f) +
              ((SBGalleonState*)state)->homeZ;
-        ty = 60.0f * mathSinf((gDBprotPi * (f32)((SBGalleonState*)state)->bobPhase) / gDBprotAngleUnit) +
+        ty = 60.0f * mathSinf((3.14159265f * (f32)((SBGalleonState*)state)->bobPhase) / 32768.0f) +
              (((SBGalleonState*)state)->homeY - 300.0f);
         ((SBGalleonState*)state)->bobPhase = ((SBGalleonState*)state)->bobPhase + framesThisStep * 0xB6;
         dx = tx - ((GameObject*)obj)->anim.localPosX;
         dy = ty - ((GameObject*)obj)->anim.localPosY;
         dz = tz - ((GameObject*)obj)->anim.localPosZ;
         ((SBGalleonState*)state)->speed = 3.0f;
-        dx = dx * lbl_803E56F8;
-        dy = dy * lbl_803E56F8;
-        dz = dz * lbl_803E56F8;
+        dx = dx * 0.03125f;
+        dy = dy * 0.03125f;
+        dz = dz * 0.03125f;
         limit = ((SBGalleonState*)state)->speed;
         if (dx > limit) {
             dx = limit;
@@ -242,7 +237,7 @@ void DBprotection_updateFlight(GameObject* obj) {
             dy = dy * ((f32)(t - 0x78) / 60.0f);
         }
         ((SBGalleonState*)state)->phaseTimer += framesThisStep;
-        ((SBGalleonState*)state)->driftX += (dx - ((SBGalleonState*)state)->driftX) * (blendK = lbl_803E56FC);
+        ((SBGalleonState*)state)->driftX += (dx - ((SBGalleonState*)state)->driftX) * (blendK = 0.0625f);
         ((SBGalleonState*)state)->driftY += (dy - ((SBGalleonState*)state)->driftY) * (blendK = blendK);
         ((SBGalleonState*)state)->driftZ += (dz - ((SBGalleonState*)state)->driftZ) * (blendK = blendK);
         ambA = 50.0f;
@@ -352,9 +347,9 @@ void DBprotection_updateFlight(GameObject* obj) {
         tz = tz - ((GameObject*)obj)->anim.localPosZ;
         ((SBGalleonState*)state)->speed = 3.0f;
         dist = sqrtf(tz * tz + (tx * tx + dy * dy));
-        tx = tx * lbl_803E56FC;
-        dy = dy * lbl_803E56F8;
-        tz = tz * lbl_803E56F8;
+        tx = tx * 0.0625f;
+        dy = dy * 0.03125f;
+        tz = tz * 0.03125f;
         if (tx > 6.0f) {
             tx = 6.0f;
         }
@@ -375,7 +370,7 @@ void DBprotection_updateFlight(GameObject* obj) {
         }
         ((SBGalleonState*)state)->phaseTimer += framesThisStep;
         lerpD = tx - ((SBGalleonState*)state)->driftX;
-        ((SBGalleonState*)state)->driftX = lerpD * lbl_803E5748 + ((SBGalleonState*)state)->driftX;
+        ((SBGalleonState*)state)->driftX = lerpD * 0.125f + ((SBGalleonState*)state)->driftX;
         ((SBGalleonState*)state)->driftY += (dy - ((SBGalleonState*)state)->driftY) / 14.0f;
         ((SBGalleonState*)state)->driftZ += (tz - ((SBGalleonState*)state)->driftZ) / 24.0f;
         ambA = 1911.0f;
@@ -779,7 +774,7 @@ void DBprotection_updateShield(GameObject* obj) {
     (*gCloudActionInterface)->func12Nop(-25.0f, 0.0f);
     (*gCloudActionInterface)->func10Nop(0);
 
-    angleSin = mathSinf((gDBprotPi * state->shieldAngle) / gDBprotAngleUnit);
+    angleSin = mathSinf((3.14159265f * state->shieldAngle) / 32768.0f);
     if (state->shieldSfxLatch == 0) {
         if (angleSin < -0.9f) {
             if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0) {
