@@ -2198,7 +2198,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
     u8 vertexBit;
     u8 nextBit;
     u8 bounces;
-    int hit;
+    s16 hit;
     TrackTriangle* tri;
     u32 objmtx;
     TrackBlockDescriptor* desc;
@@ -2342,7 +2342,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                         if (b == 0)
                         {
                             hit = 1;
-                            break;
+                            goto hitCheck;
                         }
                         tri->edgeOutBits = b;
                     }
@@ -2376,10 +2376,8 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                         tri->edgeOutBits = b;
                     }
                 }
-                if (hit == 0)
+                if (mag != 0.0f)
                 {
-                    if (mag == 0.0f)
-                        continue;
                     for (tri = gTrackTriangleBuffer + desc->firstTriangle;
                          tri < gTrackTriangleBuffer + desc[1].firstTriangle; tri++)
                     {
@@ -2406,13 +2404,10 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                                                      &frac, 0.0f))
                             {
                                 hit = 1;
-                                break;
+                                goto hitCheck;
                             }
                         }
-                        if (hit != 0)
-                            break;
                     }
-                    if (hit == 0)
                     for (tri = gTrackTriangleBuffer + desc->firstTriangle;
                          tri < gTrackTriangleBuffer + desc[1].firstTriangle; tri++)
                     {
@@ -2476,7 +2471,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                             if (ok)
                             {
                                 hit = 1;
-                                break;
+                                goto hitCheck;
                             }
                             vb[0] = tri->vx[nextBit];
                             vb[1] = tri->vy[nextBit];
@@ -2528,13 +2523,12 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                             if (ok)
                             {
                                 hit = 1;
-                                break;
+                                goto hitCheck;
                             }
                         }
-                        if (hit != 0)
-                            break;
                     }
                 }
+            hitCheck:
                 if (hit != 0)
                 {
                     u8 triFlags;
