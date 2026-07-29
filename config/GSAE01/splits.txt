@@ -1246,14 +1246,14 @@ dlls/engine/76/76.c:
 
 dlls/engine/77/77.c:
 	.text       start:0x8010DB7C end:0x8010E51C
-	.data       start:0x80319DA8 end:0x80319E08
+	.data       start:0x80319DA8 end:0x80319DF8
 	.sdata      start:0x803DB9A8 end:0x803DB9C8
 	.sbss       start:0x803DD580 end:0x803DD588
 	.sdata2     start:0x803E19D0 end:0x803E1A24
 
 dlls/engine/78/78.c:
 	.text       start:0x8010E51C end:0x8010F2F8
-	.data       start:0x80319E08 end:0x80319E38
+	.data       start:0x80319DF8 end:0x80319E38
 	.sbss       start:0x803DD588 end:0x803DD590
 	.sdata2     start:0x803E1A28 end:0x803E1A84
 

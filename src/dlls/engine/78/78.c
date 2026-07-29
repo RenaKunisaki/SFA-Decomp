@@ -16,7 +16,8 @@ CameraModeWorldMapState* gCamWorldMapState;
 #define WORLDMAP_CAMERA_FREE_OVERVIEW 0
 #define WORLDMAP_CAMERA_LOCKED_PATH   1
 
-extern f32 lbl_80319DF8[];
+f32 gCamWorldMapMarkerYOffsets[4] = {-3.0f, -3.5f, -3.5f, -3.0f};
+
 void CameraModeWorldMap_copyToCurrent(int* p1, int kind)
 {
     switch (kind)
@@ -302,7 +303,7 @@ void CameraModeWorldMap_update(GameObject* obj)
                     sb = -mathSinf(b);
                     radius = 30.0f;
                     g->anim.localPosX = radius * sb + camera->anim.worldPosX;
-                    g->anim.localPosY = camera->anim.worldPosY + lbl_80319DF8[(s8) * &g->anim.bankIndex];
+                    g->anim.localPosY = camera->anim.worldPosY + gCamWorldMapMarkerYOffsets[(s8) * &g->anim.bankIndex];
                     g->anim.localPosZ = radius * cb + camera->anim.worldPosZ;
                     g->anim.rotX = (s16)(-0xbb8 - my);
                 }

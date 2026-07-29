@@ -326,7 +326,6 @@ void CameraModeNpcSpeak_init(CameraObject* camera, int unused, CameraModeNpcSpea
 
 #undef target
 
-f32 lbl_80319DF8[4] = {-3.0f, -3.5f, -3.5f, -3.0f};
 void CameraModeNpcSpeak_release(void)
 {
 }
