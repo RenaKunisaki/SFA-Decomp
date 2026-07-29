@@ -76,6 +76,14 @@ is the integer sibling of the already-recorded `(v = 0.0f)` in-place float idiom
 temp;` before a by-value call, and `int amapBytes = animCount * 4; size = amapBytes;` were both
 **exactly inert**.
 
+**Nor when the constant is loop-invariant rather than reused across statements.** In
+`errorThreadFunc` retail materialises a hoisted `0xc080` fill *before* computing the loop bound;
+naming it (`u16 fill = 0xc080;` assigned ahead of `rows`, with the loop body storing `fill`) was
+**exactly inert** — LICM hoists the literal either way, so there was no re-materialisation for
+the fossil to remove. The lever fires on a constant used by **two or more separate statements**,
+not on one the optimiser already hoists. Swapping the two preheader statements to change the
+emission order instead **regressed 99.954 -> 99.673**.
+
 ### 2. Uniform declaration-order band model (narrow width)
 
 **Claim.** At narrow band width, try the **uniform** model first: treat *all* saved-band values
@@ -170,6 +178,13 @@ indexing spelling reaches it. Check which of base/index retail keeps before appl
 gSubtitleLineTimes + i;` before an `if` moved the work above the short-circuit branch and cost
 **96.567 -> 90.634**.
 
+**Caching a global in a local is usually right — verify before undoing it.** In the same
+function, dropping the local `i` and reading `gSubtitleLineIndex` directly at each use
+**regressed 96.567 -> 94.963**. Together with the pointer-IV result above, this confirmed both
+reshaping choices made when that TU's boundary was recovered, rather than assuming them. When a
+recent commit message records a shape decision, re-measure it against the target — but expect it
+to hold.
+
 **Condition spelling is not a knob either.** `curTime >= (&gSubtitleLineTimes[i])[1]` and
 splitting `&&` into nested `if`s were both **exactly inert** — MWCC folds them to one expression
 DAG. If two spellings tie to the digit, stop probing that expression.
@@ -193,6 +208,53 @@ EABI. It is hand-written assembly; inline asm is banned outside `src/dolphin/`, 
 stays `NonMatching`. Do not reach for global register variables — they would not reproduce it
 anyway (MWCC still emits saves for any callee-saved register it allocates, and three register
 return values are not expressible).
+
+**Declaration position does not move a compiler-generated temp relative to a named local.**
+`objCausticReflectionRenderCb` looks like a 4-byte frame-layout bug — retail `stw r0,20(r1)` /
+`addi r4,r1,20`, ours `16(r1)`. It isn't. The **frames are identical** (`-320` both); there are
+*two* 4-byte temps, a `volatile float root` and the anonymous by-value `GXColor` copy for
+`GXSetTevKColor`, and they are simply **swapped** between slots 16 and 20. Four spellings, all
+**exactly inert** (99.991 to the digit, T=C=523): hoisting `volatile float root` out of its `if`
+block — which mirrors the real `sqrtf` inline, where `volatile float y` is declared *before* the
+`if` — moving it to the function's top-level declaration list, swapping two unrelated
+declarations, and naming the anonymous copy. If a diff is a temp-vs-local slot swap rather than
+a frame-size change, declaration position is not the knob.
+
+**Arithmetic respelling of a constant multiply is inert.** `modelGetAmapSize` (band 2, one
+instruction short) splits an `if`/`else` where retail materialises the `else` arm through
+`slwi r0,r5,2; mr r31,r0` and we emit `slwi r31,r5,2` direct. `animCount << 2`, `4 * animCount`,
+and a local copy of `animCount` were all **exactly inert** (97.614, 47 vs 46). Note also what
+*not* to try: inverting the arms would break the branch sense retail pins with `cmpwi r4,0;
+beq-` — you'd trade a match for one instruction.
+
+**Better code is not the goal; retail's shape is.** In `hitDetect_800667ec` the source computes
+`typeSlotp = slotBase + i;` and then, on the next line, `slotBase[i + 0x54]` — an obvious
+missed reuse. Rewriting it as `typeSlotp[0x54]` **regressed 98.148 -> 97.399**: retail *spills*
+`typeSlotp` to `368(r1)` and reloads it (4 instructions) while our version keeps it in `r14`
+(2 instructions), and holding `r14` cascaded to **+18 instructions** overall. An allocator spill
+decision in an 18-wide band is not source-reachable, and "our code is tighter" is a warning sign.
+
+**Curing a defect can cost more than the defect.** Deleting four decompiler-invented pointer
+locals in the same function *did* cure the `addi r0,r1,K; mr rN,r0` detour — every `addi` went
+direct — but shrank the frame 656 -> 640, cascading every stack offset: **98.148 -> 97.987**.
+Retail's frame is 656, so those locals are real. Check the frame size before deleting locals.
+
+**Definition-order is the copy-class knob, and it can still go backwards.**
+`modelLoadAnimations` is 12 regions of a single `r27`/`r31` swap on two copy-class parameters
+(retail `id`->r31, `animBase`->r27). Since copy class is keyed on *definition* order, delaying
+`buf = animBase` past the first use of `id` is the textbook probe; it **regressed
+99.661 -> 99.237**.
+
+**A score that ticks up while the instruction count walks away is the wrong direction.** An
+inner copy loop reproducing retail's branch-back-to-the-count-test in `modelApplyBoneTransform`
+scored **10.784 -> 10.810** — +0.026 — for **+9 instructions** (153 -> 162 against retail's 120).
+Reverted. Track the count alongside the percentage.
+
+**Free source-consistency fixes worth knowing are inert, not harmful.** `RENDER_BITS_REFILL` and
+`RENDER_BITS_REFILL_NEXT` are twin macros that differ only in that one uses a two-variable form
+(`addrB = bufA + curB; curB = addrB;`) and the other assigns in place. Making them consistent is
+**exactly inert** — propagation folds them — so it can be done for readability at zero byte cost,
+but it will not move a score.
 
 ## Gate reminders that cost real score today
 
