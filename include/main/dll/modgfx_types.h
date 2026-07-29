@@ -34,31 +34,100 @@ STATIC_ASSERT(offsetof(ModgfxEffectResource, sequenceParams) == 0x6C);
 
 typedef struct ModgfxSpawnPacket
 {
-    GfxCmd* cmds;
-    int ctx;
+    union
+    {
+        GfxCmd* cmds;
+        GfxCmd* commands;
+    };
+    union
+    {
+        int ctx;
+        GameObject* sourceObj;
+    };
     u8 pad08[0x18];
-    f32 col[3];
-    f32 pos[3];
+    union
+    {
+        f32 col[3];
+        f32 velocity[3];
+    };
+    union
+    {
+        f32 pos[3];
+        f32 position[3];
+    };
     f32 scale;
-    u32 v3c;
-    u32 v40;
-    s16 v44;
-    s16 hw[7];
+    union
+    {
+        u32 v3c;
+        u32 drawGroupStride;
+    };
+    union
+    {
+        u32 v40;
+        u32 drawGroupCount;
+    };
+    union
+    {
+        s16 v44;
+        s16 sourceMode;
+    };
+    union
+    {
+        s16 hw[7];
+        s16 sequenceParams[7];
+    };
     u32 flags;
-    u8 v58;
-    u8 v59;
-    u8 v5a;
-    u8 v5b;
-    u8 v5c;
-    s8 count;
+    union
+    {
+        u8 v58;
+        u8 modeByte;
+    };
+    union
+    {
+        u8 v59;
+        u8 initialStateByte;
+    };
+    union
+    {
+        u8 v5a;
+        u8 byte5A;
+    };
+    union
+    {
+        u8 v5b;
+        u8 textureFrameTimer;
+    };
+    union
+    {
+        u8 v5c;
+        u8 sourceYawIndex;
+    };
+    union
+    {
+        s8 count;
+        s8 commandCount;
+    };
     u8 pad5E[2];
     GfxCmd entries[32];
 } ModgfxSpawnPacket;
 
-STATIC_ASSERT(offsetof(ModgfxSpawnPacket, col) == 0x20);
-STATIC_ASSERT(offsetof(ModgfxSpawnPacket, pos) == 0x2C);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, commands) == 0x00);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, ctx) == 0x04);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, sourceObj) == 0x04);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, velocity) == 0x20);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, position) == 0x2C);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, scale) == 0x38);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, drawGroupStride) == 0x3C);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, drawGroupCount) == 0x40);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, sourceMode) == 0x44);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, sequenceParams) == 0x46);
 STATIC_ASSERT(offsetof(ModgfxSpawnPacket, flags) == 0x54);
-STATIC_ASSERT(offsetof(ModgfxSpawnPacket, count) == 0x5D);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, modeByte) == 0x58);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, initialStateByte) == 0x59);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, byte5A) == 0x5A);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, textureFrameTimer) == 0x5B);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, sourceYawIndex) == 0x5C);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, commandCount) == 0x5D);
 STATIC_ASSERT(offsetof(ModgfxSpawnPacket, entries) == 0x60);
 STATIC_ASSERT(sizeof(ModgfxSpawnPacket) == 0x360);
 
