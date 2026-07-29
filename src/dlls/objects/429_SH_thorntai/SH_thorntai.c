@@ -32,13 +32,11 @@
 
 extern u32 gSHthorntailDataTables[][4];
 extern char sSHthorntailAngleYawDebug[];
-extern f32 SHTHORNTAIL_TIMER_DONE_THRESHOLD;
-extern f32 SHTHORNTAIL_LINKED_EVENT_DISTANCE_SQ;
-extern f32 SHTHORNTAIL_TAIL_SWING_WINDUP_TIME;
-extern f32 SHTHORNTAIL_TAIL_SWING_RECOVER_TIME;
-extern f32 SHTHORNTAIL_CLOSE_ATTACK_DISTANCE;
-extern u32 lbl_803E5410;
-
+#define SHTHORNTAIL_TIMER_DONE_THRESHOLD                  0.0f
+#define SHTHORNTAIL_LINKED_EVENT_DISTANCE_SQ              40000.0f
+#define SHTHORNTAIL_TAIL_SWING_WINDUP_TIME                180.0f
+#define SHTHORNTAIL_TAIL_SWING_RECOVER_TIME               45.0f
+#define SHTHORNTAIL_CLOSE_ATTACK_DISTANCE                 10000.0f
 #define SHTHORNTAIL_LINKED_CONFIG_GROUP_COUNT             6
 #define SHTHORNTAIL_LINKED_CONFIG_COUNT                   3
 #define SHTHORNTAIL_HIT_REACT_ENTRY_COUNT                 25
@@ -147,6 +145,12 @@ typedef struct SHthorntailDataTables {
     u8 levelMode0Locomotion5ClearImpactSfxVariants[SHTHORNTAIL_LEVEL_MODE0_SFX_VARIANT_BYTES];
     u8 levelMode0Locomotion8ImpactSfxVariants[SHTHORNTAIL_LEVEL_MODE0_SFX_VARIANT_BYTES];
 } SHthorntailDataTables;
+
+typedef struct SHthorntailPathParams {
+    u8 values[4];
+} SHthorntailPathParams;
+
+static const SHthorntailPathParams sSHthorntailPathParams = {{1, 1, 1, 1}};
 
 s32 gSHthorntailActiveConfigToken = -1;
 u8 gSHthorntailLevelControlMode1ImpactSfxTable[] = {1, 0x10};
@@ -704,8 +708,8 @@ void SHthorntail_updateLevelControlMode1(u32 objectId, SHthorntailState* runtime
     runtime->impactSfxTable = gSHthorntailLevelControlMode1ImpactSfxTable;
     playerObj = (int)Obj_GetPlayerObject();
     {
-        int cmp = (double)getXZDistance((f32*)(objectId + 0x18), (f32*)(playerObj + 0x18)) <
-                  (double)SHTHORNTAIL_CLOSE_ATTACK_DISTANCE;
+        int cmp = getXZDistance((f32*)(objectId + 0x18), (f32*)(playerObj + 0x18)) <
+                  SHTHORNTAIL_CLOSE_ATTACK_DISTANCE;
         closeToPlayer = cmp;
     }
     if (placement->impactSfxVariant == 0) {
@@ -1100,10 +1104,10 @@ void SHthorntail_init(GameObject* obj, const SHthorntailPlacement* placement) {
     ObjModel* model;
     u32 randomTime;
     u8* moveScratch;
-    u32 outA[2];
+    SHthorntailPathParams pathParam;
 
     runtime = obj->extra;
-    outA[0] = lbl_803E5410;
+    pathParam = sSHthorntailPathParams;
     obj->anim.rotX = (short)((int)placement->initialFacing << 8);
     switch (placement->controlMode) {
     case SHTHORNTAIL_CONTROL_MODE_LEVEL_0:
@@ -1132,7 +1136,7 @@ void SHthorntail_init(GameObject* obj, const SHthorntailPlacement* placement) {
     moveScratch = runtime->moveScratch;
     (*gPathControlInterface)->init(moveScratch, SHTHORNTAIL_PATH_CONTROL_MODE, SHTHORNTAIL_PATH_CONTROL_FLAGS, 0);
     (*gPathControlInterface)
-        ->setup(moveScratch, SHTHORNTAIL_PATH_CHANNEL, gSHthorntailPathHeaders, gSHthorntailPathData, outA);
+        ->setup(moveScratch, SHTHORNTAIL_PATH_CHANNEL, gSHthorntailPathHeaders, gSHthorntailPathData, &pathParam);
     (*gPathControlInterface)->attachObject(obj, moveScratch);
     obj->animEventCallback = SHthorntail_updateLevelControlState;
     dll_2E_initState((GameObject*)obj, (MoveLibState*)runtime, 0xffffdc72, 0x2aaa, 3);

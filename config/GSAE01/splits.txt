@@ -2925,7 +2925,7 @@ dlls/objects/429_SH_thorntai/SH_thorntai.c:
 	.text       start:0x801D4CD0 end:0x801D6914
 	.data       start:0x80326E98 end:0x80327560
 	.sdata      start:0x803DBFF8 end:0x803DC038
-	.sdata2     start:0x803E5428 end:0x803E5460
+	.sdata2     start:0x803E5410 end:0x803E5460
 
 dlls/objects/432_SH_swapston/SH_swapston.c:
 	.text       start:0x801D6914 end:0x801D7BA8
