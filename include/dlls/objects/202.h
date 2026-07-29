@@ -8,20 +8,6 @@
 
 typedef int (*IceBaddieStateHandler)(GameObject* obj, GroundBaddieState* state);
 
-typedef struct IceBaddiePlacement {
-    ObjPlacement base;     /* 0x00 */
-    u8 pad18[0x2B - 0x18]; /* 0x18 */
-    u8 flags;              /* 0x2B: ground-baddie initialization flags */
-    u8 pad2C[0x2E - 0x2C]; /* 0x2C */
-    s8 sequenceId;         /* 0x2E: object sequence run on first update */
-    u8 pad2F;              /* 0x2F */
-} IceBaddiePlacement;
-
-STATIC_ASSERT(offsetof(IceBaddiePlacement, base) == 0x0);
-STATIC_ASSERT(offsetof(IceBaddiePlacement, flags) == 0x2B);
-STATIC_ASSERT(offsetof(IceBaddiePlacement, sequenceId) == 0x2E);
-STATIC_ASSERT(sizeof(IceBaddiePlacement) == 0x30);
-
 void iceBaddie_installStateHandlers(void);
 
 int iceBaddie_updateOpenHitState(GameObject* obj, GroundBaddieState* state);
@@ -57,7 +43,7 @@ void iceBaddie_free(GameObject* obj);
 void iceBaddie_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible);
 void iceBaddie_hitDetect(GameObject* obj);
 void iceBaddie_update(GameObject* obj, int unusedA, int unusedB);
-void iceBaddie_init(GameObject* obj, IceBaddiePlacement* placement, int flags);
+void iceBaddie_init(GameObject* obj, GroundBaddiePlacement* placement, int flags);
 void iceBaddie_release(void);
 void iceBaddie_initialise(void);
 
