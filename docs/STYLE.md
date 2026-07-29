@@ -57,7 +57,11 @@ The retail `.o` bytes are the ground truth; layout moves must be codegen-neutral
 - **Never change a declaration's type spelling** while moving it. Signedness of extern
   decls is load-bearing: `int` vs `u32` flips `cmpwi`/`cmplwi` at compare sites. If a
   local extern's spelling differs from every header's, it stays local, as spelled.
-- **Never strip an `LL` suffix from a flag-word constant.** On a 32-bit flag word,
+- **Never narrow a 64-bit flag-word constant to 32 bits.** This covers the `LL`/`ULL` suffix *and*
+  the suffix-less form: a literal too wide for 32 bits is already a `long long`, so
+  `x &= 0xFFFFFFFBF` (nine hex digits, truncating to `0xFFFFFFBF`) is the same lever wearing
+  different clothes and must not be "cleaned" to `x &= ~0x40`. A rule phrased only as "don't strip
+  the suffix" sails straight past it. On a 32-bit flag word,
   `x |= 0x1000000LL` emits `lis; or` while `x |= 0x1000000` folds to `oris`; the same
   split holds for `&= ~MASK` (`lis; addi; and` vs `rlwinm`) and `^= BIT`
   (`li; xor` vs `xori`). The 64-bit width of the operand is the *only* lever that
