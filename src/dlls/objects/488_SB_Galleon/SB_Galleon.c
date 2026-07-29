@@ -207,9 +207,9 @@ void DBprotection_updateFlight(GameObject* obj) {
         dy = ty - ((GameObject*)obj)->anim.localPosY;
         dz = tz - ((GameObject*)obj)->anim.localPosZ;
         ((SBGalleonState*)state)->speed = 3.0f;
-        dx = dx * 0.03125f;
-        dy = dy * 0.03125f;
-        dz = dz * 0.03125f;
+        dx *= 0.03125f;
+        dy *= 0.03125f;
+        dz *= 0.03125f;
         limit = ((SBGalleonState*)state)->speed;
         if (dx > limit) {
             dx = limit;
