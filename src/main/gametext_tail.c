@@ -248,15 +248,34 @@ static inline int gameTextCtrlCharLen(u32 c)
     return 0;
 }
 
+static inline int gameTextCountChars(char* str) {
+    int charCount;
+    int byteOffset;
+    u32 ch;
+    int charLen;
+
+    charCount = 0;
+    byteOffset = 0;
+    if (str == NULL) {
+        return 0;
+    }
+    while ((ch = utf8GetNextChar((u8*)(str + byteOffset), &charLen)) != 0) {
+        byteOffset += charLen;
+        if (ch >= 0xe000 && ch <= 0xf8ff) {
+            byteOffset += gameTextCtrlCharLen(ch) * 2;
+        } else {
+            charCount++;
+        }
+    }
+    return charCount;
+}
+
 void gameTextTickReveal(int textId, TextDisplayState* state)
 {
     GameTextDef* def;
     s32 charCount;
-    int byteOffset;
     char* lineStr;
     int special;
-    u32 ch;
-    int charLen;
     u8* defAddress;
 
     if (gameTextFonts->mode == 1)
@@ -276,26 +295,7 @@ void gameTextTickReveal(int textId, TextDisplayState* state)
         return;
     }
     lineStr = def->strings[state->charIndex];
-    byteOffset = charCount = 0;
-    if (lineStr == NULL)
-    {
-        charCount = byteOffset;
-    }
-    else
-    {
-        while ((ch = utf8GetNextChar((u8*)(lineStr + byteOffset), &charLen)) != 0)
-        {
-            byteOffset += charLen;
-            if (ch >= 0xe000 && ch <= 0xf8ff)
-            {
-                byteOffset += gameTextCtrlCharLen(ch) * 2;
-            }
-            else
-            {
-                charCount++;
-            }
-        }
-    }
+    charCount = gameTextCountChars(lineStr);
     if (state->active == 0)
     {
         gGameTextDrawnCharIndex = 0;
