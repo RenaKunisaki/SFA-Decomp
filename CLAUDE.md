@@ -66,6 +66,9 @@ These are match-hacks, not plausible 2002 source. They were purged repo-wide (se
 - **`__declspec(section ...)`** and any section-forcing data placement.
 - **Match-volatiles** — `volatile` or `*(volatile T*)&` puns used to block CSE/hoisting. `volatile`
   is allowed only for genuine hardware/interrupt semantics (GX FIFO, hardware registers).
+- **Dummy global-register reservations** — declarations such as
+  `register int unused asm("r14")` whose only purpose is to remove a register from MWCC's
+  allocator. Recover the real source lifetimes instead and accept the mismatch until then.
 - **Pool-reconstruction consts** — `lbl_8XXXXXXX`-named const defs read via `*(f32*)&`; write plain
   literals. This includes the **`const union { f32 f; } lbl_x = { V };` + `lbl_x.f`** disguise (a
   named-`.sdata2` float that blocks folding to force the pool symbol) — banned; write the plain

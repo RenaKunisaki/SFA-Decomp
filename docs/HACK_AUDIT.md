@@ -19,7 +19,8 @@ The complete pre-purge state is pinned at git tag `pre-hack-purge`
 These constructs are BANNED from game code (`src/main/`, `src/track/`) — see the
 "Banned constructs" section of CLAUDE.md, which is the enforced source of truth:
 no `#pragma` of any kind, no `goto`, no `__declspec(section ...)`, no
-match-volatiles/CSE-blocking puns, no `lbl_`-named pool-reconstruction consts.
+match-volatiles/CSE-blocking puns, no dummy `register ... asm("rN")` declarations
+used to reserve allocator registers, and no `lbl_`-named pool-reconstruction consts.
 Units that cannot match without them stay NonMatching or await a TU re-split.
 
 ## Waves 1-2 (complete purge of src/main + src/track)
