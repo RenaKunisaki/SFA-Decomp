@@ -333,6 +333,7 @@
 #include "main/dll/dll_0051_cameramodecannon.h"
 #include "main/dll/dll_0052_cameramodeforcebehind.h"
 #include "main/dll/dll_0053_cameramodecloudrunner.h"
+#include "main/dll/dll_0054_dll54.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -412,7 +413,7 @@ char sModelEngineTimerDotText[] = ".";
 
 extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19;
 extern ResourceDescriptor dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
-extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
+extern ResourceDescriptor dll_2A4, dll_2E, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor;
@@ -1220,7 +1221,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCameraModeCannonDescriptor,
     (ResourceDescriptor*)&gCameraModeForceBehindDescriptor,
     (ResourceDescriptor*)&gCameraModeCloudRunnerDescriptor,
-    &dll_54,
+    (ResourceDescriptor*)&gCameraMode54Descriptor,
     &lbl_80319F58,
     &lbl_80319F88,
     &gCameraModeTitleDescriptor,

@@ -6,6 +6,10 @@
 #include "game/objects/object.h"
 #include "main/dll/CAM/camcontrol_mode_settings.h"
 
+typedef enum CameraModeNormalResourceId {
+    CAMERA_MODE_NORMAL_RESOURCE_ID = 0x42,
+} CameraModeNormalResourceId;
+
 typedef struct CamSlideRot
 {
     s16 angles[4];
