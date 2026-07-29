@@ -5,29 +5,28 @@
  * prints the "projdfp1r ... No Longer supported" banner and returns -1, and
  * the load/unload hooks are empty stubs.
  */
-#include "dolphin/os.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00C2_projdfp1r.h"
+#include "dolphin/os/OSReport.h"
 
-#define PROJECTILE_UNSUPPORTED_RETURN -1
+extern char sProjdfp1rDoNoLongerSupported[];
 
-int projdfp1r_doUnsupported(void)
-{
+int projdfp1r_doUnsupported(void) {
     OSReport(sProjdfp1rDoNoLongerSupported);
-    return PROJECTILE_UNSUPPORTED_RETURN;
+    return -1;
 }
 
-void projdfp1r_release(void)
-{
+void projdfp1r_release(void) {
 }
 
-void projdfp1r_initialise(void)
-{
+void projdfp1r_initialise(void) {
 }
 
-DllDescriptorTable lbl_80319A40 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projdfp1r_initialise, projdfp1r_release, (void*)0x00000000,
-                                    projdfp1r_doUnsupported}};
+Projdfp1rResourceDescriptor gProjdfp1rResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projdfp1r_initialise,
+    projdfp1r_release,
+    NULL,
+    projdfp1r_doUnsupported,
+};
 
-/* Explicit length preserves the four-byte retail tail padding. */
 char sProjdfp1rDoNoLongerSupported[] = "<projdfp1r Do>No Longer supported \n";

@@ -448,6 +448,7 @@
 #include "main/dll/dll_00BF_projcore1.h"
 #include "main/dll/dll_00C0_projcore2.h"
 #include "main/dll/dll_00C1_projcore3.h"
+#include "main/dll/dll_00C2_projdfp1r.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -594,7 +595,6 @@ extern ResourceDescriptor Effect9_funcs, Effect10_funcs, Effect11_funcs, Effect1
 extern ResourceDescriptor Effect17_funcs, Effect18_funcs, Effect19_funcs, Effect20_funcs, lbl_803112E8, lbl_80311340,
     lbl_80311378, lbl_80311438;
 extern ResourceDescriptor lbl_803114B0, lbl_803114D8, lbl_803115F8, dll_15_funcs, lbl_80311900, lbl_80311BE0;
-extern ResourceDescriptor lbl_80319A40;
 extern ResourceDescriptor lbl_8031A148;
 extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode_funcs, lbl_8031A82C, EnterSaveNameScreen_funcs, OptionsScreen_funcs,
     lbl_8031ADA4, Dummy39_funcs;
@@ -1417,7 +1417,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gProjcore1ResourceDescriptor,
     (ResourceDescriptor*)&gProjcore2ResourceDescriptor,
     (ResourceDescriptor*)&gProjcore3ResourceDescriptor,
-    &lbl_80319A40,
+    (ResourceDescriptor*)&gProjdfp1rResourceDescriptor,
     NULL,
     &gTrickyObjDescriptor,
     (ResourceDescriptor*)&gDllC5NullResourceDescriptor,
