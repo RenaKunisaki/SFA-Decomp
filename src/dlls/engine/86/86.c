@@ -15,8 +15,6 @@ typedef enum CameraModeArwingMapEventSlot {
 } CameraModeArwingMapEventSlot;
 
 CameraModeArwingState gCameraModeArwingState;
-extern f32 gCamArwingRotEaseScale;
-extern f32 gCamArwingRollDecay;
 
 void CameraModeArwing_copyToCurrent(void* actionData, u32 recordSize) {
     if (recordSize == sizeof(CameraModeArwingPositionInput)) {
@@ -90,7 +88,7 @@ void CameraModeArwing_update(CameraObject* camera) {
             angleDelta = angleDelta + 0xffff;
         }
         rotationStep = (s32)((f32)angleDelta * timeDelta);
-        camera->anim.rotX = rotationStep * gCamArwingRotEaseScale + (f32) * (s16*)camera;
+        camera->anim.rotX = rotationStep * 0.0625f + (f32) * (s16*)camera;
         angleDelta = targetYaw - (u16)camera->anim.rotY;
         if (angleDelta > 0x8000) {
             angleDelta = angleDelta - 0xffff;
@@ -99,9 +97,9 @@ void CameraModeArwing_update(CameraObject* camera) {
             angleDelta = angleDelta + 0xffff;
         }
         rotationStep = (s32)((f32)angleDelta * timeDelta);
-        camera->anim.rotY = rotationStep * gCamArwingRotEaseScale + (f32)camera->anim.rotY;
+        camera->anim.rotY = rotationStep * 0.0625f + (f32)camera->anim.rotY;
     } else if (arwarwing_isExplodingOrWarping(target) != 0) {
-        f32 rollRate = gCameraModeArwingState.rollRate * gCamArwingRollDecay;
+        f32 rollRate = gCameraModeArwingState.rollRate * 0.98f;
         gCameraModeArwingState.rollRate = rollRate;
         camera->anim.rotZ = rollRate * timeDelta + (f32)camera->anim.rotZ;
     } else {
@@ -115,7 +113,7 @@ void CameraModeArwing_update(CameraObject* camera) {
             targetRoll = targetRoll + 0xffff;
         }
         rotationStep = (f32)targetRoll * timeDelta;
-        camera->anim.rotZ = rotationStep * gCamArwingRotEaseScale + (f32)camera->anim.rotZ;
+        camera->anim.rotZ = rotationStep * 0.0625f + (f32)camera->anim.rotZ;
         targetYaw = targetYaw - (u16)camera->anim.rotX;
         if (targetYaw > 0x8000) {
             targetYaw = targetYaw - 0xffff;
@@ -124,7 +122,7 @@ void CameraModeArwing_update(CameraObject* camera) {
             targetYaw = targetYaw + 0xffff;
         }
         rotationStep = (f32)targetYaw * timeDelta;
-        camera->anim.rotX = rotationStep * gCamArwingRotEaseScale + (f32) * (s16*)camera;
+        camera->anim.rotX = rotationStep * 0.0625f + (f32) * (s16*)camera;
         targetPitch = targetPitch - (u16)camera->anim.rotY;
         if (targetPitch > 0x8000) {
             targetPitch = targetPitch - 0xffff;
@@ -133,7 +131,7 @@ void CameraModeArwing_update(CameraObject* camera) {
             targetPitch = targetPitch + 0xffff;
         }
         rotationStep = (f32)targetPitch * timeDelta;
-        camera->anim.rotY = rotationStep * gCamArwingRotEaseScale + (f32)camera->anim.rotY;
+        camera->anim.rotY = rotationStep * 0.0625f + (f32)camera->anim.rotY;
     }
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
