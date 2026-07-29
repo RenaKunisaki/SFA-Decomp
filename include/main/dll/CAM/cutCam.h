@@ -5,12 +5,6 @@
 #include "main/camera_object.h"
 #include "game/objects/object.h"
 
-typedef struct CamcontrolAction43Payload {
-  s16 action;
-  u8 enabled;
-  u8 immediate;
-} CamcontrolAction43Payload;
-
 #define CAMCONTROL_TRACE_RADIUS_OFFSET 0x40
 #define CAMCONTROL_TRACE_BBOX_HIT_OFFSET 0x50
 #define CAMCONTROL_TRACE_MODE_OFFSET 0x54
