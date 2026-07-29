@@ -262,7 +262,7 @@ extern u8 gVideoBlackScreenFrameCount;
 extern u16 gGxDrawSyncToken;
 extern OSStopwatch gFrameStopwatch;
 extern f32 physicsTimeScale;
-extern u8 lbl_803DB411;
+extern u8 framesThisStepUnclamped;
 
 #include "main/dll/ppcwgpipe_struct.h"
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -431,7 +431,7 @@ void waitNextFrame(void)
     framesThisStep = step;
     frames = step & 0xff;
     gFrameStepRemainder = (dt + gFrameStepRemainder) - (f32)frames;
-    lbl_803DB411 = step;
+    framesThisStepUnclamped = step;
     if (frames < 1)
     {
         framesThisStep = 1;

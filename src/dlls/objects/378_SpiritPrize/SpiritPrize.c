@@ -7,7 +7,7 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 
-extern u8 lbl_803DB411;
+extern u8 framesThisStepUnclamped;
 
 #define SPIRIT_PRIZE_DISABLED_MAP_ID       0x4CA62
 #define SPIRIT_PRIZE_BOUND_LIGHT_SEQ_ID    0x1D9
@@ -93,7 +93,7 @@ void spiritPrize_update(GameObject* obj) {
         }
     }
 
-    objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
+    objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)framesThisStepUnclamped);
     if (objectIndex != 0 && obj->seqIndex == -2) {
         GameObject* matchingObj;
         int slot;

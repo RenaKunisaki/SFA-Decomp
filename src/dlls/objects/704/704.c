@@ -126,7 +126,7 @@ extern u8 gTitleScreenSfxFlagGrid[0x48];
 extern u8 gTitleScreenMtx[0x34];
 extern TitleAnimMoves gTitleScreenAnimMoves[];
 extern f32 hudMatrix[4][4];
-extern u8 lbl_803DB411;
+extern u8 framesThisStepUnclamped;
 extern f32 lbl_803E2300;
 extern f32 gTitleScreenPi;
 
@@ -205,7 +205,7 @@ void creditsStart_(void)
     }
     if (gTitleScreenCreditDelay > 0)
     {
-        gTitleScreenCreditDelay -= lbl_803DB411;
+        gTitleScreenCreditDelay -= framesThisStepUnclamped;
         if (gTitleScreenCreditDelay < 0)
         {
             gTitleScreenCreditDelay = 0;
@@ -232,8 +232,8 @@ void creditsStart_(void)
     }
     gameTextSetColor(0xff, 0xff, 0xff, alpha);
     gameTextShowAt(gCreditEntries[gTitleScreenCreditIndex].textId, 0, 0);
-    gTitleScreenCreditsElapsed += lbl_803DB411;
-    gTitleScreenCreditTimer += lbl_803DB411;
+    gTitleScreenCreditsElapsed += framesThisStepUnclamped;
+    gTitleScreenCreditTimer += framesThisStepUnclamped;
     if (gTitleScreenCreditTimer < gCreditEntries[gTitleScreenCreditIndex].duration)
     {
         return;

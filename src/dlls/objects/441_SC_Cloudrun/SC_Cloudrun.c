@@ -33,7 +33,7 @@
 #define SC_CLOUDRUNNER_A_SHADOW_TINT_A           0x64
 #define SC_CLOUDRUNNER_A_SHADOW_TINT_B           0x96
 
-extern u8 lbl_803DB411;
+extern u8 framesThisStepUnclamped;
 
 int sc_cloudrunnera_getExtraSize(void) {
     return sizeof(ScCloudrunnerAState);
@@ -75,7 +75,7 @@ void sc_cloudrunnera_update(int obj) {
     if (placement->animDataIndex == SC_CLOUDRUNNER_A_ANIM_DATA_NONE) {
         return;
     }
-    objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
+    objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)framesThisStepUnclamped);
     if (objectIndex != 0 && ((GameObject*)obj)->seqIndex == SC_CLOUDRUNNER_A_SEQUENCE_PENDING) {
         int sequenceOwner;
         register s32 slot = *(s8*)&sequence->slot;

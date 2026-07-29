@@ -4,7 +4,7 @@
 #include "dolphin/pad.h"
 
 u8 framesThisStep = 1;
-u8 lbl_803DB411 = 1;
+u8 framesThisStepUnclamped = 1;
 f32 timeDelta = 1.0f;
 f32 oneOverTimeDelta = 1.0f;
 int gGameLoopPendingUiDllId = -1;

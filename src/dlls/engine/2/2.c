@@ -1582,7 +1582,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
 
 extern ObjSeqStreamMapEntry gObjSeqStreamTableB[];
 extern u8 lbl_8039944C[];
-extern u8 lbl_803DB411;
+extern u8 framesThisStepUnclamped;
 int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmd, s8 flags, void* out);
 void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* placement);
 
@@ -5949,7 +5949,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
     (void)t;
 
     runs = 0;
-    step = lbl_803DB411;
+    step = framesThisStepUnclamped;
     placement = (ObjSeqPlacement*)obj->anim.placementData;
     if (placement == NULL)
     {

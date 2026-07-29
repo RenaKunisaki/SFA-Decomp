@@ -27,7 +27,7 @@
 #define MMSH_SCALES_NO_MAP_LAYER            -1
 #define MMSH_SCALES_NO_OBJECT_INDEX         -1
 
-extern u8 lbl_803DB411;
+extern u8 framesThisStepUnclamped;
 
 int mmshScales_getExtraSize(void) {
     return sizeof(MMSHScalesState);
@@ -71,7 +71,7 @@ void mmshScales_update(GameObject* obj) {
 
     if ((obj->anim.placementData != NULL) &&
         (((MMSHScalesPlacement*)obj->anim.placementData)->animDataIndex != MMSH_SCALES_ANIM_DATA_NONE)) {
-        objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
+        objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)framesThisStepUnclamped);
         if (objectIndex != 0 && obj->seqIndex == MMSH_SCALES_SEQUENCE_PENDING) {
             slot = ((MMSHScalesState*)obj->extra)->sequence.slot;
             sequenceOwner = NULL;
