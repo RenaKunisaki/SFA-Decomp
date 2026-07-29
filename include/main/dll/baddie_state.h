@@ -71,7 +71,11 @@ typedef struct BaddieState {
     f32 unk1B0; /* player.c compares it against 15 / 40 / 120 to gate landing and
         state-exit branches */
     f32 waterDepth; /* compared > threshold to fire the waterfx splash path (intersect.c) */
-    u8 unk1B8[0x25B - 0x1B8];
+    u8 unk1B8[0x1C0 - 0x1B8];
+    f32 waterSurfaceY; /* world-Y of the water surface under the actor, or the
+        no-water sentinel; player.c copies it into PlayerState.waterSurfaceY and
+        derives the submerged depth from it */
+    u8 unk1C4[0x25B - 0x1C4];
     s8 contactSfxMuted; /* nonzero suppresses contact sfx unless contactSfxFlags bit 0x10 (intersect.c) */
     u8 unk25C[0x25F - 0x25C];
     s8 physicsActive; /* enables the free-fall physics path: gravity integration (velY -= g*dt), floor bounce response; set when thrown/spat */

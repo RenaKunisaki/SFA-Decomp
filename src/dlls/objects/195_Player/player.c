@@ -6142,8 +6142,8 @@ int playerState1B(GameObject* obj, int state, f32 fv)
     }
     {
         int in2 = *(int*)&obj->extra;
-        *(u32*)((char*)in2 + 0x360) &= ~PLAYER_FLAG_HITDETECT;
-        *(u32*)((char*)in2 + 0x360) |= 0x2000LL;
+        *(u32*)&((PlayerState*)in2)->flags360 &= ~PLAYER_FLAG_HITDETECT;
+        *(u32*)&((PlayerState*)in2)->flags360 |= 0x2000LL;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     {
@@ -6486,8 +6486,8 @@ int playerState19(GameObject* obj, int state)
     }
     {
         int inner2 = *(int*)&obj->extra;
-        *(u32*)((char*)inner2 + 0x360) &= ~PLAYER_FLAG_HITDETECT;
-        *(int*)((char*)inner2 + 0x360) |= 0x2000;
+        *(u32*)&((PlayerState*)inner2)->flags360 &= ~PLAYER_FLAG_HITDETECT;
+        *(int*)&((PlayerState*)inner2)->flags360 |= 0x2000;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     {
@@ -6929,8 +6929,8 @@ int playerStateClimbDownFromWall(GameObject* obj, int state)
     }
     {
         int ex = *(int*)&obj->extra;
-        *(u32*)((char*)ex + 0x360) &= ~2LL;
-        *(u32*)((char*)ex + 0x360) |= 0x2000LL;
+        *(u32*)&((PlayerState*)ex)->flags360 &= ~2LL;
+        *(u32*)&((PlayerState*)ex)->flags360 |= 0x2000LL;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     fz = 0.0f;
@@ -7007,8 +7007,8 @@ int playerStateClimbUpFromWall(GameObject* obj, int state)
     }
     {
         int ex = *(int*)&obj->extra;
-        *(u32*)((char*)ex + 0x360) &= ~2LL;
-        *(u32*)((char*)ex + 0x360) |= 0x2000LL;
+        *(u32*)&((PlayerState*)ex)->flags360 &= ~2LL;
+        *(u32*)&((PlayerState*)ex)->flags360 |= 0x2000LL;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     fz = 0.0f;
@@ -7913,8 +7913,8 @@ int playerStateOnLadder(int obj, int state)
     }
     {
         int base = *(int*)&((GameObject*)obj)->extra;
-        *(u32*)((char*)base + 0x360) &= ~0x2LL;
-        *(u32*)((char*)base + 0x360) |= 0x2000LL;
+        *(u32*)&((PlayerState*)base)->flags360 &= ~0x2LL;
+        *(u32*)&((PlayerState*)base)->flags360 |= 0x2000LL;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     {
@@ -8558,8 +8558,8 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
     ((PlayerState*)inner)->probeHitDist = z;
     {
         int in2 = *(int*)&((GameObject*)obj)->extra;
-        *(u32*)((char*)in2 + 0x360) &= ~2LL;
-        *(u32*)((char*)in2 + 0x360) |= 0x2000LL;
+        *(u32*)&((PlayerState*)in2)->flags360 &= ~2LL;
+        *(u32*)&((PlayerState*)in2)->flags360 |= 0x2000LL;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     ((PlayerState*)state)->baddie.animSpeedA = z;
@@ -8970,8 +8970,8 @@ int playerStateGrabLedge(GameObject* obj, int state)
     ((PlayerState*)inner)->probeHitDist = fz;
     {
         int e = *(int*)&obj->extra;
-        *(u32*)((char*)e + 0x360) &= ~2LL;
-        *(u32*)((char*)e + 0x360) |= 0x2000LL;
+        *(u32*)&((PlayerState*)e)->flags360 &= ~2LL;
+        *(u32*)&((PlayerState*)e)->flags360 |= 0x2000LL;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     ((PlayerState*)state)->baddie.animSpeedA = fz;
@@ -9089,8 +9089,8 @@ int playerState09(GameObject* obj, int state)
         ((PlayerState*)inner)->stateHandler = 0;
     }
     flagsBase = *(int*)&obj->extra;
-    *(u32*)((char*)flagsBase + 0x360) &= ~2LL;
-    *(u32*)((char*)flagsBase + 0x360) |= 0x2000LL;
+    *(u32*)&((PlayerState*)flagsBase)->flags360 &= ~2LL;
+    *(u32*)&((PlayerState*)flagsBase)->flags360 |= 0x2000LL;
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     fz = 0.0f;
     ((PlayerState*)state)->baddie.animSpeedA = fz;
@@ -16105,9 +16105,9 @@ void fn_802B1E5C(GameObject* obj, int state, int cfg, f32 dt)
     ((PlayerState*)state)->velSmoothRateBase = 0.06f;
     ((PlayerState*)state)->surfaceType = 0;
     b = ((PlayerState*)state)->flags3F0 >> 5 & 1;
-    if (b == 0 || (b != 0 && lbl_803E80D0 != *(f32*)((char*)cfg + 0x1c0)))
+    if (b == 0 || (b != 0 && lbl_803E80D0 != ((PlayerState*)cfg)->baddie.waterSurfaceY))
     {
-        ((PlayerState*)state)->waterSurfaceY = *(f32*)((char*)cfg + 0x1c0);
+        ((PlayerState*)state)->waterSurfaceY = ((PlayerState*)cfg)->baddie.waterSurfaceY;
     }
     if (lbl_803E80D0 != ((PlayerState*)state)->waterSurfaceY)
     {
@@ -17130,7 +17130,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 obj2 = *(int*)&((GameObject*)obj)->extra;
                 (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, obj2, 0x3e);
                 *(int*)&((PlayerState*)obj2)->baddie.unk304 = 0;
-                *(u32*)(obj2 + 0x360) |= 1LL;
+                *(u32*)&((PlayerState*)obj2)->flags360 |= 1LL;
                 ((GameObject*)obj)->anim.flags |= 8;
                 break;
             case 8:
@@ -17139,7 +17139,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 obj2 = *(int*)&((GameObject*)obj)->extra;
                 (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, obj2, 1);
                 *(void (**)(int, int))(obj2 + 0x304) = (void (*)(int, int))playerStagedRestoreDefaultControl;
-                *(u32*)((char*)obj2 + 0x360) &= ~0x1LL;
+                *(u32*)&((PlayerState*)obj2)->flags360 &= ~0x1LL;
                 ((GameObject*)obj)->anim.flags &= ~8;
                 break;
             }
@@ -17221,7 +17221,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                             *(int*)(va + 0x7f8) = 0;
                         }
                     }
-                    *(u32*)((char*)va + 0x360) |= 0x800000LL;
+                    *(u32*)&((PlayerState*)va)->flags360 |= 0x800000LL;
                     (**(void (**)(int, int, int))((char*)(*gPlayerInterface) + 0x14))(obj, va, 1);
                     *(void (**)(int, int))(va + 0x304) = (void (*)(int, int))playerStagedRestoreDefaultControl;
                 }
@@ -17399,7 +17399,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 break;
             }
         }
-        if (*(int*)(*(int*)&((GameObject*)obj)->extra + 0x360) & 1)
+        if (*(int*)&((PlayerState*)((GameObject*)obj)->extra)->flags360 & 1)
         {
             seq->flags &= ~3;
         }
@@ -18333,11 +18333,11 @@ void playerUpdate(GameObject* obj)
             }
             if ((*(u8*)(*(int*)&obj->extra + 0xc4) & 0x40) != 0)
             {
-                v = (int)-(4.0f * timeDelta - (f32)(u32) * (u8*)((char*)obj + 0xf1));
+                v = (int)-(4.0f * timeDelta - (f32)(u32)obj->unkF1);
             }
             else
             {
-                v = (int)(4.0f * timeDelta + (f32)(u32) * (u8*)((char*)obj + 0xf1));
+                v = (int)(4.0f * timeDelta + (f32)(u32)obj->unkF1);
             }
             if (v < (u8)skyGetSlotBlendAlpha(2))
             {
@@ -18347,7 +18347,7 @@ void playerUpdate(GameObject* obj)
             {
                 v = 0xff;
             }
-            *(u8*)((char*)obj + 0xf1) = (u8)v;
+            obj->unkF1 = (u8)v;
             playerRunActiveSpells(obj, inner);
             playerProcessQueuedItemCommand(obj, inner);
             if (((ByteFlags*)((char*)inner + 0x3f3))->b20 != 0 && (*gScreenTransitionInterface)->isFinished() != 0)
