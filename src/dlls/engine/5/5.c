@@ -1123,7 +1123,7 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
 
 void skyUpdateLightingFromTimeOfDay(void)
 {
-    int part;
+    int curveSegment;
     int red;
     int green;
     f32* blendAlphaCurve;
@@ -1131,69 +1131,70 @@ void skyUpdateLightingFromTimeOfDay(void)
     f32* lightIntensityCurve;
     int greenCurveOffset;
     int blueCurveOffset;
-    int i;
-    int off;
-    f32* vec;
+    int slotIndex;
+    int slotOffset;
+    f32* lightingData;
     int rawR;
     int blue;
     int rawG;
     int lightIntensity;
     int ambientIntensity;
     u8 blendAlpha;
-    f32 tc;
+    f32 normalizedTime;
     f32 blend;
-    f32 time2;
-    SkyColorBlendView* slot;
+    f32 timeOfDay;
+    SkyColorBlendView* blendState;
     f32 zero;
-    f32 frac;
+    f32 segmentFraction;
     f32 dayStart;
 
-    vec = gSkySunDirection;
+    lightingData = gSkySunDirection;
     if (gSkyState == NULL)
     {
         for (blue = 0; blue < 3; blue++)
         {
-            skySetLightSlot(blue, vec[0], vec[1], vec[2], 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
+            skySetLightSlot(blue, lightingData[0], lightingData[1], lightingData[2], 0xff, 0xff, 0xff, 0xff, 0xff,
+                            0xff);
         }
     }
     else
     {
-        tc = (((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay < 0.0f)
-                 ? 0.0f
-                 : ((((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay > 1.0f)
-                        ? 1.0f
-                        : ((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay);
-        if (tc <= 0.25f)
+        normalizedTime = (((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay < 0.0f)
+                             ? 0.0f
+                             : ((((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay > 1.0f)
+                                    ? 1.0f
+                                    : ((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay);
+        if (normalizedTime <= 0.25f)
         {
-            frac = tc / 0.25f;
-            part = 0;
+            segmentFraction = normalizedTime / 0.25f;
+            curveSegment = 0;
         }
-        else if (tc <= 0.5f)
+        else if (normalizedTime <= 0.5f)
         {
-            frac = (tc - 0.25f) / 0.25f;
-            part = 1;
+            segmentFraction = (normalizedTime - 0.25f) / 0.25f;
+            curveSegment = 1;
         }
-        else if (tc <= 0.75f)
+        else if (normalizedTime <= 0.75f)
         {
-            frac = (tc - 0.5f) / 0.25f;
-            part = 2;
+            segmentFraction = (normalizedTime - 0.5f) / 0.25f;
+            curveSegment = 2;
         }
         else
         {
-            frac = (tc - 0.75f) / 0.25f;
-            part = 3;
+            segmentFraction = (normalizedTime - 0.75f) / 0.25f;
+            curveSegment = 3;
         }
-        for (i = 0; i < 2; i++)
+        for (slotIndex = 0; slotIndex < 2; slotIndex++)
         {
-            blendAlphaCurve = &((f32*)((u8*)vec + 0x40))[part];
-            ambientIntensityCurve = &((f32*)((u8*)vec + 0x18))[part];
-            lightIntensityCurve = &((f32*)((u8*)vec + 0x2c))[part];
-            greenCurveOffset = (part + 7) * 4;
-            blueCurveOffset = (part + 0xe) * 4;
+            blendAlphaCurve = &((f32*)((u8*)lightingData + 0x40))[curveSegment];
+            ambientIntensityCurve = &((f32*)((u8*)lightingData + 0x18))[curveSegment];
+            lightIntensityCurve = &((f32*)((u8*)lightingData + 0x2c))[curveSegment];
+            greenCurveOffset = (curveSegment + 7) * 4;
+            blueCurveOffset = (curveSegment + 0xe) * 4;
             zero = 0.0f;
             dayStart = 18000.0f;
-            off = i * 0xa4;
-            if ((u32)((gSkyState[off + 0xc1] >> 7) & 1) != 0)
+            slotOffset = slotIndex * 0xa4;
+            if ((u32)((gSkyState[slotOffset + 0xc1] >> 7) & 1) != 0)
             {
                 blendAlpha = 0xc8;
                 ambientIntensity = 0;
@@ -1201,20 +1202,21 @@ void skyUpdateLightingFromTimeOfDay(void)
             }
             else
             {
-                blendAlpha = (int)Curve_EvalLinear(blendAlphaCurve, frac, 0);
-                ambientIntensity = Curve_EvalLinear(ambientIntensityCurve, frac, 0);
-                lightIntensity = Curve_EvalLinear(lightIntensityCurve, frac, 0);
+                blendAlpha = (int)Curve_EvalLinear(blendAlphaCurve, segmentFraction, 0);
+                ambientIntensity = Curve_EvalLinear(ambientIntensityCurve, segmentFraction, 0);
+                lightIntensity = Curve_EvalLinear(lightIntensityCurve, segmentFraction, 0);
             }
-            rawR = Curve_EvalCatmullRom(gSkyState + off + part * 4 + 0x20, frac, 0);
-            rawG = Curve_EvalCatmullRom(gSkyState + off + greenCurveOffset + 0x20, frac, 0);
-            blue = Curve_EvalCatmullRom(gSkyState + off + blueCurveOffset + 0x20, frac, 0);
-            slot = (SkyColorBlendView*)(gSkyState + off);
-            blend = slot->factor;
+            rawR =
+                Curve_EvalCatmullRom(gSkyState + slotOffset + curveSegment * 4 + 0x20, segmentFraction, 0);
+            rawG = Curve_EvalCatmullRom(gSkyState + slotOffset + greenCurveOffset + 0x20, segmentFraction, 0);
+            blue = Curve_EvalCatmullRom(gSkyState + slotOffset + blueCurveOffset + 0x20, segmentFraction, 0);
+            blendState = (SkyColorBlendView*)(gSkyState + slotOffset);
+            blend = blendState->factor;
             if (blend != zero)
             {
-                rawR = (int)(blend * ((f32)slot->targetR - rawR) + rawR);
-                rawG = (int)(blend * ((f32)slot->targetG - rawG) + rawG);
-                blue = (int)(blend * ((f32)slot->targetB - blue) + blue);
+                rawR = (int)(blend * ((f32)blendState->targetR - rawR) + rawR);
+                rawG = (int)(blend * ((f32)blendState->targetG - rawG) + rawG);
+                blue = (int)(blend * ((f32)blendState->targetB - blue) + blue);
             }
             if (rawR < 0)
             {
@@ -1248,22 +1250,22 @@ void skyUpdateLightingFromTimeOfDay(void)
             {
                 blue = 0xff;
             }
-            if (i == 0)
+            if (slotIndex == 0)
             {
                 gSkyCurrentTextureColor.r = red;
                 gSkyCurrentTextureColor.g = green;
                 gSkyCurrentTextureColor.b = blue;
             }
-            time2 = ((SkyState*)gSkyState)->timeOfDay;
-            if (time2 >= dayStart && time2 <= 75600.0f)
+            timeOfDay = ((SkyState*)gSkyState)->timeOfDay;
+            if (timeOfDay >= dayStart && timeOfDay <= 75600.0f)
             {
-                skySetLightSlot(i, vec[0], vec[1], vec[2], red, green, blue, ambientIntensity, lightIntensity,
-                            blendAlpha);
+                skySetLightSlot(slotIndex, lightingData[0], lightingData[1], lightingData[2], red, green, blue,
+                                ambientIntensity, lightIntensity, blendAlpha);
             }
             else
             {
-                skySetLightSlot(i, -vec[3], vec[4], -vec[5], red, green, blue, ambientIntensity, lightIntensity,
-                            blendAlpha);
+                skySetLightSlot(slotIndex, -lightingData[3], lightingData[4], -lightingData[5], red, green, blue,
+                                ambientIntensity, lightIntensity, blendAlpha);
             }
         }
         skySetLightSlot(2, 0.0f, 0.0f, 0.0f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);

@@ -494,16 +494,16 @@ void sky2_run(void)
     int i;
     u8* p;
     f32* dst;
-    f32 cmax;
+    f32 colorMax;
     int k;
     int d;
-    int off1;
-    int off2;
+    int bestColorOffset;
+    int secondColorOffset;
     u16 a1;
-    int amp;
-    int ri;
-    int gi;
-    int bi;
+    int range;
+    int redInt;
+    int greenInt;
+    int blueInt;
     u16 flags;
     f32 r;
     f32 g;
@@ -513,8 +513,8 @@ void sky2_run(void)
     f32 step;
     f32 t;
     f32 u;
-    f32 att;
-    f32 z2;
+    f32 directionWeight;
+    f32 zero;
     f32 c158;
     f32 c154;
     f32 c150;
@@ -522,10 +522,10 @@ void sky2_run(void)
     f32 z;
     f32 zv;
     f32 spd;
-    f32 frzero;
-    f32 hv;
-    f32 diff;
-    f32 scale;
+    f32 value;
+    f32 offset;
+    f32 negativeRange;
+    f32 ambientScale;
 
     best = lbl_802C1F98;
     r = 0.0f;
@@ -610,8 +610,8 @@ void sky2_run(void)
                 p = *pp;
                 if ((*(u16*)&((GameObject*)p)->anim.rotZ & 1) == 0) {
                     ((SkySlotAnim*)p)->blend = -(timeDelta * *(f32*)(p + 0x58) - ((SkySlotAnim*)p)->blend);
-                    frzero = ((SkySlotAnim*)*pp)->blend;
-                    if (frzero < 0.0f) {
+                    value = ((SkySlotAnim*)*pp)->blend;
+                    if (value < 0.0f) {
                         ((SkySlotAnim*)*pp)->blend = 0.0f;
                     }
                 }
@@ -681,11 +681,11 @@ void sky2_run(void)
                     u = (t - 0.875f) / step;
                     k = 7;
                 }
-                r = Curve_EvalCatmullRom(*pp + (off1 = k * 4) + 0x70, u, 0);
-                g = Curve_EvalCatmullRom(*pp + (off2 = (k + 0xb) * 4) + 0x70, u, 0);
+                r = Curve_EvalCatmullRom(*pp + (bestColorOffset = k * 4) + 0x70, u, 0);
+                g = Curve_EvalCatmullRom(*pp + (secondColorOffset = (k + 0xb) * 4) + 0x70, u, 0);
                 b = Curve_EvalCatmullRom(*pp + (k + 0x16) * 4 + 0x70, u, 0);
-                sa = Curve_EvalCatmullRom(*pp + off1 + 0x1fc, u, 0);
-                sb = Curve_EvalCatmullRom(*pp + off2 + 0x1fc, u, 0);
+                sa = Curve_EvalCatmullRom(*pp + bestColorOffset + 0x1fc, u, 0);
+                sb = Curve_EvalCatmullRom(*pp + secondColorOffset + 0x1fc, u, 0);
             }
             else
             {
@@ -702,43 +702,43 @@ void sky2_run(void)
                     {
                         d = 0xffff - d;
                     }
-                    att = (32767.0f - d) / 32767.0f;
-                    att -= 0.75f;
-                    att /= 0.25f;
-                    if (att > best.x)
+                    directionWeight = (32767.0f - d) / 32767.0f;
+                    directionWeight -= 0.75f;
+                    directionWeight /= 0.25f;
+                    if (directionWeight > best.x)
                     {
                         if (best.x > best.y)
                         {
                             best.y = best.x;
                             idx.second = idx.best;
                         }
-                        best.x = att;
+                        best.x = directionWeight;
                         idx.best = k;
                     }
-                    else if (att > best.y)
+                    else if (directionWeight > best.y)
                     {
-                        best.y = att;
+                        best.y = directionWeight;
                         idx.second = k;
                     }
                     k++;
                 } while (k < 8);
-                z2 = 0.0f;
-                if (z2 < best.x)
+                zero = 0.0f;
+                if (zero < best.x)
                 {
-                    p = *pp + (off1 = idx.best * 4);
+                    p = *pp + (bestColorOffset = idx.best * 4);
                     r = *(f32*)&((GameObject*)p)->anim.textureSlots * best.x + r;
                     g = ((GameObject*)p)->anim.activeMoveProgress * best.x + g;
                     b = *(f32*)&((GameObject*)p)->childObjs[0] * best.x + b;
-                    sa = *(f32*)(*pp + off1 + 0x1fc) * best.x + sa;
+                    sa = *(f32*)(*pp + bestColorOffset + 0x1fc) * best.x + sa;
                     sb = ((SkySlotAnim*)p)->cur2[0xb] * best.x + sb;
                 }
-                if (best.y > z2)
+                if (best.y > zero)
                 {
-                    p = *pp + (off2 = idx.second * 4);
+                    p = *pp + (secondColorOffset = idx.second * 4);
                     r = *(f32*)&((GameObject*)p)->anim.textureSlots * best.y + r;
                     g = ((GameObject*)p)->anim.activeMoveProgress * best.y + g;
                     b = *(f32*)&((GameObject*)p)->childObjs[0] * best.y + b;
-                    sa = *(f32*)(*pp + off2 + 0x1fc) * best.y + sa;
+                    sa = *(f32*)(*pp + secondColorOffset + 0x1fc) * best.y + sa;
                     sb = ((SkySlotAnim*)p)->cur2[0xb] * best.y + sb;
                 }
             }
@@ -750,10 +750,10 @@ void sky2_run(void)
             {
                 r = 0.0f;
             }
-            cmax = 255.0f;
+            colorMax = 255.0f;
             if (g > 255.0f)
             {
-                g = cmax;
+                g = colorMax;
             }
             else if (g < 0.0f)
             {
@@ -761,7 +761,7 @@ void sky2_run(void)
             }
             if (b > 255.0f)
             {
-                b = cmax;
+                b = colorMax;
             }
             else if (b < 0.0f)
             {
@@ -773,17 +773,18 @@ void sky2_run(void)
                 if (((SkySlotAnim*)p)->b314 == -1)
                 {
                     ((SkySlotAnim*)p)->b314 = 1;
-                    frzero = 0.0f;
-                    *(f32*)(*pp + 0x6c) = frzero;
-                    diff = -(sb - sa);
-                    *(f32*)(*pp + 0x68) = randomGetRange((int)(diff * 0.5f), (int)(-diff * 0.5f));
+                    value = 0.0f;
+                    *(f32*)(*pp + 0x6c) = value;
+                    negativeRange = -(sb - sa);
+                    *(f32*)(*pp + 0x68) =
+                        randomGetRange((int)(negativeRange * 0.5f), (int)(-negativeRange * 0.5f));
                     *(f32*)(*pp + 0x64) = 0.05f * randomGetRange(1, 10);
                 }
                 else if (((SkySlotAnim*)p)->b314 == 1)
                 {
-                    hv = *(f32*)&((GameObject*)p)->anim.jointPoseData;
-                    sa = sa + hv;
-                    *(f32*)&((GameObject*)p)->anim.jointPoseData = hv + *(f32*)&((GameObject*)p)->anim.modelState;
+                    offset = *(f32*)&((GameObject*)p)->anim.jointPoseData;
+                    sa = sa + offset;
+                    *(f32*)&((GameObject*)p)->anim.jointPoseData = offset + *(f32*)&((GameObject*)p)->anim.modelState;
                     p = *pp;
                     if (*(f32*)&((GameObject*)p)->anim.jointPoseData > *(f32*)&((GameObject*)p)->anim.dll)
                     {
@@ -792,16 +793,16 @@ void sky2_run(void)
                 }
                 else
                 {
-                    hv = *(f32*)&((GameObject*)p)->anim.jointPoseData;
-                    sa = sa + hv;
-                    *(f32*)&((GameObject*)p)->anim.jointPoseData = hv - *(f32*)&((GameObject*)p)->anim.modelState;
+                    offset = *(f32*)&((GameObject*)p)->anim.jointPoseData;
+                    sa = sa + offset;
+                    *(f32*)&((GameObject*)p)->anim.jointPoseData = offset - *(f32*)&((GameObject*)p)->anim.modelState;
                     p = *pp;
-                    frzero = *(f32*)&((GameObject*)p)->anim.jointPoseData;
-                    if (frzero < 0.0f) {
+                    value = *(f32*)&((GameObject*)p)->anim.jointPoseData;
+                    if (value < 0.0f) {
                         ((SkySlotAnim*)p)->b314 = (s8)(1 - ((SkySlotAnim*)p)->b314);
                         *(f32*)(*pp + 0x6c) = 0.0f;
-                        amp = (s16)(int)(sb - sa);
-                        *(f32*)(*pp + 0x68) = randomGetRange(-amp / 2, amp / 2);
+                        range = (s16)(int)(sb - sa);
+                        *(f32*)(*pp + 0x68) = randomGetRange(-range / 2, range / 2);
                         *(f32*)(*pp + 0x64) = 0.05f * randomGetRange(1, 10);
                     }
                 }
@@ -826,10 +827,10 @@ void sky2_run(void)
             flags = *(u16*)&((GameObject*)p)->anim.rotZ;
             if ((flags & 8) == 0)
             {
-                scale = (f32)(red + green + blue) / 765.0f;
-                r *= scale;
-                g *= scale;
-                b *= scale;
+                ambientScale = (f32)(red + green + blue) / 765.0f;
+                r *= ambientScale;
+                g *= ambientScale;
+                b *= ambientScale;
             }
             if ((flags & 1) != 0)
             {
@@ -865,17 +866,17 @@ void sky2_run(void)
             }
             else
             {
-                ri = r;
-                *(int*)&((GameObject*)p)->anim.velocityX = ri;
-                gi = g;
-                *(int*)(*pp + 0x28) = gi;
-                bi = b;
-                *(int*)(*pp + 0x2c) = bi;
+                redInt = r;
+                *(int*)&((GameObject*)p)->anim.velocityX = redInt;
+                greenInt = g;
+                *(int*)(*pp + 0x28) = greenInt;
+                blueInt = b;
+                *(int*)(*pp + 0x2c) = blueInt;
                 *(f32*)(*pp + 0x14) = sa;
                 *(f32*)(*pp + 0x18) = sb;
-                *(int*)(*pp + 0x30) = ri;
-                *(int*)(*pp + 0x34) = gi;
-                *(int*)(*pp + 0x38) = bi;
+                *(int*)(*pp + 0x30) = redInt;
+                *(int*)(*pp + 0x34) = greenInt;
+                *(int*)(*pp + 0x38) = blueInt;
                 *(f32*)(*pp + 0x1c) = sa;
                 *(f32*)(*pp + 0x20) = sb;
             }
