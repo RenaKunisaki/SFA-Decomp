@@ -575,7 +575,7 @@ void SaveSelectScreen_render(int param)
         alpha = 0;
     } else {
         titleScreenPositionElements(40.0f, 120.0f);
-        alpha = ((u8)progress & 0x7f) * 2;
+        alpha = ((int)((u8)progress & 0x7f) << 1) & 0xff;
     }
     titleScreenDrawMenuFrame(alpha, (u8)(gSaveSelectPanelIndex == SAVE_SELECT_PANEL_CONFIRM_ERASE), 0);
     switch (gSaveSelectPanelIndex)
