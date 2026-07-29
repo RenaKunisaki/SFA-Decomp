@@ -78,14 +78,14 @@ u8 ccGasVentControl_countUnblockedVents(GameObject* obj, CCGasVentControlState* 
 
     if (mainGetBit(CC_GAS_VENT_ACTIVE_GAMEBIT) != 0) {
         int ventCount;
-        GameObject** vents = (GameObject**)ObjGroup_GetObjects(CC_GAS_VENT_OBJECT_GROUP, &ventCount);
+        GameObject** vents = (GameObject**)objGetAllOfType(CC_GAS_VENT_OBJECT_GROUP, &ventCount);
         f32 blockerClearDistance;
 
         i = 0;
         blockerClearDistance = CC_GAS_VENT_CONTROL_BLOCKER_CLEAR_DISTANCE;
         for (; i < CC_GAS_VENT_CONTROL_VENT_COUNT; i++) {
             GameObject* nearestBlocker =
-                (GameObject*)ObjGroup_FindNearestObject(CC_GAS_VENT_BLOCKER_OBJECT_GROUP, vents[i], 0);
+                (GameObject*)objGetNearestTypeTo(CC_GAS_VENT_BLOCKER_OBJECT_GROUP, vents[i], 0);
             if (getXZDistance(&vents[i]->anim.worldPosX, &nearestBlocker->anim.worldPosX) > blockerClearDistance) {
                 unblockedVentCount = unblockedVentCount + 1u;
             }
@@ -158,7 +158,7 @@ void ccGasVentControl_update(GameObject* obj) {
     case CC_GAS_VENT_CONTROL_PHASE_WAIT_FOR_VENTS: {
         int ventCount;
 
-        ObjGroup_GetObjects(CC_GAS_VENT_OBJECT_GROUP, &ventCount);
+        objGetAllOfType(CC_GAS_VENT_OBJECT_GROUP, &ventCount);
         if (ventCount == CC_GAS_VENT_CONTROL_VENT_COUNT) {
             state->phase = CC_GAS_VENT_CONTROL_PHASE_WAIT_FOR_INTRO;
         }

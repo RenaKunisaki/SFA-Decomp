@@ -14,6 +14,7 @@
 #include "main/camera_interface.h"
 #include "main/dll/boneparticleeffect_interface.h"
 #include "main/dll/dll_00E2_staff_api.h"
+#include "main/dll/dll_0057_cameramodetitle.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/waterfx_interface.h"
@@ -23,7 +24,7 @@
 #include "main/object_transform.h"
 #include "main/objHitReact.h"
 #include "main/obj_contact.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/objhits.h"
 #include "main/objseq.h"
@@ -147,7 +148,6 @@ typedef struct CharSpawn
     int mapId;
 } CharSpawn;
 
-#define OBJECT_CAMMODE_TITLE   0x57 /* cameramode DLL dll_0057_cameramodetitle */
 #define OBJECT_CAMMODE_DEFAULT 0x42 /* default gameplay cameramode DLL */
 
 /* special-cased seqIds (retail OBJECTS.bin names) */
@@ -823,14 +823,14 @@ int objMove(GameObject* obj, f32 dx, f32 dy, f32 dz)
     obj->anim.localPosX += dx;
     obj->anim.localPosY += dy;
     obj->anim.localPosZ += dz;
-    ObjGroup_GetObjects(0, &n);
+    objGetAllOfType(0, &n);
     return 0;
 }
 
 GameObject* getTrickyObject(void)
 {
     int count;
-    GameObject** objs = (GameObject**)ObjGroup_GetObjects(1, &count);
+    GameObject** objs = (GameObject**)objGetAllOfType(1, &count);
     if (count != 0)
     {
         return objs[0];
@@ -841,7 +841,7 @@ GameObject* getTrickyObject(void)
 GameObject* Obj_GetPlayerObject(void)
 {
     int count;
-    GameObject** objs = (GameObject**)ObjGroup_GetObjects(0, &count);
+    GameObject** objs = (GameObject**)objGetAllOfType(0, &count);
     if (count != 0)
     {
         return objs[0];
@@ -915,7 +915,7 @@ void mapSetupPlayer(void)
         if ((u32)(uiDll - 2) <= 4 || uiDll == 7)
         {
             (*gCameraInterface)->init(obj, *(f32*)(base + 8), *(f32*)(base + 0xc), *(f32*)(base + 0x10));
-            (*gCameraInterface)->setMode(OBJECT_CAMMODE_TITLE, 0, 3, 0, NULL, 0, 0);
+            (*gCameraInterface)->setMode(CAMERA_MODE_TITLE_RESOURCE_ID, 0, 3, 0, NULL, 0, 0);
             (*gCameraInterface)->setFocus(obj, 0);
             (*gCameraInterface)->update(1);
         }
@@ -1008,7 +1008,7 @@ void objFreeObjdef(u8* obj, int flag)
     (*gExpgfxInterface)->freeOwner3((u32)(GameObject*)obj);
     if (((ObjAnimComponent*)obj)->modelInstance->flags & OBJMODEL_FLAG_SKIP_RESET_UPDATE)
     {
-        ObjGroup_RemoveObject((u32)obj, OBJECT_OBJGROUP_HITBOX);
+        objFreeObjectType((u32)obj, OBJECT_OBJGROUP_HITBOX);
         if (flag == 0)
         {
             count = 0;
@@ -1056,7 +1056,7 @@ void objFreeObjdef(u8* obj, int flag)
     }
     if (((ObjAnimComponent*)obj)->modelInstance->group8RegistrationCount > 0)
     {
-        ObjGroup_RemoveObject((u32)obj, OBJECT_OBJGROUP_GROUP8);
+        objFreeObjectType((u32)obj, OBJECT_OBJGROUP_GROUP8);
     }
     if (((ObjAnimComponent*)obj)->modelState != NULL)
     {
@@ -1118,10 +1118,10 @@ void objFreeObjdef(u8* obj, int flag)
     {
         Obj_ClearModelColorFadeRecursive((GameObject*)obj);
     }
-    group = ObjGroup_GetObjectGroup((u32)obj);
+    group = objGetObjectType((u32)obj);
     if (group != 0)
     {
-        ObjGroup_RemoveObject((u32)obj, group - 1);
+        objFreeObjectType((u32)obj, group - 1);
     }
     {
         s16 type;
@@ -2303,7 +2303,7 @@ void Obj_ResetObjectSystem(void)
     gObjCount = 0;
     objListInit(&gObjUpdateList, 0x38);
     gObjPartitionPivot = 0;
-    ObjGroup_ClearAll();
+    objTypeInit();
     ObjHits_ResetWorkBuffers();
     (*gCameraInterface)->setFocus(NULL, 0);
     AudioStream_StopAll();
@@ -2456,7 +2456,7 @@ void Obj_UpdateAllObjects(u8 flags)
             Obj_UpdateObject((GameObject*)obj);
         }
     }
-    obj2 = (u8*)ObjGroup_GetObjects(0, &count1);
+    obj2 = (u8*)objGetAllOfType(0, &count1);
     if (count1 != 0)
     {
         obj2 = *(u8**)obj2;
@@ -2501,7 +2501,7 @@ void Obj_UpdateAllObjects(u8 flags)
                                      &((GameObject*)obj3)->anim.worldPosY, &((GameObject*)obj3)->anim.worldPosZ);
             }
         }
-        obj2 = (u8*)ObjGroup_GetObjects(0, &count2);
+        obj2 = (u8*)objGetAllOfType(0, &count2);
         obj2 = (count2 != 0) ? *(u8**)obj2 : 0;
         if (obj2 != 0 && ((GameObject*)obj2)->childObjs[0] != 0)
         {
@@ -2598,7 +2598,7 @@ void Obj_InitObjectSystem(void)
     gObjCount = 0;
     objListInit(&gObjUpdateList, 0x38);
     gObjPartitionPivot = 0;
-    ObjGroup_ClearAll();
+    objTypeInit();
     ObjHits_ResetWorkBuffers();
 }
 
@@ -2671,7 +2671,7 @@ void Obj_RegisterObject(GameObject* obj, int flags)
     }
     if (object->modelInstance->flags & 0x40)
     {
-        ObjGroup_AddObject((u32)obj, OBJECT_OBJGROUP_HITBOX);
+        objAddObjectType((u32)obj, OBJECT_OBJGROUP_HITBOX);
         if (object->activeHitboxMode != 0x5a && (object->modelInstance->flags & 0x40))
         {
             object->activeHitboxMode = 0x5a;
@@ -2703,7 +2703,7 @@ void Obj_RegisterObject(GameObject* obj, int flags)
     }
     if (object->modelInstance->group8RegistrationCount > 0)
     {
-        ObjGroup_AddObject((u32)obj, OBJECT_OBJGROUP_GROUP8);
+        objAddObjectType((u32)obj, OBJECT_OBJGROUP_GROUP8);
     }
     if (object->modelInstance->flags & 1)
     {

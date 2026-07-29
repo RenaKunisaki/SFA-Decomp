@@ -23,7 +23,7 @@
 #include "main/objHitReact.h"
 #include "main/objhits.h"
 #undef OBJHITS_STATE_INDEX_S8
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
 #include "dolphin/mtx/vec.h"
@@ -1032,7 +1032,7 @@ int objBboxFn_800640cc(f32* startPos, f32* endPos, f32 radius, int flags, TrackB
         memcpy(worldStart, startPos, 0xc);
         memcpy(worldEnd, endPos, 0xc);
     }
-    objects = ObjGroup_GetObjects(6, &count);
+    objects = objGetAllOfType(6, &count);
     for (i = 0; i < count; i++)
     {
         GameObject* target = (GameObject*)objects[i];

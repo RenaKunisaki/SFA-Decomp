@@ -16,7 +16,7 @@
 #include "main/mapEventTypes.h"
 #include "main/model_light.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/pi_dolphin_api.h"
@@ -202,7 +202,7 @@ void dbshShrine_free(GameObject* obj) {
         state->light = NULL;
     }
     gameTimerStop();
-    ObjGroup_RemoveObject((int)obj, DBSH_SHRINE_OBJ_GROUP);
+    objFreeObjectType((int)obj, DBSH_SHRINE_OBJ_GROUP);
     Music_Trigger(MUSICTRIG_DIM_Snow, 0);
     Music_Trigger(MUSICTRIG_CC_Visit1, 0);
     Music_Trigger(MUSICTRIG_vfp_walkabout, 0);

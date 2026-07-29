@@ -4,7 +4,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/newclouds.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/objfx.h"
 
 #define LIGHTNING_AGE_ROUND_BIAS             0.5f
@@ -27,7 +27,7 @@ int lightning_getExtraSize(void) {
 void lightning_free(GameObject* obj, int flags) {
     LightningState* state = obj->extra;
 
-    ObjGroup_RemoveObject((int)obj, LIGHTNING_OBJECT_GROUP);
+    objFreeObjectType((int)obj, LIGHTNING_OBJECT_GROUP);
     if (state->effect != NULL) {
         mm_free(state->effect);
     }
@@ -78,7 +78,7 @@ void lightning_update(GameObject* obj) {
             spawnLightning = 1;
         }
         if (spawnLightning != 0) {
-            objects = ObjGroup_GetObjects(LIGHTNING_OBJECT_GROUP, &objectCount);
+            objects = objGetAllOfType(LIGHTNING_OBJECT_GROUP, &objectCount);
             objectIndex = 0;
             while (objectIndex < objectCount) {
                 u32 linkedMapId = ((GameObject*)objects[objectIndex])->anim.placement->ident;
@@ -142,7 +142,7 @@ void lightning_init(GameObject* obj, LightningPlacement* placement) {
     f32 defaultScale;
 
     state = obj->extra;
-    ObjGroup_AddObject((int)obj, LIGHTNING_OBJECT_GROUP);
+    objAddObjectType((int)obj, LIGHTNING_OBJECT_GROUP);
     state->modeBits.mode = placement->mode;
     defaultScale = 1.0f;
     state->hitRadius = defaultScale;

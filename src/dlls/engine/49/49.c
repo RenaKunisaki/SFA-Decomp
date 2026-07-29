@@ -12,7 +12,7 @@
 #include "dolphin/gx/GXCull.h"
 #include "main/pad.h"
 #include "main/camera.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/lightmap_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx_play_api.h"
@@ -981,7 +981,7 @@ void Minimap_frameStart(void)
                     gMinimapZoomSfxActive = 0;
                 }
                 gMinimapRadarTarget =
-                    (GameObject*)ObjGroup_FindNearestObject(FUEL_CELL_OBJECT_GROUP, (GameObject*)player, &dist);
+                    (GameObject*)objGetNearestTypeTo(FUEL_CELL_OBJECT_GROUP, (GameObject*)player, &dist);
                 if ((void*)gMinimapRadarTarget != NULL)
                 {
                     if (dist < 500.0f)

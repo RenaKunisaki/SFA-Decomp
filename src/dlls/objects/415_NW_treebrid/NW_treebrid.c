@@ -143,7 +143,7 @@ void nwTreeBridge_update(GameObject* obj) {
     searchDistance = NW_TREE_BRIDGE_TARGET_SEARCH_DISTANCE;
     if (state->targetSearchAttempts != 0) {
         state->pathTarget =
-            (GameObject*)ObjGroup_FindNearestObject(NW_TREE_BRIDGE_TARGET_OBJECT_GROUP, obj, &searchDistance);
+            (GameObject*)objGetNearestTypeTo(NW_TREE_BRIDGE_TARGET_OBJECT_GROUP, obj, &searchDistance);
         if (state->pathTarget != NULL) {
             state->targetSearchAttempts = 0;
         } else {

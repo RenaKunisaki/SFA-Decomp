@@ -1,5 +1,9 @@
 #include "main/camera_interface.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/dll_004C_camDebug.h"
+#include "main/dll/dll_0053_cameramodecloudrunner.h"
+#include "main/dll/dll_0056_cameramodearwing.h"
+#include "main/dll/dll_0057_cameramodetitle.h"
 #include "main/debug.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
@@ -53,7 +57,7 @@
 #include "main/sky_interface.h"
 #include "main/dll/player_api.h"
 #include "main/dll/player_status.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/pad.h"
 #include "main/gamebit_ids.h"
@@ -1546,9 +1550,6 @@ f32 objCurveInterpolate(ObjCurveKey* keys, int count, int frame);
 #define OBJSEQ_CAMMODE_COMBAT       0x49 /* dll_0049_cameramodecombat */
 #define OBJSEQ_CAMMODE_SHIPBATTLE   0x4a /* dll_004A_cameramodeshipbattle */
 #define OBJSEQ_CAMMODE_CAMDEBUG     0x4c /* dll_004C_camDebug */
-#define OBJSEQ_CAMMODE_CLOUDRUNNER  0x53 /* dll_0053_cameramodecloudrunner */
-#define OBJSEQ_CAMMODE_ARWING       0x56 /* dll_0056_cameramodearwing */
-#define OBJSEQ_CAMMODE_TITLE        0x57 /* dll_0057_cameramodetitle */
 
 extern char sObjLoadAnimdataNullACRomTabWarning[];
 
@@ -1585,17 +1586,6 @@ extern u8 lbl_8039944C[];
 extern u8 framesThisStepUnclamped;
 int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmd, s8 flags, void* out);
 void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* placement);
-
-typedef struct CamRequest
-{
-    s16 rot[3];
-    u8 pad6[6];
-    f32 posB[3];
-    f32 pos[3];
-    u8 pad24[0x90];
-    f32 fov;
-    u8 padB8[0x8c];
-} CamRequest;
 
 typedef struct CamFloats
 {
@@ -2828,7 +2818,7 @@ char sObjLoadAnimdataNullACRomTabWarning[45] = "<objLoadAnimdata>  Warning ACRom
 
 void ObjSeq_updateCamera(void)
 {
-    CamRequest block;
+    CameraModeFixedPose cameraPose;
     CamFloats fblock;
     CamMode mode47;
     CamMode mode48;
@@ -2870,22 +2860,23 @@ void ObjSeq_updateCamera(void)
         lbl_803DD0DC = 1.0f;
         if ((s8)gObjSeqCameraActive == 0)
         {
-            block.pos[0] = x;
-            block.pos[1] = y;
-            block.pos[2] = z;
-            block.rot[0] = (s16)(0x8000 - pitch);
-            block.rot[1] = (s16)-yaw;
-            block.rot[2] = roll;
+            cameraPose.worldPosition.x = x;
+            cameraPose.worldPosition.y = y;
+            cameraPose.worldPosition.z = z;
+            cameraPose.sequenceRotation.pitch = (s16)(0x8000 - pitch);
+            cameraPose.sequenceRotation.yaw = (s16)-yaw;
+            cameraPose.sequenceRotation.roll = roll;
             if ((s8)gObjSeqFovOverrideActive != 0)
             {
-                block.fov = gObjSeqFovOverrideValue;
+                cameraPose.fov = gObjSeqFovOverrideValue;
                 gObjSeqCameraFov = gObjSeqFovOverrideValue;
             }
             else
             {
-                block.fov = gObjSeqCameraFov;
+                cameraPose.fov = gObjSeqCameraFov;
             }
-            (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_CAMDEBUG, 0, 1, 0x144, &block, model[0x24], 0xff);
+            (*gCameraInterface)
+                ->setMode(OBJSEQ_CAMMODE_CAMDEBUG, 0, 1, sizeof(CameraModeFixedPose), &cameraPose, model[0x24], 0xff);
             gObjSeqCameraActive = 1;
         }
         else
@@ -2944,14 +2935,15 @@ void ObjSeq_updateCamera(void)
                     (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_SHIPBATTLE, 1, 0, 0, NULL, gObjSeqCamModeArgD, 0xff);
                     break;
                 case 0x4c:
-                    block.posB[0] = gObjSeqSavedCamPosX;
-                    block.posB[1] = gObjSeqSavedCamPosY;
-                    block.posB[2] = gObjSeqSavedCamPosZ;
-                    block.rot[0] = gObjSeqSavedCamPitch;
-                    block.rot[1] = gObjSeqSavedCamYaw;
-                    block.rot[2] = gObjSeqSavedCamRoll;
-                    block.fov = gObjSeqSavedCamFov;
-                    (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_CAMDEBUG, 1, 0, 0x144, &block, 0, 0xff);
+                    cameraPose.savedWorldPosition.x = gObjSeqSavedCamPosX;
+                    cameraPose.savedWorldPosition.y = gObjSeqSavedCamPosY;
+                    cameraPose.savedWorldPosition.z = gObjSeqSavedCamPosZ;
+                    cameraPose.sequenceRotation.pitch = gObjSeqSavedCamPitch;
+                    cameraPose.sequenceRotation.yaw = gObjSeqSavedCamYaw;
+                    cameraPose.sequenceRotation.roll = gObjSeqSavedCamRoll;
+                    cameraPose.fov = gObjSeqSavedCamFov;
+                    (*gCameraInterface)
+                        ->setMode(OBJSEQ_CAMMODE_CAMDEBUG, 1, 0, sizeof(CameraModeFixedPose), &cameraPose, 0, 0xff);
                     break;
                 case 0x45:
                     (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_CAMTALK, 1, 0, 0, NULL, gObjSeqCamModeArgD, 0xff);
@@ -2977,16 +2969,17 @@ void ObjSeq_updateCamera(void)
                         ->setMode(OBJSEQ_CAMMODE_COMBAT, 1, 0, gObjSeqCamModeArgB, &gObjSeqCamModeArgC,
                                   gObjSeqCamModeArgD, 0xff);
                     break;
-                case 0x53:
-                    (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_CLOUDRUNNER, 1, 0, 0, NULL, 0, 0xff);
+                case CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID:
+                    (*gCameraInterface)->setMode(CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID, 1, 0, 0, NULL, 0, 0xff);
                     break;
-                case 0x56:
-                    (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_ARWING, 1, gObjSeqCamModeArgB, 0, NULL, 0, 0);
-                    break;
-                case 0x57:
-                    (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_TITLE, 0, 3, 0, NULL, 0, 0);
+                case CAMERA_MODE_ARWING_RESOURCE_ID:
                     (*gCameraInterface)
-                        ->setFocus(*(void**)(void*)ObjGroup_GetObjects(OBJSEQ_TARGET_OBJGROUP, &groupObjCount), 0);
+                        ->setMode(CAMERA_MODE_ARWING_RESOURCE_ID, 1, gObjSeqCamModeArgB, 0, NULL, 0, 0);
+                    break;
+                case CAMERA_MODE_TITLE_RESOURCE_ID:
+                    (*gCameraInterface)->setMode(CAMERA_MODE_TITLE_RESOURCE_ID, 0, 3, 0, NULL, 0, 0);
+                    (*gCameraInterface)
+                        ->setFocus(*(void**)(void*)objGetAllOfType(OBJSEQ_TARGET_OBJGROUP, &groupObjCount), 0);
                     break;
                 default:
                     if (gObjSeqCamModeArgB == 0)

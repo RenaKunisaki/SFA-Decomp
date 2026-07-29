@@ -14,7 +14,7 @@
 #include "main/gamebits_api.h"
 #include "main/gameloop_gamebit_api.h"
 #include "main/newshadows_audio_api.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/obj_trigger.h"
 #include "main/object_render.h"
@@ -268,7 +268,7 @@ int NW_mammoth_updateSleepCycle(GameObject* obj, NwMammothState* state) {
 void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammothPlacement* placement) {
     GameObject* tw2;
     GameObject* tw;
-    int nearestObj = ObjGroup_FindNearestObject(NW_MAMMOTH_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
+    int nearestObj = objGetNearestTypeTo(NW_MAMMOTH_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
 
     switch (state->stateIndex) {
     case 9:
@@ -607,7 +607,7 @@ void NW_mammoth_free(GameObject* obj) {
     NwMammothState* state;
 
     state = (NwMammothState*)obj->extra;
-    ObjGroup_RemoveObject((int)obj, NW_MAMMOTH_GROUP_ID);
+    objFreeObjectType((int)obj, NW_MAMMOTH_GROUP_ID);
     if ((state->runtimeFlags & NW_MAMMOTH_RUNTIME_UI_MESSAGE) != 0) {
         (*gGameUIInterface)->airMeterSetShutdown();
     }
@@ -802,7 +802,7 @@ void NW_mammoth_init(GameObject* obj, NwMammothPlacement* placement, int isReloa
                     pathParam.values);
         (*gPathControlInterface)->attachObject(obj, path);
     }
-    ObjGroup_AddObject((int)obj, NW_MAMMOTH_GROUP_ID);
+    objAddObjectType((int)obj, NW_MAMMOTH_GROUP_ID);
 }
 
 const f32 gNwMammothDefaultAnimStepScale = 0.005f;

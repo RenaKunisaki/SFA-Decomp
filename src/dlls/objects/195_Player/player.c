@@ -2,6 +2,8 @@
 
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
+#include "main/dll/dll_0052_cameramodeforcebehind.h"
+#include "main/dll/dll_0053_cameramodecloudrunner.h"
 #include "main/dll/partfx_interface.h"
 #include "game/objects/object_setup.h"
 #include "main/model_engine.h"
@@ -97,7 +99,7 @@
 #include "main/dll/dll_0000_gameui.h"
 #undef FEAR_TEST_METER_POSITION_INT
 #include "main/dll/dll_00C9_enemy.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
@@ -311,14 +313,9 @@ typedef struct PlayerIntPair
     int v[2];
 } PlayerIntPair;
 
-typedef struct PlayerF32Pair
-{
-    f32 v[2];
-} PlayerF32Pair;
-
 static const PlayerIntPair sPlayerKnockFxIds = {{6, 8}};
-static const PlayerF32Pair sPlayerCamRange = {{60.0f, 37.0f}};
-static const PlayerF32Pair sPlayerColRange = {{65.0f, 35.0f}};
+static const CameraModeForceBehindInitParams sPlayerCamRange = {60.0f, 37.0f};
+static const CameraModeForceBehindInitParams sPlayerColRange = {65.0f, 35.0f};
 
 const u8 lbl_802C2B30[12][16] = {
     {0x40, 0x02, 0x01}, {0x40, 0x03, 0x01, 0x02}, {0x40, 0x04, 0x05, 0x06},
@@ -1388,7 +1385,7 @@ int playerIsQuakeShockwaveActive(GameObject* obj)
 int playerFindNearestFirefly(GameObject* player)
 {
     f32 dist = 300.0f;
-    return ObjGroup_FindNearestObject(LANTERNFIREFLY_OBJGROUP, player, &dist);
+    return objGetNearestTypeTo(LANTERNFIREFLY_OBJGROUP, player, &dist);
 }
 
 static int playerIsAtFullSpeed(GameObject* obj)
@@ -3660,7 +3657,7 @@ int playerState31(GameObject* obj, int p2)
     f32 sinv;
     f32 fz;
     dist = 100.0f;
-    near = (void*)ObjGroup_FindNearestObject(MAGICPLANT_OBJGROUP_B, obj, &dist);
+    near = (void*)objGetNearestTypeTo(MAGICPLANT_OBJGROUP_B, obj, &dist);
     ((ByteFlags*)((char*)inner + 0x3f4))->b20 = 1;
     fz = 0.0f;
     inner->buttonHoldTimer = fz;
@@ -5800,7 +5797,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     f32 xc;
     f32 yc;
     f32 yOut;
-    PlayerF32Pair col = sPlayerColRange;
+    CameraModeForceBehindInitParams col = sPlayerColRange;
 
     setAButtonIcon(0xf);
     if (*(s8*)&state->baddie.moveJustStartedA != 0)
@@ -5819,7 +5816,8 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
         if (inner->curAnimId != 0x48 && inner->curAnimId != 0x47)
         {
             Camera_setBlendCurveMode(2);
-            (*gCameraInterface)->setMode(0x52, 1, 0, 8, col.v, 0x1e, 0xff);
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_FORCE_BEHIND_RESOURCE_ID, 1, 0, sizeof(col), &col, 0x1e, 0xff);
         }
         inner->stickDirection = 0;
         inner->latchedStickDir = 0;
@@ -6357,7 +6355,8 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
         f32 z = 0.0f;
         inner->aimInputX = z;
         inner->aimInputZ = z;
-        (*gCameraInterface)->setMode(0x53, 1, sub != NULL ? 0x12 : -2, 0, NULL, 0, 0xff);
+        (*gCameraInterface)
+            ->setMode(CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID, 1, sub != NULL ? 0x12 : -2, 0, NULL, 0, 0xff);
         ObjAnim_SetCurrentMove((int)obj, 0x43e, 0.0f, 0);
         ((PlayerState*)state)->baddie.moveSpeed = 0.015f;
         inner->actionCooldown = 0.0f;
@@ -6786,7 +6785,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
             break;
         case 0x419:
             inner->moveSequence = (int)(base + 0x420);
-            (*gCameraInterface)->setMode(0x53, 1, 0, 0, NULL, 0x2d, 0xff);
+            (*gCameraInterface)->setMode(CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID, 1, 0, 0, NULL, 0x2d, 0xff);
             break;
         case 0x416:
             inner->moveSequence = (int)(base + 0x438);
@@ -9249,7 +9248,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
         }
         if (((PlayerState*)inner)->heldObj == NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
         {
-            list = (int*)ObjGroup_GetObjects(STAFF_ACTIVATED_OBJECT_GROUP, &cnt41);
+            list = (int*)objGetAllOfType(STAFF_ACTIVATED_OBJECT_GROUP, &cnt41);
             for (i = 0; i < cnt41; i++)
             {
                 int o = *list;
@@ -9294,7 +9293,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
             }
         }
     }
-    ObjGroup_GetObjects(BABYCLOUDRUNNER_OBJGROUP, &cnt20);
+    objGetAllOfType(BABYCLOUDRUNNER_OBJGROUP, &cnt20);
     mainSetBits(GAMEBIT_ITEM_Flute_Disabled, !cnt20);
     if ((*gGameUIInterface)->isAnyItemBeingUsed() != 0)
     {
@@ -9303,7 +9302,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
             char* found;
             s16* def = NULL;
             buttonDisable(0, PAD_BUTTON_A);
-            found = (char*)ObjGroup_FindNearestObject(0xf, obj, &dist);
+            found = (char*)objGetNearestTypeTo(0xf, obj, &dist);
             if (found != NULL)
             {
                 def = *(s16**)((char*)found + 0x4c);
@@ -9351,7 +9350,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
     }
     if (inner->curAnimId != 0x44 && (*gGameUIInterface)->isAnyItemBeingUsed() != 0 &&
         (*gGameUIInterface)->isItemBeingUsed(0x13e) != 0 &&
-        (ObjGroup_GetObjects(LANTERNFIREFLY_OBJGROUP, &cnt30), cnt30 == 0))
+        (objGetAllOfType(LANTERNFIREFLY_OBJGROUP, &cnt30), cnt30 == 0))
     {
         gameBitDecrement(0x13d);
         if (Obj_IsLoadingLocked() != 0)
@@ -11280,7 +11279,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
                 continue;
             }
             nearDist = 50.0f;
-            t8 = ObjGroup_FindNearestObject(WALL_ANIMATOR_GROUP_CLIMBABLE, (GameObject*)obj, &nearDist);
+            t8 = objGetNearestTypeTo(WALL_ANIMATOR_GROUP_CLIMBABLE, (GameObject*)obj, &nearDist);
             ok2 = 1;
             if ((u32)t8 != 0)
             {
@@ -11337,7 +11336,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     }
     if ((*(int*)&((PlayerState*)state2)->baddie.unk31C & 0x100) != 0 && (mask & 0x200) != 0)
     {
-        int* objs = (int*)ObjGroup_GetObjects(10, &objCount);
+        int* objs = (int*)objGetAllOfType(10, &objCount);
         int k2;
         for (k2 = 0; k2 < objCount; k2++)
         {
@@ -12024,7 +12023,7 @@ void playerRestoreAfterSequence(GameObject* obj, int p2, int p3)
     inner->timeScaleMode = 2;
     if (gPlayerChildObject != NULL)
     {
-        found = (void*)ObjGroup_FindNearestObject(BABYCLOUDRUNNER_OBJGROUP, obj, &dist);
+        found = (void*)objGetNearestTypeTo(BABYCLOUDRUNNER_OBJGROUP, obj, &dist);
         if (found != NULL)
         {
             (*(void (*)(void*))(*(int*)((char*)*(int*)*(int*)((char*)found + 0x68) + 0x24)))(found);
@@ -12834,7 +12833,7 @@ int fn_802AB1D0(GameObject* obj)
         return (int)held;
     }
     best = NULL;
-    objs = ObjGroup_GetObjects(8, &count);
+    objs = objGetAllOfType(8, &count);
     i = 0;
     bestDist = 0.0f;
     for (; i < count;)
@@ -12984,7 +12983,7 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
     int i;
 
     sumS = sumC = 0.0f;
-    objs = (int*)ObjGroup_GetObjects(0x14, &n);
+    objs = (int*)objGetAllOfType(0x14, &n);
     any = 0;
     for (i = 0; i < n; i++)
     {
@@ -13014,7 +13013,7 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
             }
         }
     }
-    objs = (int*)ObjGroup_GetObjects(0x50, &n);
+    objs = (int*)objGetAllOfType(0x50, &n);
     for (i = 0; i < n; i++)
     {
         int o = objs[i];
@@ -13361,7 +13360,7 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
 {
     int r;
     int ok;
-    PlayerF32Pair camp = sPlayerCamRange;
+    CameraModeForceBehindInitParams camp = sPlayerCamRange;
     MatrixTransform pos;
     u8 buf[52];
     f32 mtx[16];
@@ -13417,7 +13416,8 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
         if (!((ByteFlags*)((char*)inner + 0x3f1))->b10)
         {
             Camera_setBlendCurveMode(2);
-            (*gCameraInterface)->setMode(0x52, 1, 0, 8, camp.v, 0x1e, 0xff);
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_FORCE_BEHIND_RESOURCE_ID, 1, 0, sizeof(camp), &camp, 0x1e, 0xff);
             if (gPlayerFrameCounter - gPlayerLastSfxFrame > 2)
             {
                 Sfx_PlayFromObject(obj, SFXTRIG_headcam_in);
@@ -14784,7 +14784,7 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
                     }
                 }
                 Camera_setBlendCurveMode(2);
-                (*gCameraInterface)->setMode(0x52, 1, 0, 0, NULL, 0x2d, 0xff);
+                (*gCameraInterface)->setMode(CAMERA_MODE_FORCE_BEHIND_RESOURCE_ID, 1, 0, 0, NULL, 0x2d, 0xff);
                 ((ByteFlags*)((char*)state + 0x3f6))->b40 = 1;
                 (*gPlayerInterface)->setState(obj, (void*)state, 0x2a);
                 *(int*)&((PlayerState*)state)->baddie.unk304 = (int)playerStagedEndIceSpellAndRestoreCamera;
@@ -16147,7 +16147,7 @@ void fn_802B1E5C(GameObject* obj, int state, int cfg, f32 dt)
             break;
         case SURFACE_CONVEYOR:
             queryParams[0] = 500.0f;
-            found = (void*)ObjGroup_FindNearestObject(CFGUARDIAN_OBJECT_GROUP, obj, queryParams);
+            found = (void*)objGetNearestTypeTo(CFGUARDIAN_OBJECT_GROUP, obj, queryParams);
             if (found != 0)
             {
                 (*(void (*)(int, int, f32, f32*, f32*))(*(int*)(*(int*)(*(int*)((char*)found + 0x68)) + 0x20)))(
@@ -16990,7 +16990,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             {
                 f32 best;
                 u8 found;
-                void* objs = ObjGroup_GetObjects(10, &objCount);
+                void* objs = objGetAllOfType(10, &objCount);
                 found = 0;
                 best = 10000.0f;
                 for (endFlag = 0, obj2 = (int)objs; endFlag < objCount; endFlag++)
@@ -17111,7 +17111,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 }
                 else if ((u32)gb != 0 && arrayIndexOf((int*)(tbl + 0x160), 4, ((GameObject*)gb)->anim.romDefNo) != -1)
                 {
-                    (*gObjectTriggerInterface)->setCamVars(0x53, 0, 0, 0);
+                    (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_CLOUDRUNNER_RESOURCE_ID, 0, 0, 0);
                 }
                 else
                 {
@@ -17191,7 +17191,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             {
                 int t;
                 nearArg = 400.0f;
-                t = ObjGroup_FindNearestObject(6, (GameObject*)obj, &nearArg);
+                t = objGetNearestTypeTo(6, (GameObject*)obj, &nearArg);
                 if ((u32)t != 0)
                 {
                     objHitDetectFn_80062e84((GameObject*)obj, (GameObject*)t, 1);
@@ -17466,7 +17466,7 @@ void fn_802B4A9C(GameObject* obj, int inner, int inner2)
             else
             {
                 f32 dist = 500.0f;
-                *(int*)&((PlayerState*)inner2)->baddie.targetObj = ObjGroup_FindNearestObject(3, (GameObject*)obj, &dist);
+                *(int*)&((PlayerState*)inner2)->baddie.targetObj = objGetNearestTypeTo(3, (GameObject*)obj, &dist);
             }
         }
         else
@@ -17576,8 +17576,8 @@ void fn_802B4DE0(GameObject* obj, int p2)
             mm_free((void*)e);
         off += 0xb0;
     }
-    ObjGroup_RemoveObject((int)obj, 0);
-    ObjGroup_RemoveObject((int)obj, PLAYER_OBJGROUP);
+    objFreeObjectType((int)obj, 0);
+    objFreeObjectType((int)obj, PLAYER_OBJGROUP);
     ObjModelChain_Free((ObjModelChain*)gPlayerModelChain);
 }
 
@@ -18427,8 +18427,8 @@ void objLoadPlayerFromSave(int obj)
     u8* pathState;
 
     lbl_803DE459 = 0;
-    ObjGroup_AddObject((int)obj, 0);
-    ObjGroup_AddObject((int)obj, PLAYER_OBJGROUP);
+    objAddObjectType((int)obj, 0);
+    objAddObjectType((int)obj, PLAYER_OBJGROUP);
     objSetSlot((GameObject*)obj, 0x3c);
     ObjMsg_AllocQueue((void*)obj, 0x14);
     ((GameObject*)obj)->animEventCallback = (void*)player_SeqFn;

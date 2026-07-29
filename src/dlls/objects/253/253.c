@@ -56,7 +56,7 @@ void dll_FD_update(GameObject* obj) {
     placement = (DllFDPlacement*)obj->anim.placementData;
     state = obj->extra;
     if (state->target == NULL) {
-        target = (GameObject*)ObjGroup_FindNearestObject((u32)placement->targetGroup, obj, &maxDistance);
+        target = (GameObject*)objGetNearestTypeTo((u32)placement->targetGroup, obj, &maxDistance);
         state->target = target;
         if (state->target == NULL) {
             return;

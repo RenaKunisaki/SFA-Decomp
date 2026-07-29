@@ -1,56 +1,48 @@
 /*
  * DLL 76 / 0x4C.
  */
-#include "main/resource.h"
-#include "main/object_transform.h"
 #include "main/dll/dll_004C_camDebug.h"
 
-void CameraModeFixed_copyToCurrent(void)
-{
+#include "main/object_transform.h"
+
+void CameraModeFixed_copyToCurrent(void) {
 }
 
-void CameraModeFixed_free(void)
-{
+void CameraModeFixed_free(void) {
 }
 
-void CameraModeFixed_update(void)
-{
+void CameraModeFixed_update(void) {
 }
 
-void CameraModeFixed_init(CameraObject* camera, int unused, CameraObject* src)
-{
-    if (src != NULL)
-    {
-        camera->anim.worldPosX = src->anim.worldPosX;
-        camera->anim.worldPosY = src->anim.worldPosY;
-        camera->anim.worldPosZ = src->anim.worldPosZ;
-        Obj_TransformWorldPointToLocal(src->anim.worldPosX, src->anim.worldPosY, src->anim.worldPosZ,
+void CameraModeFixed_init(CameraObject* camera, int unused, const CameraModeFixedPose* pose) {
+    if (pose != NULL) {
+        camera->anim.worldPosX = pose->worldPosition.x;
+        camera->anim.worldPosY = pose->worldPosition.y;
+        camera->anim.worldPosZ = pose->worldPosition.z;
+        Obj_TransformWorldPointToLocal(pose->worldPosition.x, pose->worldPosition.y, pose->worldPosition.z,
                                        &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                       camera->anim.parent);
-        camera->anim.rotX = src->anim.rotX;
-        camera->anim.rotY = src->anim.rotY;
-        camera->anim.rotZ = src->anim.rotZ;
-        camera->fov = src->fov;
+                                       (GameObject*)camera->anim.parent);
+        camera->anim.rotX = pose->cameraRotation.rotX;
+        camera->anim.rotY = pose->cameraRotation.rotY;
+        camera->anim.rotZ = pose->cameraRotation.rotZ;
+        camera->fov = pose->fov;
     }
 }
 
-void CameraModeFixed_release(void)
-{
+void CameraModeFixed_release(void) {
 }
 
-void CameraModeFixed_initialise(void)
-{
+void CameraModeFixed_initialise(void) {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319D78 = {{0x00000000,
-                       0x00000000,
-                       0x00000000,
-                       0x00060000},
-                      {(ResourceDescriptorCallback)CameraModeFixed_initialise,
-                       (ResourceDescriptorCallback)CameraModeFixed_release,
-                       0x00000000,
-                       (ResourceDescriptorCallback)CameraModeFixed_init,
-                       (ResourceDescriptorCallback)CameraModeFixed_update,
-                       (ResourceDescriptorCallback)CameraModeFixed_free,
-                       (ResourceDescriptorCallback)CameraModeFixed_copyToCurrent,
-                       0x00000000}};
+CameraModeFixedDescriptor gCameraModeFixedDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    CameraModeFixed_initialise,
+    CameraModeFixed_release,
+    NULL,
+    CameraModeFixed_init,
+    CameraModeFixed_update,
+    CameraModeFixed_free,
+    CameraModeFixed_copyToCurrent,
+    NULL,
+};

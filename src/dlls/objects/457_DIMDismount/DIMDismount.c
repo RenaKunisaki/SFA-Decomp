@@ -53,7 +53,7 @@ int DIMDismountPoint_getObjectTypeId(void) {
 }
 
 void DIMDismountPoint_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, DIM_DISMOUNT_POINT_OBJECT_GROUP);
+    objFreeObjectType((int)obj, DIM_DISMOUNT_POINT_OBJECT_GROUP);
 }
 
 void DIMDismountPoint_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
@@ -75,7 +75,7 @@ void DIMDismountPoint_update(GameObject* obj) {
     f32 searchRadius;
 
     searchRadius = 500.0f;
-    nearestNeighbor = (GameObject*)ObjGroup_FindNearestObject(DIM_DISMOUNT_MOUNT_OBJECT_GROUP, obj, &searchRadius);
+    nearestNeighbor = (GameObject*)objGetNearestTypeTo(DIM_DISMOUNT_MOUNT_OBJECT_GROUP, obj, &searchRadius);
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if (mainGetBit(GAMEBIT_NW_SnowHorn03E3) != 0) {
         obj->hitVolumeIndex = 1;
@@ -97,7 +97,7 @@ void DIMDismountPoint_update(GameObject* obj) {
 void DIMDismountPoint_init(GameObject* obj, DimDismountPlacement* placement) {
     DimDismountState* state;
 
-    ObjGroup_AddObject((u32)obj, DIM_DISMOUNT_POINT_OBJECT_GROUP);
+    objAddObjectType((u32)obj, DIM_DISMOUNT_POINT_OBJECT_GROUP);
     obj->anim.rotX = (s16)(placement->rotationXByte << 8);
     state = obj->extra;
     state->planeNormalX = mathSinf(3.1415927f * (f32)(s32)obj->anim.rotX / 32768.0f);

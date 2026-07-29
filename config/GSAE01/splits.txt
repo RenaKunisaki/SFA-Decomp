@@ -2713,7 +2713,7 @@ dlls/objects/373_DFropenode/DFropenode.c:
 	.rodata     start:0x802C2358 end:0x802C23B8
 	.data       start:0x80325E00 end:0x80325F20
 	.sdata      start:0x803DBF40 end:0x803DBF60
-	.sdata2     start:0x803E4DE0 end:0x803E4DF8
+	.sdata2     start:0x803E4DE0 end:0x803E4E2C
 
 dlls/objects/374_DFSH_Door1S/DFSH_Door1S.c:
 	.data       start:0x80325F20 end:0x80325F50

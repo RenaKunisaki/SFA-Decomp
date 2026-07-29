@@ -116,7 +116,7 @@ int PressureSwitchFB_getExtraSize(void) {
 }
 
 void PressureSwitchFB_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, PRESSURESWITCHFB_OBJECT_GROUP);
+    objFreeObjectType((int)obj, PRESSURESWITCHFB_OBJECT_GROUP);
 }
 
 static inline int PressureSwitchFB_scanTrackedSlots(int stateAddress, u8 slotIndex, int foundTrackedObject,
@@ -178,7 +178,7 @@ void PressureSwitchFB_update(GameObject* obj) {
             state->contactTimer = 0;
         }
         searchRadius = PRESSURESWITCHFB_TARGET_SEARCH_RADIUS;
-        nearestTarget = ObjGroup_FindNearestObject(PRESSURESWITCHFB_TARGET_OBJECT_GROUP, obj, &searchRadius);
+        nearestTarget = objGetNearestTypeTo(PRESSURESWITCHFB_TARGET_OBJECT_GROUP, obj, &searchRadius);
         if (nearestTarget != 0) {
             state->contactTimer = PRESSURESWITCHFB_CONTACT_FRAMES;
         }
@@ -380,7 +380,7 @@ void PressureSwitchFB_init(GameObject* obj, PressureSwitchFBPlacement* placement
             }
         }
     }
-    ObjGroup_AddObject((int)obj, PRESSURESWITCHFB_OBJECT_GROUP);
+    objAddObjectType((int)obj, PRESSURESWITCHFB_OBJECT_GROUP);
     state->trackedObjects[0] = NULL;
     state->trackedObjects[1] = NULL;
     state->trackedObjects[2] = NULL;

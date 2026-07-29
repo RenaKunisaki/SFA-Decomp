@@ -322,6 +322,21 @@
 #include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "main/dll/CAM/dll_0045_camTalk.h"
 #include "main/dll/dll_0046_cameramodedebug.h"
+#include "main/dll/dll_0048_cameramodestatic.h"
+#include "main/dll/dll_004A_cameramodeshipbattle.h"
+#include "main/dll/dll_004B_cameramodeclimb.h"
+#include "main/dll/dll_004C_camDebug.h"
+#include "main/dll/dll_004D_cameramodenpcspeak.h"
+#include "main/dll/dll_004E_cameramodeworldmap.h"
+#include "main/dll/dll_004F_cameramode.h"
+#include "main/dll/dll_0050_cameramodecrawl.h"
+#include "main/dll/dll_0051_cameramodecannon.h"
+#include "main/dll/dll_0052_cameramodeforcebehind.h"
+#include "main/dll/dll_0053_cameramodecloudrunner.h"
+#include "main/dll/dll_0054_dll54.h"
+#include "main/dll/dll_0055_cameramode.h"
+#include "main/dll/dll_0056_cameramodearwing.h"
+#include "main/dll/dll_0057_cameramodetitle.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -401,7 +416,7 @@ char sModelEngineTimerDotText[] = ".";
 
 extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19;
 extern ResourceDescriptor dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
-extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
+extern ResourceDescriptor dll_2A4, dll_2E, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor;
@@ -495,13 +510,9 @@ extern ResourceDescriptor lbl_80319598, lbl_803195E8, lbl_80319638, lbl_80319688
     lbl_80319768, lbl_803197B0;
 extern ResourceDescriptor lbl_803197F8, lbl_80319840, projquakeshock_funcs, lbl_803198D8, projtesla_funcs, lbl_80319968,
     lbl_803199B0, lbl_803199F8;
-extern ResourceDescriptor lbl_80319A40, lbl_80319B58, lbl_80319B98, gCameraModeViewfinderDescriptor,
-    gCameraModeStaticDescriptor;
-extern ResourceDescriptor gCameraModeTestStrengthDescriptor, gCameraModeCombatDescriptor, gCameraModeShipBattleDescriptor, gCameraModeClimbDescriptor, lbl_80319D78,
-    gCameraModeNpcSpeakDescriptor,
-    gCameraModeWorldMapDescriptor, lbl_80319E38;
-extern ResourceDescriptor gCameraModeCrawlDescriptor, lbl_80319E98, lbl_80319EC8, lbl_80319EF8, lbl_80319F58, lbl_80319F88,
-    gCameraModeTitleDescriptor, lbl_8031A148;
+extern ResourceDescriptor lbl_80319A40, lbl_80319B58, lbl_80319B98, gCameraModeViewfinderDescriptor;
+extern ResourceDescriptor gCameraModeTestStrengthDescriptor, gCameraModeCombatDescriptor;
+extern ResourceDescriptor lbl_8031A148;
 extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode_funcs, lbl_8031A82C, EnterSaveNameScreen_funcs, OptionsScreen_funcs,
     lbl_8031ADA4, Dummy39_funcs;
 extern ResourceDescriptor Dummy3A_funcs, lbl_8031C020, lbl_8031C168, lbl_8031C1E4, lbl_8031C2B4, Dummy3E_funcs,
@@ -1201,22 +1212,22 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gCameraModeTalkDescriptor,
     (ResourceDescriptor*)&gCameraModeDebugDescriptor,
     &gCameraModeTestStrengthDescriptor,
-    &gCameraModeStaticDescriptor,
+    (ResourceDescriptor*)&gCameraModeStaticDescriptor,
     &gCameraModeCombatDescriptor,
-    &gCameraModeShipBattleDescriptor,
-    &gCameraModeClimbDescriptor,
-    &lbl_80319D78,
-    &gCameraModeNpcSpeakDescriptor,
-    &gCameraModeWorldMapDescriptor,
-    &lbl_80319E38,
-    &gCameraModeCrawlDescriptor,
-    &lbl_80319E98,
-    &lbl_80319EC8,
-    &lbl_80319EF8,
-    &dll_54,
-    &lbl_80319F58,
-    &lbl_80319F88,
-    &gCameraModeTitleDescriptor,
+    (ResourceDescriptor*)&gCameraModeShipBattleDescriptor,
+    (ResourceDescriptor*)&gCameraModeClimbDescriptor,
+    (ResourceDescriptor*)&gCameraModeFixedDescriptor,
+    (ResourceDescriptor*)&gCameraModeNpcSpeakDescriptor,
+    (ResourceDescriptor*)&gCameraModeWorldMapDescriptor,
+    (ResourceDescriptor*)&gCameraMode4FDescriptor,
+    (ResourceDescriptor*)&gCameraModeCrawlDescriptor,
+    (ResourceDescriptor*)&gCameraModeCannonDescriptor,
+    (ResourceDescriptor*)&gCameraModeForceBehindDescriptor,
+    (ResourceDescriptor*)&gCameraModeCloudRunnerDescriptor,
+    (ResourceDescriptor*)&gCameraMode54Descriptor,
+    (ResourceDescriptor*)&gCameraMode55Descriptor,
+    (ResourceDescriptor*)&gCameraModeArwingDescriptor,
+    (ResourceDescriptor*)&gCameraModeTitleDescriptor,
     &lbl_803137D8,
     &dll_59_funcs,
     &StaffCollision_funcs,

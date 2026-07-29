@@ -68,7 +68,7 @@
 #include "main/dll/dll_0000_gameui.h"
 #undef FEAR_TEST_METER_POSITION_INT
 #include "main/dll/dll_00C9_enemy.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/dll/dll_029B_arwingandrossstuff.h"
 #include "main/dll/player.h"
@@ -92,7 +92,7 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/objhits.h"
 #include "main/objfx.h"
@@ -834,7 +834,7 @@ void dll437_free(GameObject* obj, int preserveChildren) {
     int count;
     int i;
 
-    ObjGroup_RemoveObject((u32)obj, DLL1B5_OBJECT_GROUP);
+    objFreeObjectType((u32)obj, DLL1B5_OBJECT_GROUP);
     count = obj->childCount;
     for (i = 0; i < count; i++) {
         child = obj->childObjs[0];

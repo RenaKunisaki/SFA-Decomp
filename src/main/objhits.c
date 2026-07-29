@@ -30,7 +30,7 @@
 #include "main/dll/player_api.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_hit_region.h"
 #include "main/obj_link.h"
 #include "main/objlib_api.h"
@@ -2793,22 +2793,22 @@ typedef struct ObjLibRegionList ObjLibRegionList;
 
 extern char sObjAddObjectTypeReachedMaxTypes[];
 
-#define OBJGROUP_COUNT                0x54
-#define OBJGROUP_OFFSET_CLEAR_COUNT   (OBJGROUP_COUNT + 1)
-#define OBJGROUP_MAX_OBJECTS          0x100
+#define OBJTYPE_COUNT                0x54
+#define OBJTYPE_INDEX_COUNT   (OBJTYPE_COUNT + 1)
+#define OBJTYPE_LIST_MAX          0x100
 #define OBJLIB_PRIMARY_ROM_PAGE_COUNT 0x50
 #define OBJHITREGION_ROM_ENTRY_TYPE   0x130
 
-typedef struct ObjGroupOffsetTable
+typedef struct ObjectTypeIndexTable
 {
-    u8 offsets[OBJGROUP_OFFSET_CLEAR_COUNT];
+    u8 offsets[OBJTYPE_INDEX_COUNT];
     u8 reserved[3];
-} ObjGroupOffsetTable;
+} ObjectTypeIndexTable;
 
-STATIC_ASSERT(sizeof(ObjGroupOffsetTable) == 0x58);
+STATIC_ASSERT(sizeof(ObjectTypeIndexTable) == 0x58);
 
-u32 gObjGroupObjects[OBJGROUP_MAX_OBJECTS];
-ObjGroupOffsetTable gObjGroupOffsets;
+u32 gObjectTypeList[OBJTYPE_LIST_MAX];
+ObjectTypeIndexTable gObjectTypeIndices;
 
 typedef struct ObjContactCallbackEntry
 {
@@ -2844,7 +2844,7 @@ struct ObjLibRegionList
 
 ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEntry)];
 extern void* gObjHitsWorkBuffer;
-extern u8 gObjGroupObjectCount;
+extern u8 gObjectTypeListCount;
 extern int gObjContactCallbackCount;
 extern f32 OBJLIB_UNIT_SCALE;
 extern f32 gObjLibAnglePiNumerator;
@@ -3713,7 +3713,7 @@ void ObjHits_InitWorkBuffers(void)
     return;
 }
 
-int ObjGroup_ContainsObject(u32 obj, int group)
+int objIsObjectType(u32 obj, int group)
 {
     u32* entry;
     u32 index;
@@ -3721,13 +3721,13 @@ int ObjGroup_ContainsObject(u32 obj, int group)
     u32 limitXorIndex;
     int halfDiff;
 
-    if ((group < 0) || (group >= OBJGROUP_COUNT))
+    if ((group < 0) || (group >= OBJTYPE_COUNT))
     {
         return 0;
     }
-    index = gObjGroupOffsets.offsets[group];
-    limit = gObjGroupOffsets.offsets[group + 1];
-    for (entry = gObjGroupObjects + index; ((int)index < (int)limit && (obj != *entry));
+    index = gObjectTypeIndices.offsets[group];
+    limit = gObjectTypeIndices.offsets[group + 1];
+    for (entry = gObjectTypeList + index; ((int)index < (int)limit && (obj != *entry));
          entry = entry + 1, index = index + 1)
     {
     }
@@ -3737,7 +3737,7 @@ int ObjGroup_ContainsObject(u32 obj, int group)
     return (u32)(halfDiff - limitXorIndex) >> 0x1f;
 }
 
-int ObjGroup_FindNearestObjectToPoint(int group, float* point, float* maxDistance)
+int objGetNearestType(int group, float* point, float* maxDistance)
 {
     u32* entry;
     u32 nearest;
@@ -3748,13 +3748,13 @@ int ObjGroup_FindNearestObjectToPoint(int group, float* point, float* maxDistanc
 
     nearest = 0;
     bestDistanceSq = *maxDistance * *maxDistance;
-    if ((group < 0) || (group >= OBJGROUP_COUNT))
+    if ((group < 0) || (group >= OBJTYPE_COUNT))
     {
         return 0;
     }
-    index = gObjGroupOffsets.offsets[group];
-    limit = gObjGroupOffsets.offsets[group + 1];
-    entry = gObjGroupObjects + index;
+    index = gObjectTypeIndices.offsets[group];
+    limit = gObjectTypeIndices.offsets[group + 1];
+    entry = gObjectTypeList + index;
     while (index < limit)
     {
         if (*entry != 0)
@@ -3776,7 +3776,7 @@ int ObjGroup_FindNearestObjectToPoint(int group, float* point, float* maxDistanc
     return nearest;
 }
 
-GameObject* ObjGroup_FindNearestObjectForObject(int group, GameObject* obj, float* maxDistance)
+GameObject* objGetNearestTypeToExcludingSelf(int group, GameObject* obj, float* maxDistance)
 {
     u32* entry;
     GameObject* nearest;
@@ -3786,7 +3786,7 @@ GameObject* ObjGroup_FindNearestObjectForObject(int group, GameObject* obj, floa
     float bestDistanceSq;
 
     nearest = 0;
-    if ((group < 0) || (group >= OBJGROUP_COUNT))
+    if ((group < 0) || (group >= OBJTYPE_COUNT))
     {
         return 0;
     }
@@ -3798,9 +3798,9 @@ GameObject* ObjGroup_FindNearestObjectForObject(int group, GameObject* obj, floa
     {
         bestDistanceSq = 3.4028235e38f;
     }
-    index = gObjGroupOffsets.offsets[group];
-    limit = gObjGroupOffsets.offsets[group + 1];
-    entry = gObjGroupObjects + index;
+    index = gObjectTypeIndices.offsets[group];
+    limit = gObjectTypeIndices.offsets[group + 1];
+    entry = gObjectTypeList + index;
     while (index < limit)
     {
         if ((GameObject*)*entry != obj)
@@ -3822,7 +3822,7 @@ GameObject* ObjGroup_FindNearestObjectForObject(int group, GameObject* obj, floa
     return nearest;
 }
 
-int ObjGroup_FindNearestObject(int group, GameObject* obj, float* maxDistance)
+int objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance)
 {
     u32* entry;
     u32 nearest;
@@ -3833,7 +3833,7 @@ int ObjGroup_FindNearestObject(int group, GameObject* obj, float* maxDistance)
     float bestDistanceSq;
 
     nearest = 0;
-    if ((group < 0) || (group >= OBJGROUP_COUNT))
+    if ((group < 0) || (group >= OBJTYPE_COUNT))
     {
         return 0;
     }
@@ -3846,9 +3846,9 @@ int ObjGroup_FindNearestObject(int group, GameObject* obj, float* maxDistance)
         bestDistanceSq = 3.4028235e38f;
     }
     o = obj;
-    index = gObjGroupOffsets.offsets[group];
-    limit = gObjGroupOffsets.offsets[group + 1];
-    entry = gObjGroupObjects + index;
+    index = gObjectTypeIndices.offsets[group];
+    limit = gObjectTypeIndices.offsets[group + 1];
+    entry = gObjectTypeList + index;
     while (index < limit)
     {
         if ((GameObject*)*entry != o)
@@ -3870,18 +3870,18 @@ int ObjGroup_FindNearestObject(int group, GameObject* obj, float* maxDistance)
     return nearest;
 }
 
-u32* ObjGroup_GetObjects(int group, int* countOut)
+u32* objGetAllOfType(int group, int* countOut)
 {
-    if ((group < 0) || (group >= OBJGROUP_COUNT))
+    if ((group < 0) || (group >= OBJTYPE_COUNT))
     {
         *countOut = 0;
         return 0x0;
     }
-    *countOut = gObjGroupOffsets.offsets[group + 1] - gObjGroupOffsets.offsets[group];
-    return (u32*)(gObjGroupObjects + gObjGroupOffsets.offsets[group]);
+    *countOut = gObjectTypeIndices.offsets[group + 1] - gObjectTypeIndices.offsets[group];
+    return (u32*)(gObjectTypeList + gObjectTypeIndices.offsets[group]);
 }
 
-void ObjGroup_RemoveObject(int obj, int group)
+void objFreeObjectType(int obj, int group)
 {
     u8* offset;
     u8 count;
@@ -3889,15 +3889,15 @@ void ObjGroup_RemoveObject(int obj, int group)
     int limit;
     u32* entries;
 
-    if ((group < 0) || (group >= OBJGROUP_COUNT))
+    if ((group < 0) || (group >= OBJTYPE_COUNT))
     {
         return;
     }
-    offset = gObjGroupOffsets.offsets;
+    offset = gObjectTypeIndices.offsets;
     index = offset[group];
     offset += group;
     limit = offset[1];
-    entries = gObjGroupObjects + index;
+    entries = gObjectTypeList + index;
     while ((index < limit) && (*entries != obj))
     {
         entries++;
@@ -3907,8 +3907,8 @@ void ObjGroup_RemoveObject(int obj, int group)
     {
         return;
     }
-    count = (gObjGroupObjectCount -= 1);
-    entries = gObjGroupObjects + index;
+    count = (gObjectTypeListCount -= 1);
+    entries = gObjectTypeList + index;
     while (index < count)
     {
         *entries = entries[1];
@@ -3916,8 +3916,8 @@ void ObjGroup_RemoveObject(int obj, int group)
         index++;
     }
     group++;
-    offset = gObjGroupOffsets.offsets + group;
-    while (group <= OBJGROUP_COUNT)
+    offset = gObjectTypeIndices.offsets + group;
+    while (group <= OBJTYPE_COUNT)
     {
         (*offset)--;
         offset++;
@@ -3925,19 +3925,19 @@ void ObjGroup_RemoveObject(int obj, int group)
     }
 }
 
-int ObjGroup_GetObjectGroup(u32 obj)
+int objGetObjectType(u32 obj)
 {
     int group;
     int objectIndex;
 
-    for (objectIndex = 0; objectIndex < (int)(u32)gObjGroupObjectCount; objectIndex++)
+    for (objectIndex = 0; objectIndex < (int)(u32)gObjectTypeListCount; objectIndex++)
     {
-        u32 entryObj = gObjGroupObjects[objectIndex];
+        u32 entryObj = gObjectTypeList[objectIndex];
         if (entryObj == obj)
         {
             group = 0;
-            while (((int)(u32)gObjGroupOffsets.offsets[group] <= objectIndex) &&
-                   (group < OBJGROUP_OFFSET_CLEAR_COUNT))
+            while (((int)(u32)gObjectTypeIndices.offsets[group] <= objectIndex) &&
+                   (group < OBJTYPE_INDEX_COUNT))
             {
                 group++;
             }
@@ -3947,7 +3947,7 @@ int ObjGroup_GetObjectGroup(u32 obj)
     return 0;
 }
 
-void ObjGroup_AddObject(int obj, int group)
+void objAddObjectType(int obj, int group)
 {
     u8* offset;
     int count;
@@ -3956,20 +3956,20 @@ void ObjGroup_AddObject(int obj, int group)
     int insertIndex;
     u32* entries;
 
-    if ((group < 0) || (group >= OBJGROUP_COUNT))
+    if ((group < 0) || (group >= OBJTYPE_COUNT))
     {
         return;
     }
-    if ((int)(u32)gObjGroupObjectCount >= OBJGROUP_MAX_OBJECTS)
+    if ((int)(u32)gObjectTypeListCount >= OBJTYPE_LIST_MAX)
     {
         OSReport(sObjAddObjectTypeReachedMaxTypes);
         return;
     }
-    offset = gObjGroupOffsets.offsets;
+    offset = gObjectTypeIndices.offsets;
     insertIndex = offset[group];
     offset += group;
     limit = offset[1];
-    entries = gObjGroupObjects + insertIndex;
+    entries = gObjectTypeList + insertIndex;
     for (index = insertIndex; index < limit; index++)
     {
         if (*entries == obj)
@@ -3979,19 +3979,19 @@ void ObjGroup_AddObject(int obj, int group)
         entries++;
     }
     insertIndex = (limit - insertIndex == 0) ? insertIndex : (limit - 1);
-    gObjGroupObjectCount++;
-    count = (int)(u32)gObjGroupObjectCount;
+    gObjectTypeListCount++;
+    count = (int)(u32)gObjectTypeListCount;
     count--;
-    entries = gObjGroupObjects + count;
+    entries = gObjectTypeList + count;
     for (index = count; insertIndex < index; index--)
     {
         *entries = entries[-1];
         entries--;
     }
-    gObjGroupObjects[insertIndex] = obj;
+    gObjectTypeList[insertIndex] = obj;
     group++;
-    offset = gObjGroupOffsets.offsets + group;
-    while (group <= OBJGROUP_COUNT)
+    offset = gObjectTypeIndices.offsets + group;
+    while (group <= OBJTYPE_COUNT)
     {
         (*offset)++;
         offset++;
@@ -3999,10 +3999,10 @@ void ObjGroup_AddObject(int obj, int group)
     }
 }
 
-void ObjGroup_ClearAll(void)
+void objTypeInit(void)
 {
-    memset(gObjGroupOffsets.offsets, 0, sizeof(gObjGroupOffsets.offsets));
-    gObjGroupObjectCount = 0;
+    memset(gObjectTypeIndices.offsets, 0, sizeof(gObjectTypeIndices.offsets));
+    gObjectTypeListCount = 0;
     return;
 }
 

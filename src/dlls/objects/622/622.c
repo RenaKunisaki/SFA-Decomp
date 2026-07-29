@@ -9,7 +9,7 @@
  * and rattling).
  */
 #include "dolphin/mtx/vec.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
 #include "dlls/object_descriptor.h"
@@ -147,7 +147,7 @@ int drshackle_getObjectTypeId(void)
 
 void drshackle_free(int obj)
 {
-    ObjGroup_RemoveObject(obj, DRSHACKLE_OBJGROUP);
+    objFreeObjectType(obj, DRSHACKLE_OBJGROUP);
 }
 
 void drshackle_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
@@ -196,7 +196,7 @@ void drshackle_update(GameObject* obj)
     u32* list;
     if (placement->pathObjGroupBase != 0 && *(void**)state == 0)
     {
-        list = ObjGroup_GetObjects(DFROPENODE_OBJGROUP, &count);
+        list = objGetAllOfType(DFROPENODE_OBJGROUP, &count);
         while (count-- != 0)
         {
             sub = *(int*)(*list + 0x4c);
@@ -220,7 +220,7 @@ void drshackle_update(GameObject* obj)
 void drshackle_init(GameObject* obj, char* arg)
 {
     char* state = (obj)->extra;
-    ObjGroup_AddObject((int)obj, DRSHACKLE_OBJGROUP);
+    objAddObjectType((int)obj, DRSHACKLE_OBJGROUP);
     ((BitFlags8*)(state + 0x1a))->b0 = (mainGetBit(((DrshacklePlacement*)arg)->activeGameBit) == 0);
     ((DrshackleState*)state)->pathPointA = ((DrshacklePlacement*)arg)->startPathPoint % 2;
     (obj)->animEventCallback = drshackle_SeqFn;

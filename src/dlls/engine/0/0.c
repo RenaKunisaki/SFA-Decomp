@@ -8,7 +8,7 @@
 #include "main/pi_dolphin.h"
 #include "main/dll/player_api.h"
 #include "game/objects/object.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/model.h"
 #include "sys/objects.h"
 #include "main/objprint_render_api.h"
@@ -2255,7 +2255,7 @@ void hudDrawFn_80121440(int unused1, int unused2, int unused3)
         int c2 = 0, c1 = 0, c0 = 0;
         f32 radius = gTrickyHudNearestObjMaxDist;
         int* near;
-        near = (int*)ObjGroup_FindNearestObject(9, Obj_GetPlayerObject(), &radius);
+        near = (int*)objGetNearestTypeTo(9, Obj_GetPlayerObject(), &radius);
         if (near != NULL && pauseMenuState == 0)
         {
             (*(void (*)(int*, int*, int*, int*)) *

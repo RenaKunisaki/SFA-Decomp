@@ -21,7 +21,7 @@
 #include "main/gamebits_api.h"
 #include "main/lightmap_api.h"
 #include "main/mapEventTypes.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
@@ -331,7 +331,7 @@ int mmpMoonRock_getObjectTypeId(void) {
 }
 
 void mmpMoonRock_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, MMP_MOON_ROCK_OBJECT_GROUP);
+    objFreeObjectType((int)obj, MMP_MOON_ROCK_OBJECT_GROUP);
     (*gCarryableInterface)->free(obj);
 }
 
@@ -413,7 +413,7 @@ void mmpMoonRock_update(GameObject* obj) {
         (*gCarryableInterface)->setDropDisabled((void*)stateAddress, 0);
         {
             f32 minimumSpacing;
-            placementOrObjects = (MMPMoonRockPlacement*)ObjGroup_GetObjects(CARRYABLE_OBJECT_GROUP, &count);
+            placementOrObjects = (MMPMoonRockPlacement*)objGetAllOfType(CARRYABLE_OBJECT_GROUP, &count);
             i = 0;
             list = (u32*)placementOrObjects;
             minimumSpacing = 40.0f;
@@ -513,7 +513,7 @@ void mmpMoonRock_init(GameObject* obj, const MMPMoonRockPlacement* placement) {
     }
     (*gCarryableInterface)->init(obj, obj->extra, 0x32);
     (*gCarryableInterface)->setSuppressPositionSave(state, 1);
-    ObjGroup_AddObject((int)obj, MMP_MOON_ROCK_OBJECT_GROUP);
+    objAddObjectType((int)obj, MMP_MOON_ROCK_OBJECT_GROUP);
     state->homeX = obj->anim.localPosX;
     state->homeY = obj->anim.localPosY;
     state->homeZ = obj->anim.localPosZ;

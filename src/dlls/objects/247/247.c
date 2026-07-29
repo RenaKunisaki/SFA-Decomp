@@ -96,7 +96,7 @@ void dll_F7_free(GameObject* obj) {
     Resource_Release(gDllF7Resource5A);
     gDllF7Resource5B = NULL;
     gDllF7Resource5A = NULL;
-    ObjGroup_RemoveObject((int)obj, DLLF7_OBJECT_GROUP);
+    objFreeObjectType((int)obj, DLLF7_OBJECT_GROUP);
 }
 
 void dll_F7_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
@@ -181,7 +181,7 @@ void dll_F7_update(GameObject* obj) {
             GameObject* collectible;
 
             radius = DLLF7_COLLECTIBLE_SEARCH_RADIUS;
-            collectible = (GameObject*)ObjGroup_FindNearestObject(COLLECTIBLE_OBJECT_GROUP, obj, &radius);
+            collectible = (GameObject*)objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &radius);
             if (collectible != NULL) {
                 collectible->anim.localPosX = collectible->anim.worldPosX = obj->anim.localPosX;
                 collectible->anim.localPosY = collectible->anim.worldPosY =
@@ -206,7 +206,7 @@ void dll_F7_update(GameObject* obj) {
 void dll_F7_init(GameObject* obj, DllF7Placement* placement) {
     DllF7State* state = obj->extra;
 
-    ObjGroup_AddObject((int)obj, DLLF7_OBJECT_GROUP);
+    objAddObjectType((int)obj, DLLF7_OBJECT_GROUP);
     obj->anim.rotX = (s16)(placement->rotXByte << 8);
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     gDllF7Resource5B = Resource_Acquire(DLLF7_RESOURCE_MODGFX, 1);

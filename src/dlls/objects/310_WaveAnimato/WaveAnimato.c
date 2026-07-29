@@ -159,7 +159,7 @@ void WaveAnimator_free(GameObject* obj) {
             mm_free(gWaveAnimatorColorTable);
         }
     }
-    ObjGroup_RemoveObject((int)obj, WAVE_ANIMATOR_OBJECT_GROUP);
+    objFreeObjectType((int)obj, WAVE_ANIMATOR_OBJECT_GROUP);
 }
 
 void WaveAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
@@ -218,7 +218,7 @@ void WaveAnimator_init(GameObject* obj, WaveAnimatorPlacement* placement) {
     if (gWaveAnimatorInstanceCount == 0) {
         WaveAnimator_buildSharedTables(state);
     }
-    ObjGroup_AddObject((int)obj, WAVE_ANIMATOR_OBJECT_GROUP);
+    objAddObjectType((int)obj, WAVE_ANIMATOR_OBJECT_GROUP);
     gWaveAnimatorInstanceCount++;
 }
 

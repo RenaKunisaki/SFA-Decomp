@@ -409,7 +409,7 @@ void DIMbosstonsil_free(GameObject* obj) {
     DIMbosstonsilState* state;
 
     state = obj->extra;
-    ObjGroup_RemoveObject((int)obj, DIMBOSSTONSIL_OBJGROUP);
+    objFreeObjectType((int)obj, DIMBOSSTONSIL_OBJGROUP);
     (*gBaddieControlInterface)->releaseState((GameObject*)obj, state, 1);
     if (gDIMbosstonsilLight != NULL) {
         ModelLightStruct_free(gDIMbosstonsilLight);

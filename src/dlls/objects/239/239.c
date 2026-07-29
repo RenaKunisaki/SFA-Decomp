@@ -15,7 +15,7 @@
 #include "main/gamebits.h"
 #include "main/maketex_api.h"
 #include "main/model.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
@@ -293,7 +293,7 @@ int pushable_updateMagicGem(GameObject* obj, PushableState* state) {
     }
     if (state->nearestObj == NULL) {
         state->nearestObj =
-            (GameObject*)ObjGroup_FindNearestObject(PUSHABLE_MAGIC_GEM_TARGET_OBJECT_GROUP, obj, nearestDistance);
+            (GameObject*)objGetNearestTypeTo(PUSHABLE_MAGIC_GEM_TARGET_OBJECT_GROUP, obj, nearestDistance);
     }
     if (state->nearestObj == NULL) {
         return 0;
@@ -959,7 +959,7 @@ void pushable_free(GameObject* obj) {
         gPushableSavedIdentCount = savedIdentIndex + 1;
         gPushableSavedIdents[savedIdentIndex] = ident;
     }
-    ObjGroup_RemoveObject((int)obj, PUSHABLE_OBJECT_GROUP);
+    objFreeObjectType((int)obj, PUSHABLE_OBJECT_GROUP);
 }
 
 void pushable_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
@@ -1250,7 +1250,7 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
     }
     obj->anim.rotX = setup->rotXByte << 8;
     obj->anim.localPosY = PUSHABLE_COLLISION_RADIUS + setup->base.posY;
-    ObjGroup_AddObject((int)obj, PUSHABLE_OBJECT_GROUP);
+    objAddObjectType((int)obj, PUSHABLE_OBJECT_GROUP);
     objSetSlot(obj, PUSHABLE_OBJECT_SLOT);
     obj->animEventCallback = pushable_SeqFn;
     state = obj->extra;

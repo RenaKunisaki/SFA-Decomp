@@ -350,7 +350,7 @@ int shop_getObjectTypeId(void)
 void shop_free(GameObject* obj)
 {
     skySetSlotFlag80(7, 0);
-    ObjGroup_RemoveObject((int)obj, SPSHOP_OBJGROUP);
+    objFreeObjectType((int)obj, SPSHOP_OBJGROUP);
     Music_Trigger(MUSICTRIG_communicator, 0);
     mainSetBits(GAMEBIT_PlayerInShop, 0);
 }
@@ -408,7 +408,7 @@ static inline void shop_initBody(GameObject* obj, int objDef)
     int i;
 
     ((ShopBuyItemState*)obj->extra)->itemIndex = -1;
-    ObjGroup_AddObject((int)obj, SPSHOP_OBJGROUP);
+    objAddObjectType((int)obj, SPSHOP_OBJGROUP);
     for (i = 0, item = gShopItemRows; i < SHOP_ITEM_ROW_COUNT; i++)
     {
         item[5] = item[randomGetRange(0, 2) + 1];

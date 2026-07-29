@@ -32,17 +32,6 @@ s16 gCameraViewportYOffset;
 s16 gCameraFarPlaneTransitionFrames;
 s16 gCameraFarPlaneTransitionFramesLeft;
 
-CameraMatrix gObjInverseYawTransformMatrices[0x1E];
-CameraMatrix gObjYawTransformMatrices[0x22];
-f32 gCameraWorldMatrix[64];
-CameraMatrix gCameraDefaultModelMatrix;
-Camera gCameras[CAMERA_COUNT];
-CameraMatrix gCameraViewRotationMatrix;
-CameraMatrix gCameraInverseViewRotationMatrix;
-CameraMatrix gCameraViewMatrix;
-CameraMatrix gCameraInverseViewMatrix;
-CameraProjectionMatrix gCameraProjectionMatrix;
-
 typedef struct CameraMatrixStorage {
     CameraMatrix inverseYawTransforms[0x1E];
     union {
@@ -618,10 +607,14 @@ void Camera_UpdateProjection(void* viewportArg, int unused) {
     u8 viewIndex = gCameraCurrentViewIndex;
     u8 activeViewIndex;
     u32 resolution = getScreenResolution();
-    u32 screenHeight = resolution >> 16;
-    u32 screenWidth = resolution & 0xFFFF;
-    CameraViewport* viewports = gCameraViewports;
+    u32 screenWidth;
+    u32 screenHeight;
+    CameraViewport* viewports;
     CameraViewport* activeViewport;
+
+    screenHeight = resolution >> 16;
+    screenWidth = resolution & 0xFFFF;
+    viewports = gCameraViewports;
 
     if ((viewports[viewIndex].flags & 1) != 0) {
         u8 savedViewIndex = gCameraCurrentViewIndex;
@@ -657,8 +650,8 @@ void Camera_UpdateProjection(void* viewportArg, int unused) {
         GXSetProjection(gCameraProjectionMatrix, gCameraProjectionMode);
         gCameraCurrentViewIndex = viewIndex;
     } else {
-        u32 halfScreenHeight = screenHeight / 2;
         u32 halfScreenWidth = screenWidth / 2;
+        u32 halfScreenHeight = screenHeight / 2;
 
         activeViewIndex = gCameraCurrentViewIndex;
         activeViewport = gCameraViewports;
@@ -1000,6 +993,21 @@ void Camera_InitState(void) {
                      gCameraNearPlane, gCameraFarPlane, lbl_803DE5F0);
     copyMatrix44(storage->worldMatrix + 32, storage->yawTransforms[33]);
 }
+
+/*
+ * MWCC emits this uninitialized block in reverse declaration order. Keep these
+ * definitions together so the generated .bss follows CameraMatrixStorage.
+ */
+CameraProjectionMatrix gCameraProjectionMatrix;
+CameraMatrix gCameraInverseViewMatrix;
+CameraMatrix gCameraViewMatrix;
+CameraMatrix gCameraInverseViewRotationMatrix;
+CameraMatrix gCameraViewRotationMatrix;
+Camera gCameras[CAMERA_COUNT];
+CameraMatrix gCameraDefaultModelMatrix;
+f32 gCameraWorldMatrix[64];
+CameraMatrix gObjYawTransformMatrices[0x22];
+CameraMatrix gObjInverseYawTransformMatrices[0x1E];
 
 CameraViewport gCameraViewports[4] = {
     {0, 0, 320, 240, 160, 120, 320, 240, 0, 0, 319, 239, 0},

@@ -19,7 +19,7 @@
  * placement (defeatedGameBit). Defeat anim events warp to map 0x79 and restore the HUD.
  */
 #include "main/dll/partfx_interface.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_path.h"
 #include "main/obj_query.h"
@@ -85,6 +85,8 @@ s16 lbl_803DC19A = 0x2D8;
 #define DRAKORHOVERPAD_OBJGROUP 0x46 /* DLL 0x271 drakorhoverpad */
 #define BOSSDRAKOR_CHILD_OBJ_MISSILE 0x70f /* drakormissile (drakormissile_startActiveLaunch) */
 
+#define BOSSDRAKOR_DEG_TO_ANGLE (65536.0f / 360.0f)
+
 #define BOSSDRAKOR_SPELLSTONE_STATE_HELD 2
 #define BOSSDRAKOR_SPELLSTONE_STATE_IDLE 0
 
@@ -124,7 +126,7 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
         switch (eventId)
         {
         case 6:
-            target = ObjGroup_FindNearestObject(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
+            target = objGetNearestTypeTo(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
             if ((void*)target != NULL && (obj)->childCount != 0)
             {
                 (*(BossDrakorSpellStoneInterface**)((GameObject*)target)->anim.dll)
@@ -133,7 +135,7 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             }
             break;
         case 7:
-            target = ObjGroup_FindNearestObject(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
+            target = objGetNearestTypeTo(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
             if ((void*)target != NULL)
             {
                 (*(BossDrakorSpellStoneInterface**)((GameObject*)target)->anim.dll)
@@ -531,7 +533,7 @@ void bossdrakor_handleActionEvent(GameObject* obj, BossDrakorState* state, int a
             s->curveFollowState = 1;
         }
     case 24:
-        found = ObjGroup_FindNearestObject(DRAKORHOVERPAD_OBJGROUP, obj, 0);
+        found = objGetNearestTypeTo(DRAKORHOVERPAD_OBJGROUP, obj, 0);
         if ((void*)found != NULL)
         {
             drakorhoverpad_resetPendingMotion((GameObject*)(found));
@@ -549,7 +551,7 @@ void bossdrakor_free(GameObject* obj)
 {
     BossDrakorState* inner = (BossDrakorState*)(obj)->extra;
     BossDrakorState* s = inner;
-    ObjGroup_RemoveObject((int)obj, BOSSDRAKOR_OBJGROUP);
+    objFreeObjectType((int)obj, BOSSDRAKOR_OBJGROUP);
     if ((obj)->childObjs[0] != NULL)
     {
         ObjLink_DetachChild(obj, obj->childObjs[0]);
@@ -894,8 +896,8 @@ void bossdrakor_update(GameObject* obj)
         shakeScaleZ = drakorState->shakeScaleZ;
         shake = drakorState->shakeAmount;
         tblRes = objGetLookAtJointKeys();
-        shakeX = (s16)(gBossDrakorDegToAngle * shake);
-        shakeY = (s16)(gBossDrakorDegToAngle * (shake * shakeScaleZ));
+        shakeX = (s16)(BOSSDRAKOR_DEG_TO_ANGLE * shake);
+        shakeY = (s16)(BOSSDRAKOR_DEG_TO_ANGLE * (shake * shakeScaleZ));
         i = 0;
         tbl = tblRes;
         do
@@ -981,7 +983,7 @@ void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init)
     s->textTimer = fz;
     ((BossDrakorState*)inner)->flags198.b10 = 1;
     storeZeroToFloatParam(&s->attackTimer);
-    ObjGroup_AddObject((int)obj, BOSSDRAKOR_OBJGROUP);
+    objAddObjectType((int)obj, BOSSDRAKOR_OBJGROUP);
     storeZeroToFloatParam(&s->jawAnimAngle);
     (obj)->animEventCallback = bossdrakor_seqFn;
     Music_Trigger(MUSICTRIG_LVF_Tracking, 1);

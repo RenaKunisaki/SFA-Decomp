@@ -260,7 +260,7 @@ void shopitem_free(GameObject* obj)
     switch ((obj)->anim.romDefNo)
     {
     case SHOPITEM_SEQ_SPARKLE:
-        ObjGroup_RemoveObject((int)obj, FUEL_CELL_OBJECT_GROUP);
+        objFreeObjectType((int)obj, FUEL_CELL_OBJECT_GROUP);
         break;
     }
 }
@@ -313,7 +313,7 @@ void shopitem_update(GameObject* obj)
         if (*(u32*)&s->vendorObj == 0)
         {
             int item;
-            s->vendorObj = ObjGroup_FindNearestObject(SHOPITEM_TARGET_OBJGROUP, obj, &range);
+            s->vendorObj = objGetNearestTypeTo(SHOPITEM_TARGET_OBJGROUP, obj, &range);
             item = s->vendorObj;
             if ((u32)item != 0)
             {
@@ -437,7 +437,7 @@ void shopitem_init(GameObject* obj, ShopItemDef* data)
         break;
     case SHOPITEM_SEQ_SPARKLE:
         ObjModel_SetPostRenderCallback(Obj_GetActiveModel(obj), shopitem_sparkleBlendSetup);
-        ObjGroup_AddObject((int)obj, FUEL_CELL_OBJECT_GROUP);
+        objAddObjectType((int)obj, FUEL_CELL_OBJECT_GROUP);
         break;
     }
 }

@@ -45,7 +45,7 @@
 #include "main/modellight_api.h"
 #include "main/objfx.h"
 #include "sys/objects.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_list.h"
 #include "main/obj_path.h"
@@ -1605,7 +1605,7 @@ void arwarwing_free(GameObject* obj)
 {
     ArwingState* state = (obj)->extra;
 
-    ObjGroup_RemoveObject((int)obj, ARWARWING_OBJGROUP);
+    objFreeObjectType((int)obj, ARWARWING_OBJGROUP);
     gArwing = NULL;
     if (state->light != NULL)
     {
@@ -1818,7 +1818,7 @@ void arwarwing_init(GameObject* obj)
     (*gPathControlInterface)->init(pathBlock, 4, 0x1040006, 1);
     (*gPathControlInterface)->setup(pathBlock, 3, gArwingPathSetupData, sArwingPathSpeeds, &cfg);
     (*gPathControlInterface)->attachObject((void*)obj, pathBlock);
-    ObjGroup_AddObject((int)obj, ARWARWING_OBJGROUP);
+    objAddObjectType((int)obj, ARWARWING_OBJGROUP);
     gArwing = obj;
     ObjHits_SetTargetMask(obj, 1);
     state->fullLoadout = 1;

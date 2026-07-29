@@ -18,7 +18,7 @@ int NW_ice_getExtraSize(void) {
 }
 
 void NW_ice_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, NW_ICE_OBJECT_GROUP_ID);
+    objFreeObjectType((int)obj, NW_ICE_OBJECT_GROUP_ID);
 }
 
 void NW_ice_render(void) {
@@ -41,7 +41,7 @@ void NW_ice_update(GameObject* obj) {
         obj->anim.localPosY = state->pairedIceObject->anim.localPosY;
         obj->anim.localPosZ = state->pairedIceObject->anim.localPosZ;
         obj->anim.rotX = state->pairedIceObject->anim.rotX;
-        ObjGroup_FindNearestObjectForObject(NW_ICE_OBJECT_GROUP_ID, obj, &nearestDistance);
+        objGetNearestTypeToExcludingSelf(NW_ICE_OBJECT_GROUP_ID, obj, &nearestDistance);
 
         if (state->pairedIceObject->anim.alpha < NW_ICE_COLLISION_ALPHA_THRESHOLD) {
             ObjHits_DisableObject(obj);
@@ -57,7 +57,7 @@ void NW_ice_update(GameObject* obj) {
             obj->objectFlags = (u16)(obj->objectFlags & ~0x100);
         }
     } else {
-        pairedObjects = (GameObject**)ObjGroup_GetObjects(DLL1A3_OBJECT_GROUP_ID, &objectCount);
+        pairedObjects = (GameObject**)objGetAllOfType(DLL1A3_OBJECT_GROUP_ID, &objectCount);
         placement = (NwIcePlacement*)obj->anim.placementData;
         for (objectIndex = 0, candidatePtr = pairedObjects; objectIndex < objectCount; candidatePtr++, objectIndex++) {
             candidateObject = *candidatePtr;
@@ -71,7 +71,7 @@ void NW_ice_update(GameObject* obj) {
 }
 
 void NW_ice_init(GameObject* obj) {
-    ObjGroup_AddObject((int)obj, NW_ICE_OBJECT_GROUP_ID);
+    objAddObjectType((int)obj, NW_ICE_OBJECT_GROUP_ID);
 }
 
 ObjectDescriptor gNW_iceObjDescriptor = {

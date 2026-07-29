@@ -32,7 +32,7 @@
 #include "main/resource.h"
 #include "main/dll/path_control_interface.h"
 #include "main/dll/rom_curve_interface.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -1076,8 +1076,8 @@ void DR_CloudRunner_free(GameObject* obj)
 {
     CloudRunnerState* inner = (obj)->extra;
     mainSetBits(0x7aa, inner->airTimeRemaining);
-    ObjGroup_RemoveObject((int)obj, DRCLOUDRUNNER_OBJGROUP);
-    ObjGroup_RemoveObject((int)obj, ARWARWING_OBJGROUP);
+    objFreeObjectType((int)obj, DRCLOUDRUNNER_OBJGROUP);
+    objFreeObjectType((int)obj, ARWARWING_OBJGROUP);
     (*gGameUIInterface)->airMeterShutdown();
 }
 
@@ -1280,7 +1280,7 @@ void DR_CloudRunner_init(GameObject* obj, int def)
     int savedSlot;
     (obj)->anim.rotX = (s16)(((DRCloudRunnerPlacement*)def)->spawnRot << 8);
     (obj)->animEventCallback = DR_CloudRunner_SeqFn;
-    ObjGroup_AddObject((int)obj, DRCLOUDRUNNER_OBJGROUP);
+    objAddObjectType((int)obj, DRCLOUDRUNNER_OBJGROUP);
     inner = *(int*)&(obj)->extra;
     ((CloudRunnerState*)inner)->spawnVariant = ((DRCloudRunnerPlacement*)def)->spawnVariant;
     ((CloudRunnerState*)inner)->unkBAE = 5;
@@ -1305,7 +1305,7 @@ void DR_CloudRunner_init(GameObject* obj, int def)
     DR_CloudRunner_setupPath(obj, (CloudRunnerState*)inner, ((ByteFlags*)((char*)inner + 0xbc0))->b20);
     dll_2E_initState(obj, (MoveLibState*)((char*)inner + 0x4c4), -0x11c7, 0x1555, 1);
     dll_2E_setReattackDelay((MoveLibState*)(inner + 0x4c4), 0x12c, 0x78);
-    ObjGroup_AddObject((int)obj, ARWARWING_OBJGROUP);
+    objAddObjectType((int)obj, ARWARWING_OBJGROUP);
     ((ByteFlags*)((char*)inner + 0xbc0))->b01 = 0;
 }
 

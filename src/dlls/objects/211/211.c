@@ -1115,7 +1115,7 @@ int dll_D3_getObjectTypeId(void)
 void dll_D3_free(GameObject* obj)
 {
     int* inner = obj->extra;
-    ObjGroup_RemoveObject((int)obj, STAFFACTION_OBJGROUP);
+    objFreeObjectType((int)obj, STAFFACTION_OBJGROUP);
     if (obj->childObjs[0] != NULL)
     {
         Obj_FreeObject(obj->childObjs[0]);

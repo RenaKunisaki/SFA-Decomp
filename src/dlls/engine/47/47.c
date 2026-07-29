@@ -115,7 +115,7 @@ s32 Carryable_getCarryState(void* state)
 
 void Carryable_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject((int)obj, CARRYABLE_OBJGROUP);
+    objFreeObjectType((int)obj, CARRYABLE_OBJGROUP);
 }
 
 int Carryable_updateRenderState(GameObject* obj, int flag)
@@ -278,7 +278,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
 void Carryable_init(GameObject* obj, void* state, int arg2)
 {
     CarryableUpdateHeldState* s = (CarryableUpdateHeldState*)state;
-    ObjGroup_AddObject((int)obj, CARRYABLE_OBJGROUP);
+    objAddObjectType((int)obj, CARRYABLE_OBJGROUP);
     s->unk2 = 0;
     s->carryState = CARRY_STATE_RESTING;
     s->pad4[0] = 0;

@@ -54,7 +54,7 @@ STATIC_ASSERT(offsetof(TrickyWarpCurveNode, forbiddenGameBit) == 0x32);
 void TrickyWarp_free(GameObject* obj) {
     TrickyWarpState* state = obj->extra;
     if (state->active != 0) {
-        ObjGroup_RemoveObject((int)obj, TRICKYWARP_OBJ_GROUP);
+        objFreeObjectType((int)obj, TRICKYWARP_OBJ_GROUP);
     }
 }
 
@@ -71,12 +71,12 @@ void TrickyWarp_update(GameObject* obj) {
     if (isReachable != 0) {
         if (state->active == 0) {
             state->active = 1;
-            ObjGroup_AddObject((int)obj, TRICKYWARP_OBJ_GROUP);
+            objAddObjectType((int)obj, TRICKYWARP_OBJ_GROUP);
         }
     } else {
         if (state->active != 0) {
             state->active = 0;
-            ObjGroup_RemoveObject((int)obj, TRICKYWARP_OBJ_GROUP);
+            objFreeObjectType((int)obj, TRICKYWARP_OBJ_GROUP);
         }
     }
 }

@@ -37,7 +37,7 @@
 #include "main/objprint_character_api.h"
 #include "main/dll/dll_00C9_enemy.h"
 #include "main/pad.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "dolphin/pad.h"
 
 f32 gDIMSnowHorn1ModelMtx[16];
@@ -143,7 +143,7 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, int state, f32 t)
     f32 nearDist;
 
     nearDist = 300.0f;
-    near = ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &nearDist);
+    near = objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &nearDist);
     inner = (obj)->extra;
     if (mainGetBit(GAMEBIT_SNOWHORN_RIDING) != 0)
     {
@@ -282,7 +282,7 @@ int DIMSnowHorn1_stateHandler09(GameObject* obj, int state, f32 fv)
     f32 sp = 300.0f;
     s16 turnRate;
 
-    near = (GameObject*)(ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp));
+    near = (GameObject*)(objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp));
     inner = (obj)->extra;
     ((DIMSnowHorn1State*)state)->baddie.flags0 |= 0x200000;
 
@@ -387,7 +387,7 @@ int DIMSnowHorn1_stateHandler07(GameObject* obj, int state)
     f32 sp = 300.0f;
     f32 fz;
 
-    near = (void*)ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp);
+    near = (void*)objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp);
     inner = (obj)->extra;
     (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     fz = 0.0f;
@@ -1043,7 +1043,7 @@ int DIMSnowHorn1_canMount(GameObject* obj)
         return 0;
     }
 
-    nearest = (void*)ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &range);
+    nearest = (void*)objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &range);
     if ((nearest != NULL) && ((((GameObject*)nearest)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0))
     {
         buttonDisable(0, PAD_BUTTON_A);
@@ -1118,7 +1118,7 @@ int DIMSnowHorn1_getObjectTypeId(void)
 
 void DIMSnowHorn1_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject((int)obj, DIMSNOWHORN1_OBJGROUP);
+    objFreeObjectType((int)obj, DIMSNOWHORN1_OBJGROUP);
 }
 
 void DIMSnowHorn1_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -1350,7 +1350,7 @@ void DIMSnowHorn1_update(GameObject* obj)
     case 3:
     case 4:
         nearDist = 300.0f;
-        found = (char*)ObjGroup_FindNearestObject(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &nearDist);
+        found = (char*)objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &nearDist);
         if (((DIMSnowHorn1State*)data)->mountMode == 0 && ((DIMSnowHorn1State*)data)->baddie.controlMode == 7 &&
             getXZDistance(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 10000.0f)
         {
@@ -1464,7 +1464,7 @@ void DIMSnowHorn1_init(GameObject* obj, int def, int spawnFlag)
     s8 idx;
     (obj)->anim.rotX = (s16)((s8) * (s8*)((char*)def + 0x18) << 8);
     (obj)->animEventCallback = (void*)DIMSnowHorn1_animEventCallback;
-    ObjGroup_AddObject((int)obj, DIMSNOWHORN1_OBJGROUP);
+    objAddObjectType((int)obj, DIMSNOWHORN1_OBJGROUP);
     inner = (obj)->extra;
     inner->mode = *(u8*)((char*)def + 0x19);
     inner->advanceCountThreshold = 5;

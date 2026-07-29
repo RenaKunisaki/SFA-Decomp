@@ -19,7 +19,7 @@
 #include "main/gamebits_api.h"
 #include "game/objects/object.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_path.h"
 #include "main/objanim.h"
@@ -301,7 +301,7 @@ void DR_LaserCannon_free(GameObject* obj)
     {
         Obj_FreeObject(state->warningObject);
     }
-    ObjGroup_RemoveObject((int)obj, DR_LASERCANNON_GROUP_ID);
+    objFreeObjectType((int)obj, DR_LASERCANNON_GROUP_ID);
 }
 
 void DR_LaserCannon_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
@@ -390,7 +390,7 @@ void DR_LaserCannon_update(GameObject* obj)
     if (state->flags.b7 != 0)
     {
         nearDist = 50.0f;
-        if ((state->firepipeObject = (GameObject*)ObjGroup_FindNearestObject(
+        if ((state->firepipeObject = (GameObject*)objGetNearestTypeTo(
                  DR_LASERCANNON_FIREPIPE_GROUP_ID, obj, &nearDist)) != 0u)
         {
             state->hasFirepipe = 1;
@@ -592,7 +592,7 @@ void DR_LaserCannon_init(GameObject* obj, DrLaserCannonSetup* setup)
         Obj_RemoveFromUpdateList(obj);
         ObjHits_DisableObject(obj);
     }
-    ObjGroup_AddObject((int)obj, DR_LASERCANNON_GROUP_ID);
+    objAddObjectType((int)obj, DR_LASERCANNON_GROUP_ID);
     state->beamObject = 0;
     state->flags.b3 = 0;
     (obj)->anim.rotX = (s16)(setup->initialYaw << 8);

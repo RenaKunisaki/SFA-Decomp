@@ -670,7 +670,7 @@ int dll_CE_getObjectTypeId(void) {
 void dll_CE_free(GameObject* obj) {
     GroundBaddieState* state = obj->extra;
 
-    ObjGroup_RemoveObject((int)obj, DLL_CE_OBJGROUP);
+    objFreeObjectType((int)obj, DLL_CE_OBJGROUP);
     {
         GameObject* child = obj->childObjs[0];
 

@@ -52,7 +52,7 @@ extern char sTrackLoadBlockOverrunError[];
 #include "main/fileio.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/track_dolphin_api.h"
 #include "dolphin/os/OSCache.h"
@@ -1018,7 +1018,7 @@ void mapLoadUnloadObjects(int flag)
             }
         }
         {
-            int* objs2 = (int*)ObjGroup_GetObjects(6, &objCount);
+            int* objs2 = (int*)objGetAllOfType(6, &objCount);
             for (i = 0; i < objCount; i++)
             {
                 GameObject* obj2 = (GameObject*)objs2[i];
@@ -1101,7 +1101,7 @@ void mapUpdateCameraPosByTransformSpace(void)
     int i;
     f32 lx, ly, lz;
 
-    objs = (GameObject**)ObjGroup_GetObjects(6, &count);
+    objs = (GameObject**)objGetAllOfType(6, &count);
     cam = Camera_GetCurrent();
     Camera_UpdateForObject(cam);
     for (k = 0; k < 31; k++)

@@ -13,7 +13,7 @@
 #include "main/objseq.h"
 #include "main/resource.h"
 #include "main/dll/path_control_interface.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_path.h"
 #include "main/frame_timing.h"
@@ -1020,7 +1020,7 @@ void DR_EarthWarrior_free(GameObject* obj)
     {
         ObjModelChain_Free(inner->sub.modelChain);
     }
-    ObjGroup_RemoveObject((int)obj, DREARTHWARRIOR_OBJGROUP);
+    objFreeObjectType((int)obj, DREARTHWARRIOR_OBJGROUP);
     if (((ByteFlags*)&inner->sub.flags994)->b02)
     {
         (*gGameUIInterface)->airMeterShutdown();
@@ -1344,7 +1344,7 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     u8* pathState;
     (obj)->anim.rotX = (s16)(def->spawnYaw << 8);
     (obj)->animEventCallback = DR_EarthWarrior_SeqFn;
-    ObjGroup_AddObject((int)obj, DREARTHWARRIOR_OBJGROUP);
+    objAddObjectType((int)obj, DREARTHWARRIOR_OBJGROUP);
     inner->sub.unk990 = def->unk19;
     inner->sub.unk986 = 5;
     inner->sub.interactSequenceId = -1;

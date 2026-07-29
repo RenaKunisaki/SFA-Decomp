@@ -732,8 +732,8 @@ int drakorhoverpad_getObjectTypeId(void)
 
 void drakorhoverpad_free(int obj)
 {
-    ObjGroup_RemoveObject(obj, DRAKORHOVERPAD_OBJGROUP);
-    ObjGroup_RemoveObject(obj, DRAKORHOVERPAD_OBJGROUP_SECONDARY);
+    objFreeObjectType(obj, DRAKORHOVERPAD_OBJGROUP);
+    objFreeObjectType(obj, DRAKORHOVERPAD_OBJGROUP_SECONDARY);
 }
 
 void drakorhoverpad_render(GameObject* obj, int p2, int p3, int p4, int p5, char visible)
@@ -888,7 +888,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
         (s16)(((DrakorHoverpadState*)p)->anglePhase + framesThisStep * 0x320);
     if (g->f10 != 0)
     {
-        nearest = (GameObject*)ObjGroup_FindNearestObject(BOSSDRAKOR_OBJGROUP, obj, 0);
+        nearest = (GameObject*)objGetNearestTypeTo(BOSSDRAKOR_OBJGROUP, obj, 0);
         if (nearest != NULL)
         {
             yawDelta = Obj_GetYawDeltaToObject(obj, nearest, 0);
@@ -990,8 +990,8 @@ void drakorhoverpad_initMain(GameObject* obj, void* desc)
         g->f08 = 1;
         break;
     }
-    ObjGroup_AddObject((int)obj, DRAKORHOVERPAD_OBJGROUP);
-    ObjGroup_AddObject((int)obj, DRAKORHOVERPAD_OBJGROUP_SECONDARY);
+    objAddObjectType((int)obj, DRAKORHOVERPAD_OBJGROUP);
+    objAddObjectType((int)obj, DRAKORHOVERPAD_OBJGROUP_SECONDARY);
 }
 
 void drakorhoverpad_release(void)

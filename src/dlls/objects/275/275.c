@@ -110,7 +110,7 @@ int SeqObj2_getObjectTypeId(void) {
 }
 
 void SeqObj2_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, SEQ_OBJ2_GROUP);
+    objFreeObjectType((int)obj, SEQ_OBJ2_GROUP);
 }
 
 void SeqObj2_render(void) {
@@ -186,7 +186,7 @@ void SeqObj2_init(GameObject* obj, SeqObjectPlacement* placement) {
             state->flags = (u8)(state->flags | SEQ_OBJ2_STATE_PREEMPT_SEQUENCE);
         }
     }
-    ObjGroup_AddObject((int)obj, SEQ_OBJ2_GROUP);
+    objAddObjectType((int)obj, SEQ_OBJ2_GROUP);
     obj->objectFlags = (u16)(obj->objectFlags | (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED));
 }
 

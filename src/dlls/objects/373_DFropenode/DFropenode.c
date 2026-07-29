@@ -13,7 +13,7 @@
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/sky.h"
 #include "main/texture.h"
@@ -687,13 +687,13 @@ void dfropenode_free(GameObject* obj) {
     int i;
 
     node = obj->extra;
-    ObjGroup_RemoveObject((u32)obj, DFROPENODE_OBJGROUP);
+    objFreeObjectType((u32)obj, DFROPENODE_OBJGROUP);
     if (((DFropenodeExtra*)node)->rope != NULL && ((DFropenodeExtra*)node)->rope != NULL) {
         mm_free(((DFropenodeExtra*)node)->rope);
     }
     node = ((DFropenodeExtra*)node)->linkedObj;
     if (node != NULL) {
-        objs = (int**)ObjGroup_GetObjects(DFROPENODE_OBJGROUP, &count);
+        objs = (int**)objGetAllOfType(DFROPENODE_OBJGROUP, &count);
         for (i = 0; i < count; i++) {
             if ((void*)objs[i] == node) {
                 (*(void (***)(void*)) * (void**)((char*)node + 0x68))[17](node);
@@ -931,7 +931,7 @@ void dfropenode_init(GameObject* obj, u8* objDef) {
     if ((gRopeNodeVariantVisibleFlags)[((DfropenodePlacement*)objDef)->textureIndex] == 0) {
         (obj)->anim.flags = (obj)->anim.flags & ~0x80;
     }
-    ObjGroup_AddObject((int)obj, DFROPENODE_OBJGROUP);
+    objAddObjectType((int)obj, DFROPENODE_OBJGROUP);
     (obj)->animEventCallback = dfropenode_syncRopeToEndpoints;
     extra->rope = NULL;
     extra->linkedObj = NULL;

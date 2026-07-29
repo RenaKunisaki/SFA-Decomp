@@ -102,7 +102,7 @@ int arwarwingbo_getObjectTypeId(void)
 void arwarwingbo_free(int obj)
 {
     (*gExpgfxInterface)->freeSource(obj);
-    ObjGroup_RemoveObject(obj, ARWARWINGBO_OBJGROUP);
+    objFreeObjectType(obj, ARWARWINGBO_OBJGROUP);
 }
 
 void arwarwingbo_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -186,7 +186,7 @@ void arwarwingbo_init(GameObject* obj, ArwingBombSetup* setup)
     (obj)->anim.rotX = (s16)(setup->rotX << 8);
     (obj)->anim.rotY = (s16)(setup->rotY << 8);
     (obj)->anim.rotZ = (s16)(setup->rotZ << 8);
-    ObjGroup_AddObject((int)obj, ARWARWINGBO_OBJGROUP);
+    objAddObjectType((int)obj, ARWARWINGBO_OBJGROUP);
 }
 
 void arwarwingbo_release(void)

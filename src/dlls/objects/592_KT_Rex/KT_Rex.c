@@ -12,7 +12,7 @@
 #include "main/map_load.h"
 #include "main/mapEventTypes.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #include "main/objanim.h"
@@ -1452,7 +1452,7 @@ void ktrex_free(GameObject* obj)
 {
     int i;
     gKTRexRuntime = obj->extra;
-    ObjGroup_RemoveObject((int)obj, KTREX_OBJGROUP);
+    objFreeObjectType((int)obj, KTREX_OBJGROUP);
     (*gBaddieControlInterface)->releaseState(obj, gKTRexRuntime, 0);
     Stack_Free(gKTRexState->stack);
     if (gKTRexResource != NULL)

@@ -101,7 +101,7 @@ int WispBaddie_getObjectTypeId(void) {
 
 void WispBaddie_free(GameObject* obj) {
     WispBaddieState* state = obj->extra;
-    ObjGroup_RemoveObject((int)obj, WISPBADDIE_OBJECT_GROUP);
+    objFreeObjectType((int)obj, WISPBADDIE_OBJECT_GROUP);
     if (state->curve != NULL) {
         mm_free(state->curve);
         state->curve = NULL;

@@ -216,7 +216,7 @@ void explodable_free(GameObject* obj, int keepChildren) {
     GameObject* child;
 
     stateAddress = *(int*)&obj->extra;
-    ObjGroup_RemoveObject((int)obj, EXPLODABLE_OBJECT_GROUP);
+    objFreeObjectType((int)obj, EXPLODABLE_OBJECT_GROUP);
     if (keepChildren == 0) {
         childSlotAddress = stateAddress - 4;
         while (childSlotAddress += 4, ++fragmentIndex < EXPLODABLE_FRAGMENT_COUNT) {
@@ -294,7 +294,7 @@ void explodable_init(GameObject* obj, int placementAddress) {
     ExplodableState* state;
     ExplodablePlacement* placement = (ExplodablePlacement*)placementAddress;
 
-    ObjGroup_AddObject((int)obj, EXPLODABLE_OBJECT_GROUP);
+    objAddObjectType((int)obj, EXPLODABLE_OBJECT_GROUP);
     stateAddress = *(int*)&obj->extra;
     state = (ExplodableState*)stateAddress;
     fragmentCount = placement->fragmentCount;

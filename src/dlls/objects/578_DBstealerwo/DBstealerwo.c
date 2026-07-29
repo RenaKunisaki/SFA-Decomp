@@ -45,7 +45,7 @@
 #include "main/player_control_interface.h"
 #include "main/objprint_api.h"
 #include "main/vecmath.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #define OBJ_YAW_DELTA_RETURNS_S16
@@ -184,7 +184,7 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
             if (sub->objGroup != 0)
             {
                 baddie->targetObj =
-                    ObjGroup_FindNearestObjectForObject(sub->objGroup, obj, &range);
+                    objGetNearestTypeToExcludingSelf(sub->objGroup, obj, &range);
             }
             break;
         case 1:
@@ -208,10 +208,10 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
             }
             else if (sub->objGroup != 0)
             {
-                if (ObjGroup_ContainsObject(*(int*)&baddie->targetObj, sub->objGroup) == 0)
+                if (objIsObjectType(*(int*)&baddie->targetObj, sub->objGroup) == 0)
                 {
                     baddie->targetObj =
-                        ObjGroup_FindNearestObjectForObject(sub->objGroup, obj, 0);
+                        objGetNearestTypeToExcludingSelf(sub->objGroup, obj, 0);
                     if (*(void**)&baddie->targetObj == NULL)
                     {
                         sub->msgAdvance = 1;
@@ -279,7 +279,7 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
         if (*(int*)(sub->routeCursor + 4) != 0)
         {
             baddie->targetObj =
-                ObjGroup_FindNearestObjectForObject(*(int*)(sub->routeCursor + 4), obj, &range);
+                objGetNearestTypeToExcludingSelf(*(int*)(sub->routeCursor + 4), obj, &range);
         }
         if (*(void**)&baddie->targetObj != NULL)
         {
@@ -299,7 +299,7 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
             p = &gDbStealerwormRunToAvoidGroups[3];
             for (; (p--, --i) >= 0;)
             {
-                nearest = ObjGroup_FindNearestObjectForObject(*p, obj, &range);
+                nearest = objGetNearestTypeToExcludingSelf(*p, obj, &range);
                 if (nearest != 0)
                 {
                     found = nearest;
@@ -740,7 +740,7 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
     player = (int)Obj_GetPlayerObject();
     best = 0;
     bestD = 0.0f;
-    objs = (int*)ObjGroup_GetObjects(c30, &cnt);
+    objs = (int*)objGetAllOfType(c30, &cnt);
     for (i = 0, cursor = objs; i < cnt; i++)
     {
         o = *cursor;
@@ -832,9 +832,9 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     c30 = sub->objGroup;
     sub->flags14 |= DBWORM_FLAG14_FX_DUST;
     sub->flags15 &= ~4;
-    if (ObjGroup_ContainsObject(*(int*)&baddie->targetObj, c30) == 0)
+    if (objIsObjectType(*(int*)&baddie->targetObj, c30) == 0)
     {
-        ObjGroup_GetObjects(c30, &cnt1);
+        objGetAllOfType(c30, &cnt1);
         if (cnt1 == 0)
         {
             player = Obj_GetPlayerObject();
@@ -852,7 +852,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     }
     q = *(int*)&baddie->targetObj;
     found = 0;
-    ptr = (int*)ObjGroup_GetObjects(DBSTEALERWORM_OBJGROUP, &cnt2);
+    ptr = (int*)objGetAllOfType(DBSTEALERWORM_OBJGROUP, &cnt2);
     for (i = 0, objs = ptr; i < cnt2; i++)
     {
         if (((GameObject*)*objs)->anim.romDefNo == DBSTEALERWORM_SEQID)
@@ -868,7 +868,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     if (found == 0)
     {
         if ((u32)obj ==
-            ObjGroup_FindNearestObject(DBSTEALERWORM_OBJGROUP, (GameObject*)*(int*)&baddie->targetObj, 0))
+            objGetNearestTypeTo(DBSTEALERWORM_OBJGROUP, (GameObject*)*(int*)&baddie->targetObj, 0))
         {
             sub->savedTargetObj = *(int*)&baddie->targetObj;
             {
@@ -932,7 +932,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     }
     if (*(void**)&sub->savedTargetObj != NULL)
     {
-        if (ObjGroup_ContainsObject(*(int*)&baddie->targetObj, c30) != 0)
+        if (objIsObjectType(*(int*)&baddie->targetObj, c30) != 0)
         {
             {
                 int tEb;
@@ -1601,7 +1601,7 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
         bs->hasTarget = 0;
         (obj)->anim.resetHitboxFlags = (u8)((obj)->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
         ObjHits_DisableObject(obj);
-        ObjGroup_RemoveObject((int)obj, DBSTEALERWORM_OBJGROUP);
+        objFreeObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
         if (*(void**)&sub_40c->linkedObj != NULL)
         {
             ObjMsg_SendToObject((void*)sub_40c->linkedObj, 17, obj, 16);
@@ -1926,7 +1926,7 @@ int dbstealerworm_avoidObjects(GameObject* obj, int* objs, f32* weights, int n, 
     for (; i < n; i++)
     {
         stk.range = rangeInit;
-        nearest = ObjGroup_FindNearestObjectForObject(*objCursor, obj, &stk.range);
+        nearest = objGetNearestTypeToExcludingSelf(*objCursor, obj, &stk.range);
         if (nearest != 0)
         {
             if (stk.range == zero)
@@ -2132,12 +2132,12 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
                ->findAggroTarget(obj, (void*)baddie, st->aggroRange, 0x8000);
     if (near == 0 && (st->configFlags & 0x10) != 0)
     {
-        near = (GameObject*)ObjGroup_FindNearestObject(DBEGG_OBJGROUP, obj, &stk.range);
+        near = (GameObject*)objGetNearestTypeTo(DBEGG_OBJGROUP, obj, &stk.range);
     }
     if (near == 0 && (st->configFlags & 0x10) != 0 && (st->configFlags & 2) == 0 &&
         (((DbstealerwormPlacement*)data)->configFlags & 2) != 0)
     {
-        near = (GameObject*)ObjGroup_FindNearestObject(DBEGG_OBJGROUP, obj, 0);
+        near = (GameObject*)objGetNearestTypeTo(DBEGG_OBJGROUP, obj, 0);
     }
     if (near != 0 && (st->configFlags & 2) == 0)
     {
@@ -2145,7 +2145,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
             ->startHitReaction(obj, (void*)baddie, (char*)groundState + 0x35c, st->gameBitB, NULL, 0, 0, 8, -1);
         *(int*)&((BaddieState*)baddie)->targetObj = (int)near;
         ((BaddieState*)baddie)->hasTarget = 0;
-        ObjGroup_AddObject((int)obj, DBSTEALERWORM_OBJGROUP);
+        objAddObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
         st->targetState = 1;
     }
     else
@@ -2233,7 +2233,7 @@ void dbstealerworm_free(GameObject* obj)
 {
     u8* sub = obj->extra;
     int* p40c = *(int**)&((GroundBaddieState*)sub)->control;
-    ObjGroup_RemoveObject((int)obj, DBSTEALERWORM_OBJGROUP);
+    objFreeObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
     Stack_Free(((DbStealerwormControl*)p40c)->msgStack);
     if (obj->childObjs[0] != NULL)
     {
@@ -2346,7 +2346,7 @@ void dbstealerworm_update(GameObject* objp)
             {
                 (*gBaddieControlInterface)
                     ->initGroundBaddie(obj, (u8*)data, (u8*)blob, 0x10, 7, 0x10a, 0x26, 20.0f);
-                ObjGroup_AddObject((int)obj, DBSTEALERWORM_OBJGROUP);
+                objAddObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
                 ((GroundBaddieState*)blob)->targetState = 0;
                 ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
                 ((GroundBaddieState*)blob)->baddie.moveDone = 0;
@@ -2443,7 +2443,7 @@ void dbstealerworm_init(GameObject* obj, u8* def, int flag)
     }
     (*gBaddieControlInterface)
         ->initGroundBaddie(obj, def, sub, 0x10, 7, 0x10a, mode, 20.0f);
-    ObjGroup_AddObject((int)obj, DBSTEALERWORM_OBJGROUP);
+    objAddObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
     obj->animEventCallback = NULL;
     p40c = *(int**)&((GroundBaddieState*)sub)->control;
     memset(p40c, 0, sizeof(DbStealerwormControl));

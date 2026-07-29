@@ -24,7 +24,7 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/objseq.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/objhits.h"
 #include "main/object_render.h"
@@ -426,7 +426,7 @@ void sh_staff_update(GameObject* obj) {
         }
     } else if (currentPhase == SHSTAFF_PHASE_ARMED) {
         if (ObjTrigger_IsSet((int)obj) != 0) {
-            int target = ObjGroup_FindNearestObject(SHSTAFF_TARGET_OBJGROUP, obj, 0);
+            int target = objGetNearestTypeTo(SHSTAFF_TARGET_OBJGROUP, obj, 0);
             (*gObjectTriggerInterface)->runSequence(0, (void*)target, -1);
             state->phase = SHSTAFF_PHASE_PICKUP;
             state->hazeFadeTimer = 60.0f;

@@ -45,7 +45,7 @@
 #include "main/lightmap_api.h"
 #include "main/maketex_api.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
@@ -2179,7 +2179,7 @@ void SnowBike_free(GameObject* obj)
     int state;
 
     state = *(int*)&obj->extra;
-    ObjGroup_RemoveObject((int)obj, SNOWBIKE_OBJGROUP);
+    objFreeObjectType((int)obj, SNOWBIKE_OBJGROUP);
     i = 0;
     p = (char*)state;
     for (; i < 9; i++)
@@ -2653,7 +2653,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     s->posSnapshotY = obj->anim.localPosY;
     s->posSnapshotZ = obj->anim.localPosZ;
     obj->animEventCallback = SnowBike_SeqFn;
-    ObjGroup_AddObject((int)obj, SNOWBIKE_OBJGROUP);
+    objAddObjectType((int)obj, SNOWBIKE_OBJGROUP);
     if (flag == 0)
     {
         i = 0;

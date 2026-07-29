@@ -62,7 +62,7 @@ int FlammableVine_getObjectTypeId(void) {
 }
 
 void FlammableVine_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, FLAMMABLEVINE_OBJECT_GROUP);
+    objFreeObjectType((int)obj, FLAMMABLEVINE_OBJECT_GROUP);
 }
 
 void FlammableVine_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
@@ -193,7 +193,7 @@ void FlammableVine_init(GameObject* obj, FlammableVinePlacement* placement) {
     f32 scale;
 
     state = obj->extra;
-    ObjGroup_AddObject((int)obj, FLAMMABLEVINE_OBJECT_GROUP);
+    objAddObjectType((int)obj, FLAMMABLEVINE_OBJECT_GROUP);
     obj->anim.rotX = (s16)(placement->rotXByte << 8);
 
     obj->anim.rootMotionScale =

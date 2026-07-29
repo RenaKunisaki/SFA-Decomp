@@ -204,7 +204,7 @@ void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8*
     b1 = flags & 1;
     if (b1 == 0 && (flags & 0x20) == 0)
     {
-        ObjGroup_AddObject((int)obj, DLL19_OBJGROUP);
+        objAddObjectType((int)obj, DLL19_OBJGROUP);
         ObjMsg_AllocQueue(obj, 4);
     }
     (*gPlayerInterface)->init(obj, state, moveArg0, moveArg1);
@@ -585,7 +585,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
                 }
             }
             nearDist = 750.0f;
-            gDll19NearestObj = (GameObject*)ObjGroup_FindNearestObject(DLL19_TARGET_OBJGROUP, (GameObject*)obj, &nearDist);
+            gDll19NearestObj = (GameObject*)objGetNearestTypeTo(DLL19_TARGET_OBJGROUP, (GameObject*)obj, &nearDist);
             source->anim.worldPosX = savedX;
             source->anim.worldPosY = savedY;
             source->anim.worldPosZ = savedZ;

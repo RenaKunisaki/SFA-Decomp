@@ -101,7 +101,7 @@ int wmwallcrawler_getObjectTypeId(void)
 
 void wmwallcrawler_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject((int)obj, WMWALLCRAWLER_OBJGROUP);
+    objFreeObjectType((int)obj, WMWALLCRAWLER_OBJGROUP);
 }
 
 void wmwallcrawler_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
@@ -145,7 +145,7 @@ void wmwallcrawler_hitDetect(GameObject* obj)
         {
             Obj_RemoveFromUpdateList(obj);
             ObjHits_DisableObject(obj);
-            ObjGroup_RemoveObject((int)obj, WMWALLCRAWLER_OBJGROUP);
+            objFreeObjectType((int)obj, WMWALLCRAWLER_OBJGROUP);
             (obj)->anim.flags = (obj)->anim.flags | OBJANIM_FLAG_HIDDEN;
         }
     }
@@ -158,7 +158,7 @@ void wmwallcrawler_hitDetect(GameObject* obj)
         }
         else
         {
-            target = (GameObject*)(ObjGroup_FindNearestObject(WMWALLCRAWLER_TARGET_OBJGROUP, obj, &stk));
+            target = (GameObject*)(objGetNearestTypeTo(WMWALLCRAWLER_TARGET_OBJGROUP, obj, &stk));
         }
         ObjHits_RecordObjectHit(target, obj, 0xb, 1, 0);
         state->mode = WMWALLCRAWLER_MODE_DIE;
@@ -197,7 +197,7 @@ void wmwallcrawler_update(GameObject* obj)
     best = 10000.0f;
     player = (state->flags & WMWALLCRAWLER_FLAG_TARGET_NEAREST) == 0
                  ? (u32)Obj_GetPlayerObject()
-                 : ObjGroup_FindNearestObject(WMWALLCRAWLER_TARGET_OBJGROUP, (GameObject*)ob, &best);
+                 : objGetNearestTypeTo(WMWALLCRAWLER_TARGET_OBJGROUP, (GameObject*)ob, &best);
     if (player != 0)
     {
         sq = mainGetBit(0x789);
@@ -231,7 +231,7 @@ void wmwallcrawler_update(GameObject* obj)
                 {
                     Obj_RemoveFromUpdateList((GameObject*)ob);
                     ObjHits_DisableObject((GameObject*)ob);
-                    ObjGroup_RemoveObject(ob, WMWALLCRAWLER_OBJGROUP);
+                    objFreeObjectType(ob, WMWALLCRAWLER_OBJGROUP);
                     ((GameObject*)ob)->anim.flags |= OBJANIM_FLAG_HIDDEN;
                 }
             }
@@ -261,7 +261,7 @@ void wmwallcrawler_update(GameObject* obj)
                     {
                         Obj_RemoveFromUpdateList((GameObject*)ob);
                         ObjHits_DisableObject((GameObject*)ob);
-                        ObjGroup_RemoveObject(ob, WMWALLCRAWLER_OBJGROUP);
+                        objFreeObjectType(ob, WMWALLCRAWLER_OBJGROUP);
                         ((GameObject*)ob)->anim.flags |= OBJANIM_FLAG_HIDDEN;
                     }
                     return;
@@ -282,7 +282,7 @@ void wmwallcrawler_update(GameObject* obj)
                 {
                     Obj_RemoveFromUpdateList((GameObject*)ob);
                     ObjHits_DisableObject((GameObject*)ob);
-                    ObjGroup_RemoveObject(ob, WMWALLCRAWLER_OBJGROUP);
+                    objFreeObjectType(ob, WMWALLCRAWLER_OBJGROUP);
                     ((GameObject*)ob)->anim.flags |= OBJANIM_FLAG_HIDDEN;
                 }
             }
@@ -329,7 +329,7 @@ void wmwallcrawler_update(GameObject* obj)
                                 {
                                     Obj_RemoveFromUpdateList((GameObject*)ob);
                                     ObjHits_DisableObject((GameObject*)ob);
-                                    ObjGroup_RemoveObject(ob, WMWALLCRAWLER_OBJGROUP);
+                                    objFreeObjectType(ob, WMWALLCRAWLER_OBJGROUP);
                                     ((GameObject*)ob)->anim.flags |= OBJANIM_FLAG_HIDDEN;
                                 }
                                 return;
@@ -667,7 +667,7 @@ void wmwallcrawler_init(GameObject* obj, WmwallcrawlerMapData* mapData)
     ObjAnimComponent* objAnim = &(obj)->anim;
     WmwallcrawlerState* state = (obj)->extra;
     u16 flags;
-    ObjGroup_AddObject((int)obj, WMWALLCRAWLER_OBJGROUP);
+    objAddObjectType((int)obj, WMWALLCRAWLER_OBJGROUP);
     (obj)->anim.rotX = (s16)(mapData->rotXByte << 8);
     ObjMsg_AllocQueue(obj, 2);
     state->homeX = mapData->base.posX;

@@ -213,12 +213,23 @@ objtype.c          (8) main/objhits.c  (folded in)               [BODY, EXACT 8<
       DP objTypeInit        == ObjGroup_ClearAll       zero the index array, zero the count.
       DP objGetNearestType(s32 type, Vec3f*, f32*) == ObjGroup_FindNearestObjectToPoint - same
           three parameters in the same order, same *distance-squared seed, same sqrtf on exit.
-      SFA's ObjGroup_GetObjectGroup (find which list an object sits in) has NO DP counterpart.
-    ** NOT resolved: which of DP's two (type, Object*, f32*) nearest functions is which. **
-      DP has objGetNearestTypeTo (does NOT skip `object`) and objGetNearestTypeToExcludingSelf
-      (skips it); SFA has ObjGroup_FindNearestObjectForObject (returns GameObject*) and
-      ObjGroup_FindNearestObject (returns int) and **both skip self**, so the distinguishing
-      feature DP names them by does not exist on our side.  Do not guess the suffix.
+      SFA's ObjGroup_GetObjectGroup (find which list an object sits in) has NO DP counterpart;
+          it is the exact inverse of objAddObjectType's `type` argument, so objGetObjectType.
+    ** The two-way assignment IS resolved - by the CALLER SET, not by the body. **
+      DP names its two (type, Object*, f32*) finders by whether they skip `object`, and both of
+      ours skip it, so that discriminator does not exist here.  The caller sets settle it
+      exactly, 2-for-2 and 50-for-50:
+        DP objGetNearestTypeToExcludingSelf has exactly TWO caller DLLs, 499_NWice and
+          688_DBstealerworm.  SFA's GameObject*-returning finder has exactly TWO caller DLLs,
+          420 and 578_DBstealerwo - and SFA 420 IS DP 499_NWice (NW_ice_update is that body
+          statement for statement: F32_MAX seed, copy the paired object's transl x/y/z and yaw,
+          call the finder on its own type, then the alpha test and the `dist < 120.0f` test).
+          => ObjGroup_FindNearestObjectForObject == objGetNearestTypeToExcludingSelf.
+        DP objGetNearestTypeTo is the workhorse, 50 caller files; SFA's int-returning finder is
+          the workhorse too, ~55 caller files, and the CCgasvent pair calls it on both sides
+          (DP 463_CCgasvent objGetNearestTypeTo <-> SFA 389_CCgasvent).
+          => ObjGroup_FindNearestObject == objGetNearestTypeTo.
+      LANDED: all nine now carry the type vocabulary, two-sided (src + symbols.txt).
 footsteps.c       (10) main/newshadows.c + track/intersect.c     [BODY] SETTLED for the SFX half;
     the DECAL half is GONE.  DP `footstepsGetSfxBank(bank)` returns one of gFootstepSfxBank1..5;
     SFA fuses the bank pick and the lookup and writes the SAME switch out TWICE - newshadows.c
@@ -278,11 +289,11 @@ OPEN ROWS (state, do not guess)
   1. Where the DLL bank copy actually happens (see the dll.c row): the gResourceDescriptors
      `acquire` callbacks are data, and the code they reach is not in any decompiled TU.
   2. DP lighting.c's ambient/sky half vs dlls/engine/5 (see that row) - nominated, not read.
-  3. The two-way assignment inside the objtype.c row (which SFA nearest-finder is DP's
-     objGetNearestTypeTo and which is objGetNearestTypeToExcludingSelf) - both of ours skip self.
 
-  Previously open: dll.c, objlib.c's touch half, footsteps.c, menu.c (closed by C40) and
-  objtype.c (closed above by C41).  Method note for whoever extends this: the IDF token lens (L1)
+  Previously open: dll.c, objlib.c's touch half, footsteps.c, menu.c (closed by C40), objtype.c
+  (closed by C41) and the objtype.c two-way nearest-finder assignment (closed by C42 with a
+  third lens: when the bodies are identical and the string lens is silent, compare the CALLER
+  SETS - a rare API's two-DLL caller set is a fingerprint).  Method note: the IDF token lens (L1)
   put DP menu.c on engine/0 with a 2x margin and it was WRONG - the shared token was just "menu".
   L1 nominates, L4 (body read) decides; never land an L1 row without one.  The objtype.c row is
   the other direction: L1 could not see it at all (SFA renamed every symbol Group-for-Type), and
@@ -290,17 +301,19 @@ OPEN ROWS (state, do not guess)
 
 HANDED OVER (analysis done here, the file belongs to another lane)
 ------------------------------------------------------------------
-  The nine `ObjGroup_*` functions in src/main/objhits.c should carry retail's "object type"
-  vocabulary, not "group" - `ObjGroup_AddObject` is retail's own `objAddObjectType` (it prints
-  that name).  The evidenced mapping is in the objtype.c row above: AddObject->objAddObjectType
-  [SFA retail string], RemoveObject->objFreeObjectType [DP rodata string + exact body],
-  ClearAll->objTypeInit, GetObjects->objGetAllOfType, ContainsObject->objIsObjectType,
-  FindNearestObjectToPoint->objGetNearestType [all four: exact DP body], and
-  GetObjectGroup->objGetObjectType [ours, no DP counterpart].  C41 did NOT execute it: two of the
-  nine (the (type, Object*, f32*) nearest pair) cannot be assigned from DP without guessing a
-  suffix, and the substitution is ~480 tokens across 165 files plus symbols.txt, which needs one
-  owner and one commit.  Whoever takes it must do it TWO-SIDED (src + config/GSAE01/symbols.txt)
-  in a single commit, and must decide the two open assignments or keep those two descriptive.
+  DONE (C42): the nine `ObjGroup_*` functions in src/main/objhits.c now carry retail's "object
+  type" vocabulary, two-sided (src + config/GSAE01/symbols.txt), 494 tokens over 168 files.
+  ObjGroup_AddObject->objAddObjectType [SFA retail string], RemoveObject->objFreeObjectType
+  [DP rodata string + exact body], ClearAll->objTypeInit, GetObjects->objGetAllOfType,
+  ContainsObject->objIsObjectType, FindNearestObjectToPoint->objGetNearestType [all four: exact
+  DP body], GetObjectGroup->objGetObjectType [ours, no DP counterpart],
+  FindNearestObjectForObject->objGetNearestTypeToExcludingSelf and
+  FindNearestObject->objGetNearestTypeTo [caller-set lens, see the objtype.c row].
+  Do NOT extend the substitution to the SaveGame `ObjGroup` family
+  (SaveGame_gplaySet/GetObjGroupStatus, gSaveGameMapObjGroupBits, gMapObjGroupStatuses,
+  gSaveGameObjGroupCacheIdx, GAMEBIT_*_ObjGroups): that is a DIFFERENT concept - one 32-bit
+  spawn-group mask per MAP id, held in the save file - and its "object group" noun is attested
+  by the retail gamebit names themselves.
 
   `objBboxFn_800640cc` (src/main/track_dolphin.c, held by B32 body-only; called from player.c
   (A39/A40), tricky.c, 211, 423, LanternFire, WM_Galleon) is DP's `trackGetLineIntersect`:

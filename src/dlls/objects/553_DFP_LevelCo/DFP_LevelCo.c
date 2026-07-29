@@ -179,7 +179,7 @@ int DFP_LevelControl_getObjectTypeId(void)
 
 void DFP_LevelControl_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject((int)obj, DFPLEVELCONTROL_OBJGROUP);
+    objFreeObjectType((int)obj, DFPLEVELCONTROL_OBJGROUP);
 }
 
 void DFP_LevelControl_render(void)
@@ -248,7 +248,7 @@ void DFP_LevelControl_init(GameObject* obj, DfpLevelControlPlacement* placement)
 
     DfpLevelControlState* state = (obj)->extra;
     int mode;
-    ObjGroup_AddObject((int)obj, DFPLEVELCONTROL_OBJGROUP);
+    objAddObjectType((int)obj, DFPLEVELCONTROL_OBJGROUP);
     ((DfpFlags7*)&state->flags07)->b80 = mainGetBit(0xd5d);
     ((DfpFlags7*)&state->flags07)->b40 = mainGetBit(0xd59);
     ((DfpFlags7*)&state->flags07)->b20 = mainGetBit(0xd5a);

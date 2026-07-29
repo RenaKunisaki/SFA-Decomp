@@ -13,7 +13,7 @@
 #include "main/game_ui_interface.h"
 #include "main/maketex_random_api.h"
 #include "main/maketex_sequence_api.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_trigger.h"
 #include "main/object_render.h"
@@ -506,7 +506,7 @@ int cfguardian_updateMain(GameObject* obj) {
                         homeDistY = state->home.y - obj->anim.localPosY;
                         homeDistY = (homeDistY >= 0.0f) ? homeDistY : -homeDistY;
                         if (homeDistY < 80.0f) {
-                            ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
+                            objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
                             state->questState = CFGUARDIAN_STATE_FLY_TO_TALK;
                             ObjAnim_SetCurrentMove((int)obj, CFGUARDIAN_MOVE_FLY, 0.0f, 0);
                         }
@@ -527,7 +527,7 @@ int cfguardian_updateMain(GameObject* obj) {
                     ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
                     ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0x32);
                     obj->anim.velocityY = 0.0f;
-                    ObjGroup_RemoveObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
+                    objFreeObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
                     {
                         f32 zero = 0.0f;
                         obj->anim.velocityX = zero;
@@ -595,7 +595,7 @@ int cfguardian_updateMain(GameObject* obj) {
         break;
     case CFGUARDIAN_STATE_TALK_1: /* talk spot: greet and head-track the player; 0x43 advances */
     {
-        void* nearestObject = (void*)ObjGroup_FindNearestObject(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
+        void* nearestObject = (void*)objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
         if (nearestObject != NULL && nearestDistance < 300.0f) {
             dll_2E_setLockTarget(&state->moveLib, nearestObject);
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
@@ -634,7 +634,7 @@ int cfguardian_updateMain(GameObject* obj) {
         break;
     case CFGUARDIAN_STATE_TALK_2: /* second talk loop; 0x4be sends her onward */
     {
-        void* nearestObject = (void*)ObjGroup_FindNearestObject(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
+        void* nearestObject = (void*)objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
         if (nearestObject != NULL && nearestDistance < 300.0f) {
             dll_2E_setLockTarget(&state->moveLib, nearestObject);
         }

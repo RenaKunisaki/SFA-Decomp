@@ -626,7 +626,7 @@ void grimble_attachNearestPath(GameObject* obj) {
     GrimbleControl* control;
 
     state = obj->extra;
-    pathObjects = (void*)ObjGroup_GetObjects(GRIMBLE_PATH_OBJECT_GROUP, &pathObjectCount);
+    pathObjects = (void*)objGetAllOfType(GRIMBLE_PATH_OBJECT_GROUP, &pathObjectCount);
     if (pathObjectCount != 0) {
         control = state->control;
         control->candidatePathObj = 0;
@@ -699,7 +699,7 @@ int grimble_getObjectTypeId(void) {
 void grimble_free(GameObject* obj) {
     GroundBaddieState* state = obj->extra;
 
-    ObjGroup_RemoveObject((u32)obj, GRIMBLE_OBJECT_GROUP);
+    objFreeObjectType((u32)obj, GRIMBLE_OBJECT_GROUP);
     (*gBaddieControlInterface)->releaseState(obj, state, 0);
 }
 

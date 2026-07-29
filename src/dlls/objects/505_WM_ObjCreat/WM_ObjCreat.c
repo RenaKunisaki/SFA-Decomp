@@ -20,7 +20,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
@@ -161,7 +161,7 @@ void WM_ObjCreator_update(GameObject* obj) {
                 if (mainGetBit(GAMEBIT_WM_Galleon_despawn) != 0) {
                     state = NULL;
                 }
-                groupObjects = ObjGroup_GetObjects(3, &objectCount);
+                groupObjects = objGetAllOfType(3, &objectCount);
                 objectIndex = 0;
                 while (objectIndex < objectCount && (s8)(int)state != 0) {
                     if (((GameObject*)*groupObjects)->anim.romDefNo == WM_GALLEON_OBJECT_ID) {

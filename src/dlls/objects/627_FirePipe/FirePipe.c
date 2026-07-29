@@ -31,7 +31,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "game/objects/object.h"
 #include "main/objhits.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_update_list.h"
 #include "main/objfx.h"
 #include "sys/objects/lifecycle.h"
@@ -424,7 +424,7 @@ void firepipe_free(GameObject* obj)
     FirePipeExtra* extra;
 
     extra = obj->extra;
-    ObjGroup_RemoveObject((int)obj, FIREPIPE_OBJGROUP);
+    objFreeObjectType((int)obj, FIREPIPE_OBJGROUP);
     i = 0;
     iter = extra->effectObjs;
     while (i < (int)(u32)extra->effectCount)
@@ -591,7 +591,7 @@ void firepipe_init(GameObject* obj, FirePipeMapData* mapData)
         ((FirePipeBitFlags*)&extra->flags)->glowEnabled = flagValue;
         storeZeroToFloatParam(&extra->emitTimer);
         s16toFloat(&extra->emitTimer, 0x14);
-        ObjGroup_AddObject((int)obj, FIREPIPE_OBJGROUP);
+        objAddObjectType((int)obj, FIREPIPE_OBJGROUP);
         ((FirePipeBitFlags*)&extra->flags)->childEmitEnabled = 0;
         extra->glowLight = NULL;
     }
