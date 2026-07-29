@@ -58,8 +58,7 @@ static inline int voxmaps_findRouteNode(RouteState* state, s16* box, int* flagOu
     s16 bz = box[2];
     s16 bx = box[0];
     int foundIdx;
-    int nodeCount;
-    for (foundIdx = 0, nodeCount = state->nodeCount; foundIdx < nodeCount; foundIdx++)
+    for (foundIdx = 0; foundIdx < state->nodeCount; foundIdx++)
     {
         RouteNode* nn = &state->nodes[foundIdx];
         if (nn->x == bx && nn->z == bz)
@@ -317,7 +316,18 @@ void voxmaps_visitRouteNeighbor(struct RouteState* state, VoxBoxArg* srcBox, int
             }
             else if (key > oldp)
             {
-                heapSiftUp(q, foundSlot);
+                u16 upKey = q[foundSlot].priority;
+                u16 upVal = q[foundSlot].value;
+                int parent;
+                q[0].priority = 0xFFFF;
+                while (q[(parent = foundSlot >> 1)].priority <= upKey)
+                {
+                    q[foundSlot].value = q[parent].value;
+                    q[foundSlot].priority = q[parent].priority;
+                    foundSlot = parent;
+                }
+                q[foundSlot].priority = upKey;
+                q[foundSlot].value = upVal;
             }
         }
         return;

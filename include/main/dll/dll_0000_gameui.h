@@ -135,7 +135,7 @@ extern u32 lbl_8031BF90[6];
 void pauseMenuAnimateCarousel(void);
 void pauseMenuInit(void);
 void pauseMenuDoSave(void);
-void perspectiveFn_80129db4(void);
+void pauseMenuRenderSlotShadow(void);
 void GameUI_airMeterInitType0(int a, int b, int c);
 void GameUI_airMeterRun(int value);
 void GameUI_airMeterSetField24(f32 value);
