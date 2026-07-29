@@ -751,14 +751,12 @@ void* errorThreadFunc(void* unused)
     int depth;
     int hold;
     int h, h2;
-    int b;
     ErrStackFrame* frame;
     int stackLines;
     int n;
     u8 lvl;
     u32 r, rr;
     u32* rp;
-    int rows;
 
     sp = NULL;
     depth = 0;
@@ -871,11 +869,12 @@ void* errorThreadFunc(void* unused)
             }
             if (enableDebugText != 0)
             {
-                b = 0x12700;
-                rows = y + 0x4c;
+                int b = 0x12700;
+                u16 rowColor = 0xc080;
+                int rows = y + 0x4c;
                 while (rows > 0x3b)
                 {
-                    *(u16*)((char*)debugDrawFrameBuffer + b + 0x1e0) = 0xc080;
+                    *(u16*)((char*)debugDrawFrameBuffer + b + 0x1e0) = rowColor;
                     b += 0x500;
                     rows--;
                 }
