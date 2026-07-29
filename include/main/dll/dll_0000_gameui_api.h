@@ -9,7 +9,7 @@ u8 pauseMenuGetTokenConfirmFlag(void);
 int registerNewScore(s8 tableId, int score, u8 kind, int mode);
 void timeListFn_8012df14(void);
 void textureFreeFn_8012fcec(void);
-void viewFn_80129c74(void);
+void gameUiEndOverlayView(void);
 void CMenu_SetFadeCounter(s16 value);
 void showHelpText(s16 val);
 u8 getWorldMapVoiceoverTimer(void);
@@ -19,6 +19,6 @@ s32 isTalkingToNpc(void);
 void setShowWorldMapHud(u8 visible);
 
 void forceAButtonIcon(int icon);
-void viewFn_80129cbc(f32 fov, f32 x, f32 y);
+void gameUiBeginOverlayView(f32 fov, f32 x, f32 y);
 
 #endif /* MAIN_DLL_DLL_0000_GAMEUI_API_H_ */

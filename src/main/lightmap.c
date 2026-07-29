@@ -772,7 +772,7 @@ void sceneDraw(void)
     gLightmapDrawQueueCount = 0;
     getVisibleObjects(buf);
     Rcp_UpdateDistortionTextures();
-    perspectiveFn_80129db4();
+    pauseMenuRenderSlotShadow();
     GXPixModeSync();
     Camera_UpdateProjection(NULL, 0);
     Camera_UpdateViewMatrices();
