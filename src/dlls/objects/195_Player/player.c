@@ -17310,7 +17310,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 ((PlayerState*)inner)->pendingFxFlags ^= 2;
                 break;
             case 0x27:
-                hudFn_8011f38c(1);
+                setHudForceShowMask(1);
                 break;
             case 0x28:
             {
@@ -17363,7 +17363,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 break;
             }
             case 0x29:
-                hudFn_8011f38c(0);
+                setHudForceShowMask(0);
                 break;
             case 0x2a:
                 if ((*gMapEventInterface)->getMapAct(0xb) == 7)

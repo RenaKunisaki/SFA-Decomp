@@ -353,7 +353,7 @@ extern const f32 lbl_803E1E48;
 extern const f32 lbl_803E1E50;
 extern const f32 lbl_803E1E54;
 extern u8 gHudMagicCostPreview;
-extern u8 lbl_803DD792;
+extern u8 gHudForceShowMask;
 extern u8 gTrickyHudShowNearestInfo;
 extern s16 gFearTestMeterFadeIn;
 extern s16 aButtonIcon;
@@ -936,7 +936,7 @@ void showDeathMenu(void)
 
 extern char lbl_803A8830[0x120];
 
-void pauseMenuMapFn_8011de20(void* this, u8 a, s16 b, int c)
+void gameUiSetupTexturedQuadTev(void* this, u8 a, s16 b, int c)
 {
     GXColor colA = { 0xC0, 0xC0, 0xFF, 0x80 };
     GXColor colB = { 0xFF, 0xFF, 0xFF, 0xFF };
@@ -1148,7 +1148,7 @@ void pauseMenuTextDrawFn(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1,
 void pauseMenuDrawTextureRegion(void* this, f32 f1, f32 f2, int p4, u8 p5, int p6, int p7, int p8, int p9)
 {
     f32 u1, u0, v0, v1;
-    pauseMenuMapFn_8011de20(this, p5, p4, 0);
+    gameUiSetupTexturedQuadTev(this, p5, p4, 0);
     f1 = 4.0f * f1;
     f2 = 4.0f * f2;
     u0 = (f32)(u32)p8 / ((Texture*)this)->width;
@@ -1184,7 +1184,7 @@ void drawFn_8011eb3c(void* this, f32 f1, f32 f2, int p4, u8 p5, int p6, int p7, 
     f32 ua, ub, va, vb, tu, tv;
     u32 dx, dy;
     u8 flags = p9;
-    pauseMenuMapFn_8011de20(this, p5, p4, flags & 4);
+    gameUiSetupTexturedQuadTev(this, p5, p4, flags & 4);
     dx = ((u32)(p7 << 2) * (u16)p6) >> 8;
     dy = ((u32)(p8 << 2) * (u16)p6) >> 8;
     f1 = 4.0f * f1;
@@ -1239,7 +1239,7 @@ void pauseMenuDrawElement(void* element, f32 fx, f32 fy, int depthZ, u8 paletteI
     u8 drawFlags = flags & 4;
     int dx, dy;
     f32 c0, c1;
-    pauseMenuMapFn_8011de20(element, paletteIndex, depthZ, drawFlags);
+    gameUiSetupTexturedQuadTev(element, paletteIndex, depthZ, drawFlags);
     dx = (((Texture*)element)->width << 2) * (u16)scalePercent / 256;
     dy = (((Texture*)element)->height << 2) * (u16)scalePercent / 256;
     fx = 4.0f * fx;
@@ -1368,7 +1368,7 @@ void gameUiResetMenuState(void)
     lbl_803DD75B = 0;
     lbl_803DD772 = 0;
     pauseMenuFrameCounter = 0x3c;
-    lbl_803DD792 = 0;
+    gHudForceShowMask = 0;
 }
 
 u8 pauseMenuGetState(void)
@@ -1395,9 +1395,9 @@ void arwingHudSetVisible(u32 x)
     }
     arwingHudAlpha = 0xff;
 }
-void hudFn_8011f38c(u8 x)
+void setHudForceShowMask(u8 x)
 {
-    lbl_803DD792 = x;
+    gHudForceShowMask = x;
 }
 void resetYbutton(void)
 {
@@ -1496,7 +1496,7 @@ void fearTestMeterSetRange(u8 a, u8 b, s16 c)
     fearTestMeterInnerHalfWidth = b;
     fearTestMeterMarkerX = c;
 }
-void hudFn_8011f6f0(u8 x)
+void setTrickyHudShowNearestInfo(u8 x)
 {
     gTrickyHudShowNearestInfo = x;
 }
@@ -2896,7 +2896,7 @@ void pauseMenuDrawStatus(void)
     statuses[HUD_STATUS_FUEL_CELLS] = mainGetBit(GAMEBIT_ITEM_FuelCell_Count);
     statuses[HUD_STATUS_SCARABS] = playerGetMoney(player);
     statuses[HUD_STATUS_TRICKY_ENERGY] = *trickyEnergy;
-    if ((((lbl_803DD792 & 1) != 0) ||
+    if ((((gHudForceShowMask & 1) != 0) ||
          ((lbl_803E1E3C == (*gScreenTransitionInterface)->getProgress()) &&
           ((*gCameraInterface)->getMode() != CAMMODE_VIEWFINDER) &&
            ((player->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) == 0) && (getHudHiddenFrameCount() == 0) && (lbl_803DD75B == 0))) &&
@@ -2935,7 +2935,7 @@ void pauseMenuDrawStatus(void)
                 if ((((f32*)(base + 0xAFC))[animationSlot] >= lbl_803E1E3C && ((player->objectFlags & TRICKY_OBJFLAG_PARENT_SLACK) == 0) &&
                       (pauseMenuState == 0) && (airMeter == NULL) && (getHudHiddenFrameCount() == 0) &&
                       ((*gCameraInterface)->getMode() != CAMMODE_VIEWFINDER)) ||
-                    ((animationSlot == HUD_STATUS_SCARABS) && ((lbl_803DD792 & 2) != 0)))
+                    ((animationSlot == HUD_STATUS_SCARABS) && ((gHudForceShowMask & 2) != 0)))
                 {
                     flashThreshold = 8.5f * timeDelta + ((f32*)(base + 0xAC8))[animationSlot];
                     ((f32*)(base + 0xAC8))[animationSlot] = flashThreshold;
@@ -9237,7 +9237,7 @@ short gCMenuScrollTimer;
 u8 cMenuOpen;
 u8 gPauseMenuTransitionStarted;
 u8 cMenuEnabled;
-u8 lbl_803DD792;
+u8 gHudForceShowMask;
 s16 gCMenuPrevStickY;
 short lbl_803DD78E;
 s16 lbl_803DD78C;

@@ -1433,19 +1433,19 @@ void groundBaddieHandlePaidTrigger(int obj, u8* state)
             mainSetBits(*(s16*)(setup + 0x1c), 1);
             *(u16*)(state + 0x338) = gGroundBaddieTriggerResponseSeq[2];
             ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-            hudFn_8011f38c(2);
+            setHudForceShowMask(2);
             (*gObjectTriggerInterface)->runSequence(2, (void*)obj, -1);
         }
         else
         {
-            hudFn_8011f38c(2);
+            setHudForceShowMask(2);
             *(u16*)(state + 0x338) = gGroundBaddieTriggerResponseSeq[1];
             (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
         }
     }
     else
     {
-        hudFn_8011f38c(2);
+        setHudForceShowMask(2);
         *(u16*)(state + 0x338) = gGroundBaddieTriggerResponseSeq[0];
         (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
     }
