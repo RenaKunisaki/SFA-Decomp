@@ -18520,7 +18520,7 @@ void objLoadPlayerFromSave(int obj)
         ((PlayerState*)inner)->characterHeightOffset = 27.8f;
     }
     gPlayerModelChain = (int)ObjModelChain_Alloc(&gPlayerModelChainConfig, 1);
-    *(int*)((char*)obj + 0x108) = (int)playerDoTailAnims;
+    ((GameObject*)obj)->afterBonesCallback = playerDoTailAnims;
     if (gPlayerPendingHealth != 0)
     {
         int v = gPlayerPendingHealth;

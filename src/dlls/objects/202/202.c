@@ -1408,7 +1408,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->moveSpeedScale2 = fz2;
         *(int*)(state + 0x36c) = (int)ObjModelChain_Alloc(&gGroundBaddieModelChainDesc, 1);
         ObjModelChain_SetOrigin((ObjModelChain*)*(int*)(state + 0x36c), 0.15f, 0.75f, -0.05f);
-        *(int*)(obj + 0x108) = (int)baddieAfterUpdateBonesCb;
+        ((GameObject*)obj)->afterBonesCallback = baddieAfterUpdateBonesCb;
         ObjModelChain_SetEnabled((ObjModelChain*)*(int*)(state + 0x36c), 1);
         break;
     }
@@ -6390,7 +6390,7 @@ void hagabonMK2_init(GameObject* obj, EnemyState* st)
     ((EnemyState*)st)->tailSimHandle = ObjModelChain_Alloc(gCrawlerModelChainIds, 5);
     ObjModelChain_SetOrigin(((EnemyState*)st)->tailSimHandle, 0.1f, 0.85f, -0.075f);
     st->flags2E8 = st->flags2E8 | 0x100;
-    *(int*)((char*)obj + 0x108) = (int)&baddieAfterUpdateBonesCb;
+    obj->afterBonesCallback = &baddieAfterUpdateBonesCb;
 }
 
 extern u8 gSnowwormTurnRates[4];
