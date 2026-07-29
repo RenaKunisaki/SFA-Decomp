@@ -37,6 +37,10 @@ Run these in order. Each one can end the round without a build.
      (main lib 2.0, audio/MSL 1.2.5n). The GC/2.0 lever catalogue may not transfer, and
      compiler-specific levers become worth censusing — GC/1.3 reads plain `char` unsigned, so
      retail `extsb` needs an explicit `s8`.
+     **But `mw_version` identifies a candidate lever, it does not fire one.** The `extsb`/`extsh`
+     census came back **zero surplus in every function** on `WORLDplanet.c`, and Lane B measured
+     `SB_Galleon.c` — also GC/1.3 — at `extsb` **29/29**. Read the version to know *which*
+     levers are worth censusing, then census before writing anything.
 4. **Look for a sibling-site control inside the same function.** If the same construct gets
    two different treatments in one basic block, the difference is operand-dependent and the
    operand is the knob. In `modelRenderInterpolateRootTransform` a *full* 64-bit AND and a
@@ -158,6 +162,35 @@ in this function are **MWCC's 64-bit variable-shift expansion**, not source ANDs
 that added mask variables failed because they targeted a construct that does not exist in the
 source. Read the expansion before writing the fix.
 
+### 5. The `(int)` cast / addend order — one knob, and its residual is the price
+
+*All measurements in this section are Lane B's.*
+
+**Shape.** A same-length transposition: retail and ours emit the same instructions in a
+different order, across a pointer-vs-index computation or a commutative operand pair.
+
+**Source.** An `(int)` cast on the index expression restores retail's evaluation order. A/B
+every site — this is a live lever, not a rule you can apply blind.
+
+**The thing that makes it different from every other lever here: it is ONE knob driving TWO
+facts.** It governs evaluation order *and* commutative operand order simultaneously, and the two
+can want opposite settings. When they conflict, you cannot have both, and reversing the cast to
+fix a small residual transposition **costs the entire win**:
+
+| function | with the lever | reversed to fix the transposition |
+|---|---|---|
+| `objRenderShadow2` | **99.956** | 99.082 |
+| `renderOpMatrix` | **99.942** | 98.743 |
+| `staffMtxFn_8003b620` | **97.018** | 92.289 |
+
+**Rule that follows, and it generalises past this lever: the residual of a landed cast lever is
+its price, not a defect.** When a fix leaves a small transposition behind, check whether that
+transposition is the same knob's other face before treating it as new work. Three separate
+functions here punish the attempt by an order of magnitude more than the residual was worth.
+
+**Does not fire when** the two facts happen to agree — then there is nothing to trade and the
+lever is simply inert.
+
 ## Refutations worth knowing before you spend a build
 
 **Transcribing the target's instruction order into C is not recovering its source.** Retail's
@@ -255,6 +288,30 @@ Reverted. Track the count alongside the percentage.
 (`addrB = bufA + curB; curB = addrB;`) and the other assigns in place. Making them consistent is
 **exactly inert** — propagation folds them — so it can be done for readability at zero byte cost,
 but it will not move a score.
+
+The remaining four in this section are **Lane B's measurements**.
+
+**The statement split does not generalise to pool-constant placement.** Splitting a statement to
+move where a constant is materialised is a real lever in its own right, but it is not a
+general-purpose placement knob. At `DBprotection_updateFlight` site 2 the statement was
+*already* split; merging it back **regressed 99.061 -> 99.009**. Before applying it, check
+whether the site is already at the setting you are about to "fix" — the same
+already-at-its-optimum trap as the abs spellings above.
+
+**A ternary consumed by an enclosing expression does not always fire.** The pattern is a real
+one, but `drlasercannon_aimAtTarget` **regressed 97.660 -> 96.745** under it. Treat it as an A/B
+candidate, never as a rewrite rule.
+
+**Naming a derived induction variable creates an independent variable, not a copy.** The
+intuition that a name merely labels an existing value is wrong once the value is IV-derived:
+MWCC gives the named local its own web and its own update. `dll_0B_spawnEffect` **regressed
+95.748 -> 95.202** and its structural count went **7 -> 8** — the name *added* a structural
+difference. This is the counter-case to "give a value a name to move it": naming works on a
+compiler temp with no source variable behind it, and backfires on one the compiler already owns.
+
+**Source-level commutative operand order is inert.** Writing `a + b` versus `b + a` does not
+reach the emitted operand order; MWCC canonicalises before it matters. If a commutative pair is
+transposed, the knob is the cast lever above, not the source text.
 
 ## Gate reminders that cost real score today
 
