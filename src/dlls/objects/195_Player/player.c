@@ -3008,16 +3008,16 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
             Sfx_PlayFromObject((int)obj, SFXTRIG_fox_roll2);
             amt = -((PlayerState*)inner)->chargeCapacity;
             r35c = *(int*)((char*)(*(int*)&obj->extra) + 0x35c);
-            v = *(s16*)((char*)r35c + 4) + amt;
+            v = ((PlayerStatus*)r35c)->magic + amt;
             if (v < 0)
             {
                 v = 0;
             }
-            else if (v > (hi = *(s16*)((char*)r35c + 6)))
+            else if (v > (hi = ((PlayerStatus*)r35c)->maxMagic))
             {
                 v = hi;
             }
-            *(s16*)((char*)r35c + 4) = v;
+            ((PlayerStatus*)r35c)->magic = v;
             if (amt > 0)
             {
                 Sfx_PlayFromObject(0, SFXTRIG_id_21c);
@@ -3505,16 +3505,16 @@ int playerStateStaffBoost(GameObject* obj, int state, f32 fv)
                 int v;
                 inner->chargeLevel = 0.0f;
                 sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-                v = *(s16*)((char*)sub + 0x4) - 0xa;
+                v = ((PlayerStatus*)sub)->magic - 0xa;
                 if (v < 0)
                 {
                     v = 0;
                 }
-                else if (v > *(s16*)((char*)sub + 0x6))
+                else if (v > ((PlayerStatus*)sub)->maxMagic)
                 {
-                    v = *(s16*)((char*)sub + 0x6);
+                    v = ((PlayerStatus*)sub)->maxMagic;
                 }
-                *(s16*)((char*)sub + 0x4) = v;
+                ((PlayerStatus*)sub)->magic = v;
                 Sfx_PlayFromObject((int)obj, SFXTRIG_staff_boulder_move2);
                 ObjAnim_SetCurrentMove((int)obj, 0x88, 0.0f, 0);
                 ((PlayerState*)state)->baddie.moveSpeed = 0.05f;
@@ -3750,16 +3750,16 @@ int playerState30(GameObject* obj, int state, f32 fv)
         if (timer <= 0.0f)
         {
             int sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-            int v = *(s16*)((char*)sub + 0x4) - 1;
+            int v = ((PlayerStatus*)sub)->magic - 1;
             if (v < 0)
             {
                 v = 0;
             }
-            else if (v > *(s16*)((char*)sub + 0x6))
+            else if (v > ((PlayerStatus*)sub)->maxMagic)
             {
-                v = *(s16*)((char*)sub + 0x6);
+                v = ((PlayerStatus*)sub)->maxMagic;
             }
-            *(s16*)((char*)sub + 0x4) = v;
+            ((PlayerStatus*)sub)->magic = v;
             inner->stateTimer = 15.0f;
         }
         ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.x, &pfx.y, &pfx.z, 0);
@@ -3769,7 +3769,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
         pfx.mode = 1;
         (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
         if ((inner->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
-            *(s16*)((char*)*(int*)((char*)*(int*)&obj->extra + 0x35c) + 0x4) == 0 || getCurSeqNo() != 0)
+            ((PlayerStatus*)((PlayerState*)obj->extra)->playerStatus)->magic == 0 || getCurSeqNo() != 0)
         {
             int z[2];
             void** p[1];
@@ -3966,20 +3966,20 @@ int playerStateFireLaser(int obj, int state, f32 fv)
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
         int p = *(int*)((char*)*(int*)&((GameObject*)obj)->extra + 0x35c);
-        int val = *(s16*)((char*)p + 4);
+        int val = ((PlayerStatus*)p)->magic;
         if (val < 0)
         {
             val = 0;
         }
         else
         {
-            int hi = *(s16*)((char*)p + 6);
+            int hi = ((PlayerStatus*)p)->maxMagic;
             if (val > hi)
             {
                 val = hi;
             }
         }
-        *(s16*)((char*)p + 4) = (s16)val;
+        ((PlayerStatus*)p)->magic = (s16)val;
         gPlayerFireLaserCountdown = 30.0f;
     }
     if (30.0f == gPlayerFireLaserCountdown || 25.0f == gPlayerFireLaserCountdown || 20.0f == gPlayerFireLaserCountdown)
@@ -4052,16 +4052,16 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
         if (timer <= 0.0f)
         {
             int sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-            int v = *(s16*)((char*)sub + 0x4) - 1;
+            int v = ((PlayerStatus*)sub)->magic - 1;
             if (v < 0)
             {
                 v = 0;
             }
-            else if (v > *(s16*)((char*)sub + 0x6))
+            else if (v > ((PlayerStatus*)sub)->maxMagic)
             {
-                v = *(s16*)((char*)sub + 0x6);
+                v = ((PlayerStatus*)sub)->maxMagic;
             }
-            *(s16*)((char*)sub + 0x4) = v;
+            ((PlayerStatus*)sub)->magic = v;
             inner->stateTimer = 15.0f;
         }
         ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.x, &pfx.y, &pfx.z, 0);
@@ -4071,7 +4071,7 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
         pfx.mode = 1;
         (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
         if ((((PlayerState*)inner)->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
-            *(s16*)((char*)*(int*)((char*)*(int*)&obj->extra + 0x35c) + 0x4) == 0 || getCurSeqNo() != 0)
+            ((PlayerStatus*)((PlayerState*)obj->extra)->playerStatus)->magic == 0 || getCurSeqNo() != 0)
         {
             int z[2];
             void** p[1];
@@ -4139,16 +4139,16 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
             (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x3ed, &pfx2, 0x200001, -1, NULL);
         }
         sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-        v = *(s16*)((char*)sub + 0x4) - 2;
+        v = ((PlayerStatus*)sub)->magic - 2;
         if (v < 0)
         {
             v = 0;
         }
-        else if (v > *(s16*)((char*)sub + 0x6))
+        else if (v > ((PlayerStatus*)sub)->maxMagic)
         {
-            v = *(s16*)((char*)sub + 0x6);
+            v = ((PlayerStatus*)sub)->maxMagic;
         }
-        *(s16*)((char*)sub + 0x4) = v;
+        ((PlayerStatus*)sub)->magic = v;
         staffShootFireball(obj, state, inner->aimInputZ);
         if (((PlayerState*)state)->baddie.targetObj == NULL)
         {
@@ -4196,16 +4196,16 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
         if (timer <= 0.0f)
         {
             int sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-            int v = *(s16*)((char*)sub + 0x4) - 1;
+            int v = ((PlayerStatus*)sub)->magic - 1;
             if (v < 0)
             {
                 v = 0;
             }
-            else if (v > *(s16*)((char*)sub + 0x6))
+            else if (v > ((PlayerStatus*)sub)->maxMagic)
             {
-                v = *(s16*)((char*)sub + 0x6);
+                v = ((PlayerStatus*)sub)->maxMagic;
             }
-            *(s16*)((char*)sub + 0x4) = v;
+            ((PlayerStatus*)sub)->magic = v;
             inner->stateTimer = 15.0f;
         }
         ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.x, &pfx.y, &pfx.z, 0);
@@ -4215,7 +4215,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
         pfx.mode = 1;
         (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
         if ((inner->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
-            *(s16*)((char*)*(int*)((char*)*(int*)&obj->extra + 0x35c) + 0x4) == 0 || getCurSeqNo() != 0)
+            ((PlayerStatus*)((PlayerState*)obj->extra)->playerStatus)->magic == 0 || getCurSeqNo() != 0)
         {
             int z[2];
             void** p[1];
@@ -4270,7 +4270,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
             case GAMEBIT_STAFF_ABILITY_FIRE_BLASTER:
             {
                 int sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-                if (*(s16*)((char*)sub + 0x4) >= 2)
+                if (((PlayerStatus*)sub)->magic >= 2)
                 {
                     int r = playerStateShootFireball(obj, state, fv);
                     if (r != 0)
@@ -4287,7 +4287,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
             case 0x958:
             {
                 int sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-                if (*(s16*)((char*)sub + 0x4) >= 0)
+                if (((PlayerStatus*)sub)->magic >= 0)
                 {
                     int r = playerStateFireLaser((int)obj, state, fv);
                     if (r != 0)
@@ -4304,7 +4304,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
             case GAMEBIT_STAFF_ABILITY_FREEZE_BLAST:
             {
                 int sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-                if (*(s16*)((char*)sub + 0x4) >= 1)
+                if (((PlayerStatus*)sub)->magic >= 1)
                 {
                     int sub2;
                     int v;
@@ -4314,16 +4314,16 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
                     lbl_803DE430 = 0.0f;
                     inner->stateTimer = 15.0f;
                     sub2 = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-                    v = *(s16*)((char*)sub2 + 0x4) - 1;
+                    v = ((PlayerStatus*)sub2)->magic - 1;
                     if (v < 0)
                     {
                         v = 0;
                     }
-                    else if (v > *(s16*)((char*)sub2 + 0x6))
+                    else if (v > ((PlayerStatus*)sub2)->maxMagic)
                     {
-                        v = *(s16*)((char*)sub2 + 0x6);
+                        v = ((PlayerStatus*)sub2)->maxMagic;
                     }
-                    *(s16*)((char*)sub2 + 0x4) = v;
+                    ((PlayerStatus*)sub2)->magic = v;
                 }
                 break;
             }
@@ -4432,16 +4432,16 @@ int playerStateAimStaff(int obj, int state, f32 fv)
             if (x <= 0.0f)
             {
                 int sub = *(int*)((char*)*(int*)&((GameObject*)obj)->extra + 0x35c);
-                int v = *(s16*)((char*)sub + 0x4) - 1;
+                int v = ((PlayerStatus*)sub)->magic - 1;
                 if (v < 0)
                 {
                     v = 0;
                 }
-                else if (v > *(s16*)((char*)sub + 0x6))
+                else if (v > ((PlayerStatus*)sub)->maxMagic)
                 {
-                    v = *(s16*)((char*)sub + 0x6);
+                    v = ((PlayerStatus*)sub)->maxMagic;
                 }
-                *(s16*)((char*)sub + 0x4) = v;
+                ((PlayerStatus*)sub)->magic = v;
                 inner->stateTimer = 15.0f;
             }
             ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.posX, &pfx.posY, &pfx.posZ, 0);
@@ -4507,7 +4507,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
                 case GAMEBIT_STAFF_ABILITY_FIRE_BLASTER:
                 {
                     int sub = *(int*)((char*)*(int*)&((GameObject*)obj)->extra + 0x35c);
-                    if (*(s16*)((char*)sub + 0x4) >= 2)
+                    if (((PlayerStatus*)sub)->magic >= 2)
                     {
                         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedEndIceSpellAndRestoreCamera;
                         return 0x2f;
@@ -4518,7 +4518,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
                 case 0x958:
                 {
                     int sub = *(int*)((char*)*(int*)&((GameObject*)obj)->extra + 0x35c);
-                    if (*(s16*)((char*)sub + 0x4) >= 0)
+                    if (((PlayerStatus*)sub)->magic >= 0)
                     {
                         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedEndIceSpellAndRestoreCamera;
                         return 0x30;
@@ -4529,7 +4529,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
                 case GAMEBIT_STAFF_ABILITY_FREEZE_BLAST:
                 {
                     int sub = *(int*)((char*)*(int*)&((GameObject*)obj)->extra + 0x35c);
-                    if (*(s16*)((char*)sub + 0x4) >= 1)
+                    if (((PlayerStatus*)sub)->magic >= 1)
                     {
                         int sub2;
                         int v;
@@ -4539,16 +4539,16 @@ int playerStateAimStaff(int obj, int state, f32 fv)
                         lbl_803DE430 = 0.0f;
                         inner->stateTimer = 15.0f;
                         sub2 = *(int*)((char*)*(int*)&((GameObject*)obj)->extra + 0x35c);
-                        v = *(s16*)((char*)sub2 + 0x4) - 1;
+                        v = ((PlayerStatus*)sub2)->magic - 1;
                         if (v < 0)
                         {
                             v = 0;
                         }
-                        else if (v > *(s16*)((char*)sub2 + 0x6))
+                        else if (v > ((PlayerStatus*)sub2)->maxMagic)
                         {
-                            v = *(s16*)((char*)sub2 + 0x6);
+                            v = ((PlayerStatus*)sub2)->maxMagic;
                         }
-                        *(s16*)((char*)sub2 + 0x4) = v;
+                        ((PlayerStatus*)sub2)->magic = v;
                         break;
                     }
                     Sfx_PlayFromObject(0, SFXTRIG_staff_swipes_long);
@@ -12904,16 +12904,16 @@ void playerCastSpell(int a, int b, int c)
         ((PlayerState*)b)->stateTimer = 300.0f;
         {
             int sub = *(int*)((char*)((GameObject*)a)->extra + 0x35c);
-            int v = *(s16*)((char*)sub + 0x4) - 0xa;
+            int v = ((PlayerStatus*)sub)->magic - 0xa;
             if (v < 0)
             {
                 v = 0;
             }
-            else if (v > *(s16*)((char*)sub + 0x6))
+            else if (v > ((PlayerStatus*)sub)->maxMagic)
             {
-                v = *(s16*)((char*)sub + 0x6);
+                v = ((PlayerStatus*)sub)->maxMagic;
             }
-            *(s16*)((char*)sub + 0x4) = v;
+            ((PlayerStatus*)sub)->magic = v;
         }
         playerSetDisguised((GameObject*)a, 1);
         Sfx_PlayFromObject(a, SFXTRIG_dn_boar1_c_209);
@@ -12922,16 +12922,16 @@ void playerCastSpell(int a, int b, int c)
         c = -1;
         {
             int sub = *(int*)((char*)((GameObject*)a)->extra + 0x35c);
-            int v = *(s16*)((char*)sub + 0x4) - 0x14;
+            int v = ((PlayerStatus*)sub)->magic - 0x14;
             if (v < 0)
             {
                 v = 0;
             }
-            else if (v > *(s16*)((char*)sub + 0x6))
+            else if (v > ((PlayerStatus*)sub)->maxMagic)
             {
-                v = *(s16*)((char*)sub + 0x6);
+                v = ((PlayerStatus*)sub)->maxMagic;
             }
-            *(s16*)((char*)sub + 0x4) = v;
+            ((PlayerStatus*)sub)->magic = v;
         }
         {
             void* cam = (void*)(*gCameraInterface)->getTarget();
