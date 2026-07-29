@@ -10,7 +10,7 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_position_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/foodbag.h"
+#include "main/dll/dll_0081_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/player_api.h"
@@ -114,10 +114,10 @@ void LaserBeam_update(GameObject* obj) {
                 beamKind = state->beamKind;
                 if (beamKind == 1) {
                     if (gLaserBeamObjModgfxResource != NULL) {
-                        (*gLaserBeamObjModgfxResource)->spawn((int)obj, 2, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
+                        (*gLaserBeamObjModgfxResource)->spawn(obj, 2, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
                     }
                 } else if (beamKind != 30 && beamKind != 0) {
-                    (*gLaserBeamObjModgfxResource)->spawn((int)obj, 0, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
+                    (*gLaserBeamObjModgfxResource)->spawn(obj, 0, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
                 }
             }
             if (state->cycleTimer < 0x28) {
@@ -131,17 +131,17 @@ void LaserBeam_update(GameObject* obj) {
                     if (beamKind == 1) {
                         if (gLaserBeamObjModgfxResource != NULL) {
                             (*gLaserBeamObjModgfxResource)
-                                ->spawn((int)obj, 3, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
+                                ->spawn(obj, 3, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
                         }
                     } else if (beamKind == 30) {
                         if (gLaserBeamObjModgfxResource != NULL) {
                             state->effectHandle = (*gLaserBeamObjModgfxResource)
-                                                      ->spawn((int)obj, 30, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
+                                                      ->spawn(obj, 30, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
                         }
                     } else if (beamKind != 0) {
                         if (gLaserBeamObjModgfxResource != NULL) {
                             (*gLaserBeamObjModgfxResource)
-                                ->spawn((int)obj, 1, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
+                                ->spawn(obj, 1, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
                         }
                     } else {
                         if (gLaserBeamObjModgfxResource != NULL && state->effectHandle == -1) {
@@ -151,7 +151,7 @@ void LaserBeam_update(GameObject* obj) {
                             if (gLaserBeamObjModgfxResource != NULL) {
                                 state->effectHandle =
                                     (*gLaserBeamObjModgfxResource)
-                                        ->spawn((int)obj, 0, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
+                                        ->spawn(obj, 0, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
                             }
                         }
                     }

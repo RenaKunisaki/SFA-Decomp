@@ -8,7 +8,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/audio/sfx_channel_volume_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/foodbag.h"
+#include "main/dll/dll_0081_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
@@ -95,7 +95,7 @@ void dfshLaserBeam_update(GameObject* obj) {
                 }
                 state->blastPhase = 1;
                 if (gDFSHLaserBeamEffectResource != NULL) {
-                    (*gDFSHLaserBeamEffectResource)->spawn((int)obj, 10, NULL, 0x10004, -1, 0);
+                    (*gDFSHLaserBeamEffectResource)->spawn(obj, 10, NULL, 0x10004, -1, 0);
                 }
             }
             if (state->cycleTimer < 0x28) {
@@ -107,7 +107,7 @@ void dfshLaserBeam_update(GameObject* obj) {
                 if (state->blastPhase == 1) {
                     state->blastPhase = 2;
                     if (gDFSHLaserBeamEffectResource != NULL) {
-                        (*gDFSHLaserBeamEffectResource)->spawn((int)obj, 0xB, NULL, 0x10004, -1, 0);
+                        (*gDFSHLaserBeamEffectResource)->spawn(obj, 0xB, NULL, 0x10004, -1, 0);
                     }
                 }
             } else if (state->beamVolumeScale <= 1.0f) {
