@@ -219,7 +219,8 @@ void GroundAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int 
 
 void GroundAnimator_update(GameObject* obj) {
     int offsets[2];
-    int vertexHeightOffset;
+    int polygonFalloffOffset;
+    MapBlockData* block;
     u8 previousOnMapFlag;
     int entryIndex;
     void* tricky;
@@ -231,12 +232,12 @@ void GroundAnimator_update(GameObject* obj) {
     void* polygonGroup;
     void* linkedObject;
     int polygonHeightOffset;
-    int polygonFalloffOffset;
+    void* packedVertex;
     int vertexFalloffOffset;
     f32 searchDistance;
-    void* polygonIndexCursor;
     void* polygon;
-    MapBlockData* block;
+    void* polygonIndexCursor;
+    int vertexHeightOffset;
     s8 blockIndex;
     f32 vertexPosition[3];
     Obj_GetPlayerObject();
@@ -261,8 +262,7 @@ void GroundAnimator_update(GameObject* obj) {
     }
     if ((state->flags & GROUND_ANIMATOR_STATE_ON_MAP) != 0 && state->falloffBuffer == NULL) {
         int bufferAddress;
-        block = mapGetBlock(blockIndex);
-        state->vertexCount = (s16)(mapBlockCountTrianglesByType(block, placement->blockId) * 3);
+        state->vertexCount = (s16)(mapBlockCountTrianglesByType(mapGetBlock(blockIndex), placement->blockId) * 3);
         if (state->vertexCount > 0) {
             bufferAddress = (int)mmAlloc(state->vertexCount * 6, 5, 0);
             state->falloffBuffer = (f32*)bufferAddress;
@@ -355,9 +355,8 @@ void GroundAnimator_update(GameObject* obj) {
                         vertexHeightOffset = polygonHeightOffset;
                          vertexIndex < 3; vertexIndex++) {
                         if (*(f32*)((char*)state->falloffBuffer + vertexFalloffOffset) > (0.0f)) {
-                            void* packedVertex =
-                                (char*)((MapBlockData*)block)->vertices + *(u16*)polygonIndexCursor * 6;
                             f32 sinkOffset;
+                            packedVertex = (char*)((MapBlockData*)block)->vertices + *(u16*)polygonIndexCursor * 6;
                             trackUnpackVector(packedVertex, vertexPosition);
                             sinkOffset = (state->previousSinkDepth / GROUND_ANIMATOR_SINK_DEPTH_SCALE) *
                                          *(f32*)((char*)state->falloffBuffer + vertexFalloffOffset);
