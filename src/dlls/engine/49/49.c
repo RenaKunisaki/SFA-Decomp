@@ -747,7 +747,7 @@ void Minimap_drawCompassBlip(void)
     ObjModel* model;
 
     count = 2;
-    viewFn_80129cbc(43.0f, 110.0f, 390.0f);
+    gameUiBeginOverlayView(43.0f, 110.0f, 390.0f);
     pulseOn = (gMinimapBlipPulse >> 3) & 1;
     if (pulseOn != 0)
     {
@@ -768,7 +768,7 @@ void Minimap_drawCompassBlip(void)
         model->bufferFlags = model->bufferFlags & ~0x8;
         gMinimapBlipObjects[i]->anim.renderAlpha = 255;
     }
-    viewFn_80129c74();
+    gameUiEndOverlayView();
 }
 
 void Minimap_setupCompassBlip(void)

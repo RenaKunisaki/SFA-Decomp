@@ -151,7 +151,7 @@ u8 gHighScoreHighlightRow = 255;
 u8 gGameUiTaskHintCandidates[8] = {3, 0, 1, 4, 2, 0, 0, 0};
 u8 lbl_803DBA9C[6] = {2, 4, 5, 3, 1, 0};
 u8 lbl_803DBAA2 = 10;
-f32 lbl_803DBAA4 = 43.0f;
+f32 gGameUiSavedFovY = 43.0f;
 s16 gHighScorePulseAngleStep = 1200;
 f32 gHighScorePulseAmplitude = 55.0f;
 f32 gHighScorePulseBias = 200.0f;
@@ -563,7 +563,7 @@ extern s8 cMenuState;
 extern s16 lbl_803DD79A;
 extern s16 lbl_803DD79C;
 extern s16 lbl_803DD79E;
-extern int lbl_803DD7E0;
+extern int gGameUiSavedCameraShake;
 extern s8 lbl_803DD8B7;
 extern GameObject* gCMenuRingFrontObjs[3];
 extern GameObject* gCMenuRingObjs[3];
@@ -3959,10 +3959,10 @@ void hudDrawCMenu(int p1, int p2, int p3)
         lbl_803E1E40 + (f32)(-gCMenuScrollTimer * lbl_803DBA30) / 1000.0f;
     sy = lbl_803DBAC8;
     sx = lbl_803DBAC4;
-    lbl_803DBAA4 = Camera_GetFovY();
+    gGameUiSavedFovY = Camera_GetFovY();
     Camera_SetFovY(60.0f);
     Camera_SetCurrentViewIndex(1);
-    lbl_803DD7E0 = CameraShake_IsEnabled();
+    gGameUiSavedCameraShake = CameraShake_IsEnabled();
     CameraShake_Disable();
     {
         f32 small = lbl_803E1E3C;
@@ -4026,12 +4026,12 @@ void hudDrawCMenu(int p1, int p2, int p3)
         j++;
     } while (j < 3);
     Camera_SetCurrentViewIndex(0);
-    if (lbl_803DD7E0 != 0)
+    if (gGameUiSavedCameraShake != 0)
     {
         CameraShake_Enable();
     }
     Camera_UpdateViewMatrices();
-    Camera_SetFovY(lbl_803DBAA4);
+    Camera_SetFovY(gGameUiSavedFovY);
     Camera_RebuildProjectionMatrix();
     Camera_ApplyFullViewport();
 }
@@ -4341,10 +4341,10 @@ void headDisplayDraw(void)
         }
         GXSetScissor(0x1ea, width, 0x78, height);
         drawRect(490.0f, (f32)(int)width, 0x78, height);
-        lbl_803DBAA4 = Camera_GetFovY();
+        gGameUiSavedFovY = Camera_GetFovY();
         Camera_SetFovY(43.0f);
         Camera_SetCurrentViewIndex(1);
-        lbl_803DD7E0 = CameraShake_IsEnabled();
+        gGameUiSavedCameraShake = CameraShake_IsEnabled();
         CameraShake_Disable();
         cameraOrigin = lbl_803E1E3C;
         Camera_SetCurrentViewPosition(cameraOrigin, cameraOrigin, cameraOrigin);
@@ -4365,12 +4365,12 @@ void headDisplayDraw(void)
             Obj_GetActiveModel(gHeadDisplayModelObjs[panelType])->bufferFlags &= ~8;
         }
         Camera_SetCurrentViewIndex(0);
-        if (lbl_803DD7E0 != 0)
+        if (gGameUiSavedCameraShake != 0)
         {
             CameraShake_Enable();
         }
         Camera_UpdateViewMatrices();
-        Camera_SetFovY(lbl_803DBAA4);
+        Camera_SetFovY(gGameUiSavedFovY);
         Camera_RebuildProjectionMatrix();
         Camera_ApplyFullViewport();
         GXSetScissor(0, 0, 0x280, 0x1e0);
@@ -5767,10 +5767,10 @@ void pauseMenuDoSave(void)
     u8 i;
     u8 j;
 
-    lbl_803DBAA4 = Camera_GetFovY();
+    gGameUiSavedFovY = Camera_GetFovY();
     Camera_SetFovY(43.0f);
     Camera_SetCurrentViewIndex(1);
-    lbl_803DD7E0 = CameraShake_IsEnabled();
+    gGameUiSavedCameraShake = CameraShake_IsEnabled();
     CameraShake_Disable();
     Camera_SetCurrentViewPosition(lbl_803E1E3C, lbl_803E1E3C, lbl_803E1E3C);
     Camera_SetCurrentViewRotation(0x8000, 0, 0);
@@ -5811,12 +5811,12 @@ void pauseMenuDoSave(void)
         j++;
     }
     Camera_SetCurrentViewIndex(0);
-    if (lbl_803DD7E0 != 0)
+    if (gGameUiSavedCameraShake != 0)
     {
         CameraShake_Enable();
     }
     Camera_UpdateViewMatrices();
-    Camera_SetFovY(lbl_803DBAA4);
+    Camera_SetFovY(gGameUiSavedFovY);
     Camera_RebuildProjectionMatrix();
     Camera_ApplyFullViewport();
     if (lbl_803DD778 & 0x10)
@@ -5832,15 +5832,15 @@ void pauseMenuDoSave(void)
 /* Render-block teardown for the snowworm
  * scene: drops to layer 0, optionally tears the cached effect down, and
  * issues the close/restore pair before returning to the parent renderer. */
-void viewFn_80129c74(void)
+void gameUiEndOverlayView(void)
 {
     Camera_SetCurrentViewIndex(0);
-    if (lbl_803DD7E0 != 0)
+    if (gGameUiSavedCameraShake != 0)
     {
         CameraShake_Enable();
     }
     Camera_UpdateViewMatrices();
-    Camera_SetFovY(lbl_803DBAA4);
+    Camera_SetFovY(gGameUiSavedFovY);
     Camera_RebuildProjectionMatrix();
     Camera_ApplyFullViewport();
 }
@@ -5851,12 +5851,12 @@ void viewFn_80129c74(void)
  * layer 1, captures depth bias, snaps clip planes (0,0,0), restores
  * ZBuf window 0x8000, then calls GXSetViewport with width/height
  * from the global render obj at gRenderModeObj (offsets 0x4, 0x8). */
-void viewFn_80129cbc(f32 fov, f32 x, f32 y)
+void gameUiBeginOverlayView(f32 fov, f32 x, f32 y)
 {
-    lbl_803DBAA4 = Camera_GetFovY();
+    gGameUiSavedFovY = Camera_GetFovY();
     Camera_SetFovY(fov);
     Camera_SetCurrentViewIndex(1);
-    lbl_803DD7E0 = CameraShake_IsEnabled();
+    gGameUiSavedCameraShake = CameraShake_IsEnabled();
     CameraShake_Disable();
     Camera_SetCurrentViewPosition(lbl_803E1E3C, lbl_803E1E3C, lbl_803E1E3C);
     Camera_SetCurrentViewRotation(0x8000, 0, 0);
@@ -5876,7 +5876,7 @@ void viewFn_80129cbc(f32 fov, f32 x, f32 y)
  * slot pointer and clears the +0x4c sentinel
  * if it overflowed the 0x90000000 watermark. Tail restores FOV
  * and runs the standard close-block trio. */
-void perspectiveFn_80129db4(void)
+void pauseMenuRenderSlotShadow(void)
 {
     f32 saved_fov;
 
@@ -9199,7 +9199,7 @@ u16 gViewFinderCamAngle;
 f32 gHudYButtonIconScale;
 s16 gTimeListPulseAngle;
 s16 gHighScorePulseAngle;
-int lbl_803DD7E0;
+int gGameUiSavedCameraShake;
 f32 lbl_803DD7DC;
 int lbl_803DD7D8;
 u8 lbl_803DD7D6;
