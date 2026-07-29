@@ -22,15 +22,6 @@ s32 gAttractMovieIdleFrameCount;
 s32 gPicMenuVideoDecodePrepareReady;
 s32 gPicMenuVideoDecodeThreadCreated;
 
-static void THPVideoDecode_ResetWork(void)
-{
-    memset(gPicMenuVideoDecodeThreadArea, 0, sizeof(gPicMenuVideoDecodeThreadArea));
-    memset(&gPicMenuDecodedTextureSetQueue, 0, sizeof(gPicMenuDecodedTextureSetQueue));
-    memset(&gPicMenuFreeTextureSetQueue, 0, sizeof(gPicMenuFreeTextureSetQueue));
-    memset(gPicMenuVideoDecodeThreadStack, 0, sizeof(gPicMenuVideoDecodeThreadStack));
-    memset(&gPicMenuVideoDecodeThread, 0, sizeof(gPicMenuVideoDecodeThread));
-}
-
 OSMessage PopDecodedTextureSet(s32 flags)
 {
     OSMessage msg;

@@ -32,13 +32,6 @@ const Dll28BMoveBlendData gDll28BMoveBlendDataB = {{0x0005000A, 0x00140014, 0x00
 void* gDll28BStateHandlers[4];
 void* gDll28BSubstateHandlers[4];
 
-static void dll_28B_clearSubstateHandlers(void)
-{
-    int i;
-    for (i = 0; i < 4; i++)
-        gDll28BSubstateHandlers[i] = NULL;
-}
-
 int dll_28B_getExtraSize(void)
 {
     return sizeof(Dll28BState);

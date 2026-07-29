@@ -723,13 +723,6 @@ void grimble_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int 
     }
 }
 
-static void grimble_clearStateHandlersB(void)
-{
-    int i;
-    for (i = 0; i < 6; i++)
-        gGrimbleStateHandlersB[i] = NULL;
-}
-
 void grimble_hitDetect(GameObject* obj) {
     (*gPlayerInterface)->updateVelocityState(obj, obj->extra, gGrimbleStateHandlersA);
 }

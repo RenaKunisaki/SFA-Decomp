@@ -646,13 +646,6 @@ void kaldachom_hitDetect(GameObject* obj) {
     (void)obj;
 }
 
-static void kaldachom_clearStateHandlersB(void)
-{
-    int i;
-    for (i = 0; i < 6; i++)
-        gKaldachomStateHandlersB[i] = NULL;
-}
-
 void kaldachom_update(GameObject* obj) {
     int cond;
     GameObject* player;

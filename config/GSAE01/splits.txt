@@ -236,7 +236,6 @@ main/shader_dolphin.c:
 	.bss        start:0x803779A0 end:0x803779C0
 	.sdata      start:0x803DB5E8 end:0x803DB600
 	.sbss       start:0x803DCD28 end:0x803DCD98
-	.sdata2     start:0x803DEAB0 end:0x803DEB44
 
 main/rcp_dolphin.c:
 	.text       start:0x80052974 end:0x800536C0

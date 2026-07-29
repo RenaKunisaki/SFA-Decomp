@@ -701,13 +701,6 @@ void dll_CE_hitDetect(GameObject* obj) {
     (void)obj;
 }
 
-static void chukChuk_clearCheckHandlers(void)
-{
-    int i;
-    for (i = 0; i < 6; i++)
-        gChukChukCheckHandlers[i] = NULL;
-}
-
 void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
     GroundBaddieState* state;
     DllCEPlacement* placement;
