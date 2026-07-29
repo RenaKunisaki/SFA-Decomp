@@ -436,6 +436,7 @@
 #include "main/dll/dll_00B3_projlightning4.h"
 #include "main/dll/dll_00B4_projenergise1.h"
 #include "main/dll/dll_00B5_projenergise2.h"
+#include "main/dll/dll_00B6_projsquirt1.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -582,7 +583,7 @@ extern ResourceDescriptor Effect9_funcs, Effect10_funcs, Effect11_funcs, Effect1
 extern ResourceDescriptor Effect17_funcs, Effect18_funcs, Effect19_funcs, Effect20_funcs, lbl_803112E8, lbl_80311340,
     lbl_80311378, lbl_80311438;
 extern ResourceDescriptor lbl_803114B0, lbl_803114D8, lbl_803115F8, dll_15_funcs, lbl_80311900, lbl_80311BE0;
-extern ResourceDescriptor lbl_803195E8, lbl_80319638, lbl_80319688, lbl_803197B0;
+extern ResourceDescriptor lbl_803195E8, lbl_80319638, lbl_80319688;
 extern ResourceDescriptor lbl_803197F8, lbl_80319840, projquakeshock_funcs, lbl_803198D8, projtesla_funcs, lbl_80319968,
     lbl_803199B0, lbl_803199F8;
 extern ResourceDescriptor lbl_80319A40;
@@ -1396,7 +1397,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gProjlightning4ResourceDescriptor,
     (ResourceDescriptor*)&gProjenergise1ResourceDescriptor,
     (ResourceDescriptor*)&gProjenergise2ResourceDescriptor,
-    &lbl_803197B0,
+    (ResourceDescriptor*)&gProjsquirt1ResourceDescriptor,
     &lbl_803197F8,
     &lbl_803195E8,
     &lbl_80319638,
