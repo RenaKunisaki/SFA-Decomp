@@ -3,6 +3,7 @@
 #include "main/dll/dll_004C_camDebug.h"
 #include "main/dll/dll_0053_cameramodecloudrunner.h"
 #include "main/dll/dll_0056_cameramodearwing.h"
+#include "main/dll/dll_0057_cameramodetitle.h"
 #include "main/debug.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/vecmath.h"
@@ -1549,7 +1550,6 @@ f32 objCurveInterpolate(ObjCurveKey* keys, int count, int frame);
 #define OBJSEQ_CAMMODE_COMBAT       0x49 /* dll_0049_cameramodecombat */
 #define OBJSEQ_CAMMODE_SHIPBATTLE   0x4a /* dll_004A_cameramodeshipbattle */
 #define OBJSEQ_CAMMODE_CAMDEBUG     0x4c /* dll_004C_camDebug */
-#define OBJSEQ_CAMMODE_TITLE        0x57 /* dll_0057_cameramodetitle */
 
 extern char sObjLoadAnimdataNullACRomTabWarning[];
 
@@ -2976,8 +2976,8 @@ void ObjSeq_updateCamera(void)
                     (*gCameraInterface)
                         ->setMode(CAMERA_MODE_ARWING_RESOURCE_ID, 1, gObjSeqCamModeArgB, 0, NULL, 0, 0);
                     break;
-                case 0x57:
-                    (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_TITLE, 0, 3, 0, NULL, 0, 0);
+                case CAMERA_MODE_TITLE_RESOURCE_ID:
+                    (*gCameraInterface)->setMode(CAMERA_MODE_TITLE_RESOURCE_ID, 0, 3, 0, NULL, 0, 0);
                     (*gCameraInterface)
                         ->setFocus(*(void**)(void*)objGetAllOfType(OBJSEQ_TARGET_OBJGROUP, &groupObjCount), 0);
                     break;

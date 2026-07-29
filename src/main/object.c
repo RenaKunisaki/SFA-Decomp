@@ -14,6 +14,7 @@
 #include "main/camera_interface.h"
 #include "main/dll/boneparticleeffect_interface.h"
 #include "main/dll/dll_00E2_staff_api.h"
+#include "main/dll/dll_0057_cameramodetitle.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/waterfx_interface.h"
@@ -147,7 +148,6 @@ typedef struct CharSpawn
     int mapId;
 } CharSpawn;
 
-#define OBJECT_CAMMODE_TITLE   0x57 /* cameramode DLL dll_0057_cameramodetitle */
 #define OBJECT_CAMMODE_DEFAULT 0x42 /* default gameplay cameramode DLL */
 
 /* special-cased seqIds (retail OBJECTS.bin names) */
@@ -915,7 +915,7 @@ void mapSetupPlayer(void)
         if ((u32)(uiDll - 2) <= 4 || uiDll == 7)
         {
             (*gCameraInterface)->init(obj, *(f32*)(base + 8), *(f32*)(base + 0xc), *(f32*)(base + 0x10));
-            (*gCameraInterface)->setMode(OBJECT_CAMMODE_TITLE, 0, 3, 0, NULL, 0, 0);
+            (*gCameraInterface)->setMode(CAMERA_MODE_TITLE_RESOURCE_ID, 0, 3, 0, NULL, 0, 0);
             (*gCameraInterface)->setFocus(obj, 0);
             (*gCameraInterface)->update(1);
         }

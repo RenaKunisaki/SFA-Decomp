@@ -44,6 +44,7 @@
 #include "main/objseq.h"
 #include "main/dll/FRONT/dll_0034_n_filemenu.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
+#include "main/dll/dll_0057_cameramodetitle.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
@@ -72,9 +73,6 @@ f32 gTitleScreenFoxTypeMoveRate = 0.01f;
 #define FRONT_SEQID_ROB            0x780 /* "FrontRob" */
 #define FRONT_SEQID_PILOTS         0x781 /* "FrontPilots" */
 #define FRONT_SEQID_PILOTS_ATTRACT 0x78a /* "FrontPilots" */
-
-/* camera mode DLL 0x57 = dll_0057_cameramodetitle */
-#define FRONT_CAMMODE_TITLE 0x57
 
 typedef struct TitlescreenState
 {
@@ -195,7 +193,7 @@ void creditsStart_(void)
     int alpha;
     if (gTitleScreenCreditIndex >= gTitleScreenCreditCount)
     {
-        if ((*gCameraInterface)->getMode() == FRONT_CAMMODE_TITLE)
+        if ((*gCameraInterface)->getMode() == CAMERA_MODE_TITLE_RESOURCE_ID)
         {
             showCredits = 0;
             loadUiDll(4);
@@ -589,7 +587,7 @@ void TitleScreen_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
         return;
     mainSetBits(GAMEBIT_CreditsRelated0DF6, 1);
     gTitleScreenCreditsStarted = 1;
-    (*gObjectTriggerInterface)->setCamVars(FRONT_CAMMODE_TITLE, 0, 0, 0);
+    (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_TITLE_RESOURCE_ID, 0, 0, 0);
     n_attractmode_releaseMovieBuffers();
     gTitleScreenCreditsEndTriggered = 0;
 }
