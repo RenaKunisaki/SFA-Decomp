@@ -7,28 +7,28 @@
  * DLL still exports the standard projectile lifecycle entry points. This is
  * one of a family of identical retired projectile DLLs.
  */
-#include "dolphin/os/OSReport.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00B9_projlightning7.h"
+#include "dolphin/os/OSReport.h"
 
-#define PROJECTILE_UNSUPPORTED_RETURN -1
+extern char sProjlightning7DoNoLongerSupported[];
 
-int projlightning7_doUnsupported(void)
-{
+int projlightning7_doUnsupported(void) {
     OSReport(sProjlightning7DoNoLongerSupported);
-    return PROJECTILE_UNSUPPORTED_RETURN;
+    return -1;
 }
 
-void projlightning7_release(void)
-{
+void projlightning7_release(void) {
 }
 
-void projlightning7_initialise(void)
-{
+void projlightning7_initialise(void) {
 }
 
-DllDescriptorTable lbl_80319638 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projlightning7_initialise, projlightning7_release, (void*)0x00000000,
-                                    projlightning7_doUnsupported}};
+Projlightning7ResourceDescriptor gProjlightning7ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projlightning7_initialise,
+    projlightning7_release,
+    NULL,
+    projlightning7_doUnsupported,
+};
 
 char sProjlightning7DoNoLongerSupported[] = "<projlightning7 Do>No Longer supported \n";
