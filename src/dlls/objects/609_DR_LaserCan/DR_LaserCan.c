@@ -496,7 +496,7 @@ void DR_LaserCannon_update(GameObject* obj)
                             o->posX = ((DrLaserCannonState*)spawned)->muzzleX;
                             o->posY = ((DrLaserCannonState*)spawned)->muzzleY;
                             o->posZ = ((DrLaserCannonState*)spawned)->muzzleZ;
-                            spawned = (int)objSetupObject(o, 5, (obj)->anim.mapEventSlot, -1, NULL);
+                            spawned = (int)Obj_SetupObject(o, 5, (obj)->anim.mapEventSlot, -1, NULL);
                         }
                         if ((void*)spawned != NULL)
                         {
