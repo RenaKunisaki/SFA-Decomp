@@ -6328,7 +6328,7 @@ void pauseMenuUpdate(void)
                     arwingHudVisible = 1;
                 }
                 pauseMenuState = 0;
-                if (player == 0 || fn_80296C4C(player) == 0)
+                if (player == 0 || playerIsDead(player) == 0)
                 {
                     AudioStream_StopCurrent();
                 }

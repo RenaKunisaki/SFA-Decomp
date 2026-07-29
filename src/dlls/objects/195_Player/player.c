@@ -2121,13 +2121,13 @@ int playerStatusIsPositive(GameObject* obj)
     return *(s8*)((char*)inner->playerStatus) > 0;
 }
 
-int fn_80296C4C(GameObject* obj)
+int playerIsDead(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return (inner->flags3F3 >> 1) & 1;
 }
 
-int playerIsDead(GameObject* player)
+int fn_80296C5C(GameObject* player)
 {
     PlayerState* inner = player->extra;
     return (inner->flags3F3 >> 2) & 1;

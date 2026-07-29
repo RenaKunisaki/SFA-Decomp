@@ -61,7 +61,7 @@ int playerIsStaffActionPending(GameObject* obj);
 int playerIsNotAttacking(GameObject* player);
 int objAnimFn_80296328(GameObject* player);
 f32 playerGetProbeHitDist(GameObject* player);
-int fn_80296C4C(GameObject* obj);
+int playerIsDead(GameObject* obj);
 void fn_80296D20(GameObject* player, GameObject* parentObj);
 void playerSetInCutscene(GameObject* player);
 void playerSetCutsceneCameraFlag(GameObject* player);

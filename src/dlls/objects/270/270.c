@@ -68,7 +68,11 @@ void DeathSeq_update(GameObject* obj) {
     ObjTextureRuntimeSlot* texture;
 
     useDeathCamera = FALSE;
-    if (playerIsDead(player) != 0) {
+    /* fn_80296C5C reads bit 2 of PlayerState+0x3F3; the playerSetIsDead call below
+     * writes bit 1. They are not a getter/setter pair despite reading like one.
+     * This is faithful to retail -- DeathSeq_update matches byte for byte -- so
+     * the call must not be changed to playerIsDead (the bit 1 reader). */
+    if (fn_80296C5C(player) != 0) {
         state->cameraDistanceTarget = DEATH_SEQ_DEAD_CAMERA_DISTANCE;
         if (obj->anim.currentMove != DEATH_SEQ_MOVE_DEATH) {
             AudioStream_StopCurrent();
@@ -90,6 +94,8 @@ void DeathSeq_update(GameObject* obj) {
             }
             if ((*gScreenTransitionInterface)->isFinished() != 0) {
                 if (player != NULL) {
+                    /* Writes bit 1, not the bit 2 that the guard at the top of this
+                     * function tested. See the note there. */
                     playerSetIsDead(player, FALSE);
                 }
                 cutsceneFadeInOut(FALSE);
