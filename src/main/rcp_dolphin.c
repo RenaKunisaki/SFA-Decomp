@@ -282,7 +282,7 @@ void Rcp_UpdateDistortionTextures(void)
             GXSetChanMatColor(GX_COLOR1A1, matColor);
             Rcp_SetupDistortionLights(((RcpDistortSlot*)slots[0])[i].model, ((RcpDistortSlot*)slots[0])[i].params);
             Rcp_ResetTextureStageState();
-            textureFn_8004ff20(gRcpDistortTexture, (f32*)mtx, &texColor, 0);
+            addSphereMapLitStages(gRcpDistortTexture, (f32*)mtx, &texColor, 0);
             Rcp_ApplyTextureStageCounts();
             Rcp_DrawWarpDistortionMesh((f32)(i * 0x20), 0.0f);
             GXCopyTex(((RcpDistortSlot*)slots[0])[i].texture + 0x60, 0);
