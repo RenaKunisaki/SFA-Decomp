@@ -1114,8 +1114,8 @@ void dll_0B_updateActiveEffects(void)
     int** pp;
     int slot;
     int feFlag;
-    int cntC;
-    int cntA;
+    int scaleGroupIndex;
+    int alphaGroupIndex;
     int k;
     void* res;
     PartFxSpawnParams tmpl;
@@ -1171,8 +1171,8 @@ void dll_0B_updateActiveEffects(void)
                 active = 1;
                 ((ExpFn2)modgfx_captureFrameBaseVertices)(eff, 0);
             }
-            cntC = 0;
-            cntA = 0;
+            scaleGroupIndex = 0;
+            alphaGroupIndex = 0;
             ((ExpFn3)modgfx_restoreBaseVertices)(eff, PENDING_SPAWNS + emIdx * 0x18, active);
             feFlag = 0;
             emIdx = 0;
@@ -1303,14 +1303,14 @@ void dll_0B_updateActiveEffects(void)
                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x2)
                 {
                     modgfx_stepVertexScale((ModgfxState*)eff,
-                                           (ModgfxVertexGroupCmd*)(PENDING_SPAWNS + emOff), active, cntC);
-                    cntC++;
+                                           (ModgfxVertexGroupCmd*)(PENDING_SPAWNS + emOff), active, scaleGroupIndex);
+                    scaleGroupIndex++;
                 }
                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x4)
                 {
                     modgfx_stepVertexAlpha((ModgfxState*)eff,
-                                           (ModgfxVertexGroupCmd*)(PENDING_SPAWNS + emOff), active, cntA);
-                    cntA++;
+                                           (ModgfxVertexGroupCmd*)(PENDING_SPAWNS + emOff), active, alphaGroupIndex);
+                    alphaGroupIndex++;
                 }
                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x8)
                 {
