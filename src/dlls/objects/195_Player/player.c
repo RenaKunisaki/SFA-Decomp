@@ -1801,7 +1801,7 @@ int playerSetHeldObject(GameObject* obj, GameObject* heldObj)
             }
             else
             {
-                objSaveFn_800ea774(sub);
+                Carryable_putDownAndSavePos(sub);
             }
             *(s16*)((char*)inner->heldObj + 6) &= ~0x4000;
             *(int*)((char*)inner->heldObj + 0xf8) = 0;
@@ -2197,7 +2197,7 @@ void fn_80296D20(GameObject* obj, GameObject* parentObj)
                 }
                 else
                 {
-                    objSaveFn_800ea774((GameObject*)inner->heldObj);
+                    Carryable_putDownAndSavePos((GameObject*)inner->heldObj);
                 }
                 *(s16*)((char*)inner->heldObj + 6) &= ~0x4000;
                 *(int*)((char*)inner->heldObj + 0xf8) = 0;
@@ -2444,7 +2444,7 @@ int playerState41(GameObject* obj, int state, f32 fv)
             }
             else
             {
-                objSaveFn_800ea774((GameObject*)sub);
+                Carryable_putDownAndSavePos((GameObject*)sub);
             }
             *(s16*)((char*)inner->heldObj + 0x6) &= ~0x4000;
             *(int*)((char*)inner->heldObj + 0xf8) = 0;
@@ -7775,7 +7775,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                         }
                         else
                         {
-                            objSaveFn_800ea774((GameObject*)sub);
+                            Carryable_putDownAndSavePos((GameObject*)sub);
                         }
                         *(s16*)((char*)inner->heldObj + 0x6) &= ~0x4000;
                         *(int*)((char*)inner->heldObj + 0xf8) = 0;
@@ -8208,7 +8208,7 @@ int playerStateOnLadder(int obj, int state)
                                 }
                                 else
                                 {
-                                    objSaveFn_800ea774((GameObject*)((PlayerState*)inner)->heldObj);
+                                    Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                                 }
                                 *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) =
                                     *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) & ~0x4000;
@@ -8724,7 +8724,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
                 }
                 else
                 {
-                    objSaveFn_800ea774((GameObject*)((PlayerState*)inner)->heldObj);
+                    Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                 }
                 *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
                     *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
@@ -8959,7 +8959,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
             }
             else
             {
-                objSaveFn_800ea774((GameObject*)sub);
+                Carryable_putDownAndSavePos((GameObject*)sub);
             }
             *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) &= ~0x4000;
             *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
@@ -9500,7 +9500,7 @@ int playerStateThrowing(GameObject* obj, int state)
             }
             else
             {
-                objSaveFn_800ea774(s2);
+                Carryable_putDownAndSavePos(s2);
             }
             *(s16*)((char*)inner->heldObj + 6) &= ~0x4000;
             *(int*)((char*)inner->heldObj + 0xf8) = 0;
@@ -9577,7 +9577,7 @@ int playerState06(GameObject* obj, int state)
             }
             else
             {
-                objSaveFn_800ea774(s2);
+                Carryable_putDownAndSavePos(s2);
             }
             *(s16*)((char*)inner->heldObj + 6) &= ~0x4000;
             *(int*)((char*)inner->heldObj + 0xf8) = 0;
@@ -9738,7 +9738,7 @@ void playerStagedRestoreDefaultControl(GameObject* obj, int state)
                 }
                 else
                 {
-                    objSaveFn_800ea774((GameObject*)sub);
+                    Carryable_putDownAndSavePos((GameObject*)sub);
                 }
                 *(s16*)((char*)inner->heldObj + 0x6) &= ~0x4000;
                 *(int*)((char*)inner->heldObj + 0xf8) = 0;
@@ -13487,7 +13487,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
                     }
                     else
                     {
-                        objSaveFn_800ea774((GameObject*)((PlayerState*)inner)->heldObj);
+                        Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                     }
                     *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
                         *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
@@ -13598,7 +13598,7 @@ int fn_802AC7DC(int obj, int state, int inner, f32 fv)
                         }
                         else
                         {
-                            objSaveFn_800ea774((GameObject*)((PlayerState*)inner)->heldObj);
+                            Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                         }
                         *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
                             *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
@@ -14025,7 +14025,7 @@ int fn_802ADC08(GameObject* obj, int inner, int p3)
             }
             else
             {
-                objSaveFn_800ea774((GameObject*)sub);
+                Carryable_putDownAndSavePos((GameObject*)sub);
             }
             *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) &= ~0x4000;
             *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
@@ -14334,7 +14334,7 @@ void fn_802AE83C(int obj, int inner, int state)
         }
         else
         {
-            objSaveFn_800ea774(sub);
+            Carryable_putDownAndSavePos(sub);
         }
         *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) &= ~0x4000;
         *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
@@ -14457,7 +14457,7 @@ void fn_802AE9C8(GameObject* obj, int inner, int state)
             }
             else
             {
-                objSaveFn_800ea774((GameObject*)sub);
+                Carryable_putDownAndSavePos((GameObject*)sub);
             }
             *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) &= ~0x4000;
             *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
@@ -14507,7 +14507,7 @@ void fn_802AED2C(GameObject* obj, int state, int p3)
         }
         else
         {
-            objSaveFn_800ea774((GameObject*)((PlayerState*)state)->heldObj);
+            Carryable_putDownAndSavePos((GameObject*)((PlayerState*)state)->heldObj);
         }
         *(s16*)((char*)((PlayerState*)state)->heldObj + 6) &= ~0x4000;
         *(int*)((char*)((PlayerState*)state)->heldObj + 0xf8) = 0;
@@ -15401,7 +15401,7 @@ void fn_802AFB0C(int obj, int inner, int state)
                 }
                 else
                 {
-                    objSaveFn_800ea774((GameObject*)((PlayerState*)inner)->heldObj);
+                    Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                 }
                 *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) =
                     *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) & ~0x4000;
@@ -16319,7 +16319,7 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 }
                 else
                 {
-                    objSaveFn_800ea774((GameObject*)((PlayerState*)inner)->heldObj);
+                    Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                 }
                 *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
                     *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
@@ -16359,7 +16359,7 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 }
                 else
                 {
-                    objSaveFn_800ea774((GameObject*)((PlayerState*)inner)->heldObj);
+                    Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                 }
                 *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
                     *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
@@ -16402,7 +16402,7 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 }
                 else
                 {
-                    objSaveFn_800ea774((GameObject*)((PlayerState*)inner)->heldObj);
+                    Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                 }
                 *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
                     *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
@@ -16606,7 +16606,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     }
                     else
                     {
-                        objSaveFn_800ea774(p);
+                        Carryable_putDownAndSavePos(p);
                     }
                     *(s16*)((char*)inner->heldObj + 6) &= ~0x4000;
                     *(int*)((char*)inner->heldObj + 0xf8) = 0;
@@ -17214,7 +17214,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                             }
                             else
                             {
-                                objSaveFn_800ea774((GameObject*)p17);
+                                Carryable_putDownAndSavePos((GameObject*)p17);
                             }
                             *(s16*)(*(int*)(va + 0x7f8) + 6) &= ~0x4000;
                             *(int*)(*(int*)(va + 0x7f8) + 0xf8) = 0;
@@ -18322,7 +18322,7 @@ void playerUpdate(GameObject* obj)
                         }
                         else
                         {
-                            objSaveFn_800ea774(held);
+                            Carryable_putDownAndSavePos(held);
                         }
                         *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
                             *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;

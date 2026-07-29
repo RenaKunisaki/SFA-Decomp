@@ -32,12 +32,12 @@ typedef struct CarryableUpdateHeldState
 } CarryableUpdateHeldState;
 
 
-void objSaveFn_800ea774(GameObject* obj)
+void Carryable_putDownAndSavePos(GameObject* obj)
 {
-    u8* sub = obj->extra;
-    sub[5] = 0;
-    sub[6] = 0;
-    if ((sub[7] & 8) == 0)
+    CarryableUpdateHeldState* state = obj->extra;
+    state->carryState = CARRY_STATE_RESTING;
+    state->isHeld = 0;
+    if ((state->flags & CARRYABLE_FLAG_SUPPRESS_POS_SAVE) == 0)
     {
         obj->anim.localPosY += 10.0f;
         saveGame_saveObjectPos(obj);
