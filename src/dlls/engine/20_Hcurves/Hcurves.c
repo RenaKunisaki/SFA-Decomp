@@ -1388,9 +1388,7 @@ void Objfsa_UpdateWalkGroupPatches(void)
                                 back = 4;
                             }
                             wg->patchIndices[slot] = gObjfsaPatchCount;
-                            pairGid = pairId;
-                            np = &patchBase[0][gObjfsaPatchCount];
-                            np->groupId = pairGid;
+                            (np = &patchBase[0][gObjfsaPatchCount])->groupId = (pairGid = pairId);
                             pairs[gObjfsaPatchCount * 2] = curve->walkGroup;
                             pairs[gObjfsaPatchCount * 2 + 1] = linked->walkGroup;
 
