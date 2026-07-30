@@ -451,8 +451,7 @@ void synthFreeHandle(u32 handle)
             }
 
             {
-                i = 0;
-                for (; i < 2; i++)
+                for (i = 0; i < 2; i++)
                 {
                     SynthCallbackLink* callback = voice->callbackLists[i];
                     while (callback != 0)
