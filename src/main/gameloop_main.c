@@ -874,7 +874,7 @@ void init(void)
         if (once == 0)
         {
             testAndSet_onlyUseHeap3(1);
-            initFn_8006d020();
+            newShadowsInitProceduralTextures();
         }
         once = 1;
         runLoadingScreens();

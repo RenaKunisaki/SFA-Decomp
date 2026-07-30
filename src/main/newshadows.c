@@ -1437,7 +1437,7 @@ void evalNoisePlacements(f32 px, f32 pz, f32 frame, f32* placements, int count, 
     *out1 = lbl_803DED40 * acc6 + 0.4375f;
     *out2 = acc5;
 }
-void initFn_8006d020(void)
+void newShadowsInitProceduralTextures(void)
 {
     u8 savedHeap;
     f32* placementRadius;

@@ -11,7 +11,7 @@ void findSomething(void* needle);
 
 
 /* extern-cleanup: defining-file public prototypes */
-void initFn_8006d020(void);
+void newShadowsInitProceduralTextures(void);
 f32 getNewShadowDistortionWaveOffset(void);
 void drawReflectionTexture(void);
 void maybeHudFn_8006c91c(void);
