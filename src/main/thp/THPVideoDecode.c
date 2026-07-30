@@ -37,8 +37,7 @@ void PushFreeTextureSet(OSMessage msg)
     OSSendMessage(&gPicMenuFreeTextureSetQueue, msg, OS_MESSAGE_NOBLOCK);
 }
 
-void AttractMovieVideo_Decode(void* param)
-{
+static void AttractMovieVideo_Decode(void* param) {
     AttractMoviePlayer* player;
     char* db;
     AttractMoviePlayer* player2;
@@ -60,20 +59,15 @@ void AttractMovieVideo_Decode(void* param)
     player2 = &gAttractMoviePlayer;
     componentKind = (u8*)player2;
 
-    while (i < player->compInfo.mNumComponents)
-    {
-        switch (componentKind[0x70])
-        {
-        case THP_COMPONENT_VIDEO:
-        {
+    while (i < player->compInfo.mNumComponents) {
+        switch (componentKind[0x70]) {
+        case THP_COMPONENT_VIDEO: {
             s32 dec = THPVideoDecode(dvdData, ((AttractMovieTextureSet*)readMsg)->yTexture,
                                      ((AttractMovieTextureSet*)readMsg)->uTexture,
                                      ((AttractMovieTextureSet*)readMsg)->vTexture, player2->thpWorkArea);
             player2->videoError = dec;
-            if (dec != 0)
-            {
-                if (gPicMenuVideoDecodePrepareReady != 0)
-                {
+            if (dec != 0) {
+                if (gPicMenuVideoDecodePrepareReady != 0) {
                     PrepareReady(0);
                     gPicMenuVideoDecodePrepareReady = 0;
                 }
@@ -96,8 +90,7 @@ void AttractMovieVideo_Decode(void* param)
         i++;
     }
 
-    if (gPicMenuVideoDecodePrepareReady != 0)
-    {
+    if (gPicMenuVideoDecodePrepareReady != 0) {
         PrepareReady(1);
         gPicMenuVideoDecodePrepareReady = 0;
     }
