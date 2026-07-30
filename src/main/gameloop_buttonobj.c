@@ -19,7 +19,7 @@ void removeButtonObject(u32 object)
     buttonObjectCount = gGameLoopButtonObjectCount;
     for (; objectIndex < buttonObjectCount; objectIndex++)
     {
-        if (buttonObjects[0] == object)
+        if (*buttonObjects == object)
         {
             removeIndex = objectIndex;
             break;
