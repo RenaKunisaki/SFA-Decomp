@@ -2514,27 +2514,28 @@ typedef struct ObjPathPoint {
 } ObjPathPoint;
 
 void ObjHitbox_SetStateIndex(GameObject* object, ObjHitReactState* hitStatePtr, int stateIndex) {
-    ObjHitsPriorityState* hitState;
-    int i;
+    ObjHitsPriorityState* priorityState;
+    int modelOrSlotIndex;
     ObjHitsPriorityWorkSlot* workSlot;
 
-    i = object->anim.modelInstance->modelCount;
-    if (stateIndex >= i) {
-        stateIndex = i - 1;
+    modelOrSlotIndex = object->anim.modelInstance->modelCount;
+    if (stateIndex >= modelOrSlotIndex) {
+        stateIndex = modelOrSlotIndex - 1;
     } else if (stateIndex < 0) {
         stateIndex = 0;
     }
-    hitState = (ObjHitsPriorityState*)hitStatePtr;
-    if (hitState->stateIndex == stateIndex) {
+    priorityState = (ObjHitsPriorityState*)hitStatePtr;
+    if (priorityState->stateIndex == stateIndex) {
         return;
     }
-    for (i = 0; (s16)i < OBJHITS_PRIORITY_WORK_SLOT_COUNT; i++) {
-        workSlot = &gObjHitsPriorityHitStates[i];
+    for (modelOrSlotIndex = 0; (s16)modelOrSlotIndex < OBJHITS_PRIORITY_WORK_SLOT_COUNT;
+         modelOrSlotIndex++) {
+        workSlot = &gObjHitsPriorityHitStates[modelOrSlotIndex];
         if ((workSlot->active != 0) && (workSlot->object == object)) {
             workSlot->active = 0;
         }
     }
-    hitState->stateIndex = stateIndex;
+    priorityState->stateIndex = stateIndex;
     return;
 }
 
