@@ -1709,40 +1709,40 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
 
 int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset, int queryMask)
 {
-    TrackGroundHit** arr;
-    int n;
-    int i;
-    int bestIdx;
-    f32 best;
-    f32 cur;
+    TrackGroundHit** hits;
+    int hitCount;
+    int hitIndex;
+    int nearestIndex;
+    f32 firstDistance;
+    f32 bestDistance;
 
-    n = trackGetHeight(obj, x, y, z, &arr, 0, queryMask);
-    if (n != 0)
+    hitCount = trackGetHeight(obj, x, y, z, &hits, 0, queryMask);
+    if (hitCount != 0)
     {
-        cur = arr[0]->height;
-        cur = y - cur;
-        if (cur >= 0.0f)
+        firstDistance = hits[0]->height;
+        firstDistance = y - firstDistance;
+        if (firstDistance >= 0.0f)
         {
-            best = cur;
+            bestDistance = firstDistance;
         }
         else
         {
-            cur = -cur;
-            best = cur;
+            firstDistance = -firstDistance;
+            bestDistance = firstDistance;
         }
-        bestIdx = 0;
-        for (i = 1; i < n; i++)
+        nearestIndex = 0;
+        for (hitIndex = 1; hitIndex < hitCount; hitIndex++)
         {
-            cur = arr[i]->height;
-            cur = y - cur;
-            cur = cur >= 0.0f ? cur : -cur;
-            if (cur < best)
+            f32 distance = hits[hitIndex]->height;
+            distance = y - distance;
+            distance = distance >= 0.0f ? distance : -distance;
+            if (distance < bestDistance)
             {
-                best = cur;
-                bestIdx = i;
+                bestDistance = distance;
+                nearestIndex = hitIndex;
             }
         }
-        *outGroundOffset = y - arr[bestIdx]->height;
+        *outGroundOffset = y - hits[nearestIndex]->height;
         return 0;
     }
     *outGroundOffset = 0.0f;
