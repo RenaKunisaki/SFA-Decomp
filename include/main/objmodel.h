@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-int return0_8002A5B8(u8* resource);
+int ObjModel_IsPackedResource(u8* resource);
 int ObjModel_GetUnpackedResourceSize(u8* resource, int baseSize);
 void ObjModel_UnpackResourcePayload(u8* src, int srcSize, u8* dst, int dstSize);
 void* modelFileGetCollisionBlock(u8* modelFile, int index);

@@ -2702,7 +2702,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         {
             qptr = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]);
             slotPtrAddr = qptr + offsetFlags;
-            tmp = return0_8002A5B8((u8*)slotPtrAddr);
+            tmp = ObjModel_IsPackedResource((u8*)slotPtrAddr);
             if (tmp != 0)
             {
                 *sizeOut = ObjModel_GetUnpackedResourceSize((u8*)slotPtrAddr, *sizeOut);
@@ -2724,7 +2724,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         {
             qptr = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]);
             slotPtrAddr = qptr + offsetFlags;
-            tmp = return0_8002A5B8((u8*)slotPtrAddr);
+            tmp = ObjModel_IsPackedResource((u8*)slotPtrAddr);
             if (tmp != 0)
             {
                 *sizeOut = ObjModel_GetUnpackedResourceSize((u8*)slotPtrAddr, *sizeOut);
@@ -3250,7 +3250,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         else if (fileId == 0x30 || fileId == 0x51 || fileId == 0x4a)
         {
             fileBuf = qptr + offsetFlags;
-            tmp = return0_8002A5B8((u8*)fileBuf);
+            tmp = ObjModel_IsPackedResource((u8*)fileBuf);
             if (tmp != 0)
             {
                 ObjModel_UnpackResourcePayload((u8*)fileBuf, *sizeOut, (u8*)destBuf,

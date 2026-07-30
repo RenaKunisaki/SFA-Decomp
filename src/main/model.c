@@ -3213,7 +3213,7 @@ void ObjModel_UnpackResourcePayload(u8* src, int srcSize, u8* dst, int dstSize)
     }
 }
 
-int return0_8002A5B8(u8* resource) { return 0x0; }
+int ObjModel_IsPackedResource(u8* resource) { return 0x0; }
 
 int ObjModel_GetUnpackedResourceSize(u8* resource, int baseSize)
 {
