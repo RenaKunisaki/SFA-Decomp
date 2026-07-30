@@ -319,45 +319,46 @@ extern void* gCurRomListPage;
 int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type, int* out_lastpage)
 {
     MapRomListPage* page;
-    MapRomListPage** pp[1];
-    int inner_idx;
-    int outer;
-    int total_offset;
-    int* p;
-    u16 limit;
-    int sz;
+    MapRomListPage** pageCursor[1];
+    int itemIndex;
+    int pageIndex;
+    int pageOffset;
+    int* item;
+    u16 pageDataSize;
+    int itemSize;
 
-    for (outer = 0, pp[0] = gLoadedRomListPages; outer < ROM_LIST_PAGE_COUNT; pp[0]++, outer++)
+    for (pageIndex = 0, pageCursor[0] = gLoadedRomListPages; pageIndex < ROM_LIST_PAGE_COUNT;
+         pageCursor[0]++, pageIndex++)
     {
-        page = *pp[0];
+        page = *pageCursor[0];
         if (page == NULL) continue;
 
         gCurRomListPage = page;
-        p = (int*)page->objects;
-        inner_idx = 0;
-        total_offset = 0;
-        limit = page->objectDataSize;
+        item = (int*)page->objects;
+        itemIndex = 0;
+        pageOffset = 0;
+        pageDataSize = page->objectDataSize;
 
-        while (total_offset < limit)
+        while (pageOffset < pageDataSize)
         {
-            if (*(u32*)((char*)p + 0x14) == (u32)needle)
+            if (*(u32*)((char*)item + 0x14) == (u32)needle)
             {
-                if (out_idx != NULL) *out_idx = inner_idx;
-                if (out_outer != NULL) *out_outer = outer;
+                if (out_idx != NULL) *out_idx = itemIndex;
+                if (out_outer != NULL) *out_outer = pageIndex;
                 if (out_type != NULL)
                 {
                     *out_type = (int)*(s8*)((char*)gCurRomListPage + 0x19);
                 }
                 if (out_lastpage != NULL)
                 {
-                    *out_lastpage = (outer >= 0x50) ? 1 : 0;
+                    *out_lastpage = (pageIndex >= 0x50) ? 1 : 0;
                 }
-                return p;
+                return item;
             }
-            sz = (int)*(u8*)((char*)p + 0x2) << 2;
-            total_offset += sz;
-            p = (int*)((char*)p + sz);
-            inner_idx++;
+            itemSize = (int)*(u8*)((char*)item + 0x2) << 2;
+            pageOffset += itemSize;
+            item = (int*)((char*)item + itemSize);
+            itemIndex++;
         }
     }
     return NULL;
@@ -949,7 +950,7 @@ void updateEnvironment(int mode)
         MapTextureScroll* textureScroll;
         Texture* tex;
         int i;
-        int off;
+        int byteOffset;
         f32 x;
         f32 deltaY;
         f32 deltaX;
@@ -962,23 +963,23 @@ void updateEnvironment(int mode)
         (*gNewCloudsInterface)->run();
 
         i = 0;
-        off = 0;
+        byteOffset = 0;
         for (; i < 80; i++)
         {
-            textureOverride = (MapTextureOverride*)((u8*)gMapTextureOverrides + off);
+            textureOverride = (MapTextureOverride*)((u8*)gMapTextureOverrides + byteOffset);
             if (textureOverride->refCount != 0 && (tex = textureOverride->texture) != NULL &&
                 tex->animationFrameCount != 0x100 && tex->animationFrameStep != 0)
             {
                 textureUpdateAnimationFrame(tex, &textureOverride->flags, &textureOverride->frame);
             }
-            off += sizeof(MapTextureOverride);
+            byteOffset += sizeof(MapTextureOverride);
         }
 
         i = 0;
-        off = 0;
+        byteOffset = 0;
         for (; i < 58; i++)
         {
-            textureScroll = (MapTextureScroll*)((u8*)gMapTextureScrolls + off);
+            textureScroll = (MapTextureScroll*)((u8*)gMapTextureScrolls + byteOffset);
             if (textureScroll->refCount != 0)
             {
                 deltaY = textureScroll->yStep * (deltaTime = timeDelta);
@@ -987,7 +988,7 @@ void updateEnvironment(int mode)
                 textureScroll->offsetX = x + deltaX;
                 textureScroll->offsetY = textureScroll->offsetY + deltaY;
             }
-            off += sizeof(MapTextureScroll);
+            byteOffset += sizeof(MapTextureScroll);
         }
 
         loadNextMap();
