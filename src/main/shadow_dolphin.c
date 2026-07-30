@@ -236,7 +236,7 @@ void vecGetRanges(f32* pts, f32* base, f32 scale, int* out)
     }
 }
 
-void buildGroundShadowQuad(s16* out, GameObject* obj)
+static void buildGroundShadowQuad(s16* out, GameObject* obj)
 {
     f32 dist;
     Vec b;
