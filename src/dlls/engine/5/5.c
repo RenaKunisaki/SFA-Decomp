@@ -1188,7 +1188,7 @@ void skyUpdateLightingFromTimeOfDay(void)
             blueCurveOffset = (curveSegment + 0xe) * 4;
             zero = 0.0f;
             dayStart = 18000.0f;
-            lightSlotOffset = slotIndex * 0xa4;
+            lightSlotOffset = 0xa4 * slotIndex;
             if ((u32)((gSkyState[lightSlotOffset + 0xc1] >> 7) & 1) != 0)
             {
                 blendAlpha = 0xc8;
