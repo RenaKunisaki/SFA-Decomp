@@ -3672,7 +3672,7 @@ int cMenuCountAvailableEntries(CMenuItemDef* items, s8 useTricky)
  * pipeline for menu/HUD models. drawTrickyHudOverlay draws the Tricky
  * action/item icons and the view-finder HUD. hudDrawCMenu renders the
  * three rotating menu objects through a dedicated camera view, fading
- * by selection. cMenuRotateFn_80124d80 advances the ring rotation and
+ * by selection. cMenuUpdateRingRotation advances the ring rotation and
  * computes the highlight fade (lbl_803DD8D4).
  */
 
@@ -4091,7 +4091,7 @@ static inline s16 cMenuMinRingAbs(void)
     return best;
 }
 
-void cMenuRotateFn_80124d80(void)
+void cMenuUpdateRingRotation(void)
 {
     u16 uend;
     s16 diff;
@@ -8239,7 +8239,7 @@ void cMenuRun(void)
 
     if (cMenuEnabled != 0)
     {
-        cMenuRotateFn_80124d80();
+        cMenuUpdateRingRotation();
     }
     {
         u8 isOpen = cMenuOpen;

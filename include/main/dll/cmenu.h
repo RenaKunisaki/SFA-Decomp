@@ -10,6 +10,6 @@ int cMenuRingModelRenderFn(struct GameObject* obj, int block, int idx);
 void drawTrickyHudOverlay(int obj, int unused1, int unused2);
 int cMenuRingIconRenderFn(struct GameObject* obj, int block, int idx);
 void hudDrawCMenu(int p1, int p2, int p3);
-void cMenuRotateFn_80124d80(void);
+void cMenuUpdateRingRotation(void);
 
 #endif /* MAIN_DLL_CMENU_H_ */
