@@ -36,6 +36,7 @@ void* gSfxTriggersData;
 SfxObjectChannel gSfxObjectChannels[0xC40 / sizeof(SfxObjectChannel)];
 
 static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* vector);
+static f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta);
 
 static inline SfxObjectChannel* Sfx_FindFreeObjectChannel(void)
 {
@@ -939,8 +940,7 @@ static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
     v[2] = p;
 }
 
-f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta)
-{
+static f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta) {
     Vec v;
     f32 t;
     double t2;

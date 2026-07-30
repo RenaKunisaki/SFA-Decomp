@@ -271,7 +271,6 @@ u32 audioIsChannelUnavailable(u32 mask);
 void audioFree(void* ptr);
 void* _audioAlloc(u32 size);
 s32 Music_GetActivePriority(void);
-f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta);
 int concatThreeStrings(char* dst, void* unused, const char* first, const char* second, const char* third);
 void AudioAramWriteCompleteCallback(u32 request);
 void MIDIWADLoadedCallback(s32 status, DVDFileInfo* fileInfo);
