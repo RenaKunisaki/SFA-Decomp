@@ -173,14 +173,7 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
     int neckStep;
     int jawStep;
     s16 jawDelta;
-    /* Partfx spawn parameter block (breath/steam emitted from the neck bone). */
-    struct
-    {
-        u8 pad[6];
-        s16 mode;
-        f32 val;
-        Vec vec;
-    } partfxParams;
+    PartFxSpawnParams partfxParams;
 
     drakorState = state;
     neck = objModelGetVecFn_800395d8(obj, 0xe);
@@ -191,8 +184,8 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
                    ? -(framesThisStep << 8)
                    : (s16)((neckDelta > (framesThisStep << 8)) ? (framesThisStep << 8) : neckDelta);
         neck[0] += (s16)neckStep;
-        PSVECSubtract(&drakorState->homePos, &obj->anim.localPos, &partfxParams.vec);
-        partfxParams.val = 1.0f;
+        PSVECSubtract(&drakorState->homePos, &obj->anim.localPos, &partfxParams.pos);
+        partfxParams.scale = 1.0f;
         if (timerIsActive(&drakorState->jawAnimAngle) != 0)
         {
             upperJaw = objModelGetVecFn_800395d8(obj, 0xf);
@@ -222,7 +215,7 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
                     }
                     if (drakorState->jawAnimAngle > 10.0f)
                     {
-                        partfxParams.mode = 45000;
+                        partfxParams.arg3 = 45000;
                         (*gPartfxInterface)->spawnObject((void*)obj, BOSSDRAKOR_PARTFX, &partfxParams, 1, -1, NULL);
                     }
                 }
