@@ -671,7 +671,6 @@ int modelLoadAnimations(void* model, int id, void* animBase)
     }
     return 0;
 }
-int modelGetAmapSize(int modelId, int amapFlag, int animCount);
 int modelGetAmapSize(int modelId, int amapFlag, int animCount)
 {
     int amapSize;
