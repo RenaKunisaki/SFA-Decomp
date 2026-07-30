@@ -845,7 +845,7 @@ void init(void)
     testAndSet_onlyUseHeap3(0);
     Camera_InitState();
     testAndSet_onlyUseHeap3(1);
-    gameTextInitFn_8001a234();
+    gameTextInitRendererState();
     testAndSet_onlyUseHeap3(0);
     gameTextLoadDir(3);
     testAndSet_onlyUseHeap3(1);

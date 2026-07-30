@@ -527,7 +527,7 @@ void gameTextInit(void)
     gameTextLoadDir(0x1c);
 }
 
-void gameTextInitFn_8001a234(void)
+void gameTextInitRendererState(void)
 {
     u8* clearPtr;
     u8* glyphPage;

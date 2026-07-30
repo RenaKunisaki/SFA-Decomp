@@ -45,7 +45,7 @@ void gameTextLoadTaskText(int taskId);
 int getCurGameText(void);
 int getCurLanguage(void);
 void gameTextInit(void);
-void gameTextInitFn_8001a234(void);
+void gameTextInitRendererState(void);
 void subtitleInit(void);
 void gameTextInitFn_8001c794(void);
 void gameTextBuildSystemFontAtlas(void);
