@@ -16,6 +16,7 @@
 extern f32 gSubtitleCurTime;
 
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
+static void subtitleBuildLineTable(void);
 
 void* gSubtitleLineTable[0x100];
 char* gSubtitleLineStrs[0x100];
@@ -116,7 +117,7 @@ void subtitleStop(void) {
     }
 }
 
-void subtitleBuildLineTable(void) {
+static void subtitleBuildLineTable(void) {
     int savedCharset;
     SubtitleLineTable* s[1];
     f32 delta;

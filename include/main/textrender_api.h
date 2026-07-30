@@ -25,7 +25,6 @@ void subtitleStop(void);
 void subtitleStart(int x);
 void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* outMaxAdv, f32* outMaxH, int glyphLang);
 void subtitleUpdateAndDraw(int mode);
-void subtitleBuildLineTable(void);
 int subtitleIsActive(void);
 int setSubtitlesEnabled(int enabled);
 void* gameTextGetPhrase(int textId, int phraseIndex);
