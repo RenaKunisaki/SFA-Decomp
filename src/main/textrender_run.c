@@ -100,8 +100,8 @@ typedef struct GameTextStringTable
     int offsets[];
 } GameTextStringTable;
 
-void gameTextLoadCancelCallback(s32 result, DVDCommandBlock* block);
-void gameTextLoadCompleteCallback(s32 status, DVDFileInfo* fileInfo);
+static void gameTextLoadCancelCallback(s32 result, DVDCommandBlock* block);
+static void gameTextLoadCompleteCallback(s32 status, DVDFileInfo* fileInfo);
 
 void gameTextLoadDir(int dirId)
 {
@@ -1156,17 +1156,12 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
     loadSlot->state = 3;
 }
 
-
-
-void gameTextLoadCancelCallback(s32 result, DVDCommandBlock* block)
-{
+static void gameTextLoadCancelCallback(s32 result, DVDCommandBlock* block) {
     int i;
     GameTextLoadSlot* slot = curGameTexts;
     (void)result;
-    for (i = 8; i != 0; i--)
-    {
-        if (block == &slot->fileInfo.cb)
-        {
+    for (i = 8; i != 0; i--) {
+        if (block == &slot->fileInfo.cb) {
             slot->state = 5;
             return;
         }
@@ -1174,29 +1169,21 @@ void gameTextLoadCancelCallback(s32 result, DVDCommandBlock* block)
     }
 }
 
-void gameTextLoadCompleteCallback(s32 status, DVDFileInfo* fileInfo)
-{
+static void gameTextLoadCompleteCallback(s32 status, DVDFileInfo* fileInfo) {
     int i;
     GameTextLoadSlot* slot = curGameTexts;
-    if (status != -1 && status != -3)
-    {
-        for (i = 8; i != 0; i--)
-        {
-            if (fileInfo == &slot->fileInfo)
-            {
+    if (status != -1 && status != -3) {
+        for (i = 8; i != 0; i--) {
+            if (fileInfo == &slot->fileInfo) {
                 slot->state = 2;
                 return;
             }
             slot++;
         }
-    }
-    else
-    {
+    } else {
         slot = curGameTexts;
-        for (i = 8; i != 0; i--)
-        {
-            if (fileInfo == &slot->fileInfo)
-            {
+        for (i = 8; i != 0; i--) {
+            if (fileInfo == &slot->fileInfo) {
                 slot->state = 5;
                 return;
             }
