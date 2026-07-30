@@ -4182,21 +4182,21 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
         if ((inner->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
             ((PlayerStatus*)((PlayerState*)obj->extra)->playerStatus)->magic == 0 || getCurSeqNo() != 0)
         {
-            int z[2];
-            void** p[1];
+            int cleanupCounters[2];
+            void** spawnedObjectCursors[1];
             inner->animState = -1;
-            z[0] = gPlayerIceSpellSustaining = z[1] = 0;
-            p[0] = gPlayerSpawnedObjects;
+            cleanupCounters[0] = gPlayerIceSpellSustaining = cleanupCounters[1] = 0;
+            spawnedObjectCursors[0] = gPlayerSpawnedObjects;
             do
             {
-                if (*p[0] != NULL)
+                if (*spawnedObjectCursors[0] != NULL)
                 {
-                    Obj_FreeObject((GameObject*)*p[0]);
-                    *p[0] = NULL;
+                    Obj_FreeObject((GameObject*)*spawnedObjectCursors[0]);
+                    *spawnedObjectCursors[0] = NULL;
                 }
-                p[0]++;
-                z[0]++;
-            } while (z[0] < 7);
+                spawnedObjectCursors[0]++;
+                cleanupCounters[0]++;
+            } while (cleanupCounters[0] < 7);
             if (gPlayerResource != NULL)
             {
                 Resource_Release(gPlayerResource);
@@ -4206,41 +4206,42 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
     }
     else if (inner->deferredItemCommand != -1 || (inner->buttonsJustPressed & PAD_BUTTON_Y) != 0)
     {
-        int yitem;
-        u16 b28;
-        s16 item;
+        int hasYButtonItem;
+        u16 buttonMask;
+        s16 itemId;
         if (inner->buttonsJustPressed & PAD_BUTTON_Y)
         {
-            yitem = getYButtonItem(&item);
-            b28 = 0x800;
+            hasYButtonItem = getYButtonItem(&itemId);
+            buttonMask = 0x800;
         }
         else
         {
-            yitem = 0;
-            item = inner->deferredItemCommand;
-            b28 = 0x100;
+            hasYButtonItem = 0;
+            itemId = inner->deferredItemCommand;
+            buttonMask = 0x100;
         }
         if (inner->deferredItemCommand != -1 ||
-            (yitem == 1 && (item == GAMEBIT_STAFF_ABILITY_FIRE_BLASTER || item == GAMEBIT_STAFF_ABILITY_FREEZE_BLAST)))
+            (hasYButtonItem == 1 &&
+             (itemId == GAMEBIT_STAFF_ABILITY_FIRE_BLASTER || itemId == GAMEBIT_STAFF_ABILITY_FREEZE_BLAST)))
         {
             buttonDisable(0, 0x900);
             ((PlayerState*)inner)->buttonsJustPressed = inner->buttonsJustPressed & ~0x900;
-            gPlayerSelectedItem = item;
-            if (item != inner->animState)
+            gPlayerSelectedItem = itemId;
+            if (itemId != inner->animState)
             {
-                playerCastSpell((int)obj, (int)inner, item);
+                playerCastSpell((int)obj, (int)inner, itemId);
             }
             switch (gPlayerSelectedItem)
             {
             case GAMEBIT_STAFF_ABILITY_FIRE_BLASTER:
             {
-                int sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-                if (((PlayerStatus*)sub)->magic >= 2)
+                int status = *(int*)((char*)*(int*)&obj->extra + 0x35c);
+                if (((PlayerStatus*)status)->magic >= 2)
                 {
-                    int r = playerStateShootFireball(obj, state, fv);
-                    if (r != 0)
+                    int nextState = playerStateShootFireball(obj, state, fv);
+                    if (nextState != 0)
                     {
-                        return r;
+                        return nextState;
                     }
                 }
                 else
@@ -4249,15 +4250,15 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
                 }
                 break;
             }
-            case 0x958:
+            case GAMEBIT_ITEM_LaserSpell_Got:
             {
-                int sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-                if (((PlayerStatus*)sub)->magic >= 0)
+                int status = *(int*)((char*)*(int*)&obj->extra + 0x35c);
+                if (((PlayerStatus*)status)->magic >= 0)
                 {
-                    int r = playerStateFireLaser((int)obj, state, fv);
-                    if (r != 0)
+                    int nextState = playerStateFireLaser((int)obj, state, fv);
+                    if (nextState != 0)
                     {
-                        return r;
+                        return nextState;
                     }
                 }
                 else
@@ -4268,27 +4269,27 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
             }
             case GAMEBIT_STAFF_ABILITY_FREEZE_BLAST:
             {
-                int sub = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-                if (((PlayerStatus*)sub)->magic >= 1)
+                int status = *(int*)((char*)*(int*)&obj->extra + 0x35c);
+                if (((PlayerStatus*)status)->magic >= 1)
                 {
-                    int sub2;
-                    int v;
+                    int statusAfterCast;
+                    int magic;
                     playerCastIceSpell(obj);
-                    gPlayerHeldButtonMask = b28;
+                    gPlayerHeldButtonMask = buttonMask;
                     gPlayerIceSpellSustaining = 1;
                     lbl_803DE430 = 0.0f;
                     inner->stateTimer = 15.0f;
-                    sub2 = *(int*)((char*)*(int*)&obj->extra + 0x35c);
-                    v = ((PlayerStatus*)sub2)->magic - 1;
-                    if (v < 0)
+                    statusAfterCast = *(int*)((char*)*(int*)&obj->extra + 0x35c);
+                    magic = ((PlayerStatus*)statusAfterCast)->magic - 1;
+                    if (magic < 0)
                     {
-                        v = 0;
+                        magic = 0;
                     }
-                    else if (v > ((PlayerStatus*)sub2)->maxMagic)
+                    else if (magic > ((PlayerStatus*)statusAfterCast)->maxMagic)
                     {
-                        v = ((PlayerStatus*)sub2)->maxMagic;
+                        magic = ((PlayerStatus*)statusAfterCast)->maxMagic;
                     }
-                    ((PlayerStatus*)sub2)->magic = v;
+                    ((PlayerStatus*)statusAfterCast)->magic = magic;
                 }
                 break;
             }
