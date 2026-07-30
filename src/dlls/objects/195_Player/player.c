@@ -5904,8 +5904,8 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
             yT = 0.0f;
         }
         k = 0.1f;
-        inner->stickTargetX = k * (xT - inner->stickTargetX) + inner->stickTargetX;
-        inner->stickTargetY = k * (yT - inner->stickTargetY) + inner->stickTargetY;
+        inner->stickTargetX += k * (xT - inner->stickTargetX);
+        inner->stickTargetY += k * (yT - inner->stickTargetY);
     }
     if (((ByteFlags*)((char*)inner + 0x3f3))->b80 == 0 &&
         ((*(int*)&state->baddie.unk318 & 0x100) == 0 || inner->stickEdgeLatch != 0 ||
