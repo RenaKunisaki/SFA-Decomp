@@ -33,8 +33,8 @@ static u32 WaitingBits;
 static u32 CheckingBits;
 static u32 PendingBits;
 
-static u32 Type[4];
-PADStatus Origin[4];
+static u32 Type[SI_MAX_CHAN];
+PADStatus Origin[SI_MAX_CHAN];
 
 u32 __PADSpec;
 
@@ -70,7 +70,7 @@ static SPECCallback MakeStatus = SPEC2_MakeStatus;
 
 static u32 CmdReadOrigin = 0x41000000;
 static u32 CmdCalibrate = 0x42000000;
-u32 CmdProbeDevice[4];
+u32 CmdProbeDevice[SI_MAX_CHAN];
 
 static OSResetFunctionInfo ResetFunctionInfo = {
     OnReset2,
