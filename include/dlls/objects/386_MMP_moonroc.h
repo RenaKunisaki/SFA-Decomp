@@ -61,7 +61,6 @@ STATIC_ASSERT(offsetof(MMPMoonRockState, heightLevel) == 0x2F);
 extern PartFxSpawnParams gMMPMoonRockSpawnParams;
 extern ObjectDescriptor gMMPMoonRockObjDescriptor;
 
-int mmpMoonRock_probeFloor(GameObject* obj, f32 x, f32 y, f32 z, f32 maxY, f32* floorYOut, GameObject** floorObjectOut);
 void mmpMoonRock_handleImpact(GameObject* obj);
 void mmpMoonRock_updateThrow(GameObject* obj);
 void mmpMoonRock_throwFromPlayer(GameObject* obj);
