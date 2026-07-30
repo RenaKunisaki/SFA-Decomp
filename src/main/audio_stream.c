@@ -53,6 +53,9 @@ AudioDvdStreamContext gAudioStreamDvdBlockPrepared;
 #define AI_STREAM_STOP  0
 #define AI_STREAM_START 1
 
+static void AudioStream_CancelCallback(s32 result, DVDCommandBlock* block);
+static void AudioStream_CancelPreparedCallback(s32 result, DVDCommandBlock* block);
+
 void AudioStream_StopAll(void)
 {
     if (gAudioStreamDvdState != 0)
@@ -138,7 +141,7 @@ u8 volume;
     AISetStreamVolRight(volume);
 }
 
-void AudioStream_CancelCallback(s32 result, DVDCommandBlock* block)
+static void AudioStream_CancelCallback(s32 result, DVDCommandBlock* block)
 {
     (void)block;
     if (result == 0)
@@ -174,7 +177,7 @@ void AudioStream_StopCurrent(void)
     }
 }
 
-void AudioStream_CancelPreparedCallback(s32 result, DVDCommandBlock* block)
+static void AudioStream_CancelPreparedCallback(s32 result, DVDCommandBlock* block)
 {
     (void)result;
     (void)block;
