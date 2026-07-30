@@ -1443,6 +1443,9 @@ static void modelRenderFn_setVtxDescr(u8* modelHeader, u8* shader, u32* textureR
 {
     int nextMatrixAttr;
     int previousMatrixAttr;
+    int textureCoordIndex;
+    int textureIndex16;
+
     GXClearVtxDesc();
     if (((ModelFileHeader*)modelHeader)->jointCount > 1)
     {
@@ -1567,8 +1570,6 @@ static void modelRenderFn_setVtxDescr(u8* modelHeader, u8* shader, u32* textureR
         GXSetVtxDesc(GX_VA_CLR0, (((int)(w >> (pos & 7)) & 1) ? GX_INDEX16 : GX_INDEX8));
     }
     {
-        int index16;
-        int i;
         {
             u32 w;
             int pos = bitStream->pos;
@@ -1579,12 +1580,12 @@ static void modelRenderFn_setVtxDescr(u8* modelHeader, u8* shader, u32* textureR
             w |= p[1] << 8;
             w |= p[2] << 16;
             bitStream->pos = pos + 1;
-            index16 = (w >> (pos & 7)) & 1;
+            textureIndex16 = (w >> (pos & 7)) & 1;
         }
-        i = 0;
-        for (; i < ((Shader*)shader)->layerCount; i++)
+        textureCoordIndex = 0;
+        for (; textureCoordIndex < ((Shader*)shader)->layerCount; textureCoordIndex++)
         {
-            GXSetVtxDesc(i + GX_VA_TEX0, index16 ? GX_INDEX16 : GX_INDEX8);
+            GXSetVtxDesc(textureCoordIndex + GX_VA_TEX0, textureIndex16 ? GX_INDEX16 : GX_INDEX8);
         }
     }
 }
