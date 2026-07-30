@@ -693,8 +693,6 @@ void Camera_setBlendCurveMode(u8 mode) {
 }
 
 void camcontrol_applyState(CamcontrolCameraState* camera) {
-    f32 prog;
-    f32 clamped;
     Camera* view;
     int itmp;
     f32 mag;
@@ -724,6 +722,9 @@ void camcontrol_applyState(CamcontrolCameraState* camera) {
     }
     gCamcontrolFovY = camera->fovY;
     if (camera->blendProgress > 0.0f) {
+        f32 prog;
+        f32 clamped;
+
         camera->blendProgress = -(camera->blendStep * timeDelta - camera->blendProgress);
         prog = camera->blendProgress;
         clamped = 0.0f;
