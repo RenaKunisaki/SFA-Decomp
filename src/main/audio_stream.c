@@ -100,7 +100,7 @@ void AudioStream_StopAll(void)
     gAudioStreamMusicFadeFlagA = 0;
 }
 
-void doNothing_8000CF54(int unused)
+void AudioStream_Nop(int unused)
 {
 }
 

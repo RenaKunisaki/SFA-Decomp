@@ -360,7 +360,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
             animatedObjGetSeqId((ObjSeqState*)animObj) == 0x35f) {
             AudioStream_CancelPrepared();
             seqClearTaskTexts();
-            doNothing_8000CF54(0);
+            AudioStream_Nop(0);
             animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A;
         }
     }

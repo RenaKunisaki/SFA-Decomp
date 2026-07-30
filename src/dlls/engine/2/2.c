@@ -982,7 +982,7 @@ int ObjSeq_SetSlotValue(ObjSeqState* state, int value)
 void ObjSeq_AudioStreamCallback(void)
 {
     AudioStream_IsPreparing();
-    doNothing_8000CF54(0);
+    AudioStream_Nop(0);
     if (gObjSeqDeferredTaskTextId != -1)
     {
         gameTextLoadTaskText(gObjSeqDeferredTaskTextId);
