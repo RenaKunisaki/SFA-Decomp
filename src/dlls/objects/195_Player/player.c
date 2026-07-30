@@ -264,7 +264,7 @@ void fn_802ADE80(GameObject* obj, int inner, int state);
 int fn_802AE480(GameObject* obj, int inner, int state);
 void fn_802AE650(GameObject* obj, int state, int p3);
 void playerEnterDeepWater(int obj, int inner, int state);
-void fn_802AE9C8(GameObject* obj, int inner, int state);
+void playerStartWallTransition(GameObject* obj, int inner, int state);
 void fn_802AED2C(GameObject* obj, int state, int p3);
 void staffAnimate(int obj, void* state, f32 dt);
 void playerProcessQueuedItemCommand(GameObject* obj, int state);
@@ -9213,7 +9213,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
             *(int*)&((PlayerState*)state)->baddie.unk308 = 0;
             return 0x1d;
         case 7:
-            fn_802AE9C8(obj, (int)inner, state);
+            playerStartWallTransition(obj, (int)inner, state);
             return 0;
         case 8:
             *(int*)&((PlayerState*)state)->baddie.unk308 = 0;
@@ -14317,7 +14317,7 @@ void playerEnterDeepWater(int obj, int inner, int state)
     }
 }
 
-void fn_802AE9C8(GameObject* obj, int inner, int state)
+void playerStartWallTransition(GameObject* obj, int inner, int state)
 {
     if (obj->anim.currentMoveProgress > 0.5f)
     {
