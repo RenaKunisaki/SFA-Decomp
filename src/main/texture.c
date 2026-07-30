@@ -260,35 +260,31 @@ void textureInitSecondaryGXTexObj(Texture* tex, GXTexObj* obj)
     }
 }
 
-void textureInitGXTexObj(Texture* texture)
-{
-    u8 mipmap = 0;
-    GXTexObj* texObj;
+void textureInitGXTexObj(Texture* texture) {
+    u8 hasMipmaps = 0;
+    GXTexObj* gxTexObj;
     texture->tmemAddr = NULL;
-    texture->preloaded = mipmap;
-    texObj = textureGetGXTexObj(texture);
-    if (texture->maxLod - texture->minLod > 0)
-        mipmap = 1;
-    GXInitTexObj(texObj, textureGetImageData(texture), texture->width, texture->height, texture->format,
-                 texture->wrapS, texture->wrapT, mipmap);
-    if (mipmap != 0)
-    {
-        GXInitTexObjLOD(texObj, texture->minFilter, texture->magFilter, (f32)(u32)texture->minLod,
+    texture->preloaded = hasMipmaps;
+    gxTexObj = textureGetGXTexObj(texture);
+    if (texture->maxLod - texture->minLod > 0) {
+        hasMipmaps = 1;
+    }
+    GXInitTexObj(gxTexObj, textureGetImageData(texture), texture->width, texture->height, texture->format,
+                 texture->wrapS, texture->wrapT, hasMipmaps);
+    if (hasMipmaps != 0) {
+        GXInitTexObjLOD(gxTexObj, texture->minFilter, texture->magFilter, (f32)(u32)texture->minLod,
                         (f32)(s32)texture->maxLod, -2.0f, 0, 0, 0);
+    } else {
+        GXInitTexObjLOD(gxTexObj, texture->minFilter, texture->magFilter, 0.0f, 0.0f, 0.0f, 0, 0, 0);
     }
-    else
+    GXInitTexObjUserData(gxTexObj, texture);
     {
-        GXInitTexObjLOD(texObj, texture->minFilter, texture->magFilter, 0.0f, 0.0f,
-                        0.0f, 0, 0, 0);
-    }
-    GXInitTexObjUserData(texObj, texture);
-    {
-        u16 w;
-        u16 h;
-        GXTexFmt fmt = GXGetTexObjFmt(texObj);
-        w = GXGetTexObjWidth(texObj);
-        h = GXGetTexObjHeight(texObj);
-        texture->dataSize = GXGetTexBufferSize(w, h, fmt, 0, 0);
+        u16 width;
+        u16 height;
+        GXTexFmt format = GXGetTexObjFmt(gxTexObj);
+        width = GXGetTexObjWidth(gxTexObj);
+        height = GXGetTexObjHeight(gxTexObj);
+        texture->dataSize = GXGetTexBufferSize(width, height, format, 0, 0);
     }
 }
 
