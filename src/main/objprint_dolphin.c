@@ -1455,8 +1455,8 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
             if (((Shader*)m)->auxTextureIndex != 0)
             {
                 GXSetVtxDesc(GX_VA_TEX0MTXIDX, GX_DIRECT);
-                next = 3;
-                GXSetVtxDesc(GX_VA_TEX1MTXIDX, GX_DIRECT);
+                next = GX_VA_TEX1MTXIDX;
+                GXSetVtxDesc(next++, GX_DIRECT);
             }
             GXSetVtxDesc(next++, GX_DIRECT);
         }
