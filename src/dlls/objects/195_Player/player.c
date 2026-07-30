@@ -257,7 +257,7 @@ void playerRefreshCollisionState(GameObject* obj, int p2, int flags);
 void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player);
 void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* player, f32 turnInput);
 void fn_802ABFBC(GameObject* obj, int state, PlayerState* inner);
-void fn_802AC32C(int p1, int p2, int p3);
+void playerUpdateLookAtTarget(int p1, int p2, int p3);
 void playerSetMovingAnims(int p1, int obj);
 int fn_802ADC08(GameObject* obj, int inner, int p3);
 void fn_802ADE80(GameObject* obj, int inner, int state);
@@ -10704,7 +10704,7 @@ int playerStateIdle(int obj, int state, f32 fv)
     }
     if (((ByteFlags*)((char*)inner + 0x3f0))->b20 == 0)
     {
-        fn_802AC32C(obj, state, inner);
+        playerUpdateLookAtTarget(obj, state, inner);
     }
     return 0;
 }
@@ -13213,7 +13213,7 @@ void fn_802ABFBC(GameObject* obj, int state, PlayerState* inner)
     }
 }
 
-void fn_802AC32C(int p1, int p2, int p3)
+void playerUpdateLookAtTarget(int p1, int p2, int p3)
 {
     void* near;
     int angle1;
