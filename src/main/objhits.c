@@ -4557,7 +4557,7 @@ void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 
     }
 }
 
-int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b) {
+static int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b) {
     f32 buf[4];
     f32 ratio;
     s16 lo;
@@ -4596,7 +4596,7 @@ int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b) {
     }
     return 0;
 }
-int characterTrackJointYaw(s16* curve, s16* state) {
+static int characterTrackJointYaw(s16* curve, s16* state) {
     f32 buf[4];
     f32 ratio;
     s16 lo;
@@ -4636,10 +4636,7 @@ int characterTrackJointYaw(s16* curve, s16* state) {
     return 0;
 }
 
-int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b);
-int characterTrackJointYaw(s16* curve, s16* state);
-
-void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val) {
+static void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val) {
     int masked;
     int flag;
 

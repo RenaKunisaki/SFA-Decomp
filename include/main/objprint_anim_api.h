@@ -7,6 +7,5 @@
 
 void objSoundUpdateMouth(GameObject* obj, ObjSoundState* state);
 void characterHeadLookCalm(GameObject* obj, s16* state, f32 value);
-void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val);
 
 #endif /* MAIN_OBJPRINT_ANIM_API_H_ */
