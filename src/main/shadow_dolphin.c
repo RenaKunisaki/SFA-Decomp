@@ -919,7 +919,7 @@ void playerShadowClearPositionOverride(GameObject* obj)
     modelState->flags &= ~0x2020;
 }
 
-void doNothing_80062A50(GameObject* obj, f32 x, f32 y, f32 z)
+void playerShadowSetPositionOverride(GameObject* obj, f32 x, f32 y, f32 z)
 {
 }
 
