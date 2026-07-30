@@ -35,6 +35,7 @@ void* gSfxTriggersData;
 
 SfxObjectChannel gSfxObjectChannels[0xC40 / sizeof(SfxObjectChannel)];
 
+static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* vector);
 
 static inline SfxObjectChannel* Sfx_FindFreeObjectChannel(void)
 {
@@ -888,7 +889,7 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
     }
 }
 
-void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
+static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
 {
     f32 ra;
     f32 x = v[0];

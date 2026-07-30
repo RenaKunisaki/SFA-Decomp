@@ -273,7 +273,6 @@ u32 audioIsChannelUnavailable(u32 mask);
 void audioFree(void* ptr);
 void* _audioAlloc(u32 size);
 s32 Music_GetActivePriority(void);
-void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* vector);
 f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta);
 int concatThreeStrings(char* dst, void* unused, const char* first, const char* second, const char* third);
 void AudioAramWriteCompleteCallback(u32 request);
