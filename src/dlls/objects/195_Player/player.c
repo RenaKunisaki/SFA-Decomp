@@ -2103,7 +2103,7 @@ int playerIsDead(GameObject* obj)
     return (inner->flags3F3 >> 1) & 1;
 }
 
-int fn_80296C5C(GameObject* player)
+int playerHasRevived(GameObject* player)
 {
     PlayerState* inner = player->extra;
     return (inner->flags3F3 >> 2) & 1;

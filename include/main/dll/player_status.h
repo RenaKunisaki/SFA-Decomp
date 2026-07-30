@@ -7,7 +7,7 @@ int playerGetMaxMagic(GameObject* playerObj);
 int playerGetMaxHealth(GameObject* playerObj);
 int playerGetCurHealth(GameObject* playerObj);
 int playerStatusIsPositive(GameObject* playerObj);
-int fn_80296C5C(GameObject* playerObj);
+int playerHasRevived(GameObject* playerObj);
 void playerSetIsDead(GameObject* playerObj, int isDead);
 void saveSetOverrideHealth(int health);
 
