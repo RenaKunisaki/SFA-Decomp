@@ -2137,7 +2137,6 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
     u8* slotp;
     u8* typeSlotp;
     f32* outp;
-    f32 *szp, *syp, *wzp, *wyp;
     f32 *edge1p, *edge2p, *vbp, *evecp;
     u8 found;
     u8* slotBase;
@@ -2211,10 +2210,6 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
     sp2 = startPos;
     slotp = slots;
     outp = slots;
-    wyp = &we[1];
-    wzp = &we[2];
-    szp = &ws[2];
-    syp = &ws[1];
     edge1p = edge1;
     edge2p = edge2;
     vbp = vb;
@@ -2230,7 +2225,7 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
         svFromp[2] = sp2[2];
         radius = *(f32*)(slotp + 0x40);
         typeSlotp = slotBase + i;
-        type = slotBase[i + 0x54];
+        type = typeSlotp[0x54];
         maxStep = radius + lbl_803DB660;
         rdatap[0] = radius;
         rdatap[1] = radius * radius;
@@ -2247,8 +2242,9 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
             {
                 if (desc->object != NULL)
                 {
-                    Matrix_TransformPoint(desc->alternateMatrix, svFromp[0], svFromp[1], svFromp[2], &ws[0], syp, szp);
-                    Matrix_TransformPoint(desc->currentMatrix, cur[0], cur[1], cur[2], &we[0], wyp, wzp);
+                    Matrix_TransformPoint(desc->alternateMatrix, svFromp[0], svFromp[1], svFromp[2], &ws[0],
+                                          &ws[1], &ws[2]);
+                    Matrix_TransformPoint(desc->currentMatrix, cur[0], cur[1], cur[2], &we[0], &we[1], &we[2]);
                 }
                 else
                 {
@@ -2256,8 +2252,8 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                     ws[1] = svFromp[1];
                     ws[2] = svFromp[2] - offZ;
                     we[0] = cur[0] - offX;
-                    wyp[0] = cur[1];
-                    wzp[0] = cur[2] - offZ;
+                    we[1] = cur[1];
+                    we[2] = cur[2] - offZ;
                 }
                 PSVECSubtract((Vec*)we, (Vec*)ws, (Vec*)delta);
                 mag = PSVECMag((Vec*)delta);
