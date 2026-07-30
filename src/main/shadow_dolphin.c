@@ -63,7 +63,6 @@
 #include "main/tex_dolphin.h"
 #include "string.h"
 #include "main/track_dolphin_sky_api.h"
-#include "main/track_dolphin_sky_api.h"
 
 int gShadowVolumeBuffer;
 void* gShadowVolumeBuffers[2];
@@ -818,7 +817,7 @@ u8 objShadowUpdateAlpha(GameObject* obj, int delta)
 
 void shadowVolumeBeginFrame(void)
 {
-    void* bufPtr;
+    void* selectedBuffer;
     s16 zero;
     if ((s8)gShadowVolumesDirty == 0)
     {
@@ -831,12 +830,12 @@ void shadowVolumeBeginFrame(void)
     gShadowVolumeBufferSelect = 1 - gShadowVolumeBufferSelect;
     lbl_803DCEED = 1 - lbl_803DCEED;
     lbl_803DCEEE = 1 - lbl_803DCEEE;
-    bufPtr = gShadowVolumeBuffers[gShadowVolumeBufferSelect];
-    lbl_803DCF08 = bufPtr;
+    selectedBuffer = gShadowVolumeBuffers[gShadowVolumeBufferSelect];
+    lbl_803DCF08 = selectedBuffer;
     lbl_803DCEF4 = zero;
     lbl_803DCF10 = lbl_803DCF20;
     lbl_803DCF18 = lbl_803DCF1C;
-    lbl_803DCF04 = bufPtr;
+    lbl_803DCF04 = selectedBuffer;
     lbl_803DCF14 = lbl_803DCF1C;
     lbl_803DCF0C = lbl_803DCF20;
 }
