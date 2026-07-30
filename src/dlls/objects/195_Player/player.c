@@ -278,7 +278,7 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt);
 void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2);
 void playerAnimate(GameObject* obj, int state, f32 fv);
 void playerInitFuncPtrs(void);
-int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb);
+int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb);
 int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag);
 int playerStateClimbLedge(int obj, int state, f32 fv);
 int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag);
@@ -11226,7 +11226,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             {
                 continue;
             }
-            switch (fn_802A87CC((GameObject*)obj, (char*)&buf, (f32*)(state + 0x5a8), end, hd, fv))
+            switch (playerBuildWallTransitionProbe((GameObject*)obj, (char*)&buf, (f32*)(state + 0x5a8), end, hd, fv))
             {
             case 4:
                 return 8;
@@ -11530,7 +11530,7 @@ int playerBuildWallPlaneProbe(int p1, int p2, void* src, f32* vec, int out, int 
     return 0;
 }
 
-int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
+int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
 {
     f32* dp;
     char* cp;
