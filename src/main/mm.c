@@ -533,7 +533,7 @@ int mmGetRegionForPtr(u8* ptr)
 void mmFreeDeferred(void* p)
 {
     DeferredFree* stack;
-    if (gMmDeferredFreeCount == 0x7d0)
+    if (gMmDeferredFreeCount == MM_DEFERRED_FREE_CAPACITY)
     {
         waitNextFrame();
         GXFlush_(1, 0);
