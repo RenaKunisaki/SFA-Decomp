@@ -813,7 +813,6 @@ void seqPairTableSort(SeqSortPair* arr, int n)
     {
     }
 }
-void seqPairTableSort(SeqSortPair* arr, int n);
 
 int seqPairTableLookup(void* entries, int count, int key)
 {
