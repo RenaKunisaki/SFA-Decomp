@@ -566,7 +566,7 @@ void objfx_spawnDirectionalBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode,
 
 #define OBJ_FX_PI 3.1415927f
 
-void objfx_spawnArcedBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, u8 chance, f32 angBase, f32 lo, f32 hi,
+void objfx_spawnArcedBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, int chance, f32 angBase, f32 lo, f32 hi,
                            void* origin, int flags)
 {
     ObjFxParticleParams params;
