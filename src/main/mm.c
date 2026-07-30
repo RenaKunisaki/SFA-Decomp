@@ -179,34 +179,34 @@ extern MmStore* gMmStoreArray[MM_STORE_COUNT];
 
 void* mmAllocateFromFBMemoryStore(int handle, int size)
 {
-    int sz = size;
-    MmStore* found;
-    int i;
-    found = NULL;
-    i = 0;
-    while (i < 0x20)
+    int requestedSize = size;
+    MmStore* store;
+    int storeIndex;
+    store = NULL;
+    storeIndex = 0;
+    while (storeIndex < MM_STORE_COUNT)
     {
-        if (gMmStoreArray[i] != NULL && handle == gMmStoreArray[i]->handle)
+        if (gMmStoreArray[storeIndex] != NULL && handle == gMmStoreArray[storeIndex]->handle)
         {
-            found = gMmStoreArray[i];
+            store = gMmStoreArray[storeIndex];
             break;
         }
-        if (++i == 0x20)
+        if (++storeIndex == MM_STORE_COUNT)
         {
             OSReport(sMmAllocateFromFBMemoryStoreMissingHandleError);
             return 0;
         }
     }
-    if (found != NULL)
+    if (store != NULL)
     {
-        size = found->size - ((int)found->ptrCurrent - (int)found->ptrStore);
-        if (size < sz)
+        size = store->size - ((int)store->ptrCurrent - (int)store->ptrStore);
+        if (size < requestedSize)
         {
             OSReport(sMmAllocateFromFBMemoryStoreSpaceError);
             return 0;
         }
-        found->ptrCurrent = (char*)found->ptrCurrent + sz;
-        return (void*)((int)found->ptrCurrent - sz);
+        store->ptrCurrent = (char*)store->ptrCurrent + requestedSize;
+        return (void*)((int)store->ptrCurrent - requestedSize);
     }
     return 0;
 }
