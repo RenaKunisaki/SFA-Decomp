@@ -13,7 +13,6 @@ typedef struct SeqObj2State {
 STATIC_ASSERT(offsetof(SeqObj2State, flags) == 0x0);
 STATIC_ASSERT(sizeof(SeqObj2State) == SEQ_OBJ2_STATE_SIZE);
 
-int SeqObj2_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate);
 int SeqObj2_getExtraSize(void);
 int SeqObj2_getObjectTypeId(void);
 void SeqObj2_free(GameObject* obj);
