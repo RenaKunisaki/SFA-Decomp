@@ -3477,56 +3477,41 @@ int expgfx_addToTable(u32 resourceHandle, u32 sourceId, u32 attachedTableKey, s1
     return EXPGFX_INVALID_TABLE_INDEX;
 }
 
-
-int expgfx_updateSourceFrameFlags(void* sourceObject)
-{
+int expgfx_updateSourceFrameFlags(void* sourceObject) {
     s16 signedPoolIndex;
     int result;
-    ObjAnimComponent** poolSourceIds[1];
+    ObjAnimComponent** poolSourceIds;
     int poolIndex;
     u8* flagWalk;
     result = EXPGFX_SOURCE_FRAME_STATE_NONE;
     lbl_803DD253 = 0;
     poolIndex = 0;
-    poolSourceIds[0] = gExpgfxTrackedPoolSourceIds;
+    poolSourceIds = gExpgfxTrackedPoolSourceIds;
     flagWalk = gExpgfxStaticPoolFrameFlags;
 
-    for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds[0]++, flagWalk++, poolIndex++)
-    {
+    for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds++, flagWalk++, poolIndex++) {
         if ((((ObjAnimComponent*)sourceObject)->romDefNo == EXPGFX_SOURCE_SEQID_MATCH_ALL) ||
-            (*poolSourceIds[0] == sourceObject))
-        {
+            (*poolSourceIds == sourceObject)) {
             s64 frameBit;
 
             signedPoolIndex = poolIndex;
             frameBit = 1 << (signedPoolIndex >> 1);
-            if ((frameBit & gExpgfxTrackedSourceFrameMasks[signedPoolIndex & 1]) != 0)
-            {
+            if ((frameBit & gExpgfxTrackedSourceFrameMasks[signedPoolIndex & 1]) != 0) {
                 *flagWalk = EXPGFX_SOURCE_FRAME_STATE_B;
-                if ((s8)result == EXPGFX_SOURCE_FRAME_STATE_A)
-                {
+                if ((s8)result == EXPGFX_SOURCE_FRAME_STATE_A) {
                     result = EXPGFX_SOURCE_FRAME_STATE_MIXED;
-                }
-                else
-                {
+                } else {
                     result = EXPGFX_SOURCE_FRAME_STATE_B;
                 }
-            }
-            else
-            {
+            } else {
                 *flagWalk = EXPGFX_SOURCE_FRAME_STATE_A;
-                if ((s8)result == EXPGFX_SOURCE_FRAME_STATE_B)
-                {
+                if ((s8)result == EXPGFX_SOURCE_FRAME_STATE_B) {
                     result = EXPGFX_SOURCE_FRAME_STATE_MIXED;
-                }
-                else
-                {
+                } else {
                     result = EXPGFX_SOURCE_FRAME_STATE_A;
                 }
             }
-        }
-        else
-        {
+        } else {
             *flagWalk = EXPGFX_SOURCE_FRAME_STATE_NONE;
         }
     }
