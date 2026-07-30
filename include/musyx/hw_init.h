@@ -8,7 +8,6 @@ typedef u32 (*SndMessageCallback)(u32 message, u32 userValue);
 
 extern SndMessageCallback salMessageCallback;
 
-void snd_handle_irq(void);
 int hwInit(u32 *sampleRate, u16 numVoices, u16 numStudios, u32 flags);
 void hwExit(void);
 void hwSetTimeOffset(int value);
