@@ -33,33 +33,26 @@ int isSpace(u32 c);
 static inline int gameTextIdExists(int id);
 static inline int textCountChars(char* lineStr);
 
-
-int isSpace(u32 c)
-{
+int isSpace(u32 c) {
     int result = 0;
 
-    if (c == 0x20 || c == 0x3000 || c == 0x303F)
-    {
+    if (c == 0x20 || c == 0x3000 || c == 0x303F) {
         result = 1;
     }
     return result;
 }
-static inline int gameTextIdExists(int id)
-{
+static inline int gameTextIdExists(int id) {
     GlyphEntry* e;
     int count;
     int i;
 
-    if (gameTextFonts->mode != 2)
-    {
+    if (gameTextFonts->mode != 2) {
         return 0;
     }
     e = gameTextFonts->entries;
     count = gameTextFonts->count;
-    for (i = 0; i != count; i++)
-    {
-        if (e->id == id)
-        {
+    for (i = 0; i != count; i++) {
+        if (e->id == id) {
             return 1;
         }
         e++;
@@ -67,8 +60,7 @@ static inline int gameTextIdExists(int id)
     return 0;
 }
 
-static inline int textCountChars(char* lineStr)
-{
+static inline int textCountChars(char* lineStr) {
     int charCount;
     int byteOffset;
     u32 ch;
@@ -76,53 +68,41 @@ static inline int textCountChars(char* lineStr)
 
     charCount = 0;
     byteOffset = 0;
-    if (lineStr == NULL)
-    {
+    if (lineStr == NULL) {
         return 0;
     }
-    while ((ch = utf8GetNextChar((u8*)(lineStr + byteOffset), &charLen)) != 0)
-    {
+    while ((ch = utf8GetNextChar((u8*)(lineStr + byteOffset), &charLen)) != 0) {
         byteOffset += charLen;
-        if (ch >= 0xe000 && ch <= 0xf8ff)
-        {
+        if (ch >= 0xe000 && ch <= 0xf8ff) {
             SpecialGlyph* g = gGameTextCtrlCodeArgCounts;
             int n;
             int val = 0;
-            for (n = 46; n-- != 0;)
-            {
-                if (g->key == ch)
-                {
+            for (n = 46; n-- != 0;) {
+                if (g->key == ch) {
                     val = g->val;
                     break;
                 }
                 g++;
             }
             byteOffset += val * 2;
-        }
-        else
-        {
+        } else {
             charCount++;
         }
     }
     return charCount;
 }
 
-char* gameStrcpy(char* dst, char* src)
-{
+static char* gameStrcpy(char* dst, char* src) {
     u32 ch;
     int len;
-    do
-    {
+    do {
         ch = utf8GetNextChar((u8*)src, &len);
-        while (len-- != 0)
-        {
+        while (len-- != 0) {
             *dst++ = *src++;
         }
-        if (ch >= 0xe000 && ch <= 0xf8ff)
-        {
+        if (ch >= 0xe000 && ch <= 0xf8ff) {
             len = getControlCharLen(ch) * 2;
-            while (len-- != 0)
-            {
+            while (len-- != 0) {
                 *dst++ = *src++;
             }
         }
@@ -130,13 +110,11 @@ char* gameStrcpy(char* dst, char* src)
     return dst - 1;
 }
 
-int utf8GetNextChar(u8* str, int* outLen)
-{
+int utf8GetNextChar(u8* str, int* outLen) {
     u8 first = *str;
     int cls = gUtf8CharClassTable[first];
     u32 acc = 0;
-    switch (cls)
-    {
+    switch (cls) {
     case 5:
         str++;
         acc = first << 6;
@@ -160,20 +138,15 @@ int utf8GetNextChar(u8* str, int* outLen)
     *outLen = cls + 1;
     return acc - gUtf8ClassOffsetTable[cls];
 }
-int gameTextGetTaskText(int id, int* outTextSeqId, int* outDirId)
-{
+int gameTextGetTaskText(int id, int* outTextSeqId, int* outDirId) {
     int i;
     TaskTextEntry* e = gTaskTextTable;
-    for (i = 0; i < 0x7a; i++)
-    {
-        if (e->objSeqId == id)
-        {
-            if (outTextSeqId != NULL)
-            {
+    for (i = 0; i < 0x7a; i++) {
+        if (e->objSeqId == id) {
+            if (outTextSeqId != NULL) {
                 *outTextSeqId = e->textSeqId;
             }
-            if (outDirId != NULL)
-            {
+            if (outDirId != NULL) {
                 *outDirId = e->dirId;
             }
             return 1;
@@ -183,20 +156,16 @@ int gameTextGetTaskText(int id, int* outTextSeqId, int* outDirId)
     return 0;
 }
 
-void gameTextShowStr(char* text, int box, int cursorX, int cursorY)
-{
+void gameTextShowStr(char* text, int box, int cursorX, int cursorY) {
     int i;
     GameTextSlot* e;
     char* buf;
-    if (gameTextDrawFunc != NULL)
-    {
+    if (gameTextDrawFunc != NULL) {
         TextSlot* slot = (TextSlot*)gTextBoxes + box;
         slot->cursorX = cursorX;
         slot->cursorY = cursorY;
         gameTextRenderStrs(text, box);
-    }
-    else
-    {
+    } else {
         i = gGameTextCommandCount++;
         e = &gGameTextCommandSlots[i];
         e->opcode = 7;
@@ -209,8 +178,7 @@ void gameTextShowStr(char* text, int box, int cursorX, int cursorY)
     }
 }
 
-void gameTextRenderStrs(char* str, int boxIdx)
-{
+void gameTextRenderStrs(char* str, int boxIdx) {
     TextSlot* slot = (TextSlot*)gTextBoxes + boxIdx;
     char** lines;
     int count;
@@ -218,38 +186,29 @@ void gameTextRenderStrs(char* str, int boxIdx)
     int i;
     int closeAtEnd = 0;
 
-    if (lbl_803DC9C0 != 1)
-    {
+    if (lbl_803DC9C0 != 1) {
         slot->alignment = slot->alignH;
-        if (gGameTextMeasureOnly == 0)
-        {
+        if (gGameTextMeasureOnly == 0) {
             gameTextDrawBox(NULL, (int)str, slot);
         }
     }
     lines = gameTextWrapLines(str, (f32)(u32)slot->width, slot->scale, &count, &lineH);
-    if (lines == NULL)
-    {
+    if (lines == NULL) {
         slot->cursorY = (s16)(lineH * count + slot->cursorY);
         return;
     }
-    if (gameTextDrawFunc != NULL)
-    {
+    if (gameTextDrawFunc != NULL) {
         gxSetScissorRect(0, 0, 0, 0, 0x280, 0x1e0);
-    }
-    else if (gGameTextMeasureOnly == 0)
-    {
+    } else if (gGameTextMeasureOnly == 0) {
         gxSetScissorRect(0, 0, slot->x, slot->y, slot->x + slot->width, slot->y + slot->height);
     }
     gGameTextScale = slot->scale;
-    for (i = 0; i < count; i++)
-    {
-        if (i == count - 1 && slot->alignment == 3)
-        {
+    for (i = 0; i < count; i++) {
+        if (i == count - 1 && slot->alignment == 3) {
             slot->alignment = 0;
             closeAtEnd = 1;
         }
-        if (gGameTextShadowEnabled == 1 && gGameTextMeasureOnly == 0)
-        {
+        if (gGameTextShadowEnabled == 1 && gGameTextMeasureOnly == 0) {
             u8 save7 = gGameTextColorR;
             u8 save6 = gGameTextColorG;
             u8 save5 = gGameTextColorB;
@@ -265,28 +224,22 @@ void gameTextRenderStrs(char* str, int boxIdx)
         }
         textRenderStr(lines[i], slot, slot->cursorX, slot->cursorY, lineH, 0);
         slot->cursorY = (s16)((f32)slot->cursorY + lineH);
-        if (closeAtEnd)
-        {
+        if (closeAtEnd) {
             slot->alignment = 3;
         }
     }
-    if (gGameTextMeasureOnly == 0)
-    {
+    if (gGameTextMeasureOnly == 0) {
         Camera_ApplyCurrentViewport(NULL);
     }
 }
 
-void gameTextAppendStr(char* str, int box)
-{
+void gameTextAppendStr(char* str, int box) {
     int i;
     GameTextSlot* e;
     char* buf;
-    if (gameTextDrawFunc != NULL)
-    {
+    if (gameTextDrawFunc != NULL) {
         gameTextRenderStrs(str, box);
-    }
-    else
-    {
+    } else {
         i = gGameTextCommandCount++;
         e = &gGameTextCommandSlots[i];
         e->opcode = 6;
@@ -297,8 +250,7 @@ void gameTextAppendStr(char* str, int box)
     }
 }
 
-void gameTextShowTimeStr(char* str)
-{
+void gameTextShowTimeStr(char* str) {
     int i;
     GameTextSlot* e;
     char* buf;
@@ -309,7 +261,6 @@ void gameTextShowTimeStr(char* str)
     gGameTextCommandStringCursor = gameStrcpy(buf, str) + 1;
     e->arg0 = (int)buf;
 }
-
 
 u8 gUtf8CharClassTable[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -698,7 +649,6 @@ SpecialGlyph gGameTextCtrlCodeArgCounts[46] = {
     {0x0000F8FF, 0x00000004}, {0x0000F8FF, 0x00000004}, {0x0000F8FF, 0x00000004}, {0x0000F8FF, 0x00000004},
     {0x0000F8FF, 0x00000004}, {0x0000F8FF, 0x00000004},
 };
-
 
 TaskTextEntry gTaskTextTable[208] = {
     {0x0004, 0x0029, 0x00D1}, {0x0006, 0x0029, 0x04F7}, {0x0009, 0x0029, 0x017C}, {0x000B, 0x0029, 0x004B},
