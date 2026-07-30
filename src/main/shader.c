@@ -1136,7 +1136,7 @@ MapTextureOverride* mapTextureOverrideGetEntry(int idx)
     return &gMapTextureOverrides[idx];
 }
 
-s16* return0_80056694(MapBlockData* wpad0, int wpad1)
+s16* mapBlockFindTextureOverrideIndex(MapBlockData* block, int textureSlot)
 {
     return NULL;
 }
