@@ -89,7 +89,7 @@ extern RingBufferQueue gVideoFlipQueue;
 
 void videoSwapFrameBuffers(u32 retraceCount);
 void gpuErrorHandler(u32 retraceCount);
-void videoFn_800499e8(void);
+void videoBreakPointCallback(void);
 
 extern Mtx44 hudMatrix;
 
@@ -137,7 +137,7 @@ void videoInit(void* unusedRenderMode, int unusedArg)
     OSInitThreadQueue((OSThreadQueue*)&gVideoFlipWaitQueue);
     VISetPreRetraceCallback(videoSwapFrameBuffers);
     VISetPostRetraceCallback(gpuErrorHandler);
-    GXSetBreakPtCallback(videoFn_800499e8);
+    GXSetBreakPtCallback(videoBreakPointCallback);
     GXSetViewport(0.0f, 0.0f, gRenderModeObj->fbWidth, gRenderModeObj->xfbHeight, 0.0f,
                   1.0f);
     GXSetFieldMode(gRenderModeObj->field_rendering, gRenderModeObj->xfbHeight < gRenderModeObj->viHeight);

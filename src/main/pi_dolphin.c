@@ -4147,7 +4147,7 @@ void videoSwapFrameBuffers(u32 retraceCount)
     }
 }
 
-void videoFn_800499e8(void)
+void videoBreakPointCallback(void)
 {
     char peek[12];
     int tok[3];
