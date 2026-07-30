@@ -11,7 +11,6 @@ void PushReadedBuffer2(OSMessage msg);
 OSMessage PopReadedBuffer2(void);
 void PushFreeReadBuffer(OSMessage msg);
 OSMessage PopReadedBuffer(void);
-void* THPRead_Reader(void* unused);
 void ReadThreadCancel(void);
 void ReadThreadStart(void);
 BOOL CreateReadThread(OSPriority priority);

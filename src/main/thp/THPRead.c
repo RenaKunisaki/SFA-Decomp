@@ -41,8 +41,7 @@ OSMessage PopReadedBuffer(void)
     return msg;
 }
 
-void* THPRead_Reader(void* unused)
-{
+static void* THPRead_Reader(void* unused) {
     AttractMovieReadBuffer* req;
     u32 readOff;
     u32 readSize;
@@ -54,8 +53,7 @@ void* THPRead_Reader(void* unused)
     readOff = gAttractMoviePlayer.initOffset;
     readSize = gAttractMoviePlayer.initReadSize;
 
-    while (1)
-    {
+    while (1) {
         OSMessage msgVal;
         s32 res;
 
@@ -63,14 +61,11 @@ void* THPRead_Reader(void* unused)
         req = (AttractMovieReadBuffer*)msgVal;
 
         res = DVDReadPrio(&gAttractMoviePlayer.fileInfo, req->ptr, readSize, readOff, 2);
-        if (res != (s32)readSize)
-        {
-            if (res == -1)
-            {
+        if (res != (s32)readSize) {
+            if (res == -1) {
                 gAttractMoviePlayer.dvdError = -1;
             }
-            if (i == 0)
-            {
+            if (i == 0) {
                 PrepareReady(0);
             }
             OSSuspendThread((OSThread*)(base + 0x1000));
@@ -86,14 +81,10 @@ void* THPRead_Reader(void* unused)
             u32 cols = gAttractMoviePlayer.header.mNumFrames;
             u32 bOff = gAttractMoviePlayer.initReadFrame;
             u32 pos = (i + bOff) % cols;
-            if (pos == cols - 1)
-            {
-                if (gAttractMoviePlayer.playFlags & 1)
-                {
+            if (pos == cols - 1) {
+                if (gAttractMoviePlayer.playFlags & 1) {
                     readOff = gAttractMoviePlayer.header.mMovieDataOffsets;
-                }
-                else
-                {
+                } else {
                     OSSuspendThread((OSThread*)(base + 0x1000));
                 }
             }
