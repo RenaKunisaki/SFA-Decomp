@@ -37,7 +37,7 @@ int EmissionController_IsLingering(GameObject* obj);
 int playerGetFlags3F0Bit5(GameObject* obj);
 u32 playerGetStateFlag310(GameObject* obj);
 u8 playerIsPushingObject(GameObject* player, GameObject* otherObj, u8* outDirection);
-int fn_80296464(GameObject* player);
+int playerIsSequenceRenderSuppressed(GameObject* player);
 int playerGetSurfaceType(GameObject* player);
 void playerAddMaxMagic(GameObject* player, int delta);
 void playerDisableHitDetect(GameObject* player);

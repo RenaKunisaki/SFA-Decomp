@@ -476,7 +476,7 @@ void warpstone_render(GameObject* obj, int renderArg2, int renderArg3, int rende
     if (visibleValue != 0) {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
         player = Obj_GetPlayerObject();
-        if (player != NULL && fn_80296464(player) != 0) {
+        if (player != NULL && playerIsSequenceRenderSuppressed(player) != 0) {
             model = (int*)Obj_GetActiveModel(player);
             *(u16*)((char*)model + 24) = (u16)(*(u16*)((char*)model + 24) & ~0x8);
             ObjPath_GetPointWorldPosition(obj, ((WarpStoneState*)state)->pathPointIndex, &x, &y, &z, 0);

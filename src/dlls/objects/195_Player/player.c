@@ -1693,7 +1693,7 @@ int EmissionController_IsLingering(GameObject* obj)
     return inner->emissionState;
 }
 
-int fn_80296464(GameObject* player)
+int playerIsSequenceRenderSuppressed(GameObject* player)
 {
     PlayerState* inner = player->extra;
     return inner->flags360 & 1;
