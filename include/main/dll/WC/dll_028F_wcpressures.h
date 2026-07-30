@@ -9,13 +9,10 @@
 
 #define WCPRESSURES_TRACKED_COUNT 10
 
-typedef struct WCPressuresSetup
-{
-    union
-    {
+typedef struct WCPressuresSetup {
+    union {
         ObjPlacement base;
-        struct
-        {
+        struct {
             u8 pad00[8];
             f32 x;
             f32 y;
@@ -32,14 +29,12 @@ typedef struct WCPressuresSetup
     s16 activateBit;
 } WCPressuresSetup;
 
-typedef struct WCPressuresSavedPos
-{
+typedef struct WCPressuresSavedPos {
     f32 x;
     f32 z;
 } WCPressuresSavedPos;
 
-typedef struct WCPressuresState
-{
+typedef struct WCPressuresState {
     s8 pressTimer;
     s8 mode;
     u8 pad02[2];
