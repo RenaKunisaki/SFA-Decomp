@@ -101,7 +101,7 @@ STATIC_ASSERT(sizeof(StackPool) == 0x20);
 
 typedef struct MmGlobalLayout
 {
-    void* stores[MM_STORE_COUNT];
+    MmStore* stores[MM_STORE_COUNT];
     DeferredFree deferred[MM_DEFERRED_FREE_CAPACITY];
     MmRegion regions[MM_REGION_CAPACITY];
 } MmGlobalLayout;
