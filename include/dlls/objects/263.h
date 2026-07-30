@@ -90,7 +90,6 @@ STATIC_ASSERT(offsetof(WindLift107State, unk27) == 0x27);
 STATIC_ASSERT(offsetof(WindLift107State, pad28) == 0x28);
 STATIC_ASSERT(sizeof(WindLift107State) == WINDLIFT107_STATE_SIZE);
 
-void windLift107_finishSpitBurst(GameObject* obj, f32 playerDistance);
 int windLift107_getExtraSize(void);
 int windLift107_getObjectTypeId(void);
 void windLift107_free(GameObject* obj);
