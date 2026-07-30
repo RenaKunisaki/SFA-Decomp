@@ -841,7 +841,7 @@ void init(void)
     initLoadingScreenTextures();
     mmInit();
     testAndSet_onlyUseHeap3(1);
-    gxTransformFn_8004a83c();
+    gxDisableGpuHangRecovery();
     testAndSet_onlyUseHeap3(0);
     Camera_InitState();
     testAndSet_onlyUseHeap3(1);

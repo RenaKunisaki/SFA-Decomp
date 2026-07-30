@@ -389,7 +389,7 @@ void gxSetGPMetricsEnabled(int enabled)
         GXWGFifo.u32 = 0;
     }
 }
-void gxTransformFn_8004a83c(void)
+void gxDisableGpuHangRecovery(void)
 {
     gGpuHangRecoveryEnabled = 0;
     gxSetGPMetricsEnabled(0);
