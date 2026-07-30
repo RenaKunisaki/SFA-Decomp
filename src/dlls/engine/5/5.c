@@ -116,7 +116,7 @@ extern f32 gSkySunDirection[];
 extern f32 gSkyMoonDirection[];
 extern u8 gSkyColorBlendTable[];
 extern int lbl_803E8458;
-int return0_80088758(void)
+int skyReservedReturnZeroB(void)
 {
     return 0x0;
 }
@@ -135,11 +135,11 @@ void skySetDayNo(int value)
     mainSetBits(GAMEBIT_ENV_dayNo, (u8)value);
 }
 
-void doNothing_800887C4(void)
+void skyReservedNopC(void)
 {
 }
 
-void doNothing_800887C8(void)
+void skyReservedNopB(void)
 {
 }
 
@@ -333,21 +333,21 @@ typedef struct SkyDllInterface {
     ObjectDescriptorCallback render;
     ObjectDescriptorCallback getTimeOfDay;
     ObjectDescriptorCallback getClockTime;
-    ObjectDescriptorCallback nop1;
+    ObjectDescriptorCallback reservedNopA;
     ObjectDescriptorCallback getTransitionTimer;
     ObjectDescriptorCallback getSunPosition;
     ObjectDescriptorCallback setTimeOfDay;
-    ObjectDescriptorCallback return0;
+    ObjectDescriptorCallback reservedReturnZeroA;
     ObjectDescriptorCallback timeToDayHourMinute;
     ObjectDescriptorCallback getVisibility;
     ObjectDescriptorCallback renderTimeOfDayBackdrop;
     ObjectDescriptorCallback getCurrentTextureColor;
     ObjectDescriptorCallback getCurrentAmbientAndLightColors;
-    ObjectDescriptorCallback nop2;
-    ObjectDescriptorCallback nop3;
+    ObjectDescriptorCallback reservedNopB;
+    ObjectDescriptorCallback reservedNopC;
     ObjectDescriptorCallback setDayNo;
     ObjectDescriptorCallback getDayNo;
-    ObjectDescriptorCallback return0b;
+    ObjectDescriptorCallback reservedReturnZeroB;
     ObjectDescriptorCallback slot15;
     ObjectDescriptorCallback slot16;
     ObjectDescriptorCallback slot17;
@@ -367,21 +367,21 @@ SkyDllInterface sky_funcs = {
     (ObjectDescriptorCallback)renderSky,
     (ObjectDescriptorCallback)getTimeOfDay,
     (ObjectDescriptorCallback)skyGetClockTime,
-    (ObjectDescriptorCallback)doNothing_8008B8B0,
+    (ObjectDescriptorCallback)skyReservedNopA,
     (ObjectDescriptorCallback)skyGetTimer,
     (ObjectDescriptorCallback)getSunPos,
     (ObjectDescriptorCallback)pDll_Sky_setTimeOfDay_nop,
-    (ObjectDescriptorCallback)return0_8008B7E8,
+    (ObjectDescriptorCallback)skyReservedReturnZeroA,
     (ObjectDescriptorCallback)skyTimeToDayHourMinute,
     (ObjectDescriptorCallback)skyGetVisibility,
     (ObjectDescriptorCallback)skyRenderTimeOfDayBackdrop,
     (ObjectDescriptorCallback)skyGetCurrentTextureColor,
     (ObjectDescriptorCallback)skyGetCurrentAmbientAndLightColors,
-    (ObjectDescriptorCallback)doNothing_800887C8,
-    (ObjectDescriptorCallback)doNothing_800887C4,
+    (ObjectDescriptorCallback)skyReservedNopB,
+    (ObjectDescriptorCallback)skyReservedNopC,
     (ObjectDescriptorCallback)skySetDayNo,
     (ObjectDescriptorCallback)skyGetDayNo,
-    (ObjectDescriptorCallback)return0_80088758,
+    (ObjectDescriptorCallback)skyReservedReturnZeroB,
 };
 
 void skySetSlotFlag80(int flags, u8 mode)
@@ -1770,7 +1770,7 @@ void skyTimeToDayHourMinute(f32 time, s16* days, s16* hours, s16* minutes)
     *minutes = remaining / 0x3c;
 }
 
-int return0_8008B7E8(void)
+int skyReservedReturnZeroA(void)
 {
     return 0x0;
 }
@@ -1825,7 +1825,7 @@ void skyGetTimer(int* outTimer)
     *outTimer = ((SkyState*)sky)->timer;
 }
 
-void doNothing_8008B8B0(void)
+void skyReservedNopA(void)
 {
 }
 
