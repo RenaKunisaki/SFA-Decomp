@@ -193,7 +193,7 @@ int playerState28(GameObject* obj, int state, f32 fv);
 void playerStagedResetMoveHitState(GameObject* obj);
 int playerState27(GameObject* obj, int state, f32 fv);
 void playerStagedEndIceSpellAndSettleHeading(GameObject* obj, int p2);
-int playerState25(int obj, int state, f32 fv);
+int playerState25(int obj, int state, f32 updateRate);
 int playerState24(GameObject* obj, int state, f32 fv);
 int playerState23(GameObject* obj, int state, f32 fv);
 int playerState22(GameObject* obj, int state);
@@ -5190,68 +5190,70 @@ void playerStagedEndIceSpellAndSettleHeading(GameObject* obj, int p2)
     }
 }
 
-int playerState25(int obj, int state, f32 fv)
+int playerState25(int obj, int state, f32 updateRate)
 {
     PlayerState* inner = ((GameObject*)obj)->extra;
-    f32 ratio, s, c, vx, t0, curveOut;
-    f32 vy;
-    int r;
+    f32 inputScale, sinYaw, cosYaw, targetVelX, moveProgress, moveSpeed;
+    f32 targetVelZ;
+    int result;
 
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
         gPlayerModelChainStyle = 5;
     }
-    r = playerState28((GameObject*)obj, state, fv);
-    if (r != 0)
+    result = playerState28((GameObject*)obj, state, updateRate);
+    if (result != 0)
     {
-        return r;
+        return result;
     }
     {
-        f32 x = (((PlayerState*)state)->baddie.inputMagnitude - 0.2f) / 0.8f;
-        ratio = (x < 0.0f) ? 0.0f : ((x > 1.0f) ? 1.0f : x);
-    }
-    {
-        f32 ang = 3.1415927f * (f32)(int)inner->inputHeading / 32768.0f;
-        vx = ratio * -mathSinf(ang);
-        vx = inner->maxSpeed * vx;
+        f32 normalizedInput = (((PlayerState*)state)->baddie.inputMagnitude - 0.2f) / 0.8f;
+        inputScale = (normalizedInput < 0.0f) ? 0.0f : ((normalizedInput > 1.0f) ? 1.0f : normalizedInput);
     }
     {
         f32 ang = 3.1415927f * (f32)(int)inner->inputHeading / 32768.0f;
-        vy = inner->maxSpeed * (ratio * -mathCosf(ang));
+        targetVelX = inputScale * -mathSinf(ang);
+        targetVelX = inner->maxSpeed * targetVelX;
     }
     {
-        f32 a = interpolate(vx - inner->smoothVelX, 0.25f, timeDelta);
-        f32 b = interpolate(vy - inner->smoothVelZ, 0.25f, timeDelta);
-        inner->smoothVelX += a;
-        inner->smoothVelZ += b;
+        f32 ang = 3.1415927f * (f32)(int)inner->inputHeading / 32768.0f;
+        targetVelZ = inner->maxSpeed * (inputScale * -mathCosf(ang));
+    }
+    {
+        f32 deltaX = interpolate(targetVelX - inner->smoothVelX, 0.25f, timeDelta);
+        f32 deltaZ = interpolate(targetVelZ - inner->smoothVelZ, 0.25f, timeDelta);
+        inner->smoothVelX += deltaX;
+        inner->smoothVelZ += deltaZ;
     }
     ((PlayerState*)state)->baddie.animSpeedC =
         sqrtf(inner->smoothVelX * inner->smoothVelX + inner->smoothVelZ * inner->smoothVelZ);
     {
-        f32 v = ((PlayerState*)state)->baddie.animSpeedC;
-        f32 lo = *(f32*)inner->moveParams;
+        f32 animSpeed = ((PlayerState*)state)->baddie.animSpeedC;
+        f32 minSpeed = *(f32*)inner->moveParams;
         ((PlayerState*)state)->baddie.animSpeedC =
-            (((PlayerState*)state)->baddie.animSpeedC < lo)
-                ? lo
-                : ((v > inner->maxSpeed) ? inner->maxSpeed : ((PlayerState*)state)->baddie.animSpeedC);
+            (((PlayerState*)state)->baddie.animSpeedC < minSpeed)
+                ? minSpeed
+                : ((animSpeed > inner->maxSpeed) ? inner->maxSpeed : ((PlayerState*)state)->baddie.animSpeedC);
     }
     {
         f32 ang = 3.1415927f * (f32)inner->targetYaw / 32768.0f;
-        s = mathSinf(ang);
+        sinYaw = mathSinf(ang);
     }
     {
         f32 ang = 3.1415927f * (f32)inner->targetYaw / 32768.0f;
-        c = mathCosf(ang);
+        cosYaw = mathCosf(ang);
     }
     {
-        f32 cc = inner->smoothVelZ;
-        f32 c8 = inner->smoothVelX;
+        f32 smoothVelZ = inner->smoothVelZ;
+        f32 smoothVelX = inner->smoothVelX;
         ((PlayerState*)state)->baddie.animSpeedA +=
-            interpolate(-cc * c - c8 * s - ((PlayerState*)state)->baddie.animSpeedA, inner->targetAnimSpeed, timeDelta);
+            interpolate(-smoothVelZ * cosYaw - smoothVelX * sinYaw - ((PlayerState*)state)->baddie.animSpeedA,
+                        inner->targetAnimSpeed, timeDelta);
         ((PlayerState*)state)->baddie.animSpeedB +=
-            interpolate(c8 * c - cc * s - ((PlayerState*)state)->baddie.animSpeedB, inner->targetAnimSpeed, timeDelta);
+            interpolate(smoothVelX * cosYaw - smoothVelZ * sinYaw - ((PlayerState*)state)->baddie.animSpeedB,
+                        inner->targetAnimSpeed, timeDelta);
     }
-    t0 = ((GameObject*)obj)->anim.currentMoveProgress;
+    moveProgress = ((GameObject*)obj)->anim.currentMoveProgress;
     {
         u8 phase = *(u8*)&((PlayerState*)inner)->gaitLevel;
         int idx = (u8)((s8)phase >> 1);
@@ -5276,7 +5278,7 @@ int playerState25(int obj, int state, f32 fv)
             {
                 if ((s8)phase == 0)
                 {
-                    t0 = 0.0f;
+                    moveProgress = 0.0f;
                 }
                 if (((PlayerState*)state)->baddie.animSpeedC < inner->maxSpeed)
                 {
@@ -5286,23 +5288,23 @@ int playerState25(int obj, int state, f32 fv)
         }
     }
     {
-        f32 ax;
-        f32 az = ((PlayerState*)state)->baddie.animSpeedB;
-        if (az < 0.0f)
+        f32 absAnimSpeedX;
+        f32 absAnimSpeedZ = ((PlayerState*)state)->baddie.animSpeedB;
+        if (absAnimSpeedZ < 0.0f)
         {
-            az = -az;
+            absAnimSpeedZ = -absAnimSpeedZ;
         }
-        ax = ((PlayerState*)state)->baddie.animSpeedA;
-        if (ax < 0.0f)
+        absAnimSpeedX = ((PlayerState*)state)->baddie.animSpeedA;
+        if (absAnimSpeedX < 0.0f)
         {
-            ax = -ax;
+            absAnimSpeedX = -absAnimSpeedX;
         }
         if (ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, ((PlayerState*)state)->baddie.animSpeedC,
-                                         &curveOut) != 0)
+                                         &moveSpeed) != 0)
         {
-            ((PlayerState*)state)->baddie.moveSpeed = curveOut;
+            ((PlayerState*)state)->baddie.moveSpeed = moveSpeed;
         }
-        if (ax > az)
+        if (absAnimSpeedX > absAnimSpeedZ)
         {
             if (((PlayerState*)state)->baddie.animSpeedA < 0.0f)
             {
@@ -5312,7 +5314,7 @@ int playerState25(int obj, int state, f32 fv)
             {
                 if (ObjAnim_GetCurrentEventCountdown((ObjAnimComponent*)obj) == 0)
                 {
-                    ObjAnim_SetCurrentMove(obj, gPlayerMoveTableB[inner->gaitLevel], t0, 0);
+                    ObjAnim_SetCurrentMove(obj, gPlayerMoveTableB[inner->gaitLevel], moveProgress, 0);
                     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA == 0)
                     {
                         ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0xc);
@@ -5330,7 +5332,7 @@ int playerState25(int obj, int state, f32 fv)
             {
                 if (ObjAnim_GetCurrentEventCountdown((ObjAnimComponent*)obj) == 0)
                 {
-                    ObjAnim_SetCurrentMove(obj, (gPlayerMoveTableB + 2)[inner->gaitLevel], t0, 0);
+                    ObjAnim_SetCurrentMove(obj, (gPlayerMoveTableB + 2)[inner->gaitLevel], moveProgress, 0);
                     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA == 0)
                     {
                         ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0xc);
