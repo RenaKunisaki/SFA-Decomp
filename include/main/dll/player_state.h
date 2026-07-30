@@ -364,7 +364,7 @@ typedef struct PlayerState {
     f32 characterHeightOffset; /* 0x874: per-character vertical height offset (set with pathBearingEyeY by characterId at spawn); subtracted from leapTargetY to convert the leap/ledge world-Y anchor into anim.worldPosY (worldPosY = leapTargetY - characterHeightOffset) */
     f32 particleBurstCooldown; /* f32 countdown decremented by frame-time each tick, floored to 0; while moving fast, on expiry (<=0) spawns a burst of particle FX (spawnObject 0x804) then resets to the burst interval */
     f32 targetSuppressTimer; /* f32 countdown decremented by frame-time each tick, floored to 0; set on a state transition (flag 0x3f2:b40); while active (>0, queried via playerIsTargetSuppressed) suppresses A-button-hint camera targeting */
-    f32 idleDelayTimer; /* idle-eligibility countdown (f32); set positive at state init (lbl_803E7FA4), decremented by frame-time in fn_802B18BC and floored at 0; the default-idle "stay" path requires it == 0 */
+    f32 idleDelayTimer; /* idle-eligibility countdown (f32); set positive at state init (lbl_803E7FA4), decremented by frame-time in playerUpdateInputTimers and floored at 0; the default-idle "stay" path requires it == 0 */
     u32 flags884; /* 0x884: directional-response flag word (set in another TU); bit0 gates the rumble + directional anim branch, bits 2/4/8 select the directional move index (idx 3/1/2) into the move table */
     f32 animSpeedDecay; /* 0x888: per-frame decay rate for baddie.animSpeedA via powfBitEstimate(rate, dt) */
     f32 animSpeedStart; /* 0x88c: initial baddie.animSpeedA magnitude at move start (set as animSpeedA = -animSpeedStart) */

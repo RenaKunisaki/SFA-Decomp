@@ -1192,7 +1192,7 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
         (*gGameUIInterface)->runAirMeter(((EarthWarriorState*)inner)->sub.health);
     }
     fn_802B1BF8(obj, sub, inner, timeDelta);
-    fn_802B1B28(obj, timeDelta);
+    playerClampVelocityAndMove(obj, timeDelta);
     (*gPathControlInterface)->update((void*)obj, (void*)(inner + 4), timeDelta);
     (*gPathControlInterface)->apply((void*)obj, (void*)(inner + 4));
     (*gPathControlInterface)->advance((void*)obj, (void*)(inner + 4), timeDelta);

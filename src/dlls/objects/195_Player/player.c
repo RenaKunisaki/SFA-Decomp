@@ -272,7 +272,7 @@ void playerRunActiveSpells(GameObject* obj, int state);
 void playerUpdateKnockbackTimers(GameObject* obj, int state);
 void playerStaffInit(GameObject* obj, int state);
 void playerDoEyeAnims(GameObject* obj, int state);
-void fn_802B18BC(GameObject* obj, int state, f32 fv);
+void playerUpdateInputTimers(GameObject* obj, int state, f32 fv);
 void playerDoControls(GameObject* obj, int state, f32 fv);
 void fn_802B1E5C(GameObject* obj, int state, int cfg, f32 dt);
 void fn_802B4A9C(GameObject* obj, int inner, int inner2);
@@ -15897,7 +15897,7 @@ void playerUpdateMotionState(GameObject* obj, int inner, int state)
     *(u32*)&((PlayerState*)inner)->flags360 &= ~0x1800000LL;
 }
 
-void fn_802B18BC(GameObject* obj, int state, f32 fv)
+void playerUpdateInputTimers(GameObject* obj, int state, f32 fv)
 {
     f32 v;
 
@@ -15957,10 +15957,10 @@ void playerDoControls(GameObject* obj, int state, f32 fv)
     }
     ((PlayerState*)state)->stickXf = (f32) ((PlayerState*)state)->stickX;
     ((PlayerState*)state)->stickYf = (f32) ((PlayerState*)state)->stickY;
-    fn_802B18BC(obj, state, fv);
+    playerUpdateInputTimers(obj, state, fv);
 }
 
-void fn_802B1B28(GameObject* obj, f32 fv)
+void playerClampVelocityAndMove(GameObject* obj, f32 fv)
 {
     f32 x, y, z;
     f32 v;
