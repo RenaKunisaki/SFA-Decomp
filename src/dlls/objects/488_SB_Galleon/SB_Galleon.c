@@ -82,11 +82,9 @@ void DBprotection_updateFlight(GameObject* obj) {
     SBGalleonState* state;
     GameObject* tricky;
     GameObject** objects;
-    int sfxObj;
     GameObject* otherObj;
     s8 c;
     int t;
-    int nextState;
     int wrap;
     int diff;
     u32 angY;
@@ -434,9 +432,11 @@ void DBprotection_updateFlight(GameObject* obj) {
             ((SBGalleonState*)state)->stage = 3;
             ((SBGalleonState*)state)->phaseCounter = 5;
             ((SBGalleonState*)state)->headingLatch = 200;
-            sfxObj = sbGetPropeller();
-            Sfx_StopFromObject(sfxObj, SFXTRIG_swtst1_c);
-            Sfx_PlayFromObject(sfxObj, SFXTRIG_mv_curtainloop16);
+            {
+                int sfxObj = sbGetPropeller();
+                Sfx_StopFromObject(sfxObj, SFXTRIG_swtst1_c);
+                Sfx_PlayFromObject(sfxObj, SFXTRIG_mv_curtainloop16);
+            }
             mainSetBits(DBPROTECTION_GAMEBIT_DIVE_ACTIVE, 0);
         } else if (((SBGalleonState*)state)->phaseCounter >= 4) {
             ((SBGalleonState*)state)->phase = 2;
@@ -452,7 +452,8 @@ void DBprotection_updateFlight(GameObject* obj) {
     case 5:
     case 6:
     case 7:
-    case 8:
+    case 8: {
+        int nextState;
         camShake = 120.0f;
         Sfx_StopObjectChannel((int)obj, 2);
         (*gCameraInterface)->releaseAction(&camShake, 0);
@@ -634,6 +635,7 @@ void DBprotection_updateFlight(GameObject* obj) {
             }
         }
         break;
+    }
     default:
         ((GameObject*)obj)->userData1 = 7;
         break;
