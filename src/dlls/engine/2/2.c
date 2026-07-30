@@ -4473,6 +4473,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
     u8* act2;
     u8* st2;
     u8* entry;
+    s16* sfxTimerEntry;
     int opcode;
     int sub;
     int restart;
@@ -4833,16 +4834,16 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             slot = 3;
         }
-        entry = seq + slot * 2;
-        if (*(s16*)(entry + 0x30) > 0)
+        sfxTimerEntry = &((ObjSeqState*)seq)->sfxTimer[slot];
+        if (*sfxTimerEntry > 0)
         {
-            Sfx_RemoveLoopedObjectSound((u32)obj, (u16) * (s16*)(entry + 0x38));
+            Sfx_RemoveLoopedObjectSound((u32)obj, (u16)((ObjSeqState*)seq)->sfxId[slot]);
         }
         cmd[1] = cmd[5];
         cmd[4] = 0x63;
-        *(s16*)(entry + 0x30) = *(s16*)(cmd + 6);
-        *(s16*)(seq + slot * 2 + 0x38) = (s16)(*(s16*)(cmd + 2) & 0xfff);
-        Sfx_AddLoopedObjectSound((u32)obj, (u16) * (s16*)(seq + slot * 2 + 0x38));
+        *sfxTimerEntry = *(s16*)(cmd + 6);
+        ((ObjSeqState*)seq)->sfxId[slot] = (s16)(*(s16*)(cmd + 2) & 0xfff);
+        Sfx_AddLoopedObjectSound((u32)obj, (u16)((ObjSeqState*)seq)->sfxId[slot]);
         break;
     }
     return 0;
