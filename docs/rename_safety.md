@@ -120,7 +120,7 @@ Renames are **not** byte-neutral and `tools/byteneutral.py` cannot gate them
    and the tree-wide count returned to the expected 2. Nothing was ever wrong
    with that rename.
 
-   Measured four ways on `linkDrawFn_801302c0` in `dlls/engine/60`:
+   Measured four ways on `Link_refreshOverlappingItemTimers` in `dlls/engine/60`:
 
    | state | unitfuzzy |
    |---|---|

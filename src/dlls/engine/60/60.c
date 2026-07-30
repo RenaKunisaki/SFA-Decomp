@@ -123,7 +123,7 @@ void linkInitTextures(LinkMenuItem* item)
         OSReport(sTumbleweedBushSlotOverflowErr);
     }
 }
-void linkDrawFn_801302c0(void)
+void Link_refreshOverlappingItemTimers(void)
 {
     LinkMenuItem* sel;
     int resetTimer;
@@ -216,7 +216,7 @@ void setLinkIsRotated(void)
     linkIsRotated = 1;
 }
 
-void linkDrawFn_80130484(void)
+void Link_scanItemVerticalBounds(void)
 {
     LinkMenuItem* item;
     Texture* iconTex;
@@ -669,8 +669,8 @@ u32 Link_update(void)
     }
 
     gTumbleweedBushInputEnabled[0] = 1;
-    linkDrawFn_801302c0();
-    linkDrawFn_80130484();
+    Link_refreshOverlappingItemTimers();
+    Link_scanItemVerticalBounds();
     return result;
 }
 
