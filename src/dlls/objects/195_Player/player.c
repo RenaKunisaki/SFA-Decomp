@@ -9319,8 +9319,8 @@ int playerState08(GameObject* obj, int state, f32 fv)
                 setup->posY = player->anim.localPosY;
                 setup->posZ = player->anim.localPosZ;
                 att = objSetupObject(setup, 4, player->anim.mapEventSlot, -1, player->anim.parent);
-                gPlayerChildObject = att;
             }
+            gPlayerChildObject = att;
             ObjLink_AttachChild((GameObject*)obj, (GameObject*)att, 1);
             (*gObjectTriggerInterface)->runSequence(0xd, (void*)obj, -1);
         }
