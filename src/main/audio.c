@@ -817,7 +817,7 @@ int audioInit(void)
     return 0;
 }
 
-u32 audioFlagFn_8000a188(u32 mask)
+u32 audioIsChannelUnavailable(u32 mask)
 {
     s32 managed = gAudioManagedChannelMask & mask;
     if (managed == 0)
@@ -1320,14 +1320,14 @@ void Music_LoadChannelForTrigger(MusicTrigger* trigger)
 
     if (((u32)trigger->flags >> 5) & 1)
     {
-        if ((int)audioFlagFn_8000a188(2) != 0)
+        if ((int)audioIsChannelUnavailable(2) != 0)
         {
             return;
         }
     }
     if (!(((u32)trigger->flags >> 5) & 1))
     {
-        if ((int)audioFlagFn_8000a188(1) != 0)
+        if ((int)audioIsChannelUnavailable(1) != 0)
         {
             return;
         }

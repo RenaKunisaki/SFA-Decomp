@@ -262,7 +262,7 @@ int AudioStream_Play(int id, void (*preparedCallback)(void))
         Music_Trigger(MUSICTRIG_drako_3, 0);
         Music_Trigger(MUSICTRIG_TTH_Night, 1);
     }
-    if ((int)audioFlagFn_8000a188(8) != 0)
+    if ((int)audioIsChannelUnavailable(8) != 0)
     {
         return 0;
     }

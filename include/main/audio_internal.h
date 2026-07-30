@@ -269,7 +269,7 @@ void AudioStream_CancelPreparedCallback(s32 result, DVDCommandBlock* block);
 void AudioAramReadCompleteCallback(u32 request);
 void Music_LoadChannelForTrigger(MusicTrigger* trigger);
 void Music_ChannelLoadedCallback(MusicTrackSlot* slot, MusicChannel* channel, MusicTrigger* trigger);
-u32 audioFlagFn_8000a188(u32 mask);
+u32 audioIsChannelUnavailable(u32 mask);
 void audioFree(void* ptr);
 void* _audioAlloc(u32 size);
 s32 Music_GetActivePriority(void);

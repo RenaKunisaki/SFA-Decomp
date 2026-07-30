@@ -743,7 +743,7 @@ SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 p
     SfxObjectChannel* ch;
     u32 handle;
 
-    if ((int)audioFlagFn_8000a188(4) != 0)
+    if ((int)audioIsChannelUnavailable(4) != 0)
     {
         return 0;
     }
