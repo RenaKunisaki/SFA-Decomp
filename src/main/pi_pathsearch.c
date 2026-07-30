@@ -1,6 +1,7 @@
 #include "dolphin/PPCArch.h"
 #include "dolphin/mtx.h"
 #include "main/dll/rom_curve_interface.h"
+#include "main/dll/dll_0015_curves.h"
 #include "main/gamebits.h"
 #include "main/pi_dolphin.h"
 #include "main/mm.h"
@@ -132,7 +133,7 @@ static inline void pathSearchClear(PathSearch* search) {
     }
 }
 
-static inline int pathSearchFindPointNode(PathSearch* search, PathPoint* point, int* countOut, int* visitedOut) {
+static inline int pathSearchFindPointNode(PathSearch* search, RomCurveDef* point, int* countOut, int* visitedOut) {
     int index = 0;
     int offset = 0;
     int n;
@@ -151,7 +152,7 @@ static inline int pathSearchFindPointNode(PathSearch* search, PathPoint* point, 
 }
 
 void pathSearchAddNeighbor(PathSearch* search, PathSearchNode* previousNode, int previousNodeIndex, u32 routeDistance,
-                           PathPoint* candidatePoint) {
+                           RomCurveDef* candidatePoint) {
     int heapIndex;
     u16* heapHalves;
     int pointCount;
@@ -168,7 +169,7 @@ void pathSearchAddNeighbor(PathSearch* search, PathSearchNode* previousNode, int
             newNode->point = candidatePoint;
             newNode->routeDistance = routeDistance;
             newNode->parentIndex = (u16)previousNodeIndex;
-            newNode->distanceToTarget = (u32)vec3f_distanceSquared(newNode->point->position, search->targetPosition);
+            newNode->distanceToTarget = (u32)vec3f_distanceSquared(&newNode->point->x, search->targetPosition);
         }
         pathSearchHeapInsert(search, pointIndex, 1);
     }
@@ -224,7 +225,7 @@ void pathSearchAddNeighbor(PathSearch* search, PathSearchNode* previousNode, int
             addedNode->routeDistance = routeDistance;
             addedNode->parentIndex = (u16)previousNodeIndex;
             addedNode->distanceToTarget =
-                (u32)vec3f_distanceSquared(addedNode->point->position, search->targetPosition);
+                (u32)vec3f_distanceSquared(&addedNode->point->x, search->targetPosition);
         }
         if (addedNode != NULL) {
             if (addedNode->distanceToTarget > search->closestDistance) {
@@ -275,7 +276,7 @@ void pathSearchExpandNode(int* q, int* elem, int idx) {
                             if (!(*(s8*)(obj + 0x1a) == 8 && *(s8*)(node + 0x1a) == 9)) {
                                 f32 d = vec3f_distanceSquared((f32*)(node + 8), (f32*)(obj + 8));
                                 pathSearchAddNeighbor((PathSearch*)q, (PathSearchNode*)elem, idx,
-                                                      (u32)((f32)(u32)elem[2] + d), (PathPoint*)obj);
+                                                      (u32)((f32)(u32)elem[2] + d), (RomCurveDef*)obj);
                             }
                         }
                     }
@@ -290,8 +291,8 @@ void pathSearchExpandNode(int* q, int* elem, int idx) {
         p += 4;
     }
 }
-PathPoint* pathSearchGetNextPoint(PathSearch* search) {
-    PathPoint** path;
+RomCurveDef* pathSearchGetNextPoint(PathSearch* search) {
+    RomCurveDef** path;
     int index = search->pathIndex;
     if (index < search->pathCount) {
         path = search->path;
@@ -382,7 +383,7 @@ int pathSearchStep(PathSearch* search, u32 n_) {
     return result;
 }
 
-int pathSearchBegin(PathSearch* queue, PathPoint* startPoint, f32* targetPosition, int pathId, u32 routeFlags) {
+int pathSearchBegin(PathSearch* queue, RomCurveDef* startPoint, f32* targetPosition, int pathId, u32 routeFlags) {
     PathSearchNode* node;
     int nodeCount;
 
@@ -400,7 +401,7 @@ int pathSearchBegin(PathSearch* queue, PathPoint* startPoint, f32* targetPositio
         node->point = startPoint;
         node->routeDistance = 0;
         node->parentIndex = 0xff;
-        node->distanceToTarget = (u32)vec3f_distanceSquared(node->point->position, queue->targetPosition);
+        node->distanceToTarget = (u32)vec3f_distanceSquared(&node->point->x, queue->targetPosition);
     }
     pathSearchHeapInsert(queue, queue->nodeCount - 1, node->distanceToTarget + node->routeDistance);
     return 0;
@@ -416,7 +417,7 @@ void freeAndNull(void** p) {
 void pathSearchInit(PathSearch* search) {
     search->nodes = (PathSearchNode*)mmAlloc(0x1960, 0x10, 0);
     search->heap = (PathHeapEntry*)((u8*)search->nodes + 0xfe0);
-    search->path = (PathPoint**)((u8*)search->heap + 0x7f0);
+    search->path = (RomCurveDef**)((u8*)search->heap + 0x7f0);
 }
 
 void allocSomething32bytes(void) {

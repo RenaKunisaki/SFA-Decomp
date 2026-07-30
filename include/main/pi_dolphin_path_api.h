@@ -3,19 +3,10 @@
 
 #include "global.h"
 
-typedef struct PathPoint {
-    u8 padding[8];
-    f32 position[3];
-    u32 id;
-    s8 action;
-    s8 type;
-    u8 unk1A;
-    s8 blockedLinkMask;
-    s32 linkIds[4];
-} PathPoint;
+typedef struct RomCurveDef RomCurveDef;
 
 typedef struct PathSearchNode {
-    PathPoint* point;
+    RomCurveDef* point;
     u32 distanceToTarget;
     u32 routeDistance;
     u8 parentIndex;
@@ -33,11 +24,11 @@ typedef struct PathHeapEntry {
 typedef struct PathSearch {
     PathSearchNode* nodes;
     PathHeapEntry* heap;
-    PathPoint** path;
+    RomCurveDef** path;
     f32* targetPosition;
     s32 pathId;
     u32 reserved14;
-    PathPoint* startPoint;
+    RomCurveDef* startPoint;
     s32 currentNode;
     s16 nodeCount;
     s16 heapSize;
@@ -49,17 +40,16 @@ typedef struct PathSearch {
     u16 padding2E;
 } PathSearch;
 
-STATIC_ASSERT(sizeof(PathPoint) == 0x2C);
 STATIC_ASSERT(sizeof(PathSearchNode) == 0x10);
 STATIC_ASSERT(sizeof(PathHeapEntry) == 0x8);
 STATIC_ASSERT(sizeof(PathSearch) == 0x30);
 
 void pathSearchInit(PathSearch* search);
 void pathSearchAddNeighbor(PathSearch* search, PathSearchNode* previousNode, int previousNodeIndex, u32 routeDistance,
-                           PathPoint* candidatePoint);
-PathPoint* pathSearchGetNextPoint(PathSearch* search);
+                           RomCurveDef* candidatePoint);
+RomCurveDef* pathSearchGetNextPoint(PathSearch* search);
 int pathSearchBuildPath(PathSearch* search);
 int pathSearchStep(PathSearch* search, u32 timeout);
-int pathSearchBegin(PathSearch* search, PathPoint* startPoint, f32* targetPosition, int pathId, u32 routeFlags);
+int pathSearchBegin(PathSearch* search, RomCurveDef* startPoint, f32* targetPosition, int pathId, u32 routeFlags);
 
 #endif /* MAIN_PI_DOLPHIN_PATH_API_H_ */

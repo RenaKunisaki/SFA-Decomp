@@ -1490,7 +1490,7 @@ void* trickyFindPathRouteEntry(u8* state, u32 route, int pathId)
         }
     }
 
-    pathSearchBegin((PathSearch*)(state + 0x6b8), (PathPoint*)route,
+    pathSearchBegin((PathSearch*)(state + 0x6b8), (RomCurveDef*)route,
                 ((TrickyState*)state)->targetPosPtr, pathId,
                 ((TrickyState*)state)->route.reverse);
     if (pathSearchStep((PathSearch*)(state + 0x6b8), 0x1f4) != 1)
@@ -1519,7 +1519,7 @@ int trickyFindReachableRouteIndex(u8* state, void** routes, u8* routeFlags, int 
     {
         if (*wp != 0)
         {
-            pathSearchBegin((PathSearch*)(sp + 0x538), (PathPoint*)*wp,
+            pathSearchBegin((PathSearch*)(sp + 0x538), (RomCurveDef*)*wp,
                         ((TrickyState*)state)->targetPosPtr, pathId, routeFlags[i]);
         }
         wp++;
@@ -2690,10 +2690,10 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                 }
                 if (step == 4)
                 {
-                    pathSearchBegin(&state->pathSearches[0], (PathPoint*)state->route.nodeA4,
+                    pathSearchBegin(&state->pathSearches[0], (RomCurveDef*)state->route.nodeA4,
                                 state->targetPosPtr, state->walkGroup,
                                 state->route.reverse);
-                    pathSearchBegin(&state->pathSearches[1], (PathPoint*)state->route.node9C,
+                    pathSearchBegin(&state->pathSearches[1], (RomCurveDef*)state->route.node9C,
                                 state->targetPosPtr, state->walkGroup,
                                 state->route.reverse ^ 1);
                     found = 0;
