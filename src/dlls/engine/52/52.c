@@ -453,7 +453,7 @@ void TitleMenu_initialise(void)
     gTitleMenuReadyForInput = 0;
     skySetEnvFxFlags(0);
     gameTimerStop();
-    audioFn_8000b694(0);
+    Sfx_SetObjectReverbPreset(0);
     gAttractMovieIdleFrameCount = 0;
 }
 

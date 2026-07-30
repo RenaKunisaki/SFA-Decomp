@@ -124,13 +124,13 @@ void Sfx_StopAllObjectSounds(void)
     }
 }
 
-void audioFn_8000b694(u32 value)
+void Sfx_SetObjectReverbPreset(u32 preset)
 {
     s32 i;
     SfxObjectChannel* objectChannel;
 
     objectChannel = gSfxObjectChannels;
-    gSfxGlobalCtrlLevel = (u8)(value * 5);
+    gSfxGlobalCtrlLevel = (u8)(preset * 5);
     i = SFX_OBJECT_CHANNEL_COUNT - 1;
     do
     {

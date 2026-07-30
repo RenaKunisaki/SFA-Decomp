@@ -11,7 +11,7 @@ void audioUpdate(void);
 void audioSetVolumes(int volume, int time, int musicFlag, int fxFlag, int streamFlag);
 void audioSetSoundMode(int mode, u8 forceFlag);
 int audioInit(void);
-void audioFn_8000b694(u32 value);
+void Sfx_SetObjectReverbPreset(u32 preset);
 int return0x64_8000A378(void);
 void doNothing_8000CF54(int unused);
 
