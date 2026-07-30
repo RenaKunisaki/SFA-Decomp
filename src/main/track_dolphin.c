@@ -197,7 +197,7 @@ struct IntersectModLineObject
 #define MAP_DYNAMIC_SLOT_COUNT 64
 
 
-int mapLoadBlocksFn_800685cc(int base, int x0, int y0, int z0, int x1, int y1, int z1, int a, int b);
+int trackBuildBlockTriangles(int base, int x0, int y0, int z0, int x1, int y1, int z1, int a, int b);
 int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32 scale, f32 x0, f32 y0, f32 z0, f32 x1,
                 f32 y1, f32 z1, u8 flags);
 int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
@@ -2048,8 +2048,8 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
     return 1;
 }
 
-int hitDetectFn_800664fc(void* tri, f32* rayOrig, f32* rayDir, f32 maxd, f32* out29, f32* outNrm, f32 maxStep,
-                         f32* outDist, f32 epsArg)
+int trackSweepSphereAgainstEdge(void* tri, f32* rayOrig, f32* rayDir, f32 maxd, f32* out29, f32* outNrm,
+                                f32 maxStep, f32* outDist, f32 epsArg)
 {
     f32 nrm[3];
     f32 e[3];
@@ -2396,8 +2396,7 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                             vb[2] = tri->vz[k];
                             PSVECSubtract((Vec*)vbp, (Vec*)va, (Vec*)evecp);
                             rdatap[2] = Vec3_Normalize(evecp);
-                            if (hitDetectFn_800664fc(va, ws, dir, mag, hitpt, plane, maxStep,
-                                                     &frac, 0.0f))
+                            if (trackSweepSphereAgainstEdge(va, ws, dir, mag, hitpt, plane, maxStep, &frac, 0.0f))
                             {
                                 hit = 1;
                                 goto hitCheck;
@@ -2998,9 +2997,9 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32
     return cur;
 }
 
-/* mapLoadBlocksFn_800685cc -- gather map-block collision triangles overlapping
+/* trackBuildBlockTriangles -- gather map-block collision triangles overlapping
  * the query box into the buffer at cur; returns advanced cursor. */
-int mapLoadBlocksFn_800685cc(cur, x0, y0, z0, x1, y1, z1, flags, doEdges)
+int trackBuildBlockTriangles(cur, x0, y0, z0, x1, y1, z1, flags, doEdges)
 int cur;
 int x0;
 int y0;
@@ -3441,7 +3440,7 @@ void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 que
         }
         else
         {
-            cur = mapLoadBlocksFn_800685cc((int)gTrackTriangleBuffer, f31, f29, f27, f30, f28, f26, queryMask, b);
+            cur = trackBuildBlockTriangles((int)gTrackTriangleBuffer, f31, f29, f27, f30, f28, f26, queryMask, b);
         }
         if ((u32)cur < gTrackTriangleBufferEnd && (masked & 1) && obj != NULL)
         {

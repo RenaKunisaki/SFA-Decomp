@@ -36,7 +36,7 @@ struct MapBlockData;
 enum HitQueryMask
 {
     HITQUERY_TEST_OBJECT_HITBOXES = 0x01,  /* also test reset-object hitboxes, not just map triangles */
-    /* keep only near-horizontal triangles: mapLoadBlocksFn_800685cc drops any
+    /* keep only near-horizontal triangles: trackBuildBlockTriangles drops any
      * triangle whose plane normal Y is within +-0.707 (cos 45deg) of zero */
     HITQUERY_HORIZONTAL_SURFACES_ONLY = 0x04,
     HITQUERY_REUSE_TRIANGLE_BUFFER = 0x10, /* reuse the loaded map-triangle buffer (skip block reload) */

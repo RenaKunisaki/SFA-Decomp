@@ -583,7 +583,7 @@ void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieSt
 /*
  * Mask passed to trackGetHeight / trackIntersectBroadphase to pick what a
  * collision query tests. Low byte = behaviour flags; the high bits select the
- * map-surface type (consumed by mapLoadBlocksFn_800685cc).
+ * map-surface type (consumed by trackBuildBlockTriangles).
  */
 void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
 {
