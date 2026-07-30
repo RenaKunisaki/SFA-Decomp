@@ -566,7 +566,7 @@ void objfx_spawnDirectionalBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode,
 
 #define OBJ_FX_PI 3.1415927f
 
-void objfx_spawnArcedBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, u8 chance, f32 angBase, f32 lo, f32 hi,
+void objfx_spawnArcedBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, int chance, f32 angBase, f32 lo, f32 hi,
                            void* origin, int flags) {
     ObjFxParticleParams params;
     ObjFxU16Table9 effectParams = *(ObjFxU16Table9*)((char*)&gObjFxCrystalSparkleTbl + 0x8c);
@@ -585,7 +585,7 @@ void objfx_spawnArcedBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, u8 ch
     for (i = 0; i < 4; i++) {
         u16 val;
         f32 a;
-        if (randomGetRange(0, 0x63) >= chance) {
+        if (randomGetRange(0, 0x63) >= (u8)chance) {
             continue;
         }
         rvec[0] = randomGetRange(0, 0xffff);
