@@ -49,7 +49,7 @@ extern int gModelEnginePrevUiDll;
 extern f32 gModelEngineTimerDuration;
 extern f32 gModelEngineTimerValue;
 extern s32 gModelEngineHudNumber;
-extern s32 lbl_803DB28C;
+extern s32 gMenuState;
 extern char sModelEngineHudNumberFormat[];
 extern char gModelEngineTextBuf[];
 extern s32 gModelEngineUiDllResourceIds[];
@@ -90,7 +90,7 @@ ModelList* allocModelStruct(int capacity, int dataSize);
 
 int getPrevUiDll(void);
 void loadUiDll(int index);
-void fn_8001404C(s32 value);
+void menuSetState(s32 value);
 void hudNumberRender(void* context);
 void hudNumberSet(s32 value);
 f32 gameTimerGetElapsedMilliseconds(void);

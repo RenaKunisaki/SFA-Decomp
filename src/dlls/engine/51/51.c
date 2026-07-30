@@ -104,7 +104,7 @@ void n_rareware_release(void)
 
 void n_rareware_initialise(void)
 {
-    fn_8001404C(0);
+    menuSetState(0);
     gNrarewareFrameCounter = 0;
     gNrarewareStage = 0;
     gNrarewareTimeoutFlag = 0;

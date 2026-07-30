@@ -512,7 +512,7 @@ int gModelEngineTimerDigitPairXOffset = 0x10;
 int gModelEngineTimerFieldXStride = 0x26;
 int gModelEngineTimerColonX = 0x24;
 int gModelEngineTimerDotX = 0x4A;
-s32 lbl_803DB28C = -1;
+s32 gMenuState = -1;
 char sModelEngineHudNumberFormat[] = "%d";
 char sModelEngineTimerDigitFormat[] = "%01d";
 char sModelEngineTimerColonText[] = ":";
@@ -870,9 +870,9 @@ void Resource_ResetRefCounts(void)
     }
 }
 
-void fn_8001404C(s32 value)
+void menuSetState(s32 value)
 {
-    lbl_803DB28C = value;
+    gMenuState = value;
 }
 
 u8 gameTimerIsRunning(void)

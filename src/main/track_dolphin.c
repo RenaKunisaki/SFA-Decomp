@@ -200,8 +200,8 @@ struct IntersectModLineObject
 int mapLoadBlocksFn_800685cc(int base, int x0, int y0, int z0, int x1, int y1, int z1, int a, int b);
 int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32 scale, f32 x0, f32 y0, f32 z0, f32 x1,
                 f32 y1, f32 z1, u8 flags);
-int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
-                      int flagsArg);
+int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
+                       int flagsArg);
 int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int flags, TrackBBoxHit* hit,
                                  GameObject* target, s8 lineMask, s8 segment, s8 yTolerance,
                                  GameObject* sourceObj);
@@ -2135,12 +2135,12 @@ int hitDetectFn_800664fc(void* tri, f32* rayOrig, f32* rayDir, f32 maxd, f32* ou
     return 0;
 }
 
-/* hitDetect_800667ec -- sweep each input sphere against the gathered triangle
+/* trackGetIntersect2 -- sweep each input sphere against the gathered triangle
  * lists, bouncing/sliding up to 10 times per slot; returns hit mask. */
 char sTrackHitOverflowError[] = "HIT OVERFLOW\n";
 
-int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
-                      int flagsArg)
+int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
+                       int flagsArg)
 {
     f32 *ep1, *ep2;
     f32 *sp1, *sp2;
@@ -2724,9 +2724,8 @@ int hitDetectFn_80067958(GameObject* contactSrc, f32* startPos, f32* endPos, int
         }
     }
 
-    hitCount = hitDetect_800667ec(0, gTrackTriangleBuffer + tbl->firstTriangle,
-                                 gTrackTriangleBuffer + tbl[1].firstTriangle, startPos, endPos, count,
-                                 results, 0);
+    hitCount = trackGetIntersect2(0, gTrackTriangleBuffer + tbl->firstTriangle,
+                                 gTrackTriangleBuffer + tbl[1].firstTriangle, startPos, endPos, count, results, 0);
 
     fp = results;
     pp = results;
