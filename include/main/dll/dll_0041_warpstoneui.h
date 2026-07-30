@@ -22,8 +22,6 @@ typedef struct
     u8 pad1C[0x20];
 } WarpstoneMenuItem;
 
-int WarpstoneUI_getMenuItems(const WarpstoneMenuItem* templates, WarpstoneMenuItem* items,
-                             const WarpstoneEntry* entries, int count, int* selectedIndices);
 void WarpstoneUI_setState(int val);
 void WarpstoneUI_showUI(int arg);
 void WarpstoneUI_frameEnd(void);

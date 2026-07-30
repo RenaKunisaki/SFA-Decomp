@@ -39,8 +39,8 @@ WarpstoneEntry gWarpStoneUiEntryTable[WARPSTONE_UI_ENTRY_COUNT] = {
 };
 int gWarpStoneUiSelectedIndices[0x6];
 
-int WarpstoneUI_getMenuItems(const WarpstoneMenuItem* templates, WarpstoneMenuItem* items,
-                             const WarpstoneEntry* entries, int count, int* selectedIndices)
+static int WarpstoneUI_getMenuItems(const WarpstoneMenuItem* templates, WarpstoneMenuItem* items,
+                                    const WarpstoneEntry* entries, int count, int* selectedIndices)
 {
     int yStart;
     WarpstoneMenuItem* lastDst;
