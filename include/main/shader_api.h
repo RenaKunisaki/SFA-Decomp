@@ -48,7 +48,7 @@ int objUpdateOpacity(struct GameObject* obj);
 void mapUpdateCameraPosByTransformSpace(void);
 void doPendingMapLoads(void);
 void mapReloadWithFadeout(void);
-void mapSetup(int mapType, f32 x, int* outMapId, int* outEvent, f32 y, f32 z);
+void mapSetup(int layerOffset, f32 x, int* outMapId, int* outMapDataFileId, f32 y, f32 z);
 void initMaps(void);
 void unloadMap(void);
 void beginLoadingMap(void);

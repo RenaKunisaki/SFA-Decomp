@@ -88,7 +88,7 @@ extern const f32 gMapBlockWorldSize;
 #include "string.h"
 
 int lbl_803DB620 = -1;
-s8 lbl_803DB624[8] = {0, -2, -1, 1, 2, 0, 0, 0};
+s8 gMapLayerOffsets[8] = {0, -2, -1, 1, 2, 0, 0, 0};
 f32 lbl_803DB62C = 0.5f;
 extern int gMapBlockCellEntryTables[5];
 extern f32 lbl_803DEBCC;
@@ -1624,40 +1624,40 @@ void mapLoadGameTextDir(u8 force)
 }
 
 
-void mapSetup(int mapType, f32 a, int* outMapId, int* outEvent, f32 b, f32 c)
+void mapSetup(int layerOffset, f32 x, int* outMapId, int* outMapDataFileId, f32 y, f32 z)
 {
-    MapInfoRecord* tabEntry;
-    int mapY;
+    MapInfoRecord* mapInfo;
+    int gridZ;
     int mapId;
-    int layer;
+    int layerIndex;
     int mapCount;
-    s8* arr;
+    s8* layerOffsets;
 
-    layer = 0;
-    arr = (s8*)(int)lbl_803DB624;
-    if (arr[0] != mapType)
+    layerIndex = 0;
+    layerOffsets = (s8*)(int)gMapLayerOffsets;
+    if (layerOffsets[0] != layerOffset)
     {
-        layer = 1;
-        if (arr[1] != mapType)
+        layerIndex = 1;
+        if (layerOffsets[1] != layerOffset)
         {
-            layer = 2;
-            if (arr[2] != mapType)
+            layerIndex = 2;
+            if (layerOffsets[2] != layerOffset)
             {
-                layer = 3;
-                if (arr[3] != mapType)
+                layerIndex = 3;
+                if (layerOffsets[3] != layerOffset)
                 {
-                    layer = 4;
-                    if (arr[4] != mapType)
+                    layerIndex = 4;
+                    if (layerOffsets[4] != layerOffset)
                     {
-                        layer = 5;
+                        layerIndex = 5;
                     }
                 }
             }
         }
     }
     curMapLayer = 0;
-    mapY = fastFloorf(c / gMapBlockWorldSize);
-    mapId = mapCoordsToId((s32)fastFloorf(a / gMapBlockWorldSize), mapY, layer);
+    gridZ = fastFloorf(z / gMapBlockWorldSize);
+    mapId = mapCoordsToId((s32)fastFloorf(x / gMapBlockWorldSize), gridZ, layerIndex);
     mapCount = (s32)((u32)getDataFileSize(MLDF_FILEID_MAPINFO_BIN) >> 5);
     if (mapId < 0 || mapId >= mapCount)
     {
@@ -1665,19 +1665,19 @@ void mapSetup(int mapType, f32 a, int* outMapId, int* outEvent, f32 b, f32 c)
     }
     else
     {
-        getTabEntry(tabEntry = (MapInfoRecord*)lbl_803DCE78, MLDF_FILEID_MAPINFO_BIN, mapId << 5, 0x20);
-        curMapType = tabEntry->mapType;
+        getTabEntry(mapInfo = (MapInfoRecord*)lbl_803DCE78, MLDF_FILEID_MAPINFO_BIN, mapId << 5, 0x20);
+        curMapType = mapInfo->mapType;
     }
     lbl_803DCEB4 = 0;
     if (curMapType == MAPTYPE_SUBMAP)
     {
         lbl_803DCEB6 = mapId;
-        lbl_803DCEB4 = tabEntry->unk1e;
+        lbl_803DCEB4 = mapInfo->unk1e;
     }
     *outMapId = mapId;
     if (mapId != -1)
     {
-        *outEvent = (s32) * (s8*)((*gMapEventInterface)->getCurCharPos() + 0xe);
+        *outMapDataFileId = (s32) * (s8*)((*gMapEventInterface)->getCurCharPos() + 0xe);
     }
 }
 
@@ -2892,7 +2892,7 @@ int mapCoordsToId(int x, int z, int layerIdx)
     int layer;
     int idx;
 
-    layer = curMapLayer + lbl_803DB624[layerIdx];
+    layer = curMapLayer + gMapLayerOffsets[layerIdx];
     rects = (s16*)gShaderMapRomBuffers[1];
     bits = (u8*)gShaderMapRomBuffers[4];
     id = 0;
