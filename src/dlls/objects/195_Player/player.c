@@ -250,7 +250,7 @@ void objDoTeleportAnim(GameObject* obj);
 void playerDie(GameObject* obj);
 void playerCacheMoveRootHeights(int obj);
 void playerDrawTeleportAnim(GameObject* obj);
-void fn_802AAF80(GameObject* obj, int inner, int a, int b, int c);
+void playerRenderPostEffects(GameObject* obj, int inner, int a, int b, int c);
 int playerFindNearestLookTarget(GameObject* obj);
 void playerCastSpell(int a, int b, int c);
 void playerRefreshCollisionState(GameObject* obj, int p2, int flags);
@@ -12742,7 +12742,7 @@ void playerDrawTeleportAnim(GameObject* obj)
     GXSetColorUpdate(1);
 }
 
-void fn_802AAF80(GameObject* obj, int inner, int a, int b, int c)
+void playerRenderPostEffects(GameObject* obj, int inner, int a, int b, int c)
 {
     int v;
     if (gPlayerPathObject != NULL && (((u32)((PlayerState*)inner)->flags3F4 >> 6) & 1) != 0)
@@ -17688,7 +17688,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
         }
         if ((s8)flag != 0)
         {
-            fn_802AAF80((GameObject*)obj, inner, a, b, c);
+            playerRenderPostEffects((GameObject*)obj, inner, a, b, c);
         }
         ObjPath_GetPointWorldPositionArray((GameObject*)obj, 6, 2, (f32*)(inner + 0x3c4));
         ObjPath_GetPointWorldPosition((GameObject*)obj, 0xb, (f32*)((char*)inner + 0x768), (f32*)((char*)inner + 0x76c),
