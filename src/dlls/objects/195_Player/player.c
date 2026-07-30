@@ -261,7 +261,7 @@ void playerUpdateLookAtTarget(int p1, int p2, int p3);
 void playerSetMovingAnims(int p1, int obj);
 int fn_802ADC08(GameObject* obj, int inner, int p3);
 void fn_802ADE80(GameObject* obj, int inner, int state);
-int fn_802AE480(GameObject* obj, int inner, int state);
+int playerUpdateQuickTurn(GameObject* obj, int inner, int state);
 void playerUpdateStaffAttack(GameObject* obj, int state, int p3);
 void playerEnterDeepWater(int obj, int inner, int state);
 void playerStartWallTransition(GameObject* obj, int inner, int state);
@@ -9895,7 +9895,7 @@ int playerStateMoving(int obj, int state, f32 fv)
         }
         else if ((fl >> 7 & 1) != 0)
         {
-            int r = fn_802AE480((GameObject*)obj, inner, state);
+            int r = playerUpdateQuickTurn((GameObject*)obj, inner, state);
             if (r != 0)
             {
                 *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
@@ -14162,7 +14162,7 @@ void fn_802ADE80(GameObject* obj, int inner, int state)
     }
 }
 
-int fn_802AE480(GameObject* obj, int inner, int state)
+int playerUpdateQuickTurn(GameObject* obj, int inner, int state)
 {
     f32 h;
     f32 lim;
