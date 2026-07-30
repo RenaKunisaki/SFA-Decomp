@@ -173,7 +173,6 @@ u8 CameraShake_IsActive(void);
 void Camera_LoadModelViewMatrix(int unusedDisplayList, int unusedMatrixList, MatrixTransform* transform, f32 yScale,
                                 f32 unusedOffsetY, f32* outMatrix);
 void Camera_UpdateForObject(Camera* camera);
-void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex);
 void Obj_BuildTransformMatrices(GameObject* obj);
 s32 Obj_BuildTransformMatrixSlot(GameObject* obj);
 void Camera_ClipToScreen(f32 clipX, f32 clipY, f32 clipZ, s32* outX, s32* outY, s32* outZ);
