@@ -889,7 +889,7 @@ static void LowPrecisionHandler(int voice)
  * Zero-offset per-voice update: volume envelope, tremolo, panning and final
  * volume/aux sends.
  */
-void ZeroOffsetHandler(int voice)
+static void ZeroOffsetHandler(int voice)
 {
     SynthHwVoice* sv;
     u32 lowDeltaTime;
