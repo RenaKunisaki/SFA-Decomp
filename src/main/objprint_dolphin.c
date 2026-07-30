@@ -1440,150 +1440,154 @@ void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
     }
 }
 
-void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5, u8* out1, u8* out2)
+void modelRenderFn_setVtxDescr(u8* modelHeader, u8* shader, u32* textureRefs,
+                               MtxBitStream* bitStream, u8 passMask,
+                               u8* usesNormalMatrix, u8* usesTextureMatrix)
 {
-    int next;
-    int back;
+    int nextMatrixAttr;
+    int previousMatrixAttr;
     GXClearVtxDesc();
-    if (((ModelFileHeader*)hdr)->jointCount > 1)
+    if (((ModelFileHeader*)modelHeader)->jointCount > 1)
     {
         GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
-        next = 1;
-        back = 8;
-        if (p3[0] != 0 || p3[1] != 0)
+        nextMatrixAttr = 1;
+        previousMatrixAttr = 8;
+        if (textureRefs[0] != 0 || textureRefs[1] != 0)
         {
-            if (((Shader*)m)->auxTextureIndex != 0)
+            if (((Shader*)shader)->auxTextureIndex != 0)
             {
                 GXSetVtxDesc(GX_VA_TEX0MTXIDX, GX_DIRECT);
-                next = GX_VA_TEX1MTXIDX;
-                GXSetVtxDesc(next++, GX_DIRECT);
+                nextMatrixAttr = GX_VA_TEX1MTXIDX;
+                GXSetVtxDesc(nextMatrixAttr++, GX_DIRECT);
             }
-            GXSetVtxDesc(next++, GX_DIRECT);
+            GXSetVtxDesc(nextMatrixAttr++, GX_DIRECT);
         }
         {
             int i = 0;
-            for (; i < ((ModelFileHeader*)hdr)->texMtxCount; i++)
+            for (; i < ((ModelFileHeader*)modelHeader)->texMtxCount; i++)
             {
-                u8 use;
-                if (p5 == 4 && i == 0)
+                u8 useForwardAttr;
+                if (passMask == 4 && i == 0)
                 {
-                    int b;
-                    int a;
+                    int projectionModeB;
+                    int projectionModeA;
                     if (lbl_803DCC5C != 0 &&
-                        (modelLightStruct_getProjectionTevModes(lbl_803DCC64, &a, &b), a == 0))
+                        (modelLightStruct_getProjectionTevModes(
+                             lbl_803DCC64, &projectionModeA, &projectionModeB),
+                         projectionModeA == 0))
                     {
-                        use = 1;
+                        useForwardAttr = 1;
                     }
                     else
                     {
-                        use = 0;
+                        useForwardAttr = 0;
                     }
                 }
-                else if (i < lbl_803DCC5C && p5 == 0)
+                else if (i < lbl_803DCC5C && passMask == 0)
                 {
-                    use = 1;
+                    useForwardAttr = 1;
                 }
                 else
                 {
-                    use = 0;
+                    useForwardAttr = 0;
                 }
-                if (use)
+                if (useForwardAttr)
                 {
-                    GXSetVtxDesc(next++, GX_DIRECT);
+                    GXSetVtxDesc(nextMatrixAttr++, GX_DIRECT);
                 }
                 else
                 {
-                    GXSetVtxDesc(back--, GX_DIRECT);
+                    GXSetVtxDesc(previousMatrixAttr--, GX_DIRECT);
                 }
             }
         }
-        if (next > 1)
+        if (nextMatrixAttr > 1)
         {
-            *out2 = 1;
+            *usesTextureMatrix = 1;
         }
         else
         {
-            *out2 = 0;
+            *usesTextureMatrix = 0;
         }
     }
     else
     {
         GXSetCurrentMtx(0);
-        *out2 = 1;
+        *usesTextureMatrix = 1;
     }
     {
         u32 w;
-        int pos = bs->pos;
+        int pos = bitStream->pos;
         int off = pos >> 3;
         u8* p;
-        w = bs->data[off];
-        p = (u8*)(off + (char*)bs->data);
+        w = bitStream->data[off];
+        p = (u8*)(off + (char*)bitStream->data);
         w |= p[1] << 8;
         w |= p[2] << 16;
-        bs->pos = pos + 1;
+        bitStream->pos = pos + 1;
         GXSetVtxDesc(GX_VA_POS, (((int)(w >> (pos & 7)) & 1) ? GX_INDEX16 : GX_INDEX8));
     }
-    if (((Shader*)m)->vtxAttrFlags & 1)
+    if (((Shader*)shader)->vtxAttrFlags & 1)
     {
-        int b;
+        int index16;
         {
             u32 w;
-            int pos = bs->pos;
+            int pos = bitStream->pos;
             int off = pos >> 3;
             u8* p;
-            w = bs->data[off];
-            p = (u8*)(off + (char*)bs->data);
+            w = bitStream->data[off];
+            p = (u8*)(off + (char*)bitStream->data);
             w |= p[1] << 8;
             w |= p[2] << 16;
-            bs->pos = pos + 1;
-            b = (w >> (pos & 7)) & 1;
+            bitStream->pos = pos + 1;
+            index16 = (w >> (pos & 7)) & 1;
         }
-        if (((ModelFileHeader*)hdr)->flags24 & 8)
+        if (((ModelFileHeader*)modelHeader)->flags24 & 8)
         {
-            GXSetVtxDesc(GX_VA_NBT, b ? GX_INDEX16 : GX_INDEX8);
+            GXSetVtxDesc(GX_VA_NBT, index16 ? GX_INDEX16 : GX_INDEX8);
         }
         else
         {
-            GXSetVtxDesc(GX_VA_NRM, b ? GX_INDEX16 : GX_INDEX8);
+            GXSetVtxDesc(GX_VA_NRM, index16 ? GX_INDEX16 : GX_INDEX8);
         }
-        *out1 = 1;
+        *usesNormalMatrix = 1;
     }
     else
     {
-        *out1 = 0;
+        *usesNormalMatrix = 0;
     }
-    if (((Shader*)m)->vtxAttrFlags & 2)
+    if (((Shader*)shader)->vtxAttrFlags & 2)
     {
         u32 w;
-        int pos = bs->pos;
+        int pos = bitStream->pos;
         int off = pos >> 3;
         u8* p;
-        w = bs->data[off];
-        p = (u8*)(off + (char*)bs->data);
+        w = bitStream->data[off];
+        p = (u8*)(off + (char*)bitStream->data);
         w |= p[1] << 8;
         w |= p[2] << 16;
-        bs->pos = pos + 1;
+        bitStream->pos = pos + 1;
         GXSetVtxDesc(GX_VA_CLR0, (((int)(w >> (pos & 7)) & 1) ? GX_INDEX16 : GX_INDEX8));
     }
     {
-        int b;
+        int index16;
         int i;
         {
             u32 w;
-            int pos = bs->pos;
+            int pos = bitStream->pos;
             int off = pos >> 3;
             u8* p;
-            w = bs->data[off];
-            p = (u8*)(off + (char*)bs->data);
+            w = bitStream->data[off];
+            p = (u8*)(off + (char*)bitStream->data);
             w |= p[1] << 8;
             w |= p[2] << 16;
-            bs->pos = pos + 1;
-            b = (w >> (pos & 7)) & 1;
+            bitStream->pos = pos + 1;
+            index16 = (w >> (pos & 7)) & 1;
         }
         i = 0;
-        for (; i < ((Shader*)m)->layerCount; i++)
+        for (; i < ((Shader*)shader)->layerCount; i++)
         {
-            GXSetVtxDesc(i + GX_VA_TEX0, b ? GX_INDEX16 : GX_INDEX8);
+            GXSetVtxDesc(i + GX_VA_TEX0, index16 ? GX_INDEX16 : GX_INDEX8);
         }
     }
 }
