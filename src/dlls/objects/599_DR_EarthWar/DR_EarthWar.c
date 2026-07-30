@@ -254,7 +254,7 @@ extern u8 gDREarthWarriorRowIndices[];
 const EWColorTbl gDREarthWarriorColors = {
     {{8, 255, 190, 120}, {8, 255, 255, 120}, {8, 180, 240, 255}, {8, 170, 255, 170}}
 };
-void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state);
+void DR_EarthWarrior_updateLookAtBones(GameObject* obj, EarthWarriorSub* warrior, int state);
 
 static const u8 gDREarthWarriorPathSetupParam[4] = {1, 1, 1, 1};
 
@@ -318,8 +318,7 @@ int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state)
     return 0;
 }
 
-void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state) {
-    EarthWarriorSub* warrior = (EarthWarriorSub*)sub;
+void DR_EarthWarrior_updateLookAtBones(GameObject* obj, EarthWarriorSub* warrior, int state) {
     int targetAngle;
     int angleDelta;
     s16* primaryLookBone;
@@ -703,7 +702,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
             ((EarthWarriorState*)state)->baddie.moveSpeed = 0.005f;
         }
     }
-    DR_EarthWarrior_updateLookAtBones(obj, (int)q, state);
+    DR_EarthWarrior_updateLookAtBones(obj, q, state);
     return 0;
 }
 #undef hitState
@@ -805,7 +804,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
         }
         *(s16*)&q->currentYaw = (182.044f * v + (f32)(s32)q->currentYaw);
     }
-    DR_EarthWarrior_updateLookAtBones(obj, (int)q, baddie);
+    DR_EarthWarrior_updateLookAtBones(obj, q, baddie);
     return 0;
 }
 
