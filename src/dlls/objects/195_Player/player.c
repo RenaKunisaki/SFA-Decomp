@@ -9977,7 +9977,7 @@ int playerStateMoving(int obj, int state, f32 fv)
         }
         else if ((fl >> 2 & 1) != 0)
         {
-            int r = fn_802AD2F4((GameObject*)obj, inner, state);
+            int r = playerUpdateAirborneMotion((GameObject*)obj, inner, state);
             if (r != 0)
             {
                 *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
@@ -13667,7 +13667,7 @@ void playerSetMovingAnims(int p1, int obj)
     }
 }
 
-int fn_802AD2F4(GameObject* obj, int inner, int state)
+int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
 {
     f32 hdiff;
     int sfx;
