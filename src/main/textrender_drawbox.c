@@ -99,7 +99,7 @@ GlyphResource802CA100 gGameTextBoxEdgeTexSrc = {
 Texture* gGameTextBoxFrameTextures[5];
 Texture* gSubtitleBoxTextures[3];
 
-void boxDrawFn_8001c5ac(u16* strPtr, int boxId, u8* box);
+void gameTextDrawBoxEdges(u16* strPtr, int boxId, u8* box);
 
 void subtitleStart(int x)
 {
@@ -383,14 +383,14 @@ void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box) {
         }
         break;
     case 4:
-        boxDrawFn_8001c5ac((u16*)strPtr, boxId, (u8*)box);
+        gameTextDrawBoxEdges((u16*)strPtr, boxId, (u8*)box);
         break;
     }
     ((GameTextBox*)box)->cursorX = savedX;
     ((GameTextBox*)box)->cursorY = savedY;
 }
 
-void boxDrawFn_8001c5ac(u16* strPtr, int boxId, u8* box)
+void gameTextDrawBoxEdges(u16* strPtr, int boxId, u8* box)
 {
     int x;
     int y;
