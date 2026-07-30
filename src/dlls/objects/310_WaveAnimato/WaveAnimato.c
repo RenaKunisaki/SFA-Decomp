@@ -51,90 +51,91 @@ void WaveAnimator_setScale(GameObject* obj, f32 scale) {
 }
 
 void WaveAnimator_buildSharedTables(WaveAnimatorState* config) {
-    int row;
-    int heightIdx;
+    int rowOffset;
+    int heightOffset;
     int i;
     int j;
     int x;
-    int stepX;
-    int y;
-    int phaseIdx;
-    int stepY;
-    f32 waveY;
-    f32 initHeight;
+    int phaseStepX;
+    int phaseY;
+    int phaseOffset;
+    int phaseStepY;
+    f32 yWave;
+    f32 zeroHeight;
 
     gWaveAnimatorHeightTable = mmAlloc(sizeof(f32) * config->period * config->period, 0xFFFFFF, 0);
     gWaveAnimatorColorTable = mmAlloc(sizeof(WaveAnimatorColor) * config->period * config->period, 0xFFFFFF, 0);
 
     x = config->originX;
-    stepX = (s32)((65536.0f * config->spanX) / config->period);
-    y = config->originY;
-    stepY = (s32)((65536.0f * config->spanY) / config->period);
+    phaseStepX = (s32)((65536.0f * config->spanX) / config->period);
+    phaseY = config->originY;
+    phaseStepY = (s32)((65536.0f * config->spanY) / config->period);
 
-    initHeight = 0.0f;
-    config->maxHeight = initHeight;
-    config->minHeight = initHeight;
+    zeroHeight = 0.0f;
+    config->maxHeight = zeroHeight;
+    config->minHeight = zeroHeight;
 
     i = 0;
-    heightIdx = 0;
+    heightOffset = 0;
     for (; i < config->period; i++) {
-        f32 xv;
+        f32 xRadians;
         j = 0;
-        row = heightIdx;
-        xv = 3.1415927f * x;
+        rowOffset = heightOffset;
+        xRadians = 3.1415927f * x;
         for (; j < config->period; j++) {
-            f32 s1 = mathSinf((3.1415927f * y) / 32768.0f);
-            f32 s2;
-            waveY = config->ampY * s1;
-            s2 = mathSinf(xv / 32768.0f);
-            *(f32*)((u8*)gWaveAnimatorHeightTable + row) = config->ampX * s2 + waveY;
-            if (*(f32*)((u8*)gWaveAnimatorHeightTable + row) < config->minHeight) {
-                config->minHeight = *(f32*)((u8*)gWaveAnimatorHeightTable + row);
+            f32 sinY = mathSinf((3.1415927f * phaseY) / 32768.0f);
+            f32 sinX;
+            yWave = config->ampY * sinY;
+            sinX = mathSinf(xRadians / 32768.0f);
+            *(f32*)((u8*)gWaveAnimatorHeightTable + rowOffset) = config->ampX * sinX + yWave;
+            if (*(f32*)((u8*)gWaveAnimatorHeightTable + rowOffset) < config->minHeight) {
+                config->minHeight = *(f32*)((u8*)gWaveAnimatorHeightTable + rowOffset);
             }
-            if (*(f32*)((u8*)gWaveAnimatorHeightTable + row) > config->maxHeight) {
-                config->maxHeight = *(f32*)((u8*)gWaveAnimatorHeightTable + row);
+            if (*(f32*)((u8*)gWaveAnimatorHeightTable + rowOffset) > config->maxHeight) {
+                config->maxHeight = *(f32*)((u8*)gWaveAnimatorHeightTable + rowOffset);
             }
-            y += stepY;
-            row += 4;
-            heightIdx += 4;
+            phaseY += phaseStepY;
+            rowOffset += 4;
+            heightOffset += 4;
         }
-        x += stepX;
+        x += phaseStepX;
     }
 
     {
         f32 colorSplitZero;
         f32 t;
         f32 negMin = -config->minHeight;
-        heightIdx = 0;
-        x = heightIdx;
-        i = heightIdx;
+        heightOffset = 0;
+        x = heightOffset;
+        i = heightOffset;
         colorSplitZero = 0.0f;
-        for (; heightIdx < config->period; heightIdx++) {
-            int src[1];
-            int byte[1];
-            for (j = 0, src[0] = x, byte[0] = i; j < config->period; src[0] += 4, byte[0] += 3, x += 4, i += 3, j++) {
-                f32 v = *(f32*)((u8*)gWaveAnimatorHeightTable + src[0]);
+        for (; heightOffset < config->period; heightOffset++) {
+            int heightCursor[1];
+            int colorCursor[1];
+            for (j = 0, heightCursor[0] = x, colorCursor[0] = i; j < config->period;
+                 heightCursor[0] += 4, colorCursor[0] += 3, x += 4, i += 3, j++) {
+                f32 v = *(f32*)((u8*)gWaveAnimatorHeightTable + heightCursor[0]);
                 if (v < colorSplitZero) {
                     t = (v - config->minHeight) / negMin;
-                    *(u8*)((u8*)gWaveAnimatorColorTable + byte[0]) = 65.0f * t + 190.0f;
-                    *(u8*)((u8*)gWaveAnimatorColorTable + byte[0] + 1) = 165.0f * t + 90.0f;
-                    *(u8*)((u8*)gWaveAnimatorColorTable + byte[0] + 2) = 235.0f * t + 20.0f;
+                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0]) = 65.0f * t + 190.0f;
+                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0] + 1) = 165.0f * t + 90.0f;
+                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0] + 2) = 235.0f * t + 20.0f;
                 } else {
-                    *(u8*)((u8*)gWaveAnimatorColorTable + byte[0]) = 255;
-                    *(u8*)((u8*)gWaveAnimatorColorTable + byte[0] + 1) = 255;
-                    *(u8*)((u8*)gWaveAnimatorColorTable + byte[0] + 2) = 255;
+                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0]) = 255;
+                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0] + 1) = 255;
+                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0] + 2) = 255;
                 }
             }
         }
     }
 
     gWaveAnimatorPhaseTable = mmAlloc(2 * sizeof(s16) * config->gridN * config->gridN, 0xFFFFFF, 0);
-    phaseIdx = 0;
+    phaseOffset = 0;
     for (i = 0; i < config->gridN; i++) {
         for (j = 0; j < config->gridN; j++) {
-            gWaveAnimatorPhaseTable[phaseIdx] = (s16)(i * 10);
-            gWaveAnimatorPhaseTable[phaseIdx + 1] = (s16)(j * 10);
-            phaseIdx += 2;
+            gWaveAnimatorPhaseTable[phaseOffset] = (s16)(i * 10);
+            gWaveAnimatorPhaseTable[phaseOffset + 1] = (s16)(j * 10);
+            phaseOffset += 2;
         }
     }
 }
