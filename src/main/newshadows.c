@@ -1714,7 +1714,7 @@ static inline void fillFalloffTexture(void)
     }
 }
 
-static inline void fillTextureCFB4(void)
+static inline void fillLightningTexture(void)
 {
     int j;
     int i;
@@ -2001,7 +2001,7 @@ void allocLotsOfTextures(void)
     updateHeavyFogTexture(0);
 
     gNewShadowLightningTexture = textureAlloc(0x20, 4, 1, 0, 0, 0, 0, 1, 1);
-    fillTextureCFB4();
+    fillLightningTexture();
     DCFlushRange((u8*)gNewShadowLightningTexture + 0x60, gNewShadowLightningTexture->dataSize);
 
     gNewShadowRingTexture = textureAlloc(0x80, 0x80, 1, 0, 0, 1, 1, 1, 1);
