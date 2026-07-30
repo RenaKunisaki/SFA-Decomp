@@ -270,7 +270,7 @@ void worldplanet_update(GameObject* obj) {
             warpToMap(gWorldPlanetWarpMapIndices[gWorldPlanetSelectionToIndex[state->selectedPlanet]], 0);
         }
     } else {
-        setFrameCountdown_800202c4(1);
+        setFrameCountdown(1);
         if ((state->flags & WORLDPLANET_STATE_FLAG_CAMERA_SET) == 0) {
             (*gCameraInterface)->setMode(CAMERA_MODE_WORLD_MAP_RESOURCE_ID, 1, 0, 0, NULL, 0, 0xff);
             (*gCameraInterface)->setFocus((void*)obj, 0);

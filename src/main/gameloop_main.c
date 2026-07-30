@@ -314,7 +314,7 @@ int return1_800202BC(void)
 
 typedef f32 Mtx[3][4];
 
-void setFrameCountdown_800202c4(s8 count)
+void setFrameCountdown(s8 count)
 {
     frameCountdown = count;
 }
