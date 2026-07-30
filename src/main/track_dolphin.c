@@ -1168,7 +1168,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
     int lineIndex;
     int sourceLineCount;
     MapHitLine* sourceLine;
-    int lineOffset;
+    int lineByteOffset;
     int outputLineIndex;
     s16 previousGroup;
 
@@ -1206,13 +1206,13 @@ void intersectModLineBuild(IntersectModLineObject* obj)
     }
     {
         outputLineIndex = 0;
-        lineOffset = outputLineIndex;
-        for (; outputLineIndex < gIntersectLineCount; lineOffset += 0x10, outputLineIndex++)
+        lineByteOffset = outputLineIndex;
+        for (; outputLineIndex < gIntersectLineCount; lineByteOffset += 0x10, outputLineIndex++)
         {
             int pointLinkIndex;
             s16* firstPointLinks;
             s16* secondPointLinks;
-            line = (IntersectLine*)((u8*)lbl_803DCF34 + lineOffset);
+            line = (IntersectLine*)((u8*)lbl_803DCF34 + lineByteOffset);
             pointLinkIndex = line->pt[0] * 2;
             firstPointLinks = &pointLinks[pointLinkIndex];
             if (firstPointLinks[0] > -1 && firstPointLinks[0] != outputLineIndex)
