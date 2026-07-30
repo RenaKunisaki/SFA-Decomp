@@ -112,14 +112,14 @@ typedef struct TrackShadowTriangle
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
-void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8);
+static void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8);
 
 /* Begin a new shadow-volume frame: clear the per-frame
  * counts, flip the three double-buffer selectors, and rotate the current
  * write pointers to the buffer picked by this frame's flip index. */
-void vecGetRanges(f32* pts, f32* base, f32 scale, int* out);
+static void vecGetRanges(f32* pts, f32* base, f32 scale, int* out);
 
-int objShadowGetFadedAlpha(GameObject* obj, u8 param);
+static int objShadowGetFadedAlpha(GameObject* obj, u8 param);
 
 
 f32 gShadowVolumeBoxCorners[0x19];
@@ -205,8 +205,7 @@ void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale)
     }
 }
 
-void vecGetRanges(f32* pts, f32* base, f32 scale, int* out)
-{
+static void vecGetRanges(f32* pts, f32* base, f32 scale, int* out) {
     int i;
 
     out[0] = 0x7fffffff;
@@ -215,23 +214,28 @@ void vecGetRanges(f32* pts, f32* base, f32 scale, int* out)
     out[4] = 0x80000000;
     out[2] = 0x7fffffff;
     out[5] = 0x80000000;
-    for (i = 0; i < 8; i++)
-    {
+    for (i = 0; i < 8; i++) {
         f32 x = scale * pts[0] + base[0];
         f32 y = scale * pts[1] + base[1];
         f32 z = scale * pts[2] + base[2];
-        if (x < out[0])
+        if (x < out[0]) {
             out[0] = x;
-        if (x > out[3])
+        }
+        if (x > out[3]) {
             out[3] = x;
-        if (y < out[1])
+        }
+        if (y < out[1]) {
             out[1] = y;
-        if (y > out[4])
+        }
+        if (y > out[4]) {
             out[4] = y;
-        if (z < out[2])
+        }
+        if (z < out[2]) {
             out[2] = z;
-        if (z > out[5])
+        }
+        if (z > out[5]) {
             out[5] = z;
+        }
         pts += 3;
     }
 }
@@ -361,136 +365,134 @@ void objDrawGroundShadow(GameObject* obj, ObjModel* model)
     }
 }
 
-void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8)
-{
+static void trackDolphin_buildShadowVolumePlanes(int* obj, void* buf48, void* bufA8) {
     f32* verts = buf48;
     f32* planes = bufA8;
     Vec nrm;
 
     {
-    Vec3f edge1;
-    Vec3f edge2;
+        Vec3f edge1;
+        Vec3f edge2;
 
-    edge1.x = verts[6] - verts[9];
-    edge1.y = verts[7] - verts[10];
-    edge1.z = verts[8] - verts[0xb];
-    edge2.x = verts[0x15] - verts[9];
-    edge2.y = verts[0x16] - verts[10];
-    edge2.z = verts[0x17] - verts[0xb];
-    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(&nrm, &nrm);
-    planes[0] = -nrm.x;
-    planes[1] = -nrm.y;
-    planes[2] = -nrm.z;
-    planes[3] = -(planes[0] * verts[9] + planes[1] * verts[10] + planes[2] * verts[0xb]);
+        edge1.x = verts[6] - verts[9];
+        edge1.y = verts[7] - verts[10];
+        edge1.z = verts[8] - verts[0xb];
+        edge2.x = verts[0x15] - verts[9];
+        edge2.y = verts[0x16] - verts[10];
+        edge2.z = verts[0x17] - verts[0xb];
+        nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+        nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+        nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+        PSVECNormalize(&nrm, &nrm);
+        planes[0] = -nrm.x;
+        planes[1] = -nrm.y;
+        planes[2] = -nrm.z;
+        planes[3] = -(planes[0] * verts[9] + planes[1] * verts[10] + planes[2] * verts[0xb]);
     }
 
     {
-    Vec3f edge1;
-    Vec3f edge2;
+        Vec3f edge1;
+        Vec3f edge2;
 
-    edge1.x = verts[0x12] - verts[0xf];
-    edge1.y = verts[0x13] - verts[0x10];
-    edge1.z = verts[0x14] - verts[0x11];
-    edge2.x = verts[3] - verts[0xf];
-    edge2.y = verts[4] - verts[0x10];
-    edge2.z = verts[5] - verts[0x11];
-    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(&nrm, &nrm);
-    planes[5] = -nrm.x;
-    planes[6] = -nrm.y;
-    planes[7] = -nrm.z;
-    planes[8] = -(planes[5] * verts[0xf] + planes[6] * verts[0x10] + planes[7] * verts[0x11]);
+        edge1.x = verts[0x12] - verts[0xf];
+        edge1.y = verts[0x13] - verts[0x10];
+        edge1.z = verts[0x14] - verts[0x11];
+        edge2.x = verts[3] - verts[0xf];
+        edge2.y = verts[4] - verts[0x10];
+        edge2.z = verts[5] - verts[0x11];
+        nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+        nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+        nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+        PSVECNormalize(&nrm, &nrm);
+        planes[5] = -nrm.x;
+        planes[6] = -nrm.y;
+        planes[7] = -nrm.z;
+        planes[8] = -(planes[5] * verts[0xf] + planes[6] * verts[0x10] + planes[7] * verts[0x11]);
     }
 
     {
-    Vec3f edge1;
-    Vec3f edge2;
+        Vec3f edge1;
+        Vec3f edge2;
 
-    edge1.x = verts[0xf] - verts[0xc];
-    edge1.y = verts[0x10] - verts[0xd];
-    edge1.z = verts[0x11] - verts[0xe];
-    edge2.x = verts[0] - verts[0xc];
-    edge2.y = verts[1] - verts[0xd];
-    edge2.z = verts[2] - verts[0xe];
-    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(&nrm, &nrm);
-    planes[10] = -nrm.x;
-    planes[0xb] = -nrm.y;
-    planes[0xc] = -nrm.z;
-    planes[0xd] = -(planes[10] * verts[0xc] + planes[0xb] * verts[0xd] + planes[0xc] * verts[0xe]);
+        edge1.x = verts[0xf] - verts[0xc];
+        edge1.y = verts[0x10] - verts[0xd];
+        edge1.z = verts[0x11] - verts[0xe];
+        edge2.x = verts[0] - verts[0xc];
+        edge2.y = verts[1] - verts[0xd];
+        edge2.z = verts[2] - verts[0xe];
+        nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+        nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+        nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+        PSVECNormalize(&nrm, &nrm);
+        planes[10] = -nrm.x;
+        planes[0xb] = -nrm.y;
+        planes[0xc] = -nrm.z;
+        planes[0xd] = -(planes[10] * verts[0xc] + planes[0xb] * verts[0xd] + planes[0xc] * verts[0xe]);
     }
 
     {
-    Vec3f edge1;
-    Vec3f edge2;
+        Vec3f edge1;
+        Vec3f edge2;
 
-    edge1.x = verts[9] - verts[0];
-    edge1.y = verts[10] - verts[1];
-    edge1.z = verts[0xb] - verts[2];
-    edge2.x = verts[0xc] - verts[0];
-    edge2.y = verts[0xd] - verts[1];
-    edge2.z = verts[0xe] - verts[2];
-    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(&nrm, &nrm);
-    planes[0xf] = -nrm.x;
-    planes[0x10] = -nrm.y;
-    planes[0x11] = -nrm.z;
-    planes[0x12] = -(planes[0xf] * verts[0] + planes[0x10] * verts[1] + planes[0x11] * verts[2]);
+        edge1.x = verts[9] - verts[0];
+        edge1.y = verts[10] - verts[1];
+        edge1.z = verts[0xb] - verts[2];
+        edge2.x = verts[0xc] - verts[0];
+        edge2.y = verts[0xd] - verts[1];
+        edge2.z = verts[0xe] - verts[2];
+        nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+        nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+        nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+        PSVECNormalize(&nrm, &nrm);
+        planes[0xf] = -nrm.x;
+        planes[0x10] = -nrm.y;
+        planes[0x11] = -nrm.z;
+        planes[0x12] = -(planes[0xf] * verts[0] + planes[0x10] * verts[1] + planes[0x11] * verts[2]);
     }
 
     {
-    Vec3f edge1;
-    Vec3f edge2;
+        Vec3f edge1;
+        Vec3f edge2;
 
-    edge1.x = verts[0x12] - verts[0x15];
-    edge1.y = verts[0x13] - verts[0x16];
-    edge1.z = verts[0x14] - verts[0x17];
-    edge2.x = verts[0xc] - verts[0x15];
-    edge2.y = verts[0xd] - verts[0x16];
-    edge2.z = verts[0xe] - verts[0x17];
-    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(&nrm, &nrm);
-    planes[0x14] = -nrm.x;
-    planes[0x15] = -nrm.y;
-    planes[0x16] = -nrm.z;
-    planes[0x17] = -(planes[0x14] * verts[0x15] + planes[0x15] * verts[0x16] + planes[0x16] * verts[0x17]);
+        edge1.x = verts[0x12] - verts[0x15];
+        edge1.y = verts[0x13] - verts[0x16];
+        edge1.z = verts[0x14] - verts[0x17];
+        edge2.x = verts[0xc] - verts[0x15];
+        edge2.y = verts[0xd] - verts[0x16];
+        edge2.z = verts[0xe] - verts[0x17];
+        nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+        nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+        nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+        PSVECNormalize(&nrm, &nrm);
+        planes[0x14] = -nrm.x;
+        planes[0x15] = -nrm.y;
+        planes[0x16] = -nrm.z;
+        planes[0x17] = -(planes[0x14] * verts[0x15] + planes[0x15] * verts[0x16] + planes[0x16] * verts[0x17]);
     }
 
     {
-    Vec3f edge1;
-    Vec3f edge2;
+        Vec3f edge1;
+        Vec3f edge2;
 
-    edge1.x = verts[3] - verts[0];
-    edge1.y = verts[4] - verts[1];
-    edge1.z = verts[5] - verts[2];
-    edge2.x = verts[9] - verts[0];
-    edge2.y = verts[10] - verts[1];
-    edge2.z = verts[0xb] - verts[2];
-    nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
-    nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
-    nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
-    PSVECNormalize(&nrm, &nrm);
-    planes[0x19] = -nrm.x;
-    planes[0x1a] = -nrm.y;
-    planes[0x1b] = -nrm.z;
-    planes[0x1c] = -(planes[0x19] * verts[0] + planes[0x1a] * verts[1] + planes[0x1b] * verts[2]);
+        edge1.x = verts[3] - verts[0];
+        edge1.y = verts[4] - verts[1];
+        edge1.z = verts[5] - verts[2];
+        edge2.x = verts[9] - verts[0];
+        edge2.y = verts[10] - verts[1];
+        edge2.z = verts[0xb] - verts[2];
+        nrm.x = edge2.y * edge1.z - edge2.z * edge1.y;
+        nrm.y = -(edge2.x * edge1.z - edge2.z * edge1.x);
+        nrm.z = edge2.x * edge1.y - edge2.y * edge1.x;
+        PSVECNormalize(&nrm, &nrm);
+        planes[0x19] = -nrm.x;
+        planes[0x1a] = -nrm.y;
+        planes[0x1b] = -nrm.z;
+        planes[0x1c] = -(planes[0x19] * verts[0] + planes[0x1a] * verts[1] + planes[0x1b] * verts[2]);
     }
 }
 
-int cullVisibleShadowTriangles(GameObject* obj, void* u1, void* u2, int count, Vec3f* vertices, Vec3f* outVertices,
-                TrackShadowTriangle* triangles, int limit)
-{
+static int cullVisibleShadowTriangles(GameObject* obj, void* u1, void* u2, int count, Vec3f* vertices,
+                                      Vec3f* outVertices, TrackShadowTriangle* triangles, int limit) {
     int vertexIndex = 0;
     int outCount = 0;
     int i = 0;
@@ -498,26 +500,21 @@ int cullVisibleShadowTriangles(GameObject* obj, void* u1, void* u2, int count, V
     ObjModelState* modelState = obj->anim.modelState;
 
     gShadowVisibleCount = 0;
-    for (; i < count; i++, vertexIndex += 3, triangles++)
-    {
+    for (; i < count; i++, vertexIndex += 3, triangles++) {
         int vis = 1;
         f32 dot = modelState->shadowOffsetX * triangles->normal.x + modelState->shadowOffsetY * triangles->normal.y +
                   modelState->shadowOffsetZ * triangles->normal.z;
-        if (dot < 0.0f)
-        {
+        if (dot < 0.0f) {
             vis = -1;
         }
-        if (vis == 1)
-        {
+        if (vis == 1) {
             gShadowVisibleCount++;
-            for (j = 0; j < 3; j++)
-            {
+            for (j = 0; j < 3; j++) {
                 outVertices->x = vertices[vertexIndex + j].x;
                 outVertices->y = vertices[vertexIndex + j].y;
                 outVertices->z = vertices[vertexIndex + j].z;
                 outVertices++;
-                if (++outCount >= limit)
-                {
+                if (++outCount >= limit) {
                     return 0;
                 }
             }
@@ -668,33 +665,26 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
     }
 }
 
-int objShadowGetFadedAlpha(GameObject* obj, u8 param)
-{
+static int objShadowGetFadedAlpha(GameObject* obj, u8 param) {
     int lo;
     int hi;
     f32 inv;
     ObjDef* p;
 
     p = (ObjDef*)((obj)->anim.modelInstance);
-    if (p->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
-    {
+    if (p->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW) {
         lo = 1000;
         hi = 2000;
-    }
-    else
-    {
+    } else {
         lo = 400;
         hi = 500;
     }
     inv = (Camera_DistanceToCurrentViewPosition((obj)->anim.worldPosX, (obj)->anim.worldPosY, (obj)->anim.worldPosZ) -
            lo) /
           (f32)(hi - lo);
-    if (inv < 0.0f)
-    {
+    if (inv < 0.0f) {
         inv = 0.0f;
-    }
-    else if (inv > 1.0f)
-    {
+    } else if (inv > 1.0f) {
         inv = 1.0f;
     }
     inv = 1.0f - inv;
