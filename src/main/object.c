@@ -963,7 +963,7 @@ ObjPlacement* Obj_AllocObjectSetup(int size, int type)
     p->size = size;
     return p;
 }
-void objFreeObjdef(u8* obj, int flag)
+static void objFreeObjdef(u8* obj, int flag)
 {
     int defs[40];
     void (*fp)(u8*, int);
