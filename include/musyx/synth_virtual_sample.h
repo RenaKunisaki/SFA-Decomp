@@ -77,7 +77,6 @@ extern SynthVirtualSampleState synthVirtualSampleState;
 void synthInitVirtualSampleTable(void);
 u32 synthClaimVirtualSampleSlot(u8 voice);
 void synthHandleVirtualSampleDone(u32 packed);
-void synthAdvanceVirtualSampleEntry(void *entry, u32 elapsed);
 void synthUpdateVirtualSamples(void);
 void synthResetLoadedGroupCount(void);
 

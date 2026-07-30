@@ -156,7 +156,7 @@ void synthHandleVirtualSampleDone(u32 packed)
     slots[entry->voice] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
 }
 
-void synthAdvanceVirtualSampleEntry(void* entry, u32 elapsed)
+static void synthAdvanceVirtualSampleEntry(void* entry, u32 elapsed)
 {
     SynthVirtualSampleState* state;
     SynthVirtualSampleEntry* sample;
