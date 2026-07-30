@@ -17,8 +17,6 @@ void ReadThreadStart(void);
 BOOL CreateReadThread(OSPriority priority);
 OSMessage PopDecodedTextureSet(s32 flags);
 void PushFreeTextureSet(OSMessage msg);
-void* AttractMovieVideo_DecoderForOnMemory(void* param);
-void* AttractMovieVideo_Decoder(void* unused);
 void VideoDecodeThreadCancel(void);
 void VideoDecodeThreadStart(void);
 BOOL CreateVideoDecodeThread(OSPriority priority, u32 onMemoryArg);
