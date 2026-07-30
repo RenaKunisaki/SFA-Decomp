@@ -248,7 +248,7 @@ void fn_802AA2B0(int obj, int state, f32 unused, f32 yoff);
 void staffShootFireball(GameObject* obj, int p2, f32 unused);
 void objDoTeleportAnim(GameObject* obj);
 void playerDie(GameObject* obj);
-void fn_802AABE4(int obj);
+void playerCacheMoveRootHeights(int obj);
 void playerDrawTeleportAnim(GameObject* obj);
 void fn_802AAF80(GameObject* obj, int inner, int a, int b, int c);
 int fn_802AB1D0(GameObject* obj);
@@ -12624,7 +12624,7 @@ void playerDie(GameObject* obj)
     AudioStream_Play(0x51e0, AudioStream_StartPrepared);
 }
 
-void fn_802AABE4(int obj)
+void playerCacheMoveRootHeights(int obj)
 {
     s16* moveId;
     f32* outputHeight;
@@ -18463,7 +18463,7 @@ void objLoadPlayerFromSave(int obj)
                        ((s16*)(base + 0x7fc))[*(s16*)((char*)da + 0x2)], 0);
         off += 0xb0;
     }
-    fn_802AABE4(obj);
+    playerCacheMoveRootHeights(obj);
     gPlayerSelectedItem = GAMEBIT_STAFF_ABILITY_FIRE_BLASTER;
     gPlayerEggObject = 0;
     base += 0x1b94;
