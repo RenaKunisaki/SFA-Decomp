@@ -108,7 +108,7 @@ typedef struct TexShadowRow
     int type;
 } TexShadowRow;
 
-u8 mapBlockBounds_HasCornerPastDepthThreshold(MapBlockBoundsRec* bounds, float* xform)
+static u8 mapBlockBounds_HasCornerPastDepthThreshold(MapBlockBoundsRec* bounds, float* xform)
 {
     Vec v;
     u32 i;
@@ -430,9 +430,9 @@ u32 frustumTestAabbWithPlaneOffsets(f32 minX, f32 maxX, f32 minY, f32 maxY, f32 
     return 1;
 }
 
-u8 mapBlockBounds_ComputeAndTestPlanes(MapBlockBoundsRec* bounds, struct MapBlockData* block,
-                                       FrustumPlane* planes, int planeCount, f32* minX, f32* minY, f32* minZ,
-                                       f32* maxX, f32* maxY, f32* maxZ)
+static u8 mapBlockBounds_ComputeAndTestPlanes(MapBlockBoundsRec* bounds, struct MapBlockData* block,
+                                              FrustumPlane* planes, int planeCount, f32* minX, f32* minY, f32* minZ,
+                                              f32* maxX, f32* maxY, f32* maxZ)
 {
     u8 cornerIndex;
     float nearX;
