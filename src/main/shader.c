@@ -2653,19 +2653,20 @@ MapCellEntry* mapGetCellEntry(int x, int z)
 void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
 {
     int id;
-    MapRomListGrid* grid;
-    int adjacentMapId2;
-    char* slots;
-    char* activeFlags;
-    int slot;
-    int adjacentMapId1;
-    s16* adjacentMapIds;
-    s16* mapBounds;
-    u32 cell;
 
     id = mapCoordsToId(gridX, gridZ, layer);
     if (id != -1)
     {
+        MapRomListGrid* grid;
+        int adjacentMapId2;
+        char* slots;
+        char* activeFlags;
+        int slot;
+        int adjacentMapId1;
+        s16* adjacentMapIds;
+        s16* mapBounds;
+        u32 cell;
+
         slot = mapFindRomListSlotByIdAndGetBase(&slots, id);
         if (slot == -1)
             slot = mapProcessRomList(id);
