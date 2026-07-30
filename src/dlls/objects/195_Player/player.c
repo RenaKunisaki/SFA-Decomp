@@ -260,7 +260,7 @@ void playerUpdateCameraTargetLookAngles(GameObject* obj, int state, PlayerState*
 void playerUpdateLookAtTarget(int p1, int p2, int p3);
 void playerSetMovingAnims(int p1, int obj);
 int fn_802ADC08(GameObject* obj, int inner, int p3);
-void fn_802ADE80(GameObject* obj, int inner, int state);
+void playerUpdateWaterMotion(GameObject* obj, int inner, int state);
 int playerUpdateQuickTurn(GameObject* obj, int inner, int state);
 void playerUpdateStaffAttack(GameObject* obj, int state, int p3);
 void playerEnterDeepWater(int obj, int inner, int state);
@@ -9969,7 +9969,7 @@ int playerStateMoving(int obj, int state, f32 fv)
         }
         else if ((fl >> 5 & 1) != 0)
         {
-            fn_802ADE80((GameObject*)obj, inner, state);
+            playerUpdateWaterMotion((GameObject*)obj, inner, state);
         }
         else if ((fl >> 3 & 1) != 0)
         {
@@ -10546,7 +10546,7 @@ int playerStateIdle(int obj, int state, f32 fv)
         (((PlayerState*)inner)->maxSpeed - 0.05f) * (t * ((PlayerState*)inner)->speedScale);
     if (((ByteFlags*)((char*)inner + 0x3f0))->b20 != 0)
     {
-        fn_802ADE80((GameObject*)obj, inner, state);
+        playerUpdateWaterMotion((GameObject*)obj, inner, state);
     }
     {
         u32 fl = ((PlayerState*)inner)->flags3F0;
@@ -14027,7 +14027,7 @@ int fn_802ADC08(GameObject* obj, int inner, int p3)
     return 0;
 }
 
-void fn_802ADE80(GameObject* obj, int inner, int state)
+void playerUpdateWaterMotion(GameObject* obj, int inner, int state)
 {
     f32 t[3];
     f32 waterX;
