@@ -179,7 +179,6 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
     f32 heightDelta;
     f32 accel;
     f32 accelDenom;
-    f32 launchSpeed;
     register int facingAngle;
     int angleDelta;
     int pitchSign;
@@ -195,6 +194,7 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
     player = (int)Obj_GetPlayerObject();
     state = (obj)->extra;
     if (state->shotCooldown <= 0) {
+        f32 launchSpeed;
         modelRotation = objFindJointPoseVector(obj, 0);
         facingAngle = modelRotation[1] + ((s32)placement->rotationXByte << 8);
         targetX -= (obj)->anim.localPosX;
