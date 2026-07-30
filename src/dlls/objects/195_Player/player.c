@@ -177,7 +177,7 @@ void playerStagedSyncHitPosition(int obj);
 int playerState35(GameObject* obj, int state);
 int playerState34(GameObject* obj, int state);
 int playerStateStaffLiftRock(int obj, int state, f32 fv);
-void fn_802994A4(GameObject* obj);
+void playerStagedResetAnimStateAndSyncPosition(GameObject* obj);
 int playerStateStaffBoost(GameObject* obj, int state, f32 fv);
 int playerState31(GameObject* obj, int p2);
 int playerState30(GameObject* obj, int state, f32 fv);
@@ -3405,7 +3405,7 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
     return 0;
 }
 
-void fn_802994A4(GameObject* obj)
+void playerStagedResetAnimStateAndSyncPosition(GameObject* obj)
 {
     *(s16*)((char*)*(int*)&obj->extra + 0x80a) = -1;
     ObjHits_SyncObjectPositionIfDirty(obj);
@@ -12867,7 +12867,7 @@ void playerCastSpell(int a, int b, int c)
     case GAMEBIT_STAFF_ABILITY_STAFF_BOOSTER:
         gPlayerInteractTarget = ((PlayerState*)b)->cameraTargetObject;
         (*gPlayerInterface)->setState((void*)a, (void*)b, 0x32);
-        *(int*)&((PlayerState*)b)->baddie.unk304 = (int)fn_802994A4;
+        *(int*)&((PlayerState*)b)->baddie.unk304 = (int)playerStagedResetAnimStateAndSyncPosition;
         break;
     case 0x107:
     case 0xc55:
