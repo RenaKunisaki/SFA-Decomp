@@ -96,7 +96,7 @@ typedef struct PlayerState {
     u8 pad40E[0x410 - 0x40E];
     f32 rumbleCooldown; /* f32 countdown decremented by frame-time each tick, floored to 0; when expired (<=0) and moving fast (animSpeedA > thresh) fires doRumble + sfx 0x404 and resets to the cooldown interval */
     f32 buttonHoldTimer; /* accumulates frame-time while button 0x100 is held (and playerCanCastQuakeSpell true), clamped to a max; reset to 0 when released; paired with the 0x3f4:b20 "accumulating" flag */
-    f32 actionCooldown; /* f32 input-cooldown countdown decremented by timeDelta each tick, floored to 0; gates button 0x100: when pressed and the timer has expired (<=0) performs the staff/aim action (fn_802AA014) and resets to the cooldown interval */
+    f32 actionCooldown; /* f32 input-cooldown countdown decremented by timeDelta each tick, floored to 0; gates button 0x100: when pressed and the timer has expired (<=0) fires the CloudRunner projectile and resets to the cooldown interval */
     u8 chargeCapacity; /* 0x41c: full-charge level for the breath attack (0x14 for move 0xc55, else 0xa); chargeLevel must reach this to fire, and -chargeCapacity is the damage applied to the target */
     u8 pad41D[0x420 - 0x41D];
     f32 leanCurveScale; /* lean-curve sample: Curve_EvalCatmullRom(leanCurve) indexed by targetYawRateSigned (default 1.0); multiplies targetYawRateLimit to bound the per-frame targetYaw delta */

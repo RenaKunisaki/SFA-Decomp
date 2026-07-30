@@ -243,7 +243,7 @@ int playerCanCastQuakeSpell(GameObject* obj, int p2);
 int playerCanCastBlasterSpell(GameObject* obj, int p2, int p3);
 int playerIsBlasterSpellAvailable(GameObject* obj, int p2, int p3);
 void fn_802A9D0C(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8);
-void fn_802AA014(GameObject* obj, int state, f32 aimInputZ, f32 zero);
+void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, f32 zero);
 void fn_802AA2B0(int obj, int state, f32 unused, f32 yoff);
 void staffShootFireball(GameObject* obj, int p2, f32 unused);
 void objDoTeleportAnim(GameObject* obj);
@@ -6357,7 +6357,7 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
         if (inner->actionCooldown <= 0.0f)
         {
             buttonDisable(0, PAD_BUTTON_A);
-            fn_802AA014(obj, state, inner->aimInputZ, 0.0f);
+            playerFireCloudRunnerProjectile(obj, state, inner->aimInputZ, 0.0f);
             inner->actionCooldown = 5.0f;
         }
     }
@@ -12304,7 +12304,7 @@ void fn_802A9D0C(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8)
     playerRefreshCollisionState((GameObject*)p1, p2, 7);
 }
 
-void fn_802AA014(GameObject* obj, int state, f32 aimInputZ, f32 zero)
+void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, f32 zero)
 {
     void* o;
     int slot;
