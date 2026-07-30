@@ -21,8 +21,8 @@ void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model);
 void staffUpdateSegmentTransforms(int staff, GameObject* obj, int model, int a, int b, int c);
 void objModelClearJointVectors(GameObject* obj);
 int characterTrackJointList(GameObject* obj, int* keys, int count, u8* channels);
-s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* targetPos, u8* channels, s16* speeds,
-                       f32 yOffset, int unused, int basePitch);
+s16 objJointTracksAimAtTarget(GameObject* obj, GameObject* target, f32* targetPos, u8* channels, s16* speeds,
+                              f32 yOffset, int unused, int basePitch);
 void objJointTracksSetAngles(u8* channelData, int count, s16 yaw, s16 pitch);
 void characterDecayJointVecs(GameObject* obj, int* keys, int count);
 void objJointTracksCaptureCurrentAngles(GameObject* obj, int* keys, int count, u8* channels);
