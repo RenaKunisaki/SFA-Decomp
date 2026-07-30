@@ -1033,9 +1033,8 @@ void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
                 headingDelta = headingDelta + 0xffff;
             }
             absoluteHeadingDelta = ((int)headingDelta >= 0) ? headingDelta : -headingDelta;
-            if ((int)((u32)(((int)(absoluteHeadingDelta ^ gSnowBikeWrongWayAngleThreshold) >> 1) -
-                             ((absoluteHeadingDelta ^ gSnowBikeWrongWayAngleThreshold) & absoluteHeadingDelta)) >> 0x1f) ==
-                0)
+            gameBitSet = (int)absoluteHeadingDelta > gSnowBikeWrongWayAngleThreshold;
+            if ((int)gameBitSet == 0)
             {
                 pathStep = timeDelta;
             }
@@ -1043,7 +1042,7 @@ void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
             {
                 pathStep = -timeDelta;
             }
-            st->pathProgress = st->pathProgress + pathStep;
+            st->pathProgress += pathStep;
             pathStep = st->pathProgress;
             st->pathProgress =
                 (pathStep < 0.0f) ? 0.0f : ((pathStep > 180.0f) ? 180.0f : pathStep);
