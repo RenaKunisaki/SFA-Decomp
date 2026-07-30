@@ -143,7 +143,7 @@ ModelLightStruct* modelLightStruct_createPointLight(void* owner, u8 red, u8 gree
     return light;
 }
 
-u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* light, GameObject* obj)
+static u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* light, GameObject* obj)
 {
     f32 localPos[3];
     f32 projected[3];
