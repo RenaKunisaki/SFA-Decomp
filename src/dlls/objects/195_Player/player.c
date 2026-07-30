@@ -201,7 +201,7 @@ int playerState21(int obj, int state, f32 fv);
 int playerState20(GameObject* obj, int state, f32 fv);
 int playerState1F(GameObject* obj, int state, f32 fv);
 int playerState1E(int obj, int state, f32 fv);
-void fn_8029DAE0(GameObject* obj, int* p2);
+void playerStagedRestoreCameraAndSyncPosition(GameObject* obj, int* stateFlags);
 int playerState1C(GameObject* obj, int state);
 int playerState1B(GameObject* obj, int state, f32 fv);
 int playerStateOnCloudRunner(GameObject* obj, int state);
@@ -5665,11 +5665,11 @@ int playerState1E(int obj, int state, f32 fv)
     return 0;
 }
 
-void fn_8029DAE0(GameObject* obj, int* p2)
+void playerStagedRestoreCameraAndSyncPosition(GameObject* obj, int* stateFlags)
 {
     PlayerState* inner = obj->extra;
     u8 c;
-    *p2 &= ~0x4000;
+    *stateFlags &= ~0x4000;
     c = inner->curAnimId;
     if (c != 0x48 && c != 0x47 && getCurSeqNo() == 0)
     {
@@ -5780,7 +5780,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     {
         ((ByteFlags*)((char*)inner + 0x3f3))->b01 = ((ByteFlags*)((char*)inner + 0x3f3))->b08;
         state->baddie.stateId = 0x1d;
-        inner->stateHandler = (int)fn_8029DAE0;
+        inner->stateHandler = (int)playerStagedRestoreCameraAndSyncPosition;
     }
     if (*(s8*)&state->baddie.moveJustStartedA != 0)
     {
@@ -9203,7 +9203,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
             }
             break;
         case 6:
-            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)fn_8029DAE0;
+            *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraAndSyncPosition;
             return -0x1d;
         case 0xd:
             *(int*)&((PlayerState*)state)->baddie.unk308 = 0;
