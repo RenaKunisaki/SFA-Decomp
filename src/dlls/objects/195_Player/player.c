@@ -17603,7 +17603,7 @@ void playerRenderFuzz(GameObject* obj, int p2, int fuzzPass)
     }
     else if (m == 2)
     {
-        objRenderFn_800413d4((int*)obj);
+        objRenderFuzzShadowShells((int*)obj);
     }
     else if (m == 4)
     {

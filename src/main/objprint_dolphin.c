@@ -2651,7 +2651,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     f32* vm;
     int passMaskCopy;
     int fuzzPass;
-    int m2;
+    int fuzzShadowPass;
     int shadowPass;
     u8 did;
     int* op;
@@ -2810,8 +2810,8 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         }
         ((ObjModel*)am)->bufferFlags |= 8;
     }
-    m2 = passMaskCopy & 2;
-    if (m2 || fuzzPass || (passMaskCopy & 8))
+    fuzzShadowPass = passMaskCopy & 2;
+    if (fuzzShadowPass || fuzzPass || (passMaskCopy & 8))
     {
         int j;
         f32 one;
@@ -2855,7 +2855,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     }
     if (*(u32*)&((ModelFileHeader*)m)->vertexAnimEntries != 0)
     {
-        if (fuzzPass || m2 || (passMaskCopy & 8))
+        if (fuzzPass || fuzzShadowPass || (passMaskCopy & 8))
         {
             f32 sc2 = 1.0f + (lbl_803DEA54 * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
             PSMTXTrans((MtxPtr)tm, -*(f32*)(m + 0x44), -*(f32*)(m + 0x48), -*(f32*)(m + 0x4c));
@@ -2945,7 +2945,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
             GXSetCullMode(GX_CULL_NONE);
         }
     }
-    else if (m2 != 0)
+    else if (fuzzShadowPass != 0)
     {
         objFuzzSetupGxState(obj);
     }
@@ -3179,7 +3179,7 @@ void objRenderFuzzShells(int* obj)
     }
 }
 
-void objRenderFn_800413d4(int* obj)
+void objRenderFuzzShadowShells(int* obj)
 {
     int* model;
     u32 savedMtx;
