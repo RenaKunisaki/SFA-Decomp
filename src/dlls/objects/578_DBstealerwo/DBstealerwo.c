@@ -2286,14 +2286,13 @@ void dbstealerworm_hitDetect(GameObject* obj)
     (*gPlayerInterface)->updateVelocityState(obj, inner, gDBStealerWormStateHandlersA);
 }
 
-void dbstealerworm_update(GameObject* objp)
+void dbstealerworm_update(GameObject* obj)
 {
-    DbWormEffectSpawnWork* st;
-    char* tbl;
+    DbWormEffectSpawnWork* st = &gDbWormEffectSpawnWork;
+    char* tbl = (char*)gDbStealerwormScriptStealEggThrowToWorm;
     int blob;
     int data;
     int sub;
-    GameObject* obj;
     DbWormMsgGroup* grp;
     int sub3;
     int n;
@@ -2307,9 +2306,6 @@ void dbstealerworm_update(GameObject* objp)
         f32 v[3];
     } stk;
 
-    obj = objp;
-    st = &gDbWormEffectSpawnWork;
-    tbl = (char*)gDbStealerwormScriptStealEggThrowToWorm;
     blob = *(int*)&obj->extra;
     data = (int)obj->anim.placementData;
     sub = *(int*)&((GroundBaddieState*)blob)->control;
@@ -2409,6 +2405,7 @@ void dbstealerworm_update(GameObject* objp)
                     }
                     ((GroundBaddieState*)blob)->savedPendingParentObj = obj->pendingParentObj;
                     obj->pendingParentObj = 0;
+                    /* Retail derives both pointers past the 0x18-byte scratch record. */
                     (*gPlayerInterface)->update((void*)obj, (void*)blob, timeDelta, timeDelta, (char*)st + 0x34, (char*)st + 0x18);
                     obj->pendingParentObj = ((GroundBaddieState*)blob)->savedPendingParentObj;
                 }
