@@ -1340,7 +1340,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
  * stage 1 modulates by the second texture. Uses ind tex stage 0 to warp
  * tex coord 0 by tex1.
  */
-void quakeSpellTextureFn_8007366c(u8 alpha)
+void setupQuakeSpellRingGxState(u8 alpha)
 {
 
     int handle1;

@@ -5,7 +5,7 @@
  * The staff drives a procedural swipe trail (staff_setupSwipe builds vertex
  * strips from the weapon's per-frame da-table via B-spline interpolation;
  * staffDrawSwipe / staff_update render and age them through GXWGFifo) and the
- * ground-quake spell (superQuakeFn / quakeSpellTextureFn draw a scaled torus
+ * ground-quake spell (superQuakeFn / setupQuakeSpellRingGxState draw a scaled torus
  * and shake the camera; quakeSpellFn_8016cee8 spawns the hit/charge particle
  * bursts keyed by attack type id). staff_hitDetectGeometry plays per-surface
  * impact sfx/water splashes from the contact hit-volume index, and the
@@ -513,7 +513,7 @@ void staffDrawQuakeSpellRing(void)
     {
         f32 scale;
         f32 z;
-        quakeSpellTextureFn_8007366c((int)((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade);
+        setupQuakeSpellRingGxState(((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade);
         memcpy(mView, Camera_GetViewMatrix(), 0x30);
         PSMTXRotRad(mRot, 'x', gStaffHalfPi);
         scale = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->scale;
