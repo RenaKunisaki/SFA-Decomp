@@ -269,7 +269,7 @@ void fn_802AED2C(GameObject* obj, int state, int p3);
 void staffAnimate(int obj, void* state, f32 dt);
 void playerProcessQueuedItemCommand(GameObject* obj, int state);
 void playerRunActiveSpells(GameObject* obj, int state);
-void fn_802B066C(GameObject* obj, int state);
+void playerUpdateKnockbackTimers(GameObject* obj, int state);
 void playerStaffInit(GameObject* obj, int state);
 void playerDoEyeAnims(GameObject* obj, int state);
 void fn_802B18BC(GameObject* obj, int state, f32 fv);
@@ -15392,7 +15392,7 @@ void fn_802AFB0C(int obj, int inner, int state)
     }
 }
 
-void fn_802B066C(GameObject* obj, int state)
+void playerUpdateKnockbackTimers(GameObject* obj, int state)
 {
     f32 v;
     f32 posWork[6];
@@ -18256,7 +18256,7 @@ void playerUpdate(GameObject* obj)
                     ((PlayerState*)inner)->stepDustCount = lbl_803DC6B0[((PlayerState*)inner)->gaitStepLevel];
                 }
             }
-            fn_802B066C(obj, inner);
+            playerUpdateKnockbackTimers(obj, inner);
             if (((PlayerState*)inner)->teleportAnimActive == 1)
             {
                 ((PlayerState*)inner)->teleportAnimProgress =
