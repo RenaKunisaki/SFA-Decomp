@@ -29,7 +29,6 @@
 
 #define DFBARREL_NODE_LINKS_OFFSET 0x28
 #define DFROPENODE_OBJGROUP        0x17
-extern const f32 lbl_803E4DFC;
 
 int gRopeNodeTextureAssetIds[2] = {0x3CA, 0x5DD};
 void* gRopeNodeTextures[2] = {0};
@@ -426,14 +425,8 @@ f32 DFRope_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 start
 
 int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32 worldZ, float* distanceOut,
                                     float* phaseOut, u8* sideOut) {
-    int offset;
     int i;
     DFropenodeState* state;
-    f32 phase;
-    f32 localY;
-    f32 localX;
-    f32 best;
-    f32 localZ;
     f32 x;
     f32 y;
     f32 z;
@@ -455,27 +448,26 @@ int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32
         return 0;
     }
     *distanceOut = 10000.0f;
-    localX = worldX - obj->anim.localPosX;
-    localY = worldY - obj->anim.localPosY;
-    localZ = worldZ - obj->anim.localPosZ;
+    worldX -= obj->anim.localPosX;
+    worldY -= obj->anim.localPosY;
+    worldZ -= obj->anim.localPosZ;
     {
         i = 0;
         result = 0;
-        offset = 0;
-        best = lbl_803E4DFC;
         for (; i < state->rope->count - 1; i++) {
             DFRopeNode* node;
+            f32 phase;
 
-            x = localX;
-            y = localY;
-            z = localZ;
-            node = (DFRopeNode*)((int)state->rope->nodes + offset);
+            x = worldX;
+            y = worldY;
+            z = worldZ;
+            node = &state->rope->nodes[i];
             phase = DFRope_projectPointOntoSegment(&x, &y, &z, node->pos[0], node->pos[1], node->pos[2], node[1].pos[0],
                                                    node[1].pos[1], node[1].pos[2]);
-            if (phase >= best && phase < 1.0f) {
-                dx = x - localX;
-                dy = y - localY;
-                dz = z - localZ;
+            if (phase >= 0.0f && phase < 1.0f) {
+                dx = x - worldX;
+                dy = y - worldY;
+                dz = z - worldZ;
                 distance = sqrtf(dx * dx + dy * dy + dz * dz);
                 if (distance < *distanceOut) {
                     result = i + 1;
@@ -483,7 +475,6 @@ int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32
                     *phaseOut = (f32)i + phase;
                 }
             }
-            offset += 0x34;
         }
     }
     if (result != 0) {
@@ -644,8 +635,9 @@ int dfropenode_syncRopeToEndpoints(GameObject* obj) {
         extra->boundsMaxZ = temp;
     }
 
-    if (extra->minimumY != lbl_803E4DFC) {
-        clampY = extra->minimumY - baseObj->anim.localPosY;
+    clampY = extra->minimumY;
+    if (clampY) {
+        clampY -= baseObj->anim.localPosY;
         for (i = 0; i < extra->rope->count - 1; i++) {
             if (extra->rope->nodes[i].pos[1] < clampY) {
                 extra->rope->nodes[i].pos[1] = clampY;
