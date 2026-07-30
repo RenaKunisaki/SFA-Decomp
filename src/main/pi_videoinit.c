@@ -100,10 +100,10 @@ void initViewport(void)
 void videoInit(void* unusedRenderMode, int unusedArg)
 {
     GXFifoObj fifo;
-    f32 mtx[3][4];
+    Mtx mtx;
     u8* arenaLo;
     u8* arenaHi;
-    int fbSize;
+    u32 fbSize;
     arenaLo = OSGetArenaLo();
     arenaHi = OSGetArenaHi();
     memcpy(arenaHi - 0x40000, gLoadingScreenTextures, 0x40000);
