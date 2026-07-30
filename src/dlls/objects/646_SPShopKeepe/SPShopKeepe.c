@@ -92,12 +92,12 @@ f32 gDrLaserTurretIdleAnimStepScales[2] = {0.01f, 0.0125f};
 
 #define DLL801E66DC_OBJFLAG_RENDERED 0x800
 
-int return0_801E66DC(void)
+int ShopKeeper_defaultStateHandler(void)
 {
     return 0;
 }
 
-int return0_801E66E4(void)
+int ShopKeeper_state7Handler(void)
 {
     return 0;
 }
@@ -1034,7 +1034,7 @@ void ShopKeeper_initialise(void)
     gShopKeeperStateHandlers[4] = TREX_Lazerwall_waitForStartBit;
     gShopKeeperStateHandlers[5] = TREX_Lazerwall_popQueuedState;
     gShopKeeperStateHandlers[6] = ShopKeeper_popQueuedState;
-    gShopKeeperStateHandlers[7] = return0_801E66E4;
-    gShopKeeperDefaultStateHandler = return0_801E66DC;
+    gShopKeeperStateHandlers[7] = ShopKeeper_state7Handler;
+    gShopKeeperDefaultStateHandler = ShopKeeper_defaultStateHandler;
 }
 
