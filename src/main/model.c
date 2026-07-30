@@ -37,7 +37,7 @@ int lbl_803DCB58;
 ModelList* gModelList;
 ModelList* gModelAnimCacheList;
 u32* gModelAnimDataOffsetTable;
-f32 lbl_803DCB48;
+f32 gModelChainJitterScale;
 
 u16 gModelCopyChunkWordLimit = 0x2A0;
 #define GX_BM_BLEND 1
@@ -1208,7 +1208,7 @@ void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain*
     {
         dot = 0.0f;
     }
-    scaled = lbl_803DCB48 * (1.2f - dot);
+    scaled = gModelChainJitterScale * (1.2f - dot);
     amp = 0.01f * randomGetRange((int)(75.0f * scaled), (int)(100.0f * scaled));
     i = 0;
     off = 0;
