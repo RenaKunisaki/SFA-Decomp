@@ -344,7 +344,7 @@ void synthQueueAllChannelEvents(void)
 }
 
 /* Queue the next event for every MIDI channel mapped to one sequence section. */
-void synthQueueChannelEventsForSection(u8 sectionIndex)
+static void synthQueueChannelEventsForSection(u8 sectionIndex)
 {
     u32 group;
     u32 i;
