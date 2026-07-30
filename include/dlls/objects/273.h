@@ -45,7 +45,6 @@ STATIC_ASSERT(offsetof(DoorLockPlacement, modeFlags) == 0x26);
 STATIC_ASSERT(offsetof(DoorLockState, unlocked) == 0x0);
 STATIC_ASSERT(sizeof(DoorLockState) == DOOR_LOCK_STATE_SIZE);
 
-int DoorLock_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int DoorLock_getExtraSize(void);
 void DoorLock_free(GameObject* obj);
 void DoorLock_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
