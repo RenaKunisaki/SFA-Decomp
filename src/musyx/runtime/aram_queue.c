@@ -12,7 +12,7 @@ extern AramTransferQueue aramHighPriorityQueue;
  * and invokes any pending entry's callback whose request handle
  * matches `req`. Decrements the count when done.
  */
-void aramQueueCallback(u32 requestAddress)
+static void aramQueueCallback(u32 requestAddress)
 {
     ARQRequest* request;
     AramTransferQueue* queue;
