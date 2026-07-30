@@ -1716,7 +1716,7 @@ MapBlockData* MapBlock_loadFromFile(int blockId)
     return buf;
 }
 
-void gxErrorFn_80060b40(void)
+void mapBlockGpuRecoveryHook(void)
 {
     int n;
     int i;

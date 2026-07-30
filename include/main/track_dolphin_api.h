@@ -80,7 +80,7 @@ void initTextures(void);
 void mapClearBlockEdgeFlags(void);
 void* mapBlockGetPolygon(int* obj, int idx);
 void* mapBlockGetEdge(int* obj, int idx);
-void gxErrorFn_80060b40(void);
+void mapBlockGpuRecoveryHook(void);
 struct MapBlockData* MapBlock_loadFromFile(int blockId);
 void setMapBlockFlag(void);
 void trackTickDynamicSlotCooldowns(void);

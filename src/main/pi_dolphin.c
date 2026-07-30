@@ -4121,7 +4121,7 @@ void videoSwapFrameBuffers(u32 retraceCount)
     if (gGpuHangRecoveryEnabled != 0 && (u32)gGpuStallRetraceCount > 18000)
     {
         logGpuHang();
-        gxErrorFn_80060b40();
+        mapBlockGpuRecoveryHook();
         ObjModel_TouchModelCache();
         __GXAbortWaitPECopyDone();
         GXInitFifoBase(&fifo, renderFrameBuffer, 0x10000);
