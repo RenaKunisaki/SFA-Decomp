@@ -251,7 +251,7 @@ void playerDie(GameObject* obj);
 void playerCacheMoveRootHeights(int obj);
 void playerDrawTeleportAnim(GameObject* obj);
 void fn_802AAF80(GameObject* obj, int inner, int a, int b, int c);
-int fn_802AB1D0(GameObject* obj);
+int playerFindNearestLookTarget(GameObject* obj);
 void playerCastSpell(int a, int b, int c);
 void playerRefreshCollisionState(GameObject* obj, int p2, int flags);
 void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player);
@@ -12789,7 +12789,7 @@ void fn_802AAF80(GameObject* obj, int inner, int a, int b, int c)
     }
 }
 
-int fn_802AB1D0(GameObject* obj)
+int playerFindNearestLookTarget(GameObject* obj)
 {
     GameObject* cur;
     u32* objs;
@@ -13080,7 +13080,7 @@ void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* 
         d = d + 0xffff;
     }
     player->headPitch = (f32)(int)player->headPitch + interpolate((f32)(int)d, 0.15f, timeDelta);
-    near = fn_802AB1D0(obj);
+    near = playerFindNearestLookTarget(obj);
     if ((u32)near != 0 && (((u32)player->flags3F0 >> 7) & 1) == 0 && (((u32)player->flags3F0 >> 6) & 1) == 0 &&
         (((u32)player->flags3F0 >> 4) & 1) == 0 && (((u32)player->flags3F0 >> 5) & 1) == 0) {
         int gd = (u16)getAngle(-(*(f32*)((char*)near + 0xc) - obj->anim.localPosX),
@@ -13219,7 +13219,7 @@ void fn_802AC32C(int p1, int p2, int p3)
     int angle1;
     int angle2;
 
-    near = (void*)fn_802AB1D0((GameObject*)p1);
+    near = (void*)playerFindNearestLookTarget((GameObject*)p1);
     if (near != NULL && ((ByteFlags*)((char*)p3 + 0x3f0))->b80 == 0 && ((ByteFlags*)((char*)p3 + 0x3f0))->b40 == 0)
     {
         f32 ratio;
