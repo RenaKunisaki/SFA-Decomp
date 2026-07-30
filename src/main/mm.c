@@ -717,7 +717,7 @@ int mmSetFreeDelay(int v)
     return old;
 }
 
-int mmAllocFromRegion(int region, int size, int type, int tag)
+static int mmAllocFromRegion(int region, int size, int type, int tag)
 {
     char* msg = sMmShowInfoFBMemoryStoreMessageBlock;
     int bestIdx;
