@@ -45,7 +45,7 @@ typedef struct DFRopeLink {
     f32 force[3];
 } DFRopeLink;
 
-struct DFRope {
+typedef struct DFRope {
     DFRopeNode* nodes;
     DFRopeLink* links;
     u8 count;
@@ -62,7 +62,7 @@ struct DFRope {
     f32 damping;
     f32 inverseTicks;
     f32 stepPerTick;
-};
+} DFRope;
 
 STATIC_ASSERT(offsetof(DFRopeNode, pos) == 0x00);
 STATIC_ASSERT(offsetof(DFRopeNode, velocity) == 0x0C);

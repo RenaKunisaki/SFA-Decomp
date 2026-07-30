@@ -5,7 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-typedef struct DFRope DFRope;
+struct DFRope;
 
 typedef struct DFropenodePlacement {
     ObjPlacement base;
@@ -29,7 +29,7 @@ typedef struct DFropenodeState {
     f32 planeNormalY;
     f32 planeNormalZ;
     f32 planeDistance;
-    DFRope* rope;
+    struct DFRope* rope;
     u8 hidden : 1;
     u8 pad30 : 7;
     u8 pad31[3];
