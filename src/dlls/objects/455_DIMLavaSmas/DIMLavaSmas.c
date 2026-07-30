@@ -24,32 +24,29 @@ enum DimLavaSmashPhase {
 #define DIM_LAVA_SMASH_ANIM_COMMAND_COMPLETE 1
 
 void dimlavasmash_setBlockSurfaceFlags(MapBlockData* map, int disable, int surfaceType) {
-    int clearMask;
+    u32 clearMask;
     int i;
     int j;
-    int* block;
-    int got;
 
-    for (j = 0; j < (int)((MapBlockData*)map)->polyGroupCount; j++) {
-        block = mapBlockGetPolygonGroup(map, j);
-        got = mapBlockGetPolygonGroupType(block);
-        if (surfaceType == got) {
+    for (j = 0; j < (int)map->polyGroupCount; j++) {
+        MapPolygonGroup* polygonGroup = mapBlockGetPolygonGroup(map, j);
+        if (surfaceType == mapBlockGetPolygonGroupType(polygonGroup)) {
             if (disable != 0) {
-                *(u32*)(block + 0x10 / 4) &= ~2LL;
-                *(u32*)(block + 0x10 / 4) &= ~1LL;
+                polygonGroup->flags &= ~2LL;
+                polygonGroup->flags &= ~1LL;
             } else {
-                block[0x10 / 4] = block[0x10 / 4] | 2;
-                block[0x10 / 4] = block[0x10 / 4] | 1;
+                polygonGroup->flags |= 2;
+                polygonGroup->flags |= 1;
             }
         }
     }
-    for (i = 0, clearMask = ~2; i < (int)((MapBlockData*)map)->shaderCount; i++) {
-        block = (int*)mapBlockGetShader(map, i);
-        if (surfaceType == (int)*((u8*)Shader_getLayer(block, 0) + 5)) {
+    for (i = 0, clearMask = ~2; i < (int)map->shaderCount; i++) {
+        Shader* shader = mapBlockGetShader(map, i);
+        if (surfaceType == ((ShaderLayer*)Shader_getLayer(shader, 0))->materialId) {
             if (disable != 0) {
-                *(u32*)(block + 0x3c / 4) &= clearMask;
+                shader->flags &= clearMask;
             } else {
-                block[0x3c / 4] = block[0x3c / 4] | 2;
+                shader->flags |= 2;
             }
         }
     }
