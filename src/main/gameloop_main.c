@@ -918,7 +918,7 @@ void init(void)
     gameTextLoadDir(0x15);
     Obj_InitObjectSystem();
     debugPrintInit();
-    mapInitFn_80069990();
+    trackInitCollisionBuffers();
     initTextures();
     waterFxInit();
     initGameTimer();

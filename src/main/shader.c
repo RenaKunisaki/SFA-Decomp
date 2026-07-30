@@ -1744,7 +1744,7 @@ void beginLoadingMap(void)
         gWarpArrivalTimer = 8;
     }
     (*gObjectTriggerInterface)->onMapSetup();
-    mapInitFn_80069990();
+    trackInitCollisionBuffers();
     for (i = 0; i < 5; i++)
     {
         a = ((s8**)(base + 0x41F4))[i];

@@ -3578,7 +3578,7 @@ void trackGetTriangleBuffer(int* outCount, int* outTable)
     *outTable = (int)gTrackTriangleBuffer;
 }
 
-void mapInitFn_80069990(void)
+void trackInitCollisionBuffers(void)
 {
     int i;
     int off;
