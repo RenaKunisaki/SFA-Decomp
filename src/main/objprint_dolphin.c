@@ -1983,7 +1983,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     if (isHeavyFogEnabled() && !(((ModelFileHeader*)p2)->flags & 0x100))
     {
-        getColor803dd01c(fogc);
+        getFogColorRgb(fogc);
         renderHeavyFog(fogc);
     }
     if (((Shader*)op)->flags & SHADER_FLAG_PROJECTED_TEX_PASS)
@@ -2303,7 +2303,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
             if (isHeavyFogEnabled() != 0)
             {
                 u8 c[4];
-                getColor803dd01c(c);
+                getFogColorRgb(c);
                 renderHeavyFog(c);
             }
             Rcp_ApplyTextureStageCounts();

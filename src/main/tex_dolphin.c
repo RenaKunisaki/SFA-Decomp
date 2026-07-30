@@ -930,7 +930,7 @@ Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRende
     } else if ((flags & 0x40) != 0) {
         addWarpedRingTevStages();
     } else if (isHeavyFogEnabled()) {
-        getColor803dd01c(fogRgba);
+        getFogColorRgb(fogRgba);
         renderHeavyFog(fogRgba);
     }
     if (((SHADER_FLAGS(shader) & 0x40000000) != 0) || ((SHADER_FLAGS(shader) & 0x20000000) != 0)) {

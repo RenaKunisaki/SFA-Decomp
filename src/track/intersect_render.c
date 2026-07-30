@@ -218,7 +218,7 @@ void fogSetRange(f32 start, f32 end)
     GXSetFog(GX_FOG_PERSP_EXP, gFogStartZ, gFogEndZ, gFogNearZ, gFogFarZ, c);
 }
 
-void getColor803dd01c(u8* rgbOut)
+void getFogColorRgb(u8* rgbOut)
 {
     rgbOut[0] = gFogColor.r;
     rgbOut[1] = gFogColor.g;
