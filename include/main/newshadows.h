@@ -14,7 +14,7 @@ void findSomething(void* needle);
 void newShadowsInitProceduralTextures(void);
 f32 getNewShadowDistortionWaveOffset(void);
 void drawReflectionTexture(void);
-void maybeHudFn_8006c91c(void);
+void newShadowsBeginFrame(void);
 void freeNewShadowDistortionTexture(void);
 void createNewShadowDistortionTexture(void);
 

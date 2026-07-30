@@ -1244,7 +1244,7 @@ void updateReflectionTextures(void)
     GXPixModeSync();
 }
 
-void maybeHudFn_8006c91c(void)
+void newShadowsBeginFrame(void)
 {
     f32 hi, lo;
     if (getHudHiddenFrameCount() == 0)

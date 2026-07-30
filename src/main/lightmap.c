@@ -411,7 +411,7 @@ void getVisibleObjects(s8* opacity)
     f32 a, b;
     f32 depth;
 
-    maybeHudFn_8006c91c();
+    newShadowsBeginFrame();
     objects = ObjList_GetObjects((int*)0, 0);
     part = ObjList_PartitionForRender(&count);
     i = 0;
