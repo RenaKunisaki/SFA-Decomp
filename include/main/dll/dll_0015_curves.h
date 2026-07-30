@@ -71,7 +71,7 @@ typedef struct RomCurveDef
     u32 id;
     s8 action;
     s8 type;
-    u8 pad1A;
+    u8 unk1A;
     s8 blockedLinkMask;
     s32 linkIds[ROMCURVE_LINK_COUNT];
 } RomCurveDef;

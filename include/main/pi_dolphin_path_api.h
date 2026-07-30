@@ -6,6 +6,12 @@
 typedef struct PathPoint {
     u8 padding[8];
     f32 position[3];
+    u32 id;
+    s8 action;
+    s8 type;
+    u8 unk1A;
+    s8 blockedLinkMask;
+    s32 linkIds[4];
 } PathPoint;
 
 typedef struct PathSearchNode {
@@ -43,7 +49,7 @@ typedef struct PathSearch {
     u16 padding2E;
 } PathSearch;
 
-STATIC_ASSERT(sizeof(PathPoint) == 0x14);
+STATIC_ASSERT(sizeof(PathPoint) == 0x2C);
 STATIC_ASSERT(sizeof(PathSearchNode) == 0x10);
 STATIC_ASSERT(sizeof(PathHeapEntry) == 0x8);
 STATIC_ASSERT(sizeof(PathSearch) == 0x30);
