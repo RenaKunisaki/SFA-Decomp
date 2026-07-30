@@ -300,7 +300,7 @@ void Scarab_update(GameObject* obj) {
     f32 deltaY;
     f32 heading;
     f32 speed;
-    f32 zeroSpeed;
+    f32 zeroMagnitudeSquared;
     u32 angle;
     int yawDelta;
     int hitCount;
@@ -428,8 +428,8 @@ void Scarab_update(GameObject* obj) {
                 obj->anim.velocityZ = player->anim.localPosZ - obj->anim.localPosZ;
                 obj->anim.rotX = 0;
                 speed = obj->anim.velocityX * obj->anim.velocityX + obj->anim.velocityZ * obj->anim.velocityZ;
-                zeroSpeed = 0.0f;
-                if (speed != zeroSpeed) {
+                zeroMagnitudeSquared = 0.0f;
+                if (speed != zeroMagnitudeSquared) {
                     speed = sqrtf(speed);
                 }
                 obj->anim.velocityX = obj->anim.velocityX / (deltaY = 2.0f * speed);
