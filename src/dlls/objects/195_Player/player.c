@@ -244,7 +244,7 @@ int playerCanCastBlasterSpell(GameObject* obj, int p2, int p3);
 int playerIsBlasterSpellAvailable(GameObject* obj, int p2, int p3);
 void fn_802A9D0C(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8);
 void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, f32 zero);
-void fn_802AA2B0(int obj, int state, f32 unused, f32 yoff);
+void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInput, f32 randomOffset);
 void staffShootFireball(GameObject* obj, int p2, f32 unused);
 void objDoTeleportAnim(GameObject* obj);
 void playerDie(GameObject* obj);
@@ -3949,7 +3949,7 @@ int playerStateFireLaser(int obj, int state, f32 fv)
     }
     if (30.0f == gPlayerFireLaserCountdown || 25.0f == gPlayerFireLaserCountdown || 20.0f == gPlayerFireLaserCountdown)
     {
-        fn_802AA2B0(obj, state, inner->aimInputZ, (f32)randomGetRange(-0xc8, 0xc8) / 100.0f);
+        playerSpawnRapidFireLaser(obj, state, inner->aimInputZ, (f32)randomGetRange(-0xc8, 0xc8) / 100.0f);
     }
     gPlayerFireLaserCountdown -= 1.0f;
     if (gPlayerFireLaserCountdown < 0.0f)
@@ -12370,7 +12370,7 @@ void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, 
     }
 }
 
-void fn_802AA2B0(int obj, int state, f32 unused, f32 yoff)
+void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInput, f32 randomOffset)
 {
     ObjPlacement* setup;
     int linkEffect;
@@ -12382,15 +12382,15 @@ void fn_802AA2B0(int obj, int state, f32 unused, f32 yoff)
     if (Obj_IsLoadingLocked() != 0)
     {
         Sfx_PlayFromObject(0, SFXTRIG_staff_rocket_hitdirt);
-        setup = Obj_AllocObjectSetup(0x24, 0x655);
+        setup = Obj_AllocObjectSetup(0x24, ARW_SEQID_RAPIDFIRE_LASER);
         setup->color[0] = 2;
         setup->color[1] = 1;
         setup->color[2] = 0xff;
         setup->color[3] = 0xff;
         ObjPath_GetPointWorldPosition((GameObject*)gPlayerPathObject, 0, &x0, &y0, &z0, 0);
-        setup->posX = x0 + yoff;
-        setup->posY = y0 + yoff;
-        setup->posZ = z0 + yoff;
+        setup->posX = x0 + randomOffset;
+        setup->posY = y0 + randomOffset;
+        setup->posZ = z0 + randomOffset;
         setup = (ObjPlacement*)objSetupObject(setup, 5, -1, -1, NULL);
         if (setup == NULL)
         {
