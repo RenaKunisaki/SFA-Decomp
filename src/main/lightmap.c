@@ -873,10 +873,10 @@ void sceneDraw(void)
         cursor = (u8*)player;
         for (; i < ((GameObject*)player)->childCount; i++)
         {
-            u8* m = *(u8**)(cursor + 200);
-            if (((GameObject*)m)->anim.classId == 45)
+            GameObject* child = *(GameObject**)(cursor + 200);
+            if (child->anim.classId == 45)
             {
-                (*(void (***)(void))*(int*)(m + 0x68))[11]();
+                ((void (*)(GameObject*))(*child->anim.dll)[11])(child);
             }
             cursor += 4;
         }
