@@ -1339,6 +1339,26 @@ static inline int mapFindRomListSlotById(int id)
     return -1;
 }
 
+static inline int mapFindRomListSlotByIdAndGetBase(char** slots, int id)
+{
+    int slotIndex;
+    char* cursor;
+    int slotCount;
+    int i;
+
+    slotIndex = 0;
+    *slots = cursor = (char*)gShaderRomListSlots;
+    slotCount = gShaderRomListSlotCount;
+    for (i = 0; i < slotCount; i++)
+    {
+        if (*(void**)cursor != NULL && id == *(s16*)(cursor + 4))
+            return slotIndex;
+        cursor += 8;
+        slotIndex++;
+    }
+    return -1;
+}
+
 int mapTextureScrollAcquire(int xStep, int yStep, int texWidthFixed, int texHeightFixed,
                             int secondaryXStep, int secondaryYStep, int texWidthFixed2, int texHeightFixed2)
 {
@@ -2646,8 +2666,7 @@ void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
     id = mapCoordsToId(gridX, gridZ, layer);
     if (id != -1)
     {
-        slots = (char*)gShaderRomListSlots;
-        slot = mapFindRomListSlot(slots, id);
+        slot = mapFindRomListSlotByIdAndGetBase(&slots, id);
         if (slot == -1)
             slot = mapProcessRomList(id);
         *(s8*)((activeFlags = (char*)gShaderRomListSlots + 6) + slot * 8) = 1;
