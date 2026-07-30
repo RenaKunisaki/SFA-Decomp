@@ -40,30 +40,25 @@ WarpstoneEntry gWarpStoneUiEntryTable[WARPSTONE_UI_ENTRY_COUNT] = {
 int gWarpStoneUiSelectedIndices[0x6];
 
 static int WarpstoneUI_getMenuItems(const WarpstoneMenuItem* templates, WarpstoneMenuItem* items,
-                                    const WarpstoneEntry* entries, int count, int* selectedIndices)
-{
+                                    const WarpstoneEntry* entries, int count, int* selectedIndices) {
     int yStart;
     WarpstoneMenuItem* lastDst;
-    int entry;
     int slot;
+    int entry;
 
     lastDst = NULL;
     slot = 0;
     entry = 0;
-    for (; slot < count; slot++)
-    {
-        if (mainGetBit(entries[slot].bit) != 0)
-        {
-            entry++;
+    for (; entry < count; entry++) {
+        if (mainGetBit(entries[entry].bit) != 0) {
+            slot++;
         }
     }
-    yStart = (count - entry) * 0x2a / 2 + 0x52;
+    yStart = (count - slot) * 0x2a / 2 + 0x52;
     slot = 0;
     entry = slot;
-    for (; entry < count; entry++)
-    {
-        if (mainGetBit(entries[entry].bit) != 0)
-        {
+    for (; entry < count; entry++) {
+        if (mainGetBit(entries[entry].bit) != 0) {
             memcpy(&items[slot], &templates[entry], sizeof(WarpstoneMenuItem));
             lastDst = &items[slot];
             items[slot].y = yStart + slot * 0x2a;
@@ -73,27 +68,23 @@ static int WarpstoneUI_getMenuItems(const WarpstoneMenuItem* templates, Warpston
             slot++;
         }
     }
-    if (lastDst != NULL)
-    {
+    if (lastDst != NULL) {
         lastDst->nextItem = -1;
     }
     return slot;
 }
 
-void WarpstoneUI_setState(int val)
-{
+void WarpstoneUI_setState(int val) {
     warpstoneUIState[0] = val;
 }
 
-void WarpstoneUI_showUI(int arg)
-{
+void WarpstoneUI_showUI(int arg) {
     int sel;
     int idx;
     int itemCount;
 
     CMenu_SetFadeCounter(0);
-    switch (warpstoneUIState[0])
-    {
+    switch (warpstoneUIState[0]) {
     case 2:
     case 3:
     case 5:
@@ -101,7 +92,8 @@ void WarpstoneUI_showUI(int arg)
         gameTextShowAt(0x3dd, 200, lbl_803DBBF8);
         break;
     case 1:
-        drawTexture(gWarpStoneUiTexture, (f32)(int)(gWarpStoneUiTextureX - 0x1d), (f32)(int)(gWarpStoneUiTextureY + 0xd), gWarpStoneUiFadeAlpha, 0xff);
+        drawTexture(gWarpStoneUiTexture, (f32)(int)(gWarpStoneUiTextureX - 0x1d),
+                    (f32)(int)(gWarpStoneUiTextureY + 0xd), gWarpStoneUiFadeAlpha, 0xff);
         gameTextSetColor(0xff, 0xff, 0xff, gWarpStoneUiFadeAlpha);
         gameTextShow(0x37c);
         gameTextShow(0x37d);
@@ -110,20 +102,17 @@ void WarpstoneUI_showUI(int arg)
     case 4:
         gameTextSetColor(0xff, 0xff, 0xff, gWarpStoneUiFadeAlpha);
         gameTextShowAt(0x3dd, 200, lbl_803DBC04);
-        if (gWarpStoneUiMenuActive == 0)
-        {
-            itemCount = WarpstoneUI_getMenuItems((WarpstoneMenuItem*)gWarpStoneUiMenuItemTemplates,
-                                                 gWarpStoneUiMenuItems, gWarpStoneUiEntryTable,
-                                                 WARPSTONE_UI_ENTRY_COUNT,
-                                                 gWarpStoneUiSelectedIndices);
+        if (gWarpStoneUiMenuActive == 0) {
+            itemCount =
+                WarpstoneUI_getMenuItems((WarpstoneMenuItem*)gWarpStoneUiMenuItemTemplates, gWarpStoneUiMenuItems,
+                                         gWarpStoneUiEntryTable, WARPSTONE_UI_ENTRY_COUNT, gWarpStoneUiSelectedIndices);
             gTitleMenuLinkInterface->vtable->setup(gWarpStoneUiMenuItems, itemCount, 0, NULL, 0, 0, 0x14, 200, 0xff,
                                                    0xff, 0xff, 0xff);
             gWarpStoneUiMenuActive = 1;
         }
         sel = gTitleMenuLinkInterface->vtable->update();
         idx = gTitleMenuLinkInterface->vtable->getSelected();
-        if (sel > 0)
-        {
+        if (sel > 0) {
             (*gMapEventInterface)
                 ->setMapAct(WARPSTONEUI_MAPEVENT_KRAZOA,
                             gWarpStoneUiEntryTable[gWarpStoneUiSelectedIndices[idx]].mapAct);
@@ -131,48 +120,37 @@ void WarpstoneUI_showUI(int arg)
         gTitleMenuLinkInterface->vtable->render(arg);
         break;
     }
-    if (gWarpStoneUiMenuActive != 0 && warpstoneUIState[0] != 4)
-    {
+    if (gWarpStoneUiMenuActive != 0 && warpstoneUIState[0] != 4) {
         gTitleMenuLinkInterface->vtable->free();
         gWarpStoneUiMenuActive = 0;
     }
 }
 
-void WarpstoneUI_frameEnd(void)
-{
+void WarpstoneUI_frameEnd(void) {
 }
 
-int WarpstoneUI_frameStart(void)
-{
+int WarpstoneUI_frameStart(void) {
     f32 alpha;
-    if (warpstoneUIState[0] == 0)
-    {
+    if (warpstoneUIState[0] == 0) {
         gWarpStoneUiFadeAlpha = gWarpStoneUiFadeAlpha - (8.0f * timeDelta);
-    }
-    else
-    {
+    } else {
         gWarpStoneUiFadeAlpha = gWarpStoneUiFadeAlpha + (8.0f * timeDelta);
     }
     alpha = gWarpStoneUiFadeAlpha;
-    if (alpha > 255.0f)
-    {
+    if (alpha > 255.0f) {
         gWarpStoneUiFadeAlpha = 255.0f;
-    }
-    else if (alpha < 0.0f)
-    {
+    } else if (alpha < 0.0f) {
         gWarpStoneUiFadeAlpha = 0.0f;
     }
     return 0;
 }
 
-void WarpstoneUI_release(void)
-{
+void WarpstoneUI_release(void) {
     textureFree(gWarpStoneUiTextureA);
     textureFree(gWarpStoneUiTexture);
 }
 
-void WarpstoneUI_initialise(void)
-{
+void WarpstoneUI_initialise(void) {
     gWarpStoneUiTextureA = textureLoadAsset(WARPSTONEUI_TEXTURE_A);
     gWarpStoneUiTexture = textureLoadAsset(WARPSTONEUI_TEXTURE_B);
     gWarpStoneUiFadeAlpha = 0.0f;
