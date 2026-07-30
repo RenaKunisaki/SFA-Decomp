@@ -1728,9 +1728,9 @@ void mapBlockGpuRecoveryHook(void)
     }
 }
 
-int return0_80060B90(void* wpad0)
+void* mapBlockGetUnused00Value(MapBlockData* block)
 {
-    return 0x0;
+    return NULL;
 }
 
 void mapGetBlocks(void** outLayerTables, u32* outBlocks)

@@ -1509,7 +1509,7 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
         MapBlock_initHits(block[0], blockId);
         MapBlock_initShaders(block[0]);
         trackLoadBlockEnd(block[0], blockId, slotIdx, layer);
-        ((MapBlockData*)block[0])->unk0 = (void*)return0_80060B90(block[0]);
+        ((MapBlockData*)block[0])->unused00 = mapBlockGetUnused00Value(block[0]);
         DCStoreRange(block[0], ((MapBlockData*)block[0])->size);
     }
     return 1;

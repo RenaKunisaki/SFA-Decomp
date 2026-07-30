@@ -235,7 +235,7 @@ void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorSta
         }
         dataOffset += 2;
     }
-    *(int*)blockAddress = return0_80060B90((void*)blockAddress);
+    ((MapBlockData*)blockAddress)->unused00 = mapBlockGetUnused00Value((MapBlockData*)blockAddress);
 }
 
 void XyzAnimator_update(GameObject* obj) {
