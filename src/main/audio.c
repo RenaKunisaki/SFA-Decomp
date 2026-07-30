@@ -846,17 +846,12 @@ int concatThreeStrings(char* dst, void* unused, const char* first, const char* s
     return 1;
 }
 
-
-void MIDIWADLoadedCallback(s32 status, DVDFileInfo* fileInfo)
-{
-    if (status == -1)
-    {
+static void MIDIWADLoadedCallback(s32 status, DVDFileInfo* fileInfo) {
+    if (status == -1) {
         OSReport(sMidiWadLoadedCallbackLoadError);
         DVDClose(fileInfo);
         mm_free(fileInfo);
-    }
-    else
-    {
+    } else {
         DVDClose(fileInfo);
         mm_free(fileInfo);
         gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_MIDI_WAD;

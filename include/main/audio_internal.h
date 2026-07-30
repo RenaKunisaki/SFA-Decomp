@@ -273,7 +273,6 @@ void* _audioAlloc(u32 size);
 s32 Music_GetActivePriority(void);
 int concatThreeStrings(char* dst, void* unused, const char* first, const char* second, const char* third);
 void AudioAramWriteCompleteCallback(u32 request);
-void MIDIWADLoadedCallback(s32 status, DVDFileInfo* fileInfo);
 u8 musicInitMidiWad(void);
 void poolDataMLoadedCallback(s32 status, DVDFileInfo* fileInfo);
 void poolDataSLoadedCallback(s32 status, DVDFileInfo* fileInfo);
