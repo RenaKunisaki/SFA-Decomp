@@ -54,7 +54,6 @@
 #include "main/dll/dll_02B5_timer.h"
 #include "main/dll/headdisplay.h"
 #include "main/sky.h"
-#include "main/dll/dll_80198a00.h"
 #include "main/dll/dll_0126_trigger_api.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/vecmath.h"
@@ -109,7 +108,7 @@ STATIC_ASSERT(offsetof(MmpTriggerPlaneState, mtx) == 0x38);
 
 #define MOONROCK_ANGLE_TO_RADIANS(angle) ((3.1415927f * (f32)(s32)(-(angle))) / 32768.0f)
 
-void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj) {
+static void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj) {
     MmpTriggerPlaneState* state;
     f32 hitDistance;
     int queryType;
@@ -140,7 +139,7 @@ void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj) {
     }
 }
 
-int triggerPointInBox(GameObject* obj, f32* point) {
+static int triggerPointInBox(GameObject* obj, f32* point) {
     u8* data;
     f32 pointX;
     f32 pointY;
@@ -193,7 +192,7 @@ int triggerPointInBox(GameObject* obj, f32* point) {
     return 0;
 }
 
-void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj) {
+static void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj) {
     f32 ny;
     MmpTriggerPlaneState* state;
     s8 triggerState;
