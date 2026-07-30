@@ -105,20 +105,11 @@ STATIC_ASSERT(sizeof(SkyState) == 0x258);
 /* Per-map sky blend config record passed to sky2_update / skyUpdateEnvfxAct. */
 typedef struct Sky2Config {
     u8 unk00[0xC];
-    u8 lightColorR;
-    u8 lightColorG;
-    u8 lightColorB;
-    u8 lightColorA;
+    u8 redKeys[4];
     u8 unk10[4];
-    u8 color2R;
-    u8 color2G;
-    u8 color2B;
-    u8 color2A;
+    u8 greenKeys[4];
     u8 unk18[4];
-    u8 color3R;
-    u8 color3G;
-    u8 color3B;
-    u8 color3A;
+    u8 blueKeys[4];
     u8 unk20[4];
     u16 envfxActId; /* 0x24: 1-based env effect action id; (id-1) passed to getEnvfxAct, 0 => disabled */
     u8 unk26[4];
