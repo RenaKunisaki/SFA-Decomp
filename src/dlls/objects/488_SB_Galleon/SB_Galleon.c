@@ -237,7 +237,8 @@ void DBprotection_updateFlight(GameObject* obj) {
             dy = dy * ((f32)(t - 0x78) / 60.0f);
         }
         ((SBGalleonState*)state)->phaseTimer += framesThisStep;
-        ((SBGalleonState*)state)->driftX += (dx - ((SBGalleonState*)state)->driftX) * (blendK = 0.0625f);
+        lerpD = dx - ((SBGalleonState*)state)->driftX;
+        ((SBGalleonState*)state)->driftX += lerpD * (blendK = 0.0625f);
         ((SBGalleonState*)state)->driftY += (dy - ((SBGalleonState*)state)->driftY) * (blendK = blendK);
         ((SBGalleonState*)state)->driftZ += (dz - ((SBGalleonState*)state)->driftZ) * (blendK = blendK);
         ambA = 50.0f;
