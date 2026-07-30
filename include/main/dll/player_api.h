@@ -41,7 +41,8 @@ int fn_80296464(GameObject* player);
 int playerGetSurfaceType(GameObject* player);
 void playerAddMaxMagic(GameObject* player, int delta);
 void playerDisableHitDetect(GameObject* player);
-void fn_802972B4(GameObject* player, u32* outEffects, f32* outA, f32* outB, f32* outC, u16* outHitStunFrames);
+void playerGetAttackHitProperties(GameObject* player, u32* outEffects, f32* outReaction, f32* outKnockbackSpeed,
+                                  f32* outDrag, u16* outHitStunFrames);
 GameObject* playerGetFocusObject(GameObject* player);
 int playerGetMoney(GameObject* player);
 int playerHasSpell(GameObject* obj, int spell);

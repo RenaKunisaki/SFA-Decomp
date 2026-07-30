@@ -430,7 +430,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
         {
             ((EnemyState*)state)->freezeRecoverTimer = 0.0f;
         }
-        fn_802972B4((GameObject*)(player), &hitEffects, &fxA, &fxB, &fxC, &hitStun);
+        playerGetAttackHitProperties((GameObject*)(player), &hitEffects, &fxA, &fxB, &fxC, &hitStun);
         baddie_decodePlayerAttackFlags((EnemyState*)state, hitEffects, fxA, hitStun);
         if (hit != 0)
         {

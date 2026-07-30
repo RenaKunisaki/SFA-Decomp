@@ -2328,59 +2328,63 @@ GameObject* playerGetFocusObject(GameObject* obj)
     return inner->focusObject;
 }
 
-void fn_802972B4(GameObject* obj, u32* flags, f32* p5, f32* p6, f32* p7, u16* outHitStunFrames)
+void playerGetAttackHitProperties(GameObject* obj, u32* outEffects, f32* outReaction, f32* outKnockbackSpeed,
+                                  f32* outDrag, u16* outHitStunFrames)
 {
     PlayerState* inner = obj->extra;
     s8 idx;
     u8 mode;
     f32 zero;
 
-    *flags = 0;
+    *outEffects = 0;
     zero = 0.0f;
-    *p5 = zero;
-    *p6 = zero;
-    *p7 = zero;
+    *outReaction = zero;
+    *outKnockbackSpeed = zero;
+    *outDrag = zero;
     if (inner->baddie.controlMode == 0x26)
     {
-        *flags |= 1;
+        *outEffects |= 1;
         idx = inner->hitWindowIndex;
         if (idx != -1)
         {
-            *flags |= *(int*)((inner->moveSlots + 8) + (u32)inner->moveSlotIndex * 0xb0 + idx * 4);
-            *p6 = *(f32*)((inner->moveSlots + 0x70) + (u32)inner->moveSlotIndex * 0xb0 + inner->hitWindowIndex * 4);
-            *p7 = *(f32*)((inner->moveSlots + 0x7c) + (u32)inner->moveSlotIndex * 0xb0 + inner->hitWindowIndex * 4);
-            *p5 = *(f32*)((inner->moveSlots + 0x94) + (u32)inner->moveSlotIndex * 0xb0 + inner->hitWindowIndex * 4);
+            *outEffects |= *(int*)((inner->moveSlots + 8) + (u32)inner->moveSlotIndex * 0xb0 + idx * 4);
+            *outKnockbackSpeed =
+                *(f32*)((inner->moveSlots + 0x70) + (u32)inner->moveSlotIndex * 0xb0 + inner->hitWindowIndex * 4);
+            *outDrag =
+                *(f32*)((inner->moveSlots + 0x7c) + (u32)inner->moveSlotIndex * 0xb0 + inner->hitWindowIndex * 4);
+            *outReaction =
+                *(f32*)((inner->moveSlots + 0x94) + (u32)inner->moveSlotIndex * 0xb0 + inner->hitWindowIndex * 4);
         }
         if (*(u8*)((inner->moveSlots + 0x88) + (u32)inner->moveSlotIndex * 0xb0) & 2)
         {
             if (inner->hitCount < inner->hitCountMax)
             {
-                *p7 = *p6 = 0.0f;
+                *outDrag = *outKnockbackSpeed = 0.0f;
             }
         }
         if ((*(u8*)((inner->moveSlots + 0x88) + (u32)inner->moveSlotIndex * 0xb0) & 1) &&
             inner->cutsceneTimer >= 6.0f)
         {
-            *flags |= 0x80;
+            *outEffects |= 0x80;
         }
     }
     mode = inner->attackVariantMode;
     if (mode == 0)
     {
-        *flags |= 0x100;
+        *outEffects |= 0x100;
     }
     else if (mode == 1)
     {
-        *flags |= 0x200;
+        *outEffects |= 0x200;
     }
     else if (mode == 2)
     {
-        *flags |= 0x400;
+        *outEffects |= 0x400;
     }
     if (inner->baddie.controlMode == 0x2e || inner->baddie.controlMode == 0x2f)
     {
-        *(u32*)flags &= 0x7dLL;
-        *flags |= 2;
+        *outEffects &= 0x7dLL;
+        *outEffects |= 2;
     }
     *outHitStunFrames = 0x78;
 }
