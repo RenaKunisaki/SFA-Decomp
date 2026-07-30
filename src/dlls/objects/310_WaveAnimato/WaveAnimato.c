@@ -26,15 +26,15 @@ s16* gWaveAnimatorPhaseTable;
 WaveAnimatorColor* gWaveAnimatorColorTable;
 u8 gWaveAnimatorInstanceCount;
 
-void WaveAnimator_modelMtxFn(GameObject* obj, int arg0, int arg1, int arg2) {
+void WaveAnimator_modelMtxFn(GameObject* obj, int modelMtxArg0, int modelMtxArg1, int modelMtxArg2) {
     WaveAnimatorState* state = obj->extra;
     u32 newFlags;
 
     newFlags = (u32)state->flags | WAVE_ANIMATOR_STATE_MODEL_MTX_PENDING;
     state->flags = newFlags;
-    state->modelMtxArg0 = arg0;
-    state->modelMtxArg1 = arg1;
-    state->modelMtxArg2 = arg2;
+    state->modelMtxArg0 = modelMtxArg0;
+    state->modelMtxArg1 = modelMtxArg1;
+    state->modelMtxArg2 = modelMtxArg2;
 }
 
 void WaveAnimator_func0B(GameObject* obj) {
@@ -171,27 +171,27 @@ void WaveAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int re
 }
 
 void WaveAnimator_hitDetect(GameObject* obj) {
-    int i;
-    int j;
-    int phaseIdx;
+    int rowIndex;
+    int columnIndex;
+    int phaseOffset;
     WaveAnimatorState* state;
 
     if (gWaveAnimatorPhaseUpdateLatch != 0) {
         return;
     }
     state = obj->extra;
-    phaseIdx = 0;
-    for (i = 0; i < state->gridN; i++) {
-        for (j = 0; j < state->gridN; j++) {
-            gWaveAnimatorPhaseTable[phaseIdx] += framesThisStep >> 1;
-            while (gWaveAnimatorPhaseTable[phaseIdx] >= state->period) {
-                gWaveAnimatorPhaseTable[phaseIdx] -= state->period;
+    phaseOffset = 0;
+    for (rowIndex = 0; rowIndex < state->gridN; rowIndex++) {
+        for (columnIndex = 0; columnIndex < state->gridN; columnIndex++) {
+            gWaveAnimatorPhaseTable[phaseOffset] += framesThisStep >> 1;
+            while (gWaveAnimatorPhaseTable[phaseOffset] >= state->period) {
+                gWaveAnimatorPhaseTable[phaseOffset] -= state->period;
             }
-            gWaveAnimatorPhaseTable[phaseIdx + 1] += framesThisStep >> 1;
-            while (gWaveAnimatorPhaseTable[phaseIdx + 1] >= state->period) {
-                gWaveAnimatorPhaseTable[phaseIdx + 1] -= state->period;
+            gWaveAnimatorPhaseTable[phaseOffset + 1] += framesThisStep >> 1;
+            while (gWaveAnimatorPhaseTable[phaseOffset + 1] >= state->period) {
+                gWaveAnimatorPhaseTable[phaseOffset + 1] -= state->period;
             }
-            phaseIdx += 2;
+            phaseOffset += 2;
         }
     }
     gWaveAnimatorPhaseUpdateLatch = 1;
@@ -202,7 +202,7 @@ void WaveAnimator_update(void) {
 
 void WaveAnimator_init(GameObject* obj, WaveAnimatorPlacement* placement) {
     WaveAnimatorState* state = obj->extra;
-    f32 scale;
+    f32 initialScale;
 
     state->sinkDepthScale = placement->sinkDepthScale;
     state->originX = placement->originX;
@@ -213,9 +213,9 @@ void WaveAnimator_init(GameObject* obj, WaveAnimatorPlacement* placement) {
     state->ampY = placement->ampY;
     state->period = placement->period;
     state->gridN = placement->gridN;
-    scale = (1.0f);
-    state->scaleA = scale;
-    state->scaleB = scale;
+    initialScale = (1.0f);
+    state->scaleA = initialScale;
+    state->scaleB = initialScale;
     if (gWaveAnimatorInstanceCount == 0) {
         WaveAnimator_buildSharedTables(state);
     }
