@@ -3932,9 +3932,9 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
     char* str = lbl_8031D2E8;
     u8 ok;
     int hasTarget;
-    int* best = NULL;
-    f32 bestd = 0.0f;
-    int count;
+    int* bestWarp = NULL;
+    f32 bestDetourSavings = 0.0f;
+    int warpCount;
     u8* cfg;
 
     switch (t->substate)
@@ -4229,53 +4229,57 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
     }
     case ANIMOBJD2_SUBSTATE_ORBIT:
     {
-        void** p;
-        GameObject* tgt;
-        GameObject* found = trickyFindNearestUsableBaddie(t->playerObj, 150.0f, 0);
-        if (found != NULL && found->anim.romDefNo == ANIMOBJD2_CIRCLE_TARGET_SEQID)
+        void** warpCursor;
+        GameObject* target;
+        GameObject* nearestBaddie = trickyFindNearestUsableBaddie(t->playerObj, 150.0f, 0);
+        if (nearestBaddie != NULL && nearestBaddie->anim.romDefNo == ANIMOBJD2_CIRCLE_TARGET_SEQID)
         {
-            tgt = found;
+            target = nearestBaddie;
         }
         else
         {
-            tgt = (GameObject*)Player_GetTargetObject((int)t->playerObj);
+            target = (GameObject*)Player_GetTargetObject((int)t->playerObj);
         }
-        if ((u32)tgt != t->cooldownB.u || *(int*)&t->stateFlags728 != 0)
+        if ((u32)target != t->cooldownB.u || *(int*)&t->stateFlags728 != 0)
         {
             TRICKY_RETARGET((u8*)t, t->followObj);
             t->substate = ANIMOBJD2_SUBSTATE_ACQUIRE;
         }
         else
         {
-            void** list = (void**)objGetAllOfType(TRICKYWARP_OBJ_GROUP, &count);
+            void** warpList = (void**)objGetAllOfType(TRICKYWARP_OBJ_GROUP, &warpCount);
             int i = 0;
-            p = list;
-            for (; i < count; i++)
+            warpCursor = warpList;
+            for (; i < warpCount; i++)
             {
-                f32 d1 = Vec_xzDistance(&((GameObject*)p[0])->anim.worldPosX, &tgt->anim.worldPosX);
-                f32 d2 = Vec_xzDistance(&((GameObject*)p[0])->anim.worldPosX,
-                                        &t->playerObj->anim.worldPosX);
-                f32 d3 = Vec_xzDistance(&tgt->anim.worldPosX, &t->playerObj->anim.worldPosX);
-                if (d1 + d2 > 2.0f * d3)
+                f32 warpToTarget =
+                    Vec_xzDistance(&((GameObject*)warpCursor[0])->anim.worldPosX, &target->anim.worldPosX);
+                f32 warpToPlayer = Vec_xzDistance(&((GameObject*)warpCursor[0])->anim.worldPosX,
+                                                  &t->playerObj->anim.worldPosX);
+                f32 targetToPlayer =
+                    Vec_xzDistance(&target->anim.worldPosX, &t->playerObj->anim.worldPosX);
+                if (warpToTarget + warpToPlayer > 2.0f * targetToPlayer)
                 {
-                    f32 d4 = Vec_xzDistance(&((GameObject*)p[0])->anim.worldPosX, &gobj->anim.worldPosX);
-                    if (d2 - d4 > bestd)
+                    f32 warpToTricky =
+                        Vec_xzDistance(&((GameObject*)warpCursor[0])->anim.worldPosX, &gobj->anim.worldPosX);
+                    if (warpToPlayer - warpToTricky > bestDetourSavings)
                     {
-                        bestd = d2 - d4;
-                        best = p[0];
+                        bestDetourSavings = warpToPlayer - warpToTricky;
+                        bestWarp = warpCursor[0];
                     }
                 }
-                p++;
+                warpCursor++;
             }
             {
-                int* c = *(int**)&t->unk724;
-                if (c != NULL && (((GameObject*)c)->objectFlags & ANIMOBJD2_OBJFLAG_FREED))
+                int* circlingObstacle = *(int**)&t->unk724;
+                if (circlingObstacle != NULL &&
+                    (((GameObject*)circlingObstacle)->objectFlags & ANIMOBJD2_OBJFLAG_FREED))
                 {
                     *(int*)&t->unk724 = 0;
                     TRICKY_RETARGET((u8*)t, t->playerObj);
                 }
             }
-            if (best != NULL)
+            if (bestWarp != NULL)
             {
                 /* unk724 NULL-checks kept raw: typing as ->unk724 shifts
                        saved-register coloring and regresses (the int reads/
@@ -4284,43 +4288,44 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                 {
                     TRICKY_BARK((int*)gobj, 0x35b, 0x500);
                 }
-                if (*(void**)((u8*)t + 0x724) == NULL || *(int**)&t->unk724 != best)
+                if (*(void**)((u8*)t + 0x724) == NULL || *(int**)&t->unk724 != bestWarp)
                 {
-                    *(int**)&t->unk724 = best;
+                    *(int**)&t->unk724 = bestWarp;
                     TRICKY_RETARGET((u8*)t, *(int*)&t->unk724);
                 }
             }
         }
         {
-            u8 r;
+            u8 orbitMovementStatus;
             if (*(void**)((u8*)t + 0x724) != NULL)
             {
-                r = trickyUpdateMovementState(gobj, 5.0f, t);
+                orbitMovementStatus = trickyUpdateMovementState(gobj, 5.0f, t);
             }
             else
             {
-                r = trickyUpdateMovementState(gobj, 340282346638528859811704183484516925440.0f, t);
+                orbitMovementStatus =
+                    trickyUpdateMovementState(gobj, 340282346638528859811704183484516925440.0f, t);
             }
-            if (r != 1)
+            if (orbitMovementStatus != 1)
             {
-                int b;
+                int useSwimMove;
                 if (0.0f == t->waterLevel)
                 {
-                    b = 0;
+                    useSwimMove = 0;
                 }
                 else if (-100000.0f == t->eventTime)
                 {
-                    b = 1;
+                    useSwimMove = 1;
                 }
                 else if (t->currentTime - t->eventTime > 8.0f)
                 {
-                    b = 1;
+                    useSwimMove = 1;
                 }
                 else
                 {
-                    b = 0;
+                    useSwimMove = 0;
                 }
-                if (b != 0)
+                if (useSwimMove != 0)
                 {
                     trickyRequestMove((int)gobj, 8, 0.02f, 0);
                     t->cooldownC = 600.0f;
