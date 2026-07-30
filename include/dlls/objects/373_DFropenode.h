@@ -5,8 +5,6 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-#define DFROPENODE_ROLE_ROPE_OWNER 0x01
-
 typedef struct DFRope DFRope;
 
 typedef struct DFropenodePlacement {

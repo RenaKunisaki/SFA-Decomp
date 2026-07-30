@@ -6,29 +6,102 @@
 #include "dlls/objects/373_DFropenode.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/mtx.h"
+#include "dolphin/mtx/vec.h"
+#include "game/objects/object.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_legacy_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
-#include "main/dll/DF/DFbarrel.h"
 #include "main/frame_timing.h"
-#include "main/gamebits.h"
+#include "main/gamebits_api.h"
 #include "main/lightmap_api.h"
 #include "main/mm.h"
-#include "main/objtype.h"
 #include "main/obj_list.h"
+#include "main/objtype.h"
 #include "main/sky.h"
 #include "main/texture.h"
+#include "main/vecmath.h"
 #include "string.h"
 #include "track/intersect_api.h"
-#include "game/objects/object_setup.h"
-#include "dolphin/mtx/vec.h"
 
-#define DFBARREL_SWAY_LIMIT          0x32
-#define DFBARREL_SWAY_DIR_INCREASING 1
-#define DFBARREL_SWAY_DIR_DECREASING 2
+typedef struct DFRopeNode {
+    f32 pos[3];
+    f32 velocity[3];
+    f32 force[3];
+    u8 linkCount;
+    u8 pad25[3];
+    struct DFRopeLink* links[2];
+    u8 locked;
+    u8 pad31[3];
+} DFRopeNode;
 
-#define DFBARREL_NODE_LINKS_OFFSET 0x28
-#define DFROPENODE_OBJGROUP        0x17
+typedef struct DFRopeLink {
+    f32 length;
+    DFRopeNode* a;
+    DFRopeNode* b;
+    f32 restLength;
+    f32 stiffness;
+    f32 maxLength;
+    f32 force[3];
+} DFRopeLink;
+
+struct DFRope {
+    DFRopeNode* nodes;
+    DFRopeLink* links;
+    u8 count;
+    u8 pad09[3];
+    f32 start[3];
+    f32 end[3];
+    f32 totalLength;
+    s32 enabled;
+    f32 maxSlack;
+    f32 step;
+    s8 sway;
+    u8 direction;
+    u8 pad36[2];
+    f32 damping;
+    f32 inverseTicks;
+    f32 stepPerTick;
+};
+
+STATIC_ASSERT(offsetof(DFRopeNode, pos) == 0x00);
+STATIC_ASSERT(offsetof(DFRopeNode, velocity) == 0x0C);
+STATIC_ASSERT(offsetof(DFRopeNode, force) == 0x18);
+STATIC_ASSERT(offsetof(DFRopeNode, linkCount) == 0x24);
+STATIC_ASSERT(offsetof(DFRopeNode, links) == 0x28);
+STATIC_ASSERT(offsetof(DFRopeNode, locked) == 0x30);
+STATIC_ASSERT(sizeof(DFRopeNode) == 0x34);
+
+STATIC_ASSERT(offsetof(DFRopeLink, length) == 0x00);
+STATIC_ASSERT(offsetof(DFRopeLink, a) == 0x04);
+STATIC_ASSERT(offsetof(DFRopeLink, b) == 0x08);
+STATIC_ASSERT(offsetof(DFRopeLink, restLength) == 0x0C);
+STATIC_ASSERT(offsetof(DFRopeLink, stiffness) == 0x10);
+STATIC_ASSERT(offsetof(DFRopeLink, maxLength) == 0x14);
+STATIC_ASSERT(offsetof(DFRopeLink, force) == 0x18);
+STATIC_ASSERT(sizeof(DFRopeLink) == 0x24);
+
+STATIC_ASSERT(offsetof(DFRope, nodes) == 0x00);
+STATIC_ASSERT(offsetof(DFRope, links) == 0x04);
+STATIC_ASSERT(offsetof(DFRope, count) == 0x08);
+STATIC_ASSERT(offsetof(DFRope, start) == 0x0C);
+STATIC_ASSERT(offsetof(DFRope, end) == 0x18);
+STATIC_ASSERT(offsetof(DFRope, totalLength) == 0x24);
+STATIC_ASSERT(offsetof(DFRope, enabled) == 0x28);
+STATIC_ASSERT(offsetof(DFRope, maxSlack) == 0x2C);
+STATIC_ASSERT(offsetof(DFRope, step) == 0x30);
+STATIC_ASSERT(offsetof(DFRope, sway) == 0x34);
+STATIC_ASSERT(offsetof(DFRope, direction) == 0x35);
+STATIC_ASSERT(offsetof(DFRope, damping) == 0x38);
+STATIC_ASSERT(offsetof(DFRope, inverseTicks) == 0x3C);
+STATIC_ASSERT(offsetof(DFRope, stepPerTick) == 0x40);
+STATIC_ASSERT(sizeof(DFRope) == 0x44);
+
+#define DFROPENODE_ROLE_ROPE_OWNER        0x01
+#define DFROPENODE_ROPE_SWAY_LIMIT        0x32
+#define DFROPENODE_ROPE_SWAY_DIR_INCREASE 1
+#define DFROPENODE_ROPE_SWAY_DIR_DECREASE 2
+#define DFROPENODE_OBJGROUP               0x17
 
 int gRopeNodeTextureAssetIds[2] = {0x3CA, 0x5DD};
 void* gRopeNodeTextures[2] = {0};
@@ -170,13 +243,13 @@ void DFropenode_updateRopeSimulation(DFRope* self) {
     partsInit = self->nodes;
     parts = partsInit;
 
-    if (self->sway < -DFBARREL_SWAY_LIMIT) {
-        self->direction = DFBARREL_SWAY_DIR_INCREASING;
+    if (self->sway < -DFROPENODE_ROPE_SWAY_LIMIT) {
+        self->direction = DFROPENODE_ROPE_SWAY_DIR_INCREASE;
     }
-    if (self->sway > DFBARREL_SWAY_LIMIT) {
-        self->direction = DFBARREL_SWAY_DIR_DECREASING;
+    if (self->sway > DFROPENODE_ROPE_SWAY_LIMIT) {
+        self->direction = DFROPENODE_ROPE_SWAY_DIR_DECREASE;
     }
-    if ((s8)self->direction == DFBARREL_SWAY_DIR_DECREASING) {
+    if ((s8)self->direction == DFROPENODE_ROPE_SWAY_DIR_DECREASE) {
         self->sway--;
     } else {
         self->sway++;
@@ -232,12 +305,12 @@ void DFropenode_attachRopeLink(DFRopeLink* linkSelf, DFRopeNode* firstNode, DFRo
     firstLinkIndex = 0;
     secondLinkIndex = 0;
     nodeLinkIter = (u8*)firstNode;
-    while (*(u32*)(nodeLinkIter + DFBARREL_NODE_LINKS_OFFSET) != 0) {
+    while (*(u32*)(nodeLinkIter + offsetof(DFRopeNode, links)) != 0) {
         nodeLinkIter += 4;
         firstLinkIndex++;
     }
     nodeLinkIter = (u8*)secondNode;
-    while (*(u32*)(nodeLinkIter + DFBARREL_NODE_LINKS_OFFSET) != 0) {
+    while (*(u32*)(nodeLinkIter + offsetof(DFRopeNode, links)) != 0) {
         nodeLinkIter += 4;
         secondLinkIndex++;
     }
