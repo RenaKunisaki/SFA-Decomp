@@ -35,6 +35,7 @@ import re
 import shlex
 import subprocess
 import sys
+import tempfile
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -84,11 +85,16 @@ def compile_with_warnings(edge):
     version = variables.get("mw_version")
     if not version:
         return source, ""
-    argv = [os.path.join(ROOT, "build/tools/wibo")]
+    argv = []
+    if os.name != "nt":
+        argv.append(os.path.join(ROOT, "build/tools/wibo"))
     if "sjis" in rule:
         argv.append(os.path.join(ROOT, "build/tools/sjiswrap.exe"))
     argv.append(os.path.join(ROOT, "build/compilers", version, "mwcceppc.exe"))
-    flags = shlex.split(variables.get("cflags", ""))
+    flags = shlex.split(variables.get("cflags", ""), posix=os.name != "nt")
+    if os.name == "nt":
+        flags = [flag[1:-1] if len(flag) >= 2 and flag[0] == flag[-1] == '"'
+                 else flag for flag in flags]
     kept = []
     j = 0
     while j < len(flags):
@@ -97,12 +103,22 @@ def compile_with_warnings(edge):
             continue
         kept.append(flags[j])
         j += 1
-    argv += kept + ["-maxerrors", "400", "-W", "all", "-c", source, "-o", os.devnull]
+    output = os.devnull
+    temp_output = None
+    if os.name == "nt":
+        handle, temp_output = tempfile.mkstemp(suffix=".o")
+        os.close(handle)
+        os.unlink(temp_output)
+        output = temp_output
+    argv += kept + ["-maxerrors", "400", "-W", "all", "-c", source, "-o", output]
     try:
         done = subprocess.run(argv, cwd=ROOT, capture_output=True, text=True,
                               timeout=900, errors="replace")
     except subprocess.TimeoutExpired:
         return source, "TIMEOUT"
+    finally:
+        if temp_output and os.path.exists(temp_output):
+            os.unlink(temp_output)
     return source, (done.stdout or "") + (done.stderr or "")
 
 
