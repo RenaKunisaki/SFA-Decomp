@@ -470,7 +470,7 @@ extern u64 synthRealTime;
 /*
  * Evaluate a controller expression list and cache its 14-bit result.
  */
-u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 midiSlot, u8 midiKey)
+static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 midiSlot, u8 midiKey)
 {
     u32 sign;
     u32 i;
