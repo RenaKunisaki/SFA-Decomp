@@ -275,7 +275,7 @@ void playerDoEyeAnims(GameObject* obj, int state);
 void playerUpdateInputTimers(GameObject* obj, int state, f32 fv);
 void playerDoControls(GameObject* obj, int state, f32 fv);
 void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt);
-void fn_802B4A9C(GameObject* obj, int inner, int inner2);
+void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2);
 void playerAnimate(GameObject* obj, int state, f32 fv);
 void playerInitFuncPtrs(void);
 int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb);
@@ -17410,7 +17410,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     return result;
 }
 
-void fn_802B4A9C(GameObject* obj, int inner, int inner2)
+void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
 {
     int* target = (int*)(*gCameraInterface)->getOverrideTarget();
     u32 v = (((PlayerState*)inner)->flags3F4 >> 6) & 1;
@@ -18169,7 +18169,7 @@ void playerUpdate(GameObject* obj)
                 *(int*)&((PlayerState*)inner)->baddie.unk304 = (int)playerStagedRestoreDefaultControl;
             }
             playerItemGetAnimFn((int)obj, inner, inner);
-            fn_802B4A9C(obj, inner, inner);
+            playerUpdateTargetSelection(obj, inner, inner);
             playerStaffInit(obj, inner);
             if ((u32)gPlayerEggObject == 0 && Obj_IsLoadingLocked() != 0)
             {
