@@ -53,8 +53,8 @@ extern u8 gSurfaceSfxTable[];
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
-void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, void* points, void* state, f32 unused,
-                         f32 scale)
+void objAudioDispatchAnimEvents(GameObject* obj, ObjAnimEventList* events, u8 type, void* points, void* state,
+                                f32 unused, f32 scale)
 {
     Vec v;
     SplashFxParams ps;

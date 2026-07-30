@@ -5,10 +5,10 @@
 #include "game/objects/object.h"
 #include "main/objanim.h"
 
-int audioPickSoundEffect_8006ed24(u8 surfaceType, u8 soundId);
-void objAudioFn_8006edcc(GameObject* obj, int eventMask, u8 type, void* points, void* state, f32 unused,
-                         f32 scale);
-void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, void* points, void* state, f32 unused,
-                         f32 scale);
+int surfaceSfxSelectTrigger(u8 surfaceType, u8 soundId);
+void objAudioDispatchEventMask(GameObject* obj, int eventMask, u8 type, void* points, void* state, f32 unused,
+                               f32 scale);
+void objAudioDispatchAnimEvents(GameObject* obj, ObjAnimEventList* events, u8 type, void* points, void* state,
+                                f32 unused, f32 scale);
 
 #endif /* MAIN_NEWSHADOWS_AUDIO_API_H_ */

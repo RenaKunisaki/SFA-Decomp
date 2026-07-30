@@ -2104,7 +2104,7 @@ void allocLotsOfTextures(void)
     testAndSet_onlyUseHeap3(saved);
 }
 
-int audioPickSoundEffect_8006ed24(u8 a, u8 b)
+int surfaceSfxSelectTrigger(u8 a, u8 b)
 {
     u8* base = gSurfaceSfxTable;
     int idx = (u8)a;
@@ -2151,7 +2151,8 @@ int audioPickSoundEffect_8006ed24(u8 a, u8 b)
     return *(u16*)(base + v * 2);
 }
 
-void objAudioFn_8006edcc(GameObject* obj, int eventMask, u8 type, void* points, void* state, f32 unused, f32 scale)
+void objAudioDispatchEventMask(GameObject* obj, int eventMask, u8 type, void* points, void* state, f32 unused,
+                               f32 scale)
 {
     ObjAnimEventList events;
     int bit;
@@ -2164,5 +2165,5 @@ void objAudioFn_8006edcc(GameObject* obj, int eventMask, u8 type, void* points, 
             events.triggerCount++;
         }
     }
-    objAudioFn_8006ef38(obj, &events, type, points, state, unused, scale);
+    objAudioDispatchAnimEvents(obj, &events, type, points, state, unused, scale);
 }

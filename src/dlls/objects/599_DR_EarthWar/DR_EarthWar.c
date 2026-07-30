@@ -114,7 +114,7 @@ typedef struct EarthWarriorSub
     u8 pad848[0x10];
     int leapStartYaw; /* 0x858: yaw latched (from currentYaw) at leap start; re-added to move progress to build leap yaw */
     u8 pad85C[0x4a];
-    u8 soundId;       /* 0x8A6: active sound-effect id passed to objAudioFn_8006edcc (8 or 0xa) */
+    u8 soundId;       /* 0x8A6: active sound-effect id passed to objAudioDispatchEventMask (8 or 0xa) */
     u8 soundIdReload; /* 0x8A7: stored sound id copied into soundId on leap trigger */
     u8 pad8A8[8];
     u8 attackStage;
@@ -1273,9 +1273,9 @@ void DR_EarthWarrior_update(GameObject* obj)
         f32 saved = (obj)->anim.velocityY;
         (obj)->anim.velocityY = 0.0f;
         inner->baddie.eventFlags &= ~7;
-        objAudioFn_8006edcc(obj, inner->baddie.eventFlags, inner->sub.soundId, inner->pathPoints,
-                            (void*)((char*)inner + 0x4), inner->baddie.animSpeedA,
-                            (inner->sub.soundId == 8) ? 2.5f : 2.75f);
+        objAudioDispatchEventMask(obj, inner->baddie.eventFlags, inner->sub.soundId, inner->pathPoints,
+                                  (void*)((char*)inner + 0x4), inner->baddie.animSpeedA,
+                                  (inner->sub.soundId == 8) ? 2.5f : 2.75f);
         (obj)->anim.velocityY = saved;
     }
     if (inner->sub.flags8D8 & 8)

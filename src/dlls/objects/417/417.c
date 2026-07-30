@@ -172,7 +172,7 @@ int NW_mammoth_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* an
     audioEvents = &state->animEvents;
     audioPoints = state->pathPoints;
     audioScratch = state->pathState;
-    objAudioFn_8006ef38(obj, (ObjAnimEventList*)audioEvents, 8, audioPoints, audioScratch, 1.0f, 1.0f);
+    objAudioDispatchAnimEvents(obj, (ObjAnimEventList*)audioEvents, 8, audioPoints, audioScratch, 1.0f, 1.0f);
     if (animUpdate->eventCount != 0) {
         obj->objectFlags = (u16)(obj->objectFlags & ~OBJECT_OBJFLAG_SHADOW_DISABLED);
         obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_VISIBLE;
@@ -725,7 +725,8 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
     } else {
         state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_ANIM_ENDED;
     }
-    objAudioFn_8006ef38((GameObject*)obj, &state->animEvents, 8, state->pathPoints, state->pathState, 1.0f, 1.0f);
+    objAudioDispatchAnimEvents((GameObject*)obj, &state->animEvents, 8, state->pathPoints, state->pathState, 1.0f,
+                               1.0f);
     NW_mammoth_updateEyeTracking(obj, state,
                                  tables[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_TRIGGER_REFRESH);
     state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH;

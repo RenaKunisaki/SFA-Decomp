@@ -377,8 +377,8 @@ typedef struct PlayerState {
     u8 moveVariantIndex; /* index into moveAnimTable->moves[]/angles[] (0xff = none) */
     u8 walkAnimSoundId; /* anim-sound-set id copied into animSoundId for low gait (gaitStepLevel <= 3); init 3 */
     u8 runAnimSoundId;  /* anim-sound-set id copied into animSoundId for high gait (gaitStepLevel > 3); init 4 */
-    u8 footstepSoundId; /* sound-variant id passed with surfaceType to audioPickSoundEffect_8006ed24 for footstep/landing sfx */
-    u8 animSoundId; /* active anim-event sound set passed to the animEvents audio dispatch (objAudioFn_8006ef38/edcc); selected from walk/run/altAnimSoundId by gait/move */
+    u8 footstepSoundId; /* sound-variant id passed with surfaceType to surfaceSfxSelectTrigger for footstep/landing sfx */
+    u8 animSoundId; /* active anim-event sound set passed to objAudioDispatchAnimEvents/objAudioDispatchEventMask; selected from walk/run/altAnimSoundId by gait/move */
     u8 altAnimSoundId; /* anim-sound-set id copied into animSoundId for specific moves (e.g. turn/launch); init 6 */
     u8 moveSlotCount;
     u8 moveSlotIndex;

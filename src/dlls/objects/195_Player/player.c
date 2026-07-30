@@ -2546,7 +2546,7 @@ int playerState3D(int obj, int state, f32 fv)
     if ((((PlayerState*)state)->baddie.moveEventFlags & 2) == 0 &&
         ((GameObject*)obj)->anim.currentMoveProgress > 0.7f)
     {
-        Sfx_PlayFromObject(obj, audioPickSoundEffect_8006ed24(inner->surfaceType, inner->footstepSoundId));
+        Sfx_PlayFromObject(obj, surfaceSfxSelectTrigger(inner->surfaceType, inner->footstepSoundId));
         ((PlayerState*)state)->baddie.moveEventFlags |= 2;
     }
     if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
@@ -7782,7 +7782,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
     case 0x37:
         if ((((PlayerState*)state)->baddie.eventFlags & 1) != 0)
         {
-            int snd = audioPickSoundEffect_8006ed24(inner->surfaceType, inner->footstepSoundId);
+            int snd = surfaceSfxSelectTrigger(inner->surfaceType, inner->footstepSoundId);
             Sfx_PlayFromObject((int)obj, snd);
             doRumble(5.0f);
             if (inner->waterDepth > 0.0f)
@@ -13789,7 +13789,7 @@ int fn_802AD2F4(GameObject* obj, int inner, int state)
     if ((((ByteFlags*)(((char*)inner) + 0x3f1))->b01 != 0) && (((ByteFlags*)(((char*)inner) + 0x3f0))->b01 == 0))
     {
         ((ByteFlags*)(((char*)inner) + 0x3f0))->b01 = 1;
-        sfx = audioPickSoundEffect_8006ed24(ps->surfaceType, ps->footstepSoundId);
+        sfx = surfaceSfxSelectTrigger(ps->surfaceType, ps->footstepSoundId);
         if (hdiff > 260.0f)
         {
             s8 hv;
@@ -13952,8 +13952,8 @@ int fn_802ADC08(GameObject* obj, int inner, int p3)
     {
         u16 snd;
         doRumble(5.0f);
-        Sfx_PlayFromObject((int)obj, (u16)audioPickSoundEffect_8006ed24(((PlayerState*)inner)->surfaceType,
-                                                                       ((PlayerState*)inner)->footstepSoundId));
+        Sfx_PlayFromObject((int)obj, (u16)surfaceSfxSelectTrigger(((PlayerState*)inner)->surfaceType,
+                                                                 ((PlayerState*)inner)->footstepSoundId));
         if (((PlayerState*)inner)->characterId == 0)
         {
             snd = 0x2cf;
@@ -17405,9 +17405,9 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         }
     }
     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
-    objAudioFn_8006ef38((GameObject*)obj, &seq->animEvents, ((PlayerState*)inner)->animSoundId,
-                        (void*)((char*)inner + 0x3c4), (void*)((char*)inner + 4),
-                        ((PlayerState*)inner)->baddie.animSpeedA, 1.0f);
+    objAudioDispatchAnimEvents((GameObject*)obj, &seq->animEvents, ((PlayerState*)inner)->animSoundId,
+                               (void*)((char*)inner + 0x3c4), (void*)((char*)inner + 4),
+                               ((PlayerState*)inner)->baddie.animSpeedA, 1.0f);
     return result;
 }
 
@@ -18376,9 +18376,9 @@ void playerUpdate(GameObject* obj)
             ((PlayerState*)inner)->isHoldingObject = 0;
             ((PlayerState*)inner)->queuedBitCount = 0;
             *(s16*)obj = ((PlayerState*)inner)->targetYaw;
-            objAudioFn_8006edcc((GameObject*)obj, ((PlayerState*)inner)->baddie.eventFlags,
-                                ((PlayerState*)inner)->animSoundId, (void*)(inner + 0x3c4), (void*)(inner + 4),
-                                ((PlayerState*)inner)->baddie.animSpeedA, 1.0f);
+            objAudioDispatchEventMask((GameObject*)obj, ((PlayerState*)inner)->baddie.eventFlags,
+                                      ((PlayerState*)inner)->animSoundId, (void*)(inner + 0x3c4),
+                                      (void*)(inner + 4), ((PlayerState*)inner)->baddie.animSpeedA, 1.0f);
         }
     }
 }

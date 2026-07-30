@@ -1102,8 +1102,8 @@ void Tricky_applyFloorResponse(GameObject* obj, int state)
     if ((((EnemyState*)state)->flags2E4 & 0x00200000) != 0)
     {
         ObjPath_GetPointWorldPositionArray(obj, 2, 2, points);
-        objAudioFn_8006edcc(obj, ((EnemyState*)state)->animEventMask, 7, points, (void*)(state + 4),
-                            ((EnemyState*)state)->pathSpeed, 1.0f);
+        objAudioDispatchEventMask(obj, ((EnemyState*)state)->animEventMask, 7, points, (void*)(state + 4),
+                                  ((EnemyState*)state)->pathSpeed, 1.0f);
     }
 }
 

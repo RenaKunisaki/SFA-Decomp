@@ -8222,9 +8222,8 @@ int tricky_SeqFn(int obj, int unused, ObjSeqState* animUpdate)
     objAnimFreeChildren((GameObject*)obj, state, (GameObject**)&((TrickyState*)state)->child);
     tricky_updateModelVariantFade(obj, state);
     Tricky_updateBlendChannelWeight(obj, (u8*)state);
-    objAudioFn_8006ef38((GameObject*)obj, &animUpdate->animEvents, 1, (void*)(state + 0x7d8),
-                        (void*)(state + 0xf8), 1.0f,
-                        1.0f);
+    objAudioDispatchAnimEvents((GameObject*)obj, &animUpdate->animEvents, 1, (void*)(state + 0x7d8),
+                               (void*)(state + 0xf8), 1.0f, 1.0f);
     if ((((TrickyState*)state)->stateFlags & 1) != 0)
     {
         animUpdate->flags &= ~0x40;
@@ -9663,8 +9662,8 @@ void Tricky_update(int obj)
     Tricky_updateBlendChannelWeight(obj, (u8*)state);
     if (trickyState->speed > 0.2f)
     {
-        objAudioFn_8006ef38((GameObject*)obj, (ObjAnimEventList*)(state + 0x80c), 1, (void*)(state + 0x7d8),
-                            (void*)(state + 0xf8), trickyState->speed, 1.0f);
+        objAudioDispatchAnimEvents((GameObject*)obj, (ObjAnimEventList*)(state + 0x80c), 1,
+                                   (void*)(state + 0x7d8), (void*)(state + 0xf8), trickyState->speed, 1.0f);
     }
     if (0.0f == trickyState->waterLevel)
     {
