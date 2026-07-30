@@ -594,16 +594,13 @@ void SB_CloudRunner_HandlePriorityHit(GameObject* obj, SBCloudRunnerState* state
     }
 }
 
-
 /* Forward to the laser-locked target's DLL vtable (slot 0x24). */
-int shipBattleFn_801eed24(GameObject* obj)
-{
+int SB_CloudRunner_getTargetMode(GameObject* obj) {
     GameObject* target = ((SBCloudRunnerState*)obj->extra)->targetObj;
     void* vt = *target->anim.dll;
     int (*fn)(GameObject*) = *(int (**)(GameObject*))((char*)vt + 0x24);
     return fn(target);
 }
-
 
 void SB_CloudRunner_getSpawnPos(GameObject* obj, f32* x, f32* y, f32* z)
 {

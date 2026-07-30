@@ -27,7 +27,7 @@ void CameraModeShipBattle_update(CameraObject* camera) {
     int targetMode = 0;
     GameObject* focus = (GameObject*)camera->anim.targetObj;
     if (focus != NULL) {
-        targetMode = shipBattleFn_801eed24(focus);
+        targetMode = SB_CloudRunner_getTargetMode(focus);
     }
     state = gCameraModeShipBattleState;
     if (targetMode != state->targetMode) {
