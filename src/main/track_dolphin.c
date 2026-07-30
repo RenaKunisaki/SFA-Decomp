@@ -1481,7 +1481,7 @@ void trackIntersect(void)
         {
             sortComplete = 1;
             for (sortIndex = 0, lineOffset = sortIndex; sortIndex < gIntersectLineCount - 1;
-                 lineOffset += 2, sortIndex++)
+                 lineOffset += sizeof(s16), sortIndex++)
             {
                 int firstType;
 
@@ -1492,7 +1492,7 @@ void trackIntersect(void)
                 if (firstType < ((s8)lineBytes[(secondLine = sortOrder[1]) * sizeof(IntersectLine) + 3] & 0x3f))
                 {
                     sortOrder[0] = secondLine;
-                    *(s16*)(lbl_803DCF40 + lineOffset + 2) = firstLine;
+                    *(s16*)(lbl_803DCF40 + lineOffset + sizeof(s16)) = firstLine;
                     sortComplete = 0;
                 }
             }
