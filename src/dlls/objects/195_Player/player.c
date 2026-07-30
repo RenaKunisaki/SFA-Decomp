@@ -1653,21 +1653,21 @@ int playerIsNotAttacking(GameObject* obj)
     return inner->baddie.controlMode != 0x26;
 }
 
-int objAnimFn_80296328(GameObject* obj)
+int playerCanUseCombatTargeting(GameObject* player)
 {
-    PlayerState* inner = ((GameObject*)obj)->extra;
-    if (((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 &&
-         ((ByteFlags*)((char*)inner + 0x3f2))->b80 == 0) ||
-        ((ByteFlags*)((char*)inner + 0x3f0))->b04 || ((ByteFlags*)((char*)inner + 0x3f0))->b08 ||
-        ((ByteFlags*)((char*)inner + 0x3f0))->b20 || ((PlayerState*)inner)->heldObj != NULL ||
-        ((ByteFlags*)((char*)inner + 0x3f0))->b02)
+    PlayerState* state = player->extra;
+    if (((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 &&
+         ((ByteFlags*)((char*)state + 0x3f2))->b80 == 0) ||
+        ((ByteFlags*)((char*)state + 0x3f0))->b04 || ((ByteFlags*)((char*)state + 0x3f0))->b08 ||
+        ((ByteFlags*)((char*)state + 0x3f0))->b20 || state->heldObj != NULL ||
+        ((ByteFlags*)((char*)state + 0x3f0))->b02)
     {
         return 0;
     }
-    if (inner->baddie.controlMode == 1 || inner->baddie.controlMode == 2 || inner->baddie.controlMode == 0x26 ||
-        (inner->baddie.controlMode == 0x18 &&
-         (mainGetBit(GAMEBIT_NW_SnowHorn03E3) || *(s16*)((char*)inner->focusObject + 0x46) == 0x416)) ||
-        inner->baddie.targetObj != NULL)
+    if (state->baddie.controlMode == 1 || state->baddie.controlMode == 2 || state->baddie.controlMode == 0x26 ||
+        (state->baddie.controlMode == 0x18 &&
+         (mainGetBit(GAMEBIT_NW_SnowHorn03E3) || *(s16*)((char*)state->focusObject + 0x46) == 0x416)) ||
+        state->baddie.targetObj != NULL)
     {
         return 1;
     }

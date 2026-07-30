@@ -59,7 +59,7 @@ int playerIsThrowing(GameObject* obj);
 int fn_802966B4(GameObject* obj);
 int playerIsStaffActionPending(GameObject* obj);
 int playerIsNotAttacking(GameObject* player);
-int objAnimFn_80296328(GameObject* player);
+int playerCanUseCombatTargeting(GameObject* player);
 f32 playerGetProbeHitDist(GameObject* player);
 int playerIsDead(GameObject* obj);
 void playerReleaseLedgeGrabOn(GameObject* player, GameObject* parentObj);
