@@ -12372,8 +12372,7 @@ void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, 
     }
 }
 
-void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInput, f32 randomOffset)
-{
+void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInput, f32 randomOffset) {
     ObjPlacement* setup;
     int linkEffect;
     f32 x1, y1, z1, x0, y0, z0;
@@ -12381,8 +12380,7 @@ void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInpu
 
     linkEffect = 1;
     Camera_GetCurrent();
-    if (Obj_IsLoadingLocked() != 0)
-    {
+    if (Obj_IsLoadingLocked() != 0) {
         Sfx_PlayFromObject(0, SFXTRIG_staff_rocket_hitdirt);
         setup = Obj_AllocObjectSetup(0x24, ARW_SEQID_RAPIDFIRE_LASER);
         setup->color[0] = 2;
@@ -12394,12 +12392,9 @@ void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInpu
         setup->posY = y0 + randomOffset;
         setup->posZ = z0 + randomOffset;
         setup = (ObjPlacement*)objSetupObject(setup, 5, -1, -1, NULL);
-        if (setup == NULL)
-        {
+        if (setup == NULL) {
             linkEffect = 0;
-        }
-        if (setup != NULL)
-        {
+        } else {
             ObjPath_GetPointWorldPosition((GameObject*)gPlayerPathObject, 0, &x0, &y0, &z0, 0);
             ObjPath_GetPointWorldPosition((GameObject*)gPlayerPathObject, 1, &x1, &y1, &z1, 0);
             dx = x0 - x1;
@@ -12414,10 +12409,9 @@ void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInpu
             setup->posX *= 6.0f;
             arwprojectile_placeForward((GameObject*)setup, 10.0f);
             arwprojectile_setLifetime((GameObject*)setup, 0x32);
-            if (linkEffect == 1)
-            {
-                arwprojectile_createLinkedEffect((GameObject*)setup, 1);
-            }
+        }
+        if (linkEffect == 1) {
+            arwprojectile_createLinkedEffect((GameObject*)setup, 1);
         }
     }
 }
