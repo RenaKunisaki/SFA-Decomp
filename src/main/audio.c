@@ -473,21 +473,21 @@ void streamsLoadedCallback(s32 status, DVDFileInfo* fileInfo)
     }
     else
     {
-        StreamEntry* s;
+        StreamEntry* stream;
         int i;
-        int count;
+        int streamCount;
         DVDClose(fileInfo);
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
         gAudioPendingLoadFlags &= ~AUDIO_LOAD_STREAMS;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_STREAMS;
-        s = gStreamsData;
-        count = gStreamsCount;
-        for (i = 0; i != count; i++)
+        stream = gStreamsData;
+        streamCount = gStreamsCount;
+        for (i = 0; i != streamCount; i++)
         {
-            s->flag = 0;
-            s++;
+            stream->flag = 0;
+            stream++;
         }
     }
 }
