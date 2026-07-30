@@ -582,7 +582,7 @@ void* textureLoad(int texId, u8 flagIn)
     Texture* walk;
     u32 bankWord;
     int bankWordSaved;
-    int restore;
+    BOOL interruptState;
     int origTexId;
     int mipChainWord;
     u16 remapped;
@@ -593,12 +593,12 @@ void* textureLoad(int texId, u8 flagIn)
     int n;
     int sizeOut;
     int frameOut;
-    int disabled;
+    BOOL interruptsDisabled;
     int bankWordHeld;
     LoadedTextureEntry* entry;
 
-    restore = 1;
-    disabled = 0;
+    interruptState = TRUE;
+    interruptsDisabled = FALSE;
     if (texId < 0)
     {
         n = -texId;
@@ -628,8 +628,8 @@ void* textureLoad(int texId, u8 flagIn)
     }
     if (getLoadedFileFlags(0) != 0)
     {
-        restore = OSDisableInterrupts();
-        disabled = 1;
+        interruptState = OSDisableInterrupts();
+        interruptsDisabled = TRUE;
     }
     origTexId = texId;
     if (texId < 0)
@@ -744,13 +744,13 @@ void* textureLoad(int texId, u8 flagIn)
             if (buf == NULL)
             {
                 gRcpTexAllocFailed = 1;
-                if (getLoadedFileFlags(0) != 0 && disabled == 1)
+                if (getLoadedFileFlags(0) != 0 && interruptsDisabled == TRUE)
                 {
-                    OSRestoreInterrupts(restore);
+                    OSRestoreInterrupts(interruptState);
                 }
-                else if (disabled == 1)
+                else if (interruptsDisabled == TRUE)
                 {
-                    OSRestoreInterrupts(restore);
+                    OSRestoreInterrupts(interruptState);
                 }
                 if (flagIn != 0)
                 {
@@ -764,13 +764,13 @@ void* textureLoad(int texId, u8 flagIn)
             if (mipLevel == 0)
             {
                 gRcpTexAllocFailed = 1;
-                if (getLoadedFileFlags(0) != 0 && disabled == 1)
+                if (getLoadedFileFlags(0) != 0 && interruptsDisabled == TRUE)
                 {
-                    OSRestoreInterrupts(restore);
+                    OSRestoreInterrupts(interruptState);
                 }
-                else if (disabled == 1)
+                else if (interruptsDisabled == TRUE)
                 {
-                    OSRestoreInterrupts(restore);
+                    OSRestoreInterrupts(interruptState);
                 }
                 if (flagIn != 0)
                 {
@@ -842,13 +842,13 @@ void* textureLoad(int texId, u8 flagIn)
     gLoadedTextures[slot].size = getHeapItemSize(gLoadedTextures[slot].texture);
     if (gLoadedTextureCount > 0x2bc)
     {
-        if (getLoadedFileFlags(0) != 0 && disabled == 1)
+        if (getLoadedFileFlags(0) != 0 && interruptsDisabled == TRUE)
         {
-            OSRestoreInterrupts(restore);
+            OSRestoreInterrupts(interruptState);
         }
-        else if (disabled == 1)
+        else if (interruptsDisabled == TRUE)
         {
-            OSRestoreInterrupts(restore);
+            OSRestoreInterrupts(interruptState);
         }
         if (flagIn != 0)
         {
@@ -861,13 +861,13 @@ void* textureLoad(int texId, u8 flagIn)
         textureInitGXTexObj(walk);
         walk = walk->nextAnimationFrame;
     }
-    if (getLoadedFileFlags(0) != 0 && disabled == 1)
+    if (getLoadedFileFlags(0) != 0 && interruptsDisabled == TRUE)
     {
-        OSRestoreInterrupts(restore);
+        OSRestoreInterrupts(interruptState);
     }
-    else if (disabled == 1)
+    else if (interruptsDisabled == TRUE)
     {
-        OSRestoreInterrupts(restore);
+        OSRestoreInterrupts(interruptState);
     }
     if (flagIn != 0)
     {
