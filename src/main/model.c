@@ -1009,8 +1009,8 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
     return out2;
 }
 
-void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain,
-                                  ObjModelChainEntry* entry)
+static void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain,
+                                         ObjModelChainEntry* entry)
 {
     Mtx tmp;
     Mtx mt;
@@ -1087,9 +1087,8 @@ void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjMod
         }
     }
 }
-void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain* chain, ObjModelChainEntry* entry);
-void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain, ObjModelChainEntry* entry,
-                           ObjModelChainUpdateCallback callback, int callbackArg)
+static void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain,
+                                  ObjModelChainEntry* entry, ObjModelChainUpdateCallback callback, int callbackArg)
 {
     Mtx tmp;
     Mtx mt;
@@ -1175,7 +1174,8 @@ void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain
         entry->nodes[i].pos.z = work.z;
     }
 }
-void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain* chain, ObjModelChainEntry* entry)
+static void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain* chain,
+                                           ObjModelChainEntry* entry)
 {
     Vec vec;
     int modelIndex;
@@ -1228,7 +1228,7 @@ void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain*
     }
 }
 
-void modelChainInitNodesFromJoints(int* obj, int b, int* desc)
+static void modelChainInitNodesFromJoints(int* obj, int b, int* desc)
 {
     int i;
 
