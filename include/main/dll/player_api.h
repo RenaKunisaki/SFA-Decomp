@@ -70,7 +70,7 @@ void cameraGetPrevPos2(GameObject* player, f32* outX, f32* outY, f32* outZ);
 void objSetAnimStateFlags(GameObject* obj, int flag, int set);
 void playerInitFuncPtrsEntry(void);
 void playerRenderFuzz(GameObject* obj, int p2, int fuzzPass);
-void fn_802B4DE0(GameObject* obj, int flag);
+void playerFree(GameObject* obj, int flag);
 void playerUpdateWhileTimeStopped(int obj);
 void objLoadPlayerFromSave(int obj);
 void playerReparentPreservingWorldTransform(GameObject* obj, GameObject* newParent);

@@ -989,7 +989,7 @@ void objFreeObjdef(u8* obj, int flag)
     {
     case 0:
     case 0x1f:
-        fn_802B4DE0((GameObject*)obj, flag);
+        playerFree((GameObject*)obj, flag);
         break;
     default:
         if (((GameObject*)obj)->anim.dll != NULL)

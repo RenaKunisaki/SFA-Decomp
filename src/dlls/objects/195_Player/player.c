@@ -17513,7 +17513,7 @@ void playerAnimate(GameObject* obj, int state, f32 fv)
     *(int*)state &= ~0x1000000;
 }
 
-void fn_802B4DE0(GameObject* obj, int p2)
+void playerFree(GameObject* obj, int flag)
 {
     int off;
     int i;
