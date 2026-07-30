@@ -4457,7 +4457,7 @@ ObjTextureRuntimeSlot* objFindTexture(GameObject* obj, int target, int unusedMat
     return result;
 }
 
-void objPosFn_80039510(GameObject* obj, int key, f32* outPosition) {
+void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
     int* table;
     int i;
     int k;

@@ -6651,7 +6651,7 @@ int tricky_substateApproachThorntail(int obj, int state)
     u16 sfxId;
     float pos[3];
 
-    objPosFn_80039510(((TrickyState*)state)->followObj, 0, pos);
+    objGetJointWorldPosition(((TrickyState*)state)->followObj, 0, pos);
     if (getXZDistance(pos, (float*)(state + 0x72c)) > 100.0f)
     {
         ((TrickyState*)state)->wanderTargetX = pos[0];
@@ -7508,7 +7508,7 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
     {
     case 0:
         ((TrickyState*)state)->followObj = (GameObject*)found;
-        objPosFn_80039510((GameObject*)found, 0, (float*)(state + 0x72c));
+        objGetJointWorldPosition((GameObject*)found, 0, (float*)(state + 0x72c));
         if ((u8*)((TrickyState*)state)->targetPosPtr != state + 0x72c)
         {
             ((TrickyState*)state)->targetPosPtr = (f32*)(state + 0x72c);

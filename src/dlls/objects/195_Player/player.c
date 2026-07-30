@@ -13166,7 +13166,7 @@ void fn_802ABFBC(GameObject* obj, int state, PlayerState* inner)
         ObjPath_GetPointWorldPosition((GameObject*)obj, 5, &x1, &y1, &z1, 0);
         if (objModelGetVecFn_800395d8((GameObject*)sub, 0) != 0)
         {
-            objPosFn_80039510((GameObject*)sub, 0, pos);
+            objGetJointWorldPosition((GameObject*)sub, 0, pos);
         }
         else
         {
@@ -16642,7 +16642,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             obj2 = (int)getFocusedNpc();
             if (objModelGetVecFn_800395d8((GameObject*)(obj2), 0) != 0)
             {
-                objPosFn_80039510((GameObject*)(obj2), 0, npos);
+                objGetJointWorldPosition((GameObject*)(obj2), 0, npos);
             }
             else
             {
