@@ -1041,7 +1041,7 @@ void snowCloudUpdateFlakes(u8* snow)
     }
 }
 
-void snowReposSnowCloud(int cloudId)
+static void snowReposSnowCloud(int cloudId)
 {
     u8* p;
     SnowFlake* part;
