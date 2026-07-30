@@ -13,9 +13,9 @@
 #include "ghidra_import.h"
 
 void* surfaceSfxGetRecord(u32 i);
-void timeFn_8006f400(f32 step);
-void drawFn_8006f500(void);
-void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
+void waterFxUpdate(f32 step);
+void waterFxDraw(void);
+void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type);
 void waterFxSetDisabled(int disabled);
 void waterFxInit(void);
 void mtx44Perspective(f32* matrix, u16* perspectiveNorm, f32 fovY, f32 aspect, f32 nearPlane, f32 farPlane, f32 scale);

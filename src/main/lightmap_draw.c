@@ -632,7 +632,7 @@ void sceneDrawTransparentPolys(void)
             drawGlow(entries[i].arg0.value, entries[i].arg1.value);
             break;
         case 8:
-            drawFn_8006f500();
+            waterFxDraw();
             break;
         case 9:
             (*gWaterfxInterface)->render(0, 0);

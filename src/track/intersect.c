@@ -193,7 +193,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
         {
             if (obj->anim.classId == 1 || obj->anim.romDefNo == 0x416)
             {
-                playerEarthWalkerAudioFn_8006f950((u8*)obj, (f32*)&v, i & 1, sfx);
+                waterFxSpawnContactEffect((u8*)obj, (f32*)&v, i & 1, sfx);
             }
             ps.pos.x = vec[0];
             ps.pos.y = vec[1];
@@ -338,7 +338,7 @@ f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 #include "track/intersect_internal.h"
 
 /* Per-frame alpha decrement of the two water-effect pools. */
-void timeFn_8006f400(f32 step) {
+void waterFxUpdate(f32 step) {
     int i;
     SplashQuad* quad;
     RippleEntry* ripple;
@@ -366,7 +366,7 @@ void timeFn_8006f400(f32 step) {
     }
 }
 
-void drawFn_8006f500(void)
+void waterFxDraw(void)
 {
     GXColor color;
     Mtx camTrans;
@@ -509,7 +509,7 @@ extern u32 lbl_803DCFF4;
 
 #include "track/intersect_internal.h"
 
-void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
+void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type)
 {
     WaterFxState* base;
     f32 x, y, z;

@@ -53,14 +53,14 @@ u32 gSaveCardSerialLo;
 u32 gSaveCardSerialHi;
 char* gSaveCardIoBuffer;
 void* gSaveCardWorkArea;
-void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
+void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
 void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 
 
-void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
+void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type);
 
 
 /* 4x4 identity fill. */

@@ -672,7 +672,7 @@ void gameUpdate(void)
             }
         }
     }
-    timeFn_8006f400(timeDelta);
+    waterFxUpdate(timeDelta);
     uiDll_runFrameEndAndLoadNext();
     trackIntersect();
     mapUpdateCameraPosByTransformSpace();
