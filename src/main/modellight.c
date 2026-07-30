@@ -935,7 +935,7 @@ ModelLightStruct* objAllocLight(void* owner)
     return light;
 }
 
-void modelLightStruct_loadDiffuseGXLight(ModelLightStruct* light, GameObject* obj, GXLightID lightId)
+static void modelLightStruct_loadDiffuseGXLight(ModelLightStruct* light, GameObject* obj, GXLightID lightId)
 {
     f32 viewPos[3];
     f32* view;
