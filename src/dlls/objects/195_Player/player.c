@@ -263,7 +263,7 @@ int fn_802ADC08(GameObject* obj, int inner, int p3);
 void fn_802ADE80(GameObject* obj, int inner, int state);
 int fn_802AE480(GameObject* obj, int inner, int state);
 void fn_802AE650(GameObject* obj, int state, int p3);
-void fn_802AE83C(int obj, int inner, int state);
+void playerEnterDeepWater(int obj, int inner, int state);
 void fn_802AE9C8(GameObject* obj, int inner, int state);
 void fn_802AED2C(GameObject* obj, int state, int p3);
 void staffAnimate(int obj, void* state, f32 dt);
@@ -7673,7 +7673,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
     if (inner->waterDepth > 25.0f)
     {
         playerRefreshCollisionState(obj, (int)inner, 5);
-        fn_802AE83C((int)obj, (int)inner, state);
+        playerEnterDeepWater((int)obj, (int)inner, state);
         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
         return 2;
     }
@@ -7910,7 +7910,7 @@ int playerStateOnLadder(int obj, int state)
         if (((PlayerState*)inner)->waterDepth > 25.0f)
         {
             playerRefreshCollisionState((GameObject*)obj, inner, 5);
-            fn_802AE83C(obj, inner, state);
+            playerEnterDeepWater(obj, inner, state);
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
             return 2;
         }
@@ -13416,7 +13416,7 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
     if (!((ByteFlags*)((char*)inner + 0x3f0))->b20 && ((PlayerState*)inner)->waterDepth > 25.0f &&
         ((PlayerState*)state)->baddie.unk1B0 < 120.0f)
     {
-        fn_802AE83C(obj, inner, state);
+        playerEnterDeepWater(obj, inner, state);
         return 0;
     }
     {
@@ -14267,7 +14267,7 @@ void fn_802AE650(GameObject* obj, int state, int p3)
     }
 }
 
-void fn_802AE83C(int obj, int inner, int state)
+void playerEnterDeepWater(int obj, int inner, int state)
 {
     GameObject* sub;
     f32 z;
