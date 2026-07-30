@@ -2546,7 +2546,7 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                         typeSlotp[0x58] = triFlags;
                         *(int*)(slotp + 0x5c) = objmtx;
                         bounces++;
-                        found = 0;
+                        goto slotComplete;
                     }
                     break;
                 }
@@ -2598,6 +2598,7 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                 }
             }
         } while (found != 0);
+    slotComplete:
         if (bounces != 0)
         {
             if (norm4[1] >= 0.707f || norm4[1] <= -0.707f)
