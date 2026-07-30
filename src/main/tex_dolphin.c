@@ -690,7 +690,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
     }
 }
 
-void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
+static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
 {
     int layerIdx;
     ShaderLayer* layer;
