@@ -1180,7 +1180,7 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
         ((EarthWarriorState*)inner)->baddie.cameraYaw = 0;
     }
     ((EarthWarriorState*)inner)->baddie.flags0 |= 0x1000000;
-    fn_802B0EA4(obj, sub, inner);
+    playerUpdateMotionState(obj, sub, inner);
     (*gPlayerInterface)->update(obj, (void*)inner, timeDelta, timeDelta, gDREarthWarriorStateHandlers,
                                 &gDREarthWarriorDefaultStateHandler);
     obj->anim.rotY =

@@ -15602,7 +15602,7 @@ void playerDoEyeAnims(GameObject* obj, int state)
     }
 }
 
-void fn_802B0EA4(GameObject* obj, int inner, int state)
+void playerUpdateMotionState(GameObject* obj, int inner, int state)
 {
     int d;
     char* cam;
@@ -16894,7 +16894,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     ((PlayerState*)inner)->baddie.physicsActive = 1;
                     ((PlayerState*)inner)->baddie.flags4 = ((PlayerState*)inner)->baddie.flags4 & ~0x100000;
                     ((PlayerState*)inner)->emissionState = 0;
-                    fn_802B0EA4((GameObject*)(obj), inner, inner);
+                    playerUpdateMotionState((GameObject*)(obj), inner, inner);
                     (*gPlayerInterface)->update((void*)obj, (void*)inner, timeDelta, timeDelta, gPlayerStateHandlers,
                         &gPlayerDefaultStateHandler);
                 }
@@ -16918,7 +16918,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 ((PlayerState*)inner)->baddie.physicsActive = 1;
                 ((PlayerState*)inner)->baddie.flags4 = ((PlayerState*)inner)->baddie.flags4 & ~0x100000;
                 ((PlayerState*)inner)->emissionState = 0;
-                fn_802B0EA4((GameObject*)(obj), inner, inner);
+                playerUpdateMotionState((GameObject*)(obj), inner, inner);
                 (*gPlayerInterface)->update((void*)obj, (void*)inner, timeDelta, timeDelta, gPlayerStateHandlers,
                     &gPlayerDefaultStateHandler);
             }
@@ -17495,7 +17495,7 @@ void playerAnimate(GameObject* obj, int state, f32 fv)
     ((PlayerState*)state)->emissionState = 0;
     *(u32*)&((PlayerState*)state)->flags360 &= ~PLAYER_FLAG_NO_POS_VELOCITY;
     *(int*)state |= 0x1000000;
-    fn_802B0EA4(obj, state, state);
+    playerUpdateMotionState(obj, state, state);
     if ((s8)playerCheckIfClimbingOntoWall((int)obj, state, state, buf, fv, 0x60) == 8)
     {
         *(int*)&((PlayerState*)state)->baddie.targetObj = 0;
