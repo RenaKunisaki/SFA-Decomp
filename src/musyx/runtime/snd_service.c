@@ -76,10 +76,10 @@ u16 sndRand(void)
  * Look up s16 from a 4-zone table based on the input's low 12 bits.
  * Upper two zones return sign-flipped values.
  */
-s16 sndSin(u32 packed)
+s16 sndSin(u16 angle)
 {
     s16* table = sndSintab.tab;
-    u32 zone = packed & 0xfff;
+    u32 zone = angle & 0xfff;
     if (zone < 0x400)
     {
         return table[zone];
