@@ -32,7 +32,7 @@ void gxTevAddColor1Stage(void);
 /* Per-frame alpha decrement of the two water-effect pools. */
 void waterFxUpdate(f32 step);
 void waterFxDraw(void);
-int moonFxCb_80074110(u8* obj, int* model, int slot);
+int moonFxRenderCallback(u8* obj, int* model, int slot);
 void resetSomeGxFlags(void);
 void fogSetRange(f32 start, f32 end);
 void setFogColorRgb(u8 red, u8 green, u8 blue);

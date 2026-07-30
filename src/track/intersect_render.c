@@ -1556,7 +1556,7 @@ int modelCb_80073d04(u8* obj, int* objB)
     return 1;
 }
 
-int moonFxCb_80074110(u8* obj, int* objB, int slot)
+int moonFxRenderCallback(u8* obj, int* objB, int slot)
 {
     GXColor colorK;
     GXColor colorFog;

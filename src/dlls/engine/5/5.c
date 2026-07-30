@@ -296,7 +296,7 @@ void loadSunAndMoon(void)
         moonObj = objSetupObject(Obj_AllocObjectSetup(0x20, SKY_CHILD_OBJ_MOON), 4, -1, -1, NULL);
         gSkyMoonObject = moonObj;
         gSkyObjectsInitialized = 1;
-        ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel(moonObj), moonFxCb_80074110);
+        ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel(moonObj), moonFxRenderCallback);
     }
 }
 
