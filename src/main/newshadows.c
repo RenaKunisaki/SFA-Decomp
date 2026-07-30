@@ -430,7 +430,7 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
             u32* tile = (u32*)(data + (y & 3) * 8 + (y >> 2) * 4 * size);
             u32* dst = row.words;
             u32* src;
-            u32* wp;
+            u32* tileDst;
             u32 x;
 
             for (i = 0; i < (window >> 3); i++)
@@ -453,13 +453,13 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
             }
             boxBlurRow(row.bytes, blurred.bytes, size, window);
             src = blurred.words;
-            wp = tile;
+            tileDst = tile;
             for (x = 0; x < size; x += 8)
             {
-                wp[0] = src[0];
-                wp[1] = src[1];
+                tileDst[0] = src[0];
+                tileDst[1] = src[1];
                 src += 2;
-                wp += 8;
+                tileDst += 8;
             }
         }
         {
@@ -469,42 +469,42 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
             {
                 u8* col = data + (x & 7) + (x >> 3) * 32;
                 u32* dst = row.words;
-                u8* gp;
-                u8* bp;
-                u32 yy;
-                u32 padding;
+                u8* texturePtr;
+                u8* bufferPtr;
+                u32 yOffset;
+                u32 paddingWord;
 
-                for (padding = 0; padding < (window >> 3); padding++)
+                for (paddingWord = 0; paddingWord < (window >> 3); paddingWord++)
                 {
                     dst[0] = fill;
                     dst++;
                 }
-                bp = row.bytes + (window >> 1);
-                gp = col;
-                for (yy = 0; yy < size; yy += 4)
+                bufferPtr = row.bytes + (window >> 1);
+                texturePtr = col;
+                for (yOffset = 0; yOffset < size; yOffset += 4)
                 {
-                    bp[0] = gp[0];
-                    bp[1] = gp[8];
-                    bp[2] = gp[16];
-                    bp[3] = gp[24];
-                    bp += 4;
-                    gp += (size >> 3) * 32;
+                    bufferPtr[0] = texturePtr[0];
+                    bufferPtr[1] = texturePtr[8];
+                    bufferPtr[2] = texturePtr[16];
+                    bufferPtr[3] = texturePtr[24];
+                    bufferPtr += 4;
+                    texturePtr += (size >> 3) * 32;
                 }
                 dst = (u32*)(row.bytes + (size + (window >> 1)));
-                for (padding = 0; padding < (window >> 3); padding++)
+                for (paddingWord = 0; paddingWord < (window >> 3); paddingWord++)
                 {
                     dst[0] = fill;
                     dst++;
                 }
                 boxBlurRow(row.bytes, blurred.bytes, size, window);
-                bp = blurred.bytes;
-                for (yy = 0; yy < size; yy += 4)
+                bufferPtr = blurred.bytes;
+                for (yOffset = 0; yOffset < size; yOffset += 4)
                 {
-                    col[0] = bp[0];
-                    col[8] = bp[1];
-                    col[16] = bp[2];
-                    col[24] = bp[3];
-                    bp += 4;
+                    col[0] = bufferPtr[0];
+                    col[8] = bufferPtr[1];
+                    col[16] = bufferPtr[2];
+                    col[24] = bufferPtr[3];
+                    bufferPtr += 4;
                     col += (size >> 3) * 32;
                 }
             }
@@ -513,7 +513,7 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
     else
     {
         u32 y = 0;
-        u16 fillhw = fill;
+        u16 fillHalfword = fill;
 
         for (; y < size; y++)
         {
@@ -524,7 +524,7 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
 
             for (i = 0; i < (window >> 2); i++)
             {
-                dst[0] = fillhw;
+                dst[0] = fillHalfword;
                 dst++;
             }
             src = tile;
@@ -539,7 +539,7 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
             }
             for (i = 0; i < (window >> 2); i++)
             {
-                dst[0] = fillhw;
+                dst[0] = fillHalfword;
                 dst++;
             }
             boxBlurRow(row.bytes, blurred.bytes, size, window);
@@ -561,41 +561,41 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
             {
                 u8* col = data + (x & 7) + (x >> 3) * 32;
                 u16* dst = row.halfwords;
-                u8* gp;
-                u8* bp;
-                u32 yy;
+                u8* texturePtr;
+                u8* bufferPtr;
+                u32 yOffset;
 
                 for (i = 0; i < (window >> 2); i++)
                 {
-                    dst[0] = fillhw;
+                    dst[0] = fillHalfword;
                     dst++;
                 }
-                bp = row.bytes + (window >> 1);
-                gp = col;
-                for (yy = 0; yy < size; yy += 4)
+                bufferPtr = row.bytes + (window >> 1);
+                texturePtr = col;
+                for (yOffset = 0; yOffset < size; yOffset += 4)
                 {
-                    bp[0] = gp[0];
-                    bp[1] = gp[8];
-                    bp[2] = gp[16];
-                    bp[3] = gp[24];
-                    bp += 4;
-                    gp += (size >> 3) * 32;
+                    bufferPtr[0] = texturePtr[0];
+                    bufferPtr[1] = texturePtr[8];
+                    bufferPtr[2] = texturePtr[16];
+                    bufferPtr[3] = texturePtr[24];
+                    bufferPtr += 4;
+                    texturePtr += (size >> 3) * 32;
                 }
                 dst = (u16*)(row.bytes + (size + (window >> 1)));
                 for (i = 0; i < (window >> 2); i++)
                 {
-                    dst[0] = fillhw;
+                    dst[0] = fillHalfword;
                     dst++;
                 }
                 boxBlurRow(row.bytes, blurred.bytes, size, window);
-                bp = blurred.bytes;
-                for (yy = 0; yy < size; yy += 4)
+                bufferPtr = blurred.bytes;
+                for (yOffset = 0; yOffset < size; yOffset += 4)
                 {
-                    col[0] = bp[0];
-                    col[8] = bp[1];
-                    col[16] = bp[2];
-                    col[24] = bp[3];
-                    bp += 4;
+                    col[0] = bufferPtr[0];
+                    col[8] = bufferPtr[1];
+                    col[16] = bufferPtr[2];
+                    col[24] = bufferPtr[3];
+                    bufferPtr += 4;
                     col += (size >> 3) * 32;
                 }
             }
