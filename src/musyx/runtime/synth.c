@@ -1056,7 +1056,7 @@ static void ZeroOffsetHandler(int voice)
 /*
  * Event per-voice update: pedal state, deferred hardware start and key-off.
  */
-void EventHandler(int voice)
+static void EventHandler(int voice)
 {
     SynthHwVoice* sv;
 
