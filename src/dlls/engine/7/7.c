@@ -1875,8 +1875,10 @@ void newclouds_run(void)
                 PSMTXRotRad(mtx, 'z', rot);
             }
             PSMTXConcat((MtxPtr)viewRotationMatrix, mtx, mtx);
-            PSMTXMultVec(mtx, (Vec*)((u32)clouds + 0xd8),
-                         (Vec*)((u32)clouds + 0xd8));
+            {
+                Vec* flashVector = (Vec*)((u32)clouds + 0xd8);
+                PSMTXMultVec(mtx, flashVector, flashVector);
+            }
             if (lbl_803DD190 < -16.0f)
             {
                 lbl_803DD190 += 16.0f;
