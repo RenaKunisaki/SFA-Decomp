@@ -1638,17 +1638,20 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
     void** curves;
     int linkCurveId;
     int count;
-    u8 j;
+    void** cp;
+    int curveIdx;
     void* linkedCurve;
-    u8 routeFlags;
-    f32 cz;
+    f32 curveX;
+    f32 targetXDistanceSquared;
+    f32 targetZDistanceSquared;
+    f32 curveZ;
     f32* p;
     f32 score;
     f32 init;
     void* curve;
+    u8 j;
+    u8 routeFlags;
     u8 k;
-    void** cp;
-    int curveIdx;
     f32* bd;
     void** rp;
     TrickyState* state;
@@ -1685,15 +1688,20 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
             continue;
         }
 
-        cz = ((ObjfsaRomCurveDef*)curve)->z;
+        curveZ = ((ObjfsaRomCurveDef*)curve)->z;
         p = state->targetPosPtr;
         {
-            f32 sq0 = (p[2] - cz) * (p[2] - cz);
-            f32 sq1 = (p[0] - ((ObjfsaRomCurveDef*)curve)->x) * (p[0] - ((ObjfsaRomCurveDef*)curve)->x);
-            f32 sq2 = (obj->anim.worldPosX - ((ObjfsaRomCurveDef*)curve)->x) *
-                      (obj->anim.worldPosX - ((ObjfsaRomCurveDef*)curve)->x);
-            f32 sq3 = (obj->anim.worldPosZ - cz) * (obj->anim.worldPosZ - cz);
-            score = sq0 + (sq1 + (sq2 + sq3));
+            targetZDistanceSquared = (p[2] - curveZ) * (p[2] - curveZ);
+            curveX = ((ObjfsaRomCurveDef*)curve)->x;
+            targetXDistanceSquared = (p[0] - curveX) * (p[0] - curveX);
+            {
+                f32 objectXDistanceSquared =
+                    (obj->anim.worldPosX - curveX) * (obj->anim.worldPosX - curveX);
+                f32 objectZDistanceSquared =
+                    (obj->anim.worldPosZ - curveZ) * (obj->anim.worldPosZ - curveZ);
+                score = targetZDistanceSquared +
+                        (targetXDistanceSquared + (objectXDistanceSquared + objectZDistanceSquared));
+            }
         }
         if (score < bestDistances[7])
         {
