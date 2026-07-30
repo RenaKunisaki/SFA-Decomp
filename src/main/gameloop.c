@@ -137,7 +137,7 @@ typedef struct
     int arg24;
     int arg28;
 } AssetReq;
-void loadAsset(AssetReq* req)
+static void loadAsset(AssetReq* req)
 {
     u8 tmp[0x10];
 
