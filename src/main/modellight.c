@@ -242,43 +242,34 @@ static u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* ligh
     return 1;
 }
 
-f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj)
-{
+static f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj) {
     f32 delta[3];
     f32 dist;
     f32 amount;
 
-    if (obj->ownerObj != NULL)
-    {
+    if (obj->ownerObj != NULL) {
         obj = obj->ownerObj;
     }
 
     PSVECSubtract(&obj->anim.worldPos, &light->worldPos, (Vec*)delta);
     dist = PSVECMag((Vec*)delta) - obj->anim.hitboxScale * obj->anim.rootMotionScale;
-    if (dist > 1000.0f || dist > light->attenuationFar)
-    {
+    if (dist > 1000.0f || dist > light->attenuationFar) {
         return 0.0f;
     }
 
-    if (dist < light->attenuationNear)
-    {
+    if (dist < light->attenuationNear) {
         amount = 1.0f;
-    }
-    else
-    {
-        amount = 1.0f -
-                 (dist - light->attenuationNear) / (light->attenuationFar - light->attenuationNear);
+    } else {
+        amount = 1.0f - (dist - light->attenuationNear) / (light->attenuationFar - light->attenuationNear);
     }
 
-    if (light->spotFunction != 0)
-    {
+    if (light->spotFunction != 0) {
         PSVECScale((Vec*)delta, (Vec*)delta, 1.0f / dist);
         PSVECDotProduct(&light->worldDirection, (Vec*)delta);
     }
 
     return amount;
 }
-f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj);
 
 void modelLightStruct_updateColorFade(ModelLightStruct* light)
 {
