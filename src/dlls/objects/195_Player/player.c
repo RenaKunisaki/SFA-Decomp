@@ -256,7 +256,7 @@ void playerCastSpell(int a, int b, int c);
 void playerRefreshCollisionState(GameObject* obj, int p2, int flags);
 void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player);
 void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* player, f32 turnInput);
-void fn_802ABFBC(GameObject* obj, int state, PlayerState* inner);
+void playerUpdateCameraTargetLookAngles(GameObject* obj, int state, PlayerState* inner);
 void playerUpdateLookAtTarget(int p1, int p2, int p3);
 void playerSetMovingAnims(int p1, int obj);
 int fn_802ADC08(GameObject* obj, int inner, int p3);
@@ -5348,7 +5348,7 @@ int playerState25(int obj, int state, f32 updateRate)
     inner->targetYaw = (s16)(inner->targetYaw + (int)((f32)(int)inner->targetObjectBearing / 24.0f));
     inner->yaw = inner->targetYaw;
     *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
-    fn_802ABFBC((GameObject*)obj, state, inner);
+    playerUpdateCameraTargetLookAngles((GameObject*)obj, state, inner);
     return 0;
 }
 
@@ -5415,7 +5415,7 @@ int playerState24(GameObject* obj, int state, f32 fv)
     inner->targetYaw += (int)((f32)inner->targetObjectBearing / 24.0f);
     inner->yaw = inner->targetYaw;
     *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
-    fn_802ABFBC(obj, state, inner);
+    playerUpdateCameraTargetLookAngles(obj, state, inner);
     return 0;
 }
 
@@ -13152,7 +13152,7 @@ void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* 
     }
 }
 
-void fn_802ABFBC(GameObject* obj, int state, PlayerState* inner)
+void playerUpdateCameraTargetLookAngles(GameObject* obj, int state, PlayerState* inner)
 {
     f32 x1, y1, z1;
     f32 pos[3];
