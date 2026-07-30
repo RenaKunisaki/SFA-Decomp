@@ -4382,7 +4382,7 @@ void objSeqDoBgCmds0D(u8* seq, GameObject* obj, int skipSpawns)
         case 4:
             if ((u8)skipSpawns == 0)
             {
-                return0xFFFF_80008B6C(cmdObj, 0, 0, 1, -1, (u8)cmdParam, 0);
+                ObjSeq_defaultActionCallback(cmdObj, 0, 0, 1, -1, (u8)cmdParam, 0);
             }
             break;
         case 5:
