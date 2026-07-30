@@ -274,7 +274,7 @@ void playerStaffInit(GameObject* obj, int state);
 void playerDoEyeAnims(GameObject* obj, int state);
 void playerUpdateInputTimers(GameObject* obj, int state, f32 fv);
 void playerDoControls(GameObject* obj, int state, f32 fv);
-void fn_802B1E5C(GameObject* obj, int state, int cfg, f32 dt);
+void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt);
 void fn_802B4A9C(GameObject* obj, int inner, int inner2);
 void playerAnimate(GameObject* obj, int state, f32 fv);
 void playerInitFuncPtrs(void);
@@ -16046,7 +16046,7 @@ extern f32 lbl_803E7FF4;
 extern f32 lbl_803E80D0;
 extern f32 lbl_803E8118;
 
-void fn_802B1E5C(GameObject* obj, int state, int cfg, f32 dt)
+void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
 {
     u32 b;
     void* found;
@@ -18226,7 +18226,7 @@ void playerUpdate(GameObject* obj)
             playerDoControls(obj, inner, dt);
             playerAnimate(obj, inner, dt);
             staffAnimate((int)obj, (void*)inner, dt);
-            fn_802B1E5C(obj, inner, inner, dt);
+            playerUpdateSurfaceResponse(obj, inner, inner, dt);
             playerUpdateVelocityFromMotion(obj, inner, inner, dt);
             {
                 f32 t = obj->anim.velocityX;
