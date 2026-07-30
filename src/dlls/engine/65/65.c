@@ -27,8 +27,8 @@ int lbl_803DBC04 = 0x140;
 #define WARPSTONEUI_MAPEVENT_KRAZOA 0x42
 
 u8 warpstoneUIState[8];
-void* lbl_803DD984;
-void* gWarpStoneUiTexture;
+Texture* gWarpStoneUiTextureA;
+Texture* gWarpStoneUiTexture;
 f32 gWarpStoneUiFadeAlpha;
 int gWarpStoneUiMenuActive;
 extern u8 gWarpStoneUiMenuItemTemplates[];
@@ -168,13 +168,13 @@ int WarpstoneUI_frameStart(void)
 
 void WarpstoneUI_release(void)
 {
-    textureFree((Texture*)(lbl_803DD984));
-    textureFree((Texture*)(gWarpStoneUiTexture));
+    textureFree(gWarpStoneUiTextureA);
+    textureFree(gWarpStoneUiTexture);
 }
 
 void WarpstoneUI_initialise(void)
 {
-    lbl_803DD984 = textureLoadAsset(WARPSTONEUI_TEXTURE_A);
+    gWarpStoneUiTextureA = textureLoadAsset(WARPSTONEUI_TEXTURE_A);
     gWarpStoneUiTexture = textureLoadAsset(WARPSTONEUI_TEXTURE_B);
     gWarpStoneUiFadeAlpha = 0.0f;
 }
