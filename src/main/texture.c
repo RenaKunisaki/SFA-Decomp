@@ -63,6 +63,10 @@ typedef struct LoadedTextureEntry
     u32 size;
 } LoadedTextureEntry;
 
+#define LOADED_TEXTURE_CAPACITY 0x2BC
+
+STATIC_ASSERT(sizeof(LoadedTextureEntry) == 0x10);
+
 LoadedTextureEntry* gLoadedTextures;
 u16* gRcpTexIdRemap;
 int gLoadedTextureCount;
@@ -546,10 +550,6 @@ void textureFree(Texture* tex)
         }
     }
 }
-extern int gRcpTexBankCount[3];
-
-extern int* gRcpTexBankTable[3];
-
 static inline void loadTextureBank(int bank, int fileId)
 {
     int* p;
@@ -840,7 +840,7 @@ void* textureLoad(int texId, u8 flagIn)
     gLoadedTextures[slot].texture = (u8*)firstTex;
     gLoadedTextures[slot].flag = flagIn;
     gLoadedTextures[slot].size = getHeapItemSize(gLoadedTextures[slot].texture);
-    if (gLoadedTextureCount > 0x2bc)
+    if (gLoadedTextureCount > LOADED_TEXTURE_CAPACITY)
     {
         if (getLoadedFileFlags(0) != 0 && interruptsDisabled == TRUE)
         {
@@ -922,39 +922,39 @@ void* textureLoadAsset(int asset)
 
 void loadTextureFiles(void)
 {
-    int* p;
-    int** q;
-    int* out;
-    int n;
+    int* bankEntry;
+    int** bankTable;
+    int* bankCount;
+    int count;
 
-    gLoadedTextures = mmAlloc(0x2bc0, 6, 0);
+    gLoadedTextures = mmAlloc(LOADED_TEXTURE_CAPACITY * sizeof(LoadedTextureEntry), 6, 0);
     gLoadedTextureCount = 0;
     loadTextureBank(0, MLDF_FILEID_TEX0_TAB_A);
     loadTextureBank(1, MLDF_FILEID_TEX1_TAB_A);
-    n = 0;
-    p = getCurrentDataFile(MLDF_FILEID_TEXPRE_TAB);
-    gRcpTexBankTable[2] = p;
-    while (p[0] != -1)
+    count = 0;
+    bankEntry = getCurrentDataFile(MLDF_FILEID_TEXPRE_TAB);
+    gRcpTexBankTable[2] = bankEntry;
+    while (bankEntry[0] != -1)
     {
-        p++;
-        n++;
+        bankEntry++;
+        count++;
     }
-    gRcpTexBankCount[2] = n - 1;
+    gRcpTexBankCount[2] = count - 1;
     loadAssetFileById(&gRcpTexIdRemap, MLDF_FILEID_TEXTABLE_BIN);
-    q = gRcpTexBankTable;
-    out = gRcpTexBankCount;
-    for (n = 0; n < 2; n++)
+    bankTable = gRcpTexBankTable;
+    bankCount = gRcpTexBankCount;
+    for (count = 0; count < 2; count++)
     {
-        int m = 0;
-        p = q[0];
-        while (p[0] != -1)
+        int entryCount = 0;
+        bankEntry = bankTable[0];
+        while (bankEntry[0] != -1)
         {
-            p++;
-            m++;
+            bankEntry++;
+            entryCount++;
         }
-        out[0] = m - 1;
-        q++;
-        out++;
+        bankCount[0] = entryCount - 1;
+        bankTable++;
+        bankCount++;
     }
     gRcpTexHeaderBuffer = mmAlloc(0x120, 6, 0);
     textureLoad(0, 0);
