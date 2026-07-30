@@ -34,7 +34,7 @@ int setWidescreen(u8 enabled);
 u8 isOvercast(void);
 u32 shouldDrawShadows(void);
 int shouldDrawClouds(void);
-int getDrawDistanceFlag_8005cd48(void);
+int isDrawDistanceEnabled(void);
 int objPosToMapBlockIdx(f32 x, f32 y, f32 z);
 void mapGetBlockOriginForPos(f32 x, f32 y, f32 z, f32* outX, f32* outZ);
 void setPendingMapLoad(int pending);

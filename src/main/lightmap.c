@@ -1010,7 +1010,7 @@ void updateEnvironment(int mode)
 }
 
 
-int getDrawDistanceFlag_8005cd48(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
+int isDrawDistanceEnabled(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
 
 
 int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }

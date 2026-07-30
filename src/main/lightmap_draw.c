@@ -145,7 +145,7 @@ void gameFlagFn_8005cd24(int v)
     renderFlags = (v != 0) ? (renderFlags | 0x20000) : (renderFlags & ~0x20000);
 }
 
-int getDrawDistanceFlag_8005cd48(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
+int isDrawDistanceEnabled(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
 
 
 int setWidescreen(u8 v)

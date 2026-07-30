@@ -975,7 +975,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     slot->pitch = savedRotY;
     slot->yaw = savedRotX;
     slot->roll = savedRotZ;
-    if (getDrawDistanceFlag_8005cd48() != 0)
+    if (isDrawDistanceEnabled() != 0)
     {
         Camera_SetCurrentViewIndex(0);
         Camera_SetFovY(savedFovY);
