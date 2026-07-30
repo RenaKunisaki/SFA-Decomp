@@ -1132,7 +1132,7 @@ void skyUpdateLightingFromTimeOfDay(void)
     int greenCurveOffset;
     int blueCurveOffset;
     int slotIndex;
-    int slotOffset;
+    int lightSlotOffset;
     f32* lightingData;
     int rawR;
     int blue;
@@ -1193,8 +1193,8 @@ void skyUpdateLightingFromTimeOfDay(void)
             blueCurveOffset = (curveSegment + 0xe) * 4;
             zero = 0.0f;
             dayStart = 18000.0f;
-            slotOffset = slotIndex * 0xa4;
-            if ((u32)((gSkyState[slotOffset + 0xc1] >> 7) & 1) != 0)
+            lightSlotOffset = slotIndex * 0xa4;
+            if ((u32)((gSkyState[lightSlotOffset + 0xc1] >> 7) & 1) != 0)
             {
                 blendAlpha = 0xc8;
                 ambientIntensity = 0;
@@ -1207,10 +1207,10 @@ void skyUpdateLightingFromTimeOfDay(void)
                 lightIntensity = Curve_EvalLinear(lightIntensityCurve, segmentFraction, 0);
             }
             rawR =
-                Curve_EvalCatmullRom(gSkyState + slotOffset + curveSegment * 4 + 0x20, segmentFraction, 0);
-            rawG = Curve_EvalCatmullRom(gSkyState + slotOffset + greenCurveOffset + 0x20, segmentFraction, 0);
-            blue = Curve_EvalCatmullRom(gSkyState + slotOffset + blueCurveOffset + 0x20, segmentFraction, 0);
-            blendState = (SkyColorBlendView*)(gSkyState + slotOffset);
+                Curve_EvalCatmullRom(gSkyState + lightSlotOffset + curveSegment * 4 + 0x20, segmentFraction, 0);
+            rawG = Curve_EvalCatmullRom(gSkyState + lightSlotOffset + greenCurveOffset + 0x20, segmentFraction, 0);
+            blue = Curve_EvalCatmullRom(gSkyState + lightSlotOffset + blueCurveOffset + 0x20, segmentFraction, 0);
+            blendState = (SkyColorBlendView*)(gSkyState + lightSlotOffset);
             blend = blendState->factor;
             if (blend != zero)
             {
