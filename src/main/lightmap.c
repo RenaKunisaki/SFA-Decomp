@@ -948,10 +948,10 @@ void updateEnvironment(int mode)
     {
         MapTextureOverride* textureOverride;
         MapTextureScroll* textureScroll;
-        Texture* tex;
+        Texture* texture;
         int i;
         int byteOffset;
-        f32 x;
+        f32 offsetX;
         f32 deltaY;
         f32 deltaX;
         f32 deltaTime;
@@ -967,10 +967,10 @@ void updateEnvironment(int mode)
         for (; i < 80; i++)
         {
             textureOverride = (MapTextureOverride*)((u8*)gMapTextureOverrides + byteOffset);
-            if (textureOverride->refCount != 0 && (tex = textureOverride->texture) != NULL &&
-                tex->animationFrameCount != 0x100 && tex->animationFrameStep != 0)
+            if (textureOverride->refCount != 0 && (texture = textureOverride->texture) != NULL &&
+                texture->animationFrameCount != 0x100 && texture->animationFrameStep != 0)
             {
-                textureUpdateAnimationFrame(tex, &textureOverride->flags, &textureOverride->frame);
+                textureUpdateAnimationFrame(texture, &textureOverride->flags, &textureOverride->frame);
             }
             byteOffset += sizeof(MapTextureOverride);
         }
@@ -983,9 +983,9 @@ void updateEnvironment(int mode)
             if (textureScroll->refCount != 0)
             {
                 deltaY = textureScroll->yStep * (deltaTime = timeDelta);
-                x = textureScroll->offsetX;
+                offsetX = textureScroll->offsetX;
                 deltaX = textureScroll->xStep * deltaTime;
-                textureScroll->offsetX = x + deltaX;
+                textureScroll->offsetX = offsetX + deltaX;
                 textureScroll->offsetY = textureScroll->offsetY + deltaY;
             }
             byteOffset += sizeof(MapTextureScroll);
