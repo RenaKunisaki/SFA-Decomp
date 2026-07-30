@@ -646,7 +646,7 @@ extern f32 gPauseMenuSecsPerHour;
 extern const f32 lbl_803E20B8;
 extern const f32 lbl_803E20C0;
 extern const f32 lbl_803E20C4;
-void boxDrawFn_8012975c(int a, int b, int c);
+void hudDrawCommunicatorAlert(int a, int b, int c);
 void pauseMenuDrawTaskHintPanel(void* obj, u8 v);
 void pauseMenuDrawGrid(int v);
 extern u8 gPauseMenuTokenConfirmFlag;
@@ -4660,7 +4660,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
     switch (pauseMenuState)
     {
     case 0:
-        boxDrawFn_8012975c(boxDrawParamA, boxDrawParamB, boxDrawParamC);
+        hudDrawCommunicatorAlert(boxDrawParamA, boxDrawParamB, boxDrawParamC);
         break;
     case 1:
         gameTextSetColor(0xff, 0xff, 0xff, 0xff);
@@ -5252,7 +5252,7 @@ void pauseMenuDrawGrid(int alpha);
 void pauseMenuDrawGridCell(u8 i, int alpha, int flag);
 void timeListDraw(int unused1, int unused2, int unused3);
 void highScoreScreenDraw(int p1, int p2, int p3);
-void boxDrawFn_8012975c(int unused1, int unused2, int unused3);
+void hudDrawCommunicatorAlert(int unused1, int unused2, int unused3);
 int pauseMenuUpdateMapScroll(void);
 int pauseMenuIsFox(void);
 void timeListPromptUpdate(void);
@@ -5721,9 +5721,9 @@ int registerNewScore(s8 tableId, int score, u8 kind, int mode)
     return 1;
 }
 
-/* Draws the help-text frame: a base panel
- * then a row of edge/corner segments tweened in from both directions. */
-void boxDrawFn_8012975c(int unused1, int unused2, int unused3)
+/* Draws the communicator alert: a base panel followed by mirrored rows of
+ * edge segments animated from both directions. */
+void hudDrawCommunicatorAlert(int unused1, int unused2, int unused3)
 {
     f64 offset;
     s8 phase;
