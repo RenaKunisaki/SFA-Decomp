@@ -264,13 +264,13 @@ extern void* lbl_8031A804[4];
 void* lbl_803A8680[4];
 extern SaveSelectPanel gSaveSelectPanels[];
 extern u8 lbl_8031A7F8[];
-void saveSelectGoToChapterSelect(void);
+static void saveSelectGoToChapterSelect(void);
 
 void* gSaveSelectTextBuffers[SAVE_SELECT_TEXT_BUFFER_COUNT];
 extern void* gSaveGameWorkBuffer;
 extern char sSaveGameBinPathFormat[];
 
-void saveSelectOpenFile(int sel, int slot)
+static void saveSelectOpenFile(int sel, int slot)
 {
     TitleMenuTextEntry** pp;
     int off;
@@ -320,7 +320,7 @@ void saveSelectOpenFile(int sel, int slot)
         }
     }
 }
-void saveFileSelect_init(int sel, int slot)
+static void saveFileSelect_init(int sel, int slot)
 {
     int i;
 
@@ -369,7 +369,7 @@ void saveFileSelect_init(int sel, int slot)
     }
 }
 
-void saveSelectSetupMenuItems(SaveSelectPanel* p)
+static void saveSelectSetupMenuItems(SaveSelectPanel* p)
 {
     int i;
 
@@ -393,7 +393,7 @@ void saveSelectSetupMenuItems(SaveSelectPanel* p)
     }
 }
 
-void saveSelectGoToChapterSelect(void)
+static void saveSelectGoToChapterSelect(void)
 {
     int i;
     SaveSelectPanel* panel;
@@ -442,7 +442,7 @@ void saveSelectGoToChapterSelect(void)
         gSaveSelectChapter = 0;
     }
 }
-void saveSelect_loadSlotSummaries(void)
+static void saveSelect_loadSlotSummaries(void)
 {
     int i;
     FrontendSaveSlot* slots = saveFileSelect_saveSlotsBase;
@@ -508,7 +508,7 @@ void saveSelectGoToChooseSlot(int arg)
         saveSelectGoToChapterSelect();
     }
 }
-void saveSelectScreenFree(int runExitCallback)
+static void saveSelectScreenFree(int runExitCallback)
 {
     void** p;
     int i;
