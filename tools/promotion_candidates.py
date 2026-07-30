@@ -111,8 +111,11 @@ def read_linker_undefined_symbols(objdump: Path, build: Path) -> set[str]:
 
 def is_report_exact(unit: dict) -> bool:
     measures = unit.get("measures", {})
+    code_percent = measures.get(
+        "matched_code_percent", measures.get("fuzzy_match_percent", 0.0)
+    )
     return (
-        float(measures.get("matched_code_percent", 100.0)) == 100.0
+        float(code_percent) == 100.0
         and float(measures.get("matched_data_percent", 100.0)) == 100.0
         and not unit.get("metadata", {}).get("complete", False)
         and not unit.get("metadata", {}).get("auto_generated", False)
@@ -147,6 +150,11 @@ def main() -> None:
         target = build / "obj" / f"{object_path}.o"
         source = build / "src" / f"{object_path}.o"
         if not target.exists() or not source.exists():
+            continue
+        if report_path.stat().st_mtime_ns < max(
+            target.stat().st_mtime_ns, source.stat().st_mtime_ns
+        ):
+            rejected.append((name, "stale-report"))
             continue
 
         target_contract = read_contract(objdump, target)
