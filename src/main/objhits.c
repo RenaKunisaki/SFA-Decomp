@@ -5026,7 +5026,7 @@ void objJointTracksSetAngles(u8* channelData, int count, s16 yaw, s16 pitch) {
 
 void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 unused);
 
-void objModelClearVecFn_8003aa40(GameObject* obj) {
+void objModelClearJointVectors(GameObject* obj) {
     s16* found;
     int slot;
 

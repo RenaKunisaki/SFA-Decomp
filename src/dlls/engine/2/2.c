@@ -4916,7 +4916,7 @@ void ObjSeq_SetupInitialPlaybackState(GameObject* obj, GameObject** seqObj, u8* 
 
     if (*seqObj != NULL)
     {
-        objModelClearVecFn_8003aa40(*seqObj);
+        objModelClearJointVectors(*seqObj);
         if ((*seqObj)->anim.classId == 1)
         {
             modelVec = objModelGetVecFn_800395d8(obj, 1);

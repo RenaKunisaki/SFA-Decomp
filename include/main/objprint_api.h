@@ -19,7 +19,7 @@ int objGetAlphaCompareThreshold(void);
 void objSetAlphaCompareThreshold(u8 alpha);
 void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model);
 void staffUpdateSegmentTransforms(int staff, GameObject* obj, int model, int a, int b, int c);
-void objModelClearVecFn_8003aa40(GameObject* obj);
+void objModelClearJointVectors(GameObject* obj);
 int characterTrackJointList(GameObject* obj, int* keys, int count, u8* channels);
 s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* targetPos, u8* channels, s16* speeds,
                        f32 yOffset, int unused, int basePitch);

@@ -230,7 +230,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
         {
             state->substate = 9;
         }
-        objModelClearVecFn_8003aa40(obj);
+        objModelClearJointVectors(obj);
         ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0);
         ObjAnim_SetCurrentMove((u32)obj, 0, 0.0f, 0);
         ObjHits_DisableObject(obj);
