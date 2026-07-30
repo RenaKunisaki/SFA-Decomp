@@ -76,7 +76,7 @@ static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** ligh
 
 extern u8 gRcpWarpDistortDisplayList[0x6640];
 
-void Rcp_SetupDistortionRenderState(void);
+static void Rcp_SetupDistortionRenderState(void);
 
 static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** lights)
 {
@@ -93,12 +93,12 @@ static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** ligh
 }
 
 void addVertexColorKAlphaStage(GXColor* param);
-int Rcp_SetupDistortionLights(int model, f32* params);
+static int Rcp_SetupDistortionLights(int model, f32* params);
 static const f32 gRcpDistortScaleA[1] = {2.146452f};
 static const f32 gRcpDistortPowExp[1] = {2.520326f};
 static const f32 gRcpDistortColorScale[1] = {255.0f};
 
-void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*32, 0.0f) */
+static void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*32, 0.0f) */
 {
     f32 x0;
     f32 y;
@@ -175,7 +175,7 @@ void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*
     }
     GXCallDisplayList(gRcpWarpDistortDisplayList, gRcpWarpDistortListSize);
 }
-int Rcp_SetupDistortionLights(int model, f32* params)
+static int Rcp_SetupDistortionLights(int model, f32* params)
 {
     ModelLightStruct* la;
     ModelLightStruct* lb;
@@ -211,7 +211,7 @@ int Rcp_SetupDistortionLights(int model, f32* params)
     modelLightStruct_setAngularAttenuation(lb, 1.0f, 0.0f, 0.0f);
     return 0;
 }
-void Rcp_SetupDistortionRenderState(void)
+static void Rcp_SetupDistortionRenderState(void)
 {
     f32 omtx[4][4];
     f32 pmtx[3][4];
