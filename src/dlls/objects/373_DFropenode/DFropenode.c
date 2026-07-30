@@ -24,79 +24,6 @@
 #include "string.h"
 #include "track/intersect_api.h"
 
-typedef struct DFRopeNode {
-    f32 pos[3];
-    f32 velocity[3];
-    f32 force[3];
-    u8 linkCount;
-    u8 pad25[3];
-    struct DFRopeLink* links[2];
-    u8 locked;
-    u8 pad31[3];
-} DFRopeNode;
-
-typedef struct DFRopeLink {
-    f32 length;
-    DFRopeNode* a;
-    DFRopeNode* b;
-    f32 restLength;
-    f32 stiffness;
-    f32 maxLength;
-    f32 force[3];
-} DFRopeLink;
-
-typedef struct DFRope {
-    DFRopeNode* nodes;
-    DFRopeLink* links;
-    u8 count;
-    u8 pad09[3];
-    f32 start[3];
-    f32 end[3];
-    f32 totalLength;
-    s32 enabled;
-    f32 maxSlack;
-    f32 step;
-    s8 sway;
-    u8 direction;
-    u8 pad36[2];
-    f32 damping;
-    f32 inverseTicks;
-    f32 stepPerTick;
-} DFRope;
-
-STATIC_ASSERT(offsetof(DFRopeNode, pos) == 0x00);
-STATIC_ASSERT(offsetof(DFRopeNode, velocity) == 0x0C);
-STATIC_ASSERT(offsetof(DFRopeNode, force) == 0x18);
-STATIC_ASSERT(offsetof(DFRopeNode, linkCount) == 0x24);
-STATIC_ASSERT(offsetof(DFRopeNode, links) == 0x28);
-STATIC_ASSERT(offsetof(DFRopeNode, locked) == 0x30);
-STATIC_ASSERT(sizeof(DFRopeNode) == 0x34);
-
-STATIC_ASSERT(offsetof(DFRopeLink, length) == 0x00);
-STATIC_ASSERT(offsetof(DFRopeLink, a) == 0x04);
-STATIC_ASSERT(offsetof(DFRopeLink, b) == 0x08);
-STATIC_ASSERT(offsetof(DFRopeLink, restLength) == 0x0C);
-STATIC_ASSERT(offsetof(DFRopeLink, stiffness) == 0x10);
-STATIC_ASSERT(offsetof(DFRopeLink, maxLength) == 0x14);
-STATIC_ASSERT(offsetof(DFRopeLink, force) == 0x18);
-STATIC_ASSERT(sizeof(DFRopeLink) == 0x24);
-
-STATIC_ASSERT(offsetof(DFRope, nodes) == 0x00);
-STATIC_ASSERT(offsetof(DFRope, links) == 0x04);
-STATIC_ASSERT(offsetof(DFRope, count) == 0x08);
-STATIC_ASSERT(offsetof(DFRope, start) == 0x0C);
-STATIC_ASSERT(offsetof(DFRope, end) == 0x18);
-STATIC_ASSERT(offsetof(DFRope, totalLength) == 0x24);
-STATIC_ASSERT(offsetof(DFRope, enabled) == 0x28);
-STATIC_ASSERT(offsetof(DFRope, maxSlack) == 0x2C);
-STATIC_ASSERT(offsetof(DFRope, step) == 0x30);
-STATIC_ASSERT(offsetof(DFRope, sway) == 0x34);
-STATIC_ASSERT(offsetof(DFRope, direction) == 0x35);
-STATIC_ASSERT(offsetof(DFRope, damping) == 0x38);
-STATIC_ASSERT(offsetof(DFRope, inverseTicks) == 0x3C);
-STATIC_ASSERT(offsetof(DFRope, stepPerTick) == 0x40);
-STATIC_ASSERT(sizeof(DFRope) == 0x44);
-
 #define DFROPENODE_ROLE_ROPE_OWNER        0x01
 #define DFROPENODE_ROPE_SWAY_LIMIT        0x32
 #define DFROPENODE_ROPE_SWAY_DIR_INCREASE 1
@@ -182,8 +109,8 @@ void DFropenode_buildRopeSegmentMesh(void* templateData, int angle, float* start
 /*
  * Integrate the spring forces attached to every unlocked rope node.
  */
-void DFropenode_integrateRopeNodes(DFRope* self) {
-    DFRopeNode* part;
+void DFropenode_integrateRopeNodes(DFropenodeRope* self) {
+    DFropenodeRopeNode* part;
     int j;
     int i;
     Vec accel;
@@ -202,7 +129,7 @@ void DFropenode_integrateRopeNodes(DFRope* self) {
 
         if (part->locked == 0) {
             for (j = 0; j < part->linkCount; j++) {
-                DFRopeLink* link = part->links[j];
+                DFropenodeRopeLink* link = part->links[j];
                 if (part == link->a) {
                     PSVECAdd(&accel, (Vec*)link->force, &accel);
                 } else {
@@ -229,16 +156,16 @@ void DFropenode_integrateRopeNodes(DFRope* self) {
  * Apply rope sway, solve each spring link, integrate the nodes, and clear
  * accumulated forces for the next tick.
  */
-void DFropenode_updateRopeSimulation(DFRope* self) {
+void DFropenode_updateRopeSimulation(DFropenodeRope* self) {
     int j;
-    DFRopeLink* link;
+    DFropenodeRopeLink* link;
     int k;
-    DFRopeNode* parts;
+    DFropenodeRopeNode* parts;
     int i;
-    DFRopeNode* partIter;
+    DFropenodeRopeNode* partIter;
     Vec tmp;
     f32 zero;
-    DFRopeNode* partsInit;
+    DFropenodeRopeNode* partsInit;
 
     partsInit = self->nodes;
     parts = partsInit;
@@ -297,7 +224,8 @@ void DFropenode_updateRopeSimulation(DFRope* self) {
     }
 }
 
-void DFropenode_attachRopeLink(DFRopeLink* linkSelf, DFRopeNode* firstNode, DFRopeNode* secondNode) {
+void DFropenode_attachRopeLink(DFropenodeRopeLink* linkSelf, DFropenodeRopeNode* firstNode,
+                               DFropenodeRopeNode* secondNode) {
     u8* nodeLinkIter;
     int firstLinkIndex;
     int secondLinkIndex;
@@ -305,12 +233,12 @@ void DFropenode_attachRopeLink(DFRopeLink* linkSelf, DFRopeNode* firstNode, DFRo
     firstLinkIndex = 0;
     secondLinkIndex = 0;
     nodeLinkIter = (u8*)firstNode;
-    while (*(u32*)(nodeLinkIter + offsetof(DFRopeNode, links)) != 0) {
+    while (*(u32*)(nodeLinkIter + offsetof(DFropenodeRopeNode, links)) != 0) {
         nodeLinkIter += 4;
         firstLinkIndex++;
     }
     nodeLinkIter = (u8*)secondNode;
-    while (*(u32*)(nodeLinkIter + offsetof(DFRopeNode, links)) != 0) {
+    while (*(u32*)(nodeLinkIter + offsetof(DFropenodeRopeNode, links)) != 0) {
         nodeLinkIter += 4;
         secondLinkIndex++;
     }
@@ -327,15 +255,15 @@ void DFropenode_attachRopeLink(DFRopeLink* linkSelf, DFRopeNode* firstNode, DFRo
  * Allocate a rope, seed evenly-spaced nodes between its endpoints, pin the
  * ends, and attach each spring link to its node pair.
  */
-DFRope* DFropenode_createRope(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f32 endZ, f32 unused, s32 count,
-                              f32 tickScale) {
-    DFRope* rope;
-    DFRopeNode* nodes;
-    DFRopeNode* node;
+DFropenodeRope* DFropenode_createRope(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f32 endZ, f32 unused,
+                                      s32 count, f32 tickScale) {
+    DFropenodeRope* rope;
+    DFropenodeRopeNode* nodes;
+    DFropenodeRopeNode* node;
     s32 linkCount;
-    DFRopeLink* link;
-    DFRopeNode* nextNode;
-    DFRopeNode* linkNode;
+    DFropenodeRopeLink* link;
+    DFropenodeRopeNode* nextNode;
+    DFropenodeRopeNode* linkNode;
     s32 nodesSize;
     s32 allocSize;
     u8* base;
@@ -355,12 +283,12 @@ DFRope* DFropenode_createRope(f32 startX, f32 startY, f32 startZ, f32 endX, f32 
     dy = dy / (f32)(count - 1);
     dz = dz / (f32)(count - 1);
 
-    nodesSize = count * sizeof(DFRopeNode);
-    allocSize = sizeof(DFRope) + nodesSize + (count - 1) * sizeof(DFRopeLink);
+    nodesSize = count * sizeof(DFropenodeRopeNode);
+    allocSize = sizeof(DFropenodeRope) + nodesSize + (count - 1) * sizeof(DFropenodeRopeLink);
     base = (u8*)mmAlloc(allocSize, 0xFF, 0);
-    rope = (DFRope*)base;
-    rope->nodes = (DFRopeNode*)(base + sizeof(DFRope));
-    rope->links = (DFRopeLink*)(base + nodesSize + sizeof(DFRope));
+    rope = (DFropenodeRope*)base;
+    rope->nodes = (DFropenodeRopeNode*)(base + sizeof(DFropenodeRope));
+    rope->links = (DFropenodeRopeLink*)(base + nodesSize + sizeof(DFropenodeRope));
     rope->count = count;
     rope->totalLength = length;
     rope->start[0] = startX;
@@ -422,7 +350,7 @@ DFRope* DFropenode_createRope(f32 startX, f32 startY, f32 startZ, f32 endX, f32 
         link->force[1] = 0.0f;
         link->force[0] = 0.0f;
         link->maxLength = 1000.0f * link->restLength;
-        nextNode = (DFRopeNode*)((u8*)nodes + (linkIndex + 1) * sizeof(DFRopeNode));
+        nextNode = (DFropenodeRopeNode*)((u8*)nodes + (linkIndex + 1) * sizeof(DFropenodeRopeNode));
         DFropenode_attachRopeLink(link, linkNode, nextNode);
         link++;
         linkNode++;
@@ -528,7 +456,7 @@ int DFropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32
         i = 0;
         result = 0;
         for (; i < state->rope->count - 1; i++) {
-            DFRopeNode* node;
+            DFropenodeRopeNode* node;
             f32 phase;
 
             x = worldX;
@@ -564,7 +492,7 @@ void DFropenode_applyForceAtPhase(f32 phase, f32 force, GameObject* obj) {
     DFropenodeState* extra;
     s8 idx;
     f32 fraction;
-    DFRopeNode* node;
+    DFropenodeRopeNode* node;
 
     extra = (obj)->extra;
     phase = phase - (f32)(s8)phase;
@@ -638,7 +566,7 @@ int DFropenode_syncRopeToEndpoints(GameObject* obj) {
     GameObject* endObj;
     GameObject* baseObj;
     int i;
-    DFRopeLink* link;
+    DFropenodeRopeLink* link;
     int flag;
     s16 angle;
     f32 dx;
@@ -755,12 +683,6 @@ void DFropenode_free(GameObject* obj) {
     }
 }
 
-typedef struct DfropenodeRenderState {
-    u8 red;
-    u8 green;
-    u8 blue;
-} DfropenodeRenderState;
-
 void DFropenode_render(GameObject* obj, int p2, int p3) {
     ObjAnimComponent* objAnim;
     DFropenodeState* extra;
@@ -768,9 +690,9 @@ void DFropenode_render(GameObject* obj, int p2, int p3) {
     int eventId;
     int fadeAlpha;
     u32 oldAlpha;
-    DFRopeNode* node;
+    DFropenodeRopeNode* node;
     s16 segment;
-    DfropenodeRenderState renderState;
+    DFropenodeRenderState renderState;
     LightmapVertex segmentVerts[6];
     f32 originalScale;
 

@@ -5,8 +5,6 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
-struct DFRope;
-
 typedef struct DFropenodePlacement {
     ObjPlacement base;
     u8 roleFlags;
@@ -15,6 +13,46 @@ typedef struct DFropenodePlacement {
     s16 fadeGameBit;
     u8 pad1E[0x20 - 0x1E];
 } DFropenodePlacement;
+
+typedef struct DFropenodeRopeNode {
+    f32 pos[3];
+    f32 velocity[3];
+    f32 force[3];
+    u8 linkCount;
+    u8 pad25[3];
+    struct DFropenodeRopeLink* links[2];
+    u8 locked;
+    u8 pad31[3];
+} DFropenodeRopeNode;
+
+typedef struct DFropenodeRopeLink {
+    f32 length;
+    DFropenodeRopeNode* a;
+    DFropenodeRopeNode* b;
+    f32 restLength;
+    f32 stiffness;
+    f32 maxLength;
+    f32 force[3];
+} DFropenodeRopeLink;
+
+typedef struct DFropenodeRope {
+    DFropenodeRopeNode* nodes;
+    DFropenodeRopeLink* links;
+    u8 count;
+    u8 pad09[3];
+    f32 start[3];
+    f32 end[3];
+    f32 totalLength;
+    s32 enabled;
+    f32 maxSlack;
+    f32 step;
+    s8 sway;
+    u8 direction;
+    u8 pad36[2];
+    f32 damping;
+    f32 inverseTicks;
+    f32 stepPerTick;
+} DFropenodeRope;
 
 typedef struct DFropenodeState {
     GameObject* linkedNode;
@@ -29,11 +67,17 @@ typedef struct DFropenodeState {
     f32 planeNormalY;
     f32 planeNormalZ;
     f32 planeDistance;
-    struct DFRope* rope;
+    DFropenodeRope* rope;
     u8 hidden : 1;
     u8 pad30 : 7;
     u8 pad31[3];
 } DFropenodeState;
+
+typedef struct DFropenodeRenderState {
+    u8 red;
+    u8 green;
+    u8 blue;
+} DFropenodeRenderState;
 
 STATIC_ASSERT(offsetof(DFropenodePlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(DFropenodePlacement, roleFlags) == 0x18);
@@ -42,6 +86,39 @@ STATIC_ASSERT(offsetof(DFropenodePlacement, variant) == 0x1B);
 STATIC_ASSERT(offsetof(DFropenodePlacement, fadeGameBit) == 0x1C);
 STATIC_ASSERT(offsetof(DFropenodePlacement, pad1E) == 0x1E);
 STATIC_ASSERT(sizeof(DFropenodePlacement) == 0x20);
+
+STATIC_ASSERT(offsetof(DFropenodeRopeNode, pos) == 0x00);
+STATIC_ASSERT(offsetof(DFropenodeRopeNode, velocity) == 0x0C);
+STATIC_ASSERT(offsetof(DFropenodeRopeNode, force) == 0x18);
+STATIC_ASSERT(offsetof(DFropenodeRopeNode, linkCount) == 0x24);
+STATIC_ASSERT(offsetof(DFropenodeRopeNode, links) == 0x28);
+STATIC_ASSERT(offsetof(DFropenodeRopeNode, locked) == 0x30);
+STATIC_ASSERT(sizeof(DFropenodeRopeNode) == 0x34);
+
+STATIC_ASSERT(offsetof(DFropenodeRopeLink, length) == 0x00);
+STATIC_ASSERT(offsetof(DFropenodeRopeLink, a) == 0x04);
+STATIC_ASSERT(offsetof(DFropenodeRopeLink, b) == 0x08);
+STATIC_ASSERT(offsetof(DFropenodeRopeLink, restLength) == 0x0C);
+STATIC_ASSERT(offsetof(DFropenodeRopeLink, stiffness) == 0x10);
+STATIC_ASSERT(offsetof(DFropenodeRopeLink, maxLength) == 0x14);
+STATIC_ASSERT(offsetof(DFropenodeRopeLink, force) == 0x18);
+STATIC_ASSERT(sizeof(DFropenodeRopeLink) == 0x24);
+
+STATIC_ASSERT(offsetof(DFropenodeRope, nodes) == 0x00);
+STATIC_ASSERT(offsetof(DFropenodeRope, links) == 0x04);
+STATIC_ASSERT(offsetof(DFropenodeRope, count) == 0x08);
+STATIC_ASSERT(offsetof(DFropenodeRope, start) == 0x0C);
+STATIC_ASSERT(offsetof(DFropenodeRope, end) == 0x18);
+STATIC_ASSERT(offsetof(DFropenodeRope, totalLength) == 0x24);
+STATIC_ASSERT(offsetof(DFropenodeRope, enabled) == 0x28);
+STATIC_ASSERT(offsetof(DFropenodeRope, maxSlack) == 0x2C);
+STATIC_ASSERT(offsetof(DFropenodeRope, step) == 0x30);
+STATIC_ASSERT(offsetof(DFropenodeRope, sway) == 0x34);
+STATIC_ASSERT(offsetof(DFropenodeRope, direction) == 0x35);
+STATIC_ASSERT(offsetof(DFropenodeRope, damping) == 0x38);
+STATIC_ASSERT(offsetof(DFropenodeRope, inverseTicks) == 0x3C);
+STATIC_ASSERT(offsetof(DFropenodeRope, stepPerTick) == 0x40);
+STATIC_ASSERT(sizeof(DFropenodeRope) == 0x44);
 
 STATIC_ASSERT(offsetof(DFropenodeState, linkedNode) == 0x00);
 STATIC_ASSERT(offsetof(DFropenodeState, boundsMinX) == 0x04);
@@ -58,6 +135,11 @@ STATIC_ASSERT(offsetof(DFropenodeState, planeDistance) == 0x28);
 STATIC_ASSERT(offsetof(DFropenodeState, rope) == 0x2C);
 STATIC_ASSERT(offsetof(DFropenodeState, pad31) == 0x31);
 STATIC_ASSERT(sizeof(DFropenodeState) == 0x34);
+
+STATIC_ASSERT(offsetof(DFropenodeRenderState, red) == 0x00);
+STATIC_ASSERT(offsetof(DFropenodeRenderState, green) == 0x01);
+STATIC_ASSERT(offsetof(DFropenodeRenderState, blue) == 0x02);
+STATIC_ASSERT(sizeof(DFropenodeRenderState) == 0x03);
 
 void DFropenode_setMinY(GameObject* obj, f32 value);
 int DFropenode_isVisible(GameObject* obj);
