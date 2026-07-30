@@ -592,7 +592,7 @@ void doQueuedLoads(void)
         mmSetFreeDelay(0);
         if (gGameLoopMapLoaded != 0)
         {
-            setColor_803db5d0(0, 0, 0);
+            videoSetEfbCopyClearColor(0, 0, 0);
             unloadMap();
             if (gGameLoopFullMapUnloadPending != 0)
             {

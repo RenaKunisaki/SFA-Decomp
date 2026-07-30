@@ -233,7 +233,7 @@ void videoInit(void* unusedRenderMode, int unusedArg)
     PPCMthid0(PPCMfhid0() | HID0_SPD);
 }
 
-void setColor_803db5d0(u8 r, u8 g, u8 b)
+void videoSetEfbCopyClearColor(u8 r, u8 g, u8 b)
 {
     gEfbCopyClearColor.r = r;
     gEfbCopyClearColor.g = g;
