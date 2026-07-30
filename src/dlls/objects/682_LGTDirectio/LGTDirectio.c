@@ -266,7 +266,7 @@ void directionallight_init(GameObject* obj, DirectionalLightSetup* setup)
     if (state->light != NULL)
     {
         modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_DIRECTIONAL);
-        objSetEventName(state->light, setupData->eventName);
+        modelLightStruct_setTransformMode(state->light, setupData->eventName);
         modelLightStruct_setDirection(state->light, vec.x, vec.y, vec.z);
 
         if ((setupData->flags & DIRECTIONALLIGHT_FLAG_USE_AMBIENT_COLOR) != 0)

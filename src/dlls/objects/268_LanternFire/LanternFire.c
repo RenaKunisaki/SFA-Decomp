@@ -261,7 +261,7 @@ void LanternFireFly_update(GameObject* obj) {
         } else {
             modelLightStruct_setLightKind(light, MODEL_LIGHT_KIND_POINT);
             modelLightStruct_setDiffuseColor(light, 100, 0xff, 100, 0);
-            lightSetFieldBC_8001db14(light, 1);
+            modelLightStruct_setFieldBC(light, 1);
             modelLightStruct_setDistanceAttenuation(light, gLanternFireFlyLightNearDistance,
                                                     gLanternFireFlyLightFarDistance);
             modelLightStruct_setAffectsAabbLightSelection(light, 1);

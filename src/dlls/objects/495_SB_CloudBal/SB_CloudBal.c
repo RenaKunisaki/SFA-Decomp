@@ -196,7 +196,7 @@ void SB_CloudBall_init(GameObject* obj) {
             modelLightStruct_setLightKind(state->light, SB_CLOUD_BALL_LIGHT_KIND);
             modelLightStruct_setDiffuseColor(state->light, SB_CLOUD_BALL_LIGHT_RED, SB_CLOUD_BALL_LIGHT_GREEN,
                                              SB_CLOUD_BALL_LIGHT_BLUE, SB_CLOUD_BALL_LIGHT_ALPHA);
-            lightSetFieldBC_8001db14(state->light, SB_CLOUD_BALL_LIGHT_FIELD_BC);
+            modelLightStruct_setFieldBC(state->light, SB_CLOUD_BALL_LIGHT_FIELD_BC);
             modelLightStruct_setDistanceAttenuation(state->light, 150.0f, 250.0f);
         }
     }

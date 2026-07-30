@@ -1241,7 +1241,7 @@ void arwarwing_initAttachments(GameObject* obj, ArwingState* state)
             {
                 modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
                 modelLightStruct_setPosition(state->light, 0.0f, lbl_803E6FC4, lbl_803E6FC8);
-                lightSetFieldBC_8001db14(state->light, 1);
+                modelLightStruct_setFieldBC(state->light, 1);
                 modelLightStruct_setDiffuseColor(state->light, 0x28, 0x7d, 0xff, 0);
                 modelLightStruct_setDistanceAttenuation(state->light, lbl_803E6FCC, lbl_803E6FD0);
                 modelLightStruct_startColorFade(state->light, 1, 1);

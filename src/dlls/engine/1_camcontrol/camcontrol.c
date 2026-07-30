@@ -407,7 +407,7 @@ void camcontrol_initialiseTargetReticle(void) {
         if (gCamcontrolReticleLight != NULL) {
             modelLightStruct_setLightKind(gCamcontrolReticleLight, MODEL_LIGHT_KIND_DIRECTIONAL);
             modelLightStruct_setObjectLightMaskIndex(gCamcontrolReticleLight, 1);
-            objSetEventName(gCamcontrolReticleLight, 1);
+            modelLightStruct_setTransformMode(gCamcontrolReticleLight, 1);
             modelLightStruct_setDirection(gCamcontrolReticleLight, 1.0f, 0.0f, -0.78f);
             modelLightStruct_setDiffuseColor(gCamcontrolReticleLight, 0xB4, 0xC8, 0xFF, 0xFF);
         }

@@ -613,7 +613,7 @@ u8 a;
     p->diffuseColor[3] = a;
 }
 
-void lightSetFieldBC_8001db14(ModelLightStruct* p, u8 v)
+void modelLightStruct_setFieldBC(ModelLightStruct* p, u8 v)
 {
     p->fieldBC = v;
 }
@@ -633,7 +633,7 @@ void modelLightStruct_setLightKind(ModelLightStruct* p, int v)
     p->lightKind = v;
 }
 
-void objSetEventName(ModelLightStruct* light, int mode)
+void modelLightStruct_setTransformMode(ModelLightStruct* light, int mode)
 {
     light->transformMode = mode;
 }

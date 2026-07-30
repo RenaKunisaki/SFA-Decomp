@@ -69,7 +69,7 @@ void arwprojectile_createLinkedEffect(GameObject* obj, u8 enable)
         return;
     modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
     modelLightStruct_setPosition(state->light, 0.0f, 0.0f, 0.0f);
-    lightSetFieldBC_8001db14(state->light, 1);
+    modelLightStruct_setFieldBC(state->light, 1);
     if ((obj)->anim.romDefNo == ARW_SEQID_INVINCIBLE)
     {
         modelLightStruct_setDiffuseColor(state->light, 0xff, 0x14, 0x50, 0);
