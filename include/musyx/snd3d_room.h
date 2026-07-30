@@ -4,7 +4,6 @@
 #include "ghidra_import.h"
 #include "musyx/snd3d.h"
 
-void s3dUpdateRoomDistances(void);
 void s3dAllocateRoomStudios(void);
 void s3dUpdateDoorStudioInputs(void);
 
