@@ -4164,7 +4164,7 @@ static inline int playerEyeAnim_FindJoint(ObjAnimComponent* objAnim, int tag) {
     return joint;
 }
 
-void playerEyeAnimFn_80038988(int obj, int blinkState, u16 flags) {
+void playerUpdateBlinkAnimation(int obj, int blinkState, u16 flags) {
 
     PlayerBlinkState* bs = (PlayerBlinkState*)blinkState;
     f32 leftScale;
