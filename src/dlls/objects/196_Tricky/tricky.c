@@ -653,9 +653,9 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 /* "staff" (DLL 0xE2) */
 #define SKEETLA_PARTICLE_SPAWN_FLAGS   0x200001
 #define SKEETLA_PARTICLE_RANDOM_RATE   4
-void fn_8014187C();
+void tricky_state04_nop(void);
 void tricky_updateBallRoll();
-void fn_8014128C();
+void tricky_state06_nop(void);
 void trickyFlame();
 void trickyGuard();
 void tricky_moveToFollowTarget();
@@ -696,9 +696,9 @@ TrickyStateHandler gTrickyStateHandlers[] = {
     (TrickyStateHandler)tricky_stateFollowPlayer,
     (TrickyStateHandler)tricky_stateFindSecretDig,
     (TrickyStateHandler)trickyDigTunnel,
-    (TrickyStateHandler)fn_8014187C,
+    (TrickyStateHandler)tricky_state04_nop,
     (TrickyStateHandler)tricky_updateBallRoll,
-    (TrickyStateHandler)fn_8014128C,
+    (TrickyStateHandler)tricky_state06_nop,
     (TrickyStateHandler)trickyFlame,
     (TrickyStateHandler)trickyGuard,
     (TrickyStateHandler)tricky_moveToFollowTarget,
@@ -5765,7 +5765,7 @@ void trickyFlame(GameObject* obj, int trickyState)
         break;
     }
 }
-void fn_8014128C(void)
+void tricky_state06_nop(void)
 {
 }
 
@@ -5983,7 +5983,7 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
     }
 }
 
-void fn_8014187C(void)
+void tricky_state04_nop(void)
 {
 }
 
