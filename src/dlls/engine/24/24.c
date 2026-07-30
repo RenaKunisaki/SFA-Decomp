@@ -5,8 +5,10 @@
 #include "main/mm.h"
 #include "main/texture.h"
 #include "main/model.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
+#include "main/lightmap_api.h"
 #include "main/lightmap_text_color_api.h"
 #include "main/dll/dll_0018_boneparticleeffect.h"
 #include "main/vecmath.h"
@@ -14,6 +16,9 @@
 #include "dolphin/gx/GXCull.h"
 #include "dolphin/mtx.h"
 #include "main/rcp_dolphin_api.h"
+#include "track/intersect_api.h"
+#include "track/intersect_geom_api.h"
+#include "track/intersect_render_setup_api.h"
 
 s16 gBoneParticleEffectTimer;
 s32 gBoneParticleScrollOffset;
