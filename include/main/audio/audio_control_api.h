@@ -12,7 +12,7 @@ void audioSetVolumes(int volume, int time, int musicFlag, int fxFlag, int stream
 void audioSetSoundMode(int mode, u8 forceFlag);
 int audioInit(void);
 void Sfx_SetObjectReverbPreset(u32 preset);
-int return0x64_8000A378(void);
+int Music_GetTrackCount(void);
 void doNothing_8000CF54(int unused);
 
 #endif /* MAIN_AUDIO_AUDIO_CONTROL_API_H_ */

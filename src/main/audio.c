@@ -872,7 +872,7 @@ void Music_PlayTrackByIndex(int index)
     Music_Trigger(MUSICTRIG_dark_ice_boss_1_ec, 1);
 }
 
-int return0x64_8000A378(void)
+int Music_GetTrackCount(void)
 {
     return 0x64;
 }
