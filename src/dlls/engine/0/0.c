@@ -408,7 +408,7 @@ extern const f32 lbl_803E1E94;
 extern f32 gTrickyHudPi;
 extern f32 gTrickyHudTexScaleX, gTrickyHudTexScaleY, gTrickyHudTexScaleZ;
 extern f32 gTrickyHudIconFovY, gTrickyHudIconAspect, gTrickyHudIconNearPlane, gTrickyHudIconFarPlane;
-extern void* hudTextures[102];
+extern Texture* hudTextures[102];
 extern s16 gFearTestMeterAlpha;
 extern u8 gFearTestMeterFadeSpeed;
 extern u8 gFearTestMeterMarkerHalfWidth;
@@ -563,7 +563,7 @@ extern s8 gCMenuPreselectOwnedBit;
 extern int gTrickyHudActionMask;
 extern s16 gTrickyHudIconTextureIds[];
 extern s16 gTrickyHudCachedIconIndex;
-extern void* gTrickyHudCachedIconTexture;
+extern Texture* gTrickyHudCachedIconTexture;
 extern const f32 lbl_803E2038;
 extern const f32 lbl_803E203C;
 extern void* gCMenuRingIconTextures[7];
@@ -621,7 +621,7 @@ extern u8 lbl_803DD758;
 extern s16 lbl_803DD75C;
 extern f32 lbl_803DD7BC;
 extern u8 lbl_803DD7C4;
-extern void* lbl_803DD7C8;
+extern Texture* gPauseMenuGridBackdropTexture;
 extern u8 lbl_803DD7D6;
 extern f32 lbl_803DD7FC;
 extern GridEntry* lbl_803DD824;
@@ -4203,7 +4203,7 @@ void drawTrickyHudOverlay(int obj, int unused1, int unused2)
         {
             if (gTrickyHudCachedIconIndex != iconIndex)
             {
-                textureFree((Texture*)gTrickyHudCachedIconTexture);
+                textureFree(gTrickyHudCachedIconTexture);
                 gTrickyHudCachedIconIndex = -1;
                 gTrickyHudCachedIconTexture = 0;
             }
@@ -4709,14 +4709,14 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         {
             if (lbl_803DD7C4 == 0)
             {
-                if (lbl_803DD7C8 == 0)
+                if (gPauseMenuGridBackdropTexture == 0)
                 {
-                    lbl_803DD7C8 = textureLoadAsset(0xbe7);
+                    gPauseMenuGridBackdropTexture = textureLoadAsset(0xbe7);
                 }
-                if (lbl_803DD7C8 != 0)
+                if (gPauseMenuGridBackdropTexture != 0)
                 {
-                    pauseMenuDrawElement(lbl_803DD7C8, 4.0f, lbl_803E2098, 0x96 - lbl_803DD75C, x, lbl_803E209C,
-                                         0);
+                    pauseMenuDrawElement(gPauseMenuGridBackdropTexture, 4.0f, lbl_803E2098,
+                                         0x96 - lbl_803DD75C, x, lbl_803E209C, 0);
                 }
             }
             pauseMenuDrawSideRails(x);
@@ -6438,10 +6438,10 @@ void pauseMenuUpdate(void)
             }
             else
             {
-                if (lbl_803DD7C8 != 0)
+                if (gPauseMenuGridBackdropTexture != 0)
                 {
-                    textureFree((Texture*)(lbl_803DD7C8));
-                    lbl_803DD7C8 = 0;
+                    textureFree(gPauseMenuGridBackdropTexture);
+                    gPauseMenuGridBackdropTexture = 0;
                 }
                 pauseMenuSetupTitle(0x3a9, 0, 2, 0);
                 pauseMenuState = 1;
@@ -8989,7 +8989,7 @@ void CMenu_SetShouldClose(int val)
 static inline void gameUiClearItemSlots(GameUiHud* gameUi)
 {
     int index;
-    void** itemTexture;
+    Texture** itemTexture;
     u8 slot;
     s16* itemSlot;
     u8* itemFlag;
@@ -8997,10 +8997,10 @@ static inline void gameUiClearItemSlots(GameUiHud* gameUi)
     for (slot = 0; slot < 64; slot++)
     {
         index = slot;
-        itemTexture = (void**)((u8*)&gameUi->itemTextures + index * sizeof(void*));
+        itemTexture = (Texture**)((u8*)&gameUi->itemTextures + index * sizeof(Texture*));
         if (*itemTexture != NULL)
         {
-            textureFree((Texture*)*itemTexture);
+            textureFree(*itemTexture);
             *itemTexture = NULL;
         }
         itemSlot = (s16*)((u8*)&gameUi->itemSlots + index * sizeof(s16));
@@ -9015,14 +9015,14 @@ static inline void gameUiReleaseMenuResources(GameUiHud* gameUi)
     gameUiResetMenuState();
     gameUiClearItemSlots(gameUi);
 
-    if (lbl_803DD7C8 != NULL)
+    if (gPauseMenuGridBackdropTexture != NULL)
     {
-        textureFree((Texture*)lbl_803DD7C8);
-        lbl_803DD7C8 = NULL;
+        textureFree(gPauseMenuGridBackdropTexture);
+        gPauseMenuGridBackdropTexture = NULL;
     }
     if (gTrickyHudCachedIconTexture != NULL)
     {
-        textureFree((Texture*)gTrickyHudCachedIconTexture);
+        textureFree(gTrickyHudCachedIconTexture);
     }
     gTrickyHudCachedIconIndex = -1;
     gTrickyHudCachedIconTexture = NULL;
@@ -9032,35 +9032,35 @@ void GameUI_release(void)
 {
     GameUiHud* gameUi;
     int i;
-    void** texture;
+    Texture** texture;
 
     gameUi = (GameUiHud*)lbl_803A87F0;
     for (i = 0, texture = gameUi->hudTextures; i < ARRAY_COUNT(gameUi->hudTextures); texture++, i++)
     {
         if (*texture != NULL)
         {
-            textureFree((Texture*)*texture);
+            textureFree(*texture);
         }
     }
 
     gameUiResetMenuState();
     gameUiClearItemSlots(gameUi);
 
-    if (lbl_803DD7C8 != NULL)
+    if (gPauseMenuGridBackdropTexture != NULL)
     {
-        textureFree((Texture*)lbl_803DD7C8);
-        lbl_803DD7C8 = NULL;
+        textureFree(gPauseMenuGridBackdropTexture);
+        gPauseMenuGridBackdropTexture = NULL;
     }
     if (gTrickyHudCachedIconTexture != NULL)
     {
-        textureFree((Texture*)gTrickyHudCachedIconTexture);
+        textureFree(gTrickyHudCachedIconTexture);
     }
     gTrickyHudCachedIconIndex = -1;
     gTrickyHudCachedIconTexture = NULL;
 
     gameUiClearItemSlots(gameUi);
 
-    textureFree((Texture*)((u8*)gGameUiBlinkTexture));
+    textureFree(gGameUiBlinkTexture);
 }
 
 
@@ -9129,7 +9129,7 @@ void GameUI_initialise(void)
     airMeter = 0;
 }
 
-void* hudTextures[102];
+Texture* hudTextures[102];
 s16 lbl_803A8B48[0x98];
 u8 gCMenuItemEnabledTable[0x3C0];
 int gCMenuItemTargetTable[0xBA];
@@ -9192,7 +9192,7 @@ f32 lbl_803DD844;
 u8 lbl_803DD840;
 f32 lbl_803DD83C;
 s16 arwingHudAlpha;
-void* gTrickyHudCachedIconTexture;
+Texture* gTrickyHudCachedIconTexture;
 s16 gTrickyHudCachedIconIndex;
 u32 lbl_803DD82C;
 s32 lbl_803DD828;
@@ -9223,7 +9223,7 @@ u8 shouldOpenCMenu;
 s8 cMenuState;
 TrickyAirMeter* airMeter;
 u8 arwingHudVisible;
-void* lbl_803DD7C8;
+Texture* gPauseMenuGridBackdropTexture;
 u8 gameUiResourcesLoaded;
 u8 lbl_803DD7C4;
 f32 lbl_803DD7C0;

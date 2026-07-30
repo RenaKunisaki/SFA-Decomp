@@ -3,6 +3,7 @@
 
 #include "ghidra_import.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "main/texture.h"
 
 /* Shared struct layouts for the in-game GameUI / HUD / C-menu subsystem
  * exposed through DLL 0. Field offsets are recovered from the EN v1.0 asm. */
@@ -116,12 +117,12 @@ typedef struct
 typedef struct
 {
     u8 pad000[0x1c0];
-    void* hudTextures[102]; /* 0x1c0 */
+    Texture* hudTextures[102]; /* 0x1c0 */
     u8 pad358[0x448 - 0x358];
     u8 itemFlags[64]; /* 0x448 */
     u8 pad488[0x948 - 0x488];
     s16 itemSlots[64]; /* 0x948 */
-    void* itemTextures[64]; /* 0x9c8 */
+    Texture* itemTextures[64]; /* 0x9c8 */
     f32 itemFade[13]; /* 0xac8 */
     f32 counterOpacity[13]; /* 0xafc */
     int previousItemValues[13]; /* 0xb30 */
