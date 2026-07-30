@@ -2216,7 +2216,7 @@ void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
 }
 
 extern f32 gObjJointMtxTemp[];
-void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
+static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
 {
     f32 wm[16];
     f32 cm[12];
