@@ -27,7 +27,7 @@ void doNothing_onSaveSelectScreenExit(void);
 void requestKrazoaShrineMusic(void);
 int getButtonObjects(int** objectsOut);
 int cacheAllocAndCopy(u32 srcAddress, u32 size, u32* cacheCursor, u32* outEnd, u32 limit);
-void doNothing_8001F678(int a, int b);
+void nop_onUnloadMap(int a, int b);
 void doNothing_startOfFrame(void);
 void crash(int a, int b, int c, int d, int e, int f, int g, int h);
 

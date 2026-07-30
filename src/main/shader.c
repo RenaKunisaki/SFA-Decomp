@@ -1530,7 +1530,7 @@ void unloadMap(void)
 
     audioStopByMask(4);
     Sfx_ClearLoopedObjectSounds();
-    doNothing_8001F678(1, 0);
+    nop_onUnloadMap(1, 0);
     for (layer = 0; layer < MAP_BLOCK_LAYER_COUNT; layer++)
     {
         cur = gMapBlockLayerTables[layer];
@@ -2176,7 +2176,7 @@ void doPendingMapLoads(void)
                 MapCellEntry** eBase;
 
                 shadowVolumesSetDirty(1);
-                doNothing_8001F678(1, 0);
+                nop_onUnloadMap(1, 0);
                 cnt = 0;
                 layer = 0;
                 {

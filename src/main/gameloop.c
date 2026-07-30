@@ -171,7 +171,7 @@ void loadAsset(AssetReq* req)
     }
 }
 
-void doNothing_8001F678(int wpad0, int wpad1)
+void nop_onUnloadMap(int wpad0, int wpad1)
 {
 }
 void doNothing_startOfFrame(void)
