@@ -87,30 +87,30 @@ void mainLoopDoGameText(void) {
 }
 
 void subtitleStop(void) {
-    int none;
-    void** slot;
-    int i;
+    int zero;
+    void** blockSlot;
+    int blockIndex;
     int oldDelay;
-    int dir;
+    int savedDir;
 
     if (gSubtitleActive != 0) {
-        gSubtitleActive = none = 0;
-        i = 0;
-        slot = gSubtitleLineTable;
-        while (i < gSubtitleBlockCount) {
-            if (*slot != NULL) {
+        gSubtitleActive = zero = 0;
+        blockIndex = 0;
+        blockSlot = gSubtitleLineTable;
+        while (blockIndex < gSubtitleBlockCount) {
+            if (*blockSlot != NULL) {
                 oldDelay = mmSetFreeDelay(0);
-                mm_free(*slot);
+                mm_free(*blockSlot);
                 mmSetFreeDelay(oldDelay);
-                *slot = (void*)none;
+                *blockSlot = (void*)zero;
             }
-            slot++;
-            i++;
+            blockSlot++;
+            blockIndex++;
         }
 
-        dir = gGameTextSavedDir;
-        if (dir != -1) {
-            gameTextLoadDir(dir);
+        savedDir = gGameTextSavedDir;
+        if (savedDir != -1) {
+            gameTextLoadDir(savedDir);
             gGameTextSavedDir = -1;
         }
     }
