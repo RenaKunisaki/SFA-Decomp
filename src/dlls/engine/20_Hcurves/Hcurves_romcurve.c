@@ -10,7 +10,9 @@
 #include "main/dll/dll_0015_curves.h"
 #include "main/obj_list.h"
 #include "main/vecmath_distance_api.h"
+#include "main/vecmath.h"
 #include "main/shader_api.h"
+#include "string.h"
 
 int nRomCurves;
 RomCurveDef* gRomCurveLastFindStart;
