@@ -265,7 +265,7 @@ int fn_802AE480(GameObject* obj, int inner, int state);
 void fn_802AE650(GameObject* obj, int state, int p3);
 void playerEnterDeepWater(int obj, int inner, int state);
 void playerStartWallTransition(GameObject* obj, int inner, int state);
-void fn_802AED2C(GameObject* obj, int state, int p3);
+void playerStartStaffAttack(GameObject* obj, int state, int p3);
 void staffAnimate(int obj, void* state, f32 dt);
 void playerProcessQueuedItemCommand(GameObject* obj, int state);
 void playerRunActiveSpells(GameObject* obj, int state);
@@ -10002,7 +10002,7 @@ int playerStateMoving(int obj, int state, f32 fv)
         }
         if (calm && (((PlayerState*)inner)->buttonsJustPressed & PAD_BUTTON_X) != 0)
         {
-            fn_802AED2C((GameObject*)obj, inner, state);
+            playerStartStaffAttack((GameObject*)obj, inner, state);
         }
     }
     {
@@ -10563,7 +10563,7 @@ int playerStateIdle(int obj, int state, f32 fv)
     }
     if (calm && (((PlayerState*)inner)->buttonsJustPressed & PAD_BUTTON_X) != 0)
     {
-        fn_802AED2C((GameObject*)obj, inner, state);
+        playerStartStaffAttack((GameObject*)obj, inner, state);
         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
         return 3;
     }
@@ -13907,7 +13907,7 @@ int fn_802AD2F4(GameObject* obj, int inner, int state)
     if (((((ByteFlags*)(((char*)inner) + 0x3f0))->b01 != 0) && (((ByteFlags*)(((char*)inner) + 0x3f2))->b02 != 0)) &&
         (ps->fallSeverity < 3))
     {
-        fn_802AED2C(obj, inner, state);
+        playerStartStaffAttack(obj, inner, state);
         ((ByteFlags*)(((char*)inner) + 0x3f0))->b04 = 0;
         ps->staffHoldFrames = 0;
     }
@@ -14434,7 +14434,7 @@ void playerStartWallTransition(GameObject* obj, int inner, int state)
     }
 }
 
-void fn_802AED2C(GameObject* obj, int state, int p3)
+void playerStartStaffAttack(GameObject* obj, int state, int p3)
 {
     u16 sound;
     u32 b;
