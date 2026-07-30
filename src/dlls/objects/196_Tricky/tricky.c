@@ -412,7 +412,7 @@ void trickyImpress(GameObject* obj)
 }
 /* GameBit-gated bit toggle on obj->_b8->_54: requires mainGetBit(GAMEBIT_Tricky_Usable); sets bit 0x10000 then
  * checks bit 0x10. Returns 1 only when the post-OR check passes. */
-int trickyFn_80138f14(GameObject* obj)
+int Tricky_requestRecallAndCheckBusy(GameObject* obj)
 {
     TrickyImpressState* b = obj->extra;
     if ((u32)mainGetBit(GAMEBIT_Tricky_Usable) != 0u)
