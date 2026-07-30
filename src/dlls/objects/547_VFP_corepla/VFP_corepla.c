@@ -23,7 +23,7 @@ typedef struct VfpCorePlatformPlacement
 
 STATIC_ASSERT(sizeof(VfpCorePlatformState) == 0x4);
 
-int return0_801FD13C(void)
+int VFP_coreplat_sequenceCallback(void)
 {
     return 0x0;
 }
@@ -63,7 +63,7 @@ void VFP_coreplat_init(GameObject* obj, int data)
 
     obj->anim.rotX = (((s32)def->rotXByte) << 8);
     state->gameBitId = def->gameBitId;
-    obj->animEventCallback = return0_801FD13C;
+    obj->animEventCallback = VFP_coreplat_sequenceCallback;
     if (obj->anim.romDefNo == 0x3cb)
     {
         if (mainGetBit(GAMEBIT_ITEM_SpellStone1_Used) != 0)
