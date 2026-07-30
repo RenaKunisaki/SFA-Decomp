@@ -2375,7 +2375,7 @@ extern s16 gModelRootRotX;
 extern s16 gModelRootRotY;
 extern s16 gModelRootRotZ;
 
-void ObjModel_BuildAnimBlendTable(u8* obj, u8* channel, u8* hdr)
+static void ObjModel_BuildAnimBlendTable(u8* obj, u8* channel, u8* hdr)
 {
     ObjAnimComponent* objAnim;
     int poseOff;
