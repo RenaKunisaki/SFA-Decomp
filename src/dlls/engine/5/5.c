@@ -104,6 +104,7 @@ extern f32 gSkyOverrideLightIntensity;
 extern u8 gSkyOverrideLightDirectionEnabled;
 extern f32 gSkyOverrideLightDirection[];
 extern const f32 gSkySecondsPerDay;
+extern const f32 gSkySunMoonRiseScale;
 extern u16 gSkySunAlpha;
 extern u16 gSkyMoonAlpha;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
@@ -1426,7 +1427,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             riseT = 1.0f - (riseT - 1.0f);
         }
-        scale = -(0.55f * riseT - 1.0f);
+        scale = -(gSkySunMoonRiseScale * riseT - 1.0f);
         vec[0] = 2.0f * sunDir.x;
         vec[1] = 2.0f * sunDir.y;
         vec[2] = 2.0f * sunDir.z;
@@ -1507,7 +1508,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             riseT = 1.0f - (riseT - 1.0f);
         }
-        scale = -(0.55f * riseT - 1.0f);
+        scale = -(gSkySunMoonRiseScale * riseT - 1.0f);
         vec[0] = 2.0f * moonDir.x;
         vec[1] = 2.0f * moonDir.y;
         vec[2] = 2.0f * moonDir.z;
