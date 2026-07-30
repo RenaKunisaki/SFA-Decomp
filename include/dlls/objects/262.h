@@ -99,8 +99,6 @@ STATIC_ASSERT(offsetof(ScarabState, messageParamB) == 0x2E);
 STATIC_ASSERT(offsetof(ScarabState, messageParamC) == 0x30);
 STATIC_ASSERT(sizeof(ScarabState) == SCARAB_STATE_SIZE);
 
-int Scarab_resolveCollision(GameObject* obj);
-void Scarab_applyOrientation(GameObject* obj, const TrackGroundHit* groundHit, u8 mode, const f32* direction);
 int Scarab_getExtraSize(void);
 void Scarab_free(GameObject* obj);
 void Scarab_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);

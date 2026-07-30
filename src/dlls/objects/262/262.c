@@ -102,7 +102,7 @@ STATIC_ASSERT(offsetof(ScarabCollisionScratch, hitResults) == 0x54);
 STATIC_ASSERT(offsetof(ScarabCollisionScratch, sphere) == 0x94);
 STATIC_ASSERT(sizeof(ScarabCollisionScratch) == 0xC4);
 
-int Scarab_resolveCollision(GameObject* obj) {
+static int Scarab_resolveCollision(GameObject* obj) {
     ObjHitsPriorityState* hitState;
     TrackQueryBounds sweptBounds;
     f32 endPoints[12];
@@ -171,7 +171,7 @@ int Scarab_resolveCollision(GameObject* obj) {
     return 0;
 }
 
-void Scarab_applyOrientation(GameObject* obj, const TrackGroundHit* groundHit, u8 mode, const f32* direction) {
+static void Scarab_applyOrientation(GameObject* obj, const TrackGroundHit* groundHit, u8 mode, const f32* direction) {
     f32* velocityCache = obj->extra;
     PartFxSpawnParams rotation;
     f32 normal[3];
@@ -410,8 +410,8 @@ void Scarab_update(GameObject* obj) {
                     hitDetect_calcSweptSphereBounds(&sweepBounds, &startPosition.x, &endPosition.x, sphere->radii, 1);
                 }
                 trackIntersectBroadphase(obj, &sweepBounds, 0, 1);
-                hitCount = trackGetIntersect(obj, (f32*)&startPosition, (f32*)&endPosition, 1,
-                                                collisionScratch.hitResults, 0);
+                hitCount =
+                    trackGetIntersect(obj, (f32*)&startPosition, (f32*)&endPosition, 1, collisionScratch.hitResults, 0);
                 obj->anim.localPosX = endPosition.x;
                 obj->anim.localPosY = endPosition.y;
                 obj->anim.localPosZ = endPosition.z;
@@ -467,7 +467,7 @@ void Scarab_update(GameObject* obj) {
                 bestGroundHit = 0;
                 bestDistance = 10000.0f;
                 hitCount = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
-                                                &groundHits, 1, 0);
+                                          &groundHits, 1, 0);
                 for (hitIndex = 0; hitIndex < hitCount; hitIndex++) {
                     deltaY = groundHits[hitIndex]->height - obj->anim.localPosY;
                     if (deltaY > gScarabMaxGroundHeightDelta) {
@@ -524,8 +524,8 @@ void Scarab_update(GameObject* obj) {
                     heading = angle;
                     heading = gScarabGroundHeadingScale * heading + 32768.0f;
                     obj->anim.rotX = heading;
-                    obj->anim.localPosX = timeDelta * ((movementScale = 8.0f) * groundHits[bestGroundHit]->normalX) +
-                                          obj->anim.localPosX;
+                    obj->anim.localPosX =
+                        timeDelta * ((movementScale = 8.0f) * groundHits[bestGroundHit]->normalX) + obj->anim.localPosX;
                     obj->anim.localPosZ =
                         timeDelta * (movementScale * groundHits[bestGroundHit]->normalZ) + obj->anim.localPosZ;
                     obj->anim.velocityX = groundHits[bestGroundHit]->normalX;
@@ -551,7 +551,7 @@ void Scarab_update(GameObject* obj) {
                 }
                 trackIntersectBroadphase(obj, &sweepBounds, 0, 1);
                 hitMask = trackGetIntersect(obj, &obj->anim.previousLocalPosX, &obj->anim.localPosX, 1,
-                                               collisionScratch.hitResults, 0);
+                                            collisionScratch.hitResults, 0);
                 if (collisionDetected != 0 ||
                     Vec_distance(&obj->anim.worldPosX, &((ObjPlacement*)obj->anim.placementData)->posX) > 300.0f ||
                     ((hitMask & 1) != 0 && (hitMask & 0x10) == 0)) {
@@ -565,7 +565,7 @@ void Scarab_update(GameObject* obj) {
             } else {
                 bestDistance = 10000.0f;
                 hitCount = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
-                                                &groundHits, 1, 0);
+                                          &groundHits, 1, 0);
                 for (hitIndex = 0; hitIndex < hitCount; hitIndex++) {
                     deltaY = groundHits[hitIndex]->height - obj->anim.localPosY;
                     if (deltaY < 0.0f) {
