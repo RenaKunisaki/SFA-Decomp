@@ -1346,7 +1346,7 @@ int ObjHits_CheckHitVolumes(int objA, int objB, int srcObj, char checkA, char ch
     return 0;
 }
 
-void doNothing_800333C8(int objA, int objB, int att, void* state, void* attState, f32 dt) {
+void ObjHits_OnPlayerHitVolumeMiss(int objA, int objB, int attachment, void* state, void* attachmentState, f32 dt) {
 }
 
 void ObjHits_CheckObjectHitVolumes(int objA, int objB, int attA, int attB, f32 dt) {
@@ -1411,7 +1411,7 @@ void ObjHits_CheckObjectHitVolumes(int objA, int objB, int attA, int attB, f32 d
             result = ObjHits_CheckHitVolumes(attA, objB, objA, 1, 0, mask, stateA->skeletonHitMask & 0xf);
         }
         if ((result == 0) && (((GameObject*)objA)->anim.classId == 1)) {
-            doNothing_800333C8(objA, objB, attA, stateA, attStateA, dt);
+            ObjHits_OnPlayerHitVolumeMiss(objA, objB, attA, stateA, attStateA, dt);
         }
     }
     result = 0;
@@ -1455,7 +1455,7 @@ void ObjHits_CheckObjectHitVolumes(int objA, int objB, int attA, int attB, f32 d
             result = ObjHits_CheckHitVolumes(attB, objA, objB, 1, 0, mask, stateB->skeletonHitMask & 0xf);
         }
         if ((result == 0) && (((GameObject*)objB)->anim.classId == 1)) {
-            doNothing_800333C8(objB, objA, attB, stateB, attStateB, dt);
+            ObjHits_OnPlayerHitVolumeMiss(objB, objA, attB, stateB, attStateB, dt);
         }
     }
 }
