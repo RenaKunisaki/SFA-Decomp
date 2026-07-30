@@ -11,7 +11,6 @@
 #include "main/dll/modgfx.h"
 #include "string.h"
 
-int mathFn_800dbff0(float* point);
 void doNothing_onTrickyFree(void);
 void doNothing_onTrickyInit(void);
 

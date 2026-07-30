@@ -14,6 +14,7 @@ int Objfsa_GetNearestPatchExit(f32* point, f32* outVec, int id);
 #endif
 int isPointWithinPatchGroup(f32* point, u32 patchGroupIndex, int groupId);
 int isInWalkGroupOrPatch(f32* point);
+int Objfsa_FindWalkGroupIndexAtPoint(f32* point);
 int Objfsa_GetPatchGroupIdAtPoint(f32* point);
 
 #endif /* MAIN_DLL_HCURVES_API_H_ */

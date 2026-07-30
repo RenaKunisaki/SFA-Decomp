@@ -922,7 +922,7 @@ int isInWalkGroupOrPatch(float* point)
     s16 idx;
     f32 y;
 
-    if (mathFn_800dbff0(point) != 0)
+    if (Objfsa_FindWalkGroupIndexAtPoint(point) != 0)
     {
         return 1;
     }
@@ -966,7 +966,7 @@ int Objfsa_GetWalkGroupIndexAtPoint(float* point, ObjfsaWalkGroupPatchInfo* patc
     ObjfsaPatch* patch;
     f32 y;
 
-    wgi = (u8)mathFn_800dbff0(point);
+    wgi = (u8)Objfsa_FindWalkGroupIndexAtPoint(point);
     if (patchInfo != NULL && wgi != 0)
     {
         patchInfo->walkGroupIndex = wgi;
@@ -1047,120 +1047,129 @@ int Objfsa_GetPatchGroupIdAtPoint(float* point)
 
 
 
-int mathFn_800dbff0(float* point)
+int Objfsa_FindWalkGroupIndexAtPoint(float* point)
 {
-    s16 up;
-    ObjfsaWalkGroup* wg;
-    ObjfsaWalkGroup* wgLast;
-    s16 down;
-    u8 j[1];
-    f32 planeOff;
-    u8 i[1];
-    ObjfsaWalkGroup* g;
-    f32 y;
-    f32 x;
-    f32 zLast;
-    f32 z;
+    s16 upperGroupIndex;
+    ObjfsaWalkGroup* lowerGroup;
+    ObjfsaWalkGroup* finalGroup;
+    s16 lowerGroupIndex;
+    u8 normalIndex[1];
+    f32 planeOffset;
+    u8 edgeIndex[1];
+    ObjfsaWalkGroup* walkGroup;
+    f32 pointY;
+    f32 pointX;
+    f32 pointZCopy;
+    f32 pointZ;
 
-    down = gObjfsaLastWalkGroupIndex;
+    lowerGroupIndex = gObjfsaLastWalkGroupIndex;
     if (gObjfsaLastWalkGroupIndex == OBJFSA_WALKGROUP_COUNT - 1)
     {
-        up = 0;
+        upperGroupIndex = 0;
     }
     else
     {
-        up = 1;
-        up = gObjfsaLastWalkGroupIndex + up;
+        upperGroupIndex = 1;
+        upperGroupIndex = gObjfsaLastWalkGroupIndex + upperGroupIndex;
     }
 
-    while (down != up)
+    while (lowerGroupIndex != upperGroupIndex)
     {
-        if (gObjfsaWalkGroupActive[down])
+        if (gObjfsaWalkGroupActive[lowerGroupIndex])
         {
-            wg = &gObjfsaWalkGroups[down];
-            g = wg;
-            y = point[1];
-            if (y < g->maxY && y > g->minY)
+            lowerGroup = &gObjfsaWalkGroups[lowerGroupIndex];
+            walkGroup = lowerGroup;
+            pointY = point[1];
+            if (pointY < walkGroup->maxY && pointY > walkGroup->minY)
             {
-                zLast = point[2];
-                x = point[0];
-                z = zLast;
-                i[0] = (j[0] = 0);
-                j[0] = 0;
-                for (; i[0] < 4; i[0]++, j[0] += 2)
+                pointZCopy = point[2];
+                pointX = point[0];
+                pointZ = pointZCopy;
+                edgeIndex[0] = (normalIndex[0] = 0);
+                normalIndex[0] = 0;
+                for (; edgeIndex[0] < 4; edgeIndex[0]++, normalIndex[0] += 2)
                 {
-                    if (g->planeOffsets[i[0]] + (x * (f32)((s16*)g)[j[0]] + z * (f32)((s16*)g)[j[0] + 1]) > 0.0f)
+                    if (walkGroup->planeOffsets[edgeIndex[0]] +
+                            (pointX * (f32)((s16*)walkGroup)[normalIndex[0]] +
+                             pointZ * (f32)((s16*)walkGroup)[normalIndex[0] + 1]) >
+                        0.0f)
                     {
                         break;
                     }
                 }
-                if (i[0] == 4)
+                if (edgeIndex[0] == 4)
                 {
-                    gObjfsaLastWalkGroupIndex = down;
-                    return down;
+                    gObjfsaLastWalkGroupIndex = lowerGroupIndex;
+                    return lowerGroupIndex;
                 }
             }
         }
-        if (gObjfsaWalkGroupActive[up])
+        if (gObjfsaWalkGroupActive[upperGroupIndex])
         {
-            g = &gObjfsaWalkGroups[up];
-            y = point[1];
-            if (y < g->maxY && y > g->minY)
+            walkGroup = &gObjfsaWalkGroups[upperGroupIndex];
+            pointY = point[1];
+            if (pointY < walkGroup->maxY && pointY > walkGroup->minY)
             {
-                z = point[2];
-                x = point[0];
-                i[0] = (j[0] = 0);
-                j[0] = 0;
-                for (; i[0] < 4; i[0]++, j[0] += 2)
+                pointZ = point[2];
+                pointX = point[0];
+                edgeIndex[0] = (normalIndex[0] = 0);
+                normalIndex[0] = 0;
+                for (; edgeIndex[0] < 4; edgeIndex[0]++, normalIndex[0] += 2)
                 {
-                    if (g->planeOffsets[i[0]] + (x * (f32)((s16*)g)[j[0]] + z * (f32)((s16*)g)[j[0] + 1]) > 0.0f)
+                    if (walkGroup->planeOffsets[edgeIndex[0]] +
+                            (pointX * (f32)((s16*)walkGroup)[normalIndex[0]] +
+                             pointZ * (f32)((s16*)walkGroup)[normalIndex[0] + 1]) >
+                        0.0f)
                     {
                         break;
                     }
                 }
-                if (i[0] == 4)
+                if (edgeIndex[0] == 4)
                 {
-                    gObjfsaLastWalkGroupIndex = up;
-                    return up;
+                    gObjfsaLastWalkGroupIndex = upperGroupIndex;
+                    return upperGroupIndex;
                 }
             }
         }
 
-        down--;
-        if (down == -1)
+        lowerGroupIndex--;
+        if (lowerGroupIndex == -1)
         {
-            down = OBJFSA_WALKGROUP_COUNT - 1;
+            lowerGroupIndex = OBJFSA_WALKGROUP_COUNT - 1;
         }
-        up++;
-        if (up == OBJFSA_WALKGROUP_COUNT)
+        upperGroupIndex++;
+        if (upperGroupIndex == OBJFSA_WALKGROUP_COUNT)
         {
-            up = 0;
+            upperGroupIndex = 0;
         }
     }
 
-    if (gObjfsaWalkGroupActive[down])
+    if (gObjfsaWalkGroupActive[lowerGroupIndex])
     {
-        wgLast = &gObjfsaWalkGroups[down];
-        g = wgLast;
-        y = point[1];
-        if (y < g->maxY && y > g->minY)
+        finalGroup = &gObjfsaWalkGroups[lowerGroupIndex];
+        walkGroup = finalGroup;
+        pointY = point[1];
+        if (pointY < walkGroup->maxY && pointY > walkGroup->minY)
         {
-            z = point[2];
-            x = point[0];
-            i[0] = (j[0] = 0);
-            j[0] = 0;
-            for (; i[0] < 4; i[0]++, j[0] += 2)
+            pointZ = point[2];
+            pointX = point[0];
+            edgeIndex[0] = (normalIndex[0] = 0);
+            normalIndex[0] = 0;
+            for (; edgeIndex[0] < 4; edgeIndex[0]++, normalIndex[0] += 2)
             {
-                planeOff = g->planeOffsets[i[0]];
-                if (planeOff + (x * (f32)((s16*)g)[j[0]] + (f32)((s16*)g)[j[0] + 1] * z) > 0.0f)
+                planeOffset = walkGroup->planeOffsets[edgeIndex[0]];
+                if (planeOffset +
+                        (pointX * (f32)((s16*)walkGroup)[normalIndex[0]] +
+                         (f32)((s16*)walkGroup)[normalIndex[0] + 1] * pointZ) >
+                    0.0f)
                 {
                     break;
                 }
             }
-            if (i[0] == 4)
+            if (edgeIndex[0] == 4)
             {
-                gObjfsaLastWalkGroupIndex = down;
-                return down;
+                gObjfsaLastWalkGroupIndex = lowerGroupIndex;
+                return lowerGroupIndex;
             }
         }
     }
