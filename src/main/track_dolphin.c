@@ -69,9 +69,9 @@ typedef struct TrackTriangle TrackTriangle;
 u32 gTrackTriangleBufferEnd;
 s16 gTrackTriangleCount;
 u8 gActiveTrackBlockCount;
-TrackGroundHit* lbl_803DCF68;
-int lbl_803DCF64;
-s8 lbl_803DCF60;
+TrackGroundHit* gTrackGroundHitWriteCursor;
+TrackGroundHit** gTrackGroundHitPtrs;
+s8 gTrackGroundHitCount;
 s16 gIntersectLineCount;
 s16 gIntersectPointCount;
 f32 lbl_803DCF58;
@@ -1838,38 +1838,37 @@ void trackCollectGroundHits(TrackTriangle* triStart, TrackTriangle* triEnd, Trac
         }
         if (inside == 0)
             continue;
-        if (lbl_803DCF60 >= 0x23)
+        if (gTrackGroundHitCount >= 0x23)
             break;
         if (desc->object != NULL)
         {
             Matrix_TransformPoint(desc->currentCollisionMatrix, qx, planeY, qz, &ox, &planeY, &oz);
             Matrix_TransformVector(desc->currentCollisionMatrix, vec, vec);
         }
-        lbl_803DCF68->height = planeY;
-        lbl_803DCF68->surfaceType = tri->surfaceType;
-        lbl_803DCF68->normalX = vec[0];
-        lbl_803DCF68->normalY = vec[1];
-        lbl_803DCF68->normalZ = vec[2];
-        lbl_803DCF68->object = desc->object;
-        lbl_803DCF68++;
-        lbl_803DCF60++;
+        gTrackGroundHitWriteCursor->height = planeY;
+        gTrackGroundHitWriteCursor->surfaceType = tri->surfaceType;
+        gTrackGroundHitWriteCursor->normalX = vec[0];
+        gTrackGroundHitWriteCursor->normalY = vec[1];
+        gTrackGroundHitWriteCursor->normalZ = vec[2];
+        gTrackGroundHitWriteCursor->object = desc->object;
+        gTrackGroundHitWriteCursor++;
+        gTrackGroundHitCount++;
     }
 }
 
-int trackGetHeight(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask)
-{
+int trackGetHeight(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask) {
     u8* base = (u8*)gIntersectSegmentTypeTable;
     TrackBlockDescriptor* desc = (TrackBlockDescriptor*)(base + 0x424);
     TrackBlockDescriptor* end;
     u8* ptr;
-    f32* p5;
+    TrackGroundHit* hit;
     int i, j;
+    int sortIndex;
     int sorted;
     int conv[6];
     f32 tx, ty, tz;
 
-    if (mode >= 0)
-    {
+    if (mode >= 0) {
         conv[0] = x;
         conv[3] = x;
         conv[1] = (int)(y - 10000.0f);
@@ -1877,63 +1876,53 @@ int trackGetHeight(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsO
         conv[2] = z;
         conv[5] = z;
         trackIntersectBroadphase(obj, (TrackQueryBounds*)conv, queryMask, 1);
-    }
-    else
-    {
-        if (mode == -1)
+    } else {
+        if (mode == -1) {
             mode = 0;
-        else
+        } else {
             mode = 1;
+        }
     }
 
-    lbl_803DCF68 = (TrackGroundHit*)(base + 0xdc);
-    lbl_803DCF64 = (int)(base + 0x50);
-    lbl_803DCF60 = 0;
+    gTrackGroundHitWriteCursor = (TrackGroundHit*)(base + 0xdc);
+    gTrackGroundHitPtrs = (TrackGroundHit**)(base + 0x50);
+    gTrackGroundHitCount = 0;
     end = (TrackBlockDescriptor*)(base + 0x424) + gActiveTrackBlockCount;
-    for (; desc < end; desc++)
-    {
-        if (lbl_803DCF60 >= 0x23)
+    for (; desc < end; desc++) {
+        if (gTrackGroundHitCount >= 0x23) {
             break;
-        if (desc->object != NULL)
-        {
+        }
+        if (desc->object != NULL) {
             Matrix_TransformPoint(desc->currentMatrix, x, 0.0f, z, &tx, &ty, &tz);
             trackCollectGroundHits(gTrackTriangleBuffer + desc->firstTriangle,
-                        gTrackTriangleBuffer + desc[1].firstTriangle, desc, tx, tz, mode);
-        }
-        else
-        {
+                                   gTrackTriangleBuffer + desc[1].firstTriangle, desc, tx, tz, mode);
+        } else {
             trackCollectGroundHits(gTrackTriangleBuffer + desc->firstTriangle,
-                        gTrackTriangleBuffer + desc[1].firstTriangle, desc, x, z, mode);
+                                   gTrackTriangleBuffer + desc[1].firstTriangle, desc, x, z, mode);
         }
     }
 
-    for (j = 0, ptr = base + 0xdc, i = 0; j < lbl_803DCF60; j++)
-    {
-        *(u8**)(lbl_803DCF64 + i) = ptr;
+    for (j = 0, ptr = base + 0xdc, i = 0; j < gTrackGroundHitCount; j++) {
+        *(u8**)((u8*)gTrackGroundHitPtrs + i) = ptr;
         ptr += 0x18;
         i += 4;
     }
 
     sorted = 0;
-    while (!sorted)
-    {
+    while (!sorted) {
         sorted = 1;
-        i = 0;
-        for (j = 0; j < lbl_803DCF60 - 1; j++)
-        {
-            p5 = ((f32**)(lbl_803DCF64 + i))[0];
-            if (*p5 < *((f32**)(lbl_803DCF64 + i))[1])
-            {
+        for (sortIndex = 0; sortIndex < gTrackGroundHitCount - 1; sortIndex++) {
+            if (gTrackGroundHitPtrs[sortIndex]->height < gTrackGroundHitPtrs[sortIndex + 1]->height) {
+                hit = gTrackGroundHitPtrs[sortIndex];
                 sorted = 0;
-                ((f32**)(lbl_803DCF64 + i))[0] = ((f32**)(lbl_803DCF64 + i))[1];
-                *(f32**)(lbl_803DCF64 + i + 4) = p5;
+                gTrackGroundHitPtrs[sortIndex] = gTrackGroundHitPtrs[sortIndex + 1];
+                gTrackGroundHitPtrs[sortIndex + 1] = hit;
             }
-            i += 4;
         }
     }
 
     *hitsOut = (TrackGroundHit**)(base + 0x50);
-    return lbl_803DCF60;
+    return gTrackGroundHitCount;
 }
 
 int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 y, u8 type)
