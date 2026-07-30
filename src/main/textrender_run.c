@@ -375,7 +375,7 @@ void gameTextRun(void)
     }
 
     textBox = gTextBoxes;
-    for (i = 148; i != 0; i--)
+    for (i = GAMETEXT_BOX_COUNT; i != 0; i--)
     {
         textBox->flags &= ~1;
         textBox++;
@@ -503,8 +503,8 @@ void gameTextRun(void)
     gGameTextCommandCount = 0;
     gGameTextCommandStringCursor = runtime->commandStringBuffer;
 
-    i = 0x94;
-    textBox = &gTextBoxes[148];
+    i = GAMETEXT_BOX_COUNT;
+    textBox = &gTextBoxes[GAMETEXT_BOX_COUNT];
     while (textBox--, i-- != 0)
     {
         textBox->cursorX = 0;
@@ -552,8 +552,8 @@ void gameTextInitRendererState(void)
 
     gameTextBase = gGameTextBase;
 
-    i = 0x94;
-    p = textWindow = (u8*)gTextBoxes + 0x1280;
+    i = GAMETEXT_BOX_COUNT;
+    p = textWindow = (u8*)&gTextBoxes[GAMETEXT_BOX_COUNT];
     while (p -= 0x20, i-- != 0)
     {
         *(u16*)(p + 8) = *(u16*)(p + 2);
@@ -576,7 +576,7 @@ void gameTextInitRendererState(void)
         *(u8***)(fontState + 8) = glyphPagePtr;
     }
 
-    i = 0x94;
+    i = GAMETEXT_BOX_COUNT;
     while (textWindow -= 0x20, i-- != 0)
     {
         textWindow[0x1e] = 0xff;

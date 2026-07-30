@@ -27,6 +27,8 @@ typedef struct GameTextBox
 
 typedef GameTextBox TextSlot;
 
+#define GAMETEXT_BOX_COUNT 148
+
 void* gameTextGetBox(int box);
 
 #endif /* MAIN_GAMETEXT_BOX_API_H_ */

@@ -476,7 +476,7 @@ LanguageName sLanguageNameTable[6] = {
     {sLanguageNameItalian, 4, {0, 0, 0}}, {sLanguageNameJapanese, 0, {0, 0, 0}}, {sLanguageNameSpanish, 4, {0, 0, 0}},
 };
 
-u8 gTextBoxes[4736] = {
+u8 gTextBoxes[GAMETEXT_BOX_COUNT * sizeof(GameTextBox)] = {
     2, 48,  2, 48,  1,  144, 1, 144, 2, 48,  1, 144, 63, 128, 0,   0,   2, 0,   2, 5,   0,  40,  0,   40,
     0, 0,   0, 0,   0,  0,   0, 0,   1, 0,   1, 0,   0,  96,  0,   96,  1, 0,   0, 96,  63, 128, 0,   0,
     3, 0,   3, 6,   0,  30,  0, 30,  0, 0,   0, 0,   0,  0,   0,   0,   2, 68,  2, 68,  1,  144, 1,   144,
