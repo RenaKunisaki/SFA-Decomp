@@ -61,7 +61,7 @@ extern char sTrackLoadBlockOverrunError[];
 extern char sShaderUnusedWordTable[];
 #define MAP_BLOCK_LAYER_COUNT 5
 #define FRUSTUM_PLANE_COUNT   5
-void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer);
+static void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer);
 /* One 0x20-byte MAPINFO.bin (fileId 0x1f) record, fetched by mapId via getTabEntry. */
 typedef struct MapInfoRecord
 {
@@ -1401,7 +1401,7 @@ int mapTextureScrollAcquire(int xStep, int yStep, int texWidthFixed, int texHeig
     return slot;
 }
 
-void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer)
+static void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer)
 {
     int i;
     s16* arr;
@@ -1441,7 +1441,7 @@ MapRomListIndex gMapRomListIndexes[120];
 void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* entry, int layer);
 
 
-int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
+static int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
 {
     int j;
     s16* arr;
@@ -2533,7 +2533,7 @@ void loadMapForCameraPos(float x, float y, float z)
     }
 }
 
-void mapInitSetRects(s16* rect, u8* bitmap, int originX, int originY, int idx)
+static void mapInitSetRects(s16* rect, u8* bitmap, int originX, int originY, int idx)
 {
     u8* self = lbl_803DCE78;
     int tabOff = idx * 7 << 2;
@@ -2559,8 +2559,6 @@ void mapInitSetRects(s16* rect, u8* bitmap, int originX, int originY, int idx)
         }
     }
 }
-
-void mapInitSetRects(s16* rect, u8* bitmap, int originX, int originY, int idx);
 
 void initMaps(void)
 {
