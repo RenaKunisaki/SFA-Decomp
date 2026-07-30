@@ -275,37 +275,37 @@ void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box) {
     int edgeWidth;
     int middleWidth;
 
-    savedX = ((GameTextBox*)box)->cursorX;
-    savedY = ((GameTextBox*)box)->cursorY;
-    boxFlags = ((GameTextBox*)box)->flags;
+    savedX = box->cursorX;
+    savedY = box->cursorY;
+    boxFlags = box->flags;
     if (boxFlags & 1) {
         return;
     }
-    ((GameTextBox*)box)->flags = boxFlags | 1;
-    switch (((GameTextBox*)box)->style) {
+    box->flags = boxFlags | 1;
+    switch (box->style) {
     case 5:
         return;
     case 7:
         if (getCurGameText() == 3) {
-            u16 bh = ((GameTextBox*)box)->height;
-            u16 bw = ((GameTextBox*)box)->width;
-            s16 by = ((GameTextBox*)box)->y;
-            s16 bx = ((GameTextBox*)box)->x;
+            u16 bh = box->height;
+            u16 bw = box->width;
+            s16 by = box->y;
+            s16 bx = box->x;
             hudDrawRect(bx, by, bx + bw, by + bh, gGameTextBoxFillColor);
         } else {
-            hudHeight = ((GameTextBox*)box)->height;
-            hudWidth = ((GameTextBox*)box)->width;
-            hudY = ((GameTextBox*)box)->y;
-            hudX = ((GameTextBox*)box)->x;
+            hudHeight = box->height;
+            hudWidth = box->width;
+            hudY = box->y;
+            hudX = box->x;
             GXSetScissor(0, 0, 0x280, 0x1e0);
             drawHudBox(hudX, hudY, (s16)hudWidth, (s16)hudHeight, 0xff, 1);
         }
         break;
     case 1: {
-        u16 bh = ((GameTextBox*)box)->height;
-        u16 bw = ((GameTextBox*)box)->width;
-        s16 by = ((GameTextBox*)box)->y;
-        s16 bx = ((GameTextBox*)box)->x;
+        u16 bh = box->height;
+        u16 bw = box->width;
+        s16 by = box->y;
+        s16 bx = box->x;
         hudDrawRect(bx, by, bx + bw, by + bh, gGameTextBoxFillColor);
     } break;
     case 6:
@@ -337,8 +337,7 @@ void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box) {
                           cornerHalfWidth + gGameTextBoxCornerInset, cornerHalfHeight + gGameTextBoxCornerInset, 3);
         break;
     case 0:
-        drawScaledTexture(gGameTextBoxBgTexture, (f32)((GameTextBox*)box)->x, (f32)((GameTextBox*)box)->y, 0xff, 0x100,
-                          ((GameTextBox*)box)->width, ((GameTextBox*)box)->height, 0);
+        drawScaledTexture(gGameTextBoxBgTexture, (f32)box->x, (f32)box->y, 0xff, 0x100, box->width, box->height, 0);
         break;
     case 3:
         window = gameTextGetCurBox();
@@ -349,18 +348,16 @@ void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box) {
                                         &subtitleMaxX, &subtitleMinY, &subtitleMaxY);
         }
         gameTextSetWindow(window);
-        drawTexture(gSubtitleBoxTextures[0], (f32)(subtitleMinX - 0x16), (f32)(subtitleMinY - 9),
-                    ((GameTextBox*)box)->alpha, 0x100);
-        drawScaledTexture(gSubtitleBoxTextures[1], (f32)subtitleMinX, (f32)(subtitleMinY - 9),
-                          ((GameTextBox*)box)->alpha, 0x100, subtitleMaxX - subtitleMinX, 0x24, 0);
-        drawTexture(gSubtitleBoxTextures[2], (f32)subtitleMaxX, (f32)(subtitleMinY - 9), ((GameTextBox*)box)->alpha,
-                    0x100);
+        drawTexture(gSubtitleBoxTextures[0], (f32)(subtitleMinX - 0x16), (f32)(subtitleMinY - 9), box->alpha, 0x100);
+        drawScaledTexture(gSubtitleBoxTextures[1], (f32)subtitleMinX, (f32)(subtitleMinY - 9), box->alpha, 0x100,
+                          subtitleMaxX - subtitleMinX, 0x24, 0);
+        drawTexture(gSubtitleBoxTextures[2], (f32)subtitleMaxX, (f32)(subtitleMinY - 9), box->alpha, 0x100);
         break;
     case 2:
-        frameX = ((GameTextBox*)box)->x;
-        frameWidth = ((GameTextBox*)box)->width;
+        frameX = box->x;
+        frameWidth = box->width;
         frameRight = frameX + frameWidth;
-        frameY = ((GameTextBox*)box)->y;
+        frameY = box->y;
         edgeWidth = frameWidth >> 1;
         if (edgeWidth > 0xc) {
             edgeWidth = 0xc;
@@ -370,31 +367,28 @@ void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box) {
             middleWidth = 0;
         }
         GXSetScissor(0, 0, 0x280, 0x1e0);
-        drawTexture(gGameTextBoxFrameTextures[0], (f32)(frameX - 0x34), (f32)(frameY - 0x23),
-                    ((GameTextBox*)box)->alpha, 0x100);
-        drawTexture(gGameTextBoxFrameTextures[4], (f32)frameRight, (f32)(frameY - 0x23), ((GameTextBox*)box)->alpha,
-                    0x100);
+        drawTexture(gGameTextBoxFrameTextures[0], (f32)(frameX - 0x34), (f32)(frameY - 0x23), box->alpha, 0x100);
+        drawTexture(gGameTextBoxFrameTextures[4], (f32)frameRight, (f32)(frameY - 0x23), box->alpha, 0x100);
         if (edgeWidth != 0) {
-            drawScaledTexture(gGameTextBoxFrameTextures[1], (f32)frameX, (f32)(frameY - 0x13),
-                              ((GameTextBox*)box)->alpha, 0x100, edgeWidth, 0x3a, 0);
+            drawScaledTexture(gGameTextBoxFrameTextures[1], (f32)frameX, (f32)(frameY - 0x13), box->alpha, 0x100,
+                              edgeWidth, 0x3a, 0);
             drawPartialTexture(gGameTextBoxFrameTextures[3], (f32)(frameRight - edgeWidth), (f32)(frameY - 0x13),
-                               ((GameTextBox*)box)->alpha, 0x100, edgeWidth, 0x3a, 0xc - edgeWidth, 0);
+                               box->alpha, 0x100, edgeWidth, 0x3a, 0xc - edgeWidth, 0);
         }
         if (middleWidth != 0) {
-            drawScaledTexture(gGameTextBoxFrameTextures[2], (f32)(frameX + edgeWidth), (f32)(frameY - 0x13),
-                              ((GameTextBox*)box)->alpha, 0x100, middleWidth, 0x3a, 0);
+            drawScaledTexture(gGameTextBoxFrameTextures[2], (f32)(frameX + edgeWidth), (f32)(frameY - 0x13), box->alpha,
+                              0x100, middleWidth, 0x3a, 0);
         }
         break;
     case 4:
         gameTextDrawBoxEdges((u16*)strPtr, boxId, (u8*)box);
         break;
     }
-    ((GameTextBox*)box)->cursorX = savedX;
-    ((GameTextBox*)box)->cursorY = savedY;
+    box->cursorX = savedX;
+    box->cursorY = savedY;
 }
 
-static void gameTextDrawBoxEdges(u16* strPtr, int boxId, u8* box)
-{
+static void gameTextDrawBoxEdges(u16* strPtr, int boxId, u8* box) {
     int x;
     int y;
     int alpha;
