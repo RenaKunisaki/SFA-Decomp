@@ -24,8 +24,7 @@
 #include "dolphin/vi/vifuncs.h"
 #include "main/dll/FRONT/dll_3B.h"
 
-typedef struct AttractMovieControl
-{
+typedef struct AttractMovieControl {
     u8 pad000[0x560];
     u32 readBufBegin; /* 0x560 */
     u32 readBufEnd;   /* 0x564 */
@@ -69,8 +68,7 @@ STATIC_ASSERT(offsetof(AttractMovieControl, field684) == 0x684);
 STATIC_ASSERT(offsetof(AttractMovieControl, field690) == 0x690);
 
 /* playFlags bits (shared by AttractMoviePlayer and AttractMovieControl) */
-enum
-{
+enum {
     THP_PLAY_LOOP = 1,
     THP_PLAY_EVEN_FIELD = 2,
     THP_PLAY_ODD_FIELD = 4
@@ -79,7 +77,7 @@ enum
 extern OSMessageQueue gAttractMovieSpentTextureSetQueue;
 extern char gAttractMovieAudioDmaBuffer[];
 extern OSMessageQueue gAttractMoviePrepareReadyQueue;
-void InitAllMessageQueue(void);
+static void InitAllMessageQueue(void);
 
 u8 gAttractMovieLoopCompleted;
 OSMessage lbl_803DD67C;
@@ -90,190 +88,148 @@ s32 gAttractMovieAudioMode;
 AIDCallback gAttractMovieAudioPrevDmaCallback;
 static VIRetraceCallback OldVIPostCallback;
 
-static void PlayControl(u32 retraceCount)
-{
+static void PlayControl(u32 retraceCount) {
     AttractMovieTextureSet* decodedTexture;
     s32 frame;
     int allowPop;
     s32 modResult;
 
-    if (OldVIPostCallback != NULL)
-    {
+    if (OldVIPostCallback != NULL) {
         OldVIPostCallback(retraceCount);
     }
 
     decodedTexture = (AttractMovieTextureSet*)-1;
-    if (gAttractMoviePlayer.isOpen == 0)
-    {
+    if (gAttractMoviePlayer.isOpen == 0) {
         return;
     }
-    if (gAttractMoviePlayer.state != 2)
-    {
+    if (gAttractMoviePlayer.state != 2) {
         return;
     }
-    if ((gAttractMoviePlayer.dvdError != 0) || (gAttractMoviePlayer.videoError != 0))
-    {
+    if ((gAttractMoviePlayer.dvdError != 0) || (gAttractMoviePlayer.videoError != 0)) {
         gAttractMoviePlayer.internalState = 5;
         gAttractMoviePlayer.state = 5;
         return;
     }
 
-    if ((gAttractMoviePlayer.retraceCount == 0) && ((gAttractMoviePlayer.internalState == 0) || (gAttractMoviePlayer.internalState == 4)))
-    {
+    if ((gAttractMoviePlayer.retraceCount == 0) &&
+        ((gAttractMoviePlayer.internalState == 0) || (gAttractMoviePlayer.internalState == 4))) {
         gAttractMoviePlayer.internalState = 2;
     }
     gAttractMoviePlayer.retraceCount++;
 
-    if ((gAttractMoviePlayer.internalState == 0) || (gAttractMoviePlayer.internalState == 4))
-    {
-        do
-        {
-            if ((gAttractMoviePlayer.playFlags & THP_PLAY_EVEN_FIELD) != 0)
-            {
-                if (VIGetNextField() == 0)
-                {
+    if ((gAttractMoviePlayer.internalState == 0) || (gAttractMoviePlayer.internalState == 4)) {
+        do {
+            if ((gAttractMoviePlayer.playFlags & THP_PLAY_EVEN_FIELD) != 0) {
+                if (VIGetNextField() == 0) {
                     allowPop = 1;
                     break;
                 }
-            }
-            else if ((gAttractMoviePlayer.playFlags & THP_PLAY_ODD_FIELD) != 0)
-            {
-                if (VIGetNextField() == 1)
-                {
+            } else if ((gAttractMoviePlayer.playFlags & THP_PLAY_ODD_FIELD) != 0) {
+                if (VIGetNextField() == 1) {
                     allowPop = 1;
                     break;
                 }
-            }
-            else
-            {
+            } else {
                 allowPop = 1;
                 break;
             }
             allowPop = 0;
         } while (0);
 
-        if (allowPop != 0)
-        {
-            if (gAttractMoviePlayer.audioExists != 0)
-            {
+        if (allowPop != 0) {
+            if (gAttractMoviePlayer.audioExists != 0) {
                 frame = gAttractMoviePlayer.curAudioTrack - gAttractMoviePlayer.curVideoNumber;
-                if (frame <= 1)
-                {
+                if (frame <= 1) {
                     decodedTexture = (AttractMovieTextureSet*)PopDecodedTextureSet(0);
-                    if (gAttractMoviePlayer.videoDecodeCount > frame)
-                    {
+                    if (gAttractMoviePlayer.videoDecodeCount > frame) {
                         gAttractMoviePlayer.videoDecodeCount--;
                     }
-                }
-                else
-                {
+                } else {
                     gAttractMoviePlayer.internalState = 2;
                 }
-            }
-            else
-            {
+            } else {
                 decodedTexture = (AttractMovieTextureSet*)PopDecodedTextureSet(0);
                 gAttractMoviePlayer.internalState = 2;
             }
-        }
-        else
-        {
+        } else {
             gAttractMoviePlayer.retraceCount = -1;
         }
-    }
-    else if (ProperTimingForGettingNextFrame() != 0)
-    {
-        if (gAttractMoviePlayer.audioExists != 0)
-        {
+    } else if (ProperTimingForGettingNextFrame() != 0) {
+        if (gAttractMoviePlayer.audioExists != 0) {
             frame = gAttractMoviePlayer.curAudioTrack - gAttractMoviePlayer.curVideoNumber;
-            if (frame <= 1)
-            {
+            if (frame <= 1) {
                 decodedTexture = (AttractMovieTextureSet*)PopDecodedTextureSet(0);
-                if (gAttractMoviePlayer.videoDecodeCount > frame)
-                {
+                if (gAttractMoviePlayer.videoDecodeCount > frame) {
                     gAttractMoviePlayer.videoDecodeCount--;
                 }
             }
-        }
-        else
-        {
+        } else {
             decodedTexture = (AttractMovieTextureSet*)PopDecodedTextureSet(0);
         }
     }
 
-    if ((decodedTexture != NULL) && (decodedTexture != (AttractMovieTextureSet*)-1))
-    {
+    if ((decodedTexture != NULL) && (decodedTexture != (AttractMovieTextureSet*)-1)) {
         gAttractMoviePlayer.curAudioTrack = decodedTexture->frameNumber;
-        if ((void*)gAttractMoviePlayer.curAudioNumber != NULL)
-        {
-            OSSendMessage(&gAttractMovieSpentTextureSetQueue, (OSMessage)gAttractMoviePlayer.curAudioNumber, OS_MESSAGE_NOBLOCK);
+        if ((void*)gAttractMoviePlayer.curAudioNumber != NULL) {
+            OSSendMessage(&gAttractMovieSpentTextureSetQueue, (OSMessage)gAttractMoviePlayer.curAudioNumber,
+                          OS_MESSAGE_NOBLOCK);
         }
         gAttractMoviePlayer.curAudioNumber = (s32)decodedTexture;
     }
 
-    if ((gAttractMoviePlayer.playFlags & THP_PLAY_LOOP) == 0)
-    {
-        if (gAttractMoviePlayer.audioExists != 0)
-        {
-            modResult = (gAttractMoviePlayer.curVideoNumber + gAttractMoviePlayer.initReadFrame) % gAttractMoviePlayer.header.mNumFrames;
-            if ((modResult == (gAttractMoviePlayer.header.mNumFrames - 1)) && (gAttractMoviePlayer.dispTextureSet == NULL))
-            {
-                modResult = (gAttractMoviePlayer.curAudioTrack + gAttractMoviePlayer.initReadFrame) % gAttractMoviePlayer.header.mNumFrames;
-                if ((modResult == (gAttractMoviePlayer.header.mNumFrames - 1)) && (decodedTexture == NULL))
-                {
+    if ((gAttractMoviePlayer.playFlags & THP_PLAY_LOOP) == 0) {
+        if (gAttractMoviePlayer.audioExists != 0) {
+            modResult = (gAttractMoviePlayer.curVideoNumber + gAttractMoviePlayer.initReadFrame) %
+                        gAttractMoviePlayer.header.mNumFrames;
+            if ((modResult == (gAttractMoviePlayer.header.mNumFrames - 1)) &&
+                (gAttractMoviePlayer.dispTextureSet == NULL)) {
+                modResult = (gAttractMoviePlayer.curAudioTrack + gAttractMoviePlayer.initReadFrame) %
+                            gAttractMoviePlayer.header.mNumFrames;
+                if ((modResult == (gAttractMoviePlayer.header.mNumFrames - 1)) && (decodedTexture == NULL)) {
                     gAttractMoviePlayer.internalState = 3;
                     gAttractMoviePlayer.state = 3;
                 }
             }
-        }
-        else
-        {
+        } else {
             u32 numFrames;
             modResult = (gAttractMoviePlayer.curAudioTrack + gAttractMoviePlayer.initReadFrame) %
                         (numFrames = gAttractMoviePlayer.header.mNumFrames);
-            if ((modResult == (numFrames - 1)) && (decodedTexture == NULL))
-            {
+            if ((modResult == (numFrames - 1)) && (decodedTexture == NULL)) {
                 gAttractMoviePlayer.internalState = 3;
                 gAttractMoviePlayer.state = 3;
             }
         }
-    }
-    else
-    {
+    } else {
         u32 numFrames;
-        modResult =
-            (gAttractMoviePlayer.curAudioTrack + gAttractMoviePlayer.initReadFrame) % (numFrames = gAttractMoviePlayer.header.mNumFrames);
-        if (modResult == (numFrames - 1))
-        {
+        modResult = (gAttractMoviePlayer.curAudioTrack + gAttractMoviePlayer.initReadFrame) %
+                    (numFrames = gAttractMoviePlayer.header.mNumFrames);
+        if (modResult == (numFrames - 1)) {
             gAttractMovieLoopCompleted = 1;
         }
     }
 }
 
-void THPPlayerStop(void)
-{
+void THPPlayerStop(void) {
     OSMessage msg;
 
-    if ((gAttractMoviePlayer.isOpen != 0) && (gAttractMoviePlayer.state != 0))
-    {
+    if ((gAttractMoviePlayer.isOpen != 0) && (gAttractMoviePlayer.state != 0)) {
         gAttractMoviePlayer.internalState = 0;
         gAttractMoviePlayer.state = 0;
         VISetPostRetraceCallback(OldVIPostCallback);
 
-        if (gAttractMoviePlayer.isOnMemory == 0)
-        {
+        if (gAttractMoviePlayer.isOnMemory == 0) {
             DVDCancel((DVDCommandBlock*)&gAttractMoviePlayer.fileInfo);
             ReadThreadCancel();
         }
 
         VideoDecodeThreadCancel();
-        if (gAttractMoviePlayer.audioExists != 0)
-        {
+        if (gAttractMoviePlayer.audioExists != 0) {
             AudioDecodeThreadCancel();
         }
 
-        while (((OSReceiveMessage(&gAttractMovieSpentTextureSetQueue, &msg, OS_MESSAGE_NOBLOCK) == TRUE) ? msg : NULL) != NULL)
-        {
+        while (
+            ((OSReceiveMessage(&gAttractMovieSpentTextureSetQueue, &msg, OS_MESSAGE_NOBLOCK) == TRUE) ? msg : NULL) !=
+            NULL) {
         }
 
         gAttractMoviePlayer.curVolume = gAttractMoviePlayer.targetVolume;
@@ -283,10 +239,8 @@ void THPPlayerStop(void)
     }
 }
 
-BOOL THPPlayerPlay(void)
-{
-    if ((gAttractMoviePlayer.isOpen != 0) && ((gAttractMoviePlayer.state == 1) || (gAttractMoviePlayer.state == 4)))
-    {
+BOOL THPPlayerPlay(void) {
+    if ((gAttractMoviePlayer.isOpen != 0) && ((gAttractMoviePlayer.state == 1) || (gAttractMoviePlayer.state == 4))) {
         gAttractMoviePlayer.state = 2;
         gAttractMoviePlayer.prevCount = 0;
         gAttractMoviePlayer.curCount = 0;
@@ -296,8 +250,7 @@ BOOL THPPlayerPlay(void)
     return FALSE;
 }
 
-BOOL prepareAttractMode(u32 movieIndex, s32 playFlags)
-{
+BOOL prepareAttractMode(u32 movieIndex, s32 playFlags) {
     char* base;
     AttractMovieControl* ctrl;
     s32 readyMsg;
@@ -307,35 +260,26 @@ BOOL prepareAttractMode(u32 movieIndex, s32 playFlags)
     ctrl = (AttractMovieControl*)base;
     gAttractMovieLoopCompleted = 0;
 
-    if (ctrl->enabled != 0 && ctrl->isPrepared == 0)
-    {
-        if ((s32)movieIndex > 0)
-        {
+    if (ctrl->enabled != 0 && ctrl->isPrepared == 0) {
+        if ((s32)movieIndex > 0) {
             u32 offsetTable = ctrl->offsetTable;
 
-            if (offsetTable == 0)
-            {
+            if (offsetTable == 0) {
                 return FALSE;
             }
-            if (ctrl->movieCount > movieIndex)
-            {
+            if (ctrl->movieCount > movieIndex) {
                 if (DVDRead((DVDFileInfo*)(base + 0x5a0), base + 0x560, 0x20,
-                            offsetTable + ((movieIndex - 1) * sizeof(u32))) < 0)
-                {
+                            offsetTable + ((movieIndex - 1) * sizeof(u32))) < 0) {
                     return FALSE;
                 }
 
                 ctrl->frameOffset = ctrl->dataOffset + ctrl->readBufBegin;
                 ctrl->movieIndex = movieIndex;
                 ctrl->frameSize = ctrl->readBufEnd - ctrl->readBufBegin;
-            }
-            else
-            {
+            } else {
                 return FALSE;
             }
-        }
-        else
-        {
+        } else {
             ctrl->frameOffset = ctrl->dataOffset;
             ctrl->frameSize = ctrl->firstMovieSize;
             ctrl->movieIndex = movieIndex;
@@ -344,24 +288,18 @@ BOOL prepareAttractMode(u32 movieIndex, s32 playFlags)
         ctrl->playFlags = playFlags;
         ctrl->field670 = 0;
 
-        if (ctrl->preloaded != 0)
-        {
-            if (DVDRead((DVDFileInfo*)(base + 0x5a0), ctrl->loopFrame, ctrl->initReadSize, ctrl->dataOffset) < 0)
-            {
+        if (ctrl->preloaded != 0) {
+            if (DVDRead((DVDFileInfo*)(base + 0x5a0), ctrl->loopFrame, ctrl->initReadSize, ctrl->dataOffset) < 0) {
                 return FALSE;
             }
             startOffset = ((s32)ctrl->loopFrame + ctrl->frameOffset) - ctrl->dataOffset;
             CreateVideoDecodeThread(0xf, startOffset);
-            if (ctrl->audioExists != 0)
-            {
+            if (ctrl->audioExists != 0) {
                 CreateAudioDecodeThread(0xc, (void*)startOffset);
             }
-        }
-        else
-        {
+        } else {
             CreateVideoDecodeThread(0xf, 0);
-            if (ctrl->audioExists != 0)
-            {
+            if (ctrl->audioExists != 0) {
                 CreateAudioDecodeThread(0xc, NULL);
             }
             CreateReadThread(8);
@@ -369,18 +307,15 @@ BOOL prepareAttractMode(u32 movieIndex, s32 playFlags)
 
         InitAllMessageQueue();
         VideoDecodeThreadStart();
-        if (ctrl->audioExists != 0)
-        {
+        if (ctrl->audioExists != 0) {
             AudioDecodeThreadStart();
         }
-        if (ctrl->preloaded == 0)
-        {
+        if (ctrl->preloaded == 0) {
             ReadThreadStart();
         }
 
         OSReceiveMessage((OSMessageQueue*)(base + 0x52c), (OSMessage*)&readyMsg, OS_MESSAGE_BLOCK);
-        if (readyMsg == 0)
-        {
+        if (readyMsg == 0) {
             return FALSE;
         }
         ctrl->isPrepared = 1;
@@ -395,38 +330,31 @@ BOOL prepareAttractMode(u32 movieIndex, s32 playFlags)
     return FALSE;
 }
 
-void PrepareReady(void* msg)
-{
+void PrepareReady(void* msg) {
     OSSendMessage(&gAttractMoviePrepareReadyQueue, msg, OS_MESSAGE_BLOCK);
 }
 
-void InitAllMessageQueue(void)
-{
+static void InitAllMessageQueue(void) {
     AttractMoviePlayer* buf;
     s32 i;
 
     buf = &gAttractMoviePlayer;
-    if (buf->isOnMemory == 0)
-    {
-        for (i = 0; i < 10; i++)
-        {
+    if (buf->isOnMemory == 0) {
+        for (i = 0; i < 10; i++) {
             PushFreeReadBuffer((OSMessage)&buf->readBuffer[i]);
         }
     }
 
     i = 0;
     buf = &gAttractMoviePlayer;
-    do
-    {
+    do {
         PushFreeTextureSet((OSMessage)&buf->textureSet[i]);
         i++;
     } while (i < 3);
 
-    if (gAttractMoviePlayer.audioExists != 0)
-    {
+    if (gAttractMoviePlayer.audioExists != 0) {
         i = 0;
-        do
-        {
+        do {
             PushFreeAudioBuffer((OSMessage)&buf->audioBuffer[i]);
             i++;
         } while (i < 3);
