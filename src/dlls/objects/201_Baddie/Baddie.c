@@ -1124,7 +1124,7 @@ void Tricky_findNearbyFloorHeights(GameObject* obj, int state, f32* nearestFloor
     defaultY = -1.0f;
     *nearestFloorY = defaultY;
     *nearestSpecialY = defaultY;
-    hitCount = (u16)hitDetectFn_80065e50(obj, (obj)->anim.localPosX, (obj)->anim.localPosY,
+    hitCount = (u16)trackGetHeight(obj, (obj)->anim.localPosX, (obj)->anim.localPosY,
                                          (obj)->anim.localPosZ, hitList, 0, 0);
     *nearestFloorY = (obj)->anim.localPosY;
     *nearestSpecialY = (obj)->anim.localPosY;

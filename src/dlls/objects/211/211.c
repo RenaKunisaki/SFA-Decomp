@@ -510,7 +510,7 @@ void landedarwing_updateAirborneMotion(GameObject* obj, LandedArwingState* state
     hitScratch.hitRadius = 0.0f;
     hitScratch.hitType = 3;
     hitDetect_calcSweptSphereBounds(&bounds, start, end, &radius, 1);
-    hitDetectFn_800691c0(obj, &bounds, 0, 1);
+    trackIntersectBroadphase(obj, &bounds, 0, 1);
     hitFound = trackGetIntersect(obj, start, end, 1, hitScratch.hit, 0x20);
     if (hitFound != 0)
     {
@@ -873,7 +873,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
     end[2] = start[2] + obj->anim.velocityZ;
     radius = 100.0f;
     hitDetect_calcSweptSphereBounds(&bounds, start, end, &radius, 1);
-    hitDetectFn_800691c0(obj, &bounds, 0, 1);
+    trackIntersectBroadphase(obj, &bounds, 0, 1);
     one = 1.0f;
     while ((traveled < distanceRemaining) && (++stepCount < 10))
     {

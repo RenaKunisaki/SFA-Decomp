@@ -76,7 +76,7 @@ void mmshWaterSpike_update(GameObject* obj) {
         riseDelta = XyzAnimator_getCoordinate(xyzAnimator, XYZ_ANIMATOR_COORD_WORLD_Y) - obj->anim.localPosY;
     } else {
         logPrintf(sMMSHWaterSpikeInvalidXyzAnimatorIdWarning, placement->base.ident);
-        hitCount = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &hitList,
+        hitCount = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &hitList,
                                         MMSH_WATER_SPIKE_GROUND_QUERY_MODE, MMSH_WATER_SPIKE_GROUND_QUERY_SUBMODE);
         if (hitCount != 0) {
             riseDelta = MMSH_WATER_SPIKE_MIN_SURFACE_DELTA;

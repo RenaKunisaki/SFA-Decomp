@@ -727,7 +727,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
         probeEnd[2] =
             PUSHABLE_FORWARD_PROBE_DISTANCE * mathCosf(PUSHABLE_PI * state->yaw / PUSHABLE_HALF_TURN) + probeStart[2];
         hitDetect_calcSweptSphereBounds(&sweep, probeStart, probeEnd, collisionProbe->radii, 1);
-        hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
+        trackIntersectBroadphase(NULL, &sweep, 0x208, 1);
         blocked = trackGetIntersect(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
         if (blocked == 0) {
             blocked = trackGetLineIntersect(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
@@ -748,7 +748,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
             PUSHABLE_SIDE_PROBE_DISTANCE * mathCosf(PUSHABLE_PI * (f32)(state->yaw + 0x4000) / PUSHABLE_HALF_TURN) +
             probeStart[2];
         hitDetect_calcSweptSphereBounds(&sweep, probeStart, probeEnd, collisionProbe->radii, 1);
-        hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
+        trackIntersectBroadphase(NULL, &sweep, 0x208, 1);
         blocked = trackGetIntersect(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
         if (blocked == 0) {
             blocked = trackGetLineIntersect(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
@@ -769,7 +769,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
             PUSHABLE_SIDE_PROBE_DISTANCE * mathCosf(PUSHABLE_PI * (f32)(state->yaw - 0x4000) / PUSHABLE_HALF_TURN) +
             probeStart[2];
         hitDetect_calcSweptSphereBounds(&sweep, probeStart, probeEnd, collisionProbe->radii, 1);
-        hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
+        trackIntersectBroadphase(NULL, &sweep, 0x208, 1);
         blocked = trackGetIntersect(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
         if (blocked == 0) {
             blocked = trackGetLineIntersect(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
@@ -1088,7 +1088,7 @@ void pushable_hitDetect(GameObject* obj) {
                                         PUSHABLE_MAX_POINTS);
         sweep.minY -= PUSHABLE_SWEEP_Y_PADDING;
         sweep.maxY += PUSHABLE_SWEEP_Y_PADDING;
-        hitDetectFn_800691c0(obj, &sweep, 1, 1);
+        trackIntersectBroadphase(obj, &sweep, 1, 1);
         groundHeightSum = PUSHABLE_ZERO;
         groundPointCount = 0;
         waterHitCount = 0;
@@ -1100,7 +1100,7 @@ void pushable_hitDetect(GameObject* obj) {
 
             *groundHeight = y;
             waterDepthSum = PUSHABLE_ZERO;
-            hitCount = hitDetectFn_80065e50(obj, point->x, y, point->z, &groundHits, -1, 0);
+            hitCount = trackGetHeight(obj, point->x, y, point->z, &groundHits, -1, 0);
             foundGround = 0;
             if (hitCount != 0) {
                 for (j = 0; j < hitCount; j++) {

@@ -68,7 +68,7 @@ int camcontrol_traceMove(f32* fromPos, f32* toPos, f32* outPos, u8* traceWork, c
     if (runTrace != 0) {
         hitDetect_calcSweptSphereBounds(&sweptBounds, fromPos, outPos,
                                         (f32*)(traceWork + offsetof(CamcontrolTraceWork, radius)), 1);
-        hitDetectFn_800691c0(NULL, &sweptBounds, 0x240, 1);
+        trackIntersectBroadphase(NULL, &sweptBounds, 0x240, 1);
     }
     trackGetIntersect(NULL, fromPos, outPos, 1, traceWork, 0);
     clear = 0;
@@ -439,7 +439,7 @@ void CameraModeNormal_updateWallAvoidance(CameraObject* camera, GameObject* targ
         radii[j] = 3.9f;
     }
     hitDetect_calcSweptSphereBounds(&bounds, (float*)path, (float*)endPts, radii, 0xd);
-    hitDetectFn_800691c0(NULL, &bounds, 0x248, 1);
+    trackIntersectBroadphase(NULL, &bounds, 0x248, 1);
     trace = camcontrol_traceMove(prev, &camera->anim.worldPosX, NULL, box, 7, '\0', '\0', 3.9f);
     blocked = 0;
     if (trace == 0) {
@@ -560,14 +560,14 @@ void CameraModeNormal_updateVerticalBounds(CameraObject* camera, int flags, int 
         pos[2] = camera->anim.worldPosZ;
         hitDetect_calcSweptSphereBounds(&bounds, &camera->probePosX, pos,
                                         (f32*)(cameraAddr + (int)offsetof(CameraObject, anim.hitVolumeTransforms)), 1);
-        hitDetectFn_800691c0(camObj, &bounds, 0x240, 1);
+        trackIntersectBroadphase(camObj, &bounds, 0x240, 1);
         trackGetIntersect(camObj, &camera->probePosX, pos, 1, &camera->anim.hostedMapSlot, 0);
         camera->anim.worldPosX = pos[0];
         camera->anim.worldPosY = pos[1];
         camera->anim.worldPosZ = pos[2];
     }
     if ((flags & 2) != 0) {
-        count = hitDetectFn_80065e50(camObj, camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
+        count = trackGetHeight(camObj, camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                      &hits, 1, 0x40);
         *upperBound = -100000.0f;
         *lowerBound = 100000.0f;

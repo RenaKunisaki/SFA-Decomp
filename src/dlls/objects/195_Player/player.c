@@ -11428,7 +11428,7 @@ int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag)
         PSVECAdd((Vec*)((int)dst + 0x48), (Vec*)pos, (Vec*)pos);
         y = *(f32*)((char*)src + 0x3c);
         pos[1] = y;
-        count = hitDetectFn_80065e50(obj, pos[0], y, pos[2], &hits, 0, HITQUERY_CLIMB_SURFACE);
+        count = trackGetHeight(obj, pos[0], y, pos[2], &hits, 0, HITQUERY_CLIMB_SURFACE);
 
         minDist = 10000.0f;
         best = -1;
@@ -11702,7 +11702,7 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
         Obj_TransformLocalPointToWorld(probe.x, probe.y, probe.z, &probe.x, &probe.y, &probe.z,
                                        obj->anim.parent);
         {
-            int cnt = hitDetectFn_80065e50(obj, probe.x, probe.y, probe.z, &list, 0, 0x201);
+            int cnt = trackGetHeight(obj, probe.x, probe.y, probe.z, &list, 0, 0x201);
             if (cnt != 0)
             {
                 TrackGroundHit** pp;
@@ -16162,7 +16162,7 @@ void fn_802B1E5C(GameObject* obj, int state, int cfg, f32 dt)
                     lbl_803DE440 = (f32)(int)randomGetRange(0x27, 0x3c);
                 }
             }
-            iv = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY,
+            iv = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY,
                                       obj->anim.localPosZ, &nearList, 0, 0x20);
             velMag = -((PlayerState*)state)->sinkOffsetY;
             if (1 < iv &&

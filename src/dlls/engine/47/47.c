@@ -188,7 +188,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
                 obj->anim.localPosY =
                     obj->anim.velocityY * timeDelta + obj->anim.localPosY;
             }
-            cnt = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY,
+            cnt = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY,
                                        obj->anim.localPosZ, &list, 0, 1);
             hit = 0;
             i = 0;

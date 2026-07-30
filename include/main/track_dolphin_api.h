@@ -56,12 +56,12 @@ int trackIntersectRebuildPending(void);
 int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset,
                                          f32* outNormal, int queryMask);
 int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset, int queryMask);
-int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask);
+int trackGetHeight(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask);
 int trackGetIntersect(GameObject* contactSource, f32* startPoints, f32* endPoints, int pointCount, void* results,
                         int flags);
 void hitDetect_calcSweptSphereBounds(TrackQueryBounds* boundsOut, f32* startPoints, f32* endPoints, f32* radii,
                                      int pointCount);
-void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* bounds, u32 mask, int flags);
+void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* bounds, u32 mask, int flags);
 void trackSetLinesEnabledByParam(int matchValue, GameObject* obj, int flag);
 void doNothing_80062A50(GameObject* obj, f32 x, f32 y, f32 z);
 void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode);

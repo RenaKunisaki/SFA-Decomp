@@ -265,7 +265,7 @@ int dbegg_probeSurface(GameObject* obj, f32* out, f32 offsetX, f32 offsetZ, int 
     TrackGroundHit* hit;
 
     *out = 0.0f;
-    hitCount = hitDetectFn_80065e50(obj, (obj)->anim.localPosX + offsetX, (obj)->anim.localPosY,
+    hitCount = trackGetHeight(obj, (obj)->anim.localPosX + offsetX, (obj)->anim.localPosY,
                                     (obj)->anim.localPosZ + offsetZ, &hitList, 0, 0);
     if (hitCount != 0)
     {

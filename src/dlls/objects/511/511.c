@@ -100,7 +100,7 @@ void dll_1FF_update(GameObject* obj) {
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
             obj->anim.velocityY = -(DLL1FF_GRAVITY * timeDelta - obj->anim.velocityY);
             obj->anim.localPosY = obj->anim.velocityY * timeDelta + obj->anim.localPosY;
-            surfaceCount = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
+            surfaceCount = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                                 hitLists, 0, 1);
             landedObject = NULL;
             for (surfaceIndex = 0; surfaceIndex < surfaceCount; surfaceIndex++) {

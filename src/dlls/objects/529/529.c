@@ -28,7 +28,7 @@ u8 sWallCrawlerCollisionBone[3] = {0x41, 0x20, 0};
 /* state->flags, from the per-variant table gWallCrawlerVariantFlags */
 #define WMWALLCRAWLER_FLAG_START_ACTIVE   0x1   /* spawn already diving (rotZ 0) */
 #define WMWALLCRAWLER_FLAG_PATH_CONTROL   0x2   /* drive movement through gPathControlInterface */
-#define WMWALLCRAWLER_FLAG_FLOOR_SNAP     0x4   /* snap Y to the nearest floor (hitDetectFn_80065e50) */
+#define WMWALLCRAWLER_FLAG_FLOOR_SNAP     0x4   /* snap Y to the nearest floor (trackGetHeight) */
 #define WMWALLCRAWLER_FLAG_TIMED_EXPLODE  0x8   /* burst into particles when explodeTimer expires */
 #define WMWALLCRAWLER_FLAG_TARGET_NEAREST 0x10  /* chase the nearest group-10 object, not the player */
 #define WMWALLCRAWLER_FLAG_CLAMP_SPEED    0x20  /* cap velocity at gWallCrawlerSpeedCap */
@@ -378,7 +378,7 @@ void wmwallcrawler_update(GameObject* obj)
                         if ((state->flags & WMWALLCRAWLER_FLAG_FLOOR_SNAP) != 0)
                         {
                             best = 10000.0f;
-                            hitCount = hitDetectFn_80065e50((GameObject*)ob, ((GameObject*)ob)->anim.localPosX,
+                            hitCount = trackGetHeight((GameObject*)ob, ((GameObject*)ob)->anim.localPosX,
                                                             ((GameObject*)ob)->anim.localPosY,
                                                             ((GameObject*)ob)->anim.localPosZ, &list, 0, 0);
                             idx = 0;
@@ -477,7 +477,7 @@ void wmwallcrawler_update(GameObject* obj)
                                 if ((state->flags & WMWALLCRAWLER_FLAG_FLOOR_SNAP) != 0)
                                 {
                                     best = 10000.0f;
-                                    hitCount = hitDetectFn_80065e50((GameObject*)ob, ((GameObject*)ob)->anim.localPosX,
+                                    hitCount = trackGetHeight((GameObject*)ob, ((GameObject*)ob)->anim.localPosX,
                                                                     ((GameObject*)ob)->anim.localPosY,
                                                                     ((GameObject*)ob)->anim.localPosZ, &list, 0, 0);
                                     idx = 0;

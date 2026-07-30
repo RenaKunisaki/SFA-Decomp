@@ -435,7 +435,7 @@ void EdibleMushroom_hitDetect(GameObject* obj) {
          ((((ObjHitsPriorityState*)obj->anim.hitReactState)->flags & OBJHITS_PRIORITY_STATE_PAIR_RESPONSE_APPLIED) !=
           0))) {
         hitCount =
-            hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &hits, 0, 0);
+            trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &hits, 0, 0);
         for (i = 0; i < hitCount; i++) {
             if (hits[i]->height < 10.0f + obj->anim.localPosY) {
                 obj->anim.localPosY = hits[i]->height;

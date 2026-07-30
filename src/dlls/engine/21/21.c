@@ -156,7 +156,7 @@ void curves_countRandomPoints(GameObject* obj, CurvesCollisionState* collision)
         for (i = 0; i < (int)(u32)collision->pointCounts >> CURVES_POINT_COUNT_SEGMENT_SHIFT; i++)
         {
             heights[i] = collision->points[i][1];
-            hits = hitDetectFn_80065e50(obj, collision->points[i][0], object->anim.worldPosY,
+            hits = trackGetHeight(obj, collision->points[i][0], object->anim.worldPosY,
                                         collision->points[i][2], &hitOut, -1, 0);
             found1 = 0;
             if (hits != 0)
@@ -968,7 +968,7 @@ RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, in
     {
         sCurvesCachedHitObj = obj;
         sCurvesCachedHitCount =
-            hitDetectFn_80065e50(obj, x, obj->anim.worldPosY, z, &hitPoints, queryAll != 0 ? 1 : -2, 0);
+            trackGetHeight(obj, x, obj->anim.worldPosY, z, &hitPoints, queryAll != 0 ? 1 : -2, 0);
         if (ROMCURVE_GETCURVES_MAX_POINTS < sCurvesCachedHitCount)
         {
             sCurvesCachedHitCount = ROMCURVE_GETCURVES_MAX_POINTS;
@@ -1410,7 +1410,7 @@ void curves_gatherTrackTriangles(GameObject* obj, CurvesCollisionState* state)
             mask |= 0x1;
         if ((s32)(flags & 0x01000000) != 0)
             mask |= 0x20;
-        hitDetectFn_800691c0(obj, &state->hitBounds, mask, 1);
+        trackIntersectBroadphase(obj, &state->hitBounds, mask, 1);
     }
 }
 

@@ -127,7 +127,7 @@ int Scarab_resolveCollision(GameObject* obj) {
     }
 
     hitDetect_calcSweptSphereBounds(&sweptBounds, startPoints, endPoints, results.radii, 1);
-    hitDetectFn_800691c0(obj, &sweptBounds, hitState->trackContactMask, 1);
+    trackIntersectBroadphase(obj, &sweptBounds, hitState->trackContactMask, 1);
     hitMask = trackGetIntersect(obj, startPoints, endPoints, 1, &results, 0);
     if (hitMask != 0) {
         if ((hitMask & 1) != 0) {
@@ -409,7 +409,7 @@ void Scarab_update(GameObject* obj) {
                     sphere->flags = 0;
                     hitDetect_calcSweptSphereBounds(&sweepBounds, &startPosition.x, &endPosition.x, sphere->radii, 1);
                 }
-                hitDetectFn_800691c0(obj, &sweepBounds, 0, 1);
+                trackIntersectBroadphase(obj, &sweepBounds, 0, 1);
                 hitCount = trackGetIntersect(obj, (f32*)&startPosition, (f32*)&endPosition, 1,
                                                 collisionScratch.hitResults, 0);
                 obj->anim.localPosX = endPosition.x;
@@ -466,7 +466,7 @@ void Scarab_update(GameObject* obj) {
             if (state->stunTimer == 0) {
                 bestGroundHit[0] = 0;
                 bestDistance = 10000.0f;
-                hitCount = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
+                hitCount = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                                 &groundHits, 1, 0);
                 for (hitIndex = 0; hitIndex < hitCount; hitIndex++) {
                     deltaY = groundHits[hitIndex]->height - obj->anim.localPosY;
@@ -549,7 +549,7 @@ void Scarab_update(GameObject* obj) {
                     hitDetect_calcSweptSphereBounds(&sweepBounds, &obj->anim.previousLocalPosX, &obj->anim.localPosX,
                                                     sphere->radii, 1);
                 }
-                hitDetectFn_800691c0(obj, &sweepBounds, 0, 1);
+                trackIntersectBroadphase(obj, &sweepBounds, 0, 1);
                 hitMask = trackGetIntersect(obj, &obj->anim.previousLocalPosX, &obj->anim.localPosX, 1,
                                                collisionScratch.hitResults, 0);
                 if (collisionDetected != 0 ||
@@ -564,7 +564,7 @@ void Scarab_update(GameObject* obj) {
                 }
             } else {
                 bestDistance = 10000.0f;
-                hitCount = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
+                hitCount = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                                 &groundHits, 1, 0);
                 for (hitIndex = 0; hitIndex < hitCount; hitIndex++) {
                     deltaY = groundHits[hitIndex]->height - obj->anim.localPosY;

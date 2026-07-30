@@ -80,7 +80,7 @@ void dim2icicle_update(GameObject* obj) {
             int hitIndex;
             TrackGroundHit** groundHits;
 
-            hitCount = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
+            hitCount = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                             &groundHits, 0, 0);
             state->dropTargetY = DIM2ICICLE_DROP_Y_SENTINEL;
             for (hitIndex = 0; hitIndex < hitCount; hitIndex++) {

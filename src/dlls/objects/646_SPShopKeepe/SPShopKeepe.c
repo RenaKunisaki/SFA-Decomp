@@ -430,7 +430,7 @@ int DRlaserturret_updateTracking(GameObject* obj, DRLaserTurretAnimState* animSt
         animState->aimBlend = 0.0f;
     }
     animState->aimBlend = 0.0f;
-    count = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &arr, 0, 0);
+    count = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &arr, 0, 0);
     minDist = 10000.0f;
     for (idx = 0; idx < count; idx++)
     {

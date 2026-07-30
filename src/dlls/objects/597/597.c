@@ -224,7 +224,7 @@ void SnowBike_DrawTrails(int p1, char* table)
  * Provides three routines for the vehicle's trail, sound, and pitch state:
  *   drcloudcage_updateTrails  builds and fades the swirling cloud-trail ribbons. Each of the
  *                three emitters casts a transformed segment, ray-tests it
- *                (hitDetectFn_80065e50, mask 0x20), and when it strikes ground
+ *                (trackGetHeight, mask 0x20), and when it strikes ground
  *                inserts a new fully-opaque point pair at the head of one of the
  *                nine trail buffers; every existing pair's alpha decays by
  *                timeDelta and exhausted trails are freed.
@@ -438,7 +438,7 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
         endpoint = &startX;
         for (; endpointIndex < 2; endpoint += 3, endpointIndex++)
         {
-            hitCount = hitDetectFn_80065e50(obj, endpoint[0], endpoint[1], endpoint[2], &hits, 0, 0x20);
+            hitCount = trackGetHeight(obj, endpoint[0], endpoint[1], endpoint[2], &hits, 0, 0x20);
             for (hitIndex = 0; hitIndex < hitCount; hitIndex++)
             {
                 deltaY = hits[hitIndex]->height - endpoint[1];

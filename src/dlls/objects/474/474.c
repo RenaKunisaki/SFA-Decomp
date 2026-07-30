@@ -111,7 +111,7 @@ void dll_1DA_update(GameObject* obj) {
 
     obj->anim.localPosY = -(0.2f * timeDelta - obj->anim.localPosY);
     hitCount =
-        hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &groundHits, 0, 0x11);
+        trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &groundHits, 0, 0x11);
     state->grounded = 0;
     groundHitIndex = 0;
     for (; hitCount > 0; hitCount--) {

@@ -67,7 +67,7 @@ int mmpMoonRock_probeFloor(GameObject* obj, f32 x, f32 y, f32 z, f32 maxY, f32* 
     int i;
     int count;
 
-    count = hitDetectFn_80065e50(obj, x, y, z, &results, 0, 1);
+    count = trackGetHeight(obj, x, y, z, &results, 0, 1);
     *floorYOut = y;
     *floorObjectOut = 0;
     for (i = 0; i < count; i++) {

@@ -751,7 +751,7 @@ int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount)
         base[2] = obj->anim.worldPosZ;
         vecGetRanges((f32*)buf48, base, modelState->shadowScale, (int*)&ranges);
 
-        hitDetectFn_800691c0(obj, &ranges, 0x81, 0);
+        trackIntersectBroadphase(obj, &ranges, 0x81, 0);
         trackGetGridOrigin((int**)&vtx);
         trackGetTriangleBuffer(&idxOut, &alphaOut);
 

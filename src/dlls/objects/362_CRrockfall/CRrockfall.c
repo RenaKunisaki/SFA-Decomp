@@ -31,7 +31,7 @@ f32 crrockfall_findFloorY(GameObject* obj) {
     int bestIdx;
     f32 bestDist;
 
-    count = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &list, 0, 0);
+    count = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &list, 0, 0);
     bestDist = 100000.0f;
     bestIdx = -1;
     for (i = 0, p = list; i < count; i++) {

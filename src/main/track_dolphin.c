@@ -233,7 +233,7 @@ int findSurfaceInYRange(GameObject* obj, f32 x, f32 lo, f32 z, f32 hi, f32* outS
         hi = lo;
         lo = t;
     }
-    n = hitDetectFn_80065e50(obj, x, lo, z, &arr, 0, HITQUERY_TEST_OBJECT_HITBOXES);
+    n = trackGetHeight(obj, x, lo, z, &arr, 0, HITQUERY_TEST_OBJECT_HITBOXES);
     *outSurfaceY = lo;
     *outSurfaceObj = NULL;
     for (i = 0; i < n; i++)
@@ -1631,7 +1631,7 @@ int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDept
     f32 best;
     f32 cur;
 
-    n = hitDetectFn_80065e50(obj, x, y, z, &arr, 0, queryMask);
+    n = trackGetHeight(obj, x, y, z, &arr, 0, queryMask);
     if (n != 0)
     {
         TrackGroundHit** arrp;
@@ -1671,7 +1671,7 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
     f32 firstDistance;
     f32 bestDistance;
 
-    hitCount = hitDetectFn_80065e50(obj, x, y, z, &hits, 0, queryMask);
+    hitCount = trackGetHeight(obj, x, y, z, &hits, 0, queryMask);
     if (hitCount != 0)
     {
         firstDistance = hits[0]->height;
@@ -1716,7 +1716,7 @@ int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGr
     f32 best;
     f32 cur;
 
-    n = hitDetectFn_80065e50(obj, x, y, z, &arr, 0, queryMask);
+    n = trackGetHeight(obj, x, y, z, &arr, 0, queryMask);
     if (n != 0)
     {
         cur = arr[0]->height;
@@ -1855,7 +1855,7 @@ void trackCollectGroundHits(TrackTriangle* triStart, TrackTriangle* triEnd, Trac
     }
 }
 
-int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask)
+int trackGetHeight(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask)
 {
     u8* base = (u8*)gIntersectSegmentTypeTable;
     TrackBlockDescriptor* desc = (TrackBlockDescriptor*)(base + 0x424);
@@ -1875,7 +1875,7 @@ int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit***
         conv[4] = (int)(10000.0f + y);
         conv[2] = z;
         conv[5] = z;
-        hitDetectFn_800691c0(obj, (TrackQueryBounds*)conv, queryMask, 1);
+        trackIntersectBroadphase(obj, (TrackQueryBounds*)conv, queryMask, 1);
     }
     else
     {
@@ -3407,7 +3407,7 @@ u8 doEdges;
     return cur;
 }
 
-void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 queryMask, int b)
+void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 queryMask, int b)
 {
     f32 f31 = (f32)(ranges->minX - 5);
     f32 f30 = (f32)(ranges->maxX + 5);
