@@ -794,36 +794,36 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
     {
     case 0:
         obj->anim.rotX = 0;
-        headingAngle = atan2_8002178c(obj->anim.velocityZ, obj->anim.velocityY);
+        headingAngle = atan2Angle16(obj->anim.velocityZ, obj->anim.velocityY);
         obj->anim.rotY = (short)(headingAngle + 0x4000);
         obj->anim.rotZ = -0x4000;
         break;
     case 1:
         obj->anim.rotX = 0;
-        headingAngle = atan2_8002178c(obj->anim.velocityZ, obj->anim.velocityY);
+        headingAngle = atan2Angle16(obj->anim.velocityZ, obj->anim.velocityY);
         obj->anim.rotY = (short)(headingAngle + 0x4000);
         obj->anim.rotZ = 0x4000;
         break;
     case 2:
         obj->anim.rotX = 0x4000;
-        headingAngle = atan2_8002178c(obj->anim.velocityX, obj->anim.velocityY);
+        headingAngle = atan2Angle16(obj->anim.velocityX, obj->anim.velocityY);
         obj->anim.rotY = (short)(headingAngle + 0x4000);
         obj->anim.rotZ = -0x4000;
         break;
     case 3:
         obj->anim.rotX = 0x4000;
-        headingAngle = atan2_8002178c(obj->anim.velocityX, obj->anim.velocityY);
+        headingAngle = atan2Angle16(obj->anim.velocityX, obj->anim.velocityY);
         obj->anim.rotY = (short)(headingAngle + 0x4000);
         obj->anim.rotZ = 0x4000;
         break;
     case 5:
-        headingAngle = atan2_8002178c(obj->anim.velocityX, obj->anim.velocityZ);
+        headingAngle = atan2Angle16(obj->anim.velocityX, obj->anim.velocityZ);
         obj->anim.rotX = (short)(headingAngle + 0x8000);
         obj->anim.rotY = 0;
         obj->anim.rotZ = 0;
         break;
     case 4:
-        headingAngle = atan2_8002178c(obj->anim.velocityX, obj->anim.velocityZ);
+        headingAngle = atan2Angle16(obj->anim.velocityX, obj->anim.velocityZ);
         obj->anim.rotX = (short)(headingAngle + 0x8000);
         obj->anim.rotY = 0;
         obj->anim.rotZ = -0x8000;

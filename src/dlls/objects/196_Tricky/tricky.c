@@ -4389,7 +4389,7 @@ void trickyUpdateCirclingTargetPosition(void* objPtr, void* state)
     GameObject* target = ((TrickyState*)state)->followObj;
     f32 dx = target->anim.worldPosX - obj->anim.worldPosX;
     f32 dz = target->anim.worldPosZ - obj->anim.worldPosZ;
-    int angle = atan2_8002178c(dx, dz);
+    int angle = atan2Angle16(dx, dz);
     s32 delta;
     s32 absDelta;
 

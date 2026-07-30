@@ -135,7 +135,7 @@ int cos16(s16 angle)
     return (int)(65536.0f * fcos16((u16)angle));
 }
 
-int atan2_8002178c(float y, float x)
+int atan2Angle16(float y, float x)
 {
     return (int)(10430.37835 * atan2f(y, x));
 }
