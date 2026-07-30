@@ -652,9 +652,9 @@ void renderSceneGeometry(u8 renderType, s8* order)
     layer = 4;
     layerTablePtr = &gMapBlockLayerTables[4];
     layerFlagPtr = &gMapBlockCellStateTables[4];
+    worldSize = gMapBlockWorldSize;
     do
     {
-        worldSize = gMapBlockWorldSize;
         table = *layerTablePtr;
         gMapLayerCellStates = (s8*)*layerFlagPtr;
         mapGetBlockGridRects(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
@@ -668,10 +668,11 @@ void renderSceneGeometry(u8 renderType, s8* order)
             cellMaskPtr[3] = 0;
             cellMaskPtr += 4;
         }
-        fillBoxRows(cellMask, box0);
-        fillBoxRows(cellMask, box1);
-        fillBoxRows(cellMask, box2);
-        fillBoxRows(cellMask, box3);
+        cellMaskPtr = cellMask;
+        fillBoxRows(cellMaskPtr, box0);
+        fillBoxRows(cellMaskPtr, box1);
+        fillBoxRows(cellMaskPtr, box2);
+        fillBoxRows(cellMaskPtr, box3);
         for (oi = 0; oi < 16; oi++)
         {
             row = order[oi];
