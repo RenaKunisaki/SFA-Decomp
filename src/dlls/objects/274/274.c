@@ -56,7 +56,7 @@ void objCallOnLoadCallback(GameObject* obj) {
     }
 }
 
-int SeqObject_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate) {
+static int SeqObject_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate) {
     SeqObjectPlacement* placement;
     SeqObjectState* state;
     int eventIndex;
