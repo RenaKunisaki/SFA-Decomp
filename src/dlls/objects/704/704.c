@@ -55,6 +55,7 @@
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "main/gametext_color_api.h"
+#include "track/intersect_hud_api.h"
 
 s8 gTitleScreenPrevMenuSelection = -1;
 s8 gTitleScreenPrevMenuActive = -1;
