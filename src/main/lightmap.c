@@ -556,10 +556,7 @@ void renderObjects(s8* opacity)
     int* objects;
     LightmapDrawQueue* qbase;
     LightmapQEnt* q;
-    LightmapQEnt* qe;
     LightmapDrawQueue* dq;
-    int qi;
-    u32 shadowKind;
 
     qbase = (LightmapDrawQueue*)gLightmapDrawQueue;
     q = (LightmapQEnt*)gLightmapDrawQueue;
@@ -589,6 +586,10 @@ void renderObjects(s8* opacity)
             p = (int*)((GameObject*)obj)->anim.modelState;
             if (p != NULL && ((GameObject*)obj)->anim.modelState->shadowCastSlot != NULL)
             {
+                LightmapQEnt* qe;
+                int qi;
+                u32 shadowKind;
+
                 renderShadowType3(obj, 0x13, 0);
                 shadowKind = 2;
                 qi = gLightmapDrawQueueCount;
@@ -600,6 +601,10 @@ void renderObjects(s8* opacity)
                 & OBJANIM_FLAG_HIDDEN) == 0 && (((GameObject*)obj)->anim.modelState->flags &
                 OBJ_MODEL_STATE_SHADOW_VISIBLE))
             {
+                LightmapQEnt* qe;
+                int qi;
+                u32 shadowKind;
+
                 renderShadowType3(obj, 0x13, 0);
                 shadowKind = 3;
                 qi = gLightmapDrawQueueCount;
