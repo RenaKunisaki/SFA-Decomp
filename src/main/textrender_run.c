@@ -522,7 +522,7 @@ static inline u32 lookupSjisGlyph(int c)
 
 void gameTextInit(void)
 {
-    gameTextInitFn_8001c794();
+    gameTextInitBoxTextures();
     lbl_803DC980 = 1;
     gameTextLoadDir(0x1c);
 }

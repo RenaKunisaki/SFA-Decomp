@@ -47,7 +47,7 @@ int getCurLanguage(void);
 void gameTextInit(void);
 void gameTextInitRendererState(void);
 void subtitleInit(void);
-void gameTextInitFn_8001c794(void);
+void gameTextInitBoxTextures(void);
 void gameTextBuildSystemFontAtlas(void);
 void subtitleFreeBoxTextures(int mode);
 void subtitleLoadBoxTextures(int mode);
