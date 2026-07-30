@@ -25,10 +25,6 @@
 #include "dolphin/gx/GXTransform.h"
 #include "main/asset_load.h"
 
-
-void sceneDraw(void);
-void sceneDrawTransparentPolys(void);
-
 #include "main/lightmap_internal.h"
 
 
@@ -49,7 +45,6 @@ extern s16 gArrivedWarpIndex;
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
-void renderShadowType3(u8* obj, u32 b, s32 offset);
 static inline void GXPosition3s16(const s16 x, const s16 y, const s16 z)
 {
     GXWGFifo.s16 = x;
@@ -81,11 +76,6 @@ extern u32 gLightmapDrawQueue[];
 #define MAP_BLOCK_LAYER_COUNT 5
 
 
-void sortVisibleObjectKeysDescending(u32* arr, int n);
-
-void sortVisibleObjectKeysDescending(u32* arr, int n);
-void getVisibleObjects(s8* opacity);
-
 static inline void fillBoxRows(u8* map, int* box)
 {
     int y, x0;
@@ -103,12 +93,6 @@ static inline void fillBoxRows(u8* map, int* box)
         }
     }
 }
-
-void renderSceneGeometry(u8 renderType, s8* order);
-
-
-void sceneDraw(void);
-
 
 void initMapBlocks(void)
 {
@@ -210,35 +194,4 @@ void initMapBlocks(void)
     memset(mb + 0x8818, 0, 0xfa0);
     *(u32*)(mb + 0x8818) = -1;
 }
-
-
-void lightmapDrawQueuedObject(GameObject* obj);
-void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void lightmap_sortTransparentDrawQueue(void);
-
-void getVisibleObjects(s8 * opacity);
-
-
-void renderSceneGeometry(u8 renderType, s8* order);
-
-void renderShadowType3(u8* obj, u32 b, s32 offset);
-
-void lightmap_sortTransparentDrawQueue(void);
-
-
-
-
-void sortVisibleObjectKeysDescending(u32* arr, int n);
-
-
-void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
-
-
-void lightmapDrawQueuedObject(GameObject* obj);
-
-void sceneDrawTransparentPolys(void);
 
