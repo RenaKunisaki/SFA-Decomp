@@ -873,12 +873,11 @@ static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
     return;
 }
 
-Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRenderInstrsState* state)
-{
+Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRenderInstrsState* state) {
     Shader* shader;
     u32 shaderIdx;
     int fogColor;
-    int byteBase;
+    u8* byteBase;
     u32 flags;
     int* lightList;
     u8 ambColor[3];
@@ -890,111 +889,82 @@ Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRende
     bitPos = state->bit;
     {
         int off = (int)bitPos >> 3;
-        byteBase = (int)state->instrs;
-        bits = *(u8*)(byteBase + off);
+        byteBase = state->instrs;
+        bits = byteBase[off];
         byteBase += off;
-        bits |= (u32) * (u8*)(byteBase + 1) << 8;
-        bits |= (u32) * (u8*)(byteBase + 2) << 16;
+        bits |= (u32)byteBase[1] << 8;
+        bits |= (u32)byteBase[2] << 16;
         state->bit = bitPos + 6;
         shaderIdx = (bits >> (bitPos & 7)) & 0x3f;
         shader = &blockData->shaders[shaderIdx];
     }
 
-    if (doSetup == 0)
-    {
+    if (doSetup == 0) {
         return shader;
     }
 
-    if ((SHADER_FLAGS(shader) & 4) != 0)
-    {
+    if ((SHADER_FLAGS(shader) & 4) != 0) {
         _gxSetFogParams();
-    }
-    else
-    {
+    } else {
         GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&fogColor);
     }
-    if ((shader != 0) && ((SHADER_FLAGS(shader) & 0x80000000) != 0))
-    {
+    if ((shader != 0) && ((SHADER_FLAGS(shader) & 0x80000000) != 0)) {
         return shader;
     }
-    if ((shader != 0) && ((SHADER_FLAGS(shader) & 0x20000) != 0))
-    {
+    if ((shader != 0) && ((SHADER_FLAGS(shader) & 0x20000) != 0)) {
         u32 res;
         res = AttractMovie_DrawTextureCallback(0, 0, 0);
-        if ((res & 0xff) != 0)
-        {
+        if ((res & 0xff) != 0) {
             return shader;
         }
     }
     Rcp_ResetTextureStageState();
-    if ((SHADER_FLAGS(shader) & 0x80) != 0)
-    {
+    if ((SHADER_FLAGS(shader) & 0x80) != 0) {
         setupHeatShimmerTevStages((char*)shader);
-    }
-    else
-    {
+    } else {
         mapBlockRender_setupShaderTextures(shader, 0x80);
     }
     flags = SHADER_FLAGS(shader);
-    if ((flags & 0x20) != 0 && (lightList = lbl_803DCE34) != 0)
-    {
+    if ((flags & 0x20) != 0 && (lightList = lbl_803DCE34) != 0) {
         addSignedOverlayTexStage((u8*)lightList, &gCloudLayerTexMatrix, gCloudLayerOverlayColor);
-    }
-    else if ((flags & 0x40) != 0)
-    {
+    } else if ((flags & 0x40) != 0) {
         addWarpedRingTevStages();
-    }
-    else if (isHeavyFogEnabled())
-    {
+    } else if (isHeavyFogEnabled()) {
         getColor803dd01c(fogRgba);
         renderHeavyFog(fogRgba);
     }
-    if (((SHADER_FLAGS(shader) & 0x40000000) != 0) || ((SHADER_FLAGS(shader) & 0x20000000) != 0))
-    {
+    if (((SHADER_FLAGS(shader) & 0x40000000) != 0) || ((SHADER_FLAGS(shader) & 0x20000000) != 0)) {
         GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
         gxSetZMode_(1, GX_LEQUAL, 0);
         gxSetPeControl_ZCompLoc_(1);
         GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
-    }
-    else if ((SHADER_FLAGS(shader) & 0x400) != 0 && (SHADER_FLAGS(shader) & 0x80) == 0)
-    {
+    } else if ((SHADER_FLAGS(shader) & 0x400) != 0 && (SHADER_FLAGS(shader) & 0x80) == 0) {
         GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
         gxSetZMode_(1, GX_LEQUAL, 1);
         gxSetPeControl_ZCompLoc_(0);
         GXSetAlphaCompare(GX_GREATER, 0, GX_AOP_AND, GX_GREATER, 0);
-    }
-    else
-    {
+    } else {
         GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
         gxSetZMode_(1, GX_LEQUAL, 1);
         gxSetPeControl_ZCompLoc_(1);
         GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
     }
     if ((SHADER_FLAGS(shader) & 1) != 0 || (SHADER_FLAGS(shader) & 0x40000) != 0 ||
-        (SHADER_FLAGS(shader) & 0x800) != 0 || (SHADER_FLAGS(shader) & 0x1000) != 0)
-    {
+        (SHADER_FLAGS(shader) & 0x800) != 0 || (SHADER_FLAGS(shader) & 0x1000) != 0) {
         GXSetChanAmbColor(GX_COLOR0, *(GXColor*)&gTexShaderAmbColor);
-        if ((SHADER_FLAGS(shader) & 0x40000) != 0)
-        {
+        if ((SHADER_FLAGS(shader) & 0x40000) != 0) {
             GXSetChanCtrl(GX_COLOR0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
-        }
-        else
-        {
+        } else {
             GXSetChanCtrl(GX_COLOR0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
         }
-    }
-    else
-    {
+    } else {
         objGetColor(0, &ambColor[0], &ambColor[1], &ambColor[2]);
         GXSetChanCtrl(GX_COLOR0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
         GXSetChanAmbColor(GX_COLOR0, *(GXColor*)&ambColor[0]);
     }
-    if ((SHADER_FLAGS(shader) & 0x8) != 0)
-    {
+    if ((SHADER_FLAGS(shader) & 0x8) != 0) {
         GXSetCullMode(GX_CULL_BACK);
-    }
-    else
-    {
+    } else {
         GXSetCullMode(GX_CULL_NONE);
     }
     return shader;
