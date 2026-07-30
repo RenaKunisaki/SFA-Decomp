@@ -3388,10 +3388,10 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
                 aTextPtr = textObj->strings[*aPhraseIndex];
                 aPrevCharset2 = gameTextGetCharset();
                 gameTextSetCharset(3, 3);
-                gameTextMeasureFn_800163c4(aTextPtr, 8, 0, 0, &am0, &am1, &am2, &am3);
+                gameTextMeasureStringBoundsAt(aTextPtr, 8, 0, 0, &am0, &am1, &am2, &am3);
                 gameTextShowStr(aTextPtr, 8, 0, 0);
                 gameTextSetCharset(aPrevCharset2, 3);
-                gameTextMeasureFn_800163c4(textObj->strings[*aPhraseIndex], 8, 0, 0, &ax0, &ax1, &ay0, &ay1);
+                gameTextMeasureStringBoundsAt(textObj->strings[*aPhraseIndex], 8, 0, 0, &ax0, &ax1, &ay0, &ay1);
                 wid = (ax1 - ax0) + -0x19;
                 if (wid < 1)
                 {
@@ -3450,10 +3450,10 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
                 bTextPtr = textObj->strings[*bPhraseIndex];
                 bPrevCharset2 = gameTextGetCharset();
                 gameTextSetCharset(3, 3);
-                gameTextMeasureFn_800163c4(bTextPtr, 9, 0, 0, &bm0, &bm1, &bm2, &bm3);
+                gameTextMeasureStringBoundsAt(bTextPtr, 9, 0, 0, &bm0, &bm1, &bm2, &bm3);
                 gameTextShowStr(bTextPtr, 9, 0, 0);
                 gameTextSetCharset(bPrevCharset2, 3);
-                gameTextMeasureFn_800163c4(textObj->strings[*bPhraseIndex], 9, 0, 0, &bx0, &bx1, &by0, &by1);
+                gameTextMeasureStringBoundsAt(textObj->strings[*bPhraseIndex], 9, 0, 0, &bx0, &bx1, &by0, &by1);
                 wid = (bx1 - bx0) + -7;
                 if (wid < 1)
                 {
@@ -4783,8 +4783,8 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                     while (stringIndex < lbl_803DD7A4->count)
                     {
                         gameTextShowStr(*(void**)((u8*)lbl_803DD7A4->strings + stringOffset), 0x79, 0xf0, textY);
-                        gameTextMeasureFn_800163c4(*(void**)((u8*)lbl_803DD7A4->strings + stringOffset), 0x79, 0, 0,
-                                                   &measureLeft, &measureRight, &measureTop, &measureBottom);
+                        gameTextMeasureStringBoundsAt(*(void**)((u8*)lbl_803DD7A4->strings + stringOffset), 0x79, 0,
+                                                      0, &measureLeft, &measureRight, &measureTop, &measureBottom);
                         lineHeight = gGameTextFontMetrics[sLanguageNameTable[getCurLanguage()].sizeIdx].lineHeight;
                         textHeight = measureBottom - measureTop;
                         textY += (textHeight > lineHeight)
@@ -4959,7 +4959,8 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                 sprintf(tokenCountText, lbl_803DBB58, thresholds[lbl_803DD756 * 8]);
             }
             gameTextShowStr(tokenCountText, 0x79, 0, textX + 0x78);
-            gameTextMeasureFn_800163c4(tokenCountText, 0x79, 0, 0, &tokenLeft, &tokenRight, &tokenTop, &tokenBottom);
+            gameTextMeasureStringBoundsAt(tokenCountText, 0x79, 0, 0, &tokenLeft, &tokenRight, &tokenTop,
+                                          &tokenBottom);
             {
                 s32 textWidth = tokenBottom - tokenTop;
                 textX = textWidth + textX;
@@ -7564,7 +7565,7 @@ void pauseMenuDrawText(int unused1, int unused2, int unused3)
         cur = 0x10e;
 
     gameTextSetCursor(sprite->maxWidth, sprite->height, 1);
-    gameTextMeasureFn_800163c4(handle, 0x49, 0, 0, &v[3], &v[2], &v[1], &v[0]);
+    gameTextMeasureStringBoundsAt(handle, 0x49, 0, 0, &v[3], &v[2], &v[1], &v[0]);
     gameTextResetCursor(1);
 
     {
