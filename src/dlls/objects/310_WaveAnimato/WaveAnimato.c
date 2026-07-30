@@ -50,7 +50,7 @@ void WaveAnimator_setScale(GameObject* obj, f32 scale) {
     state->scaleB = scale;
 }
 
-void WaveAnimator_buildSharedTables(WaveAnimatorState* config) {
+static void WaveAnimator_buildSharedTables(WaveAnimatorState* config) {
     int rowOffset;
     int heightOffset;
     int i;

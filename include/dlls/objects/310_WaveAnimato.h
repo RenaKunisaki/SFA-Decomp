@@ -87,7 +87,6 @@ STATIC_ASSERT(sizeof(WaveAnimatorState) == 0x3C);
 void WaveAnimator_modelMtxFn(GameObject* obj, int modelMtxArg0, int modelMtxArg1, int modelMtxArg2);
 void WaveAnimator_func0B(GameObject* obj);
 void WaveAnimator_setScale(GameObject* obj, f32 scale);
-void WaveAnimator_buildSharedTables(WaveAnimatorState* config);
 int WaveAnimator_getExtraSize(void);
 int WaveAnimator_getObjectTypeId(void);
 void WaveAnimator_free(GameObject* obj);
