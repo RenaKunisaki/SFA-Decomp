@@ -2092,7 +2092,7 @@ u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     return idx;
 }
-void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
+static void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
 {
     u8 blend;
     u8 zwrite;
