@@ -175,7 +175,7 @@ BOOL Movie_SetVolumeFade(int volume, int fadeFrames)
     return FALSE;
 }
 
-void AttractMovieAudio_Mix(s16* destination, s16* source, u32 sampleCount)
+static void AttractMovieAudio_Mix(s16* destination, s16* source, u32 sampleCount)
 {
     u16 volumeScale;
     u32 validSamples;
