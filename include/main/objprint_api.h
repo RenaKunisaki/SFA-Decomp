@@ -25,6 +25,6 @@ s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* targetPos, u8* 
                        f32 yOffset, int unused, int basePitch);
 void objJointTracksSetAngles(u8* channelData, int count, s16 yaw, s16 pitch);
 void characterDecayJointVecs(GameObject* obj, int* keys, int count);
-void objFn_8003acfc(GameObject* obj, int* keys, int count, u8* channels);
+void objJointTracksCaptureCurrentAngles(GameObject* obj, int* keys, int count, u8* channels);
 
 #endif /* MAIN_OBJPRINT_API_H_ */

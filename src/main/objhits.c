@@ -5089,7 +5089,7 @@ void characterDecayJointVecs(GameObject* obj, int* keys, int count) {
     }
 }
 
-void objFn_8003acfc(GameObject* obj, int* keys, int count, u8* out) {
+void objJointTracksCaptureCurrentAngles(GameObject* obj, int* keys, int count, u8* out) {
     s16* found;
     int idx;
 
