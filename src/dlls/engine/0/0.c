@@ -258,6 +258,14 @@ typedef struct GameUiIndirectMatrix
     f32 values[2][3];
 } GameUiIndirectMatrix;
 
+typedef struct HudButtonIconTextEntry
+{
+    u8 icon;
+    u8 phraseIndex;
+} HudButtonIconTextEntry;
+
+STATIC_ASSERT(sizeof(HudButtonIconTextEntry) == 2);
+
 typedef struct GameUiMatrixWorkspace
 {
     f32 projection[4][4];
@@ -3367,14 +3375,15 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
             {
                 for (bi = 0; bi < 0x1D; bi++)
                 {
-                    if (aButtonIcon == gHudButtonIcons[bi * 2])
+                    if (aButtonIcon == ((HudButtonIconTextEntry*)gHudButtonIcons)[bi].icon)
                     {
                         icon = bi;
                     }
                 }
                 textObj = gameTextGet(0x2AD);
             }
-            if (icon != 0 && textObj != NULL && textObj->count > *(aPhraseIndex = gHudButtonIcons + icon * 2 + 1))
+            if (icon != 0 && textObj != NULL &&
+                textObj->count > *(aPhraseIndex = &((HudButtonIconTextEntry*)gHudButtonIcons)[icon].phraseIndex))
             {
                 aTextPtr = textObj->strings[*aPhraseIndex];
                 aPrevCharset2 = gameTextGetCharset();
@@ -3427,7 +3436,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
             icon = 0;
             for (bi = icon; bi < 0x1D; bi++)
             {
-                if (bButtonIcon == gHudButtonIcons[bi * 2])
+                if (bButtonIcon == ((HudButtonIconTextEntry*)gHudButtonIcons)[bi].icon)
                 {
                     icon = bi;
                 }
@@ -3435,7 +3444,8 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
             prevCharset = gameTextGetCharset();
             gameTextSetCharset(3, 3);
             textObj = gameTextGet(0x2AD);
-            if (icon != 0 && textObj != NULL && textObj->count > *(bPhraseIndex = gHudButtonIcons + icon * 2 + 1))
+            if (icon != 0 && textObj != NULL &&
+                textObj->count > *(bPhraseIndex = &((HudButtonIconTextEntry*)gHudButtonIcons)[icon].phraseIndex))
             {
                 bTextPtr = textObj->strings[*bPhraseIndex];
                 bPrevCharset2 = gameTextGetCharset();
