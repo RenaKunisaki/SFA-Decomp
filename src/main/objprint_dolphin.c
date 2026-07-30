@@ -1364,9 +1364,9 @@ extern u8 gObjGxKColorCache[4];
 extern u8 gObjShadowColor[4];
 
 
-void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
-void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
-void objRenderChild(int* child, int* parent, u8 isShadow);
+static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
+static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
+static void objRenderChild(int* child, int* parent, u8 isShadow);
 
 extern volatile int gAssetLoadInFlightFlags;
 extern f32 lbl_803DEA4C;
@@ -1607,7 +1607,7 @@ static inline void texSlotGetScroll(u8* obj, u32 jid, f32* txp, f32* typ)
     }
     *typ = *txp = 0.0f;
 }
-u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
+static u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
 {
     u16 alpha;
     u8* colp;
@@ -1786,7 +1786,7 @@ u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
     }
     return ok;
 }
-u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
+static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
 {
     int* op;
     u32* refs;
@@ -2386,7 +2386,7 @@ extern f32 gObjBoneMtxBuffer[0xC00];
 
 
 
-void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
+static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
 {
     int done;
     f32 cm[16];
@@ -2635,7 +2635,7 @@ void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
 }
 extern u8 gObjGxTexMtxIdTable[12];
 
-void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
+static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
 {
     int joff;
     f32 fm[16];
@@ -3323,7 +3323,7 @@ void objRenderShadow(void* obj)
     }
 }
 
-void objRenderChild(int* child, int* parent, u8 isShadow)
+static void objRenderChild(int* child, int* parent, u8 isShadow)
 {
     f32 res[3];
     MatrixTransform blk;
@@ -3896,7 +3896,6 @@ void animCurvReadCb(s32 result, DVDFileInfo* fileInfo)
     }
 }
 
-u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs);
 
 
 void animCurvTabReadCb(s32 result, DVDFileInfo* fileInfo)
