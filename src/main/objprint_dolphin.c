@@ -945,7 +945,7 @@ void objRenderAttachment(u8* obj, int* p2)
     }
 }
 
-void objSetupLightChannels(u8* model, u8* obj)
+static void objSetupLightChannels(u8* model, u8* obj)
 {
     int t2;
     int t10;
@@ -1124,7 +1124,7 @@ extern s32 gModelMtxCacheState;
 extern u8 gObjGxPosMtxIdTable[12];
 
 
-void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
+static void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
 {
     char* cache = (char*)getCache();
     if (gModelMtxCacheState == 1)
@@ -1192,7 +1192,7 @@ void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
     }
 }
 
-void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8 nrm, u8 tex, u8 skip)
+static void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8 nrm, u8 tex, u8 skip)
 {
     u8* posMtxIds[1];
     char* cache;
@@ -1389,10 +1389,7 @@ extern f32 lbl_803DEA6C;
 extern u8 gObjGxPosMtxIdTable[12];
 
 
-void objSetupLightChannels(u8* model, u8* obj);
-void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx);
-void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8 nrm, u8 tex, u8 skip);
-void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
+static void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
 {
     u32 flags = 0;
     if (hdr[0xf3] > 1)
@@ -1440,9 +1437,9 @@ void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
     }
 }
 
-void modelRenderFn_setVtxDescr(u8* modelHeader, u8* shader, u32* textureRefs,
-                               MtxBitStream* bitStream, u8 passMask,
-                               u8* usesNormalMatrix, u8* usesTextureMatrix)
+static void modelRenderFn_setVtxDescr(u8* modelHeader, u8* shader, u32* textureRefs,
+                                      MtxBitStream* bitStream, u8 passMask,
+                                      u8* usesNormalMatrix, u8* usesTextureMatrix)
 {
     int nextMatrixAttr;
     int previousMatrixAttr;
