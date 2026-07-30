@@ -259,7 +259,7 @@ void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* 
 void playerUpdateCameraTargetLookAngles(GameObject* obj, int state, PlayerState* inner);
 void playerUpdateLookAtTarget(int p1, int p2, int p3);
 void playerSetMovingAnims(int p1, int obj);
-int fn_802ADC08(GameObject* obj, int inner, int p3);
+int playerUpdateFallingMotion(GameObject* obj, int inner, int p3);
 void playerUpdateWaterMotion(GameObject* obj, int inner, int state);
 int playerUpdateQuickTurn(GameObject* obj, int inner, int state);
 void playerUpdateStaffAttack(GameObject* obj, int state, int p3);
@@ -9973,7 +9973,7 @@ int playerStateMoving(int obj, int state, f32 fv)
         }
         else if ((fl >> 3 & 1) != 0)
         {
-            fn_802ADC08((GameObject*)obj, inner, state);
+            playerUpdateFallingMotion((GameObject*)obj, inner, state);
         }
         else if ((fl >> 2 & 1) != 0)
         {
@@ -13946,7 +13946,7 @@ int fn_802AD2F4(GameObject* obj, int inner, int state)
     return 0;
 }
 
-int fn_802ADC08(GameObject* obj, int inner, int p3)
+int playerUpdateFallingMotion(GameObject* obj, int inner, int p3)
 {
     obj->anim.velocityY = obj->anim.velocityY - lbl_803DC67C * timeDelta;
     if (((PlayerState*)inner)->fallFrames > 5 && ((ByteFlags*)((char*)inner + 0x3f1))->b01)
