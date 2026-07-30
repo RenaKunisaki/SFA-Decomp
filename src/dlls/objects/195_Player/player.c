@@ -15984,7 +15984,7 @@ void playerClampVelocityAndMove(GameObject* obj, f32 fv)
     objMove((GameObject*)obj, x, y, z);
 }
 
-void fn_802B1BF8(GameObject* a, int b, int state, f32 unusedTimeDelta)
+void playerUpdateVelocityFromMotion(GameObject* a, int b, int state, f32 unusedTimeDelta)
 {
     MatrixTransform v;
     f32 mtx[16];
@@ -18227,7 +18227,7 @@ void playerUpdate(GameObject* obj)
             playerAnimate(obj, inner, dt);
             staffAnimate((int)obj, (void*)inner, dt);
             fn_802B1E5C(obj, inner, inner, dt);
-            fn_802B1BF8(obj, inner, inner, dt);
+            playerUpdateVelocityFromMotion(obj, inner, inner, dt);
             {
                 f32 t = obj->anim.velocityX;
                 obj->anim.velocityX =
