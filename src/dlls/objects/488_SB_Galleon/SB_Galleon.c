@@ -920,7 +920,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
         int blue = gSbGalleonSkyColorBStart[2];
         gSbGalleonSkyColorB[2] = blue + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorBEnd[2] - blue);
     }
-    skySetLightColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorB[0], gSbGalleonSkyColorB[1], gSbGalleonSkyColorB[2]);
+    skySetAmbientColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorB[0], gSbGalleonSkyColorB[1], gSbGalleonSkyColorB[2]);
     {
         int red = gSbGalleonSkyColorCStart[0];
         gSbGalleonSkyColorC[0] = red + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorCEnd[0] - red);
@@ -933,7 +933,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
         int blue = gSbGalleonSkyColorCStart[2];
         gSbGalleonSkyColorC[2] = blue + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorCEnd[2] - blue);
     }
-    skySetAmbientColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorC[0], gSbGalleonSkyColorC[1],
+    skySetMoonColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorC[0], gSbGalleonSkyColorC[1],
                        gSbGalleonSkyColorC[2]);
     gSbGalleonSkyLightIntensity = gSbGalleonSkyBlendFactor * 128.0f + 32.0f;
     skySetOverrideLightDirectionEnabled(1);

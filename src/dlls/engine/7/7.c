@@ -847,7 +847,7 @@ int snowPrintSnowCloud(int arg, int cloudId)
     }
     else if (((NewCloud*)p)->cloudType == 0)
     {
-        getAmbientColor(0, &attr.cr, &attr.cg, &attr.cb);
+        skyGetSunColor(0, &attr.cr, &attr.cg, &attr.cb);
         setTextColor((void*)arg, attr.cr, attr.cg, attr.cb, 0xff);
     }
     gxSetAlphaBlendZTest();

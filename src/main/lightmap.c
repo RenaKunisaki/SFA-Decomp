@@ -804,7 +804,7 @@ void sceneDraw(void)
     lightningRenderActive();
     (*gSky2Interface)->applyFogColor(0);
     gLightmapDeferredObjectCount = 0;
-    getAmbientColor(0, (u8*)&c, (u8*)&c + 1, (u8*)&c + 2);
+    skyGetSunColor(0, (u8*)&c, (u8*)&c + 1, (u8*)&c + 2);
     GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
     GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
     GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);

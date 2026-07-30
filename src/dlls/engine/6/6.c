@@ -536,7 +536,7 @@ void sky2_run(void)
     height = r;
     *(u16*)&idx = lbl_803E8460;
     idx.pad = lbl_803E8462;
-    getAmbientColor(0, &red, &green, &blue);
+    skyGetSunColor(0, &red, &green, &blue);
     if (lbl_803DB758 != 0)
     {
         z = 0.0f;

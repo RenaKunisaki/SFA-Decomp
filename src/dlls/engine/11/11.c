@@ -768,9 +768,9 @@ int dll_0B_renderEffects(void* drawContext, int unused1, int unused2, u8 sourceO
     nextTextureFrame = 0;
     textureFrame = 0;
     if (sourceObject != NULL) {
-        getAmbientColor(((GameObject*)sourceObject)->lightColorSlot, &ar, &ag, &ab);
+        skyGetSunColor(((GameObject*)sourceObject)->lightColorSlot, &ar, &ag, &ab);
     } else {
-        getAmbientColor(0, &ar, &ag, &ab);
+        skyGetSunColor(0, &ar, &ag, &ab);
     }
     GXSetCullMode(GX_CULL_NONE);
     if (renderModeSetOrGet(-1) == 1) {

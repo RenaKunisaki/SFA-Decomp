@@ -105,7 +105,7 @@ void skyBuildSunModelMatrix(f32 mtx[3][4]);
 u8 skyGetSunRenderAlpha(int slot);
 void getTimeOfDay(f32* time);
 void renderSky(int a, int b, int c, int d, int visible);
-void getAmbientColor(int slot, u8* red, u8* green, u8* blue);
+void skyGetSunColor(int slot, u8* red, u8* green, u8* blue);
 int getSunPos(f32* outTime);
 void skyGetTimer(int* outTimer);
 void skyGetSunLightDirection(int slot, f32* x, f32* y, f32* z);
@@ -143,8 +143,8 @@ void sky2ResetStateFromConfig(u8* cfg, u8 flags);
 void sky2StepSlotAnim(int slot);
 void skyResetState(void);
 void skyUpdateLightingFromTimeOfDay(void);
-void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,
-                 int lightIntensity, u8 blendAlpha);
+void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int moonIntensity,
+                 int ambientIntensity, u8 blendAlpha);
 void renderSunAndMoon(int a, int b, int c, int d, int visible);
 void skyRenderTimeOfDayBackdrop(void);
 void skyUpdateEnvfxAct(int a, int b, u8* cfg);

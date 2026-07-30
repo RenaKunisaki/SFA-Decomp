@@ -2280,7 +2280,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
         }
         else
         {
-            objGetColor(((GameObject*)obj)->lightColorSlot, &color[0], &color[1], &color[2]);
+            objGetSunColor(((GameObject*)obj)->lightColorSlot, &color[0], &color[1], &color[2]);
         }
     }
     else
@@ -2714,7 +2714,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     }
     else
     {
-        objGetColor(((GameObject*)obj)->lightColorSlot, &gObjCurChanColor.r, &gObjCurChanColor.g,
+        objGetSunColor(((GameObject*)obj)->lightColorSlot, &gObjCurChanColor.r, &gObjCurChanColor.g,
                     &gObjCurChanColor.b);
     }
     passMaskCopy = passMask;

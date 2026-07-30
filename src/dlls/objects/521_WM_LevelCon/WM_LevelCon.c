@@ -154,11 +154,11 @@ void WM_LevelControl_updateSkyLighting(GameObject* obj) {
                     gWmLevelControlBlendedLightColor[2], 0x40, 0x40);
 
     WmLevelControl_blendColor(gWmLevelControlBlendedSkyColor, gWmLevelControlSkyColorFrom, gWmLevelControlSkyColorTo);
-    skySetLightColor(1, gWmLevelControlBlendedSkyColor[0], gWmLevelControlBlendedSkyColor[1],
+    skySetAmbientColor(1, gWmLevelControlBlendedSkyColor[0], gWmLevelControlBlendedSkyColor[1],
                      gWmLevelControlBlendedSkyColor[2]);
 
     WmLevelControl_blendColor(gWmLevelControlBlendedFogColor, gWmLevelControlFogColorFrom, gWmLevelControlFogColorTo);
-    skySetAmbientColor(1, gWmLevelControlBlendedFogColor[0], gWmLevelControlBlendedFogColor[1],
+    skySetMoonColor(1, gWmLevelControlBlendedFogColor[0], gWmLevelControlBlendedFogColor[1],
                        gWmLevelControlBlendedFogColor[2]);
 
     gWmLevelControlBlendedLightIntensity =

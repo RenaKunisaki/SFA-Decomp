@@ -555,7 +555,7 @@ static inline void lightmapSetObjAmbColor(void)
 {
     GXColor color;
 
-    objGetColor(0, (u8*)&color, (u8*)&color + 1, (u8*)&color + 2);
+    objGetSunColor(0, (u8*)&color, (u8*)&color + 1, (u8*)&color + 2);
     GXSetChanAmbColor(GX_COLOR0, color);
     GXSetNumChans(1);
 }

@@ -94,7 +94,7 @@ void PointLight_update(GameObject* obj)
         }
         if ((setup->flags & POINTLIGHT_FLAG_USE_AMBIENT_COLOR) != 0)
         {
-            getAmbientColor(0, &colorR, &colorG, &colorB);
+            skyGetSunColor(0, &colorR, &colorG, &colorB);
             modelLightStruct_setDiffuseColor(state->light, colorR, colorG, colorB, 0xff);
             modelLightStruct_setDiffuseTargetColor(state->light, colorR, colorG, colorB, 0xff);
         }
@@ -140,7 +140,7 @@ void PointLight_init(GameObject* obj, PointLightSetup* setup)
 
         if ((setupData->flags & POINTLIGHT_FLAG_USE_AMBIENT_COLOR) != 0)
         {
-            getAmbientColor(0, &colorR, &colorG, &colorB);
+            skyGetSunColor(0, &colorR, &colorG, &colorB);
             modelLightStruct_setDiffuseColor(state->light, colorR, colorG, colorB, 0xff);
             modelLightStruct_setDiffuseTargetColor(state->light, colorR, colorG, colorB, 0xff);
         }

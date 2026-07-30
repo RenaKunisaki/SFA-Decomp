@@ -2166,7 +2166,7 @@ void addTexLayerStagesLit(void* p1, void* mtx)
     u8 buf[3];
     int out_c;
     int out_8;
-    objGetColor(0, &buf[0], &buf[1], &buf[2]);
+    objGetSunColor(0, &buf[0], &buf[1], &buf[2]);
     if (mtx != 0)
     {
         GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx, 0);

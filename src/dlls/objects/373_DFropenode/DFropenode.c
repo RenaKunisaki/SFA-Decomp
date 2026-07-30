@@ -726,7 +726,7 @@ void DFropenode_render(GameObject* obj, int p2, int p3) {
             renderState.blue = 0xff;
         } else {
             objAnim->alpha = 0xff;
-            getAmbientColor(0, &renderState.blue, &renderState.green, &renderState.red);
+            skyGetSunColor(0, &renderState.blue, &renderState.green, &renderState.red);
             renderState.green = (u8)(renderState.green * 200 >> 8);
             renderState.red = (u8)(renderState.red * 0xaa >> 8);
         }

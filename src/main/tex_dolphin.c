@@ -303,7 +303,7 @@ Shader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, ModelRe
     }
     else
     {
-        objGetColor(0, &ambColor[0], &ambColor[1], &ambColor[2]);
+        objGetSunColor(0, &ambColor[0], &ambColor[1], &ambColor[2]);
         GXSetChanCtrl(GX_COLOR0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
         GXSetChanAmbColor(GX_COLOR0, *(GXColor*)&ambColor[0]);
     }
@@ -958,7 +958,7 @@ Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRende
             GXSetChanCtrl(GX_COLOR0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
         }
     } else {
-        objGetColor(0, &ambColor[0], &ambColor[1], &ambColor[2]);
+        objGetSunColor(0, &ambColor[0], &ambColor[1], &ambColor[2]);
         GXSetChanCtrl(GX_COLOR0, GX_ENABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
         GXSetChanAmbColor(GX_COLOR0, *(GXColor*)&ambColor[0]);
     }
@@ -1297,7 +1297,7 @@ void renderGlows(void)
                 GXLoadPosMtxImm((const f32 (*)[4])sunMtx, GX_PNMTX0);
                 GXSetCurrentMtx(GX_PNMTX0);
                 selectTexture((Texture*)((int)skyGetSkyTexture()), 0);
-                getAmbientColor(0, &amb[0], &amb[1], &amb[2]);
+                skyGetSunColor(0, &amb[0], &amb[1], &amb[2]);
                 sunDot = (f32)(u32)sunAlpha * sunDot;
                 _gxSetTevColor2(amb[0], amb[1], amb[2], (int)(0.5f * sunDot));
                 alpha = 255.0f - 0.9f * sunDot;

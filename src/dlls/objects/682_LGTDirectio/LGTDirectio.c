@@ -230,7 +230,7 @@ void directionallight_update(GameObject* obj)
         }
         if ((setup->flags & DIRECTIONALLIGHT_FLAG_USE_AMBIENT_COLOR) != 0)
         {
-            getAmbientColor(0, &colorR, &colorG, &colorB);
+            skyGetSunColor(0, &colorR, &colorG, &colorB);
             modelLightStruct_setDiffuseColor(state->light, colorR, colorG, colorB, 0xff);
         }
     }
@@ -271,7 +271,7 @@ void directionallight_init(GameObject* obj, DirectionalLightSetup* setup)
 
         if ((setupData->flags & DIRECTIONALLIGHT_FLAG_USE_AMBIENT_COLOR) != 0)
         {
-            getAmbientColor(0, &colorR, &colorG, &colorB);
+            skyGetSunColor(0, &colorR, &colorG, &colorB);
             modelLightStruct_setDiffuseColor(state->light, colorR, colorG, colorB, 0xff);
             modelLightStruct_setDiffuseTargetColor(state->light, colorR, colorG, colorB, 0xff);
         }

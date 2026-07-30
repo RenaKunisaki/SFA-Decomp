@@ -2477,7 +2477,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     {
         ambientScale = 0.75f;
     }
-    getAmbientColor(sky, &ambR8, &ambG8, &ambB8);
+    skyGetSunColor(sky, &ambR8, &ambG8, &ambB8);
     ambientScaled[2] = (f32)ambR8 * ambientScale;
     ambientScaled[1] = (f32)ambG8 * ambientScale;
     ambientScaled[0] = (f32)ambB8 * ambientScale;

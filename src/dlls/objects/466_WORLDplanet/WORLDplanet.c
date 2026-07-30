@@ -131,7 +131,7 @@ void worldplanet_updateMapLighting(GameObject* obj) {
                              gWorldPlanetLightingLerpT)
     WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurLight, gWorldPlanetLightFrom, gWorldPlanetLightTo, blue,
                              gWorldPlanetLightingLerpT)
-    skySetLightColor(WORLDPLANET_SKY_LIGHT_MASK, gWorldPlanetCurLight.red, gWorldPlanetCurLight.green,
+    skySetAmbientColor(WORLDPLANET_SKY_LIGHT_MASK, gWorldPlanetCurLight.red, gWorldPlanetCurLight.green,
                      gWorldPlanetCurLight.blue);
 
     WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurAmbient, gWorldPlanetAmbientFrom, gWorldPlanetAmbientTo, red,
@@ -140,7 +140,7 @@ void worldplanet_updateMapLighting(GameObject* obj) {
                              gWorldPlanetLightingLerpT)
     WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurAmbient, gWorldPlanetAmbientFrom, gWorldPlanetAmbientTo, blue,
                              gWorldPlanetLightingLerpT)
-    skySetAmbientColor(WORLDPLANET_SKY_LIGHT_MASK, gWorldPlanetCurAmbient.red, gWorldPlanetCurAmbient.green,
+    skySetMoonColor(WORLDPLANET_SKY_LIGHT_MASK, gWorldPlanetCurAmbient.red, gWorldPlanetCurAmbient.green,
                        gWorldPlanetCurAmbient.blue);
 
     gWorldPlanetCurIntensity = gWorldPlanetLightingLerpT * 128.0f + 32.0f;

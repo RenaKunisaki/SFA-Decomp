@@ -111,7 +111,7 @@ void gcRobotLightBeam_update(GameObject* obj) {
     voxmaps_traceScaledVectorEnd(lightPosition, &obj->anim.localPosX, worldDirection, gGcRobotLightBeamTraceDistance);
     PSVECScale((Vec*)gGcRobotLightBeamLocalDirection, (Vec*)lightPosition,
                PSVECDistance(&obj->anim.localPos, (Vec*)lightPosition));
-    getAmbientColor(0, &red, &green, &blue);
+    skyGetSunColor(0, &red, &green, &blue);
     if (state->pointLight != NULL) {
         modelLightStruct_setDiffuseColor(state->pointLight, (s32)(GCROBOTLIGHTBEAM_AMBIENT_COLOR_SCALE * (f32)(u32)red),
                                          (s32)(GCROBOTLIGHTBEAM_AMBIENT_COLOR_SCALE * (f32)(u32)green),

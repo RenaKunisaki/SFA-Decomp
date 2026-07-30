@@ -184,7 +184,7 @@ void SnowBike_DrawTrails(int p1, char* table)
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
     GXLoadPosMtxImm((const f32(*)[4])Camera_GetViewMatrix(), GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
-    getAmbientColor(0, &r, &g, &b);
+    skyGetSunColor(0, &r, &g, &b);
     i = 0;
     p = table;
     for (; i < 9; i++)
