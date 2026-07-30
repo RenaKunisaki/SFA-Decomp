@@ -632,7 +632,7 @@ static void doQueuedLoads(void)
     }
 }
 
-void gameUpdate(void)
+static void gameUpdate(void)
 {
     Obj_GetPlayerObject();
     gGameLoopMusicRequestCount = 0;
