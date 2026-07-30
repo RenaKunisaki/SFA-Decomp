@@ -12,7 +12,7 @@ int playerIsInNormalControlUndisguisedOnLand(GameObject* player);
 int playerIsInNormalControl(GameObject* obj);
 void playerSetStateValue(GameObject* player, int selector, f32 value);
 int playerGetStateValue(GameObject* obj, int selector);
-int fn_80295C0C(GameObject* obj);
+int playerCanEnterStaffCombatCamera(GameObject* player);
 int playerIsTargetSuppressed(GameObject* player);
 int playerIsInWater(GameObject* player);
 int playerIsQuakeShockwaveActive(GameObject* player);

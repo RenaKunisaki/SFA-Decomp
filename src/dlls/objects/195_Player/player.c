@@ -1343,9 +1343,9 @@ int isTrickyNear(GameObject* obj)
     return inner->curAnimId != 0x44;
 }
 
-int fn_80295C0C(GameObject* obj)
+int playerCanEnterStaffCombatCamera(GameObject* player)
 {
-    PlayerState* inner = obj->extra;
+    PlayerState* inner = player->extra;
     return ((inner->flags3F0 >> 1) & 1) == 0;
 }
 
