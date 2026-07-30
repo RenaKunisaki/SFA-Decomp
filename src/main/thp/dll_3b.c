@@ -81,8 +81,7 @@ static void AttractMovieAudio_Decode(void* readBufferArg) {
     }
 }
 
-void* AudioDecoderForOnMemory(void* param)
-{
+static void* AudioDecoderForOnMemory(void* param) {
     register AttractMoviePlayer* player;
     int stride;
     u32 framesPerGroup;
@@ -94,26 +93,19 @@ void* AudioDecoderForOnMemory(void* param)
     stride = player->frameStride;
     readBuffer.ptr = param;
     frame = 0;
-    while (true)
-    {
+    while (true) {
         readBuffer.frameNumber = frame;
         AttractMovieAudio_Decode(&readBuffer);
         framesPerGroup = player->header.mNumFrames;
         frameInGroup = (frame + player->initReadFrame) % framesPerGroup;
-        if (frameInGroup == (framesPerGroup - 1))
-        {
-            if ((player->playFlags & 1) != 0)
-            {
+        if (frameInGroup == (framesPerGroup - 1)) {
+            if ((player->playFlags & 1) != 0) {
                 stride = *(int*)readBuffer.ptr;
                 readBuffer.ptr = player->loopFrame;
-            }
-            else
-            {
+            } else {
                 OSSuspendThread(&gAttractMovieAudioDecodeThread.thread);
             }
-        }
-        else
-        {
+        } else {
             int newStride = *(int*)readBuffer.ptr;
             readBuffer.ptr += stride;
             stride = newStride;
@@ -123,13 +115,11 @@ void* AudioDecoderForOnMemory(void* param)
     return NULL;
 }
 
-void* AudioDecoder(void* param)
-{
+static void* AudioDecoder(void* param) {
     void* token;
 
     (void)param;
-    while (true)
-    {
+    while (true) {
         token = PopReadedBuffer();
         AttractMovieAudio_Decode(token);
         PushReadedBuffer2(token);

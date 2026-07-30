@@ -38,8 +38,6 @@ extern AttractMovieDecodeThread gAttractMovieAudioDecodeThread;
 void TitleMenu_initialise(void);
 void *PopDecodedAudioBuffer(int flags);
 void PushFreeAudioBuffer(void *message);
-void *AudioDecoderForOnMemory(void *param);
-void *AudioDecoder(void *param);
 void AudioDecodeThreadCancel(void);
 void AudioDecodeThreadStart(void);
 
