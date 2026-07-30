@@ -42,7 +42,7 @@ void dbstealerworm_update(GameObject* obj);
 void dbstealerworm_init(GameObject* obj, u8* def, int flag);
 void dbstealerworm_release(void);
 void dbstealerworm_initialise(void);
-void DBstealerwo_setFuncPtrs_80203c78(void);
+void DBstealerwo_setFuncPtrs(void);
 
 int dbstealerworm_func0B(GameObject* obj, u8 msg, int* out);
 

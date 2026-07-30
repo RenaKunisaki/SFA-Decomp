@@ -2462,10 +2462,10 @@ void dbstealerworm_release(void)
 
 void dbstealerworm_initialise(void)
 {
-    DBstealerwo_setFuncPtrs_80203c78();
+    DBstealerwo_setFuncPtrs();
 }
 
-void DBstealerwo_setFuncPtrs_80203c78(void)
+void DBstealerwo_setFuncPtrs(void)
 {
     gDBStealerWormStateHandlersA[0] = (int)dbstealerworm_stateHandlerA00;
     gDBStealerWormStateHandlersA[1] = (int)dbstealerworm_stateHandlerA01;
