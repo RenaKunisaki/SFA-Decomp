@@ -1257,7 +1257,6 @@ void renderGlows(void)
     u8 alpha;
     u8 sunAlpha;
     f32 sunDot;
-    f32 cx, cy, cz;
     int i;
     ModelLightStruct* e;
 
@@ -1382,43 +1381,46 @@ void renderGlows(void)
             e = gGlowLightList[i];
             if (e->glowAlpha != 0)
             {
-                f32 f = e->activeIntensity;
+                f32 quadZ;
+                f32 quadY;
+                f32 quadX;
+
                 selectTexture((Texture*)((int)e->glowTexture), 0);
                 _gxSetTevColor2((int)((f32)(u32)e->glowColor[0] * e->activeIntensity),
                                 (int)((f32)(u32)e->glowColor[1] * e->activeIntensity),
                                 (int)((f32)(u32)e->glowColor[2] * e->activeIntensity),
                                 (u8)((int)(e->glowColor[3] * e->glowAlpha) >> 8));
                 GXBegin(GX_QUADS, GX_VTXFMT2, 4);
-                cz = e->viewZ;
-                cy = e->viewY - e->glowScale;
-                cx = e->viewX - e->glowScale;
-                GXWGFifo.f32 = cx;
-                GXWGFifo.f32 = cy;
-                GXWGFifo.f32 = cz;
+                quadZ = e->viewZ;
+                quadY = e->viewY - e->glowScale;
+                quadX = e->viewX - e->glowScale;
+                GXWGFifo.f32 = quadX;
+                GXWGFifo.f32 = quadY;
+                GXWGFifo.f32 = quadZ;
                 GXWGFifo.f32 = lbl_803DEBCC;
                 GXWGFifo.f32 = lbl_803DEBCC;
-                cz = e->viewZ;
-                cy = e->viewY - e->glowScale;
-                cx = e->viewX + e->glowScale;
-                GXWGFifo.f32 = cx;
-                GXWGFifo.f32 = cy;
-                GXWGFifo.f32 = cz;
+                quadZ = e->viewZ;
+                quadY = e->viewY - e->glowScale;
+                quadX = e->viewX + e->glowScale;
+                GXWGFifo.f32 = quadX;
+                GXWGFifo.f32 = quadY;
+                GXWGFifo.f32 = quadZ;
                 GXWGFifo.f32 = lbl_803DEBDC;
                 GXWGFifo.f32 = lbl_803DEBCC;
-                cz = e->viewZ;
-                cy = e->viewY + e->glowScale;
-                cx = e->viewX + e->glowScale;
-                GXWGFifo.f32 = cx;
-                GXWGFifo.f32 = cy;
-                GXWGFifo.f32 = cz;
+                quadZ = e->viewZ;
+                quadY = e->viewY + e->glowScale;
+                quadX = e->viewX + e->glowScale;
+                GXWGFifo.f32 = quadX;
+                GXWGFifo.f32 = quadY;
+                GXWGFifo.f32 = quadZ;
                 GXWGFifo.f32 = lbl_803DEBDC;
                 GXWGFifo.f32 = lbl_803DEBDC;
-                cz = e->viewZ;
-                cy = e->viewY + e->glowScale;
-                cx = e->viewX - e->glowScale;
-                GXWGFifo.f32 = cx;
-                GXWGFifo.f32 = cy;
-                GXWGFifo.f32 = cz;
+                quadZ = e->viewZ;
+                quadY = e->viewY + e->glowScale;
+                quadX = e->viewX - e->glowScale;
+                GXWGFifo.f32 = quadX;
+                GXWGFifo.f32 = quadY;
+                GXWGFifo.f32 = quadZ;
                 GXWGFifo.f32 = lbl_803DEBCC;
                 GXWGFifo.f32 = lbl_803DEBDC;
             }
