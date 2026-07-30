@@ -69,8 +69,7 @@ int WarpstoneUI_getMenuItems(const WarpstoneMenuItem* templates, WarpstoneMenuIt
             items[slot].y = yStart + slot * 0x2a;
             items[slot].previousItem = slot - 1;
             items[slot].nextItem = slot + 1;
-            selectedIndices[0] = entry;
-            selectedIndices++;
+            *selectedIndices++ = entry;
             slot++;
         }
     }
