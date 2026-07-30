@@ -176,7 +176,7 @@ int gMapBlockOriginWorldX;
 /* the ice-mountain snowbike; its map-block residency is tracked separately so the
    ride streams blocks ahead. retail OBJECTS.bin name "IMSnowBike" (DLL 0x255) */
 #define SHADER_SNOWBIKE_OBJ 0x72
-void mapBuildRomListIndex(MapRomListPage* page, MapRomListIndex* romListIndex, int slot, int unloading);
+static void mapBuildRomListIndex(MapRomListPage* page, MapRomListIndex* romListIndex, int slot, int unloading);
 extern f32 gShaderLoadCenterZ;
 extern f32 gShaderLoadCenterY;
 extern f32 gShaderLoadCenterX;
@@ -681,7 +681,7 @@ static inline int objVisibleForAct(ObjPlacement* placement, int t)
     return 1;
 }
 
-int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup)
+static int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup)
 {
     char* strs;
     int verbose;
@@ -2751,7 +2751,7 @@ void mapLoadForObject(int mapId, GameObject* obj)
     gShaderCurMapEventId = saved;
 }
 
-void mapBuildRomListIndex(MapRomListPage* p, MapRomListIndex* tbl, int idx, int flag)
+static void mapBuildRomListIndex(MapRomListPage* p, MapRomListIndex* tbl, int idx, int flag)
 {
     char* cur;
     int count;
