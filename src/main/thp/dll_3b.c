@@ -52,8 +52,7 @@ void PushFreeAudioBuffer(void* message)
     OSSendMessage(&gAttractMovieFreeAudioQueueAndStack.queue, message, OS_MESSAGE_NOBLOCK);
 }
 
-void AttractMovieAudio_Decode(void* readBufferArg)
-{
+static void AttractMovieAudio_Decode(void* readBufferArg) {
     u32* audioFrameSizes;
     AttractMovieReadBuffer* readBuffer;
     AttractMovieAudioBuffer* audioBuf[1];
@@ -68,10 +67,8 @@ void AttractMovieAudio_Decode(void* readBufferArg)
         OSReceiveMessage(&gAttractMovieFreeAudioQueueAndStack.queue, &received, OS_MESSAGE_BLOCK);
         audioBuf[0] = received;
     }
-    for (track = 0; track < gAttractMoviePlayer.compInfo.mNumComponents; track++)
-    {
-        switch (gAttractMoviePlayer.compInfo.mFrameComp[track])
-        {
+    for (track = 0; track < gAttractMoviePlayer.compInfo.mNumComponents; track++) {
+        switch (gAttractMoviePlayer.compInfo.mFrameComp[track]) {
         case THP_FRAME_COMP_AUDIO:
             audioBuf[0]->validSample = THPAudioDecode(audioBuf[0]->buffer, audioFrame, 0);
             audioBuf[0]->curPtr = audioBuf[0]->buffer;
