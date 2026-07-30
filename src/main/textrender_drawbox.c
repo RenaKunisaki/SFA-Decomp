@@ -1,6 +1,8 @@
 #include "track/intersect_hud_api.h"
 #define GAMETEXT_COLOR_U8
 #include "main/gametext_shared_internal.h"
+#include "main/gametext_api.h"
+#include "main/gametext_task_api.h"
 #include "main/texture.h"
 #include "main/textrender_api.h"
 #include "main/textrender_internal.h"
@@ -9,6 +11,7 @@
 #include "main/rcp_dolphin_api.h"
 #include "track/intersect_api.h"
 #include "main/lightmap.h"
+#include "main/gx_scissor_api.h"
 
 const GXColor gGameTextBoxFillColor = {0xFF, 0x40, 0x40, 0xFF};
 
