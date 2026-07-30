@@ -577,7 +577,7 @@ void mapLoadByCoords(f32 x, f32 y, f32 z, int act)
     gGameLoopMusicFadeTimer = -3e+01f;
 }
 
-void doQueuedLoads(void)
+static void doQueuedLoads(void)
 {
     if ((s8)gGameLoopReloadRequested != 0)
     {
