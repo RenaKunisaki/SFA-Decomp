@@ -1732,7 +1732,7 @@ void beginLoadingMap(void)
     f32* p;
     f32 px, py, pz;
     Camera* cam;
-    char* player;
+    GameObject* player;
     u8* env;
     int bo;
     char buf[0x110];
@@ -1820,8 +1820,8 @@ void beginLoadingMap(void)
     (*gSkyInterface)->loadLights();
     (*gNewCloudsInterface)->onMapSetup();
     waterFxInit();
-    player = (char*)Obj_GetPlayerObject();
-    if (gArrivedWarpIndex == -2 && player != 0 && (mapKind == 0 || mapKind == 1))
+    player = Obj_GetPlayerObject();
+    if (gArrivedWarpIndex == -2 && player != NULL && (mapKind == 0 || mapKind == 1))
     {
         s16 cam2 = SaveGame_getCamActionNo();
         if (cam2 != -1)
