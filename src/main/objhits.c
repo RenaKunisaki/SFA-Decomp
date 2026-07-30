@@ -4713,7 +4713,7 @@ void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val) {
     }
 }
 
-void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val) {
+static void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val) {
     int masked;
     int flag;
 
