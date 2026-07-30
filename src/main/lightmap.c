@@ -545,8 +545,7 @@ void getVisibleObjects(s8* opacity)
     renderShadows(0, 0, 0);
 }
 
-void renderObjects(s8* opacity)
-{
+static void renderObjects(s8* opacity) {
     u32* kp;
     int i;
     u32 flags;
@@ -562,31 +561,25 @@ void renderObjects(s8* opacity)
     qbase = (LightmapDrawQueue*)gLightmapDrawQueue;
     q = (LightmapQEnt*)gLightmapDrawQueue;
     objects = ObjList_GetObjects((int*)0, 0);
-    for (i = 1, kp = (u32*)((u8*)qbase + 0x8818) + 1; i < gVisibleObjectSortKeyCount; kp++, i++)
-    {
+    for (i = 1, kp = (u32*)((u8*)qbase + 0x8818) + 1; i < gVisibleObjectSortKeyCount; kp++, i++) {
         idx = *kp & 0x3ff;
         obj = (u8*)objects[idx];
         flags = ((GameObject*)obj)->anim.modelInstance->flags;
-        if ((flags & OBJDEF_FLAG_DEFERRED_RENDER) != 0 || ((((GameObject*)obj)->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER) != 0))
-        {
-            if (opacity[idx] != 0 && gLightmapDeferredObjectCount < 0x14)
-            {
+        if ((flags & OBJDEF_FLAG_DEFERRED_RENDER) != 0 ||
+            ((((GameObject*)obj)->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER) != 0)) {
+            if (opacity[idx] != 0 && gLightmapDeferredObjectCount < 0x14) {
                 slot = gLightmapDeferredObjectCount;
                 gLightmapDeferredObjectCount = slot + 1;
                 dq = (LightmapDrawQueue*)&((u32*)qbase)[slot];
                 dq->deferred[0] = (u32)obj;
             }
-        }
-        else
-        {
-            if ((flags & 0x800000) == 0)
-            {
+        } else {
+            if ((flags & 0x800000) == 0) {
                 (*gModgfxInterface)->renderEffects(NULL, 0, 0, 1, obj);
             }
             objRender(0, 0, 0, 0, (GameObject*)obj, 1);
             p = (int*)((GameObject*)obj)->anim.modelState;
-            if (p != NULL && ((GameObject*)obj)->anim.modelState->shadowCastSlot != NULL)
-            {
+            if (p != NULL && ((GameObject*)obj)->anim.modelState->shadowCastSlot != NULL) {
                 LightmapQEnt* qe;
                 int qi;
                 u32 shadowKind;
@@ -597,11 +590,9 @@ void renderObjects(s8* opacity)
                 qe = &q[qi];
                 qe->d = shadowKind;
                 gLightmapDrawQueueCount = qi + 1;
-            }
-            else if (((GameObject*)obj)->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH && (((GameObject*)obj)->anim.flags
-                & OBJANIM_FLAG_HIDDEN) == 0 && (((GameObject*)obj)->anim.modelState->flags &
-                OBJ_MODEL_STATE_SHADOW_VISIBLE))
-            {
+            } else if (((GameObject*)obj)->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH &&
+                       (((GameObject*)obj)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0 &&
+                       (((GameObject*)obj)->anim.modelState->flags & OBJ_MODEL_STATE_SHADOW_VISIBLE)) {
                 LightmapQEnt* qe;
                 int qi;
                 u32 shadowKind;
@@ -616,18 +607,15 @@ void renderObjects(s8* opacity)
         }
     }
 }
-static inline void fillBoxRows(u8* map, int* box)
-{
+static inline void fillBoxRows(u8* map, int* box) {
     int y, x0;
     int xs, xe;
     u8* p;
-    for (y = box[2]; y <= box[3]; y++)
-    {
+    for (y = box[2]; y <= box[3]; y++) {
         xs = box[0];
         p = map + (y + 7) * 0x10 + xs;
         xe = box[1];
-        for (x0 = xs; x0 <= xe; x0++)
-        {
+        for (x0 = xs; x0 <= xe; x0++) {
             p[7] = 1;
             p++;
         }
