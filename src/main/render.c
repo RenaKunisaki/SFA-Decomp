@@ -16,6 +16,9 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/floorf.h"
 
+static void render_copyPackedU64Tail(u64* dst, u32 packed);
+static void render_copyPackedU64Head(u64* dst, u32 packed);
+
 const int gModelRenderAdpcmStepTable[89] = {
     0x4, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE,
     0x10, 0x11, 0x13, 0x15, 0x17, 0x19, 0x1C, 0x1F,
@@ -529,14 +532,12 @@ void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s
     } while (RENDER_PACKED_ADDRESS(outPosition) != end);
 }
 
-void render_copyPackedU64Tail(u64* dst, u32 packed)
-{
+static void render_copyPackedU64Tail(u64* dst, u32 packed) {
     /* Preserve the leading bytes of *dst; fill the tail from the aligned
        64-bit word shifted down. */
     u64 src = *(u64*)(packed & ~7);
 
-    switch (packed & 7)
-    {
+    switch (packed & 7) {
     case 7:
         *dst = src;
         break;
@@ -564,14 +565,12 @@ void render_copyPackedU64Tail(u64* dst, u32 packed)
     }
 }
 
-void render_copyPackedU64Head(u64* dst, u32 packed)
-{
+static void render_copyPackedU64Head(u64* dst, u32 packed) {
     /* Fill the head from the aligned 64-bit word; preserve bytes after the
        unaligned source offset. */
     u64 src = *(u64*)(packed & ~7);
 
-    switch (packed & 7)
-    {
+    switch (packed & 7) {
     case 0:
         *dst = src;
         break;
