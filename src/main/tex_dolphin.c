@@ -1758,7 +1758,8 @@ void mapClearBlockEdgeFlags(void)
     }
 }
 
-int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int vertsOut, int p7, f32 offX, f32 offZ, int p8, int kindMask)
+int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int vertsOut, int unusedTriangleCount,
+                                f32 offX, f32 offZ, int unusedRenderMode, int kindSelector)
 {
     int j;
     f32 lm[12];
@@ -1767,11 +1768,12 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
     int total;
     int grp;
     int outOff;
+    int triangleFlag;
 
     outOff = 0;
     j = grp = 0;
     total = 0;
-    kindMask = kindMask ? 4 : 8;
+    triangleFlag = kindSelector ? 4 : 8;
     for (; descBytes < end; descBytes += 0x18)
     {
         u32 id = *(u32*)descBytes;
@@ -1790,7 +1792,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
             outA = (f32*)((char*)planesOut + outOff);
             while (j < (s16)((TrackBlockDescriptor*)descBytes)[1].firstTriangle && grp < 0x4b0 && total < 0xe10)
             {
-                if (kindMask & ((TrackTriangle*)triBuf + j)->flags)
+                if (triangleFlag & ((TrackTriangle*)triBuf + j)->flags)
                 {
                     ((TrackP6Entry*)vertsOut)->relX0 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vx[0]) - fx;
                     ((TrackP6Entry*)vertsOut)->relY0 =
@@ -1842,7 +1844,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
             outA = (f32*)((char*)planesOut + outOff);
             while (j < (s16)((TrackBlockDescriptor*)descBytes)[1].firstTriangle && grp < 0x4b0 && total < 0xe10)
             {
-                if (kindMask & ((TrackTriangle*)triBuf + j)->flags)
+                if (triangleFlag & ((TrackTriangle*)triBuf + j)->flags)
                 {
                     ((TrackP6Entry*)vertsOut)->relX0 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vx[0]);
                     ((TrackP6Entry*)vertsOut)->relY0 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[0]);
