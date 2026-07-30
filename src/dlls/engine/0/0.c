@@ -2005,15 +2005,14 @@ void drawViewFinderHud(void)
                                     (int)(gViewFinderBaseY + (495.0f + sn)));
                 }
                 {
-                    f64 fx;
                     u8 alpha = (f32)(u8)tickAlpha * gViewFinderFadeLevel;
                     f32 phase = lbl_803E1F34 - tickX;
                     cosine = lbl_803DBAE4 * mathCosf(lbl_803E1EC8 * (phase * lbl_803DBAE0) / lbl_803E1E94);
                     nextY = gViewFinderBaseY + ((f32)((u8)tickHeight + 0x1e0) + cosine);
                     cosine = lbl_803DBAE4 * mathCosf(lbl_803E1EC8 * (phase * lbl_803DBAE0) / lbl_803E1E94);
                     currentY = gViewFinderBaseY + (480.0f + cosine);
-                    fx = 0.98 * (tickX - 320.0) + 320.0;
-                    drawViewFinderSegment(tickX, currentY, (f32)fx, nextY, (f32)fx - tickX,
+                    drawViewFinderSegment(tickX, currentY, (f32)(0.98 * (tickX - 320.0) + 320.0), nextY,
+                                          (f32)(0.98 * (tickX - 320.0) + 320.0) - tickX,
                                           nextY - currentY, lbl_803E1E68, alpha);
                 }
             }
