@@ -126,7 +126,7 @@ static inline void GXTexCoord2s16(const s16 s, const s16 t)
 }
 static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 
-void updateVisibleGeometry(void)
+static void updateVisibleGeometry(void)
 {
     Camera* cam;
     int n;
