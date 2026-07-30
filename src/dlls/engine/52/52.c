@@ -256,7 +256,7 @@ int TitleMenu_run(void)
         if (((previousFadeTimer <= 12) || (gTitleMenuLoadDelay > 12)) && (gTitleMenuLoadDelay <= 0))
         {
             gTitleMenuLinkInterface->vtable->free();
-            titleScreenFn_8005cdd4(0);
+            setTitleScreenActive(0);
             setLinkNotRotated();
             loadUiDll(gTitleMenuNextDllId);
         }

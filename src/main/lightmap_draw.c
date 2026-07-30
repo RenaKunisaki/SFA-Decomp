@@ -166,10 +166,12 @@ int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }
 u32 shouldDrawShadows(void) { return renderFlags & RENDERFLAG_DRAW_SHADOWS; }
 int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
 
-void titleScreenFn_8005cdd4(int v)
-{
-    if (v != 0) renderFlags &= ~0x2000;
-    else renderFlags |= 0x2000;
+void setTitleScreenActive(int active) {
+    if (active != 0) {
+        renderFlags &= ~0x2000;
+    } else {
+        renderFlags |= 0x2000;
+    }
 }
 
 void setDrawLights(int v)

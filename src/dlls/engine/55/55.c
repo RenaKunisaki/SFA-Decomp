@@ -665,7 +665,7 @@ int OptionsScreen_frameStart(void)
                 gOptionsActivePanel = OPTIONSSCREEN_PANEL_NONE;
             }
             optionsScreenFreeMenuItems();
-            titleScreenFn_8005cdd4(1);
+            setTitleScreenActive(1);
             setDrawCloudsAndLights(1);
             loadUiDll(4);
         }

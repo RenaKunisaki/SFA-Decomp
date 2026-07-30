@@ -41,7 +41,7 @@ void setPendingMapLoad(int pending);
 void lightmapDrawTriangleList(const void* vertexBase, u8* triList, int triCount);
 void doNothing_8005D148(int arg0, int arg1);
 void doNothing_8005D14C(int arg0, int arg1);
-void titleScreenFn_8005cdd4(int enabled);
+void setTitleScreenActive(int active);
 void setIsOvercast(int value);
 
 void setStarsHidden(int v);
