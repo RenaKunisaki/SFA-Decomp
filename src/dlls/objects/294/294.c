@@ -559,9 +559,9 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                 break;
             case 7:
                 if (p[3] != 0) {
-                    gameFlagFn_8005cd24(1);
+                    setRenderFlag20000(1);
                 } else {
-                    gameFlagFn_8005cd24(0);
+                    setRenderFlag20000(0);
                 }
                 break;
             case 8:

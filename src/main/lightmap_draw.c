@@ -140,9 +140,9 @@ void renderSceneGeometry(u8 renderType, s8* order);
 void sceneDraw(void);
 
 
-void gameFlagFn_8005cd24(int v)
+void setRenderFlag20000(int v)
 {
-    renderFlags = (v != 0) ? (renderFlags | 0x20000) : (renderFlags & ~0x20000);
+    renderFlags = (v != 0) ? (renderFlags | RENDERFLAG_20000) : (renderFlags & ~RENDERFLAG_20000);
 }
 
 int isDrawDistanceEnabled(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
