@@ -4122,7 +4122,7 @@ void videoSwapFrameBuffers(u32 retraceCount)
     {
         logGpuHang();
         gxErrorFn_80060b40();
-        modelFn_800292e0();
+        ObjModel_TouchModelCache();
         __GXAbortWaitPECopyDone();
         GXInitFifoBase(&fifo, renderFrameBuffer, 0x10000);
         GXSetCPUFifo(&fifo);

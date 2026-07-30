@@ -410,7 +410,7 @@ void Model_GetVertexPosition(ModelFileHeader* model, int vertexIndex, f32* out);
 void ObjModel_InitRenderBuffers(void);
 void ObjModel_InitResourceCaches(void);
 void ObjModel_InitScratchBuffers(void);
-void modelFn_800292e0(void);
+void ObjModel_TouchModelCache(void);
 void* return0_8002969C(int resourceId, int arg, void* buffer);
 void* loadAnimation(int hdr, s16 id, int b, u8* bufout);
 

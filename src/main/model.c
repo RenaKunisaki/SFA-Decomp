@@ -2703,7 +2703,7 @@ void* ObjModel_LoadModelData(int id)
     return model;
 }
 
-void modelFn_800292e0(void)
+void ObjModel_TouchModelCache(void)
 {
     u8 buf[8];
     gModelList->iter = gModelList->entries;
