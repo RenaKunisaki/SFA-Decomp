@@ -37,7 +37,7 @@
 extern void* lbl_803DCD10;
 extern char* lbl_803DCD08;
 
-int pathSearchNodeMatchesTarget(int* ctx, int* ref) {
+static int pathSearchNodeMatchesTarget(int* ctx, int* ref) {
     int* node;
     int target;
     target = ctx[4];
@@ -68,7 +68,7 @@ int pathSearchNodeMatchesTarget(int* ctx, int* ref) {
     }
 }
 
-void pathSearchHeapSiftDown(u8* arr, int size, int idx) {
+static void pathSearchHeapSiftDown(u8* arr, int size, int idx) {
     u16* h = (u16*)arr;
     int half;
     u8* childptr;
