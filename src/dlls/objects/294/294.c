@@ -531,7 +531,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                 if (p[3] > 1) {
                     p[3] = 1;
                 }
-                gameFlagFn_8005ce6c(p[3]);
+                setDisableAntiAlias(p[3]);
                 break;
             case 2:
                 if (p[3] > 1) {

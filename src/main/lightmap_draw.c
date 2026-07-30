@@ -189,9 +189,10 @@ void setDrawLights(int v)
     }
 }
 
-void gameFlagFn_8005ce6c(int v)
+void setDisableAntiAlias(int v)
 {
-    renderFlags = (v != 0) ? (renderFlags | 0x20) : (renderFlags & ~0x20);
+    renderFlags = (v != 0) ? (renderFlags | RENDERFLAG_DISABLE_ANTI_ALIAS)
+                           : (renderFlags & ~RENDERFLAG_DISABLE_ANTI_ALIAS);
 }
 
 u8 isOvercast(void)
