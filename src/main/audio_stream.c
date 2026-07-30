@@ -55,6 +55,7 @@ AudioDvdStreamContext gAudioStreamDvdBlockPrepared;
 
 static void AudioStream_CancelCallback(s32 result, DVDCommandBlock* block);
 static void AudioStream_CancelPreparedCallback(s32 result, DVDCommandBlock* block);
+static void AudioStream_PrepareCallback(s32 result, DVDFileInfo* fileInfo);
 
 void AudioStream_StopAll(void)
 {
@@ -404,21 +405,17 @@ void AudioStream_Init(void)
     gAudioStreamStartWhenPrepared = 0;
 }
 
-void AudioStream_PrepareCallback(s32 result, DVDFileInfo* fileInfo)
-{
+static void AudioStream_PrepareCallback(s32 result, DVDFileInfo* fileInfo) {
     (void)result;
     (void)fileInfo;
-    if (getGameState() != 1)
-    {
+    if (getGameState() != 1) {
         gAudioStreamDvdState = 0;
         return;
     }
     gAudioStreamPreparedId = gAudioStreamPreparingId;
     gAudioStreamPreparingId = 0;
-    if (gAudioStreamStartWhenPrepared != 0)
-    {
-        if (getGameState() == 1)
-        {
+    if (gAudioStreamStartWhenPrepared != 0) {
+        if (getGameState() == 1) {
             AISetStreamVolLeft(gAudioStreamVolumeLeft);
             AISetStreamVolRight(gAudioStreamVolumeRight);
             AISetStreamPlayState(AI_STREAM_START);
@@ -428,19 +425,14 @@ void AudioStream_PrepareCallback(s32 result, DVDFileInfo* fileInfo)
             gAudioStreamPreparedId = 0;
             gAudioStreamPreparingId = 0;
             gAudioStreamStartWhenPrepared = 0;
-        }
-        else
-        {
+        } else {
             gAudioStreamPlaying = 0;
         }
-    }
-    else if (gAudioStreamPreparedCallback != NULL)
-    {
+    } else if (gAudioStreamPreparedCallback != NULL) {
         gAudioStreamPreparedCallback();
     }
     gAudioStreamDvdState = 0;
 }
-
 
 void AudioStream_PlayAddrCallback(u32 result)
 {
