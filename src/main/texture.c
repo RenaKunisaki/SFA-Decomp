@@ -113,7 +113,7 @@ void texRestructRefs(int mode)
     strs = (char*)(int)sRcpTexRestructStrings;
     done = 0;
     pass = 0;
-    texFlagFn_80023cbc(2);
+    mmSetTextureAllocationState(2);
     OSReport(strs + 0x1164);
     printHeapStats(1);
     OSReport(strs + 0x1194);
@@ -233,7 +233,7 @@ void texRestructRefs(int mode)
         pass++;
     }
     OSReport(strs + 0x1420, pass);
-    texFlagFn_80023cbc(0);
+    mmSetTextureAllocationState(0);
 }
 
 void textureInitSecondaryGXTexObj(Texture* tex, GXTexObj* obj)
@@ -738,9 +738,9 @@ void* textureLoad(int texId, u8 flagIn)
         else
         {
             frameSize = frameOut;
-            texFlagFn_80023cbc(1);
+            mmSetTextureAllocationState(1);
             buf = mmAlloc(size, gRcpTexAllocTag, 0);
-            texFlagFn_80023cbc(0);
+            mmSetTextureAllocationState(0);
             if (buf == NULL)
             {
                 gRcpTexAllocFailed = 1;

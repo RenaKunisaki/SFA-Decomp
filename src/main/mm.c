@@ -883,9 +883,9 @@ int getHeapItemSize(void* ptr)
         }
     }
 }
-void texFlagFn_80023cbc(int v)
+void mmSetTextureAllocationState(int state)
 {
-    lbl_803DCB10 = v;
+    lbl_803DCB10 = state;
 }
 void* mmInitRegion(u8* buf, int size, int numSlots);
 

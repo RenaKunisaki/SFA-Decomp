@@ -3661,7 +3661,7 @@ void defragMemory(int mode)
     u8* base = gResourceFileTable;
     done = 0;
     pass = 0;
-    texFlagFn_80023cbc(2);
+    mmSetTextureAllocationState(2);
     if (loadedFileFlags(0) != 0)
     {
         return;
@@ -3864,7 +3864,7 @@ void defragMemory(int mode)
         } while (i <= 0x57);
         pass++;
     }
-    texFlagFn_80023cbc(0);
+    mmSetTextureAllocationState(0);
 }
 
 f32 gObjBoneMtxBuffer[0xC00];
