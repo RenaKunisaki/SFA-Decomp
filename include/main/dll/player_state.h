@@ -171,7 +171,7 @@ typedef struct PlayerState {
     f32 moveStartPosY; /* localPosY captured at the start of the 0x35/0x37 vertical moves; the per-frame Y is interpolated between this anchor and the current localPosY by currentMoveProgress */
     f32 savedLocalPosX; /* localPosX saved at the vertical-move start (backed up before localPos is overwritten with moveStartPosX) */
     f32 savedLocalPosZ; /* localPosZ saved at the vertical-move start (backed up before localPos is overwritten with moveStartPosZ) */
-    f32 moveDirX;       /* move direction vector X; (moveDirX,moveDirY,moveDirZ) is negated when flag set and fed to getAngle()->targetYaw and fn_802A71E0 */
+    f32 moveDirX;       /* move direction vector X; (moveDirX,moveDirY,moveDirZ) is negated when flag set and fed to getAngle()->targetYaw and playerSetMoveBlendFromPlane */
     u8 pad510[0x514 - 0x510];
     f32 moveDirY;       /* move direction vector Y */
     f32 moveDirZ;       /* move direction vector Z */
@@ -179,8 +179,8 @@ typedef struct PlayerState {
     f32 moveStartPosX;  /* localPosX assigned at the vertical-move start */
     u8 pad530[0x534 - 0x530];
     f32 moveStartPosZ;  /* localPosZ assigned at the vertical-move start */
-    f32 blendAnchor[3]; /* planar anchor vector (X at +0, Z at +8) fed as the p6 arg to the fn_802A71E0 move-blend; dotted with the p7 direction to form the blend interpolation parameter t; written in another TU */
-    s16 eventCountdown; /* move-blend/event countdown from fn_802A71E0; written each frame then pushed as the ObjAnim EVENT_COUNTDOWN state word (ObjAnim_WriteStateWord) */
+    f32 blendAnchor[3]; /* planar anchor vector (X at +0, Z at +8) fed to playerSetMoveBlendFromPlane; dotted with the blend plane to form the interpolation factor; written in another TU */
+    s16 eventCountdown; /* move-blend/event countdown from playerSetMoveBlendFromPlane; written each frame then pushed as the ObjAnim EVENT_COUNTDOWN state word (ObjAnim_WriteStateWord) */
     s8 footstepSurface; /* footstep surface/material selector; switched to pick the footstep sfx variant (case 4 -> foot_33a, default -> foot_var) on anim foot events */
     u8 unk547;
     u8 pad548[0x549 - 0x548];
@@ -204,7 +204,7 @@ typedef struct PlayerState {
     u8 pad590[0x594 - 0x590];
     f32 climbStartPosZ; /* localPosZ assigned at the climb move start */
     u8 pad598[0x5A4 - 0x598];
-    s16 animEventState; /* anim event-state word written each frame via ObjAnim_WriteStateWord(...EVENT_STATE); from fn_802A71E0 or a scaled move-blend factor */
+    s16 animEventState; /* anim event-state word written each frame via ObjAnim_WriteStateWord(...EVENT_STATE); from playerSetMoveBlendFromPlane or a scaled move-blend factor */
     s16 moveAltToggle; /* alternating selector for a paired repeating move: !=0 picks move 0x15, ==0 picks 0x16; XOR-toggled each cycle (e.g. left/right climb step) */
     f32 leapSpeed;   /* leap/launch speed magnitude filled by fn_802A8EE4 (base = &leapSpeed): threshold-compared vs lbl_803E8040/8048 to pick the jump move (0xe/0x16/0x12) then normalized (leapSpeed-lo)/(hi-lo) into the move blend */
     f32 leapTargetY; /* world-Y leap anchor filled alongside leapSpeed; converted world<->parent-relative (-/+ groundObject.y); feeds worldPosY = leapTargetY - unk874 and the localPosY lerp endpoint */
