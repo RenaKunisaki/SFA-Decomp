@@ -86,6 +86,14 @@ extern int gGameTextFontTexRowPitch;
 extern GameTextStateElem gGameTextCharsets[];
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 
+typedef struct GameTextTableHeader
+{
+    u32 unk0;
+    u16 entryCount;
+    u16 textureOffset;
+} GameTextTableHeader;
+STATIC_ASSERT(sizeof(GameTextTableHeader) == 8);
+
 void gameTextLoadCancelCallback(s32 result, DVDCommandBlock* block);
 void gameTextLoadCompleteCallback(s32 status, DVDFileInfo* fileInfo);
 
@@ -985,7 +993,7 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
     int i;
     u8* txt;
     int* texHdr;
-    u8* hdr;
+    GameTextTableHeader* hdr;
     u16* texStart;
     int* data;
     u16 kind;
@@ -1024,10 +1032,10 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
         return;
     }
     cs->strings = (u8*)(data + 1);
-    hdr = (u8*)data + cs->headerCount * 16;
-    cs->count = *(u16*)(hdr + 4);
-    ofs = *(u16*)(hdr + 6);
-    entries = hdr + 8;
+    hdr = (GameTextTableHeader*)((u8*)data + cs->headerCount * 16);
+    cs->count = hdr->entryCount;
+    ofs = hdr->textureOffset;
+    entries = (u8*)(hdr + 1);
     cs->entries = entries;
     table = (int*)(entries + cs->count * 12);
     numStrings = table[0];
