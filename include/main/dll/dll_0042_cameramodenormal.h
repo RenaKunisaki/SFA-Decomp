@@ -273,7 +273,7 @@ int camcontrol_traceMove(f32* fromPos, f32* toPos, f32* outPos, u8* traceWork, c
                          f32 radius);
 u8 camcontrol_traceFromTarget(f32* fromPos, GameObject* target, f32* outPos, void* unused);
 u8 camcontrol_getTargetPosition(CameraObject* camera, ObjAnimComponent* targetAnim, f32* outPos, s16* outRotY);
-void doNothing_80103660(int unused);
+void camcontrol_onTargetTraceBlocked(int unused);
 void CameraModeNormal_updateTargetAction(CameraObject* camera, GameObject* target);
 int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* camera, f32* outA, f32* outB, int angle);
 void CameraModeNormal_updateWallAvoidance(CameraObject* camera, GameObject* target);

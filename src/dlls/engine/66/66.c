@@ -77,7 +77,7 @@ int camcontrol_traceMove(f32* fromPos, f32* toPos, f32* outPos, u8* traceWork, c
     }
     return clear;
 }
-void doNothing_80103660(int unused) {
+void camcontrol_onTargetTraceBlocked(int unused) {
 }
 
 u8 camcontrol_traceFromTarget(float* fromPos, GameObject* target, float* outPos, void* unused) {
