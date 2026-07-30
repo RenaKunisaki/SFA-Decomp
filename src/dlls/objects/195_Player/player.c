@@ -234,7 +234,7 @@ void playerStagedRestoreDefaultControl(GameObject* obj, int state);
 int playerState00(int obj, int state);
 void playerGetMovementOrFacingDirection(GameObject* obj, int state, f32* out);
 int fn_802A8680(int p1, int p2, void* src, f32* vec, int out, int flag);
-int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance);
+int playerBuildLedgeClimbProbe(int a, int b, void* c, int d, f32* e, f32 distance);
 void playerRestoreAfterSequence(GameObject* obj, int p2, int p3);
 void playerCastIceSpell(GameObject* unused);
 int playerCanUseStaffBooster(GameObject* obj, int p2);
@@ -11122,7 +11122,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             if ((*(int (*)(int)) * (int*)((char*)target->anim.dll[0] + 0x2c))((int)target) != 0 &&
                 ((PlayerState*)state2)->baddie.inputMagnitude > 0.1f && hd <= 2.0f + lbl_803DC6C0)
             {
-                switch (fn_802A8EE4(obj, state, &buf, state + 0x5a8, end, hd))
+                switch (playerBuildLedgeClimbProbe(obj, state, &buf, state + 0x5a8, end, hd))
                 {
                 case 2:
                     return 4;
@@ -11236,7 +11236,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             {
                 continue;
             }
-            switch (fn_802A8EE4(obj, state, &buf, state + 0x5a8, end, hd))
+            switch (playerBuildLedgeClimbProbe(obj, state, &buf, state + 0x5a8, end, hd))
             {
             case 2:
                 return 4;
@@ -11787,7 +11787,7 @@ int fn_802A87CC(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb)
     return mode;
 }
 
-int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance)
+int playerBuildLedgeClimbProbe(int a, int b, void* c, int d, f32* e, f32 distance)
 {
     char* cp;
     f32* b6b8;
@@ -11799,7 +11799,7 @@ int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance)
     void* hit;
     int i;
     int j;
-    int k;
+    u32 vertexZOffset;
     f32 bx, ax, bz, az, by, ay;
     f32 threshold;
     EmitPlane planes[2];
@@ -11857,13 +11857,13 @@ int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance)
                 j = *(s16*)((char*)face + 0x4) * 0xc;
                 ax = *(f32*)(tbl2 + j);
                 ay = 0.0f;
-                k = j + 8;
-                az = *(f32*)(k + tbl2);
+                vertexZOffset = j + offsetof(Vec, z);
+                az = ((f32*)tbl2)[vertexZOffset / sizeof(f32)];
                 j = *(s16*)((char*)face + 0x6) * 0xc;
                 bx = *(f32*)(tbl2 + j);
                 by = 0.0f;
-                k = j + 8;
-                bz = *(f32*)(k + tbl2);
+                vertexZOffset = j + offsetof(Vec, z);
+                bz = ((f32*)tbl2)[vertexZOffset / sizeof(f32)];
                 if (hit != NULL)
                 {
                     Obj_TransformLocalPointToWorld(ax, ay, az, &ax, &ay, &az, (GameObject*)(int)hit);
