@@ -2834,7 +2834,7 @@ void* ObjModel_Load(int id, int loadFlag, int* outSize)
     return header;
 }
 
-void* return0_8002969C(int resourceId, int arg, void* buffer) { return NULL; }
+void* loadModelInstance(int resourceId, int arg, void* buffer) { return NULL; }
 
 void ObjModel_InitResourceCaches(void)
 {
