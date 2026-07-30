@@ -55,7 +55,7 @@ static void UpdateRoomDistances(void)
  * Allocate scarce studio voices to spatial entries and update their
  * activation fade state.
  */
-void s3dAllocateRoomStudios(void)
+static void s3dAllocateRoomStudios(void)
 {
     SndSpatialListener* listener;
     Snd3DEmitter* voice;
@@ -215,7 +215,7 @@ void s3dAllocateRoomStudios(void)
  * Update studio-input bridges between spatial entries as voices appear
  * and disappear.
  */
-void s3dUpdateDoorStudioInputs(void)
+static void s3dUpdateDoorStudioInputs(void)
 {
     SndStudioInputLink* link;
     f32 f;

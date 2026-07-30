@@ -91,8 +91,8 @@ static inline u8 clip127(u8 value)
     return value;
 }
 
-void s3dCalcEmitter(Snd3DEmitter* emitter, f32* distanceOut, f32* panOut, f32* azimuthOut, f32* pitchOut,
-                    f32* frontBackOut)
+static void s3dCalcEmitter(Snd3DEmitter* emitter, f32* distanceOut, f32* panOut, f32* azimuthOut,
+                           f32* pitchOut, f32* frontBackOut)
 {
     SndSpatialListener* listener;
     SndFVector d;
@@ -203,7 +203,8 @@ void s3dCalcEmitter(Snd3DEmitter* emitter, f32* distanceOut, f32* panOut, f32* a
     }
 }
 
-void s3dApplyEmitterControls(Snd3DEmitter* emitter, f32 distance, f32 pan, f32 unused, f32 azimuth, f32 pitch)
+static void s3dApplyEmitterControls(Snd3DEmitter* emitter, f32 distance, f32 pan, f32 unused, f32 azimuth,
+                                    f32 pitch)
 {
     u32 handle;
     u16 value14;
@@ -257,7 +258,7 @@ void s3dApplyEmitterControls(Snd3DEmitter* emitter, f32 distance, f32 pan, f32 u
 /*
  * s3dInsertSortedEmitter - distance-sorted voice node insert.
  */
-void s3dInsertSortedEmitter(Snd3DEmitter* emitter, f32 distance)
+static void s3dInsertSortedEmitter(Snd3DEmitter* emitter, f32 distance)
 {
     S3DMixGroup* group;
     S3DSortedNode* node;
@@ -317,7 +318,8 @@ void s3dInsertSortedEmitter(Snd3DEmitter* emitter, f32 distance)
 /*
  * s3dInsertActiveEmitter - active spatial voice node insert.
  */
-int s3dInsertActiveEmitter(Snd3DEmitter* emitter, f32 distance, f32 pan, f32 frontBack, f32 azimuth, f32 pitch)
+static int s3dInsertActiveEmitter(Snd3DEmitter* emitter, f32 distance, f32 pan, f32 frontBack, f32 azimuth,
+                                  f32 pitch)
 {
     S3DMixGroup* group;
     S3DActiveNode* scan;
@@ -383,7 +385,7 @@ int s3dInsertActiveEmitter(Snd3DEmitter* emitter, f32 distance, f32 pan, f32 fro
     startListNum[s3dActiveCnt++].distance = distance;
     return 1;
 }
-void s3dStartQueuedEmitters(void)
+static void s3dStartQueuedEmitters(void)
 {
     int groupIndex;
     S3DActiveNode* node;
