@@ -70,7 +70,7 @@ int camcontrol_traceMove(f32* fromPos, f32* toPos, f32* outPos, u8* traceWork, c
                                         (f32*)(traceWork + offsetof(CamcontrolTraceWork, radius)), 1);
         hitDetectFn_800691c0(NULL, &sweptBounds, 0x240, 1);
     }
-    hitDetectFn_80067958(NULL, fromPos, outPos, 1, traceWork, 0);
+    trackGetIntersect(NULL, fromPos, outPos, 1, traceWork, 0);
     clear = 0;
     if ((gCamcontrolTraceBboxBlocked == 0) && (*(s16*)(traceWork + offsetof(CamcontrolTraceWork, hitCount)) == 0)) {
         clear = 1;
@@ -561,7 +561,7 @@ void CameraModeNormal_updateVerticalBounds(CameraObject* camera, int flags, int 
         hitDetect_calcSweptSphereBounds(&bounds, &camera->probePosX, pos,
                                         (f32*)(cameraAddr + (int)offsetof(CameraObject, anim.hitVolumeTransforms)), 1);
         hitDetectFn_800691c0(camObj, &bounds, 0x240, 1);
-        hitDetectFn_80067958(camObj, &camera->probePosX, pos, 1, &camera->anim.hostedMapSlot, 0);
+        trackGetIntersect(camObj, &camera->probePosX, pos, 1, &camera->anim.hostedMapSlot, 0);
         camera->anim.worldPosX = pos[0];
         camera->anim.worldPosY = pos[1];
         camera->anim.worldPosZ = pos[2];

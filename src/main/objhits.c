@@ -1969,7 +1969,7 @@ void ObjHits_CheckTrackContact(int objA, int objB) {
         if (pointCount != 0) {
             hitDetect_calcSweptSphereBounds(&bounds, startPoints, endPoints, hb.radii, pointCount);
             hitDetectFn_800691c0((GameObject*)objB, &bounds, stateB->trackContactMask, 1);
-            contact = hitDetectFn_80067958((GameObject*)objB, startPoints, endPoints, pointCount, hb.out, 0);
+            contact = trackGetIntersect((GameObject*)objB, startPoints, endPoints, pointCount, hb.out, 0);
             if (contact != 0) {
                 if ((contact & 1) != 0) {
                     pointCount = 0;

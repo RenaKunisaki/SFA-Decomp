@@ -8983,7 +8983,7 @@ void Tricky_update(int obj)
     found = 0;
     cmdQuery = gTrickyCmdQueryInit;
     pair = lbl_803E23C4;
-    walkgroupFindExitPointFn_800dc398();
+    Objfsa_UpdateWalkGroupPatches();
     if (mainGetBit(GAMEBIT_Tricky_LoadBadge) != 0 && *(void**)&trickyState->spawnedChild == NULL &&
         Obj_IsLoadingLocked())
     {
@@ -9806,7 +9806,7 @@ void Tricky_init(GameObject* obj)
     (*gPathControlInterface)->setup((void*)pathState, 2, lbl_8031D2E8, lbl_803DBC40, startPath);
     (*gPathControlInterface)->attachObject((void*)obj, (void*)pathState);
     doNothing_onTrickyInit();
-    walkgroupFindExitPointFn_800dc398();
+    Objfsa_UpdateWalkGroupPatches();
     ((TrickyState*)state)->groundSnapCounter = 2;
     ((TrickyInitFlags*)&((TrickyState*)state)->flags82E)->initBit7 = 1;
     ((TrickyState*)state)->commandPhase = -1;

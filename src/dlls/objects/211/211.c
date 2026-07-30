@@ -511,7 +511,7 @@ void landedarwing_updateAirborneMotion(GameObject* obj, LandedArwingState* state
     hitScratch.hitType = 3;
     hitDetect_calcSweptSphereBounds(&bounds, start, end, &radius, 1);
     hitDetectFn_800691c0(obj, &bounds, 0, 1);
-    hitFound = hitDetectFn_80067958(obj, start, end, 1, hitScratch.hit, 0x20);
+    hitFound = trackGetIntersect(obj, start, end, 1, hitScratch.hit, 0x20);
     if (hitFound != 0)
     {
         {
@@ -884,7 +884,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
         end[0] = obj->anim.velocityX * stepScale + start[0];
         end[1] = obj->anim.velocityY * stepScale + start[1];
         end[2] = obj->anim.velocityZ * stepScale + start[2];
-        hitFound = hitDetectFn_80067958(obj, start, end, 1, hitScratch.hit, 0x20);
+        hitFound = trackGetIntersect(obj, start, end, 1, hitScratch.hit, 0x20);
         if (hitFound != 0)
         {
             dx = end[0] - start[0];
@@ -910,7 +910,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
     end[2] = -(4.0f * state->surfaceNormalZ - start[2]);
     hitScratch.hitRadius = 0.0f;
     hitScratch.hitType = 3;
-    hitFound = hitDetectFn_80067958(obj, start, end, 1, hitScratch.hit, 0x20);
+    hitFound = trackGetIntersect(obj, start, end, 1, hitScratch.hit, 0x20);
     if (hitFound != 0)
     {
         if ((((hitScratch.hit[0] != state->surfaceNormalX) ||
@@ -941,7 +941,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
         end[2] = 10.0f * end[2] + start[2];
         hitScratch.hitRadius = 0.0f;
         hitScratch.hitType = 3;
-        hitFound = hitDetectFn_80067958(obj, start, end, 1, hitScratch.hit, 0x20);
+        hitFound = trackGetIntersect(obj, start, end, 1, hitScratch.hit, 0x20);
         if (hitFound != 0)
         {
             landedarwing_resolveSurfaceCollision(obj, state, hitScratch.hit, end);

@@ -128,7 +128,7 @@ int Scarab_resolveCollision(GameObject* obj) {
 
     hitDetect_calcSweptSphereBounds(&sweptBounds, startPoints, endPoints, results.radii, 1);
     hitDetectFn_800691c0(obj, &sweptBounds, hitState->trackContactMask, 1);
-    hitMask = hitDetectFn_80067958(obj, startPoints, endPoints, 1, &results, 0);
+    hitMask = trackGetIntersect(obj, startPoints, endPoints, 1, &results, 0);
     if (hitMask != 0) {
         if ((hitMask & 1) != 0) {
             hitIndex = 0;
@@ -410,7 +410,7 @@ void Scarab_update(GameObject* obj) {
                     hitDetect_calcSweptSphereBounds(&sweepBounds, &startPosition.x, &endPosition.x, sphere->radii, 1);
                 }
                 hitDetectFn_800691c0(obj, &sweepBounds, 0, 1);
-                hitCount = hitDetectFn_80067958(obj, (f32*)&startPosition, (f32*)&endPosition, 1,
+                hitCount = trackGetIntersect(obj, (f32*)&startPosition, (f32*)&endPosition, 1,
                                                 collisionScratch.hitResults, 0);
                 obj->anim.localPosX = endPosition.x;
                 obj->anim.localPosY = endPosition.y;
@@ -550,7 +550,7 @@ void Scarab_update(GameObject* obj) {
                                                     sphere->radii, 1);
                 }
                 hitDetectFn_800691c0(obj, &sweepBounds, 0, 1);
-                hitMask = hitDetectFn_80067958(obj, &obj->anim.previousLocalPosX, &obj->anim.localPosX, 1,
+                hitMask = trackGetIntersect(obj, &obj->anim.previousLocalPosX, &obj->anim.localPosX, 1,
                                                collisionScratch.hitResults, 0);
                 if (collisionDetected != 0 ||
                     Vec_distance(&obj->anim.worldPosX, &((ObjPlacement*)obj->anim.placementData)->posX) > 300.0f ||

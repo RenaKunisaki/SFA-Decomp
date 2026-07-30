@@ -14,6 +14,5 @@
 int mathFn_800dbff0(float* point);
 void doNothing_onTrickyFree(void);
 void doNothing_onTrickyInit(void);
-void walkgroupFindExitPointFn_800dc398(void);
 
 #endif

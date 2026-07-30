@@ -1202,7 +1202,7 @@ static void objfsaSetPlaneNormal(ObjfsaPatchPlane* pl, f32 dxn, f32 dzn)
     pl->normalZ = (s16)(32767.0f * dzn);
 }
 
-void walkgroupFindExitPointFn_800dc398(void)
+void Objfsa_UpdateWalkGroupPatches(void)
 {
     char* slotPtr;
     u8 blockFlags[0x78];

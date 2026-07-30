@@ -2633,7 +2633,7 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
     return (u8)retLo | ((u8)retHi << 4);
 }
 
-int hitDetectFn_80067958(GameObject* contactSrc, f32* startPos, f32* endPos, int count, void* results, int flags)
+int trackGetIntersect(GameObject* contactSrc, f32* startPos, f32* endPos, int count, void* results, int flags)
 {
     int lim;
     f32* fp;

@@ -492,7 +492,7 @@ int SmallBasket_resolveCollision(GameObject* obj) {
 
     hitDetect_calcSweptSphereBounds(&sweptBounds, startPoints, endPoints, hitResults.radii, 1);
     hitDetectFn_800691c0(obj, &sweptBounds, hitState->trackContactMask, 1);
-    hitMask = hitDetectFn_80067958(obj, startPoints, endPoints, 1, &hitResults, 0);
+    hitMask = trackGetIntersect(obj, startPoints, endPoints, 1, &hitResults, 0);
     if (hitMask != 0) {
         if (hitMask & 1) {
             hitIndex = 0;
