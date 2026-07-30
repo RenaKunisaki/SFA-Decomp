@@ -1728,13 +1728,13 @@ void beginLoadingMap(void)
     int j;
     s8* a;
     s8* b;
-    int mapKind;
-    f32* p;
-    f32 px, py, pz;
-    Camera* cam;
+    int currentCharacter;
+    f32* characterPosition;
+    f32 positionX, positionY, positionZ;
+    Camera* camera;
     GameObject* player;
-    u8* env;
-    int bo;
+    u8* environmentState;
+    int enabled;
     char buf[0x110];
 
     base = gLightmapDrawQueue;
@@ -1762,13 +1762,13 @@ void beginLoadingMap(void)
     }
     gMapBlockCount = 0;
     gShaderRomListSlotCount = 0;
-    mapKind = (*gMapEventInterface)->getCurChar();
-    p = (f32*)(*gMapEventInterface)->getCurCharPos();
-    gMapBlockOriginX = fastFloorf(p[0] / gMapBlockWorldSize);
-    gMapBlockOriginZ = fastFloorf(p[2] / gMapBlockWorldSize);
-    *(f32*)(base + 0x8588) = p[0];
-    *(f32*)(base + 0x858C) = p[1];
-    *(f32*)(base + 0x8590) = p[2];
+    currentCharacter = (*gMapEventInterface)->getCurChar();
+    characterPosition = (f32*)(*gMapEventInterface)->getCurCharPos();
+    gMapBlockOriginX = fastFloorf(characterPosition[0] / gMapBlockWorldSize);
+    gMapBlockOriginZ = fastFloorf(characterPosition[2] / gMapBlockWorldSize);
+    *(f32*)(base + 0x8588) = characterPosition[0];
+    *(f32*)(base + 0x858C) = characterPosition[1];
+    *(f32*)(base + 0x8590) = characterPosition[2];
     *(int*)(base + 0x8594) = 1;
     gMapBlockOriginWorldX = gMapBlockOriginX * 640;
     gMapBlockOriginWorldZ = gMapBlockOriginZ * 640;
@@ -1779,7 +1779,7 @@ void beginLoadingMap(void)
     gShaderCurMapEventId = -1;
     gShaderGameTextLoadedMapId = gShaderGameTextLoadedMapId - 1;
     gMapCurRomListSlot = -1;
-    curMapLayer = *(s8*)((char*)p + 0xd);
+    curMapLayer = *(s8*)((char*)characterPosition + 0xd);
     renderFlags &= 0x82008;
     renderFlags |= 0x481F0LL;
     renderFlags |= 0x804;
@@ -1789,24 +1789,24 @@ void beginLoadingMap(void)
     lbl_803DB62C = lbl_803DEBCC;
     gHeatEffectFadeDirection = -1;
     setSaveGameLoadingFlag();
-    pz = p[2];
-    py = p[1];
-    px = p[0];
+    positionZ = characterPosition[2];
+    positionY = characterPosition[1];
+    positionX = characterPosition[0];
     if (!(renderFlags & 2) || (renderFlags & 0x800))
     {
-        gShaderLoadCenterX = px;
-        gShaderLoadCenterY = py;
-        gShaderLoadCenterZ = pz;
+        gShaderLoadCenterX = positionX;
+        gShaderLoadCenterY = positionY;
+        gShaderLoadCenterZ = positionZ;
         renderFlags |= 2;
         if (renderFlags & 0x800)
             doPendingMapLoads();
     }
     renderFlags &= ~4LL;
     trackIntersect();
-    cam = Camera_GetCurrent();
-    cam->x = p[0];
-    cam->y = p[1];
-    cam->z = p[2];
+    camera = Camera_GetCurrent();
+    camera->x = characterPosition[0];
+    camera->y = characterPosition[1];
+    camera->z = characterPosition[2];
     mapSetupPlayer();
     gWarpRequested = 0;
     (*gWaterfxInterface)->onMapSetup();
@@ -1821,38 +1821,38 @@ void beginLoadingMap(void)
     (*gNewCloudsInterface)->onMapSetup();
     waterFxInit();
     player = Obj_GetPlayerObject();
-    if (gArrivedWarpIndex == -2 && player != NULL && (mapKind == 0 || mapKind == 1))
+    if (gArrivedWarpIndex == -2 && player != NULL && (currentCharacter == 0 || currentCharacter == 1))
     {
         s16 cam2 = SaveGame_getCamActionNo();
         if (cam2 != -1)
         {
             (*gCameraInterface)->loadTriggeredCamAction(0, cam2, 1);
         }
-        env = saveGameGetEnvState();
+        environmentState = saveGameGetEnvState();
         {
-            s16 v = *(s16*)(env + 4);
+            s16 v = *(s16*)(environmentState + 4);
             if (v != -1)
                 getEnvfxActImmediately(player, player, v & 0xFFFF, 0);
-            v = *(s16*)(env + 6);
+            v = *(s16*)(environmentState + 6);
             if (v != -1)
                 getEnvfxActImmediately(player, player, v & 0xFFFF, 0);
-            v = *(s16*)(env + 0xa);
+            v = *(s16*)(environmentState + 0xa);
             if (v != -1)
                 getEnvfxActImmediately(player, player, v & 0xFFFF, 0);
-            v = *(s16*)(env + 0xc);
+            v = *(s16*)(environmentState + 0xc);
             if (v != -1)
                 getEnvfxActImmediately(player, player, v & 0xFFFF, 0);
         }
-        skySetSlotFlag80(1, (*(u8*)(env + 0x40) & 2) ? 1 : 0);
-        skySetSlotFlag80(2, (*(u8*)(env + 0x40) & 4) ? 1 : 0);
-        skySetLightIndex((*(u8*)(env + 0x40) & 0x10) ? 1 : 0, lbl_803DEBCC);
-        if (*(u8*)(env + 0x40) & 1)
-            bo = 1;
+        skySetSlotFlag80(1, (*(u8*)(environmentState + 0x40) & 2) ? 1 : 0);
+        skySetSlotFlag80(2, (*(u8*)(environmentState + 0x40) & 4) ? 1 : 0);
+        skySetLightIndex((*(u8*)(environmentState + 0x40) & 0x10) ? 1 : 0, lbl_803DEBCC);
+        if (*(u8*)(environmentState + 0x40) & 1)
+            enabled = 1;
         else
-            bo = 0;
+            enabled = 0;
         {
             u8* e2 = saveGameGetEnvState();
-            if (bo)
+            if (enabled)
             {
                 renderFlags |= 0x50;
                 *(u8*)(e2 + 0x40) = *(u8*)(e2 + 0x40) | 9;
@@ -1863,13 +1863,13 @@ void beginLoadingMap(void)
                 *(u8*)(e2 + 0x40) = *(u8*)(e2 + 0x40) & ~9;
             }
         }
-        if (*(u8*)(env + 0x40) & 8)
-            bo = 1;
+        if (*(u8*)(environmentState + 0x40) & 8)
+            enabled = 1;
         else
-            bo = 0;
+            enabled = 0;
         {
             u8* e3 = saveGameGetEnvState();
-            if (bo)
+            if (enabled)
             {
                 renderFlags |= 0x40;
                 *(u8*)(e3 + 0x40) = *(u8*)(e3 + 0x40) | 8;
@@ -1880,7 +1880,7 @@ void beginLoadingMap(void)
                 *(u8*)(e3 + 0x40) = *(u8*)(e3 + 0x40) & ~8;
             }
         }
-        if (*(u8*)(env + 0x40) & 0x20)
+        if (*(u8*)(environmentState + 0x40) & 0x20)
             gHeatEffectFadeDirection = 1;
         else
             gHeatEffectFadeDirection = -1;
@@ -1892,32 +1892,32 @@ void beginLoadingMap(void)
         *(f32*)(buf + 0x1c) = lbl_803DEBCC;
         *(f32*)(buf + 0x20) = lbl_803DEBCC;
         {
-            s16 a1 = *(s16*)(env + 0xe);
+            s16 a1 = *(s16*)(environmentState + 0xe);
             if (a1 != -1)
             {
-                *(f32*)(buf + 0xc) = (f32) * (int*)(env + 0x14);
-                *(f32*)(buf + 0x10) = (f32) * (int*)(env + 0x18);
-                *(f32*)(buf + 0x14) = (f32) * (int*)(env + 0x1c);
+                *(f32*)(buf + 0xc) = (f32) * (int*)(environmentState + 0x14);
+                *(f32*)(buf + 0x10) = (f32) * (int*)(environmentState + 0x18);
+                *(f32*)(buf + 0x14) = (f32) * (int*)(environmentState + 0x1c);
                 getEnvfxAct(buf, player, a1 & 0xFFFF, 0);
             }
-            a1 = *(s16*)(env + 0x10);
+            a1 = *(s16*)(environmentState + 0x10);
             if (a1 != -1)
             {
-                *(f32*)(buf + 0xc) = (f32) * (int*)(env + 0x20);
-                *(f32*)(buf + 0x10) = (f32) * (int*)(env + 0x24);
-                *(f32*)(buf + 0x14) = (f32) * (int*)(env + 0x28);
+                *(f32*)(buf + 0xc) = (f32) * (int*)(environmentState + 0x20);
+                *(f32*)(buf + 0x10) = (f32) * (int*)(environmentState + 0x24);
+                *(f32*)(buf + 0x14) = (f32) * (int*)(environmentState + 0x28);
                 getEnvfxAct(buf, player, a1 & 0xFFFF, 0);
             }
-            a1 = *(s16*)(env + 0x12);
+            a1 = *(s16*)(environmentState + 0x12);
             if (a1 != -1)
             {
-                *(f32*)(buf + 0xc) = (f32) * (int*)(env + 0x2c);
-                *(f32*)(buf + 0x10) = (f32) * (int*)(env + 0x30);
-                *(f32*)(buf + 0x14) = (f32) * (int*)(env + 0x34);
+                *(f32*)(buf + 0xc) = (f32) * (int*)(environmentState + 0x2c);
+                *(f32*)(buf + 0x10) = (f32) * (int*)(environmentState + 0x30);
+                *(f32*)(buf + 0x14) = (f32) * (int*)(environmentState + 0x34);
                 getEnvfxAct(buf, player, a1 & 0xFFFF, 0);
             }
         }
-        (*gSkyInterface)->setTimeOfDay(*(f32*)env);
+        (*gSkyInterface)->setTimeOfDay(*(f32*)environmentState);
     }
     else
     {
