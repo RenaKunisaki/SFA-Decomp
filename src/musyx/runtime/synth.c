@@ -260,8 +260,8 @@ typedef struct LAYER
     u8 reserved[3];
 } LAYER;
 
-u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 pan, u8 midi, u8 midiSet,
-                u8 section, u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd);
+static u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 pan, u8 midi, u8 midiSet,
+                       u8 section, u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd);
 
 /*
  * Set one studio/channel scale entry.
@@ -506,8 +506,8 @@ typedef struct KeymapEntry
  * Resolve an indirection-table sample entry, then dispatch the resolved
  * sample or nested sample group.
  */
-u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 pan, u8 midi, u8 midiSet, u8 section,
-                u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd)
+static u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 pan, u8 midi, u8 midiSet,
+                       u8 section, u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd)
 {
     u8 o;
     KeymapEntry* keymap;
@@ -682,7 +682,7 @@ static inline void UpdateTimeMIDICtrl(SynthHwVoice* sv)
     }
 }
 
-void LowPrecisionHandler(int voice)
+static void LowPrecisionHandler(int voice)
 {
     u32 j;
     s32 pbend;
