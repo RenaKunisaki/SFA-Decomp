@@ -262,7 +262,7 @@ void playerSetMovingAnims(int p1, int obj);
 int fn_802ADC08(GameObject* obj, int inner, int p3);
 void fn_802ADE80(GameObject* obj, int inner, int state);
 int fn_802AE480(GameObject* obj, int inner, int state);
-void fn_802AE650(GameObject* obj, int state, int p3);
+void playerUpdateStaffAttack(GameObject* obj, int state, int p3);
 void playerEnterDeepWater(int obj, int inner, int state);
 void playerStartWallTransition(GameObject* obj, int inner, int state);
 void playerStartStaffAttack(GameObject* obj, int state, int p3);
@@ -9891,7 +9891,7 @@ int playerStateMoving(int obj, int state, f32 fv)
         }
         else if ((fl >> 4 & 1) != 0)
         {
-            fn_802AE650((GameObject*)obj, inner, state);
+            playerUpdateStaffAttack((GameObject*)obj, inner, state);
         }
         else if ((fl >> 7 & 1) != 0)
         {
@@ -14207,7 +14207,7 @@ int fn_802AE480(GameObject* obj, int inner, int state)
     return 0;
 }
 
-void fn_802AE650(GameObject* obj, int state, int p3)
+void playerUpdateStaffAttack(GameObject* obj, int state, int p3)
 {
     f32 v;
     u32 b;
