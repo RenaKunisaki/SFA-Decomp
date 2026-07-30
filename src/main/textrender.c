@@ -69,7 +69,7 @@ extern CtrlCharEntry gGameTextCtrlCodeArgCounts[];
 
 extern u32 sSubtitleCtrlCmdScratch[];
 
-void translateToDinoLanguage(u8* str);
+static void translateToDinoLanguage(u8* str);
 
 /*
  * The disc-error/loading screens' self-contained resources: the SJIS->glyph
@@ -831,7 +831,7 @@ struct
 
 char sGameTextMapPathFormat[] = "gametext/%s/%s.bin";
 
-void translateToDinoLanguage(u8* str)
+static void translateToDinoLanguage(u8* str)
 {
     int byteOff = 0;
     u32 ch;
