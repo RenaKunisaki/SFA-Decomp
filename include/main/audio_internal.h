@@ -171,7 +171,7 @@ extern u16 gSfxLoopedObjectSoundIds[0x80];
 extern u32 gSfxLoopedObjectSoundObjects[0x80];
 extern u16 gSfxLoopedObjectSoundCount;
 extern SfxObjectChannel gSfxObjectChannels[];
-extern u8 gSfxGlobalCtrlLevel;
+extern u8 gSfxGlobalReverbLevel;
 extern u32 gSfxObjectChannelMatchCount;
 extern u64 gSfxObjectChannelAge;
 extern const MusicSeqStartParams gMusicSeqStartParamsDefault;
