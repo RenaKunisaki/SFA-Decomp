@@ -671,29 +671,35 @@ int modelLoadAnimations(void* model, int id, void* animBase)
     }
     return 0;
 }
-int modelGetAmapSize(int animId, int amapFlag, int animCount);
-int modelGetAmapSize(int animId, int amapFlag, int animCount)
+int modelGetAmapSize(int modelId, int amapFlag, int animCount);
+int modelGetAmapSize(int modelId, int amapFlag, int animCount)
 {
-    int size;
+    int amapSize;
+    int totalSize;
+    int index;
+
+    totalSize = animCount;
     if (amapFlag != 0)
     {
-        size = animCount * 2 + 8;
-        while (size & 7)
+        totalSize = (totalSize << 1) + 8;
+        while (totalSize & 7)
         {
-            size++;
+            totalSize++;
         }
     }
     else
     {
-        size = animCount * 4;
-        while (size & 7)
+        totalSize = totalSize << 2;
+        while (totalSize & 7)
         {
-            size++;
+            totalSize++;
         }
-        fileLoadToBufferOffset(MLDF_FILEID_AMAP_TAB, gModelAnimOffsetTable, (animId & ~3) << 2, 0x20);
-        size += gModelAnimOffsetTable[(animId & 3) + 1] - gModelAnimOffsetTable[animId & 3];
+        index = modelId & 3;
+        fileLoadToBufferOffset(MLDF_FILEID_AMAP_TAB, gModelAnimOffsetTable, (modelId & ~3) << 2, 0x20);
+        amapSize = gModelAnimOffsetTable[index + 1] - gModelAnimOffsetTable[index];
+        totalSize += amapSize;
     }
-    return size;
+    return totalSize;
 }
 
 int modelLoad_calcSizes(void* model, int flags, int* sizes, int forceBlendChannels)
