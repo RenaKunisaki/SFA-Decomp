@@ -14964,7 +14964,7 @@ void playerRunActiveSpells(GameObject* obj, int state)
     }
 }
 
-void fn_802AFB0C(int obj, int inner, int state)
+void playerProcessHitResponse(int obj, int inner, int state)
 {
     int orig;
     int work;
@@ -18273,7 +18273,7 @@ void playerUpdate(GameObject* obj)
                     ((PlayerState*)inner)->teleportAnimRate = 0.2f;
                 }
             }
-            fn_802AFB0C((int)obj, inner, inner);
+            playerProcessHitResponse((int)obj, inner, inner);
             if (((PlayerState*)inner)->heldObj != NULL &&
                 Obj_IsObjectAlive((GameObject*)((PlayerState*)inner)->heldObj) == 0)
             {

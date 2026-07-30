@@ -9,7 +9,7 @@ struct PlayerState;
 int playerUpdateAirborneMotion(GameObject* obj, int inner, int state);
 void playerUpdate(GameObject* obj);
 void playerItemGetAnimFn(int obj, int inner, int state);
-void fn_802AFB0C(int obj, int inner, int state);
+void playerProcessHitResponse(int obj, int inner, int state);
 void playerDoHitDetection(int obj);
 int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv);
 
