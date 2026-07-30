@@ -63,33 +63,6 @@ extern f32 gDbStealerwormWaitAvoidWeights[];
 extern int gDbStealerwormKillAvoidGroups[];
 extern f32 gDbStealerwormKillAvoidWeights[];
 
-typedef struct DbstealerwormPlacement
-{
-    u8 pad0[0x4 - 0x0];
-    u8 unk4;              /* 0x04 */
-    u8 unk5;              /* 0x05 */
-    u8 unk6;              /* 0x06 */
-    u8 unk7;              /* 0x07 */
-    f32 homePosX;         /* 0x08: worm home/spawn position */
-    f32 homePosY;         /* 0x0C */
-    f32 homePosZ;         /* 0x10 */
-    u32 eventConfigId;    /* 0x14: 0xFFFFFFFF = no map-event config */
-    s16 incrementGameBit; /* 0x18: game bit bumped on a successful steal */
-    s16 unk1A;            /* 0x1A */
-    s16 unk1C;            /* 0x1C */
-    s16 unk1E;            /* 0x1E */
-    s16 unk20;            /* 0x20 */
-    u8 pad22[0x24 - 0x22];
-    s16 cfgTableIndex; /* 0x24: index into the per-worm config table (entry stride 8) */
-    u8 pad26[0x2B - 0x26];
-    u8 configFlags;          /* 0x2B: config flag bits OR'd into the state's configFlags */
-    s16 disableMapEventTime; /* 0x2C: nonzero suppresses the on-activate addTime() map-event grant */
-    s8 seqId;                /* 0x2E: sequence run when activated */
-    u8 pad2F[0x30 - 0x2F];
-} DbstealerwormPlacement;
-
-STATIC_ASSERT(sizeof(DbstealerwormPlacement) == 0x30);
-
 typedef struct
 {
     int* msgs; /* 0x00 */
@@ -157,21 +130,21 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
         }
         else
         {
-            if (((DbstealerwormPlacement*)data)->eventConfigId == 0xFFFFFFFF)
+            if (((GroundBaddiePlacement*)data)->base.ident == 0xFFFFFFFF)
             {
                 Obj_FreeObject(obj);
                 return 0;
             }
-            entry = (char*)&gDbStealerwormScriptTable[((DbstealerwormPlacement*)data)->cfgTableIndex * 2];
+            entry = (char*)&gDbStealerwormScriptTable[((GroundBaddiePlacement*)data)->unk24 * 2];
             count = *(s16*)(entry + 4);
             for (; count != 0;)
             {
                 Stack_Push(sub->msgStack, (int*)(*(int*)entry + --count * 12));
             }
             sub->msgAdvance = 1;
-            (obj)->anim.localPosX = ((DbstealerwormPlacement*)data)->homePosX;
-            (obj)->anim.localPosY = ((DbstealerwormPlacement*)data)->homePosY;
-            (obj)->anim.localPosZ = ((DbstealerwormPlacement*)data)->homePosZ;
+            (obj)->anim.localPosX = ((GroundBaddiePlacement*)data)->base.posX;
+            (obj)->anim.localPosY = ((GroundBaddiePlacement*)data)->base.posY;
+            (obj)->anim.localPosZ = ((GroundBaddiePlacement*)data)->base.posZ;
         }
         switch (sub->msgMode)
         {
@@ -267,9 +240,9 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
         if (*(void**)&sub->routeCursor == NULL)
         {
             sub->routeCursor = *(int*)sub->cfg;
-            (obj)->anim.localPosX = ((DbstealerwormPlacement*)data)->homePosX;
-            (obj)->anim.localPosY = ((DbstealerwormPlacement*)data)->homePosY;
-            (obj)->anim.localPosZ = ((DbstealerwormPlacement*)data)->homePosZ;
+            (obj)->anim.localPosX = ((GroundBaddiePlacement*)data)->base.posX;
+            (obj)->anim.localPosY = ((GroundBaddiePlacement*)data)->base.posY;
+            (obj)->anim.localPosZ = ((GroundBaddiePlacement*)data)->base.posZ;
         }
         if (*(int*)(sub->routeCursor + 4) != 0)
         {
@@ -1613,8 +1586,8 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
     if ((obj)->anim.currentMoveProgress > 0.8f)
     {
         int popBuf;
-        gameBitIncrement(((DbstealerwormPlacement*)data)->incrementGameBit);
-        if ((((DbstealerwormPlacement*)data)->eventConfigId + 0x10000) == 0xffff)
+        gameBitIncrement(((GroundBaddiePlacement*)data)->gameBitA);
+        if (((u32)((GroundBaddiePlacement*)data)->base.ident + 0x10000) == 0xffff)
         {
             Obj_FreeObject(obj);
             return 0;
@@ -1623,11 +1596,11 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
         {
             Stack_Pop(sub_40c->msgStack, &popBuf);
         }
-        if (((DbstealerwormPlacement*)data)->disableMapEventTime == 0)
+        if (((GroundBaddiePlacement*)data)->unk2C == 0)
         {
-            (*gMapEventInterface)->addTime(*(int*)&((DbstealerwormPlacement*)data)->eventConfigId, 360.0f);
+            (*gMapEventInterface)->addTime(*(int*)&((GroundBaddiePlacement*)data)->base.ident, 360.0f);
         }
-        sub->configFlags |= ((DbstealerwormPlacement*)data)->configFlags;
+        sub->configFlags |= ((GroundBaddiePlacement*)data)->flags;
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 0, 2, gDbStealerwormDeathFootstepSfx);
     (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, gDbStealerwormBurrowFootstepSfx);
@@ -1826,7 +1799,7 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
         bs->physicsActive = 0;
         bs->hasTarget = 0;
         sub->targetState = 0;
-        sub->configFlags |= ((DbstealerwormPlacement*)placementData)->configFlags;
+        sub->configFlags |= ((GroundBaddiePlacement*)placementData)->flags;
         if (*(void**)&sub_40c->linkedObj != NULL)
         {
             ObjMsg_SendToObject((void*)sub_40c->linkedObj, 17, obj, 19);
@@ -2130,7 +2103,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
         near = (GameObject*)objGetNearestTypeTo(DBEGG_OBJGROUP, obj, &stk.range);
     }
     if (near == 0 && (st->configFlags & 0x10) != 0 && (st->configFlags & 2) == 0 &&
-        (((DbstealerwormPlacement*)data)->configFlags & 2) != 0)
+        (((GroundBaddiePlacement*)data)->flags & 2) != 0)
     {
         near = (GameObject*)objGetNearestTypeTo(DBEGG_OBJGROUP, obj, 0);
     }
@@ -2312,7 +2285,7 @@ void dbstealerworm_update(GameObject* obj)
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     if ((u32)((DbStealerwormControl*)sub)->flags44 >> 4 & 1)
     {
-        grp = (DbWormMsgGroup*)(tbl + ((DbstealerwormPlacement*)data)->cfgTableIndex * 8);
+        grp = (DbWormMsgGroup*)(tbl + ((GroundBaddiePlacement*)data)->unk24 * 8);
         grp = (DbWormMsgGroup*)((char*)grp + 0x15c);
         ((DbStealerwormControl*)sub)->msgStack = Queue_Alloc(0x14, 0xc);
         n = grp->count;
@@ -2328,7 +2301,7 @@ void dbstealerworm_update(GameObject* obj)
         if (obj->userData1 != 0)
         {
             if ((((GroundBaddieState*)blob)->configFlags & 4) == 0 &&
-                (*gMapEventInterface)->shouldNotSaveTime(*(int*)&((DbstealerwormPlacement*)data)->eventConfigId) != 0)
+                (*gMapEventInterface)->shouldNotSaveTime(*(int*)&((GroundBaddiePlacement*)data)->base.ident) != 0)
             {
                 (*gBaddieControlInterface)
                     ->initGroundBaddie(obj, (u8*)data, (u8*)blob, 0x10, 7, 0x10a, 0x26, 20.0f);
@@ -2342,10 +2315,10 @@ void dbstealerworm_update(GameObject* obj)
         }
         else if (obj->userData2 == 0)
         {
-            obj->anim.localPosX = ((DbstealerwormPlacement*)data)->homePosX;
-            obj->anim.localPosY = ((DbstealerwormPlacement*)data)->homePosY;
-            obj->anim.localPosZ = ((DbstealerwormPlacement*)data)->homePosZ;
-            (*gObjectTriggerInterface)->runSequence(((DbstealerwormPlacement*)data)->seqId, (void*)obj, -1);
+            obj->anim.localPosX = ((GroundBaddiePlacement*)data)->base.posX;
+            obj->anim.localPosY = ((GroundBaddiePlacement*)data)->base.posY;
+            obj->anim.localPosZ = ((GroundBaddiePlacement*)data)->base.posZ;
+            (*gObjectTriggerInterface)->runSequence(((GroundBaddiePlacement*)data)->sequenceId, (void*)obj, -1);
             obj->userData2 = 1;
         }
         else
