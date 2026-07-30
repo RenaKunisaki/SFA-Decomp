@@ -40,7 +40,6 @@ extern s8 hudHiddenFrameCount;
 extern u8 gGameLoopReloadRequested;
 extern u8 lbl_803DCA38;
 
-void gameLoop(void);
 void init(void);
 void askProgressiveScanMode(void);
 
