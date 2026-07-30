@@ -348,7 +348,7 @@ void Obj_SetParent(GameObject* obj, GameObject* newParent, int updateLocalTransf
 int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 radius,
                                  s8 resolveCollision)
 {
-    f32 quadraticC, startDeltaX, timeA, startDistanceSq, startX, moveX, moveZ, quadraticB, negB;
+    f32 quadraticC, startDeltaX, timeA, startDistanceSq, startX, startZ, moveX, moveZ, quadraticB, negB;
     f32 separation, sqrtDiscriminant, denominator, separationX, timeB, hitTime, hitX, hitZ;
     f32 separationZ, planeOffset, normalX, penetration, discriminant, startDeltaZ, normalZ;
     f32 motionLengthSq, fourMotionLengthSq;
@@ -359,7 +359,8 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
     startX = x[0];
     startDeltaX = startX - centerX;
     startDistanceSq = startDeltaX * startDeltaX;
-    startDeltaZ = z[0] - centerZ;
+    startZ = z[0];
+    startDeltaZ = startZ - centerZ;
     {
         f32 deltaZSq = startDeltaZ * startDeltaZ;
         startDistanceSq = startDistanceSq + deltaZSq;
@@ -376,7 +377,7 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
     }
 
     moveX = x[1] - startX;
-    moveZ = z[1] - z[0];
+    moveZ = z[1] - startZ;
     motionLengthSq = moveX * moveX + moveZ * moveZ;
     if (motionLengthSq > 0.0f)
     {
