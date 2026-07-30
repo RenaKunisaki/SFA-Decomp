@@ -5333,7 +5333,7 @@ void objSetColorFilter(s16 a, s16 b, s16 c) {
 
 #define OBJPRINT_CHILD_TABLE(staff) (*(char**)(*(char**)((staff) + 0x50) + 0x2c))
 
-void staffMtxFn_8003b620(int staffArg, GameObject* objArg, int modelArg, int a, int b, int c) {
+void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg, int a, int b, int c) {
     f32 va[3];
     Vec vb;
     int k;
@@ -5493,7 +5493,7 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag) {
     for (i = 0, walk = (int)obj; i < (s32)(u32)obj->childCount; i++) {
         int staff = *(int*)&((GameObject*)walk)->childObjs[0];
         if (((GameObject*)staff)->anim.classId == 0x2d) {
-            staffMtxFn_8003b620(staff, obj, (int)OBJPRINT_ACTIVE_BANK(staff), a, b, c);
+            staffUpdateSegmentTransforms(staff, obj, (int)OBJPRINT_ACTIVE_BANK(staff), a, b, c);
         }
         walk += 4;
     }
