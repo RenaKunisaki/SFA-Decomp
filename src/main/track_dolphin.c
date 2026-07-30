@@ -1033,7 +1033,7 @@ int trackGetLineIntersect(f32* startPos, f32* endPos, f32 radius, int flags, Tra
         memcpy(worldStart, startPos, 0xc);
         memcpy(worldEnd, endPos, 0xc);
     }
-    objects = objGetAllOfType(6, &count);
+    objects = (u32*)objGetAllOfType(6, &count);
     for (i = 0; i < count; i++)
     {
         GameObject* target = (GameObject*)objects[i];

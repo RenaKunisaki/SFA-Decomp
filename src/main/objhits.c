@@ -3300,13 +3300,13 @@ int objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance) {
     return nearest;
 }
 
-u32* objGetAllOfType(int group, int* countOut) {
-    if ((group < 0) || (group >= OBJTYPE_COUNT)) {
+GameObject** objGetAllOfType(int group, int* countOut) {
+    if (group < 0 || group >= OBJTYPE_COUNT) {
         *countOut = 0;
         return 0x0;
     }
     *countOut = gObjectTypeIndices.offsets[group + 1] - gObjectTypeIndices.offsets[group];
-    return (u32*)(gObjectTypeList + gObjectTypeIndices.offsets[group]);
+    return (GameObject**)(gObjectTypeList + gObjectTypeIndices.offsets[group]);
 }
 
 void objFreeObjectType(int obj, int group) {

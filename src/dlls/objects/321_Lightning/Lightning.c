@@ -78,7 +78,7 @@ void lightning_update(GameObject* obj) {
             spawnLightning = 1;
         }
         if (spawnLightning != 0) {
-            objects = objGetAllOfType(LIGHTNING_OBJECT_GROUP, &objectCount);
+            objects = (u32*)objGetAllOfType(LIGHTNING_OBJECT_GROUP, &objectCount);
             objectIndex = 0;
             while (objectIndex < objectCount) {
                 u32 linkedMapId = ((GameObject*)objects[objectIndex])->anim.placement->ident;

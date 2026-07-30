@@ -934,22 +934,17 @@ void objGetColor(int slot, u8* red, u8* green, u8* blue)
 
 void getAmbientColor(int slot, u8* red, u8* green, u8* blue)
 {
-    u8* sky;
-    int offset;
-
-    sky = gSkyState;
-    if (sky == NULL)
-    {
+    u8* sky = gSkyState;
+    if (sky == NULL) {
         *blue = 0xff;
         *green = 0xff;
         *red = 0xff;
-        return;
+    } else {
+        int offset = slot * 0xa4;
+        *red = gSkyState[offset + 0x78];
+        *green = gSkyState[offset + 0x79];
+        *blue = gSkyState[offset + 0x7a];
     }
-
-    offset = slot * 0xa4;
-    *red = gSkyState[offset + 0x78];
-    *green = gSkyState[offset + 0x79];
-    *blue = gSkyState[offset + 0x7a];
 }
 
 void skyGetAmbientColor(int slot, u8* red, u8* green, u8* blue)

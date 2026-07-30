@@ -2,6 +2,7 @@
 #define DLLS_OBJECTS_373_DFROPENODE_H_
 
 #include "dlls/object_descriptor.h"
+#include "dolphin/mtx/vec_types.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
@@ -15,7 +16,7 @@ typedef struct DFropenodePlacement {
 } DFropenodePlacement;
 
 typedef struct DFropenodeRopeNode {
-    f32 pos[3];
+    Vec pos;
     f32 velocity[3];
     f32 force[3];
     u8 linkCount;
@@ -79,6 +80,21 @@ typedef struct DFropenodeRenderState {
     u8 blue;
 } DFropenodeRenderState;
 
+typedef struct DFropenodeInterface {
+    ObjectInterface object;
+    void (*getPlaneEquation)(GameObject* obj, f32* out);
+    void (*getWorldPosAtPhase)(f32 phase, GameObject* obj, f32* xOut, f32* yOut, f32* zOut);
+    void (*advancePhaseByDistance)(GameObject* obj, f32* phase, f32 distance);
+    void (*applyForceAtPhase)(f32 phase, f32 force, GameObject* obj);
+    int (*findNearestRopePoint)(GameObject* obj, f32 worldX, f32 worldY, f32 worldZ, f32* distanceOut, f32* phaseOut,
+                                u8* sideOut);
+    int (*getAngle)(GameObject* obj);
+    void (*setVisible)(GameObject* obj, int visible);
+    int (*isVisible)(GameObject* obj);
+    void (*setMinY)(GameObject* obj, f32 value);
+    void (*clearLinkedObj)(GameObject* state);
+} DFropenodeInterface;
+
 STATIC_ASSERT(offsetof(DFropenodePlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(DFropenodePlacement, roleFlags) == 0x18);
 STATIC_ASSERT(offsetof(DFropenodePlacement, pad19) == 0x19);
@@ -140,6 +156,19 @@ STATIC_ASSERT(offsetof(DFropenodeRenderState, red) == 0x00);
 STATIC_ASSERT(offsetof(DFropenodeRenderState, green) == 0x01);
 STATIC_ASSERT(offsetof(DFropenodeRenderState, blue) == 0x02);
 STATIC_ASSERT(sizeof(DFropenodeRenderState) == 0x03);
+
+STATIC_ASSERT(offsetof(DFropenodeInterface, object) == 0x00);
+STATIC_ASSERT(offsetof(DFropenodeInterface, getPlaneEquation) == 0x20);
+STATIC_ASSERT(offsetof(DFropenodeInterface, getWorldPosAtPhase) == 0x24);
+STATIC_ASSERT(offsetof(DFropenodeInterface, advancePhaseByDistance) == 0x28);
+STATIC_ASSERT(offsetof(DFropenodeInterface, applyForceAtPhase) == 0x2C);
+STATIC_ASSERT(offsetof(DFropenodeInterface, findNearestRopePoint) == 0x30);
+STATIC_ASSERT(offsetof(DFropenodeInterface, getAngle) == 0x34);
+STATIC_ASSERT(offsetof(DFropenodeInterface, setVisible) == 0x38);
+STATIC_ASSERT(offsetof(DFropenodeInterface, isVisible) == 0x3C);
+STATIC_ASSERT(offsetof(DFropenodeInterface, setMinY) == 0x40);
+STATIC_ASSERT(offsetof(DFropenodeInterface, clearLinkedObj) == 0x44);
+STATIC_ASSERT(sizeof(DFropenodeInterface) == 0x48);
 
 void DFropenode_setMinY(GameObject* obj, f32 value);
 int DFropenode_isVisible(GameObject* obj);

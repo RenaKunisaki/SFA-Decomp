@@ -315,7 +315,7 @@ void windLift_update(GameObject* obj) {
                 state->slots[0].phaseFlags &= ~WINDLIFT_SLOT_RESET_FLAGS;
             }
         }
-        objects = objGetAllOfType(CFGUARDIAN_OBJECT_GROUP, &objectCount);
+        objects = (u32*)objGetAllOfType(CFGUARDIAN_OBJECT_GROUP, &objectCount);
         objectCount = objectCount + 1;
         if (objectCount > WINDLIFT_SLOT_COUNT) {
             objectCount = WINDLIFT_SLOT_COUNT;

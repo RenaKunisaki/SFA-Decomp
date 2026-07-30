@@ -735,7 +735,7 @@ void snowclaw_update(GameObject* obj)
 
     if (*(void**)inner == NULL)
     {
-        objects = objGetAllOfType(SNOWCLAW_MOUNT_OBJGROUP, &objectCount);
+        objects = (u32*)objGetAllOfType(SNOWCLAW_MOUNT_OBJGROUP, &objectCount);
         targetType = seqPairTableLookup(gSnowClawMoveTable, 6, obj->anim.romDefNo);
         for (i = 0; i < objectCount; i++)
         {

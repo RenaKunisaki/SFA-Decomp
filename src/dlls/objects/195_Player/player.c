@@ -12809,7 +12809,7 @@ int playerFindNearestLookTarget(GameObject* obj)
         return (int)held;
     }
     best = NULL;
-    objs = objGetAllOfType(8, &count);
+    objs = (u32*)objGetAllOfType(8, &count);
     i = 0;
     bestDist = 0.0f;
     for (; i < count;)
