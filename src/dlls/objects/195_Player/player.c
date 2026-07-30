@@ -233,7 +233,7 @@ int playerStateIceSpell(int obj, int state, f32 fv);
 void playerStagedRestoreDefaultControl(GameObject* obj, int state);
 int playerState00(int obj, int state);
 void playerGetMovementOrFacingDirection(GameObject* obj, int state, f32* out);
-int fn_802A8680(int p1, int p2, void* src, f32* vec, int out, int flag);
+int playerBuildWallPlaneProbe(int p1, int p2, void* src, f32* vec, int out, int flag);
 int playerBuildLedgeClimbProbe(int a, int b, void* c, int d, f32* e, f32 distance);
 void playerRestoreAfterSequence(GameObject* obj, int p2, int p3);
 void playerCastIceSpell(GameObject* unused);
@@ -11214,7 +11214,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             {
                 continue;
             }
-            if (fn_802A8680(obj, state, &buf, end, state + 0x548, i == 5) == 0)
+            if (playerBuildWallPlaneProbe(obj, state, &buf, end, state + 0x548, i == 5) == 0)
             {
                 continue;
             }
@@ -11477,7 +11477,7 @@ int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag)
     return 0;
 }
 
-int fn_802A8680(int p1, int p2, void* src, f32* vec, int out, int flag)
+int playerBuildWallPlaneProbe(int p1, int p2, void* src, f32* vec, int out, int flag)
 {
     f32 p48;
     f32 m44;
