@@ -232,7 +232,7 @@ int playerState04(int obj, int state, f32 fv);
 int playerStateIceSpell(int obj, int state, f32 fv);
 void playerStagedRestoreDefaultControl(GameObject* obj, int state);
 int playerState00(int obj, int state);
-void fn_802A81B8(GameObject* obj, int state, f32* out);
+void playerGetMovementOrFacingDirection(GameObject* obj, int state, f32* out);
 int fn_802A8680(int p1, int p2, void* src, f32* vec, int out, int flag);
 int fn_802A8EE4(int a, int b, void* c, int d, f32* e, f32 distance);
 void playerRestoreAfterSequence(GameObject* obj, int p2, int p3);
@@ -10871,7 +10871,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     rot[0] = -mathSinf((3.1415927f * (f32)ai) / 32768.0f);
     rot[1] = 0.0f;
     rot[2] = -mathCosf((3.1415927f * (f32)ai) / 32768.0f);
-    fn_802A81B8((GameObject*)(obj), state, vec);
+    playerGetMovementOrFacingDirection((GameObject*)(obj), state, vec);
     sc1p[0] = 50.0f * rot[0];
     sc1p[1] = 50.0f * rot[1];
     sc1p[2] = 50.0f * rot[2];
@@ -11325,7 +11325,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     return -1;
 }
 
-void fn_802A81B8(GameObject* obj, int state, f32* out)
+void playerGetMovementOrFacingDirection(GameObject* obj, int state, f32* out)
 {
     f32 mag;
     u32 flag = (((PlayerState*)state)->flags3F1 >> 5) & 1;
