@@ -747,7 +747,7 @@ void showMemCardError(u8 err)
  */
 void cardShowLoadingMsg(u8 kind)
 {
-    int* buttons;
+    GameObject** buttons;
     u32 saved;
     int frame;
     int j;
@@ -771,7 +771,7 @@ void cardShowLoadingMsg(u8 kind)
             drawRect(rectAlpha, rectAlpha, 0x280, 0x1E0);
             for (j = 0; j < count; j++)
             {
-                objRenderModelAndHitVolumes((GameObject*)buttons[j], 0, 0, 0, 0, 1.0f);
+                objRenderModelAndHitVolumes(buttons[j], 0, 0, 0, 0, 1.0f);
             }
             curUiDllDraw(0, 0, 0, 0);
         }

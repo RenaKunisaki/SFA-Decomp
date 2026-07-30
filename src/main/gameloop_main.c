@@ -92,9 +92,9 @@ typedef enum GameLoopState
     GAME_STATE_RESETDONE = 5,        /* terminal, after OSResetSystem */
     GAME_STATE_HARDRESETPRESSED = 6  /* like GAME_STATE_RESETPRESSED but flags a hard reset */
 } GameLoopState;
-void addButtonObject(void* obj)
+void addButtonObject(GameObject* obj)
 {
-    gGameLoopButtonObjects[gGameLoopButtonObjectCount++] = (int)obj;
+    gGameLoopButtonObjects[gGameLoopButtonObjectCount++] = obj;
 }
 
 
@@ -776,17 +776,17 @@ void gameLoop(void)
         {
             if (screenBlankFrameCount == 0)
             {
-                int* p;
+                GameObject** p;
                 int i;
 
                 drawRect(0.0f, 0.0f, 0x280, 0x1e0);
                 i = 0;
-                p = (int*)&gGameLoopButtonObjects;
+                p = gGameLoopButtonObjects;
                 for (; i < gGameLoopButtonObjectCount; i++)
                 {
-                    objRenderModelAndHitVolumes((GameObject*)*p, 0, 0, 0, 0, 1.0f);
-                    if (((GameObject*)*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_FOX ||
-                        ((GameObject*)*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_KRYSTAL)
+                    objRenderModelAndHitVolumes(*p, 0, 0, 0, 0, 1.0f);
+                    if ((*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_FOX ||
+                        (*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_KRYSTAL)
                     {
                         objRenderFuzz((int*)*p);
                     }

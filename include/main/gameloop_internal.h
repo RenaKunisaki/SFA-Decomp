@@ -1,6 +1,7 @@
 #ifndef MAIN_GAMELOOP_INTERNAL_H_
 #define MAIN_GAMELOOP_INTERNAL_H_
 
+#include "game/objects/object_fwd.h"
 #include "types.h"
 
 extern int gGameLoopPendingUiDllId;
@@ -12,7 +13,7 @@ extern void* gAskProgressiveScanFlag;
 extern int gGameLoopPendingMapId;
 extern int gGameLoopPendingMapDataFileId;
 extern u8 gGameLoopPendingMusicId;
-extern int gGameLoopButtonObjects[2];
+extern GameObject* gGameLoopButtonObjects[2];
 extern u8 gGameLoopProgressiveMode;
 extern u8* gGameBitSaveData;
 extern u8* gGameBitTable;

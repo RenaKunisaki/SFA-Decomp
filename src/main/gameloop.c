@@ -63,7 +63,7 @@ void* gAskProgressiveScanFlag;
 int gGameLoopPendingMapId;
 int gGameLoopPendingMapDataFileId;
 u8 gGameLoopPendingMusicId;
-int gGameLoopButtonObjects[2];
+GameObject* gGameLoopButtonObjects[2];
 u8 gGameLoopProgressiveMode;
 u8* gGameBitSaveData;
 u8* gGameBitTable;

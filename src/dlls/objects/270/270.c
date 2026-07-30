@@ -10,6 +10,7 @@
 #include "main/camera.h"
 #include "main/dll/player_status.h"
 #include "main/frame_timing.h"
+#include "main/gameloop_api.h"
 #include "main/objtexture.h"
 #include "main/screen_transition.h"
 #include "sys/objects.h"
@@ -51,7 +52,7 @@ int DeathSeq_getObjectTypeId(void) {
 void DeathSeq_free(GameObject* obj) {
     setScreenTransitionPause(FALSE);
     setPendingMapLoad(FALSE);
-    removeButtonObject((u32)obj);
+    removeButtonObject(obj);
 }
 
 void DeathSeq_render(void) {
