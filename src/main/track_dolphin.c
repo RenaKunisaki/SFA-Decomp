@@ -1208,7 +1208,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
     {
         outputLineIndex = 0;
         lineByteOffset = outputLineIndex;
-        for (; outputLineIndex < gIntersectLineCount; lineByteOffset += 0x10, outputLineIndex++)
+        for (; outputLineIndex < gIntersectLineCount; lineByteOffset += sizeof(IntersectLine), outputLineIndex++)
         {
             int pointLinkIndex;
             s16* firstPointLinks;
