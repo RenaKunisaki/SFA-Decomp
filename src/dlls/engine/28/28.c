@@ -1,4 +1,5 @@
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "game/objects/object.h"
