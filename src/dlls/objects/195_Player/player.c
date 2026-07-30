@@ -1586,14 +1586,14 @@ void objSetXRot(GameObject* obj, int v)
     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
 }
 
-void fn_802961FC(GameObject* obj, u8 type)
+void playerSetHitReactionVariant(GameObject* unusedPlayer, u8 type)
 {
     u8 v = type;
     if (type > 2)
     {
         v = 0;
     }
-    lbl_803DE459 = v;
+    gPlayerHitReactionVariant = v;
 }
 
 f32 playerGetVerticalVel(GameObject* obj)
@@ -4752,17 +4752,17 @@ int playerState27(GameObject* obj, int state, f32 fv)
 
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
-        if (lbl_803DE459 == 0)
+        if (gPlayerHitReactionVariant == 0)
         {
-            lbl_803DE459 = 1;
+            gPlayerHitReactionVariant = 1;
         }
-        else if (lbl_803DE459 > 2)
+        else if (gPlayerHitReactionVariant > 2)
         {
-            lbl_803DE459 = 2;
+            gPlayerHitReactionVariant = 2;
         }
-        ((PlayerState*)state)->baddie.moveSpeed = lbl_803DC690[lbl_803DE459 - 1];
-        ObjAnim_SetCurrentMove((int)obj, lbl_803DC688[lbl_803DE459 - 1], 0.0f, 0);
-        lbl_803DE459 = 0;
+        ((PlayerState*)state)->baddie.moveSpeed = lbl_803DC690[gPlayerHitReactionVariant - 1];
+        ObjAnim_SetCurrentMove((int)obj, lbl_803DC688[gPlayerHitReactionVariant - 1], 0.0f, 0);
+        gPlayerHitReactionVariant = 0;
     }
     if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
     {
@@ -4799,7 +4799,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
     gPlayerModelChainStyle = 5;
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA == 0)
     {
-        if (lbl_803DE459 != 0)
+        if (gPlayerHitReactionVariant != 0)
         {
             doRumble(10.0f);
             *(int*)&((PlayerState*)state)->baddie.unk308 = 0;
@@ -4895,7 +4895,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
     }
     else
     {
-        lbl_803DE459 = 0;
+        gPlayerHitReactionVariant = 0;
         changed = 1;
         *(u32*)&inner->flags360 &= 0xFFFFFFFBF;
         Player_GetObjHitsState(obj)->suppressOutgoingHits = 0;
@@ -5725,7 +5725,7 @@ void* gPlayerPathObject;
 GameObject* gPlayerStaffObject;
 StaffCollisionInterface** gPlayerResource;
 u8 lbl_803DE458;
-u8 lbl_803DE459;
+u8 gPlayerHitReactionVariant;
 f32 gPlayerFireLaserCountdown;
 f32 lbl_803DE460;
 f32 lbl_803DE464;
@@ -17891,13 +17891,13 @@ void playerDoHitDetection(int obj)
                         }
                         if ((hitObj->anim.modelInstance->effectFlags & 8) != 0)
                         {
-                            lbl_803DE459 = 1;
+                            gPlayerHitReactionVariant = 1;
                         }
                     }
                     else if (*(s8*)(sub + 0xad) != 0)
                     {
                         doRumble(10.0f);
-                        lbl_803DE459 = 1;
+                        gPlayerHitReactionVariant = 1;
                     }
                 }
                 {
@@ -18393,7 +18393,7 @@ void objLoadPlayerFromSave(int obj)
     int me;
     u8* pathState;
 
-    lbl_803DE459 = 0;
+    gPlayerHitReactionVariant = 0;
     objAddObjectType((int)obj, 0);
     objAddObjectType((int)obj, PLAYER_OBJGROUP);
     objSetSlot((GameObject*)obj, 0x3c);

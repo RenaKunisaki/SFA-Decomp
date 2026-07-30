@@ -199,7 +199,7 @@ extern f32 lbl_803DE438;
 extern f32 lbl_803DE43C;
 extern f32 lbl_803DE440;
 extern u8 lbl_803DE458;
-extern u8 lbl_803DE459;
+extern u8 gPlayerHitReactionVariant;
 extern f32 gPlayerFireLaserCountdown;
 extern f32 lbl_803DE460;
 extern f32 lbl_803DE464;

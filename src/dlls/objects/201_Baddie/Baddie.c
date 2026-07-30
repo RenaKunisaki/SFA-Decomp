@@ -644,7 +644,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
             proj = ((EnemyState*)state)->trackedObj;
             if (proj != NULL && proj->anim.classId == 1)
             {
-                fn_802961FC(proj, result);
+                playerSetHitReactionVariant(proj, result);
             }
         }
         else if ((((EnemyState*)state)->flags2E8 & 0x20) != 0)
