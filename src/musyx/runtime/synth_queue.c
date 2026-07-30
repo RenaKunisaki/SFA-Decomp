@@ -28,6 +28,8 @@ typedef struct SynthVoiceRuntimeView
 #define SYNTH_VOICE_STATE_QUEUED    1 /* on gSynthQueuedVoices; awaiting start */
 #define SYNTH_VOICE_STATE_ALLOCATED 2 /* on gSynthAllocatedVoices; playing */
 
+static void synthQueueVoice(SynthVoice* voice);
+
 static inline void BuildTransTab(u8* tab, SynthPage* page)
 {
     u8 i;
@@ -315,7 +317,7 @@ void seqHandleMasterTrack(u8 secIndex)
  * Move a voice node from the queued list to the head of the allocated
  * list and mark it active.
  */
-void synthQueueVoice(SynthVoice* voice)
+static void synthQueueVoice(SynthVoice* voice)
 {
     if (voice->prev != 0)
     {
