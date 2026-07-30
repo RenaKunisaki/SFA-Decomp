@@ -737,7 +737,7 @@ extern u8 gGameUiUnusedHudSetting;
 extern u8 gCMenuItemEnabledTable[0x3C0];
 extern int gCMenuItemTargetTable[0xBA];
 extern Texture* gGameUiBlinkTexture;
-void hudDrawFn_80121440(int a, int b, int c);
+void hudDrawStatusBarsAndCounters(int a, int b, int c);
 extern s32 lbl_803DD828;
 extern u32 lbl_803DD82C;
 int cMenuCountAvailableEntries(CMenuItemDef* items, s8 useTricky);
@@ -2140,7 +2140,7 @@ void GameUI_setInputOverride(int buttons, s16 stickX, s16 stickY)
 
 
 
-void hudDrawFn_80121440(int unused1, int unused2, int unused3)
+void hudDrawStatusBarsAndCounters(int unused1, int unused2, int unused3)
 {
     TrickyHud* base = (TrickyHud*)lbl_803A87F0;
     int i;
@@ -8513,7 +8513,7 @@ void GameUI_hudDraw(int a, int b, int c)
                 y = sy - scale * (f32)(u32) ((Texture*)tex)->height;
                 drawTexture(tex, x, y, 0x96, 0x100);
             }
-            hudDrawFn_80121440(a, b, c);
+            hudDrawStatusBarsAndCounters(a, b, c);
         }
         GXSetScissor(0, 0, 0x280, 0x1e0);
         if (player != 0)
