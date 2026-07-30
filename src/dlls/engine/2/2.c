@@ -149,10 +149,10 @@ extern int gObjSeqPreemptList[][2];
 extern void* lbl_803DD0B8;
 extern int gObjSeqPreparingStreamSlot;
 extern int lbl_803DD064;
-extern u64 gSaveCardChecksumHi;
+extern u32 gSaveCardChecksumHi;
 extern u32 gSaveCardChecksumLo;
 extern u8* gSaveCardImageBuffer;
-extern u64 gSaveCardSerialHi;
+extern u32 gSaveCardSerialHi;
 extern u8 lbl_803DD059;
 extern int gObjSeqStreamResumeOffset;
 extern f32 gObjSeqStreamRemainingTime;
@@ -218,7 +218,7 @@ int saveGame_doWrite(int slot)
             }
             else
             {
-                gSaveCardChecksumHi = chk2;
+                *(u64*)&gSaveCardChecksumHi = chk2;
             }
         }
     }
@@ -280,9 +280,9 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     {
         if (lbl_803DD059 != 0)
         {
-            if (gSaveCardChecksumHi != 0)
+            if (*(u64*)&gSaveCardChecksumHi != 0)
             {
-                if (chk != gSaveCardChecksumHi)
+                if (chk != *(u64*)&gSaveCardChecksumHi)
                 {
                     result = -0x55;
                     gSaveCardState = 0xb;
@@ -291,13 +291,13 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
             else
             {
                 gSaveCardChecksumLo = (u32)chk;
-                *(u32*)&gSaveCardChecksumHi = (u32)(chk >> 32);
+                gSaveCardChecksumHi = (u32)(chk >> 32);
             }
         }
         else
         {
             gSaveCardChecksumLo = (u32)chk;
-            *(u32*)&gSaveCardChecksumHi = (u32)(chk >> 32);
+            gSaveCardChecksumHi = (u32)(chk >> 32);
         }
     }
     if (result == 0)
@@ -559,9 +559,9 @@ int saveGame(int writeImages)
         {
             if (lbl_803DD059 != 0)
             {
-                if (gSaveCardSerialHi != 0)
+                if (*(u64*)&gSaveCardSerialHi != 0)
                 {
-                    if (serial != gSaveCardSerialHi)
+                    if (serial != *(u64*)&gSaveCardSerialHi)
                     {
                         result = -0x55;
                         gSaveCardState = 0xb;
@@ -569,12 +569,12 @@ int saveGame(int writeImages)
                 }
                 else
                 {
-                    gSaveCardSerialHi = serial;
+                    *(u64*)&gSaveCardSerialHi = serial;
                 }
             }
             else
             {
-                gSaveCardSerialHi = serial;
+                *(u64*)&gSaveCardSerialHi = serial;
             }
         }
         else
@@ -670,7 +670,7 @@ int saveGame(int writeImages)
                 result = CARDSetStatus(0, gSaveCardFileInfo.fileInfo.fileNo, &stat);
                 if (result == CARD_RESULT_READY)
                 {
-                    gSaveCardChecksumHi = *(u64*)(gSaveCardImageBuffer + 0x3ff8);
+                    *(u64*)&gSaveCardChecksumHi = *(u64*)(gSaveCardImageBuffer + 0x3ff8);
                 }
             }
         }
