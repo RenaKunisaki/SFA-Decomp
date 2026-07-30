@@ -989,7 +989,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
         zero = 0;
         for (q = 1, keys = keys + 1; q < 9; keys++, q++)
         {
-            vec = objModelGetVecFn_800395d8(obj, *keys);
+            vec = objFindJointPoseVector(obj, *keys);
             if (vec != 0)
             {
                 vec[2] = zero;
@@ -1289,7 +1289,7 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
             zero = 0;
             for (q = 1, ptr = ptr + 1; q < 9; ptr++, q++)
             {
-                vec = objModelGetVecFn_800395d8(obj, *ptr);
+                vec = objFindJointPoseVector(obj, *ptr);
                 if (vec != 0)
                 {
                     vec[2] = zero;
@@ -1325,7 +1325,7 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
         zero = 0;
         for (i2 = 1, p2 = p2 + 1; i2 < 9; p2++, i2++)
         {
-            vec = objModelGetVecFn_800395d8(obj, *p2);
+            vec = objFindJointPoseVector(obj, *p2);
             if (vec != 0)
             {
                 vec[2] = zero;
@@ -1362,7 +1362,7 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
         p3 = p3 + 1;
         for (; i3 < 9; i3++)
         {
-            vec = objModelGetVecFn_800395d8(obj, *p3);
+            vec = objFindJointPoseVector(obj, *p3);
             if (vec != 0)
             {
                 vec[2] = sb;
@@ -1488,7 +1488,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
             zero = 0;
             for (q = 1, ptr = ptr + 1; q < 9; ptr++, q++)
             {
-                vec = objModelGetVecFn_800395d8(obj, *ptr);
+                vec = objFindJointPoseVector(obj, *ptr);
                 if (vec != 0)
                 {
                     vec[2] = zero;
@@ -1524,7 +1524,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
         zero = 0;
         for (i2 = 1, p2 = p2 + 1; i2 < 9; p2++, i2++)
         {
-            vec = objModelGetVecFn_800395d8(obj, *p2);
+            vec = objFindJointPoseVector(obj, *p2);
             if (vec != 0)
             {
                 vec[2] = zero;
@@ -1561,7 +1561,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
         p3 = p3 + 1;
         for (; i3 < 9; i3++)
         {
-            vec = objModelGetVecFn_800395d8(obj, *p3);
+            vec = objFindJointPoseVector(obj, *p3);
             if (vec != 0)
             {
                 vec[2] = sb;

@@ -10,7 +10,7 @@ typedef struct ObjModel ObjModel;
 int* objGetLookAtJointKeys(void);
 void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition);
 void characterClampJointVecs(GameObject* obj, int* keys, int count, int lo, int hi);
-s16* objModelGetVecFn_800395d8(GameObject* obj, int target);
+s16* objFindJointPoseVector(GameObject* obj, int key);
 void characterHeadLookRelax(GameObject* obj, void* state);
 void objSetColorFilter(s16 red, s16 green, s16 blue);
 void objSetGlowColor(int red, int green, int blue, int alpha);

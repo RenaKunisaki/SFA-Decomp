@@ -574,7 +574,7 @@ void warpstone_update(int obj) {
     ((GameObject*)obj)->anim.localPosY += gWarpStoneHeadAimHeightOffset;
     characterAimHeadAtTarget((GameObject*)(obj), (void*)target, (void*)(state + offsetof(WarpStoneState, headAimState)),
                              0x23, 1, gWarpStoneHeadAimMode);
-    modelVec = objModelGetVecFn_800395d8((GameObject*)(obj), 0);
+    modelVec = objFindJointPoseVector((GameObject*)(obj), 0);
     ((GameObject*)obj)->anim.localPosY -= gWarpStoneHeadAimHeightOffset;
 
     if (modelVec != NULL) {

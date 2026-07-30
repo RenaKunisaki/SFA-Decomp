@@ -176,7 +176,7 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
     PartFxSpawnParams partfxParams;
 
     drakorState = state;
-    neck = objModelGetVecFn_800395d8(obj, 0xe);
+    neck = objFindJointPoseVector(obj, 0xe);
     if (neck != NULL)
     {
         neckDelta = (s16)-neck[0];
@@ -188,10 +188,10 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
         partfxParams.scale = 1.0f;
         if (timerIsActive(&drakorState->jawAnimAngle) != 0)
         {
-            upperJaw = objModelGetVecFn_800395d8(obj, 0xf);
+            upperJaw = objFindJointPoseVector(obj, 0xf);
             if (upperJaw != NULL)
             {
-                lowerJaw = objModelGetVecFn_800395d8(obj, 0x10);
+                lowerJaw = objFindJointPoseVector(obj, 0x10);
                 if (lowerJaw != NULL)
                 {
                     jawDelta = (int)(drakorState->jawAnimAngle * lbl_803DC19A) - (u16)upperJaw[1];
@@ -895,7 +895,7 @@ void bossdrakor_update(GameObject* obj)
         tbl = tblRes;
         do
         {
-            uvec = (s16*)objModelGetVecFn_800395d8(obj, tbl[0]);
+            uvec = (s16*)objFindJointPoseVector(obj, tbl[0]);
             if (uvec != NULL)
             {
                 uvec[1] = shakeY;
@@ -914,7 +914,7 @@ void bossdrakor_update(GameObject* obj)
     if (((BossDrakorState*)state)->flags198.b04)
     {
         player = Obj_GetPlayerObject();
-        vec = objModelGetVecFn_800395d8(obj, 0xe);
+        vec = objFindJointPoseVector(obj, 0xe);
         if (vec != NULL)
         {
             f32 hxsq;

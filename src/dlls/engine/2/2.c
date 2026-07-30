@@ -1061,7 +1061,7 @@ void cameraFocusNpc(int param1, GameObject* obj)
 
 void ObjSeq_ClearModelLookVector(GameObject* obj)
 {
-    s16* v = objModelGetVecFn_800395d8(obj, 0);
+    s16* v = objFindJointPoseVector(obj, 0);
     if (v != NULL)
     {
         v[1] = 0;
@@ -1094,7 +1094,7 @@ int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjSeqState* state, s16 turnDegrees
     if (mode == 4)
     {
         state->flags = state->flags & ~2;
-        modelVec = objModelGetVecFn_800395d8(obj, 0);
+        modelVec = objFindJointPoseVector(obj, 0);
         if (modelVec != NULL)
         {
             state->flags = state->flags & ~8;
@@ -1181,7 +1181,7 @@ int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjSeqState* state, s16 turnDegrees
         }
         obj->anim.rotX +=
             (s16)(state->posOffsetDecay * (f32)state->rotOffsetX);
-        modelVec = objModelGetVecFn_800395d8(obj, 0);
+        modelVec = objFindJointPoseVector(obj, 0);
         if (modelVec != NULL)
         {
             state->flags = state->flags & ~8;
@@ -1210,7 +1210,7 @@ int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjSeqState* state, s16 turnDegrees
         {
             state->movementState = 0;
             state->flags = state->flags | 8;
-            modelVec = objModelGetVecFn_800395d8(obj, 0);
+            modelVec = objFindJointPoseVector(obj, 0);
             if (modelVec != NULL)
             {
                 state->baseRotY = modelVec[1];
@@ -4919,7 +4919,7 @@ void ObjSeq_SetupInitialPlaybackState(GameObject* obj, GameObject** seqObj, u8* 
         objModelClearJointVectors(*seqObj);
         if ((*seqObj)->anim.classId == 1)
         {
-            modelVec = objModelGetVecFn_800395d8(obj, 1);
+            modelVec = objFindJointPoseVector(obj, 1);
             if (modelVec != NULL)
             {
                 modelVec[0] = 0;
@@ -5575,7 +5575,7 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
 
         if ((((ObjSeqState*)seq)->flags & 8) != 0)
         {
-            vec = objModelGetVecFn_800395d8(seqObj, 0);
+            vec = objFindJointPoseVector(seqObj, 0);
             if (vec != NULL)
             {
                 if (((ObjSeqState*)seq)->trackRunLength[1] != 0)
@@ -5659,7 +5659,7 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
                     {
                         for (k = 1, modelIds++; k < slots; modelIds++, k++)
                         {
-                            vec2 = objModelGetVecFn_800395d8(seqObj, *modelIds);
+                            vec2 = objFindJointPoseVector(seqObj, *modelIds);
                             if (vec2 != NULL)
                             {
                                 vec2[1] = vec[1];
@@ -5674,7 +5674,7 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
 
         if ((((ObjSeqState*)seq)->flags & 0x200) != 0)
         {
-            vec = objModelGetVecFn_800395d8(seqObj, 1);
+            vec = objFindJointPoseVector(seqObj, 1);
             if (vec != NULL)
             {
                 if (((ObjSeqState*)seq)->trackRunLength[17] != 0)

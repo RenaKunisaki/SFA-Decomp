@@ -1451,8 +1451,8 @@ void playerSetDisguised(GameObject* obj, int mode)
     int newModel;
     void* tricky;
 
-    objModelGetVecFn_800395d8(obj, 0);
-    objModelGetVecFn_800395d8(obj, 9);
+    objFindJointPoseVector(obj, 0);
+    objFindJointPoseVector(obj, 9);
     if (mode != 0)
     {
         staffToggle(obj, 0);
@@ -4363,7 +4363,7 @@ int playerStateAimStaff(int obj, int state, f32 fv)
             Object_ObjAnimSetSecondaryBlendMove((ObjAnimComponent*)obj, 0x440, (int)(16384.0f * -a));
         }
         inner->bodyLeanHalf = -10240.0f * inner->aimInputX;
-        objModelGetVecFn_800395d8((GameObject*)(obj), 9);
+        objFindJointPoseVector((GameObject*)(obj), 9);
         *(u32*)&((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_AIM_READY;
         if (gPlayerSelectedItem == GAMEBIT_STAFF_ABILITY_FIRE_BLASTER)
         {
@@ -6533,7 +6533,7 @@ int playerState19(GameObject* obj, int state)
     }
     t = 1.0f - obj->anim.currentMoveProgress;
     obj->anim.localPosY = inner->warpDeltaY * t + inner->warpStartY;
-    vec = objModelGetVecFn_800395d8(obj, 5);
+    vec = objFindJointPoseVector(obj, 5);
     if (vec != NULL)
     {
         *(s16*)vec = (f32) * (s16*)((char*)sub + 0x2) * t;
@@ -6598,7 +6598,7 @@ void playerStagedClearActiveMove(GameObject* obj)
     modelState->flags &= 0xFFFFEFFFLL;
     obj->anim.flags &= ~0x8;
     obj->anim.activeMove = -1;
-    v = objModelGetVecFn_800395d8(obj, 9);
+    v = objFindJointPoseVector(obj, 9);
     if (v != NULL)
     {
         v[0] = 0;
@@ -12040,7 +12040,7 @@ void playerRestoreAfterSequence(GameObject* obj, int p2, int p3)
         (*gPlayerInterface)->setState(obj, inner, 3);
         *(int*)&((PlayerState*)inner)->baddie.unk304 = 0;
     }
-    vec = (s16*)objModelGetVecFn_800395d8(obj, 1);
+    vec = (s16*)objFindJointPoseVector(obj, 1);
     if (vec != NULL)
     {
         vec[0] = 0;
@@ -12229,7 +12229,7 @@ void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, in
     int inner;
     if (p8 != 0)
     {
-        vec = (void*)objModelGetVecFn_800395d8((GameObject*)(p1), 0);
+        vec = (void*)objFindJointPoseVector((GameObject*)(p1), 0);
         if (vec != NULL)
         {
             v = *(s16*)((char*)vec + 0x2);
@@ -13164,7 +13164,7 @@ void fn_802ABFBC(GameObject* obj, int state, PlayerState* inner)
     if (sub != NULL && sub->anim.modelInstance->unk58 != 0)
     {
         ObjPath_GetPointWorldPosition((GameObject*)obj, 5, &x1, &y1, &z1, 0);
-        if (objModelGetVecFn_800395d8((GameObject*)sub, 0) != 0)
+        if (objFindJointPoseVector((GameObject*)sub, 0) != 0)
         {
             objGetJointWorldPosition((GameObject*)sub, 0, pos);
         }
@@ -15481,8 +15481,8 @@ void playerStaffInit(GameObject* obj, int state)
 
 void playerDoEyeAnims(GameObject* obj, int state)
 {
-    s16* vec9 = objModelGetVecFn_800395d8(obj, 9);
-    s16* vec0 = objModelGetVecFn_800395d8(obj, 0);
+    s16* vec9 = objFindJointPoseVector(obj, 9);
+    s16* vec0 = objFindJointPoseVector(obj, 0);
     u8 doBlink = 0;
     PlayerState* inner = obj->extra;
     f32 f31v;
@@ -15594,7 +15594,7 @@ void playerDoEyeAnims(GameObject* obj, int state)
             }
         }
         {
-            s16* vec1 = objModelGetVecFn_800395d8(obj, 1);
+            s16* vec1 = objFindJointPoseVector(obj, 1);
             if (vec1 != NULL)
             {
                 vec1[0] = 0x1c2;
@@ -16504,8 +16504,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     int objCount;
     f32 nearArg;
 
-    va = (int)objModelGetVecFn_800395d8((GameObject*)(obj), 0);
-    vb = (int)objModelGetVecFn_800395d8((GameObject*)(obj), 9);
+    va = (int)objFindJointPoseVector((GameObject*)(obj), 0);
+    vb = (int)objFindJointPoseVector((GameObject*)(obj), 9);
     seq->freeCallback = (ObjAnimSequenceFreeCallback)playerRestoreAfterSequence;
     if (gPlayerStaffObject != NULL)
     {
@@ -16640,7 +16640,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             seq->flags &= ~0x4c;
             seq->savedFlags &= ~0x48;
             obj2 = (int)getFocusedNpc();
-            if (objModelGetVecFn_800395d8((GameObject*)(obj2), 0) != 0)
+            if (objFindJointPoseVector((GameObject*)(obj2), 0) != 0)
             {
                 objGetJointWorldPosition((GameObject*)(obj2), 0, npos);
             }

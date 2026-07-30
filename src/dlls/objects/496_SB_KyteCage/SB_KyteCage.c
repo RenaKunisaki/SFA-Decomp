@@ -140,7 +140,7 @@ void SB_KyteCage_update(GameObject* obj) {
     }
     if (obj->anim.parent != NULL) {
         int kind = ((GameObject*)obj->anim.parent)->userData1;
-        s16* mvec = objModelGetVecFn_800395d8(obj, 0);
+        s16* mvec = objFindJointPoseVector(obj, 0);
         if (mvec != NULL && kind < SB_KYTECAGE_FAR_PARENT_KIND && obj->anim.currentMove != SB_KYTECAGE_MOVE_NEAR) {
             mvec[2] = ((GameObject*)obj->anim.parent)->anim.rotZ;
             ObjAnim_SetCurrentMove((int)obj, SB_KYTECAGE_MOVE_NEAR, 0.0f, 0);

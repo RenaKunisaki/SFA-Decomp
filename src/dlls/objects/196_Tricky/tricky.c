@@ -8770,7 +8770,7 @@ void Tricky_render(GameObject* obj, int p2, int p3, int p4, int p5, char doRende
         } while (i < 4);
         ObjPath_GetPointWorldPosition(obj, 8, (float*)(pathState + 0x408), (float*)(pathState + 0x40c),
                                       (float*)(pathState + 0x410), 0);
-        pathInfo = objModelGetVecFn_800395d8(obj, 0);
+        pathInfo = objFindJointPoseVector(obj, 0);
         *(s16*)(pathState + 0x414) = pathInfo[1];
         if ((((TrickyState*)state)->stateFlags & 0x10) != 0)
         {

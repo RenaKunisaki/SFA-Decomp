@@ -364,10 +364,10 @@ void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state) {
         angleDelta = angleDelta + 0xffff;
     }
     warrior->aimAccumX += angleDelta;
-    primaryLookBone = objModelGetVecFn_800395d8(obj, 0);
-    secondaryLookBone = objModelGetVecFn_800395d8(obj, 9);
-    objModelGetVecFn_800395d8(obj, 4);
-    objModelGetVecFn_800395d8(obj, 5);
+    primaryLookBone = objFindJointPoseVector(obj, 0);
+    secondaryLookBone = objFindJointPoseVector(obj, 9);
+    objFindJointPoseVector(obj, 4);
+    objFindJointPoseVector(obj, 5);
     if (primaryLookBone != NULL) {
         int clampedY;
         primaryLookBone[0] = -warrior->aimAccumX;

@@ -423,7 +423,7 @@ int dll_2E_updateSequenceTurn(GameObject* obj, ObjSeqState* seq, MoveLibState* s
             {
                 s16* v;
                 seq->flags = seq->flags | 8;
-                v = objModelGetVecFn_800395d8(obj, 0);
+                v = objFindJointPoseVector(obj, 0);
                 if (v != NULL)
                 {
                     seq->baseRotY = v[1];

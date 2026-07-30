@@ -4484,28 +4484,28 @@ void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
     outPosition[2] += playerMapOffsetZ;
 }
 
-s16* objModelGetVecFn_800395d8(GameObject* obj, int target) {
+s16* objFindJointPoseVector(GameObject* obj, int key) {
     int vecOffset;
-    int entries;
+    int jointData;
     int entryIdx;
-    void* m;
+    void* modelDef;
     s16* result;
     int count;
     int i;
 
     result = NULL;
-    m = OBJPRINT_MODEL_INSTANCE(obj);
-    if (m != NULL) {
+    modelDef = OBJPRINT_MODEL_INSTANCE(obj);
+    if (modelDef != NULL) {
         entryIdx = 0;
         vecOffset = 0;
-        count = OBJPRINT_JOINT_COUNT(m);
+        count = OBJPRINT_JOINT_COUNT(modelDef);
         for (i = 0; i < count; i++) {
-            entries = *(int*)&((ObjDef*)m)->jointData;
-            if ((int)*(u8*)(entries + OBJPRINT_ACTIVE_BANK_INDEX(obj) + entryIdx + 1) != 0xff &&
-                (s32) * (u8*)(entries + entryIdx) == target) {
+            jointData = *(int*)&((ObjDef*)modelDef)->jointData;
+            if ((int)*(u8*)(jointData + OBJPRINT_ACTIVE_BANK_INDEX(obj) + entryIdx + 1) != 0xff &&
+                (s32) * (u8*)(jointData + entryIdx) == key) {
                 result = (s16*)((char*)(obj)->anim.jointPoseData + vecOffset);
             }
-            entryIdx += OBJPRINT_MODEL_COUNT(m) + 1;
+            entryIdx += OBJPRINT_MODEL_COUNT(modelDef) + 1;
             vecOffset += 0x12;
         }
     }
