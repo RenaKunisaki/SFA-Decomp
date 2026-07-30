@@ -218,9 +218,9 @@ void wmsun_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
     WmSunState* state = (obj)->extra;
     if (vis != 0 && state->renderEnabled != 0)
     {
-        doNothing_8005D148(p2, 0x10000);
+        lightmapObjectRenderBegin(p2, 0x10000);
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-        doNothing_8005D14C(p2, 0x10000);
+        lightmapObjectRenderEnd(p2, 0x10000);
     }
 }
 

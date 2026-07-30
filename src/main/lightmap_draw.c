@@ -280,7 +280,7 @@ void setTextColor(void* context, int a, int b, int c, int d)
     _gxSetTevColor2(a, b, c, d);
 }
 
-void doNothing_8005D148(int arg0, int arg1)
+void lightmapObjectRenderBegin(int arg0, int arg1)
 {
 }
 
@@ -296,7 +296,7 @@ void getVisibleObjects(s8 * opacity);
 
 void renderSceneGeometry(u8 renderType, s8* order);
 
-void doNothing_8005D14C(int arg0, int arg1)
+void lightmapObjectRenderEnd(int arg0, int arg1)
 {
 }
 void renderShadowType3(u8* obj, u32 b, s32 offset)

@@ -39,8 +39,8 @@ int objPosToMapBlockIdx(f32 x, f32 y, f32 z);
 void mapGetBlockOriginForPos(f32 x, f32 y, f32 z, f32* outX, f32* outZ);
 void setPendingMapLoad(int pending);
 void lightmapDrawTriangleList(const void* vertexBase, u8* triList, int triCount);
-void doNothing_8005D148(int arg0, int arg1);
-void doNothing_8005D14C(int arg0, int arg1);
+void lightmapObjectRenderBegin(int arg0, int arg1);
+void lightmapObjectRenderEnd(int arg0, int arg1);
 void setTitleScreenActive(int active);
 void setIsOvercast(int value);
 
