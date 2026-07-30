@@ -918,7 +918,7 @@ int ObjAnim_AdvanceCurrentMove(int objAnimHandle, f32 moveStepScale, f32 deltaTi
                 {
                     blendAxis++;
                 }
-                at = &axis[previousSampleIndex];
+                at = (s16*)((previousSampleIndex << 1) + (int)axis);
                 previousAxisValue = moveWeight * at[0];
                 if (blendAxis != NULL)
                 {
@@ -931,7 +931,7 @@ int ObjAnim_AdvanceCurrentMove(int objAnimHandle, f32 moveStepScale, f32 deltaTi
                 }
                 previousInterp = previousAxisValue + previousFraction * (previousAxisNextValue - previousAxisValue);
 
-                at = &axis[currentSampleIndex];
+                at = (s16*)((currentSampleIndex << 1) + (int)axis);
                 currentAxisValue = moveWeight * at[0];
                 if (blendAxis != NULL)
                 {
