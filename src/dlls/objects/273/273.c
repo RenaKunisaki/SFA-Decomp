@@ -66,7 +66,7 @@ int DoorLock_getExtraSize(void) {
 }
 
 void DoorLock_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, DOOR_LOCK_OBJECT_GROUP);
+    objFreeObjectType((int)obj, DOOR_LOCK_OBJECT_GROUP);
 }
 
 void DoorLock_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
@@ -74,7 +74,7 @@ void DoorLock_render(GameObject* obj, int renderArg2, int renderArg3, int render
         if (obj->userData2 == DOOR_LOCK_CUSTOM_RENDER_DISABLED) {
             return;
         }
-        objRenderFn_80041018(obj);
+        objUpdateHitVolumeTransforms(obj);
         return;
     }
     objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DOOR_LOCK_MODEL_SCALE);
@@ -159,7 +159,7 @@ void DoorLock_update(GameObject* obj) {
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
         if ((obj->anim.modelInstance->flags & OBJDEF_FLAG_HAS_MODELS) != 0 && obj->anim.hitVolumeTransforms != NULL) {
-            objRenderFn_80041018(obj);
+            objUpdateHitVolumeTransforms(obj);
         }
     }
 }
@@ -179,7 +179,7 @@ void DoorLock_init(GameObject* obj, DoorLockPlacement* placement) {
     }
     state = obj->extra;
     state->unlocked = mainGetBit(placement->unlockedGameBit);
-    ObjGroup_AddObject((int)obj, DOOR_LOCK_OBJECT_GROUP);
+    objAddObjectType((int)obj, DOOR_LOCK_OBJECT_GROUP);
     if ((placement->flags & DOOR_LOCK_FLAG_HIDE_WHEN_UNLOCKED) != 0) {
         if (state->unlocked != DOOR_LOCK_LOCKED) {
             objAnim->alpha = DOOR_LOCK_HIDDEN_ALPHA;

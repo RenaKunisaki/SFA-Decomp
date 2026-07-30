@@ -1,13 +1,15 @@
 /*
  * DLL 82 / 0x52 - force-behind camera mode.
  */
-#include "main/resource.h"
-#include "main/object_transform.h"
-#include "main/dll/player_motion.h"
-#include "main/dll/CAM/cutCam.h"
-#include "main/frame_timing.h"
-#include "main/vecmath.h"
+#include "main/dll/dll_0052_cameramodeforcebehind.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "game/objects/object.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
+#include "main/dll/player_motion.h"
+#include "main/frame_timing.h"
+#include "main/object_transform.h"
+#include "main/vecmath.h"
 
 f32 gCamForceBehindTraceDistance;
 f32 gCamForceBehindActiveHeightOffset;
@@ -15,84 +17,85 @@ f32 gCamForceBehindPlacementRadius;
 
 f32 gCamForceBehindOrbitRadius = 40.0f;
 
-void CameraModeForceBehind_copyToCurrent(void)
-{
+void CameraModeForceBehind_copyToCurrent(void) {
 }
 
-void CameraModeForceBehind_free(void)
-{
+void CameraModeForceBehind_free(void) {
 }
 
-void CameraModeForceBehind_update(CameraObject* camera)
-{
+void CameraModeForceBehind_update(CameraObject* camera) {
     extern const f32 gCamForceBehindEaseRate[1];
     GameObject* target = (GameObject*)camera->anim.targetObj;
     s16 yaw;
     s16 pitch;
-    s16 extra;
-    f32 pos[3];
-    f32 angle;
-    f32 cosv, sinv;
-    f32 sx, sz;
-    f32 baseX, baseY, baseZ;
-    f32 cosYaw, sinYaw, cosPitch, sinPitch;
+    s16 traceRotY;
+    f32 tracePosition[3];
+    f32 radians;
+    f32 orbitSin;
+    f32 orbitCos;
+    f32 traceOriginX;
+    f32 traceOriginZ;
+    f32 targetX;
+    f32 targetY;
+    f32 targetZ;
+    f32 yawX;
+    f32 yawZ;
+    f32 pitchHorizontalScale;
+    f32 pitchVerticalScale;
     f32 radius;
-    f32 dx, dz;
+    f32 traceDeltaX;
+    f32 traceDeltaZ;
 
-    angle = 3.1415927f * (f32)(0x8000 - camera->anim.rotX) / 32768.0f;
-    cosv = mathSinf(angle);
-    sinv = mathCosf(angle);
-    pos[0] = cosv * gCamForceBehindOrbitRadius + (sx = target->anim.worldPosX);
-    pos[1] = 37.0f + target->anim.worldPosY;
-    pos[2] = sinv * gCamForceBehindOrbitRadius + (sz = target->anim.worldPosZ);
-    camcontrol_traceFromTarget(pos, target, pos, &extra);
-    dx = pos[0] - sx;
-    dz = pos[2] - sz;
-    gCamForceBehindTraceDistance = sqrtf(dx * dx + dz * dz);
+    radians = 3.1415927f * (f32)(0x8000 - camera->anim.rotX) / 32768.0f;
+    orbitSin = mathSinf(radians);
+    orbitCos = mathCosf(radians);
+    tracePosition[0] = orbitSin * gCamForceBehindOrbitRadius + (traceOriginX = target->anim.worldPosX);
+    tracePosition[1] = 37.0f + target->anim.worldPosY;
+    tracePosition[2] = orbitCos * gCamForceBehindOrbitRadius + (traceOriginZ = target->anim.worldPosZ);
+    camcontrol_traceFromTarget(tracePosition, target, tracePosition, &traceRotY);
+    traceDeltaX = tracePosition[0] - traceOriginX;
+    traceDeltaZ = tracePosition[2] - traceOriginZ;
+    gCamForceBehindTraceDistance = sqrtf(traceDeltaX * traceDeltaX + traceDeltaZ * traceDeltaZ);
     gCamForceBehindPlacementRadius = gCamForceBehindTraceDistance;
 
     Player_GetAimAngles((int)target, &yaw, &pitch);
     yaw = (s16)((0x8000 - target->anim.rotX) + (yaw >> 1));
     pitch = (s16)(pitch >> 1);
-    baseX = target->anim.worldPosX;
-    baseY = target->anim.worldPosY + gCamForceBehindActiveHeightOffset;
-    baseZ = target->anim.worldPosZ;
+    targetX = target->anim.worldPosX;
+    targetY = target->anim.worldPosY + gCamForceBehindActiveHeightOffset;
+    targetZ = target->anim.worldPosZ;
 
     yaw = (s16)(yaw - (u16)camera->anim.rotX);
-    if (yaw > 0x8000)
-    {
+    if (yaw > 0x8000) {
         yaw = yaw - 0xffff;
     }
-    if (yaw < -0x8000)
-    {
+    if (yaw < -0x8000) {
         yaw = yaw + 0xffff;
     }
     camera->anim.rotX = (f32)(s32)camera->anim.rotX + interpolate((f32)yaw, gCamForceBehindEaseRate[0], timeDelta);
 
     pitch = (s16)(pitch - (u16)camera->anim.rotY);
-    if (pitch > 0x8000)
-    {
+    if (pitch > 0x8000) {
         pitch = pitch - 0xffff;
     }
-    if (pitch < -0x8000)
-    {
+    if (pitch < -0x8000) {
         pitch = pitch + 0xffff;
     }
     camera->anim.rotY = (f32)(s32)camera->anim.rotY + interpolate((f32)pitch, gCamForceBehindEaseRate[0], timeDelta);
 
-    cosYaw = mathSinf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
-    sinYaw = mathCosf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
-    cosPitch = mathCosf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
-    sinPitch = mathSinf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
+    yawX = mathSinf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
+    yawZ = mathCosf(3.1415927f * (f32)(s32)(camera->anim.rotX - 0x4000) / 32768.0f);
+    pitchHorizontalScale = mathCosf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
+    pitchVerticalScale = mathSinf(3.1415927f * (f32)(s32)camera->anim.rotY / 32768.0f);
     radius = gCamForceBehindPlacementRadius;
     {
-        f32 ry = radius * sinPitch;
-        f32 rh = radius * cosPitch;
-        f32 rx = rh * sinYaw;
-        rh = rh * cosYaw;
-        camera->anim.worldPosX = baseX + rx;
-        camera->anim.worldPosY = baseY + ry;
-        camera->anim.worldPosZ = baseZ + rh;
+        f32 verticalOffset = radius * pitchVerticalScale;
+        f32 horizontalRadius = radius * pitchHorizontalScale;
+        f32 xOffset = horizontalRadius * yawZ;
+        horizontalRadius = horizontalRadius * yawX;
+        camera->anim.worldPosX = targetX + xOffset;
+        camera->anim.worldPosY = targetY + verticalOffset;
+        camera->anim.worldPosZ = targetZ + horizontalRadius;
     }
     camcontrol_traceFromTarget(&camera->anim.worldPosX, target, &camera->anim.worldPosX, &camera->anim.rotY);
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
@@ -102,51 +105,55 @@ void CameraModeForceBehind_update(CameraObject* camera)
 
 const f32 gCamForceBehindEaseRate[1] = {0.25f};
 
-void CameraModeForceBehind_init(CameraObject* camera, int unused, f32* params)
-{
+void CameraModeForceBehind_init(CameraObject* camera, int unused, CameraModeForceBehindInitParams* params) {
     GameObject* target = (GameObject*)camera->anim.targetObj;
-    f32 angle;
-    f32 cosv, sinv;
-    f32 baseX, baseZ;
-    f32 pos[3];
-    f32 extra;
-    f32 dx, dz;
+    f32 radians;
+    f32 orbitSin;
+    f32 orbitCos;
+    f32 targetX;
+    f32 targetZ;
+    f32 tracePosition[3];
+    f32 traceRotY;
+    f32 traceDeltaX;
+    f32 traceDeltaZ;
 
     {
         s16 rotX = target->anim.rotX;
-        angle = 3.1415927f * rotX / 32768.0f;
+        radians = 3.1415927f * rotX / 32768.0f;
     }
-    cosv = mathSinf(angle);
-    sinv = mathCosf(angle);
-    pos[0] = cosv * gCamForceBehindOrbitRadius + (baseX = target->anim.worldPosX);
-    pos[1] = 37.0f + target->anim.worldPosY;
-    baseZ = target->anim.worldPosZ;
-    pos[2] = sinv * gCamForceBehindOrbitRadius + baseZ;
-    camcontrol_traceFromTarget(pos, target, pos, &extra);
-    dx = pos[0] - baseX;
-    dz = pos[2] - baseZ;
-    gCamForceBehindTraceDistance = sqrtf(dx * dx + dz * dz);
-    if (params != NULL)
-    {
-        gCamForceBehindOrbitRadius = params[0];
-        gCamForceBehindActiveHeightOffset = params[1];
-    }
-    else
-    {
+    orbitSin = mathSinf(radians);
+    orbitCos = mathCosf(radians);
+    tracePosition[0] = orbitSin * gCamForceBehindOrbitRadius + (targetX = target->anim.worldPosX);
+    tracePosition[1] = 37.0f + target->anim.worldPosY;
+    targetZ = target->anim.worldPosZ;
+    tracePosition[2] = orbitCos * gCamForceBehindOrbitRadius + targetZ;
+    camcontrol_traceFromTarget(tracePosition, target, tracePosition, &traceRotY);
+    traceDeltaX = tracePosition[0] - targetX;
+    traceDeltaZ = tracePosition[2] - targetZ;
+    gCamForceBehindTraceDistance = sqrtf(traceDeltaX * traceDeltaX + traceDeltaZ * traceDeltaZ);
+    if (params != NULL) {
+        gCamForceBehindOrbitRadius = params->orbitRadius;
+        gCamForceBehindActiveHeightOffset = params->heightOffset;
+    } else {
         gCamForceBehindOrbitRadius = 40.0f;
         gCamForceBehindActiveHeightOffset = 37.0f;
     }
 }
 
-void CameraModeForceBehind_release(void)
-{
+void CameraModeForceBehind_release(void) {
 }
 
-void CameraModeForceBehind_initialise(void)
-{
+void CameraModeForceBehind_initialise(void) {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319EC8 = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
-        {(ResourceDescriptorCallback)CameraModeForceBehind_initialise, (ResourceDescriptorCallback)CameraModeForceBehind_release,
-        0x00000000, (ResourceDescriptorCallback)CameraModeForceBehind_init, (ResourceDescriptorCallback)CameraModeForceBehind_update,
-        (ResourceDescriptorCallback)CameraModeForceBehind_free, (ResourceDescriptorCallback)CameraModeForceBehind_copyToCurrent, 0x00000000}};
+CameraModeForceBehindDescriptor gCameraModeForceBehindDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    CameraModeForceBehind_initialise,
+    CameraModeForceBehind_release,
+    NULL,
+    CameraModeForceBehind_init,
+    CameraModeForceBehind_update,
+    CameraModeForceBehind_free,
+    CameraModeForceBehind_copyToCurrent,
+    NULL,
+};

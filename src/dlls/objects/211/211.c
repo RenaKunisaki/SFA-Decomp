@@ -216,6 +216,14 @@ int LandedArwing_UpdateRetreatChase(GameObject* obj, int stateWord)
     return 0;
 }
 
+int gStaffActionHitReactionMoves[30] = {
+    3, 3, 3, 3, 3, 3, 3, -1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+};
+u8 gStaffActionHitReactionDamage[32] = {
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00,
+};
+
 ObjectDescriptor dll_D3 = {
     0,
     0,
@@ -1107,7 +1115,7 @@ int dll_D3_getObjectTypeId(void)
 void dll_D3_free(GameObject* obj)
 {
     int* inner = obj->extra;
-    ObjGroup_RemoveObject((int)obj, STAFFACTION_OBJGROUP);
+    objFreeObjectType((int)obj, STAFFACTION_OBJGROUP);
     if (obj->childObjs[0] != NULL)
     {
         Obj_FreeObject(obj->childObjs[0]);
@@ -1309,7 +1317,8 @@ void dll_D3_update(GameObject* obj)
     {
         (*gBaddieControlInterface)
             ->updateHitReaction(obj, state, (void*)((int)state + 0x35c),
-                                ((TreasureChestState*)state)->gameBitB, lbl_803202E8, lbl_80320360, 0,
+                                ((TreasureChestState*)state)->gameBitB, gStaffActionHitReactionMoves,
+                                gStaffActionHitReactionDamage, 0,
                                 gStaffActionHitLightParams);
         if ((int)((TreasureChestState*)state)->hitPoints < hits)
         {
@@ -1335,7 +1344,7 @@ void dll_D3_update(GameObject* obj)
 
     if (((LandedArwingMovementFlags*)&extra->flags92)->hitSurfaceType13 == 0u && extra->surfaceMode == 6)
     {
-        hitCount = objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
+        hitCount = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
                                       6.0f, 0, (TrackBBoxHit*)hitResult, obj, -0x7c, -1, 0xff,
                                       0);
         if (hitCount != 0 && *(s8*)((char*)hitResult + 0x50) == 13)

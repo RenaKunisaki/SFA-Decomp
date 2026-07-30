@@ -78,7 +78,7 @@ void gcRobotLightBeam_hitDetect(GameObject* obj) {
         return;
     }
     if (obj->userData1 != 0 ||
-        objBboxFn_800640cc(&obj->anim.localPosX, playerPosition, GCROBOTLIGHTBEAM_BBOX_RADIUS, 0, &bboxHit, obj,
+        trackGetLineIntersect(&obj->anim.localPosX, playerPosition, GCROBOTLIGHTBEAM_BBOX_RADIUS, 0, &bboxHit, obj,
                            GCROBOTLIGHTBEAM_BBOX_FLAGS, GCROBOTLIGHTBEAM_BBOX_MASK, 0, 0) == 0) {
         state->statusFlags.playerCaught = TRUE;
     }

@@ -194,7 +194,7 @@ void PaymentKiosk_update(GameObject* obj) {
     }
     state->promptState = PAYMENT_KIOSK_PROMPT_NONE;
     if ((obj->anim.modelInstance->flags & OBJDEF_FLAG_HAS_MODELS) != 0 && obj->anim.hitVolumeTransforms != NULL) {
-        objRenderFn_80041018(obj);
+        objUpdateHitVolumeTransforms(obj);
     }
 }
 

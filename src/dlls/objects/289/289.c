@@ -31,7 +31,7 @@ void infotext_update(GameObject* obj) {
         }
     }
     if ((obj->anim.modelInstance->flags & OBJDEF_FLAG_HAS_MODELS) != 0) {
-        objRenderFn_80041018(obj);
+        objUpdateHitVolumeTransforms(obj);
     }
 }
 

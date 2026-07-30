@@ -23,12 +23,30 @@ PAD (differs only in zero/0x80000000 alignment words) are emission-order
 artifacts; SUBSET means the unit is merely incomplete. cameramodeforcebehind,
 long cited as a wrong-value case, is in fact a PERM.
 
-Two things this must get right, because both once produced a census of ~76
-phantom defects. A unit may claim `.sdata2` MORE THAN ONCE -- keeping only the
-last claim compares a whole pool against a fragment of itself. And a SHIFT
-(pool matching verbatim at another address, meaning the claim is misplaced) is
-only evidence when the untruncated pool is long enough to be unique: an 8-byte
-prefix recurs hundreds of times in a float pool.
+Four things this must get right, because each one on its own manufactures a
+census of phantom defects, and a phantom pool defect is the documented bait for
+the banned pool-reconstruction hack.
+
+  * A unit may claim `.sdata2` MORE THAN ONCE -- keeping only the last claim
+    compares a whole pool against a fragment of itself.
+  * A SHIFT (pool matching verbatim at another address, meaning the claim is
+    misplaced) is only evidence when the untruncated pool is long enough to be
+    unique: an 8-byte prefix recurs hundreds of times in a float pool.
+  * The MULTISET must be built from our WHOLE pool. When ours is longer than
+    the claim the positional walk is truncated to the claim, and reusing that
+    truncated prefix for the multiset compares a fragment of ourselves against
+    all of retail -- SUPERSET becomes unreachable and every under-claimed unit
+    reads as a wrong-value BAD. objhits, track/intersect, engine/86,
+    SB_Galleon and synth_seq_dispatch were all BAD for this reason alone.
+  * Weak (COMDAT) words are not pool content. MSL's inlined sqrt/sqrtf carry
+    `_half`/`_three` f64 local statics as weak symbols that the linker keeps
+    ONE copy of image-wide, so they are in no unit's split range.
+
+UNDERCLAIM is the graded verdict for a superset the retail object itself
+explains: when retail's own code reaches BELOW its claimed start, the claim is
+the TAIL of the real pool and the surplus is a split-boundary artifact. A
+residual BAD is also annotated with any function we define that retail does
+not, since an extra function mints its own constants.
 
 Ground truth is orig/GSAE01/sys/main.dol. For each unit that claims a data
 range in config/GSAE01/splits.txt, this reads the same-named section out of our
@@ -151,6 +169,90 @@ def has_relocs(obj_path, section):
     return False
 
 
+def comdat_words(obj_path, section):
+    """Words in `section` that belong to a WEAK (COMDAT) symbol.
+
+    MSL's inlined sqrt/sqrtf carry their `_half`/`_three` f64 local statics as
+    weak symbols. The linker keeps ONE copy of each for the whole image, so
+    they are absent from every individual unit's split range -- counting them
+    as pool content makes every unit that inlines a square root look like it
+    emits surplus literals. synth_seq_dispatch's four "extra" words are exactly
+    these two constants, twice.
+    """
+    r = subprocess.run([OBJDUMP, '-t', obj_path], capture_output=True)
+    if r.returncode != 0:
+        return Counter()
+    data = section_bytes(obj_path, section) or b''
+    out = Counter()
+    for line in r.stdout.decode('utf8', 'replace').splitlines():
+        m = re.match(r'^([0-9a-f]{8})\s(.{7})\s+O?\s*(\S+)\s+([0-9a-f]{8})\s',
+                     line)
+        if not m or m.group(3) != section or 'w' not in m.group(2):
+            continue
+        off, size = int(m.group(1), 16), int(m.group(4), 16)
+        for i in range(off, min(off + size, len(data)) & ~3, 4):
+            out[data[i:i + 4]] += 1
+    return out
+
+
+def claim_start_hint(retail_obj, claims):
+    """Lowest .sdata2 address the RETAIL object references below its claim.
+
+    A retail object whose own code reaches BELOW the range splits.txt hands it
+    proves the claim is a tail FRAGMENT of the real pool -- the words ahead of
+    `start` were attributed to a neighbour or to an auto_ blob. Our object then
+    holds pool words the claim cannot contain, and that surplus is a split
+    boundary artifact, not a surplus literal. Only `lbl_ADDR` targets are read
+    here: their address is in the name, so the hint needs no symbol map and
+    cannot mis-resolve.
+    """
+    if not retail_obj or not os.path.exists(retail_obj):
+        return None
+    r = subprocess.run([OBJDUMP, '-r', retail_obj], capture_output=True)
+    if r.returncode != 0:
+        return None
+    lo = min(b for b, _ in claims)
+    win = sda_window(lo)
+    if win is None:
+        return None
+    # An SDA21 reloc is r2- OR r13-relative, so the same relocation type also
+    # names .sdata words. Only an address in the SAME small-data window as the
+    # claim is evidence about THIS section's boundary.
+    below = [int(a, 16) for a in
+             re.findall(r'R_PPC_(?:EMB_)?SDA21\s+lbl_([0-9A-Fa-f]{8})',
+                        r.stdout.decode('utf8', 'replace'))]
+    below = [a for a in below if win[0] <= a < lo]
+    return (min(below), len(below)) if below else None
+
+
+def surplus_fns(ours_obj, retail_obj):
+    """Functions our object defines that the retail object does not.
+
+    A pool word retail has nowhere is only a MISCODED literal if the two
+    objects hold the same code. An extra function mints its own constants, so
+    it accounts for surplus pool words without any literal being wrong.
+    """
+    def fns(p):
+        r = subprocess.run([OBJDUMP, '-t', p], capture_output=True)
+        if r.returncode != 0:
+            return set()
+        return {m.group(1) for m in
+                (re.match(r'^[0-9a-f]{8}\s.*\sF\s+\.text\s+[0-9a-f]{8}\s+(\S+)',
+                          ln) for ln in
+                 r.stdout.decode('utf8', 'replace').splitlines()) if m}
+    if not (ours_obj and retail_obj and os.path.exists(retail_obj)):
+        return set()
+    return fns(ours_obj) - fns(retail_obj)
+
+
+def sda_window(addr):
+    """The +/-32K small-data window (r2 or r13) that covers `addr`."""
+    for base in (SDA2_BASE, SDA_BASE):
+        if base - 0x8000 <= addr < base + 0x8000:
+            return (base - 0x8000, base + 0x8000)
+    return None
+
+
 def disp(addr):
     if SDA2_BASE - 0x8000 <= addr < SDA2_BASE + 0x8000:
         return 'r2%+d (%04x)' % (addr - SDA2_BASE,
@@ -190,12 +292,14 @@ def shift_hint(ours, dol, base, span):
     return None
 
 
-def compare(name, section, ours, claims, dol, quiet):
+def compare(name, section, ours, claims, dol, quiet, ours_obj=None,
+            retail_obj=None):
     """Return list of report lines (empty == clean)."""
     base = claims[0][0]
     span = sum(e - b for b, e in claims)
     lines = []
     n = len(ours)
+    ours_full = ours
     if n > span:
         lines.append('  [size] %s ours=0x%x claim=0x%x -- comparing the '
                      'claimed 0x%x only (section_size_check owns the rest)'
@@ -222,9 +326,16 @@ def compare(name, section, ours, claims, dol, quiet):
     words = max(1, len(ours) // 4)
     kind = 'BAD'
     note = ''
-    full = retail if n > span else (b''.join(
-        dol.read(b, e - b) or b'' for b, e in claims) or retail)
-    ow = Counter(ours[i:i + 4] for i in range(0, len(ours) & ~3, 4))
+    full = b''.join(dol.read(b, e - b) or b'' for b, e in claims) or retail
+    # The multiset must see our WHOLE pool. Building it from the prefix that was
+    # truncated to the claim compares a fragment of ourselves against all of
+    # retail, which makes SUPERSET unreachable and reports every under-claimed
+    # unit as a wrong-value [BAD] -- the precise bait for the banned
+    # pool-reconstruction hack. objhits, track/intersect, engine/86, SB_Galleon
+    # and synth_seq_dispatch all read [BAD] under the truncated multiset and are
+    # SUPERSET under this one.
+    ow = Counter(ours_full[i:i + 4] for i in range(0, len(ours_full) & ~3, 4))
+    ow -= comdat_words(ours_obj, section) if ours_obj else Counter()
     rw = Counter(full[i:i + 4] for i in range(0, len(full) & ~3, 4))
     pad = b'\x00\x00\x00\x00'
     only_ours, only_retail = ow - rw, rw - ow
@@ -244,10 +355,20 @@ def compare(name, section, ours, claims, dol, quiet):
                '%d MORE (%s). The unit is INCOMPLETE, not miscoded' \
                % (sum(only_retail.values()), fmt_vals(only_retail))
     elif not only_retail:
-        kind = 'SUPERSET'
-        note = '  -- every retail word occurs in ours; we emit %d EXTRA ' \
-               '(%s). Over-claim or surplus literals, not a wrong value' \
-               % (sum(only_ours.values()), fmt_vals(only_ours))
+        hint = claim_start_hint(retail_obj, claims)
+        if hint:
+            kind = 'UNDERCLAIM'
+            note = '  -- every retail word occurs in ours and we emit %d ' \
+                   'MORE, but the retail object itself reaches down to ' \
+                   '0x%08X (%d refs below the claimed start): the claim is ' \
+                   'the TAIL of the real pool, so the surplus is a SPLIT ' \
+                   'BOUNDARY artifact, not a wrong literal' \
+                   % (sum(only_ours.values()), hint[0], hint[1])
+        else:
+            kind = 'SUPERSET'
+            note = '  -- every retail word occurs in ours; we emit %d EXTRA ' \
+                   '(%s). Over-claim or surplus literals, not a wrong value' \
+                   % (sum(only_ours.values()), fmt_vals(only_ours))
     else:
         delta = (shift_hint(ours, dol, base, span)
                  if n <= span and len(ours) >= 0x10 else None)
@@ -259,10 +380,15 @@ def compare(name, section, ours, claims, dol, quiet):
         else:
             note = '  -- ours-only %s | retail-only %s' \
                    % (fmt_vals(only_ours), fmt_vals(only_retail))
+            extra = surplus_fns(ours_obj, retail_obj)
+            if extra:
+                note += '. NOTE: we define %d function(s) retail does not ' \
+                        '(%s) -- surplus words are theirs before any literal ' \
+                        'is suspect' % (len(extra), ', '.join(sorted(extra)))
     lines.append('  [%s] %-8s %d/%d words differ  (0x%08X..0x%08X)%s'
                  % (kind, section, len(bad), words, base, base + len(ours),
                     note))
-    if quiet or kind in ('SHIFT', 'SUBSET', 'SUPERSET'):
+    if quiet or kind in ('SHIFT', 'SUBSET', 'SUPERSET', 'UNDERCLAIM'):
         return lines
     for off, a, b in bad:
         addr = base + off
@@ -313,6 +439,8 @@ def main():
         ours_p = os.path.join(ROOT, ours_p)
         if not os.path.exists(ours_p):
             continue
+        retail_p = u.get('target_path')
+        retail_p = os.path.join(ROOT, retail_p) if retail_p else None
         key = src[4:] if src.startswith('src/') else src
         claims = splits.get(key)
         if not claims:
@@ -328,9 +456,11 @@ def main():
             if has_relocs(ours_p, section):
                 report.append('  [skip] %s carries relocations' % section)
                 continue
-            report += compare(name, section, data, claims[section], dol, quiet)
+            report += compare(name, section, data, claims[section], dol, quiet,
+                              ours_obj=ours_p, retail_obj=retail_p)
         if any(k in ln for ln in report for k in
-                   ('[BAD]', '[SHIFT]', '[PERM]', '[SUBSET]', '[SUPERSET]')):
+                   ('[BAD]', '[SHIFT]', '[PERM]', '[SUBSET]', '[SUPERSET]',
+                    '[UNDERCLAIM]')):
             bad_units += 1
             bad_names.append(name)
         if report:

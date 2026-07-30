@@ -39,7 +39,7 @@
 #include "dolphin/gx/GXEnum.h"
 #include "string.h"
 #include "main/dll/dll_00E2_staff_api.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebit_ids.h"
 #include "main/frame_timing.h"
@@ -443,15 +443,6 @@ void staffSetGlow(GameObject* obj, u8 attackType, u8 enable)
 }
 
 
-static void staffQuakeSpellAdvance(StaffQuakeSpellState* q)
-{
-    q->scale += 5.5f;
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade += -4.0f;
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius *= 0.97f;
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale *= 1.01f;
-    ((GameObject*)q->object)->anim.rootMotionScale += 0.07f;
-}
-
 void staffStartQuakeSpell(f32* pos)
 {
     GameObject* player;
@@ -492,7 +483,7 @@ void staffStartQuakeSpell(f32* pos)
         ((ObjPlacement*)setup)->posY = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posY;
         ((ObjPlacement*)setup)->posZ = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ;
         ((StaffQuakeSpellState*)gStaffQuakeSpellState)->object =
-            (int*)Obj_SetupObject((ObjPlacement*)setup, 5, player->anim.mapEventSlot, -1,
+            (int*)objSetupObject((ObjPlacement*)setup, 5, player->anim.mapEventSlot, -1,
                                   player->anim.parent);
         if (mainGetBit(GAMEBIT_STAFF_ABILITY_SUPER_QUAKE) != 0)
         {
@@ -643,13 +634,13 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg)
             slot = (u8*)((StaffState*)swipe)->activeSlot;
             count = (int)(2.0f * *(f32*)(model2 + 0x14));
             prog = ((StaffSwipeSlot*)slot)->lengthScale * *(f32*)(model2 + 0x14);
-            if (slot[0x14] & 1)
+            if (((StaffSwipeSlot*)slot)->flags & 1)
             {
                 ((StaffState*)swipe)->anchorX = obj->anim.worldPosX;
                 ((StaffState*)swipe)->anchorY = obj->anim.worldPosY;
                 ((StaffState*)swipe)->anchorZ = obj->anim.worldPosZ;
                 ((StaffState*)swipe)->progress = 0.0f;
-                slot[0x14] &= ~1;
+                ((StaffSwipeSlot*)slot)->flags &= ~1;
             }
             sw = ((StaffState*)swipe)->progress;
             m4 = *(f32*)(model2 + 4);
@@ -876,11 +867,6 @@ ObjectDescriptor23 gStaffObjDescriptor = {
     (ObjectDescriptorCallback)staff_startSwipe,
     (ObjectDescriptorCallback)staff_getSwipeTextureIndex,
 };
-
-u8 gFireballLightColors[4][3] = {
-    {0xFF, 0x20, 0x20}, {0x20, 0xFF, 0x20}, {0x20, 0x20, 0xFF}, {0x00, 0x00, 0x00},
-};
-
 
 s32 staff_getSwipeTextureIndex(GameObject* obj)
 {

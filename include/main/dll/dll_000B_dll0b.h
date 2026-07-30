@@ -17,7 +17,7 @@ void dll_0B_updateActiveEffects(void);
 void dll_0B_releaseAll(void);
 void dll_0B_freeSourceEffects(void* source);
 void dll_0B_detachSource(void* param);
-int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4);
+int dll_0B_renderEffects(void* drawContext, int unused1, int unused2, u8 sourceOnly, void* sourceObject);
 void dll_0B_releaseHandle(s16* p);
 void dll_0B_func0B(void);
 void dll_0B_func0C(void* source, char value);

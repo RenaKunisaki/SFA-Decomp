@@ -6,28 +6,26 @@
  * and returns the unsupported sentinel. release/initialise are the empty
  * object lifecycle hooks that remain so the object descriptor stays valid.
  */
-#include "dolphin/os.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00B1_projlightning3.h"
+#include "dolphin/os/OSReport.h"
 
-#define PROJECTILE_UNSUPPORTED_RETURN -1
-
-DllDescriptorTable lbl_80319548 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projlightning3_initialise, projlightning3_release, (void*)0x00000000,
-                                    projlightning3_doUnsupported}};
+Projlightning3ResourceDescriptor gProjlightning3ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projlightning3_initialise,
+    projlightning3_release,
+    NULL,
+    projlightning3_doUnsupported,
+};
 
 char sProjlightning3DoNoLongerSupported[] = "<projlightning3 Do>No Longer supported \n";
 
-int projlightning3_doUnsupported(void)
-{
+int projlightning3_doUnsupported(void) {
     OSReport(sProjlightning3DoNoLongerSupported);
-    return PROJECTILE_UNSUPPORTED_RETURN;
+    return -1;
 }
 
-void projlightning3_release(void)
-{
+void projlightning3_release(void) {
 }
 
-void projlightning3_initialise(void)
-{
+void projlightning3_initialise(void) {
 }

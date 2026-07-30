@@ -35,7 +35,7 @@
 #include "track/intersect_api.h"
 #include "main/lightmap.h"
 #include "main/dll/dll_80136a40.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/camera_shake_api.h"
 #include "main/dll/boneparticleeffect_interface.h"
 #include "main/dll/expgfx_resource_api.h"
@@ -1739,7 +1739,7 @@ void objfx_shakeCameraByDistance(GameObject* obj, f32 shakeRange)
     }
 }
 
-void DIMexplosionFn_8009a96c(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 flag10, u8 doShake,
+void spawnDimExplosion(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 flag10, u8 doShake,
                              u8 flag20, u8 f1cinit)
 {
     DimExplosionPlacement* setup;
@@ -1787,7 +1787,7 @@ void DIMexplosionFn_8009a96c(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u
                 }
             }
         }
-        Obj_SetupObject(&setup->base, 5, ((ObjAnimComponent*)src)->mapEventSlot, -1, NULL);
+        objSetupObject(&setup->base, 5, ((ObjAnimComponent*)src)->mapEventSlot, -1, NULL);
     }
 }
 
@@ -1838,7 +1838,7 @@ void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 
                 }
             }
         }
-        Obj_SetupObject(&setup->base, 5, src->anim.mapEventSlot, -1, NULL);
+        objSetupObject(&setup->base, 5, src->anim.mapEventSlot, -1, NULL);
     }
 }
 

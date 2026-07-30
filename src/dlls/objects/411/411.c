@@ -9,8 +9,9 @@
 
 #include "main/debug.h"
 #include "main/dll/dll_0004_dummy04.h"
-#include "main/dll/dll_006A_dll6afunc0.h"
-#include "main/dll/foodbag.h"
+#include "main/dll/dll_006A_modgfx.h"
+#include "main/dll/dll_0083_modgfx.h"
+#include "main/dll/dll_0084_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
@@ -263,7 +264,7 @@ void dll411_update(GameObject* obj) {
             }
         }
     } else {
-        nearestObject = (GameObject*)ObjGroup_FindNearestObject(DLL19B_TARGET_OBJGROUP, player, &distance);
+        nearestObject = (GameObject*)objGetNearestTypeTo(DLL19B_TARGET_OBJGROUP, player, &distance);
         if (nearestObject != NULL && distance < DLL19B_NEAREST_DISTANCE_MAX && distance > DLL19B_NEAREST_DISTANCE_MIN) {
             positionDelta = nearestObject->anim.localPosZ - player->anim.localPosZ;
             if (positionDelta <= 0.0f) {

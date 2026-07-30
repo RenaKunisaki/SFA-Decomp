@@ -134,9 +134,9 @@ STATIC_ASSERT(offsetof(DimCannonBallState, rotationYRate) == 0x0A);
 STATIC_ASSERT(offsetof(DimCannonBallState, rotationXRate) == 0x0B);
 STATIC_ASSERT(sizeof(DimCannonBallState) == 0x0C);
 
-void DIMwooddoor_updateFallingDebris(GameObject* obj);
-void DIMwooddoor_spawnShard(GameObject* obj, u8 variant);
-void DIMwooddoor_updateShardAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 targetZ, f32 unusedDistance);
+void DIMCannon_updateBall(GameObject* obj);
+void DIMCannon_spawnBall(GameObject* obj, u8 variant);
+void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 targetZ, f32 unusedDistance);
 int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int DIMCannon_getExtraSize(GameObject* obj);
 int DIMCannon_getObjectTypeId(GameObject* obj);

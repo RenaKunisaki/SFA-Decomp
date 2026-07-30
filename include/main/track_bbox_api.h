@@ -50,11 +50,11 @@ STATIC_ASSERT(offsetof(TrackBBoxHit, surfaceType) == 0x50);
 #endif
 
 #ifdef TRACK_BBOX_FLAGS_S8
-int objBboxFn_800640cc(f32* from, f32* to, f32 radius, int mode, TrackBBoxHit* hit, GameObject* self, s8 flags,
-                       TRACK_BBOX_MASK_TYPE mask, int slot, TRACK_BBOX_ARG10_TYPE arg10);
+int trackGetLineIntersect(f32* from, f32* to, f32 radius, int mode, TrackBBoxHit* hit, GameObject* self, s8 flags,
+                          TRACK_BBOX_MASK_TYPE mask, int slot, TRACK_BBOX_ARG10_TYPE arg10);
 #else
-int objBboxFn_800640cc(f32* from, f32* to, f32 radius, int mode, TrackBBoxHit* hit, GameObject* self, int flags,
-                       TRACK_BBOX_MASK_TYPE mask, int slot, TRACK_BBOX_ARG10_TYPE arg10);
+int trackGetLineIntersect(f32* from, f32* to, f32 radius, int mode, TrackBBoxHit* hit, GameObject* self, int flags,
+                          TRACK_BBOX_MASK_TYPE mask, int slot, TRACK_BBOX_ARG10_TYPE arg10);
 #endif
 
 #endif /* MAIN_TRACK_BBOX_API_H_ */

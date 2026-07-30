@@ -54,7 +54,7 @@ void crcloudrace_updateCompletionState(GameObject* obj, CrCloudRaceState* state)
         if (mainGetBit(CRCLOUDRACE_GAMEBIT_RACE_CAN_FINISH) != 0 &&
             playerGetFocusObject(player) == NULL)
         {
-            near = (GameObject*)ObjGroup_FindNearestObject(CRCLOUDRACE_NEARBY_TOTEM_GROUP, (GameObject*)obj, &dist);
+            near = (GameObject*)objGetNearestTypeTo(CRCLOUDRACE_NEARBY_TOTEM_GROUP, (GameObject*)obj, &dist);
             if (near != NULL)
             {
                 ((ScTotemPoleInterfaceVTable*)*near->anim.dll)->handleEvent(near, 1);

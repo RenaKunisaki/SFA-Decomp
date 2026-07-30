@@ -52,7 +52,7 @@ void StayPoint_update(GameObject* obj) {
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             if (((obj->anim.modelInstance->flags & STAYPOINT_MODEL_VISIBLE_FLAG) != 0) &&
                 obj->anim.hitVolumeTransforms != NULL) {
-                objRenderFn_80041018(obj);
+                objUpdateHitVolumeTransforms(obj);
             }
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
                 TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, STAYPOINT_COMMAND_KIND,

@@ -23,7 +23,7 @@
 #include "main/map_load.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/objseq_api.h"
 #include "main/pi_dolphin_api.h"
 #include "main/sky_api.h"
@@ -123,17 +123,17 @@ void WM_LevelControl_updateSkyLighting(GameObject* obj) {
     if (skyColorActive != 0) {
         skySetOverrideLightColorEnabled(0);
         skySetOverrideLightDirectionEnabled(0);
-        skyFn_80089710(7, 0, 1);
+        skySetLightsEnabled(7, 0, 1);
         return;
     }
 
     skySetOverrideLightColorEnabled(1);
     skySetOverrideLightColor(0x88, 0xB7, 0xBA);
     if ((obj->userData1 & 4) == 0) {
-        skyFn_80089710(1, 1, 0);
+        skySetLightsEnabled(1, 1, 0);
         obj->userData1 |= 4;
     } else {
-        skyFn_80089710(1, 1, 1);
+        skySetLightsEnabled(1, 1, 1);
     }
 
     /*
@@ -180,7 +180,7 @@ int WM_LevelControl_getObjectTypeId(void) {
 }
 
 void WM_LevelControl_free(GameObject* obj) {
-    ObjGroup_RemoveObject((u32)obj, WM_LEVEL_CONTROL_OBJ_GROUP);
+    objFreeObjectType((u32)obj, WM_LEVEL_CONTROL_OBJ_GROUP);
     Music_Trigger(MUSICTRIG_drako_3, 0);
     mainSetBits(GAMEBIT_WMRelated0A7F, 0);
     mainSetBits(GAMEBIT_KrazTest1Related0372, 1);
@@ -238,7 +238,7 @@ void WM_LevelControl_init(GameObject* obj) {
     WMLevelControlState* state;
     u8 mode;
 
-    ObjGroup_AddObject((u32)obj, WM_LEVEL_CONTROL_OBJ_GROUP);
+    objAddObjectType((u32)obj, WM_LEVEL_CONTROL_OBJ_GROUP);
     unlockLevel(mapGetDirIdx(0xB), 0, 0);
     state = obj->extra;
     state->unknown0B = 0;

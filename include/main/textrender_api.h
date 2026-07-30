@@ -15,7 +15,7 @@ typedef struct GameTextSlot {
 } GameTextSlot;
 
 extern int lbl_803DC9C8;
-extern u8 lbl_803DC968;
+extern u8 gGameTextFontIsSjis;
 extern GameTextSlot lbl_8033A540[];
 
 #define gGameTextCommandCount lbl_803DC9C8

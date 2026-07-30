@@ -1,7 +1,7 @@
 #include "dlls/objects/412.h"
 
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/foodbag.h"
+#include "main/dll/dll_0082_modgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
@@ -81,7 +81,7 @@ void dll412_update(GameObject* obj) {
         childSetup->color[1] = placement->base.color[1];
         childSetup->color[2] = placement->base.color[2];
         childSetup->color[3] = placement->base.color[3];
-        Obj_SetupObject(childSetup, DLL19C_OBJECT_SETUP_FLAGS, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        objSetupObject(childSetup, DLL19C_OBJECT_SETUP_FLAGS, obj->anim.mapEventSlot, -1, obj->anim.parent);
         state->spawnTimer = DLL19C_SPAWN_TIMER;
         state->spawnTimerRate = 0;
     }

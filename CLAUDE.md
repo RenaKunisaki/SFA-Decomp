@@ -38,16 +38,14 @@ project matches more.
 ## Integration branch safety
 - Retail target objs (`build/GSAE01/obj/...`) are READ-ONLY — never rebuild or delete them. Only the
   source objs (`build/GSAE01/src/...`) are yours to build.
-- Normal work lands on the UTC-dated branch `staging/YYYY-MM-DD`, not directly on `main`. The
-  initial branch is `staging/2026-07-28`. Fetch it from origin and rebase onto the fresh remote
-  staging tip before every push; abort and re-derive conflicts instead of using `--theirs`.
-- A maintainer or bot normally merges staging into `main` once after the UTC date rolls over. Use a
-  normal merge so the useful per-change history remains while the main Actions build runs once for
-  the batch. The merger owns creating the next dated staging branch from the clean integration
-  result.
-- The initial cutover deliberately stops builds on `main` and directs agents to staging. Do not
-  repair that main-only stop during normal work, and never merge or cherry-pick it into staging.
-  Only the nightly merger should revert it before integrating the batch.
+- Normal work lands on the permanent branch `staging`, not directly on `main`. Fetch it from origin
+  and rebase local unpushed work onto the fresh remote staging tip before every push; abort and
+  re-derive conflicts instead of using `--theirs`.
+- A maintainer or bot makes one normal merge commit from `staging` into `main` per UTC day, preserving
+  per-change history while making the main Actions build run once for the batch. After publishing
+  that merge, fast-forward `staging` to the new main merge commit before reopening it for work; do
+  not create dated rollover branches. Reconcile any direct `main` commits into `staging` without
+  dropping either side.
 - Rebase + `ninja EXIT=0` before each commit; commit only when asked. One owner per `.c`.
 - Edit SJIS-bearing files byte-wise (python rb/wb). Never `git stash` in a worktree — use `git checkout -- <file>`.
 - **A function rename is NOT byte-neutral and can wreck a unit with a green build.** `config/GSAE01/symbols.txt`
@@ -68,6 +66,9 @@ These are match-hacks, not plausible 2002 source. They were purged repo-wide (se
 - **`__declspec(section ...)`** and any section-forcing data placement.
 - **Match-volatiles** — `volatile` or `*(volatile T*)&` puns used to block CSE/hoisting. `volatile`
   is allowed only for genuine hardware/interrupt semantics (GX FIFO, hardware registers).
+- **Dummy global-register reservations** — declarations such as
+  `register int unused asm("r14")` whose only purpose is to remove a register from MWCC's
+  allocator. Recover the real source lifetimes instead and accept the mismatch until then.
 - **Pool-reconstruction consts** — `lbl_8XXXXXXX`-named const defs read via `*(f32*)&`; write plain
   literals. This includes the **`const union { f32 f; } lbl_x = { V };` + `lbl_x.f`** disguise (a
   named-`.sdata2` float that blocks folding to force the pool symbol) — banned; write the plain

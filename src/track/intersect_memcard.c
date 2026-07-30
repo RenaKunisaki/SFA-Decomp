@@ -44,15 +44,15 @@ char sMemoryCardFileNameString[20] = "Star Fox Adventures";
 extern volatile s32 gSaveCardState;
 
 u8* gSaveCardImageBuffer;
-u8 lbl_803DD05A;
+u8 gSaveCardFileOpen;
 u8 lbl_803DD059;
 u8 gSaveCardRetry;
 u32 gSaveCardChecksumLo;
 u32 gSaveCardChecksumHi;
 u32 gSaveCardSerialLo;
 u32 gSaveCardSerialHi;
-char* lbl_803DD044;
-void* lbl_803DD040;
+char* gSaveCardIoBuffer;
+void* gSaveCardWorkArea;
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
@@ -161,8 +161,8 @@ int cardFormatMemoryCard(void)
     }
     else
     {
-        lbl_803DD040 = mmAlloc(0xA000, -1, 0);
-        if (lbl_803DD040 == 0)
+        gSaveCardWorkArea = mmAlloc(0xA000, -1, 0);
+        if (gSaveCardWorkArea == 0)
         {
             gSaveCardState = 8;
             ok = 0;
@@ -177,7 +177,7 @@ int cardFormatMemoryCard(void)
         return 0;
     }
     gSaveCardState = 0;
-    res = CARDMount(0, lbl_803DD040, (void*)cardSetStatusNoCard2);
+    res = CARDMount(0, gSaveCardWorkArea, (void*)cardSetStatusNoCard2);
     if (res == -13)
     {
         need_format = 1;
@@ -208,16 +208,16 @@ int cardFormatMemoryCard(void)
             else
             {
                 CARDUnmount(0);
-                mm_free(lbl_803DD040);
-                lbl_803DD040 = 0;
+                mm_free(gSaveCardWorkArea);
+                gSaveCardWorkArea = 0;
                 gSaveCardState = 0xD;
                 return 1;
             }
         }
     }
     CARDUnmount(0);
-    mm_free(lbl_803DD040);
-    lbl_803DD040 = 0;
+    mm_free(gSaveCardWorkArea);
+    gSaveCardWorkArea = 0;
     switch (res)
     {
     case -2:
@@ -282,8 +282,8 @@ int cardDeleteSaveFile(void)
         }
         else
         {
-            lbl_803DD040 = mmAlloc(0xA000, -1, 0);
-            if (lbl_803DD040 == 0)
+            gSaveCardWorkArea = mmAlloc(0xA000, -1, 0);
+            if (gSaveCardWorkArea == 0)
             {
                 gSaveCardState = 8;
                 ok = 0;
@@ -298,7 +298,7 @@ int cardDeleteSaveFile(void)
             return 0;
         }
         gSaveCardState = 0;
-        res = CARDMount(0, lbl_803DD040, (CARDCallback)cardSetStatusNoCard2);
+        res = CARDMount(0, gSaveCardWorkArea, (CARDCallback)cardSetStatusNoCard2);
         if (res == 0 || res == -6)
         {
             res = CARDCheck(0);
@@ -308,8 +308,8 @@ int cardDeleteSaveFile(void)
             res = CARDDelete(0, sMemoryCardFileName);
         }
         CARDUnmount(0);
-        mm_free(lbl_803DD040);
-        lbl_803DD040 = 0;
+        mm_free(gSaveCardWorkArea);
+        gSaveCardWorkArea = 0;
 
         switch (res + 13)
         {
@@ -400,14 +400,14 @@ int cardCreateSaveFile(u8 retry)
         ret = saveGame(0);
         if (ret != 0)
         {
-            if (lbl_803DD05A != 0)
+            if (gSaveCardFileOpen != 0)
             {
-                lbl_803DD05A = 0;
+                gSaveCardFileOpen = 0;
                 CARDClose(&gSaveCardFileInfo.fileInfo);
             }
             CARDUnmount(0);
-            mm_free(lbl_803DD040);
-            lbl_803DD040 = 0;
+            mm_free(gSaveCardWorkArea);
+            gSaveCardWorkArea = 0;
             gSaveCardState = 13;
             if (ret == 2)
             {
@@ -621,7 +621,7 @@ void showMemCardError(u8 err)
         mmFreeTick(0);
         timer += 0x3e8;
         waitNextFrame();
-        saved = lbl_803DB708;
+        saved = gSaveCardBackdropColor;
         hudDrawColored(getReflectionTexture1(), 0, 0, &saved, 0x200, 0);
         if (submenu != 0)
         {
@@ -699,12 +699,12 @@ void showMemCardError(u8 err)
                 gSaveCardRetry = 1;
                 break;
             case 2:
-                lbl_803DB424 = 0;
+                gSaveGameEnabled = 0;
                 gSaveCardState = 0xd;
                 break;
             case 3:
                 setGameState(6);
-                lbl_803DB424 = 0;
+                gSaveGameEnabled = 0;
                 gSaveCardState = 0xd;
                 break;
             case 4:
@@ -741,8 +741,8 @@ void showMemCardError(u8 err)
  * loops in _saveGame, maybeTryLoadSave, loadSaveGame and cardCreateSaveFile.
  * Pumps 60 frames of the GX/dialog
  * pipeline; on each frame either lets the active controller draw its own
- * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored over the
- * cached prompt id in lbl_803DB708, then routes the OK/Cancel/back text
+ * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored
+ * tinting the reflection texture with gSaveCardBackdropColor, then routes the OK/Cancel/back text
  * to gameTextShowAt based on the dialog kind passed in.
  */
 void cardShowLoadingMsg(u8 kind)
@@ -777,7 +777,7 @@ void cardShowLoadingMsg(u8 kind)
         }
         else
         {
-            saved = lbl_803DB708;
+            saved = gSaveCardBackdropColor;
             hudDrawColored(getReflectionTexture1(), 0, 0, &saved, 0x200, 0);
         }
     gameTextSetColor(0xFF, 0xFF, 0xFF, 0xFF);
@@ -801,14 +801,14 @@ void cardShowLoadingMsg(u8 kind)
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from _saveGame.
  * Stages a per-slot 0x6EC-byte block plus the shared 0xE4-byte trailer
- * into the card-IO buffer (lbl_803DD044), then asks saveGame_doWrite(2) to
+ * into the card-IO buffer (gSaveCardIoBuffer), then asks saveGame_doWrite(2) to
  * commit; if that fails it falls back to saveGame_doWrite(1).
  */
 int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2)
 {
     int ret;
-    memcpy(lbl_803DD044 + slot * 0x6EC + 0xA50, src1, 0x6EC);
-    memcpy(lbl_803DD044 + 0x1F14, src2, 0xE4);
+    memcpy(gSaveCardIoBuffer + slot * 0x6EC + 0xA50, src1, 0x6EC);
+    memcpy(gSaveCardIoBuffer + 0x1F14, src2, 0xE4);
     ret = saveGame_doWrite(2);
     if (ret == 0)
     {
@@ -820,11 +820,11 @@ int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2)
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from maybeTryLoadSave.
  * Copies the 0xE4-byte block at offset 0x1F14 in the card buffer (held in
- * lbl_803DD044) into the caller-supplied destination.
+ * gSaveCardIoBuffer) into the caller-supplied destination.
  */
 int saveGameReadGlobalsCb(int saveId, int size, void* dst)
 {
-    memcpy(dst, lbl_803DD044 + 0x1F14, 0xE4);
+    memcpy(dst, gSaveCardIoBuffer + 0x1F14, 0xE4);
     return 0;
 }
 

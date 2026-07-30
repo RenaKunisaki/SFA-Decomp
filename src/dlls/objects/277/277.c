@@ -56,7 +56,7 @@ int dll_115_getObjectTypeId(void) {
 }
 
 void dll_115_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, DLL_115_GROUP);
+    objFreeObjectType((int)obj, DLL_115_GROUP);
 }
 
 void dll_115_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
@@ -135,7 +135,7 @@ void dll_115_init(GameObject* obj, Dll115Placement* placement) {
     obj->anim.rotX = (s16)(placement->initialYaw << DLL_115_ROTATION_SHIFT);
     obj->animEventCallback = dll_115_animEventCallback;
     obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED;
-    ObjGroup_AddObject((int)obj, DLL_115_GROUP);
+    objAddObjectType((int)obj, DLL_115_GROUP);
 
     step = 0;
     placementCursor = (s16*)placement;

@@ -134,10 +134,6 @@ int collectible_getIsHidden(GameObject* obj) {
     return obj->userData1;
 }
 
-static f32 collectible_getRotX(GameObject* obj) {
-    return (f32)obj->anim.rotX;
-}
-
 PPCWGPipe GXWGFifo : (0xCC008000);
 
 void collectible_applyPickup(GameObject* obj) {
@@ -225,14 +221,6 @@ void collectible_applyPickup(GameObject* obj) {
     }
     obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
     obj->userData1 = 1;
-}
-
-static void collectible_updateSeqEffects(GameObject* obj) {
-    switch (obj->anim.romDefNo) {
-    case COLLECTIBLE_SEQ_ID_MOON_SEED:
-        objfx_spawnDirectionalBurst(obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
-        break;
-    }
 }
 
 void collectible_updateLooseMotion(GameObject* obj) {
@@ -479,7 +467,7 @@ int collectible_getObjectTypeId(void) {
 
 void collectible_free(GameObject* obj) {
     (*gExpgfxInterface)->freeSource2((u32)obj);
-    ObjGroup_RemoveObject((int)obj, COLLECTIBLE_OBJECT_GROUP);
+    objFreeObjectType((int)obj, COLLECTIBLE_OBJECT_GROUP);
 }
 
 void collectible_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
@@ -615,7 +603,7 @@ void collectible_init(GameObject* obj, CollectibleSetup* setup) {
 
     objAnim = &obj->anim;
     pathControlByte = sCollectiblePathByte[0];
-    ObjGroup_AddObject((int)obj, COLLECTIBLE_OBJECT_GROUP);
+    objAddObjectType((int)obj, COLLECTIBLE_OBJECT_GROUP);
     ObjMsg_AllocQueue(obj, COLLECTIBLE_MESSAGE_QUEUE_LENGTH);
     obj->anim.rotX = (s16)(setup->rotXByte << 8);
     obj->anim.rotY = (s16)(setup->rotYByte << 8);

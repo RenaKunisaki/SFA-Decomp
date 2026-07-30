@@ -45,7 +45,7 @@
 #include "main/lightmap_api.h"
 #include "main/maketex_api.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
@@ -914,7 +914,7 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
 
             if (s->floorAdjustFlag == 0)
             {
-                hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &floorOffset,
+                trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &floorOffset,
                                      0);
                 obj->anim.localPosY = obj->anim.localPosY - floorOffset;
                 obj->anim.localPosY += 2.0f;
@@ -1138,18 +1138,6 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
     }
 }
 
-static void SnowBike_ResetAirMeter(SnowBikeState* st)
-{
-    st->airMeterMax = 70000.0f;
-    st->airDrainRate = 1.0f;
-    st->airMeterCurrent = 69999.0f;
-    if (st->riderMode == 2)
-    {
-        (*gGameUIInterface)->initAirMeter((int)st->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
-        (*gGameUIInterface)->airMeterSetField24(4.0f);
-    }
-}
-
 void SnowBike_onSeqFree(GameObject* obj)
 {
     SnowBikeState* state = obj->extra;
@@ -1251,20 +1239,6 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
 
     ((HightopFlags3*)&st->flags428)->active = 0;
     return 0;
-}
-
-static void SnowBike_ClampSwayAxis(f32* accum, f32 lo, f32 hi)
-{
-    f32 v = *accum;
-    *accum = (v < lo) ? lo : ((v > hi) ? hi : v);
-    v = *accum;
-    if (v < 0.01f)
-    {
-        if (v > -0.01f)
-        {
-            *accum = 0.0f;
-        }
-    }
 }
 
 void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
@@ -1419,7 +1393,7 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
     {
         yawDelta = yawDelta + 0xffff;
     }
-    st->yaw = *(s16*)((char*)st + 0x40e) + yawDelta;
+    st->yaw += yawDelta;
     st->yawCurrent = st->yawCurrent + yawDelta;
     obj[1] = obj[1] + ((int)st->unk310 >> ival);
     obj[2] = obj[2] + ((int)st->unk312 >> ival);
@@ -1571,11 +1545,6 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
     st->distanceScaleDamp += timeDelta * (k * (target54c - st->distanceScaleDamp));
     st->turnVelScale += timeDelta * (k * (target540 - st->turnVelScale));
     st->turnForceGain += timeDelta * (k * (target544 - st->turnForceGain));
-}
-
-static s16 SnowBike_StickToSteerAngle(f32 stickX, f32 stickY)
-{
-    return (f32)(u16)getAngle(stickX, stickY) / 182.04f;
 }
 
 void SnowBike_UpdateLiftSway(int obj, int state)
@@ -2179,7 +2148,7 @@ void SnowBike_free(GameObject* obj)
     int state;
 
     state = *(int*)&obj->extra;
-    ObjGroup_RemoveObject((int)obj, SNOWBIKE_OBJGROUP);
+    objFreeObjectType((int)obj, SNOWBIKE_OBJGROUP);
     i = 0;
     p = (char*)state;
     for (; i < 9; i++)
@@ -2653,7 +2622,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     s->posSnapshotY = obj->anim.localPosY;
     s->posSnapshotZ = obj->anim.localPosZ;
     obj->animEventCallback = SnowBike_SeqFn;
-    ObjGroup_AddObject((int)obj, SNOWBIKE_OBJGROUP);
+    objAddObjectType((int)obj, SNOWBIKE_OBJGROUP);
     if (flag == 0)
     {
         i = 0;

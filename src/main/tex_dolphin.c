@@ -23,7 +23,7 @@
 #include "main/objHitReact.h"
 #include "main/objhits.h"
 #undef OBJHITS_STATE_INDEX_S8
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
 #include "dolphin/mtx.h"
@@ -69,7 +69,7 @@
 #include "main/dll/FRONT/n_options.h"
 #include "main/lightmap_render_queue_api.h"
 
-u8 lbl_803DB638[4] = {0x20, 0x20, 0x20, 0};
+u8 gCloudLayerOverlayColor[4] = {0x20, 0x20, 0x20, 0};
 int gTexShaderAmbColor = -1;
 int gTexLightmapAmbColor = -1;
 s8 gTexIndMtxScaleExp = -2;
@@ -189,7 +189,7 @@ typedef struct IndMtxCopy
 
 #define SHADER_FLAGS(s) ((s)->flags)
 
-void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, MapShader* shader,
+void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, Shader* shader,
                                                ModelRenderInstrsState* state, f32 (*viewMtx)[4])
 {
     f32 passMtx[3][4];
@@ -255,9 +255,9 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, M
     }
 }
 
-MapShader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, ModelRenderInstrsState* state)
+Shader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, ModelRenderInstrsState* state)
 {
-    MapShader* shader;
+    Shader* shader;
     u32 shaderIdx;
     int byteBase;
     int fogColor;
@@ -279,7 +279,7 @@ MapShader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, Mode
         shader = &blockData->shaders[shaderIdx];
     }
     GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
-    selectTexture(((MapShaderLayer*)Shader_getLayer(shader, 0))->texture, 0);
+    selectTexture(((ShaderLayer*)Shader_getLayer(shader, 0))->texture, 0);
     if ((SHADER_FLAGS(shader) & 4) != 0)
     {
         _gxSetFogParams();
@@ -493,7 +493,7 @@ u8 mapBlockBounds_ComputeAndTestPlanes(MapBlockBoundsRec* bounds, struct MapBloc
     return 1;
 }
 
-void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, MapShader* shader,
+void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Shader* shader,
                              ModelRenderInstrsState* state, float* mtx)
 {
     int lightPos[3];
@@ -690,10 +690,10 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Map
     }
 }
 
-void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
+void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
 {
     int layerIdx;
-    MapShaderLayer* layer;
+    ShaderLayer* layer;
     int texture;
     f32 (*texMtx)[4];
     int overrideIdx;
@@ -707,17 +707,17 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
     kColor = lbl_803DEBB0;
     if ((shader->layerCount == 2) &&
         (texture = (int)Shader_getLayer(shader, 1),
-         (((MapShaderLayer*)texture)->typeBits & 0x7f) == 9u))
+         (((ShaderLayer*)texture)->typeBits & 0x7f) == 9u))
     {
         layer = Shader_getLayer(shader, 0);
         {
             u8 overrideType;
-            if ((overrideType = layer->overrideType) != '\0')
+            if ((overrideType = layer->materialId) != '\0')
             {
                 int layerTextureId = layer->textureIndex;
                 MapTextureOverride* overrides;
                 overrideIdx = 0;
-                overrides = (MapTextureOverride*)(int)lbl_803DCE6C;
+                overrides = (MapTextureOverride*)(int)gMapTextureOverrides;
                 overrideEntry = overrides;
                 for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                 {
@@ -740,9 +740,9 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         }
         if (layer->scrollMtx != 0xff)
         {
-            tx = *(float*)((int)lbl_803DCE68 + ((u32)layer->scrollMtx << 4)) / 1048576.0f;
+            tx = *(float*)((int)gMapTextureScrolls + ((u32)layer->scrollMtx << 4)) / 1048576.0f;
             PSMTXTrans(texMatrix, tx,
-                       *(float*)((int)lbl_803DCE68 + 4 + ((u32)layer->scrollMtx << 4)) /
+                       *(float*)((int)gMapTextureScrolls + 4 + ((u32)layer->scrollMtx << 4)) /
                            1048576.0f,
                        0.0f);
             texMtx = texMatrix;
@@ -759,12 +759,12 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         layer = Shader_getLayer(shader, 1);
         {
             u8 overrideType;
-            if ((overrideType = layer->overrideType) != '\0')
+            if ((overrideType = layer->materialId) != '\0')
             {
                 int layerTextureId = layer->textureIndex;
                 MapTextureOverride* overrides;
                 overrideIdx = 0;
-                overrides = (MapTextureOverride*)(int)lbl_803DCE6C;
+                overrides = (MapTextureOverride*)(int)gMapTextureOverrides;
                 overrideEntry = overrides;
                 for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                 {
@@ -787,9 +787,9 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
         }
         if (layer->scrollMtx != 0xff)
         {
-            tx = *(float*)((int)lbl_803DCE68 + ((u32)layer->scrollMtx << 4)) / 1048576.0f;
+            tx = *(float*)((int)gMapTextureScrolls + ((u32)layer->scrollMtx << 4)) / 1048576.0f;
             PSMTXTrans(texMatrix, tx,
-                       *(float*)((int)lbl_803DCE68 + 4 + ((u32)layer->scrollMtx << 4)) /
+                       *(float*)((int)gMapTextureScrolls + 4 + ((u32)layer->scrollMtx << 4)) /
                            1048576.0f,
                        0.0f);
             texMtx = texMatrix;
@@ -812,11 +812,11 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
             {
                 u8 overrideType;
                 {
-                    if ((overrideType = layer->overrideType) != '\0')
+                    if ((overrideType = layer->materialId) != '\0')
                     {
                         MapTextureOverride* overrides;
                         overrideIdx = 0;
-                        overrides = (MapTextureOverride*)(int)lbl_803DCE6C;
+                        overrides = (MapTextureOverride*)(int)gMapTextureOverrides;
                         overrideEntry = overrides;
                         for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                         {
@@ -839,9 +839,9 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
                     if (layer->scrollMtx != 0xff)
                     {
                         int scrollOffset = (u32)layer->scrollMtx * 0x10;
-                        tx = *(float*)((u8*)lbl_803DCE68 + scrollOffset) / 1048576.0f;
+                        tx = *(float*)((u8*)gMapTextureScrolls + scrollOffset) / 1048576.0f;
                         PSMTXTrans(texMatrix, tx,
-                                   *(float*)((u8*)lbl_803DCE68 + scrollOffset + 4) / 1048576.0f,
+                                   *(float*)((u8*)gMapTextureScrolls + scrollOffset + 4) / 1048576.0f,
                                    0.0f);
                         texMtx = texMatrix;
                     }
@@ -873,9 +873,9 @@ void mapBlockRender_setupShaderTextures(MapShader* shader, int mode)
     return;
 }
 
-MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRenderInstrsState* state)
+Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRenderInstrsState* state)
 {
-    MapShader* shader;
+    Shader* shader;
     u32 shaderIdx;
     int fogColor;
     int byteBase;
@@ -938,7 +938,7 @@ MapShader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRe
     flags = SHADER_FLAGS(shader);
     if ((flags & 0x20) != 0 && (lightList = lbl_803DCE34) != 0)
     {
-        addSignedOverlayTexStage((u8*)lightList, &gCloudLayerTexMatrix, lbl_803DB638);
+        addSignedOverlayTexStage((u8*)lightList, &gCloudLayerTexMatrix, gCloudLayerOverlayColor);
     }
     else if ((flags & 0x40) != 0)
     {
@@ -1044,7 +1044,7 @@ extern u32 gSunFlareScissorWidth;
 extern u32 gSunFlareScissorHeight;
 extern u8 lbl_803DCE06;
 extern ModelLightStruct* gGlowLightList[];
-extern u8 lbl_803DCE98;
+extern u8 gMapBlockCount;
 extern int lbl_803DCE80;
 extern int gMapBlockIndexCount;
 extern int* gMapBlockIndexList;
@@ -1059,7 +1059,7 @@ extern f32 lbl_803DEC40;
 
 void* trackGetBlockDescriptors(u32* outVal);
 
-void mapBlockRender_setVtxDcrs(u8 doSetup, MapBlockData* block, MapShader* shader,
+void mapBlockRender_setVtxDcrs(u8 doSetup, MapBlockData* block, Shader* shader,
                                ModelRenderInstrsState* state)
 {
     int* stateWords;
@@ -1161,7 +1161,7 @@ void renderMapBlock(MapBlockData* block, u8 type)
     f32 m[16];
     void* instructions;
     int done;
-    MapShader* shader;
+    Shader* shader;
     u8 doSetup;
     u16 instructionCount;
     void* viewMtx;
@@ -1554,7 +1554,7 @@ void* mapBlockGetEdge(int* obj, int idx)
     return (char*)((int**)obj)[0x68 / 4] + idx * 0x1c;
 }
 
-MapShader* mapBlockGetShader(MapBlockData* obj, int idx)
+Shader* mapBlockGetShader(MapBlockData* obj, int idx)
 {
     return obj->shaders + idx;
 }
@@ -1564,7 +1564,7 @@ void MapBlock_initShaders(MapBlockData* block)
     int i;
     int j;
     int ref;
-    MapShader* sh;
+    Shader* sh;
     for (i = 0; i < block->shaderCount; i++)
     {
         sh = &block->shaders[i];
@@ -1574,7 +1574,7 @@ void MapBlock_initShaders(MapBlockData* block)
             if (ref != -1)
             {
                 sh->layers[j].texture = block->textures[ref].texture;
-                ref = sh->layers[j].overrideType;
+                ref = sh->layers[j].materialId;
                 if ((u32)ref != 0u)
                 {
                     mapTextureOverrideAcquire(sh->layers[j].texture, 0, ref);
@@ -1722,7 +1722,7 @@ void gxErrorFn_80060b40(void)
     int i;
 
     i = 0;
-    n = lbl_803DCE98;
+    n = gMapBlockCount;
     for (; i < n; i++)
     {
     }
@@ -1745,7 +1745,7 @@ void mapClearBlockEdgeFlags(void)
     int j;
     MapBlockData* block;
 
-    for (i = 0; i < lbl_803DCE98; i++)
+    for (i = 0; i < gMapBlockCount; i++)
     {
         block = gMapBlocks[i];
         if (block != NULL)

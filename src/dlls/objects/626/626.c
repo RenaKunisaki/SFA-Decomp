@@ -29,7 +29,7 @@
 #include "main/game_ui_interface.h"
 #include "sys/objects/lifecycle.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/obj_trigger.h"
 #include "main/objanim.h"
@@ -357,7 +357,7 @@ int hightop_stateHandler07(GameObject* obj, HighTopRuntime* stateArg)
         rt->substate = 5;
         stateArg->baddie.moveSpeed = 0.004f;
         rt->lookController.modeBits &= ~1;
-        ObjGroup_RemoveObject((int)obj, HIGHTOP_OBJGROUP);
+        objFreeObjectType((int)obj, HIGHTOP_OBJGROUP);
     }
     if (stateArg->baddie.moveDone != 0)
     {
@@ -524,6 +524,16 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
     }
     return 0;
 }
+u8 lbl_8032AAB0[0x80] = {
+    0x04, 0x30, 0x0B, 0x00, 0x03, 0x00, 0x04, 0x31, 0x05, 0x00, 0x02, 0x00, 0x04, 0x32, 0x0B, 0x00,
+    0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x02,
+    0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x05,
+    0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x03,
+    0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x05,
+    0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x02,
+    0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x02,
+    0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x05,
+};
 int gHighTopIdleSequenceIds[3] = {0x4, 0x5, 0x6};
 int gHighTopIdleSequenceWeights[3] = {0x32, 0x19, 0x19};
 HighTopTuning lbl_8032AB48 = {
@@ -631,6 +641,11 @@ int hightop_stateHandler03(GameObject* obj, HighTopRuntime* state)
     return 0;
 }
 
+static inline int hightopAbs(int v)
+{
+    return v >= 0 ? v : -v;
+}
+
 int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
 {
     s16 d336;
@@ -653,7 +668,7 @@ int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
         stateArg->baddie.inputMagnitude = 0.0f;
     }
     d336 = stateArg->baddie.turnRate;
-    if ((d336 >= 0 ? d336 : -d336) > state->turnRateThreshold)
+    if (state->turnRateThreshold < hightopAbs(d336))
     {
         conv = (int)(182.04445f * ((f32)d336 * dt));
         (obj)->anim.rotX = (s16)((obj)->anim.rotX + ((s16)conv >> 5));
@@ -976,8 +991,8 @@ int HighTop_getObjectTypeId(void)
 
 void HighTop_free(int obj)
 {
-    ObjGroup_RemoveObject(obj, ARWARWING_OBJGROUP);
-    ObjGroup_RemoveObject(obj, HIGHTOP_OBJGROUP);
+    objFreeObjectType(obj, ARWARWING_OBJGROUP);
+    objFreeObjectType(obj, HIGHTOP_OBJGROUP);
     (*gGameUIInterface)->airMeterShutdown();
 }
 
@@ -1000,7 +1015,7 @@ void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible)
         dll_2E_setTargetFromPathPoint((GameObject*)obj, &runtime->lookController, 0);
         if (runtime->flagsC49.b1 != 0)
         {
-            int** t = (int**)ObjGroup_GetObjects(55, &count);
+            int** t = (int**)objGetAllOfType(55, &count);
             for (i = 0, list = t; i < count; i++)
             {
                 int idx = (*(int (**)(int*))((char*)**(int***)((char*)*list + 0x68) + 0x24))(*list);
@@ -1070,7 +1085,7 @@ void HighTop_hitDetect(GameObject* obj)
                 spawn->effectId = HIGHTOP_DEATH_EFFECT_ID;
                 spawn->unk1C = 0;
                 spawn->gameBit = -1;
-                Obj_SetupObject(&spawn->base, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+                objSetupObject(&spawn->base, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
             }
             (obj)->anim.rotY = 0;
             (obj)->anim.rotZ = 0;
@@ -1189,8 +1204,8 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     {
         *(int*)&node->flags |= 0xa10;
     }
-    ObjGroup_AddObject((int)obj, ARWARWING_OBJGROUP);
-    ObjGroup_AddObject((int)obj, HIGHTOP_OBJGROUP);
+    objAddObjectType((int)obj, ARWARWING_OBJGROUP);
+    objAddObjectType((int)obj, HIGHTOP_OBJGROUP);
     (*gPlayerInterface)->init(obj, runtime, 11, 1);
     runtime->baddie.gravity = 0.17f;
     pathState = (u8*)&runtime->baddie + 4;

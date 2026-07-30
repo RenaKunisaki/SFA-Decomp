@@ -104,7 +104,7 @@ class Elf:
         return None
 
 
-ROOT = "/Users/zcanann/Documents/Projects/SFA-Decomp"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OBJDIR = os.path.join(ROOT, "build/GSAE01/obj")
 # Ghidra-import names encode the address they were lifted from: lbl_803DEA04,
 # DAT_803dd8bd, D_8035F680. Used only for UND symbols (a locally DEFINED symbol
@@ -217,12 +217,30 @@ def fmt(b):
 
 
 def normalize(text, rels, start, size):
+    """Blank out exactly the bits the LINKER writes, and nothing else.
+
+    Reloc offsets are not uniform, and getting that wrong silently widens what
+    counts as "encoding-identical". R_PPC_EMB_SDA21 (109) is recorded at the
+    INSTRUCTION WORD and the linker rewrites both the base register rA (bits
+    11-15) and the 16-bit displacement (bits 16-31), so only bits 0-10 -- the
+    opcode and rD -- survive. Every other IMM16 reloc (ADDR16_HA/LO/16) is
+    recorded at the 16-bit IMMEDIATE FIELD, i.e. instruction+2, so there the two
+    bytes at the offset are the ones to clear.
+
+    Blanking two bytes at the raw offset in both cases erases the SDA21 word's
+    opcode, rD and rA instead of its displacement, which makes two functions
+    that load the same slot with DIFFERENT OPCODES or into DIFFERENT REGISTERS
+    normalize equal.
+    """
     b = bytearray(text[start:start + size])
     for off, typ, nm, add, shndx, val, sz in rels:
         if not (start <= off < start + size):
             continue
         i = off - start
-        if typ in IMM16 and i + 2 <= len(b):
+        if typ == R_SDA21 and i % 4 == 0 and i + 4 <= len(b):
+            w = struct.unpack_from(">I", b, i)[0]
+            struct.pack_into(">I", b, i, w & 0xFFE00000)
+        elif typ in IMM16 and i + 2 <= len(b):
             b[i:i + 2] = b"\0\0"
         elif typ == R_REL24:
             j = i - (i % 4)

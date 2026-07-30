@@ -11,10 +11,10 @@
  *   mode 3: one-shot trigger-sequence gated on its game bit.
  * mode 2 also doubles as a no-op marker at init (clears the timer).
  *
- * Most behavior keys off the player object's position/parent, the global
- * map-hint state (lbl_803DCEB8), and per-marker game bits. Markers placed
- * on the WARPPOINT_MAP_SAVE_* maps additionally record a save point the
- * first time the matching hint byte is seen.
+ * Most behavior keys off the player object's position/parent, the WARPTAB
+ * index the player arrived through (gArrivedWarpIndex), and per-marker game
+ * bits. Markers placed on the WARPPOINT_MAP_SAVE_* maps additionally record a
+ * save point the first time their own arrivalWarpId matches that index.
  */
 #include "dlls/objects/240_WarpPoint.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -39,15 +39,15 @@
 #define WARPPOINT_HINT_TRIGGER_RADIUS  100.0f
 #define WARPPOINT_ZERO                 0.0f
 #define WARPPOINT_HINT_TIMER_FRAMES    2
-#define WARPPOINT_NO_HINT              -1
-#define WARPPOINT_NO_TARGET_MAP        -1
+#define WARPPOINT_NO_ARRIVAL_WARP      -1
+#define WARPPOINT_NO_WARP              -1
 #define WARPPOINT_ANIM_TRIGGER_WARP    1
 #define WARPPOINT_ANIM_TRIGGER_NONE    0
 #define WARPPOINT_SEQUENCE_HINT_ACTIVE 1
 #define WARPPOINT_SEQUENCE_HINT_DONE   0
 
-extern s16 lbl_803DCEB8;
-extern u8 lbl_803DCDE0;
+extern s16 gArrivedWarpIndex;
+extern u8 gWarpArrivalTimer;
 
 int WarpPoint_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     WarpPointPlacement* placement = (WarpPointPlacement*)obj->anim.placementData;
@@ -56,9 +56,9 @@ int WarpPoint_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUp
 
     if (placement->mode != WARPPOINT_MODE_GATED_WARP) {
         if (animUpdate->unk80 == WARPPOINT_ANIM_TRIGGER_WARP) {
-            int targetMapId = (s8) * (u8*)&placement->targetMapId;
-            if (targetMapId > WARPPOINT_NO_TARGET_MAP) {
-                warpToMap(targetMapId, 1);
+            int warpId = (s8) * (u8*)&placement->warpId;
+            if (warpId > WARPPOINT_NO_WARP) {
+                warpToMap(warpId, 1);
                 animUpdate->unk80 = WARPPOINT_ANIM_TRIGGER_NONE;
             }
         }
@@ -106,14 +106,14 @@ void WarpPoint_update(GameObject* obj) {
     if (state->warpDelay < 0) {
         state->warpDelay = 0;
     }
-    if (placement->savePointArmed != 0 && state->savePointRecorded == 0 && lbl_803DCEB8 > WARPPOINT_NO_HINT &&
-        lbl_803DCEB8 == placement->hintId) {
+    if (placement->savePointArmed != 0 && state->savePointRecorded == 0 && gArrivedWarpIndex > WARPPOINT_NO_ARRIVAL_WARP &&
+        gArrivedWarpIndex == placement->arrivalWarpId) {
         (*gMapEventInterface)->savePoint((int)&player->anim.localPosX, player->anim.rotX, 0, getCurMapLayer());
         state->savePointRecorded = 1;
     }
     switch (placement->mode) {
     case WARPPOINT_MODE_PROXIMITY:
-        if (lbl_803DCEB8 > WARPPOINT_NO_HINT || mainGetBit(GAMEBIT_WarpPointRelatedD53) != 0) {
+        if (gArrivedWarpIndex > WARPPOINT_NO_ARRIVAL_WARP || mainGetBit(GAMEBIT_WarpPointRelatedD53) != 0) {
             f32 deltaX = player->anim.localPosX - obj->anim.localPosX;
             f32 deltaY = player->anim.localPosY - obj->anim.localPosY;
             f32 deltaZ = player->anim.localPosZ - obj->anim.localPosZ;
@@ -127,14 +127,14 @@ void WarpPoint_update(GameObject* obj) {
                 }
                 (*gObjectTriggerInterface)->runSequence(state->sequenceId, obj, -1);
                 mainSetBits(GAMEBIT_WarpPointRelatedD53, 0);
-                lbl_803DCDE0 = WARPPOINT_HINT_TIMER_FRAMES;
+                gWarpArrivalTimer = WARPPOINT_HINT_TIMER_FRAMES;
                 state->sequenceTriggered = 1;
             }
         }
-        if (placement->targetMapId > WARPPOINT_NO_TARGET_MAP) {
+        if (placement->warpId > WARPPOINT_NO_WARP) {
             f32 playerDistance = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
             if (playerDistance < state->triggerRadius) {
-                warpToMap(placement->targetMapId, 1);
+                warpToMap(placement->warpId, 1);
             }
         }
         break;
@@ -143,13 +143,13 @@ void WarpPoint_update(GameObject* obj) {
         f32 deltaY = player->anim.localPosY - obj->anim.localPosY;
         f32 deltaZ = player->anim.localPosZ - obj->anim.localPosZ;
         distance = sqrtf(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
-        if (lbl_803DCEB8 > WARPPOINT_NO_HINT && placement->enabled != 0 && distance < WARPPOINT_HINT_TRIGGER_RADIUS &&
+        if (gArrivedWarpIndex > WARPPOINT_NO_ARRIVAL_WARP && placement->enabled != 0 && distance < WARPPOINT_HINT_TRIGGER_RADIUS &&
             player->anim.parentAddress == obj->anim.parentAddress) {
             (*gObjectTriggerInterface)->runSequence(WARPPOINT_SEQUENCE_HINT_ACTIVE, obj, -1);
-            lbl_803DCDE0 = WARPPOINT_HINT_TIMER_FRAMES;
+            gWarpArrivalTimer = WARPPOINT_HINT_TIMER_FRAMES;
         }
         if (state->warpDelay == 0 && distance < (f32)placement->radius &&
-            placement->targetMapId > WARPPOINT_NO_TARGET_MAP && placement->targetMapId > WARPPOINT_NO_TARGET_MAP) {
+            placement->warpId > WARPPOINT_NO_WARP && placement->warpId > WARPPOINT_NO_WARP) {
             (*gObjectTriggerInterface)->runSequence(WARPPOINT_SEQUENCE_HINT_DONE, obj, -1);
         }
         break;
@@ -167,9 +167,9 @@ void WarpPoint_update(GameObject* obj) {
             state->sequenceTriggered = 1;
         } else {
             if (state->sequenceTriggered == 1 && mainGetBit(state->gameBit) != 0 && state->warpDelay == 0 &&
-                distance <= state->triggerRadius && placement->targetMapId > WARPPOINT_NO_TARGET_MAP) {
+                distance <= state->triggerRadius && placement->warpId > WARPPOINT_NO_WARP) {
                 mainSetBits(state->gameBit, 0);
-                warpToMap(placement->targetMapId, 0);
+                warpToMap(placement->warpId, 0);
             }
         }
         break;
@@ -193,16 +193,16 @@ void WarpPoint_update(GameObject* obj) {
             f32 deltaZ = player->anim.worldPosZ - obj->anim.worldPosZ;
             distance = sqrtf(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
         }
-        if (lbl_803DCEB8 > WARPPOINT_NO_HINT && state->sequenceTriggered == 0 && placement->enabled != 0 &&
+        if (gArrivedWarpIndex > WARPPOINT_NO_ARRIVAL_WARP && state->sequenceTriggered == 0 && placement->enabled != 0 &&
             distance < state->triggerRadius && player->anim.parentAddress == obj->anim.parentAddress) {
             (*gObjectTriggerInterface)->runSequence(state->sequenceId, obj, -1);
-            lbl_803DCDE0 = WARPPOINT_HINT_TIMER_FRAMES;
+            gWarpArrivalTimer = WARPPOINT_HINT_TIMER_FRAMES;
             state->sequenceTriggered = 1;
         }
         if (mainGetBit(state->gameBit) != 0 && state->warpDelay == 0 && distance <= state->triggerRadius &&
-            placement->targetMapId > WARPPOINT_NO_TARGET_MAP) {
+            placement->warpId > WARPPOINT_NO_WARP) {
             mainSetBits(state->gameBit, 0);
-            warpToMap(placement->targetMapId, 1);
+            warpToMap(placement->warpId, 1);
         }
         break;
     }

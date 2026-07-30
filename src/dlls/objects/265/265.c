@@ -82,7 +82,7 @@ void breakableCarryable_update(GameObject* obj) {
                 setup->posX = obj->anim.localPosX;
                 setup->posY = obj->anim.localPosY;
                 setup->posZ = obj->anim.localPosZ;
-                Obj_SetupObject(setup, BREAKABLE_CARRYABLE_EXPLOSION_SETUP_FLAGS, obj->anim.mapEventSlot, -1,
+                objSetupObject(setup, BREAKABLE_CARRYABLE_EXPLOSION_SETUP_FLAGS, obj->anim.mapEventSlot, -1,
                                 obj->anim.parent);
             }
             (*gPartfxInterface)

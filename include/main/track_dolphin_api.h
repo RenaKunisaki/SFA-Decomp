@@ -31,16 +31,32 @@ typedef struct TrackQueryBounds
 
 STATIC_ASSERT(sizeof(TrackQueryBounds) == 0x18);
 
-struct MapShader;
+struct Shader;
 struct MapBlockData;
+enum HitQueryMask
+{
+    HITQUERY_TEST_OBJECT_HITBOXES = 0x01,  /* also test reset-object hitboxes, not just map triangles */
+    /* keep only near-horizontal triangles: mapLoadBlocksFn_800685cc drops any
+     * triangle whose plane normal Y is within +-0.707 (cos 45deg) of zero */
+    HITQUERY_HORIZONTAL_SURFACES_ONLY = 0x04,
+    HITQUERY_REUSE_TRIANGLE_BUFFER = 0x10, /* reuse the loaded map-triangle buffer (skip block reload) */
+    HITQUERY_SKIP_CULLED_OBJECTS = 0x80,   /* skip objects whose modelInstance flag 0x01000000 is set */
+    /* Composite the player's ladder/climb probe issues: floor-like surfaces
+     * only, and 0x200 to drop the triangle-group class carrying group flag 8.
+     * No 0x01, so map triangles only. The probe narrows the result to normal
+     * Y > 0.707 and reads the rung heights, so it selects horizontal surfaces
+     * by geometry - there is no climb surface type. */
+    HITQUERY_CLIMB_SURFACE = 0x200 | HITQUERY_HORIZONTAL_SURFACES_ONLY,
+};
+
 typedef struct ObjModel ObjModel;
 
-int objShadowFn_80062498(GameObject* obj, int renderMode, int unused, int frameCount);
+int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount);
 int trackIntersectRebuildPending(void);
 int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset,
-                                         f32* outNormal, int kinds);
-int hitDetectFn_800658a4(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundY, int flag);
-int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int submode);
+                                         f32* outNormal, int queryMask);
+int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset, int queryMask);
+int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask);
 int hitDetectFn_80067958(GameObject* contactSource, f32* startPoints, f32* endPoints, int pointCount, void* results,
                         int flags);
 void hitDetect_calcSweptSphereBounds(TrackQueryBounds* boundsOut, f32* startPoints, f32* endPoints, f32* radii,
@@ -58,7 +74,7 @@ void trackGetGridOrigin(int** outOrigin);
 void trackGetTriangleBuffer(int* outCount, int* outTable);
 void mapInitFn_80069990(void);
 void trackIntersect(void);
-void mapBlockRender_setVtxDcrs(u8 doSetup, struct MapBlockData* block, struct MapShader* shader,
+void mapBlockRender_setVtxDcrs(u8 doSetup, struct MapBlockData* block, struct Shader* shader,
                                ModelRenderInstrsState* state);
 void initTextures(void);
 void mapClearBlockEdgeFlags(void);
@@ -73,7 +89,7 @@ void renderMapBlock(struct MapBlockData* block, u8 type);
 void shadowBeginFrame(void);
 void shadowVolumeBeginFrame(void);
 void trackInvalidateDynamicSlotsForObject(GameObject* target);
-void objDrawFn_80061654(GameObject* obj, ObjModel* model);
+void objDrawGroundShadow(GameObject* obj, ObjModel* model);
 int findSurfaceInYRange(GameObject* obj, f32 x, f32 lo, f32 z, f32 hi, f32* outSurfaceY,
                         GameObject** outSurfaceObj);
 void renderGlows(void);
@@ -81,7 +97,7 @@ void MapBlock_init(struct MapBlockData* block);
 void MapBlock_initHits(struct MapBlockData* block, int index);
 int mapBlockCountTrianglesByType(struct MapBlockData* block, int type);
 void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale);
-int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDepth, int kinds);
+int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDepth, int queryMask);
 extern int lbl_803DCF34;
 extern f32* lbl_803DCF38;
 

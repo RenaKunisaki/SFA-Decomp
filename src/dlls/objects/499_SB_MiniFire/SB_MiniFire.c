@@ -10,7 +10,7 @@
 #include "dlls/objects/499_SB_MiniFire.h"
 
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_0075_dll75func0.h"
+#include "main/dll/dll_0075_modgfx.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/frame_timing.h"

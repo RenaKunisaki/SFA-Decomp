@@ -4,7 +4,7 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
-#include "main/dll/dll_0069_dll69func0.h"
+#include "main/dll/dll_0069_modgfx.h"
 
 #define DLL197_STATE_SIZE 0x10
 

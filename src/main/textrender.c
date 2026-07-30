@@ -1066,7 +1066,6 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count)
 GameTextStateElem gGameTextCharsets[0xA0 / sizeof(GameTextStateElem)];
 
 
-void* gSubtitleLineTable[0x100];
 
 
 GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
@@ -1119,8 +1118,6 @@ int GameText_FindControlCodeArgs(u8* str, u32 target, int* out)
     return 0;
 }
 
-char* gSubtitleLineStrs[0x100];
-f32 gSubtitleLineTimes[0x100];
 
 int getControlCharLen(u32 c)
 {
@@ -1143,5 +1140,3 @@ u8 sGameTextFallbackBufSlots[0x20];
 u8 sGameTextFallbackDefs[0x280];
 u32 sSubtitleCtrlCmdScratch[0x240];
 GameTextSlot gGameTextCommandSlots[0xA00 / sizeof(GameTextSlot)];
-Texture* gGameTextBoxFrameTextures[5];
-Texture* gSubtitleBoxTextures[3];

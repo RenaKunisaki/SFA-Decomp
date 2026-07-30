@@ -87,9 +87,3 @@ ObjectDescriptor11WithPadding gSkeetlaWallObjDescriptor = {
     },
     0,
 };
-
-/* Kaldachom move/speed tables physically owned by this TU's .data tail. */
-
-s16 gKaldachomMoves[6] = {0, 0, 1, 1, 2, 0};
-
-f32 gKaldachomMoveSpeeds[5] = {0.004f, 0.006f, 0.01f, 0.01f, 0.01f};

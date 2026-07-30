@@ -23,7 +23,7 @@
 #include "main/objHitReact.h"
 #include "main/objhits.h"
 #undef OBJHITS_STATE_INDEX_S8
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
 #include "dolphin/mtx.h"
@@ -325,7 +325,7 @@ extern u32 gNewShadowBumpTexture;
 extern u32 gNewShadowWhirlpoolTexture;
 extern u32 gNewShadowReflectionSmallTexture;
 extern u8 gNewShadowFrameIndex;
-u8 lbl_8030E8B0[0xD8] = {
+u8 gSurfaceSfxTable[0xD8] = {
     0x03, 0x46, 0x03, 0x46, 0x03, 0x46, 0x03, 0x47, 0x03, 0x48, 0x03, 0x49, 0x03, 0x4A, 0x03, 0x4B,
     0x03, 0x46, 0x03, 0x4C, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04,
     0x00, 0x05, 0x00, 0x06, 0x00, 0x01, 0x03, 0x3A, 0x01, 0x2E, 0x01, 0x2E, 0x01, 0x2E, 0x01, 0x2E,
@@ -689,12 +689,14 @@ void sortShadowEntriesDescending(ShadowSortEntry* arr, int count);
 
 void renderShadows(int unused0, int unused1, int unused2)
 {
+    NewShadowCaster* casterPtr;
     f32 *mc54p;
+    f32* vAzp;
+    f32* vAyp;
+    Texture** texture;
     f32 dirY, dirZ, vAy, dirX, sCamX, sCamY;
     int savedRotY;
     s16 savedRotX;
-    Texture** texture;
-    NewShadowCaster* casterPtr;
     f32 om100[24];
     Mtx mTrans, mScale;
     Mtx44 mOrtho;
@@ -708,12 +710,12 @@ void renderShadows(int unused0, int unused1, int unused2)
     f32 sCamZ, savedFovY, vAx, vAz, orthoHalf;
     int slotIdx, texIdx;
     s8 casterIdx;
+    int w;
     GameObject* obj;
     s16 savedRotZ;
     ObjModelState* modelState;
     NewShadowCastSlot* castSlot;
     MtxPtr viewMtx;
-    int screenW;
 
     if (gNewShadowCasterCount == 0)
         return;
@@ -736,18 +738,19 @@ void renderShadows(int unused0, int unused1, int unused2)
     v30.z = 0.0f;
     buildShadowVolumeBox(&v30.x, om100, 2.0f);
     mapGetBlocks(&layerTables, &blocks);
+    texIdx = 0;
     slotIdx = 0;
     casterIdx = 0;
-    texIdx = 0;
     casterPtr = shadowData->casters;
     mc54p = &mc54[0];
+    vAzp = &vA.x + 2;
+    vAyp = &vA.x + 1;
     for (; casterIdx < gNewShadowCasterCount && casterIdx < NEW_SHADOW_MAX_CASTERS; casterPtr++, casterIdx++)
     {
         u8 alpha;
         u8 kind;
         obj = casterPtr->obj;
         modelState = obj->anim.modelState;
-        screenW = 0;
         Camera_SetCurrentViewIndex(0);
         alpha = objShadowUpdateAlpha(obj, framesThisStep);
         Camera_SetCurrentViewIndex(1);
@@ -765,7 +768,7 @@ void renderShadows(int unused0, int unused1, int unused2)
         castSlot->alpha = alpha;
         if ((u8)texIdx < NEW_SHADOW_MAX_CAST_TEXTURES && (kind = casterPtr->flags) != 0)
         {
-            int w;
+            int screenW;
             if ((u8)texIdx < 3)
             {
                 w = 0x100;
@@ -790,7 +793,7 @@ void renderShadows(int unused0, int unused1, int unused2)
                 w = obj->anim.modelState->shadowTexture->width;
                 screenW = w;
             }
-            skyGetObjectLightDirection(obj, &vA.x, &vA.y, &vA.z);
+            skyGetObjectLightDirection(obj, &vA.x, vAyp, vAzp);
             dot24.x = -modelState->shadowOffsetX;
             dot24.y = -modelState->shadowOffsetY;
             dot24.z = -modelState->shadowOffsetZ;
@@ -1570,7 +1573,7 @@ void initFn_8006d020(void)
     testAndSet_onlyUseHeap3(savedHeap);
 }
 
-extern u8 lbl_8030E8B0[0xD8];
+extern u8 gSurfaceSfxTable[0xD8];
 
 
 static inline void fillDiskTexture(void)
@@ -2103,7 +2106,7 @@ void allocLotsOfTextures(void)
 
 int audioPickSoundEffect_8006ed24(u8 a, u8 b)
 {
-    u8* base = lbl_8030E8B0;
+    u8* base = gSurfaceSfxTable;
     int idx = (u8)a;
     int t;
     u8 v;

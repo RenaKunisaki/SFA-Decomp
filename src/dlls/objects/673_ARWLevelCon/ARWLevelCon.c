@@ -15,6 +15,7 @@
 #include "main/sky_api.h"
 #include "main/dll/ARW/dll_02A1_arwlevelcon.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
+#include "main/dll/dll_0056_cameramodearwing.h"
 #include "main/render_envfx_api.h"
 #include "main/shader_api.h"
 #include "main/gamebit_ids.h"
@@ -24,9 +25,6 @@
 /* env effects co-activated once with the sky preset; opaque distinct roles */
 #define ARWLEVELCON_ENVFX_A 0x21f
 #define ARWLEVELCON_ENVFX_B 0x22b
-
-/* camera mode DLL 0x56 = dll_0056_cameramodearwing */
-#define ARWLEVELCON_CAMMODE_ARWING 0x56
 
 ObjectDescriptor gARWLevelConObjDescriptor = {
     0,
@@ -71,7 +69,7 @@ int arwlevelcon_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
         u8 eventId = seq->eventIds[i];
         if (eventId == 1)
         {
-            (*gObjectTriggerInterface)->setCamVars(ARWLEVELCON_CAMMODE_ARWING, 0, 0, 0);
+            (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_ARWING_RESOURCE_ID, 0, 0, 0);
         }
         else if (eventId == 4)
         {
@@ -93,7 +91,7 @@ int arwlevelcon_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
                 textId = 4;
                 break;
             }
-            gameTextFn_80125ba4(textId);
+            headDisplayOpen(textId);
         }
     }
     return 0;
@@ -132,7 +130,7 @@ void arwlevelcon_update(GameObject* obj)
 
     if (state->skyConfigured == 0)
     {
-        skyFn_80089710(7, 1, 0);
+        skySetLightsEnabled(7, 1, 0);
         if (state->alternateRoute != 0)
         {
             skySetBaseColor(7, 0xaa, 0x78, 0xff, 0x69, 0x40);

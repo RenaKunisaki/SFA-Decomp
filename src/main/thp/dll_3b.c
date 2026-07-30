@@ -36,14 +36,6 @@ AttractMovieFreeQueueAndStack gAttractMovieFreeAudioQueueAndStack;
 AttractMovieDecodeThread gAttractMovieAudioDecodeThread;
 s32 gAttractMovieAudioThreadActive;
 
-static void AttractMovieAudio_ResetWork(void)
-{
-    memset(&gAttractMovieAudioDecodeContext, 0, sizeof(gAttractMovieAudioDecodeContext));
-    memset(&gAttractMovieDecodedAudioQueue, 0, sizeof(gAttractMovieDecodedAudioQueue));
-    memset(&gAttractMovieFreeAudioQueueAndStack, 0, sizeof(gAttractMovieFreeAudioQueueAndStack));
-    memset(&gAttractMovieAudioDecodeThread, 0, sizeof(gAttractMovieAudioDecodeThread));
-}
-
 void* PopDecodedAudioBuffer(int flags)
 {
     void* message;

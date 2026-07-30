@@ -1,426 +1,412 @@
 /*
  * DLL 91 / 0x5B - an impact and debris effect spawner.
  */
-#include "main/dll/modgfx_interface.h"
+#include "main/dll/dll_005B_modgfx.h"
+#include "game/objects/object.h"
 #include "main/debug.h"
-#include "main/rcp_dolphin_api.h"
+#include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_005B_modgfxfunc03.h"
+#include "main/model.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/vecmath.h"
 
-u8 lbl_803DB8B0[4] = {0};
-u8 lbl_803DB8B4[8] = {0, 0, 0, 1, 0, 2, 0, 3};
+typedef struct Dll5BEffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} Dll5BEffectVertex;
 
-extern u8 lbl_80311E30[];
+STATIC_ASSERT(offsetof(Dll5BEffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(Dll5BEffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(Dll5BEffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(Dll5BEffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(Dll5BEffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(Dll5BEffectVertex) == 0x0A);
 
-#define MODGFX_FUNC03_SPAWN_MIN 5
-#define MODGFX_FUNC03_SPAWN_MAX 20
+typedef struct Dll5BEffectResourceView {
+    Dll5BEffectVertex vertices[4];
+    s16 colors[4][3];
+    s16 sequenceParams[7];
+    u8 pad4E[2];
+} Dll5BEffectResourceView;
 
-const ModgfxSpawnCountRange gModgfxFunc03DefaultSpawnCount = {(MODGFX_FUNC03_SPAWN_MIN << 16) |
-                                                              MODGFX_FUNC03_SPAWN_MAX};
+STATIC_ASSERT(offsetof(Dll5BEffectResourceView, vertices) == 0x00);
+STATIC_ASSERT(offsetof(Dll5BEffectResourceView, colors) == 0x28);
+STATIC_ASSERT(offsetof(Dll5BEffectResourceView, sequenceParams) == 0x40);
+STATIC_ASSERT(sizeof(Dll5BEffectResourceView) == 0x50);
 
-u8 lbl_80311E30[80] = {0,   0,   2, 88, 0, 0,  0, 15, 0, 31, 2,   88,  0, 0, 0,   0,   0, 0,  0, 0,
-                       253, 168, 0, 0,  2, 88, 0, 15, 0, 0,  253, 168, 0, 0, 253, 168, 0, 31, 0, 0,
-                       0,   0,   0, 1,  0, 2,  0, 0,  0, 2,  0,   3,   0, 0, 0,   3,   0, 1,  0, 1,
-                       0,   3,   0, 2,  0, 0,  0, 70, 0, 0,  0,   0,   0, 0, 0,   0,   0, 0,  0, 0};
+typedef struct Dll5BPartFxSpawnParams {
+    s16 rotationX;
+    s16 rotationY;
+    s16 rotationZOrEffectId;
+    u8 pad06[2];
+    f32 scale;
+    f32 position[3];
+} Dll5BPartFxSpawnParams;
 
-void* lbl_80311E80[18] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000, (void*)0x00000000,
-                          (void*)0x00000000, (void*)0x00000000, modgfx_func03,     (void*)0x21212121, (void*)0x20546869,
-                          (void*)0x73206D6F, (void*)0x64676678, (void*)0x206E6565, (void*)0x64732061, (void*)0x6E206F77,
-                          (void*)0x6E657220, (void*)0x6F626A65, (void*)0x63740A00};
+STATIC_ASSERT(offsetof(Dll5BPartFxSpawnParams, rotationX) == 0x00);
+STATIC_ASSERT(offsetof(Dll5BPartFxSpawnParams, rotationY) == 0x02);
+STATIC_ASSERT(offsetof(Dll5BPartFxSpawnParams, rotationZOrEffectId) == 0x04);
+STATIC_ASSERT(offsetof(Dll5BPartFxSpawnParams, scale) == 0x08);
+STATIC_ASSERT(offsetof(Dll5BPartFxSpawnParams, position) == 0x0C);
+STATIC_ASSERT(sizeof(Dll5BPartFxSpawnParams) == 0x18);
 
-static inline u8* Gameplay_GetActiveModel(void* obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (u8*)objAnim->banks[objAnim->bankIndex];
-}
+u8 gDll5BZeroIndices[4] = {0};
+u8 gDll5BQuadIndices[8] = {0, 0, 0, 1, 0, 2, 0, 3};
 
-s16 modgfx_func03(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, int modelId,
-                  ModgfxSpawnCountRange* countRange)
-{
-    ModgfxSpawnCountRange r;
-    struct
-    {
-        s16 rotX, rotY, seqId;
-        f32 scale;
-        f32 pos[3];
-    } m;
-    ModgfxPointerSpawnPacket buf;
-    u8* base[1];
-    GfxCmd* cmd;
-    u8* model;
-    int spawnCount;
-    GfxCmd* cmdList;
-    int emitCount;
+const Dll5BSpawnCountRange gDll5BDefaultSpawnCountRange = {5, 20};
+
+u8 gDll5BEffectResourceData[0x50] = {0,   0,   2, 88, 0, 0,  0, 15, 0, 31, 2,   88,  0, 0, 0,   0,   0, 0,  0, 0,
+                                     253, 168, 0, 0,  2, 88, 0, 15, 0, 0,  253, 168, 0, 0, 253, 168, 0, 31, 0, 0,
+                                     0,   0,   0, 1,  0, 2,  0, 0,  0, 2,  0,   3,   0, 0, 0,   3,   0, 1,  0, 1,
+                                     0,   3,   0, 2,  0, 0,  0, 70, 0, 0,  0,   0,   0, 0, 0,   0,   0, 0,  0, 0};
+
+Dll5BResourceDescriptor gDll5BResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, NULL, NULL, NULL, dll_5B_spawnModelEffects,
+    "!!!! This modgfx needs an owner object\n",
+};
+
+s16 dll_5B_spawnModelEffects(GameObject* sourceObj, int effectId, PartFxSpawnParams* unusedSpawnParams, u32 spawnFlags,
+                             int unusedModelId, const Dll5BSpawnCountRange* countRange) {
+    Dll5BSpawnCountRange spawnCountRange;
+    Dll5BPartFxSpawnParams partFxParams;
+    ModgfxPointerSpawnPacket packet;
+    Dll5BEffectResourceView* resources[1];
+    GfxCmd* commandCursor;
+    ObjModel* model;
+    int partFxSpawnCount;
+    GfxCmd* commands;
+    int effectCount;
     void* texture;
-    s16 result;
-    u8* activeModel;
-    base[0] = lbl_80311E30;
-    result = 0;
-    model = Gameplay_GetActiveModel(sourceObj);
-    r = gModgfxFunc03DefaultSpawnCount;
-    if (countRange != NULL)
-    {
-        r.min = countRange->min;
-        r.max = countRange->max;
+    s16 spawnHandle;
+    ModelFileHeader* modelFile;
+    resources[0] = (Dll5BEffectResourceView*)gDll5BEffectResourceData;
+    spawnHandle = 0;
+    /* Retail resolves the model before checking for a missing owner. */
+    model = (ObjModel*)sourceObj->anim.banks[sourceObj->anim.bankIndex];
+    spawnCountRange = gDll5BDefaultSpawnCountRange;
+    if (countRange != NULL) {
+        spawnCountRange.min = countRange->min;
+        spawnCountRange.max = countRange->max;
     }
-    if (sourceObj == 0)
-    {
-        debugPrintf((char*)&base[0][0x70]);
+    if (sourceObj == NULL) {
+        debugPrintf((char*)resources[0] + sizeof(*resources[0]) +
+                    offsetof(Dll5BResourceDescriptor, missingOwnerMessage));
         return -1;
     }
-    m.pos[0] = 0.0f;
-    m.pos[1] = 0.0f;
-    m.pos[2] = 0.0f;
-    m.scale = 1.0f;
-    m.seqId = 0;
-    activeModel = *(u8**)model;
-    if (((GameObject*)activeModel)->lightColorSlot == 0)
-    {
+    partFxParams.position[0] = 0.0f;
+    partFxParams.position[1] = 0.0f;
+    partFxParams.position[2] = 0.0f;
+    partFxParams.scale = 1.0f;
+    partFxParams.rotationZOrEffectId = 0;
+    modelFile = model->file;
+    if (modelFile->textureCount == 0) {
         return -1;
     }
-    buf.v58 = effectId;
-    buf.ctx = sourceObj;
-    buf.v44 = effectId;
-    buf.pos[0] = 0.0f;
-    buf.pos[1] = 0.0f;
-    buf.pos[2] = 0.0f;
-    buf.col[0] = 0.0f;
-    buf.col[1] = 0.0f;
-    buf.col[2] = 0.0f;
-    buf.scale = 1.0f;
-    buf.v40 = 1;
-    buf.v3c = 0;
-    buf.v59 = 4;
-    buf.v5a = 0;
-    buf.v5b = 0;
-    buf.hw[0] = *(s16*)&base[0][0x40];
-    buf.hw[1] = *(s16*)&base[0][0x42];
-    buf.hw[2] = *(s16*)&base[0][0x44];
-    buf.hw[3] = *(s16*)&base[0][0x46];
-    buf.hw[4] = *(s16*)&base[0][0x48];
-    buf.hw[5] = *(s16*)&base[0][0x4a];
-    buf.hw[6] = *(s16*)&base[0][0x4c];
-    emitCount = randomGetRange(r.min, r.max);
-    if (effectId == 0xc)
-    {
-        emitCount = randomGetRange(2, 6);
+    packet.modeByte = effectId;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = effectId;
+    packet.position[0] = 0.0f;
+    packet.position[1] = 0.0f;
+    packet.position[2] = 0.0f;
+    packet.velocity[0] = 0.0f;
+    packet.velocity[1] = 0.0f;
+    packet.velocity[2] = 0.0f;
+    packet.scale = 1.0f;
+    packet.drawGroupCount = 1;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 4;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0;
+    packet.sequenceParams[0] = resources[0]->sequenceParams[0];
+    packet.sequenceParams[1] = resources[0]->sequenceParams[1];
+    packet.sequenceParams[2] = resources[0]->sequenceParams[2];
+    packet.sequenceParams[3] = resources[0]->sequenceParams[3];
+    packet.sequenceParams[4] = resources[0]->sequenceParams[4];
+    packet.sequenceParams[5] = resources[0]->sequenceParams[5];
+    packet.sequenceParams[6] = resources[0]->sequenceParams[6];
+    effectCount = randomGetRange(spawnCountRange.min, spawnCountRange.max);
+    if (effectId == 0xc) {
+        effectCount = randomGetRange(2, 6);
+    } else if (effectId == 0xd) {
+        effectCount = randomGetRange(2, 6);
+    } else if (effectId == 0x11) {
+        effectCount = 5;
     }
-    else if (effectId == 0xd)
-    {
-        emitCount = randomGetRange(2, 6);
+    commands = packet.entries;
+    for (; effectCount != 0; effectCount--) {
+        texture = textureIdxToPtr(*modelFile->textureIds);
+        commands[0].layer = 0;
+        commands[0].flags = 1;
+        commands[0].tex = gDll5BZeroIndices;
+        commands[0].mode = 8;
+        commands[0].x = 0.0f;
+        commands[0].y = 0.0f;
+        commands[0].z = 0.0f;
+        if (effectId == 0xc || effectId == 5) {
+            commands[1].layer = 0;
+            commands[1].flags = 4;
+            commands[1].tex = gDll5BQuadIndices;
+            commands[1].mode = 2;
+            commands[1].x = 0.15f * (f32)randomGetRange(1, 6);
+            commands[1].y = 0.15f * (f32)randomGetRange(1, 6);
+            commands[1].z = 0.15f * (f32)randomGetRange(1, 6);
+            commandCursor = &commands[2];
+        } else if (effectId == 0xd) {
+            commands[1].layer = 0;
+            commands[1].flags = 4;
+            commands[1].tex = gDll5BQuadIndices;
+            commands[1].mode = 2;
+            commands[1].x = 0.15f * (f32)randomGetRange(1, 6);
+            commands[1].y = 0.15f * (f32)randomGetRange(1, 6);
+            commands[1].z = 0.15f * (f32)randomGetRange(1, 6);
+            commandCursor = &commands[2];
+        } else if (effectId == 0x14) {
+            commands[1].layer = 0;
+            commands[1].flags = 4;
+            commands[1].tex = gDll5BQuadIndices;
+            commands[1].mode = 2;
+            commands[1].x = 0.25f * (f32)randomGetRange(3, 6);
+            commands[1].y = 0.25f * (f32)randomGetRange(3, 6);
+            commands[1].z = 0.25f * (f32)randomGetRange(3, 6);
+            commandCursor = &commands[2];
+        } else if (effectId == 0x11) {
+            commands[1].layer = 0;
+            commands[1].flags = 4;
+            commands[1].tex = gDll5BQuadIndices;
+            commands[1].mode = 2;
+            commands[1].x = 0.25f * (f32)randomGetRange(3, 6);
+            commands[1].y = 0.25f * (f32)randomGetRange(3, 6);
+            commands[1].z = 0.25f * (f32)randomGetRange(3, 6);
+            commandCursor = &commands[2];
+        } else if (effectId == 0x10) {
+            commands[1].layer = 0;
+            commands[1].flags = 4;
+            commands[1].tex = gDll5BQuadIndices;
+            commands[1].mode = 8;
+            commands[1].x = 255.0f;
+            commands[1].y = 0.0f;
+            commands[1].z = 255.0f;
+            commands[2].layer = 0;
+            commands[2].flags = 4;
+            commands[2].tex = gDll5BQuadIndices;
+            commands[2].mode = 2;
+            commands[2].x = 2.5f * (f32)randomGetRange(3, 6);
+            commands[2].y = 2.5f * (f32)randomGetRange(3, 6);
+            commands[2].z = 2.5f * (f32)randomGetRange(3, 6);
+            commandCursor = &commands[3];
+        } else {
+            commands[1].layer = 0;
+            commands[1].flags = 4;
+            commands[1].tex = gDll5BQuadIndices;
+            commands[1].mode = 2;
+            commands[1].x = 0.15f * (f32)randomGetRange(1, 6);
+            commands[1].y = 0.15f * (f32)randomGetRange(1, 6);
+            commands[1].z = 0.15f * (f32)randomGetRange(1, 6);
+            commandCursor = &commands[2];
+        }
+        commandCursor[0].layer = 1;
+        commandCursor[0].flags = 0;
+        commandCursor[0].tex = NULL;
+        commandCursor[0].mode = 0x80000000;
+        commandCursor[0].x = 0.0f;
+        commandCursor[0].y = -0.07f;
+        commandCursor[0].z = 0.0f;
+        commandCursor[1].layer = 1;
+        commandCursor[1].flags = 0;
+        commandCursor[1].tex = NULL;
+        commandCursor[1].mode = 0x100;
+        commandCursor[1].x = 0.0f;
+        commandCursor[1].y = 300.0f * (f32)randomGetRange(-10, 10);
+        commandCursor[1].z = 300.0f * (f32)randomGetRange(-10, 10);
+        if (effectId == 0x10) {
+            commandCursor[2].layer = 1;
+            commandCursor[2].flags = 0;
+            commandCursor[2].tex = NULL;
+            commandCursor[2].mode = 0x400000;
+            commandCursor[2].x = 0.0f;
+            commandCursor[2].y = 0.0f;
+            commandCursor[2].z = 300.0f + (f32)randomGetRange(0, 300);
+            partFxParams.rotationY = randomGetRange(-0x7fff, -0xfa0);
+            partFxParams.rotationX = randomGetRange(0, 0xffff);
+            vecRotateZXY(&partFxParams.rotationX, &commandCursor[2].x);
+            commandCursor += 3;
+        } else if (effectId == 0x11) {
+            commandCursor[2].layer = 1;
+            commandCursor[2].flags = 0;
+            commandCursor[2].tex = NULL;
+            commandCursor[2].mode = 0x400000;
+            commandCursor[2].x = 0.0f;
+            commandCursor[2].y = 0.0f;
+            commandCursor[2].z = 300.0f + (f32)randomGetRange(0, 300);
+            partFxParams.rotationY = randomGetRange(-0x7fff, -0xfa0);
+            partFxParams.rotationX = randomGetRange(0, 0xffff);
+            vecRotateZXY(&partFxParams.rotationX, &commandCursor[2].x);
+            commandCursor += 3;
+        } else {
+            commandCursor[2].layer = 1;
+            commandCursor[2].flags = 0;
+            commandCursor[2].tex = NULL;
+            commandCursor[2].mode = 0x400000;
+            commandCursor[2].x = 0.0f;
+            commandCursor[2].y = 0.0f;
+            commandCursor[2].z = 100.0f + (f32)randomGetRange(0, 100);
+            partFxParams.rotationY = randomGetRange(-0x7fff, -0xfa0);
+            partFxParams.rotationX = randomGetRange(0, 0xffff);
+            vecRotateZXY(&partFxParams.rotationX, &commandCursor[2].x);
+            commandCursor += 3;
+        }
+        commandCursor[0].layer = 1;
+        commandCursor[0].flags = 4;
+        commandCursor[0].tex = gDll5BQuadIndices;
+        commandCursor[0].mode = 4;
+        commandCursor[0].x = 0.0f;
+        commandCursor[0].y = 0.0f;
+        commandCursor[0].z = 0.0f;
+        packet.commands = commands;
+        packet.commandCount = (commandCursor + 1) - commands;
+        packet.flags = 0x4000000;
+        packet.flags |= spawnFlags;
+        spawnHandle = (*gModgfxInterface)
+                          ->spawnEffect(&packet, 0, 4, resources[0]->vertices, 4, resources[0]->colors, 0, texture);
     }
-    else if (effectId == 0x11)
-    {
-        emitCount = 5;
-    }
-    cmdList = buf.entries;
-    for (; emitCount != 0; emitCount--)
-    {
-        /* anim.worldPosZ is reused here as a pointer to the model's
-           texture-index table head; deref twice to reach the active index. */
-        texture = textureIdxToPtr(**(int**)&((GameObject*)activeModel)->anim.worldPosZ);
-        cmdList[0].layer = 0;
-        cmdList[0].flags = 1;
-        cmdList[0].tex = lbl_803DB8B0;
-        cmdList[0].mode = 8;
-        cmdList[0].x = 0.0f;
-        cmdList[0].y = 0.0f;
-        cmdList[0].z = 0.0f;
-        if (effectId == 0xc || effectId == 5)
-        {
-            cmdList[1].layer = 0;
-            cmdList[1].flags = 4;
-            cmdList[1].tex = lbl_803DB8B4;
-            cmdList[1].mode = 2;
-            cmdList[1].x = 0.15f * (f32)randomGetRange(1, 6);
-            cmdList[1].y = 0.15f * (f32)randomGetRange(1, 6);
-            cmdList[1].z = 0.15f * (f32)randomGetRange(1, 6);
-            cmd = &cmdList[2];
-        }
-        else if (effectId == 0xd)
-        {
-            cmdList[1].layer = 0;
-            cmdList[1].flags = 4;
-            cmdList[1].tex = lbl_803DB8B4;
-            cmdList[1].mode = 2;
-            cmdList[1].x = 0.15f * (f32)randomGetRange(1, 6);
-            cmdList[1].y = 0.15f * (f32)randomGetRange(1, 6);
-            cmdList[1].z = 0.15f * (f32)randomGetRange(1, 6);
-            cmd = &cmdList[2];
-        }
-        else if (effectId == 0x14)
-        {
-            cmdList[1].layer = 0;
-            cmdList[1].flags = 4;
-            cmdList[1].tex = lbl_803DB8B4;
-            cmdList[1].mode = 2;
-            cmdList[1].x = 0.25f * (f32)randomGetRange(3, 6);
-            cmdList[1].y = 0.25f * (f32)randomGetRange(3, 6);
-            cmdList[1].z = 0.25f * (f32)randomGetRange(3, 6);
-            cmd = &cmdList[2];
-        }
-        else if (effectId == 0x11)
-        {
-            cmdList[1].layer = 0;
-            cmdList[1].flags = 4;
-            cmdList[1].tex = lbl_803DB8B4;
-            cmdList[1].mode = 2;
-            cmdList[1].x = 0.25f * (f32)randomGetRange(3, 6);
-            cmdList[1].y = 0.25f * (f32)randomGetRange(3, 6);
-            cmdList[1].z = 0.25f * (f32)randomGetRange(3, 6);
-            cmd = &cmdList[2];
-        }
-        else if (effectId == 0x10)
-        {
-            cmdList[1].layer = 0;
-            cmdList[1].flags = 4;
-            cmdList[1].tex = lbl_803DB8B4;
-            cmdList[1].mode = 8;
-            cmdList[1].x = 255.0f;
-            cmdList[1].y = 0.0f;
-            cmdList[1].z = 255.0f;
-            cmdList[2].layer = 0;
-            cmdList[2].flags = 4;
-            cmdList[2].tex = lbl_803DB8B4;
-            cmdList[2].mode = 2;
-            cmdList[2].x = 2.5f * (f32)randomGetRange(3, 6);
-            cmdList[2].y = 2.5f * (f32)randomGetRange(3, 6);
-            cmdList[2].z = 2.5f * (f32)randomGetRange(3, 6);
-            cmd = &cmdList[3];
-        }
-        else
-        {
-            cmdList[1].layer = 0;
-            cmdList[1].flags = 4;
-            cmdList[1].tex = lbl_803DB8B4;
-            cmdList[1].mode = 2;
-            cmdList[1].x = 0.15f * (f32)randomGetRange(1, 6);
-            cmdList[1].y = 0.15f * (f32)randomGetRange(1, 6);
-            cmdList[1].z = 0.15f * (f32)randomGetRange(1, 6);
-            cmd = &cmdList[2];
-        }
-        cmd[0].layer = 1;
-        cmd[0].flags = 0;
-        cmd[0].tex = NULL;
-        cmd[0].mode = 0x80000000;
-        cmd[0].x = 0.0f;
-        cmd[0].y = -0.07f;
-        cmd[0].z = 0.0f;
-        cmd[1].layer = 1;
-        cmd[1].flags = 0;
-        cmd[1].tex = NULL;
-        cmd[1].mode = 0x100;
-        cmd[1].x = 0.0f;
-        cmd[1].y = 300.0f * (f32)randomGetRange(-10, 10);
-        cmd[1].z = 300.0f * (f32)randomGetRange(-10, 10);
-        if (effectId == 0x10)
-        {
-            cmd[2].layer = 1;
-            cmd[2].flags = 0;
-            cmd[2].tex = NULL;
-            cmd[2].mode = 0x400000;
-            cmd[2].x = 0.0f;
-            cmd[2].y = 0.0f;
-            cmd[2].z = 300.0f + (f32)randomGetRange(0, 300);
-            m.rotY = randomGetRange(-0x7fff, -0xfa0);
-            m.rotX = randomGetRange(0, 0xffff);
-            vecRotateZXY(&m.rotX, &cmd[2].x);
-            cmd += 3;
-        }
-        else if (effectId == 0x11)
-        {
-            cmd[2].layer = 1;
-            cmd[2].flags = 0;
-            cmd[2].tex = NULL;
-            cmd[2].mode = 0x400000;
-            cmd[2].x = 0.0f;
-            cmd[2].y = 0.0f;
-            cmd[2].z = 300.0f + (f32)randomGetRange(0, 300);
-            m.rotY = randomGetRange(-0x7fff, -0xfa0);
-            m.rotX = randomGetRange(0, 0xffff);
-            vecRotateZXY(&m.rotX, &cmd[2].x);
-            cmd += 3;
-        }
-        else
-        {
-            cmd[2].layer = 1;
-            cmd[2].flags = 0;
-            cmd[2].tex = NULL;
-            cmd[2].mode = 0x400000;
-            cmd[2].x = 0.0f;
-            cmd[2].y = 0.0f;
-            cmd[2].z = 100.0f + (f32)randomGetRange(0, 100);
-            m.rotY = randomGetRange(-0x7fff, -0xfa0);
-            m.rotX = randomGetRange(0, 0xffff);
-            vecRotateZXY(&m.rotX, &cmd[2].x);
-            cmd += 3;
-        }
-        cmd[0].layer = 1;
-        cmd[0].flags = 4;
-        cmd[0].tex = lbl_803DB8B4;
-        cmd[0].mode = 4;
-        cmd[0].x = 0.0f;
-        cmd[0].y = 0.0f;
-        cmd[0].z = 0.0f;
-        buf.cmds = cmdList;
-        buf.count = (cmd + 1) - cmdList;
-        buf.flags = 0x4000000;
-        buf.flags |= spawnFlags;
-        result = (*gModgfxInterface)->spawnEffect(&buf, 0, 4, base[0], 4, &base[0][0x28], 0, texture);
-    }
-    spawnCount = randomGetRange(2, 6);
-    if (effectId == 7)
-    {
+    partFxSpawnCount = randomGetRange(2, 6);
+    if (effectId == 7) {
         effectId = randomGetRange(4, 6);
     }
-    if (effectId == 0xb)
-    {
+    if (effectId == 0xb) {
         effectId = randomGetRange(8, 10);
     }
-    if (effectId == 0xc)
-    {
-        spawnCount = randomGetRange(1, 3);
+    if (effectId == 0xc) {
+        partFxSpawnCount = randomGetRange(1, 3);
     }
-    switch (effectId)
-    {
+    switch (effectId) {
     case 0:
     case 0x14:
-        m.seqId = 0x2a;
-        for (; spawnCount != 0; spawnCount--)
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x2a;
+        for (; partFxSpawnCount != 0; partFxSpawnCount--) {
+            (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         }
         break;
     case 1:
-        m.seqId = 0x2b;
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x2b;
+        (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
+        (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         break;
     case 2:
-        m.seqId = 0x184;
-        for (; spawnCount != 0; spawnCount--)
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x184;
+        for (; partFxSpawnCount != 0; partFxSpawnCount--) {
+            (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         }
         break;
     case 3:
-        m.seqId = 0x1a1;
-        for (; spawnCount != 0; spawnCount--)
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x1a1;
+        for (; partFxSpawnCount != 0; partFxSpawnCount--) {
+            (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         }
         break;
     case 4:
-        m.seqId = 0x60;
-        for (; spawnCount != 0; spawnCount--)
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x60;
+        for (; partFxSpawnCount != 0; partFxSpawnCount--) {
+            (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         }
-        m.seqId = 0x159;
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 3, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x159;
+        (*gPartfxInterface)->spawnObject(sourceObj, 3, &partFxParams, 1, -1, NULL);
         break;
     case 5:
-        m.seqId = 0x60;
-        for (; spawnCount != 0; spawnCount--)
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x60;
+        for (; partFxSpawnCount != 0; partFxSpawnCount--) {
+            (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         }
-        m.seqId = 0x91;
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 3, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x91;
+        (*gPartfxInterface)->spawnObject(sourceObj, 3, &partFxParams, 1, -1, NULL);
         break;
     case 6:
-        m.seqId = 0x60;
-        for (; spawnCount != 0; spawnCount--)
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x60;
+        for (; partFxSpawnCount != 0; partFxSpawnCount--) {
+            (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         }
-        m.seqId = 0x74;
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 3, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x74;
+        (*gPartfxInterface)->spawnObject(sourceObj, 3, &partFxParams, 1, -1, NULL);
         break;
     case 8:
-        m.seqId = 0x60;
-        for (; spawnCount != 0; spawnCount--)
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x60;
+        for (; partFxSpawnCount != 0; partFxSpawnCount--) {
+            (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         }
-        emitCount = 0x14;
-        m.seqId = 0xdf;
-        do
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 7, &m, 1, -1, NULL);
-            emitCount--;
-        } while (emitCount != 0);
-        m.seqId = 0x159;
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 3, &m, 1, -1, NULL);
+        effectCount = 0x14;
+        partFxParams.rotationZOrEffectId = 0xdf;
+        do {
+            (*gPartfxInterface)->spawnObject(sourceObj, 7, &partFxParams, 1, -1, NULL);
+            effectCount--;
+        } while (effectCount != 0);
+        partFxParams.rotationZOrEffectId = 0x159;
+        (*gPartfxInterface)->spawnObject(sourceObj, 3, &partFxParams, 1, -1, NULL);
         break;
     case 9:
-        m.seqId = 0x60;
-        for (; spawnCount != 0; spawnCount--)
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x60;
+        for (; partFxSpawnCount != 0; partFxSpawnCount--) {
+            (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         }
-        emitCount = 0x14;
-        m.seqId = 0xde;
-        do
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 7, &m, 1, -1, NULL);
-            emitCount--;
-        } while (emitCount != 0);
-        m.seqId = 0x91;
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 3, &m, 1, -1, NULL);
+        effectCount = 0x14;
+        partFxParams.rotationZOrEffectId = 0xde;
+        do {
+            (*gPartfxInterface)->spawnObject(sourceObj, 7, &partFxParams, 1, -1, NULL);
+            effectCount--;
+        } while (effectCount != 0);
+        partFxParams.rotationZOrEffectId = 0x91;
+        (*gPartfxInterface)->spawnObject(sourceObj, 3, &partFxParams, 1, -1, NULL);
         break;
     case 10:
-        m.seqId = 0x60;
-        for (; spawnCount != 0; spawnCount--)
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x60;
+        for (; partFxSpawnCount != 0; partFxSpawnCount--) {
+            (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         }
-        emitCount = 0x14;
-        m.seqId = 0x160;
-        do
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 7, &m, 1, -1, NULL);
-            emitCount--;
-        } while (emitCount != 0);
-        m.seqId = 0x74;
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 3, &m, 1, -1, NULL);
+        effectCount = 0x14;
+        partFxParams.rotationZOrEffectId = 0x160;
+        do {
+            (*gPartfxInterface)->spawnObject(sourceObj, 7, &partFxParams, 1, -1, NULL);
+            effectCount--;
+        } while (effectCount != 0);
+        partFxParams.rotationZOrEffectId = 0x74;
+        (*gPartfxInterface)->spawnObject(sourceObj, 3, &partFxParams, 1, -1, NULL);
         break;
     case 0xc:
-        m.seqId = 0x2a;
+        partFxParams.rotationZOrEffectId = 0x2a;
         break;
     case 0xd:
-        m.seqId = 0x4c;
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x4c;
+        (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
+        (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         break;
     case 0xe:
-        m.seqId = 0x60;
-        for (; spawnCount != 0; spawnCount--)
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 0x135, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x60;
+        for (; partFxSpawnCount != 0; partFxSpawnCount--) {
+            (*gPartfxInterface)->spawnObject(sourceObj, 0x135, &partFxParams, 1, -1, NULL);
         }
         break;
     case 0xf:
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 0x51b, NULL, 2, -1, NULL);
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 0x51b, NULL, 2, -1, NULL);
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 0x51b, NULL, 2, -1, NULL);
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 0x51b, NULL, 2, -1, NULL);
+        (*gPartfxInterface)->spawnObject(sourceObj, 0x51b, NULL, 2, -1, NULL);
+        (*gPartfxInterface)->spawnObject(sourceObj, 0x51b, NULL, 2, -1, NULL);
+        (*gPartfxInterface)->spawnObject(sourceObj, 0x51b, NULL, 2, -1, NULL);
+        (*gPartfxInterface)->spawnObject(sourceObj, 0x51b, NULL, 2, -1, NULL);
         break;
     case 0x10:
     case 0x11:
-        m.seqId = 0x4c;
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
-        (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
+        partFxParams.rotationZOrEffectId = 0x4c;
+        (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
+        (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
         break;
     default:
-        m.seqId = 0x2a;
-        emitCount = 5;
-        do
-        {
-            (*gPartfxInterface)->spawnObject((void*)sourceObj, 5, &m, 1, -1, NULL);
-            emitCount--;
-        } while (emitCount != 0);
+        partFxParams.rotationZOrEffectId = 0x2a;
+        effectCount = 5;
+        do {
+            (*gPartfxInterface)->spawnObject(sourceObj, 5, &partFxParams, 1, -1, NULL);
+            effectCount--;
+        } while (effectCount != 0);
         break;
     }
-    return result;
+    return spawnHandle;
 }

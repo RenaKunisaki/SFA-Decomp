@@ -45,7 +45,7 @@
 #include "main/modellight_api.h"
 #include "main/objfx.h"
 #include "sys/objects.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_list.h"
 #include "main/obj_path.h"
@@ -147,12 +147,7 @@ ObjectDescriptor gARWArwingObjDescriptor = {
     (ObjectDescriptorExtraSizeCallback)arwarwing_getExtraSize,
 };
 
-static inline f32 clampPos(f32 v, f32 lo, f32 hi)
-{
-    return (v < lo) ? lo : ((v > hi) ? hi : v);
-}
-
-static inline f32 clampNeg(f32 v, f32 lo, f32 hi)
+static inline f32 arwarwing_clampTrim(f32 v, f32 lo, f32 hi)
 {
     return (v < lo) ? lo : ((v > hi) ? hi : v);
 }
@@ -194,10 +189,10 @@ void arwarwing_readControls(GameObject* obj, ArwingState* state)
     }
     aw->rTriggerTrim = (f32)padGetRTrigger(0) / 150.0f;
     trim = aw->rTriggerTrim;
-    aw->rTriggerTrim = clampPos(trim, 0.0f, 1.0f);
+    aw->rTriggerTrim = arwarwing_clampTrim(trim, 0.0f, 1.0f);
     aw->lTriggerTrim = -(f32)padGetLTrigger(0) / 150.0f;
     trim = aw->lTriggerTrim;
-    aw->lTriggerTrim = clampNeg(trim, -1.0f, 0.0f);
+    aw->lTriggerTrim = arwarwing_clampTrim(trim, -1.0f, 0.0f);
     aw->inputFlags = getButtonsJustPressed(0);
     aw->inputFlagsPrev = getButtonsJustPressedIfNotBusy(0);
     aw->inputFlags2 = getButtonsHeld(0);
@@ -1160,10 +1155,10 @@ int arwarwing_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
                              state->collectedRings, 2);
             break;
         case 0xd:
-            gameTextFn_80125ba4(0x13);
+            headDisplayOpen(0x13);
             break;
         case 0xe:
-            gameTextFn_80125ba4(0x14);
+            headDisplayOpen(0x14);
             break;
         }
     }
@@ -1610,7 +1605,7 @@ void arwarwing_free(GameObject* obj)
 {
     ArwingState* state = (obj)->extra;
 
-    ObjGroup_RemoveObject((int)obj, ARWARWING_OBJGROUP);
+    objFreeObjectType((int)obj, ARWARWING_OBJGROUP);
     gArwing = NULL;
     if (state->light != NULL)
     {
@@ -1823,7 +1818,7 @@ void arwarwing_init(GameObject* obj)
     (*gPathControlInterface)->init(pathBlock, 4, 0x1040006, 1);
     (*gPathControlInterface)->setup(pathBlock, 3, gArwingPathSetupData, sArwingPathSpeeds, &cfg);
     (*gPathControlInterface)->attachObject((void*)obj, pathBlock);
-    ObjGroup_AddObject((int)obj, ARWARWING_OBJGROUP);
+    objAddObjectType((int)obj, ARWARWING_OBJGROUP);
     gArwing = obj;
     ObjHits_SetTargetMask(obj, 1);
     state->fullLoadout = 1;

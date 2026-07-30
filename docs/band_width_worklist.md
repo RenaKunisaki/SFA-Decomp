@@ -58,6 +58,11 @@ Use the worklist to find **structB**; treat regB as diagnosis, not as a target.
 `structB`/`regB` are differing instructions x4 — a ranking proxy, not `report.json`
 truth. Always gate a real change on `python3 tools/unitfuzzy.py <unit>`.
 
+Once this file has told you **where**, `docs/source_shape_levers.md` covers **what to write** —
+the levers that landed, each with the measurements that refuted it elsewhere. Note that this
+ranking has **no memory**: it will happily rank a documented cap as the largest unworked entry,
+so `grep` the memory files and `git log` the function before starting.
+
 ## Caveats
 
 - Interior `lbl_*` symbols in retail objects are folded into the preceding function.

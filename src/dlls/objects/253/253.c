@@ -39,7 +39,7 @@ void dll_FD_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int f
 void dll_FD_hitDetect(GameObject* obj) {
     if (((obj->anim.modelInstance->flags & DLL_FD_MODEL_HIT_DETECT_FLAG) != 0) &&
         (obj->anim.hitVolumeTransforms != NULL)) {
-        objRenderFn_80041018(obj);
+        objUpdateHitVolumeTransforms(obj);
     }
 }
 
@@ -56,7 +56,7 @@ void dll_FD_update(GameObject* obj) {
     placement = (DllFDPlacement*)obj->anim.placementData;
     state = obj->extra;
     if (state->target == NULL) {
-        target = (GameObject*)ObjGroup_FindNearestObject((u32)placement->targetGroup, obj, &maxDistance);
+        target = (GameObject*)objGetNearestTypeTo((u32)placement->targetGroup, obj, &maxDistance);
         state->target = target;
         if (state->target == NULL) {
             return;

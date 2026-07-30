@@ -71,7 +71,7 @@ void magicmaker_update(GameObject* obj) {
     if (Obj_IsLoadingLocked() != 0) {
         if (mainGetBit(MAGICMAKER_SPAWN_GAMEBIT) != 0u) {
             mainSetBits(MAGICMAKER_SPAWN_GAMEBIT, 0);
-            groupObjects = (GameObject**)ObjGroup_GetObjects(COLLECTIBLE_OBJECT_GROUP, &groupObjectCount);
+            groupObjects = (GameObject**)objGetAllOfType(COLLECTIBLE_OBJECT_GROUP, &groupObjectCount);
             matchingEntryCount = 0;
             for (i = 0; i < groupObjectCount; i++) {
                 groupObject = *groupObjects;
@@ -102,7 +102,7 @@ void magicmaker_update(GameObject* obj) {
                     spawnSetup->base.color[3] = placement->color[3];
                     spawnSetup->spawnMode = MAGICMAKER_COLLECTIBLE_SPAWN_MODE;
                     spawnedObject =
-                        Obj_SetupObject(&spawnSetup->base, MAGICMAKER_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
+                        objSetupObject(&spawnSetup->base, MAGICMAKER_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
                                         MAGICMAKER_CHILD_OBJECT_INDEX, obj->anim.parent);
                     if (spawnedObject != NULL) {
                         i = MAGICMAKER_HIT_BURST_COUNT;

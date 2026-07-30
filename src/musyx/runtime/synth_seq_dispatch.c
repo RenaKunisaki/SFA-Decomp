@@ -637,17 +637,32 @@ void seqHandle(u32 deltaTime)
     }
 }
 
+static inline void synthInitCallbacks(SynthVoiceRuntime* runtime) {
+    SynthCallbackLink* prev;
+    SynthCallbackLink* callback;
+    u32 i;
+
+    prev = NULL;
+    gSynthFreeCallbacks = &runtime->callbacks[0];
+    for (i = 0; i < 0x100; i++) {
+        callback = &runtime->callbacks[i];
+        callback->prev = prev;
+        if (prev != NULL) {
+            prev->next = callback;
+        }
+        prev = callback;
+    }
+    prev->next = NULL;
+}
+
 /*
  * Initialize sequence instances, note priorities, and callback links.
  */
 void seqInit(void)
 {
-    u32 k;
     u16* note;
     SynthVoice* voice;
     SynthVoiceRuntime* runtime;
-    SynthCallbackLink* prev;
-    SynthCallbackLink* callback;
     u32 i;
     int j;
 
@@ -679,19 +694,6 @@ void seqInit(void)
     }
     runtime->voices[i - 1].next = NULL;
 
-    prev = NULL;
-    callback = &runtime->callbacks[0];
-    gSynthFreeCallbacks = callback;
-    for (k = 0; k < 0x100; k++)
-    {
-        callback->prev = prev;
-        if (prev != NULL)
-        {
-            prev->next = callback;
-        }
-        prev = callback;
-        callback++;
-    }
-    prev->next = NULL;
+    synthInitCallbacks(runtime);
     gSynthNextHandle = 0;
 }

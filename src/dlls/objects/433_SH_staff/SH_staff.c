@@ -24,7 +24,7 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/objseq.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_path.h"
 #include "main/objhits.h"
 #include "main/object_render.h"
@@ -328,7 +328,7 @@ int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpda
             state->phase = SHSTAFF_PHASE_CARRY_LOCAL;
             break;
         case SHSTAFF_EVENT_SHOW_STAFF_HUD:
-            hudFn_8011f38c(1);
+            setHudForceShowMask(1);
             break;
         case SHSTAFF_EVENT_SPAWN_EVEN_HAZE:
             state->hazeFlags = state->hazeFlags | SHSTAFF_HAZE_FLAG_SPAWN_EVEN;
@@ -426,7 +426,7 @@ void sh_staff_update(GameObject* obj) {
         }
     } else if (currentPhase == SHSTAFF_PHASE_ARMED) {
         if (ObjTrigger_IsSet((int)obj) != 0) {
-            int target = ObjGroup_FindNearestObject(SHSTAFF_TARGET_OBJGROUP, obj, 0);
+            int target = objGetNearestTypeTo(SHSTAFF_TARGET_OBJGROUP, obj, 0);
             (*gObjectTriggerInterface)->runSequence(0, (void*)target, -1);
             state->phase = SHSTAFF_PHASE_PICKUP;
             state->hazeFadeTimer = 60.0f;
@@ -449,7 +449,7 @@ void sh_staff_update(GameObject* obj) {
             mainSetBits(GAMEBIT_STAFF_PICKUP_MAP_UNLOADED, 1);
         }
     }
-    hudFn_8011f38c(0);
+    setHudForceShowMask(0);
     state->hazeClimbT = 0.01f * timeDelta + state->hazeClimbT;
     if (state->hazeClimbT > 1.0f) {
         state->hazeClimbT = 0.0f;

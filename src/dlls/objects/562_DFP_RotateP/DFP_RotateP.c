@@ -160,7 +160,7 @@ int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex)
         setup->flags = 0xd2;
         setup->behaviorFlags = 0;
         *(int*)((int)handles + handleOffset) =
-            (int)Obj_SetupObject(&setup->base, SFXPLAYER_RING_SETUP_MODE, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            (int)objSetupObject(&setup->base, SFXPLAYER_RING_SETUP_MODE, obj->anim.mapEventSlot, -1, obj->anim.parent);
     }
 
     {
@@ -177,7 +177,7 @@ int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex)
         setup->base.posX = obj->anim.localPosX;
         setup->base.posY = obj->anim.localPosY;
         setup->base.posZ = obj->anim.localPosZ;
-        *pair = (int)Obj_SetupObject(&setup->base, SFXPLAYER_RING_SETUP_MODE, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        *pair = (int)objSetupObject(&setup->base, SFXPLAYER_RING_SETUP_MODE, obj->anim.mapEventSlot, -1, obj->anim.parent);
     }
 
     return 1;

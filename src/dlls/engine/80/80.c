@@ -1,152 +1,145 @@
 /*
  * DLL 80 / 0x50 - crawl camera mode.
  */
-#include "main/resource.h"
-#include "main/dll/CAM/cutCam.h"
-#include "main/camera_interface.h"
-#include "main/frame_timing.h"
-#include "main/dll/CAM/camcrawl_state.h"
+#include "main/dll/dll_0050_cameramodecrawl.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "game/objects/object.h"
+#include "main/camera_interface.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
+#include "main/frame_timing.h"
+#include "main/mm.h"
 #include "main/object_transform.h"
+#include "string.h"
 
 CameraModeCrawlState* gCameraModeCrawlState;
 
-
-void CameraModeCrawl_copyToCurrent(void* param1, int param2)
-{
-    int obj;
+void CameraModeCrawl_copyToCurrent(void* actionData, int recordSize) {
+    CameraObject* camera;
     GameObject* target;
-    int yaw;
-    f32 s, c;
-    f32 pos[3];
+    int originalYaw;
+    f32 sinYaw;
+    f32 cosYaw;
+    f32 targetPosition[3];
 
-    if (param1 == NULL)
-    {
+    if (actionData == NULL) {
         return;
     }
-    obj = (int)(*gCameraInterface)->getCamera();
-    target = (GameObject*)((CameraObject*)obj)->anim.targetObj;
-    yaw = target->anim.rotX;
+    camera = (*gCameraInterface)->getCamera();
+    target = (GameObject*)camera->anim.targetObj;
+    originalYaw = target->anim.rotX;
 
-    if (param2 == 0)
-    {
-        s = mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
-        c = mathCosf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
+    if (recordSize == 0) {
+        sinYaw = mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
+        cosYaw = mathCosf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
+    } else {
+        sinYaw = -mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
+        cosYaw = -mathCosf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
     }
-    else
+    target->anim.rotX = getAngle(sinYaw, cosYaw);
+    camcontrol_getTargetPosition(camera, &target->anim, targetPosition, NULL);
+    target->anim.rotX = originalYaw;
     {
-        s = -mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
-        c = -mathCosf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f);
+        f32 coordinate;
+
+        coordinate = targetPosition[0];
+        camera->anim.worldPosX = coordinate;
+        camera->probePosX = coordinate;
+        coordinate = targetPosition[1];
+        camera->anim.worldPosY = coordinate;
+        camera->probePosY = coordinate;
+        coordinate = targetPosition[2];
+        camera->anim.worldPosZ = coordinate;
+        camera->probePosZ = coordinate;
     }
-    {
-        target->anim.rotX = getAngle(s, c);
-    }
-    camcontrol_getTargetPosition((CameraObject*)obj, &target->anim, pos, NULL);
-    target->anim.rotX = yaw;
-    {
-        f32 coord;
-        coord = pos[0];
-        ((CameraObject*)obj)->anim.worldPosX = coord;
-        ((CameraObject*)obj)->probePosX = coord;
-        coord = pos[1];
-        ((CameraObject*)obj)->anim.worldPosY = coord;
-        ((CameraObject*)obj)->probePosY = coord;
-        coord = pos[2];
-        ((CameraObject*)obj)->anim.worldPosZ = coord;
-        ((CameraObject*)obj)->probePosZ = coord;
-    }
-    Obj_TransformWorldPointToLocal(((CameraObject*)obj)->anim.worldPosX, ((CameraObject*)obj)->anim.worldPosY,
-                                   ((CameraObject*)obj)->anim.worldPosZ, &((GameObject*)obj)->anim.localPosX,
-                                   &((GameObject*)obj)->anim.localPosY, &((GameObject*)obj)->anim.localPosZ,
-                                   (GameObject*)((CameraObject*)obj)->anim.parentAddress);
+    Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
+                                   &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
+                                   (GameObject*)camera->anim.parentAddress);
     gCameraModeCrawlState->flags.useDefaultHandler = 1;
 }
 
-void CameraModeCrawl_free(void)
-{
-    mm_free((void*)gCameraModeCrawlState);
+void CameraModeCrawl_free(void) {
+    mm_free(gCameraModeCrawlState);
     gCameraModeCrawlState = NULL;
 }
 
-void CameraModeCrawl_update(CameraObject* camera)
-{
+void CameraModeCrawl_update(CameraObject* camera) {
     GameObject* target = (GameObject*)camera->anim.targetObj;
-    int delta;
-    f32 dx, outY, dz, outW;
-    int other;
+    int yawDelta;
+    f32 relativeX;
+    f32 relativeY;
+    f32 relativeZ;
+    f32 relativeDistanceXZ;
+    int defaultHandler;
 
-    if (target == NULL)
-    {
+    if (target == NULL) {
         return;
     }
-    if (gCameraModeCrawlState->flags.useDefaultHandler == 0)
-    {
+    if (gCameraModeCrawlState->flags.useDefaultHandler == 0) {
         camera->anim.worldPosX =
             13.0f * mathSinf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f) + target->anim.worldPosX;
         camera->anim.worldPosZ =
             13.0f * mathCosf(3.1415927f * (f32)(s32)target->anim.rotX / 32768.0f) + target->anim.worldPosZ;
         camera->anim.worldPosY = 20.0f + target->anim.worldPosY;
-        dx = camera->anim.localPosX - target->anim.worldPosX;
-        dz = camera->anim.localPosZ - target->anim.worldPosZ;
+        relativeX = camera->anim.localPosX - target->anim.worldPosX;
+        relativeZ = camera->anim.localPosZ - target->anim.worldPosZ;
         {
-            int t = 0x8000 - (u16)getAngle(dx, dz);
-            delta = t - (u16)camera->anim.rotX;
+            int targetYaw = 0x8000 - (u16)getAngle(relativeX, relativeZ);
+            yawDelta = targetYaw - (u16)camera->anim.rotX;
         }
-        if (0x8000 < delta)
-        {
-            delta = delta - 0xffff;
+        if (0x8000 < yawDelta) {
+            yawDelta = yawDelta - 0xffff;
         }
-        if (delta < -0x8000)
-        {
-            delta = delta + 0xffff;
+        if (yawDelta < -0x8000) {
+            yawDelta = yawDelta + 0xffff;
         }
-        camera->anim.rotX = (s16)((f32)(s32)camera->anim.rotX + interpolate((f32)(s32)delta, 0.125f, timeDelta));
-        camera->anim.rotX = (s16)(0x8000 - getAngle(dx, dz));
+        camera->anim.rotX = (s16)((f32)(s32)camera->anim.rotX + interpolate((f32)(s32)yawDelta, 0.125f, timeDelta));
+        camera->anim.rotX = (s16)(0x8000 - getAngle(relativeX, relativeZ));
         camera->anim.rotY = 2048;
-    }
-    else
-    {
-        other = (int)(*gCameraInterface)->getDefaultHandlerEntry();
-        (*gCameraInterface)->getRelativePosition(camera, &dx, &outY, &dz, &outW, 35.0f, 0);
+    } else {
+        defaultHandler = (int)(*gCameraInterface)->getDefaultHandlerEntry();
+        (*gCameraInterface)
+            ->getRelativePosition(camera, &relativeX, &relativeY, &relativeZ, &relativeDistanceXZ, 35.0f, 0);
         {
-            int t = 0x8000 - (u16)getAngle(dx, dz);
-            delta = t - (u16)camera->anim.rotX;
+            int targetYaw = 0x8000 - (u16)getAngle(relativeX, relativeZ);
+            yawDelta = targetYaw - (u16)camera->anim.rotX;
         }
-        if (0x8000 < delta)
-        {
-            delta = delta - 0xffff;
+        if (0x8000 < yawDelta) {
+            yawDelta = yawDelta - 0xffff;
         }
-        if (delta < -0x8000)
-        {
-            delta = delta + 0xffff;
+        if (yawDelta < -0x8000) {
+            yawDelta = yawDelta + 0xffff;
         }
-        camera->anim.rotX += delta;
-        (*(void (**)(CameraObject*, f32, f32))(*(int*)(*(int*)(other + 4)) + 24))(camera, target->anim.worldPosY,
-                                                                                    outW);
+        camera->anim.rotX += yawDelta;
+        (*(void (**)(CameraObject*, f32, f32))(*(int*)(*(int*)(defaultHandler + 4)) + 24))(
+            camera, target->anim.worldPosY, relativeDistanceXZ);
     }
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
                                    (GameObject*)camera->anim.parentAddress);
 }
 
-void CameraModeCrawl_init(void)
-{
-    if (gCameraModeCrawlState == NULL)
-    {
+void CameraModeCrawl_init(void) {
+    if (gCameraModeCrawlState == NULL) {
         gCameraModeCrawlState = (CameraModeCrawlState*)mmAlloc(sizeof(CameraModeCrawlState), 15, 0);
         memset(gCameraModeCrawlState, 0, sizeof(CameraModeCrawlState));
     }
 }
 
-void CameraModeCrawl_release(void)
-{
+void CameraModeCrawl_release(void) {
 }
 
-void CameraModeCrawl_initialise(void)
-{
+void CameraModeCrawl_initialise(void) {
 }
 
-ResourceDescriptorCallbacks8 gCameraModeCrawlDescriptor = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
-        {(ResourceDescriptorCallback)CameraModeCrawl_initialise, (ResourceDescriptorCallback)CameraModeCrawl_release,
-        0x00000000, (ResourceDescriptorCallback)CameraModeCrawl_init, (ResourceDescriptorCallback)CameraModeCrawl_update,
-        (ResourceDescriptorCallback)CameraModeCrawl_free, (ResourceDescriptorCallback)CameraModeCrawl_copyToCurrent, 0x00000000}};
+CameraModeCrawlDescriptor gCameraModeCrawlDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    CameraModeCrawl_initialise,
+    CameraModeCrawl_release,
+    NULL,
+    CameraModeCrawl_init,
+    CameraModeCrawl_update,
+    CameraModeCrawl_free,
+    CameraModeCrawl_copyToCurrent,
+    NULL,
+};

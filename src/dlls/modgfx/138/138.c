@@ -1,105 +1,112 @@
 /*
- * DLL 138 / 0x8A - one of the foodbag modgfx effect spawners
- * (dll_NN_func03 family, see foodbag.h). func03 builds a single-command
- * FbBuf from the effect's resource table (lbl_80316650) and hands it to
- * the modgfx interface to spawn a bone particle effect; flag bit 0 sources
- * the spawn position either from sourceObj (offsets 0x18/0x1c/0x20) or, when
- * sourceObj is null, from posSource (offsets 0xc/0x10/0x14). func00/func01
- * are unused stub slots.
+ * DLL 138 / 0x8A - a single-command modgfx effect spawner.
  */
+#include "main/dll/dll_008A_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/dll/fb_cmd.h"
-#include "dlls/object_descriptor.h"
+#include "main/dll/modgfx_types.h"
 
-/* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
-#define DLL8A_EFFECT_ID 0x1fd
+typedef struct Dll8AEffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} Dll8AEffectVertex;
 
-u8 lbl_80316650[184] = {254, 12,  254, 12, 254, 12, 0, 0,   0,  0,   1,   244, 254, 12, 254, 12, 0,  32, 0,  32,  1,
-                        244, 254, 12,  1,  244, 0,  0, 0,   0,  254, 12,  254, 12,  1,  244, 0,  32, 0,  32, 254, 12,
-                        1,   244, 254, 12, 0,   0,  0, 0,   1,  244, 1,   244, 254, 12, 0,   32, 0,  32, 1,  244, 1,
-                        244, 1,   244, 0,  0,   0,  0, 254, 12, 1,   244, 1,   244, 0,  32,  0,  32, 0,  0,  0,   4,
-                        0,   5,   0,   0,  0,   5,  0, 1,   0,  1,   0,   5,   0,   6,  0,   1,  0,  6,  0,  2,   0,
-                        2,   0,   6,   0,  7,   0,  2, 0,   7,  0,   3,   0,   3,   0,  7,   0,  4,  0,  3,  0,   4,
-                        0,   0,   0,   0,  0,   1,  0, 2,   0,  0,   0,   2,   0,   3,  0,   4,  0,  7,  0,  6,   0,
-                        4,   0,   6,   0,  5,   0,  0, 0,   1,  0,   2,   0,   3,   0,  4,   0,  5,  0,  6,  0,   7,
-                        0,   0,   0,   10, 0,   0,  0, 0,   0,  0,   0,   0,   0,   0,  0,   0};
+STATIC_ASSERT(offsetof(Dll8AEffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(Dll8AEffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(Dll8AEffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(Dll8AEffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(Dll8AEffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(Dll8AEffectVertex) == 0x0A);
 
-void dll_8A_func03(int sourceObj, int variant, int posSource, u32 flags)
-{
-    FbBuf buf;
-    u8* base = (u8*)(int)lbl_80316650;
-    FbCmd* e = buf.entries;
+typedef struct Dll8AEffectResourceView {
+    Dll8AEffectVertex vertices[8];
+    s16 triangles[12][3];
+    s16 allVertexIndices[8];
+    s16 sequenceParams[7];
+    s16 opaqueTail;
+} Dll8AEffectResourceView;
 
-    e[0].layer = 0;
-    e[0].flags = 8;
-    e[0].tex = base + 0x98;
-    e[0].mode = 2;
-    e[0].x = 0.5f;
-    e[0].y = 0.5f;
-    e[0].z = 0.5f;
-    buf.v58 = 0;
-    buf.ctx = sourceObj;
-    buf.v44 = variant;
-    buf.pos[0] = 0.0f;
-    buf.pos[1] = 0.0f;
-    buf.pos[2] = 0.0f;
-    buf.col[0] = 0.0f;
-    buf.col[1] = 0.0f;
-    buf.col[2] = 0.0f;
-    buf.scale = 1.0f;
-    buf.v40 = 1;
-    buf.v3c = 0;
-    buf.v59 = 8;
-    buf.v5a = 0;
-    buf.v5b = 0x10;
-    buf.flags = 0x2000492;
-    buf.count = (FbCmd*)((u8*)e + 0x18) - e;
-    buf.hw[0] = *(s16*)(base + 0xa8);
-    buf.hw[1] = *(s16*)(base + 0xaa);
-    buf.hw[2] = *(s16*)(base + 0xac);
-    buf.hw[3] = *(s16*)(base + 0xae);
-    buf.hw[4] = *(s16*)(base + 0xb0);
-    buf.hw[5] = *(s16*)(base + 0xb2);
-    buf.hw[6] = *(s16*)(base + 0xb4);
-    buf.cmds = e;
-    buf.flags |= flags;
-    if ((buf.flags & 1) != 0)
-    {
-        if ((u32)sourceObj != 0)
-        {
-            GameObject* obj = (GameObject*)sourceObj;
-            buf.pos[0] += obj->anim.worldPosX;
-            buf.pos[1] += obj->anim.worldPosY;
-            buf.pos[2] += obj->anim.worldPosZ;
-        }
-        else
-        {
-            PartFxSpawnParams* params = (PartFxSpawnParams*)posSource;
-            buf.pos[0] += params->posX;
-            buf.pos[1] += params->posY;
-            buf.pos[2] += params->posZ;
+STATIC_ASSERT(offsetof(Dll8AEffectResourceView, vertices) == 0x00);
+STATIC_ASSERT(offsetof(Dll8AEffectResourceView, triangles) == 0x50);
+STATIC_ASSERT(offsetof(Dll8AEffectResourceView, allVertexIndices) == 0x98);
+STATIC_ASSERT(offsetof(Dll8AEffectResourceView, sequenceParams) == 0xA8);
+STATIC_ASSERT(offsetof(Dll8AEffectResourceView, opaqueTail) == 0xB6);
+STATIC_ASSERT(sizeof(Dll8AEffectResourceView) == 0xB8);
+
+u8 gDll8AEffectResourceData[sizeof(Dll8AEffectResourceView)] = {
+    254, 12,  254, 12, 254, 12,  0,   0,   0,   0,   1,  244, 254, 12, 254, 12,  0,  32,  0,  32,  1,   244, 254,
+    12,  1,   244, 0,  0,   0,   0,   254, 12,  254, 12, 1,   244, 0,  32,  0,   32, 254, 12, 1,   244, 254, 12,
+    0,   0,   0,   0,  1,   244, 1,   244, 254, 12,  0,  32,  0,   32, 1,   244, 1,  244, 1,  244, 0,   0,   0,
+    0,   254, 12,  1,  244, 1,   244, 0,   32,  0,   32, 0,   0,   0,  4,   0,   5,  0,   0,  0,   5,   0,   1,
+    0,   1,   0,   5,  0,   6,   0,   1,   0,   6,   0,  2,   0,   2,  0,   6,   0,  7,   0,  2,   0,   7,   0,
+    3,   0,   3,   0,  7,   0,   4,   0,   3,   0,   4,  0,   0,   0,  0,   0,   1,  0,   2,  0,   0,   0,   2,
+    0,   3,   0,   4,  0,   7,   0,   6,   0,   4,   0,  6,   0,   5,  0,   0,   0,  1,   0,  2,   0,   3,   0,
+    4,   0,   5,   0,  6,   0,   7,   0,   0,   0,   10, 0,   0,   0,  0,   0,   0,  0,   0,  0,   0,   0,   0};
+
+void dll_8A_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
+    ModgfxPointerSpawnPacket packet;
+    u8* resourceData = (u8*)(int)gDll8AEffectResourceData;
+    GfxCmd* commands = packet.entries;
+
+    commands[0].layer = 0;
+    commands[0].flags = 8;
+    commands[0].tex = &resourceData[offsetof(Dll8AEffectResourceView, allVertexIndices)];
+    commands[0].mode = 2;
+    commands[0].x = 0.5f;
+    commands[0].y = 0.5f;
+    commands[0].z = 0.5f;
+    packet.modeByte = 0;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = variant;
+    packet.position[0] = 0.0f;
+    packet.position[1] = 0.0f;
+    packet.position[2] = 0.0f;
+    packet.velocity[0] = 0.0f;
+    packet.velocity[1] = 0.0f;
+    packet.velocity[2] = 0.0f;
+    packet.scale = 1.0f;
+    packet.drawGroupCount = 1;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 8;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0x10;
+    packet.flags = 0x2000492;
+    packet.commandCount = (GfxCmd*)((u8*)commands + sizeof(GfxCmd)) - commands;
+    packet.sequenceParams[0] = *(s16*)&resourceData[offsetof(Dll8AEffectResourceView, sequenceParams[0])];
+    packet.sequenceParams[1] = *(s16*)&resourceData[offsetof(Dll8AEffectResourceView, sequenceParams[1])];
+    packet.sequenceParams[2] = *(s16*)&resourceData[offsetof(Dll8AEffectResourceView, sequenceParams[2])];
+    packet.sequenceParams[3] = *(s16*)&resourceData[offsetof(Dll8AEffectResourceView, sequenceParams[3])];
+    packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll8AEffectResourceView, sequenceParams[4])];
+    packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll8AEffectResourceView, sequenceParams[5])];
+    packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll8AEffectResourceView, sequenceParams[6])];
+    packet.commands = commands;
+    packet.flags |= spawnFlags;
+    if ((packet.flags & 1) != 0) {
+        if (sourceObj != NULL) {
+            GameObject* anchorObj = sourceObj;
+            packet.position[0] += anchorObj->anim.worldPosX;
+            packet.position[1] += anchorObj->anim.worldPosY;
+            packet.position[2] += anchorObj->anim.worldPosZ;
+        } else {
+            PartFxSpawnParams* anchorParams = spawnParams;
+            packet.position[0] += anchorParams->posX;
+            packet.position[1] += anchorParams->posY;
+            packet.position[2] += anchorParams->posZ;
         }
     }
-    (*gModgfxInterface)->spawnEffect(&buf, 0, 8, (u8*)(int)lbl_80316650, 0xc, base + 0x50, DLL8A_EFFECT_ID, 0);
+    (*gModgfxInterface)
+        ->spawnEffect(&packet, 0, 8, (u8*)(int)gDll8AEffectResourceData, 0xC,
+                      &resourceData[offsetof(Dll8AEffectResourceView, triangles)], 0x1FD, 0);
 }
 
-void dll_8A_func01_nop(void)
-{
+void dll_8A_release(void) {
 }
 
-void dll_8A_func00_nop(void)
-{
+void dll_8A_initialise(void) {
 }
 
-ObjectDescriptor4 dll_8A_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)dll_8A_func00_nop,
-    (ObjectDescriptorCallback)dll_8A_func01_nop,
-    0,
-    (ObjectDescriptorCallback)dll_8A_func03,
+Dll8AResourceDescriptor gDll8AResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_8A_initialise, dll_8A_release, NULL, dll_8A_spawnEffect,
 };

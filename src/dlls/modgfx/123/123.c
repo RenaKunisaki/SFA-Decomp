@@ -1,219 +1,231 @@
 /*
- * DLL 123 / 0x7B - save-icon / preview modgfx effect DLL.
- *
- * dll_7B_func03 builds a modgfx command list on the stack and submits it
- * (the save-icon / preview effect).
+ * DLL 123 / 0x7B - a two-variant modgfx effect spawner.
  */
+#include "main/dll/dll_007B_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
-#include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
-#include "dlls/object_descriptor.h"
+#include "main/vecmath.h"
 
-/* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
-#define DLL7B_EFFECT_ID 0x8e
+typedef struct Dll7BEffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} Dll7BEffectVertex;
+
+STATIC_ASSERT(offsetof(Dll7BEffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(Dll7BEffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(Dll7BEffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(Dll7BEffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(Dll7BEffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(Dll7BEffectVertex) == 0x0A);
+
+typedef struct Dll7BEffectResourceView {
+    Dll7BEffectVertex vertices[14];
+    s16 triangles[12][3];
+    s16 firstSevenVertexIndices[8];
+    s16 secondSevenVertexIndices[8];
+    s16 allVertexIndices[14];
+    s16 innerTenVertexIndices[10];
+    s16 sequenceParams[7];
+    s16 opaqueTail;
+} Dll7BEffectResourceView;
+
+STATIC_ASSERT(offsetof(Dll7BEffectResourceView, vertices) == 0x000);
+STATIC_ASSERT(offsetof(Dll7BEffectResourceView, triangles) == 0x08C);
+STATIC_ASSERT(offsetof(Dll7BEffectResourceView, firstSevenVertexIndices) == 0x0D4);
+STATIC_ASSERT(offsetof(Dll7BEffectResourceView, secondSevenVertexIndices) == 0x0E4);
+STATIC_ASSERT(offsetof(Dll7BEffectResourceView, allVertexIndices) == 0x0F4);
+STATIC_ASSERT(offsetof(Dll7BEffectResourceView, innerTenVertexIndices) == 0x110);
+STATIC_ASSERT(offsetof(Dll7BEffectResourceView, sequenceParams) == 0x124);
+STATIC_ASSERT(offsetof(Dll7BEffectResourceView, opaqueTail) == 0x132);
+STATIC_ASSERT(sizeof(Dll7BEffectResourceView) == 0x134);
 
 extern u8 gDll7BEffectResourceData[];
 
-void dll_7B_func03(u8* sourceObj, int variant, u8* posSource, u32 flags)
-{
-    ModgfxPointerSpawnPacket buf;
-    u8* base = (u8*)(int)gDll7BEffectResourceData;
-    GfxCmd* e;
-    GfxCmd* entries = buf.entries;
-    if (variant == 1)
-    {
-        *(s16*)&base[0x128] = 0x1130;
+void dll_7B_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
+    ModgfxPointerSpawnPacket packet;
+    u8* resourceData = (u8*)(int)gDll7BEffectResourceData;
+    GfxCmd* commandCursor;
+    GfxCmd* commands = packet.entries;
+    if (variant == 1) {
+        *(s16*)&resourceData[offsetof(Dll7BEffectResourceView, sequenceParams[2])] = 0x1130;
+    } else {
+        *(s16*)&resourceData[offsetof(Dll7BEffectResourceView, sequenceParams[2])] = 100;
     }
-    else
-    {
-        *(s16*)&base[0x128] = 100;
+    commands[0].layer = 0;
+    commands[0].flags = 0xe;
+    commands[0].tex = &resourceData[offsetof(Dll7BEffectResourceView, allVertexIndices)];
+    commands[0].mode = 4;
+    commands[0].x = 0.0f;
+    commands[0].y = 0.0f;
+    commands[0].z = 0.0f;
+    if (variant == 1) {
+        commands[1].layer = 0;
+        commands[1].flags = 0xe;
+        commands[1].tex = &resourceData[offsetof(Dll7BEffectResourceView, allVertexIndices)];
+        commands[1].mode = 2;
+        commands[1].x = 1.0f;
+        commands[1].y = 1.0f;
+        commands[1].z = 1.0f;
+        commandCursor = &commands[2];
+    } else {
+        commands[1].layer = 0;
+        commands[1].flags = 0xe;
+        commands[1].tex = &resourceData[offsetof(Dll7BEffectResourceView, allVertexIndices)];
+        commands[1].mode = 2;
+        commands[1].x = 1.0f;
+        commands[1].y = 0.7f * (f32)randomGetRange(3, 5);
+        commands[1].z = 1.0f;
+        commandCursor = &commands[2];
     }
-    entries[0].layer = 0;
-    entries[0].flags = 0xe;
-    entries[0].tex = &base[0xf4];
-    entries[0].mode = 4;
-    entries[0].x = 0.0f;
-    entries[0].y = 0.0f;
-    entries[0].z = 0.0f;
-    if (variant == 1)
-    {
-        entries[1].layer = 0;
-        entries[1].flags = 0xe;
-        entries[1].tex = &base[0xf4];
-        entries[1].mode = 2;
-        entries[1].x = 1.0f;
-        entries[1].y = 1.0f;
-        entries[1].z = 1.0f;
-        e = &entries[2];
+    commandCursor[0].layer = 0;
+    commandCursor[0].flags = 0xe;
+    commandCursor[0].tex = &resourceData[offsetof(Dll7BEffectResourceView, allVertexIndices)];
+    commandCursor[0].mode = 0x80;
+    commandCursor[0].x = 0.0f;
+    commandCursor[0].y = 0.0f;
+    commandCursor[0].z = 16767.0f;
+    if (variant == 1) {
+        commandCursor[1].layer = 0;
+        commandCursor[1].flags = 0xe;
+        commandCursor[1].tex = &resourceData[offsetof(Dll7BEffectResourceView, allVertexIndices)];
+        commandCursor[1].mode = 0x400000;
+        commandCursor[1].x = 100.0f;
+        commandCursor[1].y = 75.0f;
+        commandCursor[1].z = 0.0f;
+        commandCursor[2].layer = 0;
+        commandCursor[2].flags = 0x190;
+        commandCursor[2].tex = NULL;
+        commandCursor[2].mode = 0x20000000;
+        commandCursor[2].x = 999.0f;
+        commandCursor[2].y = 111.0f;
+        commandCursor[2].z = 112.0f;
+        commandCursor[3].layer = 0;
+        commandCursor[3].flags = 0;
+        commandCursor[3].tex = NULL;
+        commandCursor[3].mode = 0x80000;
+        commandCursor[3].x = 70.0f;
+        commandCursor[3].y = 150.0f;
+        commandCursor[3].z = 0.0f;
+        commandCursor += 4;
+    } else {
+        commandCursor[1].layer = 0;
+        commandCursor[1].flags = 0xe;
+        commandCursor[1].tex = &resourceData[offsetof(Dll7BEffectResourceView, allVertexIndices)];
+        commandCursor[1].mode = 0x400000;
+        commandCursor[1].x = 90.0f + (f32)randomGetRange(0, 0x14);
+        commandCursor[1].y = 75.0f;
+        commandCursor[1].z = (f32)randomGetRange(0, 0x1e);
+        commandCursor += 2;
     }
-    else
-    {
-        entries[1].layer = 0;
-        entries[1].flags = 0xe;
-        entries[1].tex = &base[0xf4];
-        entries[1].mode = 2;
-        entries[1].x = 1.0f;
-        entries[1].y = 0.7f * (f32)randomGetRange(3, 5);
-        entries[1].z = 1.0f;
-        e = &entries[2];
+    commandCursor[0].layer = 1;
+    commandCursor[0].flags = 10;
+    commandCursor[0].tex = &resourceData[offsetof(Dll7BEffectResourceView, innerTenVertexIndices)];
+    commandCursor[0].mode = 4;
+    commandCursor[0].x = 255.0f;
+    commandCursor[0].y = 0.0f;
+    commandCursor[0].z = 0.0f;
+    commandCursor[1].layer = 1;
+    commandCursor[1].flags = 0xe;
+    commandCursor[1].tex = &resourceData[offsetof(Dll7BEffectResourceView, allVertexIndices)];
+    commandCursor[1].mode = 2;
+    commandCursor[1].x = 1.0f;
+    commandCursor[1].y = 1.0f;
+    commandCursor[1].z = 1.0f;
+    commandCursor += 2;
+    if (variant != 1) {
+        commandCursor[0].layer = 2;
+        commandCursor[0].flags = 0xe;
+        commandCursor[0].tex = &resourceData[offsetof(Dll7BEffectResourceView, allVertexIndices)];
+        commandCursor[0].mode = 0x400000;
+        commandCursor[0].x = -0.3f * (f32)randomGetRange(1, 0x28);
+        commandCursor[0].y = 0.0f;
+        commandCursor[0].z = 0.0f;
+        commandCursor += 1;
     }
-    e[0].layer = 0;
-    e[0].flags = 0xe;
-    e[0].tex = &base[0xf4];
-    e[0].mode = 0x80;
-    e[0].x = 0.0f;
-    e[0].y = 0.0f;
-    e[0].z = 16767.0f;
-    if (variant == 1)
-    {
-        e[1].layer = 0;
-        e[1].flags = 0xe;
-        e[1].tex = &base[0xf4];
-        e[1].mode = 0x400000;
-        e[1].x = 100.0f;
-        e[1].y = 75.0f;
-        e[1].z = 0.0f;
-        e[2].layer = 0;
-        e[2].flags = 0x190;
-        e[2].tex = NULL;
-        e[2].mode = 0x20000000;
-        e[2].x = 999.0f;
-        e[2].y = 111.0f;
-        e[2].z = 112.0f;
-        e[3].layer = 0;
-        e[3].flags = 0;
-        e[3].tex = NULL;
-        e[3].mode = 0x80000;
-        e[3].x = 70.0f;
-        e[3].y = 150.0f;
-        e[3].z = 0.0f;
-        e += 4;
+    commandCursor[0].layer = 2;
+    commandCursor[0].flags = 0xe;
+    commandCursor[0].tex = &resourceData[offsetof(Dll7BEffectResourceView, allVertexIndices)];
+    commandCursor[0].mode = 0x4000;
+    commandCursor[0].x = 0.1f * (f32)randomGetRange(-3, 3);
+    commandCursor[0].y = 0.0f;
+    commandCursor[0].z = 0.0f;
+    commandCursor[1].layer = 3;
+    commandCursor[1].flags = 0xe;
+    commandCursor[1].tex = &resourceData[offsetof(Dll7BEffectResourceView, allVertexIndices)];
+    commandCursor[1].mode = 0x4000;
+    commandCursor[1].x = 0.3f;
+    commandCursor[1].y = 0.0f;
+    commandCursor[1].z = 0.0f;
+    commandCursor[2].layer = 3;
+    commandCursor[2].flags = 10;
+    commandCursor[2].tex = &resourceData[offsetof(Dll7BEffectResourceView, innerTenVertexIndices)];
+    commandCursor[2].mode = 4;
+    commandCursor[2].x = 0.0f;
+    commandCursor[2].y = 0.0f;
+    commandCursor[2].z = 0.0f;
+    commandCursor += 3;
+    if (variant == 1) {
+        commandCursor[0].layer = 3;
+        commandCursor[0].flags = 0;
+        commandCursor[0].tex = NULL;
+        commandCursor[0].mode = 0x20000000;
+        commandCursor[0].x = 999.0f;
+        commandCursor[0].y = 111.0f;
+        commandCursor[0].z = 112.0f;
+        commandCursor += 1;
     }
-    else
-    {
-        e[1].layer = 0;
-        e[1].flags = 0xe;
-        e[1].tex = &base[0xf4];
-        e[1].mode = 0x400000;
-        e[1].x = 90.0f + (f32)randomGetRange(0, 0x14);
-        e[1].y = 75.0f;
-        e[1].z = (f32)randomGetRange(0, 0x1e);
-        e += 2;
-    }
-    e[0].layer = 1;
-    e[0].flags = 10;
-    e[0].tex = &base[0x110];
-    e[0].mode = 4;
-    e[0].x = 255.0f;
-    e[0].y = 0.0f;
-    e[0].z = 0.0f;
-    e[1].layer = 1;
-    e[1].flags = 0xe;
-    e[1].tex = &base[0xf4];
-    e[1].mode = 2;
-    e[1].x = 1.0f;
-    e[1].y = 1.0f;
-    e[1].z = 1.0f;
-    e += 2;
-    if (variant != 1)
-    {
-        e[0].layer = 2;
-        e[0].flags = 0xe;
-        e[0].tex = &base[0xf4];
-        e[0].mode = 0x400000;
-        e[0].x = -0.3f * (f32)randomGetRange(1, 0x28);
-        e[0].y = 0.0f;
-        e[0].z = 0.0f;
-        e += 1;
-    }
-    e[0].layer = 2;
-    e[0].flags = 0xe;
-    e[0].tex = &base[0xf4];
-    e[0].mode = 0x4000;
-    e[0].x = 0.1f * (f32)randomGetRange(-3, 3);
-    e[0].y = 0.0f;
-    e[0].z = 0.0f;
-    e[1].layer = 3;
-    e[1].flags = 0xe;
-    e[1].tex = &base[0xf4];
-    e[1].mode = 0x4000;
-    e[1].x = 0.3f;
-    e[1].y = 0.0f;
-    e[1].z = 0.0f;
-    e[2].layer = 3;
-    e[2].flags = 10;
-    e[2].tex = &base[0x110];
-    e[2].mode = 4;
-    e[2].x = 0.0f;
-    e[2].y = 0.0f;
-    e[2].z = 0.0f;
-    e += 3;
-    if (variant == 1)
-    {
-        e[0].layer = 3;
-        e[0].flags = 0;
-        e[0].tex = NULL;
-        e[0].mode = 0x20000000;
-        e[0].x = 999.0f;
-        e[0].y = 111.0f;
-        e[0].z = 112.0f;
-        e += 1;
-    }
-    buf.v58 = 0;
-    buf.ctx = sourceObj;
-    buf.v44 = variant;
-    buf.pos[0] = 0.0f;
-    buf.pos[1] = 5.0f;
-    buf.pos[2] = 0.0f;
-    buf.col[0] = 0.0f;
-    buf.col[1] = 0.0f;
-    buf.col[2] = 0.0f;
-    buf.scale = 1.0f;
-    buf.v40 = 1;
-    buf.v3c = 0;
-    buf.v59 = 0xe;
-    buf.v5a = 0;
-    buf.v5b = randomGetRange(0x18, 0x1c);
-    buf.count = e - entries;
-    buf.hw[0] = *(s16*)&base[0x124];
-    buf.hw[1] = *(s16*)&base[0x126];
-    buf.hw[2] = *(s16*)&base[0x128];
-    buf.hw[3] = *(s16*)&base[0x12a];
-    buf.hw[4] = *(s16*)&base[0x12c];
-    buf.hw[5] = *(s16*)&base[0x12e];
-    buf.hw[6] = *(s16*)&base[0x130];
-    buf.cmds = (GfxCmd*)((u8*)&buf + 0x60);
-    buf.flags = 0x1000000;
-    buf.flags |= flags;
-    if ((buf.flags & 1) != 0)
-    {
-        if (buf.ctx != 0)
-        {
-            buf.pos[0] += ((GameObject*)(buf.ctx))->anim.worldPosX;
-            buf.pos[1] += ((GameObject*)(buf.ctx))->anim.worldPosY;
-            buf.pos[2] += ((GameObject*)(buf.ctx))->anim.worldPosZ;
-        }
-        else
-        {
-            buf.pos[0] += ((PartFxSpawnParams*)posSource)->posX;
-            buf.pos[1] += ((PartFxSpawnParams*)posSource)->posY;
-            buf.pos[2] += ((PartFxSpawnParams*)posSource)->posZ;
+    packet.modeByte = 0;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = variant;
+    packet.position[0] = 0.0f;
+    packet.position[1] = 5.0f;
+    packet.position[2] = 0.0f;
+    packet.velocity[0] = 0.0f;
+    packet.velocity[1] = 0.0f;
+    packet.velocity[2] = 0.0f;
+    packet.scale = 1.0f;
+    packet.drawGroupCount = 1;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 0xe;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = randomGetRange(0x18, 0x1c);
+    packet.commandCount = commandCursor - commands;
+    packet.sequenceParams[0] = *(s16*)&resourceData[offsetof(Dll7BEffectResourceView, sequenceParams[0])];
+    packet.sequenceParams[1] = *(s16*)&resourceData[offsetof(Dll7BEffectResourceView, sequenceParams[1])];
+    packet.sequenceParams[2] = *(s16*)&resourceData[offsetof(Dll7BEffectResourceView, sequenceParams[2])];
+    packet.sequenceParams[3] = *(s16*)&resourceData[offsetof(Dll7BEffectResourceView, sequenceParams[3])];
+    packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll7BEffectResourceView, sequenceParams[4])];
+    packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll7BEffectResourceView, sequenceParams[5])];
+    packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll7BEffectResourceView, sequenceParams[6])];
+    packet.commands = (GfxCmd*)((u8*)&packet + 0x60);
+    packet.flags = 0x1000000;
+    packet.flags |= spawnFlags;
+    if ((packet.flags & 1) != 0) {
+        if (packet.sourceObj != NULL) {
+            packet.position[0] += packet.sourceObj->anim.worldPosX;
+            packet.position[1] += packet.sourceObj->anim.worldPosY;
+            packet.position[2] += packet.sourceObj->anim.worldPosZ;
+        } else {
+            packet.position[0] += spawnParams->posX;
+            packet.position[1] += spawnParams->posY;
+            packet.position[2] += spawnParams->posZ;
         }
     }
     (*gModgfxInterface)
-        ->spawnEffect(&buf, 0, 0xe, (u8*)(int)gDll7BEffectResourceData, 0xc, &base[0x8c], DLL7B_EFFECT_ID, 0);
+        ->spawnEffect(&packet, 0, 0xe, (u8*)(int)gDll7BEffectResourceData, 0xc,
+                      &resourceData[offsetof(Dll7BEffectResourceView, triangles)], 0x8e, 0);
 }
 
-void dll_7B_func01_nop(void)
-{
+void dll_7B_release(void) {
 }
 
-void dll_7B_func00_nop(void)
-{
+void dll_7B_initialise(void) {
 }
 
-u8 gDll7BEffectResourceData[308] = {
+u8 gDll7BEffectResourceData[sizeof(Dll7BEffectResourceView)] = {
     244, 72,  0, 0,   254, 212, 0, 0,   0,   0,   247, 104, 0,   0,   1, 244, 0, 6,   0,   0,   252, 24, 0,   0,
     0,   0,   0, 11,  0,   0,   0, 0,   0,   0,   253, 168, 0,   16,  0, 0,   3, 232, 0,   0,   0,   0,  0,   21,
     0,   0,   8, 152, 0,   0,   2, 188, 0,   26,  0,   0,   11,  184, 0, 0,   1, 44,  0,   31,  0,   0,  244, 72,
@@ -229,16 +241,11 @@ u8 gDll7BEffectResourceData[308] = {
     0,   11,  0, 12,  0,   0,   0, 50,  0,   200, 0,   50,  0,   0,   0, 0,   0, 0,   0,   0,
 };
 
-ObjectDescriptor4WithPadding dll_7B_funcs = {
-    {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-        (ObjectDescriptorCallback)dll_7B_func00_nop,
-        (ObjectDescriptorCallback)dll_7B_func01_nop,
-        0,
-        (ObjectDescriptorCallback)dll_7B_func03,
-    },
-    0,
+Dll7BResourceDescriptor gDll7BResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    dll_7B_initialise,
+    dll_7B_release,
+    NULL,
+    dll_7B_spawnEffect,
+    0x00000000,
 };

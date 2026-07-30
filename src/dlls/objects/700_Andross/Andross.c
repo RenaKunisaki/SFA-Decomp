@@ -36,7 +36,7 @@
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/obj_path.h"
 #include "main/dll/dll_02BC_andross.h"
@@ -131,7 +131,7 @@ void andross_steerAsteroids(GameObject* obj, AndrossState* state)
     int defNo;
 
     {
-        u32* objList = ObjGroup_GetObjects(2, &count);
+        u32* objList = objGetAllOfType(2, &count);
         for (i = 0, objs = (int*)objList; i < count; i++)
         {
             cur = *objs;
@@ -388,32 +388,6 @@ int andross_trackArwingVelocity(AndrossState* state, f32 clampRange, f32 scale, 
 #define ANDROSS_ALPHA_255 255.0f
 #define ANDROSS_DISTORT_PHASE_WRAP 6.28318f
 
-static void andross_updateDistortion(GameObject* obj, AndrossState* state, f32 fval)
-{
-    f32 fc;
-
-    obj->anim.alpha = (u8)(ANDROSS_ALPHA_255 * state->fadeAlpha);
-    if (fval < 0.5f)
-    {
-        fc = 1000.0f - 2.0f * (800.0f * fval);
-        if (fval < 0.01f)
-        {
-            gAndrossDistortPhase = gAndrossDistortPhaseReset;
-        }
-    }
-    else
-    {
-        fc = 200.0f;
-    }
-    gAndrossDistortPhase += gAndrossDistortPhaseStep;
-    if (gAndrossDistortPhase > ANDROSS_DISTORT_PHASE_WRAP)
-    {
-        gAndrossDistortPhase -= ANDROSS_DISTORT_PHASE_WRAP;
-    }
-    turnOnDistortionFilter(&state->cachedPosX, fc, &gAndrossDistortFilterParam, gAndrossDistortPhase);
-    state->fadeAlpha = 0.0f;
-}
-
 void andross_updateBombCollector(GameObject* obj, AndrossState* andross)
 {
     GameObject* spawned;
@@ -456,7 +430,7 @@ int andross_SeqFn(GameObject* obj)
     f32 fade;
     f32 alpha;
     int model;
-    ModelRenderOp* op;
+    Shader* op;
 
     state->fadeAlpha = gAndrossZero;
     fade = state->fadeAlpha;
@@ -536,7 +510,7 @@ void andross_update(int obj)
     GameObject** spawnSlot;
     AndrossState* signalState;
     ModelFileHeader* model = NULL;
-    ModelRenderOp* renderOp;
+    Shader* renderOp;
     AndrossChildSetup* childSetup;
     int rotationDelta;
     u32 val;

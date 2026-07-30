@@ -943,7 +943,7 @@ int curves_findNearObj(GameObject* obj, int* curveTypes, int typeCount, int acti
                     voxmaps_worldToGrid(curvePos, curveGrid);
                     traceResult = voxmaps_traceLine((VoxPos*)curveGrid, (VoxPos*)objGrid, NULL, &traceHit, 0);
                     if (((traceHit == 1) || (traceResult != 0)) &&
-                        (((int (*)(f32*, f32*, f32, int, TrackBBoxHit*, GameObject*, s8, int, int, int))objBboxFn_800640cc)(
+                        (((int (*)(f32*, f32*, f32, int, TrackBBoxHit*, GameObject*, s8, int, int, int))trackGetLineIntersect)(
                              &(obj)->anim.localPosX, curvePos, ROMCURVE_ONE, 0, (TrackBBoxHit*)bboxHit, obj,
                              bboxMode, -1, 0, 0) == 0))
                     {
@@ -959,7 +959,7 @@ int curves_findNearObj(GameObject* obj, int* curveTypes, int typeCount, int acti
                     voxmaps_worldToGrid(curvePos, curveGrid);
                     traceResult = voxmaps_traceLine((VoxPos*)curveGrid, (VoxPos*)objGrid, NULL, &traceHit, 0);
                     if (((traceHit == 1) || (traceResult != 0)) &&
-                        (((int (*)(f32*, f32*, f32, int, TrackBBoxHit*, GameObject*, s8, int, int, int))objBboxFn_800640cc)(
+                        (((int (*)(f32*, f32*, f32, int, TrackBBoxHit*, GameObject*, s8, int, int, int))trackGetLineIntersect)(
                              &(obj)->anim.localPosX, curvePos, ROMCURVE_ONE, 0, (TrackBBoxHit*)bboxHit, obj,
                              bboxMode, -1, 0, 0) == 0))
                     {
@@ -987,7 +987,7 @@ int curves_findNearObj(GameObject* obj, int* curveTypes, int typeCount, int acti
 #define OBJFSA_WG(GRP) ((ObjfsaWalkGroup*)((char*)patchBase[0] + (GRP) * OBJFSA_PATCHGROUP_STRIDE + 0x3000))
 
 
-int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurveId)
+int RomCurve_findShortestPathLink(RomCurveDef* startCurve, int unused1, int unused2, int* previousCurveId)
 {
     f32* scanBase;
     int top;
@@ -1019,7 +1019,7 @@ int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurve
     {
         return -1;
     }
-    if (RomCurve_findByIdWithIndex(((RomCurveDef*)startCurve)->id, &startIndex) == NULL)
+    if (RomCurve_findByIdWithIndex(startCurve->id, &startIndex) == NULL)
     {
         return -1;
     }
@@ -1029,7 +1029,7 @@ int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurve
     for (; directSlot < 4; directSlot++)
     {
         scanBase = queueDistances;
-        directLinkId = ((RomCurveDef*)startCurve)->linkIds[directSlot];
+        directLinkId = startCurve->linkIds[directSlot];
         if (directLinkId <= -1)
         {
             continue;
@@ -1041,18 +1041,15 @@ int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurve
         }
         visited[startIndex] = 1;
 
-        directCurve = (RomCurveDef*)RomCurve_findByIdWithIndex(((RomCurveDef*)startCurve)->linkIds[directSlot], &directIndex);
+        directCurve = (RomCurveDef*)RomCurve_findByIdWithIndex(startCurve->linkIds[directSlot], &directIndex);
         if (directCurve == 0)
         {
             continue;
         }
 
-        distance = (directCurve->z - ((RomCurveDef*)startCurve)->z) *
-                   (directCurve->z - ((RomCurveDef*)startCurve)->z);
-        queueDistances[0] = (directCurve->x - ((RomCurveDef*)startCurve)->x) *
-                                (directCurve->x - ((RomCurveDef*)startCurve)->x) +
-                            (directCurve->y - ((RomCurveDef*)startCurve)->y) *
-                                (directCurve->y - ((RomCurveDef*)startCurve)->y) +
+        distance = (directCurve->z - startCurve->z) * (directCurve->z - startCurve->z);
+        queueDistances[0] = (directCurve->x - startCurve->x) * (directCurve->x - startCurve->x) +
+                            (directCurve->y - startCurve->y) * (directCurve->y - startCurve->y) +
                             distance;
         queueCount = 0;
         queueIndices[queueCount++] = directIndex;
@@ -1074,7 +1071,7 @@ int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurve
                 {
                     found = 1;
                     candidateDistances[candidateCount] = distance;
-                    candidateIds[candidateCount++] = ((RomCurveDef*)startCurve)->linkIds[directSlot];
+                    candidateIds[candidateCount++] = startCurve->linkIds[directSlot];
                     continue;
                 }
 
@@ -1131,7 +1128,7 @@ int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurve
     }
     if (candidateCount == 1)
     {
-        *previousCurveId = ((RomCurveDef*)startCurve)->id;
+        *previousCurveId = startCurve->id;
         return candidateIds[0];
     }
     if (candidateCount > 1)
@@ -1149,7 +1146,7 @@ int RomCurve_func1C(u32 startCurve, int unused1, int unused2, int* previousCurve
             }
         }
 
-        *previousCurveId = ((RomCurveDef*)startCurve)->id;
+        *previousCurveId = startCurve->id;
         sel[1] = 0;
         sel[0] = sel[1];
         for (; sel[0] < candidateCount; sel[0]++)
@@ -2984,7 +2981,7 @@ void* lbl_803115F8[49] = {(void*)0,
                           (void*)RomCurve_getFarthestAdjacentLink,
                           (void*)RomCurve_getRandomBlockedLink,
                           (void*)Objfsa_GetNearestAdjacentLink,
-                          (void*)RomCurve_func1C,
+                          (void*)RomCurve_findShortestPathLink,
                           (void*)RomCurve_getAdjacentWindow,
                           (void*)RomCurve_buildAdjacentWindowPoints,
                           (void*)RomCurve_countRandomPoints,

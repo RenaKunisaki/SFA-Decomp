@@ -741,7 +741,7 @@ void* jumptable_802CC254[73] = {
 char sMapAssetPathFormats[0x78] =
     "%s/animcurv.bin\0%s/animcurv.tab\0%s/voxmap.bin\0\0\0warlock/voxmap.bin\0\0%s/voxmap.tab\0\0"
     "\0%s/mod%d.zlb.bin\0\0\0\0%s/mod%d.tab";
-void gxPerfFn_8004a77c(int);
+void gxSetGPMetricsEnabled(int);
 extern void* renderFrameBuffer;
 extern void* externalFrameBuffer0;
 extern void* externalFrameBuffer1;
@@ -2140,6 +2140,9 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
     switch (fileId)
     {
     case 0xd:
+        /* This file family does not use the caller's entry index. Reuse its
+           local for one protected snapshot: both the BIN and TAB reads for a
+           slot must finish before its merged table pointer is usable. */
         intr = OSDisableInterrupts();
         entryIndex = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(intr);
@@ -4140,7 +4143,7 @@ void videoSwapFrameBuffers(u32 retraceCount)
             Queue_Peek(&gVideoFlipQueue, tok);
             GXEnableBreakPt((void*)tok[0]);
         }
-        gxPerfFn_8004a77c(1);
+        gxSetGPMetricsEnabled(1);
     }
 }
 

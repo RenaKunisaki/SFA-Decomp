@@ -6,7 +6,7 @@
  */
 #include "dlls/objects/222_BaddieInterestP.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 #include "main/sky_interface.h"
 #include "main/vecmath.h"
@@ -71,7 +71,7 @@ void BaddieInterestP_update(GameObject* obj) {
         ((int)placement->doneGameBit == BADDIE_INTEREST_GAME_BIT_NONE ||
          mainGetBit((int)placement->doneGameBit) == 0)) {
         int objectCount;
-        u32* objects = ObjGroup_GetObjects(BADDIE_INTEREST_OBJECT_GROUP, &objectCount);
+        u32* objects = objGetAllOfType(BADDIE_INTEREST_OBJECT_GROUP, &objectCount);
         if (objectCount > 0) {
             u32 targetLinkId = (u32)(u16)placement->targetLinkIdHi << 16;
             GameObject* candidate;

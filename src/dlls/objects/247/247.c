@@ -7,8 +7,8 @@
 #include "dlls/objects/247.h"
 #include "dlls/objects/237.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
-#include "main/dll/dll_005B_modgfxfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
+#include "main/dll/dll_005B_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/mapEventTypes.h"
@@ -80,7 +80,7 @@ STATIC_ASSERT(offsetof(DllF7State, alternateMode) == 0xB);
 STATIC_ASSERT(sizeof(DllF7State) == 0xC);
 
 StaffCollisionInterface** gDllF7Resource5A;
-ModgfxFunc03Interface** gDllF7Resource5B;
+Dll5BInterface** gDllF7Resource5B;
 
 int dll_F7_getExtraSize(void) {
     return sizeof(DllF7State);
@@ -96,7 +96,7 @@ void dll_F7_free(GameObject* obj) {
     Resource_Release(gDllF7Resource5A);
     gDllF7Resource5B = NULL;
     gDllF7Resource5A = NULL;
-    ObjGroup_RemoveObject((int)obj, DLLF7_OBJECT_GROUP);
+    objFreeObjectType((int)obj, DLLF7_OBJECT_GROUP);
 }
 
 void dll_F7_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
@@ -176,12 +176,12 @@ void dll_F7_update(GameObject* obj) {
             setup->unk1A = 3;
             setup->counterGameBit = -1;
             setup->visibilityGameBit = -1;
-            Obj_SetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            objSetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         } else {
             GameObject* collectible;
 
             radius = DLLF7_COLLECTIBLE_SEARCH_RADIUS;
-            collectible = (GameObject*)ObjGroup_FindNearestObject(COLLECTIBLE_OBJECT_GROUP, obj, &radius);
+            collectible = (GameObject*)objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &radius);
             if (collectible != NULL) {
                 collectible->anim.localPosX = collectible->anim.worldPosX = obj->anim.localPosX;
                 collectible->anim.localPosY = collectible->anim.worldPosY =
@@ -206,7 +206,7 @@ void dll_F7_update(GameObject* obj) {
 void dll_F7_init(GameObject* obj, DllF7Placement* placement) {
     DllF7State* state = obj->extra;
 
-    ObjGroup_AddObject((int)obj, DLLF7_OBJECT_GROUP);
+    objAddObjectType((int)obj, DLLF7_OBJECT_GROUP);
     obj->anim.rotX = (s16)(placement->rotXByte << 8);
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     gDllF7Resource5B = Resource_Acquire(DLLF7_RESOURCE_MODGFX, 1);

@@ -42,18 +42,6 @@ f32 gBoneParticleDriftVelocity[2] = {10.0f, 0.0f};
 #define BONE_PARTICLE_DRIFT_MIN      -500.0f
 #define BONE_PARTICLE_DRIFT_REBOUND  -1.0f
 
-
-static inline int* Modgfx_GetActiveModel(void* obj)
-{
-    ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    return (int*)objAnim->banks[objAnim->bankIndex];
-}
-
-static void boneParticleEffect_resetDrift(void)
-{
-    gBoneParticleDrift = 0.0f;
-}
-
 void boneParticleEffect_func08_nop(void)
 {
 }
@@ -105,7 +93,7 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj)
         gBoneParticleEffectTimer = 0xf;
         Sfx_PlayFromObject((u32)gobj, SFXTRIG_id_281);
     }
-    model = (ObjModel*)((ObjAnimComponent*)gobj)->banks[((ObjAnimComponent*)gobj)->bankIndex];
+    model = (ObjModel*)gobj->anim.banks[gobj->anim.bankIndex];
     if (gBoneParticleStageIndex > 6)
     {
         gBoneParticleStageIndex = 0;

@@ -50,7 +50,6 @@ void allocSomething32bytes(void);
 void initViewport(void);
 void tvInit(void);
 void pathSearchExpandNode(int* q, int* elem, int idx);
-void pathSearchEnqueuePoint(int* q, int* elem, int idx, u32 d, char* obj);
 void loadModelsBin(int fileOffset, int* animCount, int* headerSize, int* amapFlag, int* dataLen, int id);
 void* fileLoad(int id, int heap);
 void videoInit(void* rmode, int arg);

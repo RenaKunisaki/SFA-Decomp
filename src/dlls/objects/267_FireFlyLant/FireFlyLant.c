@@ -104,7 +104,7 @@ void FireFlyLantern_free(GameObject* obj) {
     if (tricky != NULL) {
         trickyImpress(tricky);
     }
-    ObjGroup_RemoveObject((int)obj, FIREFLY_LANTERN_OBJECT_GROUP);
+    objFreeObjectType((int)obj, FIREFLY_LANTERN_OBJECT_GROUP);
 }
 
 void FireFlyLantern_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {

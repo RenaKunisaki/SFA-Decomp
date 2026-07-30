@@ -143,7 +143,7 @@ static void landed_arwing_runTargetSequence(GameObject* obj) {
     GameObject* nearest;
     LandedArwingPlacement* placement = (LandedArwingPlacement*)obj->anim.placementData;
 
-    nearest = (GameObject*)ObjGroup_FindNearestObject(LANDED_ARWING_TARGET_OBJECT_GROUP, obj, NULL);
+    nearest = (GameObject*)objGetNearestTypeTo(LANDED_ARWING_TARGET_OBJECT_GROUP, obj, NULL);
     if (obj->anim.mapEventSlot == 0xD && mainGetBit(GAMEBIT_Tricky_SaidGoodBye) != 0) {
         nearest->anim.localPosY += 20.0f;
         (*gObjectTriggerInterface)->runSequence(2, nearest, -1);
@@ -368,7 +368,7 @@ void landed_arwing_update(GameObject* obj) {
     player = Obj_GetPlayerObject();
     if (state->childObject == NULL) {
         if (Obj_IsLoadingLocked() != 0) {
-            child = (GameObject*)Obj_SetupObject(
+            child = (GameObject*)objSetupObject(
                 Obj_AllocObjectSetup(LANDED_ARWING_CHILD_OBJECT_SETUP_SIZE, LANDED_ARWING_GADGET_OBJECT_ID), 4, -1, -1,
                 0);
             state->childObject = child;
@@ -459,14 +459,14 @@ void landed_arwing_updateHitReaction(GameObject* obj, LandedArwingHitReactionSta
                         setup->posY = yOffset + obj->anim.localPosY;
                         setup->posZ = obj->anim.localPosZ;
                         setup->color[0] = 1;
-                        Obj_SetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+                        objSetupObject(setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                         spawnIndex++;
                     }
                 }
                 break;
             case LANDED_ARWING_REACTION_DAMAGE_NEAREST:
                 range = lbl_803E3BC0;
-                other = (GameObject*)ObjGroup_FindNearestObject(STAFF_ACTIVATED_OBJECT_GROUP, obj, &range);
+                other = (GameObject*)objGetNearestTypeTo(STAFF_ACTIVATED_OBJECT_GROUP, obj, &range);
                 if (other != NULL) {
                     otherState = other->extra;
                     if (((StaffActivatedPlacement*)other->anim.placementData)->siblingGameBit > 0) {

@@ -11,6 +11,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
+#include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebits_api.h"
@@ -53,7 +54,6 @@ STATIC_ASSERT(offsetof(ScTotemBondLightfootSetup, unknown32) == 0x32);
 STATIC_ASSERT(offsetof(ScTotemBondLightfootSetup, unknown33) == 0x33);
 STATIC_ASSERT(sizeof(ScTotemBondLightfootSetup) == 0x38);
 
-#define SC_TOTEM_BOND_CAMERA_MODE_VIEWFINDER 0x44
 #define SC_TOTEM_BOND_CAMERA_MODE_DEFAULT    0x42
 
 #define SC_TOTEM_BOND_MAP_SWAPCIRCLE 0xE
@@ -74,11 +74,6 @@ STATIC_ASSERT(sizeof(ScTotemBondLightfootSetup) == 0x38);
 #define SC_TOTEM_BOND_CAMERA_DISTANCE  72.0f
 #define SC_TOTEM_BOND_ROTATION_SPEED   512.0f
 
-static void sc_totembond_respawnOrbRing(GameObject* obj, ScTotemBondState* state) {
-    sc_totembond_spawnGameBitOrbs(obj, state, SC_TOTEM_BOND_INITIAL_RADIUS);
-    state->spawnTimer = SC_TOTEM_BOND_SPAWN_DELAY;
-}
-
 static inline void sc_totembond_beginOrbGame(GameObject* obj, ScTotemBondState* state) {
     state->active = 1;
     obj->anim.rotX = 0x3FFF;
@@ -90,7 +85,7 @@ static inline void sc_totembond_beginOrbGame(GameObject* obj, ScTotemBondState* 
     state->eventFlags &= ~SC_TOTEM_BOND_EVENT_START_ORBS;
     state->eventFlags |= SC_TOTEM_BOND_EVENT_ORBS_ACTIVE;
     (*gGameUIInterface)->setCMenuShouldClose(1);
-    hudFn_8011f38c(1);
+    setHudForceShowMask(1);
     (*gScreenTransitionInterface)->step(SC_TOTEM_BOND_SCREEN_TRANSITION, SC_TOTEM_BOND_SCREEN_TRANSITION_STATE);
     state->spawnTimer = SC_TOTEM_BOND_SPAWN_DELAY;
     Music_Trigger(MUSICTRIG_WLC_Puzzle_f0, 1);
@@ -126,7 +121,7 @@ void sc_totembond_spawnGameBitOrbs(GameObject* obj, ScTotemBondState* state, f32
             setup->activeGameBit = gTotemBondRingGameBits[orbIndex];
             setup->rotationByte = (s8)(((obj->anim.rotX + 0x8000) + angleOffset) >> 8);
             setup->unknown32 = 1;
-            Obj_SetupObject(&setup->base, 5, -1, -1, 0);
+            objSetupObject(&setup->base, 5, -1, -1, 0);
             orbIndex++;
             if (orbIndex > 7) {
                 orbIndex = 0;
@@ -156,7 +151,7 @@ u32 sc_totembond_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
         switch (eventId) {
         case 1:
             state->eventFlags |= SC_TOTEM_BOND_EVENT_START_ORBS;
-            (*gObjectTriggerInterface)->setCamVars(SC_TOTEM_BOND_CAMERA_MODE_VIEWFINDER, 1, 0, 0);
+            (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_VIEWFINDER_RESOURCE_ID, 1, 0, 0);
             break;
         case 2:
             objects = ObjList_GetObjects(&startForEvent2, &countForEvent2);
@@ -222,7 +217,7 @@ static inline void sc_totembond_finishOrbGame(GameObject* obj, ScTotemBondState*
     obj->anim.alpha = 0xFF;
     playerTeleport(player, NULL, NULL, 0);
     ObjHits_EnableObject(obj);
-    hudFn_8011f38c(0);
+    setHudForceShowMask(0);
     mainSetBits(SC_TOTEM_BOND_GAMEBIT_COMPLETE, 1);
     state->eventFlags = 0;
     Music_Trigger(MUSICTRIG_WLC_Puzzle_f0, 0);

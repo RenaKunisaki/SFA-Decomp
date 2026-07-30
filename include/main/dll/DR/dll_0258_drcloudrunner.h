@@ -8,6 +8,10 @@
 #include "main/dll/DR/cloudrunner_state.h"
 #include "game/objects/object_setup.h"
 
+typedef enum DRCloudRunnerObjectId {
+    DR_CLOUDRUNNER_OBJECT_ID = 1049,
+} DRCloudRunnerObjectId;
+
 /* placement record passed to init / read by the state handlers */
 typedef struct DRCloudRunnerPlacement
 {

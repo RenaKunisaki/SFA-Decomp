@@ -16,11 +16,11 @@ typedef struct TrackGroundHit TrackGroundHit;
 #define SCARAB_OBJECT_RAIN      0x3D6 /* RainScarab */
 #define SCARAB_OBJECT_BLUE_BEAN 0x3DF /* Blue_bean */
 
-typedef enum ScarabPhase {
-    SCARAB_PHASE_AIRBORNE = 0,
-    SCARAB_PHASE_GROUNDED = 1,
-    SCARAB_PHASE_RISING = 2,
-} ScarabPhase;
+typedef enum ScarabBehaviorState {
+    SCARAB_STATE_TUMBLING = 0,
+    SCARAB_STATE_SCURRYING = 1,
+    SCARAB_STATE_GOLD_CLIMB = 2,
+} ScarabBehaviorState;
 
 typedef enum ScarabPickupFlags {
     SCARAB_PICKUP_PENDING = 1 << 0,
@@ -44,28 +44,28 @@ typedef struct ScarabPlacement {
 
 /* Scarab_getExtraSize allocates the complete 0x34-byte state block. */
 typedef struct ScarabState {
-    f32 velocityX;     /* 0x00 */
-    f32 velocityZ;     /* 0x04 */
-    f32 riseAmount;    /* 0x08 */
-    f32 baseY;         /* 0x0C */
-    s16 despawnTimer;  /* 0x10 */
-    u8 pad12[2];       /* 0x12 */
-    s16 activeTimer;   /* 0x14: zero begins despawn */
-    s16 yawSpeed;      /* 0x16 */
-    s16 spawnYaw;      /* 0x18 */
-    s16 fleeTimer;     /* 0x1A */
-    s16 riseLimit;     /* 0x1C */
-    s16 pickupSfxId;   /* 0x1E */
-    s16 particleId;    /* 0x20 */
-    s16 burstModel;    /* 0x22 */
-    s8 phase;          /* 0x24: ScarabPhase */
-    u8 pad25[2];       /* 0x25 */
-    u8 moneyKind;      /* 0x27: ScarabMoneyKind */
-    u8 pickupFlags;    /* 0x28: ScarabPickupFlags; waiting on pickup reply */
-    u8 pad29[3];       /* 0x29 */
-    s16 messageParamA; /* 0x2C */
-    s16 messageParamB; /* 0x2E */
-    f32 messageParamC; /* 0x30 */
+    f32 speedX;             /* 0x00: scurry speed */
+    f32 speedZ;             /* 0x04: scurry speed */
+    f32 goldClimbTimer;     /* 0x08 */
+    f32 initialY;           /* 0x0C: fallback ground height */
+    s16 destructDelayTimer; /* 0x10 */
+    u8 pad12[2];            /* 0x12 */
+    s16 lifetime;           /* 0x14: zero begins despawn */
+    s16 rollSpeed;          /* 0x16 */
+    s16 scurryInitialYaw;   /* 0x18 */
+    s16 stunTimer;          /* 0x1A */
+    s16 goldClimbDuration;  /* 0x1C */
+    s16 collectSfxId;       /* 0x1E */
+    s16 particleId;         /* 0x20 */
+    s16 burstModel;         /* 0x22 */
+    s8 behaviorState;       /* 0x24: ScarabBehaviorState */
+    u8 pad25[2];            /* 0x25 */
+    u8 moneyKind;           /* 0x27: ScarabMoneyKind */
+    u8 pickupFlags;         /* 0x28: ScarabPickupFlags; waiting on pickup reply */
+    u8 pad29[3];            /* 0x29 */
+    s16 messageParamA;      /* 0x2C */
+    s16 messageParamB;      /* 0x2E */
+    f32 messageParamC;      /* 0x30 */
 } ScarabState;
 
 STATIC_ASSERT(offsetof(ScarabPlacement, base) == 0x0);
@@ -75,21 +75,21 @@ STATIC_ASSERT(offsetof(ScarabPlacement, activeTimer) == 0x1A);
 STATIC_ASSERT(offsetof(ScarabPlacement, pad1C) == 0x1C);
 STATIC_ASSERT(sizeof(ScarabPlacement) == SCARAB_PLACEMENT_SIZE);
 
-STATIC_ASSERT(offsetof(ScarabState, velocityX) == 0x0);
-STATIC_ASSERT(offsetof(ScarabState, velocityZ) == 0x4);
-STATIC_ASSERT(offsetof(ScarabState, riseAmount) == 0x8);
-STATIC_ASSERT(offsetof(ScarabState, baseY) == 0xC);
-STATIC_ASSERT(offsetof(ScarabState, despawnTimer) == 0x10);
+STATIC_ASSERT(offsetof(ScarabState, speedX) == 0x0);
+STATIC_ASSERT(offsetof(ScarabState, speedZ) == 0x4);
+STATIC_ASSERT(offsetof(ScarabState, goldClimbTimer) == 0x8);
+STATIC_ASSERT(offsetof(ScarabState, initialY) == 0xC);
+STATIC_ASSERT(offsetof(ScarabState, destructDelayTimer) == 0x10);
 STATIC_ASSERT(offsetof(ScarabState, pad12) == 0x12);
-STATIC_ASSERT(offsetof(ScarabState, activeTimer) == 0x14);
-STATIC_ASSERT(offsetof(ScarabState, yawSpeed) == 0x16);
-STATIC_ASSERT(offsetof(ScarabState, spawnYaw) == 0x18);
-STATIC_ASSERT(offsetof(ScarabState, fleeTimer) == 0x1A);
-STATIC_ASSERT(offsetof(ScarabState, riseLimit) == 0x1C);
-STATIC_ASSERT(offsetof(ScarabState, pickupSfxId) == 0x1E);
+STATIC_ASSERT(offsetof(ScarabState, lifetime) == 0x14);
+STATIC_ASSERT(offsetof(ScarabState, rollSpeed) == 0x16);
+STATIC_ASSERT(offsetof(ScarabState, scurryInitialYaw) == 0x18);
+STATIC_ASSERT(offsetof(ScarabState, stunTimer) == 0x1A);
+STATIC_ASSERT(offsetof(ScarabState, goldClimbDuration) == 0x1C);
+STATIC_ASSERT(offsetof(ScarabState, collectSfxId) == 0x1E);
 STATIC_ASSERT(offsetof(ScarabState, particleId) == 0x20);
 STATIC_ASSERT(offsetof(ScarabState, burstModel) == 0x22);
-STATIC_ASSERT(offsetof(ScarabState, phase) == 0x24);
+STATIC_ASSERT(offsetof(ScarabState, behaviorState) == 0x24);
 STATIC_ASSERT(offsetof(ScarabState, pad25) == 0x25);
 STATIC_ASSERT(offsetof(ScarabState, moneyKind) == 0x27);
 STATIC_ASSERT(offsetof(ScarabState, pickupFlags) == 0x28);

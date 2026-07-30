@@ -10,7 +10,7 @@
 
 #include "main/dll/partfx_interface.h"
 #include "main/vecmath.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/dll/ppcwgpipe_struct.h"
 #include "main/dll/baddie_control_interface.h"
@@ -79,7 +79,7 @@
 #include "main/dll/tricky_api.h"
 #include "main/objprint_api.h"
 #include "main/dll/objfx_api.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/audio/sfx_limited_object_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/object_render.h"
@@ -404,19 +404,6 @@ void tricky_updateModelVariantFade(int obj, int state)
 
 /* Set bit 0x80000000 of obj->_b8->_54
  * and store 20.0f into obj->_b8->_808. */
-static int trickyEventTimeExpired(TrickyState* state)
-{
-    if (-100000.0f == state->eventTime)
-    {
-        return 1;
-    }
-    if ((state->currentTime - state->eventTime) > 8.0f)
-    {
-        return 1;
-    }
-    return 0;
-}
-
 void trickyImpress(GameObject* obj)
 {
     TrickyImpressState* b = ((GameObject*)obj)->extra;
@@ -470,7 +457,7 @@ GameObject* trickyFindNearestUsableBaddie(GameObject* origin, f32 maxRadius, int
 
     bestDistSq = maxRadius;
     closest = 0;
-    tmpList = (int*)ObjGroup_GetObjects(3, &count);
+    tmpList = (int*)objGetAllOfType(3, &count);
     bestDistSq = bestDistSq * bestDistSq;
     i = 0;
     objs = tmpList;
@@ -511,7 +498,7 @@ GameObject* trickyFindNearestUsableBaddie(GameObject* origin, f32 maxRadius, int
             v2 = mainGetBit(g2);
         }
 
-        if (ObjGroup_ContainsObject(*objs, TRICKY_BADDIE_TARGET_OBJGROUP) == 0 && obj_extra > 0.0f && v1 == 0 &&
+        if (objIsObjectType(*objs, TRICKY_BADDIE_TARGET_OBJGROUP) == 0 && obj_extra > 0.0f && v1 == 0 &&
             v2 != 0)
         {
             if (((GameObject*)*objs)->anim.romDefNo != TRICKY_SEQID_WHIRLPOOL)
@@ -666,14 +653,6 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 /* "staff" (DLL 0xE2) */
 #define SKEETLA_PARTICLE_SPAWN_FLAGS   0x200001
 #define SKEETLA_PARTICLE_RANDOM_RATE   4
-static f32 trickyApproachSpeedStep(f32 speed, f32 target)
-{
-    if (speed > target)
-    {
-        return -0.15f;
-    }
-    return 0.05f;
-}
 void fn_8014187C();
 void tricky_updateBallRoll();
 void fn_8014128C();
@@ -817,7 +796,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
 
     if (doGroundSnap != 0)
     {
-        hitDetectFn_800658a4((GameObject*)obj, ((GameObject*)obj)->anim.worldPosX, ((GameObject*)obj)->anim.worldPosY,
+        trackGetNearestGroundOffset((GameObject*)obj, ((GameObject*)obj)->anim.worldPosX, ((GameObject*)obj)->anim.worldPosY,
                              ((GameObject*)obj)->anim.worldPosZ, &hitOffsetY, 0);
         ((GameObject*)obj)->anim.localPosY -= hitOffsetY;
         state->heightUpdateActive = 0;
@@ -934,7 +913,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     }
 
     if ((coordsToMapCell(((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosZ) == 0xe) ||
-        ((u32)ObjGroup_FindNearestObject(SKEETLA_TARGET_OBJGROUP, (GameObject*)obj, &nearestDistance) != 0u))
+        ((u32)objGetNearestTypeTo(SKEETLA_TARGET_OBJGROUP, (GameObject*)obj, &nearestDistance) != 0u))
     {
         state->pathControlFlags &= ~4;
     }
@@ -949,29 +928,6 @@ void trickyUpdateCollisionAndPathState(u8* obj)
 
     ((GameObject*)obj)->anim.rotY = state->pathRotY;
     ((GameObject*)obj)->anim.rotZ = state->pathRotZ;
-}
-
-static f32 trickyRouteTurnRate(f32 distance)
-{
-    f32 rate;
-    f32 limit;
-
-    rate = 0.02f;
-    limit = 600.0f;
-    if (distance > limit)
-    {
-        rate = 0.005f;
-    }
-    return rate;
-}
-
-static f32 trickyRouteStep(RomCurveWalker* route)
-{
-    if (route->reverse != 0)
-    {
-        return -2.0f;
-    }
-    return 2.0f;
 }
 
 int trickyAdvanceRouteTargetAhead(GameObject* obj, RomCurveWalker* route, f32 speed)
@@ -1166,16 +1122,6 @@ static inline void skeetla_playFootstepSfx(u8* obj, u16 sfxId)
     {
         objSoundStartTimed((GameObject*)obj, &((TrickyState*)state)->soundState, sfxId, 0x500, -1, 0);
     }
-}
-
-static f32 trickyBinAngleToRadians(int binAngle)
-{
-    f32 halfTurn;
-    f32 scale;
-
-    halfTurn = 3.1415927f;
-    scale = 32768.0f;
-    return halfTurn * (f32)binAngle / scale;
 }
 
 int moveTricky(GameObject* obj, f32* targetPos)
@@ -1949,7 +1895,7 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint)
     f32 scale;
     int i;
 
-    objects = (void**)ObjGroup_GetObjects(SIDEREPEL_OBJGROUP, &count);
+    objects = (void**)objGetAllOfType(SIDEREPEL_OBJGROUP, &count);
     for (i = 0, op = objects, scale = 0.1f; i < count; i++)
     {
         obj = *op;
@@ -2781,7 +2727,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             node = trickySelectRouteEntry((u8*)state, state->route.nodeA4, dir & 0xff);
             if (node != 0)
             {
-                curveFn_800da23c(&state->route, node);
+                RomCurve_advanceToNextSegment(&state->route, node);
                 type = ((ObjfsaRomCurveDef*)state->route.node9C)->unk1A;
                 switch (type)
                 {
@@ -2920,7 +2866,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             }
             else
             {
-                curveFn_800da23c(&state->route, nextRouteNode);
+                RomCurve_advanceToNextSegment(&state->route, nextRouteNode);
                 node = state->route.nodeA0;
                 state->dirX = node->x - obj->anim.worldPosX;
                 state->dirZ = node->z - obj->anim.worldPosZ;
@@ -3140,7 +3086,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             }
             else
             {
-                curveFn_800da23c(&state->route, nextRouteNode);
+                RomCurve_advanceToNextSegment(&state->route, nextRouteNode);
                 node = state->route.nodeA0;
                 state->dirX = node->x - obj->anim.worldPosX;
                 state->dirZ = node->z - obj->anim.worldPosZ;
@@ -3261,7 +3207,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             }
             else
             {
-                curveFn_800da23c(&state->route, nextRouteNode);
+                RomCurve_advanceToNextSegment(&state->route, nextRouteNode);
                 node = state->route.nodeA0;
                 state->dirX = node->x - obj->anim.worldPosX;
                 state->dirZ = node->z - obj->anim.worldPosZ;
@@ -3501,7 +3447,7 @@ void tricky_stateGoToWarpPoint(u8* self, u8* state)
         return;
     }
 
-    objsList = (u8**)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, &count);
+    objsList = (u8**)objGetAllOfType(TRICKYWARP_OBJ_GROUP, &count);
     i = 0;
     objs = objsList;
     rejectDist = 2500.0f;
@@ -3612,7 +3558,7 @@ int trickyShouldGoToWarpPoint(u8* tricky, u8* state)
         result = 1;
     }
 
-    if ((u8*)ObjGroup_FindNearestObject(PRESSURESWITCHFB_REMOVE_GROUP_ID, (GameObject*)tricky, &dist) != NULL)
+    if ((u8*)objGetNearestTypeTo(PRESSURESWITCHFB_REMOVE_GROUP_ID, (GameObject*)tricky, &dist) != NULL)
     {
         return 0;
     }
@@ -3663,7 +3609,7 @@ int trickyShouldGoToWarpPoint(u8* tricky, u8* state)
  *   1  face target   - turns toward the followed object (extra+0x28), with a
  *                      random chance to bark again, until anim flag + timer hit
  *   2  dig start     - if loading isn't locked, spawns seven child objects
- *                      (Obj_AllocObjectSetup/Obj_SetupObject into scratch700..),
+ *                      (Obj_AllocObjectSetup/objSetupObject into scratch700..),
  *                      plays/loops the dig sfx (0x3db/0x3dc) and runs anim 0x34
  *   3  dig end       - on move progress >= threshold, resets child anim speed,
  *                      stops the dig loop, barks (sfx 0x29d) and clears the
@@ -3782,7 +3728,7 @@ void trickyGrowl(void* obj, void* trickyState)
                     *(u8*)((char*)setup + 0x4) = 2;
                     *(u8*)((char*)setup + 0x5) = 1;
                     *(s16*)((char*)setup + 0x1a) = i;
-                    slot[0x700 / 4] = (void*)Obj_SetupObject((ObjPlacement*)setup, 5,
+                    slot[0x700 / 4] = (void*)objSetupObject((ObjPlacement*)setup, 5,
                                                              ((GameObject*)obj)->anim.mapEventSlot, -1,
                                                              ((GameObject*)obj)->anim.parent);
                 }
@@ -4153,7 +4099,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                             }
                             ((TrickyPackedSlots*)((char*)t + 0x7bc))->zzzSlot = free_;
                             *(int*)&t->child =
-                                (int)Obj_SetupObject((ObjPlacement*)o, 4, -1, -1, (void*)gobj->anim.parentAddress);
+                                (int)objSetupObject((ObjPlacement*)o, 4, -1, -1, (void*)gobj->anim.parentAddress);
                             ObjLink_AttachChild(gobj, t->child, ((TrickyPackedSlots*)((char*)t + 0x7bc))->zzzSlot);
                             {
                                 f32 z3 = 0.0f;
@@ -4230,7 +4176,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                         ((AnimObjD2DripSetup*)o)->head.color[0] = 2;
                         ((AnimObjD2DripSetup*)o)->head.color[1] = 1;
                         ((AnimObjD2DripSetup*)o)->index = i;
-                        *(int*)(p + 0x700) = (int)Obj_SetupObject((ObjPlacement*)o, 5, gobj->anim.mapEventSlot, -1,
+                        *(int*)(p + 0x700) = (int)objSetupObject((ObjPlacement*)o, 5, gobj->anim.mapEventSlot, -1,
                                                                   (void*)gobj->anim.parentAddress);
                         p += 4;
                     }
@@ -4293,7 +4239,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         }
         else
         {
-            void** list = (void**)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, &count);
+            void** list = (void**)objGetAllOfType(TRICKYWARP_OBJ_GROUP, &count);
             int i = 0;
             p = list;
             for (; i < count; i++)
@@ -4402,7 +4348,7 @@ void* trickyFindCirclingTarget(GameObject* obj, void* state)
     target = (GameObject*)playerGetTargetObject(((TrickyState*)state)->playerObj);
     if (target != NULL)
     {
-        list = (void**)ObjGroup_GetObjects(3, &count);
+        list = (void**)objGetAllOfType(3, &count);
         for (i = 0; i < count; i++)
         {
             if ((GameObject*)*list == target)
@@ -5176,7 +5122,7 @@ static inline int trickyGuardIsBaddieTargetValid(TrickyRuntime* trickyState)
     int* list;
     int i;
 
-    list = (int*)ObjGroup_GetObjects(TRICKY_GUARD_APPROACH_GROUP, &count);
+    list = (int*)objGetAllOfType(TRICKY_GUARD_APPROACH_GROUP, &count);
     for (i = 0; (s16)i < count; i++)
     {
         if ((u32)*list == target)
@@ -5307,7 +5253,7 @@ void trickyGuard(ObjAnimComponent* obj, TrickyRuntime* trickyState)
                         *(u8*)((char*)setup + 0x5) = 1;
                         *(s16*)((char*)setup + 0x1a) = i;
                         slot[0x700 / 4] =
-                            (void*)Obj_SetupObject((ObjPlacement*)setup, 5, obj->mapEventSlot, -1, obj->parent);
+                            (void*)objSetupObject((ObjPlacement*)setup, 5, obj->mapEventSlot, -1, obj->parent);
                         slot++;
                     }
                     Sfx_PlayFromObject((int)obj, SFXTRIG_en_cvdrip1c_3db);
@@ -5472,7 +5418,7 @@ int trickyGuardFindBaddieTarget(TrickyRuntime* trickyState)
     int* groupObjects;
     u32 best = 0;
 
-    groupObjects = (int*)ObjGroup_GetObjects(TRICKY_GUARD_APPROACH_GROUP, &count);
+    groupObjects = (int*)objGetAllOfType(TRICKY_GUARD_APPROACH_GROUP, &count);
     i = 0;
     list = groupObjects;
     for (; (s16)i < count; i++)
@@ -5639,7 +5585,7 @@ void trickyFlame(GameObject* obj, int trickyState)
                             *(u8*)((char*)setup + 0x4) = 2;
                             *(u8*)((char*)setup + 0x5) = 1;
                             *(s16*)((char*)setup + 0x1a) = i;
-                            slot[0x700 / 4] = (void*)Obj_SetupObject((ObjPlacement*)setup, 5,
+                            slot[0x700 / 4] = (void*)objSetupObject((ObjPlacement*)setup, 5,
                                                                     (obj)->anim.mapEventSlot, -1,
                                                                     (obj)->anim.parent);
                             slot++;
@@ -5737,7 +5683,7 @@ void trickyFlame(GameObject* obj, int trickyState)
                             *(u8*)((char*)setup + 0x4) = 2;
                             *(u8*)((char*)setup + 0x5) = 1;
                             *(s16*)((char*)setup + 0x1a) = i;
-                            slot[0x700 / 4] = (void*)Obj_SetupObject((ObjPlacement*)setup, 5,
+                            slot[0x700 / 4] = (void*)objSetupObject((ObjPlacement*)setup, 5,
                                                                     (obj)->anim.mapEventSlot, -1,
                                                                     (obj)->anim.parent);
                             slot++;
@@ -5925,7 +5871,7 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
                 link++;
             }
 
-            curveFn_800da23c(&ts->route, (void*)targetNode);
+            RomCurve_advanceToNextSegment(&ts->route, (void*)targetNode);
         }
 
         speed = ts->speed;
@@ -6745,7 +6691,7 @@ int tricky_substateFlameBreath(u8* obj, u8* state)
                     e[4] = 2;
                     e[5] = 1;
                     *(s16*)(e + 0x1a) = i;
-                    *(u8**)(p + 0x700) = (u8*)Obj_SetupObject((ObjPlacement*)e, 5,
+                    *(u8**)(p + 0x700) = (u8*)objSetupObject((ObjPlacement*)e, 5,
                                                               ((GameObject*)obj)->anim.mapEventSlot, -1,
                                                               ((GameObject*)obj)->anim.parent);
                 }
@@ -7243,7 +7189,7 @@ int tricky_substateSleep(GameObject* obj, int* state)
             idx = -1;
         }
         ((TrickyPackedSlots*)((u8*)state + 0x7bc))->zzzSlot = idx;
-        ((TrickyState*)state)->child = Obj_SetupObject((ObjPlacement*)e, 4, -1, -1, (obj)->anim.parent);
+        ((TrickyState*)state)->child = objSetupObject((ObjPlacement*)e, 4, -1, -1, (obj)->anim.parent);
         ObjLink_AttachChild(obj, ((TrickyState*)state)->child,
                             ((TrickyPackedSlots*)((u8*)state + 0x7bc))->zzzSlot);
         z = 0.0f;
@@ -7529,7 +7475,7 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
     lo = 1;
     hi = 3;
     arr[0] = 200.0f;
-    found = (u8*)ObjGroup_FindNearestObject(SHTHORNTAIL_OBJECT_GROUP, (GameObject*)obj, arr);
+    found = (u8*)objGetNearestTypeTo(SHTHORNTAIL_OBJECT_GROUP, (GameObject*)obj, arr);
     if (found != NULL && (((GameObject*)found)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
     {
         lo = 0;
@@ -8013,7 +7959,7 @@ u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state)
     int i;
 
     result = 0;
-    objs = (int*)ObjGroup_GetObjects(TRICKYWARP_OBJ_GROUP, count);
+    objs = (int*)objGetAllOfType(TRICKYWARP_OBJ_GROUP, count);
     d = getXZDistance(&state->playerObj->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX);
     if ((d >= 360000.0f) || (state->cooldownA > 0.0f))
     {
@@ -8145,7 +8091,7 @@ void tricky_attachToWalkGroup(GameObject* obj, int state)
     if (gTrickyHelperObject == 0)
     {
         int setup = (int)Obj_AllocObjectSetup(0x18, 0x25);
-        gTrickyHelperObject = (int)Obj_SetupObject((ObjPlacement*)setup, 4, -1, -1, obj->anim.parent);
+        gTrickyHelperObject = (int)objSetupObject((ObjPlacement*)setup, 4, -1, -1, obj->anim.parent);
     }
     ((TrickyByteFlags*)&((TrickyState*)state)->statusFlags)->bit7 = 1;
 }
@@ -8234,7 +8180,7 @@ int tricky_SeqFn(int obj, int unused, ObjSeqState* animUpdate)
                     *(u8*)(setup + 4) = 2;
                     *(u8*)(setup + 5) = 1;
                     *(s16*)(setup + 0x1a) = k;
-                    *(int*)(p + 0x700) = (int)Obj_SetupObject((ObjPlacement*)setup, 5, ((GameObject*)obj)->anim.mapEventSlot, -1,
+                    *(int*)(p + 0x700) = (int)objSetupObject((ObjPlacement*)setup, 5, ((GameObject*)obj)->anim.mapEventSlot, -1,
                                                               ((GameObject*)obj)->anim.parent);
                 }
                 Sfx_PlayFromObject(obj, SFXTRIG_en_cvdrip1c_3db);
@@ -8256,7 +8202,7 @@ int tricky_SeqFn(int obj, int unused, ObjSeqState* animUpdate)
                     setup = (int)Obj_AllocObjectSetup(0x20, TRICKY_CHILD_OBJ_BADGE_B);
                 }
                 *(int*)&((TrickyState*)state)->spawnedChild =
-                    (int)Obj_SetupObject((ObjPlacement*)setup, 4, -1, -1, ((GameObject*)obj)->anim.parent);
+                    (int)objSetupObject((ObjPlacement*)setup, 4, -1, -1, ((GameObject*)obj)->anim.parent);
                 ObjLink_AttachChild((GameObject*)obj, ((TrickyState*)state)->spawnedChild, 3);
             }
             break;
@@ -8529,7 +8475,7 @@ int Tricky_updateSideCommandPrompts(int obj)
             (bitVal = mainGetBit(GAMEBIT_ITEM_TrickyBall_Usable), bitVal != 0))
         {
             ref = (int)Obj_GetPlayerObject();
-            ref = fn_80296240((GameObject*)(ref));
+            ref = playerIsInNormalControlUndisguisedOnLand((GameObject*)(ref));
             if ((ref != 0) && (bitVal = mainGetBit(GAMEBIT_NoBallsAllowed), bitVal == 0))
             {
                 if (playerGetFlags3F0Bit5(((TrickyState*)state)->playerObj) == 0)
@@ -8603,7 +8549,7 @@ int Tricky_updateSideCommandPrompts(int obj)
                     bitVal = 0xffffffff;
                 }
                 ((TrickyPackedSlots*)(state + 0x7bc))->promptBSlot = bitVal;
-                spawnedObj = (int)Obj_SetupObject((ObjPlacement*)setup, 4, -1, 0xffffffff, ((GameObject*)obj)->anim.parent);
+                spawnedObj = (int)objSetupObject((ObjPlacement*)setup, 4, -1, 0xffffffff, ((GameObject*)obj)->anim.parent);
                 *(u32*)(state + 0x7b0) = spawnedObj; /* raw: arrow form shifts bytes */
                 ObjLink_AttachChild((GameObject*)obj, ((TrickyState*)state)->childB, *(u8*)(state + 0x7bc) >> 4 & 3);
             }
@@ -8682,7 +8628,7 @@ int Tricky_updateSideCommandPrompts(int obj)
                     bitVal = 0xffffffff;
                 }
                 ((TrickyPackedSlots*)(state + 0x7bc))->promptASlot = bitVal;
-                spawnedObj = (int)Obj_SetupObject((ObjPlacement*)setup, 4, -1, 0xffffffff, ((GameObject*)obj)->anim.parent);
+                spawnedObj = (int)objSetupObject((ObjPlacement*)setup, 4, -1, 0xffffffff, ((GameObject*)obj)->anim.parent);
                 *(u32*)(state + 0x7a8) = spawnedObj; /* raw: arrow form shifts bytes */
                 ObjLink_AttachChild((GameObject*)obj, ((TrickyState*)state)->childA, *(u8*)(state + 0x7bc) >> 6 & 3);
             }
@@ -8738,7 +8684,7 @@ void Tricky_free(int obj, int shouldKeepFlameChildren)
     freeAndNull((void**)&((TrickyState*)state)->pathSearches[6].nodes);
     freeAndNull((void**)&((TrickyState*)state)->pathSearches[7].nodes);
     freeAndNull((void**)&((TrickyState*)state)->pathSearches[8].nodes);
-    ObjGroup_RemoveObject(obj, TRICKY_OBJGROUP);
+    objFreeObjectType(obj, TRICKY_OBJGROUP);
     (*gExpgfxInterface)->freeSource(objId);
     if ((shouldKeepFlameChildren == 0) &&
         ((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_FLAME_CHILDREN_ACTIVE) != 0))
@@ -8883,7 +8829,7 @@ void Tricky_hitDetect(GameObject* obj)
     if ((((TrickyState*)state)->statusFlags >> 5 & 1) != 0u)
     {
         {
-            GameObject** t = (GameObject**)ObjGroup_GetObjects(XYZ_ANIMATOR_OBJECT_GROUP, count);
+            GameObject** t = (GameObject**)objGetAllOfType(XYZ_ANIMATOR_OBJECT_GROUP, count);
             i = 0;
             objects = t;
         }
@@ -8995,7 +8941,7 @@ void Tricky_hitDetect(GameObject* obj)
             slot_ = -1;                                                                                                \
         }                                                                                                              \
         ((TrickyPackedSlots*)((state) + 0x7bc))->zzzSlot = slot_;                                                           \
-        *(int*)((state) + 0x7b8) = (int)Obj_SetupObject((ObjPlacement*)setup_, 4, -1, -1, *(void**)((obj) + 0x30));    \
+        *(int*)((state) + 0x7b8) = (int)objSetupObject((ObjPlacement*)setup_, 4, -1, -1, *(void**)((obj) + 0x30));    \
         ObjLink_AttachChild((GameObject*)(obj), *(GameObject**)((state) + 0x7b8),                                    \
                             ((TrickyPackedSlots*)((state) + 0x7bc))->zzzSlot);                                             \
         z = 0.0f;                                                                                              \
@@ -9051,7 +8997,7 @@ void Tricky_update(int obj)
             setup = (int)Obj_AllocObjectSetup(0x20, TRICKY_CHILD_OBJ_BADGE_B);
         }
         *(int*)&trickyState->spawnedChild =
-            (int)Obj_SetupObject((ObjPlacement*)setup, 4, -1, -1, ((GameObject*)obj)->anim.parent);
+            (int)objSetupObject((ObjPlacement*)setup, 4, -1, -1, ((GameObject*)obj)->anim.parent);
         ObjLink_AttachChild((GameObject*)obj, trickyState->spawnedChild, 3);
     }
     if ((trickyState->stateFlags & 0x40000000) != 0)
@@ -9396,7 +9342,7 @@ void Tricky_update(int obj)
                         ((ObjPlacement*)setup)->posY = ((GameObject*)obj)->anim.worldPosY;
                         ((ObjPlacement*)setup)->posZ = ((GameObject*)obj)->anim.worldPosZ;
                         trickyState->followObj =
-                            Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, ((GameObject*)obj)->anim.parent);
+                            objSetupObject((ObjPlacement*)setup, 5, -1, -1, ((GameObject*)obj)->anim.parent);
                         target = &trickyState->followObj->anim.worldPosX;
                         if (trickyState->targetPosPtr != target)
                         {
@@ -9831,16 +9777,16 @@ void Tricky_init(GameObject* obj)
         mainSetBits(GAMEBIT_ITEM_TrickyBall_Usable, 1);
     }
     (obj)->animEventCallback = tricky_SeqFn;
-    ObjGroup_AddObject((int)obj, TRICKY_OBJGROUP);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[0]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[1]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[2]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[3]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[4]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[5]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[6]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[7]);
-    trickyVoxAllocFn_8004b5d4(&((TrickyState*)state)->pathSearches[8]);
+    objAddObjectType((int)obj, TRICKY_OBJGROUP);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[0]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[1]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[2]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[3]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[4]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[5]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[6]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[7]);
+    pathSearchInit(&((TrickyState*)state)->pathSearches[8]);
     ((TrickyState*)state)->progressPtr = (*gMapEventInterface)->getTrickyEnergy();
     ((TrickyState*)state)->playerObj = Obj_GetPlayerObject();
     ((TrickyState*)state)->stateIndex = 0;

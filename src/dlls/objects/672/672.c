@@ -177,12 +177,12 @@ void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
             if (collected == seg)
             {
                 if (state->flags.bit20)
-                    gameTextFn_80125ba4(7);
+                    headDisplayOpen(7);
             }
             else
             {
                 if (state->flags.bit20)
-                    gameTextFn_80125ba4(9);
+                    headDisplayOpen(9);
             }
         }
     }
@@ -220,7 +220,7 @@ int arwbombcoll_checkArwingCollision(GameObject* obj, RingState* state, int arwi
             if (sqrtf(dx * dx + dy * dy) < 55.0f)
                 return 1;
             if (state->mode == RING_MODE_GOLD && f->bit20)
-                gameTextFn_80125ba4(0xa);
+                headDisplayOpen(0xa);
         }
     }
     return 0;

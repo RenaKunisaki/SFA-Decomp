@@ -2,8 +2,9 @@
 
 #include "dolphin/pad.h"
 #include "main/dll/dll_0004_dummy04.h"
-#include "main/dll/dll_006A_dll6afunc0.h"
-#include "main/dll/foodbag.h"
+#include "main/dll/dll_006A_modgfx.h"
+#include "main/dll/dll_0083_modgfx.h"
+#include "main/dll/dll_0084_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
@@ -246,7 +247,7 @@ void dll409_update(GameObject* obj) {
             }
         }
     } else {
-        found = (GameObject*)ObjGroup_FindNearestObject(DLL199_TARGET_OBJECT_GROUP, player, &dist);
+        found = (GameObject*)objGetNearestTypeTo(DLL199_TARGET_OBJECT_GROUP, player, &dist);
         if ((found != 0) && (dist < 300.0f) && (dist > 100.0f)) {
             dz = found->anim.localPosZ - player->anim.localPosZ;
             if (dz <= 0.0f) {
@@ -329,7 +330,7 @@ void dll409_update(GameObject* obj) {
             state->channel3BrightnessDelta = 1;
             (*gObjectTriggerInterface)->runSequence(2, obj, 0xffffffff);
             dist = 10000.0f;
-            found = (GameObject*)ObjGroup_FindNearestObject(DLL199_SPAWNED_OBJECT_GROUP, obj, &dist);
+            found = (GameObject*)objGetNearestTypeTo(DLL199_SPAWNED_OBJECT_GROUP, obj, &dist);
             if (found != 0) {
                 Obj_FreeObject(found);
             }
@@ -352,7 +353,7 @@ void dll409_update(GameObject* obj) {
             break;
         case 3:
             dist = 10000.0f;
-            found = (GameObject*)ObjGroup_FindNearestObject(DLL199_SPAWNED_OBJECT_GROUP, obj, &dist);
+            found = (GameObject*)objGetNearestTypeTo(DLL199_SPAWNED_OBJECT_GROUP, obj, &dist);
             if (found != 0) {
                 Obj_FreeObject(found);
             }

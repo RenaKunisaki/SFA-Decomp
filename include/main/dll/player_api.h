@@ -8,16 +8,16 @@
 
 #define PLAYER_STATE_FLAG_CAN_PLACE_CARRYABLE 0x4000
 
-int fn_80296240(GameObject* player);
-int objFn_802962b4(GameObject* obj);
-void fn_80295918(GameObject* player, int selector, f32 value);
-int fn_80295A04(GameObject* obj, int selector);
+int playerIsInNormalControlUndisguisedOnLand(GameObject* player);
+int playerIsInNormalControl(GameObject* obj);
+void playerSetStateValue(GameObject* player, int selector, f32 value);
+int playerGetStateValue(GameObject* obj, int selector);
 int fn_80295C0C(GameObject* obj);
 int playerIsTargetSuppressed(GameObject* player);
 int playerIsInWater(GameObject* player);
-int fn_80295C5C(GameObject* player);
+int playerIsQuakeShockwaveActive(GameObject* player);
 int playerFindNearestFirefly(GameObject* player);
-int fn_80295CBC(GameObject* player);
+int playerIsClimbingWall(GameObject* player);
 int playerIsPathFollowing(GameObject* player);
 void playerRender(int obj, int a, int b, int c, int d, int flag);
 void playerLock(GameObject* player, int lock);
@@ -40,7 +40,7 @@ u8 playerIsPushingObject(GameObject* player, GameObject* otherObj, u8* outDirect
 int fn_80296464(GameObject* player);
 int playerGetSurfaceType(GameObject* player);
 void playerAddMaxMagic(GameObject* player, int delta);
-void fn_80296BBC(GameObject* player);
+void playerDisableHitDetect(GameObject* player);
 void fn_802972B4(GameObject* player, u32* outEffects, f32* outA, f32* outB, f32* outC, u16* outHitStunFrames);
 GameObject* playerGetFocusObject(GameObject* player);
 int playerGetMoney(GameObject* player);
@@ -55,25 +55,25 @@ void playerCancelSpell(GameObject* obj, int spell);
 void playerHeal(GameObject* obj);
 int playerGetTimeScale(GameObject* obj, f32* out);
 int isTrickyNear(GameObject* obj);
-int fn_8029669C(GameObject* obj);
+int playerIsThrowing(GameObject* obj);
 int fn_802966B4(GameObject* obj);
 int playerIsStaffActionPending(GameObject* obj);
-int fn_8029630C(GameObject* player);
+int playerIsNotAttacking(GameObject* player);
 int objAnimFn_80296328(GameObject* player);
 f32 playerGetProbeHitDist(GameObject* player);
-int fn_80296C4C(GameObject* obj);
-void fn_80296D20(GameObject* player, GameObject* parentObj);
+int playerIsDead(GameObject* obj);
+void playerReleaseLedgeGrabOn(GameObject* player, GameObject* parentObj);
 void playerSetInCutscene(GameObject* player);
 void playerSetCutsceneCameraFlag(GameObject* player);
 void playerSetOverrideParentSlack(GameObject* player);
 void cameraGetPrevPos2(GameObject* player, f32* outX, f32* outY, f32* outZ);
 void objSetAnimStateFlags(GameObject* obj, int flag, int set);
 void playerInitFuncPtrsEntry(void);
-void fn_802B4ED8(GameObject* obj, int state, int mode);
+void playerRenderFuzz(GameObject* obj, int p2, int fuzzPass);
 void fn_802B4DE0(GameObject* obj, int flag);
 void playerUpdateWhileTimeStopped(int obj);
 void objLoadPlayerFromSave(int obj);
-void fn_80296EB4(GameObject* obj, GameObject* newParent);
+void playerReparentPreservingWorldTransform(GameObject* obj, GameObject* newParent);
 
 int Lightfoot_UpdateProximityInteractionState(int obj, int state);
 int Lightfoot_UpdateCompletionInteraction(int obj, int state);

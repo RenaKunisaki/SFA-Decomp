@@ -158,14 +158,14 @@ void saveSelect_drawText(int unused, int alpha)
  *
  * saveSelectSetSlot() is invoked from saveSelectScreen when the player
  * confirms a slot. Slot 0 is the "back" choice: if a save already exists
- * (lbl_803DB424) it returns to the choose-slot screen, otherwise it plays
+ * (gSaveGameEnabled) it returns to the choose-slot screen, otherwise it plays
  * the rotation sfx, kicks off screen transition 0x14, and arms the
  * pending-action flags (lbl_803DD6CC/CF). Any other slot starts a new
  * game: it flags the choice, plays the confirm sfx, runs transition 0x14,
  * tears down the four title-menu control sub-objects via vtable slot 7,
  * and records the chosen value (gSaveSelectChapter).
  *
- * The lbl_803DD6xx / lbl_803DB424 state words are shared with DLL 0x35
+ * The lbl_803DD6xx / gSaveGameEnabled state words are shared with DLL 0x35
  * (its home TU); 0x23 here matches that TU's pending-action value.
  */
 
@@ -178,7 +178,7 @@ void saveSelectSetSlot(int slot, int value)
 {
     if (slot == 0)
     {
-        if (lbl_803DB424 != 0)
+        if (gSaveGameEnabled != 0)
         {
             Sfx_PlayFromObject(0, SFXTRIG_menu_pause_down); /* back sfx (unnamed in sfx_ids.h) */
             saveSelectGoToChooseSlot(0);
@@ -267,12 +267,7 @@ extern u8 lbl_8031A7F8[];
 void saveSelectGoToChapterSelect(void);
 
 void* gSaveSelectTextBuffers[SAVE_SELECT_TEXT_BUFFER_COUNT];
-extern void* lbl_803DD498;
-extern TitleMenuTextEntry gSaveSelectChooseSlotEntries[];
-extern TitleMenuTextEntry gSaveSelectOpenFileEntries[];
-extern TitleMenuTextEntry gSaveSelectSlotActionEntries[];
-extern TitleMenuTextEntry gSaveSelectConfirmEraseEntries[];
-extern TitleMenuTextEntry gSaveSelectChapterSelectEntries[];
+extern void* gSaveGameWorkBuffer;
 extern char sSaveGameBinPathFormat[];
 
 void saveSelectOpenFile(int sel, int slot)
@@ -407,7 +402,7 @@ void saveSelectGoToChapterSelect(void)
     {
         gTitleMenuLinkInterface->vtable->free();
     }
-    if (saveFileSelect_saveDirty != 0 || lbl_803DB424 == 0)
+    if (saveFileSelect_saveDirty != 0 || gSaveGameEnabled == 0)
     {
         gSaveSelectPanelIndex = SAVE_SELECT_PANEL_CHAPTER_SELECT;
         panel = &gSaveSelectPanels[SAVE_SELECT_PANEL_CHAPTER_SELECT];
@@ -453,10 +448,10 @@ void saveSelect_loadSlotSummaries(void)
     FrontendSaveSlot* slots = saveFileSelect_saveSlotsBase;
     saveFileSelect_saveSlots = slots;
     gSaveSelectInfoStartSlot[0] = 0;
-    if (lbl_803DB424 != 0)
+    if (gSaveGameEnabled != 0)
     {
         saveSelect_getInfo(slots);
-        if (lbl_803DB424 != 0)
+        if (gSaveGameEnabled != 0)
         {
             gSaveSelectInfoStartSlot[0] = 3;
         }
@@ -508,7 +503,7 @@ void saveSelectGoToChooseSlot(int arg)
     gTitleMenuLinkInterface->vtable->setSelected(0);
 
     gSaveSelectRefreshCounter = 2;
-    if (lbl_803DB424 == 0)
+    if (gSaveGameEnabled == 0)
     {
         saveSelectGoToChapterSelect();
     }
@@ -628,7 +623,7 @@ void SaveSelectScreen_render(int param)
     {
         gameTextSetColor(0xff, 0xff, 0xff, alpha);
         gTitleMenuLinkInterface->vtable->getSelected();
-        if (lbl_803DB424 != 0)
+        if (gSaveGameEnabled != 0)
         {
             int slotIndex;
             int slotOffset;
@@ -718,7 +713,7 @@ int SaveSelectScreen_run(void)
             if (lbl_803DD6CD != 0)
             {
                 n_attractmode_releaseMovieBuffers();
-                if (lbl_803DB424 != 0)
+                if (gSaveGameEnabled != 0)
                 {
                     trySaveGame(*(u8*)&saveFileSelect_currentSlotIndex);
                 }
@@ -746,7 +741,7 @@ int SaveSelectScreen_run(void)
                     data = loadFileByPath(buf, 0, 0);
                     if (data != NULL)
                     {
-                        memcpy(lbl_803DD498, data, 0x6ec);
+                        memcpy(gSaveGameWorkBuffer, data, 0x6ec);
                     }
                 }
                 else
@@ -758,7 +753,7 @@ int SaveSelectScreen_run(void)
             else
             {
                 saveSelectScreenFree(0);
-                lbl_803DB424 = 0xfe;
+                gSaveGameEnabled = 0xfe;
                 loadUiDll(4);
             }
         }
@@ -925,6 +920,138 @@ void SaveSelectScreen_initialise(void)
         gSaveSelectTextBuffers[i] = mmAlloc(5, 5, 0);
     }
 }
+
+TitleMenuTextEntry gSaveSelectChooseSlotEntries[3] = {
+    {
+        0xFFFF,
+        {0x00, 0x18, 0x00, 0x82, 0x00, 0xB2, 0x01, 0x40, 0x00, 0x59, 0x00, 0xAA, 0x00, 0x00},
+        -1,
+        {0x01, 0x40},
+        0x0000,
+        {0, 0, -1, 1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    {
+        0xFFFF,
+        {0x00, 0x19, 0x00, 0x82, 0x00, 0xCC, 0x01, 0x40, 0x00, 0x59, 0x00, 0xC4, 0x00, 0x00},
+        -1,
+        {0x01, 0x40},
+        0x0000,
+        {0, 0, 0, 2, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    {
+        0xFFFF,
+        {0x00, 0x1A, 0x00, 0x82, 0x00, 0xE6, 0x01, 0x40, 0x00, 0x59, 0x00, 0xDE, 0x00, 0x00},
+        -1,
+        {0x01, 0x40},
+        0x0000,
+        {0, 0, 1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+};
+
+TitleMenuTextEntry gSaveSelectOpenFileEntries[2] = {
+    {
+        0x03D5,
+        {0x00, 0x1D, 0x00, 0x3A, 0x01, 0x53, 0x00, 0x00, 0x00, 0x3A, 0x01, 0x47, 0x00, 0x00},
+        -1,
+        {0x00, 0x00},
+        0x0000,
+        {5, 4, -1, 1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    {
+        0x03D6,
+        {0x00, 0x1E, 0x00, 0x3A, 0x01, 0x53, 0x00, 0x00, 0x00, 0x3A, 0x01, 0x47, 0x00, 0x00},
+        -1,
+        {0x00, 0x00},
+        0x0000,
+        {5, 4, 0, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+};
+
+TitleMenuTextEntry gSaveSelectConfirmEraseEntries[1] = {
+    {
+        0xFFFF,
+        {0x00, 0x02, 0x00, 0x3A, 0x01, 0x53, 0x00, 0x00, 0x00, 0x3A, 0x01, 0x47, 0x00, 0x00},
+        -1,
+        {0x00, 0x00},
+        0x0000,
+        {5, 4, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+};
+
+TitleMenuTextEntry gSaveSelectSlotActionEntries[1] = {
+    {
+        0xFFFF,
+        {0x00, 0x02, 0x01, 0x40, 0x01, 0x7E, 0x00, 0x00, 0x01, 0x40, 0x01, 0x72, 0x00, 0x00},
+        -1,
+        {0x00, 0x00},
+        0x0400,
+        {5, 4, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+};
+
+TitleMenuTextEntry gSaveSelectChapterSelectEntries[6] = {
+    {
+        0x03D5,
+        {0x00, 0x17, 0x00, 0x82, 0x00, 0xB2, 0x01, 0x40, 0x00, 0x59, 0x00, 0xAA, 0x00, 0x00},
+        -1,
+        {0x01, 0x40},
+        0x0000,
+        {0, 0, -1, 1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    {
+        0x039E,
+        {0x00, 0x19, 0x00, 0x82, 0x00, 0xB2, 0x01, 0x40, 0x00, 0x59, 0x00, 0xAA, 0x00, 0x00},
+        -1,
+        {0x01, 0x40},
+        0x0000,
+        {0, 0, 0, 2, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    {
+        0x039F,
+        {0x00, 0x1A, 0x00, 0x82, 0x00, 0xCC, 0x01, 0x40, 0x00, 0x59, 0x00, 0xC4, 0x00, 0x00},
+        -1,
+        {0x01, 0x40},
+        0x0000,
+        {0, 0, 1, 3, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    {
+        0x03A0,
+        {0x00, 0x1B, 0x00, 0x82, 0x00, 0xE6, 0x01, 0x40, 0x00, 0x59, 0x00, 0xDE, 0x00, 0x00},
+        -1,
+        {0x01, 0x40},
+        0x0000,
+        {0, 0, 2, 4, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    {
+        0x03A1,
+        {0x00, 0x1C, 0x00, 0x82, 0x00, 0xE6, 0x01, 0x40, 0x00, 0x59, 0x00, 0xDE, 0x00, 0x00},
+        -1,
+        {0x01, 0x40},
+        0x0000,
+        {0, 0, 3, 5, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    {
+        0x03A2,
+        {0x00, 0x1D, 0x00, 0x82, 0x00, 0xE6, 0x01, 0x40, 0x00, 0x59, 0x00, 0xDE, 0x00, 0x00},
+        -1,
+        {0x01, 0x40},
+        0x0000,
+        {0, 0, 4, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+};
 
 SaveSelectPanel gSaveSelectPanels[] = {
     {gSaveSelectChooseSlotEntries, 3, 0, 0x0379, 0x0367, {2, 0}}, {gSaveSelectOpenFileEntries, 2, 0, 0x0379, 0x0367, {2, 0}},

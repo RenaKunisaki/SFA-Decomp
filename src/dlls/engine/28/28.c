@@ -20,8 +20,7 @@ ObjectDescriptor6 Effect3_funcs = {
     (ObjectDescriptorCallback)Effect3_func05_nop,
 };
 
-static inline PartFxSpawnParams* Effect3_getDefaultSpawnParams(void)
-{
+static inline PartFxSpawnParams* Effect3_getDefaultSpawnParams(void) {
     gEffect3DefaultSpawnParams.posX = 0.0f;
     gEffect3DefaultSpawnParams.posY = 0.0f;
     gEffect3DefaultSpawnParams.posZ = 0.0f;
@@ -32,20 +31,20 @@ static inline PartFxSpawnParams* Effect3_getDefaultSpawnParams(void)
     return &gEffect3DefaultSpawnParams;
 }
 
-int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnParamsIn, u32 spawnFlags, u8 modelId,
-                        f32* extraArgs)
-{
+int Effect3_spawnEffect(GameObject* sourceObject, int effectId, PartFxSpawnParams* spawnParamsIn, u32 spawnFlags,
+                        u8 modelId, f32* extraArgs) {
     u32 hasAttachedSource;
     PartFxSpawn cfg;
     PartFxSpawnParams* spawnParams = spawnParamsIn;
 
-    if (sourceObj == 0)
+    if (sourceObject == 0) {
         return -1;
+    }
     hasAttachedSource = spawnFlags & PROJGFX_SPAWN_FLAG_USE_ATTACHED_SOURCE;
-    if (hasAttachedSource != 0)
-    {
-        if (spawnParams == 0)
+    if (hasAttachedSource != 0) {
+        if (spawnParams == 0) {
             return -1;
+        }
         cfg.sourcePosX = spawnParams->posX;
         cfg.sourcePosY = spawnParams->posY;
         cfg.sourcePosZ = spawnParams->posZ;
@@ -58,7 +57,7 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
     cfg.behaviorFlags = 0;
     cfg.renderFlags = 0;
     cfg.effectIdByte = effectId;
-    cfg.attachedSource = sourceObj;
+    cfg.attachedSource = sourceObject;
     cfg.startPosX = 0.0f;
     cfg.startPosY = 0.0f;
     cfg.startPosZ = 0.0f;
@@ -78,16 +77,15 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
     cfg.overrideColor1 = 0xffff;
     cfg.overrideColor2 = 0xffff;
     cfg.textureSetupFlags = 0;
-    switch (effectId)
-    {
+    switch (effectId) {
     case 0x1f4:
-        if (spawnParams == 0)
+        if (spawnParams == 0) {
             spawnParams = Effect3_getDefaultSpawnParams();
+        }
         cfg.startPosX = 0.1f * (f32)randomGetRange(-0x14, -0xa);
         cfg.startPosY = 0.1f * (f32)randomGetRange(-0xa, 0xa);
         cfg.startPosZ = 0.1f * (f32)randomGetRange(-0xa, 0);
-        if (spawnParams != 0)
-        {
+        if (spawnParams != 0) {
             cfg.startPosX += spawnParams->posX;
             cfg.startPosY += spawnParams->posY;
             cfg.startPosZ += spawnParams->posZ;
@@ -101,13 +99,13 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.linkGroup = randomGetRange(0, 0x14) + 4;
         break;
     case 0x1f5:
-        if (spawnParams == 0)
+        if (spawnParams == 0) {
             spawnParams = Effect3_getDefaultSpawnParams();
+        }
         cfg.startPosX = 0.1f * (f32)randomGetRange(-0x14, -0xa);
         cfg.startPosY = 0.1f * (f32)randomGetRange(-0xa, 0xa);
         cfg.startPosZ = 0.1f * (f32)randomGetRange(-0xa, 0);
-        if (spawnParams != 0)
-        {
+        if (spawnParams != 0) {
             cfg.startPosX += spawnParams->posX;
             cfg.startPosY += spawnParams->posY;
             cfg.startPosZ += spawnParams->posZ;
@@ -129,10 +127,12 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.linkGroup = randomGetRange(0, 0x14) + 4;
         break;
     case 0x1f7:
-        if (spawnParams == 0)
+        if (spawnParams == 0) {
             spawnParams = Effect3_getDefaultSpawnParams();
-        if (spawnParams != 0)
+        }
+        if (spawnParams != 0) {
             cfg.startPosY = spawnParams->posY;
+        }
         cfg.scale = 0.03f;
         cfg.lifetimeFrames = randomGetRange(0, 0x1e) + 0x46;
         cfg.initialAlpha = 0x7f;
@@ -141,14 +141,12 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.linkGroup = 0x20;
         break;
     case 0x1f8:
-        if (spawnParams == 0)
+        if (spawnParams == 0) {
             spawnParams = Effect3_getDefaultSpawnParams();
-        if (spawnParams != 0)
-        {
-            cfg.scale = 0.03f * spawnParams->scale;
         }
-        else
-        {
+        if (spawnParams != 0) {
+            cfg.scale = 0.03f * spawnParams->scale;
+        } else {
             cfg.scale = 0.03f;
         }
         cfg.lifetimeFrames = randomGetRange(0, 0x1e) + 0x46;
@@ -188,28 +186,25 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.lifetimeFrames = 0x1e;
         cfg.initialAlpha = 0xc8;
         cfg.behaviorFlags = 0x140101;
-        if (randomGetRange(0, 1) != 0)
-        {
+        if (randomGetRange(0, 1) != 0) {
             cfg.textureId = 0x33;
-        }
-        else
-        {
+        } else {
             cfg.textureId = 0xc7e;
         }
         break;
     case 0x1fe:
-        if (spawnParams == 0)
+        if (spawnParams == 0) {
             spawnParams = Effect3_getDefaultSpawnParams();
-        if (extraArgs == 0)
+        }
+        if (extraArgs == 0) {
             return -1;
-        if (spawnParams != 0)
-        {
+        }
+        if (spawnParams != 0) {
             cfg.startPosX = spawnParams->posX;
             cfg.startPosY = spawnParams->posY;
             cfg.startPosZ = spawnParams->posZ;
         }
-        if (extraArgs != 0)
-        {
+        if (extraArgs != 0) {
             cfg.velocityX = extraArgs[0];
             cfg.velocityY = 0.03f * (f32)randomGetRange(0, 0x14);
             cfg.velocityZ = extraArgs[1];
@@ -230,7 +225,7 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.quadVertex3Pad06 = 0x200;
         break;
     case 0x200:
-        Sfx_PlayFromObject((u32)sourceObj, SFXTRIG_blkscrp6);
+        Sfx_PlayFromObject((u32)sourceObject, SFXTRIG_blkscrp6);
         cfg.lifetimeFrames = 0x64;
         cfg.scale = 0.0003f * cfg.lifetimeFrames;
         cfg.behaviorFlags = 0xa100201;
@@ -251,10 +246,12 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.velocityY = 0.1f * (f32)randomGetRange(0x96, 0xc8) / 100.0f;
         cfg.scale = 0.0004f * ((f32)randomGetRange(0x32, 0x64) / 100.0f) + 0.00025f;
         cfg.lifetimeFrames = (s32)(spawnParams->scale / cfg.velocityY);
-        if (cfg.lifetimeFrames < 0xa)
+        if (cfg.lifetimeFrames < 0xa) {
             cfg.lifetimeFrames = 0xa;
-        if (cfg.lifetimeFrames > 0x78)
+        }
+        if (cfg.lifetimeFrames > 0x78) {
             cfg.lifetimeFrames = 0x78;
+        }
         cfg.linkGroup = 0;
         cfg.behaviorFlags = 0x201;
         cfg.renderFlags = 0x4000000;
@@ -262,12 +259,12 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.initialAlpha = 0x60;
         break;
     case 0x203:
-        if (spawnParams == 0)
+        if (spawnParams == 0) {
             spawnParams = Effect3_getDefaultSpawnParams();
+        }
         cfg.startPosY = spawnParams->posY;
         cfg.velocityY = 0.005f;
-        switch (randomGetRange(0, 3))
-        {
+        switch (randomGetRange(0, 3)) {
         case 0:
             cfg.startPosX = spawnParams->posX;
             cfg.startPosZ = (f32)randomGetRange((s16)(s32)-spawnParams->posZ, (s16)(s32)spawnParams->posZ);
@@ -292,12 +289,12 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.initialAlpha = 0xc4;
         break;
     case 0x204:
-        if (spawnParams == 0)
+        if (spawnParams == 0) {
             spawnParams = Effect3_getDefaultSpawnParams();
+        }
         cfg.startPosY = spawnParams->posY;
         cfg.velocityY = 0.005f;
-        switch (randomGetRange(0, 3))
-        {
+        switch (randomGetRange(0, 3)) {
         case 0:
             cfg.startPosX = spawnParams->posX;
             cfg.startPosZ = (f32)randomGetRange((s16)(s32)-spawnParams->posZ, (s16)(s32)spawnParams->posZ);
@@ -323,12 +320,12 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.textureId = 0x47;
         break;
     case 0x205:
-        if (spawnParams == 0)
+        if (spawnParams == 0) {
             spawnParams = Effect3_getDefaultSpawnParams();
+        }
         cfg.startPosY = spawnParams->posY;
         cfg.velocityY = 0.005f;
-        switch (randomGetRange(0, 3))
-        {
+        switch (randomGetRange(0, 3)) {
         case 0:
             cfg.startPosX = spawnParams->posX;
             cfg.startPosZ = (f32)randomGetRange((s16)(s32)-spawnParams->posZ, (s16)(s32)spawnParams->posZ);
@@ -361,12 +358,12 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.textureId = 0x60;
         break;
     case 0x206:
-        if (spawnParams == 0)
+        if (spawnParams == 0) {
             spawnParams = Effect3_getDefaultSpawnParams();
+        }
         cfg.startPosY = spawnParams->posY - 12.0f;
         cfg.velocityY = 0.005f;
-        switch (randomGetRange(0, 3))
-        {
+        switch (randomGetRange(0, 3)) {
         case 0:
             cfg.startPosX = spawnParams->posX;
             cfg.startPosZ = (f32)randomGetRange((s16)(s32)-spawnParams->posZ, (s16)(s32)spawnParams->posZ);
@@ -414,19 +411,19 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.behaviorFlags = 0x80480200;
         cfg.textureId = 0xc0d;
         break;
-    case 0x20a:
-    {
+    case 0x20a: {
         f32 speed;
         f32 horizSpeed;
-        if (spawnParams == 0)
+        if (spawnParams == 0) {
             spawnParams = Effect3_getDefaultSpawnParams();
+        }
         cfg.startPosX = (f32)randomGetRange(-5, 5);
         cfg.startPosY = (f32)randomGetRange(1, 5);
         cfg.startPosZ = (f32)randomGetRange(-5, 5);
         speed = 0.003f * (f32)randomGetRange(0, 0x258) + 2.3f;
         cfg.velocityY = 0.001f * (f32)randomGetRange(0, 0xc8) + 1.0f;
-        cfg.velocityX = mathSinf(3.1415927f * (f32)*sourceObj / 32768.0f);
-        cfg.velocityZ = mathCosf(3.1415927f * (f32)*sourceObj / 32768.0f);
+        cfg.velocityX = mathSinf(3.1415927f * (f32)sourceObject->anim.rotX / 32768.0f);
+        cfg.velocityZ = mathCosf(3.1415927f * (f32)sourceObject->anim.rotX / 32768.0f);
         horizSpeed = speed * (0.015f * (f32)randomGetRange(0, 0x14)) + 0.1f;
         cfg.velocityX *= horizSpeed;
         cfg.velocityZ *= horizSpeed;
@@ -438,8 +435,7 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         cfg.renderFlags = 0x200000;
         cfg.textureId = 0xc0a;
         cfg.quadVertex3Pad06 = 0x20b;
-    }
-    break;
+    } break;
     case 0x20b:
         cfg.velocityY = 0.002f * (f32)randomGetRange(2, 0x14);
         cfg.scale = 0.008445f;
@@ -501,20 +497,16 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
         return -1;
     }
     cfg.behaviorFlags |= spawnFlags;
-    if (((cfg.behaviorFlags & 1) != 0) && ((cfg.behaviorFlags & 2) != 0))
+    if (((cfg.behaviorFlags & 1) != 0) && ((cfg.behaviorFlags & 2) != 0)) {
         cfg.behaviorFlags ^= 2LL;
-    if ((cfg.behaviorFlags & 1) != 0)
-    {
-        if (hasAttachedSource != 0)
-        {
+    }
+    if ((cfg.behaviorFlags & 1) != 0) {
+        if (hasAttachedSource != 0) {
             cfg.startPosX += cfg.sourcePosX;
             cfg.startPosY += cfg.sourcePosY;
             cfg.startPosZ += cfg.sourcePosZ;
-        }
-        else
-        {
-            if (cfg.attachedSource != 0)
-            {
+        } else {
+            if (cfg.attachedSource != 0) {
                 cfg.startPosX += ((GameObject*)cfg.attachedSource)->anim.worldPosX;
                 cfg.startPosY += ((GameObject*)cfg.attachedSource)->anim.worldPosY;
                 cfg.startPosZ += ((GameObject*)cfg.attachedSource)->anim.worldPosZ;
@@ -523,18 +515,14 @@ int Effect3_spawnEffect(s16* sourceObj, int effectId, PartFxSpawnParams* spawnPa
     }
     return (*gExpgfxInterface)->spawnEffect(&cfg, -1, effectId, 0);
 }
-void Effect3_func05_nop(void)
-{
+void Effect3_func05_nop(void) {
 }
 
-void Effect3_func03_nop(void)
-{
+void Effect3_func03_nop(void) {
 }
 
-void Effect3_release(void)
-{
+void Effect3_release(void) {
 }
 
-void Effect3_initialise(void)
-{
+void Effect3_initialise(void) {
 }

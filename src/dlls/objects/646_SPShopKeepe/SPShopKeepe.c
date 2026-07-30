@@ -31,7 +31,7 @@
 #include "main/player_control_interface.h"
 #include "main/rcp_dolphin.h"
 #include "main/screen_transition.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/vecmath.h"
 #include "main/dll/SP/dll_0286_spshopkeeper.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -252,7 +252,7 @@ int TREX_Lazerwall_updateTimedChallenge(GameObject* obj)
     if (isGameTimerDisabled() != 0 || now >= limit || elapsed != 0)
     {
         gameTimerStop();
-        hudFn_8011f6f0(0);
+        setTrickyHudShowNearestInfo(0);
         mainSetBits(GAMEBIT_LAZERWALL_RUNNING, 0);
 
         if (now >= limit)
@@ -264,7 +264,7 @@ int TREX_Lazerwall_updateTimedChallenge(GameObject* obj)
             mainSetBits(GAMEBIT_LAZERWALL_LOSE, 1);
         }
 
-        hudFn_8011f38c(2);
+        setHudForceShowMask(2);
 
         (*gMapEventInterface)->setObjGroupStatus((s32)(obj)->anim.mapEventSlot, 6, 0);
 
@@ -622,7 +622,7 @@ void DRlaserturret_startTimedChallenge(GameObject* obj)
         int* target;
         gameTimerInit(0x11, 0x1e);
         timerSetToCountUp();
-        hudFn_8011f6f0(1);
+        setTrickyHudShowNearestInfo(1);
         mainSetBits(DR_LASERTURRET_GAMEBIT_TIMER_STARTED, 1);
         target = state->linkedTarget;
         (**(VtableFn***)((char*)target + 0x68))[0x4c / 4](target, state->digitCount);
@@ -630,7 +630,7 @@ void DRlaserturret_startTimedChallenge(GameObject* obj)
     }
     else
     {
-        hudFn_8011f38c(0);
+        setHudForceShowMask(0);
     }
     state->flags = 0;
 }
@@ -789,21 +789,21 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
         case 5:
             if (getCurUiDll() == 0x10)
             {
-                uiDll = getDLL16();
+                uiDll = getCurUiDllInterface();
                 (*uiDll)->setState(0);
             }
             break;
         case 6:
             if (getCurUiDll() == 0x10)
             {
-                uiDll = getDLL16();
+                uiDll = getCurUiDllInterface();
                 (*uiDll)->setState(2);
             }
             break;
         case 7:
             if (getCurUiDll() == 0x10)
             {
-                uiDll = getDLL16();
+                uiDll = getCurUiDllInterface();
                 (*uiDll)->setState(4);
             }
             break;
@@ -899,7 +899,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
 
     (*gMapEventInterface)->setObjGroupStatus((s32)(obj)->anim.mapEventSlot, 6, 1);
 
-    hitDetectFn_800658a4(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, &groundHeight,
+    trackGetNearestGroundOffset(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, &groundHeight,
                          0);
 
     for (i = 0; i < count; i++)
@@ -915,7 +915,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
         ((ShopkeeperSpawnSetup*)setup)->base.ident = ((ShopkeeperState*)state)->vendorObj;
-        Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+        objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 
     for (i = 0; i < count; i++)
@@ -932,7 +932,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
         ((ShopkeeperSpawnSetup*)setup)->kind = 1;
         ((ShopkeeperSpawnSetup*)setup)->base.ident = ((ShopkeeperState*)state)->vendorObj;
-        Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+        objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 }
 
@@ -998,7 +998,7 @@ void ShopKeeper_update(GameObject* obj)
     if (*(void**)&((ShopkeeperState*)state)->vendorObj == NULL)
     {
         ((ShopkeeperState*)state)->vendorObj =
-            ObjGroup_FindNearestObject(SPSHOPKEEPER_TARGET_OBJGROUP, obj, &dist);
+            objGetNearestTypeTo(SPSHOPKEEPER_TARGET_OBJGROUP, obj, &dist);
     }
     ((ShopkeeperState*)state)->playerMoney = playerGetMoney(player);
     (*gPlayerInterface)->update((void*)obj, (void*)state, timeDelta, timeDelta, gShopKeeperStateHandlers, &gShopKeeperDefaultStateHandler);
@@ -1014,7 +1014,7 @@ void ShopKeeper_init(GameObject* obj)
     (obj)->animEventCallback = ShopKeeper_SeqFn;
     (obj)->anim.modelState->flags |= 0x810;
     ((ShopkeeperState*)state)->unk9B8 = 0.1f * (f32)(s32)randomGetRange(0xF, 0x23);
-    ((ShopkeeperState*)state)->msgStack = allocModelStruct_800139e8(4, 4);
+    ((ShopkeeperState*)state)->msgStack = Queue_Alloc(4, 4);
     ((ShopkeeperState*)state)->opacity = 0xFF;
     ((ShopkeeperState*)state)->textTimer = 300.0f;
     dll_2E_initState(obj, (MoveLibState*)(state + 0x35C), -0x1C71, 0x3555, 2);

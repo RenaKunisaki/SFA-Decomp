@@ -45,7 +45,7 @@ void dfptargetblock_resolveCollisionPoints(GameObject* obj, DfpTargetBlockCollis
         probe[1] = *(f32*)(point + DFPTARGETBLOCK_POINT_OFFSET_Y) + obj->anim.localPosY;
         probe[2] = *(f32*)(point + DFPTARGETBLOCK_POINT_OFFSET_Z) + obj->anim.localPosZ;
         originalZ = probe[2];
-        if (objBboxFn_800640cc(&obj->anim.localPosX, probe, (0.5f), 1, &hit, obj, 8, -1, 0, 0) != 0)
+        if (trackGetLineIntersect(&obj->anim.localPosX, probe, (0.5f), 1, &hit, obj, 8, -1, 0, 0) != 0)
         {
             deltaX = probe[0] - originalX;
             deltaZ = probe[2] - originalZ;

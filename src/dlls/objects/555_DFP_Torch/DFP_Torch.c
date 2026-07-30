@@ -5,7 +5,7 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DF/dll_022B_dfptorch.h"
-#include "main/dll/dll_0069_dll69func0.h"
+#include "main/dll/dll_0069_modgfx.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/modgfx_interface.h"

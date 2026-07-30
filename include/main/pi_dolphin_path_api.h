@@ -3,14 +3,12 @@
 
 #include "global.h"
 
-typedef struct PathPoint
-{
+typedef struct PathPoint {
     u8 padding[8];
     f32 position[3];
 } PathPoint;
 
-typedef struct PathSearchNode
-{
+typedef struct PathSearchNode {
     PathPoint* point;
     u32 distanceToTarget;
     u32 routeDistance;
@@ -20,15 +18,13 @@ typedef struct PathSearchNode
     u8 padding;
 } PathSearchNode;
 
-typedef struct PathHeapEntry
-{
+typedef struct PathHeapEntry {
     u32 priority;
     u16 nodeIndex;
     u16 padding;
 } PathHeapEntry;
 
-typedef struct PathSearch
-{
+typedef struct PathSearch {
     PathSearchNode* nodes;
     PathHeapEntry* heap;
     PathPoint** path;
@@ -52,7 +48,9 @@ STATIC_ASSERT(sizeof(PathSearchNode) == 0x10);
 STATIC_ASSERT(sizeof(PathHeapEntry) == 0x8);
 STATIC_ASSERT(sizeof(PathSearch) == 0x30);
 
-void trickyVoxAllocFn_8004b5d4(PathSearch* search);
+void pathSearchInit(PathSearch* search);
+void pathSearchAddNeighbor(PathSearch* search, PathSearchNode* previousNode, int previousNodeIndex, u32 routeDistance,
+                           PathPoint* candidatePoint);
 PathPoint* pathSearchGetNextPoint(PathSearch* search);
 int pathSearchBuildPath(PathSearch* search);
 int pathSearchStep(PathSearch* search, u32 timeout);

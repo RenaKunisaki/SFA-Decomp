@@ -72,7 +72,7 @@ int dll_2E_getCurveActionTargetAimed(int idx, MoveLibTarget* out)
         out->x = p->base.x;
         out->y = p->base.y;
         out->z = p->base.z;
-        q = (GameObject*)ObjGroup_FindNearestObjectToPoint(MOVELIB_TARGET_OBJGROUP, &out->x, &range);
+        q = (GameObject*)objGetNearestType(MOVELIB_TARGET_OBJGROUP, &out->x, &range);
         if (q != NULL)
         {
             out->angle = (s16)atan2i((int)(q->anim.localPosX - out->x), (int)(q->anim.localPosZ - out->z));
@@ -258,7 +258,7 @@ int dll_2E_advanceAlongRoute(GameObject* obj, RomCurveWalker* route, f32 phase, 
     ObjAnim_SampleRootCurvePhase(&obj->anim, phase, rootOut);
     if (*flags & 1)
     {
-        if (hitDetectFn_800658a4(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, &ground,
+        if (trackGetNearestGroundOffset(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, &ground,
                                  0) == 0)
         {
             (obj)->anim.localPosY -= ground;
@@ -298,7 +298,7 @@ int dll_2E_moveToTarget(GameObject* obj, const MoveLibTarget* target, f32 speed,
         obj->anim.localPosZ = target->z;
         if (*flags & 1)
         {
-            if (hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &ground, 0) ==
+            if (trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &ground, 0) ==
                 0)
             {
                 obj->anim.localPosY -= ground;
@@ -312,7 +312,7 @@ int dll_2E_moveToTarget(GameObject* obj, const MoveLibTarget* target, f32 speed,
     obj->anim.velocityZ = dz * (speed * timeDelta);
     if (*flags & 1)
     {
-        if (hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &ground, 0) == 0)
+        if (trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &ground, 0) == 0)
         {
             obj->anim.localPosY -= ground;
         }
@@ -577,7 +577,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
         {
             targetObj = s->lockTarget;
             target = (u32)(targetObj != NULL ? targetObj
-                                             : (targetObj = (void*)ObjGroup_FindNearestObject(MOVELIB_TARGET_OBJGROUP,
+                                             : (targetObj = (void*)objGetNearestTypeTo(MOVELIB_TARGET_OBJGROUP,
                                                                                               obj, (f32*)&sv)));
             if (targetObj != NULL)
             {

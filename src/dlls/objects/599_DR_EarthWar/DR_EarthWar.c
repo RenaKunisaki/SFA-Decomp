@@ -13,7 +13,7 @@
 #include "main/objseq.h"
 #include "main/resource.h"
 #include "main/dll/path_control_interface.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_path.h"
 #include "main/frame_timing.h"
@@ -258,13 +258,6 @@ void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state);
 
 static const u8 gDREarthWarriorPathSetupParam[4] = {1, 1, 1, 1};
 
-static void DR_EarthWarrior_setupPathState(u8* pathState, DREarthWarriorInitData* base, EarthWarriorSub* s)
-{
-    (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, (void*)gDREarthWarriorPathSetupParam);
-    s->aimAccumY = 0.0f;
-    s->aimHalfY = (f32)s->yawTurnDir;
-}
-
 void DR_EarthWarrior_func23(GameObject* obj, int mode)
 {
     EarthWarriorState* inner = (obj)->extra;
@@ -325,51 +318,34 @@ int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state)
     return 0;
 }
 
-static void DR_EarthWarrior_slowTurn(GameObject* obj, EarthWarriorSub* q, BaddieState* baddie)
-{
-    baddie->moveSpeed = 0.02f;
-    q->yawSmoothDivisor *= 2.0f;
-    q->yawStepScale *= 0.5f;
-    q->targetAnimSpeed *= 0.75f;
-    q->appliedYaw = (s16)(32768.0f * (obj)->anim.currentMoveProgress);
-}
-
-void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state)
-{
-    EarthWarriorSub* s = (EarthWarriorSub*)sub;
-    int angle;
-    int delta;
-    s16* vec0;
-    s16* vec9;
-    f32 aimScale;
-    angle = s->yawTurnDir << 1;
-    if (angle < -0x41)
-    {
-        delta = -0x41;
+void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state) {
+    EarthWarriorSub* warrior = (EarthWarriorSub*)sub;
+    int targetAngle;
+    int angleDelta;
+    s16* primaryLookBone;
+    s16* secondaryLookBone;
+    f32 responseScale;
+    targetAngle = warrior->yawTurnDir << 1;
+    if (targetAngle < -0x41) {
+        angleDelta = -0x41;
+    } else if (targetAngle > 0x41) {
+        angleDelta = 0x41;
+    } else {
+        angleDelta = targetAngle;
     }
-    else if (angle > 0x41)
-    {
-        delta = 0x41;
+    angleDelta = angleDelta * 0xb6;
+    angleDelta -= (u16)warrior->aimAccumY;
+    if (angleDelta > 0x8000) {
+        angleDelta = angleDelta - 0xffff;
     }
-    else
-    {
-        delta = angle;
+    if (angleDelta < -0x8000) {
+        angleDelta = angleDelta + 0xffff;
     }
-    delta = delta * 0xb6;
-    delta -= (u16)s->aimAccumY;
-    if (delta > 0x8000)
-    {
-        delta = delta - 0xffff;
-    }
-    if (delta < -0x8000)
-    {
-        delta = delta + 0xffff;
-    }
-    aimScale = 0.15f;
-    delta = (int)((f32)delta * aimScale);
-    delta = (delta < -0x16c) ? -0x16c : ((delta > 0x16c) ? 0x16c : delta);
-    s->aimAccumY = delta * timeDelta + (f32)(s32)*(s16*)&s->aimAccumY;
-    s->aimHalfY = s->aimAccumY / 2;
+    responseScale = 0.15f;
+    angleDelta = (int)((f32)angleDelta * responseScale);
+    angleDelta = (angleDelta < -0x16c) ? -0x16c : ((angleDelta > 0x16c) ? 0x16c : angleDelta);
+    warrior->aimAccumY = angleDelta * timeDelta + (f32)(s32) * (s16*)&warrior->aimAccumY;
+    warrior->aimHalfY = warrior->aimAccumY / 2;
     {
         f32 step;
         f32 scale;
@@ -378,46 +354,41 @@ void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state)
         ph = (f32)(s32)((BaddieState*)state)->spawnRotY / 8192.0f;
         scale = 182.0f;
         step = 10.0f;
-        delta = (int)(scale * (step * -((ph < -1.0f) ? -1.0f : ((ph > 1.0f) ? 1.0f : ph))));
-        delta -= (u16)s->aimAccumX;
+        angleDelta = (int)(scale * (step * -((ph < -1.0f) ? -1.0f : ((ph > 1.0f) ? 1.0f : ph))));
+        angleDelta -= (u16)warrior->aimAccumX;
     }
-    if (delta > 0x8000)
-    {
-        delta = delta - 0xffff;
+    if (angleDelta > 0x8000) {
+        angleDelta = angleDelta - 0xffff;
     }
-    if (delta < -0x8000)
-    {
-        delta = delta + 0xffff;
+    if (angleDelta < -0x8000) {
+        angleDelta = angleDelta + 0xffff;
     }
-    s->aimAccumX += delta;
-    vec0 = objModelGetVecFn_800395d8(obj, 0);
-    vec9 = objModelGetVecFn_800395d8(obj, 9);
+    warrior->aimAccumX += angleDelta;
+    primaryLookBone = objModelGetVecFn_800395d8(obj, 0);
+    secondaryLookBone = objModelGetVecFn_800395d8(obj, 9);
     objModelGetVecFn_800395d8(obj, 4);
     objModelGetVecFn_800395d8(obj, 5);
-    if (vec0 != NULL)
-    {
-        int sv;
-        vec0[0] = -s->aimAccumX;
-        vec0[1] = s->aimAccumY / 2;
-        sv = vec0[1];
-        sv = (sv < -4000) ? -4000 : ((sv > 4000) ? 4000 : sv);
-        vec0[1] = sv;
-        vec0[2] = 0;
+    if (primaryLookBone != NULL) {
+        int clampedY;
+        primaryLookBone[0] = -warrior->aimAccumX;
+        primaryLookBone[1] = warrior->aimAccumY / 2;
+        clampedY = primaryLookBone[1];
+        clampedY = (clampedY < -4000) ? -4000 : ((clampedY > 4000) ? 4000 : clampedY);
+        primaryLookBone[1] = clampedY;
+        primaryLookBone[2] = 0;
     }
-    if (vec9 != NULL)
-    {
-        int sv;
-        int t;
-        vec9[1] = s->aimHalfY;
-        sv = vec9[1];
-        sv = (sv < -3000) ? -3000 : ((sv > 3000) ? 3000 : sv);
-        vec9[1] = sv;
-        t = s->aimHalfY;
-        if (t < 0)
-        {
-            t = -t;
+    if (secondaryLookBone != NULL) {
+        int clampedY;
+        int absoluteHalfY;
+        secondaryLookBone[1] = warrior->aimHalfY;
+        clampedY = secondaryLookBone[1];
+        clampedY = (clampedY < -3000) ? -3000 : ((clampedY > 3000) ? 3000 : clampedY);
+        secondaryLookBone[1] = clampedY;
+        absoluteHalfY = warrior->aimHalfY;
+        if (absoluteHalfY < 0) {
+            absoluteHalfY = -absoluteHalfY;
         }
-        vec9[0] = (s16)(t >> 1);
+        secondaryLookBone[0] = (s16)(absoluteHalfY >> 1);
     }
 }
 int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state);
@@ -1020,7 +991,7 @@ void DR_EarthWarrior_free(GameObject* obj)
     {
         ObjModelChain_Free(inner->sub.modelChain);
     }
-    ObjGroup_RemoveObject((int)obj, DREARTHWARRIOR_OBJGROUP);
+    objFreeObjectType((int)obj, DREARTHWARRIOR_OBJGROUP);
     if (((ByteFlags*)&inner->sub.flags994)->b02)
     {
         (*gGameUIInterface)->airMeterShutdown();
@@ -1130,14 +1101,14 @@ void DR_EarthWarrior_hitDetect(GameObject* obj)
         }
         if (*(int*)inner & 0x800000)
         {
-            if ((*(u8*)((char*)inner + 0x262) != 0 || (*(s8*)((char*)inner + 0x264) & 0xf0)) &&
+            if ((inner->baddie.groundContact != 0 || (inner->baddie.surfaceFlags & 0xf0)) &&
                 inner->sub.footstepCooldown <= 0.0f && inner->baddie.animSpeedA > 3.408f)
             {
                 doRumble((f32)(int)randomGetRange(2, 5));
                 inner->sub.footstepCooldown = 30.0f;
                 Sfx_PlayFromObject((int)obj, SFXTRIG_foot_run_jingle4);
             }
-            if (*(u8*)((char*)inner + 0x262) != 0 ||
+            if (inner->baddie.groundContact != 0 ||
                 (((ObjHitsPriorityState*)obj->anim.hitReactState)->flags & 8))
             {
                 f32 spd;
@@ -1240,7 +1211,7 @@ void DR_EarthWarrior_update(GameObject* obj)
     if (inner->helperObj == NULL && Obj_IsLoadingLocked() != 0)
     {
         ObjPlacement* setup = Obj_AllocObjectSetup(0x18, DREARTHWARRIOR_CHILD_OBJ_HELPER);
-        GameObject* newObj = Obj_SetupObject(setup, 4, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+        GameObject* newObj = objSetupObject(setup, 4, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
         ObjLink_AttachChild(obj, newObj, 2);
         inner->helperObj = newObj;
     }
@@ -1297,7 +1268,7 @@ void DR_EarthWarrior_update(GameObject* obj)
             }
         }
     }
-    *(s8*)((char*)inner + 0x264) |= 0x10;
+    inner->baddie.surfaceFlags |= 0x10;
     {
         f32 saved = (obj)->anim.velocityY;
         (obj)->anim.velocityY = 0.0f;
@@ -1344,7 +1315,7 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     u8* pathState;
     (obj)->anim.rotX = (s16)(def->spawnYaw << 8);
     (obj)->animEventCallback = DR_EarthWarrior_SeqFn;
-    ObjGroup_AddObject((int)obj, DREARTHWARRIOR_OBJGROUP);
+    objAddObjectType((int)obj, DREARTHWARRIOR_OBJGROUP);
     inner->sub.unk990 = def->unk19;
     inner->sub.unk986 = 5;
     inner->sub.interactSequenceId = -1;
@@ -1404,7 +1375,7 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     }
     inner->sub.modelChain = ObjModelChain_Alloc(&gEarthWarriorTailChainDesc, 1);
     ObjModelChain_SetOrigin(inner->sub.modelChain, 0.15f, 0.75f, -0.05f);
-    *(int*)((char*)obj + 0x108) = (int)dim2prisonmammoth_updateModelChain;
+    obj->afterBonesCallback = dim2prisonmammoth_updateModelChain;
     ObjModelChain_SetEnabled(inner->sub.modelChain, 1);
 }
 

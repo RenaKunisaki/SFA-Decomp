@@ -41,7 +41,7 @@ void dll_FC_hitDetect(GameObject* obj) {
     if (anim->hitVolumeTransforms == NULL) {
         return;
     }
-    objRenderFn_80041018(obj);
+    objUpdateHitVolumeTransforms(obj);
 }
 
 void dll_FC_update(GameObject* obj) {
@@ -56,7 +56,7 @@ void dll_FC_update(GameObject* obj) {
     state = obj->extra;
 
     if (state->target == NULL) {
-        state->target = (GameObject*)ObjGroup_FindNearestObject(placement->targetGroup, obj, &maxDistance);
+        state->target = (GameObject*)objGetNearestTypeTo(placement->targetGroup, obj, &maxDistance);
         if (state->target == NULL) {
             return;
         }

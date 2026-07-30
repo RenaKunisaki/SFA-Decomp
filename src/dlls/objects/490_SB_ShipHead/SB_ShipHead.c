@@ -54,7 +54,7 @@ int SB_ShipHead_getObjectTypeId(void) {
 }
 
 void SB_ShipHead_free(GameObject* obj) {
-    ObjGroup_RemoveObject((u32)obj, SB_SHIP_HEAD_OBJECT_GROUP);
+    objFreeObjectType((u32)obj, SB_SHIP_HEAD_OBJECT_GROUP);
 }
 
 void SB_ShipHead_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
@@ -202,7 +202,7 @@ void SB_ShipHead_update(GameObject* obj) {
         ((ObjPlacement*)placementBytes)->posX = spawnX;
         ((ObjPlacement*)placementBytes)->posY = spawnY;
         ((ObjPlacement*)placementBytes)->posZ = spawnZ;
-        result = (int)Obj_SetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
+        result = (int)objSetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
         deltaX = player->anim.worldPosX - ((GameObject*)result)->anim.localPosX;
         deltaY = (player->anim.worldPosY - gSbShipHeadFireballSpeed) - ((GameObject*)result)->anim.localPosY;
         deltaZ = player->anim.worldPosZ - ((GameObject*)result)->anim.localPosZ;
@@ -224,7 +224,7 @@ void SB_ShipHead_update(GameObject* obj) {
         placementBytes[5] = 1;
         placementBytes[6] = 0xff;
         placementBytes[7] = 0xff;
-        Obj_SetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
+        objSetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
     }
     result = ObjAnim_AdvanceCurrentMove((int)obj, gSbShipHeadAnimAdvanceRate, timeDelta, NULL);
     if ((object->anim.currentMove == 1) && (result != 0)) {
@@ -236,7 +236,7 @@ void SB_ShipHead_update(GameObject* obj) {
 void SB_ShipHead_init(GameObject* obj) {
     SBShipHeadState* state = obj->extra;
 
-    ObjGroup_AddObject((u32)obj, SB_SHIP_HEAD_OBJECT_GROUP);
+    objAddObjectType((u32)obj, SB_SHIP_HEAD_OBJECT_GROUP);
     ObjMsg_AllocQueue((void*)obj, 10);
     state->health = 4;
     state->swayB += 1.0f;

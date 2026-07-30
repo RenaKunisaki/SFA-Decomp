@@ -53,16 +53,6 @@ AudioDvdStreamContext gAudioStreamDvdBlockPrepared;
 #define AI_STREAM_STOP  0
 #define AI_STREAM_START 1
 
-
-static void AudioStream_ResetWork(void)
-{
-    memset(&gAudioStreamDvdBlockCurrent, 0, sizeof(gAudioStreamDvdBlockCurrent));
-    memset(&gAudioStreamDvdBlockPrepared, 0, sizeof(gAudioStreamDvdBlockPrepared));
-    memset(gSfxLoopedObjectSoundFlags, 0, sizeof(gSfxLoopedObjectSoundFlags));
-    memset(gSfxLoopedObjectSoundIds, 0, sizeof(gSfxLoopedObjectSoundIds));
-    memset(gSfxLoopedObjectSoundObjects, 0, sizeof(gSfxLoopedObjectSoundObjects));
-}
-
 void AudioStream_StopAll(void)
 {
     if (gAudioStreamDvdState != 0)

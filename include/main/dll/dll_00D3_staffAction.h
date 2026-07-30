@@ -17,4 +17,7 @@ int dll_D3_getExtraSize_ret_1188(void);
 /* extern-cleanup: defining-file public prototypes */
 void LandedArwing_OnPlayerContact(GameObject* obj, GameObject* otherObj);
 
+extern int gStaffActionHitReactionMoves[30];
+extern u8 gStaffActionHitReactionDamage[32];
+
 #endif /* MAIN_DLL_STAFFACTION_H_ */

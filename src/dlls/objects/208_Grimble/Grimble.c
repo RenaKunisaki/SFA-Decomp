@@ -626,7 +626,7 @@ void grimble_attachNearestPath(GameObject* obj) {
     GrimbleControl* control;
 
     state = obj->extra;
-    pathObjects = (void*)ObjGroup_GetObjects(GRIMBLE_PATH_OBJECT_GROUP, &pathObjectCount);
+    pathObjects = (void*)objGetAllOfType(GRIMBLE_PATH_OBJECT_GROUP, &pathObjectCount);
     if (pathObjectCount != 0) {
         control = state->control;
         control->candidatePathObj = 0;
@@ -699,7 +699,7 @@ int grimble_getObjectTypeId(void) {
 void grimble_free(GameObject* obj) {
     GroundBaddieState* state = obj->extra;
 
-    ObjGroup_RemoveObject((u32)obj, GRIMBLE_OBJECT_GROUP);
+    objFreeObjectType((u32)obj, GRIMBLE_OBJECT_GROUP);
     (*gBaddieControlInterface)->releaseState(obj, state, 0);
 }
 
@@ -721,13 +721,6 @@ void grimble_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int 
         objDoParticleFx(obj, 1.0f, 4, state->glowAlpha, 0);
         state->flags400 &= ~GRIMBLE_PARTICLE_BURST_FLAG;
     }
-}
-
-static void grimble_clearStateHandlersB(void)
-{
-    int i;
-    for (i = 0; i < 6; i++)
-        gGrimbleStateHandlersB[i] = NULL;
 }
 
 void grimble_hitDetect(GameObject* obj) {

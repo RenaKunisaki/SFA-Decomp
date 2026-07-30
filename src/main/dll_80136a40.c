@@ -45,8 +45,8 @@ char sErrDSI[] = "DSI";
 char sErrISI[] = "ISI";
 char sErrFmtPC[] = "PC\t%x";
 char sErrFmtSP[] = "SP\t%x";
-char lbl_803DBC30[] = "\t%x";
-char lbl_803DBC34[] = "%d - %d";
+char sErrFmtStackAddress[] = "\t%x";
+char sErrFmtRegisterRange[] = "%d - %d";
 
 /* debug font glyph-atlas texture asset (gDebugFontTex0) */
 #define DEBUG_FONT_TEXTURE0_ID 0x25D
@@ -844,7 +844,7 @@ void* errorThreadFunc(void* unused)
             stackLines = 0;
             while (frame != (ErrStackFrame*)-1 && stackLines++ != 8)
             {
-                debugPrintfxy(0x10, y, lbl_803DBC30, frame->returnAddress);
+                debugPrintfxy(0x10, y, sErrFmtStackAddress, frame->returnAddress);
                 y += 0xc;
                 frame = frame->previous;
             }
@@ -918,7 +918,7 @@ void* errorThreadFunc(void* unused)
             for (r = 0; (u8)r < 0x20; r += 8)
             {
                 rr = r & 0xff;
-                debugPrintfxy(0xc, y + 0xc, lbl_803DBC34, rr, rr + 7);
+                debugPrintfxy(0xc, y + 0xc, sErrFmtRegisterRange, rr, rr + 7);
                 rp = &gErrContext->gpr[rr];
                 debugPrintfxy(0x10, y + 0x18, strs + 0x22c, gErrContext->gpr[(u8)r], rp[1],
                               rp[2], rp[3]);

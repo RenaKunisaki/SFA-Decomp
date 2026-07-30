@@ -4,6 +4,11 @@
 #include "main/fcos16_approx_api.h"
 #include "main/trig.h"
 
+static const float sTrigApproxCosBias[1] = {0.99999f};
+static const float sTrigApproxCosLinear[1] = {-2.8707542e-10f};
+static const float sTrigApproxCosQuadratic[1] = {1.3332733e-20f};
+static const float sTrigApproxSinLinear[1] = {0.000023945184f};
+static const float sTrigApproxSinCubic[1] = {-2.2078018e-15f};
 
 float fsin16Approx(int angle) {
     s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
@@ -11,17 +16,17 @@ float fsin16Approx(int angle) {
     float x2 = x * x;
 
     switch (angle & 0xE000) {
-        case 0x2000:
-        case 0x4000:
-            return x2 * (1.3332733e-20f * x2 + -2.8707542e-10f) + 0.99999f;
         case 0x0000:
         case 0xE000:
-            return x * (-2.2078018e-15f * x2 + 0.000023945184f);
+            return x * (sTrigApproxSinCubic[0] * x2 + sTrigApproxSinLinear[0]);
+        case 0x2000:
+        case 0x4000:
+            return x2 * (sTrigApproxCosQuadratic[0] * x2 + sTrigApproxCosLinear[0]) + sTrigApproxCosBias[0];
         case 0x6000:
         case 0x8000:
-            return -(x * (-2.2078018e-15f * x2 + 0.000023945184f));
+            return -(x * (sTrigApproxSinCubic[0] * x2 + sTrigApproxSinLinear[0]));
         default:
-            return -(x2 * (1.3332733e-20f * x2 + -2.8707542e-10f) + 0.99999f);
+            return -(x2 * (sTrigApproxCosQuadratic[0] * x2 + sTrigApproxCosLinear[0]) + sTrigApproxCosBias[0]);
     }
 }
 
@@ -110,15 +115,15 @@ float fcos16Approx(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return y2 * (1.3332733e-20f * y2 + -2.8707542e-10f) + 0.99999f;
+            return y2 * (sTrigApproxCosQuadratic[0] * y2 + sTrigApproxCosLinear[0]) + sTrigApproxCosBias[0];
         case 0x2000:
         case 0x4000:
-            return -(y * (-2.2078018e-15f * y2 + 0.000023945184f));
+            return -(y * (sTrigApproxSinCubic[0] * y2 + sTrigApproxSinLinear[0]));
         case 0x6000:
         case 0x8000:
-            return -(y2 * (1.3332733e-20f * y2 + -2.8707542e-10f) + 0.99999f);
+            return -(y2 * (sTrigApproxCosQuadratic[0] * y2 + sTrigApproxCosLinear[0]) + sTrigApproxCosBias[0]);
         default:
-            return y * (-2.2078018e-15f * y2 + 0.000023945184f);
+            return y * (sTrigApproxSinCubic[0] * y2 + sTrigApproxSinLinear[0]);
     }
 }
 

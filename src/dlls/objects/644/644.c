@@ -116,7 +116,7 @@ void shopitem_renderSparkle(GameObject* obj, int p2, int p3, int p4, int p5)
         objfx_spawnDirectionalBurst(obj, 5, 1.0f, 1, 1, 0x14, 4.5f, NULL, 0);
     }
     {
-        ModelRenderOp* renderOp = ObjModel_GetRenderOp(Obj_GetActiveModel(obj)->file, 0);
+        Shader* renderOp = ObjModel_GetRenderOp(Obj_GetActiveModel(obj)->file, 0);
         renderOp->alphaOverride = 0x7F;
     }
     objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
@@ -182,7 +182,7 @@ void shopitem_onSeqFree(GameObject* obj)
             b->flag_80 = 1;
         }
     }
-    hudFn_8011f38c(0);
+    setHudForceShowMask(0);
     {
         int* vptr2 = (int*)((ShopItemState*)state)->vendorObj;
         int* cls2 = **(int***)((char*)vptr2 + 0x68);
@@ -260,7 +260,7 @@ void shopitem_free(GameObject* obj)
     switch ((obj)->anim.romDefNo)
     {
     case SHOPITEM_SEQ_SPARKLE:
-        ObjGroup_RemoveObject((int)obj, FUEL_CELL_OBJECT_GROUP);
+        objFreeObjectType((int)obj, FUEL_CELL_OBJECT_GROUP);
         break;
     }
 }
@@ -313,7 +313,7 @@ void shopitem_update(GameObject* obj)
         if (*(u32*)&s->vendorObj == 0)
         {
             int item;
-            s->vendorObj = ObjGroup_FindNearestObject(SHOPITEM_TARGET_OBJGROUP, obj, &range);
+            s->vendorObj = objGetNearestTypeTo(SHOPITEM_TARGET_OBJGROUP, obj, &range);
             item = s->vendorObj;
             if ((u32)item != 0)
             {
@@ -355,7 +355,7 @@ void shopitem_update(GameObject* obj)
                 }
                 if (money >= price)
                 {
-                    hudFn_8011f38c(3);
+                    setHudForceShowMask(3);
                     (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
                 }
                 else
@@ -406,7 +406,7 @@ void shopitem_update(GameObject* obj)
         }
         if (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_DISABLED) == 0)
         {
-            objRenderFn_80041018(obj);
+            objUpdateHitVolumeTransforms(obj);
         }
     }
 }
@@ -437,7 +437,7 @@ void shopitem_init(GameObject* obj, ShopItemDef* data)
         break;
     case SHOPITEM_SEQ_SPARKLE:
         ObjModel_SetPostRenderCallback(Obj_GetActiveModel(obj), shopitem_sparkleBlendSetup);
-        ObjGroup_AddObject((int)obj, FUEL_CELL_OBJECT_GROUP);
+        objAddObjectType((int)obj, FUEL_CELL_OBJECT_GROUP);
         break;
     }
 }

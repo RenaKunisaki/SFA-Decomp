@@ -133,29 +133,29 @@ void modelApplyBoneTransform(u8* p, u8* out, u16 n, u8** pd, u8** pe, int f, u16
             {
                 b = modelBoneTransforms_next(b, &bx, &by, &bz);
                 a = modelBoneTransforms_next(a, &ax, &ay, &az);
-                *(s16*)out = ((u32)(ax * wHi + bx * f) >> 16) + *(s16*)p;
-                *(s16*)(out + 2) = ((u32)(ay * wHi + by * f) >> 16) + *(s16*)(p + 2);
-                *(s16*)(out + 4) = ((u32)(az * wHi + bz * f) >> 16) + *(s16*)(p + 4);
+                *(u16*)out = ((u32)(ax * wHi + bx * f) >> 16) + *(s16*)p;
+                *(u16*)(out + 2) = ((u32)(ay * wHi + by * f) >> 16) + *(s16*)(p + 2);
+                *(u16*)(out + 4) = ((u32)(az * wHi + bz * f) >> 16) + *(s16*)(p + 4);
             }
             else
             {
                 a = modelBoneTransforms_next(a, &ax, &ay, &az);
-                *(s16*)out = ((u32)(ax * wHi) >> 16) + *(s16*)p;
-                *(s16*)(out + 2) = ((u32)(ay * wHi) >> 16) + *(s16*)(p + 2);
-                *(s16*)(out + 4) = ((u32)(az * wHi) >> 16) + *(s16*)(p + 4);
+                *(u16*)out = ((u32)(ax * wHi) >> 16) + *(s16*)p;
+                *(u16*)(out + 2) = ((u32)(ay * wHi) >> 16) + *(s16*)(p + 2);
+                *(u16*)(out + 4) = ((u32)(az * wHi) >> 16) + *(s16*)(p + 4);
             }
         }
         else if (i >= bIdx)
         {
             b = modelBoneTransforms_next(b, &bx, &by, &bz);
-            *(s16*)out = ((u32)(bx * f) >> 16) + *(s16*)p;
-            *(s16*)(out + 2) = ((u32)(by * f) >> 16) + *(s16*)(p + 2);
-            *(s16*)(out + 4) = ((u32)(bz * f) >> 16) + *(s16*)(p + 4);
+            *(u16*)out = ((u32)(bx * f) >> 16) + *(s16*)p;
+            *(u16*)(out + 2) = ((u32)(by * f) >> 16) + *(s16*)(p + 2);
+            *(u16*)(out + 4) = ((u32)(bz * f) >> 16) + *(s16*)(p + 4);
         }
         else
         {
             *(u32*)out = *(u32*)p;
-            *(s16*)(out + 4) = *(s16*)(p + 4);
+            *(u16*)(out + 4) = *(s16*)(p + 4);
         }
         p += 6;
         out += 6;
@@ -2249,7 +2249,7 @@ s16* ObjModel_GetBaseVertexCoords(ModelFileHeader* modelFile, int vertexIndex)
     return (s16*)(modelFile->vertices + vertexIndex * 6);
 }
 
-ModelRenderOp* ObjModel_GetRenderOp(ModelFileHeader* model, int renderOpIndex)
+Shader* ObjModel_GetRenderOp(ModelFileHeader* model, int renderOpIndex)
 {
     return &model->renderOps[renderOpIndex];
 }
@@ -2279,7 +2279,7 @@ void ObjModel_EnableDefaultRenderCallback(void* object, ObjModel* model, f32* mt
 {
     if (model->renderAttachment == NULL)
     {
-        model->renderCallback = gxTextureFn_80072dfc;
+        model->renderCallback = objFrozenRenderCb;
     }
 }
 
@@ -2480,40 +2480,36 @@ void ObjModel_ResolveRenderOpTextures(u8* m)
 {
     int j, k;
     u8* op;
-    for (j = 0; j < m[0xf8]; j++)
+    for (j = 0; j < ((ModelFileHeader*)m)->renderOpCount; j++)
     {
-        op = *(u8**)(m + 0x38) + j * 0x44;
-        for (k = 0; k < op[0x41]; k++)
+        op = (u8*)&((ModelFileHeader*)m)->renderOps[j];
+        for (k = 0; k < ((Shader*)op)->layerCount; k++)
         {
-            /* e is an 8-byte per-renderop texture record whose id sits at
-               e + 0x24; the GameObject overlay below is offset-equivalent and
-               its member spelling is byte-load-bearing (a raw *(int*)(e + 0x24)
-               re-spelling shifts MWCC's alias/CSE class) -- keep as is. */
-            u8* e = op + k * 8;
-            if (*(int*)&((GameObject*)e)->anim.velocityX != -1)
+            ShaderLayer* e = &((Shader*)op)->layers[k];
+            if (e->textureIndex != -1)
             {
-                *(int*)&((GameObject*)e)->anim.velocityX = ((int*)(u8*)((ModelFileHeader*)m)->textureIds)[*(int*)&((GameObject*)e)->anim.velocityX];
+                e->textureIndex = ((ModelFileHeader*)m)->textureIds[e->textureIndex];
             }
             else
             {
-                *(int*)&((GameObject*)e)->anim.velocityX = 0;
+                e->textureIndex = 0;
             }
         }
         if (*(int*)(op + 0x34) != -1)
         {
-            *(int*)(op + 0x34) = ((int*)(u8*)((ModelFileHeader*)m)->textureIds)[*(int*)(op + 0x34)];
+            *(int*)(op + 0x34) = ((ModelFileHeader*)m)->textureIds[*(int*)(op + 0x34)];
         }
         else
         {
             *(int*)(op + 0x34) = 0;
         }
-        if (*(int*)(op + 0x38) != -1)
+        if (((Shader*)op)->unk38 != -1)
         {
-            *(int*)(op + 0x38) = ((int*)(u8*)((ModelFileHeader*)m)->textureIds)[*(int*)(op + 0x38)];
+            ((Shader*)op)->unk38 = ((ModelFileHeader*)m)->textureIds[((Shader*)op)->unk38];
         }
         else
         {
-            *(int*)(op + 0x38) = 0;
+            ((Shader*)op)->unk38 = 0;
         }
         if (*(int*)(op + 0x1c) != -1)
         {
@@ -2530,13 +2526,13 @@ void ObjModel_ResolveRenderOpTextures(u8* m)
         {
             *(int*)(op + 0x1c) = 0;
         }
-        if (*(int*)(op + 0x18) != -1)
+        if (((Shader*)op)->textureId != -1)
         {
-            *(int*)(op + 0x18) = ((int*)(u8*)((ModelFileHeader*)m)->textureIds)[*(int*)(op + 0x18)];
+            ((Shader*)op)->textureId = ((ModelFileHeader*)m)->textureIds[((Shader*)op)->textureId];
         }
         else
         {
-            *(int*)(op + 0x18) = 0;
+            ((Shader*)op)->textureId = 0;
         }
         if (!(((ModelFileHeader*)m)->shaderFlags & 0xc))
         {
@@ -2655,7 +2651,7 @@ void ObjModel_RelocateModelData(u8* m)
     }
     if (*(u32*)&((ModelFileHeader*)m)->renderOps)
     {
-        ((ModelFileHeader*)m)->renderOps = (ModelRenderOp*)(m + *(u32*)&((ModelFileHeader*)m)->renderOps);
+        ((ModelFileHeader*)m)->renderOps = (Shader*)(m + *(u32*)&((ModelFileHeader*)m)->renderOps);
     }
     for (i = 0; i < ((ModelFileHeader*)m)->displayListCount + ((ModelFileHeader*)m)->shadowDisplayListCount; i++)
     {

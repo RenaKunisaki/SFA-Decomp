@@ -1,243 +1,195 @@
 /*
  * DLL 86 / 0x56 - Arwing camera mode.
  */
-#include "main/camera_interface.h"
-#include "main/object_transform.h"
+#include "main/dll/dll_0056_cameramodearwing.h"
+
 #include "dolphin/mtx/vec.h"
-#include "main/resource.h"
-#include "main/frame_timing.h"
+#include "main/camera_interface.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
+#include "main/frame_timing.h"
+#include "main/object_transform.h"
+#include "main/vecmath.h"
 
-typedef struct CameraArwingWork
-{
-    f32 offsetX;
-    f32 offsetY;
-    f32 offsetZ;
-    f32 basePosX;
-    f32 basePosY;
-    f32 basePosZ;
-    u8 pad18[0x24 - 0x18];
-    f32 xScale;
-    f32 yScale;
-    f32 unk2C;
-    f32 initOffsetX;
-    f32 initOffsetY;
-    f32 posZOffset;
-    f32 zEaseDenom;
-    f32 zEaseNum;
-    f32 yawScale;
-    f32 pitchScale;
-    f32 rollScale;
-    f32 rollRate;
-    s16 inputYaw;
-    s16 inputPitch;
-    s16 inputRoll;
-    u8 zScaleNear;
-    u8 zScaleFar;
-    u8 pad5C[0x5E - 0x5C];
-    u8 active;
-    u8 pad5F[0x60 - 0x5F];
-} CameraArwingWork;
+typedef enum CameraModeArwingMapEventSlot {
+    CAMERA_MODE_ARWING_NO_Z_EASE_MAP_EVENT_SLOT = 0x26,
+} CameraModeArwingMapEventSlot;
 
-f32 gCamArwingWork[24];
-extern f32 gCamArwingRotEaseScale;
-extern f32 gCamArwingRollDecay;
-void CameraModeArwing_copyToCurrent(void* p1, u32 kind)
-{
-    if (kind == 12)
-    {
-        gCamArwingWork[0] = ((f32*)p1)[0];
-        gCamArwingWork[1] = ((f32*)p1)[1];
-        gCamArwingWork[2] = ((f32*)p1)[2];
+CameraModeArwingState gCameraModeArwingState;
+
+void CameraModeArwing_copyToCurrent(void* actionData, u32 recordSize) {
+    if (recordSize == sizeof(CameraModeArwingPositionInput)) {
+        const CameraModeArwingPositionInput* input = (const CameraModeArwingPositionInput*)actionData;
+        gCameraModeArwingState.offsetX = input->offsetX;
+        gCameraModeArwingState.offsetY = input->offsetY;
+        gCameraModeArwingState.offsetZ = input->offsetZ;
         return;
     }
-    if (kind == 6)
-    {
-        ((CameraArwingWork*)gCamArwingWork)->inputYaw = ((s16*)p1)[0];
-        ((CameraArwingWork*)gCamArwingWork)->inputPitch = ((s16*)p1)[1];
-        ((CameraArwingWork*)gCamArwingWork)->inputRoll = ((s16*)p1)[2];
+    if (recordSize == sizeof(CameraModeArwingRotationInput)) {
+        const CameraModeArwingRotationInput* input = (const CameraModeArwingRotationInput*)actionData;
+        gCameraModeArwingState.inputYaw = input->yaw;
+        gCameraModeArwingState.inputPitch = input->pitch;
+        gCameraModeArwingState.inputRoll = input->roll;
         return;
     }
-    if (kind == 4)
-    {
-        ((CameraArwingWork*)gCamArwingWork)->posZOffset = ((f32*)p1)[0];
+    if (recordSize == sizeof(CameraModeArwingZOffsetInput)) {
+        const CameraModeArwingZOffsetInput* input = (const CameraModeArwingZOffsetInput*)actionData;
+        gCameraModeArwingState.posZOffset = input->offset;
         return;
     }
-    ((CameraArwingWork*)gCamArwingWork)->zEaseDenom = ((f32*)p1)[0];
-    ((CameraArwingWork*)gCamArwingWork)->zEaseNum = ((f32*)p1)[1];
+    {
+        const CameraModeArwingZEaseInput* input = (const CameraModeArwingZEaseInput*)actionData;
+        gCameraModeArwingState.zEaseDenominator = input->denominator;
+        gCameraModeArwingState.zEaseNumerator = input->numerator;
+    }
 }
 
-void CameraModeArwing_free(void)
-{
+void CameraModeArwing_free(void) {
 }
-void CameraModeArwing_update(GameObject* obj)
-{
+
+void CameraModeArwing_update(CameraObject* camera) {
     int targetYaw, targetPitch;
-    u8* targetObj = *(u8**)&obj->anim.targetObj;
+    GameObject* target = (GameObject*)camera->anim.targetObj;
     int angleDelta;
 
-    obj->anim.worldPosX = gCamArwingWork[0] * ((CameraArwingWork*)gCamArwingWork)->xScale;
-    obj->anim.worldPosX = obj->anim.worldPosX + ((CameraArwingWork*)gCamArwingWork)->basePosX;
-    obj->anim.worldPosY = gCamArwingWork[1] * ((CameraArwingWork*)gCamArwingWork)->yScale;
-    obj->anim.worldPosY = obj->anim.worldPosY + ((CameraArwingWork*)gCamArwingWork)->basePosY;
-    obj->anim.worldPosZ = ((GameObject*)targetObj)->anim.worldPosZ + ((CameraArwingWork*)gCamArwingWork)->
-        posZOffset;
+    camera->anim.worldPosX = gCameraModeArwingState.offsetX * gCameraModeArwingState.xScale;
+    camera->anim.worldPosX = camera->anim.worldPosX + gCameraModeArwingState.basePosX;
+    camera->anim.worldPosY = gCameraModeArwingState.offsetY * gCameraModeArwingState.yScale;
+    camera->anim.worldPosY = camera->anim.worldPosY + gCameraModeArwingState.basePosY;
+    camera->anim.worldPosZ = target->anim.worldPosZ + gCameraModeArwingState.posZOffset;
 
-    if ((s8)targetObj[0xac] != 0x26)
-    {
-        f32 t = ((CameraArwingWork*)gCamArwingWork)->zEaseNum / ((CameraArwingWork*)gCamArwingWork)->zEaseDenom;
-        t = t - 1.0f;
-        if (t < 0.0f)
-        {
-            obj->anim.worldPosZ =
-                (f32) - (s32)((CameraArwingWork*)gCamArwingWork)->zScaleNear * t + obj->anim.worldPosZ;
-        }
-        else
-        {
-            obj->anim.worldPosZ =
-                (f32) - (s32)((CameraArwingWork*)gCamArwingWork)->zScaleFar * t + obj->anim.worldPosZ;
+    if (target->anim.mapEventSlot != CAMERA_MODE_ARWING_NO_Z_EASE_MAP_EVENT_SLOT) {
+        f32 zEase = gCameraModeArwingState.zEaseNumerator / gCameraModeArwingState.zEaseDenominator;
+        zEase = zEase - 1.0f;
+        if (zEase < 0.0f) {
+            camera->anim.worldPosZ = (f32) - (s32)gCameraModeArwingState.zScaleNear * zEase + camera->anim.worldPosZ;
+        } else {
+            camera->anim.worldPosZ = (f32) - (s32)gCameraModeArwingState.zScaleFar * zEase + camera->anim.worldPosZ;
         }
     }
 
-    targetYaw = (s32)((f32)((CameraArwingWork*)gCamArwingWork)->inputYaw *
-        ((CameraArwingWork*)gCamArwingWork)->yawScale);
-    targetPitch = (s32)((f32)((CameraArwingWork*)gCamArwingWork)->inputPitch *
-        ((CameraArwingWork*)gCamArwingWork)->pitchScale);
+    targetYaw = (s32)((f32)gCameraModeArwingState.inputYaw * gCameraModeArwingState.yawScale);
+    targetPitch = (s32)((f32)gCameraModeArwingState.inputPitch * gCameraModeArwingState.pitchScale);
 
-    if (arwarwing_isDead((GameObject*)targetObj) != 0)
-    {
+    if (arwarwing_isDead(target) != 0) {
         f32 relX, relY, relZ, relDist;
-        int step;
-        CameraArwingWork* work;
-        ((CameraArwingWork*)gCamArwingWork)->rollRate = 500.0f;
-        work = (CameraArwingWork*)gCamArwingWork;
-        (*gCameraInterface)->getRelativePosition(obj, &relX, &relY, &relZ, &relDist, 0.0f, 0);
-        obj->anim.rotZ = work->rollRate * timeDelta +
-            (f32)obj->anim.rotZ;
+        int rotationStep;
+        CameraModeArwingState* state;
+        gCameraModeArwingState.rollRate = 500.0f;
+        state = &gCameraModeArwingState;
+        (*gCameraInterface)->getRelativePosition(camera, &relX, &relY, &relZ, &relDist, 0.0f, 0);
+        camera->anim.rotZ = state->rollRate * timeDelta + (f32)camera->anim.rotZ;
         angleDelta = 0x8000 - (u16)getAngle(relX, relZ);
         targetYaw = (u16)getAngle(relY, relDist);
-        angleDelta -= (u16)obj->anim.rotX;
-        if (angleDelta > 0x8000)
-        {
+        angleDelta -= (u16)camera->anim.rotX;
+        if (angleDelta > 0x8000) {
             angleDelta = angleDelta - 0xffff;
         }
-        if (angleDelta < -0x8000)
-        {
+        if (angleDelta < -0x8000) {
             angleDelta = angleDelta + 0xffff;
         }
-        step = (s32)((f32)angleDelta * timeDelta);
-        obj->anim.rotX = step * gCamArwingRotEaseScale + (f32) * (s16*)obj;
-        angleDelta = targetYaw - (u16)obj->anim.rotY;
-        if (angleDelta > 0x8000)
-        {
+        rotationStep = (s32)((f32)angleDelta * timeDelta);
+        camera->anim.rotX = rotationStep / 16.0f + (f32) * (s16*)camera;
+        angleDelta = targetYaw - (u16)camera->anim.rotY;
+        if (angleDelta > 0x8000) {
             angleDelta = angleDelta - 0xffff;
         }
-        if (angleDelta < -0x8000)
-        {
+        if (angleDelta < -0x8000) {
             angleDelta = angleDelta + 0xffff;
         }
-        step = (s32)((f32)angleDelta * timeDelta);
-        obj->anim.rotY = step * gCamArwingRotEaseScale + (f32)obj->anim.rotY;
-    }
-    else if (arwarwing_isExplodingOrWarping((GameObject*)targetObj) != 0)
-    {
-        f32 rollVel = ((CameraArwingWork*)gCamArwingWork)->rollRate * gCamArwingRollDecay;
-        ((CameraArwingWork*)gCamArwingWork)->rollRate = rollVel;
-        obj->anim.rotZ = rollVel * timeDelta + (f32)obj->anim.rotZ;
-    }
-    else
-    {
-        f32 step;
-        int targetRoll = (s32)((f32)((CameraArwingWork*)gCamArwingWork)->inputRoll *
-            ((CameraArwingWork*)gCamArwingWork)->rollScale);
-        targetRoll = targetRoll - (u16)obj->anim.rotZ;
-        if (targetRoll > 0x8000)
-        {
+        rotationStep = (s32)((f32)angleDelta * timeDelta);
+        camera->anim.rotY = rotationStep / 16.0f + (f32)camera->anim.rotY;
+    } else if (arwarwing_isExplodingOrWarping(target) != 0) {
+        f32 rollRate = gCameraModeArwingState.rollRate;
+        rollRate = rollRate * 0.98f;
+        gCameraModeArwingState.rollRate = rollRate;
+        camera->anim.rotZ = rollRate * timeDelta + (f32)camera->anim.rotZ;
+    } else {
+        f32 rotationStep;
+        int targetRoll = (s32)((f32)gCameraModeArwingState.inputRoll * gCameraModeArwingState.rollScale);
+        targetRoll = targetRoll - (u16)camera->anim.rotZ;
+        if (targetRoll > 0x8000) {
             targetRoll = targetRoll - 0xffff;
         }
-        if (targetRoll < -0x8000)
-        {
+        if (targetRoll < -0x8000) {
             targetRoll = targetRoll + 0xffff;
         }
-        step = (f32)targetRoll * timeDelta;
-        obj->anim.rotZ = step * gCamArwingRotEaseScale + (f32)obj->anim.rotZ;
-        targetYaw = targetYaw - (u16)obj->anim.rotX;
-        if (targetYaw > 0x8000)
-        {
+        rotationStep = (f32)targetRoll * timeDelta;
+        camera->anim.rotZ = rotationStep / 16.0f + (f32)camera->anim.rotZ;
+        targetYaw = targetYaw - (u16)camera->anim.rotX;
+        if (targetYaw > 0x8000) {
             targetYaw = targetYaw - 0xffff;
         }
-        if (targetYaw < -0x8000)
-        {
+        if (targetYaw < -0x8000) {
             targetYaw = targetYaw + 0xffff;
         }
-        step = (f32)targetYaw * timeDelta;
-        obj->anim.rotX = step * gCamArwingRotEaseScale + (f32) * (s16*)obj;
-        targetPitch = targetPitch - (u16)obj->anim.rotY;
-        if (targetPitch > 0x8000)
-        {
+        rotationStep = (f32)targetYaw * timeDelta;
+        camera->anim.rotX = rotationStep / 16.0f + (f32) * (s16*)camera;
+        targetPitch = targetPitch - (u16)camera->anim.rotY;
+        if (targetPitch > 0x8000) {
             targetPitch = targetPitch - 0xffff;
         }
-        if (targetPitch < -0x8000)
-        {
+        if (targetPitch < -0x8000) {
             targetPitch = targetPitch + 0xffff;
         }
-        step = (f32)targetPitch * timeDelta;
-        obj->anim.rotY = step * gCamArwingRotEaseScale + (f32)obj->anim.rotY;
+        rotationStep = (f32)targetPitch * timeDelta;
+        camera->anim.rotY = rotationStep / 16.0f + (f32)camera->anim.rotY;
     }
-    Obj_TransformWorldPointToLocal(obj->anim.worldPosX, obj->anim.worldPosY,
-                                   obj->anim.worldPosZ,
-                                   &obj->anim.localPosX, &obj->anim.localPosY,
-                                   &obj->anim.localPosZ,
-                                   (GameObject*)obj->anim.parentAddress);
+    Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
+                                   &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
+                                   (GameObject*)camera->anim.parentAddress);
 }
-void CameraModeArwing_init(GameObject* obj, int mode, int unused)
-{
-    GameObject* a4 = ((GameObject**)obj)[0xA4 / 4];
-    char* base;
-    f32* p;
-    f32 fc2;
-    f32 fc;
-    if (mode != 1)
-    {
-        ((CameraArwingWork*)gCamArwingWork)->basePosX = a4->anim.worldPosX;
-        ((CameraArwingWork*)gCamArwingWork)->basePosY = a4->anim.worldPosY;
-        ((CameraArwingWork*)gCamArwingWork)->basePosZ = a4->anim.worldPosZ;
+
+void CameraModeArwing_init(CameraObject* camera, int mode, int unusedArg) {
+    GameObject* target = (GameObject*)camera->anim.targetObj;
+    char* stateBytes;
+    f32* initialOffset;
+    f32 zEaseValue;
+    f32 zero;
+    if (mode != 1) {
+        gCameraModeArwingState.basePosX = target->anim.worldPosX;
+        gCameraModeArwingState.basePosY = target->anim.worldPosY;
+        gCameraModeArwingState.basePosZ = target->anim.worldPosZ;
     }
-    *(p = (f32*)((base = (char*)gCamArwingWork) + 48)) = 0.0f;
-    *(f32*)(base + 52) = 20.0f;
-    *(f32*)(base + 56) = -165.0f;
-    PSVECAdd(&a4->anim.worldPos, (Vec*)p, &obj->anim.worldPos);
-    ((CameraArwingWork*)gCamArwingWork)->active = 1;
-    ((CameraArwingWork*)gCamArwingWork)->yawScale = -0.2f;
-    ((CameraArwingWork*)gCamArwingWork)->pitchScale = 0.1f;
-    ((CameraArwingWork*)gCamArwingWork)->rollScale = 0.3f;
-    ((CameraArwingWork*)gCamArwingWork)->xScale = 0.8f;
-    ((CameraArwingWork*)gCamArwingWork)->yScale = 0.65f;
-    fc = 0.0f;
-    ((CameraArwingWork*)gCamArwingWork)->unk2C = fc;
-    fc2 = 13.0f;
-    ((CameraArwingWork*)gCamArwingWork)->zEaseNum = fc2;
-    ((CameraArwingWork*)gCamArwingWork)->zEaseDenom = fc2;
-    ((CameraArwingWork*)gCamArwingWork)->zScaleFar = 90;
-    ((CameraArwingWork*)gCamArwingWork)->zScaleNear = 100;
-    ((CameraArwingWork*)gCamArwingWork)->offsetZ = fc;
-    ((CameraArwingWork*)gCamArwingWork)->offsetY = fc;
-    ((CameraArwingWork*)gCamArwingWork)->offsetX = fc;
-    obj->anim.worldPosX = a4->anim.worldPosX;
-    obj->anim.worldPosY = a4->anim.worldPosY;
-    obj->anim.worldPosZ = a4->anim.worldPosZ + *(f32*)(base + 56);
+    *(initialOffset = (f32*)((stateBytes = (char*)&gCameraModeArwingState) +
+                             offsetof(CameraModeArwingState, initialOffsetX))) = 0.0f;
+    *(f32*)(stateBytes + offsetof(CameraModeArwingState, initialOffsetY)) = 20.0f;
+    *(f32*)(stateBytes + offsetof(CameraModeArwingState, posZOffset)) = -165.0f;
+    PSVECAdd(&target->anim.worldPos, (Vec*)initialOffset, &camera->anim.worldPos);
+    gCameraModeArwingState.active = 1;
+    gCameraModeArwingState.yawScale = -0.2f;
+    gCameraModeArwingState.pitchScale = 0.1f;
+    gCameraModeArwingState.rollScale = 0.3f;
+    gCameraModeArwingState.xScale = 0.8f;
+    gCameraModeArwingState.yScale = 0.65f;
+    zero = 0.0f;
+    gCameraModeArwingState.unk2C = zero;
+    zEaseValue = 13.0f;
+    gCameraModeArwingState.zEaseNumerator = zEaseValue;
+    gCameraModeArwingState.zEaseDenominator = zEaseValue;
+    gCameraModeArwingState.zScaleFar = 90;
+    gCameraModeArwingState.zScaleNear = 100;
+    gCameraModeArwingState.offsetZ = zero;
+    gCameraModeArwingState.offsetY = zero;
+    gCameraModeArwingState.offsetX = zero;
+    camera->anim.worldPosX = target->anim.worldPosX;
+    camera->anim.worldPosY = target->anim.worldPosY;
+    camera->anim.worldPosZ = target->anim.worldPosZ + *(f32*)(stateBytes + offsetof(CameraModeArwingState, posZOffset));
 }
 
-void CameraModeArwing_release(void)
-{
+void CameraModeArwing_release(void) {
 }
 
-
-void CameraModeArwing_initialise(void)
-{
+void CameraModeArwing_initialise(void) {
 }
 
-ResourceDescriptorCallbacks8 lbl_80319F88 = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
-        {(ResourceDescriptorCallback)CameraModeArwing_initialise, (ResourceDescriptorCallback)CameraModeArwing_release,
-        0x00000000, (ResourceDescriptorCallback)CameraModeArwing_init, (ResourceDescriptorCallback)CameraModeArwing_update,
-        (ResourceDescriptorCallback)CameraModeArwing_free, (ResourceDescriptorCallback)CameraModeArwing_copyToCurrent, 0x00000000}};
+CameraModeArwingDescriptor gCameraModeArwingDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    CameraModeArwing_initialise,
+    CameraModeArwing_release,
+    NULL,
+    CameraModeArwing_init,
+    CameraModeArwing_update,
+    CameraModeArwing_free,
+    CameraModeArwing_copyToCurrent,
+    NULL,
+};

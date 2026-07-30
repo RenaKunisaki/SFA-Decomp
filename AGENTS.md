@@ -1,22 +1,17 @@
 # AGENTS.md - SFA-Decomp Runbook
 
-> **Integration workflow (effective 2026-07-28):** High-frequency decomp commits land on the
-> UTC-dated staging branch `staging/YYYY-MM-DD`, not directly on `main`. The initial branch is
-> `staging/2026-07-28`. Fetch before starting, check out the current remote staging branch, and
-> rebase onto fresh `origin/staging/YYYY-MM-DD` before every push. Never resolve a rebase by
-> clobbering with `--theirs`; abort and re-derive on conflict.
+> **Integration workflow (effective 2026-07-29):** High-frequency decomp commits land on the
+> permanent `staging` branch, not directly on `main`. Fetch before starting, check out
+> `origin/staging`, and rebase local unpushed work onto the fresh remote staging tip before every
+> push. Never resolve a rebase by clobbering with `--theirs`; abort and re-derive on conflict.
 >
-> A maintainer or bot performs one **normal merge** from staging to `main` after the UTC date
-> rolls over. This preserves the useful per-change history while causing the main Actions build
-> to run once for the batch. Larger coherent PRs remain welcome, but the dated staging branch is
-> the default low-overhead landing path.
->
-> During the initial cutover, `main` carries a deliberate, temporary build stop that points agents
-> at the staging branch. That stop exists only on `main`: do not repair it during normal work and
-> never merge or cherry-pick it into staging. The nightly merger owns reverting the stop before
-> integrating staging. The merger also owns creating the next UTC-dated staging branch from the
-> clean integration result; agents must not create a rollover branch from a deliberately paused
-> `main`.
+> A maintainer or bot performs one **normal merge commit** from `staging` to `main` per UTC day.
+> This preserves the useful per-change history while causing the main Actions build to run once
+> for the batch. After that merge is published, fast-forward `staging` to the new `main` merge
+> commit before reopening it for work; do not rotate or date the staging branch. If commits land
+> directly on `main`, reconcile them into `staging` without dropping either side before the next
+> staging push. Larger coherent PRs remain welcome, but `staging` is the default low-overhead
+> landing path.
 
 > **Automation note (resolved 2026-06-18):** JackPriceBurns paused the loop because it
 > was re-pushing a stale patch series (cherry-pick with `--theirs` conflict resolution
@@ -287,8 +282,8 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
 3. Build the strict hash target with `python configure.py --matching` followed by `ninja` (if anything goes wrong, consider running `python configure.py -v GSAE01 --matching`). Always timeout ninja to 30s; plain non-matching `ninja` can stop at `main.dol` and miss the checksum target that CI runs.
 4. Run objdiff and judge net progress.
 5. If stuck, change angle quickly: adjacent code, data, assets, references, or tooling.
-6. Commit real progress to the current UTC staging branch and push to
-   `origin/staging/YYYY-MM-DD`. Do not push normal development commits directly to `main`.
+6. Commit real progress to the permanent staging branch and push to `origin/staging`. Do not push
+   normal development commits directly to `main`.
 7. If the process changes (ie we expect ninja to pass after a session, etc.) please update this document.
 
 ## Commit Standard

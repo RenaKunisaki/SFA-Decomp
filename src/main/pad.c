@@ -4,17 +4,17 @@
 #include "main/pad.h"
 #include "dolphin/pad.h"
 
-u8 gPadStickRepeatDelay = 5;
+u8 gPadMenuStickRepeatDelay = 5;
 
 /* Synthesized C-stick-as-direction bits OR'd into the extended button word. */
-#define PADBTN_CSTICK_UP    0x10000
-#define PADBTN_CSTICK_DOWN  0x20000
-#define PADBTN_CSTICK_LEFT  0x40000
-#define PADBTN_CSTICK_RIGHT 0x80000
+#define PAD_BUTTON_CSTICK_UP    0x10000
+#define PAD_BUTTON_CSTICK_DOWN  0x20000
+#define PAD_BUTTON_CSTICK_LEFT  0x40000
+#define PAD_BUTTON_CSTICK_RIGHT 0x80000
 
 /* Synthesized digital-trigger bits (analog trigger past threshold). */
-#define PADTRIG_R 0x20
-#define PADTRIG_L 0x40
+#define PAD_ANALOG_TRIGGER_R 0x20
+#define PAD_ANALOG_TRIGGER_L 0x40
 
 typedef struct PadStateBlock
 {
@@ -38,13 +38,13 @@ u32 gPadButtonsReleased[4];
 u32 gPadButtonsJustPressed[4];
 PADStatus gPadStatuses[2][4];
 
-u8 gPadStatusToggle;
-s8 gPadPrevStickX[4];
-s8 gPadPrevStickY[4];
-s8 gPadRepeatX[4];
-s8 gPadRepeatY[4];
-s8 gPadAnalogX[4];
-s8 gPadAnalogY[4];
+u8 gPadStatusBufferIndex;
+s8 gPadLastStickX[4];
+s8 gPadLastStickY[4];
+s8 gPadMenuStickXHoldTimer[4];
+s8 gPadMenuStickYHoldTimer[4];
+s8 gPadMenuStickXSign[4];
+s8 gPadMenuStickYSign[4];
 u16 gPadTriggersPressed[4];
 u16 gPadTriggersReleased[4];
 u16 gPadTriggers[4];
@@ -91,7 +91,7 @@ void setJoypadDisabled(void)
 
 void padSetStickRepeatDelay(int delay)
 {
-    gPadStickRepeatDelay = delay;
+    gPadMenuStickRepeatDelay = delay;
 }
 
 u32 buttonGetDisabled(int port)
@@ -106,12 +106,12 @@ void buttonDisable(int port, u32 mask)
 
 void padClearAnalogInputY(int port)
 {
-    gPadAnalogY[port] = 0;
+    gPadMenuStickYSign[port] = 0;
 }
 
 void padClearAnalogInputX(int port)
 {
-    gPadAnalogX[port] = 0;
+    gPadMenuStickXSign[port] = 0;
 }
 
 void padGetAnalogInput(int port, s8* x, s8* y)
@@ -122,8 +122,8 @@ void padGetAnalogInput(int port, s8* x, s8* y)
         *y = 0;
         return;
     }
-    *x = gPadAnalogX[port];
-    *y = gPadAnalogY[port];
+    *x = gPadMenuStickXSign[port];
+    *y = gPadMenuStickYSign[port];
 }
 
 s8 padGetCY(int port)
@@ -139,7 +139,7 @@ s8 padGetCY(int port)
         return 0;
     }
     statuses = gPadStatuses[0];
-    return statuses[gPadStatusToggle * 4 + port].substickY;
+    return statuses[gPadStatusBufferIndex * 4 + port].substickY;
 }
 
 s8 padGetCX(int port)
@@ -155,7 +155,7 @@ s8 padGetCX(int port)
         return 0;
     }
     statuses = gPadStatuses[0];
-    return statuses[gPadStatusToggle * 4 + port].substickX;
+    return statuses[gPadStatusBufferIndex * 4 + port].substickX;
 }
 
 s8 padGetStickY(int port)
@@ -171,7 +171,7 @@ s8 padGetStickY(int port)
         return 0;
     }
     statuses = gPadStatuses[0];
-    return statuses[gPadStatusToggle * 4 + port].stickY;
+    return statuses[gPadStatusBufferIndex * 4 + port].stickY;
 }
 
 s8 padGetStickX(int port)
@@ -187,7 +187,7 @@ s8 padGetStickX(int port)
         return 0;
     }
     statuses = gPadStatuses[0];
-    return statuses[gPadStatusToggle * 4 + port].stickX;
+    return statuses[gPadStatusBufferIndex * 4 + port].stickX;
 }
 
 u8 padGetLTrigger(int port)
@@ -199,7 +199,7 @@ u8 padGetLTrigger(int port)
         return 0;
     }
     statuses = gPadStatuses[0];
-    return statuses[gPadStatusToggle * 4 + port].triggerLeft;
+    return statuses[gPadStatusBufferIndex * 4 + port].triggerLeft;
 }
 
 u8 padGetRTrigger(int port)
@@ -211,7 +211,7 @@ u8 padGetRTrigger(int port)
         return 0;
     }
     statuses = gPadStatuses[0];
-    return statuses[gPadStatusToggle * 4 + port].triggerRight;
+    return statuses[gPadStatusBufferIndex * 4 + port].triggerRight;
 }
 
 u16 padGetTriggersPressed(int port)
@@ -322,9 +322,9 @@ void padUpdate(void)
     u8 useprev;
 
     padStateBlock[0] = gPadButtonsPrevious;
-    prevPad = (PADStatus*)((u8*)(padStateBlock[0] + 0x10) + gPadStatusToggle * 0x30);
-    gPadStatusToggle ^= 1;
-    readPad = (PADStatus*)((u8*)(padStateBlock[0] + 0x10) + gPadStatusToggle * 0x30);
+    prevPad = (PADStatus*)((u8*)(padStateBlock[0] + 0x10) + gPadStatusBufferIndex * 0x30);
+    gPadStatusBufferIndex ^= 1;
+    readPad = (PADStatus*)((u8*)(padStateBlock[0] + 0x10) + gPadStatusBufferIndex * 0x30);
     if (PADRead(readPad) == PAD_ERR_TRANSFER)
     {
         return;
@@ -350,12 +350,12 @@ void padUpdate(void)
 
     i = 0;
     currentStatus = readPad;
-    prevStickY = gPadPrevStickY;
-    prevStickX = gPadPrevStickX;
-    repeatY = gPadRepeatY;
-    repeatX = gPadRepeatX;
-    analogY = gPadAnalogY;
-    analogX = gPadAnalogX;
+    prevStickY = gPadLastStickY;
+    prevStickX = gPadLastStickX;
+    repeatY = gPadMenuStickYHoldTimer;
+    repeatX = gPadMenuStickXHoldTimer;
+    analogY = gPadMenuStickYSign;
+    analogX = gPadMenuStickXSign;
     previousButtons = padStateBlock[0];
     currentButtons = padStateBlock[0] + 4;
     releasedButtons = padStateBlock[0] + 8;
@@ -399,19 +399,19 @@ void padUpdate(void)
             *currentButtons = currentStatus->button;
             if (currentStatus->substickY < -40)
             {
-                *currentButtons |= (u64)PADBTN_CSTICK_DOWN;
+                *currentButtons |= (u64)PAD_BUTTON_CSTICK_DOWN;
             }
             if (currentStatus->substickY > 40)
             {
-                *currentButtons |= (u64)PADBTN_CSTICK_UP;
+                *currentButtons |= (u64)PAD_BUTTON_CSTICK_UP;
             }
             if (currentStatus->substickX < -40)
             {
-                *currentButtons |= (u64)PADBTN_CSTICK_LEFT;
+                *currentButtons |= (u64)PAD_BUTTON_CSTICK_LEFT;
             }
             if (currentStatus->substickX > 40)
             {
-                *currentButtons |= (u64)PADBTN_CSTICK_RIGHT;
+                *currentButtons |= (u64)PAD_BUTTON_CSTICK_RIGHT;
             }
             *pressedButtons = *currentButtons & (*currentButtons ^ *previousButtons);
             *releasedButtons = *previousButtons & (*currentButtons ^ *previousButtons);
@@ -420,11 +420,11 @@ void padUpdate(void)
             *triggers = 0;
             if (currentStatus->triggerRight > 10)
             {
-                *triggers |= PADTRIG_R;
+                *triggers |= PAD_ANALOG_TRIGGER_R;
             }
             if (currentStatus->triggerLeft > 10)
             {
-                *triggers |= PADTRIG_L;
+                *triggers |= PAD_ANALOG_TRIGGER_L;
             }
             *triggersPressed = *triggers & (*triggers ^ *prevTriggers);
             *triggersReleased = *prevTriggers & (*triggers ^ *prevTriggers);
@@ -468,7 +468,7 @@ void padUpdate(void)
             {
                 *repeatY = 0;
             }
-            if (*repeatY > gPadStickRepeatDelay)
+            if (*repeatY > gPadMenuStickRepeatDelay)
             {
                 *prevStickY = 0;
                 *repeatY = 0;
@@ -487,7 +487,7 @@ void padUpdate(void)
             {
                 *repeatX = 0;
             }
-            if (*repeatX > gPadStickRepeatDelay)
+            if (*repeatX > gPadMenuStickRepeatDelay)
             {
                 *prevStickX = 0;
                 *repeatX = 0;
@@ -523,7 +523,7 @@ void padUpdate(void)
     }
     if (useprev != 0)
     {
-        gPadStatusToggle ^= 1;
+        gPadStatusBufferIndex ^= 1;
     }
     gPadReadReady = 0;
 }
@@ -564,12 +564,12 @@ int initControllers(void)
     }
 
     i = 0;
-    prevStickY = gPadPrevStickY;
-    prevStickX = gPadPrevStickX;
-    repeatY = gPadRepeatY;
-    repeatX = gPadRepeatX;
-    analogY = gPadAnalogY;
-    analogX = gPadAnalogX;
+    prevStickY = gPadLastStickY;
+    prevStickX = gPadLastStickX;
+    repeatY = gPadMenuStickYHoldTimer;
+    repeatX = gPadMenuStickXHoldTimer;
+    analogY = gPadMenuStickYSign;
+    analogX = gPadMenuStickXSign;
     previousButtons = base[0]->previousButtons;
     currentButtons = base[0]->currentButtons;
     buttonsReleased = base[0]->releasedButtons;
@@ -618,7 +618,7 @@ int initControllers(void)
         statuses++;
     }
 
-    gPadStatusToggle = 0;
+    gPadStatusBufferIndex = 0;
     rumbleEnabled = 1;
     PADControlMotor(0, PAD_MOTOR_STOP_HARD);
     gRumbleTimer = 0.0f;

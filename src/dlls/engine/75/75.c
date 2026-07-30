@@ -1,159 +1,138 @@
 /*
  * DLL 75 / 0x4B - climbing camera mode.
  */
-#include "main/dll/CAM/camclimb_state.h"
-#include "main/object_transform.h"
-#include "main/resource.h"
-#include "main/dll/CAM/cutCam.h"
-#include "main/camera_interface.h"
-#include "main/frame_timing.h"
+#include "main/dll/dll_004B_cameramodeclimb.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-
-CameraModeClimbState* gCamClimbState;
-
-typedef struct CameraModeClimbInitArgs
-{
-    s8 pad0;
-    s8 duration;
-    s8 distance;
-    s8 relativePosition;
-    s8 maxHeight;
-    s8 minHeight;
-} CameraModeClimbInitArgs;
-
+#include "main/camera_interface.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
+#include "main/frame_timing.h"
+#include "main/mm.h"
+#include "main/object_transform.h"
+#include "main/vecmath.h"
+#include "string.h"
 
 extern f32 lbl_803E19A0;
 extern f32 gCamClimbDistanceSmoothRate;
 extern f32 gCamClimbTraceOrbitRadius;
 extern f32 gCamClimbPi;
 extern f32 gCamClimbHalfCircleBinaryAngle;
-extern f32 lbl_803E19B4;
+extern f32 gCamClimbTraceRadius;
 extern f32 gCamClimbDegreesToBinaryAngle;
 extern f32 gCamClimbDefaultEndMinHeight;
 extern f32 gCamClimbDefaultEndMaxHeight;
-extern f32 lbl_803E19C4;
+extern f32 gCamClimbDefaultDistanceScale;
 extern f32 gCamClimbDefaultHeightAdjustRate;
 
+CameraModeClimbState* gCameraModeClimbState;
 
-void CameraModeClimb_copyToCurrent(void)
-{
+void CameraModeClimb_copyToCurrent(void) {
 }
 
-void CameraModeClimb_free(void)
-{
-    mm_free(gCamClimbState);
-    gCamClimbState = NULL;
+void CameraModeClimb_free(void) {
+    mm_free(gCameraModeClimbState);
+    gCameraModeClimbState = NULL;
 }
 
-void CameraModeClimb_update(CameraObject* camObj)
-{
+void CameraModeClimb_update(CameraObject* camera) {
     f32 blend;
     f32 targetY;
-    f32 hi;
-    f32 lo;
+    f32 maxCameraY;
+    f32 minCameraY;
     u32 angle;
-    int yawDelta;
-    GameObject* viewObj;
+    int angleDelta;
+    GameObject* target;
     f32 trigValue;
     f32 relX;
-    f32 clamped;
+    f32 value;
     f32 relZ;
-    f32 dist;
+    f32 distance;
     f32 traceFrom[3];
     f32 traceOut[3];
-    u8 traceWork[CAMCONTROL_TRACE_WORK_SIZE];
+    u8 traceWork[sizeof(CamcontrolTraceWork)];
 
-    viewObj = (GameObject*)camObj->anim.targetObj;
-    if (gCamClimbState->transitionTimer != 0)
-    {
-        gCamClimbState->transitionTimer -= framesThisStep;
-        if (gCamClimbState->transitionTimer < 0)
-        {
-            gCamClimbState->transitionTimer = 0;
+    target = (GameObject*)camera->anim.targetObj;
+    if (gCameraModeClimbState->transitionTimer != 0) {
+        gCameraModeClimbState->transitionTimer -= framesThisStep;
+        if (gCameraModeClimbState->transitionTimer < 0) {
+            gCameraModeClimbState->transitionTimer = 0;
         }
-        blend = (f32)(s32)(gCamClimbState->transitionDuration - gCamClimbState->transitionTimer) /
-                (f32)(s32)gCamClimbState->transitionDuration;
-        gCamClimbState->relativePosition =
-            blend * (f32)(s32)(gCamClimbState->targetRelativePosition - gCamClimbState->startRelativePosition) +
-            (f32)(u32)gCamClimbState->startRelativePosition;
-        gCamClimbState->targetDistance =
-            blend * (gCamClimbState->endDistance - gCamClimbState->startDistance) + gCamClimbState->startDistance;
-        gCamClimbState->minHeight =
-            blend * (gCamClimbState->endMinHeight - gCamClimbState->startMinHeight) + gCamClimbState->startMinHeight;
-        gCamClimbState->maxHeight =
-            blend * (gCamClimbState->endMaxHeight - gCamClimbState->startMaxHeight) + gCamClimbState->startMaxHeight;
+        blend = (f32)(s32)(gCameraModeClimbState->transitionDuration - gCameraModeClimbState->transitionTimer) /
+                (f32)(s32)gCameraModeClimbState->transitionDuration;
+        gCameraModeClimbState->relativePosition = blend * (f32)(s32)(gCameraModeClimbState->targetRelativePosition -
+                                                                     gCameraModeClimbState->startRelativePosition) +
+                                                  (f32)(u32)gCameraModeClimbState->startRelativePosition;
+        gCameraModeClimbState->targetDistance =
+            blend * (gCameraModeClimbState->endDistance - gCameraModeClimbState->startDistance) +
+            gCameraModeClimbState->startDistance;
+        gCameraModeClimbState->minHeight =
+            blend * (gCameraModeClimbState->endMinHeight - gCameraModeClimbState->startMinHeight) +
+            gCameraModeClimbState->startMinHeight;
+        gCameraModeClimbState->maxHeight =
+            blend * (gCameraModeClimbState->endMaxHeight - gCameraModeClimbState->startMaxHeight) +
+            gCameraModeClimbState->startMaxHeight;
     }
-    targetY = viewObj->anim.worldPosY;
-    hi = targetY + gCamClimbState->maxHeight;
-    lo = targetY + gCamClimbState->minHeight;
-    blend = camObj->anim.worldPosY;
-    if (blend < lo)
-    {
-        clamped = lo - blend;
+    targetY = target->anim.worldPosY;
+    maxCameraY = targetY + gCameraModeClimbState->maxHeight;
+    minCameraY = targetY + gCameraModeClimbState->minHeight;
+    blend = camera->anim.worldPosY;
+    if (blend < minCameraY) {
+        value = minCameraY - blend;
+    } else if (blend > maxCameraY) {
+        value = maxCameraY - blend;
+    } else {
+        value = lbl_803E19A0;
     }
-    else if (blend > hi)
-    {
-        clamped = hi - blend;
-    }
-    else
-    {
-        clamped = lbl_803E19A0;
-    }
-    clamped = clamped * (gCamClimbState->heightAdjustRate * timeDelta);
-    camObj->anim.worldPosY = camObj->anim.worldPosY + clamped;
-    dist = gCamClimbState->targetDistance;
-    dist = dist - gCamClimbState->smoothedDistance;
-    dist = dist * (gCamClimbDistanceSmoothRate * timeDelta);
-    gCamClimbState->smoothedDistance = gCamClimbState->smoothedDistance + dist;
-    trigValue = mathSinf((gCamClimbPi * (f32)(s32)viewObj->anim.rotX) / gCamClimbHalfCircleBinaryAngle);
-    traceFrom[0] = gCamClimbTraceOrbitRadius * trigValue + viewObj->anim.worldPosX;
-    traceFrom[1] = viewObj->anim.worldPosY;
-    trigValue = mathCosf((gCamClimbPi * (f32)(s32)viewObj->anim.rotX) / gCamClimbHalfCircleBinaryAngle);
-    traceFrom[2] = gCamClimbTraceOrbitRadius * trigValue + viewObj->anim.worldPosZ;
-    trigValue = mathSinf((gCamClimbPi * (f32)(s32)viewObj->anim.rotX) / gCamClimbHalfCircleBinaryAngle);
-    camObj->anim.worldPosX = gCamClimbState->smoothedDistance * trigValue + traceFrom[0];
-    trigValue = mathCosf((gCamClimbPi * (f32)(s32)viewObj->anim.rotX) / gCamClimbHalfCircleBinaryAngle);
-    camObj->anim.worldPosZ = gCamClimbState->smoothedDistance * trigValue + traceFrom[2];
-    camcontrol_traceMove(traceFrom, &camObj->anim.worldPosX, traceOut, traceWork, 3, 1, 1, lbl_803E19B4);
-    camObj->anim.worldPosX = traceOut[0];
-    camObj->anim.worldPosY = traceOut[1];
-    camObj->anim.worldPosZ = traceOut[2];
+    value = value * (gCameraModeClimbState->heightAdjustRate * timeDelta);
+    camera->anim.worldPosY = camera->anim.worldPosY + value;
+    distance = gCameraModeClimbState->targetDistance;
+    distance = distance - gCameraModeClimbState->smoothedDistance;
+    distance = distance * (gCamClimbDistanceSmoothRate * timeDelta);
+    gCameraModeClimbState->smoothedDistance = gCameraModeClimbState->smoothedDistance + distance;
+    trigValue = mathSinf((gCamClimbPi * (f32)(s32)target->anim.rotX) / gCamClimbHalfCircleBinaryAngle);
+    traceFrom[0] = gCamClimbTraceOrbitRadius * trigValue + target->anim.worldPosX;
+    traceFrom[1] = target->anim.worldPosY;
+    trigValue = mathCosf((gCamClimbPi * (f32)(s32)target->anim.rotX) / gCamClimbHalfCircleBinaryAngle);
+    traceFrom[2] = gCamClimbTraceOrbitRadius * trigValue + target->anim.worldPosZ;
+    trigValue = mathSinf((gCamClimbPi * (f32)(s32)target->anim.rotX) / gCamClimbHalfCircleBinaryAngle);
+    camera->anim.worldPosX = gCameraModeClimbState->smoothedDistance * trigValue + traceFrom[0];
+    trigValue = mathCosf((gCamClimbPi * (f32)(s32)target->anim.rotX) / gCamClimbHalfCircleBinaryAngle);
+    camera->anim.worldPosZ = gCameraModeClimbState->smoothedDistance * trigValue + traceFrom[2];
+    camcontrol_traceMove(traceFrom, &camera->anim.worldPosX, traceOut, traceWork, 3, 1, 1, gCamClimbTraceRadius);
+    camera->anim.worldPosX = traceOut[0];
+    camera->anim.worldPosY = traceOut[1];
+    camera->anim.worldPosZ = traceOut[2];
     (*gCameraInterface)
-        ->getRelativePosition(camObj, &relX, &clamped, &relZ, &dist,
-                              (f32)(u32)(u16)gCamClimbState->relativePosition, 0);
+        ->getRelativePosition(camera, &relX, &value, &relZ, &distance,
+                              (f32)(u32)(u16)gCameraModeClimbState->relativePosition, 0);
     {
-        int t = 0x8000 - (u16)getAngle(relX, relZ);
-        yawDelta = t - (u16)camObj->anim.rotX;
+        int targetYaw = 0x8000 - (u16)getAngle(relX, relZ);
+        angleDelta = targetYaw - (u16)camera->anim.rotX;
     }
-    if (0x8000 < yawDelta)
-    {
-        yawDelta = yawDelta - 0xffff;
+    if (0x8000 < angleDelta) {
+        angleDelta = angleDelta - 0xffff;
     }
-    if (yawDelta < -0x8000)
-    {
-        yawDelta = yawDelta + 0xffff;
+    if (angleDelta < -0x8000) {
+        angleDelta = angleDelta + 0xffff;
     }
-    camObj->anim.rotX += yawDelta;
-    clamped = camObj->anim.worldPosY - (viewObj->anim.worldPosY + (f32)(u32)(u16)gCamClimbState->relativePosition);
-    angle = getAngle(clamped, dist);
-    yawDelta = angle & 0xffff;
-    yawDelta -= (u16)camObj->anim.rotY;
-    if (0x8000 < yawDelta)
-    {
-        yawDelta = yawDelta - 0xffff;
+    camera->anim.rotX += angleDelta;
+    value = camera->anim.worldPosY - (target->anim.worldPosY + (f32)(u32)(u16)gCameraModeClimbState->relativePosition);
+    angle = getAngle(value, distance);
+    angleDelta = angle & 0xffff;
+    angleDelta -= (u16)camera->anim.rotY;
+    if (0x8000 < angleDelta) {
+        angleDelta = angleDelta - 0xffff;
     }
-    if (yawDelta < -0x8000)
-    {
-        yawDelta = yawDelta + 0xffff;
+    if (angleDelta < -0x8000) {
+        angleDelta = angleDelta + 0xffff;
     }
-    camObj->anim.rotY += (yawDelta * framesThisStep) / 6;
-    Obj_TransformWorldPointToLocal(camObj->anim.worldPosX, camObj->anim.worldPosY, camObj->anim.worldPosZ,
-                                   &camObj->anim.localPosX, &camObj->anim.localPosY, &camObj->anim.localPosZ,
-                                   (GameObject*)camObj->anim.parentAddress);
+    camera->anim.rotY += (angleDelta * framesThisStep) / 6;
+    Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
+                                   &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
+                                   (GameObject*)camera->anim.parent);
 }
 
-void CameraModeClimb_init(CameraObject* camera, int mode, s8* args)
-{
+void CameraModeClimb_init(CameraObject* camera, int mode, CameraModeClimbTransition* transition) {
     f32 outX;
     f32 outY;
     f32 outZ;
@@ -165,69 +144,62 @@ void CameraModeClimb_init(CameraObject* camera, int mode, s8* args)
     f32 defaultRelPos;
     int handler;
 
-    if (gCamClimbState == NULL)
-    {
-        gCamClimbState = (CameraModeClimbState*)mmAlloc(sizeof(CameraModeClimbState), 0xf, 0);
+    if (gCameraModeClimbState == NULL) {
+        gCameraModeClimbState = (CameraModeClimbState*)mmAlloc(sizeof(CameraModeClimbState), 0xf, 0);
     }
-    switch (mode)
-    {
+    switch (mode) {
     case 2:
-    {
-        CameraModeClimbInitArgs* a = (CameraModeClimbInitArgs*)args;
-        gCamClimbState->startRelativePosition = gCamClimbState->relativePosition;
-        gCamClimbState->startMinHeight = gCamClimbState->minHeight;
-        gCamClimbState->startMaxHeight = gCamClimbState->maxHeight;
-        gCamClimbState->startDistance = gCamClimbState->targetDistance;
-        gCamClimbState->targetRelativePosition = (u16)(int)(gCamClimbDegreesToBinaryAngle * (f32)a->relativePosition);
-        gCamClimbState->endMinHeight = a->minHeight;
-        gCamClimbState->endMaxHeight = a->maxHeight;
-        gCamClimbState->endDistance = a->distance;
-        gCamClimbState->transitionTimer = (s16)a->duration;
-        gCamClimbState->transitionDuration = (s16)a->duration;
+        gCameraModeClimbState->startRelativePosition = gCameraModeClimbState->relativePosition;
+        gCameraModeClimbState->startMinHeight = gCameraModeClimbState->minHeight;
+        gCameraModeClimbState->startMaxHeight = gCameraModeClimbState->maxHeight;
+        gCameraModeClimbState->startDistance = gCameraModeClimbState->targetDistance;
+        gCameraModeClimbState->targetRelativePosition =
+            (u16)(int)(gCamClimbDegreesToBinaryAngle * (f32)transition->relativePosition);
+        gCameraModeClimbState->endMinHeight = transition->minHeight;
+        gCameraModeClimbState->endMaxHeight = transition->maxHeight;
+        gCameraModeClimbState->endDistance = transition->distance;
+        gCameraModeClimbState->transitionTimer = (s16)transition->duration;
+        gCameraModeClimbState->transitionDuration = (s16)transition->duration;
         break;
-    }
     case 1:
     default:
-        memset(gCamClimbState, 0, sizeof(CameraModeClimbState));
+        memset(gCameraModeClimbState, 0, sizeof(CameraModeClimbState));
         handler = (int)(*gCameraInterface)->getDefaultHandlerEntry();
         (*(VtableFn*)(**(int**)(handler + 4) + 0x20))(&defaultDistB, &defaultDistA, &defaultMinHeight,
                                                       &defaultMaxHeight, &defaultRelPos);
         (*gCameraInterface)
             ->getRelativePosition(camera, &outX, &outY, &outZ, &defaultDistXZ,
-                                  (f32)(u16)gCamClimbState->relativePosition, 0);
-        gCamClimbState->startRelativePosition = defaultRelPos;
-        gCamClimbState->startMinHeight = defaultMinHeight;
-        gCamClimbState->startMaxHeight = defaultMaxHeight;
-        gCamClimbState->startDistance = defaultDistXZ;
-        gCamClimbState->targetRelativePosition = 30;
-        gCamClimbState->endMinHeight = gCamClimbDefaultEndMinHeight;
-        gCamClimbState->endMaxHeight = gCamClimbDefaultEndMaxHeight;
-        gCamClimbState->endDistance = lbl_803E19C4 * (defaultDistA + defaultDistB);
-        gCamClimbState->transitionTimer = 60;
-        gCamClimbState->transitionDuration = 60;
-        gCamClimbState->smoothedDistance = defaultDistXZ;
-        gCamClimbState->heightAdjustRate = gCamClimbDefaultHeightAdjustRate;
+                                  (f32)(u16)gCameraModeClimbState->relativePosition, 0);
+        gCameraModeClimbState->startRelativePosition = defaultRelPos;
+        gCameraModeClimbState->startMinHeight = defaultMinHeight;
+        gCameraModeClimbState->startMaxHeight = defaultMaxHeight;
+        gCameraModeClimbState->startDistance = defaultDistXZ;
+        gCameraModeClimbState->targetRelativePosition = 30;
+        gCameraModeClimbState->endMinHeight = gCamClimbDefaultEndMinHeight;
+        gCameraModeClimbState->endMaxHeight = gCamClimbDefaultEndMaxHeight;
+        gCameraModeClimbState->endDistance = gCamClimbDefaultDistanceScale * (defaultDistA + defaultDistB);
+        gCameraModeClimbState->transitionTimer = 60;
+        gCameraModeClimbState->transitionDuration = 60;
+        gCameraModeClimbState->smoothedDistance = defaultDistXZ;
+        gCameraModeClimbState->heightAdjustRate = gCamClimbDefaultHeightAdjustRate;
         break;
     }
 }
 
-void CameraModeClimb_release(void)
-{
+void CameraModeClimb_release(void) {
 }
 
-void CameraModeClimb_initialise(void)
-{
+void CameraModeClimb_initialise(void) {
 }
 
-ResourceDescriptorCallbacks8 gCameraModeClimbDescriptor = {{0x00000000,
-                       0x00000000,
-                       0x00000000,
-                       0x00060000},
-                      {(ResourceDescriptorCallback)CameraModeClimb_initialise,
-                       (ResourceDescriptorCallback)CameraModeClimb_release,
-                       0x00000000,
-                       (ResourceDescriptorCallback)CameraModeClimb_init,
-                       (ResourceDescriptorCallback)CameraModeClimb_update,
-                       (ResourceDescriptorCallback)CameraModeClimb_free,
-                       (ResourceDescriptorCallback)CameraModeClimb_copyToCurrent,
-                       0x00000000}};
+CameraModeClimbDescriptor gCameraModeClimbDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    CameraModeClimb_initialise,
+    CameraModeClimb_release,
+    NULL,
+    CameraModeClimb_init,
+    CameraModeClimb_update,
+    CameraModeClimb_free,
+    CameraModeClimb_copyToCurrent,
+    NULL,
+};

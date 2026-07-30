@@ -9,7 +9,7 @@
  * the generic enemy DLL (slot 201). Baddie.c is the reader and supplies the
  * field widths; the SharpClaw encounter spawners (DFSH_ObjCre 0x179,
  * ECSH_Creato 0x191, slot 410) are the writers - each allocates one of these
- * records, fills it and hands it to Obj_SetupObject, and the spawned child's
+ * records, fills it and hands it to objSetupObject, and the spawned child's
  * extra block is an EnemyState (enemy_getExtraSize() = 0x370).
  */
 typedef struct EnemyPlacement {

@@ -68,10 +68,10 @@
 #include "main/dll/dll_0000_gameui.h"
 #undef FEAR_TEST_METER_POSITION_INT
 #include "main/dll/dll_00C9_enemy.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/dll/dll_029B_arwingandrossstuff.h"
-#include "main/dll/player.h"
+#include "main/dll/player_data.h"
 #include "main/dll/tricky_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
@@ -92,7 +92,7 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/objhits.h"
 #include "main/objfx.h"
@@ -103,6 +103,16 @@
 #define DLL1B5_WEAPON_DEF_1 0x6F1
 #define DLL1B5_WEAPON_DEF_2 0x6F2
 #define DLL1B5_OBJECT_GROUP 3
+
+typedef struct Dll1B5ButtonTimingTables {
+    u8 pad00[0x60];
+    s16 anims[14];
+    f32 blends[25];
+    u16 gameBits[8];
+    f32 meterScales[16];
+} Dll1B5ButtonTimingTables;
+
+STATIC_ASSERT(sizeof(Dll1B5ButtonTimingTables) == 0x130);
 
 int Lightfoot_UpdateProximityInteractionState(int obj, int state)
 {
@@ -301,9 +311,9 @@ int Lightfoot_UpdateWanderSteering(GameObject* obj, int state, f32 fv)
         ((BaddieState*)state)->moveDone != 0)
     {
         u8 r;
-        if (*(u8*)((char*)sub + 0x2c) != 0)
+        if (sub->completionCountdown != 0)
         {
-            *(u8*)((char*)sub + 0x2c) -= 1;
+            sub->completionCountdown -= 1;
         }
         else
         {
@@ -314,23 +324,23 @@ int Lightfoot_UpdateWanderSteering(GameObject* obj, int state, f32 fv)
                 if (r & 4)
                 {
                     obj->anim.rotX += 0x7ff8;
-                    *(u8*)((char*)sub + 0x2c) = 3;
+                    sub->completionCountdown = 3;
                 }
                 else if (r & 2)
                 {
                     obj->anim.rotX -= 0x3ffc;
-                    *(u8*)((char*)sub + 0x2c) = 3;
+                    sub->completionCountdown = 3;
                 }
                 else if (r & 8)
                 {
                     obj->anim.rotX += 0x3ffc;
-                    *(u8*)((char*)sub + 0x2c) = 3;
+                    sub->completionCountdown = 3;
                 }
             }
         }
         ObjAnim_SetCurrentMove((int)obj, 0x14, 0.0f, 0);
     }
-    if (*(u8*)((char*)sub + 0x2c) == 0)
+    if (sub->completionCountdown == 0)
     {
         obj->anim.rotX +=
             (s16)((f32)(s32)((u16) * (u16*)((char*)sub + 0x20) - 0x7fff) * timeDelta / 4.0f);
@@ -407,7 +417,7 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
 {
     const Dll1B5Placement* placement;
-    EmitCtrlTbl* controls = (EmitCtrlTbl*)&lbl_80334EE8;
+    Dll1B5ButtonTimingTables* controls = (Dll1B5ButtonTimingTables*)&lbl_80334EE8;
     GroundBaddieState* actor = obj->extra;
     Dll1B5ButtonTimingControlState* challenge = actor->control;
     BaddieState* playerState = (BaddieState*)state;
@@ -426,7 +436,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
     {
         int meterPosition =
             (s16)(90.0f * mathSinf(3.1415927f * challenge->phase / 32768.0f));
-        u16 successRange = (int)(90.0f * controls->scales[challenge->difficulty]);
+        u16 successRange = (int)(90.0f * controls->meterScales[challenge->difficulty]);
         if (obj->userData2 == 0)
         {
             if ((s16)challenge->phase * (s16)challenge->previousPhase < 0)
@@ -463,7 +473,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
             int index;
             u16* gameBit;
             challenge->difficulty = 0;
-            for (index = 0, gameBit = controls->bits; index < 8; gameBit++, index++)
+            for (index = 0, gameBit = controls->gameBits; index < 8; gameBit++, index++)
             {
                 if (mainGetBit(*gameBit) != 0)
                 {
@@ -474,7 +484,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
             challenge->previousPhase = challenge->phase;
             challenge->previousPhase2 = challenge->previousPhase;
             fearTestMeterSetRange(
-                0x60, (u8)(int)(96.0f * controls->scales[challenge->difficulty]),
+                0x60, (u8)(int)(96.0f * controls->meterScales[challenge->difficulty]),
                 (int)(90.0f * mathSinf(3.1415927f * challenge->phase / 32768.0f)));
             fearTestMeterSetFadeIn(1);
             setAButtonIcon(6);
@@ -575,13 +585,6 @@ void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieSt
  * collision query tests. Low byte = behaviour flags; the high bits select the
  * map-surface type (consumed by mapLoadBlocksFn_800685cc).
  */
-static void Lightfoot_RearmScuffBurst(GameObject* obj, f32* timer, f32* params)
-{
-    *timer = *timer + 15.0f;
-    params[1] = 35.0f;
-    objfx_spawnPulseBurst(obj, 0.2f * obj->anim.rootMotionScale, 3, 3, 0, params);
-}
-
 void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
 {
     if (inner->eventFlags & 4)
@@ -686,7 +689,7 @@ void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner)
         if (animState->weaponDefNo > 0)
         {
             setup = Obj_AllocObjectSetup(0x20, animState->weaponDefNo);
-            child = Obj_SetupObject(setup, 4, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            child = objSetupObject(setup, 4, obj->anim.mapEventSlot, -1, obj->anim.parent);
             ObjLink_AttachChild(obj, child, 0);
             animState->weaponDefNoSentinel = animState->weaponDefNo;
         }
@@ -834,7 +837,7 @@ void dll437_free(GameObject* obj, int preserveChildren) {
     int count;
     int i;
 
-    ObjGroup_RemoveObject((u32)obj, DLL1B5_OBJECT_GROUP);
+    objFreeObjectType((u32)obj, DLL1B5_OBJECT_GROUP);
     count = obj->childCount;
     for (i = 0; i < count; i++) {
         child = obj->childObjs[0];

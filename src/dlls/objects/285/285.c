@@ -7,7 +7,7 @@
  */
 #include "dlls/objects/285.h"
 #include "dlls/objects/237.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/game_ui_interface.h"
 #include "main/objHitReact_types.h"
 #include "main/objseq.h"
@@ -133,7 +133,7 @@ void TreasureChest_update(GameObject* obj) {
         if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             playerPullOutStaff(Obj_GetPlayerObject(), TREASURE_CHEST_STAFF_MODE);
-            nearestCollectible = ObjGroup_FindNearestObject(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDist);
+            nearestCollectible = objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDist);
             if (nearestCollectible != 0) {
                 (*gObjectTriggerInterface)->setObjects((int)((GameObject*)nearestCollectible)->anim.romDefNo, 0, 0);
                 (*gObjectTriggerInterface)

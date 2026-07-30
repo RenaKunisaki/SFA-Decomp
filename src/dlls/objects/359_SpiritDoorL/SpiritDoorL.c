@@ -6,6 +6,7 @@
 
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
+#include "main/dll/dll_0051_cameramodecannon.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
@@ -16,10 +17,9 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 
-#define SPIRIT_DOOR_LOCK_SILENT_CAMERA_MODE 0x51
-#define SPIRIT_DOOR_LOCK_LOOP_SFX           0x423
-#define SPIRIT_DOOR_LOCK_HALF_TURN          0x8000
-#define SPIRIT_DOOR_LOCK_FULL_TURN          0x10000
+#define SPIRIT_DOOR_LOCK_LOOP_SFX  0x423
+#define SPIRIT_DOOR_LOCK_HALF_TURN 0x8000
+#define SPIRIT_DOOR_LOCK_FULL_TURN 0x10000
 
 typedef struct SpiritDoorLockOrbitWords {
     u32 x;
@@ -132,10 +132,10 @@ void SpiritDoorLock_update(GameObject* obj) {
         int i;
 
         cameraMode = (*gCameraInterface)->getMode();
-        if (cameraMode != SPIRIT_DOOR_LOCK_SILENT_CAMERA_MODE) {
+        if (cameraMode != CAMERA_MODE_CANNON_RESOURCE_ID) {
             Sfx_KeepAliveLoopedObjectSound((int)obj, SPIRIT_DOOR_LOCK_LOOP_SFX);
         }
-        orbitObjects = (GameObject**)ObjGroup_GetObjects(SPIRIT_DOOR_SPIRIT_OBJECT_GROUP, &orbitCount);
+        orbitObjects = (GameObject**)objGetAllOfType(SPIRIT_DOOR_SPIRIT_OBJECT_GROUP, &orbitCount);
         angleStep = SPIRIT_DOOR_LOCK_FULL_TURN / state->orbitCount;
         angle = state->spinAngle;
         orbitOffset[1] = gSpiritDoorLockOrbitOffsetY;

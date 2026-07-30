@@ -35,7 +35,7 @@ void mcupgrade_update(GameObject* obj)
     }
     else
     {
-        objRenderFn_80041018(obj);
+        objUpdateHitVolumeTransforms(obj);
     }
 }
 
@@ -53,14 +53,14 @@ int mcupgradema_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
         switch (animUpdate->eventIds[i])
         {
         case MCUPGRADEMA_EVENT_SHOW_HUD:
-            hudFn_8011f38c(1);
+            setHudForceShowMask(1);
             break;
         case MCUPGRADEMA_EVENT_SHOW_DIALOGUE:
             playerAddMaxMagic(Obj_GetPlayerObject(), 0x19);
             (*gGameUIInterface)->showNpcDialogue(0x468, 0x14, 0x8c, 0);
             break;
         case MCUPGRADEMA_EVENT_HIDE_HUD:
-            hudFn_8011f38c(0);
+            setHudForceShowMask(0);
             break;
         }
     }

@@ -654,7 +654,6 @@ int ObjAnim_AdvanceCurrentMove(int objAnimHandle, f32 moveStepScale, f32 deltaTi
     ObjAnimBank* bank;
     ObjAnimEventTable* eventTable;
     ObjAnimMoveData* moveData;
-    ObjAnimRootCurve* curve;
     ObjAnimRootCurve* blendCurve;
     f32 clampedStepScale;
     f32 prevFrameLength;
@@ -873,10 +872,10 @@ int ObjAnim_AdvanceCurrentMove(int objAnimHandle, f32 moveStepScale, f32 deltaTi
     if (moveData->rootCurveOffset != 0)
     {
         events->rootCurveValid = 1;
-        curve = ObjAnim_GetMoveDataRootCurve(moveData);
-        rootScale = curve->scale * objAnim->rootMotionScale;
-        segmentCount = curve->sampleCount - 1;
-        axis = ObjAnim_GetRootCurveAxisData(curve);
+        axis = (s16*)ObjAnim_GetMoveDataRootCurve(moveData);
+        rootScale = ((ObjAnimRootCurve*)axis)->scale * objAnim->rootMotionScale;
+        segmentCount = ((ObjAnimRootCurve*)axis)->sampleCount - 1;
+        axis += OBJANIM_ROOT_CURVE_AXIS_DATA_OFFSET / sizeof(*axis);
         sampleSpan = segmentCount;
         previousScaledSample = sampleSpan * previousProgress;
         previousSampleIndex = previousScaledSample;

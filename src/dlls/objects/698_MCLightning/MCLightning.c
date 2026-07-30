@@ -4,7 +4,7 @@
 #include "main/frame_timing.h"
 #include "main/newclouds.h"
 #include "main/objfx.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/dll/dll_02BA_mclightning.h"
 
 #define MCLIGHTNING_OBJGROUP 0x48
@@ -55,7 +55,7 @@ void mclightning_free(GameObject* obj)
 {
     McLightningState* state = (obj)->extra;
 
-    ObjGroup_RemoveObject((int)obj, MCLIGHTNING_OBJGROUP);
+    objFreeObjectType((int)obj, MCLIGHTNING_OBJGROUP);
     if (state->boltHandle != NULL)
     {
         mm_free(state->boltHandle);
@@ -69,7 +69,7 @@ void mclightning_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 sca
     if (mode == MCLIGHTNING_PHASE_ARMED)
     {
         int count;
-        u32* objs = ObjGroup_GetObjects(MCLIGHTNING_OBJGROUP, &count);
+        u32* objs = objGetAllOfType(MCLIGHTNING_OBJGROUP, &count);
         int i;
         for (i = 0; i < count; i++)
         {
@@ -149,7 +149,7 @@ void mclightning_init(GameObject* obj, McLightningSetup* setup)
 
     (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
     (obj)->animEventCallback = mclightning_SeqFn;
-    ObjGroup_AddObject((int)obj, MCLIGHTNING_OBJGROUP);
+    objAddObjectType((int)obj, MCLIGHTNING_OBJGROUP);
     state->flags.spawnFlags = setup->spawnFlags;
     effectScale = 1.0f;
     state->hitEffectScale = effectScale;

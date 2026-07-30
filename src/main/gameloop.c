@@ -4,12 +4,12 @@
 #include "dolphin/pad.h"
 
 u8 framesThisStep = 1;
-u8 lbl_803DB411 = 1;
+u8 framesThisStepUnclamped = 1;
 f32 timeDelta = 1.0f;
 f32 oneOverTimeDelta = 1.0f;
 int gGameLoopPendingUiDllId = -1;
 f32 gGameLoopMusicFadeTimer = -30.0f;
-u8 lbl_803DB424 = 0xFF;
+u8 gSaveGameEnabled = 0xFF;
 u8 gGameLoopResetComboDebounce = 10;
 int gAskProgressiveScanYesX = 0xAA;
 int gAskProgressiveScanNoX = 0x16A;
@@ -73,7 +73,7 @@ int gGameLoopPlayerTrailTime;
 int lbl_803DCACC;
 f32 gGameLoopResetHoldTimer;
 u8 gGameLoopHardReset;
-u8 lbl_803DCAC4;
+u8 gGameLoopMapLoaded;
 CarryableInterface** gCarryableInterface;
 MinimapInterface* gMinimapInterface;
 BaddieControlInterface** gBaddieControlInterface;
@@ -110,7 +110,7 @@ s16 screenBlankFrameCount;
 u8 gGameLoopMusicActive;
 u16 gGameLoopMusicRequestCount;
 u8 gGameLoopMapLoadPending;
-u8 lbl_803DCA40;
+u8 gGameLoopFullMapUnloadPending;
 u8 lbl_803DCA3F;
 u8 shouldResetNextFrame;
 u8 gameState;
@@ -301,7 +301,7 @@ void cardShowMessage(void)
         else if (ok && (held & PAD_BUTTON_B))
         {
             buttonDisable(0, PAD_BUTTON_B);
-            lbl_803DB424 = 0;
+            gSaveGameEnabled = 0;
             hudHiddenFrameCount = 0;
             timeStop = 0;
             Sfx_SetObjectSoundsPaused(0);

@@ -65,21 +65,21 @@ u8 lbl_803DCD4B;
 u8 lbl_803DCD4A;
 u8 lbl_803DCD49;
 u8 lbl_803DCD48;
-f32 lbl_803DCD44;
-f32 lbl_803DCD40;
-f32 lbl_803DCD3C;
-f32 lbl_803DCD38;
-f32 lbl_803DCD34;
-u8 lbl_803DCD31;
+f32 gHeavyFogTop;
+f32 gHeavyFogBottom;
+f32 gHeavyFogDepthScale;
+f32 gHeavyFogDepthOffset;
+f32 gHeavyFogWorldScale;
+u8 gHeavyFogMode;
 u8 gRcpTevPrevColorValid;
-u8* lbl_803DCD2C;
-u8 lbl_803DCD28;
+u8* sWarpNoiseTexture;
+u8 gHeavyFogEnabled;
 
 u8 lbl_803DB5E8 = 0xFF;
 GXColor gHeatEffectColor = {0xFF, 0xFF, 0xFF, 0xC0};
 f32 gHeatEffectScale = 1.0f;
-int lbl_803DB5F4 = -4;
-u8 lbl_803DB5F8[8] = {0x28, 0x20, 0, 0xFF, 0, 0, 0, 0};
+int sWarpNoiseIndMtxScaleExp = -4;
+u8 sWarpNoiseBaseColor[8] = {0x28, 0x20, 0, 0xFF, 0, 0, 0, 0};
 
 typedef struct
 {
@@ -114,7 +114,7 @@ static const GXColorS10 kYuvTevColor0 = { -90, 0, -114, 135 };
 static const GXColor kYuvKColor0 = { 0x00, 0x00, 0xE2, 0x58 };
 static const GXColor kYuvKColor1 = { 0xB3, 0x00, 0x00, 0xB6 };
 static const GXColor kYuvKColor2 = { 0xFF, 0x00, 0xFF, 0x80 };
-extern GXTexObj lbl_803779A0;
+extern GXTexObj sSecondaryTexObj;
 
 
 void chooseTevKonstSelectors(void* params, u8 colorEnabled, u8 alphaEnabled, int* colorSelection,
@@ -238,12 +238,6 @@ void chooseTevKonstSelectors(void* params, u8 colorEnabled, u8 alphaEnabled, int
 }
 
 
-static void setHeatEffectInverted(void)
-{
-    gHeatEffectScale = -1.0f;
-}
-
-
 void setHeatEffectParams(u8 alpha, f32 scale)
 {
     gHeatEffectColor.a = alpha;
@@ -255,47 +249,39 @@ void setHeatEffectParams(u8 alpha, f32 scale)
 }
 
 
-static void setDefaultHeavyFogParams(void)
-{
-    lbl_803DCD3C = 0.0f;
-    lbl_803DCD38 = 0.8f;
-    lbl_803DCD34 = 0.9f;
-}
-
-
 void disableHeavyFog(void)
 {
-    lbl_803DCD28 = 0x0;
+    gHeavyFogEnabled = 0x0;
 }
 
 void enableHeavyFog(f32 top, f32 bottom, f32 depthScale, f32 depthOffset, f32 worldScale, u8 mode)
 {
-    lbl_803DCD28 = 1;
-    lbl_803DCD44 = top;
-    lbl_803DCD40 = bottom;
-    lbl_803DCD3C = depthScale;
-    lbl_803DCD38 = depthOffset;
-    lbl_803DCD34 = worldScale;
-    lbl_803DCD31 = mode;
+    gHeavyFogEnabled = 1;
+    gHeavyFogTop = top;
+    gHeavyFogBottom = bottom;
+    gHeavyFogDepthScale = depthScale;
+    gHeavyFogDepthOffset = depthOffset;
+    gHeavyFogWorldScale = worldScale;
+    gHeavyFogMode = mode;
 }
 
 
 void getHeavyFogRange(f32* high, f32* low)
 {
-    *high = lbl_803DCD44;
-    *low = lbl_803DCD40;
+    *high = gHeavyFogTop;
+    *low = gHeavyFogBottom;
 }
 
 u8 isHeavyFogEnabled(void)
 {
-    return lbl_803DCD28;
+    return gHeavyFogEnabled;
 }
 
 void* Shader_getLayer(void* base, int idx)
 {
     return (u8*)base + idx * 8 + 0x24;
 }
-void textureFn_8004c264(Texture* texture, int mapId)
+void selectTextureWithSecondary(Texture* texture, int mapId)
 {
     void* base;
     if (texture == NULL)
@@ -311,8 +297,8 @@ void textureFn_8004c264(Texture* texture, int mapId)
     }
     if (*(void**)((u8*)texture + 80) != NULL)
     {
-        textureInitSecondaryGXTexObj(texture, &lbl_803779A0);
-        GXLoadTexObj(&lbl_803779A0, GX_TEXMAP1);
+        textureInitSecondaryGXTexObj(texture, &sSecondaryTexObj);
+        GXLoadTexObj(&sSecondaryTexObj, GX_TEXMAP1);
     }
 }
 
@@ -331,7 +317,7 @@ void selectTexture(Texture* texture, int mapId)
         GXLoadTexObj(base, mapId);
     }
 }
-void textureFn_8004c330(void* p1, void* mtx)
+void addWarpedNoiseTevStages(void* p1, void* mtx)
 {
     IndTexMtx23 m;
     f32 sx;
@@ -348,9 +334,9 @@ void textureFn_8004c330(void* p1, void* mtx)
     int v2;
     int v3;
     m = lbl_802C1E28;
-    if (lbl_803DCD2C == 0)
+    if (sWarpNoiseTexture == 0)
     {
-        lbl_803DCD2C = textureAlloc(0x20, 0x20, 4, 0, 0, 1, 1, 1, 1);
+        sWarpNoiseTexture = textureAlloc(0x20, 0x20, 4, 0, 0, 1, 1, 1, 1);
         for (y = 0; y < 0x20; y++)
         {
             x = 0;
@@ -358,7 +344,7 @@ void textureFn_8004c330(void* p1, void* mtx)
             ylo = (y & 3) * 2;
             for (; x < 0x20; x++)
             {
-                v1 = (int)(lbl_803DCD2C + ylo);
+                v1 = (int)(sWarpNoiseTexture + ylo);
                 v1 = (int)((u8*)v1 + yhi);
                 v1 = v1 + (x & 3) * 8;
                 dst = (u8*)v1 + (x >> 2) * 0x100;
@@ -368,7 +354,7 @@ void textureFn_8004c330(void* p1, void* mtx)
                 *(u16*)(dst + 0x60) = ((v1 & 0xf8) >> 3) | ((v2 & 0xf8) << 8 | (v3 & 0xfc) << 3);
             }
         }
-        DCFlushRange(lbl_803DCD2C + 0x60, ((Texture*)lbl_803DCD2C)->dataSize);
+        DCFlushRange(sWarpNoiseTexture + 0x60, ((Texture*)sWarpNoiseTexture)->dataSize);
     }
     newshadows_getReflectionScrollOffsets(&sx, &sy);
     wave = mathSinf(3.142f * sx);
@@ -387,10 +373,10 @@ void textureFn_8004c330(void* p1, void* mtx)
     {
         GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     }
-    GXSetIndTexMtx(GX_ITM_0, m.v, lbl_803DB5F4);
+    GXSetIndTexMtx(GX_ITM_0, m.v, sWarpNoiseIndMtxScaleExp);
     GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord, gRcpNextTexMap);
     GXSetTevIndirect(gRcpNextTevStage, gRcpNextIndTexStage, 0, 7, 1, 0, 0, 0, 0, 3);
-    chooseTevKonstSelectors(lbl_803DB5F8, 1, 0, &out_c, &out_8);
+    chooseTevKonstSelectors(sWarpNoiseBaseColor, 1, 0, &out_c, &out_8);
     GXSetTevKColorSel(gRcpNextTevStage, out_c);
     GXSetTevColorIn(gRcpNextTevStage, GX_CC_KONST, GX_CC_TEXC, GX_CC_RASA, GX_CC_ZERO);
     GXSetTevAlphaIn(gRcpNextTevStage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
@@ -420,7 +406,7 @@ void textureFn_8004c330(void* p1, void* mtx)
     }
     {
         int id2 = gRcpNextTexMap + 1;
-        Texture* tex = (Texture*)lbl_803DCD2C;
+        Texture* tex = (Texture*)sWarpNoiseTexture;
         if (tex != 0)
         {
             void* obj = textureGetGXTexObj(tex);
@@ -728,7 +714,7 @@ void addShadowFalloffTevStages(void)
     gRcpNumTexGens += 2;
 }
 
-void gxTextureFn_8004d5b4(void* p1)
+void addRenderOpFadeStage(void* p1)
 {
     u8 buf[3];
     u8 b = *(u8*)((char*)p1 + 0x43);
@@ -1188,13 +1174,13 @@ void renderHeavyFog(void* fogColor)
     iv = (f32(*)[4])Camera_GetInverseViewMatrix();
     mcc[0][0] = 0.0f;
     mcc[0][1] = 0.0f;
-    mcc[0][2] = -1.0f / lbl_803DCD3C;
-    mcc[0][3] = lbl_803DCD38;
-    k = -1.0f / (lbl_803DCD44 - lbl_803DCD40);
+    mcc[0][2] = -1.0f / gHeavyFogDepthScale;
+    mcc[0][3] = gHeavyFogDepthOffset;
+    k = -1.0f / (gHeavyFogTop - gHeavyFogBottom);
     mcc[1][0] = k * iv[1][0];
     mcc[1][1] = k * iv[1][1];
     mcc[1][2] = k * iv[1][2];
-    mcc[1][3] = k * iv[1][3] + -lbl_803DCD44 * k;
+    mcc[1][3] = k * iv[1][3] + -gHeavyFogTop * k;
     mcc[2][0] = 0.0f;
     mcc[2][1] = 0.0f;
     mcc[2][2] = 0.0f;
@@ -1218,19 +1204,19 @@ void renderHeavyFog(void* fogColor)
             }
         }
     }
-    if (lbl_803DCD31 != 0)
+    if (gHeavyFogMode != 0)
     {
         newshadows_getReflectionScrollOffsets(&a, &b);
         b *= 0.25f;
         a *= 0.125f;
         GXSetIndTexMtx(GX_ITM_1, im.v, -2);
         GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord + 1, gRcpNextTexMap + 1);
-        m9c[0][0] = lbl_803DCD34;
+        m9c[0][0] = gHeavyFogWorldScale;
         m9c[0][1] = 0.0f;
         m9c[0][2] = 0.0f;
-        m9c[0][3] = playerMapOffsetX * lbl_803DCD34 + a;
+        m9c[0][3] = playerMapOffsetX * gHeavyFogWorldScale + a;
         m9c[1][0] = 0.0f;
-        m9c[1][1] = lbl_803DCD34;
+        m9c[1][1] = gHeavyFogWorldScale;
         m9c[1][2] = 0.0f;
         m9c[1][3] = 0.0f;
         m9c[2][0] = 0.0f;
@@ -1247,10 +1233,10 @@ void renderHeavyFog(void* fogColor)
         GXSetIndTexOrder(gRcpNextIndTexStage + 1, gRcpNextTexCoord + 2, gRcpNextTexMap + 1);
         m6c[0][0] = 0.0f;
         m6c[0][1] = 0.0f;
-        m6c[0][2] = lbl_803DCD34;
-        m6c[0][3] = playerMapOffsetZ * lbl_803DCD34 + b;
+        m6c[0][2] = gHeavyFogWorldScale;
+        m6c[0][3] = playerMapOffsetZ * gHeavyFogWorldScale + b;
         m6c[1][0] = 0.0f;
-        m6c[1][1] = lbl_803DCD34;
+        m6c[1][1] = gHeavyFogWorldScale;
         m6c[1][2] = 0.0f;
         m6c[1][3] = 0.0f;
         m6c[2][0] = 0.0f;
@@ -1693,7 +1679,7 @@ void addSignedOverlayTexStage(u8* texSrc, void* texMtx, u8* color)
     gRcpNumTexGens++;
 }
 
-void textureFn_8004ff20(void* p1, f32* wpad0, void* wpad1, int wpad2)
+void addSphereMapLitStages(void* p1, f32* wpad0, void* wpad1, int wpad2)
 {
     if (p1 != 0)
     {
@@ -1965,7 +1951,7 @@ void addEnvMapTexCoord(int scale)
     gRcpNumTexGens++;
 }
 
-int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
+int addEnvMapBumpStages(void* p1, int p2, u8 p3, u32 p4)
 {
     struct piIndMtx indmtx;
     f32 mtx[3][4];
@@ -2043,7 +2029,7 @@ int textureFn_80050ad8(void* p1, int p2, u8 p3, u32 p4)
 
 
 
-void gxTextureFn_80050e28(u8 mode)
+void addLitColorStage(u8 mode)
 {
     GXSetTevDirect(gRcpNextTevStage);
     GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
@@ -2167,7 +2153,7 @@ void addLightTexReg2Stage(void* p1, u8 flag2, u8 flag3)
 
 
 
-void textureFn_80051348(void* p1, u8 p2)
+void addSphereMapTexStage(void* p1, u8 p2)
 {
     f32 mtxB[3][4];
     f32 mtxA[3][4];
@@ -2282,7 +2268,7 @@ void addTexLayerStagesLit(void* p1, void* mtx)
 }
 
 
-GXTexObj lbl_803779A0;
+GXTexObj sSecondaryTexObj;
 
 void addTexLayerStage(Texture* tex, MtxPtr mtx, int mode)
 {
@@ -2586,8 +2572,8 @@ void addTexLayerStageSwizzled(Texture* tex, MtxPtr mtx, int mode, GXColor* kpara
         }
         if (*(void**)&tex->imageOffset != NULL)
         {
-            textureInitSecondaryGXTexObj(tex, &lbl_803779A0);
-            GXLoadTexObj(&lbl_803779A0, GX_TEXMAP1);
+            textureInitSecondaryGXTexObj(tex, &sSecondaryTexObj);
+            GXLoadTexObj(&sSecondaryTexObj, GX_TEXMAP1);
         }
     }
     if (*(void**)&tex->imageOffset != NULL)

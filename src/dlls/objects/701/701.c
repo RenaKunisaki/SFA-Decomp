@@ -104,7 +104,7 @@ void androsshand_handleDamage(GameObject* obj, AndrossHandState* state)
                 andross_setPartSignal(state->androssObj, 1);
                 Sfx_PlayFromObject((int)obj, SFXTRIG_en_barrelblow11);
                 ObjPath_GetPointWorldPosition(obj, 0, &x, &y, &z, 0);
-                DIMexplosionFn_8009a96c((u8*)obj, x, y, z, 120.0f, 1, 1, 1, 1, 0, 1, 0);
+                spawnDimExplosion((u8*)obj, x, y, z, 120.0f, 1, 1, 1, 1, 0, 1, 0);
             }
             break;
         }

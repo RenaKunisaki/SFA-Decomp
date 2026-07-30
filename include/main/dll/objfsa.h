@@ -45,7 +45,7 @@ FUN_800dd62c(u64 param_1,u64 param_2,u64 param_3,u64 param_4,
 int RomCurve_setClosed(RomCurveWalker *state,int closed);
 u8 RomCurve_goNextPoint(RomCurveWalker *state);
 void RomCurve_stepClamped(RomCurveWalker *state,f32 step);
-int curveFn_800da23c(RomCurveWalker *state,void *targetCurve);
+int RomCurve_advanceToNextSegment(RomCurveWalker *state,void *targetCurve);
 int RomCurve_setupHermiteSegment(RomCurveWalker *state,void *fromCurve,void *toCurve,void *targetCurve);
 u32
 FUN_800ddf84(u64 param_1,u64 param_2,u64 param_3,u64 param_4,

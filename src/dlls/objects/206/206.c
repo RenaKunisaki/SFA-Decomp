@@ -534,7 +534,7 @@ void chukChuk_spawnIceBall(GameObject* obj, GroundBaddieState* state) {
         setup->color[1] = 1;
         setup->color[2] = 0xff;
         setup->color[3] = 0xff;
-        projectile = Obj_SetupObject(setup, 5, -1, -1, 0);
+        projectile = objSetupObject(setup, 5, -1, -1, 0);
         if (projectile != NULL) {
             distanceRatio = state->baddie.targetDistance / (f32)(u32)state->aggroRange;
             duration = 50.0f * distanceRatio;
@@ -670,7 +670,7 @@ int dll_CE_getObjectTypeId(void) {
 void dll_CE_free(GameObject* obj) {
     GroundBaddieState* state = obj->extra;
 
-    ObjGroup_RemoveObject((int)obj, DLL_CE_OBJGROUP);
+    objFreeObjectType((int)obj, DLL_CE_OBJGROUP);
     {
         GameObject* child = obj->childObjs[0];
 
@@ -699,13 +699,6 @@ void dll_CE_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int f
 
 void dll_CE_hitDetect(GameObject* obj) {
     (void)obj;
-}
-
-static void chukChuk_clearCheckHandlers(void)
-{
-    int i;
-    for (i = 0; i < 6; i++)
-        gChukChukCheckHandlers[i] = NULL;
 }
 
 void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {

@@ -4,7 +4,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_placement.h"
 #include "main/dll/baddie_state.h"
-#include "main/dll/foodbag.h"
+#include "main/dll/dll_0082_modgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
@@ -105,7 +105,7 @@ void dll410_update(GameObject* obj) {
                 hitPoints = placement->triggerGameBitOffset;
                 spawnSetup->hitPoints = hitPoints;
             }
-            child = Obj_SetupObject(&spawnSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            child = objSetupObject(&spawnSetup->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
             if (child != NULL && child->extra != NULL) {
                 ((GroundBaddieState*)child->extra)->configFlags = DLL19A_CHILD_DISABLE_CAMERA_TARGET;
             }

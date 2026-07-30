@@ -75,7 +75,7 @@ int gCurTextBuffer;
 u8* gGameTextLastEntry;
 int gGameTextFallbackBuf;
 GameTextDrawFunc gameTextDrawFunc;
-u8 lbl_803DC968;
+u8 gGameTextFontIsSjis;
 
 void setLanguageFn_8001ad64(GameTextLoadSlot* slot);
 
@@ -827,13 +827,13 @@ void gameTextLoadGraphicsFn_8001a918(void)
         sizeA = 0x3000;
         sizeB = 0x10120;
         curLanguage = 0;
-        lbl_803DC968 = 0;
+        gGameTextFontIsSjis = 0;
         break;
     case 1:
         sizeA = 0x4d000;
         sizeB = 0x90ee4;
         curLanguage = 4;
-        lbl_803DC968 = 1;
+        gGameTextFontIsSjis = 1;
         break;
     }
     bufA = mmAlloc(sizeA, 0x1a, 0);
@@ -841,7 +841,7 @@ void gameTextLoadGraphicsFn_8001a918(void)
     OSLoadFont(bufB, bufA);
     if (charset->glyphCount == 0)
     {
-        if (lbl_803DC968)
+        if (gGameTextFontIsSjis)
         {
             charset->glyphs = (TextGlyph*)fontData;
             charset->glyphCount = 0x55;
@@ -868,7 +868,7 @@ void gameTextLoadGraphicsFn_8001a918(void)
     y = 0;
     while (count--)
     {
-        if (lbl_803DC968)
+        if (gGameTextFontIsSjis)
         {
             int c;
             u32 val;
@@ -1202,115 +1202,4 @@ int gameTextSaveDir(int x)
         return 1;
     }
     return 0;
-}
-
-void subtitleUpdateAndDraw(int a)
-{
-    int charset;
-    SubtitleCmd* cmds;
-    int delay;
-    int n;
-
-    if (gSubtitleActive == 2)
-    {
-        if (gGameTextSequenceMode != 0)
-        {
-            charset = gameTextGetCharset();
-            gameTextSetCharset(1, 2);
-        }
-        if (getHudHiddenFrameCount() == 0)
-        {
-            gSubtitleElapsedFrames += framesThisStep;
-        }
-        gSubtitleCurTime = gSubtitleElapsedFrames / 60.0f;
-        if (gSubtitleLineIndex + 1 < gSubtitleLineCount &&
-            gSubtitleCurTime >= gSubtitleLineTimes[gSubtitleLineIndex + 1])
-        {
-            cmds = subtitleParseControlCmds(gSubtitleLineStrs[gSubtitleLineIndex], &n);
-            if (cmds != NULL)
-            {
-                SubtitleCmd* p = &cmds[n];
-                while (p--, n-- != 0)
-                {
-                    if (p->code == TEXT_CTRL_COLOR)
-                    {
-                        SubtitleCmd* e = &cmds[n];
-                        gSubtitleColorR = e->r;
-                        gSubtitleColorG = e->g;
-                        gSubtitleColorB = e->b;
-                        gSubtitleColorA = e->a;
-                        break;
-                    }
-                }
-                delay = mmSetFreeDelay(0);
-                mm_free(cmds);
-                mmSetFreeDelay(delay);
-            }
-            gSubtitleLineIndex++;
-            if (gSubtitleLineIndex + 1 >= gSubtitleLineCount)
-            {
-                subtitleStop();
-                if (gGameTextSequenceMode != 0)
-                {
-                    gameTextSetCharset(charset, 2);
-                }
-                return;
-            }
-        }
-        gameTextSetColor(gSubtitleColorR, gSubtitleColorG, gSubtitleColorB, gSubtitleColorA);
-        gameTextShowStr(gSubtitleLineStrs[gSubtitleLineIndex], 10, 0, 0);
-        if (gGameTextSequenceMode != 0)
-        {
-            gameTextSetCharset(charset, 2);
-        }
-    }
-}
-
-void mainLoopDoGameText(void)
-{
-    if (gGameTextSequenceMode != 0)
-    {
-        if (gameTextGetState(1) == 2 && gSubtitleActive == 1)
-        {
-            subtitleBuildLineTable();
-        }
-    }
-    else
-    {
-        if (gameTextGetState(0) == 2 && gGameTextPendingDir == getCurGameText() && gSubtitleActive == 1)
-        {
-            subtitleBuildLineTable();
-        }
-    }
-}
-
-void subtitleStop(void)
-{
-    void** slot;
-    int i;
-    int oldDelay;
-
-    if (gSubtitleActive != 0)
-    {
-        gSubtitleActive = 0;
-        i = 0;
-        slot = gSubtitleLineTable;
-        while (i < gSubtitleBlockCount)
-        {
-            if (slot[i] != NULL)
-            {
-                oldDelay = mmSetFreeDelay(0);
-                mm_free(slot[i]);
-                mmSetFreeDelay(oldDelay);
-                slot[i] = NULL;
-            }
-            i++;
-        }
-
-        if (gGameTextSavedDir != -1)
-        {
-            gameTextLoadDir(gGameTextSavedDir);
-            gGameTextSavedDir = -1;
-        }
-    }
 }

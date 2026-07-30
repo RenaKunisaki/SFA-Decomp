@@ -31,6 +31,7 @@ typedef struct RomCurvePathNode
   s16 sampleB;
   s16 sampleC;
   s8 sampleD;
+  u8 cameraFlags;
 } RomCurvePathNode;
 
 STATIC_ASSERT(offsetof(RomCurvePathNode, x) == 0x08);
@@ -39,6 +40,8 @@ STATIC_ASSERT(offsetof(RomCurvePathNode, directionMask) == 0x1B);
 STATIC_ASSERT(offsetof(RomCurvePathNode, links) == 0x1C);
 STATIC_ASSERT(offsetof(RomCurvePathNode, tag0) == 0x31);
 STATIC_ASSERT(offsetof(RomCurvePathNode, sampleA) == 0x34);
+STATIC_ASSERT(offsetof(RomCurvePathNode, cameraFlags) == 0x3B);
+STATIC_ASSERT(sizeof(RomCurvePathNode) == 0x3C);
 
 typedef void (*RomCurveVoidFn)(void);
 typedef RomCurveDef **(*RomCurveGetCurvesFn)(int *outCount);
@@ -48,6 +51,8 @@ typedef f32 (*RomCurveFindPositionFn)(int type,int action,f32 x,f32 y,f32 z,f32 
 typedef f32 (*RomCurveDistanceToObjectFn)(struct GameObject *obj,u32 curveId);
 typedef int (*RomCurveFindByActionFn)(int action);
 typedef int (*RomCurveGetLinkedCurveFn)(RomCurveDef *curve,int excludeLinkId);
+typedef int (*RomCurveFindShortestPathLinkFn)(RomCurveDef *startCurve,int unused1,int unused2,
+                                              int *previousCurveId);
 typedef int (*RomCurveIsPointInsideLoopFn)(int curveId,f32 x,f32 y,f32 z,f32 *outDistance);
 typedef int (*RomCurveCountRandomPointsFn)(RomCurveDef *curve);
 typedef int (*RomCurveBuildRandomPointsFn)(RomCurvePlacementDef *curve,f32 *outX,f32 *outY,f32 *outZ,s8 *outTypes);
@@ -85,7 +90,7 @@ struct RomCurveInterface {
   void *slot5C;
   RomCurveGetLinkedCurveFn getRandomBlockedLink;
   void *slot64;
-  void *slot68;
+  RomCurveFindShortestPathLinkFn findShortestPathLink;
   void *slot6C;
   void *slot70;
   RomCurveCountRandomPointsFn countRandomPoints;
@@ -109,6 +114,7 @@ extern RomCurveInterface **gRomCurveInterface;
 STATIC_ASSERT(offsetof(RomCurveInterface, getCurves) == 0x10);
 STATIC_ASSERT(offsetof(RomCurveInterface, find) == 0x14);
 STATIC_ASSERT(offsetof(RomCurveInterface, getById) == 0x1C);
+STATIC_ASSERT(offsetof(RomCurveInterface, findShortestPathLink) == 0x68);
 STATIC_ASSERT(offsetof(RomCurveInterface, initCurve) == 0x8C);
 STATIC_ASSERT(offsetof(RomCurveInterface, goNextPoint) == 0x90);
 STATIC_ASSERT(offsetof(RomCurveInterface, setClosed) == 0x94);

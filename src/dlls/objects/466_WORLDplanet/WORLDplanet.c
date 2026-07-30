@@ -14,6 +14,7 @@
 #include "main/audio/stream_api.h"
 #include "main/camera_interface.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/dll_004E_cameramodeworldmap.h"
 #include "main/dll/hint_text_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/fcos16_approx_api.h"
@@ -50,11 +51,7 @@
 #define WORLDPLANET_CONFIRM_BUTTON         0x100
 #define WORLDPLANET_CANCEL_BUTTON          0x200
 
-#define WORLDPLANET_CAMERA_MODE                 0x4E /* cameramode DLL dll_004E_cameramodeworldmap */
 #define WORLDPLANET_CAMERA_FOCUS_FRAMES         0x50
-#define WORLDPLANET_CAMERA_ACTION_INIT_RECORD   2
-#define WORLDPLANET_CAMERA_ACTION_SELECT_RECORD 1
-#define WORLDPLANET_CAMERA_ACTION_LOCK_RECORD   0
 
 #define WORLDPLANET_STATE_FLAG_ENVFX_STARTED           0x01
 #define WORLDPLANET_STATE_FLAG_CAMERA_SET              0x04
@@ -63,7 +60,6 @@
 #define WORLDPLANET_FOX_OBJECT_ID               0x42FF5
 #define WORLDPLANET_ARWING_OBJECT_ID            0x4300C
 #define WORLDPLANET_SPECIAL_ORBIT_OBJECT_ID     0x4300D
-#define WORLDPLANET_BRIEFING_PORTRAIT_OBJECT_ID 0x43077
 #define WORLDPLANET_FOX_SPAWN_OBJECT_ID         0x80F
 #define WORLDPLANET_FOX_SPAWN_SETUP_SIZE        0x20
 #define WORLDPLANET_FOX_SPAWN_INITIAL_FRAMES    0x78
@@ -116,7 +112,7 @@ int gWorldPlanetSelectConfirmTimer;
 f32 lbl_803DDD00;
 
 void worldplanet_updateMapLighting(GameObject* obj) {
-    skyFn_80089710(WORLDPLANET_SKY_LIGHT_MASK, 1, 0);
+    skySetLightsEnabled(WORLDPLANET_SKY_LIGHT_MASK, 1, 0);
 
     gWorldPlanetLightingLerpT = 0.0f;
 
@@ -255,7 +251,7 @@ void worldplanet_update(GameObject* obj) {
             setup->base.posX = (obj)->anim.localPosX;
             setup->base.posY = (obj)->anim.localPosY;
             setup->base.posZ = (obj)->anim.localPosZ;
-            Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, NULL);
+            objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, NULL);
         }
     }
     if (state->foxSpawnTimer < 0) {
@@ -276,12 +272,12 @@ void worldplanet_update(GameObject* obj) {
     } else {
         setFrameCountdown_800202c4(1);
         if ((state->flags & WORLDPLANET_STATE_FLAG_CAMERA_SET) == 0) {
-            (*gCameraInterface)->setMode(WORLDPLANET_CAMERA_MODE, 1, 0, 0, NULL, 0, 0xff);
+            (*gCameraInterface)->setMode(CAMERA_MODE_WORLD_MAP_RESOURCE_ID, 1, 0, 0, NULL, 0, 0xff);
             (*gCameraInterface)->setFocus((void*)obj, 0);
             state->flags |= WORLDPLANET_STATE_FLAG_CAMERA_SET;
         } else if ((state->flags & WORLDPLANET_STATE_FLAG_INITIAL_ACTION_RELEASED) == 0) {
             objId = tbl->orbitObjectIds[gWorldPlanetSelectionToIndex[state->selectedPlanet]];
-            (*gCameraInterface)->releaseAction(&objId, WORLDPLANET_CAMERA_ACTION_INIT_RECORD);
+            (*gCameraInterface)->releaseAction(&objId, CAMERA_MODE_WORLD_MAP_ACTION_SET_FOCUS_IMMEDIATE);
             state->flags |= WORLDPLANET_STATE_FLAG_INITIAL_ACTION_RELEASED;
             {
                 GameObject* briefingPortrait = ObjList_FindObjectById(WORLDPLANET_BRIEFING_PORTRAIT_OBJECT_ID);
@@ -362,7 +358,7 @@ void worldplanet_update(GameObject* obj) {
             if (prevPlanet != state->selectedPlanet || (obj)->userData1 == 0) {
                 if ((obj)->userData1 != 0) {
                     objId = tbl->orbitObjectIds[gWorldPlanetSelectionToIndex[state->selectedPlanet]];
-                    (*gCameraInterface)->releaseAction(&objId, WORLDPLANET_CAMERA_ACTION_SELECT_RECORD);
+                    (*gCameraInterface)->releaseAction(&objId, CAMERA_MODE_WORLD_MAP_ACTION_SET_FOCUS);
                     Sfx_PlayFromObject(0, SFXTRIG_crf_babyambi3);
                 }
                 gWorldPlanetPathProgress = 0.0f;
@@ -460,7 +456,7 @@ void worldplanet_update(GameObject* obj) {
                         (*gCameraInterface)->setFocus((void*)objId, WORLDPLANET_CAMERA_FOCUS_FRAMES);
                         state->selectionLocked = 1;
                         (*gCameraInterface)
-                            ->releaseAction(&state->selectionLocked, WORLDPLANET_CAMERA_ACTION_LOCK_RECORD);
+                            ->releaseAction(&state->selectionLocked, CAMERA_MODE_WORLD_MAP_ACTION_SET_MODE);
                         {
                             GameObject* briefingPortrait =
                                 ObjList_FindObjectById(WORLDPLANET_BRIEFING_PORTRAIT_OBJECT_ID);
@@ -492,7 +488,7 @@ void worldplanet_update(GameObject* obj) {
                     (*gCameraInterface)->setFocus((void*)obj, WORLDPLANET_CAMERA_FOCUS_FRAMES);
                     state->selectionLocked = 0;
                     gWorldPlanetReselectDelayTimer = WORLDPLANET_CANCEL_LOCKOUT_FRAMES;
-                    (*gCameraInterface)->releaseAction(&state->selectionLocked, WORLDPLANET_CAMERA_ACTION_LOCK_RECORD);
+                    (*gCameraInterface)->releaseAction(&state->selectionLocked, CAMERA_MODE_WORLD_MAP_ACTION_SET_MODE);
                     unlockLevel(gWorldPlanetLoadedMapId, 1, 0);
                     mapUnload(gWorldPlanetLoadedMapId, WORLDPLANET_MAP_SELECTED_FLAG);
                     gWorldPlanetInputLockTimer = WORLDPLANET_COUNTDOWN_FRAMES;

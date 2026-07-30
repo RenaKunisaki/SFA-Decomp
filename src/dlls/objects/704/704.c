@@ -44,6 +44,7 @@
 #include "main/objseq.h"
 #include "main/dll/FRONT/dll_0034_n_filemenu.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
+#include "main/dll/dll_0057_cameramodetitle.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
@@ -72,9 +73,6 @@ f32 gTitleScreenFoxTypeMoveRate = 0.01f;
 #define FRONT_SEQID_ROB            0x780 /* "FrontRob" */
 #define FRONT_SEQID_PILOTS         0x781 /* "FrontPilots" */
 #define FRONT_SEQID_PILOTS_ATTRACT 0x78a /* "FrontPilots" */
-
-/* camera mode DLL 0x57 = dll_0057_cameramodetitle */
-#define FRONT_CAMMODE_TITLE 0x57
 
 typedef struct TitlescreenState
 {
@@ -126,10 +124,8 @@ extern u8 gTitleScreenSfxFlagGrid[0x48];
 extern u8 gTitleScreenMtx[0x34];
 extern TitleAnimMoves gTitleScreenAnimMoves[];
 extern f32 hudMatrix[4][4];
-extern u8 lbl_803DB411;
+extern u8 framesThisStepUnclamped;
 extern f32 lbl_803E2300;
-extern f32 gTitleScreenPi;
-
 void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
 {
     s8* sarr = (s8*)arr;
@@ -195,7 +191,7 @@ void creditsStart_(void)
     int alpha;
     if (gTitleScreenCreditIndex >= gTitleScreenCreditCount)
     {
-        if ((*gCameraInterface)->getMode() == FRONT_CAMMODE_TITLE)
+        if ((*gCameraInterface)->getMode() == CAMERA_MODE_TITLE_RESOURCE_ID)
         {
             showCredits = 0;
             loadUiDll(4);
@@ -205,7 +201,7 @@ void creditsStart_(void)
     }
     if (gTitleScreenCreditDelay > 0)
     {
-        gTitleScreenCreditDelay -= lbl_803DB411;
+        gTitleScreenCreditDelay -= framesThisStepUnclamped;
         if (gTitleScreenCreditDelay < 0)
         {
             gTitleScreenCreditDelay = 0;
@@ -232,8 +228,8 @@ void creditsStart_(void)
     }
     gameTextSetColor(0xff, 0xff, 0xff, alpha);
     gameTextShowAt(gCreditEntries[gTitleScreenCreditIndex].textId, 0, 0);
-    gTitleScreenCreditsElapsed += lbl_803DB411;
-    gTitleScreenCreditTimer += lbl_803DB411;
+    gTitleScreenCreditsElapsed += framesThisStepUnclamped;
+    gTitleScreenCreditTimer += framesThisStepUnclamped;
     if (gTitleScreenCreditTimer < gCreditEntries[gTitleScreenCreditIndex].duration)
     {
         return;
@@ -335,7 +331,7 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
         gTitleScreenPulseTimer = m - 100.0f;
     }
     gTitleScreenPulseAlpha =
-        127.0f * mathCosf(gTitleScreenPi * (2.0f * gTitleScreenPulseTimer) / 100.0f) + 128.0f;
+        127.0f * mathCosf(3.142f * (2.0f * gTitleScreenPulseTimer) / 100.0f) + 128.0f;
     if (gTitleScreenCursorY > 0.0f)
     {
         f32 (*m2)[4] = (f32 (*)[4])gTitleScreenMtx;
@@ -589,7 +585,7 @@ void TitleScreen_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
         return;
     mainSetBits(GAMEBIT_CreditsRelated0DF6, 1);
     gTitleScreenCreditsStarted = 1;
-    (*gObjectTriggerInterface)->setCamVars(FRONT_CAMMODE_TITLE, 0, 0, 0);
+    (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_TITLE_RESOURCE_ID, 0, 0, 0);
     n_attractmode_releaseMovieBuffers();
     gTitleScreenCreditsEndTriggered = 0;
 }
@@ -905,7 +901,7 @@ void TitleScreen_update(GameObject* obj)
         if (gTitleScreenSetupDone == 0)
         {
             getEnvfxAct(0, 0, FRONT_ENVFX_TITLE, 0);
-            skyFn_80089710(7, 1, 0);
+            skySetLightsEnabled(7, 1, 0);
             skySetBaseColor(7, 0x4b, 0x64, 0x78, 0, 0);
             skySetLightDirection(7, 1.0f, -1.0f, -1.0f);
             (*gCameraInterface)->setFocus(obj, 0);
@@ -1007,7 +1003,7 @@ extern s16 gTitleScreenTextureIds[];
 /* Copyright/title text box shown by titleScreenShowCopyright (docblock: "push text box 0x3d9"). */
 
 /* Reset state bytes, load the main texture (asset 0x647 or 0xC5 depending on
- * lbl_803DC968), identity the matrix, then load the 19-entry texture table
+ * gGameTextFontIsSjis), identity the matrix, then load the 19-entry texture table
  * from the id list at gTitleScreenTextureIds into gTitleScreenTextures. */
 void TitleScreen_initialise(void)
 {
@@ -1016,7 +1012,7 @@ void TitleScreen_initialise(void)
     gTitleScreenMenuSelection = 0;
     gTitleScreenPrevMenuActive = -1;
     gTitleScreenMenuActive = 0;
-    if (lbl_803DC968 != 0)
+    if (gGameTextFontIsSjis != 0)
     {
         gTitleScreenMainTex = textureLoadAsset(FRONT_MAIN_TEXTURE_ID_A);
     }

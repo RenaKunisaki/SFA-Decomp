@@ -104,6 +104,20 @@ def differing(t: list[str], c: list[str]) -> tuple[int, int]:
     return struct, reg
 
 
+def known_counts(fns: list[str]) -> dict[str, int]:
+    roots = [REPO / "docs"]
+    roots += sorted(Path.home().glob(".claude/projects/*/memory"))
+    files = [p for r in roots if r.is_dir()
+             for p in r.rglob("*.md") if p.is_file()]
+    texts = []
+    for p in files:
+        try:
+            texts.append(p.read_text(errors="ignore"))
+        except OSError:
+            pass
+    return {fn: sum(1 for t in texts if fn in t) for fn in fns}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("-v", "--version", default="GSAE01")
@@ -113,6 +127,10 @@ def main() -> int:
     ap.add_argument("--struct-only", action="store_true",
                     help="only functions whose mnemonic stream differs")
     ap.add_argument("--limit", type=int, default=60)
+    ap.add_argument("--annotate-known", action="store_true",
+                    help="mark rows whose function is already discussed in docs/ or "
+                         "the agent memory dir -- a high count usually means a "
+                         "documented cap, not an unworked target")
     args = ap.parse_args()
 
     cfg = json.loads((REPO / "build" / args.version / "config.json").read_text())
@@ -148,10 +166,24 @@ def main() -> int:
           f"regB {sum(r[1] for r in narrow)}/{sum(r[1] for r in rows)}\n")
     print("# structB = instructions whose MNEMONIC differs (source-addressable shape);")
     print("# regB    = same mnemonic, different operands (band/allocation)\n")
-    print("%-8s %-8s %-8s %-4s %-4s  %-34s %s"
-          % ("structB", "regB", "sizeB", "G", "F", "unit", "function"))
-    for r in narrow[:args.limit]:
-        print("%-8d %-8d %-8d %-4d %-4d  %-34s %s" % r)
+    shown = narrow[:args.limit]
+    if not args.annotate_known:
+        print("%-8s %-8s %-8s %-4s %-4s  %-34s %s"
+              % ("structB", "regB", "sizeB", "G", "F", "unit", "function"))
+        for r in shown:
+            print("%-8d %-8d %-8d %-4d %-4d  %-34s %s" % r)
+        return 0
+
+    known = known_counts([r[6] for r in shown])
+    print("# prior = files in docs/ + agent memory that mention the function. It measures how much\n"
+          "#         has been WRITTEN about it, not that it is capped -- a big win gets written up\n"
+          "#         too. Treat >=5 as 'read those first', never as 'skip'.\n")
+    print("%-8s %-8s %-8s %-4s %-4s  %-34s %-44s %s"
+          % ("structB", "regB", "sizeB", "G", "F", "unit", "function", "prior"))
+    for r in shown:
+        n = known.get(r[6], 0)
+        mark = "none" if n == 0 else f"{n} file(s)" + ("  <-- read first" if n >= 5 else "")
+        print("%-8d %-8d %-8d %-4d %-4d  %-34s %-44s %s" % (*r, mark))
     return 0
 
 

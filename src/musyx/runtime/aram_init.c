@@ -5,7 +5,7 @@
 #include "dolphin/os/OSCache.h"
 #include "dolphin/ar.h"
 
-extern AramTransferQueues lbl_803D3F60;
+extern AramTransferQueues aramNormalPriorityQueue;
 
 u32 aramWrite;
 u32 aramTop;
@@ -25,7 +25,7 @@ void aramInit(u32 extraSize)
     u32 arBase;
     int i;
 
-    queues = &lbl_803D3F60;
+    queues = &aramNormalPriorityQueue;
     arBase = ARGetBaseAddress();
     buf = salMalloc(0x500);
     clear = (u16*)buf;

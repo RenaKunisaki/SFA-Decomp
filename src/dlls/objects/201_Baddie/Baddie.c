@@ -8,17 +8,18 @@
  */
 #include "dlls/objects/237.h"
 #include "main/camera_interface.h"
+#include "main/dll/dll_0049_cameramodecombat.h"
 #include "main/dll/objfx_api.h"
 #include "main/objfx.h"
 #include "main/newshadows_audio_api.h"
-#include "main/dll/dll_005A_staffcollisionfunc03.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/object_render.h"
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/dll/baddie_placement.h"
 #include "main/dll/baddie_setmove.h"
 #include "main/dll/boneparticleeffect_interface.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/objprint_character_api.h"
 #include "sys/objects/lifecycle.h"
@@ -145,9 +146,6 @@ StaffCollisionInterface** gBaddieStaffCollisionInterface;
 /* object groups: the enemy's own group / secondary group left on a message */
 #define ENEMY_OBJGROUP           3
 #define ENEMY_OBJGROUP_SECONDARY 0x50
-
-/* camera mode DLL 0x49 = dll_0049_cameramodecombat */
-#define ENEMY_CAMMODE_COMBAT 0x49
 
 /* enemy defNos (anim.romDefNo) - names read from retail OBJECTS.bin at def+0x91;
    every id below gates to this file's own DLL 0xC9 */
@@ -796,7 +794,7 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
                 (obj)->anim.worldPosZ = ((ObjPlacement*)parentSetup)->posZ;
             }
             nearestDistance = 750.0f;
-            gTrickyNearestObject = ObjGroup_FindNearestObject(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDistance);
+            gTrickyNearestObject = objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDistance);
             (obj)->anim.worldPosX = savedX;
             (obj)->anim.worldPosY = savedY;
             (obj)->anim.worldPosZ = savedZ;
@@ -849,7 +847,7 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
     ((ObjPlacement*)setup)->color[2] = ((ObjPlacement*)parentSetup)->color[2];
     ((ObjPlacement*)setup)->color[1] = ((ObjPlacement*)parentSetup)->color[1];
     ((ObjPlacement*)setup)->color[3] = ((ObjPlacement*)parentSetup)->color[3];
-    nearest = (int)Obj_SetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+    nearest = (int)objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     gTrickyNearestObject = nearest;
     if ((((GameObject*)nearest)->anim.romDefNo == TRICKY_OBJ_APPLE) || (((GameObject*)nearest)->anim.romDefNo == TRICKY_CHILD_OBJ_ENERGY_EGG))
     {
@@ -880,7 +878,7 @@ void baddieInstantiateWeapon(GameObject* obj, int state)
             {
                 setup = (int)Obj_AllocObjectSetup(0x20, ((EnemyState*)state)->weaponRomDefNo);
                 *(u8*)(setup + 5) = *(u8*)(setup + 5) | (((BaddieInstantiateWeaponPlacement*)parentSetup)->unk5 & 0x18);
-                child = Obj_SetupObject((ObjPlacement*)setup, 4, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
+                child = objSetupObject((ObjPlacement*)setup, 4, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
                 ObjLink_AttachChild(obj, child, 0);
                 ((EnemyState*)state)->spawnedWeaponRomDefNo = ((EnemyState*)state)->weaponRomDefNo;
             }
@@ -941,7 +939,7 @@ u8 baddie_canSeeTarget(GameObject* obj, EnemyState* state, void* from, void* to)
     }
     if ((visible != 0) && ((state->flags2E4 & ENEMY_FLAG2E4_BBOX_BLOCKS_SIGHT) != 0))
     {
-        if (objBboxFn_800640cc((f32*)from, (f32*)&probe, 1.0f, 0, &bboxHit, obj,
+        if (trackGetLineIntersect((f32*)from, (f32*)&probe, 1.0f, 0, &bboxHit, obj,
                                state->unk261, -1, 0, 0) != 0)
         {
             visible = 0;
@@ -1015,7 +1013,7 @@ void baddie_updateSightQuadrants(GameObject* obj, EnemyState* state, f32 radius)
         }
         if ((visible != 0) && ((state->flags2E4 & ENEMY_FLAG2E4_BBOX_BLOCKS_SIGHT) != 0))
         {
-            if (objBboxFn_800640cc(&obj->anim.worldPosX, (f32*)&probe, 1.0f, 0, &bboxHit,
+            if (trackGetLineIntersect(&obj->anim.worldPosX, (f32*)&probe, 1.0f, 0, &bboxHit,
                                    obj,
                                    state->unk261, -1, 0, 0) != 0)
             {
@@ -1881,7 +1879,7 @@ int enemy_SeqFn(GameObject* node, int unused, ObjSeqState* animUpdate)
                 *(u16*)(sub + 0x2b6) = 0x33;
             break;
         case 3:
-            (*gObjectTriggerInterface)->setCamVars(ENEMY_CAMMODE_COMBAT, 4, (int)node, 0x3c);
+            (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_COMBAT_RESOURCE_ID, 4, (int)node, 0x3c);
             break;
         case 6:
             if (((EnemyState*)sub)->tailSimHandle != NULL)
@@ -1963,7 +1961,7 @@ int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int max, Enem
     resultCount = 0;
     if ((flags & 1) != 0)
     {
-        tgt = (GameObject*)ObjGroup_FindNearestObject(ENEMY_OBJGROUP, obj, &radius);
+        tgt = (GameObject*)objGetNearestTypeTo(ENEMY_OBJGROUP, obj, &radius);
         out->obj = tgt;
         if (tgt != 0)
         {
@@ -2013,7 +2011,7 @@ int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int max, Enem
     else
     {
         radius = radius * radius;
-        arr = (GameObject**)ObjGroup_GetObjects(ENEMY_OBJGROUP, &count);
+        arr = (GameObject**)objGetAllOfType(ENEMY_OBJGROUP, &count);
         if (count != 0)
         {
             i = 0;
@@ -2513,9 +2511,9 @@ void enemy_free(GameObject* obj, int flag)
         hagabonMK2_stopLoopSfx((int)obj, state);
         break;
     case ENEMY_WHIRLPOOL_OBJ:
-        if (ObjGroup_ContainsObject((u32)obj, ENEMY_OBJGROUP_SECONDARY) != 0)
+        if (objIsObjectType((u32)obj, ENEMY_OBJGROUP_SECONDARY) != 0)
         {
-            ObjGroup_RemoveObject((int)obj, ENEMY_OBJGROUP_SECONDARY);
+            objFreeObjectType((int)obj, ENEMY_OBJGROUP_SECONDARY);
         }
         break;
     }
@@ -2533,7 +2531,7 @@ void enemy_free(GameObject* obj, int flag)
         }
     }
     (*gExpgfxInterface)->freeSource((int)obj);
-    ObjGroup_RemoveObject((int)obj, ENEMY_OBJGROUP);
+    objFreeObjectType((int)obj, ENEMY_OBJGROUP);
 }
 
 void enemy_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -2803,7 +2801,7 @@ void enemy_update(GameObject* obj)
     }
     if ((((EnemyState*)state)->controlFlags & 0x8000) != 0)
     {
-        hudFn_8011f38c(0);
+        setHudForceShowMask(0);
         (*gPathControlInterface)->attachObject(obj, state + 4);
         ((EnemyState*)state)->controlFlags &= ~0x8003;
         if ((((EnemyState*)state)->flags2E4 & 0x20000) != 0)
@@ -3015,7 +3013,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
         {
             ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 & -39;
         }
-        ObjGroup_AddObject((int)obj, ENEMY_OBJGROUP);
+        objAddObjectType((int)obj, ENEMY_OBJGROUP);
         ((EnemyState*)state)->prevActionId = 7;
         ((EnemyState*)state)->actionId = 2;
         if (*(void**)state == NULL)

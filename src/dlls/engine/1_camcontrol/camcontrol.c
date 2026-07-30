@@ -4,7 +4,6 @@
 #include "dolphin/mtx/vec.h"
 #include "dolphin/os.h"
 #include "dolphin/pad.h"
-#include "main/dll/dll_0042_unk.h"
 #include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/dll_0048_cameramodestatic.h"
 #include "main/dll/dll_02C0_front_api.h"
@@ -111,28 +110,6 @@ typedef struct CamcontrolStateStorage {
 
 STATIC_ASSERT(sizeof(CamcontrolStateStorage) == 0x148);
 STATIC_ASSERT(offsetof(CamcontrolStateStorage, state) == 0x00);
-
-typedef union CamcontrolReticleRenderVariant {
-    u8 iconVariant;
-    u8 distanceTier;
-} CamcontrolReticleRenderVariant;
-
-typedef struct CamcontrolReticleRenderFields {
-    u8 pad00[0x29];
-    CamcontrolReticleRenderVariant variant;
-} CamcontrolReticleRenderFields;
-
-STATIC_ASSERT(sizeof(CamcontrolReticleRenderVariant) == 0x01);
-STATIC_ASSERT(offsetof(CamcontrolReticleRenderFields, variant) == 0x29);
-
-typedef union CamcontrolReticleRenderOp {
-    ModelRenderOp model;
-    CamcontrolReticleRenderFields reticle;
-} CamcontrolReticleRenderOp;
-
-STATIC_ASSERT(sizeof(CamcontrolReticleRenderOp) == sizeof(ModelRenderOp));
-STATIC_ASSERT(offsetof(CamcontrolReticleRenderOp, reticle.variant.iconVariant) == 0x29);
-STATIC_ASSERT(offsetof(CamcontrolReticleRenderOp, reticle.variant.distanceTier) == 0x29);
 
 enum CamcontrolReticleBank {
     CAMCONTROL_RETICLE_BANK_LOCKON,
@@ -332,12 +309,12 @@ void camcontrol_updateTargetReticle(GameObject* fallbackTarget, int unused2, u32
 }
 
 int camcontrol_aButtonIconTextureCallback(GameObject* obj, void** objPtr, u32 renderOpIdx) {
-    CamcontrolReticleRenderOp* renderOp;
+    Shader* renderOp;
     GXColor color; /* r/g/b intentionally left unset: callee reads only alpha for this op */
 
-    renderOp = (CamcontrolReticleRenderOp*)ObjModel_GetRenderOp((ModelFileHeader*)*objPtr, renderOpIdx);
+    renderOp = ObjModel_GetRenderOp((ModelFileHeader*)*objPtr, renderOpIdx);
     Rcp_ResetTextureStageState();
-    if (renderOp->reticle.variant.iconVariant == CAMCONTROL_RETICLE_ICON_VARIANT_PRESS_A) {
+    if (renderOp->layers[0].materialId == CAMCONTROL_RETICLE_ICON_VARIANT_PRESS_A) {
         if ((gCamcontrolCamera->targetFlags & CAMCONTROL_CAMERA_TARGET_FLAG_PROMPT_SUPPRESSED) == 0) {
             color.a = 0;
         } else {
@@ -349,7 +326,7 @@ int camcontrol_aButtonIconTextureCallback(GameObject* obj, void** objPtr, u32 re
     if (gCamcontrolCamera->targetKind == CAMCONTROL_TARGET_KIND_SUPPRESSED) {
         color.a = 0;
     }
-    addTexLayerStageKAlpha(textureIdxToPtr(renderOp->model.textureId), NULL, 0, &color);
+    addTexLayerStageKAlpha(textureIdxToPtr(renderOp->layers[0].textureIndex), NULL, 0, &color);
     Rcp_ApplyTextureStageCounts();
     if (color.a < 0xff) {
         GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
@@ -365,13 +342,13 @@ int camcontrol_aButtonIconTextureCallback(GameObject* obj, void** objPtr, u32 re
 }
 
 int camcontrol_lockIconTextureCallback(GameObject* obj, int* modelPtr, int renderOpIdx) {
-    CamcontrolReticleRenderOp* renderOp;
+    Shader* renderOp;
     u8 tier;
     GXColor color;
     f32 dist;
     int alphaVal;
 
-    renderOp = (CamcontrolReticleRenderOp*)ObjModel_GetRenderOp((ModelFileHeader*)*modelPtr, renderOpIdx);
+    renderOp = ObjModel_GetRenderOp((ModelFileHeader*)*modelPtr, renderOpIdx);
     dist = gCamcontrolCamera->targetDistance;
     if (dist <= 0.0f) {
         tier = 4;
@@ -385,22 +362,22 @@ int camcontrol_lockIconTextureCallback(GameObject* obj, int* modelPtr, int rende
         tier = 0;
     }
     Rcp_ResetTextureStageState();
-    if (renderOp->reticle.variant.distanceTier <= tier) {
+    if (renderOp->layers[0].materialId <= tier) {
         color.r = 0;
         color.g = 0;
         color.b = 0;
         alphaVal = ((obj->anim.alpha + 1) * CAMCONTROL_RETICLE_DIM_ALPHA_SCALE) >> 8;
         color.a = alphaVal;
-        addTexLayerStageKAlpha(textureIdxToPtr(renderOp->model.textureId), NULL, 0, &color);
+        addTexLayerStageKAlpha(textureIdxToPtr(renderOp->layers[0].textureIndex), NULL, 0, &color);
     } else {
         color.r = 0xff;
         color.g = 0xff;
         color.b = 0xff;
         color.a = obj->anim.alpha;
-        addTexLayerStageKAlpha(textureIdxToPtr(renderOp->model.textureId), NULL, 0, &color);
+        addTexLayerStageKAlpha(textureIdxToPtr(renderOp->layers[0].textureIndex), NULL, 0, &color);
     }
     Rcp_ApplyTextureStageCounts();
-    if (obj->anim.alpha < 0xff || renderOp->reticle.variant.distanceTier <= tier) {
+    if (obj->anim.alpha < 0xff || renderOp->layers[0].materialId <= tier) {
         GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
         gxSetZMode_(1, GX_LEQUAL, 0);
     } else {
@@ -416,7 +393,7 @@ int camcontrol_lockIconTextureCallback(GameObject* obj, int* modelPtr, int rende
 void camcontrol_initialiseTargetReticle(void) {
     if (gCamcontrolTargetReticle == NULL) {
         gCamcontrolTargetReticle =
-            Obj_SetupObject(Obj_AllocObjectSetup(0x18, CAMCONTROL_RETICLE_OBJECT_ID), 4, -1, -1, NULL);
+            objSetupObject(Obj_AllocObjectSetup(0x18, CAMCONTROL_RETICLE_OBJECT_ID), 4, -1, -1, NULL);
         ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel(gCamcontrolTargetReticle),
                                    camcontrol_lockIconTextureCallback);
         gCamcontrolTargetReticle->anim.bankIndex = CAMCONTROL_RETICLE_BANK_DEFAULT;
@@ -480,7 +457,8 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
     bestPri = -1;
     count = 0;
     player = Obj_GetPlayerObject();
-    if (player == NULL || focus == NULL || gCamcontrolActiveActionId == 0x44 || objAnimFn_80296328(player) == 0) {
+    if (player == NULL || focus == NULL || gCamcontrolActiveActionId == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
+        objAnimFn_80296328(player) == 0) {
         return NULL;
     }
     ptr = (GameObject**)ObjList_GetObjects(&objIndex, &objCount);

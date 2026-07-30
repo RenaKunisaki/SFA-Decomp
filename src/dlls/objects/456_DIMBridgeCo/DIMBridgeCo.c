@@ -59,7 +59,7 @@ int dimbridgecogmai_getObjectTypeId(void) {
 }
 
 void dimbridgecogmai_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, DIM_BRIDGE_COG_OBJECT_GROUP);
+    objFreeObjectType((int)obj, DIM_BRIDGE_COG_OBJECT_GROUP);
 }
 
 void dimbridgecogmai_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
@@ -133,7 +133,7 @@ void dimbridgecogmai_init(GameObject* obj, const DimBridgeCogPlacement* placemen
     state->unknown00 = DIM_BRIDGE_COG_STATE_INITIAL_VALUE;
     obj->anim.rotX = (s16)((u32)placement->rotationAngle << 8);
     obj->animEventCallback = dimbridgecogmai_SeqFn;
-    ObjGroup_AddObject((u32)obj, DIM_BRIDGE_COG_OBJECT_GROUP);
+    objAddObjectType((u32)obj, DIM_BRIDGE_COG_OBJECT_GROUP);
     if ((u8)mainGetBit(placement->doneGameBit) != 0) {
         obj->objectFlags |= OBJECT_OBJFLAG_UPDATE_DISABLED;
     }

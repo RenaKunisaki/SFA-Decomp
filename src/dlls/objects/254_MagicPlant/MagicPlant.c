@@ -216,7 +216,7 @@ void MagicPlant_spawnChild(GameObject* obj, int objectId) {
         placement->base.color[2] = placementData[0x06];
         placement->base.color[1] = placementData[0x05];
         placement->base.unk07 = (u8)(placementData[0x07] - MAGICPLANT_CHILD_YAW_OFFSET);
-        childObj = Obj_SetupObject(&placement->base, MAGICPLANT_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
+        childObj = objSetupObject(&placement->base, MAGICPLANT_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
                                    MAGICPLANT_CHILD_SENTINEL, obj->anim.parent);
         if (childObj != NULL) {
             ObjLink_AttachChild(obj, childObj, 0);
@@ -247,8 +247,8 @@ void MagicPlant_free(GameObject* obj, int keepChildren) {
     MagicPlantState* state;
 
     state = obj->extra;
-    ObjGroup_RemoveObject((int)obj, MAGICPLANT_OBJGROUP_A);
-    ObjGroup_RemoveObject((int)obj, MAGICPLANT_OBJGROUP_B);
+    objFreeObjectType((int)obj, MAGICPLANT_OBJGROUP_A);
+    objFreeObjectType((int)obj, MAGICPLANT_OBJGROUP_B);
     if (obj->childCount != 0) {
         ObjLink_DetachChild(obj, state->childObject);
         if (keepChildren == 0) {
@@ -388,8 +388,8 @@ void MagicPlant_init(GameObject* obj, MagicPlantPlacement* placement) {
 
     anim = &obj->anim;
     state = obj->extra;
-    ObjGroup_AddObject((int)obj, MAGICPLANT_OBJGROUP_A);
-    ObjGroup_AddObject((int)obj, MAGICPLANT_OBJGROUP_B);
+    objAddObjectType((int)obj, MAGICPLANT_OBJGROUP_A);
+    objAddObjectType((int)obj, MAGICPLANT_OBJGROUP_B);
     noSaveTime = (*gMapEventInterface)->shouldNotSaveTime(placement->eventId);
     if (noSaveTime == 0) {
         progress = (*gMapEventInterface)->getTime(placement->eventId);

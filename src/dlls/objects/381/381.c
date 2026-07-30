@@ -8,7 +8,7 @@
 #include "main/camera_shake_api.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "main/vecmath.h"
@@ -71,13 +71,13 @@ int rollingBarrel_getObjectTypeId(void) {
 void rollingBarrel_free(GameObject* obj) {
     RollingBarrelState* state = obj->extra;
     int count;
-    u32* groupObjects = ObjGroup_GetObjects(ROLLING_BARREL_OBJECT_GROUP_ID, &count);
+    u32* groupObjects = objGetAllOfType(ROLLING_BARREL_OBJECT_GROUP_ID, &count);
     int i;
     u32 groupObject;
     for (i = 0; i < count; i++) {
         groupObject = groupObjects[i];
         if (groupObject == (u32)obj) {
-            ObjGroup_RemoveObject((int)obj, ROLLING_BARREL_OBJECT_GROUP_ID);
+            objFreeObjectType((int)obj, ROLLING_BARREL_OBJECT_GROUP_ID);
             break;
         }
     }
@@ -209,7 +209,7 @@ void rollingBarrel_update(GameObject* obj) {
             state->hitVolumeSlot = 0;
             state->mode = ROLLING_BARREL_MODE_CLEANUP;
             state->timer -= 30.0f;
-            ObjGroup_AddObject((int)obj, ROLLING_BARREL_OBJECT_GROUP_ID);
+            objAddObjectType((int)obj, ROLLING_BARREL_OBJECT_GROUP_ID);
             gRollingBarrelExplodingCount -= 1;
         }
         break;

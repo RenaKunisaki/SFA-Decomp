@@ -80,11 +80,11 @@ extern f32 lbl_803DEBCC;
 extern f32 lbl_803DEBDC;
 extern f32 lbl_803DEC00;
 extern f32 gLightmapDegToBamScale;
-extern F32Pair lbl_803DEC08;
+extern f32 lbl_803DEC08;
 extern f32 lbl_803DEC0C;
 extern FrustumPlane gViewFrustumPlanes[];
 
-extern u8 lbl_803DCE98; /* count of allocated blocks */
+extern u8 gMapBlockCount; /* count of allocated blocks */
 extern f32 lbl_803DEC18;
 extern u32 lbl_803DCE34;
 extern f32 lbl_803DEC10;
@@ -175,7 +175,7 @@ void updateVisibleGeometry(void)
     tt = fcos16HighPrecision(fov);
     ratio = fsin16HighPrecision(fov) / tt;
     ratio2 = ratio * ratio;
-    ff = lbl_803DEC08.lo;
+    ff = lbl_803DEC08;
     tt = ff * ratio2;
     tt = atanf(sqrtf(ff * tt + ratio2));
     ff = mathSinfHighPrecision(tt);
@@ -205,7 +205,7 @@ void updateVisibleGeometry(void)
 
 MapBlockData* mapGetBlock(int i)
 {
-    if (i < 0 || i >= lbl_803DCE98) return 0;
+    if (i < 0 || i >= gMapBlockCount) return 0;
     return gMapBlocks[i];
 }
 
@@ -223,7 +223,7 @@ MapBlockData* mapGetBlockAtPos(int x, int y, int layer)
     s32 idx;
     if (x < 0 || y < 0 || x >= 0x10 || y >= 0x10) return 0;
     idx = table[x + (y << 4)];
-    if (idx < 0 || idx >= lbl_803DCE98) return 0;
+    if (idx < 0 || idx >= gMapBlockCount) return 0;
     return gMapBlocks[idx];
 }
 
@@ -314,7 +314,7 @@ int objPosToMapBlockIdx(f32 x, f32 y, f32 z)
     return -1;
 }
 
-extern void* lbl_803DCEA0;
+extern void* gCurRomListPage;
 
 int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type, int* out_lastpage)
 {
@@ -332,7 +332,7 @@ int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type,
         page = *pp[0];
         if (page == NULL) continue;
 
-        lbl_803DCEA0 = page;
+        gCurRomListPage = page;
         p = (int*)page->objects;
         inner_idx = 0;
         total_offset = 0;
@@ -346,7 +346,7 @@ int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type,
                 if (out_outer != NULL) *out_outer = outer;
                 if (out_type != NULL)
                 {
-                    *out_type = (int)*(s8*)((char*)lbl_803DCEA0 + 0x19);
+                    *out_type = (int)*(s8*)((char*)gCurRomListPage + 0x19);
                 }
                 if (out_lastpage != NULL)
                 {
@@ -630,12 +630,12 @@ static inline void fillBoxRows(u8* map, int* box)
 
 void renderSceneGeometry(u8 renderType, s8* order)
 {
-    u8 map[256];
+    u8 cellMask[256];
     int box0[4];
     int box1[4];
     int box2[4];
     int box3[4];
-    u8* mp;
+    u8* cellMaskPtr;
     s8** layerTablePtr;
     int* layerFlagPtr;
     int idx;
@@ -647,7 +647,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
     s8* table;
     f32 worldSize;
     f32 rowF, colF;
-    int cell;
+    int cellIndex;
 
     layer = 4;
     layerTablePtr = &gMapBlockLayerTables[4];
@@ -659,19 +659,19 @@ void renderSceneGeometry(u8 renderType, s8* order)
         gMapLayerCellStates = (s8*)*layerFlagPtr;
         mapGetBlockGridRects(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
                        gMapCurRomListSlot);
-        mp = map;
-        for (k = 0; k != ARRAY_COUNT(map); k += 4)
+        cellMaskPtr = cellMask;
+        for (k = 0; k != ARRAY_COUNT(cellMask); k += 4)
         {
-            mp[0] = 0;
-            mp[1] = 0;
-            mp[2] = 0;
-            mp[3] = 0;
-            mp += 4;
+            cellMaskPtr[0] = 0;
+            cellMaskPtr[1] = 0;
+            cellMaskPtr[2] = 0;
+            cellMaskPtr[3] = 0;
+            cellMaskPtr += 4;
         }
-        fillBoxRows(map, box0);
-        fillBoxRows(map, box1);
-        fillBoxRows(map, box2);
-        fillBoxRows(map, box3);
+        fillBoxRows(cellMask, box0);
+        fillBoxRows(cellMask, box1);
+        fillBoxRows(cellMask, box2);
+        fillBoxRows(cellMask, box3);
         for (oi = 0; oi < 16; oi++)
         {
             row = order[oi];
@@ -680,8 +680,8 @@ void renderSceneGeometry(u8 renderType, s8* order)
             for (; ii < 16; ii++)
             {
                 col = order[ii];
-                cell = row + col * 0x10;
-                idx = table[cell];
+                cellIndex = row + col * 0x10;
+                idx = table[cellIndex];
                 if (idx < 0)
                 {
                     block = NULL;
@@ -690,7 +690,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
                 {
                     block = gMapBlocks[idx];
                     block->flags4 ^= 1;
-                    if (map[cell] == 0)
+                    if (cellMask[cellIndex] == 0)
                     {
                         continue;
                     }
@@ -816,7 +816,7 @@ void sceneDraw(void)
     GXSetChanAmbColor(GX_COLOR0, c);
     GXSetNumChans(1);
     renderSceneGeometry(0, gMapBlockDrawOrderFrontToBack);
-    renderResetFn_8003fc60();
+    objRenderInvalidateStateCache();
     renderObjects(buf);
     if (CameraShake_IsActive() != 0 || (int)bEnableMotionBlur != 0)
     {
@@ -955,20 +955,24 @@ void updateEnvironment(int mode)
         (*gSkyInterface)->updateTimeOfDay();
         (*gNewCloudsInterface)->run();
 
-        off = i = 0;
-        for (; i < 80; off += sizeof(MapTextureOverride), i++)
+        i = 0;
+        off = 0;
+        for (; i < 80; i++)
         {
-            textureOverride = (MapTextureOverride*)((u8*)lbl_803DCE6C + off);
+            textureOverride = (MapTextureOverride*)((u8*)gMapTextureOverrides + off);
             if (textureOverride->refCount != 0 && (tex = textureOverride->texture) != NULL &&
                 tex->animationFrameCount != 0x100 && tex->animationFrameStep != 0)
             {
                 textureUpdateAnimationFrame(tex, &textureOverride->flags, &textureOverride->frame);
             }
+            off += sizeof(MapTextureOverride);
         }
 
-        for (i = 0; i < 58; i++)
+        i = 0;
+        off = 0;
+        for (; i < 58; i++)
         {
-            textureScroll = &lbl_803DCE68[i];
+            textureScroll = (MapTextureScroll*)((u8*)gMapTextureScrolls + off);
             if (textureScroll->refCount != 0)
             {
                 deltaY = textureScroll->yStep * (deltaTime = timeDelta);
@@ -977,6 +981,7 @@ void updateEnvironment(int mode)
                 textureScroll->offsetX = x + deltaX;
                 textureScroll->offsetY = textureScroll->offsetY + deltaY;
             }
+            off += sizeof(MapTextureScroll);
         }
 
         loadNextMap();

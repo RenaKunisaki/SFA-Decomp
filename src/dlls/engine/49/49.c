@@ -12,7 +12,7 @@
 #include "dolphin/gx/GXCull.h"
 #include "main/pad.h"
 #include "main/camera.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/lightmap_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx_play_api.h"
@@ -20,6 +20,7 @@
 #include "main/frame_timing.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_0031_minimap.h"
+#include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/minimap_api.h"
 #include "main/textrender_api.h"
 #include "main/pause_menu_api.h"
@@ -44,8 +45,6 @@ f32 gMinimapZoomStepMax = 1.05f;
 f32 gMinimapZoomStep = 1.0f;
 int gMinimapPrevAreaNameId = -1;
 f32 gMinimapWorldToTexScale = 0.08f;
-
-#define CAMMODE_VIEWFINDER 0x44
 
 #define MINIMAP_TEXTURE_COMPASS 0xBE5
 
@@ -227,7 +226,7 @@ int gMinimapLoadedMapId;
 u8 gMinimapBlipPulse;
 u8 gMinimapRadarInited;
 u8 gMinimapAreaNameDelay;
-extern u8 lbl_803DD75B;
+extern u8 gTimeListPromptSelection;
 
 const MinimapColor gMinimapCompassColor = {0x00FF0000};
 const MinimapColor gMinimapBaseColor = {0xFFFF0000};
@@ -349,10 +348,11 @@ int Minimap_update(void)
         {
             mapTextureId = 0;
         }
-        if ((*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER || (gMinimapEnabled == 0 && lbl_803DD7BA == 0) ||
+        if ((*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
+            (gMinimapEnabled == 0 && lbl_803DD7BA == 0) ||
             Camera_GetViewportYOffset() != 0 ||
             (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
-            objIsCurModelNotZero(player) == 0 || pauseMenuState != 0 || lbl_803DD75B != 0)
+            objIsCurModelNotZero(player) == 0 || pauseMenuState != 0 || gTimeListPromptSelection != 0)
         {
             mapTextureId = 0;
             gMinimapFadeAlpha -= 0x20;
@@ -788,7 +788,7 @@ void Minimap_setupCompassBlip(void)
     scale = 0.05f;
     for (; i < 2; i++)
     {
-        gMinimapBlipObjects[i] = (GameObject*)Obj_SetupObject(Obj_AllocObjectSetup(32, MINIMAP_COMMAND_MENU_OBJ_BASE + i), 4, -1, -1, 0);
+        gMinimapBlipObjects[i] = (GameObject*)objSetupObject(Obj_AllocObjectSetup(32, MINIMAP_COMMAND_MENU_OBJ_BASE + i), 4, -1, -1, 0);
         ((GameObject*)gMinimapBlipObjects[i])->anim.localPosX = posX;
         ((GameObject*)gMinimapBlipObjects[i])->anim.localPosY = posY;
         ((GameObject*)gMinimapBlipObjects[i])->anim.localPosX = center;
@@ -845,7 +845,7 @@ void Minimap_frameStart(void)
 
     sfx = 0;
     player = (int)Obj_GetPlayerObject();
-    if ((void*)player == NULL || (*gCameraInterface)->getMode() == CAMMODE_VIEWFINDER ||
+    if ((void*)player == NULL || (*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
         Camera_GetViewportYOffset() != 0 || (((GameObject*)player)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
         objIsCurModelNotZero((void*)player) == 0 || pauseMenuState != 0)
     {
@@ -981,7 +981,7 @@ void Minimap_frameStart(void)
                     gMinimapZoomSfxActive = 0;
                 }
                 gMinimapRadarTarget =
-                    (GameObject*)ObjGroup_FindNearestObject(FUEL_CELL_OBJECT_GROUP, (GameObject*)player, &dist);
+                    (GameObject*)objGetNearestTypeTo(FUEL_CELL_OBJECT_GROUP, (GameObject*)player, &dist);
                 if ((void*)gMinimapRadarTarget != NULL)
                 {
                     if (dist < 500.0f)

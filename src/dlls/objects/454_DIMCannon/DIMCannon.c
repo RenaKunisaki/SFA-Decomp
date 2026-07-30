@@ -15,6 +15,7 @@
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
+#include "main/dll/dll_0051_cameramodecannon.h"
 #include "main/dll/player_api.h"
 #include "main/dll/player_status.h"
 #include "main/dll/tricky_api.h"
@@ -22,7 +23,7 @@
 #include "main/game_ui_interface.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #include "main/objanim.h"
@@ -40,7 +41,6 @@
 #define DIM_CANNON_BALL_HIT_VOLUME_SLOT             5
 #define DIM_CANNON_OBJECT_GROUP                     3
 #define DIM_CANNON_AIR_METER_BACKGROUND_TEXTURE     0x5d5
-#define DIM_CANNON_CAMERA_MODE                      0x51 /* dll_0051_cameramodecannon */
 #define DIM_CANNON_RELEASE_CAMERA_MODE              0x42 /* default gameplay camera */
 #define DIM_CANNON_PLAYER_CONTROLLED_MAP_EVENT_SLOT 0x13
 
@@ -59,7 +59,7 @@ static void DIMCannon_explodeBall(GameObject* obj, DimCannonBallState* state) {
     obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
 }
 
-void DIMwooddoor_updateFallingDebris(GameObject* obj) {
+void DIMCannon_updateBall(GameObject* obj) {
     DimCannonBallState* state = obj->extra;
     switch (state->mode) {
     case DIM_CANNON_BALL_MODE_FALLING: {
@@ -102,7 +102,7 @@ void DIMwooddoor_updateFallingDebris(GameObject* obj) {
     }
 }
 
-void DIMwooddoor_spawnShard(GameObject* obj, u8 variant) {
+void DIMCannon_spawnBall(GameObject* obj, u8 variant) {
     DimCannonPlacement* placement;
     DimCannonState* state;
     DimCannonBallState* ballState;
@@ -130,7 +130,7 @@ void DIMwooddoor_spawnShard(GameObject* obj, u8 variant) {
     ballPlacement->base.posY = state->launchOriginY;
     ballPlacement->base.posZ = state->launchOriginZ;
 
-    ball = Obj_SetupObject(&ballPlacement->base, 5, obj->anim.mapEventSlot, -1, 0);
+    ball = objSetupObject(&ballPlacement->base, 5, obj->anim.mapEventSlot, -1, 0);
     ballState = ball->extra;
     ballState->parent = obj;
     ballState->variant = variant;
@@ -167,7 +167,7 @@ void DIMwooddoor_spawnShard(GameObject* obj, u8 variant) {
     Sfx_PlayFromObject(objHandle, SFXTRIG_tr_jrumbalp);
 }
 
-void DIMwooddoor_updateShardAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 targetZ, f32 unusedDistance) {
+void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 targetZ, f32 unusedDistance) {
     DimCannonState* state;
     DimCannonPlacement* placement;
     s16* modelRotation;
@@ -289,13 +289,15 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         player = Obj_GetPlayerObject();
         setAButtonIcon(0x16);
         setBButtonIcon(0x17);
-        hudFn_8011f38c(1);
+        setHudForceShowMask(1);
         cameraMode = (*gCameraInterface)->getMode();
-        if (cameraMode != DIM_CANNON_CAMERA_MODE && cameraMode != 0x4c) {
-            GameObject* focusObj = obj;
-            (*gCameraInterface)->setMode(DIM_CANNON_CAMERA_MODE, 1, 0, 4, &focusObj, 0x32, 0xff);
+        if (cameraMode != CAMERA_MODE_CANNON_RESOURCE_ID && cameraMode != 0x4c) {
+            CameraModeCannonInitParams cameraParams;
+            cameraParams.target = obj;
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_CANNON_RESOURCE_ID, 1, 0, sizeof(cameraParams), &cameraParams, 0x32, 0xff);
         }
-        if (cameraMode != DIM_CANNON_CAMERA_MODE) {
+        if (cameraMode != CAMERA_MODE_CANNON_RESOURCE_ID) {
             return 0;
         }
         modelRotation = objModelGetVecFn_800395d8(obj, 0);
@@ -357,7 +359,8 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 state->airMeterCharge = gDimCannonMaxCharge;
             }
             (*gGameUIInterface)->runAirMeter(state->airMeterCharge);
-            state->launchSpeed = (f32)state->airMeterCharge * gDimCannonLaunchSpeedPerCharge + gDimCannonLaunchSpeedBase;
+            state->launchSpeed =
+                (f32)state->airMeterCharge * gDimCannonLaunchSpeedPerCharge + gDimCannonLaunchSpeedBase;
             if ((getButtonsJustPressedIfNotBusy(0) & PAD_BUTTON_A) || state->airMeterCharge == gDimCannonMaxCharge) {
                 if (state->launchDelay <= 0 && Player_GetCurrentMagic((int)player) >= 1) {
                     buttonDisable(0, PAD_BUTTON_A);
@@ -366,7 +369,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                     state->airMeterCharge = 0;
                 }
             }
-            DIMwooddoor_spawnShard(obj, 1);
+            DIMCannon_spawnBall(obj, 1);
             if (obj->anim.mapEventSlot == DIM_CANNON_PLAYER_CONTROLLED_MAP_EVENT_SLOT && state->hasActivated == 0 &&
                 mainGetBit(GAMEBIT_DIM_CannonRelated0C17) && mainGetBit(GAMEBIT_DIM_CannonRelated0A21)) {
                 state->hasActivated = 1;
@@ -383,7 +386,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             }
             if (shouldExit != 0 || (getButtonsJustPressed(0) & PAD_BUTTON_B)) {
                 buttonDisable(0, PAD_BUTTON_B);
-                hudFn_8011f38c(0);
+                setHudForceShowMask(0);
                 (*gGameUIInterface)->airMeterShutdown();
                 (*gCameraInterface)->setMode(DIM_CANNON_RELEASE_CAMERA_MODE, 0, 1, 0, NULL, 0, 0xff);
                 state->mode = DIM_CANNON_MODE_WAIT_FOR_RESET;
@@ -429,7 +432,7 @@ void DIMCannon_free(GameObject* obj) {
         Resource_Release(gDimCannonResource);
         gDimCannonResource = NULL;
     }
-    ObjGroup_RemoveObject((int)obj, DIM_CANNON_OBJECT_GROUP);
+    objFreeObjectType((int)obj, DIM_CANNON_OBJECT_GROUP);
 }
 
 void DIMCannon_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
@@ -462,7 +465,7 @@ void DIMCannon_update(GameObject* obj) {
     DimCannonPlacement* placement = *(DimCannonPlacement**)&obj->anim.placementData;
 
     if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
-        DIMwooddoor_updateFallingDebris(obj);
+        DIMCannon_updateBall(obj);
         return;
     }
 
@@ -491,11 +494,12 @@ void DIMCannon_update(GameObject* obj) {
         if (chargeTimer > 0) {
             state->chargeTimer = (s8)(chargeTimer - framesThisStep);
         } else if (obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) {
-            GameObject* focusObj;
+            CameraModeCannonInitParams cameraParams;
             state->airMeterCharge = 0;
             state->shutdownTimer = 0;
-            focusObj = obj;
-            (*gCameraInterface)->setMode(DIM_CANNON_CAMERA_MODE, 1, 0, 4, &focusObj, 0x32, 0xff);
+            cameraParams.target = obj;
+            (*gCameraInterface)
+                ->setMode(CAMERA_MODE_CANNON_RESOURCE_ID, 1, 0, sizeof(cameraParams), &cameraParams, 0x32, 0xff);
             buttonDisable(0, PAD_BUTTON_A);
             state->mode = DIM_CANNON_MODE_PLAYER_CONTROLLED;
             (*gObjectTriggerInterface)->runSequence(0, obj, -1);
@@ -508,8 +512,8 @@ void DIMCannon_update(GameObject* obj) {
         break;
     }
     case DIM_CANNON_MODE_ARMED:
-        DIMwooddoor_updateShardAim(obj, *(f32*)&state->aimTargetXBits, *(f32*)&state->aimTargetYBits, state->aimTargetZ,
-                                   state->targetDistance);
+        DIMCannon_updateAim(obj, *(f32*)&state->aimTargetXBits, *(f32*)&state->aimTargetYBits, state->aimTargetZ,
+                            state->targetDistance);
         if (mainGetBit(placement->resetGameBit)) {
             state->mode = DIM_CANNON_MODE_WAIT_FOR_RESET;
         } else if (state->targetPlayer != 0 && !mainGetBit(placement->holdGameBit)) {
@@ -560,9 +564,9 @@ void DIMCannon_update(GameObject* obj) {
             }
             state->targetDistance =
                 getXZDistance(&obj->anim.worldPosX, &((GameObject*)state->targetPlayer)->anim.worldPosX);
-            DIMwooddoor_updateShardAim(obj, *(f32*)&state->aimTargetXBits, *(f32*)&state->aimTargetYBits,
-                                       state->aimTargetZ, state->targetDistance);
-            DIMwooddoor_spawnShard(obj, 0);
+            DIMCannon_updateAim(obj, *(f32*)&state->aimTargetXBits, *(f32*)&state->aimTargetYBits, state->aimTargetZ,
+                                state->targetDistance);
+            DIMCannon_spawnBall(obj, 0);
             {
                 f32 playerDistance = state->targetDistance;
                 int triggerDistance = placement->triggerRange * lbl_803DBF0C;

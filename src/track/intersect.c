@@ -49,7 +49,7 @@ typedef struct
     Vec pos;
 } SplashFxParams;
 
-extern u8 lbl_8030E8B0[];
+extern u8 gSurfaceSfxTable[];
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
@@ -69,7 +69,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
     int n;
     GameObject* desc;
 
-    tbl = lbl_8030E8B0;
+    tbl = gSurfaceSfxTable;
     switch (type)
     {
     case 1:
@@ -231,7 +231,7 @@ void objAudioFn_8006ef38(GameObject* obj, ObjAnimEventList* events, u8 type, voi
 
 void* surfaceSfxGetRecord(u32 i)
 {
-    u8* base = lbl_8030E8B0;
+    u8* base = gSurfaceSfxTable;
     switch (i)
     {
     case 1:
@@ -302,15 +302,15 @@ u32 lbl_803DB69C = 0x666666FF;
 GXColor lbl_803DB6A0 = {0, 0, 0, 0x7F};
 GXColor lbl_803DB6A4 = {0xFF, 0xFF, 0xFF, 0xFC};
 u32 lbl_803DB6A8 = 0xFFFFFFFF;
-f32 lbl_803DB6AC = 0.55f;
+f32 gCausticReflectionDiskScale = 0.55f;
 f32 lbl_803DB6B0 = 2.0f;
 f32 lbl_803DB6B4 = 0.25f;
-f32 lbl_803DB6B8 = 0.4f;
-GXColor lbl_803DB6BC = {0x80, 0x80, 0x80, 0xFF};
-f32 lbl_803DB6C0 = 2.0f;
-f32 lbl_803DB6C4 = 0.3878f;
-f32 lbl_803DB6C8 = 15.0f;
-f32 lbl_803DB6CC = 100.0f;
+f32 gFrozenReflectionNormalScale = 0.4f;
+GXColor gFrozenTintColor = {0x80, 0x80, 0x80, 0xFF};
+f32 gFrozenWhirlpoolTexScale = 2.0f;
+f32 gDistortionTexCoordScale = 0.3878f;
+f32 gDistortionAlphaRadius = 15.0f;
+f32 gDistortionIndMtxRadius = 100.0f;
 GXColor lbl_803DB6D0 = {0x42, 0x42, 0x42, 0};
 GXColor lbl_803DB6D4 = {0x81, 0x81, 0x81, 0};
 GXColor lbl_803DB6D8 = {0x19, 0x19, 0x19, 0};
@@ -338,30 +338,30 @@ f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 #include "track/intersect_internal.h"
 
 /* Per-frame alpha decrement of the two water-effect pools. */
-void timeFn_8006f400(f32 step)
-{
+void timeFn_8006f400(f32 step) {
     int i;
-    SplashQuad* quads;
-    RippleEntry* ripples;
+    SplashQuad* quad;
+    RippleEntry* ripple;
+    u8 alpha;
 
-    quads = gWaterSplashQuads;
-    ripples = gWaterRipples;
-
-    for (i = 0; i < 256; i++)
-    {
-        if (quads[i].alpha != 0)
-        {
-            if (quads[i].alpha - step <= 0.0f)
-                quads[i].alpha = 0;
-            else
-                quads[i].alpha -= step;
+    for (i = 0; i < 256; i++) {
+        quad = &gWaterSplashQuads[i];
+        ripple = &gWaterRipples[i];
+        alpha = quad->alpha;
+        if (alpha != 0) {
+            if (alpha - step <= 0.0f) {
+                quad->alpha = 0;
+            } else {
+                quad->alpha -= step;
+            }
         }
-        if (ripples[i].alpha != 0)
-        {
-            if (ripples[i].alpha - step <= 0.0f)
-                ripples[i].alpha = 0;
-            else
-                ripples[i].alpha -= step;
+        alpha = ripple->alpha;
+        if (alpha != 0) {
+            if (alpha - step <= 0.0f) {
+                ripple->alpha = 0;
+            } else {
+                ripple->alpha -= step;
+            }
         }
     }
 }
@@ -507,11 +507,6 @@ extern u32 lbl_803DCFF4;
 
 
 
-extern f32 lbl_803DEE58;
-
-
-
-
 #include "track/intersect_internal.h"
 
 void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
@@ -558,7 +553,7 @@ void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type)
         axis.x = 1.0f;
         axis.y = 0.0f;
         axis.z = 0.0f;
-        if (__fabs(PSVECDotProduct(&norm, &axis)) >= lbl_803DEE58)
+        if (__fabsf(PSVECDotProduct(&norm, &axis)) >= 0.9f)
         {
             axis.x = 0.0f;
             axis.z = 1.0f;
@@ -764,22 +759,22 @@ void OSReport(const char* msg, ...);
  * loops in _saveGame, maybeTryLoadSave, loadSaveGame and cardCreateSaveFile.
  * Pumps 60 frames of the GX/dialog
  * pipeline; on each frame either lets the active controller draw its own
- * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored over the
- * cached prompt id in lbl_803DB708, then routes the OK/Cancel/back text
+ * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored
+ * tinting the reflection texture with gSaveCardBackdropColor, then routes the OK/Cancel/back text
  * to gameTextShowAt based on the dialog kind passed in.
  */
 
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from _saveGame.
  * Stages a per-slot 0x6EC-byte block plus the shared 0xE4-byte trailer
- * into the card-IO buffer (lbl_803DD044), then asks saveGame_doWrite(2) to
+ * into the card-IO buffer (gSaveCardIoBuffer), then asks saveGame_doWrite(2) to
  * commit; if that fails it falls back to saveGame_doWrite(1).
  */
 
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from maybeTryLoadSave.
  * Copies the 0xE4-byte block at offset 0x1F14 in the card buffer (held in
- * lbl_803DD044) into the caller-supplied destination.
+ * gSaveCardIoBuffer) into the caller-supplied destination.
  */
 
 

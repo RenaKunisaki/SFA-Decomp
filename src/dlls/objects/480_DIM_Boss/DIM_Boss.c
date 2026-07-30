@@ -28,7 +28,7 @@
 #include "main/mm.h"
 #include "main/model.h"
 #include "main/model_light.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #include "main/object_render.h"
@@ -725,7 +725,7 @@ void DIM2icicle_spawnBlueWhiteEffect(DIMbossEffectMarker* source, f32* velocity)
         setup->base.color[3] = 255;
         setup->gameBit = -1;
         setup->gameBit2 = -1;
-        spawnedObj = Obj_SetupObject(&setup->base, 5, -1, -1, NULL);
+        spawnedObj = objSetupObject(&setup->base, 5, -1, -1, NULL);
         if (spawnedObj != NULL) {
             spawnedObj->anim.velocityX = velocity[0];
             spawnedObj->anim.velocityY = velocity[1];
@@ -958,7 +958,7 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
     if (((Dim2IcicleWarpFlags*)&topState->steamFlags)->pending) {
         getEnvfxAct(0, 0, DIM2ICICLE_ENVFX_A, 0);
         getEnvfxAct(0, 0, DIM2ICICLE_ENVFX_B, 0);
-        skyFn_80089710(7, 1, 0);
+        skySetLightsEnabled(7, 1, 0);
         skySetLightDirection(7, 0.2f, -0.3f, -1.0f);
         skySetBaseColor(7, 0xa0, 0xa0, 0xff, 0x7f, 0x28);
         ((Dim2IcicleWarpFlags*)&topState->steamFlags)->pending = 0;
@@ -1156,7 +1156,7 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
         } else {
             if (playerState->targetObj == NULL) {
                 player = Obj_GetPlayerObject();
-                if (fn_80295A04(player, 1) != 0) {
+                if (playerGetStateValue(player, 1) != 0) {
                     (*gBaddieControlInterface)
                         ->startHitReaction((GameObject*)obj, playerState, (char*)state + 0x35c,
                                            *(s16*)((char*)state + 0x3f4), NULL, 2, 10, -1, -1);
@@ -1646,7 +1646,7 @@ void DIMboss_free(GameObject* obj) {
     mainSetBits(GAMEBIT_DIM_TriggerLostInBlizzard, 0);
     obj->anim.resetHitboxFlags &= ~DIMBOSS_OBJECT_FLAG_ACTIVE;
     CameraShake_Disable();
-    ObjGroup_RemoveObject((int)obj, DIMBOSS_OBJGROUP);
+    objFreeObjectType((int)obj, DIMBOSS_OBJGROUP);
     childObject = obj->childObjs[0];
     if (childObject != NULL) {
         Obj_FreeObject(childObject);
@@ -1748,7 +1748,7 @@ void DIMboss_update(GameObject* obj) {
                 if (topState->steamFlags.bits.sfxPending != 0) {
                     getEnvfxAct(0, 0, DIMBOSS_ENVFX_A, 0);
                     getEnvfxAct(0, 0, DIMBOSS_ENVFX_B, 0);
-                    skyFn_80089710(7, 1, 0);
+                    skySetLightsEnabled(7, 1, 0);
                     skySetLightDirection(7, 0.2f, -0.3f, -1.0f);
                     skySetBaseColor(7, 0xa0, 0xa0, 0xff, 0x7f, 0x28);
                     topState->steamFlags.bits.sfxPending = 0;

@@ -35,7 +35,7 @@ void mcupgradema_update(GameObject* obj)
     }
     else
     {
-        objRenderFn_80041018(obj);
+        objUpdateHitVolumeTransforms(obj);
     }
 }
 

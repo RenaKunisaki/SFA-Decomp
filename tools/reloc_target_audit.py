@@ -77,6 +77,14 @@ def call_key(name, RA):
     return ("addr", a) if a is not None else ("name", name)
 
 
+def comparable(rel):
+    """True when a reloc is one this audit would compare if it could resolve it."""
+    off, typ, nm, add, shndx, val, sz = rel
+    if typ == R_REL24:
+        return True
+    return typ in VALUE_RELOCS and not nm.startswith("jumptable_")
+
+
 def resolve(o, rel, RA, is_retail):
     """(kind, key) for one reloc, or None when not comparable.
 
@@ -126,7 +134,7 @@ def main():
     rep = json.load(open(os.path.join(ROOT, "build/GSAE01/report.json")))
     pct = {u["name"]: u["measures"].get("fuzzy_match_percent", 0) for u in rep["units"]}
 
-    findings, checked = [], 0
+    findings, checked, skipped = [], 0, 0
     for u in units:
         po, pr = u["base_path"], u["target_path"]
         if not (os.path.exists(os.path.join(ROOT, po)) and
@@ -144,14 +152,31 @@ def main():
             (so, szo), (sr, szr) = fo[name], ft[name]
             checked += 1
             mo, mt = {}, {}
+            uo = ut = 0
             for rel, dst, obj, ret in ((r, mo, O, False) for r in ro if so <= r[0] < so + szo):
                 k = resolve(obj, rel, RA, ret)
                 if k:
                     dst[k] = dst.get(k, 0) + 1
+                elif comparable(rel):
+                    uo += 1
             for rel, dst, obj, ret in ((r, mt, T, True) for r in rt if sr <= r[0] < sr + szr):
                 k = resolve(obj, rel, RA, ret)
                 if k:
                     dst[k] = dst.get(k, 0) + 1
+                elif comparable(rel):
+                    ut += 1
+            # The two sides resolve by different routes: ours reads the datum out
+            # of our own unlinked section, retail's out of main.dol via the symbol
+            # map. Either route can decline (a pointer-table datum carrying its own
+            # relocs, a symbol absent from the map). When they decline a DIFFERENT
+            # number of times the surviving multisets are not comparable -- the
+            # unresolved reloc on one side becomes a phantom EXTRA/MISSING against
+            # its resolved partner. Measured against the one gate that cannot lie
+            # (a green main.dol sha1, which proves the source-linked units are
+            # byte-identical to retail) this asymmetry produced 123 of 228 findings.
+            if uo != ut:
+                skipped += 1
+                continue
             for k in set(mo) | set(mt):
                 a, b = mo.get(k, 0), mt.get(k, 0)
                 if a and b and not counts:
@@ -165,7 +190,8 @@ def main():
                                      ours_n=a, retail_n=b))
     out = args[0] if args else "/dev/stdout"
     json.dump(findings, open(out, "w"), indent=1)
-    sys.stderr.write("[fns checked: %d] [findings: %d]\n" % (checked, len(findings)))
+    sys.stderr.write("[fns checked: %d] [skipped unsound: %d] [findings: %d]\n"
+                     % (checked, skipped, len(findings)))
 
 
 main()

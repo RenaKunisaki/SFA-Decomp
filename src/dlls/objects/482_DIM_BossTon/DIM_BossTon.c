@@ -117,11 +117,6 @@ int DIMbosstonsil_startIdleHitReaction(GameObject* obj, DIMbosstonsilState* stat
     state->recoveryTimer = 0.01f;
     return 0;
 }
-/* Source-position anchor for MWCC's anonymous symbol numbering. */
-static int DIMbosstonsil_isWithinLightRange(f32 dist) {
-    return dist > 30.0f && dist < 50.0f;
-}
-
 void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state) {
     int hitObj;
     int modelPart;
@@ -312,7 +307,7 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
         eventId = animUpdate->eventIds[eventIndex];
         switch (eventId) {
         case DIMBOSSTONSIL_ANIM_EVENT_START_STEAM:
-            skyFn_80089710(7, 1, 0);
+            skySetLightsEnabled(7, 1, 0);
             skySetLightDirection(7, -0.1f, -0.1f, 1.0f);
             skySetBaseColor(7, 0xff, 0xb4, 0xb4, 0x7f, 0x28);
             getEnvfxAct(obj, obj, DIMBOSSTONSIL_STEAM_ENVFX, 0);
@@ -409,7 +404,7 @@ void DIMbosstonsil_free(GameObject* obj) {
     DIMbosstonsilState* state;
 
     state = obj->extra;
-    ObjGroup_RemoveObject((int)obj, DIMBOSSTONSIL_OBJGROUP);
+    objFreeObjectType((int)obj, DIMBOSSTONSIL_OBJGROUP);
     (*gBaddieControlInterface)->releaseState((GameObject*)obj, state, 1);
     if (gDIMbosstonsilLight != NULL) {
         ModelLightStruct_free(gDIMbosstonsilLight);

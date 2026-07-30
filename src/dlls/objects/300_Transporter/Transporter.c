@@ -59,8 +59,8 @@ STATIC_ASSERT(offsetof(TransporterEffectParams, scale) == 0x08);
 STATIC_ASSERT(offsetof(TransporterEffectParams, pos) == 0x0C);
 STATIC_ASSERT(sizeof(TransporterEffectParams) == 0x18);
 
-extern u8 lbl_803DCDE0;
-extern s16 lbl_803DCEB8;
+extern u8 gWarpArrivalTimer;
+extern s16 gArrivedWarpIndex;
 
 void Transporter_updateEffects(GameObject* obj) {
     TransporterState* state;
@@ -190,13 +190,13 @@ void Transporter_updateInteraction(GameObject* obj) {
 
     if ((state->triggerMode == TRANSPORTER_TRIGGER_PROXIMITY) && (state->countdownActive == 0) &&
         ((obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0)) {
-        if ((lbl_803DCEB8 > -1) && (Vec_xzDistance(&obj->anim.worldPosX, &Obj_GetPlayerObject()->anim.worldPosX) <
+        if ((gArrivedWarpIndex > -1) && (Vec_xzDistance(&obj->anim.worldPosX, &Obj_GetPlayerObject()->anim.worldPosX) <
                                     WARP_PAD_INTERACTION_DISTANCE)) {
             (*gObjectTriggerInterface)->runSequence(TRANSPORTER_SEQUENCE_INBOUND, (void*)obj, -1);
             obj->userData1 = state->activateDelay;
             state->triggerMode = TRANSPORTER_TRIGGER_PROXIMITY;
             state->countdownActive = 1;
-            lbl_803DCDE0 = 2;
+            gWarpArrivalTimer = 2;
         } else {
             gameBit = placement->enableGameBit;
             if (((gameBit == TRANSPORTER_GAME_BIT_NONE) ||
@@ -471,11 +471,11 @@ void Transporter_hitDetect(int obj) {
     register TransporterPlacement* placement = (TransporterPlacement*)((GameObject*)self)->anim.placementData;
     register TransporterState* state = ((GameObject*)self)->extra;
 
-    if (lbl_803DCEB8 > -1) {
+    if (gArrivedWarpIndex > -1) {
         ((GameObject*)self)->anim.resetHitboxFlags &= ~(INTERACT_FLAG_DISABLED | INTERACT_FLAG_PROMPT_SUPPRESSED);
         state->flags |= TRANSPORTER_FLAG_INTERACTIVE;
         if (((GameObject*)self)->anim.hitVolumeTransforms != NULL) {
-            objRenderFn_80041018((GameObject*)self);
+            objUpdateHitVolumeTransforms((GameObject*)self);
         }
         return;
     }
@@ -493,7 +493,7 @@ void Transporter_hitDetect(int obj) {
             state->flags |= TRANSPORTER_FLAG_INTERACTIVE;
         }
         if (((GameObject*)self)->anim.hitVolumeTransforms != NULL) {
-            objRenderFn_80041018((GameObject*)self);
+            objUpdateHitVolumeTransforms((GameObject*)self);
         }
         return;
     }

@@ -1,461 +1,405 @@
 /*
- * DLL 141 / 0x8D - foodbag-effect builder from the dll_NN_func03
- * spawn-effect family.
- *
- * dll_8D_func03 fills an FbBuf command list on the stack, three layered
- * passes of FbCmd records selected by `variant` (0/1/2), then hands it to
- * the modgfx interface's spawnEffect. Each variant emits a distinct effect
- * id (0x156 / 0xc0d / 0x23b). posSource (when non-null) supplies the world
- * position triple at offset 0xc/0x10/0x14; otherwise default constants are
- * used. flags is OR'd into the effect flag word and, when bit 0 is set, the
- * source object's position (ctx+0x18..0x20, or posSource) is added in.
- *
- * The geometry/colour constants and the per-effect parameter block at
- * gDll8DEffectParamBlock (texture base +0x8c, s16 size words at +0xb0..+0xbc)
- * define the command stream.
- *
- * dll_8D_func00_nop / dll_8D_func01_nop are empty export-table slots.
+ * DLL 141 / 0x8D - a three-variant layered modgfx effect spawner.
  */
+#include "main/dll/dll_008D_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/dll/fb_cmd.h"
-#include "dlls/object_descriptor.h"
+#include "main/dll/modgfx_types.h"
 
-/* spawnEffect effect ids per variant. */
-#define DLL8D_EFFECT_ID_VARIANT0 0x156
-#define DLL8D_EFFECT_ID_VARIANT1 0xc0d
-#define DLL8D_EFFECT_ID_VARIANT2 0x23b
+typedef struct Dll8DEffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} Dll8DEffectVertex;
 
-extern u8 gDll8DEffectParamBlock[];
+STATIC_ASSERT(offsetof(Dll8DEffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(Dll8DEffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(Dll8DEffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(Dll8DEffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(Dll8DEffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(Dll8DEffectVertex) == 0x0A);
 
-#define DLL8D_COMMAND_SENTINEL          999.0f
-#define DLL8D_VARIANT0_POSITION_Y       94.0f
-#define DLL8D_VARIANT0_POSITION_Z       95.0f
-#define DLL8D_DEFAULT_POSITION_Y        32640.0f
-#define DLL8D_VARIANT0_COMMAND_SCALE    3.2f
-#define DLL8D_VARIANT0_COMMAND_DEPTH    30.0f
-#define DLL8D_UNIT_SCALE                1.0f
-#define DLL8D_JITTER_STEP               0.05f
-#define DLL8D_VARIANT1_JITTER_BASE      5.0f
-#define DLL8D_VARIANT1_JITTER_DEPTH     28.0f
-#define DLL8D_ALT_POSITION_Y            96.0f
-#define DLL8D_ALT_POSITION_Z            97.0f
-#define DLL8D_VARIANT2_JITTER_BASE      1.2f
-#define DLL8D_VARIANT2_JITTER_DEPTH     12.0f
-#define DLL8D_HALF_SCALE                0.5f
-#define DLL8D_DOUBLE_SCALE              2.0f
-#define DLL8D_VARIANT0_EFFECT_RANGE     400.0f
-#define DLL8D_ALT_EFFECT_RANGE          800.0f
+typedef struct Dll8DEffectResourceView {
+    Dll8DEffectVertex vertices[9];
+    u8 opaque5A[2];
+    s16 triangles[8][3];
+    s16 nineVertexIndices[10];
+    s16 eightVertexIndices[8];
+    s16 sequenceParams[7];
+    s16 opaqueTail;
+} Dll8DEffectResourceView;
 
-s16 dll_8D_func03(int sourceObj, int variant, int posSource, u32 flags)
-{
-    FbBuf buf;
-    u8* base = (u8*)(int)gDll8DEffectParamBlock;
-    FbCmd* p;
-    FbCmd* entries;
+STATIC_ASSERT(offsetof(Dll8DEffectResourceView, vertices) == 0x00);
+STATIC_ASSERT(offsetof(Dll8DEffectResourceView, opaque5A) == 0x5A);
+STATIC_ASSERT(offsetof(Dll8DEffectResourceView, triangles) == 0x5C);
+STATIC_ASSERT(offsetof(Dll8DEffectResourceView, nineVertexIndices) == 0x8C);
+STATIC_ASSERT(offsetof(Dll8DEffectResourceView, eightVertexIndices) == 0xA0);
+STATIC_ASSERT(offsetof(Dll8DEffectResourceView, sequenceParams) == 0xB0);
+STATIC_ASSERT(offsetof(Dll8DEffectResourceView, opaqueTail) == 0xBE);
+STATIC_ASSERT(sizeof(Dll8DEffectResourceView) == 0xC0);
+
+extern u8 gDll8DEffectResourceData[sizeof(Dll8DEffectResourceView)];
+
+s16 dll_8D_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
+    ModgfxPointerSpawnPacket packet;
+    u8* resourceData = (u8*)(int)gDll8DEffectResourceData;
+    GfxCmd* command;
+    GfxCmd* commands;
     s16 ret = 0;
     f32 jitter;
 
-    entries = buf.entries;
-    p = (FbCmd*)entries;
+    commands = packet.entries;
+    command = (GfxCmd*)commands;
 
-    if (variant == 0)
-    {
-        p->layer = 0;
-        p->flags = 0x8c;
-        p->tex = NULL;
-        p->mode = 0x20000000;
-        p->x = DLL8D_COMMAND_SENTINEL;
-        p->y = DLL8D_VARIANT0_POSITION_Y;
-        p->z = DLL8D_VARIANT0_POSITION_Z;
-        p++;
-        p->layer = 0;
-        p->flags = 9;
-        p->tex = base + 0x8c;
-        p->mode = 0x80;
-        if ((u32)posSource != 0)
-        {
-            PartFxSpawnParams* ps = (PartFxSpawnParams*)posSource;
-            p->x = ps->posX;
-            p->y = ps->posY;
-            p->z = ps->posZ;
-            p++;
+    if (variant == 0) {
+        command->layer = 0;
+        command->flags = 0x8c;
+        command->tex = NULL;
+        command->mode = 0x20000000;
+        command->x = 999.0f;
+        command->y = 94.0f;
+        command->z = 95.0f;
+        command++;
+        command->layer = 0;
+        command->flags = 9;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 0x80;
+        if ((u32)spawnParams != 0) {
+            PartFxSpawnParams* anchorParams = (PartFxSpawnParams*)spawnParams;
+            command->x = anchorParams->posX;
+            command->y = anchorParams->posY;
+            command->z = anchorParams->posZ;
+            command++;
+        } else {
+            command->x = 0.0f;
+            command->y = 32640.0f;
+            command->z = 0.0f;
+            command++;
         }
-        else
-        {
-            p->x = 0.0f;
-            p->y = DLL8D_DEFAULT_POSITION_Y;
-            p->z = 0.0f;
-            p++;
+        command->layer = 0;
+        command->flags = 8;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 2;
+        command->x = 3.2f;
+        command->y = 3.2f;
+        command->z = 30.0f;
+        command++;
+    } else if (variant == 1) {
+        *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[1])] = 0x50;
+        *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[2])] = 0x50;
+        command->layer = 0;
+        command->flags = 2;
+        command->tex = NULL;
+        command->mode = 0x1800000;
+        command->x = 1.0f;
+        command->y = 0.0f;
+        command->z = 0.0f;
+        command++;
+        command->layer = 0;
+        command->flags = 0x69;
+        command->tex = NULL;
+        command->mode = 0x1800000;
+        command->x = 1.0f;
+        command->y = 0.0f;
+        command->z = 0.0f;
+        command++;
+        command->layer = 0;
+        command->flags = 8;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 2;
+        jitter = 0.05f * (f32)randomGetRange(0, 0xc);
+        command->y = command->x = 5.0f + jitter;
+        command->z = 28.0f + jitter;
+        command++;
+        command->layer = 0;
+        command->flags = 0x8c;
+        command->tex = NULL;
+        command->mode = 0x20000000;
+        command->x = 999.0f;
+        command->y = 96.0f;
+        command->z = 97.0f;
+        command++;
+        command->layer = 0;
+        command->flags = 9;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 0x80;
+        if ((u32)spawnParams != 0) {
+            PartFxSpawnParams* anchorParams = (PartFxSpawnParams*)spawnParams;
+            command->x = anchorParams->posX;
+            command->y = anchorParams->posY;
+            command->z = anchorParams->posZ;
+            command++;
+        } else {
+            command->x = 0.0f;
+            command->y = 32640.0f;
+            command->z = 0.0f;
+            command++;
         }
-        p->layer = 0;
-        p->flags = 8;
-        p->tex = base + 0x8c;
-        p->mode = 2;
-        p->x = DLL8D_VARIANT0_COMMAND_SCALE;
-        p->y = DLL8D_VARIANT0_COMMAND_SCALE;
-        p->z = DLL8D_VARIANT0_COMMAND_DEPTH;
-        p++;
-    }
-    else if (variant == 1)
-    {
-        *(s16*)(base + 0xb2) = 0x50;
-        *(s16*)(base + 0xb4) = 0x50;
-        p->layer = 0;
-        p->flags = 2;
-        p->tex = NULL;
-        p->mode = 0x1800000;
-        p->x = DLL8D_UNIT_SCALE;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
-        p->layer = 0;
-        p->flags = 0x69;
-        p->tex = NULL;
-        p->mode = 0x1800000;
-        p->x = DLL8D_UNIT_SCALE;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
-        p->layer = 0;
-        p->flags = 8;
-        p->tex = base + 0x8c;
-        p->mode = 2;
-        jitter = DLL8D_JITTER_STEP * (f32)randomGetRange(0, 0xc);
-        p->y = p->x = DLL8D_VARIANT1_JITTER_BASE + jitter;
-        p->z = DLL8D_VARIANT1_JITTER_DEPTH + jitter;
-        p++;
-        p->layer = 0;
-        p->flags = 0x8c;
-        p->tex = NULL;
-        p->mode = 0x20000000;
-        p->x = DLL8D_COMMAND_SENTINEL;
-        p->y = DLL8D_ALT_POSITION_Y;
-        p->z = DLL8D_ALT_POSITION_Z;
-        p++;
-        p->layer = 0;
-        p->flags = 9;
-        p->tex = base + 0x8c;
-        p->mode = 0x80;
-        if ((u32)posSource != 0)
-        {
-            PartFxSpawnParams* ps = (PartFxSpawnParams*)posSource;
-            p->x = ps->posX;
-            p->y = ps->posY;
-            p->z = ps->posZ;
-            p++;
-        }
-        else
-        {
-            p->x = 0.0f;
-            p->y = DLL8D_DEFAULT_POSITION_Y;
-            p->z = 0.0f;
-            p++;
-        }
-    }
-    else if (variant == 2)
-    {
-        *(s16*)(base + 0xb2) = 0x50;
-        *(s16*)(base + 0xb4) = 0x50;
-        p->layer = 0;
-        p->flags = 0x1fc;
-        p->tex = NULL;
-        p->mode = 0x1800000;
-        p->x = DLL8D_UNIT_SCALE;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
-        p->layer = 0;
-        p->flags = 8;
-        p->tex = base + 0x8c;
-        p->mode = 2;
-        jitter = DLL8D_JITTER_STEP * (f32)randomGetRange(0, 0xc);
-        p->y = p->x = DLL8D_VARIANT2_JITTER_BASE + jitter;
-        p->z = DLL8D_VARIANT2_JITTER_DEPTH + jitter;
-        p++;
-        p->layer = 0;
-        p->flags = 0x8c;
-        p->tex = NULL;
-        p->mode = 0x20000000;
-        p->x = DLL8D_COMMAND_SENTINEL;
-        p->y = DLL8D_ALT_POSITION_Y;
-        p->z = DLL8D_ALT_POSITION_Z;
-        p++;
-        p->layer = 0;
-        p->flags = 9;
-        p->tex = base + 0x8c;
-        p->mode = 0x80;
-        if ((u32)posSource != 0)
-        {
-            PartFxSpawnParams* ps = (PartFxSpawnParams*)posSource;
-            p->x = ps->posX;
-            p->y = ps->posY;
-            p->z = ps->posZ;
-            p++;
-        }
-        else
-        {
-            p->x = 0.0f;
-            p->y = DLL8D_DEFAULT_POSITION_Y;
-            p->z = 0.0f;
-            p++;
+    } else if (variant == 2) {
+        *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[1])] = 0x50;
+        *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[2])] = 0x50;
+        command->layer = 0;
+        command->flags = 0x1fc;
+        command->tex = NULL;
+        command->mode = 0x1800000;
+        command->x = 1.0f;
+        command->y = 0.0f;
+        command->z = 0.0f;
+        command++;
+        command->layer = 0;
+        command->flags = 8;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 2;
+        jitter = 0.05f * (f32)randomGetRange(0, 0xc);
+        command->y = command->x = 1.2f + jitter;
+        command->z = 12.0f + jitter;
+        command++;
+        command->layer = 0;
+        command->flags = 0x8c;
+        command->tex = NULL;
+        command->mode = 0x20000000;
+        command->x = 999.0f;
+        command->y = 96.0f;
+        command->z = 97.0f;
+        command++;
+        command->layer = 0;
+        command->flags = 9;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 0x80;
+        if ((u32)spawnParams != 0) {
+            PartFxSpawnParams* anchorParams = (PartFxSpawnParams*)spawnParams;
+            command->x = anchorParams->posX;
+            command->y = anchorParams->posY;
+            command->z = anchorParams->posZ;
+            command++;
+        } else {
+            command->x = 0.0f;
+            command->y = 32640.0f;
+            command->z = 0.0f;
+            command++;
         }
     }
-    if (variant == 0)
-    {
-        p[0].layer = 1;
-        p[0].flags = 9;
-        p[0].tex = base + 0x8c;
-        p[0].mode = 0x4000;
-        p[0].x = 0.0f;
-        p[0].y = 0.0f;
-        p[0].z = 0.0f;
-        p[1].layer = 1;
-        p[1].flags = 0x68;
-        p[1].tex = NULL;
-        p[1].mode = 0x800000;
-        p[1].x = DLL8D_UNIT_SCALE;
-        p[1].y = 0.0f;
-        p[1].z = 0.0f;
-        p[2].layer = 1;
-        p[2].flags = 8;
-        p[2].tex = base + 0x8c;
-        p[2].mode = 2;
-        p[2].x = DLL8D_HALF_SCALE;
-        p[2].y = DLL8D_HALF_SCALE;
-        p[2].z = DLL8D_HALF_SCALE;
-        p += 3;
+    if (variant == 0) {
+        command[0].layer = 1;
+        command[0].flags = 9;
+        command[0].tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command[0].mode = 0x4000;
+        command[0].x = 0.0f;
+        command[0].y = 0.0f;
+        command[0].z = 0.0f;
+        command[1].layer = 1;
+        command[1].flags = 0x68;
+        command[1].tex = NULL;
+        command[1].mode = 0x800000;
+        command[1].x = 1.0f;
+        command[1].y = 0.0f;
+        command[1].z = 0.0f;
+        command[2].layer = 1;
+        command[2].flags = 8;
+        command[2].tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command[2].mode = 2;
+        command[2].x = 0.5f;
+        command[2].y = 0.5f;
+        command[2].z = 0.5f;
+        command += 3;
+    } else if (variant == 1) {
+        command[0].layer = 1;
+        command[0].flags = 9;
+        command[0].tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command[0].mode = 0x4000;
+        command[0].x = 0.0f;
+        command[0].y = 0.0f;
+        command[0].z = 0.0f;
+        command[1].layer = 1;
+        command[1].flags = 0x8f;
+        command[1].tex = NULL;
+        command[1].mode = 0x1800000;
+        command[1].x = 2.0f;
+        command[1].y = 0.0f;
+        command[1].z = 0.0f;
+        command += 2;
+    } else if (variant == 2) {
+        command[0].layer = 1;
+        command[0].flags = 9;
+        command[0].tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command[0].mode = 0x4000;
+        command[0].x = 0.0f;
+        command[0].y = 0.0f;
+        command[0].z = 0.0f;
+        command[1].layer = 1;
+        command[1].flags = 0x1fd;
+        command[1].tex = NULL;
+        command[1].mode = 0x1800000;
+        command[1].x = 2.0f;
+        command[1].y = 0.0f;
+        command[1].z = 0.0f;
+        command += 2;
     }
-    else if (variant == 1)
-    {
-        p[0].layer = 1;
-        p[0].flags = 9;
-        p[0].tex = base + 0x8c;
-        p[0].mode = 0x4000;
-        p[0].x = 0.0f;
-        p[0].y = 0.0f;
-        p[0].z = 0.0f;
-        p[1].layer = 1;
-        p[1].flags = 0x8f;
-        p[1].tex = NULL;
-        p[1].mode = 0x1800000;
-        p[1].x = DLL8D_DOUBLE_SCALE;
-        p[1].y = 0.0f;
-        p[1].z = 0.0f;
-        p += 2;
+    if (variant == 0) {
+        command->layer = 1;
+        command->flags = 9;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 0x100;
+        command->x = 400.0f;
+        command->y = 0.0f;
+        command->z = 0.0f;
+        command++;
+    } else if (variant == 1) {
+        command->layer = 1;
+        command->flags = 9;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 0x100;
+        command->x = 800.0f;
+        command->y = 0.0f;
+        command->z = 0.0f;
+        command++;
+    } else if (variant == 2) {
+        command->layer = 1;
+        command->flags = 9;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 0x100;
+        command->x = 800.0f;
+        command->y = 0.0f;
+        command->z = 0.0f;
+        command++;
     }
-    else if (variant == 2)
-    {
-        p[0].layer = 1;
-        p[0].flags = 9;
-        p[0].tex = base + 0x8c;
-        p[0].mode = 0x4000;
-        p[0].x = 0.0f;
-        p[0].y = 0.0f;
-        p[0].z = 0.0f;
-        p[1].layer = 1;
-        p[1].flags = 0x1fd;
-        p[1].tex = NULL;
-        p[1].mode = 0x1800000;
-        p[1].x = DLL8D_DOUBLE_SCALE;
-        p[1].y = 0.0f;
-        p[1].z = 0.0f;
-        p += 2;
+    if (variant == 0) {
+        command->layer = 2;
+        command->flags = 9;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 0x100;
+        command->x = 400.0f;
+        command->y = 0.0f;
+        command->z = 0.0f;
+        command++;
+    } else if (variant == 1) {
+        command->layer = 2;
+        command->flags = 9;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 0x100;
+        command->x = 800.0f;
+        command->y = 0.0f;
+        command->z = 0.0f;
+        command++;
+    } else if (variant == 2) {
+        command->layer = 2;
+        command->flags = 9;
+        command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+        command->mode = 0x100;
+        command->x = 800.0f;
+        command->y = 0.0f;
+        command->z = 0.0f;
+        command++;
     }
-    if (variant == 0)
-    {
-        p->layer = 1;
-        p->flags = 9;
-        p->tex = base + 0x8c;
-        p->mode = 0x100;
-        p->x = DLL8D_VARIANT0_EFFECT_RANGE;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
+    command->layer = 2;
+    command->flags = 9;
+    command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
+    command->mode = 4;
+    command->x = 0.0f;
+    command->y = 0.0f;
+    command->z = 0.0f;
+    command++;
+    if (variant == 0) {
+        command->layer = 3;
+        command->flags = 0;
+        command->tex = NULL;
+        command->mode = 0x20000000;
+        command->x = 999.0f;
+        command->y = 94.0f;
+        command->z = 95.0f;
+        command++;
+    } else if (variant == 1) {
+        command->layer = 3;
+        command->flags = 0;
+        command->tex = NULL;
+        command->mode = 0x20000000;
+        command->x = 999.0f;
+        command->y = 96.0f;
+        command->z = 97.0f;
+        command++;
+    } else if (variant == 2) {
+        command->layer = 3;
+        command->flags = 0;
+        command->tex = NULL;
+        command->mode = 0x20000000;
+        command->x = 999.0f;
+        command->y = 96.0f;
+        command->z = 97.0f;
+        command++;
     }
-    else if (variant == 1)
-    {
-        p->layer = 1;
-        p->flags = 9;
-        p->tex = base + 0x8c;
-        p->mode = 0x100;
-        p->x = DLL8D_ALT_EFFECT_RANGE;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = variant;
+    if (variant == 0) {
+        packet.position[0] = 0.0f;
+        packet.position[1] = 0.0f;
+        packet.position[2] = 0.0f;
+    } else {
+        packet.position[0] = 0.0f;
+        packet.position[1] = 0.0f;
+        packet.position[2] = 0.0f;
     }
-    else if (variant == 2)
-    {
-        p->layer = 1;
-        p->flags = 9;
-        p->tex = base + 0x8c;
-        p->mode = 0x100;
-        p->x = DLL8D_ALT_EFFECT_RANGE;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
-    }
-    if (variant == 0)
-    {
-        p->layer = 2;
-        p->flags = 9;
-        p->tex = base + 0x8c;
-        p->mode = 0x100;
-        p->x = DLL8D_VARIANT0_EFFECT_RANGE;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
-    }
-    else if (variant == 1)
-    {
-        p->layer = 2;
-        p->flags = 9;
-        p->tex = base + 0x8c;
-        p->mode = 0x100;
-        p->x = DLL8D_ALT_EFFECT_RANGE;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
-    }
-    else if (variant == 2)
-    {
-        p->layer = 2;
-        p->flags = 9;
-        p->tex = base + 0x8c;
-        p->mode = 0x100;
-        p->x = DLL8D_ALT_EFFECT_RANGE;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
-    }
-    p->layer = 2;
-    p->flags = 9;
-    p->tex = base + 0x8c;
-    p->mode = 4;
-    p->x = 0.0f;
-    p->y = 0.0f;
-    p->z = 0.0f;
-    p++;
-    if (variant == 0)
-    {
-        p->layer = 3;
-        p->flags = 0;
-        p->tex = NULL;
-        p->mode = 0x20000000;
-        p->x = DLL8D_COMMAND_SENTINEL;
-        p->y = DLL8D_VARIANT0_POSITION_Y;
-        p->z = DLL8D_VARIANT0_POSITION_Z;
-        p++;
-    }
-    else if (variant == 1)
-    {
-        p->layer = 3;
-        p->flags = 0;
-        p->tex = NULL;
-        p->mode = 0x20000000;
-        p->x = DLL8D_COMMAND_SENTINEL;
-        p->y = DLL8D_ALT_POSITION_Y;
-        p->z = DLL8D_ALT_POSITION_Z;
-        p++;
-    }
-    else if (variant == 2)
-    {
-        p->layer = 3;
-        p->flags = 0;
-        p->tex = NULL;
-        p->mode = 0x20000000;
-        p->x = DLL8D_COMMAND_SENTINEL;
-        p->y = DLL8D_ALT_POSITION_Y;
-        p->z = DLL8D_ALT_POSITION_Z;
-        p++;
-    }
-    buf.ctx = sourceObj;
-    buf.v44 = variant;
-    if (variant == 0)
-    {
-        buf.pos[0] = 0.0f;
-        buf.pos[1] = 0.0f;
-        buf.pos[2] = 0.0f;
-    }
-    else
-    {
-        buf.pos[0] = 0.0f;
-        buf.pos[1] = 0.0f;
-        buf.pos[2] = 0.0f;
-    }
-    buf.col[0] = 0.0f;
-    buf.col[1] = 0.0f;
-    buf.col[2] = 0.0f;
-    buf.scale = DLL8D_UNIT_SCALE;
-    buf.v40 = 1;
-    buf.v3c = 0;
-    buf.v59 = 9;
-    buf.v5a = 0;
-    buf.v5b = 0;
-    buf.count = p - entries;
-    buf.hw[0] = *(s16*)(base + 0xb0);
-    buf.hw[1] = *(s16*)(base + 0xb2);
-    buf.hw[2] = *(s16*)(base + 0xb4);
-    buf.hw[3] = *(s16*)(base + 0xb6);
-    buf.hw[4] = *(s16*)(base + 0xb8);
-    buf.hw[5] = *(s16*)(base + 0xba);
-    buf.hw[6] = *(s16*)(base + 0xbc);
-    buf.cmds = (FbCmd*)((u8*)&buf + 0x60);
-    buf.flags = 0x4000000;
-    buf.flags |= flags;
-    if ((buf.flags & 1) != 0)
-    {
-        if ((u32)buf.ctx != 0)
-        {
-            GameObject* ctx = (GameObject*)buf.ctx;
-            buf.pos[0] += ctx->anim.worldPosX;
-            buf.pos[1] += ctx->anim.worldPosY;
-            buf.pos[2] += ctx->anim.worldPosZ;
-        }
-        else
-        {
-            PartFxSpawnParams* ps = (PartFxSpawnParams*)posSource;
-            buf.pos[0] += ps->posX;
-            buf.pos[1] += ps->posY;
-            buf.pos[2] += ps->posZ;
+    packet.velocity[0] = 0.0f;
+    packet.velocity[1] = 0.0f;
+    packet.velocity[2] = 0.0f;
+    packet.scale = 1.0f;
+    packet.drawGroupCount = 1;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 9;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0;
+    packet.commandCount = command - commands;
+    packet.sequenceParams[0] = *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[0])];
+    packet.sequenceParams[1] = *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[1])];
+    packet.sequenceParams[2] = *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[2])];
+    packet.sequenceParams[3] = *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[3])];
+    packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[4])];
+    packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[5])];
+    packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[6])];
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.flags = 0x4000000;
+    packet.flags |= spawnFlags;
+    if ((packet.flags & 1) != 0) {
+        if ((u32)packet.sourceObj != 0) {
+            GameObject* anchorObj = packet.sourceObj;
+            packet.position[0] += anchorObj->anim.worldPosX;
+            packet.position[1] += anchorObj->anim.worldPosY;
+            packet.position[2] += anchorObj->anim.worldPosZ;
+        } else {
+            PartFxSpawnParams* anchorParams = (PartFxSpawnParams*)spawnParams;
+            packet.position[0] += anchorParams->posX;
+            packet.position[1] += anchorParams->posY;
+            packet.position[2] += anchorParams->posZ;
         }
     }
-    if (variant == 0)
-    {
-        buf.v58 = 0;
+    if (variant == 0) {
+        packet.modeByte = 0;
         ret = (*gModgfxInterface)
-                  ->spawnEffect(&buf, 0, 9, (u8*)(int)gDll8DEffectParamBlock, 8, base + 0x5c, DLL8D_EFFECT_ID_VARIANT0,
-                                0);
-    }
-    else if (variant == 1)
-    {
-        buf.v58 = 0;
-        buf.flags |= 4;
+                  ->spawnEffect(&packet, 0, 9, (u8*)(int)gDll8DEffectResourceData, 8,
+                                &resourceData[offsetof(Dll8DEffectResourceView, triangles)], 0x156, 0);
+    } else if (variant == 1) {
+        packet.modeByte = 0;
+        packet.flags |= 4;
         ret = (*gModgfxInterface)
-                  ->spawnEffect(&buf, 0, 9, (u8*)(int)gDll8DEffectParamBlock, 8, base + 0x5c, DLL8D_EFFECT_ID_VARIANT1,
-                                0);
-    }
-    else if (variant == 2)
-    {
-        buf.v58 = 0;
-        buf.flags |= 4;
+                  ->spawnEffect(&packet, 0, 9, (u8*)(int)gDll8DEffectResourceData, 8,
+                                &resourceData[offsetof(Dll8DEffectResourceView, triangles)], 0xC0D, 0);
+    } else if (variant == 2) {
+        packet.modeByte = 0;
+        packet.flags |= 4;
         ret = (*gModgfxInterface)
-                  ->spawnEffect(&buf, 0, 9, (u8*)(int)gDll8DEffectParamBlock, 8, base + 0x5c, DLL8D_EFFECT_ID_VARIANT2,
-                                0);
+                  ->spawnEffect(&packet, 0, 9, (u8*)(int)gDll8DEffectResourceData, 8,
+                                &resourceData[offsetof(Dll8DEffectResourceView, triangles)], 0x23B, 0);
     }
     return ret;
 }
 
-void dll_8D_func01_nop(void)
-{
+void dll_8D_release(void) {
 }
 
-void dll_8D_func00_nop(void)
-{
+void dll_8D_initialise(void) {
 }
 
-u8 gDll8DEffectParamBlock[] = {
+u8 gDll8DEffectResourceData[sizeof(Dll8DEffectResourceView)] = {
     0x03, 0xE8, 0x00, 0x00, 0x01, 0x90, 0x00, 0x1F, 0x00, 0x1F, 0x02, 0xC3, 0xFD, 0x3D, 0x01, 0x90, 0x00, 0x00,
     0x00, 0x1F, 0x00, 0x00, 0xFC, 0x18, 0x01, 0x90, 0x00, 0x1F, 0x00, 0x1F, 0xFD, 0x3D, 0xFD, 0x3D, 0x01, 0x90,
     0x00, 0x00, 0x00, 0x1F, 0xFC, 0x18, 0x00, 0x00, 0x01, 0x90, 0x00, 0x1F, 0x00, 0x1F, 0xFD, 0x3D, 0x02, 0xC3,
@@ -469,13 +413,6 @@ u8 gDll8DEffectParamBlock[] = {
     0x00, 0x1E, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-ObjectDescriptor4 dll_8D_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)dll_8D_func00_nop,
-    (ObjectDescriptorCallback)dll_8D_func01_nop,
-    0,
-    (ObjectDescriptorCallback)dll_8D_func03,
+Dll8DResourceDescriptor gDll8DResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_8D_initialise, dll_8D_release, NULL, dll_8D_spawnEffect,
 };

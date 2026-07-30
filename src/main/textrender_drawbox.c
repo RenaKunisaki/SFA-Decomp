@@ -96,6 +96,9 @@ GlyphResource802CA100 gGameTextBoxEdgeTexSrc = {
     },
 };
 
+Texture* gGameTextBoxFrameTextures[5];
+Texture* gSubtitleBoxTextures[3];
+
 void boxDrawFn_8001c5ac(u16* strPtr, int boxId, u8* box);
 
 void subtitleStart(int x)
@@ -241,157 +244,142 @@ void subtitleLoadBoxTextures(int mode)
     }
 }
 
-void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box)
-{
-    int c6y1;
-    int c6y0;
-    int c6x1;
-    int c6x0;
-    int c3y1;
-    int c3y0;
-    int c3x1;
+void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box) {
+    int cornerMaxX;
+    int cornerMinX;
+    int cornerMaxY;
+    int cornerMinY;
+    int subtitleMaxX;
     s16 savedY;
     s16 savedX;
     u16 boxFlags;
-    u8* cur;
-    int cy;
-    int cx;
-    int hh;
-    int hw;
-    s16 x7;
-    s16 y7;
-    u16 w7;
-    u16 h7;
-    int c3x0;
-    int y2;
-    int w2;
-    int xw;
-    s16 x2;
-    int half;
-    int rem;
+    u8* window;
+    int cornerCenterY;
+    int cornerCenterX;
+    int cornerHalfHeight;
+    int cornerHalfWidth;
+    s16 hudX;
+    s16 hudY;
+    u16 hudWidth;
+    u16 hudHeight;
+    int subtitleMinX;
+    int subtitleMaxY;
+    int subtitleMinY;
+    int frameY;
+    int frameWidth;
+    int frameRight;
+    s16 frameX;
+    int edgeWidth;
+    int middleWidth;
 
     savedX = ((GameTextBox*)box)->cursorX;
     savedY = ((GameTextBox*)box)->cursorY;
     boxFlags = ((GameTextBox*)box)->flags;
-    if (boxFlags & 1)
-    {
+    if (boxFlags & 1) {
         return;
     }
     ((GameTextBox*)box)->flags = boxFlags | 1;
-    switch (((GameTextBox*)box)->style)
-    {
+    switch (((GameTextBox*)box)->style) {
     case 5:
         return;
     case 7:
-        if (getCurGameText() == 3)
-        {
+        if (getCurGameText() == 3) {
             u16 bh = ((GameTextBox*)box)->height;
             u16 bw = ((GameTextBox*)box)->width;
             s16 by = ((GameTextBox*)box)->y;
             s16 bx = ((GameTextBox*)box)->x;
             hudDrawRect(bx, by, bx + bw, by + bh, gGameTextBoxFillColor);
-        }
-        else
-        {
-            h7 = ((GameTextBox*)box)->height;
-            w7 = ((GameTextBox*)box)->width;
-            y7 = ((GameTextBox*)box)->y;
-            x7 = ((GameTextBox*)box)->x;
+        } else {
+            hudHeight = ((GameTextBox*)box)->height;
+            hudWidth = ((GameTextBox*)box)->width;
+            hudY = ((GameTextBox*)box)->y;
+            hudX = ((GameTextBox*)box)->x;
             GXSetScissor(0, 0, 0x280, 0x1e0);
-            drawHudBox(x7, y7, (s16)w7, (s16)h7, 0xff, 1);
+            drawHudBox(hudX, hudY, (s16)hudWidth, (s16)hudHeight, 0xff, 1);
         }
         break;
-    case 1:
-    {
+    case 1: {
         u16 bh = ((GameTextBox*)box)->height;
         u16 bw = ((GameTextBox*)box)->width;
         s16 by = ((GameTextBox*)box)->y;
         s16 bx = ((GameTextBox*)box)->x;
         hudDrawRect(bx, by, bx + bw, by + bh, gGameTextBoxFillColor);
-    }
-    break;
+    } break;
     case 6:
-        if (strPtr == NULL)
-        {
+        if (strPtr == NULL) {
             return;
         }
-        cur = gameTextGetCurBox();
-        if (strPtr != NULL)
-        {
-            gameTextMeasureById(*(u16*)strPtr, 0, 0, &c6x0, &c6x1, &c6y0, &c6y1);
+        window = gameTextGetCurBox();
+        if (strPtr != NULL) {
+            gameTextMeasureById(*(u16*)strPtr, 0, 0, &cornerMinX, &cornerMaxX, &cornerMinY, &cornerMaxY);
+        } else if ((u32)boxId != 0) {
+            gameTextMeasureStringBounds((char*)boxId, (int)((u8*)box - (u8*)gTextBoxes) / 0x20, &cornerMinX,
+                                        &cornerMaxX, &cornerMinY, &cornerMaxY);
         }
-        else if ((u32)boxId != 0)
-        {
-            gameTextMeasureStringBounds((char*)boxId, (int)((u8*)box - (u8*)gTextBoxes) / 0x20, &c6x0, &c6x1,
-                                        &c6y0, &c6y1);
-        }
-        gameTextSetWindow(cur);
-        hw = (c6x1 - c6x0) >> 1;
-        hh = (c6y1 - c6y0) >> 1;
-        cx = c6x0 + hw;
-        cy = c6y0 + hh;
-        drawScaledTexture(gGameTextBoxCornerTexture, (f32)(c6x0 - gGameTextBoxCornerInset),
-                          (f32)(c6y0 - gGameTextBoxCornerInset), 0xff, 0x100, hw + gGameTextBoxCornerInset,
-                          hh + gGameTextBoxCornerInset, 0);
-        drawScaledTexture(gGameTextBoxCornerTexture, (f32)cx, (f32)(c6y0 - gGameTextBoxCornerInset), 0xff, 0x100,
-                          hw + gGameTextBoxCornerInset, hh + gGameTextBoxCornerInset, 1);
-        drawScaledTexture(gGameTextBoxCornerTexture, (f32)(c6x0 - gGameTextBoxCornerInset), cy, 0xff, 0x100,
-                          hw + gGameTextBoxCornerInset, hh + gGameTextBoxCornerInset, 2);
-        drawScaledTexture(gGameTextBoxCornerTexture, (f32)cx, cy, 0xff, 0x100, hw + gGameTextBoxCornerInset,
-                          hh + gGameTextBoxCornerInset, 3);
+        gameTextSetWindow(window);
+        cornerHalfWidth = (cornerMaxX - cornerMinX) >> 1;
+        cornerHalfHeight = (cornerMaxY - cornerMinY) >> 1;
+        cornerCenterX = cornerMinX + cornerHalfWidth;
+        cornerCenterY = cornerMinY + cornerHalfHeight;
+        drawScaledTexture(gGameTextBoxCornerTexture, (f32)(cornerMinX - gGameTextBoxCornerInset),
+                          (f32)(cornerMinY - gGameTextBoxCornerInset), 0xff, 0x100,
+                          cornerHalfWidth + gGameTextBoxCornerInset, cornerHalfHeight + gGameTextBoxCornerInset, 0);
+        drawScaledTexture(gGameTextBoxCornerTexture, (f32)cornerCenterX, (f32)(cornerMinY - gGameTextBoxCornerInset),
+                          0xff, 0x100, cornerHalfWidth + gGameTextBoxCornerInset,
+                          cornerHalfHeight + gGameTextBoxCornerInset, 1);
+        drawScaledTexture(gGameTextBoxCornerTexture, (f32)(cornerMinX - gGameTextBoxCornerInset), cornerCenterY, 0xff,
+                          0x100, cornerHalfWidth + gGameTextBoxCornerInset, cornerHalfHeight + gGameTextBoxCornerInset,
+                          2);
+        drawScaledTexture(gGameTextBoxCornerTexture, (f32)cornerCenterX, cornerCenterY, 0xff, 0x100,
+                          cornerHalfWidth + gGameTextBoxCornerInset, cornerHalfHeight + gGameTextBoxCornerInset, 3);
         break;
     case 0:
         drawScaledTexture(gGameTextBoxBgTexture, (f32)((GameTextBox*)box)->x, (f32)((GameTextBox*)box)->y, 0xff, 0x100,
                           ((GameTextBox*)box)->width, ((GameTextBox*)box)->height, 0);
         break;
     case 3:
-        cur = gameTextGetCurBox();
-        if (strPtr != NULL)
-        {
-            gameTextMeasureById(*(u16*)strPtr, 0, 0, &c3x0, &c3x1, &c3y0, &c3y1);
+        window = gameTextGetCurBox();
+        if (strPtr != NULL) {
+            gameTextMeasureById(*(u16*)strPtr, 0, 0, &subtitleMinX, &subtitleMaxX, &subtitleMinY, &subtitleMaxY);
+        } else if ((u32)boxId != 0) {
+            gameTextMeasureStringBounds((char*)boxId, (int)((u8*)box - (u8*)gTextBoxes) / 0x20, &subtitleMinX,
+                                        &subtitleMaxX, &subtitleMinY, &subtitleMaxY);
         }
-        else if ((u32)boxId != 0)
-        {
-            gameTextMeasureStringBounds((char*)boxId, (int)((u8*)box - (u8*)gTextBoxes) / 0x20, &c3x0, &c3x1,
-                                        &c3y0, &c3y1);
-        }
-        gameTextSetWindow(cur);
-        drawTexture(gSubtitleBoxTextures[0], (f32)(c3x0 - 0x16), (f32)(c3y0 - 9), ((GameTextBox*)box)->alpha, 0x100);
-        drawScaledTexture(gSubtitleBoxTextures[1], (f32)c3x0, (f32)(c3y0 - 9), ((GameTextBox*)box)->alpha, 0x100,
-                          c3x1 - c3x0, 0x24, 0);
-        drawTexture(gSubtitleBoxTextures[2], (f32)c3x1, (f32)(c3y0 - 9), ((GameTextBox*)box)->alpha, 0x100);
+        gameTextSetWindow(window);
+        drawTexture(gSubtitleBoxTextures[0], (f32)(subtitleMinX - 0x16), (f32)(subtitleMinY - 9),
+                    ((GameTextBox*)box)->alpha, 0x100);
+        drawScaledTexture(gSubtitleBoxTextures[1], (f32)subtitleMinX, (f32)(subtitleMinY - 9),
+                          ((GameTextBox*)box)->alpha, 0x100, subtitleMaxX - subtitleMinX, 0x24, 0);
+        drawTexture(gSubtitleBoxTextures[2], (f32)subtitleMaxX, (f32)(subtitleMinY - 9), ((GameTextBox*)box)->alpha,
+                    0x100);
         break;
     case 2:
-        x2 = ((GameTextBox*)box)->x;
-        w2 = ((GameTextBox*)box)->width;
-        xw = x2 + w2;
-        y2 = ((GameTextBox*)box)->y;
-        half = w2 >> 1;
-        if (half > 0xc)
-        {
-            half = 0xc;
+        frameX = ((GameTextBox*)box)->x;
+        frameWidth = ((GameTextBox*)box)->width;
+        frameRight = frameX + frameWidth;
+        frameY = ((GameTextBox*)box)->y;
+        edgeWidth = frameWidth >> 1;
+        if (edgeWidth > 0xc) {
+            edgeWidth = 0xc;
         }
-        rem = w2 - half * 2;
-        if (rem < 0)
-        {
-            rem = 0;
+        middleWidth = frameWidth - edgeWidth * 2;
+        if (middleWidth < 0) {
+            middleWidth = 0;
         }
         GXSetScissor(0, 0, 0x280, 0x1e0);
-        drawTexture(gGameTextBoxFrameTextures[0], (f32)(x2 - 0x34), (f32)(y2 - 0x23),
+        drawTexture(gGameTextBoxFrameTextures[0], (f32)(frameX - 0x34), (f32)(frameY - 0x23),
                     ((GameTextBox*)box)->alpha, 0x100);
-        drawTexture(gGameTextBoxFrameTextures[4], (f32)xw, (f32)(y2 - 0x23), ((GameTextBox*)box)->alpha, 0x100);
-        if (half != 0)
-        {
-            drawScaledTexture(gGameTextBoxFrameTextures[1], (f32)x2, (f32)(y2 - 0x13),
-                              ((GameTextBox*)box)->alpha, 0x100, half, 0x3a, 0);
-            drawPartialTexture(gGameTextBoxFrameTextures[3], (f32)(xw - half), (f32)(y2 - 0x13),
-                               ((GameTextBox*)box)->alpha, 0x100,
-                               half, 0x3a, 0xc - half, 0);
+        drawTexture(gGameTextBoxFrameTextures[4], (f32)frameRight, (f32)(frameY - 0x23), ((GameTextBox*)box)->alpha,
+                    0x100);
+        if (edgeWidth != 0) {
+            drawScaledTexture(gGameTextBoxFrameTextures[1], (f32)frameX, (f32)(frameY - 0x13),
+                              ((GameTextBox*)box)->alpha, 0x100, edgeWidth, 0x3a, 0);
+            drawPartialTexture(gGameTextBoxFrameTextures[3], (f32)(frameRight - edgeWidth), (f32)(frameY - 0x13),
+                               ((GameTextBox*)box)->alpha, 0x100, edgeWidth, 0x3a, 0xc - edgeWidth, 0);
         }
-        if (rem != 0)
-        {
-            drawScaledTexture(gGameTextBoxFrameTextures[2], (f32)(x2 + half), (f32)(y2 - 0x13),
-                              ((GameTextBox*)box)->alpha, 0x100, rem, 0x3a, 0);
+        if (middleWidth != 0) {
+            drawScaledTexture(gGameTextBoxFrameTextures[2], (f32)(frameX + edgeWidth), (f32)(frameY - 0x13),
+                              ((GameTextBox*)box)->alpha, 0x100, middleWidth, 0x3a, 0);
         }
         break;
     case 4:

@@ -17,18 +17,6 @@ OSMessage gPicMenuFreeReadBufferMessages[10];
 
 s32 gPicMenuReadThreadCreated;
 
-static void THPRead_ResetWork(void)
-{
-    memset(gPicMenuReadThreadArea, 0, sizeof(gPicMenuReadThreadArea));
-    memset(&gPicMenuReadThread, 0, sizeof(gPicMenuReadThread));
-    memset(gPicMenuReadedBuffer2Messages, 0, sizeof(gPicMenuReadedBuffer2Messages));
-    memset(gPicMenuReadedBufferMessages, 0, sizeof(gPicMenuReadedBufferMessages));
-    memset(gPicMenuFreeReadBufferMessages, 0, sizeof(gPicMenuFreeReadBufferMessages));
-    memset(&gPicMenuReadedBuffer2Queue, 0, sizeof(gPicMenuReadedBuffer2Queue));
-    memset(&gPicMenuReadedBufferQueue, 0, sizeof(gPicMenuReadedBufferQueue));
-    memset(&gPicMenuFreeReadBufferQueue, 0, sizeof(gPicMenuFreeReadBufferQueue));
-}
-
 void PushReadedBuffer2(OSMessage msg)
 {
     OSSendMessage(&gPicMenuReadedBuffer2Queue, msg, OS_MESSAGE_BLOCK);

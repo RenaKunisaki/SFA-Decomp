@@ -10,12 +10,12 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
 #include "main/debug.h"
-#include "main/dll/dll_005B_modgfxfunc03.h"
+#include "main/dll/dll_005B_modgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/maketex_api.h"
 #include "main/model.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
@@ -199,19 +199,13 @@ ObjectDescriptor14 gPushableObjDescriptor = {
 char sPushPullObjectHitpointOverflow[] = "PUSHPULL OBJECT: hitpoint overflow\n";
 const PushableRadii gPushableDefaultBox = {{0.0f, 0.0f, 0.0f, 0.0f}};
 
-static void pushableClampToZero(f32* value) {
-    if (*value <= PUSHABLE_ZERO) {
-        *value = PUSHABLE_ZERO;
-    }
-}
-
 int pushable_updateCurtain(int obj, PushableState* state) {
     int placement;
     GameObject* player;
 
     placement = ((GameObject*)obj)->anim.placementDataAddress;
     player = Obj_GetPlayerObject();
-    if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (fn_80295A04(player, 10) != 0)) {
+    if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (playerGetStateValue(player, 10) != 0)) {
         Sfx_StopObjectChannel(obj, 8);
         return 0;
     }
@@ -264,7 +258,7 @@ void pushable_initWcPushBlock(GameObject* obj, PushableState* state) {
 }
 
 int pushable_updateMagicGem(GameObject* obj, PushableState* state) {
-    ModgfxFunc03Interface** effectInterface;
+    Dll5BInterface** effectInterface;
     u8 nearTarget;
     ObjTextureRuntimeSlot* texture;
     f32 value;
@@ -293,7 +287,7 @@ int pushable_updateMagicGem(GameObject* obj, PushableState* state) {
     }
     if (state->nearestObj == NULL) {
         state->nearestObj =
-            (GameObject*)ObjGroup_FindNearestObject(PUSHABLE_MAGIC_GEM_TARGET_OBJECT_GROUP, obj, nearestDistance);
+            (GameObject*)objGetNearestTypeTo(PUSHABLE_MAGIC_GEM_TARGET_OBJECT_GROUP, obj, nearestDistance);
     }
     if (state->nearestObj == NULL) {
         return 0;
@@ -464,7 +458,7 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
                                   probeCoordinates[pointIndex * 3 + 2], &worldPoints[pointIndex * 3],
                                   &worldPoints[pointIndex * 3 + 1], &worldPoints[pointIndex * 3 + 2]);
             if ((1 << pointIndex & PUSHABLE_POINT_MASK) != 0) {
-                if (objBboxFn_800640cc((f32*)&state->cornerWorld[pointIndex], &worldPoints[pointIndex * 3],
+                if (trackGetLineIntersect((f32*)&state->cornerWorld[pointIndex], &worldPoints[pointIndex * 3],
                                        PUSHABLE_COLLISION_RADIUS, 1, &collision, obj, 8, 0xd, (u8)(pointIndex + 3),
                                        10) == 0) {
                     unresolvedMask = (s8)(unresolvedMask & ~(1 << pointIndex));
@@ -736,7 +730,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
         hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
         blocked = hitDetectFn_80067958(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
         if (blocked == 0) {
-            blocked = objBboxFn_800640cc(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
+            blocked = trackGetLineIntersect(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
         if (blocked != 0) {
             f32 pushAmount;
@@ -757,7 +751,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
         hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
         blocked = hitDetectFn_80067958(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
         if (blocked == 0) {
-            blocked = objBboxFn_800640cc(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
+            blocked = trackGetLineIntersect(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
         if (blocked != 0) {
             f32 pushAmount;
@@ -778,7 +772,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
         hitDetectFn_800691c0(NULL, &sweep, 0x208, 1);
         blocked = hitDetectFn_80067958(NULL, probeStart, probeEnd, 1, hitBuffer, 8);
         if (blocked == 0) {
-            blocked = objBboxFn_800640cc(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
+            blocked = trackGetLineIntersect(probeStart, probeEnd, collisionProbe->radii[0], 0, NULL, obj, 1, -1, 0xff, 0);
         }
         if (blocked != 0) {
             f32 pushAmount;
@@ -959,7 +953,7 @@ void pushable_free(GameObject* obj) {
         gPushableSavedIdentCount = savedIdentIndex + 1;
         gPushableSavedIdents[savedIdentIndex] = ident;
     }
-    ObjGroup_RemoveObject((int)obj, PUSHABLE_OBJECT_GROUP);
+    objFreeObjectType((int)obj, PUSHABLE_OBJECT_GROUP);
 }
 
 void pushable_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
@@ -1184,7 +1178,7 @@ void pushable_update(GameObject* obj) {
         return;
     }
     player = Obj_GetPlayerObject();
-    if ((player != NULL && fn_80295A04(player, 10) != 0) || (state->flags & PUSHABLE_FLAG_AIRBORNE) != 0) {
+    if ((player != NULL && playerGetStateValue(player, 10) != 0) || (state->flags & PUSHABLE_FLAG_AIRBORNE) != 0) {
         state->savePosDelay = PUSHABLE_ACTIVE_SAVE_DELAY;
     }
     if (state->savePosDelay != 0) {
@@ -1250,7 +1244,7 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
     }
     obj->anim.rotX = setup->rotXByte << 8;
     obj->anim.localPosY = PUSHABLE_COLLISION_RADIUS + setup->base.posY;
-    ObjGroup_AddObject((int)obj, PUSHABLE_OBJECT_GROUP);
+    objAddObjectType((int)obj, PUSHABLE_OBJECT_GROUP);
     objSetSlot(obj, PUSHABLE_OBJECT_SLOT);
     obj->animEventCallback = pushable_SeqFn;
     state = obj->extra;

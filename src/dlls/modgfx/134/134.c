@@ -1,158 +1,136 @@
 /*
- * DLL 134 / 0x86 - one of the foodbag/modgfx particle-effect DLLs
- * (the dll_NN_func03 family in foodbag.h). dll_86_func03 builds an FbBuf
- * command list of five FbCmd layers, seeds positions with randomGetRange
- * jitter, copies the seven shared hw words from lbl_80316020, and submits
- * the effect via gModgfxInterface->spawnEffect.
- *
- * flags bit 0 anchors the effect to a source object: when set, the spawn
- * position is offset by the source object's world position (ctx+0x18 when
- * a context object is given, else posSource+0xc). func00/func01 are the
- * DLL's empty entry/exit stubs.
+ * DLL 134 / 0x86 - a randomised five-command modgfx effect spawner.
  */
+#include "main/dll/dll_0086_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/dll/fb_cmd.h"
-#include "dlls/object_descriptor.h"
+#include "main/dll/modgfx_types.h"
 
-s16 lbl_80316020[8] = {0, 255, 0, 0, 0, 0, 0, 0};
+typedef struct Dll86SequenceResource {
+    s16 sequenceParams[7];
+    s16 opaqueTail;
+} Dll86SequenceResource;
 
-void dll_86_func03(int sourceObj, int variant, int posSource, u32 flags)
-{
-    FbBuf buf;
-    FbCmd* e;
-    s16* base;
-    f32 fx = 81.0f;
-    f32 fy = 82.0f;
-    int fl = 0x64;
-    f32 rx;
-    f32 ry;
-    if (variant == 0)
-    {
-        fx = 18.0f;
-        fy = 8.0f;
-        fl = 0x410;
+STATIC_ASSERT(offsetof(Dll86SequenceResource, sequenceParams) == 0x00);
+STATIC_ASSERT(offsetof(Dll86SequenceResource, opaqueTail) == 0x0E);
+STATIC_ASSERT(sizeof(Dll86SequenceResource) == 0x10);
+
+Dll86SequenceResource gDll86SequenceResource = {{0, 255, 0, 0, 0, 0, 0}, 0};
+
+void dll_86_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
+    ModgfxPointerSpawnPacket packet;
+    GfxCmd* commands;
+    s16* sequenceParams;
+    f32 effectWidth = 81.0f;
+    f32 effectHeight = 82.0f;
+    int commandFlags = 0x64;
+    f32 randomX;
+    f32 copiedY;
+
+    if (variant == 0) {
+        effectWidth = 18.0f;
+        effectHeight = 8.0f;
+        commandFlags = 0x410;
+    } else if (variant == 1) {
+        effectWidth = 19.0f;
+        effectHeight = 9.0f;
+        commandFlags = 0x410;
+    } else if (variant == 2) {
+        effectWidth = 20.0f;
+        effectHeight = 15.0f;
+        commandFlags = 0x410;
+    } else if (variant == 3) {
+        effectWidth = 20.0f;
+        effectHeight = 15.0f;
+        commandFlags = 0x410;
     }
-    else if (variant == 1)
-    {
-        fx = 19.0f;
-        fy = 9.0f;
-        fl = 0x410;
-    }
-    else if (variant == 2)
-    {
-        fx = 20.0f;
-        fy = 15.0f;
-        fl = 0x410;
-    }
-    else if (variant == 3)
-    {
-        fx = 20.0f;
-        fy = 15.0f;
-        fl = 0x410;
-    }
-    e = buf.entries;
-    e[0].layer = 0;
-    *(s16*)&e[0].flags = fl;
-    e[0].tex = NULL;
-    e[0].mode = 0x20000000;
-    e[0].x = 999.0f;
-    e[0].y = fx;
-    e[0].z = fy;
-    e[1].layer = 1;
-    e[1].flags = 0;
-    e[1].tex = NULL;
-    e[1].mode = 0x400000;
-    e[1].x = (f32)randomGetRange(-0x64, 0x64);
-    e[1].y = 0.0f;
-    e[1].z = (f32)randomGetRange(-0x4b0, -0x320);
-    rx = e[1].x;
-    ry = e[1].y;
-    e[2].layer = 1;
-    e[2].flags = 0;
-    e[2].tex = NULL;
-    e[2].mode = 0x40000000;
-    e[2].x = rx;
-    e[2].y = 0.0f;
-    e[2].z = ry;
-    e[3].layer = 1;
-    e[3].flags = 0x65;
-    e[3].tex = NULL;
-    e[3].mode = 0x800000;
-    e[3].x = 1.0f;
-    e[3].y = 1.0f;
-    e[3].z = 0.0f;
-    e[4].layer = 2;
-    e[4].flags = 0;
-    e[4].tex = NULL;
-    e[4].mode = 0x20000000;
-    e[4].x = 999.0f;
-    e[4].y = fx;
-    e[4].z = fy;
-    buf.v58 = 0;
-    buf.ctx = sourceObj;
-    buf.v44 = variant;
-    rx = (f32)randomGetRange(-0x64, 0x64);
-    buf.pos[0] = rx;
-    buf.pos[1] = 0.0f;
-    buf.pos[2] = 0.0f;
-    buf.col[0] = 0.0f;
-    buf.col[1] = 0.0f;
-    buf.col[2] = 0.0f;
-    buf.scale = 1.0f;
-    buf.v40 = 0;
-    buf.v3c = 0;
-    buf.v59 = 0;
-    buf.v5a = 0;
-    buf.v5b = 0;
-    buf.count = (FbCmd*)((u8*)e + 0x78) - e;
-    base = lbl_80316020;
-    buf.hw[0] = base[0];
-    buf.hw[1] = base[1];
-    buf.hw[2] = base[2];
-    buf.hw[3] = base[3];
-    buf.hw[4] = base[4];
-    buf.hw[5] = base[5];
-    buf.hw[6] = base[6];
-    buf.cmds = (FbCmd*)((u8*)&buf + 0x60);
-    buf.flags = 0x10400;
-    buf.flags |= flags;
-    if ((buf.flags & 1) != 0)
-    {
-        if ((u32)buf.ctx != 0)
-        {
-            GameObject* obj = (GameObject*)buf.ctx;
-            buf.pos[0] = rx + obj->anim.worldPosX;
-            buf.pos[1] += obj->anim.worldPosY;
-            buf.pos[2] += obj->anim.worldPosZ;
-        }
-        else
-        {
-            PartFxSpawnParams* src = (PartFxSpawnParams*)posSource;
-            buf.pos[0] = rx + src->posX;
-            buf.pos[1] += src->posY;
-            buf.pos[2] += src->posZ;
+    commands = packet.entries;
+    commands[0].layer = 0;
+    commands[0].flags = commandFlags;
+    commands[0].tex = NULL;
+    commands[0].mode = 0x20000000;
+    commands[0].x = 999.0f;
+    commands[0].y = effectWidth;
+    commands[0].z = effectHeight;
+    commands[1].layer = 1;
+    commands[1].flags = 0;
+    commands[1].tex = NULL;
+    commands[1].mode = 0x400000;
+    commands[1].x = (f32)randomGetRange(-0x64, 0x64);
+    commands[1].y = 0.0f;
+    commands[1].z = (f32)randomGetRange(-0x4b0, -0x320);
+    randomX = commands[1].x;
+    copiedY = commands[1].y;
+    commands[2].layer = 1;
+    commands[2].flags = 0;
+    commands[2].tex = NULL;
+    commands[2].mode = 0x40000000;
+    commands[2].x = randomX;
+    commands[2].y = 0.0f;
+    commands[2].z = copiedY;
+    commands[3].layer = 1;
+    commands[3].flags = 0x65;
+    commands[3].tex = NULL;
+    commands[3].mode = 0x800000;
+    commands[3].x = 1.0f;
+    commands[3].y = 1.0f;
+    commands[3].z = 0.0f;
+    commands[4].layer = 2;
+    commands[4].flags = 0;
+    commands[4].tex = NULL;
+    commands[4].mode = 0x20000000;
+    commands[4].x = 999.0f;
+    commands[4].y = effectWidth;
+    commands[4].z = effectHeight;
+    packet.modeByte = 0;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = variant;
+    randomX = (f32)randomGetRange(-0x64, 0x64);
+    packet.position[0] = randomX;
+    packet.position[1] = 0.0f;
+    packet.position[2] = 0.0f;
+    packet.velocity[0] = 0.0f;
+    packet.velocity[1] = 0.0f;
+    packet.velocity[2] = 0.0f;
+    packet.scale = 1.0f;
+    packet.drawGroupCount = 0;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 0;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0;
+    packet.commandCount = (GfxCmd*)((u8*)commands + 0x78) - commands;
+    sequenceParams = gDll86SequenceResource.sequenceParams;
+    packet.sequenceParams[0] = sequenceParams[0];
+    packet.sequenceParams[1] = sequenceParams[1];
+    packet.sequenceParams[2] = sequenceParams[2];
+    packet.sequenceParams[3] = sequenceParams[3];
+    packet.sequenceParams[4] = sequenceParams[4];
+    packet.sequenceParams[5] = sequenceParams[5];
+    packet.sequenceParams[6] = sequenceParams[6];
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.flags = 0x10400;
+    packet.flags |= spawnFlags;
+    if ((packet.flags & 1) != 0) {
+        if (packet.sourceObj != NULL) {
+            GameObject* anchorObj = packet.sourceObj;
+            packet.position[0] = randomX + anchorObj->anim.worldPosX;
+            packet.position[1] += anchorObj->anim.worldPosY;
+            packet.position[2] += anchorObj->anim.worldPosZ;
+        } else {
+            PartFxSpawnParams* anchorParams = spawnParams;
+            packet.position[0] = randomX + anchorParams->posX;
+            packet.position[1] += anchorParams->posY;
+            packet.position[2] += anchorParams->posZ;
         }
     }
-    (*gModgfxInterface)->spawnEffect(&buf, 0, 0, 0, 0, 0, 0, 0);
+    (*gModgfxInterface)->spawnEffect(&packet, 0, 0, 0, 0, 0, 0, 0);
 }
 
-void dll_86_func01_nop(void)
-{
+void dll_86_release(void) {
 }
 
-void dll_86_func00_nop(void)
-{
+void dll_86_initialise(void) {
 }
 
-ObjectDescriptor4 dll_86_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)dll_86_func00_nop,
-    (ObjectDescriptorCallback)dll_86_func01_nop,
-    0,
-    (ObjectDescriptorCallback)dll_86_func03,
+Dll86ResourceDescriptor gDll86ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_86_initialise, dll_86_release, NULL, dll_86_spawnEffect,
 };

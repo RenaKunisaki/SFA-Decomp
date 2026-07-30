@@ -71,7 +71,7 @@
 #include "dolphin/os.h"
 #include "string.h"
 
-extern s32 lbl_803DCC48;
+extern s32 gModelMtxCacheState;
 extern s32 gObjFuzzLayerIndex;
 extern u8 lbl_803DCC3E;
 extern u32 lbl_803DB468;
@@ -165,7 +165,7 @@ int objMatrixToRotation(f32* m, s16* outA, s16* outB, s16* outC)
 }
 
 
-void modelMtxFn_8003be38(u8* def, int* model, f32* mtxA, f32* mtxB)
+void modelBuildPosNrmMtxs(u8* def, int* model, f32* mtxA, f32* mtxB)
 {
     void* cache;
     int count;
@@ -194,7 +194,7 @@ void modelMtxFn_8003be38(u8* def, int* model, f32* mtxA, f32* mtxB)
         mid += 3;
         dstB += 3;
     }
-    lbl_803DCC48 = 2;
+    gModelMtxCacheState = 2;
 }
 
 void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model)
@@ -277,11 +277,11 @@ void modelInitMtxs(ModelFileHeader* def, ObjModel* model)
         {
             copyToCache((void*)cache, (void*)mtx, rem);
         }
-        lbl_803DCC48 = 1;
+        gModelMtxCacheState = 1;
     }
     else
     {
-        lbl_803DCC48 = 3;
+        gModelMtxCacheState = 3;
     }
 }
 
@@ -298,7 +298,7 @@ extern u32 lbl_803DB470;
 extern int lbl_803DB498;
 extern int lbl_803DB49C;
 
-int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
+int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
 {
     Mtx mtx4;
     Mtx mtx3;
@@ -324,7 +324,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     mtxA = lbl_802C1B40;
     mtxB = lbl_802C1B58;
     rop = (u8*)ObjModel_GetRenderOp((ModelFileHeader*)*model, ropIdx);
-    if ((((ModelRenderOp*)rop)->flags & 0x200) == 0)
+    if ((((Shader*)rop)->flags & 0x200) == 0)
     {
         if ((gObjFuzzLayerIndex & 3) != 0)
         {
@@ -332,7 +332,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
             return 0;
         }
         lbl_803DCC3E = 1;
-        objRenderFuzzFn_8003d6f8((void*)obj);
+        objFuzzSetupGxState((void*)obj);
         return 1;
     }
     lbl_803DCC3E = 1;
@@ -389,7 +389,7 @@ int modelRenderCb_8003c268(int obj, int* model, int ropIdx)
     GXSetTevAlphaIn(GX_TEVSTAGE2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
     GXSetTevColorOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    selectTexture((Texture*)(textureIdxToPtr(((ModelRenderOp*)rop)->layer1TextureId)), 2);
+    selectTexture((Texture*)(textureIdxToPtr(((Shader*)rop)->unk38)), 2);
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD3, GX_TEXMAP2);
     GXSetIndTexCoordScale(1, 0, 0);
@@ -484,7 +484,7 @@ static inline int shaderProjDisabled(ModelLightStruct* light)
     return flag;
 }
 
-int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
+int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
 {
     Mtx mtx4;
     Mtx mtx3;
@@ -509,7 +509,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     mtxA = lbl_802C1B10;
     mtxB = lbl_802C1B28;
     rop = (u8*)ObjModel_GetRenderOp(model->file, ropIdx);
-    if ((((ModelRenderOp*)rop)->flags & 0x200) == 0)
+    if ((((Shader*)rop)->flags & 0x200) == 0)
     {
         lbl_803DCC3E = 0;
         return 0;
@@ -670,7 +670,7 @@ int shaderFuzzFn_8003cc1c(GameObject* obj, ObjModel* model, int ropIdx)
     GXSetTevAlphaOp(stage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVPREV);
     if (*(void**)(rop + 0x38) != NULL)
     {
-        selectTexture((Texture*)(textureIdxToPtr(((ModelRenderOp*)rop)->layer1TextureId)), 2);
+        selectTexture((Texture*)(textureIdxToPtr(((Shader*)rop)->unk38)), 2);
         GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
         GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD3, GX_TEXMAP2);
         GXSetIndTexCoordScale(1, 0, 0);
@@ -740,7 +740,7 @@ u8 gObjOverrideColor[3];
 GXColor gObjCurChanColor;
 f32 gObjShadowDist;
 u8 gObjShadowNear;
-s32 lbl_803DCC48;
+s32 gModelMtxCacheState;
 s32 gObjFuzzLayerIndex;
 s32 gObjFuzzStep;
 u8 lbl_803DCC3E;
@@ -794,7 +794,7 @@ const int lbl_802C1B70[56] = {
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 
 
-void objRenderFuzzFn_8003d6f8(void* objArg)
+void objFuzzSetupGxState(void* objArg)
 {
     ModelLightStruct* renderHandle;
     int obj = (int)objArg;
@@ -852,7 +852,7 @@ extern PPCWGPipe GXWGFifo : (0xCC008000);
 
 extern u8 gObjGxPosMtxIdTable[12];
 
-void objRenderFn_8003d980(u8* obj, int* p2)
+void objRenderAttachment(u8* obj, int* p2)
 {
     f32 wm[16];
     f32 cm[16];
@@ -883,7 +883,7 @@ void objRenderFn_8003d980(u8* obj, int* p2)
     cm[11] = 0.0f;
     PSMTXConcat((MtxPtr)cm, (MtxPtr)sm, (MtxPtr)cm);
     GXLoadTexMtxImm((const f32 (*)[4])cm, 0x1e, 0);
-    gxTextureFn_80072dfc(obj, (void**)mdl, 0);
+    objFrozenRenderCb(obj, (void**)mdl, 0);
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_NRM, GX_DIRECT);
@@ -945,7 +945,7 @@ void objRenderFn_8003d980(u8* obj, int* p2)
     }
 }
 
-void objFn_8003dc50(u8* obj, u8* model)
+void objSetupLightChannels(u8* model, u8* obj)
 {
     int t2;
     int t10;
@@ -960,7 +960,7 @@ void objFn_8003dc50(u8* obj, u8* model)
 
     count = 0;
     lbl_803DCC5C = 0;
-    b = ((ModelFileHeader*)obj)->flags24;
+    b = ((ModelFileHeader*)model)->flags24;
     t2 = b & 2;
     if (t2)
     {
@@ -972,7 +972,7 @@ void objFn_8003dc50(u8* obj, u8* model)
     }
     t10 = b & 0x10;
     chan = t10 ? 4 : 0;
-    if (((ModelFileHeader*)obj)->shaderFlags & 2)
+    if (((ModelFileHeader*)model)->shaderFlags & 2)
     {
         if (t2 || t10)
         {
@@ -994,7 +994,7 @@ void objFn_8003dc50(u8* obj, u8* model)
         modelLightChannels_reset(0);
         ch = chan;
         modelLightChannel_configure(ch, 0, en2);
-        f = ((ModelFileHeader*)obj)->shaderFlags;
+        f = ((ModelFileHeader*)model)->shaderFlags;
         if (!(f & 9))
         {
             int mode;
@@ -1007,11 +1007,11 @@ void objFn_8003dc50(u8* obj, u8* model)
             {
                 int l;
                 mode = 6;
-                l = OBJPRINT_MODEL_DEF(model)->modelLightMaskIndex;
+                l = OBJPRINT_MODEL_DEF(obj)->modelLightMaskIndex;
                 if (l == 0)
                 {
-                    modelTextureFn_80089970(((GameObject*)model)->lightColorSlot);
-                    textureColorFn_8008991c(((GameObject*)model)->lightColorSlot, &c.r, &c.g, &c.b);
+                    skyApplyLightSlot(((GameObject*)obj)->lightColorSlot);
+                    skyGetAmbientColor(((GameObject*)obj)->lightColorSlot, &c.r, &c.g, &c.b);
                 }
                 else
                 {
@@ -1021,10 +1021,10 @@ void objFn_8003dc50(u8* obj, u8* model)
                 GXSetChanAmbColor(ch, c);
             }
             {
-                u32 nl = (*(u8**)(model + 0x50))[0x8c];
+                u32 nl = (*(u8**)(obj + 0x50))[0x8c];
                 if (nl != 0)
                 {
-                    modelLightStruct_selectObjectLights((GameObject*)model, larr, nl, &count, mode);
+                    modelLightStruct_selectObjectLights((GameObject*)obj, larr, nl, &count, mode);
                 }
             }
             if (count == 0)
@@ -1042,7 +1042,7 @@ void objFn_8003dc50(u8* obj, u8* model)
                 p = larr;
                 for (; i < count; i++)
                 {
-                    modelLightStruct_loadChannelLight(ch, *p, (GameObject*)model);
+                    modelLightStruct_loadChannelLight(ch, *p, (GameObject*)obj);
                     p++;
                 }
             }
@@ -1059,11 +1059,11 @@ void objFn_8003dc50(u8* obj, u8* model)
             }
         }
         {
-            u32 nf = ((ModelFileHeader*)obj)->texMtxCount;
+            u32 nf = ((ModelFileHeader*)model)->texMtxCount;
             if (nf != 0)
             {
-                modelLightStruct_selectObjectLights((GameObject*)model, &lbl_803DCC64, nf, &lbl_803DCC5C, 8);
-                if ((OBJPRINT_MODEL_DEF(model)->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW) || gObjShadowNear)
+                modelLightStruct_selectObjectLights((GameObject*)obj, &lbl_803DCC64, nf, &lbl_803DCC5C, 8);
+                if ((OBJPRINT_MODEL_DEF(obj)->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW) || gObjShadowNear)
                 {
                     lbl_803DCC5C = 0;
                 }
@@ -1093,7 +1093,7 @@ void objFn_8003dc50(u8* obj, u8* model)
                             *sp = 3;
                         }
                         modelLightChannel_configure(*sp, 2, 0);
-                        modelLightStruct_loadChannelLight(*sp, *lp, (GameObject*)model);
+                        modelLightStruct_loadChannelLight(*sp, *lp, (GameObject*)obj);
                         GXSetChanAmbColor(*sp, *(GXColor*)&lbl_803DB470);
                         GXSetChanMatColor(*sp, *(GXColor*)&lbl_803DB468);
                         lp++;
@@ -1104,7 +1104,7 @@ void objFn_8003dc50(u8* obj, u8* model)
         }
         modelLightChannels_applyGXControls();
         {
-            u8 b5f = OBJPRINT_MODEL_DEF(model)->renderFlags;
+            u8 b5f = OBJPRINT_MODEL_DEF(obj)->renderFlags;
             if ((b5f & 4) || gObjShadowNear)
             {
                 lbl_803DCC5C = 2;
@@ -1117,7 +1117,7 @@ void objFn_8003dc50(u8* obj, u8* model)
     }
 }
 
-extern s32 lbl_803DCC48;
+extern s32 gModelMtxCacheState;
 
 #include "main/objprint_dolphin_internal.h"
 
@@ -1127,7 +1127,7 @@ extern u8 gObjGxPosMtxIdTable[12];
 void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
 {
     char* cache = (char*)getCache();
-    if (lbl_803DCC48 == 1)
+    if (gModelMtxCacheState == 1)
     {
         char* c2 = (char*)getCache();
         char* src;
@@ -1143,7 +1143,7 @@ void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
             src += 0x40;
             dst += 0x30;
         }
-        lbl_803DCC48 = 2;
+        gModelMtxCacheState = 2;
     }
     {
         u8* tbl[1];
@@ -1178,7 +1178,7 @@ void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
                 bs->pos = pos + 8;
                 idx = (w >> (pos & 7)) & 0xff;
             }
-            if (lbl_803DCC48 == 2)
+            if (gModelMtxCacheState == 2)
             {
                 GXLoadPosMtxImm((const f32 (*)[4])(cache + idx * 0x30), *tbl[0]);
             }
@@ -1198,11 +1198,11 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
     char* cache;
     tbl[0] = gObjGxPosMtxIdTable;
     cache = (char*)getCache();
-    if (lbl_803DCC48 == 1)
+    if (gModelMtxCacheState == 1)
     {
         if (skip == 0)
         {
-            modelMtxFn_8003be38(hdr, model, mtx, m1);
+            modelBuildPosNrmMtxs(hdr, model, mtx, m1);
         }
         else
         {
@@ -1219,7 +1219,7 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
                 hdr += 0x40;
                 dst += 0x30;
             }
-            lbl_803DCC48 = 2;
+            gModelMtxCacheState = 2;
         }
     }
     {
@@ -1259,7 +1259,7 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
                 bs->pos = pos + 8;
                 idx = (w >> (pos & 7)) & 0xff;
             }
-            if (lbl_803DCC48 == 2)
+            if (gModelMtxCacheState == 2)
             {
                 u8* pm = (u8*)(cache + idx * 0x30);
                 u8* nm = pm + 0x12c0;
@@ -1299,7 +1299,7 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
     }
 }
 
-extern s32 lbl_803DCC48;
+extern s32 gModelMtxCacheState;
 extern s32 gObjFuzzLayerIndex;
 extern u8 lbl_803DCC3E;
 extern u32 lbl_803DB468;
@@ -1364,8 +1364,8 @@ extern u8 gObjGxKColorCache[4];
 extern u8 gObjShadowColor[4];
 
 
-void objRenderShadow2(int* obj, int* obj2, u8* m, int p4);
-void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode);
+void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
+void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
 void objRenderChild(int* child, int* parent, u8 isShadow);
 
 extern volatile int gAssetLoadInFlightFlags;
@@ -1389,7 +1389,7 @@ extern f32 lbl_803DEA6C;
 extern u8 gObjGxPosMtxIdTable[12];
 
 
-void objFn_8003dc50(u8* obj, u8* model);
+void objSetupLightChannels(u8* model, u8* obj);
 void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx);
 void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8 nrm, u8 tex, u8 skip);
 void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
@@ -1445,14 +1445,14 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
     int next;
     int back;
     GXClearVtxDesc();
-    if (hdr[0xf3] > 1)
+    if (((ModelFileHeader*)hdr)->jointCount > 1)
     {
         GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
         next = 1;
         back = 8;
         if (p3[0] != 0 || p3[1] != 0)
         {
-            if (*(u32*)&((ModelFileHeader*)m)->texCoords != 0)
+            if (((Shader*)m)->auxTextureIndex != 0)
             {
                 GXSetVtxDesc(GX_VA_TEX0MTXIDX, GX_DIRECT);
                 next = 3;
@@ -1523,7 +1523,7 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
         bs->pos = pos + 1;
         GXSetVtxDesc(GX_VA_POS, (((int)(w >> (pos & 7)) & 1) ? GX_INDEX16 : GX_INDEX8));
     }
-    if (m[0x40] & 1)
+    if (((Shader*)m)->vtxAttrFlags & 1)
     {
         int b;
         {
@@ -1538,7 +1538,7 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
             bs->pos = pos + 1;
             b = (w >> (pos & 7)) & 1;
         }
-        if (hdr[0x24] & 8)
+        if (((ModelFileHeader*)hdr)->flags24 & 8)
         {
             GXSetVtxDesc(GX_VA_NBT, b ? GX_INDEX16 : GX_INDEX8);
         }
@@ -1552,7 +1552,7 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
     {
         *out1 = 0;
     }
-    if (m[0x40] & 2)
+    if (((Shader*)m)->vtxAttrFlags & 2)
     {
         u32 w;
         int pos = bs->pos;
@@ -1581,7 +1581,7 @@ void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5,
             b = (w >> (pos & 7)) & 1;
         }
         i = 0;
-        for (; i < m[0x41]; i++)
+        for (; i < ((Shader*)m)->layerCount; i++)
         {
             GXSetVtxDesc(i + GX_VA_TEX0, b ? GX_INDEX16 : GX_INDEX8);
         }
@@ -1606,7 +1606,7 @@ static inline void texSlotGetScroll(u8* obj, u32 jid, f32* txp, f32* typ)
     }
     *typ = *txp = 0.0f;
 }
-u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
+u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
 {
     u16 alpha;
     u8* colp;
@@ -1624,7 +1624,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
         int i;
         u8 cnt;
         cnt = 0;
-        for (i = 0; i < shader[0x41]; i++)
+        for (i = 0; i < ((Shader*)shader)->layerCount; i++)
         {
             u8* l = Shader_getLayer(shader, i);
             if (l[4] & 0x80)
@@ -1640,12 +1640,12 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
     layerIdx = 0;
     colp = &gObjCurChanColor.r;
     {
-        for (; layerIdx < shader[0x41]; layerIdx++)
+        for (; layerIdx < ((Shader*)shader)->layerCount; layerIdx++)
         {
             layer = Shader_getLayer(shader, layerIdx);
             if ((layer[4] & 0x80) == mask)
             {
-                if ((((ObjModelRenderOp*)shader)->flags & SHADER_FLAG_DECAL_LAYER) && layerIdx == 1)
+                if ((((Shader*)shader)->flags & SHADER_FLAG_DECAL_LAYER) && layerIdx == 1)
                 {
                     u8 hasBaseTexture;
                     if (p3[0] != 0)
@@ -1656,10 +1656,10 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     {
                         hasBaseTexture = 0;
                     }
-                    gxTextureFn_80050e28(hasBaseTexture);
+                    addLitColorStage(hasBaseTexture);
                     return 1;
                 }
-                alpha = ((((GameObject*)obj)->anim.renderAlpha + 1) * shader[0xc]) >> 8;
+                alpha = ((((GameObject*)obj)->anim.renderAlpha + 1) * ((Shader*)shader)->alpha) >> 8;
                 if (*(u32*)layer != 0)
                 {
                     f32 (*mtxp)[4];
@@ -1723,7 +1723,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     else if (p5 != 0)
                     {
                         colp[3] = color[3];
-                        if (shader[0x40] & 0x10)
+                        if (((Shader*)shader)->vtxAttrFlags & 0x10)
                         {
                             addTexLayerStageKColor(tex, mtxp, (u8)fl, &gObjCurChanColor);
                         }
@@ -1734,7 +1734,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     }
                     else
                     {
-                        if (shader[0x40] & 0x10)
+                        if (((Shader*)shader)->vtxAttrFlags & 0x10)
                         {
                             addTexLayerStage(tex, mtxp, (u8)fl);
                             if (color[3] < 0xff)
@@ -1765,7 +1765,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
                     }
                     else
                     {
-                        if (shader[0x40] & 0x10)
+                        if (((Shader*)shader)->vtxAttrFlags & 0x10)
                         {
                             addVertexColorStage();
                             if (color[3] < 0xff)
@@ -1785,7 +1785,7 @@ u8 modelRenderFn_8003e98c(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6
     }
     return ok;
 }
-u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
+u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
 {
     int* op;
     u32* refs;
@@ -1828,9 +1828,9 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     refs = (u32*)ObjModel_GetRenderOpTextureRefs((ObjModel*)am, idx);
     Rcp_ResetTextureStageState();
     envtex = 0;
-    if ((refs[0] != 0 || refs[1] != 0) && ((ObjModelRenderOp*)op)->envTextureId != 0)
+    if ((refs[0] != 0 || refs[1] != 0) && ((Shader*)op)->auxTextureIndex != 0)
     {
-        void* t = textureIdxToPtr(((ObjModelRenderOp*)op)->envTextureId);
+        void* t = textureIdxToPtr(((Shader*)op)->auxTextureIndex);
         int nl = lbl_803DCC5C + 1;
         if (refs[0] != 0)
         {
@@ -1840,16 +1840,16 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         {
             nl += 1;
         }
-        envtex = textureFn_80050ad8(t, nl, ((u8*)op)[0x42], ((ObjModelRenderOp*)op)->indirectTextureId);
+        envtex = addEnvMapBumpStages(t, nl, ((u8*)op)[0x42], ((Shader*)op)->layers[0].textureIndex);
         envtex &= 0xff;
     }
     if (refs[0] != 0)
     {
-        textureFn_80051348((void*)refs[0], ((GameObject*)obj)->unkF1);
+        addSphereMapTexStage((void*)refs[0], ((GameObject*)obj)->unkF1);
     }
     if (refs[1] != 0)
     {
-        if (((ObjModelRenderOp*)op)->unk1C != 0)
+        if (((Shader*)op)->unk1C != 0)
         {
             color[0] = 0xff;
             color[1] = 0xff;
@@ -1945,7 +1945,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     {
         u32 t18;
-        if ((t18 = ((ObjModelRenderOp*)op)->textureId) != 0 && ((ObjModelRenderOp*)op)->unk1C == 0 && refs[1] != 0)
+        if ((t18 = ((Shader*)op)->textureId) != 0 && ((Shader*)op)->unk1C == 0 && refs[1] != 0)
         {
             textureIdxToPtr(t18);
             addTexModulateReg2Stage();
@@ -1953,7 +1953,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     {
         u8 hl;
-        if (modelRenderFn_8003e98c(obj, (u8*)op, refs, 0x80, hl = ((((ModelFileHeader*)p2)->shaderFlags & 2) && !(p2[0x24] & 2)),
+        if (addShaderLayerStages(obj, (u8*)op, refs, 0x80, hl = ((((ModelFileHeader*)p2)->shaderFlags & 2) && !(((ModelFileHeader*)p2)->flags24 & 2)),
                                    nlay) == 0)
         {
             u8 hasBaseTexture;
@@ -1965,9 +1965,9 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             {
                 hasBaseTexture = 0;
             }
-            gxTextureFn_80050e28(hasBaseTexture);
+            addLitColorStage(hasBaseTexture);
         }
-        if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_DECAL_LAYER)
+        if (((Shader*)op)->flags & SHADER_FLAG_DECAL_LAYER)
         {
             u8* l1 = Shader_getLayer((u8*)op, 1);
             {
@@ -1976,16 +1976,16 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
                 texSlotGetScroll(obj, l1[5], &tx, &ty);
                 PSMTXTrans((MtxPtr)m2, tx, ty, 0.0f);
             }
-            textureFn_8004c330(textureIdxToPtr(*(u32*)l1), m2);
+            addWarpedNoiseTevStages(textureIdxToPtr(*(u32*)l1), m2);
         }
-        modelRenderFn_8003e98c(obj, (u8*)op, refs, 0, hl, nlay);
+        addShaderLayerStages(obj, (u8*)op, refs, 0, hl, nlay);
     }
     if (isHeavyFogEnabled() && !(((ModelFileHeader*)p2)->flags & 0x100))
     {
         getColor803dd01c(fogc);
         renderHeavyFog(fogc);
     }
-    if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_PROJECTED_TEX_PASS)
+    if (((Shader*)op)->flags & SHADER_FLAG_PROJECTED_TEX_PASS)
     {
         f32* vm = Camera_GetViewMatrix();
         Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
@@ -1996,7 +1996,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     if (OBJPRINT_MODEL_DEF(obj)->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER)
     {
-        gxTextureFn_8004d5b4(op);
+        addRenderOpFadeStage(op);
     }
     {
         u8 e5 = ((GameObject*)obj)->colorFadeFlags;
@@ -2009,7 +2009,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             addColorFadeStage((GXColor*)color);
         }
     }
-    if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_WATER_CAUSTIC)
+    if (((Shader*)op)->flags & SHADER_FLAG_WATER_CAUSTIC)
     {
         AttractMovie_AddVideoTevStages();
     }
@@ -2023,7 +2023,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         else
         {
             u8 zon = 1;
-            if (((GameObject*)obj)->anim.renderAlpha < 0xff || (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_FORCE_BLEND) || shad)
+            if (((GameObject*)obj)->anim.renderAlpha < 0xff || (((Shader*)op)->flags & SHADER_FLAG_FORCE_BLEND) || shad)
             {
                 u16 f2;
                 GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
@@ -2045,7 +2045,7 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
                     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
                 }
             }
-            else if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
+            else if (((Shader*)op)->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if (((ModelFileHeader*)p2)->flags & 0x400)
@@ -2071,14 +2071,14 @@ u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs)
                 }
                 GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
-            if (((ObjModelRenderOp*)op)->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
+            if (((Shader*)op)->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
             {
                 zon = 0;
             }
             gxSetPeControl_ZCompLoc_(zon);
         }
     }
-    if (((ObjModelRenderOp*)op)->flags & 8)
+    if (((Shader*)op)->flags & 8)
     {
         GXSetCullMode(GX_CULL_BACK);
     }
@@ -2097,7 +2097,7 @@ void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
     u32 alpha;
     u8 cull;
     u32 sf;
-    if (((GameObject*)obj)->anim.renderAlpha < 0xff || ((sf = ((ObjModelRenderOp*)shader)->flags) & SHADER_FLAG_FORCE_BLEND))
+    if (((GameObject*)obj)->anim.renderAlpha < 0xff || ((sf = ((Shader*)shader)->flags) & SHADER_FLAG_FORCE_BLEND))
     {
         blend = 1;
         if (((ModelFileHeader*)m)->flags & 0x400)
@@ -2154,7 +2154,7 @@ void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
         zcomploc = 1;
         alpha = 0;
     }
-    if (((ObjModelRenderOp*)shader)->flags & SHADER_FLAG_BACKFACE_CULL)
+    if (((Shader*)shader)->flags & SHADER_FLAG_BACKFACE_CULL)
     {
         cull = 1;
     }
@@ -2243,14 +2243,14 @@ void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
             }
             else
             {
-                lbl_803DCC48 = 1;
+                gModelMtxCacheState = 1;
             }
         }
         else
         {
             ObjModel_ToggleMatrixBuffer((ObjModel*)am);
             PSMTXCopy((MtxPtr)gObjJointMtxTemp, (MtxPtr)(f32*)ObjModel_GetJointMatrix((u8*)am, 0));
-            lbl_803DCC48 = 3;
+            gModelMtxCacheState = 3;
         }
         {
             u8* att = *(u8**)&((GameObject*)obj)->anim.hitReactState;
@@ -2361,7 +2361,7 @@ void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
 }
 
 
-void renderResetFn_8003fc60(void)
+void objRenderInvalidateStateCache(void)
 {
     gObjRenderSetupDone = 0;
     gObjCachedTexture = 0;
@@ -2385,7 +2385,7 @@ extern f32 gObjBoneMtxBuffer[0xC00];
 
 
 
-void objRenderShadow2(int* obj, int* obj2, u8* m, int p4)
+void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
 {
     int done;
     f32 cm[16];
@@ -2430,7 +2430,7 @@ void objRenderShadow2(int* obj, int* obj2, u8* m, int p4)
                 ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, wm);
             }
             {
-                ObjShadowCb cb = *(ObjShadowCb*)((char*)obj + 0x108);
+                ObjShadowCb cb = (ObjShadowCb)((GameObject*)obj)->afterBonesCallback;
                 if (cb != NULL && obj2 == obj)
                 {
                     cb(obj, am, wm);
@@ -2634,7 +2634,7 @@ void objRenderShadow2(int* obj, int* obj2, u8* m, int p4)
 }
 extern u8 gObjGxTexMtxIdTable[12];
 
-void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
+void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
 {
     int joff;
     f32 fm[16];
@@ -2649,10 +2649,10 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
     u8 o8;
     int* am;
     f32* vm;
-    int mode8;
-    int m4;
+    int passMaskCopy;
+    int fuzzPass;
     int m2;
-    int m1;
+    int shadowPass;
     u8 did;
     int* op;
     u32* refs;
@@ -2716,13 +2716,13 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
         objGetColor(((GameObject*)obj)->lightColorSlot, &gObjCurChanColor.r, &gObjCurChanColor.g,
                     &gObjCurChanColor.b);
     }
-    mode8 = mode;
-    m4 = mode8 & 4;
-    if (m4 || (mode8 & 8))
+    passMaskCopy = passMask;
+    fuzzPass = passMaskCopy & 4;
+    if (fuzzPass || (passMaskCopy & 8))
     {
         fade = lbl_803DEA4C;
     }
-    else if (mode8 & 2)
+    else if (passMaskCopy & 2)
     {
         fade = lbl_803DEA50;
     }
@@ -2738,7 +2738,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             {
                 PSMTXIdentity((MtxPtr)im);
                 ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, im);
-                if (m4 == 0)
+                if (fuzzPass == 0)
                 {
                     modelInitBoneMtxs2((ObjModel*)am, wm, gObjBoneMtxBuffer);
                 }
@@ -2753,7 +2753,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
                 ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, wm);
             }
             {
-                ObjShadowCb cb = *(ObjShadowCb*)((char*)obj + 0x108);
+                ObjShadowCb cb = (ObjShadowCb)((GameObject*)obj)->afterBonesCallback;
                 if (cb != NULL && obj2 == obj)
                 {
                     cb(obj, am, wm);
@@ -2765,7 +2765,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             ObjModel_ToggleMatrixBuffer((ObjModel*)am);
             PSMTXCopy((MtxPtr)wm, (MtxPtr)(f32*)ObjModel_GetJointMatrix((u8*)am, 0));
         }
-        if ((m4 == 0 && (mode8 & 8) == 0) || gObjFuzzLayerIndex == 0)
+        if ((fuzzPass == 0 && (passMaskCopy & 8) == 0) || gObjFuzzLayerIndex == 0)
         {
             if (((ModelFileHeader*)m)->morphTargetCount != 0)
             {
@@ -2773,12 +2773,17 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             }
             if (did != 0)
             {
-                int vtx;
-                vtx = ((ObjModel*)am)->vtxBufDirty != 0
-                    ? ((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1]
-                    : *(int*)&((ModelFileHeader*)m)->vertices;
+                u8* vtx;
+                if (((ObjModel*)am)->vtxBufDirty != 0)
+                {
+                    vtx = (u8*)((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1];
+                }
+                else
+                {
+                    vtx = *(u8**)&((ModelFileHeader*)m)->vertices;
+                }
                 ObjModel_BlendVertexStream(
-                    (u8*)gObjBoneMtxBuffer, m + 0x88, (u8*)vtx,
+                    (u8*)gObjBoneMtxBuffer, m + 0x88, vtx,
                     (int*)*(int*)&((ModelFileHeader*)am)->jointBlendData,
                     (u8*)((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1]);
                 ObjModel_BlendNormalStream((u8*)gObjBoneMtxBuffer, m + 0xac,
@@ -2805,8 +2810,8 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
         }
         ((ObjModel*)am)->bufferFlags |= 8;
     }
-    m2 = mode8 & 2;
-    if (m2 || m4 || (mode8 & 8))
+    m2 = passMaskCopy & 2;
+    if (m2 || fuzzPass || (passMaskCopy & 8))
     {
         int j;
         f32 one;
@@ -2850,7 +2855,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
     }
     if (*(u32*)&((ModelFileHeader*)m)->vertexAnimEntries != 0)
     {
-        if (m4 || m2 || (mode8 & 8))
+        if (fuzzPass || m2 || (passMaskCopy & 8))
         {
             f32 sc2 = 1.0f + (lbl_803DEA54 * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
             PSMTXTrans((MtxPtr)tm, -*(f32*)(m + 0x44), -*(f32*)(m + 0x48), -*(f32*)(m + 0x4c));
@@ -2877,8 +2882,8 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             GXLoadTexMtxImm((const f32 (*)[4])fm, gObjGxTexMtxIdTable[9], 0);
         }
     }
-    m1 = mode8 & 1;
-    if (m1 != 0)
+    shadowPass = passMaskCopy & 1;
+    if (shadowPass != 0)
     {
         GXSetNumTexGens(0);
         GXSetNumTevStages(1);
@@ -2942,12 +2947,12 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
     }
     else if (m2 != 0)
     {
-        objRenderFuzzFn_8003d6f8(obj);
+        objFuzzSetupGxState(obj);
     }
     else
     {
         Camera_RebuildProjectionMatrix();
-        objFn_8003dc50(m, (u8*)obj);
+        objSetupLightChannels(m, (u8*)obj);
         if (((ModelFileHeader*)m)->flags & 0x100)
         {
             GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&lbl_803DB468);
@@ -2987,34 +2992,33 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
         switch (op4)
         {
         case 3:
-            modelRenderFn_setVtxDescr(m, (u8*)op, refs, &bs, mode, &o9, &o8);
+            modelRenderFn_setVtxDescr(m, (u8*)op, refs, &bs, passMask, &o9, &o8);
             break;
         case 1:
-            if (mode == 0 || mode == 4 || mode == 8)
+        {
+            u32 idx;
+            if ((passMask == 0 || passMask == 4 || passMask == 8) && lbl_803DCC20 == 0)
             {
-                u32 idx;
-                if (lbl_803DCC20 == 0)
-                {
-                    idx = objRenderFn_8003edf4((u8*)obj, m, am, &bs);
-                    op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
-                }
-                else
-                {
-                    u32 w;
-                    int pos = bs.pos;
-                    u8* p = (u8*)((pos >> 3) + (int)bs.data);
-                    w = p[0];
-                    w |= p[1] << 8;
-                    w |= p[2] << 16;
-                    bs.pos = pos + 6;
-                    idx = (w >> (pos & 7)) & 0x3f;
-                    op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
-                }
-                refs = (u32*)ObjModel_GetRenderOpTextureRefs((ObjModel*)am, idx);
+                idx = objSetupRenderOpGxState((u8*)obj, m, am, &bs);
+                op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
             }
+            else
+            {
+                u32 w;
+                int pos = bs.pos;
+                u8* p = (u8*)((pos >> 3) + (int)bs.data);
+                w = p[0];
+                w |= p[1] << 8;
+                w |= p[2] << 16;
+                bs.pos = pos + 6;
+                idx = (w >> (pos & 7)) & 0x3f;
+                op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
+            }
+            refs = (u32*)ObjModel_GetRenderOpTextureRefs((ObjModel*)am, idx);
             break;
+        }
         case 2:
-            if ((mode != 4 && mode != 8) || lbl_803DCC3E != 0)
+            if ((passMask != 4 && passMask != 8) || lbl_803DCC3E != 0)
             {
                 u8* dl;
                 u32 w;
@@ -3033,7 +3037,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
             }
             break;
         case 4:
-            renderOpMatrix(m, am, &bs, sm, vm, o9, o8, m1);
+            renderOpMatrix(m, am, &bs, sm, vm, o9, o8, shadowPass);
             break;
         case 5:
             done = 1;
@@ -3043,9 +3047,9 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 mode)
 }
 
 
-void objMtxFn_80041104(f32* mtx, f32* out, s16* in, int flag, int* obj, int e);
+void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, int* obj, int e);
 
-void objRenderFn_80041018(GameObject* obj)
+void objUpdateHitVolumeTransforms(GameObject* obj)
 {
     ObjDefHitVolume* p;
     ObjHitVolumeRuntimeTransform* q;
@@ -3071,8 +3075,8 @@ void objRenderFn_80041018(GameObject* obj)
             {
                 mtx = NULL;
             }
-            objMtxFn_80041104(NULL, &q->centerX, &p->posX, base->flags & 0x10, (int*)obj, 0);
-            objMtxFn_80041104((f32*)mtx, &q->jointX, &p->jointOffsetX, base->flags & 0x10, (int*)obj, 1);
+            objTransformHitVolumePoint(NULL, &q->centerX, &p->posX, base->flags & 0x10, (int*)obj, 0);
+            objTransformHitVolumePoint((f32*)mtx, &q->jointX, &p->jointOffsetX, base->flags & 0x10, (int*)obj, 1);
             p++;
             q++;
         }
@@ -3080,7 +3084,7 @@ void objRenderFn_80041018(GameObject* obj)
 }
 
 
-void objMtxFn_80041104(f32* mtx, f32* out, s16* in, int flag, int* obj, int e)
+void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, int* obj, int e)
 {
     f32 m[16];
     MatrixTransform blk;
@@ -3160,7 +3164,7 @@ void objRenderFuzzShells(int* obj)
     model = (int*)Obj_GetActiveModel((GameObject*)obj);
     savedMtx = curObjMtx;
     lbl_803DCC3D = gObjFuzzPhase;
-    ObjModel_SetRenderCallback((u8*)model, modelRenderCb_8003c268);
+    ObjModel_SetRenderCallback((u8*)model, objFuzzShellRenderCb);
     for (gObjFuzzLayerIndex = 0; gObjFuzzLayerIndex < 16; gObjFuzzLayerIndex += gObjFuzzStep)
     {
         modelDoRenderInstrs(obj, ((GameObject*)obj)->ownerObj ? ((GameObject*)obj)->ownerObj : obj, (u8*)*model, 8);
@@ -3272,7 +3276,7 @@ void objRenderFuzz(int* obj)
         }
         model = (int*)Obj_GetActiveModel((GameObject*)obj);
         savedMtx = curObjMtx;
-        ObjModel_SetRenderCallback((u8*)model, shaderFuzzFn_8003cc1c);
+        ObjModel_SetRenderCallback((u8*)model, objFuzzRenderCb);
         for (gObjFuzzLayerIndex = 0; gObjFuzzLayerIndex < n; gObjFuzzLayerIndex++)
         {
             modelDoRenderInstrs(obj, ((GameObject*)obj)->ownerObj ? ((GameObject*)obj)->ownerObj : obj, (u8*)*model, 4);
@@ -3294,7 +3298,7 @@ void objRenderShadow(void* obj)
         int* m = *(int**)Obj_GetActiveModel((GameObject*)obj);
         if (((ModelFileHeader*)m)->shadowDisplayListCount != 0)
         {
-            objRenderShadow2(obj, obj, (u8*)m, 1);
+            objRenderShadowModel(obj, obj, (u8*)m, 1);
         }
         else
         {
@@ -3891,7 +3895,7 @@ void animCurvReadCb(s32 result, DVDFileInfo* fileInfo)
     }
 }
 
-u32 objRenderFn_8003edf4(u8* obj, u8* p2, int* am, MtxBitStream* bs);
+u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs);
 
 
 void animCurvTabReadCb(s32 result, DVDFileInfo* fileInfo)

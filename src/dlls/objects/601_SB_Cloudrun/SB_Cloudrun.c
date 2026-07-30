@@ -30,7 +30,7 @@
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/player_api.h"
 #include "main/track_dolphin_api.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/objprint_render_api.h"
 #include "main/object_render_legacy.h"
 #include "main/dll/WC/dll_0259_sbcloudrunner.h"
@@ -137,7 +137,7 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
     setup->group = 1;
     ObjPath_GetPointWorldPosition(path, WCPUSHBLOCK_SPAWN_PATH_POINT, &setup->x, &setup->y, &setup->z, 0);
 
-    block = (GameObject*)Obj_SetupObject((ObjPlacement*)setup, 5, -1, -1, NULL);
+    block = (GameObject*)objSetupObject((ObjPlacement*)setup, 5, -1, -1, NULL);
     if (block == NULL)
     {
         return;
@@ -536,7 +536,7 @@ int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
         if (animUpdate->eventIds[i] == 1)
         {
             objHitDetectFn_80062e84(player, state->targetObj, 0);
-            fn_80295918(player, 5, 0.0f);
+            playerSetStateValue(player, 5, 0.0f);
             state->done = 1;
         }
     }
@@ -723,7 +723,7 @@ void SB_CloudRunner_free(GameObject* obj)
     }
     Resource_Release(*(void**)&state->resource);
     state->resource = 0;
-    ObjGroup_RemoveObject((int)obj, SBCLOUDRUNNER_OBJGROUP);
+    objFreeObjectType((int)obj, SBCLOUDRUNNER_OBJGROUP);
 }
 
 
@@ -786,7 +786,7 @@ void SB_CloudRunner_update(GameObject* obj)
     if (state->targetObj == NULL)
     {
         int count;
-        int* objs = (int*)ObjGroup_GetObjects(3, &count);
+        int* objs = (int*)objGetAllOfType(3, &count);
         int i;
         for (i = 0; i < count; i++)
         {
@@ -849,7 +849,7 @@ void SB_CloudRunner_init(GameObject* obj)
     state->texture1 = textureLoadAsset(3085);
     *(void**)&state->resource = Resource_Acquire(121, 1);
     ObjHits_SetTargetMask(obj, 1);
-    ObjGroup_AddObject((int)obj, SBCLOUDRUNNER_OBJGROUP);
+    objAddObjectType((int)obj, SBCLOUDRUNNER_OBJGROUP);
 }
 
 

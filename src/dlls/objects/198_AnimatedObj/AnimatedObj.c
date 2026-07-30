@@ -144,7 +144,7 @@ void animatedobj_update(GameObject* obj) {
                 switch (sequence->eventIds[eventIndex]) {
                 case ANIMATEDOBJ_SEQEV_ATTACH_STAFF:
                     if (Obj_IsLoadingLocked() != 0) {
-                        child = Obj_SetupObject(Obj_AllocObjectSetup(sizeof(ObjPlacement), ANIMATEDOBJ_CHILD_OBJ_STAFF),
+                        child = objSetupObject(Obj_AllocObjectSetup(sizeof(ObjPlacement), ANIMATEDOBJ_CHILD_OBJ_STAFF),
                                                 4, -1, -1, NULL);
                         ObjLink_AttachChild(obj, child, 0);
                         ObjAnim_SetCurrentMove((int)child, 0, 0.0f, 0);

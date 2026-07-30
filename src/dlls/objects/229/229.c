@@ -50,9 +50,6 @@
 #define SHIELD_SEGMENT_RATE_BASE          136.0f
 #define SHIELD_SPAWN_SETUP_SIZE           0x24
 
-#define SHIELD_MODE_INIT_OMNI     5
-#define SHIELD_MODE_INIT_STANDARD 7
-
 #define SHIELD_STAFF_GLOW_SLOT     7
 #define SHIELD_STAFF_GLOW_DISABLED 0
 #define SHIELD_STAFF_GLOW_ENABLED  8
@@ -107,7 +104,7 @@ GameObject* Shield_spawnOmniShield(GameObject* obj, f32 rootMotionScale) {
     setup->color[0] = 1;
     setup->color[1] = 1;
     setup->color[3] = 255;
-    shield = Obj_SetupObject(setup, 5, -1, -1, 0);
+    shield = objSetupObject(setup, 5, -1, -1, 0);
     if (shield != NULL) {
         shield->anim.rootMotionScale = rootMotionScale;
     }
@@ -148,7 +145,7 @@ void Shield_setMode(GameObject* obj, u8 mode) {
         state->segmentFlags[2] |= SHIELD_SEGMENT_FLAG_HIDDEN;
         state->segmentFlags[3] |= SHIELD_SEGMENT_FLAG_HIDDEN;
         break;
-    case 0:
+    case SHIELD_MODE_STANDARD_FADE_OUT_SHORT:
         if (state->light != NULL) {
             modelLightStruct_setEnabled(state->light, 0, 0.5f);
         }
@@ -165,7 +162,7 @@ void Shield_setMode(GameObject* obj, u8 mode) {
         Sfx_StopFromObject((int)obj, SFXTRIG_lrope_powerup);
         Sfx_StopFromObject((int)obj, SFXTRIG_lockon3_on);
         break;
-    case 1:
+    case SHIELD_MODE_STANDARD_FADE_IN_SHORT:
         if (state->fadeTarget == 0.0f) {
             if (staff != NULL) {
                 staffSetGlow(staff, SHIELD_STAFF_GLOW_SLOT, SHIELD_STAFF_GLOW_ENABLED);
@@ -230,7 +227,7 @@ void Shield_setMode(GameObject* obj, u8 mode) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_lockon3_on);
         }
         break;
-    case 2:
+    case SHIELD_MODE_STANDARD_FADE_OUT_LONG:
         if (staff != NULL) {
             staffSetGlow(staff, SHIELD_STAFF_GLOW_SLOT, SHIELD_STAFF_GLOW_DISABLED);
         }
@@ -245,7 +242,7 @@ void Shield_setMode(GameObject* obj, u8 mode) {
         Sfx_StopFromObject((int)obj, SFXTRIG_lrope_powerup);
         Sfx_StopFromObject((int)obj, SFXTRIG_lockon3_on);
         break;
-    case 3:
+    case SHIELD_MODE_STANDARD_FADE_IN_LONG:
         if (staff != NULL) {
             staffSetGlow(staff, SHIELD_STAFF_GLOW_SLOT, SHIELD_STAFF_GLOW_ENABLED);
         }
@@ -307,7 +304,7 @@ void Shield_setMode(GameObject* obj, u8 mode) {
         Sfx_StopFromObject((int)obj, SFXTRIG_lrope_powerup);
         Sfx_StopFromObject((int)obj, SFXTRIG_lockon3_on);
         break;
-    case 4: {
+    case SHIELD_MODE_OMNI_ACTIVE: {
         f32 fade = 60.0f;
         f32 amp;
         state->fadeTarget = fade;
@@ -350,7 +347,7 @@ void Shield_setMode(GameObject* obj, u8 mode) {
         Sfx_PlayFromObject((u32)obj, SFXTRIG_lrope_powerup);
         break;
     }
-    case 6: {
+    case SHIELD_MODE_OMNI_HIT: {
         int i;
         s16* phaseCursor;
         f32* segmentScaleCursor;
@@ -544,8 +541,8 @@ void Shield_update(GameObject* obj) {
     } else {
         obj->anim.alpha = (u8)(state->fadeValue / state->fadeMax * (f32)(s32)randomGetRange(192, 255));
     }
-    Sfx_SetObjectSfxVolume((int)obj, SFXTRIG_lockon3_on,
-                           (SHIELD_SFX_VOLUME_MAX * (state->fadeValue / state->fadeMax)), SHIELD_SFX_VOLUME_SCALE);
+    Sfx_SetObjectSfxVolume((int)obj, SFXTRIG_lockon3_on, (SHIELD_SFX_VOLUME_MAX * (state->fadeValue / state->fadeMax)),
+                           SHIELD_SFX_VOLUME_SCALE);
     if (obj->anim.alpha != 0) {
         obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
     } else {

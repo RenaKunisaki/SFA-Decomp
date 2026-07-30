@@ -91,7 +91,7 @@ void nwTricky_update(GameObject* obj) {
     switch (state->phase) {
     case NW_TRICKY_PHASE_HERDING:
         if (mainGetBit(NW_TRICKY_HERDING_COMPLETE_GAMEBIT)) {
-            herdObjects = (GameObject**)ObjGroup_GetObjects(NW_TRICKY_HERD_OBJECT_GROUP, &herdObjectCount);
+            herdObjects = (GameObject**)objGetAllOfType(NW_TRICKY_HERD_OBJECT_GROUP, &herdObjectCount);
             for (herdObjectIndex = 0, completedHerdScan = herdObjects; herdObjectIndex < herdObjectCount;
                  completedHerdScan++, herdObjectIndex++) {
                 if ((*completedHerdScan)->anim.romDefNo == NW_TRICKY_HERD_OBJECT_SEQUENCE_ID) {
@@ -125,7 +125,7 @@ void nwTricky_update(GameObject* obj) {
                 }
             }
 
-            herdObjects = (GameObject**)ObjGroup_GetObjects(NW_TRICKY_HERD_OBJECT_GROUP, &herdObjectCount);
+            herdObjects = (GameObject**)objGetAllOfType(NW_TRICKY_HERD_OBJECT_GROUP, &herdObjectCount);
             for (herdObjectIndex = 0, activeHerdScan = herdObjects; herdObjectIndex < herdObjectCount;
                  activeHerdScan++, herdObjectIndex++) {
                 if ((*activeHerdScan)->anim.romDefNo == NW_TRICKY_HERD_OBJECT_SEQUENCE_ID) {

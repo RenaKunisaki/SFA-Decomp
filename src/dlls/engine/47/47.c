@@ -32,12 +32,12 @@ typedef struct CarryableUpdateHeldState
 } CarryableUpdateHeldState;
 
 
-void objSaveFn_800ea774(GameObject* obj)
+void Carryable_putDownAndSavePos(GameObject* obj)
 {
-    u8* sub = obj->extra;
-    sub[5] = 0;
-    sub[6] = 0;
-    if ((sub[7] & 8) == 0)
+    CarryableUpdateHeldState* state = obj->extra;
+    state->carryState = CARRY_STATE_RESTING;
+    state->isHeld = 0;
+    if ((state->flags & CARRYABLE_FLAG_SUPPRESS_POS_SAVE) == 0)
     {
         obj->anim.localPosY += 10.0f;
         saveGame_saveObjectPos(obj);
@@ -115,7 +115,7 @@ s32 Carryable_getCarryState(void* state)
 
 void Carryable_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject((int)obj, CARRYABLE_OBJGROUP);
+    objFreeObjectType((int)obj, CARRYABLE_OBJGROUP);
 }
 
 int Carryable_updateRenderState(GameObject* obj, int flag)
@@ -278,7 +278,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
 void Carryable_init(GameObject* obj, void* state, int arg2)
 {
     CarryableUpdateHeldState* s = (CarryableUpdateHeldState*)state;
-    ObjGroup_AddObject((int)obj, CARRYABLE_OBJGROUP);
+    objAddObjectType((int)obj, CARRYABLE_OBJGROUP);
     s->unk2 = 0;
     s->carryState = CARRY_STATE_RESTING;
     s->pad4[0] = 0;

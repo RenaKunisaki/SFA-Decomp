@@ -1,60 +1,111 @@
 /*
- * DLL 94 / 0x5E - a modgfx particle-sequence spawn stub DLL.
- *
- * dll_5E_func03 spawns a modgfx particle sequence from the embedded
- * gDll5EFunc03SequenceData block; the two tiny dll_5E entry stubs are
- * no-ops.
+ * DLL 94 / 0x5E - a modgfx particle-sequence spawner.
  */
+#include "main/dll/dll_005E_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/mapEventTypes.h"
-#include "dlls/object_descriptor.h"
 
-extern u8 gDll5EFunc03SequenceData[];
+typedef struct Dll5EEffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} Dll5EEffectVertex;
 
-void dll_5E_func03(int sourceObj, int variant, u8* posSource, u32 flags)
-{
-    u8* base = (u8*)(int)gDll5EFunc03SequenceData;
-    (*gModgfxInterface)->beginSequence((void*)sourceObj, (u8)variant, 0x12, 3, 9);
-    (*gModgfxInterface)->setSequenceParams(&base[0x2cc]);
-    (*gModgfxInterface)->addSequenceFlags(flags | 0x4004484);
+STATIC_ASSERT(offsetof(Dll5EEffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(Dll5EEffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(Dll5EEffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(Dll5EEffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(Dll5EEffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(Dll5EEffectVertex) == 0x0A);
+
+typedef struct Dll5ESequenceResourceView {
+    Dll5EEffectVertex vertices[36];
+    s16 colors[16][3];
+    s16 nineVertexIndices[4][10];
+    u8 opaque218[0x48];
+    s16 allVertexIndices[36];
+    s16 subsetIndices[18];
+    s16 sequenceParams[7];
+    u8 opaque2DA[0x12];
+} Dll5ESequenceResourceView;
+
+STATIC_ASSERT(offsetof(Dll5ESequenceResourceView, vertices) == 0x000);
+STATIC_ASSERT(offsetof(Dll5ESequenceResourceView, colors) == 0x168);
+STATIC_ASSERT(offsetof(Dll5ESequenceResourceView, nineVertexIndices) == 0x1C8);
+STATIC_ASSERT(offsetof(Dll5ESequenceResourceView, opaque218) == 0x218);
+STATIC_ASSERT(offsetof(Dll5ESequenceResourceView, allVertexIndices) == 0x260);
+STATIC_ASSERT(offsetof(Dll5ESequenceResourceView, subsetIndices) == 0x2A8);
+STATIC_ASSERT(offsetof(Dll5ESequenceResourceView, sequenceParams) == 0x2CC);
+STATIC_ASSERT(offsetof(Dll5ESequenceResourceView, opaque2DA) == 0x2DA);
+STATIC_ASSERT(sizeof(Dll5ESequenceResourceView) == 0x2EC);
+
+extern u8 gDll5ESequenceResourceData[];
+
+void dll_5E_spawnSequence(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
+    u8* resourceData = (u8*)(int)gDll5ESequenceResourceData;
+    (*gModgfxInterface)->beginSequence(sourceObj, (u8)variant, 0x12, 3, 9);
+    (*gModgfxInterface)->setSequenceParams(&resourceData[offsetof(Dll5ESequenceResourceView, sequenceParams)]);
+    (*gModgfxInterface)->addSequenceFlags(spawnFlags | 0x4004484);
     (*gModgfxInterface)->resetSequenceSpawns();
-    (*gModgfxInterface)->addSequenceSpawn(2, 0.01f, 0.02f, 0.01f, 9, &base[0x1c8]);
-    (*gModgfxInterface)->addSequenceSpawn(2, 0.015f, 0.02f, 0.014f, 9, &base[0x1dc]);
-    (*gModgfxInterface)->addSequenceSpawn(2, 0.015f, 0.02f, 0.015f, 9, &base[0x1f0]);
-    (*gModgfxInterface)->addSequenceSpawn(2, 0.015f, 0.02f, 0.015f, 9, &base[0x204]);
-    (*gModgfxInterface)->addSequenceSpawn(4, 0.0f, 0.0f, 0.0f, 0x24, &base[0x260]);
-    (*gModgfxInterface)->addSequenceSpawn(8, 175.0f, 165.0f, 40.0f, 0x24, &base[0x260]);
+    (*gModgfxInterface)
+        ->addSequenceSpawn(2, 0.01f, 0.02f, 0.01f, 9,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, nineVertexIndices[0])]);
+    (*gModgfxInterface)
+        ->addSequenceSpawn(2, 0.015f, 0.02f, 0.014f, 9,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, nineVertexIndices[1])]);
+    (*gModgfxInterface)
+        ->addSequenceSpawn(2, 0.015f, 0.02f, 0.015f, 9,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, nineVertexIndices[2])]);
+    (*gModgfxInterface)
+        ->addSequenceSpawn(2, 0.015f, 0.02f, 0.015f, 9,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, nineVertexIndices[3])]);
+    (*gModgfxInterface)
+        ->addSequenceSpawn(4, 0.0f, 0.0f, 0.0f, 0x24,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, allVertexIndices)]);
+    (*gModgfxInterface)
+        ->addSequenceSpawn(8, 175.0f, 165.0f, 40.0f, 0x24,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, allVertexIndices)]);
     (*gModgfxInterface)->nextSequenceParam();
     (*gModgfxInterface)->addSequenceSpawn(2, 37.0f, 11.0f, 37.0f, 0, NULL);
     (*gModgfxInterface)->addSequenceSpawn(0x4000, 0.0f, -4.0f, 0.0f, 0, NULL);
     (*gModgfxInterface)->addSequenceSpawn(0x1800000, 1.0f, 1.0f, 3.0f, 0x5e0, NULL);
     (*gModgfxInterface)->nextSequenceParam();
-    (*gModgfxInterface)->addSequenceSpawn(4, 254.0f, 0.0f, 0.0f, 0x12, &base[0x2a8]);
-    (*gModgfxInterface)->addSequenceSpawn(0x4000, 0.0f, -4.0f, 0.0f, 0x24, &base[0x260]);
-    (*gModgfxInterface)->addSequenceSpawn(0x100, 0.0f, 0.0f, 1800.0f, 0, NULL);
-    (*gModgfxInterface)->addSequenceSpawn(0x1800000, 1.0f, 1.0f, 3.0f, 0x5e0, NULL);
-    (*gModgfxInterface)->nextSequenceParam();
-    (*gModgfxInterface)->addSequenceSpawn(0x4000, 0.0f, -4.0f, 0.0f, 0x24, &base[0x260]);
-    (*gModgfxInterface)->addSequenceSpawn(0x100, 0.0f, 0.0f, 1800.0f, 0, NULL);
-    (*gModgfxInterface)->addSequenceSpawn(0x1800000, 1.0f, 1.0f, 3.0f, 0x5e0, NULL);
-    (*gModgfxInterface)->nextSequenceParam();
-    (*gModgfxInterface)->addSequenceSpawn(0x4000, 0.0f, -4.0f, 0.0f, 0x24, &base[0x260]);
-    (*gModgfxInterface)->addSequenceSpawn(0x100, 0.0f, 0.0f, 1800.0f, 0, NULL);
-    (*gModgfxInterface)->addSequenceSpawn(4, 0.0f, 0.0f, 0.0f, 0x24, &base[0x260]);
     (*gModgfxInterface)
-        ->spawnSequence(posSource, (u8*)(int)gDll5EFunc03SequenceData, 0x24, &base[0x168], 0x10, 0x120, 0);
+        ->addSequenceSpawn(4, 254.0f, 0.0f, 0.0f, 0x12,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, subsetIndices)]);
+    (*gModgfxInterface)
+        ->addSequenceSpawn(0x4000, 0.0f, -4.0f, 0.0f, 0x24,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, allVertexIndices)]);
+    (*gModgfxInterface)->addSequenceSpawn(0x100, 0.0f, 0.0f, 1800.0f, 0, NULL);
+    (*gModgfxInterface)->addSequenceSpawn(0x1800000, 1.0f, 1.0f, 3.0f, 0x5e0, NULL);
+    (*gModgfxInterface)->nextSequenceParam();
+    (*gModgfxInterface)
+        ->addSequenceSpawn(0x4000, 0.0f, -4.0f, 0.0f, 0x24,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, allVertexIndices)]);
+    (*gModgfxInterface)->addSequenceSpawn(0x100, 0.0f, 0.0f, 1800.0f, 0, NULL);
+    (*gModgfxInterface)->addSequenceSpawn(0x1800000, 1.0f, 1.0f, 3.0f, 0x5e0, NULL);
+    (*gModgfxInterface)->nextSequenceParam();
+    (*gModgfxInterface)
+        ->addSequenceSpawn(0x4000, 0.0f, -4.0f, 0.0f, 0x24,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, allVertexIndices)]);
+    (*gModgfxInterface)->addSequenceSpawn(0x100, 0.0f, 0.0f, 1800.0f, 0, NULL);
+    (*gModgfxInterface)
+        ->addSequenceSpawn(4, 0.0f, 0.0f, 0.0f, 0x24,
+                           &resourceData[offsetof(Dll5ESequenceResourceView, allVertexIndices)]);
+    (*gModgfxInterface)
+        ->spawnSequence(spawnParams, (u8*)(int)gDll5ESequenceResourceData, 0x24,
+                        &resourceData[offsetof(Dll5ESequenceResourceView, colors)], 0x10, 0x120, 0);
     (*gModgfxInterface)->getLastSpawnHandle();
 }
 
-void dll_5E_func01_nop(void)
-{
+void dll_5E_release(void) {
 }
 
-void dll_5E_func00_nop(void)
-{
+void dll_5E_initialise(void) {
 }
 
-u8 gDll5EFunc03SequenceData[748] = {
+u8 gDll5ESequenceResourceData[sizeof(Dll5ESequenceResourceView)] = {
     4,   76,  0,   0,   0,   0,   0,   0,   0,   0,   3,   39,  0,   0,   253, 61,  0,   15,  0,   0,   0,   0,   0,
     0,   252, 24,  0,   31,  0,   0,   253, 161, 0,   0,   253, 61,  0,   47,  0,   0,   252, 124, 0,   0,   0,   0,
     0,   63,  0,   0,   253, 161, 0,   0,   2,   195, 0,   79,  0,   0,   0,   0,   0,   0,   3,   232, 0,   95,  0,
@@ -90,16 +141,6 @@ u8 gDll5EFunc03SequenceData[748] = {
     0,   0,   1,   253, 0,   0,   2,   1,   0,   0,   2,   3,
 };
 
-ObjectDescriptor4WithPadding dll_5E_funcs = {
-    {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-        (ObjectDescriptorCallback)dll_5E_func00_nop,
-        (ObjectDescriptorCallback)dll_5E_func01_nop,
-        0,
-        (ObjectDescriptorCallback)dll_5E_func03,
-    },
-    0,
+Dll5EResourceDescriptor gDll5EResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_5E_initialise, dll_5E_release, NULL, dll_5E_spawnSequence, 0,
 };

@@ -13,8 +13,6 @@
 #include "main/object_render.h"
 #include "main/dll/dll_025A_staticcamera.h"
 
-#define STATICCAMERA_OBJGROUP 7
-
 int StaticCamera_getExtraSize(void)
 {
     return sizeof(StaticCameraState);
@@ -26,7 +24,7 @@ int StaticCamera_getObjectTypeId(void)
 
 void StaticCamera_free(GameObject* obj)
 {
-    ObjGroup_RemoveObject((int)obj, STATICCAMERA_OBJGROUP);
+    objFreeObjectType((int)obj, STATIC_CAMERA_OBJECT_GROUP);
 }
 
 void StaticCamera_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -50,16 +48,16 @@ void StaticCamera_init(GameObject* obj, StaticCameraPlacement* params, int defer
 {
     StaticCameraState* state;
 
-    obj->anim.rotX = -params->rotX;
-    obj->anim.rotY = -params->rotY;
-    obj->anim.rotZ = -params->rotZ;
+    obj->anim.rotX = -params->objectRotation.rotX;
+    obj->anim.rotY = -params->objectRotation.rotY;
+    obj->anim.rotZ = -params->objectRotation.rotZ;
     state = obj->extra;
     state->setupParam = params->setupParam;
-    state->unk4 = (f32)(u32)params->unkByte1A;
+    state->fov = (f32)(u32)params->fov;
     state->unk1 = 0;
     if (deferAdd == 0)
     {
-        ObjGroup_AddObject((int)obj, STATICCAMERA_OBJGROUP);
+        objAddObjectType((int)obj, STATIC_CAMERA_OBJECT_GROUP);
     }
 }
 

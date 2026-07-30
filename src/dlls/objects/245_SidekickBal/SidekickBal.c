@@ -125,7 +125,7 @@ void sidekickBall_handlePlayerInteraction(GameObject* obj, SidekickBallState* st
         state->triggerHit = 2;
     }
     if (state->triggerHit == 2 && obj->userData2 == 0) {
-        if (fn_8029669C(player) != 0) {
+        if (playerIsThrowing(player) != 0) {
             state->triggerHit = 0;
             state->triggerArmed = 1;
 

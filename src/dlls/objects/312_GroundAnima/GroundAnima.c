@@ -207,7 +207,7 @@ void GroundAnimator_free(GameObject* obj, int flags) {
     if (state->falloffBuffer != NULL) {
         mm_free(state->falloffBuffer);
     }
-    ObjGroup_RemoveObject((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
+    objFreeObjectType((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
 }
 
 void GroundAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
@@ -219,7 +219,8 @@ void GroundAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int 
 
 void GroundAnimator_update(GameObject* obj) {
     int offsets[2];
-    int vertexHeightOffset;
+    int polygonFalloffOffset;
+    MapBlockData* block;
     u8 previousOnMapFlag;
     int entryIndex;
     void* tricky;
@@ -231,12 +232,12 @@ void GroundAnimator_update(GameObject* obj) {
     void* polygonGroup;
     void* linkedObject;
     int polygonHeightOffset;
-    int polygonFalloffOffset;
+    void* packedVertex;
     int vertexFalloffOffset;
     f32 searchDistance;
-    void* polygonIndexCursor;
     void* polygon;
-    MapBlockData* block;
+    void* polygonIndexCursor;
+    int vertexHeightOffset;
     s8 blockIndex;
     f32 vertexPosition[3];
     Obj_GetPlayerObject();
@@ -261,8 +262,7 @@ void GroundAnimator_update(GameObject* obj) {
     }
     if ((state->flags & GROUND_ANIMATOR_STATE_ON_MAP) != 0 && state->falloffBuffer == NULL) {
         int bufferAddress;
-        block = mapGetBlock(blockIndex);
-        state->vertexCount = (s16)(mapBlockCountTrianglesByType(block, placement->blockId) * 3);
+        state->vertexCount = (s16)(mapBlockCountTrianglesByType(mapGetBlock(blockIndex), placement->blockId) * 3);
         if (state->vertexCount > 0) {
             bufferAddress = (int)mmAlloc(state->vertexCount * 6, 5, 0);
             state->falloffBuffer = (f32*)bufferAddress;
@@ -277,7 +277,7 @@ void GroundAnimator_update(GameObject* obj) {
         if (state->linkedObject == NULL) {
             searchDistance = (100.0f);
             state->linkedObject =
-                (GameObject*)ObjGroup_FindNearestObject(GROUND_ANIMATOR_TARGET_OBJECT_GROUP, obj, &searchDistance);
+                (GameObject*)objGetNearestTypeTo(GROUND_ANIMATOR_TARGET_OBJECT_GROUP, obj, &searchDistance);
             linkedObject = state->linkedObject;
             if (linkedObject != NULL) {
                 switch (state->linkedObject->anim.romDefNo) {
@@ -355,9 +355,8 @@ void GroundAnimator_update(GameObject* obj) {
                         vertexHeightOffset = polygonHeightOffset;
                          vertexIndex < 3; vertexIndex++) {
                         if (*(f32*)((char*)state->falloffBuffer + vertexFalloffOffset) > (0.0f)) {
-                            void* packedVertex =
-                                (char*)((MapBlockData*)block)->vertices + *(u16*)polygonIndexCursor * 6;
                             f32 sinkOffset;
+                            packedVertex = (char*)((MapBlockData*)block)->vertices + *(u16*)polygonIndexCursor * 6;
                             trackUnpackVector(packedVertex, vertexPosition);
                             sinkOffset = (state->previousSinkDepth / GROUND_ANIMATOR_SINK_DEPTH_SCALE) *
                                          *(f32*)((char*)state->falloffBuffer + vertexFalloffOffset);
@@ -397,7 +396,7 @@ void GroundAnimator_update(GameObject* obj) {
     } else {
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
     }
-    objRenderFn_80041018(obj);
+    objUpdateHitVolumeTransforms(obj);
 }
 
 void GroundAnimator_init(GameObject* obj, GroundAnimatorPlacement* placement) {
@@ -411,7 +410,7 @@ void GroundAnimator_init(GameObject* obj, GroundAnimatorPlacement* placement) {
             state->sinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth;
             state->flags |= GROUND_ANIMATOR_STATE_COMPLETE;
         }
-        ObjGroup_AddObject((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
+        objAddObjectType((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
         if (placement->sfxIndex > 1) {
             placement->sfxIndex = 0;
         }

@@ -1,22 +1,46 @@
 /*
- * DLL 97 / 0x61 - a thin gameplay-effect DLL exporting three object
- * hooks. func01/func00 are empty no-op slots; func03 builds a
- * fifteen-command modgfx effect list on the stack (texture/blend modes from
- * the lbl_803128E8 resource blob) and submits it through
- * gModgfxInterface->spawnEffect.
+ * DLL 97 / 0x61 - a modgfx effect spawner.
  */
+#include "main/dll/dll_0061_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
-#include "main/mapEventTypes.h"
 #include "main/dll/modgfx_types.h"
-#include "dlls/object_descriptor.h"
+#include "main/vecmath.h"
 
-u8 lbl_803DB8C0[8] = {0, 8, 0, 0, 0, 0, 0, 0};
+typedef struct Dll61EffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} Dll61EffectVertex;
 
-/* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
-#define DLL61_EFFECT_ID 0x90
+STATIC_ASSERT(offsetof(Dll61EffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(Dll61EffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(Dll61EffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(Dll61EffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(Dll61EffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(Dll61EffectVertex) == 0x0A);
 
-u32 lbl_803128E8[48] = {
+typedef struct Dll61EffectResourceView {
+    Dll61EffectVertex vertices[9];
+    u8 pad5A[2];
+    s16 colors[8][3];
+    s16 nineVertexIndices[10];
+    s16 eightVertexIndices[8];
+    s16 sequenceParams[7];
+    u8 padBE[2];
+} Dll61EffectResourceView;
+
+STATIC_ASSERT(offsetof(Dll61EffectResourceView, vertices) == 0x00);
+STATIC_ASSERT(offsetof(Dll61EffectResourceView, colors) == 0x5C);
+STATIC_ASSERT(offsetof(Dll61EffectResourceView, nineVertexIndices) == 0x8C);
+STATIC_ASSERT(offsetof(Dll61EffectResourceView, eightVertexIndices) == 0xA0);
+STATIC_ASSERT(offsetof(Dll61EffectResourceView, sequenceParams) == 0xB0);
+STATIC_ASSERT(sizeof(Dll61EffectResourceView) == 0xC0);
+
+s16 gDll61VertexEightIndices[4] = {8, 0, 0, 0};
+
+u32 gDll61EffectResourceData[sizeof(Dll61EffectResourceView) / sizeof(u32)] = {
     0x03e80000, 0x0190001f, 0x001f02c3, 0xfd3d0190, 0x0000001f, 0x0000fc18, 0x0190001f, 0x001ffd3d,
     0xfd3d0190, 0x0000001f, 0xfc180000, 0x0190001f, 0x001ffd3d, 0x02c30190, 0x0000001f, 0x000003e8,
     0x0190001f, 0x001f02c3, 0x02c30190, 0x0000001f, 0x00000000, 0x0000000f, 0x00000000, 0x00000001,
@@ -25,179 +49,167 @@ u32 lbl_803128E8[48] = {
     0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00000050, 0x001e0000, 0x00000000, 0x00000000,
 };
 
-void dll_61_func03(int sourceObj, int variant, int posSource, u32 flags)
-{
-    ModgfxSpawnPacket buf;
-    f32 randScale;
-    u8* base = (u8*)(int)lbl_803128E8;
-    GfxCmd* entry;
-    entry = buf.entries;
-    entry[0].layer = 0;
-    entry[0].flags = 8;
-    entry[0].tex = &base[0xa0];
-    entry[0].mode = 4;
-    entry[0].x = (0.0f);
-    entry[0].y = (0.0f);
-    entry[0].z = (0.0f);
-    entry[1].layer = 0;
-    entry[1].flags = 1;
-    entry[1].tex = 0;
-    entry[1].mode = 0x2008000;
-    entry[1].x = 125.0f;
-    entry[1].y = 255.0f;
-    entry[1].z = 125.0f;
-    entry[2].layer = 0;
-    entry[2].flags = 0;
-    entry[2].tex = 0;
-    entry[2].mode = 0x2080000;
-    entry[2].x = (0.0f);
-    entry[2].y = 17.0f;
-    entry[2].z = -17.0f;
-    entry[3].layer = 0;
-    entry[3].flags = 9;
-    entry[3].tex = &base[0x8c];
-    entry[3].mode = 0x80;
-    entry[3].x = (0.0f);
-    entry[3].y = (0.0f);
-    entry[3].z = (f32) * (s16*)sourceObj;
-    entry[4].layer = 0;
-    entry[4].flags = 0x7a;
-    entry[4].tex = 0;
-    entry[4].mode = 0x10000;
-    entry[4].x = (0.0f);
-    entry[4].y = (0.0f);
-    entry[4].z = (0.0f);
-    entry[5].layer = 0;
-    entry[5].flags = 9;
-    entry[5].tex = &base[0x8c];
-    entry[5].mode = 2;
-    randScale = 0.05f * (f32)randomGetRange(0, 0xc);
-    randScale = 2.6f + randScale;
-    entry[5].x = randScale;
-    entry[5].y = randScale;
-    entry[5].z = randScale;
-    entry[6].layer = 1;
-    entry[6].flags = 0;
-    entry[6].tex = 0;
-    entry[6].mode = 0x10000000;
-    entry[6].x = 28.0f;
-    entry[6].y = 2.0f;
-    entry[6].z = (0.0f);
-    entry[7].layer = 1;
-    entry[7].flags = 8;
-    entry[7].tex = &base[0xa0];
-    entry[7].mode = 0x4000;
-    entry[7].x = (0.0f);
-    entry[7].y = -4.0f;
-    entry[7].z = (0.0f);
-    entry[8].layer = 1;
-    entry[8].flags = 9;
-    entry[8].tex = &base[0x8c];
-    entry[8].mode = 0x100;
-    entry[8].x = 600.0f;
-    entry[8].y = (0.0f);
-    entry[8].z = (0.0f);
-    entry[9].layer = 1;
-    entry[9].flags = 0;
-    entry[9].tex = 0;
-    entry[9].mode = 0x400000;
-    entry[9].x = (0.0f);
-    entry[9].y = (0.0f);
-    entry[9].z = -200.0f;
-    entry[10].layer = 1;
-    entry[10].flags = 0;
-    entry[10].tex = 0;
-    entry[10].mode = 0x2080000;
-    entry[10].x = (0.0f);
-    entry[10].y = 17.0f;
-    entry[10].z = -200.0f;
-    entry[11].layer = 2;
-    entry[11].flags = 8;
-    entry[11].tex = &base[0xa0];
-    entry[11].mode = 0x4000;
-    entry[11].x = (0.0f);
-    entry[11].y = -4.0f;
-    entry[11].z = (0.0f);
-    entry[12].layer = 2;
-    entry[12].flags = 9;
-    entry[12].tex = &base[0x8c];
-    entry[12].mode = 0x100;
-    entry[12].x = 600.0f;
-    entry[12].y = (0.0f);
-    entry[12].z = (0.0f);
-    entry[13].layer = 2;
-    entry[13].flags = 1;
-    entry[13].tex = lbl_803DB8C0;
-    entry[13].mode = 4;
-    entry[13].x = (0.0f);
-    entry[13].y = (0.0f);
-    entry[13].z = (0.0f);
-    entry[14].layer = 2;
-    entry[14].flags = 0;
-    entry[14].tex = 0;
-    entry[14].mode = 0x2008000;
-    entry[14].x = (0.0f);
-    entry[14].y = (0.0f);
-    entry[14].z = (0.0f);
-    buf.v58 = 0;
-    buf.ctx = sourceObj;
-    buf.v44 = variant;
-    buf.pos[0] = (0.0f);
-    buf.pos[1] = 17.0f;
-    buf.pos[2] = -40.0f;
-    buf.col[0] = (0.0f);
-    buf.col[1] = (0.0f);
-    buf.col[2] = (0.0f);
-    buf.scale = 1.0f;
-    buf.v40 = 1;
-    buf.v3c = 0;
-    buf.v59 = 9;
-    buf.v5a = 0;
-    buf.v5b = 0;
-    buf.count = (GfxCmd*)((u8*)entry + 0x168) - entry;
-    buf.hw[0] = *(s16*)&base[0xb0];
-    buf.hw[1] = *(s16*)&base[0xb2];
-    buf.hw[2] = *(s16*)&base[0xb4];
-    buf.hw[3] = *(s16*)&base[0xb6];
-    buf.hw[4] = *(s16*)&base[0xb8];
-    buf.hw[5] = *(s16*)&base[0xba];
-    buf.hw[6] = *(s16*)&base[0xbc];
-    buf.cmds = (GfxCmd*)((u8*)&buf + 0x60);
-    buf.flags = 0x4000010;
-    buf.flags |= flags;
-    if ((buf.flags & 1) != 0)
-    {
-        if ((void*)sourceObj != NULL)
-        {
-            buf.pos[0] += ((GameObject*)sourceObj)->anim.worldPosX;
-            buf.pos[1] += ((GameObject*)sourceObj)->anim.worldPosY;
-            buf.pos[2] += ((GameObject*)sourceObj)->anim.worldPosZ;
-        }
-        else
-        {
-            buf.pos[0] += ((PartFxSpawnParams*)posSource)->posX;
-            buf.pos[1] += ((PartFxSpawnParams*)posSource)->posY;
-            buf.pos[2] += ((PartFxSpawnParams*)posSource)->posZ;
+void dll_61_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
+    ModgfxSpawnPacket packet;
+    f32 randomScale;
+    u8* resourceData = (u8*)(int)gDll61EffectResourceData;
+    GfxCmd* commands;
+    commands = packet.entries;
+    commands[0].layer = 0;
+    commands[0].flags = 8;
+    commands[0].tex = &resourceData[offsetof(Dll61EffectResourceView, eightVertexIndices)];
+    commands[0].mode = 4;
+    commands[0].x = 0.0f;
+    commands[0].y = 0.0f;
+    commands[0].z = 0.0f;
+    commands[1].layer = 0;
+    commands[1].flags = 1;
+    commands[1].tex = NULL;
+    commands[1].mode = 0x2008000;
+    commands[1].x = 125.0f;
+    commands[1].y = 255.0f;
+    commands[1].z = 125.0f;
+    commands[2].layer = 0;
+    commands[2].flags = 0;
+    commands[2].tex = NULL;
+    commands[2].mode = 0x2080000;
+    commands[2].x = 0.0f;
+    commands[2].y = 17.0f;
+    commands[2].z = -17.0f;
+    commands[3].layer = 0;
+    commands[3].flags = 9;
+    commands[3].tex = &resourceData[offsetof(Dll61EffectResourceView, nineVertexIndices)];
+    commands[3].mode = 0x80;
+    commands[3].x = 0.0f;
+    commands[3].y = 0.0f;
+    commands[3].z = (f32)sourceObj->anim.rotX;
+    commands[4].layer = 0;
+    commands[4].flags = 0x7a;
+    commands[4].tex = NULL;
+    commands[4].mode = 0x10000;
+    commands[4].x = 0.0f;
+    commands[4].y = 0.0f;
+    commands[4].z = 0.0f;
+    commands[5].layer = 0;
+    commands[5].flags = 9;
+    commands[5].tex = &resourceData[offsetof(Dll61EffectResourceView, nineVertexIndices)];
+    commands[5].mode = 2;
+    randomScale = 0.05f * (f32)randomGetRange(0, 0xc);
+    randomScale = 2.6f + randomScale;
+    commands[5].x = randomScale;
+    commands[5].y = randomScale;
+    commands[5].z = randomScale;
+    commands[6].layer = 1;
+    commands[6].flags = 0;
+    commands[6].tex = NULL;
+    commands[6].mode = 0x10000000;
+    commands[6].x = 28.0f;
+    commands[6].y = 2.0f;
+    commands[6].z = 0.0f;
+    commands[7].layer = 1;
+    commands[7].flags = 8;
+    commands[7].tex = &resourceData[offsetof(Dll61EffectResourceView, eightVertexIndices)];
+    commands[7].mode = 0x4000;
+    commands[7].x = 0.0f;
+    commands[7].y = -4.0f;
+    commands[7].z = 0.0f;
+    commands[8].layer = 1;
+    commands[8].flags = 9;
+    commands[8].tex = &resourceData[offsetof(Dll61EffectResourceView, nineVertexIndices)];
+    commands[8].mode = 0x100;
+    commands[8].x = 600.0f;
+    commands[8].y = 0.0f;
+    commands[8].z = 0.0f;
+    commands[9].layer = 1;
+    commands[9].flags = 0;
+    commands[9].tex = NULL;
+    commands[9].mode = 0x400000;
+    commands[9].x = 0.0f;
+    commands[9].y = 0.0f;
+    commands[9].z = -200.0f;
+    commands[10].layer = 1;
+    commands[10].flags = 0;
+    commands[10].tex = NULL;
+    commands[10].mode = 0x2080000;
+    commands[10].x = 0.0f;
+    commands[10].y = 17.0f;
+    commands[10].z = -200.0f;
+    commands[11].layer = 2;
+    commands[11].flags = 8;
+    commands[11].tex = &resourceData[offsetof(Dll61EffectResourceView, eightVertexIndices)];
+    commands[11].mode = 0x4000;
+    commands[11].x = 0.0f;
+    commands[11].y = -4.0f;
+    commands[11].z = 0.0f;
+    commands[12].layer = 2;
+    commands[12].flags = 9;
+    commands[12].tex = &resourceData[offsetof(Dll61EffectResourceView, nineVertexIndices)];
+    commands[12].mode = 0x100;
+    commands[12].x = 600.0f;
+    commands[12].y = 0.0f;
+    commands[12].z = 0.0f;
+    commands[13].layer = 2;
+    commands[13].flags = 1;
+    commands[13].tex = gDll61VertexEightIndices;
+    commands[13].mode = 4;
+    commands[13].x = 0.0f;
+    commands[13].y = 0.0f;
+    commands[13].z = 0.0f;
+    commands[14].layer = 2;
+    commands[14].flags = 0;
+    commands[14].tex = NULL;
+    commands[14].mode = 0x2008000;
+    commands[14].x = 0.0f;
+    commands[14].y = 0.0f;
+    commands[14].z = 0.0f;
+    packet.modeByte = 0;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = variant;
+    packet.position[0] = 0.0f;
+    packet.position[1] = 17.0f;
+    packet.position[2] = -40.0f;
+    packet.velocity[0] = 0.0f;
+    packet.velocity[1] = 0.0f;
+    packet.velocity[2] = 0.0f;
+    packet.scale = 1.0f;
+    packet.drawGroupCount = 1;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 9;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0;
+    packet.commandCount = (GfxCmd*)((u8*)commands + sizeof(GfxCmd) * 15) - commands;
+    packet.sequenceParams[0] = *(s16*)&resourceData[offsetof(Dll61EffectResourceView, sequenceParams[0])];
+    packet.sequenceParams[1] = *(s16*)&resourceData[offsetof(Dll61EffectResourceView, sequenceParams[1])];
+    packet.sequenceParams[2] = *(s16*)&resourceData[offsetof(Dll61EffectResourceView, sequenceParams[2])];
+    packet.sequenceParams[3] = *(s16*)&resourceData[offsetof(Dll61EffectResourceView, sequenceParams[3])];
+    packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll61EffectResourceView, sequenceParams[4])];
+    packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll61EffectResourceView, sequenceParams[5])];
+    packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll61EffectResourceView, sequenceParams[6])];
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
+    packet.flags = 0x4000010;
+    packet.flags |= spawnFlags;
+    if ((packet.flags & 1) != 0) {
+        if ((void*)sourceObj != NULL) {
+            packet.position[0] += sourceObj->anim.worldPosX;
+            packet.position[1] += sourceObj->anim.worldPosY;
+            packet.position[2] += sourceObj->anim.worldPosZ;
+        } else {
+            packet.position[0] += spawnParams->posX;
+            packet.position[1] += spawnParams->posY;
+            packet.position[2] += spawnParams->posZ;
         }
     }
-    (*gModgfxInterface)->spawnEffect(&buf, 0, 9, (u8*)(int)lbl_803128E8, 8, &base[0x5c], DLL61_EFFECT_ID, 0);
+    (*gModgfxInterface)
+        ->spawnEffect(&packet, 0, 9, (u8*)(int)gDll61EffectResourceData, 8,
+                      &resourceData[offsetof(Dll61EffectResourceView, colors)], 0x90, 0);
 }
 
-void dll_61_func01_nop(void)
-{
+void dll_61_release(void) {
 }
 
-void dll_61_func00_nop(void)
-{
+void dll_61_initialise(void) {
 }
 
-ObjectDescriptor4 dll_61_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)dll_61_func00_nop,
-    (ObjectDescriptorCallback)dll_61_func01_nop,
-    0,
-    (ObjectDescriptorCallback)dll_61_func03,
+Dll61ResourceDescriptor gDll61ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_61_initialise, dll_61_release, NULL, dll_61_spawnEffect,
 };

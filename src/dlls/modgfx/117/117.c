@@ -1,208 +1,181 @@
 /*
- * DLL 117 / 0x75 - modgfx particle-spawn helper. dll_75_func03 emits a
- * variant-selected effect through gModgfxInterface; variant (0..8) picks the
- * effect parameters and optional hardware tuning. dll_75_func00_nop /
- * dll_75_func01_nop are empty entry-point stubs.
+ * DLL 117 / 0x75 - a variant-driven modgfx effect spawner.
  */
+#include "main/dll/dll_0075_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/dll_0075_dll75func0.h"
-#include "dlls/object_descriptor.h"
 
-s16 gModgfxFxHwTuning[8] = {0, 155, 200, 155, 0, 0, 0, 0};
+typedef struct Dll75SequenceParamBlock {
+    s16 params[7];
+    s16 opaqueTail;
+} Dll75SequenceParamBlock;
 
-s16 dll_75_func03(GameObject* sourceObj, int variant, PartFxSpawnParams* posSource, u32 flags, int owner, void* unused)
-{
-    ModgfxSpawnPacket buf;
-    int fl;
-    GfxCmd* entries;
-    GfxCmd* e;
+STATIC_ASSERT(offsetof(Dll75SequenceParamBlock, params) == 0x00);
+STATIC_ASSERT(offsetof(Dll75SequenceParamBlock, opaqueTail) == 0x0E);
+STATIC_ASSERT(sizeof(Dll75SequenceParamBlock) == 0x10);
+
+Dll75SequenceParamBlock gDll75SequenceParams = {
+    {0, 155, 200, 155, 0, 0, 0},
+    0,
+};
+
+s16 dll_75_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags,
+                       int unusedArg4, void* unusedArg5) {
+    ModgfxSpawnPacket packet;
+    int commandFlags;
+    GfxCmd* commands;
+    GfxCmd* commandCursor;
     f32 originOffset = 0.0f;
-    f32 fa = 81.0f;
-    f32 fb = 82.0f;
-    fl = 100;
-    if (variant == 0)
-    {
-        fl = 0x8c;
+    f32 startFrame = 81.0f;
+    f32 endFrame = 82.0f;
+    commandFlags = 100;
+    if (variant == 0) {
+        commandFlags = 0x8c;
+    } else if (variant == 1) {
+        startFrame = 100.0f;
+        endFrame = 101.0f;
+        commandFlags = 0x8c;
+    } else if (variant == 2) {
+        startFrame = 102.0f;
+        endFrame = 103.0f;
+        commandFlags = 0x8c;
+    } else if (variant == 3) {
+        startFrame = 104.0f;
+        endFrame = 105.0f;
+        commandFlags = 0x8c;
+    } else if (variant == 4) {
+        startFrame = 106.0f;
+        endFrame = 107.0f;
+        commandFlags = 0x154;
+    } else if (variant == 5) {
+        startFrame = 111.0f;
+        endFrame = 112.0f;
+        commandFlags = 0x280;
+        gDll75SequenceParams.params[2] = 800;
+    } else if (variant == 6) {
+        startFrame = 125.0f;
+        endFrame = 126.0f;
+        commandFlags = 100;
+        gDll75SequenceParams.params[2] = 0x14;
+    } else if (variant == 7) {
+        startFrame = 133.0f;
+        endFrame = 134.0f;
+        commandFlags = 200;
+        gDll75SequenceParams.params[1] = 0x14;
+        gDll75SequenceParams.params[2] = 0x14;
+        gDll75SequenceParams.params[3] = 0x14;
+    } else if (variant == 8) {
+        startFrame = 157.0f;
+        endFrame = 158.0f;
+        commandFlags = 0x41;
+        gDll75SequenceParams.params[1] = 0x14;
+        gDll75SequenceParams.params[2] = 0x14;
+        gDll75SequenceParams.params[3] = 0x14;
     }
-    else if (variant == 1)
-    {
-        fa = 100.0f;
-        fb = 101.0f;
-        fl = 0x8c;
+    commands = packet.entries;
+    commands[0].layer = 0;
+    commands[0].flags = commandFlags;
+    commands[0].tex = NULL;
+    commands[0].mode = 0x20000000;
+    commands[0].x = 999.0f;
+    commands[0].y = startFrame;
+    commands[0].z = endFrame;
+    commandCursor = &commands[1];
+    if (variant == 0) {
+        commandCursor[0].layer = 0;
+        commandCursor[0].flags = 0;
+        commandCursor[0].tex = NULL;
+        commandCursor[0].mode = 0x80000;
+        commandCursor[0].x = originOffset;
+        commandCursor[0].y = 200.0f;
+        commandCursor[0].z = originOffset;
+        commandCursor[1].layer = 1;
+        commandCursor[1].flags = 0;
+        commandCursor[1].tex = NULL;
+        commandCursor[1].mode = 0x80000;
+        commandCursor[1].x = originOffset;
+        commandCursor[1].y = originOffset;
+        commandCursor[1].z = originOffset;
+        commandCursor[2].layer = 3;
+        commandCursor[2].flags = 0;
+        commandCursor[2].tex = NULL;
+        commandCursor[2].mode = 0x80000;
+        commandCursor[2].x = originOffset;
+        commandCursor[2].y = 200.0f;
+        commandCursor[2].z = originOffset;
+        commandCursor += 3;
+    } else if (variant == 6) {
+        commandCursor[0].layer = 3;
+        commandCursor[0].flags = 1;
+        commandCursor[0].tex = NULL;
+        commandCursor[0].mode = 0x2000;
+        commandCursor[0].x = originOffset;
+        commandCursor[0].y = originOffset;
+        commandCursor[0].z = originOffset;
+        commandCursor += 1;
+    } else if (variant == 8) {
+        commandCursor[0].layer = 3;
+        commandCursor[0].flags = 1;
+        commandCursor[0].tex = NULL;
+        commandCursor[0].mode = 0x2000;
+        commandCursor[0].x = originOffset;
+        commandCursor[0].y = originOffset;
+        commandCursor[0].z = originOffset;
+        commandCursor += 1;
     }
-    else if (variant == 2)
-    {
-        fa = 102.0f;
-        fb = 103.0f;
-        fl = 0x8c;
-    }
-    else if (variant == 3)
-    {
-        fa = 104.0f;
-        fb = 105.0f;
-        fl = 0x8c;
-    }
-    else if (variant == 4)
-    {
-        fa = 106.0f;
-        fb = 107.0f;
-        fl = 0x154;
-    }
-    else if (variant == 5)
-    {
-        fa = 111.0f;
-        fb = 112.0f;
-        fl = 0x280;
-        gModgfxFxHwTuning[2] = 800;
-    }
-    else if (variant == 6)
-    {
-        fa = 125.0f;
-        fb = 126.0f;
-        fl = 100;
-        gModgfxFxHwTuning[2] = 0x14;
-    }
-    else if (variant == 7)
-    {
-        fa = 133.0f;
-        fb = 134.0f;
-        fl = 200;
-        gModgfxFxHwTuning[1] = 0x14;
-        gModgfxFxHwTuning[2] = 0x14;
-        gModgfxFxHwTuning[3] = 0x14;
-    }
-    else if (variant == 8)
-    {
-        fa = 157.0f;
-        fb = 158.0f;
-        fl = 0x41;
-        gModgfxFxHwTuning[1] = 0x14;
-        gModgfxFxHwTuning[2] = 0x14;
-        gModgfxFxHwTuning[3] = 0x14;
-    }
-    entries = buf.entries;
-    entries[0].layer = 0;
-    entries[0].flags = fl;
-    entries[0].tex = NULL;
-    entries[0].mode = 0x20000000;
-    entries[0].x = 999.0f;
-    entries[0].y = fa;
-    entries[0].z = fb;
-    e = &entries[1];
-    if (variant == 0)
-    {
-        e[0].layer = 0;
-        e[0].flags = 0;
-        e[0].tex = NULL;
-        e[0].mode = 0x80000;
-        e[0].x = originOffset;
-        e[0].y = 200.0f;
-        e[0].z = originOffset;
-        e[1].layer = 1;
-        e[1].flags = 0;
-        e[1].tex = NULL;
-        e[1].mode = 0x80000;
-        e[1].x = originOffset;
-        e[1].y = originOffset;
-        e[1].z = originOffset;
-        e[2].layer = 3;
-        e[2].flags = 0;
-        e[2].tex = NULL;
-        e[2].mode = 0x80000;
-        e[2].x = originOffset;
-        e[2].y = 200.0f;
-        e[2].z = originOffset;
-        e += 3;
-    }
-    else if (variant == 6)
-    {
-        e[0].layer = 3;
-        e[0].flags = 1;
-        e[0].tex = NULL;
-        e[0].mode = 0x2000;
-        e[0].x = originOffset;
-        e[0].y = originOffset;
-        e[0].z = originOffset;
-        e += 1;
-    }
-    else if (variant == 8)
-    {
-        e[0].layer = 3;
-        e[0].flags = 1;
-        e[0].tex = NULL;
-        e[0].mode = 0x2000;
-        e[0].x = originOffset;
-        e[0].y = originOffset;
-        e[0].z = originOffset;
-        e += 1;
-    }
-    e[0].layer = 4;
-    e[0].flags = 0;
-    e[0].tex = NULL;
-    e[0].mode = 0x20000000;
-    e[0].x = 999.0f;
-    e[0].y = fa;
-    e[0].z = fb;
-    buf.v58 = 0;
-    buf.ctx = (int)sourceObj;
-    buf.v44 = variant;
-    buf.pos[0] = originOffset;
-    buf.pos[1] = originOffset;
-    buf.pos[2] = originOffset;
-    buf.col[0] = originOffset;
-    buf.col[1] = originOffset;
-    buf.col[2] = originOffset;
-    buf.scale = 1.0f;
-    buf.v40 = 0;
-    buf.v3c = 0;
-    buf.v59 = 0;
-    buf.v5a = 0;
-    buf.v5b = 0;
-    buf.count = (e + 1) - entries;
-    buf.hw[0] = gModgfxFxHwTuning[0];
-    buf.hw[1] = gModgfxFxHwTuning[1];
-    buf.hw[2] = gModgfxFxHwTuning[2];
-    buf.hw[3] = gModgfxFxHwTuning[3];
-    buf.hw[4] = gModgfxFxHwTuning[4];
-    buf.hw[5] = gModgfxFxHwTuning[5];
-    buf.hw[6] = gModgfxFxHwTuning[6];
-    buf.cmds = (GfxCmd*)((u8*)&buf + 0x60);
-    buf.flags = 0x10800;
-    buf.flags |= flags;
-    if ((buf.flags & 1) != 0)
-    {
-        if (sourceObj != 0)
-        {
-            buf.pos[0] = originOffset + sourceObj->anim.worldPosX;
-            buf.pos[1] = originOffset + sourceObj->anim.worldPosY;
-            buf.pos[2] = originOffset + sourceObj->anim.worldPosZ;
-        }
-        else
-        {
-            buf.pos[0] = originOffset + posSource->posX;
-            buf.pos[1] = originOffset + posSource->posY;
-            buf.pos[2] = originOffset + posSource->posZ;
+    commandCursor[0].layer = 4;
+    commandCursor[0].flags = 0;
+    commandCursor[0].tex = NULL;
+    commandCursor[0].mode = 0x20000000;
+    commandCursor[0].x = 999.0f;
+    commandCursor[0].y = startFrame;
+    commandCursor[0].z = endFrame;
+    packet.modeByte = 0;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = variant;
+    packet.position[0] = originOffset;
+    packet.position[1] = originOffset;
+    packet.position[2] = originOffset;
+    packet.velocity[0] = originOffset;
+    packet.velocity[1] = originOffset;
+    packet.velocity[2] = originOffset;
+    packet.scale = 1.0f;
+    packet.drawGroupCount = 0;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 0;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0;
+    packet.commandCount = (commandCursor + 1) - commands;
+    packet.sequenceParams[0] = gDll75SequenceParams.params[0];
+    packet.sequenceParams[1] = gDll75SequenceParams.params[1];
+    packet.sequenceParams[2] = gDll75SequenceParams.params[2];
+    packet.sequenceParams[3] = gDll75SequenceParams.params[3];
+    packet.sequenceParams[4] = gDll75SequenceParams.params[4];
+    packet.sequenceParams[5] = gDll75SequenceParams.params[5];
+    packet.sequenceParams[6] = gDll75SequenceParams.params[6];
+    packet.commands = (GfxCmd*)((u8*)&packet + 0x60);
+    packet.flags = 0x10800;
+    packet.flags |= spawnFlags;
+    if ((packet.flags & 1) != 0) {
+        if (sourceObj != NULL) {
+            packet.position[0] = originOffset + sourceObj->anim.worldPosX;
+            packet.position[1] = originOffset + sourceObj->anim.worldPosY;
+            packet.position[2] = originOffset + sourceObj->anim.worldPosZ;
+        } else {
+            packet.position[0] = originOffset + spawnParams->posX;
+            packet.position[1] = originOffset + spawnParams->posY;
+            packet.position[2] = originOffset + spawnParams->posZ;
         }
     }
-    return (*gModgfxInterface)->spawnEffect(&buf, 0, 0, 0, 0, 0, 0, 0);
+    return (*gModgfxInterface)->spawnEffect(&packet, 0, 0, 0, 0, 0, 0, 0);
 }
 
-void dll_75_func01_nop(void)
-{
+void dll_75_release(void) {
 }
 
-void dll_75_func00_nop(void)
-{
+void dll_75_initialise(void) {
 }
 
-ObjectDescriptor4 dll_75_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)dll_75_func00_nop,
-    (ObjectDescriptorCallback)dll_75_func01_nop,
-    0,
-    (ObjectDescriptorCallback)dll_75_func03,
+Dll75ResourceDescriptor gDll75ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_75_initialise, dll_75_release, NULL, dll_75_spawnEffect,
 };

@@ -5,7 +5,6 @@
 #include "main/mm.h"
 #include "main/objseq.h"
 #include "main/camera_interface.h"
-#include "main/dll/CAM/camcloudrunner_state.h"
 #include "game/objects/object_setup.h"
 #include "main/mapEvent.h"
 #include "main/dll/path_control_interface.h"
@@ -44,7 +43,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
                   s16 substate, void* hitPosOut);
 int dll_19_processMessages(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* flagOut, s16 substateIdle,
                   s16 substateActive, s16 moveMode);
-void dll_19_initGroundBaddie(GameObject* obj, u8* config, u8* state, int moveArg0, int moveArg1, int pathFlags, u8 initFlags,
+void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8* state, int moveArg0, int moveArg1, int pathFlags, u8 initFlags,
                    f32 pathRadius);
 void dll_19_changeWeapon(u8* cam, u8* ctx);
 f32 dll_19_getHealthFraction(GameObject* obj);

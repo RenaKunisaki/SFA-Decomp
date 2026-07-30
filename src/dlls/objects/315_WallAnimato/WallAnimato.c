@@ -84,8 +84,8 @@ int WallAnimator_getExtraSize(void) {
 }
 
 void WallAnimator_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, WALL_ANIMATOR_GROUP_CLIMBABLE);
-    ObjGroup_RemoveObject((int)obj, WALL_ANIMATOR_GROUP_SECONDARY);
+    objFreeObjectType((int)obj, WALL_ANIMATOR_GROUP_CLIMBABLE);
+    objFreeObjectType((int)obj, WALL_ANIMATOR_GROUP_SECONDARY);
 }
 
 void WallAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
@@ -121,14 +121,14 @@ void WallAnimator_update(GameObject* obj) {
     tricky = getTrickyObject();
     if (tricky != NULL) {
         nearestDistance[0] = 35.0f;
-        nearbyObject = ObjGroup_FindNearestObject(WALL_ANIMATOR_NEARBY_GROUP, obj, nearestDistance);
+        nearbyObject = objGetNearestTypeTo(WALL_ANIMATOR_NEARBY_GROUP, obj, nearestDistance);
         if ((void*)nearbyObject == NULL) {
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
                 TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 1);
             }
-            objRenderFn_80041018(obj);
+            objUpdateHitVolumeTransforms(obj);
         }
     } else {
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED;
@@ -140,8 +140,8 @@ void WallAnimator_init(int objAddress, WallAnimatorPlacement* placement) {
 
     state = ((GameObject*)objAddress)->extra;
     ((GameObject*)objAddress)->anim.rotX = placement->initialRotX;
-    ObjGroup_AddObject(objAddress, WALL_ANIMATOR_GROUP_CLIMBABLE);
-    ObjGroup_AddObject(objAddress, WALL_ANIMATOR_GROUP_SECONDARY);
+    objAddObjectType(objAddress, WALL_ANIMATOR_GROUP_CLIMBABLE);
+    objAddObjectType(objAddress, WALL_ANIMATOR_GROUP_SECONDARY);
     if (mainGetBit((int)placement->completionBit) != 0) {
         state->complete = 1;
         state->timer = WALL_ANIMATOR_DONE_TIMER;

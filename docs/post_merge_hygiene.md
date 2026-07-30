@@ -1,6 +1,6 @@
 # Post-merge hygiene
 
-Four checks to run after every `git merge origin/staging/<date>`. They take a few
+Four checks to run after every daily `git merge --no-ff origin/staging` into `main`. They take a few
 minutes, they are all read-only until you ask them to act, and each one catches a
 class of problem that a green `locked_ninja.sh` does not.
 

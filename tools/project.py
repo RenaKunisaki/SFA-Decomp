@@ -1778,10 +1778,15 @@ def generate_objdiff_config(
             filter(keep_flag, obj.options["cflags"] + obj.options["extra_cflags"])
         )
         reverse_fn_order = False
-        for flag in all_cflags:
-            if not flag.startswith("-inline "):
+        for i, flag in enumerate(all_cflags):
+            if flag.startswith("-inline "):
+                keywords = flag.split(" ", 1)[1]
+            elif flag == "-inline" and i + 1 < len(all_cflags):
+                keywords = all_cflags[i + 1]
+            else:
                 continue
-            for value in flag.split(" ")[1].split(","):
+            for value in keywords.split(","):
+                value = value.strip()
                 if value == "deferred":
                     reverse_fn_order = True
                 elif value == "nodeferred":

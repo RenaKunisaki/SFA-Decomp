@@ -13,7 +13,7 @@
 #include "main/game_ui_interface.h"
 #include "main/maketex_random_api.h"
 #include "main/maketex_sequence_api.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_trigger.h"
 #include "main/object_render.h"
@@ -247,13 +247,6 @@ int cfguardian_isNotPathFlying(GameObject* obj) {
     return (state->stateFlags & CFGUARDIAN_STATE_PATH_FLYING) == 0;
 }
 
-static f32 cfguardian_pathFraction(int pointIndex, int pointCount) {
-    if (pointCount == 0) {
-        return 0.0f;
-    }
-    return (f32)pointIndex / (f32)pointCount;
-}
-
 /* cfguardian_flyAlongPath: fly the guardian along a rom-curve path. On the first
  * tick (userData1 == 0) it steers to the nearest curve point then opens the
  * curve walker; thereafter it advances the walker, snaps the object to
@@ -300,7 +293,7 @@ int cfguardian_flyAlongPath(GameObject* obj, RomCurveWalker* walker, f32 speed, 
         if (pathComplete != 0) {
             obj->userData1 = -1;
         }
-        if (hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &groundDistance,
+        if (trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &groundDistance,
                                  0) == 0) {
             obj->anim.localPosY = obj->anim.localPosY - groundDistance;
         }
@@ -485,7 +478,7 @@ int cfguardian_updateMain(GameObject* obj) {
                     obj->anim.velocityZ = zero;
                 }
                 obj->anim.localPosY = obj->anim.velocityY * timeDelta + obj->anim.localPosY;
-                hitDetectFn_800658a4(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
+                trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                      &groundDistance, 0);
                 obj->anim.rotX = (s16)((0xc0 << (obj->anim.rotX + 8)) >> 1);
                 ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_IMMOVABLE;
@@ -506,7 +499,7 @@ int cfguardian_updateMain(GameObject* obj) {
                         homeDistY = state->home.y - obj->anim.localPosY;
                         homeDistY = (homeDistY >= 0.0f) ? homeDistY : -homeDistY;
                         if (homeDistY < 80.0f) {
-                            ObjGroup_AddObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
+                            objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
                             state->questState = CFGUARDIAN_STATE_FLY_TO_TALK;
                             ObjAnim_SetCurrentMove((int)obj, CFGUARDIAN_MOVE_FLY, 0.0f, 0);
                         }
@@ -527,7 +520,7 @@ int cfguardian_updateMain(GameObject* obj) {
                     ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
                     ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0x32);
                     obj->anim.velocityY = 0.0f;
-                    ObjGroup_RemoveObject((int)obj, CFGUARDIAN_OBJECT_GROUP);
+                    objFreeObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
                     {
                         f32 zero = 0.0f;
                         obj->anim.velocityX = zero;
@@ -595,7 +588,7 @@ int cfguardian_updateMain(GameObject* obj) {
         break;
     case CFGUARDIAN_STATE_TALK_1: /* talk spot: greet and head-track the player; 0x43 advances */
     {
-        void* nearestObject = (void*)ObjGroup_FindNearestObject(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
+        void* nearestObject = (void*)objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
         if (nearestObject != NULL && nearestDistance < 300.0f) {
             dll_2E_setLockTarget(&state->moveLib, nearestObject);
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
@@ -634,7 +627,7 @@ int cfguardian_updateMain(GameObject* obj) {
         break;
     case CFGUARDIAN_STATE_TALK_2: /* second talk loop; 0x4be sends her onward */
     {
-        void* nearestObject = (void*)ObjGroup_FindNearestObject(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
+        void* nearestObject = (void*)objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
         if (nearestObject != NULL && nearestDistance < 300.0f) {
             dll_2E_setLockTarget(&state->moveLib, nearestObject);
         }

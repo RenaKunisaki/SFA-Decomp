@@ -1,200 +1,219 @@
 /*
- * dlla8func0 (DLL 168 / 0xA8) - a modgfx pickup/effect spawner.
- *
- * dll_A8_func03 builds a stack command buffer of GfxCmd primitives (two
- * variant layouts selected by extraArgs) plus a per-effect header (colour,
- * position, scale, hardware-state words copied from the asset table at
- * lbl_80318EE8) and hands it to gModgfxInterface->spawnEffect. When flag bit
- * 0 is set the effect is positioned at the source object's world position
- * (sourceObj + 0x18..0x20) or, lacking a source object, at the spawn-param
- * packet's position (posSource + 0xc..0x14). func00/func01 are the DLL's
- * unused entry-point stubs.
+ * DLL 168 / 0xA8 - an alternate-style layered effect spawner.
  */
+#include "main/dll/dll_00A8_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
-#include "main/dll/partfx_interface.h"
-#include "dlls/object_descriptor.h"
 
-/* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
-#define DLLA8_EFFECT_ID 0x586
+typedef struct DllA8EffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} DllA8EffectVertex;
 
-extern u8 lbl_80318EE8[];
+STATIC_ASSERT(offsetof(DllA8EffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(DllA8EffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(DllA8EffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(DllA8EffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(DllA8EffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(DllA8EffectVertex) == 0x0A);
 
-void dll_A8_func03(GameObject* sourceObj, int variant, u8* posSource, u32 flags, u32 modelId, u8* extraArgs)
-{
-    ModgfxSpawnPacket buf;
-    u8* tab = (u8*)(int)lbl_80318EE8;
+typedef struct DllA8SevenIndexList {
+    s16 indices[7];
+    s16 opaqueTail;
+} DllA8SevenIndexList;
+
+STATIC_ASSERT(offsetof(DllA8SevenIndexList, indices) == 0x00);
+STATIC_ASSERT(offsetof(DllA8SevenIndexList, opaqueTail) == 0x0E);
+STATIC_ASSERT(sizeof(DllA8SevenIndexList) == 0x10);
+
+typedef struct DllA8EffectResourceView {
+    DllA8EffectVertex vertices[14];
+    s16 triangles[12][3];
+    DllA8SevenIndexList firstSevenVertexIndices;
+    DllA8SevenIndexList lastSevenVertexIndices;
+    s16 allVertexIndices[14];
+    s16 sequenceParams[7];
+    s16 opaqueTail;
+} DllA8EffectResourceView;
+
+STATIC_ASSERT(offsetof(DllA8EffectResourceView, vertices) == 0x000);
+STATIC_ASSERT(offsetof(DllA8EffectResourceView, triangles) == 0x08C);
+STATIC_ASSERT(offsetof(DllA8EffectResourceView, firstSevenVertexIndices) == 0x0D4);
+STATIC_ASSERT(offsetof(DllA8EffectResourceView, lastSevenVertexIndices) == 0x0E4);
+STATIC_ASSERT(offsetof(DllA8EffectResourceView, allVertexIndices) == 0x0F4);
+STATIC_ASSERT(offsetof(DllA8EffectResourceView, sequenceParams) == 0x110);
+STATIC_ASSERT(offsetof(DllA8EffectResourceView, opaqueTail) == 0x11E);
+STATIC_ASSERT(sizeof(DllA8EffectResourceView) == 0x120);
+
+extern u8 gDllA8EffectResourceData[sizeof(DllA8EffectResourceView)];
+
+void dll_A8_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 flags, int unused,
+                        void* alternateStyle) {
+    ModgfxSpawnPacket packet;
+    u8* resourceData = (u8*)(int)gDllA8EffectResourceData;
     f32 scaleX;
-    GfxCmd* e;
-    GfxCmd* p;
+    GfxCmd* commands;
+    GfxCmd* commandCursor;
     u32 effectFlags;
     f32 originOffset = 0.0f;
 
-    if (extraArgs != 0)
-    {
+    if (alternateStyle != NULL) {
         scaleX = -2.0f;
-    }
-    else
-    {
+    } else {
         scaleX = 2.0f;
     }
-    e = buf.entries;
-    e[0].layer = 0;
-    e[0].flags = 0xe;
-    e[0].tex = &tab[0xf4];
-    e[0].mode = 4;
-    e[0].x = originOffset;
-    e[0].y = originOffset;
-    e[0].z = originOffset;
-    if (extraArgs != 0)
-    {
-        e[1].layer = 0;
-        e[1].flags = 7;
-        e[1].tex = &tab[0xd4];
-        e[1].mode = 2;
-        e[1].x = 1.2f;
-        e[1].y = 0.009f;
-        e[1].z = 1.2f;
-        e[2].layer = 0;
-        e[2].flags = 7;
-        e[2].tex = &tab[0xe4];
-        e[2].mode = 2;
-        e[2].x = 2.25f;
-        e[2].y = 0.009f;
-        e[2].z = 2.25f;
-        p = e + 3;
+    commands = packet.entries;
+    commands[0].layer = 0;
+    commands[0].flags = 0xe;
+    commands[0].tex = &resourceData[offsetof(DllA8EffectResourceView, allVertexIndices)];
+    commands[0].mode = 4;
+    commands[0].x = originOffset;
+    commands[0].y = originOffset;
+    commands[0].z = originOffset;
+    if (alternateStyle != NULL) {
+        commands[1].layer = 0;
+        commands[1].flags = 7;
+        commands[1].tex = &resourceData[offsetof(DllA8EffectResourceView, firstSevenVertexIndices.indices)];
+        commands[1].mode = 2;
+        commands[1].x = 1.2f;
+        commands[1].y = 0.009f;
+        commands[1].z = 1.2f;
+        commands[2].layer = 0;
+        commands[2].flags = 7;
+        commands[2].tex = &resourceData[offsetof(DllA8EffectResourceView, lastSevenVertexIndices.indices)];
+        commands[2].mode = 2;
+        commands[2].x = 2.25f;
+        commands[2].y = 0.009f;
+        commands[2].z = 2.25f;
+        commandCursor = commands + 3;
+    } else {
+        commands[1].layer = 0;
+        commands[1].flags = 7;
+        commands[1].tex = &resourceData[offsetof(DllA8EffectResourceView, firstSevenVertexIndices.indices)];
+        commands[1].mode = 2;
+        commands[1].x = 1.2f;
+        commands[1].y = 0.042f;
+        commands[1].z = 1.2f;
+        commands[2].layer = 0;
+        commands[2].flags = 7;
+        commands[2].tex = &resourceData[offsetof(DllA8EffectResourceView, lastSevenVertexIndices.indices)];
+        commands[2].mode = 2;
+        commands[2].x = 1.8f;
+        commands[2].y = 0.042f;
+        commands[2].z = 1.8f;
+        commandCursor = commands + 3;
     }
-    else
-    {
-        e[1].layer = 0;
-        e[1].flags = 7;
-        e[1].tex = &tab[0xd4];
-        e[1].mode = 2;
-        e[1].x = 1.2f;
-        e[1].y = 0.042f;
-        e[1].z = 1.2f;
-        e[2].layer = 0;
-        e[2].flags = 7;
-        e[2].tex = &tab[0xe4];
-        e[2].mode = 2;
-        e[2].x = 1.8f;
-        e[2].y = 0.042f;
-        e[2].z = 1.8f;
-        p = e + 3;
-    }
-    p[0].layer = 1;
-    p[0].flags = 0xe;
-    p[0].tex = &tab[0xf4];
-    p[0].mode = 2;
-    p[0].x = 1.0f;
-    p[0].y = 130.0f;
-    p[0].z = 1.0f;
-    p[1].layer = 1;
-    p[1].flags = 0xe;
-    p[1].tex = &tab[0xf4];
-    p[1].mode = 4;
-    p[1].x = 255.0f;
-    p[1].y = originOffset;
-    p[1].z = originOffset;
-    p[2].layer = 1;
-    p[2].flags = 0xe;
-    p[2].tex = &tab[0xf4];
-    p[2].mode = 0x4000;
-    p[2].x = scaleX;
-    p[2].y = originOffset;
-    p[2].z = originOffset;
-    p[3].layer = 2;
-    p[3].flags = 0xe;
-    p[3].tex = &tab[0xf4];
-    p[3].mode = 0x4000;
-    p[3].x = scaleX;
-    p[3].y = originOffset;
-    p[3].z = originOffset;
-    p[4].layer = 3;
-    p[4].flags = 1;
-    p[4].tex = 0;
-    p[4].mode = 0x2000;
-    p[4].x = originOffset;
-    p[4].y = originOffset;
-    p[4].z = originOffset;
-    p[5].layer = 4;
-    p[5].flags = 0xe;
-    p[5].tex = &tab[0xf4];
-    p[5].mode = 4;
-    p[5].x = originOffset;
-    p[5].y = originOffset;
-    p[5].z = originOffset;
-    p[6].layer = 4;
-    p[6].flags = 0xe;
-    p[6].tex = &tab[0xf4];
-    p[6].mode = 0x4000;
-    p[6].x = scaleX;
-    p[6].y = originOffset;
-    p[6].z = originOffset;
-    p[7].layer = 4;
-    p[7].flags = 0xe;
-    p[7].tex = &tab[0xf4];
-    p[7].mode = 2;
-    p[7].x = 1.0f;
-    p[7].y = 0.01f;
-    p[7].z = 1.0f;
+    commandCursor[0].layer = 1;
+    commandCursor[0].flags = 0xe;
+    commandCursor[0].tex = &resourceData[offsetof(DllA8EffectResourceView, allVertexIndices)];
+    commandCursor[0].mode = 2;
+    commandCursor[0].x = 1.0f;
+    commandCursor[0].y = 130.0f;
+    commandCursor[0].z = 1.0f;
+    commandCursor[1].layer = 1;
+    commandCursor[1].flags = 0xe;
+    commandCursor[1].tex = &resourceData[offsetof(DllA8EffectResourceView, allVertexIndices)];
+    commandCursor[1].mode = 4;
+    commandCursor[1].x = 255.0f;
+    commandCursor[1].y = originOffset;
+    commandCursor[1].z = originOffset;
+    commandCursor[2].layer = 1;
+    commandCursor[2].flags = 0xe;
+    commandCursor[2].tex = &resourceData[offsetof(DllA8EffectResourceView, allVertexIndices)];
+    commandCursor[2].mode = 0x4000;
+    commandCursor[2].x = scaleX;
+    commandCursor[2].y = originOffset;
+    commandCursor[2].z = originOffset;
+    commandCursor[3].layer = 2;
+    commandCursor[3].flags = 0xe;
+    commandCursor[3].tex = &resourceData[offsetof(DllA8EffectResourceView, allVertexIndices)];
+    commandCursor[3].mode = 0x4000;
+    commandCursor[3].x = scaleX;
+    commandCursor[3].y = originOffset;
+    commandCursor[3].z = originOffset;
+    commandCursor[4].layer = 3;
+    commandCursor[4].flags = 1;
+    commandCursor[4].tex = NULL;
+    commandCursor[4].mode = 0x2000;
+    commandCursor[4].x = originOffset;
+    commandCursor[4].y = originOffset;
+    commandCursor[4].z = originOffset;
+    commandCursor[5].layer = 4;
+    commandCursor[5].flags = 0xe;
+    commandCursor[5].tex = &resourceData[offsetof(DllA8EffectResourceView, allVertexIndices)];
+    commandCursor[5].mode = 4;
+    commandCursor[5].x = originOffset;
+    commandCursor[5].y = originOffset;
+    commandCursor[5].z = originOffset;
+    commandCursor[6].layer = 4;
+    commandCursor[6].flags = 0xe;
+    commandCursor[6].tex = &resourceData[offsetof(DllA8EffectResourceView, allVertexIndices)];
+    commandCursor[6].mode = 0x4000;
+    commandCursor[6].x = scaleX;
+    commandCursor[6].y = originOffset;
+    commandCursor[6].z = originOffset;
+    commandCursor[7].layer = 4;
+    commandCursor[7].flags = 0xe;
+    commandCursor[7].tex = &resourceData[offsetof(DllA8EffectResourceView, allVertexIndices)];
+    commandCursor[7].mode = 2;
+    commandCursor[7].x = 1.0f;
+    commandCursor[7].y = 0.01f;
+    commandCursor[7].z = 1.0f;
 
-    buf.v58 = 0;
-    buf.ctx = (int)sourceObj;
-    buf.v44 = variant;
-    buf.pos[0] = originOffset;
-    buf.pos[1] = -8.0f;
-    buf.pos[2] = originOffset;
-    buf.col[0] = originOffset;
-    buf.col[1] = originOffset;
-    buf.col[2] = originOffset;
-    buf.scale = 1.0f;
-    buf.v40 = 1;
-    buf.v3c = 0;
-    buf.v59 = 0xe;
-    buf.v5a = 0;
-    buf.v5b = 0x1e;
-    buf.count = &p[8] - e;
-    buf.hw[0] = *(s16*)&tab[0x110];
-    buf.hw[1] = *(s16*)&tab[0x112];
-    buf.hw[2] = *(s16*)&tab[0x114];
-    buf.hw[3] = *(s16*)&tab[0x116];
-    buf.hw[4] = *(s16*)&tab[0x118];
-    buf.hw[5] = *(s16*)&tab[0x11a];
-    buf.hw[6] = *(s16*)&tab[0x11c];
-    buf.cmds = (GfxCmd*)((u8*)&buf + 0x60);
+    packet.modeByte = 0;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = variant;
+    packet.position[0] = originOffset;
+    packet.position[1] = -8.0f;
+    packet.position[2] = originOffset;
+    packet.velocity[0] = originOffset;
+    packet.velocity[1] = originOffset;
+    packet.velocity[2] = originOffset;
+    packet.scale = 1.0f;
+    packet.drawGroupCount = 1;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 0xe;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0x1e;
+    packet.commandCount = &commandCursor[8] - commands;
+    packet.sequenceParams[0] = *(s16*)&resourceData[offsetof(DllA8EffectResourceView, sequenceParams[0])];
+    packet.sequenceParams[1] = *(s16*)&resourceData[offsetof(DllA8EffectResourceView, sequenceParams[1])];
+    packet.sequenceParams[2] = *(s16*)&resourceData[offsetof(DllA8EffectResourceView, sequenceParams[2])];
+    packet.sequenceParams[3] = *(s16*)&resourceData[offsetof(DllA8EffectResourceView, sequenceParams[3])];
+    packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(DllA8EffectResourceView, sequenceParams[4])];
+    packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(DllA8EffectResourceView, sequenceParams[5])];
+    packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(DllA8EffectResourceView, sequenceParams[6])];
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     effectFlags = 0xc010040;
-    buf.flags = effectFlags;
+    packet.flags = effectFlags;
     effectFlags |= flags;
-    buf.flags = effectFlags;
-    if (effectFlags & 1)
-    {
-        if (sourceObj != 0)
-        {
-            buf.pos[0] = originOffset + (sourceObj)->anim.worldPosX;
-            buf.pos[1] = -8.0f + (sourceObj)->anim.worldPosY;
-            buf.pos[2] = originOffset + (sourceObj)->anim.worldPosZ;
-        }
-        else
-        {
-            buf.pos[0] = originOffset + ((PartFxSpawnParams*)posSource)->posX;
-            buf.pos[1] = -8.0f + ((PartFxSpawnParams*)posSource)->posY;
-            buf.pos[2] = originOffset + ((PartFxSpawnParams*)posSource)->posZ;
+    packet.flags = effectFlags;
+    if (effectFlags & 1) {
+        if (sourceObj != NULL) {
+            packet.position[0] = originOffset + sourceObj->anim.worldPosX;
+            packet.position[1] = -8.0f + sourceObj->anim.worldPosY;
+            packet.position[2] = originOffset + sourceObj->anim.worldPosZ;
+        } else {
+            packet.position[0] = originOffset + spawnParams->posX;
+            packet.position[1] = -8.0f + spawnParams->posY;
+            packet.position[2] = originOffset + spawnParams->posZ;
         }
     }
     (*gModgfxInterface)
-        ->spawnEffect(&buf, 0, 0xe, (u8*)(int)lbl_80318EE8, 0xc, (u8*)(int)lbl_80318EE8 + 0x8c, DLLA8_EFFECT_ID, 0);
+        ->spawnEffect(&packet, 0, 0xe, (u8*)(int)gDllA8EffectResourceData, 0xc,
+                      &resourceData[offsetof(DllA8EffectResourceView, triangles)], 0x586, 0);
 }
 
-void dll_A8_func01_nop(void)
-{
+void dll_A8_release(void) {
 }
 
-void dll_A8_func00_nop(void)
-{
+void dll_A8_initialise(void) {
 }
 
-u8 lbl_80318EE8[288] = {
+u8 gDllA8EffectResourceData[sizeof(DllA8EffectResourceView)] = {
     0,   0,   0,   0,   3, 232, 0, 0,   0,   0,   3,   98,  0, 0,   1,   244, 0,   31,  0,   0,   3,   98,  0,   0,
     254, 12,  0,   63,  0, 0,   0, 0,   0,   0,   252, 24,  0, 95,  0,   0,   252, 158, 0,   0,   254, 12,  0,   127,
     0,   0,   252, 158, 0, 0,   1, 244, 0,   158, 0,   0,   0, 0,   0,   0,   3,   232, 0,   188, 0,   0,   0,   0,
@@ -207,13 +226,6 @@ u8 lbl_80318EE8[288] = {
     0,   2,   0,   3,   0, 4,   0, 5,   0,   6,   0,   0,   0, 7,   0,   8,   0,   9,   0,   10,  0,   11,  0,   12,
     0,   13,  0,   0,   0, 0,   0, 1,   0,   2,   0,   3,   0, 4,   0,   5,   0,   6,   0,   7,   0,   8,   0,   9,
     0,   10,  0,   11,  0, 12,  0, 13,  0,   0,   0,   150, 0, 250, 0,   1,   0,   50,  0,   0,   0,   0,   0,   0};
-ObjectDescriptor4 dll_A8_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)dll_A8_func00_nop,
-    (ObjectDescriptorCallback)dll_A8_func01_nop,
-    0,
-    (ObjectDescriptorCallback)dll_A8_func03,
+DllA8ResourceDescriptor gDllA8ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_A8_initialise, dll_A8_release, NULL, dll_A8_spawnEffect,
 };

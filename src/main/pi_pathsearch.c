@@ -37,33 +37,24 @@
 extern void* lbl_803DCD10;
 extern char* lbl_803DCD08;
 
-int pathSearchNodeMatchesTarget(int* ctx, int* ref)
-{
+int pathSearchNodeMatchesTarget(int* ctx, int* ref) {
     int* node;
     int target;
     target = ctx[4];
     node = (int*)ref[0];
-    switch (((s8*)node)[0x19])
-    {
-    case 0x24:
-    {
+    switch (((s8*)node)[0x19]) {
+    case 0x24: {
         u8 idx = ((u8*)ref)[0xc];
-        if ((idx & 0x80) == 0)
-        {
-            if (((u8*)node)[3] != 0)
-            {
+        if ((idx & 0x80) == 0) {
+            if (((u8*)node)[3] != 0) {
                 return target == ((u8*)node)[3];
-            }
-            else
-            {
+            } else {
                 int* p;
                 int* arr;
                 int i;
                 arr = (int*)*(int*)((char*)ctx[0] + (idx << 4));
-                for (i = 0, p = arr; i < 4; i++)
-                {
-                    if ((u32)node[5] == *(u32*)((char*)p + 0x1c))
-                    {
+                for (i = 0, p = arr; i < 4; i++) {
+                    if ((u32)node[5] == *(u32*)((char*)p + 0x1c)) {
                         return target == ((u8*)arr)[i + 4];
                     }
                     p++;
@@ -77,8 +68,7 @@ int pathSearchNodeMatchesTarget(int* ctx, int* ref)
     }
 }
 
-void pathSearchHeapSiftDown(u8* arr, int size, int idx)
-{
+void pathSearchHeapSiftDown(u8* arr, int size, int idx) {
     u16* h = (u16*)arr;
     int half;
     u8* childptr;
@@ -87,20 +77,18 @@ void pathSearchHeapSiftDown(u8* arr, int size, int idx)
     int child;
     u8* cp;
     half = size >> 1;
-    while (idx <= half)
-    {
+    while (idx <= half) {
         child = idx + idx;
-        if (child < size)
-        {
+        if (child < size) {
             cp = arr + child * 8;
-            if (*(u32*)cp < *(u32*)(cp + 8))
-            {
+            if (*(u32*)cp < *(u32*)(cp + 8)) {
                 child++;
             }
         }
         childptr = arr + child * 8;
-        if (key >= *(u32*)childptr)
+        if (key >= *(u32*)childptr) {
             break;
+        }
         *(u32*)(arr + idx * 8) = *(u32*)childptr;
         *(u16*)(arr + idx * 8 + 4) = *(u16*)(childptr + 4);
         idx = child;
@@ -109,11 +97,7 @@ void pathSearchHeapSiftDown(u8* arr, int size, int idx)
     h[idx * 4 + 2] = val;
 }
 
-
-
-
-static inline void pathSearchHeapInsert(PathSearch* search, u16 index, u32 pri)
-{
+static inline void pathSearchHeapInsert(PathSearch* search, u16 index, u32 pri) {
     int i;
     u32 key;
     u16 idx16;
@@ -128,8 +112,7 @@ static inline void pathSearchHeapInsert(PathSearch* search, u16 index, u32 pri)
     key = *(u32*)((int)heap + i * 8);
     idx16 = hh[i * 4 + 2];
     *heap = -1;
-    while (parent = i >> 1, *(u32*)(hh + parent * 4) < key)
-    {
+    while (parent = i >> 1, *(u32*)(hh + parent * 4) < key) {
         *(u16*)((int)heap + i * 8 + 4) = *(u16*)((int)heap + (int)((long)parent * 8) + 4);
         *(u32*)((int)heap + i * 8) = *(u32*)((int)heap + (int)((long)parent * 8));
         i = parent;
@@ -138,18 +121,15 @@ static inline void pathSearchHeapInsert(PathSearch* search, u16 index, u32 pri)
     hh[i * 4 + 2] = idx16;
 }
 
-static inline int pathSearchFindPointNode(PathSearch* search, PathPoint* point, int* countOut, int* visitedOut)
-{
+static inline int pathSearchFindPointNode(PathSearch* search, PathPoint* point, int* countOut, int* visitedOut) {
     int index = 0;
     int offset = 0;
     int n;
 
     *countOut = search->nodeCount;
-    for (n = *countOut; n > 0; n--)
-    {
+    for (n = *countOut; n > 0; n--) {
         PathSearchNode* scanNode = (PathSearchNode*)((u8*)search->nodes + offset);
-        if (scanNode->point == point)
-        {
+        if (scanNode->point == point) {
             *visitedOut = scanNode->visited;
             return index;
         }
@@ -159,121 +139,99 @@ static inline int pathSearchFindPointNode(PathSearch* search, PathPoint* point, 
     return -1;
 }
 
-void pathSearchEnqueuePoint(int* q, int* elem, int idx, u32 d, char* obj)
-{
-    PathSearch* search = (PathSearch*)q;
-    PathPoint* point = (PathPoint*)obj;
-    int pos;
-    u16* hh;
-    int cnt2;
-    PathSearchNode* node;
+void pathSearchAddNeighbor(PathSearch* search, PathSearchNode* previousNode, int previousNodeIndex, u32 routeDistance,
+                           PathPoint* candidatePoint) {
+    int heapIndex;
+    u16* heapHalves;
+    int pointCount;
+    PathSearchNode* newNode;
     u32* heap;
-    int z[2];
-    PathSearchNode* node4;
+    int foundNodeIndex[2];
+    PathSearchNode* addedNode;
     int visited;
-    int cnt;
-    if (pathSearchNodeMatchesTarget(q, elem) != 0)
-    {
-        cnt = search->nodeCount;
-        if (cnt != 0xfe)
-        {
-            node = &search->nodes[search->nodeCount++];
-            node->point = point;
-            node->routeDistance = d;
-            node->parentIndex = (u16)idx;
-            node->distanceToTarget = (u32)vec3f_distanceSquared(node->point->position, search->targetPosition);
+    int pointIndex;
+    if (pathSearchNodeMatchesTarget((int*)search, (int*)previousNode) != 0) {
+        pointIndex = search->nodeCount;
+        if (pointIndex != 0xfe) {
+            newNode = &search->nodes[search->nodeCount++];
+            newNode->point = candidatePoint;
+            newNode->routeDistance = routeDistance;
+            newNode->parentIndex = (u16)previousNodeIndex;
+            newNode->distanceToTarget = (u32)vec3f_distanceSquared(newNode->point->position, search->targetPosition);
         }
-        pathSearchHeapInsert(search, cnt, 0xfffffffe);
+        pathSearchHeapInsert(search, pointIndex, 0xfffffffe);
     }
-    z[0] = pathSearchFindPointNode(search, point, &cnt2, &visited);
-    if (z[0] >= 0 && visited == 0)
-    {
-        PathSearchNode* node3 = &search->nodes[z[0]];
-        if (d < node3->routeDistance)
-        {
-            int s2;
-            u16 target;
-            int j;
-            u32 newpri;
+    foundNodeIndex[0] = pathSearchFindPointNode(search, candidatePoint, &pointCount, &visited);
+    if (foundNodeIndex[0] >= 0 && visited == 0) {
+        PathSearchNode* existingNode = &search->nodes[foundNodeIndex[0]];
+        if (routeDistance < existingNode->routeDistance) {
+            int heapSize;
+            u16 targetNodeIndex;
+            int searchIndex;
+            u32 newPriority;
             u32* entry;
-            u32 old;
-            node3->parentIndex = idx;
-            node3->routeDistance = d;
-            newpri = node3->distanceToTarget + node3->routeDistance;
-            s2 = search->heapSize;
+            u32 oldPriority;
+            existingNode->parentIndex = previousNodeIndex;
+            existingNode->routeDistance = routeDistance;
+            newPriority = existingNode->distanceToTarget + existingNode->routeDistance;
+            heapSize = search->heapSize;
             heap = (u32*)search->heap;
-            hh = (u16*)heap;
-            j = 0;
-            target = z[0];
-            for (; j <= s2; j++)
-            {
-                if (target == *(u16*)(heap + j * 2 + 1))
-                {
-                    pos = j;
-                    j = s2 + 1;
+            heapHalves = (u16*)heap;
+            searchIndex = 0;
+            targetNodeIndex = foundNodeIndex[0];
+            for (; searchIndex <= heapSize; searchIndex++) {
+                if (targetNodeIndex == *(u16*)(heap + searchIndex * 2 + 1)) {
+                    heapIndex = searchIndex;
+                    searchIndex = heapSize + 1;
                 }
             }
-            entry = heap + pos * 2;
-            old = *entry;
-            *entry = newpri;
-            if (newpri < old)
-            {
-                pathSearchHeapSiftDown((u8*)heap, s2, pos);
-            }
-            else if (newpri > old)
-            {
-                u32 pri = *entry;
-                u16 idx16 = ((u16*)entry)[2];
+            entry = heap + heapIndex * 2;
+            oldPriority = *entry;
+            *entry = newPriority;
+            if (newPriority < oldPriority) {
+                pathSearchHeapSiftDown((u8*)heap, heapSize, heapIndex);
+            } else if (newPriority > oldPriority) {
+                u32 priority = *entry;
                 int parent;
+                u16 nodeIndex = ((u16*)entry)[2];
                 *heap = -1;
-                while (parent = pos >> 1, *(u32*)(hh + parent * 4) < pri)
-                {
-                    *(u16*)((int)heap + pos * 8 + 4) = *(u16*)((int)heap + (int)((long)parent * 8) + 4);
-                    *(u32*)((int)heap + pos * 8) = *(u32*)((int)heap + (int)((long)parent * 8));
-                    pos = parent;
+                while (parent = heapIndex >> 1, *(u32*)(heapHalves + parent * 4) < priority) {
+                    *(u16*)((int)heap + heapIndex * 8 + 4) = *(u16*)((int)heap + (int)((long)parent * 8) + 4);
+                    *(u32*)((int)heap + heapIndex * 8) = *(u32*)((int)heap + (int)((long)parent * 8));
+                    heapIndex = parent;
                 }
-                *(u32*)((int)heap + pos * 8) = pri;
-                hh[pos * 4 + 2] = idx16;
+                *(u32*)((int)heap + heapIndex * 8) = priority;
+                heapHalves[heapIndex * 4 + 2] = nodeIndex;
             }
         }
-    }
-    else if (z[0] < 0)
-    {
-        if (cnt2 == 0xfe)
-        {
-            node4 = NULL;
+    } else if (foundNodeIndex[0] < 0) {
+        if (pointCount == 0xfe) {
+            addedNode = NULL;
+        } else {
+            addedNode = &search->nodes[search->nodeCount++];
+            addedNode->point = candidatePoint;
+            addedNode->routeDistance = routeDistance;
+            addedNode->parentIndex = (u16)previousNodeIndex;
+            addedNode->distanceToTarget =
+                (u32)vec3f_distanceSquared(addedNode->point->position, search->targetPosition);
         }
-        else
-        {
-            node4 = &search->nodes[search->nodeCount++];
-            node4->point = point;
-            node4->routeDistance = d;
-            node4->parentIndex = (u16)idx;
-            node4->distanceToTarget = (u32)vec3f_distanceSquared(node4->point->position, search->targetPosition);
-        }
-        if (node4 != NULL)
-        {
-            if (node4->distanceToTarget > search->closestDistance)
-            {
-                u32 newpri = node4->distanceToTarget + node4->routeDistance;
-                pathSearchHeapInsert(search, cnt2, -1 - newpri);
-            }
-            else
-            {
-                u32 newpri;
-                if (node4->distanceToTarget < search->closestDistance)
-                {
-                    search->closestDistance = node4->distanceToTarget;
+        if (addedNode != NULL) {
+            if (addedNode->distanceToTarget > search->closestDistance) {
+                u32 newPriority = addedNode->distanceToTarget + addedNode->routeDistance;
+                pathSearchHeapInsert(search, pointCount, -1 - newPriority);
+            } else {
+                u32 newPriority;
+                if (addedNode->distanceToTarget < search->closestDistance) {
+                    search->closestDistance = addedNode->distanceToTarget;
                 }
-                newpri = node4->distanceToTarget + node4->routeDistance;
-                pathSearchHeapInsert(search, cnt2, -1 - newpri);
+                newPriority = addedNode->distanceToTarget + addedNode->routeDistance;
+                pathSearchHeapInsert(search, pointCount, -1 - newPriority);
             }
         }
     }
 }
 
-void pathSearchExpandNode(int* q, int* elem, int idx)
-{
+void pathSearchExpandNode(int* q, int* elem, int idx) {
     u8 mask;
     char* p;
     char* node;
@@ -281,42 +239,32 @@ void pathSearchExpandNode(int* q, int* elem, int idx)
     int bit;
     int t;
     node = (char*)elem[0];
-    if (*(u8*)((char*)q + 0x28) != 0)
-    {
+    if (*(u8*)((char*)q + 0x28) != 0) {
         t = *(s8*)(node + 0x1b);
-    }
-    else
-    {
+    } else {
         t = ~*(s8*)(node + 0x1b);
     }
     bit = 0;
     p = node;
     mask = t;
-    for (; bit < 4; bit++)
-    {
+    for (; bit < 4; bit++) {
         int nodeId = *(int*)(p + 0x1c);
-        if (nodeId > -1 && (mask & (1 << bit)) != 0)
-        {
+        if (nodeId > -1 && (mask & (1 << bit)) != 0) {
             obj = (char*)(*gRomCurveInterface)->getById(nodeId);
-            if (obj != 0)
-            {
-                switch (*(s8*)(obj + 0x19))
-                {
-                case 0x24:
-                {
+            if (obj != 0) {
+                switch (*(s8*)(obj + 0x19)) {
+                case 0x24: {
                     s16 ev1;
                     s16 ev2;
                     mainGetBit(0x4e2);
                     ev1 = *(s16*)(obj + 0x30);
-                    if (ev1 == -1 || mainGetBit(ev1) != 0)
-                    {
+                    if (ev1 == -1 || mainGetBit(ev1) != 0) {
                         ev2 = *(s16*)(obj + 0x32);
-                        if (ev2 == -1 || mainGetBit(ev2) == 0)
-                        {
-                            if (!(*(s8*)(obj + 0x1a) == 8 && *(s8*)(node + 0x1a) == 9))
-                            {
+                        if (ev2 == -1 || mainGetBit(ev2) == 0) {
+                            if (!(*(s8*)(obj + 0x1a) == 8 && *(s8*)(node + 0x1a) == 9)) {
                                 f32 d = vec3f_distanceSquared((f32*)(node + 8), (f32*)(obj + 8));
-                                pathSearchEnqueuePoint(q, elem, idx, (u32)((f32)(u32)elem[2] + d), obj);
+                                pathSearchAddNeighbor((PathSearch*)q, (PathSearchNode*)elem, idx,
+                                                      (u32)((f32)(u32)elem[2] + d), (PathPoint*)obj);
                             }
                         }
                     }
@@ -331,12 +279,10 @@ void pathSearchExpandNode(int* q, int* elem, int idx)
         p += 4;
     }
 }
-PathPoint* pathSearchGetNextPoint(PathSearch* search)
-{
+PathPoint* pathSearchGetNextPoint(PathSearch* search) {
     PathPoint** path;
     int index = search->pathIndex;
-    if (index < search->pathCount)
-    {
+    if (index < search->pathCount) {
         path = search->path;
         search->pathIndex++;
         return path[index];
@@ -344,8 +290,7 @@ PathPoint* pathSearchGetNextPoint(PathSearch* search)
     return NULL;
 }
 
-int pathSearchBuildPath(PathSearch* search)
-{
+int pathSearchBuildPath(PathSearch* search) {
     int* p = (int*)search;
     int node;
     u32 cur;
@@ -357,37 +302,27 @@ int pathSearchBuildPath(PathSearch* search)
     prev = p[7];
     node = *p + prev * 0x10;
     *(u8*)(node + 0xd) = 0xff;
-    while ((cur = *(u8*)(node + 0xc)) != 0xff)
-    {
+    while ((cur = *(u8*)(node + 0xc)) != 0xff) {
         node = *p + cur * 0x10;
         *(u8*)(node + 0xd) = prev;
         prev = cur;
     }
-    if (*(u8*)(node + 0xd) == 0xff)
-    {
+    if (*(u8*)(node + 0xd) == 0xff) {
         entry = NULL;
-    }
-    else
-    {
+    } else {
         entry = (int*)(*p + (u32) * (u8*)(node + 0xd) * 0x10);
     }
     count = 0;
     i = 0;
-    while (entry != NULL)
-    {
+    while (entry != NULL) {
         *(int*)(p[2] + i) = *entry;
         i += 4;
         count++;
-        if (count >= 100)
-        {
+        if (count >= 100) {
             entry = NULL;
-        }
-        else if (*(u8*)((int)entry + 0xd) == 0xff)
-        {
+        } else if (*(u8*)((int)entry + 0xd) == 0xff) {
             entry = NULL;
-        }
-        else
-        {
+        } else {
             entry = (int*)(*p + (u32) * (u8*)((int)entry + 0xd) * 0x10);
         }
     }
@@ -396,8 +331,7 @@ int pathSearchBuildPath(PathSearch* search)
     return count;
 }
 
-int pathSearchStep(PathSearch* search, u32 n_)
-{
+int pathSearchStep(PathSearch* search, u32 n_) {
     int n;
     int* q = (int*)search;
     int idx;
@@ -408,37 +342,27 @@ int pathSearchStep(PathSearch* search, u32 n_)
     n = n_;
     done = 0;
     result = 0;
-    while (done == 0 && n != 0)
-    {
+    while (done == 0 && n != 0) {
         heap = *(int**)((char*)q + 0x4);
-        if (*(s16*)((char*)q + 0x22) == 0)
-        {
+        if (*(s16*)((char*)q + 0x22) == 0) {
             idx = -1;
-        }
-        else
-        {
+        } else {
             idx = *(u16*)((char*)heap + 0xc);
             *(int*)((char*)heap + 0x8) = *(int*)((int)heap + *(s16*)((char*)q + 0x22) * 8);
             *(u16*)((char*)heap + 0xc) = *(u16*)((char*)heap + (*(s16*)((char*)q + 0x22))-- * 8 + 4);
             pathSearchHeapSiftDown((u8*)heap, *(s16*)((char*)q + 0x22), 1);
         }
-        if (idx >= 0)
-        {
+        if (idx >= 0) {
             elem = (int*)(*(int*)((char*)q + 0) + idx * 16);
             *(int*)((char*)q + 0x1c) = idx;
-            if (pathSearchNodeMatchesTarget(q, elem) != 0)
-            {
+            if (pathSearchNodeMatchesTarget(q, elem) != 0) {
                 done = 1;
                 result = 1;
-            }
-            else
-            {
+            } else {
                 *((u8*)elem + 0xe) = 1;
                 pathSearchExpandNode(q, elem, idx);
             }
-        }
-        else
-        {
+        } else {
             done = 1;
             result = -1;
         }
@@ -447,8 +371,7 @@ int pathSearchStep(PathSearch* search, u32 n_)
     return result;
 }
 
-int pathSearchBegin(PathSearch* queue, PathPoint* startPoint, f32* targetPosition, int pathId, u32 routeFlags)
-{
+int pathSearchBegin(PathSearch* queue, PathPoint* startPoint, f32* targetPosition, int pathId, u32 routeFlags) {
     int i;
     PathSearchNode* node;
     PathHeapEntry* heap;
@@ -461,8 +384,7 @@ int pathSearchBegin(PathSearch* queue, PathPoint* startPoint, f32* targetPositio
 
     queue->heapSize = 0;
     queue->nodeCount = 0;
-    for (i = 0; i < 0xfe; i++)
-    {
+    for (i = 0; i < 0xfe; i++) {
         queue->heap[i].priority = 0;
         queue->nodes[i].visited = 0;
     }
@@ -472,12 +394,9 @@ int pathSearchBegin(PathSearch* queue, PathPoint* startPoint, f32* targetPositio
     queue->routeFlags = routeFlags & 1;
     queue->closestDistance = 10000;
     nodeCount = queue->nodeCount;
-    if (nodeCount == 0xfe)
-    {
+    if (nodeCount == 0xfe) {
         node = NULL;
-    }
-    else
-    {
+    } else {
         node = &queue->nodes[queue->nodeCount++];
         node->point = startPoint;
         node->routeDistance = 0;
@@ -494,8 +413,7 @@ int pathSearchBegin(PathSearch* queue, PathPoint* startPoint, f32* targetPositio
     priority = heap[i].priority;
     nodeIndex = heapHalves[i * 4 + 2];
     heap[0].priority = -1;
-    while (parent = i >> 1, *(u32*)(heapHalves + parent * 4) < priority)
-    {
+    while (parent = i >> 1, *(u32*)(heapHalves + parent * 4) < priority) {
         *(u16*)((int)heap + i * 8 + 4) = *(u16*)((int)heap + (int)((long)parent * 8) + 4);
         *(u32*)((int)heap + i * 8) = *(u32*)((int)heap + (int)((long)parent * 8));
         i = parent;
@@ -505,25 +423,19 @@ int pathSearchBegin(PathSearch* queue, PathPoint* startPoint, f32* targetPositio
     return 0;
 }
 
-
-void freeAndNull(void** p)
-{
-    if (*p != NULL)
-    {
+void freeAndNull(void** p) {
+    if (*p != NULL) {
         mm_free(*p);
         *p = NULL;
     }
 }
 
-void trickyVoxAllocFn_8004b5d4(PathSearch* search)
-{
+void pathSearchInit(PathSearch* search) {
     search->nodes = (PathSearchNode*)mmAlloc(0x1960, 0x10, 0);
     search->heap = (PathHeapEntry*)((u8*)search->nodes + 0xfe0);
     search->path = (PathPoint**)((u8*)search->heap + 0x7f0);
 }
 
-
-void allocSomething32bytes(void)
-{
+void allocSomething32bytes(void) {
     lbl_803DCD10 = mmAlloc(0x20, 0xff, 0);
 }

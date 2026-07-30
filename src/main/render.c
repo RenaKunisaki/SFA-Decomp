@@ -16,8 +16,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/floorf.h"
 
-register int gRenderReserved asm("r14");
-
 const int gModelRenderAdpcmStepTable[89] = {
     0x4, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE,
     0x10, 0x11, 0x13, 0x15, 0x17, 0x19, 0x1C, 0x1F,
@@ -436,7 +434,7 @@ void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s
     do
     {
         u64 sample = 0;
-        u64 h = render_readPackedU16(tp);
+        s64 h = render_readPackedU16(tp);
         u64 nib = h & 0xf;
         u32 hw = h;
         u64 masked = h & maskConst;

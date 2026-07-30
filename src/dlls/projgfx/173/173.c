@@ -6,26 +6,28 @@
  * logs the "no longer supported" string and returns the failure sentinel.
  * The slot is kept so the DLL id stays valid.
  */
-#include "dolphin/os/OSReport.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00AD_projmagicemmit1.h"
+#include "dolphin/os/OSReport.h"
 
-int projmagicemmit1_doUnsupported(void)
-{
+extern char sProjmagicemmit1DoNoLongerSupported[];
+
+int projmagicemmit1_doUnsupported(void) {
     OSReport(sProjmagicemmit1DoNoLongerSupported);
-    return -1; /* failure sentinel */
+    return -1;
 }
 
-void projmagicemmit1_release(void)
-{
+void projmagicemmit1_release(void) {
 }
 
-void projmagicemmit1_initialise(void)
-{
+void projmagicemmit1_initialise(void) {
 }
 
-DllDescriptorTable lbl_80319410 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projmagicemmit1_initialise, projmagicemmit1_release, (void*)0x00000000,
-                                    projmagicemmit1_doUnsupported}};
+Projmagicemmit1ResourceDescriptor gProjmagicemmit1ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projmagicemmit1_initialise,
+    projmagicemmit1_release,
+    NULL,
+    projmagicemmit1_doUnsupported,
+};
 
 char sProjmagicemmit1DoNoLongerSupported[] = "<projmagicemmit1 Do>No Longer supported \n";

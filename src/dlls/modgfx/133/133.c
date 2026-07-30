@@ -1,267 +1,260 @@
 /*
- * DLL 133 / 0x85 - func03 builds a ModgfxInterface
- * effect command list (FbBuf) and spawns it. Two layouts are emitted:
- * variant 4 (a self-contained burst, base flags 0x4004400) and the
- * default variant (scaled off the source object's field 8 and a child
- * object at field 0x50, base flags 0x4006410). The caller's `flags` are
- * OR'd in; flag bit 0 adds the source/position-source world offsets to
- * buf.pos before the spawn. Several command slots seed x with a random
- * angle from randomGetRange. The two trailing _nop entry points are the
- * DLL's unused func00/func01 slots.
+ * DLL 133 / 0x85 - a randomised multi-layer modgfx effect spawner.
  */
+#include "main/dll/dll_0085_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
-#include "game/objects/object.h"
-#include "main/dll/fb_cmd.h"
-#include "dlls/object_descriptor.h"
+#include "main/dll/modgfx_types.h"
 
-u8 lbl_803DB8F0[4] = {0, 0, 0, 1};
-u8 lbl_803DB8F4[8] = {0, 0, 0, 1, 0, 2, 0, 3};
-u8 lbl_803DB8FC[4] = {0, 2, 0, 3};
+typedef enum Dll85Variant {
+    DLL85_VARIANT_BURST = 4,
+} Dll85Variant;
 
-#define FX_VARIANT_BURST 4
+typedef struct Dll85EffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} Dll85EffectVertex;
 
-extern u8 gFoodbagEffectTemplate[];
+STATIC_ASSERT(offsetof(Dll85EffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(Dll85EffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(Dll85EffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(Dll85EffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(Dll85EffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(Dll85EffectVertex) == 0x0A);
 
-void dll_85_func03(int sourceObj, int variant, int posSource, u32 flags)
-{
-    FbBuf buf;
-    u8* base = (u8*)(int)gFoodbagEffectTemplate;
-    s16* tableHw = (s16*)base;
-    FbCmd* p;
-    FbCmd* e = buf.entries;
-    f32 rv;
+typedef struct Dll85EffectResourceView {
+    Dll85EffectVertex vertices[4];
+    s16 triangles[2][3];
+    s16 sequenceParams[7];
+    s16 opaqueTail;
+    s16 textureAssetIds[5][2];
+} Dll85EffectResourceView;
 
-    if (variant == FX_VARIANT_BURST)
-    {
-        e[0].layer = 0;
-        e[0].flags = 0;
-        e[0].tex = NULL;
-        e[0].mode = 0x400000;
-        e[0].x = 10.0f;
-        e[0].y = 0.0f;
-        e[0].z = 0.0f;
-        e[1].layer = 0;
-        e[1].flags = 2;
-        e[1].tex = lbl_803DB8FC;
-        e[1].mode = 2;
-        e[1].x = 9.0f;
-        e[1].y = 2.0f;
-        e[1].z = 9.0f;
-        e[2].layer = 0;
-        e[2].flags = 4;
-        e[2].tex = lbl_803DB8FC;
-        e[2].mode = 0x80;
-        e[2].x = (f32)randomGetRange(-0x7ff8, 0x7ff8);
-        e[2].y = 0.0f;
-        e[2].z = 16383.0f;
-        p = &e[3];
+STATIC_ASSERT(offsetof(Dll85EffectResourceView, vertices) == 0x00);
+STATIC_ASSERT(offsetof(Dll85EffectResourceView, triangles) == 0x28);
+STATIC_ASSERT(offsetof(Dll85EffectResourceView, sequenceParams) == 0x34);
+STATIC_ASSERT(offsetof(Dll85EffectResourceView, opaqueTail) == 0x42);
+STATIC_ASSERT(offsetof(Dll85EffectResourceView, textureAssetIds) == 0x44);
+STATIC_ASSERT(sizeof(Dll85EffectResourceView) == 0x58);
+
+s16 gDll85IndexPair01[2] = {0, 1};
+s16 gDll85IndexSequence0123[4] = {0, 1, 2, 3};
+s16 gDll85IndexPair23[2] = {2, 3};
+
+extern u8 gDll85EffectResourceData[sizeof(Dll85EffectResourceView)];
+
+void dll_85_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
+    ModgfxPointerSpawnPacket packet;
+    u8* resourceData = (u8*)(int)gDll85EffectResourceData;
+    s16* resourceHalfwords = (s16*)resourceData;
+    GfxCmd* commandCursor;
+    GfxCmd* commands = packet.entries;
+    f32 randomValue;
+
+    if (variant == DLL85_VARIANT_BURST) {
+        commands[0].layer = 0;
+        commands[0].flags = 0;
+        commands[0].tex = NULL;
+        commands[0].mode = 0x400000;
+        commands[0].x = 10.0f;
+        commands[0].y = 0.0f;
+        commands[0].z = 0.0f;
+        commands[1].layer = 0;
+        commands[1].flags = 2;
+        commands[1].tex = gDll85IndexPair23;
+        commands[1].mode = 2;
+        commands[1].x = 9.0f;
+        commands[1].y = 2.0f;
+        commands[1].z = 9.0f;
+        commands[2].layer = 0;
+        commands[2].flags = 4;
+        commands[2].tex = gDll85IndexPair23;
+        commands[2].mode = 0x80;
+        commands[2].x = (f32)randomGetRange(-0x7ff8, 0x7ff8);
+        commands[2].y = 0.0f;
+        commands[2].z = 16383.0f;
+        commandCursor = &commands[3];
+    } else {
+        GameObject* scaledSource = sourceObj;
+        commands[0].layer = 0;
+        commands[0].flags = 2;
+        commands[0].tex = gDll85IndexPair01;
+        commands[0].mode = 2;
+        commands[0].x = 190.0f * scaledSource->anim.rootMotionScale;
+        commands[0].y = 6.0f * scaledSource->anim.rootMotionScale;
+        commands[0].z = 1.0f;
+        commands[1].layer = 0;
+        commands[1].flags = 2;
+        commands[1].tex = gDll85IndexPair23;
+        commands[1].mode = 2;
+        commands[1].x =
+            40.0f * (scaledSource->anim.rootMotionScale / scaledSource->anim.modelInstance->rootMotionScaleBase);
+        commands[1].y =
+            6.0f * (scaledSource->anim.rootMotionScale / scaledSource->anim.modelInstance->rootMotionScaleBase);
+        commands[1].z = 1.0f;
+        randomValue = (f32)randomGetRange(0, 0xfffe);
+        commands[2].layer = 0;
+        commands[2].flags = 0;
+        commands[2].tex = NULL;
+        commands[2].mode = 0x80;
+        commands[2].x = randomValue;
+        commands[2].y = 1000.0f;
+        commands[2].z = 0.0f;
+        commandCursor = &commands[3];
     }
-    else
-    {
-        GameObject* src = (GameObject*)sourceObj;
-        e[0].layer = 0;
-        e[0].flags = 2;
-        e[0].tex = lbl_803DB8F0;
-        e[0].mode = 2;
-        e[0].x = 190.0f * src->anim.rootMotionScale;
-        e[0].y = 6.0f * src->anim.rootMotionScale;
-        e[0].z = 1.0f;
-        e[1].layer = 0;
-        e[1].flags = 2;
-        e[1].tex = lbl_803DB8FC;
-        e[1].mode = 2;
-        e[1].x = 40.0f * (src->anim.rootMotionScale /
-                          src->anim.modelInstance->rootMotionScaleBase);
-        e[1].y = 6.0f * (src->anim.rootMotionScale /
-                         src->anim.modelInstance->rootMotionScaleBase);
-        e[1].z = 1.0f;
-        rv = (f32)randomGetRange(0, 0xfffe);
-        e[2].layer = 0;
-        e[2].flags = 0;
-        e[2].tex = NULL;
-        e[2].mode = 0x80;
-        e[2].x = rv;
-        e[2].y = 1000.0f;
-        e[2].z = 0.0f;
-        p = &e[3];
+    commandCursor[0].layer = 0;
+    commandCursor[0].flags = 4;
+    commandCursor[0].tex = gDll85IndexSequence0123;
+    commandCursor[0].mode = 4;
+    commandCursor[0].x = 0.0f;
+    commandCursor[0].y = 0.0f;
+    commandCursor[0].z = 0.0f;
+    randomValue = (f32)randomGetRange(0, 0xfffe);
+    commandCursor[1].layer = 1;
+    commandCursor[1].flags = 2;
+    commandCursor[1].tex = gDll85IndexPair01;
+    commandCursor[1].mode = 4;
+    commandCursor[1].x = 255.0f;
+    commandCursor[1].y = 0.0f;
+    commandCursor[1].z = 0.0f;
+    if (variant == DLL85_VARIANT_BURST) {
+        commandCursor[2].layer = 2;
+        commandCursor[2].flags = 0;
+        commandCursor[2].tex = NULL;
+        commandCursor[2].mode = 0x100;
+        commandCursor[2].x = 100.0f;
+        commandCursor[2].y = 0.0f;
+        commandCursor[2].z = 0.0f;
+        commandCursor += 3;
+    } else {
+        commandCursor[2].layer = 1;
+        commandCursor[2].flags = 0;
+        commandCursor[2].tex = NULL;
+        commandCursor[2].mode = 0x80;
+        commandCursor[2].x = randomValue;
+        commandCursor[2].y = 1000.0f;
+        commandCursor[2].z = 0.0f;
+        commandCursor += 3;
     }
-    p[0].layer = 0;
-    p[0].flags = 4;
-    p[0].tex = lbl_803DB8F4;
-    p[0].mode = 4;
-    p[0].x = 0.0f;
-    p[0].y = 0.0f;
-    p[0].z = 0.0f;
-    rv = (f32)randomGetRange(0, 0xfffe);
-    p[1].layer = 1;
-    p[1].flags = 2;
-    p[1].tex = lbl_803DB8F0;
-    p[1].mode = 4;
-    p[1].x = 255.0f;
-    p[1].y = 0.0f;
-    p[1].z = 0.0f;
-    if (variant == FX_VARIANT_BURST)
-    {
-        p[2].layer = 2;
-        p[2].flags = 0;
-        p[2].tex = NULL;
-        p[2].mode = 0x100;
-        p[2].x = 100.0f;
-        p[2].y = 0.0f;
-        p[2].z = 0.0f;
-        p += 3;
+    randomValue = (f32)randomGetRange(0, 0xfffe);
+    if (variant == DLL85_VARIANT_BURST) {
+        commandCursor->layer = 2;
+        commandCursor->flags = 0;
+        commandCursor->tex = NULL;
+        commandCursor->mode = 0x100;
+        commandCursor->x = 100.0f;
+        commandCursor->y = 0.0f;
+        commandCursor->z = 0.0f;
+        commandCursor++;
+    } else {
+        commandCursor->layer = 2;
+        commandCursor->flags = 0;
+        commandCursor->tex = NULL;
+        commandCursor->mode = 0x80;
+        commandCursor->x = randomValue;
+        commandCursor->y = 1000.0f;
+        commandCursor->z = 0.0f;
+        commandCursor++;
     }
-    else
-    {
-        p[2].layer = 1;
-        p[2].flags = 0;
-        p[2].tex = NULL;
-        p[2].mode = 0x80;
-        p[2].x = rv;
-        p[2].y = 1000.0f;
-        p[2].z = 0.0f;
-        p += 3;
+    if (variant == DLL85_VARIANT_BURST) {
+        commandCursor->layer = 3;
+        commandCursor->flags = 0;
+        commandCursor->tex = NULL;
+        commandCursor->mode = 0x100;
+        commandCursor->x = 100.0f;
+        commandCursor->y = 0.0f;
+        commandCursor->z = 0.0f;
+        commandCursor++;
+    } else {
+        commandCursor->layer = 3;
+        commandCursor->flags = 0;
+        commandCursor->tex = NULL;
+        commandCursor->mode = 0x80;
+        commandCursor->x = randomValue;
+        commandCursor->y = 1000.0f;
+        commandCursor->z = 0.0f;
+        commandCursor++;
     }
-    rv = (f32)randomGetRange(0, 0xfffe);
-    if (variant == FX_VARIANT_BURST)
-    {
-        p->layer = 2;
-        p->flags = 0;
-        p->tex = NULL;
-        p->mode = 0x100;
-        p->x = 100.0f;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
+    commandCursor[0].layer = 3;
+    commandCursor[0].flags = 2;
+    commandCursor[0].tex = gDll85IndexPair01;
+    commandCursor[0].mode = 4;
+    commandCursor[0].x = 100.0f;
+    commandCursor[0].y = 0.0f;
+    commandCursor[0].z = 0.0f;
+    commandCursor[1].layer = 3;
+    commandCursor[1].flags = 4;
+    commandCursor[1].tex = gDll85IndexSequence0123;
+    commandCursor[1].mode = 2;
+    commandCursor[1].x = 2.0f;
+    commandCursor[1].y = 0.1f;
+    commandCursor[1].z = 1.0f;
+    packet.modeByte = 0;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = variant;
+    packet.position[0] = 0.0f;
+    packet.position[1] = 0.0f;
+    packet.position[2] = 0.0f;
+    packet.velocity[0] = 0.0f;
+    packet.velocity[1] = 0.0f;
+    packet.velocity[2] = 0.0f;
+    packet.scale = 1.0f;
+    packet.drawGroupCount = 2;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 4;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0x20;
+    packet.commandCount = (GfxCmd*)((u8*)commandCursor + 0x30) - commands;
+    packet.sequenceParams[0] = *(s16*)&resourceData[offsetof(Dll85EffectResourceView, sequenceParams[0])];
+    packet.sequenceParams[1] = *(s16*)&resourceData[offsetof(Dll85EffectResourceView, sequenceParams[1])];
+    packet.sequenceParams[2] = *(s16*)&resourceData[offsetof(Dll85EffectResourceView, sequenceParams[2])];
+    packet.sequenceParams[3] = *(s16*)&resourceData[offsetof(Dll85EffectResourceView, sequenceParams[3])];
+    packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll85EffectResourceView, sequenceParams[4])];
+    packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll85EffectResourceView, sequenceParams[5])];
+    packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll85EffectResourceView, sequenceParams[6])];
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    if (variant == DLL85_VARIANT_BURST) {
+        packet.flags = 0x4004400;
+    } else {
+        packet.flags = 0x4006410;
     }
-    else
-    {
-        p->layer = 2;
-        p->flags = 0;
-        p->tex = NULL;
-        p->mode = 0x80;
-        p->x = rv;
-        p->y = 1000.0f;
-        p->z = 0.0f;
-        p++;
-    }
-    if (variant == FX_VARIANT_BURST)
-    {
-        p->layer = 3;
-        p->flags = 0;
-        p->tex = NULL;
-        p->mode = 0x100;
-        p->x = 100.0f;
-        p->y = 0.0f;
-        p->z = 0.0f;
-        p++;
-    }
-    else
-    {
-        p->layer = 3;
-        p->flags = 0;
-        p->tex = NULL;
-        p->mode = 0x80;
-        p->x = rv;
-        p->y = 1000.0f;
-        p->z = 0.0f;
-        p++;
-    }
-    p[0].layer = 3;
-    p[0].flags = 2;
-    p[0].tex = lbl_803DB8F0;
-    p[0].mode = 4;
-    p[0].x = 100.0f;
-    p[0].y = 0.0f;
-    p[0].z = 0.0f;
-    p[1].layer = 3;
-    p[1].flags = 4;
-    p[1].tex = lbl_803DB8F4;
-    p[1].mode = 2;
-    p[1].x = 2.0f;
-    p[1].y = 0.1f;
-    p[1].z = 1.0f;
-    buf.v58 = 0;
-    buf.ctx = sourceObj;
-    buf.v44 = variant;
-    buf.pos[0] = 0.0f;
-    buf.pos[1] = 0.0f;
-    buf.pos[2] = 0.0f;
-    buf.col[0] = 0.0f;
-    buf.col[1] = 0.0f;
-    buf.col[2] = 0.0f;
-    buf.scale = 1.0f;
-    buf.v40 = 2;
-    buf.v3c = 0;
-    buf.v59 = 4;
-    buf.v5a = 0;
-    buf.v5b = 0x20;
-    buf.count = (FbCmd*)((u8*)p + 0x30) - e;
-    buf.hw[0] = *(s16*)(base + 0x34);
-    buf.hw[1] = *(s16*)(base + 0x36);
-    buf.hw[2] = *(s16*)(base + 0x38);
-    buf.hw[3] = *(s16*)(base + 0x3a);
-    buf.hw[4] = *(s16*)(base + 0x3c);
-    buf.hw[5] = *(s16*)(base + 0x3e);
-    buf.hw[6] = *(s16*)(base + 0x40);
-    buf.cmds = (FbCmd*)((u8*)&buf + 0x60);
-    if (variant == FX_VARIANT_BURST)
-    {
-        buf.flags = 0x4004400;
-    }
-    else
-    {
-        buf.flags = 0x4006410;
-    }
-    buf.flags |= flags;
-    if ((buf.flags & 1) != 0)
-    {
-        if ((u32)buf.ctx != 0 && (u32)posSource != 0)
-        {
-            buf.pos[0] += ((GameObject*)buf.ctx)->anim.worldPosX + ((PartFxSpawnParams*)posSource)->posX;
-            buf.pos[1] += ((GameObject*)buf.ctx)->anim.worldPosY + ((PartFxSpawnParams*)posSource)->posY;
-            buf.pos[2] += ((GameObject*)buf.ctx)->anim.worldPosZ + ((PartFxSpawnParams*)posSource)->posZ;
-        }
-        else if ((u32)buf.ctx != 0)
-        {
-            buf.pos[0] += ((GameObject*)buf.ctx)->anim.worldPosX;
-            buf.pos[1] += ((GameObject*)buf.ctx)->anim.worldPosY;
-            buf.pos[2] += ((GameObject*)buf.ctx)->anim.worldPosZ;
-        }
-        else if ((u32)posSource != 0)
-        {
-            buf.pos[0] += ((PartFxSpawnParams*)posSource)->posX;
-            buf.pos[1] += ((PartFxSpawnParams*)posSource)->posY;
-            buf.pos[2] += ((PartFxSpawnParams*)posSource)->posZ;
+    packet.flags |= spawnFlags;
+    if ((packet.flags & 1) != 0) {
+        if (packet.sourceObj != NULL && spawnParams != NULL) {
+            packet.position[0] += packet.sourceObj->anim.worldPosX + spawnParams->posX;
+            packet.position[1] += packet.sourceObj->anim.worldPosY + spawnParams->posY;
+            packet.position[2] += packet.sourceObj->anim.worldPosZ + spawnParams->posZ;
+        } else if (packet.sourceObj != NULL) {
+            packet.position[0] += packet.sourceObj->anim.worldPosX;
+            packet.position[1] += packet.sourceObj->anim.worldPosY;
+            packet.position[2] += packet.sourceObj->anim.worldPosZ;
+        } else if (spawnParams != NULL) {
+            packet.position[0] += spawnParams->posX;
+            packet.position[1] += spawnParams->posY;
+            packet.position[2] += spawnParams->posZ;
         }
     }
     (*gModgfxInterface)
-        ->spawnEffect(&buf, 0, 4, (u8*)(int)gFoodbagEffectTemplate, 2, base + 0x28,
-                      tableHw[variant * 2 + randomGetRange(0, 1) + 0x22], 0);
+        ->spawnEffect(&packet, 0, 4, (u8*)(int)gDll85EffectResourceData, 2,
+                      &resourceData[offsetof(Dll85EffectResourceView, triangles)],
+                      resourceHalfwords[variant * 2 + randomGetRange(0, 1) +
+                                        offsetof(Dll85EffectResourceView, textureAssetIds) / sizeof(s16)],
+                      0);
 }
 
-void dll_85_func01_nop(void)
-{
+void dll_85_release(void) {
 }
 
-void dll_85_func00_nop(void)
-{
+void dll_85_initialise(void) {
 }
 
-u8 gFoodbagEffectTemplate[88] = {
+u8 gDll85EffectResourceData[sizeof(Dll85EffectResourceView)] = {
     0, 30, 0, 0,   0, 0, 0, 0, 0, 0,  255, 226, 0, 0,   0, 0,   0, 15,  0, 0, 255, 226, 3, 232, 0, 0,   0, 15, 0, 15,
     0, 30, 3, 232, 0, 0, 0, 0, 0, 15, 0,   0,   0, 1,   0, 2,   0, 0,   0, 2, 0,   3,   0, 0,   0, 10,  0, 15, 0, 80,
     0, 0,  0, 0,   0, 0, 0, 0, 5, 39, 5,   40,  0, 223, 0, 222, 0, 223, 2, 0, 1,   251, 1, 251, 0, 223, 0, 222};
 
-/* DLL entry and resource tables. */
-ObjectDescriptor4 dll_85_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)dll_85_func00_nop,
-    (ObjectDescriptorCallback)dll_85_func01_nop,
-    0,
-    (ObjectDescriptorCallback)dll_85_func03,
+Dll85ResourceDescriptor gDll85ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_85_initialise, dll_85_release, NULL, dll_85_spawnEffect,
 };

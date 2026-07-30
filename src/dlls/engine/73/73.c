@@ -1,64 +1,67 @@
 /*
  * DLL 73 / 0x49 - combat camera mode.
  */
-#include "main/camera_interface.h"
-#include "main/object_transform.h"
-#include "main/resource.h"
-#include "dolphin/mtx/vec.h"
-#include "main/camera.h"
-#include "main/dll/CAM/camcombat_state.h"
-#include "main/dll/DR/dr_types.h"
-#include "main/dll/CAM/cutCam.h"
+#include "main/dll/dll_0049_cameramodecombat.h"
+
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/frame_timing.h"
+#include "dolphin/mtx/vec.h"
 #include "dolphin/pad.h"
+#include "main/camera.h"
+#include "main/camera_interface.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
+#include "main/dll/CAM/dll_0001_camcontrol.h"
+#include "main/dll/DR/dr_types.h"
+#include "main/dll/player_api.h"
+#include "main/frame_timing.h"
+#include "main/mm.h"
+#include "main/object_transform.h"
+#include "main/pad.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/vecmath.h"
 
-s32 gCamCombatPrevYawDiff;
-CameraModeCombatState* gCamCombatState;
+enum CameraModeCombatRomDefNo {
+    CAMERA_MODE_COMBAT_DIM_BOSS_ROM_DEF_NO = 0x200,
+};
 
-#define CAMCOMBAT_SEQID_DIM_BOSS 0x200 /* retail "DIM_Boss" (DLL 0x1E0) */
-#define CAMERAMODECOMBAT_CAMACTION_DEFAULT 0x42
+s32 gCameraModeCombatPreviousYawDelta;
+CameraModeCombatState* gCameraModeCombatState;
 
-void camCombatIntroEvalPos(CameraObject* camera, float* outX, float* outY, float* outZ, f32* targetY)
-{
+void CameraModeCombat_evaluateTargetPosition(CameraObject* camera, f32* outX, f32* outY, f32* outZ, f32* targetY) {
     ObjHitVolumeRuntimeTransform* hitVolumes;
     GameObject* target;
     u8 prevIdx;
     GameObject* focus;
     CameraModeCombatState* state;
-    float lim;
-    float t;
+    f32 lim;
+    f32 t;
 
     target = (GameObject*)camera->targetObj;
     focus = (GameObject*)camera->anim.targetObj;
     hitVolumes = target->anim.hitVolumeTransforms;
-    if ((u32)target->hitVolumeIndex != (prevIdx = (state = gCamCombatState)->pathBlendTargetIndex))
-    {
-        state->pathBlendStartIndex = prevIdx;
-        gCamCombatState->pathBlendWeight = 1.0f;
+    if ((u32)target->hitVolumeIndex != (prevIdx = (state = gCameraModeCombatState)->hitVolumeBlendTargetIndex)) {
+        state->hitVolumeBlendStartIndex = prevIdx;
+        gCameraModeCombatState->hitVolumeBlendWeight = 1.0f;
     }
-    t = gCamCombatState->pathBlendWeight;
+    t = gCameraModeCombatState->hitVolumeBlendWeight;
     lim = 0.0f;
-    if (t > lim)
-    {
-        gCamCombatState->pathBlendWeight = t - 0.02f * timeDelta;
-        t = gCamCombatState->pathBlendWeight;
-        if (gCamCombatState->pathBlendWeight < lim)
-        {
-            gCamCombatState->pathBlendWeight = lim;
-            gCamCombatState->pathBlendStartIndex = target->hitVolumeIndex;
+    if (t > lim) {
+        gCameraModeCombatState->hitVolumeBlendWeight = t - 0.02f * timeDelta;
+        t = gCameraModeCombatState->hitVolumeBlendWeight;
+        if (gCameraModeCombatState->hitVolumeBlendWeight < lim) {
+            gCameraModeCombatState->hitVolumeBlendWeight = lim;
+            gCameraModeCombatState->hitVolumeBlendStartIndex = target->hitVolumeIndex;
         }
         {
-            u8 ci = gCamCombatState->pathBlendStartIndex;
+            u8 ci = gCameraModeCombatState->hitVolumeBlendStartIndex;
             float bx;
             float by;
             float bz;
             float dx = hitVolumes[ci].centerX - (bx = hitVolumes[target->hitVolumeIndex].centerX);
             float dy = hitVolumes[ci].centerY - (by = hitVolumes[target->hitVolumeIndex].centerY);
             float dz = hitVolumes[ci].centerZ - (bz = hitVolumes[target->hitVolumeIndex].centerZ);
-            dx *= gCamCombatState->pathBlendWeight;
-            dy *= gCamCombatState->pathBlendWeight;
-            dz *= gCamCombatState->pathBlendWeight;
+            dx *= gCameraModeCombatState->hitVolumeBlendWeight;
+            dy *= gCameraModeCombatState->hitVolumeBlendWeight;
+            dz *= gCameraModeCombatState->hitVolumeBlendWeight;
             dx += bx;
             dy += by;
             dz += bz;
@@ -66,40 +69,33 @@ void camCombatIntroEvalPos(CameraObject* camera, float* outX, float* outY, float
             *outY = dy - *targetY;
             *outZ = dz - focus->anim.worldPosZ;
         }
-    }
-    else
-    {
+    } else {
         *outX = hitVolumes[target->hitVolumeIndex].centerX - focus->anim.worldPosX;
         *outY = hitVolumes[target->hitVolumeIndex].centerY - *targetY;
         *outZ = hitVolumes[target->hitVolumeIndex].centerZ - focus->anim.worldPosZ;
     }
-    gCamCombatState->pathBlendTargetIndex = target->hitVolumeIndex;
+    gCameraModeCombatState->hitVolumeBlendTargetIndex = target->hitVolumeIndex;
 }
 
-void CameraModeCombat_copyToCurrent(void)
-{
+void CameraModeCombat_copyToCurrent(void) {
 }
 
-void CameraModeCombat_free(CameraObject* camera)
-{
-    if (camera->targetObj != NULL)
-    {
+void CameraModeCombat_free(CameraObject* camera) {
+    if (camera->targetObj != NULL) {
         (*gCameraInterface)->setTarget(0);
     }
-    mm_free(gCamCombatState);
-    gCamCombatState = 0;
+    mm_free(gCameraModeCombatState);
+    gCameraModeCombatState = NULL;
     Rcp_DisableBlurFilter();
     ((BitFlags8*)&camera->smoothingFlags)->b0 = 0;
 }
 
-static void camCombatTraceMove(f32* prevPos, CameraObject* camera, u8* trace)
-{
-    camcontrol_traceMove(prevPos, &camera->anim.worldPosX, &camera->anim.worldPosX, trace, 3, 1, 1, 4.0f);
+static void CameraModeCombat_traceMove(f32* prevPos, CameraObject* camera, u8* traceWork) {
+    camcontrol_traceMove(prevPos, &camera->anim.worldPosX, &camera->anim.worldPosX, traceWork, 3, 1, 1, 4.0f);
 }
 
-void CameraModeCombat_update(CameraObject* cam)
-{
-    Vec vec;
+void CameraModeCombat_update(CameraObject* camera) {
+    Vec movement;
     f32 prevZ;
     f32 prevY;
     f32 prevX;
@@ -107,10 +103,10 @@ void CameraModeCombat_update(CameraObject* cam)
     f32 ty;
     f32 dx;
     f32 dz;
-    Vec n;
-    u8 trace[116];
-    Camera* view = Camera_GetCurrent();
-    GameObject* tgt;
+    Vec desiredPosition;
+    u8 traceWork[116];
+    Camera* currentView = Camera_GetCurrent();
+    GameObject* target;
     ObjHitVolumeRuntimeTransform* hitVolumes;
     GameObject* focus;
     f32 dist;
@@ -131,301 +127,225 @@ void CameraModeCombat_update(CameraObject* cam)
     int ang;
     int diff;
     u32 binAngleDelta;
-    short classId;
+    s16 classId;
 
-    if (gCamCombatState->invalidTarget != 0)
-    {
-        if (cam->targetObj != NULL)
-        {
-            if (((GameObject*)cam->targetObj)->anim.resetHitboxFlags & 0x40)
-            {
+    if (gCameraModeCombatState->invalidTarget != 0) {
+        if (camera->targetObj != NULL) {
+            if (((GameObject*)camera->targetObj)->anim.resetHitboxFlags & 0x40) {
                 return;
             }
-            if (cam->targetFlags & 2)
-            {
+            if (camera->targetFlags & 2) {
                 return;
             }
             (*gCameraInterface)->setTarget(0);
         }
-        (*gCameraInterface)->setMode(CAMERAMODECOMBAT_CAMACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
-    }
-    else
-    {
-        focus = (GameObject*)cam->anim.targetObj;
-        if (focus->anim.classId == 1 && objAnimFn_80296328(focus) == 0)
-        {
-            if (cam->targetObj != NULL)
-            {
-                if (((GameObject*)cam->targetObj)->anim.resetHitboxFlags & 0x40)
-                {
+        (*gCameraInterface)->setMode(CAMCONTROL_ACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
+    } else {
+        focus = (GameObject*)camera->anim.targetObj;
+        if (focus->anim.classId == 1 && objAnimFn_80296328(focus) == 0) {
+            if (camera->targetObj != NULL) {
+                if (((GameObject*)camera->targetObj)->anim.resetHitboxFlags & 0x40) {
                     return;
                 }
-                if (cam->targetFlags & 2)
-                {
+                if (camera->targetFlags & 2) {
                     return;
                 }
                 (*gCameraInterface)->setTarget(0);
             }
-            (*gCameraInterface)->setMode(CAMERAMODECOMBAT_CAMACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
-        }
-        else
-        {
-            tgt = (GameObject*)cam->targetObj;
-            if (tgt == NULL || (tgt->objectFlags & OBJECT_OBJFLAG_FREED) || (tgt->anim.resetHitboxFlags & 0x28))
-            {
-                if (tgt != NULL)
-                {
-                    if (tgt->anim.resetHitboxFlags & 0x40)
-                    {
+            (*gCameraInterface)->setMode(CAMCONTROL_ACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
+        } else {
+            target = (GameObject*)camera->targetObj;
+            if (target == NULL || (target->objectFlags & OBJECT_OBJFLAG_FREED) ||
+                (target->anim.resetHitboxFlags & 0x28)) {
+                if (target != NULL) {
+                    if (target->anim.resetHitboxFlags & 0x40) {
                         return;
                     }
-                    if (cam->targetFlags & 2)
-                    {
+                    if (camera->targetFlags & 2) {
                         return;
                     }
                     (*gCameraInterface)->setTarget(0);
                 }
-                (*gCameraInterface)->setMode(CAMERAMODECOMBAT_CAMACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
-            }
-            else
-            {
-                hitVolumes = tgt->anim.hitVolumeTransforms;
-                if (hitVolumes != NULL)
-                {
-                    range = (f32)(s32)((u32)tgt->anim.modelInstance->hitVolumes[0].bounds[1] << 2);
-                    if (((u16)getButtonsJustPressed(0) & PAD_BUTTON_B) && fn_8029630C(focus) != 0)
-                    {
-                        if (cam->targetObj != NULL)
-                        {
-                            if (((GameObject*)cam->targetObj)->anim.resetHitboxFlags & 0x40)
-                            {
+                (*gCameraInterface)->setMode(CAMCONTROL_ACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
+            } else {
+                hitVolumes = target->anim.hitVolumeTransforms;
+                if (hitVolumes != NULL) {
+                    range = (f32)(s32)((u32)target->anim.modelInstance->hitVolumes[0].bounds[1] << 2);
+                    if (((u16)getButtonsJustPressed(0) & PAD_BUTTON_B) && playerIsNotAttacking(focus) != 0) {
+                        if (camera->targetObj != NULL) {
+                            if (((GameObject*)camera->targetObj)->anim.resetHitboxFlags & 0x40) {
                                 return;
                             }
-                            if (cam->targetFlags & 2)
-                            {
+                            if (camera->targetFlags & 2) {
                                 return;
                             }
                             (*gCameraInterface)->setTarget(0);
                         }
-                        (*gCameraInterface)->setMode(CAMERAMODECOMBAT_CAMACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
-                    }
-                    else
-                    {
+                        (*gCameraInterface)->setMode(CAMCONTROL_ACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
+                    } else {
                         ty = 20.0f + focus->anim.worldPosY;
-                        classId = tgt->anim.classId;
-                        if (classId == 0x1c || classId == 0x6d || classId == 0x2a)
-                        {
-                            if (tgt->anim.romDefNo == CAMCOMBAT_SEQID_DIM_BOSS)
-                            {
+                        classId = target->anim.classId;
+                        if (classId == 0x1c || classId == 0x6d || classId == 0x2a) {
+                            if (target->anim.romDefNo == CAMERA_MODE_COMBAT_DIM_BOSS_ROM_DEF_NO) {
                                 ty += 20.0f;
                             }
-                            if (tgt->anim.modelInstance->hitVolumeCount > 1)
-                            {
-                                camCombatIntroEvalPos((CameraObject*)cam, &dx, &dy, &dz, &ty);
+                            if (target->anim.modelInstance->hitVolumeCount > 1) {
+                                CameraModeCombat_evaluateTargetPosition(camera, &dx, &dy, &dz, &ty);
+                            } else {
+                                dx = hitVolumes[target->hitVolumeIndex].centerX - focus->anim.worldPosX;
+                                dy = hitVolumes[target->hitVolumeIndex].centerY - ty;
+                                dz = hitVolumes[target->hitVolumeIndex].centerZ - focus->anim.worldPosZ;
                             }
-                            else
-                            {
-                                dx = hitVolumes[tgt->hitVolumeIndex].centerX - focus->anim.worldPosX;
-                                dy = hitVolumes[tgt->hitVolumeIndex].centerY - ty;
-                                dz = hitVolumes[tgt->hitVolumeIndex].centerZ - focus->anim.worldPosZ;
-                            }
-                        }
-                        else
-                        {
+                        } else {
                             ty = 20.0f + focus->anim.worldPosY;
-                            dx = hitVolumes[tgt->hitVolumeIndex].centerX - focus->anim.worldPosX;
-                            dy = hitVolumes[tgt->hitVolumeIndex].centerY - ty;
-                            dz = hitVolumes[tgt->hitVolumeIndex].centerZ - focus->anim.worldPosZ;
+                            dx = hitVolumes[target->hitVolumeIndex].centerX - focus->anim.worldPosX;
+                            dy = hitVolumes[target->hitVolumeIndex].centerY - ty;
+                            dz = hitVolumes[target->hitVolumeIndex].centerZ - focus->anim.worldPosZ;
                         }
                         fa = dx * dx;
                         fb = dz * dz;
                         dist = sqrtf(fa + fb);
-                        cam->letterboxTargetOffset = 0x30;
-                        cam->letterboxStep = 1;
-                        if (dist > range)
-                        {
-                            if (cam->targetObj != NULL)
-                            {
-                                if (((GameObject*)cam->targetObj)->anim.resetHitboxFlags & 0x40)
-                                {
+                        camera->letterboxTargetOffset = 0x30;
+                        camera->letterboxStep = 1;
+                        if (dist > range) {
+                            if (camera->targetObj != NULL) {
+                                if (((GameObject*)camera->targetObj)->anim.resetHitboxFlags & 0x40) {
                                     return;
                                 }
-                                if (cam->targetFlags & 2)
-                                {
+                                if (camera->targetFlags & 2) {
                                     return;
                                 }
                                 (*gCameraInterface)->setTarget(0);
                             }
-                            (*gCameraInterface)->setMode(CAMERAMODECOMBAT_CAMACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
-                        }
-                        else
-                        {
+                            (*gCameraInterface)->setMode(CAMCONTROL_ACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
+                        } else {
                             cameraGetPrevPos2(focus, &prevX, &prevY, &prevZ);
                             px = 0.35f * dx + focus->anim.worldPosX;
                             py = 5.0f + ty;
                             pz = 0.35f * dz + focus->anim.worldPosZ;
                             ang = getAngle(dx, dz);
                             binAngleDelta = (ang & 0xffff) + 0x8000;
-                            diff = (int)cam->anim.rotX - ((0x8000 - binAngleDelta) & 0xffff);
-                            if (diff > 0x8000)
-                            {
+                            diff = (int)camera->anim.rotX - ((0x8000 - binAngleDelta) & 0xffff);
+                            if (diff > 0x8000) {
                                 diff = diff - 0xffff;
                             }
-                            if (diff < -0x8000)
-                            {
+                            if (diff < -0x8000) {
                                 diff = diff + 0xffff;
                             }
-                            if (diff > 9000)
-                            {
+                            if (diff > 9000) {
                                 step = interpolate((f32)(s32)(diff - 9000), 1.0f / 12.0f, timeDelta);
-                                cam->anim.rotX = (s16)((f32)(s32)cam->anim.rotX - step);
-                            }
-                            else if (diff < -9000)
-                            {
+                                camera->anim.rotX = (s16)((f32)(s32)camera->anim.rotX - step);
+                            } else if (diff < -9000) {
                                 step = interpolate((f32)(s32)(diff + 9000), 1.0f / 12.0f, timeDelta);
-                                cam->anim.rotX = (s16)((f32)(s32)cam->anim.rotX - step);
+                                camera->anim.rotX = (s16)((f32)(s32)camera->anim.rotX - step);
                             }
-                            if (diff < 3000 && diff > 0)
-                            {
-                                if (gCamCombatPrevYawDiff < 3000 && diff < 1000 && gCamCombatPrevYawDiff > diff)
-                                {
+                            if (diff < 3000 && diff > 0) {
+                                if (gCameraModeCombatPreviousYawDelta < 3000 && diff < 1000 &&
+                                    gCameraModeCombatPreviousYawDelta > diff) {
                                     step = interpolate((f32)(s32)(-diff - 3000), 0.0078125f, timeDelta);
-                                    cam->anim.rotX = (s16)((f32)(s32)cam->anim.rotX + step);
-                                }
-                                else
-                                {
+                                    camera->anim.rotX = (s16)((f32)(s32)camera->anim.rotX + step);
+                                } else {
                                     step = interpolate((f32)(s32)(3000 - diff), 0.0078125f, timeDelta);
-                                    cam->anim.rotX = (s16)((f32)(s32)cam->anim.rotX + step);
+                                    camera->anim.rotX = (s16)((f32)(s32)camera->anim.rotX + step);
                                 }
-                            }
-                            else if (diff > -3000 && diff < 0)
-                            {
-                                if (gCamCombatPrevYawDiff > -3000 && diff > -1000 && gCamCombatPrevYawDiff < diff)
-                                {
+                            } else if (diff > -3000 && diff < 0) {
+                                if (gCameraModeCombatPreviousYawDelta > -3000 && diff > -1000 &&
+                                    gCameraModeCombatPreviousYawDelta < diff) {
                                     step = interpolate((f32)(s32)(3000 - diff), 0.0078125f, timeDelta);
-                                    cam->anim.rotX = (s16)((f32)(s32)cam->anim.rotX + step);
-                                }
-                                else
-                                {
+                                    camera->anim.rotX = (s16)((f32)(s32)camera->anim.rotX + step);
+                                } else {
                                     step = interpolate((f32)(s32)(-diff - 3000), 0.0078125f, timeDelta);
-                                    cam->anim.rotX = (s16)((f32)(s32)cam->anim.rotX + step);
+                                    camera->anim.rotX = (s16)((f32)(s32)camera->anim.rotX + step);
                                 }
                             }
-                            gCamCombatPrevYawDiff = diff;
-                            if (diff < 0)
-                            {
+                            gCameraModeCombatPreviousYawDelta = diff;
+                            if (diff < 0) {
                                 diff = -diff;
                             }
-                            if (diff > 9000)
-                            {
+                            if (diff > 9000) {
                                 diff = 9000;
                             }
                             step = (f32)(s32)(9000 - diff);
                             zoom = step / 9000.0f;
-                            step = interpolate(35.0f - gCamCombatState->heightOffset, 0.04f, timeDelta);
-                            gCamCombatState->heightOffset = gCamCombatState->heightOffset + step;
+                            step = interpolate(35.0f - gCameraModeCombatState->heightOffset, 0.04f, timeDelta);
+                            gCameraModeCombatState->heightOffset = gCameraModeCombatState->heightOffset + step;
                             fb = 1.0f - zoom;
                             fb = 0.8f + fb;
-                            step = interpolate(
-                                fb / 1.8f - gCamCombatState->zoomOffset,
-                                0.1f, timeDelta);
-                            gCamCombatState->zoomOffset = gCamCombatState->zoomOffset + step;
-                            sinAngle = mathSinf((3.1415927f * (f32)(s32)cam->anim.rotX) / 32768.0f);
-                            cosAngle = mathCosf((3.1415927f * (f32)(s32)cam->anim.rotX) / 32768.0f);
-                            t = gCamCombatState->followDistance * sinAngle;
-                            n.x = px + t;
-                            t = gCamCombatState->followDistance * cosAngle;
-                            n.z = pz - t;
+                            step = interpolate(fb / 1.8f - gCameraModeCombatState->zoomOffset, 0.1f, timeDelta);
+                            gCameraModeCombatState->zoomOffset = gCameraModeCombatState->zoomOffset + step;
+                            sinAngle = mathSinf((3.1415927f * (f32)(s32)camera->anim.rotX) / 32768.0f);
+                            cosAngle = mathCosf((3.1415927f * (f32)(s32)camera->anim.rotX) / 32768.0f);
+                            t = gCameraModeCombatState->followDistance * sinAngle;
+                            desiredPosition.x = px + t;
+                            t = gCameraModeCombatState->followDistance * cosAngle;
+                            desiredPosition.z = pz - t;
                             dy *= 0.6f;
                             dy = ty - dy;
-                            dy = dy + gCamCombatState->heightOffset;
-                            step = interpolate(cam->anim.worldPosY - dy, 0.05f, timeDelta);
-                            n.y = cam->anim.worldPosY - step;
-                            PSVECSubtract(&n, &cam->anim.worldPos, &vec);
-                            mag = PSVECMag(&vec);
-                            if (mag > 0.0f)
-                            {
-                                PSVECNormalize(&vec, &vec);
+                            dy = dy + gCameraModeCombatState->heightOffset;
+                            step = interpolate(camera->anim.worldPosY - dy, 0.05f, timeDelta);
+                            desiredPosition.y = camera->anim.worldPosY - step;
+                            PSVECSubtract(&desiredPosition, &camera->anim.worldPos, &movement);
+                            mag = PSVECMag(&movement);
+                            if (mag > 0.0f) {
+                                PSVECNormalize(&movement, &movement);
                             }
-                            if (cam->blendProgress <= 0.0f)
-                            {
+                            if (camera->blendProgress <= 0.0f) {
                                 fa = focus->anim.previousWorldPosX - focus->anim.worldPosX;
                                 fb = focus->anim.previousWorldPosZ - focus->anim.worldPosZ;
                                 speed = sqrtf(fa * fa + fb * fb);
                                 lim = speed * (3.0f * timeDelta);
-                                if ((f64)lim < 0.5)
-                                {
+                                if ((f64)lim < 0.5) {
                                     lim = 0.5f;
                                 }
-                                if (mag < 0.0f)
-                                {
+                                if (mag < 0.0f) {
                                     mag = 0.0f;
-                                }
-                                else if (mag > lim)
-                                {
+                                } else if (mag > lim) {
                                     mag = lim;
                                 }
                             }
-                            PSVECScale(&vec, &vec,
-                                       (mag < 0.0f)
-                                           ? 0.0f
-                                           : ((mag > 20.0f) ? 20.0f : mag));
-                            PSVECAdd(&cam->anim.worldPos, &vec, &cam->anim.worldPos);
-                            camCombatTraceMove(&prevX, (CameraObject*)cam, trace);
+                            PSVECScale(&movement, &movement, (mag < 0.0f) ? 0.0f : ((mag > 20.0f) ? 20.0f : mag));
+                            PSVECAdd(&camera->anim.worldPos, &movement, &camera->anim.worldPos);
+                            CameraModeCombat_traceMove(&prevX, camera, traceWork);
                             t = 0.1f * dz + focus->anim.worldPosZ;
-                            fb = view->x - (0.1f * dx + focus->anim.worldPosX);
-                            dy = view->y - py;
-                            fa = view->z - t;
+                            fb = currentView->x - (0.1f * dx + focus->anim.worldPosX);
+                            dy = currentView->y - py;
+                            fa = currentView->z - t;
                             t = sqrtf(fb * fb + fa * fa);
                             ang = getAngle(dy, t) & 0xffff;
-                            binAngleDelta = ang - ((int)cam->anim.rotY & 0xffffU);
-                            if ((int)binAngleDelta > 0x8000)
-                            {
+                            binAngleDelta = ang - ((int)camera->anim.rotY & 0xffffU);
+                            if ((int)binAngleDelta > 0x8000) {
                                 binAngleDelta = binAngleDelta - 0xffff;
                             }
-                            if ((int)binAngleDelta < -0x8000)
-                            {
+                            if ((int)binAngleDelta < -0x8000) {
                                 binAngleDelta = binAngleDelta + 0xffff;
                             }
                             step = interpolate((f32)(s32)binAngleDelta, 0.125f, timeDelta);
-                            cam->anim.rotY = (s16)
-                            ((f32)(s32)
-                            cam->anim.rotY + step
-                            )
-                            ;
+                            camera->anim.rotY = (s16)((f32)(s32)camera->anim.rotY + step);
                             fa = 10.0f + dist;
-                            if (fa < 70.0f)
-                            {
+                            if (fa < 70.0f) {
                                 fa = 70.0f;
                             }
-                            if (fa > 150.0f)
-                            {
+                            if (fa > 150.0f) {
                                 fa = 150.0f;
                             }
-                            fa = fa - gCamCombatState->followDistance;
+                            fa = fa - gCameraModeCombatState->followDistance;
                             step = powfBitEstimate(0.04f, timeDelta);
                             fa = fa * step;
-                            if (fa > 5.0f * timeDelta)
-                            {
+                            if (fa > 5.0f * timeDelta) {
                                 fa = 5.0f * timeDelta;
-                            }
-                            else if (fa < -5.0f * timeDelta)
-                            {
+                            } else if (fa < -5.0f * timeDelta) {
                                 fa = -5.0f * timeDelta;
                             }
-                            gCamCombatState->followDistance = gCamCombatState->followDistance + fa;
-                            turnOnBlurFilter(tgt->anim.worldPosX, tgt->anim.worldPosY, tgt->anim.worldPosZ, 1, 0);
-                            if (0.0f == cam->blendProgress)
-                            {
-                                ((struct { u8 b7 : 1; } *)&cam->smoothingFlags)->b7 = 1;
+                            gCameraModeCombatState->followDistance = gCameraModeCombatState->followDistance + fa;
+                            turnOnBlurFilter(target->anim.worldPosX, target->anim.worldPosY, target->anim.worldPosZ, 1,
+                                             0);
+                            if (0.0f == camera->blendProgress) {
+                                ((BitFlags8*)&camera->smoothingFlags)->b0 = 1;
                             }
-                            Obj_TransformWorldPointToLocal(cam->anim.worldPosX,
-                                                           cam->anim.worldPosY,
-                                                           cam->anim.worldPosZ,
-                                                           &cam->anim.localPosX,
-                                                           &cam->anim.localPosY,
-                                                           &cam->anim.localPosZ,
-                                                           (GameObject*)cam->anim.parentAddress);
+                            Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY,
+                                                           camera->anim.worldPosZ, &camera->anim.localPosX,
+                                                           &camera->anim.localPosY, &camera->anim.localPosZ,
+                                                           (GameObject*)camera->anim.parentAddress);
                         }
                     }
                 }
@@ -434,84 +354,66 @@ void CameraModeCombat_update(CameraObject* cam)
     }
 }
 
-void CameraModeCombat_init(CameraObject* camera, u32 unused, GameObject** targetPtr)
-{
-    float dx;
-    float dz;
+void CameraModeCombat_init(CameraObject* camera, u32 unused, GameObject** targetPtr) {
+    f32 dx;
+    f32 dz;
     ObjHitVolumeRuntimeTransform* hitVolume;
     GameObject* target;
     GameObject* focus;
 
     camera->targetObj = *targetPtr;
     focus = (GameObject*)camera->anim.targetObj;
-    if (gCamCombatState == (CameraModeCombatState*)0x0)
-    {
-        gCamCombatState = (CameraModeCombatState*)mmAlloc(0x1c, 0xf, 0);
+    if (gCameraModeCombatState == NULL) {
+        gCameraModeCombatState = (CameraModeCombatState*)mmAlloc(sizeof(CameraModeCombatState), 0xf, 0);
     }
     dx = 0.0f;
-    gCamCombatState->heightOffset = 0.0f;
-    gCamCombatState->zoomOffset = 1.0f;
-    gCamCombatState->invalidTarget = 0;
-    gCamCombatState->unk11 = 0;
-    gCamCombatState->pathBlendStartIndex = 1;
-    gCamCombatState->pathBlendTargetIndex = 1;
-    gCamCombatState->pathBlendWeight = dx;
-    if (focus->anim.classId != 1)
-    {
-        gCamCombatState->invalidTarget = 1;
-    }
-    else
-    {
+    gCameraModeCombatState->heightOffset = 0.0f;
+    gCameraModeCombatState->zoomOffset = 1.0f;
+    gCameraModeCombatState->invalidTarget = 0;
+    gCameraModeCombatState->unk11 = 0;
+    gCameraModeCombatState->hitVolumeBlendStartIndex = 1;
+    gCameraModeCombatState->hitVolumeBlendTargetIndex = 1;
+    gCameraModeCombatState->hitVolumeBlendWeight = dx;
+    if (focus->anim.classId != 1) {
+        gCameraModeCombatState->invalidTarget = 1;
+    } else {
         target = (GameObject*)camera->targetObj;
-        if (target == NULL)
-        {
-            gCamCombatState->invalidTarget = 1;
-        }
-        else
-        {
-            if (target->anim.hitVolumeTransforms == NULL)
-            {
+        if (target == NULL) {
+            gCameraModeCombatState->invalidTarget = 1;
+        } else {
+            if (target->anim.hitVolumeTransforms == NULL) {
                 dx = focus->anim.worldPosX - target->anim.worldPosX;
                 dz = focus->anim.worldPosZ - target->anim.worldPosZ;
-            }
-            else
-            {
+            } else {
                 hitVolume = &target->anim.hitVolumeTransforms[target->hitVolumeIndex];
                 dx = hitVolume->centerX - focus->anim.worldPosX;
                 dz = hitVolume->centerZ - focus->anim.worldPosZ;
             }
-            if (target->anim.classId != 0x6d)
-            {
-                gCamCombatState->followDistance = sqrtf(dx * dx + dz * dz);
+            if (target->anim.classId != 0x6d) {
+                gCameraModeCombatState->followDistance = sqrtf(dx * dx + dz * dz);
+            } else {
+                gCameraModeCombatState->followDistance = 200.0f;
             }
-            else
-            {
-                gCamCombatState->followDistance = 200.0f;
-            }
-            gCamCombatState->unk10 = 0;
+            gCameraModeCombatState->unk10 = 0;
         }
     }
     return;
 }
 
-void CameraModeCombat_release(void)
-{
+void CameraModeCombat_release(void) {
 }
 
-void CameraModeCombat_initialise(void)
-{
+void CameraModeCombat_initialise(void) {
 }
 
-
-ResourceDescriptorCallbacks8 gCameraModeCombatDescriptor = {{0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00060000},
-                       {(ResourceDescriptorCallback)CameraModeCombat_initialise,
-                        (ResourceDescriptorCallback)CameraModeCombat_release,
-                        0x00000000,
-                        (ResourceDescriptorCallback)CameraModeCombat_init,
-                        (ResourceDescriptorCallback)CameraModeCombat_update,
-                        (ResourceDescriptorCallback)CameraModeCombat_free,
-                        (ResourceDescriptorCallback)CameraModeCombat_copyToCurrent,
-                        0x00000000}};
+CameraModeCombatDescriptor gCameraModeCombatDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    CameraModeCombat_initialise,
+    CameraModeCombat_release,
+    NULL,
+    CameraModeCombat_init,
+    CameraModeCombat_update,
+    CameraModeCombat_free,
+    CameraModeCombat_copyToCurrent,
+    NULL,
+};

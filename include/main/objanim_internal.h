@@ -628,7 +628,7 @@ STATIC_ASSERT(offsetof(ObjDef, renderFlags) == 0x5F);
  *  - 0x800 DEFERRED_RENDER: routes the object down the same deferred-render
  *    path as renderFlags OBJDEF_RENDERFLAG_DEFERRED_RENDER (0x10). Every read
  *    site OR's the two together: object.c selects the deferred render callback
- *    objCallback_80074d04 when set; lightmap.c queues the object into the
+ *    objCausticReflectionRenderCb when set; lightmap.c queues the object into the
  *    deferred object list and picks the extended (0x1f) shadow render mode.
  *    Consensus across object.c and lightmap.c, each read paired
  *    with the named renderFlags 0x10 bit to the same behavior.

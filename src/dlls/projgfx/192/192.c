@@ -5,28 +5,28 @@
  * supported and returns the unsupported sentinel (-1); the DLL's
  * release/initialise lifecycle hooks are empty stubs.
  */
-#include "dolphin/os/OSReport.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00C0_projcore2.h"
+#include "dolphin/os/OSReport.h"
 
-#define PROJECTILE_UNSUPPORTED_RETURN -1
+extern char sProjcore2DoNoLongerSupported[];
 
-int projcore2_doUnsupported(void)
-{
+int projcore2_doUnsupported(void) {
     OSReport(sProjcore2DoNoLongerSupported);
-    return PROJECTILE_UNSUPPORTED_RETURN;
+    return -1;
 }
 
-void projcore2_release(void)
-{
+void projcore2_release(void) {
 }
 
-void projcore2_initialise(void)
-{
+void projcore2_initialise(void) {
 }
 
-DllDescriptorTable lbl_803199B0 = {{(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00030000,
-                                    projcore2_initialise, projcore2_release, (void*)0x00000000,
-                                    projcore2_doUnsupported}};
+Projcore2ResourceDescriptor gProjcore2ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projcore2_initialise,
+    projcore2_release,
+    NULL,
+    projcore2_doUnsupported,
+};
 
 char sProjcore2DoNoLongerSupported[] = "<projcore2 Do>No Longer supported \n";

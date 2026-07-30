@@ -10,7 +10,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_placement.h"
 #include "main/dll/baddie_state.h"
-#include "main/dll/foodbag.h"
+#include "main/dll/dll_0082_modgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/mm.h"
@@ -112,7 +112,7 @@ void ecshCreator_update(GameObject* obj) {
         spawnSetup->unk34 = 0xFFFF;
         spawnSetup->gameBit2 = 0;
         spawnSetup->hitPoints = state->sharpClawHitPoints;
-        sharpClaw = Obj_SetupObject(&spawnSetup->base, ECSH_CREATOR_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
+        sharpClaw = objSetupObject(&spawnSetup->base, ECSH_CREATOR_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
                                     ECSH_CREATOR_NO_OBJECT_INDEX, obj->anim.parent);
         if (sharpClaw != NULL) {
             ((GroundBaddieState*)sharpClaw->extra)->configFlags = ECSH_CREATOR_SHARPCLAW_DISABLE_CAMERA_TARGET;

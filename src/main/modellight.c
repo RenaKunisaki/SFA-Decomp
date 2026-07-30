@@ -242,11 +242,6 @@ u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* light, Game
     return 1;
 }
 
-static void modelLightStruct_resetProjectionFarZ(ModelLightStruct* light)
-{
-    light->projectionFarZ = 500.0f;
-}
-
 f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj)
 {
     f32 delta[3];
@@ -284,11 +279,6 @@ f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj
     return amount;
 }
 f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj);
-
-static f32 modelLightColorComponentToScale(u8 component)
-{
-    return component / 255.0f;
-}
 
 void modelLightStruct_updateColorFade(ModelLightStruct* light)
 {

@@ -156,7 +156,7 @@ void staffactivated_spawnMapEventDebris(GameObject* obj) {
             scarabPlacement->base.posZ = state->targetZ;
             scarabPlacement->activeTimer = STAFF_ACTIVATED_SCARAB_ACTIVE_FRAMES;
 
-            scarab = Obj_SetupObject(&scarabPlacement->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+            scarab = objSetupObject(&scarabPlacement->base, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
             scarab->anim.velocityX = obj->anim.localPosX - player->anim.localPosX;
             scarab->anim.velocityZ = obj->anim.localPosZ - player->anim.localPosZ;
 
@@ -276,7 +276,7 @@ int staffactivated_getObjectTypeId(void) {
 }
 
 void staffactivated_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, STAFF_ACTIVATED_OBJECT_GROUP);
+    objFreeObjectType((int)obj, STAFF_ACTIVATED_OBJECT_GROUP);
 }
 
 void staffactivated_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
@@ -368,7 +368,7 @@ void staffactivated_init(GameObject* obj, StaffActivatedPlacement* placement) {
     StaffActivatedFlags* flags;
 
     state = obj->extra;
-    ObjGroup_AddObject((int)obj, STAFF_ACTIVATED_OBJECT_GROUP);
+    objAddObjectType((int)obj, STAFF_ACTIVATED_OBJECT_GROUP);
     obj->anim.rotX = (s16)((s32)placement->rotationX << 8);
 
     sizeVariant = placement->sizeVariant;

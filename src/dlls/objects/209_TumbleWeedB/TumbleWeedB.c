@@ -159,7 +159,7 @@ s8 tumbleweedbush_spawnSibling(GameObject* obj) {
     }
 
     {
-        GameObject* spawnedObj = Obj_SetupObject((ObjPlacement*)newPlacement, TUMBLEWEED_BUSH_SIBLING_SETUP_FLAGS,
+        GameObject* spawnedObj = objSetupObject((ObjPlacement*)newPlacement, TUMBLEWEED_BUSH_SIBLING_SETUP_FLAGS,
                                                  obj->anim.mapEventSlot, -1, obj->anim.parent);
 
         state->pieceObjects[freePieceIndex] = spawnedObj;
@@ -324,7 +324,7 @@ GameObject* tumbleweedbush_findNearestActive(f32* position) {
     nearestDistance = TUMBLEWEED_BUSH_NEAREST_INITIAL_DIST;
     nearestObj = NULL;
     {
-        GameObject** objectList = (GameObject**)ObjGroup_GetObjects(TUMBLEWEED_BUSH_OBJECT_GROUP, &objectCount);
+        GameObject** objectList = (GameObject**)objGetAllOfType(TUMBLEWEED_BUSH_OBJECT_GROUP, &objectCount);
 
         objectIndex = 0;
         objects = objectList;
@@ -589,8 +589,8 @@ void tumbleweed_free(GameObject* obj) {
         }
         objectIndex++;
     }
-    ObjGroup_RemoveObject((u32)obj, TUMBLEWEED_OBJECT_GROUP);
-    ObjGroup_RemoveObject((u32)obj, TUMBLEWEED_SECONDARY_OBJECT_GROUP);
+    objFreeObjectType((u32)obj, TUMBLEWEED_OBJECT_GROUP);
+    objFreeObjectType((u32)obj, TUMBLEWEED_SECONDARY_OBJECT_GROUP);
 }
 
 void tumbleweed_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
@@ -953,8 +953,8 @@ void tumbleweed_init(GameObject* obj, TumbleweedPlacement* placement) {
     (*gPathControlInterface)->attachObject(obj, state);
     state->phase = TUMBLEWEED_PHASE_GROWING;
     state->phaseTimer = 1200.0f + (f32)(s32)randomGetRange(-0x12c, 0x12c);
-    ObjGroup_AddObject((int)obj, TUMBLEWEED_OBJECT_GROUP);
-    ObjGroup_AddObject((int)obj, TUMBLEWEED_SECONDARY_OBJECT_GROUP);
+    objAddObjectType((int)obj, TUMBLEWEED_OBJECT_GROUP);
+    objAddObjectType((int)obj, TUMBLEWEED_SECONDARY_OBJECT_GROUP);
     ObjHits_DisableObject(obj);
     ObjMsg_AllocQueue((void*)obj, 1);
     if (obj->anim.romDefNo == TUMBLEWEED_TYPE_3) {
@@ -988,12 +988,4 @@ ObjectDescriptor16WithPadding gTumbleweedObjDescriptor = {
         (ObjectDescriptorCallback)tumbleweed_setPlayer,
     },
     0,
-};
-
-int lbl_803202E8[30] = {
-    3, 3, 3, 3, 3, 3, 3, -1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-};
-u8 lbl_80320360[32] = {
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00,
 };

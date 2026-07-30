@@ -58,16 +58,15 @@ extern u32 lbl_803DB69C;
 extern GXColor lbl_803DB6A0;
 extern GXColor lbl_803DB6A4;
 extern u32 lbl_803DB6A8;
-extern f32 lbl_803DB6AC;
+extern f32 gCausticReflectionDiskScale;
 extern f32 lbl_803DB6B0;
 extern f32 lbl_803DB6B4;
-extern f32 lbl_803DB6B8;
-extern GXColor lbl_803DB6BC;
-extern f32 lbl_803DB6C0;
-extern f32 lbl_803DB6C4;
-extern f32 lbl_803DB6C8;
-extern f32 lbl_803DB6CC;
-extern f32 lbl_803DEEE4;
+extern f32 gFrozenReflectionNormalScale;
+extern GXColor gFrozenTintColor;
+extern f32 gFrozenWhirlpoolTexScale;
+extern f32 gDistortionTexCoordScale;
+extern f32 gDistortionAlphaRadius;
+extern f32 gDistortionIndMtxRadius;
 extern GXColor lbl_803DB6D0;
 extern GXColor lbl_803DB6D4;
 extern GXColor lbl_803DB6D8;
@@ -109,6 +108,21 @@ extern f32 lbl_8030EA58[2][3];
 extern f32 lbl_8030EA70[2][3];
 extern f32 lbl_8030EA88[2][3];
 extern f32 lbl_8030EAA0[2][3];
+
+extern inline float sqrtf(float x)
+{
+    volatile float y;
+    if (x > 0.0f)
+    {
+        double guess = __frsqrte((double)x);
+        guess = 0.5 * guess * (3.0 - guess * guess * x);
+        guess = 0.5 * guess * (3.0 - guess * guess * x);
+        guess = 0.5 * guess * (3.0 - guess * guess * x);
+        y = (float)(x * guess);
+        return y;
+    }
+    return x;
+}
 
 int cardDeleteSaveFile(void);
 void cardGetMessage(u32* buttons, u32* texts, u32* count);
@@ -235,7 +249,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     handle1 = *(int*)Shader_getLayer(renderOp, 0);
     selectTexture((Texture*)textureIdxToPtr(handle1), 0);
     selectReflectionTexture(1);
-    tex2 = textureIdxToPtr(((ModelRenderOp*)renderOp)->layer0TextureId);
+    tex2 = textureIdxToPtr(((Shader*)renderOp)->auxTextureIndex);
     wrapBit = (((Texture*)tex2)->maxLod - ((Texture*)tex2)->minLod > 0) ? GX_TRUE : GX_FALSE;
     GXInitTexObj((void*)((u8*)tex2 + 0x20), (u8*)tex2 + 0x60, ((Texture*)tex2)->width, ((Texture*)tex2)->height,
                  ((Texture*)tex2)->format, GX_REPEAT, GX_REPEAT, wrapBit);
@@ -318,8 +332,8 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     else
     {
         u8 zCompLoc = 1;
-        if (((u8*)obj_a)[0x37] < 0xFF || (((ModelRenderOp*)renderOp)->flags & 0x40000000) != 0 ||
-            ((ModelRenderOp*)renderOp)->alpha < 0xFF)
+        if (((u8*)obj_a)[0x37] < 0xFF || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
+            ((Shader*)renderOp)->alpha < 0xFF)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
             if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -365,7 +379,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
         }
         else
         {
-            if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+            if ((((Shader*)renderOp)->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -424,7 +438,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
         }
-        if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+        if ((((Shader*)renderOp)->flags & 0x400) != 0)
         {
             zCompLoc = 0;
         }
@@ -435,7 +449,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
             gGxZCompLocValid = 1;
         }
     }
-    if ((((ModelRenderOp*)renderOp)->flags & 0x8) != 0)
+    if ((((Shader*)renderOp)->flags & 0x8) != 0)
     {
         GXSetCullMode(GX_CULL_BACK);
     }
@@ -925,7 +939,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
 
     PSMTXTrans(mtx_a0, 0.5f * (-proj5) - 0.5f, 0.5f * proj4 - 0.5f, 0.0f);
     {
-        f32 s = lbl_803DB6C4;
+        f32 s = gDistortionTexCoordScale;
         PSMTXScale(mtx_70, s / proj2, s / proj1, 0.0f);
     }
     PSMTXConcat(mtx_70, mtx_a0, mtx_d0);
@@ -935,7 +949,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 
     {
-        f32 r2 = lbl_803DB6C8 / radius;
+        f32 r2 = gDistortionAlphaRadius / radius;
         f32 sr;
         sr = (r2 > 0.0f) ? distortSqrtf(r2) : r2;
         if (sr > 1.0f)
@@ -961,7 +975,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     selectTexture(handle3, 3);
 
     {
-        f32 ind_s = lbl_803DB6CC / radius;
+        f32 ind_s = gDistortionIndMtxRadius / radius;
         if (ind_s > 0.5f)
             ind_s = 0.5f;
         indMtx[0] = ind_s;
@@ -1099,7 +1113,7 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     Camera_RebuildProjectionMatrix();
 }
 
-int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
+int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
 {
     Mtx mtx_54;
     Mtx mtx_24;
@@ -1123,7 +1137,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
 
     if (model == 0 || ((ModelFileHeader*)model)->normalCount != 0)
     {
-        PSMTXScale(mtx_54, lbl_803DB6B8, lbl_803DB6B8, 0.0f);
+        PSMTXScale(mtx_54, gFrozenReflectionNormalScale, gFrozenReflectionNormalScale, 0.0f);
         mtx_54[2][3] = 1.0f;
         PSMTXTrans(mtx_24, 0.5f, 0.5f, 0.0f);
         PSMTXConcat(mtx_24, mtx_54, mtx_54);
@@ -1138,7 +1152,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
     GXLoadTexMtxImm(mtx_54, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX6);
 
-    PSMTXScale(mtx_54, lbl_803DB6C0, lbl_803DB6C0, 0.0f);
+    PSMTXScale(mtx_54, gFrozenWhirlpoolTexScale, gFrozenWhirlpoolTexScale, 0.0f);
     mtx_54[2][3] = 1.0f;
     GXLoadTexMtxImm(mtx_54, GX_PTTEXMTX5, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX5);
@@ -1169,11 +1183,11 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
     GXSetNumTexGens(3);
     GXSetNumTevStages(2);
 
-    alpha_byte = (((ModelRenderOp*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
+    alpha_byte = (((Shader*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
     temp.a = alpha_byte;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
-    GXSetTevKColor(GX_KCOLOR1, lbl_803DB6BC);
+    GXSetTevKColor(GX_KCOLOR1, gFrozenTintColor);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K1);
 
     pcb = (void (*)(void*, void**, int))ObjModel_GetPostRenderCallback((ObjModel*)obj_b);
@@ -1185,8 +1199,8 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
     {
         u8 zCompLoc = 1;
         int ref1;
-        if (((u8*)obj_a)[0x37] < 0xff || (((ModelRenderOp*)renderOp)->flags & 0x40000000) != 0 ||
-            ((ModelRenderOp*)renderOp)->alpha < 0xff)
+        if (((u8*)obj_a)[0x37] < 0xff || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
+            ((Shader*)renderOp)->alpha < 0xff)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
             if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -1234,7 +1248,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
         }
         else
         {
-            if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+            if ((((Shader*)renderOp)->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -1293,7 +1307,7 @@ int gxTextureFn_80072dfc(void* obj_a, void** obj_b, int slot)
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
         }
-        if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+        if ((((Shader*)renderOp)->flags & 0x400) != 0)
         {
             zCompLoc = 0;
         }
@@ -1563,7 +1577,7 @@ int moonFxCb_80074110(u8* obj, int* objB, int slot)
     GXSetNumTevStages(3);
     GXSetNumIndStages(0);
     selectTexture(tex, 0);
-    colorK.a = (((ModelRenderOp*)op)->alpha * obj[0x37]) >> 8;
+    colorK.a = (((Shader*)op)->alpha * obj[0x37]) >> 8;
     GXSetTevKColor(GX_KCOLOR0, colorK);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevDirect(GX_TEVSTAGE0);
@@ -1654,13 +1668,13 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
     PSMTXScale(mtx_30, lbl_803DB6B0, lbl_803DB6B0, 1.0f);
     PSMTXConcat(mtx_30, gCameraLightPerspectiveFlipYMatrix, mtx_90);
-    PSMTXTrans(mtx_30, 0.5f * (lbl_803DEEE4 - lbl_803DB6B0),
-               0.5f * (lbl_803DEEE4 - lbl_803DB6B0), 0.0f);
+    PSMTXTrans(mtx_30, 0.5f * (1.0f - lbl_803DB6B0),
+               0.5f * (1.0f - lbl_803DB6B0), 0.0f);
     PSMTXConcat(mtx_30, mtx_90, mtx_90);
     GXLoadTexMtxImm(mtx_90, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_TRUE, GX_PTTEXMTX6);
 
-    alpha_byte = (((ModelRenderOp*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
+    alpha_byte = (((Shader*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
     temp.a = alpha_byte;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
@@ -1679,8 +1693,8 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     else
     {
         u8 zCompLoc = 1;
-        if (((u8*)obj_a)[0x37] < 0xff || (((ModelRenderOp*)renderOp)->flags & 0x40000000) != 0 ||
-            ((ModelRenderOp*)renderOp)->alpha < 0xff)
+        if (((u8*)obj_a)[0x37] < 0xff || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
+            ((Shader*)renderOp)->alpha < 0xff)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
             if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -1731,7 +1745,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
         }
         else
         {
-            if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+            if ((((Shader*)renderOp)->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -1790,7 +1804,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
         }
-        if ((((ModelRenderOp*)renderOp)->flags & 0x400) != 0)
+        if ((((Shader*)renderOp)->flags & 0x400) != 0)
         {
             zCompLoc = 0;
         }
@@ -1801,7 +1815,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
             gGxZCompLocValid = 1;
         }
     }
-    if ((((ModelRenderOp*)renderOp)->flags & 0x8) != 0)
+    if ((((Shader*)renderOp)->flags & 0x8) != 0)
     {
         GXSetCullMode(GX_CULL_BACK);
     }
@@ -1812,7 +1826,7 @@ int modelCb_80074518(void* obj_a, void** obj_b, int slot)
     return 1;
 }
 
-u32 objCallback_80074d04(int handle, void* model)
+u32 objCausticReflectionRenderCb(int handle, void* model)
 {
 
     Mtx mtx_ec;
@@ -1836,17 +1850,7 @@ u32 objCallback_80074d04(int handle, void* model)
         px = mtx_8c[0][3];
         py = mtx_8c[1][3];
         pz = mtx_8c[2][3];
-        dist = px * px + py * py + pz * pz;
-        if (dist > 0.0f)
-        {
-            volatile float root;
-            double guess = __frsqrte((double)dist);
-            guess = 0.5 * guess * (3.0 - guess * guess * dist);
-            guess = 0.5 * guess * (3.0 - guess * guess * dist);
-            guess = 0.5 * guess * (3.0 - guess * guess * dist);
-            root = (float)(dist * guess);
-            dist = root;
-        }
+        dist = sqrtf(px * px + py * py + pz * pz);
         f31_val = 200.0f / dist;
         if (f31_val > 1.0f)
             f31_val = 1.0f;
@@ -1907,12 +1911,12 @@ u32 objCallback_80074d04(int handle, void* model)
     GXSetIndTexMtx(2, (f32(*)[3])indMtx_2c, -4);
     GXSetTevIndirect(1, 1, 0, 7, 2, 0, 0, 1, 0, 0);
 
-    ((f32*)mtx_8c)[0] = lbl_803DB6AC;
+    ((f32*)mtx_8c)[0] = gCausticReflectionDiskScale;
     ((f32*)mtx_8c)[1] = 0.0f;
     ((f32*)mtx_8c)[2] = 0.0f;
     ((f32*)mtx_8c)[3] = 0.5f;
     ((f32*)mtx_8c)[4] = 0.0f;
-    ((f32*)mtx_8c)[5] = lbl_803DB6AC;
+    ((f32*)mtx_8c)[5] = gCausticReflectionDiskScale;
     ((f32*)mtx_8c)[6] = 0.0f;
     ((f32*)mtx_8c)[7] = 0.5f;
     ((f32*)mtx_8c)[8] = 0.0f;
@@ -2330,7 +2334,7 @@ void drawPartialTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int
     GXSetNumChans(0);
     GXSetNumTexGens(1);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-    textureFn_8004c264((Texture*)obj, 0);
+    selectTextureWithSecondary((Texture*)obj, 0);
     GXSetCullMode(GX_CULL_NONE);
     GXSetProjection(hudMatrix, GX_ORTHOGRAPHIC);
     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 7 || gGxZModeUpdateEnable != 0 || gGxZModeValid == 0)
@@ -2502,7 +2506,7 @@ void drawScaledTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int 
     GXSetNumChans(0);
     GXSetNumTexGens(1);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-    textureFn_8004c264((Texture*)obj, 0);
+    selectTextureWithSecondary((Texture*)obj, 0);
     GXSetCullMode(GX_CULL_NONE);
     GXSetProjection(hudMatrix, GX_ORTHOGRAPHIC);
     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 7 || gGxZModeUpdateEnable != 0 || gGxZModeValid == 0)
@@ -2638,7 +2642,7 @@ void hudDrawColored(int obj, int x, int y, u32* color, int scale, int flag)
     GXSetNumChans(0);
     GXSetNumTexGens(1);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-    textureFn_8004c264((Texture*)obj, 0);
+    selectTextureWithSecondary((Texture*)obj, 0);
     GXSetCullMode(GX_CULL_NONE);
     GXSetProjection(hudMatrix, GX_ORTHOGRAPHIC);
     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 7 || gGxZModeUpdateEnable != 0 || gGxZModeValid == 0)
@@ -2753,7 +2757,7 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
     GXSetNumChans(0);
     GXSetNumTexGens(1);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-    textureFn_8004c264((Texture*)obj, 0);
+    selectTextureWithSecondary((Texture*)obj, 0);
     GXSetCullMode(GX_CULL_NONE);
     GXSetProjection(hudMatrix, GX_ORTHOGRAPHIC);
     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 7 || gGxZModeUpdateEnable != 0 || gGxZModeValid == 0)
@@ -4728,8 +4732,8 @@ void showMemCardError(u8 err);
  * loops in _saveGame, maybeTryLoadSave, loadSaveGame and cardCreateSaveFile.
  * Pumps 60 frames of the GX/dialog
  * pipeline; on each frame either lets the active controller draw its own
- * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored over the
- * cached prompt id in lbl_803DB708, then routes the OK/Cancel/back text
+ * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored
+ * tinting the reflection texture with gSaveCardBackdropColor, then routes the OK/Cancel/back text
  * to gameTextShowAt based on the dialog kind passed in.
  */
 void cardShowLoadingMsg(u8 kind);
@@ -4737,7 +4741,7 @@ void cardShowLoadingMsg(u8 kind);
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from _saveGame.
  * Stages a per-slot 0x6EC-byte block plus the shared 0xE4-byte trailer
- * into the card-IO buffer (lbl_803DD044), then asks saveGame_doWrite(2) to
+ * into the card-IO buffer (gSaveCardIoBuffer), then asks saveGame_doWrite(2) to
  * commit; if that fails it falls back to saveGame_doWrite(1).
  */
 int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
@@ -4745,7 +4749,7 @@ int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
 /*
  * Card-write callback dispatched through saveGame_prepareAndWrite from maybeTryLoadSave.
  * Copies the 0xE4-byte block at offset 0x1F14 in the card buffer (held in
- * lbl_803DD044) into the caller-supplied destination.
+ * gSaveCardIoBuffer) into the caller-supplied destination.
  */
 int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 

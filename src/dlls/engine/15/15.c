@@ -132,19 +132,6 @@ void player_followCurve(GameObject* obj, int* state, f32 cx, f32 cz, f32 t, int 
     }
 }
 
-static f32 player_clampUnitScale(f32 value)
-{
-    if (value > PLAYER_MOVE_ONE)
-    {
-        value = PLAYER_MOVE_ONE;
-    }
-    if (value < PLAYER_MOVE_ZERO)
-    {
-        value = PLAYER_MOVE_ZERO;
-    }
-    return value;
-}
-
 void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
 {
     int flags;
@@ -820,7 +807,7 @@ void player_setState(void* ctx, void* p, int new_state)
         }
         *(void**)&((BaddieState*)p)->unk304 = *(void**)&((BaddieState*)p)->unk308;
     }
-    *(s16*)((char*)p + 0x338) = 0;
+    ((BaddieState*)p)->controlTimer = 0;
     ((BaddieState*)p)->moveJustStartedA = 1;
     ((BaddieState*)p)->stateTag = 0;
     ((BaddieState*)p)->movementFlags = 0;
@@ -879,6 +866,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     f32 matrix[16];
     int keepPathControls;
     int attachment;
+    f32* axes;
     int mapBlock;
     int overrideObj;
     f32 dx;
@@ -917,7 +905,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
 
     *(u32*)state |= 0x8000;
 
-    if (*(void**)(state + 0x27c) != NULL)
+    if (((BaddieState*)state)->orientationAxesOut != NULL)
     {
         localTransform.rotX = ((GameObject*)pos)->anim.rotX;
         localTransform.rotY = ((GameObject*)pos)->anim.rotY;
@@ -928,15 +916,15 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
         localTransform.z = PLAYER_MOVE_ZERO;
         setMatrixFromObjectPos(matrix, &localTransform);
 
-        attachment = *(int*)(state + 0x27c);
-        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, (f32*)(attachment + 0x0),
-                              (f32*)(attachment + 0x4), (f32*)(attachment + 0x8));
-        attachment = *(int*)(state + 0x27c);
-        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, (f32*)(attachment + 0xc),
-                              (f32*)(attachment + 0x10), (f32*)(attachment + 0x14));
-        attachment = *(int*)(state + 0x27c);
-        Matrix_TransformPoint(matrix, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, (f32*)(attachment + 0x18),
-                              (f32*)(attachment + 0x1c), (f32*)(attachment + 0x20));
+        axes = ((BaddieState*)state)->orientationAxesOut;
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, &axes[0], &axes[1],
+                              &axes[2]);
+        axes = ((BaddieState*)state)->orientationAxesOut;
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, &axes[3], &axes[4],
+                              &axes[5]);
+        axes = ((BaddieState*)state)->orientationAxesOut;
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, &axes[6], &axes[7],
+                              &axes[8]);
     }
 
     if ((*(int*)state & 0x1000000) == 0)
@@ -1017,7 +1005,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
         (*gPathControlInterface)->apply(pos, state + 0x4);
         (*gPathControlInterface)->advance(pos, state + 0x4, pathDt);
 
-        if (((s32) * (s8*)(state + 0x264) & 0x10) != 0)
+        if (((s32)((BaddieState*)state)->surfaceFlags & 0x10) != 0)
         {
             *(u32*)state |= 0x40000;
         }
@@ -1028,7 +1016,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
 
         if ((*(int*)state & 0x800000) != 0)
         {
-            if (((s32) * (s8*)(state + 0x264) & 2) != 0 || *(u8*)(state + 0x262) != 0)
+            if (((s32)((BaddieState*)state)->surfaceFlags & 2) != 0 || ((BaddieState*)state)->groundContact != 0)
             {
                 ((GameObject*)pos)->anim.velocityX =
                     (((GameObject*)pos)->anim.localPosX - *(f32*)((int)((GameObject*)pos)->anim.hitReactState + 0x10)) /
@@ -1046,15 +1034,15 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
 
 void player_init(void* unused, void* obj, int a, int b)
 {
-    memset(obj, 0, 0x35c);
-    *(s16*)((char*)obj + 0x26c) = a;
-    *(s16*)((char*)obj + 0x26e) = b;
+    memset(obj, 0, sizeof(BaddieState));
+    ((BaddieState*)obj)->unk26C = a;
+    ((BaddieState*)obj)->unk26E = b;
     ((BaddieState*)obj)->moveJustStartedA = 1;
     ((BaddieState*)obj)->moveJustStartedB = 1;
     ((BaddieState*)obj)->velSmoothTime = PLAYER_MOVE_TIMER_LIMIT;
     ((BaddieState*)obj)->curveId = -1;
-    *(s32*)((char*)obj + 0x340) = -1;
-    *(u8*)((char*)obj + 0x358) = 0;
+    ((BaddieState*)obj)->unk340 = -1;
+    ((BaddieState*)obj)->unk358 = 0;
 }
 
 void player_release(void)

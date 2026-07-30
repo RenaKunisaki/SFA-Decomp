@@ -373,7 +373,7 @@ s16 EdibleMushroom_findClearApproachAngle(GameObject* obj, GameObject* player, E
     vec[0] = obj->anim.localPosX - dist * sin0;
     vec[1] = obj->anim.localPosY;
     vec[2] = obj->anim.localPosZ - dist * cos0;
-    if (objBboxFn_800640cc(&obj->anim.localPosX, vec, 0.1f, 3, NULL, obj, 8, -1, 0xFF, 0) != 0) {
+    if (trackGetLineIntersect(&obj->anim.localPosX, vec, 0.1f, 3, NULL, obj, 8, -1, 0xFF, 0) != 0) {
         anglePlus = angle;
         angleMinus = angle;
         sinM = sin0;
@@ -393,7 +393,7 @@ s16 EdibleMushroom_findClearApproachAngle(GameObject* obj, GameObject* player, E
             sinP = sinNext;
             vec[0] = obj->anim.localPosX - dist * sinNext;
             vec[2] = obj->anim.localPosZ - dist * cosP;
-            if (objBboxFn_800640cc(&obj->anim.localPosX, vec, 0.1f, 1, NULL, obj, 8, -1, 0xFF, 0) == 0) {
+            if (trackGetLineIntersect(&obj->anim.localPosX, vec, 0.1f, 1, NULL, obj, 8, -1, 0xFF, 0) == 0) {
                 return anglePlus;
             }
             angleMinus -= 0xE38;
@@ -402,7 +402,7 @@ s16 EdibleMushroom_findClearApproachAngle(GameObject* obj, GameObject* player, E
             sinM = sinNext;
             vec[0] = obj->anim.localPosX - dist * sinNext;
             vec[2] = obj->anim.localPosZ - dist * cosM;
-            if (objBboxFn_800640cc(&obj->anim.localPosX, vec, 0.1f, 1, NULL, obj, 8, -1, 0xFF, 0) == 0) {
+            if (trackGetLineIntersect(&obj->anim.localPosX, vec, 0.1f, 1, NULL, obj, 8, -1, 0xFF, 0) == 0) {
                 return angleMinus;
             }
         }
@@ -415,8 +415,8 @@ int EdibleMushroom_getExtraSize(void) {
 }
 
 void EdibleMushroom_free(GameObject* obj) {
-    ObjGroup_RemoveObject((int)obj, EDIBLE_MUSHROOM_GROUP_ID);
-    ObjGroup_RemoveObject((int)obj, EDIBLE_MUSHROOM_SECONDARY_GROUP_ID);
+    objFreeObjectType((int)obj, EDIBLE_MUSHROOM_GROUP_ID);
+    objFreeObjectType((int)obj, EDIBLE_MUSHROOM_SECONDARY_GROUP_ID);
 }
 
 void EdibleMushroom_hitDetect(GameObject* obj) {
@@ -443,7 +443,7 @@ void EdibleMushroom_hitDetect(GameObject* obj) {
             }
         }
 
-        hitCount = objBboxFn_800640cc(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 6.0f, 2, &bboxHit, obj, 8, -1,
+        hitCount = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 6.0f, 2, &bboxHit, obj, 8, -1,
                                       0xFF, 0x14);
         if ((placement->objectType == 4) && (hitCount != 0) && (bboxHit.surfaceType == 13)) {
             state->flags |= EDIBLE_MUSHROOM_FLAG_GROUNDED;
@@ -600,8 +600,8 @@ void EdibleMushroom_init(GameObject* obj, EdibleMushroomPlacement* placement) {
         state->previousTargetDistance = z;
     }
 
-    ObjGroup_AddObject((int)obj, EDIBLE_MUSHROOM_SECONDARY_GROUP_ID);
-    ObjGroup_AddObject((int)obj, EDIBLE_MUSHROOM_GROUP_ID);
+    objAddObjectType((int)obj, EDIBLE_MUSHROOM_SECONDARY_GROUP_ID);
+    objAddObjectType((int)obj, EDIBLE_MUSHROOM_GROUP_ID);
 
     if (obj->anim.romDefNo == EDIBLE_MUSHROOM_WHITE_ALIAS_ID) {
         state->collectedGameBitId = GAMEBIT_ITEM_WhiteShroom_Count;

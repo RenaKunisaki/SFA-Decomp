@@ -52,7 +52,7 @@ extern char sTrackLoadBlockOverrunError[];
 #include "main/fileio.h"
 #include "game/objects/object.h"
 #include "sys/objects.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_list.h"
 #include "main/track_dolphin_api.h"
 #include "dolphin/os/OSCache.h"
@@ -98,10 +98,10 @@ f32 gMapSavedPlayerOffsetZ;
 int gShaderCurMapEventId;
 int gShaderGameTextLoadedMapId;
 int gMapCurRomListSlot;
-u8 lbl_803DCEBD;
+u8 gWarpRequested;
 u8 gRcpWarpTransitionType;
-s16 lbl_803DCEBA;
-s16 lbl_803DCEB8;
+s16 gPendingWarpIndex;
+s16 gArrivedWarpIndex;
 s16 lbl_803DCEB6;
 s16 lbl_803DCEB4;
 int gMapBlockIndexCount;
@@ -109,9 +109,9 @@ s16 gVisibleObjectSortKeyCount;
 u16 lbl_803DCEAC;
 Camera* lbl_803DCEA8;
 s8 curMapType;
-void* lbl_803DCEA0;
+void* gCurRomListPage;
 MapBlockData** gMapBlocks;
-u8 lbl_803DCE98;
+u8 gMapBlockCount;
 s16* gMapBlockIds;
 s16 lbl_803DCE90;
 u8* gMapBlockRefCounts;
@@ -122,8 +122,8 @@ int lbl_803DCE7C;
 u8* lbl_803DCE78;
 int lbl_803DCE74;
 s16 lbl_803DCE70;
-MapTextureOverride* lbl_803DCE6C;
-MapTextureScroll* lbl_803DCE68;
+MapTextureOverride* gMapTextureOverrides;
+MapTextureScroll* gMapTextureScrolls;
 f32 gShaderLoadCenterX;
 f32 gShaderLoadCenterY;
 f32 gShaderLoadCenterZ;
@@ -165,7 +165,7 @@ s8 gShaderRomListSlotCount;
 u32 renderFlags;
 int* gMapBlockIndexList;
 s8 curMapLayer;
-u8 lbl_803DCDE0;
+u8 gWarpArrivalTimer;
 f32 playerMapOffsetZ;
 f32 playerMapOffsetX;
 int gMapBlockOriginZ;
@@ -362,26 +362,26 @@ typedef struct WarpDestination
 
 extern u8 gRcpPendingWarpDest[];
 extern u8 gRcpWarpTransitionType;
-extern u8 lbl_803DCA40;
+extern u8 gGameLoopFullMapUnloadPending;
 
 void loadNextMap(void)
 {
     u8* pos;
     pos = (*gMapEventInterface)->getCurCharPos();
-    if (lbl_803DCEB8 != -1)
+    if (gArrivedWarpIndex != -1)
     {
-        lbl_803DCDE0 -= 1;
-        if ((s8)lbl_803DCDE0 < 0)
+        gWarpArrivalTimer -= 1;
+        if ((s8)gWarpArrivalTimer < 0)
         {
-            if (lbl_803DCEB8 > -1 && (s8)gRcpWarpTransitionType != 0)
+            if (gArrivedWarpIndex > -1 && (s8)gRcpWarpTransitionType != 0)
             {
                 (*gScreenTransitionInterface)->step(3, 1);
             }
-            lbl_803DCEB8 = -1;
+            gArrivedWarpIndex = -1;
             Pause_SetDisabled(0);
         }
     }
-    if ((s8)lbl_803DCEBD != 0)
+    if ((s8)gWarpRequested != 0)
     {
         if ((*gScreenTransitionInterface)->isFinished() != 0 || (s8)gRcpWarpTransitionType == 0)
         {
@@ -391,17 +391,17 @@ void loadNextMap(void)
             (*gSkyInterface)->loadLights();
             (*gNewCloudsInterface)->onMapSetup();
             gameUiResetMenuState();
-            lbl_803DCEBD = 0;
+            gWarpRequested = 0;
             *(f32*)(pos + 0) = ((WarpDestination*)gRcpPendingWarpDest)->x;
             *(f32*)(pos + 4) = ((WarpDestination*)gRcpPendingWarpDest)->y;
             *(f32*)(pos + 8) = ((WarpDestination*)gRcpPendingWarpDest)->z;
             *(s8*)(pos + 0xd) = (s8)((WarpDestination*)gRcpPendingWarpDest)->layer;
             *(s8*)(pos + 0xc) = (s8)((WarpDestination*)gRcpPendingWarpDest)->angle;
             mapReload();
-            lbl_803DCEB8 = lbl_803DCEBA;
-            lbl_803DCEBA = -1;
-            lbl_803DCDE0 = 8;
-            lbl_803DCA40 = 1;
+            gArrivedWarpIndex = gPendingWarpIndex;
+            gPendingWarpIndex = -1;
+            gWarpArrivalTimer = 8;
+            gGameLoopFullMapUnloadPending = 1;
             blankScreen(1);
         }
     }
@@ -416,8 +416,8 @@ void warpToMap(int idx, s8 transType)
     ((WarpDestination*)gRcpPendingWarpDest)->z = ((WarpDestination*)p)->z;
     ((WarpDestination*)gRcpPendingWarpDest)->layer = ((WarpDestination*)p)->layer;
     ((WarpDestination*)gRcpPendingWarpDest)->angle = ((WarpDestination*)p)->angle;
-    lbl_803DCEBA = (s16)idx;
-    lbl_803DCEBD = 1;
+    gPendingWarpIndex = (s16)idx;
+    gWarpRequested = 1;
     *(s8*)&gRcpWarpTransitionType = transType;
     if (transType != 0)
     {
@@ -526,7 +526,7 @@ void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObjec
                     vis = (s8*)bm2->loadedObjectBits;
                     vis[visByte] |= bit;
                 }
-                Obj_SetupObject((ObjPlacement*)obj, 1, mapId, objIndex, parent);
+                objSetupObject((ObjPlacement*)obj, 1, mapId, objIndex, parent);
             }
         }
         objIndex++;
@@ -989,7 +989,7 @@ void mapLoadUnloadObjects(int flag)
                                 *(s8*)&pg->loadedObjectBits[ix2] = pg->loadedObjectBits[ix2] & ~msk;
                                 *(s8*)&pg->loadedObjectBits[ix2] = pg->loadedObjectBits[ix2] | msk;
                             }
-                            Obj_SetupObject((ObjPlacement*)objStart, 1, list[i], bit, NULL);
+                            objSetupObject((ObjPlacement*)objStart, 1, list[i], bit, NULL);
                         }
                         bit++;
                         mask <<= 1;
@@ -1018,7 +1018,7 @@ void mapLoadUnloadObjects(int flag)
             }
         }
         {
-            int* objs2 = (int*)ObjGroup_GetObjects(6, &objCount);
+            int* objs2 = (int*)objGetAllOfType(6, &objCount);
             for (i = 0; i < objCount; i++)
             {
                 GameObject* obj2 = (GameObject*)objs2[i];
@@ -1079,7 +1079,7 @@ void mapLoadUnloadObjects(int flag)
                                 *(s8*)(*(int*)(pg3 + 0x10) + ix3) = *(u8*)(*(int*)(pg3 + 0x10) + ix3) & ~msk3;
                                 *(s8*)(*(int*)(pg3 + 0x10) + ix3) = *(u8*)(*(int*)(pg3 + 0x10) + ix3) | msk3;
                             }
-                            Obj_SetupObject((ObjPlacement*)cur, 1, mid2, bit, obj2);
+                            objSetupObject((ObjPlacement*)cur, 1, mid2, bit, obj2);
                         }
                         bit++;
                         cur += *(u8*)(cur + 2) * 4;
@@ -1101,7 +1101,7 @@ void mapUpdateCameraPosByTransformSpace(void)
     int i;
     f32 lx, ly, lz;
 
-    objs = (GameObject**)ObjGroup_GetObjects(6, &count);
+    objs = (GameObject**)objGetAllOfType(6, &count);
     cam = Camera_GetCurrent();
     Camera_UpdateForObject(cam);
     for (k = 0; k < 31; k++)
@@ -1133,7 +1133,7 @@ void mapUpdateCameraPosByTransformSpace(void)
 
 MapTextureOverride* mapTextureOverrideGetEntry(int idx)
 {
-    return &lbl_803DCE6C[idx];
+    return &gMapTextureOverrides[idx];
 }
 
 s16* return0_80056694(MapBlockData* wpad0, int wpad1)
@@ -1152,17 +1152,17 @@ void mapTextureOverrideRelease(Texture* texture, int type)
 
     for (i = 0; i < 80; i++)
     {
-        entryTexture = lbl_803DCE6C[i].texture;
-        if (entryTexture == texture && lbl_803DCE6C[i].type == type &&
-            lbl_803DCE6C[i].refCount > 0)
+        entryTexture = gMapTextureOverrides[i].texture;
+        if (entryTexture == texture && gMapTextureOverrides[i].type == type &&
+            gMapTextureOverrides[i].refCount > 0)
         {
-            lbl_803DCE6C[i].refCount -= 1;
-            if (lbl_803DCE6C[i].refCount == 0)
+            gMapTextureOverrides[i].refCount -= 1;
+            if (gMapTextureOverrides[i].refCount == 0)
             {
-                lbl_803DCE6C[i].frame = 0;
-                lbl_803DCE6C[i].type = 0;
-                lbl_803DCE6C[i].texture = NULL;
-                lbl_803DCE6C[i].flags = 0;
+                gMapTextureOverrides[i].frame = 0;
+                gMapTextureOverrides[i].type = 0;
+                gMapTextureOverrides[i].texture = NULL;
+                gMapTextureOverrides[i].flags = 0;
             }
         }
     }
@@ -1179,7 +1179,7 @@ int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type)
 
     found = -1;
     idx = 0;
-    base = lbl_803DCE6C;
+    base = gMapTextureOverrides;
     for (; idx < 80; idx++)
     {
         if (base[idx].refCount != 0)
@@ -1199,7 +1199,7 @@ int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type)
     }
     found = -1;
     idx2 = 0;
-    base = lbl_803DCE6C;
+    base = gMapTextureOverrides;
     for (; idx2 < 80; idx2++)
     {
         if (base[idx2].refCount == 0)
@@ -1211,10 +1211,10 @@ int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type)
     if (found != -1)
     {
         base[found].refCount = 1;
-        lbl_803DCE6C[found].frame = 0;
-        lbl_803DCE6C[found].flags = flags;
-        lbl_803DCE6C[found].texture = texture;
-        lbl_803DCE6C[found].type = type;
+        gMapTextureOverrides[found].frame = 0;
+        gMapTextureOverrides[found].flags = flags;
+        gMapTextureOverrides[found].texture = texture;
+        gMapTextureOverrides[found].type = type;
         return found;
     }
     OSReport(sTrackGlobalTexanimOverflowError);
@@ -1229,11 +1229,11 @@ void mapTextureOverrideSetValue(int type, Texture* texture, int frame)
 
     for (i = 0; i < 80; i++)
     {
-        if (lbl_803DCE6C[i].refCount > 0 &&
-            lbl_803DCE6C[i].texture == texture &&
-            type == lbl_803DCE6C[i].type)
+        if (gMapTextureOverrides[i].refCount > 0 &&
+            gMapTextureOverrides[i].texture == texture &&
+            type == gMapTextureOverrides[i].type)
         {
-            lbl_803DCE6C[i].frame = frame;
+            gMapTextureOverrides[i].frame = frame;
         }
     }
 }
@@ -1241,14 +1241,14 @@ void mapTextureOverrideSetValue(int type, Texture* texture, int frame)
 void mapTextureScrollGetOffset(int idx, float* outX, float* outY)
 {
     f32 divisor;
-    *outX = lbl_803DCE68[idx].offsetX / (divisor = lbl_803DEBC8);
-    *outY = lbl_803DCE68[idx].offsetY / divisor;
+    *outX = gMapTextureScrolls[idx].offsetX / (divisor = lbl_803DEBC8);
+    *outY = gMapTextureScrolls[idx].offsetY / divisor;
 }
 
 void mapTextureScrollSetStep(int idx, int xStep, int yStep, int texWidthFixed, int texHeightFixed,
                              int secondaryXStep, int secondaryYStep, int texWidthFixed2, int texHeightFixed2)
 {
-    MapTextureScroll* e = &lbl_803DCE68[idx];
+    MapTextureScroll* e = &gMapTextureScrolls[idx];
     e->xStep = (s16)((xStep << 16) / (texWidthFixed >> 6));
     e->yStep = (s16)((yStep << 16) / (texHeightFixed >> 6));
 }
@@ -1350,7 +1350,7 @@ int mapTextureScrollAcquire(int xStep, int yStep, int texWidthFixed, int texHeig
     f32 init;
 
     idx = 0;
-    entry = base = lbl_803DCE68;
+    entry = base = gMapTextureScrolls;
     for (; idx < 0x3a; idx++)
     {
         if (entry->xStep == xStep && entry->yStep == yStep)
@@ -1390,7 +1390,7 @@ void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer)
 
     i = 0;
     arr = gMapBlockIds;
-    count = lbl_803DCE98;
+    count = gMapBlockCount;
     for (; i < count; i++)
     {
         if (*arr == -1)
@@ -1399,8 +1399,8 @@ void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer)
     }
     if (i == count)
     {
-        lbl_803DCE98++;
-        if (lbl_803DCE98 == 0x40)
+        gMapBlockCount++;
+        if (gMapBlockCount == 0x40)
         {
             OSReport(sTrackLoadBlockOverrunError);
         }
@@ -1458,7 +1458,7 @@ int mapLoadBlock(int cellX, int cellZ, int worldX, int worldZ, int layer)
 
     j = 0;
     arr = gMapBlockIds;
-    for (; j < lbl_803DCE98; j++)
+    for (; j < gMapBlockCount; j++)
     {
         if (blockId == *arr)
         {
@@ -1499,12 +1499,12 @@ void unloadMap(void)
 {
     MapBlockData* block;
     int j;
-    MapShaderLayer* shaderLayer;
+    ShaderLayer* shaderLayer;
     int i;
     int layer;
     s8* cur;
     s8 mapType;
-    MapShader* shader;
+    Shader* shader;
     int k;
     u32 scrollSlot;
 
@@ -1534,11 +1534,11 @@ void unloadMap(void)
                             scrollSlot = shaderLayer->scrollMtx;
                             if (scrollSlot != 0xff)
                             {
-                                if (lbl_803DCE68[scrollSlot].refCount != 0)
-                                    lbl_803DCE68[scrollSlot].refCount -= 1;
+                                if (gMapTextureScrolls[scrollSlot].refCount != 0)
+                                    gMapTextureScrolls[scrollSlot].refCount -= 1;
                             }
-                            if (shaderLayer->overrideType != 0)
-                                mapTextureOverrideRelease(shaderLayer->texture, shaderLayer->overrideType);
+                            if (shaderLayer->materialId != 0)
+                                mapTextureOverrideRelease(shaderLayer->texture, shaderLayer->materialId);
                         }
                     }
                     for (j = 0; j < block->textureCount; j++)
@@ -1553,7 +1553,7 @@ void unloadMap(void)
             }
         }
     }
-    lbl_803DCE98 = 0;
+    gMapBlockCount = 0;
     Obj_ResetObjectSystem();
     for (i = 0; i < ROM_LIST_PAGE_COUNT; i++)
     {
@@ -1569,7 +1569,7 @@ void unloadMap(void)
     playerMapOffsetX = lbl_803DEBCC;
     playerMapOffsetZ = lbl_803DEBCC;
     voxmaps_resetLoadedMaps();
-    textureFreeFn_8012fcec();
+    GameUI_releaseMenuResources();
     minimapFreeTexture();
     (*gNewCloudsInterface)->killSnowCloud(-1, 0);
     (*gCloudActionInterface)->freeCloudObjects();
@@ -1718,10 +1718,10 @@ void beginLoadingMap(void)
     char buf[0x110];
 
     base = gLightmapDrawQueue;
-    if (lbl_803DCEB8 == -1)
+    if (gArrivedWarpIndex == -1)
     {
-        lbl_803DCEB8 = -2;
-        lbl_803DCDE0 = 8;
+        gArrivedWarpIndex = -2;
+        gWarpArrivalTimer = 8;
     }
     (*gObjectTriggerInterface)->onMapSetup();
     mapInitFn_80069990();
@@ -1740,7 +1740,7 @@ void beginLoadingMap(void)
         *(s16*)((char*)gMapBlockIds + j * 2) = -1;
         gMapBlocks[j] = NULL;
     }
-    lbl_803DCE98 = 0;
+    gMapBlockCount = 0;
     gShaderRomListSlotCount = 0;
     mapKind = (*gMapEventInterface)->getCurChar();
     p = (f32*)(*gMapEventInterface)->getCurCharPos();
@@ -1788,7 +1788,7 @@ void beginLoadingMap(void)
     cam->y = p[1];
     cam->z = p[2];
     mapSetupPlayer();
-    lbl_803DCEBD = 0;
+    gWarpRequested = 0;
     (*gWaterfxInterface)->onMapSetup();
     (*gProjgfxInterface)->onMapSetup();
     (*gModgfxInterface)->onMapSetup();
@@ -1801,7 +1801,7 @@ void beginLoadingMap(void)
     (*gNewCloudsInterface)->onMapSetup();
     waterFxInit();
     player = (char*)Obj_GetPlayerObject();
-    if (lbl_803DCEB8 == -2 && player != 0 && (mapKind == 0 || mapKind == 1))
+    if (gArrivedWarpIndex == -2 && player != 0 && (mapKind == 0 || mapKind == 1))
     {
         s16 cam2 = SaveGame_getCamActionNo();
         if (cam2 != -1)
@@ -2037,7 +2037,7 @@ void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rec
     }
 }
 
-/* 16-byte texture-override table entry (array at lbl_803DCE6C, 80 slots). */
+/* 16-byte texture-override table entry (array at gMapTextureOverrides, 80 slots). */
 
 void goToPrevMapLayer(void)
 {
@@ -2426,7 +2426,7 @@ void doPendingMapLoads(void)
                             if (romListSlot->romlist != NULL)
                             {
                                 s16 sl = romListSlot->slot;
-                                mapBuildRomListIndex(romListSlot->romlist, (MapRomListIndex*)(base + sl * 0x8C + 0x4208), sl, 1);
+                                mapBuildRomListIndex(romListSlot->romlist, &((MapRomListIndex*)(base + 0x4208))[sl], sl, 1);
                                 mm_free(romListSlot->romlist);
                                 *(int*)(sl * 4 + 0x83A8 + (char*)base) = 0;
                             }
@@ -2453,8 +2453,8 @@ void doPendingMapLoads(void)
                             if (gMapBlockRefCounts[blockId] == 0)
                             {
                                 MapBlockData* block = gMapBlocks[blockId];
-                                MapShader* shader;
-                                MapShaderLayer* shaderLayer;
+                                Shader* shader;
+                                ShaderLayer* shaderLayer;
                                 int k;
                                 u32 scrollSlot;
                                 gMapBlockIds[blockId] = -1;
@@ -2468,12 +2468,12 @@ void doPendingMapLoads(void)
                                         scrollSlot = shaderLayer->scrollMtx;
                                         if (scrollSlot != 0xff)
                                         {
-                                            if (lbl_803DCE68[scrollSlot].refCount != 0)
-                                                lbl_803DCE68[scrollSlot].refCount -= 1;
+                                            if (gMapTextureScrolls[scrollSlot].refCount != 0)
+                                                gMapTextureScrolls[scrollSlot].refCount -= 1;
                                         }
-                                        if (shaderLayer->overrideType != 0)
+                                        if (shaderLayer->materialId != 0)
                                             mapTextureOverrideRelease(shaderLayer->texture,
-                                                                      shaderLayer->overrideType);
+                                                                      shaderLayer->materialId);
                                     }
                                 }
                                 for (n = 0; n < block->textureCount; n++)
@@ -2618,7 +2618,7 @@ MapRomList* mapGetCurrentRomList(void)
             return res;
         }
         lbl_803DB648 = v;
-        lbl_803DCEA0 = res;
+        gCurRomListPage = res;
         return res;
     }
 }
@@ -3038,12 +3038,12 @@ int mapProcessRomList(int slot)
     entry->romlist = (void*)rl;
     *(int*)(slot * 4 + 0x83A8 + (char*)base) = rl;
     ((s16*)((char*)base + 0x4190))[i * 4] = slot;
-    lbl_803DCEA0 = entry->romlist;
+    gCurRomListPage = entry->romlist;
     rects = (s16*)(*(int*)(base + 0x417C) + slot * 10);
-    ((MapRomListPage*)lbl_803DCEA0)->mapLayer = *(u8*)(*(int*)(base + 0x4184) + slot);
-    ((MapRomListPage*)lbl_803DCEA0)->worldX = gMapBlockWorldSize * (f32)(rects[0] + *(s16*)((char*)lbl_803DCEA0 + 4));
-    ((MapRomListPage*)lbl_803DCEA0)->worldZ = gMapBlockWorldSize * (f32)(rects[2] + *(s16*)((char*)lbl_803DCEA0 + 6));
-    cur = lbl_803DCEA0;
+    ((MapRomListPage*)gCurRomListPage)->mapLayer = *(u8*)(*(int*)(base + 0x4184) + slot);
+    ((MapRomListPage*)gCurRomListPage)->worldX = gMapBlockWorldSize * (f32)(rects[0] + *(s16*)((char*)gCurRomListPage + 4));
+    ((MapRomListPage*)gCurRomListPage)->worldZ = gMapBlockWorldSize * (f32)(rects[2] + *(s16*)((char*)gCurRomListPage + 6));
+    cur = gCurRomListPage;
     dz = cur->worldZ;
     dx = cur->worldX;
     if (cur != 0)
@@ -3074,36 +3074,36 @@ int mapGetRomListAndOffsets(int p1, int flag)
     int i;
 
     mapsBinGetRomlistSize(offset0, &v0, &v1, &v2, words);
-    lbl_803DCEA0 = mmAlloc(tailLen + (v0 + 7 >> 3) + 0x401 + v2, 5, 0);
-    fileLoadToBufferOffset(MLDF_FILEID_MAPS_BIN, lbl_803DCEA0, offset0, tailLen);
+    gCurRomListPage = mmAlloc(tailLen + (v0 + 7 >> 3) + 0x401 + v2, 5, 0);
+    fileLoadToBufferOffset(MLDF_FILEID_MAPS_BIN, gCurRomListPage, offset0, tailLen);
 
-    *(int*)((char*)lbl_803DCEA0 + 0xc) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 4) + (words << 2)) - offset0;
-    *(int*)((char*)lbl_803DCEA0 + 0x14) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 8) + (words << 2)) - offset0;
-    *(int*)((char*)lbl_803DCEA0 + 0x30) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0xc) + (words << 2)) - offset0;
-    *(int*)((char*)lbl_803DCEA0 + 0x2c) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x10) + (words << 2)) - offset0;
-    *(int*)((char*)lbl_803DCEA0 + 0x34) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x14) + (words << 2)) - offset0;
-    *(int*)((char*)lbl_803DCEA0 + 0x20) = (int)lbl_803DCEA0 + *(int*)((lbl_803DCE7C + 0x18) + (words << 2)) - offset0;
+    ((MapRomListPage*)gCurRomListPage)->unk0C = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 4) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->unk14 = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 8) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->unk30 = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0xc) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->unk2C = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x10) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->unk34 = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x14) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->objects = (ObjPlacement*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x18) + (words << 2)) - offset0);
 
-    piRomLoadSection(*(int*)((lbl_803DCE7C + 0x18) + (words << 2)), p1, *(int*)((char*)lbl_803DCEA0 + 0x20));
-    *(int*)((char*)lbl_803DCEA0 + 0x10) = (*(int*)((lbl_803DCE7C + 0x1c) + (words << 2)) + v2) + (int)lbl_803DCEA0 - offset0;
+    piRomLoadSection(*(int*)((lbl_803DCE7C + 0x18) + (words << 2)), p1, (int)((MapRomListPage*)gCurRomListPage)->objects);
+    ((MapRomListPage*)gCurRomListPage)->loadedObjectBits = (u8*)((*(int*)((lbl_803DCE7C + 0x1c) + (words << 2)) + v2) + (int)gCurRomListPage - offset0);
 
     for (i = 0; i < (v0 + 7 >> 3) + 1; i++)
     {
-        *(u8*)(*(int*)((char*)lbl_803DCEA0 + 0x10) + i) = 0;
+        ((MapRomListPage*)gCurRomListPage)->loadedObjectBits[i] = 0;
     }
     {
         f32 fillVal = lbl_803DEBCC;
-        ((MapRomListPage*)lbl_803DCEA0)->worldX = fillVal;
-        ((MapRomListPage*)lbl_803DCEA0)->worldZ = fillVal;
+        ((MapRomListPage*)gCurRomListPage)->worldX = fillVal;
+        ((MapRomListPage*)gCurRomListPage)->worldZ = fillVal;
     }
-    ((MapRomListPage*)lbl_803DCEA0)->unk18 = 0;
-    ((MapRomListPage*)lbl_803DCEA0)->mapLayer = 0;
+    ((MapRomListPage*)gCurRomListPage)->unk18 = 0;
+    ((MapRomListPage*)gCurRomListPage)->mapLayer = 0;
     if (flag == 0)
     {
-        mapBuildRomListIndex(lbl_803DCEA0, &gMapRomListIndexes[p1], p1, 0);
+        mapBuildRomListIndex(gCurRomListPage, &gMapRomListIndexes[p1], p1, 0);
         (*gMapEventInterface)->updateObjGroups(p1);
     }
-    return (int)lbl_803DCEA0;
+    return (int)gCurRomListPage;
 }
 
 extern f32 lbl_803DEBEC;
@@ -3270,7 +3270,7 @@ void mapDebugRender(int* state)
         else
         {
             ci = tbl[bx + bz * 16];
-            if (ci < 0 || ci >= lbl_803DCE98)
+            if (ci < 0 || ci >= gMapBlockCount)
             {
                 blk = 0;
             }

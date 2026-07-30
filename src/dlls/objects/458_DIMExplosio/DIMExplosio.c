@@ -335,7 +335,7 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
             }
         }
     }
-    renderResetFn_8003fc60();
+    objRenderInvalidateStateCache();
 }
 
 void explosion_hitDetect(void) {
@@ -576,7 +576,7 @@ void explosion_init(GameObject* obj, int placementAddress) {
         ((DimExplosionState*)state)->gravity = sExplosionZero[0];
     }
     ((DimExplosionState*)state)->nearGround = 0;
-    if (hitDetectFn_800658a4(obj, obj->anim.localPosX, 5.0f + obj->anim.localPosY, obj->anim.localPosZ,
+    if (trackGetNearestGroundOffset(obj, obj->anim.localPosX, 5.0f + obj->anim.localPosY, obj->anim.localPosZ,
                              (f32*)(state + offsetof(DimExplosionState, groundY)), 0) == 0) {
         if (((DimExplosionState*)state)->groundY < 20.0f) {
             ((DimExplosionState*)state)->nearGround = 1;

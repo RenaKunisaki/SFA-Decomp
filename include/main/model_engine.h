@@ -77,7 +77,7 @@ BOOL Stack_IsFull(RingBufferQueue* stack);
 void Stack_Pop(RingBufferQueue* stack, void* dst);
 void Stack_Push(RingBufferQueue* stack, void* src);
 void Stack_Free(RingBufferQueue* stack);
-RingBufferQueue* allocModelStruct_800139e8(int capacity, int elemSize);
+RingBufferQueue* Queue_Alloc(int capacity, int elemSize);
 
 void objList_remove(ObjLinkedList* list, int item);
 void objListAdd(ObjLinkedList* list, int prev, int item);
@@ -99,7 +99,7 @@ void curUiDllDraw(int a, int b, int c, int d);
 void uiDll_runFrameEndAndLoadNext(void);
 int uiDll_runFrameStartAndLoadNext(void);
 void setCurUiDll(int idx);
-UiDllVTable** getDLL16(void);
+UiDllVTable** getCurUiDllInterface(void);
 void initGameTimer(void);
 void gameTimerRun(void* context);
 

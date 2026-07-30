@@ -97,7 +97,7 @@ void initViewport(void)
 {
     C_MTXOrtho(hudMatrix, 0.0f, 480.0f, 0.0f, 640.0f, 1.0f, 100.0f);
 }
-void videoInit(void* wpad0, int wpad1)
+void videoInit(void* unusedRenderMode, int unusedArg)
 {
     GXFifoObj fifo;
     f32 mtx[3][4];
@@ -228,6 +228,7 @@ void videoInit(void* wpad0, int wpad1)
     GXSetCurrentMtx(GX_PNMTX0);
     C_MTXOrtho(hudMatrix, -23.0f, 502.0f, 0.0f, 640.0f, 1.0f, 100.0f);
     GXSetMisc(GX_MT_XF_FLUSH, 8);
+    /* Mark performance-monitor events and disable speculative cache access. */
     PPCMtmsr(PPCMfmsr() | MSR_PM);
     PPCMthid0(PPCMfhid0() | HID0_SPD);
 }
@@ -261,8 +262,7 @@ extern u8 gGxBreakPtEnabled;
 extern u8 gVideoBlackScreenFrameCount;
 extern u16 gGxDrawSyncToken;
 extern OSStopwatch gFrameStopwatch;
-extern f32 physicsTimeScale;
-extern u8 lbl_803DB411;
+extern u8 framesThisStepUnclamped;
 
 #include "main/dll/ppcwgpipe_struct.h"
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -363,7 +363,7 @@ void logGpuHang(void)
     }
 }
 
-void gxPerfFn_8004a77c(int enabled)
+void gxSetGPMetricsEnabled(int enabled)
 {
     if ((u8)enabled != 0)
     {
@@ -392,7 +392,7 @@ void gxPerfFn_8004a77c(int enabled)
 void gxTransformFn_8004a83c(void)
 {
     gGpuHangRecoveryEnabled = 0;
-    gxPerfFn_8004a77c(0);
+    gxSetGPMetricsEnabled(0);
 }
 
 char sThreadStateAttrSuspendFormat[] = "thread: state=%d attr=%d suspend=%d\n";
@@ -409,7 +409,7 @@ void waitNextFrame(void)
         (u64)OSCheckStopwatch(&gFrameStopwatch) / (f32)(u32)((*(u32*)0x800000f8 >> 2) / 1000);
     OSResetStopwatch(&gFrameStopwatch);
     OSStartStopwatch(&gFrameStopwatch);
-    timeDelta = physicsTimeScale * (0.001f * gFrameElapsedMs);
+    timeDelta = 60.0f * (0.001f * gFrameElapsedMs);
     if (gDvdErrorPauseActive != 0)
     {
         timeDelta = 0.0f;
@@ -431,7 +431,7 @@ void waitNextFrame(void)
     framesThisStep = step;
     frames = step & 0xff;
     gFrameStepRemainder = (dt + gFrameStepRemainder) - (f32)frames;
-    lbl_803DB411 = step;
+    framesThisStepUnclamped = step;
     if (frames < 1)
     {
         framesThisStep = 1;

@@ -21,7 +21,7 @@
 #include "main/model_engine.h"
 #include "main/model_engine_ui_api.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_link.h"
 #include "main/obj_path.h"
 #include "main/obj_query.h"
@@ -418,7 +418,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
         case 0x10:
         case 0x11:
             if (getCurUiDll() == 0x10) {
-                UiDllVTable** uiDll = getDLL16();
+                UiDllVTable** uiDll = getCurUiDllInterface();
                 (*uiDll)->setState(animUpdate->eventIds[i] - 0xd);
             }
             mainSetBits(((WarpStoneState*)state)->sequenceGameBit, 1);
@@ -568,7 +568,7 @@ void warpstone_update(int obj) {
     if (((WarpStoneFlags*)(state + offsetof(WarpStoneState, behaviorFlags)))->lookAtPlayer != 0) {
         target = (int)Obj_GetPlayerObject();
     } else {
-        target = ObjGroup_FindNearestObject(WARPSTONE_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
+        target = objGetNearestTypeTo(WARPSTONE_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
     }
 
     ((GameObject*)obj)->anim.localPosY += gWarpStoneHeadAimHeightOffset;

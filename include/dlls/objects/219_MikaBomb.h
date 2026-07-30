@@ -3,12 +3,12 @@
 
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
-#include "main/dll/dll_005B_modgfxfunc03.h"
+#include "main/dll/dll_005B_modgfx.h"
 
 typedef struct MikaBombState {
     GameObject* shadowObj;            /* 0x00 */
     f32 groundY;                      /* 0x04 */
-    ModgfxFunc03Interface** resource; /* 0x08 */
+    Dll5BInterface** resource;        /* 0x08 */
     u8 exploded;                      /* 0x0C */
     u8 pad0D[3];                      /* 0x0D */
 } MikaBombState;
@@ -30,6 +30,6 @@ void MikaBomb_release(void);
 void MikaBomb_initialise(void);
 
 extern ObjectDescriptor gMikaBombObjDescriptor;
-extern const ModgfxSpawnCountRange gMikaBombExplosionSpawnCountRange;
+extern const Dll5BSpawnCountRange gMikaBombExplosionSpawnCountRange;
 
 #endif /* DLLS_OBJECTS_219_MIKABOMB_H_ */

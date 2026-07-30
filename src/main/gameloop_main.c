@@ -363,9 +363,8 @@ void checkReset(void)
         }
         if (pressed != 0 && gGameLoopResetComboDebounce == 0)
         {
-            t = gGameLoopResetHoldTimer + 1.0f;
-            gGameLoopResetHoldTimer = t;
-            if (t >= 3e+01f)
+            gGameLoopResetHoldTimer += 1.0f;
+            if (gGameLoopResetHoldTimer >= 3e+01f)
             {
                 gameState = GAME_STATE_RESETPRESSED;
             }
@@ -529,7 +528,7 @@ void cutsceneFadeInOut(int enter)
     cutsceneEnterExit(enter, 1);
 }
 
-u8 lbl_8033C3B8[0x3E8];
+extern u8 lbl_8033C3B8[0x3E8];
 typedef struct GameLoopRenderModeStorage
 {
     GXRenderModeObj mode;
@@ -567,7 +566,7 @@ void mapLoadByCoords(f32 x, f32 y, f32 z, int act)
 {
     lbl_803DCA38 = 0;
     mapSetup(act, x, &gGameLoopPendingMapId, &gGameLoopPendingMapDataFileId, y, z);
-    lbl_803DCA40 = 1;
+    gGameLoopFullMapUnloadPending = 1;
     gGameLoopMapLoadPending = 1;
     memset(gGameLoopPlayerTrailBuffer, 0, 0x3c0);
     gGameLoopPlayerTrailIndex = 0;
@@ -591,14 +590,14 @@ void doQueuedLoads(void)
         waitNextFrame();
         GXFlush_(1, 0);
         mmSetFreeDelay(0);
-        if (lbl_803DCAC4 != 0)
+        if (gGameLoopMapLoaded != 0)
         {
             setColor_803db5d0(0, 0, 0);
             unloadMap();
-            if (lbl_803DCA40 != 0)
+            if (gGameLoopFullMapUnloadPending != 0)
             {
                 mapUnload(0, 0x80000000);
-                lbl_803DCA40 = 0;
+                gGameLoopFullMapUnloadPending = 0;
             }
         }
         old = mmSetFreeDelay(0);
@@ -629,7 +628,7 @@ void doQueuedLoads(void)
             (*(void (**)(int))(*(int*)gDll12Interface + 0xc))(1);
         }
         mmSetFreeDelay(old);
-        lbl_803DCAC4 = 1;
+        gGameLoopMapLoaded = 1;
     }
 }
 
@@ -1000,4 +999,6 @@ int main(int argc, char** argv)
     } while (1);
 }
 
-char sMainFinishedInitMessage[15] = "finished init\n";
+u8 lbl_8033C3B8[0x3E8];
+
+char sMainFinishedInitMessage[16] = "finished init\n";

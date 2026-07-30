@@ -21,31 +21,6 @@
 #define DIMBOSSGUT2_PARTFX             0x32b
 #define DIMBOSSGUT2_OBJECT_TYPE_ID     0x49
 #define DIMBOSSGUT2_WATER_SURFACE_TYPE 0xE
-/* Unused source-position anchor for MWCC's anonymous symbol numbering. */
-static void dimbossgut2_spawnBreathSplash(GameObject* obj, DimBossGut2Control* control) {
-    u32 randomThreshold;
-    f32 heightDiff;
-    f32 xyScale;
-    PartFxSpawnParams effectParams;
-
-    if ((control->verticalVelocity < -0.025f) && (control->pathSpeed < 0.25f)) {
-        heightDiff = control->surfaceY - obj->anim.localPosY;
-        if (heightDiff < 0.0f) {
-            heightDiff = -heightDiff;
-        }
-        if ((heightDiff < 14.0f) &&
-            (effectParams.posY = control->surfaceY, randomThreshold = randomGetRange(0x1e, 0x3c),
-             (int)(u32)control->breathFxTimer > (int)randomThreshold)) {
-            xyScale = 20.0f * control->pathSpeed;
-            effectParams.posX = obj->anim.localPosX - xyScale * mathSinf(3.1415927f * (f32)obj->anim.rotX / 32768.0f);
-            effectParams.posZ = obj->anim.localPosZ - xyScale * mathCosf(3.1415927f * (f32)obj->anim.rotX / 32768.0f);
-            effectParams.scale = 0.65f * (1.0f - heightDiff / 14.0f);
-            (*gPartfxInterface)->spawnObject((void*)obj, DIMBOSSGUT2_PARTFX, &effectParams, 1, -1, NULL);
-            control->breathFxTimer = 0;
-        }
-    }
-}
-
 void dimbossgut2_updateBobAndSway(GameObject* obj, DimBossGut2State* state) {
     DimBossGut2Control* control;
     f32 heightDelta;
@@ -164,7 +139,7 @@ void DIM_BossGut2_free(GameObject* obj) {
     if (light != NULL) {
         ModelLightStruct_free(light);
     }
-    ObjGroup_RemoveObject((int)obj, DIMBOSSGUT2_OBJGROUP);
+    objFreeObjectType((int)obj, DIMBOSSGUT2_OBJGROUP);
     childObj = obj->childObjs[0];
     if (childObj != NULL) {
         Obj_FreeObject(childObj);

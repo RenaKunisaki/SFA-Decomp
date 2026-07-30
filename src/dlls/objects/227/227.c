@@ -7,7 +7,6 @@
 #include "dlls/objects/227_Fireball.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/waterfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
@@ -38,6 +37,10 @@
 #define FIREBALL_HIT_STATE(obj) ((ObjHitsPriorityState*)(obj)->anim.hitReactState)
 
 u8 gFireballColorIndexTable[8] = {0, 2, 4, 0, 0, 0, 0, 0};
+
+u8 gFireballLightColors[4][3] = {
+    {0xFF, 0x20, 0x20}, {0x20, 0xFF, 0x20}, {0x20, 0x20, 0xFF}, {0x00, 0x00, 0x00},
+};
 
 ObjectDescriptor10WithPadding gFireballObjDescriptor = {
     {
@@ -179,7 +182,7 @@ void Fireball_free(GameObject* obj) {
         ModelLightStruct_free(light);
     }
     (*gExpgfxInterface)->freeSource2((u32)obj);
-    ObjGroup_RemoveObject((int)obj, FIREBALL_OBJECT_GROUP);
+    objFreeObjectType((int)obj, FIREBALL_OBJECT_GROUP);
 }
 
 void Fireball_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
@@ -281,7 +284,7 @@ void Fireball_hitDetect(GameObject* obj) {
             state->light = NULL;
         }
     }
-    ObjGroup_RemoveObject((int)obj, FIREBALL_OBJECT_GROUP);
+    objFreeObjectType((int)obj, FIREBALL_OBJECT_GROUP);
 }
 
 void Fireball_update(GameObject* obj) {
@@ -345,7 +348,7 @@ void Fireball_update(GameObject* obj) {
                 ModelLightStruct_free(state->light);
                 state->light = NULL;
             }
-            ObjGroup_RemoveObject((int)obj, FIREBALL_OBJECT_GROUP);
+            objFreeObjectType((int)obj, FIREBALL_OBJECT_GROUP);
             ObjHits_DisableObject(obj);
         }
     }
@@ -376,7 +379,7 @@ void Fireball_update(GameObject* obj) {
         if ((state->stateFlags & FIREBALL_FLAG_GRAVITY) != 0) {
             f32 ground;
             state->posY -= 2.0f * timeDelta;
-            if (hitDetectFn_800658a4(obj, state->posX, state->posY, state->posZ, &ground, 0) == 0) {
+            if (trackGetNearestGroundOffset(obj, state->posX, state->posY, state->posZ, &ground, 0) == 0) {
                 ground -= 10.0f;
                 if (ground < 0.0f && ground > -15.0f) {
                     state->posY -= ground;
@@ -445,7 +448,7 @@ void Fireball_init(GameObject* obj) {
             fs = (FireballState*)((char*)fs + 2);
         }
         obj->animEventCallback = Fireball_SeqFn;
-        ObjGroup_AddObject((int)obj, FIREBALL_OBJECT_GROUP);
+        objAddObjectType((int)obj, FIREBALL_OBJECT_GROUP);
         if (obj->anim.romDefNo != FIREBALL_SEQID_HIDDEN && placement->startupDelayEnabled != 0) {
             state->startupDelay = 4.0f;
         }

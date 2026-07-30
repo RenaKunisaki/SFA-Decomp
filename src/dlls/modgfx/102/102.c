@@ -1,18 +1,50 @@
 /*
- * DLL 102 / 0x66 - one of a family of near-identical per-DLL modgfx
- * emitters (dll_005E..dll_007B). func00/func01 are empty entry stubs;
- * dll_66_func03 builds a fixed modgfx command list (GfxCmd entries off
- * lbl_803131A8) and submits it via gModgfxInterface->spawnEffect.
+ * DLL 102 / 0x66 - a modgfx effect spawner.
  */
+#include "main/dll/dll_0066_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/partfx_interface.h"
 #include "main/dll/modgfx_types.h"
-#include "dlls/object_descriptor.h"
+#include "main/dll/partfx_interface.h"
 
-/* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
-#define DLL66_EFFECT_ID 0x155
+typedef struct Dll66EffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} Dll66EffectVertex;
 
-u32 lbl_803131A8[123] = {
+STATIC_ASSERT(offsetof(Dll66EffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(Dll66EffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(Dll66EffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(Dll66EffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(Dll66EffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(Dll66EffectVertex) == 0x0A);
+
+typedef struct Dll66EffectResourceView {
+    Dll66EffectVertex vertices[21];
+    u8 padD2[2];
+    s16 colors[24][3];
+    s16 firstGroupIndices[8];
+    s16 secondGroupIndices[8];
+    s16 thirdGroupIndices[8];
+    s16 firstAndThirdGroupIndices[14];
+    s16 allVertexIndices[22];
+    s16 sequenceParams[7];
+    u8 pad1EA[2];
+} Dll66EffectResourceView;
+
+STATIC_ASSERT(offsetof(Dll66EffectResourceView, vertices) == 0x000);
+STATIC_ASSERT(offsetof(Dll66EffectResourceView, colors) == 0x0D4);
+STATIC_ASSERT(offsetof(Dll66EffectResourceView, firstGroupIndices) == 0x164);
+STATIC_ASSERT(offsetof(Dll66EffectResourceView, secondGroupIndices) == 0x174);
+STATIC_ASSERT(offsetof(Dll66EffectResourceView, thirdGroupIndices) == 0x184);
+STATIC_ASSERT(offsetof(Dll66EffectResourceView, firstAndThirdGroupIndices) == 0x194);
+STATIC_ASSERT(offsetof(Dll66EffectResourceView, allVertexIndices) == 0x1B0);
+STATIC_ASSERT(offsetof(Dll66EffectResourceView, sequenceParams) == 0x1DC);
+STATIC_ASSERT(sizeof(Dll66EffectResourceView) == 0x1EC);
+
+u32 gDll66EffectResourceData[sizeof(Dll66EffectResourceView) / sizeof(u32)] = {
     0x00000000, 0x03e80000, 0x00000362, 0x000001f4, 0x000b0000, 0x03620000, 0xfe0c0016, 0x00000000, 0x0000fc18,
     0x00200000, 0xfc9e0000, 0xfe0c0016, 0x0000fc9e, 0x000001f4, 0x000b0000, 0x00000000, 0x03e80000, 0x00000000,
     0x0bb803e8, 0x0000003f, 0x03620bb8, 0x01f4000b, 0x003f0362, 0x0bb8fe0c, 0x0016003f, 0x00000bb8, 0xfc180020,
@@ -29,21 +61,21 @@ u32 lbl_803131A8[123] = {
     0x00120013, 0x00140000, 0x00000032, 0x00c80032, 0x00010000, 0x00000000,
 };
 
-void dll_66_func03(int sourceObj, int variant, int posSource, u32 flags)
-{
+void dll_66_spawnEffect(GameObject* sourceObj, int variant, void* spawnParams, u32 spawnFlags) {
     ModgfxSpawnPacket buf;
-    u8* base = (u8*)(int)lbl_803131A8;
-    int ctx;
+    u8* resourceData = (u8*)(int)gDll66EffectResourceData;
+    GameObject* context;
+
     buf.entries[0].layer = 0;
     buf.entries[0].flags = 0x15;
-    buf.entries[0].tex = &base[432];
+    buf.entries[0].tex = &resourceData[offsetof(Dll66EffectResourceView, allVertexIndices)];
     buf.entries[0].mode = 4;
     buf.entries[0].x = 0.0f;
     buf.entries[0].y = 0.0f;
     buf.entries[0].z = 0.0f;
     buf.entries[1].layer = 0;
     buf.entries[1].flags = 0x15;
-    buf.entries[1].tex = &base[432];
+    buf.entries[1].tex = &resourceData[offsetof(Dll66EffectResourceView, allVertexIndices)];
     buf.entries[1].mode = 2;
     buf.entries[1].x = 0.01f;
     buf.entries[1].y = 2.0f;
@@ -71,21 +103,21 @@ void dll_66_func03(int sourceObj, int variant, int posSource, u32 flags)
     buf.entries[4].z = 0.0f;
     buf.entries[5].layer = 1;
     buf.entries[5].flags = 0x15;
-    buf.entries[5].tex = &base[432];
+    buf.entries[5].tex = &resourceData[offsetof(Dll66EffectResourceView, allVertexIndices)];
     buf.entries[5].mode = 2;
     buf.entries[5].x = 200.0f;
     buf.entries[5].y = 1.0f;
     buf.entries[5].z = 200.0f;
     buf.entries[6].layer = 1;
     buf.entries[6].flags = 7;
-    buf.entries[6].tex = &base[372];
+    buf.entries[6].tex = &resourceData[offsetof(Dll66EffectResourceView, secondGroupIndices)];
     buf.entries[6].mode = 4;
     buf.entries[6].x = 255.0f;
     buf.entries[6].y = 0.0f;
     buf.entries[6].z = 0.0f;
     buf.entries[7].layer = 1;
     buf.entries[7].flags = 0x15;
-    buf.entries[7].tex = &base[432];
+    buf.entries[7].tex = &resourceData[offsetof(Dll66EffectResourceView, allVertexIndices)];
     buf.entries[7].mode = 0x4000;
     buf.entries[7].x = 0.0f;
     buf.entries[7].y = 2.0f;
@@ -113,7 +145,7 @@ void dll_66_func03(int sourceObj, int variant, int posSource, u32 flags)
     buf.entries[10].z = 0.0f;
     buf.entries[11].layer = 2;
     buf.entries[11].flags = 0x15;
-    buf.entries[11].tex = &base[432];
+    buf.entries[11].tex = &resourceData[offsetof(Dll66EffectResourceView, allVertexIndices)];
     buf.entries[11].mode = 0x4000;
     buf.entries[11].x = 0.0f;
     buf.entries[11].y = 2.0f;
@@ -134,14 +166,14 @@ void dll_66_func03(int sourceObj, int variant, int posSource, u32 flags)
     buf.entries[13].z = 0.0f;
     buf.entries[14].layer = 3;
     buf.entries[14].flags = 7;
-    buf.entries[14].tex = &base[372];
+    buf.entries[14].tex = &resourceData[offsetof(Dll66EffectResourceView, secondGroupIndices)];
     buf.entries[14].mode = 4;
     buf.entries[14].x = 0.0f;
     buf.entries[14].y = 0.0f;
     buf.entries[14].z = 0.0f;
     buf.entries[15].layer = 3;
     buf.entries[15].flags = 0x15;
-    buf.entries[15].tex = &base[432];
+    buf.entries[15].tex = &resourceData[offsetof(Dll66EffectResourceView, allVertexIndices)];
     buf.entries[15].mode = 0x4000;
     buf.entries[15].x = 0.0f;
     buf.entries[15].y = 2.0f;
@@ -155,7 +187,7 @@ void dll_66_func03(int sourceObj, int variant, int posSource, u32 flags)
     buf.entries[16].z = -150.0f;
     buf.entries[17].layer = 3;
     buf.entries[17].flags = 0x15;
-    buf.entries[17].tex = &base[432];
+    buf.entries[17].tex = &resourceData[offsetof(Dll66EffectResourceView, allVertexIndices)];
     buf.entries[17].mode = 2;
     buf.entries[17].x = 0.01f;
     buf.entries[17].y = 1.0f;
@@ -174,69 +206,57 @@ void dll_66_func03(int sourceObj, int variant, int posSource, u32 flags)
     buf.entries[18].x = 999.0f;
     buf.entries[18].y = 18.0f;
     buf.entries[18].z = 19.0f;
-    buf.v58 = 0;
-    ctx = sourceObj;
-    buf.ctx = ctx;
-    buf.v44 = variant;
-    buf.pos[0] = 0.0f;
-    buf.pos[1] = 0.0f;
-    buf.pos[2] = 0.0f;
-    buf.col[0] = 0.0f;
-    buf.col[1] = 0.0f;
-    buf.col[2] = 0.0f;
+    buf.modeByte = 0;
+    context = sourceObj;
+    buf.sourceObj = context;
+    buf.sourceMode = variant;
+    buf.position[0] = 0.0f;
+    buf.position[1] = 0.0f;
+    buf.position[2] = 0.0f;
+    buf.velocity[0] = 0.0f;
+    buf.velocity[1] = 0.0f;
+    buf.velocity[2] = 0.0f;
     buf.scale = 1.0f;
-    buf.v40 = 2;
-    buf.v3c = 7;
-    buf.v59 = 0xe;
-    buf.v5a = 0;
-    buf.v5b = 0x1e;
-    buf.count = 20;
-    buf.hw[0] = *(s16*)&base[476];
-    buf.hw[1] = *(s16*)&base[478];
-    buf.hw[2] = *(s16*)&base[480];
-    buf.hw[3] = *(s16*)&base[482];
-    buf.hw[4] = *(s16*)&base[484];
-    buf.hw[5] = *(s16*)&base[486];
-    buf.hw[6] = *(s16*)&base[488];
-    buf.cmds = (GfxCmd*)((u8*)&buf + 0x60);
+    buf.drawGroupCount = 2;
+    buf.drawGroupStride = 7;
+    buf.initialStateByte = 0xe;
+    buf.byte5A = 0;
+    buf.textureFrameTimer = 0x1e;
+    buf.commandCount = 20;
+    buf.sequenceParams[0] = *(s16*)&resourceData[offsetof(Dll66EffectResourceView, sequenceParams[0])];
+    buf.sequenceParams[1] = *(s16*)&resourceData[offsetof(Dll66EffectResourceView, sequenceParams[1])];
+    buf.sequenceParams[2] = *(s16*)&resourceData[offsetof(Dll66EffectResourceView, sequenceParams[2])];
+    buf.sequenceParams[3] = *(s16*)&resourceData[offsetof(Dll66EffectResourceView, sequenceParams[3])];
+    buf.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll66EffectResourceView, sequenceParams[4])];
+    buf.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll66EffectResourceView, sequenceParams[5])];
+    buf.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll66EffectResourceView, sequenceParams[6])];
+    buf.commands = (GfxCmd*)((u8*)&buf + 0x60);
     buf.flags = 0xc010080;
-    buf.flags |= flags;
-    if ((buf.flags & 1) != 0)
-    {
-        if ((void*)ctx != NULL)
-        {
-            buf.pos[0] += ((GameObject*)ctx)->anim.worldPosX;
-            buf.pos[1] += ((GameObject*)ctx)->anim.worldPosY;
-            buf.pos[2] += ((GameObject*)ctx)->anim.worldPosZ;
-        }
-        else
-        {
-            buf.pos[0] += ((PartFxSpawnParams*)posSource)->posX;
-            buf.pos[1] += ((PartFxSpawnParams*)posSource)->posY;
-            buf.pos[2] += ((PartFxSpawnParams*)posSource)->posZ;
+    buf.flags |= spawnFlags;
+    if ((buf.flags & 1) != 0) {
+        if (context != NULL) {
+            buf.position[0] += context->anim.worldPosX;
+            buf.position[1] += context->anim.worldPosY;
+            buf.position[2] += context->anim.worldPosZ;
+        } else {
+            PartFxSpawnParams* params = (PartFxSpawnParams*)spawnParams;
+
+            buf.position[0] += params->posX;
+            buf.position[1] += params->posY;
+            buf.position[2] += params->posZ;
         }
     }
-    (*gModgfxInterface)->spawnEffect(&buf, 0, 0x15, (u8*)(int)lbl_803131A8, 0x18, &base[212], DLL66_EFFECT_ID, 0);
+    (*gModgfxInterface)
+        ->spawnEffect(&buf, 0, 0x15, (u8*)(int)gDll66EffectResourceData, 0x18,
+                      &resourceData[offsetof(Dll66EffectResourceView, colors)], 0x155, 0);
 }
 
-void dll_66_func01_nop(void)
-{
+void dll_66_release(void) {
 }
 
-void dll_66_func00_nop(void)
-{
+void dll_66_initialise(void) {
 }
 
-ObjectDescriptor4WithPadding dll_66_funcs = {
-    {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-        (ObjectDescriptorCallback)dll_66_func00_nop,
-        (ObjectDescriptorCallback)dll_66_func01_nop,
-        0,
-        (ObjectDescriptorCallback)dll_66_func03,
-    },
-    0,
+Dll66ResourceDescriptor gDll66ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_66_initialise, dll_66_release, NULL, dll_66_spawnEffect, 0,
 };

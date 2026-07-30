@@ -741,8 +741,7 @@ void dll_0B_releaseHandle(s16* p)
     *p = -1;
 }
 
-int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
-{
+int dll_0B_renderEffects(void* drawContext, int unused1, int unused2, u8 sourceOnly, void* sourceObject) {
     u8 ar;
     u8 ag;
     u8 ab;
@@ -754,58 +753,54 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
     int** p;
     int slot;
     Camera* view;
-    u8 texCount;
+    u8 textureFrameCount;
     void* buf1;
     void* buf2;
     u8 aligned;
-    void* tex;
-    int n131p1;
-    int n131;
-    int j;
+    Texture* texture;
+    int nextTextureFrame;
+    int textureFrame;
+    int frameIndex;
     f32 dirX;
     f32 dirZ;
     f32 dscale;
 
-    n131p1 = 0;
-    n131 = 0;
-    if (a4 != NULL)
-    {
-        getAmbientColor(((GameObject*)a4)->lightColorSlot, &ar, &ag, &ab);
-    }
-    else
-    {
+    nextTextureFrame = 0;
+    textureFrame = 0;
+    if (sourceObject != NULL) {
+        getAmbientColor(((GameObject*)sourceObject)->lightColorSlot, &ar, &ag, &ab);
+    } else {
         getAmbientColor(0, &ar, &ag, &ab);
     }
     GXSetCullMode(GX_CULL_NONE);
-    if (renderModeSetOrGet(-1) == 1)
-    {
+    if (renderModeSetOrGet(-1) == 1) {
         return 1;
     }
     view = Camera_GetCurrent();
     p = (int**)gPartfxActiveEffects;
-    for (slot = 0; slot < PARTFX_ACTIVE_EFFECT_COUNT; slot++)
-    {
-        if (p[slot] == NULL)
+    for (slot = 0; slot < PARTFX_ACTIVE_EFFECT_COUNT; slot++) {
+        if (p[slot] == NULL) {
             continue;
-        if (((PartfxEffectState*)p[slot])->sequenceId == -1)
+        }
+        if (((PartfxEffectState*)p[slot])->sequenceId == -1) {
             continue;
-        if (a3)
-        {
-            if (((int)((PartfxEffectState*)p[slot])->flags & 0x2000) == 0)
-                continue;
         }
-        if (a3)
-        {
-            if (((PartfxEffectState*)p[slot])->sourceObject != a4)
+        if (sourceOnly) {
+            if (((int)((PartfxEffectState*)p[slot])->flags & 0x2000) == 0) {
                 continue;
+            }
         }
-        if (!a3)
-        {
-            if ((int)((PartfxEffectState*)p[slot])->flags & 0x2000)
+        if (sourceOnly) {
+            if (((PartfxEffectState*)p[slot])->sourceObject != sourceObject) {
                 continue;
+            }
         }
-        if ((int)((PartfxEffectState*)p[slot])->flags & 0x800)
-        {
+        if (!sourceOnly) {
+            if ((int)((PartfxEffectState*)p[slot])->flags & 0x2000) {
+                continue;
+            }
+        }
+        if ((int)((PartfxEffectState*)p[slot])->flags & 0x800) {
             ((PartfxEffectState*)p[slot])->frameUpdated = 0;
         }
         aligned = 0;
@@ -820,19 +815,14 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
         pos[0] = ((PartfxEffectState*)p[slot])->drawPosX;
         pos[1] = ((PartfxEffectState*)p[slot])->drawPosY;
         pos[2] = ((PartfxEffectState*)p[slot])->drawPosZ;
-        if ((int)((PartfxEffectState*)p[slot])->flags & 0x4)
-        {
-            if (MODGFX_ZERO == pos[2] + (pos[0] + pos[1]))
-            {
+        if ((int)((PartfxEffectState*)p[slot])->flags & 0x4) {
+            if (MODGFX_ZERO == pos[2] + (pos[0] + pos[1])) {
                 aligned = 1;
             }
         }
-        if ((int)((PartfxEffectState*)p[slot])->flags & 0x4)
-        {
-            if (!aligned)
-            {
-                if (((PartfxEffectState*)p[slot])->sourceObject != NULL)
-                {
+        if ((int)((PartfxEffectState*)p[slot])->flags & 0x4) {
+            if (!aligned) {
+                if (((PartfxEffectState*)p[slot])->sourceObject != NULL) {
                     xf.rotX = ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotX;
                     xf.rotY = ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotY;
                     xf.rotZ = ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotZ;
@@ -843,16 +833,12 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
         rot[0] = MODGFX_ZERO;
         rot[1] = MODGFX_ZERO;
         rot[2] = MODGFX_ZERO;
-        if (((int)((PartfxEffectState*)p[slot])->flags & 1) == 0)
-        {
-            if (((PartfxEffectState*)p[slot])->sourceObject != NULL)
-            {
+        if (((int)((PartfxEffectState*)p[slot])->flags & 1) == 0) {
+            if (((PartfxEffectState*)p[slot])->sourceObject != NULL) {
                 rot[0] = ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.worldPosX;
                 rot[1] = ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.worldPosY;
                 rot[2] = ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.worldPosZ;
-            }
-            else
-            {
+            } else {
                 rot[0] = ((PartfxEffectState*)p[slot])->sourcePosX;
                 rot[1] = ((PartfxEffectState*)p[slot])->sourcePosY;
                 rot[2] = ((PartfxEffectState*)p[slot])->sourcePosZ;
@@ -860,67 +846,50 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
                                            ((PartfxEffectState*)p[slot])->sourceYawIndex);
             }
         }
-        if (rot[0] > 65534.0f || rot[0] < -65534.0f)
-        {
+        if (rot[0] > 65534.0f || rot[0] < -65534.0f) {
             rot[0] = -playerMapOffsetX;
         }
-        if (rot[1] > 65534.0f || rot[1] < -65534.0f)
-        {
+        if (rot[1] > 65534.0f || rot[1] < -65534.0f) {
             rot[1] = MODGFX_ZERO;
         }
-        if (rot[2] > 65534.0f || rot[2] < -65534.0f)
-        {
+        if (rot[2] > 65534.0f || rot[2] < -65534.0f) {
             rot[2] = -playerMapOffsetZ;
         }
         xf.x = rot[0] + pos[0];
         xf.y = rot[1] + pos[1];
         xf.z = rot[2] + pos[2];
-        if ((int)((PartfxEffectState*)p[slot])->flags & 0x400000)
-        {
+        if ((int)((PartfxEffectState*)p[slot])->flags & 0x400000) {
             dscale = 0.5f * ((PartfxEffectState*)p[slot])->renderScale;
             xf.scale = dscale + dscale / randomGetRange(1, 10);
-        }
-        else
-        {
+        } else {
             xf.scale = 0.01f * ((PartfxEffectState*)p[slot])->renderScale;
         }
-        if ((int)((PartfxEffectState*)p[slot])->flags & 0x80000)
-        {
+        if ((int)((PartfxEffectState*)p[slot])->flags & 0x80000) {
             xf.rotZ = ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotZ;
             xf.rotY = ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotY;
             xf.rotX = ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotX;
-        }
-        else if (aligned && ((PartfxEffectState*)p[slot])->sourceObject != NULL)
-        {
+        } else if (aligned && ((PartfxEffectState*)p[slot])->sourceObject != NULL) {
             xf.rotZ = ((PartfxEffectState*)p[slot])->rotOffsetZ +
-                        ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotZ;
+                      ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotZ;
             xf.rotY = ((PartfxEffectState*)p[slot])->rotOffsetY +
-                        ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotY;
+                      ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotY;
             xf.rotX = ((PartfxEffectState*)p[slot])->rotOffsetX +
-                        ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotX;
-        }
-        else if (aligned)
-        {
+                      ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.rotX;
+        } else if (aligned) {
             xf.rotZ = ((PartfxEffectState*)p[slot])->rotOffsetZ + ((PartfxEffectState*)p[slot])->sourceRotZ;
             xf.rotY = ((PartfxEffectState*)p[slot])->rotOffsetY + ((PartfxEffectState*)p[slot])->sourceRotY;
             xf.rotX = ((PartfxEffectState*)p[slot])->rotOffsetX + ((PartfxEffectState*)p[slot])->sourceRotX;
-        }
-        else
-        {
+        } else {
             xf.rotZ = ((PartfxEffectState*)p[slot])->rotOffsetZ;
             xf.rotY = ((PartfxEffectState*)p[slot])->rotOffsetY;
             xf.rotX = ((PartfxEffectState*)p[slot])->rotOffsetX;
         }
-        if ((int)((PartfxEffectState*)p[slot])->flags & 0x1000)
-        {
-            if (((PartfxEffectState*)p[slot])->sourceObject != NULL)
-            {
+        if ((int)((PartfxEffectState*)p[slot])->flags & 0x1000) {
+            if (((PartfxEffectState*)p[slot])->sourceObject != NULL) {
                 dirX = view->worldX - ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.worldPosX;
-                dirZ = view->worldZ -
-                       ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.worldPosZ;
+                dirZ = view->worldZ - ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.worldPosZ;
                 dscale = sqrtf(dirX * dirX + dirZ * dirZ);
-                if (dscale)
-                {
+                if (dscale) {
                     dirX = dirX / dscale;
                     dirZ = dirZ / dscale;
                 }
@@ -934,149 +903,111 @@ int dll_0B_renderEffects(void* a0, int a1, int a2, u8 a3, void* a4)
         mtx44Transpose(mtxB[0], mtxA[0]);
         PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), mtxA, mtxA);
         GXLoadPosMtxImm(mtxA, GX_PNMTX0);
-        tex = ((PartfxEffectState*)p[slot])->textureResource;
-        if (tex != NULL)
-        {
-            texCount = (u8)(((Texture*)tex)->animationFrameCount >> 8);
+        texture = ((PartfxEffectState*)p[slot])->textureResource;
+        if (texture != NULL) {
+            textureFrameCount = (u8)(texture->animationFrameCount >> 8);
         }
-        if (tex != NULL && ((PartfxEffectState*)p[slot])->textureFrameTimer != 0)
-        {
+        if (texture != NULL && ((PartfxEffectState*)p[slot])->textureFrameTimer != 0) {
             ((PartfxEffectState*)p[slot])->textureFrameStep -= 1;
-            if (((PartfxEffectState*)p[slot])->textureFrameStep == 0)
-            {
+            if (((PartfxEffectState*)p[slot])->textureFrameStep == 0) {
                 ((PartfxEffectState*)p[slot])->textureFrameStep =
                     0x3c / ((PartfxEffectState*)p[slot])->textureFrameTimer;
                 ((PartfxEffectState*)p[slot])->textureFrame += 1;
-                if (((PartfxEffectState*)p[slot])->textureFrame >= (u32)texCount)
-                {
+                if (((PartfxEffectState*)p[slot])->textureFrame >= (u32)textureFrameCount) {
                     ((PartfxEffectState*)p[slot])->textureFrame = 0;
                 }
             }
         }
-        if ((int)((PartfxEffectState*)p[slot])->flags & 0x10000000)
-        {
-            setTextColor(a0, ar, ag, ab, 0xff);
-        }
-        else if (((PartfxEffectState*)p[slot])->sourceObject != NULL &&
-                 ((int)((PartfxEffectState*)p[slot])->flags & 0x4000))
-        {
-            setTextColor(a0, 0xff, 0xff, 0xff,
+        if ((int)((PartfxEffectState*)p[slot])->flags & 0x10000000) {
+            setTextColor(drawContext, ar, ag, ab, 0xff);
+        } else if (((PartfxEffectState*)p[slot])->sourceObject != NULL &&
+                   ((int)((PartfxEffectState*)p[slot])->flags & 0x4000)) {
+            setTextColor(drawContext, 0xff, 0xff, 0xff,
                          ((GameObject*)((PartfxEffectState*)p[slot])->sourceObject)->anim.renderAlpha);
+        } else {
+            setTextColor(drawContext, 0xff, 0xff, 0xff, 0xff);
         }
-        else
-        {
-            setTextColor(a0, 0xff, 0xff, 0xff, 0xff);
-        }
-        tex = ((PartfxEffectState*)p[slot])->textureResource;
-        if (tex != NULL)
-        {
-            n131 = ((PartfxEffectState*)p[slot])->textureFrame;
-            n131p1 = (n131 + 1) & 0xff;
-            if (n131p1 > texCount - 1)
-            {
-                n131p1 = 0;
+        texture = ((PartfxEffectState*)p[slot])->textureResource;
+        if (texture != NULL) {
+            textureFrame = ((PartfxEffectState*)p[slot])->textureFrame;
+            nextTextureFrame = (textureFrame + 1) & 0xff;
+            if (nextTextureFrame > textureFrameCount - 1) {
+                nextTextureFrame = 0;
             }
         }
         if (((int)((PartfxEffectState*)p[slot])->flags & 0x1000000) &&
-            (((PartfxEffectState*)p[slot])->frameUpdated != 0 || ((int)((PartfxEffectState*)p[slot])->flags & 0x400)))
-        {
+            (((PartfxEffectState*)p[slot])->frameUpdated != 0 || ((int)((PartfxEffectState*)p[slot])->flags & 0x400))) {
             {
-                for (j = 0; j < (u8)n131p1; j++)
-                {
-                    tex = *(void**)tex;
+                for (frameIndex = 0; frameIndex < (u8)nextTextureFrame; frameIndex++) {
+                    texture = texture->nextAnimationFrame;
                 }
-                _textSetColor(a0, 0xff, 0xff, 0xff,
+                _textSetColor(drawContext, 0xff, 0xff, 0xff,
                               (u8)(0xff - ((PartfxEffectState*)p[slot])->textureFrameStep *
                                               ((PartfxEffectState*)p[slot])->textureFrameFadeStep));
                 gxTevResetStages();
                 gxTevAddTextureFrameBlendStages();
                 gxTevModulateRasStage();
                 gxTevCommitStages();
-                selectTexture((Texture*)tex, 1);
+                selectTexture(texture, 1);
             }
-        }
-        else if ((int)((PartfxEffectState*)p[slot])->flags & 0x2000000)
-        {
+        } else if ((int)((PartfxEffectState*)p[slot])->flags & 0x2000000) {
             gxTevResetStages();
             gxTevRasTimesColor1Stage();
             gxTevCommitStages();
-        }
-        else if ((int)((PartfxEffectState*)p[slot])->flags & 0x4000000)
-        {
+        } else if ((int)((PartfxEffectState*)p[slot])->flags & 0x4000000) {
             gxTevResetStages();
             gxTevTextureTimesRasStage();
             gxTevModulateColor1Stage();
             gxTevCommitStages();
         }
         if (((int)((PartfxEffectState*)p[slot])->flags & 0x05000000) &&
-            (((PartfxEffectState*)p[slot])->frameUpdated != 0 || ((int)((PartfxEffectState*)p[slot])->flags & 0x400)))
-        {
+            (((PartfxEffectState*)p[slot])->frameUpdated != 0 || ((int)((PartfxEffectState*)p[slot])->flags & 0x400))) {
             {
-                tex = ((PartfxEffectState*)p[slot])->textureResource;
-                for (j = 0; j < (u8)n131; j++)
-                {
-                    tex = *(void**)tex;
+                texture = ((PartfxEffectState*)p[slot])->textureResource;
+                for (frameIndex = 0; frameIndex < (u8)textureFrame; frameIndex++) {
+                    texture = texture->nextAnimationFrame;
                 }
-                selectTexture((Texture*)tex, 0);
+                selectTexture(texture, 0);
             }
         }
-        if ((int)((PartfxEffectState*)p[slot])->flags & 0x100)
-        {
+        if ((int)((PartfxEffectState*)p[slot])->flags & 0x100) {
             gxSetAlphaBlendZTest();
-        }
-        else if (((int)((PartfxEffectState*)p[slot])->flags & 0x10) &&
-                 ((int)((PartfxEffectState*)p[slot])->flags & 0x80))
-        {
+        } else if (((int)((PartfxEffectState*)p[slot])->flags & 0x10) &&
+                   ((int)((PartfxEffectState*)p[slot])->flags & 0x80)) {
             gxSetAlphaBlendNoZTest();
-        }
-        else if ((int)((PartfxEffectState*)p[slot])->flags & 0x80)
-        {
+        } else if ((int)((PartfxEffectState*)p[slot])->flags & 0x80) {
             gxSetAlphaBlendZTest();
-        }
-        else if ((int)((PartfxEffectState*)p[slot])->flags & 0x10)
-        {
+        } else if ((int)((PartfxEffectState*)p[slot])->flags & 0x10) {
             gxSetAlphaBlendNoZTest();
-        }
-        else
-        {
+        } else {
             gxSetAlphaBlendZTest();
         }
-        if ((int)((PartfxEffectState*)p[slot])->flags & 0x40)
-        {
+        if ((int)((PartfxEffectState*)p[slot])->flags & 0x40) {
             GXSetCullMode(GX_CULL_FRONT);
-        }
-        else
-        {
+        } else {
             GXSetCullMode(GX_CULL_NONE);
         }
-        if (((PartfxEffectState*)p[slot])->frameUpdated != 0 || ((int)((PartfxEffectState*)p[slot])->flags & 0x400))
-        {
+        if (((PartfxEffectState*)p[slot])->frameUpdated != 0 || ((int)((PartfxEffectState*)p[slot])->flags & 0x400)) {
             int di;
-            for (di = 0; di < ((PartfxEffectState*)p[slot])->drawGroupCount; di++)
-            {
-                if ((int)((PartfxEffectState*)p[slot])->flags & 0x8000000)
-                {
+            for (di = 0; di < ((PartfxEffectState*)p[slot])->drawGroupCount; di++) {
+                if ((int)((PartfxEffectState*)p[slot])->flags & 0x8000000) {
                     lightmapDrawTriangleList(buf1, (u8*)buf2,
-                                    ((PartfxEffectState*)p[slot])->colorVertexCount /
-                                        ((PartfxEffectState*)p[slot])->drawGroupCount);
-                }
-                else
-                {
-                    lightmapDrawTriangleList(buf1, (u8*)buf2,
-                                    ((PartfxEffectState*)p[slot])->colorVertexCount);
+                                             ((PartfxEffectState*)p[slot])->colorVertexCount /
+                                                 ((PartfxEffectState*)p[slot])->drawGroupCount);
+                } else {
+                    lightmapDrawTriangleList(buf1, (u8*)buf2, ((PartfxEffectState*)p[slot])->colorVertexCount);
                 }
                 buf1 = (char*)buf1 + (((PartfxEffectState*)p[slot])->drawGroupStride << 4);
-                if ((int)((PartfxEffectState*)p[slot])->flags & 0x8000000)
-                {
+                if ((int)((PartfxEffectState*)p[slot])->flags & 0x8000000) {
                     buf2 = (char*)buf2 + ((((PartfxEffectState*)p[slot])->colorVertexCount /
                                            ((PartfxEffectState*)p[slot])->drawGroupCount)
                                           << 4);
                 }
             }
-            Rcp_ResetRenderState();
-            ((PartfxEffectState*)p[slot])->activeVertexBufferIndex =
-                1 - ((PartfxEffectState*)p[slot])->activeVertexBufferIndex;
         }
+        Rcp_ResetRenderState();
+        ((PartfxEffectState*)p[slot])->activeVertexBufferIndex =
+            1 - ((PartfxEffectState*)p[slot])->activeVertexBufferIndex;
     }
     return 0;
 }
@@ -1321,7 +1252,7 @@ void dll_0B_updateActiveEffects(void)
                         ((ObjPlacement*)o)->posX = tmpl.posX;
                         ((ObjPlacement*)o)->posY = tmpl.posY;
                         ((ObjPlacement*)o)->posZ = tmpl.posZ;
-                        *(int*)eff = (int)Obj_SetupObject((ObjPlacement*)o, 5, -1, -1, NULL);
+                        *(int*)eff = (int)objSetupObject((ObjPlacement*)o, 5, -1, -1, NULL);
                         *(int*)(*(int*)eff + 0xf8) = 1;
                     }
                     else if (*(void**)eff != NULL)
@@ -1595,18 +1526,22 @@ void dll_0B_updateActiveEffects(void)
 s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e, s16* d, int textureAssetId,
                   void* textureResource)
 {
-    int base0;
-    int total = 0;
     int off;
-    int i = 0;
-    int found = i;
+    int i;
     int spawnCount;
     int divThresh;
-    int slot = modgfx_findFreeEffectSlot(gPartfxActiveEffects, found, i);
+    int slot;
     f32 fz434;
     f32 fz430;
     PartfxEffectState** arr;
+    int emitterAddress;
+    int base0;
+    int total;
 
+    total = 0;
+    i = 0;
+    off = i;
+    slot = modgfx_findFreeEffectSlot(gPartfxActiveEffects, off, i);
     if (slot == -1)
     {
         return 0;
@@ -1672,13 +1607,14 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
     }
     if ((st->flags & 0x800) == 0)
     {
-        int k;
-        for (k = 0; k < 3; k++)
+        for (i = 0, off = i; i < 3; off += 4, i++)
         {
-            u8* dstc = (u8*)arr[slot]->colorBuffers[k];
-            int j = 0;
+            u8* dstc = *(u8**)((u8*)arr[slot] + 0x84 + off);
+            int j;
             int bias = 0;
-            s16* sd = d;
+            s16* sd;
+            j = 0;
+            sd = d;
             for (; j < e; j++)
             {
                 if ((st->flags & 0x8000000) && j == divThresh)
@@ -1709,10 +1645,9 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
 
     if ((st->flags & 0x800) == 0)
     {
-        int k;
-        for (k = 0; k < 3; k++)
+        for (i = 0, off = i; i < 3; off += 4, i++)
         {
-            u8* dstv = (u8*)arr[slot]->vertexBuffers[k];
+            u8* dstv = *(u8**)((u8*)arr[slot] + 0x78 + off);
             int j;
             s16* sb = b;
             for (j = 0; j < c; j++)
@@ -1756,8 +1691,10 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
     arr[slot]->stageDurations[4] = st->sequenceParams[4];
     arr[slot]->stageDurations[5] = st->sequenceParams[5];
     arr[slot]->stageDurations[6] = st->sequenceParams[6];
-    arr[slot]->emitterCommands =
-        (u8*)(base0 + (int)arr[slot]->inlineData + 0x100);
+    emitterAddress = base0;
+    emitterAddress += (int)arr[slot]->inlineData;
+    emitterAddress += 0x100;
+    arr[slot]->emitterCommands = (u8*)emitterAddress;
     arr[slot]->auxSequenceBuffer = NULL;
     if (total != 0)
     {
@@ -1768,7 +1705,7 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* st, int unused, int c, s16* b, int e,
 
     {
         u8* dst = arr[slot]->auxSequenceBuffer;
-        for (i = 0, off = 0; i < arr[slot]->emitterCount; off += 0x18, i++)
+        for (i = 0, off = i; i < arr[slot]->emitterCount; off += 0x18, i++)
         {
             ((ModgfxPendingSpawn*)((u8*)arr[slot]->emitterCommands + off))
                 ->sequenceIndex = ((ModgfxPendingSpawn*)((u8*)st->pendingSpawns + off))->sequenceIndex;

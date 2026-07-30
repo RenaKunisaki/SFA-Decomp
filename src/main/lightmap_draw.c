@@ -51,7 +51,7 @@ void sceneDrawTransparentPolys(void);
 
 extern f32 lbl_803DEBFC;
 
-extern u8 lbl_803DCE98; /* count of allocated blocks */
+extern u8 gMapBlockCount; /* count of allocated blocks */
 
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -406,7 +406,7 @@ void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* v
     int cursor;
     u32 v;
     int* base;
-    struct MapShader* newR;
+    struct Shader* newR;
     int nibble;
     int i;
     u8* s0;
@@ -442,7 +442,7 @@ void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* 
     int state[5];
     Mtx m;
     int countShifted;
-    struct MapShader* newR;
+    struct Shader* newR;
     int cursor;
     u32 v;
     int* base;
@@ -483,7 +483,7 @@ void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, f
 {
     int state[5];
     int countShifted;
-    struct MapShader* newR;
+    struct Shader* newR;
     int cursor;
     u32 v;
     int* base;
@@ -524,23 +524,23 @@ void lightmapDrawQueuedObject(GameObject* obj)
     ObjModel* model = Obj_GetActiveModel(obj);
     if (model->renderAttachment != NULL)
     {
-        objRenderFn_8003d980((u8*)obj, (int*)model);
+        objRenderAttachment((u8*)obj, (int*)model);
     }
     else
     {
         ObjModelState* shadow;
         (*gModgfxInterface)->renderEffects(NULL, 0, 0, 1, obj);
-        renderResetFn_8003fc60();
+        objRenderInvalidateStateCache();
         objRender(0, 0, 0, 0, obj, 1);
         Camera_ApplyDecalViewport();
         shadow = (ObjModelState*)(obj->anim.modelState);
         if (shadow != NULL && shadow->shadowCastSlot != NULL)
         {
-            objShadowFn_80062498(obj, 0, 0, framesThisStep);
+            objShadowRender(obj, 0, 0, framesThisStep);
         }
-        else if (((ObjAnimComponent*)obj)->modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH)
+        else if (obj->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH)
         {
-            objDrawFn_80061654(obj, model);
+            objDrawGroundShadow(obj, model);
         }
         Camera_ApplyFullViewport();
     }
@@ -583,7 +583,7 @@ void sceneDrawTransparentPolys(void)
             {
                 if (playerIsDisguised(item.object) == 0)
                 {
-                    fn_802B4ED8(item.object, 1, 1);
+                    playerRenderFuzz(item.object, 1, 1);
                 }
             }
             else
@@ -593,12 +593,12 @@ void sceneDrawTransparentPolys(void)
             break;
         case 2:
             Camera_ApplyDecalViewport();
-            objShadowFn_80062498(entries[i].arg0.object, 0, 0, framesThisStep);
+            objShadowRender(entries[i].arg0.object, 0, 0, framesThisStep);
             Camera_ApplyFullViewport();
             break;
         case 3:
             Camera_ApplyDecalViewport();
-            objDrawFn_80061654(entries[i].arg0.object, Obj_GetActiveModel(entries[i].arg0.object));
+            objDrawGroundShadow(entries[i].arg0.object, Obj_GetActiveModel(entries[i].arg0.object));
             Camera_ApplyFullViewport();
             break;
         case 4:

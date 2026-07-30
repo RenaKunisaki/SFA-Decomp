@@ -1,6 +1,7 @@
 #ifndef MAIN_DLL_BADDIE_STATE_H_
 #define MAIN_DLL_BADDIE_STATE_H_
 
+#include "game/objects/object_setup.h"
 #include "ghidra_import.h"
 #include "global.h"
 #include "main/objprint_character_api.h"
@@ -57,17 +58,39 @@ typedef struct BaddieState {
     u8 paletteSlot; /* indexes the palette table (paletteIndex = gIceBaddiePaletteIndexTable[slot]) */
     u8 unkBD[0xC4 - 0xBD];
     void *contactObj; /* GameObject*; its anim.romDefNo (0x5d/0x99/0x1db/0x223) switches a sfx override (intersect.c) */
-    u8 unkC8[0x19C - 0xC8];
+    u8 unkC8[0x118 - 0xC8];
+    f32 unk118; /* a local-space point carried through a reparent exactly like
+        anim.localPos: player.c playerReparentPreservingWorldTransform pushes it to world space through the old
+        parent and pulls it back through the new one. No other reader in the tree. */
+    f32 unk11C;
+    f32 unk120;
+    u8 unk124[0x19C - 0x124];
     s16 spawnRotY; /* pair copied into the spawn-setup shorts; restored into anim.rotY */
     s16 spawnRotZ; /* restored into anim.rotZ */
-    u8 unk1A0[0x1B4 - 0x1A0];
+    u8 unk1A0[0x1B0 - 0x1A0];
+    f32 unk1B0; /* player.c compares it against 15 / 40 / 120 to gate landing and
+        state-exit branches */
     f32 waterDepth; /* compared > threshold to fire the waterfx splash path (intersect.c) */
-    u8 unk1B8[0x25B - 0x1B8];
+    u8 unk1B8[0x1C0 - 0x1B8];
+    f32 waterSurfaceY; /* world-Y of the water surface under the actor, or the
+        no-water sentinel; player.c copies it into PlayerState.waterSurfaceY and
+        derives the submerged depth from it */
+    u8 unk1C4[0x25B - 0x1C4];
     s8 contactSfxMuted; /* nonzero suppresses contact sfx unless contactSfxFlags bit 0x10 (intersect.c) */
     u8 unk25C[0x25F - 0x25C];
     s8 physicsActive; /* enables the free-fall physics path: gravity integration (velY -= g*dt), floor bounce response; set when thrown/spat */
     s8 contactSfxFlags; /* bit 0x10 allows contact sfx while contactSfxMuted is set (intersect.c) */
-    u8 unk261[0x270 - 0x261];
+    u8 unk261[0x262 - 0x261];
+    u8 groundContact; /* nonzero while the actor is resting on a surface this frame; the shared controller and player.c re-derive velocity from the position delta when it or surfaceFlags bit 2 is set */
+    u8 unk263;
+/* surfaceFlags bit: a floor was found within the ground-probe distance. Set and
+ * cleared by the shared floor scan in dll_00C9 (Baddie.c), consumed by the
+ * riders/controllers to enable ground handling. */
+#define BADDIE_SURFACE_HAS_NEARBY_FLOOR 0x10
+    s8 surfaceFlags; /* per-frame ground/surface contact flags, same field the dll_00C9 enemy view calls surfaceFlags; bits 0x1/0x2/0x10/0x20 are ground-contact channels (mask 0x33 = "touching ground at all") */
+    u8 unk265[0x26C - 0x265];
+    s16 unk26C; /* the shared player-interface init writes its two mode arguments here */
+    s16 unk26E;
     s16 substate; /* CA-family substate 0..5; gates the map-event re-register when != 3 */
     s16 prevSubstate; /* latched from substate for change detection (prevSubstate = startState in objseq) */
     s16 controlMode; /* current control move/mode; gPlayerInterface[5](obj,state,N) requests N */
@@ -75,7 +98,11 @@ typedef struct BaddieState {
     s16 stateId; /* active player/control state id, written when a state handler starts */
     s8 moveJustStartedA; /* one-shot, tested at SeqFn entry */
     s8 moveJustStartedB; /* one-shot, secondary channel (death/cleanup handlers) */
-    u8 unk27C[0x280 - 0x27C];
+    void* orientationAxesOut; /* 0x27C: optional destination for the actor's world
+        orientation axes. When non-NULL the shared controller writes three unit
+        vectors there each update - +Z at +0x00, +Y at +0x0C, +X at +0x18 - by
+        transforming the unit axes through the object's rotation matrix. player.c
+        points it at PlayerState.orientationAxes. */
     f32 animSpeedA; /* anim blend speed pair */
     f32 animSpeedB;
     f32 animSpeedY; /* vertical companion of animSpeedA/animSpeedB: dll_000F feeds the triple to Matrix_TransformPoint as (animSpeedB, animSpeedY, -animSpeedA), i.e. local (x,y,z), and only when flags0 bit 0x10000 is set - the bit player_advanceMove raises when the move's root motion drives Y */
@@ -115,7 +142,9 @@ typedef struct BaddieState {
         int stateHandler; /* player state callback address */
         BaddieStateExitFn nextStateExitFn;
     };
-    u8 unk30C[8];
+    u8 unk30C[4];
+    s32 queuedBitMask; /* 0x310: rebuilt every tick - zeroed, then OR'd with (1 << id)
+        for each of the queuedBitCount queued bit ids; readers test bits 0x1/0x1000/0x4000 */
 /* eventFlags bit: anim-event footstep - the anim/event stream latches it, and
  * the per-family update readers test-then-clear it to fire the footstep/climb
  * contact SFX. */
@@ -136,7 +165,7 @@ typedef struct BaddieState {
     s16 controlTimer; /* primary control-state timer; reset on mode entry and accumulated each update */
     u8 unk33A[0x33C - 0x33A];
     s32 curveId; /* active ROM curve, -1 = none; dll_000F player_findCurve stores gRomCurveInterface->find() here and player_updateCurve resolves it back through getById each frame */
-    u8 unk340[0x344 - 0x340];
+    s32 unk340; /* initialised to -1 next to curveId */
     s8 curveSearchFilter; /* type filter passed as the last argument of gRomCurveInterface->find() when picking curveId */
     u8 unk345;
     s8 moveDone; /* set when the current move completes; SeqFns chain the next mode off it */
@@ -152,7 +181,9 @@ typedef struct BaddieState {
     s8 hitPoints; /* remaining hit points; decremented on hit, < 1 = dead */
     u8 unk355;
     u8 moveEventFlags; /* one-shot move-progress event latches (bit1/bit2: SFX fired once past a progress threshold) */
-    u8 unk357[0x35C - 0x357];
+    u8 unk357;
+    u8 unk358;
+    u8 unk359[0x35C - 0x359];
 } BaddieState;
 
 STATIC_ASSERT(sizeof(BaddieState) == 0x35C);
@@ -168,6 +199,47 @@ STATIC_ASSERT(offsetof(BaddieState, stateTimer) == 0x32E);
 STATIC_ASSERT(offsetof(BaddieState, controlTimer) == 0x338);
 STATIC_ASSERT(offsetof(BaddieState, moveDone) == 0x346);
 STATIC_ASSERT(offsetof(BaddieState, hitPoints) == 0x354);
+
+/*
+ * GroundBaddiePlacement - the placement/setup record every ground baddie is
+ * spawned from, i.e. the `config` argument of
+ * BaddieControlInterface.initGroundBaddie. Decoded from
+ * dll_19_initGroundBaddie (engine/25), the shared controller that reads the
+ * whole record on behalf of every ground-baddie class: each field below is
+ * named after the GroundBaddieState member the controller copies it into,
+ * or after the object field it drives. Per-class re-uses exist (202's
+ * crawler reads unk28 as a root-motion scale, hoodedZyck reads aggression as
+ * a distance scale), so the class-specific slots stay unnamed.
+ */
+typedef struct GroundBaddiePlacement {
+    ObjPlacement base; /* 0x00: standard object placement; base.ident gates the map-event save time */
+    s16 gameBitA;      /* 0x18: mainGetBit gate -> obj->userData1 (inverted for romDefNo 636) */
+    s16 gameBitC;      /* 0x1a */
+    s16 gameBitD;      /* 0x1c: 202's paid-trigger baddie sets it on payment */
+    s16 soundIdB;      /* 0x1e */
+    s16 soundIdA;      /* 0x20 */
+    s16 triggerId;     /* 0x22 */
+    s16 unk24;         /* 0x24 */
+    u8 pad26;          /* 0x26 */
+    u8 unk27;          /* 0x27 */
+    u8 unk28;          /* 0x28 */
+    u8 aggroRange;     /* 0x29: scaled <<3 into GroundBaddieState.aggroRange */
+    u8 rotX;           /* 0x2a: 1/256-turn heading, sign-extended and <<8 into obj->anim.rotX */
+    u8 flags;          /* 0x2b: GroundBaddieState.configFlags */
+    s16 unk2C;         /* 0x2c */
+    s8 sequenceId;     /* 0x2e: -1 leaves the baddie dormant (obj->userData2 = 1) */
+    u8 aggression;     /* 0x2f */
+    s16 gameBitB;      /* 0x30: set 0 at init */
+    u8 hitPoints;      /* 0x32: 0 means the default 6 */
+    u8 pad33;          /* 0x33 */
+} GroundBaddiePlacement;
+
+STATIC_ASSERT(offsetof(GroundBaddiePlacement, gameBitA) == 0x18);
+STATIC_ASSERT(offsetof(GroundBaddiePlacement, aggroRange) == 0x29);
+STATIC_ASSERT(offsetof(GroundBaddiePlacement, flags) == 0x2B);
+STATIC_ASSERT(offsetof(GroundBaddiePlacement, sequenceId) == 0x2E);
+STATIC_ASSERT(offsetof(GroundBaddiePlacement, gameBitB) == 0x30);
+STATIC_ASSERT(sizeof(GroundBaddiePlacement) == 0x34);
 
 /*
  * GroundBaddieState - BaddieState plus the route/config tail shared by the
@@ -192,7 +264,7 @@ typedef struct GroundBaddieState {
     s16 gameBitA; /* set 1 on trigger */
     s16 gameBitB; /* set 1 / cleared 0; also passed to interface[10] */
     s16 gameBitC; /* gate; checked != -1 + mainGetBit */
-    u8 unk3F8[2];
+    s16 gameBitD; /* 0x3f8: copy of GroundBaddiePlacement.gameBitD */
     s16 soundIdA; /* config-sourced sound-id (config+32); played via interface[+8]
         on the stop/cleanup path (dll19func12) and passed with soundIdB to the
         route/move interface [+0x3c] (dllcb/dllce/icebaddie) */

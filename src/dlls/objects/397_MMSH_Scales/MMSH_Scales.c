@@ -27,7 +27,7 @@
 #define MMSH_SCALES_NO_MAP_LAYER            -1
 #define MMSH_SCALES_NO_OBJECT_INDEX         -1
 
-extern u8 lbl_803DB411;
+extern u8 framesThisStepUnclamped;
 
 int mmshScales_getExtraSize(void) {
     return sizeof(MMSHScalesState);
@@ -71,7 +71,7 @@ void mmshScales_update(GameObject* obj) {
 
     if ((obj->anim.placementData != NULL) &&
         (((MMSHScalesPlacement*)obj->anim.placementData)->animDataIndex != MMSH_SCALES_ANIM_DATA_NONE)) {
-        objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)lbl_803DB411);
+        objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)framesThisStepUnclamped);
         if (objectIndex != 0 && obj->seqIndex == MMSH_SCALES_SEQUENCE_PENDING) {
             slot = ((MMSHScalesState*)obj->extra)->sequence.slot;
             sequenceOwner = NULL;
@@ -130,7 +130,7 @@ void mmshScales_init(GameObject* obj, const MMSHScalesPlacement* placement) {
     childSetup->base.color[0] = MMSH_SCALES_CHILD_COLOR_RED;
     childSetup->base.color[1] = MMSH_SCALES_CHILD_COLOR_GREEN;
     childSetup->base.color[3] = MMSH_SCALES_CHILD_COLOR_ALPHA;
-    obj->childObjs[0] = Obj_SetupObject(&childSetup->base, MMSH_SCALES_CHILD_SETUP_FLAGS, MMSH_SCALES_NO_MAP_LAYER,
+    obj->childObjs[0] = objSetupObject(&childSetup->base, MMSH_SCALES_CHILD_SETUP_FLAGS, MMSH_SCALES_NO_MAP_LAYER,
                                         MMSH_SCALES_NO_OBJECT_INDEX, NULL);
     ((GameObject*)obj->childObjs[0])->anim.rootMotionScale *= MMSH_SCALES_CHILD_SCALE;
 }

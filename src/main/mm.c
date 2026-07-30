@@ -320,7 +320,7 @@ extern char sMmFreeInvalidLocationError[];
 extern char sMmAllocFreeMessageBlock[];
 extern char sMmStbfStackTooDeepError[];
 
-extern void* lbl_803DD498;
+extern void* gSaveGameWorkBuffer;
 extern void* gAskProgressiveScanFlag;
 extern char sMmSpawnedUnalignedSlotWarning[];
 extern int gModelsArchiveLoadCount;
@@ -1012,7 +1012,7 @@ void mmInit(void)
     mmInitRegion(p, size, 0xfa);
 
     p = OSAllocFromHeap(__OSCurrHeap, 0x6ed);
-    lbl_803DD498 = p;
+    gSaveGameWorkBuffer = p;
     gAskProgressiveScanFlag = (u8*)p + 0x6ec;
 
     p = OSAllocFromHeap(__OSCurrHeap, 0x1c0000);

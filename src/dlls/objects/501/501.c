@@ -19,7 +19,7 @@
 #define DLL1F5_TRAIL_EFFECT_ID          389
 #define DLL1F5_TRAIL_EFFECT_PARAM       5
 
-extern u8 lbl_803DB411;
+extern u8 framesThisStepUnclamped;
 
 typedef struct Dll1F5TrackedState {
     f32 value;
@@ -87,7 +87,7 @@ void dll501_update(GameObject* obj) {
         return;
     }
 
-    i = (*gObjectTriggerInterface)->update((u8*)obj, lbl_803DB411);
+    i = (*gObjectTriggerInterface)->update((u8*)obj, framesThisStepUnclamped);
     if (i == 0) {
         return;
     }

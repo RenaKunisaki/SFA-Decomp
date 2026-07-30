@@ -78,6 +78,9 @@ u8 gKaldachomHitLightWork[0x18];
 KaldachomStateHandler gKaldachomStateHandlersB[6];
 KaldachomStateHandler gKaldachomStateHandlersA[8];
 
+s16 gKaldachomMoves[6] = {0, 0, 1, 1, 2, 0};
+
+f32 gKaldachomMoveSpeeds[5] = {0.004f, 0.006f, 0.01f, 0.01f, 0.01f};
 
 ObjectDescriptor12 gKaldachomObjDescriptor = {
     0,
@@ -402,7 +405,7 @@ void kaldachom_spawnDustEffects(GameObject* obj, KaldachomControl* control) {
         ((ObjPlacement*)work)->color[1] = placement->base.color[1];
         ((ObjPlacement*)work)->color[2] = placement->base.color[2];
         ((ObjPlacement*)work)->color[3] = placement->base.color[3];
-        work = (int)Obj_SetupObject((ObjPlacement*)work, 5, 0xffffffff, 0xffffffff, 0);
+        work = (int)objSetupObject((ObjPlacement*)work, 5, 0xffffffff, 0xffffffff, 0);
         control->spawnedDustObj = (void*)work;
         ((GameObject*)control->spawnedDustObj)->anim.rootMotionScale = gKaldachomDustSpawnScratch;
     }
@@ -436,7 +439,7 @@ void kaldachom_spawnMouthProjectile(GameObject* obj, KaldachomState* state, u8 u
         setup->color[1] = 4;
         setup->color[2] = 0xff;
         setup->color[3] = 0xff;
-        projectile = Obj_SetupObject(setup, 5, 0xffffffff, 0xffffffff, 0);
+        projectile = objSetupObject(setup, 5, 0xffffffff, 0xffffffff, 0);
         if (projectile != NULL) {
             travelTime = 60.0f * (state->ground.baddie.targetDistance / (f32)(u32)state->aggroRange);
             projectile->anim.velocityX = (state->targetObj->anim.localPosX - setup->posX) / travelTime;
@@ -610,7 +613,7 @@ void kaldachom_free(GameObject* obj) {
     KaldachomState* state;
 
     state = obj->extra;
-    ObjGroup_RemoveObject((int)obj, KALDACHOM_OBJECT_GROUP);
+    objFreeObjectType((int)obj, KALDACHOM_OBJECT_GROUP);
     (*gBaddieControlInterface)->releaseState(obj, state, 0x20);
 }
 
@@ -641,13 +644,6 @@ void kaldachom_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, in
 
 void kaldachom_hitDetect(GameObject* obj) {
     (void)obj;
-}
-
-static void kaldachom_clearStateHandlersB(void)
-{
-    int i;
-    for (i = 0; i < 6; i++)
-        gKaldachomStateHandlersB[i] = NULL;
 }
 
 void kaldachom_update(GameObject* obj) {

@@ -7,12 +7,7 @@
 
 typedef f32 Mtx[3][4];
 
-extern f32 gVecMathAngleScale;
 extern f32 lbl_803DE7C0;
-extern f32 gVecMathPi;
-extern f32 gVecMathHalfPi;
-extern f32 gVecMathNegHalfPi;
-extern f32 gVecMathTwoPi;
 
 f32 interpolate(f32 a, f32 t, f32 exp)
 {
@@ -44,9 +39,9 @@ void basisVectorsToEulerAngles(f32* a, f32* b, s16* out0, s16* out1, s16* out2)
     b1 = b[1];
     a2 = a[2];
     sinp = asinf(-b[2]);
-    if (sinp < gVecMathHalfPi)
+    if (sinp < 1.5707964f)
     {
-        if (sinp > gVecMathNegHalfPi)
+        if (sinp > -1.5707964f)
         {
             roll = __kernel_cos(c2, a2);
             yaw = __kernel_cos(b0, b1);
@@ -63,8 +58,8 @@ void basisVectorsToEulerAngles(f32* a, f32* b, s16* out0, s16* out1, s16* out2)
     {
         f32 twoPi;
         f32 angleScale;
-        scale = (angleScale = gVecMathAngleScale);
-        *out0 = scale * yaw / (twoPi = gVecMathTwoPi);
+        scale = (angleScale = 65536.0f);
+        *out0 = scale * yaw / (twoPi = 6.2831855f);
         *out1 = angleScale * sinp / twoPi;
         *out2 = angleScale * roll / twoPi;
     }
@@ -135,7 +130,7 @@ f32 Vec_distance(f32* a, f32* b)
 
 int cos16(s16 angle)
 {
-    return (int)(gVecMathAngleScale * fcos16((u16)angle));
+    return (int)(65536.0f * fcos16((u16)angle));
 }
 
 int atan2_8002178c(float y, float x)
@@ -186,28 +181,28 @@ void vecRotateYXZ(s16* a, f32* v)
     y = v[1];
     z = v[2];
 
-    trig = mathSinf((gVecMathPi * a[0]) / 32768.0f);
+    trig = mathSinf((3.1415927f * a[0]) / 32768.0f);
     s1 = x * trig;
     s2 = z * trig;
-    trig = mathCosf((gVecMathPi * a[0]) / 32768.0f);
+    trig = mathCosf((3.1415927f * a[0]) / 32768.0f);
     x *= trig;
     z *= trig;
     x += s2;
     z -= s1;
 
-    trig = mathSinf((gVecMathPi * a[1]) / 32768.0f);
+    trig = mathSinf((3.1415927f * a[1]) / 32768.0f);
     s1 = y * trig;
     s2 = z * trig;
-    trig = mathCosf((gVecMathPi * a[1]) / 32768.0f);
+    trig = mathCosf((3.1415927f * a[1]) / 32768.0f);
     y *= trig;
     z *= trig;
     y -= s2;
     z += s1;
 
-    trig = mathSinf((gVecMathPi * a[2]) / 32768.0f);
+    trig = mathSinf((3.1415927f * a[2]) / 32768.0f);
     s1 = x * trig;
     s2 = y * trig;
-    trig = mathCosf((gVecMathPi * a[2]) / 32768.0f);
+    trig = mathCosf((3.1415927f * a[2]) / 32768.0f);
     x *= trig;
     y *= trig;
     x -= s2;
@@ -257,17 +252,17 @@ void mtxRotateByVec3s(f32* mtx, const void* transform)
     f32 sz;
     const MatrixTransform* xf = (const MatrixTransform*)transform;
 
-    s = (f32)(int)(gVecMathAngleScale * fcos16((u16)xf->rotX));
+    s = (f32)(int)(65536.0f * fcos16((u16)xf->rotX));
     cx = s * lbl_803DE7F0;
-    s = (f32)(int)(gVecMathAngleScale * fsin16((u16)xf->rotX));
+    s = (f32)(int)(65536.0f * fsin16((u16)xf->rotX));
     sx = s * lbl_803DE7F0;
-    s = (f32)(int)(gVecMathAngleScale * fcos16((u16)xf->rotY));
+    s = (f32)(int)(65536.0f * fcos16((u16)xf->rotY));
     cy = s * lbl_803DE7F0;
-    s = (f32)(int)(gVecMathAngleScale * fsin16((u16)xf->rotY));
+    s = (f32)(int)(65536.0f * fsin16((u16)xf->rotY));
     sy = s * lbl_803DE7F0;
-    cz = (f32)(int)(gVecMathAngleScale * fcos16((u16)xf->rotZ));
+    cz = (f32)(int)(65536.0f * fcos16((u16)xf->rotZ));
     cz = cz * lbl_803DE7F0;
-    sz = (f32)(int)(gVecMathAngleScale * fsin16((u16)xf->rotZ));
+    sz = (f32)(int)(65536.0f * fsin16((u16)xf->rotZ));
     sz = sz * lbl_803DE7F0;
 
     t1 = cy * cz;

@@ -47,23 +47,6 @@ ObjectDescriptor gARWArwingBoObjDescriptor = {
     (ObjectDescriptorExtraSizeCallback)arwarwingbo_getExtraSize,
 };
 
-static void arwarwingbo_detonate(GameObject* obj)
-{
-    ObjAnimComponent* objAnim = &obj->anim;
-    ArwingBombState* state = obj->extra;
-
-    arwarwing_clearActiveBomb(getArwing());
-    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_awghitobj16_2a5);
-    state->explosionTimer = 100.0f;
-    state->control.fuseTimer = 0.0f;
-    objAnim->alpha = 0;
-    (*(ObjHitsPriorityState**)&objAnim->hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
-    spawnExplosion(obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
-    ObjHitbox_SetSphereRadius(&obj->anim, 0x280);
-    ObjHits_SetHitVolumeSlot(&obj->anim, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
-    objAnim->velocityZ = objAnim->velocityY = objAnim->velocityX = 0.0f;
-}
-
 void arwprojectile_launchForward(GameObject* obj, f32 lifetime)
 {
     ArwProjectileState* state = obj->extra;
@@ -102,7 +85,7 @@ int arwarwingbo_getObjectTypeId(void)
 void arwarwingbo_free(int obj)
 {
     (*gExpgfxInterface)->freeSource(obj);
-    ObjGroup_RemoveObject(obj, ARWARWINGBO_OBJGROUP);
+    objFreeObjectType(obj, ARWARWINGBO_OBJGROUP);
 }
 
 void arwarwingbo_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -186,7 +169,7 @@ void arwarwingbo_init(GameObject* obj, ArwingBombSetup* setup)
     (obj)->anim.rotX = (s16)(setup->rotX << 8);
     (obj)->anim.rotY = (s16)(setup->rotY << 8);
     (obj)->anim.rotZ = (s16)(setup->rotZ << 8);
-    ObjGroup_AddObject((int)obj, ARWARWINGBO_OBJGROUP);
+    objAddObjectType((int)obj, ARWARWINGBO_OBJGROUP);
 }
 
 void arwarwingbo_release(void)

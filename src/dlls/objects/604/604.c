@@ -7,7 +7,7 @@
 #include "main/frame_timing.h"
 #include "main/dll/player_api.h"
 #include "main/gamebits.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
@@ -425,7 +425,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
             break;
         case 6:
         {
-            int* found = (int*)ObjGroup_FindNearestObject(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
+            int* found = (int*)objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
             if (found != 0)
             {
                 SNOWCLAW_TARGET_INTERFACE(found)->setState((GameObject*)found, 2);
@@ -435,7 +435,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
         }
         case 7:
         {
-            int* found = (int*)ObjGroup_FindNearestObject(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
+            int* found = (int*)objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
             if (found != 0)
             {
                 SNOWCLAW_TARGET_INTERFACE(found)->setState((GameObject*)found, 0);
@@ -458,7 +458,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
         if (s->dropIndex > 0 && Obj_IsLoadingLocked() != 0)
         {
             obj->childObjs[0] =
-                Obj_SetupObject(Obj_AllocObjectSetup(
+                objSetupObject(Obj_AllocObjectSetup(
                                          0x18, tbl.objectIds[s->dropIndex]), 4,
                                      obj->anim.mapEventSlot, -1, obj->anim.parent);
             obj->childCount = 1;
@@ -537,7 +537,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
         if ((obj)->childCount == 0 && (obj)->anim.romDefNo == SNOWCLAW_SEQID_CR_SNOWCLAW &&
             ((SnowclawAaFlags*)&s->flags)->b0 != 0)
         {
-            near = ObjGroup_FindNearestObject(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
+            near = objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
             if ((u32)near != 0 && SNOWCLAW_TARGET_INTERFACE(near)->getState((GameObject*)near) != 0 &&
                 SNOWCLAW_TARGET_INTERFACE(near)->setState((GameObject*)near, 0) != 0)
             {
@@ -606,7 +606,7 @@ void snowclaw_hitDetect(GameObject* obj)
                 }
                 if (obj->anim.romDefNo == SNOWCLAW_SEQID_CR_SNOWCLAW)
                 {
-                    near = (int*)ObjGroup_FindNearestObject(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
+                    near = (int*)objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
                     if (near != 0)
                     {
                         ObjLink_DetachChild(obj, (GameObject*)near);
@@ -725,7 +725,7 @@ void snowclaw_update(GameObject* obj)
         if (s->dropIndex > 0 && Obj_IsLoadingLocked() != 0)
         {
             obj->childObjs[0] =
-                Obj_SetupObject(Obj_AllocObjectSetup(
+                objSetupObject(Obj_AllocObjectSetup(
                                          0x18, dropTable.objectIds[s->dropIndex]), 4,
                                      obj->anim.mapEventSlot, -1, obj->anim.parent);
             obj->childCount = 1;
@@ -735,7 +735,7 @@ void snowclaw_update(GameObject* obj)
 
     if (*(void**)inner == NULL)
     {
-        objects = ObjGroup_GetObjects(SNOWCLAW_MOUNT_OBJGROUP, &objectCount);
+        objects = objGetAllOfType(SNOWCLAW_MOUNT_OBJGROUP, &objectCount);
         targetType = seqPairTableLookup(gSnowClawMoveTable, 6, obj->anim.romDefNo);
         for (i = 0; i < objectCount; i++)
         {

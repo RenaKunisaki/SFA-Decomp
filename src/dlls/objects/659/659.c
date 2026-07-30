@@ -120,7 +120,7 @@ void suntemple_hitDetect(GameObject* obj)
     GameObject* gameObj = obj;
     if ((gameObj->anim.modelInstance->flags & 1) != 0 && gameObj->anim.hitVolumeTransforms != NULL)
     {
-        objRenderFn_80041018(obj);
+        objUpdateHitVolumeTransforms(obj);
     }
 }
 

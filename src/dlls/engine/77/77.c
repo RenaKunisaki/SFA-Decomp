@@ -1,14 +1,16 @@
 /*
  * DLL 77 / 0x4D - NPC conversation camera mode.
  */
-#include "main/dll/CAM/camnpcspeak_state.h"
-#include "main/object_transform.h"
-#include "main/resource.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "main/maketex_api.h"
-#include "main/dll/CAM/cutCam.h"
-#include "main/frame_timing.h"
 #include "main/dll/dll_004D_cameramodenpcspeak.h"
+
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
+#include "main/frame_timing.h"
+#include "main/maketex_api.h"
+#include "main/mm.h"
+#include "main/object_transform.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/vecmath.h"
 
 CameraModeNpcSpeakState* gCameraModeNpcSpeakState;
 f32 gCameraModeNpcSpeakMode6AnchorLerpScale;
@@ -22,188 +24,169 @@ int gCameraModeNpcSpeakMode6OrbitAngleOffset = 10000;
 f32 gCameraModeNpcSpeakMode3DistanceOffset = 2.0f;
 f32 gCameraModeNpcSpeakMode3PitchScale = 0.09f;
 
-
-void CameraModeNpcSpeak_solveOrbitPosition(GameObject* target, f32* outX, f32* outY, f32* outZ)
-{
+void CameraModeNpcSpeak_solveOrbitPosition(GameObject* target, f32* outX, f32* outY, f32* outZ) {
     CameraModeNpcSpeakState* state = gCameraModeNpcSpeakState;
     f32 dx;
     f32 dz;
-    f32 dist;
+    f32 distance;
     u16 angle;
-    f32 sinVal;
-    f32 cosVal;
+    f32 sinValue;
+    f32 cosValue;
 
     dx = target->anim.worldPosX - state->anchorX;
     dz = target->anim.worldPosZ - state->anchorZ;
-    dist = sqrtf(dx * dx + dz * dz);
+    distance = sqrtf(dx * dx + dz * dz);
     angle = getAngle(dx, dz);
 
     {
-        f32 scale = gCameraModeNpcSpeakState->anchorLerpScale;
-        dx *= scale;
-        dz *= scale;
+        f32 anchorLerpScale = gCameraModeNpcSpeakState->anchorLerpScale;
+        dx *= anchorLerpScale;
+        dz *= anchorLerpScale;
     }
     dx += state->anchorX;
     dz += state->anchorZ;
 
-    sinVal = mathSinf(3.1415927f * (f32)(s32)(angle + gCameraModeNpcSpeakState->orbitAngleOffset) /
-                      32768.0f);
-    cosVal = mathCosf(3.1415927f * (f32)(s32)(angle + gCameraModeNpcSpeakState->orbitAngleOffset) /
-                      32768.0f);
+    sinValue = mathSinf(3.1415927f * (f32)(s32)(angle + gCameraModeNpcSpeakState->orbitAngleOffset) / 32768.0f);
+    cosValue = mathCosf(3.1415927f * (f32)(s32)(angle + gCameraModeNpcSpeakState->orbitAngleOffset) / 32768.0f);
 
-    if (dist < gCameraModeNpcSpeakState->minDistance)
-    {
-        dist = gCameraModeNpcSpeakState->minDistance;
+    if (distance < gCameraModeNpcSpeakState->minDistance) {
+        distance = gCameraModeNpcSpeakState->minDistance;
     }
-    dist += gCameraModeNpcSpeakState->distanceOffset;
+    distance += gCameraModeNpcSpeakState->distanceOffset;
 
-    *outX = sinVal * dist + dx;
+    *outX = sinValue * distance + dx;
     *outY = (target->anim.worldPosY + gCameraModeNpcSpeakState->targetHeightOffset) -
             0.03f * ((30.0f + target->anim.worldPosY) - state->anchorY);
-    *outZ = cosVal * dist + dz;
+    *outZ = cosValue * distance + dz;
 }
 
-void CameraModeNpcSpeak_copyToCurrent(void)
-{
+void CameraModeNpcSpeak_copyToCurrent(void) {
 }
 
-void CameraModeNpcSpeak_free(void)
-{
+void CameraModeNpcSpeak_free(void) {
     mm_free(gCameraModeNpcSpeakState);
     gCameraModeNpcSpeakState = NULL;
     Rcp_DisableBlurFilter();
 }
 
-void CameraModeNpcSpeak_update(CameraObject* camera)
-{
-    CameraModeNpcSpeakState* speakState;
+void CameraModeNpcSpeak_update(CameraObject* camera) {
+    CameraModeNpcSpeakState* state;
     GameObject* target = (GameObject*)camera->anim.targetObj;
-    f32 ex, ez, ey;
-    f32 dx, dy, dz;
+    f32 cameraOffsetX, cameraOffsetZ, cameraOffsetY;
+    f32 lookAtOffsetX, lookAtOffsetY, lookAtOffsetZ;
 
-    if (target == NULL)
-    {
+    if (target == NULL) {
         return;
     }
-    speakState = gCameraModeNpcSpeakState;
-    if (speakState->mode == 6)
-    {
-        speakState->orbitAngleOffset =
-            (s32)((f32)speakState->orbitAngleVelocity * timeDelta + speakState->orbitAngleOffset);
-        if (gCameraModeNpcSpeakState->orbitAngleVelocity > 0 && gCameraModeNpcSpeakState->orbitAngleOffset > 0xd6d8)
-        {
+    state = gCameraModeNpcSpeakState;
+    if (state->mode == 6) {
+        state->orbitAngleOffset = (s32)((f32)state->orbitAngleVelocity * timeDelta + state->orbitAngleOffset);
+        if (gCameraModeNpcSpeakState->orbitAngleVelocity > 0 && gCameraModeNpcSpeakState->orbitAngleOffset > 0xd6d8) {
             gCameraModeNpcSpeakState->orbitAngleOffset = 0xd6d8;
-        }
-        else if (gCameraModeNpcSpeakState->orbitAngleVelocity < 0 && gCameraModeNpcSpeakState->orbitAngleOffset < -0xd6d8)
-        {
+        } else if (gCameraModeNpcSpeakState->orbitAngleVelocity < 0 &&
+                   gCameraModeNpcSpeakState->orbitAngleOffset < -0xd6d8) {
             gCameraModeNpcSpeakState->orbitAngleOffset = -0xd6d8;
         }
         CameraModeNpcSpeak_solveOrbitPosition(target, &gCameraModeNpcSpeakState->cameraX,
-                                              &gCameraModeNpcSpeakState->cameraY,
-                                              &gCameraModeNpcSpeakState->cameraZ);
+                                              &gCameraModeNpcSpeakState->cameraY, &gCameraModeNpcSpeakState->cameraZ);
     }
     camera->anim.worldPosX = gCameraModeNpcSpeakState->cameraX;
     camera->anim.worldPosY = gCameraModeNpcSpeakState->cameraY;
     camera->anim.worldPosZ = gCameraModeNpcSpeakState->cameraZ;
-    dx = target->anim.worldPosX - speakState->anchorX;
-    dy = (target->anim.worldPosY + gCameraModeNpcSpeakState->lookAtHeightOffset) - speakState->anchorY;
-    dz = target->anim.worldPosZ - speakState->anchorZ;
-    dx *= gCameraModeNpcSpeakState->lookAtXZScale;
-    dy *= gCameraModeNpcSpeakState->lookAtYScale;
-    dz *= gCameraModeNpcSpeakState->lookAtXZScale;
-    if (gCameraModeNpcSpeakState->mode == 3)
-    {
+    lookAtOffsetX = target->anim.worldPosX - state->anchorX;
+    lookAtOffsetY = (target->anim.worldPosY + gCameraModeNpcSpeakState->lookAtHeightOffset) - state->anchorY;
+    lookAtOffsetZ = target->anim.worldPosZ - state->anchorZ;
+    lookAtOffsetX *= gCameraModeNpcSpeakState->lookAtXZScale;
+    lookAtOffsetY *= gCameraModeNpcSpeakState->lookAtYScale;
+    lookAtOffsetZ *= gCameraModeNpcSpeakState->lookAtXZScale;
+    if (gCameraModeNpcSpeakState->mode == 3) {
+        camera->anim.rotY = (s16)(s32)getAngle(gCameraModeNpcSpeakMode3PitchScale * lookAtOffsetY,
+                                               sqrtf(lookAtOffsetX * lookAtOffsetX + lookAtOffsetZ * lookAtOffsetZ));
+    }
+    lookAtOffsetX += state->anchorX;
+    lookAtOffsetY += state->anchorY;
+    lookAtOffsetZ += state->anchorZ;
+    cameraOffsetX = camera->anim.worldPosX - lookAtOffsetX;
+    cameraOffsetY = camera->anim.worldPosY - lookAtOffsetY;
+    cameraOffsetZ = camera->anim.worldPosZ - lookAtOffsetZ;
+    camera->anim.rotX = (s16)(0x8000 - getAngle(cameraOffsetX, cameraOffsetZ));
+    if (gCameraModeNpcSpeakState->mode != 3) {
         camera->anim.rotY =
-            (s16)(s32)getAngle(gCameraModeNpcSpeakMode3PitchScale * dy, sqrtf(dx * dx + dz * dz));
+            (s16)(s32)getAngle(cameraOffsetY, sqrtf(cameraOffsetX * cameraOffsetX + cameraOffsetZ * cameraOffsetZ));
     }
-    dx += speakState->anchorX;
-    dy += speakState->anchorY;
-    dz += speakState->anchorZ;
-    ex = camera->anim.worldPosX - dx;
-    ey = camera->anim.worldPosY - dy;
-    ez = camera->anim.worldPosZ - dz;
-    camera->anim.rotX = (s16)(0x8000 - getAngle(ex, ez));
-    if (gCameraModeNpcSpeakState->mode != 3)
-    {
-        camera->anim.rotY = (s16)(s32)getAngle(ey, sqrtf(ex * ex + ez * ez));
-    }
-    turnOnBlurFilter(speakState->anchorX, speakState->anchorY, speakState->anchorZ, 1, 0);
+    turnOnBlurFilter(state->anchorX, state->anchorY, state->anchorZ, 1, 0);
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,
-                                   (GameObject*)camera->anim.parentAddress);
+                                   (GameObject*)camera->anim.parent);
 }
 
+CameraModeNpcSpeakDescriptor gCameraModeNpcSpeakDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00060000},
+    CameraModeNpcSpeak_initialise,
+    CameraModeNpcSpeak_release,
+    NULL,
+    CameraModeNpcSpeak_init,
+    CameraModeNpcSpeak_update,
+    CameraModeNpcSpeak_free,
+    CameraModeNpcSpeak_copyToCurrent,
+};
 
-ResourceDescriptorCallbacks7 gCameraModeNpcSpeakDescriptor = {{0x00000000, 0x00000000, 0x00000000, 0x00060000},
-        {(ResourceDescriptorCallback)CameraModeNpcSpeak_initialise, (ResourceDescriptorCallback)CameraModeNpcSpeak_release,
-        0x00000000, (ResourceDescriptorCallback)CameraModeNpcSpeak_init, (ResourceDescriptorCallback)CameraModeNpcSpeak_update,
-        (ResourceDescriptorCallback)CameraModeNpcSpeak_free, (ResourceDescriptorCallback)CameraModeNpcSpeak_copyToCurrent}};
-void CameraModeNpcSpeak_init(CameraObject* camera, int unused, CameraModeNpcSpeakInitParams* params)
-{
-#define target ((GameObject*)camera->anim.targetObj)
-    u16 yawA, yawB;
+void CameraModeNpcSpeak_init(CameraObject* camera, int unused, CameraModeNpcSpeakInitParams* params) {
+    u16 cameraYaw, targetYaw;
     int mode = 0;
-    int spd;
-    int d1, d2;
-    GameObject* npc;
-    f32 vc, vb, va;
-    u8 traceWork[CAMCONTROL_TRACE_WORK_SIZE];
+    int orbitAngleOffset;
+    int positiveOrbitDelta, negativeOrbitDelta;
+    GameObject* focusedNpc;
+    f32 cameraZ, cameraY, cameraX;
+    u8 traceWork[sizeof(CamcontrolTraceWork)];
 
-    if (gCameraModeNpcSpeakState == NULL)
-    {
+    if (gCameraModeNpcSpeakState == NULL) {
         gCameraModeNpcSpeakState = (CameraModeNpcSpeakState*)mmAlloc(sizeof(CameraModeNpcSpeakState), 15, 0);
     }
 
-    if (params != NULL)
-    {
+    if (params != NULL) {
         gCameraModeNpcSpeakState->anchorX = params->anchorX;
         gCameraModeNpcSpeakState->anchorY = params->anchorY;
         gCameraModeNpcSpeakState->anchorZ = params->anchorZ;
         mode = params->mode;
-    }
-    else
-    {
-        GameObject* focus = getFocusedNpc();
-        f32* fpos;
-        if (focus == NULL)
-        {
+    } else {
+        GameObject* anchorNpc = getFocusedNpc();
+        f32* anchorPosition;
+        if (anchorNpc == NULL) {
             gCameraModeNpcSpeakState->anchorX = 0.0f;
             gCameraModeNpcSpeakState->anchorY = 0.0f;
             gCameraModeNpcSpeakState->anchorZ = 0.0f;
         }
-        fpos = (f32*)focus->anim.hitVolumeTransforms;
-        if (fpos == NULL)
-        {
+        anchorPosition = (f32*)anchorNpc->anim.hitVolumeTransforms;
+        if (anchorPosition == NULL) {
             gCameraModeNpcSpeakState->anchorX = 0.0f;
             gCameraModeNpcSpeakState->anchorY = 0.0f;
             gCameraModeNpcSpeakState->anchorZ = 0.0f;
         }
-        gCameraModeNpcSpeakState->anchorX = fpos[0];
-        gCameraModeNpcSpeakState->anchorY = fpos[1];
-        gCameraModeNpcSpeakState->anchorZ = fpos[2];
+        gCameraModeNpcSpeakState->anchorX = anchorPosition[0];
+        gCameraModeNpcSpeakState->anchorY = anchorPosition[1];
+        gCameraModeNpcSpeakState->anchorZ = anchorPosition[2];
     }
-    if (mode == 4)
-    {
+    if (mode == 4) {
         mode = randomGetRange(0, 3);
     }
     {
-        f32 a, b;
+        f32 valueA, valueB;
         gCameraModeNpcSpeakState->unk20 = 0;
         gCameraModeNpcSpeakState->mode = mode;
         gCameraModeNpcSpeakState->unk14 = 0.0f;
-        a = 25.0f;
-        gCameraModeNpcSpeakState->targetHeightOffset = a;
+        valueA = 25.0f;
+        gCameraModeNpcSpeakState->targetHeightOffset = valueA;
         gCameraModeNpcSpeakState->lookAtHeightOffset = 30.0f;
         gCameraModeNpcSpeakState->lookAtYScale = 0.9f;
-        b = 0.5f;
-        gCameraModeNpcSpeakState->anchorLerpScale = b;
-        gCameraModeNpcSpeakState->lookAtXZScale = b;
-        gCameraModeNpcSpeakState->minDistance = a;
+        valueB = 0.5f;
+        gCameraModeNpcSpeakState->anchorLerpScale = valueB;
+        gCameraModeNpcSpeakState->lookAtXZScale = valueB;
+        gCameraModeNpcSpeakState->minDistance = valueA;
     }
     gCameraModeNpcSpeakState->orbitAngleOffset = randomGetRange(0x2000, 0x2c00);
 
-    switch (mode)
-    {
+    switch (mode) {
     case 0:
         gCameraModeNpcSpeakState->distanceOffset = 20.0f;
         break;
@@ -249,88 +232,71 @@ void CameraModeNpcSpeak_init(CameraObject* camera, int unused, CameraModeNpcSpea
         break;
     }
 
-    yawA = (u16)getAngle(camera->anim.worldPosX - gCameraModeNpcSpeakState->anchorX,
-                         camera->anim.worldPosZ - gCameraModeNpcSpeakState->anchorZ);
-    yawB = (u16)getAngle(target->anim.worldPosX - gCameraModeNpcSpeakState->anchorX,
-                         target->anim.worldPosZ - gCameraModeNpcSpeakState->anchorZ);
+    cameraYaw = (u16)getAngle(camera->anim.worldPosX - gCameraModeNpcSpeakState->anchorX,
+                              camera->anim.worldPosZ - gCameraModeNpcSpeakState->anchorZ);
+    targetYaw =
+        (u16)getAngle(((GameObject*)camera->anim.targetObj)->anim.worldPosX - gCameraModeNpcSpeakState->anchorX,
+                      ((GameObject*)camera->anim.targetObj)->anim.worldPosZ - gCameraModeNpcSpeakState->anchorZ);
     {
         CameraModeNpcSpeakState* state = gCameraModeNpcSpeakState;
-        spd = state->orbitAngleOffset;
-        d1 = (yawB + spd) - yawA;
-        if (d1 > 0x8000)
-        {
-            d1 -= 0xffff;
+        orbitAngleOffset = state->orbitAngleOffset;
+        positiveOrbitDelta = (targetYaw + orbitAngleOffset) - cameraYaw;
+        if (positiveOrbitDelta > 0x8000) {
+            positiveOrbitDelta -= 0xffff;
         }
-        if (d1 < -0x8000)
-        {
-            d1 += 0xffff;
+        if (positiveOrbitDelta < -0x8000) {
+            positiveOrbitDelta += 0xffff;
         }
-        d2 = (yawB - spd) - yawA;
-        if (d2 > 0x8000)
-        {
-            d2 -= 0xffff;
+        negativeOrbitDelta = (targetYaw - orbitAngleOffset) - cameraYaw;
+        if (negativeOrbitDelta > 0x8000) {
+            negativeOrbitDelta -= 0xffff;
         }
-        if (d2 < -0x8000)
-        {
-            d2 += 0xffff;
+        if (negativeOrbitDelta < -0x8000) {
+            negativeOrbitDelta += 0xffff;
         }
-        if (d1 < 0)
-        {
-            d1 = -d1;
+        if (positiveOrbitDelta < 0) {
+            positiveOrbitDelta = -positiveOrbitDelta;
         }
-        if (d2 < 0)
-        {
-            d2 = -d2;
+        if (negativeOrbitDelta < 0) {
+            negativeOrbitDelta = -negativeOrbitDelta;
         }
-        if (d2 < d1)
-        {
-            state->orbitAngleOffset = -spd;
+        if (negativeOrbitDelta < positiveOrbitDelta) {
+            state->orbitAngleOffset = -orbitAngleOffset;
             gCameraModeNpcSpeakState->orbitAngleVelocity = -0x80;
         }
     }
 
-    if (mode != 6 && mode != 7 && (npc = getFocusedNpc()) != NULL)
-    {
-        GameObject* tgt = target;
-        s16 sd;
-        int dd;
-        sd = (s16)(yawB - (u16)tgt->anim.rotX);
-        if (sd > 0x8000)
-        {
-            sd = (s16)(sd - 0xffff);
+    if (mode != 6 && mode != 7 && (focusedNpc = getFocusedNpc()) != NULL) {
+        GameObject* target = (GameObject*)camera->anim.targetObj;
+        s16 targetYawDelta;
+        int relativeYawDelta;
+        targetYawDelta = (s16)(targetYaw - (u16)target->anim.rotX);
+        if (targetYawDelta > 0x8000) {
+            targetYawDelta = (s16)(targetYawDelta - 0xffff);
         }
-        if (sd < -0x8000)
-        {
-            sd = (s16)(sd + 0xffff);
+        if (targetYawDelta < -0x8000) {
+            targetYawDelta = (s16)(targetYawDelta + 0xffff);
         }
-        dd = sd - (u16)(s16)Obj_GetYawDeltaToObject(tgt, npc, 0);
-        if (dd > 0x8000)
-        {
-            dd -= 0xffff;
+        relativeYawDelta = targetYawDelta - (u16)(s16)Obj_GetYawDeltaToObject(target, focusedNpc, 0);
+        if (relativeYawDelta > 0x8000) {
+            relativeYawDelta -= 0xffff;
         }
-        if (dd < -0x8000)
-        {
-            dd += 0xffff;
+        if (relativeYawDelta < -0x8000) {
+            relativeYawDelta += 0xffff;
         }
-        if ((dd > 0x1000 && gCameraModeNpcSpeakState->orbitAngleOffset > 0) ||
-            (dd < -0x1000 && gCameraModeNpcSpeakState->orbitAngleOffset < 0))
-        {
+        if ((relativeYawDelta > 0x1000 && gCameraModeNpcSpeakState->orbitAngleOffset > 0) ||
+            (relativeYawDelta < -0x1000 && gCameraModeNpcSpeakState->orbitAngleOffset < 0)) {
             gCameraModeNpcSpeakState->orbitAngleOffset = -gCameraModeNpcSpeakState->orbitAngleOffset;
         }
     }
 
-    CameraModeNpcSpeak_solveOrbitPosition(target, &va, &vb, &vc);
-    camcontrol_traceMove(&camera->anim.worldPosX, &va, &gCameraModeNpcSpeakState->cameraX, traceWork, 3, 1, 1,
+    CameraModeNpcSpeak_solveOrbitPosition((GameObject*)camera->anim.targetObj, &cameraX, &cameraY, &cameraZ);
+    camcontrol_traceMove(&camera->anim.worldPosX, &cameraX, &gCameraModeNpcSpeakState->cameraX, traceWork, 3, 1, 1,
                          4.0f);
 }
 
-#undef target
-
-f32 lbl_80319DF8[4] = {-3.0f, -3.5f, -3.5f, -3.0f};
-void CameraModeNpcSpeak_release(void)
-{
+void CameraModeNpcSpeak_release(void) {
 }
 
-void CameraModeNpcSpeak_initialise(void)
-{
+void CameraModeNpcSpeak_initialise(void) {
 }

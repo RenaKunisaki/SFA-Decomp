@@ -29,11 +29,6 @@
 u8 gWcTileGridB[8][8];
 u8 gWcTileGridA[9][8];
 
-static void wclevelcont_resetTileGridB(void)
-{
-    memcpy(gWcTileGridB, gWcTileGridBInitial.g, 0x40);
-}
-
 void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
 {
     f32 sunTime;
@@ -742,7 +737,7 @@ void wclevelcont_free(GameObject* obj)
     WcLevelControlState* state = obj->extra;
     u8 mode;
 
-    ObjGroup_RemoveObject((int)obj, WCLEVELCONT_OBJGROUP);
+    objFreeObjectType((int)obj, WCLEVELCONT_OBJGROUP);
     mode = state->mode;
     if (mode == 1)
     {
@@ -893,7 +888,7 @@ void wclevelcont_init(GameObject* obj)
     {
         state->mode = 3;
     }
-    ObjGroup_AddObject((int)obj, WCLEVELCONT_OBJGROUP);
+    objAddObjectType((int)obj, WCLEVELCONT_OBJGROUP);
     mainSetBits(0x226, 1);
     mainSetBits(0x2a6, 1);
     mainSetBits(0x206, 1);
@@ -911,6 +906,47 @@ void wclevelcont_release(void)
 void wclevelcont_initialise(void)
 {
 }
+
+WcTileGrid gWcTileGridAInitial = {{
+    {0, 0, 0, 0, 0, 0, 8, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 4, 0, 0, 0},
+    {0, 2, 0, 0, 0, 0, 3, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 7},
+    {0, 0, 0, 0, 6, 0, 0, 0},
+    {0, 5, 0, 0, 1, 0, 0, 0},
+}};
+WcTileGrid gWcTileGridASolved = {{
+    {0, 0, 0, 0, 0, 0, 4, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 3},
+    {0, 0, 0, 0, 2, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0, 0},
+}};
+WcTileGrid gWcTileGridBInitial = {{
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 1, 5, 0, 0, 2, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 3},
+    {0, 0, 0, 0, 0, 0, 6, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 7},
+    {0, 8, 0, 0, 4, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+}};
+WcTileGrid gWcTileGridBSolved = {{
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 2, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 3},
+    {0, 4, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0},
+}};
 
 ObjectDescriptor24 gWCLevelContObjDescriptor = {
     0,

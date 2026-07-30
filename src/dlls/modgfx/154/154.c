@@ -1,249 +1,272 @@
 /*
- * DLL 154 / 0x9A - one of the screen-fx descriptor builders
- * (the dll_9X_func03 family). dll_9A_func03 fills a ScreenFxHdr plus a
- * table of ScreenFxPart entries describing an animated multi-part
- * screen effect, then hands it to the modgfx interface to spawn.
- *
- * The seven-element animation template (ScreenSeq) is read from
- * gScreenFx9AAnimTemplate and jittered with randomGetRange; the part table
- * is built in two variants selected by `variant` (0 or 1), and the
- * header is anchored to the target/parent object positions when its
- * low flag bit is set.
+ * DLL 154 / 0x9A - a randomized multi-layer modgfx effect spawner.
  */
+#include "main/dll/dll_009A_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/screenfx_types.h"
-#include "game/objects/object.h"
-#include "main/dll/partfx_interface.h"
-#include "dlls/object_descriptor.h"
+#include "main/dll/modgfx_types.h"
 
-extern u32 lbl_80317B98[];
+typedef struct Dll9AEffectVertex {
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} Dll9AEffectVertex;
 
-u8 lbl_803DB958[8] = {0, 0, 0, 1, 0, 2, 0, 0};
-u8 gScreenFx9APartTexB[4] = {0, 2, 0, 0};
-u8 gScreenFx9APartTexA[8] = {0, 0, 0, 1, 0, 2, 0, 0};
+STATIC_ASSERT(offsetof(Dll9AEffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(Dll9AEffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(Dll9AEffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(Dll9AEffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(Dll9AEffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(Dll9AEffectVertex) == 0x0A);
 
-typedef struct
-{
-    s16 v[7];
-} ScreenSeq;
+typedef struct Dll9AEffectResourceView {
+    Dll9AEffectVertex vertices[3];
+    s16 opaqueTail;
+} Dll9AEffectResourceView;
 
-/* effect id spawned by this DLL's modgfx emitter (spawnEffect textureAssetId arg). */
-#define DLL9A_EFFECT_ID 0x31
+STATIC_ASSERT(offsetof(Dll9AEffectResourceView, vertices) == 0x00);
+STATIC_ASSERT(offsetof(Dll9AEffectResourceView, opaqueTail) == 0x1E);
+STATIC_ASSERT(sizeof(Dll9AEffectResourceView) == 0x20);
 
-const s16 gScreenFx9AAnimTemplate[8] = {0, 10, 40, 60, 40, 0, 0, 0};
-void dll_9A_func03(int target, int variant, int parent, u32 flags)
-{
-    ScreenSeq seq;
-    ScreenFxPart parts[32];
-    ScreenFxHdr hdr;
-    ScreenFxPart* cur;
-    ScreenFxPart* pp;
-    f32 rz;
-    f32 ry;
+typedef struct Dll9ASequence {
+    s16 sequenceParams[7];
+} Dll9ASequence;
 
-    seq = *(ScreenSeq*)gScreenFx9AAnimTemplate;
-    seq.v[1] += randomGetRange(0, 0x14);
-    seq.v[2] += randomGetRange(-0x14, 0x14);
-    seq.v[3] += randomGetRange(-0x14, 0x14);
-    seq.v[4] += randomGetRange(-0x14, 0x14);
-    pp = parts;
-    cur = pp;
-    if (variant == 0)
-    {
-        cur->state = 0;
-        cur->id = 3;
-        cur->tex = gScreenFx9APartTexA;
-        cur->flags = 8;
-        cur->x = (f32)(s32)(randomGetRange(0, 0x69) + 0x8c);
-        cur->y = (f32)(s32)(randomGetRange(0, 0x69) + 0x8c);
-        cur->z = (f32)(s32)(randomGetRange(0, 0x1e) + 0xe1);
-        cur++;
+STATIC_ASSERT(sizeof(Dll9ASequence) == 0x0E);
+
+typedef struct Dll9ASequenceTemplate {
+    Dll9ASequence sequence;
+    s16 opaqueTail;
+} Dll9ASequenceTemplate;
+
+STATIC_ASSERT(offsetof(Dll9ASequenceTemplate, sequence) == 0x00);
+STATIC_ASSERT(offsetof(Dll9ASequenceTemplate, opaqueTail) == 0x0E);
+STATIC_ASSERT(sizeof(Dll9ASequenceTemplate) == 0x10);
+
+typedef struct Dll9AThreeIndexList {
+    s16 indices[3];
+    s16 opaqueTail;
+} Dll9AThreeIndexList;
+
+STATIC_ASSERT(offsetof(Dll9AThreeIndexList, indices) == 0x00);
+STATIC_ASSERT(offsetof(Dll9AThreeIndexList, opaqueTail) == 0x06);
+STATIC_ASSERT(sizeof(Dll9AThreeIndexList) == 0x08);
+
+typedef struct Dll9ASingleIndexList {
+    s16 index;
+    s16 opaqueTail;
+} Dll9ASingleIndexList;
+
+STATIC_ASSERT(offsetof(Dll9ASingleIndexList, index) == 0x00);
+STATIC_ASSERT(offsetof(Dll9ASingleIndexList, opaqueTail) == 0x02);
+STATIC_ASSERT(sizeof(Dll9ASingleIndexList) == 0x04);
+
+Dll9AThreeIndexList gDll9ATriangleIndices = {{0, 1, 2}, 0};
+Dll9ASingleIndexList gDll9ASingleVertexIndex = {2, 0};
+Dll9AThreeIndexList gDll9AAllVertexIndices = {{0, 1, 2}, 0};
+
+extern u32 gDll9AEffectVertexData[sizeof(Dll9AEffectResourceView) / sizeof(u32)];
+
+const Dll9ASequenceTemplate gDll9ASequenceTemplate = {
+    {{0, 10, 40, 60, 40, 0, 0}},
+    0,
+};
+
+void dll_9A_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
+    Dll9ASequence sequence;
+    ModgfxPointerSpawnPacket packet;
+    GfxCmd* commandCursor;
+    GfxCmd* commands;
+    f32 rotationZ;
+    f32 rotationY;
+
+    sequence = gDll9ASequenceTemplate.sequence;
+    sequence.sequenceParams[1] += randomGetRange(0, 0x14);
+    sequence.sequenceParams[2] += randomGetRange(-0x14, 0x14);
+    sequence.sequenceParams[3] += randomGetRange(-0x14, 0x14);
+    sequence.sequenceParams[4] += randomGetRange(-0x14, 0x14);
+    commands = packet.entries;
+    commandCursor = commands;
+    if (variant == 0) {
+        commandCursor->layer = 0;
+        commandCursor->flags = 3;
+        commandCursor->tex = gDll9AAllVertexIndices.indices;
+        commandCursor->mode = 8;
+        commandCursor->x = (f32)(s32)(randomGetRange(0, 0x69) + 0x8c);
+        commandCursor->y = (f32)(s32)(randomGetRange(0, 0x69) + 0x8c);
+        commandCursor->z = (f32)(s32)(randomGetRange(0, 0x1e) + 0xe1);
+        commandCursor++;
+    } else if (variant == 1) {
+        commandCursor->layer = 0;
+        commandCursor->flags = 3;
+        commandCursor->tex = gDll9AAllVertexIndices.indices;
+        commandCursor->mode = 8;
+        commandCursor->x = (f32)(s32)(randomGetRange(0, 0x1e) + 0xe1);
+        commandCursor->y = (f32)(s32)(randomGetRange(0, 0x69) + 0x8c);
+        commandCursor->z = (f32)(s32)(randomGetRange(0, 0x41) + 0x78);
+        commandCursor++;
     }
-    else if (variant == 1)
-    {
-        cur->state = 0;
-        cur->id = 3;
-        cur->tex = gScreenFx9APartTexA;
-        cur->flags = 8;
-        cur->x = (f32)(s32)(randomGetRange(0, 0x1e) + 0xe1);
-        cur->y = (f32)(s32)(randomGetRange(0, 0x69) + 0x8c);
-        cur->z = (f32)(s32)(randomGetRange(0, 0x41) + 0x78);
-        cur++;
-    }
-    rz = (f32)(s32)randomGetRange(-0x36b0, 0x36b0);
-    ry = (f32)(s32)randomGetRange(-0x2ee0, 0x2ee0);
-    cur[0].state = 0;
-    cur[0].id = 0;
-    cur[0].tex = NULL;
-    cur[0].flags = 0x80;
-    cur[0].x = 0.0f;
-    cur[0].y = ry;
-    cur[0].z = rz;
-    cur[1].state = 0;
-    cur[1].id = 3;
-    cur[1].tex = gScreenFx9APartTexA;
-    cur[1].flags = 4;
-    cur[1].x = 0.0f;
-    cur[1].y = 0.0f;
-    cur[1].z = 0.0f;
-    cur[2].state = 0;
-    cur[2].id = 3;
-    cur[2].tex = gScreenFx9APartTexA;
-    cur[2].flags = 2;
-    cur[2].x = 1.0f;
-    cur[2].y = 0.01f * (f32)(s32)randomGetRange(0, 0x32) + 0.2f;
-    cur[2].z = 0.01f * (f32)(s32)randomGetRange(4, 6) + 0.8f;
-    cur[3].state = 1;
-    cur[3].id = 1;
-    cur[3].tex = gScreenFx9APartTexB;
-    cur[3].flags = 4;
-    cur[3].x = 255.0f;
-    cur[3].y = 0.0f;
-    cur[3].z = 0.0f;
-    cur[4].state = 1;
-    cur[4].id = 0;
-    cur[4].tex = gScreenFx9APartTexB;
-    cur[4].flags = 0x4000;
-    cur[4].x = 1.8f;
-    cur[4].y = 0.0f;
-    cur[4].z = 0.0f;
-    cur[5].state = 1;
-    cur[5].id = 3;
-    cur[5].tex = gScreenFx9APartTexA;
-    cur[5].flags = 2;
-    cur[5].x = 3.0f;
-    cur[5].y = 4.0f;
-    cur[5].z = 4.0f;
-    cur[6].state = 1;
-    cur[6].id = 0;
-    cur[6].tex = NULL;
-    cur[6].flags = 0x80;
-    cur[6].x = (f32)(s32)randomGetRange(-32000, 32000);
-    cur[6].y = ry * (f32)(s32)randomGetRange(-1, 1);
-    cur[6].z = rz * (f32)(s32)randomGetRange(-1, 1);
-    cur[7].state = 2;
-    cur[7].id = 0;
-    cur[7].tex = NULL;
-    cur[7].flags = 0x80;
-    cur[7].x = (f32)(s32)randomGetRange(-32000, 32000);
-    cur[7].y = ry * (f32)(s32)randomGetRange(-1, 1);
-    cur[7].z = rz * (f32)(s32)randomGetRange(-1, 1);
-    cur[8].state = 2;
-    cur[8].id = 0;
-    cur[8].tex = gScreenFx9APartTexB;
-    cur[8].flags = 0x4000;
-    cur[8].x = 1.8f;
-    cur[8].y = 0.0f;
-    cur[8].z = 0.0f;
-    cur[9].state = 3;
-    cur[9].id = 0;
-    cur[9].tex = NULL;
-    cur[9].flags = 0x80;
-    cur[9].x = (f32)(s32)randomGetRange(-32000, 32000);
-    cur[9].y = ry * (f32)(s32)randomGetRange(-1, 1);
-    cur[9].z = rz * (f32)(s32)randomGetRange(-1, 1);
-    cur[10].state = 3;
-    cur[10].id = 0;
-    cur[10].tex = gScreenFx9APartTexB;
-    cur[10].flags = 0x4000;
-    cur[10].x = 1.8f;
-    cur[10].y = 0.0f;
-    cur[10].z = 0.0f;
-    cur[11].state = 4;
-    cur[11].id = 0;
-    cur[11].tex = NULL;
-    cur[11].flags = 0x80;
-    cur[11].x = (f32)(s32)randomGetRange(-32000, 32000);
-    cur[11].y = ry * (f32)(s32)randomGetRange(-1, 1);
-    cur[11].z = rz * (f32)(s32)randomGetRange(-1, 1);
-    cur[12].state = 4;
-    cur[12].id = 0;
-    cur[12].tex = gScreenFx9APartTexB;
-    cur[12].flags = 0x4000;
-    cur[12].x = 1.8f;
-    cur[12].y = 0.0f;
-    cur[12].z = 0.0f;
-    cur[13].state = 4;
-    cur[13].id = 1;
-    cur[13].tex = gScreenFx9APartTexB;
-    cur[13].flags = 4;
-    cur[13].x = 0.0f;
-    cur[13].y = 0.0f;
-    cur[13].z = 0.0f;
+    rotationZ = (f32)(s32)randomGetRange(-0x36b0, 0x36b0);
+    rotationY = (f32)(s32)randomGetRange(-0x2ee0, 0x2ee0);
+    commandCursor[0].layer = 0;
+    commandCursor[0].flags = 0;
+    commandCursor[0].tex = NULL;
+    commandCursor[0].mode = 0x80;
+    commandCursor[0].x = 0.0f;
+    commandCursor[0].y = rotationY;
+    commandCursor[0].z = rotationZ;
+    commandCursor[1].layer = 0;
+    commandCursor[1].flags = 3;
+    commandCursor[1].tex = gDll9AAllVertexIndices.indices;
+    commandCursor[1].mode = 4;
+    commandCursor[1].x = 0.0f;
+    commandCursor[1].y = 0.0f;
+    commandCursor[1].z = 0.0f;
+    commandCursor[2].layer = 0;
+    commandCursor[2].flags = 3;
+    commandCursor[2].tex = gDll9AAllVertexIndices.indices;
+    commandCursor[2].mode = 2;
+    commandCursor[2].x = 1.0f;
+    commandCursor[2].y = 0.01f * (f32)(s32)randomGetRange(0, 0x32) + 0.2f;
+    commandCursor[2].z = 0.01f * (f32)(s32)randomGetRange(4, 6) + 0.8f;
+    commandCursor[3].layer = 1;
+    commandCursor[3].flags = 1;
+    commandCursor[3].tex = &gDll9ASingleVertexIndex.index;
+    commandCursor[3].mode = 4;
+    commandCursor[3].x = 255.0f;
+    commandCursor[3].y = 0.0f;
+    commandCursor[3].z = 0.0f;
+    commandCursor[4].layer = 1;
+    commandCursor[4].flags = 0;
+    commandCursor[4].tex = &gDll9ASingleVertexIndex.index;
+    commandCursor[4].mode = 0x4000;
+    commandCursor[4].x = 1.8f;
+    commandCursor[4].y = 0.0f;
+    commandCursor[4].z = 0.0f;
+    commandCursor[5].layer = 1;
+    commandCursor[5].flags = 3;
+    commandCursor[5].tex = gDll9AAllVertexIndices.indices;
+    commandCursor[5].mode = 2;
+    commandCursor[5].x = 3.0f;
+    commandCursor[5].y = 4.0f;
+    commandCursor[5].z = 4.0f;
+    commandCursor[6].layer = 1;
+    commandCursor[6].flags = 0;
+    commandCursor[6].tex = NULL;
+    commandCursor[6].mode = 0x80;
+    commandCursor[6].x = (f32)(s32)randomGetRange(-32000, 32000);
+    commandCursor[6].y = rotationY * (f32)(s32)randomGetRange(-1, 1);
+    commandCursor[6].z = rotationZ * (f32)(s32)randomGetRange(-1, 1);
+    commandCursor[7].layer = 2;
+    commandCursor[7].flags = 0;
+    commandCursor[7].tex = NULL;
+    commandCursor[7].mode = 0x80;
+    commandCursor[7].x = (f32)(s32)randomGetRange(-32000, 32000);
+    commandCursor[7].y = rotationY * (f32)(s32)randomGetRange(-1, 1);
+    commandCursor[7].z = rotationZ * (f32)(s32)randomGetRange(-1, 1);
+    commandCursor[8].layer = 2;
+    commandCursor[8].flags = 0;
+    commandCursor[8].tex = &gDll9ASingleVertexIndex.index;
+    commandCursor[8].mode = 0x4000;
+    commandCursor[8].x = 1.8f;
+    commandCursor[8].y = 0.0f;
+    commandCursor[8].z = 0.0f;
+    commandCursor[9].layer = 3;
+    commandCursor[9].flags = 0;
+    commandCursor[9].tex = NULL;
+    commandCursor[9].mode = 0x80;
+    commandCursor[9].x = (f32)(s32)randomGetRange(-32000, 32000);
+    commandCursor[9].y = rotationY * (f32)(s32)randomGetRange(-1, 1);
+    commandCursor[9].z = rotationZ * (f32)(s32)randomGetRange(-1, 1);
+    commandCursor[10].layer = 3;
+    commandCursor[10].flags = 0;
+    commandCursor[10].tex = &gDll9ASingleVertexIndex.index;
+    commandCursor[10].mode = 0x4000;
+    commandCursor[10].x = 1.8f;
+    commandCursor[10].y = 0.0f;
+    commandCursor[10].z = 0.0f;
+    commandCursor[11].layer = 4;
+    commandCursor[11].flags = 0;
+    commandCursor[11].tex = NULL;
+    commandCursor[11].mode = 0x80;
+    commandCursor[11].x = (f32)(s32)randomGetRange(-32000, 32000);
+    commandCursor[11].y = rotationY * (f32)(s32)randomGetRange(-1, 1);
+    commandCursor[11].z = rotationZ * (f32)(s32)randomGetRange(-1, 1);
+    commandCursor[12].layer = 4;
+    commandCursor[12].flags = 0;
+    commandCursor[12].tex = &gDll9ASingleVertexIndex.index;
+    commandCursor[12].mode = 0x4000;
+    commandCursor[12].x = 1.8f;
+    commandCursor[12].y = 0.0f;
+    commandCursor[12].z = 0.0f;
+    commandCursor[13].layer = 4;
+    commandCursor[13].flags = 1;
+    commandCursor[13].tex = &gDll9ASingleVertexIndex.index;
+    commandCursor[13].mode = 4;
+    commandCursor[13].x = 0.0f;
+    commandCursor[13].y = 0.0f;
+    commandCursor[13].z = 0.0f;
 
-    hdr.v0 = 0;
-    hdr.target = target;
-    hdr.b = variant;
-    hdr.bx = 0.0f;
-    if (variant == 0)
-    {
-        hdr.by = 0.0f;
+    packet.modeByte = 0;
+    packet.sourceObj = sourceObj;
+    packet.sourceMode = variant;
+    packet.position[0] = 0.0f;
+    if (variant == 0) {
+        packet.position[1] = 0.0f;
+    } else if (variant == 1) {
+        packet.position[1] = 200.0f;
     }
-    else if (variant == 1)
-    {
-        hdr.by = 200.0f;
-    }
-    hdr.bz = 0.0f;
-    hdr.ax = 0.0f;
-    hdr.ay = 0.0f;
-    hdr.az = 0.0f;
-    hdr.r = 4.0f;
-    hdr.c2 = 1;
-    hdr.c7 = 0;
-    hdr.v1 = 3;
-    hdr.v2 = 0;
-    hdr.v3 = 0;
-    hdr.count = (s8)(((u8*)(cur + 14) - (u8*)pp) / 0x18);
-    hdr.anim[0] = seq.v[0];
-    hdr.anim[1] = seq.v[1];
-    hdr.anim[2] = seq.v[2];
-    hdr.anim[3] = seq.v[3];
-    hdr.anim[4] = seq.v[4];
-    hdr.anim[5] = seq.v[5];
-    hdr.anim[6] = seq.v[6];
-    hdr.parts = parts;
-    hdr.flags = 0x4000400;
-    hdr.flags |= flags;
-    if ((hdr.flags & 1) != 0)
-    {
-        if ((void*)hdr.target != NULL && (void*)parent != NULL)
-        {
-            hdr.bx = hdr.bx + (((GameObject*)hdr.target)->anim.worldPosX + ((PartFxSpawnParams*)parent)->posX);
-            hdr.by = hdr.by + (((GameObject*)hdr.target)->anim.worldPosY + ((PartFxSpawnParams*)parent)->posY);
-            hdr.bz = hdr.bz + (((GameObject*)hdr.target)->anim.worldPosZ + ((PartFxSpawnParams*)parent)->posZ);
+    packet.position[2] = 0.0f;
+    packet.velocity[0] = 0.0f;
+    packet.velocity[1] = 0.0f;
+    packet.velocity[2] = 0.0f;
+    packet.scale = 4.0f;
+    packet.drawGroupCount = 1;
+    packet.drawGroupStride = 0;
+    packet.initialStateByte = 3;
+    packet.byte5A = 0;
+    packet.textureFrameTimer = 0;
+    packet.commandCount = (s8)(((u8*)(commandCursor + 14) - (u8*)commands) / (int)sizeof(GfxCmd));
+    packet.sequenceParams[0] = sequence.sequenceParams[0];
+    packet.sequenceParams[1] = sequence.sequenceParams[1];
+    packet.sequenceParams[2] = sequence.sequenceParams[2];
+    packet.sequenceParams[3] = sequence.sequenceParams[3];
+    packet.sequenceParams[4] = sequence.sequenceParams[4];
+    packet.sequenceParams[5] = sequence.sequenceParams[5];
+    packet.sequenceParams[6] = sequence.sequenceParams[6];
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.flags = 0x4000400;
+    packet.flags |= spawnFlags;
+    if ((packet.flags & 1) != 0) {
+        if ((void*)packet.sourceObj != NULL && (void*)spawnParams != NULL) {
+            packet.position[0] = packet.position[0] + (packet.sourceObj->anim.worldPosX + spawnParams->posX);
+            packet.position[1] = packet.position[1] + (packet.sourceObj->anim.worldPosY + spawnParams->posY);
+            packet.position[2] = packet.position[2] + (packet.sourceObj->anim.worldPosZ + spawnParams->posZ);
+        } else if ((void*)packet.sourceObj != NULL) {
+            packet.position[0] = packet.position[0] + packet.sourceObj->anim.worldPosX;
+            packet.position[1] = packet.position[1] + packet.sourceObj->anim.worldPosY;
+            packet.position[2] = packet.position[2] + packet.sourceObj->anim.worldPosZ;
+        } else if ((void*)spawnParams != NULL) {
+            packet.position[0] = packet.position[0] + spawnParams->posX;
+            packet.position[1] = packet.position[1] + spawnParams->posY;
+            packet.position[2] = packet.position[2] + spawnParams->posZ;
         }
-        else if ((void*)hdr.target != NULL)
-        {
-            hdr.bx = hdr.bx + ((GameObject*)hdr.target)->anim.worldPosX;
-            hdr.by = hdr.by + ((GameObject*)hdr.target)->anim.worldPosY;
-            hdr.bz = hdr.bz + ((GameObject*)hdr.target)->anim.worldPosZ;
-        }
-        else if ((void*)parent != NULL)
-        {
-            hdr.bx = hdr.bx + ((PartFxSpawnParams*)parent)->posX;
-            hdr.by = hdr.by + ((PartFxSpawnParams*)parent)->posY;
-            hdr.bz = hdr.bz + ((PartFxSpawnParams*)parent)->posZ;
-        }
     }
-    (*gModgfxInterface)->spawnEffect(&hdr, 0, 3, (u8*)(int)lbl_80317B98, 1, lbl_803DB958, DLL9A_EFFECT_ID, 0);
+    (*gModgfxInterface)
+        ->spawnEffect(&packet, 0, 3, (u8*)(int)gDll9AEffectVertexData, 1, gDll9ATriangleIndices.indices, 0x31, 0);
 }
 
-void dll_9A_func01_nop(void)
-{
+void dll_9A_release(void) {
 }
 
-void dll_9A_func00_nop(void)
-{
+void dll_9A_initialise(void) {
 }
 
-u32 lbl_80317B98[8] = {0x000000e6, 0x07080000, 0x001f0000, 0xff1a0708, 0x001f001f, 0x00000000, 0x0000000f, 0x00100000};
-ObjectDescriptor4 dll_9A_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)dll_9A_func00_nop,
-    (ObjectDescriptorCallback)dll_9A_func01_nop,
-    0,
-    (ObjectDescriptorCallback)dll_9A_func03,
+u32 gDll9AEffectVertexData[sizeof(Dll9AEffectResourceView) / sizeof(u32)] = {
+    0x000000e6, 0x07080000, 0x001f0000, 0xff1a0708, 0x001f001f, 0x00000000, 0x0000000f, 0x00100000,
+};
+
+Dll9AResourceDescriptor gDll9AResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, dll_9A_initialise, dll_9A_release, NULL, dll_9A_spawnEffect,
 };

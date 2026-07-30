@@ -320,7 +320,135 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
+#include "main/dll/dll_0042_cameramodenormal.h"
+#include "main/dll/dll_0043_cameramodestaffanim.h"
+#include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/CAM/dll_0045_camTalk.h"
+#include "main/dll/dll_0046_cameramodedebug.h"
+#include "main/dll/dll_0047_cameramodepath.h"
+#include "main/dll/dll_0048_cameramodestatic.h"
+#include "main/dll/dll_0049_cameramodecombat.h"
+#include "main/dll/dll_004A_cameramodeshipbattle.h"
+#include "main/dll/dll_004B_cameramodeclimb.h"
+#include "main/dll/dll_004C_camDebug.h"
+#include "main/dll/dll_004D_cameramodenpcspeak.h"
+#include "main/dll/dll_004E_cameramodeworldmap.h"
+#include "main/dll/dll_004F_cameramode.h"
+#include "main/dll/dll_0050_cameramodecrawl.h"
+#include "main/dll/dll_0051_cameramodecannon.h"
+#include "main/dll/dll_0052_cameramodeforcebehind.h"
+#include "main/dll/dll_0053_cameramodecloudrunner.h"
+#include "main/dll/dll_0054_dll54.h"
+#include "main/dll/dll_0055_cameramode.h"
+#include "main/dll/dll_0056_cameramodearwing.h"
+#include "main/dll/dll_0057_cameramodetitle.h"
+#include "main/dll/dll_0058_dummy58.h"
+#include "main/dll/dll_0059_dll59func0.h"
+#include "main/dll/dll_005A_staffcollision.h"
+#include "main/dll/dll_005B_modgfx.h"
+#include "main/dll/dll_005C_modgfx.h"
+#include "main/dll/dll_005D_modgfx.h"
+#include "main/dll/dll_005E_modgfx.h"
+#include "main/dll/dll_005F_modgfx.h"
+#include "main/dll/dll_0060_modgfx.h"
+#include "main/dll/dll_0061_modgfx.h"
+#include "main/dll/dll_0062_modgfx.h"
+#include "main/dll/dll_0063_modgfx.h"
+#include "main/dll/dll_0064_modgfx.h"
+#include "main/dll/dll_0065_modgfx.h"
+#include "main/dll/dll_0066_modgfx.h"
+#include "main/dll/dll_0067_modgfx.h"
+#include "main/dll/dll_0068_modgfx.h"
+#include "main/dll/dll_0069_modgfx.h"
+#include "main/dll/dll_006A_modgfx.h"
+#include "main/dll/dll_006B_modgfx.h"
+#include "main/dll/dll_006C_dummy6c.h"
+#include "main/dll/dll_006D_modgfx.h"
+#include "main/dll/dll_006E_modgfx.h"
+#include "main/dll/dll_006F_modgfx.h"
+#include "main/dll/dll_0070_modgfx.h"
+#include "main/dll/dll_0071_modgfx.h"
+#include "main/dll/dll_0072_modgfx.h"
+#include "main/dll/dll_0073_modgfx.h"
+#include "main/dll/dll_0074_modgfx.h"
+#include "main/dll/dll_0075_modgfx.h"
+#include "main/dll/dll_0076_modgfx.h"
+#include "main/dll/dll_0077_modgfx.h"
+#include "main/dll/dll_0078_modgfx.h"
+#include "main/dll/dll_0079_modgfx.h"
+#include "main/dll/dll_007A_modgfx.h"
+#include "main/dll/dll_007B_modgfx.h"
+#include "main/dll/dll_007C_modgfx.h"
+#include "main/dll/dll_007D_modgfx.h"
+#include "main/dll/dll_007E_modgfx.h"
+#include "main/dll/dll_007F_modgfx.h"
+#include "main/dll/dll_0080_modgfx.h"
+#include "main/dll/dll_0081_modgfx.h"
+#include "main/dll/dll_0082_modgfx.h"
+#include "main/dll/dll_0083_modgfx.h"
+#include "main/dll/dll_0084_modgfx.h"
+#include "main/dll/dll_0085_modgfx.h"
+#include "main/dll/dll_0086_modgfx.h"
+#include "main/dll/dll_0087_modgfx.h"
+#include "main/dll/dll_0088_modgfx.h"
+#include "main/dll/dll_0089_modgfx.h"
+#include "main/dll/dll_008A_modgfx.h"
+#include "main/dll/dll_008B_modgfx.h"
+#include "main/dll/dll_008C_modgfx.h"
+#include "main/dll/dll_008D_modgfx.h"
+#include "main/dll/dll_008E_modgfx.h"
+#include "main/dll/dll_008F_modgfx.h"
+#include "main/dll/dll_0090_modgfx.h"
+#include "main/dll/dll_0091_modgfx.h"
+#include "main/dll/dll_0092_modgfx.h"
+#include "main/dll/dll_0093_modgfx.h"
+#include "main/dll/dll_0094_modgfx.h"
+#include "main/dll/dll_0095_modgfx.h"
+#include "main/dll/dll_0096_modgfx.h"
+#include "main/dll/dll_0097_modgfx.h"
+#include "main/dll/dll_0098_modgfx.h"
+#include "main/dll/dll_0099_modgfx.h"
+#include "main/dll/dll_009A_modgfx.h"
+#include "main/dll/dll_009B_modgfx.h"
+#include "main/dll/dll_009C_modgfx.h"
+#include "main/dll/dll_009D_modgfx.h"
+#include "main/dll/dll_009E_modgfx.h"
+#include "main/dll/dll_009F_modgfx.h"
+#include "main/dll/dll_00A0_modgfx.h"
+#include "main/dll/dll_00A1_modgfx.h"
+#include "main/dll/dll_00A2_modgfx.h"
+#include "main/dll/dll_00A3_modgfx.h"
+#include "main/dll/dll_00A4_dummya4.h"
+#include "main/dll/dll_00A5_modgfx.h"
+#include "main/dll/dll_00A6_modgfx.h"
+#include "main/dll/dll_00A7_modgfx.h"
+#include "main/dll/dll_00A8_modgfx.h"
+#include "main/dll/dll_00A9_modgfx.h"
+#include "main/dll/dll_00AA_modgfx.h"
+#include "main/dll/dll_00AB_projdummy.h"
+#include "main/dll/dll_00AC_projmagicstream.h"
+#include "main/dll/dll_00AD_projmagicemmit1.h"
+#include "main/dll/dll_00AE_projroombeam.h"
+#include "main/dll/dll_00AF_projlightning1.h"
+#include "main/dll/dll_00B0_projlightning2.h"
+#include "main/dll/dll_00B1_projlightning3.h"
+#include "main/dll/dll_00B2_projrobotfire.h"
+#include "main/dll/dll_00B3_projlightning4.h"
+#include "main/dll/dll_00B4_projenergise1.h"
+#include "main/dll/dll_00B5_projenergise2.h"
+#include "main/dll/dll_00B6_projsquirt1.h"
+#include "main/dll/dll_00B7_projship1.h"
+#include "main/dll/dll_00B8_projlightning5.h"
+#include "main/dll/dll_00B9_projlightning7.h"
+#include "main/dll/dll_00BA_projlightning6.h"
+#include "main/dll/dll_00BB_projwallpower.h"
+#include "main/dll/dll_00BC_projquakeshock.h"
+#include "main/dll/dll_00BD_projsunshock.h"
+#include "main/dll/dll_00BE_projtesla.h"
+#include "main/dll/dll_00BF_projcore1.h"
+#include "main/dll/dll_00C0_projcore2.h"
+#include "main/dll/dll_00C1_projcore3.h"
+#include "main/dll/dll_00C2_projdfp1r.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00DA_pollenfragment_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -400,7 +528,7 @@ char sModelEngineTimerDotText[] = ".";
 
 extern ResourceDescriptor Carryable_funcs, boneParticleEffect_funcs, dll_19;
 extern ResourceDescriptor dll_219, dll_21B, dll_224, dll_28B, dll_2A3;
-extern ResourceDescriptor dll_2A4, dll_2E, dll_54, dll_D3, expgfx_funcs;
+extern ResourceDescriptor dll_2A4, dll_2E, dll_D3, expgfx_funcs;
 extern ResourceDescriptor gARWBlockerObjDescriptor, gARWBombCollObjDescriptor, gARWGeneratoObjDescriptor,
     gARWProximitObjDescriptor;
 extern ResourceDescriptor gARWSpeedStrObjDescriptor, gARWSquadronObjDescriptor;
@@ -466,41 +594,8 @@ extern ResourceDescriptor Effect9_funcs, Effect10_funcs, Effect11_funcs, Effect1
     Effect15_funcs, Effect13_funcs;
 extern ResourceDescriptor Effect17_funcs, Effect18_funcs, Effect19_funcs, Effect20_funcs, lbl_803112E8, lbl_80311340,
     lbl_80311378, lbl_80311438;
-extern ResourceDescriptor lbl_803114B0, lbl_803114D8, lbl_803115F8, dll_15_funcs, lbl_80311900, lbl_80311BE0,
-    dll_59_funcs, StaffCollision_funcs;
-extern ResourceDescriptor lbl_80311E80, dll_5C_funcs, dll_5D_funcs, dll_5E_funcs, dll_5F_funcs, dll_60_funcs,
-    dll_61_funcs, dll_62_funcs;
-extern ResourceDescriptor dll_63_funcs, dll_64_funcs, dll_65_funcs, dll_A3_funcs, dll_66_funcs, dll_67_funcs,
-    dll_68_funcs, lbl_803137D8;
-extern ResourceDescriptor dll_69_funcs, dll_6A_funcs, dll_6B_funcs, Dummy6C_funcs, dll_6D_funcs, dll_6E_funcs,
-    dll_6F_funcs, dll_70_funcs;
-extern ResourceDescriptor dll_71_funcs, dll_72_funcs, dll_73_funcs, dll_74_funcs, dll_75_funcs, dll_76_funcs,
-    dll_77_funcs, dll_78_funcs;
-extern ResourceDescriptor dll_79_funcs, dll_7A_funcs, dll_7B_funcs, dll_7C_funcs, dll_7D_funcs, dll_7E_funcs,
-    dll_7F_funcs, dll_80_funcs;
-extern ResourceDescriptor dll_81_funcs, dll_82_funcs, dll_83_funcs, dll_84_funcs, dll_85_funcs, dll_86_funcs,
-    dll_87_funcs, dll_88_funcs;
-extern ResourceDescriptor dll_89_funcs, dll_8A_funcs, dll_8B_funcs, dll_8C_funcs, dll_8D_funcs, dll_8E_funcs,
-    dll_8F_funcs, dll_90_funcs;
-extern ResourceDescriptor dll_91_funcs, dll_92_funcs, dll_93_funcs, dll_94_funcs, dll_95_funcs, dll_96_funcs,
-    dll_97_funcs, dll_98_funcs;
-extern ResourceDescriptor dll_99_funcs, dll_9A_funcs, dll_9B_funcs, dll_9C_funcs, dll_9D_funcs, dll_9E_funcs,
-    dll_9F_funcs, dll_A0_funcs;
-extern ResourceDescriptor dll_A1_funcs, dll_A2_funcs, DummyA4_funcs, dll_A5_funcs, dll_A6_funcs, dll_A7_funcs,
-    dll_A8_funcs, dll_A9_funcs;
-extern ResourceDescriptor dll_AA_funcs, projdummy_funcs, lbl_803193C0, lbl_80319410, lbl_80319460, projlightning1_funcs,
-    lbl_803194F8, lbl_80319548;
-extern ResourceDescriptor lbl_80319598, lbl_803195E8, lbl_80319638, lbl_80319688, lbl_803196D8, projenergise2_funcs,
-    lbl_80319768, lbl_803197B0;
-extern ResourceDescriptor lbl_803197F8, lbl_80319840, projquakeshock_funcs, lbl_803198D8, projtesla_funcs, lbl_80319968,
-    lbl_803199B0, lbl_803199F8;
-extern ResourceDescriptor lbl_80319A40, lbl_80319B58, lbl_80319B98, gCameraModeViewfinderDescriptor,
-    gCameraModeDebugDescriptor, gCameraModeStaticDescriptor;
-extern ResourceDescriptor gCameraModeTestStrengthDescriptor, gCameraModeCombatDescriptor, gCameraModeShipBattleDescriptor, gCameraModeClimbDescriptor, lbl_80319D78,
-    gCameraModeNpcSpeakDescriptor,
-    gCameraModeWorldMapDescriptor, lbl_80319E38;
-extern ResourceDescriptor gCameraModeCrawlDescriptor, lbl_80319E98, lbl_80319EC8, lbl_80319EF8, lbl_80319F58, lbl_80319F88,
-    gCameraModeTitleDescriptor, lbl_8031A148;
+extern ResourceDescriptor lbl_803114B0, lbl_803114D8, lbl_803115F8, dll_15_funcs, lbl_80311900, lbl_80311BE0;
+extern ResourceDescriptor lbl_8031A148;
 extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode_funcs, lbl_8031A82C, EnterSaveNameScreen_funcs, OptionsScreen_funcs,
     lbl_8031ADA4, Dummy39_funcs;
 extern ResourceDescriptor Dummy3A_funcs, lbl_8031C020, lbl_8031C168, lbl_8031C1E4, lbl_8031C2B4, Dummy3E_funcs,
@@ -524,7 +619,7 @@ void* gResourceLoadedHandles[0x2C1];
 u16 gResourceRefCounts[0x2C2];
 char gModelEngineTextBuf[0x10];
 
-RingBufferQueue* allocModelStruct_800139e8(int capacity, int elemSize)
+RingBufferQueue* Queue_Alloc(int capacity, int elemSize)
 {
     RingBufferQueue* queue = mmAlloc(elemSize * capacity + sizeof(RingBufferQueue), 0x1a, 0);
     queue->data = (u8*)queue + sizeof(RingBufferQueue);
@@ -1068,7 +1163,7 @@ int getPrevUiDll(void)
     return gModelEnginePrevUiDll;
 }
 
-UiDllVTable** getDLL16(void)
+UiDllVTable** getCurUiDllInterface(void)
 {
     return gModelEngineCurUiDllRes;
 }
@@ -1194,135 +1289,135 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &dll_3F_funcs,
     &gCreditsDescriptor,
     &gWarpStoneUiDescriptor,
-    &lbl_80319B58,
-    &lbl_80319B98,
-    &gCameraModeViewfinderDescriptor,
+    (ResourceDescriptor*)&gCameraModeNormalDescriptor,
+    (ResourceDescriptor*)&gCameraModeStaffAnimDescriptor,
+    (ResourceDescriptor*)&gCameraModeViewfinderDescriptor,
     (ResourceDescriptor*)&gCameraModeTalkDescriptor,
-    &gCameraModeDebugDescriptor,
-    &gCameraModeTestStrengthDescriptor,
-    &gCameraModeStaticDescriptor,
-    &gCameraModeCombatDescriptor,
-    &gCameraModeShipBattleDescriptor,
-    &gCameraModeClimbDescriptor,
-    &lbl_80319D78,
-    &gCameraModeNpcSpeakDescriptor,
-    &gCameraModeWorldMapDescriptor,
-    &lbl_80319E38,
-    &gCameraModeCrawlDescriptor,
-    &lbl_80319E98,
-    &lbl_80319EC8,
-    &lbl_80319EF8,
-    &dll_54,
-    &lbl_80319F58,
-    &lbl_80319F88,
-    &gCameraModeTitleDescriptor,
-    &lbl_803137D8,
-    &dll_59_funcs,
-    &StaffCollision_funcs,
-    &lbl_80311E80,
-    &dll_5C_funcs,
-    &dll_5D_funcs,
-    &dll_5E_funcs,
-    &dll_5F_funcs,
-    &dll_60_funcs,
-    &dll_61_funcs,
-    &dll_62_funcs,
-    &dll_63_funcs,
-    &dll_64_funcs,
-    &dll_65_funcs,
-    &dll_66_funcs,
-    &dll_67_funcs,
-    &dll_68_funcs,
-    &dll_69_funcs,
-    &dll_6A_funcs,
-    &dll_6B_funcs,
-    &Dummy6C_funcs,
-    &dll_6D_funcs,
-    &dll_6E_funcs,
-    &dll_6F_funcs,
-    &dll_70_funcs,
-    &dll_71_funcs,
-    &dll_72_funcs,
-    &dll_73_funcs,
-    &dll_74_funcs,
-    &dll_75_funcs,
-    &dll_76_funcs,
-    &dll_77_funcs,
-    &dll_78_funcs,
-    &dll_79_funcs,
-    &dll_7A_funcs,
-    &dll_7B_funcs,
-    &dll_7C_funcs,
-    &dll_7D_funcs,
-    &dll_7E_funcs,
-    &dll_7F_funcs,
-    &dll_80_funcs,
-    &dll_81_funcs,
-    &dll_82_funcs,
-    &dll_83_funcs,
-    &dll_84_funcs,
-    &dll_85_funcs,
-    &dll_86_funcs,
-    &dll_87_funcs,
-    &dll_88_funcs,
-    &dll_89_funcs,
-    &dll_8A_funcs,
-    &dll_8B_funcs,
-    &dll_8C_funcs,
-    &dll_8D_funcs,
-    &dll_8E_funcs,
-    &dll_8F_funcs,
-    &dll_90_funcs,
-    &dll_91_funcs,
-    &dll_92_funcs,
-    &dll_93_funcs,
-    &dll_94_funcs,
-    &dll_95_funcs,
-    &dll_96_funcs,
-    &dll_97_funcs,
-    &dll_98_funcs,
-    &dll_99_funcs,
-    &dll_9A_funcs,
-    &dll_9B_funcs,
-    &dll_9C_funcs,
-    &dll_9D_funcs,
-    &dll_9E_funcs,
-    &dll_9F_funcs,
-    &dll_A0_funcs,
-    &dll_A1_funcs,
-    &dll_A2_funcs,
-    &dll_A3_funcs,
-    &DummyA4_funcs,
-    &dll_A5_funcs,
-    &dll_A6_funcs,
-    &dll_A7_funcs,
-    &dll_A8_funcs,
-    &dll_A9_funcs,
-    &dll_AA_funcs,
-    &projdummy_funcs,
-    &lbl_803193C0,
-    &lbl_80319410,
-    &lbl_80319460,
-    &projlightning1_funcs,
-    &lbl_803194F8,
-    &lbl_80319548,
-    &lbl_80319768,
-    &lbl_80319598,
-    &lbl_803196D8,
-    &projenergise2_funcs,
-    &lbl_803197B0,
-    &lbl_803197F8,
-    &lbl_803195E8,
-    &lbl_80319638,
-    &lbl_80319688,
-    &lbl_80319840,
-    &projquakeshock_funcs,
-    &lbl_803198D8,
-    &projtesla_funcs,
-    &lbl_80319968,
-    &lbl_803199B0,
-    &lbl_803199F8,
-    &lbl_80319A40,
+    (ResourceDescriptor*)&gCameraModeDebugDescriptor,
+    (ResourceDescriptor*)&gCameraModePathDescriptor,
+    (ResourceDescriptor*)&gCameraModeStaticDescriptor,
+    (ResourceDescriptor*)&gCameraModeCombatDescriptor,
+    (ResourceDescriptor*)&gCameraModeShipBattleDescriptor,
+    (ResourceDescriptor*)&gCameraModeClimbDescriptor,
+    (ResourceDescriptor*)&gCameraModeFixedDescriptor,
+    (ResourceDescriptor*)&gCameraModeNpcSpeakDescriptor,
+    (ResourceDescriptor*)&gCameraModeWorldMapDescriptor,
+    (ResourceDescriptor*)&gCameraMode4FDescriptor,
+    (ResourceDescriptor*)&gCameraModeCrawlDescriptor,
+    (ResourceDescriptor*)&gCameraModeCannonDescriptor,
+    (ResourceDescriptor*)&gCameraModeForceBehindDescriptor,
+    (ResourceDescriptor*)&gCameraModeCloudRunnerDescriptor,
+    (ResourceDescriptor*)&gCameraMode54Descriptor,
+    (ResourceDescriptor*)&gCameraMode55Descriptor,
+    (ResourceDescriptor*)&gCameraModeArwingDescriptor,
+    (ResourceDescriptor*)&gCameraModeTitleDescriptor,
+    (ResourceDescriptor*)&gDummy58Descriptor,
+    (ResourceDescriptor*)&gDll59ResourceDescriptor,
+    (ResourceDescriptor*)&gStaffCollisionResourceDescriptor,
+    (ResourceDescriptor*)&gDll5BResourceDescriptor,
+    (ResourceDescriptor*)&gDll5CResourceDescriptor,
+    (ResourceDescriptor*)&gDll5DResourceDescriptor,
+    (ResourceDescriptor*)&gDll5EResourceDescriptor,
+    (ResourceDescriptor*)&gDll5FResourceDescriptor,
+    (ResourceDescriptor*)&gDll60ResourceDescriptor,
+    (ResourceDescriptor*)&gDll61ResourceDescriptor,
+    (ResourceDescriptor*)&gDll62ResourceDescriptor,
+    (ResourceDescriptor*)&gDll63ResourceDescriptor,
+    (ResourceDescriptor*)&gDll64ResourceDescriptor,
+    (ResourceDescriptor*)&gDll65ResourceDescriptor,
+    (ResourceDescriptor*)&gDll66ResourceDescriptor,
+    (ResourceDescriptor*)&gDll67ResourceDescriptor,
+    (ResourceDescriptor*)&gDll68ResourceDescriptor,
+    (ResourceDescriptor*)&gDll69ResourceDescriptor,
+    (ResourceDescriptor*)&gDll6AResourceDescriptor,
+    (ResourceDescriptor*)&gDll6BResourceDescriptor,
+    (ResourceDescriptor*)&gDummy6CDescriptor,
+    (ResourceDescriptor*)&gDll6DResourceDescriptor,
+    (ResourceDescriptor*)&gDll6EResourceDescriptor,
+    (ResourceDescriptor*)&gDll6FResourceDescriptor,
+    (ResourceDescriptor*)&gDll70ResourceDescriptor,
+    (ResourceDescriptor*)&gDll71ResourceDescriptor,
+    (ResourceDescriptor*)&gDll72ResourceDescriptor,
+    (ResourceDescriptor*)&gDll73ResourceDescriptor,
+    (ResourceDescriptor*)&gDll74ResourceDescriptor,
+    (ResourceDescriptor*)&gDll75ResourceDescriptor,
+    (ResourceDescriptor*)&gDll76ResourceDescriptor,
+    (ResourceDescriptor*)&gDll77ResourceDescriptor,
+    (ResourceDescriptor*)&gDll78ResourceDescriptor,
+    (ResourceDescriptor*)&gDll79ResourceDescriptor,
+    (ResourceDescriptor*)&gDll7AResourceDescriptor,
+    (ResourceDescriptor*)&gDll7BResourceDescriptor,
+    (ResourceDescriptor*)&gDll7CResourceDescriptor,
+    (ResourceDescriptor*)&gDll7DResourceDescriptor,
+    (ResourceDescriptor*)&gDll7EResourceDescriptor,
+    (ResourceDescriptor*)&gDll7FResourceDescriptor,
+    (ResourceDescriptor*)&gDll80ResourceDescriptor,
+    (ResourceDescriptor*)&gDll81ResourceDescriptor,
+    (ResourceDescriptor*)&gDll82ResourceDescriptor,
+    (ResourceDescriptor*)&gDll83ResourceDescriptor,
+    (ResourceDescriptor*)&gDll84ResourceDescriptor,
+    (ResourceDescriptor*)&gDll85ResourceDescriptor,
+    (ResourceDescriptor*)&gDll86ResourceDescriptor,
+    (ResourceDescriptor*)&gDll87ResourceDescriptor,
+    (ResourceDescriptor*)&gDll88ResourceDescriptor,
+    (ResourceDescriptor*)&gDll89ResourceDescriptor,
+    (ResourceDescriptor*)&gDll8AResourceDescriptor,
+    (ResourceDescriptor*)&gDll8BResourceDescriptor,
+    (ResourceDescriptor*)&gDll8CResourceDescriptor,
+    (ResourceDescriptor*)&gDll8DResourceDescriptor,
+    (ResourceDescriptor*)&gDll8EResourceDescriptor,
+    (ResourceDescriptor*)&gDll8FResourceDescriptor,
+    (ResourceDescriptor*)&gDll90ResourceDescriptor,
+    (ResourceDescriptor*)&gDll91ResourceDescriptor,
+    (ResourceDescriptor*)&gDll92ResourceDescriptor,
+    (ResourceDescriptor*)&gDll93ResourceDescriptor,
+    (ResourceDescriptor*)&gDll94ResourceDescriptor,
+    (ResourceDescriptor*)&gDll95ResourceDescriptor,
+    (ResourceDescriptor*)&gDll96ResourceDescriptor,
+    (ResourceDescriptor*)&gDll97ResourceDescriptor,
+    (ResourceDescriptor*)&gDll98ResourceDescriptor,
+    (ResourceDescriptor*)&gDll99ResourceDescriptor,
+    (ResourceDescriptor*)&gDll9AResourceDescriptor,
+    (ResourceDescriptor*)&gDll9BResourceDescriptor,
+    (ResourceDescriptor*)&gDll9CResourceDescriptor,
+    (ResourceDescriptor*)&gDll9DResourceDescriptor,
+    (ResourceDescriptor*)&gDll9EResourceDescriptor,
+    (ResourceDescriptor*)&gDll9FResourceDescriptor,
+    (ResourceDescriptor*)&gDllA0ResourceDescriptor,
+    (ResourceDescriptor*)&gDllA1ResourceDescriptor,
+    (ResourceDescriptor*)&gDllA2ResourceDescriptor,
+    (ResourceDescriptor*)&gDllA3ResourceDescriptor,
+    (ResourceDescriptor*)&gDummyA4ResourceDescriptor,
+    (ResourceDescriptor*)&gDllA5ResourceDescriptor,
+    (ResourceDescriptor*)&gDllA6ResourceDescriptor,
+    (ResourceDescriptor*)&gDllA7ResourceDescriptor,
+    (ResourceDescriptor*)&gDllA8ResourceDescriptor,
+    (ResourceDescriptor*)&gDllA9ResourceDescriptor,
+    (ResourceDescriptor*)&gDllAAResourceDescriptor,
+    (ResourceDescriptor*)&gProjdummyResourceDescriptor,
+    (ResourceDescriptor*)&gProjmagicstreamResourceDescriptor,
+    (ResourceDescriptor*)&gProjmagicemmit1ResourceDescriptor,
+    (ResourceDescriptor*)&gProjroombeamResourceDescriptor,
+    (ResourceDescriptor*)&gProjlightning1ResourceDescriptor,
+    (ResourceDescriptor*)&gProjlightning2ResourceDescriptor,
+    (ResourceDescriptor*)&gProjlightning3ResourceDescriptor,
+    (ResourceDescriptor*)&gProjrobotfireResourceDescriptor,
+    (ResourceDescriptor*)&gProjlightning4ResourceDescriptor,
+    (ResourceDescriptor*)&gProjenergise1ResourceDescriptor,
+    (ResourceDescriptor*)&gProjenergise2ResourceDescriptor,
+    (ResourceDescriptor*)&gProjsquirt1ResourceDescriptor,
+    (ResourceDescriptor*)&gProjship1ResourceDescriptor,
+    (ResourceDescriptor*)&gProjlightning5ResourceDescriptor,
+    (ResourceDescriptor*)&gProjlightning7ResourceDescriptor,
+    (ResourceDescriptor*)&gProjlightning6ResourceDescriptor,
+    (ResourceDescriptor*)&gProjwallpowerResourceDescriptor,
+    (ResourceDescriptor*)&gProjquakeshockResourceDescriptor,
+    (ResourceDescriptor*)&gProjsunshockResourceDescriptor,
+    (ResourceDescriptor*)&gProjteslaResourceDescriptor,
+    (ResourceDescriptor*)&gProjcore1ResourceDescriptor,
+    (ResourceDescriptor*)&gProjcore2ResourceDescriptor,
+    (ResourceDescriptor*)&gProjcore3ResourceDescriptor,
+    (ResourceDescriptor*)&gProjdfp1rResourceDescriptor,
     NULL,
     &gTrickyObjDescriptor,
     (ResourceDescriptor*)&gDllC5NullResourceDescriptor,

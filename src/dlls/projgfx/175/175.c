@@ -7,36 +7,28 @@
  * DLL still exports the standard projectile lifecycle entry points. This is
  * one of a family of identical retired projectile DLLs.
  */
-#include "dolphin/os/OSReport.h"
-#include "main/dll/dll_descriptor_table.h"
 #include "main/dll/dll_00AF_projlightning1.h"
-#include "dlls/object_descriptor.h"
+#include "dolphin/os/OSReport.h"
 
-#define PROJECTILE_UNSUPPORTED_RETURN -1
+extern char sProjlightning1DoNoLongerSupported[];
 
-int projlightning1_doUnsupported(void)
-{
+int projlightning1_doUnsupported(void) {
     OSReport(sProjlightning1DoNoLongerSupported);
-    return PROJECTILE_UNSUPPORTED_RETURN;
+    return -1;
 }
 
-void projlightning1_release(void)
-{
+void projlightning1_release(void) {
 }
 
-void projlightning1_initialise(void)
-{
+void projlightning1_initialise(void) {
 }
 
-ObjectDescriptor4 projlightning1_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)projlightning1_initialise,
-    (ObjectDescriptorCallback)projlightning1_release,
-    0,
-    (ObjectDescriptorCallback)projlightning1_doUnsupported,
+Projlightning1ResourceDescriptor gProjlightning1ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000},
+    projlightning1_initialise,
+    projlightning1_release,
+    NULL,
+    projlightning1_doUnsupported,
 };
 
 char sProjlightning1DoNoLongerSupported[] = "<projlightning1 Do>No Longer supported \n";

@@ -207,7 +207,7 @@ void drakormissile_free(GameObject* obj)
         ModelLightStruct_free(light);
         state->light = NULL;
     }
-    ObjGroup_RemoveObject((int)obj, DRAKORMISSILE_GROUP_ID);
+    objFreeObjectType((int)obj, DRAKORMISSILE_GROUP_ID);
 }
 
 void drakormissile_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
@@ -412,7 +412,7 @@ void drakormissile_init(GameObject* obj, DrakorMissileSetup* setup)
     {
         ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->trackContactMask = 1;
     }
-    ObjGroup_AddObject((int)obj, DRAKORMISSILE_GROUP_ID);
+    objAddObjectType((int)obj, DRAKORMISSILE_GROUP_ID);
     state->state = DRAKORMISSILE_STATE_IDLE;
     state->flags = 0;
     state->timer = 0;

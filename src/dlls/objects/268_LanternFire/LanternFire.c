@@ -194,7 +194,7 @@ void LanternFireFly_free(GameObject* obj, int flag) {
     if (flag == 0 && state->light != NULL && LANTERN_FIREFLY_OBJECT_MODE(state) != LANTERN_FIREFLY_ACTIVE_OBJECT_MODE) {
         sLanternFireFlyLightActive = 0;
     }
-    ObjGroup_RemoveObject((int)obj, LANTERN_FIREFLY_OBJECT_GROUP);
+    objFreeObjectType((int)obj, LANTERN_FIREFLY_OBJECT_GROUP);
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
@@ -334,7 +334,7 @@ void LanternFireFly_init(GameObject* obj, LanternFireFlyPlacement* placement) {
     int zeroFlag;
 
     state = obj->extra;
-    ObjGroup_AddObject((int)obj, LANTERN_FIREFLY_OBJECT_GROUP);
+    objAddObjectType((int)obj, LANTERN_FIREFLY_OBJECT_GROUP);
 
     zero = 0.0f;
     state->controlX[0] = zero;

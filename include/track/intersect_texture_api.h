@@ -1,7 +1,7 @@
 #ifndef TRACK_INTERSECT_TEXTURE_API_H_
 #define TRACK_INTERSECT_TEXTURE_API_H_
 
-int gxTextureFn_80072dfc(void* object, void** model, int slot);
+int objFrozenRenderCb(void* object, void** model, int slot);
 /*
  * Three-tex-coord-gen ind+direct TEV setup. Loads the active env-mtx
  * (gCameraLightPerspectiveFlipYMatrix) for tex0, scales tex1 by lbl_803DEF2C through a 3x4

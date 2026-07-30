@@ -19,7 +19,7 @@
 #include "main/mapEventTypes.h"
 #include "main/model_light.h"
 #include "main/object_render.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/objseq.h"
 #include "main/pi_dolphin_api.h"
 #include "main/render_envfx_api.h"
@@ -210,7 +210,7 @@ void gpshShrine_free(GameObject* obj) {
         state->light = NULL;
     }
     gameTimerStop();
-    ObjGroup_RemoveObject((int)obj, GPSH_SHRINE_OBJ_GROUP);
+    objFreeObjectType((int)obj, GPSH_SHRINE_OBJ_GROUP);
     Music_Trigger(MUSICTRIG_DIM_Snow, 0);
     Music_Trigger(MUSICTRIG_CC_Visit1, 0);
     Music_Trigger(MUSICTRIG_vfp_walkabout, 0);
@@ -368,7 +368,7 @@ void gpshShrine_update(GameObject* obj) {
                     Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
                 } else if (isGameTimerDisabled()) {
                     state->phase = GPSH_SHRINE_PHASE_FAIL_TRANSITION;
-                    objects = (GameObject**)ObjGroup_GetObjects(GPSH_SHRINE_SPAWNED_OBJ_GROUP, &objectCount);
+                    objects = (GameObject**)objGetAllOfType(GPSH_SHRINE_SPAWNED_OBJ_GROUP, &objectCount);
                     for (; objectCount != 0; objectCount--) {
                         Obj_FreeObject(objects[objectCount - 1]);
                     }

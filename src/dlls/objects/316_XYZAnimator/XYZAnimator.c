@@ -152,7 +152,7 @@ void XyzAnimator_free(GameObject* obj, int flags) {
     if ((void*)state->geometryBuffer != NULL) {
         mm_free((void*)state->geometryBuffer);
     }
-    ObjGroup_RemoveObject((int)obj, XYZ_ANIMATOR_OBJECT_GROUP);
+    objFreeObjectType((int)obj, XYZ_ANIMATOR_OBJECT_GROUP);
 }
 
 void XyzAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
@@ -542,7 +542,7 @@ void XyzAnimator_init(GameObject* obj) {
     XyzAnimatorState* state = (XyzAnimatorState*)obj->extra;
     int mapId;
 
-    ObjGroup_AddObject((int)obj, XYZ_ANIMATOR_OBJECT_GROUP);
+    objAddObjectType((int)obj, XYZ_ANIMATOR_OBJECT_GROUP);
     mapId = *(int*)(obj->anim.placementDataAddress + 0x14);
     switch (mapId) {
     case 0x46406:

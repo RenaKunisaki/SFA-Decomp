@@ -12,7 +12,7 @@
 #include "main/map_load.h"
 #include "main/mapEventTypes.h"
 #include "main/mm.h"
-#include "main/obj_group.h"
+#include "main/objtype.h"
 #include "main/obj_message.h"
 #include "main/obj_path.h"
 #include "main/objanim.h"
@@ -97,15 +97,6 @@ static inline u8 ktrex_hasLaneLerpOvershot(void)
         }
     }
     return 0;
-}
-
-static u8 ktrex_isLaneLerpSettled(void)
-{
-    if (gKTRexState->laneLerpT - gKTRexState->laneFrac > 0.1f)
-    {
-        return 0;
-    }
-    return 1;
 }
 
 int ktrex_isPlayerInLaneThreatRange(GameObject* obj);
@@ -1081,7 +1072,7 @@ void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime)
         msg.w[1] += randomGetRange(0, 0x9b);
         msg.w[2] += randomGetRange(0, 0x9b);
         (*gKTRexResource)
-            ->spawn((u8*)obj, 0, (PartFxSpawnParams*)&gKTRexEffectSpawnWork, 1, -1,
+            ->spawn(obj, 0, (PartFxSpawnParams*)&gKTRexEffectSpawnWork, 1, -1,
                     (StaffCollisionColorArgs*)msg.w);
         gKTRexContactEffectCooldown = 0x3c;
     }
@@ -1452,7 +1443,7 @@ void ktrex_free(GameObject* obj)
 {
     int i;
     gKTRexRuntime = obj->extra;
-    ObjGroup_RemoveObject((int)obj, KTREX_OBJGROUP);
+    objFreeObjectType((int)obj, KTREX_OBJGROUP);
     (*gBaddieControlInterface)->releaseState(obj, gKTRexRuntime, 0);
     Stack_Free(gKTRexState->stack);
     if (gKTRexResource != NULL)
@@ -1687,7 +1678,7 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
         (obj)->anim.modelState->flags |= 0x810;
     }
     gKTRexState = gKTRexRuntime->control;
-    gKTRexState->stack = allocModelStruct_800139e8(4, 4);
+    gKTRexState->stack = Queue_Alloc(4, 4);
     yaw = (s16)((s8)arg[0x2a] << 8);
     (obj)->anim.rotX = yaw;
     gKTRexState->homeYaw = yaw;

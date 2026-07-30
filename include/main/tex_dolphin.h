@@ -7,7 +7,7 @@
 
 struct MapBlockData;
 struct MapBlockBoundsRec;
-struct MapShader;
+struct Shader;
 
 u8 mapBlockBounds_HasCornerPastDepthThreshold(struct MapBlockBoundsRec* bounds, float* xform);
 u32
@@ -20,18 +20,18 @@ void FUN_8005e884(u32 param_1,u32 param_2,int param_3,int param_4,int *param_5,
                  float *param_6);
 void mapBlockRender_drawDimmedAabbLights(struct MapBlockBoundsRec* bounds, struct MapBlockData* block,
                                         float* viewMtx);
-void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, struct MapShader* shader,
+void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, struct Shader* shader,
                                                ModelRenderInstrsState* state, float (*viewMtx)[4]);
-struct MapShader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData,
+struct Shader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData,
                                                    ModelRenderInstrsState* state);
 #ifdef TEX_SETSHADER_U8
-struct MapShader* mapBlockRender_setShader(u8 doSetup, struct MapBlockData* blockData,
+struct Shader* mapBlockRender_setShader(u8 doSetup, struct MapBlockData* blockData,
                                            ModelRenderInstrsState* state);
 #else
-struct MapShader* mapBlockRender_setShader(int doSetup, struct MapBlockData* blockData,
+struct Shader* mapBlockRender_setShader(int doSetup, struct MapBlockData* blockData,
                                            ModelRenderInstrsState* state);
 #endif
-void mapBlockRender_callList(u8 passSelect, u32 visArg, struct MapBlockData* block, struct MapShader* shader,
+void mapBlockRender_callList(u8 passSelect, u32 visArg, struct MapBlockData* block, struct Shader* shader,
                              ModelRenderInstrsState* state, float* mtx);
 
 #endif /* MAIN_TEX_DOLPHIN_H_ */

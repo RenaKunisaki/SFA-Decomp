@@ -180,7 +180,7 @@ void CurveFish_update(GameObject* obj) {
 
             if (state->route.atSegmentEnd != 0) {
                 nextNode = (*gRomCurveInterface)->getRandomUnblockedLink((RomCurveDef*)state->route.nodeA4, 0);
-                if (curveFn_800da23c(&state->route, (*gRomCurveInterface)->getById(nextNode)) != 0) {
+                if (RomCurve_advanceToNextSegment(&state->route, (*gRomCurveInterface)->getById(nextNode)) != 0) {
                     state->mode = CURVEFISH_MODE_WAIT;
                     state->modeTimer = 0.0f;
                     obj->anim.alpha = 0;

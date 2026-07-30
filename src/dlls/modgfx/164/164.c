@@ -1,33 +1,18 @@
 /*
- * dummya4 (DLL 164 / 0xA4) - empty placeholder DLL.
- *
- * Provides only the three required DLL entry points: a no-op
- * release and initialise, plus a func03 stub that returns 0. No game
- * objects, state, or behaviour live here.
+ * DummyA4 (DLL 164 / 0xA4) - an empty placeholder resource DLL.
  */
-#include "dlls/object_descriptor.h"
+#include "main/dll/dll_00A4_dummya4.h"
 
-
-int DummyA4_func03_ret_0(void)
-{
-    return 0x0;
+int DummyA4_returnZero(void) {
+    return 0;
 }
 
-void DummyA4_release(void)
-{
+void DummyA4_release(void) {
 }
 
-void DummyA4_initialise(void)
-{
+void DummyA4_initialise(void) {
 }
 
-ObjectDescriptor4 DummyA4_funcs = {
-    0,
-    0,
-    0,
-    OBJECT_DESCRIPTOR_FLAGS_4_SLOTS,
-    (ObjectDescriptorCallback)DummyA4_initialise,
-    (ObjectDescriptorCallback)DummyA4_release,
-    0,
-    (ObjectDescriptorCallback)DummyA4_func03_ret_0,
+DummyA4ResourceDescriptor gDummyA4ResourceDescriptor = {
+    {0x00000000, 0x00000000, 0x00000000, 0x00030000}, DummyA4_initialise, DummyA4_release, NULL, DummyA4_returnZero,
 };

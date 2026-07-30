@@ -229,7 +229,6 @@ typedef struct SubtitleTextEntry
 } SubtitleTextEntry;
 
 extern GameTextBox gTextBoxes[];
-extern const f32 gSubtitleNoTimeSentinel;
 extern int gGameTextSequenceMode;
 extern int gSubtitleActive;
 extern int gGameTextPendingDir;

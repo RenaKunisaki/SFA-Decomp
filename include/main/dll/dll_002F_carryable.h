@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 
-void objSaveFn_800ea774(GameObject* obj);
+void Carryable_putDownAndSavePos(GameObject* obj);
 void Carryable_initialise(void);
 void Carryable_release(void);
 void Carryable_init(GameObject* obj, void* state, int arg2);
