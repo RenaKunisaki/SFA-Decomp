@@ -84,7 +84,7 @@ typedef struct WindSource
 extern NewCloud* gNewClouds[8];
 
 #define NC_CLOUD ((u8 *)gNewClouds[*(u16 *)(params + 0x26)])
-#define D7_CLOUD (*pp)
+#define D7_CLOUD (*cloudSlot)
 extern char sSnowPrintSnowCloudInvalidCloudId[];
 
 static inline void snowFifoTexCoord2s16(s16 s, s16 t)
@@ -1576,11 +1576,11 @@ void newclouds_run(void)
 {
     Camera* cam;
     void** clouds;
-    u8** pp;
+    u8** cloudSlot;
     int i;
     u8* nearestCloud;
     u8 activeCount;
-    int off;
+    int slotOffset;
     u8* p;
     f32* viewRotationMatrix;
     f32 mag;
@@ -1607,7 +1607,7 @@ void newclouds_run(void)
 
     clouds = (void**)gNewCloudLayerTextures;
     i = 0;
-    off = 0;
+    slotOffset = 0;
     cam = Camera_GetCurrent();
     activeCount = 0;
     nearestCloud = NULL;
@@ -1630,15 +1630,15 @@ void newclouds_run(void)
     gNewCloudBlizzardActive = 0;
     while (i < 8)
     {
-        pp = (u8**)((u8*)clouds + off);
-        pp = (u8**)((u8*)pp + 16);
-        p = *pp;
+        cloudSlot = (u8**)((u8*)clouds + slotOffset);
+        cloudSlot = (u8**)((u8*)cloudSlot + 16);
+        p = *cloudSlot;
         if (p != NULL &&
             (*(u8**)p == NULL || (((GameObject*)*(u8**)p)->objectFlags & OBJECT_OBJFLAG_FREED)))
         {
             snowFreeSnowCloud(((NewCloud*)p)->cloudId);
             i++;
-            off += 4;
+            slotOffset += 4;
             continue;
         }
         if (p != NULL && ((NewCloud*)p)->active != 0)
@@ -1795,7 +1795,7 @@ void newclouds_run(void)
             activeCount++;
         }
         i++;
-        off += 4;
+        slotOffset += 4;
     }
     if (activeCount != 0)
     {
