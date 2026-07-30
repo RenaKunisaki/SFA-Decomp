@@ -529,27 +529,30 @@ int cullVisibleShadowTriangles(GameObject* obj, void* u1, void* u2, int count, V
 void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObject* obj, int triangleCount,
                              void* unusedDrawScratch, void* unusedBounds, f32 unusedYOffset)
 {
-    u8 col[4];
+    u8 shadowColor[4];
     Vec3f savedWorldPos;
     Vec3f savedLocalPos;
-    f32 mtx[4][4];
-    f32 outMtx[4][4];
-    f32 f31, f30;
-    f32 kf;
-    s16 s31, s30, s29;
-    u32 h2;
+    f32 worldMtx[4][4];
+    f32 viewWorldMtx[4][4];
+    f32 savedRootMotionScale;
+    f32 projectionScale;
+    f32 meshVertexScale;
+    s16 savedRotX;
+    s16 savedRotZ;
+    s16 savedRotY;
+    u32 diskTexture;
     MtxPtr viewMtx;
 
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
-    col[0] = 0;
-    col[1] = 0;
-    col[2] = 0;
-    col[3] = modelState->shadowCastSlot->alpha;
-    f31 = obj->anim.rootMotionScale;
-    s31 = obj->anim.rotX;
-    s30 = obj->anim.rotZ;
-    s29 = obj->anim.rotY;
+    shadowColor[0] = 0;
+    shadowColor[1] = 0;
+    shadowColor[2] = 0;
+    shadowColor[3] = modelState->shadowCastSlot->alpha;
+    savedRootMotionScale = obj->anim.rootMotionScale;
+    savedRotX = obj->anim.rotX;
+    savedRotZ = obj->anim.rotZ;
+    savedRotY = obj->anim.rotY;
     if (modelState->shadowRenderResource == NULL ||
         modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED)
         obj->anim.rootMotionScale = 0.05f;
@@ -566,44 +569,45 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
         memcpy(&obj->anim.worldPos, &modelState->overrideWorldPos, sizeof(Vec3f));
         memcpy(&obj->anim.localPos, &modelState->overrideWorldPos, sizeof(Vec3f));
     }
-    Obj_BuildWorldTransformMatrix(obj, (f32*)mtx, 0);
+    Obj_BuildWorldTransformMatrix(obj, (f32*)worldMtx, 0);
     viewMtx = (MtxPtr)Camera_GetViewMatrix();
-    PSMTXConcat(viewMtx, (MtxPtr)mtx, (MtxPtr)outMtx);
-    GXLoadPosMtxImm((const f32 (*)[4])outMtx, GX_PNMTX0);
+    PSMTXConcat(viewMtx, (MtxPtr)worldMtx, (MtxPtr)viewWorldMtx);
+    GXLoadPosMtxImm((const f32 (*)[4])viewWorldMtx, GX_PNMTX0);
     if (obj->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
     {
-        u32 c = *(u32*)col;
-        objectShadow_setupSwappedProjectedTexture(modelState->shadowCastSlot, &c, mtx);
+        u32 color = *(u32*)shadowColor;
+        objectShadow_setupSwappedProjectedTexture(modelState->shadowCastSlot, &color, worldMtx);
     }
     else
     {
         if (obj == Obj_GetPlayerObject())
-            f30 = 10.0f;
+            projectionScale = 10.0f;
         else
-            f30 = obj->anim.hitboxScale * obj->anim.rootMotionScale;
+            projectionScale = obj->anim.hitboxScale * obj->anim.rootMotionScale;
         if (modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED ||
-            (h2 = getNewShadowSmallDiskTexture(), (u32)modelState->shadowCastSlot->texture == h2))
+            (diskTexture = getNewShadowSmallDiskTexture(),
+             (u32)modelState->shadowCastSlot->texture == diskTexture))
         {
-            u32 c = *(u32*)col;
-            objectShadow_setupProjectedTexture(modelState->shadowCastSlot, &c, mtx);
+            u32 color = *(u32*)shadowColor;
+            objectShadow_setupProjectedTexture(modelState->shadowCastSlot, &color, worldMtx);
         }
         else if (modelState->shadowCastSlot->mode == 0xff)
         {
-            u32 c = *(u32*)col;
-            objectShadow_setupProjectedTextureDepthFade(modelState->shadowCastSlot, &c, mtx, f30);
+            u32 color = *(u32*)shadowColor;
+            objectShadow_setupProjectedTextureDepthFade(modelState->shadowCastSlot, &color, worldMtx, projectionScale);
         }
         else
         {
-            u32 c = *(u32*)col;
-            objectShadow_setupProjectedTextureChannel(modelState->shadowCastSlot, &c, mtx, f30);
+            u32 color = *(u32*)shadowColor;
+            objectShadow_setupProjectedTextureChannel(modelState->shadowCastSlot, &color, worldMtx, projectionScale);
         }
     }
     GXSetCullMode(GX_CULL_FRONT);
     GXSetCurrentMtx(GX_PNMTX0);
-    obj->anim.rootMotionScale = f31;
-    obj->anim.rotX = s31;
-    obj->anim.rotY = s29;
-    obj->anim.rotZ = s30;
+    obj->anim.rootMotionScale = savedRootMotionScale;
+    obj->anim.rotX = savedRotX;
+    obj->anim.rotY = savedRotY;
+    obj->anim.rotZ = savedRotZ;
     if (modelState->shadowRenderResource == NULL)
     {
         u32 i;
@@ -614,12 +618,12 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
             (Vec3s*)((u8*)modelState->shadowRenderResource + sizeof(ObjectShadowMesh));
         modelState->shadowRenderResource->vertexCount = triangleCount * 3;
         i = 0;
-        kf = 20.0f;
+        meshVertexScale = 20.0f;
         for (; i < modelState->shadowRenderResource->vertexCount; i++)
         {
-            modelState->shadowRenderResource->vertices[i].x = kf * vertices[i].x;
-            modelState->shadowRenderResource->vertices[i].y = kf * vertices[i].y;
-            modelState->shadowRenderResource->vertices[i].z = kf * vertices[i].z;
+            modelState->shadowRenderResource->vertices[i].x = meshVertexScale * vertices[i].x;
+            modelState->shadowRenderResource->vertices[i].y = meshVertexScale * vertices[i].y;
+            modelState->shadowRenderResource->vertices[i].z = meshVertexScale * vertices[i].z;
         }
     }
     if (modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED) {
