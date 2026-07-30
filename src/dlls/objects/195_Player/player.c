@@ -15866,10 +15866,9 @@ void playerUpdateMotionState(GameObject* obj, int inner, int state)
     if (((ByteFlags*)((char*)inner + 0x3f0))->b20 == 0 && ((PlayerState*)inner)->waterDepth > (v = 0.0f))
     {
         ((PlayerState*)inner)->speedScale = (((PlayerState*)inner)->waterDepth - 7.0f) / 18.0f;
-        if (!(((PlayerState*)inner)->speedScale < v))
-        {
-            v = (((PlayerState*)inner)->speedScale > one) ? one : ((PlayerState*)inner)->speedScale;
-        }
+        v = (((PlayerState*)inner)->speedScale < v)
+                ? v
+                : ((((PlayerState*)inner)->speedScale > one) ? one : ((PlayerState*)inner)->speedScale);
         ((PlayerState*)inner)->speedScale = v;
         ((PlayerState*)inner)->speedScale = -(0.5f * ((PlayerState*)inner)->speedScale - 1.0f);
     }
