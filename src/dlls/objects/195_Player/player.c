@@ -158,7 +158,7 @@ void playerUpdateTail(int unused1, int* unused2, f32* vec, int unused3, int mode
 void playerDoTailAnims(int obj, void* statep);
 void playerUpdatePathEffectCountdown(GameObject* obj, int inner);
 int playerStopRidingObject(GameObject* obj);
-int fn_80297498(void);
+int playerStateNoOp(void);
 int playerState41(GameObject* obj, int state, f32 fv);
 int playerState40(int p1, int obj);
 int playerState3F(int obj, int state);
@@ -2385,7 +2385,7 @@ void fn_802972B4(GameObject* obj, u32* flags, f32* p5, f32* p6, f32* p7, u16* ou
     *outHitStunFrames = 0x78;
 }
 
-int fn_80297498(void)
+int playerStateNoOp(void)
 {
     return 0x0;
 }
@@ -18598,5 +18598,5 @@ void playerInitFuncPtrs(void)
     p[63] = (int)playerState3F;
     p[64] = (int)playerState40;
     p[65] = (int)playerState41;
-    gPlayerDefaultStateHandler = (int)fn_80297498;
+    gPlayerDefaultStateHandler = (int)playerStateNoOp;
 }
