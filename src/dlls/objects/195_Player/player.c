@@ -242,7 +242,7 @@ int playerCanCastPortalOpenSpell(GameObject* obj, int p2);
 int playerCanCastQuakeSpell(GameObject* obj, int p2);
 int playerCanCastBlasterSpell(GameObject* obj, int p2, int p3);
 int playerIsBlasterSpellAvailable(GameObject* obj, int p2, int p3);
-void fn_802A9D0C(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8);
+void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8);
 void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, f32 zero);
 void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInput, f32 randomOffset);
 void staffShootFireball(GameObject* obj, int p2, f32 unused);
@@ -12216,7 +12216,7 @@ int playerIsBlasterSpellAvailable(GameObject* obj, int p2, int p3)
     return 0;
 }
 
-void fn_802A9D0C(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8)
+void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8)
 {
     void* vec;
     s16 v;
@@ -17651,7 +17651,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
             ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
              arrayIndexOf(lbl_803DC6C4, 2, ((PlayerState*)inner)->baddie.controlMode) != -1))
         {
-            fn_802A9D0C(obj, inner, (int)((PlayerState*)inner)->focusObject, a, b, c, d, 1);
+            playerSyncTransformToFocusObject(obj, inner, (int)((PlayerState*)inner)->focusObject, a, b, c, d, 1);
         }
         if (((PlayerState*)inner)->teleportAnimActive == 1)
         {
@@ -17968,7 +17968,7 @@ void playerDoHitDetection(int obj)
             (*(void (*)(int, f32*, f32*, f32*))(*(int*)(*(int*)(*(int*)((int)((PlayerState*)inner)->focusObject + 0x68)) +
                                                         0x34)))((int)((PlayerState*)inner)->focusObject, &x, &y, &z);
             (*gCameraInterface)->overridePos(x, y, z);
-            fn_802A9D0C(obj, inner, (int)((PlayerState*)inner)->focusObject, 0, 0, 0, 0, 0);
+            playerSyncTransformToFocusObject(obj, inner, (int)((PlayerState*)inner)->focusObject, 0, 0, 0, 0, 0);
         }
         if (*(s8*)&((PlayerState*)inner)->baddie.physicsActive == 1 && (((PlayerState*)inner)->baddie.flags4 & 0x100000) == 0)
         {
