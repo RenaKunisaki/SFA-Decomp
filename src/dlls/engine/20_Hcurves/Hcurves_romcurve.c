@@ -991,7 +991,7 @@ int RomCurve_findShortestPathLink(RomCurveDef* startCurve, int unused1, int unus
 {
     f32* scanBase;
     int top;
-    int queueCurve;
+    RomCurveDef* queueCurve;
     int directIndex;
     int directSlot;
     int directLinkId;
@@ -1000,7 +1000,7 @@ int RomCurve_findShortestPathLink(RomCurveDef* startCurve, int unused1, int unus
     int candidateCount;
     int queueCount;
     int linkId;
-    int linkCurve;
+    RomCurveDef* linkCurve;
     int insertIndex;
     int sel[2];
     int found;
@@ -1063,11 +1063,11 @@ int RomCurve_findShortestPathLink(RomCurveDef* startCurve, int unused1, int unus
                 queueCount--;
                 top = queueCount;
                 directIndex = queueIndices[top];
-                queueCurve = (int)romCurves[directIndex];
+                queueCurve = romCurves[directIndex];
                 distance = queueDistances[top];
                 sel[0] = 0;
 
-                if (*(u8*)(queueCurve + 0x34) == 1)
+                if (*((u8*)queueCurve + 0x34) == 1)
                 {
                     found = 1;
                     candidateDistances[candidateCount] = distance;
@@ -1077,26 +1077,23 @@ int RomCurve_findShortestPathLink(RomCurveDef* startCurve, int unused1, int unus
 
                 for (linkSlot = 0; linkSlot < 4; linkSlot++)
                 {
-                    linkId = ((RomCurveDef*)queueCurve)->linkIds[linkSlot];
+                    linkId = queueCurve->linkIds[linkSlot];
                     if (linkId <= -1)
                     {
                         continue;
                     }
 
-                    linkCurve = (int)RomCurve_findByIdWithIndex(linkId, &directIndex);
-                    if ((void*)linkCurve == NULL || (s8)visited[directIndex] != 0 ||
+                    linkCurve = RomCurve_findByIdWithIndex(linkId, &directIndex);
+                    if (linkCurve == NULL || (s8)visited[directIndex] != 0 ||
                         queueCount >= ROMCURVE_LINK_SEARCH_QUEUE_CAPACITY)
                     {
                         continue;
                     }
 
-                    linkDistance = (((RomCurveDef*)queueCurve)->z - ((RomCurveDef*)linkCurve)->z) *
-                                       (((RomCurveDef*)queueCurve)->z - ((RomCurveDef*)linkCurve)->z) +
+                    linkDistance = (queueCurve->z - linkCurve->z) * (queueCurve->z - linkCurve->z) +
                                    (distance +
-                                    (((RomCurveDef*)queueCurve)->x - ((RomCurveDef*)linkCurve)->x) *
-                                        (((RomCurveDef*)queueCurve)->x - ((RomCurveDef*)linkCurve)->x) +
-                                    (((RomCurveDef*)queueCurve)->y - ((RomCurveDef*)linkCurve)->y) *
-                                        (((RomCurveDef*)queueCurve)->y - ((RomCurveDef*)linkCurve)->y));
+                                    (queueCurve->x - linkCurve->x) * (queueCurve->x - linkCurve->x) +
+                                    (queueCurve->y - linkCurve->y) * (queueCurve->y - linkCurve->y));
 
                     insertIndex = 0;
                     while (insertIndex < queueCount && scanBase[insertIndex] > linkDistance)
