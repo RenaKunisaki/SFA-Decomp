@@ -750,7 +750,7 @@ extern int lbl_803DD898;
 extern const f32 lbl_803E21D0;
 extern s16 gHudTextureIds[];
 extern int gGameUiScreenWidthOffset;
-void npcTalkFn_8012e880(void);
+void gameUiUpdateNpcDialogue(void);
 int pauseMenuUpdateMapScroll(void);
 void drawWorldMapHud(void);
 void timeListDraw(int a, int b, int c);
@@ -5260,7 +5260,7 @@ void mapScreenDrawHud(int unused1, int unused2, int unused3);
 void drawWorldMapHud(void);
 void setWorldMapVoiceoverActive(u32 val);
 void cMenuRun(void);
-void npcTalkFn_8012e880(void);
+void gameUiUpdateNpcDialogue(void);
 
 /* Draws the pause-menu task-hint panel: the framed backing (corners/edges via
  * pauseMenuDrawElement/gameUiDrawTextureRegion) plus a six-segment progress bar whose
@@ -8264,7 +8264,7 @@ void cMenuRun(void)
     *cursor = gCMenuSelIndex;
 }
 
-void npcTalkFn_8012e880(void)
+void gameUiUpdateNpcDialogue(void)
 {
     Obj_GetPlayerObject();
     if (lbl_803DD7A8 != 0)
@@ -8954,7 +8954,7 @@ void cMenuSelectFirstEnabledItem(int idx, s8 flag)
  * Gated on the gameUiResourcesLoaded enable flag; when zero, fast-returns 0.
  * Otherwise: optionally runs drawWorldMapHud (if mapScreenVisible set), runs
  * gameTextFadeOut, optionally runs cMenuRun (if cMenuEnabled set),
- * runs npcTalkFn_8012e880, returns 0. */
+ * runs gameUiUpdateNpcDialogue, returns 0. */
 int GameUI_frameStart(void)
 {
     if (gameUiResourcesLoaded == 0)
@@ -8970,7 +8970,7 @@ int GameUI_frameStart(void)
     {
         cMenuRun();
     }
-    npcTalkFn_8012e880();
+    gameUiUpdateNpcDialogue();
     return 0;
 }
 
