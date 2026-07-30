@@ -254,8 +254,6 @@ extern u8 gDREarthWarriorRowIndices[];
 const EWColorTbl gDREarthWarriorColors = {
     {{8, 255, 190, 120}, {8, 255, 255, 120}, {8, 180, 240, 255}, {8, 170, 255, 170}}
 };
-void DR_EarthWarrior_updateLookAtBones(GameObject* obj, EarthWarriorSub* warrior, int state);
-
 static const u8 gDREarthWarriorPathSetupParam[4] = {1, 1, 1, 1};
 
 void DR_EarthWarrior_func23(GameObject* obj, int mode)
@@ -318,7 +316,7 @@ int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state)
     return 0;
 }
 
-void DR_EarthWarrior_updateLookAtBones(GameObject* obj, EarthWarriorSub* warrior, int state) {
+static void DR_EarthWarrior_updateLookAtBones(GameObject* obj, EarthWarriorSub* warrior, int state) {
     int targetAngle;
     int angleDelta;
     s16* primaryLookBone;
