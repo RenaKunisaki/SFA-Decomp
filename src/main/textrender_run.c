@@ -94,6 +94,12 @@ typedef struct GameTextTableHeader
 } GameTextTableHeader;
 STATIC_ASSERT(sizeof(GameTextTableHeader) == 8);
 
+typedef struct GameTextStringTable
+{
+    int count;
+    int offsets[];
+} GameTextStringTable;
+
 void gameTextLoadCancelCallback(s32 result, DVDCommandBlock* block);
 void gameTextLoadCompleteCallback(s32 status, DVDFileInfo* fileInfo);
 
@@ -987,7 +993,7 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
     u16* p;
     u32 bpp;
     int ofs;
-    int* table;
+    GameTextStringTable* stringTable;
     u32 w;
     u32 h;
     int i;
@@ -1037,14 +1043,14 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
     ofs = hdr->textureOffset;
     entries = (u8*)(hdr + 1);
     cs->entries = entries;
-    table = (int*)(entries + cs->count * 12);
-    numStrings = table[0];
-    strs = table + 1;
+    stringTable = (GameTextStringTable*)(entries + cs->count * 12);
+    numStrings = stringTable->count;
+    strs = stringTable->offsets;
     for (i = 0; i < cs->count; i++)
     {
         *(int**)(cs->entries + i * 12 + 8) = strs + *(int*)(cs->entries + i * 12 + 8);
     }
-    txt = (u8*)(table + numStrings + 1);
+    txt = (u8*)&stringTable->offsets[numStrings];
     {
         int j;
         for (j = 0; j < numStrings; j++)
