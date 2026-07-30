@@ -1179,12 +1179,18 @@ void dll_0B_updateActiveEffects(void)
             emOff = 0;
             for (; emIdx < ((ModgfxEffectSlot*)eff)->emitterCount; emOff += 0x18, emIdx++)
             {
+                s16 frameIndex;
+                char* pendingSpawns;
+                ModgfxPendingSpawn* emitter;
                 int flags;
-                if (((ModgfxEffectSlot*)eff)->frameIndex != ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->sequenceIndex)
+
+                frameIndex = ((ModgfxEffectSlot*)eff)->frameIndex;
+                pendingSpawns = PENDING_SPAWNS;
+                emitter = (ModgfxPendingSpawn*)(pendingSpawns + emOff);
+                if (frameIndex != emitter->sequenceIndex)
                     continue;
-                flags = ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource;
-                if ((flags & 0x1000) && ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->posX > MODGFX_ZERO &&
-                    ((ModgfxEffectSlot*)eff)->frameIndex > 0)
+                flags = emitter->modelOrResource;
+                if ((flags & 0x1000) && emitter->posX > MODGFX_ZERO && frameIndex > 0)
                 {
                     ((ModgfxEffectSlot*)eff)->frameIndex = ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emIdx * 0x18))->param14;
                     ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emIdx * 0x18))->posX =
@@ -1207,7 +1213,8 @@ void dll_0B_updateActiveEffects(void)
                     if (((ModgfxEffectSlot*)eff)->frameIndex > 0)
                     {
                         feFlag = 1;
-                        ((ModgfxEffectSlot*)eff)->frameIndex = ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emIdx * 0x18))->param14;
+                        ((ModgfxEffectSlot*)eff)->frameIndex =
+                            ((ModgfxPendingSpawn*)(pendingSpawns + emIdx * 0x18))->param14;
                         ((ModgfxEffectSlot*)eff)->frameDuration = -1;
                         reprocess = 1;
                         break;
