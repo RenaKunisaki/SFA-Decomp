@@ -61,27 +61,27 @@ STATIC_ASSERT(offsetof(DFropenodeState, rope) == 0x2C);
 STATIC_ASSERT(offsetof(DFropenodeState, pad31) == 0x31);
 STATIC_ASSERT(sizeof(DFropenodeState) == 0x34);
 
-void dfropenode_setMinY(GameObject* obj, f32 value);
-int dfropenode_isVisible(GameObject* obj);
-void dfropenode_setVisible(GameObject* obj, int visible);
-int dfropenode_getAngle(GameObject* obj);
-void dfropenode_clearLinkedObj(GameObject* obj);
-int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32 worldZ, f32* distanceOut,
+void DFropenode_setMinY(GameObject* obj, f32 value);
+int DFropenode_isVisible(GameObject* obj);
+void DFropenode_setVisible(GameObject* obj, int visible);
+int DFropenode_getAngle(GameObject* obj);
+void DFropenode_clearLinkedObj(GameObject* obj);
+int DFropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32 worldZ, f32* distanceOut,
                                     f32* phaseOut, u8* sideOut);
-void dfropenode_applyForceAtPhase(f32 phase, f32 force, GameObject* obj);
-void dfropenode_advancePhaseByDistance(GameObject* obj, f32* phase, f32 distance);
-void dfropenode_getWorldPosAtPhase(f32 phase, GameObject* obj, f32* xOut, f32* yOut, f32* zOut);
-void dfropenode_getPlaneEquation(GameObject* obj, f32* out);
-int dfropenode_syncRopeToEndpoints(GameObject* obj);
-int dfropenode_getExtraSize(void);
-int dfropenode_getObjectTypeId(void);
-void dfropenode_free(GameObject* obj);
-void dfropenode_render(GameObject* obj, int p2, int p3);
-void dfropenode_hitDetect(void);
-void dfropenode_update(GameObject* obj);
-void dfropenode_init(GameObject* obj, DFropenodePlacement* placement);
-void dfropenode_release(void);
-void dfropenode_initialise(void);
+void DFropenode_applyForceAtPhase(f32 phase, f32 force, GameObject* obj);
+void DFropenode_advancePhaseByDistance(GameObject* obj, f32* phase, f32 distance);
+void DFropenode_getWorldPosAtPhase(f32 phase, GameObject* obj, f32* xOut, f32* yOut, f32* zOut);
+void DFropenode_getPlaneEquation(GameObject* obj, f32* out);
+int DFropenode_syncRopeToEndpoints(GameObject* obj);
+int DFropenode_getExtraSize(void);
+int DFropenode_getObjectTypeId(void);
+void DFropenode_free(GameObject* obj);
+void DFropenode_render(GameObject* obj, int p2, int p3);
+void DFropenode_hitDetect(void);
+void DFropenode_update(GameObject* obj);
+void DFropenode_init(GameObject* obj, DFropenodePlacement* placement);
+void DFropenode_release(void);
+void DFropenode_initialise(void);
 
 extern ObjectDescriptor20 gDFropenodeObjDescriptor;
 

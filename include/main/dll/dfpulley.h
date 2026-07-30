@@ -3,6 +3,6 @@
 
 #include "main/dll/DF/DFbarrel.h"
 
-void DFPulley_integrateLinks(DFRope* rope);
+void DFropenode_integrateRopeNodes(DFRope* rope);
 
 #endif /* MAIN_DLL_DFPULLEY_H_ */
