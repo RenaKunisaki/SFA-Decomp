@@ -359,6 +359,7 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
 {
     Vec stk;
     s32 t;
+    f32 half;
     f32 maxXs;
     f32 minXs;
     f32 maxYs;
@@ -375,20 +376,21 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
         sceneDrawTransparentPolys();
         gLightmapDrawQueueCount = 0;
     }
-    maxXs = __OSs16tof32(&bounds->maxX);
-    minXs = __OSs16tof32(&bounds->minX);
-    maxYs = __OSs16tof32(&bounds->maxY);
+    OSs16tof32(&bounds->maxX, &maxXs);
+    OSs16tof32(&bounds->minX, &minXs);
+    OSs16tof32(&bounds->maxY, &maxYs);
     maxW = maxYs * lbl_803DEC20 + block->transform[1][3];
-    minYs = __OSs16tof32(&bounds->minY);
-    maxZs = __OSs16tof32(&bounds->maxZ);
+    OSs16tof32(&bounds->minY, &minYs);
+    OSs16tof32(&bounds->maxZ, &maxZs);
     maxD = maxZs * lbl_803DEC20 + block->transform[2][3];
-    minZs = __OSs16tof32(&bounds->minZ);
-    stk.x = lbl_803DEBFC * ((minXs * lbl_803DEC20 + block->transform[0][3]) +
-                             (maxXs * lbl_803DEC20 + block->transform[0][3]));
+    OSs16tof32(&bounds->minZ, &minZs);
+    half = lbl_803DEBFC;
+    stk.x = half * ((minXs * lbl_803DEC20 + block->transform[0][3]) +
+                    (maxXs * lbl_803DEC20 + block->transform[0][3]));
     minW = minYs * lbl_803DEC20 + block->transform[1][3];
-    stk.y = lbl_803DEBFC * (minW + maxW);
+    stk.y = half * (minW + maxW);
     minD = minZs * lbl_803DEC20 + block->transform[2][3];
-    stk.z = lbl_803DEBFC * (minD + maxD);
+    stk.z = half * (minD + maxD);
     PSMTXMultVec((MtxPtr)Camera_GetViewMatrix(), &stk, &stk);
     t = (s32) - stk.z;
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
