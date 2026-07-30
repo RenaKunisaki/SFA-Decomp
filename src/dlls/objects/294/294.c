@@ -435,7 +435,6 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
     int count;
     int first;
     int id;
-    GameObject** objects;
 
     for (; i < 8; i++, p += 4) {
         if (p[1] == 0) {
@@ -615,7 +614,9 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                 break;
             }
             break;
-        case 0xc:
+        case 0xc: {
+            GameObject** objects;
+
             id = (u16)((p[2] << 8) | p[3]);
             objects = ObjList_GetObjects(&first, &count);
             for (; first < count; first++) {
@@ -640,6 +641,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                 }
             }
             break;
+        }
         case 0x10:
             Obj_SetActiveModelIndex(Obj_GetPlayerObject(), p[2]);
             break;
