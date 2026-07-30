@@ -123,7 +123,7 @@ void lightningGetStartPos(Vec* out)
     out->z = gActiveLightning->start[2];
 }
 
-void lightningDrawStrand(f32* from, f32* to, u8 width, f32 segScale, int* seed)
+static void lightningDrawStrand(f32* from, f32* to, u8 width, f32 segScale, int* seed)
 {
     int segs;
     int savedRand;
@@ -252,8 +252,8 @@ void lightningDrawStrand(f32* from, f32* to, u8 width, f32 segScale, int* seed)
 }
 
 
-void lightningDrawBolt(f32* start, f32* end, u8 width, f32 segScale, f32 d, int* seed, int depth,
-                       u8 flags)
+static void lightningDrawBolt(f32* start, f32* end, u8 width, f32 segScale, f32 d, int* seed, int depth,
+                              u8 flags)
 {
     f32 len;
     f32 total;
