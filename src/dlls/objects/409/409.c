@@ -126,7 +126,7 @@ int dll409_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdat
             case 9:
                 mainSetBits(DLL199_GAMEBIT_0128, 1);
                 if (gDll199Event9Result == 0) {
-                    gDll199Event9Result = return0_8005669C(1);
+                    gDll199Event9Result = shaderReturnZeroStub(1);
                 }
                 break;
             case 8:

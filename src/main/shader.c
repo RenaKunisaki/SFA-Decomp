@@ -1140,7 +1140,7 @@ s16* mapBlockFindTextureOverrideIndex(MapBlockData* block, int textureSlot)
 {
     return NULL;
 }
-int return0_8005669C(int unused)
+int shaderReturnZeroStub(int unused)
 {
     return 0x0;
 }

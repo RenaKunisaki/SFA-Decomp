@@ -61,6 +61,6 @@ void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rec
 int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type);
 void mapTextureOverrideRelease(Texture* texture, int type);
 s16* mapBlockFindTextureOverrideIndex(struct MapBlockData* block, int textureSlot);
-int return0_8005669C(int unused);
+int shaderReturnZeroStub(int unused);
 
 #endif /* MAIN_SHADER_API_H_ */
