@@ -23,7 +23,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag);
 void playerLock(GameObject* player, int lock);
 int playerGetAimScreenPos(GameObject* player, f32* outX, f32* outY);
 void playerSetPendingBoneEffect(GameObject* player, s16 effectId);
-void fn_802960E4(int obj, f32 xVelocity, f32 zVelocity);
+void playerApplyHorizontalVelocity_nop(int obj, f32 xVelocity, f32 zVelocity);
 void playerGetFxOffsets(GameObject* player, f32** outFxOffsets);
 void objSetPos(GameObject* player, f32 x, f32 y, f32 z);
 f32 playerGetAnimSpeed(GameObject* obj);

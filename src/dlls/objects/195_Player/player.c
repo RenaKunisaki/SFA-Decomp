@@ -1507,7 +1507,7 @@ int playerGetAimScreenPos(GameObject* obj, f32* p2, f32* p3)
     return 0;
 }
 
-void fn_802960E4(int a, f32 b, f32 c)
+void playerApplyHorizontalVelocity_nop(int obj, f32 xVelocity, f32 zVelocity)
 {
 }
 
