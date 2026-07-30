@@ -792,7 +792,7 @@ void gunpowderBarrel_update(GameObject* obj) {
         obj->anim.alpha = GUNPOWDER_BARREL_MAX_ALPHA;
         if (state->heldByCarryInterface != 0) {
             state->heldByCarryInterface = 0;
-            if (fn_802966B4(player) != 0) {
+            if (playerIsPuttingDown(player) != 0) {
                 /* Set down in place. */
                 ObjHits_SyncObjectPositionIfDirty(obj);
             } else if (playerIsThrowing(player) != 0) {

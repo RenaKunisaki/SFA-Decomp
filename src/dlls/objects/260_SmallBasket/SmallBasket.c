@@ -747,7 +747,7 @@ void SmallBasket_update(GameObject* obj) {
                         }
                         vecRotateZXY((s16*)&effectParams, &obj->anim.velocityX);
                         Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_throw);
-                    } else if (fn_802966B4(player) != 0) {
+                    } else if (playerIsPuttingDown(player) != 0) {
                         state->carryState = SMALLBASKET_CARRY_IDLE;
                         state->throwState = SMALLBASKET_THROW_DROPPED;
                         zero = gSmallBasketZero[0];

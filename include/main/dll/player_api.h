@@ -56,7 +56,7 @@ void playerHeal(GameObject* obj);
 int playerGetTimeScale(GameObject* obj, f32* out);
 int isTrickyNear(GameObject* obj);
 int playerIsThrowing(GameObject* obj);
-int fn_802966B4(GameObject* obj);
+int playerIsPuttingDown(GameObject* obj);
 int playerIsStaffActionPending(GameObject* obj);
 int playerIsNotAttacking(GameObject* player);
 int playerCanUseCombatTargeting(GameObject* player);

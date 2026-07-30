@@ -1796,7 +1796,7 @@ int playerIsThrowing(GameObject* obj)
     return inner->baddie.controlMode == 7;
 }
 
-int fn_802966B4(GameObject* obj)
+int playerIsPuttingDown(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     return inner->baddie.controlMode == 6;
