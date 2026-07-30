@@ -6187,7 +6187,27 @@ void trickyDigTunnel(u8* obj, u8* state)
                 (u8*)((TrickyState*)state)->followObj) !=
             0)
         {
-            trickyAdvanceNode(state);
+            {
+                int linkId;
+                int off;
+                int idx;
+                int k;
+
+                idx = 0;
+                off = 0;
+                for (k = 4; k != 0; k--) {
+                    linkId = *(int*)((u8*)((TrickyState*)state)->scratch704.ptr + off + 0x1c);
+                    if (linkId > -1 && linkId != ((TrickyCurveNode*)((TrickyState*)state)->scratch700.ptr)->id) {
+                        ((TrickyState*)state)->scratch700.ptr = ((TrickyState*)state)->scratch704.ptr;
+                        ((TrickyState*)state)->scratch704.ptr =
+                            (u8*)(*gRomCurveInterface)
+                                ->getById(((int*)((char*)((TrickyState*)state)->scratch704.ptr + 0x1c))[idx]);
+                        break;
+                    }
+                    off += 4;
+                    idx++;
+                }
+            }
             **(u8**)state -= 4;
             Sfx_RemoveLoopedObjectSound((u32)obj, SFXTRIG_trwhin1);
             state[0xa] = 5;
