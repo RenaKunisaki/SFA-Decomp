@@ -105,26 +105,31 @@ STATIC_ASSERT(sizeof(SkyState) == 0x258);
 /* Per-map sky blend config record passed to sky2_update / skyUpdateEnvfxAct. */
 typedef struct Sky2Config {
     u8 unk00[0xC];
-    u8 redKeys[4];
-    u8 unk10[4];
-    u8 greenKeys[4];
-    u8 unk18[4];
-    u8 blueKeys[4];
-    u8 unk20[4];
+    u8 redKeys[8];
+    u8 greenKeys[8];
+    u8 blueKeys[8];
     u16 envfxActId; /* 0x24: 1-based env effect action id; (id-1) passed to getEnvfxAct, 0 => disabled */
     u8 unk26[4];
     u16 fadeDurationA; /* 0x2A: clamped to >=1; state+0x3c=this, rate at +0x5c = k/this (per-frame fade increment) */
     u16 fadeDurationB; /* 0x2C: clamped to >=1; state+0x40=this, rate at +0x58/+0x60 = k/this */
-    u16 skyTexId0;   /* sky texture id slot 0 (+0xc38); also staged to slot+8 */
-    u16 skyTexId1;   /* sky texture id slot 1 (+0xc38) */
-    u16 skyTexId2;   /* sky texture id slot 2 (+0xc38) */
-    u16 skyTexId3;   /* sky texture id slot 3 (+0xc38) */
-    u8 unk36[8];
-    u16 skyTexId4;   /* sky texture id slot 4 (+0xc38) */
-    u16 skyTexId5;   /* sky texture id slot 5 (+0xc38) */
-    u16 skyTexId6;   /* sky texture id slot 6 (+0xc38) */
-    u16 skyTexId7;   /* sky texture id slot 7 (+0xc38) */
-    u8 unk46[0xE];
+    union {
+        struct {
+            u16 skyTexId0;   /* sky texture id slot 0 (+0xc38); also staged to slot+8 */
+            u16 skyTexId1;   /* sky texture id slot 1 (+0xc38) */
+            u16 skyTexId2;   /* sky texture id slot 2 (+0xc38) */
+            u16 skyTexId3;   /* sky texture id slot 3 (+0xc38) */
+            u8 unk36[8];
+            u16 skyTexId4;   /* sky texture id slot 4 (+0xc38) */
+            u16 skyTexId5;   /* sky texture id slot 5 (+0xc38) */
+            u16 skyTexId6;   /* sky texture id slot 6 (+0xc38) */
+            u16 skyTexId7;   /* sky texture id slot 7 (+0xc38) */
+        };
+        struct {
+            u16 fogFarKeys[8];
+            u16 fogNearKeys[8];
+        };
+    };
+    u8 unk4E[0x6];
     u16 cloudMode;
     u16 visibility;  /* 0x56: drives the sky blend-state bit20 visibility flag */
     u8 flags;
@@ -135,6 +140,10 @@ typedef struct Sky2Config {
 } Sky2Config;
 
 STATIC_ASSERT(offsetof(Sky2Config, fadeDurationA) == 0x2A);
+STATIC_ASSERT(offsetof(Sky2Config, skyTexId0) == 0x2E);
+STATIC_ASSERT(offsetof(Sky2Config, fogFarKeys) == 0x2E);
+STATIC_ASSERT(offsetof(Sky2Config, fogNearKeys) == 0x3E);
+STATIC_ASSERT(offsetof(Sky2Config, cloudMode) == 0x54);
 STATIC_ASSERT(offsetof(Sky2Config, flags) == 0x58);
 
 #endif
