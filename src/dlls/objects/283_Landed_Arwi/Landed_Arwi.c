@@ -399,7 +399,7 @@ void landed_arwing_update(GameObject* obj) {
     case LANDED_ARWING_SEQUENCE_STATE_TRIGGER:
         if (ObjTrigger_IsSet((int)obj) != 0) {
             state->sequenceState = LANDED_ARWING_SEQUENCE_STATE_CONFIRM;
-            cutSceneFn_8011dd30();
+            showFuelCellTokenConfirmMenu();
         }
         ObjHits_PollPriorityHitEffectWithCooldown(obj, STAFF_ACTIVATED_HIT_EFFECT_MODE, STAFF_ACTIVATED_HIT_EFFECT_RED,
                                                   STAFF_ACTIVATED_HIT_EFFECT_GREEN, STAFF_ACTIVATED_HIT_EFFECT_BLUE,

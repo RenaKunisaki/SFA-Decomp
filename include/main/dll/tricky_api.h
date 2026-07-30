@@ -14,7 +14,7 @@ enum AButtonIcon {
 
 void setAButtonIcon(int icon);
 void setBButtonIcon(int icon);
-void cutSceneFn_8011dd30(void);
+void showFuelCellTokenConfirmMenu(void);
 void drawViewFinderHud(void);
 void hudSetMagicCostPreview(u8 value);
 void fearTestMeterSetFadeIn(u32 value);

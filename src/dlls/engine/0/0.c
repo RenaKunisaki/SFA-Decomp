@@ -907,7 +907,7 @@ void gameUiLoadResources(void)
     }
 }
 
-void cutSceneFn_8011dd30(void)
+void showFuelCellTokenConfirmMenu(void)
 {
     cutsceneFadeInOut(1);
     setTimeStop(0xff);
