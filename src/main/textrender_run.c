@@ -1044,7 +1044,7 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
     {
         *(int**)(cs->entries + i * 12 + 8) = strs + *(int*)(cs->entries + i * 12 + 8);
     }
-    txt = (u8*)(table + numStrings) + 4;
+    txt = (u8*)(table + numStrings + 1);
     {
         int j;
         for (j = 0; j < numStrings; j++)
