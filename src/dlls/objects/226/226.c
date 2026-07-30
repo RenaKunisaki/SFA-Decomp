@@ -45,6 +45,7 @@
 #include "main/gamebit_ids.h"
 #include "main/frame_timing.h"
 #include "main/rcp_dolphin_api.h"
+#include "track/intersect_texture_api.h"
 #include "dolphin/gx/GXCull.h"
 #include "dolphin/gx/GXGeometry.h"
 #include "dolphin/gx/GXPixel.h"
