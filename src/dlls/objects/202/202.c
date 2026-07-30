@@ -394,9 +394,9 @@ u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent)
     u8 eventIndex;
     int ei;
     int flag20;
-    u32 stateFlags;
     u8 eventFlags;
-    u8 sequenceIndex;
+    u32 stateFlags;
+    u32 sequenceIndex;
     f32 blendScale;
     f32 blendTimer;
     int eventTableIndex;
