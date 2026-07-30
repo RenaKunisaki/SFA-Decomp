@@ -1063,7 +1063,7 @@ void Trigger_hitDetect(GameObject* obj) {
                     break;
                 case 0x50:
                     objInterpretSeq(obj, triggerObj, 1, 0);
-                    if (return1_800202BC() != 0) {
+                    if (TriggSetpShouldUnload() != 0) {
                         Obj_FreeObject(obj);
                     }
                     break;

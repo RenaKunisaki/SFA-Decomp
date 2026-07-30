@@ -12,7 +12,7 @@ extern LinkInterface* gTitleMenuLinkInterface;
 int main(int argc, char** argv);
 int getGameState(void);
 int getScreenBlankFrameCount(void);
-int return1_800202BC(void);
+int TriggSetpShouldUnload(void);
 void requestGalleonBattleMusic(void);
 void checkReset(void);
 void setShouldResetNextFrame(int reset);

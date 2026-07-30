@@ -307,7 +307,7 @@ void mainSetBits(int gameBit, int value)
     }
 }
 
-int return1_800202BC(void)
+int TriggSetpShouldUnload(void)
 {
     return 0x1;
 }
