@@ -303,7 +303,7 @@ int DRlaserturret_updateIdle(GameObject* obj, DRLaserTurretAnimState* animState)
         }
         return DR_LASERTURRET_STATE_CONTINUE;
     }
-    shopKeeperRotateFn_801e7c4c(obj, playerObj, 0);
+    ShopKeeper_turnTowardPlayer(obj, playerObj, 0);
     obj->anim.localPosY = state->bobAmplitude *
                  mathSinf((double)(3.1415927f * (float)(u32)state->bobPhase / 32768.0f)) +
              state->bobBaseY;
@@ -413,7 +413,7 @@ int DRlaserturret_updateTracking(GameObject* obj, DRLaserTurretAnimState* animSt
         }
         return DR_LASERTURRET_STATE_CONTINUE;
     }
-    t = shopKeeperRotateFn_801e7c4c(obj, playerObj, 0);
+    t = ShopKeeper_turnTowardPlayer(obj, playerObj, 0);
     rate = 0.02f;
     if (t > 80.0f)
     {
@@ -837,12 +837,12 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     return 0;
 }
 
-f32 shopKeeperRotateFn_801e7c4c(GameObject* obj, GameObject* player, int mode)
+f32 ShopKeeper_turnTowardPlayer(GameObject* obj, GameObject* player, int snap)
 {
     f32 dist;
     f32 dx;
     f32 dz;
-    int diff;
+    int angleDelta;
 
     dx = player->anim.localPosX - obj->anim.localPosX;
     dz = player->anim.localPosZ - obj->anim.localPosZ;
@@ -854,35 +854,35 @@ f32 shopKeeperRotateFn_801e7c4c(GameObject* obj, GameObject* player, int mode)
     }
     if (dist > 10.0f)
     {
-        diff = getAngle(dx, dz) & 0xffff;
-        if (mode != 0)
+        angleDelta = getAngle(dx, dz) & 0xffff;
+        if (snap != 0)
         {
-            obj->anim.rotX = diff;
+            obj->anim.rotX = angleDelta;
         }
         else
         {
-            diff = diff - (u16)obj->anim.rotX;
-            if (diff > 0x8000)
+            angleDelta = angleDelta - (u16)obj->anim.rotX;
+            if (angleDelta > 0x8000)
             {
-                diff -= 0xFFFF;
+                angleDelta -= 0xFFFF;
             }
-            if (diff < -0x8000)
+            if (angleDelta < -0x8000)
             {
-                diff += 0xFFFF;
+                angleDelta += 0xFFFF;
             }
-            if (diff > 0x2000)
+            if (angleDelta > 0x2000)
             {
-                diff -= 0x2000;
+                angleDelta -= 0x2000;
             }
-            else if (diff < -0x2000)
+            else if (angleDelta < -0x2000)
             {
-                diff += 0x2000;
+                angleDelta += 0x2000;
             }
             else
             {
-                diff = 0;
+                angleDelta = 0;
             }
-            obj->anim.rotX = (s16)((f32)(diff >> 3) * timeDelta + (f32) * (s16*)obj);
+            obj->anim.rotX = (s16)((f32)(angleDelta >> 3) * timeDelta + (f32) * (s16*)obj);
         }
     }
     return dist;
@@ -992,7 +992,7 @@ void ShopKeeper_update(GameObject* obj)
     }
     if ((((ShopkeeperState*)state)->flags9D4 & SHOPKEEPER_FLAG_FACING) != 0)
     {
-        shopKeeperRotateFn_801e7c4c(obj, player, 1);
+        ShopKeeper_turnTowardPlayer(obj, player, 1);
     }
     (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase;
     if (*(void**)&((ShopkeeperState*)state)->vendorObj == NULL)
