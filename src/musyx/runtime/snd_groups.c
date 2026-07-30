@@ -140,7 +140,7 @@ static inline MEM_DATA* GetLayerAddr(u16 id, POOL_DATA* pool)
     return NULL;
 }
 
-void InsertData(u16 id, void* data, u8 dataType, u32 remove)
+static void InsertData(u16 id, void* data, u8 dataType, u32 remove)
 {
     MEM_DATA* m;
 
