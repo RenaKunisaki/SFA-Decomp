@@ -2122,11 +2122,11 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
                 renderFlags = ((ObjModelInstance*)obj->def)->renderFlags;
                 if (renderFlags & 1)
                 {
-                    ObjModel_SetRenderCallback(obj->models[idx], modelCb_80073d04);
+                    ObjModel_SetRenderCallback(obj->models[idx], objModelNormalDiskRenderCb);
                 }
                 else if (renderFlags & 0x80)
                 {
-                    ObjModel_SetRenderCallback(obj->models[idx], modelCb_80074518);
+                    ObjModel_SetRenderCallback(obj->models[idx], objModelProjectedIndirectRenderCb);
                 }
             }
         }
@@ -2153,11 +2153,11 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
                 renderFlags = ((ObjModelInstance*)obj->def)->renderFlags;
                 if (renderFlags & 1)
                 {
-                    ObjModel_SetRenderCallback(obj->models[i], modelCb_80073d04);
+                    ObjModel_SetRenderCallback(obj->models[i], objModelNormalDiskRenderCb);
                 }
                 else if (renderFlags & 0x80)
                 {
-                    ObjModel_SetRenderCallback(obj->models[i], modelCb_80074518);
+                    ObjModel_SetRenderCallback(obj->models[i], objModelProjectedIndirectRenderCb);
                 }
             }
         }
