@@ -64,7 +64,7 @@ void hitDetect_calcSweptSphereBounds(TrackQueryBounds* boundsOut, f32* startPoin
 void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* bounds, u32 mask, int flags);
 void trackSetLinesEnabledByParam(int matchValue, GameObject* obj, int flag);
 void doNothing_80062A50(GameObject* obj, f32 x, f32 y, f32 z);
-void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode);
+void Obj_SetParent(GameObject* obj, GameObject* newParent, int updateLocalTransform);
 void playerShadowClearPositionOverride(GameObject* obj);
 int shadowInit(GameObject* obj, u32 arena, int flags);
 void objShadowInvalidate(GameObject* obj);

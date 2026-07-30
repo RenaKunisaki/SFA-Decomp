@@ -2147,7 +2147,7 @@ void playerReleaseLedgeGrabOn(GameObject* obj, GameObject* parentObj)
 
     if (((GameObject*)obj)->anim.parent == parentObj)
     {
-        objHitDetectFn_80062e84((GameObject*)obj, NULL, 1);
+        Obj_SetParent((GameObject*)obj, NULL, 1);
         type = ((PlayerState*)state)->baddie.controlMode;
         if (type == 0xa || type == 0xc)
         {
@@ -8747,7 +8747,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
         Obj_TransformWorldPointToLocal(((GameObject*)obj)->anim.worldPosX, ((GameObject*)obj)->anim.worldPosY,
                                        ((GameObject*)obj)->anim.worldPosZ, (f32*)(obj + 0xc), (f32*)(obj + 0x10),
                                        (f32*)(obj + 0x14), ((GameObject*)obj)->anim.parent);
-        objHitDetectFn_80062e84((GameObject*)obj, ((PlayerState*)inner)->groundObject, 1);
+        Obj_SetParent((GameObject*)obj, ((PlayerState*)inner)->groundObject, 1);
         ((PlayerState*)inner)->moveStartX = ((GameObject*)obj)->anim.localPosX;
         ((PlayerState*)inner)->moveStartY = ((GameObject*)obj)->anim.localPosY;
         ((PlayerState*)inner)->moveStartZ = ((GameObject*)obj)->anim.localPosZ;
@@ -8875,7 +8875,7 @@ int playerState0B(GameObject* obj, int state)
                                        obj->anim.worldPosZ, (f32*)((char*)obj + 0xc),
                                        (f32*)((char*)obj + 0x10), (f32*)((char*)obj + 0x14),
                                        obj->anim.parent);
-        objHitDetectFn_80062e84(obj, inner->groundObject, 1);
+        Obj_SetParent(obj, inner->groundObject, 1);
         inner->moveStartX = obj->anim.localPosX;
         inner->moveStartY = obj->anim.localPosY;
         inner->moveStartZ = obj->anim.localPosZ;
@@ -9009,7 +9009,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
                                        obj->anim.worldPosZ, (f32*)((char*)obj + 0xc),
                                        (f32*)((char*)obj + 0x10), (f32*)((char*)obj + 0x14),
                                        obj->anim.parent);
-        objHitDetectFn_80062e84(obj, ((PlayerState*)inner)->groundObject, 1);
+        Obj_SetParent(obj, ((PlayerState*)inner)->groundObject, 1);
         ((PlayerState*)inner)->moveStartX = obj->anim.localPosX;
         ((PlayerState*)inner)->moveStartY = obj->anim.localPosY;
         ((PlayerState*)inner)->moveStartZ = obj->anim.localPosZ;
@@ -9105,7 +9105,7 @@ int playerState09(GameObject* obj, int state)
                                        obj->anim.worldPosZ, &obj->anim.localPosX,
                                        &obj->anim.localPosY, &obj->anim.localPosZ,
                                        obj->anim.parent);
-        objHitDetectFn_80062e84(obj, ((PlayerState*)inner)->groundObject, 1);
+        Obj_SetParent(obj, ((PlayerState*)inner)->groundObject, 1);
         if (*(void**)((char*)inner + 0x4c4) != NULL)
         {
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5d4), *(f32*)((int)inner + 0x5d8),
@@ -17153,7 +17153,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 break;
             }
             case 0xf:
-                objHitDetectFn_80062e84((GameObject*)obj, NULL, 1);
+                Obj_SetParent((GameObject*)obj, NULL, 1);
                 break;
             case 0x10:
             {
@@ -17162,7 +17162,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 t = objGetNearestTypeTo(6, (GameObject*)obj, &nearArg);
                 if ((u32)t != 0)
                 {
-                    objHitDetectFn_80062e84((GameObject*)obj, (GameObject*)t, 1);
+                    Obj_SetParent((GameObject*)obj, (GameObject*)t, 1);
                 }
                 break;
             }
@@ -17954,11 +17954,11 @@ void playerDoHitDetection(int obj)
                 ((fl = ((ObjAnimComponent*)h)->modelInstance->flags) & OBJMODEL_FLAG_SKIP_RESET_UPDATE) != 0 &&
                 (fl & 0x8000) == 0)
             {
-                objHitDetectFn_80062e84((GameObject*)obj, (GameObject*)h, 1);
+                Obj_SetParent((GameObject*)obj, (GameObject*)h, 1);
             }
             else if (((GameObject*)obj)->anim.parent != NULL && h == NULL)
             {
-                objHitDetectFn_80062e84((GameObject*)obj, NULL, 1);
+                Obj_SetParent((GameObject*)obj, NULL, 1);
             }
         }
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_HITDETECT;

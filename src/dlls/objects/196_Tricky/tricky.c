@@ -3028,7 +3028,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                     state->arcMoveProgress = k / 2.0f + 0.25f;
                 }
             }
-            objHitDetectFn_80062e84(obj, NULL, 0);
+            Obj_SetParent(obj, NULL, 0);
             state->heightUpdateActive = 0;
         }
         break;

@@ -562,7 +562,7 @@ void gunpowderBarrel_hitDetect(int obj) {
     }
 
     if (state->queuedHitObject != NULL) {
-        objHitDetectFn_80062e84((GameObject*)obj, state->queuedHitObject, 1);
+        Obj_SetParent((GameObject*)obj, state->queuedHitObject, 1);
         state->queuedHitObject = NULL;
     }
 

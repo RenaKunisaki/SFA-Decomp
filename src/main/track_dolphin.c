@@ -253,7 +253,7 @@ int findSurfaceInYRange(GameObject* obj, f32 x, f32 lo, f32 z, f32 hi, f32* outS
     return 0;
 }
 
-void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
+void Obj_SetParent(GameObject* obj, GameObject* newParent, int updateLocalTransform)
 {
     GameObject* oldParent;
     ObjHitsPriorityState* hitState;
@@ -299,7 +299,7 @@ void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
         yawSum = obj->anim.rotX;
     }
 
-    if (mode != 0)
+    if (updateLocalTransform != 0)
     {
         if (obj->anim.parent != NULL)
         {

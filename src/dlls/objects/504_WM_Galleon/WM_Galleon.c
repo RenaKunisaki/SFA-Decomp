@@ -199,7 +199,7 @@ void WM_Galleon_update(GameObject* obj) {
         player->anim.localPosX = -121.0f;
         player->anim.localPosY = 116.0f;
         player->anim.localPosZ = 5.0f;
-        objHitDetectFn_80062e84(player, obj, 0);
+        Obj_SetParent(player, obj, 0);
         playerDisableHitDetect(player);
         obj->userData2 = WM_GALLEON_TRANSITION_ATTACHED;
     } else if (obj->userData2 == WM_GALLEON_TRANSITION_ATTACHED) {

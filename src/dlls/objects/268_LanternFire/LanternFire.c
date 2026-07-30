@@ -78,7 +78,7 @@ void LanternFireFly_releaseFromLantern(GameObject* obj) {
     state->unk4C = gLanternFireFlyUnitValue;
     state->driftRangeZ = (f32)(int)placement->driftRangeZ;
     state->unk6F = 0;
-    objHitDetectFn_80062e84(obj, NULL, 1);
+    Obj_SetParent(obj, NULL, 1);
     player = Obj_GetPlayerObject();
     playerX = player->anim.worldPosX;
     targetPositionPtr[0] = playerX;
