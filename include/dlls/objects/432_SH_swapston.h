@@ -54,7 +54,7 @@ STATIC_ASSERT(sizeof(WarpStoneState) == 0xD8);
 
 void SHthorntail_updateDustEffects(GameObject* obj);
 u32 SClantern_advanceAnimEvents(int obj, f32 moveStepScale);
-u32 playerFn_801d6d58(void);
+u32 warpstoneProbePlayerAnimState(void);
 int warpstone_testEvent(u32 obj, u32 unused, int option);
 void warpstone_loadBaseUi(void);
 int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj);

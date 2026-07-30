@@ -152,7 +152,7 @@ void SHthorntail_updateDustEffects(GameObject* obj) {
  * spark particle SFX at left/right attachment points (path points 0 and 1)
  * on events 1-4, and plays a swing SFX on event 9. Sparks are suppressed
  * during the early frames of move SCLANTERN_SPARK_SUPPRESS_MOVE (0x1b).
- * playerFn_801d6d58 probes the current player's anim-state flags.
+ * warpstoneProbePlayerAnimState probes the current player's anim-state flags.
  */
 
 #define SCLANTERN_EVENT_LEFT_SPARK_A  1
@@ -220,7 +220,7 @@ u32 SClantern_advanceAnimEvents(int obj, f32 moveStepScale) {
 
 int lbl_803DDBF4;
 
-u32 playerFn_801d6d58(void) {
+u32 warpstoneProbePlayerAnimState(void) {
     u32 playerObj;
 
     (*gMapEventInterface)->getCurChar();
@@ -338,7 +338,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
 
     if ((s8)animUpdate->movementState != 0) {
         ((WarpStoneState*)state)->sequenceFlags = ((WarpStoneState*)state)->sequenceFlags & ~3;
-        if ((s32)playerFn_801d6d58() != 0) {
+        if ((s32)warpstoneProbePlayerAnimState() != 0) {
             ((WarpStoneState*)state)->sequenceFlags = ((WarpStoneState*)state)->sequenceFlags | 1;
         }
         {
@@ -500,8 +500,7 @@ void warpstone_hitDetect(GameObject* obj) {
         } else {
             Sfx_PlayFromObject((int)obj, SFXTRIG_swapstone_move_short_2bc);
         }
-        objSoundStartTimed(obj, (ObjSoundState*)((u8*)state + offsetof(WarpStoneState, soundState)), 171, -1280, -1,
-                            0);
+        objSoundStartTimed(obj, (ObjSoundState*)((u8*)state + offsetof(WarpStoneState, soundState)), 171, -1280, -1, 0);
     }
 }
 
@@ -547,11 +546,11 @@ void warpstone_update(int obj) {
     if (((GameObject*)obj)->anim.currentMove == 0) {
         if (randomChanceOneIn(100) != 0) {
             objSoundStartTimed((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0xab,
-                                -0x100, -1, 0);
+                               -0x100, -1, 0);
         }
         if (randomChanceOneIn(500) != 0) {
             objSoundStartTimed((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0x417,
-                                -0x500, -1, 0);
+                               -0x500, -1, 0);
         }
     }
 
