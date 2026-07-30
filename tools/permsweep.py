@@ -73,8 +73,10 @@ import argparse
 import hashlib
 import itertools
 import json
+import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -110,6 +112,28 @@ def locked_ninja(*targets: str) -> bool:
     # Go through the build mutex: a bare `ninja` here races parallel matching
     # agents and corrupts .ninja_log / loses .d writes, which shows up as
     # spurious BUILD-FAIL entries mid-sweep.
+    if os.name == "nt":
+        lockdir = Path("/tmp/sfa_ninja.lock")
+        lockdir.parent.mkdir(parents=True, exist_ok=True)
+        for _ in range(600):
+            try:
+                lockdir.mkdir()
+            except FileExistsError:
+                time.sleep(0.5)
+                continue
+            try:
+                proc = subprocess.run(
+                    ["ninja", *targets],
+                    cwd=REPO, capture_output=True, text=True
+                )
+                return proc.returncode == 0
+            finally:
+                try:
+                    lockdir.rmdir()
+                except OSError:
+                    pass
+        return False
+
     proc = subprocess.run(
         ["bash", "--noprofile", "--norc", "tools/locked_ninja.sh", *targets],
         cwd=REPO, capture_output=True, text=True
