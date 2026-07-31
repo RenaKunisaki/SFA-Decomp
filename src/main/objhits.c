@@ -4942,9 +4942,9 @@ s16 objJointTracksAimAtTarget(GameObject* obj, GameObject* target, f32* pos, u8*
             p4 += 0x60;
         } else {
             s16* fv = found[0];
-            int d1 = (s16)((s16)((fv[1] + dst[0]) >> 1) - fv[1]);
+            s16 d1 = (s16)((s16)((fv[1] + dst[0]) >> 1) - fv[1]);
             s16 lim;
-            int d2;
+            s16 d2;
             int t2;
             int lim3;
 

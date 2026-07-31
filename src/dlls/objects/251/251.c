@@ -119,12 +119,14 @@ void PressureSwitchFB_free(GameObject* obj) {
     objFreeObjectType((int)obj, PRESSURESWITCHFB_OBJECT_GROUP);
 }
 
-static inline int PressureSwitchFB_scanTrackedSlots(int stateAddress, u8 slotIndex, int foundTrackedObject,
-                                                    int emptyValue) {
-    u32 trackedObject;
+static inline int PressureSwitchFB_scanTrackedSlots(int stateAddress) {
     int positionAddress;
+    u32 trackedObject;
+    u8 slotIndex;
+    int foundTrackedObject;
 
-    for (; slotIndex < PRESSURESWITCHFB_TRACKED_OBJECT_COUNT; slotIndex++) {
+    foundTrackedObject = 0;
+    for (slotIndex = 0; slotIndex < PRESSURESWITCHFB_TRACKED_OBJECT_COUNT; slotIndex++) {
         trackedObject = *(u32*)(stateAddress + slotIndex * 4 + PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET);
         if (trackedObject != 0) {
             positionAddress = stateAddress + slotIndex * 8;
@@ -134,7 +136,7 @@ static inline int PressureSwitchFB_scanTrackedSlots(int stateAddress, u8 slotInd
                  ((GameObject*)trackedObject)->anim.localPosZ)) {
                 foundTrackedObject = 1;
             } else {
-                *(int*)(stateAddress + slotIndex * 4 + PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET) = emptyValue;
+                *(int*)(stateAddress + slotIndex * 4 + PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET) = 0;
             }
         }
     }
@@ -223,7 +225,7 @@ void PressureSwitchFB_update(GameObject* obj) {
             }
         }
         stateAddress = *(int*)&obj->extra;
-        foundTrackedObject = PressureSwitchFB_scanTrackedSlots(stateAddress, 0, 0, 0);
+        foundTrackedObject = PressureSwitchFB_scanTrackedSlots(stateAddress);
         if (foundTrackedObject & PRESSURESWITCHFB_TRACKED_POSITION_MASK) {
             state->contactTimer = PRESSURESWITCHFB_CONTACT_FRAMES;
         }
