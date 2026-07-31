@@ -42,7 +42,8 @@ void subtitleUpdateAndDraw(int unused) {
         gSubtitleCurTime = currentTime;
         lineIndex = gSubtitleLineIndex;
         if (lineIndex + 1 < gSubtitleLineCount && currentTime >= gSubtitleLineTimes[lineIndex + 1]) {
-            commands = subtitleParseControlCmds(gSubtitleLineStrs[lineIndex], &commandCount);
+            char** lineStrs = gSubtitleLineStrs;
+            commands = subtitleParseControlCmds(lineStrs[lineIndex], &commandCount);
             if (commands != NULL) {
                 SubtitleCmd* command = &commands[commandCount];
                 while (command--, commandCount-- != 0) {
@@ -61,9 +62,10 @@ void subtitleUpdateAndDraw(int unused) {
             }
             if (++gSubtitleLineIndex + 1 >= gSubtitleLineCount) {
                 subtitleStop();
-                if (gGameTextSequenceMode != 0) {
-                    gameTextSetCharset(savedCharset, 2);
+                if (gGameTextSequenceMode == 0) {
+                    return;
                 }
+                gameTextSetCharset(savedCharset, 2);
                 return;
             }
         }
