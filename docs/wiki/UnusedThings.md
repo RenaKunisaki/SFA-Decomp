@@ -179,8 +179,9 @@ repeating it.
   ready-to-adopt block). In particular Files.md already independently confirms: `DLLS.bin`/`DLLS.tab`
   are table-slot-only in `pi_dolphin.c` and **not the same file** as this page's "old N64 DLLS.tab"
   (though the wiki's leftover ids `0x58`/`0xAB` do map onto real do-nothing stubs
-  `src/main/dll/dll_0058_dummy58.c` / `dll_00AB_projdummy.c`); `VOXOBJ.bin/tab` (fileId `0x35`/`0x36`)
-  is table-slot-only with no consumer, consistent with "empty file"; `GAMETEXT.bin/tab` (fileId
+  `src/main/dll/dll_0058_dummy58.c` / `dll_00AB_projdummy.c`); `VOXOBJ.tab` (fileId `0x35`) *is*
+  actually loaded at voxmaps init (`gVoxMapsMapList`, a `-1`-terminated list — see Files.md) while
+  `VOXOBJ.bin` (`0x36`) has no consumer; `GAMETEXT.bin/tab` (fileId
   `0x13`/`0x14`) is the stale root copy, distinct from the live `gametext/%s/%s.bin` system.
 - **The live Gametext format** (character/message structs, control codes, font slots) is
   **[Gametext](Gametext)** — this page's `GAMETEXT.bin` hex dump is the *old, unused* predecessor of
@@ -300,6 +301,38 @@ GameBit" fuel-cell bugs exploit. The fuel cell object itself is decompiled:
 - The specific object ids from the wiki (`0004BE3B`, `0004BE3E`) are raw `OBJECTS.bin`/level
   placement data, not symbols — **not found** as named constants anywhere in source (expected: this
   is data, not code).
+
+### Severed subsystems — APIs whose output nothing in the retail binary reads
+
+A relocation scan over every retail object (all loads/stores/address-takes of every data symbol)
+proves the following state is **stored but never loaded, and never address-taken, anywhere in the
+shipped binary**. Each is a mechanism whose consumer was severed before ship; the writers remain.
+These are pinned as-is — the decompiled source must keep writing them and must not "fix" the
+missing reader.
+
+- **Per-object render-override channel** (`src/main/objhits.c`, API in
+  `include/main/objprint_api.h`): `objSetGlowColor` (backing `gObjGlowColorRed/Green/Blue/Alpha/`
+  `Enabled`), `objSetColorFilter` (`gObjColorFilterRed/Green/Blue/Enabled`) and
+  `objSetModelMatrixOverride` (`gObjModelMatrixOverride`) are pure setters into 11 globals with
+  zero loads binary-wide. They still have *live callers*: the baddie red damage-glow
+  (`202.c`/`Kaldachom.c`/`DBstealerwo.c`/`247.c` pass `RGBA(200,0,0,glowAlpha)`), per-object tints
+  (`MSPlantingS.c`, `687.c`, `439.c`, `VFP_lavapoo.c`) and boss/platform model-matrix overrides
+  (`DR_EarthWar.c`, `DR_CloudRun.c`, `211.c`, `626.c`, `625.c`, `DIMSnowHorn.c`) — all of which
+  therefore do nothing in retail. Same class as the severed voxel-map link (see [Maps](Maps)).
+- **Sub-map carrier latch** (`src/main/shader.c`): on entering a `mapType`-1 moving sub-map, the
+  map resolver copies `MapInfoRecord.objType` (the sub-map's carrier object type — see
+  [Files](Files)) and the sub-map's id into the halfword pair `lbl_803DCEB4`/`lbl_803DCEB6`; all 7
+  retail references to the pair are `sth` stores. The mechanism that would consume the carrier
+  object id (the wiki's "which object to use as the player" from older builds) is gone.
+- **Root-motion rotation export** (`src/main/model.c`, `ObjModel_UpdateAnimMatrices`): the sampled
+  root-joint rotation triple is stored to `gModelRootRotX/Y/Z` and never read — only the
+  translation half of root motion is consumed.
+
+Most other store-only globals found by the same scan are one-off debug snapshot mirrors (e.g.
+`gShadowTrackTriangleCount`, `gTrackTriangleCount`) rather than whole severed mechanisms; a value
+stored *and used in-register* in the same function also shows up as "never loaded" without being
+dead, so store-only alone is not proof of severance — the three entries above are additionally
+pure-setter/pure-latch shaped.
 
 ### Not found in this codebase
 
