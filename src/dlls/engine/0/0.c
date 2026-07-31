@@ -589,7 +589,7 @@ extern u8 gHeadDisplayEntryIdx;
 extern u16 gHeadDisplayPanelWidth;
 extern u16 gHeadDisplayPanelHeight;
 extern s16 gHeadDisplayFadeAlpha;
-extern u16 lbl_803DD77C;
+extern u16 gGameUiShimmerFrame;
 struct PauseMenuMapTables
 {
     GridEntry entries[14];
@@ -4394,12 +4394,12 @@ void headDisplayDraw(void)
         Camera_RebuildProjectionMatrix();
         Camera_ApplyFullViewport();
         GXSetScissor(0, 0, 0x280, 0x1e0);
-        lbl_803DD77C += 1;
+        gGameUiShimmerFrame += 1;
         wavePhaseA = wavePhaseB = lineOffset = 0;
         for (; lineOffset < (int)height; lineOffset += 4)
         {
-            wave = lbl_803E204C * fsin16Approx((u16)(wavePhaseA + lbl_803DD77C * 0x1838));
-            wave = lbl_803E204C * fsin16Approx((u16)(wavePhaseB + lbl_803DD77C * 0xfa0)) + wave;
+            wave = lbl_803E204C * fsin16Approx((u16)(wavePhaseA + gGameUiShimmerFrame * 0x1838));
+            wave = lbl_803E204C * fsin16Approx((u16)(wavePhaseB + gGameUiShimmerFrame * 0xfa0)) + wave;
             waveAlpha = (int)((f32)(s16)panelAlpha * (0.4f + wave));
             clampedAlpha = waveAlpha < 0 ? 0 : waveAlpha;
             noiseX = randomGetRange(0, 0x1e) << 1;
@@ -7433,7 +7433,7 @@ void mapScreenDrawHud(int unused1, int unused2, int unused3)
                 gameTextShow(hint);
             }
         }
-        lbl_803DD77C++;
+        gGameUiShimmerFrame++;
         drawTexture(((HudTextures*)hudTextures)->tex28, 475.0f, 45.0f, panelAlpha, 0x100);
         drawScaledTexture(((HudTextures*)hudTextures)->tex34, 480.0f, 45.0f, panelAlpha, 0x100, 0x82, 5,
                           0);
@@ -7461,8 +7461,8 @@ void mapScreenDrawHud(int unused1, int unused2, int unused3)
             for (; row < 0x96; row += 4)
             {
                 int alpha0, alpha1, jitter1, jitter0, rawAlpha;
-                shimmer = shimmerScale * fsin16Approx((u16)(lbl_803DD77C * 0x1838 + phaseA));
-                shimmer = shimmerScale * fsin16Approx((u16)(lbl_803DD77C * 0xfa0 + phaseB)) + shimmer;
+                shimmer = shimmerScale * fsin16Approx((u16)(gGameUiShimmerFrame * 0x1838 + phaseA));
+                shimmer = shimmerScale * fsin16Approx((u16)(gGameUiShimmerFrame * 0xfa0 + phaseB)) + shimmer;
                 rawAlpha = (int)(panelAlpha * (0.4f + shimmer));
                 alpha0 = rawAlpha < 0 ? 0 : rawAlpha;
                 jitter1 = randomGetRange(0, 0x1e) << 1;
@@ -9272,7 +9272,7 @@ u8 gPauseMenuCloseAnimIndex;
 u8 pauseMenuState;
 u8 gPauseMenuTitleFadeRising;
 u8 mapScreenVisible;
-u16 lbl_803DD77C;
+u16 gGameUiShimmerFrame;
 u8 gPauseMenuTextCharset;
 u8 gPauseMenuHintIndex;
 s16 gPauseMenuSaveTextTimer;
