@@ -4568,7 +4568,11 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
         {
             int modePoolIndex;
 
-            sourceModeValue = (config->behaviorFlags & EXPGFX_BEHAVIOR_SOURCE_MODE_FLAG) != 0 ? 1 : 0;
+            if ((config->behaviorFlags & EXPGFX_BEHAVIOR_SOURCE_MODE_FLAG) != 0) {
+                sourceModeValue = 1;
+            } else {
+                sourceModeValue = 0;
+            }
             modePoolIndex = poolIndex;
             runtime->poolSourceModes[modePoolIndex] = sourceModeValue;
             if (runtime->poolSourceModes[modePoolIndex] != 0 &&
