@@ -672,8 +672,8 @@ void debugPrintfxy(int x, int y, char* fmt, ...) {
     int drawY;
     u16* savedFrameBuffer;
     int lineStartX = x;
-    u8* character;
-    u8* textCursor;
+    u8* endCursor[1];
+    u8* character[1];
     u8* glyphRows;
     va_list args;
     char text[256];
@@ -684,10 +684,10 @@ void debugPrintfxy(int x, int y, char* fmt, ...) {
         va_start(args, fmt);
         vsprintf(text, fmt, args);
         savedFrameBuffer = debugDrawFrameBuffer;
-        character = (u8*)&text[-1];
-        textCursor = (u8*)text - 1;
-        while (character++, *++textCursor != 0) {
-            switch (*character) {
+        endCursor[0] = (u8*)&text[-1];
+        character[0] = (u8*)text - 1;
+        while (character[0]++, *++endCursor[0] != 0) {
+            switch (*character[0]) {
             case 0xa:
                 drawY += 0xc;
                 drawX = lineStartX;
@@ -699,12 +699,12 @@ void debugPrintfxy(int x, int y, char* fmt, ...) {
                 drawX += 8;
                 break;
             default:
-                if (*character >= 0x61 && *character <= 0x7a) {
-                    *character -= 0x20;
+                if (*character[0] >= 0x61 && *character[0] <= 0x7a) {
+                    *character[0] -= 0x20;
                 }
-                if (*character >= 0x21 && *character <= 0x5a) {
+                if (*character[0] >= 0x21 && *character[0] <= 0x5a) {
                     debugDrawFrameBuffer = externalFrameBuffer0;
-                    debugTextDrawToFrameBuffer(drawX, drawY, glyphRows = gDebugFontGlyphs + (*character - 0x21) * 5,
+                    debugTextDrawToFrameBuffer(drawX, drawY, glyphRows = gDebugFontGlyphs + (*character[0] - 0x21) * 5,
                                                -1);
                     debugDrawFrameBuffer = externalFrameBuffer1;
                     debugTextDrawToFrameBuffer(drawX, drawY, glyphRows, -1);
