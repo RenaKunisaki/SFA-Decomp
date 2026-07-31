@@ -1053,7 +1053,7 @@ void player_initialise(void)
 {
 }
 
-u32 lbl_80311438[30] = {
+u32 player_funcs[30] = {
     0, 0, 0, 0x00190000,
     (u32)player_initialise, (u32)player_release, 0, (u32)player_init,
     (u32)player_update, (u32)player_updateVel, (u32)player_setOverride, (u32)player_setState,

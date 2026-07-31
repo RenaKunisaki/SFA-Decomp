@@ -2948,7 +2948,7 @@ void RomCurve_initialise(void)
 {
 }
 
-void* lbl_803115F8[49] = {(void*)0,
+void* RomCurve_funcs[49] = {(void*)0,
                           (void*)0,
                           (void*)0,
                           (void*)0x2C0000,

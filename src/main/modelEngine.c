@@ -586,26 +586,26 @@ extern ResourceDescriptor gWM_PlanetsObjDescriptor;
 extern ResourceDescriptor gWM_SpiritSetObjDescriptor, gWM_WallCrawlerObjDescriptor, gWM_newcrystalObjDescriptor,
     gWM_seqpointObjDescriptor;
 extern ResourceDescriptor gWM_spiritplaceObjDescriptor, gWM_sunObjDescriptor, gWaterFlowWeObjDescriptor;
-extern ResourceDescriptor lbl_8030EE34;
-extern ResourceDescriptor sky_funcs, sky2_funcs, lbl_8030F5B4, lbl_8030F788, lbl_8030F7E8, lbl_8030F830,
-    lbl_8030FCA8, partfx_funcs;
+extern ResourceDescriptor ObjSeq_funcs;
+extern ResourceDescriptor sky_funcs, sky2_funcs, newclouds_funcs, Dummy08_funcs, cloudaction_funcs, waterfx_funcs,
+    dll_0B_funcs, partfx_funcs;
 extern ResourceDescriptor Effect1_funcs, Effect2_funcs, Effect3_funcs, Effect4_funcs, Effect5_funcs, Effect6_funcs,
     Effect7_funcs, Effect8_funcs;
 extern ResourceDescriptor Effect9_funcs, Effect10_funcs, Effect11_funcs, Effect12_funcs, Effect14_funcs, Effect16_funcs,
     Effect15_funcs, Effect13_funcs;
-extern ResourceDescriptor Effect17_funcs, Effect18_funcs, Effect19_funcs, Effect20_funcs, lbl_803112E8, lbl_80311340,
-    lbl_80311378, lbl_80311438;
-extern ResourceDescriptor lbl_803114B0, lbl_803114D8, lbl_803115F8, dll_15_funcs, lbl_80311900, lbl_80311BE0;
-extern ResourceDescriptor lbl_8031A148;
-extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode_funcs, lbl_8031A82C, EnterSaveNameScreen_funcs, OptionsScreen_funcs,
-    lbl_8031ADA4, Dummy39_funcs;
-extern ResourceDescriptor Dummy3A_funcs, lbl_8031C020, lbl_8031C168, lbl_8031C1E4, lbl_8031C2B4, Dummy3E_funcs,
+extern ResourceDescriptor Effect17_funcs, Effect18_funcs, Effect19_funcs, Effect20_funcs, Checkpoint_funcs, screenTransition_funcs,
+    Dummy04_funcs, player_funcs;
+extern ResourceDescriptor UIController_funcs, Dummy12_funcs, RomCurve_funcs, dll_15_funcs, SaveGame_funcs, screens_funcs;
+extern ResourceDescriptor Dummy30_funcs;
+extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode_funcs, SaveSelectScreen_funcs, EnterSaveNameScreen_funcs, OptionsScreen_funcs,
+    WeirdUnusedMenu_funcs, Dummy39_funcs;
+extern ResourceDescriptor Dummy3A_funcs, GameUI_funcs, Menu_funcs, Link_funcs, TitleMenuItem_funcs, Dummy3E_funcs,
     Minimap_funcs, dll_3F_funcs;
 extern ResourceDescriptor gCreditsDescriptor, gWarpStoneUiDescriptor;
 extern ResourceDescriptorCallbacks8 gDllC5NullResourceDescriptor;
 extern ResourceDescriptor gWM_VConsoleNullResourceDescriptor, gGCRobotBlastObjDescriptor;
 extern ResourceDescriptor gDll22CObjDescriptor, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
-extern ResourceDescriptor lbl_8032A110, gDll27BNullResourceDescriptor, gDll27DNullResourceDescriptor,
+extern ResourceDescriptor Dummy24C_funcs, gDll27BNullResourceDescriptor, gDll27DNullResourceDescriptor,
     gDll29EObjDescriptor;
 extern ResourceDescriptor gDll212NullResourceDescriptor, gWM_TransTopNullResourceDescriptor,
     gDBPointMumNullResourceDescriptor;
@@ -1224,30 +1224,30 @@ void initGameTimer(void)
 }
 
 ResourceDescriptor* gResourceDescriptors[] = {
-    &lbl_8031C020,
+    &GameUI_funcs,
     (ResourceDescriptor*)&gCamcontrolResourceDescriptor,
-    &lbl_8030EE34,
-    &lbl_803112E8,
-    &lbl_80311378,
+    &ObjSeq_funcs,
+    &Checkpoint_funcs,
+    &Dummy04_funcs,
     &sky_funcs,
     &sky2_funcs,
-    &lbl_8030F5B4,
-    &lbl_8030F788,
-    &lbl_8030F7E8,
+    &newclouds_funcs,
+    &Dummy08_funcs,
+    &cloudaction_funcs,
     &expgfx_funcs,
-    &lbl_8030FCA8,
+    &dll_0B_funcs,
     &projgfx_funcs,
     &playerShadow_funcs,
     &partfx_funcs,
-    &lbl_80311438,
-    &lbl_803114B0,
-    &lbl_80311BE0,
-    &lbl_803114D8,
-    &lbl_8030F830,
-    &lbl_803115F8,
+    &player_funcs,
+    &UIController_funcs,
+    &screens_funcs,
+    &Dummy12_funcs,
+    &waterfx_funcs,
+    &RomCurve_funcs,
     &dll_15_funcs,
-    &lbl_80311340,
-    &lbl_80311900,
+    &screenTransition_funcs,
+    &SaveGame_funcs,
     &boneParticleEffect_funcs,
     &dll_19,
     &Effect1_funcs,
@@ -1272,20 +1272,20 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &Effect20_funcs,
     &dll_2E,
     &Carryable_funcs,
-    &lbl_8031A148,
+    &Dummy30_funcs,
     &Minimap_funcs,
     &TitleScreenInit_funcs,
     &n_rareware_funcs,
     &n_attractmode_funcs,
-    &lbl_8031A82C,
+    &SaveSelectScreen_funcs,
     &EnterSaveNameScreen_funcs,
     &OptionsScreen_funcs,
-    &lbl_8031ADA4,
+    &WeirdUnusedMenu_funcs,
     &Dummy39_funcs,
     &Dummy3A_funcs,
-    &lbl_8031C168,
-    &lbl_8031C1E4,
-    &lbl_8031C2B4,
+    &Menu_funcs,
+    &Link_funcs,
+    &TitleMenuItem_funcs,
     &Dummy3E_funcs,
     &dll_3F_funcs,
     &gCreditsDescriptor,
@@ -1812,7 +1812,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gDll249NullResourceDescriptor,
     &Dummy24A,
     &Dummy24B,
-    &lbl_8032A110,
+    &Dummy24C_funcs,
     &gBossDrakorObjDescriptor,
     &gDrakorDThornBushObjDescriptor,
     &gKtRexLevelObjDescriptor,

@@ -1251,7 +1251,7 @@ u16 gSaveGameMapObjGroupBits[120] = {
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 };
 
-void* lbl_80311900[56] = {(void*)0x00000000,
+void* SaveGame_funcs[56] = {(void*)0x00000000,
                           (void*)0x00000000,
                           (void*)0x00000000,
                           (void*)0x00330000,

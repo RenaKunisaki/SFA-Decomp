@@ -826,7 +826,7 @@ struct LinkObjDescriptor
     void* fns[16];
 };
 
-struct LinkObjDescriptor lbl_8031C1E4 = {
+struct LinkObjDescriptor Link_funcs = {
     {0, 0, 0},
     0x000F0000,
     {

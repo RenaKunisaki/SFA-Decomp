@@ -861,7 +861,7 @@ void Checkpoint_initialise(void)
     gCheckpointRankItems = (void*)((u8*)gCheckpointPartFxListBuffer + 0x28);
 }
 
-u32 lbl_803112E8[22] = {
+u32 Checkpoint_funcs[22] = {
     0, 0, 0, 0x00110000,
     (u32)Checkpoint_initialise, (u32)Checkpoint_release, 0, (u32)Checkpoint_reset,
     (u32)Checkpoint_Add, (u32)Checkpoint_Remove, (u32)Checkpoint_findRouteForObject, (u32)Checkpoint_getRouteHeading,

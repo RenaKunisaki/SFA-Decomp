@@ -2251,7 +2251,7 @@ void newclouds_initialise(void)
 }
 int gNewCloudMusicIdByType[5] = {43, 0, 0, 0, 0};
 
-u32 lbl_8030F5B4[15] = { 0x00000000, 0x00000000, 0x00000000, 0x000a0000, (u32)newclouds_initialise, (u32)newclouds_release, 0x00000000, (u32)newclouds_updateEnvfxAct, (u32)newclouds_onMapSetup, (u32)newclouds_killSnowCloud, (u32)newclouds_run, (u32)newclouds_renderSnowClouds, (u32)newclouds_isBlizzardActive, (u32)dll_07_func09, (u32)dll_07_func0A_nop };
+u32 newclouds_funcs[15] = { 0x00000000, 0x00000000, 0x00000000, 0x000a0000, (u32)newclouds_initialise, (u32)newclouds_release, 0x00000000, (u32)newclouds_updateEnvfxAct, (u32)newclouds_onMapSetup, (u32)newclouds_killSnowCloud, (u32)newclouds_run, (u32)newclouds_renderSnowClouds, (u32)newclouds_isBlizzardActive, (u32)dll_07_func09, (u32)dll_07_func0A_nop };
 
 char sSnowFreeSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowFreeSnowCloud\n";
 char sSnowPrintSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowPrintSnowCloud\n";

@@ -2763,7 +2763,7 @@ int gObjSeqMsgIds[] = {
 
 s8 gObjSeqMsgSendModes[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0};
 
-void* lbl_8030EE34[40] = {(void*)0,
+void* ObjSeq_funcs[40] = {(void*)0,
                           (void*)0,
                           (void*)0,
                           (void*)0x230000,

@@ -44,7 +44,7 @@ void Dummy12_initialise(void)
 {
 }
 
-u32 lbl_803114D8[16] = {
+u32 Dummy12_funcs[16] = {
     0, 0, 0, 0x000A0000,
     (u32)Dummy12_initialise, (u32)Dummy12_release, 0, (u32)dll_12_func03_nop,
     (u32)dll_12_func04_nop, (u32)dll_12_func05_nop, (u32)dll_12_func06_ret_0, (u32)dll_12_func07_nop,

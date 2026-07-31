@@ -477,7 +477,7 @@ CloudEnvTbl gCloudActionEnvTbl = {
     {0, 1578, 2140, 2145, 2147},
 };
 
-ResourceDescriptorCallbacks14 lbl_8030F7E8 = {
+ResourceDescriptorCallbacks14 cloudaction_funcs = {
     {0x00000000, 0x00000000, 0x00000000, 0x000c0000},
     {(ResourceDescriptorCallback)cloudaction_initialise,
      (ResourceDescriptorCallback)cloudaction_release,

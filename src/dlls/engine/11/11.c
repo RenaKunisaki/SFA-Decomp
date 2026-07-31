@@ -1883,7 +1883,7 @@ void dll_0B_initialise(void)
     }
 }
 
-Dll0BDescriptorTable lbl_8030FCA8 = {{0x00000000,
+Dll0BDescriptorTable dll_0B_funcs = {{0x00000000,
                                       0x00000000,
                                       0x00000000,
                                       0x00180000,

@@ -330,7 +330,7 @@ void screenTransition_update(int p1, int p2, int p3)
 }
 
 
-u32 lbl_80311340[14] = {
+u32 screenTransition_funcs[14] = {
     0, 0, 0, 0x00080000,
     0, 0, 0, (u32)screenTransition_update,
     (u32)screenTransition_fadeOut, (u32)screenTransition_fadeIn, (u32)screenTransition_fadeFrom, (u32)screenTransition_isDone,
