@@ -121,12 +121,10 @@ void firstPersonExit(CameraObject* camera) {
     if (((gCameraModeViewfinderState->yawCurve.start - gCameraModeViewfinderState->yawCurve.end) > 32768.0f) ||
         ((gCameraModeViewfinderState->yawCurve.start - gCameraModeViewfinderState->yawCurve.end) < -32768.0f)) {
         if (gCameraModeViewfinderState->yawCurve.start < 0.0f) {
-            gCameraModeViewfinderState->yawCurve.start =
-                *(f32*)&gCameraModeViewfinderState->yawCurve.start + gCameraModeViewfinderFullCircle;
+            gCameraModeViewfinderState->yawCurve.start += gCameraModeViewfinderFullCircle;
         } else {
             if (gCameraModeViewfinderState->yawCurve.end < 0.0f) {
-                gCameraModeViewfinderState->yawCurve.end =
-                    *(f32*)&gCameraModeViewfinderState->yawCurve.end + gCameraModeViewfinderFullCircle;
+                gCameraModeViewfinderState->yawCurve.end += gCameraModeViewfinderFullCircle;
             }
         }
     }
@@ -138,12 +136,10 @@ void firstPersonExit(CameraObject* camera) {
     if (((gCameraModeViewfinderState->pitchCurve.start - gCameraModeViewfinderState->pitchCurve.end) > 32768.0f) ||
         ((gCameraModeViewfinderState->pitchCurve.start - gCameraModeViewfinderState->pitchCurve.end) < -32768.0f)) {
         if (gCameraModeViewfinderState->pitchCurve.start < 0.0f) {
-            gCameraModeViewfinderState->pitchCurve.start =
-                *(f32*)&gCameraModeViewfinderState->pitchCurve.start + gCameraModeViewfinderFullCircle;
+            gCameraModeViewfinderState->pitchCurve.start += gCameraModeViewfinderFullCircle;
         } else {
             if (gCameraModeViewfinderState->pitchCurve.end < 0.0f) {
-                gCameraModeViewfinderState->pitchCurve.end =
-                    *(f32*)&gCameraModeViewfinderState->pitchCurve.end + gCameraModeViewfinderFullCircle;
+                gCameraModeViewfinderState->pitchCurve.end += gCameraModeViewfinderFullCircle;
             }
         }
     }
