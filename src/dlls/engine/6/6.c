@@ -494,6 +494,7 @@ void sky2_run(void)
     int i;
     u8* p;
     f32* dst;
+    f32* knot;
     f32 colorMax;
     int k;
     int d;
@@ -524,7 +525,8 @@ void sky2_run(void)
     f32 spd;
     f32 value;
     f32 offset;
-    f32 negativeRange;
+    f32 wobbleRange;
+    f32 half;
     f32 ambientScale;
 
     best = sSky2BestWeightsInit;
@@ -729,7 +731,8 @@ void sky2_run(void)
                     r = ((SkySlotAnim*)p)->cur[0] * best.x + r;
                     g = ((SkySlotAnim*)p)->cur[0xb] * best.x + g;
                     b = ((SkySlotAnim*)p)->cur[0x16] * best.x + b;
-                    sa = *(f32*)(*pp + bestKnotOffset + 0x1fc) * best.x + sa;
+                    knot = (f32*)(*pp + bestKnotOffset + 0x1fc);
+                    sa = *knot * best.x + sa;
                     sb = ((SkySlotAnim*)p)->cur2[0xb] * best.x + sb;
                 }
                 if (best.y > zero)
@@ -738,7 +741,8 @@ void sky2_run(void)
                     r = ((SkySlotAnim*)p)->cur[0] * best.y + r;
                     g = ((SkySlotAnim*)p)->cur[0xb] * best.y + g;
                     b = ((SkySlotAnim*)p)->cur[0x16] * best.y + b;
-                    sa = *(f32*)(*pp + secondKnotOffset + 0x1fc) * best.y + sa;
+                    knot = (f32*)(*pp + secondKnotOffset + 0x1fc);
+                    sa = *knot * best.y + sa;
                     sb = ((SkySlotAnim*)p)->cur2[0xb] * best.y + sb;
                 }
             }
@@ -775,9 +779,10 @@ void sky2_run(void)
                     ((SkySlotAnim*)p)->b314 = 1;
                     value = 0.0f;
                     ((SkySlotAnim*)*pp)->wobbleOffset = value;
-                    negativeRange = -(sb - sa);
+                    wobbleRange = sb - sa;
+                    half = 0.5f;
                     ((SkySlotAnim*)*pp)->wobbleAmp =
-                        randomGetRange((int)(negativeRange * 0.5f), (int)(-negativeRange * 0.5f));
+                        randomGetRange((int)(-wobbleRange * half), (int)(wobbleRange * half));
                     ((SkySlotAnim*)*pp)->wobbleStep = 0.05f * randomGetRange(1, 10);
                 }
                 else if (((SkySlotAnim*)p)->b314 == 1)
