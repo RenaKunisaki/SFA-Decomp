@@ -61,9 +61,9 @@ typedef struct CheckpointNavState
 s32 Checkpoint_buildControlPoints(CheckpointRouteEntry* checkpoint, s32 linkIndex, f32* outX, f32* outY, f32* outZ, u8 mode,
                  f32 lateralOffset, f32 verticalOffset)
 {
-    f32 prodC;
-    f32 prodB;
     f32 prodA;
+    f32 prodB;
+    f32 prodC;
     f32 sinB;
     f32 prodD;
     s32 routeIndex;
