@@ -16026,20 +16026,9 @@ void playerUpdateVelocityFromMotion(GameObject* a, int b, int state, f32 unusedT
     }
 }
 
-extern f32 lbl_803E7E90;
-extern f32 lbl_803E7E98;
 extern f32 lbl_803E7EA4;
 extern f32 lbl_803E7EE0;
-extern f32 lbl_803E7EF8;
-extern f32 lbl_803E7EFC;
 extern f32 lbl_803E7F14;
-extern f32 lbl_803E7F6C;
-extern f32 lbl_803E7FA0;
-extern f32 lbl_803E7FCC;
-extern f32 lbl_803E7FEC;
-extern f32 lbl_803E7FF4;
-extern f32 lbl_803E80D0;
-extern f32 lbl_803E8118;
 
 void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
 {
@@ -16066,11 +16055,11 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
     ((PlayerState*)state)->velSmoothRateBase = 0.06f;
     ((PlayerState*)state)->surfaceType = 0;
     b = ((PlayerState*)state)->flags3F0 >> 5 & 1;
-    if (b == 0 || (b != 0 && lbl_803E80D0 != ((PlayerState*)cfg)->baddie.waterSurfaceY))
+    if (b == 0 || (b != 0 && -1e+05f != ((PlayerState*)cfg)->baddie.waterSurfaceY))
     {
         ((PlayerState*)state)->waterSurfaceY = ((PlayerState*)cfg)->baddie.waterSurfaceY;
     }
-    if (lbl_803E80D0 != ((PlayerState*)state)->waterSurfaceY)
+    if (-1e+05f != ((PlayerState*)state)->waterSurfaceY)
     {
         ((PlayerState*)state)->waterDepth = ((PlayerState*)state)->waterSurfaceY - obj->anim.worldPosY;
     }
@@ -16091,13 +16080,13 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
         case SURFACE_ICE:
             ((PlayerState*)state)->targetAnimSpeed = 0.055f;
             ((PlayerState*)state)->yawSmoothScale = 1.75f;
-            ((PlayerState*)state)->velSmoothRateBase = lbl_803E8118;
+            ((PlayerState*)state)->velSmoothRateBase = 0.13f;
             break;
         case SURFACE_SNOW:
             fv2 = lbl_803E7EE0;
             ((PlayerState*)state)->targetAnimSpeed = fv2;
             ((PlayerState*)state)->yawSmoothScale = fv2;
-            ((PlayerState*)state)->velSmoothRateBase = lbl_803E7F6C;
+            ((PlayerState*)state)->velSmoothRateBase = 0.05f;
             break;
         case 6:
             if ((*(s16*)&((PlayerState*)state)->hitIntervalTimer -= dt) <= 0)
@@ -16139,14 +16128,14 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
             }
             break;
         case 32:
-            if (((PlayerState*)cfg)->baddie.animSpeedA > lbl_803E7E98)
+            if (((PlayerState*)cfg)->baddie.animSpeedA > 0.5f)
             {
-                fv2 = lbl_803E7F6C + ((PlayerState*)state)->sinkOffsetY;
+                fv2 = 0.05f + ((PlayerState*)state)->sinkOffsetY;
                 ((PlayerState*)state)->sinkOffsetY = (fv2 < clamp) ? fv2 : clamp;
             }
             else
             {
-                ((PlayerState*)state)->sinkOffsetY = -(lbl_803E7E90 * dt - ((PlayerState*)state)->sinkOffsetY);
+                ((PlayerState*)state)->sinkOffsetY = -(0.04f * dt - ((PlayerState*)state)->sinkOffsetY);
                 if (gPlayerSinkSfxTimer > clamp)
                 {
                     gPlayerSinkSfxTimer = gPlayerSinkSfxTimer - dt;
@@ -16161,7 +16150,7 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
                                       obj->anim.localPosZ, &nearList, 0, 0x20);
             velMag = -((PlayerState*)state)->sinkOffsetY;
             if (1 < iv &&
-                (velMag = velMag + (nearList[0]->height - nearList[iv - 1]->height), velMag > lbl_803E7FA0))
+                (velMag = velMag + (nearList[0]->height - nearList[iv - 1]->height), velMag > 25.0f))
             {
                 int inner;
                 s8* p = *(s8**)&((PlayerState*)(inner = *(int*)&obj->extra))->playerStatus;
@@ -16192,7 +16181,7 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
                 f32 sink = ((PlayerState*)state)->sinkOffsetY;
                 if (sink < (zero = lbl_803E7EA4))
                 {
-                    fv2 = lbl_803E7EFC * ((PlayerState*)cfg)->baddie.animSpeedA + sink;
+                    fv2 = 0.1f * ((PlayerState*)cfg)->baddie.animSpeedA + sink;
                     ((PlayerState*)state)->sinkOffsetY = (fv2 < zero) ? fv2 : zero;
                     velMag = -((PlayerState*)state)->sinkOffsetY;
                 }
@@ -16202,26 +16191,26 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
         if (velMag != lbl_803E7EA4)
         {
             damp = lbl_803E7F14;
-            r = -(lbl_803E7F6C * velMag - lbl_803E7EE0);
+            r = -(0.05f * velMag - lbl_803E7EE0);
             damp = (damp > r) ? damp : r;
             obj->anim.velocityX = obj->anim.velocityX * powfBitEstimate(damp, dt);
             obj->anim.velocityZ = obj->anim.velocityZ * powfBitEstimate(damp, dt);
         }
     }
-    r = interpolate(pushX - ((PlayerState*)state)->pushVelX, lbl_803E7FCC, timeDelta);
+    r = interpolate(pushX - ((PlayerState*)state)->pushVelX, 0.02f, timeDelta);
     ((PlayerState*)state)->pushVelX = ((PlayerState*)state)->pushVelX + r;
-    r = interpolate(pushZ - ((PlayerState*)state)->pushVelZ, lbl_803E7FCC, timeDelta);
+    r = interpolate(pushZ - ((PlayerState*)state)->pushVelZ, 0.02f, timeDelta);
     ((PlayerState*)state)->pushVelZ = ((PlayerState*)state)->pushVelZ + r;
     if (found == 0)
     {
-        ((PlayerState*)state)->pushVelX = ((PlayerState*)state)->pushVelX * powfBitEstimate(lbl_803E7FF4, timeDelta);
-        ((PlayerState*)state)->pushVelZ = ((PlayerState*)state)->pushVelZ * powfBitEstimate(lbl_803E7FF4, timeDelta);
+        ((PlayerState*)state)->pushVelX = ((PlayerState*)state)->pushVelX * powfBitEstimate(0.9f, timeDelta);
+        ((PlayerState*)state)->pushVelZ = ((PlayerState*)state)->pushVelZ * powfBitEstimate(0.9f, timeDelta);
     }
-    if (((PlayerState*)state)->pushVelX > lbl_803E7FEC && ((PlayerState*)state)->pushVelX < lbl_803E7EF8)
+    if (((PlayerState*)state)->pushVelX > -0.01f && ((PlayerState*)state)->pushVelX < 0.01f)
     {
         ((PlayerState*)state)->pushVelX = lbl_803E7EA4;
     }
-    if (((PlayerState*)state)->pushVelZ > lbl_803E7FEC && ((PlayerState*)state)->pushVelZ < lbl_803E7EF8)
+    if (((PlayerState*)state)->pushVelZ > -0.01f && ((PlayerState*)state)->pushVelZ < 0.01f)
     {
         ((PlayerState*)state)->pushVelZ = lbl_803E7EA4;
     }

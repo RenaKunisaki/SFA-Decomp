@@ -91,7 +91,6 @@ int lbl_803DB620 = -1;
 s8 gMapLayerOffsets[8] = {0, -2, -1, 1, 2, 0, 0, 0};
 f32 gMotionBlurAmount = 0.5f;
 extern int gMapBlockCellEntryTables[5];
-extern f32 lbl_803DEBCC;
 
 f32 gMapSavedPlayerOffsetX;
 f32 gMapSavedPlayerOffsetZ;
@@ -1221,7 +1220,6 @@ int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type)
     return 0;
 }
 
-extern f32 lbl_803DEBC8;
 
 void mapTextureOverrideSetValue(int type, Texture* texture, int frame)
 {
@@ -1241,7 +1239,7 @@ void mapTextureOverrideSetValue(int type, Texture* texture, int frame)
 void mapTextureScrollGetOffset(int idx, float* outX, float* outY)
 {
     f32 divisor;
-    *outX = gMapTextureScrolls[idx].offsetX / (divisor = lbl_803DEBC8);
+    *outX = gMapTextureScrolls[idx].offsetX / (divisor = 1048576.0f);
     *outY = gMapTextureScrolls[idx].offsetY / divisor;
 }
 
@@ -1387,7 +1385,7 @@ int mapTextureScrollAcquire(int xStep, int yStep, int texWidthFixed, int texHeig
     entry = &base[slot];
     entry->xStep = (s16)((xStep << 16) / (texWidthFixed >> 6));
     entry->yStep = (s16)((yStep << 16) / (texHeightFixed >> 6));
-    init = lbl_803DEBCC;
+    init = 0.0f;
     entry->offsetX = init;
     entry->offsetY = init;
     entry->refCount += 1;
@@ -1579,8 +1577,8 @@ void unloadMap(void)
     (*gCheckpointInterface)->reset();
     (*gRomCurveInterface)->initialise();
     gShaderRomListSlotCount = 0;
-    playerMapOffsetX = lbl_803DEBCC;
-    playerMapOffsetZ = lbl_803DEBCC;
+    playerMapOffsetX = 0.0f;
+    playerMapOffsetZ = 0.0f;
     voxmaps_resetLoadedMaps();
     GameUI_releaseMenuResources();
     minimapFreeTexture();
@@ -1779,7 +1777,7 @@ void beginLoadingMap(void)
     gMapLoadDeferred = 0;
     bEnableBlurFilter = 0;
     bEnableMotionBlur = 0;
-    gMotionBlurAmount = lbl_803DEBCC;
+    gMotionBlurAmount = 0.0f;
     gHeatEffectFadeDirection = -1;
     setSaveGameLoadingFlag();
     positionZ = characterPosition[2];
@@ -1838,7 +1836,7 @@ void beginLoadingMap(void)
         }
         skySetSlotFlag80(1, (*(u8*)(environmentState + 0x40) & 2) ? 1 : 0);
         skySetSlotFlag80(2, (*(u8*)(environmentState + 0x40) & 4) ? 1 : 0);
-        skySetLightIndex((*(u8*)(environmentState + 0x40) & 0x10) ? 1 : 0, lbl_803DEBCC);
+        skySetLightIndex((*(u8*)(environmentState + 0x40) & 0x10) ? 1 : 0, 0.0f);
         if (*(u8*)(environmentState + 0x40) & 1)
             enabled = 1;
         else
@@ -1878,12 +1876,12 @@ void beginLoadingMap(void)
         else
             gHeatEffectFadeDirection = -1;
         *(int*)(buf + 0x30) = 0;
-        *(f32*)(buf + 0xc) = lbl_803DEBCC;
-        *(f32*)(buf + 0x10) = lbl_803DEBCC;
-        *(f32*)(buf + 0x14) = lbl_803DEBCC;
-        *(f32*)(buf + 0x18) = lbl_803DEBCC;
-        *(f32*)(buf + 0x1c) = lbl_803DEBCC;
-        *(f32*)(buf + 0x20) = lbl_803DEBCC;
+        *(f32*)(buf + 0xc) = 0.0f;
+        *(f32*)(buf + 0x10) = 0.0f;
+        *(f32*)(buf + 0x14) = 0.0f;
+        *(f32*)(buf + 0x18) = 0.0f;
+        *(f32*)(buf + 0x1c) = 0.0f;
+        *(f32*)(buf + 0x20) = 0.0f;
         {
             s16 a1 = *(s16*)(environmentState + 0xe);
             if (a1 != -1)
@@ -3104,7 +3102,7 @@ int mapGetRomListAndOffsets(int p1, int flag)
         ((MapRomListPage*)gCurRomListPage)->loadedObjectBits[i] = 0;
     }
     {
-        f32 fillVal = lbl_803DEBCC;
+        f32 fillVal = 0.0f;
         ((MapRomListPage*)gCurRomListPage)->worldX = fillVal;
         ((MapRomListPage*)gCurRomListPage)->worldZ = fillVal;
     }
@@ -3118,8 +3116,6 @@ int mapGetRomListAndOffsets(int p1, int flag)
     return (int)gCurRomListPage;
 }
 
-extern f32 lbl_803DEBEC;
-extern f32 lbl_803DEBF0;
 extern FrustumPlane gViewFrustumPlanes[];
 
 int ViewFrustum_IsSphereVisible(float* center, float radius)
@@ -3140,10 +3136,6 @@ int ViewFrustum_IsSphereVisible(float* center, float radius)
     return 1;
 }
 
-extern f32 lbl_803DEBB8;
-extern f32 lbl_803DEBD4;
-extern f32 lbl_803DEBD8;
-extern f32 lbl_803DEBDC;
 
 int objUpdateOpacity(GameObject* obj)
 {
@@ -3175,7 +3167,7 @@ int objUpdateOpacity(GameObject* obj)
     else
     {
         range = obj->anim.cullDistance2;
-        if (range < lbl_803DEBB8)
+        if (range < 40.0f)
         {
             obj->anim.renderAlpha = 0;
             return 0;
@@ -3197,12 +3189,12 @@ int objUpdateOpacity(GameObject* obj)
             return 0;
         }
         alpha = 255;
-        near = range - lbl_803DEBD4;
+        near = range - 100.0f;
         if (d > near)
         {
             range = range - near;
             d = d - near;
-            alpha = (int)(lbl_803DEBD8 * (lbl_803DEBDC - d / range));
+            alpha = (int)(255.0f * (1.0f - d / range));
         }
         Camera_ProjectWorldSphere(obj->anim.worldPosX - playerMapOffsetX,
                                   obj->anim.worldPosY,
@@ -3350,8 +3342,8 @@ int mapBlockIsInViewFrustum(int bx, int bz, MapBlockData* block)
     }
     else
     {
-        y0 = lbl_803DEBEC;
-        y1 = lbl_803DEBF0;
+        y0 = -100000.0f;
+        y1 = 100000.0f;
     }
     plane = gViewFrustumPlanes;
     for (i = 0; i < FRUSTUM_PLANE_COUNT; i++)
@@ -3383,7 +3375,7 @@ int mapBlockIsInViewFrustum(int bx, int bz, MapBlockData* block)
             else
                 v += c2;
             v += p3;
-            if (v > lbl_803DEBCC)
+            if (v > 0.0f)
                 hit = 1;
             j++;
         }
@@ -3403,7 +3395,7 @@ void frustumPlanes_updateAabbCornerIndices(FrustumPlane* planes, int count)
 
     for (k = 0; k < count; k++)
     {
-        best = lbl_803DEBCC;
+        best = 0.0f;
         j = 0;
         while (j < 24)
         {
@@ -3448,7 +3440,6 @@ void frustumPlanes_updateAabbCornerIndices(FrustumPlane* planes, int count)
 }
 
 extern FrustumPlane gPlayerRelativeFrustumPlanes[];
-extern f32 lbl_803DEBF4;
 void buildPlayerRelativeFrustumPlanes(void)
 {
     Vec tmp;
@@ -3478,7 +3469,7 @@ void buildPlayerRelativeFrustumPlanes(void)
     }
     else
     {
-        clipDist = lbl_803DEBF4;
+        clipDist = -100.0f;
     }
     scales.v[0] = clipDist;
 

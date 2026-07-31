@@ -493,7 +493,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
     f32 e710;
 
     byteOff = 0;
-    spaceExtra = lbl_803DE704;
+    spaceExtra = 0.0f;
     if (gameTextCharset == 2)
     {
         glyphLang = 6;
@@ -611,15 +611,15 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
             switch (win->alignment)
             {
             case TEXT_ALIGN_LEFT:
-                spaceExtra = lbl_803DE704;
+                spaceExtra = 0.0f;
                 break;
             case TEXT_ALIGN_RIGHT:
-                spaceExtra = lbl_803DE704;
+                spaceExtra = 0.0f;
                 gameTextMeasureString(p, gGameTextScale, &measW, NULL, 0, 0, -1);
                 x = win->x + (win->width - measW);
                 break;
             case TEXT_ALIGN_CENTER:
-                spaceExtra = lbl_803DE704;
+                spaceExtra = 0.0f;
                 gameTextMeasureString(p, gGameTextScale, &measW, NULL, 0, 0, -1);
                 x = win->width - measW;
                 x = x * lbl_803DE70C + win->x;
@@ -660,7 +660,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
 
         if (ch == 0xa)
         {
-            x = lbl_803DE704;
+            x = 0.0f;
             y = y + lineH;
             continue;
         }
@@ -682,15 +682,15 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
         fy0 = e710 * fy0;
         fx1 = e710 * ((f32)(u32)g->width * gGameTextScale) + fx0;
         fy1 = e710 * ((f32)(u32)g->height * gGameTextScale) + fy0;
-        if (fx0 < lbl_803DE704 && fx1 > lbl_803DE704)
+        if (fx0 < 0.0f && fx1 > 0.0f)
         {
             u0 = lbl_803DE714 * -fx0 + u0;
-            fx0 = lbl_803DE704;
+            fx0 = 0.0f;
         }
-        if (fy0 < 0.0f && fy1 > lbl_803DE704)
+        if (fy0 < 0.0f && fy1 > 0.0f)
         {
             v0 = lbl_803DE714 * -fy0 + v0;
-            fy0 = lbl_803DE704;
+            fy0 = 0.0f;
         }
 
         if (gGameTextMeasureOnly != 0)
@@ -914,7 +914,7 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
     int params[8];
 
     byteOff = 0;
-    width = lbl_803DE704;
+    width = 0.0f;
     if (str == NULL)
     {
         return;
@@ -1000,7 +1000,7 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
     }
     if (outZero != NULL)
     {
-        *outZero = lbl_803DE704;
+        *outZero = 0.0f;
     }
 }
 

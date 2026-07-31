@@ -362,8 +362,6 @@ extern const f32 lbl_803E1E48;
 extern const f32 lbl_803E1E4C;
 extern const f32 lbl_803E1E50;
 extern const f32 lbl_803E1E54;
-extern const f32 lbl_803E1E58;
-extern const f32 lbl_803E1E5C;
 extern const f32 lbl_803E2024;
 extern const f32 lbl_803E2040;
 extern const f32 lbl_803E2044;
@@ -463,7 +461,6 @@ extern const f32 gViewFinderDepthMax;
 extern f32 gViewFinderBamToDeg;
 extern const double lbl_803E1F50;
 extern const double lbl_803E1F58;
-extern const double lbl_803E1F60;
 extern const double lbl_803E1F68;
 extern const double lbl_803E1F80;
 extern u16 gViewFinderCamAngle;
@@ -616,7 +613,6 @@ extern u8 gNpcDialoguePhraseState[0x18];
 extern const f32 lbl_803E205C;
 extern const f32 lbl_803E2060;
 extern const f32 lbl_803E2064;
-extern const f32 lbl_803E2068;
 extern f32 gPauseMenuHoloTime;
 extern f32 gPauseMenuHoloRotXAmp;
 extern u16 gPauseMenuHoloRotZ;
@@ -641,7 +637,6 @@ typedef struct SmallText
 
 extern const SmallText lbl_803E1E04;
 extern const double lbl_803E2070;
-extern const double lbl_803E2080;
 extern const double lbl_803E2088;
 extern const f32 lbl_803E2098;
 extern const f32 lbl_803E209C;
@@ -677,7 +672,6 @@ extern TaskHintEntry gTaskHintTable[GAMEUI_TASK_HINT_COUNT];
 extern f32 gPauseMenuMapSwivelVel;
 extern f32 gPauseMenuMapSwivelWrapMax;
 extern f32 gPauseMenuMapSwivelWrapMin;
-extern const f64 lbl_803E2160;
 extern int lbl_803DD81C;
 extern u8 gPauseMenuCloseAnimIndex;
 extern const f32 lbl_803E213C;
@@ -864,7 +858,7 @@ void gameUiLoadResources(void)
             communicatorObjects->objects[1]->anim.localPosY = lbl_803E1E54;
             communicatorObjects->objects[1]->anim.localPosZ = lbl_803E1E4C;
             communicatorObjects->objects[1]->anim.rotX = 0x7447;
-            communicatorObjects->objects[1]->anim.rootMotionScale = lbl_803E1E58;
+            communicatorObjects->objects[1]->anim.rootMotionScale = 0.01f;
         }
 
         object = objSetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_COMM_CUBE), 4, -1, -1, NULL);
@@ -885,7 +879,7 @@ void gameUiLoadResources(void)
         ids = &gGameUiHudAnimObjIds[4];
         menuObjects = (GameObject**)(base + 0xc30);
         z = lbl_803E1E3C;
-        y = lbl_803E1E5C;
+        y = -5.0f;
         addressLimit = 0x90000000;
         for (; j < 6; j++)
         {
@@ -1937,7 +1931,7 @@ void drawViewFinderHud(void)
             fadeAmount = viewScale - lbl_803E1F50;
             t = (int)(fadeAmount * lbl_803E1F58);
             minorLabelAlpha = (t < 0) ? 0 : ((t > 0x8c) ? 0x8c : t);
-            fadeAmount = viewScale - lbl_803E1F60;
+            fadeAmount = viewScale - 1.0;
             t = (int)(fadeAmount * lbl_803E1F68);
             majorLabelAlpha = (t < 0) ? 0 : ((t > 0xc8) ? 0xc8 : t);
             headingIndex = (int)((f32)gViewFinderCamAngle / gViewFinderBamToDeg);
@@ -4607,7 +4601,7 @@ void drawArwingHud(int unused1, int unused2, int unused3)
         }
         if (((GameObject*)arwing)->anim.mapEventSlot != 0x26)
         {
-            drawTexture(hudTextures[61], lbl_803E2068, 31.0f, (int)arwingHudAlpha & 0xff, 0x100);
+            drawTexture(hudTextures[61], 6e+02f, 31.0f, (int)arwingHudAlpha & 0xff, 0x100);
             for (i = 0; (int)(i & 0xff) < rings; i++)
             {
                 drawTexture(hudTextures[60], (f32)(int)(0x244 - (i & 0xff) * 0x14), 30.0f, (int)arwingHudAlpha & 0xff,
@@ -4684,7 +4678,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         gPauseMenuHoloRotX = (u16)(gPauseMenuHoloRotXAmp * mathCosfHighPrecision(gPauseMenuHoloTime * gPauseMenuHoloWobbleFreqX) + gPauseMenuHoloRotXBase);
         gPauseMenuHoloRotY = (u16)(gPauseMenuHoloRotYAmp * mathCosfHighPrecision(gPauseMenuHoloTime * gPauseMenuHoloWobbleFreqY) + gPauseMenuMapSwivelAngle);
         gPauseMenuHoloScale = (f32)(lbl_803E2070 * gPauseMenuOpenAmount);
-        gPauseMenuHoloPosY = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - gPauseMenuOpenAmount));
+        gPauseMenuHoloPosY = (f32)(0.3f - lbl_803E2070 * (1.0 - gPauseMenuOpenAmount));
         pauseMenuSetHoloTransform(lbl_803E1E3C, gPauseMenuHoloPosY, gPauseMenuHoloPosZ, gPauseMenuHoloScale, gPauseMenuHoloRotZ, gPauseMenuHoloRotX,
                     gPauseMenuHoloRotY);
         model = Obj_GetActiveModel(gGameUiCommCubeObjects[0]);
@@ -4692,7 +4686,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         model->bufferFlags &= ~0x8;
         panelAlpha = (s32)((f32)(s16)alpha * gPauseMenuMapSwivelCos);
         {
-            f64 tmp = (double)(s16)panelAlpha * (lbl_803E2080 - (double)gPauseMenuSlideOut);
+            f64 tmp = (double)(s16)panelAlpha * (512.0 - (double)gPauseMenuSlideOut);
             x = (s32)(tmp * lbl_803E2088);
         }
         timer = gameTextGetTimer();
@@ -4751,7 +4745,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         gPauseMenuHoloRotX = (u16)(gPauseMenuHoloRotXAmp * mathCosfHighPrecision(gPauseMenuHoloTime * gPauseMenuHoloWobbleFreqX) + gPauseMenuHoloRotXBase);
         gPauseMenuHoloRotY = (u16)(gPauseMenuHoloRotYAmp * mathCosfHighPrecision(gPauseMenuHoloTime * gPauseMenuHoloWobbleFreqY) + gPauseMenuMapSwivelAngle);
         gPauseMenuHoloScale = (f32)(lbl_803E2070 * gPauseMenuOpenAmount);
-        gPauseMenuHoloPosY = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - gPauseMenuOpenAmount));
+        gPauseMenuHoloPosY = (f32)(0.3f - lbl_803E2070 * (1.0 - gPauseMenuOpenAmount));
         pauseMenuSetHoloTransform(lbl_803E1E3C, gPauseMenuHoloPosY, gPauseMenuHoloPosZ, gPauseMenuHoloScale, gPauseMenuHoloRotZ, gPauseMenuHoloRotX,
                     gPauseMenuHoloRotY);
         model = Obj_GetActiveModel(gGameUiCommCubeObjects[0]);
@@ -4831,7 +4825,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         gPauseMenuHoloRotX = (u16)(gPauseMenuHoloRotXAmp * mathCosfHighPrecision(gPauseMenuHoloTime * gPauseMenuHoloWobbleFreqX) + gPauseMenuHoloRotXBase);
         gPauseMenuHoloRotY = (u16)(gPauseMenuHoloRotYAmp * mathCosfHighPrecision(gPauseMenuHoloTime * gPauseMenuHoloWobbleFreqY) + gPauseMenuMapSwivelAngle);
         gPauseMenuHoloScale = (f32)(lbl_803E2070 * gPauseMenuOpenAmount);
-        gPauseMenuHoloPosY = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - gPauseMenuOpenAmount));
+        gPauseMenuHoloPosY = (f32)(0.3f - lbl_803E2070 * (1.0 - gPauseMenuOpenAmount));
         pauseMenuSetHoloTransform(lbl_803E1E3C, gPauseMenuHoloPosY, gPauseMenuHoloPosZ, gPauseMenuHoloScale, gPauseMenuHoloRotZ, gPauseMenuHoloRotX,
                     gPauseMenuHoloRotY);
         model = Obj_GetActiveModel(gGameUiCommCubeObjects[0]);
@@ -4941,7 +4935,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         gPauseMenuHoloRotX = (u16)(gPauseMenuHoloRotXAmp * mathCosfHighPrecision(gPauseMenuHoloTime * gPauseMenuHoloWobbleFreqX) + gPauseMenuHoloRotXBase);
         gPauseMenuHoloRotY = (u16)(gPauseMenuHoloRotYAmp * mathCosfHighPrecision(gPauseMenuHoloTime * gPauseMenuHoloWobbleFreqY) + gPauseMenuMapSwivelAngle);
         gPauseMenuHoloScale = (f32)(lbl_803E2070 * gPauseMenuOpenAmount);
-        gPauseMenuHoloPosY = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - gPauseMenuOpenAmount));
+        gPauseMenuHoloPosY = (f32)(0.3f - lbl_803E2070 * (1.0 - gPauseMenuOpenAmount));
         pauseMenuSetHoloTransform(lbl_803E1E3C, gPauseMenuHoloPosY, gPauseMenuHoloPosZ, gPauseMenuHoloScale, gPauseMenuHoloRotZ, gPauseMenuHoloRotX,
                     gPauseMenuHoloRotY);
         model = Obj_GetActiveModel(gGameUiCommCubeObjects[0]);
@@ -5050,7 +5044,7 @@ void pauseMenuDrawStatusPage(GameObject* player)
     gPauseMenuHoloRotX = (u16)(gPauseMenuHoloRotXAmp * mathCosfHighPrecision(gPauseMenuHoloTime * gPauseMenuHoloWobbleFreqX) + gPauseMenuHoloRotXBase);
     gPauseMenuHoloRotY = (u16)(gPauseMenuHoloRotYAmp * mathCosfHighPrecision(gPauseMenuHoloTime * gPauseMenuHoloWobbleFreqY) + gPauseMenuMapSwivelAngle);
     gPauseMenuHoloScale = lbl_803E2070 * gPauseMenuOpenAmount;
-    gPauseMenuHoloPosY = 0.3f - lbl_803E2070 * (lbl_803E1F60 - gPauseMenuOpenAmount);
+    gPauseMenuHoloPosY = 0.3f - lbl_803E2070 * (1.0 - gPauseMenuOpenAmount);
     pauseMenuSetHoloTransform(lbl_803E1E3C, gPauseMenuHoloPosY, gPauseMenuHoloPosZ, gPauseMenuHoloScale, gPauseMenuHoloRotZ, gPauseMenuHoloRotX,
                 gPauseMenuHoloRotY);
     model = Obj_GetActiveModel(gGameUiCommCubeObjects[0]);
@@ -5077,7 +5071,7 @@ void pauseMenuDrawStatusPage(GameObject* player)
 
     ty1 = (s32)((f32)(s16)alpha * gPauseMenuMapSwivelCos);
     {
-        f64 tmp = (double)(s16)ty1 * (lbl_803E2080 - (double)gPauseMenuSlideOut);
+        f64 tmp = (double)(s16)ty1 * (512.0 - (double)gPauseMenuSlideOut);
         ty = (s32)(tmp * lbl_803E2088);
     }
     pauseMenuDrawSideRails(ty);
@@ -5114,7 +5108,7 @@ void pauseMenuDrawStatusPage(GameObject* player)
         playRatio = SaveGame_getPlayTime() / 60.0f;
         ty2 = (s32)((f32)(s16)ty1 * gPauseMenuMapSwivelCos);
         {
-            f64 tmp = (double)(s16)ty2 * (lbl_803E2080 - (double)gPauseMenuSlideOut);
+            f64 tmp = (double)(s16)ty2 * (512.0 - (double)gPauseMenuSlideOut);
             ty = (s32)(tmp * lbl_803E2088);
         }
         pauseMenuDrawTaskHintPanel(player, ty);
@@ -5466,7 +5460,7 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag)
     f64 k2108;
     f64 t;
 
-    t = (f64)(s16)alpha * (lbl_803E2080 - gPauseMenuSlideOut);
+    t = (f64)(s16)alpha * (512.0 - gPauseMenuSlideOut);
     scaled = (s32)(t * lbl_803E2088);
     if (gPauseMenuActiveGrid[i].id < 0)
     {
@@ -5507,7 +5501,7 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag)
             f32 dy;
             f32 pr;
             v = alpha;
-            spd = (f32)(spd * (lbl_803E1F60 + gPauseMenuSlideOut / lbl_803E2118));
+            spd = (f32)(spd * (1.0 + gPauseMenuSlideOut / lbl_803E2118));
             spd += 20.0f * mathSinf(lbl_803E1EC8 * (500.0f * gPauseMenuHoloTime) / lbl_803E1E94) + 40.0f;
             dx = lbl_803E1F34 - x;
             pr = dx * gPauseMenuSlideOut;
@@ -6374,7 +6368,7 @@ void pauseMenuUpdate(void)
             break;
         }
         case 3:
-            if (gPauseMenuOpenAmount > lbl_803E2160 || gPauseMenuOpenVel > lbl_803E2160)
+            if (gPauseMenuOpenAmount > 0.0 || gPauseMenuOpenVel > 0.0)
             {
                 int r = pauseMenuUpdateMapScroll();
                 if (gPauseMenuMapBackSide != 0)
@@ -6388,7 +6382,7 @@ void pauseMenuUpdate(void)
                 if (gPauseMenuMapBackSide == 0)
                 {
                     hintTextGetAvailableMaps(hintBuf);
-                    if ((u8)r != 0 || (lbl_803E2160 == gPauseMenuOpenAmount && gPauseMenuOpenVel > lbl_803E2160))
+                    if ((u8)r != 0 || (0.0 == gPauseMenuOpenAmount && gPauseMenuOpenVel > 0.0))
                     {
                         gPauseMenuGridCursor = gPauseMenuPlayerMapCell;
                     }
@@ -6455,7 +6449,7 @@ void pauseMenuUpdate(void)
             }
             break;
         case 5:
-            if (gPauseMenuOpenAmount > lbl_803E2160 || gPauseMenuOpenVel > lbl_803E2160)
+            if (gPauseMenuOpenAmount > 0.0 || gPauseMenuOpenVel > 0.0)
             {
                 int r = pauseMenuUpdateMapScroll();
                 if (gPauseMenuMapBackSide != 0)
@@ -6542,7 +6536,7 @@ void pauseMenuUpdate(void)
             }
             break;
         case 4:
-            if (gPauseMenuOpenAmount > lbl_803E2160 || gPauseMenuOpenVel > lbl_803E2160)
+            if (gPauseMenuOpenAmount > 0.0 || gPauseMenuOpenVel > 0.0)
             {
                 gLastTaskHintId = getNextTaskHintText();
                 gHudCommAlertTimer = 0;
@@ -6569,12 +6563,12 @@ void pauseMenuUpdate(void)
         case 8:
         case 9:
         case 0xa:
-            if (gPauseMenuOpenAmount > lbl_803E2160 || gPauseMenuOpenVel > lbl_803E2160)
+            if (gPauseMenuOpenAmount > 0.0 || gPauseMenuOpenVel > 0.0)
             {
                 gPauseMenuActiveGrid = tbl->gridF10;
                 pauseMenuRunSubmenu(0);
                 pauseMenuUpdateFadeAndBack();
-                if ((btn & PAD_BUTTON_A) && gPauseMenuOpenVel > lbl_803E2160)
+                if ((btn & PAD_BUTTON_A) && gPauseMenuOpenVel > 0.0)
                 {
                     Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up);
                     buttonDisable(0, PAD_BUTTON_A);
@@ -6662,7 +6656,7 @@ void pauseMenuUpdate(void)
             }
             break;
         case 0xb:
-            if (gPauseMenuOpenAmount > lbl_803E2160 || gPauseMenuOpenVel > lbl_803E2160)
+            if (gPauseMenuOpenAmount > 0.0 || gPauseMenuOpenVel > 0.0)
             {
                 int have = mainGetBit(GAMEBIT_ITEM_FuelCell_Count);
                 gPauseMenuTokenPromptState = 0;
@@ -6694,7 +6688,7 @@ void pauseMenuUpdate(void)
                         }
                     }
                 }
-                if ((btn & PAD_BUTTON_A) && gPauseMenuOpenVel > lbl_803E2160 && gPauseMenuOpenAmount >= lbl_803E1F60)
+                if ((btn & PAD_BUTTON_A) && gPauseMenuOpenVel > 0.0 && gPauseMenuOpenAmount >= 1.0)
                 {
                     if (gPauseMenuTokenPromptState == 2)
                     {
@@ -6706,7 +6700,7 @@ void pauseMenuUpdate(void)
                     buttonDisable(0, PAD_BUTTON_A);
                     gPauseMenuOpenVel = (-0.1f);
                 }
-                else if ((btn & PAD_BUTTON_B) && gPauseMenuOpenVel > lbl_803E2160 && gPauseMenuOpenAmount >= lbl_803E1F60)
+                else if ((btn & PAD_BUTTON_B) && gPauseMenuOpenVel > 0.0 && gPauseMenuOpenAmount >= 1.0)
                 {
                     buttonDisable(0, PAD_BUTTON_B);
                     gPauseMenuOpenVel = (-0.1f);
@@ -6836,7 +6830,7 @@ void pauseMenuUpdateFadeAndBack(void)
     gPauseMenuOpenAmount = (gPauseMenuOpenAmount > 0.0) ? gPauseMenuOpenAmount : 0.0;
     gPauseMenuOpenAmount = (gPauseMenuOpenAmount < 1.0) ? gPauseMenuOpenAmount : 1.0;
 
-    if (((int)pauseMenuState >= 0xc || (int)pauseMenuState < 8) && ((int)btn & PAD_BUTTON_B) && speed > lbl_803E2160)
+    if (((int)pauseMenuState >= 0xc || (int)pauseMenuState < 8) && ((int)btn & PAD_BUTTON_B) && speed > 0.0)
     {
         u8 i;
         buttonDisable(0, PAD_BUTTON_B);
@@ -7027,7 +7021,7 @@ void pauseMenuRunSubmenu(int p1)
             pauseMenuSetupTitle(gPauseMenuActiveGrid[gPauseMenuGridCursor].f18, gPauseMenuActiveGrid[gPauseMenuGridCursor].f1c, 2, 0);
             return;
         }
-        if (sel >= 0 || (u8)p1 != 0 || (lbl_803E2160 == gPauseMenuOpenAmount && gPauseMenuOpenVel > lbl_803E2160))
+        if (sel >= 0 || (u8)p1 != 0 || (0.0 == gPauseMenuOpenAmount && gPauseMenuOpenVel > 0.0))
         {
             if (gPauseMenuActiveGrid[gPauseMenuGridCursor].f18 != 0)
             {
