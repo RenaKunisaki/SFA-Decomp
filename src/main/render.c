@@ -405,8 +405,8 @@ static inline void render_writePackedU16(RenderPackedAddress address, u16 value)
 void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s16* outRotation)
 {
     f32 framePhase = anim->framePhase;
-    u64 end;
     u64 outPos = RENDER_PACKED_ADDRESS(outRotation);
+    u64 end;
     int curB = (u16)anim->frameStreamStride;
     u64 posA = RENDER_PACKED_ADDRESS(anim->frameStreamCursor);
     u64 tp = RENDER_PACKED_ADDRESS(anim->moveFrameData) + 4;
@@ -440,7 +440,7 @@ void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s
         s64 h = render_readPackedU16(tp);
         u64 nib = h & 0xf;
         u32 hw = h;
-        u64 masked = h & maskConst;
+        u64 masked = (u64)hw & maskConst;
 
         if (nib != 0)
         {
