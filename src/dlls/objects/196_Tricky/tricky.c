@@ -6460,9 +6460,9 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
     found = NULL;
     if ((((TrickyState*)state)->stateFlags & 0x10) == 0)
     {
-        if (state[0x7d0] != 0)
+        if (((TrickyState*)state)->pendingFollowRequest != 0)
         {
-            switch ((int)state[0x7d0])
+            switch ((int)((TrickyState*)state)->pendingFollowRequest)
             {
             case 1:
             {
@@ -6489,7 +6489,7 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
                     }
                     else
                     {
-                        other[0x7d0] = 1;
+                        ((TrickyState*)other)->pendingFollowRequest = 1;
                         ((TrickyState*)other)->pendingFollowObj = target;
                         ((TrickyState*)other)->stateFlags |= 0x10000LL;
                     }
@@ -6557,17 +6557,17 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
             default:
                 break;
             }
-            state[0x7d0] = 0;
+            ((TrickyState*)state)->pendingFollowRequest = 0;
             return;
         }
         found = Tricky_findNearestGroup4BObject(obj, (TrickyState*)state);
     }
     if (found != NULL)
     {
-        state[0x374] = 2;
+        ((TrickyState*)state)->groundSnapCounter = 2;
         (*gPathControlInterface)->attachObject(obj, &((TrickyState*)state)->pathControlFlags);
-        state[8] = 1;
-        state[0xa] = 0;
+        ((TrickyState*)state)->stateIndex = 1;
+        ((TrickyState*)state)->substate = 0;
         z = 0.0f;
         ((TrickyState*)state)->cooldownA = z;
         ((TrickyState*)state)->cooldownB.f = z;
