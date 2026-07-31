@@ -945,7 +945,7 @@ void objRenderAttachment(u8* obj, int* p2)
     }
 }
 
-void objSetupLightChannels(u8* model, u8* obj)
+static void objSetupLightChannels(u8* model, u8* obj)
 {
     int t2;
     int t10;
@@ -1124,29 +1124,29 @@ extern s32 gModelMtxCacheState;
 extern u8 gObjGxPosMtxIdTable[12];
 
 
-void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
+static void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
 {
     char* cache = (char*)getCache();
     if (gModelMtxCacheState == 1)
     {
-        char* c2 = (char*)getCache();
-        char* src;
-        char* dst;
+        char* cacheBase = (char*)getCache();
+        char* sourceMtx;
+        char* posMtx;
         int i;
         obj = ((ModelFileHeader*)obj)->jointCount + ((ModelFileHeader*)obj)->extraJointCount;
-        src = c2 + 0x2700;
-        dst = c2;
+        sourceMtx = cacheBase + 0x2700;
+        posMtx = cacheBase;
         cacheQueueWait(0);
         for (i = 0; i < obj; i++)
         {
-            PSMTXConcat((MtxPtr)mtx, (MtxPtr)(f32*)src, (MtxPtr)(f32*)dst);
-            src += 0x40;
-            dst += 0x30;
+            PSMTXConcat((MtxPtr)mtx, (MtxPtr)(f32*)sourceMtx, (MtxPtr)(f32*)posMtx);
+            sourceMtx += 0x40;
+            posMtx += 0x30;
         }
         gModelMtxCacheState = 2;
     }
     {
-        u8* tbl[1];
+        u8* posMtxIds[1];
         int i;
         int count;
         f32 tmp[12];
@@ -1163,7 +1163,7 @@ void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
             count = (w >> (pos & 7)) & 0xf;
         }
         i = 0;
-        tbl[0] = gObjGxPosMtxIdTable;
+        posMtxIds[0] = gObjGxPosMtxIdTable;
         for (; i < count; i++)
         {
             int idx;
@@ -1180,23 +1180,23 @@ void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
             }
             if (gModelMtxCacheState == 2)
             {
-                GXLoadPosMtxImm((const f32 (*)[4])(cache + idx * 0x30), *tbl[0]);
+                GXLoadPosMtxImm((const f32 (*)[4])(cache + idx * 0x30), *posMtxIds[0]);
             }
             else
             {
                 PSMTXConcat((MtxPtr)mtx, (MtxPtr)(f32*)ObjModel_GetJointMatrix((u8*)model, idx), (MtxPtr)tmp);
-                GXLoadPosMtxImm((const f32 (*)[4])tmp, *tbl[0]);
+                GXLoadPosMtxImm((const f32 (*)[4])tmp, *posMtxIds[0]);
             }
-            tbl[0]++;
+            posMtxIds[0]++;
         }
     }
 }
 
-void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8 nrm, u8 tex, u8 skip)
+static void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8 nrm, u8 tex, u8 skip)
 {
-    u8* tbl[1];
+    u8* posMtxIds[1];
     char* cache;
-    tbl[0] = gObjGxPosMtxIdTable;
+    posMtxIds[0] = gObjGxPosMtxIdTable;
     cache = (char*)getCache();
     if (gModelMtxCacheState == 1)
     {
@@ -1206,24 +1206,24 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
         }
         else
         {
-            char* c2 = (char*)getCache();
-            char* dst;
+            char* cacheBase = (char*)getCache();
+            char* posMtx;
             int i;
             int total = hdr[0xf3] + hdr[0xf4];
-            hdr = (u8*)(c2 + 0x2700);
-            dst = c2;
+            hdr = (u8*)(cacheBase + 0x2700);
+            posMtx = cacheBase;
             cacheQueueWait(0);
             for (i = 0; i < total; i++)
             {
-                PSMTXConcat((MtxPtr)mtx, (MtxPtr)(f32*)hdr, (MtxPtr)(f32*)dst);
+                PSMTXConcat((MtxPtr)mtx, (MtxPtr)(f32*)hdr, (MtxPtr)(f32*)posMtx);
                 hdr += 0x40;
-                dst += 0x30;
+                posMtx += 0x30;
             }
             gModelMtxCacheState = 2;
         }
     }
     {
-        u8* tbl2;
+        u8* texMtxIds;
         int i;
         int count;
         f32 tmp[12];
@@ -1241,10 +1241,10 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
         }
         if (count < 0 || count > 20)
         {
-            OSReport((char*)&tbl[0][0x48], count);
+            OSReport((char*)&posMtxIds[0][0x48], count);
         }
         i = 0;
-        tbl2 = tbl[0] + 0xc;
+        texMtxIds = posMtxIds[0] + 0xc;
         for (; i < count; i++)
         {
             int idx;
@@ -1261,22 +1261,22 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
             }
             if (gModelMtxCacheState == 2)
             {
-                u8* pm = (u8*)(cache + idx * 0x30);
-                u8* nm = pm + 0x12c0;
-                GXLoadPosMtxImm((const f32 (*)[4])pm, *tbl[0]);
+                u8* posMtx = (u8*)(cache + idx * 0x30);
+                u8* normalMtx = posMtx + 0x12c0;
+                GXLoadPosMtxImm((const f32 (*)[4])posMtx, *posMtxIds[0]);
                 if (skip == 0 && tex != 0)
                 {
-                    GXLoadTexMtxImm((const f32 (*)[4])nm, *tbl2, 0);
+                    GXLoadTexMtxImm((const f32 (*)[4])normalMtx, *texMtxIds, 0);
                 }
                 if (skip == 0 && nrm != 0)
                 {
-                    GXLoadNrmMtxImm((const f32 (*)[4])nm, *tbl[0]);
+                    GXLoadNrmMtxImm((const f32 (*)[4])normalMtx, *posMtxIds[0]);
                 }
             }
             else
             {
                 PSMTXConcat((MtxPtr)mtx, (MtxPtr)(f32*)ObjModel_GetJointMatrix((u8*)model, idx), (MtxPtr)tmp);
-                GXLoadPosMtxImm((const f32 (*)[4])tmp, *tbl[0]);
+                GXLoadPosMtxImm((const f32 (*)[4])tmp, *posMtxIds[0]);
                 if (skip == 0 && (nrm != 0 || tex != 0))
                 {
                     tmp[3] = 0.0f;
@@ -1285,16 +1285,16 @@ void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8
                     PSMTXConcat((MtxPtr)tmp, (MtxPtr)m1, (MtxPtr)tmp);
                     if (tex != 0)
                     {
-                        GXLoadTexMtxImm((const f32 (*)[4])tmp, *tbl2, 0);
+                        GXLoadTexMtxImm((const f32 (*)[4])tmp, *texMtxIds, 0);
                     }
                     if (nrm != 0)
                     {
-                        GXLoadNrmMtxImm((const f32 (*)[4])tmp, *tbl[0]);
+                        GXLoadNrmMtxImm((const f32 (*)[4])tmp, *posMtxIds[0]);
                     }
                 }
             }
-            tbl[0]++;
-            tbl2++;
+            posMtxIds[0]++;
+            texMtxIds++;
         }
     }
 }
@@ -1364,9 +1364,9 @@ extern u8 gObjGxKColorCache[4];
 extern u8 gObjShadowColor[4];
 
 
-void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
-void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
-void objRenderChild(int* child, int* parent, u8 isShadow);
+static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
+static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
+static void objRenderChild(int* child, int* parent, u8 isShadow);
 
 extern volatile int gAssetLoadInFlightFlags;
 extern f32 lbl_803DEA4C;
@@ -1389,10 +1389,7 @@ extern f32 lbl_803DEA6C;
 extern u8 gObjGxPosMtxIdTable[12];
 
 
-void objSetupLightChannels(u8* model, u8* obj);
-void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx);
-void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* mtx, u8 nrm, u8 tex, u8 skip);
-void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
+static void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
 {
     u32 flags = 0;
     if (hdr[0xf3] > 1)
@@ -1440,150 +1437,155 @@ void ModelHeader_setupPosTexFmt(u8* hdr, int* model, MtxBitStream* bs, int p4)
     }
 }
 
-void modelRenderFn_setVtxDescr(u8* hdr, u8* m, u32* p3, MtxBitStream* bs, u8 p5, u8* out1, u8* out2)
+static void modelRenderFn_setVtxDescr(u8* modelHeader, u8* shader, u32* textureRefs,
+                                      MtxBitStream* bitStream, u8 passMask,
+                                      u8* usesNormalMatrix, u8* usesTextureMatrix)
 {
-    int next;
-    int back;
+    int nextMatrixAttr;
+    int previousMatrixAttr;
+    int textureCoordIndex;
+    int textureIndex16;
+
     GXClearVtxDesc();
-    if (((ModelFileHeader*)hdr)->jointCount > 1)
+    if (((ModelFileHeader*)modelHeader)->jointCount > 1)
     {
         GXSetVtxDesc(GX_VA_PNMTXIDX, GX_DIRECT);
-        next = 1;
-        back = 8;
-        if (p3[0] != 0 || p3[1] != 0)
+        nextMatrixAttr = 1;
+        previousMatrixAttr = 8;
+        if (textureRefs[0] != 0 || textureRefs[1] != 0)
         {
-            if (((Shader*)m)->auxTextureIndex != 0)
+            if (((Shader*)shader)->auxTextureIndex != 0)
             {
                 GXSetVtxDesc(GX_VA_TEX0MTXIDX, GX_DIRECT);
-                next = 3;
-                GXSetVtxDesc(GX_VA_TEX1MTXIDX, GX_DIRECT);
+                nextMatrixAttr = GX_VA_TEX1MTXIDX;
+                GXSetVtxDesc(nextMatrixAttr++, GX_DIRECT);
             }
-            GXSetVtxDesc(next++, GX_DIRECT);
+            GXSetVtxDesc(nextMatrixAttr++, GX_DIRECT);
         }
         {
             int i = 0;
-            for (; i < ((ModelFileHeader*)hdr)->texMtxCount; i++)
+            for (; i < ((ModelFileHeader*)modelHeader)->texMtxCount; i++)
             {
-                u8 use;
-                if (p5 == 4 && i == 0)
+                u8 useForwardAttr;
+                if (passMask == 4 && i == 0)
                 {
-                    int b;
-                    int a;
+                    int projectionModeB;
+                    int projectionModeA;
                     if (lbl_803DCC5C != 0 &&
-                        (modelLightStruct_getProjectionTevModes(lbl_803DCC64, &a, &b), a == 0))
+                        (modelLightStruct_getProjectionTevModes(
+                             lbl_803DCC64, &projectionModeA, &projectionModeB),
+                         projectionModeA == 0))
                     {
-                        use = 1;
+                        useForwardAttr = 1;
                     }
                     else
                     {
-                        use = 0;
+                        useForwardAttr = 0;
                     }
                 }
-                else if (i < lbl_803DCC5C && p5 == 0)
+                else if (i < lbl_803DCC5C && passMask == 0)
                 {
-                    use = 1;
+                    useForwardAttr = 1;
                 }
                 else
                 {
-                    use = 0;
+                    useForwardAttr = 0;
                 }
-                if (use)
+                if (useForwardAttr)
                 {
-                    GXSetVtxDesc(next++, GX_DIRECT);
+                    GXSetVtxDesc(nextMatrixAttr++, GX_DIRECT);
                 }
                 else
                 {
-                    GXSetVtxDesc(back--, GX_DIRECT);
+                    GXSetVtxDesc(previousMatrixAttr--, GX_DIRECT);
                 }
             }
         }
-        if (next > 1)
+        if (nextMatrixAttr > 1)
         {
-            *out2 = 1;
+            *usesTextureMatrix = 1;
         }
         else
         {
-            *out2 = 0;
+            *usesTextureMatrix = 0;
         }
     }
     else
     {
         GXSetCurrentMtx(0);
-        *out2 = 1;
+        *usesTextureMatrix = 1;
     }
     {
         u32 w;
-        int pos = bs->pos;
+        int pos = bitStream->pos;
         int off = pos >> 3;
         u8* p;
-        w = bs->data[off];
-        p = (u8*)(off + (char*)bs->data);
+        w = bitStream->data[off];
+        p = (u8*)(off + (char*)bitStream->data);
         w |= p[1] << 8;
         w |= p[2] << 16;
-        bs->pos = pos + 1;
+        bitStream->pos = pos + 1;
         GXSetVtxDesc(GX_VA_POS, (((int)(w >> (pos & 7)) & 1) ? GX_INDEX16 : GX_INDEX8));
     }
-    if (((Shader*)m)->vtxAttrFlags & 1)
+    if (((Shader*)shader)->vtxAttrFlags & 1)
     {
-        int b;
+        int index16;
         {
             u32 w;
-            int pos = bs->pos;
+            int pos = bitStream->pos;
             int off = pos >> 3;
             u8* p;
-            w = bs->data[off];
-            p = (u8*)(off + (char*)bs->data);
+            w = bitStream->data[off];
+            p = (u8*)(off + (char*)bitStream->data);
             w |= p[1] << 8;
             w |= p[2] << 16;
-            bs->pos = pos + 1;
-            b = (w >> (pos & 7)) & 1;
+            bitStream->pos = pos + 1;
+            index16 = (w >> (pos & 7)) & 1;
         }
-        if (((ModelFileHeader*)hdr)->flags24 & 8)
+        if (((ModelFileHeader*)modelHeader)->flags24 & 8)
         {
-            GXSetVtxDesc(GX_VA_NBT, b ? GX_INDEX16 : GX_INDEX8);
+            GXSetVtxDesc(GX_VA_NBT, index16 ? GX_INDEX16 : GX_INDEX8);
         }
         else
         {
-            GXSetVtxDesc(GX_VA_NRM, b ? GX_INDEX16 : GX_INDEX8);
+            GXSetVtxDesc(GX_VA_NRM, index16 ? GX_INDEX16 : GX_INDEX8);
         }
-        *out1 = 1;
+        *usesNormalMatrix = 1;
     }
     else
     {
-        *out1 = 0;
+        *usesNormalMatrix = 0;
     }
-    if (((Shader*)m)->vtxAttrFlags & 2)
+    if (((Shader*)shader)->vtxAttrFlags & 2)
     {
         u32 w;
-        int pos = bs->pos;
+        int pos = bitStream->pos;
         int off = pos >> 3;
         u8* p;
-        w = bs->data[off];
-        p = (u8*)(off + (char*)bs->data);
+        w = bitStream->data[off];
+        p = (u8*)(off + (char*)bitStream->data);
         w |= p[1] << 8;
         w |= p[2] << 16;
-        bs->pos = pos + 1;
+        bitStream->pos = pos + 1;
         GXSetVtxDesc(GX_VA_CLR0, (((int)(w >> (pos & 7)) & 1) ? GX_INDEX16 : GX_INDEX8));
     }
     {
-        int b;
-        int i;
         {
             u32 w;
-            int pos = bs->pos;
+            int pos = bitStream->pos;
             int off = pos >> 3;
             u8* p;
-            w = bs->data[off];
-            p = (u8*)(off + (char*)bs->data);
+            w = bitStream->data[off];
+            p = (u8*)(off + (char*)bitStream->data);
             w |= p[1] << 8;
             w |= p[2] << 16;
-            bs->pos = pos + 1;
-            b = (w >> (pos & 7)) & 1;
+            bitStream->pos = pos + 1;
+            textureIndex16 = (w >> (pos & 7)) & 1;
         }
-        i = 0;
-        for (; i < ((Shader*)m)->layerCount; i++)
+        textureCoordIndex = 0;
+        for (; textureCoordIndex < ((Shader*)shader)->layerCount; textureCoordIndex++)
         {
-            GXSetVtxDesc(i + GX_VA_TEX0, b ? GX_INDEX16 : GX_INDEX8);
+            GXSetVtxDesc(textureCoordIndex + GX_VA_TEX0, textureIndex16 ? GX_INDEX16 : GX_INDEX8);
         }
     }
 }
@@ -1606,7 +1608,7 @@ static inline void texSlotGetScroll(u8* obj, u32 jid, f32* txp, f32* typ)
     }
     *typ = *txp = 0.0f;
 }
-u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
+static u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
 {
     u16 alpha;
     u8* colp;
@@ -1785,7 +1787,7 @@ u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
     }
     return ok;
 }
-u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
+static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
 {
     int* op;
     u32* refs;
@@ -1982,7 +1984,7 @@ u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     if (isHeavyFogEnabled() && !(((ModelFileHeader*)p2)->flags & 0x100))
     {
-        getColor803dd01c(fogc);
+        getFogColorRgb(fogc);
         renderHeavyFog(fogc);
     }
     if (((Shader*)op)->flags & SHADER_FLAG_PROJECTED_TEX_PASS)
@@ -2088,7 +2090,7 @@ u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     return idx;
 }
-void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
+static void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
 {
     u8 blend;
     u8 zwrite;
@@ -2212,7 +2214,7 @@ void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
 }
 
 extern f32 gObjJointMtxTemp[];
-void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
+static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
 {
     f32 wm[16];
     f32 cm[12];
@@ -2279,7 +2281,7 @@ void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
         }
         else
         {
-            objGetColor(((GameObject*)obj)->lightColorSlot, &color[0], &color[1], &color[2]);
+            objGetSunColor(((GameObject*)obj)->lightColorSlot, &color[0], &color[1], &color[2]);
         }
     }
     else
@@ -2302,7 +2304,7 @@ void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
             if (isHeavyFogEnabled() != 0)
             {
                 u8 c[4];
-                getColor803dd01c(c);
+                getFogColorRgb(c);
                 renderHeavyFog(c);
             }
             Rcp_ApplyTextureStageCounts();
@@ -2385,7 +2387,7 @@ extern f32 gObjBoneMtxBuffer[0xC00];
 
 
 
-void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
+static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
 {
     int done;
     f32 cm[16];
@@ -2634,7 +2636,7 @@ void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
 }
 extern u8 gObjGxTexMtxIdTable[12];
 
-void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
+static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
 {
     int joff;
     f32 fm[16];
@@ -2651,7 +2653,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     f32* vm;
     int passMaskCopy;
     int fuzzPass;
-    int m2;
+    int fuzzShadowPass;
     int shadowPass;
     u8 did;
     int* op;
@@ -2713,7 +2715,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     }
     else
     {
-        objGetColor(((GameObject*)obj)->lightColorSlot, &gObjCurChanColor.r, &gObjCurChanColor.g,
+        objGetSunColor(((GameObject*)obj)->lightColorSlot, &gObjCurChanColor.r, &gObjCurChanColor.g,
                     &gObjCurChanColor.b);
     }
     passMaskCopy = passMask;
@@ -2810,8 +2812,8 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         }
         ((ObjModel*)am)->bufferFlags |= 8;
     }
-    m2 = passMaskCopy & 2;
-    if (m2 || fuzzPass || (passMaskCopy & 8))
+    fuzzShadowPass = passMaskCopy & 2;
+    if (fuzzShadowPass || fuzzPass || (passMaskCopy & 8))
     {
         int j;
         f32 one;
@@ -2855,7 +2857,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     }
     if (*(u32*)&((ModelFileHeader*)m)->vertexAnimEntries != 0)
     {
-        if (fuzzPass || m2 || (passMaskCopy & 8))
+        if (fuzzPass || fuzzShadowPass || (passMaskCopy & 8))
         {
             f32 sc2 = 1.0f + (lbl_803DEA54 * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
             PSMTXTrans((MtxPtr)tm, -*(f32*)(m + 0x44), -*(f32*)(m + 0x48), -*(f32*)(m + 0x4c));
@@ -2945,7 +2947,7 @@ void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
             GXSetCullMode(GX_CULL_NONE);
         }
     }
-    else if (m2 != 0)
+    else if (fuzzShadowPass != 0)
     {
         objFuzzSetupGxState(obj);
     }
@@ -3179,7 +3181,7 @@ void objRenderFuzzShells(int* obj)
     }
 }
 
-void objRenderFn_800413d4(int* obj)
+void objRenderFuzzShadowShells(int* obj)
 {
     int* model;
     u32 savedMtx;
@@ -3322,7 +3324,7 @@ void objRenderShadow(void* obj)
     }
 }
 
-void objRenderChild(int* child, int* parent, u8 isShadow)
+static void objRenderChild(int* child, int* parent, u8 isShadow)
 {
     f32 res[3];
     MatrixTransform blk;
@@ -3661,7 +3663,7 @@ void defragMemory(int mode)
     u8* base = gResourceFileTable;
     done = 0;
     pass = 0;
-    texFlagFn_80023cbc(2);
+    mmSetTextureAllocationState(2);
     if (loadedFileFlags(0) != 0)
     {
         return;
@@ -3864,7 +3866,7 @@ void defragMemory(int mode)
         } while (i <= 0x57);
         pass++;
     }
-    texFlagFn_80023cbc(0);
+    mmSetTextureAllocationState(0);
 }
 
 f32 gObjBoneMtxBuffer[0xC00];
@@ -3895,7 +3897,6 @@ void animCurvReadCb(s32 result, DVDFileInfo* fileInfo)
     }
 }
 
-u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs);
 
 
 void animCurvTabReadCb(s32 result, DVDFileInfo* fileInfo)

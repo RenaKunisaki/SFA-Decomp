@@ -130,7 +130,7 @@ def main():
     units, sym = norm_unit(sys.argv[1]), sys.argv[2]
     r = None
     for unit in units:
-        r = subprocess.run(['python3', 'tools/function_objdump.py', unit, sym],
+        r = subprocess.run([sys.executable, 'tools/function_objdump.py', unit, sym],
                            capture_output=True, text=True)
         if '===== current' in r.stdout:
             break

@@ -143,7 +143,7 @@ ModelLightStruct* modelLightStruct_createPointLight(void* owner, u8 red, u8 gree
     return light;
 }
 
-u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* light, GameObject* obj)
+static u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* light, GameObject* obj)
 {
     f32 localPos[3];
     f32 projected[3];
@@ -242,43 +242,34 @@ u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* light, Game
     return 1;
 }
 
-f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj)
-{
+static f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj) {
     f32 delta[3];
     f32 dist;
     f32 amount;
 
-    if (obj->ownerObj != NULL)
-    {
+    if (obj->ownerObj != NULL) {
         obj = obj->ownerObj;
     }
 
     PSVECSubtract(&obj->anim.worldPos, &light->worldPos, (Vec*)delta);
     dist = PSVECMag((Vec*)delta) - obj->anim.hitboxScale * obj->anim.rootMotionScale;
-    if (dist > 1000.0f || dist > light->attenuationFar)
-    {
+    if (dist > 1000.0f || dist > light->attenuationFar) {
         return 0.0f;
     }
 
-    if (dist < light->attenuationNear)
-    {
+    if (dist < light->attenuationNear) {
         amount = 1.0f;
-    }
-    else
-    {
-        amount = 1.0f -
-                 (dist - light->attenuationNear) / (light->attenuationFar - light->attenuationNear);
+    } else {
+        amount = 1.0f - (dist - light->attenuationNear) / (light->attenuationFar - light->attenuationNear);
     }
 
-    if (light->spotFunction != 0)
-    {
+    if (light->spotFunction != 0) {
         PSVECScale((Vec*)delta, (Vec*)delta, 1.0f / dist);
         PSVECDotProduct(&light->worldDirection, (Vec*)delta);
     }
 
     return amount;
 }
-f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj);
 
 void modelLightStruct_updateColorFade(ModelLightStruct* light)
 {
@@ -613,7 +604,7 @@ u8 a;
     p->diffuseColor[3] = a;
 }
 
-void lightSetFieldBC_8001db14(ModelLightStruct* p, u8 v)
+void modelLightStruct_setFieldBC(ModelLightStruct* p, u8 v)
 {
     p->fieldBC = v;
 }
@@ -633,7 +624,7 @@ void modelLightStruct_setLightKind(ModelLightStruct* p, int v)
     p->lightKind = v;
 }
 
-void objSetEventName(ModelLightStruct* light, int mode)
+void modelLightStruct_setTransformMode(ModelLightStruct* light, int mode)
 {
     light->transformMode = mode;
 }
@@ -935,7 +926,7 @@ ModelLightStruct* objAllocLight(void* owner)
     return light;
 }
 
-void modelLightStruct_loadDiffuseGXLight(ModelLightStruct* light, GameObject* obj, GXLightID lightId)
+static void modelLightStruct_loadDiffuseGXLight(ModelLightStruct* light, GameObject* obj, GXLightID lightId)
 {
     f32 viewPos[3];
     f32* view;

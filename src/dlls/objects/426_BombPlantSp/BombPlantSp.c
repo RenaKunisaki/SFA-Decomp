@@ -337,7 +337,7 @@ void BombPlantSpore_init(GameObject* obj, BombPlantSporePlacement* placement) {
     if (light != NULL) {
         modelLightStruct_setLightKind(light, MODEL_LIGHT_KIND_POINT);
         modelLightStruct_setDiffuseColor(light, 0xFF, 0, 0xFF, 0);
-        lightSetFieldBC_8001db14(light, 1);
+        modelLightStruct_setFieldBC(light, 1);
         modelLightStruct_setDistanceAttenuation(light, gBombPlantSporeLightAttenuationNear,
                                                 gBombPlantSporeLightAttenuationFar);
     }

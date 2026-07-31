@@ -196,7 +196,7 @@ void drshackle_update(GameObject* obj)
     u32* list;
     if (placement->pathObjGroupBase != 0 && *(void**)state == 0)
     {
-        list = objGetAllOfType(DFROPENODE_OBJGROUP, &count);
+        list = (u32*)objGetAllOfType(DFROPENODE_OBJGROUP, &count);
         while (count-- != 0)
         {
             sub = *(int*)(*list + 0x4c);

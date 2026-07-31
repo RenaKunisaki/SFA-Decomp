@@ -13,9 +13,9 @@
 #include "ghidra_import.h"
 
 void* surfaceSfxGetRecord(u32 i);
-void timeFn_8006f400(f32 step);
-void drawFn_8006f500(void);
-void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
+void waterFxUpdate(f32 step);
+void waterFxDraw(void);
+void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type);
 void waterFxSetDisabled(int disabled);
 void waterFxInit(void);
 void mtx44Perspective(f32* matrix, u16* perspectiveNorm, f32 fovY, f32 aspect, f32 nearPlane, f32 farPlane, f32 scale);
@@ -28,7 +28,7 @@ void screenImageDraw(u8 alpha);
 void doSpiritVisionFilter(void);
 void doColorFilter(u8* mod);
 void doDistortionFilter(f32* position, f32 radius, u8* modulation, f32 angle);
-int moonFxCb_80074110(u8* obj, int* objB, int slot);
+int moonFxRenderCallback(u8* obj, int* objB, int slot);
 void drawOrthoTexturedQuad(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, f32 v2, int z);
 void textRenderChar(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, f32 v2);
 void drawRect(f32 sx, f32 sy, int x, int y);

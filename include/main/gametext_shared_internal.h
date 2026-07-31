@@ -33,7 +33,6 @@ extern int gGameTextRevealActive;
 extern f32 gGameTextRevealSpeed;
 
 int utf8GetNextChar(u8* str, int* outLen);
-char* gameStrcpy(char* dst, char* src);
 void* gameTextGetCurBox(void);
 void gameTextMeasureStringBounds(char* str, int boxIdx, int* outMinX, int* outMaxX, int* outMinY, int* outMaxY);
 void gameTextRenderStrs(char* str, int boxIdx);

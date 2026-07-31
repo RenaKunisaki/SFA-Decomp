@@ -101,8 +101,6 @@ extern u8* gWaterfxWakeVtx;
 extern u8* gWaterfxRippleVtxDesc;
 extern u8* gWaterfxRippleVtx;
 
-void waterfx_setupSplashDropPointRender(void);
-void waterfx_buildSplashDisplayList(void);
 int waterfx_consumePendingImpactNearPoint(f32* vec, f32 dist);
 void waterfx_spawnRipple(f32 a, f32 b, f32 c, s16 p1, f32 d, int p2);
 void waterfx_setRippleScale(int flag, f32 val);

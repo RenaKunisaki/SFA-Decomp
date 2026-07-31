@@ -535,7 +535,7 @@ int SB_CloudRunner_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     {
         if (animUpdate->eventIds[i] == 1)
         {
-            objHitDetectFn_80062e84(player, state->targetObj, 0);
+            Obj_SetParent(player, state->targetObj, 0);
             playerSetStateValue(player, 5, 0.0f);
             state->done = 1;
         }
@@ -594,16 +594,13 @@ void SB_CloudRunner_HandlePriorityHit(GameObject* obj, SBCloudRunnerState* state
     }
 }
 
-
 /* Forward to the laser-locked target's DLL vtable (slot 0x24). */
-int shipBattleFn_801eed24(GameObject* obj)
-{
+int SB_CloudRunner_getTargetMode(GameObject* obj) {
     GameObject* target = ((SBCloudRunnerState*)obj->extra)->targetObj;
     void* vt = *target->anim.dll;
     int (*fn)(GameObject*) = *(int (**)(GameObject*))((char*)vt + 0x24);
     return fn(target);
 }
-
 
 void SB_CloudRunner_getSpawnPos(GameObject* obj, f32* x, f32* y, f32* z)
 {

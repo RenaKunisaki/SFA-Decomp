@@ -20,8 +20,8 @@
 
 int isSpace(u32 c);
 
-void gameTextMeasureFn_800163c4(char* str, int boxIdx, int x, int y, int* outMinX, int* outMaxX, int* outMinY,
-                                int* outMaxY)
+void gameTextMeasureStringBoundsAt(char* str, int boxIdx, int x, int y, int* outMinX, int* outMaxX, int* outMinY,
+                                   int* outMaxY)
 {
     TextSlot* box = (TextSlot*)gTextBoxes + boxIdx;
     s16 savedX = box->cursorX;

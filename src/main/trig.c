@@ -11,8 +11,8 @@ static const float sTrigApproxSinLinear[1] = {0.000023945184f};
 static const float sTrigApproxSinCubic[1] = {-2.2078018e-15f};
 
 float fsin16Approx(int angle) {
-    s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
-    float x = fastCastS16ToFloat(&reduced);
+    s16 scaledAngleBits = (s16)(int)((angle << 2) & 0x3FFFC);
+    float x = fastCastS16ToFloat(&scaledAngleBits);
     float x2 = x * x;
 
     switch (angle & 0xE000) {
@@ -31,8 +31,8 @@ float fsin16Approx(int angle) {
 }
 
 float fcos16(int angle) {
-    s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
-    float x = fastCastS16ToFloat(&reduced);
+    s16 scaledAngleBits = (s16)(int)((angle << 2) & 0x3FFFC);
+    float x = fastCastS16ToFloat(&scaledAngleBits);
     float x2 = x * x;
 
     switch (angle & 0xE000) {
@@ -51,8 +51,8 @@ float fcos16(int angle) {
 }
 
 float fsin16Precise(int angle) {
-    s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
-    float y = fastCastS16ToFloat(&reduced);
+    s16 scaledAngleBits = (s16)(int)((angle << 2) & 0x3FFFC);
+    float y = fastCastS16ToFloat(&scaledAngleBits);
     float y2 = y * y;
 
     switch (angle & 0xE000) {
@@ -73,8 +73,8 @@ float fsin16Precise(int angle) {
 }
 
 float fsin16HighPrecision(int angle) {
-    s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
-    float reducedFloat = fastCastS16ToFloat(&reduced);
+    s16 scaledAngleBits = (s16)(int)((angle << 2) & 0x3FFFC);
+    float reducedFloat = fastCastS16ToFloat(&scaledAngleBits);
     double reducedAngle = 0.000023968449810713143 * reducedFloat;
     double reducedSquared = reducedAngle * reducedAngle;
 
@@ -108,8 +108,8 @@ float fsin16HighPrecision(int angle) {
 }
 
 float fcos16Approx(int angle) {
-    s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
-    float y = fastCastS16ToFloat(&reduced);
+    s16 scaledAngleBits = (s16)(int)((angle << 2) & 0x3FFFC);
+    float y = fastCastS16ToFloat(&scaledAngleBits);
     float y2 = y * y;
 
     switch (angle & 0xE000) {
@@ -128,8 +128,8 @@ float fcos16Approx(int angle) {
 }
 
 float fsin16(int angle) {
-    s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
-    float y = fastCastS16ToFloat(&reduced);
+    s16 scaledAngleBits = (s16)(int)((angle << 2) & 0x3FFFC);
+    float y = fastCastS16ToFloat(&scaledAngleBits);
     float y2 = y * y;
 
     switch (angle & 0xE000) {
@@ -148,8 +148,8 @@ float fsin16(int angle) {
 }
 
 float fcos16Precise(int angle) {
-    s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
-    float y = fastCastS16ToFloat(&reduced);
+    s16 scaledAngleBits = (s16)(int)((angle << 2) & 0x3FFFC);
+    float y = fastCastS16ToFloat(&scaledAngleBits);
     float y2 = y * y;
 
     switch (angle & 0xE000) {
@@ -170,8 +170,8 @@ float fcos16Precise(int angle) {
 }
 
 float fcos16HighPrecision(int angle) {
-    s16 reduced = (s16)(int)((angle << 2) & 0x3FFFC);
-    float reducedFloat = fastCastS16ToFloat(&reduced);
+    s16 scaledAngleBits = (s16)(int)((angle << 2) & 0x3FFFC);
+    float reducedFloat = fastCastS16ToFloat(&scaledAngleBits);
     double reducedAngle = 0.000023968449810713143 * reducedFloat;
     double reducedSquared = reducedAngle * reducedAngle;
 

@@ -407,7 +407,7 @@ void camcontrol_initialiseTargetReticle(void) {
         if (gCamcontrolReticleLight != NULL) {
             modelLightStruct_setLightKind(gCamcontrolReticleLight, MODEL_LIGHT_KIND_DIRECTIONAL);
             modelLightStruct_setObjectLightMaskIndex(gCamcontrolReticleLight, 1);
-            objSetEventName(gCamcontrolReticleLight, 1);
+            modelLightStruct_setTransformMode(gCamcontrolReticleLight, 1);
             modelLightStruct_setDirection(gCamcontrolReticleLight, 1.0f, 0.0f, -0.78f);
             modelLightStruct_setDiffuseColor(gCamcontrolReticleLight, 0xB4, 0xC8, 0xFF, 0xFF);
         }
@@ -458,7 +458,7 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
     count = 0;
     player = Obj_GetPlayerObject();
     if (player == NULL || focus == NULL || gCamcontrolActiveActionId == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
-        objAnimFn_80296328(player) == 0) {
+        playerCanUseCombatTargeting(player) == 0) {
         return NULL;
     }
     ptr = (GameObject**)ObjList_GetObjects(&objIndex, &objCount);
@@ -693,8 +693,6 @@ void Camera_setBlendCurveMode(u8 mode) {
 }
 
 void camcontrol_applyState(CamcontrolCameraState* camera) {
-    f32 prog;
-    f32 clamped;
     Camera* view;
     int itmp;
     f32 mag;
@@ -724,6 +722,9 @@ void camcontrol_applyState(CamcontrolCameraState* camera) {
     }
     gCamcontrolFovY = camera->fovY;
     if (camera->blendProgress > 0.0f) {
+        f32 prog;
+        f32 clamped;
+
         camera->blendProgress = -(camera->blendStep * timeDelta - camera->blendProgress);
         prog = camera->blendProgress;
         clamped = 0.0f;

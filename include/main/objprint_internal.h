@@ -37,7 +37,7 @@ typedef struct
  * finder loop in this file: jointCount (+0x5A) records, each
  * (1 + modelCount (+0x55)) bytes:
  *   byte 0             - joint key (0 = head, 1 = jaw, ...; see the key list
- *                        at gObjLookAtJointKeys used by objMathFn_8003a380)
+ *                        at gObjLookAtJointKeys used by objJointTracksAimAtTarget)
  *   byte 1 + bankIndex - joint index in that bank's model, 0xFF = the joint
  *                        does not exist in that bank
  * The record's ordinal selects the matching ObjJointPose18 in

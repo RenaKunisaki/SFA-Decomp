@@ -430,7 +430,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
         {
             ((EnemyState*)state)->freezeRecoverTimer = 0.0f;
         }
-        fn_802972B4((GameObject*)(player), &hitEffects, &fxA, &fxB, &fxC, &hitStun);
+        playerGetAttackHitProperties((GameObject*)(player), &hitEffects, &fxA, &fxB, &fxC, &hitStun);
         baddie_decodePlayerAttackFlags((EnemyState*)state, hitEffects, fxA, hitStun);
         if (hit != 0)
         {
@@ -644,7 +644,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
             proj = ((EnemyState*)state)->trackedObj;
             if (proj != NULL && proj->anim.classId == 1)
             {
-                fn_802961FC(proj, result);
+                playerSetHitReactionVariant(proj, result);
             }
         }
         else if ((((EnemyState*)state)->flags2E8 & 0x20) != 0)
@@ -1102,8 +1102,8 @@ void Tricky_applyFloorResponse(GameObject* obj, int state)
     if ((((EnemyState*)state)->flags2E4 & 0x00200000) != 0)
     {
         ObjPath_GetPointWorldPositionArray(obj, 2, 2, points);
-        objAudioFn_8006edcc(obj, ((EnemyState*)state)->animEventMask, 7, points, (void*)(state + 4),
-                            ((EnemyState*)state)->pathSpeed, 1.0f);
+        objAudioDispatchEventMask(obj, ((EnemyState*)state)->animEventMask, 7, points, (void*)(state + 4),
+                                  ((EnemyState*)state)->pathSpeed, 1.0f);
     }
 }
 
@@ -1124,7 +1124,7 @@ void Tricky_findNearbyFloorHeights(GameObject* obj, int state, f32* nearestFloor
     defaultY = -1.0f;
     *nearestFloorY = defaultY;
     *nearestSpecialY = defaultY;
-    hitCount = (u16)hitDetectFn_80065e50(obj, (obj)->anim.localPosX, (obj)->anim.localPosY,
+    hitCount = (u16)trackGetHeight(obj, (obj)->anim.localPosX, (obj)->anim.localPosY,
                                          (obj)->anim.localPosZ, hitList, 0, 0);
     *nearestFloorY = (obj)->anim.localPosY;
     *nearestSpecialY = (obj)->anim.localPosY;

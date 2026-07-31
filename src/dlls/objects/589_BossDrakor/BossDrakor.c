@@ -74,8 +74,8 @@ f32 lbl_803DC188 = 3.0f;
 f32 lbl_803DC18C = 8.0f;
 f32 lbl_803DC190 = 1.0f;
 f32 lbl_803DC194 = 150.0f;
-s16 lbl_803DC198 = 0xE38;
-s16 lbl_803DC19A = 0x2D8;
+s16 gBossDrakorMaxJawStepAngle = 0xE38;
+s16 gBossDrakorJawAnglePerTick = 0x2D8;
 
 #define BOSSDRAKOR_MAP_ARENA          0x1d /* map-event id set to act 3 on boss defeat */
 #define BOSSDRAKOR_OBJGROUP           0x45
@@ -173,17 +173,10 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
     int neckStep;
     int jawStep;
     s16 jawDelta;
-    /* Partfx spawn parameter block (breath/steam emitted from the neck bone). */
-    struct
-    {
-        u8 pad[6];
-        s16 mode;
-        f32 val;
-        Vec vec;
-    } partfxParams;
+    PartFxSpawnParams partfxParams;
 
     drakorState = state;
-    neck = objModelGetVecFn_800395d8(obj, 0xe);
+    neck = objFindJointPoseVector(obj, 0xe);
     if (neck != NULL)
     {
         neckDelta = (s16)-neck[0];
@@ -191,17 +184,17 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
                    ? -(framesThisStep << 8)
                    : (s16)((neckDelta > (framesThisStep << 8)) ? (framesThisStep << 8) : neckDelta);
         neck[0] += (s16)neckStep;
-        PSVECSubtract(&drakorState->homePos, &obj->anim.localPos, &partfxParams.vec);
-        partfxParams.val = 1.0f;
-        if (timerIsActive(&drakorState->jawAnimAngle) != 0)
+        PSVECSubtract(&drakorState->homePos, &obj->anim.localPos, &partfxParams.pos);
+        partfxParams.scale = 1.0f;
+        if (timerIsActive(&drakorState->jawAnimTimer) != 0)
         {
-            upperJaw = objModelGetVecFn_800395d8(obj, 0xf);
+            upperJaw = objFindJointPoseVector(obj, 0xf);
             if (upperJaw != NULL)
             {
-                lowerJaw = objModelGetVecFn_800395d8(obj, 0x10);
+                lowerJaw = objFindJointPoseVector(obj, 0x10);
                 if (lowerJaw != NULL)
                 {
-                    jawDelta = (int)(drakorState->jawAnimAngle * lbl_803DC19A) - (u16)upperJaw[1];
+                    jawDelta = (int)(drakorState->jawAnimTimer * gBossDrakorJawAnglePerTick) - (u16)upperJaw[1];
                     if (jawDelta > 0x8000)
                     {
                         jawDelta = (s16)((int)jawDelta - 0xffff);
@@ -210,19 +203,21 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
                     {
                         jawDelta += 0xffff;
                     }
-                    jawStep = (jawDelta < -lbl_803DC198 * framesThisStep)
-                                ? -lbl_803DC198 * framesThisStep
-                                : ((jawDelta > lbl_803DC198 * framesThisStep) ? lbl_803DC198 * framesThisStep : jawDelta);
+                    jawStep = (jawDelta < -gBossDrakorMaxJawStepAngle * framesThisStep)
+                                ? -gBossDrakorMaxJawStepAngle * framesThisStep
+                                : ((jawDelta > gBossDrakorMaxJawStepAngle * framesThisStep)
+                                       ? gBossDrakorMaxJawStepAngle * framesThisStep
+                                       : jawDelta);
                     jawDelta = (s16)jawStep;
                     upperJaw[1] += jawDelta;
                     lowerJaw[1] -= jawDelta;
-                    if (timerCountDown(&drakorState->jawAnimAngle) != 0)
+                    if (timerCountDown(&drakorState->jawAnimTimer) != 0)
                     {
-                        storeZeroToFloatParam(&drakorState->jawAnimAngle);
+                        storeZeroToFloatParam(&drakorState->jawAnimTimer);
                     }
-                    if (drakorState->jawAnimAngle > 10.0f)
+                    if (drakorState->jawAnimTimer > 10.0f)
                     {
-                        partfxParams.mode = 45000;
+                        partfxParams.arg3 = 45000;
                         (*gPartfxInterface)->spawnObject((void*)obj, BOSSDRAKOR_PARTFX, &partfxParams, 1, -1, NULL);
                     }
                 }
@@ -358,8 +353,8 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                                        s->missileBaseSpeed * lbl_803DC18C);
                             *mstate = spd;
                             drakormissile_startActiveLaunch((GameObject*)(missile));
-                            storeZeroToFloatParam(&s->jawAnimAngle);
-                            s16toFloat(&s->jawAnimAngle, 0x1e);
+                            storeZeroToFloatParam(&s->jawAnimTimer);
+                            s16toFloat(&s->jawAnimTimer, 0x1e);
                             Sfx_PlayFromObject((int)obj, SFXTRIG__UNK);
                             Sfx_PlayFromObject((int)obj, SFXTRIG_cahit2_c);
                         }
@@ -902,7 +897,7 @@ void bossdrakor_update(GameObject* obj)
         tbl = tblRes;
         do
         {
-            uvec = (s16*)objModelGetVecFn_800395d8(obj, tbl[0]);
+            uvec = (s16*)objFindJointPoseVector(obj, tbl[0]);
             if (uvec != NULL)
             {
                 uvec[1] = shakeY;
@@ -921,7 +916,7 @@ void bossdrakor_update(GameObject* obj)
     if (((BossDrakorState*)state)->flags198.b04)
     {
         player = Obj_GetPlayerObject();
-        vec = objModelGetVecFn_800395d8(obj, 0xe);
+        vec = objFindJointPoseVector(obj, 0xe);
         if (vec != NULL)
         {
             f32 hxsq;
@@ -984,7 +979,7 @@ void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init)
     ((BossDrakorState*)inner)->flags198.b10 = 1;
     storeZeroToFloatParam(&s->attackTimer);
     objAddObjectType((int)obj, BOSSDRAKOR_OBJGROUP);
-    storeZeroToFloatParam(&s->jawAnimAngle);
+    storeZeroToFloatParam(&s->jawAnimTimer);
     (obj)->animEventCallback = bossdrakor_seqFn;
     Music_Trigger(MUSICTRIG_LVF_Tracking, 1);
     Music_Trigger(MUSICTRIG_citytombs, 1);

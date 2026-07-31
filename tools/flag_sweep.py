@@ -191,7 +191,14 @@ def fuzzy_of(candidate, unit_entry, workdir):
 
 
 def compile_and_score(cmd, unit, mutate, target, workdir, unit_entry):
-    toks = shlex.split(cmd)
+    toks = shlex.split(cmd, posix=os.name != "nt")
+    if os.name == "nt":
+        toks = [
+            token[1:-1]
+            if len(token) >= 2 and token[0] == token[-1] and token[0] in {'"', "'"}
+            else token
+            for token in toks
+        ]
     for i, t in enumerate(toks):
         if t == "-o":
             toks[i + 1] = str(workdir) + "/"
@@ -205,7 +212,8 @@ def compile_and_score(cmd, unit, mutate, target, workdir, unit_entry):
     if not os.path.exists(obj):
         return None
     try:
-        nbytes, nrelocs, _ = RR.screen(obj, target)
+        screen = RR.screen(obj, target)
+        nbytes, nrelocs = screen[:2]
     except Exception:
         return None
     fz = fuzzy_of(obj, unit_entry, workdir) if unit_entry else None
@@ -259,7 +267,7 @@ def sweep_unit(unit, obj, target, profs, top, unit_entry, keep_traps):
 
 def objdiff_units():
     with open(ROOT / "objdiff.json") as fh:
-        return {u["base_path"]: u for u in json.load(fh).get("units", [])
+        return {u["base_path"].replace("\\", "/"): u for u in json.load(fh).get("units", [])
                 if u.get("base_path")}
 
 
@@ -269,7 +277,7 @@ def resolve(selectors, only_incomplete):
         if only_incomplete and done:
             continue
         obj = str(Path(ours).relative_to(ROOT))
-        yield name, obj, target, entries.get(obj)
+        yield name, obj, target, entries.get(obj.replace("\\", "/"))
 
 
 def main():

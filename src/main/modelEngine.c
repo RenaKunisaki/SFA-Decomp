@@ -168,6 +168,7 @@
 #include "dlls/objects/370_LINKB_levco.h"
 #include "dlls/objects/371_LINK_levcon.h"
 #include "dlls/objects/372_CCriverflow.h"
+#include "dlls/objects/373_DFropenode.h"
 #include "dlls/objects/374_DFSH_Door1S.h"
 #include "dlls/objects/375.h"
 #include "dlls/objects/376_DFSH_Shrine.h"
@@ -512,7 +513,7 @@ int gModelEngineTimerDigitPairXOffset = 0x10;
 int gModelEngineTimerFieldXStride = 0x26;
 int gModelEngineTimerColonX = 0x24;
 int gModelEngineTimerDotX = 0x4A;
-s32 lbl_803DB28C = -1;
+s32 gMenuState = -1;
 char sModelEngineHudNumberFormat[] = "%d";
 char sModelEngineTimerDigitFormat[] = "%01d";
 char sModelEngineTimerColonText[] = ":";
@@ -537,7 +538,7 @@ extern ResourceDescriptor gChukaObjDescriptor;
 extern ResourceDescriptor gControlLightObjDescriptor, gCrCloudRaceObjDescriptor, gCrFuelTankObjDescriptor;
 extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDB_eggObjDescriptor, gDBstealerwormObjDescriptor,
     gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor, gDFP_TorchObjDescriptor;
-extern ResourceDescriptor gDFP_seqpointObjDescriptor, gDFropenodeObjDescriptor;
+extern ResourceDescriptor gDFP_seqpointObjDescriptor;
 extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor;
 extern ResourceDescriptor gDIM_trickyObjDescriptor, gDR_CloudRunnerObjDescriptor, gDR_EarthWarriorObjDescriptor;
 extern ResourceDescriptor gDfperchwitchObjDescriptor, gDfpfloorbarObjDescriptor, gDfplightniObjDescriptor,
@@ -870,9 +871,9 @@ void Resource_ResetRefCounts(void)
     }
 }
 
-void fn_8001404C(s32 value)
+void menuSetState(s32 value)
 {
-    lbl_803DB28C = value;
+    gMenuState = value;
 }
 
 u8 gameTimerIsRunning(void)
@@ -1596,7 +1597,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gLINKBLevelControlObjDescriptor,
     (ResourceDescriptor*)&gLINKLevelControlObjDescriptor,
     (ResourceDescriptor*)&gCCRiverFlowObjDescriptor,
-    &gDFropenodeObjDescriptor,
+    (ResourceDescriptor*)&gDFropenodeObjDescriptor,
     (ResourceDescriptor*)&gDFSH_Door1SNullResourceDescriptor,
     (ResourceDescriptor*)&gDll177ObjDescriptor,
     (ResourceDescriptor*)&gDFSHShrineObjDescriptor,

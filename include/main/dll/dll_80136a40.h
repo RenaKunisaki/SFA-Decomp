@@ -14,7 +14,7 @@ void* trickyGetQueuedPathParticlePos(GameObject* obj);
 f32 trickyGetAnimSpeed(GameObject* tricky);
 GameObject* trickyGetStayPoint(GameObject* tricky);
 int trickyGetAimPitchOffset(GameObject* tricky);
-int trickyFn_80138f14(GameObject* tricky);
+int Tricky_requestRecallAndCheckBusy(GameObject* tricky);
 void trickyImpress(GameObject* obj);
 void trickySetSoundSuppressed(GameObject* obj, int value);
 int trickyTryPlaySound(GameObject* obj, u16 sfxId, int volume);

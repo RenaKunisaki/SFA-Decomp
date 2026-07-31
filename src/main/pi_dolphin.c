@@ -2121,7 +2121,8 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
     u32 tab0 = 0; /* TAB ptr of the primary slot of the pair, 0 = not ready */
     u32 tab1 = 0; /* TAB ptr of the alternate slot of the pair */
     u8 frame = 0; /* run a full frame per wait iteration once dvd error UI is up */
-    u32 hiSel;    /* caller's slot-select bit; cases 0x51/0x4f reuse it as the TAB ptr */
+    /* Slot-select scratch; case 0x2b reuses it for a flags snapshot and cases 0x51/0x4f for a TAB ptr. */
+    u32 slotScratch;
     int entryOff;
     int flags;
     int intr;
@@ -2154,8 +2155,8 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         {
             tab1 = MLDF_PTR(0x56);
         }
-        hiSel = offsetFlags & 0x80000000;
-        if (hiSel != 0 && tab0 == 0)
+        slotScratch = offsetFlags & 0x80000000;
+        if (slotScratch != 0 && tab0 == 0)
         {
             while (intr = OSDisableInterrupts(), entryIndex = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), entryIndex != 0)
             {
@@ -2217,7 +2218,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         {
             fileId = 0x55;
         }
-        else if (hiSel != 0 && tab0 != 0)
+        else if (slotScratch != 0 && tab0 != 0)
         {
             fileId = 0xd;
         }
@@ -2243,8 +2244,8 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         {
             tab1 = MLDF_PTR(0x53);
         }
-        hiSel = offsetFlags & 0x80000000;
-        if (hiSel != 0 && tab0 == 0)
+        slotScratch = offsetFlags & 0x80000000;
+        if (slotScratch != 0 && tab0 == 0)
         {
             while (intr = OSDisableInterrupts(), entryIndex = gAssetLoadInFlightFlags, OSRestoreInterrupts(intr), entryIndex != 0)
             {
@@ -2306,7 +2307,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         {
             fileId = 0x54;
         }
-        else if (hiSel != 0 && tab0 != 0)
+        else if (slotScratch != 0 && tab0 != 0)
         {
             fileId = 0x1b;
         }
@@ -2352,13 +2353,13 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         break;
     case 0x2b:
         intr = OSDisableInterrupts();
-        flags = gAssetLoadInFlightFlags;
+        slotScratch = gAssetLoadInFlightFlags;
         OSRestoreInterrupts(intr);
-        if ((flags & 4) == 0 && (flags & 1) == 0)
+        if (((int)slotScratch & 4) == 0 && ((int)slotScratch & 1) == 0)
         {
             tab0 = MLDF_PTR(0x2a);
         }
-        if ((flags & 8) == 0 && (flags & 2) == 0)
+        if (((int)slotScratch & 8) == 0 && ((int)slotScratch & 2) == 0)
         {
             tab1 = MLDF_PTR(0x45);
         }
@@ -2702,7 +2703,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         {
             qptr = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]);
             slotPtrAddr = qptr + offsetFlags;
-            tmp = return0_8002A5B8((u8*)slotPtrAddr);
+            tmp = ObjModel_IsPackedResource((u8*)slotPtrAddr);
             if (tmp != 0)
             {
                 *sizeOut = ObjModel_GetUnpackedResourceSize((u8*)slotPtrAddr, *sizeOut);
@@ -2710,13 +2711,14 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         }
         break;
     case 0x51:
-        hiSel = MLDF_PTR(0x52);
-        if (hiSel != 0)
+        slotScratch = MLDF_PTR(0x52);
+        if (slotScratch != 0)
         {
             fileId = 0x51;
             if (sizeOut != NULL)
             {
-                *sizeOut = (((u32*)(hiSel + 4))[entryIndex] & 0xfffffff) - (((u32*)hiSel)[entryIndex] & 0xfffffff);
+                *sizeOut = (((u32*)(slotScratch + 4))[entryIndex] & 0xfffffff) -
+                           (((u32*)slotScratch)[entryIndex] & 0xfffffff);
             }
         }
         offsetFlags = offsetFlags & 0xfffffff;
@@ -2724,7 +2726,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         {
             qptr = *(u32*)((fileId << 2) + (u32)&tbl->ptrs[0]);
             slotPtrAddr = qptr + offsetFlags;
-            tmp = return0_8002A5B8((u8*)slotPtrAddr);
+            tmp = ObjModel_IsPackedResource((u8*)slotPtrAddr);
             if (tmp != 0)
             {
                 *sizeOut = ObjModel_GetUnpackedResourceSize((u8*)slotPtrAddr, *sizeOut);
@@ -3250,7 +3252,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
         else if (fileId == 0x30 || fileId == 0x51 || fileId == 0x4a)
         {
             fileBuf = qptr + offsetFlags;
-            tmp = return0_8002A5B8((u8*)fileBuf);
+            tmp = ObjModel_IsPackedResource((u8*)fileBuf);
             if (tmp != 0)
             {
                 ObjModel_UnpackResourcePayload((u8*)fileBuf, *sizeOut, (u8*)destBuf,
@@ -4121,8 +4123,8 @@ void videoSwapFrameBuffers(u32 retraceCount)
     if (gGpuHangRecoveryEnabled != 0 && (u32)gGpuStallRetraceCount > 18000)
     {
         logGpuHang();
-        gxErrorFn_80060b40();
-        modelFn_800292e0();
+        mapBlockGpuRecoveryHook();
+        ObjModel_TouchModelCache();
         __GXAbortWaitPECopyDone();
         GXInitFifoBase(&fifo, renderFrameBuffer, 0x10000);
         GXSetCPUFifo(&fifo);
@@ -4147,7 +4149,7 @@ void videoSwapFrameBuffers(u32 retraceCount)
     }
 }
 
-void videoFn_800499e8(void)
+void videoBreakPointCallback(void)
 {
     char peek[12];
     int tok[3];

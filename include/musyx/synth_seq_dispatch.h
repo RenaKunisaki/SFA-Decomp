@@ -7,7 +7,6 @@ typedef struct SynthSequenceEvent SynthSequenceEvent;
 
 SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 groupIndex, u32* loopFlag);
 void synthQueueAllChannelEvents(void);
-void synthQueueChannelEventsForSection(u8 sectionIndex);
 u32 synthProcessChannelEventQueue(u8 groupIndex, u32 deltaTime);
 
 #endif /* MUSYX_SYNTH_SEQ_DISPATCH_H_ */

@@ -510,8 +510,8 @@ void landedarwing_updateAirborneMotion(GameObject* obj, LandedArwingState* state
     hitScratch.hitRadius = 0.0f;
     hitScratch.hitType = 3;
     hitDetect_calcSweptSphereBounds(&bounds, start, end, &radius, 1);
-    hitDetectFn_800691c0(obj, &bounds, 0, 1);
-    hitFound = hitDetectFn_80067958(obj, start, end, 1, hitScratch.hit, 0x20);
+    trackIntersectBroadphase(obj, &bounds, 0, 1);
+    hitFound = trackGetIntersect(obj, start, end, 1, hitScratch.hit, 0x20);
     if (hitFound != 0)
     {
         {
@@ -794,36 +794,36 @@ void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state)
     {
     case 0:
         obj->anim.rotX = 0;
-        headingAngle = atan2_8002178c(obj->anim.velocityZ, obj->anim.velocityY);
+        headingAngle = atan2Angle16(obj->anim.velocityZ, obj->anim.velocityY);
         obj->anim.rotY = (short)(headingAngle + 0x4000);
         obj->anim.rotZ = -0x4000;
         break;
     case 1:
         obj->anim.rotX = 0;
-        headingAngle = atan2_8002178c(obj->anim.velocityZ, obj->anim.velocityY);
+        headingAngle = atan2Angle16(obj->anim.velocityZ, obj->anim.velocityY);
         obj->anim.rotY = (short)(headingAngle + 0x4000);
         obj->anim.rotZ = 0x4000;
         break;
     case 2:
         obj->anim.rotX = 0x4000;
-        headingAngle = atan2_8002178c(obj->anim.velocityX, obj->anim.velocityY);
+        headingAngle = atan2Angle16(obj->anim.velocityX, obj->anim.velocityY);
         obj->anim.rotY = (short)(headingAngle + 0x4000);
         obj->anim.rotZ = -0x4000;
         break;
     case 3:
         obj->anim.rotX = 0x4000;
-        headingAngle = atan2_8002178c(obj->anim.velocityX, obj->anim.velocityY);
+        headingAngle = atan2Angle16(obj->anim.velocityX, obj->anim.velocityY);
         obj->anim.rotY = (short)(headingAngle + 0x4000);
         obj->anim.rotZ = 0x4000;
         break;
     case 5:
-        headingAngle = atan2_8002178c(obj->anim.velocityX, obj->anim.velocityZ);
+        headingAngle = atan2Angle16(obj->anim.velocityX, obj->anim.velocityZ);
         obj->anim.rotX = (short)(headingAngle + 0x8000);
         obj->anim.rotY = 0;
         obj->anim.rotZ = 0;
         break;
     case 4:
-        headingAngle = atan2_8002178c(obj->anim.velocityX, obj->anim.velocityZ);
+        headingAngle = atan2Angle16(obj->anim.velocityX, obj->anim.velocityZ);
         obj->anim.rotX = (short)(headingAngle + 0x8000);
         obj->anim.rotY = 0;
         obj->anim.rotZ = -0x8000;
@@ -873,7 +873,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
     end[2] = start[2] + obj->anim.velocityZ;
     radius = 100.0f;
     hitDetect_calcSweptSphereBounds(&bounds, start, end, &radius, 1);
-    hitDetectFn_800691c0(obj, &bounds, 0, 1);
+    trackIntersectBroadphase(obj, &bounds, 0, 1);
     one = 1.0f;
     while ((traveled < distanceRemaining) && (++stepCount < 10))
     {
@@ -884,7 +884,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
         end[0] = obj->anim.velocityX * stepScale + start[0];
         end[1] = obj->anim.velocityY * stepScale + start[1];
         end[2] = obj->anim.velocityZ * stepScale + start[2];
-        hitFound = hitDetectFn_80067958(obj, start, end, 1, hitScratch.hit, 0x20);
+        hitFound = trackGetIntersect(obj, start, end, 1, hitScratch.hit, 0x20);
         if (hitFound != 0)
         {
             dx = end[0] - start[0];
@@ -910,7 +910,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
     end[2] = -(4.0f * state->surfaceNormalZ - start[2]);
     hitScratch.hitRadius = 0.0f;
     hitScratch.hitType = 3;
-    hitFound = hitDetectFn_80067958(obj, start, end, 1, hitScratch.hit, 0x20);
+    hitFound = trackGetIntersect(obj, start, end, 1, hitScratch.hit, 0x20);
     if (hitFound != 0)
     {
         if ((((hitScratch.hit[0] != state->surfaceNormalX) ||
@@ -941,7 +941,7 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
         end[2] = 10.0f * end[2] + start[2];
         hitScratch.hitRadius = 0.0f;
         hitScratch.hitType = 3;
-        hitFound = hitDetectFn_80067958(obj, start, end, 1, hitScratch.hit, 0x20);
+        hitFound = trackGetIntersect(obj, start, end, 1, hitScratch.hit, 0x20);
         if (hitFound != 0)
         {
             landedarwing_resolveSurfaceCollision(obj, state, hitScratch.hit, end);

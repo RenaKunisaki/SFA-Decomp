@@ -5,7 +5,6 @@
 #include "main/attract_movie_api.h"
 
 void THPPlayerDrawCurrentFrame(void *yTexture,void *uTexture,void *vTexture,u32 width,u32 height);
-void AttractMovieAudio_Mix(s16 *dst,s16 *src,u32 sampleCount);
 void AttractMovieAudio_DmaCallback(void);
 void THPPlayerPostDrawDone(void);
 BOOL THPPlayerGetVideoInfo(void *dst);

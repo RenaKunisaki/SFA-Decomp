@@ -201,6 +201,36 @@ functions here punish the attempt by an order of magnitude more than the residua
 **Does not fire when** the two facts happen to agree — then there is nothing to trade and the
 lever is simply inert.
 
+### 6. Restore an inlined helper boundary to restore a local's lifetime
+
+**Shape.** Retail initializes one source loop counter and derives two strength-reduced offsets
+from it (`li i,0; mr heapOffset,i; mr nodeOffset,i`). A flattened reconstruction keeps the loop
+in its caller and gives the counter an independent value (`li i,0; li heapOffset,0; mr
+nodeOffset,i`), even though the loop body is otherwise identical.
+
+**Source.** Recover the real `static inline` helper instead of spelling its body in the caller.
+In `pathSearchBegin`, the Dinosaur Planet lineage supplied both missing boundaries:
+`routeClear()` owns the 254-entry clear loop, while `routeHeapInsert()` accepts a distance and
+performs the `-1 - distance` max-heap inversion internally. The SFA equivalents are
+`pathSearchClear()` and `pathSearchHeapInsert()`.
+
+**Measured.** Restoring the heap API first moved `pathSearchBegin` **97.880 -> 98.449**.
+Moving the clear loop and its `i` local into `pathSearchClear()` then moved it **98.449 ->
+100.000**. The unit moved **99.49424 -> 99.92317** without changing
+`pathSearchAddNeighbor` (**99.780**).
+
+**Why this is a source fossil rather than arbitrary extraction:** the donor has the same route
+record, 254-entry capacity, clear loop, add-point flow, max-heap inversion, and sift-up/down
+helpers. The target's two `mr` instructions are exactly the copies MWCC emits when the inlined
+helper's local owns the induction lifetime.
+
+**Do not generalize this into "factor code until registers move."** Factoring the adjacent
+add-point sequence into another inline helper regressed `pathSearchAddNeighbor` **99.780 ->
+99.432** by swapping its saved-register homes. Replacing that function's already-correct manual
+sift-up block with the recovered helper regressed it to **99.194**. Splitting the sift-up body
+where it was otherwise inert also changed the raw object identity, so it was reverted. Require
+both lineage evidence and a measured gain at the exact call site.
+
 ## Refutations worth knowing before you spend a build
 
 **Transcribing the target's instruction order into C is not recovering its source.** Retail's

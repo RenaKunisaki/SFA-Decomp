@@ -413,123 +413,106 @@ typedef union ShadowBlurRow
     u32 words[38];
 } ShadowBlurRow;
 
-void boxBlurTexture(u8* texData, int size, int window, u32 fill)
-{
+static void boxBlurTexture(u8* texData, int size, int window, u32 fill) {
     ShadowBlurOutput blurred;
     ShadowBlurRow row;
     u8* data;
     u32 i;
 
     data = texData + 0x60;
-    if (window % 8 == 0)
-    {
+    if (window % 8 == 0) {
         u32 y = 0;
 
-        for (; y < size; y++)
-        {
+        for (; y < size; y++) {
             u32* tile = (u32*)(data + (y & 3) * 8 + (y >> 2) * 4 * size);
             u32* dst = row.words;
             u32* src;
-            u32* wp;
+            u32* tileDst;
             u32 x;
 
-            for (i = 0; i < (window >> 3); i++)
-            {
+            for (i = 0; i < (window >> 3); i++) {
                 dst[0] = fill;
                 dst++;
             }
             src = tile;
-            for (x = 0; x < size; x += 8)
-            {
+            for (x = 0; x < size; x += 8) {
                 dst[0] = src[0];
                 dst[1] = src[1];
                 dst += 2;
                 src += 8;
             }
-            for (i = 0; i < (window >> 3); i++)
-            {
+            for (i = 0; i < (window >> 3); i++) {
                 dst[0] = fill;
                 dst++;
             }
             boxBlurRow(row.bytes, blurred.bytes, size, window);
             src = blurred.words;
-            wp = tile;
-            for (x = 0; x < size; x += 8)
-            {
-                wp[0] = src[0];
-                wp[1] = src[1];
+            tileDst = tile;
+            for (x = 0; x < size; x += 8) {
+                tileDst[0] = src[0];
+                tileDst[1] = src[1];
                 src += 2;
-                wp += 8;
+                tileDst += 8;
             }
         }
         {
             u32 x;
 
-            for (x = 0; x < size; x++)
-            {
+            for (x = 0; x < size; x++) {
                 u8* col = data + (x & 7) + (x >> 3) * 32;
                 u32* dst = row.words;
-                u8* gp;
-                u8* bp;
-                u32 yy;
-                u32 padding;
+                u8* texturePtr;
+                u8* bufferPtr;
+                u32 yOffset;
+                u32 paddingWord;
 
-                for (padding = 0; padding < (window >> 3); padding++)
-                {
+                for (paddingWord = 0; paddingWord < (window >> 3); paddingWord++) {
                     dst[0] = fill;
                     dst++;
                 }
-                bp = row.bytes + (window >> 1);
-                gp = col;
-                for (yy = 0; yy < size; yy += 4)
-                {
-                    bp[0] = gp[0];
-                    bp[1] = gp[8];
-                    bp[2] = gp[16];
-                    bp[3] = gp[24];
-                    bp += 4;
-                    gp += (size >> 3) * 32;
+                bufferPtr = row.bytes + (window >> 1);
+                texturePtr = col;
+                for (yOffset = 0; yOffset < size; yOffset += 4) {
+                    bufferPtr[0] = texturePtr[0];
+                    bufferPtr[1] = texturePtr[8];
+                    bufferPtr[2] = texturePtr[16];
+                    bufferPtr[3] = texturePtr[24];
+                    bufferPtr += 4;
+                    texturePtr += (size >> 3) * 32;
                 }
                 dst = (u32*)(row.bytes + (size + (window >> 1)));
-                for (padding = 0; padding < (window >> 3); padding++)
-                {
+                for (paddingWord = 0; paddingWord < (window >> 3); paddingWord++) {
                     dst[0] = fill;
                     dst++;
                 }
                 boxBlurRow(row.bytes, blurred.bytes, size, window);
-                bp = blurred.bytes;
-                for (yy = 0; yy < size; yy += 4)
-                {
-                    col[0] = bp[0];
-                    col[8] = bp[1];
-                    col[16] = bp[2];
-                    col[24] = bp[3];
-                    bp += 4;
+                bufferPtr = blurred.bytes;
+                for (yOffset = 0; yOffset < size; yOffset += 4) {
+                    col[0] = bufferPtr[0];
+                    col[8] = bufferPtr[1];
+                    col[16] = bufferPtr[2];
+                    col[24] = bufferPtr[3];
+                    bufferPtr += 4;
                     col += (size >> 3) * 32;
                 }
             }
         }
-    }
-    else
-    {
+    } else {
         u32 y = 0;
-        u16 fillhw = fill;
+        u16 fillHalfword = fill;
 
-        for (; y < size; y++)
-        {
+        for (; y < size; y++) {
             u16* tile = (u16*)(data + (y & 3) * 8 + (y >> 2) * 4 * size);
             u16* src;
             u16* dst = row.halfwords;
             u32 x;
 
-            for (i = 0; i < (window >> 2); i++)
-            {
-                dst[0] = fillhw;
+            for (i = 0; i < (window >> 2); i++) {
+                dst[0] = fillHalfword;
                 dst++;
             }
             src = tile;
-            for (x = 0; x < size; x += 8)
-            {
+            for (x = 0; x < size; x += 8) {
                 dst[0] = src[0];
                 dst[1] = src[1];
                 dst[2] = src[2];
@@ -537,15 +520,13 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
                 dst += 4;
                 src += 16;
             }
-            for (i = 0; i < (window >> 2); i++)
-            {
-                dst[0] = fillhw;
+            for (i = 0; i < (window >> 2); i++) {
+                dst[0] = fillHalfword;
                 dst++;
             }
             boxBlurRow(row.bytes, blurred.bytes, size, window);
             src = blurred.halfwords;
-            for (x = 0; x < size; x += 8)
-            {
+            for (x = 0; x < size; x += 8) {
                 tile[0] = src[0];
                 tile[1] = src[1];
                 tile[2] = src[2];
@@ -557,45 +538,40 @@ void boxBlurTexture(u8* texData, int size, int window, u32 fill)
         {
             u32 x;
 
-            for (x = 0; x < size; x++)
-            {
+            for (x = 0; x < size; x++) {
                 u8* col = data + (x & 7) + (x >> 3) * 32;
                 u16* dst = row.halfwords;
-                u8* gp;
-                u8* bp;
-                u32 yy;
+                u8* texturePtr;
+                u8* bufferPtr;
+                u32 yOffset;
 
-                for (i = 0; i < (window >> 2); i++)
-                {
-                    dst[0] = fillhw;
+                for (i = 0; i < (window >> 2); i++) {
+                    dst[0] = fillHalfword;
                     dst++;
                 }
-                bp = row.bytes + (window >> 1);
-                gp = col;
-                for (yy = 0; yy < size; yy += 4)
-                {
-                    bp[0] = gp[0];
-                    bp[1] = gp[8];
-                    bp[2] = gp[16];
-                    bp[3] = gp[24];
-                    bp += 4;
-                    gp += (size >> 3) * 32;
+                bufferPtr = row.bytes + (window >> 1);
+                texturePtr = col;
+                for (yOffset = 0; yOffset < size; yOffset += 4) {
+                    bufferPtr[0] = texturePtr[0];
+                    bufferPtr[1] = texturePtr[8];
+                    bufferPtr[2] = texturePtr[16];
+                    bufferPtr[3] = texturePtr[24];
+                    bufferPtr += 4;
+                    texturePtr += (size >> 3) * 32;
                 }
                 dst = (u16*)(row.bytes + (size + (window >> 1)));
-                for (i = 0; i < (window >> 2); i++)
-                {
-                    dst[0] = fillhw;
+                for (i = 0; i < (window >> 2); i++) {
+                    dst[0] = fillHalfword;
                     dst++;
                 }
                 boxBlurRow(row.bytes, blurred.bytes, size, window);
-                bp = blurred.bytes;
-                for (yy = 0; yy < size; yy += 4)
-                {
-                    col[0] = bp[0];
-                    col[8] = bp[1];
-                    col[16] = bp[2];
-                    col[24] = bp[3];
-                    bp += 4;
+                bufferPtr = blurred.bytes;
+                for (yOffset = 0; yOffset < size; yOffset += 4) {
+                    col[0] = bufferPtr[0];
+                    col[8] = bufferPtr[1];
+                    col[16] = bufferPtr[2];
+                    col[24] = bufferPtr[3];
+                    bufferPtr += 4;
                     col += (size >> 3) * 32;
                 }
             }
@@ -658,22 +634,19 @@ void renderObjectShadowTexture(GameObject* obj)
     obj->anim.modelState->shadowOffsetY -= 64.0f * obj->anim.modelState->shadowScale;
 }
 
-void sortShadowEntriesDescending(ShadowSortEntry* arr, int count)
-{
+static void sortShadowEntriesDescending(ShadowSortEntry* arr, int count) {
     int gap = 1;
     int i, j;
     ShadowSortEntry tmp;
     int limit = (count - 1) / 9;
-    while (gap <= limit)
+    while (gap <= limit) {
         gap = gap * 3 + 1;
-    while (gap > 0)
-    {
-        for (i = gap + 1; i <= count; i++)
-        {
+    }
+    while (gap > 0) {
+        for (i = gap + 1; i <= count; i++) {
             tmp = arr[i - 1];
             j = i;
-            while (j > gap && arr[j - gap - 1].dist < tmp.dist)
-            {
+            while (j > gap && arr[j - gap - 1].dist < tmp.dist) {
                 arr[j - 1] = arr[j - gap - 1];
                 j -= gap;
             }
@@ -683,9 +656,6 @@ void sortShadowEntriesDescending(ShadowSortEntry* arr, int count)
     }
 }
 extern NewShadowEntry gNewShadowEntries[0x294 / sizeof(NewShadowEntry)];
-
-
-void sortShadowEntriesDescending(ShadowSortEntry* arr, int count);
 
 void renderShadows(int unused0, int unused1, int unused2)
 {
@@ -975,7 +945,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     slot->pitch = savedRotY;
     slot->yaw = savedRotX;
     slot->roll = savedRotZ;
-    if (getDrawDistanceFlag_8005cd48() != 0)
+    if (isDrawDistanceEnabled() != 0)
     {
         Camera_SetCurrentViewIndex(0);
         Camera_SetFovY(savedFovY);
@@ -1244,7 +1214,7 @@ void updateReflectionTextures(void)
     GXPixModeSync();
 }
 
-void maybeHudFn_8006c91c(void)
+void newShadowsBeginFrame(void)
 {
     f32 hi, lo;
     if (getHudHiddenFrameCount() == 0)
@@ -1366,7 +1336,7 @@ void createNewShadowDistortionTexture(void)
 /* Sample the animated noise field built from gNewShadowPlacements: sums the
    contribution of every active placement at texel (px,pz) for animation frame
    `frame`. out2 = sparkle intensity (0..1), out1 = accumulated shift term. */
-void evalNoisePlacements(f32 px, f32 pz, f32 frame, f32* placements, int count, f32* out1, f32* out2)
+static void evalNoisePlacements(f32 px, f32 pz, f32 frame, f32* placements, int count, f32* out1, f32* out2)
 {
     f32* place;
     int i;
@@ -1437,7 +1407,7 @@ void evalNoisePlacements(f32 px, f32 pz, f32 frame, f32* placements, int count, 
     *out1 = lbl_803DED40 * acc6 + 0.4375f;
     *out2 = acc5;
 }
-void initFn_8006d020(void)
+void newShadowsInitProceduralTextures(void)
 {
     u8 savedHeap;
     f32* placementRadius;
@@ -1714,7 +1684,7 @@ static inline void fillFalloffTexture(void)
     }
 }
 
-static inline void fillTextureCFB4(void)
+static inline void fillLightningTexture(void)
 {
     int j;
     int i;
@@ -2001,7 +1971,7 @@ void allocLotsOfTextures(void)
     updateHeavyFogTexture(0);
 
     gNewShadowLightningTexture = textureAlloc(0x20, 4, 1, 0, 0, 0, 0, 1, 1);
-    fillTextureCFB4();
+    fillLightningTexture();
     DCFlushRange((u8*)gNewShadowLightningTexture + 0x60, gNewShadowLightningTexture->dataSize);
 
     gNewShadowRingTexture = textureAlloc(0x80, 0x80, 1, 0, 0, 1, 1, 1, 1);
@@ -2104,7 +2074,7 @@ void allocLotsOfTextures(void)
     testAndSet_onlyUseHeap3(saved);
 }
 
-int audioPickSoundEffect_8006ed24(u8 a, u8 b)
+int surfaceSfxSelectTrigger(u8 a, u8 b)
 {
     u8* base = gSurfaceSfxTable;
     int idx = (u8)a;
@@ -2151,7 +2121,8 @@ int audioPickSoundEffect_8006ed24(u8 a, u8 b)
     return *(u16*)(base + v * 2);
 }
 
-void objAudioFn_8006edcc(GameObject* obj, int eventMask, u8 type, void* points, void* state, f32 unused, f32 scale)
+void objAudioDispatchEventMask(GameObject* obj, int eventMask, u8 type, void* points, void* state, f32 unused,
+                               f32 scale)
 {
     ObjAnimEventList events;
     int bit;
@@ -2164,5 +2135,5 @@ void objAudioFn_8006edcc(GameObject* obj, int eventMask, u8 type, void* points, 
             events.triggerCount++;
         }
     }
-    objAudioFn_8006ef38(obj, &events, type, points, state, unused, scale);
+    objAudioDispatchAnimEvents(obj, &events, type, points, state, unused, scale);
 }

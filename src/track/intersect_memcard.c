@@ -53,14 +53,14 @@ u32 gSaveCardSerialLo;
 u32 gSaveCardSerialHi;
 char* gSaveCardIoBuffer;
 void* gSaveCardWorkArea;
-void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
+void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type);
 void mtx44Identity(f32* mat);
 void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
 void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);
 void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
 
 
-void playerEarthWalkerAudioFn_8006f950(u8* obj, f32* pos, u8 flip, u8 type);
+void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type);
 
 
 /* 4x4 identity fill. */
@@ -747,7 +747,7 @@ void showMemCardError(u8 err)
  */
 void cardShowLoadingMsg(u8 kind)
 {
-    int* buttons;
+    GameObject** buttons;
     u32 saved;
     int frame;
     int j;
@@ -771,7 +771,7 @@ void cardShowLoadingMsg(u8 kind)
             drawRect(rectAlpha, rectAlpha, 0x280, 0x1E0);
             for (j = 0; j < count; j++)
             {
-                objRenderModelAndHitVolumes((GameObject*)buttons[j], 0, 0, 0, 0, 1.0f);
+                objRenderModelAndHitVolumes(buttons[j], 0, 0, 0, 0, 1.0f);
             }
             curUiDllDraw(0, 0, 0, 0);
         }

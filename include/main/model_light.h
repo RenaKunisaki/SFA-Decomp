@@ -143,7 +143,7 @@ ModelLightStruct* objCreateLight(void* owner, u8 addToList);
 ModelLightStruct* modelLightStruct_createPointLight(void* owner, u8 red, u8 green, u8 blue, u8 setFlag);
 void lightSetColor(int index, u8 red, u8 green, u8 blue);
 void modelLightStruct_freeSlot(ModelLightStruct** lightSlot);
-void objSetEventName(ModelLightStruct* light, int mode);
+void modelLightStruct_setTransformMode(ModelLightStruct* light, int mode);
 void ModelLightStruct_free(ModelLightStruct* light);
 
 void queueGlowRender(ModelLightStruct *light);

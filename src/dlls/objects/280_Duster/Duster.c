@@ -123,7 +123,7 @@ void duster_update(GameObject* obj) {
     state->priorityHit = 0;
     if (state->flags.floorCached == 0) {
         floorHitCount =
-            hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &floorHits, 0, 0);
+            trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &floorHits, 0, 0);
         bestFloorDelta = 100000.0f;
         bestFloorIndex = -1;
         for (floorIndex = 0; floorIndex < floorHitCount; floorIndex++) {

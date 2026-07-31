@@ -164,7 +164,7 @@ int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUp
             case DLL19B_ANIM_EVENT_GAMEBIT_0128_SET:
                 mainSetBits(0x128, 1);
                 if (gDll19BShaderResult == 0) {
-                    gDll19BShaderResult = return0_8005669C(1);
+                    gDll19BShaderResult = shaderReturnZeroStub(1);
                 }
                 break;
             case DLL19B_ANIM_EVENT_GAMEBIT_0127_SET:

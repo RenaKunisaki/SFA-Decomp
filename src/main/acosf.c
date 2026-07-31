@@ -15,7 +15,7 @@ float asinf(float value) {
     }
 
     reduced = 0.5f - 0.5f * absoluteValue;
-    root = sqrtf_8029312c(reduced);
+    root = sqrtfHighPrecision(reduced);
     polynomial = root * (0.19452852f * reduced + 0.9981575f);
     if (value >= 0.0f) {
         return 1.5707964f - 2.0f * polynomial;
@@ -35,7 +35,7 @@ float acosf_fast(float value) {
     }
 
     reduced = 0.5f - 0.5f * absoluteValue;
-    root = sqrtf_8029312c(reduced);
+    root = sqrtfHighPrecision(reduced);
     polynomial = root * (0.19452852f * reduced + 0.9981575f);
     if (value >= 0.0f) {
         return 2.0f * polynomial;
@@ -56,7 +56,7 @@ float acosf(float value) {
     }
 
     reduced = 0.5f - 0.5f * absoluteValue;
-    root = sqrtf_8029312c(reduced);
+    root = sqrtfHighPrecision(reduced);
     polynomial = root
         * (reduced * (reduced * (reduced * (reduced * (0.044916496f * reduced + 0.022284873f) + 0.045945134f) + 0.074900925f)
             + 0.16666986f) + 1.0f);

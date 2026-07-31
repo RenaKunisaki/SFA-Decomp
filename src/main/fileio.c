@@ -27,6 +27,8 @@ u8 gDvdErrorPauseActive;
 
 DVDCommandBlock gDvdStreamPlayAddrCommandBlock;
 
+static void DvdRead_Callback(s32 result, DVDFileInfo* fileInfo);
+
 void dvdCheckError(void)
 {
     int msgId = 0xffff;
@@ -155,7 +157,7 @@ int DVDRead(DVDFileInfo* fileInfo, void* buf, s32 size, s32 offset)
     return gDvdReadCallbackResult;
 }
 
-void DvdRead_Callback(s32 result, DVDFileInfo* fileInfo)
+static void DvdRead_Callback(s32 result, DVDFileInfo* fileInfo)
 {
     (void)fileInfo;
     gDvdReadCallbackResult = result;

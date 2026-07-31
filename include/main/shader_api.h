@@ -48,7 +48,7 @@ int objUpdateOpacity(struct GameObject* obj);
 void mapUpdateCameraPosByTransformSpace(void);
 void doPendingMapLoads(void);
 void mapReloadWithFadeout(void);
-void mapSetup(int mapType, f32 x, int* outMapId, int* outEvent, f32 y, f32 z);
+void mapSetup(int layerOffset, f32 x, int* outMapId, int* outMapDataFileId, f32 y, f32 z);
 void initMaps(void);
 void unloadMap(void);
 void beginLoadingMap(void);
@@ -60,7 +60,7 @@ void mapUnloadRomListPage(int pageIndex);
 void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rectC, int* rectD, int layer, int useVisGrid, int slot);
 int mapTextureOverrideAcquire(Texture* texture, u32 flags, int type);
 void mapTextureOverrideRelease(Texture* texture, int type);
-s16* return0_80056694(struct MapBlockData* block, int textureSlot);
-int return0_8005669C(int unused);
+s16* mapBlockFindTextureOverrideIndex(struct MapBlockData* block, int textureSlot);
+int shaderReturnZeroStub(int unused);
 
 #endif /* MAIN_SHADER_API_H_ */

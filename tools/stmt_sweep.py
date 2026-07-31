@@ -466,7 +466,10 @@ def install_restore_guard(src_file: Path, original: bytes):
         os._exit(130)
 
     atexit.register(finish)
-    for s in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+    sigs = [signal.SIGINT, signal.SIGTERM]
+    if hasattr(signal, "SIGHUP"):
+        sigs.append(signal.SIGHUP)
+    for s in sigs:
         try:
             signal.signal(s, on_signal)
         except (ValueError, OSError):

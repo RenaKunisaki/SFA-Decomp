@@ -1,14 +1,14 @@
 
 #include "main/gameloop_internal.h"
 
-int getButtonObjects(int** p)
+int getButtonObjects(GameObject*** p)
 {
     *p = gGameLoopButtonObjects;
     return gGameLoopButtonObjectCount;
 }
-void removeButtonObject(u32 object)
+void removeButtonObject(GameObject* object)
 {
-    int* buttonObjects;
+    GameObject** buttonObjects;
     int buttonObjectCount;
     int objectIndex;
     int removeIndex;
@@ -19,7 +19,7 @@ void removeButtonObject(u32 object)
     buttonObjectCount = gGameLoopButtonObjectCount;
     for (; objectIndex < buttonObjectCount; objectIndex++)
     {
-        if (buttonObjects[0] == object)
+        if (*buttonObjects == object)
         {
             removeIndex = objectIndex;
             break;

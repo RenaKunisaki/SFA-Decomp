@@ -1346,7 +1346,7 @@ int ObjHits_CheckHitVolumes(int objA, int objB, int srcObj, char checkA, char ch
     return 0;
 }
 
-void doNothing_800333C8(int objA, int objB, int att, void* state, void* attState, f32 dt) {
+void ObjHits_OnPlayerHitVolumeMiss(int objA, int objB, int attachment, void* state, void* attachmentState, f32 dt) {
 }
 
 void ObjHits_CheckObjectHitVolumes(int objA, int objB, int attA, int attB, f32 dt) {
@@ -1411,7 +1411,7 @@ void ObjHits_CheckObjectHitVolumes(int objA, int objB, int attA, int attB, f32 d
             result = ObjHits_CheckHitVolumes(attA, objB, objA, 1, 0, mask, stateA->skeletonHitMask & 0xf);
         }
         if ((result == 0) && (((GameObject*)objA)->anim.classId == 1)) {
-            doNothing_800333C8(objA, objB, attA, stateA, attStateA, dt);
+            ObjHits_OnPlayerHitVolumeMiss(objA, objB, attA, stateA, attStateA, dt);
         }
     }
     result = 0;
@@ -1455,7 +1455,7 @@ void ObjHits_CheckObjectHitVolumes(int objA, int objB, int attA, int attB, f32 d
             result = ObjHits_CheckHitVolumes(attB, objA, objB, 1, 0, mask, stateB->skeletonHitMask & 0xf);
         }
         if ((result == 0) && (((GameObject*)objB)->anim.classId == 1)) {
-            doNothing_800333C8(objB, objA, attB, stateB, attStateB, dt);
+            ObjHits_OnPlayerHitVolumeMiss(objB, objA, attB, stateB, attStateB, dt);
         }
     }
 }
@@ -1968,8 +1968,8 @@ void ObjHits_CheckTrackContact(int objA, int objB) {
         }
         if (pointCount != 0) {
             hitDetect_calcSweptSphereBounds(&bounds, startPoints, endPoints, hb.radii, pointCount);
-            hitDetectFn_800691c0((GameObject*)objB, &bounds, stateB->trackContactMask, 1);
-            contact = hitDetectFn_80067958((GameObject*)objB, startPoints, endPoints, pointCount, hb.out, 0);
+            trackIntersectBroadphase((GameObject*)objB, &bounds, stateB->trackContactMask, 1);
+            contact = trackGetIntersect((GameObject*)objB, startPoints, endPoints, pointCount, hb.out, 0);
             if (contact != 0) {
                 if ((contact & 1) != 0) {
                     pointCount = 0;
@@ -2514,27 +2514,28 @@ typedef struct ObjPathPoint {
 } ObjPathPoint;
 
 void ObjHitbox_SetStateIndex(GameObject* object, ObjHitReactState* hitStatePtr, int stateIndex) {
-    ObjHitsPriorityState* hitState;
-    int i;
+    ObjHitsPriorityState* priorityState;
+    int modelOrSlotIndex;
     ObjHitsPriorityWorkSlot* workSlot;
 
-    i = object->anim.modelInstance->modelCount;
-    if (stateIndex >= i) {
-        stateIndex = i - 1;
+    modelOrSlotIndex = object->anim.modelInstance->modelCount;
+    if (stateIndex >= modelOrSlotIndex) {
+        stateIndex = modelOrSlotIndex - 1;
     } else if (stateIndex < 0) {
         stateIndex = 0;
     }
-    hitState = (ObjHitsPriorityState*)hitStatePtr;
-    if (hitState->stateIndex == stateIndex) {
+    priorityState = (ObjHitsPriorityState*)hitStatePtr;
+    if (priorityState->stateIndex == stateIndex) {
         return;
     }
-    for (i = 0; (s16)i < OBJHITS_PRIORITY_WORK_SLOT_COUNT; i++) {
-        workSlot = &gObjHitsPriorityHitStates[i];
+    for (modelOrSlotIndex = 0; (s16)modelOrSlotIndex < OBJHITS_PRIORITY_WORK_SLOT_COUNT;
+         modelOrSlotIndex++) {
+        workSlot = &gObjHitsPriorityHitStates[modelOrSlotIndex];
         if ((workSlot->active != 0) && (workSlot->object == object)) {
             workSlot->active = 0;
         }
     }
-    hitState->stateIndex = stateIndex;
+    priorityState->stateIndex = stateIndex;
     return;
 }
 
@@ -3299,13 +3300,13 @@ int objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance) {
     return nearest;
 }
 
-u32* objGetAllOfType(int group, int* countOut) {
-    if ((group < 0) || (group >= OBJTYPE_COUNT)) {
+GameObject** objGetAllOfType(int group, int* countOut) {
+    if (group < 0 || group >= OBJTYPE_COUNT) {
         *countOut = 0;
         return 0x0;
     }
     *countOut = gObjectTypeIndices.offsets[group + 1] - gObjectTypeIndices.offsets[group];
-    return (u32*)(gObjectTypeList + gObjectTypeIndices.offsets[group]);
+    return (GameObject**)(gObjectTypeList + gObjectTypeIndices.offsets[group]);
 }
 
 void objFreeObjectType(int obj, int group) {
@@ -4164,7 +4165,7 @@ static inline int playerEyeAnim_FindJoint(ObjAnimComponent* objAnim, int tag) {
     return joint;
 }
 
-void playerEyeAnimFn_80038988(int obj, int blinkState, u16 flags) {
+void playerUpdateBlinkAnimation(int obj, int blinkState, u16 flags) {
 
     PlayerBlinkState* bs = (PlayerBlinkState*)blinkState;
     f32 leftScale;
@@ -4457,7 +4458,7 @@ ObjTextureRuntimeSlot* objFindTexture(GameObject* obj, int target, int unusedMat
     return result;
 }
 
-void objPosFn_80039510(GameObject* obj, int key, f32* outPosition) {
+void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
     int* table;
     int i;
     int k;
@@ -4484,28 +4485,28 @@ void objPosFn_80039510(GameObject* obj, int key, f32* outPosition) {
     outPosition[2] += playerMapOffsetZ;
 }
 
-s16* objModelGetVecFn_800395d8(GameObject* obj, int target) {
+s16* objFindJointPoseVector(GameObject* obj, int key) {
     int vecOffset;
-    int entries;
+    int jointData;
     int entryIdx;
-    void* m;
+    void* modelDef;
     s16* result;
     int count;
     int i;
 
     result = NULL;
-    m = OBJPRINT_MODEL_INSTANCE(obj);
-    if (m != NULL) {
+    modelDef = OBJPRINT_MODEL_INSTANCE(obj);
+    if (modelDef != NULL) {
         entryIdx = 0;
         vecOffset = 0;
-        count = OBJPRINT_JOINT_COUNT(m);
+        count = OBJPRINT_JOINT_COUNT(modelDef);
         for (i = 0; i < count; i++) {
-            entries = *(int*)&((ObjDef*)m)->jointData;
-            if ((int)*(u8*)(entries + OBJPRINT_ACTIVE_BANK_INDEX(obj) + entryIdx + 1) != 0xff &&
-                (s32) * (u8*)(entries + entryIdx) == target) {
+            jointData = *(int*)&((ObjDef*)modelDef)->jointData;
+            if ((int)*(u8*)(jointData + OBJPRINT_ACTIVE_BANK_INDEX(obj) + entryIdx + 1) != 0xff &&
+                (s32) * (u8*)(jointData + entryIdx) == key) {
                 result = (s16*)((char*)(obj)->anim.jointPoseData + vecOffset);
             }
-            entryIdx += OBJPRINT_MODEL_COUNT(m) + 1;
+            entryIdx += OBJPRINT_MODEL_COUNT(modelDef) + 1;
             vecOffset += 0x12;
         }
     }
@@ -4556,7 +4557,7 @@ void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 
     }
 }
 
-int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b) {
+static int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b) {
     f32 buf[4];
     f32 ratio;
     s16 lo;
@@ -4595,7 +4596,7 @@ int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b) {
     }
     return 0;
 }
-int characterTrackJointYaw(s16* curve, s16* state) {
+static int characterTrackJointYaw(s16* curve, s16* state) {
     f32 buf[4];
     f32 ratio;
     s16 lo;
@@ -4635,10 +4636,7 @@ int characterTrackJointYaw(s16* curve, s16* state) {
     return 0;
 }
 
-int characterTrackJointPitch(s16* curve, s16* state, f32 a, f32 b);
-int characterTrackJointYaw(s16* curve, s16* state);
-
-void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val) {
+static void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val) {
     int masked;
     int flag;
 
@@ -4712,7 +4710,7 @@ void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val) {
     }
 }
 
-void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val) {
+static void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val) {
     int masked;
     int flag;
 
@@ -4855,8 +4853,8 @@ void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 
         state->headTrackMode = (s16)(state->headTrackMode | (flag << 8));
     }
 }
-s16 objMathFn_8003a380(GameObject* obj, GameObject* target, f32* pos, u8* p4, s16* spd, f32 yOff, int unused,
-                       int basePitch) {
+s16 objJointTracksAimAtTarget(GameObject* obj, GameObject* target, f32* pos, u8* p4, s16* spd, f32 yOff, int unused,
+                              int basePitch) {
     s16 src[2];
     s16 dst[2];
     GameObject* go = obj;
@@ -5026,7 +5024,7 @@ void objJointTracksSetAngles(u8* channelData, int count, s16 yaw, s16 pitch) {
 
 void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 unused);
 
-void objModelClearVecFn_8003aa40(GameObject* obj) {
+void objModelClearJointVectors(GameObject* obj) {
     s16* found;
     int slot;
 
@@ -5089,7 +5087,7 @@ void characterDecayJointVecs(GameObject* obj, int* keys, int count) {
     }
 }
 
-void objFn_8003acfc(GameObject* obj, int* keys, int count, u8* out) {
+void objJointTracksCaptureCurrentAngles(GameObject* obj, int* keys, int count, u8* out) {
     s16* found;
     int idx;
 
@@ -5333,7 +5331,7 @@ void objSetColorFilter(s16 a, s16 b, s16 c) {
 
 #define OBJPRINT_CHILD_TABLE(staff) (*(char**)(*(char**)((staff) + 0x50) + 0x2c))
 
-void staffMtxFn_8003b620(int staffArg, GameObject* objArg, int modelArg, int a, int b, int c) {
+void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg, int a, int b, int c) {
     f32 va[3];
     Vec vb;
     int k;
@@ -5493,7 +5491,7 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag) {
     for (i = 0, walk = (int)obj; i < (s32)(u32)obj->childCount; i++) {
         int staff = *(int*)&((GameObject*)walk)->childObjs[0];
         if (((GameObject*)staff)->anim.classId == 0x2d) {
-            staffMtxFn_8003b620(staff, obj, (int)OBJPRINT_ACTIVE_BANK(staff), a, b, c);
+            staffUpdateSegmentTransforms(staff, obj, (int)OBJPRINT_ACTIVE_BANK(staff), a, b, c);
         }
         walk += 4;
     }

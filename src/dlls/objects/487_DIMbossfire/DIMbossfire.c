@@ -133,7 +133,7 @@ void dimbossfire_update(GameObject* obj) {
                 state->light = light;
                 if (state->light != NULL) {
                     modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
-                    lightSetFieldBC_8001db14(state->light, 1);
+                    modelLightStruct_setFieldBC(state->light, 1);
                     if (placement->flameColor != 0) {
                         modelLightStruct_setDiffuseColor(state->light, 0xff, 0x7f, 0, 0);
                     } else {

@@ -71,7 +71,7 @@ typedef struct RomCurveDef
     u32 id;
     s8 action;
     s8 type;
-    u8 pad1A;
+    u8 unk1A;
     s8 blockedLinkMask;
     s32 linkIds[ROMCURVE_LINK_COUNT];
 } RomCurveDef;
@@ -259,8 +259,6 @@ RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, in
 void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, f32 step);
 void curves_setSegmentCollision(CurvesCollisionState* state, int count, f32* segmentLocalPoints, f32* radii, s8* types);
 void curves_updateQueryBounds(GameObject* obj, CurvesCollisionState* state, f32 step);
-void FUN_800e65c8(CurvesCollisionState* state, u8 pointCount, f32* localPointPositions, f32* localPointRadii,
-                  s8 primaryHitType, s8 secondaryHitType);
 void curves_setLocalPointCollisionEx(CurvesCollisionState* state, int pointCount, f32* localPointPositions,
                                      f32* localPointRadii, int primaryHitType, int secondaryHitType);
 void curves_clear(CurvesCollisionState* state, int updateMode, u32 flags, int subtype);

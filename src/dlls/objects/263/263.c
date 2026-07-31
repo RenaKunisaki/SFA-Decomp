@@ -92,7 +92,7 @@ static const f32 gWindLift107DefaultRadius = 50.0f;
 WindLift107EffectResource* gWindLift107Resource170;
 WindLift107EffectResource* gWindLift107Resource91;
 
-void windLift107_finishSpitBurst(GameObject* obj, f32 playerDistance) {
+static void windLift107_finishSpitBurst(GameObject* obj, f32 playerDistance) {
     PartFxSpawnParams effectParams;
     WindLift107State* state;
     f32 zero;

@@ -1,6 +1,7 @@
 #ifndef DLLS_OBJECT_DESCRIPTOR_H_
 #define DLLS_OBJECT_DESCRIPTOR_H_
 
+#include "game/objects/object_interface.h"
 #include "global.h"
 
 typedef void (*ObjectDescriptorCallback)(void);

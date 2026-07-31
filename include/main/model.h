@@ -332,7 +332,7 @@ STATIC_ASSERT(offsetof(ObjModel, vtxBufDirty) == 0x60);
 
 /* Verlet-style bone-chain node (player tail etc.), simulated by the
  * modelChainUpdateNodesPassive / modelChainUpdateNodes /
- * modelChainInitNodesFromJoints / modelAnimFn_80026790 cluster. */
+ * modelChainInitNodesFromJoints / modelChainApplyDampingAndJitter cluster. */
 typedef struct ObjModelChainNode {
     Vec pos;         /* 0x00: current world position */
     Vec posDelta;    /* 0x0C: per-frame momentum (damped + jittered) */
@@ -410,8 +410,8 @@ void Model_GetVertexPosition(ModelFileHeader* model, int vertexIndex, f32* out);
 void ObjModel_InitRenderBuffers(void);
 void ObjModel_InitResourceCaches(void);
 void ObjModel_InitScratchBuffers(void);
-void modelFn_800292e0(void);
-void* return0_8002969C(int resourceId, int arg, void* buffer);
+void ObjModel_TouchModelCache(void);
+void* loadModelInstance(int resourceId, int arg, void* buffer);
 void* loadAnimation(int hdr, s16 id, int b, u8* bufout);
 
 int loadModelAndAnimTabs(void);

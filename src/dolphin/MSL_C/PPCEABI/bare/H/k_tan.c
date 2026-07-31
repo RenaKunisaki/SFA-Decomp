@@ -3,7 +3,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 
-float sqrtf_8029312c(float value) {
+float sqrtfHighPrecision(float value) {
     float reciprocalSqrt;
     float halfValue;
 

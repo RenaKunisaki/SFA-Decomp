@@ -451,13 +451,13 @@ static inline void mcmdUntrapEvent(McmdVoiceState* svoice, McmdCommandArgs* cste
  */
 static inline void mcmdGetVID(McmdVoiceState* svoice, McmdCommandArgs* cstep)
 {
-    if (((cstep->flags >> 0x10) & 0xff) == 0)
+    if ((u8)(cstep->flags >> 0x10) == 0)
     {
-        varSet32(svoice, 0, (cstep->flags >> 8) & 0xff, svoice->vidListNode->id);
+        varSet32(svoice, 0, (u8)(cstep->flags >> 8), svoice->vidListNode->id);
     }
     else
     {
-        varSet32(svoice, 0, (cstep->flags >> 8) & 0xff, (u32)svoice->cloneVidListNode);
+        varSet32(svoice, 0, (u8)(cstep->flags >> 8), (u32)svoice->cloneVidListNode);
     }
 }
 
@@ -536,11 +536,8 @@ static inline void mcmdIfModulation(McmdVoiceState* svoice, McmdCommandArgs* cst
 
 static inline void mcmdSRCModeSelect(McmdVoiceState* svoice, McmdCommandArgs* cstep)
 {
-    u8 filter;
-
     hwSetSRCType(svoice->voiceHandle & 0xff, (cstep->flags >> 8) & 0xff);
-    filter = (cstep->flags >> 0x10) & 0xff;
-    hwSetPolyPhaseFilter(svoice->voiceHandle & 0xff, filter);
+    hwSetPolyPhaseFilter(svoice->voiceHandle & 0xff, (u8)(cstep->flags >> 0x10));
     MAC_CFLAGS(svoice) |= MAC_FLAG64(0x800, 0);
 }
 
@@ -564,18 +561,18 @@ static inline void mcmdSetupLFO(McmdVoiceState* svoice, McmdCommandArgs* cstep)
 {
     u32 time;
     u32 phase;
-    u8 n;
+    u8 controllerIndex;
 
-    n = (u8)(cstep->flags >> 8);
+    controllerIndex = (u8)(cstep->flags >> 8);
     time = (u16)(cstep->flags >> 0x10);
     sndConvertMs(&time);
-    if (svoice->exCtrls[n].rampFrames != 0)
+    if (svoice->exCtrls[controllerIndex].rampFrames != 0)
     {
         phase = (u16)cstep->value;
         sndConvertMs(&phase);
-        svoice->exCtrls[n].unk00 = phase;
+        svoice->exCtrls[controllerIndex].unk00 = phase;
     }
-    svoice->exCtrls[n].rampFrames = time;
+    svoice->exCtrls[controllerIndex].rampFrames = time;
 }
 
 /*

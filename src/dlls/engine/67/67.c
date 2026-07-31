@@ -242,7 +242,7 @@ void CameraModeStaffAnim_update(CameraObject* camera) {
             needsReset =
                 camcontrol_getTargetPosition(camera, &target->anim, &camera->anim.worldPosX, &camera->anim.rotY);
             if (needsReset == 1) {
-                doNothing_80103660(1);
+                camcontrol_onTargetTraceBlocked(1);
             }
             camera->probePosX = camera->anim.worldPosX;
             camera->probePosY = camera->anim.worldPosY;

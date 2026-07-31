@@ -37,8 +37,7 @@ void PushFreeTextureSet(OSMessage msg)
     OSSendMessage(&gPicMenuFreeTextureSetQueue, msg, OS_MESSAGE_NOBLOCK);
 }
 
-void AttractMovieVideo_Decode(void* param)
-{
+static void AttractMovieVideo_Decode(void* param) {
     AttractMoviePlayer* player;
     char* db;
     AttractMoviePlayer* player2;
@@ -60,20 +59,15 @@ void AttractMovieVideo_Decode(void* param)
     player2 = &gAttractMoviePlayer;
     componentKind = (u8*)player2;
 
-    while (i < player->compInfo.mNumComponents)
-    {
-        switch (componentKind[0x70])
-        {
-        case THP_COMPONENT_VIDEO:
-        {
+    while (i < player->compInfo.mNumComponents) {
+        switch (componentKind[0x70]) {
+        case THP_COMPONENT_VIDEO: {
             s32 dec = THPVideoDecode(dvdData, ((AttractMovieTextureSet*)readMsg)->yTexture,
                                      ((AttractMovieTextureSet*)readMsg)->uTexture,
                                      ((AttractMovieTextureSet*)readMsg)->vTexture, player2->thpWorkArea);
             player2->videoError = dec;
-            if (dec != 0)
-            {
-                if (gPicMenuVideoDecodePrepareReady != 0)
-                {
+            if (dec != 0) {
+                if (gPicMenuVideoDecodePrepareReady != 0) {
                     PrepareReady(0);
                     gPicMenuVideoDecodePrepareReady = 0;
                 }
@@ -96,26 +90,21 @@ void AttractMovieVideo_Decode(void* param)
         i++;
     }
 
-    if (gPicMenuVideoDecodePrepareReady != 0)
-    {
+    if (gPicMenuVideoDecodePrepareReady != 0) {
         PrepareReady(1);
         gPicMenuVideoDecodePrepareReady = 0;
     }
 }
 
-void* AttractMovieVideo_DecoderForOnMemory(void* param)
-{
+static void* AttractMovieVideo_DecoderForOnMemory(void* param) {
     AttractMoviePlayer* player = &gAttractMoviePlayer;
     u32 frameSize = player->frameStride;
     void* cur = param;
     int i = 0;
 
-    while (1)
-    {
-        if (player->audioExists != 0)
-        {
-            while (player->videoDecodeCount < 0)
-            {
+    while (1) {
+        if (player->audioExists != 0) {
+            while (player->videoDecodeCount < 0) {
                 {
                     u32 intr = OSDisableInterrupts();
                     player->videoDecodeCount += 1;
@@ -126,17 +115,13 @@ void* AttractMovieVideo_DecoderForOnMemory(void* param)
                     u32 bOff = player->initReadFrame;
                     u32 sum = i + bOff;
                     u32 pos = sum % (cols = player->header.mNumFrames);
-                    if (pos == cols - 1)
-                    {
-                        if (!(player->playFlags & 1))
-                        {
+                    if (pos == cols - 1) {
+                        if (!(player->playFlags & 1)) {
                             break; /* pos==cols-1, not looping: go to decode */
                         }
                         frameSize = *(u32*)cur;
                         cur = player->loopFrame;
-                    }
-                    else
-                    {
+                    } else {
                         u32 nextSize = *(u32*)cur;
                         cur = (char*)cur + frameSize;
                         frameSize = nextSize;
@@ -154,20 +139,14 @@ void* AttractMovieVideo_DecoderForOnMemory(void* param)
             u32 bOff = player->initReadFrame;
             u32 sum = i + bOff;
             u32 pos = sum % (cols = player->header.mNumFrames);
-            if (pos == cols - 1)
-            {
-                if (player->playFlags & 1)
-                {
+            if (pos == cols - 1) {
+                if (player->playFlags & 1) {
                     frameSize = *(u32*)cur;
                     cur = player->loopFrame;
-                }
-                else
-                {
+                } else {
                     OSSuspendThread(&gPicMenuVideoDecodeThread);
                 }
-            }
-            else
-            {
+            } else {
                 u32 nextSize = *(u32*)cur;
                 cur = (char*)cur + frameSize;
                 frameSize = nextSize;
@@ -177,24 +156,19 @@ void* AttractMovieVideo_DecoderForOnMemory(void* param)
     }
 }
 
-void* AttractMovieVideo_Decoder(void* unused)
-{
+static void* AttractMovieVideo_Decoder(void* unused) {
     AttractMoviePlayer* player = &gAttractMoviePlayer;
     void* msg;
 
-    while (1)
-    {
-        if (player->audioExists != 0)
-        {
-            while (player->videoDecodeCount < 0)
-            {
+    while (1) {
+        if (player->audioExists != 0) {
+            while (player->videoDecodeCount < 0) {
                 msg = PopReadedBuffer2();
                 {
                     u32 cols = player->header.mNumFrames;
                     u32 bOff = player->initReadFrame;
                     u32 pos = (*(u32*)((char*)msg + 4) + bOff) % cols;
-                    if (pos == cols - 1 && !(player->playFlags & 1))
-                    {
+                    if (pos == cols - 1 && !(player->playFlags & 1)) {
                         AttractMovieVideo_Decode(msg);
                     }
                 }
@@ -206,12 +180,9 @@ void* AttractMovieVideo_Decoder(void* unused)
                 }
             }
         }
-        if (player->audioExists != 0)
-        {
+        if (player->audioExists != 0) {
             msg = PopReadedBuffer2();
-        }
-        else
-        {
+        } else {
             msg = PopReadedBuffer();
         }
         AttractMovieVideo_Decode(msg);

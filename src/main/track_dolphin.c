@@ -69,9 +69,9 @@ typedef struct TrackTriangle TrackTriangle;
 u32 gTrackTriangleBufferEnd;
 s16 gTrackTriangleCount;
 u8 gActiveTrackBlockCount;
-TrackGroundHit* lbl_803DCF68;
-int lbl_803DCF64;
-s8 lbl_803DCF60;
+TrackGroundHit* gTrackGroundHitWriteCursor;
+TrackGroundHit** gTrackGroundHitPtrs;
+s8 gTrackGroundHitCount;
 s16 gIntersectLineCount;
 s16 gIntersectPointCount;
 f32 lbl_803DCF58;
@@ -197,11 +197,11 @@ struct IntersectModLineObject
 #define MAP_DYNAMIC_SLOT_COUNT 64
 
 
-int mapLoadBlocksFn_800685cc(int base, int x0, int y0, int z0, int x1, int y1, int z1, int a, int b);
+int trackBuildBlockTriangles(int base, int x0, int y0, int z0, int x1, int y1, int z1, int a, int b);
 int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32 scale, f32 x0, f32 y0, f32 z0, f32 x1,
                 f32 y1, f32 z1, u8 flags);
-int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
-                      int flagsArg);
+int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
+                       int flagsArg);
 int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int flags, TrackBBoxHit* hit,
                                  GameObject* target, s8 lineMask, s8 segment, s8 yTolerance,
                                  GameObject* sourceObj);
@@ -233,7 +233,7 @@ int findSurfaceInYRange(GameObject* obj, f32 x, f32 lo, f32 z, f32 hi, f32* outS
         hi = lo;
         lo = t;
     }
-    n = hitDetectFn_80065e50(obj, x, lo, z, &arr, 0, HITQUERY_TEST_OBJECT_HITBOXES);
+    n = trackGetHeight(obj, x, lo, z, &arr, 0, HITQUERY_TEST_OBJECT_HITBOXES);
     *outSurfaceY = lo;
     *outSurfaceObj = NULL;
     for (i = 0; i < n; i++)
@@ -253,7 +253,7 @@ int findSurfaceInYRange(GameObject* obj, f32 x, f32 lo, f32 z, f32 hi, f32* outS
     return 0;
 }
 
-void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
+void Obj_SetParent(GameObject* obj, GameObject* newParent, int updateLocalTransform)
 {
     GameObject* oldParent;
     ObjHitsPriorityState* hitState;
@@ -299,7 +299,7 @@ void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
         yawSum = obj->anim.rotX;
     }
 
-    if (mode != 0)
+    if (updateLocalTransform != 0)
     {
         if (obj->anim.parent != NULL)
         {
@@ -348,7 +348,7 @@ void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode)
 int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 radius,
                                  s8 resolveCollision)
 {
-    f32 quadraticC, startDeltaX, timeA, startDistanceSq, startX, moveX, moveZ, quadraticB, negB;
+    f32 quadraticC, startDeltaX, timeA, startDistanceSq, startX, startZ, moveX, moveZ, quadraticB, negB;
     f32 separation, sqrtDiscriminant, denominator, separationX, timeB, hitTime, hitX, hitZ;
     f32 separationZ, planeOffset, normalX, penetration, discriminant, startDeltaZ, normalZ;
     f32 motionLengthSq, fourMotionLengthSq;
@@ -359,7 +359,8 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
     startX = x[0];
     startDeltaX = startX - centerX;
     startDistanceSq = startDeltaX * startDeltaX;
-    startDeltaZ = z[0] - centerZ;
+    startZ = z[0];
+    startDeltaZ = startZ - centerZ;
     {
         f32 deltaZSq = startDeltaZ * startDeltaZ;
         startDistanceSq = startDistanceSq + deltaZSq;
@@ -376,7 +377,7 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
     }
 
     moveX = x[1] - startX;
-    moveZ = z[1] - z[0];
+    moveZ = z[1] - startZ;
     motionLengthSq = moveX * moveX + moveZ * moveZ;
     if (motionLengthSq > 0.0f)
     {
@@ -1032,7 +1033,7 @@ int trackGetLineIntersect(f32* startPos, f32* endPos, f32 radius, int flags, Tra
         memcpy(worldStart, startPos, 0xc);
         memcpy(worldEnd, endPos, 0xc);
     }
-    objects = objGetAllOfType(6, &count);
+    objects = (u32*)objGetAllOfType(6, &count);
     for (i = 0; i < count; i++)
     {
         GameObject* target = (GameObject*)objects[i];
@@ -1168,7 +1169,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
     int lineIndex;
     int sourceLineCount;
     MapHitLine* sourceLine;
-    int lineOffset;
+    int lineByteOffset;
     int outputLineIndex;
     s16 previousGroup;
 
@@ -1206,13 +1207,13 @@ void intersectModLineBuild(IntersectModLineObject* obj)
     }
     {
         outputLineIndex = 0;
-        lineOffset = outputLineIndex;
-        for (; outputLineIndex < gIntersectLineCount; lineOffset += 0x10, outputLineIndex++)
+        lineByteOffset = outputLineIndex;
+        for (; outputLineIndex < gIntersectLineCount; lineByteOffset += sizeof(IntersectLine), outputLineIndex++)
         {
             int pointLinkIndex;
             s16* firstPointLinks;
             s16* secondPointLinks;
-            line = (IntersectLine*)((u8*)lbl_803DCF34 + lineOffset);
+            line = (IntersectLine*)((u8*)lbl_803DCF34 + lineByteOffset);
             pointLinkIndex = line->pt[0] * 2;
             firstPointLinks = &pointLinks[pointLinkIndex];
             if (firstPointLinks[0] > -1 && firstPointLinks[0] != outputLineIndex)
@@ -1315,8 +1316,6 @@ void trackIntersect(void)
     int sourceOffset;
     int blockIndex;
     int rowOffset;
-    int orderOffset;
-    int orderIndex;
     int sourceIndex;
     int endpoint;
     int gridX, gridZ;
@@ -1482,7 +1481,7 @@ void trackIntersect(void)
         {
             sortComplete = 1;
             for (sortIndex = 0, lineOffset = sortIndex; sortIndex < gIntersectLineCount - 1;
-                 lineOffset += 2, sortIndex++)
+                 lineOffset += sizeof(s16), sortIndex++)
             {
                 int firstType;
 
@@ -1493,7 +1492,7 @@ void trackIntersect(void)
                 if (firstType < ((s8)lineBytes[(secondLine = sortOrder[1]) * sizeof(IntersectLine) + 3] & 0x3f))
                 {
                     sortOrder[0] = secondLine;
-                    *(s16*)(lbl_803DCF40 + lineOffset + 2) = firstLine;
+                    *(s16*)(lbl_803DCF40 + lineOffset + sizeof(s16)) = firstLine;
                     sortComplete = 0;
                 }
             }
@@ -1522,12 +1521,10 @@ void trackIntersect(void)
     }
 
     previousType = -1;
-    orderIndex = 0;
-    orderOffset = orderIndex;
-    for (; orderIndex < gIntersectLineCount; orderOffset += 2, orderIndex++)
+    for (i = 0, lineOffset = i; i < gIntersectLineCount; lineOffset += 2, i++)
     {
         segmentType =
-            (s16)((s8) * (u8*)(lbl_803DCF34 + *(s16*)(gIntersectLineIndexTable + orderOffset) * 0x10 + 3) &
+            (s16)((s8) * (u8*)(lbl_803DCF34 + *(s16*)(gIntersectLineIndexTable + lineOffset) * 0x10 + 3) &
                   0x3f);
         if (segmentType >= 0x14)
         {
@@ -1536,7 +1533,7 @@ void trackIntersect(void)
         }
         if (previousType != segmentType)
         {
-            u16 v = orderIndex;
+            u16 v = i;
             int ti = segmentType * 2;
             gIntersectSegmentTypeTable[ti] = v;
             if (previousType != -1)
@@ -1635,7 +1632,7 @@ int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDept
     f32 best;
     f32 cur;
 
-    n = hitDetectFn_80065e50(obj, x, y, z, &arr, 0, queryMask);
+    n = trackGetHeight(obj, x, y, z, &arr, 0, queryMask);
     if (n != 0)
     {
         TrackGroundHit** arrp;
@@ -1675,7 +1672,7 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
     f32 firstDistance;
     f32 bestDistance;
 
-    hitCount = hitDetectFn_80065e50(obj, x, y, z, &hits, 0, queryMask);
+    hitCount = trackGetHeight(obj, x, y, z, &hits, 0, queryMask);
     if (hitCount != 0)
     {
         firstDistance = hits[0]->height;
@@ -1713,40 +1710,40 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
 
 int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset, int queryMask)
 {
-    TrackGroundHit** arr;
-    int n;
-    int i;
-    int bestIdx;
-    f32 best;
-    f32 cur;
+    TrackGroundHit** hits;
+    int hitCount;
+    int hitIndex;
+    int nearestIndex;
+    f32 firstDistance;
+    f32 bestDistance;
 
-    n = hitDetectFn_80065e50(obj, x, y, z, &arr, 0, queryMask);
-    if (n != 0)
+    hitCount = trackGetHeight(obj, x, y, z, &hits, 0, queryMask);
+    if (hitCount != 0)
     {
-        cur = arr[0]->height;
-        cur = y - cur;
-        if (cur >= 0.0f)
+        firstDistance = hits[0]->height;
+        firstDistance = y - firstDistance;
+        if (firstDistance >= 0.0f)
         {
-            best = cur;
+            bestDistance = firstDistance;
         }
         else
         {
-            cur = -cur;
-            best = cur;
+            firstDistance = -firstDistance;
+            bestDistance = firstDistance;
         }
-        bestIdx = 0;
-        for (i = 1; i < n; i++)
+        nearestIndex = 0;
+        for (hitIndex = 1; hitIndex < hitCount; hitIndex++)
         {
-            cur = arr[i]->height;
-            cur = y - cur;
-            cur = cur >= 0.0f ? cur : -cur;
-            if (cur < best)
+            f32 distance = hits[hitIndex]->height;
+            distance = y - distance;
+            distance = distance >= 0.0f ? distance : -distance;
+            if (distance < bestDistance)
             {
-                best = cur;
-                bestIdx = i;
+                bestDistance = distance;
+                nearestIndex = hitIndex;
             }
         }
-        *outGroundOffset = y - arr[bestIdx]->height;
+        *outGroundOffset = y - hits[nearestIndex]->height;
         return 0;
     }
     *outGroundOffset = 0.0f;
@@ -1841,102 +1838,91 @@ void trackCollectGroundHits(TrackTriangle* triStart, TrackTriangle* triEnd, Trac
         }
         if (inside == 0)
             continue;
-        if (lbl_803DCF60 >= 0x23)
+        if (gTrackGroundHitCount >= 0x23)
             break;
         if (desc->object != NULL)
         {
             Matrix_TransformPoint(desc->currentCollisionMatrix, qx, planeY, qz, &ox, &planeY, &oz);
             Matrix_TransformVector(desc->currentCollisionMatrix, vec, vec);
         }
-        lbl_803DCF68->height = planeY;
-        lbl_803DCF68->surfaceType = tri->surfaceType;
-        lbl_803DCF68->normalX = vec[0];
-        lbl_803DCF68->normalY = vec[1];
-        lbl_803DCF68->normalZ = vec[2];
-        lbl_803DCF68->object = desc->object;
-        lbl_803DCF68++;
-        lbl_803DCF60++;
+        gTrackGroundHitWriteCursor->height = planeY;
+        gTrackGroundHitWriteCursor->surfaceType = tri->surfaceType;
+        gTrackGroundHitWriteCursor->normalX = vec[0];
+        gTrackGroundHitWriteCursor->normalY = vec[1];
+        gTrackGroundHitWriteCursor->normalZ = vec[2];
+        gTrackGroundHitWriteCursor->object = desc->object;
+        gTrackGroundHitWriteCursor++;
+        gTrackGroundHitCount++;
     }
 }
 
-int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask)
-{
+int trackGetHeight(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask) {
     u8* base = (u8*)gIntersectSegmentTypeTable;
     TrackBlockDescriptor* desc = (TrackBlockDescriptor*)(base + 0x424);
     TrackBlockDescriptor* end;
     u8* ptr;
-    f32* p5;
+    TrackGroundHit* hit;
     int i, j;
+    int sortIndex;
     int sorted;
     int conv[6];
     f32 tx, ty, tz;
 
-    if (mode >= 0)
-    {
+    if (mode >= 0) {
         conv[0] = x;
         conv[3] = x;
         conv[1] = (int)(y - 10000.0f);
         conv[4] = (int)(10000.0f + y);
         conv[2] = z;
         conv[5] = z;
-        hitDetectFn_800691c0(obj, (TrackQueryBounds*)conv, queryMask, 1);
-    }
-    else
-    {
-        if (mode == -1)
+        trackIntersectBroadphase(obj, (TrackQueryBounds*)conv, queryMask, 1);
+    } else {
+        if (mode == -1) {
             mode = 0;
-        else
+        } else {
             mode = 1;
+        }
     }
 
-    lbl_803DCF68 = (TrackGroundHit*)(base + 0xdc);
-    lbl_803DCF64 = (int)(base + 0x50);
-    lbl_803DCF60 = 0;
+    gTrackGroundHitWriteCursor = (TrackGroundHit*)(base + 0xdc);
+    gTrackGroundHitPtrs = (TrackGroundHit**)(base + 0x50);
+    gTrackGroundHitCount = 0;
     end = (TrackBlockDescriptor*)(base + 0x424) + gActiveTrackBlockCount;
-    for (; desc < end; desc++)
-    {
-        if (lbl_803DCF60 >= 0x23)
+    for (; desc < end; desc++) {
+        if (gTrackGroundHitCount >= 0x23) {
             break;
-        if (desc->object != NULL)
-        {
+        }
+        if (desc->object != NULL) {
             Matrix_TransformPoint(desc->currentMatrix, x, 0.0f, z, &tx, &ty, &tz);
             trackCollectGroundHits(gTrackTriangleBuffer + desc->firstTriangle,
-                        gTrackTriangleBuffer + desc[1].firstTriangle, desc, tx, tz, mode);
-        }
-        else
-        {
+                                   gTrackTriangleBuffer + desc[1].firstTriangle, desc, tx, tz, mode);
+        } else {
             trackCollectGroundHits(gTrackTriangleBuffer + desc->firstTriangle,
-                        gTrackTriangleBuffer + desc[1].firstTriangle, desc, x, z, mode);
+                                   gTrackTriangleBuffer + desc[1].firstTriangle, desc, x, z, mode);
         }
     }
 
-    for (j = 0, ptr = base + 0xdc, i = 0; j < lbl_803DCF60; j++)
-    {
-        *(u8**)(lbl_803DCF64 + i) = ptr;
+    for (j = 0, ptr = base + 0xdc, i = 0; j < gTrackGroundHitCount; j++) {
+        *(u8**)((u8*)gTrackGroundHitPtrs + i) = ptr;
         ptr += 0x18;
         i += 4;
     }
 
     sorted = 0;
-    while (!sorted)
-    {
+    while (!sorted) {
         sorted = 1;
-        i = 0;
-        for (j = 0; j < lbl_803DCF60 - 1; j++)
-        {
-            p5 = ((f32**)(lbl_803DCF64 + i))[0];
-            if (*p5 < *((f32**)(lbl_803DCF64 + i))[1])
-            {
+        for (sortIndex = 0; sortIndex < gTrackGroundHitCount - 1; sortIndex++) {
+            if (gTrackGroundHitPtrs[sortIndex]->height < gTrackGroundHitPtrs[sortIndex + 1]->height) {
+                hit = gTrackGroundHitPtrs[sortIndex];
                 sorted = 0;
-                ((f32**)(lbl_803DCF64 + i))[0] = ((f32**)(lbl_803DCF64 + i))[1];
-                *(f32**)(lbl_803DCF64 + i + 4) = p5;
+                gTrackGroundHitPtrs[sortIndex] = gTrackGroundHitPtrs[sortIndex + 1];
+                gTrackGroundHitPtrs[sortIndex + 1] = hit;
             }
-            i += 4;
         }
     }
 
     *hitsOut = (TrackGroundHit**)(base + 0x50);
-    return lbl_803DCF60;
+    return gTrackGroundHitCount;
 }
 
 int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 y, u8 type)
@@ -2052,8 +2038,8 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
     return 1;
 }
 
-int hitDetectFn_800664fc(void* tri, f32* rayOrig, f32* rayDir, f32 maxd, f32* out29, f32* outNrm, f32 maxStep,
-                         f32* outDist, f32 epsArg)
+int trackSweepSphereAgainstEdge(void* tri, f32* rayOrig, f32* rayDir, f32 maxd, f32* out29, f32* outNrm,
+                                f32 maxStep, f32* outDist, f32 epsArg)
 {
     f32 nrm[3];
     f32 e[3];
@@ -2139,19 +2125,18 @@ int hitDetectFn_800664fc(void* tri, f32* rayOrig, f32* rayDir, f32 maxd, f32* ou
     return 0;
 }
 
-/* hitDetect_800667ec -- sweep each input sphere against the gathered triangle
+/* trackGetIntersect2 -- sweep each input sphere against the gathered triangle
  * lists, bouncing/sliding up to 10 times per slot; returns hit mask. */
 char sTrackHitOverflowError[] = "HIT OVERFLOW\n";
 
-int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
-                      int flagsArg)
+int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
+                       int flagsArg)
 {
     f32 *ep1, *ep2;
     f32 *sp1, *sp2;
     u8* slotp;
     u8* typeSlotp;
     f32* outp;
-    f32 *szp, *syp, *wzp, *wyp;
     f32 *edge1p, *edge2p, *vbp, *evecp;
     u8 found;
     u8* slotBase;
@@ -2225,10 +2210,6 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
     sp2 = startPos;
     slotp = slots;
     outp = slots;
-    wyp = &we[1];
-    wzp = &we[2];
-    szp = &ws[2];
-    syp = &ws[1];
     edge1p = edge1;
     edge2p = edge2;
     vbp = vb;
@@ -2244,7 +2225,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
         svFromp[2] = sp2[2];
         radius = *(f32*)(slotp + 0x40);
         typeSlotp = slotBase + i;
-        type = slotBase[i + 0x54];
+        type = typeSlotp[0x54];
         maxStep = radius + lbl_803DB660;
         rdatap[0] = radius;
         rdatap[1] = radius * radius;
@@ -2261,8 +2242,9 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
             {
                 if (desc->object != NULL)
                 {
-                    Matrix_TransformPoint(desc->alternateMatrix, svFromp[0], svFromp[1], svFromp[2], &ws[0], syp, szp);
-                    Matrix_TransformPoint(desc->currentMatrix, cur[0], cur[1], cur[2], &we[0], wyp, wzp);
+                    Matrix_TransformPoint(desc->alternateMatrix, svFromp[0], svFromp[1], svFromp[2], &ws[0],
+                                          &ws[1], &ws[2]);
+                    Matrix_TransformPoint(desc->currentMatrix, cur[0], cur[1], cur[2], &we[0], &we[1], &we[2]);
                 }
                 else
                 {
@@ -2270,8 +2252,8 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                     ws[1] = svFromp[1];
                     ws[2] = svFromp[2] - offZ;
                     we[0] = cur[0] - offX;
-                    wyp[0] = cur[1];
-                    wzp[0] = cur[2] - offZ;
+                    we[1] = cur[1];
+                    we[2] = cur[2] - offZ;
                 }
                 PSVECSubtract((Vec*)we, (Vec*)ws, (Vec*)delta);
                 mag = PSVECMag((Vec*)delta);
@@ -2400,8 +2382,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                             vb[2] = tri->vz[k];
                             PSVECSubtract((Vec*)vbp, (Vec*)va, (Vec*)evecp);
                             rdatap[2] = Vec3_Normalize(evecp);
-                            if (hitDetectFn_800664fc(va, ws, dir, mag, hitpt, plane, maxStep,
-                                                     &frac, 0.0f))
+                            if (trackSweepSphereAgainstEdge(va, ws, dir, mag, hitpt, plane, maxStep, &frac, 0.0f))
                             {
                                 hit = 1;
                                 goto hitCheck;
@@ -2561,7 +2542,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                         typeSlotp[0x58] = triFlags;
                         *(int*)(slotp + 0x5c) = objmtx;
                         bounces++;
-                        found = 0;
+                        goto slotComplete;
                     }
                     break;
                 }
@@ -2613,6 +2594,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
                 }
             }
         } while (found != 0);
+    slotComplete:
         if (bounces != 0)
         {
             if (norm4[1] >= 0.707f || norm4[1] <= -0.707f)
@@ -2637,7 +2619,7 @@ int hitDetect_800667ec(int mode, void* tri1, void* tri2, f32* startPos, f32* end
     return (u8)retLo | ((u8)retHi << 4);
 }
 
-int hitDetectFn_80067958(GameObject* contactSrc, f32* startPos, f32* endPos, int count, void* results, int flags)
+int trackGetIntersect(GameObject* contactSrc, f32* startPos, f32* endPos, int count, void* results, int flags)
 {
     int lim;
     f32* fp;
@@ -2728,9 +2710,8 @@ int hitDetectFn_80067958(GameObject* contactSrc, f32* startPos, f32* endPos, int
         }
     }
 
-    hitCount = hitDetect_800667ec(0, gTrackTriangleBuffer + tbl->firstTriangle,
-                                 gTrackTriangleBuffer + tbl[1].firstTriangle, startPos, endPos, count,
-                                 results, 0);
+    hitCount = trackGetIntersect2(0, gTrackTriangleBuffer + tbl->firstTriangle,
+                                 gTrackTriangleBuffer + tbl[1].firstTriangle, startPos, endPos, count, results, 0);
 
     fp = results;
     pp = results;
@@ -3003,9 +2984,9 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32
     return cur;
 }
 
-/* mapLoadBlocksFn_800685cc -- gather map-block collision triangles overlapping
+/* trackBuildBlockTriangles -- gather map-block collision triangles overlapping
  * the query box into the buffer at cur; returns advanced cursor. */
-int mapLoadBlocksFn_800685cc(cur, x0, y0, z0, x1, y1, z1, flags, doEdges)
+int trackBuildBlockTriangles(cur, x0, y0, z0, x1, y1, z1, flags, doEdges)
 int cur;
 int x0;
 int y0;
@@ -3412,7 +3393,7 @@ u8 doEdges;
     return cur;
 }
 
-void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 queryMask, int b)
+void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 queryMask, int b)
 {
     f32 f31 = (f32)(ranges->minX - 5);
     f32 f30 = (f32)(ranges->maxX + 5);
@@ -3446,7 +3427,7 @@ void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* ranges, u32 queryMa
         }
         else
         {
-            cur = mapLoadBlocksFn_800685cc((int)gTrackTriangleBuffer, f31, f29, f27, f30, f28, f26, queryMask, b);
+            cur = trackBuildBlockTriangles((int)gTrackTriangleBuffer, f31, f29, f27, f30, f28, f26, queryMask, b);
         }
         if ((u32)cur < gTrackTriangleBufferEnd && (masked & 1) && obj != NULL)
         {
@@ -3584,7 +3565,7 @@ void trackGetTriangleBuffer(int* outCount, int* outTable)
     *outTable = (int)gTrackTriangleBuffer;
 }
 
-void mapInitFn_80069990(void)
+void trackInitCollisionBuffers(void)
 {
     int i;
     int off;

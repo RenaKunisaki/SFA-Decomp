@@ -93,14 +93,14 @@ extern int gWorldPlanetSavedSelection;
 extern int gWorldPlanetGameBitTable[WORLDPLANET_PLANET_COUNT];
 extern WorldPlanetObjectTables gWorldPlanetObjectIdTable;
 
-extern WorldPlanetColorRGBA8 gWorldPlanetLightFrom;
-extern WorldPlanetColorRGBA8 gWorldPlanetLightTo;
+extern WorldPlanetColorRGBA8 gWorldPlanetAmbientFrom;
+extern WorldPlanetColorRGBA8 gWorldPlanetAmbientTo;
 extern WorldPlanetColorRGBA8 gWorldPlanetSkyColorFrom;
 extern WorldPlanetColorRGBA8 gWorldPlanetSkyColorTo;
-extern WorldPlanetColorRGBA8 gWorldPlanetAmbientFrom;
-extern WorldPlanetPaddedColorRGBA8 gWorldPlanetAmbientTo;
+extern WorldPlanetColorRGBA8 gWorldPlanetMoonFrom;
+extern WorldPlanetPaddedColorRGBA8 gWorldPlanetMoonTo;
+extern WorldPlanetColorRGBA8 gWorldPlanetCurMoon;
 extern WorldPlanetColorRGBA8 gWorldPlanetCurAmbient;
-extern WorldPlanetColorRGBA8 gWorldPlanetCurLight;
 extern WorldPlanetColorRGBA8 gWorldPlanetCurSky;
 
 void worldplanet_updateMapLighting(GameObject* obj);

@@ -100,8 +100,8 @@ STATIC_ASSERT(sizeof(WorldPlanetFoxSpawnSetup) == WORLDPLANET_FOX_SPAWN_SETUP_SI
 f32 gWorldPlanetPathProgress;
 int gWorldPlanetLoadedMapId;
 WorldPlanetColorRGBA8 gWorldPlanetCurSky;
-WorldPlanetColorRGBA8 gWorldPlanetCurLight;
 WorldPlanetColorRGBA8 gWorldPlanetCurAmbient;
+WorldPlanetColorRGBA8 gWorldPlanetCurMoon;
 u8 gWorldPlanetCurIntensity;
 f32 gWorldPlanetLightingLerpT;
 int lbl_803DDD10;
@@ -125,15 +125,6 @@ void worldplanet_updateMapLighting(GameObject* obj) {
     skySetBaseColor(WORLDPLANET_SKY_LIGHT_MASK, gWorldPlanetCurSky.red, gWorldPlanetCurSky.green,
                     gWorldPlanetCurSky.blue, WORLDPLANET_SKY_COLOR_SCALE, WORLDPLANET_SKY_COLOR_SCALE);
 
-    WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurLight, gWorldPlanetLightFrom, gWorldPlanetLightTo, red,
-                             gWorldPlanetLightingLerpT)
-    WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurLight, gWorldPlanetLightFrom, gWorldPlanetLightTo, green,
-                             gWorldPlanetLightingLerpT)
-    WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurLight, gWorldPlanetLightFrom, gWorldPlanetLightTo, blue,
-                             gWorldPlanetLightingLerpT)
-    skySetLightColor(WORLDPLANET_SKY_LIGHT_MASK, gWorldPlanetCurLight.red, gWorldPlanetCurLight.green,
-                     gWorldPlanetCurLight.blue);
-
     WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurAmbient, gWorldPlanetAmbientFrom, gWorldPlanetAmbientTo, red,
                              gWorldPlanetLightingLerpT)
     WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurAmbient, gWorldPlanetAmbientFrom, gWorldPlanetAmbientTo, green,
@@ -141,7 +132,16 @@ void worldplanet_updateMapLighting(GameObject* obj) {
     WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurAmbient, gWorldPlanetAmbientFrom, gWorldPlanetAmbientTo, blue,
                              gWorldPlanetLightingLerpT)
     skySetAmbientColor(WORLDPLANET_SKY_LIGHT_MASK, gWorldPlanetCurAmbient.red, gWorldPlanetCurAmbient.green,
-                       gWorldPlanetCurAmbient.blue);
+                     gWorldPlanetCurAmbient.blue);
+
+    WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurMoon, gWorldPlanetMoonFrom, gWorldPlanetMoonTo, red,
+                             gWorldPlanetLightingLerpT)
+    WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurMoon, gWorldPlanetMoonFrom, gWorldPlanetMoonTo, green,
+                             gWorldPlanetLightingLerpT)
+    WORLDPLANET_LERP_CHANNEL(gWorldPlanetCurMoon, gWorldPlanetMoonFrom, gWorldPlanetMoonTo, blue,
+                             gWorldPlanetLightingLerpT)
+    skySetMoonColor(WORLDPLANET_SKY_LIGHT_MASK, gWorldPlanetCurMoon.red, gWorldPlanetCurMoon.green,
+                       gWorldPlanetCurMoon.blue);
 
     gWorldPlanetCurIntensity = gWorldPlanetLightingLerpT * 128.0f + 32.0f;
     skySetLightDirection(WORLDPLANET_SKY_LIGHT_MASK, 0.739264f, 0.0f, 0.673415f);
@@ -155,12 +155,12 @@ u8 gWorldPlanetWarpMapIndices[6] = {0x76, 0x6E, 0x6F, 0x75, 0x74, 0};
 u8 gWorldPlanetLoadMapIndices[6] = {0x3D, 0x3C, 0x3A, 0x3E, 0x3B, 0};
 u8 gWorldPlanetBriefingSpeakerModel[8] = {2, 2, 1, 0, 0, 0, 0, 0};
 int gWorldPlanetSavedSelection = -1;
-WorldPlanetColorRGBA8 gWorldPlanetLightFrom = {0x21, 0x35, 0x3F, 0};
-WorldPlanetColorRGBA8 gWorldPlanetLightTo = {9, 0x0F, 0x1E, 0};
+WorldPlanetColorRGBA8 gWorldPlanetAmbientFrom = {0x21, 0x35, 0x3F, 0};
+WorldPlanetColorRGBA8 gWorldPlanetAmbientTo = {9, 0x0F, 0x1E, 0};
 WorldPlanetColorRGBA8 gWorldPlanetSkyColorFrom = {0xFF, 0xE1, 0x87, 0};
 WorldPlanetColorRGBA8 gWorldPlanetSkyColorTo = {0xC8, 0xE7, 0xFF, 0};
-WorldPlanetColorRGBA8 gWorldPlanetAmbientFrom = {0x74, 0xA2, 0x85, 0};
-WorldPlanetPaddedColorRGBA8 gWorldPlanetAmbientTo = {0x13, 0x23, 0x36, 0, {0, 0, 0, 0}};
+WorldPlanetColorRGBA8 gWorldPlanetMoonFrom = {0x74, 0xA2, 0x85, 0};
+WorldPlanetPaddedColorRGBA8 gWorldPlanetMoonTo = {0x13, 0x23, 0x36, 0, {0, 0, 0, 0}};
 
 /* Per-WorldPlanetSlot parameter table. Columns are WorldPlanetSlot 0..4
  * (Walled City / CloudRunner / Dinosaur / Dragon Rock / DarkIce).
@@ -270,7 +270,7 @@ void worldplanet_update(GameObject* obj) {
             warpToMap(gWorldPlanetWarpMapIndices[gWorldPlanetSelectionToIndex[state->selectedPlanet]], 0);
         }
     } else {
-        setFrameCountdown_800202c4(1);
+        setFrameCountdown(1);
         if ((state->flags & WORLDPLANET_STATE_FLAG_CAMERA_SET) == 0) {
             (*gCameraInterface)->setMode(CAMERA_MODE_WORLD_MAP_RESOURCE_ID, 1, 0, 0, NULL, 0, 0xff);
             (*gCameraInterface)->setFocus((void*)obj, 0);

@@ -64,7 +64,7 @@ typedef enum MapBlockFlag {
  * names, true size unverified - do not take sizeof).
  */
 typedef struct MapBlockData {
-    void* unk0;
+    void* unused00;
     u16 flags4; /* 0x04: MapBlockFlag plus an unidentified bit toggled per tick */
     u16 unk6;
     u32 size;

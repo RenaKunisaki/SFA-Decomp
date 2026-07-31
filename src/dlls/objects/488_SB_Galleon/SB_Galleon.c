@@ -82,11 +82,9 @@ void DBprotection_updateFlight(GameObject* obj) {
     SBGalleonState* state;
     GameObject* tricky;
     GameObject** objects;
-    int sfxObj;
     GameObject* otherObj;
     s8 c;
     int t;
-    int nextState;
     int wrap;
     int diff;
     u32 angY;
@@ -237,7 +235,8 @@ void DBprotection_updateFlight(GameObject* obj) {
             dy = dy * ((f32)(t - 0x78) / 60.0f);
         }
         ((SBGalleonState*)state)->phaseTimer += framesThisStep;
-        ((SBGalleonState*)state)->driftX += (dx - ((SBGalleonState*)state)->driftX) * (blendK = 0.0625f);
+        lerpD = dx - ((SBGalleonState*)state)->driftX;
+        ((SBGalleonState*)state)->driftX += lerpD * (blendK = 0.0625f);
         ((SBGalleonState*)state)->driftY += (dy - ((SBGalleonState*)state)->driftY) * (blendK = blendK);
         ((SBGalleonState*)state)->driftZ += (dz - ((SBGalleonState*)state)->driftZ) * (blendK = blendK);
         ambA = 50.0f;
@@ -433,9 +432,11 @@ void DBprotection_updateFlight(GameObject* obj) {
             ((SBGalleonState*)state)->stage = 3;
             ((SBGalleonState*)state)->phaseCounter = 5;
             ((SBGalleonState*)state)->headingLatch = 200;
-            sfxObj = sbGetPropeller();
-            Sfx_StopFromObject(sfxObj, SFXTRIG_swtst1_c);
-            Sfx_PlayFromObject(sfxObj, SFXTRIG_mv_curtainloop16);
+            {
+                int sfxObj = sbGetPropeller();
+                Sfx_StopFromObject(sfxObj, SFXTRIG_swtst1_c);
+                Sfx_PlayFromObject(sfxObj, SFXTRIG_mv_curtainloop16);
+            }
             mainSetBits(DBPROTECTION_GAMEBIT_DIVE_ACTIVE, 0);
         } else if (((SBGalleonState*)state)->phaseCounter >= 4) {
             ((SBGalleonState*)state)->phase = 2;
@@ -451,7 +452,8 @@ void DBprotection_updateFlight(GameObject* obj) {
     case 5:
     case 6:
     case 7:
-    case 8:
+    case 8: {
+        int nextState;
         camShake = 120.0f;
         Sfx_StopObjectChannel((int)obj, 2);
         (*gCameraInterface)->releaseAction(&camShake, 0);
@@ -633,6 +635,7 @@ void DBprotection_updateFlight(GameObject* obj) {
             }
         }
         break;
+    }
     default:
         ((GameObject*)obj)->userData1 = 7;
         break;
@@ -917,7 +920,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
         int blue = gSbGalleonSkyColorBStart[2];
         gSbGalleonSkyColorB[2] = blue + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorBEnd[2] - blue);
     }
-    skySetLightColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorB[0], gSbGalleonSkyColorB[1], gSbGalleonSkyColorB[2]);
+    skySetAmbientColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorB[0], gSbGalleonSkyColorB[1], gSbGalleonSkyColorB[2]);
     {
         int red = gSbGalleonSkyColorCStart[0];
         gSbGalleonSkyColorC[0] = red + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorCEnd[0] - red);
@@ -930,7 +933,7 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
         int blue = gSbGalleonSkyColorCStart[2];
         gSbGalleonSkyColorC[2] = blue + gSbGalleonSkyBlendFactor * (gSbGalleonSkyColorCEnd[2] - blue);
     }
-    skySetAmbientColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorC[0], gSbGalleonSkyColorC[1],
+    skySetMoonColor(SBGALLEON_SKY_LIGHT_SLOT, gSbGalleonSkyColorC[0], gSbGalleonSkyColorC[1],
                        gSbGalleonSkyColorC[2]);
     gSbGalleonSkyLightIntensity = gSbGalleonSkyBlendFactor * 128.0f + 32.0f;
     skySetOverrideLightDirectionEnabled(1);

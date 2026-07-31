@@ -140,12 +140,12 @@ void renderSceneGeometry(u8 renderType, s8* order);
 void sceneDraw(void);
 
 
-void gameFlagFn_8005cd24(int v)
+void setRenderFlag20000(int v)
 {
-    renderFlags = (v != 0) ? (renderFlags | 0x20000) : (renderFlags & ~0x20000);
+    renderFlags = (v != 0) ? (renderFlags | RENDERFLAG_20000) : (renderFlags & ~RENDERFLAG_20000);
 }
 
-int getDrawDistanceFlag_8005cd48(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
+int isDrawDistanceEnabled(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
 
 
 int setWidescreen(u8 v)
@@ -166,10 +166,12 @@ int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }
 u32 shouldDrawShadows(void) { return renderFlags & RENDERFLAG_DRAW_SHADOWS; }
 int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
 
-void titleScreenFn_8005cdd4(int v)
-{
-    if (v != 0) renderFlags &= ~0x2000;
-    else renderFlags |= 0x2000;
+void setTitleScreenActive(int active) {
+    if (active != 0) {
+        renderFlags &= ~0x2000;
+    } else {
+        renderFlags |= 0x2000;
+    }
 }
 
 void setDrawLights(int v)
@@ -187,9 +189,10 @@ void setDrawLights(int v)
     }
 }
 
-void gameFlagFn_8005ce6c(int v)
+void setDisableAntiAlias(int v)
 {
-    renderFlags = (v != 0) ? (renderFlags | 0x20) : (renderFlags & ~0x20);
+    renderFlags = (v != 0) ? (renderFlags | RENDERFLAG_DISABLE_ANTI_ALIAS)
+                           : (renderFlags & ~RENDERFLAG_DISABLE_ANTI_ALIAS);
 }
 
 u8 isOvercast(void)
@@ -277,7 +280,7 @@ void setTextColor(void* context, int a, int b, int c, int d)
     _gxSetTevColor2(a, b, c, d);
 }
 
-void doNothing_8005D148(int arg0, int arg1)
+void lightmapObjectRenderBegin(int arg0, int arg1)
 {
 }
 
@@ -293,7 +296,7 @@ void getVisibleObjects(s8 * opacity);
 
 void renderSceneGeometry(u8 renderType, s8* order);
 
-void doNothing_8005D14C(int arg0, int arg1)
+void lightmapObjectRenderEnd(int arg0, int arg1)
 {
 }
 void renderShadowType3(u8* obj, u32 b, s32 offset)
@@ -357,6 +360,7 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
 {
     Vec stk;
     s32 t;
+    f32 half;
     f32 maxXs;
     f32 minXs;
     f32 maxYs;
@@ -373,20 +377,21 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
         sceneDrawTransparentPolys();
         gLightmapDrawQueueCount = 0;
     }
-    maxXs = __OSs16tof32(&bounds->maxX);
-    minXs = __OSs16tof32(&bounds->minX);
-    maxYs = __OSs16tof32(&bounds->maxY);
+    OSs16tof32(&bounds->maxX, &maxXs);
+    OSs16tof32(&bounds->minX, &minXs);
+    OSs16tof32(&bounds->maxY, &maxYs);
     maxW = maxYs * lbl_803DEC20 + block->transform[1][3];
-    minYs = __OSs16tof32(&bounds->minY);
-    maxZs = __OSs16tof32(&bounds->maxZ);
+    OSs16tof32(&bounds->minY, &minYs);
+    OSs16tof32(&bounds->maxZ, &maxZs);
     maxD = maxZs * lbl_803DEC20 + block->transform[2][3];
-    minZs = __OSs16tof32(&bounds->minZ);
-    stk.x = lbl_803DEBFC * ((minXs * lbl_803DEC20 + block->transform[0][3]) +
-                             (maxXs * lbl_803DEC20 + block->transform[0][3]));
+    OSs16tof32(&bounds->minZ, &minZs);
+    half = lbl_803DEBFC;
+    stk.x = half * ((minXs * lbl_803DEC20 + block->transform[0][3]) +
+                    (maxXs * lbl_803DEC20 + block->transform[0][3]));
     minW = minYs * lbl_803DEC20 + block->transform[1][3];
-    stk.y = lbl_803DEBFC * (minW + maxW);
+    stk.y = half * (minW + maxW);
     minD = minZs * lbl_803DEC20 + block->transform[2][3];
-    stk.z = lbl_803DEBFC * (minD + maxD);
+    stk.z = half * (minD + maxD);
     PSMTXMultVec((MtxPtr)Camera_GetViewMatrix(), &stk, &stk);
     t = (s32) - stk.z;
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
@@ -550,7 +555,7 @@ static inline void lightmapSetObjAmbColor(void)
 {
     GXColor color;
 
-    objGetColor(0, (u8*)&color, (u8*)&color + 1, (u8*)&color + 2);
+    objGetSunColor(0, (u8*)&color, (u8*)&color + 1, (u8*)&color + 2);
     GXSetChanAmbColor(GX_COLOR0, color);
     GXSetNumChans(1);
 }
@@ -632,7 +637,7 @@ void sceneDrawTransparentPolys(void)
             drawGlow(entries[i].arg0.value, entries[i].arg1.value);
             break;
         case 8:
-            drawFn_8006f500();
+            waterFxDraw();
             break;
         case 9:
             (*gWaterfxInterface)->render(0, 0);

@@ -28,12 +28,17 @@
 #define BABYCLOUDRUNNER_SECONDARY_OBJECT_GROUP 0x20
 #define BABYCLOUDRUNNER_AMBIENT_OBJECT_ID      0x788
 
-#define BABYCLOUDRUNNER_AIR_METER_TEXTURE_ID   0x5D1
-#define BABYCLOUDRUNNER_MESSAGE_QUEUE_CAPACITY 4
-#define BABYCLOUDRUNNER_OBJECT_TYPE_ID         0
-#define BABYCLOUDRUNNER_CURVE_MODE             0x19
-#define BABYCLOUDRUNNER_MUTTER_SFX_PERIOD      500
-#define BABYCLOUDRUNNER_TURN_FRAMES            0x1E
+#define BABYCLOUDRUNNER_AIR_METER_TEXTURE_ID     0x5D1
+#define BABYCLOUDRUNNER_MESSAGE_QUEUE_CAPACITY   4
+#define BABYCLOUDRUNNER_OBJECT_TYPE_ID           0
+#define BABYCLOUDRUNNER_CURVE_MODE               0x19
+#define BABYCLOUDRUNNER_MUTTER_SFX_PERIOD        500
+#define BABYCLOUDRUNNER_TURN_FRAMES              0x1E
+#define BABYCLOUDRUNNER_TURN_ALIGNMENT_TOLERANCE 200
+#define BABYCLOUDRUNNER_TURN_YAW_SHIFT           3
+#define BABYCLOUDRUNNER_TURN_ANIM_SHIFT          2
+#define BABYCLOUDRUNNER_IDLE_ANIM_SPEED          0.0064f
+#define BABYCLOUDRUNNER_TURN_ANIM_RATE_DIVISOR   10000.0f
 
 #define BABYCLOUDRUNNER_MOVE_IDLE_A  0
 #define BABYCLOUDRUNNER_MOVE_IDLE_B  2
@@ -65,7 +70,6 @@ f32 gBabyCloudRunnerHomeMoveSpeed = 2.0f;
 f32 gBabyCloudRunnerHomeAnimSpeed = 0.05f;
 u8 gBabyCloudRunnerHomeMoveState = 2;
 f32 gBabyCloudRunnerVerticalSpeedScale = 0.01f;
-
 
 int babyCloudRunner_updateBurrowAnimation(GameObject* obj) {
     f32 speed;
@@ -105,16 +109,17 @@ void babyCloudRunner_turnTowardTarget(GameObject* obj, GameObject* target, BabyC
     int yawStep;
     characterAimHeadAtTarget(obj, target, &state->eyeAnimState, BABYCLOUDRUNNER_HEAD_AIM_LIMIT, 0, 3);
     yawStep = Obj_GetYawDeltaToObject(obj, target, 0);
-    obj->anim.rotX += (yawStep >>= 3);
+    obj->anim.rotX += (yawStep >>= BABYCLOUDRUNNER_TURN_YAW_SHIFT);
     if (playMove == 0) {
         return;
     }
-    if ((s16)yawStep > -200 && (s16)yawStep < 200) {
+    if ((s16)yawStep > -BABYCLOUDRUNNER_TURN_ALIGNMENT_TOLERANCE &&
+        (s16)yawStep < BABYCLOUDRUNNER_TURN_ALIGNMENT_TOLERANCE) {
         if (state->turnLatch != 0) {
             state->turnLatch = 0;
             ObjAnim_SetCurrentMove((int)obj, BABYCLOUDRUNNER_MOVE_IDLE_A, 0.0f, 0);
         } else {
-            ObjAnim_AdvanceCurrentMove((int)obj, 0.0064f, timeDelta, 0);
+            ObjAnim_AdvanceCurrentMove((int)obj, BABYCLOUDRUNNER_IDLE_ANIM_SPEED, timeDelta, 0);
         }
     } else {
         if (state->turnLatch == 0) {
@@ -123,15 +128,15 @@ void babyCloudRunner_turnTowardTarget(GameObject* obj, GameObject* target, BabyC
         } else {
             int turnAnimStep;
             if ((int)(s16)yawStep > 0) {
-                turnAnimStep = (s16)yawStep >> 2;
+                turnAnimStep = (s16)yawStep >> BABYCLOUDRUNNER_TURN_ANIM_SHIFT;
             } else {
-                turnAnimStep = -(s16)yawStep >> 2;
+                turnAnimStep = -(s16)yawStep >> BABYCLOUDRUNNER_TURN_ANIM_SHIFT;
             }
-            ObjAnim_AdvanceCurrentMove((int)obj, (f32)(s16)turnAnimStep / 10000.0f, timeDelta, 0);
+            ObjAnim_AdvanceCurrentMove((int)obj, (f32)(s16)turnAnimStep / BABYCLOUDRUNNER_TURN_ANIM_RATE_DIVISOR,
+                                       timeDelta, 0);
         }
     }
 }
-
 
 int babyCloudRunner_tryCapture(void* object) {
     GameObject* obj;
@@ -166,7 +171,7 @@ int babyCloudRunner_tryCapture(void* object) {
         return 1;
     }
     objSoundStartTimed(obj, &state->soundState, BABYCLOUDRUNNER_CAPTURE_SFX_ID, BABYCLOUDRUNNER_CAPTURE_SFX_PITCH, -1,
-                        1);
+                       1);
     Sfx_PlayFromObject((int)obj, SFXTRIG_wp_ice_freeze);
     return 0;
 }
@@ -375,10 +380,8 @@ void babyCloudRunner_update(GameObject* obj) {
             if (state->runnerState == BABYCLOUDRUNNER_STATE_FOLLOW_CURVE ||
                 state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
                 f32 speed = state->curveSpeed;
-                Obj_UpdateRomCurveFollowVelocity(obj, &state->curveWalker, speed, 10.0f * speed,
-                                                 5.0f * speed, 1);
-                Obj_SmoothTurnAnglesTowardVelocity(obj, &obj->anim.velocity, BABYCLOUDRUNNER_TURN_FRAMES, 10.0f,
-                                                   0.2f);
+                Obj_UpdateRomCurveFollowVelocity(obj, &state->curveWalker, speed, 10.0f * speed, 5.0f * speed, 1);
+                Obj_SmoothTurnAnglesTowardVelocity(obj, &obj->anim.velocity, BABYCLOUDRUNNER_TURN_FRAMES, 10.0f, 0.2f);
                 objMove(obj, obj->anim.velocityX, obj->anim.velocityY, obj->anim.velocityZ);
                 if (state->runnerState == BABYCLOUDRUNNER_STATE_FOLLOW_CURVE) {
                     if (state->runnerIndex != -1 && mainGetBit(state->runnerIndex + GAMEBIT_CFRelated0B2A) != 0) {
@@ -393,8 +396,7 @@ void babyCloudRunner_update(GameObject* obj) {
                     return;
                 }
                 if (state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
-                    nearbyObject =
-                        (GameObject*)objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, 0);
+                    nearbyObject = (GameObject*)objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, 0);
                     if (nearbyObject != NULL && Vec_distance(&nearbyObject->anim.worldPosX, &state->handoffPosition.x) <
                                                     gBabyCloudRunnerTargetNearDist) {
                         babyCloudRunner_turnTowardTarget(obj, nearbyObject, state, 0);
@@ -469,8 +471,8 @@ void babyCloudRunner_update(GameObject* obj) {
                     target.angleZ = 0;
                     obj->anim.rotY = 0;
                     obj->anim.rotZ = 0;
-                    if (dll_2E_moveToTarget(obj, &target, gBabyCloudRunnerHomeMoveSpeed, -1, &gBabyCloudRunnerHomeAnimSpeed,
-                                      &gBabyCloudRunnerHomeMoveState) != 0) {
+                    if (dll_2E_moveToTarget(obj, &target, gBabyCloudRunnerHomeMoveSpeed, -1,
+                                            &gBabyCloudRunnerHomeAnimSpeed, &gBabyCloudRunnerHomeMoveState) != 0) {
                         state->stateFlags.atRoost = 1;
                         mainSetBits(BABYCLOUDRUNNER_AIR_METER_GAME_BIT, 0);
                     }

@@ -8,8 +8,7 @@
 typedef u8 BoneFxJRow[16];
 
 /* One 0x10-byte rendered particle slot in a gBoneParticleEffectBuffers buffer. */
-typedef struct ParticleSlot
-{
+typedef struct ParticleSlot {
     s16 posX, posY, posZ;
     u16 pad;
     s16 texU, texV;

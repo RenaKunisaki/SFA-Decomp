@@ -578,7 +578,7 @@ s32 dataRemoveMacro(u16 mid)
     return 0;
 }
 
-s32 maccmp(void* p1, void* p2)
+static s32 maccmp(void* p1, void* p2)
 {
     return ((MAC_SUBTAB*)p1)->id - ((MAC_SUBTAB*)p2)->id;
 }
@@ -604,7 +604,7 @@ void* dataGetMacro(u16 mid)
     return NULL;
 }
 
-s32 smpcmp(void* p1, void* p2)
+static s32 smpcmp(void* p1, void* p2)
 {
     return ((SDIR_DATA*)p1)->id - ((SDIR_DATA*)p2)->id;
 }
@@ -644,7 +644,7 @@ s32 dataGetSample(u16 sid, SAMPLE_INFO* newsmp)
     return -1;
 }
 
-s32 curvecmp(void* p1, void* p2)
+static s32 curvecmp(void* p1, void* p2)
 {
     return ((DATA_TAB*)p1)->id - ((DATA_TAB*)p2)->id;
 }
@@ -671,7 +671,7 @@ void* dataGetKeymap(u16 cid)
     return NULL;
 }
 
-s32 layercmp(void* p1, void* p2)
+static s32 layercmp(void* p1, void* p2)
 {
     return ((LAYER_TAB*)p1)->id - ((LAYER_TAB*)p2)->id;
 }
@@ -690,7 +690,7 @@ void* dataGetLayer(u16 cid, u16* count)
     return NULL;
 }
 
-s32 fxcmp(void* p1, void* p2)
+static s32 fxcmp(void* p1, void* p2)
 {
     return ((FX_TAB*)p1)->id - ((FX_TAB*)p2)->id;
 }

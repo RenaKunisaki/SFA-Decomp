@@ -137,7 +137,7 @@ void gunpowderBarrel_launchAtTarget(GameObject* obj, u8 usePlayerStrength) {
         placement = (GunpowderBarrelPlacement*)obj->anim.placement;
         generator = NULL;
         if (placement->generatorLinkId != 0) {
-            generators = objGetAllOfType(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
+            generators = (u32*)objGetAllOfType(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
             index = 0;
             generatorIter = generators;
             for (; index < generatorCount; index++) {
@@ -309,7 +309,7 @@ void gunpowderBarrel_triggerExplosion(GameObject* obj) {
             placement = (GunpowderBarrelPlacement*)obj->anim.placement;
             generator = NULL;
             if (placement->generatorLinkId != 0) {
-                generators = objGetAllOfType(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
+                generators = (u32*)objGetAllOfType(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
                 index = 0;
                 generatorIter = generators;
                 for (; index < generatorCount; index++) {
@@ -562,7 +562,7 @@ void gunpowderBarrel_hitDetect(int obj) {
     }
 
     if (state->queuedHitObject != NULL) {
-        objHitDetectFn_80062e84((GameObject*)obj, state->queuedHitObject, 1);
+        Obj_SetParent((GameObject*)obj, state->queuedHitObject, 1);
         state->queuedHitObject = NULL;
     }
 
@@ -732,7 +732,7 @@ void gunpowderBarrel_update(GameObject* obj) {
             if (placement->generatorLinkId != 0) {
                 int generatorCount;
                 u32* generatorIter;
-                generators = objGetAllOfType(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
+                generators = (u32*)objGetAllOfType(BARREL_GENERATOR_OBJECT_GROUP, &generatorCount);
                 index = 0;
                 generatorIter = generators;
                 for (; index < generatorCount; index++) {
@@ -792,7 +792,7 @@ void gunpowderBarrel_update(GameObject* obj) {
         obj->anim.alpha = GUNPOWDER_BARREL_MAX_ALPHA;
         if (state->heldByCarryInterface != 0) {
             state->heldByCarryInterface = 0;
-            if (fn_802966B4(player) != 0) {
+            if (playerIsPuttingDown(player) != 0) {
                 /* Set down in place. */
                 ObjHits_SyncObjectPositionIfDirty(obj);
             } else if (playerIsThrowing(player) != 0) {

@@ -4,6 +4,6 @@
 #include "types.h"
 
 void _gxSetFogParams(void);
-void getColor803dd01c(u8* rgbOut);
+void getFogColorRgb(u8* rgbOut);
 
 #endif /* TRACK_INTERSECT_FOG_API_H_ */

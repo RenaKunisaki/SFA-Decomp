@@ -61,13 +61,13 @@
 #define MMP_MOON_ROCK_FLAG_RESETTING        0x200
 #define MMP_MOON_ROCK_FLAG_PLACED           0x400
 
-int mmpMoonRock_probeFloor(GameObject* obj, f32 x, f32 y, f32 z, f32 maxY, f32* floorYOut,
-                           GameObject** floorObjectOut) {
+static int mmpMoonRock_probeFloor(GameObject* obj, f32 x, f32 y, f32 z, f32 maxY, f32* floorYOut,
+                                  GameObject** floorObjectOut) {
     TrackGroundHit** results;
     int i;
     int count;
 
-    count = hitDetectFn_80065e50(obj, x, y, z, &results, 0, 1);
+    count = trackGetHeight(obj, x, y, z, &results, 0, 1);
     *floorYOut = y;
     *floorObjectOut = 0;
     for (i = 0; i < count; i++) {
@@ -90,8 +90,8 @@ void mmpMoonRock_handleImpact(GameObject* obj) {
     state = obj->extra;
     hit = ObjHits_GetPriorityHit(obj, &priorityObjectOut, 0, 0);
     if (hit == 0) {
-        hit = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 8.0f, 1, &hitScratch, obj, 1, -1,
-                                 0xff, 0);
+        hit = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 8.0f, 1, &hitScratch, obj, 1,
+                                    -1, 0xff, 0);
     }
     if ((hit != 0) || ((((ObjHitsPriorityState*)(obj)->anim.hitReactState)->contactFlags != 0 &&
                         (state->flags & MMP_MOON_ROCK_FLAG_THROWN) != 0) ||

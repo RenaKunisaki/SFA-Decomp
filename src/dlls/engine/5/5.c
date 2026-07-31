@@ -104,6 +104,7 @@ extern f32 gSkyOverrideLightIntensity;
 extern u8 gSkyOverrideLightDirectionEnabled;
 extern f32 gSkyOverrideLightDirection[];
 extern const f32 gSkySecondsPerDay;
+extern const f32 gSkySunMoonRiseScale;
 extern u16 gSkySunAlpha;
 extern u16 gSkyMoonAlpha;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
@@ -115,7 +116,7 @@ extern f32 gSkySunDirection[];
 extern f32 gSkyMoonDirection[];
 extern u8 gSkyColorBlendTable[];
 extern int lbl_803E8458;
-int return0_80088758(void)
+int skyReservedReturnZeroB(void)
 {
     return 0x0;
 }
@@ -134,11 +135,11 @@ void skySetDayNo(int value)
     mainSetBits(GAMEBIT_ENV_dayNo, (u8)value);
 }
 
-void doNothing_800887C4(void)
+void skyReservedNopC(void)
 {
 }
 
-void doNothing_800887C8(void)
+void skyReservedNopB(void)
 {
 }
 
@@ -296,7 +297,7 @@ void loadSunAndMoon(void)
         moonObj = objSetupObject(Obj_AllocObjectSetup(0x20, SKY_CHILD_OBJ_MOON), 4, -1, -1, NULL);
         gSkyMoonObject = moonObj;
         gSkyObjectsInitialized = 1;
-        ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel(moonObj), moonFxCb_80074110);
+        ObjModel_SetRenderCallback((u8*)Obj_GetActiveModel(moonObj), moonFxRenderCallback);
     }
 }
 
@@ -332,21 +333,21 @@ typedef struct SkyDllInterface {
     ObjectDescriptorCallback render;
     ObjectDescriptorCallback getTimeOfDay;
     ObjectDescriptorCallback getClockTime;
-    ObjectDescriptorCallback nop1;
+    ObjectDescriptorCallback reservedNopA;
     ObjectDescriptorCallback getTransitionTimer;
     ObjectDescriptorCallback getSunPosition;
     ObjectDescriptorCallback setTimeOfDay;
-    ObjectDescriptorCallback return0;
+    ObjectDescriptorCallback reservedReturnZeroA;
     ObjectDescriptorCallback timeToDayHourMinute;
     ObjectDescriptorCallback getVisibility;
     ObjectDescriptorCallback renderTimeOfDayBackdrop;
     ObjectDescriptorCallback getCurrentTextureColor;
     ObjectDescriptorCallback getCurrentAmbientAndLightColors;
-    ObjectDescriptorCallback nop2;
-    ObjectDescriptorCallback nop3;
+    ObjectDescriptorCallback reservedNopB;
+    ObjectDescriptorCallback reservedNopC;
     ObjectDescriptorCallback setDayNo;
     ObjectDescriptorCallback getDayNo;
-    ObjectDescriptorCallback return0b;
+    ObjectDescriptorCallback reservedReturnZeroB;
     ObjectDescriptorCallback slot15;
     ObjectDescriptorCallback slot16;
     ObjectDescriptorCallback slot17;
@@ -366,21 +367,21 @@ SkyDllInterface sky_funcs = {
     (ObjectDescriptorCallback)renderSky,
     (ObjectDescriptorCallback)getTimeOfDay,
     (ObjectDescriptorCallback)skyGetClockTime,
-    (ObjectDescriptorCallback)doNothing_8008B8B0,
+    (ObjectDescriptorCallback)skyReservedNopA,
     (ObjectDescriptorCallback)skyGetTimer,
     (ObjectDescriptorCallback)getSunPos,
     (ObjectDescriptorCallback)pDll_Sky_setTimeOfDay_nop,
-    (ObjectDescriptorCallback)return0_8008B7E8,
+    (ObjectDescriptorCallback)skyReservedReturnZeroA,
     (ObjectDescriptorCallback)skyTimeToDayHourMinute,
     (ObjectDescriptorCallback)skyGetVisibility,
     (ObjectDescriptorCallback)skyRenderTimeOfDayBackdrop,
     (ObjectDescriptorCallback)skyGetCurrentTextureColor,
     (ObjectDescriptorCallback)skyGetCurrentAmbientAndLightColors,
-    (ObjectDescriptorCallback)doNothing_800887C8,
-    (ObjectDescriptorCallback)doNothing_800887C4,
+    (ObjectDescriptorCallback)skyReservedNopB,
+    (ObjectDescriptorCallback)skyReservedNopC,
     (ObjectDescriptorCallback)skySetDayNo,
     (ObjectDescriptorCallback)skyGetDayNo,
-    (ObjectDescriptorCallback)return0_80088758,
+    (ObjectDescriptorCallback)skyReservedReturnZeroB,
 };
 
 void skySetSlotFlag80(int flags, u8 mode)
@@ -766,28 +767,9 @@ void skySetLightDirection(int flags, f32 x, f32 y, f32 z)
     {
         if ((flags & (1 << bit)) != 0)
         {
-            ((SkyLightSlotView*)(gSkyState + bit * 0xa4))->overrideDirectionX = x;
-            ((SkyLightSlotView*)(gSkyState + bit * 0xa4))->overrideDirectionY = y;
-            ((SkyLightSlotView*)(gSkyState + bit * 0xa4))->overrideDirectionZ = z;
-        }
-    }
-}
-
-void skySetLightColor(int flags, u8 red, u8 green, u8 blue)
-{
-    int bit;
-
-    if (gSkyState == NULL)
-    {
-        return;
-    }
-    for (bit = 0; bit < 2; bit++)
-    {
-        if ((flags & (1 << bit)) != 0)
-        {
-            ((SkyLightSlotView*)(gSkyState + bit * 0xa4))->lightR = red;
-            ((SkyLightSlotView*)(gSkyState + bit * 0xa4))->lightG = green;
-            ((SkyLightSlotView*)(gSkyState + bit * 0xa4))->lightB = blue;
+            ((SkyState*)(gSkyState + bit * 0xa4))->lights[0].overrideDirectionX = x;
+            ((SkyState*)(gSkyState + bit * 0xa4))->lights[0].overrideDirectionY = y;
+            ((SkyState*)(gSkyState + bit * 0xa4))->lights[0].overrideDirectionZ = z;
         }
     }
 }
@@ -804,14 +786,33 @@ void skySetAmbientColor(int flags, u8 red, u8 green, u8 blue)
     {
         if ((flags & (1 << bit)) != 0)
         {
-            ((SkyLightSlotView*)(gSkyState + bit * 0xa4))->scaledAmbientR = red;
-            ((SkyLightSlotView*)(gSkyState + bit * 0xa4))->scaledAmbientG = green;
-            ((SkyLightSlotView*)(gSkyState + bit * 0xa4))->scaledAmbientB = blue;
+            ((SkyState*)(gSkyState + bit * 0xa4))->lights[0].overrideAmbientR = red;
+            ((SkyState*)(gSkyState + bit * 0xa4))->lights[0].overrideAmbientG = green;
+            ((SkyState*)(gSkyState + bit * 0xa4))->lights[0].overrideAmbientB = blue;
         }
     }
 }
 
-void skySetBaseColor(int flags, u8 red, u8 green, u8 blue, u8 ambientScale, u8 lightScale)
+void skySetMoonColor(int flags, u8 red, u8 green, u8 blue)
+{
+    int bit;
+
+    if (gSkyState == NULL)
+    {
+        return;
+    }
+    for (bit = 0; bit < 2; bit++)
+    {
+        if ((flags & (1 << bit)) != 0)
+        {
+            ((SkyState*)(gSkyState + bit * 0xa4))->lights[0].overrideMoonColorR = red;
+            ((SkyState*)(gSkyState + bit * 0xa4))->lights[0].overrideMoonColorG = green;
+            ((SkyState*)(gSkyState + bit * 0xa4))->lights[0].overrideMoonColorB = blue;
+        }
+    }
+}
+
+void skySetBaseColor(int flags, u8 red, u8 green, u8 blue, u8 moonScale, u8 ambientScale)
 {
     int base;
     int r1, g1, b1, r2, g2, b2;
@@ -823,25 +824,25 @@ void skySetBaseColor(int flags, u8 red, u8 green, u8 blue, u8 ambientScale, u8 l
     }
     bit = 0;
     base = 0;
-    r1 = red * ambientScale >> 8;
-    g1 = green * ambientScale >> 8;
-    b1 = blue * ambientScale >> 8;
-    r2 = red * lightScale >> 8;
-    g2 = green * lightScale >> 8;
-    b2 = blue * lightScale >> 8;
+    r1 = red * moonScale >> 8;
+    g1 = green * moonScale >> 8;
+    b1 = blue * moonScale >> 8;
+    r2 = red * ambientScale >> 8;
+    g2 = green * ambientScale >> 8;
+    b2 = blue * ambientScale >> 8;
     for (; bit < 2; bit++)
     {
         if ((flags & (1 << bit)) != 0)
         {
-            ((SkyLightSlotView*)(gSkyState + base))->overrideAmbientR = red;
-            ((SkyLightSlotView*)(gSkyState + base))->overrideAmbientG = green;
-            ((SkyLightSlotView*)(gSkyState + base))->overrideAmbientB = blue;
-            ((SkyLightSlotView*)(gSkyState + base))->scaledAmbientR = r1;
-            ((SkyLightSlotView*)(gSkyState + base))->scaledAmbientG = g1;
-            ((SkyLightSlotView*)(gSkyState + base))->scaledAmbientB = b1;
-            ((SkyLightSlotView*)(gSkyState + base))->lightR = r2;
-            ((SkyLightSlotView*)(gSkyState + base))->lightG = g2;
-            ((SkyLightSlotView*)(gSkyState + base))->lightB = b2;
+            ((SkyState*)(gSkyState + base))->lights[0].overrideSunColorR = red;
+            ((SkyState*)(gSkyState + base))->lights[0].overrideSunColorG = green;
+            ((SkyState*)(gSkyState + base))->lights[0].overrideSunColorB = blue;
+            ((SkyState*)(gSkyState + base))->lights[0].overrideMoonColorR = r1;
+            ((SkyState*)(gSkyState + base))->lights[0].overrideMoonColorG = g1;
+            ((SkyState*)(gSkyState + base))->lights[0].overrideMoonColorB = b1;
+            ((SkyState*)(gSkyState + base))->lights[0].overrideAmbientR = r2;
+            ((SkyState*)(gSkyState + base))->lights[0].overrideAmbientG = g2;
+            ((SkyState*)(gSkyState + base))->lights[0].overrideAmbientB = b2;
         }
         base += 0xa4;
     }
@@ -907,7 +908,7 @@ void skyGetSunLightDirection(int slot, f32* x, f32* y, f32* z)
     *z = ((SkyState*)sky)->lights[0].directionZ;
 }
 
-void objGetColor(int slot, u8* red, u8* green, u8* blue)
+void objGetSunColor(int slot, u8* red, u8* green, u8* blue)
 {
     u8* sky;
     int offset;
@@ -932,24 +933,19 @@ void objGetColor(int slot, u8* red, u8* green, u8* blue)
     *blue = (u8)((*blue * colorScale) >> 8);
 }
 
-void getAmbientColor(int slot, u8* red, u8* green, u8* blue)
+void skyGetSunColor(int slot, u8* red, u8* green, u8* blue)
 {
-    u8* sky;
-    int offset;
-
-    sky = gSkyState;
-    if (sky == NULL)
-    {
+    u8* sky = gSkyState;
+    if (sky == NULL) {
         *blue = 0xff;
         *green = 0xff;
         *red = 0xff;
-        return;
+    } else {
+        int offset = slot * 0xa4;
+        *red = gSkyState[offset + 0x78];
+        *green = gSkyState[offset + 0x79];
+        *blue = gSkyState[offset + 0x7a];
     }
-
-    offset = slot * 0xa4;
-    *red = gSkyState[offset + 0x78];
-    *green = gSkyState[offset + 0x79];
-    *blue = gSkyState[offset + 0x7a];
 }
 
 void skyGetAmbientColor(int slot, u8* red, u8* green, u8* blue)
@@ -1009,22 +1005,22 @@ ModelLightStruct* skyGetSunLight(void)
     return gSkySunLight;
 }
 
-void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,
-                 int lightIntensity, u8 blendAlpha)
+void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int moonIntensity,
+                 int ambientIntensity, u8 blendAlpha)
 {
     Vec dir;
+    int moonR;
+    int moonG;
+    int moonB;
     int ambientR;
     int ambientG;
     int ambientB;
-    int lightR;
-    int lightG;
-    int lightB;
     u32 previousComponent;
-    int lightScale;
-    int entryOffset;
-    SkyLightSlotView* skyEntry;
-    f32 blend;
     int ambientScale;
+    int entryOffset;
+    SkyState* skyEntry;
+    f32 blend;
+    int moonScale;
     SkyLight* previous;
     SkyLight* current;
 
@@ -1049,17 +1045,17 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
         previousComponent = previous->sunColorB;
         blue = (int)(blend * ((f32)current->sunColorB - (f32)previousComponent) + (f32)previousComponent);
         previousComponent = previous->moonColorR;
-        ambientR = (int)(blend * ((f32)current->moonColorR - (f32)previousComponent) + (f32)previousComponent);
+        moonR = (int)(blend * ((f32)current->moonColorR - (f32)previousComponent) + (f32)previousComponent);
         previousComponent = previous->moonColorG;
-        ambientG = (int)(blend * ((f32)current->moonColorG - (f32)previousComponent) + (f32)previousComponent);
+        moonG = (int)(blend * ((f32)current->moonColorG - (f32)previousComponent) + (f32)previousComponent);
         previousComponent = previous->moonColorB;
-        ambientB = (int)(blend * ((f32)current->moonColorB - (f32)previousComponent) + (f32)previousComponent);
+        moonB = (int)(blend * ((f32)current->moonColorB - (f32)previousComponent) + (f32)previousComponent);
         previousComponent = previous->ambientR;
-        lightR = (int)(blend * ((f32)current->ambientR - (f32)previousComponent) + (f32)previousComponent);
+        ambientR = (int)(blend * ((f32)current->ambientR - (f32)previousComponent) + (f32)previousComponent);
         previousComponent = previous->ambientG;
-        lightG = (int)(blend * ((f32)current->ambientG - (f32)previousComponent) + (f32)previousComponent);
+        ambientG = (int)(blend * ((f32)current->ambientG - (f32)previousComponent) + (f32)previousComponent);
         previousComponent = previous->ambientB;
-        lightB = (int)(blend * ((f32)current->ambientB - (f32)previousComponent) + (f32)previousComponent);
+        ambientB = (int)(blend * ((f32)current->ambientB - (f32)previousComponent) + (f32)previousComponent);
         previousComponent = previous->blendAlpha;
         blendAlpha = blend * ((f32)current->blendAlpha - (f32)previousComponent) + (f32)previousComponent;
     }
@@ -1076,31 +1072,31 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
         entryOffset = slot * 0xa4;
         if (((SkyBlendStateFlags*)(gSkyState + slot * 0xa4 + 0xc1))->active != 0)
         {
-            skyEntry = (SkyLightSlotView*)(gSkyState + entryOffset);
-            dir.x = skyEntry->overrideDirectionX;
-            dir.y = skyEntry->overrideDirectionY;
-            dir.z = skyEntry->overrideDirectionZ;
-            red = skyEntry->overrideAmbientR;
-            green = skyEntry->overrideAmbientG;
-            blue = skyEntry->overrideAmbientB;
-            ambientR = skyEntry->scaledAmbientR;
-            ambientG = skyEntry->scaledAmbientG;
-            ambientB = skyEntry->scaledAmbientB;
-            lightR = skyEntry->lightR;
-            lightG = skyEntry->lightG;
-            lightB = skyEntry->lightB;
+            skyEntry = (SkyState*)(gSkyState + entryOffset);
+            dir.x = skyEntry->lights[0].overrideDirectionX;
+            dir.y = skyEntry->lights[0].overrideDirectionY;
+            dir.z = skyEntry->lights[0].overrideDirectionZ;
+            red = skyEntry->lights[0].overrideSunColorR;
+            green = skyEntry->lights[0].overrideSunColorG;
+            blue = skyEntry->lights[0].overrideSunColorB;
+            moonR = skyEntry->lights[0].overrideMoonColorR;
+            moonG = skyEntry->lights[0].overrideMoonColorG;
+            moonB = skyEntry->lights[0].overrideMoonColorB;
+            ambientR = skyEntry->lights[0].overrideAmbientR;
+            ambientG = skyEntry->lights[0].overrideAmbientG;
+            ambientB = skyEntry->lights[0].overrideAmbientB;
             blendAlpha = 0xff;
         }
         else
         {
+            moonScale = moonIntensity + 1;
+            moonR = red * moonScale >> 8;
+            moonG = green * moonScale >> 8;
+            moonB = blue * moonScale >> 8;
             ambientScale = ambientIntensity + 1;
             ambientR = red * ambientScale >> 8;
             ambientG = green * ambientScale >> 8;
             ambientB = blue * ambientScale >> 8;
-            lightScale = lightIntensity + 1;
-            lightR = red * lightScale >> 8;
-            lightG = green * lightScale >> 8;
-            lightB = blue * lightScale >> 8;
         }
     }
     ((SkyLight*)(gSkyState + 0x20))[slot].directionX = dir.x;
@@ -1112,12 +1108,12 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
     ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionX = -dir.x;
     ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionY = -dir.y;
     ((SkyLight*)(gSkyState + 0x20))[slot].moonDirectionZ = -dir.z;
-    gSkyState[slot * 0xa4 + 0x80] = (u8)(ambientR * (colorScale + 1) >> 8);
-    gSkyState[slot * 0xa4 + 0x81] = (u8)(ambientG * (colorScale + 1) >> 8);
-    gSkyState[slot * 0xa4 + 0x82] = (u8)(ambientB * (colorScale + 1) >> 8);
-    gSkyState[slot * 0xa4 + 0x88] = lightR;
-    gSkyState[slot * 0xa4 + 0x89] = lightG;
-    gSkyState[slot * 0xa4 + 0x8a] = lightB;
+    gSkyState[slot * 0xa4 + 0x80] = (u8)(moonR * (colorScale + 1) >> 8);
+    gSkyState[slot * 0xa4 + 0x81] = (u8)(moonG * (colorScale + 1) >> 8);
+    gSkyState[slot * 0xa4 + 0x82] = (u8)(moonB * (colorScale + 1) >> 8);
+    gSkyState[slot * 0xa4 + 0x88] = ambientR;
+    gSkyState[slot * 0xa4 + 0x89] = ambientG;
+    gSkyState[slot * 0xa4 + 0x8a] = ambientB;
     gSkyState[slot * 0xa4 + 0xc0] = blendAlpha;
 }
 
@@ -1127,23 +1123,23 @@ void skyUpdateLightingFromTimeOfDay(void)
     int red;
     int green;
     f32* blendAlphaCurve;
+    f32* moonIntensityCurve;
     f32* ambientIntensityCurve;
-    f32* lightIntensityCurve;
     int greenCurveOffset;
     int blueCurveOffset;
     int slotIndex;
-    int slotOffset;
+    int lightSlotOffset;
     f32* lightingData;
     int rawR;
     int blue;
     int rawG;
-    int lightIntensity;
     int ambientIntensity;
+    int moonIntensity;
     u8 blendAlpha;
     f32 normalizedTime;
     f32 blend;
     f32 timeOfDay;
-    SkyColorBlendView* blendState;
+    SkyState* blendState;
     f32 zero;
     f32 segmentFraction;
     f32 dayStart;
@@ -1187,36 +1183,36 @@ void skyUpdateLightingFromTimeOfDay(void)
         for (slotIndex = 0; slotIndex < 2; slotIndex++)
         {
             blendAlphaCurve = &((f32*)((u8*)lightingData + 0x40))[curveSegment];
-            ambientIntensityCurve = &((f32*)((u8*)lightingData + 0x18))[curveSegment];
-            lightIntensityCurve = &((f32*)((u8*)lightingData + 0x2c))[curveSegment];
+            moonIntensityCurve = &((f32*)((u8*)lightingData + 0x18))[curveSegment];
+            ambientIntensityCurve = &((f32*)((u8*)lightingData + 0x2c))[curveSegment];
             greenCurveOffset = (curveSegment + 7) * 4;
             blueCurveOffset = (curveSegment + 0xe) * 4;
             zero = 0.0f;
             dayStart = 18000.0f;
-            slotOffset = slotIndex * 0xa4;
-            if ((u32)((gSkyState[slotOffset + 0xc1] >> 7) & 1) != 0)
+            lightSlotOffset = 0xa4 * slotIndex;
+            if ((u32)((gSkyState[lightSlotOffset + 0xc1] >> 7) & 1) != 0)
             {
                 blendAlpha = 0xc8;
-                ambientIntensity = 0;
-                lightIntensity = 0x60;
+                moonIntensity = 0;
+                ambientIntensity = 0x60;
             }
             else
             {
                 blendAlpha = (int)Curve_EvalLinear(blendAlphaCurve, segmentFraction, 0);
+                moonIntensity = Curve_EvalLinear(moonIntensityCurve, segmentFraction, 0);
                 ambientIntensity = Curve_EvalLinear(ambientIntensityCurve, segmentFraction, 0);
-                lightIntensity = Curve_EvalLinear(lightIntensityCurve, segmentFraction, 0);
             }
             rawR =
-                Curve_EvalCatmullRom(gSkyState + slotOffset + curveSegment * 4 + 0x20, segmentFraction, 0);
-            rawG = Curve_EvalCatmullRom(gSkyState + slotOffset + greenCurveOffset + 0x20, segmentFraction, 0);
-            blue = Curve_EvalCatmullRom(gSkyState + slotOffset + blueCurveOffset + 0x20, segmentFraction, 0);
-            blendState = (SkyColorBlendView*)(gSkyState + slotOffset);
-            blend = blendState->factor;
+                Curve_EvalCatmullRom(gSkyState + lightSlotOffset + curveSegment * 4 + 0x20, segmentFraction, 0);
+            rawG = Curve_EvalCatmullRom(gSkyState + lightSlotOffset + greenCurveOffset + 0x20, segmentFraction, 0);
+            blue = Curve_EvalCatmullRom(gSkyState + lightSlotOffset + blueCurveOffset + 0x20, segmentFraction, 0);
+            blendState = (SkyState*)(gSkyState + lightSlotOffset);
+            blend = blendState->lights[0].blendFactor;
             if (blend != zero)
             {
-                rawR = (int)(blend * ((f32)blendState->targetR - rawR) + rawR);
-                rawG = (int)(blend * ((f32)blendState->targetG - rawG) + rawG);
-                blue = (int)(blend * ((f32)blendState->targetB - blue) + blue);
+                rawR = (int)(blend * ((f32)blendState->lights[0].blendTargetR - rawR) + rawR);
+                rawG = (int)(blend * ((f32)blendState->lights[0].blendTargetG - rawG) + rawG);
+                blue = (int)(blend * ((f32)blendState->lights[0].blendTargetB - blue) + blue);
             }
             if (rawR < 0)
             {
@@ -1260,12 +1256,12 @@ void skyUpdateLightingFromTimeOfDay(void)
             if (timeOfDay >= dayStart && timeOfDay <= 75600.0f)
             {
                 skySetLightSlot(slotIndex, lightingData[0], lightingData[1], lightingData[2], red, green, blue,
-                                ambientIntensity, lightIntensity, blendAlpha);
+                                moonIntensity, ambientIntensity, blendAlpha);
             }
             else
             {
                 skySetLightSlot(slotIndex, -lightingData[3], lightingData[4], -lightingData[5], red, green, blue,
-                                ambientIntensity, lightIntensity, blendAlpha);
+                                moonIntensity, ambientIntensity, blendAlpha);
             }
         }
         skySetLightSlot(2, 0.0f, 0.0f, 0.0f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
@@ -1431,7 +1427,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             riseT = 1.0f - (riseT - 1.0f);
         }
-        scale = -(0.55f * riseT - 1.0f);
+        scale = -(gSkySunMoonRiseScale * riseT - 1.0f);
         vec[0] = 2.0f * sunDir.x;
         vec[1] = 2.0f * sunDir.y;
         vec[2] = 2.0f * sunDir.z;
@@ -1512,7 +1508,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             riseT = 1.0f - (riseT - 1.0f);
         }
-        scale = -(0.55f * riseT - 1.0f);
+        scale = -(gSkySunMoonRiseScale * riseT - 1.0f);
         vec[0] = 2.0f * moonDir.x;
         vec[1] = 2.0f * moonDir.y;
         vec[2] = 2.0f * moonDir.z;
@@ -1774,7 +1770,7 @@ void skyTimeToDayHourMinute(f32 time, s16* days, s16* hours, s16* minutes)
     *minutes = remaining / 0x3c;
 }
 
-int return0_8008B7E8(void)
+int skyReservedReturnZeroA(void)
 {
     return 0x0;
 }
@@ -1829,7 +1825,7 @@ void skyGetTimer(int* outTimer)
     *outTimer = ((SkyState*)sky)->timer;
 }
 
-void doNothing_8008B8B0(void)
+void skyReservedNopA(void)
 {
 }
 
@@ -2166,27 +2162,27 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
             if ((mask & (1 << i)) != 0)
             {
                 envp[2] = (s16)((Sky2Config*)cfg)->envfxActId - 1;
-                *(f32*)(gSkyState + iofs + 0x20) = (f32)(u32)((Sky2Config*)cfg)->lightColorR;
-                *(f32*)(gSkyState + iofs + 0x24) = (f32)(u32)((Sky2Config*)cfg)->lightColorR;
-                *(f32*)(gSkyState + iofs + 0x28) = (f32)(u32)((Sky2Config*)cfg)->lightColorG;
-                *(f32*)(gSkyState + iofs + 0x2c) = (f32)(u32)((Sky2Config*)cfg)->lightColorB;
-                *(f32*)(gSkyState + iofs + 0x30) = (f32)(u32)((Sky2Config*)cfg)->lightColorA;
-                *(f32*)(gSkyState + iofs + 0x34) = (f32)(u32)((Sky2Config*)cfg)->lightColorR;
-                *(f32*)(gSkyState + iofs + 0x38) = (f32)(u32)((Sky2Config*)cfg)->lightColorR;
-                *(f32*)(gSkyState + iofs + 0x3c) = (f32)(u32)((Sky2Config*)cfg)->color2R;
-                *(f32*)(gSkyState + iofs + 0x40) = (f32)(u32)((Sky2Config*)cfg)->color2R;
-                *(f32*)(gSkyState + iofs + 0x44) = (f32)(u32)((Sky2Config*)cfg)->color2G;
-                *(f32*)(gSkyState + iofs + 0x48) = (f32)(u32)((Sky2Config*)cfg)->color2B;
-                *(f32*)(gSkyState + iofs + 0x4c) = (f32)(u32)((Sky2Config*)cfg)->color2A;
-                *(f32*)(gSkyState + iofs + 0x50) = (f32)(u32)((Sky2Config*)cfg)->color2R;
-                *(f32*)(gSkyState + iofs + 0x54) = (f32)(u32)((Sky2Config*)cfg)->color2R;
-                *(f32*)(gSkyState + iofs + 0x58) = (f32)(u32)((Sky2Config*)cfg)->color3R;
-                *(f32*)(gSkyState + iofs + 0x5c) = (f32)(u32)((Sky2Config*)cfg)->color3R;
-                *(f32*)(gSkyState + iofs + 0x60) = (f32)(u32)((Sky2Config*)cfg)->color3G;
-                *(f32*)(gSkyState + iofs + 0x64) = (f32)(u32)((Sky2Config*)cfg)->color3B;
-                *(f32*)(gSkyState + iofs + 0x68) = (f32)(u32)((Sky2Config*)cfg)->color3A;
-                *(f32*)(gSkyState + iofs + 0x6c) = (f32)(u32)((Sky2Config*)cfg)->color3R;
-                *(f32*)(gSkyState + iofs + 0x70) = (f32)(u32)((Sky2Config*)cfg)->color3R;
+                *(f32*)(gSkyState + iofs + 0x20) = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
+                *(f32*)(gSkyState + iofs + 0x24) = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
+                *(f32*)(gSkyState + iofs + 0x28) = (f32)(u32)((Sky2Config*)cfg)->redKeys[1];
+                *(f32*)(gSkyState + iofs + 0x2c) = (f32)(u32)((Sky2Config*)cfg)->redKeys[2];
+                *(f32*)(gSkyState + iofs + 0x30) = (f32)(u32)((Sky2Config*)cfg)->redKeys[3];
+                *(f32*)(gSkyState + iofs + 0x34) = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
+                *(f32*)(gSkyState + iofs + 0x38) = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
+                *(f32*)(gSkyState + iofs + 0x3c) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
+                *(f32*)(gSkyState + iofs + 0x40) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
+                *(f32*)(gSkyState + iofs + 0x44) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[1];
+                *(f32*)(gSkyState + iofs + 0x48) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[2];
+                *(f32*)(gSkyState + iofs + 0x4c) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[3];
+                *(f32*)(gSkyState + iofs + 0x50) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
+                *(f32*)(gSkyState + iofs + 0x54) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
+                *(f32*)(gSkyState + iofs + 0x58) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
+                *(f32*)(gSkyState + iofs + 0x5c) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
+                *(f32*)(gSkyState + iofs + 0x60) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[1];
+                *(f32*)(gSkyState + iofs + 0x64) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[2];
+                *(f32*)(gSkyState + iofs + 0x68) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[3];
+                *(f32*)(gSkyState + iofs + 0x6c) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
+                *(f32*)(gSkyState + iofs + 0x70) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
                 *(f32*)(gSkyState + iofs + 0xb8) = 1.0f;
                 if (((Sky2Config*)cfg)->fadeDurationA != 0)
                 {

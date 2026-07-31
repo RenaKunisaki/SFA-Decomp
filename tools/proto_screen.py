@@ -20,7 +20,8 @@ against the real prototype declared elsewhere in include/, and classified:
 
   A  return type is not int-width      -> the implicit `int` return is wrong
   B  callee has a floating parameter   -> an integer actual lands in a GPR
-  C  no prototype anywhere in the tree
+  C  callee has a narrow integer value -> the callee expects an explicit conversion
+  D  no prototype anywhere in the tree
 
 Usage:
     python3 tools/proto_screen.py                 # screen everything
@@ -35,6 +36,7 @@ import re
 import shlex
 import subprocess
 import sys
+import tempfile
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -84,11 +86,16 @@ def compile_with_warnings(edge):
     version = variables.get("mw_version")
     if not version:
         return source, ""
-    argv = [os.path.join(ROOT, "build/tools/wibo")]
+    argv = []
+    if os.name != "nt":
+        argv.append(os.path.join(ROOT, "build/tools/wibo"))
     if "sjis" in rule:
         argv.append(os.path.join(ROOT, "build/tools/sjiswrap.exe"))
     argv.append(os.path.join(ROOT, "build/compilers", version, "mwcceppc.exe"))
-    flags = shlex.split(variables.get("cflags", ""))
+    flags = shlex.split(variables.get("cflags", ""), posix=os.name != "nt")
+    if os.name == "nt":
+        flags = [flag[1:-1] if len(flag) >= 2 and flag[0] == flag[-1] == '"'
+                 else flag for flag in flags]
     kept = []
     j = 0
     while j < len(flags):
@@ -97,12 +104,22 @@ def compile_with_warnings(edge):
             continue
         kept.append(flags[j])
         j += 1
-    argv += kept + ["-maxerrors", "400", "-W", "all", "-c", source, "-o", os.devnull]
+    output = os.devnull
+    temp_output = None
+    if os.name == "nt":
+        handle, temp_output = tempfile.mkstemp(suffix=".o")
+        os.close(handle)
+        os.unlink(temp_output)
+        output = temp_output
+    argv += kept + ["-maxerrors", "400", "-W", "all", "-c", source, "-o", output]
     try:
         done = subprocess.run(argv, cwd=ROOT, capture_output=True, text=True,
                               timeout=900, errors="replace")
     except subprocess.TimeoutExpired:
         return source, "TIMEOUT"
+    finally:
+        if temp_output and os.path.exists(temp_output):
+            os.unlink(temp_output)
     return source, (done.stdout or "") + (done.stderr or "")
 
 
@@ -119,6 +136,10 @@ INT_WIDTH = re.compile(
     r"^(const\s+)?(void|int|long|unsigned|unsigned int|unsigned long|signed|"
     r"u8|s8|u16|s16|u32|s32|size_t|char|short|BOOL|\w+\s*\*+)$")
 FLOATING = re.compile(r"\b(f32|f64|float|double)\b")
+NARROW_VALUE = re.compile(
+    r"(?:^|,)\s*(?:const\s+)?"
+    r"(?:u8|s8|u16|s16|char|short|unsigned char|signed char|"
+    r"unsigned short|signed short)\b(?!\s*\*)")
 
 
 def collect_hits(log):
@@ -194,7 +215,7 @@ def main():
     for hit in hits:
         by_name[hit["name"]].append(hit)
 
-    bad_return, float_param, unknown = [], [], []
+    bad_return, float_param, narrow_param, unknown = [], [], [], []
     for name, group in sorted(by_name.items()):
         found = protos.get(name)
         if not found:
@@ -207,6 +228,8 @@ def main():
             bad_return.append((name, returns, arglists, group))
         if any(FLOATING.search(a) for a in arglists):
             float_param.append((name, returns, arglists, group))
+        if any(NARROW_VALUE.search(a) for a in arglists):
+            narrow_param.append((name, returns, arglists, group))
 
     print("implicit-declaration call sites: %d in %d units, %d distinct callees"
           % (len(hits), len({h["unit"] for h in hits}), len(by_name)))
@@ -228,9 +251,11 @@ def main():
          bad_return)
     dump("B. CALLEE HAS A FLOATING PARAMETER (an integer actual lands in a GPR)",
          float_param)
+    dump("C. CALLEE HAS A NARROW INTEGER VALUE PARAMETER (conversion may differ)",
+         narrow_param)
 
     print("\n" + "=" * 78)
-    print("C. NO PROTOTYPE ANYWHERE IN include/: %d" % len(unknown))
+    print("D. NO PROTOTYPE ANYWHERE IN include/: %d" % len(unknown))
     print("=" * 78)
     for name, group in unknown:
         print("   %-36s %s:%d" % (name, group[0]["unit"], group[0]["line"]))

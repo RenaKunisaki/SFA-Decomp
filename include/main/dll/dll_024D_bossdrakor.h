@@ -28,7 +28,7 @@ typedef struct BossDrakorState
     int unk0C;
     f32 attackTimer;
     f32 attackTimerDuration;
-    f32 jawAnimAngle;
+    f32 jawAnimTimer;
     union {
         struct {
             f32 homePosX;
@@ -70,8 +70,8 @@ extern f32 lbl_803DC188;
 extern f32 lbl_803DC18C;
 extern f32 lbl_803DC190;
 extern f32 lbl_803DC194;
-extern s16 lbl_803DC198;
-extern s16 lbl_803DC19A;
+extern s16 gBossDrakorMaxJawStepAngle;
+extern s16 gBossDrakorJawAnglePerTick;
 
 extern int gBossDrakorMoveStateTable[];
 extern int gBossDrakorMoveSpeedTable[];

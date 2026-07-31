@@ -385,7 +385,6 @@ static inline u32 synthResolveHandleSlot(u32 handle)
 
     return SYNTH_HANDLE_INVALID;
 }
-void synthQueueVoice(SynthVoice* voice);
 void synthQueueHandle(u32 handle);
 void synthFreeHandle(u32 handle);
 void synthSetHandleValue16(u32 handle, u16 value);

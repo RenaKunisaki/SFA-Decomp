@@ -340,7 +340,7 @@ void TrickyCurve_updateCooldownTrigger(int obj)
     {
         randomX = 0.01f * randomGetRange(-0x17, 0x17);
         randomZ = 0.01f * randomGetRange(-0x17, 0x17);
-        fn_802960E4((int)player, randomX, randomZ);
+        playerApplyHorizontalVelocity_nop((int)player, randomX, randomZ);
     }
     return;
 }

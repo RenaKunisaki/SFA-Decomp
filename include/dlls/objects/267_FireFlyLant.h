@@ -51,8 +51,6 @@ STATIC_ASSERT(offsetof(FireFlyLanternState, countGameBit) == 0x20);
 STATIC_ASSERT(offsetof(FireFlyLanternState, pad22) == 0x22);
 STATIC_ASSERT(sizeof(FireFlyLanternState) == FIREFLY_LANTERN_STATE_SIZE);
 
-GameObject* FireFlyLantern_spawnFireFly(GameObject* obj);
-int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int FireFlyLantern_getExtraSize(void);
 int FireFlyLantern_getObjectTypeId(void);
 void FireFlyLantern_free(GameObject* obj);

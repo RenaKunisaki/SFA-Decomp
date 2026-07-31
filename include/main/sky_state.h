@@ -11,28 +11,36 @@
  * read/write evidence in sky.c are named; everything else is padded.
  */
 typedef struct SkyLight {
-    u8 unk00[0x58];
+    f32 redCurve[7];
+    f32 greenCurve[7];
+    f32 blueCurve[7];
+    u8 blendTargetR;
+    u8 blendTargetG;
+    u8 blendTargetB;
+    u8 unk57;
     u8 sunColorR;
     u8 sunColorG;
     u8 sunColorB;
     u8 unk5B;
-    u8 overrideAmbientR;
-    u8 overrideAmbientG;
-    u8 overrideAmbientB;
+    u8 overrideSunColorR;
+    u8 overrideSunColorG;
+    u8 overrideSunColorB;
     u8 unk5F;
     u8 moonColorR;
     u8 moonColorG;
     u8 moonColorB;
     u8 unk63;
-    u8 unk64;
-    u8 unk65[3];
+    u8 overrideMoonColorR;
+    u8 overrideMoonColorG;
+    u8 overrideMoonColorB;
+    u8 unk67;
     u8 ambientR;
     u8 ambientG;
     u8 ambientB;
     u8 unk6B;
-    u8 overrideLightR;
-    u8 overrideLightG;
-    u8 overrideLightB;
+    u8 overrideAmbientR;
+    u8 overrideAmbientG;
+    u8 overrideAmbientB;
     u8 unk6F;
     f32 directionX;
     f32 directionY;
@@ -43,50 +51,17 @@ typedef struct SkyLight {
     f32 overrideDirectionX;
     f32 overrideDirectionY;
     f32 overrideDirectionZ;
-    u8 unk94[8];
+    f32 blendRate;
+    f32 blendFactor;
     f32 unk9C;
     u8 blendAlpha;
     u8 unkA1[3];
 } SkyLight;
 
 STATIC_ASSERT(sizeof(SkyLight) == 0xA4);
-
-/* View of a light slot relative to the start of the sky state block. */
-typedef struct SkyLightSlotView {
-    u8 unk00[0x7C];
-    u8 overrideAmbientR;
-    u8 overrideAmbientG;
-    u8 overrideAmbientB;
-    u8 unk7F[5];
-    u8 scaledAmbientR;
-    u8 scaledAmbientG;
-    u8 scaledAmbientB;
-    u8 unk87[5];
-    u8 lightR;
-    u8 lightG;
-    u8 lightB;
-    u8 unk8F[0x19];
-    f32 overrideDirectionX;
-    f32 overrideDirectionY;
-    f32 overrideDirectionZ;
-} SkyLightSlotView;
-
-STATIC_ASSERT(offsetof(SkyLightSlotView, overrideAmbientR) == 0x7C);
-STATIC_ASSERT(offsetof(SkyLightSlotView, scaledAmbientR) == 0x84);
-STATIC_ASSERT(offsetof(SkyLightSlotView, lightR) == 0x8C);
-STATIC_ASSERT(offsetof(SkyLightSlotView, overrideDirectionX) == 0xA8);
-
-/* View used while fading a slot's computed color toward its override color. */
-typedef struct SkyColorBlendView {
-    u8 unk00[0x74];
-    u8 targetR;
-    u8 targetG;
-    u8 targetB;
-    u8 unk77[0x41];
-    f32 factor;
-} SkyColorBlendView;
-
-STATIC_ASSERT(offsetof(SkyColorBlendView, factor) == 0xB8);
+STATIC_ASSERT(offsetof(SkyLight, blendTargetR) == 0x54);
+STATIC_ASSERT(offsetof(SkyLight, overrideMoonColorR) == 0x64);
+STATIC_ASSERT(offsetof(SkyLight, blendFactor) == 0x98);
 
 typedef struct SkyState {
     u8 unk00;
@@ -130,35 +105,31 @@ STATIC_ASSERT(sizeof(SkyState) == 0x258);
 /* Per-map sky blend config record passed to sky2_update / skyUpdateEnvfxAct. */
 typedef struct Sky2Config {
     u8 unk00[0xC];
-    u8 lightColorR;
-    u8 lightColorG;
-    u8 lightColorB;
-    u8 lightColorA;
-    u8 unk10[4];
-    u8 color2R;
-    u8 color2G;
-    u8 color2B;
-    u8 color2A;
-    u8 unk18[4];
-    u8 color3R;
-    u8 color3G;
-    u8 color3B;
-    u8 color3A;
-    u8 unk20[4];
+    u8 redKeys[8];
+    u8 greenKeys[8];
+    u8 blueKeys[8];
     u16 envfxActId; /* 0x24: 1-based env effect action id; (id-1) passed to getEnvfxAct, 0 => disabled */
     u8 unk26[4];
     u16 fadeDurationA; /* 0x2A: clamped to >=1; state+0x3c=this, rate at +0x5c = k/this (per-frame fade increment) */
     u16 fadeDurationB; /* 0x2C: clamped to >=1; state+0x40=this, rate at +0x58/+0x60 = k/this */
-    u16 skyTexId0;   /* sky texture id slot 0 (+0xc38); also staged to slot+8 */
-    u16 skyTexId1;   /* sky texture id slot 1 (+0xc38) */
-    u16 skyTexId2;   /* sky texture id slot 2 (+0xc38) */
-    u16 skyTexId3;   /* sky texture id slot 3 (+0xc38) */
-    u8 unk36[8];
-    u16 skyTexId4;   /* sky texture id slot 4 (+0xc38) */
-    u16 skyTexId5;   /* sky texture id slot 5 (+0xc38) */
-    u16 skyTexId6;   /* sky texture id slot 6 (+0xc38) */
-    u16 skyTexId7;   /* sky texture id slot 7 (+0xc38) */
-    u8 unk46[0xE];
+    union {
+        struct {
+            u16 skyTexId0;   /* sky texture id slot 0 (+0xc38); also staged to slot+8 */
+            u16 skyTexId1;   /* sky texture id slot 1 (+0xc38) */
+            u16 skyTexId2;   /* sky texture id slot 2 (+0xc38) */
+            u16 skyTexId3;   /* sky texture id slot 3 (+0xc38) */
+            u8 unk36[8];
+            u16 skyTexId4;   /* sky texture id slot 4 (+0xc38) */
+            u16 skyTexId5;   /* sky texture id slot 5 (+0xc38) */
+            u16 skyTexId6;   /* sky texture id slot 6 (+0xc38) */
+            u16 skyTexId7;   /* sky texture id slot 7 (+0xc38) */
+        };
+        struct {
+            u16 fogFarKeys[8];
+            u16 fogNearKeys[8];
+        };
+    };
+    u8 unk4E[0x6];
     u16 cloudMode;
     u16 visibility;  /* 0x56: drives the sky blend-state bit20 visibility flag */
     u8 flags;
@@ -169,6 +140,10 @@ typedef struct Sky2Config {
 } Sky2Config;
 
 STATIC_ASSERT(offsetof(Sky2Config, fadeDurationA) == 0x2A);
+STATIC_ASSERT(offsetof(Sky2Config, skyTexId0) == 0x2E);
+STATIC_ASSERT(offsetof(Sky2Config, fogFarKeys) == 0x2E);
+STATIC_ASSERT(offsetof(Sky2Config, fogNearKeys) == 0x3E);
+STATIC_ASSERT(offsetof(Sky2Config, cloudMode) == 0x54);
 STATIC_ASSERT(offsetof(Sky2Config, flags) == 0x58);
 
 #endif

@@ -850,7 +850,7 @@ void arwarwing_updateRollAndEngine(int obj, ArwingState* state)
     f32 vol;
     f64 sum;
 
-    vec = objModelGetVecFn_800395d8(state->escortObj, 0x14);
+    vec = objFindJointPoseVector(state->escortObj, 0x14);
 
     if (state->mode < ARWING_MODE_DEAD && mainGetBit(GAMEBIT_ArwingRelated09D6) == 0 &&
         mainGetBit(GAMEBIT_ARWING_FLIGHT_RINGS_PASSED) == 0)
@@ -1241,7 +1241,7 @@ void arwarwing_initAttachments(GameObject* obj, ArwingState* state)
             {
                 modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
                 modelLightStruct_setPosition(state->light, 0.0f, lbl_803E6FC4, lbl_803E6FC8);
-                lightSetFieldBC_8001db14(state->light, 1);
+                modelLightStruct_setFieldBC(state->light, 1);
                 modelLightStruct_setDiffuseColor(state->light, 0x28, 0x7d, 0xff, 0);
                 modelLightStruct_setDistanceAttenuation(state->light, lbl_803E6FCC, lbl_803E6FD0);
                 modelLightStruct_startColorFade(state->light, 1, 1);
@@ -1319,10 +1319,10 @@ void arwarwing_initAttachments(GameObject* obj, ArwingState* state)
         state->bombProjectileLifetime = 25.0f;
         state->bombFireDelay = 0xc;
         state->maxBombCount = 0x3;
-        state->wingVec[0] = objModelGetVecFn_800395d8(obj, 0);
-        state->wingVec[1] = objModelGetVecFn_800395d8(obj, 1);
-        state->wingVec[2] = objModelGetVecFn_800395d8(obj, 2);
-        state->wingVec[3] = objModelGetVecFn_800395d8(obj, 3);
+        state->wingVec[0] = objFindJointPoseVector(obj, 0);
+        state->wingVec[1] = objFindJointPoseVector(obj, 1);
+        state->wingVec[2] = objFindJointPoseVector(obj, 2);
+        state->wingVec[3] = objFindJointPoseVector(obj, 3);
         state->wingFlexScale = 0.5f;
         *(s16*)&state->enginePitch = 0xaf;
         state->maxHealth = *(u8*)(charState + 0x1);

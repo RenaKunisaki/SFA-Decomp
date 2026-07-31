@@ -71,7 +71,7 @@ void TexFrameAnimator_update(GameObject* obj) {
         if (mapBlock == NULL || !(mapBlock->flags4 & MAP_BLOCK_FLAG_LOADED)) {
             return;
         }
-        textureOverrideIndex = return0_80056694(mapBlock, state->textureSlot);
+        textureOverrideIndex = mapBlockFindTextureOverrideIndex(mapBlock, state->textureSlot);
         if (textureOverrideIndex != NULL) {
             textureOverride = mapTextureOverrideGetEntry(*textureOverrideIndex);
             state->frame += state->speed * framesThisStep;

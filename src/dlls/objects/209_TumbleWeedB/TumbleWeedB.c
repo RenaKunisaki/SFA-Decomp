@@ -442,7 +442,7 @@ void tumbleweed_updateRollingMotion(GameObject* obj, TumbleweedState* state) {
     groundHits[0] = NULL;
     nearestHeightDelta = 10000.0f;
     hitCount =
-        hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, groundHits, 0, 0);
+        trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, groundHits, 0, 0);
     for (hitIndex = 0, nearestHitIndex = 0, hitEntry = groundHits[0]; hitIndex < hitCount; hitIndex++) {
         heightDelta = obj->anim.localPosY - (*hitEntry)->height;
         if (heightDelta < 0.0f) {

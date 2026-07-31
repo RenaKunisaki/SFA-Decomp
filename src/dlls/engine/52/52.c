@@ -256,7 +256,7 @@ int TitleMenu_run(void)
         if (((previousFadeTimer <= 12) || (gTitleMenuLoadDelay > 12)) && (gTitleMenuLoadDelay <= 0))
         {
             gTitleMenuLinkInterface->vtable->free();
-            titleScreenFn_8005cdd4(0);
+            setTitleScreenActive(0);
             setLinkNotRotated();
             loadUiDll(gTitleMenuNextDllId);
         }
@@ -453,7 +453,7 @@ void TitleMenu_initialise(void)
     gTitleMenuReadyForInput = 0;
     skySetEnvFxFlags(0);
     gameTimerStop();
-    audioFn_8000b694(0);
+    Sfx_SetObjectReverbPreset(0);
     gAttractMovieIdleFrameCount = 0;
 }
 

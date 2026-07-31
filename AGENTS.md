@@ -132,9 +132,9 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
   it into `ResourceDescriptor` or `ObjectDescriptor` merely because the generic registry stores its
   address; give the record a unit-owned name and cast only at that registry boundary.
 - Give each cleaned object DLL one canonical unit-owned header under `include/dlls/<bank>/`. Keep
-  that header self-contained, put the unit's state/setup types and public API there, and do not use
-  one legacy aggregate header to declare adjacent DLLs. Include the canonical header first in its
-  source; keep private helper types and constants in the TU.
+  that header self-contained, put all unit-owned struct definitions and the public API there, and do
+  not use one legacy aggregate header to declare adjacent DLLs. Include the canonical header first
+  in its source; keep private constants in the TU.
 - Keep layout assertions beside the canonical definition owned by that unit. Do not include
   neighboring object headers in a consumer solely to repeat unrelated state-size assertions; remove
   those imports and duplicate assertions when canonicalizing the owning types.

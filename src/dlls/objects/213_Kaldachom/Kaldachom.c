@@ -556,7 +556,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                     *(u16*)(gKaldachomHitLightWork + 0) = 0;
                     (*(void (**)(int, int, void*, int, int, void*))(*(int*)gKaldachomEffectResource + 4))(
                         0, 1, gKaldachomHitLightWork, 0x401, -1, (KaldachomCombatParams*)((u8*)&stack + 0xc));
-                    fn_802961FC(playerObj, 2);
+                    playerSetHitReactionVariant(playerObj, 2);
                     (*gPlayerInterface)->setState(obj, (void*)stateAddress, 5);
                     objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 4, 0);
                     Sfx_PlayFromObject((int)obj, SFXTRIG_swdout1);

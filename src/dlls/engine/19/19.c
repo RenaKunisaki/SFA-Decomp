@@ -84,8 +84,7 @@ volatile PPCWGPipe GXWGFifo : (0xCC008000);
 #define WATERFX_SHALLOW_DEPTH           10.0f
 #define WATERFX_SPLASH_SPEED_THRESHOLD  0.25f
 
-void waterfx_setupSplashDropPointRender(void)
-{
+static void waterfx_setupSplashDropPointRender(void) {
     GXColor col;
     u8 ignoredLightColor;
     GXSetPointSize(0x12, 5);
@@ -188,8 +187,7 @@ void waterfx_drawSplashBurst(WaterParticle* s)
     GXCallDisplayList(gWaterfxSplashDisplayList, gWaterfxSplashDisplayListSize);
 }
 
-void waterfx_buildSplashDisplayList(void)
-{
+static void waterfx_buildSplashDisplayList(void) {
     int m;
     f32* pos;
     int i;
@@ -201,12 +199,9 @@ void waterfx_buildSplashDisplayList(void)
     GXSetMisc(1, 0);
     gWaterfxSplashPosArray = mmAlloc(192, 0, 0);
     gWaterfxSplashTexCoordArray = mmAlloc(1024, 0, 0);
-    for (i = 0; i < 8; i++)
-    {
-        for (j = 0; j < 16; j++)
-        {
-            if (i == 0)
-            {
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 16; j++) {
+            if (i == 0) {
                 f32 ang;
                 f32 sv;
                 f32 cv;
@@ -234,11 +229,9 @@ void waterfx_buildSplashDisplayList(void)
     GXBeginDisplayList(gWaterfxSplashDisplayList, 2880);
     GXResetWriteGatherPipe();
     a[0] = 0;
-    for (k = 0; k < 15; k++)
-    {
+    for (k = 0; k < 15; k++) {
         GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT2, 16);
-        for (m = 7; m >= 0; m--)
-        {
+        for (m = 7; m >= 0; m--) {
             a[0] = m * 3;
             GXWGFifo.u8 = a[0];
             GXWGFifo.u8 = a[0];

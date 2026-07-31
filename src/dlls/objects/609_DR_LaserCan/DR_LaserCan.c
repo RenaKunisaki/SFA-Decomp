@@ -143,7 +143,7 @@ int drlasercannon_aimAtTarget(GameObject* self, GameObject* target, DrLaserCanno
     s16 wrapDelta;
 
     /* Fetch the barrel's secondary rotation vector (pitch channel) from the model. */
-    vec = (Vec3s*)objModelGetVecFn_800395d8(self, 0xb);
+    vec = (Vec3s*)objFindJointPoseVector(self, 0xb);
     if (vec == NULL)
     {
         return 0;
@@ -454,7 +454,7 @@ void DR_LaserCannon_update(GameObject* obj)
         {
             s16* v;
             (obj)->anim.rotX += gLaserCannonPitchStep;
-            v = (s16*)objModelGetVecFn_800395d8(obj, 0xb);
+            v = (s16*)objFindJointPoseVector(obj, 0xb);
             v[0] = (s16)(v[0] >> 1);
         }
         if (hit == 0 && dist < setup->targetRange)
@@ -534,7 +534,7 @@ void DR_LaserCannon_update(GameObject* obj)
         }
         else
         {
-            s16* v = (s16*)objModelGetVecFn_800395d8(obj, 0xb);
+            s16* v = (s16*)objFindJointPoseVector(obj, 0xb);
             *(s16*)spawned = (s16)((f32) * (s16*)obj + lbl_803DDD68);
             ((GameObject*)spawned)->anim.rotY = v[0];
         }

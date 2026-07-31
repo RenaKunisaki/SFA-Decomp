@@ -54,7 +54,6 @@
 #include "main/dll/dll_02B5_timer.h"
 #include "main/dll/headdisplay.h"
 #include "main/sky.h"
-#include "main/dll/dll_80198a00.h"
 #include "main/dll/dll_0126_trigger_api.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/vecmath.h"
@@ -109,7 +108,7 @@ STATIC_ASSERT(offsetof(MmpTriggerPlaneState, mtx) == 0x38);
 
 #define MOONROCK_ANGLE_TO_RADIANS(angle) ((3.1415927f * (f32)(s32)(-(angle))) / 32768.0f)
 
-void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj) {
+static void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj) {
     MmpTriggerPlaneState* state;
     f32 hitDistance;
     int queryType;
@@ -140,7 +139,7 @@ void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj) {
     }
 }
 
-int triggerPointInBox(GameObject* obj, f32* point) {
+static int triggerPointInBox(GameObject* obj, f32* point) {
     u8* data;
     f32 pointX;
     f32 pointY;
@@ -193,7 +192,7 @@ int triggerPointInBox(GameObject* obj, f32* point) {
     return 0;
 }
 
-void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj) {
+static void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj) {
     f32 ny;
     MmpTriggerPlaneState* state;
     s8 triggerState;
@@ -435,7 +434,6 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
     int count;
     int first;
     int id;
-    GameObject** objects;
 
     for (; i < 8; i++, p += 4) {
         if (p[1] == 0) {
@@ -531,7 +529,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                 if (p[3] > 1) {
                     p[3] = 1;
                 }
-                gameFlagFn_8005ce6c(p[3]);
+                setDisableAntiAlias(p[3]);
                 break;
             case 2:
                 if (p[3] > 1) {
@@ -560,9 +558,9 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                 break;
             case 7:
                 if (p[3] != 0) {
-                    gameFlagFn_8005cd24(1);
+                    setRenderFlag20000(1);
                 } else {
-                    gameFlagFn_8005cd24(0);
+                    setRenderFlag20000(0);
                 }
                 break;
             case 8:
@@ -615,7 +613,9 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                 break;
             }
             break;
-        case 0xc:
+        case 0xc: {
+            GameObject** objects;
+
             id = (u16)((p[2] << 8) | p[3]);
             objects = ObjList_GetObjects(&first, &count);
             for (; first < count; first++) {
@@ -640,6 +640,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                 }
             }
             break;
+        }
         case 0x10:
             Obj_SetActiveModelIndex(Obj_GetPlayerObject(), p[2]);
             break;
@@ -1063,7 +1064,7 @@ void Trigger_hitDetect(GameObject* obj) {
                     break;
                 case 0x50:
                     objInterpretSeq(obj, triggerObj, 1, 0);
-                    if (return1_800202BC() != 0) {
+                    if (TriggSetpShouldUnload() != 0) {
                         Obj_FreeObject(obj);
                     }
                     break;

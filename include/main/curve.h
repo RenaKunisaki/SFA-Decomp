@@ -12,7 +12,6 @@ typedef struct CurveHeapNode {
 int Curve_AdvanceAlongPath(Curve *curve, f32 dt);
 void Curve_SampleSegmentPoints(f32* px, f32* py, f32* pz, f32* outX, f32* outY, f32* outZ, int count,
                                CurveCoeffFn coeffFn);
-void Curve_BuildSegmentLengthTable(Curve* curve, int count);
 void curvesSetupMoveNetworkCurve(Curve* curve);
 void curvesMove(Curve *curve);
 void CurveHeap_SiftDown(CurveHeapNode* heap, s32 count, s32 index);

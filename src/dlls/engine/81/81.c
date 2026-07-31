@@ -22,7 +22,7 @@ void CameraModeCannon_update(CameraObject* camera) {
     s16 currentYaw;
     s16 yawDelta;
 
-    modelRotation = objModelGetVecFn_800395d8(gCameraModeCannonState->target, 0);
+    modelRotation = objFindJointPoseVector(gCameraModeCannonState->target, 0);
     if (gCameraModeCannonState->target == NULL) {
         return;
     }

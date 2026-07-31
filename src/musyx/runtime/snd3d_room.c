@@ -12,7 +12,7 @@
  * Update average squared distance from each active spatial entry to all
  * registered listeners.
  */
-void s3dUpdateRoomDistances(void)
+static void UpdateRoomDistances(void)
 {
     SndSpatialListener* listener;
     SndSpatialEntry* entry;
@@ -55,7 +55,7 @@ void s3dUpdateRoomDistances(void)
  * Allocate scarce studio voices to spatial entries and update their
  * activation fade state.
  */
-void s3dAllocateRoomStudios(void)
+static void s3dAllocateRoomStudios(void)
 {
     SndSpatialListener* listener;
     Snd3DEmitter* voice;
@@ -73,7 +73,7 @@ void s3dAllocateRoomStudios(void)
     u32 mask;
     u8 listenerOwned;
 
-    s3dUpdateRoomDistances();
+    UpdateRoomDistances();
 
     listenerCount = 0;
     for (listener = s3dListenerRoot; listener != NULL; listener = listener->next)
@@ -215,7 +215,7 @@ void s3dAllocateRoomStudios(void)
  * Update studio-input bridges between spatial entries as voices appear
  * and disappear.
  */
-void s3dUpdateDoorStudioInputs(void)
+static void s3dUpdateDoorStudioInputs(void)
 {
     SndStudioInputLink* link;
     f32 f;

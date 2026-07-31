@@ -142,7 +142,7 @@ void CameraModeCombat_update(CameraObject* camera) {
         (*gCameraInterface)->setMode(CAMCONTROL_ACTION_DEFAULT, 0, 1, 0, NULL, 0x1e, 0xff);
     } else {
         focus = (GameObject*)camera->anim.targetObj;
-        if (focus->anim.classId == 1 && objAnimFn_80296328(focus) == 0) {
+        if (focus->anim.classId == 1 && playerCanUseCombatTargeting(focus) == 0) {
             if (camera->targetObj != NULL) {
                 if (((GameObject*)camera->targetObj)->anim.resetHitboxFlags & 0x40) {
                     return;

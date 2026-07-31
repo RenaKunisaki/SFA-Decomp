@@ -26,6 +26,20 @@ volatile u32 salDspCallbackEnabled;
 u32 salAiDmaBuffer;
 SalAiCallback salAiCallback;
 
+static inline void callUserCallback(void)
+{
+    if (salCallbackActive != 0)
+    {
+        return;
+    }
+
+    salCallbackActive = 1;
+    OSEnableInterrupts();
+    salAiCallback();
+    OSDisableInterrupts();
+    salCallbackActive = 0;
+}
+
 /*
  * AI DMA done callback: bumps the round-robin buffer index and
  * re-issues AIInitDMA on the next 0x280-byte chunk. If a higher-
@@ -39,14 +53,7 @@ void salCallback(u32 p1, u32 p2, u32 p3, int p4, u32 p5, u32 p6)
     salLastTick = OSGetTick();
     if (salDspCallbackEnabled != 0)
     {
-        if (salCallbackActive == 0)
-        {
-            salCallbackActive = 1;
-            OSEnableInterrupts();
-            salAiCallback();
-            OSDisableInterrupts();
-            salCallbackActive = 0;
-        }
+        callUserCallback();
     }
     else
     {
@@ -77,14 +84,7 @@ void dspResumeCallback(void* task)
     if (d.pending != 0)
     {
         salDspCallbackPending = 0;
-        if (salCallbackActive == 0)
-        {
-            salCallbackActive = 1;
-            OSEnableInterrupts();
-            salAiCallback();
-            OSDisableInterrupts();
-            salCallbackActive = 0;
-        }
+        callUserCallback();
     }
 }
 

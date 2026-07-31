@@ -1,8 +1,10 @@
 #include "global.h"
 #include "main/fileio.h"
 #include "main/frame_timing.h"
+#include "main/gameloop_api.h"
 #include "main/pad.h"
 #include "dolphin/pad.h"
+#include "string.h"
 
 u8 gPadMenuStickRepeatDelay = 5;
 

@@ -177,7 +177,7 @@ typedef struct SaveGameMapState
 
 #define gSaveGameMapState (*(SaveGameMapState*)gTransientMapBits)
 
-static inline s8 saveGame_findTransientMapBit(int mapId, int shift, SaveGameMapState* state)
+static inline s8 saveGame_findTransientMapBit(int mapId, int shift, const SaveGameMapState* state)
 {
     int i;
 
@@ -707,7 +707,7 @@ int saveSelect_getInfo(void* outPtr)
     return 1;
 }
 
-void SaveGame_gplaySetObjGroupStatus(int idx, int shift, int value)
+void SaveGame_gplaySetObjGroupStatus(int mapId, int groupBit, int enabled)
 {
     SaveGameMapState* s[1];
     u8 createTransient;
@@ -719,53 +719,53 @@ void SaveGame_gplaySetObjGroupStatus(int idx, int shift, int value)
     s[0] = &gSaveGameMapState;
     createTransient = 0;
 
-    if (idx >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
+    if (mapId >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
     {
-        idx = s[0]->extendedMapActLookup[idx - SAVEGAME_EXTENDED_MAP_THRESHOLD];
+        mapId = s[0]->extendedMapActLookup[mapId - SAVEGAME_EXTENDED_MAP_THRESHOLD];
     }
-    if (!(idx < SAVEGAME_MAP_COUNT && gSaveGameMapObjGroupBits[idx] != 0))
+    if (!(mapId < SAVEGAME_MAP_COUNT && gSaveGameMapObjGroupBits[mapId] != 0))
     {
         return;
     }
     {
-        if (value == -1)
+        if (enabled == -1)
         {
-            value = 1;
+            enabled = 1;
         }
-        if (value == -2)
+        if (enabled == -2)
         {
-            value = 0;
+            enabled = 0;
             createTransient = 1;
         }
 
-        newStatus = mainGetBit(gSaveGameMapObjGroupBits[idx]);
+        newStatus = mainGetBit(gSaveGameMapObjGroupBits[mapId]);
         oldStatus = newStatus;
-        if (value != 0)
+        if (enabled != 0)
         {
-            bit = 1 << shift;
+            bit = 1 << groupBit;
             newStatus = newStatus | bit;
         }
         else
         {
-            bit = 1 << shift;
+            bit = 1 << groupBit;
             bit = ~bit;
             newStatus = newStatus & bit;
         }
 
-        mainSetBits(gSaveGameMapObjGroupBits[idx], newStatus);
-        gSaveGameObjGroupCacheIdx[0] = idx;
+        mainSetBits(gSaveGameMapObjGroupBits[mapId], newStatus);
+        gSaveGameObjGroupCacheIdx[0] = mapId;
         gSaveGameObjGroupCacheIdx[1] = newStatus;
 
-        if (value != 0)
+        if (enabled != 0)
         {
-            if ((oldStatus & (1 << shift)) == 0)
+            if ((oldStatus & (1 << groupBit)) == 0)
             {
                 u32* gp = s[0]->groupStatuses;
                 for (i = 0; i < SAVEGAME_MAP_COUNT; i++)
                 {
-                    if (gSaveGameMapObjGroupBits[i] == gSaveGameMapObjGroupBits[idx])
+                    if (gSaveGameMapObjGroupBits[i] == gSaveGameMapObjGroupBits[mapId])
                     {
-                        gp[i] |= 1 << shift;
+                        gp[i] |= 1 << groupBit;
                     }
                 }
             }
@@ -775,17 +775,17 @@ void SaveGame_gplaySetObjGroupStatus(int idx, int shift, int value)
             u32* gp = s[0]->groupStatuses;
             for (i = 0; i < SAVEGAME_MAP_COUNT; i++)
             {
-                if (gSaveGameMapObjGroupBits[i] == gSaveGameMapObjGroupBits[idx])
+                if (gSaveGameMapObjGroupBits[i] == gSaveGameMapObjGroupBits[mapId])
                 {
-                    gp[i] &= ~(1 << shift);
+                    gp[i] &= ~(1 << groupBit);
                 }
             }
 
             if (!createTransient)
             {
-                if (saveGame_findTransientMapBit(idx, shift, s[0]) == -1)
+                if (saveGame_findTransientMapBit(mapId, groupBit, s[0]) == -1)
                 {
-                    saveGame_addTransientMapBit(idx, shift, s[0]);
+                    saveGame_addTransientMapBit(mapId, groupBit, s[0]);
                 }
             }
         }

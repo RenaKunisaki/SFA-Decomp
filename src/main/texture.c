@@ -63,6 +63,10 @@ typedef struct LoadedTextureEntry
     u32 size;
 } LoadedTextureEntry;
 
+#define LOADED_TEXTURE_CAPACITY 0x2BC
+
+STATIC_ASSERT(sizeof(LoadedTextureEntry) == 0x10);
+
 LoadedTextureEntry* gLoadedTextures;
 u16* gRcpTexIdRemap;
 int gLoadedTextureCount;
@@ -109,7 +113,7 @@ void texRestructRefs(int mode)
     strs = (char*)(int)sRcpTexRestructStrings;
     done = 0;
     pass = 0;
-    texFlagFn_80023cbc(2);
+    mmSetTextureAllocationState(2);
     OSReport(strs + 0x1164);
     printHeapStats(1);
     OSReport(strs + 0x1194);
@@ -229,7 +233,7 @@ void texRestructRefs(int mode)
         pass++;
     }
     OSReport(strs + 0x1420, pass);
-    texFlagFn_80023cbc(0);
+    mmSetTextureAllocationState(0);
 }
 
 void textureInitSecondaryGXTexObj(Texture* tex, GXTexObj* obj)
@@ -256,35 +260,31 @@ void textureInitSecondaryGXTexObj(Texture* tex, GXTexObj* obj)
     }
 }
 
-void textureInitGXTexObj(Texture* texture)
-{
-    u8 mipmap = 0;
-    GXTexObj* texObj;
+void textureInitGXTexObj(Texture* texture) {
+    u8 hasMipmaps = 0;
+    GXTexObj* gxTexObj;
     texture->tmemAddr = NULL;
-    texture->preloaded = mipmap;
-    texObj = textureGetGXTexObj(texture);
-    if (texture->maxLod - texture->minLod > 0)
-        mipmap = 1;
-    GXInitTexObj(texObj, textureGetImageData(texture), texture->width, texture->height, texture->format,
-                 texture->wrapS, texture->wrapT, mipmap);
-    if (mipmap != 0)
-    {
-        GXInitTexObjLOD(texObj, texture->minFilter, texture->magFilter, (f32)(u32)texture->minLod,
+    texture->preloaded = hasMipmaps;
+    gxTexObj = textureGetGXTexObj(texture);
+    if (texture->maxLod - texture->minLod > 0) {
+        hasMipmaps = 1;
+    }
+    GXInitTexObj(gxTexObj, textureGetImageData(texture), texture->width, texture->height, texture->format,
+                 texture->wrapS, texture->wrapT, hasMipmaps);
+    if (hasMipmaps != 0) {
+        GXInitTexObjLOD(gxTexObj, texture->minFilter, texture->magFilter, (f32)(u32)texture->minLod,
                         (f32)(s32)texture->maxLod, -2.0f, 0, 0, 0);
+    } else {
+        GXInitTexObjLOD(gxTexObj, texture->minFilter, texture->magFilter, 0.0f, 0.0f, 0.0f, 0, 0, 0);
     }
-    else
+    GXInitTexObjUserData(gxTexObj, texture);
     {
-        GXInitTexObjLOD(texObj, texture->minFilter, texture->magFilter, 0.0f, 0.0f,
-                        0.0f, 0, 0, 0);
-    }
-    GXInitTexObjUserData(texObj, texture);
-    {
-        u16 w;
-        u16 h;
-        GXTexFmt fmt = GXGetTexObjFmt(texObj);
-        w = GXGetTexObjWidth(texObj);
-        h = GXGetTexObjHeight(texObj);
-        texture->dataSize = GXGetTexBufferSize(w, h, fmt, 0, 0);
+        u16 width;
+        u16 height;
+        GXTexFmt format = GXGetTexObjFmt(gxTexObj);
+        width = GXGetTexObjWidth(gxTexObj);
+        height = GXGetTexObjHeight(gxTexObj);
+        texture->dataSize = GXGetTexBufferSize(width, height, format, 0, 0);
     }
 }
 
@@ -546,10 +546,6 @@ void textureFree(Texture* tex)
         }
     }
 }
-extern int gRcpTexBankCount[3];
-
-extern int* gRcpTexBankTable[3];
-
 static inline void loadTextureBank(int bank, int fileId)
 {
     int* p;
@@ -582,7 +578,7 @@ void* textureLoad(int texId, u8 flagIn)
     Texture* walk;
     u32 bankWord;
     int bankWordSaved;
-    int restore;
+    BOOL interruptState;
     int origTexId;
     int mipChainWord;
     u16 remapped;
@@ -593,12 +589,12 @@ void* textureLoad(int texId, u8 flagIn)
     int n;
     int sizeOut;
     int frameOut;
-    int disabled;
+    BOOL interruptsDisabled;
     int bankWordHeld;
     LoadedTextureEntry* entry;
 
-    restore = 1;
-    disabled = 0;
+    interruptState = TRUE;
+    interruptsDisabled = FALSE;
     if (texId < 0)
     {
         n = -texId;
@@ -628,8 +624,8 @@ void* textureLoad(int texId, u8 flagIn)
     }
     if (getLoadedFileFlags(0) != 0)
     {
-        restore = OSDisableInterrupts();
-        disabled = 1;
+        interruptState = OSDisableInterrupts();
+        interruptsDisabled = TRUE;
     }
     origTexId = texId;
     if (texId < 0)
@@ -738,19 +734,19 @@ void* textureLoad(int texId, u8 flagIn)
         else
         {
             frameSize = frameOut;
-            texFlagFn_80023cbc(1);
+            mmSetTextureAllocationState(1);
             buf = mmAlloc(size, gRcpTexAllocTag, 0);
-            texFlagFn_80023cbc(0);
+            mmSetTextureAllocationState(0);
             if (buf == NULL)
             {
                 gRcpTexAllocFailed = 1;
-                if (getLoadedFileFlags(0) != 0 && disabled == 1)
+                if (getLoadedFileFlags(0) != 0 && interruptsDisabled == TRUE)
                 {
-                    OSRestoreInterrupts(restore);
+                    OSRestoreInterrupts(interruptState);
                 }
-                else if (disabled == 1)
+                else if (interruptsDisabled == TRUE)
                 {
-                    OSRestoreInterrupts(restore);
+                    OSRestoreInterrupts(interruptState);
                 }
                 if (flagIn != 0)
                 {
@@ -764,13 +760,13 @@ void* textureLoad(int texId, u8 flagIn)
             if (mipLevel == 0)
             {
                 gRcpTexAllocFailed = 1;
-                if (getLoadedFileFlags(0) != 0 && disabled == 1)
+                if (getLoadedFileFlags(0) != 0 && interruptsDisabled == TRUE)
                 {
-                    OSRestoreInterrupts(restore);
+                    OSRestoreInterrupts(interruptState);
                 }
-                else if (disabled == 1)
+                else if (interruptsDisabled == TRUE)
                 {
-                    OSRestoreInterrupts(restore);
+                    OSRestoreInterrupts(interruptState);
                 }
                 if (flagIn != 0)
                 {
@@ -840,15 +836,15 @@ void* textureLoad(int texId, u8 flagIn)
     gLoadedTextures[slot].texture = (u8*)firstTex;
     gLoadedTextures[slot].flag = flagIn;
     gLoadedTextures[slot].size = getHeapItemSize(gLoadedTextures[slot].texture);
-    if (gLoadedTextureCount > 0x2bc)
+    if (gLoadedTextureCount > LOADED_TEXTURE_CAPACITY)
     {
-        if (getLoadedFileFlags(0) != 0 && disabled == 1)
+        if (getLoadedFileFlags(0) != 0 && interruptsDisabled == TRUE)
         {
-            OSRestoreInterrupts(restore);
+            OSRestoreInterrupts(interruptState);
         }
-        else if (disabled == 1)
+        else if (interruptsDisabled == TRUE)
         {
-            OSRestoreInterrupts(restore);
+            OSRestoreInterrupts(interruptState);
         }
         if (flagIn != 0)
         {
@@ -861,13 +857,13 @@ void* textureLoad(int texId, u8 flagIn)
         textureInitGXTexObj(walk);
         walk = walk->nextAnimationFrame;
     }
-    if (getLoadedFileFlags(0) != 0 && disabled == 1)
+    if (getLoadedFileFlags(0) != 0 && interruptsDisabled == TRUE)
     {
-        OSRestoreInterrupts(restore);
+        OSRestoreInterrupts(interruptState);
     }
-    else if (disabled == 1)
+    else if (interruptsDisabled == TRUE)
     {
-        OSRestoreInterrupts(restore);
+        OSRestoreInterrupts(interruptState);
     }
     if (flagIn != 0)
     {
@@ -922,39 +918,39 @@ void* textureLoadAsset(int asset)
 
 void loadTextureFiles(void)
 {
-    int* p;
-    int** q;
-    int* out;
-    int n;
+    int* bankEntry;
+    int** bankTable;
+    int* bankCount;
+    int count;
 
-    gLoadedTextures = mmAlloc(0x2bc0, 6, 0);
+    gLoadedTextures = mmAlloc(LOADED_TEXTURE_CAPACITY * sizeof(LoadedTextureEntry), 6, 0);
     gLoadedTextureCount = 0;
     loadTextureBank(0, MLDF_FILEID_TEX0_TAB_A);
     loadTextureBank(1, MLDF_FILEID_TEX1_TAB_A);
-    n = 0;
-    p = getCurrentDataFile(MLDF_FILEID_TEXPRE_TAB);
-    gRcpTexBankTable[2] = p;
-    while (p[0] != -1)
+    count = 0;
+    bankEntry = getCurrentDataFile(MLDF_FILEID_TEXPRE_TAB);
+    gRcpTexBankTable[2] = bankEntry;
+    while (bankEntry[0] != -1)
     {
-        p++;
-        n++;
+        bankEntry++;
+        count++;
     }
-    gRcpTexBankCount[2] = n - 1;
+    gRcpTexBankCount[2] = count - 1;
     loadAssetFileById(&gRcpTexIdRemap, MLDF_FILEID_TEXTABLE_BIN);
-    q = gRcpTexBankTable;
-    out = gRcpTexBankCount;
-    for (n = 0; n < 2; n++)
+    bankTable = gRcpTexBankTable;
+    bankCount = gRcpTexBankCount;
+    for (count = 0; count < 2; count++)
     {
-        int m = 0;
-        p = q[0];
-        while (p[0] != -1)
+        int entryCount = 0;
+        bankEntry = bankTable[0];
+        while (bankEntry[0] != -1)
         {
-            p++;
-            m++;
+            bankEntry++;
+            entryCount++;
         }
-        out[0] = m - 1;
-        q++;
-        out++;
+        bankCount[0] = entryCount - 1;
+        bankTable++;
+        bankCount++;
     }
     gRcpTexHeaderBuffer = mmAlloc(0x120, 6, 0);
     textureLoad(0, 0);

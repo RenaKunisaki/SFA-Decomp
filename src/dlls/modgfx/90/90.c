@@ -37,6 +37,13 @@ STATIC_ASSERT(offsetof(StaffCollisionEffectResourceView, alternateColors) == 0x4
 STATIC_ASSERT(offsetof(StaffCollisionEffectResourceView, sequenceParams) == 0x54);
 STATIC_ASSERT(sizeof(StaffCollisionEffectResourceView) == 0x64);
 
+typedef union StaffCollisionEffectResource {
+    u8 bytes[0x64];
+    StaffCollisionEffectResourceView view;
+} StaffCollisionEffectResource;
+
+STATIC_ASSERT(sizeof(StaffCollisionEffectResource) == 0x64);
+
 typedef struct StaffCollisionSpawnPacket {
     GfxCmd* commands;
     GameObject* sourceObj;
@@ -75,7 +82,11 @@ u8 gStaffCollisionDefaultColorData[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 gStaffCollisionDefaultIndices[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 gStaffCollisionAlternateIndices[8] = {0, 0, 0, 1, 0, 2, 0, 3};
 
-extern u8 gStaffCollisionEffectResourceData[0x64];
+StaffCollisionEffectResource gStaffCollisionEffectResourceData = {
+    {0,   30, 0, 0,  0, 0, 0, 0,   0,  31, 255, 226, 0,   0,   0, 0, 0,  15,  0,   31, 0, 0, 0, 0, 3,
+     232, 0,  8, 0,  0, 0, 0, 0,   15, 0,  0,   0,   0,   0,   0, 0, 31, 255, 241, 0,  0, 0, 0, 0, 15,
+     0,   31, 0, 15, 0, 0, 7, 208, 0,  8,  0,   0,   255, 241, 0, 0, 7,  208, 0,   8,  0, 0, 0, 0, 0,
+     1,   0,  2, 0,  1, 0, 3, 0,   2,  0,  0,   0,   80,  0,   0, 0, 0,  0,   0,   0,  0, 0, 0, 0, 0}};
 
 void StaffCollision_spawn(GameObject* sourceObj, int mode, PartFxSpawnParams* spawnParams, u32 spawnFlags,
                           int unusedModelId, const StaffCollisionColorArgs* colorArgs) {
@@ -84,7 +95,7 @@ void StaffCollision_spawn(GameObject* sourceObj, int mode, PartFxSpawnParams* sp
     GfxCmd commandStorage[32];
     GfxCmd* commands = commandStorage;
     int spawnCount;
-    StaffCollisionEffectResourceView* resource = (StaffCollisionEffectResourceView*)gStaffCollisionEffectResourceData;
+    StaffCollisionEffectResourceView* resource = &gStaffCollisionEffectResourceData.view;
     s16 colorR, colorG, colorB;
     int spawnIndex;
     colorR = 0xff;
@@ -205,12 +216,6 @@ void StaffCollision_spawn(GameObject* sourceObj, int mode, PartFxSpawnParams* sp
                           mode != 0 ? (void*)resource->alternateColors : (void*)gStaffCollisionDefaultColorData, 0, 0);
     }
 }
-
-u8 gStaffCollisionEffectResourceData[0x64] = {
-    0,   30, 0, 0,  0, 0, 0, 0,   0,  31, 255, 226, 0,   0,   0, 0, 0,  15,  0,   31, 0, 0, 0, 0, 3,
-    232, 0,  8, 0,  0, 0, 0, 0,   15, 0,  0,   0,   0,   0,   0, 0, 31, 255, 241, 0,  0, 0, 0, 0, 15,
-    0,   31, 0, 15, 0, 0, 7, 208, 0,  8,  0,   0,   255, 241, 0, 0, 7,  208, 0,   8,  0, 0, 0, 0, 0,
-    1,   0,  2, 0,  1, 0, 3, 0,   2,  0,  0,   0,   80,  0,   0, 0, 0,  0,   0,   0,  0, 0, 0, 0, 0};
 
 StaffCollisionResourceDescriptor gStaffCollisionResourceDescriptor = {
     {0x00000000, 0x00000000, 0x00000000, 0x00030000}, NULL, NULL, NULL, StaffCollision_spawn, 0x00000000,

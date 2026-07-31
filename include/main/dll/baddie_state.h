@@ -53,7 +53,7 @@ typedef struct BaddieState {
     f32 velY;
     f32 velZ;
     u8 unk44[0xB8 - 0x44];
-    s8 surfaceSoundIndex; /* 0..0x22 index into the per-type contact-sfx tables (intersect.c objAudioFn_8006ef38) */
+    s8 surfaceSoundIndex; /* 0..0x22 index into the per-type contact-sfx tables (objAudioDispatchAnimEvents) */
     u8 padB9[0xBC - 0xB9];
     u8 paletteSlot; /* indexes the palette table (paletteIndex = gIceBaddiePaletteIndexTable[slot]) */
     u8 unkBD[0xC4 - 0xBD];

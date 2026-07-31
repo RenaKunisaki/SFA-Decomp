@@ -40,7 +40,7 @@
 #define DOOR_LOCK_CUSTOM_RENDER_ENABLED              1
 #define DOOR_LOCK_HIDDEN_ALPHA                       0
 
-int DoorLock_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
+static int DoorLock_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     DoorLockPlacement* placement;
 
     (void)unused;

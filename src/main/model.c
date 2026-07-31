@@ -37,7 +37,7 @@ int lbl_803DCB58;
 ModelList* gModelList;
 ModelList* gModelAnimCacheList;
 u32* gModelAnimDataOffsetTable;
-f32 lbl_803DCB48;
+f32 gModelChainJitterScale;
 
 u16 gModelCopyChunkWordLimit = 0x2A0;
 #define GX_BM_BLEND 1
@@ -671,29 +671,34 @@ int modelLoadAnimations(void* model, int id, void* animBase)
     }
     return 0;
 }
-int modelGetAmapSize(int animId, int amapFlag, int animCount);
-int modelGetAmapSize(int animId, int amapFlag, int animCount)
+int modelGetAmapSize(int modelId, int amapFlag, int animCount)
 {
-    int size;
+    int amapSize;
+    int totalSize;
+    int index;
+
+    totalSize = animCount;
     if (amapFlag != 0)
     {
-        size = animCount * 2 + 8;
-        while (size & 7)
+        totalSize = (totalSize << 1) + 8;
+        while (totalSize & 7)
         {
-            size++;
+            totalSize++;
         }
     }
     else
     {
-        size = animCount * 4;
-        while (size & 7)
+        totalSize = totalSize << 2;
+        while (totalSize & 7)
         {
-            size++;
+            totalSize++;
         }
-        fileLoadToBufferOffset(MLDF_FILEID_AMAP_TAB, gModelAnimOffsetTable, (animId & ~3) << 2, 0x20);
-        size += gModelAnimOffsetTable[(animId & 3) + 1] - gModelAnimOffsetTable[animId & 3];
+        index = modelId & 3;
+        fileLoadToBufferOffset(MLDF_FILEID_AMAP_TAB, gModelAnimOffsetTable, (modelId & ~3) << 2, 0x20);
+        amapSize = gModelAnimOffsetTable[index + 1] - gModelAnimOffsetTable[index];
+        totalSize += amapSize;
     }
-    return size;
+    return totalSize;
 }
 
 int modelLoad_calcSizes(void* model, int flags, int* sizes, int forceBlendChannels)
@@ -1004,8 +1009,8 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
     return out2;
 }
 
-void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain,
-                                  ObjModelChainEntry* entry)
+static void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain,
+                                         ObjModelChainEntry* entry)
 {
     Mtx tmp;
     Mtx mt;
@@ -1082,9 +1087,8 @@ void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file, ObjMod
         }
     }
 }
-void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain* chain, ObjModelChainEntry* entry);
-void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain, ObjModelChainEntry* entry,
-                           ObjModelChainUpdateCallback callback, int callbackArg)
+static void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain* chain,
+                                  ObjModelChainEntry* entry, ObjModelChainUpdateCallback callback, int callbackArg)
 {
     Mtx tmp;
     Mtx mt;
@@ -1170,7 +1174,8 @@ void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjModelChain
         entry->nodes[i].pos.z = work.z;
     }
 }
-void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain* chain, ObjModelChainEntry* entry)
+static void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain* chain,
+                                           ObjModelChainEntry* entry)
 {
     Vec vec;
     int modelIndex;
@@ -1208,7 +1213,7 @@ void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain*
     {
         dot = 0.0f;
     }
-    scaled = lbl_803DCB48 * (1.2f - dot);
+    scaled = gModelChainJitterScale * (1.2f - dot);
     amp = 0.01f * randomGetRange((int)(75.0f * scaled), (int)(100.0f * scaled));
     i = 0;
     off = 0;
@@ -1223,7 +1228,7 @@ void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain*
     }
 }
 
-void modelChainInitNodesFromJoints(int* obj, int b, int* desc)
+static void modelChainInitNodesFromJoints(int* obj, int b, int* desc)
 {
     int i;
 
@@ -2370,7 +2375,7 @@ extern s16 gModelRootRotX;
 extern s16 gModelRootRotY;
 extern s16 gModelRootRotZ;
 
-void ObjModel_BuildAnimBlendTable(u8* obj, u8* channel, u8* hdr)
+static void ObjModel_BuildAnimBlendTable(u8* obj, u8* channel, u8* hdr)
 {
     ObjAnimComponent* objAnim;
     int poseOff;
@@ -2703,7 +2708,7 @@ void* ObjModel_LoadModelData(int id)
     return model;
 }
 
-void modelFn_800292e0(void)
+void ObjModel_TouchModelCache(void)
 {
     u8 buf[8];
     gModelList->iter = gModelList->entries;
@@ -2834,7 +2839,7 @@ void* ObjModel_Load(int id, int loadFlag, int* outSize)
     return header;
 }
 
-void* return0_8002969C(int resourceId, int arg, void* buffer) { return NULL; }
+void* loadModelInstance(int resourceId, int arg, void* buffer) { return NULL; }
 
 void ObjModel_InitResourceCaches(void)
 {
@@ -3213,7 +3218,7 @@ void ObjModel_UnpackResourcePayload(u8* src, int srcSize, u8* dst, int dstSize)
     }
 }
 
-int return0_8002A5B8(u8* resource) { return 0x0; }
+int ObjModel_IsPackedResource(u8* resource) { return 0x0; }
 
 int ObjModel_GetUnpackedResourceSize(u8* resource, int baseSize)
 {

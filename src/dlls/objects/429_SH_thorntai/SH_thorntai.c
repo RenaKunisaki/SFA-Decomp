@@ -879,8 +879,8 @@ u32 SHthorntail_updateLevelControlState(GameObject* obj, int unused, ObjSeqState
         characterDoEyeAnims((GameObject*)obj, &runtime->eyeAnimState);
     }
     runtime->activeMoveValid = 0;
-    objAudioFn_8006ef38((GameObject*)obj, &animUpdate->animEvents, 8, runtime->renderPathPoints, runtime->moveScratch,
-                        1.0f, 1.0f);
+    objAudioDispatchAnimEvents((GameObject*)obj, &animUpdate->animEvents, 8, runtime->renderPathPoints,
+                               runtime->moveScratch, 1.0f, 1.0f);
     return 0;
 }
 
@@ -1032,8 +1032,8 @@ void SHthorntail_update(int obj) {
             }
             eventId++;
         }
-        objAudioFn_8006ef38((GameObject*)obj, &animEvents, 8, runtime->renderPathPoints, runtime->moveScratch, 1.0f,
-                            1.0f);
+        objAudioDispatchAnimEvents((GameObject*)obj, &animEvents, 8, runtime->renderPathPoints,
+                                   runtime->moveScratch, 1.0f, 1.0f);
         if ((SHTHORNTAIL_STATE_FLAGS(stateTables)[runtime->behaviorState] &
              SHTHORNTAIL_STATE_FLAG_DISABLE_MOVE_CONTROL) != 0) {
             runtime->movementControlFlags = runtime->movementControlFlags & ~1;

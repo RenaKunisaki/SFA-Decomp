@@ -190,7 +190,7 @@ void SB_CannonBall_init(GameObject* obj) {
             modelLightStruct_setLightKind(state->modelLight, SB_CANNONBALL_LIGHT_KIND);
             modelLightStruct_setDiffuseColor(state->modelLight, SB_CANNONBALL_LIGHT_RED, SB_CANNONBALL_LIGHT_GREEN,
                                              SB_CANNONBALL_LIGHT_BLUE, SB_CANNONBALL_LIGHT_ALPHA);
-            lightSetFieldBC_8001db14(state->modelLight, SB_CANNONBALL_LIGHT_FIELD_BC);
+            modelLightStruct_setFieldBC(state->modelLight, SB_CANNONBALL_LIGHT_FIELD_BC);
             modelLightStruct_setDistanceAttenuation(state->modelLight, 150.0f, 250.0f);
         }
     }

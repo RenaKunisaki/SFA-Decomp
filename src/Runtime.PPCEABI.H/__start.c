@@ -9,7 +9,7 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
 
 __declspec(section ".init") static void __init_registers(void);
-__declspec(section ".init") void __init_data(void);
+__declspec(section ".init") static void __init_data(void);
 
 #define EXCEPTIONMASK_ADDR 0x80000044
 #define BOOTINFO2_ADDR 0x800000F4
@@ -19,7 +19,7 @@ __declspec(section ".init") void __init_data(void);
 #define PAD3_STATUS_ADDR 0x800030E4
 #define OS_BI2_DEBUGFLAG_OFFSET 0xC
 
-__declspec(section ".init") void __check_pad3(void)
+__declspec(section ".init") static void __check_pad3(void)
 {
     if ((*(volatile unsigned short*)PAD3_STATUS_ADDR & 0x0eef) == 0x0eef) {
         OSResetSystem(0, 0, 0);
@@ -156,7 +156,7 @@ static inline void __init_bss_section(void* dst, unsigned long size)
     }
 }
 
-__declspec(section ".init") void __init_data(void)
+__declspec(section ".init") static void __init_data(void)
 {
     __rom_copy_info* dci;
     __bss_init_info* bii;

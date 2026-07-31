@@ -96,7 +96,7 @@ typedef struct PlayerState {
     u8 pad40E[0x410 - 0x40E];
     f32 rumbleCooldown; /* f32 countdown decremented by frame-time each tick, floored to 0; when expired (<=0) and moving fast (animSpeedA > thresh) fires doRumble + sfx 0x404 and resets to the cooldown interval */
     f32 buttonHoldTimer; /* accumulates frame-time while button 0x100 is held (and playerCanCastQuakeSpell true), clamped to a max; reset to 0 when released; paired with the 0x3f4:b20 "accumulating" flag */
-    f32 actionCooldown; /* f32 input-cooldown countdown decremented by timeDelta each tick, floored to 0; gates button 0x100: when pressed and the timer has expired (<=0) performs the staff/aim action (fn_802AA014) and resets to the cooldown interval */
+    f32 actionCooldown; /* f32 input-cooldown countdown decremented by timeDelta each tick, floored to 0; gates button 0x100: when pressed and the timer has expired (<=0) fires the CloudRunner projectile and resets to the cooldown interval */
     u8 chargeCapacity; /* 0x41c: full-charge level for the breath attack (0x14 for move 0xc55, else 0xa); chargeLevel must reach this to fire, and -chargeCapacity is the damage applied to the target */
     u8 pad41D[0x420 - 0x41D];
     f32 leanCurveScale; /* lean-curve sample: Curve_EvalCatmullRom(leanCurve) indexed by targetYawRateSigned (default 1.0); multiplies targetYawRateLimit to bound the per-frame targetYaw delta */
@@ -171,7 +171,7 @@ typedef struct PlayerState {
     f32 moveStartPosY; /* localPosY captured at the start of the 0x35/0x37 vertical moves; the per-frame Y is interpolated between this anchor and the current localPosY by currentMoveProgress */
     f32 savedLocalPosX; /* localPosX saved at the vertical-move start (backed up before localPos is overwritten with moveStartPosX) */
     f32 savedLocalPosZ; /* localPosZ saved at the vertical-move start (backed up before localPos is overwritten with moveStartPosZ) */
-    f32 moveDirX;       /* move direction vector X; (moveDirX,moveDirY,moveDirZ) is negated when flag set and fed to getAngle()->targetYaw and fn_802A71E0 */
+    f32 moveDirX;       /* move direction vector X; (moveDirX,moveDirY,moveDirZ) is negated when flag set and fed to getAngle()->targetYaw and playerSetMoveBlendFromPlane */
     u8 pad510[0x514 - 0x510];
     f32 moveDirY;       /* move direction vector Y */
     f32 moveDirZ;       /* move direction vector Z */
@@ -179,8 +179,8 @@ typedef struct PlayerState {
     f32 moveStartPosX;  /* localPosX assigned at the vertical-move start */
     u8 pad530[0x534 - 0x530];
     f32 moveStartPosZ;  /* localPosZ assigned at the vertical-move start */
-    f32 blendAnchor[3]; /* planar anchor vector (X at +0, Z at +8) fed as the p6 arg to the fn_802A71E0 move-blend; dotted with the p7 direction to form the blend interpolation parameter t; written in another TU */
-    s16 eventCountdown; /* move-blend/event countdown from fn_802A71E0; written each frame then pushed as the ObjAnim EVENT_COUNTDOWN state word (ObjAnim_WriteStateWord) */
+    f32 blendAnchor[3]; /* planar anchor vector (X at +0, Z at +8) fed to playerSetMoveBlendFromPlane; dotted with the blend plane to form the interpolation factor; written in another TU */
+    s16 eventCountdown; /* move-blend/event countdown from playerSetMoveBlendFromPlane; written each frame then pushed as the ObjAnim EVENT_COUNTDOWN state word (ObjAnim_WriteStateWord) */
     s8 footstepSurface; /* footstep surface/material selector; switched to pick the footstep sfx variant (case 4 -> foot_33a, default -> foot_var) on anim foot events */
     u8 unk547;
     u8 pad548[0x549 - 0x548];
@@ -204,9 +204,9 @@ typedef struct PlayerState {
     u8 pad590[0x594 - 0x590];
     f32 climbStartPosZ; /* localPosZ assigned at the climb move start */
     u8 pad598[0x5A4 - 0x598];
-    s16 animEventState; /* anim event-state word written each frame via ObjAnim_WriteStateWord(...EVENT_STATE); from fn_802A71E0 or a scaled move-blend factor */
+    s16 animEventState; /* anim event-state word written each frame via ObjAnim_WriteStateWord(...EVENT_STATE); from playerSetMoveBlendFromPlane or a scaled move-blend factor */
     s16 moveAltToggle; /* alternating selector for a paired repeating move: !=0 picks move 0x15, ==0 picks 0x16; XOR-toggled each cycle (e.g. left/right climb step) */
-    f32 leapSpeed;   /* leap/launch speed magnitude filled by fn_802A8EE4 (base = &leapSpeed): threshold-compared vs lbl_803E8040/8048 to pick the jump move (0xe/0x16/0x12) then normalized (leapSpeed-lo)/(hi-lo) into the move blend */
+    f32 leapSpeed;   /* leap/launch speed magnitude filled by playerBuildLedgeClimbProbe (base = &leapSpeed): threshold-compared vs lbl_803E8040/8048 to pick the jump move (0xe/0x16/0x12) then normalized (leapSpeed-lo)/(hi-lo) into the move blend */
     f32 leapTargetY; /* world-Y leap anchor filled alongside leapSpeed; converted world<->parent-relative (-/+ groundObject.y); feeds worldPosY = leapTargetY - unk874 and the localPosY lerp endpoint */
     f32 leapBaseY;   /* second world-Y leap anchor (sibling of leapTargetY), same parent-relative conversion applied */
     f32 moveStartX; /* local-space start position captured at move begin; localPos = progress*(moveEnd-moveStart)+moveStart */
@@ -364,7 +364,7 @@ typedef struct PlayerState {
     f32 characterHeightOffset; /* 0x874: per-character vertical height offset (set with pathBearingEyeY by characterId at spawn); subtracted from leapTargetY to convert the leap/ledge world-Y anchor into anim.worldPosY (worldPosY = leapTargetY - characterHeightOffset) */
     f32 particleBurstCooldown; /* f32 countdown decremented by frame-time each tick, floored to 0; while moving fast, on expiry (<=0) spawns a burst of particle FX (spawnObject 0x804) then resets to the burst interval */
     f32 targetSuppressTimer; /* f32 countdown decremented by frame-time each tick, floored to 0; set on a state transition (flag 0x3f2:b40); while active (>0, queried via playerIsTargetSuppressed) suppresses A-button-hint camera targeting */
-    f32 idleDelayTimer; /* idle-eligibility countdown (f32); set positive at state init (lbl_803E7FA4), decremented by frame-time in fn_802B18BC and floored at 0; the default-idle "stay" path requires it == 0 */
+    f32 idleDelayTimer; /* idle-eligibility countdown (f32); set positive at state init (lbl_803E7FA4), decremented by frame-time in playerUpdateInputTimers and floored at 0; the default-idle "stay" path requires it == 0 */
     u32 flags884; /* 0x884: directional-response flag word (set in another TU); bit0 gates the rumble + directional anim branch, bits 2/4/8 select the directional move index (idx 3/1/2) into the move table */
     f32 animSpeedDecay; /* 0x888: per-frame decay rate for baddie.animSpeedA via powfBitEstimate(rate, dt) */
     f32 animSpeedStart; /* 0x88c: initial baddie.animSpeedA magnitude at move start (set as animSpeedA = -animSpeedStart) */
@@ -377,8 +377,8 @@ typedef struct PlayerState {
     u8 moveVariantIndex; /* index into moveAnimTable->moves[]/angles[] (0xff = none) */
     u8 walkAnimSoundId; /* anim-sound-set id copied into animSoundId for low gait (gaitStepLevel <= 3); init 3 */
     u8 runAnimSoundId;  /* anim-sound-set id copied into animSoundId for high gait (gaitStepLevel > 3); init 4 */
-    u8 footstepSoundId; /* sound-variant id passed with surfaceType to audioPickSoundEffect_8006ed24 for footstep/landing sfx */
-    u8 animSoundId; /* active anim-event sound set passed to the animEvents audio dispatch (objAudioFn_8006ef38/edcc); selected from walk/run/altAnimSoundId by gait/move */
+    u8 footstepSoundId; /* sound-variant id passed with surfaceType to surfaceSfxSelectTrigger for footstep/landing sfx */
+    u8 animSoundId; /* active anim-event sound set passed to objAudioDispatchAnimEvents/objAudioDispatchEventMask; selected from walk/run/altAnimSoundId by gait/move */
     u8 altAnimSoundId; /* anim-sound-set id copied into animSoundId for specific moves (e.g. turn/launch); init 6 */
     u8 moveSlotCount;
     u8 moveSlotIndex;

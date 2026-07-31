@@ -10,42 +10,39 @@ static const f32 lbl_803E6150 = 100.0f;
 
 u32 gSpellStoneEventId;
 
-typedef struct SpellStoneUseState
-{
+typedef struct SpellStoneUseState {
     s16 completeGameBit;
     s16 requiredGameBit;
     u8 used;
 } SpellStoneUseState;
 
-typedef struct SpellStonePlacement
-{
+typedef struct SpellStonePlacement {
     ObjPlacement base;
-    s8 rotXByte;         /* 0x18 */
+    s8 rotXByte; /* 0x18 */
     u8 pad19[5];
     s16 completeGameBit; /* 0x1e */
     s16 requiredGameBit; /* 0x20 */
 } SpellStonePlacement;
 
-void spellStoneUseFn_801fd270(GameObject* obj)
-{
+void SpellStoneUse_updateInteraction(GameObject* obj) {
     SpellStoneUseState* state = obj->extra;
     s16 cond = 1;
     GameObject* player = Obj_GetPlayerObject();
-    if (player == NULL)
+    if (player == NULL) {
         return;
-    if (state->requiredGameBit != -1)
-    {
+    }
+    if (state->requiredGameBit != -1) {
         cond = mainGetBit(state->requiredGameBit);
     }
-    if ((s16)mainGetBit(state->completeGameBit) != 0 || state->used != 0)
+    if ((s16)mainGetBit(state->completeGameBit) != 0 || state->used != 0) {
         return;
-    if (cond == 0)
+    }
+    if (cond == 0) {
         return;
+    }
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-    if ((*gGameUIInterface)->isItemBeingUsed(gSpellStoneEventId) != 0)
-    {
-        if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < lbl_803E6150)
-        {
+    if ((*gGameUIInterface)->isItemBeingUsed(gSpellStoneEventId) != 0) {
+        if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < lbl_803E6150) {
             mainSetBits(state->completeGameBit, 1);
             state->used = 1;
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
@@ -53,41 +50,34 @@ void spellStoneUseFn_801fd270(GameObject* obj)
     }
 }
 
-int dll_224_getExtraSize_ret_6(void)
-{
+int dll_224_getExtraSize_ret_6(void) {
     return 0x6;
 }
 
-int dll_224_getObjectTypeId(void)
-{
+int dll_224_getObjectTypeId(void) {
     return 0x0;
 }
 
-void dll_224_free_nop(void)
-{
+void dll_224_free_nop(void) {
 }
 
-void dll_224_render(int p1, int p2, int p3, int p4, int p5, s8 visible)
-{
-    if (visible == 0)
+void dll_224_render(int p1, int p2, int p3, int p4, int p5, s8 visible) {
+    if (visible == 0) {
         return;
+    }
 }
 
-void dll_224_hitDetect(GameObject* obj)
-{
-    if (obj->anim.hitVolumeTransforms != NULL)
-    {
+void dll_224_hitDetect(GameObject* obj) {
+    if (obj->anim.hitVolumeTransforms != NULL) {
         objUpdateHitVolumeTransforms(obj);
     }
 }
 
-void dll_224_update(GameObject* obj)
-{
+void dll_224_update(GameObject* obj) {
     int mapAct;
 
     mapAct = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
-    switch (mapAct)
-    {
+    switch (mapAct) {
     case 1:
         gSpellStoneEventId = 0x123;
         break;
@@ -101,11 +91,10 @@ void dll_224_update(GameObject* obj)
         gSpellStoneEventId = 0x123;
         break;
     }
-    spellStoneUseFn_801fd270(obj);
+    SpellStoneUse_updateInteraction(obj);
 }
 
-void dll_224_init(GameObject* obj, void* other)
-{
+void dll_224_init(GameObject* obj, void* other) {
     SpellStoneUseState* extra = obj->extra;
     SpellStonePlacement* def = (SpellStonePlacement*)other;
     s16 rotX = (def->rotXByte << 8);
@@ -118,12 +107,10 @@ void dll_224_init(GameObject* obj, void* other)
     obj->anim.resetHitboxFlags = hitboxFlags;
 }
 
-void dll_224_release_nop(void)
-{
+void dll_224_release_nop(void) {
 }
 
-void dll_224_initialise_nop(void)
-{
+void dll_224_initialise_nop(void) {
 }
 
 ObjectDescriptor dll_224 = {

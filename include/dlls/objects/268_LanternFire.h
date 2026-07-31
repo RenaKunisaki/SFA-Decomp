@@ -103,8 +103,6 @@ STATIC_ASSERT(sizeof(LanternFireFlyRuntimeInterface) == 0x2C);
 void LanternFireFly_setAnchor(GameObject* obj, f32 anchorX, f32 anchorY, f32 anchorZ);
 void LanternFireFly_releaseFromLantern(GameObject* obj);
 void LanternFireFly_setTargetPosition(GameObject* obj, f32* position);
-void LanternFireFly_pickDriftOffset(GameObject* obj);
-void LanternFireFly_advanceControlRing(GameObject* obj);
 int LanternFireFly_getExtraSize(void);
 int LanternFireFly_getObjectTypeId(void);
 void LanternFireFly_free(GameObject* obj, int flag);

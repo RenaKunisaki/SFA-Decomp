@@ -4,6 +4,6 @@
 #include "global.h"
 
 void tricky_updateBallRoll(int obj, TrickyState* ball);
-void fn_8014187C(void);
+void tricky_state04_nop(void);
 
 #endif /* MAIN_DLL_TRICKY_ROLLROUTE_H_ */

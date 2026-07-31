@@ -45,7 +45,7 @@ void FUN_8004800c(double param_1,double param_2,double param_3,double param_4,do
 
 /* extern-cleanup: defining-file public prototypes */
 void setDisplayCopyFilter(void);
-void gxTransformFn_8004a83c(void);
+void gxDisableGpuHangRecovery(void);
 void allocSomething32bytes(void);
 void initViewport(void);
 void tvInit(void);

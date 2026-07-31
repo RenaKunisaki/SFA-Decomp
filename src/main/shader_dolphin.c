@@ -116,127 +116,84 @@ static const GXColor kYuvKColor1 = { 0xB3, 0x00, 0x00, 0xB6 };
 static const GXColor kYuvKColor2 = { 0xFF, 0x00, 0xFF, 0x80 };
 extern GXTexObj sSecondaryTexObj;
 
-
-void chooseTevKonstSelectors(void* params, u8 colorEnabled, u8 alphaEnabled, int* colorSelection,
-                             int* alphaSelection)
-{
+static void chooseTevKonstSelectors(void* params, u8 colorEnabled, u8 alphaEnabled, int* colorSelection,
+                                    int* alphaSelection) {
     u8* buf = params;
     u8 haveColorSel = 0;
     u8 haveAlphaSel = 0;
-    if (colorEnabled != 0)
-    {
-        if (buf[0] == buf[1] && buf[0] == buf[2])
-        {
-            if (buf[0] == 0xff)
-            {
+    if (colorEnabled != 0) {
+        if (buf[0] == buf[1] && buf[0] == buf[2]) {
+            if (buf[0] == 0xff) {
                 *colorSelection = 0;
                 haveColorSel = 1;
-            }
-            else if (buf[0] == 0xe0)
-            {
+            } else if (buf[0] == 0xe0) {
                 *colorSelection = 1;
                 haveColorSel = 1;
-            }
-            else if (buf[0] == 0xc0)
-            {
+            } else if (buf[0] == 0xc0) {
                 *colorSelection = 2;
                 haveColorSel = 1;
-            }
-            else if (buf[0] == 0xa0)
-            {
+            } else if (buf[0] == 0xa0) {
                 *colorSelection = 3;
                 haveColorSel = 1;
-            }
-            else if (buf[0] == 0x80)
-            {
+            } else if (buf[0] == 0x80) {
                 *colorSelection = 4;
                 haveColorSel = 1;
-            }
-            else if (buf[0] == 0x60)
-            {
+            } else if (buf[0] == 0x60) {
                 *colorSelection = 5;
                 haveColorSel = 1;
-            }
-            else if (buf[0] == 0x40)
-            {
+            } else if (buf[0] == 0x40) {
                 *colorSelection = 6;
                 haveColorSel = 1;
-            }
-            else if (buf[0] == 0x20)
-            {
+            } else if (buf[0] == 0x20) {
                 *colorSelection = 7;
                 haveColorSel = 1;
             }
         }
-        if (haveColorSel == 0)
-        {
+        if (haveColorSel == 0) {
             *colorSelection = gRcpNextKColorSel;
         }
-    }
-    else
-    {
+    } else {
         haveColorSel = 1;
     }
-    if (alphaEnabled != 0)
-    {
-        if (buf[3] == 0xff)
-        {
+    if (alphaEnabled != 0) {
+        if (buf[3] == 0xff) {
             *alphaSelection = 0;
             haveAlphaSel = 1;
-        }
-        else if (buf[3] == 0xe0)
-        {
+        } else if (buf[3] == 0xe0) {
             *alphaSelection = 1;
             haveAlphaSel = 1;
-        }
-        else if (buf[3] == 0xc0)
-        {
+        } else if (buf[3] == 0xc0) {
             *alphaSelection = 2;
             haveAlphaSel = 1;
-        }
-        else if (buf[3] == 0xa0)
-        {
+        } else if (buf[3] == 0xa0) {
             *alphaSelection = 3;
             haveAlphaSel = 1;
-        }
-        else if (buf[3] == 0x80)
-        {
+        } else if (buf[3] == 0x80) {
             *alphaSelection = 4;
             haveAlphaSel = 1;
-        }
-        else if (buf[3] == 0x60)
-        {
+        } else if (buf[3] == 0x60) {
             *alphaSelection = 5;
             haveAlphaSel = 1;
-        }
-        else if (buf[3] == 0x40)
-        {
+        } else if (buf[3] == 0x40) {
             *alphaSelection = 6;
             haveAlphaSel = 1;
-        }
-        else if (buf[3] == 0x20)
-        {
+        } else if (buf[3] == 0x20) {
             *alphaSelection = 7;
             haveAlphaSel = 1;
         }
-        if (haveAlphaSel == 0)
-        {
+        if (haveAlphaSel == 0) {
             *alphaSelection = gRcpNextKAlphaSel;
         }
-    }
-    else
-    {
+    } else {
         haveAlphaSel = 1;
     }
-    if (haveColorSel == 0 || haveAlphaSel == 0)
-    {
+    if (haveColorSel == 0 || haveAlphaSel == 0) {
         GXSetTevKColor(gRcpNextKColor, *(GXColor*)params);
         gRcpNextKColor = gRcpNextKColor + 1;
         gRcpNextKColorSel = gRcpNextKColorSel + 1;
         gRcpNextKAlphaSel = gRcpNextKAlphaSel + 1;
     }
 }
-
 
 void setHeatEffectParams(u8 alpha, f32 scale)
 {
@@ -2209,7 +2166,7 @@ void addTexLayerStagesLit(void* p1, void* mtx)
     u8 buf[3];
     int out_c;
     int out_8;
-    objGetColor(0, &buf[0], &buf[1], &buf[2]);
+    objGetSunColor(0, &buf[0], &buf[1], &buf[2]);
     if (mtx != 0)
     {
         GXLoadTexMtxImm(mtx, gRcpNextPostTexMtx, 0);

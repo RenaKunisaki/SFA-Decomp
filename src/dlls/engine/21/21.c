@@ -156,7 +156,7 @@ void curves_countRandomPoints(GameObject* obj, CurvesCollisionState* collision)
         for (i = 0; i < (int)(u32)collision->pointCounts >> CURVES_POINT_COUNT_SEGMENT_SHIFT; i++)
         {
             heights[i] = collision->points[i][1];
-            hits = hitDetectFn_80065e50(obj, collision->points[i][0], object->anim.worldPosY,
+            hits = trackGetHeight(obj, collision->points[i][0], object->anim.worldPosY,
                                         collision->points[i][2], &hitOut, -1, 0);
             found1 = 0;
             if (hits != 0)
@@ -247,7 +247,7 @@ void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
             collision->points[0][0] = collision->points[1][0];
             collision->points[0][1] = points[pointIndex].height;
             collision->points[0][2] = collision->points[1][2];
-            hitDetectFn_80067958((GameObject*)obj, collision->traceStart[0], collision->points[0], 1,
+            trackGetIntersect((GameObject*)obj, collision->traceStart[0], collision->points[0], 1,
                                  collision->segmentHitPlanes, 0);
             break;
         }
@@ -265,7 +265,7 @@ void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
         collision->points[2][2] = collision->points[1][2];
         hitScratch.scale = CURVES_HIT_SCRATCH_SCALE;
         hitScratch.type = 3;
-        hitDetectFn_80067958((GameObject*)obj, collision->traceStart[2], collision->points[2], 1, &hitScratch, 0);
+        trackGetIntersect((GameObject*)obj, collision->traceStart[2], collision->points[2], 1, &hitScratch, 0);
     }
 
     PSVECSubtract((Vec*)collision->points[0], (Vec*)collision->points[1], &delta);
@@ -277,7 +277,7 @@ void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
         collision->points[0][0] = collision->points[1][0];
         collision->points[0][1] = collision->points[1][1] - CURVES_VERTICAL_TRACE_DISTANCE;
         collision->points[0][2] = collision->points[1][2];
-        hitDetectFn_80067958((GameObject*)obj, collision->traceStart[0], collision->points[0], 1,
+        trackGetIntersect((GameObject*)obj, collision->traceStart[0], collision->points[0], 1,
                             collision->segmentHitPlanes,
                              0);
     }
@@ -968,7 +968,7 @@ RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, in
     {
         sCurvesCachedHitObj = obj;
         sCurvesCachedHitCount =
-            hitDetectFn_80065e50(obj, x, obj->anim.worldPosY, z, &hitPoints, queryAll != 0 ? 1 : -2, 0);
+            trackGetHeight(obj, x, obj->anim.worldPosY, z, &hitPoints, queryAll != 0 ? 1 : -2, 0);
         if (ROMCURVE_GETCURVES_MAX_POINTS < sCurvesCachedHitCount)
         {
             sCurvesCachedHitCount = ROMCURVE_GETCURVES_MAX_POINTS;
@@ -1134,7 +1134,7 @@ void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, 
             if ((s32)(state->flags & 2) != 0)
             {
                 *(char*)&collision->surfaceFlags =
-                    hitDetectFn_80067958(curveObj, (f32*)collision->traceStart,
+                    trackGetIntersect(curveObj, (f32*)collision->traceStart,
                                          (f32*)collision->points,
                                          (int)(u32)collision->pointCounts >> CURVES_POINT_COUNT_SEGMENT_SHIFT,
                                          collision->segmentHitPlanes, 0);
@@ -1410,7 +1410,7 @@ void curves_gatherTrackTriangles(GameObject* obj, CurvesCollisionState* state)
             mask |= 0x1;
         if ((s32)(flags & 0x01000000) != 0)
             mask |= 0x20;
-        hitDetectFn_800691c0(obj, &state->hitBounds, mask, 1);
+        trackIntersectBroadphase(obj, &state->hitBounds, mask, 1);
     }
 }
 

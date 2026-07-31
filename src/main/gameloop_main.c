@@ -92,9 +92,9 @@ typedef enum GameLoopState
     GAME_STATE_RESETDONE = 5,        /* terminal, after OSResetSystem */
     GAME_STATE_HARDRESETPRESSED = 6  /* like GAME_STATE_RESETPRESSED but flags a hard reset */
 } GameLoopState;
-void addButtonObject(void* obj)
+void addButtonObject(GameObject* obj)
 {
-    gGameLoopButtonObjects[gGameLoopButtonObjectCount++] = (int)obj;
+    gGameLoopButtonObjects[gGameLoopButtonObjectCount++] = obj;
 }
 
 
@@ -307,14 +307,14 @@ void mainSetBits(int gameBit, int value)
     }
 }
 
-int return1_800202BC(void)
+int TriggSetpShouldUnload(void)
 {
     return 0x1;
 }
 
 typedef f32 Mtx[3][4];
 
-void setFrameCountdown_800202c4(s8 count)
+void setFrameCountdown(s8 count)
 {
     frameCountdown = count;
 }
@@ -577,7 +577,7 @@ void mapLoadByCoords(f32 x, f32 y, f32 z, int act)
     gGameLoopMusicFadeTimer = -3e+01f;
 }
 
-void doQueuedLoads(void)
+static void doQueuedLoads(void)
 {
     if ((s8)gGameLoopReloadRequested != 0)
     {
@@ -592,7 +592,7 @@ void doQueuedLoads(void)
         mmSetFreeDelay(0);
         if (gGameLoopMapLoaded != 0)
         {
-            setColor_803db5d0(0, 0, 0);
+            videoSetEfbCopyClearColor(0, 0, 0);
             unloadMap();
             if (gGameLoopFullMapUnloadPending != 0)
             {
@@ -632,7 +632,7 @@ void doQueuedLoads(void)
     }
 }
 
-void gameUpdate(void)
+static void gameUpdate(void)
 {
     Obj_GetPlayerObject();
     gGameLoopMusicRequestCount = 0;
@@ -672,7 +672,7 @@ void gameUpdate(void)
             }
         }
     }
-    timeFn_8006f400(timeDelta);
+    waterFxUpdate(timeDelta);
     uiDll_runFrameEndAndLoadNext();
     trackIntersect();
     mapUpdateCameraPosByTransformSpace();
@@ -754,11 +754,9 @@ void gameUpdate(void)
 #define GAMELOOP_SEQID_DIE_FOX     0x882 /* "DieFox" */
 #define GAMELOOP_SEQID_DIE_KRYSTAL 0x887 /* "DieKrystal" */
 
-void gameLoop(void)
-{
+static void gameLoop(void) {
     waitNextFrame();
-    if (gameState == GAME_STATE_RUNNING)
-    {
+    if (gameState == GAME_STATE_RUNNING) {
         padUpdate();
         voxmaps_updateTimers();
         gameUpdate();
@@ -770,24 +768,19 @@ void gameLoop(void)
     }
     debugPrintDraw(0);
     (*gScreenTransitionInterface)->init(0, 0, 0);
-    if (gameState == GAME_STATE_RUNNING)
-    {
-        if (gGameLoopButtonObjectCount != 0)
-        {
-            if (screenBlankFrameCount == 0)
-            {
-                int* p;
+    if (gameState == GAME_STATE_RUNNING) {
+        if (gGameLoopButtonObjectCount != 0) {
+            if (screenBlankFrameCount == 0) {
+                GameObject** p;
                 int i;
 
                 drawRect(0.0f, 0.0f, 0x280, 0x1e0);
                 i = 0;
-                p = (int*)&gGameLoopButtonObjects;
-                for (; i < gGameLoopButtonObjectCount; i++)
-                {
-                    objRenderModelAndHitVolumes((GameObject*)*p, 0, 0, 0, 0, 1.0f);
-                    if (((GameObject*)*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_FOX ||
-                        ((GameObject*)*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_KRYSTAL)
-                    {
+                p = gGameLoopButtonObjects;
+                for (; i < gGameLoopButtonObjectCount; i++) {
+                    objRenderModelAndHitVolumes(*p, 0, 0, 0, 0, 1.0f);
+                    if ((*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_FOX ||
+                        (*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_KRYSTAL) {
                         objRenderFuzz((int*)*p);
                     }
                     p++;
@@ -806,7 +799,6 @@ void gameLoop(void)
     mmFreeTick(1);
     doQueuedLoads();
 }
-
 
 void init(void)
 {
@@ -841,11 +833,11 @@ void init(void)
     initLoadingScreenTextures();
     mmInit();
     testAndSet_onlyUseHeap3(1);
-    gxTransformFn_8004a83c();
+    gxDisableGpuHangRecovery();
     testAndSet_onlyUseHeap3(0);
     Camera_InitState();
     testAndSet_onlyUseHeap3(1);
-    gameTextInitFn_8001a234();
+    gameTextInitRendererState();
     testAndSet_onlyUseHeap3(0);
     gameTextLoadDir(3);
     testAndSet_onlyUseHeap3(1);
@@ -874,7 +866,7 @@ void init(void)
         if (once == 0)
         {
             testAndSet_onlyUseHeap3(1);
-            initFn_8006d020();
+            newShadowsInitProceduralTextures();
         }
         once = 1;
         runLoadingScreens();
@@ -918,7 +910,7 @@ void init(void)
     gameTextLoadDir(0x15);
     Obj_InitObjectSystem();
     debugPrintInit();
-    mapInitFn_80069990();
+    trackInitCollisionBuffers();
     initTextures();
     waterFxInit();
     initGameTimer();

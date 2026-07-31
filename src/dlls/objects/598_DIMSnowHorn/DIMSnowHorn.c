@@ -1098,7 +1098,7 @@ void DIMSnowHorn1_spawnFootstepEffects(int obj, DIMSnowHorn1State* pointState, D
             }
 
             Sfx_PlayFromObject(
-                obj, audioPickSoundEffect_8006ed24((u8)(s8) * (s8*)&inputState->baddie.paletteSlot, 9));
+                obj, surfaceSfxSelectTrigger((u8)(s8) * (s8*)&inputState->baddie.paletteSlot, 9));
             doRumble(3.0f);
         }
         flags >>= 1;

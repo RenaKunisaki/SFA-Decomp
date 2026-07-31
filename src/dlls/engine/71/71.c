@@ -33,7 +33,7 @@ RomCurvePathNode* pathcam_walkToPathEnd(RomCurvePathNode* node, int* count, int 
 void pathcam_findTaggedNodeWindow(RomCurvePathNode* node, int* out, int tag);
 f32 pathcam_segmentParam(f32 x, f32 unused, f32 z, int* nodes);
 
-void pathcam_advanceNodePair(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag) {
+static void pathcam_advanceNodePair(int* nodeId, int* leadNodeId, f32 x, f32 y, f32 z, int tag) {
     RomCurvePathNode* node;
     RomCurvePathNode* linked;
     int noForwardExit;

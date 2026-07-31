@@ -6,30 +6,29 @@
 #include "dlls/objects/373_DFropenode.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/mtx.h"
+#include "dolphin/mtx/vec.h"
+#include "game/objects/object.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_legacy_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
-#include "main/dll/DF/DFbarrel.h"
 #include "main/frame_timing.h"
-#include "main/gamebits.h"
+#include "main/gamebits_api.h"
 #include "main/lightmap_api.h"
 #include "main/mm.h"
-#include "main/objtype.h"
 #include "main/obj_list.h"
+#include "main/objtype.h"
 #include "main/sky.h"
 #include "main/texture.h"
+#include "main/vecmath.h"
 #include "string.h"
 #include "track/intersect_api.h"
-#include "game/objects/object_setup.h"
-#include "dolphin/mtx/vec.h"
 
-#define DFBARREL_SWAY_LIMIT          0x32
-#define DFBARREL_SWAY_DIR_INCREASING 1
-#define DFBARREL_SWAY_DIR_DECREASING 2
-
-#define DFBARREL_NODE_LINKS_OFFSET 0x28
-#define DFROPENODE_OBJGROUP        0x17
-extern const f32 lbl_803E4DFC;
+#define DFROPENODE_ROLE_ROPE_OWNER        0x01
+#define DFROPENODE_ROPE_SWAY_LIMIT        0x32
+#define DFROPENODE_ROPE_SWAY_DIR_INCREASE 1
+#define DFROPENODE_ROPE_SWAY_DIR_DECREASE 2
+#define DFROPENODE_OBJGROUP               0x17
 
 int gRopeNodeTextureAssetIds[2] = {0x3CA, 0x5DD};
 void* gRopeNodeTextures[2] = {0};
@@ -55,8 +54,7 @@ const u8 gRopeNodeDisplayList[96] = {0, 0, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
  * Build the six-vertex mesh for one rope segment. The template is rotated
  * around the Y axis and its two end caps are translated onto the link nodes.
  */
-void dfropenode_buildRopeSegmentMesh(void* templateData, int angle, float* startNode, float* endNode,
-                                     LightmapVertex* out) {
+void DFropenode_buildRopeSegmentMesh(void* templateData, int angle, Vec* startNode, Vec* endNode, LightmapVertex* out) {
     s16 startX;
     s16 startY;
     s16 startZ;
@@ -68,12 +66,12 @@ void dfropenode_buildRopeSegmentMesh(void* templateData, int angle, float* start
     float angleRadians;
     f32 vertexX;
 
-    startX = 100.0f * startNode[0];
-    startY = 100.0f * startNode[1];
-    startZ = 100.0f * startNode[2];
-    endX = 100.0f * endNode[0];
-    endY = 100.0f * endNode[1];
-    endZ = 100.0f * endNode[2];
+    startX = 100.0f * startNode->x;
+    startY = 100.0f * startNode->y;
+    startZ = 100.0f * startNode->z;
+    endX = 100.0f * endNode->x;
+    endY = 100.0f * endNode->y;
+    endZ = 100.0f * endNode->z;
     memcpy(out, templateData, 0x60);
 
     i = 0;
@@ -104,14 +102,13 @@ void dfropenode_buildRopeSegmentMesh(void* templateData, int angle, float* start
     out[5].x += endX;
     out[5].y += endY;
     out[5].z += endZ;
-    return;
 }
 
 /*
  * Integrate the spring forces attached to every unlocked rope node.
  */
-void DFPulley_integrateLinks(DFRope* self) {
-    DFRopeNode* part;
+void DFropenode_integrateRopeNodes(DFropenodeRope* self) {
+    DFropenodeRopeNode* part;
     int j;
     int i;
     Vec accel;
@@ -130,7 +127,7 @@ void DFPulley_integrateLinks(DFRope* self) {
 
         if (part->locked == 0) {
             for (j = 0; j < part->linkCount; j++) {
-                DFRopeLink* link = part->links[j];
+                DFropenodeRopeLink* link = part->links[j];
                 if (part == link->a) {
                     PSVECAdd(&accel, (Vec*)link->force, &accel);
                 } else {
@@ -148,7 +145,7 @@ void DFPulley_integrateLinks(DFRope* self) {
             PSVECSubtract((Vec*)part->velocity, &velscaled, (Vec*)part->velocity);
             part->velocity[1] = self->step * self->inverseTicks + part->velocity[1];
             PSVECScale((Vec*)part->velocity, &scaled, self->step);
-            PSVECAdd((Vec*)part->pos, &scaled, (Vec*)part->pos);
+            PSVECAdd(&part->pos, &scaled, &part->pos);
         }
     }
 }
@@ -157,27 +154,27 @@ void DFPulley_integrateLinks(DFRope* self) {
  * Apply rope sway, solve each spring link, integrate the nodes, and clear
  * accumulated forces for the next tick.
  */
-void DFRope_UpdateSimulation(DFRope* self) {
+void DFropenode_updateRopeSimulation(DFropenodeRope* self) {
     int j;
-    DFRopeLink* link;
+    DFropenodeRopeLink* link;
     int k;
-    DFRopeNode* parts;
+    DFropenodeRopeNode* parts;
     int i;
-    DFRopeNode* partIter;
+    DFropenodeRopeNode* partIter;
     Vec tmp;
     f32 zero;
-    DFRopeNode* partsInit;
+    DFropenodeRopeNode* partsInit;
 
     partsInit = self->nodes;
     parts = partsInit;
 
-    if (self->sway < -DFBARREL_SWAY_LIMIT) {
-        self->direction = DFBARREL_SWAY_DIR_INCREASING;
+    if (self->sway < -DFROPENODE_ROPE_SWAY_LIMIT) {
+        self->direction = DFROPENODE_ROPE_SWAY_DIR_INCREASE;
     }
-    if (self->sway > DFBARREL_SWAY_LIMIT) {
-        self->direction = DFBARREL_SWAY_DIR_DECREASING;
+    if (self->sway > DFROPENODE_ROPE_SWAY_LIMIT) {
+        self->direction = DFROPENODE_ROPE_SWAY_DIR_DECREASE;
     }
-    if ((s8)self->direction == DFBARREL_SWAY_DIR_DECREASING) {
+    if ((s8)self->direction == DFROPENODE_ROPE_SWAY_DIR_DECREASE) {
         self->sway--;
     } else {
         self->sway++;
@@ -211,7 +208,7 @@ void DFRope_UpdateSimulation(DFRope* self) {
                 PSVECScale(&tmp, (Vec*)link->force, -link->stiffness * (link->length - link->restLength));
             }
         }
-        DFPulley_integrateLinks(self);
+        DFropenode_integrateRopeNodes(self);
     }
 
     i = 0;
@@ -225,7 +222,8 @@ void DFRope_UpdateSimulation(DFRope* self) {
     }
 }
 
-void DFRopeLink_AttachNodes(DFRopeLink* linkSelf, DFRopeNode* firstNode, DFRopeNode* secondNode) {
+void DFropenode_attachRopeLink(DFropenodeRopeLink* linkSelf, DFropenodeRopeNode* firstNode,
+                               DFropenodeRopeNode* secondNode) {
     u8* nodeLinkIter;
     int firstLinkIndex;
     int secondLinkIndex;
@@ -233,12 +231,12 @@ void DFRopeLink_AttachNodes(DFRopeLink* linkSelf, DFRopeNode* firstNode, DFRopeN
     firstLinkIndex = 0;
     secondLinkIndex = 0;
     nodeLinkIter = (u8*)firstNode;
-    while (*(u32*)(nodeLinkIter + DFBARREL_NODE_LINKS_OFFSET) != 0) {
+    while (*(u32*)(nodeLinkIter + offsetof(DFropenodeRopeNode, links)) != 0) {
         nodeLinkIter += 4;
         firstLinkIndex++;
     }
     nodeLinkIter = (u8*)secondNode;
-    while (*(u32*)(nodeLinkIter + DFBARREL_NODE_LINKS_OFFSET) != 0) {
+    while (*(u32*)(nodeLinkIter + offsetof(DFropenodeRopeNode, links)) != 0) {
         nodeLinkIter += 4;
         secondLinkIndex++;
     }
@@ -255,15 +253,15 @@ void DFRopeLink_AttachNodes(DFRopeLink* linkSelf, DFRopeNode* firstNode, DFRopeN
  * Allocate a rope, seed evenly-spaced nodes between its endpoints, pin the
  * ends, and attach each spring link to its node pair.
  */
-DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f32 endZ, f32 unused, s32 count,
-                      f32 tickScale) {
-    DFRope* rope;
-    DFRopeNode* nodes;
-    DFRopeNode* node;
+DFropenodeRope* DFropenode_createRope(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f32 endZ, f32 unused,
+                                      s32 count, f32 tickScale) {
+    DFropenodeRope* rope;
+    DFropenodeRopeNode* nodes;
+    DFropenodeRopeNode* node;
     s32 linkCount;
-    DFRopeLink* link;
-    DFRopeNode* nextNode;
-    DFRopeNode* linkNode;
+    DFropenodeRopeLink* link;
+    DFropenodeRopeNode* nextNode;
+    DFropenodeRopeNode* linkNode;
     s32 nodesSize;
     s32 allocSize;
     u8* base;
@@ -283,12 +281,12 @@ DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f3
     dy = dy / (f32)(count - 1);
     dz = dz / (f32)(count - 1);
 
-    nodesSize = count * sizeof(DFRopeNode);
-    allocSize = sizeof(DFRope) + nodesSize + (count - 1) * sizeof(DFRopeLink);
+    nodesSize = count * sizeof(DFropenodeRopeNode);
+    allocSize = sizeof(DFropenodeRope) + nodesSize + (count - 1) * sizeof(DFropenodeRopeLink);
     base = (u8*)mmAlloc(allocSize, 0xFF, 0);
-    rope = (DFRope*)base;
-    rope->nodes = (DFRopeNode*)(base + sizeof(DFRope));
-    rope->links = (DFRopeLink*)(base + nodesSize + sizeof(DFRope));
+    rope = (DFropenodeRope*)base;
+    rope->nodes = (DFropenodeRopeNode*)(base + sizeof(DFropenodeRope));
+    rope->links = (DFropenodeRopeLink*)(base + nodesSize + sizeof(DFropenodeRope));
     rope->count = count;
     rope->totalLength = length;
     rope->start[0] = startX;
@@ -311,9 +309,9 @@ DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f3
 
     nodes = rope->nodes;
     for (i = 0, node = nodes; i < count; node++, i++) {
-        node->pos[0] = i * dx + rope->start[0];
-        node->pos[1] = i * dy + rope->start[1];
-        node->pos[2] = i * dz + rope->start[2];
+        node->pos.x = i * dx + rope->start[0];
+        node->pos.y = i * dy + rope->start[1];
+        node->pos.z = i * dz + rope->start[2];
         node->velocity[2] = 0.0f;
         node->velocity[1] = 0.0f;
         node->velocity[0] = 0.0f;
@@ -350,25 +348,25 @@ DFRope* DFRope_Create(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f3
         link->force[1] = 0.0f;
         link->force[0] = 0.0f;
         link->maxLength = 1000.0f * link->restLength;
-        nextNode = (DFRopeNode*)((u8*)nodes + (linkIndex + 1) * sizeof(DFRopeNode));
-        DFRopeLink_AttachNodes(link, linkNode, nextNode);
+        nextNode = (DFropenodeRopeNode*)((u8*)nodes + (linkIndex + 1) * sizeof(DFropenodeRopeNode));
+        DFropenode_attachRopeLink(link, linkNode, nextNode);
         link++;
         linkNode++;
     }
     return rope;
 }
 
-void dfropenode_setMinY(GameObject* obj, float value) {
+void DFropenode_setMinY(GameObject* obj, float value) {
     ((DFropenodeState*)obj->extra)->minimumY = value;
 }
 
-int dfropenode_isVisible(GameObject* obj) {
+int DFropenode_isVisible(GameObject* obj) {
     DFropenodeState* state = obj->extra;
 
     return (s16)(state->hidden == 0);
 }
 
-void dfropenode_setVisible(GameObject* obj, int value) {
+void DFropenode_setVisible(GameObject* obj, int value) {
     u32 bit;
     u8 bitByte;
     DFropenodeState* state;
@@ -385,16 +383,16 @@ void dfropenode_setVisible(GameObject* obj, int value) {
     }
 }
 
-int dfropenode_getAngle(GameObject* obj) {
+int DFropenode_getAngle(GameObject* obj) {
     return ((DFropenodeState*)obj->extra)->ropeYaw;
 }
 
-void dfropenode_clearLinkedObj(GameObject* obj) {
+void DFropenode_clearLinkedObj(GameObject* obj) {
     ((DFropenodeState*)obj->extra)->linkedNode = NULL;
 }
 
-f32 DFRope_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY,
-                                   f32 endZ) {
+f32 DFropenode_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY,
+                                       f32 endZ) {
     f32 dx;
     f32 dy;
     f32 dz;
@@ -424,16 +422,10 @@ f32 DFRope_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 start
     return t;
 }
 
-int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32 worldZ, float* distanceOut,
+int DFropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32 worldZ, float* distanceOut,
                                     float* phaseOut, u8* sideOut) {
-    int offset;
     int i;
     DFropenodeState* state;
-    f32 phase;
-    f32 localY;
-    f32 localX;
-    f32 best;
-    f32 localZ;
     f32 x;
     f32 y;
     f32 z;
@@ -455,27 +447,26 @@ int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32
         return 0;
     }
     *distanceOut = 10000.0f;
-    localX = worldX - obj->anim.localPosX;
-    localY = worldY - obj->anim.localPosY;
-    localZ = worldZ - obj->anim.localPosZ;
+    worldX -= obj->anim.localPosX;
+    worldY -= obj->anim.localPosY;
+    worldZ -= obj->anim.localPosZ;
     {
         i = 0;
         result = 0;
-        offset = 0;
-        best = lbl_803E4DFC;
         for (; i < state->rope->count - 1; i++) {
-            DFRopeNode* node;
+            DFropenodeRopeNode* node;
+            f32 phase;
 
-            x = localX;
-            y = localY;
-            z = localZ;
-            node = (DFRopeNode*)((int)state->rope->nodes + offset);
-            phase = DFRope_projectPointOntoSegment(&x, &y, &z, node->pos[0], node->pos[1], node->pos[2], node[1].pos[0],
-                                                   node[1].pos[1], node[1].pos[2]);
-            if (phase >= best && phase < 1.0f) {
-                dx = x - localX;
-                dy = y - localY;
-                dz = z - localZ;
+            x = worldX;
+            y = worldY;
+            z = worldZ;
+            node = &state->rope->nodes[i];
+            phase = DFropenode_projectPointOntoSegment(&x, &y, &z, node->pos.x, node->pos.y, node->pos.z, node[1].pos.x,
+                                                       node[1].pos.y, node[1].pos.z);
+            if (phase >= 0.0f && phase < 1.0f) {
+                dx = x - worldX;
+                dy = y - worldY;
+                dz = z - worldZ;
                 distance = sqrtf(dx * dx + dy * dy + dz * dz);
                 if (distance < *distanceOut) {
                     result = i + 1;
@@ -483,7 +474,6 @@ int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32
                     *phaseOut = (f32)i + phase;
                 }
             }
-            offset += 0x34;
         }
     }
     if (result != 0) {
@@ -496,11 +486,11 @@ int dfropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32
     return result;
 }
 
-void dfropenode_applyForceAtPhase(f32 phase, f32 force, GameObject* obj) {
+void DFropenode_applyForceAtPhase(f32 phase, f32 force, GameObject* obj) {
     DFropenodeState* extra;
     s8 idx;
     f32 fraction;
-    DFRopeNode* node;
+    DFropenodeRopeNode* node;
 
     extra = (obj)->extra;
     phase = phase - (f32)(s8)phase;
@@ -513,22 +503,19 @@ void dfropenode_applyForceAtPhase(f32 phase, f32 force, GameObject* obj) {
     node->force[1] = force * fraction + node->force[1];
 }
 
-void dfropenode_advancePhaseByDistance(GameObject* obj, float* phase, f32 distance) {
-    DFropenodeState* extra;
+void DFropenode_advancePhaseByDistance(GameObject* obj, float* phase, f32 distance) {
+    DFropenodeState* extra = obj->extra;
     s32 raw;
     s8 idx;
     int node;
-    f32 ph;
     f32 x0;
     f32 dx;
     f32 dz;
     f32 len;
 
-    extra = obj->extra;
-    ph = *phase;
-    raw = (s32)ph;
+    raw = (s32)*phase;
     idx = (s8)raw;
-    *phase = ph - (f32)idx;
+    *phase = *phase - (f32)idx;
     node = (int)extra->rope->nodes;
     x0 = *((f32*)node + idx * 13);
     node = node + idx * 0x34;
@@ -540,28 +527,22 @@ void dfropenode_advancePhaseByDistance(GameObject* obj, float* phase, f32 distan
     *phase = *phase + (f32)(s8)raw;
 }
 
-void dfropenode_getWorldPosAtPhase(f32 phase, GameObject* obj, float* xOut, float* yOut, float* zOut) {
-    DFropenodeState* extra;
-    s8 idx;
-    f32 x0;
+void DFropenode_getWorldPosAtPhase(f32 phase, GameObject* obj, float* xOut, float* yOut, float* zOut) {
+    DFropenodeState* extra = obj->extra;
+    s8 idx = (s8)phase;
     f32 dx;
     f32 dy;
     f32 dz;
-    f32 fraction;
-
-    extra = (obj)->extra;
-    idx = (s8)phase;
-    fraction = phase - (f32)idx;
-    dy = extra->rope->nodes[idx + 1].pos[1] - extra->rope->nodes[idx].pos[1];
-    dz = extra->rope->nodes[idx + 1].pos[2] - extra->rope->nodes[idx].pos[2];
-    x0 = extra->rope->nodes[idx].pos[0];
-    dx = extra->rope->nodes[idx + 1].pos[0] - x0;
-    *xOut = dx * fraction + ((obj)->anim.localPosX + x0);
-    *yOut = dy * fraction + ((obj)->anim.localPosY + extra->rope->nodes[idx].pos[1]);
-    *zOut = dz * fraction + ((obj)->anim.localPosZ + extra->rope->nodes[idx].pos[2]);
+    f32 fraction = phase - (f32)idx;
+    dy = extra->rope->nodes[idx + 1].pos.y - extra->rope->nodes[idx].pos.y;
+    dz = extra->rope->nodes[idx + 1].pos.z - extra->rope->nodes[idx].pos.z;
+    dx = extra->rope->nodes[idx + 1].pos.x - extra->rope->nodes[idx].pos.x;
+    *xOut = dx * fraction + (obj->anim.localPosX + extra->rope->nodes[idx].pos.x);
+    *yOut = dy * fraction + (obj->anim.localPosY + extra->rope->nodes[idx].pos.y);
+    *zOut = dz * fraction + (obj->anim.localPosZ + extra->rope->nodes[idx].pos.z);
 }
 
-void dfropenode_getPlaneEquation(GameObject* obj, f32* out) {
+void DFropenode_getPlaneEquation(GameObject* obj, f32* out) {
     DFropenodeState* p = obj->extra;
     out[0] = p->planeNormalX;
     out[1] = p->planeNormalY;
@@ -569,12 +550,12 @@ void dfropenode_getPlaneEquation(GameObject* obj, f32* out) {
     out[3] = p->planeDistance;
 }
 
-int dfropenode_syncRopeToEndpoints(GameObject* obj) {
+int DFropenode_syncRopeToEndpoints(GameObject* obj) {
     DFropenodeState* extra;
     GameObject* endObj;
     GameObject* baseObj;
     int i;
-    DFRopeLink* link;
+    DFropenodeRopeLink* link;
     int flag;
     s16 angle;
     f32 dx;
@@ -599,7 +580,7 @@ int dfropenode_syncRopeToEndpoints(GameObject* obj) {
         extra = baseObj->extra;
     }
 
-    if ((extra->rope == NULL) || (endObj == NULL)) {
+    if (extra->rope == NULL || endObj == NULL) {
         return 0;
     }
 
@@ -625,9 +606,9 @@ int dfropenode_syncRopeToEndpoints(GameObject* obj) {
     }
 
     i = extra->rope->count - 1;
-    extra->rope->nodes[i].pos[0] = dx;
-    extra->rope->nodes[i].pos[1] = dy;
-    extra->rope->nodes[i].pos[2] = dz;
+    extra->rope->nodes[i].pos.x = dx;
+    extra->rope->nodes[i].pos.y = dy;
+    extra->rope->nodes[i].pos.z = dz;
 
     extra->boundsMinX = baseObj->anim.localPosX;
     extra->boundsMinZ = baseObj->anim.localPosZ;
@@ -644,11 +625,12 @@ int dfropenode_syncRopeToEndpoints(GameObject* obj) {
         extra->boundsMaxZ = temp;
     }
 
-    if (extra->minimumY != lbl_803E4DFC) {
-        clampY = extra->minimumY - baseObj->anim.localPosY;
+    clampY = extra->minimumY;
+    if (clampY) {
+        clampY -= baseObj->anim.localPosY;
         for (i = 0; i < extra->rope->count - 1; i++) {
-            if (extra->rope->nodes[i].pos[1] < clampY) {
-                extra->rope->nodes[i].pos[1] = clampY;
+            if (extra->rope->nodes[i].pos.y < clampY) {
+                extra->rope->nodes[i].pos.y = clampY;
             }
         }
     }
@@ -660,60 +642,55 @@ int dfropenode_syncRopeToEndpoints(GameObject* obj) {
     return 0;
 }
 
-int dfropenode_getExtraSize(void) {
+int DFropenode_getExtraSize(void) {
     return 0x34;
 }
 
-int dfropenode_getObjectTypeId(void) {
+int DFropenode_getObjectTypeId(void) {
     return 0;
 }
 
-void dfropenode_free(GameObject* obj) {
-    void* node;
-    int** objs;
-    int count;
-    int i;
+void DFropenode_free(GameObject* obj) {
+    GameObject* linkedNode;
+    DFropenodeState* state;
 
-    node = obj->extra;
+    state = obj->extra;
     objFreeObjectType((u32)obj, DFROPENODE_OBJGROUP);
-    if (((DFropenodeState*)node)->rope != NULL && ((DFropenodeState*)node)->rope != NULL) {
-        mm_free(((DFropenodeState*)node)->rope);
+    if (state->rope != NULL && state->rope != NULL) {
+        mm_free(state->rope);
     }
-    node = ((DFropenodeState*)node)->linkedNode;
-    if (node != NULL) {
-        objs = (int**)objGetAllOfType(DFROPENODE_OBJGROUP, &count);
-        for (i = 0; i < count; i++) {
-            if ((void*)objs[i] == node) {
-                (*(void (***)(void*)) * (void**)((char*)node + 0x68))[17](node);
+    linkedNode = state->linkedNode;
+    if (linkedNode != NULL) {
+        int i;
+        int objCount;
+        GameObject** objs = objGetAllOfType(DFROPENODE_OBJGROUP, &objCount);
+        for (i = 0; i < objCount; i++) {
+            if (objs[i] == linkedNode) {
+                DFropenodeInterface* interface = (DFropenodeInterface*)*linkedNode->anim.dll;
+                interface->clearLinkedObj(linkedNode);
             }
         }
     }
 }
 
-typedef struct DfropenodeRenderState {
-    u8 red;
-    u8 green;
-    u8 blue;
-} DfropenodeRenderState;
-
-void dfropenode_render(GameObject* obj, int p2, int p3) {
+void DFropenode_render(GameObject* obj, int p2, int p3) {
     ObjAnimComponent* objAnim;
     DFropenodeState* extra;
     DFropenodePlacement* objDef;
-    int eventId;
+    int fadeGameBit;
     int fadeAlpha;
     u32 oldAlpha;
-    DFRopeNode* node;
+    DFropenodeRopeNode* node;
     s16 segment;
-    DfropenodeRenderState renderState;
+    DFropenodeRenderState renderState;
     LightmapVertex segmentVerts[6];
     f32 originalScale;
 
-    objAnim = &(obj)->anim;
-    extra = (obj)->extra;
+    objAnim = &obj->anim;
+    extra = obj->extra;
     objDef = (DFropenodePlacement*)objAnim->placementData;
-    eventId = objDef->fadeGameBit;
-    if ((eventId != 0) && (mainGetBit(eventId) != 0)) {
+    fadeGameBit = objDef->fadeGameBit;
+    if (fadeGameBit != 0 && mainGetBit(fadeGameBit) != 0) {
         oldAlpha = objAnim->alpha;
         if (oldAlpha == 0x46) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_ocean_beamlp);
@@ -735,12 +712,11 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
         }
     }
 
-    if (((objDef->roleFlags & DFROPENODE_ROLE_ROPE_OWNER) != 0) && (extra->linkedNode != NULL) &&
-        (extra->rope != NULL)) {
-        originalScale = (obj)->anim.rootMotionScale;
-        (obj)->anim.rootMotionScale = 0.01f;
+    if ((objDef->roleFlags & DFROPENODE_ROLE_ROPE_OWNER) != 0 && extra->linkedNode != NULL && extra->rope != NULL) {
+        originalScale = obj->anim.rootMotionScale;
+        obj->anim.rootMotionScale = 0.01f;
         Camera_LoadModelViewMatrix(0, p3, (MatrixTransform*)obj, 1.0f, 0.0f, NULL);
-        (obj)->anim.rootMotionScale = originalScale;
+        obj->anim.rootMotionScale = originalScale;
         gxTevResetStages();
         gxTevTextureTimesColor1Stage();
         gxTevCommitStages();
@@ -750,7 +726,7 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
             renderState.blue = 0xff;
         } else {
             objAnim->alpha = 0xff;
-            getAmbientColor(0, &renderState.blue, &renderState.green, &renderState.red);
+            skyGetSunColor(0, &renderState.blue, &renderState.green, &renderState.red);
             renderState.green = (u8)(renderState.green * 200 >> 8);
             renderState.red = (u8)(renderState.red * 0xaa >> 8);
         }
@@ -764,13 +740,13 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
                 gxSetAlphaBlendZTest();
                 alpha = (objAnim->alpha + objAnim->alpha) >> 1;
             }
-            selectTexture((Texture*)(gRopeNodeTextures[objDef->variant]), 0);
+            selectTexture(gRopeNodeTextures[objDef->variant], 0);
             setTextColor(&p2, renderState.blue, renderState.green, renderState.red, (u8)alpha);
         }
         node = extra->rope->nodes;
-        for (segment = 0; segment < (int)(extra->rope->count - 1); segment++) {
+        for (segment = 0; segment < extra->rope->count - 1; segment++) {
             node++;
-            dfropenode_buildRopeSegmentMesh((u8*)gRopeNodeSegmentDataA, extra->ropeYaw, (node - 1)->pos, node->pos,
+            DFropenode_buildRopeSegmentMesh((u8*)gRopeNodeSegmentDataA, extra->ropeYaw, &(node - 1)->pos, &node->pos,
                                             segmentVerts);
             lightmapDrawTriangleList(segmentVerts, (u8*)gRopeNodeDisplayList, 6);
         }
@@ -784,44 +760,25 @@ void dfropenode_render(GameObject* obj, int p2, int p3) {
                 setTextColor(&p2, renderState.blue, renderState.green, renderState.red, alpha);
             }
             node = extra->rope->nodes;
-            for (segment = 0; segment < (int)(extra->rope->count - 1); segment++) {
+            for (segment = 0; segment < extra->rope->count - 1; segment++) {
                 node++;
-                dfropenode_buildRopeSegmentMesh((u8*)gRopeNodeSegmentDataB, extra->ropeYaw, (node - 1)->pos, node->pos,
-                                                segmentVerts);
+                DFropenode_buildRopeSegmentMesh((u8*)gRopeNodeSegmentDataB, extra->ropeYaw, &(node - 1)->pos,
+                                                &node->pos, segmentVerts);
                 lightmapDrawTriangleList(segmentVerts, (u8*)gRopeNodeDisplayList, 6);
             }
         }
     }
 }
 
-void dfropenode_hitDetect(void) {
+void DFropenode_hitDetect(void) {
 }
 
-void dfropenode_update(GameObject* obj) {
+void DFropenode_update(GameObject* obj) {
     DFropenodeState* extra;
     DFropenodePlacement* placement;
     GameObject* linkedObj;
-    GameObject** objects;
     int objectCount;
     int objectIndex;
-    GameObject* candidateObj;
-    f32 dx;
-    f32 dy;
-    f32 dz;
-    f32 length;
-    s16 angle;
-    f32 temp;
-    f32 baseX;
-    f32 baseY;
-    f32 baseZ;
-    f32 linkedX;
-    f32 linkedY;
-    f32 linkedZ;
-    f32 liftedY;
-    f32 normalX;
-    f32 normalY;
-    f32 normalZ;
-    f32 normalLength;
 
     placement = (DFropenodePlacement*)obj->anim.placementData;
     extra = obj->extra;
@@ -831,18 +788,18 @@ void dfropenode_update(GameObject* obj) {
 
     linkedObj = extra->linkedNode;
     if (linkedObj == NULL) {
-        objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+        GameObject** objects = ObjList_GetObjects(&objectIndex, &objectCount);
         objectIndex = 0;
-        while ((objectIndex < objectCount) && (linkedObj == NULL)) {
-            candidateObj = *objects;
-            if ((candidateObj->anim.classId == 0x36) &&
-                ((s32)placement->roleFlags ==
-                 ((DFropenodePlacement*)candidateObj->anim.placementData)->roleFlags - 1)) {
+        while (objectIndex < objectCount && linkedObj == NULL) {
+            GameObject* candidateObj = *objects;
+            if (candidateObj->anim.classId == 0x36 &&
+                (s32)placement->roleFlags == ((DFropenodePlacement*)candidateObj->anim.placementData)->roleFlags - 1) {
                 linkedObj = candidateObj;
             }
             objects++;
             objectIndex++;
         }
+
         if (linkedObj == NULL) {
             return;
         }
@@ -851,97 +808,97 @@ void dfropenode_update(GameObject* obj) {
         extra = obj->extra;
         extra->linkedNode = linkedObj;
 
-        dx = linkedObj->anim.localPosX - obj->anim.localPosX;
-        dy = linkedObj->anim.localPosY - obj->anim.localPosY;
-        dz = linkedObj->anim.localPosZ - obj->anim.localPosZ;
-        length = sqrtf(dz * dz + (dx * dx + dy * dy));
-        angle = getAngle(dx, dz);
-        if (angle > 0x8000) {
-            angle = (s16)(angle - 0xFFFF);
+        {
+            f32 dx = linkedObj->anim.localPosX - obj->anim.localPosX;
+            f32 dy = linkedObj->anim.localPosY - obj->anim.localPosY;
+            f32 dz = linkedObj->anim.localPosZ - obj->anim.localPosZ;
+            f32 length = sqrtf(dz * dz + (dx * dx + dy * dy));
+            s16 angle = getAngle(dx, dz);
+            if (angle > 0x8000) {
+                angle = (s16)(angle - 0xFFFF);
+            }
+            if (angle < -0x8000) {
+                angle += 0xFFFF;
+            }
+            extra->ropeYaw = angle;
+            extra->rope = DFropenode_createRope(0.0f, 0.0f, 0.0f, dx, dy, dz, length, 0x10,
+                                                gRopeNodeTickScales[placement->variant]);
+            extra->boundsMinX = obj->anim.localPosX;
+            extra->boundsMinZ = obj->anim.localPosZ;
+            extra->boundsMaxX = linkedObj->anim.localPosX;
+            extra->boundsMaxZ = linkedObj->anim.localPosZ;
         }
-        if (angle < -0x8000) {
-            angle += 0xFFFF;
-        }
-        extra->ropeYaw = angle;
 
-        extra->rope =
-            DFRope_Create(0.0f, 0.0f, 0.0f, dx, dy, dz, length, 0x10, (gRopeNodeTickScales)[placement->variant]);
-
-        extra->boundsMinX = obj->anim.localPosX;
-        extra->boundsMinZ = obj->anim.localPosZ;
-        extra->boundsMaxX = linkedObj->anim.localPosX;
-        extra->boundsMaxZ = linkedObj->anim.localPosZ;
         if (extra->boundsMinX > extra->boundsMaxX) {
-            temp = extra->boundsMinX;
+            f32 temp = extra->boundsMinX;
             extra->boundsMinX = extra->boundsMaxX;
             extra->boundsMaxX = temp;
         }
         if (extra->boundsMinZ > extra->boundsMaxZ) {
-            temp = extra->boundsMinZ;
+            f32 temp = extra->boundsMinZ;
             extra->boundsMinZ = extra->boundsMaxZ;
             extra->boundsMaxZ = temp;
         }
+
+        extra->boundsMinX -= 25.0f;
+        extra->boundsMinZ -= 25.0f;
+        extra->boundsMaxX += 25.0f;
+        extra->boundsMaxZ += 25.0f;
+
         {
-            extra->boundsMinX -= 25.0f;
-            extra->boundsMinZ -= 25.0f;
-            extra->boundsMaxX += 25.0f;
-            extra->boundsMaxZ += 25.0f;
+            f32 baseX = obj->anim.localPosX;
+            f32 baseY = obj->anim.localPosY;
+            f32 baseZ = obj->anim.localPosZ;
+            f32 linkedX = linkedObj->anim.localPosX;
+            f32 linkedY = linkedObj->anim.localPosY;
+            f32 linkedZ = linkedObj->anim.localPosZ;
+            f32 liftedY = baseY + 20.0f;
+            f32 normalX = liftedY * (baseZ - linkedZ) + (baseY * (linkedZ - baseZ) + (linkedY * (baseZ - baseZ)));
+            f32 normalY = baseZ * (baseX - linkedX) + (baseZ * (linkedX - baseX) + (linkedZ * (baseX - baseX)));
+            f32 normalZ = baseX * (baseY - linkedY) + (baseX * (linkedY - liftedY) + (linkedX * (liftedY - baseY)));
+            f32 normalLength = sqrtf(normalZ * normalZ + (normalX * normalX + normalY * normalY));
+            if (normalLength > 0.0f) {
+                normalX /= normalLength;
+                normalY /= normalLength;
+                normalZ /= normalLength;
+            }
+            extra->planeNormalX = normalX;
+            extra->planeNormalY = normalY;
+            extra->planeNormalZ = normalZ;
+            extra->planeDistance = -(baseZ * normalZ + (baseX * normalX + baseY * normalY));
         }
-
-        baseX = obj->anim.localPosX;
-        baseY = obj->anim.localPosY;
-        baseZ = obj->anim.localPosZ;
-        linkedX = linkedObj->anim.localPosX;
-        linkedY = linkedObj->anim.localPosY;
-        linkedZ = linkedObj->anim.localPosZ;
-        liftedY = 20.0f + baseY;
-
-        normalX = liftedY * (baseZ - linkedZ) + (baseY * (linkedZ - baseZ) + (linkedY * (baseZ - baseZ)));
-        normalY = baseZ * (baseX - linkedX) + (baseZ * (linkedX - baseX) + (linkedZ * (baseX - baseX)));
-        normalZ = baseX * (baseY - linkedY) + (baseX * (linkedY - liftedY) + (linkedX * (liftedY - baseY)));
-        normalLength = sqrtf(normalZ * normalZ + (normalX * normalX + normalY * normalY));
-        if (normalLength > 0.0f) {
-            normalX /= normalLength;
-            normalY /= normalLength;
-            normalZ /= normalLength;
-        }
-        extra->planeNormalX = normalX;
-        extra->planeNormalY = normalY;
-        extra->planeNormalZ = normalZ;
-        extra->planeDistance = -(baseZ * normalZ + (baseX * normalX + baseY * normalY));
     }
 
-    DFRope_UpdateSimulation(extra->rope);
+    DFropenode_updateRopeSimulation(extra->rope);
 }
 
-void dfropenode_init(GameObject* obj, DFropenodePlacement* placement) {
+void DFropenode_init(GameObject* obj, DFropenodePlacement* placement) {
+    DFropenodeState* extra = obj->extra;
 
-    DFropenodeState* extra;
-
-    extra = obj->extra;
-    if ((gRopeNodeVariantVisibleFlags)[placement->variant] == 0) {
-        (obj)->anim.flags = (obj)->anim.flags & ~0x80;
+    if (gRopeNodeVariantVisibleFlags[placement->variant] == 0) {
+        obj->anim.flags = obj->anim.flags & ~0x80;
     }
+
     objAddObjectType((int)obj, DFROPENODE_OBJGROUP);
-    (obj)->animEventCallback = dfropenode_syncRopeToEndpoints;
+    obj->animEventCallback = DFropenode_syncRopeToEndpoints;
     extra->rope = NULL;
     extra->linkedNode = NULL;
-    (obj)->anim.alpha = 0x46;
+    obj->anim.alpha = 0x46;
 }
 
-void dfropenode_release(void) {
+void DFropenode_release(void) {
     int i;
 
     for (i = 0; i < 2; i++) {
-        textureFree((Texture*)(gRopeNodeTextures[i]));
+        textureFree(gRopeNodeTextures[i]);
     }
 }
 
-void dfropenode_initialise(void) {
+void DFropenode_initialise(void) {
     int i;
 
     for (i = 0; i < 2; i++) {
-        (gRopeNodeTextures)[i] = textureLoadAsset((gRopeNodeTextureAssetIds)[i]);
+        gRopeNodeTextures[i] = textureLoadAsset(gRopeNodeTextureAssetIds[i]);
     }
 }
 
@@ -950,24 +907,24 @@ ObjectDescriptor20 gDFropenodeObjDescriptor = {
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_20_SLOTS,
-    (ObjectDescriptorCallback)dfropenode_initialise,
-    (ObjectDescriptorCallback)dfropenode_release,
+    (ObjectDescriptorCallback)DFropenode_initialise,
+    (ObjectDescriptorCallback)DFropenode_release,
     0,
-    (ObjectDescriptorCallback)dfropenode_init,
-    (ObjectDescriptorCallback)dfropenode_update,
-    (ObjectDescriptorCallback)dfropenode_hitDetect,
-    (ObjectDescriptorCallback)dfropenode_render,
-    (ObjectDescriptorCallback)dfropenode_free,
-    (ObjectDescriptorCallback)dfropenode_getObjectTypeId,
-    dfropenode_getExtraSize,
-    (ObjectDescriptorCallback)dfropenode_getPlaneEquation,
-    (ObjectDescriptorCallback)dfropenode_getWorldPosAtPhase,
-    (ObjectDescriptorCallback)dfropenode_advancePhaseByDistance,
-    (ObjectDescriptorCallback)dfropenode_applyForceAtPhase,
-    (ObjectDescriptorCallback)dfropenode_findNearestRopePoint,
-    (ObjectDescriptorCallback)dfropenode_getAngle,
-    (ObjectDescriptorCallback)dfropenode_setVisible,
-    (ObjectDescriptorCallback)dfropenode_isVisible,
-    (ObjectDescriptorCallback)dfropenode_setMinY,
-    (ObjectDescriptorCallback)dfropenode_clearLinkedObj,
+    (ObjectDescriptorCallback)DFropenode_init,
+    (ObjectDescriptorCallback)DFropenode_update,
+    (ObjectDescriptorCallback)DFropenode_hitDetect,
+    (ObjectDescriptorCallback)DFropenode_render,
+    (ObjectDescriptorCallback)DFropenode_free,
+    (ObjectDescriptorCallback)DFropenode_getObjectTypeId,
+    DFropenode_getExtraSize,
+    (ObjectDescriptorCallback)DFropenode_getPlaneEquation,
+    (ObjectDescriptorCallback)DFropenode_getWorldPosAtPhase,
+    (ObjectDescriptorCallback)DFropenode_advancePhaseByDistance,
+    (ObjectDescriptorCallback)DFropenode_applyForceAtPhase,
+    (ObjectDescriptorCallback)DFropenode_findNearestRopePoint,
+    (ObjectDescriptorCallback)DFropenode_getAngle,
+    (ObjectDescriptorCallback)DFropenode_setVisible,
+    (ObjectDescriptorCallback)DFropenode_isVisible,
+    (ObjectDescriptorCallback)DFropenode_setMinY,
+    (ObjectDescriptorCallback)DFropenode_clearLinkedObj,
 };

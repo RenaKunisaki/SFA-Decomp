@@ -1,6 +1,7 @@
 #ifndef MAIN_GAMELOOP_API_H_
 #define MAIN_GAMELOOP_API_H_
 
+#include "game/objects/object_fwd.h"
 #include "types.h"
 #include "main/gameloop_gamebit_api.h"
 #include "main/hud_visibility_api.h"
@@ -12,7 +13,7 @@ extern LinkInterface* gTitleMenuLinkInterface;
 int main(int argc, char** argv);
 int getGameState(void);
 int getScreenBlankFrameCount(void);
-int return1_800202BC(void);
+int TriggSetpShouldUnload(void);
 void requestGalleonBattleMusic(void);
 void checkReset(void);
 void setShouldResetNextFrame(int reset);
@@ -25,15 +26,15 @@ void cutsceneFadeInOut(int mode);
 void setTimeStop(int frames);
 void doNothing_onSaveSelectScreenExit(void);
 void requestKrazoaShrineMusic(void);
-int getButtonObjects(int** objectsOut);
+int getButtonObjects(GameObject*** objectsOut);
 int cacheAllocAndCopy(u32 srcAddress, u32 size, u32* cacheCursor, u32* outEnd, u32 limit);
-void doNothing_8001F678(int a, int b);
+void nop_onUnloadMap(int a, int b);
 void doNothing_startOfFrame(void);
 void crash(int a, int b, int c, int d, int e, int f, int g, int h);
 
-void addButtonObject(void* obj);
+void addButtonObject(GameObject* obj);
 
-void removeButtonObject(u32 object);
+void removeButtonObject(GameObject* object);
 
 void blankScreen(int frames);
 

@@ -7,8 +7,8 @@ u32 Link_update(void);
 void setLinkNotRotated(void);
 void setLinkIsRotated(void);
 u16 linkGetSelectedItemId(void);
-void linkDrawFn_801302c0(void);
-void linkDrawFn_80130484(void);
+void Link_refreshOverlappingItemTimers(void);
+void Link_scanItemVerticalBounds(void);
 void FUN_801310fc(u64 param_1,double param_2,double param_3,u64 param_4,
                  u64 param_5,u64 param_6,u64 param_7,u64 param_8,
                  u32 param_9,u32 param_10,u8 param_11,u8 *param_12,

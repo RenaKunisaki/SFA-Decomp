@@ -71,9 +71,10 @@ void trackDolphin_buildSweptBounds(u32 *boundsOut,float *startPoints,float *endP
 
 
 /* extern-cleanup: defining-file public prototypes */
-int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int vertsOut, int p7, f32 offX, f32 offZ, int p8, int kindMask);
-void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObject* obj, int triangleCount, void* p7,
-                       void* buf48, f32 f);
+int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int vertsOut, int unusedTriangleCount,
+                                f32 offX, f32 offZ, int unusedRenderMode, int kindSelector);
+void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObject* obj, int triangleCount,
+                             void* unusedDrawScratch, void* unusedBounds, f32 unusedYOffset);
 void trackCollectGroundHits(struct TrackTriangle* triStart, struct TrackTriangle* triEnd, struct TrackBlockDescriptor* desc,
                  f32 qx, f32 qz, int allowDown);
 #endif /* MAIN_TRACK_DOLPHIN_H_ */

@@ -19,7 +19,7 @@ u8 salNumVoices;
 u8 salMaxStudioNum;
 SalHooks salHooks;
 u8 salTimeOffset;
-void snd_handle_irq(void)
+static void snd_handle_irq(void)
 {
     u32 timeOffset;
     u8 voiceIndex;

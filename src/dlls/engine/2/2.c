@@ -149,10 +149,10 @@ extern int gObjSeqPreemptList[][2];
 extern void* lbl_803DD0B8;
 extern int gObjSeqPreparingStreamSlot;
 extern int lbl_803DD064;
-extern u64 gSaveCardChecksumHi;
+extern u32 gSaveCardChecksumHi;
 extern u32 gSaveCardChecksumLo;
 extern u8* gSaveCardImageBuffer;
-extern u64 gSaveCardSerialHi;
+extern u32 gSaveCardSerialHi;
 extern u8 lbl_803DD059;
 extern int gObjSeqStreamResumeOffset;
 extern f32 gObjSeqStreamRemainingTime;
@@ -218,7 +218,7 @@ int saveGame_doWrite(int slot)
             }
             else
             {
-                gSaveCardChecksumHi = chk2;
+                *(u64*)&gSaveCardChecksumHi = chk2;
             }
         }
     }
@@ -280,9 +280,9 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     {
         if (lbl_803DD059 != 0)
         {
-            if (gSaveCardChecksumHi != 0)
+            if (*(u64*)&gSaveCardChecksumHi != 0)
             {
-                if (chk != gSaveCardChecksumHi)
+                if (chk != *(u64*)&gSaveCardChecksumHi)
                 {
                     result = -0x55;
                     gSaveCardState = 0xb;
@@ -291,13 +291,13 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
             else
             {
                 gSaveCardChecksumLo = (u32)chk;
-                *(u32*)&gSaveCardChecksumHi = (u32)(chk >> 32);
+                gSaveCardChecksumHi = (u32)(chk >> 32);
             }
         }
         else
         {
             gSaveCardChecksumLo = (u32)chk;
-            *(u32*)&gSaveCardChecksumHi = (u32)(chk >> 32);
+            gSaveCardChecksumHi = (u32)(chk >> 32);
         }
     }
     if (result == 0)
@@ -559,9 +559,9 @@ int saveGame(int writeImages)
         {
             if (lbl_803DD059 != 0)
             {
-                if (gSaveCardSerialHi != 0)
+                if (*(u64*)&gSaveCardSerialHi != 0)
                 {
-                    if (serial != gSaveCardSerialHi)
+                    if (serial != *(u64*)&gSaveCardSerialHi)
                     {
                         result = -0x55;
                         gSaveCardState = 0xb;
@@ -569,12 +569,12 @@ int saveGame(int writeImages)
                 }
                 else
                 {
-                    gSaveCardSerialHi = serial;
+                    *(u64*)&gSaveCardSerialHi = serial;
                 }
             }
             else
             {
-                gSaveCardSerialHi = serial;
+                *(u64*)&gSaveCardSerialHi = serial;
             }
         }
         else
@@ -670,7 +670,7 @@ int saveGame(int writeImages)
                 result = CARDSetStatus(0, gSaveCardFileInfo.fileInfo.fileNo, &stat);
                 if (result == CARD_RESULT_READY)
                 {
-                    gSaveCardChecksumHi = *(u64*)(gSaveCardImageBuffer + 0x3ff8);
+                    *(u64*)&gSaveCardChecksumHi = *(u64*)(gSaveCardImageBuffer + 0x3ff8);
                 }
             }
         }
@@ -813,7 +813,6 @@ void seqPairTableSort(SeqSortPair* arr, int n)
     {
     }
 }
-void seqPairTableSort(SeqSortPair* arr, int n);
 
 int seqPairTableLookup(void* entries, int count, int key)
 {
@@ -983,7 +982,7 @@ int ObjSeq_SetSlotValue(ObjSeqState* state, int value)
 void ObjSeq_AudioStreamCallback(void)
 {
     AudioStream_IsPreparing();
-    doNothing_8000CF54(0);
+    AudioStream_Nop(0);
     if (gObjSeqDeferredTaskTextId != -1)
     {
         gameTextLoadTaskText(gObjSeqDeferredTaskTextId);
@@ -1061,7 +1060,7 @@ void cameraFocusNpc(int param1, GameObject* obj)
 
 void ObjSeq_ClearModelLookVector(GameObject* obj)
 {
-    s16* v = objModelGetVecFn_800395d8(obj, 0);
+    s16* v = objFindJointPoseVector(obj, 0);
     if (v != NULL)
     {
         v[1] = 0;
@@ -1094,7 +1093,7 @@ int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjSeqState* state, s16 turnDegrees
     if (mode == 4)
     {
         state->flags = state->flags & ~2;
-        modelVec = objModelGetVecFn_800395d8(obj, 0);
+        modelVec = objFindJointPoseVector(obj, 0);
         if (modelVec != NULL)
         {
             state->flags = state->flags & ~8;
@@ -1181,7 +1180,7 @@ int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjSeqState* state, s16 turnDegrees
         }
         obj->anim.rotX +=
             (s16)(state->posOffsetDecay * (f32)state->rotOffsetX);
-        modelVec = objModelGetVecFn_800395d8(obj, 0);
+        modelVec = objFindJointPoseVector(obj, 0);
         if (modelVec != NULL)
         {
             state->flags = state->flags & ~8;
@@ -1210,7 +1209,7 @@ int ObjSeq_TurnToFacePlayer(GameObject* obj, ObjSeqState* state, s16 turnDegrees
         {
             state->movementState = 0;
             state->flags = state->flags | 8;
-            modelVec = objModelGetVecFn_800395d8(obj, 0);
+            modelVec = objFindJointPoseVector(obj, 0);
             if (modelVec != NULL)
             {
                 state->baseRotY = modelVec[1];
@@ -4383,7 +4382,7 @@ void objSeqDoBgCmds0D(u8* seq, GameObject* obj, int skipSpawns)
         case 4:
             if ((u8)skipSpawns == 0)
             {
-                return0xFFFF_80008B6C(cmdObj, 0, 0, 1, -1, (u8)cmdParam, 0);
+                ObjSeq_defaultActionCallback(cmdObj, 0, 0, 1, -1, (u8)cmdParam, 0);
             }
             break;
         case 5:
@@ -4473,6 +4472,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
     u8* act2;
     u8* st2;
     u8* entry;
+    s16* sfxTimerEntry;
     int opcode;
     int sub;
     int restart;
@@ -4833,16 +4833,16 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             slot = 3;
         }
-        entry = seq + slot * 2;
-        if (*(s16*)(entry + 0x30) > 0)
+        sfxTimerEntry = &((ObjSeqState*)seq)->sfxTimer[slot];
+        if (*sfxTimerEntry > 0)
         {
-            Sfx_RemoveLoopedObjectSound((u32)obj, (u16) * (s16*)(entry + 0x38));
+            Sfx_RemoveLoopedObjectSound((u32)obj, (u16)((ObjSeqState*)seq)->sfxId[slot]);
         }
         cmd[1] = cmd[5];
         cmd[4] = 0x63;
-        *(s16*)(entry + 0x30) = *(s16*)(cmd + 6);
-        *(s16*)(seq + slot * 2 + 0x38) = (s16)(*(s16*)(cmd + 2) & 0xfff);
-        Sfx_AddLoopedObjectSound((u32)obj, (u16) * (s16*)(seq + slot * 2 + 0x38));
+        *sfxTimerEntry = *(s16*)(cmd + 6);
+        ((ObjSeqState*)seq)->sfxId[slot] = (s16)(*(s16*)(cmd + 2) & 0xfff);
+        Sfx_AddLoopedObjectSound((u32)obj, (u16)((ObjSeqState*)seq)->sfxId[slot]);
         break;
     }
     return 0;
@@ -4915,10 +4915,10 @@ void ObjSeq_SetupInitialPlaybackState(GameObject* obj, GameObject** seqObj, u8* 
 
     if (*seqObj != NULL)
     {
-        objModelClearVecFn_8003aa40(*seqObj);
+        objModelClearJointVectors(*seqObj);
         if ((*seqObj)->anim.classId == 1)
         {
-            modelVec = objModelGetVecFn_800395d8(obj, 1);
+            modelVec = objFindJointPoseVector(obj, 1);
             if (modelVec != NULL)
             {
                 modelVec[0] = 0;
@@ -5574,7 +5574,7 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
 
         if ((((ObjSeqState*)seq)->flags & 8) != 0)
         {
-            vec = objModelGetVecFn_800395d8(seqObj, 0);
+            vec = objFindJointPoseVector(seqObj, 0);
             if (vec != NULL)
             {
                 if (((ObjSeqState*)seq)->trackRunLength[1] != 0)
@@ -5658,7 +5658,7 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
                     {
                         for (k = 1, modelIds++; k < slots; modelIds++, k++)
                         {
-                            vec2 = objModelGetVecFn_800395d8(seqObj, *modelIds);
+                            vec2 = objFindJointPoseVector(seqObj, *modelIds);
                             if (vec2 != NULL)
                             {
                                 vec2[1] = vec[1];
@@ -5673,7 +5673,7 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
 
         if ((((ObjSeqState*)seq)->flags & 0x200) != 0)
         {
-            vec = objModelGetVecFn_800395d8(seqObj, 1);
+            vec = objFindJointPoseVector(seqObj, 1);
             if (vec != NULL)
             {
                 if (((ObjSeqState*)seq)->trackRunLength[17] != 0)

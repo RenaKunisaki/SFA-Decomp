@@ -12,7 +12,7 @@ u32 voiceConvertDbToLinear(u32 timeCents)
                              powf(2.0f, 1.2715658e-08f * (f32)(s32)timeCents));
 }
 
-int adsrAdvancePhase(ADSR_VARS* adsr)
+int salChangeADSRState(ADSR_VARS* adsr)
 {
     int ret = 0;
 
@@ -109,7 +109,7 @@ int adsrAdvancePhase(ADSR_VARS* adsr)
 int adsrSetup(ADSR_VARS* adsr)
 {
     adsr->state = ADSR_STATE_ATTACK;
-    return adsrAdvancePhase(adsr);
+    return salChangeADSRState(adsr);
 }
 
 int adsrStartRelease(ADSR_VARS* adsr, u32 divisor)
@@ -191,7 +191,7 @@ u32 adsrHandle(ADSR_VARS* adsr, u16* out1, u16* out2)
             }
             if (--*(int*)&adsr->cnt == 0)
             {
-                ret = adsrAdvancePhase(adsr);
+                ret = salChangeADSRState(adsr);
             }
         }
         else
@@ -235,7 +235,7 @@ u32 adsrHandle(ADSR_VARS* adsr, u16* out1, u16* out2)
             }
             if (--*(int*)&adsr->cnt == 0)
             {
-                ret = adsrAdvancePhase(adsr);
+                ret = salChangeADSRState(adsr);
             }
         }
         else

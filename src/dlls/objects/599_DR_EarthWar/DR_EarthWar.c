@@ -114,7 +114,7 @@ typedef struct EarthWarriorSub
     u8 pad848[0x10];
     int leapStartYaw; /* 0x858: yaw latched (from currentYaw) at leap start; re-added to move progress to build leap yaw */
     u8 pad85C[0x4a];
-    u8 soundId;       /* 0x8A6: active sound-effect id passed to objAudioFn_8006edcc (8 or 0xa) */
+    u8 soundId;       /* 0x8A6: active sound-effect id passed to objAudioDispatchEventMask (8 or 0xa) */
     u8 soundIdReload; /* 0x8A7: stored sound id copied into soundId on leap trigger */
     u8 pad8A8[8];
     u8 attackStage;
@@ -254,8 +254,6 @@ extern u8 gDREarthWarriorRowIndices[];
 const EWColorTbl gDREarthWarriorColors = {
     {{8, 255, 190, 120}, {8, 255, 255, 120}, {8, 180, 240, 255}, {8, 170, 255, 170}}
 };
-void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state);
-
 static const u8 gDREarthWarriorPathSetupParam[4] = {1, 1, 1, 1};
 
 void DR_EarthWarrior_func23(GameObject* obj, int mode)
@@ -318,8 +316,7 @@ int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state)
     return 0;
 }
 
-void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state) {
-    EarthWarriorSub* warrior = (EarthWarriorSub*)sub;
+static void DR_EarthWarrior_updateLookAtBones(GameObject* obj, EarthWarriorSub* warrior, int state) {
     int targetAngle;
     int angleDelta;
     s16* primaryLookBone;
@@ -364,10 +361,10 @@ void DR_EarthWarrior_updateLookAtBones(GameObject* obj, int sub, int state) {
         angleDelta = angleDelta + 0xffff;
     }
     warrior->aimAccumX += angleDelta;
-    primaryLookBone = objModelGetVecFn_800395d8(obj, 0);
-    secondaryLookBone = objModelGetVecFn_800395d8(obj, 9);
-    objModelGetVecFn_800395d8(obj, 4);
-    objModelGetVecFn_800395d8(obj, 5);
+    primaryLookBone = objFindJointPoseVector(obj, 0);
+    secondaryLookBone = objFindJointPoseVector(obj, 9);
+    objFindJointPoseVector(obj, 4);
+    objFindJointPoseVector(obj, 5);
     if (primaryLookBone != NULL) {
         int clampedY;
         primaryLookBone[0] = -warrior->aimAccumX;
@@ -703,7 +700,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
             ((EarthWarriorState*)state)->baddie.moveSpeed = 0.005f;
         }
     }
-    DR_EarthWarrior_updateLookAtBones(obj, (int)q, state);
+    DR_EarthWarrior_updateLookAtBones(obj, q, state);
     return 0;
 }
 #undef hitState
@@ -805,7 +802,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
         }
         *(s16*)&q->currentYaw = (182.044f * v + (f32)(s32)q->currentYaw);
     }
-    DR_EarthWarrior_updateLookAtBones(obj, (int)q, baddie);
+    DR_EarthWarrior_updateLookAtBones(obj, q, baddie);
     return 0;
 }
 
@@ -1180,7 +1177,7 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
         ((EarthWarriorState*)inner)->baddie.cameraYaw = 0;
     }
     ((EarthWarriorState*)inner)->baddie.flags0 |= 0x1000000;
-    fn_802B0EA4(obj, sub, inner);
+    playerUpdateMotionState(obj, sub, inner);
     (*gPlayerInterface)->update(obj, (void*)inner, timeDelta, timeDelta, gDREarthWarriorStateHandlers,
                                 &gDREarthWarriorDefaultStateHandler);
     obj->anim.rotY =
@@ -1191,8 +1188,8 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
     {
         (*gGameUIInterface)->runAirMeter(((EarthWarriorState*)inner)->sub.health);
     }
-    fn_802B1BF8(obj, sub, inner, timeDelta);
-    fn_802B1B28(obj, timeDelta);
+    playerUpdateVelocityFromMotion(obj, sub, inner, timeDelta);
+    playerClampVelocityAndMove(obj, timeDelta);
     (*gPathControlInterface)->update((void*)obj, (void*)(inner + 4), timeDelta);
     (*gPathControlInterface)->apply((void*)obj, (void*)(inner + 4));
     (*gPathControlInterface)->advance((void*)obj, (void*)(inner + 4), timeDelta);
@@ -1273,9 +1270,9 @@ void DR_EarthWarrior_update(GameObject* obj)
         f32 saved = (obj)->anim.velocityY;
         (obj)->anim.velocityY = 0.0f;
         inner->baddie.eventFlags &= ~7;
-        objAudioFn_8006edcc(obj, inner->baddie.eventFlags, inner->sub.soundId, inner->pathPoints,
-                            (void*)((char*)inner + 0x4), inner->baddie.animSpeedA,
-                            (inner->sub.soundId == 8) ? 2.5f : 2.75f);
+        objAudioDispatchEventMask(obj, inner->baddie.eventFlags, inner->sub.soundId, inner->pathPoints,
+                                  (void*)((char*)inner + 0x4), inner->baddie.animSpeedA,
+                                  (inner->sub.soundId == 8) ? 2.5f : 2.75f);
         (obj)->anim.velocityY = saved;
     }
     if (inner->sub.flags8D8 & 8)

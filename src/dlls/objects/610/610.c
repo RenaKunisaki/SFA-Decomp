@@ -86,7 +86,7 @@ void drakormissile_startActiveLaunch(GameObject* obj)
     {
         modelLightStruct_setLightKind(light, MODEL_LIGHT_KIND_POINT);
         modelLightStruct_setDiffuseColor(light, 255, 128, 0, 0);
-        lightSetFieldBC_8001db14(light, 1);
+        modelLightStruct_setFieldBC(light, 1);
         modelLightStruct_setDistanceAttenuation(light, 50.0f, 80.0f);
         modelLightStruct_setupGlow(light, 0, 0, 255, 255, 128, 40.0f);
         modelLightStruct_setGlowProjectionRadius(light, 10.0f);
@@ -171,7 +171,7 @@ void drakormissile_startStraightLaunch(GameObject* obj, GameObject* from, GameOb
     {
         modelLightStruct_setLightKind(light, MODEL_LIGHT_KIND_POINT);
         modelLightStruct_setDiffuseColor(light, 0, 255, 255, 0);
-        lightSetFieldBC_8001db14(light, 1);
+        modelLightStruct_setFieldBC(light, 1);
         modelLightStruct_setDistanceAttenuation(light, 50.0f, 80.0f);
         modelLightStruct_setupGlow(light, 0, 0, 255, 255, 128, 40.0f);
         modelLightStruct_setGlowProjectionRadius(light, 10.0f);

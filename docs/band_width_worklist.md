@@ -121,7 +121,7 @@ structB  regB     sizeB    G    F     unit                               functio
 8        24       648      2    0     dlls/objects/597/597.c             SnowBike_UpdateRouteFollowing
 8        24       1384     4    4     dlls/objects/195_Player/player.c   playerState25
 8        20       220      0    0     main/gameloop_buttonobj.c          removeButtonObject
-4        556      936      3    0     main/textrender_boxtex.c           gameTextInitFn_8001c794
+4        556      936      3    0     main/textrender_boxtex.c           gameTextInitBoxTextures
 4        512      760      4    0     dlls/engine/2/2.c                  ObjSeq_onMapSetup
 4        208      4880     4    3     dlls/objects/195_Player/player.c   playerStateMoving
 4        180      632      2    0     main/pi_pathsearch.c               pathSearchBegin

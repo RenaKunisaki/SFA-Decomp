@@ -270,7 +270,7 @@ void playerShadow_renderObject(GameObject* obj)
     verts[7][2] = (obj)->anim.localPosZ - radius;
 
     hitDetect_calcSweptSphereBounds(&hitData, &verts[0][0], &verts[4][0], radii, 4);
-    hitDetectFn_800691c0(obj, &hitData, 0x84, 0);
+    trackIntersectBroadphase(obj, &hitData, 0x84, 0);
     trackGetTriangleBuffer(&hitCount, &hitTable);
     hitTableValue = (PlayerShadowTriHit*)hitTable;
     trackGetGridOrigin(&tileInfo);

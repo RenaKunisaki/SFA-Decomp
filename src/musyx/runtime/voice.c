@@ -136,7 +136,7 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
     s32 selectedVoice;
     u16 priorityGroup;
     u32 restrictToStreamKind;
-    u32 priorityGroupIndex;
+    u16 priorityGroupIndex;
     SynthVoiceListNode* freeSlot;
     SynthVoiceListNode* slotBase;
     VidListTables* voiceLists = (VidListTables*)vidListNodes;

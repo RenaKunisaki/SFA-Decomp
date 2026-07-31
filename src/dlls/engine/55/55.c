@@ -376,7 +376,7 @@ void optionsMenu_openAudioPanel(void)
     if (isCheatUnlocked(2) != 0)
     {
         gOptionsMenuItems[5] = gTitleMenuItemInterface->vtable->createWithWindow(
-            0x3cb, 0x27, 0, (s16)(return0x64_8000A378() - 1), 0);
+            0x3cb, 0x27, 0, (s16)(Music_GetTrackCount() - 1), 0);
         gOptionsMenuItems[5]->flags = (u8)(gOptionsMenuItems[5]->flags | 0x80);
     }
 
@@ -665,7 +665,7 @@ int OptionsScreen_frameStart(void)
                 gOptionsActivePanel = OPTIONSSCREEN_PANEL_NONE;
             }
             optionsScreenFreeMenuItems();
-            titleScreenFn_8005cdd4(1);
+            setTitleScreenActive(1);
             setDrawCloudsAndLights(1);
             loadUiDll(4);
         }

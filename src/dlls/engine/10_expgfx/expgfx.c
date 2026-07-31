@@ -566,9 +566,8 @@ void objfx_spawnDirectionalBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode,
 
 #define OBJ_FX_PI 3.1415927f
 
-void objfx_spawnArcedBurst(void* obj, int idx, f32 scale, int kind, int mode, int chance, f32 angBase, f32 lo, f32 hi,
-                           void* origin, int flags)
-{
+void objfx_spawnArcedBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, int chance, f32 angBase, f32 lo, f32 hi,
+                           void* origin, int flags) {
     ObjFxParticleParams params;
     ObjFxU16Table9 effectParams = *(ObjFxU16Table9*)((char*)&gObjFxCrystalSparkleTbl + 0x8c);
     ObjFxU16Table8 spawnIds = *(ObjFxU16Table8*)((char*)&gObjFxCrystalSparkleTbl + 0xa0);
@@ -583,12 +582,10 @@ void objfx_spawnArcedBurst(void* obj, int idx, f32 scale, int kind, int mode, in
     params.scale = scale;
     params.effectParam = effectParams.values[(u8)kind];
     params.pad00[1] = 0x3c;
-    for (i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++) {
         u16 val;
         f32 a;
-        if (randomGetRange(0, 0x63) >= (u8)chance)
-        {
+        if (randomGetRange(0, 0x63) >= (u8)chance) {
             continue;
         }
         rvec[0] = randomGetRange(0, 0xffff);
@@ -598,8 +595,7 @@ void objfx_spawnArcedBurst(void* obj, int idx, f32 scale, int kind, int mode, in
         angularT = randomGetRange(0, 1000) / 1000.0f;
         params.position[1] = 0.0f;
         params.position[2] = 0.0f;
-        switch ((u8)mode)
-        {
+        switch (mode) {
         case 1:
             params.position[0] = 1.0f - radialT * radialT;
             break;
@@ -637,8 +633,7 @@ void objfx_spawnArcedBurst(void* obj, int idx, f32 scale, int kind, int mode, in
             f32 t = angularT - 0.5f;
             params.position[1] = t * hi;
         }
-        if (origin != NULL)
-        {
+        if (origin != NULL) {
             params.position[0] += ((GameObject*)origin)->anim.localPosX;
             params.position[1] += ((GameObject*)origin)->anim.localPosY;
             params.position[2] += ((GameObject*)origin)->anim.localPosZ;
@@ -2213,7 +2208,6 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
     if (found)
     {
         u32 currentMask;
-        u32 bitBase;
         int slotIndex;
         u32 activeBit;
         u32* activeMaskPtr;
@@ -2222,11 +2216,10 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
         slotIndex = 0;
         chosenPool = foundPoolIndex;
         activeMaskPtr = EXPGFX_POOL_ACTIVE_MASK_PTR(runtime, chosenPool);
-        bitBase = 1;
         currentMask = *activeMaskPtr;
         for (; slotIndex < EXPGFX_SLOTS_PER_POOL; slotIndex++)
         {
-            activeBit = bitBase << slotIndex;
+            activeBit = 1u << slotIndex;
             if ((activeBit & currentMask) == 0)
             {
                 expgfxSetSlotResult(poolIndexOut, slotIndexOut, foundPoolIndex, slotIndex);
@@ -2264,7 +2257,6 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
     if (found)
     {
         u32 currentMask;
-        u32 bitBase;
         u32 activeBit;
         u32* activeMaskPtr;
         int slotIndex;
@@ -2273,11 +2265,10 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
         slotIndex = 0;
         chosenPool = foundPoolIndex;
         activeMaskPtr = EXPGFX_POOL_ACTIVE_MASK_PTR(runtime, chosenPool);
-        bitBase = 1;
         currentMask = *activeMaskPtr;
         for (; slotIndex < EXPGFX_SLOTS_PER_POOL; slotIndex++)
         {
-            activeBit = bitBase << slotIndex;
+            activeBit = 1u << slotIndex;
             if ((activeBit & currentMask) == 0)
             {
                 expgfxSetSlotResult(poolIndexOut, slotIndexOut, foundPoolIndex, slotIndex);
@@ -2486,7 +2477,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     {
         ambientScale = 0.75f;
     }
-    getAmbientColor(sky, &ambR8, &ambG8, &ambB8);
+    skyGetSunColor(sky, &ambR8, &ambG8, &ambB8);
     ambientScaled[2] = (f32)ambR8 * ambientScale;
     ambientScaled[1] = (f32)ambG8 * ambientScale;
     ambientScaled[0] = (f32)ambB8 * ambientScale;
@@ -3486,56 +3477,41 @@ int expgfx_addToTable(u32 resourceHandle, u32 sourceId, u32 attachedTableKey, s1
     return EXPGFX_INVALID_TABLE_INDEX;
 }
 
-
-int expgfx_updateSourceFrameFlags(void* sourceObject)
-{
+int expgfx_updateSourceFrameFlags(void* sourceObject) {
     s16 signedPoolIndex;
     int result;
-    ObjAnimComponent** poolSourceIds[1];
+    ObjAnimComponent** poolSourceIds;
     int poolIndex;
     u8* flagWalk;
     result = EXPGFX_SOURCE_FRAME_STATE_NONE;
     lbl_803DD253 = 0;
     poolIndex = 0;
-    poolSourceIds[0] = gExpgfxTrackedPoolSourceIds;
+    poolSourceIds = gExpgfxTrackedPoolSourceIds;
     flagWalk = gExpgfxStaticPoolFrameFlags;
 
-    for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds[0]++, flagWalk++, poolIndex++)
-    {
+    for (; (s16)poolIndex < EXPGFX_POOL_COUNT; poolSourceIds++, flagWalk++, poolIndex++) {
         if ((((ObjAnimComponent*)sourceObject)->romDefNo == EXPGFX_SOURCE_SEQID_MATCH_ALL) ||
-            (*poolSourceIds[0] == sourceObject))
-        {
+            (*poolSourceIds == sourceObject)) {
             s64 frameBit;
 
             signedPoolIndex = poolIndex;
             frameBit = 1 << (signedPoolIndex >> 1);
-            if ((frameBit & gExpgfxTrackedSourceFrameMasks[signedPoolIndex & 1]) != 0)
-            {
+            if ((frameBit & gExpgfxTrackedSourceFrameMasks[signedPoolIndex & 1]) != 0) {
                 *flagWalk = EXPGFX_SOURCE_FRAME_STATE_B;
-                if ((s8)result == EXPGFX_SOURCE_FRAME_STATE_A)
-                {
+                if ((s8)result == EXPGFX_SOURCE_FRAME_STATE_A) {
                     result = EXPGFX_SOURCE_FRAME_STATE_MIXED;
-                }
-                else
-                {
+                } else {
                     result = EXPGFX_SOURCE_FRAME_STATE_B;
                 }
-            }
-            else
-            {
+            } else {
                 *flagWalk = EXPGFX_SOURCE_FRAME_STATE_A;
-                if ((s8)result == EXPGFX_SOURCE_FRAME_STATE_B)
-                {
+                if ((s8)result == EXPGFX_SOURCE_FRAME_STATE_B) {
                     result = EXPGFX_SOURCE_FRAME_STATE_MIXED;
-                }
-                else
-                {
+                } else {
                     result = EXPGFX_SOURCE_FRAME_STATE_A;
                 }
             }
-        }
-        else
-        {
+        } else {
             *flagWalk = EXPGFX_SOURCE_FRAME_STATE_NONE;
         }
     }

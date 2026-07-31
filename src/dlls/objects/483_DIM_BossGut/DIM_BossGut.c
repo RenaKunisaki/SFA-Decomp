@@ -267,7 +267,7 @@ void DIM_BossGut2_init(GameObject* obj, int placementAddress, int isAltVariant) 
     control->turnHeightBias = z;
     control->breathFxTimer = 0;
     control->pathSpeed = z;
-    count = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &list, 0, 0);
+    count = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &list, 0, 0);
     control->surfaceY = 0.0f;
     if (count != 0) {
         control->surfaceY = -9999.0f;
@@ -287,7 +287,7 @@ void DIM_BossGut2_init(GameObject* obj, int placementAddress, int isAltVariant) 
     if (control->light != NULL) {
         modelLightStruct_setLightKind(control->light, MODEL_LIGHT_KIND_POINT);
         modelLightStruct_setDiffuseColor(control->light, 0, 255, 0, 0);
-        lightSetFieldBC_8001db14(control->light, 1);
+        modelLightStruct_setFieldBC(control->light, 1);
         modelLightStruct_setDistanceAttenuation(control->light, 10.0f, 20.0f);
         modelLightStruct_setupGlow(control->light, 0, 0, 255, 0, 127, 15.0f);
         modelLightStruct_setGlowProjectionRadius(control->light, 50.0f);

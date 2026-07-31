@@ -126,7 +126,7 @@ void cfPrisonUncle_update(GameObject* obj) {
             s16* modelVector;
             characterAimHeadAtTarget(obj, player, &((CfPrisonUncleState*)obj->extra)->eyeAnimState,
                                      CFPRISONUNCLE_HEAD_AIM_LIMIT, 0, 3);
-            modelVector = objModelGetVecFn_800395d8(obj, CFPRISONUNCLE_HEAD_VECTOR_INDEX);
+            modelVector = objFindJointPoseVector(obj, CFPRISONUNCLE_HEAD_VECTOR_INDEX);
             *modelVector = CFPRISONUNCLE_HEAD_VECTOR_ANGLE;
             (*gObjectTriggerInterface)->runSequence(CFPRISONUNCLE_SEQUENCE_DIALOGUE, obj, -1);
         } else {

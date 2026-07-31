@@ -119,7 +119,7 @@ void DIMCannon_spawnBall(GameObject* obj, u8 variant) {
         return;
     }
 
-    modelRotation = objModelGetVecFn_800395d8(obj, 0);
+    modelRotation = objFindJointPoseVector(obj, 0);
     ballPlacement =
         (DimCannonBallPlacement*)Obj_AllocObjectSetup(sizeof(DimCannonBallPlacement), DIM_CANNON_BALL_SEQUENCE_ID);
     ballPlacement->base.color[0] = placement->base.color[0];
@@ -179,7 +179,6 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
     f32 heightDelta;
     f32 accel;
     f32 accelDenom;
-    f32 launchSpeed;
     register int facingAngle;
     int angleDelta;
     int pitchSign;
@@ -195,7 +194,8 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
     player = (int)Obj_GetPlayerObject();
     state = (obj)->extra;
     if (state->shotCooldown <= 0) {
-        modelRotation = objModelGetVecFn_800395d8(obj, 0);
+        f32 launchSpeed;
+        modelRotation = objFindJointPoseVector(obj, 0);
         facingAngle = modelRotation[1] + ((s32)placement->rotationXByte << 8);
         targetX -= (obj)->anim.localPosX;
         targetZ -= (obj)->anim.localPosZ;
@@ -300,7 +300,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         if (cameraMode != CAMERA_MODE_CANNON_RESOURCE_ID) {
             return 0;
         }
-        modelRotation = objModelGetVecFn_800395d8(obj, 0);
+        modelRotation = objFindJointPoseVector(obj, 0);
         timer = state->chargeTimer;
         if (timer > 0) {
             state->chargeTimer = (s8)(timer - framesThisStep);
@@ -403,7 +403,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     } else {
         s16* modelRotation;
         obj->anim.flags = (s16)(obj->anim.flags & ~OBJANIM_FLAG_HIDDEN);
-        modelRotation = objModelGetVecFn_800395d8(obj, 0);
+        modelRotation = objFindJointPoseVector(obj, 0);
         *(s16*)((char*)modelRotation + 0x2) = (s16)(obj->anim.rotX - (placement->rotationXByte << 8));
         obj->anim.rotX = (s16)(placement->rotationXByte << 8);
         state->mode = DIM_CANNON_MODE_ARMED;

@@ -79,7 +79,7 @@ static f32 curveSolveArcParam(f32* poly, f32 distance, f32 step)
     return mid;
 }
 
-void Curve_BuildSegmentLengthTable(Curve* curve, int count)
+static void Curve_BuildSegmentLengthTable(Curve* curve, int count)
 {
     f32 outX[21];
     f32 outY[21];

@@ -28,6 +28,8 @@ typedef struct SynthVoiceRuntimeView
 #define SYNTH_VOICE_STATE_QUEUED    1 /* on gSynthQueuedVoices; awaiting start */
 #define SYNTH_VOICE_STATE_ALLOCATED 2 /* on gSynthAllocatedVoices; playing */
 
+static void synthQueueVoice(SynthVoice* voice);
+
 static inline void BuildTransTab(u8* tab, SynthPage* page)
 {
     u8 i;
@@ -46,7 +48,6 @@ static inline void BuildTransTab(u8* tab, SynthPage* page)
 u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u32* song,
                  SynthPlayParams* para, u8 studio, u16 sgid)
 {
-    u8* midiData;
     SynthVoice* prevCurSeq;
     u32 bpm;
     SynthVoice* seq;
@@ -56,7 +57,6 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
     SynthArrangement* arrangement;
     u8 program;
 
-    midiData = (u8*)midiSetup;
     if ((seq = gSynthFreeVoices) == 0)
     {
         return SYNTH_HANDLE_INVALID;
@@ -221,7 +221,7 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
     {
         for (i = 0; i < 16; i++)
         {
-            program = midiData[4];
+            program = midiSetup->channel[i].program;
             gSynthVoiceNotes[gSynthCurrentVoiceSlotIndex][(u8)i] = 0xFFFF;
             if ((u8)i != 9)
             {
@@ -243,11 +243,10 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
                     seq->prgState[(u8)i].maxVoices = seq->drumtab[program].maxVoices;
                 }
             }
-            inpSetMidiCtrl(MCMD_CTRL_VOLUME, i, seqId, midiData[5]);
-            inpSetMidiCtrl(MCMD_CTRL_PANNING, i, seqId, midiData[6]);
-            inpSetMidiCtrl(MCMD_CTRL_REVERB, i, seqId, midiData[7]);
-            inpSetMidiCtrl(MCMD_CTRL_POST_AUX_B, i, seqId, midiData[8]);
-            midiData += sizeof(SynthMidiChannelSetup);
+            inpSetMidiCtrl(MCMD_CTRL_VOLUME, i, seqId, midiSetup->channel[i].volume);
+            inpSetMidiCtrl(MCMD_CTRL_PANNING, i, seqId, midiSetup->channel[i].panning);
+            inpSetMidiCtrl(MCMD_CTRL_REVERB, i, seqId, midiSetup->channel[i].reverb);
+            inpSetMidiCtrl(MCMD_CTRL_POST_AUX_B, i, seqId, midiSetup->channel[i].chorus);
         }
     }
 
@@ -318,7 +317,7 @@ void seqHandleMasterTrack(u8 secIndex)
  * Move a voice node from the queued list to the head of the allocated
  * list and mark it active.
  */
-void synthQueueVoice(SynthVoice* voice)
+static void synthQueueVoice(SynthVoice* voice)
 {
     if (voice->prev != 0)
     {
@@ -451,8 +450,7 @@ void synthFreeHandle(u32 handle)
             }
 
             {
-                i = 0;
-                for (; i < 2; i++)
+                for (i = 0; i < 2; i++)
                 {
                     SynthCallbackLink* callback = voice->callbackLists[i];
                     while (callback != 0)

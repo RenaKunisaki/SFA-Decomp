@@ -292,7 +292,7 @@ void ObjHits_SortSweepEntries(ObjHitsSweepEntry** sweepPtrs, int entryCount);
 void ObjHits_TickPriorityHitCooldowns(void);
 void ObjHitbox_UpdateRotatedBounds(ObjHitbox* hitbox, int advanceMatrix);
 int ObjHits_CheckHitVolumes(int objA, int objB, int srcObj, char checkA, char checkB, u32 mask, u32 volMask);
-void doNothing_800333C8(int objA, int objB, int att, void* state, void* attState, f32 dt);
+void ObjHits_OnPlayerHitVolumeMiss(int objA, int objB, int attachment, void* state, void* attachmentState, f32 dt);
 void ObjHits_CheckObjectHitVolumes(int objA, int objB, int attA, int attB, f32 dt);
 void ObjHits_RegisterActiveHitVolumeObject(GameObject* obj);
 void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag);

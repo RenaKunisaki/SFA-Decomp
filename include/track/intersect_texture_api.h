@@ -1,6 +1,8 @@
 #ifndef TRACK_INTERSECT_TEXTURE_API_H_
 #define TRACK_INTERSECT_TEXTURE_API_H_
 
+#include "types.h"
+
 int objFrozenRenderCb(void* object, void** model, int slot);
 /*
  * Three-tex-coord-gen ind+direct TEV setup. Loads the active env-mtx
@@ -10,6 +12,6 @@ int objFrozenRenderCb(void* object, void** model, int slot);
  * stage 1 modulates by the second texture. Uses ind tex stage 0 to warp
  * tex coord 0 by tex1.
  */
-void quakeSpellTextureFn_8007366c(int alpha);
+void setupQuakeSpellRingGxState(u8 alpha);
 
 #endif /* TRACK_INTERSECT_TEXTURE_API_H_ */

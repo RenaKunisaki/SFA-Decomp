@@ -29,18 +29,6 @@ typedef struct SkyRotQ
     f32 x, y, z;
 } SkyRotQ;
 
-typedef struct Dll06InterpState
-{
-    u8 pad00[0x24];
-    s32 targetX;
-    s32 targetY;
-    s32 targetZ;
-    u8 pad30[0x2dc];
-    f32 blend;
-    u8 pad310[0x06];
-    s8 active;
-} Dll06InterpState;
-
 typedef struct SkyBestIdx
 {
     u8 best;
@@ -50,12 +38,33 @@ typedef struct SkyBestIdx
 
 typedef struct SkySlotAnim
 {
-    u8 pad00[4];       /* 0x00 */
+    s32 unk00;         /* 0x00 */
     u16 flags4;        /* 0x04 */
     u16 flags6;        /* 0x06 */
-    u8 pad08[0x34];    /* 0x08 */
-    int frameCount;    /* 0x3c */
-    u8 pad40[0x30];    /* 0x40 */
+    s32 unk08;         /* 0x08 */
+    s32 unk0C;         /* 0x0c */
+    u8 pad10[4];       /* 0x10 */
+    f32 fogNear;       /* 0x14 */
+    f32 fogFar;        /* 0x18 */
+    f32 fogNear2;      /* 0x1c */
+    f32 fogFar2;       /* 0x20 */
+    s32 colorR;        /* 0x24 */
+    s32 colorG;        /* 0x28 */
+    s32 colorB;        /* 0x2c */
+    s32 colorR2;       /* 0x30 */
+    s32 colorG2;       /* 0x34 */
+    s32 colorB2;       /* 0x38 */
+    int fadeDurationA; /* 0x3c */
+    s32 fadeDurationB; /* 0x40 */
+    s32 unk44;         /* 0x44 */
+    s32 unk48;         /* 0x48 */
+    u8 pad4C[0xC];     /* 0x4c */
+    f32 fadeRate;      /* 0x58 */
+    f32 unk5C;         /* 0x5c */
+    f32 unk60;         /* 0x60 */
+    f32 wobbleStep;    /* 0x64 */
+    f32 wobbleAmp;     /* 0x68 */
+    f32 wobbleOffset;  /* 0x6c */
     f32 cur[0x21];     /* 0x70 */
     f32 target[0x21];  /* 0xf4 */
     f32 vel[0x21];     /* 0x178 */
@@ -69,7 +78,14 @@ typedef struct SkySlotAnim
     s8 b314;           /* 0x314 */
     s8 b315;           /* 0x315 */
     s8 b316;           /* 0x316 */
+    s8 b317;           /* 0x317 */
 } SkySlotAnim;
+
+STATIC_ASSERT(offsetof(SkySlotAnim, fogNear) == 0x14);
+STATIC_ASSERT(offsetof(SkySlotAnim, colorR) == 0x24);
+STATIC_ASSERT(offsetof(SkySlotAnim, wobbleOffset) == 0x6C);
+STATIC_ASSERT(offsetof(SkySlotAnim, cur) == 0x70);
+STATIC_ASSERT(sizeof(SkySlotAnim) == 0x318);
 
 typedef struct SkyTimeBlend
 {
@@ -105,7 +121,7 @@ void skyBuildSunModelMatrix(f32 mtx[3][4]);
 u8 skyGetSunRenderAlpha(int slot);
 void getTimeOfDay(f32* time);
 void renderSky(int a, int b, int c, int d, int visible);
-void getAmbientColor(int slot, u8* red, u8* green, u8* blue);
+void skyGetSunColor(int slot, u8* red, u8* green, u8* blue);
 int getSunPos(f32* outTime);
 void skyGetTimer(int* outTimer);
 void skyGetSunLightDirection(int slot, f32* x, f32* y, f32* z);
@@ -119,11 +135,11 @@ int skyGetVisibility(int slot);
 void skyTimeToDayHourMinute(f32 time, s16* days, s16* hours, s16* minutes);
 void skyGetClockTime(f32* time);
 int sky2GetFogFadeAlpha(void);
-int return0_80088758(void);
-void doNothing_800887C4(void);
-void doNothing_800887C8(void);
-int return0_8008B7E8(void);
-void doNothing_8008B8B0(void);
+int skyReservedReturnZeroB(void);
+void skyReservedNopC(void);
+void skyReservedNopB(void);
+int skyReservedReturnZeroA(void);
+void skyReservedNopA(void);
 void pDll_Sky_setTimeOfDay_nop(void);
 void dll_06_func0C_nop(void);
 int dll_06_func07_ret_0(void);
@@ -143,8 +159,8 @@ void sky2ResetStateFromConfig(u8* cfg, u8 flags);
 void sky2StepSlotAnim(int slot);
 void skyResetState(void);
 void skyUpdateLightingFromTimeOfDay(void);
-void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,
-                 int lightIntensity, u8 blendAlpha);
+void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int moonIntensity,
+                 int ambientIntensity, u8 blendAlpha);
 void renderSunAndMoon(int a, int b, int c, int d, int visible);
 void skyRenderTimeOfDayBackdrop(void);
 void skyUpdateEnvfxAct(int a, int b, u8* cfg);

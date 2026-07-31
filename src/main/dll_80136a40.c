@@ -665,61 +665,55 @@ void debugTextDrawToFrameBuffer(int x, int y, u8* grid, int unused)
     }
 }
 
-/* Emit a SetColor record (tag 0x81 + 4 RGBA bytes + 0 terminator) into the debug log; aborts
- * when the record counter at gDebugRecordCount has already exceeded 0xFA. */
+/* Format and draw debug text into both external framebuffers. */
 
-void debugPrintfxy(int x, int y, char* fmt, ...)
-{
-    int xx;
-    int yy;
-    u16* saved;
-    int x0 = x;
-    u8* ch;
-    u8* scan;
-    u8* glyph;
+void debugPrintfxy(int x, int y, char* fmt, ...) {
+    int drawX;
+    int drawY;
+    u16* savedFrameBuffer;
+    int lineStartX = x;
+    u8* character;
+    u8* textCursor;
+    u8* glyphRows;
     va_list args;
-    char buf[256];
+    char text[256];
 
-    if (enableDebugText != 0)
-    {
-        xx = x0;
-        yy = y;
+    if (enableDebugText != 0) {
+        drawX = lineStartX;
+        drawY = y;
         va_start(args, fmt);
-        vsprintf(buf, fmt, args);
-        saved = debugDrawFrameBuffer;
-        ch = (u8*)&buf[-1];
-        scan = (u8*)buf - 1;
-        while (ch++, *++scan != 0)
-        {
-            switch (*ch)
-            {
+        vsprintf(text, fmt, args);
+        savedFrameBuffer = debugDrawFrameBuffer;
+        character = (u8*)&text[-1];
+        textCursor = (u8*)text - 1;
+        while (character++, *++textCursor != 0) {
+            switch (*character) {
             case 0xa:
-                yy += 0xc;
-                xx = x0;
+                drawY += 0xc;
+                drawX = lineStartX;
                 break;
             case 9:
-                xx += 0x40 - (xx & 0x3f);
+                drawX += 0x40 - (drawX & 0x3f);
                 break;
             case 0x20:
-                xx += 8;
+                drawX += 8;
                 break;
             default:
-                if (*ch >= 0x61 && *ch <= 0x7a)
-                {
-                    *ch -= 0x20;
+                if (*character >= 0x61 && *character <= 0x7a) {
+                    *character -= 0x20;
                 }
-                if (*ch >= 0x21 && *ch <= 0x5a)
-                {
+                if (*character >= 0x21 && *character <= 0x5a) {
                     debugDrawFrameBuffer = externalFrameBuffer0;
-                    debugTextDrawToFrameBuffer(xx, yy, glyph = gDebugFontGlyphs + (*ch - 0x21) * 5, -1);
+                    debugTextDrawToFrameBuffer(drawX, drawY, glyphRows = gDebugFontGlyphs + (*character - 0x21) * 5,
+                                               -1);
                     debugDrawFrameBuffer = externalFrameBuffer1;
-                    debugTextDrawToFrameBuffer(xx, yy, glyph, -1);
-                    xx += 0xf;
+                    debugTextDrawToFrameBuffer(drawX, drawY, glyphRows, -1);
+                    drawX += 0xf;
                 }
                 break;
             }
         }
-        debugDrawFrameBuffer = saved;
+        debugDrawFrameBuffer = savedFrameBuffer;
     }
 }
 
@@ -751,14 +745,12 @@ void* errorThreadFunc(void* unused)
     int depth;
     int hold;
     int h, h2;
-    int b;
     ErrStackFrame* frame;
     int stackLines;
     int n;
     u8 lvl;
     u32 r, rr;
     u32* rp;
-    int rows;
 
     sp = NULL;
     depth = 0;
@@ -871,11 +863,12 @@ void* errorThreadFunc(void* unused)
             }
             if (enableDebugText != 0)
             {
-                b = 0x12700;
-                rows = y + 0x4c;
+                int b = 0x12700;
+                u16 rowColor = 0xc080;
+                int rows = y + 0x4c;
                 while (rows > 0x3b)
                 {
-                    *(u16*)((char*)debugDrawFrameBuffer + b + 0x1e0) = 0xc080;
+                    *(u16*)((char*)debugDrawFrameBuffer + b + 0x1e0) = rowColor;
                     b += 0x500;
                     rows--;
                 }

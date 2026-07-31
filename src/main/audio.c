@@ -473,21 +473,21 @@ void streamsLoadedCallback(s32 status, DVDFileInfo* fileInfo)
     }
     else
     {
-        StreamEntry* s;
+        StreamEntry* stream;
         int i;
-        int count;
+        int streamCount;
         DVDClose(fileInfo);
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~AUDIO_LOAD_STREAMS;
+        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_STREAMS;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_STREAMS;
-        s = gStreamsData;
-        count = gStreamsCount;
-        for (i = 0; i != count; i++)
+        stream = gStreamsData;
+        streamCount = gStreamsCount;
+        for (i = 0; i != streamCount; i++)
         {
-            s->flag = 0;
-            s++;
+            stream->flag = 0;
+            stream++;
         }
     }
 }
@@ -817,7 +817,7 @@ int audioInit(void)
     return 0;
 }
 
-u32 audioFlagFn_8000a188(u32 mask)
+u32 audioIsChannelUnavailable(u32 mask)
 {
     s32 managed = gAudioManagedChannelMask & mask;
     if (managed == 0)
@@ -846,17 +846,12 @@ int concatThreeStrings(char* dst, void* unused, const char* first, const char* s
     return 1;
 }
 
-
-void MIDIWADLoadedCallback(s32 status, DVDFileInfo* fileInfo)
-{
-    if (status == -1)
-    {
+static void MIDIWADLoadedCallback(s32 status, DVDFileInfo* fileInfo) {
+    if (status == -1) {
         OSReport(sMidiWadLoadedCallbackLoadError);
         DVDClose(fileInfo);
         mm_free(fileInfo);
-    }
-    else
-    {
+    } else {
         DVDClose(fileInfo);
         mm_free(fileInfo);
         gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_MIDI_WAD;
@@ -872,7 +867,7 @@ void Music_PlayTrackByIndex(int index)
     Music_Trigger(MUSICTRIG_dark_ice_boss_1_ec, 1);
 }
 
-int return0x64_8000A378(void)
+int Music_GetTrackCount(void)
 {
     return 0x64;
 }
@@ -1320,14 +1315,14 @@ void Music_LoadChannelForTrigger(MusicTrigger* trigger)
 
     if (((u32)trigger->flags >> 5) & 1)
     {
-        if ((int)audioFlagFn_8000a188(2) != 0)
+        if ((int)audioIsChannelUnavailable(2) != 0)
         {
             return;
         }
     }
     if (!(((u32)trigger->flags >> 5) & 1))
     {
-        if ((int)audioFlagFn_8000a188(1) != 0)
+        if ((int)audioIsChannelUnavailable(1) != 0)
         {
             return;
         }

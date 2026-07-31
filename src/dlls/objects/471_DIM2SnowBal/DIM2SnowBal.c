@@ -169,7 +169,7 @@ void dim2snowball_update(GameObject* obj) {
                 int hitCount;
 
                 state->flags |= DIM2_SNOWBALL_FLAG_BALLISTIC;
-                hitCount = hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
+                hitCount = trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                                 &groundHits, 0, 0);
                 state->floorHeight = obj->anim.localPosY;
                 while (hitCount > 0) {

@@ -126,7 +126,7 @@ static inline void GXTexCoord2s16(const s16 s, const s16 t)
 }
 static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 
-void updateVisibleGeometry(void)
+static void updateVisibleGeometry(void)
 {
     Camera* cam;
     int n;
@@ -319,45 +319,46 @@ extern void* gCurRomListPage;
 int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type, int* out_lastpage)
 {
     MapRomListPage* page;
-    MapRomListPage** pp[1];
-    int inner_idx;
-    int outer;
-    int total_offset;
-    int* p;
-    u16 limit;
-    int sz;
+    MapRomListPage** pageCursor[1];
+    int itemIndex;
+    int pageIndex;
+    int pageOffset;
+    int* item;
+    u16 pageDataSize;
+    int itemSize;
 
-    for (outer = 0, pp[0] = gLoadedRomListPages; outer < ROM_LIST_PAGE_COUNT; pp[0]++, outer++)
+    for (pageIndex = 0, pageCursor[0] = gLoadedRomListPages; pageIndex < ROM_LIST_PAGE_COUNT;
+         pageCursor[0]++, pageIndex++)
     {
-        page = *pp[0];
+        page = *pageCursor[0];
         if (page == NULL) continue;
 
         gCurRomListPage = page;
-        p = (int*)page->objects;
-        inner_idx = 0;
-        total_offset = 0;
-        limit = page->objectDataSize;
+        item = (int*)page->objects;
+        itemIndex = 0;
+        pageOffset = 0;
+        pageDataSize = page->objectDataSize;
 
-        while (total_offset < limit)
+        while (pageOffset < pageDataSize)
         {
-            if (*(u32*)((char*)p + 0x14) == (u32)needle)
+            if (*(u32*)((char*)item + 0x14) == (u32)needle)
             {
-                if (out_idx != NULL) *out_idx = inner_idx;
-                if (out_outer != NULL) *out_outer = outer;
+                if (out_idx != NULL) *out_idx = itemIndex;
+                if (out_outer != NULL) *out_outer = pageIndex;
                 if (out_type != NULL)
                 {
                     *out_type = (int)*(s8*)((char*)gCurRomListPage + 0x19);
                 }
                 if (out_lastpage != NULL)
                 {
-                    *out_lastpage = (outer >= 0x50) ? 1 : 0;
+                    *out_lastpage = (pageIndex >= 0x50) ? 1 : 0;
                 }
-                return p;
+                return item;
             }
-            sz = (int)*(u8*)((char*)p + 0x2) << 2;
-            total_offset += sz;
-            p = (int*)((char*)p + sz);
-            inner_idx++;
+            itemSize = (int)*(u8*)((char*)item + 0x2) << 2;
+            pageOffset += itemSize;
+            item = (int*)((char*)item + itemSize);
+            itemIndex++;
         }
     }
     return NULL;
@@ -411,7 +412,7 @@ void getVisibleObjects(s8* opacity)
     f32 a, b;
     f32 depth;
 
-    maybeHudFn_8006c91c();
+    newShadowsBeginFrame();
     objects = ObjList_GetObjects((int*)0, 0);
     part = ObjList_PartitionForRender(&count);
     i = 0;
@@ -544,8 +545,7 @@ void getVisibleObjects(s8* opacity)
     renderShadows(0, 0, 0);
 }
 
-void renderObjects(s8* opacity)
-{
+static void renderObjects(s8* opacity) {
     u32* kp;
     int i;
     u32 flags;
@@ -556,50 +556,47 @@ void renderObjects(s8* opacity)
     int* objects;
     LightmapDrawQueue* qbase;
     LightmapQEnt* q;
-    LightmapQEnt* qe;
     LightmapDrawQueue* dq;
-    int qi;
-    u32 shadowKind;
 
     qbase = (LightmapDrawQueue*)gLightmapDrawQueue;
     q = (LightmapQEnt*)gLightmapDrawQueue;
     objects = ObjList_GetObjects((int*)0, 0);
-    for (i = 1, kp = (u32*)((u8*)qbase + 0x8818) + 1; i < gVisibleObjectSortKeyCount; kp++, i++)
-    {
+    for (i = 1, kp = (u32*)((u8*)qbase + 0x8818) + 1; i < gVisibleObjectSortKeyCount; kp++, i++) {
         idx = *kp & 0x3ff;
         obj = (u8*)objects[idx];
         flags = ((GameObject*)obj)->anim.modelInstance->flags;
-        if ((flags & OBJDEF_FLAG_DEFERRED_RENDER) != 0 || ((((GameObject*)obj)->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER) != 0))
-        {
-            if (opacity[idx] != 0 && gLightmapDeferredObjectCount < 0x14)
-            {
+        if ((flags & OBJDEF_FLAG_DEFERRED_RENDER) != 0 ||
+            ((((GameObject*)obj)->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER) != 0)) {
+            if (opacity[idx] != 0 && gLightmapDeferredObjectCount < 0x14) {
                 slot = gLightmapDeferredObjectCount;
                 gLightmapDeferredObjectCount = slot + 1;
                 dq = (LightmapDrawQueue*)&((u32*)qbase)[slot];
                 dq->deferred[0] = (u32)obj;
             }
-        }
-        else
-        {
-            if ((flags & 0x800000) == 0)
-            {
+        } else {
+            if ((flags & 0x800000) == 0) {
                 (*gModgfxInterface)->renderEffects(NULL, 0, 0, 1, obj);
             }
             objRender(0, 0, 0, 0, (GameObject*)obj, 1);
             p = (int*)((GameObject*)obj)->anim.modelState;
-            if (p != NULL && ((GameObject*)obj)->anim.modelState->shadowCastSlot != NULL)
-            {
+            if (p != NULL && ((GameObject*)obj)->anim.modelState->shadowCastSlot != NULL) {
+                LightmapQEnt* qe;
+                int qi;
+                u32 shadowKind;
+
                 renderShadowType3(obj, 0x13, 0);
                 shadowKind = 2;
                 qi = gLightmapDrawQueueCount;
                 qe = &q[qi];
                 qe->d = shadowKind;
                 gLightmapDrawQueueCount = qi + 1;
-            }
-            else if (((GameObject*)obj)->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH && (((GameObject*)obj)->anim.flags
-                & OBJANIM_FLAG_HIDDEN) == 0 && (((GameObject*)obj)->anim.modelState->flags &
-                OBJ_MODEL_STATE_SHADOW_VISIBLE))
-            {
+            } else if (((GameObject*)obj)->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH &&
+                       (((GameObject*)obj)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0 &&
+                       (((GameObject*)obj)->anim.modelState->flags & OBJ_MODEL_STATE_SHADOW_VISIBLE)) {
+                LightmapQEnt* qe;
+                int qi;
+                u32 shadowKind;
+
                 renderShadowType3(obj, 0x13, 0);
                 shadowKind = 3;
                 qi = gLightmapDrawQueueCount;
@@ -610,18 +607,15 @@ void renderObjects(s8* opacity)
         }
     }
 }
-static inline void fillBoxRows(u8* map, int* box)
-{
+static inline void fillBoxRows(u8* map, int* box) {
     int y, x0;
     int xs, xe;
     u8* p;
-    for (y = box[2]; y <= box[3]; y++)
-    {
+    for (y = box[2]; y <= box[3]; y++) {
         xs = box[0];
         p = map + (y + 7) * 0x10 + xs;
         xe = box[1];
-        for (x0 = xs; x0 <= xe; x0++)
-        {
+        for (x0 = xs; x0 <= xe; x0++) {
             p[7] = 1;
             p++;
         }
@@ -652,9 +646,9 @@ void renderSceneGeometry(u8 renderType, s8* order)
     layer = 4;
     layerTablePtr = &gMapBlockLayerTables[4];
     layerFlagPtr = &gMapBlockCellStateTables[4];
+    worldSize = gMapBlockWorldSize;
     do
     {
-        worldSize = gMapBlockWorldSize;
         table = *layerTablePtr;
         gMapLayerCellStates = (s8*)*layerFlagPtr;
         mapGetBlockGridRects(gMapBlockOriginX + 7, gMapBlockOriginZ + 7, box0, box1, box2, box3, layer, 1,
@@ -668,10 +662,11 @@ void renderSceneGeometry(u8 renderType, s8* order)
             cellMaskPtr[3] = 0;
             cellMaskPtr += 4;
         }
-        fillBoxRows(cellMask, box0);
-        fillBoxRows(cellMask, box1);
-        fillBoxRows(cellMask, box2);
-        fillBoxRows(cellMask, box3);
+        cellMaskPtr = cellMask;
+        fillBoxRows(cellMaskPtr, box0);
+        fillBoxRows(cellMaskPtr, box1);
+        fillBoxRows(cellMaskPtr, box2);
+        fillBoxRows(cellMaskPtr, box3);
         for (oi = 0; oi < 16; oi++)
         {
             row = order[oi];
@@ -809,7 +804,7 @@ void sceneDraw(void)
     lightningRenderActive();
     (*gSky2Interface)->applyFogColor(0);
     gLightmapDeferredObjectCount = 0;
-    getAmbientColor(0, (u8*)&c, (u8*)&c + 1, (u8*)&c + 2);
+    skyGetSunColor(0, (u8*)&c, (u8*)&c + 1, (u8*)&c + 2);
     GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
     GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
     GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
@@ -872,10 +867,10 @@ void sceneDraw(void)
         cursor = (u8*)player;
         for (; i < ((GameObject*)player)->childCount; i++)
         {
-            u8* m = *(u8**)(cursor + 200);
-            if (((GameObject*)m)->anim.classId == 45)
+            GameObject* child = *(GameObject**)(cursor + 200);
+            if (child->anim.classId == 45)
             {
-                (*(void (***)(void))*(int*)(m + 0x68))[11]();
+                ((void (*)(GameObject*))(*child->anim.dll)[11])(child);
             }
             cursor += 4;
         }
@@ -941,10 +936,10 @@ void updateEnvironment(int mode)
     {
         MapTextureOverride* textureOverride;
         MapTextureScroll* textureScroll;
-        Texture* tex;
+        Texture* texture;
         int i;
-        int off;
-        f32 x;
+        int byteOffset;
+        f32 offsetX;
         f32 deltaY;
         f32 deltaX;
         f32 deltaTime;
@@ -956,32 +951,32 @@ void updateEnvironment(int mode)
         (*gNewCloudsInterface)->run();
 
         i = 0;
-        off = 0;
+        byteOffset = 0;
         for (; i < 80; i++)
         {
-            textureOverride = (MapTextureOverride*)((u8*)gMapTextureOverrides + off);
-            if (textureOverride->refCount != 0 && (tex = textureOverride->texture) != NULL &&
-                tex->animationFrameCount != 0x100 && tex->animationFrameStep != 0)
+            textureOverride = (MapTextureOverride*)((u8*)gMapTextureOverrides + byteOffset);
+            if (textureOverride->refCount != 0 && (texture = textureOverride->texture) != NULL &&
+                texture->animationFrameCount != 0x100 && texture->animationFrameStep != 0)
             {
-                textureUpdateAnimationFrame(tex, &textureOverride->flags, &textureOverride->frame);
+                textureUpdateAnimationFrame(texture, &textureOverride->flags, &textureOverride->frame);
             }
-            off += sizeof(MapTextureOverride);
+            byteOffset += sizeof(MapTextureOverride);
         }
 
         i = 0;
-        off = 0;
+        byteOffset = 0;
         for (; i < 58; i++)
         {
-            textureScroll = (MapTextureScroll*)((u8*)gMapTextureScrolls + off);
+            textureScroll = (MapTextureScroll*)((u8*)gMapTextureScrolls + byteOffset);
             if (textureScroll->refCount != 0)
             {
                 deltaY = textureScroll->yStep * (deltaTime = timeDelta);
-                x = textureScroll->offsetX;
+                offsetX = textureScroll->offsetX;
                 deltaX = textureScroll->xStep * deltaTime;
-                textureScroll->offsetX = x + deltaX;
+                textureScroll->offsetX = offsetX + deltaX;
                 textureScroll->offsetY = textureScroll->offsetY + deltaY;
             }
-            off += sizeof(MapTextureScroll);
+            byteOffset += sizeof(MapTextureScroll);
         }
 
         loadNextMap();
@@ -1009,7 +1004,7 @@ void updateEnvironment(int mode)
 }
 
 
-int getDrawDistanceFlag_8005cd48(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
+int isDrawDistanceEnabled(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
 
 
 int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }

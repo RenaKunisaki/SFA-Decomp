@@ -1,9 +1,11 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
 #include "dolphin/mtx/vec.h"
 #include "main/acosf.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "main/trig.h"
+#include "stdlib.h"
 
 typedef f32 Mtx[3][4];
 
@@ -133,7 +135,7 @@ int cos16(s16 angle)
     return (int)(65536.0f * fcos16((u16)angle));
 }
 
-int atan2_8002178c(float y, float x)
+int atan2Angle16(float y, float x)
 {
     return (int)(10430.37835 * atan2f(y, x));
 }

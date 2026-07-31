@@ -228,7 +228,7 @@ typedef struct SubtitleTextEntry
     char** strs;
 } SubtitleTextEntry;
 
-extern GameTextBox gTextBoxes[];
+extern GameTextBox gTextBoxes[GAMETEXT_BOX_COUNT];
 extern int gGameTextSequenceMode;
 extern int gSubtitleActive;
 extern int gGameTextPendingDir;

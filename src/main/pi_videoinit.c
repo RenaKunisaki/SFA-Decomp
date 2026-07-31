@@ -89,7 +89,7 @@ extern RingBufferQueue gVideoFlipQueue;
 
 void videoSwapFrameBuffers(u32 retraceCount);
 void gpuErrorHandler(u32 retraceCount);
-void videoFn_800499e8(void);
+void videoBreakPointCallback(void);
 
 extern Mtx44 hudMatrix;
 
@@ -100,10 +100,10 @@ void initViewport(void)
 void videoInit(void* unusedRenderMode, int unusedArg)
 {
     GXFifoObj fifo;
-    f32 mtx[3][4];
+    Mtx mtx;
     u8* arenaLo;
     u8* arenaHi;
-    int fbSize;
+    u32 fbSize;
     arenaLo = OSGetArenaLo();
     arenaHi = OSGetArenaHi();
     memcpy(arenaHi - 0x40000, gLoadingScreenTextures, 0x40000);
@@ -137,7 +137,7 @@ void videoInit(void* unusedRenderMode, int unusedArg)
     OSInitThreadQueue((OSThreadQueue*)&gVideoFlipWaitQueue);
     VISetPreRetraceCallback(videoSwapFrameBuffers);
     VISetPostRetraceCallback(gpuErrorHandler);
-    GXSetBreakPtCallback(videoFn_800499e8);
+    GXSetBreakPtCallback(videoBreakPointCallback);
     GXSetViewport(0.0f, 0.0f, gRenderModeObj->fbWidth, gRenderModeObj->xfbHeight, 0.0f,
                   1.0f);
     GXSetFieldMode(gRenderModeObj->field_rendering, gRenderModeObj->xfbHeight < gRenderModeObj->viHeight);
@@ -233,7 +233,7 @@ void videoInit(void* unusedRenderMode, int unusedArg)
     PPCMthid0(PPCMfhid0() | HID0_SPD);
 }
 
-void setColor_803db5d0(u8 r, u8 g, u8 b)
+void videoSetEfbCopyClearColor(u8 r, u8 g, u8 b)
 {
     gEfbCopyClearColor.r = r;
     gEfbCopyClearColor.g = g;
@@ -389,7 +389,7 @@ void gxSetGPMetricsEnabled(int enabled)
         GXWGFifo.u32 = 0;
     }
 }
-void gxTransformFn_8004a83c(void)
+void gxDisableGpuHangRecovery(void)
 {
     gGpuHangRecoveryEnabled = 0;
     gxSetGPMetricsEnabled(0);

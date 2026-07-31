@@ -16,7 +16,7 @@ void objRenderShadow(void* obj);
 void objRenderShadowIfVisible(GameObject* obj, int a, int b, int c, int d, int e);
 void objRenderAttachment(u8* obj, int* model);
 void objRenderFuzz(int* obj);
-void objRenderFn_800413d4(int* obj);
+void objRenderFuzzShadowShells(int* obj);
 void objRenderFuzzShells(int* obj);
 void objRenderInvalidateStateCache(void);
 void objSetRenderingShadowPass(u8 enabled);

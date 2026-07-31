@@ -230,7 +230,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
         {
             state->substate = 9;
         }
-        objModelClearVecFn_8003aa40(obj);
+        objModelClearJointVectors(obj);
         ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0);
         ObjAnim_SetCurrentMove((u32)obj, 0, 0.0f, 0);
         ObjHits_DisableObject(obj);
@@ -678,7 +678,7 @@ int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
         (obj)->anim.rotX = (182.0f * (((f32)d336 * dt) / 36.0f) + (f32) * (s16*)obj);
     }
     conv = (int)(182.04445f * ((f32) stateArg->baddie.turnRate * dt));
-    vec = (s16*)objModelGetVecFn_800395d8(obj, 9);
+    vec = (s16*)objFindJointPoseVector(obj, 9);
     if (vec != 0)
     {
         vec[1] = (s16)(vec[1] + (((s16)conv - vec[1]) >> 3));

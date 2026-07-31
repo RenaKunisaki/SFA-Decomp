@@ -6,6 +6,7 @@
 #include "main/gamebits.h"
 #include "sys/objects.h"
 #include "main/dll/dll_0243_dbholecontrol1.h"
+#include "main/dll/baddie_state.h"
 #include "main/lightmap.h"
 
 STATIC_ASSERT(sizeof(DbHoleControl1State) == 0xC);
@@ -18,7 +19,7 @@ int lbl_803DDCE0;
 
 int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
-    ObjPlacement* childPlacement;
+    GroundBaddiePlacement* childPlacement;
     void* res;
     int* objs;
     int count;
@@ -37,14 +38,14 @@ int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             res = mapRomListFindItem(0x4658A, 0, 0, 0, 0);
             if (res == NULL)
                 continue;
-            childPlacement = Obj_AllocObjectSetup(DBHOLECONTROL1_CHILD_SETUP_SIZE, DBHOLECONTROL1_CHILD_OBJ);
+            childPlacement = (GroundBaddiePlacement*)Obj_AllocObjectSetup(DBHOLECONTROL1_CHILD_SETUP_SIZE, DBHOLECONTROL1_CHILD_OBJ);
             memcpy(childPlacement, res, DBHOLECONTROL1_CHILD_SETUP_SIZE);
-            childPlacement->posX = obj->anim.localPosX;
-            childPlacement->posY = obj->anim.localPosY;
-            childPlacement->posZ = obj->anim.localPosZ;
-            childPlacement->ident = -1;
-            *(s16*)((u8*)childPlacement + 0x1A) = 149;
-            loadObjectAtObject(obj, childPlacement);
+            childPlacement->base.posX = obj->anim.localPosX;
+            childPlacement->base.posY = obj->anim.localPosY;
+            childPlacement->base.posZ = obj->anim.localPosZ;
+            childPlacement->base.ident = -1;
+            childPlacement->gameBitC = 149;
+            loadObjectAtObject(obj, &childPlacement->base);
             break;
         }
     }

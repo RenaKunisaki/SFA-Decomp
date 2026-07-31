@@ -184,7 +184,7 @@ void SnowBike_DrawTrails(int p1, char* table)
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
     GXLoadPosMtxImm((const f32(*)[4])Camera_GetViewMatrix(), GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
-    getAmbientColor(0, &r, &g, &b);
+    skyGetSunColor(0, &r, &g, &b);
     i = 0;
     p = table;
     for (; i < 9; i++)
@@ -224,7 +224,7 @@ void SnowBike_DrawTrails(int p1, char* table)
  * Provides three routines for the vehicle's trail, sound, and pitch state:
  *   drcloudcage_updateTrails  builds and fades the swirling cloud-trail ribbons. Each of the
  *                three emitters casts a transformed segment, ray-tests it
- *                (hitDetectFn_80065e50, mask 0x20), and when it strikes ground
+ *                (trackGetHeight, mask 0x20), and when it strikes ground
  *                inserts a new fully-opaque point pair at the head of one of the
  *                nine trail buffers; every existing pair's alpha decays by
  *                timeDelta and exhausted trails are freed.
@@ -438,7 +438,7 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
         endpoint = &startX;
         for (; endpointIndex < 2; endpoint += 3, endpointIndex++)
         {
-            hitCount = hitDetectFn_80065e50(obj, endpoint[0], endpoint[1], endpoint[2], &hits, 0, 0x20);
+            hitCount = trackGetHeight(obj, endpoint[0], endpoint[1], endpoint[2], &hits, 0, 0x20);
             for (hitIndex = 0; hitIndex < hitCount; hitIndex++)
             {
                 deltaY = hits[hitIndex]->height - endpoint[1];
@@ -1033,9 +1033,8 @@ void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
                 headingDelta = headingDelta + 0xffff;
             }
             absoluteHeadingDelta = ((int)headingDelta >= 0) ? headingDelta : -headingDelta;
-            if ((int)((u32)(((int)(absoluteHeadingDelta ^ gSnowBikeWrongWayAngleThreshold) >> 1) -
-                             ((absoluteHeadingDelta ^ gSnowBikeWrongWayAngleThreshold) & absoluteHeadingDelta)) >> 0x1f) ==
-                0)
+            gameBitSet = (int)absoluteHeadingDelta > gSnowBikeWrongWayAngleThreshold;
+            if ((int)gameBitSet == 0)
             {
                 pathStep = timeDelta;
             }
@@ -1043,7 +1042,7 @@ void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
             {
                 pathStep = -timeDelta;
             }
-            st->pathProgress = st->pathProgress + pathStep;
+            st->pathProgress += pathStep;
             pathStep = st->pathProgress;
             st->pathProgress =
                 (pathStep < 0.0f) ? 0.0f : ((pathStep > 180.0f) ? 180.0f : pathStep);

@@ -1,4 +1,5 @@
 #include "main/audio/sfx.h"
+#include "musyx/mcmd.h"
 #include "musyx/snd_synth_api.h"
 #include "main/audio_internal.h"
 #include "main/camera.h"
@@ -28,12 +29,14 @@ u8 gSfxTriggerExtraTable[8] = {1, 2, 4, 8, 0x10, 0x20, 0x40, 0};
 
 u64 gSfxObjectChannelAge;
 u32 gSfxObjectChannelMatchCount;
-u8 gSfxGlobalCtrlLevel;
+u8 gSfxGlobalReverbLevel;
 int gSfxTriggersCount;
 void* gSfxTriggersData;
 
 SfxObjectChannel gSfxObjectChannels[0xC40 / sizeof(SfxObjectChannel)];
 
+static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* vector);
+static f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta);
 
 static inline SfxObjectChannel* Sfx_FindFreeObjectChannel(void)
 {
@@ -124,19 +127,19 @@ void Sfx_StopAllObjectSounds(void)
     }
 }
 
-void audioFn_8000b694(u32 value)
+void Sfx_SetObjectReverbPreset(u32 preset)
 {
     s32 i;
     SfxObjectChannel* objectChannel;
 
     objectChannel = gSfxObjectChannels;
-    gSfxGlobalCtrlLevel = (u8)(value * 5);
+    gSfxGlobalReverbLevel = (u8)(preset * 5);
     i = SFX_OBJECT_CHANNEL_COUNT - 1;
     do
     {
         if ((objectChannel->handle != (u32)-1) && (objectChannel->globalCtrlDisabled == 0))
         {
-            sndFXCtrl(objectChannel->handle, 0x5B, gSfxGlobalCtrlLevel);
+            sndFXCtrl(objectChannel->handle, MCMD_CTRL_REVERB, gSfxGlobalReverbLevel);
         }
         objectChannel++;
     } while (i-- != 0);
@@ -407,16 +410,16 @@ void Sfx_UpdateObjectSounds(void)
         globalCtrl = 0;
     }
 
-    if ((u8)globalCtrl != (s32)(gSfxGlobalCtrlLevel / 5))
+    if ((u8)globalCtrl != (s32)(gSfxGlobalReverbLevel / 5))
     {
         objectChannel = gSfxObjectChannels;
-        gSfxGlobalCtrlLevel = (u8)((u8)globalCtrl * 5);
+        gSfxGlobalReverbLevel = (u8)((u8)globalCtrl * 5);
         i = SFX_OBJECT_CHANNEL_COUNT;
         while (i-- != 0)
         {
             if ((objectChannel->handle != (u32)-1) && (objectChannel->globalCtrlDisabled == 0))
             {
-                sndFXCtrl(objectChannel->handle, 0x5B, gSfxGlobalCtrlLevel);
+                sndFXCtrl(objectChannel->handle, MCMD_CTRL_REVERB, gSfxGlobalReverbLevel);
             }
             objectChannel++;
         }
@@ -451,19 +454,19 @@ void Sfx_UpdateObjectSounds(void)
     }
 }
 
-static inline void Sfx_SetGlobalCtrlLevel(u8 level)
+static inline void Sfx_SetGlobalReverbLevel(u8 level)
 {
     s32 i;
     SfxObjectChannel* objectChannel;
 
     objectChannel = gSfxObjectChannels;
-    gSfxGlobalCtrlLevel = level;
+    gSfxGlobalReverbLevel = level;
     i = SFX_OBJECT_CHANNEL_COUNT;
     while (i-- != 0)
     {
         if ((objectChannel->handle != (u32)-1) && (objectChannel->globalCtrlDisabled == 0))
         {
-            sndFXCtrl(objectChannel->handle, 0x5B, gSfxGlobalCtrlLevel);
+            sndFXCtrl(objectChannel->handle, MCMD_CTRL_REVERB, gSfxGlobalReverbLevel);
         }
         objectChannel++;
     }
@@ -480,7 +483,7 @@ void Sfx_InitObjectChannels(void)
     }
 
     gSfxObjectChannelAge = 0;
-    Sfx_SetGlobalCtrlLevel(0);
+    Sfx_SetGlobalReverbLevel(0);
 }
 
 void Sfx_PlayFromObjectEx(u32 obj, f32* pos, u32 channel, u16 sfxId)
@@ -743,7 +746,7 @@ SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 p
     SfxObjectChannel* ch;
     u32 handle;
 
-    if ((int)audioFlagFn_8000a188(4) != 0)
+    if ((int)audioIsChannelUnavailable(4) != 0)
     {
         return 0;
     }
@@ -757,9 +760,9 @@ SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 p
     handle = sndFXStartEx(fxId, volume, pan, 0);
     if (handle != (u32)-1)
     {
-        if (gSfxGlobalCtrlLevel != 0 && globalCtrlDisabled == 0)
+        if (gSfxGlobalReverbLevel != 0 && globalCtrlDisabled == 0)
         {
-            sndFXCtrl(handle, 0x5b, gSfxGlobalCtrlLevel);
+            sndFXCtrl(handle, MCMD_CTRL_REVERB, gSfxGlobalReverbLevel);
         }
 
         ch->object = 0;
@@ -887,7 +890,7 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
     }
 }
 
-void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
+static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
 {
     f32 ra;
     f32 x = v[0];
@@ -937,8 +940,7 @@ void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
     v[2] = p;
 }
 
-f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta)
-{
+static f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta) {
     Vec v;
     f32 t;
     double t2;

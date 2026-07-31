@@ -10,7 +10,7 @@
  *      player exists.
  *   4  homing/tethered projectile: ease toward the owner's target,
  *      clamp to a growing reach around an anchor, spawn fx, and snap to
- *      ground via hitDetectFn_80065e50.
+ *      ground via trackGetHeight.
  *   5  like 3 but gated on the player having a lock-on target.
  *   6  fixed primary-radius hit volume.
  *   7  self-free once the owner's hit list no longer references it.
@@ -208,7 +208,7 @@ void InvHit_update(GameObject* obj) {
             (*gPartfxInterface)->spawnObject(obj, INVHIT_HOMING_SECONDARY_EFFECT_ID, NULL, 0, -1, NULL);
         }
         {
-            s8 hitCount = (s8)hitDetectFn_80065e50(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
+            s8 hitCount = (s8)trackGetHeight(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ,
                                                    hits, 0, 0);
             groundHitIndex = 0;
             groundHitCount = hitCount;

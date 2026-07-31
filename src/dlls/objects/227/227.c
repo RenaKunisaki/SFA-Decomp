@@ -428,7 +428,7 @@ void Fireball_init(GameObject* obj) {
                 modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
                 lightSetField4D(state->light, 0);
                 modelLightStruct_setPosition(state->light, 0.0f, 0.0f, 0.0f);
-                lightSetFieldBC_8001db14(state->light, 1);
+                modelLightStruct_setFieldBC(state->light, 1);
                 c = state->colorIndex * 3;
                 modelLightStruct_setDiffuseColor(state->light, ((u8*)gFireballLightColors)[c],
                                                  (base1 = (u8*)gFireballLightColors + 1)[state->colorIndex * 3],

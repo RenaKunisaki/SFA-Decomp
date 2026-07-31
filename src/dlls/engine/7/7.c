@@ -1,5 +1,6 @@
 #include "main/newclouds_state.h"
 #include "main/newclouds.h"
+#include "main/newshadows.h"
 #include "main/shader_api.h"
 #include "main/texture.h"
 #include "dolphin/gx/GXDispList.h"
@@ -19,6 +20,7 @@
 #include "main/dll/savegame_load_api.h"
 #include "main/gameloop_api.h"
 #include "main/lightmap_api.h"
+#include "main/model_light.h"
 #include "main/mm.h"
 #include "main/render_mode_api.h"
 #include "main/vecmath.h"
@@ -26,6 +28,8 @@
 #include "stdlib.h"
 #include "track/intersect_api.h"
 #include "track/intersect_render_setup_api.h"
+#include "main/audio/music_api.h"
+#include "main/audio/sfx_position_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/frame_timing.h"
@@ -80,7 +84,7 @@ typedef struct WindSource
 extern NewCloud* gNewClouds[8];
 
 #define NC_CLOUD ((u8 *)gNewClouds[*(u16 *)(params + 0x26)])
-#define D7_CLOUD (*pp)
+#define D7_CLOUD (*cloudSlot)
 extern char sSnowPrintSnowCloudInvalidCloudId[];
 
 static inline void snowFifoTexCoord2s16(s16 s, s16 t)
@@ -119,7 +123,7 @@ void lightningGetStartPos(Vec* out)
     out->z = gActiveLightning->start[2];
 }
 
-void lightningDrawStrand(f32* from, f32* to, u8 width, f32 segScale, int* seed)
+static void lightningDrawStrand(f32* from, f32* to, u8 width, f32 segScale, int* seed)
 {
     int segs;
     int savedRand;
@@ -248,8 +252,8 @@ void lightningDrawStrand(f32* from, f32* to, u8 width, f32 segScale, int* seed)
 }
 
 
-void lightningDrawBolt(f32* start, f32* end, u8 width, f32 segScale, f32 d, int* seed, int depth,
-                       u8 flags)
+static void lightningDrawBolt(f32* start, f32* end, u8 width, f32 segScale, f32 d, int* seed, int depth,
+                              u8 flags)
 {
     f32 len;
     f32 total;
@@ -843,7 +847,7 @@ int snowPrintSnowCloud(int arg, int cloudId)
     }
     else if (((NewCloud*)p)->cloudType == 0)
     {
-        getAmbientColor(0, &attr.cr, &attr.cg, &attr.cb);
+        skyGetSunColor(0, &attr.cr, &attr.cg, &attr.cb);
         setTextColor((void*)arg, attr.cr, attr.cg, attr.cb, 0xff);
     }
     gxSetAlphaBlendZTest();
@@ -1037,7 +1041,7 @@ void snowCloudUpdateFlakes(u8* snow)
     }
 }
 
-void snowReposSnowCloud(int cloudId)
+static void snowReposSnowCloud(int cloudId)
 {
     u8* p;
     SnowFlake* part;
@@ -1572,11 +1576,11 @@ void newclouds_run(void)
 {
     Camera* cam;
     void** clouds;
-    u8** pp;
+    u8** cloudSlot;
     int i;
     u8* nearestCloud;
     u8 activeCount;
-    int off;
+    int slotOffset;
     u8* p;
     f32* viewRotationMatrix;
     f32 mag;
@@ -1603,7 +1607,7 @@ void newclouds_run(void)
 
     clouds = (void**)gNewCloudLayerTextures;
     i = 0;
-    off = 0;
+    slotOffset = 0;
     cam = Camera_GetCurrent();
     activeCount = 0;
     nearestCloud = NULL;
@@ -1626,15 +1630,15 @@ void newclouds_run(void)
     gNewCloudBlizzardActive = 0;
     while (i < 8)
     {
-        pp = (u8**)((u8*)clouds + off);
-        pp = (u8**)((u8*)pp + 16);
-        p = *pp;
+        cloudSlot = (u8**)((u8*)clouds + slotOffset);
+        cloudSlot = (u8**)((u8*)cloudSlot + 16);
+        p = *cloudSlot;
         if (p != NULL &&
             (*(u8**)p == NULL || (((GameObject*)*(u8**)p)->objectFlags & OBJECT_OBJFLAG_FREED)))
         {
             snowFreeSnowCloud(((NewCloud*)p)->cloudId);
             i++;
-            off += 4;
+            slotOffset += 4;
             continue;
         }
         if (p != NULL && ((NewCloud*)p)->active != 0)
@@ -1791,7 +1795,7 @@ void newclouds_run(void)
             activeCount++;
         }
         i++;
-        off += 4;
+        slotOffset += 4;
     }
     if (activeCount != 0)
     {
@@ -1875,8 +1879,10 @@ void newclouds_run(void)
                 PSMTXRotRad(mtx, 'z', rot);
             }
             PSMTXConcat((MtxPtr)viewRotationMatrix, mtx, mtx);
-            PSMTXMultVec(mtx, (Vec*)((u32)clouds + 0xd8),
-                         (Vec*)((u32)clouds + 0xd8));
+            {
+                Vec* flashVector = (Vec*)((u32)clouds + 0xd8);
+                PSMTXMultVec(mtx, flashVector, flashVector);
+            }
             if (lbl_803DD190 < -16.0f)
             {
                 lbl_803DD190 += 16.0f;

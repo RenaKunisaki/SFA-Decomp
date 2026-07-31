@@ -8,7 +8,6 @@
 #include "musyx/synth_channel.h"
 #include "musyx/synth_channel_scale.h"
 #include "musyx/synth_callback.h"
-#include "musyx/synth_init.h"
 #include "musyx/hw_samplemem.h"
 #include "musyx/voice_id.h"
 #include "musyx/synth_queue.h"
@@ -261,8 +260,8 @@ typedef struct LAYER
     u8 reserved[3];
 } LAYER;
 
-u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 pan, u8 midi, u8 midiSet,
-                u8 section, u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd);
+static u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 pan, u8 midi, u8 midiSet,
+                       u8 section, u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd);
 
 /*
  * Set one studio/channel scale entry.
@@ -324,7 +323,7 @@ void synthInitPortamento(McmdVoiceState* state)
 /*
  * Reuse an active voice matching the requested MIDI slot/channel.
  */
-u32 audioFn_8026f630(u8 key, u8 slot, u8 channel, u32 voiceGroup, u32* outFlags)
+static u32 do_voice_portamento(u8 key, u8 midi, u8 midiSet, u32 isMaster, u32* rejected)
 {
     u32 i;
     u32 result;
@@ -337,8 +336,8 @@ u32 audioFn_8026f630(u8 key, u8 slot, u8 channel, u32 voiceGroup, u32* outFlags)
     result = -1;
     for (i = 0, voice = (McmdVoiceState*)synthVoice; i < SYNTH_CONFIGURATION->voiceCount; ++i, ++voice)
     {
-        if (voice->macroAllocating == 0 && voice->voiceHandle != 0xffffffff && voice->midiSlot == slot &&
-            voice->midiEvent == channel)
+        if (voice->macroAllocating == 0 && voice->voiceHandle != 0xffffffff && voice->midiSlot == midi &&
+            voice->midiEvent == midiSet)
         {
             if ((*(u64*)&voice->inputFlags & 2) != 0)
             {
@@ -349,7 +348,7 @@ u32 audioFn_8026f630(u8 key, u8 slot, u8 channel, u32 voiceGroup, u32* outFlags)
             {
                 if (result == 0xffffffff && (*(u64*)&voice->inputFlags & 0x20002) == 0x20002)
                 {
-                    *outFlags = 1;
+                    *rejected = 1;
                     return -1;
                 }
 
@@ -366,7 +365,7 @@ u32 audioFn_8026f630(u8 key, u8 slot, u8 channel, u32 voiceGroup, u32* outFlags)
                 {
                     voice->voiceNextHandle = 0xffffffff;
                     voice->voicePrevHandle = 0xffffffff;
-                    result = vidMakeNew(&synthVoice[i], voiceGroup);
+                    result = vidMakeNew(&synthVoice[i], isMaster);
                     previousId = voice->voiceHandle;
                 }
                 else
@@ -384,11 +383,11 @@ u32 audioFn_8026f630(u8 key, u8 slot, u8 channel, u32 voiceGroup, u32* outFlags)
     {
         voiceRegister(selectedVoice);
         inpSetMidiLastNote(selectedVoice->midiSlot, selectedVoice->midiEvent, selectedVoice->key & 0xff);
-        *outFlags = 0;
+        *rejected = 0;
     }
     else
     {
-        *outFlags = sawHeldVoice;
+        *rejected = sawHeldVoice;
     }
     return result;
 }
@@ -397,15 +396,15 @@ static inline u32 check_portamento(u8 key, u8 midi, u8 midiSet, u32 newVID, u32*
     u32 rejected;
 
     if (inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, midi, midiSet) > 0x1F80) {
-        *vid = audioFn_8026f630(key & 0x7F, midi, midiSet, newVID, &rejected);
+        *vid = do_voice_portamento(key & 0x7F, midi, midiSet, newVID, &rejected);
         return !rejected;
     }
     *vid = 0xFFFFFFFF;
     return 1;
 }
 
-u32 audioLayerFn_8026f8b8(u16 layerID, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 panning, u8 midi,
-                          u8 midiSet, u8 section, u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd) {
+static u32 StartLayer(u16 layerID, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 panning, u8 midi,
+                      u8 midiSet, u8 section, u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd) {
     u16 count;
     u32 vid;
     u32 new_id;
@@ -464,8 +463,8 @@ u32 audioLayerFn_8026f8b8(u16 layerID, s16 prio, u8 maxVoices, u16 allocId, u8 k
                                  section, step, trackid, 0, vGroup, studio, itd);
             break;
         case 0x8000:
-            new_id = audioLayerFn_8026f8b8(l->id, prio, maxVoices, allocId, note | (key & 0x80), scaledVol, pan, midi,
-                                           midiSet, section, step, trackid, 0, vGroup, studio, itd);
+            new_id = StartLayer(l->id, prio, maxVoices, allocId, note | (key & 0x80), scaledVol, pan, midi, midiSet,
+                                section, step, trackid, 0, vGroup, studio, itd);
             break;
         }
 
@@ -507,8 +506,8 @@ typedef struct KeymapEntry
  * Resolve an indirection-table sample entry, then dispatch the resolved
  * sample or nested sample group.
  */
-u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 pan, u8 midi, u8 midiSet, u8 section,
-                u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd)
+static u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 pan, u8 midi, u8 midiSet,
+                       u8 section, u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd)
 {
     u8 o;
     KeymapEntry* keymap;
@@ -564,9 +563,8 @@ u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 
                     return macStart(keymap[o].id, prio, maxVoices, allocId, k | (key & 0x80),
                                     vol, pan, midi, midiSet, section, step, trackid, vidFlag, vGroup, studio, itd);
                 }
-                return audioLayerFn_8026f8b8(keymap[o].id, prio, maxVoices, allocId, k | (key & 0x80), vol, pan, midi,
-                                             midiSet, section, step, trackid,
-                                             vidFlag & 0xff, vGroup, studio, itd);
+                return StartLayer(keymap[o].id, prio, maxVoices, allocId, k | (key & 0x80), vol, pan, midi, midiSet,
+                                  section, step, trackid, vidFlag & 0xff, vGroup, studio, itd);
             }
         }
     }
@@ -623,8 +621,8 @@ u32 synthStartSound(u16 id, u8 prio, u8 maxVoices, u8 key, u8 vol, u8 pan, u8 mi
     }
     case 0x8000:
     {
-        u32 vid = audioLayerFn_8026f8b8(id, prio, maxVoices, id, key, vol, pan, midi, midiSet, section, step, trackid,
-                                        1, vGroup, studio, itd);
+        u32 vid =
+            StartLayer(id, prio, maxVoices, id, key, vol, pan, midi, midiSet, section, step, trackid, 1, vGroup, studio, itd);
         if (vid != 0xFFFFFFFF)
         {
             unblockAllAllocatedVoices(vid);
@@ -684,7 +682,7 @@ static inline void UpdateTimeMIDICtrl(SynthHwVoice* sv)
     }
 }
 
-void LowPrecisionHandler(int voice)
+static void LowPrecisionHandler(int voice)
 {
     u32 j;
     s32 pbend;
@@ -891,7 +889,7 @@ void LowPrecisionHandler(int voice)
  * Zero-offset per-voice update: volume envelope, tremolo, panning and final
  * volume/aux sends.
  */
-void ZeroOffsetHandler(int voice)
+static void ZeroOffsetHandler(int voice)
 {
     SynthHwVoice* sv;
     u32 lowDeltaTime;
@@ -1058,7 +1056,7 @@ void ZeroOffsetHandler(int voice)
 /*
  * Event per-voice update: pedal state, deferred hardware start and key-off.
  */
-void EventHandler(int voice)
+static void EventHandler(int voice)
 {
     SynthHwVoice* sv;
 

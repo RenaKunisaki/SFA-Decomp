@@ -36,7 +36,7 @@ struct MapBlockData;
 enum HitQueryMask
 {
     HITQUERY_TEST_OBJECT_HITBOXES = 0x01,  /* also test reset-object hitboxes, not just map triangles */
-    /* keep only near-horizontal triangles: mapLoadBlocksFn_800685cc drops any
+    /* keep only near-horizontal triangles: trackBuildBlockTriangles drops any
      * triangle whose plane normal Y is within +-0.707 (cos 45deg) of zero */
     HITQUERY_HORIZONTAL_SURFACES_ONLY = 0x04,
     HITQUERY_REUSE_TRIANGLE_BUFFER = 0x10, /* reuse the loaded map-triangle buffer (skip block reload) */
@@ -56,15 +56,15 @@ int trackIntersectRebuildPending(void);
 int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset,
                                          f32* outNormal, int queryMask);
 int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset, int queryMask);
-int hitDetectFn_80065e50(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask);
-int hitDetectFn_80067958(GameObject* contactSource, f32* startPoints, f32* endPoints, int pointCount, void* results,
+int trackGetHeight(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsOut, int mode, int queryMask);
+int trackGetIntersect(GameObject* contactSource, f32* startPoints, f32* endPoints, int pointCount, void* results,
                         int flags);
 void hitDetect_calcSweptSphereBounds(TrackQueryBounds* boundsOut, f32* startPoints, f32* endPoints, f32* radii,
                                      int pointCount);
-void hitDetectFn_800691c0(GameObject* obj, TrackQueryBounds* bounds, u32 mask, int flags);
+void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* bounds, u32 mask, int flags);
 void trackSetLinesEnabledByParam(int matchValue, GameObject* obj, int flag);
-void doNothing_80062A50(GameObject* obj, f32 x, f32 y, f32 z);
-void objHitDetectFn_80062e84(GameObject* obj, GameObject* newParent, int mode);
+void playerShadowSetPositionOverride(GameObject* obj, f32 x, f32 y, f32 z);
+void Obj_SetParent(GameObject* obj, GameObject* newParent, int updateLocalTransform);
 void playerShadowClearPositionOverride(GameObject* obj);
 int shadowInit(GameObject* obj, u32 arena, int flags);
 void objShadowInvalidate(GameObject* obj);
@@ -72,7 +72,7 @@ void shadowVolumesSetDirty(s32 dirty);
 void getSunFlareScissorRect(int* outX, int* outY, int* outWidth, int* outHeight);
 void trackGetGridOrigin(int** outOrigin);
 void trackGetTriangleBuffer(int* outCount, int* outTable);
-void mapInitFn_80069990(void);
+void trackInitCollisionBuffers(void);
 void trackIntersect(void);
 void mapBlockRender_setVtxDcrs(u8 doSetup, struct MapBlockData* block, struct Shader* shader,
                                ModelRenderInstrsState* state);
@@ -80,7 +80,8 @@ void initTextures(void);
 void mapClearBlockEdgeFlags(void);
 void* mapBlockGetPolygon(int* obj, int idx);
 void* mapBlockGetEdge(int* obj, int idx);
-void gxErrorFn_80060b40(void);
+void mapBlockGpuRecoveryHook(void);
+void* mapBlockGetUnused00Value(struct MapBlockData* block);
 struct MapBlockData* MapBlock_loadFromFile(int blockId);
 void setMapBlockFlag(void);
 void trackTickDynamicSlotCooldowns(void);

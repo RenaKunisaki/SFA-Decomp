@@ -1,6 +1,7 @@
 #ifndef MAIN_OBJANIM_INTERNAL_H_
 #define MAIN_OBJANIM_INTERNAL_H_
 
+#include "game/objects/object_interface.h"
 #include "global.h"
 #include "main/vec_types.h"
 #include "ghidra_import.h"
@@ -452,7 +453,7 @@ typedef struct ObjAnimComponent {
   struct ObjWeaponDaTable *weaponDaTable;
   struct ObjAnimEventTable *eventTable;
   ObjModelState *modelState;
-  int **dll;
+  ObjectInterfaceHandle dll;
   u8 *jointPoseData;
   ObjTextureRuntimeSlot *textureSlots;
   ObjHitVolumeRuntimeTransform *hitVolumeTransforms;

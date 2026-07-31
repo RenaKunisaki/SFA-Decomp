@@ -9,7 +9,7 @@ int objIsObjectType(u32 obj, int group);
 int objGetNearestType(int group, f32* point, f32* maxDistance);
 struct GameObject* objGetNearestTypeToExcludingSelf(int group, struct GameObject* obj, f32* maxDistance);
 int objGetNearestTypeTo(int group, struct GameObject* obj, f32* maxDistance);
-u32* objGetAllOfType(int group, int* countOut);
+struct GameObject** objGetAllOfType(int group, int* countOut);
 void objFreeObjectType(int obj, int group);
 int objGetObjectType(u32 obj);
 void objAddObjectType(int obj, int group);

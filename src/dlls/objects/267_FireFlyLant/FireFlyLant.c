@@ -29,7 +29,7 @@ static const f32 sFireFlyLanternSpawnHeightOffset = 2.0f;
 static const f32 sFireFlyLanternAnchorHeightOffset = 5.0f;
 static const f32 sFireFlyLanternModelScale = 1.0f;
 
-GameObject* FireFlyLantern_spawnFireFly(GameObject* obj) {
+static GameObject* FireFlyLantern_spawnFireFly(GameObject* obj) {
     LanternFireFlyPlacement* setup;
 
     if (Obj_IsLoadingLocked() == 0) {
@@ -52,7 +52,7 @@ GameObject* FireFlyLantern_spawnFireFly(GameObject* obj) {
     return loadObjectAtObject(obj, &setup->base);
 }
 
-int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
+static int FireFlyLantern_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     FireFlyLanternState* state;
     GameObject* child;
     int eventIndex;
@@ -107,7 +107,8 @@ void FireFlyLantern_free(GameObject* obj) {
     objFreeObjectType((int)obj, FIREFLY_LANTERN_OBJECT_GROUP);
 }
 
-void FireFlyLantern_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+void FireFlyLantern_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
+                           s8 visible) {
     (void)visible;
     objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, sFireFlyLanternModelScale);
 }

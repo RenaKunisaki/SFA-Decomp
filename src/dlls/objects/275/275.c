@@ -74,7 +74,7 @@ extern const char sSeqObjNeedBitClearDuringSequenceFormat[];
 extern const char sSeqObjDiagnosticFormats[];
 extern const char sSeqObjNeedAndUsedBitFormat[];
 
-int SeqObj2_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate) {
+static int SeqObj2_animEventCallback(GameObject* obj, int* unused, ObjSeqState* animUpdate) {
     SeqObjectPlacement* placement;
     SeqObj2State* state;
     int eventIndex;

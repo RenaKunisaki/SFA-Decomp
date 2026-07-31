@@ -94,7 +94,7 @@ void dll_28B_update(GameObject* obj)
     setMatrixFromObjectPos(mtx, &xform);
     Matrix_TransformPoint(mtx, gWcEarthWalkerIdleTimerThreshold, gWcEarthWalkerIdleTimerThreshold,
                           gWcEarthWalkerIdleTimerThreshold, &ox, &oy, &oz);
-    doNothing_80062A50(obj, ox, oy, oz);
+    playerShadowSetPositionOverride(obj, ox, oy, oz);
 }
 
 static const f32 gDll28BCurveInitParam = 1000.0f;

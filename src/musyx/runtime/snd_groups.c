@@ -140,7 +140,7 @@ static inline MEM_DATA* GetLayerAddr(u16 id, POOL_DATA* pool)
     return NULL;
 }
 
-void InsertData(u16 id, void* data, u8 dataType, u32 remove)
+static void InsertData(u16 id, void* data, u8 dataType, u32 remove)
 {
     MEM_DATA* m;
 
@@ -233,7 +233,7 @@ void InsertData(u16 id, void* data, u8 dataType, u32 remove)
     }
 }
 
-void audioFn_8027b690(u16* ref, void* data, u8 dataType, u32 remove)
+static void ScanIDList(u16* ref, void* data, u8 dataType, u32 remove)
 {
     u16 id;
 
@@ -279,12 +279,12 @@ s32 sndPushGroup(void* prj_data, u16 gid, void* samples, void* sdir, void* pool)
                 sampleRef = (u16*)((u8*)prj_data + g->sampleOff);
                 if (dataInsertSDir(sdir, hwTransAddr(samples)))
                 {
-                    audioFn_8027b690(sampleRef, sdir, 1, 0);
+                    ScanIDList(sampleRef, sdir, 1, 0);
                 }
-                audioFn_8027b690((u16*)((u8*)prj_data + g->macroOff), poolPtr, 0, 0);
-                audioFn_8027b690((u16*)((u8*)prj_data + g->curveOff), poolPtr, 4, 0);
-                audioFn_8027b690((u16*)((u8*)prj_data + g->keymapOff), pool, 2, 0);
-                audioFn_8027b690((u16*)((u8*)prj_data + g->layerOff), pool, 3, 0);
+                ScanIDList((u16*)((u8*)prj_data + g->macroOff), poolPtr, 0, 0);
+                ScanIDList((u16*)((u8*)prj_data + g->curveOff), poolPtr, 4, 0);
+                ScanIDList((u16*)((u8*)prj_data + g->keymapOff), pool, 2, 0);
+                ScanIDList((u16*)((u8*)prj_data + g->layerOff), pool, 3, 0);
                 if (g->type == 1)
                 {
                     FX_DATA* fd = (FX_DATA*)((u8*)prj_data + g->data.song.normpageOff);

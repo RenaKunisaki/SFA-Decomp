@@ -189,7 +189,7 @@ void Obj_GetWorldPosition(GameObject* obj, f32* outX, f32* outY, f32* outZ) {
     }
 }
 
-void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex) {
+static void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex) {
     CameraMatrixStorage* storage;
     GameObject* ancestors[4];
     MatrixTransform inverseTransform;

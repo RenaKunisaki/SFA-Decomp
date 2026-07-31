@@ -175,7 +175,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
         state->angularVel = state->angularVel + clamped;
         for (i = 0, div = 9.0f; i < 9; i++)
         {
-            s16* jointVec = objModelGetVecFn_800395d8(obj, i);
+            s16* jointVec = objFindJointPoseVector(obj, i);
             if (jointVec != NULL)
             {
                 jointVec[2] = state->angularVel / div;

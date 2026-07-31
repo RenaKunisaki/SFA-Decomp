@@ -14,7 +14,7 @@ void* getCache(void);
 void cacheQueueWait(int sync);
 void copyToCache(void* dst, void* src, u32 count);
 void memcpyToCache(void* dst, void* src, u32 count);
-void texFlagFn_80023cbc(int value);
+void mmSetTextureAllocationState(int state);
 void AtomicSList_Push(void** list, void* node);
 void* AtomicSList_Pop(void** list);
 int printHeapStats(int mode);

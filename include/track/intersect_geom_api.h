@@ -3,9 +3,13 @@
 
 #include "types.h"
 
+typedef struct GameObject GameObject;
+typedef struct ObjModel ObjModel;
+
 void gxTevTextureTimesRasStage(void);
-int modelCb_80073d04(u8* obj, int* model);
-int modelCb_80074518(void* obj, void** model, int slot);
+/* ObjDef-selected GX callbacks: normal-space disk masking and projected indirect texturing. */
+int objModelNormalDiskRenderCb(GameObject* object, ObjModel* model, int slot);
+int objModelProjectedIndirectRenderCb(GameObject* object, ObjModel* model, int slot);
 u32 objCausticReflectionRenderCb(int handle, void* model);
 
 #endif /* TRACK_INTERSECT_GEOM_API_H_ */
