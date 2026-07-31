@@ -1751,8 +1751,8 @@ void skeetla_spawnLinkedSparks(u8* obj)
     }
 }
 
-void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* center, f32 minDistance, f32 moveDistance)
-{
+void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* center, f32 minDistance,
+                                 f32 moveDistance) {
     f32 projection[3];
     f32 dx;
     f32 centerToEnd;
@@ -1760,7 +1760,7 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
     f32 limitDistanceSq;
     f32 guardDistance;
     f32 startGuardDistance;
-    f32 slope;
+    f32 slope[1];
     f32 intercept;
     f32 perpSlope;
     f32 dz;
@@ -1774,56 +1774,48 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
     minDistanceSq = minDistance * minDistance;
     limitDistanceSq = moveDistance * moveDistance;
 
-    if (centerToEnd > centerToStart)
-    {
+    if (centerToEnd > centerToStart) {
         return;
     }
 
     guardDistance = getXZDistance(guardPoint, center);
-    if (guardDistance < minDistanceSq)
-    {
+    if (guardDistance < minDistanceSq) {
         return;
     }
 
     startGuardDistance = getXZDistance(start, guardPoint);
-    if (getXZDistance(start, center) > startGuardDistance)
-    {
+    if (getXZDistance(start, center) > startGuardDistance) {
         return;
     }
 
-    if (centerToStart < limitDistanceSq)
-    {
+    if (centerToStart < limitDistanceSq) {
         limitDistanceSq = centerToStart;
         useBlendedDistance = 1;
     }
 
-    if (!(centerToEnd < limitDistanceSq))
-    {
+    if (!(centerToEnd < limitDistanceSq)) {
         return;
     }
 
-    slope = (end[2] - start[2]) / (end[0] - start[0]);
-    intercept = start[2] - (slope * start[0]);
+    slope[0] = (end[2] - start[2]) / (end[0] - start[0]);
+    intercept = start[2] - (slope[0] * start[0]);
     perpSlope = (start[0] - end[0]) / (end[2] - start[2]);
-    projection[0] = ((center[2] - (perpSlope * center[0])) - intercept) / (slope - perpSlope);
-    projection[2] = (slope * projection[0]) + intercept;
+    projection[0] = ((center[2] - (perpSlope * center[0])) - intercept) / (slope[0] - perpSlope);
+    projection[2] = (slope[0] * projection[0]) + intercept;
 
-    if (!(getXZDistance(center, projection) < minDistanceSq))
-    {
+    if (!(getXZDistance(center, projection) < minDistanceSq)) {
         return;
     }
 
     dx = end[0] - center[0];
     dz = end[2] - center[2];
     length = sqrtf((dx * dx) + (dz * dz));
-    if (0.0f != length)
-    {
+    if (0.0f != length) {
         dx /= length;
         dz /= length;
     }
 
-    if (useBlendedDistance != 0)
-    {
+    if (useBlendedDistance != 0) {
         moveDistance = sqrtf(limitDistanceSq);
         {
             f32 blend = moveDistance - sqrtf(centerToEnd);
@@ -1834,7 +1826,6 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
     end[0] = center[0] + (dx * moveDistance);
     end[2] = center[2] + (dz * moveDistance);
 }
-
 
 /* group owned by another DLL, queried here */
 
