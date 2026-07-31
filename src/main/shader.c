@@ -1260,13 +1260,6 @@ typedef struct
     u16 flags;
 } BlockEntry;
 
-typedef struct MapRomListGrid
-{
-    s16 width;
-    u8 unk02[0xa];
-    u32* cells;
-} MapRomListGrid;
-
 extern BlockEntry gShaderRomListSlots[8];
 extern s8 gShaderRomListSlotCount;
 
@@ -1934,8 +1927,9 @@ void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rec
     int base;
     s16* e2;
     int aa, bb;
-    int ptr0;
-    int tbl, tbl2;
+    MapRomListPage* page;
+    u32* tbl;
+    u32* tbl2;
     int index;
     int idx2;
     u32 v, v2;
@@ -1967,7 +1961,7 @@ void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rec
     e2 = (s16*)(base + gShaderRomListSlots[slot].mapId * 10);
     aa = gridX - e2[0];
     bb = gridZ - e2[2];
-    ptr0 = gShaderRomListSlots[slot].romList;
+    page = (MapRomListPage*)gShaderRomListSlots[slot].romList;
     if (slot == -1)
     {
         rectA[0] = -1;
@@ -1992,19 +1986,19 @@ void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rec
     }
     if (useVisGrid != 0)
     {
-        tbl = *(int*)(ptr0 + 0x30);
-        tbl2 = *(int*)(ptr0 + 0x34);
+        tbl = page->visCellRects;
+        tbl2 = page->visLayerRects;
     }
     else
     {
-        tbl = *(int*)(ptr0 + 0x14);
-        tbl2 = *(int*)(ptr0 + 0x2c);
+        tbl = page->cellRects;
+        tbl2 = page->layerRects;
     }
-    index = aa + bb * *(s16*)ptr0;
+    index = aa + bb * page->sizeX;
     idx2 = index * 2;
     if (layer == 0)
     {
-        v = *(int*)(tbl + idx2 * 4);
+        v = tbl[idx2];
         rectA[0] = ((v >> 12) & 0xf) - 7;
         rectA[2] = ((v >> 8) & 0xf) - 7;
         rectA[1] = ((v >> 4) & 0xf) - 7;
@@ -2013,7 +2007,7 @@ void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rec
         rectB[2] = ((v >> 24) & 0xf) - 7;
         rectB[1] = ((v >> 20) & 0xf) - 7;
         rectB[3] = ((v >> 16) & 0xf) - 7;
-        v2 = *(int*)((tbl + 4) + idx2 * 4);
+        v2 = tbl[idx2 + 1];
         rectC[0] = ((v2 >> 12) & 0xf) - 7;
         rectC[2] = ((v2 >> 8) & 0xf) - 7;
         rectC[1] = ((v2 >> 4) & 0xf) - 7;
@@ -2041,10 +2035,10 @@ void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rec
         rectD[1] = -1;
         rectD[2] = 0;
         rectD[3] = -1;
-        cellVal = *(int*)(*(int*)(ptr0 + 0xc) + (idx2 >> 1) * 4) & 0x7f;
+        cellVal = page->cells[idx2 >> 1] & 0x7f;
         if (cellVal != 127)
         {
-            v2 = ((int*)tbl2)[layer - 1 + cellVal * 4];
+            v2 = tbl2[layer - 1 + cellVal * 4];
             rectA[0] = ((v2 >> 12) & 0xf) - 7;
             rectA[2] = ((v2 >> 8) & 0xf) - 7;
             rectA[1] = ((v2 >> 4) & 0xf) - 7;
@@ -2655,7 +2649,7 @@ void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
     id = mapCoordsToId(gridX, gridZ, layer);
     if (id != -1)
     {
-        MapRomListGrid* grid;
+        MapRomListPage* grid;
         int adjacentMapId2;
         char* slots;
         char* activeFlags;
@@ -2669,7 +2663,7 @@ void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
         if (slot == -1)
             slot = mapProcessRomList(id);
         *(s8*)((activeFlags = (char*)gShaderRomListSlots + 6) + slot * 8) = 1;
-        grid = (MapRomListGrid*)gShaderRomListSlots[slot].romList;
+        grid = (MapRomListPage*)gShaderRomListSlots[slot].romList;
         adjacentMapIds = (s16*)gShaderMapRomBuffers[2];
         adjacentMapId1 = (s8)adjacentMapIds[id << 1];
         adjacentMapId2 = adjacentMapIds[(id << 1) + 1];
@@ -2694,7 +2688,7 @@ void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
         mapBounds = (s16*)(gShaderMapRomBuffers[1] + id * 10);
         gridX = gridX - mapBounds[0];
         gridZ = gridZ - mapBounds[2];
-        cell = grid->cells[gridX + gridZ * grid->width];
+        cell = grid->cells[gridX + gridZ * grid->sizeX];
         out->cellIndex = (cell >> 0x11) & 0x3f;
         out->romListIndex = (cell >> 0x17) & 0xff;
         if (out->romListIndex == 0xFF)
@@ -3059,8 +3053,8 @@ int mapProcessRomList(int slot)
     gCurRomListPage = entry->romlist;
     rects = (s16*)(*(int*)(base + 0x417C) + slot * 10);
     ((MapRomListPage*)gCurRomListPage)->mapLayer = *(u8*)(*(int*)(base + 0x4184) + slot);
-    ((MapRomListPage*)gCurRomListPage)->worldX = gMapBlockWorldSize * (f32)(rects[0] + *(s16*)((char*)gCurRomListPage + 4));
-    ((MapRomListPage*)gCurRomListPage)->worldZ = gMapBlockWorldSize * (f32)(rects[2] + *(s16*)((char*)gCurRomListPage + 6));
+    ((MapRomListPage*)gCurRomListPage)->worldX = gMapBlockWorldSize * (f32)(rects[0] + ((MapRomListPage*)gCurRomListPage)->originX);
+    ((MapRomListPage*)gCurRomListPage)->worldZ = gMapBlockWorldSize * (f32)(rects[2] + ((MapRomListPage*)gCurRomListPage)->originZ);
     cur = gCurRomListPage;
     dz = cur->worldZ;
     dx = cur->worldX;
@@ -3095,11 +3089,11 @@ int mapGetRomListAndOffsets(int p1, int flag)
     gCurRomListPage = mmAlloc(tailLen + (v0 + 7 >> 3) + 0x401 + v2, 5, 0);
     fileLoadToBufferOffset(MLDF_FILEID_MAPS_BIN, gCurRomListPage, offset0, tailLen);
 
-    ((MapRomListPage*)gCurRomListPage)->unk0C = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 4) + (words << 2)) - offset0);
-    ((MapRomListPage*)gCurRomListPage)->unk14 = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 8) + (words << 2)) - offset0);
-    ((MapRomListPage*)gCurRomListPage)->unk30 = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0xc) + (words << 2)) - offset0);
-    ((MapRomListPage*)gCurRomListPage)->unk2C = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x10) + (words << 2)) - offset0);
-    ((MapRomListPage*)gCurRomListPage)->unk34 = (void*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x14) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->cells = (u32*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 4) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->cellRects = (u32*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 8) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->visCellRects = (u32*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0xc) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->layerRects = (u32*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x10) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->visLayerRects = (u32*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x14) + (words << 2)) - offset0);
     ((MapRomListPage*)gCurRomListPage)->objects = (ObjPlacement*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x18) + (words << 2)) - offset0);
 
     piRomLoadSection(*(int*)((lbl_803DCE7C + 0x18) + (words << 2)), p1, (int)((MapRomListPage*)gCurRomListPage)->objects);
