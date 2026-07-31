@@ -78,7 +78,7 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
     }
 
     seqId = seq->slotIndex;
-    seq->pendingStartActive = 0;
+    seq->syncActive = 0;
     seq->normtab = norm;
     seq->drumtab = drum;
     seq->arrbase = (u8*)song;
@@ -401,7 +401,7 @@ void seqPause(u32 seqId)
         voice = &seqInstance[idx];
         if (voice->state == SYNTH_VOICE_STATE_FREE)
             return;
-        voice->pendingUpdate.flags |= 8;
+        voice->syncCrossInfo.flags |= 8;
     }
 }
 
@@ -489,7 +489,7 @@ void seqStop(u32 seqId)
         if ((voice = &runtime->data.voices[slot & 0x7fffffffu],
              runtime->data.voices[slot & 0x7fffffffu].state) != SYNTH_VOICE_STATE_FREE)
         {
-            voice->pendingUpdate.output = 0;
+            voice->syncSeqIdPtr = 0;
         }
     }
 }
@@ -567,7 +567,7 @@ void seqContinue(u32 seqId)
     }
     else
     {
-        seqInstance[slot & 0x7fffffffu].pendingUpdate.flags &= ~8;
+        seqInstance[slot & 0x7fffffffu].syncCrossInfo.flags &= ~8;
     }
 }
 

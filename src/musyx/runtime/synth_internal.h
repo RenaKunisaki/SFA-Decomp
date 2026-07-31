@@ -18,10 +18,16 @@
 #define SYNTH_HANDLE_INVALID 0xFFFFFFFF
 #define SYNTH_HANDLE_ID_MASK 0x7FFFFFFF
 #define SYNTH_HANDLE_QUEUED_FLAG 0x80000000
-#define SYNTH_PENDING_FLAG_STUDIO_MODE2 0x08
-#define SYNTH_PENDING_FLAG_MIX_DATA 0x10
-#define SYNTH_PENDING_FLAG_SPEED 0x20
-#define SYNTH_PENDING_FLAG_STUDIO_MODE3 0x80
+#define SND_CROSSFADE_STOP 0
+#define SND_CROSSFADE_PAUSE 1
+#define SND_CROSSFADE_CONTINUE 2
+#define SND_CROSSFADE_START 0
+#define SND_CROSSFADE_SYNC 4
+#define SND_CROSSFADE_PAUSENEW 8
+#define SND_CROSSFADE_TRACKMUTE 16
+#define SND_CROSSFADE_SPEED 32
+#define SND_CROSSFADE_MUTE 64
+#define SND_CROSSFADE_MUTENEW 128
 #define SYNTH_VARIABLE_PAIR_EXTENDED_FLAG 0x80
 #define SYNTH_VARIABLE_PAIR_VALUE_MASK 0x7F
 #define SYNTH_VARIABLE_PAIR_END_LOW 0x00
@@ -37,18 +43,6 @@ typedef struct SynthCallbackLink
     u8 listIndex;
     u8 unk12[2];
 } SynthCallbackLink;
-
-typedef struct SynthPendingUpdate
-{
-    u8 studio;
-    u8 unk01[3];
-    u32 mixValue0;
-    u32 mixValue1;
-    u16 value16;
-    u8 flags;
-    u8 unk0F;
-    u32 output;
-} SynthPendingUpdate;
 
 typedef struct SynthDelayedNode
 {
@@ -193,22 +187,20 @@ typedef struct SynthTrackCommand
 
 typedef struct SynthStartRequest
 {
-    u32 handle;
-    u16 fadeTime;
+    u32 seqId1;
+    u16 time1;
     u8 pad06[2];
-    u32 reuseHandle;
-    u16 volumeTime;
-    u8 studio;
-    u8 pad0F;
-    u32 seqId;
-    u16 groupId;
-    u16 sampleId;
-    u8 volume;
-    u8 startStudio;
+    u32 seqId2;
+    u16 time2;
+    u8 pad0E[2];
+    u32 arr2;
+    u16 gid2;
+    u16 sid2;
+    u8 vol2;
+    u8 studio2;
     u8 pad1A[2];
-    u32 mixValue0;
-    u32 mixValue1;
-    u16 value16;
+    u32 trackMute2[2];
+    u16 speed2;
     u8 flags;
     u8 pad27;
 } SynthStartRequest;
@@ -270,9 +262,10 @@ typedef struct SynthVoice
     SynthCallbackLink* callbackLists[3];
     SynthProgramState prgState[0x10];
     u8 defaultVolumeGroup;
-    u8 unkEB1[0x1B];
-    SynthPendingUpdate pendingUpdate;
-    u8 pendingStartActive;
+    u8 unkEB1[3];
+    SynthStartRequest syncCrossInfo;
+    u32* syncSeqIdPtr;
+    u8 syncActive;
     u8 defStudio;
     u8 keyOffCheck;
     u8 unkEE3;
@@ -309,9 +302,6 @@ typedef struct SynthVoiceRuntime
     (*(u16*)((u8*)(runtime) + 0x22D8 + ((voiceIndex) * sizeof(SynthVoice))))
 #define SYNTH_RUNTIME_PENDING_FLAGS(runtime, voiceIndex) \
     (*(u8*)((u8*)(runtime) + 0x22DA + ((voiceIndex) * sizeof(SynthVoice))))
-#define SYNTH_VOICE_PENDING_START_REQUEST(voice) ((SynthStartRequest*)((u8*)(voice) + 0xEB4))
-#define SYNTH_VOICE_PENDING_START_OUT_HANDLE(voice) (*(u32**)((u8*)(voice) + 0xEDC))
-#define SYNTH_VOICE_PENDING_START_ACTIVE(voice) (*(u8*)((u8*)(voice) + 0xEE0))
 
 extern SynthCallbackLink seqNote[SYNTH_CALLBACK_COUNT];
 extern u8 gSynthDelayBucketCursor;

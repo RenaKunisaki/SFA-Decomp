@@ -213,11 +213,10 @@ SynthSequenceEvent* HandleEvent(SynthSequenceEvent* event, u8 voice, u32* flag)
                     switch (velocity & 0x7f)
                     {
                     case SEQ_META_START_PENDING:
-                        if (cseq->pendingStartActive != 0)
+                        if (cseq->syncActive != 0)
                         {
-                            seqCrossFade(SYNTH_VOICE_PENDING_START_REQUEST(cseq),
-                                                        SYNTH_VOICE_PENDING_START_OUT_HANDLE(cseq), 1);
-                            cseq->pendingStartActive = 0;
+                            seqCrossFade(&cseq->syncCrossInfo, cseq->syncSeqIdPtr, 1);
+                            cseq->syncActive = 0;
                         }
                         break;
                     case SEQ_META_LOOP_MARK:
