@@ -44,7 +44,7 @@
 #define DLL199_MESSAGE_DECREASE_CHANNEL_2 0x30005
 #define DLL199_MESSAGE_INCREASE_CHANNEL_2 0x30006
 
-extern int lbl_803DB610;
+extern int gSky2EnvfxActIndex;
 u32 gDll199Event9Result;
 
 ObjectDescriptor gDll199ObjDescriptor = {
@@ -94,10 +94,10 @@ int dll409_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdat
                 getEnvfxAct(obj, obj, DLL199_ENVFX_A, 0);
                 break;
             case 2:
-                if (lbl_803DB610 == -1) {
+                if (gSky2EnvfxActIndex == -1) {
                     getEnvfxAct(obj, obj, DLL199_ENVFX_B, 0);
                 } else {
-                    getEnvfxAct(obj, obj, lbl_803DB610, 0);
+                    getEnvfxAct(obj, obj, gSky2EnvfxActIndex, 0);
                 }
                 break;
             case 3:

@@ -53,7 +53,7 @@ u8 lbl_803DB758 = 1;
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
 extern u8 gSkyConfigFieldIndices[];
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
-extern int lbl_803DB610;
+extern int gSky2EnvfxActIndex;
 extern s8 gSky2DrawMode;
 extern u8* gSky2State;
 extern u16 lbl_803E8460;
@@ -893,8 +893,8 @@ void sky2_onMapSetup(void)
     f32 b;
     f32 a;
 
-    lbl_803DB610 = -1;
-    (&lbl_803DB610)[1] = -1;
+    gSky2EnvfxActIndex = -1;
+    (&gSky2EnvfxActIndex)[1] = -1;
     i = 0;
     slot = (void**)&gSky2State;
     a = 1150.0f;
@@ -940,7 +940,7 @@ void sky2_update(int a, int b, u8* cfg)
     env = saveGameGetEnvState();
     if (cfg != NULL)
     {
-        (&lbl_803DB610)[1] = lbl_803DB610 = (s16)((Sky2Config*)cfg)->envfxActId - 1;
+        (&gSky2EnvfxActIndex)[1] = gSky2EnvfxActIndex = (s16)((Sky2Config*)cfg)->envfxActId - 1;
         *(s16*)(env + 0xc) = (s16)((Sky2Config*)cfg)->envfxActId - 1;
         flags58 = ((Sky2Config*)cfg)->flags;
         b1 = (flags58 & 0x80) ? 1 : 0;
@@ -1045,8 +1045,8 @@ void sky2_initialise(void)
 {
     u8* state;
 
-    lbl_803DB610 = -1;
-    (&lbl_803DB610)[1] = -1;
+    gSky2EnvfxActIndex = -1;
+    (&gSky2EnvfxActIndex)[1] = -1;
     if (gSky2State != NULL)
     {
         mm_free(gSky2State);
