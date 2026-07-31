@@ -54,20 +54,14 @@ u8 gSky2RunFirstTime = 1;
 extern u8 gSkyConfigFieldIndices[];
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
 extern int gSky2EnvfxActIndex;
-extern s8 gSky2DrawMode;
-extern u8* gSky2State;
 extern u16 lbl_803E8460;
 extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];
 const SkyVec3 sSky2BestWeightsInit = {-1000.0f, -1000.0f, -1000.0f};
 
 
-
-
 void skyGetCurrentAmbientAndLightColors(u8* ambientRed, u8* ambientGreen, u8* ambientBlue, u8* lightRed, u8* lightGreen,
                                         u8* lightBlue);
-
-
 
 
 void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,

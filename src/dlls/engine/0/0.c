@@ -373,9 +373,6 @@ extern s16 aButtonIcon;
 extern s16 yButtonItemTextureId;
 extern u16 yButtonState;
 extern u8 bButtonIcon;
-extern u8 fearTestMeterOuterHalfWidth;
-extern u8 fearTestMeterInnerHalfWidth;
-extern s16 fearTestMeterMarkerX;
 extern TrickyAirMeter* airMeter;
 extern f32 gPauseMenuOpenVel;
 extern int gPauseMenuSavedTextDir;
@@ -387,10 +384,8 @@ extern s8 gCMenuScriptedInput;
 extern u8 arwingHudVisible;
 extern s16 arwingHudAlpha;
 extern u16 yButtonItem;
-extern HudItemInfoPopup gHudItemInfoPopup;
 extern const f32 lbl_803E1E68;
 extern u8 cMenuEnabled;
-extern u16 curGameText;
 extern s16 gNpcDialogueTextAlpha;
 extern s8 gNpcDialogueActive;
 extern s16 gPauseMenuSaveTextTimer;
@@ -405,7 +400,6 @@ extern CMenuSection gCMenuSections[];
 extern const f32 hudElementOpacity;
 extern const f32 lbl_803E1FA4;
 extern int gGameUiScreenHeightOffset;
-extern int gHudTimedElementTexSlot[6];
 extern f32 gTrickyHudIconPosX, gTrickyHudIconPosY, gTrickyHudIconPosZ, gTrickyHudIconScale;
 extern f32 gTrickyHudIconRotZ, gTrickyHudIconRotX, gTrickyHudIconRotY, gPauseMenuSavedFovY;
 extern const f32 lbl_803E1E94;
@@ -414,9 +408,6 @@ extern f32 gTrickyHudTexScaleX, gTrickyHudTexScaleY, gTrickyHudTexScaleZ;
 extern f32 gTrickyHudIconFovY, gTrickyHudIconAspect, gTrickyHudIconNearPlane, gTrickyHudIconFarPlane;
 extern Texture* hudTextures[102];
 extern s16 gFearTestMeterAlpha;
-extern u8 gFearTestMeterFadeSpeed;
-extern u8 gFearTestMeterMarkerHalfWidth;
-extern u8 gTrickyAirMeterFillSpeed;
 extern s8 lbl_803DD7F8;
 extern s8 lbl_803DD7F9;
 
@@ -433,8 +424,6 @@ const GameUiTimeIdList sTimeListTimeBits = {{0x2B7, 0x2CB, 0x2CC, 0x2B6, 0x2D7, 
 const GameUiIndirectMatrix sGameUiZeroIndTexMtx = {0};
 extern const f32 lbl_803E1E6C;
 extern f32 gPauseMenuMapSwivelCos;
-extern f32 gTrickyHudTexMtxScale;
-extern int gTrickyHudIconKColor;
 extern s16 cMenuFadeCounter;
 extern f32 lbl_803DD844;
 extern f32 gHudStatusAlpha;
@@ -502,10 +491,6 @@ extern short gCMenuPrevStickX;
 extern u8 cMenuOpen;
 extern short gCMenuOpenAnim;
 extern int gTrickyHudItemMask;
-extern CMenuItemDef gCMenuStaffAbilities[];
-extern int lbl_803A9364[13];
-extern int gHudMagicBarX;
-extern int gHudMagicBarY;
 extern char sTemplateProgressCounterFormat[];
 typedef struct CounterText
 {
@@ -532,13 +517,6 @@ extern u8 gHudBButtonFlashTimer;
 extern u8 gYButtonInUse;
 extern f32 gYButtonIconAnim;
 extern f32 gHudYButtonIconScale;
-extern f32 gHudYButtonAnimDecayBias;
-extern f32 gHudYButtonAnimXScale;
-extern f32 gHudYButtonAnimYScale;
-extern f32 gHudYButtonAnimRenderScale;
-extern s16 gCMenuRowFadeInThreshold;
-extern s16 gCMenuRowFadeOutThreshold;
-extern u8 gHudButtonIcons[];
 extern u32 gHudBlankButtonLabel;
 extern f32 gHudRightColX;
 extern f32 gHudCMenuColX2;
@@ -564,21 +542,16 @@ void gameUiDrawTextureRegion(void* texture, f32 x, f32 y, int depth, u8 alpha, i
 extern s16 gCMenuForcedSelIndex;
 extern s8 gCMenuPreselectOwnedBit;
 extern int gTrickyHudActionMask;
-extern s16 gTrickyHudIconTextureIds[];
 extern s16 gTrickyHudCachedIconIndex;
 extern Texture* gTrickyHudCachedIconTexture;
 extern const f32 lbl_803E2038;
 extern const f32 lbl_803E203C;
-extern void* gCMenuRingIconTextures[7];
-extern int gCMenuRingIconActiveFlags[7];
 extern s8 cMenuState;
 extern s16 gCMenuRingSpinDir;
 extern s16 gCMenuRingAngle;
 extern s16 gCMenuRingAngleTarget;
 extern int gGameUiSavedCameraShake;
 extern s8 gCMenuPendingSection;
-extern GameObject* gCMenuRingFrontObjs[3];
-extern GameObject* gCMenuRingObjs[3];
 extern const f64 lbl_803E2030;
 void hudDrawTimedElement(int obj, void* p);
 extern u8 gHeadDisplayActive;
@@ -601,15 +574,12 @@ struct PauseMenuPanelAnimTable
     s32 timedStates[12];
 };
 
-extern u8 gHeadDisplayEntryTable[];
-extern GameObject* gHeadDisplayModelObjs[6];
 extern const f32 lbl_803E2048;
 extern const f32 lbl_803E204C;
 extern u8 gNpcDialogueDidFade;
 extern u8 gNpcDialogueLetterbox;
 extern s16 gNpcDialoguePageFrames;
 extern f32 gNpcDialoguePageTimer;
-extern u8 gNpcDialoguePhraseState[0x18];
 extern const f32 lbl_803E205C;
 extern const f32 lbl_803E2060;
 extern const f32 lbl_803E2064;
@@ -660,15 +630,12 @@ extern s16 gMinimapInfoTextY;
 extern s16 gMinimapInfoTextX;
 extern s16 gCMenuActivatedId;
 extern u8 gPauseMenuTitleFadeRising;
-extern s8 gHighScoreActiveTableId;
-extern u8 gHighScoreHighlightRow;
 extern u8 gPauseMenuHintIndex;
 extern u8 gPauseMenuTextCharset;
 extern s16 gPauseMenuRingExpand;
 extern s16 gPauseMenuTitleDelayTimer;
 extern s16 gPauseMenuPodiumRamp;
 extern Texture* gGameTextBoxFrameTextures[5];
-extern TaskHintEntry gTaskHintTable[GAMEUI_TASK_HINT_COUNT];
 extern f32 gPauseMenuMapSwivelVel;
 extern f32 gPauseMenuMapSwivelWrapMax;
 extern f32 gPauseMenuMapSwivelWrapMin;
@@ -680,16 +647,7 @@ extern const f64 lbl_803E2150;
 extern const f32 lbl_803E20E4;
 extern const f32 lbl_803E20E8;
 extern const f32 lbl_803E2100;
-extern u8 gGameUiTaskHintCandidates[8];
-extern char sBabySnowwormTimerFormat[];
 extern s16 gTimeListPulseAngle;
-extern s16 gTimeListPulseAngleStep;
-extern f32 gTimeListPulseAmplitude;
-extern f32 gTimeListPulseBias;
-extern HighScoreTitleIdEntry gHighScoreTitleIdTable[];
-extern s16 gHighScorePulseAngleStep;
-extern f32 gHighScorePulseAmplitude;
-extern f32 gHighScorePulseBias;
 extern s16 gHighScorePulseAngle;
 extern s8 gPauseMenuSlideVel;
 extern f32 gPauseMenuIdleVoiceTimer;
@@ -733,7 +691,6 @@ extern const f32 lbl_803E2190;
 extern const f32 lbl_803E2194;
 extern u8 gGameUiHelpTextPending;
 extern s16 gGameUiHelpTextId;
-extern u8 gGameUiUnusedHudSetting;
 extern u8 gCMenuItemEnabledTable[0x3C0];
 extern int gCMenuItemTargetTable[0xBA];
 extern Texture* gGameUiBlinkTexture;
@@ -743,12 +700,9 @@ extern u32 gGameUiBlinkAnimFlags;
 int cMenuCountAvailableEntries(CMenuItemDef* items, s8 useTricky);
 extern u8 shouldOpenCMenu;
 extern int lbl_803A9320[0x11];
-extern s16 gMinimapInfoTextXCommitted;
-extern s16 gMinimapInfoTextYCommitted;
 extern u8 gMinimapHelpTextActive;
 extern int lbl_803DD898;
 extern const f32 lbl_803E21D0;
-extern s16 gHudTextureIds[];
 extern int gGameUiScreenWidthOffset;
 void gameUiUpdateNpcDialogue(void);
 int pauseMenuUpdateMapScroll(void);
@@ -757,7 +711,6 @@ void timeListDraw(int a, int b, int c);
 void cMenuRun(void);
 extern u32 gCMenuButtons;
 extern s8 gCMenuCloseSfx;
-
 
 
 void cMenuSelectItemByTarget(int idx, s16 target, s8 flag);
@@ -2137,8 +2090,6 @@ void GameUI_setInputOverride(int buttons, s16 stickX, s16 stickY)
     gCMenuScriptedStickY = stickY;
     gCMenuScriptedInput = 1;
 }
-
-
 
 
 void hudDrawStatusBarsAndCounters(int unused1, int unused2, int unused3)
@@ -4619,7 +4570,6 @@ void drawArwingHud(int unused1, int unused2, int unused3)
         headDisplayDraw();
     }
 }
-
 
 
 /*

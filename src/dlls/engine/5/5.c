@@ -94,27 +94,13 @@ u16 gSkySunAlpha;
 #define SKY_CHILD_OBJ_SUN            0x62b /* spawned into gSkySunObject */
 #define SKY_CHILD_OBJ_MOON           0x62c /* spawned into gSkyMoonObject */
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
-extern u8 gSkyEnvFxFlags;
-extern u8* gSkyState;
-extern GameObject* gSkySunObject;
-extern GameObject* gSkyMoonObject;
-extern Texture* gSkySkyTexture;
-extern int gSkyObjectsInitialized;
-extern f32 gSkyOverrideLightIntensity;
-extern u8 gSkyOverrideLightDirectionEnabled;
 extern f32 gSkyOverrideLightDirection[];
 extern const f32 gSkySecondsPerDay;
 extern const f32 gSkySunMoonRiseScale;
-extern u16 gSkySunAlpha;
-extern u16 gSkyMoonAlpha;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
 const SkyVec3 gSkyBaseSunDirection = {0.0f, 0.0f, 4600.0f};
 const SkyVec3 gSkyBaseMoonDirection = {0.0f, 0.0f, 4600.0f};
 extern u8 colorScale;
-extern u8 gSkySunPositionPrev;
-extern f32 gSkySunDirection[];
-extern f32 gSkyMoonDirection[];
-extern u8 gSkyColorBlendTable[];
 extern int lbl_803E8458;
 int skyReservedReturnZeroB(void)
 {
