@@ -3276,7 +3276,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
     if (dist < distSq)
     {
         candidate = state->speed;
-        candidate = -0.15f * timeDelta + candidate;
+        candidate = candidate + -0.15f * timeDelta;
         state->speed = (candidate < 0.0f) ? 0.0f : candidate;
         return;
     }
@@ -3292,7 +3292,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
         if (delta[2] > 0.0f)
         {
             candidate = state->speed;
-            candidate = -0.15f * timeDelta + candidate;
+            candidate = candidate + -0.15f * timeDelta;
             state->speed = (candidate < 0.0f) ? 0.0f : candidate;
             return;
         }
@@ -3343,11 +3343,11 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
                     f32 step;
                     if (candidate > 3.0f)
                     {
-                        step = 0.05f * timeDelta + state->speed;
+                        step = 0.05f * timeDelta + curSpeed;
                         state->speed = (step > 3.0f) ? 3.0f : step;
                         return;
                     }
-                    step = 0.05f * timeDelta + state->speed;
+                    step = 0.05f * timeDelta + curSpeed;
                     state->speed = (step > candidate) ? candidate : step;
                     return;
                 }
@@ -3365,7 +3365,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
     }
     {
         f32 step = state->speed;
-        step = 0.05f * timeDelta + step;
+        step = step + 0.05f * timeDelta;
         state->speed = (step > 3.0f) ? 3.0f : step;
     }
 }
