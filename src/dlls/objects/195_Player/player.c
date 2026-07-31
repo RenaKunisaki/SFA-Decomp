@@ -11587,7 +11587,7 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
         f32 thresh;
         int i;
         int j;
-        int j8;
+        u32 vertexZOffset;
         wallHit = 0;
         if (parent != NULL)
         {
@@ -11637,13 +11637,13 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
                     j = *(s16*)(tri + 4) * 0xc;
                     x1 = *(f32*)(verts + j);
                     y1 = 0.0f;
-                    j8 = j + 8;
-                    z1 = *(f32*)(j8 + verts);
+                    vertexZOffset = j + offsetof(Vec, z);
+                    z1 = ((f32*)verts)[vertexZOffset / sizeof(f32)];
                     j = *(s16*)(tri + 6) * 0xc;
                     x2 = *(f32*)(verts + j);
                     y2 = 0.0f;
-                    j8 = j + 8;
-                    z2 = *(f32*)(j8 + verts);
+                    vertexZOffset = j + offsetof(Vec, z);
+                    z2 = ((f32*)verts)[vertexZOffset / sizeof(f32)];
                     if (parent != NULL)
                     {
                         Obj_TransformLocalPointToWorld(x1, y1, z1, &x1, &y1, &z1, parent);
