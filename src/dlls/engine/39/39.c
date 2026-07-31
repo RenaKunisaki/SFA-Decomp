@@ -16,11 +16,11 @@ ObjectDescriptor6 Effect14_funcs = {
     (ObjectDescriptorCallback)Effect14_release,
     0,
     (ObjectDescriptorCallback)Effect14_func03_nop,
-    (ObjectDescriptorCallback)Effect14_func04,
+    (ObjectDescriptorCallback)Effect14_spawnObject,
     (ObjectDescriptorCallback)Effect14_func05_nop,
 };
 
-int Effect14_func04(GameObject* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, u16* extraArgs)
+int Effect14_spawnObject(GameObject* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, u16* extraArgs)
 {
     PartFxSpawnParams rotCtx;
     PartFxSpawn p;

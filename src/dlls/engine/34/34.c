@@ -26,8 +26,8 @@ ObjectDescriptor6 Effect9_funcs = {
     (ObjectDescriptorCallback)Effect9_release,
     0,
     (ObjectDescriptorCallback)Effect9_func03_nop,
-    (ObjectDescriptorCallback)Effect9_func04,
-    (ObjectDescriptorCallback)Effect9_func05,
+    (ObjectDescriptorCallback)Effect9_spawnObject,
+    (ObjectDescriptorCallback)Effect9_updateFrameState,
 };
 
 #define FILL9()                                                                                                        \
@@ -43,7 +43,7 @@ ObjectDescriptor6 Effect9_funcs = {
         spawnParams = &gEffect9DefaultSpawnParams;                                                               \
     } while (0)
 
-int Effect9_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect9_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                    s16* extraArgs)
 {
     int spawnResult;
@@ -429,7 +429,7 @@ int Effect9_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
 }
 #undef FILL9
 
-void Effect9_func05(void)
+void Effect9_updateFrameState(void)
 {
     f32 sum;
     f32 step;

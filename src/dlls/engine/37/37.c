@@ -15,11 +15,11 @@ ObjectDescriptor6 Effect12_funcs = {
     (ObjectDescriptorCallback)Effect12_release,
     0,
     (ObjectDescriptorCallback)Effect12_func03_nop,
-    (ObjectDescriptorCallback)Effect12_func04,
+    (ObjectDescriptorCallback)Effect12_spawnObject,
     (ObjectDescriptorCallback)Effect12_func05_nop,
 };
 
-int Effect12_func04(GameObject* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, f32* auxParam)
+int Effect12_spawnObject(GameObject* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, f32* auxParam)
 {
     PartFxSpawnParams local;
     PartFxSpawn p;

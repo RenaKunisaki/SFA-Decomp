@@ -31,8 +31,8 @@ ObjectDescriptor6 Effect2_funcs = {
     (ObjectDescriptorCallback)Effect2_release,
     0,
     (ObjectDescriptorCallback)Effect2_func03_nop,
-    (ObjectDescriptorCallback)Effect2_func04,
-    (ObjectDescriptorCallback)Effect2_func05,
+    (ObjectDescriptorCallback)Effect2_spawnObject,
+    (ObjectDescriptorCallback)Effect2_updateFrameState,
 };
 
 #define FILL338()                                                                                                      \
@@ -48,7 +48,7 @@ ObjectDescriptor6 Effect2_funcs = {
         spawnParams = &gEffect2DefaultSpawnParams;                                                               \
     } while (0)
 
-int Effect2_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect2_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                    s16* extraArgs)
 {
     int spawnResult;
@@ -1016,7 +1016,7 @@ int Effect2_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
 
 
 
-void Effect2_func05(void)
+void Effect2_updateFrameState(void)
 {
     f32 sum;
     f32 step;

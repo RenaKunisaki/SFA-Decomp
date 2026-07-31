@@ -17,7 +17,7 @@ f32 gEffect19ScrollPhase2 = 0.1f;
 f32 gEffect19ScrollPhase3 = 0.3f;
 
 
-int Effect19_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect19_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                     f32* extraArgs)
 {
     int spawnResult;
@@ -114,7 +114,7 @@ int Effect19_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
     return spawnResult;
 }
 
-void Effect19_func05(void)
+void Effect19_updateFrameState(void)
 {
     f32 sum;
     f32 step;
@@ -157,6 +157,6 @@ ObjectDescriptor6 Effect19_funcs = {
     (ObjectDescriptorCallback)Effect19_release,
     0,
     (ObjectDescriptorCallback)Effect19_func03_nop,
-    (ObjectDescriptorCallback)Effect19_func04,
-    (ObjectDescriptorCallback)Effect19_func05,
+    (ObjectDescriptorCallback)Effect19_spawnObject,
+    (ObjectDescriptorCallback)Effect19_updateFrameState,
 };

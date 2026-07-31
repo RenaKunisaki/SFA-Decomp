@@ -25,11 +25,11 @@ ObjectDescriptor6 Effect20_funcs = {
     (ObjectDescriptorCallback)Effect20_release,
     0,
     (ObjectDescriptorCallback)Effect20_func03_nop,
-    (ObjectDescriptorCallback)Effect20_func04,
-    (ObjectDescriptorCallback)Effect20_func05,
+    (ObjectDescriptorCallback)Effect20_spawnObject,
+    (ObjectDescriptorCallback)Effect20_updateFrameState,
 };
 
-int Effect20_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                     f32* extraArgs)
 {
     int ret;
@@ -2368,7 +2368,7 @@ int Effect20_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParam
     return ret;
 }
 
-void Effect20_func05(void)
+void Effect20_updateFrameState(void)
 {
     f32 sum;
     f32 step;

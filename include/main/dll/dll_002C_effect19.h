@@ -3,9 +3,9 @@
 
 #include "main/dll/partfx_interface.h"
 
-int Effect19_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect19_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                     f32* extraArgs);
-void Effect19_func05(void);
+void Effect19_updateFrameState(void);
 void Effect19_func03_nop(void);
 void Effect19_release(void);
 void Effect19_initialise(void);
