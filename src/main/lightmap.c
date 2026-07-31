@@ -905,7 +905,7 @@ void sceneDraw(void)
 }
 
 extern s8 curMapType;
-extern int lbl_803DCEA8;
+extern int gSceneCamera;
 
 void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad5)
 {
@@ -921,7 +921,7 @@ void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad
     Camera_UpdateViewMatrices();
     Camera_RebuildProjectionMatrix();
     updateLights();
-    lbl_803DCEA8 = (int)Camera_GetCurrent();
+    gSceneCamera = (int)Camera_GetCurrent();
     sceneDraw();
     Camera_SetupFullscreenViewport(NULL);
     renderFlags &= ~2LL;

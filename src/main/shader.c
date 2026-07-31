@@ -107,7 +107,7 @@ s16 lbl_803DCEB4;
 int gMapBlockIndexCount;
 s16 gVisibleObjectSortKeyCount;
 u16 lbl_803DCEAC;
-Camera* lbl_803DCEA8;
+Camera* gSceneCamera;
 s8 curMapType;
 void* gCurRomListPage;
 MapBlockData** gMapBlocks;
@@ -3278,8 +3278,8 @@ void mapDebugRender(int* state)
 
     if (lbl_803DCDED != 0)
     {
-        bx = fastFloorf((lbl_803DCEA8->x - playerMapOffsetX) / gMapBlockWorldSize);
-        bz = fastFloorf((lbl_803DCEA8->z - playerMapOffsetZ) / gMapBlockWorldSize);
+        bx = fastFloorf((gSceneCamera->x - playerMapOffsetX) / gMapBlockWorldSize);
+        bz = fastFloorf((gSceneCamera->z - playerMapOffsetZ) / gMapBlockWorldSize);
         tbl = gMapBlockLayerTables[0];
         if (bx < 0 || bz < 0 || bx >= 16 || bz >= 16)
         {
@@ -3297,17 +3297,17 @@ void mapDebugRender(int* state)
                 blk = gMapBlocks[ci];
             }
         }
-        sx = (int)(gMapBlockWorldSize * fastFloorf(lbl_803DCEA8->x / gMapBlockWorldSize));
-        sz = (int)(gMapBlockWorldSize * fastFloorf(lbl_803DCEA8->z / gMapBlockWorldSize));
-        wx = (int)(lbl_803DCEA8->x - sx);
-        wz = (int)(lbl_803DCEA8->z - sz);
+        sx = (int)(gMapBlockWorldSize * fastFloorf(gSceneCamera->x / gMapBlockWorldSize));
+        sz = (int)(gMapBlockWorldSize * fastFloorf(gSceneCamera->z / gMapBlockWorldSize));
+        wx = (int)(gSceneCamera->x - sx);
+        wz = (int)(gSceneCamera->z - sz);
         if (blk != 0)
         {
             y0 = blk->minY;
             y0a = y0;
             if (y0 & 1)
                 y0a = y0 - 1;
-            cy = lbl_803DCEA8->y;
+            cy = gSceneCamera->y;
             y1 = blk->maxY;
             if (cy > y1)
                 cy = (f32)(y1 - 1);

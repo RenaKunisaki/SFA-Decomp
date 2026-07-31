@@ -128,8 +128,8 @@ f32 lbl_803DBA54 = 1024.0f;
 u8 fearTestMeterOuterHalfWidth = 80;
 u8 fearTestMeterInnerHalfWidth = 40;
 s16 fearTestMeterMarkerX = 40;
-s32 lbl_803DBA5C = -1;
-s32 lbl_803DBA60 = -1;
+s32 gPauseMenuTitlePhraseIndex = -1;
+s32 gPauseMenuTitleTextId = -1;
 s8 lbl_803DBA64 = 1;
 s8 lbl_803DBA65 = 1;
 s16 gCMenuOpenAnimMax = 170;
@@ -353,7 +353,7 @@ extern f32 gViewFinderFadeLevel;
 extern u8 gameUiResourcesLoaded;
 extern char lbl_803A87F0[];
 extern GameObject* lbl_803DD85C;
-extern GameObject* lbl_803DD860[2];
+extern GameObject* gGameUiCommCubeObjects[2];
 extern GameObject* lbl_803DD868[2];
 extern const f32 lbl_803E1E3C;
 extern const f32 lbl_803E1E40;
@@ -399,7 +399,7 @@ extern s16 lbl_803DD778;
 extern int lbl_803DD730;
 extern s16 lbl_803DD770;
 extern f32 lbl_803DD760;
-extern GameObject* lbl_803A9410[6];
+extern GameObject* gGameUiHudAnimObjects[6];
 extern u8 gTimeListPromptSelection;
 extern s16 lbl_803DD772;
 extern s8 pauseMenuFrameCounter;
@@ -409,7 +409,7 @@ extern const f32 lbl_803E1FA4;
 extern int lbl_803DD740;
 extern int lbl_803A9428[6];
 extern f32 gTrickyHudIconPosX, gTrickyHudIconPosY, gTrickyHudIconPosZ, gTrickyHudIconScale;
-extern f32 gTrickyHudIconRotZ, gTrickyHudIconRotX, gTrickyHudIconRotY, lbl_803DD7FC;
+extern f32 gTrickyHudIconRotZ, gTrickyHudIconRotX, gTrickyHudIconRotY, gPauseMenuSavedFovY;
 extern const f32 lbl_803E1E94;
 extern f32 gTrickyHudPi;
 extern f32 gTrickyHudTexScaleX, gTrickyHudTexScaleY, gTrickyHudTexScaleZ;
@@ -629,9 +629,9 @@ extern f32 lbl_803DD7BC;
 extern u8 lbl_803DD7C4;
 extern Texture* gPauseMenuGridBackdropTexture;
 extern u8 gCurTaskHintMapId;
-extern f32 lbl_803DD7FC;
+extern f32 gPauseMenuSavedFovY;
 extern GridEntry* lbl_803DD824;
-extern u8 lbl_803DD734;
+extern u8 gPauseMenuScarabCapacity;
 extern GameTextDef* lbl_803DD7A4;
 extern int lbl_803DD8E0;
 typedef struct SmallText
@@ -868,7 +868,7 @@ void gameUiLoadResources(void)
         }
 
         object = objSetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_COMM_CUBE), 4, -1, -1, NULL);
-        lbl_803DD860[0] = object;
+        gGameUiCommCubeObjects[0] = object;
         ObjModel_SetRenderCallback((u8*)object->anim.banks[0], pauseMenuHoloRenderFn);
 
         {
@@ -876,13 +876,13 @@ void gameUiLoadResources(void)
             GameUiObjectPair* communicatorCubes;
 
             communicatorCube = objSetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_COMM_CUBE_FRONT), 4, -1, -1, NULL);
-            communicatorCubes = (GameUiObjectPair*)lbl_803DD860;
+            communicatorCubes = (GameUiObjectPair*)gGameUiCommCubeObjects;
             communicatorCubes->objects[1] = communicatorCube;
             ObjModel_SetRenderCallback((u8*)communicatorCubes->objects[1]->anim.banks[0], pauseMenuHoloRenderFn);
         }
 
         j = 4;
-        ids = &lbl_8031BF90[4];
+        ids = &gGameUiHudAnimObjIds[4];
         menuObjects = (GameObject**)(base + 0xc30);
         z = lbl_803E1E3C;
         y = lbl_803E1E5C;
@@ -1315,7 +1315,7 @@ void pauseMenuSetHoloTransform(f32 f1, f32 f2, f32 f3, f32 f4, u16 a, u16 b, u16
     PSMTXConcat(matrices[0]->object, mB, matrices[0]->view);
     C_MTXPerspective(matrices[0]->projection, gTrickyHudIconFovY, gTrickyHudIconAspect, gTrickyHudIconNearPlane,
                      gTrickyHudIconFarPlane);
-    lbl_803DD7FC = Camera_GetFovY();
+    gPauseMenuSavedFovY = Camera_GetFovY();
     Camera_SetFovY(gTrickyHudIconFovY);
     Camera_RebuildProjectionMatrix();
     Camera_SetCurrentViewIndex(1);
@@ -1324,26 +1324,26 @@ void pauseMenuSetHoloTransform(f32 f1, f32 f2, f32 f3, f32 f4, u16 a, u16 b, u16
     Camera_UpdateViewMatrices();
     for (i = 0; i < 2; i += 2)
     {
-        lbl_803DD860[i]->anim.localPosX = gTrickyHudIconPosX;
-        lbl_803DD860[i]->anim.localPosY = gTrickyHudIconPosY;
-        lbl_803DD860[i]->anim.localPosZ = gTrickyHudIconPosZ;
-        lbl_803DD860[i]->anim.worldPosX = gTrickyHudIconPosX;
-        lbl_803DD860[i]->anim.worldPosY = gTrickyHudIconPosY;
-        lbl_803DD860[i]->anim.worldPosZ = gTrickyHudIconPosZ;
-        lbl_803DD860[i]->anim.rootMotionScale = f4;
-        lbl_803DD860[i]->anim.rotZ = a;
-        lbl_803DD860[i]->anim.rotY = b;
-        lbl_803DD860[i]->anim.rotX = c;
-        lbl_803DD860[i + 1]->anim.localPosX = gTrickyHudIconPosX;
-        lbl_803DD860[i + 1]->anim.localPosY = gTrickyHudIconPosY;
-        lbl_803DD860[i + 1]->anim.localPosZ = gTrickyHudIconPosZ;
-        lbl_803DD860[i + 1]->anim.worldPosX = gTrickyHudIconPosX;
-        lbl_803DD860[i + 1]->anim.worldPosY = gTrickyHudIconPosY;
-        lbl_803DD860[i + 1]->anim.worldPosZ = gTrickyHudIconPosZ;
-        lbl_803DD860[i + 1]->anim.rootMotionScale = f4;
-        lbl_803DD860[i + 1]->anim.rotZ = a;
-        lbl_803DD860[i + 1]->anim.rotY = b;
-        lbl_803DD860[i + 1]->anim.rotX = c;
+        gGameUiCommCubeObjects[i]->anim.localPosX = gTrickyHudIconPosX;
+        gGameUiCommCubeObjects[i]->anim.localPosY = gTrickyHudIconPosY;
+        gGameUiCommCubeObjects[i]->anim.localPosZ = gTrickyHudIconPosZ;
+        gGameUiCommCubeObjects[i]->anim.worldPosX = gTrickyHudIconPosX;
+        gGameUiCommCubeObjects[i]->anim.worldPosY = gTrickyHudIconPosY;
+        gGameUiCommCubeObjects[i]->anim.worldPosZ = gTrickyHudIconPosZ;
+        gGameUiCommCubeObjects[i]->anim.rootMotionScale = f4;
+        gGameUiCommCubeObjects[i]->anim.rotZ = a;
+        gGameUiCommCubeObjects[i]->anim.rotY = b;
+        gGameUiCommCubeObjects[i]->anim.rotX = c;
+        gGameUiCommCubeObjects[i + 1]->anim.localPosX = gTrickyHudIconPosX;
+        gGameUiCommCubeObjects[i + 1]->anim.localPosY = gTrickyHudIconPosY;
+        gGameUiCommCubeObjects[i + 1]->anim.localPosZ = gTrickyHudIconPosZ;
+        gGameUiCommCubeObjects[i + 1]->anim.worldPosX = gTrickyHudIconPosX;
+        gGameUiCommCubeObjects[i + 1]->anim.worldPosY = gTrickyHudIconPosY;
+        gGameUiCommCubeObjects[i + 1]->anim.worldPosZ = gTrickyHudIconPosZ;
+        gGameUiCommCubeObjects[i + 1]->anim.rootMotionScale = f4;
+        gGameUiCommCubeObjects[i + 1]->anim.rotZ = a;
+        gGameUiCommCubeObjects[i + 1]->anim.rotY = b;
+        gGameUiCommCubeObjects[i + 1]->anim.rotX = c;
     }
 }
 static inline void gameUiFreeHudAnims(GameObject** anims)
@@ -1379,7 +1379,7 @@ void gameUiResetMenuState(void)
     lbl_803DD730 = 0;
     lbl_803DD770 = 0;
     lbl_803DD760 = lbl_803E1E3C;
-    gameUiFreeHudAnims(lbl_803A9410);
+    gameUiFreeHudAnims(gGameUiHudAnimObjects);
     gTrickyHudShowNearestInfo = 0;
     gTimeListPromptSelection = 0;
     lbl_803DD772 = 0;
@@ -1651,7 +1651,7 @@ void hudDrawAirMeter(void)
 
 u8 lbl_803A9440[0x18];
 int lbl_803A9428[6];
-GameObject* lbl_803A9410[6];
+GameObject* gGameUiHudAnimObjects[6];
 GameObject* gHeadDisplayModelObjs[6];
 GameObject* gCMenuRingObjs[3];
 GameObject* gCMenuRingFrontObjs[3];
@@ -2793,7 +2793,7 @@ GridEntry lbl_8031BD90[] = {
     {0, 0, 0, 0, 0, 0, 0, 0, {0, 0, 0, 0}, 0.0f, -1, -1, 0, {0, 0, 0}},
 };
 
-u32 lbl_8031BF90[] = {0x6A8, 0x6A9, 0x6AA, 0x6AB, 0x752, 0x6AC};
+u32 gGameUiHudAnimObjIds[] = {0x6A8, 0x6A9, 0x6AA, 0x6AB, 0x752, 0x6AC};
 
 struct PauseMenuPanelAnimTable lbl_8031BFA8 = {
     {0.007f, 0.01f, 0.01f, 0.01f, 0.01f, 0.01f},
@@ -4516,7 +4516,7 @@ void pauseMenuCreateHeads(void)
             if (gHeadDisplayModelObjs[i] == NULL)
             {
                 gHeadDisplayModelObjs[i] =
-                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, lbl_8031BF90[i]), 4, -1, -1, NULL);
+                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, gGameUiHudAnimObjIds[i]), 4, -1, -1, NULL);
                 f = lbl_803E1E3C;
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.localPosX = f;
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.localPosY = f;
@@ -4687,8 +4687,8 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         lbl_803DBA34 = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
         pauseMenuSetHoloTransform(lbl_803E1E3C, lbl_803DBA34, lbl_803DBA38, lbl_803DBA3C, lbl_803DD750, lbl_803DD752,
                     lbl_803DD754);
-        model = Obj_GetActiveModel(lbl_803DD860[0]);
-        objRender(0, 0, 0, 0, lbl_803DD860[0], 1);
+        model = Obj_GetActiveModel(gGameUiCommCubeObjects[0]);
+        objRender(0, 0, 0, 0, gGameUiCommCubeObjects[0], 1);
         model->bufferFlags &= ~0x8;
         panelAlpha = (s32)((f32)(s16)alpha * lbl_803DD850);
         {
@@ -4702,12 +4702,12 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             randomHeight = randomGetRange(0, 0x1e) * 2;
             pauseMenuDrawTextureRegion(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff,
                             (u8)((s16)panelAlpha / 2), 0x230, 0x190, randomHeight, randomWidth);
-            model = Obj_GetActiveModel(lbl_803DD860[1]);
-            objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
+            model = Obj_GetActiveModel(gGameUiCommCubeObjects[1]);
+            objRender(0, 0, 0, 0, gGameUiCommCubeObjects[1], 1);
             model->bufferFlags &= ~0x8;
             Camera_SetCurrentViewIndex(0);
             Camera_UpdateViewMatrices();
-            Camera_SetFovY(lbl_803DD7FC);
+            Camera_SetFovY(gPauseMenuSavedFovY);
             Camera_RebuildProjectionMatrix();
             Camera_ApplyFullViewport();
         }
@@ -4728,12 +4728,12 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             pauseMenuDrawSideRails(x);
             lbl_803DD824 = lbl_803DD7C4 ? statusTable->gridBD0 : statusTable->grid9F8;
             pauseMenuDrawGrid(panelAlpha);
-            model = Obj_GetActiveModel(lbl_803DD860[1]);
-            objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
+            model = Obj_GetActiveModel(gGameUiCommCubeObjects[1]);
+            objRender(0, 0, 0, 0, gGameUiCommCubeObjects[1], 1);
             model->bufferFlags &= ~0x8;
             Camera_SetCurrentViewIndex(0);
             Camera_UpdateViewMatrices();
-            Camera_SetFovY(lbl_803DD7FC);
+            Camera_SetFovY(gPauseMenuSavedFovY);
             Camera_RebuildProjectionMatrix();
             Camera_ApplyFullViewport();
             GXSetScissor(0, 0, 0x280, 0x1e0);
@@ -4754,8 +4754,8 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         lbl_803DBA34 = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
         pauseMenuSetHoloTransform(lbl_803E1E3C, lbl_803DBA34, lbl_803DBA38, lbl_803DBA3C, lbl_803DD750, lbl_803DD752,
                     lbl_803DD754);
-        model = Obj_GetActiveModel(lbl_803DD860[0]);
-        objRender(0, 0, 0, 0, lbl_803DD860[0], 1);
+        model = Obj_GetActiveModel(gGameUiCommCubeObjects[0]);
+        objRender(0, 0, 0, 0, gGameUiCommCubeObjects[0], 1);
         model->bufferFlags &= ~0x8;
         timer = gameTextGetTimer();
         if (timer != lbl_803E1E3C)
@@ -4764,19 +4764,19 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             randomHeight = randomGetRange(0, 0x1e) * 2;
             pauseMenuDrawTextureRegion(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff, (u8)((s16)alpha / 2),
                             0x230, 0x190, randomHeight, randomWidth);
-            model = Obj_GetActiveModel(lbl_803DD860[1]);
-            objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
+            model = Obj_GetActiveModel(gGameUiCommCubeObjects[1]);
+            objRender(0, 0, 0, 0, gGameUiCommCubeObjects[1], 1);
             model->bufferFlags &= ~0x8;
             Camera_SetCurrentViewIndex(0);
             Camera_UpdateViewMatrices();
-            Camera_SetFovY(lbl_803DD7FC);
+            Camera_SetFovY(gPauseMenuSavedFovY);
             Camera_RebuildProjectionMatrix();
             Camera_ApplyFullViewport();
         }
         else
         {
-            model = Obj_GetActiveModel(lbl_803DD860[1]);
-            objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
+            model = Obj_GetActiveModel(gGameUiCommCubeObjects[1]);
+            objRender(0, 0, 0, 0, gGameUiCommCubeObjects[1], 1);
             model->bufferFlags &= ~0x8;
             gameTextSetDrawFunc(pauseMenuTextDrawFn);
             lbl_803DBA8A = 0xc0;
@@ -4813,7 +4813,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             gameTextSetDrawFunc(0);
             Camera_SetCurrentViewIndex(0);
             Camera_UpdateViewMatrices();
-            Camera_SetFovY(lbl_803DD7FC);
+            Camera_SetFovY(gPauseMenuSavedFovY);
             Camera_RebuildProjectionMatrix();
             Camera_ApplyFullViewport();
         }
@@ -4834,8 +4834,8 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         lbl_803DBA34 = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
         pauseMenuSetHoloTransform(lbl_803E1E3C, lbl_803DBA34, lbl_803DBA38, lbl_803DBA3C, lbl_803DD750, lbl_803DD752,
                     lbl_803DD754);
-        model = Obj_GetActiveModel(lbl_803DD860[0]);
-        objRender(0, 0, 0, 0, lbl_803DD860[0], 1);
+        model = Obj_GetActiveModel(gGameUiCommCubeObjects[0]);
+        objRender(0, 0, 0, 0, gGameUiCommCubeObjects[0], 1);
         model->bufferFlags &= ~0x8;
         timer = gameTextGetTimer();
         if (timer != lbl_803E1E3C)
@@ -4844,12 +4844,12 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             randomHeight = randomGetRange(0, 0x1e) * 2;
             pauseMenuDrawTextureRegion(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff, (u8)((s16)alpha / 2),
                             0x230, 0x190, randomHeight, randomWidth);
-            model = Obj_GetActiveModel(lbl_803DD860[1]);
-            objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
+            model = Obj_GetActiveModel(gGameUiCommCubeObjects[1]);
+            objRender(0, 0, 0, 0, gGameUiCommCubeObjects[1], 1);
             model->bufferFlags &= ~0x8;
             Camera_SetCurrentViewIndex(0);
             Camera_UpdateViewMatrices();
-            Camera_SetFovY(lbl_803DD7FC);
+            Camera_SetFovY(gPauseMenuSavedFovY);
             Camera_RebuildProjectionMatrix();
             Camera_ApplyFullViewport();
         }
@@ -4923,12 +4923,12 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                 }
                 gameTextShowAt(0x3cc, 0, 0xc8);
                 gameTextSetDrawFunc(0);
-                model = Obj_GetActiveModel(lbl_803DD860[1]);
-                objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
+                model = Obj_GetActiveModel(gGameUiCommCubeObjects[1]);
+                objRender(0, 0, 0, 0, gGameUiCommCubeObjects[1], 1);
                 model->bufferFlags &= ~0x8;
                 Camera_SetCurrentViewIndex(0);
                 Camera_UpdateViewMatrices();
-                Camera_SetFovY(lbl_803DD7FC);
+                Camera_SetFovY(gPauseMenuSavedFovY);
                 Camera_RebuildProjectionMatrix();
                 Camera_ApplyFullViewport();
             }
@@ -4944,8 +4944,8 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         lbl_803DBA34 = (f32)(0.3f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760));
         pauseMenuSetHoloTransform(lbl_803E1E3C, lbl_803DBA34, lbl_803DBA38, lbl_803DBA3C, lbl_803DD750, lbl_803DD752,
                     lbl_803DD754);
-        model = Obj_GetActiveModel(lbl_803DD860[0]);
-        objRender(0, 0, 0, 0, lbl_803DD860[0], 1);
+        model = Obj_GetActiveModel(gGameUiCommCubeObjects[0]);
+        objRender(0, 0, 0, 0, gGameUiCommCubeObjects[0], 1);
         model->bufferFlags &= ~0x8;
         gameTextSetDrawFunc(pauseMenuTextDrawFn);
         gameTextSetColor(0xff, 0xff, 0xff, 0xff);
@@ -5010,12 +5010,12 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
         }
         }
         gameTextSetDrawFunc(0);
-        model = Obj_GetActiveModel(lbl_803DD860[1]);
-        objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
+        model = Obj_GetActiveModel(gGameUiCommCubeObjects[1]);
+        objRender(0, 0, 0, 0, gGameUiCommCubeObjects[1], 1);
         model->bufferFlags &= ~0x8;
         Camera_SetCurrentViewIndex(0);
         Camera_UpdateViewMatrices();
-        Camera_SetFovY(lbl_803DD7FC);
+        Camera_SetFovY(gPauseMenuSavedFovY);
         Camera_RebuildProjectionMatrix();
         Camera_ApplyFullViewport();
         break;
@@ -5053,8 +5053,8 @@ void pauseMenuDrawStatusPage(GameObject* player)
     lbl_803DBA34 = 0.3f - lbl_803E2070 * (lbl_803E1F60 - lbl_803DD760);
     pauseMenuSetHoloTransform(lbl_803E1E3C, lbl_803DBA34, lbl_803DBA38, lbl_803DBA3C, lbl_803DD750, lbl_803DD752,
                 lbl_803DD754);
-    model = Obj_GetActiveModel(lbl_803DD860[0]);
-    objRender(0, 0, 0, 0, lbl_803DD860[0], 1);
+    model = Obj_GetActiveModel(gGameUiCommCubeObjects[0]);
+    objRender(0, 0, 0, 0, gGameUiCommCubeObjects[0], 1);
     model->bufferFlags &= ~0x8;
 
     timer = gameTextGetTimer();
@@ -5064,12 +5064,12 @@ void pauseMenuDrawStatusPage(GameObject* player)
         s32 rnd2 = randomGetRange(0, 0x1e) * 2;
         pauseMenuDrawTextureRegion(((HudTextures*)hudTextures)->tex150, 40.0f, 120.0f, 0xff, (u8)((s16)alpha / 2),
                         0x230, 0x190, rnd2, rnd1);
-        model = Obj_GetActiveModel(lbl_803DD860[1]);
-        objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
+        model = Obj_GetActiveModel(gGameUiCommCubeObjects[1]);
+        objRender(0, 0, 0, 0, gGameUiCommCubeObjects[1], 1);
         model->bufferFlags &= ~0x8;
         Camera_SetCurrentViewIndex(0);
         Camera_UpdateViewMatrices();
-        Camera_SetFovY(lbl_803DD7FC);
+        Camera_SetFovY(gPauseMenuSavedFovY);
         Camera_RebuildProjectionMatrix();
         Camera_ApplyFullViewport();
         return;
@@ -5128,7 +5128,7 @@ void pauseMenuDrawStatusPage(GameObject* player)
                    : mainGetBit(GAMEBIT_ITEM_100ScarabBag_Got) != 0 ? 0x64
                    : mainGetBit(GAMEBIT_ITEM_50ScarabBag_Got) != 0  ? 0x32
                                                                     : 0xa;
-        lbl_803DD734 = magicVal;
+        gPauseMenuScarabCapacity = magicVal;
         lbl_8031BB90[11].id = magicVal != 0 ? (u8)0x4e : (u8)0x25;
         gameTextSetDrawFunc(pauseMenuTextDrawFn);
         gameTextSetColor(0xff, 0xff, 0xff, ty & 0xff);
@@ -5136,7 +5136,7 @@ void pauseMenuDrawStatusPage(GameObject* player)
         lbl_803DBA8C = 1.5f;
         sprintf(buf, lbl_803DBB70, info->healCount, info->healCountMax);
         gameTextShowStr(buf, 0x93, 0x14a, 0xdc);
-        if (lbl_803DD734 != 0)
+        if (gPauseMenuScarabCapacity != 0)
         {
             sprintf(buf, lbl_803DBB78, lbl_803A9364[3]);
             gameTextShowStr(buf, 0x93, 0x140, 0x10e);
@@ -5208,12 +5208,12 @@ void pauseMenuDrawStatusPage(GameObject* player)
         pauseMenuDrawGrid(ty2);
     }
 
-    model = Obj_GetActiveModel(lbl_803DD860[1]);
-    objRender(0, 0, 0, 0, lbl_803DD860[1], 1);
+    model = Obj_GetActiveModel(gGameUiCommCubeObjects[1]);
+    objRender(0, 0, 0, 0, gGameUiCommCubeObjects[1], 1);
     model->bufferFlags &= ~0x8;
     Camera_SetCurrentViewIndex(0);
     Camera_UpdateViewMatrices();
-    Camera_SetFovY(lbl_803DD7FC);
+    Camera_SetFovY(gPauseMenuSavedFovY);
     Camera_RebuildProjectionMatrix();
     Camera_ApplyFullViewport();
 }
@@ -5771,7 +5771,7 @@ void hudDrawCommunicatorAlert(int unused1, int unused2, int unused3)
 /* Pause-menu save-screen render pass.
  * Saves the live FOV, swaps to view 1 at the origin facing 0x8000,
  * sets the viewport from the global render obj, then renders slots
- * 1..5 of lbl_803A9410 (clearing the model dirty bit and forcing the
+ * 1..5 of gGameUiHudAnimObjects (clearing the model dirty bit and forcing the
  * alpha byte), drawing the selected slot's shadow blob via
  * hudDrawColored when lbl_803DD78C is past its threshold. A second
  * pass renders both lbl_803DD868 slots the same way. Tail restores
@@ -5803,22 +5803,22 @@ void pauseMenuDoSave(void)
                   gRenderModeObj->xfbHeight, lbl_803E1E3C, lbl_803E1E68);
     for (i = 1; i < 6; i++)
     {
-        if (lbl_803A9410[i] == NULL)
+        if (gGameUiHudAnimObjects[i] == NULL)
         {
             continue;
         }
-        if (lbl_803A9410[i]->anim.placementDataAddress > 0x90000000U)
+        if (gGameUiHudAnimObjects[i]->anim.placementDataAddress > 0x90000000U)
         {
-            lbl_803A9410[i]->anim.placementDataAddress = 0;
+            gGameUiHudAnimObjects[i]->anim.placementDataAddress = 0;
         }
-        objRender(0, 0, 0, 0, lbl_803A9410[i], 1);
-        Obj_GetActiveModel(lbl_803A9410[i])->bufferFlags &= ~0x8;
-        lbl_803A9410[i]->anim.renderAlpha = 0xff;
+        objRender(0, 0, 0, 0, gGameUiHudAnimObjects[i], 1);
+        Obj_GetActiveModel(gGameUiHudAnimObjects[i])->bufferFlags &= ~0x8;
+        gGameUiHudAnimObjects[i]->anim.renderAlpha = 0xff;
         if (i == lbl_803DBA64)
         {
             if (lbl_803DD78C > 0x1f4)
             {
-                getObjectShadowDrawParams(lbl_803A9410[i], &texture, &scale, &x, &y);
+                getObjectShadowDrawParams(gGameUiHudAnimObjects[i], &texture, &scale, &x, &y);
                 colorA = colorB;
                 hudDrawColored(texture, x, y, (u32*)&colorA, (s32)(lbl_803E20B8 * scale), 1);
             }
@@ -5894,7 +5894,7 @@ void gameUiBeginOverlayView(f32 fov, f32 x, f32 y)
  * render block: snaps clip planes (0,0,0), restores ZBuf window
  * 0x8000, saves current FOV before swapping in 43.0f, then
  * issues GXSetViewport with width/height from the global render obj
- * at gRenderModeObj. Then walks to slot lbl_803A9410[lbl_803DBA64],
+ * at gRenderModeObj. Then walks to slot gGameUiHudAnimObjects[lbl_803DBA64],
  * dispatches renderObjectShadowTexture(slot) to do the actual draw, re-reads the
  * slot pointer and clears the +0x4c sentinel
  * if it overflowed the 0x90000000 watermark. Tail restores FOV
@@ -5914,9 +5914,9 @@ void pauseMenuRenderSlotShadow(void)
     Camera_UpdateViewMatrices();
     GXSetViewport(lbl_803E1E3C, lbl_803E1E3C, (f32)gRenderModeObj->fbWidth,
                   gRenderModeObj->xfbHeight, lbl_803E1E3C, lbl_803E1E68);
-    renderObjectShadowTexture(lbl_803A9410[lbl_803DBA64]);
+    renderObjectShadowTexture(gGameUiHudAnimObjects[lbl_803DBA64]);
     {
-        GameObject* slot = lbl_803A9410[lbl_803DBA64];
+        GameObject* slot = gGameUiHudAnimObjects[lbl_803DBA64];
         if (slot->anim.placementDataAddress > 0x90000000U)
         {
             slot->anim.placementDataAddress = 0;
@@ -6651,7 +6651,7 @@ void pauseMenuUpdate(void)
                     mapScreenVisible = 0;
                     lbl_803DD774 = 0;
                     gWorldMapVoiceoverTimer = 0;
-                    lbl_803DBA5C = -1;
+                    gPauseMenuTitlePhraseIndex = -1;
                     pauseMenuSetupTitle(0x2b1, 1, 4, 3);
                     pauseMenuState = 2;
                     pauseMenuFrameCounter = 0x3c;
@@ -6863,7 +6863,7 @@ void pauseMenuUpdateFadeAndBack(void)
         }
         for (i = 1; i < 4; i++)
         {
-            ObjAnim_SetCurrentMove((int)lbl_803A9410[i], i == (s8)lbl_803DD781, lbl_803E1E3C, 0);
+            ObjAnim_SetCurrentMove((int)gGameUiHudAnimObjects[i], i == (s8)lbl_803DD781, lbl_803E1E3C, 0);
         }
     }
 
@@ -7098,7 +7098,7 @@ void timeListPromptUpdate(void)
 /* Pause-menu character carousel driver:
  * eases the swivel angle gPauseMenuSwivelAngle toward the selected slot, spins the
  * podium objects (lbl_803DD868), then bobs/sways each character model in
- * lbl_803A9410 with phase-shifted sine waves around the podium centre. */
+ * gGameUiHudAnimObjects with phase-shifted sine waves around the podium centre. */
 void pauseMenuAnimateCarousel(void)
 {
     u8 flag;
@@ -7178,9 +7178,9 @@ void pauseMenuAnimateCarousel(void)
     {
         f32 sel;
         f32 a;
-        if (lbl_803A9410[k]->anim.placementDataAddress > watermark)
+        if (gGameUiHudAnimObjects[k]->anim.placementDataAddress > watermark)
         {
-            lbl_803A9410[k]->anim.placementDataAddress = 0;
+            gGameUiHudAnimObjects[k]->anim.placementDataAddress = 0;
         }
         kk = k;
         if (kk == lbl_803DBA64)
@@ -7192,21 +7192,21 @@ void pauseMenuAnimateCarousel(void)
             sel = lbl_803E2194;
         }
         sel = lbl_803DD784 * sel;
-        lbl_803A9410[k]->anim.rootMotionScale = sel * lbl_803E2190;
-        lbl_803A9410[k]->anim.renderAlpha = 0xff;
-        ObjAnim_AdvanceCurrentMove((int)lbl_803A9410[k], lbl_8031BFA8.speeds[k], timeDelta,
+        gGameUiHudAnimObjects[k]->anim.rootMotionScale = sel * lbl_803E2190;
+        gGameUiHudAnimObjects[k]->anim.renderAlpha = 0xff;
+        ObjAnim_AdvanceCurrentMove((int)gGameUiHudAnimObjects[k], lbl_8031BFA8.speeds[k], timeDelta,
                                                                      &animEvents);
         a = 2.0f * mathSinf(lbl_803E1EC8 * (f32)(gPauseMenuSwivelAngle + k * step) / lbl_803E1E94);
         a = lbl_803DD784 * a;
-        lbl_803A9410[k]->anim.localPosX = a * lbl_803E2190 + lbl_803DD868[0]->anim.localPosX;
+        gGameUiHudAnimObjects[k]->anim.localPosX = a * lbl_803E2190 + lbl_803DD868[0]->anim.localPosX;
         base = 0.4f * mathSinf(lbl_803E1EC8 * (f32)(gPauseMenuSwivelAngle + k * step) / lbl_803E1E94) +
                (lbl_803DD868[0]->anim.localPosY + lbl_803E2010);
         a = 2.0f - mathCosf(lbl_803E1EC8 * (f32)(gPauseMenuSwivelAngle + k * step) / lbl_803E1E94);
         a = lbl_803DD784 * a;
-        lbl_803A9410[k]->anim.localPosY = a * lbl_803E2190 + base;
+        gGameUiHudAnimObjects[k]->anim.localPosY = a * lbl_803E2190 + base;
         a = 2.0f * mathCosf(lbl_803E1EC8 * (f32)(gPauseMenuSwivelAngle + k * step) / lbl_803E1E94);
         a = lbl_803DD784 * a;
-        lbl_803A9410[k]->anim.localPosZ = a * lbl_803E2190 + lbl_803DD868[0]->anim.localPosZ;
+        gGameUiHudAnimObjects[k]->anim.localPosZ = a * lbl_803E2190 + lbl_803DD868[0]->anim.localPosZ;
     }
 }
 
@@ -7217,16 +7217,16 @@ void pauseMenuInit(void)
 
     for (; i < 6; i++)
     {
-        if (i < 4 && lbl_803A9410[i] == NULL)
+        if (i < 4 && gGameUiHudAnimObjects[i] == NULL)
         {
-            lbl_803A9410[i] = objSetupObject(Obj_AllocObjectSetup(0x20, lbl_8031BF90[i]), 4, -1, -1, NULL);
-            lbl_803A9410[i]->anim.localPosX = 0.0f;
-            lbl_803A9410[i]->anim.localPosY = -5.0f;
-            lbl_803A9410[i]->anim.localPosZ = -5.0f;
-            lbl_803A9410[i]->anim.rotX = 0x7447;
-            lbl_803A9410[i]->anim.rootMotionScale = 0.0f;
+            gGameUiHudAnimObjects[i] = objSetupObject(Obj_AllocObjectSetup(0x20, gGameUiHudAnimObjIds[i]), 4, -1, -1, NULL);
+            gGameUiHudAnimObjects[i]->anim.localPosX = 0.0f;
+            gGameUiHudAnimObjects[i]->anim.localPosY = -5.0f;
+            gGameUiHudAnimObjects[i]->anim.localPosZ = -5.0f;
+            gGameUiHudAnimObjects[i]->anim.rotX = 0x7447;
+            gGameUiHudAnimObjects[i]->anim.rootMotionScale = 0.0f;
             {
-                void* p = lbl_803A9410[i];
+                void* p = gGameUiHudAnimObjects[i];
                 if (((u32*)p)[0x13] > 0x90000000U)
                     ((u32*)p)[0x13] = 0;
             }
@@ -7545,7 +7545,7 @@ void pauseMenuDrawText(int unused1, int unused2, int unused3)
 
     saved = gameTextGetCharset();
     gameTextSetCharset(gPauseMenuTextCharset, 3);
-    handle = gameTextGetPhrase(lbl_803DBA60, lbl_803DBA5C);
+    handle = gameTextGetPhrase(gPauseMenuTitleTextId, gPauseMenuTitlePhraseIndex);
     sprite = gameTextGetBox(0x49);
 
     gGameTextBoxFrameTextures[0] = ((HudTextures*)hudTextures)->textBoxFrameTex[0];
@@ -7746,7 +7746,7 @@ void drawWorldMapHud(void)
  * lbl_803DD774 is non-zero, add the per-frame step framesThisStep. The
  * direction toggle in lbl_803DD77F gates the "approaching peak" half of
  * the trajectory. Once the counter overshoots 0xFF it resets to 0 and
- * the active-id sentinel lbl_803DBA5C is dropped to -1. */
+ * the active-id sentinel gPauseMenuTitlePhraseIndex is dropped to -1. */
 void gameTextFadeOut(void)
 {
     if (lbl_803DD774 == 0)
@@ -7762,7 +7762,7 @@ void gameTextFadeOut(void)
     if (lbl_803DD774 > 0xff)
     {
         lbl_803DD774 = 0;
-        lbl_803DBA5C = -1;
+        gPauseMenuTitlePhraseIndex = -1;
     }
 }
 
@@ -7776,7 +7776,7 @@ void setShowWorldMapHud(u8 param)
         return;
     lbl_803DD774 = 0;
     gWorldMapVoiceoverTimer = 0;
-    lbl_803DBA5C = -1;
+    gPauseMenuTitlePhraseIndex = -1;
 }
 
 /* Getter for the u8 at gPauseMenuTokenConfirmFlag. */
@@ -7811,7 +7811,7 @@ void setWorldMapVoiceoverActive(u32 val)
 #define PAUSEMENU_TITLE_FLAG_SET_DIR  0x01 /* set direction byte to 1 */
 
 /* State setter with bit-flag dispatch.
- * Args: (s32 fade_target, u8 idx, u8 flags, u8 q).
+ * Args: (s32 textId, u8 idx, u8 flags, u8 q).
  *   flags & 0x08 : commit `idx` to gPauseMenuHintIndex and consult the bit
  *                  table at gTaskHintTable (stride 0x1c, halfword field
  *                  at +0x16) -- if the GameBit reads 0, override idx
@@ -7822,9 +7822,9 @@ void setWorldMapVoiceoverActive(u32 val)
  *                  direction byte at lbl_803DD77F.
  *   flags & 0x01 : set the direction byte at lbl_803DD77F to 1.
  * Default tail: store the (clamped) idx into the active-id slot
- * lbl_803DBA5C, ensure the active counter starts at >=1, and
- * latch the s32 fade_target at lbl_803DBA60. */
-void pauseMenuSetupTitle(s32 fade_target, u8 idx, u8 flags, u8 q)
+ * gPauseMenuTitlePhraseIndex, ensure the active counter starts at >=1, and
+ * latch the s32 textId at gPauseMenuTitleTextId. */
+void pauseMenuSetupTitle(s32 textId, u8 idx, u8 flags, u8 q)
 {
     if (flags & PAUSEMENU_TITLE_FLAG_SET_HINT)
     {
@@ -7862,7 +7862,7 @@ void pauseMenuSetupTitle(s32 fade_target, u8 idx, u8 flags, u8 q)
     {
         lbl_803DD77F = 1;
     }
-    lbl_803DBA5C = idx;
+    gPauseMenuTitlePhraseIndex = idx;
     if (lbl_803DD774 != 0)
     {
         if (lbl_803DD774 > 0x7f)
@@ -7874,7 +7874,7 @@ void pauseMenuSetupTitle(s32 fade_target, u8 idx, u8 flags, u8 q)
     {
         lbl_803DD774 = 1;
     }
-    lbl_803DBA60 = fade_target;
+    gPauseMenuTitleTextId = textId;
 }
 
 /* Opens the two-option time-list prompt: highlights the first option, swings the
@@ -9185,7 +9185,7 @@ s16 gHudYButtonItemTextureCache;
 s16 yButtonItemTextureId;
 void* hudYButtonItemIconTexture;
 GameObject* lbl_803DD868[2];
-GameObject* lbl_803DD860[2];
+GameObject* gGameUiCommCubeObjects[2];
 GameObject* lbl_803DD85C;
 u8 gHeadDisplayEntryIdx;
 u8 gHeadDisplayActive;
@@ -9212,7 +9212,7 @@ f32 gTrickyHudIconScale;
 f32 gTrickyHudIconRotZ;
 f32 gTrickyHudIconRotX;
 f32 gTrickyHudIconRotY;
-f32 lbl_803DD7FC;
+f32 gPauseMenuSavedFovY;
 s8 lbl_803DD7F9;
 s8 lbl_803DD7F8;
 f32 gViewFinderBaseY;
@@ -9302,7 +9302,7 @@ int gGameUiScreenWidthOffset;
 int lbl_803DD740;
 int gTrickyHudActionMask;
 int gTrickyHudItemMask;
-u8 lbl_803DD734;
+u8 gPauseMenuScarabCapacity;
 int lbl_803DD730;
 u8* gDummy39Texture;
 u8 gDummy39Countdown;
