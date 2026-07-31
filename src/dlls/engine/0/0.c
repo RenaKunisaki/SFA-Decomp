@@ -1750,7 +1750,7 @@ static inline void drawViewFinderSegment(f32 startX, f32 startY, f32 endX, f32 e
                        endX - xOffset, endY + yOffset, endX + xOffset, endY - yOffset, &lineColor);
 }
 
-static inline void drawViewFinderHorizontal(f32 directionX, f32 directionY, f32 y, f32 startX, f32 endX, f32 fade)
+static inline void drawViewFinderHorizontal(f32 directionX, f32 y, f32 startX, f32 endX, f32 fade)
 {
     GXColor color;
     GXColor lineColor;
@@ -1769,7 +1769,7 @@ static inline void drawViewFinderHorizontal(f32 directionX, f32 directionY, f32 
 
     color = gViewFinderLineColor;
     color.a = hudElementOpacity * fade;
-    angle = getAngle(directionX, directionY);
+    angle = getAngle(directionX, 0.0f);
     radians = lbl_803E1EC8 * angle / lbl_803E1E94;
     sine = mathSinf(radians);
     cosine = mathCosf(radians);
@@ -1785,7 +1785,7 @@ static inline void drawViewFinderHorizontal(f32 directionX, f32 directionY, f32 
     drawViewFinderLine(startRight, bottom, startLeft, top, endLeft, top, endRight, bottom, &lineColor);
 }
 
-static inline void drawViewFinderVertical(f32 directionX, f32 directionY, f32 x, f32 startY, f32 endY, f32 fade)
+static inline void drawViewFinderVertical(f32 directionY, f32 x, f32 startY, f32 endY, f32 fade)
 {
     GXColor color;
     GXColor lineColor;
@@ -1804,7 +1804,7 @@ static inline void drawViewFinderVertical(f32 directionX, f32 directionY, f32 x,
 
     color = gViewFinderLineColor;
     color.a = hudElementOpacity * fade;
-    angle = getAngle(directionX, directionY);
+    angle = getAngle(0.0f, directionY);
     radians = lbl_803E1EC8 * angle / lbl_803E1E94;
     sine = mathSinf(radians);
     cosine = mathCosf(radians);
@@ -1846,14 +1846,14 @@ void drawViewFinderHud(void)
     gViewFinderBaseY = (f32)(100.0 - lbl_803E1EB8 * fadeLevel);
     gViewFinderCamAngle = -view->yaw;
 
-    drawViewFinderHorizontal(10.0f, 0.0f, 200.0f, 260.0f, 270.0f, fadeLevel);
-    drawViewFinderHorizontal(-10.0f, 0.0f, 200.0f, 380.0f, 370.0f, gViewFinderFadeLevel);
-    drawViewFinderHorizontal(10.0f, 0.0f, 280.0f, 260.0f, 270.0f, gViewFinderFadeLevel);
-    drawViewFinderHorizontal(-10.0f, 0.0f, 280.0f, 380.0f, 370.0f, gViewFinderFadeLevel);
-    drawViewFinderVertical(0.0f, 10.0f, 260.0f, 200.0f, 210.0f, gViewFinderFadeLevel);
-    drawViewFinderVertical(0.0f, -10.0f, 260.0f, 280.0f, 270.0f, gViewFinderFadeLevel);
-    drawViewFinderVertical(0.0f, 10.0f, 380.0f, 200.0f, 210.0f, gViewFinderFadeLevel);
-    drawViewFinderVertical(0.0f, -10.0f, 380.0f, 280.0f, 270.0f, gViewFinderFadeLevel);
+    drawViewFinderHorizontal(10.0f, 200.0f, 260.0f, 270.0f, fadeLevel);
+    drawViewFinderHorizontal(-10.0f, 200.0f, 380.0f, 370.0f, gViewFinderFadeLevel);
+    drawViewFinderHorizontal(10.0f, 280.0f, 260.0f, 270.0f, gViewFinderFadeLevel);
+    drawViewFinderHorizontal(-10.0f, 280.0f, 380.0f, 370.0f, gViewFinderFadeLevel);
+    drawViewFinderVertical(10.0f, 260.0f, 200.0f, 210.0f, gViewFinderFadeLevel);
+    drawViewFinderVertical(-10.0f, 260.0f, 280.0f, 270.0f, gViewFinderFadeLevel);
+    drawViewFinderVertical(10.0f, 380.0f, 200.0f, 210.0f, gViewFinderFadeLevel);
+    drawViewFinderVertical(-10.0f, 380.0f, 280.0f, 270.0f, gViewFinderFadeLevel);
 
     {
         char buf[56];

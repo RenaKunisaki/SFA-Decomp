@@ -3646,7 +3646,7 @@ void setForceLoadImmediately(void)
 {
     gForceLoadImmediately = 0x1;
 }
-static inline int loadedFileFlags(int slot)
+static inline int loadedFileFlags(void)
 {
     int s = OSDisableInterrupts();
     u32 v = gAssetLoadInFlightFlags;
@@ -3669,7 +3669,7 @@ void defragMemory(int mode)
     done = 0;
     pass = 0;
     mmSetTextureAllocationState(2);
-    if (loadedFileFlags(0) != 0)
+    if (loadedFileFlags() != 0)
     {
         return;
     }
@@ -4382,7 +4382,7 @@ int isRomListLoading(void)
 
 int getLoadedFileFlags(int slot)
 {
-    return loadedFileFlags(slot);
+    return loadedFileFlags();
 }
 
 
@@ -4402,7 +4402,7 @@ u32 loadTableFiles(void)
 {
     u8* base = gResourceFileTable;
     int s = OSDisableInterrupts();
-    int flags = loadedFileFlags(0);
+    int flags = loadedFileFlags();
     int loadedFlags = gAssetLoadInFlightFlags;
     if ((gObjTableFileRequestFlags & 0x4) && !(flags & 0x4) && *(s32*)(base + 0x191e4) == -1)
     {

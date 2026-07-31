@@ -4120,8 +4120,7 @@ void expgfx_free(u32 sourceId)
     }
 }
 
-static inline void expgfx_clearResourceTable(ExpgfxResourceEntry* resourceEntry, s32 zeroFlag, s32 zeroResource,
-                                             s32 zeroId, s32 zeroScore, s32 zeroReserved)
+static inline void expgfx_clearResourceTable(ExpgfxResourceEntry* resourceEntry)
 {
     int resourceIndex;
     for (resourceIndex = 0; resourceIndex < EXPGFX_RESOURCE_TABLE_COUNT; resourceEntry++, resourceIndex++)
@@ -4131,11 +4130,11 @@ static inline void expgfx_clearResourceTable(ExpgfxResourceEntry* resourceEntry,
         {
             textureFree((Texture*)(resourceEntry->resource));
         }
-        gExpgfxTextureFreeInProgress = zeroFlag;
-        resourceEntry->resource = (void*)zeroResource;
-        resourceEntry->resourceId = zeroId;
-        resourceEntry->evictionScore = zeroScore;
-        resourceEntry->reserved = zeroReserved;
+        gExpgfxTextureFreeInProgress = 0;
+        resourceEntry->resource = NULL;
+        resourceEntry->resourceId = 0;
+        resourceEntry->evictionScore = 0;
+        resourceEntry->reserved = 0;
     }
 }
 
@@ -4228,7 +4227,7 @@ void expgfx_resetAllPools(void)
 
     resourceEntry = runtime[0]->resourceTable;
     {
-        expgfx_clearResourceTable(resourceEntry, 0, 0, 0, 0, 0);
+        expgfx_clearResourceTable(resourceEntry);
     }
 }
 
