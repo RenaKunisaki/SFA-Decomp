@@ -490,17 +490,6 @@ typedef struct
     int a[6];
 } UiMsgBlock;
 
-typedef struct
-{
-    u8 pad[0x5d];
-    s8 hitClass[3];
-    u8 pad1[0x28];
-    u8 flags;
-    u8 pad2[0x1f];
-    u8 valsA[3];
-    u8 valsB[5];
-} HitDesc;
-
 
 typedef struct
 {
@@ -728,7 +717,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 10, {0, 0, 0},
         {0.1f, 0.1f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         1, 0, 16, 0, 210,
@@ -746,7 +735,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.1f, 0.1f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         2, 0, 27, 0, 210,
@@ -764,7 +753,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.1f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         3, 0, 33, 0, 210,
@@ -782,7 +771,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.1f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         4, 0, 31, 0, 210,
@@ -800,7 +789,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.1f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         5, 0, 17, 0, 210,
@@ -818,7 +807,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.0f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         6, 0, 19, 0, 210,
@@ -836,7 +825,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.0f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         7, 0, 20, 0, 210,
@@ -854,7 +843,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.0f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         8, 0, 17, 0, 210,
@@ -872,7 +861,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 13, {0, 0, 0},
         {0.1f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         9, 0, 18, 0, 210,
@@ -890,7 +879,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 13, {0, 0, 0},
         {0.1f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         10, 0, 22, 0, 210,
@@ -908,7 +897,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 1.1f, 11, {0, 0, 0},
         {0.1f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         11, 0, 21, 0, 210,
@@ -926,7 +915,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 10, {0, 0, 0},
         {0.1f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         12, 0, 11, 0, 210,
@@ -944,7 +933,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         1, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.1f, 0.2f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         13, 0, 7, 0, 210,
@@ -962,7 +951,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.3f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         14, 0, 9, 0, 210,
@@ -980,7 +969,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.2f, 0.2f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         15, 0, 15, 0, 210,
@@ -998,7 +987,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         1, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.3f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         16, 0, 28, 0, 210,
@@ -1016,7 +1005,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         1, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.2f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         17, 0, 30, 0, 210,
@@ -1034,7 +1023,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         1, {0, 0, 0}, 0.0f, -1, {0, 0, 0},
         {0.3f, 0.0f, 0.0f},
         0.15f, 0.5f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         18, 0, 34, 0, 210,
@@ -1052,7 +1041,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 1.1f, 20, {0, 0, 0},
         {0.1f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         19, 0, 12, 0, 210,
@@ -1070,7 +1059,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         2, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.1f, 0.1f, 0.2f},
         -1.0f, 0.0f,
-        {5, 5, 12, 3, 3, 2, 0, 0},
+        {5, 5, 12}, {3, 3, 2}, {0, 0},
     },
     {
         20, 0, 16, 0, 210,
@@ -1088,7 +1077,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 18, {0, 0, 0},
         {0.1f, 0.1f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         21, 0, 16, 0, 210,
@@ -1106,7 +1095,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 1.1f, 22, {0, 0, 0},
         {0.1f, 0.1f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         22, 0, 34, 0, 210,
@@ -1124,7 +1113,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 1.1f, 21, {0, 0, 0},
         {0.1f, 0.0f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         23, 0, 13, 0, 210,
@@ -1142,7 +1131,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.2f, 0.1f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         24, 0, 40, 0, 210,
@@ -1160,7 +1149,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.2f, 0.1f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         25, 0, 0, 0, 210,
@@ -1178,7 +1167,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, -1, {0, 0, 0},
         {0.1f, 0.1f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         26, 0, 42, 0, 210,
@@ -1196,7 +1185,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, -1, {0, 0, 0},
         {0.1f, 0.1f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
     {
         27, 0, 41, 0, 210,
@@ -1214,7 +1203,7 @@ PlayerMoveSlot gPlayerMoveSlotData[28] = {
         0, {0, 0, 0}, 0.0f, 0, {0, 0, 0},
         {0.3f, 0.1f, 0.0f},
         -1.0f, 0.0f,
-        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0}, {0, 0, 0}, {0, 0},
     },
 };
 
@@ -5061,7 +5050,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
                 if ((s8)Player_GetObjHitsState(obj)->suppressOutgoingHits == 0)
                 {
                     int bits;
-                    switch (((HitDesc*)inner->moveSlots + (u32)inner->moveSlotIndex)->hitClass[i])
+                    switch (((PlayerMoveSlot*)inner->moveSlots + (u32)inner->moveSlotIndex)->hitWindowType[i])
                     {
                     case -1:
                         bits = 0;
@@ -17833,7 +17822,7 @@ void playerDoHitDetection(int obj)
     f32 dt = timeDelta;
     f32 spd;
     int sub;
-    HitDesc* hd;
+    PlayerMoveSlot* hd;
     u32 fl;
     f32 x;
     f32 y;
@@ -17865,18 +17854,18 @@ void playerDoHitDetection(int obj)
                 ((PlayerState*)inner)->boulderChargeLevel = 0.0f;
                 *(u8*)&((PlayerState*)inner)->hitWindowIndex = *(u8*)&((PlayerState*)inner)->activeHitWindow;
                 {
-                    hd = (HitDesc*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
-                    if ((hd->flags & 1) != 0)
+                    hd = (PlayerMoveSlot*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
+                    if ((hd->flags88 & 1) != 0)
                     {
                         ((PlayerState*)inner)->cutsceneTimer = 9.0f;
                     }
-                    hd = (HitDesc*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
-                    if ((hd->flags & 2) != 0)
+                    hd = (PlayerMoveSlot*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
+                    if ((hd->flags88 & 2) != 0)
                     {
-                        ((PlayerState*)inner)->hitInterval = hd->valsA[((PlayerState*)inner)->activeHitWindow];
-                        hd = (HitDesc*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
-                        hd = (HitDesc*)((u8*)hd + ((PlayerState*)inner)->activeHitWindow);
-                        ((PlayerState*)inner)->hitCountMax = hd->valsB[0];
+                        ((PlayerState*)inner)->hitInterval = hd->hitInterval[((PlayerState*)inner)->activeHitWindow];
+                        hd = (PlayerMoveSlot*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
+                        hd = (PlayerMoveSlot*)((u8*)hd + ((PlayerState*)inner)->activeHitWindow);
+                        ((PlayerState*)inner)->hitCountMax = hd->hitCountMax[0];
                         ((PlayerState*)inner)->hitTimer = (f32)(u32)((PlayerState*)inner)->hitInterval;
                         ((PlayerState*)inner)->hitCount += 1;
                         ((PlayerState*)inner)->lastHitObject = *(int*)(sub + 0x50);
@@ -17927,18 +17916,18 @@ void playerDoHitDetection(int obj)
                 ((PlayerState*)inner)->boulderChargeLevel = 0.0f;
                 *(u8*)&((PlayerState*)inner)->hitWindowIndex = *(u8*)&((PlayerState*)inner)->activeHitWindow;
                 {
-                    hd = (HitDesc*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
-                    if ((hd->flags & 1) != 0)
+                    hd = (PlayerMoveSlot*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
+                    if ((hd->flags88 & 1) != 0)
                     {
                         ((PlayerState*)inner)->cutsceneTimer = 9.0f;
                     }
-                    hd = (HitDesc*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
-                    if ((hd->flags & 2) != 0)
+                    hd = (PlayerMoveSlot*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
+                    if ((hd->flags88 & 2) != 0)
                     {
-                        ((PlayerState*)inner)->hitInterval = hd->valsA[((PlayerState*)inner)->activeHitWindow];
-                        hd = (HitDesc*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
-                        hd = (HitDesc*)((u8*)hd + ((PlayerState*)inner)->activeHitWindow);
-                        ((PlayerState*)inner)->hitCountMax = hd->valsB[0];
+                        ((PlayerState*)inner)->hitInterval = hd->hitInterval[((PlayerState*)inner)->activeHitWindow];
+                        hd = (PlayerMoveSlot*)((PlayerState*)inner)->moveSlots + (u32)((PlayerState*)inner)->moveSlotIndex;
+                        hd = (PlayerMoveSlot*)((u8*)hd + ((PlayerState*)inner)->activeHitWindow);
+                        ((PlayerState*)inner)->hitCountMax = hd->hitCountMax[0];
                         ((PlayerState*)inner)->hitTimer = (f32)(u32)((PlayerState*)inner)->hitInterval;
                         ((PlayerState*)inner)->hitCount += 1;
                         ((PlayerState*)inner)->lastHitObject =

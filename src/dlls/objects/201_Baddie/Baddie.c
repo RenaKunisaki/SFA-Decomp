@@ -828,20 +828,20 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
         }
         setup = (int)Obj_AllocObjectSetup(0x30, ((u16*)((u8*)&rewardTail.pair - 2))[index]);
     }
-    *(u8*)(setup + 0x1a) = 0x14;
-    *(s16*)(setup + 0x2c) = -1;
-    *(s16*)(setup + 0x1c) = -1;
-    *(s16*)(setup + 0x24) = -1;
+    ((CollectibleSetup*)setup)->unk1A = 0x14;
+    ((CollectibleSetup*)setup)->counterGameBit = -1;
+    ((CollectibleSetup*)setup)->hideGameBit = -1;
+    ((CollectibleSetup*)setup)->visibilityGameBit = -1;
     ((ObjPlacement*)setup)->posX = (obj)->anim.localPosX;
     ((ObjPlacement*)setup)->posY = 30.0f + (obj)->anim.localPosY;
     ((ObjPlacement*)setup)->posZ = (obj)->anim.localPosZ;
     if ((useAltMode & 0xff) != 0)
     {
-        *(s16*)(setup + 0x2e) = 2;
+        ((CollectibleSetup*)setup)->spawnMode = 2;
     }
     else
     {
-        *(s16*)(setup + 0x2e) = 1;
+        ((CollectibleSetup*)setup)->spawnMode = 1;
     }
     ((ObjPlacement*)setup)->color[0] = ((ObjPlacement*)parentSetup)->color[0];
     ((ObjPlacement*)setup)->color[2] = ((ObjPlacement*)parentSetup)->color[2];
@@ -877,7 +877,7 @@ void baddieInstantiateWeapon(GameObject* obj, int state)
             if (((EnemyState*)state)->weaponRomDefNo > 0)
             {
                 setup = (int)Obj_AllocObjectSetup(0x20, ((EnemyState*)state)->weaponRomDefNo);
-                *(u8*)(setup + 5) = *(u8*)(setup + 5) | (((BaddieInstantiateWeaponPlacement*)parentSetup)->unk5 & 0x18);
+                ((ObjPlacement*)setup)->color[1] |= ((BaddieInstantiateWeaponPlacement*)parentSetup)->unk5 & 0x18;
                 child = objSetupObject((ObjPlacement*)setup, 4, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
                 ObjLink_AttachChild(obj, child, 0);
                 ((EnemyState*)state)->spawnedWeaponRomDefNo = ((EnemyState*)state)->weaponRomDefNo;

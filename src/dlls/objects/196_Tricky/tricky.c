@@ -8029,9 +8029,9 @@ int tricky_SeqFn(int obj, int unused, ObjSeqState* animUpdate)
                 for (k = 0, p = (u8*)state; k < 7; p += 4, k = k + 1)
                 {
                     setup = (int)Obj_AllocObjectSetup(0x24, TRICKY_CHILD_OBJ_FLAMEBLAST);
-                    *(u8*)(setup + 4) = 2;
-                    *(u8*)(setup + 5) = 1;
-                    *(s16*)(setup + 0x1a) = k;
+                    ((FlameblastPlacement*)setup)->base.color[0] = 2;
+                    ((FlameblastPlacement*)setup)->base.color[1] = 1;
+                    ((FlameblastPlacement*)setup)->streamIndex = k;
                     *(int*)(p + 0x700) = (int)objSetupObject((ObjPlacement*)setup, 5, ((GameObject*)obj)->anim.mapEventSlot, -1,
                                                               ((GameObject*)obj)->anim.parent);
                 }
@@ -9187,8 +9187,8 @@ void Tricky_update(int obj)
                     {
                         trickyState->commandPhase = 5;
                         setup = (int)Obj_AllocObjectSetup(0x18, TRICKY_CHILD_OBJ_SIDEKICK_BALL);
-                        *(u8*)(setup + 7) = 0xff;
-                        *(u8*)(setup + 4) = 2;
+                        ((ObjPlacement*)setup)->color[3] = 0xff;
+                        ((ObjPlacement*)setup)->color[0] = 2;
                         ((ObjPlacement*)setup)->posX = ((GameObject*)obj)->anim.worldPosX;
                         ((ObjPlacement*)setup)->posY = ((GameObject*)obj)->anim.worldPosY;
                         ((ObjPlacement*)setup)->posZ = ((GameObject*)obj)->anim.worldPosZ;

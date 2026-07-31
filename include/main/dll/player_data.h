@@ -89,10 +89,14 @@ typedef struct PlayerMoveSlot
     f32 hitWindowUnk94[3];
     f32 unkA0;
     f32 unkA4;
-    u8 unkA8[8];
+    u8 hitInterval[3];  /* 0xA8: per-hit-window repeat-hit interval, copied into PlayerState.hitInterval */
+    u8 hitCountMax[3];  /* 0xAB: per-hit-window max hit count, copied into PlayerState.hitCountMax */
+    u8 padAE[2];
 } PlayerMoveSlot;
 
 STATIC_ASSERT(sizeof(PlayerMoveSlot) == 0xb0);
+STATIC_ASSERT(offsetof(PlayerMoveSlot, hitInterval) == 0xA8);
+STATIC_ASSERT(offsetof(PlayerMoveSlot, hitCountMax) == 0xAB);
 STATIC_ASSERT(offsetof(PlayerMoveSlot, moveTableIndex) == 0x02);
 STATIC_ASSERT(offsetof(PlayerMoveSlot, hitWindowFlags) == 0x08);
 STATIC_ASSERT(offsetof(PlayerMoveSlot, hitVolumeId) == 0x14);

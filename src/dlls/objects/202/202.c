@@ -1665,7 +1665,7 @@ GameObject* gcRobotLight_init(GameObject* obj, int childId)
     if (Obj_IsLoadingLocked() == 0)
         return NULL;
     setup = (u8*)Obj_AllocObjectSetup(36, childId);
-    *(s16*)(setup + 0) = childId;
+    ((ObjPlacement*)setup)->objectId = childId;
     ((ObjPlacement*)setup)->color[0] = sub->color[0];
     ((ObjPlacement*)setup)->color[2] = sub->color[2];
     ((ObjPlacement*)setup)->color[1] = 1;
