@@ -99,7 +99,7 @@ objmsg.c           (6) main/objhits.c  (folded in)               [BODY, EXACT 6<
     objMesgQueue  ==  SFA ObjMsg_SendToObject / ObjMsg_SendToObjects /
     ObjMsg_SendToNearbyObjects / ObjMsg_Peek / ObjMsg_Pop / ObjMsg_AllocQueue.
 model.c           (39) main/model.c  (+ main/modelEngine.c)      [L1 38][STR]
-lighting.c        (16) main/modellight.c + dlls/engine/5          [?] REFINED, still not settled.
+lighting.c        (16) main/modellight.c + dlls/engine/5          [BODY] SETTLED (C44).
     DP's lighting.c is TWO things and only one of them is modellight.c.  The light-EMITTER object
     API (DP lightClearEmitters and the per-light record) is main/modellight.c, which SFA renamed
     wholesale to `modelLightStruct_*` (create/free + ~30 projection/specular/glow accessors) -
@@ -110,8 +110,15 @@ lighting.c        (16) main/modellight.c + dlls/engine/5          [?] REFINED, s
     skySetLightDirection / skySetLightColor / skySetLightsEnabled / skyApplyLightSlot).  The
     sphere-mapping pair (lightModelSphereMapping / lightBlockSphereMapping) was rewritten for GX
     and now lives in the TEV builders (addSphereMapTexStage / addSphereMapLitStages,
-    shader_dolphin.c).  Settle this row by reading engine/5 skySetLightSlot against DP
-    lightUpdateSkyLight before lifting any name.
+    shader_dolphin.c).  Body read done (C44): DP lightUpdateSkyLight(dir, 4 intensities, rgb)
+    == SFA skySetLightSlot(slot, dir, rgb, moon/ambient intensities, blendAlpha) at role level -
+    both push the sky light's direction + sun colour + scaled moon/ambient colours into the
+    renderer's light state each frame; SFA is the GX rewrite (per-slot SkyLight records blended
+    by lightBlendFactor replace DP's inside/outside gInsideLightT lerp; GX light objects replace
+    D_800B1834..43).  DP lightGetAmbient(u8*x3) == skyGetAmbientColor(slot,u8*x3); DP
+    lightSetInside/lightGetInside have NO engine/5 counterpart (the inside-lighting flag did not
+    survive the GX rewrite).  NOTHING TO LIFT: DP's light* names are derivations, and SFA's
+    sun/moon/ambient vocabulary is already writer-derived (C43's skySetLightSlot triple proof).
 texture.c         (19) main/texture.c  (+ main/tex_dolphin.c)    [L1]
 rcp.c             (21) main/rcp_dolphin.c + main/intersect_screenmath.c  [L1 17 / 9]
     plus the `Rcp_*` functions that ended up in shader.c and texture.c.  DP rcpClearScreen /
@@ -288,7 +295,9 @@ OPEN ROWS (state, do not guess)
 -------------------------------
   1. Where the DLL bank copy actually happens (see the dll.c row): the gResourceDescriptors
      `acquire` callbacks are data, and the code they reach is not in any decompiled TU.
-  2. DP lighting.c's ambient/sky half vs dlls/engine/5 (see that row) - nominated, not read.
+
+  Previously open here: DP lighting.c's ambient/sky half vs dlls/engine/5 - CLOSED by C44's
+  body read (see the lighting.c row; role-level match, nothing to lift).
 
   Previously open: dll.c, objlib.c's touch half, footsteps.c, menu.c (closed by C40), objtype.c
   (closed by C41) and the objtype.c two-way nearest-finder assignment (closed by C42 with a
