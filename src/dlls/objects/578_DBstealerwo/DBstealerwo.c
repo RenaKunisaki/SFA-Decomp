@@ -772,6 +772,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     int found;
     int i;
     int q;
+    int j;
     RingBufferQueue* mq;
     int* objs;
     GameObject* player;
@@ -960,7 +961,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     {
         keys = objGetLookAtJointKeys();
         zero = 0;
-        for (q = 1, keys = keys + 1; q < 9; keys++, q++)
+        for (j = 1, keys = keys + 1; j < 9; keys++, j++)
         {
             vec = objFindJointPoseVector(obj, *keys);
             if (vec != 0)

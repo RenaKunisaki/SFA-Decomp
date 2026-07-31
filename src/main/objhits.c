@@ -1883,7 +1883,6 @@ void ObjHits_CheckTrackContact(int objA, int objB) {
     int prevSpheres;
     ObjHitsPriorityState* stateB;
     int pointCount;
-    ObjHitsModelHitVolume* hitVolume;
     TrackQueryBounds bounds;
     struct {
         u8 out[64];
@@ -1909,9 +1908,9 @@ void ObjHits_CheckTrackContact(int objA, int objB) {
             prevSpheres = (int)modelBank->hitVolumeSphereBuffers[bits ^ 1];
             pointCount = 0;
             for (i = 0; i < (int)(u32)modelFile->hitVolumeCount; i = i + 1) {
-                hitVolume = &modelFile->hitVolumes[i];
-                if ((i == hitVolume->sphereIndex) && ((mask2 & 1 << hitVolume->maskBit) != 0)) {
-                    bits = hitVolume->linkedSpheres;
+                if ((i == modelFile->hitVolumes[i].sphereIndex) &&
+                    ((mask2 & 1 << modelFile->hitVolumes[i].maskBit) != 0)) {
+                    bits = modelFile->hitVolumes[i].linkedSpheres;
                     if (bits != 0) {
                         for (; (u16)bits != 0; bits = (u16)((bits & 0xffff) << 4)) {
                             sphereIdx = (((u16)bits & 0xf000) >> 0xc) + i & 0xffff;

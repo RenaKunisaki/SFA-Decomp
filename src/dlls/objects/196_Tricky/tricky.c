@@ -1866,9 +1866,9 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint)
     }
 
     objects = ObjList_GetObjects(&startIndex, &objectCount);
-    for (i = startIndex; i < objectCount; i++)
+    for (i = startIndex, op = objects + i; i < objectCount; i++)
     {
-        obj = objects[i];
+        obj = *op;
         def = *(u8**)&((GameObject*)obj)->anim.modelInstance;
         minRadius = *(u16*)(def + 0x84);
         if (minRadius != 0)
@@ -1881,6 +1881,7 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint)
                                             0.1f * (f32)(u32) * (u16*)(def + 0x86));
             }
         }
+        op++;
     }
 }
 
