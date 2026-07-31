@@ -4395,8 +4395,7 @@ void headDisplayDraw(void)
         Camera_ApplyFullViewport();
         GXSetScissor(0, 0, 0x280, 0x1e0);
         lbl_803DD77C += 1;
-        lineOffset = 0;
-        wavePhaseA = wavePhaseB = lineOffset;
+        wavePhaseA = wavePhaseB = lineOffset = 0;
         for (; lineOffset < (int)height; lineOffset += 4)
         {
             wave = lbl_803E204C * fsin16Approx((u16)(wavePhaseA + lbl_803DD77C * 0x1838));
