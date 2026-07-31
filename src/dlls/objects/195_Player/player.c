@@ -11310,9 +11310,14 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     }
     if ((*(int*)&((PlayerState*)state2)->baddie.pressedButtons & 0x100) != 0 && (probeMask & 0x200) != 0)
     {
-        int* focusCandidates = (int*)objGetAllOfType(10, &focusCandidateCount);
+        int* focusCandidates;
+        int* focusCandidateList;
         int candidateIndex;
-        for (candidateIndex = 0; candidateIndex < focusCandidateCount; candidateIndex++)
+
+        focusCandidateList = (int*)objGetAllOfType(10, &focusCandidateCount);
+        candidateIndex = 0;
+        focusCandidates = focusCandidateList;
+        for (; candidateIndex < focusCandidateCount; candidateIndex++)
         {
             int candidate = *focusCandidates;
             if ((*(int (*)(int, int)) * (int*)((char*)*(int*)*(int*)(candidate + 0x68) + 0x20))(candidate, obj) != 0)
