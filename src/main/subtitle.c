@@ -100,7 +100,7 @@ void subtitleStop(void) {
         zero[0] = 0;
         gSubtitleActive = zero[0];
         blockIndex = 0;
-        blockSlot[0] = gSubtitleLineTable;
+        blockSlot[0] = &gSubtitleLineTable[0];
         while (blockIndex < gSubtitleBlockCount) {
             if (*blockSlot[0] != NULL) {
                 oldDelay = mmSetFreeDelay(0);
