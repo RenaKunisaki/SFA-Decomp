@@ -1703,7 +1703,7 @@ void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, in
     Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_pole1_c_23);
     Sfx_PlayFromObject((u32)obj, SFXTRIG_en_lrope_powerdown);
     ((EnemyState*)state)->flags2E8 |= 0x8;
-    *(f32*)(state + 0x32c) = (f32)(u32)(u16)sub->unk2C;
+    ((EnemyState*)state)->gcRobot.cooldownTimer = (f32)(u32)(u16)sub->unk2C;
     baddieSetMove((GameObject*)obj, (int)state, 1, 2.5f, 0, 0);
     ((EnemyState*)state)->flags2E4 &= ~0x20LL;
     fz = 0.0f;
@@ -1734,7 +1734,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
 
     def = *(GroundBaddiePlacement**)&obj->anim.placementData;
     path = *(RomCurveWalker**)state;
-    if (*(f32*)(state + 0x32c) > 0.0f)
+    if (((EnemyState*)state)->gcRobot.cooldownTimer > 0.0f)
     {
         GameObject* child = obj->childObjs[0];
         if (child != 0)
@@ -1743,10 +1743,10 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             ObjLink_DetachChild(obj, obj->childObjs[0]);
             obj->childObjs[0] = 0;
         }
-        *(f32*)(state + 0x32c) = *(f32*)(state + 0x32c) - timeDelta;
-        if (*(f32*)(state + 0x32c) <= 0.0f)
+        ((EnemyState*)state)->gcRobot.cooldownTimer = ((EnemyState*)state)->gcRobot.cooldownTimer - timeDelta;
+        if (((EnemyState*)state)->gcRobot.cooldownTimer <= 0.0f)
         {
-            *(f32*)(state + 0x32c) = 0.0f;
+            ((EnemyState*)state)->gcRobot.cooldownTimer = 0.0f;
             ((EnemyState*)state)->flags2E4 |= 0x20;
             Sfx_StopObjectChannel((u32)obj, 4);
             ((SeqObj11ESetMovePointerStateFn)baddieSetMove)(obj, state, 0, 1.0f, 0, 0);
@@ -1862,7 +1862,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
     {
         obj->anim.velocityY = 0.5f;
     }
-    if (0.0f == *(f32*)(state + 0x32c))
+    if (0.0f == ((EnemyState*)state)->gcRobot.cooldownTimer)
     {
         GameObject* child2;
 
@@ -1872,7 +1872,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             ObjHits_RecordObjectHit(Obj_GetPlayerObject(), obj, 0x16, 2, 0);
             gcRobotLight_init(obj, 0x3b2);
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_rolovr_6);
-            *(f32*)(state + 0x32c) = gGcRobotPatrolCatchCooldown;
+            ((EnemyState*)state)->gcRobot.cooldownTimer = gGcRobotPatrolCatchCooldown;
         }
         if ((int)randomGetRange(0, (int)(1000.0f * oneOverTimeDelta)) == 0)
         {
@@ -1936,7 +1936,7 @@ void gcRobotPatrol_init(GameObject* obj, int state)
     ((EnemyState*)state)->moveSpeedScale1 = fz;
     ((EnemyState*)state)->moveId2 = 0;
     ((EnemyState*)state)->moveSpeedScale2 = fz;
-    *(f32*)(state + 0x32c) = 0.0f;
+    ((EnemyState*)state)->gcRobot.cooldownTimer = 0.0f;
     obj->anim.hitboxScale = 100.0f;
     Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_tr_bcrek1_c);
 }
@@ -2190,23 +2190,23 @@ void vambat_updateIdle(GameObject* obj, int state)
         vec[2] = curve->posZ - (obj)->anim.localPosZ;
         enemy_steerVelocityToward(obj, (void*)state, vec, 1.5f, 0.75f, 0.15f, 1);
 
-        *(f32*)(state + 0x324) = *(f32*)(state + 0x324) + timeDelta;
-        if (*(f32*)(state + 0x324) > 3.6e+02f)
+        ((EnemyState*)state)->vambat.idleTimer = ((EnemyState*)state)->vambat.idleTimer + timeDelta;
+        if (((EnemyState*)state)->vambat.idleTimer > 3.6e+02f)
         {
             bs->flags2E4 = bs->flags2E4 & ~(u64)0x10000;
-            *(f32*)(state + 0x324) = 0.0f;
+            ((EnemyState*)state)->vambat.idleTimer = 0.0f;
         }
     }
 
     baddieTurnTowardLookDir(obj, (void*)state, 0xf, 1e+01f, 1.0f, 0);
 
-    *(f32*)(state + 0x328) = *(f32*)(state + 0x328) - timeDelta;
-    if (*(f32*)(state + 0x328) <= 0.0f)
+    ((EnemyState*)state)->vambat.heartbeatSfxTimer = ((EnemyState*)state)->vambat.heartbeatSfxTimer - timeDelta;
+    if (((EnemyState*)state)->vambat.heartbeatSfxTimer <= 0.0f)
     {
-        *(f32*)(state + 0x328) = 60.0f;
+        ((EnemyState*)state)->vambat.heartbeatSfxTimer = 60.0f;
         Sfx_PlayFromObject((int)obj, SFXTRIG_mn_heart1_c);
     }
-    *(f32*)(state + 0x32c) = 0.0f;
+    ((EnemyState*)state)->vambat.engagedTimer = 0.0f;
 }
 
 void vambat_updateEngaged(GameObject* obj, int state)
@@ -2250,12 +2250,12 @@ void vambat_updateEngaged(GameObject* obj, int state)
     vec[1] = (25.0f + trackedObj->anim.localPosY) - (obj)->anim.localPosY;
     vec[2] = trackedObj->anim.localPosZ - (obj)->anim.localPosZ;
     PSVECMag((Vec*)vec);
-    *(f32*)(state + 0x32c) = *(f32*)(state + 0x32c) + timeDelta;
-    if (*(u32*)(state + 0x340) != 0 || *(f32*)(state + 0x32c) > 3.6e+02f)
+    ((EnemyState*)state)->vambat.engagedTimer = ((EnemyState*)state)->vambat.engagedTimer + timeDelta;
+    if (*(u32*)(state + 0x340) != 0 || ((EnemyState*)state)->vambat.engagedTimer > 3.6e+02f)
     {
         bs->flags2E4 = bs->flags2E4 | 0x10000LL;
-        *(f32*)(state + 0x324) = 0.0f;
-        *(f32*)(state + 0x32c) = 0.0f;
+        ((EnemyState*)state)->vambat.idleTimer = 0.0f;
+        ((EnemyState*)state)->vambat.engagedTimer = 0.0f;
     }
     else
     {
@@ -2275,8 +2275,8 @@ void vambat_updateEngaged(GameObject* obj, int state)
             if (voxmaps_traceLine((VoxPos*)gridB, (VoxPos*)gridA, NULL, &hitOut, 0) == 0)
             {
                 bs->flags2E4 = bs->flags2E4 | 0x10000LL;
-                *(f32*)(state + 0x324) = 0.0f;
-                *(f32*)(state + 0x32c) = 0.0f;
+                ((EnemyState*)state)->vambat.idleTimer = 0.0f;
+                ((EnemyState*)state)->vambat.engagedTimer = 0.0f;
             }
         }
     }
@@ -2303,9 +2303,9 @@ void vambat_init(GameObject* obj, int state)
     bs->moveSpeedScale1 = pathStepInit;
     bs->moveId2 = 0;
     bs->moveSpeedScale2 = initSpeed;
-    *(f32*)(state + 0x324) = 0.0f;
-    *(f32*)(state + 0x328) = 0.0f;
-    *(f32*)(state + 0x32c) = 0.0f;
+    ((EnemyState*)state)->vambat.idleTimer = 0.0f;
+    ((EnemyState*)state)->vambat.heartbeatSfxTimer = 0.0f;
+    ((EnemyState*)state)->vambat.engagedTimer = 0.0f;
     bs->pathStep = pathStepInit;
     switch (obj->anim.romDefNo)
     {
@@ -2810,10 +2810,10 @@ void baddieSpawnWaterRipple(GameObject* obj, EnemyState* state)
     f32 ox;
     f32 tz;
 
-    *(f32*)((u8*)state + 0x330) -= timeDelta;
-    if (*(f32*)((u8*)state + 0x330) <= 0.0f)
+    state->fireflyLantern.rippleTimer -= timeDelta;
+    if (state->fireflyLantern.rippleTimer <= 0.0f)
     {
-        *(f32*)((u8*)state + 0x330) = (f32)(s32)randomGetRange(30, 60);
+        state->fireflyLantern.rippleTimer = (f32)(s32)randomGetRange(30, 60);
         stk.x = obj->anim.localPosX;
         stk.y = 0.0f;
         stk.z = obj->anim.localPosZ;
@@ -2825,7 +2825,7 @@ void baddieSpawnWaterRipple(GameObject* obj, EnemyState* state)
         tx = 5.0f + (f32)(s32)randomGetRange(-20, 20) / 10.0f;
         tz = 2.0f + (f32)(s32)randomGetRange(-20, 20) / 10.0f;
         Matrix_TransformPoint(mtx, tx, 0.0f, tz, &tx, &ox, &tz);
-        (*gWaterfxInterface)->spawnRipple(tx, *(f32*)((u8*)state + 0x32c), tz, 0, 0.0f, 3);
+        (*gWaterfxInterface)->spawnRipple(tx, state->fireflyLantern.anchorY, tz, 0, 0.0f, 3);
         if (sqrtf(obj->anim.velocityX * obj->anim.velocityX + obj->anim.velocityZ * obj->anim.velocityZ) > 0.5f)
         {
             Sfx_PlayAtPositionFromObject((int)obj, stk.x, stk.y, stk.z, SFXstaff_proj_putaway);
@@ -3042,7 +3042,7 @@ void pinPon_init(GameObject* obj, void* state)
     randVal = randomGetRange(0, 0xff);
     ((EnemyState*)state)->userData1 = randVal;
     ((EnemyState*)state)->userData2 = 0;
-    ((EnemyState*)state)->fireflyLantern.unk330 = 30.0f;
+    ((EnemyState*)state)->fireflyLantern.rippleTimer = 30.0f;
     randVal = randomGetRange(0x32, 0x4b);
     fval = (f32)(s32)randVal;
     fval = 0.01f * fval;

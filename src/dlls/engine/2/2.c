@@ -2279,7 +2279,7 @@ int ObjSeq_resolveTargetObject(GameObject* obj)
         break;
     case 3:
         ((ObjSeqState*)seqObj)->targetObj = NULL;
-        ((ObjSeqState*)seqObj)->unk7B = (s8)(model->targetType - 2);
+        ((ObjSeqState*)seqObj)->isCameraSeq = (s8)(model->targetType - 2);
         if (gObjSeqCamOwnerSeqIndex != 0)
         {
             gObjSeqCamOwnerSeqIndex = 0;
@@ -3029,9 +3029,9 @@ void animatedObjFreeAndSavePlayerPos(GameObject* obj, GameObject* seqObj, u8* se
 
     if (((ObjSeqState*)seq)->runState != 0)
     {
-        if ((s8)((ObjSeqState*)seq)->unk7B != 0)
+        if ((s8)((ObjSeqState*)seq)->isCameraSeq != 0)
         {
-            ((ObjSeqState*)seq)->unk7B = 0;
+            ((ObjSeqState*)seq)->isCameraSeq = 0;
         }
         if (((ObjSeqState*)seq)->targetObj != NULL)
         {
@@ -4286,7 +4286,7 @@ void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
     }
     else
     {
-        if ((s8)((ObjSeqState*)seq)->unk7B != 0)
+        if ((s8)((ObjSeqState*)seq)->isCameraSeq != 0)
         {
             ((ObjSeqState*)seq)->movementState = 0;
             return;
@@ -4589,7 +4589,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             break;
         }
-        if ((s8)((ObjSeqState*)seq)->unk7B != 0 && (s8)(base + (s8)((ObjSeqState*)seq)->slot)[0x3a40] != 0)
+        if ((s8)((ObjSeqState*)seq)->isCameraSeq != 0 && (s8)(base + (s8)((ObjSeqState*)seq)->slot)[0x3a40] != 0)
         {
             ((ObjSeqState*)seq)->useRootMotionSpeed = 0;
             break;
@@ -4860,7 +4860,7 @@ void ObjSeq_SetupInitialPlaybackState(GameObject* obj, GameObject** seqObj, u8* 
     u8* historyBase;
 
     historyBase = gObjSeqRuntimeBuffer;
-    if ((s8)((ObjSeqState*)seq)->unk7B != 0)
+    if ((s8)((ObjSeqState*)seq)->isCameraSeq != 0)
     {
         gObjSeqCamModeArgB = 1;
         gObjSeqCamModeArgD = 0x5a;
@@ -5110,7 +5110,7 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
     state->groundSnapEnabled = 0;
     state->unk79 = 0;
     state->targetObj = NULL;
-    state->unk7B = 0;
+    state->isCameraSeq = 0;
     state->fade = 0.0f;
     state->curFrame = -1;
 
@@ -5177,7 +5177,7 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
 
         if (state->curFrame > 0 && mode != 0)
         {
-            if ((s8)state->useRootMotionSpeed == 1 && (s8)state->unk7B == 0 &&
+            if ((s8)state->useRootMotionSpeed == 1 && (s8)state->isCameraSeq == 0 &&
                 action != NULL)
             {
                 f32 dx = posp[0] - prevX;
@@ -5488,7 +5488,7 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
                         ((ObjSeqState*)seq)->trackRunLength[14] & 0xfff, frame);
                 }
             }
-            if ((s8)((ObjSeqState*)seq)->unk7B != 0)
+            if ((s8)((ObjSeqState*)seq)->isCameraSeq != 0)
             {
                 if (val < 35.0f)
                 {
@@ -5858,7 +5858,7 @@ void ObjSeq_ApplyLinkedObjectTransform(GameObject* obj, GameObject* seqObj, u8* 
         }
     }
 
-    if ((s8)((ObjSeqState*)seq)->unk7B != 0 && (s8)((ObjSeqState*)seq)->useRootMotionSpeed != 0)
+    if ((s8)((ObjSeqState*)seq)->isCameraSeq != 0 && (s8)((ObjSeqState*)seq)->useRootMotionSpeed != 0)
     {
         gObjSeqCameraSourceObj = obj;
         lbl_803DD0B6 = framesThisStep;
@@ -6013,7 +6013,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
             activeObj->pendingParentObj = obj;
             activeObj->objectFlags |= OBJECT_OBJFLAG_SEQ_ATTACHED;
         }
-        else if (state->unk7B == 0 && state->movementState < 4)
+        else if (state->isCameraSeq == 0 && state->movementState < 4)
         {
             state->movementState = -1;
         }
@@ -6148,7 +6148,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
 
             if (state->curFrame > 0 && (state->flags & 4) != 0)
             {
-                if (state->useRootMotionSpeed == 1 && state->unk7B == 0 &&
+                if (state->useRootMotionSpeed == 1 && state->isCameraSeq == 0 &&
                     action != NULL)
                 {
                     f32 dx = px - prevX;

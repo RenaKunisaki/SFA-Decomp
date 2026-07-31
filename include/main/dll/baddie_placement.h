@@ -33,7 +33,7 @@ typedef struct EnemyPlacement {
     s16 unk30;
     u8 hitPoints; /* 0x32: spawn hit-point count -> EnemyState.current */
     u8 unk33;
-    u16 unk34;
+    u16 unk34; /* the SharpClaw creator spawners (DFSH_ObjCre 377, ECSH_Creato 401) write 0xFFFF; nonzero clears flags2E4 path-control bits 0x2/0x4/0x20 and sets EnemyState.flags 0x40000 */
     u8 unk36[0x38 - 0x36];
 } EnemyPlacement;
 

@@ -135,8 +135,17 @@ typedef struct EnemyState {
             f32 trackTimer;
             f32 breathTimer;
             f32 anchorY;
-            f32 unk330;
+            f32 rippleTimer; /* baddieSpawnWaterRipple countdown: init 30, reset randomGetRange(30,60), spawns a water ripple at anchorY on expiry */
         } fireflyLantern;
+        struct {
+            f32 idleTimer;   /* vambat_updateIdle: += timeDelta, wraps at 360 clearing flags2E4 0x10000 (re-allows engagement) */
+            f32 heartbeatSfxTimer; /* countdown reset to 60, plays SFXTRIG_mn_heart1_c on expiry */
+            f32 engagedTimer; /* vambat_updateEngaged: += timeDelta; >360 or line-of-sight lost sets flags2E4 0x10000 and disengages */
+        } vambat;
+        struct {
+            u8 pad324[8];
+            f32 cooldownTimer; /* light-off countdown: seeded from placement +0x2C on powerdown msg, or gGcRobotPatrolCatchCooldown after catching the player; light child freed while >0, flags2E4 0x20 restored on expiry */
+        } gcRobot;
     };
     f32 intervalTimer;
     u16 phaseAngle;
