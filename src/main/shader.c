@@ -177,8 +177,6 @@ int gMapBlockOriginWorldX;
 #define SHADER_SNOWBIKE_OBJ 0x72
 static void mapBuildRomListIndex(MapRomListPage* page, MapRomListIndex* romListIndex, int slot, int unloading);
 int mapCoordsToId(int x, int z, int layer);
-extern s16* gMapBlockIds;
-extern u8* gMapBlockRefCounts;
 extern char gLightmapDrawQueue[];
 typedef struct ShaderRomListSlot
 {
@@ -199,8 +197,6 @@ extern int gShaderMapRomBuffers[];
     *(s8*)(e + 9) = -128;                                                                                  \
     ((s16*)gShaderMapRomBuffers[2])[(idx + (slot)) << 1] = -1;                                             \
     ((s16*)gShaderMapRomBuffers[2])[((idx + (slot)) << 1) + 1] = -1
-extern s8* gMapLayerCellStates;
-extern int* gMapBlockIndexList;
 
 typedef struct MapLoadRec
 {

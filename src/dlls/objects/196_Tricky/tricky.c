@@ -132,8 +132,6 @@ static const u16 gSkeetlaFootstepSfxId2[1] = {0x0355};
 extern const char sTrickyShouldNeverStopCirclingError[];
 
 extern char sSidekickCommandDebugTextBlock[];
-extern f32 lbl_803DBC40[2];
-extern f32 lbl_803DBC48;
 
 /* The one partfx effect emitted along Tricky's queued impress path. */
 #define TRICKY_PATH_PARTFX 0x533

@@ -1501,8 +1501,6 @@ extern s8 gObjSeqCondFlags[];
 extern s8 gObjSeqSlotResults[];
 extern ObjSeqBgCmd gObjSeqDeferredCmds[];
 extern u8 gObjSeqRuntimeBuffer[];
-extern int gObjSeqScriptedButtonMasks[];
-extern ObjSeqStreamMapEntry gObjSeqStreamTableA[];
 void ObjSeq_setCamVars(int camA, int camB, int camC, int camD);
 int objSeqFindLabel(u8* seq, int label);
 int objSeqFindConditional(u8* seq, GameObject* seqState);
@@ -1575,12 +1573,9 @@ extern char sObjLoadAnimdataNullACRomTabWarning[];
 
 extern u8 lbl_80399E50[];
 extern char sObjSequenceMissingObjectFormat[];
-extern s8 gObjSeqMsgSendModes[];
-extern int gObjSeqMsgIds[];
 extern s8 gObjSeqJumpLatch[];
 int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8 flag);
 
-extern ObjSeqStreamMapEntry gObjSeqStreamTableB[];
 extern u8 lbl_8039944C[];
 extern u8 framesThisStepUnclamped;
 int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmd, s8 flags, void* out);

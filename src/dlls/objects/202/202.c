@@ -4816,7 +4816,6 @@ u8 gSnowwormBabyHitReactionSeqIndices[8] = {3, 5, 3, 5, 0, 0, 0, 0};
 /* movement dust spawned on the move-loop event: moving straight (turnDelta == 0) */
 #define FIRECRAWLER_PARTFX_MOVE_STRAIGHT 0x809
 
-extern void* gCrawlerDescriptorTable[];
 
 EnemyTargetSearchResult gCrawlerNearbyObjectBuffer[16];
 
@@ -5950,9 +5949,6 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
 }
 
 
-extern void* gCrawlerModelChainIds[];
-
-
 static inline void crawler_createEngineLight(GameObject* obj, u8* state)
 {
     if (((EnemyState*)state)->modelLight == NULL)
@@ -6311,7 +6307,6 @@ void hagabonMK2_init(GameObject* obj, EnemyState* st)
 
 #define SNOWWORM_SEQID_BABY            0x84b /* "snowworm_ba" - the baby variant of 0x842 "snowworm" */
 
-extern u8* gCrawlerReactionTables[];
 void snowworm_spawnProjectile(GameObject* obj)
 {
     u8 locked = Obj_IsLoadingLocked();

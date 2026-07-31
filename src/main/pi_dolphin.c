@@ -150,7 +150,6 @@ int lbl_803DB5E4 = 0;
 #define GX_LEQUAL     3
 #define PAD_BUTTON_A  0x100
 #define PAD_BUTTON_B  0x200
-extern char sResourceFileNameAudioTab[];
 extern u8 gResourceFileTable[]; /* resource file table -- see struct MldfTables */
 extern s16 gForceNextLoadSync;
 extern int gForceLoadImmediately;
@@ -510,7 +509,6 @@ char* sMapFileNameTable[117] = {
 };
 
 
-
 char sMapFileNameDragrockbot[] = "dragrockbot";
 char sMapFileNameShipbattle[] = "shipbattle";
 char sMapFileNameSwapholbot[] = "swapholbot";
@@ -557,7 +555,6 @@ s16 sMapFileNameAdjacencyTable[] = {
     -1, -1, 6,  -1, -1, -1, -1, -1, -1, 34, -1, -1, -1, 25, 21, 15, 20, 14, 15, -1, -1, -1, 5,  -1, -1, -1,
     -1, 20, 30, -1, -1, -1, -1, -1, -1, -1, -1, 15, -1, 14, -1, 12, 7,  12, 21, 47, -1, -1, -1, 0,
 };
-
 
 
 void* jumptable_802CBE94[13] = {
@@ -742,14 +739,10 @@ char sMapAssetPathFormats[0x78] =
     "%s/animcurv.bin\0%s/animcurv.tab\0%s/voxmap.bin\0\0\0warlock/voxmap.bin\0\0%s/voxmap.tab\0\0"
     "\0%s/mod%d.zlb.bin\0\0\0\0%s/mod%d.tab";
 void gxSetGPMetricsEnabled(int);
-extern void* renderFrameBuffer;
-extern void* externalFrameBuffer0;
-extern void* externalFrameBuffer1;
 extern u8 gLoadingScreenTextures[];
 extern u8 gLoadFilesInitDone;
 extern int gPendingDvdReadCount;
 extern volatile int gAssetLoadCompletedFlags;
-extern void* displayFrameBuffer;
 extern RingBufferQueue gVideoFlipQueue;
 
 
