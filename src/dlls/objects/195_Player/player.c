@@ -9926,7 +9926,7 @@ int playerStateMoving(int obj, int state, f32 fv)
                     ((u32) * (u8*)((char*)inner + 0x3f6) >> 6 & 1) == 0 &&
                     ((PlayerState*)inner)->baddie.controlMode != 0x26 &&
                     (((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0 &&
-                    ((PlayerState*)inner)->idleDelayTimer == 0.0f)
+                    !((PlayerState*)inner)->idleDelayTimer)
                 {
                     stay = 1;
                 }
@@ -10097,16 +10097,16 @@ int playerStateMoving(int obj, int state, f32 fv)
             t = mathSinf((3.1415927f * (f32) ((PlayerState*)inner)->targetYaw) / 32768.0f);
             {
                 f32 cs = mathCosf((3.1415927f * (f32) ((PlayerState*)inner)->targetYaw) / 32768.0f);
-                f32 vz = -((PlayerState*)inner)->smoothVelZ;
-                f32 nx = vz * cs - ((PlayerState*)inner)->smoothVelX * t;
-                f32 nz = ((PlayerState*)inner)->smoothVelX * cs + vz * t;
+                ya = ((PlayerState*)inner)->smoothVelZ;
+                spd = -ya * cs - ((PlayerState*)inner)->smoothVelX * t;
+                ya = ((PlayerState*)inner)->smoothVelX * cs - ya * t;
                 ((PlayerState*)state)->baddie.animSpeedA =
                     ((PlayerState*)state)->baddie.animSpeedA +
-                    interpolate(nx - ((PlayerState*)state)->baddie.animSpeedA, ((PlayerState*)inner)->targetAnimSpeed,
+                    interpolate(spd - ((PlayerState*)state)->baddie.animSpeedA, ((PlayerState*)inner)->targetAnimSpeed,
                                 timeDelta);
                 ((PlayerState*)state)->baddie.animSpeedB =
                     ((PlayerState*)state)->baddie.animSpeedB +
-                    interpolate(nz - ((PlayerState*)state)->baddie.animSpeedB, ((PlayerState*)inner)->targetAnimSpeed,
+                    interpolate(ya - ((PlayerState*)state)->baddie.animSpeedB, ((PlayerState*)inner)->targetAnimSpeed,
                                 timeDelta);
             }
             spd = ((PlayerState*)state)->baddie.animSpeedB;
