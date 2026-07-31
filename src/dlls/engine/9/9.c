@@ -349,9 +349,28 @@ void cloudaction_onMapSetup(void)
     memset(&gCloudActionRuntime, 0, sizeof(CloudActionRuntime));
 }
 
+typedef struct CloudActionConfig {
+    u8 pad00[8];
+    f32 scrollSpeed;    /* 0x08: /3 -> CloudActionRuntime.textureScrollStep */
+    u8 pad0C[0x18];
+    u16 envfxActId;     /* 0x24: 1-based; (id-1) saved into env-state +0xA, replayed on map setup */
+    u8 pad26[0x32];
+    u8 flags;           /* 0x58: bit1 gates the whole update (same gate as Sky2Config.flags) */
+    u8 flags2;          /* 0x59: bit0 = apply clouds, bit2 = disable layer render */
+    u8 lowerCloudIndex; /* 0x5A: index into gCloudActionEnvTbl.lowerCloudAssetIds, 0 = none */
+    u8 upperCloudIndex; /* 0x5B: index into gCloudActionEnvTbl.upperCloudAssetIds, 0 = none */
+    u8 pad5C;
+    u8 mainCloudIndex;  /* 0x5D: index into gCloudActionEnvTbl.mainCloudAssetIds, 0 = none */
+} CloudActionConfig;
+
+STATIC_ASSERT(offsetof(CloudActionConfig, envfxActId) == 0x24);
+STATIC_ASSERT(offsetof(CloudActionConfig, flags) == 0x58);
+STATIC_ASSERT(offsetof(CloudActionConfig, mainCloudIndex) == 0x5D);
+
 void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
 {
     CloudEnvTbl* tbl = &gCloudActionEnvTbl;
+    CloudActionConfig* cfg = (CloudActionConfig*)state;
     void* envState;
 
     envState = saveGameGetEnvState();
@@ -359,20 +378,20 @@ void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
     {
         return;
     }
-    if ((state[0x58] & 2) == 0)
+    if ((cfg->flags & 2) == 0)
     {
         return;
     }
-    *(s16*)((u8*)envState + 0xa) = (s16)((s16) * (u16*)(state + 0x24) - 1);
-    if ((state[0x59] & 1) == 0)
+    *(s16*)((u8*)envState + 0xa) = (s16)((s16)cfg->envfxActId - 1);
+    if ((cfg->flags2 & 1) == 0)
     {
         return;
     }
     lbl_803DB618[0] = lbl_803DB618[1];
     lbl_803DB618[1] = (u16)val;
-    gCloudActionRuntime.textureScrollStep = *(f32*)(state + 8) / 3.0f;
+    gCloudActionRuntime.textureScrollStep = cfg->scrollSpeed / 3.0f;
     gCloudActionRuntime.pad19 = 0;
-    if ((*(u8*)(state + 0x59) & 4) != 0)
+    if ((cfg->flags2 & 4) != 0)
     {
         gCloudActionRuntime.layerRenderEnabled = 0;
     }
@@ -380,20 +399,20 @@ void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
     {
         gCloudActionRuntime.layerRenderEnabled = 1;
     }
-    if (state[0x5d] != 0)
+    if (cfg->mainCloudIndex != 0)
     {
-        if (state[0x5d] < 5)
+        if (cfg->mainCloudIndex < 5)
         {
-            if (gCloudActionRuntime.mainCloudAssetId != tbl->mainCloudAssetIds[state[0x5d]])
+            if (gCloudActionRuntime.mainCloudAssetId != tbl->mainCloudAssetIds[cfg->mainCloudIndex])
             {
                 if (gCloudActionRuntime.mainCloudObj != NULL)
                 {
                     Obj_FreeObject(gCloudActionRuntime.mainCloudObj);
                 }
                 gCloudActionRuntime.mainCloudObj =
-                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, tbl->mainCloudAssetIds[state[0x5d]]),
+                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, tbl->mainCloudAssetIds[cfg->mainCloudIndex]),
                                                  4, -1, -1, 0);
-                gCloudActionRuntime.mainCloudAssetId = tbl->mainCloudAssetIds[state[0x5d]];
+                gCloudActionRuntime.mainCloudAssetId = tbl->mainCloudAssetIds[cfg->mainCloudIndex];
             }
         }
     }
@@ -406,20 +425,20 @@ void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
         }
         gCloudActionRuntime.mainCloudAssetId = 0;
     }
-    if (state[0x5b] != 0)
+    if (cfg->upperCloudIndex != 0)
     {
-        if (state[0x5b] < 4)
+        if (cfg->upperCloudIndex < 4)
         {
-            if (gCloudActionRuntime.upperCloudAssetId != tbl->upperCloudAssetIds[state[0x5b]])
+            if (gCloudActionRuntime.upperCloudAssetId != tbl->upperCloudAssetIds[cfg->upperCloudIndex])
             {
                 if (gCloudActionRuntime.upperCloudObj != NULL)
                 {
                     Obj_FreeObject(gCloudActionRuntime.upperCloudObj);
                 }
                 gCloudActionRuntime.upperCloudObj =
-                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, tbl->upperCloudAssetIds[state[0x5b]]),
+                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, tbl->upperCloudAssetIds[cfg->upperCloudIndex]),
                                                  4, -1, -1, 0);
-                gCloudActionRuntime.upperCloudAssetId = tbl->upperCloudAssetIds[state[0x5b]];
+                gCloudActionRuntime.upperCloudAssetId = tbl->upperCloudAssetIds[cfg->upperCloudIndex];
             }
         }
     }
@@ -432,20 +451,20 @@ void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
         }
         gCloudActionRuntime.upperCloudAssetId = 0;
     }
-    if (state[0x5a] != 0)
+    if (cfg->lowerCloudIndex != 0)
     {
-        if (state[0x5a] < 5)
+        if (cfg->lowerCloudIndex < 5)
         {
-            if (gCloudActionRuntime.lowerCloudAssetId != tbl->lowerCloudAssetIds[state[0x5a]])
+            if (gCloudActionRuntime.lowerCloudAssetId != tbl->lowerCloudAssetIds[cfg->lowerCloudIndex])
             {
                 if (gCloudActionRuntime.lowerCloudObj != NULL)
                 {
                     Obj_FreeObject(gCloudActionRuntime.lowerCloudObj);
                 }
                 gCloudActionRuntime.lowerCloudObj =
-                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, tbl->lowerCloudAssetIds[state[0x5a]]),
+                    (GameObject*)objSetupObject(Obj_AllocObjectSetup(0x20, tbl->lowerCloudAssetIds[cfg->lowerCloudIndex]),
                                                  4, -1, -1, 0);
-                gCloudActionRuntime.lowerCloudAssetId = tbl->lowerCloudAssetIds[state[0x5a]];
+                gCloudActionRuntime.lowerCloudAssetId = tbl->lowerCloudAssetIds[cfg->lowerCloudIndex];
             }
         }
     }

@@ -2052,7 +2052,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
                 switch (cfg->cloudIndex)
                 {
                 case 0:
-                    *(s16*)(env + 0xe) = (s16)cfg->windCount - 1;
+                    *(s16*)(env + 0xe) = (s16)cfg->envfxActId - 1;
                     *(int*)(env + 0x14) = posA[0];
                     *(int*)(env + 0x18) = posA[1];
                     *(int*)(env + 0x1c) = posA[2];
@@ -2078,7 +2078,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
                     }
                     break;
                 case 1:
-                    *(s16*)(env + 0x10) = (s16)cfg->windCount - 1;
+                    *(s16*)(env + 0x10) = (s16)cfg->envfxActId - 1;
                     *(int*)(env + 0x20) = posA[0];
                     *(int*)(env + 0x24) = posA[1];
                     *(int*)(env + 0x28) = posA[2];
@@ -2104,7 +2104,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
                     }
                     break;
                 case 2:
-                    *(s16*)(env + 0x12) = (s16)cfg->windCount - 1;
+                    *(s16*)(env + 0x12) = (s16)cfg->envfxActId - 1;
                     *(int*)(env + 0x2c) = posA[0];
                     *(int*)(env + 0x30) = posA[1];
                     *(int*)(env + 0x34) = posA[2];

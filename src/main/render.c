@@ -104,7 +104,7 @@ u8 lbl_802C3564[0x1964] = {0};
 
 typedef struct EnvfxActEntry {
     u8 pad0[0x2a];
-    u16 field_2a;
+    u16 fadeDurationA;
     u8 pad1[0x30];
     u8 kind;
     u8 pad2[3];
@@ -628,12 +628,12 @@ int getEnvfxActImmediately(void* a, void* b, u16 idx, int d)
         }
         else if (e->kind == 3)
         {
-            e->field_2a = 0;
+            e->fadeDurationA = 0;
             (*gSky2Interface)->updateEnvfxAct(a, b, e, d, idx);
         }
         else if (e->kind == 5)
         {
-            e->field_2a = 0;
+            e->fadeDurationA = 0;
             (*gSkyInterface)->updateEnvfxAct(a, b, e, d);
         }
         else if (e->kind == 6)
