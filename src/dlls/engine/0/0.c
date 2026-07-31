@@ -1927,7 +1927,8 @@ void drawViewFinderHud(void)
             }
         }
         {
-            int minorLabelAlpha, majorLabelAlpha, headingIndex, heading;
+            int minorLabelAlpha, headingIndex, heading;
+            u32 majorLabelAlpha;
             int t;
             f32 currentY, nextY, tickSpacing;
             f32 cosine;
