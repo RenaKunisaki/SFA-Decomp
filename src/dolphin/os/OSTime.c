@@ -2,7 +2,6 @@
 #include "dolphin/os/__os.h"
 
 asm OSTime OSGetTime(void) {
-jump:
     nofralloc
 
     mftbu r3
@@ -11,7 +10,7 @@ jump:
     // Check for possible carry from TBL to TBU
     mftbu r5
     cmpw r3, r5
-    bne jump
+    bne OSGetTime
 
     blr
 }
