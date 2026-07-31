@@ -10735,7 +10735,8 @@ s16 playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* b
     controlFlags = (u8)flags;
     if (controlFlags & 0x2)
     {
-        moveFlags = (moveFlags | 0x2) & 0xff;
+        moveFlags |= 0x2;
+        moveFlags &= 0xff;
     }
     if (controlFlags & 0x40)
     {
