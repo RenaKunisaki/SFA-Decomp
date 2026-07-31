@@ -1506,7 +1506,8 @@ void trackIntersect(void)
 
     for (i = 0; i < gIntersectLineCount; i++)
     {
-        int typeIndex = ((s8) * (u8*)(gIntersectLinePool + i * 16 + 3) & 0x3f) + 1;
+        IntersectLine* line = (IntersectLine*)(gIntersectLinePool + i * 16);
+        int typeIndex = (line->kind & 0x3f) + 1;
         s16 typeOffset = counts[typeIndex]++;
         *(s16*)(gIntersectLineIndexTable + typeOffset * 2) = i;
     }
