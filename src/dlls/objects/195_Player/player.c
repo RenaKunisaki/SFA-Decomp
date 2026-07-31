@@ -12531,8 +12531,8 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
             fb->anim.rotY = *(s16*)((char*)slot + 0x2) / 2;
             fb->anim.rotX = -*(s16*)((char*)slot + 0x0);
         }
-        *(int*)((char*)fb + 0xf4) = 0x5f;
-        *(int*)((char*)fb + 0xf8) = spawned;
+        fb->userData1 = 0x5f;
+        fb->userData2 = spawned;
     }
 }
 
