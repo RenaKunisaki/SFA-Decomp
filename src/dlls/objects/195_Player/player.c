@@ -118,6 +118,7 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
 #include "main/player_control_interface.h"
+#include "dlls/objects/242_iceblast.h"
 #include "main/sky.h"
 
 #undef BADDIE_MOVE_STATUS_SIGNED
@@ -12078,8 +12079,8 @@ void playerCastIceSpell(GameObject* unused)
             setup->color[1] = 1;
             setup->color[2] = 0xff;
             setup->color[3] = 0xff;
-            *(s16*)((char*)setup + 0x1a) = (s16)(i * 3);
-            *(s16*)((char*)setup + 0x1c) = 0;
+            ((IceblastPlacement*)setup)->initialLaunchTimer = (s16)(i * 3);
+            ((IceblastPlacement*)setup)->unk1C = 0;
             gPlayerSpawnedObjects[i] = objSetupObject(setup, 5, -1, -1, NULL);
         }
     }

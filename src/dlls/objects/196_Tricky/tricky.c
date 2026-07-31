@@ -3665,9 +3665,9 @@ void trickyGrowl(void* obj, void* trickyState)
                 for (i = 0, slot = trickyState; i < CHILD_OBJECT_COUNT; slot++, i++)
                 {
                     setup = (void*)Obj_AllocObjectSetup(0x24, TRICKY_CHILD_OBJ_FLAMEBLAST);
-                    *(u8*)((char*)setup + 0x4) = 2;
-                    *(u8*)((char*)setup + 0x5) = 1;
-                    *(s16*)((char*)setup + 0x1a) = i;
+                    ((FlameblastPlacement*)setup)->base.color[0] = 2;
+                    ((FlameblastPlacement*)setup)->base.color[1] = 1;
+                    ((FlameblastPlacement*)setup)->streamIndex = i;
                     slot[0x700 / 4] = (void*)objSetupObject((ObjPlacement*)setup, 5,
                                                              ((GameObject*)obj)->anim.mapEventSlot, -1,
                                                              ((GameObject*)obj)->anim.parent);
@@ -5141,9 +5141,9 @@ void trickyGuard(ObjAnimComponent* obj, TrickyState* trickyState)
                     {
                         setup = (void*)Obj_AllocObjectSetup(TRICKY_GUARD_HELPER_SETUP_SIZE,
                                                            TRICKY_GUARD_HELPER_DEF_ID);
-                        *(u8*)((char*)setup + 0x4) = 2;
-                        *(u8*)((char*)setup + 0x5) = 1;
-                        *(s16*)((char*)setup + 0x1a) = i;
+                        ((FlameblastPlacement*)setup)->base.color[0] = 2;
+                        ((FlameblastPlacement*)setup)->base.color[1] = 1;
+                        ((FlameblastPlacement*)setup)->streamIndex = i;
                         slot[0x700 / 4] =
                             (void*)objSetupObject((ObjPlacement*)setup, 5, obj->mapEventSlot, -1, obj->parent);
                         slot++;
@@ -5473,9 +5473,9 @@ void trickyFlame(GameObject* obj, TrickyState* trickyState)
                         {
                             setup = (void*)Obj_AllocObjectSetup(TRICKY_GUARD_HELPER_SETUP_SIZE,
                                                                TRICKY_GUARD_HELPER_DEF_ID);
-                            *(u8*)((char*)setup + 0x4) = 2;
-                            *(u8*)((char*)setup + 0x5) = 1;
-                            *(s16*)((char*)setup + 0x1a) = i;
+                            ((FlameblastPlacement*)setup)->base.color[0] = 2;
+                            ((FlameblastPlacement*)setup)->base.color[1] = 1;
+                            ((FlameblastPlacement*)setup)->streamIndex = i;
                             slot[0x700 / 4] = (void*)objSetupObject((ObjPlacement*)setup, 5,
                                                                     (obj)->anim.mapEventSlot, -1,
                                                                     (obj)->anim.parent);
@@ -5571,9 +5571,9 @@ void trickyFlame(GameObject* obj, TrickyState* trickyState)
                         {
                             setup = (void*)Obj_AllocObjectSetup(TRICKY_GUARD_HELPER_SETUP_SIZE,
                                                                TRICKY_GUARD_HELPER_DEF_ID);
-                            *(u8*)((char*)setup + 0x4) = 2;
-                            *(u8*)((char*)setup + 0x5) = 1;
-                            *(s16*)((char*)setup + 0x1a) = i;
+                            ((FlameblastPlacement*)setup)->base.color[0] = 2;
+                            ((FlameblastPlacement*)setup)->base.color[1] = 1;
+                            ((FlameblastPlacement*)setup)->streamIndex = i;
                             slot[0x700 / 4] = (void*)objSetupObject((ObjPlacement*)setup, 5,
                                                                     (obj)->anim.mapEventSlot, -1,
                                                                     (obj)->anim.parent);
@@ -6571,9 +6571,9 @@ int tricky_substateFlameBreath(u8* obj, u8* state)
                 for (i = 0, p = state; i < 7; p += 4, i++)
                 {
                     e = (u8*)Obj_AllocObjectSetup(0x24, TRICKY_CHILD_OBJ_FLAMEBLAST);
-                    e[4] = 2;
-                    e[5] = 1;
-                    *(s16*)(e + 0x1a) = i;
+                    ((FlameblastPlacement*)e)->base.color[0] = 2;
+                    ((FlameblastPlacement*)e)->base.color[1] = 1;
+                    ((FlameblastPlacement*)e)->streamIndex = i;
                     *(u8**)(p + 0x700) = (u8*)objSetupObject((ObjPlacement*)e, 5,
                                                               ((GameObject*)obj)->anim.mapEventSlot, -1,
                                                               ((GameObject*)obj)->anim.parent);
