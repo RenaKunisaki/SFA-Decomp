@@ -390,7 +390,6 @@ static void DR_EarthWarrior_updateLookAtBones(GameObject* obj, EarthWarriorSub* 
         secondaryLookBone[0] = (s16)(absoluteHalfY >> 1);
     }
 }
-int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state);
 int DR_EarthWarrior_defaultStateHandler(void)
 {
     return 0x0;

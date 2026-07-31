@@ -2226,7 +2226,6 @@ void SnowBike_hitDetect(GameObject* obj)
     state->linkedObj = 0;
 }
 
-void SnowBike_buildOrientationMatrices(GameObject* obj, int state);
 
 void SnowBike_update(GameObject* obj)
 {
@@ -2433,7 +2432,6 @@ void SnowBike_update(GameObject* obj)
     }
 }
 
-void SnowBike_InitTuning(GameObject* obj, int state);
 
 void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
 {

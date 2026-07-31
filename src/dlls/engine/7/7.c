@@ -553,7 +553,6 @@ void snowCloudBuildBoxVerts(f32* out, f32 height, f32 scale)
     out[22] = zero;
     out[23] = edge;
 }
-void snowCloudBuildBoxVerts(f32* out, f32 height, f32 scale);
 void mm_free_(void* ptr)
 {
     mm_free(ptr);
@@ -704,7 +703,6 @@ void snowFreeSnowCloud(int cloudId)
     }
 }
 NewCloud* gNewClouds[8];
-void snowFreeSnowCloud(int index);
 
 void dll_07_func0A_nop(void)
 {

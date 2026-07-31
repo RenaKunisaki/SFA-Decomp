@@ -228,8 +228,6 @@ extern int gLightmapDeferredObjectCount;
 extern s16 gVisibleObjectSortKeyCount;
 
 
-
-
 extern s16* gMapBlockCellEntryTables[];
 extern f32 gMapBlockWorldSize;
 extern int gMapBlockOriginX;
@@ -379,7 +377,6 @@ void sortVisibleObjectKeysDescending(u32* arr, int n)
     }
 }
 
-void sortVisibleObjectKeysDescending(u32* arr, int n);
 void getVisibleObjects(s8* opacity)
 {
     int part;
@@ -1002,45 +999,16 @@ u32 shouldDrawShadows(void) { return renderFlags & RENDERFLAG_DRAW_SHADOWS; }
 int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void lightmapDrawQueuedObject(GameObject* obj);
 void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 void lightmap_sortTransparentDrawQueue(void);
 
-void getVisibleObjects(s8 * opacity);
-
-
-void renderSceneGeometry(u8 renderType, s8* order);
 
 void renderShadowType3(u8* obj, u32 b, s32 offset);
 
 void lightmap_sortTransparentDrawQueue(void);
-
-
-
-
-
-
-
-
-
-void sortVisibleObjectKeysDescending(u32* arr, int n);
 
 
 void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
