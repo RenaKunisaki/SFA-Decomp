@@ -1755,7 +1755,7 @@ int curves_findNearestOfType16(f32 x, f32 y, f32 z, int queryAll)
 
 #define SQ(v) ((v) * (v))
 
-int RomCurve_func13(u32 curveId, int typeFilter, int maxDist, int* outLink)
+int RomCurve_func13(u32 curveId, int typeFilter, int matchValue, int* outLink)
 {
     f32* distWrite;
     RomCurveDef* linkNode;
@@ -1835,8 +1835,8 @@ int RomCurve_func13(u32 curveId, int typeFilter, int maxDist, int* outLink)
                 curDist = queueDist[count];
                 best[0] = 0;
                 if ((((int)node->type == typeFilter) || (typeFilter == -1)) &&
-                    ((*(u8*)((u8*)node + 0x31) == (int)maxDist ||
-                      ((*(u8*)((u8*)node + 0x32) == (int)maxDist || (*(u8*)((u8*)node + 0x33) == (int)maxDist))))))
+                    ((*(u8*)((u8*)node + 0x31) == (int)matchValue ||
+                      ((*(u8*)((u8*)node + 0x32) == (int)matchValue || (*(u8*)((u8*)node + 0x33) == (int)matchValue))))))
                 {
                     done = 1;
                     *distWrite = curDist;
@@ -1924,7 +1924,7 @@ int curves_findByAction(int act)
     }
     return -1;
 }
-int RomCurve_func11(RomCurveDef* curve, int typeFilter, int actionFilter, int* outCurveId)
+int RomCurve_findLinkTowardNearestOfType(RomCurveDef* curve, int typeFilter, int actionFilter, int* previousCurveId)
 {
     f32* distWrite;
     u32 candWalk;
@@ -2051,14 +2051,14 @@ int RomCurve_func11(RomCurveDef* curve, int typeFilter, int actionFilter, int* o
     }
     if (found == 1)
     {
-        *outCurveId = curve->id;
+        *previousCurveId = curve->id;
         return results[0];
     }
     if (found > 1)
     {
         for (j = 0; j < found; j++)
         {
-            if (*outCurveId == results[j])
+            if (*previousCurveId == results[j])
             {
                 for (; j < found - 1; j++)
                 {
@@ -2068,7 +2068,7 @@ int RomCurve_func11(RomCurveDef* curve, int typeFilter, int actionFilter, int* o
                 found--;
             }
         }
-        *outCurveId = curve->id;
+        *previousCurveId = curve->id;
         best[1] = 0;
         best[0] = best[1];
         for (; best[0] < found; best[0]++)
@@ -2969,7 +2969,7 @@ void* RomCurve_funcs[49] = {(void*)0,
                           (void*)curves_isPoint,
                           (void*)curves_isNotPoint,
                           (void*)RomCurve_getRandomLinkedOfTypes,
-                          (void*)RomCurve_func11,
+                          (void*)RomCurve_findLinkTowardNearestOfType,
                           (void*)curves_findByAction,
                           (void*)RomCurve_func13,
                           (void*)curves_findNearestOfType16,

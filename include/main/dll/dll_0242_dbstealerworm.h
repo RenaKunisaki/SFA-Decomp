@@ -44,6 +44,6 @@ void dbstealerworm_release(void);
 void dbstealerworm_initialise(void);
 void DBstealerwo_setFuncPtrs(void);
 
-int dbstealerworm_func0B(GameObject* obj, u8 msg, int* out);
+int dbstealerworm_handleMessage(GameObject* obj, u8 msg, int* out);
 
 #endif /* MAIN_DLL_DLL_0242_DBSTEALERWORM_H_ */

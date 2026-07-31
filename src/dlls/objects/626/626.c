@@ -1021,7 +1021,7 @@ void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible)
                 int idx = (*(int (**)(int*))((char*)**(int***)((char*)*list + 0x68) + 0x24))(*list);
                 void (*dispatch)(int*, void*, int, int, int, int, int) =
                     *(void (**)(int*, void*, int, int, int, int, int))((char*)**(int***)((char*)*list + 0x68) + 0x20);
-                dispatch(*list, obj, gHighTopTuning.dispatchArgs[idx], p2, p3, p4, p5);
+                dispatch(*list, obj, gHighTopTuning.shacklePathPoints[idx], p2, p3, p4, p5);
                 list++;
             }
         }

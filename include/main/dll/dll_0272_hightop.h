@@ -150,7 +150,7 @@ int hightop_stateHandler10(GameObject* obj, HighTopRuntime* runtime);
 
 typedef struct HighTopTuning
 {
-    int dispatchArgs[4];
+    int shacklePathPoints[4];
     f32 unk10[22];
 } HighTopTuning;
 

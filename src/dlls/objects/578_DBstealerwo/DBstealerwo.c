@@ -2139,7 +2139,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
     }
 }
 
-int dbstealerworm_func0B(GameObject* obj, u8 msg, int* out)
+int dbstealerworm_handleMessage(GameObject* obj, u8 msg, int* out)
 {
     GroundBaddieState* state = obj->extra;
     DbStealerwormControl* sub = (DbStealerwormControl*)state->control;
@@ -2553,7 +2553,7 @@ u32 gDBstealerwormObjDescriptor[39] = {0x00000000,
                                        (u32)dbstealerworm_getObjectTypeId,
                                        (u32)dbstealerworm_getExtraSize,
                                        (u32)dbstealerworm_getControlMode,
-                                       (u32)dbstealerworm_func0B,
+                                       (u32)dbstealerworm_handleMessage,
                                        0x20537461,
                                        0x636b202d,
                                        0x2d2d2d2d,
