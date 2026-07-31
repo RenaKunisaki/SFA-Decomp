@@ -5,8 +5,6 @@ extern const float __one_over_F[];
 extern float lbl_803DC648;
 extern float lbl_803DC64C;
 __declspec(section ".sdata") extern float lbl_803DC650[];
-__declspec(section ".sdata") extern u32 lbl_803DC658;
-__declspec(section ".sdata") extern u32 lbl_803DC65C;
 
 u32 lbl_80332C78[] = {
     0xBEC00000, 0xBEBA406C, 0xBEB48C35, 0xBEAEE32E, 0xBEA9452D, 0xBEA3B205, 0xBE9E298F, 0xBE98ABA0,
@@ -73,6 +71,9 @@ typedef union {
     long i;
 } float_word;
 
+#pragma push
+#pragma section sconst_type ".sdata"
+#pragma cplusplus on
 static inline float log2_kernel(float value, const float* table)
 {
     u32 bits;
@@ -80,15 +81,12 @@ static inline float log2_kernel(float value, const float* table)
     u32 tableIndex;
     u32 fractionBits;
     float_word roundedMantissa;
-    float_word coef0;
-    float_word coef1;
+    float coefficients[2] = { -0.72135162353515625f, 0.4808933f };
     float_word inputWord;
     float_word normalizedMantissa;
     float exponentValue;
 
     bits = *(u32*)&value;
-    coef0.i = lbl_803DC658;
-    coef1.i = lbl_803DC65C;
     exponent = (bits >> 23) - 0x80;
     fractionBits = bits;
     fractionBits &= 0x007FFFFF;
@@ -113,12 +111,15 @@ static inline float log2_kernel(float value, const float* table)
              + (table[tableIndex]
                 + (delta
                    + (lbl_803DC650[0] * delta
-                      + (lbl_803DC650[1] * delta + (delta * delta) * (delta * coef1.f + coef0.f)))));
+                      + (lbl_803DC650[1] * delta
+                         + (delta * delta) * (delta * coefficients[1] + coefficients[0])))));
     }
 
     exponentValue = (float)exponent;
     return (exponentValue + 1.375f) + table[tableIndex];
 }
+#pragma cplusplus off
+#pragma pop
 
 static inline float exp2_kernel(float value, const float* table)
 {
