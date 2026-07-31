@@ -440,7 +440,7 @@ void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s
         s64 h = render_readPackedU16(tp);
         u64 nib = h & 0xf;
         u32 hw = h;
-        u64 masked = (u64)hw & maskConst;
+        h = (u64)hw & maskConst;
 
         if (nib != 0)
         {
@@ -463,7 +463,7 @@ void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s
             {
                 *q /= 2;
             }
-            sample = masked + ((vA + tmp) << 2);
+            sample = h + ((vA + tmp) << 2);
             bufA <<= (nib & 0xFFFFFFFF);
             bufB <<= (nib & 0xFFFFFFFF);
         }
