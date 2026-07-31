@@ -176,16 +176,16 @@ void setTitleScreenActive(int active) {
 
 void setDrawLights(int v)
 {
-    u8* env = saveGameGetEnvState();
+    SaveGameEnvState* env = saveGameGetEnvState();
     if (v != 0)
     {
         renderFlags |= 0x40;
-        env[0x40] |= 0x8;
+        env->envFlags |= 0x8;
     }
     else
     {
         renderFlags &= ~0x40LL;
-        env[0x40] &= ~0x8;
+        env->envFlags &= ~0x8;
     }
 }
 
@@ -214,16 +214,16 @@ void setStarsHidden(int v)
 
 void setDrawCloudsAndLights(int v)
 {
-    u8* env = saveGameGetEnvState();
+    SaveGameEnvState* env = saveGameGetEnvState();
     if (v != 0)
     {
         renderFlags |= 0x50;
-        env[0x40] |= 0x9;
+        env->envFlags |= 0x9;
     }
     else
     {
         renderFlags &= ~0x50;
-        env[0x40] &= ~0x9;
+        env->envFlags &= ~0x9;
     }
 }
 

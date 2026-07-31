@@ -664,15 +664,15 @@ void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId)
 
 void snowFreeSnowCloud(int cloudId)
 {
-    u8* env;
+    SaveGameEnvState* env;
     u8* p;
     int i;
 
     env = saveGameGetEnvState();
     if (cloudId >= 0 && cloudId <= 2 && getSaveGameLoadStatus() == 0)
     {
-        ((s16*)(env + 0xe))[cloudId] = -1;
-        ((s8*)(env + 0x41))[cloudId] = -1;
+        env->cloudEnvfxActIds[cloudId] = -1;
+        env->cloudStationary[cloudId] = -1;
     }
     for (i = 0; i < 8; i++)
     {

@@ -932,7 +932,7 @@ void sky2_onMapSetup(void)
 
 void sky2_update(int a, int b, u8* cfg)
 {
-    u8* env;
+    SaveGameEnvState* env;
     u16 bits;
     u8* st;
     int m40;
@@ -946,7 +946,7 @@ void sky2_update(int a, int b, u8* cfg)
     if (cfg != NULL)
     {
         (&gSky2EnvfxActIndex)[1] = gSky2EnvfxActIndex = (s16)((Sky2Config*)cfg)->envfxActId - 1;
-        *(s16*)(env + 0xc) = (s16)((Sky2Config*)cfg)->envfxActId - 1;
+        env->sky2EnvfxActId = (s16)((Sky2Config*)cfg)->envfxActId - 1;
         flags58 = ((Sky2Config*)cfg)->flags;
         b1 = (flags58 & 0x80) ? 1 : 0;
         if (((SkySlotAnim*)(&gSky2State)[b1])->b317 == 0)

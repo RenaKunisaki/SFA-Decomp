@@ -274,16 +274,16 @@ extern int gHeatEffectFadeDirection;
 
 void Rcp_DisableHeatEffect(void)
 {
-    u8* p = saveGameGetEnvState();
+    SaveGameEnvState* p = saveGameGetEnvState();
     gHeatEffectFadeDirection = -1;
-    p[0x40] = (u8)(p[0x40] & ~0x20);
+    p->envFlags = (u8)(p->envFlags & ~0x20);
 }
 
 void Rcp_EnableHeatEffect(void)
 {
-    u8* p = saveGameGetEnvState();
+    SaveGameEnvState* p = saveGameGetEnvState();
     gHeatEffectFadeDirection = 1;
-    p[0x40] = (u8)(p[0x40] | 0x20);
+    p->envFlags = (u8)(p->envFlags | 0x20);
 }
 void Rcp_DisableBlurFilter(void)
 {

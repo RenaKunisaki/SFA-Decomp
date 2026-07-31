@@ -371,7 +371,7 @@ void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
 {
     CloudEnvTbl* tbl = &gCloudActionEnvTbl;
     CloudActionConfig* cfg = (CloudActionConfig*)state;
-    void* envState;
+    SaveGameEnvState* envState;
 
     envState = saveGameGetEnvState();
     if (state == NULL)
@@ -382,7 +382,7 @@ void cloudaction_update(int p1, int p2, u8* state, int p4, int val)
     {
         return;
     }
-    *(s16*)((u8*)envState + 0xa) = (s16)((s16)cfg->envfxActId - 1);
+    envState->cloudActionEnvfxActId = (s16)((s16)cfg->envfxActId - 1);
     if ((cfg->flags2 & 1) == 0)
     {
         return;
