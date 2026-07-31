@@ -3467,20 +3467,20 @@ void objRenderModel(GameObject* obj)
         obj->anim.modelState->shadowAlphaStep = -0x20;
     }
     {
-        int a;
-        a = obj->anim.modelState->shadowAlpha;
-        a += obj->anim.modelState->shadowAlphaStep;
-        if (a > 0xff)
+        int alpha;
+        alpha = obj->anim.modelState->shadowAlpha;
+        alpha = obj->anim.modelState->shadowAlphaStep + alpha;
+        if (alpha > 0xff)
         {
             obj->anim.modelState->shadowAlpha = 0xff;
         }
-        else if (a < 0)
+        else if (alpha < 0)
         {
             obj->anim.modelState->shadowAlpha = 0;
         }
         else
         {
-            obj->anim.modelState->shadowAlpha = a;
+            obj->anim.modelState->shadowAlpha = alpha;
         }
     }
     gObjShadowColor[3] = obj->anim.modelState->shadowAlpha;
