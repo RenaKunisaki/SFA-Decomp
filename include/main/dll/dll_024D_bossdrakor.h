@@ -102,7 +102,7 @@ void bossdrakor_free(GameObject* obj);
 void bossdrakor_hitDetect(GameObject* obj);
 int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void bossdrakor_handleActionEvent(GameObject* obj, BossDrakorState* state, int action);
-void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state);
+void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* drakorState);
 int bossdrakor_chooseNextMove(GameObject* obj, f32* speedOut);
 void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int action);
 void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init);

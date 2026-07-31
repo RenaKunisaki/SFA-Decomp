@@ -163,9 +163,8 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     }
     return 0;
 }
-void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
+void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* drakorState)
 {
-    BossDrakorState* drakorState;
     s16* neck;
     s16* upperJaw;
     s16* lowerJaw;
@@ -175,7 +174,6 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* state)
     s16 jawDelta;
     PartFxSpawnParams partfxParams;
 
-    drakorState = state;
     neck = objFindJointPoseVector(obj, 0xe);
     if (neck != NULL)
     {
