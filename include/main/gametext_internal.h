@@ -10,31 +10,44 @@ typedef struct TaskTextEntry {
     u16 objSeqId;
 } TaskTextEntry;
 
-typedef struct GlyphEntry {
-    u16 id;
-    u8 pad[0xa];
-} GlyphEntry;
-
-typedef struct MeasGlyph MeasGlyph;
-
-typedef struct GameTextFont {
-    MeasGlyph* glyphs;
-    GlyphEntry* entries;
-    int glyphCount;
-    int count;
-    u8 pad[0xc];
-    int mode;
-} GameTextFont;
-
 typedef struct GameTextDef {
     u16 identifier;
     u16 count;
-    u8 slotHint;
+    u8 boxId;
     u8 alignH;
     u8 alignV;
     u8 language;
     char** strings;
 } GameTextDef;
+
+typedef struct TextGlyph {
+    u32 key;
+    u16 u;
+    u16 v;
+    s8 offsetX;
+    s8 advanceX;
+    s8 offsetY;
+    s8 advanceY;
+    u8 width;
+    u8 height;
+    u8 font;
+    u8 page;
+} TextGlyph;
+
+struct Texture;
+
+typedef struct TextFont {
+    TextGlyph* glyphs;
+    GameTextDef* entries;
+    int glyphCount;
+    int entryCount;
+    struct Texture* textures[3];
+    int status;
+    f32 timer;
+    u8 dirId;
+    u8 languageId;
+    u8 pad26[2];
+} TextFont;
 
 /* Language ids; order fixed by sLanguageNameTable[] below. */
 #define LANGUAGE_ENGLISH  0
@@ -46,34 +59,26 @@ typedef struct GameTextDef {
 
 typedef struct LanguageName {
     char* name;
-    u8 sizeIdx;
+    u8 fontId;
     u8 pad5[3];
 } LanguageName;
 
-typedef struct FontSizeEntry {
-    u8 pad0[0xa];
+typedef struct FontMetrics {
+    u16 glyphCount;
+    u8 pad02[2];
+    u8 unk04;
+    u8 unk05;
+    u8 unk06;
+    u8 pad07;
+    u16 maxWidth;
     u16 lineHeight;
     u8 padc[4];
-} FontSizeEntry;
+} FontMetrics;
 
-struct MeasGlyph {
+typedef struct CtrlCharEntry {
     u32 key;
-    u16 u;
-    u16 v;
-    s8 offsetX;
-    s8 advanceX;
-    s8 offsetY;
-    s8 advanceY;
-    u8 width;
-    u8 height;
-    u8 lang;
-    u8 page;
-};
-
-typedef struct SpecialGlyph {
-    u32 key;
-    u32 val;
-} SpecialGlyph;
+    int len;
+} CtrlCharEntry;
 
 struct TextDisplayState {
     int active;
@@ -83,18 +88,20 @@ struct TextDisplayState {
     int f10;
 };
 
-extern u8 gTextBoxes[];
+typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
+
+extern GameTextBox gTextBoxes[GAMETEXT_BOX_COUNT];
 extern void* gCurTextBox;
-extern void* gameTextDrawFunc;
+extern GameTextDrawFunc gameTextDrawFunc;
 extern TaskTextEntry gTaskTextTable[];
 extern u8 gUtf8CharClassTable[];
 extern int gUtf8ClassOffsetTable[];
-extern GameTextFont* gameTextFonts;
+extern TextFont* gameTextFonts;
 extern int gameTextCharset;
 extern int curLanguage;
 extern LanguageName sLanguageNameTable[];
-extern FontSizeEntry gGameTextFontMetrics[];
-extern SpecialGlyph gGameTextCtrlCodeArgCounts[];
+extern FontMetrics gGameTextFontMetrics[];
+extern CtrlCharEntry gGameTextCtrlCodeArgCounts[];
 
 extern char sMapDirectoryNameArwing[];
 extern char sMapDirectoryNameBoot[];

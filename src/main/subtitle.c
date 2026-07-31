@@ -124,7 +124,7 @@ static void subtitleBuildLineTable(void) {
     SubtitleLineTable* s[1];
     f32 delta;
     f32 curTime;
-    SubtitleTextEntry* t;
+    GameTextDef* t;
     u8* win;
     int m;
     int i;
@@ -148,7 +148,7 @@ static void subtitleBuildLineTable(void) {
         savedCharset = gameTextGetCharset();
         gameTextSetCharset(1, 1);
     }
-    t = (SubtitleTextEntry*)gameTextGet(gGameTextPendingTextId);
+    t = (GameTextDef*)gameTextGet(gGameTextPendingTextId);
     win = (u8*)gTextBoxes + 0x140;
     gSubtitleLineCount = 0;
     gSubtitleBlockCount = 0;
@@ -156,7 +156,7 @@ static void subtitleBuildLineTable(void) {
         s[0]->times[i] = SUBTITLE_TIME_NONE;
     }
     for (i = 0; i < t->count; i++) {
-        str = t->strs[i];
+        str = t->strings[i];
         n = GameText_FindControlCodeArgs((u8*)str, TEXT_CTRL_SEQ_TIME, args);
         if (n != 0) {
             q = args[2] / 60;

@@ -65,8 +65,6 @@ extern const f32 lbl_803DE70C;
 extern const f32 lbl_803DE710;
 extern const f32 lbl_803DE714;
 extern const f32 lbl_803DE718;
-extern CtrlCharEntry gGameTextCtrlCodeArgCounts[];
-
 extern u32 sSubtitleCtrlCmdScratch[];
 
 static void translateToDinoLanguage(u8* str);
@@ -292,18 +290,18 @@ char* sJpWrongDiscMessageLines[] = {
 struct JapaneseDiscStatusResource
 {
     char loadingMessage[16]; /* "Now loading..." */
-    DiscStatusMessage messages[7];
+    GameTextDef messages[7];
     TextGlyph glyphs[43];
 } sJpDiscStatusMessageTable = {
     "\xe3\x83\xad\xe3\x83\xbc\xe3\x83\x89\xe4\xb8\xad\xe2\x80\xa6",
     {
-        {0x339, 7, 0x81000004, sJpDiscErrorOccurredMessageLines},
-        {0x33a, 4, 0x81000004, sJpDiscReadErrorMessageLines},
-        {0x33b, 3, 0x81000004, sJpDiscReadingMessageLines},
-        {0x33c, 6, 0x81000004, sJpDiscCoverOpenMessageLines},
-        {0x33d, 6, 0x81000004, sJpDiscInsertMessageLines},
-        {0x33e, 9, 0x81000004, sJpWrongDiscMessageLines},
-        {0x565, 1, 0x93000004, sJpDiscLoadingMessageLines},
+        {0x339, 7, 0x81, 0, 0, 4, sJpDiscErrorOccurredMessageLines},
+        {0x33a, 4, 0x81, 0, 0, 4, sJpDiscReadErrorMessageLines},
+        {0x33b, 3, 0x81, 0, 0, 4, sJpDiscReadingMessageLines},
+        {0x33c, 6, 0x81, 0, 0, 4, sJpDiscCoverOpenMessageLines},
+        {0x33d, 6, 0x81, 0, 0, 4, sJpDiscInsertMessageLines},
+        {0x33e, 9, 0x81, 0, 0, 4, sJpWrongDiscMessageLines},
+        {0x565, 1, 0x93, 0, 0, 4, sJpDiscLoadingMessageLines},
     },
     {
         {0x41, 0x01, 0x1, 0, 1, 3, 4, 0x0d, 0x0e, 4, 0},  {0x6e, 0x0f, 0x1, 0, 1, 7, 4, 0x09, 0x0a, 4, 0},
@@ -383,17 +381,17 @@ char* sWrongDiscMessageLines[] = {
 struct EnglishDiscStatusResource
 {
     char loadingMessage[12];
-    DiscStatusMessage messages[7];
+    GameTextDef messages[7];
 } sDiscStatusMessageTable = {
     "Loading...",
     {
-        {0x339, 3, 0x81000000, sDiscErrorOccurredMessageLines},
-        {0x33a, 3, 0x81000000, sDiscReadErrorMessageLines},
-        {0x33b, 1, 0x81000000, sDiscReadingMessageLines},
-        {0x33c, 4, 0x81000000, sDiscCoverOpenMessageLines},
-        {0x33d, 2, 0x81000000, sDiscInsertMessageLines},
-        {0x33e, 6, 0x81000000, sWrongDiscMessageLines},
-        {0x565, 1, 0x93000000, sDiscLoadingMessageLines},
+        {0x339, 3, 0x81, 0, 0, 0, sDiscErrorOccurredMessageLines},
+        {0x33a, 3, 0x81, 0, 0, 0, sDiscReadErrorMessageLines},
+        {0x33b, 1, 0x81, 0, 0, 0, sDiscReadingMessageLines},
+        {0x33c, 4, 0x81, 0, 0, 0, sDiscCoverOpenMessageLines},
+        {0x33d, 2, 0x81, 0, 0, 0, sDiscInsertMessageLines},
+        {0x33e, 6, 0x81, 0, 0, 0, sWrongDiscMessageLines},
+        {0x565, 1, 0x93, 0, 0, 0, sDiscLoadingMessageLines},
     },
 };
 
@@ -461,7 +459,7 @@ static inline TextGlyph* findGlyph(u32 ch, int glyphLang)
     cnt = gameTextFonts->glyphCount;
     while (cnt-- != 0)
     {
-        if (g->key == ch && g->lang == glyphLang)
+        if (g->key == ch && g->font == glyphLang)
         {
             return g;
         }
@@ -502,11 +500,11 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
     }
     else
     {
-        glyphLang = sLanguageNameTable[curLanguage].sizeIdx;
+        glyphLang = sLanguageNameTable[curLanguage].fontId;
     }
     curTexPage = -1;
     realign = 1;
-    if (str == NULL || gameTextFonts->mode != 2)
+    if (str == NULL || gameTextFonts->status != 2)
     {
         return;
     }
@@ -716,7 +714,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
         }
         else
         {
-            if (g->lang == GAMETEXT_FONT_FLAG)
+            if (g->font == GAMETEXT_FONT_FLAG)
             {
                 int shift = gGameTextFlagGlyphRaise << 2;
                 fy0 = fy0 - shift;
@@ -724,7 +722,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 GXGetScissor(&scisX, &scisY, &scisW, &scisH);
                 GXSetScissor(scisX, (scisY >= gGameTextFlagGlyphRaise) ? scisY - gGameTextFlagGlyphRaise : 0, scisW, scisH);
             }
-            if (g->lang == GAMETEXT_FONT_FACE)
+            if (g->font == GAMETEXT_FONT_FACE)
             {
                 int iw = g->advanceX + (g->width + g->offsetX);
                 int ih = g->advanceY + (g->height + g->offsetY);
@@ -758,7 +756,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                     curTexPage = g->page;
                     tex = gameTextFonts->textures[g->page];
                     selectTexture(tex, 0);
-                    if (gGameTextFontMetrics[g->lang * 16 + 6] == 1)
+                    if (gGameTextFontMetrics[g->font].unk06 == 1)
                     {
                         if (mode != 0)
                         {
@@ -783,7 +781,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 }
             }
 
-            if (gGameTextRevealActive != 0 && mode == 0 && g->lang != GAMETEXT_FONT_FACE && gGameTextDrawnCharIndex >= gGameTextRevealProgress)
+            if (gGameTextRevealActive != 0 && mode == 0 && g->font != GAMETEXT_FONT_FACE && gGameTextDrawnCharIndex >= gGameTextRevealProgress)
             {
                 setTextColor(0, 0, 0, 0, 0);
             }
@@ -803,13 +801,13 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                                (v0 + (f32)(g->height << 5)) / sH);
             }
 
-            if (g->lang == GAMETEXT_FONT_FLAG || g->lang == GAMETEXT_FONT_FACE)
+            if (g->font == GAMETEXT_FONT_FLAG || g->font == GAMETEXT_FONT_FACE)
             {
                 GXSetScissor(scisX, scisY, scisW, scisH);
             }
         }
 
-        if ((int)g->lang != GAMETEXT_FONT_FACE)
+        if ((int)g->font != GAMETEXT_FONT_FACE)
         {
             x = gGameTextScale * (f32)(g->advanceX + (g->width + g->offsetX)) + x;
         }
@@ -933,7 +931,7 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
             glyphLang = tbl[curLanguage * 8 + 4];
         }
     }
-    tbl = &gGameTextFontMetrics[glyphLang * 16];
+    tbl = (u8*)gGameTextFontMetrics + glyphLang * 16;
     if (glyphLang != GAMETEXT_FONT_FACE)
     {
         if (outMaxAdv != NULL)
@@ -965,7 +963,7 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
                 break;
             case TEXT_CTRL_FONT:
                 glyphLang = params[0];
-                tbl = &gGameTextFontMetrics[glyphLang * 16];
+                tbl = (u8*)gGameTextFontMetrics + glyphLang * 16;
                 if (glyphLang != GAMETEXT_FONT_FACE)
                 {
                     mAdv = (f32)(u32) * (u16*)(tbl + 8) * scale;
@@ -1063,7 +1061,7 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count)
     }
 }
 
-GameTextStateElem gGameTextCharsets[0xA0 / sizeof(GameTextStateElem)];
+TextFont gGameTextCharsets[0xA0 / sizeof(TextFont)];
 
 
 

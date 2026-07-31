@@ -3,24 +3,24 @@
 
 void gameTextMeasureById(int id, int a, int b, int* outMinX, int* outMaxX, int* outMinY, int* outMaxY)
 {
-    GlyphEntry* e;
-    GameTextFont* fonts;
+    GameTextDef* e;
+    TextFont* fonts;
     int count;
     int i;
     int found;
 
     fonts = gameTextFonts;
-    if (fonts->mode != 2)
+    if (fonts->status != 2)
     {
         found = 0;
     }
     else
     {
         e = fonts->entries;
-        count = fonts->count;
+        count = fonts->entryCount;
         for (i = 0; i != count || (found = 0, 0); i++)
         {
-            if (e->id == id)
+            if (e->identifier == id)
             {
                 found = 1;
                 break;

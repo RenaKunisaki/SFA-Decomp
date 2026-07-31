@@ -4793,11 +4793,11 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                         gameTextShowStr(*(void**)((u8*)gPauseMenuCurHintText->strings + stringOffset), 0x79, 0xf0, textY);
                         gameTextMeasureStringBoundsAt(*(void**)((u8*)gPauseMenuCurHintText->strings + stringOffset), 0x79, 0,
                                                       0, &measureLeft, &measureRight, &measureTop, &measureBottom);
-                        lineHeight = gGameTextFontMetrics[sLanguageNameTable[getCurLanguage()].sizeIdx].lineHeight;
+                        lineHeight = gGameTextFontMetrics[sLanguageNameTable[getCurLanguage()].fontId].lineHeight;
                         textHeight = measureBottom - measureTop;
                         textY += (textHeight > lineHeight)
                                      ? textHeight
-                                     : gGameTextFontMetrics[sLanguageNameTable[getCurLanguage()].sizeIdx].lineHeight;
+                                     : gGameTextFontMetrics[sLanguageNameTable[getCurLanguage()].fontId].lineHeight;
                         stringOffset += 4;
                         stringIndex++;
                     }
