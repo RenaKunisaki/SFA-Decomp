@@ -3877,7 +3877,8 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         else
         {
             t->stateIndex = 1;
-            t->substate = hasTarget = 0;
+            hasTarget = 0;
+            t->substate = hasTarget;
             TRICKY_RESET_TAIL((u8*)t)
         }
         if (hasTarget != 0)
@@ -3954,7 +3955,8 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         else
         {
             t->stateIndex = 1;
-            t->substate = hasTarget = 0;
+            hasTarget = 0;
+            t->substate = hasTarget;
             TRICKY_RESET_TAIL((u8*)t)
         }
         if (hasTarget != 0)
@@ -4079,7 +4081,8 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
         else
         {
             t->stateIndex = 1;
-            t->substate = hasTarget = 0;
+            hasTarget = 0;
+            t->substate = hasTarget;
             TRICKY_RESET_TAIL((u8*)t)
         }
         if (hasTarget != 0 && ok != 1)
