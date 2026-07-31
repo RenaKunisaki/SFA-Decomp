@@ -615,8 +615,9 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
             break;
         case 0xc: {
             GameObject** objects;
+            u16 triggerId;
 
-            id = (u16)((p[2] << 8) | p[3]);
+            triggerId = (u16)((p[2] << 8) | p[3]);
             objects = ObjList_GetObjects(&first, &count);
             for (; first < count; first++) {
                 t2 = (int)objects[first];
@@ -633,7 +634,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                 case 0x50:
                 case 0x54:
                 case 0x230:
-                    if (((TriggerPlacement*)tbl)->triggerId == id) {
+                    if (((TriggerPlacement*)tbl)->triggerId == triggerId) {
                         objInterpretSeq((GameObject*)t2, seqObj, legCode, range);
                     }
                     break;
