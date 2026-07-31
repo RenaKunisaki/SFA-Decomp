@@ -783,7 +783,7 @@ int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
 
     hitResult = (*gCheckpointInterface)->advanceRoute((u8*)state, &s->collider, fade, s->colliderMode, 1, 0);
 
-    (*gCheckpointInterface)->getRouteHeading((GameObject*)o, &s->collider);
+    (*gCheckpointInterface)->getRouteHeading((GameObject*)obj, &s->collider);
 
     (*gCheckpointInterface)->queueRouteRankItem((CheckpointRankItem*)&s->collider);
 
