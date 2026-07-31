@@ -251,14 +251,33 @@ typedef struct TrickyState {
     TrickyScratch scratch70C;
     TrickyScratch scratch710;
     u8 pad714[0x71C - 0x714];
-    f32 cooldownA; /* f32 countdown: -= timeDelta, clamped to floor lbl_803E23DC; == floor gates a state/anim transition (tricky/substates/weapone6/tumbleweedbush/mmp) */
-    TrickyScratch cooldownB; /* .f: countdown paired with cooldownA: -= timeDelta, clamped to floor; == floor gates a move, > floor gates fidget/contact-sfx (tricky/substates/weapone6/tumbleweedbush). .ptr: reused in the animobjd2 orbit substate to hold the circling-target object, copied into followObj */
-    void *unk724;
-    u8 stateFlags728; /* flag byte: 0/1 boolean sets (tricky/animobjd2) plus a bit-5 test (tricky_substates) */
-    u8 pad729[0x72C - 0x729];
-    f32 wanderTargetX; /* wander/return target position X that targetPosPtr is pointed at (&wanderTargetX); written from anim world/local posX plus a sin offset (tricky/tricky_substates) */
-    f32 wanderTargetY; /* wander target position Y (written from anim world/local posY) */
-    f32 wanderTargetZ; /* wander target position Z: anim world/local posZ plus a cos offset; a rare u8-overlay at this offset toggles a state bit (tricky/tricky_substates) */
+    union {
+        struct {
+            f32 cooldownA; /* f32 countdown: -= timeDelta, clamped to floor lbl_803E23DC; == floor gates a state/anim transition (tricky/substates/weapone6/tumbleweedbush/mmp) */
+            TrickyScratch cooldownB; /* .f: countdown paired with cooldownA: -= timeDelta, clamped to floor; == floor gates a move, > floor gates fidget/contact-sfx (tricky/substates/weapone6/tumbleweedbush). .ptr: reused in the animobjd2 orbit substate to hold the circling-target object, copied into followObj */
+            void *unk724; /* trickyFlame reads this slot as the helper-done callback while helpers are active */
+        };
+        f32 guardPoint[3]; /* trickyGuard: guard-post position (home pos - 15 units along facing); trickyFlame stores two ObjfsaRomCurveDef* into [0]/[1] via int launders */
+    };
+    union {
+        struct {
+            u8 stateFlags728; /* flag byte: 0/1 boolean sets (tricky/animobjd2) plus a bit-5 test (tricky_substates) */
+            u8 pad729[0x72C - 0x729];
+        };
+        f32 guardTimer; /* guard/flame state dwell timer: += / -= timeDelta against 150/60 thresholds (trickyGuard/trickyFlame) */
+    };
+    union {
+        struct {
+            f32 wanderTargetX; /* wander/return target position X that targetPosPtr is pointed at (&wanderTargetX); written from anim world/local posX plus a sin offset (tricky/tricky_substates) */
+            f32 wanderTargetY; /* wander target position Y (written from anim world/local posY) */
+            f32 wanderTargetZ; /* wander target position Z: anim world/local posZ plus a cos offset; a rare u8-overlay at this offset toggles a state bit (tricky/tricky_substates) */
+        };
+        struct {
+            GameObject *guardTarget; /* baddie object the guard is approaching (trickyGuard) */
+            s32 guardWalkGroup; /* walk group the guard post lies in (trickyGuard) */
+            u8 guardCanSpawnHelpers; /* cleared on guard entry; gates the helper-spawn branch (trickyGuard) */
+        };
+    };
     f32 sfxRepeatTimer; /* f32 countdown: -= timeDelta, on reaching floor fires an SFX and re-primes to lbl_803E2440 (tricky_substates) */
     f32 moveHoldTimer; /* f32 countdown primed to randomGetRange(120,240) on entering idle move 0x29; counted down in move 0x2a and on reaching the floor advances to move 0x2b or 0x2c (tricky_substates) */
     f32 idleSfxTimer; /* f32 countdown: -= timeDelta, on reaching floor fires an idle vocalization SFX and re-primes to randomGetRange(500,750) (tricky/substates/weapone6) */
@@ -300,6 +319,10 @@ typedef struct TrickyState {
 
 STATIC_ASSERT(sizeof(TrickyState) == 0x840);
 STATIC_ASSERT(offsetof(TrickyState, stateFlags) == 0x54);
+STATIC_ASSERT(offsetof(TrickyState, guardPoint) == 0x71C);
+STATIC_ASSERT(offsetof(TrickyState, guardTimer) == 0x728);
+STATIC_ASSERT(offsetof(TrickyState, guardTarget) == 0x72C);
+STATIC_ASSERT(offsetof(TrickyState, sfxRepeatTimer) == 0x738);
 STATIC_ASSERT(offsetof(TrickyState, patchTargets) == 0xA0);
 STATIC_ASSERT(offsetof(TrickyState, linkedPatchPos) == 0xD4);
 STATIC_ASSERT(offsetof(TrickyState, patchExitPos) == 0xEC);
