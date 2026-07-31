@@ -359,8 +359,14 @@ extern const f32 lbl_803E1E3C;
 extern const f32 lbl_803E1E40;
 extern const f32 lbl_803E1E44;
 extern const f32 lbl_803E1E48;
+extern const f32 lbl_803E1E4C;
 extern const f32 lbl_803E1E50;
 extern const f32 lbl_803E1E54;
+extern const f32 lbl_803E1E58;
+extern const f32 lbl_803E1E5C;
+extern const f32 lbl_803E2024;
+extern const f32 lbl_803E2040;
+extern const f32 lbl_803E2044;
 extern u8 gHudMagicCostPreview;
 extern u8 gHudForceShowMask;
 extern u8 gTrickyHudShowNearestInfo;
@@ -847,7 +853,7 @@ void gameUiLoadResources(void)
             communicatorObjects->objects[0] = communicator;
             communicatorObjects->objects[0]->anim.localPosX = lbl_803E1E3C;
             communicatorObjects->objects[0]->anim.localPosY = lbl_803E1E48;
-            communicatorObjects->objects[0]->anim.localPosZ = (-7.0f);
+            communicatorObjects->objects[0]->anim.localPosZ = lbl_803E1E4C;
             communicatorObjects->objects[0]->anim.rotX = 0x7447;
             communicatorObjects->objects[0]->anim.rootMotionScale = lbl_803E1E50;
 
@@ -856,9 +862,9 @@ void gameUiLoadResources(void)
             communicatorObjects->objects[1] = communicator;
             communicatorObjects->objects[1]->anim.localPosX = lbl_803E1E3C;
             communicatorObjects->objects[1]->anim.localPosY = lbl_803E1E54;
-            communicatorObjects->objects[1]->anim.localPosZ = (-7.0f);
+            communicatorObjects->objects[1]->anim.localPosZ = lbl_803E1E4C;
             communicatorObjects->objects[1]->anim.rotX = 0x7447;
-            communicatorObjects->objects[1]->anim.rootMotionScale = 0.01f;
+            communicatorObjects->objects[1]->anim.rootMotionScale = lbl_803E1E58;
         }
 
         object = objSetupObject(Obj_AllocObjectSetup(0x20, GAMEUI_CHILD_OBJ_COMM_CUBE), 4, -1, -1, NULL);
@@ -879,7 +885,7 @@ void gameUiLoadResources(void)
         ids = &lbl_8031BF90[4];
         menuObjects = (GameObject**)(base + 0xc30);
         z = lbl_803E1E3C;
-        y = (-5.0f);
+        y = lbl_803E1E5C;
         addressLimit = 0x90000000;
         for (; j < 6; j++)
         {
@@ -3985,7 +3991,7 @@ void hudDrawCMenu(int p1, int p2, int p3)
     Camera_SetCurrentViewRotation(0x8000, 0, 0);
     Camera_UpdateViewMatrices();
     Camera_RebuildProjectionMatrix();
-    GXSetViewport(sx - lbl_803E1F34, sy - 240.0f, (f32)(u32)gRenderModeObj->fbWidth,
+    GXSetViewport(sx - lbl_803E1F34, sy - lbl_803E2024, (f32)(u32)gRenderModeObj->fbWidth,
                   (f32)(u32)gRenderModeObj->xfbHeight, lbl_803E1E3C, lbl_803E1E68);
     zero = 0;
     i = zero;
@@ -4354,9 +4360,9 @@ void headDisplayDraw(void)
             break;
         }
         GXSetScissor(0x1ea, width, 0x78, height);
-        drawRect(490.0f, (f32)(int)width, 0x78, height);
+        drawRect(lbl_803E2040, (f32)(int)width, 0x78, height);
         gGameUiSavedFovY = Camera_GetFovY();
-        Camera_SetFovY(43.0f);
+        Camera_SetFovY(lbl_803E2044);
         Camera_SetCurrentViewIndex(1);
         gGameUiSavedCameraShake = CameraShake_IsEnabled();
         CameraShake_Disable();
@@ -4365,7 +4371,7 @@ void headDisplayDraw(void)
         Camera_SetCurrentViewRotation(0x8000, 0, 0);
         Camera_UpdateViewMatrices();
         Camera_RebuildProjectionMatrix();
-        GXSetViewport(lbl_803E2048, viewportY - 240.0f, (f32)(u32)gRenderModeObj->fbWidth,
+        GXSetViewport(lbl_803E2048, viewportY - lbl_803E2024, (f32)(u32)gRenderModeObj->fbWidth,
                       (f32)(u32)gRenderModeObj->xfbHeight, lbl_803E1E3C, lbl_803E1E68);
         if (gHeadDisplayModelObjs[panelType] != NULL)
         {
@@ -4401,7 +4407,7 @@ void headDisplayDraw(void)
             noiseY = randomGetRange(0, 0x1e) << 1;
             drawY = width;
             drawY += lineOffset;
-            drawPartialTexture(hudTextures[84], 490.0f, (f32)drawY,
+            drawPartialTexture(hudTextures[84], lbl_803E2040, (f32)drawY,
                                clampedAlpha > 0xff ? 0xff : clampedAlpha, 0x100, 0x78, 2, noiseY, noiseX);
             clampedAlpha = (int)((f32)(s16)panelAlpha * (lbl_803E2010 + wave));
             if (clampedAlpha < 0)
@@ -4410,15 +4416,15 @@ void headDisplayDraw(void)
             }
             noiseX = randomGetRange(0, 0x1e) << 1;
             noiseY = randomGetRange(0, 0x1e) << 1;
-            drawPartialTexture(hudTextures[84], 490.0f, (f32)(drawY + 2),
+            drawPartialTexture(hudTextures[84], lbl_803E2040, (f32)(drawY + 2),
                                clampedAlpha > 0xff ? 0xff : clampedAlpha, 0x100, 0x78, 2, noiseY, noiseX);
             wavePhaseA += 0x3520;
             wavePhaseB += 0x1f40;
         }
         drawTexture(hudTextures[10], 485.0f, (s16)width - 5, panelAlpha, 0x100);
-        drawScaledTexture(hudTextures[13], 490.0f, (s16)width - 5, panelAlpha, 0x100, 0x78, 5, 0);
+        drawScaledTexture(hudTextures[13], lbl_803E2040, (s16)width - 5, panelAlpha, 0x100, 0x78, 5, 0);
         drawScaledTexture(hudTextures[11], 485.0f, (s16)width, panelAlpha, 0x100, 5, (s16)height, 0);
-        drawScaledTexture(hudTextures[13], 490.0f, (s16)width + (s16)(int)height, panelAlpha, 0x100, 0x78, 5, 2);
+        drawScaledTexture(hudTextures[13], lbl_803E2040, (s16)width + (s16)(int)height, panelAlpha, 0x100, 0x78, 5, 2);
         drawScaledTexture(hudTextures[11], 610.0f, (s16)width, panelAlpha, 0x100, 5, (s16)height, 1);
         drawScaledTexture(hudTextures[10], 610.0f, (s16)width + (s16)(int)height, panelAlpha, 0x100, 5, 5, 3);
         drawScaledTexture(hudTextures[10], 610.0f, (s16)width - 5, panelAlpha, 0x100, 5, 5, 1);
@@ -5785,7 +5791,7 @@ void pauseMenuDoSave(void)
     u8 j;
 
     gGameUiSavedFovY = Camera_GetFovY();
-    Camera_SetFovY(43.0f);
+    Camera_SetFovY(lbl_803E2044);
     Camera_SetCurrentViewIndex(1);
     gGameUiSavedCameraShake = CameraShake_IsEnabled();
     CameraShake_Disable();
@@ -5879,7 +5885,7 @@ void gameUiBeginOverlayView(f32 fov, f32 x, f32 y)
     Camera_SetCurrentViewRotation(0x8000, 0, 0);
     Camera_UpdateViewMatrices();
     Camera_RebuildProjectionMatrix();
-    GXSetViewport(x - lbl_803E1F34, y - 240.0f, (f32)gRenderModeObj->fbWidth,
+    GXSetViewport(x - lbl_803E1F34, y - lbl_803E2024, (f32)gRenderModeObj->fbWidth,
                   gRenderModeObj->xfbHeight, lbl_803E1E3C, lbl_803E1E68);
 }
 
@@ -5903,7 +5909,7 @@ void pauseMenuRenderSlotShadow(void)
     Camera_SetCurrentViewPosition(lbl_803E1E3C, lbl_803E1E3C, lbl_803E1E3C);
     Camera_SetCurrentViewRotation(0x8000, 0, 0);
     saved_fov = Camera_GetFovY();
-    Camera_SetFovY(43.0f);
+    Camera_SetFovY(lbl_803E2044);
     Camera_RebuildProjectionMatrix();
     Camera_UpdateViewMatrices();
     GXSetViewport(lbl_803E1E3C, lbl_803E1E3C, (f32)gRenderModeObj->fbWidth,

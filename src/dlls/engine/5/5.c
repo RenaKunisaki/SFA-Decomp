@@ -591,7 +591,7 @@ void skyBuildSunModelMatrix(Mtx mtx)
 
     scale = 1.0f / gSkySunObject->anim.rootMotionScale;
     PSMTXScale(scaleMtx, scale, scale, scale);
-    Obj_BuildWorldTransformMatrix((GameObject*)gSkySunObject, (f32*)mtx, 0);
+    Obj_BuildWorldTransformMatrix(gSkySunObject, (f32*)mtx, 0);
     PSMTXConcat(mtx, scaleMtx, mtx);
 }
 
@@ -1442,13 +1442,13 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         gSkySunDirection[0] = vec[0];
         gSkySunDirection[1] = vec[1];
         gSkySunDirection[2] = vec[2];
-        ((GameObject*)gSkySunObject)->anim.localPosX = cam->worldX + (f32)(s16)(int)vec[0];
-        ((GameObject*)gSkySunObject)->anim.localPosY = cam->worldY + (f32)(s16)(int)vec[1];
-        ((GameObject*)gSkySunObject)->anim.localPosZ = cam->worldZ + (f32)(s16)(int)vec[2];
-        ((GameObject*)gSkySunObject)->anim.rootMotionScale = 400.0f * scale;
+        gSkySunObject->anim.localPosX = cam->worldX + (f32)(s16)(int)vec[0];
+        gSkySunObject->anim.localPosY = cam->worldY + (f32)(s16)(int)vec[1];
+        gSkySunObject->anim.localPosZ = cam->worldZ + (f32)(s16)(int)vec[2];
+        gSkySunObject->anim.rootMotionScale = 400.0f * scale;
         *(s16*)gSkySunObject = 0x10000 - cam->yaw;
-        ((GameObject*)gSkySunObject)->anim.rotY = cam->pitch;
-        ((GameObject*)gSkySunObject)->anim.rotZ = 0;
+        gSkySunObject->anim.rotY = cam->pitch;
+        gSkySunObject->anim.rotZ = 0;
         gSkySunObject->anim.renderAlpha = *(s16*)&gSkySunAlpha;
         time2 = ((SkyState*)gSkyState)->timeOfDay;
         if (time2 >= 75600.0f)
@@ -1522,15 +1522,15 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         gSkyMoonDirection[0] = vec[0];
         gSkyMoonDirection[1] = vec[1];
         gSkyMoonDirection[2] = vec[2];
-        ((GameObject*)gSkyMoonObject)->anim.localPosX = cam->worldX + (f32)(s16)(int)vec[0];
-        ((GameObject*)gSkyMoonObject)->anim.localPosY = cam->worldY + (f32)(s16)(int)vec[1];
-        ((GameObject*)gSkyMoonObject)->anim.localPosZ = cam->worldZ + (f32)(s16)(int)vec[2];
-        ((GameObject*)gSkyMoonObject)->anim.rootMotionScale = 400.0f * scale;
-        ((GameObject*)gSkyMoonObject)->anim.rotX = 0x10000 - cam->yaw;
-        ((GameObject*)gSkyMoonObject)->anim.rotY = cam->pitch;
+        gSkyMoonObject->anim.localPosX = cam->worldX + (f32)(s16)(int)vec[0];
+        gSkyMoonObject->anim.localPosY = cam->worldY + (f32)(s16)(int)vec[1];
+        gSkyMoonObject->anim.localPosZ = cam->worldZ + (f32)(s16)(int)vec[2];
+        gSkyMoonObject->anim.rootMotionScale = 400.0f * scale;
+        gSkyMoonObject->anim.rotX = 0x10000 - cam->yaw;
+        gSkyMoonObject->anim.rotY = cam->pitch;
         vis = 0;
-        ((GameObject*)gSkyMoonObject)->anim.rotZ = 0;
-        ((GameObject*)gSkyMoonObject)->anim.renderAlpha = *(s16*)&gSkyMoonAlpha;
+        gSkyMoonObject->anim.rotZ = 0;
+        gSkyMoonObject->anim.renderAlpha = *(s16*)&gSkyMoonAlpha;
         if (gSkySunObject->anim.renderAlpha != 0)
         {
             if (gSkyState != NULL)
@@ -1539,12 +1539,12 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             }
             if (vis == 0 && (u8)visible != 0)
             {
-                model = (u8*)Obj_GetActiveModel((GameObject*)gSkySunObject);
+                model = (u8*)Obj_GetActiveModel(gSkySunObject);
                 ((ObjModel*)model)->bufferFlags &= ~8;
-                objRender(a, b, c, d, (GameObject*)gSkySunObject, 1);
+                objRender(a, b, c, d, gSkySunObject, 1);
             }
         }
-        if (((GameObject*)gSkyMoonObject)->anim.renderAlpha != 0)
+        if (gSkyMoonObject->anim.renderAlpha != 0)
         {
             if (gSkyState != NULL)
             {
@@ -1558,7 +1558,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             {
                 model = (u8*)Obj_GetActiveModel(gSkyMoonObject);
                 ((ObjModel*)model)->bufferFlags &= ~8;
-                objRender(a, b, c, d, (GameObject*)gSkyMoonObject, 1);
+                objRender(a, b, c, d, gSkyMoonObject, 1);
             }
         }
         Camera_SetFarPlane(far, 0);
@@ -1927,16 +1927,16 @@ void skyUpdateTimeOfDay(void)
             i = 0;
             for (count = 2; count != 0; count--)
             {
-                p = gSkyState + i;
-                *(f32*)&((GameObject*)p)->extra -= *(f32*)(p + 0xb4) * timeDelta;
-                val = *(f32*)(gSkyState + (idx = i + 0xb8));
-                *(f32*)(gSkyState + idx) =
+                ((SkyState*)gSkyState)->lights[i].blendFactor -=
+                    ((SkyState*)gSkyState)->lights[i].blendRate * timeDelta;
+                val = ((SkyState*)gSkyState)->lights[i].blendFactor;
+                ((SkyState*)gSkyState)->lights[i].blendFactor =
                     (val < 0.0f) ? 0.0f : ((val > 1.0f) ? 1.0f : val);
-                *(f32*)(gSkyState + (idx = i + 0xbc)) -= 0.008333334f * timeDelta;
-                val = *(f32*)(gSkyState + idx);
-                *(f32*)(gSkyState + idx) =
+                ((SkyState*)gSkyState)->lights[i].unk9C -= 0.008333334f * timeDelta;
+                val = ((SkyState*)gSkyState)->lights[i].unk9C;
+                ((SkyState*)gSkyState)->lights[i].unk9C =
                     (val < 0.0f) ? 0.0f : ((val > 1.0f) ? 1.0f : val);
-                i += 0xa4;
+                i++;
             }
             ((SkyState*)gSkyState)->fadeFactor -= ((SkyState*)gSkyState)->fadeRate * timeDelta;
             val = ((SkyState*)gSkyState)->fadeFactor;
