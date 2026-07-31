@@ -2226,7 +2226,7 @@ static inline GameObject* objSeqFindLinkedObject(u8* seqObj, GameObject* candida
     int j;
 
     j = 0;
-    slotBase = gObjSeqRuntimeBuffer + (s8)seqObj[0x57] * 0x80;
+    slotBase = gObjSeqRuntimeBuffer + ((ObjSeqState*)seqObj)->slot * 0x80;
     entry = slotBase;
     for (; j < 16; j++)
     {
@@ -2284,7 +2284,7 @@ int ObjSeq_resolveTargetObject(GameObject* obj)
         {
             lbl_803DD064 = 0;
         }
-        if ((lbl_80399E50[(s8)seqObj[0x57]] & 0x10) == 0)
+        if ((lbl_80399E50[((ObjSeqState*)seqObj)->slot] & 0x10) == 0)
         {
             (*gCameraInterface)->setLetterbox(0x41, 1);
         }
@@ -2335,7 +2335,7 @@ int ObjSeq_resolveTargetObject(GameObject* obj)
     found = *(GameObject**)seqObj;
     if (found != NULL)
     {
-        if ((s8)seqObj[0x57] < 0x19)
+        if (((ObjSeqState*)seqObj)->slot < 0x19)
         {
             if (found->seqIndex != -1)
             {
@@ -4523,7 +4523,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         animState = (u8*)((ObjAnimBank*)action)->currentState;
         if (activeObj->anim.currentMove == ((ObjSeqState*)seq)->moveId)
         {
-            if ((s8)animState[0x60] != 0)
+            if ((s8)((ObjAnimState*)animState)->frameType != 0)
             {
                 restart = 0;
             }
