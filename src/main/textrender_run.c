@@ -489,7 +489,8 @@ void gameTextRun(void)
             break;
         }
         case 15:
-            gameTextFonts = &runtime->fonts[cmd->arg0];
+            gameTextFonts = (TextFont*)((cmd->arg0 * sizeof(TextFont) + offsetof(GameTextRuntime, fonts)) +
+                                         (int)runtime);
             gameTextCharset = cmd->arg0;
             if (cmd->arg0 == 2)
             {
