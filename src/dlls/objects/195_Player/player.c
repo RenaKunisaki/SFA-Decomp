@@ -11588,7 +11588,6 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
         f32 thresh;
         int i;
         int j;
-        u32 vertexZOffset;
         wallHit = 0;
         if (parent != NULL)
         {
@@ -11635,16 +11634,14 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
                 }
                 if ((void*)tri != NULL && ((*(s8*)(tri + 3) & 0x3f) == 5 || (*(s8*)(tri + 3) & 0x3f) == 2))
                 {
-                    j = *(s16*)(tri + 4) * 0xc;
-                    x1 = *(f32*)(verts + j);
+                    j = *(s16*)(tri + 4);
+                    x1 = *(f32*)(verts + j * 12);
                     y1 = 0.0f;
-                    vertexZOffset = j + offsetof(Vec, z);
-                    z1 = ((f32*)verts)[vertexZOffset / sizeof(f32)];
-                    j = *(s16*)(tri + 6) * 0xc;
-                    x2 = *(f32*)(verts + j);
+                    z1 = ((f32*)verts)[j * 3 + 2];
+                    j = *(s16*)(tri + 6);
+                    x2 = *(f32*)(verts + j * 12);
                     y2 = 0.0f;
-                    vertexZOffset = j + offsetof(Vec, z);
-                    z2 = ((f32*)verts)[vertexZOffset / sizeof(f32)];
+                    z2 = ((f32*)verts)[j * 3 + 2];
                     if (parent != NULL)
                     {
                         Obj_TransformLocalPointToWorld(x1, y1, z1, &x1, &y1, &z1, parent);
@@ -11795,7 +11792,6 @@ int playerBuildLedgeClimbProbe(int a, int b, void* c, int d, f32* e, f32 distanc
     void* hit;
     int i;
     int j;
-    u32 vertexZOffset;
     f32 bx, ax, bz, az, by, ay;
     f32 threshold;
     EmitPlane planes[2];
@@ -11850,16 +11846,14 @@ int playerBuildLedgeClimbProbe(int a, int b, void* c, int d, f32* e, f32 distanc
             if (face != NULL &&
                 (((s8) * (s8*)((char*)face + 0x3) & 0x3f) == 6 || ((s8) * (s8*)((char*)face + 0x3) & 0x3f) == 0x10))
             {
-                j = *(s16*)((char*)face + 0x4) * 0xc;
-                ax = *(f32*)(tbl2 + j);
+                j = *(s16*)((char*)face + 0x4);
+                ax = *(f32*)(tbl2 + j * 12);
                 ay = 0.0f;
-                vertexZOffset = j + offsetof(Vec, z);
-                az = ((f32*)tbl2)[vertexZOffset / sizeof(f32)];
-                j = *(s16*)((char*)face + 0x6) * 0xc;
-                bx = *(f32*)(tbl2 + j);
+                az = ((f32*)tbl2)[j * 3 + 2];
+                j = *(s16*)((char*)face + 0x6);
+                bx = *(f32*)(tbl2 + j * 12);
                 by = 0.0f;
-                vertexZOffset = j + offsetof(Vec, z);
-                bz = ((f32*)tbl2)[vertexZOffset / sizeof(f32)];
+                bz = ((f32*)tbl2)[j * 3 + 2];
                 if (hit != NULL)
                 {
                     Obj_TransformLocalPointToWorld(ax, ay, az, &ax, &ay, &az, (GameObject*)(int)hit);
