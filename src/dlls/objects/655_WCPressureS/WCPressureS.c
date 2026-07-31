@@ -111,20 +111,24 @@ static inline void wcpressures_addTrackedObject(GameObject* obj, GameObject* tra
     state->savedPos[trackedIndex].z = trackedObject->anim.localPosZ;
 }
 
-static inline u8 wcpressures_scanTrackedObjects(WCPressuresState* state) {
-    GameObject* trackedObject;
-    u8 trackedIndex;
-    u8 foundStationaryObject;
+static inline u8 wcpressures_scanTrackedObjects(int stateAddress) {
+    int positionAddress;
+    u32 trackedObject;
+    u8 slotIndex;
+    int foundStationaryObject;
 
     foundStationaryObject = 0;
-    for (trackedIndex = 0; trackedIndex < WCPRESSURES_TRACKED_COUNT; trackedIndex++) {
-        trackedObject = state->objects[trackedIndex];
-        if (trackedObject != NULL) {
-            if (state->savedPos[trackedIndex].x == trackedObject->anim.localPosX &&
-                state->savedPos[trackedIndex].z == trackedObject->anim.localPosZ) {
+    for (slotIndex = 0; slotIndex < WCPRESSURES_TRACKED_COUNT; slotIndex++) {
+        trackedObject = *(u32*)(stateAddress + slotIndex * 4 + offsetof(WCPressuresState, objects));
+        if (trackedObject != 0) {
+            positionAddress = stateAddress + slotIndex * 8;
+            if (*(f32*)(positionAddress + offsetof(WCPressuresState, savedPos[0].x)) ==
+                    ((GameObject*)trackedObject)->anim.localPosX &&
+                *(f32*)(positionAddress + offsetof(WCPressuresState, savedPos[0].z)) ==
+                    ((GameObject*)trackedObject)->anim.localPosZ) {
                 foundStationaryObject = 1;
             } else {
-                state->objects[trackedIndex] = NULL;
+                *(u32*)(stateAddress + slotIndex * 4 + offsetof(WCPressuresState, objects)) = 0;
             }
         }
     }
@@ -156,8 +160,7 @@ void wcpressures_update(GameObject* obj) {
         }
     }
     {
-        WCPressuresState* trackedState = (WCPressuresState*)obj->extra;
-        u8 foundStationaryObject = wcpressures_scanTrackedObjects(trackedState);
+        u8 foundStationaryObject = wcpressures_scanTrackedObjects(*(int*)&obj->extra);
 
         if ((int)foundStationaryObject != 0) {
             state->pressTimer = WCPRESSURES_FOUND_TIMER;
