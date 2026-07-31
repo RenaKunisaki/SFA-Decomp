@@ -487,9 +487,9 @@ static inline void debugDrawLogRect(void)
 {
     u32 x0;
     u32 x;
+    u32 x1;
     u32 y0;
     u32 y1;
-    u32 x1;
     f32 sc;
     GXColor col;
 

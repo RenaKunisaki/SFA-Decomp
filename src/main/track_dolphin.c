@@ -1864,7 +1864,6 @@ int trackGetHeight(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsO
     u8* ptr;
     TrackGroundHit* hit;
     int i, j;
-    int sortIndex;
     int sorted;
     int conv[6];
     f32 tx, ty, tz;
@@ -1912,12 +1911,12 @@ int trackGetHeight(GameObject* obj, f32 x, f32 y, f32 z, TrackGroundHit*** hitsO
     sorted = 0;
     while (!sorted) {
         sorted = 1;
-        for (sortIndex = 0; sortIndex < gTrackGroundHitCount - 1; sortIndex++) {
-            if (gTrackGroundHitPtrs[sortIndex]->height < gTrackGroundHitPtrs[sortIndex + 1]->height) {
-                hit = gTrackGroundHitPtrs[sortIndex];
+        for (j = 0; j < gTrackGroundHitCount - 1; j++) {
+            if (gTrackGroundHitPtrs[j]->height < gTrackGroundHitPtrs[j + 1]->height) {
+                hit = gTrackGroundHitPtrs[j];
                 sorted = 0;
-                gTrackGroundHitPtrs[sortIndex] = gTrackGroundHitPtrs[sortIndex + 1];
-                gTrackGroundHitPtrs[sortIndex + 1] = hit;
+                gTrackGroundHitPtrs[j] = gTrackGroundHitPtrs[j + 1];
+                gTrackGroundHitPtrs[j + 1] = hit;
             }
         }
     }
