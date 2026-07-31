@@ -337,8 +337,12 @@ static void DR_EarthWarrior_updateLookAtBones(GameObject* obj, EarthWarriorSub* 
         angleDelta = angleDelta + 0xffff;
     }
     responseScale = 0.15f;
-    angleDelta = (int)((f32)angleDelta * responseScale);
-    angleDelta = (angleDelta < -0x16c) ? -0x16c : ((angleDelta > 0x16c) ? 0x16c : angleDelta);
+    angleDelta *= responseScale;
+    if (angleDelta < -0x16c) {
+        angleDelta = -0x16c;
+    } else if (angleDelta > 0x16c) {
+        angleDelta = 0x16c;
+    }
     warrior->aimAccumY = angleDelta * timeDelta + (f32)(s32) * (s16*)&warrior->aimAccumY;
     warrior->aimHalfY = warrior->aimAccumY / 2;
     {
