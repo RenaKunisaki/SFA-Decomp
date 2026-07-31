@@ -35,8 +35,8 @@ extern u8 gMapBlockCount; /* count of allocated blocks */
 extern s16* gMapBlockIds;
 extern u8* gMapBlockRefCounts;
 extern void* gMapInfoBuffer;
-extern void* lbl_803DCE7C;
-extern void* lbl_803DCE80;
+extern void* gMapsTab;
+extern void* gHitsTab;
 extern void* gTrkBlkTab;
 extern s16 gTrkBlkTabCount;
 extern s16 gPendingWarpIndex;
@@ -120,8 +120,8 @@ void initMapBlocks(void)
         *(u32*)(mb + 0x41d0 + i) = *(u32*)(mb + 0x41cc + i) + 0x100;
     }
 
-    loadAssetFileById(&lbl_803DCE7C, MLDF_FILEID_MAPS_TAB);
-    loadAssetFileById(&lbl_803DCE80, MLDF_FILEID_HITS_TAB);
+    loadAssetFileById(&gMapsTab, MLDF_FILEID_MAPS_TAB);
+    loadAssetFileById(&gHitsTab, MLDF_FILEID_HITS_TAB);
 
     q = (u32*)((u8*)(mb + 0x10000) - 0x7c58);
     zero = 0;

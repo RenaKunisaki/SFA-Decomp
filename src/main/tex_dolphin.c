@@ -1015,7 +1015,7 @@ extern u32 gSunFlareScissorHeight;
 extern u8 gGlowLightCount;
 extern ModelLightStruct* gGlowLightList[];
 extern u8 gMapBlockCount;
-extern int lbl_803DCE80;
+extern int gHitsTab;
 extern int gMapBlockIndexCount;
 extern int* gMapBlockIndexList;
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -1607,7 +1607,7 @@ void MapBlock_init(MapBlockData* block)
 void MapBlock_initHits(MapBlockData* block, int index)
 {
     int i;
-    int* table = (int*)lbl_803DCE80;
+    int* table = (int*)gHitsTab;
     int fileOff = table[index];
     int size = table[index + 1] - fileOff;
     MapHitLine* entry;

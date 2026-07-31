@@ -206,6 +206,16 @@ the numeric id every loader call site actually uses:
 string literals live in another (audio-side) source file, not found in `src/main/pi_dolphin.c`
 itself.
 
+**Fossil rows** - a block of table entries name files that do not exist on the shipped (rev1)
+disc at all, and no call site anywhere in src passes their fileIds to any loader: 0x00-0x09
+(AUDIO/SFX/AMBIENT/MUSIC/MPEG `.tab`/`.bin` - retail audio instead streams `/audio/data/*.bin`
+through musyx, see the path strings in `src/main/audio.c`), 0x0a (MUSICACT.bin), 0x11/0x12
+(CACHEFON.bin, both slots), 0x42 (DLLS.bin - only the 32-byte N64-leftover `DLLS.tab` ships),
+and 0x44 (DLLSIMPO.bin). BLOCKS.bin/tab (0x25/0x26/0x47/0x48) are half-fossils: the ids are
+live, but `mapLoadDataFile` formats their paths as `%s/mod%d.zlb.bin`/`%s/mod%d.tab`
+(`sMapAssetPathFormats`), so the literal "BLOCKS" filenames are never opened. These are
+Dinosaur-Planet-era loader-table rows kept to preserve the fileId numbering.
+
 The **2nd-slot** entries (0x45-0x56) exist because per-map resources are double-buffered so
 two maps can be resident at once during a transition - this is exactly the wiki's "every map
 has its own copy of every asset" note, generalized into a fixed dual-slot pool rather than
@@ -249,19 +259,19 @@ Per-map compressed blocks (`modXX.zlb.bin`) are handled separately by
 | modXX.zlb.bin/tab | n/a | `piRomLoadSection` + `struct PackHeader`/`struct ZlbHeader` | magic/size header fully decoded (see above) |
 | MODELIND.bin | 0x2c | `src/main/model.c: ObjModel_Load` | `fileLoadToBufferOffset(0x2c, gModelResourceBuffer, idc*2, 8)`; word 0 of the 8-byte record is the resolved "real" model id used for the `MODELS.bin` lookup - directly confirms "maps model IDs to indices" |
 | MODELS.bin/TAB | 0x2b/0x2a (+0x46/0x45) | `src/main/model.c`, `src/main/objprint_dolphin.c` | dual-slot per-map streaming (see above) |
-| OBJSEQ2C.tab | 0x0f | table slot only | no consuming reader found in decompiled source yet |
-| OBJSEQ.bin/tab | 0x3b/0x3c | table slot only for the *file*; the runtime bytecode interpreter is `include/main/objseq.h` (`struct ObjSeqState`, `ObjSeq_EvaluateCondition`) and `src/main/objseq.c` | the interpreter for the sequence bytecode is fully decompiled; the raw file-load call site by fileId wasn't found (may be behind an indirection not yet traced) |
+| OBJSEQ2C.tab | 0x0f | `src/dlls/engine/2/2.c` (`getTabEntry(gObjSeqAnimLookup, 0x0f, ((animId & 0x7ff0) >> 4) * 2, 8)`) | anim-id to sequence lookup table, 2-byte stride |
+| OBJSEQ.bin/tab | 0x3b/0x3c | `src/dlls/engine/2/2.c` (`.tab` header fetch at `seqIdx * 2`, then `.bin` payload at `first * 8`); the runtime bytecode interpreter is `include/main/objseq.h`/`src/main/objseq.c` | 8-byte-unit sequence records selected through the `.tab` index |
 | TEX0.bin/tab | 0x23/0x24 (+0x4d/0x4e) | `include/main/texture.h` (`textureLoad`/`textureFree`) | "environment" textures per wiki |
 | TEX1.bin/tab | 0x20/0x21 (+0x4b/0x4c) | same texture system | "character" textures per wiki |
-| VOXMAP.bin/tab | 0x1a/0x1b (+0x53/0x54) | `mapLoadDataFile` only (`voxMapReadCb`/`voxMapTabReadCb` externs) | consuming reader not found yet |
+| VOXMAP.bin/tab | 0x1a/0x1b (+0x53/0x54) | `src/main/voxmaps.c` (`voxLoadVoxMapActual` + walkers) | **format fully decoded** (`VoxMapFile` in `include/main/voxmaps.h`): per-record `minY`/`maxY`, occupancy `bitmap` (32 B/row), packed 12-bit `rowCounts` rank bases (3 B/row), popcount-ranked `nodeBase` cells; note retail never stores a loaded map into `activeMap` (link severed pre-ship), so the walkers see NULL |
 | AMAP.BIN/TAB | 0x32/0x31 | `src/main/model.c` | 0x31 (`AMAP.TAB`) is `gModelAnimOffsetTable`, a per-4-anim-group 0x20-byte offset block (`(id & ~3) << 2` stride); 0x32 (`AMAP.BIN`) backs `ModelFileHeader::animationDataSection`/`animationDataFileOffset` - refines the wiki's guess: the **.TAB is the id->offset index**, the **.BIN is the animation payload** it points into |
-| BITTABLE.BIN | 0x33 | table slot only | `include/main/gamebits.h` defines the runtime `enum GameBitId` (symbolic ids for `mainGetBit`/`mainSetBits`) but does not itself parse this file - not found |
-| CAMACTIO.bin | 0x0b | table slot only | not found |
+| BITTABLE.BIN | 0x33 | `src/main/gameloop_main.c` (`loadAssetFileById(&gGameBitTable, 0x33)`) | 4-byte `GameBitDef` records, one per GameBit id (`include/main/gamebits.h` holds the symbolic id enum) |
+| CAMACTIO.bin | 0x0b | `src/dlls/engine/1_camcontrol/camcontrol.c` | records are `sizeof(CamcontrolTriggeredAction)` each, fetched by action index via `getTabEntry` |
 | ENVFXACT.bin | 0x57 | table slot only | `src/dlls/objects/286_MagicCaveBo/MagicCaveBo.c` uses `envFxAct`/`EnvfxAct`-named locals, consistent with "weather effects", but the loader itself wasn't traced |
-| globalma.bin | 0x15 | table slot only | not found |
-| HITS.bin/tab | 0x28/0x29 | `src/main/track_dolphin.c` (`fileLoadToBufferOffset(0x28, ...)`) | confirms "related to map hit detection" |
-| MAPINFO.bin | 0x1f | table slot only | no consumer found - consistent with wiki's "mostly unused in final version" |
-| MAPS.bin/tab | 0x1d/0x1e | `src/main/shader.c` (0x1d) | 0x1e (`.tab`) consumer not found |
+| globalma.bin | 0x15 | `src/main/shader.c` (`loadAssetFileById(&data, 0x15)` + `getDataFileSize(0x15)`) | loaded whole; see [Maps](Maps) for the grid format |
+| HITS.bin/tab | 0x28/0x29 | `src/main/tex_dolphin.c` (`MapBlock_initHits`), `src/main/lightmap_initmapblocks.c` (0x29 -> `gHitsTab`), `src/main/track_dolphin.c` | **format confirmed**: `.tab` = 1600 `u32` byte-offsets (one per block index, all 32-byte aligned; rev1 deltas sum exactly to the .bin size); per-block chunk = consecutive 0x14-byte `MapHitLine` records (`include/main/map_block.h`), count = chunk size / 0x14 |
+| MAPINFO.bin | 0x1f | `src/main/shader.c` (`MapInfoRecord`, `getTabEntry(..., 0x1f, mapId << 5, 0x20)`) | **format confirmed**: 0x20-byte records `{ char name[0x1c]; s8 mapType; u8 unk1d; s16 objType; }` - `mapType` drives `curMapType`; `objType` (rev1 corpus: nonzero on exactly the 28 mapType-1 sub-maps, resolving through OBJINDEX/OBJECTS to the map's carrier object, e.g. `cfcolumn`->`CF_BobbingC`, `galleonship`->`SB_Galleon`) is copied into a write-only latch on sub-map entry; `unk1d` is 6 in all 117 records |
+| MAPS.bin/tab | 0x1d/0x1e | `src/main/shader.c` (0x1d), `src/main/lightmap_initmapblocks.c` (0x1e -> `gMapsTab`) | `.tab` is loaded once into `gMapsTab` and read by `shader.c` as an 8-word-per-map offset table into MAPS.bin (cells/cellRects/visCellRects/layerRects/visLayerRects/objects/loadedObjectBits section starts) |
 | MODANIM.BIN/TAB | 0x2e/0x2d | `src/main/model.c` | 0x2d (`.TAB`) is a per-model animation-header index (`id << 1` stride, 0x10-byte record); 0x2e (`.BIN`) backs `ModelFileHeader::animationHeaderBuffer` (a per-joint `s16` table per the header's own comment) |
 | MODLINES.bin/tab | 0x37/0x38 | `src/main/object.c` | 0x38 (`.tab`) is an offset table (`idx << 2` stride, reads two adjacent `u32` offsets to derive size); 0x37 (`.bin`) records are 20 bytes each (`size / 20` count) |
 | OBJECTS.bin/tab | 0x3e/0x3d | `src/main/object.c` (`gObjFileOffsetTable`) | 0x3d (`.tab`) is a `-1`-terminated `u32` offset array (`loadAssetFileById(&gObjFileOffsetTable, 0x3d)`), one offset per object-def id; per-object record format is further documented in `docs/dll_naming_manifest.md`: object name at def+0x91 (11-char fixed field), DLL id at def+0x50 |
@@ -269,12 +279,13 @@ Per-map compressed blocks (`modXX.zlb.bin`) are handled separately by
 | OBJHITS.bin | 0x41 | `src/main/objHitReact.c` (`OBJHITREACT_ENTRY_TAB_FILE_ID` = 0x41, `include/main/objHitReact.h`) | confirms "sparse table": `ObjHitReact_LoadMoveEntries` walks a per-model `hitReactMoveTable` of `{moveId, s16 byteOffset, s16 byteCount}` triples and pulls the matching byte range out of OBJHITS.bin via `getTabEntry`/`fileLoadToBufferOffset` - i.e. sparse per-move hit-reaction data, indexed indirectly through the model's own move table rather than a flat index |
 | OBJINDEX.bin | 0x3f | `src/main/object.c` (`gObjSeqToObjIdMax = (getDataFileSize(0x3f) >> 1) - 1`) | confirms 2-byte (`s16`) stride, i.e. an array of ids - matches "maps object IDs to indices" |
 | PREANIM.BIN/TAB | 0x51/0x52 | `src/main/model.c` (0x52 read as a 4-byte `flags` value at `id << 2`) | partial format confirmation only |
-| TABLES.bin/tab | 0x16/0x17 | table slot only | not found; wiki's waterfall-animation claim not independently re-verified here |
-| TEXPRE.bin/tab | 0x4f/0x50 | table slot only | not found |
-| TEXTABLE.bin | 0x22 | table slot only | not found |
-| TRKBLK.tab | 0x27 | table slot only | not found (name suggests a relation to `src/main/track_dolphin.c`'s track-block system, not verified) |
+| TABLES.bin/tab | 0x16/0x17 | `src/main/object.c` (`gObjTablesBinData`/`gObjTablesBinIndex`) | 16 sub-tables; ids 0-4 and 14 are `-1`-terminated `s32` textureId lists (ids 1-3 are overlapping suffix tails of one list; id 14 is read negated by texscroll2); ids 5-13 have no consumer anywhere in src |
+| TEXPRE.bin/tab | 0x4f/0x50 | `src/main/texture.c` (`getCurrentDataFile(0x50)`) | `.tab` consulted as the pre-loaded texture bank index |
+| TEXTABLE.bin | 0x22 | `src/main/texture.c` (`loadAssetFileById(&gRcpTexIdRemap, 0x22)`) | texture-id remap table |
+| TRKBLK.tab | 0x27 | `src/main/lightmap_initmapblocks.c` (`gTrkBlkTab`/`gTrkBlkTabCount`), `src/main/shader.c` (`mapFillCellEntry`) | **format confirmed**: `0xffff`-terminated `u16` array of base block ids, one per romlist group; a cell's global block id = `cellIndex + gTrkBlkTab[romListIndex]`, clamped against the terminator's predecessor |
 | WARPTAB.bin | 0x1c | `src/main/rcp_dolphin.c` (`warpToMap`) | **fully confirmed format**: `getTabEntry(p, 28, idx << 4, 16)` - 16-byte records, decoded into `struct WarpDestination { f32 x, y, z; s16 angle0, angle1; }`; `include/main/gamebits.h`'s `GAMEBIT_MagicCaveExitWarp` comment independently calls out a "WARPTAB index" |
-| WEAPONDA.bin | 0x34 | `src/main/object.c` (`weaponDaTable->entries`) | name match confirms "relates to staff animations" |
+| VOXOBJ.tab | 0x35 | `src/main/voxmaps.c` (`voxmaps_initialise` -> `gVoxMapsMapList`) | contradicts the wiki's "never accessed": it *is* loaded at voxmaps init as a `-1`-terminated `s32` list whose length sets `gVoxMapsMaxMapIndex` (rev1 content = one `0` entry, so the max index is 0); VOXOBJ.bin (0x36) genuinely has no consumer |
+| WEAPONDA.bin | 0x34 | `src/main/object.c` (`objGetWeaponDa`), `src/dlls/objects/226/226.c` (`staff_setupSwipe`) | **format confirmed**: streams of 12-byte samples, each `s16[6]` = two staff-endpoint points `{ax,ay,az,bx,by,bz}` scaled by 1/255, sampled along the move's animation and B-spline-interpolated into the swipe trail; a model's `weaponDaTable` is `{s16 moveId, s16 byteOffset, s16 byteCount}` triples (-1-terminated) selecting the byte range (capped at 0x800); rev1 file = exactly 4272 samples (51264/12) |
 | FONTS.bin | 0x10 | table slot only | not found - consistent with wiki's "read but not used" |
 | CACHEFON.bin | 0x11 and 0x12 | table slot only (both slots point at the *same* string, `"CACHEFON.bin"`) | the wiki lists two distinct always-empty files, `CACHEFONTSTAB.bin`/`CACHEFONTSTEX.bin`; our decompiled string is `CACHEFON.bin` (singular, no TAB/TEX suffix) for both slots - possibly a truncation or a genuinely different filename; not resolved here |
 | GAMETEXT.bin/tab | 0x13/0x14 | table slot only | this is the wiki's *old, unused, root-only* copy; the actually-used per-map/per-sequence text lives under the `gametext/` directory and is loaded by `src/main/textrender.c` via `sGameTextMapPathFormat = "gametext/%s/%s.bin"` and `sGameTextSequencePathFormat = "gametext/Sequences/%d_%s.bin"` - two separate mechanisms, consistent with the wiki's root-vs-directory distinction |

@@ -65,10 +65,10 @@ static void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int
 /* One 0x20-byte MAPINFO.bin (fileId 0x1f) record, fetched by mapId via getTabEntry. */
 typedef struct MapInfoRecord
 {
-    u8 unk00[0x1c];
-    s8 mapType; /* +0x1c: MapType */
-    u8 unk1d;
-    s16 unk1e; /* +0x1e */
+    char name[0x1c]; /* NUL-padded editor name; only mapType is read at runtime */
+    s8 mapType;      /* +0x1c: MapType */
+    u8 unk1d;        /* always 6 in retail */
+    s16 objType;     /* +0x1e: carrier object type for mapType-1 sub-maps, else 0 */
 } MapInfoRecord;
 extern WarpVec gCameraPosByTransformSpace[];
 extern const f32 gMapBlockWorldSize;
@@ -117,8 +117,8 @@ s16 gTrkBlkTabCount;
 u8* gMapBlockRefCounts;
 s8* gMapLayerCellStates;
 u16* gTrkBlkTab;
-void* lbl_803DCE80;
-int lbl_803DCE7C;
+void* gHitsTab;
+int gMapsTab;
 u8* gMapInfoBuffer;
 int gMapCellRenderInstrsTable;
 s16 gMapCellRenderInstrBits;
@@ -1665,7 +1665,7 @@ void mapSetup(int layerOffset, f32 x, int* outMapId, int* outMapDataFileId, f32 
     if (curMapType == MAPTYPE_SUBMAP)
     {
         lbl_803DCEB6 = mapId;
-        lbl_803DCEB4 = mapInfo->unk1e;
+        lbl_803DCEB4 = mapInfo->objType;
     }
     *outMapId = mapId;
     if (mapId != -1)
@@ -2531,10 +2531,10 @@ static void mapInitSetRects(s16* rect, u8* bitmap, int originX, int originY, int
 {
     u8* self = gMapInfoBuffer;
     int tabOff = idx * 7 << 2;
-    int offset0 = *(int*)(lbl_803DCE7C + tabOff);
+    int offset0 = *(int*)(gMapsTab + tabOff);
 
-    getTabEntry(self, MLDF_FILEID_MAPS_BIN, offset0, *(int*)((lbl_803DCE7C + 8) + tabOff) - offset0);
-    *(int*)(self + 0xc) = (int)self + *(int*)((lbl_803DCE7C + 4) + tabOff) - *(int*)(lbl_803DCE7C + tabOff);
+    getTabEntry(self, MLDF_FILEID_MAPS_BIN, offset0, *(int*)((gMapsTab + 8) + tabOff) - offset0);
+    *(int*)(self + 0xc) = (int)self + *(int*)((gMapsTab + 4) + tabOff) - *(int*)(gMapsTab + tabOff);
     rect[0] = originX - *(s16*)(self + 4);
     rect[2] = originY - *(s16*)(self + 6);
     rect[1] = rect[0] + *(s16*)(self + 0) - 1;
@@ -3080,8 +3080,8 @@ int mapProcessRomList(int slot)
 int mapGetRomListAndOffsets(int p1, int flag)
 {
     int words = p1 * 7;
-    int offset0 = *(int*)(lbl_803DCE7C + (words << 2));
-    int tailLen = *(int*)((lbl_803DCE7C + 0x1c) + ((u32)words << 2)) - offset0;
+    int offset0 = *(int*)(gMapsTab + (words << 2));
+    int tailLen = *(int*)((gMapsTab + 0x1c) + ((u32)words << 2)) - offset0;
     int v0, v1, v2;
     int i;
 
@@ -3089,15 +3089,15 @@ int mapGetRomListAndOffsets(int p1, int flag)
     gCurRomListPage = mmAlloc(tailLen + (v0 + 7 >> 3) + 0x401 + v2, 5, 0);
     fileLoadToBufferOffset(MLDF_FILEID_MAPS_BIN, gCurRomListPage, offset0, tailLen);
 
-    ((MapRomListPage*)gCurRomListPage)->cells = (u32*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 4) + (words << 2)) - offset0);
-    ((MapRomListPage*)gCurRomListPage)->cellRects = (u32*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 8) + (words << 2)) - offset0);
-    ((MapRomListPage*)gCurRomListPage)->visCellRects = (u32*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0xc) + (words << 2)) - offset0);
-    ((MapRomListPage*)gCurRomListPage)->layerRects = (u32*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x10) + (words << 2)) - offset0);
-    ((MapRomListPage*)gCurRomListPage)->visLayerRects = (u32*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x14) + (words << 2)) - offset0);
-    ((MapRomListPage*)gCurRomListPage)->objects = (ObjPlacement*)((int)gCurRomListPage + *(int*)((lbl_803DCE7C + 0x18) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->cells = (u32*)((int)gCurRomListPage + *(int*)((gMapsTab + 4) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->cellRects = (u32*)((int)gCurRomListPage + *(int*)((gMapsTab + 8) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->visCellRects = (u32*)((int)gCurRomListPage + *(int*)((gMapsTab + 0xc) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->layerRects = (u32*)((int)gCurRomListPage + *(int*)((gMapsTab + 0x10) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->visLayerRects = (u32*)((int)gCurRomListPage + *(int*)((gMapsTab + 0x14) + (words << 2)) - offset0);
+    ((MapRomListPage*)gCurRomListPage)->objects = (ObjPlacement*)((int)gCurRomListPage + *(int*)((gMapsTab + 0x18) + (words << 2)) - offset0);
 
-    piRomLoadSection(*(int*)((lbl_803DCE7C + 0x18) + (words << 2)), p1, (int)((MapRomListPage*)gCurRomListPage)->objects);
-    ((MapRomListPage*)gCurRomListPage)->loadedObjectBits = (u8*)((*(int*)((lbl_803DCE7C + 0x1c) + (words << 2)) + v2) + (int)gCurRomListPage - offset0);
+    piRomLoadSection(*(int*)((gMapsTab + 0x18) + (words << 2)), p1, (int)((MapRomListPage*)gCurRomListPage)->objects);
+    ((MapRomListPage*)gCurRomListPage)->loadedObjectBits = (u8*)((*(int*)((gMapsTab + 0x1c) + (words << 2)) + v2) + (int)gCurRomListPage - offset0);
 
     for (i = 0; i < (v0 + 7 >> 3) + 1; i++)
     {
