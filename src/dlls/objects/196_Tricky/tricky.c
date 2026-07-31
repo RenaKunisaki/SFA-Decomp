@@ -653,8 +653,6 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 /* "staff" (DLL 0xE2) */
 #define SKEETLA_PARTICLE_SPAWN_FLAGS   0x200001
 #define SKEETLA_PARTICLE_RANDOM_RATE   4
-void tricky_state04_nop(void);
-void tricky_updateBallRoll();
 void tricky_state06_nop(void);
 void trickyFlame();
 void trickyGuard();
@@ -663,22 +661,7 @@ void tricky_idleAndEat();
 void tricky_fetchBall();
 void trickyUpdateCirclingTargetPosition();
 void trickyUpdateCircling();
-void trickyGrowl();
 void tricky_trackTumbleweed();
-void tricky_stateGoToWarpPoint();
-int tricky_substateFollowIdle();
-u32 tricky_substateReturnToHeel();
-u32 tricky_substateWaitQueuedMove();
-int tricky_substateSleep();
-int tricky_substateHowlCall();
-u32 tricky_substateWaitMoveEnd();
-u32 tricky_substateFidgetB();
-u32 tricky_substateFidgetA();
-int tricky_substateIdlePick();
-int tricky_substateDigForFood();
-int tricky_substateBegForFood();
-int tricky_substateFlameBreath();
-int tricky_substateApproachThorntail();
 
 typedef void (*TrickyStateHandler)(void* obj, void* state);
 
