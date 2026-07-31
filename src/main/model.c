@@ -677,10 +677,10 @@ int modelGetAmapSize(int modelId, int amapFlag, int animCount)
     int totalSize;
     int index;
 
-    totalSize = animCount;
+    totalSize = 0;
     if (amapFlag != 0)
     {
-        totalSize = (totalSize << 1) + 8;
+        totalSize += animCount * 2 + 8;
         while (totalSize & 7)
         {
             totalSize++;
@@ -688,7 +688,7 @@ int modelGetAmapSize(int modelId, int amapFlag, int animCount)
     }
     else
     {
-        totalSize = totalSize << 2;
+        totalSize += animCount * 4;
         while (totalSize & 7)
         {
             totalSize++;
