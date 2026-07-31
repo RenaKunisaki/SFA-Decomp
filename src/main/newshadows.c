@@ -1410,11 +1410,11 @@ static void evalNoisePlacements(f32 px, f32 pz, f32 frame, f32* placements, int 
 void newShadowsInitProceduralTextures(void)
 {
     u8 savedHeap;
-    f32* placementRadius;
+    int placementAttempts;
     int row;
     f32* placementZ;
     f32* otherPlacement;
-    int placementAttempts;
+    f32* placementRadius;
     f32* placement;
     f32* placementX;
     u8 overlaps;
