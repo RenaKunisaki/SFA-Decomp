@@ -320,8 +320,8 @@ GXColor gScreenImageKColor0 = {0, 0, 0x80, 0};
 GXColor gScreenImageKColor1 = {0x80, 0x80, 0, 0};
 GXColor gScreenImageKColor2 = {0, 0x80, 0, 0};
 GXColor gScreenImageKColor3 = {0x80, 0, 0x80, 0};
-u32 lbl_803DB6F4 = 0xFFFFFF60;
-u32 lbl_803DB6F8 = 0xA0A0A080;
+u32 gWhirlpoolReflectionTintColor = 0xFFFFFF60;
+u32 gWhirlpoolReflectionKColor = 0xA0A0A080;
 
 
 

@@ -77,8 +77,8 @@ extern GXColor gScreenImageKColor0;
 extern GXColor gScreenImageKColor1;
 extern GXColor gScreenImageKColor2;
 extern GXColor gScreenImageKColor3;
-extern u32 lbl_803DB6F4;
-extern u32 lbl_803DB6F8;
+extern u32 gWhirlpoolReflectionTintColor;
+extern u32 gWhirlpoolReflectionKColor;
 
 typedef struct
 {
@@ -268,23 +268,25 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
 
     if (isHeavyFogEnabled() != 0)
     {
-        ((u8*)&lbl_803DB6F4)[0] = ((u8*)&gFogColor)[0];
-        ((u8*)&lbl_803DB6F4)[1] = ((u8*)&gFogColor)[1];
-        ((u8*)&lbl_803DB6F4)[2] = ((u8*)&gFogColor)[2];
-        ((u8*)&lbl_803DB6F4)[3] = 0x80;
+        ((u8*)&gWhirlpoolReflectionTintColor)[0] = ((u8*)&gFogColor)[0];
+        ((u8*)&gWhirlpoolReflectionTintColor)[1] = ((u8*)&gFogColor)[1];
+        ((u8*)&gWhirlpoolReflectionTintColor)[2] = ((u8*)&gFogColor)[2];
+        ((u8*)&gWhirlpoolReflectionTintColor)[3] = 0x80;
     }
     else
     {
         (*gSkyInterface)
-            ->getCurrentAmbientAndLightColors((u8*)&lbl_803DB6F4, (u8*)&lbl_803DB6F4 + 1, (u8*)&lbl_803DB6F4 + 2,
+            ->getCurrentAmbientAndLightColors((u8*)&gWhirlpoolReflectionTintColor,
+                                              (u8*)&gWhirlpoolReflectionTintColor + 1,
+                                              (u8*)&gWhirlpoolReflectionTintColor + 2,
                                               &ignoredLightColor, &ignoredLightColor, &ignoredLightColor);
-        ((u8*)&lbl_803DB6F4)[0] = (u8)((int)((u8*)&lbl_803DB6F4)[0] >> 3);
-        ((u8*)&lbl_803DB6F4)[1] = (u8)((int)((u8*)&lbl_803DB6F4)[1] >> 3);
-        ((u8*)&lbl_803DB6F4)[2] = (u8)((int)((u8*)&lbl_803DB6F4)[2] >> 3);
-        ((u8*)&lbl_803DB6F4)[3] = gReflectionTintAlpha;
+        ((u8*)&gWhirlpoolReflectionTintColor)[0] = (u8)((int)((u8*)&gWhirlpoolReflectionTintColor)[0] >> 3);
+        ((u8*)&gWhirlpoolReflectionTintColor)[1] = (u8)((int)((u8*)&gWhirlpoolReflectionTintColor)[1] >> 3);
+        ((u8*)&gWhirlpoolReflectionTintColor)[2] = (u8)((int)((u8*)&gWhirlpoolReflectionTintColor)[2] >> 3);
+        ((u8*)&gWhirlpoolReflectionTintColor)[3] = gReflectionTintAlpha;
     }
-    GXSetTevColor(GX_TEVREG2, *(GXColor*)&lbl_803DB6F4);
-    GXSetTevKColor(GX_KCOLOR0, *(GXColor*)&lbl_803DB6F8);
+    GXSetTevColor(GX_TEVREG2, *(GXColor*)&gWhirlpoolReflectionTintColor);
+    GXSetTevKColor(GX_KCOLOR0, *(GXColor*)&gWhirlpoolReflectionKColor);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD2, GX_TEXMAP2);
     GXSetIndTexCoordScale(0, 0, 0);
