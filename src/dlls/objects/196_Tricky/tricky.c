@@ -5701,7 +5701,6 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
     int candidateNode;
     int targetNode;
     int walkGroup;
-    int sfxState;
     float speed;
     double distance;
     double bestDistance;
@@ -5811,12 +5810,12 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
         {
             ts->scratch708.f = (f32)(int)randomGetRange(200, 600);
 
-            sfxState = *(int*)&((GameObject*)obj)->extra;
-            if (((u32)(*(u8*)(sfxState + 0x58) >> 6 & 1) == 0) &&
+            ts = ((GameObject*)obj)->extra;
+            if ((((u32)ts->statusFlags >> 6 & 1) == 0) &&
                 ((((GameObject*)obj)->anim.currentMove >= 0x30 || ((GameObject*)obj)->anim.currentMove < 0x29) &&
                  !Sfx_IsPlayingFromObjectChannel(obj, 0x10)))
             {
-                objSoundStartTimed((GameObject*)obj, &((TrickyState*)sfxState)->soundState, 0x29b, 0x1000, -1, 0);
+                objSoundStartTimed((GameObject*)obj, &ts->soundState, 0x29b, 0x1000, -1, 0);
             }
         }
     }
