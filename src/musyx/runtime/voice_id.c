@@ -6,7 +6,7 @@
 #include "musyx/voice_manage.h"
 #include "musyx/vidlisttables.h"
 
-#define voicePriorityLinks ((u8*)vidListNodes + offsetof(VidListTables, priorityLinks))
+#define voicePriorityLinks ((u8*)vidList + offsetof(VidListTables, priorityLinks))
 
 #define VID_UNLINK(field)                                                                                              \
     if (s->field->prev != 0)                                                                                           \
@@ -202,7 +202,7 @@ void voiceRemovePriority(McmdVoiceState* state)
     SynthVoiceListNode* vps;
     SynthRootListNode* pr;
 
-    vb = (VidListTables*)vidListNodes;
+    vb = (VidListTables*)vidList;
     vps = (SynthVoiceListNode*)&((u8*)voicePriorityLinks)[(s->id & 0xff) << 2];
     if (vps->user != 1)
     {

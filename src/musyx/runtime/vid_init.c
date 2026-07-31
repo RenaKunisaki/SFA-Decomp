@@ -11,13 +11,13 @@ void vidInit(void)
 
     vidCurrentId = 0;
     vidRoot = 0;
-    vidFree = vidListNodes;
-    for (prev = NULL, i = 0; i < 128; prev = &vidListNodes[i], ++i)
+    vidFree = vidList;
+    for (prev = NULL, i = 0; i < 128; prev = &vidList[i], ++i)
     {
-        vidListNodes[i].prev = prev;
+        vidList[i].prev = prev;
         if (prev != NULL)
         {
-            prev->next = &vidListNodes[i];
+            prev->next = &vidList[i];
         }
     }
     prev->next = NULL;

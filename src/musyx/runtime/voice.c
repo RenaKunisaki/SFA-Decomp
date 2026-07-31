@@ -22,7 +22,7 @@ u8 voiceFxRunning;
 u8 voiceMusicRunning;
 u16 voicePrioSortedRoot;
 
-static VID_LIST vidListNodes[128];
+static VID_LIST vidList[128];
 static u8 synth_last_started[SYNTH_VOICE_MIDI_CHANNEL_COUNT][SYNTH_VOICE_MIDI_KEY_COUNT];
 static u8 synth_last_fxstarted[SYNTH_VOICE_DIRECT_SLOT_COUNT];
 static SynthVoiceListNode voicePriorityLinks[0x40];
@@ -50,7 +50,7 @@ void voiceSetPriority(McmdVoiceState* svoice, u8 prio)
     u16 i;
 
     voiceIdx = (u8)svoice->id;
-    vb = (VidListTables*)vidListNodes;
+    vb = (VidListTables*)vidList;
     vps = VB_PRIO_LINK(vb, voiceIdx);
     if (vps->user == 1)
     {
@@ -129,7 +129,7 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 fxFlag)
     u16 priorityGroupIndex;
     SynthVoiceListNode* freeSlot;
     SynthVoiceListNode* slotBase;
-    VidListTables* voiceLists = (VidListTables*)vidListNodes;
+    VidListTables* voiceLists = (VidListTables*)vidList;
 
     if (!synthIdleWaitActive)
     {
