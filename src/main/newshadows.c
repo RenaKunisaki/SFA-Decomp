@@ -173,7 +173,7 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
         }
         else
         {
-            int i, j;
+            int j, i;
             for (i = 0; i < src1->height; i++)
             {
                 u32 wd;
