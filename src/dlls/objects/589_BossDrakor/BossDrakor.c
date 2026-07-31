@@ -662,7 +662,7 @@ void bossdrakor_update(GameObject* obj)
     int state;
     s8* p;
     int i;
-    int state2;
+    BossDrakorState* meterState;
     int moveResult;
     int adv;
     GameObject* player;
@@ -684,7 +684,6 @@ void bossdrakor_update(GameObject* obj)
     f32 hx;
     int curveArg;
     BossDrakorState* drakorState;
-    BossDrakorState* s2;
 
     state = *(int*)&obj->extra;
     drakorState = (BossDrakorState*)state;
@@ -706,11 +705,10 @@ void bossdrakor_update(GameObject* obj)
         obj->anim.localPosY = drakorState->curveWalker.posY;
         ((BossDrakorState*)state)->flags198.b20 = 1;
         drakorState->repeatCount = 0;
-        state2 = *(int*)&obj->extra;
-        s2 = (BossDrakorState*)state2;
-        ((BossDrakorState*)state2)->flags198.b20 = 1;
-        (*gGameUIInterface)->initAirMeter(s2->airMeterHandle, BOSSDRAKOR_AIRMETER_BGTEXTURE);
-        (*gGameUIInterface)->runAirMeter(s2->airMeterHandle);
+        meterState = (BossDrakorState*)*(int*)&obj->extra;
+        meterState->flags198.b20 = 1;
+        (*gGameUIInterface)->initAirMeter(meterState->airMeterHandle, BOSSDRAKOR_AIRMETER_BGTEXTURE);
+        (*gGameUIInterface)->runAirMeter(meterState->airMeterHandle);
         ((BossDrakorState*)state)->flags198.b10 = 0;
         drakorState->lightObj = objCreateLight(NULL, 1);
         if (drakorState->lightObj != NULL)
