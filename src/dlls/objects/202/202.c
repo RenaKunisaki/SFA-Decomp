@@ -1240,14 +1240,14 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
         requestKrazoaShrineMusic();
     }
     wispBaddiePlayMoveEventSfx(obj, state);
-    tv = ((EnemyState*)state)->unk328;
+    tv = ((EnemyState*)state)->seqObj.seqTimer;
     fz = 0.0f;
     if (tv != fz && ((EnemyState*)state)->phaseAngle != 0)
     {
-        ((EnemyState*)state)->unk328 = tv - timeDelta;
-        if (((EnemyState*)state)->unk328 <= fz)
+        ((EnemyState*)state)->seqObj.seqTimer = tv - timeDelta;
+        if (((EnemyState*)state)->seqObj.seqTimer <= fz)
         {
-            ((EnemyState*)state)->unk328 = fz;
+            ((EnemyState*)state)->seqObj.seqTimer = fz;
             ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             ((EnemyState*)state)->phaseAngle = (p28 + ((EnemyState*)state)->phaseAngle * 16)[10];
         }

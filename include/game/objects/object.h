@@ -67,7 +67,7 @@ struct GameObject {
     u8 colorFadeBlue;
     u8 colorFadeAlpha; /* obj+0xEF written from the fade alpha each tick */
     u8 fadeCounter;    /* obj+0xF0 ++ toward the fade limit each tick */
-    u8 unkF1;
+    u8 sphereMapIntensity; /* obj+0xF1: r=g=b konst gray of the sphere-map TEV stage (addSphereMapTexStage and the objprint fuzz/render stages); inherited parent->child; player.c ramps it 4/frame toward skyGetSlotBlendAlpha(2) as its floor */
     u8 lightColorSlot; /* obj+0xF2: sky-light / ambient object-color slot */
     u8 unkF3;
     s32 userData1; /* obj+0xF4/0xF8: two generic per-instance scratch words. No

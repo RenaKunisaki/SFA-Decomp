@@ -1000,8 +1000,8 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
     if (b & 0x8000)
     {
         pos = alignUp2(pos);
-        *(int*)&((ObjModel*)out2)->unk54 = pos;
-        *(u8*)(((ObjModel*)out2)->unk54 + 0x18) = 0;
+        *(int*)&((ObjModel*)out2)->groundShadowVerts = pos;
+        *(u8*)(((ObjModel*)out2)->groundShadowVerts + 0x18) = 0;
     }
     *(int*)&((ObjModel*)out2)->renderAttachment = 0;
     ((ObjModel*)out2)->file = (ModelFileHeader*)p;
@@ -2605,9 +2605,9 @@ void ObjModel_RelocateModelData(u8* m)
             ((ModelFileHeader*)m)->jointBlendData = m + *(u32*)&((ModelFileHeader*)m)->jointBlendData;
         }
     }
-    if (*(u32*)&((ModelFileHeader*)m)->unk54)
+    if (*(u32*)&((ModelFileHeader*)m)->extraJointDefs)
     {
-        ((ModelFileHeader*)m)->unk54 = m + *(u32*)&((ModelFileHeader*)m)->unk54;
+        ((ModelFileHeader*)m)->extraJointDefs = m + *(u32*)&((ModelFileHeader*)m)->extraJointDefs;
     }
     if (*(u32*)&((ModelFileHeader*)m)->textureIds)
     {

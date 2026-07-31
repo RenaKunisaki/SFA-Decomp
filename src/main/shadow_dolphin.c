@@ -304,7 +304,7 @@ void objDrawGroundShadow(GameObject* obj, ObjModel* model)
     f32 mtx[16];
     f32 outMtx[16];
 
-    shadowVerts = (s16*)model->unk54;
+    shadowVerts = (s16*)model->groundShadowVerts;
     if (*(u8*)((u8*)shadowVerts + 0x18) == 0)
     {
         buildGroundShadowQuad(shadowVerts, obj);

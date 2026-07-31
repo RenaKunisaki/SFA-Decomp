@@ -2110,7 +2110,7 @@ void addLightTexReg2Stage(void* p1, u8 flag2, u8 flag3)
 
 
 
-void addSphereMapTexStage(void* p1, u8 p2)
+void addSphereMapTexStage(void* p1, u8 intensity)
 {
     f32 mtxB[3][4];
     f32 mtxA[3][4];
@@ -2122,9 +2122,9 @@ void addSphereMapTexStage(void* p1, u8 p2)
     PSMTXTrans(mtxB, 0.5f, 0.5f, 1.0f);
     PSMTXConcat(mtxB, mtxA, mtxA);
     GXLoadTexMtxImm(mtxA, gRcpNextPostTexMtx, 0);
-    buf[0] = p2;
-    buf[1] = p2;
-    buf[2] = p2;
+    buf[0] = intensity;
+    buf[1] = intensity;
+    buf[2] = intensity;
     chooseTevKonstSelectors(buf, 1, 0, &out_c, &out_8);
     GXSetTevKColorSel(gRcpNextTevStage, out_c);
     GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, gRcpNextPostTexMtx);

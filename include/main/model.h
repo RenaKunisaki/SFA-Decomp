@@ -110,7 +110,7 @@ typedef struct ModelFileHeader {
     u8 *jointData;
     u8 *jointBlendData; /* 0x40: per-joint blend/pivot table (stride joff); [+0..8]=pivot XYZ (PSMTXTrans to/from origin for scale-fuzz), [+0xc]=scale divisor; passed to ObjModel_BlendVertexStream; offset->ptr relocated on load */
     u8 unk44[0x10];
-    u8 *unk54;
+    u8 *extraJointDefs; /* 0x54: extraJointCount 3-byte records {jointA, jointB, weight*4}; modelCalcVtxGroupMtxs blends the two joint matrices into the extra joint at jointCount+i; offset->ptr relocated on load */
     u8 *hitVolumes; /* 0x58: 0x18-byte ModelHitSphereDef records, hitSphereCount entries */
     u8 *collisionTriangles; /* 0x5c: 8-byte triangle vertex-index records (hit-detect mesh) */
     u8 *collisionBlocks;    /* 0x60: 0x14-byte spatial blocks (AABB + triangle range), count at +0xf0 */
@@ -306,7 +306,7 @@ typedef struct ObjModel {
     u8 *hitSphereBuf0; /* 0x48: hit-sphere workspace buffer 0 (file->hitSphereCount * 0x10) */
     u8 *hitSphereBuf1; /* 0x4C: hit-sphere workspace buffer 1 (double-buffered) */
     u8 *hitSphereBufActive; /* 0x50: current hit-sphere buffer, initialized to hitSphereBuf0 */
-    u8 *unk54;
+    u8 *groundShadowVerts; /* 0x54: ground-shadow quad buffer (s16 verts; status byte at +0x18: 0 = rebuild via buildGroundShadowQuad, 0xff = skip draw); allocated only with load flag 0x8000 */
     void *renderAttachment;
     u8 *curMtxBuf;
     u8 vtxBufDirty; /* 0x60: set when the active vertex buffer needs re-layout; cleared at layout */

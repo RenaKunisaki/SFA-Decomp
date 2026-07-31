@@ -18297,11 +18297,11 @@ void playerUpdate(GameObject* obj)
             }
             if ((*(u8*)(*(int*)&obj->extra + 0xc4) & 0x40) != 0)
             {
-                v = (int)-(4.0f * timeDelta - (f32)(u32)obj->unkF1);
+                v = (int)-(4.0f * timeDelta - (f32)(u32)obj->sphereMapIntensity);
             }
             else
             {
-                v = (int)(4.0f * timeDelta + (f32)(u32)obj->unkF1);
+                v = (int)(4.0f * timeDelta + (f32)(u32)obj->sphereMapIntensity);
             }
             if (v < (u8)skyGetSlotBlendAlpha(2))
             {
@@ -18311,7 +18311,7 @@ void playerUpdate(GameObject* obj)
             {
                 v = 0xff;
             }
-            obj->unkF1 = (u8)v;
+            obj->sphereMapIntensity = (u8)v;
             playerRunActiveSpells(obj, inner);
             playerProcessQueuedItemCommand(obj, inner);
             if (((ByteFlags*)((char*)inner + 0x3f3))->b20 != 0 && (*gScreenTransitionInterface)->isFinished() != 0)

@@ -220,7 +220,7 @@ void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model)
         f32 w;
         f32 wi;
 
-        grp = modelDef->unk54 + off;
+        grp = modelDef->extraJointDefs + off;
         out = (MtxPtr)ObjModel_GetJointMatrix(modelBytes, i + modelDef->jointCount);
         m1 = (MtxPtr)ObjModel_GetJointMatrix(modelBytes, grp[0]);
         m2 = (MtxPtr)ObjModel_GetJointMatrix(modelBytes, grp[1]);
@@ -571,7 +571,7 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     {
-        u8 v = obj->unkF1;
+        u8 v = obj->sphereMapIntensity;
         s10.b = v;
         s10.g = v;
         s10.r = v;
@@ -1852,7 +1852,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     if (refs[0] != 0)
     {
-        addSphereMapTexStage((void*)refs[0], ((GameObject*)obj)->unkF1);
+        addSphereMapTexStage((void*)refs[0], ((GameObject*)obj)->sphereMapIntensity);
     }
     if (refs[1] != 0)
     {
@@ -3420,7 +3420,7 @@ static void objRenderChild(int* child, int* parent, u8 isShadow)
     }
     ((GameObject*)child)->anim.renderAlpha =
         ((((GameObject*)child)->anim.alpha + 1) * ((GameObject*)parent)->anim.renderAlpha) >> 8;
-    ((GameObject*)child)->unkF1 = ((GameObject*)parent)->unkF1;
+    ((GameObject*)child)->sphereMapIntensity = ((GameObject*)parent)->sphereMapIntensity;
     if (!(((GameObject*)child)->anim.flags & OBJANIM_FLAG_HIDDEN))
     {
         curObjMtx = (u32)m2;
