@@ -208,7 +208,7 @@ int trickyTryPlaySound(GameObject* obj, u16 sfxId, int vol)
 {
     u8* b = ((GameObject*)obj)->extra;
     s16 v;
-    if ((u32)((b[0x58] >> 6) & 1) != 0u)
+    if ((u32)((((TrickyState*)b)->statusFlags >> 6) & 1) != 0u)
         return 0;
     v = ((GameObject*)obj)->anim.currentMove;
     switch (v)
@@ -653,6 +653,8 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 /* "staff" (DLL 0xE2) */
 #define SKEETLA_PARTICLE_SPAWN_FLAGS   0x200001
 #define SKEETLA_PARTICLE_RANDOM_RATE   4
+void tricky_state04_nop(void);
+void tricky_updateBallRoll();
 void tricky_state06_nop(void);
 void trickyFlame();
 void trickyGuard();
@@ -661,7 +663,22 @@ void tricky_idleAndEat();
 void tricky_fetchBall();
 void trickyUpdateCirclingTargetPosition();
 void trickyUpdateCircling();
+void trickyGrowl();
 void tricky_trackTumbleweed();
+void tricky_stateGoToWarpPoint();
+int tricky_substateFollowIdle();
+u32 tricky_substateReturnToHeel();
+u32 tricky_substateWaitQueuedMove();
+int tricky_substateSleep();
+int tricky_substateHowlCall();
+u32 tricky_substateWaitMoveEnd();
+u32 tricky_substateFidgetB();
+u32 tricky_substateFidgetA();
+int tricky_substateIdlePick();
+int tricky_substateDigForFood();
+int tricky_substateBegForFood();
+int tricky_substateFlameBreath();
+int tricky_substateApproachThorntail();
 
 typedef void (*TrickyStateHandler)(void* obj, void* state);
 
@@ -3606,18 +3623,9 @@ int trickyShouldGoToWarpPoint(u8* tricky, u8* state)
  *                      stops the dig loop, barks (sfx 0x29d) and clears the
  *                      action's state flags, returning to substate 0
  *
- * Barks are gated on bit 6 of TrickyGrowlState.unk58, the current anim move
+ * Barks are gated on bit 6 of TrickyState.statusFlags, the current anim move
  * being outside [0x29,0x30), and no sfx already playing on channel 0x10.
  */
-
-typedef struct TrickyGrowlState
-{
-    u8 pad0[0x8 - 0x0];
-    f32 unk8; /* 0x08: target Z (paired with deref base for X) */
-    u8 padC[0x58 - 0xC];
-    u8 unk58; /* 0x58: bit 6 suppresses barks */
-    u8 pad59[0x60 - 0x59];
-} TrickyGrowlState;
 
 #define CHILD_OBJECT_COUNT 7
 #define TRICKY_CHILD_OBJ_FLAMEBLAST 0x4f0 /* "flameblast" (DLL 0xF3) */
@@ -3660,7 +3668,7 @@ void trickyGrowl(void* obj, void* trickyState)
         if (trickyUpdateMovementState(obj, 30.0f, trickyState) == 0)
         {
             state = ((GameObject*)obj)->extra;
-            if ((((u32)((TrickyGrowlState*)state)->unk58 >> 6) & 1) == 0u)
+            if ((((u32)((TrickyState*)state)->statusFlags >> 6) & 1) == 0u)
             {
                 s16 move = ((GameObject*)obj)->anim.currentMove;
                 if (move >= 0x30 || move < 0x29)
@@ -3686,12 +3694,12 @@ void trickyGrowl(void* obj, void* trickyState)
         {
             f32* target = ((TrickyState*)((GameObject*)obj)->extra)->targetPosPtr;
             trickyTurnTowardYaw(obj,
-                                getAngle(-(*(f32*)target - ((GameObject*)obj)->anim.worldPosX),
-                                         -(((TrickyGrowlState*)target)->unk8 - ((GameObject*)obj)->anim.worldPosZ)));
+                                getAngle(-(target[0] - ((GameObject*)obj)->anim.worldPosX),
+                                         -(target[2] - ((GameObject*)obj)->anim.worldPosZ)));
             if (randomGetRange(0, 10) == 0)
             {
                 state = ((GameObject*)obj)->extra;
-                if (((((TrickyGrowlState*)state)->unk58 >> 6) & 1) == 0u)
+                if (((((TrickyState*)state)->statusFlags >> 6) & 1) == 0u)
                 {
                     s16 move = ((GameObject*)obj)->anim.currentMove;
                     if (move >= 0x30 || move < 0x29)
@@ -3746,7 +3754,7 @@ void trickyGrowl(void* obj, void* trickyState)
             }
             Sfx_RemoveLoopedObjectSound((u32)obj, SFXTRIG_trpopn_c);
             digState = ((GameObject*)obj)->extra;
-            if (((((TrickyGrowlState*)digState)->unk58 >> 6) & 1) == 0u)
+            if (((((TrickyState*)digState)->statusFlags >> 6) & 1) == 0u)
             {
                 s16 move = ((GameObject*)obj)->anim.currentMove;
                 if (move >= 0x30 || move < 0x29)
@@ -3777,8 +3785,8 @@ void trickyGrowl(void* obj, void* trickyState)
         {
             f32* target = ((TrickyState*)((GameObject*)obj)->extra)->targetPosPtr;
             trickyTurnTowardYaw(obj,
-                                getAngle(-(*(f32*)target - ((GameObject*)obj)->anim.worldPosX),
-                                         -(((TrickyGrowlState*)target)->unk8 - ((GameObject*)obj)->anim.worldPosZ)));
+                                getAngle(-(target[0] - ((GameObject*)obj)->anim.worldPosX),
+                                         -(target[2] - ((GameObject*)obj)->anim.worldPosZ)));
         }
         break;
     }
