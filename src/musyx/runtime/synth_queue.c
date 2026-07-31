@@ -171,7 +171,7 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
     for (i = 0; i < 16; i++)
     {
         seq->section[i].bpm = bpm;
-        synthSetStudioChannelScale(bpm >> 10, seqId, i);
+        synthSetBpm(bpm >> 10, seqId, i);
         if (arrangement->masterTrackOffset != 0)
         {
             seq->section[i].masterTrackBase = (u8*)(arrangement->masterTrackOffset + (u32)song);
@@ -297,13 +297,13 @@ void seqHandleMasterTrack(u8 secIndex)
 
             if (((SynthArrangement*)gSynthCurrentVoice->arrbase)->info & 0x40000000)
             {
-                synthSetStudioChannelScale((section->bpm = ((SynthMasterTrackEvent*)section->masterTrackCursor)->bpm) >>
+                synthSetBpm((section->bpm = ((SynthMasterTrackEvent*)section->masterTrackCursor)->bpm) >>
                                                10,
                                            gSynthCurrentVoiceSlotIndex, secIndex);
             }
             else
             {
-                synthSetStudioChannelScale(((SynthMasterTrackEvent*)section->masterTrackCursor)->bpm,
+                synthSetBpm(((SynthMasterTrackEvent*)section->masterTrackCursor)->bpm,
                                            gSynthCurrentVoiceSlotIndex, secIndex);
                 section->bpm = ((SynthMasterTrackEvent*)section->masterTrackCursor)->bpm << 10;
             }

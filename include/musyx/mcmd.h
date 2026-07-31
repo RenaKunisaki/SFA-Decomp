@@ -218,12 +218,9 @@ typedef struct McmdVoiceState {
     u8 vGroup;
     u8 studio;
     u8 track;
-    u8 midiSlot;
-    union {
-        u8 midiEvent;
-        u8 midiChannel;
-    };
-    u8 midiLayer;
+    u8 midi;
+    u8 midiSet;
+    u8 section;
     u32 prevSampleId;
     u32 targetPitch;
     u16 key;

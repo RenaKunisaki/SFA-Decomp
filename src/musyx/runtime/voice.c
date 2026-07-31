@@ -512,10 +512,10 @@ u32 voiceIsRegistered(McmdVoiceState* state)
     u8 voiceIdx;
     if (voice != SYNTH_INVALID_VOICE)
     {
-        slot = voiceState->midiSlot;
+        slot = voiceState->midi;
         if (slot != SYNTH_INVALID_VOICE_U8)
         {
-            channel = voiceState->midiChannel;
+            channel = voiceState->midiSet;
             voiceIdx = voice;
             if (channel == SYNTH_INVALID_VOICE_U8)
             {
@@ -543,10 +543,10 @@ void voiceRegister(McmdVoiceState* state)
     u8 voiceIdx;
     if (voice == SYNTH_INVALID_VOICE)
         return;
-    slot = voiceState->midiSlot;
+    slot = voiceState->midi;
     if (slot == SYNTH_INVALID_VOICE_U8)
         return;
-    channel = voiceState->midiChannel;
+    channel = voiceState->midiSet;
     voiceIdx = voice;
     if (channel == SYNTH_INVALID_VOICE_U8)
     {
@@ -561,20 +561,20 @@ void voiceRegister(McmdVoiceState* state)
 void voiceUnregister(McmdVoiceState* voice)
 {
     u32 voiceId;
-    u32 midiSlot;
-    u32 midiChannel;
+    u32 midi;
+    u32 midiSet;
     u32 vid8;
     u8* slot;
 
     voiceId = voice->handle;
     if (voiceId == SYNTH_INVALID_VOICE)
         return;
-    midiSlot = voice->midiSlot;
-    if (midiSlot == SYNTH_INVALID_VOICE_U8)
+    midi = voice->midi;
+    if (midi == SYNTH_INVALID_VOICE_U8)
         return;
-    midiChannel = voice->midiChannel;
+    midiSet = voice->midiSet;
     vid8 = voiceId & 0xff;
-    if (midiChannel == SYNTH_INVALID_VOICE_U8)
+    if (midiSet == SYNTH_INVALID_VOICE_U8)
     {
         slot = &voiceDirectSlots[vid8];
         if (*slot != vid8)
@@ -583,7 +583,7 @@ void voiceUnregister(McmdVoiceState* voice)
     }
     else
     {
-        slot = &voiceMidiKeySlots[midiChannel][midiSlot];
+        slot = &voiceMidiKeySlots[midiSet][midi];
         if (vid8 != *slot)
             return;
         *slot = SYNTH_INVALID_VOICE_U8;

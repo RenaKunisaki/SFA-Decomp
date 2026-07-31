@@ -3,7 +3,7 @@
 #include "musyx/synth_job_queue.h"
 #include "musyx/synth_config.h"
 #include "musyx/mcmd.h"
-#include "main/dll/synthfade_struct.h"
+#include "musyx/synth_master_fader.h"
 #include "util/carry.h"
 #include "musyx/synth_channel.h"
 #include "musyx/synth_channel_scale.h"
@@ -59,19 +59,12 @@ typedef struct SynthVoiceTimers
     int updateTimeLo1;
 } SynthVoiceTimers;
 
-typedef struct SynthTables
-{
-    u32 ticksPerSecond[9][16];
-    SynthJobTab jobs[32];
-} SynthTables;
-
 STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeHi0) == 0x24);
 STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeLo0) == 0x28);
 STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeHi1) == 0x2c);
 STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeLo1) == 0x30);
 
 #define SYNTH_FADE_COUNT                     0x20
-#define SYNTH_FADE_TABLE_OFFSET              0x5d4
 #define SYNTH_FADE_DELAY_ACTION_FREE_HANDLE  1
 #define SYNTH_FADE_DELAY_ACTION_QUEUE_HANDLE 2
 #define SYNTH_FADE_DELAY_ACTION_CLEAR_MIX    3
@@ -190,61 +183,18 @@ typedef struct SynthHwVoice
 #define HWVOICE(i)        ((SynthHwVoice*)((u8*)synthVoice + (i) * 0x404))
 #define HWVOICE_FLAGS(sv) (*(u64*)&(sv)->cFlagsHi)
 
-typedef struct SynthMasterFader
-{
-    f32 volume;
-    f32 target;
-    f32 start;
-    f32 time;
-    f32 deltaTime;
-    f32 pauseVol;
-    f32 pauseTarget;
-    f32 pauseStart;
-    f32 pauseTime;
-    f32 pauseDeltaTime;
-    u32 handle;
-    u8 delayAction;
-    u8 type;
-    u8 pad[2];
-} SynthMasterFader;
-
-typedef struct SynthState
-{
-    u32 ticksPerSecond[9][16];
-    SynthJobTab jobTable[32];
-    SynthInfo info;
-    SynthMasterFader masterFader[32];
-    u8 trackVolume[64];
-    void* auxAUser[8];
-    SynthAuxCallback auxACallback[8];
-    void* auxBUser[8];
-    SynthAuxCallback auxBCallback[8];
-    u8 itdDefault[8][2];
-    s32 globalVariable[16];
-    u8 auxBInput[0x480];
-    u8 auxAInput[0x480];
-} SynthState;
-
-STATIC_ASSERT(offsetof(SynthState, info) == 0x3c0);
-STATIC_ASSERT(offsetof(SynthState, masterFader) == 0x5d4);
-STATIC_ASSERT(offsetof(SynthState, trackVolume) == 0xbd4);
-STATIC_ASSERT(offsetof(SynthState, auxAUser) == 0xc14);
-STATIC_ASSERT(offsetof(SynthState, auxACallback) == 0xc34);
-STATIC_ASSERT(offsetof(SynthState, auxBUser) == 0xc54);
-STATIC_ASSERT(offsetof(SynthState, auxBCallback) == 0xc74);
-
 static u32 synthTicksPerSecond[9][16];
 static SynthJobTab synthJobTable[32];
 u8 inpAuxA[0x480];
 u8 inpAuxB[0x480];
 s32 synthGlobalVariable[16];
-u8 synthITDDefault[8][2];
+SynthITDInfo synthITDDefault[8];
 SynthAuxCallback synthAuxBCallback[8];
 void* synthAuxBUser[8];
 SynthAuxCallback synthAuxACallback[8];
 void* synthAuxAUser[8];
 u8 synthTrackVolume[64];
-SynthFade synthMasterFader[32];
+SynthMasterFader synthMasterFader[32];
 SynthInfo synthInfo;
 
 
@@ -263,30 +213,24 @@ typedef struct LAYER
 static u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 pan, u8 midi, u8 midiSet,
                        u8 section, u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd);
 
-/*
- * Set one studio/channel scale entry.
- */
-void synthSetStudioChannelScale(int value, u8 bank, u8 key)
+void synthSetBpm(int bpm, u8 set, u8 section)
 {
-    if (bank == 0xff)
+    if (set == 0xff)
     {
-        bank = 8;
+        set = 8;
     }
-    synthTicksPerSecond[bank][key] = (u32)((value << 3) * 0x600) / 0xf0;
+    synthTicksPerSecond[set][section] = (u32)((bpm << 3) * 0x600) / 0xf0;
 }
 
-/*
- * Look up an int from a 2D table indexed by state's ID bytes.
- */
-int synthGetVoiceSlotChannelScale(McmdVoiceState* state)
+int synthGetTicksPerSecond(McmdVoiceState* state)
 {
     McmdVoiceState* v = state;
-    u32 bank;
-    int key;
-    if ((bank = v->midiEvent) == 0xff)
-        bank = 8;
-    key = v->midiLayer;
-    return synthTicksPerSecond[bank][key];
+    u32 set;
+    int section;
+    if ((set = v->midiSet) == 0xff)
+        set = 8;
+    section = v->section;
+    return synthTicksPerSecond[set][section];
 }
 
 /*
@@ -336,8 +280,8 @@ static u32 do_voice_portamento(u8 key, u8 midi, u8 midiSet, u32 isMaster, u32* r
     result = -1;
     for (i = 0, voice = (McmdVoiceState*)synthVoice; i < SYNTH_CONFIGURATION->voiceCount; ++i, ++voice)
     {
-        if (voice->macroAllocating == 0 && voice->voiceHandle != 0xffffffff && voice->midiSlot == midi &&
-            voice->midiEvent == midiSet)
+        if (voice->macroAllocating == 0 && voice->voiceHandle != 0xffffffff && voice->midi == midi &&
+            voice->midiSet == midiSet)
         {
             if ((*(u64*)&voice->inputFlags & 2) != 0)
             {
@@ -382,7 +326,7 @@ static u32 do_voice_portamento(u8 key, u8 midi, u8 midiSet, u32 isMaster, u32* r
     if (result != 0xffffffff)
     {
         voiceRegister(selectedVoice);
-        inpSetMidiLastNote(selectedVoice->midiSlot, selectedVoice->midiEvent, selectedVoice->key & 0xff);
+        inpSetMidiLastNote(selectedVoice->midi, selectedVoice->midiSet, selectedVoice->key & 0xff);
         *rejected = 0;
     }
     else
@@ -939,8 +883,8 @@ static void ZeroOffsetHandler(int voice)
 
         HWVOICE_FLAGS(sv) &= ~0x100000000000ULL;
 
-        faderVol = synthMasterFader[sv->vGroup].auxCurrent * synthMasterFader[sv->vGroup].current *
-                   synthMasterFader[sv->fxFlag ? 22 : 21].current;
+        faderVol = synthMasterFader[sv->vGroup].pauseVol * synthMasterFader[sv->vGroup].volume *
+                   synthMasterFader[sv->fxFlag ? 22 : 21].volume;
 
         if (sv->track != 0xFF)
         {
@@ -1097,10 +1041,9 @@ void synthQueueDelayedUpdate(SynthDelayedNode* fade, int mode, u32 delay)
     SynthDelayedNode** root;
     u8 jobTabIndex;
     SynthJobTab* jobTab;
-    SynthTables* tables = (SynthTables*)synthTicksPerSecond;
 
     jobTabIndex = ((delay / 256) + gSynthDelayBucketCursor) & 0x1F;
-    jobTab = &tables->jobs[jobTabIndex];
+    jobTab = &synthJobTable[jobTabIndex];
 
     switch (mode)
     {
@@ -1122,7 +1065,7 @@ void synthQueueDelayedUpdate(SynthDelayedNode* fade, int mode, u32 delay)
             }
             else
             {
-                tables->jobs[newJq->bucketIndex].lowPrecision = newJq->next;
+                synthJobTable[newJq->bucketIndex].lowPrecision = newJq->next;
             }
         }
         root = &jobTab->lowPrecision;
@@ -1145,7 +1088,7 @@ void synthQueueDelayedUpdate(SynthDelayedNode* fade, int mode, u32 delay)
             }
             else
             {
-                tables->jobs[newJq->bucketIndex].zeroOffset = newJq->next;
+                synthJobTable[newJq->bucketIndex].zeroOffset = newJq->next;
             }
         }
         root = &jobTab->zeroOffset;
@@ -1236,18 +1179,18 @@ static inline void HandleVoices(void)
 /*
  * Dispatch a completed fade action based on its type byte.
  */
-void synthDispatchFadeAction(SynthFade* fade)
+void synthDispatchFadeAction(SynthMasterFader* fade)
 {
-    switch (fade->delayAction)
+    switch (fade->seqMode)
     {
     case SYNTH_FADE_DELAY_ACTION_FREE_HANDLE:
-        synthFreeHandle(fade->handle);
+        synthFreeHandle(fade->seqId);
         break;
     case SYNTH_FADE_DELAY_ACTION_QUEUE_HANDLE:
-        synthQueueHandle(fade->handle);
+        synthQueueHandle(fade->seqId);
         break;
     case SYNTH_FADE_DELAY_ACTION_CLEAR_MIX:
-        synthSetHandleMixData(fade->handle, 0, 0);
+        synthSetHandleMixData(fade->seqId, 0, 0);
         break;
     }
 }
@@ -1260,7 +1203,7 @@ void synthHandle(u32 deltaTime)
 {
     u32 i;
     u32 s;
-    SynthFade* fade;
+    SynthMasterFader* fade;
     u32 mask;
 
     if (synthInfo.numSamples == 0)
@@ -1278,10 +1221,10 @@ void synthHandle(u32 deltaTime)
             {
                 if ((synthMasterFaderActiveFlags & mask) != 0)
                 {
-                    fade->current = fade->target - fade->progress * (fade->target - fade->start);
-                    if ((fade->progress -= fade->progressStep) <= 0.f)
+                    fade->volume = fade->target - fade->time * (fade->target - fade->start);
+                    if ((fade->time -= fade->deltaTime) <= 0.f)
                     {
-                        fade->current = fade->target;
+                        fade->volume = fade->target;
                         synthDispatchFadeAction(fade);
                         if (((synthMasterFaderActiveFlags &= ~mask) == 0) &&
                             (synthMasterFaderPauseActiveFlags == 0))
@@ -1292,10 +1235,10 @@ void synthHandle(u32 deltaTime)
                 }
                 if ((synthMasterFaderPauseActiveFlags & mask) != 0)
                 {
-                    fade->auxCurrent = fade->auxTarget - fade->auxProgress * (fade->auxTarget - fade->auxStart);
-                    if ((fade->auxProgress -= fade->auxProgressStep) <= 0.f)
+                    fade->pauseVol = fade->pauseTarget - fade->pauseTime * (fade->pauseTarget - fade->pauseStart);
+                    if ((fade->pauseTime -= fade->pauseDeltaTime) <= 0.f)
                     {
-                        fade->auxCurrent = fade->auxTarget;
+                        fade->pauseVol = fade->pauseTarget;
                         if (((synthMasterFaderPauseActiveFlags &= ~mask) == 0) &&
                             (synthMasterFaderActiveFlags == 0))
                         {
@@ -1358,16 +1301,16 @@ u32 synthFXStart(u16 fxId, u8 volume, u8 pan, u8 studio, u32 studioAux)
     return handle;
 }
 
-#define SYNTH_FADE_SELECTOR_ACTION_2      0xfa
-#define SYNTH_FADE_SELECTOR_ACTION_2_OR_3 0xfc
-#define SYNTH_FADE_SELECTOR_ACTION_3      0xfb
-#define SYNTH_FADE_SELECTOR_ACTION_0      0xfd
-#define SYNTH_FADE_SELECTOR_ACTION_1      0xfe
-#define SYNTH_FADE_SELECTOR_ACTION_0_OR_1 0xff
-#define SYNTH_FADE_TYPE_ACTION_0          0
-#define SYNTH_FADE_TYPE_ACTION_1          1
-#define SYNTH_FADE_TYPE_ACTION_2          2
-#define SYNTH_FADE_TYPE_ACTION_3          3
+#define SND_USERMUSIC_VOLGROUPS 0xfa
+#define SND_USERFX_VOLGROUPS    0xfb
+#define SND_USERALL_VOLGROUPS   0xfc
+#define SND_MUSIC_VOLGROUPS     0xfd
+#define SND_FX_VOLGROUPS        0xfe
+#define SND_ALL_VOLGROUPS       0xff
+#define SYNTH_FADE_TYPE_MUSIC     0
+#define SYNTH_FADE_TYPE_FX        1
+#define SYNTH_FADE_TYPE_USERMUSIC 2
+#define SYNTH_FADE_TYPE_USERFX    3
 
 /*
  * synthFXSetCtrl - sndFXCtrl underlying impl.
@@ -1393,7 +1336,7 @@ u32 synthFXSetCtrl(u32 handle, u8 controller, u8 value)
             }
             else
             {
-                inpSetMidiCtrl(controller, idx, slot->midiEvent, value);
+                inpSetMidiCtrl(controller, idx, slot->midiSet, value);
             }
             found = 1;
             handle = synthVoice[idx].voiceNextHandle;
@@ -1429,7 +1372,7 @@ u32 synthFXSetCtrl14(u32 handle, u8 controller, u16 value)
             }
             else
             {
-                inpSetMidiCtrl14(controller, idx, slot->midiEvent, value);
+                inpSetMidiCtrl14(controller, idx, slot->midiSet, value);
             }
             found = 1;
             handle = synthVoice[idx].voiceNextHandle;
@@ -1486,79 +1429,79 @@ u32 synthSendKeyOff(u32 handle)
  * Route synth fade commands to one slot or to the broadcast pseudo-slots
  * 0xfa through 0xff.
  */
-static inline void SetupFader(SynthFade* fade, u8 volume, u32 time, u8 action, u32 handle)
+static inline void SetupFader(SynthMasterFader* fade, u8 volume, u32 time, u8 seqMode, u32 seqId)
 {
-    fade->delayAction = action;
-    fade->handle = handle;
+    fade->seqMode = seqMode;
+    fade->seqId = seqId;
     if (time != 0)
     {
-        fade->start = fade->current;
+        fade->start = fade->volume;
         fade->target = (f32)volume * (1.f / 127.f);
-        fade->progress = 1.f;
-        fade->progressStep = 1280.f / (f32)time;
+        fade->time = 1.f;
+        fade->deltaTime = 1280.f / (f32)time;
     }
     else
     {
-        fade->current = fade->target = (f32)volume * (1.f / 127.f);
-        if (fade->handle != SYNTH_INVALID_LINK_ID)
+        fade->volume = fade->target = (f32)volume * (1.f / 127.f);
+        if (fade->seqId != SYNTH_INVALID_LINK_ID)
         {
             synthDispatchFadeAction(fade);
         }
     }
 }
 
-void synthVolume(u8 volume, u16 timeMs, u8 target, u8 action, u32 handle)
+void synthVolume(u8 volume, u16 time, u8 vGroup, u8 seqMode, u32 seqId)
 {
     u32 convertedTime;
     u32 i;
-    u8 matchState;
-    SynthFade* fade;
+    u8 matchType;
+    SynthMasterFader* fade;
 
-    if ((convertedTime = timeMs) != 0)
+    if ((convertedTime = time) != 0)
     {
         sndConvertMs(&convertedTime);
     }
 
     do
     {
-        switch (target)
+        switch (vGroup)
         {
-        case SYNTH_FADE_SELECTOR_ACTION_0_OR_1:
+        case SND_ALL_VOLGROUPS:
             for (fade = synthMasterFader, i = 0; i < SYNTH_FADE_COUNT; ++i, ++fade)
             {
-                if (fade->type == SYNTH_FADE_TYPE_ACTION_0 || fade->type == SYNTH_FADE_TYPE_ACTION_1)
+                if (fade->type == SYNTH_FADE_TYPE_MUSIC || fade->type == SYNTH_FADE_TYPE_FX)
                 {
-                    SetupFader(fade, volume, convertedTime, action, SYNTH_INVALID_LINK_ID);
+                    SetupFader(fade, volume, convertedTime, seqMode, SYNTH_INVALID_LINK_ID);
                     synthMasterFaderActiveFlags |= 1U << i;
                 }
             }
             return;
 
-        case SYNTH_FADE_SELECTOR_ACTION_2_OR_3:
+        case SND_USERALL_VOLGROUPS:
             for (fade = synthMasterFader, i = 0; i < SYNTH_FADE_COUNT; ++i, ++fade)
             {
-                if (fade->type == SYNTH_FADE_TYPE_ACTION_2 || fade->type == SYNTH_FADE_TYPE_ACTION_3)
+                if (fade->type == SYNTH_FADE_TYPE_USERMUSIC || fade->type == SYNTH_FADE_TYPE_USERFX)
                 {
-                    SetupFader(fade, volume, convertedTime, action, SYNTH_INVALID_LINK_ID);
+                    SetupFader(fade, volume, convertedTime, seqMode, SYNTH_INVALID_LINK_ID);
                     synthMasterFaderActiveFlags |= 1U << i;
                 }
             }
             return;
 
-        case SYNTH_FADE_SELECTOR_ACTION_2:
-            matchState = SYNTH_FADE_TYPE_ACTION_2;
+        case SND_USERMUSIC_VOLGROUPS:
+            matchType = SYNTH_FADE_TYPE_USERMUSIC;
             break;
 
-        case SYNTH_FADE_SELECTOR_ACTION_3:
-            matchState = SYNTH_FADE_TYPE_ACTION_3;
+        case SND_USERFX_VOLGROUPS:
+            matchType = SYNTH_FADE_TYPE_USERFX;
             break;
 
-        case SYNTH_FADE_SELECTOR_ACTION_0:
-            matchState = SYNTH_FADE_TYPE_ACTION_0;
+        case SND_MUSIC_VOLGROUPS:
+            matchType = SYNTH_FADE_TYPE_MUSIC;
             break;
 
-        case SYNTH_FADE_SELECTOR_ACTION_1:
-            matchState = SYNTH_FADE_TYPE_ACTION_1;
+        case SND_FX_VOLGROUPS:
+            matchType = SYNTH_FADE_TYPE_FX;
             break;
 
         default:
@@ -1567,24 +1510,23 @@ void synthVolume(u8 volume, u16 timeMs, u8 target, u8 action, u32 handle)
 
         for (fade = synthMasterFader, i = 0; i < SYNTH_FADE_COUNT; ++i, ++fade)
         {
-            if (fade->type == matchState)
+            if (fade->type == matchType)
             {
-                SetupFader(fade, volume, convertedTime, action, SYNTH_INVALID_LINK_ID);
+                SetupFader(fade, volume, convertedTime, seqMode, SYNTH_INVALID_LINK_ID);
                 synthMasterFaderActiveFlags |= 1U << i;
             }
         }
         return;
     } while (0);
 
-    SetupFader(&synthMasterFader[target], volume, convertedTime, action, handle);
-    synthMasterFaderActiveFlags |= 1U << target;
+    SetupFader(&synthMasterFader[vGroup], volume, convertedTime, seqMode, seqId);
+    synthMasterFaderActiveFlags |= 1U << vGroup;
 }
 int synthIsFadeOutActive(u8 voiceIdx)
 {
-    u8* v = (u8*)synthTicksPerSecond + voiceIdx * sizeof(SynthFade);
-    if (((v[SYNTH_FADE_TABLE_OFFSET + 0x2d] != SYNTH_FADE_ACTION_DISABLED) &&
+    if (((synthMasterFader[voiceIdx].type != SYNTH_FADE_ACTION_DISABLED) &&
          ((synthMasterFaderActiveFlags & (1U << voiceIdx)) != 0)) &&
-        (*(f32*)(v + SYNTH_FADE_TABLE_OFFSET + 8) > *(f32*)(v + SYNTH_FADE_TABLE_OFFSET + 4)))
+        (synthMasterFader[voiceIdx].start > synthMasterFader[voiceIdx].target))
     {
         return 1;
     }
@@ -1645,43 +1587,15 @@ u32 synthHWMessageHandler(u32 mode, u32 arg)
     return result;
 }
 
-typedef struct SynthGlobalState
+static inline void synthInitJobQueue(void)
 {
-    u8 pad000[0x200];
-    u32 dspDmaSize;
-    u8 pad204[0x1bc];
-    u32 sampleRate;
-    u8 pad3c4[0x600];
-    f32 auxMixA;
-    u8 pad9c8[0x2c];
-    f32 auxMixB;
-    u8 pad9f8[0x1d9];
-    u8 initialized;
-    u8 padbd2[0xc34 - 0xbd2];
-    u32 auxASend[8];
-    u8 padc54[0xc74 - 0xc54];
-    u32 auxBSend[8];
-    u8 auxPairState[8][2];
-    u32 auxMixSlot[16];
-} SynthGlobalState;
-
-typedef struct SynthJobEntry
-{
-    u32 lowPrecision;
-    u32 event;
-    u32 zeroOffset;
-} SynthJobEntry;
-
-static inline void synthInitJobQueue(u8* state)
-{
-    SynthJobEntry* jobTable = (SynthJobEntry*)(state + 0x240);
     u8 i;
 
     for (i = 0; i < 32; ++i)
     {
-        jobTable[i].lowPrecision = 0;
-        jobTable[i].event = 0;
-        jobTable[i].zeroOffset = 0;
+        synthJobTable[i].lowPrecision = 0;
+        synthJobTable[i].event = 0;
+        synthJobTable[i].zeroOffset = 0;
     }
 
     gSynthDelayBucketCursor = 0;
@@ -1689,16 +1603,14 @@ static inline void synthInitJobQueue(u8* state)
 
 void synthInit(u32 sampleRate, u32 voiceCount)
 {
-    u8* state;
     u32 voiceIndex;
     u32 fadeIndex;
     u32 auxIndex;
     f32 unusedA[2];
 
-    state = (u8*)synthTicksPerSecond;
     synthRealTime = 0;
-    ((SynthGlobalState*)state)->sampleRate = sampleRate;
-    ((SynthGlobalState*)state)->dspDmaSize = 0x1800;
+    synthInfo.sampleRate = sampleRate;
+    synthSetBpm(120, 255, 0);
     synthFlags = 0;
     synthMessageCallback = 0;
 
@@ -1746,58 +1658,58 @@ void synthInit(u32 sampleRate, u32 voiceCount)
     }
 
     {
-        SynthFade* fade = (SynthFade*)(state + 0x5D4);
+        SynthMasterFader* fade = synthMasterFader;
         u32 pass;
 
         for (pass = 0; pass < 2; pass++)
         {
-            fade[0].current = 0.f;
-            fade[0].auxCurrent = 1.f;
+            fade[0].volume = 0.f;
+            fade[0].pauseVol = 1.f;
             fade[0].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[1].current = 0.f;
-            fade[1].auxCurrent = 1.f;
+            fade[1].volume = 0.f;
+            fade[1].pauseVol = 1.f;
             fade[1].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[2].current = 0.f;
-            fade[2].auxCurrent = 1.f;
+            fade[2].volume = 0.f;
+            fade[2].pauseVol = 1.f;
             fade[2].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[3].current = 0.f;
-            fade[3].auxCurrent = 1.f;
+            fade[3].volume = 0.f;
+            fade[3].pauseVol = 1.f;
             fade[3].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[4].current = 0.f;
-            fade[4].auxCurrent = 1.f;
+            fade[4].volume = 0.f;
+            fade[4].pauseVol = 1.f;
             fade[4].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[5].current = 0.f;
-            fade[5].auxCurrent = 1.f;
+            fade[5].volume = 0.f;
+            fade[5].pauseVol = 1.f;
             fade[5].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[6].current = 0.f;
-            fade[6].auxCurrent = 1.f;
+            fade[6].volume = 0.f;
+            fade[6].pauseVol = 1.f;
             fade[6].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[7].current = 0.f;
-            fade[7].auxCurrent = 1.f;
+            fade[7].volume = 0.f;
+            fade[7].pauseVol = 1.f;
             fade[7].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[8].current = 0.f;
-            fade[8].auxCurrent = 1.f;
+            fade[8].volume = 0.f;
+            fade[8].pauseVol = 1.f;
             fade[8].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[9].current = 0.f;
-            fade[9].auxCurrent = 1.f;
+            fade[9].volume = 0.f;
+            fade[9].pauseVol = 1.f;
             fade[9].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[10].current = 0.f;
-            fade[10].auxCurrent = 1.f;
+            fade[10].volume = 0.f;
+            fade[10].pauseVol = 1.f;
             fade[10].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[11].current = 0.f;
-            fade[11].auxCurrent = 1.f;
+            fade[11].volume = 0.f;
+            fade[11].pauseVol = 1.f;
             fade[11].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[12].current = 0.f;
-            fade[12].auxCurrent = 1.f;
+            fade[12].volume = 0.f;
+            fade[12].pauseVol = 1.f;
             fade[12].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[13].current = 0.f;
-            fade[13].auxCurrent = 1.f;
+            fade[13].volume = 0.f;
+            fade[13].pauseVol = 1.f;
             fade[13].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[14].current = 0.f;
-            fade[14].auxCurrent = 1.f;
+            fade[14].volume = 0.f;
+            fade[14].pauseVol = 1.f;
             fade[14].type = SYNTH_FADE_ACTION_DISABLED;
-            fade[15].current = 0.f;
-            fade[15].auxCurrent = 1.f;
+            fade[15].volume = 0.f;
+            fade[15].pauseVol = 1.f;
             fade[15].type = SYNTH_FADE_ACTION_DISABLED;
             fade += 16;
         }
@@ -1805,24 +1717,24 @@ void synthInit(u32 sampleRate, u32 voiceCount)
 
     synthMasterFaderActiveFlags = 0;
     synthMasterFaderPauseActiveFlags = 0;
-    ((SynthGlobalState*)state)->initialized = 1;
+    synthMasterFader[31].type = 1;
     for (fadeIndex = 0; fadeIndex < 8; fadeIndex++)
     {
-        *(u8*)(state + 0xA51 + fadeIndex * sizeof(SynthFade)) = 0;
+        synthMasterFader[fadeIndex + 23].type = 0;
     }
-    ((SynthGlobalState*)state)->auxMixA = 1.f;
-    ((SynthGlobalState*)state)->auxMixB = 1.f;
+    synthMasterFader[21].volume = 1.f;
+    synthMasterFader[22].volume = 1.f;
 
     inpInit(0);
 
     for (auxIndex = 0; auxIndex < 8; auxIndex++)
     {
-        ((SynthGlobalState*)state)->auxASend[auxIndex] = 0;
+        synthAuxACallback[auxIndex] = 0;
         synthAuxAMIDI[auxIndex] = 0xFF;
-        ((SynthGlobalState*)state)->auxBSend[auxIndex] = 0;
+        synthAuxBCallback[auxIndex] = 0;
         synthAuxBMIDI[auxIndex] = 0xFF;
-        ((SynthGlobalState*)state)->auxPairState[auxIndex][1] = 0;
-        ((SynthGlobalState*)state)->auxPairState[auxIndex][0] = 0;
+        synthITDDefault[auxIndex].sfx = 0;
+        synthITDDefault[auxIndex].music = 0;
     }
 
     macInit();
@@ -1831,12 +1743,12 @@ void synthInit(u32 sampleRate, u32 voiceCount)
 
     for (auxIndex = 0; auxIndex < 16; auxIndex++)
     {
-        ((SynthGlobalState*)state)->auxMixSlot[auxIndex] = 0;
+        synthGlobalVariable[auxIndex] = 0;
     }
 
     voiceInitRegistrationTables();
 
-    synthInitJobQueue(state);
+    synthInitJobQueue();
     hwSetMesgCallback(synthHWMessageHandler);
 }
 

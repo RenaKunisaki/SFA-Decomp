@@ -55,7 +55,6 @@ typedef struct
 /* Empty double-buffered time slot marker. */
 #define SEQ_TIME_EMPTY 0x7fffffff
 
-extern u8 synthITDDefault[];
 
 SynthVoice* gSynthQueuedVoices;
 SynthVoice* gSynthAllocatedVoices;
@@ -268,7 +267,7 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
                                                  sv2->prgState[midi].maxVoices, key & 0xff,
                                                  velocity & 0xff, 0x40, midi, gSynthCurrentVoiceSlotIndex & 0xff,
                                                  voice, 0, tid, sv2->trackVolumeGroup[tid], mod, vt,
-                                                 synthITDDefault[vt * 2])) == 0xFFFFFFFF)
+                                                 synthITDDefault[vt].music)) == 0xFFFFFFFF)
                         {
                             if (note->next != 0)
                             {
@@ -532,11 +531,11 @@ static inline void synthHandleMasterTrack(u8 secIndex)
             }
             if ((((SynthArrangement*)gSynthCurrentVoice->arrbase)->info & 0x40000000) != 0)
             {
-                synthSetStudioChannelScale((section->bpm = evt[1]) >> 10, gSynthCurrentVoiceSlotIndex, secIndex);
+                synthSetBpm((section->bpm = evt[1]) >> 10, gSynthCurrentVoiceSlotIndex, secIndex);
             }
             else
             {
-                synthSetStudioChannelScale(evt[1], gSynthCurrentVoiceSlotIndex, secIndex);
+                synthSetBpm(evt[1], gSynthCurrentVoiceSlotIndex, secIndex);
                 section->bpm = ((u32*)section->masterTrackCursor)[1] << 10;
             }
             section->masterTrackCursor += 8;

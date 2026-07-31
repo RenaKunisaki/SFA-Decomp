@@ -8,7 +8,7 @@
 #include "musyx/mcmd.h"
 #include "musyx/snd_core.h"
 #include "musyx/synth_queue.h"
-#include "main/dll/synthfade_struct.h"
+#include "musyx/synth_master_fader.h"
 
 #define SYNTH_CALLBACK_COUNT 0x100
 #define SYNTH_SEQUENCE_TRACK_COUNT 0x40
@@ -344,8 +344,8 @@ extern u32 gSynthNextHandle;
 #define SYNTH_VOICE_SLOT_FLAGS64(slot) (*(u64*)&(slot)->inputFlags)
 
 
-void synthSetStudioChannelScale(int value, u8 studioIndex, u8 channelIndex);
-int synthGetVoiceSlotChannelScale(McmdVoiceState *slot);
+void synthSetBpm(int bpm, u8 set, u8 section);
+int synthGetTicksPerSecond(McmdVoiceState *slot);
 SynthSequenceEvent* synthGetNextChannelEvent(u8 channel);
 void synthInsertChannelEvent(SynthSequenceQueue* queue, SynthSequenceEvent* event);
 SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 groupIndex, u32* output);

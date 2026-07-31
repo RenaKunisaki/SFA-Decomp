@@ -15,6 +15,13 @@ typedef struct SynthInfo {
 
 typedef SynthInfo SynthConfiguration;
 
+typedef struct SynthITDInfo {
+    u8 music;
+    u8 sfx;
+} SynthITDInfo;
+
+extern SynthITDInfo synthITDDefault[8];
+
 extern SynthInfo synthInfo;
 
 #define SYNTH_CONFIGURATION (&synthInfo)

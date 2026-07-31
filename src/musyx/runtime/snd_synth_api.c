@@ -25,7 +25,6 @@
 #define SND_OUTPUTMODE_STEREO   1 /* plain stereo */
 #define SND_OUTPUTMODE_SURROUND 2 /* Dolby Pro Logic surround */
 
-extern u8 synthITDDefault[8][2];
 extern u8 synthAuxBMIDISet[8];
 extern u8 synthAuxBMIDI[8];
 extern u8 synthAuxAMIDISet[8];
@@ -87,15 +86,12 @@ int sndFXKeyOff(u32 handle)
     return result;
 }
 
-/*
- * MusyX FX start wrapper, adding the current studio's cached aux index.
- */
 u32 sndFXStartEx(u16 fxId, u8 volume, u8 pan, u8 studio)
 {
     u32 result;
     u8 auxIndex;
     sndBegin();
-    auxIndex = synthITDDefault[studio][1];
+    auxIndex = synthITDDefault[studio].sfx;
     result = synthFXStart(fxId, volume, pan, studio, auxIndex);
     sndEnd();
     return result;
@@ -234,8 +230,8 @@ void synthActivateStudio(u8 studio, u32 isMaster, SND_STUDIO_TYPE type)
     synthAuxBCallback[studio] = 0;
     synthAuxAMIDI[studio] = 0xff;
     synthAuxBMIDI[studio] = 0xff;
-    synthITDDefault[studio][1] = 0;
-    synthITDDefault[studio][0] = 0;
+    synthITDDefault[studio].sfx = 0;
+    synthITDDefault[studio].music = 0;
     hwActivateStudio(studio, isMaster, type);
     sndEnd();
 }

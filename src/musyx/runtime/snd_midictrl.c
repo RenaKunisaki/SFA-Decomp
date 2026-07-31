@@ -42,7 +42,7 @@ static inline void inpSetRPNHi(u8 set, u8 channel, u8 value)
         st->pbRange[set][channel] = range;
         for (i = 0; i < SYNTH_CONFIGURATION->voiceCount; ++i)
         {
-            if (set == synthVoice[i].midiEvent && channel == synthVoice[i].midiSlot)
+            if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
                 synthVoice[i].pitchBendRangeDown = range;
                 synthVoice[i].pitchBendRangeUp = range;
@@ -77,7 +77,7 @@ static inline void inpSetRPNDec(u8 set, u8 channel)
         st->pbRange[set][channel] = range;
         for (i = 0; i < SYNTH_CONFIGURATION->voiceCount; ++i)
         {
-            if (set == synthVoice[i].midiEvent && channel == synthVoice[i].midiSlot)
+            if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
                 synthVoice[i].pitchBendRangeDown = range;
                 synthVoice[i].pitchBendRangeUp = range;
@@ -108,7 +108,7 @@ static inline void inpSetRPNInc(u8 set, u8 channel)
         st->pbRange[set][channel] = range;
         for (i = 0; i < SYNTH_CONFIGURATION->voiceCount; ++i)
         {
-            if (set == synthVoice[i].midiEvent && channel == synthVoice[i].midiSlot)
+            if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
                 synthVoice[i].pitchBendRangeDown = range;
                 synthVoice[i].pitchBendRangeUp = range;
@@ -159,7 +159,7 @@ void inpSetMidiCtrl(u8 ctrl, u8 channel, u8 set, u8 value)
         st->midiCtrl[set][channel][ctrl] = value & 0x7f;
         for (i = 0; i < SYNTH_CONFIGURATION->voiceCount; ++i)
         {
-            if (set == synthVoice[i].midiEvent && channel == synthVoice[i].midiSlot)
+            if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
                 synthVoice[i].inputDirtyFlags = MCMD_INPUT_DIRTY_ALL;
                 synthQueueVoiceInputUpdate(&synthVoice[i]);
@@ -188,7 +188,7 @@ void inpSetMidiCtrl(u8 ctrl, u8 channel, u8 set, u8 value)
         st->fxCtrl[channel][ctrl] = value & 0x7f;
         for (i = 0; i < SYNTH_CONFIGURATION->voiceCount; ++i)
         {
-            if (set == synthVoice[i].midiEvent && channel == synthVoice[i].midiSlot)
+            if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
                 synthVoice[i].inputDirtyFlags = MCMD_INPUT_DIRTY_ALL;
                 synthQueueVoiceInputUpdate(&synthVoice[i]);
@@ -470,7 +470,7 @@ extern u64 synthRealTime;
 /*
  * Evaluate a controller expression list and cache its 14-bit result.
  */
-static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 midiSlot, u8 midiKey)
+static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 midi, u8 midiSet)
 {
     u32 sign;
     u32 i;
@@ -505,7 +505,7 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
                 }
                 break;
             default:
-                tmp = (inpGetMidiCtrl(ctrl, midiSlot, midiKey) & 0xffff) - 0x2000;
+                tmp = (inpGetMidiCtrl(ctrl, midi, midiSet) & 0xffff) - 0x2000;
                 break;
             }
         combine_signed:
@@ -621,7 +621,7 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
                 }
                 break;
             default:
-                tmp = inpGetMidiCtrl(ctrl, midiSlot, midiKey) & 0xffff;
+                tmp = inpGetMidiCtrl(ctrl, midi, midiSet) & 0xffff;
                 break;
             }
             tmp = (tmp * (slotPtr->entries[i].scale >> 1)) >> 15;
@@ -715,7 +715,7 @@ u16 inpGetVolume(McmdVoiceState* state)
         return state->volumeInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_VOLUME;
-    return _GetInputValue(state, &state->volumeInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->volumeInput, state->midi, state->midiSet);
 }
 
 /*
@@ -729,7 +729,7 @@ u16 inpGetPanning(McmdVoiceState* state)
         return state->panningInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PANNING;
-    return _GetInputValue(state, &state->panningInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->panningInput, state->midi, state->midiSet);
 }
 
 u16 inpGetSurPanning(McmdVoiceState* state)
@@ -742,7 +742,7 @@ u16 inpGetSurPanning(McmdVoiceState* state)
         return *(u16*)&state->surPanningInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_SUR_PANNING;
-    return _GetInputValue(state, &state->surPanningInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->surPanningInput, state->midi, state->midiSet);
 }
 
 u16 inpGetPitchBend(McmdVoiceState* state)
@@ -755,7 +755,7 @@ u16 inpGetPitchBend(McmdVoiceState* state)
         return *(u16*)&state->pitchBendInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PITCH_BEND;
-    return _GetInputValue(state, &state->pitchBendInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->pitchBendInput, state->midi, state->midiSet);
 }
 
 u16 inpGetDoppler(McmdVoiceState* state)
@@ -766,7 +766,7 @@ u16 inpGetDoppler(McmdVoiceState* state)
         return state->dopplerInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_DOPPLER;
-    return _GetInputValue(state, &state->dopplerInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->dopplerInput, state->midi, state->midiSet);
 }
 
 u16 inpGetModulation(McmdVoiceState* state)
@@ -777,7 +777,7 @@ u16 inpGetModulation(McmdVoiceState* state)
         return state->modulationInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_MODULATION;
-    return _GetInputValue(state, &state->modulationInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->modulationInput, state->midi, state->midiSet);
 }
 
 u16 inpGetPedal(McmdVoiceState* state)
@@ -788,7 +788,7 @@ u16 inpGetPedal(McmdVoiceState* state)
         return state->pedalInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PEDAL;
-    return _GetInputValue(state, &state->pedalInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->pedalInput, state->midi, state->midiSet);
 }
 
 u16 inpGetPreAuxA(McmdVoiceState* state)
@@ -799,7 +799,7 @@ u16 inpGetPreAuxA(McmdVoiceState* state)
         return state->preAuxAInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PRE_AUX_A;
-    return _GetInputValue(state, &state->preAuxAInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->preAuxAInput, state->midi, state->midiSet);
 }
 
 u16 inpGetReverb(McmdVoiceState* state)
@@ -810,7 +810,7 @@ u16 inpGetReverb(McmdVoiceState* state)
         return state->reverbInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_REVERB;
-    return _GetInputValue(state, &state->reverbInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->reverbInput, state->midi, state->midiSet);
 }
 
 u16 inpGetPreAuxB(McmdVoiceState* state)
@@ -821,7 +821,7 @@ u16 inpGetPreAuxB(McmdVoiceState* state)
         return state->preAuxBInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PRE_AUX_B;
-    return _GetInputValue(state, &state->preAuxBInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->preAuxBInput, state->midi, state->midiSet);
 }
 
 typedef union AuxInputSlots
@@ -847,7 +847,7 @@ u16 inpGetPostAuxB(McmdVoiceState* state)
         return state->postAuxBInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_POST_AUX_B;
-    return _GetInputValue(state, &state->postAuxBInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->postAuxBInput, state->midi, state->midiSet);
 }
 
 /*
@@ -861,7 +861,7 @@ u16 inpGetTremolo(McmdVoiceState* state)
         return state->tremoloInput.cachedValue;
     }
     state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_TREMOLO;
-    return _GetInputValue(state, &state->tremoloInput, state->midiSlot, state->midiEvent);
+    return _GetInputValue(state, &state->tremoloInput, state->midi, state->midiSet);
 }
 
 static inline u32 inpResetGlobalMIDIDirtyFlag(u8 chan, u8 midiSet, u32 flag)
@@ -1042,9 +1042,9 @@ u16 inpGetExCtrl(McmdVoiceState* state, u8 ctrl)
     case MCMD_CTRL_EX_A1:
         return state->exCtrlA1Value * 2 + 0x2000;
     default:
-        if (state->midiSlot != 0xff)
+        if (state->midi != 0xff)
         {
-            value = inpGetMidiCtrl(ctrl, state->midiSlot, state->midiEvent) & 0xffff;
+            value = inpGetMidiCtrl(ctrl, state->midi, state->midiSet) & 0xffff;
         }
         else
         {
@@ -1066,9 +1066,9 @@ void inpSetExCtrl(McmdVoiceState* state, u8 ctrl, s16 value)
     case MCMD_CTRL_EX_A0:
         break;
     default:
-        if (state->midiSlot != 0xff)
+        if (state->midi != 0xff)
         {
-            inpSetMidiCtrl14(ctrl, state->midiSlot, state->midiEvent, value);
+            inpSetMidiCtrl14(ctrl, state->midi, state->midiSet, value);
         }
         break;
     }

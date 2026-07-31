@@ -109,7 +109,7 @@ void mcmdRandomKey(McmdVoiceState* state, McmdCommandArgs* args)
     state->fineTune = (s8)(args->flags >> 0x10);
     if (voiceIsRegistered(state) != 0)
     {
-        inpSetMidiLastNote(state->midiSlot, state->midiEvent, state->key & 0xff);
+        inpSetMidiLastNote(state->midi, state->midiSet, state->key & 0xff);
     }
     args->flags = 4;
     mcmdWait(state, args);
@@ -147,7 +147,7 @@ void SelectSource(McmdVoiceState* svoice, McmdInputSlot* dest, McmdCommandArgs* 
 
     if ((dirtyFlag & 0x80000000) != 0)
     {
-        inpSetGlobalMIDIDirtyFlag(svoice->midiSlot, svoice->midiEvent, dirtyFlag);
+        inpSetGlobalMIDIDirtyFlag(svoice->midi, svoice->midiSet, dirtyFlag);
     }
     else
     {
@@ -175,16 +175,16 @@ void mcmdPortamento(McmdVoiceState* state, McmdCommandArgs* args)
     switch ((args->flags >> 8) & 0xff)
     {
     case 0:
-        if (state->midiSlot != 0xff)
+        if (state->midi != 0xff)
         {
-            inpSetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midiSlot, state->midiEvent, 0);
+            inpSetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midi, state->midiSet, 0);
         }
         MAC_CFLAGS(state) &= ~MAC_FLAG64(0, 0x400);
         return;
     case 1:
-        if (state->midiSlot != 0xff)
+        if (state->midi != 0xff)
         {
-            inpSetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midiSlot, state->midiEvent, 0x7f);
+            inpSetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midi, state->midiSet, 0x7f);
         }
         while (TRUE)
         {
@@ -195,8 +195,8 @@ void mcmdPortamento(McmdVoiceState* state, McmdCommandArgs* args)
             state->outputFlags |= 0x400;
             break;
         case 2:
-            if (state->midiSlot != 0xff &&
-                inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midiSlot, state->midiEvent) > 0x1f80)
+            if (state->midi != 0xff &&
+                inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, state->midi, state->midiSet) > 0x1f80)
             {
                 continue;
             }
@@ -517,7 +517,7 @@ static inline void mcmdIfModulation(McmdVoiceState* svoice, McmdCommandArgs* cst
     u8* macro;
     u8 mod;
 
-    if (svoice->midiSlot == 0xff)
+    if (svoice->midi == 0xff)
     {
         return;
     }
@@ -638,16 +638,16 @@ void macHandleActive(McmdVoiceState* sv)
         sv->volume = sv->startupVolume << 16;
         sv->volTable = 0;
         sv->volumeBase = sv->volume;
-        sv->midiSlot = sv->startupMidiSlot;
-        sv->midiEvent = sv->startupMidiEvent;
-        sv->midiLayer = sv->startupMidiLayer;
+        sv->midi = sv->startupMidiSlot;
+        sv->midiSet = sv->startupMidiEvent;
+        sv->section = sv->startupMidiLayer;
         sv->track = sv->startupTrack;
         sv->itdMode = sv->startupDeferStart;
         sv->keyGroup = 0;
         sv->vibratoModAddScale = 0;
         sv->tremoloScale = 0;
         inpInit((u32)sv);
-        lastNote = inpGetMidiLastNote(sv->midiSlot, sv->midiEvent);
+        lastNote = inpGetMidiLastNote(sv->midi, sv->midiSet);
         if (lastNote != 0xff)
         {
             sv->registeredKey = lastNote;
@@ -657,22 +657,22 @@ void macHandleActive(McmdVoiceState* sv)
             sv->registeredKey = sv->keyBase;
         }
 
-        inpSetMidiLastNote(sv->midiSlot, sv->midiEvent, sv->keyBase);
+        inpSetMidiLastNote(sv->midi, sv->midiSet, sv->keyBase);
         voiceRegister(sv);
         sv->vGroup = sv->startupVGroup;
         sv->studio = sv->startupStudio;
         sv->portamentoTime = 0;
         sv->portamentoDuration = 25600;
         sv->portamentoMode = 0;
-        if (sv->midiSlot != 0xff)
+        if (sv->midi != 0xff)
         {
-            sv->portamentoCtrlValue = inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, sv->midiSlot, sv->midiEvent);
+            sv->portamentoCtrlValue = inpGetMidiCtrl(MCMD_CTRL_PORTAMENTO, sv->midi, sv->midiSet);
         }
         else
         {
             sv->portamentoCtrlValue = 0;
         }
-        channelDefaults = inpGetChannelDefaults(sv->midiSlot, sv->midiEvent);
+        channelDefaults = inpGetChannelDefaults(sv->midi, sv->midiSet);
         sv->pitchBendRangeUp = channelDefaults[0];
         sv->pitchBendRangeDown = channelDefaults[0];
         sv->revVolScale = 128;
@@ -871,16 +871,16 @@ void macHandleActive(McmdVoiceState* sv)
             f32 sScale;
             McmdDlsAdsrInfo adsr;
             s32* row;
-            sScale = voiceAdsrSustainTable[inpGetMidiCtrl(cmd >> 0x18, sv->midiSlot, sv->midiEvent) >> 7];
+            sScale = voiceAdsrSustainTable[inpGetMidiCtrl(cmd >> 0x18, sv->midi, sv->midiSet) >> 7];
             row = (s32*)(dataTables +
-                         (inpGetMidiCtrl((macCurrentCmd.flags >> 8) & 0xff, sv->midiSlot, sv->midiEvent) >> 7) * 4);
+                         (inpGetMidiCtrl((macCurrentCmd.flags >> 8) & 0xff, sv->midi, sv->midiSet) >> 7) * 4);
             adsr.atime = row[7];
             row = (s32*)(dataTables +
-                         (inpGetMidiCtrl((macCurrentCmd.flags >> 0x10) & 0xff, sv->midiSlot, sv->midiEvent) >> 7) *
+                         (inpGetMidiCtrl((macCurrentCmd.flags >> 0x10) & 0xff, sv->midi, sv->midiSet) >> 7) *
                              4);
             adsr.dtime = row[7];
             adsr.slevel = 0xc1 - voiceAdsrDecayTable[(u32)(dlsScaleMax * sScale)];
-            row = (s32*)(dataTables + (inpGetMidiCtrl((u8)*cmdValuePtr, sv->midiSlot, sv->midiEvent) >> 7) * 4);
+            row = (s32*)(dataTables + (inpGetMidiCtrl((u8)*cmdValuePtr, sv->midi, sv->midiSet) >> 7) * 4);
             adsr.rtime = row[7];
             adsr.ascale = 0x80000000;
             adsr.dscale = 0x80000000;
@@ -904,7 +904,7 @@ void macHandleActive(McmdVoiceState* sv)
             sv->fineTune = (s8)(macCurrentCmd.flags >> 0x10);
             if (voiceIsRegistered(sv) != 0)
             {
-                inpSetMidiLastNote(sv->midiSlot, sv->midiEvent, sv->key & 0xff);
+                inpSetMidiLastNote(sv->midi, sv->midiSet, sv->key & 0xff);
             }
             macCurrentCmd.flags = 4;
             ex = mcmdWait(sv, &macCurrentCmd);
@@ -914,7 +914,7 @@ void macHandleActive(McmdVoiceState* sv)
             sv->fineTune = (s8)(macCurrentCmd.flags >> 0x10);
             if (voiceIsRegistered(sv) != 0)
             {
-                inpSetMidiLastNote(sv->midiSlot, sv->midiEvent, sv->key & 0xff);
+                inpSetMidiLastNote(sv->midi, sv->midiSet, sv->key & 0xff);
             }
             macCurrentCmd.flags = 4;
             ex = mcmdWait(sv, &macCurrentCmd);
@@ -923,9 +923,9 @@ void macHandleActive(McmdVoiceState* sv)
             sv->key = sv->registeredKey + (s8)((cmd >> 8) & 0xff);
             sv->key = (s16)sv->key < 0 ? 0 : sv->key > 0x7f ? 0x7f : sv->key;
             sv->fineTune = (s8)(macCurrentCmd.flags >> 0x10);
-            if (sv->midiSlot != 0xff)
+            if (sv->midi != 0xff)
             {
-                inpSetMidiLastNote(sv->midiSlot, sv->midiEvent, sv->key & 0xff);
+                inpSetMidiLastNote(sv->midi, sv->midiSet, sv->key & 0xff);
             }
             macCurrentCmd.flags = 4;
             ex = mcmdWait(sv, &macCurrentCmd);

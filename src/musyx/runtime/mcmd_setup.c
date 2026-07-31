@@ -77,7 +77,7 @@ void mcmdPlayMacro(McmdVoiceState* svoice, McmdCommandArgs* cstep)
     svoice->macroAllocating = 1;
     new_child = macStart(cstep->flags >> 0x10, (u8)(cstep->value >> 0x10), (u8)(cstep->value >> 0x18),
                          svoice->baseSample, key, (u8)(svoice->volume >> 0x10), (u8)(svoice->pan >> 0x10),
-                         svoice->midiSlot, svoice->midiEvent, svoice->midiLayer, cstep->value, svoice->track, 0,
+                         svoice->midi, svoice->midiSet, svoice->section, cstep->value, svoice->track, 0,
                          svoice->vGroup, svoice->studio, svoice->itdMode == 0);
     svoice->macroAllocating = 0;
     if (new_child != 0xFFFFFFFF)
