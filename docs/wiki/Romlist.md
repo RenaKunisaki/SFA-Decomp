@@ -147,12 +147,13 @@ agree on every field:
   (`.text:0x800E8168`), both reading/writing `SAVEGAME_OBJECT_POSITION_COUNT` (`= 0x3f = 63`,
   `dll_0017_savegame.c:112`) slots keyed by that `objectId` — this is an exact, numeric confirmation
   of the wiki's "the coordinates of up to 63 objects can be saved using this ID."
-- `src/main/objlib.c:54` — `ObjLibRegionEntry`/`ObjLibRegionList` (used by
-  `ObjHitRegion_FindContainingId`, `.text:0x800386BC`) is a concrete *custom* per-type entry: `type`
-  (`s16`, `OBJHITREGION_ROM_ENTRY_TYPE` = `0x130`), `wordCount` (`u8`, = the wiki's `size`), then 5
-  bytes of padding to reach `x/y/z` at offset 8 — matching the common header up through `position` —
-  and its own `id` (a `u16`, at offset `0x18`, i.e. inside the wiki's "varies" region, not the
-  header's `u32` unique ID at `0x14`). `OBJLIB_PRIMARY_ROM_PAGE_COUNT` (`0x50` = 80) is the boundary
+- `src/main/objhits.c` — `ObjHitRegionPlacement` (used by
+  `ObjHitRegion_FindContainingId`, `.text:0x800386BC`) is a concrete *custom* per-type entry:
+  `ObjPlacement base` (`base.objectId` compared against `OBJHITREGION_ROM_ENTRY_TYPE` = `0x130`,
+  `base.size` = the wiki's `size`, `base.posX/Y/Z` = `position`) plus its own `id` (a `u16`, at
+  offset `0x18`, i.e. inside the wiki's "varies" region, not the header's `u32` unique ID at
+  `0x14`) and box half-extents/orientation. The page walked is a plain `MapRomListPage`
+  (`objectDataSize`/`objects`). `OBJLIB_PRIMARY_ROM_PAGE_COUNT` (`0x50` = 80) is the boundary
   `mapRomListFindItem` also uses (`outer >= 0x50`) to flag a page as belonging to the "last"/extra set
   of loaded pages.
 

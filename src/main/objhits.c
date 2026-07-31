@@ -2385,8 +2385,6 @@ u32 ObjHitReact_InitState(int objType, ObjAnimBank* bank, ObjHitReactState* hitS
 char sObjHitReactHitstateFrameString[] = "hitstate frame=%f\n";
 char sObjHitReactSphereOverflowString[] = "objHitReact.c: sphere overflow! %d\n";
 
-typedef struct ObjLibRegionList ObjLibRegionList;
-
 extern char sObjAddObjectTypeReachedMaxTypes[];
 
 #define OBJTYPE_COUNT                 0x54
@@ -2411,28 +2409,18 @@ typedef struct ObjContactCallbackEntry {
     ObjContactCallback callback;
 } ObjContactCallbackEntry;
 
-typedef struct ObjLibRegionEntry {
-    s16 type;
-    u8 wordCount;
-    u8 pad03[5];
-    f32 x;
-    f32 y;
-    f32 z;
-    u8 pad14[4];
+typedef struct ObjHitRegionPlacement {
+    ObjPlacement base;
     u16 id;
     u16 halfX;
     u16 halfY;
     u16 halfZ;
     u8 yaw;
     u8 pitch;
-} ObjLibRegionEntry;
+} ObjHitRegionPlacement;
 
-struct ObjLibRegionList {
-    u8 pad00[8];
-    u16 entryBytes;
-    u8 pad0A[0x16];
-    ObjLibRegionEntry* entries;
-};
+STATIC_ASSERT(offsetof(ObjHitRegionPlacement, id) == 0x18);
+STATIC_ASSERT(offsetof(ObjHitRegionPlacement, yaw) == 0x20);
 
 ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEntry)];
 extern void* gObjHitsWorkBuffer;
@@ -4065,9 +4053,9 @@ int Obj_GetYawDeltaToObject(GameObject* obj, GameObject* target, float* distOut)
 }
 
 u32 ObjHitRegion_FindContainingId(f32 x, f32 y, f32 z) {
-    ObjLibRegionList** lists;
-    ObjLibRegionList* list;
-    ObjLibRegionEntry* entry;
+    MapRomListPage** lists;
+    MapRomListPage* list;
+    ObjHitRegionPlacement* entry;
     int listIndex;
     int entryOffset;
     int hitId;
@@ -4077,10 +4065,10 @@ u32 ObjHitRegion_FindContainingId(f32 x, f32 y, f32 z) {
     for (listIndex = 0; listIndex < OBJLIB_PRIMARY_ROM_PAGE_COUNT; listIndex++) {
         list = lists[listIndex];
         if (list != 0) {
-            entry = list->entries;
+            entry = (ObjHitRegionPlacement*)list->objects;
             entryOffset = 0;
-            while (entryOffset < (int)(u32)list->entryBytes) {
-                if (entry->type == OBJHITREGION_ROM_ENTRY_TYPE) {
+            while (entryOffset < (int)(u32)list->objectDataSize) {
+                if (entry->base.objectId == OBJHITREGION_ROM_ENTRY_TYPE) {
                     f32 yawSin = mathSinf(3.1415927f * (f32) - (s32)((u32)entry->yaw << 8) / 32768.0f);
                     f32 yawCos = mathCosf(3.1415927f * (f32) - (s32)((u32)entry->yaw << 8) / 32768.0f);
                     f32 pitchSin = mathSinf(3.1415927f * (f32) - (s32)((u32)entry->pitch << 8) / 32768.0f);
@@ -4092,9 +4080,9 @@ u32 ObjHitRegion_FindContainingId(f32 x, f32 y, f32 z) {
                     f32 yawZ;
                     f32 localY;
                     f32 localZ;
-                    deltaX = x - entry->x;
-                    deltaY = y - entry->y;
-                    deltaZ = z - entry->z;
+                    deltaX = x - entry->base.posX;
+                    deltaY = y - entry->base.posY;
+                    deltaZ = z - entry->base.posZ;
                     localX = deltaX * yawCos - deltaZ * yawSin;
                     yawZ = deltaX * yawSin + deltaZ * yawCos;
                     localY = deltaY * pitchCos - yawZ * pitchSin;
@@ -4114,8 +4102,8 @@ u32 ObjHitRegion_FindContainingId(f32 x, f32 y, f32 z) {
                         hitId = entry->id;
                     }
                 }
-                entryOffset += entry->wordCount * 4;
-                entry = (ObjLibRegionEntry*)((u8*)entry + entry->wordCount * 4);
+                entryOffset += entry->base.size * 4;
+                entry = (ObjHitRegionPlacement*)((u8*)entry + entry->base.size * 4);
             }
         }
     }
