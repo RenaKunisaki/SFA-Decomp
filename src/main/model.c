@@ -2508,13 +2508,13 @@ void ObjModel_ResolveRenderOpTextures(u8* m)
         {
             *(int*)(op + 0x34) = 0;
         }
-        if (((Shader*)op)->unk38 != -1)
+        if (((Shader*)op)->indTextureId != -1)
         {
-            ((Shader*)op)->unk38 = ((ModelFileHeader*)m)->textureIds[((Shader*)op)->unk38];
+            ((Shader*)op)->indTextureId = ((ModelFileHeader*)m)->textureIds[((Shader*)op)->indTextureId];
         }
         else
         {
-            ((Shader*)op)->unk38 = 0;
+            ((Shader*)op)->indTextureId = 0;
         }
         if (*(int*)(op + 0x1c) != -1)
         {

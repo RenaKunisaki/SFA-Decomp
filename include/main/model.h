@@ -39,7 +39,7 @@ typedef struct Shader
         u32 auxTextureIndex;
         Texture* auxTexture;
     };
-    s32 unk38;
+    s32 indTextureId;
     u32 flags;
     u8 vtxAttrFlags;
     u8 layerCount;
@@ -54,7 +54,7 @@ STATIC_ASSERT(offsetof(Shader, unk1C) == 0x1C);
 STATIC_ASSERT(offsetof(Shader, reg2Alpha) == 0x22);
 STATIC_ASSERT(offsetof(Shader, layers) == 0x24);
 STATIC_ASSERT(offsetof(Shader, auxTextureIndex) == 0x34);
-STATIC_ASSERT(offsetof(Shader, unk38) == 0x38);
+STATIC_ASSERT(offsetof(Shader, indTextureId) == 0x38);
 STATIC_ASSERT(offsetof(Shader, flags) == 0x3C);
 STATIC_ASSERT(offsetof(Shader, vtxAttrFlags) == 0x40);
 STATIC_ASSERT(offsetof(Shader, layerCount) == 0x41);
