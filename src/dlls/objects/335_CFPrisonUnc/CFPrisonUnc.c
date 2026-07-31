@@ -32,7 +32,7 @@ int cfPrisonUncle_sequenceCallback(GameObject* obj, int unused, ObjSeqState* ani
     if (state->magicGranted != 0) {
         return 0;
     }
-    if (animUpdate->unk80 == CFPRISONUNCLE_TRIGGER_MAGIC) {
+    if (animUpdate->curEventId == CFPRISONUNCLE_TRIGGER_MAGIC) {
         state->magicGranted = 1;
         playerAddRemoveMagic(Obj_GetPlayerObject(), CFPRISONUNCLE_MAGIC_REWARD);
     }

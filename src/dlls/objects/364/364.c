@@ -70,9 +70,9 @@ int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* an
 
     state->mountAlpha = IM_SNOW_CLAW_FULL_ALPHA;
     mount = state->mount;
-    if (animUpdate->unk80 == 3) {
+    if (animUpdate->curEventId == 3) {
         state->dropObjectIndex = -1;
-        animUpdate->unk80 = 0;
+        animUpdate->curEventId = 0;
     }
     dropObjectTable = gIMSnowClawDropObjectTable;
 
@@ -99,7 +99,7 @@ int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* an
 
     animUpdate->flags = animUpdate->savedFlags;
 
-    if (mount != NULL && animUpdate->unk80 == 2) {
+    if (mount != NULL && animUpdate->curEventId == 2) {
         state->unknown04 = 1.0f;
         state->mountSnapX = state->pathPointX;
         state->mountSnapY = state->pathPointY;
@@ -110,10 +110,10 @@ int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* an
             obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
         }
         animUpdate->flags &= ~4;
-        animUpdate->unk80 = 0;
-    } else if (mount != NULL && animUpdate->unk80 == 1) {
+        animUpdate->curEventId = 0;
+    } else if (mount != NULL && animUpdate->curEventId == 1) {
         (*(IMSnowClawMountInterface**)mount->anim.dll)->setRiderMode(mount, 0);
-        animUpdate->unk80 = 0;
+        animUpdate->curEventId = 0;
     }
 
     if (mount != NULL) {

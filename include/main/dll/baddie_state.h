@@ -154,8 +154,8 @@ typedef struct BaddieState {
  * splash. */
 #define BADDIE_EVENT_LANDING 0x200
     s32 eventFlags; /* bits 1/0x200 observed */
-    f32 unk318;
-    f32 unk31C;
+    f32 heldButtons;
+    f32 pressedButtons;
     u8 unk320[0x32E - 0x320];
     s16 stateTimer; /* count-up dt-accumulating timer, gated > 0x78, reset to 0 on state entry */
     s16 cameraYaw;

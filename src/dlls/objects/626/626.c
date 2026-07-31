@@ -1138,8 +1138,8 @@ void HighTop_update(GameObject* obj)
         runtime->baddie.moveInputX = zero;
         runtime->baddie.moveInputZ = zero;
     }
-    *(int*)&runtime->baddie.unk31C = 0;
-    *(int*)&runtime->baddie.unk318 = 0;
+    *(int*)&runtime->baddie.pressedButtons = 0;
+    *(int*)&runtime->baddie.heldButtons = 0;
     runtime->baddie.cameraYaw = 0;
     *(int*)state &= ~0x400000;
     (*gPlayerInterface)->update((void*)self, state, (f32)(u32)framesThisStep, timeDelta, gHighTopStateHandlers,

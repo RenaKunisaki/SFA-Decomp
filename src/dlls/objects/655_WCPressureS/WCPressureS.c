@@ -46,15 +46,15 @@ int wcpressures_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     WCPressuresSetup* setup = (WCPressuresSetup*)obj->anim.placementData;
     u8 i;
 
-    if (animUpdate->unk80 == WCPRESSURES_CALLBACK_SNAPSHOT_TILES) {
+    if (animUpdate->curEventId == WCPRESSURES_CALLBACK_SNAPSHOT_TILES) {
         for (i = 0; i < WCPRESSURES_TRACKED_COUNT; i++) {
             if ((void*)state->objects[i] != NULL) {
                 state->savedPos[i].x = state->objects[i]->anim.localPosX;
                 state->savedPos[i].z = state->objects[i]->anim.localPosZ;
             }
         }
-        animUpdate->unk80 = WCPRESSURES_CALLBACK_NONE;
-    } else if (animUpdate->unk80 == WCPRESSURES_CALLBACK_RESET) {
+        animUpdate->curEventId = WCPRESSURES_CALLBACK_NONE;
+    } else if (animUpdate->curEventId == WCPRESSURES_CALLBACK_RESET) {
         for (i = 0; i < WCPRESSURES_TRACKED_COUNT; i++) {
             state->objects[i] = 0;
         }
@@ -64,7 +64,7 @@ int wcpressures_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         obj->anim.localPosY = setup->base.posY;
         obj->anim.localPosZ = setup->base.posZ;
         mainSetBits(setup->solvedBit, 0);
-        animUpdate->unk80 = WCPRESSURES_CALLBACK_NONE;
+        animUpdate->curEventId = WCPRESSURES_CALLBACK_NONE;
     }
 
     return 0;

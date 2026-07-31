@@ -334,7 +334,7 @@ int Effect7_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnP
         cfg.scale = 0.0006f * (f32)(s32)randomGetRange(0x3c, 0x50);
         {
             int t = randomGetRange(0, 5);
-            t += spawnParams->unk6;
+            t += spawnParams->effectParam;
             cfg.lifetimeFrames = t + 7;
         }
         cfg.textureId = 0x185;

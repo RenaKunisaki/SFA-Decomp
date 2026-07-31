@@ -6,7 +6,7 @@
 #include "game/objects/object_setup.h"
 
 typedef struct CFDoorLightFlags {
-    u8 unk80 : 1;
+    u8 curEventId : 1;
     u8 done : 1;   /* 0x40: completion game bit granted */
     u8 active : 1; /* 0x20: texture animation running */
     u8 unk1F : 5;

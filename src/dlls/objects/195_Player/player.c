@@ -3764,7 +3764,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
             }
         }
     }
-    if (inner->deferredItemCommand != -1 || (*(int*)&((PlayerState*)state)->baddie.unk31C & 0x800) != 0)
+    if (inner->deferredItemCommand != -1 || (*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x800) != 0)
     {
         int r = playerStateTryCastSpell(obj, state, fv);
         if (r != 0)
@@ -3773,7 +3773,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
         }
         inner->deferredItemCommand = -1;
     }
-    if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x400) != 0)
+    if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x400) != 0)
     {
         u8 sel = ((PlayerState*)state)->baddie.inputSector;
         if (sel == 1)
@@ -3819,7 +3819,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
         *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedResetMoveHitState;
         return 0x27;
     }
-    if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
+    if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0)
     {
         if (((PlayerState*)state)->baddie.inputSector == 2 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
         {
@@ -4667,7 +4667,7 @@ int playerState29(GameObject* obj, int state)
 {
     PlayerState* inner = obj->extra;
     u32 b;
-    if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
+    if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0)
     {
         b = (((PlayerState*)inner)->flags3F4 >> 6) & 1;
         if (b != 0)
@@ -4729,7 +4729,7 @@ int playerState28(GameObject* obj, int state, f32 fv)
     {
         return 0;
     }
-    if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) && gPlayerPathObject != NULL &&
+    if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) && gPlayerPathObject != NULL &&
         ((ByteFlags*)((char*)inner + 0x3f4))->b40)
     {
         inner->staffActionRequest = 4;
@@ -4872,12 +4872,12 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
                 {
                     ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A & ~1;
                 }
-                if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0 &&
+                if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0 &&
                     (((PlayerState*)state)->baddie.unk34A & 1) != 0)
                 {
                     ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A | 4;
-                    *(int*)&((PlayerState*)state)->baddie.unk31C =
-                        *(int*)&((PlayerState*)state)->baddie.unk31C & ~0x100;
+                    *(int*)&((PlayerState*)state)->baddie.pressedButtons =
+                        *(int*)&((PlayerState*)state)->baddie.pressedButtons & ~0x100;
                     buttonDisable(0, PAD_BUTTON_A);
                     inner->moveChainIndex = ((PlayerState*)state)->baddie.inputSector;
                 }
@@ -5122,7 +5122,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
     {
         if (((PlayerState*)state)->baddie.targetObj != NULL)
         {
-            if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
+            if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0)
             {
                 Player_GetObjHitsState(obj)->suppressOutgoingHits = 0;
                 inner->activeHitWindow = -1;
@@ -5136,7 +5136,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
                 return 0x31;
             }
         }
-        else if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0 &&
+        else if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0 &&
                  ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
         {
             inner->targetYaw = inner->targetYaw + inner->targetYawRate * 0xb6;
@@ -5831,7 +5831,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     switch (self->anim.currentMove)
     {
     case 0x5f:
-        if ((*(int*)&state->baddie.unk318 & 0x100) == 0)
+        if ((*(int*)&state->baddie.heldButtons & 0x100) == 0)
         {
             *(u32*)&inner->flags360 |= PLAYER_FLAG_TELEPORTED;
             *(int*)&state->baddie.unk308 = (int)playerStagedRestoreDefaultControl;
@@ -5909,7 +5909,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
         inner->stickTargetY += k * (yT - inner->stickTargetY);
     }
     if (((ByteFlags*)((char*)inner + 0x3f3))->b80 == 0 &&
-        ((*(int*)&state->baddie.unk318 & 0x100) == 0 || inner->stickEdgeLatch != 0 ||
+        ((*(int*)&state->baddie.heldButtons & 0x100) == 0 || inner->stickEdgeLatch != 0 ||
          (((ByteFlags*)((char*)inner + 0x3f1))->b01 == 0 && ((PlayerState*)state)->baddie.unk1B0 >= 15.0f)))
     {
         if (inner->stickDirection != 0)
@@ -8035,7 +8035,7 @@ int playerStateOnLadder(int obj, int state)
         }
         else
         {
-            if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0 && ((PlayerState*)inner)->climbStep > 3)
+            if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0 && ((PlayerState*)inner)->climbStep > 3)
             {
                 *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
                 return -0x10;
@@ -8047,7 +8047,7 @@ int playerStateOnLadder(int obj, int state)
         {
             Sfx_PlayFromObject(obj, SFXTRIG_foot_var);
         }
-        if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0 && ((PlayerState*)inner)->climbStep > 3)
+        if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0 && ((PlayerState*)inner)->climbStep > 3)
         {
             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedRestoreCameraUnlessClimbing;
             return -0x10;
@@ -9241,7 +9241,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
                     {
                     case 2:
                         setAButtonIcon(2);
-                        if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
+                        if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0)
                         {
                             buttonDisable(0, PAD_BUTTON_A);
                             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedSyncHitPosition;
@@ -9251,7 +9251,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
                     case 4:
                     case 5:
                         setAButtonIcon(0xe);
-                        if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
+                        if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0)
                         {
                             buttonDisable(0, PAD_BUTTON_A);
                             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedSyncHitPosition;
@@ -9260,7 +9260,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
                         break;
                     case 3:
                         setAButtonIcon(2);
-                        if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
+                        if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0)
                         {
                             buttonDisable(0, PAD_BUTTON_A);
                             *(int*)&((PlayerState*)state)->baddie.unk308 = (int)playerStagedSyncHitPosition;
@@ -9357,7 +9357,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
         if (*(u8*)&((PlayerState*)inner)->staffGrown != 0)
         {
             int r2;
-            if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x200) != 0 && gPlayerPathObject != NULL &&
+            if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x200) != 0 && gPlayerPathObject != NULL &&
                 ((ByteFlags*)((char*)inner + 0x3f4))->b40)
             {
                 inner->staffActionRequest = 0;
@@ -9366,7 +9366,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
             {
                 int in2 = *(int*)&obj->extra;
                 u8 b;
-                if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0 &&
+                if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0 &&
                     (b = ((ByteFlags*)((char*)in2 + 0x3f4))->b40, b != 0))
                 {
                     if (gPlayerPathObject != NULL && b != 0)
@@ -9389,7 +9389,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
         }
         else
         {
-            if ((*(int*)&((PlayerState*)state)->baddie.unk31C & 0x100) != 0)
+            if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0)
             {
                 int ok2;
                 if (((PlayerState*)inner)->heldObj != NULL || !((ByteFlags*)((char*)inner + 0x3f4))->b40 ||
@@ -11144,7 +11144,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
                 continue;
             }
             ((PlayerState*)state)->flags360 |= (u32)PLAYER_FLAG_LEDGE_DETECTED;
-            if ((*(int*)&((PlayerState*)state2)->baddie.unk31C & 0x100) == 0)
+            if ((*(int*)&((PlayerState*)state2)->baddie.pressedButtons & 0x100) == 0)
             {
                 continue;
             }
@@ -11174,7 +11174,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             {
                 continue;
             }
-            if ((*(int*)&((PlayerState*)state2)->baddie.unk31C & 0x100) == 0)
+            if ((*(int*)&((PlayerState*)state2)->baddie.pressedButtons & 0x100) == 0)
             {
                 continue;
             }
@@ -11315,7 +11315,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             break;
         }
     }
-    if ((*(int*)&((PlayerState*)state2)->baddie.unk31C & 0x100) != 0 && (probeMask & 0x200) != 0)
+    if ((*(int*)&((PlayerState*)state2)->baddie.pressedButtons & 0x100) != 0 && (probeMask & 0x200) != 0)
     {
         int* focusCandidates = (int*)objGetAllOfType(10, &focusCandidateCount);
         int candidateIndex;
@@ -16889,8 +16889,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     ((PlayerState*)inner)->baddie.moveInputX = fz3;
                     ((PlayerState*)inner)->baddie.moveInputZ = fz3;
                     (*gPlayerInterface)->setOverride((u32)obj2);
-                    *(int*)&((PlayerState*)inner)->baddie.unk31C = 0;
-                    *(int*)&((PlayerState*)inner)->baddie.unk318 = 0;
+                    *(int*)&((PlayerState*)inner)->baddie.pressedButtons = 0;
+                    *(int*)&((PlayerState*)inner)->baddie.heldButtons = 0;
                     ((GameObject*)obj)->userData1 = 0;
                     ((PlayerState*)inner)->baddie.cameraYaw = 0;
                     ((PlayerState*)inner)->baddie.physicsActive = 1;
@@ -16913,8 +16913,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 ((GameObject*)obj)->anim.localPosX = dist * dx2 + seq->posOffsetX;
                 ((GameObject*)obj)->anim.localPosZ = dist * dz2 + seq->posOffsetZ;
                 (*gPlayerInterface)->setOverride((u32)obj2);
-                *(int*)&((PlayerState*)inner)->baddie.unk31C = 0;
-                *(int*)&((PlayerState*)inner)->baddie.unk318 = 0;
+                *(int*)&((PlayerState*)inner)->baddie.pressedButtons = 0;
+                *(int*)&((PlayerState*)inner)->baddie.heldButtons = 0;
                 ((GameObject*)obj)->userData1 = 0;
                 ((PlayerState*)inner)->baddie.cameraYaw = 0;
                 ((PlayerState*)inner)->baddie.physicsActive = 1;
@@ -16943,8 +16943,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             ((PlayerState*)inner)->baddie.moveInputZ = fz2;
         }
         ((PlayerState*)inner)->baddie.cameraYaw = 0;
-        *(int*)&((PlayerState*)inner)->baddie.unk31C = 0;
-        *(int*)&((PlayerState*)inner)->baddie.unk318 = 0;
+        *(int*)&((PlayerState*)inner)->baddie.pressedButtons = 0;
+        *(int*)&((PlayerState*)inner)->baddie.heldButtons = 0;
         if (seq->flags & 1)
         {
             ((PlayerState*)inner)->baddie.flags4 |= 0x100000;
@@ -17485,8 +17485,8 @@ void playerAnimate(GameObject* obj, int state, f32 fv)
     ((PlayerState*)state)->baddie.gravity = 0.15f;
     ((PlayerState*)state)->baddie.moveInputX = ((PlayerState*)state)->stickXf;
     ((PlayerState*)state)->baddie.moveInputZ = ((PlayerState*)state)->stickYf;
-    *(int*)&((PlayerState*)state)->baddie.unk31C = ((PlayerState*)state)->buttonsJustPressed;
-    *(int*)&((PlayerState*)state)->baddie.unk318 = ((PlayerState*)state)->buttonsHeld;
+    *(int*)&((PlayerState*)state)->baddie.pressedButtons = ((PlayerState*)state)->buttonsJustPressed;
+    *(int*)&((PlayerState*)state)->baddie.heldButtons = ((PlayerState*)state)->buttonsHeld;
     Player_GetObjHitsState(obj)->hitVolumePriority = 0;
     Player_GetObjHitsState(obj)->hitVolumeId = 0;
     Player_GetObjHitsState(obj)->objectPairPriority = 0;

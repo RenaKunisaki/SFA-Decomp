@@ -81,7 +81,7 @@ int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             }
         }
     } else {
-        if (animUpdate->unk80 == DIM_LAVA_SMASH_ANIM_COMMAND_COMPLETE) {
+        if (animUpdate->curEventId == DIM_LAVA_SMASH_ANIM_COMMAND_COMPLETE) {
             mainSetBits(((DimLavaSmashPlacement*)def)->triggerGameBit, 1);
             ((DimLavaSmashState*)state)->phase = DIM_LAVA_SMASH_PHASE_COMPLETE;
         }

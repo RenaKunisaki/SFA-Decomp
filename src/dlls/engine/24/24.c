@@ -363,13 +363,13 @@ void boneParticleEffect_spawnAtBones(GameObject* obj, int effectId, void* extraA
                 data.unk0 = src[0];
                 data.unk4 = src[2];
                 data.unk2 = src[1];
-                data.unk6 = src[3];
+                data.effectParam = src[3];
             } else {
                 data.scale = (1.0f);
                 data.unk0 = 0;
                 data.unk4 = 0;
                 data.unk2 = 0;
-                data.unk6 = 0;
+                data.effectParam = 0;
             }
             (*gPartfxInterface)->spawnObject(obj, effectId, &data, 2, -1, extraArg);
         }

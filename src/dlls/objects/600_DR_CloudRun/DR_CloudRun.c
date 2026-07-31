@@ -618,7 +618,7 @@ int DR_CloudRunner_stateHandler05(GameObject* obj, CloudRunnerState* baddie, f32
     mag = sqrtf(obj->anim.velocityZ * obj->anim.velocityZ +
                 (obj->anim.velocityX * obj->anim.velocityX +
                  obj->anim.velocityY * obj->anim.velocityY));
-    if (((ByteFlags*)&inner->flagsBC0)->b80 == 0 && (*(int*)&baddie->baddie.unk31C & 0x200))
+    if (((ByteFlags*)&inner->flagsBC0)->b80 == 0 && (*(int*)&baddie->baddie.pressedButtons & 0x200))
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_sliftloop11);
         ((ByteFlags*)&inner->flagsBC0)->b80 = 1;
@@ -675,7 +675,7 @@ int DR_CloudRunner_stateHandler05(GameObject* obj, CloudRunnerState* baddie, f32
         objMove(obj, obj->anim.velocityX, obj->anim.velocityY,
                 obj->anim.velocityZ);
     }
-    if (((ByteFlags*)&inner->flagsBC0)->b08 == 0 && (*(int*)&baddie->baddie.unk31C & 0x100))
+    if (((ByteFlags*)&inner->flagsBC0)->b08 == 0 && (*(int*)&baddie->baddie.pressedButtons & 0x100))
     {
         buttonDisable(0, PAD_BUTTON_A);
         moveId = 0x20d;
@@ -1160,8 +1160,8 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
     {
         inner->baddie.moveInputX = (f32)padGetStickX(0);
         inner->baddie.moveInputZ = (f32)padGetStickY(0);
-        *(int*)&inner->baddie.unk31C = getButtonsJustPressed(0);
-        *(int*)&inner->baddie.unk318 = getButtonsHeld(0);
+        *(int*)&inner->baddie.pressedButtons = getButtonsJustPressed(0);
+        *(int*)&inner->baddie.heldButtons = getButtonsHeld(0);
         inner->baddie.cameraYaw = *(s16*)slot;
         if (((ByteFlags*)&inner->flagsBC0)->b01 != 0)
         {
@@ -1174,8 +1174,8 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
         f32 v = 0.0f;
         inner->baddie.moveInputX = v;
         inner->baddie.moveInputZ = v;
-        *(int*)&inner->baddie.unk31C = 0;
-        *(int*)&inner->baddie.unk318 = 0;
+        *(int*)&inner->baddie.pressedButtons = 0;
+        *(int*)&inner->baddie.heldButtons = 0;
         inner->baddie.cameraYaw = 0;
     }
     *(int*)&inner->baddie |= 0x400000;

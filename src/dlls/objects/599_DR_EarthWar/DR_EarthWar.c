@@ -453,7 +453,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
         ((ByteFlags*)&q->flags3F2)->b10 = 1;
     }
     if (!((ByteFlags*)&q->flags3F0)->b80 && !((ByteFlags*)&q->flags3F0)->b40 &&
-        !((ByteFlags*)&inner->sub.flags994)->b01 && (*(int*)&((EarthWarriorState*)state)->baddie.unk31C & 0x100))
+        !((ByteFlags*)&inner->sub.flags994)->b01 && (*(int*)&((EarthWarriorState*)state)->baddie.pressedButtons & 0x100))
     {
         buttonDisable(0, PAD_BUTTON_A);
         ((ByteFlags*)&inner->sub.flags994)->b01 = 1;
@@ -727,7 +727,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
         (obj)->anim.velocityZ = z;
     }
     if (!((ByteFlags*)&q->flags3F0)->b80 && !((ByteFlags*)&q->flags3F0)->b40 &&
-        !((ByteFlags*)&inner->sub.flags994)->b01 && (*(int*)&((BaddieState*)baddie)->unk31C & 0x100))
+        !((ByteFlags*)&inner->sub.flags994)->b01 && (*(int*)&((BaddieState*)baddie)->pressedButtons & 0x100))
     {
         buttonDisable(0, PAD_BUTTON_A);
         ((ByteFlags*)&inner->sub.flags994)->b01 = 1;
@@ -1163,8 +1163,8 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
     {
         ((EarthWarriorState*)inner)->baddie.moveInputX = (f32)padGetStickX(0);
         ((EarthWarriorState*)inner)->baddie.moveInputZ = (f32)padGetStickY(0);
-        *(int*)&((EarthWarriorState*)inner)->baddie.unk31C = getButtonsJustPressed(0);
-        *(int*)&((EarthWarriorState*)inner)->baddie.unk318 = getButtonsHeld(0);
+        *(int*)&((EarthWarriorState*)inner)->baddie.pressedButtons = getButtonsJustPressed(0);
+        *(int*)&((EarthWarriorState*)inner)->baddie.heldButtons = getButtonsHeld(0);
         ((EarthWarriorState*)inner)->baddie.cameraYaw = *(s16*)slot;
     }
     else
@@ -1172,8 +1172,8 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
         f32 v = 0.0f;
         ((EarthWarriorState*)inner)->baddie.moveInputX = v;
         ((EarthWarriorState*)inner)->baddie.moveInputZ = v;
-        *(int*)&((EarthWarriorState*)inner)->baddie.unk31C = 0;
-        *(int*)&((EarthWarriorState*)inner)->baddie.unk318 = 0;
+        *(int*)&((EarthWarriorState*)inner)->baddie.pressedButtons = 0;
+        *(int*)&((EarthWarriorState*)inner)->baddie.heldButtons = 0;
         ((EarthWarriorState*)inner)->baddie.cameraYaw = 0;
     }
     ((EarthWarriorState*)inner)->baddie.flags0 |= 0x1000000;

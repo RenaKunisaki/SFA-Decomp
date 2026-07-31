@@ -97,7 +97,7 @@ int wctemplebri_SeqFn(GameObject* obj, int p2, ObjSeqState* animUpdate)
     animUpdate->savedFlags &= ~WCTEMPLEBRI_PAYLOAD_BLOCK_FLAG;
     animUpdate->flags &= ~WCTEMPLEBRI_PAYLOAD_BLOCK_FLAG;
     wctemplebri_updateModelWarp(obj, state);
-    if (animUpdate->unk80 == WCTEMPLEBRI_PAYLOAD_TRIGGER)
+    if (animUpdate->curEventId == WCTEMPLEBRI_PAYLOAD_TRIGGER)
     {
         state->active = 1;
     }

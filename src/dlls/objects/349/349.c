@@ -67,11 +67,11 @@ int slidingDoor_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animU
     {
         register SlidingDoorState* transitionState = state;
         if (transitionState->mode == SLIDING_DOOR_MODE_OPENING) {
-            if (animUpdate->unk80 == SLIDING_DOOR_TRIGGER_OPEN_COMPLETE) {
+            if (animUpdate->curEventId == SLIDING_DOOR_TRIGGER_OPEN_COMPLETE) {
                 transitionState->mode = SLIDING_DOOR_MODE_OPEN;
             }
         } else if (transitionState->mode == SLIDING_DOOR_MODE_CLOSING) {
-            if (animUpdate->unk80 == SLIDING_DOOR_TRIGGER_CLOSE_COMPLETE) {
+            if (animUpdate->curEventId == SLIDING_DOOR_TRIGGER_CLOSE_COMPLETE) {
                 transitionState->mode = SLIDING_DOOR_MODE_CLOSED;
             }
         }

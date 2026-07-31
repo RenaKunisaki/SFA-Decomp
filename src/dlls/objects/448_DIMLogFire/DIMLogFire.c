@@ -48,7 +48,7 @@ int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     } else {
         Sfx_StopObjectChannel((u32)obj, 64);
     }
-    switch (animUpdate->unk80) {
+    switch (animUpdate->curEventId) {
     case DIM_LOG_FIRE_ANIM_COMMAND_TOGGLE_SMOKE:
         state->smokeEnabled = state->smokeEnabled ^ 1;
         break;
@@ -65,7 +65,7 @@ int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     } else {
         Sfx_StopObjectChannel((u32)obj, 1);
     }
-    animUpdate->unk80 = 0;
+    animUpdate->curEventId = 0;
     return 0;
 }
 

@@ -55,11 +55,11 @@ int WarpPoint_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUp
     (void)unused;
 
     if (placement->mode != WARPPOINT_MODE_GATED_WARP) {
-        if (animUpdate->unk80 == WARPPOINT_ANIM_TRIGGER_WARP) {
+        if (animUpdate->curEventId == WARPPOINT_ANIM_TRIGGER_WARP) {
             int warpId = (s8) * (u8*)&placement->warpId;
             if (warpId > WARPPOINT_NO_WARP) {
                 warpToMap(warpId, 1);
-                animUpdate->unk80 = WARPPOINT_ANIM_TRIGGER_NONE;
+                animUpdate->curEventId = WARPPOINT_ANIM_TRIGGER_NONE;
             }
         }
     }

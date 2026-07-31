@@ -3643,7 +3643,7 @@ int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, 
                 {
                 case 0:
                     eventId = top16;
-                    ((ObjSeqState*)seq)->unk80 = eventId;
+                    ((ObjSeqState*)seq)->curEventId = eventId;
                     eventIdx = ((ObjSeqState*)seq)->eventCount;
                     if ((u32)eventIdx < 10)
                     {
@@ -4282,7 +4282,7 @@ void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
             }
         }
         ((ObjSeqState*)seq)->eventCount = 0;
-        ((ObjSeqState*)seq)->unk80 = 0;
+        ((ObjSeqState*)seq)->curEventId = 0;
     }
     else
     {
@@ -6312,7 +6312,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
         }
 
         state->eventCount = 0;
-        state->unk80 = 0;
+        state->curEventId = 0;
         if (action != NULL && (state->flags & 4) != 0)
         {
             ((ObjAnimBank*)action)->currentState->eventCountdown = (u16)(int)(16384.0f * state->fade);

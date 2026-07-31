@@ -119,7 +119,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
     case 0x7a0:
         if (spawnParams != NULL)
         {
-            cfg.lifetimeFrames = spawnParams->unk6;
+            cfg.lifetimeFrames = spawnParams->effectParam;
             cfg.behaviorFlags = 0x80080210;
             cfg.renderFlags = 0x8000800;
             cfg.scale = spawnParams->scale * (0.00015f * (f32)(s32)randomGetRange(0x32, 100));
@@ -140,7 +140,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
     case 0x7a1:
         if (spawnParams != NULL)
         {
-            cfg.lifetimeFrames = spawnParams->unk6;
+            cfg.lifetimeFrames = spawnParams->effectParam;
             cfg.behaviorFlags = 0x80080210;
             cfg.renderFlags = 0x8000800;
             cfg.scale = spawnParams->scale * (0.00015f * (f32)(s32)randomGetRange(0x32, 100));
@@ -219,7 +219,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
     case 0x7a6:
         if (spawnParams != NULL)
         {
-            cfg.lifetimeFrames = spawnParams->unk6;
+            cfg.lifetimeFrames = spawnParams->effectParam;
             cfg.behaviorFlags = 0x80080210;
             cfg.renderFlags = 0x8000800;
             cfg.scale = spawnParams->scale * (0.00015f * (f32)(s32)randomGetRange(0x32, 100));
@@ -240,7 +240,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
     case 0x7a7:
         if (spawnParams != NULL)
         {
-            cfg.lifetimeFrames = spawnParams->unk6;
+            cfg.lifetimeFrames = spawnParams->effectParam;
             cfg.behaviorFlags = 0x80080210;
             cfg.renderFlags = 0x8000800;
             cfg.scale = spawnParams->scale * (0.00015f * (f32)(s32)randomGetRange(0x32, 100));
@@ -269,7 +269,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 spawnParams->scale * (0.008f * (f32)(s32)randomGetRange(0xffffff9c, 100)) + spawnParams->posZ;
             cfg.scale = spawnParams->scale * (0.000085f * (f32)(s32)randomGetRange(0x50, 100));
             cfg.lifetimeFrames = randomGetRange(1, 0x14) + 10;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = (spawnFlags | 0x80200);
             cfg.renderFlags = 0x4040800;
@@ -286,7 +286,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 spawnParams->scale * (0.02f * (f32)(s32)randomGetRange(0xffffff9c, 100)) + spawnParams->posZ;
             cfg.scale = spawnParams->scale * (0.000085f * (f32)(s32)randomGetRange(0x50, 100));
             cfg.lifetimeFrames = randomGetRange(1, 0x14) + 10;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = (spawnFlags | 0x80200);
             cfg.renderFlags = 0x4040800;
@@ -303,7 +303,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 spawnParams->scale * (0.1f * (f32)(s32)randomGetRange(0xffffff9c, 100)) + spawnParams->posZ;
             cfg.scale = spawnParams->scale * (0.00013f * (f32)(s32)randomGetRange(0x50, 100));
             cfg.lifetimeFrames = randomGetRange(1, 0x23) + 0x19;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = (spawnFlags | 0x80200);
             cfg.renderFlags = 0x4040800;
@@ -327,7 +327,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 spawnParams->scale * (0.0008f * (f32)(s32)randomGetRange(0xffffff9c, 100)) + spawnParams->posZ;
             cfg.scale = spawnParams->scale * (0.000085f * (f32)(s32)randomGetRange(0x23, 100));
             cfg.lifetimeFrames = randomGetRange(1, 0x12) + 10;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = (spawnFlags | 0x80080200);
             cfg.renderFlags = 0x4010800;
@@ -345,7 +345,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 spawnParams->scale * (0.002f * (f32)(s32)randomGetRange(0xffffff9c, 100)) + spawnParams->posZ;
             cfg.scale = spawnParams->scale * (0.000085f * (f32)(s32)randomGetRange(0x50, 100));
             cfg.lifetimeFrames = randomGetRange(1, 0x17) + 5;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = (spawnFlags | 0x80080200);
             cfg.renderFlags = 0x40800;
@@ -363,12 +363,12 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x80100;
             cfg.renderFlags = 0x4010020;
-            cfg.colorWord0 = (u16)(spawnParams->unk6 >> 1);
-            cfg.colorWord1 = (u16)(spawnParams->unk6 >> 1);
-            cfg.colorWord2 = (u16)(spawnParams->unk6 >> 1);
-            cfg.overrideColor0 = spawnParams->unk6;
-            cfg.overrideColor1 = spawnParams->unk6;
-            cfg.overrideColor2 = spawnParams->unk6;
+            cfg.colorWord0 = (u16)(spawnParams->effectParam >> 1);
+            cfg.colorWord1 = (u16)(spawnParams->effectParam >> 1);
+            cfg.colorWord2 = (u16)(spawnParams->effectParam >> 1);
+            cfg.overrideColor0 = spawnParams->effectParam;
+            cfg.overrideColor1 = spawnParams->effectParam;
+            cfg.overrideColor2 = spawnParams->effectParam;
         }
         break;
     case 0x7ae:
@@ -396,7 +396,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.scale = 0.012f * spawnParams->scale;
             cfg.lifetimeFrames = 5;
             cfg.textureId = 0x5e6;
-            cfg.initialAlpha = spawnParams->unk6;
+            cfg.initialAlpha = spawnParams->effectParam;
             cfg.behaviorFlags = 0x80200;
             cfg.renderFlags = 0x4088000;
             cfg.colorWord0 = 0xffff;
@@ -416,7 +416,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.scale = 0.012f * spawnParams->scale;
             cfg.lifetimeFrames = 0xf;
             cfg.textureId = 0x5e6;
-            cfg.initialAlpha = spawnParams->unk6;
+            cfg.initialAlpha = spawnParams->effectParam;
             cfg.behaviorFlags = 0x80100;
             cfg.renderFlags = 0x4088000;
             cfg.colorWord0 = 0xffff;
@@ -434,7 +434,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.scale = spawnParams->scale * (0.00005f * (f32)(s32)randomGetRange(10, 0x14));
             cfg.lifetimeFrames = randomGetRange(0x23, 100);
             cfg.initialAlpha = 0xff;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.behaviorFlags = 0x80480100;
             cfg.renderFlags = 0x8010800;
         }
@@ -446,7 +446,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.velocityZ = 0.012f * (f32)(s32)randomGetRange(0xffffff9c, 100);
             cfg.startPosY = spawnParams->posX;
             cfg.scale = 0.000046f * (f32)(s32)randomGetRange(0x1c, 0x20);
-            cfg.lifetimeFrames = spawnParams->unk6;
+            cfg.lifetimeFrames = spawnParams->effectParam;
             cfg.textureId = spawnParams->arg0;
             cfg.behaviorFlags = 0x480204;
             cfg.renderFlags = 0x808;
@@ -456,7 +456,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
         if (spawnParams != NULL)
         {
             cfg.scale = 0.0185f * spawnParams->scale;
-            cfg.lifetimeFrames = spawnParams->unk6;
+            cfg.lifetimeFrames = spawnParams->effectParam;
             cfg.velocityY = spawnParams->posY * (f32)(s32)randomGetRange(0x154, 0x2d5);
             cfg.startPosY = spawnParams->posX;
             cfg.textureId = spawnParams->arg0;
@@ -471,7 +471,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.velocityZ = 0.012f * (f32)(s32)randomGetRange(0xffffff9c, 100);
             cfg.startPosY = spawnParams->posX;
             cfg.scale = 0.000046f * (f32)(s32)randomGetRange(0x1c, 0x20);
-            cfg.lifetimeFrames = spawnParams->unk6;
+            cfg.lifetimeFrames = spawnParams->effectParam;
             cfg.textureId = spawnParams->arg0;
             cfg.behaviorFlags = 0x480004;
             cfg.renderFlags = 0x480800;
@@ -480,7 +480,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
     case 0x7b5:
         if (spawnParams != NULL)
         {
-            if (spawnParams->unk6 != 0)
+            if (spawnParams->effectParam != 0)
             {
                 cfg.scale = 0.0003f * spawnParams->scale * (f32)(s32)randomGetRange(6, 10);
                 cfg.behaviorFlags = 0xc1080000;
@@ -510,7 +510,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
     case 0x7b6:
         if (spawnParams != NULL)
         {
-            if (spawnParams->unk6 != 0)
+            if (spawnParams->effectParam != 0)
             {
                 cfg.scale = 0.0003f * spawnParams->scale * (f32)(s32)randomGetRange(6, 10);
                 cfg.behaviorFlags = 0x81080000;
@@ -571,7 +571,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             {
                 cfg.renderFlags = 0x4400000;
             }
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.linkGroup = 0xf;
         }
         break;
@@ -614,7 +614,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
     case 0x7bb:
         if (spawnParams != NULL)
         {
-            if (spawnParams->unk6 != 0)
+            if (spawnParams->effectParam != 0)
             {
                 cfg.scale = 0.0002f * spawnParams->scale * (f32)(s32)randomGetRange(7, 10);
                 cfg.behaviorFlags = 0xc0080200;
@@ -639,7 +639,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
     case 0x7bc:
         if (spawnParams != NULL)
         {
-            if (spawnParams->unk6 != 0)
+            if (spawnParams->effectParam != 0)
             {
                 cfg.scale = 0.0002f * spawnParams->scale * (f32)(s32)randomGetRange(7, 10);
                 cfg.behaviorFlags = 0xc1080200;
@@ -731,7 +731,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 cfg.overrideColor1 = 0x2d1a;
                 cfg.overrideColor2 = 0x8000;
             }
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
         }
         break;
     case 0x7bf:
@@ -749,7 +749,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.behaviorFlags = 0x80014;
             cfg.renderFlags = 0x4000820;
             cfg.initialAlpha = (int)(127.0f * spawnParams->posX) + 0x40;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             if (spawnParams->unk4 != 0)
             {
                 cfg.colorWord0 = 0xff87;
@@ -798,7 +798,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             {
                 vecRotateZXY((s16*)extraArgs, &cfg.velocityX);
             }
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
         }
         break;
     case 0x7c1:
@@ -817,7 +817,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.renderFlags = 0x4000900;
             intVal = (int)(127.0f * spawnParams->posX);
             cfg.initialAlpha = intVal + 0x40;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
         }
         break;
     case 0x7c2:
@@ -842,7 +842,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
         if (spawnParams != NULL)
         {
             intVal = randomGetRange(0, 0xffff);
-            radius = 0.01f * (f32)(s32)randomGetRange(0xffffff9c, 100) + spawnParams->unk6;
+            radius = 0.01f * (f32)(s32)randomGetRange(0xffffff9c, 100) + spawnParams->effectParam;
             angle = (3.1415927f * (f32)(s32)intVal) / 32768.0f;
             trigVal = mathSinf(angle);
             cfg.startPosX = radius * trigVal + spawnParams->posX;
@@ -872,7 +872,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.behaviorFlags = 0x80004;
             cfg.renderFlags = 0x4000820;
             cfg.initialAlpha = (int)(127.0f * spawnParams->posX) + 0x40;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             if (spawnParams->unk4 != 0)
             {
                 cfg.colorWord0 = 0xff87;
@@ -909,7 +909,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.renderFlags = 0x4000900;
             intVal = (int)(127.0f * spawnParams->posX);
             cfg.initialAlpha = intVal + 0x40;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
         }
         break;
     case 0x7c6:
@@ -930,7 +930,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 spawnParams->scale * (0.008f * (f32)(s32)randomGetRange(0xffffff9c, 100)) + spawnParams->posZ;
             cfg.scale = spawnParams->scale * (0.000085f * (f32)(s32)randomGetRange(0x50, 100));
             cfg.lifetimeFrames = randomGetRange(1, 0x14) + 10;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x80200;
             cfg.renderFlags = 0x4040800;
@@ -945,7 +945,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.startPosY = 5.0f;
             cfg.scale = 0.001479f;
             cfg.lifetimeFrames = randomGetRange(0x19, 0x20);
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.behaviorFlags = 0x80100;
             cfg.renderFlags = 0x40808;
         }
@@ -1023,7 +1023,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.startPosZ = spawnParams->scale * (0.05f * (f32)(s32)randomGetRange(0xffffff9c, 100));
             cfg.scale = 0.0003f * (f32)(s32)randomGetRange(5, 0x14);
             cfg.lifetimeFrames = randomGetRange(0x2a, 0x32);
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.behaviorFlags = 0x580000;
             cfg.renderFlags = 0x800;
         }
@@ -1039,7 +1039,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 spawnParams->scale * (0.02f * (f32)(s32)randomGetRange(0xffffff9c, 100)) + spawnParams->posZ;
             cfg.scale = spawnParams->scale * (0.000085f * (f32)(s32)randomGetRange(0x50, 100));
             cfg.lifetimeFrames = randomGetRange(1, 0x14) + 10;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x280201;
             cfg.renderFlags = 0x4040800;
@@ -1056,7 +1056,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 spawnParams->scale * (0.02f * (f32)(s32)randomGetRange(0xffffff9c, 100)) + spawnParams->posZ;
             cfg.scale = spawnParams->scale * (0.000085f * (f32)(s32)randomGetRange(0x50, 100));
             cfg.lifetimeFrames = randomGetRange(5, 0xf);
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x280201;
             cfg.renderFlags = 0x4040800;
@@ -1070,7 +1070,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.startPosZ = spawnParams->posZ;
             cfg.scale = 0.025f * spawnParams->scale;
             cfg.lifetimeFrames = 10;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0x7f;
             cfg.behaviorFlags = 0x280101;
             cfg.renderFlags = 0x822;
@@ -1110,12 +1110,12 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x20080100;
             cfg.renderFlags = 0x4010020;
-            cfg.colorWord0 = (u16)(spawnParams->unk6 >> 1);
-            cfg.colorWord1 = (u16)(spawnParams->unk6 >> 1);
-            cfg.colorWord2 = (u16)(spawnParams->unk6 >> 1);
-            cfg.overrideColor0 = spawnParams->unk6;
-            cfg.overrideColor1 = spawnParams->unk6;
-            cfg.overrideColor2 = spawnParams->unk6;
+            cfg.colorWord0 = (u16)(spawnParams->effectParam >> 1);
+            cfg.colorWord1 = (u16)(spawnParams->effectParam >> 1);
+            cfg.colorWord2 = (u16)(spawnParams->effectParam >> 1);
+            cfg.overrideColor0 = spawnParams->effectParam;
+            cfg.overrideColor1 = spawnParams->effectParam;
+            cfg.overrideColor2 = spawnParams->effectParam;
         }
         break;
     case 0x7d1:
@@ -1138,7 +1138,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.startPosZ = spawnParams->posZ;
             cfg.scale = spawnParams->scale * (0.000085f * (f32)(s32)randomGetRange(0x50, 100));
             cfg.lifetimeFrames = randomGetRange(1, 0x14) + 10;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x20080200;
             cfg.renderFlags = 0x4040800;
@@ -1162,7 +1162,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 cfg.startPosY = 0.1f * (f32)(s32)randomGetRange(100, 200);
             }
             cfg.scale = spawnParams->scale * (f32)(s32)randomGetRange(5, 10);
-            cfg.lifetimeFrames = spawnParams->unk6;
+            cfg.lifetimeFrames = spawnParams->effectParam;
             cfg.textureId = spawnParams->unk4;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x80110;
@@ -1180,7 +1180,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.velocityZ = spawnParams->scale * (0.0005f * (f32)(s32)randomGetRange(0xffffff9c, 100));
             cfg.scale = 0.000075f * (f32)(s32)randomGetRange(10, 0x14);
             cfg.lifetimeFrames = spawnParams->unk2 + randomGetRange(1, 0x28);
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x480104;
             cfg.renderFlags = 0x8000080;
@@ -1197,7 +1197,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.velocityZ = spawnParams->scale * (0.0005f * (f32)(s32)randomGetRange(0xffffff9c, 100));
             cfg.scale = 0.000075f * (f32)(s32)randomGetRange(10, 0x14);
             cfg.lifetimeFrames = spawnParams->unk2 + randomGetRange(1, 0x28);
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x1480104;
             cfg.renderFlags = 0x8000080;
@@ -1214,7 +1214,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.velocityZ = spawnParams->scale * (0.0005f * (f32)(s32)randomGetRange(0xffffff9c, 100));
             cfg.scale = 0.000075f * (f32)(s32)randomGetRange(10, 0x14);
             cfg.lifetimeFrames = spawnParams->unk2 + randomGetRange(1, 0x28);
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x48010c;
             cfg.renderFlags = 0x8000080;
@@ -1231,7 +1231,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.velocityZ = spawnParams->scale * (0.0005f * (f32)(s32)randomGetRange(0xffffff9c, 100));
             cfg.scale = 0.000075f * (f32)(s32)randomGetRange(10, 0x14);
             cfg.lifetimeFrames = spawnParams->unk2 + randomGetRange(1, 0x28);
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x40480104;
             cfg.renderFlags = 0x8000080;
@@ -1285,7 +1285,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
         }
         cfg.scale = 0.01f * spawnParams->scale;
         cfg.lifetimeFrames = 10;
-        cfg.textureId = spawnParams->unk6;
+        cfg.textureId = spawnParams->effectParam;
         cfg.initialAlpha = 0x40;
         cfg.behaviorFlags = 0x80104;
         cfg.renderFlags = 0x880;
@@ -1299,7 +1299,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
         }
         cfg.scale = 0.01f * spawnParams->scale;
         cfg.lifetimeFrames = 0x14;
-        cfg.textureId = spawnParams->unk6;
+        cfg.textureId = spawnParams->effectParam;
         cfg.initialAlpha = 0x30;
         cfg.behaviorFlags = 0x80104;
         cfg.renderFlags = 0x880;
@@ -1313,7 +1313,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
         }
         cfg.scale = 0.01f * spawnParams->scale;
         cfg.lifetimeFrames = 0x14;
-        cfg.textureId = spawnParams->unk6;
+        cfg.textureId = spawnParams->effectParam;
         cfg.initialAlpha = 0x30;
         cfg.behaviorFlags = 0x80104;
         cfg.renderFlags = 0x4000880;
@@ -1333,7 +1333,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.textureId = 0x605;
             cfg.behaviorFlags = 0x80104;
             cfg.renderFlags = 0x8a0;
-            variant = spawnParams->unk6;
+            variant = spawnParams->effectParam;
             switch (variant)
             {
             case 0x160:
@@ -1425,7 +1425,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x3000000;
             cfg.renderFlags = 0x780880;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
         }
         break;
     case 0x7de:
@@ -1441,7 +1441,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.lifetimeFrames = (int)(cfg.velocityY * (f32)(s32)randomGetRange(0x19, 100));
             cfg.behaviorFlags = 0x1482000;
             cfg.renderFlags = 0x8400880;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
         }
         break;
     case 0x7df:
@@ -1501,7 +1501,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x86000008;
             cfg.renderFlags = 0x1000000;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
             if (spawnParams->unk2 == 1)
             {
                 cfg.colorWord0 = (u16)(randomGetRange(0x63bf, 0xffff) & 0xffff);
@@ -1566,7 +1566,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.initialAlpha = 0xff;
             cfg.behaviorFlags = 0x80008;
             cfg.renderFlags = 0x5000100;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
         }
         break;
     case 0x7e5:
@@ -1645,7 +1645,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
         }
         cfg.scale = 0.01f * spawnParams->scale;
         cfg.lifetimeFrames = 10;
-        cfg.textureId = spawnParams->unk6;
+        cfg.textureId = spawnParams->effectParam;
         cfg.initialAlpha = 0x40;
         cfg.behaviorFlags = 0x80100;
         cfg.renderFlags = 0x800;
@@ -1659,7 +1659,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
         }
         cfg.scale = 0.01f * spawnParams->scale;
         cfg.lifetimeFrames = 0x14;
-        cfg.textureId = spawnParams->unk6;
+        cfg.textureId = spawnParams->effectParam;
         cfg.initialAlpha = 0x30;
         cfg.behaviorFlags = 0x80100;
         cfg.renderFlags = 0x800;
@@ -1673,7 +1673,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
         }
         cfg.scale = 0.01f * spawnParams->scale;
         cfg.lifetimeFrames = 0x14;
-        cfg.textureId = spawnParams->unk6;
+        cfg.textureId = spawnParams->effectParam;
         cfg.initialAlpha = 0x30;
         cfg.behaviorFlags = 0x80100;
         cfg.renderFlags = 0x4000800;
@@ -1711,7 +1711,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.overrideColor0 = 7000;
             cfg.overrideColor1 = 0x7fff;
             cfg.overrideColor2 = 0xffff;
-            cfg.textureId = spawnParams->unk6;
+            cfg.textureId = spawnParams->effectParam;
         }
         break;
     case 0x7ec:
@@ -1774,7 +1774,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.startPosZ = spawnParams->posZ;
             cfg.velocityZ = 0.0f;
             cfg.velocityY = spawnParams->scale;
-            if (spawnParams->unk6 != 0)
+            if (spawnParams->effectParam != 0)
             {
                 cfg.velocityX = 0.5f;
             }
@@ -1873,7 +1873,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.initialAlpha = -0xd;
             cfg.behaviorFlags = 0x80100;
             cfg.renderFlags = 0x828;
-            if (spawnParams->unk6 == 0)
+            if (spawnParams->effectParam == 0)
             {
                 cfg.scale = 0.0008f * (f32)(s32)randomGetRange(10, 0x14);
                 cfg.startPosY = 6.0f;
@@ -1884,7 +1884,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 cfg.overrideColor1 = 0x130c;
                 cfg.overrideColor2 = 0xacf;
             }
-            if (spawnParams->unk6 == 1)
+            if (spawnParams->effectParam == 1)
             {
                 cfg.scale = 0.0006f * (f32)(s32)randomGetRange(10, 0x14);
                 cfg.startPosY = 4.5f;
@@ -1895,7 +1895,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
                 cfg.overrideColor1 = 0xfec1;
                 cfg.overrideColor2 = 0xacf;
             }
-            if (spawnParams->unk6 == 2)
+            if (spawnParams->effectParam == 2)
             {
                 cfg.scale = 0.0007f * (f32)(s32)randomGetRange(10, 0x14);
                 cfg.startPosY = 4.5f;
@@ -1918,7 +1918,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
         cfg.scale = 0.0001f * (f32)(s32)randomGetRange(0x50, 0x58);
         cfg.textureId = 0x7b;
         cfg.lifetimeFrames = 0x50;
-        variant = spawnParams->unk6;
+        variant = spawnParams->effectParam;
         if ((variant == 0) || (variant == 3))
         {
             cfg.colorWord0 = 65000;
@@ -1938,7 +1938,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             cfg.colorWord1 = 0;
             cfg.colorWord2 = 65000;
         }
-        if (spawnParams->unk6 >= 3)
+        if (spawnParams->effectParam >= 3)
         {
             cfg.overrideColor0 = 65000;
             cfg.overrideColor1 = 65000;
@@ -1958,7 +1958,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
     case 0x7f5:
         if (spawnParams != NULL)
         {
-            if (spawnParams->unk6 != 0)
+            if (spawnParams->effectParam != 0)
             {
                 cfg.scale = 3.0f * (0.0003f * spawnParams->scale);
                 cfg.behaviorFlags = 0x81080000;

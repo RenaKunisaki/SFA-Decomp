@@ -860,8 +860,8 @@ void dll_19_updateGravity(GameObject* obj, void* state, f32 gravity, s8 field25f
     fz = 0.0f;
     ((BaddieState*)state)->moveInputX = fz;
     ((BaddieState*)state)->moveInputZ = fz;
-    *(int*)&((BaddieState*)state)->unk31C = 0;
-    *(int*)&((BaddieState*)state)->unk318 = 0;
+    *(int*)&((BaddieState*)state)->pressedButtons = 0;
+    *(int*)&((BaddieState*)state)->heldButtons = 0;
 }
 
 int dll_19_func10(GameObject* obj, u8* state, int moveArg0, int moveArg1, s16 controlMode, f32* destX, f32* destZ,
@@ -872,8 +872,8 @@ int dll_19_func10(GameObject* obj, u8* state, int moveArg0, int moveArg1, s16 co
 
     if (state[897] != 0)
     {
-        *(int*)&((BaddieState*)state)->unk318 = 0;
-        *(int*)&((BaddieState*)state)->unk31C = 0;
+        *(int*)&((BaddieState*)state)->heldButtons = 0;
+        *(int*)&((BaddieState*)state)->pressedButtons = 0;
         ((BaddieState*)state)->cameraYaw = 0;
         zero = 0.0f;
         ((BaddieState*)state)->moveInputX = zero;
@@ -917,8 +917,8 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
     f32 nz;
     char* t;
 
-    *(int*)&((BaddieState*)st)->unk318 = 0;
-    *(int*)&((BaddieState*)st)->unk31C = 0;
+    *(int*)&((BaddieState*)st)->heldButtons = 0;
+    *(int*)&((BaddieState*)st)->pressedButtons = 0;
     ((BaddieState*)st)->cameraYaw = 0;
     {
         f32 rest = 0.0f;
