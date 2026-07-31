@@ -40,6 +40,7 @@
 #include "main/sky_api.h"
 #include "main/object_render.h"
 #include "main/dll/dll_0015_curves.h"
+#include "main/dll/dll_02AE_waterflowwe.h"
 #include "track/intersect_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/track_bbox_api.h"
@@ -12945,31 +12946,33 @@ void playerRefreshCollisionState(GameObject* obj, int p2, int flags)
 void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
 {
     int any;
-    PlayerState* inner = ((GameObject*)player)->extra;
+    GameObject* object = (GameObject*)player;
+    PlayerState* inner = object->extra;
+    int n;
+    int i;
+    GameObject* o;
+    GameObject** objs;
     f32 sumS;
     f32 sumC;
     f32 ratio;
-    int* objs;
-    int n;
-    int i;
 
     sumS = sumC = 0.0f;
-    objs = (int*)objGetAllOfType(0x14, &n);
+    objs = (GameObject**)objGetAllOfType(0x14, &n);
     any = 0;
     for (i = 0; i < n; i++)
     {
-        int o = objs[i];
-        if (*(u8*)((char*)*(int*)((char*)o + 0x4c) + 0x1a) & 2)
+        o = objs[i];
+        if (((FoliageCurrentSetup*)o->anim.placementData)->currentFlags & 2)
         {
             f32 dy;
             any = 1;
-            dy = *(f32*)((char*)o + 0x10) - ((GameObject*)player)->anim.localPosY;
+            dy = o->anim.localPosY - object->anim.localPosY;
             if (dy <= 200.0f && dy >= -200.0f)
             {
-                f32 dx = *(f32*)((char*)o + 0xc) - ((GameObject*)player)->anim.localPosX;
-                f32 dz = *(f32*)((char*)o + 0x14) - ((GameObject*)player)->anim.localPosZ;
+                f32 dx = o->anim.localPosX - object->anim.localPosX;
+                f32 dz = o->anim.localPosZ - object->anim.localPosZ;
                 f32 dist = sqrtf(dx * dx + dz * dz);
-                f32 thresh = 1.5f * (f32)(u32) * (u8*)((char*)*(int*)((char*)o + 0x4c) + 0x19);
+                f32 thresh = 1.5f * (f32)(u32)((FoliageCurrentSetup*)o->anim.placementData)->currentRadius;
                 if (dist < thresh)
                 {
                     ratio = 0.0f;
@@ -12977,28 +12980,32 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
                     {
                         ratio = (thresh - dist) / thresh;
                     }
-                    ratio = ratio * (10.0f * *(f32*)((char*)o + 0x8));
-                    sumS = ratio * mathSinf(3.1415927f * (f32)(int)*(s16*)((char*)o + 0) / 32768.0f) + sumS;
-                    sumC = ratio * mathCosf(3.1415927f * (f32)(int)*(s16*)((char*)o + 0) / 32768.0f) + sumC;
+                    ratio = ratio * (10.0f * o->anim.rootMotionScale);
+                    sumS = ratio * mathSinf(3.1415927f * (f32)(int)o->anim.rotX / 32768.0f) + sumS;
+                    sumC = ratio * mathCosf(3.1415927f * (f32)(int)o->anim.rotX / 32768.0f) + sumC;
                 }
             }
         }
     }
-    objs = (int*)objGetAllOfType(0x50, &n);
+    objs = (GameObject**)objGetAllOfType(0x50, &n);
     for (i = 0; i < n; i++)
     {
-        int o = objs[i];
-        f32 strength = (f32)(u32) * (u8*)((char*)*(int*)((char*)o + 0x4c) + 0x32) / 10.0f;
+        f32 strength;
+        s16 currentAngle;
         f32 dy;
+        o = objs[i];
+        strength = (f32)(u32)((ObjectCurrentSourceSetup*)o->anim.placementData)->strengthTenths / 10.0f;
         any = 1;
-        dy = *(f32*)((char*)o + 0x10) - ((GameObject*)player)->anim.localPosY;
+        dy = o->anim.localPosY - object->anim.localPosY;
         if (dy <= 200.0f && dy >= -200.0f)
         {
-            f32 dx = *(f32*)((char*)o + 0xc) - ((GameObject*)player)->anim.localPosX;
-            f32 dz = *(f32*)((char*)o + 0x14) - ((GameObject*)player)->anim.localPosZ;
-            int a22 = (s16)(getAngle(dx, dz) + 0x84d0);
-            f32 dist = sqrtf(dx * dx + dz * dz);
-            f32 thresh = (f32)(int)(*(u8*)((char*)*(int*)((char*)o + 0x4c) + 0x29) << 3);
+            f32 dx = o->anim.localPosX - object->anim.localPosX;
+            f32 dz = o->anim.localPosZ - object->anim.localPosZ;
+            f32 dist;
+            f32 thresh;
+            currentAngle = (s16)(getAngle(dx, dz) + 0x84d0);
+            dist = sqrtf(dx * dx + dz * dz);
+            thresh = (f32)(int)(((ObjectCurrentSourceSetup*)o->anim.placementData)->radiusCells << 3);
             if (dist < thresh)
             {
                 ratio = 0.0f;
@@ -13007,8 +13014,8 @@ void playerCalcWaterCurrent(f32* outX, f32* outZ, f32 p3, int player)
                     ratio = (thresh - dist) / thresh;
                 }
                 ratio = ratio * strength;
-                sumS = ratio * mathSinf(3.1415927f * (f32)(int)a22 / 32768.0f) + sumS;
-                sumC = ratio * mathCosf(3.1415927f * (f32)(int)a22 / 32768.0f) + sumC;
+                sumS = ratio * mathSinf(3.1415927f * (f32)(int)currentAngle / 32768.0f) + sumS;
+                sumC = ratio * mathCosf(3.1415927f * (f32)(int)currentAngle / 32768.0f) + sumC;
             }
         }
     }
