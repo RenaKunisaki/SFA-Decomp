@@ -204,8 +204,13 @@ void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model)
     Mtx trans;
     int off;
     int i;
+    ModelFileHeader* modelDef;
+    u8* modelBytes;
 
-    for (i = 0, off = 0; i < def->extraJointCount; i++)
+    modelDef = def;
+    modelBytes = (u8*)model;
+
+    for (i = 0, off = 0; i < modelDef->extraJointCount; i++)
     {
         MtxPtr out;
         MtxPtr m2;
@@ -215,18 +220,18 @@ void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model)
         f32 w;
         f32 wi;
 
-        grp = def->unk54 + off;
-        out = (MtxPtr)ObjModel_GetJointMatrix((u8*)model, i + def->jointCount);
-        m1 = (MtxPtr)ObjModel_GetJointMatrix((u8*)model, grp[0]);
-        m2 = (MtxPtr)ObjModel_GetJointMatrix((u8*)model, grp[1]);
+        grp = modelDef->unk54 + off;
+        out = (MtxPtr)ObjModel_GetJointMatrix(modelBytes, i + modelDef->jointCount);
+        m1 = (MtxPtr)ObjModel_GetJointMatrix(modelBytes, grp[0]);
+        m2 = (MtxPtr)ObjModel_GetJointMatrix(modelBytes, grp[1]);
 
         w = (f32)grp[2] / 4.0f;
         wi = 1.0f - w;
 
-        jd = (char*)def->jointData + grp[0] * 0x1c;
+        jd = (char*)modelDef->jointData + grp[0] * 0x1c;
         PSMTXTrans(trans, -((ModelBone*)jd)->tail[0], -((ModelBone*)jd)->tail[1], -((ModelBone*)jd)->tail[2]);
         PSMTXConcat(m1, trans, ma);
-        jd = (char*)def->jointData + grp[1] * 0x1c;
+        jd = (char*)modelDef->jointData + grp[1] * 0x1c;
         PSMTXTrans(trans, -((ModelBone*)jd)->tail[0], -((ModelBone*)jd)->tail[1], -((ModelBone*)jd)->tail[2]);
         PSMTXConcat(m2, trans, mb);
 
