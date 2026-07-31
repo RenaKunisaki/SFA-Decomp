@@ -4855,33 +4855,33 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
             {
                 if (obj->anim.currentMoveProgress > *(f32*)(slot + 0x28))
                 {
-                    ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A | 2;
+                    ((PlayerState*)state)->baddie.moveChainFlags = ((PlayerState*)state)->baddie.moveChainFlags | 2;
                     if (*(u8*)((inner->moveSlots + 0x6c) + (u32)inner->moveSlotIndex * 0xb0) != 0u)
                     {
-                        ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A | 4;
+                        ((PlayerState*)state)->baddie.moveChainFlags = ((PlayerState*)state)->baddie.moveChainFlags | 4;
                         inner->moveChainIndex = 0;
                     }
                 }
                 if (obj->anim.currentMoveProgress >
                     *(f32*)((inner->moveSlots + 0x20) + (u32)inner->moveSlotIndex * 0xb0))
                 {
-                    ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A | 1;
+                    ((PlayerState*)state)->baddie.moveChainFlags = ((PlayerState*)state)->baddie.moveChainFlags | 1;
                 }
                 if (obj->anim.currentMoveProgress >
                     *(f32*)((inner->moveSlots + 0x24) + (u32)inner->moveSlotIndex * 0xb0))
                 {
-                    ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A & ~1;
+                    ((PlayerState*)state)->baddie.moveChainFlags = ((PlayerState*)state)->baddie.moveChainFlags & ~1;
                 }
                 if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0 &&
-                    (((PlayerState*)state)->baddie.unk34A & 1) != 0)
+                    (((PlayerState*)state)->baddie.moveChainFlags & 1) != 0)
                 {
-                    ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A | 4;
+                    ((PlayerState*)state)->baddie.moveChainFlags = ((PlayerState*)state)->baddie.moveChainFlags | 4;
                     *(int*)&((PlayerState*)state)->baddie.pressedButtons =
                         *(int*)&((PlayerState*)state)->baddie.pressedButtons & ~0x100;
                     buttonDisable(0, PAD_BUTTON_A);
                     inner->moveChainIndex = ((PlayerState*)state)->baddie.inputSector;
                 }
-                if ((((PlayerState*)state)->baddie.unk34A & 4) != 0 && (((PlayerState*)state)->baddie.unk34A & 2) != 0)
+                if ((((PlayerState*)state)->baddie.moveChainFlags & 4) != 0 && (((PlayerState*)state)->baddie.moveChainFlags & 2) != 0)
                 {
                     f32 v = (f32)(u8)enemy_getFreezeRecoverSeconds((GameObject*)((PlayerState*)state)->baddie.targetObj);
                     int slot2 = inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0;
@@ -4958,7 +4958,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
                 *(f32*)((inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0) + 0x68), 0);
             ObjAnim_SetCurrentEventStepFrames(&obj->anim, 2);
         }
-        ((PlayerState*)state)->baddie.unk34A = ((PlayerState*)state)->baddie.unk34A & ~0xef;
+        ((PlayerState*)state)->baddie.moveChainFlags = ((PlayerState*)state)->baddie.moveChainFlags & ~0xef;
         ((PlayerState*)state)->baddie.moveSpeed = *(f32*)((inner->moveSlots + 0x1c) + (u32)inner->moveSlotIndex * 0xb0);
         inner->unk824 = ((PlayerState*)state)->baddie.moveSpeed;
         inner->cutsceneEnded = 0;
@@ -9882,7 +9882,7 @@ int playerStateMoving(int obj, int state, f32 fv)
                 ((ByteFlags*)((char*)inner + 0x3f1))->b08 = 1;
             }
             ((PlayerState*)state)->baddie.animSpeedC =
-                ((PlayerState*)inner)->unk844 * timeDelta + ((PlayerState*)state)->baddie.animSpeedC;
+                ((PlayerState*)inner)->animSpeedRate * timeDelta + ((PlayerState*)state)->baddie.animSpeedC;
             ((PlayerState*)inner)->currentSpeed = 0.0f;
             if (((GameObject*)obj)->anim.currentMoveProgress > 0.1f &&
                 ((GameObject*)obj)->anim.currentMoveProgress < 0.55f)
@@ -10027,7 +10027,7 @@ int playerStateMoving(int obj, int state, f32 fv)
             ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 1;
             ((PlayerState*)inner)->animSoundId = ((PlayerState*)inner)->altAnimSoundId;
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_HEADING_LOCK;
-            ((PlayerState*)inner)->unk844 = ((PlayerState*)state)->baddie.animSpeedA;
+            ((PlayerState*)inner)->animSpeedRate = ((PlayerState*)state)->baddie.animSpeedA;
             ObjAnim_SetCurrentMove(obj, *(s16*)(((PlayerState*)inner)->moveAnimTable + 0x3c), 0.0f, 0);
         }
     }
@@ -14183,7 +14183,7 @@ int playerUpdateQuickTurn(GameObject* obj, int inner, int state)
         ObjAnim_SetCurrentMove((int)obj, *(s16*)((char*)((PlayerState*)inner)->moveAnimTable + 0x3a), 0.0f, 0);
         ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x10);
         ((PlayerState*)inner)->unk858 = ((PlayerState*)inner)->yaw;
-        ((PlayerState*)inner)->unk844 = (0.2f + (*(f32*)((char*)((PlayerState*)inner)->moveParams + 0x14) +
+        ((PlayerState*)inner)->animSpeedRate = (0.2f + (*(f32*)((char*)((PlayerState*)inner)->moveParams + 0x14) +
                                                          ((PlayerState*)state)->baddie.animSpeedC)) /
                                         30.0f;
         ((PlayerState*)inner)->targetYaw = ((PlayerState*)inner)->yaw;
@@ -14219,13 +14219,13 @@ void playerUpdateStaffAttack(GameObject* obj, int state, int p3)
         (ee0 = 1.0f) - 11.0f * ((PlayerState*)p3)->baddie.moveSpeed)
     {
         ((PlayerState*)p3)->baddie.animSpeedA =
-            ((PlayerState*)state)->unk844 * ((0.2f + *(f32*)((char*)((PlayerState*)state)->moveParams + 0x14)) -
+            ((PlayerState*)state)->animSpeedRate * ((0.2f + *(f32*)((char*)((PlayerState*)state)->moveParams + 0x14)) -
                                              ((PlayerState*)p3)->baddie.animSpeedA) +
             *(f32*)&((PlayerState*)p3)->baddie.animSpeedA;
         ((PlayerState*)p3)->baddie.animSpeedC = ((PlayerState*)p3)->baddie.animSpeedA;
-        ((PlayerState*)state)->unk844 = 0.1f * timeDelta + ((PlayerState*)state)->unk844;
-        v = ((PlayerState*)state)->unk844;
-        ((PlayerState*)state)->unk844 = (v < 0.0f) ? 0.0f : ((v > ee0) ? ee0 : v);
+        ((PlayerState*)state)->animSpeedRate = 0.1f * timeDelta + ((PlayerState*)state)->animSpeedRate;
+        v = ((PlayerState*)state)->animSpeedRate;
+        ((PlayerState*)state)->animSpeedRate = (v < 0.0f) ? 0.0f : ((v > ee0) ? ee0 : v);
     }
     if ((((PlayerState*)p3)->baddie.eventFlags & 0x200) != 0)
     {
@@ -14450,7 +14450,7 @@ void playerStartStaffAttack(GameObject* obj, int state, int p3)
     }
     ((PlayerState*)p3)->baddie.moveSpeed = 0.025f;
     ((PlayerState*)state)->targetYaw = ((PlayerState*)state)->yaw;
-    ((PlayerState*)state)->unk844 = 0.0f;
+    ((PlayerState*)state)->animSpeedRate = 0.0f;
     ((ByteFlags*)((char*)state + 0x3f0))->b10 = 1;
     ((ByteFlags*)((char*)state + 0x3f0))->b80 = 0;
     Shield_setMode(gPlayerStaffObject, 2);

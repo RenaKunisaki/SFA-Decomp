@@ -348,7 +348,7 @@ typedef struct PlayerState {
     f32 waterDepth; /* waterSurfaceY - worldPosY; player's submerged depth, drives splash/ripple FX */
     f32 waterSurfaceY; /* water surface world-Y (from cfg+0x1c0); compared against worldPosY */
     f32 speedScale; /* 0-1 movement-speed multiplier from terrain (water depth / slope); currentSpeed = (maxSpeed-K) * (t * speedScale) */
-    f32 unk844;
+    f32 animSpeedRate; /* 0x844: per-frame anim-speed rate integrated into baddie.animSpeedC (animSpeedRate*timeDelta); captured from animSpeedA */
     f32 prevWorldPosY;
     f32 groundRefY; /* 0x84C: worldPosY latched when grounded */
     f32 fallThresholdY; /* 0x850: groundRefY minus a margin; worldPosY <= this triggers the fall path */
