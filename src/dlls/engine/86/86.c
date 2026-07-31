@@ -99,10 +99,8 @@ void CameraModeArwing_update(CameraObject* camera) {
         rotationStep = (s32)((f32)angleDelta * timeDelta);
         camera->anim.rotY = rotationStep / 16.0f + (f32)camera->anim.rotY;
     } else if (arwarwing_isExplodingOrWarping(target) != 0) {
-        f32 rollRate = gCameraModeArwingState.rollRate;
-        rollRate = rollRate * 0.98f;
-        gCameraModeArwingState.rollRate = rollRate;
-        camera->anim.rotZ = rollRate * timeDelta + (f32)camera->anim.rotZ;
+        gCameraModeArwingState.rollRate *= 0.98f;
+        camera->anim.rotZ = gCameraModeArwingState.rollRate * timeDelta + (f32)camera->anim.rotZ;
     } else {
         int targetRoll = (s32)((f32)gCameraModeArwingState.inputRoll * gCameraModeArwingState.rollScale);
         targetRoll = targetRoll - (u16)camera->anim.rotZ;
