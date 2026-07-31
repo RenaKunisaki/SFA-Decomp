@@ -227,7 +227,7 @@ void worldplanet_update(GameObject* obj) {
     u8 i;
     u8 planetIdx;
     int objId;
-    WorldObjEffectParams pfx;
+    WorldObjEffectParams effectParams;
     struct {
         s8 inY;
         s8 inX[3];
@@ -293,12 +293,12 @@ void worldplanet_update(GameObject* obj) {
             setDrawLights(0);
         }
         buttons = getButtonsJustPressed(0);
-        pfx.dispatchTimer = WORLDPLANET_SELECTION_PFX_TIMER;
-        pfx.offsetX = 59.3736f;
-        pfx.offsetY = 39.745197f;
-        pfx.offsetZ = -42.603f;
+        effectParams.dispatchTimer = WORLDPLANET_SELECTION_PFX_TIMER;
+        effectParams.offsetX = 59.3736f;
+        effectParams.offsetY = 39.745197f;
+        effectParams.offsetZ = -42.603f;
         (*gPartfxInterface)
-            ->spawnObject((void*)obj, WORLDPLANET_SELECTION_PFX_ID, &pfx, WORLDPLANET_SELECTION_PFX_MODE, -1, NULL);
+            ->spawnObject((void*)obj, WORLDPLANET_SELECTION_PFX_ID, &effectParams, WORLDPLANET_SELECTION_PFX_MODE, -1, NULL);
         worldplanet_readMapInput(obj, in.inX, &in.inY);
         (obj)->anim.rotZ -= 10;
         (obj)->anim.rotY = 0x3448;
