@@ -1329,7 +1329,6 @@ extern u8 gObjFuzzPhaseLatched;
 extern u32 lbl_803DB470;
 extern int lbl_803DB498;
 extern int lbl_803DB49C;
-extern f32 lbl_803DEA38;
 
 
 extern ObjPrintGXColor gObjFuzzKColor;
@@ -2700,7 +2699,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         if (player != NULL && !(player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) &&
             ((GameObject*)cam)->anim.targetObj == player)
         {
-            f32 d = lbl_803DEA38 + (((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale +
+            f32 d = 2e+01f + (((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale +
                                     *(f32*)&((GameObject*)obj)->anim.targetObj);
             f32 dist = Camera_DistanceToCurrentViewPosition(player->anim.worldPosX, player->anim.worldPosY,
                                                             player->anim.worldPosZ);

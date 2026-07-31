@@ -5010,15 +5010,15 @@ int trickyGuardFindBaddieTarget(TrickyState* state);
 
 static inline int trickyGuardIsBaddieTargetValid(TrickyState* trickyState)
 {
-    u32 target = (u32)trickyState->guardTarget;
+    GameObject* target = trickyState->guardTarget;
     int count;
-    int* list;
+    GameObject** list;
     int i;
 
-    list = (int*)objGetAllOfType(TRICKY_GUARD_APPROACH_GROUP, &count);
+    list = (GameObject**)objGetAllOfType(TRICKY_GUARD_APPROACH_GROUP, &count);
     for (i = 0; (s16)i < count; i++)
     {
-        if ((u32)*list == target)
+        if (*list == target)
         {
             return 1;
         }
