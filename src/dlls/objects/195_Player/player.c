@@ -12390,9 +12390,7 @@ void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInpu
         setup->posY = y0 + randomOffset;
         setup->posZ = z0 + randomOffset;
         setup = (ObjPlacement*)objSetupObject(setup, 5, -1, -1, NULL);
-        if (setup == NULL) {
-            linkEffect = 0;
-        } else {
+        if (setup != NULL) {
             ObjPath_GetPointWorldPosition((GameObject*)gPlayerPathObject, 0, &x0, &y0, &z0, 0);
             ObjPath_GetPointWorldPosition((GameObject*)gPlayerPathObject, 1, &x1, &y1, &z1, 0);
             dx = x0 - x1;
@@ -12407,6 +12405,8 @@ void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInpu
             setup->posX *= 6.0f;
             arwprojectile_placeForward((GameObject*)setup, 10.0f);
             arwprojectile_setLifetime((GameObject*)setup, 0x32);
+        } else {
+            linkEffect = 0;
         }
         if (linkEffect == 1) {
             arwprojectile_createLinkedEffect((GameObject*)setup, 1);
