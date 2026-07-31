@@ -5,6 +5,7 @@
 #include "ghidra_import.h"
 #include "global.h"
 #include "main/dll/duster_api.h"
+#include "main/objprint_character_api.h"
 #include "main/objseq.h"
 
 struct ModelLightStruct;
@@ -30,7 +31,9 @@ typedef struct EnemyState {
     u8 unk261; /* bbox trace filter handed to trackGetLineIntersect */
     u8 unk262[0x264 - 0x262];
     s8 surfaceFlags; /* ENEMY_SURFACE_FLAG_* */
-    u8 unk265[0x29C - 0x265];
+    u8 unk265[0x26C - 0x265];
+    CharacterEyeAnimState eyeAnimState;
+    u8 unk294[0x29C - 0x294];
     GameObject* trackedObj; /* current engagement target */
     u16 turnOctant; /* (u16 turnAngleDelta >> 13): which 1/8 sector the turn falls in */
     u16 turnAngleDelta; /* signed angle to trackedObj minus world rotX, normalized to +/-0x8000 */
@@ -198,6 +201,7 @@ STATIC_ASSERT(offsetof(EnemyState, familyData) == 0x33C);
 STATIC_ASSERT(offsetof(EnemyState, lastHitObject) == 0x340);
 STATIC_ASSERT(offsetof(EnemyState, physicsActive) == 0x25F);
 STATIC_ASSERT(offsetof(EnemyState, surfaceFlags) == 0x264);
+STATIC_ASSERT(offsetof(EnemyState, eyeAnimState) == 0x26C);
 STATIC_ASSERT(offsetof(EnemyState, trackedObj) == 0x29C);
 STATIC_ASSERT(offsetof(EnemyState, aggroRange) == 0x2A8);
 STATIC_ASSERT(offsetof(EnemyState, lookDirX) == 0x2B8);

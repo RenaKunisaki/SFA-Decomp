@@ -1189,12 +1189,12 @@ void enemyObjAnimUpdate(short* obj, int state)
     memcpy((void*)(state + 0x2b8), obj + 0x12, 0xc);
     if ((((EnemyState*)state)->flags2E4 & 0x400) != 0)
     {
-        characterDoEyeAnims((GameObject*)obj, (void*)(state + 0x26c));
+        characterDoEyeAnims((GameObject*)obj, &((EnemyState*)state)->eyeAnimState);
     }
     if ((((EnemyState*)state)->trackedObj != NULL) && ((((EnemyState*)state)->flags2E4 & 0x800) != 0))
     {
         characterSetHeadYawToTarget((GameObject*)obj, ((EnemyState*)state)->trackedObj,
-                    (CharacterEyeAnimState*)(state + 0x26c), 0x19);
+                    &((EnemyState*)state)->eyeAnimState, 0x19);
     }
     ((EnemyState*)state)->prevActionId = ((EnemyState*)state)->actionId;
     flags = ((EnemyState*)state)->controlFlags;
@@ -2249,7 +2249,7 @@ void enemy_steerVelocityToward(GameObject* obj, void* state, f32* desiredVec, f3
         if (y < 0.0f)
         {
             f32 floor_height = obj->anim.localPosY;
-            GameObject* target = *(GameObject**)((char*)state + 0x29c);
+            GameObject* target = ((EnemyState*)state)->trackedObj;
             f32 ground = 10.0f + target->anim.localPosY;
             if (floor_height < ground)
             {
@@ -2449,7 +2449,7 @@ void baddieSetMove(GameObject* obj, int state, u8 moveId, f32 rateScale, int mov
     ObjHitsPriorityState* hitState;
 
     ((EnemyState*)state)->animPlaySpeed = 1.0f / (60.0f * rateScale);
-    *(u8*)(state + 0x323) = stateByte;
+    ((EnemyState*)state)->rootMotionFlags = stateByte;
     ObjAnim_SetCurrentMove((int)obj, moveId, 0.0f, moveControlFlags);
     hitState = (ObjHitsPriorityState*)(obj)->anim.hitReactState;
     if (hitState != NULL)

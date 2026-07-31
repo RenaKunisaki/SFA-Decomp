@@ -719,7 +719,7 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
             ObjAnim_SetMoveProgress(&obj->anim,
                                     *(f32*)(gBaddieMoveProgressTable + rows[(u8)amount].anim * 4));
             ((EnemyState*)state)->phaseAngle = animRows[off + 9];
-            ((EnemyState*)state)->sharpClaw.seqTimer = (f32)(u32) * (u16*)(state + 0x2ec);
+            ((EnemyState*)state)->sharpClaw.seqTimer = (f32)(u32)((EnemyState*)state)->hitStunFrames;
         }
         ((EnemyState*)state)->flags2E8 |= 8;
         if (attacker->anim.classId == 0x1c)
