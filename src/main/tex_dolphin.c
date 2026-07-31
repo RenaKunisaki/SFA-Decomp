@@ -83,7 +83,7 @@ extern int lbl_803DEBB0;
 extern ModelLightStruct* gTexDimmedLightList[2];
 extern ModelLightStruct* gTexBlockLightList[2];
 extern int gLightmapDrawQueueCount;
-extern int* lbl_803DCE34;
+extern int* gCloudLayerTexture;
 extern int gTexIndMtxTable[];
 extern u8 gLightmapDrawQueue[];
 extern u8 gCloudLayerTexMatrix[0x30];
@@ -879,7 +879,7 @@ Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRende
     int fogColor;
     u8* byteBase;
     u32 flags;
-    int* lightList;
+    int* cloudTex;
     u8 ambColor[3];
     u8 fogRgba[4];
     u32 bits;
@@ -925,8 +925,8 @@ Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRende
         mapBlockRender_setupShaderTextures(shader, 0x80);
     }
     flags = SHADER_FLAGS(shader);
-    if ((flags & 0x20) != 0 && (lightList = lbl_803DCE34) != 0) {
-        addSignedOverlayTexStage((u8*)lightList, &gCloudLayerTexMatrix, gCloudLayerOverlayColor);
+    if ((flags & 0x20) != 0 && (cloudTex = gCloudLayerTexture) != 0) {
+        addSignedOverlayTexStage((u8*)cloudTex, &gCloudLayerTexMatrix, gCloudLayerOverlayColor);
     } else if ((flags & 0x40) != 0) {
         addWarpedRingTevStages();
     } else if (isHeavyFogEnabled()) {

@@ -69,7 +69,7 @@ void cloudSetOverridePosition(f32 a, f32 b, f32 c)
     gCloudOverridePositionZ = c;
 }
 
-void* cloudGetLayerTextureSize(f32* out1, f32* out2)
+void* cloudGetLayerTexture(f32* out1, f32* out2)
 {
     ObjTextureRuntimeSlot* tex;
     int* layer;

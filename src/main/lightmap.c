@@ -86,7 +86,7 @@ extern FrustumPlane gViewFrustumPlanes[];
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
 extern f32 lbl_803DEC18;
-extern u32 lbl_803DCE34;
+extern u32 gCloudLayerTexture;
 extern f32 lbl_803DEC10;
 extern u16 lbl_803DCEAC;
 extern u8 gGlowLightCount;
@@ -739,8 +739,8 @@ void sceneDraw(void)
     s8 buf[616];
 
     q = (char*)gLightmapDrawQueue;
-    lbl_803DCE34 = (u32)cloudGetLayerTextureSize(&skyA, &skyB);
-    if (lbl_803DCE34 != 0)
+    gCloudLayerTexture = (u32)cloudGetLayerTexture(&skyA, &skyB);
+    if (gCloudLayerTexture != 0)
     {
         *(f32*)(q + 0x3f48) = lbl_803DEC10;
         *(f32*)(q + 0x3f4c) = lbl_803DEBCC;
