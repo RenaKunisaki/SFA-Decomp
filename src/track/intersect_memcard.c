@@ -45,7 +45,7 @@ extern volatile s32 gSaveCardState;
 
 u8* gSaveCardImageBuffer;
 u8 gSaveCardFileOpen;
-u8 lbl_803DD059;
+u8 gSaveCardIdentityCheckEnabled;
 u8 gSaveCardRetry;
 u32 gSaveCardChecksumLo;
 u32 gSaveCardChecksumHi;
@@ -246,7 +246,7 @@ int cardFormatMemoryCard(void)
 void cardSetIdentityCheckEnabled(u32 enable)
 {
     u8 v = enable;
-    lbl_803DD059 = v;
+    gSaveCardIdentityCheckEnabled = v;
     if (v != 0)
     {
         return;
@@ -479,7 +479,7 @@ void _initCardAndDsp(void)
 
 void cardGetMessage(u32* buttons, u32* texts, u32* count)
 {
-    if (lbl_803DD059 != 0 && (gSaveCardState == 7 || gSaveCardState == 9))
+    if (gSaveCardIdentityCheckEnabled != 0 && (gSaveCardState == 7 || gSaveCardState == 9))
     {
         gSaveCardState = 11;
     }

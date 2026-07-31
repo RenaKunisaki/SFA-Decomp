@@ -153,7 +153,7 @@ extern u32 gSaveCardChecksumHi;
 extern u32 gSaveCardChecksumLo;
 extern u8* gSaveCardImageBuffer;
 extern u32 gSaveCardSerialHi;
-extern u8 lbl_803DD059;
+extern u8 gSaveCardIdentityCheckEnabled;
 extern int gObjSeqStreamResumeOffset;
 extern f32 gObjSeqStreamRemainingTime;
 extern int gObjSeqTimedStreamSlot;
@@ -278,7 +278,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     }
     if (result == 0)
     {
-        if (lbl_803DD059 != 0)
+        if (gSaveCardIdentityCheckEnabled != 0)
         {
             if (*(u64*)&gSaveCardChecksumHi != 0)
             {
@@ -557,7 +557,7 @@ int saveGame(int writeImages)
         err = CARDGetSerialNo(0, &serial);
         if (err == CARD_RESULT_READY)
         {
-            if (lbl_803DD059 != 0)
+            if (gSaveCardIdentityCheckEnabled != 0)
             {
                 if (*(u64*)&gSaveCardSerialHi != 0)
                 {
