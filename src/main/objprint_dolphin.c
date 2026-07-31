@@ -792,10 +792,6 @@ const int lbl_802C1B70[56] = {
 };
 
 
-
-
-
-
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 
 
@@ -848,7 +844,6 @@ void objFuzzSetupGxState(void* objArg)
     GXSetBlendMode(1, 4, 5, 5);
     return;
 }
-
 
 
 #include "main/dll/ppcwgpipe_struct.h"
@@ -1122,7 +1117,6 @@ static void objSetupLightChannels(u8* model, u8* obj)
     }
 }
 
-extern s32 gModelMtxCacheState;
 
 #include "main/objprint_dolphin_internal.h"
 
@@ -1304,10 +1298,6 @@ static void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* 
     }
 }
 
-extern s32 gModelMtxCacheState;
-extern s32 gObjFuzzLayerIndex;
-extern u8 gObjFuzzPassActive;
-extern u32 lbl_803DB468;
 extern f32 lbl_803DEA28;
 
 
@@ -1317,55 +1307,7 @@ extern const f32 gObjPrintAngleUnitScale;
 extern const f32 gObjPrintTwoPi;
 
 
-
-
-
-
-
 #include "main/objprint_dolphin_internal.h"
-
-
-extern u8 gObjFuzzPhaseLatched;
-extern u32 lbl_803DB470;
-extern int lbl_803DB498;
-extern int lbl_803DB49C;
-
-
-extern ObjPrintGXColor gObjFuzzKColor;
-extern u8 lbl_803DCC35;
-extern u8 lbl_803DCC36;
-extern s32 gObjSelectedLightCount;
-extern u8 lbl_803DCC60;
-extern int lbl_803DB48C;
-extern int lbl_803DB490;
-
-
-
-extern u8 gObjOverrideColor[3];
-extern GXColor gObjCurChanColor;
-extern f32 gObjShadowDist;
-extern u8 gObjShadowNear;
-extern s32 gObjFuzzStep;
-extern f32 gObjFuzzPhase;
-extern u8 lbl_803DCC34;
-extern u32 gObjCachedModel;
-extern u32 gObjCachedTexture;
-extern u8 gObjRenderSetupDone;
-extern u8 gObjRenderingShadowPass;
-extern u8 gObjOverrideColorPending;
-extern u32 curObjMtx;
-extern u8 lbl_803DCC20;
-
-extern u32 gObjGxDefaultChanColor;
-extern u32 gObjGxVtxDescCache;
-extern u8 gObjGxBlendModeCache;
-extern u8 gObjGxZCompLocCache;
-extern u32 gObjGxAlphaCompareCache;
-extern u8 gObjGxZWriteCache;
-extern u8 gObjGxZCompareCache;
-extern u8 gObjGxCullModeCache;
-extern u8 gObjGxKColorCache[4];
-extern u8 gObjShadowColor[4];
 
 
 static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
@@ -1378,8 +1320,6 @@ extern f32 lbl_803DEA50;
 extern f32 lbl_803DEA54;
 extern s16 gDefragDelayFrames;
 extern u32 gAssetLoadCompletedFlags;
-
-
 
 
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
@@ -2390,7 +2330,6 @@ typedef void (*ObjShadowCb)(int* obj, int* am, f32* wm);
 extern f32 gObjBoneMtxBuffer[0xC00];
 
 
-
 static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
 {
     int done;
@@ -3147,7 +3086,6 @@ void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, int* obj,
 }
 
 
-
 void objSetOverrideColor(u8 r, u8 g, u8 b)
 {
     gObjOverrideColorPending = 1;
@@ -3557,7 +3495,6 @@ void objSetRenderingShadowPass(u8 x)
 }
 
 
-
 extern int gPendingDvdReadCount;
 
 void initLoadFileReadCb(s32 result, DVDFileInfo* fileInfo)
@@ -3574,7 +3511,6 @@ void initLoadFileReadCb(s32 result, DVDFileInfo* fileInfo)
         gPendingDvdReadCount--;
     }
 }
-
 
 
 // DVDGetCommandBlockStatus() command-block states (DVD_STATE_*)
@@ -3633,7 +3569,6 @@ s32 ObjLoad_GetDvdCommandBlockStatus(DVDCommandBlock* block)
 }
 u8 gObjGxPosMtxIdTable[12] = {0x00, 0x03, 0x06, 0x09, 0x0C, 0x0F, 0x12, 0x15, 0x18, 0x1B, 0x00, 0x00};
 u8 gObjGxTexMtxIdTable[12] = {0x1E, 0x21, 0x24, 0x27, 0x2A, 0x2D, 0x30, 0x33, 0x36, 0x39, 0x00, 0x00};
-
 
 
 extern u32 gForceLoadImmediately;
@@ -3902,7 +3837,6 @@ void animCurvReadCb(s32 result, DVDFileInfo* fileInfo)
 }
 
 
-
 void animCurvTabReadCb(s32 result, DVDFileInfo* fileInfo)
 {
     if (result < 0)
@@ -3928,7 +3862,6 @@ void animCurvTabReadCb(s32 result, DVDFileInfo* fileInfo)
 }
 
 
-
 void voxMapReadCb(s32 result, DVDFileInfo* fileInfo)
 {
     if (result < 0)
@@ -3952,7 +3885,6 @@ void voxMapReadCb(s32 result, DVDFileInfo* fileInfo)
         }
     }
 }
-
 
 
 void voxMapTabReadCb(s32 result, DVDFileInfo* fileInfo)

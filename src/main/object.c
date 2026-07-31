@@ -190,30 +190,23 @@ extern f32 lbl_803DE8D8;
 extern f32 gObjColorFadeRate;
 extern f32 gObjColorFadeAlphaMax;
 GameObject* gEffectBoxObjects[20];
-extern int gObjTablesBinCount;
 extern int* gObjTablesBinIndex;
 extern u8* gObjTablesBinData;
-extern int gObjCount;
 extern GameObject** gObjList;
 extern const f32 lbl_803DE890;
 extern const f32 lbl_803DE8B8;
-extern int gObjDeferredFreeCount;
 extern GameObject** gObjDeferredFreeList;
 extern char sObjSetupObjectLoadingLockedWarning[];
 extern char sObjDebugStrings[];
-extern s16 gObjPartitionPivot;
-extern int gObjSeqToObjIdMax;
 extern s16* gObjSeqToObjIdTable;
 extern f32 lbl_803DE8CC;
 extern f32 lbl_803DE8D0;
 extern u8* gObjFileRefCount;
-extern u32 gObjUpdateFlags;
 extern f32 lbl_803DE8BC;
 extern f32 gObjPi;
 extern f32 lbl_803DE8C4;
 extern f32 lbl_803DE8C8;
 extern int* gObjFileOffsetTable;
-extern int gObjFileCount;
 extern f32 gMapSavedPlayerOffsetX;
 extern f32 gMapSavedPlayerOffsetZ;
 
@@ -948,7 +941,6 @@ char sObjDebugStrings[] = {
 char sObjSetupObjectLoadingLockedWarning[] = "<objSetupObject>  loading is locked can't setup objno %d\n";
 
 extern u8** gObjFileBufferTable;
-extern char sObjFreeObjdefError[];
 
 ObjPlacement* Obj_AllocObjectSetup(int size, int type)
 {
@@ -1167,24 +1159,11 @@ static void objFreeObjdef(u8* obj, int flag)
     mm_free(obj);
 }
 
-extern ObjLinkedList gObjUpdateList;
-extern s8 gEffectBoxObjectCount;
-
-extern int gObjDefCaptureMode;
-
-
-
 
 extern GameObject* gEffectBoxObjects[20];
 
 void Obj_RegisterObject(GameObject* obj, int b);
 
-extern char sObjUnknownTypeUsingDummyObjectWarning[];
-
-
-extern u8 gObjCameraSetupBlock[32];
-
-extern char sObjFreeNonExistentObjectWarning[];
 
 int loadModLines(int idx, s16* outCount)
 {

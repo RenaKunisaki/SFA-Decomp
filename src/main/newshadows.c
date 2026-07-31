@@ -304,27 +304,13 @@ extern u32 gNewShadowFrameTextures[NEW_SHADOW_FRAME_COUNT];
 extern Texture* gNewShadowNoiseTexFrames[0x10];
 extern const f64 lbl_803DED58;
 extern const f64 lbl_803DED60;
-extern u32 gNewShadowSmallDiskTexture;
 extern Texture* gNewShadowReflectionTexture;
-extern u32 gNewShadowReflectionGradientTexture;
-extern u32 gNewShadowInverseRampTexture;
-extern u32 gNewShadowFalloffTexture;
-extern u32 gNewShadowSnowFlashTexture;
 extern Texture* gNewShadowHeatHazeTexture;
 extern Texture* gNewShadowRingTexture;
 extern Texture* gNewShadowLightningTexture;
 extern Texture* gNewShadowDistortionTexture;
 extern Texture* gNewShadowRadialTexture;
-extern u32 gNewShadowRampTexture;
-extern u32 gNewShadowDiskTexture;
-extern u32 gNewShadowReflectionTexture2;
 extern Texture* gNewShadowCausticTexture;
-extern f32 gNewShadowReflectionScrollY;
-extern f32 gNewShadowDistortionWaveOffset;
-extern u32 gNewShadowBumpTexture;
-extern u32 gNewShadowWhirlpoolTexture;
-extern u32 gNewShadowReflectionSmallTexture;
-extern u8 gNewShadowFrameIndex;
 u8 gSurfaceSfxTable[0xD8] = {
     0x03, 0x46, 0x03, 0x46, 0x03, 0x46, 0x03, 0x47, 0x03, 0x48, 0x03, 0x49, 0x03, 0x4A, 0x03, 0x4B,
     0x03, 0x46, 0x03, 0x4C, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04,
@@ -341,10 +327,8 @@ u8 gSurfaceSfxTable[0xD8] = {
     0x00, 0x07, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x05, 0x00, 0x04, 0x06, 0x00, 0x07,
     0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x09, 0x00,
 };
-extern u8 gNewShadowCasterCount;
 extern Camera* gNewShadowCurrentViewSlot;
 extern f32 gNewShadowReflectionScrollY, gNewShadowReflectionScrollX;
-extern u16 gNewShadowDistortionWavePhase;
 extern int gNewShadowLightAngleX, gNewShadowLightAngleY;
 
 extern inline float sqrtf(float x)
@@ -1542,8 +1526,6 @@ void newShadowsInitProceduralTextures(void)
     gNewShadowReflectionScrollY = 0.0f;
     testAndSet_onlyUseHeap3(savedHeap);
 }
-
-extern u8 gSurfaceSfxTable[0xD8];
 
 
 static inline void fillDiskTexture(void)

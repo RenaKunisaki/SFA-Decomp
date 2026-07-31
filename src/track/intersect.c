@@ -324,8 +324,6 @@ u32 gWhirlpoolReflectionTintColor = 0xFFFFFF60;
 u32 gWhirlpoolReflectionKColor = 0xA0A0A080;
 
 
-
-
 f32 lbl_8030EA10[3][2][3] = {
     {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
     {{0.0f, 0.8f, 0.0f}, {0.0f, 0.0f, 0.8f}},
@@ -501,10 +499,6 @@ void waterFxDraw(void)
     }
     Camera_ApplyFullViewport();
 }
-
-extern u32 lbl_803DCFF4;
-
-
 
 
 #include "track/intersect_internal.h"
@@ -699,12 +693,7 @@ void waterFxInit(void)
 }
 
 
-
 /* 4x4 identity fill. */
-
-
-
-
 
 
 void drawPartialTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int width, int height, int u_offset,
@@ -746,12 +735,6 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale);
  * output.
  */
 void OSReport(const char* msg, ...);
-
-
-
-
-
-
 
 
 /*

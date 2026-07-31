@@ -215,8 +215,6 @@ typedef struct
     f32 x, y, z;
 } TrickyVec3;
 
-extern u8 lbl_8031DBD8[];
-extern u8 lbl_8031DBE4[];
 
 void Tricky_resumeAfterCommand(GameObject* obj, int state)
 {

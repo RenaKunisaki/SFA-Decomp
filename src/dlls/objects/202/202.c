@@ -1680,9 +1680,6 @@ Seq11ERow gSeq11EStateTable[6] = {
     {2.0f, 0x0, 7, 0, 4, 1}, {2.0f, 0x0, 3, 5, 5, 0}, {3.5f, 0x1, 4, 5, 5, 0},
 };
 
-extern int gGcRobotPatrolCurveInitData[2];
-extern f32 gGcRobotPatrolRiseAccel;
-extern f32 gGcRobotPatrolCatchCooldown;
 
 void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wpad0, int wpad1, Vec* wpad2, int wpad3)
 {
@@ -2565,7 +2562,6 @@ void kooshy_init(int unused, int state)
 
 #define FALL_LADDERS_HIT_VOLUME_SLOT 0x18
 
-extern int gWeevilCurveInitData[2];
 void weevil_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int msgFlag, int wpad0, int wpad1, Vec* wpad2,
                               int wpad3)
 {
@@ -3585,7 +3581,6 @@ u8 gShadowHunterHitReactionSeq[0x40] = {
     0x3F, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-extern f32 gDusterWallProbeOffsets[];
 
 void rachnopUpdateWhileFrozen(GameObject* obj, u8* state, int unused, int eventKind, int wpad0, int wpad1, Vec* wpad2, int wpad3)
 {
@@ -3946,7 +3941,6 @@ void spittingEbaInit(u32 unused, int state)
     return;
 }
 
-extern int gWbCurveInitData[2];
 
 void wbUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int wpad0, int wpad1, Vec* wpad2, int wpad3)
 {
@@ -4829,28 +4823,6 @@ EnemyTargetSearchResult gCrawlerNearbyObjectBuffer[16];
 f32 gCrawlerHitSfxTimer;
 
 
-extern u8 gRedEyeLocomotionMoves[];
-extern u8 gRedEyeRandomMoves[];
-extern u8 gRedEyeDefaultMoveChain[];
-extern u8 gRedEyeMoveChain[];
-extern u8 gRedEyeOctantMoves[];
-extern u8 gRedEyeMoveHitVolumes[];
-extern u8 gRedEyeHitReactionSeq[];
-extern u8 gCrawlerDefaultMoveEventFx[];
-extern u8 gFireCrawlerLocomotionMoves[];
-extern u8 gFireCrawlerOctantMoves[];
-extern u8 gFireCrawlerRandomMoves[];
-extern u8 gFireCrawlerMoveChain[];
-extern u8 gFireCrawlerMoveHitVolumes[];
-extern u8 gFireCrawlerHitReactionSeq[];
-extern u8 gFireCrawlerMoveEventFx[];
-extern u8 gShadowHunterLocomotionMoves[];
-extern u8 gShadowHunterOctantMoves[];
-extern u8 gShadowHunterRandomMoves[];
-extern u8 gShadowHunterMoveChain[];
-extern u8 gShadowHunterDefaultMoveChain[];
-extern u8 gShadowHunterMoveHitVolumes[];
-extern u8 gShadowHunterHitReactionSeq[];
 void* gCrawlerDescriptorTable[24] = {
     gRedEyeLocomotionMoves, gRedEyeMoveChain, gRedEyeRandomMoves, gRedEyeOctantMoves, gRedEyeDefaultMoveChain, gRedEyeHitReactionSeq, gRedEyeMoveHitVolumes, gCrawlerDefaultMoveEventFx,
     gFireCrawlerLocomotionMoves, gFireCrawlerMoveChain, gFireCrawlerRandomMoves, gFireCrawlerOctantMoves, gFireCrawlerMoveChain, gFireCrawlerHitReactionSeq, gFireCrawlerMoveHitVolumes, gFireCrawlerMoveEventFx,
@@ -5977,7 +5949,6 @@ void crawler_initModelVariant(GameObject* obj, u8* state)
     obj->anim.rootMotionScale = 0.5f + ((f32)(s32)(s8)params->unk28 / 127.0f);
 }
 
-extern int gHagabonMK2CurveInitData[2];
 
 extern void* gCrawlerModelChainIds[];
 
@@ -6337,7 +6308,6 @@ void hagabonMK2_init(GameObject* obj, EnemyState* st)
     obj->afterBonesCallback = &baddieAfterUpdateBonesCb;
 }
 
-extern u8 gSnowwormTurnRates[4];
 
 #define SNOWWORM_SEQID_BABY            0x84b /* "snowworm_ba" - the baby variant of 0x842 "snowworm" */
 

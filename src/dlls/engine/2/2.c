@@ -1724,7 +1724,6 @@ int RomCurveInterp_EvaluateOffsetPosition(RomCurveInterpState* state, f32* offse
                                           int ignoreY);
 
 
-
 static inline u8* ObjSeq_GetActiveModel(GameObject* obj)
 {
     ObjAnimComponent* objAnim = &obj->anim;
@@ -2648,7 +2647,6 @@ void ObjSeq_seqState_init(u8* seq)
         commandIndex++;
     }
 }
-
 
 
 void ObjSeq_objLoadAnimdata(ObjSeqState* seq, ObjSeqAnimPlacement* placement)
@@ -4851,8 +4849,6 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
 }
 
 
-
-
 void ObjSeq_SetupInitialPlaybackState(GameObject* obj, GameObject** seqObj, u8* seq, ObjSeqPlacement* placement, void** outAction)
 {
     GameObject* activeObj;
@@ -6494,12 +6490,6 @@ ObjSeqBgCmd gObjSeqDeferredCmds[0x50 / sizeof(ObjSeqBgCmd)];
 s8 gObjSeqJumpLatch[0x58];
 int gObjSeqPreemptList[40][2];
 
-
-extern u8 gObjSeqCameraActive;
-extern int gObjSeqCamMode;
-extern int gObjSeqCamModeArgB;
-extern int gObjSeqCamModeArgD;
-extern s8 gObjSeqBgCmdCount;
 
 #define OBJSEQ_SLOT_COUNT 85
 

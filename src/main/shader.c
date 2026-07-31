@@ -176,10 +176,6 @@ int gMapBlockOriginWorldX;
    ride streams blocks ahead. retail OBJECTS.bin name "IMSnowBike" (DLL 0x255) */
 #define SHADER_SNOWBIKE_OBJ 0x72
 static void mapBuildRomListIndex(MapRomListPage* page, MapRomListIndex* romListIndex, int slot, int unloading);
-extern f32 gShaderLoadCenterZ;
-extern f32 gShaderLoadCenterY;
-extern f32 gShaderLoadCenterX;
-extern int gShaderCurMapEventId;
 int mapCoordsToId(int x, int z, int layer);
 extern s16* gMapBlockIds;
 extern u8* gMapBlockRefCounts;
@@ -204,9 +200,7 @@ extern int gShaderMapRomBuffers[];
     ((s16*)gShaderMapRomBuffers[2])[(idx + (slot)) << 1] = -1;                                             \
     ((s16*)gShaderMapRomBuffers[2])[((idx + (slot)) << 1) + 1] = -1
 extern s8* gMapLayerCellStates;
-extern int gMapPendingFileFlags;
 extern int* gMapBlockIndexList;
-extern int gMapBlockIndexCount;
 
 typedef struct MapLoadRec
 {
@@ -218,11 +212,6 @@ typedef struct MapLoadRec
 
 int mapProcessRomList(int slot);
 
-extern s32 bEnableColorFilter;
-extern u8 bEnableViewFinderHud;
-extern u8 bEnableSpiritVision;
-extern u8 bEnableMonochromeFilter;
-extern u8 bEnableMotionBlur;
 u32 Rcp_GetColorFilterEnabled(void)
 {
     return bEnableColorFilter;
@@ -241,17 +230,12 @@ void ObjHits_ConvertHitPositionToWorld(GameObject* object, f32* position)
     position[2] = position[2] + playerMapOffsetZ;
 }
 
-extern u8 bEnableDistortionFilter;
-extern u8 bEnableBlurFilter;
 void Rcp_DisableDistortionFilter(void)
 {
     bEnableDistortionFilter = 0x0;
 }
 
 extern f32 distortionFilterVector[];
-extern f32 distortionFilterAngle1;
-extern f32 distortionFilterAngle2;
-extern u8 distortionFilterColor[3];
 
 void turnOnDistortionFilter(f32* vec, f32 angle2, u32* color, f32 angle1)
 {
@@ -269,7 +253,6 @@ void turnOnDistortionFilter(f32* vec, f32 angle2, u32* color, f32 angle1)
 }
 
 extern MapRomListIndex gMapRomListIndexes[];
-extern int gHeatEffectFadeDirection;
 
 void Rcp_DisableHeatEffect(void)
 {
@@ -289,9 +272,6 @@ void Rcp_DisableBlurFilter(void)
     bEnableBlurFilter = 0x0;
 }
 
-extern f32 blurFilterZ;
-extern u8 bBlurFilterUseArea;
-extern u8 bBiggerBlurFilter;
 
 void turnOnBlurFilter(f32 x, f32 y, f32 z, u8 useArea, u8 bigger)
 {
@@ -360,7 +340,6 @@ typedef struct WarpDestination
 } WarpDestination;
 
 extern u8 gRcpPendingWarpDest[];
-extern u8 gRcpWarpTransitionType;
 extern u8 gGameLoopFullMapUnloadPending;
 
 void loadNextMap(void)
@@ -1259,7 +1238,6 @@ typedef struct
 } BlockEntry;
 
 extern BlockEntry gShaderRomListSlots[8];
-extern s8 gShaderRomListSlotCount;
 
 static inline int mapFindRomListSlot(char* slots, int id)
 {
@@ -1425,8 +1403,6 @@ static void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int
 }
 
 
-
-
 MapRomListIndex gMapRomListIndexes[120];
 
 void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* entry, int layer);
@@ -1586,14 +1562,11 @@ void unloadMap(void)
     (*gCloudActionInterface)->freeCloudObjects();
 }
 
-extern s8 curMapLayer;
-extern s8 curMapType;
 s32 getCurMapLayer(void)
 {
     return curMapLayer;
 }
 
-extern int gShaderGameTextLoadedMapId;
 extern s8 gShaderMapTextDirTable[];
 
 void mapLoadGameTextDir(u8 force)
@@ -1705,12 +1678,6 @@ const PlayerFrustumPlaneDirections sPlayerFrustumPlaneDirs = {
 const PlayerFrustumPlaneScales sPlayerFrustumPlaneScales = {
     {0.0f, -25.0f, -25.0f, -25.0f, -25.0f}};
 
-extern int gMapBlockOriginX;
-extern int gMapBlockOriginZ;
-extern f32 gMapSavedPlayerOffsetX;
-extern f32 gMapSavedPlayerOffsetZ;
-extern int gMapCurRomListSlot;
-extern u8 gMapLoadDeferred;
 extern f32 gShaderDefaultTimeOfDay;
 void beginLoadingMap(void)
 {
