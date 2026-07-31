@@ -9220,8 +9220,9 @@ int playerState08(GameObject* obj, int state, f32 fv)
         }
         if (((PlayerState*)inner)->heldObj == NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
         {
-            list = (int*)objGetAllOfType(STAFF_ACTIVATED_OBJECT_GROUP, &cnt41);
-            for (i = 0; i < cnt41; i++)
+            int* objects;
+            objects = (int*)objGetAllOfType(STAFF_ACTIVATED_OBJECT_GROUP, &cnt41);
+            for (i = 0, list = objects; i < cnt41; i++)
             {
                 int o = *list;
                 gPlayerInteractTarget = (GameObject*)o;
