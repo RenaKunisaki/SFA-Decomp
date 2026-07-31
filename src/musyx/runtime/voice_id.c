@@ -8,9 +8,6 @@
 
 #define voicePriorityLinks ((u8*)vidListNodes + offsetof(VidListTables, priorityLinks))
 
-/*
- * Remove a voice from the vid id list, recycling any allocated id-list nodes.
- */
 #define VID_UNLINK(field)                                                                                              \
     if (s->field->prev != 0)                                                                                           \
     {                                                                                                                  \
@@ -32,7 +29,7 @@
     s->field->prev = 0;                                                                                                \
     vidFree = s->field
 
-void vidRemoveVoice(McmdVoiceState* state)
+void vidRemoveVoiceReferences(McmdVoiceState* state)
 {
     McmdVoiceState* s = state;
     if (s->voiceHandle != 0xffffffff)

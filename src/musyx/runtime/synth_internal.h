@@ -49,7 +49,7 @@ typedef struct SynthDelayedNode
     struct SynthDelayedNode* next;
     struct SynthDelayedNode* prev;
     u8 voiceIndex;
-    u8 bucketIndex;
+    u8 jobTabIndex;
     u8 pad[2];
 } SynthDelayedNode;
 
@@ -304,7 +304,7 @@ typedef struct SynthVoiceRuntime
     (*(u8*)((u8*)(runtime) + 0x22DA + ((voiceIndex) * sizeof(SynthVoice))))
 
 extern SynthCallbackLink seqNote[SYNTH_CALLBACK_COUNT];
-extern u8 gSynthDelayBucketCursor;
+extern u8 synthJobTableIndex;
 extern SynthCallbackLink* noteFree;
 extern SynthVoice* cseq;
 extern u32 curSeqId;

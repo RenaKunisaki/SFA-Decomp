@@ -725,12 +725,12 @@ void macHandleActive(McmdVoiceState* sv)
         switch (cmd & 0x7f)
         {
         case 0x0: /* end of macro */
-            vidRemoveVoice(sv);
+            vidRemoveVoiceReferences(sv);
             voiceFree(sv);
             ex = 1;
             break;
         case 0x1: /* stop */
-            vidRemoveVoice(sv);
+            vidRemoveVoiceReferences(sv);
             voiceFree(sv);
             ex = 1;
             break;
@@ -774,7 +774,7 @@ void macHandleActive(McmdVoiceState* sv)
             }
             else
             {
-                vidRemoveVoice(sv);
+                vidRemoveVoiceReferences(sv);
                 voiceFree(sv);
                 stop = 1;
             }
@@ -847,7 +847,7 @@ void macHandleActive(McmdVoiceState* sv)
             break;
         case 0x12: /* key off */
             MAC_CFLAGS(sv) |= MAC_FLAG64(0, 0x80);
-            synthQueueVoiceInputUpdate(sv);
+            synthKeyStateUpdate(sv);
             break;
         case 0x13: /* if random */
             if ((u8)sndRand() >= ((macCurrentCmd.flags >> 8) & 0xff))
@@ -1050,7 +1050,7 @@ void macHandleActive(McmdVoiceState* sv)
             }
             else
             {
-                vidRemoveVoice(sv);
+                vidRemoveVoiceReferences(sv);
                 voiceFree(sv);
                 stop = 1;
             }
@@ -1422,7 +1422,7 @@ void TimeQueueRemove(McmdVoiceState* sv, u32 disableUpdate)
         }
         if (disableUpdate == 0)
         {
-            synthQueueVoicePrimaryUpdates(sv);
+            synthForceLowPrecisionUpdate(sv);
         }
         *(u64*)&sv->wakeTimeHi = 0;
         *(u64*)&sv->activeTimeHi = macRealTime;
@@ -1454,7 +1454,7 @@ void macMakeActive(McmdVoiceState* sv)
                     sv->timeNext->timePrev = sv->timePrev;
                 }
             }
-            synthQueueVoicePrimaryUpdates(sv);
+            synthForceLowPrecisionUpdate(sv);
             *(u64*)&sv->wakeTimeHi = 0;
             *(u64*)&sv->activeTimeHi = macRealTime;
             MAC_CFLAGS(sv) &= ~MAC_FLAG64(0, 0x40004);
@@ -1547,7 +1547,7 @@ u32 macStart(u16 macid, u8 priority, u8 maxVoices, u16 allocId, u8 key, u8 vol, 
         if ((voice = voiceAllocate(priority, maxVoices, allocId, fxFlag != 0 ? 1 : 0)) != 0xffffffff)
         {
             sv = &synthVoice[voice];
-            vidRemoveVoice(sv);
+            vidRemoveVoiceReferences(sv);
             if (sv->queueMode != 2)
             {
                 if (sv->queueMode == 0)

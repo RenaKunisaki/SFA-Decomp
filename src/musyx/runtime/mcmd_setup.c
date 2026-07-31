@@ -152,7 +152,7 @@ void mcmdStartSample(McmdVoiceState* svoice, McmdCommandArgs* cstep)
         DoSetPitch(svoice);
     }
     MAC_CFLAGS(svoice) |= MAC_FLAG64(0, 0x20);
-    synthQueueVoiceInputUpdate(svoice);
+    synthKeyStateUpdate(svoice);
 }
 
 /*

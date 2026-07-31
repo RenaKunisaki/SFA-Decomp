@@ -39,7 +39,7 @@ struct SynthDelayedNode
     struct SynthDelayedNode* next;
     struct SynthDelayedNode* prev;
     u8 voiceIndex;
-    u8 bucketIndex;
+    u8 jobTabIndex;
     u8 pad[2];
 };
 
@@ -65,9 +65,9 @@ STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeHi1) == 0x2c);
 STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeLo1) == 0x30);
 
 #define SYNTH_FADE_COUNT                     0x20
-#define SYNTH_FADE_DELAY_ACTION_FREE_HANDLE  1
-#define SYNTH_FADE_DELAY_ACTION_QUEUE_HANDLE 2
-#define SYNTH_FADE_DELAY_ACTION_CLEAR_MIX    3
+#define SND_SEQVOL_STOP  1
+#define SND_SEQVOL_PAUSE 2
+#define SND_SEQVOL_MUTE    3
 #define SYNTH_FADE_ACTION_DISABLED           4
 #define SYNTH_INVALID_LINK_ID                0xffffffff
 
@@ -82,7 +82,7 @@ u8 synthAuxAMIDI[8];
 u8 synthAuxAMIDISet[8];
 u8 synthAuxBMIDI[8];
 u8 synthAuxBMIDISet[8];
-u8 gSynthDelayBucketCursor;
+u8 synthJobTableIndex;
 u8 sndActive;
 
 typedef struct SynthVoiceLfo
@@ -304,7 +304,7 @@ static u32 do_voice_portamento(u8 key, u8 midi, u8 midiSet, u32 isMaster, u32* r
                 voice->fineTune = 0;
                 voice->portamentoTime = 0;
                 voice->outputFlags = voice->outputFlags | 0x20000LL;
-                vidRemoveVoice(&synthVoice[i]);
+                vidRemoveVoiceReferences(&synthVoice[i]);
                 if (result == 0xffffffff)
                 {
                     voice->voiceNextHandle = 0xffffffff;
@@ -823,7 +823,7 @@ static void LowPrecisionHandler(int voice)
         cpitch = convert_cents(sv, ccents);
         cpitch += sv->sweepOff[0] + sv->sweepOff[1];
         hwSetPitch(voice, sv->curPitch = ((cpitch >> 16) * inpGetDoppler((McmdVoiceState*)sv)) >> 13);
-        synthQueueDelayedUpdate((SynthDelayedNode*)sv, 0, 0xF00);
+        synthAddJob((SynthDelayedNode*)sv, 0, 0xF00);
 
     }
     UpdateTimeMIDICtrl(sv);
@@ -991,7 +991,7 @@ static void ZeroOffsetHandler(int voice)
             hwSetPriority(voice, sv->prio << 24 | sv->age >> 15);
         }
 
-        synthQueueDelayedUpdate((SynthDelayedNode*)sv, 1, (5 - hwGetTimeOffset()) * 256);
+        synthAddJob((SynthDelayedNode*)sv, 1, (5 - hwGetTimeOffset()) * 256);
 
     }
     UpdateTimeMIDICtrl(sv);
@@ -1031,27 +1031,23 @@ static void EventHandler(int voice)
     UpdateTimeMIDICtrl(sv);
 }
 
-/*
- * Queue one of a fade's embedded delayed-action nodes into the 32-bucket
- * scheduler ring.
- */
-void synthQueueDelayedUpdate(SynthDelayedNode* fade, int mode, u32 delay)
+void synthAddJob(SynthDelayedNode* fade, int mode, u32 delay)
 {
     SynthDelayedNode* newJq;
     SynthDelayedNode** root;
     u8 jobTabIndex;
     SynthJobTab* jobTab;
 
-    jobTabIndex = ((delay / 256) + gSynthDelayBucketCursor) & 0x1F;
+    jobTabIndex = ((delay / 256) + synthJobTableIndex) & 0x1F;
     jobTab = &synthJobTable[jobTabIndex];
 
     switch (mode)
     {
     case 0:
         newJq = fade;
-        if (newJq->bucketIndex != 0xFF)
+        if (newJq->jobTabIndex != 0xFF)
         {
-            if (newJq->bucketIndex == jobTabIndex)
+            if (newJq->jobTabIndex == jobTabIndex)
             {
                 return;
             }
@@ -1065,16 +1061,16 @@ void synthQueueDelayedUpdate(SynthDelayedNode* fade, int mode, u32 delay)
             }
             else
             {
-                synthJobTable[newJq->bucketIndex].lowPrecision = newJq->next;
+                synthJobTable[newJq->jobTabIndex].lowPrecision = newJq->next;
             }
         }
         root = &jobTab->lowPrecision;
         break;
     case 1:
         newJq = fade + 1;
-        if (newJq->bucketIndex != 0xFF)
+        if (newJq->jobTabIndex != 0xFF)
         {
-            if (newJq->bucketIndex == jobTabIndex)
+            if (newJq->jobTabIndex == jobTabIndex)
             {
                 return;
             }
@@ -1088,14 +1084,14 @@ void synthQueueDelayedUpdate(SynthDelayedNode* fade, int mode, u32 delay)
             }
             else
             {
-                synthJobTable[newJq->bucketIndex].zeroOffset = newJq->next;
+                synthJobTable[newJq->jobTabIndex].zeroOffset = newJq->next;
             }
         }
         root = &jobTab->zeroOffset;
         break;
     case 2:
         newJq = fade + 2;
-        if (newJq->bucketIndex != 0xFF)
+        if (newJq->jobTabIndex != 0xFF)
         {
             return;
         }
@@ -1105,7 +1101,7 @@ void synthQueueDelayedUpdate(SynthDelayedNode* fade, int mode, u32 delay)
         break;
     }
 
-    newJq->bucketIndex = jobTabIndex;
+    newJq->jobTabIndex = jobTabIndex;
     if ((newJq->next = *root) != 0)
     {
         (*root)->prev = newJq;
@@ -1124,38 +1120,28 @@ void synthStartSynthJobHandling(McmdVoiceState* voice)
 
     *(u64*)&timers->updateTimeHi0 = synthRealTime;
     *(u64*)&timers->updateTimeHi1 = synthRealTime;
-    synthQueueDelayedUpdate((SynthDelayedNode*)voice, 0, 0);
-    synthQueueDelayedUpdate((SynthDelayedNode*)voice, 1, 0);
+    synthAddJob((SynthDelayedNode*)voice, 0, 0);
+    synthAddJob((SynthDelayedNode*)voice, 1, 0);
 }
 
-/*
- * Advance both channels (modes 0 and 1) of the handle.
- */
-void synthQueueVoicePrimaryUpdates(McmdVoiceState* voice)
+void synthForceLowPrecisionUpdate(McmdVoiceState* voice)
 {
-    synthQueueDelayedUpdate((SynthDelayedNode*)voice, 0, 0);
-    synthQueueDelayedUpdate((SynthDelayedNode*)voice, 1, 0);
+    synthAddJob((SynthDelayedNode*)voice, 0, 0);
+    synthAddJob((SynthDelayedNode*)voice, 1, 0);
 }
 
-/*
- * Wrapper for synthQueueDelayedUpdate(handle, 2, 0).
- */
-void synthQueueVoiceInputUpdate(McmdVoiceState* voice)
+void synthKeyStateUpdate(McmdVoiceState* voice)
 {
-    synthQueueDelayedUpdate((SynthDelayedNode*)voice, 2, 0);
+    synthAddJob((SynthDelayedNode*)voice, 2, 0);
 }
 
-/*
- * Walk a voice linked-list, marking each entry's slot 9 as 0xff and
- * invoking the callback for entries whose voice has no active callback.
- */
-void synthDrainDelayedBucket(SynthDelayedNode** head, SynthDelayedBucketCallback callback)
+void HandleJobQueue(SynthDelayedNode** head, SynthDelayedBucketCallback callback)
 {
     SynthDelayedNode* node = *head;
     while (node != 0)
     {
         SynthDelayedNode* next = node->next;
-        node->bucketIndex = 0xff;
+        node->jobTabIndex = 0xff;
         {
             if (synthVoice[node->voiceIndex].callbackActive == 0)
             {
@@ -1169,27 +1155,24 @@ void synthDrainDelayedBucket(SynthDelayedNode** head, SynthDelayedBucketCallback
 
 static inline void HandleVoices(void)
 {
-    SynthJobTab* jobTab = &synthJobTable[gSynthDelayBucketCursor];
-    synthDrainDelayedBucket(&jobTab->lowPrecision, LowPrecisionHandler);
-    synthDrainDelayedBucket(&jobTab->event, EventHandler);
-    synthDrainDelayedBucket(&jobTab->zeroOffset, ZeroOffsetHandler);
-    gSynthDelayBucketCursor = (gSynthDelayBucketCursor + 1) & 0x1f;
+    SynthJobTab* jobTab = &synthJobTable[synthJobTableIndex];
+    HandleJobQueue(&jobTab->lowPrecision, LowPrecisionHandler);
+    HandleJobQueue(&jobTab->event, EventHandler);
+    HandleJobQueue(&jobTab->zeroOffset, ZeroOffsetHandler);
+    synthJobTableIndex = (synthJobTableIndex + 1) & 0x1f;
 }
 
-/*
- * Dispatch a completed fade action based on its type byte.
- */
-void synthDispatchFadeAction(SynthMasterFader* fade)
+void HandleFaderTermination(SynthMasterFader* fade)
 {
     switch (fade->seqMode)
     {
-    case SYNTH_FADE_DELAY_ACTION_FREE_HANDLE:
+    case SND_SEQVOL_STOP:
         seqStop(fade->seqId);
         break;
-    case SYNTH_FADE_DELAY_ACTION_QUEUE_HANDLE:
+    case SND_SEQVOL_PAUSE:
         seqPause(fade->seqId);
         break;
-    case SYNTH_FADE_DELAY_ACTION_CLEAR_MIX:
+    case SND_SEQVOL_MUTE:
         seqMute(fade->seqId, 0, 0);
         break;
     }
@@ -1225,7 +1208,7 @@ void synthHandle(u32 deltaTime)
                     if ((fade->time -= fade->deltaTime) <= 0.f)
                     {
                         fade->volume = fade->target;
-                        synthDispatchFadeAction(fade);
+                        HandleFaderTermination(fade);
                         if (((synthMasterFaderActiveFlags &= ~mask) == 0) &&
                             (synthMasterFaderPauseActiveFlags == 0))
                         {
@@ -1445,7 +1428,7 @@ static inline void SetupFader(SynthMasterFader* fade, u8 volume, u32 time, u8 se
         fade->volume = fade->target = (f32)volume * (1.f / 127.f);
         if (fade->seqId != SYNTH_INVALID_LINK_ID)
         {
-            synthDispatchFadeAction(fade);
+            HandleFaderTermination(fade);
         }
     }
 }
@@ -1598,7 +1581,7 @@ static inline void synthInitJobQueue(void)
         synthJobTable[i].zeroOffset = 0;
     }
 
-    gSynthDelayBucketCursor = 0;
+    synthJobTableIndex = 0;
 }
 
 void synthInit(u32 sampleRate, u32 voiceCount)

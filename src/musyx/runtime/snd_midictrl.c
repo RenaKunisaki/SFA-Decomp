@@ -162,7 +162,7 @@ void inpSetMidiCtrl(u8 ctrl, u8 channel, u8 set, u8 value)
             if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
                 synthVoice[i].inputDirtyFlags = MCMD_INPUT_DIRTY_ALL;
-                synthQueueVoiceInputUpdate(&synthVoice[i]);
+                synthKeyStateUpdate(&synthVoice[i]);
             }
         }
         st->globalDirty[set][channel] = 0xFF;
@@ -191,7 +191,7 @@ void inpSetMidiCtrl(u8 ctrl, u8 channel, u8 set, u8 value)
             if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
                 synthVoice[i].inputDirtyFlags = MCMD_INPUT_DIRTY_ALL;
-                synthQueueVoiceInputUpdate(&synthVoice[i]);
+                synthKeyStateUpdate(&synthVoice[i]);
             }
         }
     }

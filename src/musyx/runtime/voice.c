@@ -447,7 +447,7 @@ void voiceKill(u32 voice)
 
     if (voiceState->activeHandle != 0)
     {
-        vidRemoveVoice(voiceState);
+        vidRemoveVoiceReferences(voiceState);
         *(u64*)&voiceState->inputFlags &= ~3;
         voiceState->priorityTick = 0;
         voiceFree(voiceState);
