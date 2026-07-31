@@ -111,7 +111,11 @@ static inline void wcpressures_addTrackedObject(GameObject* obj, GameObject* tra
     state->savedPos[trackedIndex].z = trackedObject->anim.localPosZ;
 }
 
-static inline u8 wcpressures_scanTrackedObjects(WCPressuresState* state, u8 trackedIndex, u8 foundStationaryObject) {
+static inline u8 wcpressures_scanTrackedObjects(WCPressuresState* state) {
+    u8 trackedIndex;
+    u8 foundStationaryObject = 0;
+
+    trackedIndex = 0;
     for (; trackedIndex < WCPRESSURES_TRACKED_COUNT; trackedIndex++) {
         int slotIndex = trackedIndex;
         GameObject* trackedObject = state->objects[slotIndex];
@@ -153,7 +157,7 @@ void wcpressures_update(GameObject* obj) {
     }
     {
         WCPressuresState* trackedState = (WCPressuresState*)obj->extra;
-        u8 foundStationaryObject = wcpressures_scanTrackedObjects(trackedState, 0, 0);
+        u8 foundStationaryObject = wcpressures_scanTrackedObjects(trackedState);
 
         if ((int)foundStationaryObject != 0) {
             state->pressTimer = WCPRESSURES_FOUND_TIMER;
