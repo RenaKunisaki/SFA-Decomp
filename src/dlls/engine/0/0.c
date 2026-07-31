@@ -136,7 +136,7 @@ s16 gCMenuOpenAnimMax = 170;
 s16 gMinimapRevealMax = 96;
 s16 gMinimapInfoTextXCommitted = 35;
 s16 gMinimapInfoTextYCommitted = 160;
-s16 lbl_803DBA6E = -1;
+s16 gMinimapAreaNameId = -1;
 u16 curGameText = 0xFFFF;
 u8 gGameUiUnusedHudSetting = 1;
 f32 gHudYButtonAnimDecayBias = 0.25f;
@@ -491,9 +491,9 @@ char sHighScoreStarMark[] = "x10";
 #define GCMENU_ITEM_ICON_COUNT 7
 
 
-extern s8 lbl_803DD7A0;
-extern short lbl_803DD7A2;
-extern short lbl_803DD8D2;
+extern s8 gMinimapAreaNameActive;
+extern short gMinimapAreaNameAlpha;
+extern short gMinimapRevealAmount;
 extern short gCMenuScrollTimer;
 extern short lbl_803DD78E;
 extern u8 cMenuOpen;
@@ -745,7 +745,7 @@ extern u8 shouldOpenCMenu;
 extern int lbl_803A9320[0x11];
 extern s16 gMinimapInfoTextXCommitted;
 extern s16 gMinimapInfoTextYCommitted;
-extern u8 lbl_803DD7BA;
+extern u8 gMinimapHelpTextActive;
 extern int lbl_803DD898;
 extern const f32 lbl_803E21D0;
 extern s16 gHudTextureIds[];
@@ -3113,46 +3113,46 @@ void pauseMenuDrawStatus(void)
 
 void hudUpdateMinimapReveal(void)
 {
-    if (lbl_803DD7A0 != '\0')
+    if (gMinimapAreaNameActive != '\0')
     {
-        lbl_803DD7A2 = lbl_803DD7A2 + framesThisStep * 0x20;
-        if (0xff < lbl_803DD7A2)
+        gMinimapAreaNameAlpha = gMinimapAreaNameAlpha + framesThisStep * 0x20;
+        if (0xff < gMinimapAreaNameAlpha)
         {
-            lbl_803DD7A2 = 0xff;
+            gMinimapAreaNameAlpha = 0xff;
         }
     }
     else
     {
-        if (lbl_803DD8D2 == 0)
+        if (gMinimapRevealAmount == 0)
         {
-            lbl_803DD7A2 = lbl_803DD7A2 - framesThisStep * 0x20;
-            if (lbl_803DD7A2 < 0)
+            gMinimapAreaNameAlpha = gMinimapAreaNameAlpha - framesThisStep * 0x20;
+            if (gMinimapAreaNameAlpha < 0)
             {
-                lbl_803DD7A2 = 0;
+                gMinimapAreaNameAlpha = 0;
             }
         }
     }
-    if ((lbl_803DD7A0 != '\0') && (lbl_803DD7A2 == 0xff))
+    if ((gMinimapAreaNameActive != '\0') && (gMinimapAreaNameAlpha == 0xff))
     {
-        lbl_803DD8D2 = lbl_803DD8D2 + framesThisStep * 4;
-        if (lbl_803DD8D2 > gMinimapRevealMax)
+        gMinimapRevealAmount = gMinimapRevealAmount + framesThisStep * 4;
+        if (gMinimapRevealAmount > gMinimapRevealMax)
         {
-            lbl_803DD8D2 = gMinimapRevealMax;
+            gMinimapRevealAmount = gMinimapRevealMax;
         }
     }
     else
     {
-        lbl_803DD8D2 = lbl_803DD8D2 - framesThisStep * 4;
-        if (lbl_803DD8D2 < 0)
+        gMinimapRevealAmount = gMinimapRevealAmount - framesThisStep * 4;
+        if (gMinimapRevealAmount < 0)
         {
-            lbl_803DD8D2 = 0;
+            gMinimapRevealAmount = 0;
         }
     }
-    if (lbl_803DD7A2 != 0)
+    if (gMinimapAreaNameAlpha != 0)
     {
         return;
     }
-    lbl_803DBA6E = 0xffff;
+    gMinimapAreaNameId = 0xffff;
     return;
 }
 
@@ -8851,9 +8851,9 @@ void GameUI_frameEnd(void)
             else
             {
                 int show;
-                if (lbl_803DD7A0 != 0)
+                if (gMinimapAreaNameActive != 0)
                     show = 0;
-                else if (lbl_803DD8D2 != 0)
+                else if (gMinimapRevealAmount != 0)
                     show = 0;
                 else
                     show = 1;
@@ -8864,7 +8864,7 @@ void GameUI_frameEnd(void)
                 }
             }
             gMinimapInfoTextId = -1;
-            lbl_803DD7BA = gGameUiHelpTextPending;
+            gMinimapHelpTextActive = gGameUiHelpTextPending;
             if (gGameUiHelpTextPending != 0)
             {
                 gGameUiHelpTextPending = 0;
@@ -8872,13 +8872,13 @@ void GameUI_frameEnd(void)
             }
             if ((s16)sv > -1)
             {
-                lbl_803DBA6E = sv;
-                lbl_803DD7A0 = 1;
+                gMinimapAreaNameId = sv;
+                gMinimapAreaNameActive = 1;
             }
             else
             {
-                lbl_803DD7A0 = 0;
-                lbl_803DBA6E = -1;
+                gMinimapAreaNameActive = 0;
+                gMinimapAreaNameId = -1;
             }
             buttonDisable(0, 0xe0000);
             shouldCloseCMenu = 0;
@@ -9139,7 +9139,7 @@ int lbl_803DD8DC;
 int gGameUiCurHintTextMap;
 short gCMenuOpenAnim;
 u8 lbl_803DD8D4;
-short lbl_803DD8D2;
+short gMinimapRevealAmount;
 s16 lbl_803DD8D0;
 f32 lbl_803DD8CC;
 s16 lbl_803DD8CA;
@@ -9228,7 +9228,7 @@ u8 gameUiResourcesLoaded;
 u8 lbl_803DD7C4;
 f32 lbl_803DD7C0;
 f32 lbl_803DD7BC;
-u8 lbl_803DD7BA;
+u8 gMinimapHelpTextActive;
 u8 gGameUiHelpTextPending;
 u8 gCMenuScrollLock;
 s16 gCMenuScrollVel;
@@ -9243,8 +9243,8 @@ s16 aButtonIcon;
 u8 lbl_803DD7A9;
 s8 lbl_803DD7A8;
 GameTextDef* lbl_803DD7A4;
-short lbl_803DD7A2;
-s8 lbl_803DD7A0;
+short gMinimapAreaNameAlpha;
+s8 gMinimapAreaNameActive;
 s16 lbl_803DD79E;
 s16 lbl_803DD79C;
 s16 lbl_803DD79A;
@@ -9298,6 +9298,6 @@ int gTrickyHudActionMask;
 int gTrickyHudItemMask;
 u8 lbl_803DD734;
 int lbl_803DD730;
-u8* lbl_803DD72C;
-u8 lbl_803DD728;
+u8* gDummy39Texture;
+u8 gDummy39Countdown;
 u32 lbl_8031C164 = 0;

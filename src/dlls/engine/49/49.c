@@ -202,9 +202,9 @@ void Minimap_drawCompassBlip(void);
 void Minimap_setupCompassBlip(void);
 void Minimap_drawCompassNeedle(void);
 
-extern u8 lbl_803DD7BA;
-extern s16 lbl_803DD7A2;
-extern s16 lbl_803DBA6E;
+extern u8 gMinimapHelpTextActive;
+extern s16 gMinimapAreaNameAlpha;
+extern s16 gMinimapAreaNameId;
 s8 gMinimapAxisSwap;
 f32 gMinimapArrowScale0;
 f32 gMinimapArrowScale1;
@@ -344,12 +344,12 @@ int Minimap_update(void)
                 }
             }
         }
-        if ((gMinimapEnabled == 0 && lbl_803DD7BA == 0) || mainGetBit(GAMEBIT_NoMapData) != 0)
+        if ((gMinimapEnabled == 0 && gMinimapHelpTextActive == 0) || mainGetBit(GAMEBIT_NoMapData) != 0)
         {
             mapTextureId = 0;
         }
         if ((*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
-            (gMinimapEnabled == 0 && lbl_803DD7BA == 0) ||
+            (gMinimapEnabled == 0 && gMinimapHelpTextActive == 0) ||
             Camera_GetViewportYOffset() != 0 ||
             (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
             objIsCurModelNotZero(player) == 0 || pauseMenuState != 0 || gTimeListPromptSelection != 0)
@@ -424,7 +424,7 @@ int Minimap_update(void)
         if (gMinimapFadeAlpha != 0)
         {
             box = gameTextGetBox(0x83);
-            if (gMinimapViewMode == MINIMAP_VIEW_MODE_AREA_NAME && lbl_803DD7A2 != 0 && lbl_803DBA6E > -1)
+            if (gMinimapViewMode == MINIMAP_VIEW_MODE_AREA_NAME && gMinimapAreaNameAlpha != 0 && gMinimapAreaNameId > -1)
             {
                 boxTargetWidth = 200;
             }
@@ -596,7 +596,7 @@ int Minimap_update(void)
                 }
                 break;
             case MINIMAP_VIEW_MODE_AREA_NAME:
-                if (lbl_803DD7A2 != 0 && lbl_803DBA6E > -1)
+                if (gMinimapAreaNameAlpha != 0 && gMinimapAreaNameId > -1)
                 {
                     if (gMinimapAreaNameDelay == 0)
                     {
@@ -605,8 +605,8 @@ int Minimap_update(void)
                         box->clipWidth = gMinimapBoxWidth;
                         box->cursorY = gMinimapBoxHeight;
                         gameTextSetCursor(box->cursorX, box->cursorY, 2);
-                        gameTextSetColor(0, 0xff, 0, lbl_803DD7A2 & 0xff);
-                        gameTextShow(lbl_803DBA6E + 10000);
+                        gameTextSetColor(0, 0xff, 0, gMinimapAreaNameAlpha & 0xff);
+                        gameTextShow(gMinimapAreaNameId + 10000);
                         gameTextResetCursor(2);
                     }
                 }
@@ -876,7 +876,7 @@ void Minimap_frameStart(void)
             Sfx_PlayFromObject(0, sfx);
             sfx = 0;
         }
-        if (gMinimapEnabled == 0 && lbl_803DD7BA == 0)
+        if (gMinimapEnabled == 0 && gMinimapHelpTextActive == 0)
         {
             if (gMinimapZoomSfxActive != 0)
             {
@@ -914,7 +914,7 @@ void Minimap_frameStart(void)
                     }
                 }
             }
-            if (lbl_803DD7BA != 0)
+            if (gMinimapHelpTextActive != 0)
             {
                 if (gMinimapSavedViewMode == -1)
                 {
@@ -1019,7 +1019,7 @@ void Minimap_frameStart(void)
                     Sfx_StopFromObject(0, SFXTRIG_pda_compassbeep_3f0);
                     gMinimapZoomSfxActive = 0;
                 }
-                areaNameId = lbl_803DBA6E;
+                areaNameId = gMinimapAreaNameId;
                 if (areaNameId != gMinimapPrevAreaNameId)
                 {
                     switch (areaNameId)
