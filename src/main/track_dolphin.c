@@ -1968,11 +1968,13 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
             case 8:
             case 0xa:
             {
-                y = y - (p[3] + (b[2] * p[2] + (b[0] * p[0] + b[1] * p[1])));
+                f32 normalX = p[0];
+                f32 normalZ = p[2];
+                y = y - (p[3] + (b[2] * normalZ + (b[0] * normalX + b[1] * p[1])));
                 if (y > 0.0f)
                 {
-                    f32 px = p[0] * p[0];
-                    f32 pz = p[2] * p[2];
+                    f32 px = normalX * normalX;
+                    f32 pz = normalZ * normalZ;
                     f32 d = mathCosfHighPrecision(atan2fHighPrecision(p[1], sqrtf(px + pz)));
                     if (0.0f != d)
                         y = y / d;
@@ -2021,11 +2023,13 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
             case 0xa:
             default:
             {
-                y = y - (p[3] + (b[2] * p[2] + (b[0] * p[0] + b[1] * p[1])));
+                f32 normalX = p[0];
+                f32 normalZ = p[2];
+                y = y - (p[3] + (b[2] * normalZ + (b[0] * normalX + b[1] * p[1])));
                 if (y > 0.0f)
                 {
-                    f32 px = p[0] * p[0];
-                    f32 pz = p[2] * p[2];
+                    f32 px = normalX * normalX;
+                    f32 pz = normalZ * normalZ;
                     f32 d = mathSinfHighPrecision(atan2fHighPrecision(p[1], sqrtf(px + pz)));
                     d = y / d;
                     b[1] = b[1] + d;
