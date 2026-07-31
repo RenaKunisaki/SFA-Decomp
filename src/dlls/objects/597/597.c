@@ -69,7 +69,7 @@
 #define SNOWBIKE_OBJGROUP           0xa
 #define SNOWBIKE_AIRMETER_BGTEXTURE 0x5cd
 
-const GXColor sSnowBikePathPointParams = {5, 5, 5, 5};
+const GXColor lbl_803E5AE0 = {5, 5, 5, 5};
 const GXColor sSnowBikeTrailTevColor = {0x20, 0x20, 0x20, 0x80};
 
 typedef union SnowBikeCheckpointRank
@@ -526,7 +526,7 @@ typedef struct DRCloudCagePulseParams
     f32 unk14;
 } DRCloudCagePulseParams;
 
-void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale, int intensity, u8* unused,
+void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 localVelZ, int intensity, u8* unused,
                                 u8 channelFlags)
 {
     f32 clamped;
@@ -538,7 +538,7 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 distanceScale,
     DRCloudCagePulseParams pulse;
 
     clamped =
-        (distanceScale < 0.0f) ? 0.0f : ((distanceScale > 70.0f) ? 70.0f : distanceScale);
+        (localVelZ < 0.0f) ? 0.0f : ((localVelZ > 70.0f) ? 70.0f : localVelZ);
     if (channelFlags & 1)
     {
         if (Sfx_IsPlayingFromObjectChannel((int)obj, 8))
@@ -963,21 +963,8 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
  * pitch-roll integration with rumble + camera shake (SnowBike_UpdateSteering), and the
  * exhaust/contrail particle drivers blended toward per-state targets
  * (SnowBike_UpdateExhaustFx). State lives in SnowBikeState (dll_0255_snowbike.h); flags428 is
- * a bitfield overlay byte read via the Hightop* flag structs below.
+ * a bitfield overlay byte (SnowBikeRouteFlags).
  */
-
-typedef struct HightopFlags3
-{
-    u8 hi : 4;
-    u8 active : 1;
-    u8 lo : 3;
-} HightopFlags3;
-
-typedef struct HightopFlags
-{
-    u8 resetLatch : 1;
-    u8 flags : 7;
-} HightopFlags;
 
 /* particle spray spawned in a burst loop (~0x32/framesThisStep) on a bike collision */
 #define DRHIGHTOP_PARTFX_COLLISION_SPRAY 0x553
@@ -1146,8 +1133,8 @@ void SnowBike_onSeqFree(GameObject* obj)
         f32 fz = 0.0f;
         state->localVelX = fz;
         state->localVelY = fz;
-        state->distanceScale = -2.0f;
-        ((HightopFlags*)&state->flags428)->resetLatch = 0;
+        state->localVelZ = -2.0f;
+        state->routeFlags.resetLatch = 0;
         state->impactShakeTimer = fz;
         sv = obj->anim.rotX;
         state->yaw = sv;
@@ -1232,11 +1219,11 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
             st->stickY = 0x46;
         }
 
-        drcloudcage_updateEngineFx((GameObject*)obj, (void*)state, st->distanceScale,
+        drcloudcage_updateEngineFx((GameObject*)obj, (void*)state, st->localVelZ,
                                    (int)(850.0f * -st->engineFxLevel), (u8*)(state + 0x461), 4);
     }
 
-    ((HightopFlags3*)&st->flags428)->active = 0;
+    st->routeFlags.active = 0;
     return 0;
 }
 
@@ -1346,7 +1333,7 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
             {
                 st->unk584 = 0.0f;
             }
-            ((HightopFlags*)&st->flags428)->resetLatch = 1;
+            st->routeFlags.resetLatch = 1;
         }
     }
     else
@@ -1372,7 +1359,7 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
                 }
             }
         }
-        ((HightopFlags*)&st->flags428)->resetLatch = 0;
+        st->routeFlags.resetLatch = 0;
         st->impactShakeTimer = 0.0f;
         st->dampPresetMode = st->dampPresetModeRaw;
     }
@@ -1438,7 +1425,7 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
     MatrixTransform effect;
 
     speed =
-        sqrtf(st->distanceScale * st->distanceScale + (st->localVelX * st->localVelX + st->localVelY * st->localVelY));
+        sqrtf(st->localVelZ * st->localVelZ + (st->localVelX * st->localVelX + st->localVelY * st->localVelY));
     st->timer -= timeDelta;
     fa = st->timer;
     st->timer = (fa < 0.0f) ? 0.0f : ((fa > 30.0f) ? 30.0f : fa);
@@ -1523,7 +1510,7 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
         target534 = st->unk574;
         target530 = st->unk56C;
         target548 = st->localVelXDampTarget;
-        target54c = st->distanceScaleDampTarget;
+        target54c = st->localVelZDampTarget;
         target540 = 0.1f;
         target544 = 0.5f;
     }
@@ -1541,7 +1528,7 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
     st->unk534 += timeDelta * (0.25f * (target534 - st->unk534));
     st->unk530 += timeDelta * (0.04f * (target530 - st->unk530));
     st->localVelXDamp += timeDelta * ((k = 0.1f) * (target548 - st->localVelXDamp));
-    st->distanceScaleDamp += timeDelta * (k * (target54c - st->distanceScaleDamp));
+    st->localVelZDamp += timeDelta * (k * (target54c - st->localVelZDamp));
     st->turnVelScale += timeDelta * (k * (target540 - st->turnVelScale));
     st->turnForceGain += timeDelta * (k * (target544 - st->turnForceGain));
 }
@@ -1745,55 +1732,6 @@ void SnowBike_UpdateLiftSway(int obj, int state)
 #define SNOWBIKE_CR_CLAWBIKE_V1_OBJ    0x38e
 #define SNOWBIKE_CR_CLAWBIKE_V2_OBJ    0x4d4
 
-typedef struct SnowBikeSetTypeState
-{
-    s16 savedRotX;
-    u8 pad2[0xC - 0x2];
-    f32 savedPosX;
-    f32 savedPosY;
-    f32 savedPosZ;
-    u8 pad18[0x3D3 - 0x18];
-    s8 unk3D3;
-    u8 pad3D4[0x3E8 - 0x3D4];
-    f32 modelMtxPosX;
-    f32 modelMtxPosY;
-    f32 modelMtxPosZ;
-    u8 pad3F4[0x400 - 0x3F4];
-    f32 mountPosX;
-    f32 mountPosY;
-    f32 mountPosZ;
-    u8 pad40C[0x414 - 0x40C];
-    f32 unk414;
-    u8 pad418[0x420 - 0x418];
-    u8 unk420;
-    s8 bikeType;
-    u8 pad422[0x428 - 0x422];
-    u8 flags;
-    u8 pad429[0x434 - 0x429];
-    u8 romListGroupIndex;
-    u8 romListItemIndex;
-    u8 pad436[0x448 - 0x436];
-    s16 completionGameBit;
-    u8 pad44A[0x494 - 0x44A];
-    f32 velocityX;
-    f32 velocityY;
-    f32 velocityZ;
-    u8 pad4A0[0x4B8 - 0x4A0];
-    f32 airMeterMax;     /* 0x4B8 */
-    f32 airMeterCurrent; /* 0x4BC */
-    f32 airDrainRate;    /* 0x4C0 */
-    u8 pad4C4[0x4C8 - 0x4C4];
-} SnowBikeSetTypeState;
-
-typedef struct DRcradleSnowBikeFlags
-{
-    u8 resetLatch : 1;   /* 0x80 */
-    u8 pathActive : 1;   /* 0x40 */
-    u8 uiPrompt : 1;     /* 0x20 */
-    u8 impulseLatch : 1; /* 0x10 */
-    u8 flags : 4;
-} DRcradleSnowBikeFlags;
-
 void SnowBike_buildOrientationMatrices(GameObject* obj, int state)
 {
     MatrixTransform v;
@@ -1828,21 +1766,21 @@ void SnowBike_buildOrientationMatrices(GameObject* obj, int state)
 void SnowBike_ResetDynamics(int obj, register int state)
 {
     f32 fz, fa, fb, fc;
-    DRcradleSnowBikeFlags* flags;
+    SnowBikeRouteFlags* flags;
     SnowBikeState* s = (SnowBikeState*)state;
     s->unk52C = 50.0f;
     s->unk530 = 0.85f;
     s->unk534 = 700.0f;
     fz = 0.0f;
-    ((SnowBikeSetTypeState*)state)->unk414 = fz;
+    ((SnowBikeState*)state)->unk414 = fz;
     s->unk584 = fz;
     s->localVelXDamp = 0.97f;
-    s->distanceScaleDamp = 0.99f;
+    s->localVelZDamp = 0.99f;
     s->turnVelScale = 0.1f;
     s->turnForceGain = 0.5f;
     s->unk558 = 0.2f;
     s->unk56C = 0.75f;
-    flags = (DRcradleSnowBikeFlags*)(state + 0x428);
+    flags = &s->routeFlags;
     flags->resetLatch = 0;
     s->engineFxLevel = fz;
     fa = s->baseVelLimitX;
@@ -1853,7 +1791,7 @@ void SnowBike_ResetDynamics(int obj, register int state)
     s->localVelYLimit = fb;
     fc = s->baseVelLimitZ;
     s->velLimitZ = fc;
-    s->distanceScaleLimit = fc;
+    s->localVelZLimit = fc;
     flags->pathActive = 0;
     flags->impulseLatch = 0;
     *(u32*)(state + 0x42c) = 0;
@@ -1871,12 +1809,12 @@ void SnowBike_InitTuning(GameObject* obj, int state)
     s->unk538 = -0.05f;
     s->unk53C = 0.04f;
     s->localVelXDamp = 0.97f;
-    s->distanceScaleDamp = 0.99f;
+    s->localVelZDamp = 0.99f;
     s->turnVelScale = 0.1f;
     s->turnForceGain = 0.5f;
     fa = 0.995f;
     s->localVelXDampTarget = fa;
-    s->distanceScaleDampTarget = fa;
+    s->localVelZDampTarget = fa;
     s->unk554 = 0.08f;
     s->unk550 = 15.0f;
     s->unk570 = 5.0f;
@@ -1887,38 +1825,6 @@ void SnowBike_InitTuning(GameObject* obj, int state)
     s->unk56C = 0.75f;
     s->collisionBounceScale = fz;
 }
-typedef struct SnowBikeMountState
-{
-    s16 savedRotX;
-    u8 pad2[0xC - 0x2];
-    f32 savedPosX;
-    f32 savedPosY;
-    f32 savedPosZ;
-    u8 pad18[0x3D3 - 0x18];
-    s8 unk3D3;
-    u8 pad3D4[0x3E8 - 0x3D4];
-    f32 modelMtxPosX;
-    f32 modelMtxPosY;
-    f32 modelMtxPosZ;
-    u8 pad3F4[0x400 - 0x3F4];
-    f32 mountPosX;
-    f32 mountPosY;
-    f32 mountPosZ;
-    u8 pad40C[0x414 - 0x40C];
-    f32 unk414;
-    u8 pad418[0x420 - 0x418];
-    u8 unk420;
-    u8 pad421[0x428 - 0x421];
-    u8 flags;
-    u8 pad429[0x434 - 0x429];
-    u8 romListGroupIndex;
-    u8 romListItemIndex;
-    u8 pad436[0x494 - 0x436];
-    f32 velocityX;
-    f32 velocityY;
-    f32 velocityZ;
-} SnowBikeMountState;
-
 /* texture asset loaded into sSnowBikeTrailTexture (this DLL's only texture) */
 #define SNOWBIKE_TEXTURE_ID 0x186
 typedef struct SnowBikeRomListItem
@@ -1927,21 +1833,12 @@ typedef struct SnowBikeRomListItem
     u8 pad18[0x29 - 0x18];
     u8 yawByte;
 } SnowBikeRomListItem;
-typedef struct
-{
-    u8 pad0 : 2;
-    u8 b20 : 1;
-    u8 pad1 : 2;
-    u8 b04 : 1;
-    u8 b02 : 1;
-    u8 b01 : 1;
-} SnowBikeFlags;
 typedef struct SnowBikePlacement
 {
     ObjPlacement base;
     u8 yawByte;
     u8 startFlag;
-    s16 unk1a;
+    s16 completionGameBit;
     u8 param1c;
     u8 param1d;
     s16 gameBitId;
@@ -1987,11 +1884,11 @@ void SnowBike_resetToRomListPosition(GameObject* obj)
     SnowBikeRomListItem* found;
     f32 zero;
 
-    table = (int*)((int)gSnowBikeMountRomListTable + (int)(((SnowBikeMountState*)state)->romListGroupIndex) * 12);
-    found = (SnowBikeRomListItem*)mapRomListFindItem(table[((SnowBikeMountState*)state)->romListItemIndex], 0, 0, 0, 0);
+    table = (int*)((int)gSnowBikeMountRomListTable + (int)(((SnowBikeState*)state)->bikeType) * 12);
+    found = (SnowBikeRomListItem*)mapRomListFindItem(table[((SnowBikeState*)state)->bikeVariant], 0, 0, 0, 0);
     if (found != NULL)
     {
-        if (((SnowBikeMountState*)state)->romListGroupIndex != 0)
+        if (((SnowBikeState*)state)->bikeType != 0)
         {
             obj->anim.localPosX = found->base.posX;
             obj->anim.localPosY = found->base.posY;
@@ -1999,14 +1896,14 @@ void SnowBike_resetToRomListPosition(GameObject* obj)
             obj->anim.rotX = (s16)((found->yawByte) << 8);
         }
         (*gCheckpointInterface)->findRouteForObject(obj, (CheckpointRouteState*)(state + 0x28), 0);
-        ((SnowBikeMountState*)state)->savedPosX = obj->anim.localPosX;
-        ((SnowBikeMountState*)state)->savedPosY = obj->anim.localPosY;
-        ((SnowBikeMountState*)state)->savedPosZ = obj->anim.localPosZ;
-        ((SnowBikeMountState*)state)->savedRotX = obj->anim.rotX;
+        ((SnowBikeState*)state)->posSnapshotX = obj->anim.localPosX;
+        ((SnowBikeState*)state)->posSnapshotY = obj->anim.localPosY;
+        ((SnowBikeState*)state)->posSnapshotZ = obj->anim.localPosZ;
+        ((SnowBikeState*)state)->savedRotX = obj->anim.rotX;
         zero = 0.0f;
-        ((SnowBikeMountState*)state)->velocityX = zero;
-        ((SnowBikeMountState*)state)->velocityY = zero;
-        ((SnowBikeMountState*)state)->velocityZ = zero;
+        ((SnowBikeState*)state)->localVelX = zero;
+        ((SnowBikeState*)state)->localVelY = zero;
+        ((SnowBikeState*)state)->localVelZ = zero;
         (*gPathControlInterface)->attachObject((void*)obj, (void*)(state + 0x178));
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosX = obj->anim.localPosX;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosY = obj->anim.localPosY;
@@ -2014,7 +1911,7 @@ void SnowBike_resetToRomListPosition(GameObject* obj)
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->worldPosX = obj->anim.worldPosX;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->worldPosY = obj->anim.worldPosY;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->worldPosZ = obj->anim.worldPosZ;
-        ((SnowBikeMountState*)state)->unk3D3 = 1;
+        ((SnowBikeState*)state)->unk3D3 = 1;
     }
 }
 
@@ -2028,9 +1925,9 @@ f32 SnowBike_func13(GameObject* obj, f32* out)
     int state = *(int*)&obj->extra;
     f32 speed;
     *out = 5.0f;
-    speed = sqrtf(((SnowBikeMountState*)state)->velocityZ * ((SnowBikeMountState*)state)->velocityZ +
-                  (((SnowBikeMountState*)state)->velocityX * ((SnowBikeMountState*)state)->velocityX +
-                   ((SnowBikeMountState*)state)->velocityY * ((SnowBikeMountState*)state)->velocityY));
+    speed = sqrtf(((SnowBikeState*)state)->localVelZ * ((SnowBikeState*)state)->localVelZ +
+                  (((SnowBikeState*)state)->localVelX * ((SnowBikeState*)state)->localVelX +
+                   ((SnowBikeState*)state)->localVelY * ((SnowBikeState*)state)->localVelY));
     speed *= 0.2f;
     if (speed > 1.0f)
     {
@@ -2043,31 +1940,31 @@ void SnowBike_getPlayerAnim(GameObject* obj, f32* outFloat, s32* outBool)
 {
     int state = *(int*)&obj->extra;
     f32 value;
-    *outFloat = ((SnowBikeMountState*)state)->unk414 / 400.0f;
+    *outFloat = ((SnowBikeState*)state)->unk414 / 400.0f;
     value = *outFloat;
     *outFloat = (value < -1.0f) ? -1.0f : ((value > 1.0f) ? 1.0f : value);
-    *outBool = ((SnowBikeMountState*)state)->unk414 < 0.0f;
+    *outBool = ((SnowBikeState*)state)->unk414 < 0.0f;
 }
 
 void SnowBike_setMountState(GameObject* obj, int type)
 {
     int state = *(int*)&obj->extra;
     u32 bit;
-    ((SnowBikeSetTypeState*)state)->bikeType = type;
+    ((SnowBikeState*)state)->riderMode = type;
     if (type == 2)
     {
-        mainSetBits(((SnowBikeSetTypeState*)state)->completionGameBit, 1);
+        mainSetBits(((SnowBikeState*)state)->completionGameBit, 1);
         SnowBike_ResetDynamics((int)obj, state);
-        bit = (((SnowBikeSetTypeState*)state)->flags >> 5) & 1;
+        bit = (((SnowBikeState*)state)->flags428 >> 5) & 1;
         if (bit != 0)
         {
-            ((SnowBikeSetTypeState*)state)->airMeterMax = 70000.0f;
-            ((SnowBikeSetTypeState*)state)->airDrainRate = 1.0f;
-            ((SnowBikeSetTypeState*)state)->airMeterCurrent = 69999.0f;
-            if (((SnowBikeSetTypeState*)state)->bikeType == 2)
+            ((SnowBikeState*)state)->airMeterMax = 70000.0f;
+            ((SnowBikeState*)state)->airDrainRate = 1.0f;
+            ((SnowBikeState*)state)->airMeterCurrent = 69999.0f;
+            if (((SnowBikeState*)state)->riderMode == 2)
             {
                 (*gGameUIInterface)
-                    ->initAirMeter((int)((SnowBikeSetTypeState*)state)->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
+                    ->initAirMeter((int)((SnowBikeState*)state)->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
                 (*gGameUIInterface)->airMeterSetField24(4.0f);
             }
         }
@@ -2087,12 +1984,12 @@ s32 SnowBike_getMountState(GameObject* obj)
 void SnowBike_getCameraPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
     int state = *(int*)&obj->extra;
-    ((SnowBikeMountState*)state)->mountPosX = obj->anim.localPosX;
-    ((SnowBikeMountState*)state)->mountPosY = obj->anim.localPosY;
-    ((SnowBikeMountState*)state)->mountPosZ = obj->anim.localPosZ;
-    *x = ((SnowBikeMountState*)state)->mountPosX;
-    *y = ((SnowBikeMountState*)state)->mountPosY;
-    *z = ((SnowBikeMountState*)state)->mountPosZ;
+    ((SnowBikeState*)state)->mountPosX = obj->anim.localPosX;
+    ((SnowBikeState*)state)->mountPosY = obj->anim.localPosY;
+    ((SnowBikeState*)state)->mountPosZ = obj->anim.localPosZ;
+    *x = ((SnowBikeState*)state)->mountPosX;
+    *y = ((SnowBikeState*)state)->mountPosY;
+    *z = ((SnowBikeState*)state)->mountPosZ;
 }
 
 int SnowBike_getDismountSide(void)
@@ -2108,9 +2005,9 @@ int SnowBike_canDismount(void)
 void SnowBike_getRiderPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
     int state = *(int*)&obj->extra;
-    *x = ((SnowBikeMountState*)state)->modelMtxPosX;
-    *y = ((SnowBikeMountState*)state)->modelMtxPosY;
-    *z = ((SnowBikeMountState*)state)->modelMtxPosZ;
+    *x = ((SnowBikeState*)state)->modelMtxPosX;
+    *y = ((SnowBikeState*)state)->modelMtxPosY;
+    *z = ((SnowBikeState*)state)->modelMtxPosZ;
 }
 
 u8 SnowBike_getMountSide(GameObject* obj)
@@ -2121,12 +2018,12 @@ u8 SnowBike_getMountSide(GameObject* obj)
 u32 SnowBike_canMount(GameObject* obj)
 {
     int state = *(int*)&obj->extra;
-    u32 bit = (((SnowBikeMountState*)state)->flags >> 1) & 1;
+    u32 bit = (((SnowBikeState*)state)->flags428 >> 1) & 1;
     if (bit != 0)
     {
         return 0;
     }
-    return ((SnowBikeMountState*)state)->unk420;
+    return ((SnowBikeState*)state)->playerInRange;
 }
 
 int SnowBike_getExtraSize(void)
@@ -2155,7 +2052,7 @@ void SnowBike_free(GameObject* obj)
         mm_free(*(void**)(p + 0x4c8));
         p += 8;
     }
-    bit = (((SnowBikeMountState*)state)->flags >> 5) & 1;
+    bit = (((SnowBikeState*)state)->flags428 >> 5) & 1;
     if (bit != 0)
     {
         (*gGameUIInterface)->airMeterShutdown();
@@ -2224,7 +2121,7 @@ void SnowBike_hitDetect(GameObject* obj)
     mag = PSVECMag(&obj->anim.velocity);
     if (mag > 1.0f)
     {
-        if (!((SnowBikeFlags*)&state->flags428)->b02)
+        if (!state->routeFlags.b02)
         {
             doRumble(3.0f * mag);
         }
@@ -2247,7 +2144,7 @@ void SnowBike_hitDetect(GameObject* obj)
             }
         }
     }
-    if (!((SnowBikeFlags*)&state->flags428)->b02 && mag > 3.0f)
+    if (!state->routeFlags.b02 && mag > 3.0f)
     {
         CameraShake_Enable();
         shakeScale = 0.5f;
@@ -2280,7 +2177,7 @@ void SnowBike_hitDetect(GameObject* obj)
             (oneOverTimeDelta * (obj->anim.localPosZ - obj->anim.previousLocalPosZ));
     }
     Matrix_TransformPoint((f32*)((u8*)state + 0x12c), obj->anim.velocityX, 0.0f,
-                          obj->anim.velocityZ, &state->localVelX, &dummy, &state->distanceScale);
+                          obj->anim.velocityZ, &state->localVelX, &dummy, &state->localVelZ);
     }
 {
     f32 limit;
@@ -2326,9 +2223,9 @@ void SnowBike_hitDetect(GameObject* obj)
     }
     {
         f32 limit;
-        f32 value = state->distanceScale;
+        f32 value = state->localVelZ;
         f32 clamped;
-        limit = state->distanceScaleLimit;
+        limit = state->localVelZLimit;
         if (value < -limit)
         {
             clamped = -limit;
@@ -2341,11 +2238,11 @@ void SnowBike_hitDetect(GameObject* obj)
         {
             clamped = value;
         }
-        state->distanceScale = clamped;
+        state->localVelZ = clamped;
     }
-    if (state->distanceScale < 0.01f && state->distanceScale > -0.01f)
+    if (state->localVelZ < 0.01f && state->localVelZ > -0.01f)
     {
-        state->distanceScale = 0.0f;
+        state->localVelZ = 0.0f;
     }
     state->refPosX = obj->anim.localPosX;
     state->refPosY = obj->anim.localPosY;
@@ -2387,9 +2284,9 @@ void SnowBike_update(GameObject* obj)
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     obj->anim.rotY = s->savedRotY;
     obj->anim.rotZ = s->savedRotZ;
-    if (((SnowBikeFlags*)(state + 0x428))->b04 || mainGetBit(s->gameBitId) != 0)
+    if (s->routeFlags.b04 || mainGetBit(s->gameBitId) != 0)
     {
-        ((SnowBikeFlags*)(state + 0x428))->b04 = 1;
+        s->routeFlags.b04 = 1;
         return;
     }
     mode = s->riderMode;
@@ -2414,7 +2311,7 @@ void SnowBike_update(GameObject* obj)
     case 2:
     {
         SnowBike_UpdateRouteFollowing(obj, (SnowBikeState*)state);
-        if (((SnowBikeFlags*)(state + 0x428))->b02)
+        if (s->routeFlags.b02)
         {
             if (drshackle_updateAttachedPosition(obj, (ShackleSwingState*)state) != 0)
             {
@@ -2440,7 +2337,7 @@ void SnowBike_update(GameObject* obj)
                 {
                     s->localVelXLimit = s->velLimitX;
                     s->localVelYLimit = s->velLimitY;
-                    s->distanceScaleLimit = s->velLimitZ;
+                    s->localVelZLimit = s->velLimitZ;
                 }
                 fz = 0.0f;
                 rq1.quad[1] = fz;
@@ -2462,11 +2359,11 @@ void SnowBike_update(GameObject* obj)
                     s->liftAccel * timeDelta + s->localVelY;
                 damp = powfBitEstimate(s->localVelXDamp, timeDelta);
                 s->localVelX *= damp;
-                damp = powfBitEstimate(s->distanceScaleDamp, timeDelta);
-                s->distanceScale *= damp;
+                damp = powfBitEstimate(s->localVelZDamp, timeDelta);
+                s->localVelZ *= damp;
                 SnowBike_UpdateLiftSway((int)obj, (int)state);
                 Matrix_TransformPoint((f32*)(state + 0xec), s->localVelX,
-                                      s->localVelY, s->distanceScale,
+                                      s->localVelY, s->localVelZ,
                                       &obj->anim.velocityX, &obj->anim.velocityY,
                                       &obj->anim.velocityZ);
                 objApplyVelocity(obj);
@@ -2519,7 +2416,7 @@ void SnowBike_update(GameObject* obj)
             {
                 s->localVelXLimit = s->velLimitX;
                 s->localVelYLimit = s->velLimitY;
-                s->distanceScaleLimit = s->velLimitZ;
+                s->localVelZLimit = s->velLimitZ;
             }
             fz = 0.0f;
             rq2.quad[1] = fz;
@@ -2541,17 +2438,17 @@ void SnowBike_update(GameObject* obj)
                 s->liftAccel * timeDelta + s->localVelY;
             damp = powfBitEstimate(s->localVelXDamp, timeDelta);
             s->localVelX *= damp;
-            damp = powfBitEstimate(s->distanceScaleDamp, timeDelta);
-            s->distanceScale *= damp;
+            damp = powfBitEstimate(s->localVelZDamp, timeDelta);
+            s->localVelZ *= damp;
             SnowBike_UpdateLiftSway((int)obj, (int)state);
             Matrix_TransformPoint((f32*)(state + 0xec), s->localVelX,
-                                  s->localVelY, s->distanceScale,
+                                  s->localVelY, s->localVelZ,
                                   &obj->anim.velocityX, &obj->anim.velocityY,
                                   &obj->anim.velocityZ);
             objApplyVelocity(obj);
         }
         SnowBike_UpdateAirMeter((int)obj, (int)state);
-        drcloudcage_updateEngineFx(obj, state, s->distanceScale,
+        drcloudcage_updateEngineFx(obj, state, s->localVelZ,
                                    (int)(850.0f * -s->engineFxLevel), state + 0x461, 7);
         SnowBike_UpdateCollisionResponse(obj, (int)state);
         obj->anim.rotX = s->yaw;
@@ -2576,7 +2473,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     SnowBikeState* s;
 
     base[0] = (char*)gSnowBikePathSetupPoints;
-    pathParam = sSnowBikePathPointParams;
+    pathParam = lbl_803E5AE0;
     state = obj->extra;
     s = (SnowBikeState*)state;
 
@@ -2595,7 +2492,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     SnowBike_InitTuning(obj, (int)state);
     if (flag == 0)
     {
-        if (((SnowBikeFlags*)(state + 0x428))->b20)
+        if (s->routeFlags.uiPrompt)
         {
             s->airMeterMax = 70000.0f;
             s->airDrainRate = 1.0f;
@@ -2610,7 +2507,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     }
     if (params->startFlag != 0)
     {
-        ((SnowBikeFlags*)(state + 0x428))->b02 = 1;
+        s->routeFlags.b02 = 1;
     }
     s->checkpointIndexA = -1;
     s->checkpointIndexB = -1;
@@ -2635,11 +2532,11 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     s->homePosY = obj->anim.worldPosY;
     s->homePosZ = obj->anim.worldPosZ;
     s->pathProgress = 0.0f;
-    s->unk448 = params->unk1a;
+    s->completionGameBit = params->completionGameBit;
     s->gameBitId = params->gameBitId;
     if (mainGetBit(s->gameBitId) != 0)
     {
-        ((SnowBikeFlags*)(state + 0x428))->b04 = 1;
+        s->routeFlags.b04 = 1;
     }
     s->unk438 = 30.0f;
     fz = 0.0f;
@@ -2711,14 +2608,14 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     s->localVelYLimit = fv;
     s->baseVelLimitY = fv;
     fv = s->velLimitZ;
-    s->distanceScaleLimit = fv;
+    s->localVelZLimit = fv;
     s->baseVelLimitZ = fv;
     s->gameBitPtr = (s16*)((int)base[0] + 0xa4 + s->bikeType * 6);
     if (s->bikeType == 0)
     {
-        if (!((SnowBikeFlags*)(state + 0x428))->b02)
+        if (!s->routeFlags.b02)
         {
-            ((SnowBikeFlags*)(state + 0x428))->b20 = 1;
+            s->routeFlags.uiPrompt = 1;
             s->airMeterRefillTimer = 0.0f;
         }
         s->unk538 = -0.1f;
@@ -2731,7 +2628,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     path[0x25b] = 1;
     (*gPathControlInterface)->init(path, 0, 0x48607, 1);
     (*gPathControlInterface)->setup(path, 4, base[0], base[0] + 0x30, &pathParam);
-    if (((SnowBikeFlags*)(state + 0x428))->b02 && s->collisionHitType != -1)
+    if (s->routeFlags.b02 && s->collisionHitType != -1)
     {
         curves_setLocalPointCollisionEx((CurvesCollisionState*)path, 1, (f32*)(base[0] + 0x40), &gSnowBikeCollisionRadius, 8,
                                         s->collisionHitType);
