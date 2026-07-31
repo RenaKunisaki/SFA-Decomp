@@ -186,7 +186,7 @@ void gameTextRenderStrs(char* str, int boxIdx) {
     int i;
     int closeAtEnd = 0;
 
-    if (lbl_803DC9C0 != 1) {
+    if (gGameTextRenderingById != 1) {
         slot->alignment = slot->alignH;
         if (gGameTextMeasureOnly == 0) {
             gameTextDrawBox(NULL, (int)str, slot);

@@ -74,10 +74,10 @@ TrackGroundHit** gTrackGroundHitPtrs;
 s8 gTrackGroundHitCount;
 s16 gIntersectLineCount;
 s16 gIntersectPointCount;
-f32 lbl_803DCF58;
+f32 gIntersectSweepHitTime;
 f32 gTrackResolvePushX;
 f32 gTrackResolvePushZ;
-u8 lbl_803DCF4F;
+u8 gIntersectRebuildRequested;
 u8 mapBlockFlag;
 u8 gIntersectRebuildCooldown;
 u8 gTrackSweepHitCount;
@@ -85,7 +85,7 @@ MapDynamicSlot* gMapDynamicSlots;
 u8 lbl_803DCF44;
 u32 lbl_803DCF40;
 int gIntersectLineIndexTable;
-f32* lbl_803DCF38;
+f32* gIntersectPoints;
 int gIntersectLinePool;
 TrackTriangle* gTrackTriangleBuffer;
 
@@ -401,7 +401,7 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
             hitTime = timeA;
             if (hitTime >= 0.0f && hitTime <= 1.0f)
             {
-                lbl_803DCF58 = hitTime;
+                gIntersectSweepHitTime = hitTime;
                 if (resolveCollision != 0)
                 {
                     hitX = hitTime * moveX + x[0];
@@ -508,7 +508,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
         }
         lineIdx = gIntersectLineIndexTable;
         vt = gIntersectLinePool;
-        vp = (int)lbl_803DCF38;
+        vp = (int)gIntersectPoints;
     }
 
     flag1 = !(flags & 1);
@@ -766,7 +766,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
                         }
                         cx = sx * fr + posX[0];
                         cz = sz * fr + posZ[0];
-                        lbl_803DCF58 = fr;
+                        gIntersectSweepHitTime = fr;
                         ok = 1;
                         if (ld[0] + (cx * lb[0] + cz * la[0]) < 0.0f)
                         {
@@ -839,7 +839,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
         if (found)
         {
             hits[count] = i;
-            fracs[count] = lbl_803DCF58;
+            fracs[count] = gIntersectSweepHitTime;
             dists[count] = dist;
             count++;
             if (count > 4)
@@ -930,7 +930,7 @@ int insertPoint(int val, s16* arr, f32 x, f32 y, f32 z)
     int n;
 
     i = 0;
-    p = base = lbl_803DCF38;
+    p = base = gIntersectPoints;
     n = gIntersectPointCount;
     for (; i < n; i++)
     {
@@ -943,8 +943,8 @@ int insertPoint(int val, s16* arr, f32 x, f32 y, f32 z)
         p += 3;
     }
     base[n * 3] = x;
-    lbl_803DCF38[gIntersectPointCount * 3 + 1] = y;
-    lbl_803DCF38[gIntersectPointCount * 3 + 2] = z;
+    gIntersectPoints[gIntersectPointCount * 3 + 1] = y;
+    gIntersectPoints[gIntersectPointCount * 3 + 2] = z;
     arr[gIntersectPointCount << 1] = val;
     arr[(gIntersectPointCount << 1) + 1] = -1;
     gIntersectPointCount++;
@@ -1302,7 +1302,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
     }
     if ((s16)previousGroup != -1)
         obj->groupRanges[previousGroup][1] = gIntersectLineCount;
-    memcpy(obj->points, lbl_803DCF38, gIntersectPointCount * 0xc);
+    memcpy(obj->points, gIntersectPoints, gIntersectPointCount * 0xc);
     gIntersectLineCount = 0;
     gIntersectPointCount = 0;
 }
@@ -1341,15 +1341,15 @@ void trackIntersect(void)
     }
     if ((s8)mapBlockFlag == 1)
     {
-        lbl_803DCF4F = 1;
+        gIntersectRebuildRequested = 1;
         mapBlockFlag = 0;
         return;
     }
-    if ((s8)lbl_803DCF4F == 0)
+    if ((s8)gIntersectRebuildRequested == 0)
     {
         return;
     }
-    lbl_803DCF4F = 0;
+    gIntersectRebuildRequested = 0;
     if (getHudHiddenFrameCount() != 0)
     {
         gIntersectRebuildCooldown = 2;
@@ -1614,7 +1614,7 @@ void trackTickDynamicSlotCooldowns(void)
 int trackIntersectRebuildPending(void)
 {
     int r = 0;
-    if ((s8)mapBlockFlag != 0 || (s8)lbl_803DCF4F != 0 || gIntersectRebuildCooldown != 0)
+    if ((s8)mapBlockFlag != 0 || (s8)gIntersectRebuildRequested != 0 || gIntersectRebuildCooldown != 0)
         r = 1;
     return r;
 }
@@ -3573,7 +3573,7 @@ void trackInitCollisionBuffers(void)
     {
         gTrackTriangleBuffer = mmAlloc(1200 * sizeof(TrackTriangle), 0xffff00ff, 0);
         gIntersectLinePool = (int)mmAlloc(0x5dc0, 0xffff00ff, 0);
-        lbl_803DCF38 = mmAlloc(0x4fb0, 0xffff00ff, 0);
+        gIntersectPoints = mmAlloc(0x4fb0, 0xffff00ff, 0);
         gIntersectLineIndexTable = (int)mmAlloc(0xbb8, 0xffff00ff, 0);
         gMapDynamicSlots = mmAlloc(MAP_DYNAMIC_SLOT_COUNT * sizeof(MapDynamicSlot), 0xffff00ff, 0);
     }
@@ -3590,5 +3590,5 @@ void trackInitCollisionBuffers(void)
     gIntersectLineCount = 0;
     gIntersectPointCount = 0;
     mapBlockFlag = 0;
-    lbl_803DCF4F = 0;
+    gIntersectRebuildRequested = 0;
 }

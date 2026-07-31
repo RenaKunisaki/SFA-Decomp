@@ -231,7 +231,7 @@ STATIC_ASSERT(offsetof(DIMbossAnimScratch, hitDetectAnimTable) == DIMBOSS_HITDET
 
 extern Dim2BossMoveChoices gDim2LiftFarMoveChoices;
 
-extern u8 lbl_803DDB84;
+extern u8 gDimBossHitReactionIndex;
 extern u32 gDIMbossSequenceFlags;
 extern int* gDIMbossHitEffectResource;
 extern int gDim2IcicleHitCooldown;
@@ -278,21 +278,21 @@ int DIMbossAnim_updateBossHitReaction(int obj, int statePtr) {
             } else if (targetDistance < 0xfa) {
                 DIM2_GetPlayerInterface()->requestControlMode(obj, state, 3);
             } else {
-                if (lbl_803DDB84 > 6) {
-                    lbl_803DDB84 = 0;
+                if (gDimBossHitReactionIndex > 6) {
+                    gDimBossHitReactionIndex = 0;
                 }
                 switch (state->hitPoints) {
                 case 3:
                     (*(Dim2PlayerInterface**)gPlayerInterface)
-                        ->requestControlMode(obj, state, moveTable->group3[lbl_803DDB84++]);
+                        ->requestControlMode(obj, state, moveTable->group3[gDimBossHitReactionIndex++]);
                     break;
                 case 2:
                     (*(Dim2PlayerInterface**)gPlayerInterface)
-                        ->requestControlMode(obj, state, moveTable->group2[lbl_803DDB84++]);
+                        ->requestControlMode(obj, state, moveTable->group2[gDimBossHitReactionIndex++]);
                     break;
                 case 1:
                     (*(Dim2PlayerInterface**)gPlayerInterface)
-                        ->requestControlMode(obj, state, moveTable->group1[lbl_803DDB84++]);
+                        ->requestControlMode(obj, state, moveTable->group1[gDimBossHitReactionIndex++]);
                     break;
                 default:
                     DIM2_GetPlayerInterface()->requestControlMode(obj, state, 3);
@@ -1813,7 +1813,7 @@ void DIMboss_init(GameObject* obj, u32 params, int isAltVariant) {
     topState->launchLift = liftHeight;
     obj->anim.activeMove = -1;
     topState->effect = NULL;
-    lbl_803DDB84 = 0;
+    gDimBossHitReactionIndex = 0;
     gDIMbossSequenceFlags = 0;
     mainSetBits(GAMEBIT_Tricky_Usable, 1);
     dll_2E_initState((GameObject*)obj, &gDIMbossAnimController, 0xffffd8e4, 0x1c71, 6);
@@ -1883,7 +1883,7 @@ void DIMboss_initialiseAnimTables(void) {
 
 int gDim2IcicleHitCooldown;
 int* gDIMbossHitEffectResource;
-u8 lbl_803DDB84;
+u8 gDimBossHitReactionIndex;
 u32 gDIMbossSequenceFlags;
 
 DIMbossHitDetectAnimHandlerTable gDIMbossHitDetectAnimTable;

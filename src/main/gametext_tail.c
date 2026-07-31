@@ -97,7 +97,7 @@ void gameTextRenderById(int a, int b, int c)
     u8 save4 = gGameTextColorA;
     int i;
 
-    lbl_803DC9C0 = 1;
+    gGameTextRenderingById = 1;
     if (gCurTextBox != NULL)
     {
         slot = gCurTextBox;
@@ -184,7 +184,7 @@ void gameTextRenderById(int a, int b, int c)
         gameTextRenderStrs(def->strings[i], slot - (TextSlot*)gTextBoxes);
     }
 
-    lbl_803DC9C0 = 0;
+    gGameTextRenderingById = 0;
     if (gGameTextMeasureOnly == 0)
     {
         Camera_ApplyCurrentViewport(0);
@@ -493,9 +493,9 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
     {
         return 0;
     }
-    if (lbl_803DC9AA != 0 || lbl_803DC9A8 != 0)
+    if (gGameTextCursorX != 0 || gGameTextCursorY != 0)
     {
-        width = (f32)(u32)lbl_803DC9AA;
+        width = (f32)(u32)gGameTextCursorX;
     }
 
     lineStarts[0] = 0;

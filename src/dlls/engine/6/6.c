@@ -31,7 +31,7 @@ u32 lbl_803DD188;
 u8* gSky2State;
 s8 gSky2DrawMode;
 
-s8 lbl_803DB750 = 1;
+s8 gSky2TintDisabled = 1;
 int gSky2EnvfxFirstTime = 1;
 u8 gSky2RunFirstTime = 1;
 
@@ -264,7 +264,7 @@ void sky2StepSlotAnim(int slot)
             if ((*(SkySlotAnim**)(&gSky2State + slot))->blend < zero)
             {
                 (*(SkySlotAnim**)(&gSky2State + slot))->blend = zero;
-                lbl_803DB750 = 1;
+                gSky2TintDisabled = 1;
             }
         }
         else if ((flags & 4) != 0 && anim->blend < (spd = 255.0f))
@@ -394,7 +394,7 @@ void sky2ApplyModelTint(GameObject* obj)
     {
         Obj_SetModelColorOverrideRecursive(obj, 0, 0, 0, 0, 0);
     }
-    if (lbl_803DB750 == 0 && (*(u16*)((s = gSky2State) + 4) & 1) == 0)
+    if (gSky2TintDisabled == 0 && (*(u16*)((s = gSky2State) + 4) & 1) == 0)
     {
         v = ((SkySlotAnim*)s)->fogNear;
         if (v < 0.0f)
@@ -426,7 +426,7 @@ void sky2ApplyTextColor(int obj)
 
     if (s != NULL)
     {
-        if (lbl_803DB750 == 0 && (*(u16*)(s + 4) & 1) == 0)
+        if (gSky2TintDisabled == 0 && (*(u16*)(s + 4) & 1) == 0)
         {
             v = ((SkySlotAnim*)s)->fogNear;
             if (v < 0.0f)
@@ -590,7 +590,7 @@ void sky2_run(void)
     {
         if (*pp != NULL && ((SkySlotAnim*)*pp)->b317 != 0)
         {
-            lbl_803DB750 = 0;
+            gSky2TintDisabled = 0;
             p = *pp;
             if (((SkySlotAnim*)p)->unk48 != 0)
             {

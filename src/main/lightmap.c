@@ -707,7 +707,7 @@ void renderSceneGeometry(u8 renderType, s8* order)
     while (layer >= 0);
 }
 extern u8 bEnableMotionBlur;
-extern f32 lbl_803DB62C;
+extern f32 gMotionBlurAmount;
 
 extern u8 bEnableBlurFilter;
 extern f32 blurFilterX;
@@ -815,7 +815,7 @@ void sceneDraw(void)
     renderObjects(buf);
     if (CameraShake_IsActive() != 0 || (int)bEnableMotionBlur != 0)
     {
-        renderMotionBlur(lbl_803DB62C);
+        renderMotionBlur(gMotionBlurAmount);
     }
     if (getHudHiddenFrameCount() == 0)
     {

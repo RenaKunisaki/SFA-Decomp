@@ -89,7 +89,7 @@ extern const f32 gMapBlockWorldSize;
 
 int lbl_803DB620 = -1;
 s8 gMapLayerOffsets[8] = {0, -2, -1, 1, 2, 0, 0, 0};
-f32 lbl_803DB62C = 0.5f;
+f32 gMotionBlurAmount = 0.5f;
 extern int gMapBlockCellEntryTables[5];
 extern f32 lbl_803DEBCC;
 
@@ -331,7 +331,7 @@ int Rcp_GetMotionBlurEnabled(void)
 void setMotionBlur(u8 enabled, f32 amount)
 {
     bEnableMotionBlur = enabled;
-    lbl_803DB62C = amount;
+    gMotionBlurAmount = amount;
 }
 
 void gxSetScissorRect(int p1, int p2, int x, int y, int x2, int y2)
@@ -1786,7 +1786,7 @@ void beginLoadingMap(void)
     gMapLoadDeferred = 0;
     bEnableBlurFilter = 0;
     bEnableMotionBlur = 0;
-    lbl_803DB62C = lbl_803DEBCC;
+    gMotionBlurAmount = lbl_803DEBCC;
     gHeatEffectFadeDirection = -1;
     setSaveGameLoadingFlag();
     positionZ = characterPosition[2];

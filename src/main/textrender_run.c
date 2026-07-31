@@ -47,14 +47,14 @@ int lbl_803DC9D0;
 void* gCurTextBox;
 int lbl_803DC9C8;
 char* gGameTextCommandStringCursor;
-int lbl_803DC9C0;
+int gGameTextRenderingById;
 int gGameTextMeasureOnly;
 int gGameTextBoundsMinY;
 int gGameTextBoundsMaxY;
 int gGameTextBoundsMinX;
 int gGameTextBoundsMaxX;
-u16 lbl_803DC9AA;
-u16 lbl_803DC9A8;
+u16 gGameTextCursorX;
+u16 gGameTextCursorY;
 u8 gGameTextColorR;
 u8 gGameTextColorG;
 u8 gGameTextColorB;
@@ -388,8 +388,8 @@ void gameTextRun(void)
     }
 
     gGameTextRevealActive = 0;
-    lbl_803DC9AA = 0;
-    lbl_803DC9A8 = 0;
+    gGameTextCursorX = 0;
+    gGameTextCursorY = 0;
 
     i = gGameTextCommandCount;
     while (i-- != 0)
@@ -460,13 +460,13 @@ void gameTextRun(void)
         case 10:
         {
             u16 b1 = cmd->arg1;
-            lbl_803DC9AA = (u16)cmd->arg0;
-            lbl_803DC9A8 = b1;
+            gGameTextCursorX = (u16)cmd->arg0;
+            gGameTextCursorY = b1;
             break;
         }
         case 11:
-            lbl_803DC9AA = 0;
-            lbl_803DC9A8 = 0;
+            gGameTextCursorX = 0;
+            gGameTextCursorY = 0;
             break;
         case 12:
             gGameTextShadowEnabled = cmd->arg0;

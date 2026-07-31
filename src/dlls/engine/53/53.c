@@ -160,7 +160,7 @@ void saveSelect_drawText(int unused, int alpha)
  * confirms a slot. Slot 0 is the "back" choice: if a save already exists
  * (gSaveGameEnabled) it returns to the choose-slot screen, otherwise it plays
  * the rotation sfx, kicks off screen transition 0x14, and arms the
- * pending-action flags (lbl_803DD6CC/CF). Any other slot starts a new
+ * pending-action flags (gSaveSelectQuitPending/CF). Any other slot starts a new
  * game: it flags the choice, plays the confirm sfx, runs transition 0x14,
  * tears down the four title-menu control sub-objects via vtable slot 7,
  * and records the chosen value (gSaveSelectChapter).
@@ -170,9 +170,9 @@ void saveSelect_drawText(int unused, int alpha)
  */
 
 extern u8 gSaveSelectChapter;
-extern u8 lbl_803DD6CC;
-extern u8 lbl_803DD6CD;
-extern s8 lbl_803DD6CF;
+extern u8 gSaveSelectQuitPending;
+extern u8 gSaveSelectLaunchPending;
+extern s8 gSaveSelectExitTimer;
 
 void saveSelectSetSlot(int slot, int value)
 {
@@ -187,20 +187,20 @@ void saveSelectSetSlot(int slot, int value)
         {
             Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
             (*gScreenTransitionInterface)->start(0x14, 5);
-            lbl_803DD6CF = 0x23;
-            lbl_803DD6CC = 1;
+            gSaveSelectExitTimer = 0x23;
+            gSaveSelectQuitPending = 1;
         }
     }
     else
     {
-        lbl_803DD6CD = 1;
+        gSaveSelectLaunchPending = 1;
         Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up); /* confirm sfx (unnamed in sfx_ids.h) */
         (*gScreenTransitionInterface)->start(0x14, 1);
         gTitleMenuControlInterface->vtable->func0A(0);
         gTitleMenuControlInterface->vtable->func0A(1);
         gTitleMenuControlInterface->vtable->func0A(2);
         gTitleMenuControlInterface->vtable->func0A(3);
-        lbl_803DD6CF = 0x23;
+        gSaveSelectExitTimer = 0x23;
         gSaveSelectChapter = value;
     }
 }
@@ -241,10 +241,10 @@ typedef struct SaveSelectPanel
 
 #define SAVESELECTSCREEN_TEXTURE_ID 0x2dd
 
-s8 lbl_803DD6CF;
+s8 gSaveSelectExitTimer;
 s8 gSaveSelectRefreshCounter;
-u8 lbl_803DD6CD;
-u8 lbl_803DD6CC;
+u8 gSaveSelectLaunchPending;
+u8 gSaveSelectQuitPending;
 void* gSaveSelectTexture;
 u8 gSaveSelectMenuItemActive;
 u8 gSaveSelectChapter;
@@ -329,8 +329,8 @@ static void saveFileSelect_init(int sel, int slot)
     {
         Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
         (*gScreenTransitionInterface)->start(20, 5);
-        lbl_803DD6CF = 0x23;
-        lbl_803DD6CC = 1;
+        gSaveSelectExitTimer = 0x23;
+        gSaveSelectQuitPending = 1;
     }
     else if (sel != -1)
     {
@@ -431,14 +431,14 @@ static void saveSelectGoToChapterSelect(void)
     }
     else
     {
-        lbl_803DD6CD = 1;
+        gSaveSelectLaunchPending = 1;
         Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up);
         (*gScreenTransitionInterface)->start(20, 1);
         gTitleMenuControlInterface->vtable->func0A(0);
         gTitleMenuControlInterface->vtable->func0A(1);
         gTitleMenuControlInterface->vtable->func0A(2);
         gTitleMenuControlInterface->vtable->func0A(3);
-        lbl_803DD6CF = 0x23;
+        gSaveSelectExitTimer = 0x23;
         gSaveSelectChapter = 0;
     }
 }
@@ -691,7 +691,7 @@ int SaveSelectScreen_run(void)
     int btn;
     s8* flagPtr;
 
-    timer = lbl_803DD6CF;
+    timer = gSaveSelectExitTimer;
     frames = framesThisStep;
     if (frames > 3)
     {
@@ -699,18 +699,18 @@ int SaveSelectScreen_run(void)
     }
     if (timer > 0)
     {
-        lbl_803DD6CF -= frames;
+        gSaveSelectExitTimer -= frames;
     }
     if ((*gScreenTransitionInterface)->isFinished() == 0)
     {
         gTitleMenuLinkInterface->vtable->resetTimers();
         gSaveSelectRefreshCounter = 4;
     }
-    if (lbl_803DD6CD != 0 || lbl_803DD6CC != 0)
+    if (gSaveSelectLaunchPending != 0 || gSaveSelectQuitPending != 0)
     {
-        if ((timer <= 12 || lbl_803DD6CF > 12) && lbl_803DD6CF <= 0)
+        if ((timer <= 12 || gSaveSelectExitTimer > 12) && gSaveSelectExitTimer <= 0)
         {
-            if (lbl_803DD6CD != 0)
+            if (gSaveSelectLaunchPending != 0)
             {
                 n_attractmode_releaseMovieBuffers();
                 if (gSaveGameEnabled != 0)
@@ -757,7 +757,7 @@ int SaveSelectScreen_run(void)
                 loadUiDll(4);
             }
         }
-        return lbl_803DD6CF <= 12;
+        return gSaveSelectExitTimer <= 12;
     }
     if (gSaveSelectPanelIndex == SAVE_SELECT_PANEL_CONFIRM_ERASE)
     {
@@ -769,8 +769,8 @@ int SaveSelectScreen_run(void)
         else if (btn & PAD_BUTTON_B)
         {
             (*gScreenTransitionInterface)->start(0x14, 5);
-            lbl_803DD6CF = 0x23;
-            lbl_803DD6CC = 1;
+            gSaveSelectExitTimer = 0x23;
+            gSaveSelectQuitPending = 1;
         }
     }
     else
@@ -821,13 +821,13 @@ int SaveSelectScreen_run(void)
                 }
                 else if (sel == 1)
                 {
-                    lbl_803DD6CD = 1;
+                    gSaveSelectLaunchPending = 1;
                     (*gScreenTransitionInterface)->start(0x14, 5);
                     gTitleMenuControlInterface->vtable->func0A(0);
                     gTitleMenuControlInterface->vtable->func0A(1);
                     gTitleMenuControlInterface->vtable->func0A(2);
                     gTitleMenuControlInterface->vtable->func0A(3);
-                    lbl_803DD6CF = 0x23;
+                    gSaveSelectExitTimer = 0x23;
                 }
                 break;
             case SAVE_SELECT_PANEL_CHAPTER_SELECT:
@@ -909,9 +909,9 @@ void SaveSelectScreen_initialise(void)
         saveFileSelect_cheatInputTimer = 0;
     }
 
-    lbl_803DD6CC = 0;
-    lbl_803DD6CD = 0;
-    lbl_803DD6CF = 0;
+    gSaveSelectQuitPending = 0;
+    gSaveSelectLaunchPending = 0;
+    gSaveSelectExitTimer = 0;
     gSaveSelectRefreshCounter = 4;
     lbl_803DD6B4 = 0;
 

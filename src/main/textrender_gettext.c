@@ -225,8 +225,8 @@ void gameTextResetCursor(int flags)
 {
     if (flags & 1)
     {
-        lbl_803DC9AA = 0;
-        lbl_803DC9A8 = 0;
+        gGameTextCursorX = 0;
+        gGameTextCursorY = 0;
     }
     if (flags & 2)
     {
@@ -239,8 +239,8 @@ void gameTextSetCursor(u16 x, u16 y, int flags)
 {
     if (flags & 1)
     {
-        lbl_803DC9AA = x;
-        lbl_803DC9A8 = y;
+        gGameTextCursorX = x;
+        gGameTextCursorY = y;
     }
     if (flags & 2)
     {

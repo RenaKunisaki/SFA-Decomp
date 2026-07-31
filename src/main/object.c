@@ -61,8 +61,8 @@ s16* gObjSeqToObjIdTable;
 int gObjSeqToObjIdMax;
 GameObject** gObjDeferredFreeList;
 int gObjDeferredFreeCount;
-GameObject** lbl_803DCB90;
-int lbl_803DCB8C;
+GameObject** gObjPendingDefFreeList;
+int gObjPendingDefFreeCount;
 GameObject** gObjList;
 int gObjCount;
 ObjLinkedList gObjUpdateList;
@@ -1600,20 +1600,20 @@ void Obj_FreeObject(GameObject* obj)
     if (obj->unkEA != 0)
     {
         i = 0;
-        base = lbl_803DCB90;
-        for (; i < lbl_803DCB8C; i++)
+        base = gObjPendingDefFreeList;
+        for (; i < gObjPendingDefFreeCount; i++)
         {
             if (base[i] == obj)
             {
                 break;
             }
         }
-        if (i == lbl_803DCB8C)
+        if (i == gObjPendingDefFreeCount)
         {
-            if (lbl_803DCB8C < OBJ_PENDING_DEF_FREE_CAPACITY)
+            if (gObjPendingDefFreeCount < OBJ_PENDING_DEF_FREE_CAPACITY)
             {
-                lbl_803DCB90[lbl_803DCB8C] = obj;
-                lbl_803DCB8C++;
+                gObjPendingDefFreeList[gObjPendingDefFreeCount] = obj;
+                gObjPendingDefFreeCount++;
                 return;
             }
         }
@@ -2448,11 +2448,11 @@ void Obj_ResetObjectSystem(void)
     Obj_FreeDeferredObjects();
     gObjDefCaptureMode = 2;
     gObjDeferredFreeCount = 0;
-    lbl_803DCB8C = 0;
+    gObjPendingDefFreeCount = 0;
     gObjCount = 0;
     objListInit(&gObjUpdateList, 0x38);
     gObjDeferredFreeCount = 0;
-    lbl_803DCB8C = 0;
+    gObjPendingDefFreeCount = 0;
     lbl_803DCB70 = 0;
     gObjCount = 0;
     objListInit(&gObjUpdateList, 0x38);
@@ -2713,7 +2713,7 @@ void Obj_InitObjectSystem(void)
     int i;
 
     gObjDeferredFreeList = mmAlloc(OBJ_DEFERRED_FREE_CAPACITY * sizeof(*gObjDeferredFreeList), 0xe, 0);
-    lbl_803DCB90 = mmAlloc(OBJ_PENDING_DEF_FREE_CAPACITY * sizeof(*lbl_803DCB90), 0xe, 0);
+    gObjPendingDefFreeList = mmAlloc(OBJ_PENDING_DEF_FREE_CAPACITY * sizeof(*gObjPendingDefFreeList), 0xe, 0);
     lbl_803DCBC0 = mmAlloc(0x10, 0xe, 0);
     loadAssetFileById(&gObjSeqToObjIdTable, MLDF_FILEID_OBJINDEX_BIN);
     gObjSeqToObjIdMax = (getDataFileSize(MLDF_FILEID_OBJINDEX_BIN) >> 1) - 1;
@@ -2747,7 +2747,7 @@ void Obj_InitObjectSystem(void)
     gObjList = mmAlloc(OBJ_LIST_CAPACITY * sizeof(*gObjList), 0xe, 0);
     ObjHits_InitWorkBuffers();
     gObjDeferredFreeCount = 0;
-    lbl_803DCB8C = 0;
+    gObjPendingDefFreeCount = 0;
     lbl_803DCB70 = 0;
     gObjCount = 0;
     objListInit(&gObjUpdateList, 0x38);

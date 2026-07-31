@@ -162,7 +162,7 @@ typedef struct PlayerState {
     s8 climbStepCount; /* 0x4e5: total number of climb steps for the current climbable; climbStep >= climbStepCount-3 (within 3 of the top) selects the top-of-climb transition */
     u8 climbingUp; /* 0x4e6: climb direction, 1 while ascending (forward Y lerp start->target), 0 while descending (reverse lerp) */
     s8 climbSampleDone; /* 0x4e7: one-shot latch for the climb move's initial joint-transform sampling; while 0 (and moveId<=1) samples the start/end root motion into moveStartPosY then sets to 1 */
-    f32 climbEndLocalY; /* target local-Y for the ledge climb-up/down move (case 6/7): anim.localPosY is lerped w*(climbEndLocalY - localPosY)+localPosY by currentMoveProgress, snapped to climbEndLocalY on moveDone; also the camera-focus Y (paired with climbBaseY in camBuf, and lbl_803DE43C = climbEndLocalY + offset) */
+    f32 climbEndLocalY; /* target local-Y for the ledge climb-up/down move (case 6/7): anim.localPosY is lerped w*(climbEndLocalY - localPosY)+localPosY by currentMoveProgress, snapped to climbEndLocalY on moveDone; also the camera-focus Y (paired with climbBaseY in camBuf, and gPlayerClimbEndY = climbEndLocalY + offset) */
     f32 climbBaseY; /* base local-Y for the climb-step lerp: climbTargetY = climbStep*climbStepHeight + climbBaseY */
     f32 climbStepHeight; /* per-step vertical rise; multiplied by climbStep to form climbTargetY */
     f32 climbTargetY; /* target localPosY for the current climb step (climbStep*climbStepHeight + climbBaseY); lerp endpoint */
