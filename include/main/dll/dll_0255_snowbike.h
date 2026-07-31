@@ -23,6 +23,30 @@ typedef struct SnowBikeRouteFlags {
  * Offsets recovered from SnowBike_init/SnowBike_update derefs; the
  * 0x178..0x3DC block is the gPathControlInterface curves-collision state
  * and the 0x428 byte carries the SnowBikeFlags bitfield overlay. */
+typedef struct DRCloudCagePointPair
+{
+    f32 startX;
+    f32 startY;
+    f32 startZ;
+    s16 startAlpha;
+    u8 startColorByte;
+    u8 pad0F;
+    f32 endX;
+    f32 endY;
+    f32 endZ;
+    s16 endAlpha;
+    u8 endColorByte;
+    u8 pad1F;
+} DRCloudCagePointPair;
+
+typedef struct DRCloudCageTrail
+{
+    DRCloudCagePointPair* points;
+    s16 count;
+    u8 flags;
+    u8 pad07;
+} DRCloudCageTrail;
+
 typedef struct SnowBikeState {
     s16 savedRotX;          /* 0x000: saved anim.rotX on mount (restored on dismount) */
     u8 pad002[0xa];
@@ -148,7 +172,8 @@ typedef struct SnowBikeState {
     f32 airMeterCurrent;             /* 0x4bc */
     f32 airDrainRate;             /* 0x4c0 */
     f32 airMeterRefillTimer; /* 0x4c4: counts down by rate*timeDelta (clamped [0,K]); while non-zero, refills airMeterCurrent */
-    u8 pad4C8[0x54];        /* 0x4c8: 9 path allocation slots (stride 8) */
+    DRCloudCageTrail trails[9]; /* 0x4c8: cloud-trail records (drcloudcage_updateTrails walks them by raw stride) */
+    DRCloudCageTrail* activeTrails[3]; /* 0x510: the three head-trail slots (accessed raw - the spawn loop walks them via a running slot base) */
     f32 homePosX;             /* 0x51c: home X */
     f32 homePosY;             /* 0x520: home Y */
     f32 homePosZ;             /* 0x524: home Z */
@@ -180,6 +205,8 @@ typedef struct SnowBikeState {
     f32 haloPitchDrift;             /* 0x594: halo-light yaw drift */
     f32 haloDriftB;         /* 0x598: halo drift channel-B output (haloDriftAmpB * sin(phaseB)); added to anim.rotZ */
 } SnowBikeState; /* extends to at least 0x59C (DRhightop/DRhalolight tail) */
+STATIC_ASSERT(offsetof(SnowBikeState, trails) == 0x4C8);
+STATIC_ASSERT(offsetof(SnowBikeState, activeTrails) == 0x510);
 STATIC_ASSERT(offsetof(SnowBikeState, refPosX) == 0x16C);
 STATIC_ASSERT(offsetof(SnowBikeState, unk3D6) == 0x3D6);
 STATIC_ASSERT(offsetof(SnowBikeState, collisionFxDamping) == 0x3E0);

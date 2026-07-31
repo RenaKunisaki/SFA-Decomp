@@ -250,30 +250,6 @@ struct DRCloudCagePoints;
 #define DRCLOUDCAGE_PAIR_SIZE         0x10
 #define DRCLOUDCAGE_TRAIL_FLAG_ACTIVE 1
 
-typedef struct DRCloudCagePointPair
-{
-    f32 startX;
-    f32 startY;
-    f32 startZ;
-    s16 startAlpha;
-    u8 startColorByte;
-    u8 pad0F;
-    f32 endX;
-    f32 endY;
-    f32 endZ;
-    s16 endAlpha;
-    u8 endColorByte;
-    u8 pad1F;
-} DRCloudCagePointPair;
-
-typedef struct DRCloudCageTrail
-{
-    DRCloudCagePointPair* points;
-    s16 count;
-    u8 flags;
-    u8 pad07;
-} DRCloudCageTrail;
-
 typedef struct DRCloudCagePoints
 {
     f32 m[18];

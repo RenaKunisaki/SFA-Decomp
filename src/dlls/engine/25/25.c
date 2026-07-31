@@ -40,14 +40,12 @@ f32 gDll19LocalPointRadius = 25.0f;
 
 typedef struct Dll19Placement
 {
-    u8 pad0[0x22 - 0x0];
-    s16 stateFlags;
-    u8 pad24[0x32 - 0x24];
-    u8 progressDenominator;
-    u8 pad33[0x34 - 0x33];
+    GroundBaddiePlacement base;
     u16 spawnCount;
     u8 pad36[0x38 - 0x36];
 } Dll19Placement;
+
+STATIC_ASSERT(offsetof(Dll19Placement, spawnCount) == 0x34);
 
 /* bits in the Dll19State flags word at +0x400 */
 #define DLL19_FLAG_YAW_ALIGNED 0x10 /* yaw delta within facing cone */
@@ -114,8 +112,8 @@ int dll_19_isBaddieControlObject(GameObject* obj)
 f32 dll_19_getHealthFraction(GameObject* obj)
 {
     Dll19State* p_b8 = (Dll19State*)(obj)->extra;
-    Dll19Placement* p_4c = (Dll19Placement*)(obj)->anim.placementData;
-    u8 denom = p_4c->progressDenominator;
+    GroundBaddiePlacement* p_4c = (GroundBaddiePlacement*)(obj)->anim.placementData;
+    u8 denom = p_4c->hitPoints;
     if (denom != 0)
     {
         s8 numer = p_b8->progressNumerator;
@@ -531,7 +529,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
     {
         return 0;
     }
-    if ((((Dll19Placement*)state)->stateFlags & 0xf00) != 0)
+    if ((((GroundBaddiePlacement*)state)->triggerId & 0xf00) != 0)
     {
         idx = ((spawnType & 0xf00) >> 8) - 1;
         if (idx > 3)
@@ -541,7 +539,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
         setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), ids1[idx]);
         scale = 30.0f;
     }
-    if ((((Dll19Placement*)state)->stateFlags & 0xf000) != 0)
+    if ((((GroundBaddiePlacement*)state)->triggerId & 0xf000) != 0)
     {
         idx = ((spawnType & 0xf000) >> 12) - 1;
         if (idx > 3)
@@ -551,7 +549,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
         setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), ids2[idx]);
         scale = 30.0f;
     }
-    if ((int)(u8)((Dll19Placement*)state)->stateFlags != 0)
+    if ((int)(u8)((GroundBaddiePlacement*)state)->triggerId != 0)
     {
         switch (spawnType)
         {

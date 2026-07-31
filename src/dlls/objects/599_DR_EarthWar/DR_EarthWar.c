@@ -55,9 +55,7 @@ typedef struct DREarthWarriorPlacement
 /* Combat sub-block of the EarthWarrior state (state+0xb58). */
 typedef struct EarthWarriorSub
 {
-    u8 pad000[0x264];
-    u8 unk264;
-    u8 pad265[0xfb];
+    u8 pad000[0x360];
     int unk360;
     u8 pad364[0x8c];
     u8 flags3F0; /* ByteFlags: b40 leap, b80 airborne */
