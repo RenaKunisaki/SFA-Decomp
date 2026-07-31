@@ -159,7 +159,6 @@ void PressureSwitchFB_update(GameObject* obj) {
     f32 currentY;
     f32 targetY;
     u32 nearestTarget;
-    int stateAddress;
     GameObject* trickyObj;
     f32 searchRadius;
     PartFxSpawnParams effectParams;
@@ -224,8 +223,7 @@ void PressureSwitchFB_update(GameObject* obj) {
                 }
             }
         }
-        stateAddress = *(int*)&obj->extra;
-        foundTrackedObject = PressureSwitchFB_scanTrackedSlots(stateAddress);
+        foundTrackedObject = PressureSwitchFB_scanTrackedSlots(*(int*)&obj->extra);
         if (foundTrackedObject & PRESSURESWITCHFB_TRACKED_POSITION_MASK) {
             state->contactTimer = PRESSURESWITCHFB_CONTACT_FRAMES;
         }
@@ -329,7 +327,7 @@ void PressureSwitchFB_update(GameObject* obj) {
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
                 TRICKY_INTERFACE(trickyObj)->sideCommandEnable(trickyObj, obj, PRESSURESWITCHFB_TRICKY_COMMAND_KIND,
-                                                              PRESSURESWITCHFB_TRICKY_COMMAND_TYPE);
+                                                               PRESSURESWITCHFB_TRICKY_COMMAND_TYPE);
             }
         }
     }
