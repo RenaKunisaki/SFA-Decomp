@@ -109,7 +109,7 @@ STATIC_ASSERT(sizeof(ObjFxColorTable) == 0x1E);
 STATIC_ASSERT(sizeof(ObjFxSparkleEffectTable) == 0xE0);
 
 extern const ObjFxS32Table5 gObjFxPulseVariantTbl;
-extern const ObjFxSparkleEffectTable lbl_802C200C;
+extern const ObjFxSparkleEffectTable gObjFxHitPulseTbl;
 extern const ObjFxU16Table11 gObjFxHitEffectParamTbl;
 extern const ObjFxU16Table7 gObjFxMaskedHitSpawnIdTbl;
 extern const ObjFxU16Table11 gObjFxHitEffectParamTbl2;

@@ -536,7 +536,7 @@ u8 lbl_8032AAB0[0x80] = {
 };
 int gHighTopIdleSequenceIds[3] = {0x4, 0x5, 0x6};
 int gHighTopIdleSequenceWeights[3] = {0x32, 0x19, 0x19};
-HighTopTuning lbl_8032AB48 = {
+HighTopTuning gHighTopTuning = {
     {8, 9, 7, 10},
     {-25.0f, 0.0f, -60.0f, 25.0f, 0.0f, -60.0f, 25.0f, 0.0f, 60.0f, -25.0f, 0.0f,
      60.0f,  0.0f, 0.0f,   0.0f,  0.0f, 0.0f,   0.0f,  35.0f, 0.0f, 0.0f,  -35.0f},
@@ -1021,7 +1021,7 @@ void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible)
                 int idx = (*(int (**)(int*))((char*)**(int***)((char*)*list + 0x68) + 0x24))(*list);
                 void (*dispatch)(int*, void*, int, int, int, int, int) =
                     *(void (**)(int*, void*, int, int, int, int, int))((char*)**(int***)((char*)*list + 0x68) + 0x20);
-                dispatch(*list, obj, lbl_8032AB48.dispatchArgs[idx], p2, p3, p4, p5);
+                dispatch(*list, obj, gHighTopTuning.dispatchArgs[idx], p2, p3, p4, p5);
                 list++;
             }
         }

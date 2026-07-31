@@ -710,9 +710,9 @@ extern u8 bEnableMotionBlur;
 extern f32 lbl_803DB62C;
 
 extern u8 bEnableBlurFilter;
-extern f32 lbl_803DCE50;
-extern f32 lbl_803DCE4C;
-extern f32 blurFilterArea;
+extern f32 blurFilterX;
+extern f32 blurFilterY;
+extern f32 blurFilterZ;
 extern u8 bBlurFilterUseArea;
 extern u8 bBiggerBlurFilter;
 extern u8 bEnableDistortionFilter;
@@ -823,7 +823,7 @@ void sceneDraw(void)
     }
     if (bEnableBlurFilter != 0)
     {
-        doBlurFilter(lbl_803DCE50, lbl_803DCE4C, blurFilterArea, bBlurFilterUseArea,
+        doBlurFilter(blurFilterX, blurFilterY, blurFilterZ, bBlurFilterUseArea,
                      bBiggerBlurFilter);
     }
     if (heatEffectIntensity != 0)

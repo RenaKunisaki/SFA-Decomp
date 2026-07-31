@@ -69,20 +69,20 @@ GameObject* gSkyMoonObject;
 GameObject* gSkySunObject;
 ModelLightStruct* gSkySunLight;
 u8 gSkyEnvFxFlags;
-void* lbl_803DD13C;
-void* lbl_803DD138;
-void* lbl_803DD134;
-void* lbl_803DD130;
+void* gSkyEnvFxGroupBTable;
+void* gSkyEnvFxGroupCTable;
+void* gSkyEnvFxGroupDTable;
+void* gSkyEnvFxGroupATable;
 u8* gSkyState;
 u16 gSkyMoonAlpha;
 u16 gSkySunAlpha;
 
 
 /* gSkyEnvFxFlags: per-group env-FX trigger enables + update state */
-#define SKY_ENVFX_GROUP_C        0x01 /* lbl_803DD138 group (GameBit 0x3ab) */
-#define SKY_ENVFX_GROUP_A        0x02 /* lbl_803DD130 group (GameBit 0x3ac) */
-#define SKY_ENVFX_GROUP_B        0x04 /* lbl_803DD13C group */
-#define SKY_ENVFX_GROUP_D        0x08 /* lbl_803DD134 group (weather) */
+#define SKY_ENVFX_GROUP_C        0x01 /* gSkyEnvFxGroupCTable group (GameBit 0x3ab) */
+#define SKY_ENVFX_GROUP_A        0x02 /* gSkyEnvFxGroupATable group (GameBit 0x3ac) */
+#define SKY_ENVFX_GROUP_B        0x04 /* gSkyEnvFxGroupBTable group */
+#define SKY_ENVFX_GROUP_D        0x08 /* gSkyEnvFxGroupDTable group (weather) */
 #define SKY_ENVFX_UPDATE_PENDING 0x10 /* sun position changed; process this frame */
 #define SKY_ENVFX_IMMEDIATE      0x20 /* fire acts immediately vs deferred */
 /* env-effect ids activated together when the GROUP_D (weather) flag is clear
@@ -167,10 +167,10 @@ void skySetEnvFxFlags(u8 value)
 
 void skySetEnvFxRampTables(void* groupB, void* groupA, void* groupC, void* groupD)
 {
-    lbl_803DD13C = groupB;
-    lbl_803DD130 = groupA;
-    lbl_803DD138 = groupC;
-    lbl_803DD134 = groupD;
+    gSkyEnvFxGroupBTable = groupB;
+    gSkyEnvFxGroupATable = groupA;
+    gSkyEnvFxGroupCTable = groupC;
+    gSkyEnvFxGroupDTable = groupD;
 }
 
 void skyUpdateEnvFx(void)
@@ -205,38 +205,38 @@ void skyUpdateEnvFx(void)
     }
     flags = (u8)(flags & ~SKY_ENVFX_UPDATE_PENDING);
     gSkyEnvFxFlags = flags;
-    if ((u32)lbl_803DD130 != 0 && (flags & SKY_ENVFX_GROUP_A) != 0 && mainGetBit(GAMEBIT_ENV_disableDayFX2) == 0)
+    if ((u32)gSkyEnvFxGroupATable != 0 && (flags & SKY_ENVFX_GROUP_A) != 0 && mainGetBit(GAMEBIT_ENV_disableDayFX2) == 0)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, ((s16*)lbl_803DD130)[b], 0);
+            getEnvfxActImmediately(0, 0, ((s16*)gSkyEnvFxGroupATable)[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, ((s16*)lbl_803DD130)[b], 0);
+            getEnvfxAct(0, 0, ((s16*)gSkyEnvFxGroupATable)[b], 0);
         }
     }
-    if ((u32)lbl_803DD13C != 0 && (gSkyEnvFxFlags & SKY_ENVFX_GROUP_B) != 0)
+    if ((u32)gSkyEnvFxGroupBTable != 0 && (gSkyEnvFxFlags & SKY_ENVFX_GROUP_B) != 0)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, ((s16*)lbl_803DD13C)[b], 0);
+            getEnvfxActImmediately(0, 0, ((s16*)gSkyEnvFxGroupBTable)[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, ((s16*)lbl_803DD13C)[b], 0);
+            getEnvfxAct(0, 0, ((s16*)gSkyEnvFxGroupBTable)[b], 0);
         }
     }
-    if ((u32)lbl_803DD138 != 0 && (gSkyEnvFxFlags & SKY_ENVFX_GROUP_C) != 0 &&
+    if ((u32)gSkyEnvFxGroupCTable != 0 && (gSkyEnvFxFlags & SKY_ENVFX_GROUP_C) != 0 &&
         mainGetBit(GAMEBIT_ENV_disableDayFX1) == 0)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, ((s16*)lbl_803DD138)[b], 0);
+            getEnvfxActImmediately(0, 0, ((s16*)gSkyEnvFxGroupCTable)[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, ((s16*)lbl_803DD138)[b], 0);
+            getEnvfxAct(0, 0, ((s16*)gSkyEnvFxGroupCTable)[b], 0);
         }
     }
     skyApplyPlayerEnvFx(b);
@@ -250,7 +250,7 @@ void skyApplyPlayerEnvFx(u8 idx)
     s8 alt;
 
     player = Obj_GetPlayerObject();
-    if ((void*)lbl_803DD134 == NULL || player == NULL)
+    if ((void*)gSkyEnvFxGroupDTable == NULL || player == NULL)
     {
         return;
     }
@@ -267,13 +267,13 @@ void skyApplyPlayerEnvFx(u8 idx)
     {
         alt = 27;
     }
-    if (((s16*)lbl_803DD134)[idx] <= 0 || ((s16*)lbl_803DD134)[alt] != ((s16*)lbl_803DD134)[idx])
+    if (((s16*)gSkyEnvFxGroupDTable)[idx] <= 0 || ((s16*)gSkyEnvFxGroupDTable)[alt] != ((s16*)gSkyEnvFxGroupDTable)[idx])
     {
         getEnvfxAct(player, player, 310, 0);
         getEnvfxAct(player, player, 311, 0);
         getEnvfxAct(player, player, 323, 0);
     }
-    val = ((s16*)lbl_803DD134)[idx];
+    val = ((s16*)gSkyEnvFxGroupDTable)[idx];
     if (val > 0)
     {
         if (gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE)

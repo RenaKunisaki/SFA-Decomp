@@ -292,10 +292,10 @@ void modelInitMtxs(ModelFileHeader* def, ObjModel* model)
 
 #include "main/objprint_dolphin_internal.h"
 
-const IndTexMtx23 lbl_802C1B10 = {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
-const IndTexMtx23 lbl_802C1B28 = {{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f}}};
-const IndTexMtx23 lbl_802C1B40 = {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
-const IndTexMtx23 lbl_802C1B58 = {{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f}}};
+const IndTexMtx23 sObjFuzzIndMtxA = {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
+const IndTexMtx23 sObjFuzzIndMtxB = {{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f}}};
+const IndTexMtx23 sObjFuzzShellIndMtxA = {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
+const IndTexMtx23 sObjFuzzShellIndMtxB = {{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f}}};
 
 extern u8 lbl_803DCC3D;
 extern u32 lbl_803DEA00;
@@ -326,8 +326,8 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
     f32 fz;
     u8 v;
 
-    mtxA = lbl_802C1B40;
-    mtxB = lbl_802C1B58;
+    mtxA = sObjFuzzShellIndMtxA;
+    mtxB = sObjFuzzShellIndMtxB;
     rop = (u8*)ObjModel_GetRenderOp((ModelFileHeader*)*model, ropIdx);
     if ((((Shader*)rop)->flags & 0x200) == 0)
     {
@@ -473,7 +473,7 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
     return 1;
 }
 
-extern ObjPrintGXColor lbl_803DB494;
+extern ObjPrintGXColor gObjFuzzKColor;
 extern u8 lbl_803DCC35;
 extern u8 lbl_803DCC36;
 extern s32 lbl_803DCC5C;
@@ -511,8 +511,8 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
     int projBlendMode;
     u8 fancy;
 
-    mtxA = lbl_802C1B10;
-    mtxB = lbl_802C1B28;
+    mtxA = sObjFuzzIndMtxA;
+    mtxB = sObjFuzzIndMtxB;
     rop = (u8*)ObjModel_GetRenderOp(model->file, ropIdx);
     if ((((Shader*)rop)->flags & 0x200) == 0)
     {
@@ -541,26 +541,26 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
         if (lbl_803DCC36 == 1)
         {
             u8 v = gObjFuzzLayerIndex << 4;
-            lbl_803DB494.b = v;
-            lbl_803DB494.g = v;
-            lbl_803DB494.r = v;
+            gObjFuzzKColor.b = v;
+            gObjFuzzKColor.g = v;
+            gObjFuzzKColor.r = v;
             GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_TEXC, GX_CC_ONE, GX_CC_KONST, GX_CC_ZERO);
         }
         else
         {
             if (gObjFuzzLayerIndex < 8)
             {
-                lbl_803DB494.b = gObjFuzzLayerIndex << 5;
+                gObjFuzzKColor.b = gObjFuzzLayerIndex << 5;
             }
             else
             {
-                lbl_803DB494.b = 0xff;
+                gObjFuzzKColor.b = 0xff;
             }
-            lbl_803DB494.g = lbl_803DB494.b;
-            lbl_803DB494.r = lbl_803DB494.b;
+            gObjFuzzKColor.g = gObjFuzzKColor.b;
+            gObjFuzzKColor.r = gObjFuzzKColor.b;
             GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_TEXC, GX_CC_ZERO, GX_CC_KONST, GX_CC_ZERO);
         }
-        GXSetTevKColor(GX_KCOLOR1, *(GXColor*)&lbl_803DB494);
+        GXSetTevKColor(GX_KCOLOR1, *(GXColor*)&gObjFuzzKColor);
         GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K1_A);
         GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K1);
     }
@@ -777,7 +777,7 @@ u8 gObjGxKColorCache[4] = {0};
 u8 gObjShadowColor[4] = {0x20, 0x30, 0xFF, 0xFF};
 int lbl_803DB48C = -1;
 int lbl_803DB490 = -1;
-ObjPrintGXColor lbl_803DB494 = {0xFF, 0xFF, 0xFF, 0xFF};
+ObjPrintGXColor gObjFuzzKColor = {0xFF, 0xFF, 0xFF, 0xFF};
 int lbl_803DB498 = -3;
 int lbl_803DB49C = -1;
 
@@ -1332,7 +1332,7 @@ extern int lbl_803DB49C;
 extern f32 lbl_803DEA38;
 
 
-extern ObjPrintGXColor lbl_803DB494;
+extern ObjPrintGXColor gObjFuzzKColor;
 extern u8 lbl_803DCC35;
 extern u8 lbl_803DCC36;
 extern s32 lbl_803DCC5C;

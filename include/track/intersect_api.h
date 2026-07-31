@@ -57,7 +57,7 @@ void textRenderSetup(void);
 /*
  * Fullscreen 640x480 textured quad with caller-supplied alpha. The alpha
  * is multiplied by lbl_803DEF20 (a 0..255 scale), converted to int and
- * stamped into byte 3 of the K0 GXColor cache (lbl_803DB6A0). Sets up
+ * stamped into byte 3 of the K0 GXColor cache (gMotionBlurKColor). Sets up
  * one TEV stage that K-multiplies the texture by alpha; uses fixed UVs
  * 0..0x80 so the texture maps once across the screen. Used when fading
  * the screen to texture (e.g. boot logo / "now loading").

@@ -146,7 +146,7 @@ extern int gObjSeqSubtitleId;
 extern SeqRunFlags lbl_803DD0B4;
 extern u8 gObjSeqPreemptCount;
 extern int gObjSeqPreemptList[][2];
-extern void* lbl_803DD0B8;
+extern void* gObjSeqCameraSourceObj;
 extern int gObjSeqPreparingStreamSlot;
 extern int lbl_803DD064;
 extern u32 gSaveCardChecksumHi;
@@ -1302,9 +1302,9 @@ void endObjSequence(int seq)
             ObjSeqState* st = (ObjSeqState*)obj->extra;
             if ((s8)st->slot == seq)
             {
-                if (obj == lbl_803DD0B8)
+                if (obj == gObjSeqCameraSourceObj)
                 {
-                    lbl_803DD0B8 = 0;
+                    gObjSeqCameraSourceObj = 0;
                 }
                 frees[nFree++] = obj;
                 if (st->freeCallback != NULL)
@@ -1499,7 +1499,7 @@ extern s16 objSeqXrotValues[];
 extern s8 gObjSeqBoolFlags[];
 extern s8 gObjSeqCondFlags[];
 extern s8 gObjSeqSlotResults[];
-extern ObjSeqBgCmd lbl_8039A5BC[];
+extern ObjSeqBgCmd gObjSeqDeferredCmds[];
 extern u8 gObjSeqRuntimeBuffer[];
 extern int gObjSeqScriptedButtonMasks[];
 extern ObjSeqStreamMapEntry gObjSeqStreamTableA[];
@@ -1608,8 +1608,8 @@ f32 gObjSeqLinkedSavedPosY;
 f32 gObjSeqLinkedSavedPosZ;
 s16 gObjSeqLinkedSavedPitch;
 u8 gObjSeqLinkedTransformValid;
-s8 lbl_803DD113;
-u8 lbl_803DD112;
+s8 gObjSeqDeferredCmdCount;
+u8 gObjSeqSkippingToEnd;
 u8 lbl_803DD111;
 u8 gObjSeqCameraActive;
 int gObjSeqCamMode;
@@ -1636,7 +1636,7 @@ f32 gObjSeqCurvePosOffsetY;
 f32 gObjSeqCurvePosOffsetZ;
 int lbl_803DD0C0;
 s8 gObjSeqBgCmdCount;
-void* lbl_803DD0B8;
+void* gObjSeqCameraSourceObj;
 u16 lbl_803DD0B6;
 SeqRunFlags lbl_803DD0B4;
 f32 gObjSeqSavedCamPosX;
@@ -2826,7 +2826,7 @@ void ObjSeq_updateCamera(void)
     s16 roll;
     int code;
 
-    obj = lbl_803DD0B8;
+    obj = gObjSeqCameraSourceObj;
     if (obj != NULL)
     {
         model = (u8*)obj->anim.placementData;
@@ -3004,7 +3004,7 @@ void ObjSeq_updateCamera(void)
     }
 
     gObjSeqFovOverrideActive = 0;
-    lbl_803DD0B8 = NULL;
+    gObjSeqCameraSourceObj = NULL;
     gObjSeqCameraOverrideActive = 0;
 }
 
@@ -4364,10 +4364,10 @@ void objSeqDoBgCmds0D(u8* seq, GameObject* obj, int skipSpawns)
         (*gGameUIInterface)->setInputOverride(0, 0, 0);
     }
 
-    while (lbl_803DD113 > 0)
+    while (gObjSeqDeferredCmdCount > 0)
     {
-        lbl_803DD113--;
-        cmd = &lbl_8039A5BC[lbl_803DD113];
+        gObjSeqDeferredCmdCount--;
+        cmd = &gObjSeqDeferredCmds[gObjSeqDeferredCmdCount];
         cmdParam = cmd->param;
         cmdObj = cmd->object;
 
@@ -4676,22 +4676,22 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             break;
         }
-        if ((s8)lbl_803DD113 < 10)
+        if ((s8)gObjSeqDeferredCmdCount < 10)
         {
-            entry = base + lbl_803DD113 * 8;
+            entry = base + gObjSeqDeferredCmdCount * 8;
             *(GameObject**)(entry + 0x3ca4) = activeObj;
             *(s8*)((int)entry + 0x3caa) = (s8)((*(s16*)(cmd + 2) >> 12) & 0xf);
             if (*(s8*)((int)entry + 0x3caa) == 0xb || *(s8*)((int)entry + 0x3caa) == 0xc)
             {
                 u8* entry2;
                 val = *(s16*)(cmd + 6);
-                entry2 = base + (s8)(lbl_803DD113++) * 8;
+                entry2 = base + (s8)(gObjSeqDeferredCmdCount++) * 8;
                 *(s16*)(entry2 + 0x3ca8) = val;
             }
             else
             {
                 val = (s16)(*(s16*)(cmd + 2) & 0xfff);
-                lbl_803DD113++;
+                gObjSeqDeferredCmdCount++;
                 *(s16*)(entry + 0x3ca8) = val;
             }
         }
@@ -4705,7 +4705,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         return 0;
     }
 
-    if ((s8)lbl_803DD112 != 0 || (s8)lbl_803DD111 != 0)
+    if ((s8)gObjSeqSkippingToEnd != 0 || (s8)lbl_803DD111 != 0)
     {
         if ((s8)cmd[0] == 0xd)
         {
@@ -5860,7 +5860,7 @@ void ObjSeq_ApplyLinkedObjectTransform(GameObject* obj, GameObject* seqObj, u8* 
 
     if ((s8)((ObjSeqState*)seq)->unk7B != 0 && (s8)((ObjSeqState*)seq)->useRootMotionSpeed != 0)
     {
-        lbl_803DD0B8 = obj;
+        gObjSeqCameraSourceObj = obj;
         lbl_803DD0B6 = framesThisStep;
     }
     Obj_GetWorldPosition(seqObj, &seqObj->anim.worldPosX, &seqObj->anim.worldPosY,
@@ -5956,7 +5956,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
     activeObj = state->targetObj;
     gObjSeqStop = 0;
     gObjSeqLinkedTransformValid = 0;
-    lbl_803DD112 = 0;
+    gObjSeqSkippingToEnd = 0;
     lbl_803DD111 = 0;
 
     if (state->runState == 3)
@@ -5999,7 +5999,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
 
     do
     {
-        lbl_803DD113 = 0;
+        gObjSeqDeferredCmdCount = 0;
         if (state->runState == 0)
         {
             obj->anim.alpha = 0;
@@ -6075,7 +6075,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
         else if ((s8)((u8*)(base + 0x3c4c))[state->slot] == 2)
         {
             state->curFrame = state->endFrame;
-            lbl_803DD112 = 1;
+            gObjSeqSkippingToEnd = 1;
         }
         else if ((s8)((u8*)(base + 0x3c4c))[state->slot] == 3)
         {
@@ -6488,7 +6488,7 @@ s16 gObjSeqSlotSeqIdTable[0x56];
 s8 gObjSeqBoolFlags[0x58];
 s8 gObjSeqCondFlags[0x58];
 s8 gObjSeqSlotResults[0xB0];
-ObjSeqBgCmd lbl_8039A5BC[0x50 / sizeof(ObjSeqBgCmd)];
+ObjSeqBgCmd gObjSeqDeferredCmds[0x50 / sizeof(ObjSeqBgCmd)];
 s8 gObjSeqJumpLatch[0x58];
 int gObjSeqPreemptList[40][2];
 
@@ -6724,7 +6724,7 @@ void ObjSeq_onMapSetup(void)
     gObjSeqCamMode = 0;
     gObjSeqCameraActive = 0;
     lbl_803DD0DC = 0.0f;
-    lbl_803DD0B8 = NULL;
+    gObjSeqCameraSourceObj = NULL;
     gObjSeqCameraOverrideActive = 0;
     gObjSeqBgCmdCount = 0;
 }

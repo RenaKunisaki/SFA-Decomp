@@ -69,7 +69,7 @@
 #define SNOWBIKE_OBJGROUP           0xa
 #define SNOWBIKE_AIRMETER_BGTEXTURE 0x5cd
 
-const GXColor lbl_803E5AE0 = {5, 5, 5, 5};
+const GXColor sSnowBikePathPointParams = {5, 5, 5, 5};
 const GXColor sSnowBikeTrailTevColor = {0x20, 0x20, 0x20, 0x80};
 
 typedef union SnowBikeCheckpointRank
@@ -2576,7 +2576,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     SnowBikeState* s;
 
     base[0] = (char*)gSnowBikePathSetupPoints;
-    pathParam = lbl_803E5AE0;
+    pathParam = sSnowBikePathPointParams;
     state = obj->extra;
     s = (SnowBikeState*)state;
 

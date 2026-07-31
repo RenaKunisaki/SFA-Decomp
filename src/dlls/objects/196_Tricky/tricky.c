@@ -122,7 +122,7 @@ typedef struct
 } TrickySfxPair;
 
 static const u16 lbl_803E23C0[1] = {0x0A08};
-static const TrickySfxPair lbl_803E23C4 = {0x0356, 0x035C};
+static const TrickySfxPair sTrickyImpressSfxPair = {0x0356, 0x035C};
 static const u16 lbl_803E23C8[2] = {0x035A, 0x0351};
 static const u16 gTrickySubstateSfxIdPairA[2] = {0x035C, 0x0361};
 static const u16 gTrickySubstateSfxIdPairB[2] = {0x035C, 0x0361};
@@ -8965,7 +8965,7 @@ void Tricky_update(int obj)
     trickyState = (TrickyState*)state;
     found = 0;
     cmdQuery = gTrickyCmdQueryInit;
-    pair = lbl_803E23C4;
+    pair = sTrickyImpressSfxPair;
     Objfsa_UpdateWalkGroupPatches();
     if (mainGetBit(GAMEBIT_Tricky_LoadBadge) != 0 && *(void**)&trickyState->spawnedChild == NULL &&
         Obj_IsLoadingLocked())

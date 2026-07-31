@@ -75,18 +75,18 @@ s8 gTrackGroundHitCount;
 s16 gIntersectLineCount;
 s16 gIntersectPointCount;
 f32 lbl_803DCF58;
-f32 lbl_803DCF54;
-f32 lbl_803DCF50;
+f32 gTrackResolvePushX;
+f32 gTrackResolvePushZ;
 u8 lbl_803DCF4F;
 u8 mapBlockFlag;
-u8 lbl_803DCF4D;
-u8 lbl_803DCF4C;
+u8 gIntersectRebuildCooldown;
+u8 gTrackSweepHitCount;
 MapDynamicSlot* gMapDynamicSlots;
 u8 lbl_803DCF44;
 u32 lbl_803DCF40;
 int gIntersectLineIndexTable;
 f32* lbl_803DCF38;
-int lbl_803DCF34;
+int gIntersectLinePool;
 TrackTriangle* gTrackTriangleBuffer;
 
 f32 lbl_803DB660 = 0.01f;
@@ -168,7 +168,7 @@ STATIC_ASSERT(offsetof(MapDynamicSlot, cooldown) == 0x14);
 STATIC_ASSERT(offsetof(MapDynamicSlot, querySlot) == 0x15);
 
 /* IntersectLine -- 0x10-byte water/track intersection line record built into
- * the scratch pool at lbl_803DCF34 (cap 0x5dc) and later compacted into the
+ * the scratch pool at gIntersectLinePool (cap 0x5dc) and later compacted into the
  * owning object's sorted table.  kind's low 6 bits are the sort/group key;
  * a kind of 0x14 marks a consumed scratch entry. */
 typedef struct IntersectLine
@@ -370,8 +370,8 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
     {
         if (resolveCollision != 0)
         {
-            x[1] = startX + lbl_803DCF54;
-            z[1] = z[0] + lbl_803DCF50;
+            x[1] = startX + gTrackResolvePushX;
+            z[1] = z[0] + gTrackResolvePushZ;
         }
         return 0;
     }
@@ -507,7 +507,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
             end = gIntersectLineCount;
         }
         lineIdx = gIntersectLineIndexTable;
-        vt = lbl_803DCF34;
+        vt = gIntersectLinePool;
         vp = (int)lbl_803DCF38;
     }
 
@@ -671,8 +671,8 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
                 f32 q1 = la[3] * (radius * la[3] + az2);
                 ld[3] = -(q0 + q1);
             }
-            lbl_803DCF54 = 0.5f * (lb[3] * radius);
-            lbl_803DCF50 = 0.5f * (la[3] * radius);
+            gTrackResolvePushX = 0.5f * (lb[3] * radius);
+            gTrackResolvePushZ = 0.5f * (la[3] * radius);
 
             {
                 f32 *ap, *bp, *dp;
@@ -732,8 +732,8 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
                     }
                     else if (lineType != 0)
                     {
-                        posX[1] = posX[1] + lbl_803DCF54;
-                        posZ[1] = posZ[1] + lbl_803DCF50;
+                        posX[1] = posX[1] + gTrackResolvePushX;
+                        posZ[1] = posZ[1] + gTrackResolvePushZ;
                     }
                 }
                 else if (mx & 0xc)
@@ -914,7 +914,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
     }
     if (count != 0)
     {
-        lbl_803DCF4C++;
+        gTrackSweepHitCount++;
         count = 1;
         endPos[0] = posX[1];
         endPos[2] = posZ[1];
@@ -1014,7 +1014,7 @@ int trackGetLineIntersect(f32* startPos, f32* endPos, f32 radius, int flags, Tra
     int i;
     u32 parentAddress;
 
-    lbl_803DCF4C = 0;
+    gTrackSweepHitCount = 0;
     if (out != NULL)
     {
         out->surfaceType = -1;
@@ -1107,7 +1107,7 @@ int trackGetLineIntersect(f32* startPos, f32* endPos, f32 radius, int flags, Tra
         }
     }
     trackSweepCircleAgainstLines(worldStart, worldEnd, radius, flags, out, NULL, lineMask, segment, yTolerance, self);
-    if (lbl_803DCF4C != 0 && out != NULL)
+    if (gTrackSweepHitCount != 0 && out != NULL)
     {
         f32 upperDeltaStart = out->upperY0 - out->lineStartY;
         f32 upperDeltaEnd = out->upperY1 - out->lineEndY;
@@ -1151,7 +1151,7 @@ int trackGetLineIntersect(f32* startPos, f32* endPos, f32 radius, int flags, Tra
         out->upperY1 = out->lineEndY + upperDeltaEnd;
         out->normalW = -(out->normalX * out->lineStartX + out->normalZ * out->lineStartZ);
     }
-    if (lbl_803DCF4C != 0)
+    if (gTrackSweepHitCount != 0)
     {
         if (parentAddress != 0)
             Obj_TransformWorldPointToLocal(worldEnd[0], worldEnd[1], worldEnd[2], &endPos[0], &endPos[1], &endPos[2],
@@ -1159,7 +1159,7 @@ int trackGetLineIntersect(f32* startPos, f32* endPos, f32 radius, int flags, Tra
         else
             memcpy(endPos, worldEnd, 0xc);
     }
-    return lbl_803DCF4C;
+    return gTrackSweepHitCount;
 }
 
 void intersectModLineBuild(IntersectModLineObject* obj)
@@ -1182,7 +1182,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
         int i;
         if (gIntersectLineCount < 0x5dc)
         {
-            line = (IntersectLine*)((u8*)lbl_803DCF34 + gIntersectLineCount * 0x10);
+            line = (IntersectLine*)((u8*)gIntersectLinePool + gIntersectLineCount * 0x10);
             line->end0 = sourceLine->endpointData[0];
             line->end1 = sourceLine->endpointData[1];
             line->kind = sourceLine->kind;
@@ -1213,7 +1213,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
             int pointLinkIndex;
             s16* firstPointLinks;
             s16* secondPointLinks;
-            line = (IntersectLine*)((u8*)lbl_803DCF34 + lineByteOffset);
+            line = (IntersectLine*)((u8*)gIntersectLinePool + lineByteOffset);
             pointLinkIndex = line->pt[0] * 2;
             firstPointLinks = &pointLinks[pointLinkIndex];
             if (firstPointLinks[0] > -1 && firstPointLinks[0] != outputLineIndex)
@@ -1251,7 +1251,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
         u8* base;
         int j = 0;
         s16 grp;
-        base = (u8*)lbl_803DCF34;
+        base = (u8*)gIntersectLinePool;
         for (; j < gIntersectLineCount; j++)
         {
             if (((s8)base[j * 0x10 + 3] & 0x3f) < ((s8)base[best * 0x10 + 3] & 0x3f))
@@ -1286,19 +1286,19 @@ void intersectModLineBuild(IntersectModLineObject* obj)
             s16 bestLine;
             bestLine = best;
             for (lineIndex = 0; lineIndex < gIntersectLineCount; lineIndex++) {
-                line = &((IntersectLine*)lbl_803DCF34)[lineIndex];
+                line = &((IntersectLine*)gIntersectLinePool)[lineIndex];
                 if (line->kind != 0x14) {
                     if (bestLine == line->adj[0]) {
                         line->adj[0] = outputLineIndex;
                     }
-                    if (bestLine == ((IntersectLine*)lbl_803DCF34)[lineIndex].adj[1]) {
-                        ((IntersectLine*)lbl_803DCF34)[lineIndex].adj[1] = outputLineIndex;
+                    if (bestLine == ((IntersectLine*)gIntersectLinePool)[lineIndex].adj[1]) {
+                        ((IntersectLine*)gIntersectLinePool)[lineIndex].adj[1] = outputLineIndex;
                     }
                 }
             }
         }
-        memcpy(&obj->lines[outputLineIndex], (char*)lbl_803DCF34 + best * 0x10, 0x10);
-        *(u8*)(lbl_803DCF34 + best * 0x10 + 3) = 0x14;
+        memcpy(&obj->lines[outputLineIndex], (char*)gIntersectLinePool + best * 0x10, 0x10);
+        *(u8*)(gIntersectLinePool + best * 0x10 + 3) = 0x14;
     }
     if ((s16)previousGroup != -1)
         obj->groupRanges[previousGroup][1] = gIntersectLineCount;
@@ -1335,9 +1335,9 @@ void trackIntersect(void)
     f32 blockZ;
 
     lbl_803DCF44 = 0;
-    if (lbl_803DCF4D != 0 && getHudHiddenFrameCount() == 0)
+    if (gIntersectRebuildCooldown != 0 && getHudHiddenFrameCount() == 0)
     {
-        lbl_803DCF4D--;
+        gIntersectRebuildCooldown--;
     }
     if ((s8)mapBlockFlag == 1)
     {
@@ -1352,7 +1352,7 @@ void trackIntersect(void)
     lbl_803DCF4F = 0;
     if (getHudHiddenFrameCount() != 0)
     {
-        lbl_803DCF4D = 2;
+        gIntersectRebuildCooldown = 2;
     }
 
     for (i = 0; i < 0x47; i++)
@@ -1384,7 +1384,7 @@ void trackIntersect(void)
                         {
                             MapHitLine* sourceLine = (MapHitLine*)((u8*)blk->hits + sourceOffset);
                             s16* sourcePoints = sourceLine->x;
-                            IntersectLine* rec = (IntersectLine*)(lbl_803DCF34 + gIntersectLineCount * 0x10);
+                            IntersectLine* rec = (IntersectLine*)(gIntersectLinePool + gIntersectLineCount * 0x10);
                             f32 mapOriginX, mapOriginZ;
                             rec->end0 = sourceLine->endpointData[0];
                             rec->end1 = sourceLine->endpointData[1];
@@ -1429,7 +1429,7 @@ void trackIntersect(void)
         s16* pointEdges2;
         s16 adjacentLine;
 
-        line = (IntersectLine*)(lbl_803DCF34 + i * 16);
+        line = (IntersectLine*)(gIntersectLinePool + i * 16);
         pointIndex = line->pt[0] * 2;
         pointEdges = &edges[pointIndex];
         adjacentLine = pointEdges[0];
@@ -1485,7 +1485,7 @@ void trackIntersect(void)
             {
                 int firstType;
 
-                lineBytes = (u8*)lbl_803DCF34;
+                lineBytes = (u8*)gIntersectLinePool;
                 sortOrder = (s16*)(lbl_803DCF40 + lineOffset);
                 firstLine = sortOrder[0];
                 firstType = (s8)lineBytes[firstLine * sizeof(IntersectLine) + 3] & 0x3f;
@@ -1506,7 +1506,7 @@ void trackIntersect(void)
 
     for (i = 0; i < gIntersectLineCount; i++)
     {
-        int typeIndex = ((s8) * (u8*)(lbl_803DCF34 + i * 16 + 3) & 0x3f) + 1;
+        int typeIndex = ((s8) * (u8*)(gIntersectLinePool + i * 16 + 3) & 0x3f) + 1;
         s16 typeOffset = counts[typeIndex]++;
         *(s16*)(gIntersectLineIndexTable + typeOffset * 2) = i;
     }
@@ -1524,7 +1524,7 @@ void trackIntersect(void)
     for (i = 0, lineOffset = i; i < gIntersectLineCount; lineOffset += 2, i++)
     {
         segmentType =
-            (s16)((s8) * (u8*)(lbl_803DCF34 + *(s16*)(gIntersectLineIndexTable + lineOffset) * 0x10 + 3) &
+            (s16)((s8) * (u8*)(gIntersectLinePool + *(s16*)(gIntersectLineIndexTable + lineOffset) * 0x10 + 3) &
                   0x3f);
         if (segmentType >= 0x14)
         {
@@ -1566,7 +1566,7 @@ void trackSetLinesEnabledByParam(int matchVal, GameObject* obj, int flag)
     }
     else
     {
-        e = (IntersectLine*)lbl_803DCF34;
+        e = (IntersectLine*)gIntersectLinePool;
         count = gIntersectLineCount;
     }
     if (flag != 0)
@@ -1614,7 +1614,7 @@ void trackTickDynamicSlotCooldowns(void)
 int trackIntersectRebuildPending(void)
 {
     int r = 0;
-    if ((s8)mapBlockFlag != 0 || (s8)lbl_803DCF4F != 0 || lbl_803DCF4D != 0)
+    if ((s8)mapBlockFlag != 0 || (s8)lbl_803DCF4F != 0 || gIntersectRebuildCooldown != 0)
         r = 1;
     return r;
 }
@@ -3572,7 +3572,7 @@ void trackInitCollisionBuffers(void)
     if (gTrackTriangleBuffer == NULL)
     {
         gTrackTriangleBuffer = mmAlloc(1200 * sizeof(TrackTriangle), 0xffff00ff, 0);
-        lbl_803DCF34 = (int)mmAlloc(0x5dc0, 0xffff00ff, 0);
+        gIntersectLinePool = (int)mmAlloc(0x5dc0, 0xffff00ff, 0);
         lbl_803DCF38 = mmAlloc(0x4fb0, 0xffff00ff, 0);
         gIntersectLineIndexTable = (int)mmAlloc(0xbb8, 0xffff00ff, 0);
         gMapDynamicSlots = mmAlloc(MAP_DYNAMIC_SLOT_COUNT * sizeof(MapDynamicSlot), 0xffff00ff, 0);

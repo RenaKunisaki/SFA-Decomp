@@ -66,13 +66,13 @@ typedef struct
     u32 w0, w1;
 } IdPair;
 
-const IdPair lbl_803E1C18 = {0x02C402CD, 0x02CE02CF};
-const IdPair lbl_803E1C20 = {0x000B000B, 0x000B000B};
+const IdPair sDll19DropObjectIds = {0x02C402CD, 0x02CE02CF};
+const IdPair sDll19DropObjectIdsAlt = {0x000B000B, 0x000B000B};
 union Dll19ConstU32 { u32 u; };
 const union Dll19ConstU32 gDll19DefaultCurveMode = { 2 };
 
 
-const Dll19ChildObjectIdTable lbl_802C2190 = {{0x23, 0x69, 0x33, 0x64, 0x1D}};
+const Dll19ChildObjectIdTable gDll19ChildObjectIds = {{0x23, 0x69, 0x33, 0x64, 0x1D}};
 f32 gDll19SegmentLocalPoints[3] = {0.0f, 0.0f, 0.0f};
 f32 gDll19LocalPointPositions[3] = {0.0f, 0.0f, 0.0f};
 
@@ -129,7 +129,7 @@ f32 dll_19_getHealthFraction(GameObject* obj)
 
 void dll_19_changeWeapon(u8* cam, u8* ctx)
 {
-    Dll19ChildObjectIdTable childObjectIds = lbl_802C2190;
+    Dll19ChildObjectIdTable childObjectIds = gDll19ChildObjectIds;
 
     if ((s8)ctx[1031] == (s8)ctx[1033])
     {
@@ -521,8 +521,8 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
     f32 scale;
 
     scale = 0.0f;
-    *(IdPair*)ids1 = lbl_803E1C18;
-    *(IdPair*)ids2 = lbl_803E1C20;
+    *(IdPair*)ids1 = sDll19DropObjectIds;
+    *(IdPair*)ids2 = sDll19DropObjectIdsAlt;
     if (spawnType == 0)
     {
         return 0;

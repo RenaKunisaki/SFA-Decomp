@@ -99,7 +99,7 @@ void MapBlock_initHits(struct MapBlockData* block, int index);
 int mapBlockCountTrianglesByType(struct MapBlockData* block, int type);
 void buildShadowVolumeBox(f32* direction, f32* out, f32 lowerScale);
 int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDepth, int queryMask);
-extern int lbl_803DCF34;
+extern int gIntersectLinePool;
 extern f32* lbl_803DCF38;
 
 #endif /* MAIN_TRACK_DOLPHIN_API_H_ */

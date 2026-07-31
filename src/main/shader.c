@@ -120,8 +120,8 @@ u16* gTrkBlkTab;
 void* lbl_803DCE80;
 int lbl_803DCE7C;
 u8* gMapInfoBuffer;
-int lbl_803DCE74;
-s16 lbl_803DCE70;
+int gMapCellRenderInstrsTable;
+s16 gMapCellRenderInstrBits;
 MapTextureOverride* gMapTextureOverrides;
 MapTextureScroll* gMapTextureScrolls;
 f32 gShaderLoadCenterX;
@@ -129,9 +129,9 @@ f32 gShaderLoadCenterY;
 f32 gShaderLoadCenterZ;
 f32 lbl_803DCE58;
 f32 lbl_803DCE54;
-f32 lbl_803DCE50;
-f32 lbl_803DCE4C;
-f32 blurFilterArea;
+f32 blurFilterX;
+f32 blurFilterY;
+f32 blurFilterZ;
 f32 distortionFilterAngle2;
 u8 distortionFilterColor[3];
 f32 distortionFilterAngle1;
@@ -160,7 +160,7 @@ u8 bEnableDistortionFilter;
 u8 bBlurFilterUseArea;
 u8 bEnableBlurFilter;
 int gLightmapDeferredObjectCount;
-u8 lbl_803DCDED;
+u8 gMapCellRenderInstrsEnabled;
 s8 gShaderRomListSlotCount;
 u32 renderFlags;
 int* gMapBlockIndexList;
@@ -290,16 +290,16 @@ void Rcp_DisableBlurFilter(void)
     bEnableBlurFilter = 0x0;
 }
 
-extern f32 blurFilterArea;
+extern f32 blurFilterZ;
 extern u8 bBlurFilterUseArea;
 extern u8 bBiggerBlurFilter;
 
 void turnOnBlurFilter(f32 x, f32 y, f32 z, u8 useArea, u8 bigger)
 {
     bEnableBlurFilter = 1;
-    lbl_803DCE50 = x;
-    lbl_803DCE4C = y;
-    blurFilterArea = z;
+    blurFilterX = x;
+    blurFilterY = y;
+    blurFilterZ = z;
     bBlurFilterUseArea = useArea;
     bBiggerBlurFilter = bigger;
 }
@@ -2509,8 +2509,8 @@ void doPendingMapLoads(void)
                         savedBlocks++;
                     }
                 }
-                lbl_803DCE70 = 0;
-                lbl_803DCDED = 0;
+                gMapCellRenderInstrBits = 0;
+                gMapCellRenderInstrsEnabled = 0;
             }
             mapLoadUnloadObjects(doLoad);
             gMapPendingFileFlags = getLoadedFileFlags(0);
@@ -2615,7 +2615,7 @@ void initMaps(void)
     mm_free(data);
 }
 
-extern int lbl_803DB648;
+extern int gLastRomListPage;
 
 MapRomList* mapGetCurrentRomList(void)
 {
@@ -2623,7 +2623,7 @@ MapRomList* mapGetCurrentRomList(void)
     int v = *(s16*)(p + 0x594);
     if (v < 0)
     {
-        v = lbl_803DB648;
+        v = gLastRomListPage;
     }
     if (v < 0)
     {
@@ -2635,7 +2635,7 @@ MapRomList* mapGetCurrentRomList(void)
         {
             return res;
         }
-        lbl_803DB648 = v;
+        gLastRomListPage = v;
         gCurRomListPage = res;
         return res;
     }
@@ -3276,7 +3276,7 @@ void mapDebugRender(int* state)
     int n;
     int wz;
 
-    if (lbl_803DCDED != 0)
+    if (gMapCellRenderInstrsEnabled != 0)
     {
         bx = fastFloorf((gSceneCamera->x - playerMapOffsetX) / gMapBlockWorldSize);
         bz = fastFloorf((gSceneCamera->z - playerMapOffsetZ) / gMapBlockWorldSize);
@@ -3325,11 +3325,11 @@ void mapDebugRender(int* state)
             cell += cellz * 8;
             cell += cellx;
             logPrintf(sTrackCellCoordFormat, cellx, celly, cellz);
-            v = lbl_803DCE70;
+            v = gMapCellRenderInstrBits;
             n = v >> 3;
             if (v & 7)
                 n = n + 1;
-            modelRenderInstrsState_init((ModelRenderInstrsState*)state, (void*)(lbl_803DCE74 + n * cell), v, v);
+            modelRenderInstrsState_init((ModelRenderInstrsState*)state, (void*)(gMapCellRenderInstrsTable + n * cell), v, v);
         }
     }
 }

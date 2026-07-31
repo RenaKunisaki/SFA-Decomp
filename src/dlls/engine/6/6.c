@@ -32,14 +32,14 @@ u8* gSky2State;
 s8 gSky2DrawMode;
 
 s8 lbl_803DB750 = 1;
-int lbl_803DB754 = 1;
-u8 lbl_803DB758 = 1;
+int gSky2EnvfxFirstTime = 1;
+u8 gSky2RunFirstTime = 1;
 
 /* gSkyEnvFxFlags: per-group env-FX trigger enables + update state */
-#define SKY_ENVFX_GROUP_C        0x01 /* lbl_803DD138 group (GameBit 0x3ab) */
-#define SKY_ENVFX_GROUP_A        0x02 /* lbl_803DD130 group (GameBit 0x3ac) */
-#define SKY_ENVFX_GROUP_B        0x04 /* lbl_803DD13C group */
-#define SKY_ENVFX_GROUP_D        0x08 /* lbl_803DD134 group (weather) */
+#define SKY_ENVFX_GROUP_C        0x01 /* gSkyEnvFxGroupCTable group (GameBit 0x3ab) */
+#define SKY_ENVFX_GROUP_A        0x02 /* gSkyEnvFxGroupATable group (GameBit 0x3ac) */
+#define SKY_ENVFX_GROUP_B        0x04 /* gSkyEnvFxGroupBTable group */
+#define SKY_ENVFX_GROUP_D        0x08 /* gSkyEnvFxGroupDTable group (weather) */
 #define SKY_ENVFX_UPDATE_PENDING 0x10 /* sun position changed; process this frame */
 #define SKY_ENVFX_IMMEDIATE      0x20 /* fire acts immediately vs deferred */
 /* env-effect ids activated together when the GROUP_D (weather) flag is clear
@@ -59,7 +59,7 @@ extern u8* gSky2State;
 extern u16 lbl_803E8460;
 extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];
-const SkyVec3 lbl_802C1F98 = {-1000.0f, -1000.0f, -1000.0f};
+const SkyVec3 sSky2BestWeightsInit = {-1000.0f, -1000.0f, -1000.0f};
 
 
 
@@ -527,7 +527,7 @@ void sky2_run(void)
     f32 negativeRange;
     f32 ambientScale;
 
-    best = lbl_802C1F98;
+    best = sSky2BestWeightsInit;
     r = 0.0f;
     g = r;
     b = r;
@@ -537,7 +537,7 @@ void sky2_run(void)
     *(u16*)&idx = lbl_803E8460;
     idx.pad = lbl_803E8462;
     skyGetSunColor(0, &red, &green, &blue);
-    if (lbl_803DB758 != 0)
+    if (gSky2RunFirstTime != 0)
     {
         z = 0.0f;
         dst = lbl_8039A7B8;
@@ -569,7 +569,7 @@ void sky2_run(void)
         dst[21] = c154;
         dst[22] = z;
         dst[23] = c154;
-        lbl_803DB758 = 0;
+        gSky2RunFirstTime = 0;
     }
     cam = Camera_GetCurrent();
     zv = 0.0f;
@@ -916,10 +916,10 @@ void sky2_onMapSetup(void)
         ((SkySlotAnim*)*slot)->colorB2 = 255;
         ((SkySlotAnim*)*slot)->fogNear2 = a;
         ((SkySlotAnim*)*slot)->fogFar2 = b;
-        if (lbl_803DB754 != 0)
+        if (gSky2EnvfxFirstTime != 0)
         {
             getEnvfxAct(NULL, NULL, 9, 0);
-            lbl_803DB754 = 0;
+            gSky2EnvfxFirstTime = 0;
         }
         slot++;
     }

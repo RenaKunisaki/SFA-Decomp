@@ -1,6 +1,6 @@
 #include "dolphin/os.h"
 
-int lbl_803DE3E8;
+int gDefaultHeapInitialized;
 
 const double __constants[3] = {
     0.0,
@@ -20,11 +20,11 @@ inline static void InitDefaultHeap(void) {
     arenaHi = (void*)((u32)arenaHi & ~0x1F);
     OSSetCurrentHeap(OSCreateHeap(arenaLo, arenaHi));
     OSSetArenaLo(arenaHi);
-    lbl_803DE3E8 = 1;
+    gDefaultHeapInitialized = 1;
 }
 
 void __sys_free(void* p) {
-    if (!lbl_803DE3E8) {
+    if (!gDefaultHeapInitialized) {
         InitDefaultHeap();
     }
 

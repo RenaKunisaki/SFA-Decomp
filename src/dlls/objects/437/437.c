@@ -370,7 +370,7 @@ int Lightfoot_UpdateRandomTurn(int obj, int state, f32 fv)
     return 0;
 }
 
-PlayerLightfootAnimTable lbl_80334EE8 = {
+PlayerLightfootAnimTable gPlayerLightfootAnimTable = {
     {{10, 11, 12, 0, 11, 10, 10, -1}, {0.01f, 0.01f, 0.005f, 0.003f, 0.01f, 0.01f, 0.01f, -1.0f}},
     {{7, 10, 8, 9, 11, 12, 7, -1}, {0.0115f, 0.0105f, 0.005f, 0.003f, 0.01f, 0.011f, 0.012f, -1.0f}},
     {43, 45, 45, 45, 45, 46, 47, 47, 47, 47, 47, 47, 53, -1},
@@ -417,7 +417,7 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
 {
     const Dll1B5Placement* placement;
-    Dll1B5ButtonTimingTables* controls = (Dll1B5ButtonTimingTables*)&lbl_80334EE8;
+    Dll1B5ButtonTimingTables* controls = (Dll1B5ButtonTimingTables*)&gPlayerLightfootAnimTable;
     GroundBaddieState* actor = obj->extra;
     Dll1B5ButtonTimingControlState* challenge = actor->control;
     BaddieState* playerState = (BaddieState*)state;
@@ -1006,7 +1006,7 @@ void dll437_update(GameObject* obj) {
 }
 
 void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload) {
-    u8* playerAnimTableBase = (u8*)&lbl_80334EE8;
+    u8* playerAnimTableBase = (u8*)&gPlayerLightfootAnimTable;
     int inner = *(int*)&obj->extra;
     const Dll1B5Placement* placementData = placement;
     int control;

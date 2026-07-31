@@ -655,7 +655,7 @@ f32 gPlayerDefaultMoveParams[24] = {
     0.005f, 0.012f, 0.01f, 0.26f, 0.23f, 0.35f,
     0.3f, 0.52f, 0.5f, 0.7f, 0.68f, 0.7f,
 };
-PlayerMotionTuning lbl_803332B0 = {
+PlayerMotionTuning gPlayerMotionTuning = {
     {
         {23, 201, 24, 25, 26, 193, 195, 194, 205, 206, -1, -1},
         {123, 123, 123, 123, 123, 123, 123, 123, 123, 123, -1, -1},
@@ -5687,8 +5687,8 @@ s16 playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* b
                 f32 samplePhase, f32 moveStepScale, int axis, int flags);
 
 
-PlayerModelChainEntry lbl_803DC660 = {lbl_80332EC0, 5};
-PlayerModelChainEntry* gPlayerModelChainConfig = &lbl_803DC660;
+PlayerModelChainEntry gPlayerModelChainDefault = {lbl_80332EC0, 5};
+PlayerModelChainEntry* gPlayerModelChainConfig = &gPlayerModelChainDefault;
 u8 gPlayerModelChainStyle = 1;
 f32 gPlayerModelChainOriginX = 0.12f;
 f32 gPlayerModelChainOriginY = 0.675f;
@@ -5735,8 +5735,8 @@ u8 gPlayerHitReactionVariant;
 f32 gPlayerFireLaserCountdown;
 f32 lbl_803DE460;
 f32 lbl_803DE464;
-f32 lbl_803DE468;
-s8 lbl_803DE46C;
+f32 gPlayerSeqWalkPrevDist;
+s8 gPlayerSeqWalkStallFrames;
 int gPlayerSfxTimerA;
 int gPlayerStepSfxTimer;
 f32 gPlayerTeleportAnimRearm;
@@ -6637,7 +6637,7 @@ int playerStateOnBike(GameObject* obj, int state)
     {
         if (*(void**)((char*)inner + 0x6e8) == NULL)
         {
-            inner->moveSequence = (int)lbl_803332B0.moveSequences[0];
+            inner->moveSequence = (int)gPlayerMotionTuning.moveSequences[0];
         }
         ObjAnim_SetCurrentMove((int)obj, *(s16*)(inner->moveSequence + 0x2), 0.0f, 0);
         ObjAnim_AdvanceCurrentMove((int)obj, 0.0f, 0.0f, NULL);
@@ -11605,7 +11605,7 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
         }
         else
         {
-            tris = lbl_803DCF34;
+            tris = gIntersectLinePool;
             verts = (int)lbl_803DCF38;
         }
         planes[0] = out[9];
@@ -11822,7 +11822,7 @@ int playerBuildLedgeClimbProbe(int a, int b, void* c, int d, f32* e, f32 distanc
     }
     else
     {
-        tbl1 = lbl_803DCF34;
+        tbl1 = gIntersectLinePool;
         tbl2 = (int)lbl_803DCF38;
     }
     planes[0].nx = -*(f32*)((char*)d + 0x24);
@@ -16831,8 +16831,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 seq->posOffsetX = ((GameObject*)obj)->anim.localPosX;
                 seq->posOffsetY = ((GameObject*)obj)->anim.localPosY;
                 seq->posOffsetZ = ((GameObject*)obj)->anim.localPosZ;
-                lbl_803DE468 = 10000.0f;
-                lbl_803DE46C = 0;
+                gPlayerSeqWalkPrevDist = 10000.0f;
+                gPlayerSeqWalkStallFrames = 0;
             }
             result = 1;
             seq->flags = 0;
@@ -16845,11 +16845,11 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             dx2 = ((GameObject*)obj2)->anim.localPosX - seq->posOffsetX;
             dz2 = ((GameObject*)obj2)->anim.localPosZ - seq->posOffsetZ;
             d2 = sqrtf(dx2 * dx2 + dz2 * dz2);
-            if (dist <= lbl_803DE468)
+            if (dist <= gPlayerSeqWalkPrevDist)
             {
-                lbl_803DE46C += 1;
+                gPlayerSeqWalkStallFrames += 1;
             }
-            if (dist >= d2 || lbl_803DE46C > 5)
+            if (dist >= d2 || gPlayerSeqWalkStallFrames > 5)
             {
                 int dd3 = ((PlayerState*)inner)->targetYaw - (u16) * (s16*)obj2;
                 if (dd3 > 0x8000)
@@ -16870,7 +16870,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 }
                 ((PlayerState*)inner)->targetYaw -= (dd3 * framesThisStep) >> 3;
                 ((PlayerState*)inner)->yaw = ((PlayerState*)inner)->targetYaw;
-                if (lbl_803DE46C > 6)
+                if (gPlayerSeqWalkStallFrames > 6)
                 {
                     dd3 = 0;
                 }
@@ -16923,7 +16923,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 (*gPlayerInterface)->update((void*)obj, (void*)inner, timeDelta, timeDelta, gPlayerStateHandlers,
                     &gPlayerDefaultStateHandler);
             }
-            lbl_803DE468 = dist;
+            gPlayerSeqWalkPrevDist = dist;
         }
         if ((s8)seq->movementState == 0)
         {

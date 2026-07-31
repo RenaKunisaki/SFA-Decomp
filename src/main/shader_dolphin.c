@@ -98,14 +98,14 @@ const IndTexMtx23 lbl_802C1D68[4] = {
     {{{3.0f, -1.0f, 1.0f}, {1.0f, -1.0f, 3.0f}}},
     {{{1.0f, -2.0f, 1.0f}, {-2.0f, -1.0f, 1.0f}}},
     {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}}};
-const IndTexMtx23 lbl_802C1DC8 = {
+const IndTexMtx23 sHeatShimmerIndMtx1 = {
     {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
-const IndTexMtx23 lbl_802C1DE0[2] = {
+const IndTexMtx23 sHeatShimmerIndMtx2[2] = {
     {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}},
     {{{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}}}};
-const struct piIndMtx lbl_802C1E10 = {
+const struct piIndMtx sWavyCausticIndMtx = {
     {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
-const IndTexMtx23 lbl_802C1E28 = {
+const IndTexMtx23 sWarpedNoiseIndMtx = {
     {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f}}};
 const IndTexMtx23 gTexIndMtxTable = {
     {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
@@ -290,7 +290,7 @@ void addWarpedNoiseTevStages(void* p1, void* mtx)
     u8* dst;
     int v2;
     int v3;
-    m = lbl_802C1E28;
+    m = sWarpedNoiseIndMtx;
     if (sWarpNoiseTexture == 0)
     {
         sWarpNoiseTexture = textureAlloc(0x20, 0x20, 4, 0, 0, 1, 1, 1, 1);
@@ -703,7 +703,7 @@ void addWavyCausticTevStage(void)
     void* tex;
     int id;
     f32 v;
-    indmtx = lbl_802C1E10;
+    indmtx = sWavyCausticIndMtx;
     v = 0.5f * getNewShadowDistortionWaveOffset();
     indmtx.m[0][0] = v;
     indmtx.m[1][2] = v;
@@ -797,8 +797,8 @@ void setupHeatShimmerTevStages(char* p1)
     f32 k;
     f32 t;
     Texture* tex24;
-    m1 = lbl_802C1DC8;
-    m2 = lbl_802C1DE0[0];
+    m1 = sHeatShimmerIndMtx1;
+    m2 = sHeatShimmerIndMtx2[0];
     tex24 = *(Texture**)(p1 + 0x24);
     if (tex24 != 0)
     {

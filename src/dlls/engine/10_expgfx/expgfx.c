@@ -268,7 +268,7 @@ const ObjFxColorTable gObjFxCrystalSparkleTbl = {
     {0x0000, 0x00FF, 0x7FFF, 0x7FC0, 0xFFFF, 0x7FFF, 0x7FC0, 0xFFFF,
      0xA000, 0xFFA0, 0x007F, 0x40FF, 0x0000, 0x0000, 0x0000}};
 const ObjFxS32Table5 gObjFxPulseVariantTbl = {{0, 0, 0, 1, 2}};
-const ObjFxSparkleEffectTable lbl_802C200C = {
+const ObjFxSparkleEffectTable gObjFxHitPulseTbl = {
     {{0, 2, 3, 3, 3}},
     {{0x0000, 0x00DF, 0x0160, 0x00DE, 0x0200, 0x00DD, 0x00E0, 0x00E4, 0x007B,
       0x0000, 0x07D3, 0x07D3, 0x07D4, 0x07D5, 0x07D6, 0x07DC, 0x07DC, 0x07DC,
@@ -781,7 +781,7 @@ void objShowButtonGlow(void* obj, f32 intensity, u8 glowKind)
 void objfx_spawnFrameTimedHitPulse(GameObject* obj, f32 scale, u8 type, u8 variant, f32 yOffset)
 {
     ObjFxS32Table5 variantTbl = gObjFxPulseVariantTbl;
-    ObjFxS32Table5 countTbl = lbl_802C200C.counts;
+    ObjFxS32Table5 countTbl = gObjFxHitPulseTbl.counts;
     f32 offset[3];
     int frame;
     if (type == 0)

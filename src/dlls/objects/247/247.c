@@ -50,7 +50,7 @@ typedef struct DllF7HitEffect {
     PartFxSpawnParams spawn;
 } DllF7HitEffect;
 
-const StaffCollisionColorArgs lbl_802C2260 = {8, 0xFF, 0xFF, 0x78};
+const StaffCollisionColorArgs sStaffHitEffectColor = {8, 0xFF, 0xFF, 0x78};
 
 typedef struct DllF7State {
     f32 bounceOffset;   /* 0x00 */
@@ -120,7 +120,7 @@ void dll_F7_update(GameObject* obj) {
     f32 radius;
     u32 hitVolume;
 
-    hitEffect.color = lbl_802C2260;
+    hitEffect.color = sStaffHitEffectColor;
     if (state->broken != 0) {
         DllF7Placement* placement = (DllF7Placement*)obj->anim.placementData;
         if (state->alternateMode == 0 && (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) != 0) {

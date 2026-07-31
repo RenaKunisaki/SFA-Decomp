@@ -19,6 +19,6 @@ typedef struct PlayerLightfootAnimTable
 } PlayerLightfootAnimTable;
 STATIC_ASSERT(sizeof(PlayerLightfootAnimTable) == 0xB4);
 
-extern PlayerLightfootAnimTable lbl_80334EE8;
+extern PlayerLightfootAnimTable gPlayerLightfootAnimTable;
 
 #endif /* MAIN_DLL_DLL_01B5_LIGHTFOOT_H_ */
