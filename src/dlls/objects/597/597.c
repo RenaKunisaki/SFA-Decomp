@@ -302,8 +302,8 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
     f32 zero;
     f32 scaleV;
     f32 minDelta;
-    int baseOffset;
-    int baseOffset2;
+    u32 baseOffset;
+    u32 baseOffset2;
 
     localPoints = gDrCloudCagePointTemplate;
 
@@ -377,8 +377,8 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
     }
 
     activeIndex = 0;
-    baseOffset = -4;
-    baseOffset2 = 8;
+    baseOffset = 0;
+    baseOffset2 = 12;
     slot = (u8*)state;
     pStartZ = &startZ;
     pStartY = &startY;
@@ -391,8 +391,8 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
     scaleV = 1.0f;
     for (; activeIndex < 3; baseOffset += 0x18, baseOffset2 += 0x18, slot += 4, activeIndex++)
     {
-        activeOffset = baseOffset + 4;
-        nextOffset = baseOffset2 + 4;
+        activeOffset = baseOffset;
+        nextOffset = baseOffset2;
         transform.x = obj->anim.worldPosX;
         transform.y = obj->anim.worldPosY;
         transform.z = obj->anim.worldPosZ;
