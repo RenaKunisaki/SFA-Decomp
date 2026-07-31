@@ -113,13 +113,13 @@ void* gCurRomListPage;
 MapBlockData** gMapBlocks;
 u8 gMapBlockCount;
 s16* gMapBlockIds;
-s16 lbl_803DCE90;
+s16 gTrkBlkTabCount;
 u8* gMapBlockRefCounts;
 s8* gMapLayerCellStates;
-u16* lbl_803DCE84;
+u16* gTrkBlkTab;
 void* lbl_803DCE80;
 int lbl_803DCE7C;
-u8* lbl_803DCE78;
+u8* gMapInfoBuffer;
 int lbl_803DCE74;
 s16 lbl_803DCE70;
 MapTextureOverride* gMapTextureOverrides;
@@ -146,7 +146,7 @@ u32 gSunFlareScissorHeight;
 u32 gSunFlareScissorWidth;
 u32 gSunFlareScissorY;
 u32 gSunFlareScissorX;
-u8 lbl_803DCE06;
+u8 gGlowLightCount;
 u8 gLightmapScreenImageEnabled;
 u8 gMapLoadDeferred;
 int gHeatEffectFadeDirection;
@@ -409,7 +409,7 @@ void loadNextMap(void)
 
 void warpToMap(int idx, s8 transType)
 {
-    u8* p = lbl_803DCE78;
+    u8* p = gMapInfoBuffer;
     getTabEntry(p, MLDF_FILEID_WARPTAB_BIN, idx << 4, 16);
     ((WarpDestination*)gRcpPendingWarpDest)->x = ((WarpDestination*)p)->x;
     ((WarpDestination*)gRcpPendingWarpDest)->y = ((WarpDestination*)p)->y;
@@ -1665,7 +1665,7 @@ void mapSetup(int layerOffset, f32 x, int* outMapId, int* outMapDataFileId, f32 
     }
     else
     {
-        getTabEntry(mapInfo = (MapInfoRecord*)lbl_803DCE78, MLDF_FILEID_MAPINFO_BIN, mapId << 5, 0x20);
+        getTabEntry(mapInfo = (MapInfoRecord*)gMapInfoBuffer, MLDF_FILEID_MAPINFO_BIN, mapId << 5, 0x20);
         curMapType = mapInfo->mapType;
     }
     lbl_803DCEB4 = 0;
@@ -2329,7 +2329,7 @@ void doPendingMapLoads(void)
                             }
                             else
                             {
-                                MapInfoRecord* e = (MapInfoRecord*)lbl_803DCE78;
+                                MapInfoRecord* e = (MapInfoRecord*)gMapInfoBuffer;
                                 getTabEntry(e, MLDF_FILEID_MAPINFO_BIN, mapId << 5, 0x20);
                                 curMapType = e->mapType;
                             }
@@ -2535,7 +2535,7 @@ void loadMapForCameraPos(float x, float y, float z)
 
 static void mapInitSetRects(s16* rect, u8* bitmap, int originX, int originY, int idx)
 {
-    u8* self = lbl_803DCE78;
+    u8* self = gMapInfoBuffer;
     int tabOff = idx * 7 << 2;
     int offset0 = *(int*)(lbl_803DCE7C + tabOff);
 
@@ -2705,11 +2705,11 @@ void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
         }
         else
         {
-            if (out->romListIndex >= lbl_803DCE90)
-                out->romListIndex = lbl_803DCE90 - 1;
-            out->blockId = out->cellIndex + lbl_803DCE84[out->romListIndex];
-            if (out->blockId >= lbl_803DCE84[lbl_803DCE90])
-                out->blockId = lbl_803DCE84[lbl_803DCE90] - 1;
+            if (out->romListIndex >= gTrkBlkTabCount)
+                out->romListIndex = gTrkBlkTabCount - 1;
+            out->blockId = out->cellIndex + gTrkBlkTab[out->romListIndex];
+            if (out->blockId >= gTrkBlkTab[gTrkBlkTabCount])
+                out->blockId = gTrkBlkTab[gTrkBlkTabCount] - 1;
         }
     }
     else

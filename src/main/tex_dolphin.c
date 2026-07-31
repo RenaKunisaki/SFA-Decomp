@@ -1012,7 +1012,7 @@ extern u32 gSunFlareScissorX;
 extern u32 gSunFlareScissorY;
 extern u32 gSunFlareScissorWidth;
 extern u32 gSunFlareScissorHeight;
-extern u8 lbl_803DCE06;
+extern u8 gGlowLightCount;
 extern ModelLightStruct* gGlowLightList[];
 extern u8 gMapBlockCount;
 extern int lbl_803DCE80;
@@ -1328,9 +1328,9 @@ void renderGlows(void)
         }
     }
     colorScale = alpha;
-    if (lbl_803DCE06 != 0)
+    if (gGlowLightCount != 0)
     {
-        for (i = 0; i < lbl_803DCE06; i++)
+        for (i = 0; i < gGlowLightCount; i++)
         {
             int d;
             e = gGlowLightList[i];
@@ -1346,7 +1346,7 @@ void renderGlows(void)
         GXSetCurrentMtx(GX_IDENTITY);
         gxTevColor1TexAlphaStage();
         gxSetAdditiveBlendNoZTest();
-        for (i = 0; i < lbl_803DCE06; i++)
+        for (i = 0; i < gGlowLightCount; i++)
         {
             e = gGlowLightList[i];
             if (e->glowAlpha != 0)
@@ -1438,7 +1438,7 @@ void queueGlowRender(ModelLightStruct* light)
     int visible;
     u8 idx;
 
-    if (lbl_803DCE06 >= 100)
+    if (gGlowLightCount >= 100)
         return;
 
     visible = isGlowInFrustum(light);
@@ -1451,7 +1451,7 @@ void queueGlowRender(ModelLightStruct* light)
             light->glowAlphaStep = -0x10;
         }
     }
-    idx = lbl_803DCE06++;
+    idx = gGlowLightCount++;
     gGlowLightList[idx] = light;
 }
 

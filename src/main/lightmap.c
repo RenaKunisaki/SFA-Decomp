@@ -89,7 +89,7 @@ extern f32 lbl_803DEC18;
 extern u32 lbl_803DCE34;
 extern f32 lbl_803DEC10;
 extern u16 lbl_803DCEAC;
-extern u8 lbl_803DCE06;
+extern u8 gGlowLightCount;
 extern s32 heatEffectIntensity;
 extern u8 gLightmapScreenImageEnabled;
 extern s8 gMapBlockDrawOrderFrontToBack[];
@@ -762,7 +762,7 @@ void sceneDraw(void)
     shadowVolumeBeginFrame();
     gVisibleObjectSortKeyCount = 1;
     lbl_803DCEAC = 0;
-    lbl_803DCE06 = 0;
+    gGlowLightCount = 0;
     drawReflectionTexture();
     gLightmapDrawQueueCount = 0;
     getVisibleObjects(buf);

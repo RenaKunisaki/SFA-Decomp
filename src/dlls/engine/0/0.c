@@ -352,7 +352,7 @@ STATIC_ASSERT(sizeof(GameUiProjballSetup) == 0x24);
 extern f32 gViewFinderFadeLevel;
 extern u8 gameUiResourcesLoaded;
 extern char lbl_803A87F0[];
-extern GameObject* lbl_803DD85C;
+extern GameObject* gGameUiProjballObject;
 extern GameObject* gGameUiCommCubeObjects[2];
 extern GameObject* lbl_803DD868[2];
 extern const f32 lbl_803E1E3C;
@@ -622,7 +622,7 @@ extern f32 lbl_803DD74C;
 extern u16 lbl_803DD750;
 extern u16 lbl_803DD752;
 extern u16 lbl_803DD754;
-extern s16 lbl_803DD756;
+extern s16 gPauseMenuTokenIndex;
 extern u8 lbl_803DD758;
 extern s16 lbl_803DD75C;
 extern f32 lbl_803DD7BC;
@@ -908,7 +908,7 @@ void gameUiLoadResources(void)
             GameUiProjballSetup* setup = (GameUiProjballSetup*)Obj_AllocObjectSetup(0x24, GAMEUI_CHILD_OBJ_PROJBALL);
 
             setup->active = 1;
-            lbl_803DD85C = objSetupObject(&setup->placement, 4, -1, -1, NULL);
+            gGameUiProjballObject = objSetupObject(&setup->placement, 4, -1, -1, NULL);
         }
         gameUiResourcesLoaded = 1;
     }
@@ -4965,7 +4965,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             textX = (tokenBottom - tokenTop) + 5;
             {
                 u8* thresholds = &statusTable->tokens[0].thresh;
-                sprintf(tokenCountText, lbl_803DBB58, thresholds[lbl_803DD756 * 8]);
+                sprintf(tokenCountText, lbl_803DBB58, thresholds[gPauseMenuTokenIndex * 8]);
             }
             gameTextShowStr(tokenCountText, 0x79, 0, textX + 0x78);
             gameTextMeasureStringBoundsAt(tokenCountText, 0x79, 0, 0, &tokenLeft, &tokenRight, &tokenTop,
@@ -4979,8 +4979,8 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             gameTextMeasureById(0x441, 0, 0, &tokenLeft, &tokenRight, &tokenTop, &tokenBottom);
             textX += tokenBottom - tokenTop;
             taskTextIds = &statusTable->tokens[0].alt;
-            gameTextShowAt(taskTextIds[lbl_803DD756 * 4], 0, textX + 0x78);
-            gameTextMeasureById(taskTextIds[lbl_803DD756 * 4], 0, 0, &tokenLeft, &tokenRight, &tokenTop,
+            gameTextShowAt(taskTextIds[gPauseMenuTokenIndex * 4], 0, textX + 0x78);
+            gameTextMeasureById(taskTextIds[gPauseMenuTokenIndex * 4], 0, 0, &tokenLeft, &tokenRight, &tokenTop,
                                 &tokenBottom);
             {
                 s32 textWidth = tokenBottom - tokenTop;
@@ -5001,8 +5001,8 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             gameTextMeasureById(0x443, 0, 0, &tokenLeft, &tokenRight, &tokenTop, &tokenBottom);
             textX = (tokenBottom - tokenTop) + 5;
             taskTextIds = &statusTable->tokens[0].alt;
-            gameTextShowAt(taskTextIds[lbl_803DD756 * 4], 0, textX + 0xa0);
-            gameTextMeasureById(taskTextIds[lbl_803DD756 * 4], 0, 0, &tokenLeft, &tokenRight, &tokenTop,
+            gameTextShowAt(taskTextIds[gPauseMenuTokenIndex * 4], 0, textX + 0xa0);
+            gameTextMeasureById(taskTextIds[gPauseMenuTokenIndex * 4], 0, 0, &tokenLeft, &tokenRight, &tokenTop,
                                 &tokenBottom);
             textX += tokenBottom - tokenTop;
             gameTextShowAt(0x444, 0, textX + 0xaa);
@@ -6672,15 +6672,15 @@ void pauseMenuUpdate(void)
                         coordsToMapCell(player->anim.localPosX, player->anim.localPosZ);
                     if (lbl_803DD8E0 == 7)
                     {
-                        for (lbl_803DD756 = 0; lbl_803DD756 < 4;)
+                        for (gPauseMenuTokenIndex = 0; gPauseMenuTokenIndex < 4;)
                         {
-                            if (!mainGetBit(*(s16*)((u8*)&tbl->tokens[0].bitA + lbl_803DD756 * 8)))
+                            if (!mainGetBit(*(s16*)((u8*)&tbl->tokens[0].bitA + gPauseMenuTokenIndex * 8)))
                             {
                                 break;
                             }
-                            if (mainGetBit(*(s16*)((u8*)&tbl->tokens[0].bitB + lbl_803DD756 * 8)) == 0)
+                            if (mainGetBit(*(s16*)((u8*)&tbl->tokens[0].bitB + gPauseMenuTokenIndex * 8)) == 0)
                             {
-                                if (have >= tbl->tokens[lbl_803DD756].thresh)
+                                if (have >= tbl->tokens[gPauseMenuTokenIndex].thresh)
                                 {
                                     lbl_803DD758 = 2;
                                 }
@@ -6690,7 +6690,7 @@ void pauseMenuUpdate(void)
                                 }
                                 break;
                             }
-                            lbl_803DD756++;
+                            gPauseMenuTokenIndex++;
                         }
                     }
                 }
@@ -6698,9 +6698,9 @@ void pauseMenuUpdate(void)
                 {
                     if (lbl_803DD758 == 2)
                     {
-                        have -= tbl->tokens[lbl_803DD756].thresh;
+                        have -= tbl->tokens[gPauseMenuTokenIndex].thresh;
                         mainSetBits(GAMEBIT_ITEM_FuelCell_Count, have);
-                        mainSetBits(tbl->tokens[lbl_803DD756].bitB, 1);
+                        mainSetBits(tbl->tokens[gPauseMenuTokenIndex].bitB, 1);
                     }
                     gPauseMenuTokenConfirmFlag = 1;
                     buttonDisable(0, PAD_BUTTON_A);
@@ -9186,7 +9186,7 @@ s16 yButtonItemTextureId;
 void* hudYButtonItemIconTexture;
 GameObject* lbl_803DD868[2];
 GameObject* gGameUiCommCubeObjects[2];
-GameObject* lbl_803DD85C;
+GameObject* gGameUiProjballObject;
 u8 gHeadDisplayEntryIdx;
 u8 gHeadDisplayActive;
 u16 gHeadDisplayPanelWidth;
@@ -9292,7 +9292,7 @@ u8 gTimeListPromptSelection;
 u8 gTrickyHudShowNearestInfo;
 u8 gPauseMenuTokenConfirmFlag;
 u8 lbl_803DD758;
-s16 lbl_803DD756;
+s16 gPauseMenuTokenIndex;
 u16 lbl_803DD754;
 u16 lbl_803DD752;
 u16 lbl_803DD750;

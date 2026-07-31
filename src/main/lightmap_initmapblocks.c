@@ -34,11 +34,11 @@
 extern u8 gMapBlockCount; /* count of allocated blocks */
 extern s16* gMapBlockIds;
 extern u8* gMapBlockRefCounts;
-extern void* lbl_803DCE78;
+extern void* gMapInfoBuffer;
 extern void* lbl_803DCE7C;
 extern void* lbl_803DCE80;
-extern void* lbl_803DCE84;
-extern s16 lbl_803DCE90;
+extern void* gTrkBlkTab;
+extern s16 gTrkBlkTabCount;
 extern s16 gPendingWarpIndex;
 extern s16 gArrivedWarpIndex;
 
@@ -108,7 +108,7 @@ void initMapBlocks(void)
     gMapBlocks = mmAlloc(0x100, 5, 0);
     gMapBlockIds = mmAlloc(0x80, 5, 0);
     gMapBlockRefCounts = mmAlloc(0x40, 5, 0);
-    lbl_803DCE78 = mmAlloc(0xd48, 5, 0);
+    gMapInfoBuffer = mmAlloc(0xd48, 5, 0);
     buffers->blockIndices[0] = mmAlloc(0x500, 5, 0);
     buffers->blockDescriptors[0] = mmAlloc(0x3c00, 5, 0);
     buffers->cellStates[0] = mmAlloc(0x500, 5, 0);
@@ -170,16 +170,16 @@ void initMapBlocks(void)
         q += 40;
     }
 
-    loadAssetFileById(&lbl_803DCE84, MLDF_FILEID_TRKBLK_TAB);
+    loadAssetFileById(&gTrkBlkTab, MLDF_FILEID_TRKBLK_TAB);
 
-    lbl_803DCE90 = 0;
-    p = lbl_803DCE84;
+    gTrkBlkTabCount = 0;
+    p = gTrkBlkTab;
     while (*p != 0xffff)
     {
         p++;
-        lbl_803DCE90++;
+        gTrkBlkTabCount++;
     }
-    lbl_803DCE90--;
+    gTrkBlkTabCount--;
     gPendingWarpIndex = -1;
     gArrivedWarpIndex = -2;
 
