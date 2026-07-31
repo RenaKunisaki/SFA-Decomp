@@ -1348,7 +1348,6 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
     f32 moonT;
     SkyRotQ q2;
     f32 riseT;
-    f32 time2;
     u8 vis;
     u8* model;
     SkyState* sky;
@@ -1450,14 +1449,14 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         gSkySunObject->anim.rotY = cam->pitch;
         gSkySunObject->anim.rotZ = 0;
         gSkySunObject->anim.renderAlpha = *(s16*)&gSkySunAlpha;
-        time2 = ((SkyState*)gSkyState)->timeOfDay;
-        if (time2 >= 75600.0f)
+        moonT = ((SkyState*)gSkyState)->timeOfDay;
+        if (moonT >= 75600.0f)
         {
-            moonT = time2 - 75600.0f;
+            moonT -= 75600.0f;
         }
         else
         {
-            moonT = time2 + 10800.0f;
+            moonT += 10800.0f;
         }
         moonTC = moonT / 28800.0f;
         if (moonTC < 0.0f)
