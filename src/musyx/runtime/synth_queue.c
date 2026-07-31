@@ -25,10 +25,10 @@ typedef struct SynthVoiceRuntimeView
 
 /* SynthVoice.state - which intrusive list the voice sits on */
 #define SYNTH_VOICE_STATE_FREE      0 /* unallocated */
-#define SYNTH_VOICE_STATE_QUEUED    1 /* on gSynthQueuedVoices; awaiting start */
-#define SYNTH_VOICE_STATE_ALLOCATED 2 /* on gSynthAllocatedVoices; playing */
+#define SYNTH_VOICE_STATE_QUEUED    1 /* on seqActiveRoot; awaiting start */
+#define SYNTH_VOICE_STATE_ALLOCATED 2 /* on seqPausedRoot; playing */
 
-static void synthQueueVoice(SynthVoice* voice);
+static void StartPause(SynthVoice* voice);
 
 static inline void BuildTransTab(u8* tab, SynthPage* page)
 {
@@ -57,20 +57,20 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
     SynthArrangement* arrangement;
     u8 program;
 
-    if ((seq = gSynthFreeVoices) == 0)
+    if ((seq = seqFreeRoot) == 0)
     {
         return SYNTH_HANDLE_INVALID;
     }
-    if ((gSynthFreeVoices = seq->next) != 0)
+    if ((seqFreeRoot = seq->next) != 0)
     {
-        gSynthFreeVoices->prev = 0;
+        seqFreeRoot->prev = 0;
     }
-    if ((seq->next = gSynthQueuedVoices) != 0)
+    if ((seq->next = seqActiveRoot) != 0)
     {
-        gSynthQueuedVoices->prev = seq;
+        seqActiveRoot->prev = seq;
     }
     seq->prev = 0;
-    gSynthQueuedVoices = seq;
+    seqActiveRoot = seq;
     seq->state = SYNTH_VOICE_STATE_QUEUED;
     for (i = 0; i < 16; i++)
     {
@@ -222,7 +222,7 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
         for (i = 0; i < 16; i++)
         {
             program = midiSetup->channel[i].program;
-            gSynthVoiceNotes[gSynthCurrentVoiceSlotIndex][(u8)i] = 0xFFFF;
+            seqMIDIPriority[curSeqId][(u8)i] = 0xFFFF;
             if ((u8)i != 9)
             {
                 program = seq->normTrans[program];
@@ -252,7 +252,7 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
 
     for (i = 0; i < 16; i++)
     {
-        gSynthVoiceNotes[seqId][i] = 0xFFFF;
+        seqMIDIPriority[seqId][i] = 0xFFFF;
     }
 
     for (i = 0; i < 16; i++)
@@ -268,24 +268,24 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
 
     if (para != 0 && (para->flags & 0x10) != 0)
     {
-        synthQueueVoice(seq);
+        StartPause(seq);
     }
 
-    prevCurSeq = gSynthCurrentVoice;
-    gSynthCurrentVoice = seq;
-    synthQueueAllChannelEvents();
-    gSynthCurrentVoice = prevCurSeq;
-    return synthAssignHandle(seqId);
+    prevCurSeq = cseq;
+    cseq = seq;
+    InitTrackEvents();
+    cseq = prevCurSeq;
+    return GetPublicId(seqId);
 }
 
 /*
  * Advance the master (tempo) track of one sequence section (HandleMasterTrack).
  */
-void seqHandleMasterTrack(u8 secIndex)
+void HandleMasterTrack(u8 secIndex)
 {
     SynthSequenceQueue* section;
 
-    section = SYNTH_SEQUENCE_QUEUE(gSynthCurrentVoice, secIndex);
+    section = SYNTH_SEQUENCE_QUEUE(cseq, secIndex);
     if (section->masterTrackBase != 0)
     {
         while (((SynthMasterTrackEvent*)section->masterTrackCursor)->time != 0xFFFFFFFF)
@@ -295,16 +295,16 @@ void seqHandleMasterTrack(u8 secIndex)
                 break;
             }
 
-            if (((SynthArrangement*)gSynthCurrentVoice->arrbase)->info & 0x40000000)
+            if (((SynthArrangement*)cseq->arrbase)->info & 0x40000000)
             {
                 synthSetBpm((section->bpm = ((SynthMasterTrackEvent*)section->masterTrackCursor)->bpm) >>
                                                10,
-                                           gSynthCurrentVoiceSlotIndex, secIndex);
+                                           curSeqId, secIndex);
             }
             else
             {
                 synthSetBpm(((SynthMasterTrackEvent*)section->masterTrackCursor)->bpm,
-                                           gSynthCurrentVoiceSlotIndex, secIndex);
+                                           curSeqId, secIndex);
                 section->bpm = ((SynthMasterTrackEvent*)section->masterTrackCursor)->bpm << 10;
             }
 
@@ -313,11 +313,7 @@ void seqHandleMasterTrack(u8 secIndex)
     }
 }
 
-/*
- * Move a voice node from the queued list to the head of the allocated
- * list and mark it active.
- */
-static void synthQueueVoice(SynthVoice* voice)
+static void StartPause(SynthVoice* voice)
 {
     if (voice->prev != 0)
     {
@@ -325,22 +321,22 @@ static void synthQueueVoice(SynthVoice* voice)
     }
     else
     {
-        gSynthQueuedVoices = voice->next;
+        seqActiveRoot = voice->next;
     }
     if (voice->next != 0)
     {
         voice->next->prev = voice->prev;
     }
-    if ((voice->next = gSynthAllocatedVoices) != 0)
+    if ((voice->next = seqPausedRoot) != 0)
     {
-        gSynthAllocatedVoices->prev = voice;
+        seqPausedRoot->prev = voice;
     }
     voice->prev = 0;
-    gSynthAllocatedVoices = voice;
+    seqPausedRoot = voice;
     voice->state = SYNTH_VOICE_STATE_ALLOCATED;
 }
 
-static inline void synthKillVoiceCallbacks(SynthVoice* voice)
+static inline void KillNotes(SynthVoice* voice)
 {
     SynthCallbackLink* callback;
     u32 i;
@@ -349,32 +345,29 @@ static inline void synthKillVoiceCallbacks(SynthVoice* voice)
     {
         for (callback = voice->callbackLists[i]; callback != 0; callback = callback->next)
         {
-            voiceKillById(callback->callbackId);
+            voiceKillSound(callback->callbackId);
         }
     }
 
     for (callback = voice->callbackLists[2]; callback != 0; callback = callback->next)
     {
-        voiceKillById(callback->callbackId);
+        voiceKillSound(callback->callbackId);
     }
 }
 
-/*
- * Move a queued handle to the allocated list after a delayed fade completes.
- */
-void synthQueueHandle(u32 handle)
+void seqPause(u32 seqId)
 {
     u32 slot;
     SynthVoice* voice;
 
-    slot = synthResolveHandleSlot(handle);
+    slot = seqGetPrivateIdInline(seqId);
 
     if (slot == 0xffffffff)
         return;
 
     if ((slot & 0x80000000) == 0)
     {
-        SynthVoice* target = &gSynthVoices[slot];
+        SynthVoice* target = &seqInstance[slot];
         if (target->state != SYNTH_VOICE_STATE_QUEUED)
             return;
         voice = target;
@@ -385,38 +378,34 @@ void synthQueueHandle(u32 handle)
         }
         else
         {
-            gSynthQueuedVoices = voice->next;
+            seqActiveRoot = voice->next;
         }
         if (voice->next != 0)
         {
             voice->next->prev = voice->prev;
         }
 
-        if ((voice->next = gSynthAllocatedVoices) != 0)
+        if ((voice->next = seqPausedRoot) != 0)
         {
-            gSynthAllocatedVoices->prev = voice;
+            seqPausedRoot->prev = voice;
         }
         voice->prev = 0;
-        gSynthAllocatedVoices = voice;
+        seqPausedRoot = voice;
         voice->state = SYNTH_VOICE_STATE_ALLOCATED;
-        synthKillVoiceCallbacks(voice);
-        synthRecycleVoiceCallbacks(voice);
+        KillNotes(voice);
+        ResetNotes(voice);
     }
     else
     {
         u32 idx = slot & 0x7fffffffu;
-        voice = &gSynthVoices[idx];
+        voice = &seqInstance[idx];
         if (voice->state == SYNTH_VOICE_STATE_FREE)
             return;
         voice->pendingUpdate.flags |= 8;
     }
 }
 
-/*
- * Stop a sequence voice, clean up callbacks, and return the voice to the
- * free list. Deferred handles clear the pending output word instead.
- */
-void synthFreeHandle(u32 handle)
+void seqStop(u32 seqId)
 {
     SynthSeqRuntime* runtime;
     SynthVoice* voice;
@@ -424,9 +413,9 @@ void synthFreeHandle(u32 handle)
     u32 i;
     SynthVoiceRuntimeView* runtimeView;
 
-    runtime = (SynthSeqRuntime*)(void*)gSynthCallbacks;
+    runtime = (SynthSeqRuntime*)(void*)seqNote;
 
-    slot = synthResolveHandleSlot(handle);
+    slot = seqGetPrivateIdInline(seqId);
 
     if (slot == 0xffffffff)
     {
@@ -446,7 +435,7 @@ void synthFreeHandle(u32 handle)
             }
             else
             {
-                gSynthQueuedVoices = voice->next;
+                seqActiveRoot = voice->next;
             }
 
             {
@@ -455,7 +444,7 @@ void synthFreeHandle(u32 handle)
                     SynthCallbackLink* callback = voice->callbackLists[i];
                     while (callback != 0)
                     {
-                        voiceKillById(callback->callbackId);
+                        voiceKillSound(callback->callbackId);
                         callback = callback->next;
                     }
                 }
@@ -464,11 +453,11 @@ void synthFreeHandle(u32 handle)
                 SynthCallbackLink* callback = runtime->data.voices[slot].callbackLists[2];
                 while (callback != 0)
                 {
-                    voiceKillById(callback->callbackId);
+                    voiceKillSound(callback->callbackId);
                     callback = callback->next;
                 }
             }
-            synthRecycleVoiceCallbacks(voice);
+            ResetNotes(voice);
             break;
         case SYNTH_VOICE_STATE_ALLOCATED:
             if (voice->prev != 0)
@@ -477,7 +466,7 @@ void synthFreeHandle(u32 handle)
             }
             else
             {
-                gSynthAllocatedVoices = voice->next;
+                seqPausedRoot = voice->next;
             }
             break;
         }
@@ -487,13 +476,13 @@ void synthFreeHandle(u32 handle)
             voice->next->prev = voice->prev;
         }
         voice->state = SYNTH_VOICE_STATE_FREE;
-        if (gSynthFreeVoices != 0)
+        if (seqFreeRoot != 0)
         {
-            gSynthFreeVoices->prev = voice;
+            seqFreeRoot->prev = voice;
         }
-        voice->next = gSynthFreeVoices;
+        voice->next = seqFreeRoot;
         voice->prev = 0;
-        gSynthFreeVoices = voice;
+        seqFreeRoot = voice;
     }
     else
     {
@@ -505,17 +494,13 @@ void synthFreeHandle(u32 handle)
     }
 }
 
-/*
- * Update sequence playback speed immediately, or queue it for a deferred
- * handle update.
- */
-void synthSetHandleValue16(u32 handle, u16 speed)
+void seqSpeed(u32 seqId, u16 speed)
 {
     u32 slot;
     SynthSeqRuntime* runtime;
 
-    runtime = (SynthSeqRuntime*)(void*)gSynthCallbacks;
-    slot = synthResolveHandleSlot(handle);
+    runtime = (SynthSeqRuntime*)(void*)seqNote;
+    slot = seqGetPrivateIdInline(seqId);
 
     if ((slot & 0x80000000) == 0)
     {
@@ -544,20 +529,16 @@ void synthSetHandleValue16(u32 handle, u16 speed)
     }
 }
 
-/*
- * Continue a stopped sequence voice by moving it from the allocated list
- * back to the queued list, or clear the deferred continue flag.
- */
-void synthRestoreQueuedHandle(u32 handle)
+void seqContinue(u32 seqId)
 {
     u32 slot;
     SynthVoice* voice;
 
-    slot = synthResolveHandleSlot(handle);
+    slot = seqGetPrivateIdInline(seqId);
 
     if ((slot & 0x80000000) == 0)
     {
-        voice = &gSynthVoices[slot];
+        voice = &seqInstance[slot];
         if (voice->state != SYNTH_VOICE_STATE_ALLOCATED)
         {
             return;
@@ -569,26 +550,26 @@ void synthRestoreQueuedHandle(u32 handle)
         }
         else
         {
-            gSynthAllocatedVoices = voice->next;
+            seqPausedRoot = voice->next;
         }
         if (voice->next != 0)
         {
             voice->next->prev = voice->prev;
         }
 
-        if ((voice->next = gSynthQueuedVoices) != 0)
+        if ((voice->next = seqActiveRoot) != 0)
         {
-            gSynthQueuedVoices->prev = voice;
+            seqActiveRoot->prev = voice;
         }
         voice->prev = 0;
-        gSynthQueuedVoices = voice;
+        seqActiveRoot = voice;
         voice->state = SYNTH_VOICE_STATE_QUEUED;
     }
     else
     {
-        gSynthVoices[slot & 0x7fffffffu].pendingUpdate.flags &= ~8;
+        seqInstance[slot & 0x7fffffffu].pendingUpdate.flags &= ~8;
     }
 }
 
-u16 gSynthVoiceNotes[SYNTH_MAX_VOICES][SYNTH_VOICE_NOTE_COUNT];
-SynthVoice gSynthVoices[SYNTH_MAX_VOICES];
+u16 seqMIDIPriority[SYNTH_MAX_VOICES][SYNTH_VOICE_NOTE_COUNT];
+SynthVoice seqInstance[SYNTH_MAX_VOICES];

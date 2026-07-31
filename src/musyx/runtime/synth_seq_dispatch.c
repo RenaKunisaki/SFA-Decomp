@@ -56,23 +56,23 @@ typedef struct
 #define SEQ_TIME_EMPTY 0x7fffffff
 
 
-SynthVoice* gSynthQueuedVoices;
-SynthVoice* gSynthAllocatedVoices;
-SynthVoice* gSynthFreeVoices;
-u32 gSynthNextHandle;
-u8 gSynthCurrentFadeOutState;
-u32 gSynthCurrentVoiceSlotIndex;
-SynthCallbackLink* gSynthFreeCallbacks;
-SynthVoice* gSynthCurrentVoice;
+SynthVoice* seqActiveRoot;
+SynthVoice* seqPausedRoot;
+SynthVoice* seqFreeRoot;
+u32 seq_next_id;
+u8 curFadeOutState;
+u32 curSeqId;
+SynthCallbackLink* noteFree;
+SynthVoice* cseq;
 
-static inline void seqInitStream(SynthSequenceStream* stream, u32 streamDataOffset)
+static inline void InitStream(SynthSequenceStream* stream, u32 streamDataOffset)
 {
     u16 delta;
 
     if (streamDataOffset != 0)
     {
-        if ((stream->cursor = synthReadVariablePair(
-                 (u8*)(streamDataOffset + (u32)gSynthCurrentVoice->arrbase), &delta,
+        if ((stream->cursor = GetStreamValue(
+                 (u8*)(streamDataOffset + (u32)cseq->arrbase), &delta,
                  &stream->step)) != 0)
         {
             stream->nextTime = delta;
@@ -88,14 +88,14 @@ static inline void seqInitStream(SynthSequenceStream* stream, u32 streamDataOffs
     }
 }
 
-static inline u16 seqHandleStream(SynthSequenceStream* stream)
+static inline u16 HandleStream(SynthSequenceStream* stream)
 {
     u16 delta;
 
     stream->value += stream->step;
     if (stream->cursor != 0)
     {
-        if ((stream->cursor = synthReadVariablePair(stream->cursor, &delta, &stream->step)) != 0)
+        if ((stream->cursor = GetStreamValue(stream->cursor, &delta, &stream->step)) != 0)
         {
             stream->nextTime += delta;
         }
@@ -111,9 +111,9 @@ static inline u16 seqHandleStream(SynthSequenceStream* stream)
     return stream->value;
 }
 
-static inline void seqDoPrgChange(SynthVoiceRuntime* rt, SynthVoice* voice, u8 program, u32 midi)
+static inline void DoPrgChange(SynthVoiceRuntime* rt, SynthVoice* voice, u8 program, u32 midi)
 {
-    rt->voiceNotes[gSynthCurrentVoiceSlotIndex][midi] = 0xFFFF;
+    rt->voiceNotes[curSeqId][midi] = 0xFFFF;
     if (midi != 9)
     {
         program = voice->normTrans[program];
@@ -140,7 +140,7 @@ static inline void seqDoPrgChange(SynthVoiceRuntime* rt, SynthVoice* voice, u8 p
  * Dispatch a queued voice/MIDI channel event by type, then pull the next
  * event for the channel.
  */
-SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice, u32* flag)
+SynthSequenceEvent* HandleEvent(SynthSequenceEvent* event, u8 voice, u32* flag)
 {
     SynthSequenceState* pa;
     SeqNoteData* pe;
@@ -164,7 +164,7 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
         u8 prog;
 
         tEntry = (SeqTrackEntry*)event->data;
-        sv = gSynthCurrentVoice;
+        sv = cseq;
         seq = sv->arrbase;
         pattern = SYNTH_SEQUENCE_STATE(sv, event->trackId);
         pat = (SynthSeqPattern*)(*(u32*)(((SynthArrangement*)seq)->patternTableOffset + (u32)seq + tEntry->pattern * 4) +
@@ -173,20 +173,20 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
         pattern->lastTime = 0;
         pattern->baseTime = tEntry->time;
         pattern->patternInfo = tEntry;
-        seqInitStream(&pattern->pitchBend, pat->pitchBendOffset);
+        InitStream(&pattern->pitchBend, pat->pitchBendOffset);
         pattern->pitchBend.value = 0x2000;
-        seqInitStream(&pattern->modulation, pat->modulationOffset);
+        InitStream(&pattern->modulation, pat->modulationOffset);
         pattern->modulation.value = 0;
-        pattern->midi = *(u8*)(((SynthArrangement*)gSynthCurrentVoice->arrbase)->trackMidiTableOffset +
-                               (u32)gSynthCurrentVoice->arrbase + event->trackId);
+        pattern->midi = *(u8*)(((SynthArrangement*)cseq->arrbase)->trackMidiTableOffset +
+                               (u32)cseq->arrbase + event->trackId);
         prog = tEntry->prgChange;
         if (prog != 0xff)
         {
-            seqDoPrgChange(rt, gSynthCurrentVoice, prog, pattern->midi);
+            DoPrgChange(rt, cseq, prog, pattern->midi);
         }
         if (tEntry->velocity != 0xff)
         {
-            inpSetMidiCtrl(MCMD_CTRL_VOLUME, pattern->midi, gSynthCurrentVoiceSlotIndex & 0xff, tEntry->velocity);
+            inpSetMidiCtrl(MCMD_CTRL_VOLUME, pattern->midi, curSeqId & 0xff, tEntry->velocity);
         }
         break;
     }
@@ -202,10 +202,10 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
             switch (velocity)
             {
             case 0:
-                seqDoPrgChange(rt, gSynthCurrentVoice, key & 0x7f, midi);
+                DoPrgChange(rt, cseq, key & 0x7f, midi);
                 break;
             case 1:
-                inpSetMidiCtrl(SEQ_META_KEY_OFF, midi, gSynthCurrentVoiceSlotIndex & 0xff, key & 0x7f);
+                inpSetMidiCtrl(SEQ_META_KEY_OFF, midi, curSeqId & 0xff, key & 0x7f);
                 break;
             default:
                 if ((velocity & 0x80) == 0x80)
@@ -213,27 +213,27 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
                     switch (velocity & 0x7f)
                     {
                     case SEQ_META_START_PENDING:
-                        if (gSynthCurrentVoice->pendingStartActive != 0)
+                        if (cseq->pendingStartActive != 0)
                         {
-                            synthStartHandleFromRequest(SYNTH_VOICE_PENDING_START_REQUEST(gSynthCurrentVoice),
-                                                        SYNTH_VOICE_PENDING_START_OUT_HANDLE(gSynthCurrentVoice), 1);
-                            gSynthCurrentVoice->pendingStartActive = 0;
+                            seqCrossFade(SYNTH_VOICE_PENDING_START_REQUEST(cseq),
+                                                        SYNTH_VOICE_PENDING_START_OUT_HANDLE(cseq), 1);
+                            cseq->pendingStartActive = 0;
                         }
                         break;
                     case SEQ_META_LOOP_MARK:
-                        rt->voiceNotes[gSynthCurrentVoiceSlotIndex][midi] = key & 0x7f;
+                        rt->voiceNotes[curSeqId][midi] = key & 0x7f;
                         break;
                     case SEQ_META_LOOP_MARK_HI:
-                        rt->voiceNotes[gSynthCurrentVoiceSlotIndex][midi] = (key & 0x7f) + 0x80;
+                        rt->voiceNotes[curSeqId][midi] = (key & 0x7f) + 0x80;
                         break;
                     case SEQ_META_RESET_CTRL:
-                        inpResetMidiCtrl(midi, gSynthCurrentVoiceSlotIndex & 0xff, 0);
+                        inpResetMidiCtrl(midi, curSeqId & 0xff, 0);
                         break;
                     case SEQ_META_ALL_NOTES_OFF:
-                        synthFlushCallbacks();
+                        KeyOffNotes();
                         break;
                     default:
-                        inpSetMidiCtrl(velocity & 0x7f, midi, gSynthCurrentVoiceSlotIndex & 0xff, key & 0x7f);
+                        inpSetMidiCtrl(velocity & 0x7f, midi, curSeqId & 0xff, key & 0x7f);
                         break;
                     }
                 }
@@ -242,7 +242,7 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
         }
         else
         {
-            SynthVoice* sv = gSynthCurrentVoice;
+            SynthVoice* sv = cseq;
             if (sv->trackMute[event->trackId / 32] & (1 << (event->trackId & 0x1f)))
             {
                 if ((macId = sv->prgState[midi].macId) != 0xFFFF)
@@ -251,21 +251,21 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
                     key = key > 0x7f ? 0x7f : key < 0 ? 0 : key;
                     velocity += ((SeqTrackEntry*)pa->patternInfo)->velocityAdd;
                     velocity = velocity > 0x7f ? 0x7f : velocity < 0 ? 0 : velocity;
-                    if ((note = synthAllocCallback(event->time + pe->length, voice)) != NULL)
+                    if ((note = AllocateNote(event->time + pe->length, voice)) != NULL)
                     {
                         SynthVoice* sv2;
                         s16 mod;
                         u8 vt;
                         u8 tid;
 
-                        mod = gSynthCurrentFadeOutState != 0 ? -1 : 0;
-                        sv2 = gSynthCurrentVoice;
+                        mod = curFadeOutState != 0 ? -1 : 0;
+                        sv2 = cseq;
                         tid = event->trackId;
                         vt = sv2->defStudio;
                         if ((note->callbackId =
                                  synthStartSound(macId, sv2->prgState[midi].priority,
                                                  sv2->prgState[midi].maxVoices, key & 0xff,
-                                                 velocity & 0xff, 0x40, midi, gSynthCurrentVoiceSlotIndex & 0xff,
+                                                 velocity & 0xff, 0x40, midi, curSeqId & 0xff,
                                                  voice, 0, tid, sv2->trackVolumeGroup[tid], mod, vt,
                                                  synthITDDefault[vt].music)) == 0xFFFFFFFF)
                         {
@@ -279,14 +279,14 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
                             }
                             else
                             {
-                                gSynthCurrentVoice->callbackLists[note->listIndex] = note->next;
+                                cseq->callbackLists[note->listIndex] = note->next;
                             }
-                            if ((note->next = gSynthFreeCallbacks) != 0)
+                            if ((note->next = noteFree) != 0)
                             {
-                                gSynthFreeCallbacks->prev = note;
+                                noteFree->prev = note;
                             }
                             note->prev = 0;
-                            gSynthFreeCallbacks = note;
+                            noteFree = note;
                         }
                     }
                 }
@@ -295,37 +295,37 @@ SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 voice
         break;
     case 2:
         pa = event->state;
-        inpSetMidiCtrl14(MCMD_CTRL_PITCH_BEND, pa->midi, gSynthCurrentVoiceSlotIndex & 0xff,
-                         seqHandleStream(&pa->pitchBend));
+        inpSetMidiCtrl14(MCMD_CTRL_PITCH_BEND, pa->midi, curSeqId & 0xff,
+                         HandleStream(&pa->pitchBend));
         break;
     case 1:
         pa = event->state;
-        inpSetMidiCtrl14(MCMD_CTRL_MODULATION, pa->midi, gSynthCurrentVoiceSlotIndex & 0xff,
-                         seqHandleStream(&pa->modulation));
+        inpSetMidiCtrl14(MCMD_CTRL_MODULATION, pa->midi, curSeqId & 0xff,
+                         HandleStream(&pa->modulation));
         break;
     case 3:
         *flag |= 1;
         return 0;
     }
-    return synthGetNextChannelEvent(event->trackId);
+    return GenerateNextTrackEvent(event->trackId);
 }
 
 /*
  * Queue each MIDI channel's initial event into its mapped sequence section.
  */
-void synthQueueAllChannelEvents(void)
+void InitTrackEvents(void)
 {
     u32 i;
     SynthSequenceEvent* event;
 
-    if (gSynthCurrentVoice->keyGroupMap == 0)
+    if (cseq->keyGroupMap == 0)
     {
         for (i = 0; i < 0x40; i++)
         {
-            event = synthGetNextChannelEvent((u8)i);
+            event = GenerateNextTrackEvent((u8)i);
             if (event != 0)
             {
-                synthInsertChannelEvent(&gSynthCurrentVoice->section[0], event);
+                InsertGlobalEvent(&cseq->section[0], event);
             }
         }
     }
@@ -333,30 +333,30 @@ void synthQueueAllChannelEvents(void)
     {
         for (i = 0; i < 0x40; i++)
         {
-            event = synthGetNextChannelEvent((u8)i);
+            event = GenerateNextTrackEvent((u8)i);
             if (event != 0)
             {
-                synthInsertChannelEvent(&gSynthCurrentVoice->section[gSynthCurrentVoice->keyGroupMap[i]], event);
+                InsertGlobalEvent(&cseq->section[cseq->keyGroupMap[i]], event);
             }
         }
     }
 }
 
 /* Queue the next event for every MIDI channel mapped to one sequence section. */
-static void synthQueueChannelEventsForSection(u8 sectionIndex)
+static void InitTrackEventsSection(u8 sectionIndex)
 {
     u32 group;
     u32 i;
     SynthSequenceEvent* event;
 
-    if (gSynthCurrentVoice->keyGroupMap == 0)
+    if (cseq->keyGroupMap == 0)
     {
         for (i = 0; i < 0x40; i++)
         {
-            event = synthGetNextChannelEvent((u8)i);
+            event = GenerateNextTrackEvent((u8)i);
             if (event != 0)
             {
-                synthInsertChannelEvent(&gSynthCurrentVoice->section[0], event);
+                InsertGlobalEvent(&cseq->section[0], event);
             }
         }
     }
@@ -365,24 +365,24 @@ static void synthQueueChannelEventsForSection(u8 sectionIndex)
         group = sectionIndex & 0xff;
         for (i = 0; i < 0x40; i++)
         {
-            if (group == gSynthCurrentVoice->keyGroupMap[i])
+            if (group == cseq->keyGroupMap[i])
             {
-                event = synthGetNextChannelEvent((u8)i);
+                event = GenerateNextTrackEvent((u8)i);
                 if (event != 0)
                 {
-                    synthInsertChannelEvent(&gSynthCurrentVoice->section[group], event);
+                    InsertGlobalEvent(&cseq->section[group], event);
                 }
             }
         }
     }
 }
 
-static inline u32 seqGetNextEventTime(SynthSequenceQueue* section)
+static inline u32 GetNextEventTime(SynthSequenceQueue* section)
 {
     return section->eventList == NULL ? 0 : section->eventList->time;
 }
 
-static inline SynthSequenceEvent* seqGetGlobalEvent(SynthSequenceQueue* section)
+static inline SynthSequenceEvent* GetGlobalEvent(SynthSequenceQueue* section)
 {
     SynthSequenceEvent* ev;
 
@@ -408,7 +408,7 @@ static inline f32 seq_fmod(f32 x, f32 y)
     return x - y * (f32)(s64)(u64)(x / y);
 }
 
-static inline void seqSetTickDelta(SynthSequenceQueue* section, u32 deltaTime)
+static inline void SetTickDelta(SynthSequenceQueue* section, u32 deltaTime)
 {
     f32 tickDelta;
 
@@ -418,7 +418,7 @@ static inline void seqSetTickDelta(SynthSequenceQueue* section, u32 deltaTime)
     section->tickDelta[section->timeIndex].high = (int)floorf(tickDelta);
 }
 
-u32 synthProcessChannelEventQueue(u8 voice, u32 param)
+u32 HandleTrackEvents(u8 voice, u32 param)
 {
     SynthSequenceQueue* vp;
     SynthSequenceEvent* event;
@@ -427,7 +427,7 @@ u32 synthProcessChannelEventQueue(u8 voice, u32 param)
     SynthTimeWord unusedTime;
 
     flag = 0;
-    vp = (SynthSequenceQueue*)((u8*)gSynthCurrentVoice + voice * 56 + 0x14e8);
+    vp = (SynthSequenceQueue*)((u8*)cseq + voice * 56 + 0x14e8);
     while ((vp->eventList == NULL ? 0 : vp->eventList->time) <= vp->time[vp->timeIndex].high)
     {
         SynthSequenceEvent* ev = vp->eventList;
@@ -443,26 +443,26 @@ u32 synthProcessChannelEventQueue(u8 voice, u32 param)
             }
             flag = 0;
             vp->timeIndex ^= 1;
-            vp->time[vp->timeIndex].high = ((SynthArrangement*)gSynthCurrentVoice->arrbase)->loopPoint[voice];
+            vp->time[vp->timeIndex].high = ((SynthArrangement*)cseq->arrbase)->loopPoint[voice];
             vp->time[vp->timeIndex].low = vp->time[vp->timeIndex ^ 1].low;
             {
                 u8* voiceState = (u8*)(voice * 56);
-                voiceState += (u32)gSynthCurrentVoice;
+                voiceState += (u32)cseq;
                 if (*(void**)(voiceState + 0x14e8) != NULL)
                 {
                     *(int*)(voiceState + 0x14ec) = *(int*)(voiceState + 0x14e8);
-                    seqHandleMasterTrack(voice);
-                    seqSetTickDelta((SynthSequenceQueue*)((u8*)gSynthCurrentVoice + voice * 56 + 0x14e8), param);
+                    HandleMasterTrack(voice);
+                    SetTickDelta((SynthSequenceQueue*)((u8*)cseq + voice * 56 + 0x14e8), param);
                 }
             }
             vp->loopCount += 1;
-            synthQueueChannelEventsForSection(voice);
+            InitTrackEventsSection(voice);
             continue;
         }
-        res = synthHandleSequenceEvent(event, voice, &flag);
+        res = HandleEvent(event, voice, &flag);
         if (res != 0)
         {
-            synthInsertChannelEvent(vp, res);
+            InsertGlobalEvent(vp, res);
         }
     }
     return 1;
@@ -484,28 +484,28 @@ static inline f32 sal_fmod(f32 x, f32 y, f64 absy)
     return x;
 }
 
-static inline void synthHandleKeyOffCallbacks(void)
+static inline void HandleKeyOffNotes(void)
 {
     SynthCallbackLink* node;
     SynthCallbackLink* next;
 
-    if (gSynthCurrentVoice->keyOffCheck == 0)
+    if (cseq->keyOffCheck == 0)
     {
-        node = gSynthCurrentVoice->callbackLists[2];
+        node = cseq->callbackLists[2];
         while (node != NULL)
         {
             next = node->next;
             if ((node->callbackId != 0xffffffff) && (sndFXCheck(node->callbackId) == 0xffffffff))
             {
-                synthFreeCallback(node);
+                seqFreeKeyOffNote(node);
             }
             node = next;
         }
     }
-    gSynthCurrentVoice->keyOffCheck = (gSynthCurrentVoice->keyOffCheck + 1) % 5;
+    cseq->keyOffCheck = (cseq->keyOffCheck + 1) % 5;
 }
 
-static inline void synthSetTickDelta(SynthSequenceQueue* section, u32 deltaTime, f32 c0, f32 c1, f32 range,
+static inline void SetTickDeltaInline(SynthSequenceQueue* section, u32 deltaTime, f32 c0, f32 c1, f32 range,
                                      f64 absRange)
 {
     f32 tickDelta = c0 * ((f32)section->bpm * deltaTime);
@@ -515,12 +515,12 @@ static inline void synthSetTickDelta(SynthSequenceQueue* section, u32 deltaTime,
     *(int*)&section->tickDelta[section->timeIndex].high = floorf(tickDelta);
 }
 
-static inline void synthHandleMasterTrack(u8 secIndex)
+static inline void HandleMasterTrackInline(u8 secIndex)
 {
     SynthSequenceQueue* section;
     u32* evt;
 
-    section = &gSynthCurrentVoice->section[secIndex];
+    section = &cseq->section[secIndex];
     if (section->masterTrackBase != NULL)
     {
         while (*(evt = (u32*)section->masterTrackCursor) != 0xffffffff)
@@ -529,13 +529,13 @@ static inline void synthHandleMasterTrack(u8 secIndex)
             {
                 break;
             }
-            if ((((SynthArrangement*)gSynthCurrentVoice->arrbase)->info & 0x40000000) != 0)
+            if ((((SynthArrangement*)cseq->arrbase)->info & 0x40000000) != 0)
             {
-                synthSetBpm((section->bpm = evt[1]) >> 10, gSynthCurrentVoiceSlotIndex, secIndex);
+                synthSetBpm((section->bpm = evt[1]) >> 10, curSeqId, secIndex);
             }
             else
             {
-                synthSetBpm(evt[1], gSynthCurrentVoiceSlotIndex, secIndex);
+                synthSetBpm(evt[1], curSeqId, secIndex);
                 section->bpm = ((u32*)section->masterTrackCursor)[1] << 10;
             }
             section->masterTrackCursor += 8;
@@ -558,30 +558,30 @@ void seqHandle(u32 deltaTime)
     if (deltaTime != 0)
     {
         tickRange = 65536.f;
-        song = gSynthQueuedVoices;
+        song = seqActiveRoot;
         absoluteTickRange = __fabs(tickRange);
         for (; song != NULL; song = nextSong)
         {
             nextSong = song->next;
-            gSynthCurrentVoice = song;
-            gSynthCurrentVoiceSlotIndex = song->slotIndex;
-            gSynthCurrentFadeOutState = synthIsFadeOutActive(song->defaultVolumeGroup);
-            if (gSynthCurrentVoice->keyGroupMap == NULL)
+            cseq = song;
+            curSeqId = song->slotIndex;
+            curFadeOutState = synthIsFadeOutActive(song->defaultVolumeGroup);
+            if (cseq->keyGroupMap == NULL)
             {
-                synthHandleMasterTrack(0);
-                synthSetTickDelta(gSynthCurrentVoice->section, deltaTime, (1.f / 40960000.f), 0.00390625f, tickRange,
+                HandleMasterTrackInline(0);
+                SetTickDeltaInline(cseq->section, deltaTime, (1.f / 40960000.f), 0.00390625f, tickRange,
                                   absoluteTickRange);
-                eventsActive = synthProcessChannelEventQueue(0, deltaTime);
-                callbacksActive = synthUpdateCallbacks();
-                synthHandleKeyOffCallbacks();
+                eventsActive = HandleTrackEvents(0, deltaTime);
+                callbacksActive = HandleNotes();
+                HandleKeyOffNotes();
                 for (sectionIndex = 0; sectionIndex < 2; ++sectionIndex)
                 {
-                    tickSum = gSynthCurrentVoice->section[0].time[sectionIndex].low +
-                              gSynthCurrentVoice->section[0].tickDelta[sectionIndex].low;
-                    gSynthCurrentVoice->section[0].time[sectionIndex].low = tickSum & 0xffff;
+                    tickSum = cseq->section[0].time[sectionIndex].low +
+                              cseq->section[0].tickDelta[sectionIndex].low;
+                    cseq->section[0].time[sectionIndex].low = tickSum & 0xffff;
                     tickSum = tickSum >> 16;
-                    gSynthCurrentVoice->section[0].time[sectionIndex].high +=
-                        tickSum + gSynthCurrentVoice->section[0].tickDelta[sectionIndex].high;
+                    cseq->section[0].time[sectionIndex].high +=
+                        tickSum + cseq->section[0].tickDelta[sectionIndex].high;
                 }
             }
             else
@@ -589,23 +589,23 @@ void seqHandle(u32 deltaTime)
                 eventsActive = 0;
                 for (sectionIndex = 0; sectionIndex < 0x10; sectionIndex++)
                 {
-                    synthHandleMasterTrack(sectionIndex);
-                    synthSetTickDelta(&gSynthCurrentVoice->section[sectionIndex], deltaTime, (1.f / 40960000.f),
+                    HandleMasterTrackInline(sectionIndex);
+                    SetTickDeltaInline(&cseq->section[sectionIndex], deltaTime, (1.f / 40960000.f),
                                       0.00390625f, tickRange, absoluteTickRange);
-                    eventsActive |= synthProcessChannelEventQueue(sectionIndex, deltaTime);
+                    eventsActive |= HandleTrackEvents(sectionIndex, deltaTime);
                 }
-                callbacksActive = synthUpdateCallbacks();
-                synthHandleKeyOffCallbacks();
+                callbacksActive = HandleNotes();
+                HandleKeyOffNotes();
                 for (sectionIndex = 0; sectionIndex < 16; sectionIndex++)
                 {
                     for (timeIndex = 0; timeIndex < 2; ++timeIndex)
                     {
-                        tickSum = gSynthCurrentVoice->section[sectionIndex].time[timeIndex].low +
-                                  gSynthCurrentVoice->section[sectionIndex].tickDelta[timeIndex].low;
-                        gSynthCurrentVoice->section[sectionIndex].time[timeIndex].low = tickSum & 0xffff;
+                        tickSum = cseq->section[sectionIndex].time[timeIndex].low +
+                                  cseq->section[sectionIndex].tickDelta[timeIndex].low;
+                        cseq->section[sectionIndex].time[timeIndex].low = tickSum & 0xffff;
                         tickSum = tickSum >> 16;
-                        gSynthCurrentVoice->section[sectionIndex].time[timeIndex].high +=
-                            tickSum + gSynthCurrentVoice->section[sectionIndex].tickDelta[timeIndex].high;
+                        cseq->section[sectionIndex].time[timeIndex].high +=
+                            tickSum + cseq->section[sectionIndex].tickDelta[timeIndex].high;
                     }
                 }
             }
@@ -617,32 +617,32 @@ void seqHandle(u32 deltaTime)
                 }
                 else
                 {
-                    gSynthQueuedVoices = nextSong;
+                    seqActiveRoot = nextSong;
                 }
                 if (nextSong != NULL)
                 {
                     nextSong->prev = song->prev;
                 }
-                synthRecycleVoiceCallbacks(song);
+                ResetNotes(song);
                 song->state = 0;
                 song->prev = NULL;
-                if ((song->next = gSynthFreeVoices) != NULL)
+                if ((song->next = seqFreeRoot) != NULL)
                 {
-                    gSynthFreeVoices->prev = song;
+                    seqFreeRoot->prev = song;
                 }
-                gSynthFreeVoices = song;
+                seqFreeRoot = song;
             }
         }
     }
 }
 
-static inline void synthInitCallbacks(SynthVoiceRuntime* runtime) {
+static inline void ClearNotes(SynthVoiceRuntime* runtime) {
     SynthCallbackLink* prev;
     SynthCallbackLink* callback;
     u32 i;
 
     prev = NULL;
-    gSynthFreeCallbacks = &runtime->callbacks[0];
+    noteFree = &runtime->callbacks[0];
     for (i = 0; i < 0x100; i++) {
         callback = &runtime->callbacks[i];
         callback->prev = prev;
@@ -666,15 +666,15 @@ void seqInit(void)
     int j;
 
     runtime = SYNTH_VOICE_RUNTIME();
-    gSynthQueuedVoices = NULL;
-    gSynthAllocatedVoices = NULL;
+    seqActiveRoot = NULL;
+    seqPausedRoot = NULL;
     voice = &runtime->voices[0];
     note = runtime->voiceNotes[0];
     for (i = 0; i < 8; i++)
     {
         if (i == 0)
         {
-            gSynthFreeVoices = voice;
+            seqFreeRoot = voice;
             voice->prev = NULL;
         }
         else
@@ -693,6 +693,6 @@ void seqInit(void)
     }
     runtime->voices[i - 1].next = NULL;
 
-    synthInitCallbacks(runtime);
-    gSynthNextHandle = 0;
+    ClearNotes(runtime);
+    seq_next_id = 0;
 }

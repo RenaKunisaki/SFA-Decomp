@@ -271,7 +271,7 @@ void streamKill(u32 voice)
         case SYNTH_JOB_STATE_PLAYING:
             if ((u32)state == SYNTH_JOB_STATE_PLAYING)
             {
-                voiceBreakAndFree(job->voice);
+                voiceUnblock(job->voice);
             }
             job->state = SYNTH_JOB_STATE_DONE;
             job->callback(0, 0, 0, 0, job->callbackUser);

@@ -9,17 +9,17 @@ void synthInitChannelEventQueues(void)
     u8* keyGroupMap;
     u8 channel;
 
-    voice = gSynthCurrentVoice;
+    voice = cseq;
     keyGroupMap = SYNTH_KEYGROUP_MAP(voice);
     if (keyGroupMap == 0)
     {
         queue = SYNTH_SEQUENCE_QUEUE(voice, 0);
         for (channel = 0; channel < SYNTH_SEQUENCE_TRACK_COUNT; channel++)
         {
-            event = synthGetNextChannelEvent(channel);
+            event = GenerateNextTrackEvent(channel);
             if (event != 0)
             {
-                synthInsertChannelEvent(queue, event);
+                InsertGlobalEvent(queue, event);
             }
         }
         return;
@@ -27,10 +27,10 @@ void synthInitChannelEventQueues(void)
 
     for (channel = 0; channel < SYNTH_SEQUENCE_TRACK_COUNT; channel++)
     {
-        event = synthGetNextChannelEvent(channel);
+        event = GenerateNextTrackEvent(channel);
         if (event != 0)
         {
-            synthInsertChannelEvent(SYNTH_SEQUENCE_QUEUE(voice, keyGroupMap[channel]), event);
+            InsertGlobalEvent(SYNTH_SEQUENCE_QUEUE(voice, keyGroupMap[channel]), event);
         }
     }
 }
@@ -43,17 +43,17 @@ void synthRefreshChannelEventQueue(u8 groupIndex)
     u8* keyGroupMap;
     u8 channel;
 
-    voice = gSynthCurrentVoice;
+    voice = cseq;
     keyGroupMap = SYNTH_KEYGROUP_MAP(voice);
     if (keyGroupMap == 0)
     {
         queue = SYNTH_SEQUENCE_QUEUE(voice, 0);
         for (channel = 0; channel < SYNTH_SEQUENCE_TRACK_COUNT; channel++)
         {
-            event = synthGetNextChannelEvent(channel);
+            event = GenerateNextTrackEvent(channel);
             if (event != 0)
             {
-                synthInsertChannelEvent(queue, event);
+                InsertGlobalEvent(queue, event);
             }
         }
         return;
@@ -64,10 +64,10 @@ void synthRefreshChannelEventQueue(u8 groupIndex)
     {
         if (keyGroupMap[channel] == groupIndex)
         {
-            event = synthGetNextChannelEvent(channel);
+            event = GenerateNextTrackEvent(channel);
             if (event != 0)
             {
-                synthInsertChannelEvent(queue, event);
+                InsertGlobalEvent(queue, event);
             }
         }
     }

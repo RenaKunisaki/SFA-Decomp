@@ -1009,7 +1009,7 @@ void Music_Update(void)
         int status = ch->status;
         if (status != 0 && status != 4)
         {
-            if (gSynthVoices[ch->voiceId].state == 0)
+            if (seqInstance[ch->voiceId].state == 0)
             {
                 if (status == 4 || status == 5)
                 {
@@ -1401,7 +1401,7 @@ void Music_ChannelLoadedCallback(MusicTrackSlot* slot, MusicChannel* channel, Mu
             sndSeqVolume(voice, 0x1f4, seqHandle, 0);
             channel->status = 1;
             channel->seqHandle = seqHandle;
-            channel->voiceId = synthResolveHandle(seqHandle);
+            channel->voiceId = seqGetPrivateId(seqHandle);
         }
     }
 }

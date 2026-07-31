@@ -226,7 +226,7 @@ void s3dExit(void)
 /*
  * Sound init: clamps voice/stream counts, calls hwInit, then walks
  * a chain of subsystem inits if hwInit succeeded; sets the
- * gSynthInitialized flag last.
+ * sndActive flag last.
  */
 int sndInit(u8 voiceCount, u8 streamCount, u8 unk5, u8 stereo, u32 flags, u32 aramSize)
 {
@@ -234,7 +234,7 @@ int sndInit(u8 voiceCount, u8 streamCount, u8 unk5, u8 stereo, u32 flags, u32 ar
     u32 sampleRatePad[3];
     int result;
 
-    gSynthInitialized = 0;
+    sndActive = 0;
     if (voiceCount <= SND_MAX_VOICES)
     {
         SYNTH_CONFIGURATION->voiceCount = voiceCount;
@@ -267,7 +267,7 @@ int sndInit(u8 voiceCount, u8 streamCount, u8 unk5, u8 stereo, u32 flags, u32 ar
         streamInit();
         synthInitVirtualSampleTable();
         s3dInit(flags);
-        gSynthInitialized = 1;
+        sndActive = 1;
         result = 0;
     }
     return result;

@@ -264,7 +264,7 @@ s32 sndPushGroup(void* prj_data, u16 gid, void* samples, void* sdir, void* pool)
     s16 sp;
     void* poolPtr;
 
-    if (gSynthInitialized && (sp = synthLoadedGroupCount) < 128)
+    if (sndActive && (sp = synthLoadedGroupCount) < 128)
     {
         g = prj_data;
 

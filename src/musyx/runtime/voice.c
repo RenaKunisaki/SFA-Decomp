@@ -23,8 +23,8 @@ u8 voiceMusicRunning;
 u16 voicePrioSortedRoot;
 
 static McmdVidListNode vidListNodes[128];
-static u8 voiceMidiKeySlots[SYNTH_VOICE_MIDI_CHANNEL_COUNT][SYNTH_VOICE_MIDI_KEY_COUNT];
-static u8 voiceDirectSlots[SYNTH_VOICE_DIRECT_SLOT_COUNT];
+static u8 synth_last_started[SYNTH_VOICE_MIDI_CHANNEL_COUNT][SYNTH_VOICE_MIDI_KEY_COUNT];
+static u8 synth_last_fxstarted[SYNTH_VOICE_DIRECT_SLOT_COUNT];
 static SynthVoiceListNode voicePriorityLinks[0x40];
 static u8 voicePriorityGroupHeads[0x100];
 static SynthRootListNode voicePrioritySortLinks[0x100];
@@ -413,10 +413,7 @@ static inline void voiceInitPrioSort(void)
     voicePrioSortedRoot = 0xffff;
 }
 
-/*
- * Initialize the voice priority and group linked-list tables.
- */
-void voiceInitPriorityTables(void)
+void synthInitAllocationAids(void)
 {
     voiceInitFreeList();
     voiceInitPrioSort();
@@ -428,7 +425,7 @@ void voiceInitPriorityTables(void)
  * Voice cleanup: if voice handle is valid, break the active voice and
  * reset its id slot.
  */
-void voiceBreakAndFree(u32 voice)
+void voiceUnblock(u32 voice)
 {
     if (voice == SYNTH_INVALID_VOICE)
         return;
@@ -462,17 +459,13 @@ void voiceKill(u32 voice)
     hwBreak(voice);
 }
 
-/*
- * Walk the synth's voice list for the given id, breaking each match.
- * Returns 0 if at least one match was broken, else -1.
- */
-int voiceKillById(u32 id)
+int voiceKillSound(u32 id)
 {
     int result = -1;
     u32 nextHandle;
     u32 i;
 
-    if (gSynthInitialized != 0)
+    if (sndActive != 0)
     {
         McmdVidListNode* listEntry;
         if ((id != SYNTH_INVALID_VOICE) && ((listEntry = get_vidlist(id)) != 0))
@@ -503,7 +496,7 @@ int voiceKillById(u32 id)
  * Returns 1 if state's voice id is currently registered in the
  * appropriate slot table, else 0.
  */
-u32 voiceIsRegistered(McmdVoiceState* state)
+u32 voiceIsLastStarted(McmdVoiceState* state)
 {
     McmdVoiceState* voiceState = state;
     u32 voice = voiceState->handle;
@@ -519,10 +512,10 @@ u32 voiceIsRegistered(McmdVoiceState* state)
             voiceIdx = voice;
             if (channel == SYNTH_INVALID_VOICE_U8)
             {
-                if (voiceDirectSlots[voiceIdx] == voiceIdx)
+                if (synth_last_fxstarted[voiceIdx] == voiceIdx)
                     return 1;
             }
-            else if (voiceIdx == voiceMidiKeySlots[channel][slot])
+            else if (voiceIdx == synth_last_started[channel][slot])
             {
                 return 1;
             }
@@ -534,7 +527,7 @@ u32 voiceIsRegistered(McmdVoiceState* state)
 /*
  * Register the state's voice id in either the 1D or 2D slot table.
  */
-void voiceRegister(McmdVoiceState* state)
+void voiceSetLastStarted(McmdVoiceState* state)
 {
     McmdVoiceState* voiceState = state;
     u32 voice = voiceState->handle;
@@ -550,15 +543,15 @@ void voiceRegister(McmdVoiceState* state)
     voiceIdx = voice;
     if (channel == SYNTH_INVALID_VOICE_U8)
     {
-        voiceDirectSlots[voiceIdx] = voiceIdx;
+        synth_last_fxstarted[voiceIdx] = voiceIdx;
     }
     else
     {
-        voiceMidiKeySlots[channel][slot] = voiceIdx;
+        synth_last_started[channel][slot] = voiceIdx;
     }
 }
 
-void voiceUnregister(McmdVoiceState* voice)
+void voiceResetLastStarted(McmdVoiceState* voice)
 {
     u32 voiceId;
     u32 midi;
@@ -576,14 +569,14 @@ void voiceUnregister(McmdVoiceState* voice)
     vid8 = voiceId & 0xff;
     if (midiSet == SYNTH_INVALID_VOICE_U8)
     {
-        slot = &voiceDirectSlots[vid8];
+        slot = &synth_last_fxstarted[vid8];
         if (*slot != vid8)
             return;
         *slot = SYNTH_INVALID_VOICE_U8;
     }
     else
     {
-        slot = &voiceMidiKeySlots[midiSet][midi];
+        slot = &synth_last_started[midiSet][midi];
         if (vid8 != *slot)
             return;
         *slot = SYNTH_INVALID_VOICE_U8;

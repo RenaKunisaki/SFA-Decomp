@@ -107,7 +107,7 @@ void mcmdRandomKey(McmdVoiceState* state, McmdCommandArgs* args)
     args->value = 0;
     state->key = (args->flags >> 8) & 0x7f;
     state->fineTune = (s8)(args->flags >> 0x10);
-    if (voiceIsRegistered(state) != 0)
+    if (voiceIsLastStarted(state) != 0)
     {
         inpSetMidiLastNote(state->midi, state->midiSet, state->key & 0xff);
     }
@@ -658,7 +658,7 @@ void macHandleActive(McmdVoiceState* sv)
         }
 
         inpSetMidiLastNote(sv->midi, sv->midiSet, sv->keyBase);
-        voiceRegister(sv);
+        voiceSetLastStarted(sv);
         sv->vGroup = sv->startupVGroup;
         sv->studio = sv->startupStudio;
         sv->portamentoTime = 0;
@@ -902,7 +902,7 @@ void macHandleActive(McmdVoiceState* sv)
             }
             sv->key = (s16)sv->key < 0 ? 0 : sv->key > 0x7f ? 0x7f : sv->key;
             sv->fineTune = (s8)(macCurrentCmd.flags >> 0x10);
-            if (voiceIsRegistered(sv) != 0)
+            if (voiceIsLastStarted(sv) != 0)
             {
                 inpSetMidiLastNote(sv->midi, sv->midiSet, sv->key & 0xff);
             }
@@ -912,7 +912,7 @@ void macHandleActive(McmdVoiceState* sv)
         case 0x19: /* set key */
             sv->key = (cmd >> 8) & 0x7f;
             sv->fineTune = (s8)(macCurrentCmd.flags >> 0x10);
-            if (voiceIsRegistered(sv) != 0)
+            if (voiceIsLastStarted(sv) != 0)
             {
                 inpSetMidiLastNote(sv->midi, sv->midiSet, sv->key & 0xff);
             }

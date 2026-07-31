@@ -37,7 +37,7 @@ extern u32 synthFlags;
 void sndSeqVolume(u8 volume, u16 time, u32 seqId, u8 mode)
 {
     sndBegin();
-    synthUpdateHandle(volume, time, seqId, mode);
+    seqVolume(volume, time, seqId, mode);
     sndEnd();
 }
 
@@ -46,7 +46,7 @@ void sndSeqVolume(u8 volume, u16 time, u32 seqId, u8 mode)
  */
 u16 seqGetMIDIPriority(u8 slot, u8 event)
 {
-    return gSynthVoiceNotes[slot][event];
+    return seqMIDIPriority[slot][event];
 }
 
 /*
@@ -190,7 +190,7 @@ void sndSetAuxProcessingCallbacks(u8 studio, SynthAuxCallback auxACallback, void
         synthAuxAMIDI[studio] = auxAIndex;
         if (auxAIndex != 0xff)
         {
-            synthAuxAMIDISet[studio] = synthResolveHandle((u32)auxAData);
+            synthAuxAMIDISet[studio] = seqGetPrivateId((u32)auxAData);
             synthAuxACallback[studio] = auxACallback;
             synthAuxAUser[studio] = auxAUser;
         }
@@ -205,7 +205,7 @@ void sndSetAuxProcessingCallbacks(u8 studio, SynthAuxCallback auxACallback, void
         synthAuxBMIDI[studio] = auxBIndex;
         if (auxBIndex != 0xff)
         {
-            synthAuxBMIDISet[studio] = synthResolveHandle((u32)auxBData);
+            synthAuxBMIDISet[studio] = seqGetPrivateId((u32)auxBData);
             synthAuxBCallback[studio] = auxBCallback;
             synthAuxBUser[studio] = auxBUser;
         }
@@ -255,7 +255,7 @@ void synthDeactivateStudio(u8 studio)
         {
             if (((McmdVoiceState*)voice)->voiceHandle != 0xffffffff)
             {
-                voiceKillById(((McmdVoiceState*)voice)->vidListNode->id);
+                voiceKillSound(((McmdVoiceState*)voice)->vidListNode->id);
             }
             else
             {

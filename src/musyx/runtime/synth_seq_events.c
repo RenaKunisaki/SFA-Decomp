@@ -13,7 +13,7 @@ typedef struct SynthVoiceKeyGroups
 
 #define KEYGROUP_STATE(voice, index) (((SynthKeyGroupState*)((u8*)(voice) + 0x14E8))[index])
 
-SynthSequenceEvent* synthGetNextChannelEvent(u8 channel)
+SynthSequenceEvent* GenerateNextTrackEvent(u8 channel)
 {
     u32 trackId;
     SynthTrackCursor* track;
@@ -24,12 +24,12 @@ SynthSequenceEvent* synthGetNextChannelEvent(u8 channel)
     u32 modTime;
 
     trackId = channel;
-    track = SYNTH_TRACK_CURSOR(gSynthCurrentVoice, channel);
-    pattern = SYNTH_SEQUENCE_STATE(gSynthCurrentVoice, trackId);
+    track = SYNTH_TRACK_CURSOR(cseq, channel);
+    pattern = SYNTH_SEQUENCE_STATE(cseq, trackId);
 
     if (track->current != 0)
     {
-        ev = SYNTH_CHANNEL_EVENT(gSynthCurrentVoice, trackId);
+        ev = SYNTH_CHANNEL_EVENT(cseq, trackId);
         ev->trackId = channel;
         ev->state = pattern;
 
@@ -46,15 +46,15 @@ SynthSequenceEvent* synthGetNextChannelEvent(u8 channel)
 
                 if (TRACK_CMD(track)->command == SYNTH_TRACK_COMMAND_JUMP)
                 {
-                    if (SYNTH_KEYGROUP_MAP(gSynthCurrentVoice) == 0)
+                    if (SYNTH_KEYGROUP_MAP(cseq) == 0)
                     {
-                        if (KEYGROUP_STATE(gSynthCurrentVoice, 0).active)
+                        if (KEYGROUP_STATE(cseq, 0).active)
                         {
                             track->current = 0;
                             return 0;
                         }
                     }
-                    else if (KEYGROUP_STATE(gSynthCurrentVoice, SYNTH_KEYGROUP_MAP(gSynthCurrentVoice)[trackId]).active)
+                    else if (KEYGROUP_STATE(cseq, SYNTH_KEYGROUP_MAP(cseq)[trackId]).active)
                     {
                         track->current = 0;
                         return 0;
@@ -132,7 +132,7 @@ SynthSequenceEvent* synthGetNextChannelEvent(u8 channel)
 /*
  * Sorted-by-time insert into a channel event queue.
  */
-void synthInsertChannelEvent(SynthSequenceQueue* queue, SynthSequenceEvent* event)
+void InsertGlobalEvent(SynthSequenceQueue* queue, SynthSequenceEvent* event)
 {
     SynthSequenceEvent* current;
     SynthSequenceEvent* prev;

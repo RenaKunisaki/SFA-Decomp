@@ -74,10 +74,10 @@ typedef struct SynthMidiSetup
 u32 seqStartPlay(SynthPage* normalPage, SynthPage* drumPage, SynthMidiSetup* midiSetup,
                  u32* arrangement, SynthPlayParams* params, u8 studio, u16 groupId);
 
-void seqHandleMasterTrack(u8 sectionIndex);
-void synthQueueHandle(u32 handle);
-void synthFreeHandle(u32 handle);
+void HandleMasterTrack(u8 sectionIndex);
+void seqPause(u32 seqId);
+void seqStop(u32 seqId);
 
-extern u16 gSynthVoiceNotes[SYNTH_MAX_VOICES][SYNTH_VOICE_NOTE_COUNT];
+extern u16 seqMIDIPriority[SYNTH_MAX_VOICES][SYNTH_VOICE_NOTE_COUNT];
 
 #endif /* MUSYX_SYNTH_QUEUE_H_ */

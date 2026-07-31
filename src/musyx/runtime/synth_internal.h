@@ -313,48 +313,48 @@ typedef struct SynthVoiceRuntime
 #define SYNTH_VOICE_PENDING_START_OUT_HANDLE(voice) (*(u32**)((u8*)(voice) + 0xEDC))
 #define SYNTH_VOICE_PENDING_START_ACTIVE(voice) (*(u8*)((u8*)(voice) + 0xEE0))
 
-extern SynthCallbackLink gSynthCallbacks[SYNTH_CALLBACK_COUNT];
+extern SynthCallbackLink seqNote[SYNTH_CALLBACK_COUNT];
 extern u8 gSynthDelayBucketCursor;
-extern SynthCallbackLink* gSynthFreeCallbacks;
-extern SynthVoice* gSynthCurrentVoice;
-extern u32 gSynthCurrentVoiceSlotIndex;
-extern u8 gSynthCurrentFadeOutState;
+extern SynthCallbackLink* noteFree;
+extern SynthVoice* cseq;
+extern u32 curSeqId;
+extern u8 curFadeOutState;
 
-extern SynthVoice gSynthVoices[SYNTH_MAX_VOICES];
+extern SynthVoice seqInstance[SYNTH_MAX_VOICES];
 extern u8 synthTrackVolume[64];
-extern SynthVoice* gSynthFreeVoices;
-extern SynthVoice* gSynthQueuedVoices;
-extern SynthVoice* gSynthAllocatedVoices;
-extern u32 gSynthNextHandle;
+extern SynthVoice* seqFreeRoot;
+extern SynthVoice* seqActiveRoot;
+extern SynthVoice* seqPausedRoot;
+extern u32 seq_next_id;
 
-#define SYNTH_VOICE_RUNTIME() ((SynthVoiceRuntime*)(void*)gSynthCallbacks)
+#define SYNTH_VOICE_RUNTIME() ((SynthVoiceRuntime*)(void*)seqNote)
 #define SYNTH_VOICE_SLOT_FLAGS64(slot) (*(u64*)&(slot)->inputFlags)
 
 
 void synthSetBpm(int bpm, u8 set, u8 section);
 int synthGetTicksPerSecond(McmdVoiceState *slot);
-SynthSequenceEvent* synthGetNextChannelEvent(u8 channel);
-void synthInsertChannelEvent(SynthSequenceQueue* queue, SynthSequenceEvent* event);
-SynthSequenceEvent* synthHandleSequenceEvent(SynthSequenceEvent* event, u8 groupIndex, u32* output);
+SynthSequenceEvent* GenerateNextTrackEvent(u8 channel);
+void InsertGlobalEvent(SynthSequenceQueue* queue, SynthSequenceEvent* event);
+SynthSequenceEvent* HandleEvent(SynthSequenceEvent* event, u8 groupIndex, u32* output);
 void synthInitChannelEventQueues(void);
 void synthRefreshChannelEventQueue(u8 groupIndex);
-u32 synthProcessChannelEventQueue(u8 groupIndex, u32 delta);
-void synthRecycleVoiceCallbacks(SynthVoice* voice);
-SynthCallbackLink* synthAllocCallback(s32 triggerValue, u8 controllerIndex);
-s32 synthUpdateCallbacks(void);
-void synthFlushCallbacks(void);
-void synthFreeCallback(SynthCallbackLink* callback);
-u32 synthAssignHandle(s32 voiceIndex);
-u32 synthResolveHandle(u32 handle);
+u32 HandleTrackEvents(u8 groupIndex, u32 delta);
+void ResetNotes(SynthVoice* voice);
+SynthCallbackLink* AllocateNote(s32 triggerValue, u8 controllerIndex);
+s32 HandleNotes(void);
+void KeyOffNotes(void);
+void seqFreeKeyOffNote(SynthCallbackLink* callback);
+u32 GetPublicId(s32 voiceIndex);
+u32 seqGetPrivateId(u32 seqId);
 
-static inline u32 synthResolveHandleSlot(u32 handle)
+static inline u32 seqGetPrivateIdInline(u32 handle)
 {
     u32 resolvedHandle;
     SynthVoice* walker;
 
     resolvedHandle = handle & SYNTH_HANDLE_ID_MASK;
 
-    for (walker = gSynthQueuedVoices; walker != 0; walker = walker->next)
+    for (walker = seqActiveRoot; walker != 0; walker = walker->next)
     {
         if (walker->handle == resolvedHandle)
         {
@@ -362,7 +362,7 @@ static inline u32 synthResolveHandleSlot(u32 handle)
         }
     }
 
-    for (walker = gSynthAllocatedVoices; walker != 0; walker = walker->next)
+    for (walker = seqPausedRoot; walker != 0; walker = walker->next)
     {
         if (walker->handle == resolvedHandle)
         {
@@ -372,15 +372,15 @@ static inline u32 synthResolveHandleSlot(u32 handle)
 
     return SYNTH_HANDLE_INVALID;
 }
-void synthQueueHandle(u32 handle);
-void synthFreeHandle(u32 handle);
-void synthSetHandleValue16(u32 handle, u16 value);
-void synthRestoreQueuedHandle(u32 handle);
-void synthSetHandleMixData(u32 handle, u32 value0, u32 value1);
+void seqPause(u32 seqId);
+void seqStop(u32 seqId);
+void seqSpeed(u32 seqId, u16 speed);
+void seqContinue(u32 seqId);
+void seqMute(u32 seqId, u32 mask1, u32 mask2);
 u32 synthFXSetCtrl(u32 handle, u8 controller, u8 value);
 u32 synthFXSetCtrl14(u32 handle, u8 controller, u16 value);
 void synthFXCloneMidiSetup(McmdVoiceState *dstVoice, McmdVoiceState *srcVoice);
 u32 synthSendKeyOff(u32 handle);
-void synthUpdateHandle(u8 volume, u16 time, u32 handle, u8 mode);
+void seqVolume(u8 volume, u16 time, u32 seqId, u8 mode);
 
 #endif

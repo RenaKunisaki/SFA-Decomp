@@ -5,7 +5,7 @@
 #define SYNTH_CALLBACK_ACTIVE_LIST_COUNT    2
 #define SYNTH_CALLBACK_COMPLETED_LIST_INDEX 2
 
-void synthRecycleVoiceCallbacks(SynthVoice* voice)
+void ResetNotes(SynthVoice* voice)
 {
     SynthCallbackLink* callback;
 
@@ -20,13 +20,13 @@ void synthRecycleVoiceCallbacks(SynthVoice* voice)
                 callback = callback->next;
             }
 
-            if (gSynthFreeCallbacks != 0)
+            if (noteFree != 0)
             {
-                callback->next = gSynthFreeCallbacks;
-                gSynthFreeCallbacks->prev = callback;
+                callback->next = noteFree;
+                noteFree->prev = callback;
             }
 
-            gSynthFreeCallbacks = voice->callbackLists[listIndex];
+            noteFree = voice->callbackLists[listIndex];
             voice->callbackLists[listIndex] = 0;
         }
     }
@@ -38,41 +38,41 @@ void synthRecycleVoiceCallbacks(SynthVoice* voice)
             callback = callback->next;
         }
 
-        if (gSynthFreeCallbacks != 0)
+        if (noteFree != 0)
         {
-            callback->next = gSynthFreeCallbacks;
-            gSynthFreeCallbacks->prev = callback;
+            callback->next = noteFree;
+            noteFree->prev = callback;
         }
 
-        gSynthFreeCallbacks = voice->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX];
+        noteFree = voice->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX];
         voice->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX] = 0;
     }
 }
 
-SynthCallbackLink* synthAllocCallback(s32 triggerValue, u8 controllerIndex)
+SynthCallbackLink* AllocateNote(s32 triggerValue, u8 controllerIndex)
 {
     SynthCallbackLink* callback;
     SynthCallbackLink* next;
     register SynthCallbackLink* current;
     register SynthCallbackLink* prev;
 
-    if ((callback = gSynthFreeCallbacks) != 0)
+    if ((callback = noteFree) != 0)
     {
-        gSynthFreeCallbacks = next = callback->next;
+        noteFree = next = callback->next;
         if (next != 0)
         {
-            gSynthFreeCallbacks->prev = 0;
+            noteFree->prev = 0;
         }
 
         callback->triggerValue = triggerValue;
         callback->controllerIndex = controllerIndex;
         prev = 0;
         {
-            u8* ccsBase = (u8*)gSynthCurrentVoice + 0x1518;
+            u8* ccsBase = (u8*)cseq + 0x1518;
             callback->listIndex = ((SynthCallbackControllerState*)(ccsBase + controllerIndex * 0x38))->listIndex;
         }
 
-        current = gSynthCurrentVoice->callbackLists[callback->listIndex];
+        current = cseq->callbackLists[callback->listIndex];
         while (current != 0)
         {
             if (current->triggerValue > callback->triggerValue)
@@ -85,7 +85,7 @@ SynthCallbackLink* synthAllocCallback(s32 triggerValue, u8 controllerIndex)
                 }
                 else
                 {
-                    gSynthCurrentVoice->callbackLists[callback->listIndex] = callback;
+                    cseq->callbackLists[callback->listIndex] = callback;
                 }
                 current->prev = callback;
                 return callback;
@@ -102,7 +102,7 @@ SynthCallbackLink* synthAllocCallback(s32 triggerValue, u8 controllerIndex)
         }
         else
         {
-            gSynthCurrentVoice->callbackLists[callback->listIndex] = callback;
+            cseq->callbackLists[callback->listIndex] = callback;
         }
         callback->next = 0;
     }
@@ -110,7 +110,7 @@ SynthCallbackLink* synthAllocCallback(s32 triggerValue, u8 controllerIndex)
     return callback;
 }
 
-s32 synthUpdateCallbacks(void)
+s32 HandleNotes(void)
 {
     SynthCallbackLink* callback;
     u32 listIndex;
@@ -119,27 +119,27 @@ s32 synthUpdateCallbacks(void)
 
     for (listIndex = 0; listIndex < SYNTH_CALLBACK_ACTIVE_LIST_COUNT; listIndex++)
     {
-        if ((callback = gSynthCurrentVoice->callbackLists[listIndex]) != 0)
+        if ((callback = cseq->callbackLists[listIndex]) != 0)
         {
             while (callback->triggerValue <=
-                   (s32)gSynthCurrentVoice->section[callback->controllerIndex].time[listIndex].high)
+                   (s32)cseq->section[callback->controllerIndex].time[listIndex].high)
             {
                 synthSendKeyOff(callback->callbackId);
                 next = callback->next;
-                gSynthCurrentVoice->callbackLists[listIndex] = next;
+                cseq->callbackLists[listIndex] = next;
                 if (next != 0)
                 {
-                    gSynthCurrentVoice->callbackLists[listIndex]->prev = 0;
+                    cseq->callbackLists[listIndex]->prev = 0;
                 }
 
-                completed = gSynthCurrentVoice->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX];
+                completed = cseq->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX];
                 callback->next = completed;
                 if (completed != 0)
                 {
-                    gSynthCurrentVoice->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX]->prev = callback;
+                    cseq->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX]->prev = callback;
                 }
-                gSynthCurrentVoice->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX] = callback;
-                if ((callback = gSynthCurrentVoice->callbackLists[listIndex]) == 0)
+                cseq->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX] = callback;
+                if ((callback = cseq->callbackLists[listIndex]) == 0)
                 {
                     break;
                 }
@@ -147,10 +147,10 @@ s32 synthUpdateCallbacks(void)
         }
     }
 
-    return gSynthCurrentVoice->callbackLists[0] != 0 || gSynthCurrentVoice->callbackLists[1] != 0;
+    return cseq->callbackLists[0] != 0 || cseq->callbackLists[1] != 0;
 }
 
-void synthFlushCallbacks(void)
+void KeyOffNotes(void)
 {
     SynthCallbackLink* callback;
     SynthCallbackLink* next;
@@ -159,31 +159,31 @@ void synthFlushCallbacks(void)
 
     for (listIndex = 0; listIndex < SYNTH_CALLBACK_ACTIVE_LIST_COUNT; listIndex++)
     {
-        callback = gSynthCurrentVoice->callbackLists[listIndex];
+        callback = cseq->callbackLists[listIndex];
         while (callback != 0)
         {
             next = callback->next;
             synthSendKeyOff(callback->callbackId);
             completed = callback->next;
-            gSynthCurrentVoice->callbackLists[listIndex] = completed;
+            cseq->callbackLists[listIndex] = completed;
             if (completed != 0)
             {
-                gSynthCurrentVoice->callbackLists[listIndex]->prev = 0;
+                cseq->callbackLists[listIndex]->prev = 0;
             }
 
-            completed = gSynthCurrentVoice->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX];
+            completed = cseq->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX];
             callback->next = completed;
             if (completed != 0)
             {
-                gSynthCurrentVoice->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX]->prev = callback;
+                cseq->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX]->prev = callback;
             }
-            gSynthCurrentVoice->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX] = callback;
+            cseq->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX] = callback;
             callback = next;
         }
     }
 }
 
-void synthFreeCallback(SynthCallbackLink* callback)
+void seqFreeKeyOffNote(SynthCallbackLink* callback)
 {
     if (callback->next != 0)
     {
@@ -196,36 +196,36 @@ void synthFreeCallback(SynthCallbackLink* callback)
     }
     else
     {
-        gSynthCurrentVoice->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX] = callback->next;
+        cseq->callbackLists[SYNTH_CALLBACK_COMPLETED_LIST_INDEX] = callback->next;
     }
 
     {
-        SynthCallbackLink* freeCallback = gSynthFreeCallbacks;
+        SynthCallbackLink* freeCallback = noteFree;
         callback->next = freeCallback;
         if (freeCallback != 0)
         {
-            gSynthFreeCallbacks->prev = callback;
+            noteFree->prev = callback;
         }
     }
 
     callback->prev = 0;
-    gSynthFreeCallbacks = callback;
+    noteFree = callback;
 }
 
-u32 synthAssignHandle(s32 voiceIndex)
+u32 GetPublicId(s32 voiceIndex)
 {
     SynthVoice* queuedVoices;
     SynthVoice* allocatedVoices;
     u32 handle;
     SynthVoice* current;
 
-    queuedVoices = gSynthQueuedVoices;
-    allocatedVoices = gSynthAllocatedVoices;
+    queuedVoices = seqActiveRoot;
+    allocatedVoices = seqPausedRoot;
     do
     {
-        handle = gSynthNextHandle;
-        gSynthNextHandle = handle + 1;
-        gSynthNextHandle &= SYNTH_HANDLE_ID_MASK;
+        handle = seq_next_id;
+        seq_next_id = handle + 1;
+        seq_next_id &= SYNTH_HANDLE_ID_MASK;
 
         for (current = queuedVoices; current != 0; current = current->next)
         {
@@ -246,30 +246,30 @@ u32 synthAssignHandle(s32 voiceIndex)
         }
     } while (handle == SYNTH_HANDLE_INVALID);
 
-    gSynthVoices[voiceIndex].handle = handle;
+    seqInstance[voiceIndex].handle = handle;
     return handle;
 }
 
-u32 synthResolveHandle(u32 handle)
+u32 seqGetPrivateId(u32 seqId)
 {
     SynthVoice* voice;
-    for (voice = gSynthQueuedVoices; voice != 0; voice = voice->next)
+    for (voice = seqActiveRoot; voice != 0; voice = voice->next)
     {
-        if (voice->handle == (handle & SYNTH_HANDLE_ID_MASK))
+        if (voice->handle == (seqId & SYNTH_HANDLE_ID_MASK))
         {
-            return voice->slotIndex | (handle & SYNTH_HANDLE_QUEUED_FLAG);
+            return voice->slotIndex | (seqId & SYNTH_HANDLE_QUEUED_FLAG);
         }
     }
 
-    for (voice = gSynthAllocatedVoices; voice != 0; voice = voice->next)
+    for (voice = seqPausedRoot; voice != 0; voice = voice->next)
     {
-        if (voice->handle == (handle & SYNTH_HANDLE_ID_MASK))
+        if (voice->handle == (seqId & SYNTH_HANDLE_ID_MASK))
         {
-            return voice->slotIndex | (handle & SYNTH_HANDLE_QUEUED_FLAG);
+            return voice->slotIndex | (seqId & SYNTH_HANDLE_QUEUED_FLAG);
         }
     }
 
     return SYNTH_HANDLE_INVALID;
 }
 
-SynthCallbackLink gSynthCallbacks[SYNTH_CALLBACK_COUNT];
+SynthCallbackLink seqNote[SYNTH_CALLBACK_COUNT];

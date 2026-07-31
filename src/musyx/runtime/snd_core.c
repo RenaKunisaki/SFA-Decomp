@@ -14,7 +14,7 @@ void sndQuit(void)
     dataExit();
     s3dExit();
     synthExit();
-    gSynthInitialized = 0;
+    sndActive = 0;
 }
 
 void sndSetMaxVoices(u8 valueA, u8 valueB)
@@ -25,7 +25,7 @@ void sndSetMaxVoices(u8 valueA, u8 valueB)
 
 u32 sndIsInstalled(void)
 {
-    return gSynthInitialized;
+    return sndActive;
 }
 
 void salApplyMatrix(f32* matrix, f32* vec, f32* out)

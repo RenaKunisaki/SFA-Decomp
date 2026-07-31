@@ -37,7 +37,7 @@ void vidRemoveVoice(McmdVoiceState* state)
     McmdVoiceState* s = state;
     if (s->voiceHandle != 0xffffffff)
     {
-        voiceUnregister(state);
+        voiceResetLastStarted(state);
         if (s->voicePrevHandle != 0xffffffff)
         {
             synthVoice[s->voicePrevHandle & 0xff].voiceNextHandle = s->voiceNextHandle;

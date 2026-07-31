@@ -83,7 +83,7 @@ u8 synthAuxAMIDISet[8];
 u8 synthAuxBMIDI[8];
 u8 synthAuxBMIDISet[8];
 u8 gSynthDelayBucketCursor;
-u8 gSynthInitialized;
+u8 sndActive;
 
 typedef struct SynthVoiceLfo
 {
@@ -325,7 +325,7 @@ static u32 do_voice_portamento(u8 key, u8 midi, u8 midiSet, u32 isMaster, u32* r
 
     if (result != 0xffffffff)
     {
-        voiceRegister(selectedVoice);
+        voiceSetLastStarted(selectedVoice);
         inpSetMidiLastNote(selectedVoice->midi, selectedVoice->midiSet, selectedVoice->key & 0xff);
         *rejected = 0;
     }
@@ -1184,13 +1184,13 @@ void synthDispatchFadeAction(SynthMasterFader* fade)
     switch (fade->seqMode)
     {
     case SYNTH_FADE_DELAY_ACTION_FREE_HANDLE:
-        synthFreeHandle(fade->seqId);
+        seqStop(fade->seqId);
         break;
     case SYNTH_FADE_DELAY_ACTION_QUEUE_HANDLE:
-        synthQueueHandle(fade->seqId);
+        seqPause(fade->seqId);
         break;
     case SYNTH_FADE_DELAY_ACTION_CLEAR_MIX:
-        synthSetHandleMixData(fade->seqId, 0, 0);
+        seqMute(fade->seqId, 0, 0);
         break;
     }
 }
@@ -1408,7 +1408,7 @@ u32 synthSendKeyOff(u32 handle)
     u32 idx;
 
     found = 0;
-    if (gSynthInitialized != 0)
+    if (sndActive != 0)
     {
         handle = vidGetInternalId(handle);
         while (handle != 0xFFFFFFFFu)
@@ -1538,7 +1538,7 @@ int synthIsFadeOutActive(u8 voiceIdx)
  */
 void synthSetMusicVolumeType(u8 voiceIdx, u8 value)
 {
-    if (gSynthInitialized == 0)
+    if (sndActive == 0)
     {
         return;
     }
@@ -1739,14 +1739,14 @@ void synthInit(u32 sampleRate, u32 voiceCount)
 
     macInit();
     vidInit();
-    voiceInitPriorityTables();
+    synthInitAllocationAids();
 
     for (auxIndex = 0; auxIndex < 16; auxIndex++)
     {
         synthGlobalVariable[auxIndex] = 0;
     }
 
-    voiceInitRegistrationTables();
+    voiceInitLastStarted();
 
     synthInitJobQueue();
     hwSetMesgCallback(synthHWMessageHandler);
