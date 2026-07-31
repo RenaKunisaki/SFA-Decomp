@@ -1571,29 +1571,27 @@ void model_multMtxs(u8* model, f32* out)
         PSMTXConcat((MtxPtr)out, base + j * 4, base + j * 4);
     }
 }
-void modelInitBoneMtxs(ObjModel* model, f32* outReordered)
-{
+void modelInitBoneMtxs(ObjModel* model, f32* outReordered) {
     ModelFileHeader* file;
     u32 i;
+    ROMtxPtr reorderCursor[1];
+    int boneByteOff[1];
     MtxPtr mtx;
-    int boneByteOff;
-    ROMtxPtr reorderCursor;
     ModelBone* bone;
     Mtx transMtx;
 
     file = model->file;
     i = 0;
-    boneByteOff = 0;
-    reorderCursor = (ROMtxPtr)outReordered;
-    for (; i < file->jointCount; i++)
-    {
+    boneByteOff[0] = 0;
+    reorderCursor[0] = (ROMtxPtr)outReordered;
+    for (; i < file->jointCount; i++) {
         mtx = modelGetBoneMtx(model, i);
-        bone = (ModelBone*)(file->jointData + boneByteOff);
+        bone = (ModelBone*)(file->jointData + boneByteOff[0]);
         PSMTXTrans(transMtx, -bone->tail[0], -bone->tail[1], -bone->tail[2]);
         PSMTXConcat(mtx, transMtx, transMtx);
-        PSMTXReorder(transMtx, reorderCursor);
-        boneByteOff += 0x1c;
-        reorderCursor += 4;
+        PSMTXReorder(transMtx, reorderCursor[0]);
+        boneByteOff[0] += 0x1c;
+        reorderCursor[0] += 4;
     }
 }
 
