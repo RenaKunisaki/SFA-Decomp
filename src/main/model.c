@@ -312,8 +312,8 @@ void modelAnimEvalSlotPair(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
             }
         }
     }
-    lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount, (u8*)gModelJointScratchBuffer,
-                 flags, (u8)mode);
+    modelAnimBuildJointMatrices(&mtxBuf, dst, &work, file->jointData, file->jointCount,
+                                (u8*)gModelJointScratchBuffer, flags, (u8)mode);
 }
 void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 blend, int flags)
 {
@@ -364,8 +364,8 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
         {
             outFlags |= 0x20;
         }
-        lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount, (u8*)gModelJointScratchBuffer,
-                     flags, outFlags | 0x40);
+        modelAnimBuildJointMatrices(&mtxBuf, dst, &work, file->jointData, file->jointCount,
+                                    (u8*)gModelJointScratchBuffer, flags, outFlags | 0x40);
     }
     else
     {
@@ -414,8 +414,8 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
                 }
                 work.eventCountdown = slotEvent;
                 modelAnimUpdateChannels(file, &work, 2);
-                lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount,
-                             (u8*)gModelJointScratchBuffer, flags, blendMask);
+                modelAnimBuildJointMatrices(&mtxBuf, dst, &work, file->jointData, file->jointCount,
+                                            (u8*)gModelJointScratchBuffer, flags, blendMask);
                 if (blendMask != 0)
                 {
                     outFlags |= 1 << i;
@@ -454,8 +454,8 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
             {
                 outFlags |= 0x20;
             }
-            lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount,
-                         (u8*)gModelJointScratchBuffer, flags, outFlags);
+            modelAnimBuildJointMatrices(&mtxBuf, dst, &work, file->jointData, file->jointCount,
+                                        (u8*)gModelJointScratchBuffer, flags, outFlags);
         }
     }
 }
