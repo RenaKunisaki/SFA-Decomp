@@ -48,7 +48,7 @@
 #define SECONDS_PER_MINUTE  60
 
 extern u8 enableDebugText;
-extern void* lbl_803A8680[4];
+extern void* gSaveSelectTextures[4];
 
 void saveFileSelect_checkCheatCodes(void)
 {
@@ -124,8 +124,8 @@ void saveSelect_drawText(int unused, int alpha)
     int minutes;
     int seconds;
 
-    drawTexture(lbl_803A8680[1], 282.0f, 142.0f, alpha, 0x100);
-    drawTexture(lbl_803A8680[2], 322.0f, 142.0f, alpha, 0x100);
+    drawTexture(gSaveSelectTextures[1], 282.0f, 142.0f, alpha, 0x100);
+    drawTexture(gSaveSelectTextures[2], 322.0f, 142.0f, alpha, 0x100);
     gameTextSetColor(0xff, 0xff, 0xff, alpha);
 
     saveFileSelect_saveSlots =
@@ -261,7 +261,7 @@ u8 saveFileSelect_saveDirty;
 s8 saveFileSelect_currentSlotIndex;
 void* gSaveSelectCachedText;
 extern void* lbl_8031A804[4];
-void* lbl_803A8680[4];
+void* gSaveSelectTextures[4];
 extern SaveSelectPanel gSaveSelectPanels[];
 extern u8 lbl_8031A7F8[];
 static void saveSelectGoToChapterSelect(void);
@@ -536,7 +536,7 @@ static void saveSelectScreenFree(int runExitCallback)
         lbl_803DD6AC = NULL;
     }
 
-    p = lbl_803A8680;
+    p = gSaveSelectTextures;
     zero = NULL;
     for (i = 0; i < 4; i++)
     {
@@ -875,7 +875,7 @@ void SaveSelectScreen_initialise(void)
 
     for (i = 0; i < 4; i++)
     {
-        lbl_803A8680[i] = textureLoadAsset(gSaveSelectTextureIds[i]);
+        gSaveSelectTextures[i] = textureLoadAsset(gSaveSelectTextureIds[i]);
     }
 
     if (getPrevUiDll() != 6)

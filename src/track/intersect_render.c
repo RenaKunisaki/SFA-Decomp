@@ -43,8 +43,8 @@
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
 #include "track/intersect_internal.h"
-extern u8 lbl_803DD010;
-extern f32 lbl_803DD00C;
+extern u8 gMoonFxDayNo;
+extern f32 gSnowFlashOverlayAngle;
 
 extern u8 lbl_803DB678;
 extern u8 gHudTintAlpha;
@@ -1569,8 +1569,8 @@ int moonFxRenderCallback(u8* obj, int* objB, int slot)
     op = (int)ObjModel_GetRenderOp((ModelFileHeader*)objB[0], slot);
     tex = (Texture*)textureIdxToPtr(*(int*)Shader_getLayer((void*)op, 0));
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-    lbl_803DD010 = mainGetBit(0x2ba);
-    tx = lbl_803DD010 / 30.0f;
+    gMoonFxDayNo = mainGetBit(0x2ba);
+    tx = gMoonFxDayNo / 30.0f;
     PSMTXTrans(mtx, tx, 0.0f, 0.0f);
     GXLoadTexMtxImm(mtx, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
@@ -3686,13 +3686,13 @@ void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u
     ratio2 = ((f32)(u32)Camera_GetCurrentViewPitch() - 32768.0f) / 8192.0f;
     if (getHudHiddenFrameCount() != 0)
     {
-        angle = lbl_803DD00C;
+        angle = gSnowFlashOverlayAngle;
     }
     else
     {
         f32 t = atanf_fast(((f32*)vec)[0] / ((f32*)vec)[1]);
-        angle = lbl_803DD00C + interpolate(t - lbl_803DD00C, 0.05f, timeDelta);
-        lbl_803DD00C = angle;
+        angle = gSnowFlashOverlayAngle + interpolate(t - gSnowFlashOverlayAngle, 0.05f, timeDelta);
+        gSnowFlashOverlayAngle = angle;
     }
     c_K2.a = flashAlpha;
 

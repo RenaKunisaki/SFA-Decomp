@@ -130,14 +130,14 @@ static inline u64 saveGame_checksum(u64* p, int count)
 extern s8 seqGlobal3;
 extern int gObjSeqTaskTextId;
 extern int gObjSeqDeferredTaskTextId;
-extern u8 lbl_803DD0F8;
-extern f32 lbl_803DD0F4;
-extern f32 lbl_803DD0F0;
-extern f32 lbl_803DD0EC;
-extern s16 lbl_803DD0E8;
-extern s16 lbl_803DD0E6;
-extern s16 lbl_803DD0E4;
-extern f32 lbl_803DD0E0;
+extern u8 gObjSeqCameraOverrideActive;
+extern f32 gObjSeqCameraOverridePosX;
+extern f32 gObjSeqCameraOverridePosY;
+extern f32 gObjSeqCameraOverridePosZ;
+extern s16 gObjSeqCameraOverrideRotX;
+extern s16 gObjSeqCameraOverrideRotY;
+extern s16 gObjSeqCameraOverrideRotZ;
+extern f32 gObjSeqCameraOverrideW;
 extern s16 gObjSeqSlotValues[];
 extern GameObject* lbl_803DD07C;
 extern u8 lbl_803DD078;
@@ -924,14 +924,14 @@ int getCurSeqNo(void)
 
 void ObjSeq_SetCameraTransformOverride(f32 x, f32 y, s16 rx, s16 ry, s16 rz, f32 z, f32 w)
 {
-    lbl_803DD0F8 = 1;
-    lbl_803DD0F4 = x;
-    lbl_803DD0F0 = y;
-    lbl_803DD0EC = z;
-    lbl_803DD0E8 = rx;
-    lbl_803DD0E6 = ry;
-    lbl_803DD0E4 = rz;
-    lbl_803DD0E0 = w;
+    gObjSeqCameraOverrideActive = 1;
+    gObjSeqCameraOverridePosX = x;
+    gObjSeqCameraOverridePosY = y;
+    gObjSeqCameraOverridePosZ = z;
+    gObjSeqCameraOverrideRotX = rx;
+    gObjSeqCameraOverrideRotY = ry;
+    gObjSeqCameraOverrideRotZ = rz;
+    gObjSeqCameraOverrideW = w;
 }
 GameObject* getFocusedNpc(void)
 {
@@ -1617,14 +1617,14 @@ int gObjSeqCamModeArgB;
 int gObjSeqCamModeArgC;
 int gObjSeqCamModeArgD;
 GameObject* focusedNpc;
-u8 lbl_803DD0F8;
-f32 lbl_803DD0F4;
-f32 lbl_803DD0F0;
-f32 lbl_803DD0EC;
-s16 lbl_803DD0E8;
-s16 lbl_803DD0E6;
-s16 lbl_803DD0E4;
-f32 lbl_803DD0E0;
+u8 gObjSeqCameraOverrideActive;
+f32 gObjSeqCameraOverridePosX;
+f32 gObjSeqCameraOverridePosY;
+f32 gObjSeqCameraOverridePosZ;
+s16 gObjSeqCameraOverrideRotX;
+s16 gObjSeqCameraOverrideRotY;
+s16 gObjSeqCameraOverrideRotZ;
+f32 gObjSeqCameraOverrideW;
 f32 lbl_803DD0DC;
 u8 gObjSeqStop;
 u8 lbl_803DD0D9;
@@ -2830,11 +2830,11 @@ void ObjSeq_updateCamera(void)
     if (obj != NULL)
     {
         model = (u8*)obj->anim.placementData;
-        if (lbl_803DD0F8 != 0)
+        if (gObjSeqCameraOverrideActive != 0)
         {
-            x = lbl_803DD0F4;
-            y = lbl_803DD0F0;
-            z = lbl_803DD0EC;
+            x = gObjSeqCameraOverridePosX;
+            y = gObjSeqCameraOverridePosY;
+            z = gObjSeqCameraOverridePosZ;
         }
         else
         {
@@ -3005,7 +3005,7 @@ void ObjSeq_updateCamera(void)
 
     gObjSeqFovOverrideActive = 0;
     lbl_803DD0B8 = NULL;
-    lbl_803DD0F8 = 0;
+    gObjSeqCameraOverrideActive = 0;
 }
 
 void animatedObjFreeAndSavePlayerPos(GameObject* obj, GameObject* seqObj, u8* seq)
@@ -6725,7 +6725,7 @@ void ObjSeq_onMapSetup(void)
     gObjSeqCameraActive = 0;
     lbl_803DD0DC = 0.0f;
     lbl_803DD0B8 = NULL;
-    lbl_803DD0F8 = 0;
+    gObjSeqCameraOverrideActive = 0;
     gObjSeqBgCmdCount = 0;
 }
 

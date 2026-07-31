@@ -628,7 +628,7 @@ extern s16 lbl_803DD75C;
 extern f32 lbl_803DD7BC;
 extern u8 lbl_803DD7C4;
 extern Texture* gPauseMenuGridBackdropTexture;
-extern u8 lbl_803DD7D6;
+extern u8 gCurTaskHintMapId;
 extern f32 lbl_803DD7FC;
 extern GridEntry* lbl_803DD824;
 extern u8 lbl_803DD734;
@@ -4782,7 +4782,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
             lbl_803DBA8A = 0xc0;
             lbl_803DBA8C = 1.5f;
             gameTextSetColor(0xff, 0xff, 0xff, 0xff);
-            if (lbl_803DD8E0 == lbl_803DD7D6)
+            if (lbl_803DD8E0 == gCurTaskHintMapId)
             {
                 if (lbl_803DD7A4 != 0 && lbl_803DD7A4->count >= 2)
                 {
@@ -6001,7 +6001,7 @@ void pauseMenuUpdate(void)
     {
         menuMax = 4;
     }
-    lbl_803DD7D6 = getCurTaskHintTextMap();
+    gCurTaskHintMapId = getCurTaskHintTextMap();
     if (player != 0)
     {
         int cell;
@@ -6136,12 +6136,12 @@ void pauseMenuUpdate(void)
                 if (lbl_803DD772 != 0 || lbl_803DD770 != 0)
                 {
                     lbl_803DD8DC = (int)getCurGameText();
-                    if (lbl_803DD8E0 == lbl_803DD7D6)
+                    if (lbl_803DD8E0 == gCurTaskHintMapId)
                     {
                         hintTextLoadTaskMapTexts();
                     }
                     pauseMenuState = 4;
-                    if (lbl_803DD8E0 == lbl_803DD7D6)
+                    if (lbl_803DD8E0 == gCurTaskHintMapId)
                     {
                         hintTextLoadTaskMapTexts();
                     }
@@ -6300,7 +6300,7 @@ void pauseMenuUpdate(void)
                 case 3:
                     pauseMenuSetupTitle(0x2b1, prev, 4, 3);
                     pauseMenuState = 4;
-                    if (lbl_803DD8E0 == lbl_803DD7D6)
+                    if (lbl_803DD8E0 == gCurTaskHintMapId)
                     {
                         gGameUiCurHintTextMap = hintTextLoadTaskMapTexts();
                     }
@@ -6408,16 +6408,16 @@ void pauseMenuUpdate(void)
                             lbl_803DD824[k].trailY = 0xc;
                         }
                     }
-                    if (lbl_803DD7D6 == lbl_803DD8E0)
+                    if (gCurTaskHintMapId == lbl_803DD8E0)
                     {
                         lbl_803DD824[lbl_803DD8E0].id = 0x4c;
                     }
                     else
                     {
                         lbl_803DD824[lbl_803DD8E0].id = 0x4b;
-                        lbl_803DD824[lbl_803DD7D6].id = 0x4a;
-                        lbl_803DD824[lbl_803DD7D6].trailX = 0x14;
-                        lbl_803DD824[lbl_803DD7D6].trailY = 0x10;
+                        lbl_803DD824[gCurTaskHintMapId].id = 0x4a;
+                        lbl_803DD824[gCurTaskHintMapId].trailX = 0x14;
+                        lbl_803DD824[gCurTaskHintMapId].trailY = 0x10;
                     }
                     lbl_803DD824[lbl_803DD8E0].trailX = 0x1a;
                     lbl_803DD824[lbl_803DD8E0].trailY = 0x18;
@@ -6904,7 +6904,7 @@ void pauseMenuRunSubmenu(int p1)
         case 3:
             if (lbl_803DD768 >= 600.0f && old < 600.0f)
             {
-                if (lbl_803DD7D6 == lbl_803DD8E0)
+                if (gCurTaskHintMapId == lbl_803DD8E0)
                 {
                     AudioStream_Play(0x271a, AudioStream_StartPrepared);
                 }
@@ -9224,7 +9224,7 @@ s16 gHighScorePulseAngle;
 int gGameUiSavedCameraShake;
 f32 lbl_803DD7DC;
 int lbl_803DD7D8;
-u8 lbl_803DD7D6;
+u8 gCurTaskHintMapId;
 u8 shouldOpenCMenu;
 s8 cMenuState;
 TrickyAirMeter* airMeter;

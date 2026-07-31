@@ -27,7 +27,7 @@ int gMmRegion0Used;
 int gMmTickCount;
 int gMmRegion0Size;
 int gMmOpCount;
-u8 lbl_803DCB10;
+u8 gMmTextureAllocationState;
 int gMmNextAllocId;
 int gMmUseHeap3;
 
@@ -861,7 +861,7 @@ int getHeapItemSize(void* ptr)
 }
 void mmSetTextureAllocationState(int state)
 {
-    lbl_803DCB10 = state;
+    gMmTextureAllocationState = state;
 }
 void* mmInitRegion(u8* buf, int size, int numSlots);
 
