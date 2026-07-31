@@ -133,12 +133,8 @@ typedef struct BaddieState {
     f32 nudgePosY;
     f32 nudgePosZ;
     f32 nudgeYaw; /* anim.rotX delta added as nudgeYawProgress ramps */
+    BaddieStateExitFn stateExitFn; /* run once on control-mode change, then replaced by nextStateExitFn */
     union {
-        f32 unk304;
-        BaddieStateExitFn stateExitFn;
-    };
-    union {
-        f32 unk308;
         int stateHandler; /* player state callback address */
         BaddieStateExitFn nextStateExitFn;
     };
