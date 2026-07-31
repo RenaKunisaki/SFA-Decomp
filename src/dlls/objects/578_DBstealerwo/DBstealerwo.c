@@ -2286,8 +2286,7 @@ void dbstealerworm_update(GameObject* obj)
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     if ((u32)((DbStealerwormControl*)sub)->flags44 >> 4 & 1)
     {
-        grp = (DbWormMsgGroup*)(tbl + ((GroundBaddiePlacement*)data)->unk24 * 8);
-        grp = (DbWormMsgGroup*)((char*)grp + 0x15c);
+        grp = &((DbWormMsgGroup*)(tbl + 0x15c))[((GroundBaddiePlacement*)data)->unk24];
         ((DbStealerwormControl*)sub)->msgStack = Queue_Alloc(0x14, 0xc);
         n = grp->count;
         for (; n != 0;)
