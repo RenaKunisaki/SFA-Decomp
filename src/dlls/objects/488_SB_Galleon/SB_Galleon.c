@@ -80,7 +80,7 @@ ObjectDescriptor15 gSB_GalleonObjDescriptor = {
 void DBprotection_updateFlight(GameObject* obj) {
     ObjPlacement* spawnData;
     SBGalleonState* state;
-    GameObject* tricky;
+    f32 ty;
     GameObject** objects;
     GameObject* otherObj;
     s8 c;
@@ -99,7 +99,7 @@ void DBprotection_updateFlight(GameObject* obj) {
     f32 lerpD;
     f32 zRatio;
     f32 tx;
-    f32 ty;
+    GameObject* tricky;
     f32 tz;
     f32 ambA;
     f32 dy;
