@@ -231,11 +231,11 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
             modelRotation[1] = (s16)(*(s16*)((char*)modelRotation + 2) + turnStep);
         }
 
-        dx = state->launchOriginX - *(f32*)&state->aimTargetXBits;
+        dx = state->launchOriginX - state->aimTargetX;
         dz = state->launchOriginZ - state->aimTargetZ;
         distSq = dx * dx + dz * dz;
         dist = sqrtf(distSq);
-        heightDelta = (10.0f + *(f32*)&state->aimTargetYBits) - state->launchOriginY;
+        heightDelta = (10.0f + state->aimTargetY) - state->launchOriginY;
         distSq = (distSq < 10.0f) ? 10.0f : distSq;
         if ((distSq < (f32)((s32)(placement->targetRadius * 2) * (s32)(placement->targetRadius * 2))) ||
             (heightDelta < lbl_803DBF14) || ((((GameObject*)player)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)) {
@@ -512,7 +512,7 @@ void DIMCannon_update(GameObject* obj) {
         break;
     }
     case DIM_CANNON_MODE_ARMED:
-        DIMCannon_updateAim(obj, *(f32*)&state->aimTargetXBits, *(f32*)&state->aimTargetYBits, state->aimTargetZ,
+        DIMCannon_updateAim(obj, state->aimTargetX, state->aimTargetY, state->aimTargetZ,
                             state->targetDistance);
         if (mainGetBit(placement->resetGameBit)) {
             state->mode = DIM_CANNON_MODE_WAIT_FOR_RESET;
@@ -546,14 +546,14 @@ void DIMCannon_update(GameObject* obj) {
                     state->aimHistoryX[j] = state->aimHistoryX[j + 1];
                     state->aimHistoryY[j] = state->aimHistoryY[j + 1];
                     state->aimHistoryZ[j] = state->aimHistoryZ[j + 1];
-                    if (j == 0 || state->aimHistoryY[j] > *(f32*)&state->aimTargetYBits) {
-                        *(f32*)&state->aimTargetYBits = state->aimHistoryY[j];
+                    if (j == 0 || state->aimHistoryY[j] > state->aimTargetY) {
+                        state->aimTargetY = state->aimHistoryY[j];
                     }
                 }
                 state->aimHistoryX[9] = ((GameObject*)state->targetPlayer)->anim.localPosX;
                 state->aimHistoryY[9] = ((GameObject*)state->targetPlayer)->anim.localPosY;
                 state->aimHistoryZ[9] = ((GameObject*)state->targetPlayer)->anim.localPosZ;
-                *(f32*)&state->aimTargetXBits = state->aimHistoryX[0];
+                state->aimTargetX = state->aimHistoryX[0];
                 state->aimTargetZ = state->aimHistoryZ[0];
             }
             if (state->launchDelay > 0) {
@@ -564,7 +564,7 @@ void DIMCannon_update(GameObject* obj) {
             }
             state->targetDistance =
                 getXZDistance(&obj->anim.worldPosX, &((GameObject*)state->targetPlayer)->anim.worldPosX);
-            DIMCannon_updateAim(obj, *(f32*)&state->aimTargetXBits, *(f32*)&state->aimTargetYBits, state->aimTargetZ,
+            DIMCannon_updateAim(obj, state->aimTargetX, state->aimTargetY, state->aimTargetZ,
                                 state->targetDistance);
             DIMCannon_spawnBall(obj, 0);
             {

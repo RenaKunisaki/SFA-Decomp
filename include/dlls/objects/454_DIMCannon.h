@@ -43,8 +43,8 @@ typedef struct DimCannonBallPlacement {
 
 typedef struct DimCannonState {
     GameObject* targetPlayer;
-    s32 aimTargetXBits;
-    s32 aimTargetYBits;
+    f32 aimTargetX;
+    f32 aimTargetY;
     f32 aimTargetZ;
     f32 targetDistance;
     f32 aimHistoryX[10];
@@ -98,8 +98,8 @@ STATIC_ASSERT(offsetof(DimCannonBallPlacement, unknown18) == 0x18);
 STATIC_ASSERT(sizeof(DimCannonBallPlacement) == 0x24);
 
 STATIC_ASSERT(offsetof(DimCannonState, targetPlayer) == 0x00);
-STATIC_ASSERT(offsetof(DimCannonState, aimTargetXBits) == 0x04);
-STATIC_ASSERT(offsetof(DimCannonState, aimTargetYBits) == 0x08);
+STATIC_ASSERT(offsetof(DimCannonState, aimTargetX) == 0x04);
+STATIC_ASSERT(offsetof(DimCannonState, aimTargetY) == 0x08);
 STATIC_ASSERT(offsetof(DimCannonState, aimTargetZ) == 0x0C);
 STATIC_ASSERT(offsetof(DimCannonState, targetDistance) == 0x10);
 STATIC_ASSERT(offsetof(DimCannonState, aimHistoryX) == 0x14);

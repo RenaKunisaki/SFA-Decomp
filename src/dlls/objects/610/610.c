@@ -125,8 +125,8 @@ void drakormissile_startStraightLaunch(GameObject* obj, GameObject* from, GameOb
     mag = sqrtf(dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2]) / speed;
     if (mag != zero)
     {
-        *(f32*)&dir[0] = dir[0] / mag;
-        *(f32*)&dir[1] = dir[1] / mag;
+        dir[0] = dir[0] / mag;
+        dir[1] = dir[1] / mag;
         *(f32*)&dir[2] = dir[2] / mag;
     }
     (obj)->anim.localPosX = from->anim.localPosX;
@@ -152,8 +152,8 @@ void drakormissile_startStraightLaunch(GameObject* obj, GameObject* from, GameOb
     if (voxmaps_traceLine((VoxPos*)startGrid, (VoxPos*)endGrid, (VoxPos*)hitGrid, NULL, 0) == 0)
     {
         voxmaps_gridToWorld(endPos, hitGrid);
-        *(f32*)&hitDir[0] = endPos[0] - (obj)->anim.localPosX;
-        *(f32*)&hitDir[1] = endPos[1] - (obj)->anim.localPosY;
+        hitDir[0] = endPos[0] - (obj)->anim.localPosX;
+        hitDir[1] = endPos[1] - (obj)->anim.localPosY;
         *(f32*)&hitDir[2] = endPos[2] - (obj)->anim.localPosZ;
         state->timer = (int)(sqrtf(hitDir[0] * hitDir[0] + hitDir[1] * hitDir[1] + hitDir[2] * hitDir[2]) / speed);
     }

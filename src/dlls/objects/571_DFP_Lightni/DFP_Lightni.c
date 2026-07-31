@@ -151,7 +151,7 @@ void DFP_Lightni_update(GameObject* obj)
                         effectStart = start;
                         effectEnd = end;
                         clampX = (radiusX < *(f32*)&gDfpLightningRadiusMin)   ? *(f32*)&gDfpLightningRadiusMin
-                                 : (radiusX > *(f32*)&gDfpLightningRadiusMax) ? *(f32*)&gDfpLightningRadiusMax
+                                 : (radiusX > gDfpLightningRadiusMax) ? gDfpLightningRadiusMax
                                                                               : radiusX;
                         state->effectHandle = lightningCreate(
                             (const Vec3f*)effectStart, (const Vec3f*)effectEnd, clampX, clampY,
@@ -166,7 +166,7 @@ void DFP_Lightni_update(GameObject* obj)
                         effectStart = start;
                         effectEnd = end;
                         clampX = (radiusX < *(f32*)&gDfpLightningRadiusMin)   ? *(f32*)&gDfpLightningRadiusMin
-                                 : (radiusX > *(f32*)&gDfpLightningRadiusMax) ? *(f32*)&gDfpLightningRadiusMax
+                                 : (radiusX > gDfpLightningRadiusMax) ? gDfpLightningRadiusMax
                                                                               : radiusX;
                         state->effectHandle = lightningCreate(
                             (const Vec3f*)effectStart, (const Vec3f*)effectEnd, clampX, clampY,

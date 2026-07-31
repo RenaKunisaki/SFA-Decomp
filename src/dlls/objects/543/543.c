@@ -271,7 +271,7 @@ void VFP_Platform_update(GameObject* obj)
                     }
                     else if (yi < tyi)
                     {
-                        (obj)->anim.localPosZ = *(f32*)&(obj)->anim.localPosZ + timeDelta;
+                        (obj)->anim.localPosZ += timeDelta;
                         if ((int)(obj)->anim.localPosZ >= tyi)
                         {
                             (obj)->anim.localPosZ = tyi;
@@ -292,7 +292,7 @@ void VFP_Platform_update(GameObject* obj)
                     }
                     else if (yi > tyi - 60)
                     {
-                        (obj)->anim.localPosZ = *(f32*)&(obj)->anim.localPosZ - timeDelta;
+                        (obj)->anim.localPosZ -= timeDelta;
                         if ((int)(obj)->anim.localPosZ <= tyi - 60)
                         {
                             (obj)->anim.localPosZ = (tyi - 60);
@@ -313,7 +313,7 @@ void VFP_Platform_update(GameObject* obj)
                     }
                     else if (yi > tyi)
                     {
-                        (obj)->anim.localPosZ = *(f32*)&(obj)->anim.localPosZ - timeDelta;
+                        (obj)->anim.localPosZ -= timeDelta;
                         if ((int)(obj)->anim.localPosZ <= tyi)
                         {
                             (obj)->anim.localPosZ = tyi;
@@ -334,7 +334,7 @@ void VFP_Platform_update(GameObject* obj)
                     }
                     else if (yi < tyi + 60)
                     {
-                        (obj)->anim.localPosZ = *(f32*)&(obj)->anim.localPosZ + timeDelta;
+                        (obj)->anim.localPosZ += timeDelta;
                         if ((int)(obj)->anim.localPosZ >= tyi + 60)
                         {
                             (obj)->anim.localPosZ = (tyi + 60);

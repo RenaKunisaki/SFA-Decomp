@@ -16196,7 +16196,7 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
             {
                 f32 zero;
                 f32 sink = ((PlayerState*)state)->sinkOffsetY;
-                if (sink < (zero = *(f32*)&lbl_803E7EA4))
+                if (sink < (zero = lbl_803E7EA4))
                 {
                     fv2 = lbl_803E7EFC * ((PlayerState*)cfg)->baddie.animSpeedA + sink;
                     ((PlayerState*)state)->sinkOffsetY = (fv2 < zero) ? fv2 : zero;
