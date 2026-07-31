@@ -1,4 +1,4 @@
-#include "src/musyx/runtime/synth_voice_overlays.h"
+#include "src/musyx/runtime/synth_internal.h"
 #include "musyx/synth_delay.h"
 
 
@@ -67,10 +67,7 @@ SynthCallbackLink* AllocateNote(s32 triggerValue, u8 controllerIndex)
         callback->triggerValue = triggerValue;
         callback->controllerIndex = controllerIndex;
         prev = 0;
-        {
-            u8* ccsBase = (u8*)cseq + 0x1518;
-            callback->listIndex = ((SynthCallbackControllerState*)(ccsBase + controllerIndex * 0x38))->listIndex;
-        }
+        callback->listIndex = cseq->section[controllerIndex].timeIndex;
 
         current = cseq->callbackLists[callback->listIndex];
         while (current != 0)

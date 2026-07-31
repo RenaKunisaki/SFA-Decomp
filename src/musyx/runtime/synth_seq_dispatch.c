@@ -166,7 +166,7 @@ SynthSequenceEvent* HandleEvent(SynthSequenceEvent* event, u8 voice, u32* flag)
         tEntry = (SeqTrackEntry*)event->data;
         sv = cseq;
         seq = sv->arrbase;
-        pattern = SYNTH_SEQUENCE_STATE(sv, event->trackId);
+        pattern = &sv->pattern[event->trackId];
         pat = (SynthSeqPattern*)(*(u32*)(((SynthArrangement*)seq)->patternTableOffset + (u32)seq + tEntry->pattern * 4) +
                                  (u32)seq);
         pattern->noteData = (u8*)(pat + 1);

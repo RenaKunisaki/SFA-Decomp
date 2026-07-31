@@ -10,10 +10,10 @@ void synthInitChannelEventQueues(void)
     u8 channel;
 
     voice = cseq;
-    keyGroupMap = SYNTH_KEYGROUP_MAP(voice);
+    keyGroupMap = voice->keyGroupMap;
     if (keyGroupMap == 0)
     {
-        queue = SYNTH_SEQUENCE_QUEUE(voice, 0);
+        queue = &voice->section[0];
         for (channel = 0; channel < SYNTH_SEQUENCE_TRACK_COUNT; channel++)
         {
             event = GenerateNextTrackEvent(channel);
@@ -30,7 +30,7 @@ void synthInitChannelEventQueues(void)
         event = GenerateNextTrackEvent(channel);
         if (event != 0)
         {
-            InsertGlobalEvent(SYNTH_SEQUENCE_QUEUE(voice, keyGroupMap[channel]), event);
+            InsertGlobalEvent(&voice->section[keyGroupMap[channel]], event);
         }
     }
 }
@@ -44,10 +44,10 @@ void synthRefreshChannelEventQueue(u8 groupIndex)
     u8 channel;
 
     voice = cseq;
-    keyGroupMap = SYNTH_KEYGROUP_MAP(voice);
+    keyGroupMap = voice->keyGroupMap;
     if (keyGroupMap == 0)
     {
-        queue = SYNTH_SEQUENCE_QUEUE(voice, 0);
+        queue = &voice->section[0];
         for (channel = 0; channel < SYNTH_SEQUENCE_TRACK_COUNT; channel++)
         {
             event = GenerateNextTrackEvent(channel);
@@ -59,7 +59,7 @@ void synthRefreshChannelEventQueue(u8 groupIndex)
         return;
     }
 
-    queue = SYNTH_SEQUENCE_QUEUE(voice, groupIndex);
+    queue = &voice->section[groupIndex];
     for (channel = 0; channel < SYNTH_SEQUENCE_TRACK_COUNT; channel++)
     {
         if (keyGroupMap[channel] == groupIndex)

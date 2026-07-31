@@ -169,14 +169,6 @@ typedef struct SynthSequenceQueue
     u8 unk37;
 } SynthSequenceQueue;
 
-typedef struct SynthCallbackControllerState
-{
-    u8 listIndex;
-    u8 unk01;
-    u16 value16;
-    u8 unk04[0x38 - 4];
-} SynthCallbackControllerState;
-
 typedef struct SynthTrackCommand
 {
     u32 value0;
@@ -205,36 +197,6 @@ typedef struct SynthStartRequest
     u8 pad27;
 } SynthStartRequest;
 
-typedef struct SynthKeyGroupState
-{
-    u8 unk00[0x36];
-    u8 active;
-    u8 pad37;
-} SynthKeyGroupState;
-
-/* The voice tail overlays sequence events, queue/keygroup state, and callback controller state. */
-typedef struct SynthVoiceEventScratch
-{
-    u8 unk00[4];
-    SynthSequenceEvent channelEvents[SYNTH_SEQUENCE_TRACK_COUNT];
-    u8* keyGroupMap;
-} SynthVoiceEventScratch;
-
-typedef union SynthVoiceControllerOverlay
-{
-    SynthSequenceQueue sequenceQueues[SYNTH_VOICE_NOTE_COUNT];
-    SynthKeyGroupState keyGroupStates[SYNTH_VOICE_NOTE_COUNT];
-    SynthChannelState channelStates[SYNTH_VOICE_NOTE_COUNT];
-    SynthCallbackControllerState callbackControllers[SYNTH_VOICE_NOTE_COUNT];
-    u8 raw[0x380];
-} SynthVoiceControllerOverlay;
-
-typedef struct SynthVoiceScratch
-{
-    SynthVoiceEventScratch eventScratch;
-    SynthVoiceControllerOverlay overlay;
-} SynthVoiceScratch;
-
 typedef struct SynthProgramState
 {
     u16 macId;
@@ -256,9 +218,9 @@ typedef struct SynthVoice
     u8 drumTrans[0x80];
     u8* arrbase;
     u32 trackMute[2];
-    u8 unk124[0x200];
+    SynthTrackCursor track[0x40];
     u8 trackVolumeGroup[0x40];
-    u8 unk364[0xB00];
+    SynthSequenceState pattern[0x40];
     SynthCallbackLink* callbackLists[3];
     SynthProgramState prgState[0x10];
     u8 defaultVolumeGroup;
@@ -281,21 +243,6 @@ typedef struct SynthVoiceRuntime
     u16 voiceNotes[SYNTH_MAX_VOICES][SYNTH_VOICE_NOTE_COUNT];
 } SynthVoiceRuntime;
 
-#define SYNTH_VOICE_EVENT_SCRATCH(voice) ((SynthVoiceEventScratch*)((u8*)(voice) + 0xEE0))
-#define SYNTH_VOICE_CONTROLLER_OVERLAY(voice) ((SynthVoiceControllerOverlay*)((u8*)(voice) + 0x14E8))
-#define SYNTH_CHANNEL_STATE(voice, channel) \
-    ((SynthChannelState*)((u8*)(voice) + 0x14E8 + (((channel) & 0xFF) * sizeof(SynthChannelState))))
-#define SYNTH_CHANNEL_THRESHOLD(state, index) (*(u32*)((u8*)(state) + 0x24 + ((index) * 8)))
-#define SYNTH_CHANNEL_EVENT(voice, channel) \
-    ((SynthSequenceEvent*)((u8*)(voice) + 0xEE4 + ((channel) * 0x18)))
-#define SYNTH_KEYGROUP_MAP(voice) (*(u8**)((u8*)(voice) + 0x14E4))
-#define SYNTH_SEQUENCE_QUEUE(voice, index) \
-    ((SynthSequenceQueue*)((u8*)(voice) + 0x14E8 + (((index) & 0xFF) * sizeof(SynthSequenceQueue))))
-#define SYNTH_KEYGROUP_STATE(voice, index) \
-    ((SynthKeyGroupState*)((u8*)(voice) + 0x14E8 + ((index) * 0x38)))
-#define SYNTH_SEQUENCE_STATE(voice, channel) ((SynthSequenceState*)&(voice)->unk364[(channel) * 0x2C])
-#define SYNTH_TRACK_CURSOR(voice, channel) ((SynthTrackCursor*)&(voice)->unk124[(channel) * 8])
-#define SYNTH_CHANNEL_SPEED_VALUE(voice, channel) (*(u16*)((u8*)(voice) + 0x151A + ((channel) * 0x38)))
 #define SYNTH_RUNTIME_CHANNEL_SPEED_VALUE(runtime, voiceIndex, channel) \
     (*(u16*)((u8*)(runtime) + 0x291A + ((voiceIndex) * sizeof(SynthVoice)) + ((channel) * 0x38)))
 #define SYNTH_RUNTIME_PENDING_VALUE16(runtime, voiceIndex) \

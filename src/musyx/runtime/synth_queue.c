@@ -189,14 +189,14 @@ u32 seqStartPlay(SynthPage* norm, SynthPage* drum, SynthMidiSetup* midiSetup, u3
     for (i = 0; i < 64; i++)
     {
         synthTrackVolume[i] = 0x7F;
-        SYNTH_SEQUENCE_STATE(seq, i)->noteData = 0;
+        seq->pattern[i].noteData = 0;
         if (trackOffsets[i] != 0)
         {
-            SYNTH_TRACK_CURSOR(seq, i)->current = SYNTH_TRACK_CURSOR(seq, i)->base = (u8*)(trackOffsets[i] + (u32)song);
+            seq->track[i].current = seq->track[i].base = (u8*)(trackOffsets[i] + (u32)song);
         }
         else
         {
-            SYNTH_TRACK_CURSOR(seq, i)->current = SYNTH_TRACK_CURSOR(seq, i)->base = 0;
+            seq->track[i].current = seq->track[i].base = 0;
         }
     }
 
@@ -285,7 +285,7 @@ void HandleMasterTrack(u8 secIndex)
 {
     SynthSequenceQueue* section;
 
-    section = SYNTH_SEQUENCE_QUEUE(cseq, secIndex);
+    section = &cseq->section[secIndex];
     if (section->masterTrackBase != 0)
     {
         while (((SynthMasterTrackEvent*)section->masterTrackCursor)->time != 0xFFFFFFFF)
