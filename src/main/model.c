@@ -1590,8 +1590,8 @@ void modelInitBoneMtxs(ObjModel* model, f32* outReordered) {
         PSMTXTrans(transMtx, -bone->tail[0], -bone->tail[1], -bone->tail[2]);
         PSMTXConcat(mtx, transMtx, transMtx);
         PSMTXReorder(transMtx, reorderCursor[0]);
-        boneByteOff[0] += 0x1c;
         reorderCursor[0] += 4;
+        boneByteOff[0] += 0x1c;
     }
 }
 
