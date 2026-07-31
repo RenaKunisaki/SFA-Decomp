@@ -261,6 +261,60 @@ references maps; it looks like a model-animation resource, not a map one.
   `state->moveCache[slot] + OBJANIM_CACHED_MOVE_DATA_OFFSET` (`0x80`) — one compressed-stream
   format, two different tables of pointers into it.
 
+### On-disk record grammar (corpus-certified)
+
+Certified against every animation record shipped on the rev1 disc — root `ANIM.BIN`/`PREANIM.BIN`
+plus all 52 per-map `ANIM.BIN`s: 2597 ids, 2051 unique real records, every cross-container
+duplicate byte-identical (10380 copies compared, 0 mismatches). This resolves the wiki's
+"Compression" header guesses field by field.
+
+**Containers.** Both `.TAB`s are 2600 `u32`s: ids 0–2596, entry 2597 = the `.BIN` size, then a
+`0xFFFFFFFF` terminator and one zero pad word. An entry is a 28-bit offset (all offsets 32-byte
+aligned) plus bit `0x10000000` = "this container holds the id's real record". Exactly one
+container holds each real record (PREANIM: 396 ids; root ANIM: 609; the rest per-map, 546 ids are
+stubs everywhere); every other container holds a uniform 32-byte null-anim stub
+(`0004 0010 0000 0102` + zeros = 2 frames, 1 joint, stride 0). Two anomalies: root-`ANIM.TAB` id
+2462 is flagged but stub-bodied, and PREANIM ids 1016/1017/1031/1032 are duplicated (byte-
+identically) into `warlock/ANIM.BIN`.
+
+**Record header** (the wiki's `0x001600EA 0x00002413 0x4100` example parses as):
+
+| Offs | Type | Field (runtime reader) |
+|---|---|---|
+| 0x0 | u8 | always 0 in all 2051 records |
+| 0x1 | u8 | `frameControl`: bits 4-7 = frame type (`0x00` = clamped, playable length `frameCount-1`; `0x10` = looping; only these two ship), bit 5 doubles as the packed-resource bit (never set on disc), bits 0-3 = `frameStep` (event-countdown divisor, `16384.0f / frameStep`) |
+| 0x2 | u16 | frame-stream offset (= header + descriptor-table size) |
+| 0x4 | u16 | root-motion-curve offset (0 = none; 580 records have one) |
+| 0x6 | u8 | joint count |
+| 0x7 | u8 | frame count |
+| 0x8 | u8 | frame stride, in bytes |
+| 0x9 | u8 | always 0 in all 2051 records |
+| 0xA | u16[] | track descriptors, up to the frame-stream offset |
+
+**Track descriptors** — each `u16` = `(base & 0xFFF0) | bitWidth` (bits 0-3 = per-frame delta bit
+width; the same word masked `0xFFF0` is the track's base value). Grammar, per joint, three axes
+each: a rotation descriptor; its bit 4 chains one more descriptor — either the axis's translation
+descriptor, or (if that one's own bit 4 is set) an intermediate scale/link track whose bit 5 says
+a translation descriptor still follows. Walking this grammar consumes the descriptor table exactly
+and yields exactly `jointCount` groups in **all 2051 records** (chains shipped: 7910
+rotation+translation, 956 rotation+link, 247 rotation+link+translation). The per-frame packet is
+the concatenation of every track's delta field in descriptor order, byte-padded: Σ widths =
+`stride*8 − pad`, pad 0-7, exact in all records. The decoder walks two adjacent frame packets in
+parallel and lerps by sub-frame phase; rotation samples decode as `base + delta*4`, translation as
+`base + delta` (`modelRenderInterpolateRootTransform`, `src/main/render.c`, reads exactly this).
+
+**Frame stream** at the stream offset: `frameCount` packets of `stride` bytes.
+
+**Root motion curve** at the root-curve offset: `f32 scale; s16 sampleCount;` then exactly 6 axes
+of `{s16 firstSample; if != 0, s16 samples[sampleCount]}` (`ObjAnimRootCurve`,
+`include/main/objanim_internal.h`). The walk lands inside the record's trailing 32-byte-alignment
+pad in all 580 rooted records. Encoder quirk: when `frameCount*stride` is odd the root-curve
+offset is rounded *down* to even, overlapping the frame stream's final pad byte (41 records).
+
+**PREANIM vs ANIM.** Same id space, same record format; `PREANIM.BIN` is simply the
+always-resident residence class (no per-map variant exists), selected per id by `PREANIM.TAB` bit
+`0x10000000` in `animLoadFromTable` — animations that must be loadable with no map pair resident.
+
 ### Vertex Animation?
 
 This section is fully resolved in this codebase, and turns out to be the model's morph-target

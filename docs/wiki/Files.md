@@ -49,7 +49,7 @@ Excludes the map-specific files above.
 | OBJEVENT.bin | 9568 | (none) | - | ? may not be used |
 | OBJHITS.bin | 27584 | (none) | - | hitboxes? looks like a sparse table |
 | OBJINDEX.bin | 4384 | (none) | - | maps object IDs to indices |
-| PREANIM.BIN | 946880 | PREANIM.TAB | 10400 | something relating to animation |
+| PREANIM.BIN | 946880 | PREANIM.TAB | 10400 | always-resident animation bank; same record format and id space as ANIM.BIN (see the per-file table below) |
 | TABLES.bin | 736 | TABLES.tab | 96 | relates to texture animation - deleting it stops waterfall animations |
 | TEXPRE.bin | 482048 | TEXPRE.tab | 832 | textures for something (sort of "TEX2") |
 | TEXTABLE.bin | 6496 | (none) | - | maps texture IDs to indices |
@@ -114,7 +114,7 @@ Only quick testing, so some of these might be used somewhere.
 ## Files that need investigation (per the wiki)
 
 **Animation**: `/CAMACTIO.bin` format?; `/MODANIM.BIN,TAB` presumably model animations;
-`/PREANIM.BIN,TAB` presumably animation; `/WEAPONDA.bin` format, what's in here?
+`/PREANIM.BIN,TAB` **resolved** (always-resident animation bank; per-file table below); `/WEAPONDA.bin` **resolved** (per-file table below);
 
 **Graphics**: `/TABLES.bin,tab` involved in texture animation (deleting stops waterfall
 animation, otherwise harmless); `/TEXPRE.bin,tab` related to PREANIM? textures?
@@ -254,8 +254,8 @@ Per-map compressed blocks (`modXX.zlb.bin`) are handled separately by
 
 | Wiki file | fileId(s) | Consumer in this codebase | What we can add |
 |---|---|---|---|
-| ANIM.BIN/TAB | 0x30/0x2f (+0x4a/0x49) | `src/main/model.c` (`ObjModel_Load` / `modelLoadAnimations`) | animation data referenced from a model's `ModelFileHeader` |
-| ANIMCURV.bin/tab | 0x0d/0x0e (+0x55/0x56) | `mapLoadDataFile`; consumed via `include/main/dll/rom_curve_interface.h` (`RomCurveDef`, `RomCurveWalker`) | matches wiki's `Scripting#ANIMCURV` link - our "rom curve" object-movement-path interface |
+| ANIM.BIN/TAB | 0x30/0x2f (+0x4a/0x49) | `src/main/model.c` (`ObjModel_Load` / `modelLoadAnimations`) | **format confirmed** (see [Animation](Animation) for the record grammar): `.TAB` = 2600 `u32` (ids 0-2596; entry 2597 = file size, then a `0xFFFFFFFF` terminator and one pad word); entry = 28-bit offset, bit `0x10000000` = "this pair holds the id's real record"; the root pair carries 609 real records, each per-map pair a subset, and every id resident elsewhere holds a uniform 32-byte null-anim stub (rev1: flag<=>non-stub exact except id 2462, flagged in the root `.TAB` but stub-bodied). All cross-container duplicate copies are byte-identical (10380 pairs checked, 0 mismatches) |
+| ANIMCURV.bin/tab | 0x0d/0x0e (+0x55/0x56) | `mapLoadDataFile` slots; the reader is `ObjSeq_objLoadAnimdata` + the ObjSeq action/curve interpreter (engine DLL 2, `src/dlls/engine/2/2.c`) | **format confirmed** = the wiki's `Scripting#ANIMCURV` cutscene/sequence data (actions + per-track control points), **not** the RomCurve path network (`rom_curve_interface.h`) - RomCurve points come from the per-map `.romlist.zlb` object stream (objType 110), see [Curves](Curves). Corpus (root + 52 map pairs, rev1): `.tab` = 6320 `u32` (ids 0-6310, two `0xFFFFFFFF` terminators, zero pad), offset = low 24 bits (4-aligned, monotone), bit31 = id present in this pair; 8309 flagged records (3827 unique ids; per-map 0-573, root 423), records tile each `.bin`; absent ids are zero-length slots except 1802 uniform 8-byte tombstones `00000000 FF00FFC4`. Record = `{char tag[4] "SEQA"/"SEQB" (176 SEQB); s16 dataSize; s16 commandCount}` + `commandCount`*4 B actions + `((dataSize>>2 - commandCount)>>1)`*8 B control points `{f32 value; u8 typeAndScale; u8 track (low 5 bits, 0-18 shipped); s16 frame}`. Data quirks: tab entry 583's stored `dataSize` is corrupt (`0x80B9`, true size 0x14) in all 23 containers that carry it (read as a negative `s16` by the loader); 10 ids (5018, 5023, 5567, 5604-5610) drifted between the root copy and a per-map copy; root `.bin` has 60 dead bytes (a delisted record at id 35's slot) |
 | modXX.zlb.bin/tab | n/a | `piRomLoadSection` + `struct PackHeader`/`struct ZlbHeader` | magic/size header fully decoded (see above) |
 | MODELIND.bin | 0x2c | `src/main/model.c: ObjModel_Load` | `fileLoadToBufferOffset(0x2c, gModelResourceBuffer, idc*2, 8)`; word 0 of the 8-byte record is the resolved "real" model id used for the `MODELS.bin` lookup - directly confirms "maps model IDs to indices" |
 | MODELS.bin/TAB | 0x2b/0x2a (+0x46/0x45) | `src/main/model.c`, `src/main/objprint_dolphin.c` | dual-slot per-map streaming (see above) |
@@ -278,7 +278,7 @@ Per-map compressed blocks (`modXX.zlb.bin`) are handled separately by
 | OBJEVENT.bin | 0x40 | `src/main/object.c` (`eventTable->entries`, `eventTable->byteCount`) | **actively used** - this contradicts the wiki's "may not be used" |
 | OBJHITS.bin | 0x41 | `src/main/objHitReact.c` (`OBJHITREACT_ENTRY_TAB_FILE_ID` = 0x41, `include/main/objHitReact.h`) | confirms "sparse table": `ObjHitReact_LoadMoveEntries` walks a per-model `hitReactMoveTable` of `{moveId, s16 byteOffset, s16 byteCount}` triples and pulls the matching byte range out of OBJHITS.bin via `getTabEntry`/`fileLoadToBufferOffset` - i.e. sparse per-move hit-reaction data, indexed indirectly through the model's own move table rather than a flat index |
 | OBJINDEX.bin | 0x3f | `src/main/object.c` (`gObjSeqToObjIdMax = (getDataFileSize(0x3f) >> 1) - 1`) | confirms 2-byte (`s16`) stride, i.e. an array of ids - matches "maps object IDs to indices" |
-| PREANIM.BIN/TAB | 0x51/0x52 | `src/main/model.c` (0x52 read as a 4-byte `flags` value at `id << 2`) | partial format confirmation only |
+| PREANIM.BIN/TAB | 0x51/0x52 | `src/main/model.c` (`animLoadFromTable`: 0x52 read as a 4-byte `flags` value at `id << 2`; bit `0x10000000` selects the PREANIM branch, else the ANIM branch) | **format confirmed**: same 2600-entry `.TAB` shape and the same per-id record format as ANIM.BIN/TAB (see [Animation](Animation)) over the same 2597-id space. PREANIM is the always-resident bank: 396 ids live here (root-loaded, no per-map variant exists) and hold 32-byte null stubs in ANIM.BIN; every other id holds a stub here. Four PREANIM ids (1016, 1017, 1031, 1032) are additionally duplicated - byte-identically - into `warlock/ANIM.BIN` |
 | TABLES.bin/tab | 0x16/0x17 | `src/main/object.c` (`gObjTablesBinData`/`gObjTablesBinIndex`) | 16 sub-tables; ids 0-4 and 14 are `-1`-terminated `s32` textureId lists (ids 1-3 are overlapping suffix tails of one list; id 14 is read negated by texscroll2); ids 5-13 have no consumer anywhere in src |
 | TEXPRE.bin/tab | 0x4f/0x50 | `src/main/texture.c` (`getCurrentDataFile(0x50)`) | `.tab` consulted as the pre-loaded texture bank index |
 | TEXTABLE.bin | 0x22 | `src/main/texture.c` (`loadAssetFileById(&gRcpTexIdRemap, 0x22)`) | texture-id remap table |
