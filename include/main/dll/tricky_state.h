@@ -50,6 +50,10 @@ typedef union TrickyScratch
     s32 i;
     u32 u;
     f32 f;
+    struct {
+        u8 hi : 4; /* tricky NW-mammoth tumbleweed-count latch (top nibble of the scratch word) */
+        u8 lo : 4;
+    } nib;
 } TrickyScratch;
 
 typedef struct TrickyPackedSlots
@@ -125,9 +129,24 @@ typedef struct TrickyState {
     f32 rotStepScale;
     u32 pendingStateFlags;
     u32 stateFlags; /* the TRICKY state flag word (bit masks 0x80..0x100000) */
-    u8 statusFlags;
-    u8 pad59[0x5A - 0x59];
-    s16 targetYaw; /* target facing angle: set from targetYaw (skeetla); tricky interpolates anim.rotX toward it (diff = targetYaw - rotX) under TRICKY_STATE_FLAG_ROTATE */
+    union {
+        struct {
+            u8 statusFlags;
+            u8 pad59[0x5A - 0x59];
+            s16 targetYaw; /* target facing angle: set from targetYaw (skeetla); tricky interpolates anim.rotX toward it (diff = targetYaw - rotX) under TRICKY_STATE_FLAG_ROTATE */
+        };
+        struct {
+            u8 statusFlag7 : 1;
+            u8 soundSuppressed : 1; /* statusFlags bit 6: suppresses barks/voice sfx (trickySetSoundSuppressed / trickyTryPlaySound) */
+            u8 heightTracking : 1; /* statusFlags bit 5 */
+            u8 statusFlagsLow : 5;
+        };
+        struct {
+            u32 warpCooldownHi : 3;
+            u32 warpCooldown : 4; /* packed trickywarp cooldown counter (trickyShouldGoToWarpPoint) */
+            u32 warpCooldownLo : 1;
+        };
+    };
     u32 heightTrackObjId;
     f32 trackedHeight;
     TrickyJumpArc jumpArc;
@@ -257,12 +276,22 @@ typedef struct TrickyState {
             TrickyScratch cooldownB; /* .f: countdown paired with cooldownA: -= timeDelta, clamped to floor; == floor gates a move, > floor gates fidget/contact-sfx (tricky/substates/weapone6/tumbleweedbush). .ptr: reused in the animobjd2 orbit substate to hold the circling-target object, copied into followObj */
             void *unk724; /* trickyFlame reads this slot as the helper-done callback while helpers are active */
         };
-        f32 guardPoint[3]; /* trickyGuard: guard-post position (home pos - 15 units along facing); trickyFlame stores two ObjfsaRomCurveDef* into [0]/[1] via int launders */
+        f32 guardPoint[3]; /* trickyGuard: guard-post position (home pos - 15 units along facing); trickyFlame clears [0]/[1] with 0.0f on exit */
+        struct {
+            struct ObjfsaRomCurveDef *flameNode0; /* trickyFlame: Objfsa_FindNearestCurveType24 result */
+            struct ObjfsaRomCurveDef *flameNode1; /* trickyFlame: getById(flameNode0->linkIds[0]) */
+        };
     };
     union {
         struct {
             u8 stateFlags728; /* flag byte: 0/1 boolean sets (tricky/animobjd2) plus a bit-5 test (tricky_substates) */
             u8 pad729[0x72C - 0x729];
+        };
+        struct {
+            u8 flag728Bit7 : 1;
+            u8 flag728Bit6 : 1;
+            u8 flag728Bit5 : 1;
+            u8 flag728Rest : 5;
         };
         f32 guardTimer; /* guard/flame state dwell timer: += / -= timeDelta against 150/60 thresholds (trickyGuard/trickyFlame) */
     };
@@ -293,7 +322,8 @@ typedef struct TrickyState {
     GameObject* childB;
     f32 promptBDespawnTimer;
     GameObject* child;
-    u8 pad7BC[0x7C0 - 0x7BC];
+    TrickyPackedSlots packedSlots; /* 0x7BC: 2-bit anim-slot index per attached child (childA/childB/child) */
+    u8 pad7BD[0x7C0 - 0x7BD];
     f32 childPhaseTimer0; /* child-object periodic phase timer: reset to floor lbl_803E23DC when the child is attached, += timeDelta while it lives, wraps at lbl_803E2550 to (re)issue a TRICKY_VOICE line (tricky/substates/animobjd2) */
     f32 childPhaseTimer1; /* child-object periodic phase timer: += timeDelta, wraps at lbl_803E24D8/lbl_803E2440 to toggle the child's 0x4000 anim flag */
     f32 childPhaseTimer2; /* child-object periodic phase timer: += timeDelta, wraps at lbl_803E24C8, gates the child's 0x4000 anim flag via lbl_803E2408 */
@@ -311,7 +341,15 @@ typedef struct TrickyState {
     u8 pad81C[0x82C - 0x81C];
     u8 modelVariant; /* progress/10; indexes model bank color */
     u8 progressValue; /* map-event progress byte written out via **progressPtr; computed as base+(count<<2), clamped to a max byte (tricky writes to progressPtr, substates computes/clamps) */
-    u8 flags82E; /* bit flags 5/6/7, accessed only through the TrickyByteFlags / TrickyInitFlags overlays (tricky/tricky_substates) */
+    union {
+        u8 flags82E; /* bit flags 5/6/7 (tricky/tricky_substates) */
+        struct {
+            u8 blendPending : 1; /* bit 7: requests priming of model blend channel 1 (Tricky_updateBlendChannelWeight consumes) */
+            u8 blendActive : 1;  /* bit 6: blend channel 1 ramp is running */
+            u8 flag82EBit5 : 1;
+            u8 flags82ERest : 5;
+        };
+    };
     u8 pad82F[0x838 - 0x82F];
     f32 particleTimer; /* f32 countdown decremented by timeDelta; while > threshold the queued particle effect keeps emitting; reset to a float sentinel on state entry (tricky/skeetla/weapone6/tricky_substates/mmp_cratercritter/animobjd2) */
     u8 pad83C[0x840 - 0x83C];
@@ -339,14 +377,6 @@ STATIC_ASSERT(offsetof(TrickyState, commands) == 0x748);
 STATIC_ASSERT(offsetof(TrickyState, commandCount) == 0x798);
 STATIC_ASSERT(offsetof(TrickyState, footPoints) == 0x7D8);
 STATIC_ASSERT(offsetof(TrickyState, impressTimer) == 0x808);
-
-typedef struct
-{
-    u8 bit7 : 1;
-    u8 bit6 : 1;
-    u8 bit5 : 1;
-    u8 rest : 5;
-} TrickyByteFlags;
 
 
 #endif /* MAIN_DLL_TRICKY_STATE_H_ */

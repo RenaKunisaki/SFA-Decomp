@@ -4,7 +4,8 @@
 #include "global.h"
 
 typedef struct ObjfsaRomCurveDef {
-  u8 pad00[4];
+  u8 pad00[3];
+  u8 walkGroup; /* 0x3: walk-group index, compared against Objfsa_GetWalkGroupIndexAtPoint (tricky route/flame walkers) */
   u8 linkSelectors[4]; /* 0x4: per-link selector byte, parallels linkIds[4] */
   f32 x;
   f32 y;
@@ -23,6 +24,7 @@ typedef struct ObjfsaRomCurveDef {
   s16 forbiddenBit;
 } ObjfsaRomCurveDef;
 
+STATIC_ASSERT(offsetof(ObjfsaRomCurveDef, walkGroup) == 0x3);
 STATIC_ASSERT(offsetof(ObjfsaRomCurveDef, linkSelectors) == 0x4);
 STATIC_ASSERT(offsetof(ObjfsaRomCurveDef, x) == 0x8);
 STATIC_ASSERT(offsetof(ObjfsaRomCurveDef, type) == 0x19);
