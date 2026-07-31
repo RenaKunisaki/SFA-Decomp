@@ -5240,9 +5240,10 @@ int playerState25(int obj, int state, f32 updateRate)
     }
     {
         f32 smoothVelZ = inner->smoothVelZ;
-        f32 smoothVelX = inner->smoothVelX;
+        f32 smoothVelX;
         ((PlayerState*)state)->baddie.animSpeedA +=
-            interpolate(-smoothVelZ * cosYaw - smoothVelX * sinYaw - ((PlayerState*)state)->baddie.animSpeedA,
+            interpolate(-smoothVelZ * cosYaw - (smoothVelX = inner->smoothVelX) * sinYaw -
+                            ((PlayerState*)state)->baddie.animSpeedA,
                         inner->targetAnimSpeed, timeDelta);
         ((PlayerState*)state)->baddie.animSpeedB +=
             interpolate(smoothVelX * cosYaw - smoothVelZ * sinYaw - ((PlayerState*)state)->baddie.animSpeedB,
