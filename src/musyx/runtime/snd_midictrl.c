@@ -44,8 +44,8 @@ static inline void inpSetRPNHi(u8 set, u8 channel, u8 value)
         {
             if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
-                synthVoice[i].pitchBendRangeDown = range;
-                synthVoice[i].pitchBendRangeUp = range;
+                synthVoice[i].pbUpperKeyRange = range;
+                synthVoice[i].pbLowerKeyRange = range;
             }
         }
         break;
@@ -79,8 +79,8 @@ static inline void inpSetRPNDec(u8 set, u8 channel)
         {
             if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
-                synthVoice[i].pitchBendRangeDown = range;
-                synthVoice[i].pitchBendRangeUp = range;
+                synthVoice[i].pbUpperKeyRange = range;
+                synthVoice[i].pbLowerKeyRange = range;
             }
         }
         break;
@@ -110,8 +110,8 @@ static inline void inpSetRPNInc(u8 set, u8 channel)
         {
             if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
-                synthVoice[i].pitchBendRangeDown = range;
-                synthVoice[i].pitchBendRangeUp = range;
+                synthVoice[i].pbUpperKeyRange = range;
+                synthVoice[i].pbLowerKeyRange = range;
             }
         }
         break;
@@ -161,7 +161,7 @@ void inpSetMidiCtrl(u8 ctrl, u8 channel, u8 set, u8 value)
         {
             if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
-                synthVoice[i].inputDirtyFlags = MCMD_INPUT_DIRTY_ALL;
+                synthVoice[i].midiDirtyFlags = MCMD_INPUT_DIRTY_ALL;
                 synthKeyStateUpdate(&synthVoice[i]);
             }
         }
@@ -190,7 +190,7 @@ void inpSetMidiCtrl(u8 ctrl, u8 channel, u8 set, u8 value)
         {
             if (set == synthVoice[i].midiSet && channel == synthVoice[i].midi)
             {
-                synthVoice[i].inputDirtyFlags = MCMD_INPUT_DIRTY_ALL;
+                synthVoice[i].midiDirtyFlags = MCMD_INPUT_DIRTY_ALL;
                 synthKeyStateUpdate(&synthVoice[i]);
             }
         }
@@ -370,11 +370,11 @@ void inpAddCtrl(McmdInputSlot* dest, u8 ctrl, s32 scale, u8 comb, u32 isVar)
 
     if (comb == 0)
     {
-        dest->entryCount = 0;
+        dest->numSource = 0;
     }
-    if (dest->entryCount < 4)
+    if (dest->numSource < 4)
     {
-        n = dest->entryCount++;
+        n = dest->numSource++;
         if (isVar == 0)
         {
             ctrl = inpTranslateExCtrl(ctrl);
@@ -383,9 +383,9 @@ void inpAddCtrl(McmdInputSlot* dest, u8 ctrl, s32 scale, u8 comb, u32 isVar)
         {
             comb |= 0x10;
         }
-        dest->entries[n].controller = ctrl;
-        dest->entries[n].combineModeFlags = comb;
-        dest->entries[n].scale = scale;
+        dest->source[n].midiCtrl = ctrl;
+        dest->source[n].combine = comb;
+        dest->source[n].scale = scale;
     }
 }
 
@@ -402,8 +402,8 @@ void inpFXCopyCtrl(u8 controller, McmdVoiceState* dstState, McmdVoiceState* srcS
 
     ctrl = controller & 0xff;
     stateBase = (u8*)lbl_803CD760;
-    dstVoice = dstState->voiceHandle & 0xff;
-    srcVoice = srcState->voiceHandle & 0xff;
+    dstVoice = dstState->id & 0xff;
+    srcVoice = srcState->id & 0xff;
 
     if (ctrl < 0x40)
     {
@@ -479,14 +479,14 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
     s32 tmp;
     s32 vtmp;
 
-    for (value = 0, i = 0; i < slotPtr->entryCount; ++i)
+    for (value = 0, i = 0; i < slotPtr->numSource; ++i)
     {
-        if (slotPtr->entries[i].combineModeFlags & MCMD_INPUT_ENTRY_USE_VAR_FLAG)
+        if (slotPtr->source[i].combine & MCMD_INPUT_ENTRY_USE_VAR_FLAG)
         {
-            tmp = (statePtr != NULL ? varGet(statePtr, 0, slotPtr->entries[i].controller) : 0);
+            tmp = (statePtr != NULL ? varGet(statePtr, 0, slotPtr->source[i].midiCtrl) : 0);
             goto combine_signed;
         }
-        ctrl = slotPtr->entries[i].controller;
+        ctrl = slotPtr->source[i].midiCtrl;
         if (ctrl == MCMD_CTRL_PITCH_BEND || ctrl == MCMD_CTRL_MODULATION || ctrl == MCMD_CTRL_PANNING ||
             ctrl == MCMD_CTRL_EX_A0 || ctrl == MCMD_CTRL_EX_A1 || ctrl == MCMD_CTRL_SUR_PANNING)
         {
@@ -496,8 +496,8 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
             case MCMD_CTRL_EX_A1:
                 if (statePtr != NULL)
                 {
-                    tmp = statePtr->exCtrls[ctrl - MCMD_CTRL_EX_A0].value << 1;
-                    statePtr->exCtrlDirty[ctrl - MCMD_CTRL_EX_A0] = 1;
+                    tmp = statePtr->lfo[ctrl - MCMD_CTRL_EX_A0].value << 1;
+                    statePtr->lfoUsedByInput[ctrl - MCMD_CTRL_EX_A0] = 1;
                 }
                 else
                 {
@@ -509,7 +509,7 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
                 break;
             }
         combine_signed:
-            tmp = (tmp * (slotPtr->entries[i].scale >> 1)) >> 15;
+            tmp = (tmp * (slotPtr->source[i].scale >> 1)) >> 15;
             if (tmp < -0x2000)
             {
                 tmp = -0x2000;
@@ -518,7 +518,7 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
             {
                 tmp = 0x1FFF;
             }
-            switch (slotPtr->entries[i].combineModeFlags & MCMD_INPUT_ENTRY_COMBINE_MASK)
+            switch (slotPtr->source[i].combine & MCMD_INPUT_ENTRY_COMBINE_MASK)
             {
             case MCMD_INPUT_COMBINE_SET:
                 value = tmp + 0x2000;
@@ -589,13 +589,13 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
         }
         else
         {
-            ctrl = slotPtr->entries[i].controller;
+            ctrl = slotPtr->source[i].midiCtrl;
             switch (ctrl)
             {
             case MCMD_CTRL_MIDI_LAYER:
                 if (statePtr != NULL)
                 {
-                    tmp = statePtr->keyBase << 7;
+                    tmp = statePtr->orgNote << 7;
                 }
                 else
                 {
@@ -603,17 +603,17 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
                 }
                 break;
             case MCMD_CTRL_VOICE_AGE:
-                tmp = statePtr != NULL ? statePtr->volumeBase >> 9 : 0;
+                tmp = statePtr != NULL ? statePtr->orgVolume >> 9 : 0;
                 break;
             case MCMD_CTRL_VOICE_TIME:
                 if (statePtr != NULL)
                 {
-                    tmp = (synthRealTime - *(u64*)&statePtr->startTimeHi) >> 8;
+                    tmp = (synthRealTime - *(u64*)&statePtr->macStartTimeHi) >> 8;
                     if (tmp > 0x3fff)
                     {
                         tmp = 0x3fff;
                     }
-                    statePtr->unkA8[0] = 1;
+                    statePtr->timeUsedByInput = 1;
                 }
                 else
                 {
@@ -624,12 +624,12 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
                 tmp = inpGetMidiCtrl(ctrl, midi, midiSet) & 0xffff;
                 break;
             }
-            tmp = (tmp * (slotPtr->entries[i].scale >> 1)) >> 15;
+            tmp = (tmp * (slotPtr->source[i].scale >> 1)) >> 15;
             if (tmp > 0x3FFF)
             {
                 tmp = 0x3FFF;
             }
-            switch (slotPtr->entries[i].combineModeFlags & MCMD_INPUT_ENTRY_COMBINE_MASK)
+            switch (slotPtr->source[i].combine & MCMD_INPUT_ENTRY_COMBINE_MASK)
             {
             case MCMD_INPUT_COMBINE_SET:
                 value = tmp;
@@ -700,7 +700,7 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
         }
     }
 
-    *(u16*)&slotPtr->cachedValue = value;
+    *(u16*)&slotPtr->oldValue = value;
     return value;
 }
 
@@ -709,13 +709,13 @@ static u16 _GetInputValue(McmdVoiceState* statePtr, McmdInputSlot* slotPtr, u8 m
  */
 u16 inpGetVolume(McmdVoiceState* state)
 {
-    u32 flags = state->inputDirtyFlags;
+    u32 flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_VOLUME) == 0)
     {
-        return state->volumeInput.cachedValue;
+        return state->inpVolume.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_VOLUME;
-    return _GetInputValue(state, &state->volumeInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_VOLUME;
+    return _GetInputValue(state, &state->inpVolume, state->midi, state->midiSet);
 }
 
 /*
@@ -723,105 +723,105 @@ u16 inpGetVolume(McmdVoiceState* state)
  */
 u16 inpGetPanning(McmdVoiceState* state)
 {
-    u32 flags = state->inputDirtyFlags;
+    u32 flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_PANNING) == 0)
     {
-        return state->panningInput.cachedValue;
+        return state->inpPanning.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PANNING;
-    return _GetInputValue(state, &state->panningInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PANNING;
+    return _GetInputValue(state, &state->inpPanning, state->midi, state->midiSet);
 }
 
 u16 inpGetSurPanning(McmdVoiceState* state)
 {
     int flags;
 
-    flags = state->inputDirtyFlags;
+    flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_SUR_PANNING) == 0)
     {
-        return *(u16*)&state->surPanningInput.cachedValue;
+        return *(u16*)&state->inpSurroundPanning.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_SUR_PANNING;
-    return _GetInputValue(state, &state->surPanningInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_SUR_PANNING;
+    return _GetInputValue(state, &state->inpSurroundPanning, state->midi, state->midiSet);
 }
 
 u16 inpGetPitchBend(McmdVoiceState* state)
 {
     int flags;
 
-    flags = state->inputDirtyFlags;
+    flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_PITCH_BEND) == 0)
     {
-        return *(u16*)&state->pitchBendInput.cachedValue;
+        return *(u16*)&state->inpPitchBend.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PITCH_BEND;
-    return _GetInputValue(state, &state->pitchBendInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PITCH_BEND;
+    return _GetInputValue(state, &state->inpPitchBend, state->midi, state->midiSet);
 }
 
 u16 inpGetDoppler(McmdVoiceState* state)
 {
-    u32 flags = state->inputDirtyFlags;
+    u32 flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_DOPPLER) == 0)
     {
-        return state->dopplerInput.cachedValue;
+        return state->inpDoppler.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_DOPPLER;
-    return _GetInputValue(state, &state->dopplerInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_DOPPLER;
+    return _GetInputValue(state, &state->inpDoppler, state->midi, state->midiSet);
 }
 
 u16 inpGetModulation(McmdVoiceState* state)
 {
-    u32 flags = state->inputDirtyFlags;
+    u32 flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_MODULATION) == 0)
     {
-        return state->modulationInput.cachedValue;
+        return state->inpModulation.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_MODULATION;
-    return _GetInputValue(state, &state->modulationInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_MODULATION;
+    return _GetInputValue(state, &state->inpModulation, state->midi, state->midiSet);
 }
 
 u16 inpGetPedal(McmdVoiceState* state)
 {
-    u32 flags = state->inputDirtyFlags;
+    u32 flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_PEDAL) == 0)
     {
-        return state->pedalInput.cachedValue;
+        return state->inpPedal.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PEDAL;
-    return _GetInputValue(state, &state->pedalInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PEDAL;
+    return _GetInputValue(state, &state->inpPedal, state->midi, state->midiSet);
 }
 
 u16 inpGetPreAuxA(McmdVoiceState* state)
 {
-    u32 flags = state->inputDirtyFlags;
+    u32 flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_PRE_AUX_A) == 0)
     {
-        return state->preAuxAInput.cachedValue;
+        return state->inpPreAuxA.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PRE_AUX_A;
-    return _GetInputValue(state, &state->preAuxAInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PRE_AUX_A;
+    return _GetInputValue(state, &state->inpPreAuxA, state->midi, state->midiSet);
 }
 
 u16 inpGetReverb(McmdVoiceState* state)
 {
-    u32 flags = state->inputDirtyFlags;
+    u32 flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_REVERB) == 0)
     {
-        return state->reverbInput.cachedValue;
+        return state->inpReverb.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_REVERB;
-    return _GetInputValue(state, &state->reverbInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_REVERB;
+    return _GetInputValue(state, &state->inpReverb, state->midi, state->midiSet);
 }
 
 u16 inpGetPreAuxB(McmdVoiceState* state)
 {
-    u32 flags = state->inputDirtyFlags;
+    u32 flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_PRE_AUX_B) == 0)
     {
-        return state->preAuxBInput.cachedValue;
+        return state->inpPreAuxB.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PRE_AUX_B;
-    return _GetInputValue(state, &state->preAuxBInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_PRE_AUX_B;
+    return _GetInputValue(state, &state->inpPreAuxB, state->midi, state->midiSet);
 }
 
 typedef union AuxInputSlots
@@ -841,13 +841,13 @@ u32 inpAuxBDirtyFlags[4] = {0x80000010, 0x80000020, 0x80000040, 0x80000080};
  */
 u16 inpGetPostAuxB(McmdVoiceState* state)
 {
-    u32 flags = state->inputDirtyFlags;
+    u32 flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_POST_AUX_B) == 0)
     {
-        return state->postAuxBInput.cachedValue;
+        return state->inpPostAuxB.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_POST_AUX_B;
-    return _GetInputValue(state, &state->postAuxBInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_POST_AUX_B;
+    return _GetInputValue(state, &state->inpPostAuxB, state->midi, state->midiSet);
 }
 
 /*
@@ -855,13 +855,13 @@ u16 inpGetPostAuxB(McmdVoiceState* state)
  */
 u16 inpGetTremolo(McmdVoiceState* state)
 {
-    u32 flags = state->inputDirtyFlags;
+    u32 flags = state->midiDirtyFlags;
     if ((flags & MCMD_INPUT_DIRTY_TREMOLO) == 0)
     {
-        return state->tremoloInput.cachedValue;
+        return state->inpTremolo.oldValue;
     }
-    state->inputDirtyFlags = flags & ~MCMD_INPUT_DIRTY_TREMOLO;
-    return _GetInputValue(state, &state->tremoloInput, state->midi, state->midiSet);
+    state->midiDirtyFlags = flags & ~MCMD_INPUT_DIRTY_TREMOLO;
+    return _GetInputValue(state, &state->inpTremolo, state->midi, state->midiSet);
 }
 
 static inline u32 inpResetGlobalMIDIDirtyFlag(u8 chan, u8 midiSet, u32 flag)
@@ -882,7 +882,7 @@ u16 inpGetAuxA(u8 studio, u8 index, u8 midi, u8 midiSet)
 {
     if (!inpResetGlobalMIDIDirtyFlag(midi, midiSet, inpAuxADirtyFlags[index]))
     {
-        return inpAuxA.slots[studio][index].cachedValue;
+        return inpAuxA.slots[studio][index].oldValue;
     }
     return _GetInputValue(0, &inpAuxA.slots[studio][index], midi, midiSet);
 }
@@ -894,7 +894,7 @@ u16 inpGetAuxB(u8 studio, u8 index, u8 midi, u8 midiSet)
 {
     if (!inpResetGlobalMIDIDirtyFlag(midi, midiSet, inpAuxBDirtyFlags[index]))
     {
-        return inpAuxB.slots[studio][index].cachedValue;
+        return inpAuxB.slots[studio][index].oldValue;
     }
     return _GetInputValue(0, &inpAuxB.slots[studio][index], midi, midiSet);
 }
@@ -922,56 +922,56 @@ void inpInit(u32 state)
 
     if (state != 0)
     {
-        vs->volumeInput.entries[0].controller = MCMD_CTRL_VOLUME;
-        vs->volumeInput.entries[0].combineModeFlags = 0;
-        vs->volumeInput.entries[0].scale = 0x10000;
-        vs->volumeInput.entries[1].controller = MCMD_CTRL_EXPRESSION;
-        vs->volumeInput.entries[1].combineModeFlags = 2;
-        vs->volumeInput.entries[1].scale = 0x10000;
-        vs->volumeInput.entryCount = 2;
-        vs->panningInput.entries[0].controller = MCMD_CTRL_PANNING;
-        vs->panningInput.entries[0].combineModeFlags = 0;
-        vs->panningInput.entries[0].scale = 0x10000;
-        vs->panningInput.entryCount = 1;
-        vs->surPanningInput.entries[0].controller = MCMD_CTRL_SUR_PANNING;
-        vs->surPanningInput.entries[0].combineModeFlags = 0;
-        vs->surPanningInput.entries[0].scale = 0x10000;
-        vs->surPanningInput.entryCount = 1;
-        vs->pitchBendInput.entries[0].controller = MCMD_CTRL_PITCH_BEND;
-        vs->pitchBendInput.entries[0].combineModeFlags = 0;
-        vs->pitchBendInput.entries[0].scale = 0x10000;
-        vs->pitchBendInput.entryCount = 1;
-        vs->modulationInput.entries[0].controller = MCMD_CTRL_MODULATION;
-        vs->modulationInput.entries[0].combineModeFlags = 0;
-        vs->modulationInput.entries[0].scale = 0x10000;
-        vs->modulationInput.entryCount = 1;
-        vs->pedalInput.entries[0].controller = MCMD_CTRL_PEDAL;
-        vs->pedalInput.entries[0].combineModeFlags = 0;
-        vs->pedalInput.entries[0].scale = 0x10000;
-        vs->pedalInput.entryCount = 1;
-        vs->portamentoInput.entries[0].controller = MCMD_CTRL_PORTAMENTO;
-        vs->portamentoInput.entries[0].combineModeFlags = 0;
-        vs->portamentoInput.entries[0].scale = 0x10000;
-        vs->portamentoInput.entryCount = 1;
-        vs->preAuxAInput.entryCount = 0;
-        vs->reverbInput.entries[0].controller = MCMD_CTRL_REVERB;
-        vs->reverbInput.entries[0].combineModeFlags = 0;
-        vs->reverbInput.entries[0].scale = 0x10000;
-        vs->reverbInput.entryCount = 1;
-        vs->preAuxBInput.entryCount = 0;
-        vs->postAuxBInput.entries[0].controller = MCMD_CTRL_POST_AUX_B;
-        vs->postAuxBInput.entries[0].combineModeFlags = 0;
-        vs->postAuxBInput.entries[0].scale = 0x10000;
-        vs->postAuxBInput.entryCount = 1;
-        vs->dopplerInput.entries[0].controller = MCMD_CTRL_DOPPLER;
-        vs->dopplerInput.entries[0].combineModeFlags = 0;
-        vs->dopplerInput.entries[0].scale = 0x10000;
-        vs->dopplerInput.entryCount = 1;
-        vs->tremoloInput.entryCount = 0;
-        vs->inputDirtyFlags = MCMD_INPUT_DIRTY_ALL;
-        vs->exCtrlDirty[0] = 0;
-        vs->exCtrlDirty[1] = 0;
-        vs->unkA8[0] = 0;
+        vs->inpVolume.source[0].midiCtrl = MCMD_CTRL_VOLUME;
+        vs->inpVolume.source[0].combine = 0;
+        vs->inpVolume.source[0].scale = 0x10000;
+        vs->inpVolume.source[1].midiCtrl = MCMD_CTRL_EXPRESSION;
+        vs->inpVolume.source[1].combine = 2;
+        vs->inpVolume.source[1].scale = 0x10000;
+        vs->inpVolume.numSource = 2;
+        vs->inpPanning.source[0].midiCtrl = MCMD_CTRL_PANNING;
+        vs->inpPanning.source[0].combine = 0;
+        vs->inpPanning.source[0].scale = 0x10000;
+        vs->inpPanning.numSource = 1;
+        vs->inpSurroundPanning.source[0].midiCtrl = MCMD_CTRL_SUR_PANNING;
+        vs->inpSurroundPanning.source[0].combine = 0;
+        vs->inpSurroundPanning.source[0].scale = 0x10000;
+        vs->inpSurroundPanning.numSource = 1;
+        vs->inpPitchBend.source[0].midiCtrl = MCMD_CTRL_PITCH_BEND;
+        vs->inpPitchBend.source[0].combine = 0;
+        vs->inpPitchBend.source[0].scale = 0x10000;
+        vs->inpPitchBend.numSource = 1;
+        vs->inpModulation.source[0].midiCtrl = MCMD_CTRL_MODULATION;
+        vs->inpModulation.source[0].combine = 0;
+        vs->inpModulation.source[0].scale = 0x10000;
+        vs->inpModulation.numSource = 1;
+        vs->inpPedal.source[0].midiCtrl = MCMD_CTRL_PEDAL;
+        vs->inpPedal.source[0].combine = 0;
+        vs->inpPedal.source[0].scale = 0x10000;
+        vs->inpPedal.numSource = 1;
+        vs->inpPortamento.source[0].midiCtrl = MCMD_CTRL_PORTAMENTO;
+        vs->inpPortamento.source[0].combine = 0;
+        vs->inpPortamento.source[0].scale = 0x10000;
+        vs->inpPortamento.numSource = 1;
+        vs->inpPreAuxA.numSource = 0;
+        vs->inpReverb.source[0].midiCtrl = MCMD_CTRL_REVERB;
+        vs->inpReverb.source[0].combine = 0;
+        vs->inpReverb.source[0].scale = 0x10000;
+        vs->inpReverb.numSource = 1;
+        vs->inpPreAuxB.numSource = 0;
+        vs->inpPostAuxB.source[0].midiCtrl = MCMD_CTRL_POST_AUX_B;
+        vs->inpPostAuxB.source[0].combine = 0;
+        vs->inpPostAuxB.source[0].scale = 0x10000;
+        vs->inpPostAuxB.numSource = 1;
+        vs->inpDoppler.source[0].midiCtrl = MCMD_CTRL_DOPPLER;
+        vs->inpDoppler.source[0].combine = 0;
+        vs->inpDoppler.source[0].scale = 0x10000;
+        vs->inpDoppler.numSource = 1;
+        vs->inpTremolo.numSource = 0;
+        vs->midiDirtyFlags = MCMD_INPUT_DIRTY_ALL;
+        vs->lfoUsedByInput[0] = 0;
+        vs->lfoUsedByInput[1] = 0;
+        vs->timeUsedByInput = 0;
     }
     else
     {
@@ -982,8 +982,8 @@ void inpInit(u32 state)
         {
             for (j = 0; j < 4; j++)
             {
-                inpAuxA.slots[i][j].entryCount = 0;
-                inpAuxB.slots[i][j].entryCount = 0;
+                inpAuxA.slots[i][j].numSource = 0;
+                inpAuxB.slots[i][j].numSource = 0;
             }
         }
 
@@ -1038,9 +1038,9 @@ u16 inpGetExCtrl(McmdVoiceState* state, u8 ctrl)
     switch (inpTranslateExCtrl(ctrl))
     {
     case MCMD_CTRL_EX_A0:
-        return state->exCtrlA0Value * 2 + 0x2000;
+        return state->lfo[0].value * 2 + 0x2000;
     case MCMD_CTRL_EX_A1:
-        return state->exCtrlA1Value * 2 + 0x2000;
+        return state->lfo[1].value * 2 + 0x2000;
     default:
         if (state->midi != 0xff)
         {

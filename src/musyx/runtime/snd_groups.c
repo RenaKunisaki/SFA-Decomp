@@ -77,8 +77,8 @@ typedef struct FX_DATA
     FX_TAB fx[1];
 } FX_DATA;
 
-extern s16 synthLoadedGroupCount;
-GSTACK synthLoadedGroupTable[128];
+extern s16 sp;
+GSTACK gs[128];
 
 static inline MEM_DATA* GetMacroAddr(u16 id, POOL_DATA* pool)
 {
@@ -260,11 +260,11 @@ s32 sndPushGroup(void* prj_data, u16 gid, void* samples, void* sdir, void* pool)
 {
     GROUP_DATA* g;
     u16* sampleRef;
-    GSTACK* gs = synthLoadedGroupTable;
-    s16 sp;
+    GSTACK* gsTab = gs;
+    s16 curSp;
     void* poolPtr;
 
-    if (sndActive && (sp = synthLoadedGroupCount) < 128)
+    if (sndActive && (curSp = sp) < 128)
     {
         g = prj_data;
 
@@ -272,10 +272,10 @@ s32 sndPushGroup(void* prj_data, u16 gid, void* samples, void* sdir, void* pool)
         {
             if (g->id == gid)
             {
-                gs[sp].gAddr = g;
-                gs[sp].prjAddr = prj_data;
+                gsTab[curSp].gAddr = g;
+                gsTab[curSp].prjAddr = prj_data;
                 poolPtr = pool;
-                gs[sp].sdirAddr = sdir;
+                gsTab[curSp].sdirAddr = sdir;
                 sampleRef = (u16*)((u8*)prj_data + g->sampleOff);
                 if (dataInsertSDir(sdir, hwTransAddr(samples)))
                 {
@@ -291,7 +291,7 @@ s32 sndPushGroup(void* prj_data, u16 gid, void* samples, void* sdir, void* pool)
                     dataInsertFX(gid, fd->fx, fd->num);
                 }
                 hwSyncSampleMem();
-                ++synthLoadedGroupCount;
+                ++sp;
                 return 1;
             }
 
@@ -311,9 +311,9 @@ u32 seqPlaySong(u16 sgid, u16 sid, void* arrfile, SynthPlayParams* para, u8 irq_
     SynthMidiSetup* midiSetup;
     u32 seqId;
     void* prj;
-    GSTACK* gs = synthLoadedGroupTable;
+    GSTACK* gsTab = gs;
 
-    for (i = 0; i < synthLoadedGroupCount; ++i)
+    for (i = 0; i < sp; ++i)
     {
         if (gs[i].gAddr->id != sgid)
         {

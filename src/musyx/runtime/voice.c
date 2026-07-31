@@ -22,7 +22,7 @@ u8 voiceFxRunning;
 u8 voiceMusicRunning;
 u16 voicePrioSortedRoot;
 
-static McmdVidListNode vidListNodes[128];
+static VID_LIST vidListNodes[128];
 static u8 synth_last_started[SYNTH_VOICE_MIDI_CHANNEL_COUNT][SYNTH_VOICE_MIDI_KEY_COUNT];
 static u8 synth_last_fxstarted[SYNTH_VOICE_DIRECT_SLOT_COUNT];
 static SynthVoiceListNode voicePriorityLinks[0x40];
@@ -49,12 +49,12 @@ void voiceSetPriority(McmdVoiceState* svoice, u8 prio)
     u16 root;
     u16 i;
 
-    voiceIdx = (u8)svoice->voiceHandle;
+    voiceIdx = (u8)svoice->id;
     vb = (VidListTables*)vidListNodes;
     vps = VB_PRIO_LINK(vb, voiceIdx);
     if (vps->user == 1)
     {
-        if (svoice->priorityGroup == prio)
+        if (svoice->prio == prio)
         {
             return;
         }
@@ -105,21 +105,11 @@ void voiceSetPriority(McmdVoiceState* svoice, u8 prio)
     }
 
     VB_PRIO_HEAD(vb, prio) = voiceIdx;
-    svoice->priorityGroup = prio;
-    hwSetPriority(svoice->voiceHandle & 0xFF, ((u32)prio << 24) | (svoice->priorityValue >> 15));
+    svoice->prio = prio;
+    hwSetPriority(svoice->id & 0xFF, ((u32)prio << 24) | (svoice->age >> 15));
 }
 
-typedef union SynthVoiceFlags
-{
-    u64 combined;
-    struct
-    {
-        u32 input;
-        u32 output;
-    } channel;
-} SynthVoiceFlags;
-
-#define VOICE_CFLAGS(i) (((SynthVoiceFlags*)&synthVoice[i].inputFlags)->combined)
+#define VOICE_CFLAGS(i) (*(u64*)&synthVoice[i].cFlagsHi)
 
 #define VB_PRIO_LINK_NEXT(vb, i) (((SynthVoiceListNode*)((u8*)&(vb)->priorityLinks[0] + (i) * 4))->next)
 #define VOICE_PRIORITY_NONE      0xFFFF
@@ -129,12 +119,12 @@ typedef union SynthVoiceFlags
  * compatible active voice when limits are exceeded. (musyx synthvoice.c
  * voiceAllocate, pre-2.0.1 variant.)
  */
-u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
+u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 fxFlag)
 {
     s32 i;
     s32 allocationCount;
     s32 selectedVoice;
-    u16 priorityGroup;
+    u16 prio;
     u32 restrictToStreamKind;
     u16 priorityGroupIndex;
     SynthVoiceListNode* freeSlot;
@@ -143,7 +133,7 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
 
     if (!synthIdleWaitActive)
     {
-        if (streamKind)
+        if (fxFlag)
         {
             restrictToStreamKind = (voiceFxRunning >= SYNTH_CONFIGURATION->fxVoiceCount &&
                                     SYNTH_CONFIGURATION->voiceCount > SYNTH_CONFIGURATION->fxVoiceCount);
@@ -168,26 +158,26 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
             allocationCount = 0;
             selectedVoice = -1;
 
-            priorityGroup = voicePrioSortedRoot;
-            while (priorityGroup != VOICE_PRIORITY_NONE && priority >= priorityGroup && selectedVoice == -1)
+            prio = voicePrioSortedRoot;
+            while (prio != VOICE_PRIORITY_NONE && priority >= prio && selectedVoice == -1)
             {
-                u32 group = priorityGroup;
+                u32 group = prio;
                 for (i = VB_PRIO_HEAD(voiceLists, group); i != SYNTH_INVALID_VOICE_U8;
                      i = VB_PRIO_LINK_NEXT(voiceLists, i))
                 {
-                    if (allocId != synthVoice[i].baseSample)
+                    if (allocId != synthVoice[i].allocId)
                         continue;
                     ++allocationCount;
                     if (synthVoice[i].block)
                         continue;
 
-                    if (!restrictToStreamKind || streamKind == synthVoice[i].streamKind)
+                    if (!restrictToStreamKind || fxFlag == synthVoice[i].fxFlag)
                     {
                         if (VOICE_CFLAGS(i) & 2)
                             continue;
                         if (selectedVoice != -1)
                         {
-                            if (synthVoice[i].priorityValue < synthVoice[selectedVoice].priorityValue)
+                            if (synthVoice[i].age < synthVoice[selectedVoice].age)
                                 selectedVoice = i;
                         }
                         else
@@ -195,7 +185,7 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
                     }
                 }
 
-                priorityGroup = VB_PRIO_SORT_NEXT(voiceLists, group);
+                prio = VB_PRIO_SORT_NEXT(voiceLists, group);
             }
 
             if (allocationCount >= maxInstances)
@@ -203,13 +193,13 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
                 goto have_voice;
             }
 
-            while (priorityGroup != VOICE_PRIORITY_NONE && allocationCount < maxInstances)
+            while (prio != VOICE_PRIORITY_NONE && allocationCount < maxInstances)
             {
-                u32 group = priorityGroup;
+                u32 group = prio;
                 i = VB_PRIO_HEAD(voiceLists, group);
                 while (i != SYNTH_INVALID_VOICE_U8)
                 {
-                    if (allocId == synthVoice[i].baseSample)
+                    if (allocId == synthVoice[i].allocId)
                     {
                         allocationCount++;
                     }
@@ -217,7 +207,7 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
                     i = VB_PRIO_LINK_NEXT(voiceLists, i);
                 }
 
-                priorityGroup = VB_PRIO_SORT_NEXT(voiceLists, group);
+                prio = VB_PRIO_SORT_NEXT(voiceLists, group);
             }
 
             if (allocationCount >= maxInstances)
@@ -240,22 +230,22 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
                     return SYNTH_INVALID_VOICE;
                 }
 
-                priorityGroup = voicePrioSortedRoot;
+                prio = voicePrioSortedRoot;
 
-                while (priorityGroup != VOICE_PRIORITY_NONE && priority >= priorityGroup && selectedVoice == -1)
+                while (prio != VOICE_PRIORITY_NONE && priority >= prio && selectedVoice == -1)
                 {
-                    priorityGroupIndex = priorityGroup;
+                    priorityGroupIndex = prio;
                     for (i = VB_PRIO_HEAD(voiceLists, priorityGroupIndex); i != SYNTH_INVALID_VOICE_U8;
                          i = VB_PRIO_LINK_NEXT(voiceLists, i))
                     {
                         if ((synthVoice[i].block == 0) &&
-                            (!restrictToStreamKind || streamKind == synthVoice[i].streamKind))
+                            (!restrictToStreamKind || fxFlag == synthVoice[i].fxFlag))
                         {
                             if ((VOICE_CFLAGS(i) & 2) == 0)
                             {
                                 if (selectedVoice != -1)
                                 {
-                                    if (synthVoice[selectedVoice].priorityValue > synthVoice[i].priorityValue)
+                                    if (synthVoice[selectedVoice].age > synthVoice[i].age)
                                         selectedVoice = i;
                                 }
                                 else
@@ -265,7 +255,7 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
                             }
                         }
                     }
-                    priorityGroup = VB_PRIO_SORT_NEXT(voiceLists, priorityGroupIndex);
+                    prio = VB_PRIO_SORT_NEXT(voiceLists, priorityGroupIndex);
                 }
 
                 if (selectedVoice == -1)
@@ -274,7 +264,7 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
                 }
             }
 
-            if (synthVoice[selectedVoice].priorityGroup > priority)
+            if (synthVoice[selectedVoice].prio > priority)
             {
                 goto ret_invalid;
             }
@@ -314,7 +304,7 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
 
             freeSlot->user = 0;
         }
-        else if (synthVoice[selectedVoice].streamKind)
+        else if (synthVoice[selectedVoice].fxFlag)
         {
             voiceFxRunning--;
         }
@@ -322,7 +312,7 @@ u32 voiceAllocate(u8 priority, u8 maxInstances, u16 allocId, u8 streamKind)
         {
             voiceMusicRunning--;
         }
-        if (streamKind != 0)
+        if (fxFlag != 0)
         {
             ++voiceFxRunning;
         }
@@ -345,10 +335,10 @@ void voiceFree(McmdVoiceState* voice)
 {
     macMakeInactive(voice, 2);
     voiceRemovePriority(voice);
-    voice->macroBase = NULL;
-    voice->priorityGroup = 0;
+    voice->addr = NULL;
+    voice->prio = 0;
     {
-        u32 voiceId = voice->voiceHandle;
+        u32 voiceId = voice->id;
         u32 v = voiceId & 0xff;
         SynthVoiceListNode* slot = &voiceFreeListSlots[v];
         if (slot->user == 0)
@@ -367,7 +357,7 @@ void voiceFree(McmdVoiceState* voice)
                 voiceFreeListRoot = v;
             }
             voiceFreeListTail = v;
-            if (voice->streamKind != 0)
+            if (voice->fxFlag != 0)
             {
                 voiceFxRunning--;
             }
@@ -377,7 +367,7 @@ void voiceFree(McmdVoiceState* voice)
             }
         }
     }
-    *(int*)&voice->voiceHandle = -1;
+    *(int*)&voice->id = -1;
 }
 
 #define SYNTH_VOICE_STATE(voice) (&synthVoice[voice])
@@ -433,9 +423,9 @@ void voiceUnblock(u32 voice)
     {
         hwBreak(voice);
     }
-    synthVoice[voice].handle = voice;
+    synthVoice[voice].id = voice;
     voiceFree(&synthVoice[voice]);
-    synthVoice[voice].callbackActive = 0;
+    synthVoice[voice].block = 0;
 }
 
 /*
@@ -445,14 +435,14 @@ void voiceKill(u32 voice)
 {
     McmdVoiceState* voiceState = SYNTH_VOICE_STATE(voice);
 
-    if (voiceState->activeHandle != 0)
+    if (voiceState->addr != 0)
     {
         vidRemoveVoiceReferences(voiceState);
-        *(u64*)&voiceState->inputFlags &= ~3;
-        voiceState->priorityTick = 0;
+        *(u64*)&voiceState->cFlagsHi &= ~3;
+        voiceState->age = 0;
         voiceFree(voiceState);
     }
-    if (voiceState->callbackActive != 0)
+    if (voiceState->block != 0)
     {
         streamKill(voice);
     }
@@ -462,26 +452,26 @@ void voiceKill(u32 voice)
 int voiceKillSound(u32 id)
 {
     int result = -1;
-    u32 nextHandle;
+    u32 next_voiceid;
     u32 i;
 
     if (sndActive != 0)
     {
-        McmdVidListNode* listEntry;
+        VID_LIST* listEntry;
         if ((id != SYNTH_INVALID_VOICE) && ((listEntry = get_vidlist(id)) != 0))
         {
-            id = listEntry->internalId;
+            id = listEntry->root;
         }
         else
         {
             id = SYNTH_INVALID_VOICE;
         }
 
-        for (; id != SYNTH_INVALID_VOICE; id = nextHandle)
+        for (; id != SYNTH_INVALID_VOICE; id = next_voiceid)
         {
             i = (u8)id;
-            nextHandle = SYNTH_VOICE_STATE(i)->nextHandle;
-            if (id == SYNTH_VOICE_STATE(i)->handle)
+            next_voiceid = SYNTH_VOICE_STATE(i)->child;
+            if (id == SYNTH_VOICE_STATE(i)->id)
             {
                 voiceKill(i);
                 result = 0;
@@ -499,7 +489,7 @@ int voiceKillSound(u32 id)
 u32 voiceIsLastStarted(McmdVoiceState* state)
 {
     McmdVoiceState* voiceState = state;
-    u32 voice = voiceState->handle;
+    u32 voice = voiceState->id;
     u8 slot;
     u8 channel;
     u8 voiceIdx;
@@ -530,7 +520,7 @@ u32 voiceIsLastStarted(McmdVoiceState* state)
 void voiceSetLastStarted(McmdVoiceState* state)
 {
     McmdVoiceState* voiceState = state;
-    u32 voice = voiceState->handle;
+    u32 voice = voiceState->id;
     u8 slot;
     u8 channel;
     u8 voiceIdx;
@@ -559,7 +549,7 @@ void voiceResetLastStarted(McmdVoiceState* voice)
     u32 vid8;
     u8* slot;
 
-    voiceId = voice->handle;
+    voiceId = voice->id;
     if (voiceId == SYNTH_INVALID_VOICE)
         return;
     midi = voice->midi;

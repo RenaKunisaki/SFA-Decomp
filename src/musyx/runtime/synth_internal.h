@@ -53,35 +53,6 @@ typedef struct SynthDelayedNode
     u8 pad[2];
 } SynthDelayedNode;
 
-typedef union SynthDelayedActionWord
-{
-    u32 word;
-
-    struct
-    {
-        u8 action;
-        u8 pad[3];
-    } bytes;
-} SynthDelayedActionWord;
-
-typedef struct SynthDelayedEntry
-{
-    SynthDelayedNode nodes[3];
-    u32 word0;
-    u32 word1;
-    SynthDelayedActionWord word2;
-    u32 word3;
-} SynthDelayedEntry;
-
-typedef struct SynthDelayStorage
-{
-    u32 studioChannelScales[SYNTH_STUDIO_CHANNEL_SCALE_STUDIO_COUNT][SYNTH_VOICE_NOTE_COUNT];
-    SynthDelayedNode* bucketHeads[SYNTH_DELAY_BUCKET_COUNT][3];
-} SynthDelayStorage;
-
-/* The 0x404 voice-slot record is the canonical McmdVoiceState (mcmd.h);
- * the former McmdVoiceState view is retired. */
-
 typedef struct SynthPitchPoint
 {
     u32 threshold;
@@ -265,7 +236,6 @@ extern SynthVoice* seqPausedRoot;
 extern u32 seq_next_id;
 
 #define SYNTH_VOICE_RUNTIME() ((SynthVoiceRuntime*)(void*)seqNote)
-#define SYNTH_VOICE_SLOT_FLAGS64(slot) (*(u64*)&(slot)->inputFlags)
 
 
 void synthSetBpm(int bpm, u8 set, u8 section);

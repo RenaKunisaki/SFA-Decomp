@@ -3,8 +3,8 @@
 
 #include "ghidra_import.h"
 
-typedef struct McmdVidListNode McmdVidListNode;
+typedef struct VID_LIST VID_LIST;
 
-McmdVidListNode* get_vidlist(u32 id);
+VID_LIST* get_vidlist(u32 id);
 
 #endif /* MUSYX_VID_GET_H_ */

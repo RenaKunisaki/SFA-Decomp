@@ -69,7 +69,7 @@ static void snd_handle_irq(void)
     streamHandle();
     hwIRQLeaveCritical();
     hwIRQEnterCritical();
-    synthUpdateVirtualSamples();
+    vsSampleUpdates();
     hwIRQLeaveCritical();
 }
 

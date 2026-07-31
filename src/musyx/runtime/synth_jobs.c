@@ -61,7 +61,7 @@ void streamHandle(void)
                 break;
             }
             hwInitSamplePlayback(si->voice, 0xFFFF, &newsmp, 1, -1,
-                                 synthVoice[si->voice].voiceHandle, 1, 1);
+                                 synthVoice[si->voice].id, 1, 1);
             f = (f32)si->frq / (f32)SYNTH_CONFIGURATION->sampleRate;
             hwSetPitch(si->voice, f * 4096.0f);
             hwSetVolume(si->voice, 0, si->volume * (1 / 127.0f), si->pan << 16, si->surroundPan << 16,

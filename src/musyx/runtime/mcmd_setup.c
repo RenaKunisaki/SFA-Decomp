@@ -32,29 +32,8 @@ typedef union McmdAdsrData
     } dls;
 } McmdAdsrData;
 
-typedef union McmdAdsrCurve
-{
-    struct
-    {
-        u16 atime;
-        u16 dtime;
-        u16 slevel;
-        u16 rtime;
-    } linear;
-
-    struct
-    {
-        s32 atime;
-        s32 dtime;
-        u16 slevel;
-        u16 rtime;
-        s32 ascale;
-        s32 dscale;
-    } dls;
-} McmdAdsrCurve;
-
-/* 64-bit control-flag word overlaying inputFlags(hi)/outputFlags(lo). */
-#define MAC_CFLAGS(sv)     (*(u64*)&(sv)->inputFlags)
+/* 64-bit control-flag word overlaying cFlagsHi(hi)/cFlagsLo(lo). */
+#define MAC_CFLAGS(sv)     (*(u64*)&(sv)->cFlagsHi)
 #define MAC_FLAG64(hi, lo) (((u64)(hi) << 32) | (u64)(lo))
 
 /*
@@ -66,38 +45,38 @@ void mcmdPlayMacro(McmdVoiceState* svoice, McmdCommandArgs* cstep)
     s32 key;
     u32 new_child;
 
-    key = svoice->keyBase + (s8)(u8)(cstep->flags >> 8);
+    key = svoice->orgNote + (s8)(u8)(cstep->flags >> 8);
     key = (key < 0) ? 0 : key > 0x7f ? 0x7f : key;
 
-    if (svoice->streamKind != 0)
+    if (svoice->fxFlag != 0)
     {
         key |= 0x80;
     }
 
-    svoice->macroAllocating = 1;
+    svoice->block = 1;
     new_child = macStart(cstep->flags >> 0x10, (u8)(cstep->value >> 0x10), (u8)(cstep->value >> 0x18),
-                         svoice->baseSample, key, (u8)(svoice->volume >> 0x10), (u8)(svoice->pan >> 0x10),
+                         svoice->allocId, key, (u8)(svoice->volume >> 0x10), (u8)(svoice->panning[0] >> 0x10),
                          svoice->midi, svoice->midiSet, svoice->section, cstep->value, svoice->track, 0,
                          svoice->vGroup, svoice->studio, svoice->itdMode == 0);
-    svoice->macroAllocating = 0;
+    svoice->block = 0;
     if (new_child != 0xFFFFFFFF)
     {
-        svoice->cloneVidListNode = (McmdVidListNode*)synthVoice[(u8)new_child].vidListNode->id;
-        synthVoice[(u8)new_child].voicePrevHandle = svoice->voiceHandle;
-        if (svoice->voiceNextHandle != -1)
+        svoice->lastVID = synthVoice[(u8)new_child].vidList->vid;
+        synthVoice[(u8)new_child].parent = svoice->id;
+        if (svoice->child != -1)
         {
-            synthVoice[(u8)new_child].voiceNextHandle = svoice->voiceNextHandle;
-            synthVoice[(u8)svoice->voiceNextHandle].voicePrevHandle = new_child;
+            synthVoice[(u8)new_child].child = svoice->child;
+            synthVoice[(u8)svoice->child].parent = new_child;
         }
-        svoice->voiceNextHandle = new_child;
-        if (svoice->streamKind != 0)
+        svoice->child = new_child;
+        if (svoice->fxFlag != 0)
         {
             synthFXCloneMidiSetup(&synthVoice[(u8)new_child], svoice);
         }
     }
     else
     {
-        svoice->cloneVidListNode = (McmdVidListNode*)0xFFFFFFFF;
+        svoice->lastVID = 0xFFFFFFFF;
     }
 }
 
@@ -140,14 +119,14 @@ void mcmdStartSample(McmdVoiceState* svoice, McmdCommandArgs* cstep)
         }
     }
 
-    hwInitSamplePlayback(svoice->voiceHandle & 0xFF, smp, &newsmp,
+    hwInitSamplePlayback(svoice->id & 0xFF, smp, &newsmp,
                          (MAC_CFLAGS(svoice) & MAC_FLAG64(0, 0x100)) == 0,
-                         ((u32)svoice->priorityGroup << 24) | (svoice->priorityValue >> 15), svoice->voiceHandle,
+                         ((u32)svoice->prio << 24) | (svoice->age >> 15), svoice->id,
                          (MAC_CFLAGS(svoice) & MAC_FLAG64(0x800, 0)) == 0, svoice->itdMode);
 
-    svoice->prevSampleId = newsmp.info;
+    svoice->sInfo = newsmp.info;
 
-    if (svoice->targetPitch != -1)
+    if (svoice->playFrq != -1)
     {
         DoSetPitch(svoice);
     }
@@ -186,7 +165,7 @@ void mcmdVibrato(McmdVoiceState* svoice, McmdCommandArgs* cstep)
     if (time)
     {
         MAC_CFLAGS(svoice) |= MAC_FLAG64(0, 0x2000);
-        svoice->vibratoDuration = time;
+        svoice->vibPeriod = time;
 
         kr = (s8)(cstep->flags >> 8);
         cr = (s8)(cstep->flags >> 16);
@@ -195,15 +174,15 @@ void mcmdVibrato(McmdVoiceState* svoice, McmdCommandArgs* cstep)
         {
             if (cr < 0)
             {
-                svoice->vibratoTarget = -cr;
+                svoice->vibCentRange = -cr;
             }
             else
             {
-                svoice->vibratoTarget = cr;
+                svoice->vibCentRange = cr;
             }
 
-            svoice->vibratoStart = -kr;
-            svoice->vibratoHalfDuration = svoice->vibratoDuration / 2;
+            svoice->vibKeyRange = -kr;
+            svoice->vibCurTime = svoice->vibPeriod / 2;
         }
         else
         {
@@ -211,22 +190,22 @@ void mcmdVibrato(McmdVoiceState* svoice, McmdCommandArgs* cstep)
             {
                 if (kr == 0)
                 {
-                    svoice->vibratoTarget = -cr;
-                    svoice->vibratoHalfDuration = svoice->vibratoDuration / 2;
+                    svoice->vibCentRange = -cr;
+                    svoice->vibCurTime = svoice->vibPeriod / 2;
                 }
                 else
                 {
                     --kr;
-                    svoice->vibratoTarget = 100 - cr;
-                    svoice->vibratoHalfDuration = 0;
+                    svoice->vibCentRange = 100 - cr;
+                    svoice->vibCurTime = 0;
                 }
             }
             else
             {
-                svoice->vibratoTarget = cr;
-                svoice->vibratoHalfDuration = 0;
+                svoice->vibCentRange = cr;
+                svoice->vibCurTime = 0;
             }
-            svoice->vibratoStart = kr;
+            svoice->vibKeyRange = kr;
         }
     }
     else
@@ -250,13 +229,13 @@ void DoSetPitch(McmdVoiceState* svoice)
     s32 key;
     u16* kf = (u16*)lbl_8032EDD0;
 
-    frq = svoice->targetPitch & 0xFFFFFF;
-    ofrq = svoice->prevSampleId & 0xFFFFFF;
+    frq = svoice->playFrq & 0xFFFFFF;
+    ofrq = svoice->sInfo & 0xFFFFFF;
 
     if (ofrq == frq)
     {
-        svoice->key = (u8)(svoice->prevSampleId >> 24);
-        svoice->fineTune = 0;
+        svoice->curNote = (u8)(svoice->sInfo >> 24);
+        svoice->curDetune = 0;
     }
     else if (ofrq < frq)
     {
@@ -281,8 +260,8 @@ void DoSetPitch(McmdVoiceState* svoice)
             }
         }
 
-        svoice->key = (svoice->prevSampleId >> 24) + (octave * 12) + i;
-        svoice->fineTune = ((ratio - kf[i]) * 100) / (kf[i + 1] - kf[i]);
+        svoice->curNote = (svoice->sInfo >> 24) + (octave * 12) + i;
+        svoice->curDetune = ((ratio - kf[i]) * 100) / (kf[i + 1] - kf[i]);
     }
     else
     {
@@ -308,14 +287,14 @@ void DoSetPitch(McmdVoiceState* svoice)
         }
 
         key = octave * 12 + i;
-        if (key > (s32)(svoice->prevSampleId >> 24))
+        if (key > (s32)(svoice->sInfo >> 24))
         {
-            svoice->key = svoice->fineTune = 0;
+            svoice->curNote = svoice->curDetune = 0;
         }
         else
         {
-            svoice->key = (svoice->prevSampleId >> 24) - key;
-            svoice->fineTune = ((kf[i] - ratio) * 100) / (kf[i + 1] - kf[i]);
+            svoice->curNote = (svoice->sInfo >> 24) - key;
+            svoice->curDetune = ((kf[i] - ratio) * 100) / (kf[i + 1] - kf[i]);
         }
     }
 }
@@ -330,45 +309,45 @@ void mcmdSetADSR(McmdVoiceState* svoice, McmdCommandArgs* cstep)
     s32 ascale;
     s32 dscale;
     McmdAdsrData adsr;
-    McmdAdsrCurve* adsr_ptr;
+    ADSR_INFO* adsr_ptr;
 
-    if ((adsr_ptr = (McmdAdsrCurve*)dataGetCurve(cstep->flags >> 8)) != NULL)
+    if ((adsr_ptr = (ADSR_INFO*)dataGetCurve(cstep->flags >> 8)) != NULL)
     {
         if (!(u8)(cstep->flags >> 24))
         {
-            adsr.linear.atime = adsr_ptr->linear.atime >> 8 | adsr_ptr->linear.atime << 8;
-            adsr.linear.dtime = adsr_ptr->linear.dtime >> 8 | adsr_ptr->linear.dtime << 8;
-            adsr.linear.slevel = adsr_ptr->linear.slevel >> 8 | adsr_ptr->linear.slevel << 8;
-            adsr.linear.rtime = adsr_ptr->linear.rtime >> 8 | adsr_ptr->linear.rtime << 8;
-            hwSetADSR(svoice->voiceHandle & 0xFF, &adsr, 0);
+            adsr.linear.atime = adsr_ptr->data.linear.atime >> 8 | adsr_ptr->data.linear.atime << 8;
+            adsr.linear.dtime = adsr_ptr->data.linear.dtime >> 8 | adsr_ptr->data.linear.dtime << 8;
+            adsr.linear.slevel = adsr_ptr->data.linear.slevel >> 8 | adsr_ptr->data.linear.slevel << 8;
+            adsr.linear.rtime = adsr_ptr->data.linear.rtime >> 8 | adsr_ptr->data.linear.rtime << 8;
+            hwSetADSR(svoice->id & 0xFF, &adsr, 0);
         }
         else
         {
-            f32 sScale = voiceAdsrSustainTable[(u16)(adsr_ptr->dls.slevel >> 8 | adsr_ptr->dls.slevel << 8) >> 5];
-            adsr.dls.atime = ((u8*)&adsr_ptr->dls.atime)[0] << 0 | ((u8*)&adsr_ptr->dls.atime)[1] << 8 |
-                             ((u8*)&adsr_ptr->dls.atime)[2] << 16 | ((u8*)&adsr_ptr->dls.atime)[3] << 24;
-            adsr.dls.dtime = ((u8*)&adsr_ptr->dls.dtime)[0] << 0 | ((u8*)&adsr_ptr->dls.dtime)[1] << 8 |
-                             ((u8*)&adsr_ptr->dls.dtime)[2] << 16 | ((u8*)&adsr_ptr->dls.dtime)[3] << 24;
+            f32 sScale = voiceAdsrSustainTable[(u16)(adsr_ptr->data.dls.slevel >> 8 | adsr_ptr->data.dls.slevel << 8) >> 5];
+            adsr.dls.atime = ((u8*)&adsr_ptr->data.dls.atime)[0] << 0 | ((u8*)&adsr_ptr->data.dls.atime)[1] << 8 |
+                             ((u8*)&adsr_ptr->data.dls.atime)[2] << 16 | ((u8*)&adsr_ptr->data.dls.atime)[3] << 24;
+            adsr.dls.dtime = ((u8*)&adsr_ptr->data.dls.dtime)[0] << 0 | ((u8*)&adsr_ptr->data.dls.dtime)[1] << 8 |
+                             ((u8*)&adsr_ptr->data.dls.dtime)[2] << 16 | ((u8*)&adsr_ptr->data.dls.dtime)[3] << 24;
             adsr.dls.slevel = 4096.0f * sScale;
-            adsr.dls.rtime = adsr_ptr->dls.rtime >> 8 | adsr_ptr->dls.rtime << 8;
-            ascale = ((u8*)&adsr_ptr->dls.ascale)[0] << 0 | ((u8*)&adsr_ptr->dls.ascale)[1] << 8 |
-                     ((u8*)&adsr_ptr->dls.ascale)[2] << 16 | ((u8*)&adsr_ptr->dls.ascale)[3] << 24;
-            dscale = ((u8*)&adsr_ptr->dls.dscale)[0] << 0 | ((u8*)&adsr_ptr->dls.dscale)[1] << 8 |
-                     ((u8*)&adsr_ptr->dls.dscale)[2] << 16 | ((u8*)&adsr_ptr->dls.dscale)[3] << 24;
+            adsr.dls.rtime = adsr_ptr->data.dls.rtime >> 8 | adsr_ptr->data.dls.rtime << 8;
+            ascale = ((u8*)&adsr_ptr->data.dls.ascale)[0] << 0 | ((u8*)&adsr_ptr->data.dls.ascale)[1] << 8 |
+                     ((u8*)&adsr_ptr->data.dls.ascale)[2] << 16 | ((u8*)&adsr_ptr->data.dls.ascale)[3] << 24;
+            dscale = ((u8*)&adsr_ptr->data.dls.dscale)[0] << 0 | ((u8*)&adsr_ptr->data.dls.dscale)[1] << 8 |
+                     ((u8*)&adsr_ptr->data.dls.dscale)[2] << 16 | ((u8*)&adsr_ptr->data.dls.dscale)[3] << 24;
 
             if (ascale != 0x80000000)
             {
-                attackProd = 1.1920928955078125e-7f * svoice->volumeBase;
+                attackProd = 1.1920928955078125e-7f * svoice->orgVolume;
                 adsr.dls.atime += (s32)(attackProd * ascale);
             }
 
             if (dscale != 0x80000000)
             {
-                decayProd = 0.0078125f * svoice->keyBase;
+                decayProd = 0.0078125f * svoice->orgNote;
                 adsr.dls.dtime += (s32)(decayProd * dscale);
             }
 
-            hwSetADSR(svoice->voiceHandle & 0xFF, &adsr, 1);
+            hwSetADSR(svoice->id & 0xFF, &adsr, 1);
         }
 
         MAC_CFLAGS(svoice) |= MAC_FLAG64(0, 0x100);
@@ -381,60 +360,60 @@ void mcmdSetADSR(McmdVoiceState* svoice, McmdCommandArgs* cstep)
 void mcmdSetPitchADSR(McmdVoiceState* svoice, McmdCommandArgs* cstep)
 {
     McmdAdsrData adsr;
-    McmdAdsrCurve* adsr_ptr;
+    ADSR_INFO* adsr_ptr;
     u32 sl;
     s32 ascale;
     s32 dscale;
 
-    if ((adsr_ptr = (McmdAdsrCurve*)dataGetCurve(cstep->flags >> 8)) == NULL)
+    if ((adsr_ptr = (ADSR_INFO*)dataGetCurve(cstep->flags >> 8)) == NULL)
     {
         return;
     }
 
-    svoice->pitchAdsrPan = (s8)cstep->value << 8;
+    svoice->pitchADSRRange = (s8)cstep->value << 8;
 
-    if (svoice->pitchAdsrPan >= 0)
+    if (svoice->pitchADSRRange >= 0)
     {
-        svoice->pitchAdsrPan += ((s16)(s8)(cstep->value >> 8) << 8) / 100;
+        svoice->pitchADSRRange += ((s16)(s8)(cstep->value >> 8) << 8) / 100;
     }
     else
     {
-        svoice->pitchAdsrPan -= ((s16)(s8)(cstep->value >> 8) << 8) / 100;
+        svoice->pitchADSRRange -= ((s16)(s8)(cstep->value >> 8) << 8) / 100;
     }
 
-    adsr.dls.atime = ((u8*)&adsr_ptr->dls.atime)[0] << 0 | ((u8*)&adsr_ptr->dls.atime)[1] << 8 |
-                     ((u8*)&adsr_ptr->dls.atime)[2] << 16 | ((u8*)&adsr_ptr->dls.atime)[3] << 24;
-    adsr.dls.dtime = ((u8*)&adsr_ptr->dls.dtime)[0] << 0 | ((u8*)&adsr_ptr->dls.dtime)[1] << 8 |
-                     ((u8*)&adsr_ptr->dls.dtime)[2] << 16 | ((u8*)&adsr_ptr->dls.dtime)[3] << 24;
-    adsr.dls.slevel = adsr_ptr->dls.slevel >> 8 | adsr_ptr->dls.slevel << 8;
-    adsr.dls.rtime = adsr_ptr->dls.rtime >> 8 | adsr_ptr->dls.rtime << 8;
-    ascale = ((u8*)&adsr_ptr->dls.ascale)[0] << 0 | ((u8*)&adsr_ptr->dls.ascale)[1] << 8 |
-             ((u8*)&adsr_ptr->dls.ascale)[2] << 16 | ((u8*)&adsr_ptr->dls.ascale)[3] << 24;
-    dscale = ((u8*)&adsr_ptr->dls.dscale)[0] << 0 | ((u8*)&adsr_ptr->dls.dscale)[1] << 8 |
-             ((u8*)&adsr_ptr->dls.dscale)[2] << 16 | ((u8*)&adsr_ptr->dls.dscale)[3] << 24;
+    adsr.dls.atime = ((u8*)&adsr_ptr->data.dls.atime)[0] << 0 | ((u8*)&adsr_ptr->data.dls.atime)[1] << 8 |
+                     ((u8*)&adsr_ptr->data.dls.atime)[2] << 16 | ((u8*)&adsr_ptr->data.dls.atime)[3] << 24;
+    adsr.dls.dtime = ((u8*)&adsr_ptr->data.dls.dtime)[0] << 0 | ((u8*)&adsr_ptr->data.dls.dtime)[1] << 8 |
+                     ((u8*)&adsr_ptr->data.dls.dtime)[2] << 16 | ((u8*)&adsr_ptr->data.dls.dtime)[3] << 24;
+    adsr.dls.slevel = adsr_ptr->data.dls.slevel >> 8 | adsr_ptr->data.dls.slevel << 8;
+    adsr.dls.rtime = adsr_ptr->data.dls.rtime >> 8 | adsr_ptr->data.dls.rtime << 8;
+    ascale = ((u8*)&adsr_ptr->data.dls.ascale)[0] << 0 | ((u8*)&adsr_ptr->data.dls.ascale)[1] << 8 |
+             ((u8*)&adsr_ptr->data.dls.ascale)[2] << 16 | ((u8*)&adsr_ptr->data.dls.ascale)[3] << 24;
+    dscale = ((u8*)&adsr_ptr->data.dls.dscale)[0] << 0 | ((u8*)&adsr_ptr->data.dls.dscale)[1] << 8 |
+             ((u8*)&adsr_ptr->data.dls.dscale)[2] << 16 | ((u8*)&adsr_ptr->data.dls.dscale)[3] << 24;
 
     if (ascale != 0x80000000)
     {
-        f32 prod = 1.1920928955078125e-7f * svoice->volumeBase;
+        f32 prod = 1.1920928955078125e-7f * svoice->orgVolume;
         adsr.dls.atime += (s32)(prod * ascale);
     }
     if (dscale != 0x80000000)
     {
-        f32 prod = 0.0078125f * svoice->keyBase;
+        f32 prod = 0.0078125f * svoice->orgNote;
         adsr.dls.dtime += (s32)(prod * dscale);
     }
 
-    svoice->pitchAdsr.mode = 1;
-    svoice->pitchAdsr.unk24[2] = 0;
-    svoice->pitchAdsr.attack = voiceConvertDbToLinear(adsr.dls.atime);
-    svoice->pitchAdsr.decay = voiceConvertDbToLinear(adsr.dls.dtime);
+    svoice->pitchADSR.mode = 1;
+    svoice->pitchADSR.aMode = 0;
+    svoice->pitchADSR.aTime = voiceConvertDbToLinear(adsr.dls.atime);
+    svoice->pitchADSR.dTime = voiceConvertDbToLinear(adsr.dls.dtime);
     if ((sl = adsr.dls.slevel >> 2) > 0x3ff)
     {
         sl = 0x3ff;
     }
-    svoice->pitchAdsr.sustain = 0xc1 - voiceAdsrDecayTable[sl];
-    svoice->pitchAdsr.release = adsr.dls.rtime;
-    adsrSetup((ADSR_VARS*)&svoice->pitchAdsr);
+    svoice->pitchADSR.sLevel = 0xc1 - voiceAdsrDecayTable[sl];
+    svoice->pitchADSR.rTime = adsr.dls.rtime;
+    adsrSetup(&svoice->pitchADSR);
     MAC_CFLAGS(svoice) |= MAC_FLAG64(0x200, 0);
 }
 
@@ -447,18 +426,18 @@ void voiceConfigureParamRamp(McmdVoiceState* svoice, McmdCommandArgs* cstep, u8 
     s32 width;
 
     width = cstep->flags >> 16;
-    svoice->paramDuration[pi] = width;
-    sndConvertMs(&svoice->paramDuration[pi]);
+    svoice->panTime[pi] = width;
+    sndConvertMs(&svoice->panTime[pi]);
     mstime = (s8)cstep->value;
-    svoice->paramCurrent[pi] = ((u8)(cstep->flags >> 8)) << 16;
-    svoice->paramTarget[pi] = svoice->paramCurrent[pi] + (mstime << 16);
-    if (svoice->paramDuration[pi] != 0)
+    svoice->panning[pi] = ((u8)(cstep->flags >> 8)) << 16;
+    svoice->panTarget[pi] = svoice->panning[pi] + (mstime << 16);
+    if (svoice->panTime[pi] != 0)
     {
-        svoice->paramStep[pi] = (s32)(mstime << 16) / width;
+        svoice->panDelta[pi] = (s32)(mstime << 16) / width;
     }
     else
     {
-        svoice->paramStep[pi] = (s32)(mstime << 16);
+        svoice->panDelta[pi] = (s32)(mstime << 16);
     }
 
     MAC_CFLAGS(svoice) |= MAC_FLAG64(0x2000, 0);

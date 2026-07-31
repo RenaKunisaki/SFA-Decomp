@@ -1,13 +1,13 @@
 #include "musyx/vid_init.h"
 
-McmdVidListNode* vidFree;
-McmdVidListNode* vidRoot;
+VID_LIST* vidFree;
+VID_LIST* vidRoot;
 u32 vidCurrentId;
 
 void vidInit(void)
 {
     int i;
-    McmdVidListNode* prev;
+    VID_LIST* prev;
 
     vidCurrentId = 0;
     vidRoot = 0;

@@ -45,25 +45,6 @@ struct SynthDelayedNode
 
 typedef void (*SynthDelayedBucketCallback)(int voiceIndex);
 
-/*
- * Overlay for the 64-bit update-time stamps that live past the embedded
- * SynthDelayedNode header inside a voice handle. synthStartSynthJobHandling
- * writes these back-to-back as two hi/lo pairs.
- */
-typedef struct SynthVoiceTimers
-{
-    u8 pad00[0x24];
-    int updateTimeHi0;
-    int updateTimeLo0;
-    int updateTimeHi1;
-    int updateTimeLo1;
-} SynthVoiceTimers;
-
-STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeHi0) == 0x24);
-STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeLo0) == 0x28);
-STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeHi1) == 0x2c);
-STATIC_ASSERT(offsetof(SynthVoiceTimers, updateTimeLo1) == 0x30);
-
 #define SYNTH_FADE_COUNT                     0x20
 #define SND_SEQVOL_STOP  1
 #define SND_SEQVOL_PAUSE 2
@@ -85,102 +66,7 @@ u8 synthAuxBMIDISet[8];
 u8 synthJobTableIndex;
 u8 sndActive;
 
-typedef struct SynthVoiceLfo
-{
-    s32 time;
-    u32 period;
-    s16 value;
-    s16 lastValue;
-} SynthVoiceLfo;
-
-/* Hardware synth voice state (MusyX SYNTH_VOICE), one 0x404-byte slot per voice. */
-typedef struct SynthHwVoice
-{
-    u8 unk000[0x24];
-    u32 lastLowCallTimeHi;  /* 0x024 */
-    u32 lastLowCallTimeLo;  /* 0x028 */
-    u32 lastZeroCallTimeHi; /* 0x02C */
-    u32 lastZeroCallTimeLo; /* 0x030 */
-    u8* addr;               /* 0x034 */
-    u8 unk038[0xA8 - 0x38];
-    u8 timeUsedByInput; /* 0x0A8 */
-    u8 unk0A9[0xEC - 0xA9];
-    u32 child; /* 0x0EC */
-    u8 unk0F0[0x10C - 0xF0];
-    u8 prio; /* 0x10C */
-    u8 unk10D;
-    u16 ageSpeed;      /* 0x10E */
-    u32 age;           /* 0x110 */
-    u32 cFlagsHi;      /* 0x114 */
-    u32 cFlagsLo;      /* 0x118 */
-    u8 callbackActive; /* 0x11C */
-    u8 fxFlag;         /* 0x11D */
-    u8 vGroup;         /* 0x11E */
-    u8 studio;         /* 0x11F */
-    u8 track;          /* 0x120 */
-    u8 midi;           /* 0x121 */
-    u8 midiSet;        /* 0x122 */
-    u8 unk123;
-    u32 sInfo; /* 0x124 */
-    u8 unk128[4];
-    u16 curNote;  /* 0x12C */
-    s8 curDetune; /* 0x12E */
-    u8 unk12F;
-    u8 lastNote;           /* 0x130 */
-    u8 portType;           /* 0x131 */
-    u16 portLastCtrlState; /* 0x132 */
-    u32 portDuration;      /* 0x134 */
-    u32 portCurPitch;      /* 0x138 */
-    u32 portTime;          /* 0x13C */
-    u8 vibKeyRange;        /* 0x140 */
-    u8 vibCentRange;       /* 0x141 */
-    u8 unk142[2];
-    u32 vibPeriod;      /* 0x144 */
-    u32 vibCurTime;     /* 0x148 */
-    s32 vibCurOffset;   /* 0x14C */
-    s16 vibModAddScale; /* 0x150 */
-    u8 unk152[2];
-    u32 volume; /* 0x154 */
-    u8 unk158[4];
-    f32 lastVolFaderScale; /* 0x15C */
-    u32 lastPan;           /* 0x160 */
-    u32 lastSPan;          /* 0x164 */
-    f32 treCurScale;       /* 0x168 */
-    u16 treScale;          /* 0x16C */
-    u16 treModAddScale;    /* 0x16E */
-    u32 panning[2];        /* 0x170 */
-    u32 panDelta[2];       /* 0x178 */
-    u32 panTarget[2];      /* 0x180 */
-    u32 panTime[2];        /* 0x188 */
-    u8 revVolScale;        /* 0x190 */
-    u8 revVolOffset;       /* 0x191 */
-    u8 volTable;           /* 0x192 */
-    u8 unk193;
-    s32 envDelta;    /* 0x194 */
-    s32 envTarget;   /* 0x198 */
-    s32 envCurrent;  /* 0x19C */
-    s32 sweepOff[2]; /* 0x1A0 */
-    s32 sweepAdd[2]; /* 0x1A8 */
-    s32 sweepCnt[2]; /* 0x1B0 */
-    u8 sweepNum[2];  /* 0x1B8 */
-    u8 unk1BA[2];
-    SynthVoiceLfo lfo[2]; /* 0x1BC */
-    u8 lfoUsedByInput[2]; /* 0x1D4 */
-    u8 pbLowerKeyRange;   /* 0x1D6 */
-    u8 pbUpperKeyRange;   /* 0x1D7 */
-    u16 pbLast;           /* 0x1D8 */
-    u8 unk1DA[2];
-    ADSR_VARS pitchADSR; /* 0x1DC */
-    s16 pitchADSRRange;       /* 0x204 */
-    u16 curPitch;             /* 0x206 */
-    u8 unk208[0x214 - 0x208];
-    u32 midiDirtyFlags; /* 0x214 */
-    u8 unk218[0x400 - 0x218];
-    u16 curOutputVolume; /* 0x400 */
-    u8 unk402[2];
-} SynthHwVoice;
-
-#define HWVOICE(i)        ((SynthHwVoice*)((u8*)synthVoice + (i) * 0x404))
+#define HWVOICE(i)        (&synthVoice[i])
 #define HWVOICE_FLAGS(sv) (*(u64*)&(sv)->cFlagsHi)
 
 static u32 synthTicksPerSecond[9][16];
@@ -241,27 +127,27 @@ void synthInitPortamento(McmdVoiceState* state)
     McmdVoiceState* v = state;
     u64 flags;
 
-    flags = *(u64*)&v->inputFlags;
+    flags = *(u64*)&v->cFlagsHi;
     if ((flags & 0x20000) != 0)
     {
         return;
     }
-    if (v->portamentoMode == 1)
+    if (v->portType == 1)
     {
         if ((flags & 0x1000) == 0)
         {
-            v->portamentoTime = 0;
+            v->portTime = 0;
         }
         else
         {
-            v->portamentoTime = v->portamentoDuration;
+            v->portTime = v->portDuration;
         }
     }
     else
     {
-        v->portamentoTime = v->portamentoDuration;
+        v->portTime = v->portDuration;
     }
-    v->portamentoCurPitch = v->registeredKey << 0x10;
+    v->portCurPitch = v->lastNote << 0x10;
 }
 
 /*
@@ -280,43 +166,43 @@ static u32 do_voice_portamento(u8 key, u8 midi, u8 midiSet, u32 isMaster, u32* r
     result = -1;
     for (i = 0, voice = (McmdVoiceState*)synthVoice; i < SYNTH_CONFIGURATION->voiceCount; ++i, ++voice)
     {
-        if (voice->macroAllocating == 0 && voice->voiceHandle != 0xffffffff && voice->midi == midi &&
+        if (voice->block == 0 && voice->id != 0xffffffff && voice->midi == midi &&
             voice->midiSet == midiSet)
         {
-            if ((*(u64*)&voice->inputFlags & 2) != 0)
+            if ((*(u64*)&voice->cFlagsHi & 2) != 0)
             {
                 sawHeldVoice = 1;
             }
-            if ((*(u64*)&voice->inputFlags & 0x10) != 0 && (*(u64*)&voice->inputFlags & 0x10000000008) != 8 &&
+            if ((*(u64*)&voice->cFlagsHi & 0x10) != 0 && (*(u64*)&voice->cFlagsHi & 0x10000000008) != 8 &&
                 hwIsActive(i) != 0)
             {
-                if (result == 0xffffffff && (*(u64*)&voice->inputFlags & 0x20002) == 0x20002)
+                if (result == 0xffffffff && (*(u64*)&voice->cFlagsHi & 0x20002) == 0x20002)
                 {
                     *rejected = 1;
                     return -1;
                 }
 
                 selectedVoice = voice;
-                voice->portamentoCurPitch = ((u32)voice->key << 16) + ((s32)voice->fineTune << 16) / 100;
-                voice->registeredKey = voice->key;
-                voice->key = key + ((voice->key & 0xff) - voice->keyBase);
-                voice->keyBase = key;
-                voice->fineTune = 0;
-                voice->portamentoTime = 0;
-                voice->outputFlags = voice->outputFlags | 0x20000LL;
+                voice->portCurPitch = ((u32)voice->curNote << 16) + ((s32)voice->curDetune << 16) / 100;
+                voice->lastNote = voice->curNote;
+                voice->curNote = key + ((voice->curNote & 0xff) - voice->orgNote);
+                voice->orgNote = key;
+                voice->curDetune = 0;
+                voice->portTime = 0;
+                voice->cFlagsLo = voice->cFlagsLo | 0x20000LL;
                 vidRemoveVoiceReferences(&synthVoice[i]);
                 if (result == 0xffffffff)
                 {
-                    voice->voiceNextHandle = 0xffffffff;
-                    voice->voicePrevHandle = 0xffffffff;
+                    voice->child = 0xffffffff;
+                    voice->parent = 0xffffffff;
                     result = vidMakeNew(&synthVoice[i], isMaster);
-                    previousId = voice->voiceHandle;
+                    previousId = voice->id;
                 }
                 else
                 {
-                    ((McmdVoiceState*)synthVoice)[previousId & 0xff].voiceNextHandle = voice->voiceHandle;
-                    voice->voicePrevHandle = previousId;
-                    previousId = voice->voiceHandle;
+                    ((McmdVoiceState*)synthVoice)[previousId & 0xff].child = voice->id;
+                    voice->parent = previousId;
+                    previousId = voice->id;
                     vidMakeNew(&synthVoice[i], 0);
                 }
             }
@@ -326,7 +212,7 @@ static u32 do_voice_portamento(u8 key, u8 midi, u8 midiSet, u32 isMaster, u32* r
     if (result != 0xffffffff)
     {
         voiceSetLastStarted(selectedVoice);
-        inpSetMidiLastNote(selectedVoice->midi, selectedVoice->midiSet, selectedVoice->key & 0xff);
+        inpSetMidiLastNote(selectedVoice->midi, selectedVoice->midiSet, selectedVoice->curNote & 0xff);
         *rejected = 0;
     }
     else
@@ -526,7 +412,7 @@ static inline void unblockAllAllocatedVoices(u32 vid)
     vi = vidGetInternalId(vid);
     while (vi != 0xFFFFFFFF)
     {
-        HWVOICE(vi & 0xFF)->callbackActive = 0;
+        HWVOICE(vi & 0xFF)->block = 0;
         vi = HWVOICE(vi & 0xFF)->child;
     }
 }
@@ -581,7 +467,7 @@ u32 synthStartSound(u16 id, u8 prio, u8 maxVoices, u8 key, u8 vol, u8 pan, u8 mi
  * Low-precision per-voice update: LFOs, vibrato, pitch sweeps, pan ramps,
  * pitch bend/portamento and final pitch computation.
  */
-static inline u32 apply_portamento(SynthHwVoice* svoice, u32 ccents, u32 deltaTime)
+static inline u32 apply_portamento(McmdVoiceState* svoice, u32 ccents, u32 deltaTime)
 {
     u32 old_portCurPitch;
 
@@ -604,7 +490,7 @@ static inline u32 apply_portamento(SynthHwVoice* svoice, u32 ccents, u32 deltaTi
     return ccents;
 }
 
-static inline u32 convert_cents(SynthHwVoice* svoice, u32 ccents)
+static inline u32 convert_cents(McmdVoiceState* svoice, u32 ccents)
 {
     u32 curDetune;
     u32 cpitch;
@@ -617,7 +503,7 @@ static inline u32 convert_cents(SynthHwVoice* svoice, u32 ccents)
     return cpitch;
 }
 
-static inline void UpdateTimeMIDICtrl(SynthHwVoice* sv)
+static inline void UpdateTimeMIDICtrl(McmdVoiceState* sv)
 {
     if (sv->timeUsedByInput != 0)
     {
@@ -635,7 +521,7 @@ static void LowPrecisionHandler(int voice)
     u16 Modulation;
     u16 portamentoRaw;
     u32 lowDeltaTime;
-    SynthHwVoice* sv;
+    McmdVoiceState* sv;
     u32 cntDelta;
     u32 addFactor;
     u16 adsr_start;
@@ -733,7 +619,7 @@ static void LowPrecisionHandler(int voice)
                 {
                     continue;
                 }
-                pbend = inpGetPitchBend((McmdVoiceState*)sv);
+                pbend = inpGetPitchBend(sv);
                 sv->pbLast = pbend;
             }
             else
@@ -756,7 +642,7 @@ static void LowPrecisionHandler(int voice)
 
         if ((HWVOICE_FLAGS(sv) & 0x2000) != 0)
         {
-            Modulation = inpGetModulation((McmdVoiceState*)sv);
+            Modulation = inpGetModulation(sv);
             vrange = sv->vibKeyRange * 256 + (sv->vibCentRange * 256) / 100;
             if (sv->vibModAddScale != 0)
             {
@@ -822,7 +708,7 @@ static void LowPrecisionHandler(int voice)
 
         cpitch = convert_cents(sv, ccents);
         cpitch += sv->sweepOff[0] + sv->sweepOff[1];
-        hwSetPitch(voice, sv->curPitch = ((cpitch >> 16) * inpGetDoppler((McmdVoiceState*)sv)) >> 13);
+        hwSetPitch(voice, sv->curPitch = ((cpitch >> 16) * inpGetDoppler(sv)) >> 13);
         synthAddJob((SynthDelayedNode*)sv, 0, 0xF00);
 
     }
@@ -835,7 +721,7 @@ static void LowPrecisionHandler(int voice)
  */
 static void ZeroOffsetHandler(int voice)
 {
-    SynthHwVoice* sv;
+    McmdVoiceState* sv;
     u32 lowDeltaTime;
     u16 Modulation;
     f32 vol;
@@ -905,9 +791,9 @@ static void ZeroOffsetHandler(int voice)
 
         if ((sv->treScale | sv->treModAddScale) != 0)
         {
-            Modulation = inpGetModulation((McmdVoiceState*)sv);
+            Modulation = inpGetModulation(sv);
             lfo = (1.f / 8192.f) *
-                  (f32)(0x2000 - ((0x2000 - ((s16)inpGetTremolo((McmdVoiceState*)sv) - 0x2000)) >> 1));
+                  (f32)(0x2000 - ((0x2000 - ((s16)inpGetTremolo(sv) - 0x2000)) >> 1));
             {
                 f32 modScale = 1.490207e-08f * ((f32)Modulation * (f32)(0x1000 - sv->treModAddScale));
                 scale = (1.f / 4096.f) * ((f32)sv->treScale * (1.f - modScale));
@@ -938,12 +824,12 @@ static void ZeroOffsetHandler(int voice)
             if ((HWVOICE_FLAGS(sv) & 0x200000000000ULL) != 0 || (sv->midiDirtyFlags & 0x6) != 0)
             {
                 HWVOICE_FLAGS(sv) &= ~0x200000000000ULL;
-                pan = sv->panning[0] + (inpGetPanning((McmdVoiceState*)sv) - 0x2000) * 0x200;
+                pan = sv->panning[0] + (inpGetPanning(sv) - 0x2000) * 0x200;
                 sv->lastPan = pan < 0 ? 0 : (pan > 0x7F0000 ? 0x7F0000 : pan);
 
                 if ((synthFlags & 2) != 0)
                 {
-                    if ((sv->lastSPan = sv->panning[1] + inpGetSurPanning((McmdVoiceState*)sv) * 0x200) > 0x7F0000)
+                    if ((sv->lastSPan = sv->panning[1] + inpGetSurPanning(sv) * 0x200) > 0x7F0000)
                     {
                         sv->lastSPan = 0x7F0000;
                     }
@@ -970,14 +856,14 @@ static void ZeroOffsetHandler(int voice)
         if (volUpdate || (sv->midiDirtyFlags & 0xF01) != 0)
         {
             preVol = voiceVol;
-            postVol = (1.f / 16383.f) * (voiceVol * vol * (f32)inpGetVolume((McmdVoiceState*)sv));
+            postVol = (1.f / 16383.f) * (voiceVol * vol * (f32)inpGetVolume(sv));
             auxa = (1.f / 127.f) * (f32)sv->revVolOffset +
-                   ((1.f / 16383.f) * (preVol * (f32)inpGetPreAuxA((McmdVoiceState*)sv)) +
+                   ((1.f / 16383.f) * (preVol * (f32)inpGetPreAuxA(sv)) +
                     (1.f / 127.f) *
                         ((f32)sv->revVolScale *
-                         ((1.f / 16383.f) * (postVol * (f32)inpGetReverb((McmdVoiceState*)sv)))));
-            auxb = (1.f / 16383.f) * (preVol * (f32)inpGetPreAuxB((McmdVoiceState*)sv)) +
-                   (1.f / 16383.f) * (postVol * (f32)inpGetPostAuxB((McmdVoiceState*)sv));
+                         ((1.f / 16383.f) * (postVol * (f32)inpGetReverb(sv)))));
+            auxb = (1.f / 16383.f) * (preVol * (f32)inpGetPreAuxB(sv)) +
+                   (1.f / 16383.f) * (postVol * (f32)inpGetPostAuxB(sv));
             sv->curOutputVolume = (u16)(32767.f * postVol);
             hwSetVolume(voice, sv->volTable, postVol, sv->lastPan, sv->lastSPan, auxa, auxb);
         }
@@ -1002,12 +888,12 @@ static void ZeroOffsetHandler(int voice)
  */
 static void EventHandler(int voice)
 {
-    SynthHwVoice* sv;
+    McmdVoiceState* sv;
 
     sv = HWVOICE(voice);
     if (hwIsActive(voice) || sv->addr != 0)
     {
-        macSetPedalState((McmdVoiceState*)sv, inpGetPedal((McmdVoiceState*)sv) > 0x1F80);
+        macSetPedalState(sv, inpGetPedal(sv) > 0x1F80);
 
         if ((HWVOICE_FLAGS(sv) & 0x20) != 0)
         {
@@ -1116,10 +1002,8 @@ void synthAddJob(SynthDelayedNode* fade, int mode, u32 delay)
  */
 void synthStartSynthJobHandling(McmdVoiceState* voice)
 {
-    SynthVoiceTimers* timers = (SynthVoiceTimers*)voice;
-
-    *(u64*)&timers->updateTimeHi0 = synthRealTime;
-    *(u64*)&timers->updateTimeHi1 = synthRealTime;
+    *(u64*)&voice->lastLowCallTimeHi = synthRealTime;
+    *(u64*)&voice->lastZeroCallTimeHi = synthRealTime;
     synthAddJob((SynthDelayedNode*)voice, 0, 0);
     synthAddJob((SynthDelayedNode*)voice, 1, 0);
 }
@@ -1143,7 +1027,7 @@ void HandleJobQueue(SynthDelayedNode** head, SynthDelayedBucketCallback callback
         SynthDelayedNode* next = node->next;
         node->jobTabIndex = 0xff;
         {
-            if (synthVoice[node->voiceIndex].callbackActive == 0)
+            if (synthVoice[node->voiceIndex].block == 0)
             {
                 callback(node->voiceIndex);
             }
@@ -1310,19 +1194,19 @@ u32 synthFXSetCtrl(u32 handle, u8 controller, u8 value)
     while (handle != 0xFFFFFFFFu)
     {
         idx = handle;
-        if (handle == synthVoice[idx].voiceHandle)
+        if (handle == synthVoice[idx].id)
         {
             slot = &synthVoice[idx];
-            if ((*(u64*)&slot->inputFlags & 2) != 0)
+            if ((*(u64*)&slot->cFlagsHi & 2) != 0)
             {
-                inpSetMidiCtrl(controller, idx, slot->startupMidiEvent, value);
+                inpSetMidiCtrl(controller, idx, slot->setup.midiSet, value);
             }
             else
             {
                 inpSetMidiCtrl(controller, idx, slot->midiSet, value);
             }
             found = 1;
-            handle = synthVoice[idx].voiceNextHandle;
+            handle = synthVoice[idx].child;
         }
         else
         {
@@ -1346,19 +1230,19 @@ u32 synthFXSetCtrl14(u32 handle, u8 controller, u16 value)
     while (handle != 0xFFFFFFFFu)
     {
         idx = handle;
-        if (handle == synthVoice[idx].voiceHandle)
+        if (handle == synthVoice[idx].id)
         {
             slot = &synthVoice[idx];
-            if ((*(u64*)&slot->inputFlags & 2) != 0)
+            if ((*(u64*)&slot->cFlagsHi & 2) != 0)
             {
-                inpSetMidiCtrl14(controller, idx, slot->startupMidiEvent, value);
+                inpSetMidiCtrl14(controller, idx, slot->setup.midiSet, value);
             }
             else
             {
                 inpSetMidiCtrl14(controller, idx, slot->midiSet, value);
             }
             found = 1;
-            handle = synthVoice[idx].voiceNextHandle;
+            handle = synthVoice[idx].child;
         }
         else
         {
@@ -1397,12 +1281,12 @@ u32 synthSendKeyOff(u32 handle)
         while (handle != 0xFFFFFFFFu)
         {
             idx = (u8)handle;
-            if (handle == synthVoice[idx].voiceHandle)
+            if (handle == synthVoice[idx].id)
             {
                 macSetExternalKeyoff(&synthVoice[idx]);
                 found = 1;
             }
-            handle = synthVoice[idx].voiceNextHandle;
+            handle = synthVoice[idx].child;
         }
     }
     return found;
@@ -1533,7 +1417,7 @@ void synthSetMusicVolumeType(u8 voiceIdx, u8 value)
  *   0 -> validate current sample and mark the slot active
  *   1 -> voiceKill
  *   2 -> claim virtual sample slot
- *   3 -> simple vacate via hwGetVirtualSampleID + synthHandleVirtualSampleDone
+ *   3 -> simple vacate via hwGetVirtualSampleID + vsSampleEndNotify
  */
 u32 synthHWMessageHandler(u32 mode, u32 arg)
 {
@@ -1543,12 +1427,12 @@ u32 synthHWMessageHandler(u32 mode, u32 arg)
     {
     case 0:
     {
-        if (synthVoice[arg & 0xff].macroAllocating != 0)
+        if (synthVoice[arg & 0xff].block != 0)
         {
             break;
         }
-        synthHandleVirtualSampleDone(hwGetVirtualSampleID(arg & 0xff));
-        if (arg != synthVoice[arg & 0xff].voiceHandle)
+        vsSampleEndNotify(hwGetVirtualSampleID(arg & 0xff));
+        if (arg != synthVoice[arg & 0xff].id)
         {
             break;
         }
@@ -1559,11 +1443,11 @@ u32 synthHWMessageHandler(u32 mode, u32 arg)
         voiceKill(arg & 0xff);
         break;
     case 2:
-        result = synthClaimVirtualSampleSlot(arg & 0xff);
+        result = vsSampleStartNotify(arg & 0xff);
         break;
     case 3:
     {
-        synthHandleVirtualSampleDone(hwGetVirtualSampleID(arg & 0xff));
+        vsSampleEndNotify(hwGetVirtualSampleID(arg & 0xff));
         break;
     }
     }

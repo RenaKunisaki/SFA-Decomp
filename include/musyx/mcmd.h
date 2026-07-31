@@ -1,13 +1,11 @@
 #ifndef MUSYX_MCMD_H_
 #define MUSYX_MCMD_H_
 
-#define MCMD_VOICE_PLAY_PTR_OFFSET 0x38
-#define MCMD_VOICE_LOOP_COUNTER_OFFSET 0xAA
-#define MCMD_VOICE_ID_OFFSET 0xF4
-#define MCMD_VOICE_PREV_SAMPLE_ID_OFFSET 0x124
-#define MCMD_VOICE_INPUT_FLAGS_OFFSET 0x114
-#define MCMD_VOICE_OUTPUT_FLAGS_OFFSET 0x118
-#define MCMD_VOICE_HANDLE_SLOT_BYTE 0
+#include "musyx/adsr.h"
+
+#define MAC_STATE_RUNNABLE 0
+#define MAC_STATE_YIELDED 1
+#define MAC_STATE_STOPPED 2
 
 #define MCMD_LOOP_RANDOM_DELAY_FLAG 0x00010000
 #define MCMD_LOOP_WAIT_FOR_KEYOFF_FLAG 0x00000100
@@ -77,268 +75,191 @@ typedef struct McmdCommandArgs {
 } McmdCommandArgs;
 
 typedef struct McmdInputEntry {
-    u8 controller;
-    u8 combineModeFlags;
+    u8 midiCtrl;
+    u8 combine;
     u8 unk2[2];
     s32 scale;
 } McmdInputEntry;
 
 typedef struct McmdInputSlot {
-    McmdInputEntry entries[4];
-    s16 cachedValue;
-    u8 entryCount;
+    McmdInputEntry source[4];
+    s16 oldValue;
+    u8 numSource;
     u8 unk23;
 } McmdInputSlot;
 
-typedef struct McmdExCtrlState {
-    u32 unk00;
-    u32 rampFrames;
+typedef struct SYNTH_LFO {
+    u32 time;
+    u32 period;
     s16 value;
-    u16 limit;
-} McmdExCtrlState;
+    s16 lastValue;
+} SYNTH_LFO;
 
-typedef struct McmdEnvelopeState {
-    u8 mode;
-    u8 submode;
-    u8 unk02[2];
-    u32 duration;
-    u32 value;
-    u32 target;
-    s32 step;
-    u32 attack;
-    u32 decay;
-    u16 sustain;
-    u16 unk1E;
-    u32 release;
-    u8 unk24[4];
-} McmdEnvelopeState;
+typedef struct VID_LIST {
+    struct VID_LIST *next;
+    struct VID_LIST *prev;
+    u32 vid;
+    u32 root;
+} VID_LIST;
 
-typedef struct McmdDlsAdsrInfo {
-    s32 atime;
-    s32 dtime;
-    u16 slevel;
-    u16 rtime;
-    s32 ascale;
-    s32 dscale;
-} McmdDlsAdsrInfo;
-
-typedef struct McmdVidListNode {
-    struct McmdVidListNode *next;
-    struct McmdVidListNode *prev;
-    u32 id;
-    u32 internalId;
-} McmdVidListNode;
-
-typedef struct McmdMacroStackEntry {
-    u8 *macroBase;
-    u8 *macroCursor;
-} McmdMacroStackEntry;
+typedef struct CALLSTACK {
+    u8 *addr;
+    u8 *curAddr;
+} CALLSTACK;
 
 typedef struct McmdVoiceState {
-    u8 unk00[0x34];
-    union {
-        u8 *macroBase;
-        u32 activeHandle;
-    };
-    u8 *macroCursor;
-    struct McmdVoiceState *activeNext;
-    struct McmdVoiceState *activePrev;
-    struct McmdVoiceState *timeNext;
-    struct McmdVoiceState *timePrev;
-    s32 queueMode;
-    union {
-        struct {
-            u8 *keyoffMacroBase;
-            u8 *sampleEndMacroBase;
-            u8 *messageMacroBase;
-        };
-        u8 *trapMacroBase[3];
-    };
-    union {
-        struct {
-            u8 *keyoffMacroCursor;
-            u8 *sampleEndMacroCursor;
-            u8 *messageMacroCursor;
-        };
-        u8 *trapMacroCursor[3];
-    };
-    u8 hasTriggerMacros;
+    u8 unk00[0x24];
+    u32 lastLowCallTimeHi;
+    u32 lastLowCallTimeLo;
+    u32 lastZeroCallTimeHi;
+    u32 lastZeroCallTimeLo;
+    u8 *addr;
+    u8 *curAddr;
+    struct McmdVoiceState *nextMacActive;
+    struct McmdVoiceState *prevMacActive;
+    struct McmdVoiceState *nextTimeQueueMacro;
+    struct McmdVoiceState *prevTimeQueueMacro;
+    s32 macState;
+    u8 *trapEventAddr[3];
+    u8 *trapEventCurAddr[3];
+    u8 trapEventAny;
     u8 unk69[3];
-    McmdMacroStackEntry macroStack[4];
-    u8 macroStackDepth;
-    u8 macroStackIndex;
+    CALLSTACK callStack[4];
+    u8 callStackEntryNum;
+    u8 callStackIndex;
     u8 unk8E[2];
-    u32 startTimeHi;
-    u32 startTimeLo;
-    u32 wakeTimeHi;
-    u32 wakeTimeLo;
-    u32 activeTimeHi;
-    u32 activeTimeLo;
-    u8 unkA8[MCMD_VOICE_LOOP_COUNTER_OFFSET - 0xA8];
-    u16 loopCounter;
-    u32 localRegs[16];
-    union {
-        u32 voiceNextHandle;
-        u32 callbackNext;
-        u32 child;
-        u32 nextHandle;
-    };
-    union {
-        u32 voicePrevHandle;
-        u32 parent;
-    };
-    union {
-        u32 voiceHandle;
-        u32 callbackLinkId;
-        u32 handle;
-        u8 voiceHandleBytes[4];
-    };
-    McmdVidListNode *vidListNode;
-    McmdVidListNode *vidMasterListNode; /* 0xFC (MP4 vidMasterList; unkFC before voice_id adoption) */
-    u16 baseSample;
-    u16 instrumentKey;
+    u32 macStartTimeHi;
+    u32 macStartTimeLo;
+    u32 waitHi;
+    u32 waitLo;
+    u32 waitTimeHi;
+    u32 waitTimeLo;
+    u8 timeUsedByInput;
+    u8 unkA9;
+    u16 loop;
+    u32 local_vars[16];
+    u32 child;
+    u32 parent;
+    u32 id;
+    VID_LIST *vidList;
+    VID_LIST *vidMasterList;
+    u16 allocId;
+    u16 macroId;
     u8 keyGroup;
     u8 unk105[3];
-    McmdVidListNode *cloneVidListNode;
-    u8 priorityGroup;
+    u32 lastVID;
+    u8 prio;
     u8 unk10D;
-    u16 priorityScale;
-    union {
-        u32 priorityValue;
-        u32 priorityTick;
-    };
-    u32 inputFlags;
-    u32 outputFlags;
-    union {
-        u8 macroAllocating;
-        u8 callbackActive;
-        u8 block;
-    };
-    u8 streamKind;
+    u16 ageSpeed;
+    u32 age;
+    u32 cFlagsHi;
+    u32 cFlagsLo;
+    u8 block;
+    u8 fxFlag;
     u8 vGroup;
     u8 studio;
     u8 track;
     u8 midi;
     u8 midiSet;
     u8 section;
-    u32 prevSampleId;
-    u32 targetPitch;
-    u16 key;
-    s8 fineTune;
-    u8 keyBase;
-    u8 registeredKey;
-    u8 portamentoMode;
-    u16 portamentoCtrlValue;
-    u32 portamentoDuration;
-    u32 portamentoCurPitch; /* 0x138: current portamento pitch, key<<16 + bend */
-    u32 portamentoTime;
-    s8 vibratoStart;
-    s8 vibratoTarget;
+    u32 sInfo;
+    u32 playFrq;
+    u16 curNote;
+    s8 curDetune;
+    u8 orgNote;
+    u8 lastNote;
+    u8 portType;
+    u16 portLastCtrlState;
+    u32 portDuration;
+    u32 portCurPitch; /* 0x138: current portamento pitch, key<<16 + bend */
+    u32 portTime;
+    u8 vibKeyRange;
+    u8 vibCentRange;
     u8 unk142[2];
-    u32 vibratoDuration;
-    u32 vibratoHalfDuration;
-    u8 unk14C[0x150 - 0x14C];
-    s16 vibratoModAddScale;
+    u32 vibPeriod;
+    u32 vibCurTime;
+    s32 vibCurOffset;
+    s16 vibModAddScale;
     u8 unk152[2];
     u32 volume;
-    u32 volumeBase;
-    u8 unk15C[0x168 - 0x15C];
-    f32 tremoloCurScale;
-    u16 tremoloScale;
-    u16 tremoloModAddScale;
-    union {
-        struct {
-            u32 pan;
-            u32 unkParamCurrent1;
-        };
-        u32 paramCurrent[2];
-    };
-    s32 paramStep[2];
-    u32 paramTarget[2];
-    u32 paramDuration[2];
+    u32 orgVolume;
+    f32 lastVolFaderScale;
+    u32 lastPan;
+    u32 lastSPan;
+    f32 treCurScale;
+    u16 treScale;
+    u16 treModAddScale;
+    u32 panning[2];
+    s32 panDelta[2];
+    u32 panTarget[2];
+    u32 panTime[2];
     u8 revVolScale;
     u8 revVolOffset;
     u8 volTable;
     u8 itdMode;
-    s32 volumeStep;
-    u32 volumeTarget;
-    u32 volumeStart;
+    s32 envDelta;
+    s32 envTarget;
+    s32 envCurrent;
     s32 sweepOff[2];
     s32 sweepAdd[2];
     s32 sweepCnt[2];
     u8 sweepNum[2];
     u8 unk1BA[2];
-    union {
-        struct {
-            McmdExCtrlState exCtrlA0;
-            McmdExCtrlState exCtrlA1;
-        };
-        McmdExCtrlState exCtrls[2];
-        struct {
-            u8 unk1BC[8];
-            s16 exCtrlA0Value;
-            u16 exCtrlA0Limit;
-            u8 unk1C8[8];
-            s16 exCtrlA1Value;
-            u16 exCtrlA1Limit;
-        };
-    };
-    u8 exCtrlDirty[2];
-    u8 pitchBendRangeUp;
-    u8 pitchBendRangeDown;
-    u16 pitchBend;
+    SYNTH_LFO lfo[2];
+    u8 lfoUsedByInput[2];
+    u8 pbLowerKeyRange;
+    u8 pbUpperKeyRange;
+    u16 pbLast;
     u8 unk1DA[0x1DC - 0x1DA];
-    McmdEnvelopeState pitchAdsr;
-    s16 pitchAdsrPan;
-    u8 unk206[0x208 - 0x206];
-    u8 startupVolume;
-    u8 startupPan;
-    u8 startupMidiSlot;
-    u8 startupMidiEvent;
-    u8 startupMidiLayer;
-    u8 startupTrack;
-    u8 startupVGroup;
-    u8 startupStudio;
-    u8 startupDeferStart;
+    ADSR_VARS pitchADSR;
+    s16 pitchADSRRange;
+    u16 curPitch;
+    struct {
+        u8 vol;
+        u8 pan;
+        u8 midi;
+        u8 midiSet;
+        u8 section;
+        u8 track;
+        u8 vGroup;
+        u8 studio;
+        u8 itdMode;
+    } setup;
     u8 unk211[3];
-    u32 inputDirtyFlags;
-    union {
-        struct {
-            McmdInputSlot volumeInput;
-            McmdInputSlot panningInput;
-            McmdInputSlot surPanningInput;
-            McmdInputSlot pitchBendInput;
-            McmdInputSlot dopplerInput;
-            McmdInputSlot modulationInput;
-            McmdInputSlot pedalInput;
-            McmdInputSlot portamentoInput;
-            McmdInputSlot preAuxAInput;
-            McmdInputSlot reverbInput;
-            McmdInputSlot preAuxBInput;
-            McmdInputSlot postAuxBInput;
-            McmdInputSlot tremoloInput;
-        };
-        McmdInputSlot inputSlots[13];
-    };
-    u8 queuedMessageCount;
-    u8 queuedMessageReadIndex;
-    u8 queuedMessageWriteIndex;
+    u32 midiDirtyFlags;
+    McmdInputSlot inpVolume;
+    McmdInputSlot inpPanning;
+    McmdInputSlot inpSurroundPanning;
+    McmdInputSlot inpPitchBend;
+    McmdInputSlot inpDoppler;
+    McmdInputSlot inpModulation;
+    McmdInputSlot inpPedal;
+    McmdInputSlot inpPortamento;
+    McmdInputSlot inpPreAuxA;
+    McmdInputSlot inpReverb;
+    McmdInputSlot inpPreAuxB;
+    McmdInputSlot inpPostAuxB;
+    McmdInputSlot inpTremolo;
+
+    u8 mesgNum;
+    u8 mesgRead;
+    u8 mesgWrite;
     u8 unk3EF;
-    u32 queuedMessages[4];
+    u32 mesgQueue[4];
     u16 curOutputVolume;
     u8 unk402[2];
 } McmdVoiceState;
 
 extern McmdVoiceState* synthVoice;
 
-#ifdef STATIC_ASSERT /* mcmd.h has no includes of its own; assert when global.h is in scope */
-STATIC_ASSERT(offsetof(McmdVoiceState, voiceNextHandle) == 0xEC);
-STATIC_ASSERT(offsetof(McmdVoiceState, voiceHandle) == 0xF4);
-STATIC_ASSERT(offsetof(McmdVoiceState, priorityGroup) == 0x10C);
-STATIC_ASSERT(offsetof(McmdVoiceState, inputFlags) == 0x114);
-STATIC_ASSERT(offsetof(McmdVoiceState, key) == 0x12C);
-STATIC_ASSERT(offsetof(McmdVoiceState, portamentoCurPitch) == 0x138);
-STATIC_ASSERT(offsetof(McmdVoiceState, inputDirtyFlags) == 0x214);
+#ifdef STATIC_ASSERT
+STATIC_ASSERT(offsetof(McmdVoiceState, child) == 0xEC);
+STATIC_ASSERT(offsetof(McmdVoiceState, id) == 0xF4);
+STATIC_ASSERT(offsetof(McmdVoiceState, prio) == 0x10C);
+STATIC_ASSERT(offsetof(McmdVoiceState, cFlagsHi) == 0x114);
+STATIC_ASSERT(offsetof(McmdVoiceState, curNote) == 0x12C);
+STATIC_ASSERT(offsetof(McmdVoiceState, portCurPitch) == 0x138);
+STATIC_ASSERT(offsetof(McmdVoiceState, midiDirtyFlags) == 0x214);
 STATIC_ASSERT(sizeof(McmdVoiceState) == 0x404);
 #endif
 

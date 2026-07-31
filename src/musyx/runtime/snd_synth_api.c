@@ -253,9 +253,9 @@ void synthDeactivateStudio(u8 studio)
         voice = (u8*)synthVoice + offset;
         if (studio == ((McmdVoiceState*)voice)->studio)
         {
-            if (((McmdVoiceState*)voice)->voiceHandle != 0xffffffff)
+            if (((McmdVoiceState*)voice)->id != 0xffffffff)
             {
-                voiceKillSound(((McmdVoiceState*)voice)->vidListNode->id);
+                voiceKillSound(((McmdVoiceState*)voice)->vidList->vid);
             }
             else
             {

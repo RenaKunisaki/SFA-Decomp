@@ -25,97 +25,96 @@
 #define SND_MAX_STUDIOS 8
 #define SND_DEFAULT_SAMPLE_RATE 0x7d00
 
-typedef struct SndSpatialEntry {
-    struct SndSpatialEntry *next;
-    u8 pad04[4];
+typedef struct SND_FVECTOR {
+    f32 x;
+    f32 y;
+    f32 z;
+} SND_FVECTOR;
+
+typedef struct SND_ROOM {
+    struct SND_ROOM *next;
+    struct SND_ROOM *prev;
     u32 flags;
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    f32 averageDistanceSq;
-    u8 assignedVoice;
+    SND_FVECTOR pos;
+    f32 distance;
+    u8 studio;
     u8 pad1d[3];
-    void (*activateCallback)(u8 voice, u32 user);
-    void (*evictCallback)(u8 voice);
-    u32 callbackUser;
-    u32 fade;
-} SndSpatialEntry;
+    void (*activateReverb)(u8 studio, u32 user);
+    void (*deActivateReverb)(u8 studio);
+    u32 user;
+    u32 curMVol;
+} SND_ROOM;
 
-typedef struct SndSpatialListener {
-    struct SndSpatialListener *next;
-    u8 pad04[4];
-    SndSpatialEntry *entry;
+typedef struct SND_LISTENER {
+    struct SND_LISTENER *next;
+    struct SND_LISTENER *prev;
+    SND_ROOM *room;
     u32 flags;
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    f32 time;
-    f32 refX;
-    f32 refY;
-    f32 refZ;
-    f32 velX;
-    f32 velY;
-    f32 velZ;
-    u8 pad38[0x50 - 0x38];
-    f32 matrix[12];
-    f32 rearRange;
-    f32 frontRange;
-    f32 panScale;
-    f32 volumeScale;
-} SndSpatialListener;
+    SND_FVECTOR pos;
+    f32 volPosOff;
+    SND_FVECTOR dir;
+    SND_FVECTOR heading;
+    SND_FVECTOR right;
+    SND_FVECTOR up;
+    f32 mat[12];
+    f32 surroundDisFront;
+    f32 surroundDisBack;
+    f32 soundSpeed;
+    f32 vol;
+} SND_LISTENER;
 
-typedef struct SndStudioInputLink {
-    struct SndStudioInputLink *next;
-    u8 pad04[0x10];
-    f32 inputScale;
-    u8 pad18[4];
-    u8 sendLevel;
-    u8 activeInput;
+typedef struct SND_DOOR {
+    struct SND_DOOR *next;
+    struct SND_DOOR *prev;
+    SND_FVECTOR pos;
+    f32 open;
+    f32 dampen;
+    u8 fxVol;
+    u8 destStudio;
     u8 pad1e[2];
-    SndSpatialEntry *source;
-    SndSpatialEntry *target;
+    SND_ROOM *a;
+    SND_ROOM *b;
     u32 flags;
-    u8 pad2c[8];
-    SND_STUDIO_INPUT studioInput;
-} SndStudioInputLink;
+    s16 filterCoef[4];
+    SND_STUDIO_INPUT input;
+} SND_DOOR;
 
-typedef struct S3DEmitterCtrl {
-    u8 controller;
+typedef struct SND_PARAMETER {
+    u8 ctrl;
     u8 pad01;
-    u16 value;
-} S3DEmitterCtrl;
+    union _paraData {
+        u8 value7;
+        u16 value14;
+    } paraData;
+} SND_PARAMETER;
 
-typedef struct S3DEmitterCtrlList {
-    u8 count;
+typedef struct SND_PARAMETER_INFO {
+    u8 numPara;
     u8 pad01[3];
-    S3DEmitterCtrl *entries;
-} S3DEmitterCtrlList;
+    SND_PARAMETER *paraArray;
+} SND_PARAMETER_INFO;
 
-typedef struct Snd3DEmitter {
-    struct Snd3DEmitter *next;
-    struct Snd3DEmitter *prev;
-    SndSpatialEntry *entry;
-    S3DEmitterCtrlList *ctrlList;
+typedef struct SND_EMITTER {
+    struct SND_EMITTER *next;
+    struct SND_EMITTER *prev;
+    SND_ROOM *room;
+    SND_PARAMETER_INFO *paraInfo;
     u32 flags;
-    f32 posX;
-    f32 posY;
-    f32 posZ;
-    f32 refX;
-    f32 refY;
-    f32 refZ;
-    f32 maxDistance;
-    f32 maxVolume;
-    f32 minVolume;
-    f32 distanceCurve;
-    u32 handle;
-    u32 groupKey;
-    u16 fxId;
+    SND_FVECTOR pos;
+    SND_FVECTOR dir;
+    f32 maxDis;
+    f32 maxVol;
+    f32 minVol;
+    f32 volPush;
+    u32 vid;
+    u32 group;
+    u16 fxid;
     u8 studio;
     u8 maxVoices;
-    u16 retryCounter;
+    u16 VolLevelCnt;
     u8 pad4a[0x4c - 0x4a];
-    f32 age;
-} Snd3DEmitter;
+    f32 fade;
+} SND_EMITTER;
 
 void s3dHandle(void);
 void s3dInit(u32 flags);
@@ -125,9 +124,9 @@ int sndInit(u8 voiceCount, u8 streamCount, u8 unk5, u8 stereo, u32 flags, u32 ar
 extern u8 snd_max_studios;
 extern u8 snd_base_studio;
 extern u32 snd_used_studios;
-extern SndStudioInputLink* s3dDoorRoot;
-extern SndSpatialEntry* s3dRoomRoot;
-extern SndSpatialListener* s3dListenerRoot;
-extern Snd3DEmitter* s3dEmitterRoot;
+extern SND_DOOR* s3dDoorRoot;
+extern SND_ROOM* s3dRoomRoot;
+extern SND_LISTENER* s3dListenerRoot;
+extern SND_EMITTER* s3dEmitterRoot;
 
 #endif /* MUSYX_SND3D_H_ */

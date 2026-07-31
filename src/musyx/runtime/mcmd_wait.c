@@ -6,13 +6,13 @@
 #include "musyx/snd_service.h"
 #include "musyx/mcmd_wait.h"
 
-/* 64-bit control-flag word overlaying inputFlags(hi)/outputFlags(lo). */
-#define MAC_CFLAGS(sv)     (*(u64*)&(sv)->inputFlags)
+/* 64-bit control-flag word overlaying cFlagsHi(hi)/cFlagsLo(lo). */
+#define MAC_CFLAGS(sv)     (*(u64*)&(sv)->cFlagsHi)
 #define MAC_FLAG64(hi, lo) (((u64)(hi) << 32) | (u64)(lo))
 
-#define MAC_WAIT(sv)       (*(u64*)&(sv)->wakeTimeHi)
-#define MAC_START_TIME(sv) (*(u64*)&(sv)->startTimeHi)
-#define MAC_WAIT_TIME(sv)  (*(u64*)&(sv)->activeTimeHi)
+#define MAC_WAIT(sv)       (*(u64*)&(sv)->waitHi)
+#define MAC_START_TIME(sv) (*(u64*)&(sv)->macStartTimeHi)
+#define MAC_WAIT_TIME(sv)  (*(u64*)&(sv)->waitTimeHi)
 
 extern u64 macRealTime;
 /*
@@ -45,7 +45,7 @@ int mcmdWait(McmdVoiceState* svoice, McmdCommandArgs* cstep)
 
         if ((u8)(cstep->flags >> 0x18) & 1)
         {
-            if (!(MAC_CFLAGS(svoice) & MAC_FLAG64(0, 0x20)) && !hwIsActive(svoice->voiceHandle & 0xff))
+            if (!(MAC_CFLAGS(svoice) & MAC_FLAG64(0, 0x20)) && !hwIsActive(svoice->id & 0xff))
             {
                 return 0;
             }

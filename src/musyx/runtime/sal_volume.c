@@ -108,7 +108,7 @@ static void CalcBusDPL2(f32* vol_tab, f32* v_out, f32 vol, SAL_PANINFO* pi, SalV
                            pi->rpan_fm * gSnd3dRoomVolTable.pan[pi->rpan_im + 1]);
 }
 
-void salCalcVolumeMatrix(u8 volumeTable, f32* out, u32 pan, u32 surroundPan, u32 itd, u32 dpl2, f32 volume,
+void salCalcVolume(u8 volumeTable, f32* out, u32 pan, u32 surroundPan, u32 itd, u32 dpl2, f32 volume,
                          f32 auxA, f32 auxB)
 {
     SalVolTab* tabs;
