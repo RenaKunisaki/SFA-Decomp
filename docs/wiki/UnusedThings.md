@@ -327,12 +327,65 @@ missing reader.
 - **Root-motion rotation export** (`src/main/model.c`, `ObjModel_UpdateAnimMatrices`): the sampled
   root-joint rotation triple is stored to `gModelRootRotX/Y/Z` and never read — only the
   translation half of root motion is consumed.
+- **Packed (delta-compressed) animation-resource path** (`src/main/model.c` /
+  `src/main/render.c`): `loadAndDecompressDataFile`'s ANIM/PREANIM cases gate an unpack step on
+  `ObjModel_IsPackedResource`, which retail hardcodes to `return 0` — so
+  `ObjModel_UnpackResourcePayload` and its workers `modelRenderCopyPackedSamples` /
+  `modelRenderDecodeAdpcm` are unreachable. The data side agrees: the record flag bit the
+  unpacker clears (`0x20` at record offset 1) is set in none of the 2051 animation records
+  shipped on the rev1 disc (see [Animation](Animation)). The compressor was retired before ship;
+  the decoder shipped stubbed off.
+- **RomCurve type-0x16 / type-0x17 query slots** (`src/dlls/engine/20_Hcurves/Hcurves_romcurve.c`):
+  `curves_findNearestOfType16` (vtable slot 0x48) and `curves_findEnclosingLoopOfType17` (slot
+  0x50) have zero callers binary-wide, and the retail romlists ship zero type-0x16 curve records
+  and exactly one (link-less) type-0x17 record — severed on both the code and data sides (see
+  [Curves](Curves)).
+- **ObjSeq camera-override rotation half** (`src/dlls/engine/2/2.c`,
+  `ObjSeq_SetCameraTransformOverride`): the setter stores an 8-global pose —
+  `gObjSeqCameraOverrideActive`/`PosX/Y/Z` *are* read by the sequence-camera builder, but the
+  rotation triple `gObjSeqCameraOverrideRotX/Y/Z` and `gObjSeqCameraOverrideW` have zero loads
+  binary-wide (retail relocs: exactly the four stores). The one live caller —
+  `src/dlls/objects/666_ARWArwing/ARWArwing.c`, which passes a fully aim-adjusted rotation for the
+  Arwing cutscene camera — therefore overrides only the camera *position*; the camera keeps
+  deriving rotation from the source object's own `anim.rotX/Y/Z`.
+- **Map-scripted water-FX kill switch** (`src/track/intersect.c`, `waterFxSetDisabled`): stores
+  `gWaterFxDisabled`, which nothing reads — the splash/ripple renderer has no check. The live
+  caller (`src/dlls/objects/294/294.c`, driven by a placement parameter) therefore cannot disable
+  water FX; the call's only retail effect is the ripple/splash buffer reset the setter itself
+  performs when *re-enabling*.
+- **expgfx texture-free guard + pool-update arbitration** (`src/dlls/engine/10_expgfx/expgfx.c`,
+  `src/dlls/engine/11/11.c`): `gExpgfxTextureFreeInProgress` is set to 1/0 around every
+  `textureFree` in expgfx (8 bracket pairs, 16 stores) and `gExpgfxUpdatingActivePools` is
+  written by *two* DLLs (expgfx writes 1/0, engine 11 writes 2/0) — classic in-progress /
+  who-owns-the-shared-pools flags whose checker no longer exists; zero loads binary-wide.
+- **Per-frame effect-oscillator exports** (15 DLLs, 30 globals): every `gEffectN Sin/Sine/Osc`
+  value pair (`gEffect1SineWaveA/B` … `gEffect20SineValue0/1` in engines 26-35 and 41-45, plus
+  `gModgfxSineWaveA/B` in 33 and `gPartfxOscSine0/1` in 14) is recomputed from its live phase
+  counter every frame and stored to a global nothing reads — a copy-pasted oscillator-export
+  template whose consumers were retired; only the phase counters are live.
+- **HUD screen-width offset half** (`src/dlls/engine/0/0.c`): game-UI init computes
+  `gGameUiScreenWidthOffset = width - 320` and `gGameUiScreenHeightOffset = height - 240`; the
+  height half is consumed, the width half has zero loads binary-wide.
+- One decomp-side artifact found (and left in place) by the same scan: `shadowGetSunMagnitude`
+  (`src/main/shadow_dolphin.c`) is an **invented reader** — a zero-caller static wrapping
+  `gSunMagnitude` that provably does not exist in the retail object (retail `.text` is 0x1CCC
+  bytes vs 0x1D04 with it, and retail carries exactly one `gSunMagnitude` reloc, the store).
+  It cannot simply be deleted: it currently front-mints this TU's `.sdata2` entries (an `f32`
+  0.0 and the s16-to-f32 conversion double) so the pool lines up with retail's layout, whose
+  first `1.0f` sits *after* the conversion double even though retail code uses it earlier —
+  i.e. retail's `lbl_803DEC58`/`lbl_803DEC68` look like declared constants, not first-use pool
+  literals. Removing the helper costs 88 bytes of matched `.sdata2`. Flagged for a data-lane
+  re-derivation of the TU's real constant declarations; for census purposes `gSunMagnitude` is
+  a store-only latch like the entries above.
 
 Most other store-only globals found by the same scan are one-off debug snapshot mirrors (e.g.
-`gShadowTrackTriangleCount`, `gTrackTriangleCount`) rather than whole severed mechanisms; a value
-stored *and used in-register* in the same function also shows up as "never loaded" without being
-dead, so store-only alone is not proof of severance — the three entries above are additionally
-pure-setter/pure-latch shaped.
+`gShadowTrackTriangleCount`, `gTrackTriangleCount`, `gDvdLastDriveStatus`,
+`gObjSeqCurrentTrackId`, the `lbl_803DCEE8`-`lbl_803DCF18` shadow-track snapshot cluster) rather
+than whole severed mechanisms; a value stored *and used in-register* in the same function also
+shows up as "never loaded" without being dead (`gPauseMenuHoloRotY`, `gPlayerMoveTargetYaw`,
+`gMoonFxDayNo`, `gNewShadowLightAngleY`, `gCamForceBehindTraceDistance`,
+`gWmLevelControlBlendedLightIntensity` are that class), so store-only alone is not proof of
+severance — the entries above are additionally pure-setter/pure-latch shaped.
 
 ### Not found in this codebase
 
