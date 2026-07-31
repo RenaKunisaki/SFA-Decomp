@@ -2603,6 +2603,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     u32* refs;
     int done;
     f32 fade;
+    f32 sc;
 
     gObjRenderSetupDone = 0;
     gObjCachedTexture = 0;
@@ -2765,9 +2766,10 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         one = 1.0f;
         for (; j < ((ModelFileHeader*)m)->jointCount; j++)
         {
-            f32 sc =
-                (f32)gObjFuzzStep * (fade / *(f32*)(((ModelFileHeader*)m)->jointBlendData + joff + 0xc)) + one;
-            f32* jm = (f32*)ObjModel_GetJointMatrix((u8*)am, j);
+            f32* jm;
+
+            sc = (f32)gObjFuzzStep * (fade / *(f32*)(((ModelFileHeader*)m)->jointBlendData + joff + 0xc)) + one;
+            jm = (f32*)ObjModel_GetJointMatrix((u8*)am, j);
             PSMTXScale((MtxPtr)sm, sc, sc, sc);
             if (lbl_803DCC35 == 0)
             {
