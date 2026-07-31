@@ -66,7 +66,7 @@ u8 gGameLoopPendingMusicId;
 GameObject* gGameLoopButtonObjects[2];
 u8 gGameLoopProgressiveMode;
 u8* gGameBitSaveData;
-u8* gGameBitTable;
+GameBitDef* gGameBitTable;
 s16 gGameBitCount;
 int gGameLoopPlayerTrailIndex;
 int gGameLoopPlayerTrailTime;

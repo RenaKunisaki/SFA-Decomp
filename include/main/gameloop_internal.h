@@ -16,7 +16,13 @@ extern u8 gGameLoopPendingMusicId;
 extern GameObject* gGameLoopButtonObjects[2];
 extern u8 gGameLoopProgressiveMode;
 extern u8* gGameBitSaveData;
-extern u8* gGameBitTable;
+typedef struct GameBitDef {
+    u16 firstBit;
+    u8 flags;
+    u8 taskHintId;
+} GameBitDef;
+
+extern GameBitDef* gGameBitTable;
 extern s16 gGameBitCount;
 extern int gGameLoopPlayerTrailIndex;
 extern int gGameLoopPlayerTrailTime;
