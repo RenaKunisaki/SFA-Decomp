@@ -1147,10 +1147,10 @@ void skyUpdateLightingFromTimeOfDay(void)
     lightingData = gSkySunDirection;
     if (gSkyState == NULL)
     {
-        for (blue = 0; blue < 3; blue++)
+        for (slotIndex = 0; slotIndex < 3; slotIndex++)
         {
-            skySetLightSlot(blue, lightingData[0], lightingData[1], lightingData[2], 0xff, 0xff, 0xff, 0xff, 0xff,
-                            0xff);
+            skySetLightSlot(slotIndex, lightingData[0], lightingData[1], lightingData[2], 0xff, 0xff, 0xff, 0xff,
+                            0xff, 0xff);
         }
     }
     else
