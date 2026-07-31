@@ -725,7 +725,7 @@ void sky2_run(void)
                     k++;
                 } while (k < 8);
                 zero = 0.0f;
-                if (best.x > zero)
+                if (zero < best.x)
                 {
                     p = *pp + (bestKnotOffset = idx.best * 4);
                     r = ((SkySlotAnim*)p)->cur[0] * best.x + r;
