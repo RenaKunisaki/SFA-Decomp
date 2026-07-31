@@ -9,8 +9,6 @@
 #include "main/dll/dll_000E_partfx.h"
 #include "main/dll/dll_001B_effect2.h"
 
-extern u8 lbl_80380209[];
-
 f32 gPartfxSpawnAnimPhase0 = 0.1f;
 f32 gPartfxSpawnAnimPhase1 = 0.3f;
 f32 gPartfxFrameAnimPhase0 = 0.1f;
@@ -3269,7 +3267,7 @@ int partfx_spawnObject(s16* sourceObj, int effectValue, PartFxSpawnParams* spawn
             cfg.scale = 0.001f * (f32)(s32)randomGetRange(0x15, 0x29);
             cfg.lifetimeFrames = 0x1cc;
         }
-        cfg.behaviorFlags = (u32)lbl_80380209;
+        cfg.behaviorFlags = 0x80380209;
         cfg.renderFlags = 0x5000820;
         cfg.textureId = 0xc0b;
         cfg.initialAlpha = 0x7f;

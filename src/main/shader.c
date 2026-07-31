@@ -3499,8 +3499,7 @@ void buildPlayerRelativeFrustumPlanes(void)
     frustumPlanes_updateAabbCornerIndices(gPlayerRelativeFrustumPlanes, FRUSTUM_PLANE_COUNT);
 }
 
-char gLightmapDrawQueue[0x2149];
-u8 lbl_80380209[0x1DFF];
+char gLightmapDrawQueue[0x3F48];
 u8 gCloudLayerTexMatrix[0x30];
 u8 gGlowLightList[0x190];
 f32 distortionFilterVector[0x1c];
