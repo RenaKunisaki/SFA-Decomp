@@ -38,15 +38,36 @@ typedef struct SaveGameTimeEntry
     f32 time;
 } SaveGameTimeEntry;
 
+typedef struct SaveGameCharacterPosition
+{
+    f32 x;
+    f32 y;
+    f32 z;
+    s8 angle;
+    s8 map;
+    u8 padE[2];
+} SaveGameCharacterPosition;
+
 typedef struct SaveGameData
 {
-    u8 pad0[0x20 - 0x0];
+    u8 pad0[0x1C - 0x0];
+    char playerName[4];
     u8 currentCharacter;
-    u8 pad21[0x55E - 0x21];
+    u8 newFileFlag;
+    u8 pad22[0x168 - 0x22];
+    SaveGameObjectPosition positions[SAVEGAME_OBJECT_POSITION_COUNT];
+    /* 5 gametext phrase ids for the "last saved game" task hints shown on the
+     * file-select card; engine/21 getLastSavedGameTexts() hands out the same
+     * block, and each id is offset by 0xf4 before gameTextGetPhrase. */
+    u8 taskHintIds[5];
+    /* completion score out of SAVEGAME_COMPLETION_SCORE_MAX; drives the
+     * file-select percentage and the two rank digits. A new file starts at 1. */
+    u8 completionScore;
     u8 taskCount;
     u8 pad55F[0x560 - 0x55F];
     f32 playTime;
-    u8 pad564[0x6A4 - 0x564];
+    u8 pad564[0x684 - 0x564];
+    SaveGameCharacterPosition characterPositions[2];
     s16 camActionNo;
     u8 pad6A6[0x6EC - 0x6A6];
     s16 timeEntryCount; /* 0x6ec: number of valid entries in timeEntries */
@@ -54,6 +75,15 @@ typedef struct SaveGameData
     SaveGameTimeEntry timeEntries[(0xF70 - 0x6F0) / 8]; /* 0x6f0: time-attack record table */
 } SaveGameData;
 
+STATIC_ASSERT(offsetof(SaveGameData, playerName) == 0x1C);
+STATIC_ASSERT(offsetof(SaveGameData, currentCharacter) == 0x20);
+STATIC_ASSERT(offsetof(SaveGameData, positions) == 0x168);
+STATIC_ASSERT(offsetof(SaveGameData, taskHintIds) == 0x558);
+STATIC_ASSERT(offsetof(SaveGameData, completionScore) == 0x55D);
+STATIC_ASSERT(offsetof(SaveGameData, taskCount) == 0x55E);
+STATIC_ASSERT(offsetof(SaveGameData, playTime) == 0x560);
+STATIC_ASSERT(offsetof(SaveGameData, characterPositions) == 0x684);
+STATIC_ASSERT(offsetof(SaveGameData, camActionNo) == 0x6A4);
 STATIC_ASSERT(offsetof(SaveGameData, timeEntryCount) == 0x6EC);
 STATIC_ASSERT(offsetof(SaveGameData, timeEntries) == 0x6F0);
 STATIC_ASSERT(sizeof(SaveGameData) == 0xF70);
@@ -61,20 +91,10 @@ STATIC_ASSERT(sizeof(SaveGameData) == 0xF70);
 #define SAVEGAME_OBJECT_POSITION_DIRTY_OFFSET 0x20158
 #define SAVEGAME_LIVE_BUFFER_SIZE             0xf70
 #define SAVEGAME_ACTIVE_SIZE                  0x6ec
-#define SAVEGAME_PLAYER_NAME_OFFSET           0x1c
 #define SAVEGAME_CURRENT_CHARACTER_OFFSET     0x20
 #define SAVEGAME_NEW_FILE_FLAG_OFFSET         0x21
 #define SAVEGAME_CHARACTER_POSITION_OFFSET    0x684
-/* 5 gametext phrase ids for the "last saved game" task hints shown on the
- * file-select card; engine/21 getLastSavedGameTexts() hands out the same
- * block, and each id is offset by 0xf4 before gameTextGetPhrase. */
-#define SAVEGAME_TASK_HINT_IDS_OFFSET         0x558
-/* completion score out of SAVEGAME_COMPLETION_SCORE_MAX; drives the
- * file-select percentage and the two rank digits. A new file starts at 1. */
-#define SAVEGAME_COMPLETION_SCORE_OFFSET      0x55d
 #define SAVEGAME_COMPLETION_SCORE_MAX         0xbb
-/* how many of the five task-hint slots are filled */
-#define SAVEGAME_TASK_HINT_COUNT_OFFSET       0x55e
 #define SAVE_SCORE_FILE_STRIDE                0x28
 #define SAVE_SCORE_TABLE_OFFSET               0x1c
 #define SAVE_SCORE_ENTRY_COUNT                5
@@ -90,12 +110,6 @@ enum
     SAVEGAME_EMPTY_TASK_HINT = -1,
     SAVEGAME_DEFAULT_VOLUME = 0x7f,
 };
-
-typedef struct SaveGameImage
-{
-    u8 header[SAVEGAME_OBJECT_POSITION_OFFSET];
-    SaveGameObjectPosition positions[SAVEGAME_OBJECT_POSITION_COUNT];
-} SaveGameImage;
 
 typedef struct SaveGameRomListPosition
 {
@@ -118,16 +132,6 @@ typedef struct SaveScoreFile
     u8 pad0[SAVE_SCORE_TABLE_OFFSET];
     SaveScoreEntry entries[SAVE_SCORE_ENTRY_COUNT];
 } SaveScoreFile;
-
-typedef struct SaveGameCharacterPosition
-{
-    f32 x;
-    f32 y;
-    f32 z;
-    s8 angle;
-    s8 map;
-    u8 padE[2];
-} SaveGameCharacterPosition;
 
 #define SAVEGAME_CHARACTER_POSITION(save)                                                                              \
     (&((SaveGameCharacterPosition*)((save) +                                                                           \
@@ -216,7 +220,7 @@ int saveGame_restoreObjectPosToRomList(void* objectData)
 
     for (i = 0; i < SAVEGAME_OBJECT_POSITION_COUNT; i++)
     {
-        if (object->objectId == ((SaveGameImage*)gSaveGameData)->positions[i].objectId)
+        if (object->objectId == ((SaveGameData*)gSaveGameData)->positions[i].objectId)
         {
             slot = gSaveGameData;
             i = i * sizeof(SaveGameObjectPosition);
@@ -245,7 +249,7 @@ void saveGame_unsaveObjectPos(GameObject* obj)
     for (i = 0; i < SAVEGAME_OBJECT_POSITION_COUNT; i++)
     {
         objectId = ((SaveGameRomListPosition*)((GameObject*)obj)->anim.placementData)->objectId;
-        if (objectId == ((SaveGameImage*)gSaveGameData)->positions[i].objectId)
+        if (objectId == ((SaveGameData*)gSaveGameData)->positions[i].objectId)
         {
             break;
         }
@@ -280,7 +284,7 @@ void saveGame_saveObjectPos(GameObject* obj)
     }
     for (i = 0; i < SAVEGAME_OBJECT_POSITION_COUNT; i++)
     {
-        objectId = ((SaveGameImage*)gSaveGameData)->positions[i].objectId;
+        objectId = ((SaveGameData*)gSaveGameData)->positions[i].objectId;
         if (objectId == 0)
             break;
         if (((SaveGameRomListPosition*)obj->anim.placementData)->objectId == objectId)
@@ -334,7 +338,7 @@ int loadGameOptions(void)
 
 void gplaySaveGame(int param)
 {
-    gSaveGameData[0x21] = 0;
+    ((SaveGameData*)gSaveGameData)->newFileFlag = 0;
     gSaveGameCurrentSlot = param;
     if (gSaveGameData[0x22] == 0)
     {
@@ -488,7 +492,7 @@ int insertHighScore(u8 slot, u8 flag, u32 score, u8* initials)
 }
 char* getSaveFileName(void)
 {
-    return (char*)gSaveGameData + 0x1c;
+    return ((SaveGameData*)gSaveGameData)->playerName;
 }
 
 /* K&R definition: the header prototype passes slot as int (callers emit no
@@ -507,7 +511,7 @@ s8 slot;
     defaultPos = gSaveGameDefaultPosition;
 
     memset(gSaveGameData, 0, SAVEGAME_LIVE_BUFFER_SIZE);
-    if ((gSaveGameWorkBuffer[SAVEGAME_NEW_FILE_FLAG_OFFSET] & 0x80) == 0)
+    if ((((SaveGameData*)gSaveGameWorkBuffer)->newFileFlag & 0x80) == 0)
     {
         memset(gSaveGameWorkBuffer, 0, SAVEGAME_ACTIVE_SIZE);
     }
@@ -567,11 +571,11 @@ s8 slot;
             SAVEGAME_CHARACTER_POSITION_OFFSET + 4) = defaultPos.y;
     *(f32*)(gSaveGameData + gSaveGameData[SAVEGAME_CURRENT_CHARACTER_OFFSET] * 0x10 +
             SAVEGAME_CHARACTER_POSITION_OFFSET + 8) = defaultPos.z;
-    gSaveGameData[SAVEGAME_COMPLETION_SCORE_OFFSET] = 1;
+    ((SaveGameData*)gSaveGameData)->completionScore = 1;
 
     if (name != NULL)
     {
-        dst = gSaveGameData + SAVEGAME_PLAYER_NAME_OFFSET;
+        dst = (u8*)((SaveGameData*)gSaveGameData)->playerName;
         do
         {
             ch = *(u8*)name;
@@ -581,10 +585,10 @@ s8 slot;
     }
     else
     {
-        gSaveGameData[SAVEGAME_PLAYER_NAME_OFFSET + 0] = 'F';
-        gSaveGameData[SAVEGAME_PLAYER_NAME_OFFSET + 1] = 'O';
-        gSaveGameData[SAVEGAME_PLAYER_NAME_OFFSET + 2] = 'X';
-        gSaveGameData[SAVEGAME_PLAYER_NAME_OFFSET + 3] = '\0';
+        ((SaveGameData*)gSaveGameData)->playerName[0] = 'F';
+        ((SaveGameData*)gSaveGameData)->playerName[1] = 'O';
+        ((SaveGameData*)gSaveGameData)->playerName[2] = 'X';
+        ((SaveGameData*)gSaveGameData)->playerName[3] = '\0';
     }
 
     memcpy(gSaveGameWorkBuffer, gSaveGameData, SAVEGAME_ACTIVE_SIZE);
@@ -614,59 +618,59 @@ int saveSelect_getInfo(void* outPtr)
         info = (SaveSelectInfo*)outPtr + slot;
         if (loadSaveGame((u8)slot, save) != 0)
         {
-            newFileFlag = save[SAVEGAME_NEW_FILE_FLAG_OFFSET];
+            newFileFlag = ((SaveGameData*)save)->newFileFlag;
             info->valid = newFileFlag;
             if (newFileFlag != 0)
             {
-                memcpy(info, save + SAVEGAME_PLAYER_NAME_OFFSET, sizeof(info->name));
+                memcpy(info, ((SaveGameData*)save)->playerName, sizeof(info->name));
 
-                info->percentComplete = (u8)((save[SAVEGAME_COMPLETION_SCORE_OFFSET] * 100) / SAVEGAME_COMPLETION_SCORE_MAX);
-                if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0xb3)
+                info->percentComplete = (u8)((((SaveGameData*)save)->completionScore * 100) / SAVEGAME_COMPLETION_SCORE_MAX);
+                if (((SaveGameData*)save)->completionScore > 0xb3)
                 {
                     info->rankA = 6;
                     info->rankB = 4;
                 }
-                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0xb0)
+                else if (((SaveGameData*)save)->completionScore > 0xb0)
                 {
                     info->rankA = 5;
                     info->rankB = 4;
                 }
-                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0xa1)
+                else if (((SaveGameData*)save)->completionScore > 0xa1)
                 {
                     info->rankA = 4;
                     info->rankB = 4;
                 }
-                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x8a)
+                else if (((SaveGameData*)save)->completionScore > 0x8a)
                 {
                     info->rankA = 4;
                     info->rankB = 3;
                 }
-                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x81)
+                else if (((SaveGameData*)save)->completionScore > 0x81)
                 {
                     info->rankA = 3;
                     info->rankB = 3;
                 }
-                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x71)
+                else if (((SaveGameData*)save)->completionScore > 0x71)
                 {
                     info->rankA = 3;
                     info->rankB = 2;
                 }
-                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x62)
+                else if (((SaveGameData*)save)->completionScore > 0x62)
                 {
                     info->rankA = 2;
                     info->rankB = 2;
                 }
-                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x48)
+                else if (((SaveGameData*)save)->completionScore > 0x48)
                 {
                     info->rankA = 2;
                     info->rankB = 1;
                 }
-                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 0x3d)
+                else if (((SaveGameData*)save)->completionScore > 0x3d)
                 {
                     info->rankA = 1;
                     info->rankB = 1;
                 }
-                else if (save[SAVEGAME_COMPLETION_SCORE_OFFSET] > 8)
+                else if (((SaveGameData*)save)->completionScore > 8)
                 {
                     info->rankA = 1;
                     info->rankB = 0;
@@ -683,13 +687,13 @@ int saveSelect_getInfo(void* outPtr)
                 info->taskTexts[2] = NULL;
                 info->taskTexts[3] = NULL;
                 info->taskTexts[4] = NULL;
-                taskIds = save + SAVEGAME_TASK_HINT_IDS_OFFSET;
-                for (i = 0; i < save[SAVEGAME_TASK_HINT_COUNT_OFFSET]; i++)
+                taskIds = ((SaveGameData*)save)->taskHintIds;
+                for (i = 0; i < ((SaveGameData*)save)->taskCount; i++)
                 {
                     info->taskTexts[i] = gameTextGetPhrase(taskIds[i] + 0xf4, 0);
                 }
                 info->chaptersUnlocked = 0;
-                info->valid = save[SAVEGAME_NEW_FILE_FLAG_OFFSET];
+                info->valid = ((SaveGameData*)save)->newFileFlag;
             }
             else
             {

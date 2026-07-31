@@ -84,44 +84,21 @@ s16 sStaffSwipeTextureIdTable[4] = {0xC7F, 0x3EC, 0, 0};
 /* swipe/attack lingering trail: single follow-up spawn after the burst cluster */
 #define STAFF_PARTFX_SWIPE_TRAIL 0x7b3
 
+/* per-swipe trail record (stride 0x18, 3 records) */
 typedef struct StaffSwipeSlot {
-    void* buffer;
+    u8* vertexData;
     f32 unk4;
     f32 lengthScale;
-    s16 startIndex;
-    s16 endIndex;
+    u16 startIndex;
+    u16 endIndex;
     s16 idx;
     s16 vertexCount;
     u8 flags;
     u8 pad15[0x18 - 0x15];
 } StaffSwipeSlot;
 
-typedef struct StaffDoGrowShrinkAnimState {
-    u8 pad0[0x4 - 0x0];
-    f32 unk4;
-    u8 unk8;
-    s8 unk9;
-    u8 unkA;
-    u8 unkB;
-    u8 unkC;
-    u8 padD[0x18 - 0xD];
-    u8 unk18;
-    u8 pad19[0x24 - 0x19];
-    f32 unk24;
-    f32 unk28;
-    f32 unk2C;
-    u8 pad30[0x50 - 0x30];
-    f32 growShrinkAnimRate;
-    u8 pad54[0x70 - 0x54];
-    u8 unk70;
-    u8 pad71[0xAA - 0x71];
-    u8 unkAA;
-    u8 padAB[0xB0 - 0xAB];
-    s16 unkB0;
-    u8 padB2[0xB8 - 0xB2];
-} StaffDoGrowShrinkAnimState;
 typedef struct StaffState {
-    u8 pad00[0x48];
+    StaffSwipeSlot slots[3];
     void* activeSlot; /* 0x48: active swipe slot pointer */
     u8 pad4C[4];
     f32 moveSpeed; /* 0x50: current-move advance speed */
@@ -143,7 +120,10 @@ typedef struct StaffState {
     f32 anchorY;
     f32 anchorZ;
     f32 progress;
-    u8 pad9C[0x16];
+    u8 pad9C[0xAA - 0x9C];
+    u8 unkAA;
+    u8 padAB[0xB0 - 0xAB];
+    s16 unkB0;
     s16 fieldB2;
     u8 padB4[5];
     s8 swipeTextureIndex; /* 0xB9 */
@@ -165,16 +145,6 @@ typedef struct StaffQuakeSpellState {
 typedef struct SwipeColorTable {
     StaffCollisionColorArgs colors[4];
 } SwipeColorTable;
-typedef struct SwipeRecord {
-    u8* vertexData;
-    u8 pad04[0xc - 0x4];
-    u16 startIndex;
-    u16 endIndex;
-    u8 pad10[2];
-    s16 vertexCount;
-    u8 flags;
-    u8 pad15[0x18 - 0x15];
-} SwipeRecord;
 typedef struct SwipeVertex {
     f32 x;
     f32 y;
@@ -479,7 +449,7 @@ void staffDrawQuakeSpellRing(void) {
     }
 }
 void staffDrawSwipe(GameObject* obj, StaffState* swipe) {
-    SwipeRecord* swp;
+    StaffSwipeSlot* swp;
     int i;
 
     selectTexture((Texture*)gStaffSwipeTextures[swipe->swipeTextureIndex], 0);
@@ -499,7 +469,7 @@ void staffDrawSwipe(GameObject* obj, StaffState* swipe) {
     GXSetCurrentMtx(GX_PNMTX0);
 
     i = 0;
-    swp = (SwipeRecord*)swipe;
+    swp = (StaffSwipeSlot*)swipe;
     for (; i < 3; i++) {
         if ((swp->flags & 2) && swp->vertexCount >= 4) {
             SwipeVertex* vp;
@@ -718,24 +688,24 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
 }
 
 void staffDoGrowShrinkAnim(GameObject* obj, u8 grow, u8 flag2, int unused) {
-    StaffDoGrowShrinkAnimState* state = obj->extra;
+    StaffState* state = obj->extra;
     if (grow != 0) {
-        if (state->growShrinkAnimRate < 0.0f) {
+        if (state->moveSpeed < 0.0f) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stpos4_b);
         }
         if (flag2 == 0) {
-            state->growShrinkAnimRate = 0.15f;
+            state->moveSpeed = 0.15f;
         } else {
-            state->growShrinkAnimRate = 1.0f;
+            state->moveSpeed = 1.0f;
         }
     } else {
-        if (state->growShrinkAnimRate > 0.0f) {
+        if (state->moveSpeed > 0.0f) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stapo1_b);
         }
         if (flag2 == 0) {
-            state->growShrinkAnimRate = -0.15f;
+            state->moveSpeed = -0.15f;
         } else {
-            state->growShrinkAnimRate = -1.0f;
+            state->moveSpeed = -1.0f;
         }
     }
 }
@@ -949,7 +919,7 @@ void staff_free(GameObject* obj) {
     i = 0;
     p = (StaffSwipeSlot*)obj->extra;
     for (; i < 3; i++) {
-        mm_free(p->buffer);
+        mm_free(p->vertexData);
         p++;
     }
     (*gExpgfxInterface)->freeSource2((u32)obj);
@@ -960,8 +930,6 @@ void staff_render(void) {
 
 STATIC_ASSERT(sizeof(SwipeColorTable) == 0x40);
 
-/* per-swipe trail record (stride 0x18, 3 records) */
-
 void staffDrawSwipe(GameObject* obj, StaffState* swipe);
 
 void staff_hitDetect(void) {
@@ -969,13 +937,13 @@ void staff_hitDetect(void) {
 
 void staff_update(GameObject* obj) {
     u8* state = obj->extra;
-    SwipeRecord* swp;
+    StaffSwipeSlot* swp;
     int n;
     ObjModel* model = Obj_GetActiveModel(obj);
     model->bufferFlags &= ~0x8;
     ObjAnim_AdvanceCurrentMove((int)obj, ((StaffState*)state)->moveSpeed, timeDelta, NULL);
 
-    swp = (SwipeRecord*)state;
+    swp = (StaffSwipeSlot*)state;
     for (n = 3; n != 0; n--) {
         if (swp->flags & 2) {
             int j;
@@ -1047,13 +1015,13 @@ void staff_update(GameObject* obj) {
 }
 
 void staff_init(GameObject* obj) {
-    StaffDoGrowShrinkAnimState* state = obj->extra;
+    StaffState* state = obj->extra;
     ObjHitsPriorityState* hitState;
     StaffSwipeSlot* p;
     int i;
     state->unkAA = 1;
     state->unkB0 = 2;
-    state->growShrinkAnimRate = -1.0f;
+    state->moveSpeed = -1.0f;
     hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     if (hitState != NULL) {
         hitState->trackContactMask = 0x109;
@@ -1061,7 +1029,7 @@ void staff_init(GameObject* obj) {
     i = 0;
     p = (StaffSwipeSlot*)state;
     for (; i < 3; i++) {
-        p->buffer = (void*)mmAlloc(0xEA60, 0x1a, 0);
+        p->vertexData = (u8*)mmAlloc(0xEA60, 0x1a, 0);
         p->idx = -1;
         p++;
     }
