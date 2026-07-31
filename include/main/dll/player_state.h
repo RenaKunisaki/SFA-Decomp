@@ -412,11 +412,11 @@ typedef struct PlayerState {
     s8 activeHitWindow; /* index (0-2) of the currently-active hit window in the move's HitDesc list; -1 = none active */
     s8 hitWindowIndex; /* latched copy of activeHitWindow used to index per-window hit data (offset *4) */
     u8 cutsceneEnded; /* one-shot flag set to 1 when cutsceneTimer expires and cutsceneEnterExit(0,0) runs (in playerUpdate / playerUpdateWhileTimeStopped); cleared to 0 on a new move start; signals the cutscene/time-stop just finished */
-    u8 unk8D0;
-    u8 unk8D1;
-    u8 unk8D2;
-    u8 unk8D3;
-    u8 unk8D4;
+    u8 paramCurve0Count; /* f32 sample count of paramCurve0 (0x4f4-0x450 = 0x29*4) */
+    u8 paramCurve1Count;
+    u8 paramCurve2Count;
+    u8 paramCurve3Count;
+    u8 paramCurve4Count;
     u8 pad8D5[0x8D8 - 0x8D5];
     u16 pendingFxFlags; /* one-shot particle-effect request bits (1/2/8 spray-splash, 4 landing burst); set on events, cleared after the FX is spawned */
     u8 pad8DA[0x8DC - 0x8DA];

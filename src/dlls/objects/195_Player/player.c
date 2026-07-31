@@ -18442,15 +18442,15 @@ void objLoadPlayerFromSave(int obj)
     ((PlayerState*)inner)->moveSlots = (int)(base + 0x854);
     ((PlayerState*)inner)->moveSlotCount = 0x1c;
     ((PlayerState*)inner)->paramCurve0 = (int)(base + 0x450);
-    ((PlayerState*)inner)->unk8D0 = 0x29;
+    ((PlayerState*)inner)->paramCurve0Count = 0x29;
     ((PlayerState*)inner)->paramCurve1 = (int)(base + 0x4f4);
-    ((PlayerState*)inner)->unk8D1 = 0x29;
+    ((PlayerState*)inner)->paramCurve1Count = 0x29;
     ((PlayerState*)inner)->paramCurve2 = (int)(base + 0x598);
-    ((PlayerState*)inner)->unk8D2 = 0x2e;
+    ((PlayerState*)inner)->paramCurve2Count = 0x2e;
     ((PlayerState*)inner)->paramCurve3 = (int)(base + 0x650);
-    ((PlayerState*)inner)->unk8D3 = 0x29;
+    ((PlayerState*)inner)->paramCurve3Count = 0x29;
     ((PlayerState*)inner)->paramCurve4 = (int)(base + 0x6f4);
-    ((PlayerState*)inner)->unk8D4 = 0x2e;
+    ((PlayerState*)inner)->paramCurve4Count = 0x2e;
     ((PlayerState*)inner)->curveSpeedScale = 10.0f;
     for (i = 0; i < ((PlayerState*)inner)->moveSlotCount; i++)
     {
