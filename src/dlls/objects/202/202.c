@@ -1524,9 +1524,6 @@ f32 gGcRobotPatrolCatchCooldown = 240.0f;
  * the dropper via +0xC4 and announced with SFX 0x249. */
 #define SEQOBJ11E_GCROBOT_DROP_OBJ 0x6b5
 
-typedef void (*SeqObj11ESetMovePointerStateFn)(GameObject* obj, void* state, int moveId, f32 speed, int p5,
-                                               int flags);
-
 /* guardClaw_update: state-table driver: walks the 12-byte gSeq11EStateTable state
  * rows, advancing on GameBit + sequence flags and kicking the matching anim. */
 
@@ -1619,8 +1616,8 @@ void guardClaw_update(GameObject* obj, u8* state)
             {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_eggsnatch_carry3);
             }
-            ((SeqObj11ESetMovePointerStateFn)baddieSetMove)(
-                obj, state, animTbl[((EnemyState*)state)->userData1 * 12],
+            baddieSetMove(
+                obj, (int)state, animTbl[((EnemyState*)state)->userData1 * 12],
                 *(f32*)((u8*)gSeq11EStateTable + ((EnemyState*)state)->userData1 * 12), 0, 0xf);
         }
     }
@@ -1682,9 +1679,6 @@ Seq11ERow gSeq11EStateTable[6] = {
     {3.0f, 0x1, 0, 1, 4, 1}, {2.0f, 0x0, 1, 2, 2, 1}, {3.0f, 0x1, 2, 3, 3, 1},
     {2.0f, 0x0, 7, 0, 4, 1}, {2.0f, 0x0, 3, 5, 5, 0}, {3.5f, 0x1, 4, 5, 5, 0},
 };
-
-typedef void (*SeqObj11ESetMovePointerStateFn)(GameObject* obj, void* state, int moveId, f32 speed, int p5,
-                                               int flags);
 
 extern int gGcRobotPatrolCurveInitData[2];
 extern f32 gGcRobotPatrolRiseAccel;
@@ -1749,7 +1743,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
             ((EnemyState*)state)->gcRobot.cooldownTimer = 0.0f;
             ((EnemyState*)state)->flags2E4 |= 0x20;
             Sfx_StopObjectChannel((u32)obj, 4);
-            ((SeqObj11ESetMovePointerStateFn)baddieSetMove)(obj, state, 0, 1.0f, 0, 0);
+            baddieSetMove(obj, (int)state, 0, 1.0f, 0, 0);
         }
         else if (!(((EnemyState*)state)->flags2E4 & 0x20))
         {

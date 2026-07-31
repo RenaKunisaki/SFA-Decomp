@@ -124,7 +124,7 @@ void VFP_DoorSwitch_init(GameObject* obj, int data)
     state->gameBitId = def->gameBitId;
     if (mainGetBit(state->gameBitId) != 0)
     {
-        ((ObjAnimSetProgressObjectFirstFn)ObjAnim_SetMoveProgress)((int)obj, 1.0f);
+        ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, 1.0f);
         state->activated = 1;
         state->exploded = 1;
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;

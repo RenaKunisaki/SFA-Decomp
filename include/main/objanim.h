@@ -12,7 +12,6 @@ typedef struct ObjWeaponDaTable ObjWeaponDaTable;
 
 typedef void (*ObjAnimSequenceFreeCallback)(void *ctx,u8 *obj);
 typedef int (*ObjAnimSequenceConditionCallback)(void *ctx,u8 *obj);
-typedef int (*ObjAnimSetProgressObjectFirstFn)(int objAnimHandle,f32 progress);
 extern char gObjAnimMissingCachedMoveWarning[];
 
 #define OBJANIM_STATE_INDEX_CURRENT 0
