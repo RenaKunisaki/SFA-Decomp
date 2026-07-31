@@ -4,6 +4,8 @@
 Lane C39, derived on origin/staging @ 0eaa172f02.
 Lane C40 closed three of the four open rows by body read (dll.c, objlib.c, footsteps.c, menu.c).
 Lane C41 closed objtype.c (retail-string lens) and refined lighting.c.
+Lane C45 closed the final open row: the dll.c bank-copy half was rewritten out of the GC
+build (descriptors are statically linked export tables; acquire == the module's initialise).
 
 HOW THIS WAS DERIVED (so the next lane can re-run / extend it)
 -------------------------------------------------------------
@@ -172,18 +174,29 @@ fonts.c           (29) main/textrender.c + textrender_run.c      [L1 11][BODY]
 main.c            (34) main/gameloop_main.c + main/gameloop.c    [L1 22][BODY] DP mainLoop etc.
                        + main/modelEngine.c (the game timer)     == SFA gameLoop / gameUpdate /
     main / getGameState / setGameState / checkReset / cutsceneEnterExit / blankScreen.
-dll.c             (12) main/modelEngine.c (the load/free API only) [BODY] SETTLED at the CALL
-    level: DP's `dllLoad(u16 idOrIdx, u16 exportCount)` / `dllFree(void*)` are SFA's
-    `Resource_Acquire(u16 id, int)` / `Resource_Release(void*)`.  Proof is positional, not
-    nominal: DP menuDoMenuSwap and SFA loadUiDll are the same function statement for statement,
-    and where DP writes `dllFree(gActiveMenuDLL)` / `dllLoad(gMenuDLLIDs[i], 1)` SFA writes
-    `Resource_Release(gModelEngineCurUiDllRes)` / `Resource_Acquire(id, 1)` - same slots, same
-    literal 1, same surrounding statements.  The RELOCATION half (dllRelocate / dllLoadFromTab /
-    dllFindExecutingDLL / dllReplaceLoadedDLLs / dllThrowFault) has NO counterpart in any
-    decompiled SFA source: OSLink/OSUnlink are declared in the SDK headers but never defined in
-    the DOL, and SFA's DLLs are copied into four fixed banks (src/dlls/README.md) so there is
-    nothing to relocate.  Whatever performs the bank copy is reached through the
-    gResourceDescriptors `acquire` callback and is not in this tree.
+dll.c             (12) main/modelEngine.c (the load/free API only) [BODY] SETTLED, and the
+    copy half is CLOSED (C45): DP's `dllLoad(u16 idOrIdx, u16 exportCount)` / `dllFree(void*)`
+    are SFA's `Resource_Acquire(u16 id, int)` / `Resource_Release(void*)`.  Proof is positional,
+    not nominal: DP menuDoMenuSwap and SFA loadUiDll are the same function statement for
+    statement, and where DP writes `dllFree(gActiveMenuDLL)` / `dllLoad(gMenuDLLIDs[i], 1)` SFA
+    writes `Resource_Release(gModelEngineCurUiDllRes)` / `Resource_Acquire(id, 1)` - same slots,
+    same literal 1, same surrounding statements.  The RELOCATION half (dllRelocate /
+    dllLoadFromTab / dllFindExecutingDLL / dllReplaceLoadedDLLs / dllThrowFault) has NO
+    counterpart in any decompiled SFA source: OSLink/OSUnlink are declared in the SDK headers
+    but never defined in the DOL.  The COPY half was REWRITTEN OUT of the GC build - there is
+    no bank copy and no loader.  Every descriptor slot is statically linked into the DOL:
+    a gResourceDescriptors entry IS the module's own export table (ObjectDescriptor*: three
+    reserved words + slotCountAndFlags, then initialise/release, then the export slots), so
+    ResourceDescriptor's `acquire`/`release` at 0x10/0x14 alias slot00/slot01 - the module's
+    own initialise/release (lbl_8031C020's acquire is GameUI_initialise, expgfx_funcs' is
+    expgfx_initialise; both decompiled, in tree) - and `data` at 0x18 is &slot02, the export
+    surface Resource_Acquire stores into gResourceLoadedHandles.  DP's dllLoad ROM-copy thus
+    collapsed to "run the module's initialise on first acquire"; the "four banks" of
+    src/dlls/README.md are descriptor-table SLOT RANGES (engine/modgfx/projgfx/objects), not
+    memory banks.  The fossil: DLLS.bin / DLLS.tab / DLLSIMPO.bin still occupy file ids
+    0x42-0x44 in sResourceFileNameTable (pi_dolphin.c) but NO call site in the tree passes any
+    of them - mapLoadDataFile serves only the per-map ids >= 0x45, and every other
+    fileLoad/DVDOpen path is reached with different constants.
 objexpr.c         (28) dlls/engine/10_expgfx/expgfx.c            [STR: retail says "expgfx.c:"]
 objlib.c          (14) main/obj_movelib.c + main/objhits.c       [BODY] SETTLED, split two ways.
     The space-transform half is obj_movelib.c; the TOUCH-CALLBACK half is objhits.c (which
@@ -293,8 +306,12 @@ SFA UNITS WITH NO DP COUNTERPART (GameCube-only work)
 
 OPEN ROWS (state, do not guess)
 -------------------------------
-  1. Where the DLL bank copy actually happens (see the dll.c row): the gResourceDescriptors
-     `acquire` callbacks are data, and the code they reach is not in any decompiled TU.
+  NONE.  Every content row in this table is settled.
+
+  Previously open: the DLL bank copy (dll.c row) - CLOSED by C45.  The old claim that the
+  gResourceDescriptors `acquire` callbacks reach code "not in any decompiled TU" was FALSE:
+  each acquire pointer is the module's own decompiled initialise function (slot00 of its
+  export table).  There is no copy machinery to find; see the dll.c row for the full proof.
 
   Previously open here: DP lighting.c's ambient/sky half vs dlls/engine/5 - CLOSED by C44's
   body read (see the lighting.c row; role-level match, nothing to lift).
