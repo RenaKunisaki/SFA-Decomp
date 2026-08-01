@@ -76,6 +76,11 @@ extern s32 gObjFuzzLayerIndex;
 extern u8 gObjFuzzPassActive;
 extern u32 lbl_803DB468;
 
+static const GXColor sObjFuzzSavedEnvColor = {0xD8, 0xE0, 0xFF, 0xFF};
+static const GXColorS10 sObjFuzzWhiteColorS10 = {0xFF, 0xFF, 0xFF, 0xFF};
+static const GXColor sObjFuzzWhiteColor = {0xFF, 0xFF, 0xFF, 0xFF};
+static const GXColor sObjFuzzDirLightEnvColor = {0xD8, 0xE0, 0xFF, 0xFF};
+
 int objNormalizeRotationMatrix(f32* matrix, f32* out)
 {
     Vec v3;
@@ -294,7 +299,6 @@ const IndTexMtx23 sObjFuzzShellIndMtxB = {{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f
 
 extern u8 gObjFuzzPhaseLatched;
 
-static const GXColor sObjFuzzDirLightEnvColor = {0xD8, 0xE0, 0xFF, 0xFF};
 extern u32 lbl_803DB470;
 extern int lbl_803DB498;
 extern int lbl_803DB49C;
@@ -308,7 +312,7 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
     Mtx mtx5;
     IndTexMtx23 mtxA;
     IndTexMtx23 mtxB;
-    GXColor kc = {0xFF, 0xFF, 0xFF, 0xFF};
+    GXColor kc = sObjFuzzWhiteColor;
     Texture** noiseTextures;
     int noiseFrameCount;
     int t164;
@@ -493,7 +497,7 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
     Mtx mtxR;
     IndTexMtx23 mtxA;
     IndTexMtx23 mtxB;
-    GXColorS10 s10 = {0xFF, 0xFF, 0xFF, 0xFF};
+    GXColorS10 s10 = sObjFuzzWhiteColorS10;
     int stage;
     int coord;
     Texture** noiseTextures;
@@ -809,7 +813,7 @@ void objFuzzSetupGxState(void* objArg)
 {
     ModelLightStruct* renderHandle;
     int obj = (int)objArg;
-    GXColor savedEnvColor = {0xD8, 0xE0, 0xFF, 0xFF};
+    GXColor savedEnvColor = sObjFuzzSavedEnvColor;
     Texture** shadowTable;
     int shadowStride;
     int shadowParam;
