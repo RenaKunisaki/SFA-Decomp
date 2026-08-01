@@ -2262,8 +2262,8 @@ void dbstealerworm_hitDetect(GameObject* obj)
 
 void dbstealerworm_update(GameObject* obj)
 {
-    DbWormEffectSpawnWork* st = &gDbWormEffectSpawnWork;
-    char* tbl = (char*)gDbStealerwormScriptStealEggThrowToWorm;
+    DbWormEffectSpawnWork* st[1];
+    char* tbl;
     int blob;
     int data;
     int sub;
@@ -2280,6 +2280,8 @@ void dbstealerworm_update(GameObject* obj)
         f32 v[3];
     } stk;
 
+    st[0] = &gDbWormEffectSpawnWork;
+    tbl = (char*)gDbStealerwormScriptStealEggThrowToWorm;
     blob = *(int*)&obj->extra;
     data = (int)obj->anim.placementData;
     sub = *(int*)&((GroundBaddieState*)blob)->control;
@@ -2355,12 +2357,12 @@ void dbstealerworm_update(GameObject* obj)
                 if ((*gBaddieControlInterface)
                         ->updateHitReaction(obj, (void*)blob, (char*)blob + 0x35c,
                                             ((GroundBaddieState*)blob)->gameBitB, (int*)(tbl + 0x2ac),
-                                            (u8*)(tbl + 0x324), 1, st) != 0)
+                                            (u8*)(tbl + 0x324), 1, st[0]) != 0)
                 {
-                    st->posX = obj->anim.localPosX;
-                    st->posY = obj->anim.localPosY;
-                    st->posZ = obj->anim.localPosZ;
-                    objDoHitParticleFx((void*)obj, 0.014f, st, 1, 0);
+                    st[0]->posX = obj->anim.localPosX;
+                    st[0]->posY = obj->anim.localPosY;
+                    st[0]->posZ = obj->anim.localPosZ;
+                    objDoHitParticleFx((void*)obj, 0.014f, st[0], 1, 0);
                 }
                 if (((GroundBaddieState*)blob)->targetState == 0)
                 {
@@ -2379,7 +2381,7 @@ void dbstealerworm_update(GameObject* obj)
                     ((GroundBaddieState*)blob)->savedPendingParentObj = obj->pendingParentObj;
                     obj->pendingParentObj = 0;
                     /* Retail derives both pointers past the 0x18-byte scratch record. */
-                    (*gPlayerInterface)->update((void*)obj, (void*)blob, timeDelta, timeDelta, (char*)st + 0x34, (char*)st + 0x18);
+                    (*gPlayerInterface)->update((void*)obj, (void*)blob, timeDelta, timeDelta, (char*)st[0] + 0x34, (char*)st[0] + 0x18);
                     obj->pendingParentObj = ((GroundBaddieState*)blob)->savedPendingParentObj;
                 }
             }
