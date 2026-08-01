@@ -423,16 +423,24 @@ transposed, the knob is the cast lever above, not the source text.
 
 ## Gate reminders that cost real score today
 
-- **`fn_flag_probe` is only sound on GC/2.0 units. On MWCC 1.2.5n (musyx/audio) it returns a vacuous
-  all-`-` table that is indistinguishable from "no profile helps".** Its profile vocabulary is GC/2.0
-  `-opt` shaped, and on 1.2.5n every non-default profile is destructive *as a class*. Measured, counting
-  MATCHes per column: `main/objhits.c` (GC/2.0) keeps **78–118 of 118** matched functions alive across the
-  eight alternative profiles, so a `-` there is real evidence; `musyx/runtime/synth_queue.c` and
-  `synth_seq_dispatch.c` (1.2.5n) score **exactly 0 MATCH in all eight** — not one already-matched function
-  survives any alternative. The tool cannot discover a better profile there, only confirm the current one.
-  **Always read the probe's positive controls (do the already-100 functions still MATCH?) before treating
-  a `-` column as a closed flag axis.** A 1.2.5n-aware probe does not exist yet; until it does, the flag
-  axis on audio units is *unprobed*, not closed.
+- **ALWAYS read `fn_flag_probe`'s positive controls before treating a `-` column as a closed flag axis.**
+  The tool now prints a `CONTROLS kept` row by default and labels a profile UNSOUND when it breaks every
+  already-matching function — because it once returned a *vacuous all-`-` table* on musyx that looked
+  exactly like a clean closure. **Root cause, worth generalising: the alternative profiles hardcoded
+  `nopeephole,noschedule` and REPLACED the unit's `-opt`.** That is a small perturbation for `main/` under
+  GC/2.0 (already configured that way) but a demolition for musyx, which configures plain `-O4,p` with
+  **no `-opt` at all** — so the "probe" silently switched two major passes off and changed several axes at
+  once. Measured per-column MATCH retention before the fix: `objhits` (GC/2.0) **78–118 of 118**, both
+  1.2.5n units **exactly 0 of all eight**. Fixed by RELATIVE profiles (tokens *added* to the configured
+  `-opt`, auto-selected by `wants_relative()`); the 1.2.5n units now keep 2–6 controls on every profile.
+  **A tool whose failure mode is shaped like its success mode needs a control printed in its own output.**
+- **`--census` measures a compiler's real `-opt` vocabulary, and token acceptance MUST be positively
+  controlled** — 1.2.5n accepts and *silently ignores* unknown tokens exactly as w81 proved for GC/2.0, so
+  the census leads with a `__BOGUS__` token that must read inert. Measured live on 1.2.5n: `nopeephole`,
+  `noschedule`, `nocse`, `nopropagation`, `nolifetimes`, `noloopinvariants`, `nostrength`, `nodead`.
+  Inert there: `noautoinline`, `nofp_contract`, `nointrinsics`, `noaliasing`, `novectorize`, and every
+  positive form (already on at `-O4,p`). Note `nopeephole`/`noschedule` keep **0** controls on 1.2.5n —
+  live but useless as probes, which is why liveness and soundness are two separate columns.
 - **Positional diff counts ARE sound when every variant is the same length** — the shift artifact that
   makes them lie needs a length difference. For a pure-`regB` function (identical mnemonic stream,
   operands only differing) a permutation sweep can be screened on diff counts and only the winner
