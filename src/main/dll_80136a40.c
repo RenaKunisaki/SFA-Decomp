@@ -485,11 +485,11 @@ void debugPrintReset(void)
  * the passes when the log produced any extent. */
 static inline void debugDrawLogRect(void)
 {
-    u32 x0;
+    u32 y1;
     u32 x;
     u32 x1;
     u32 y0;
-    u32 y1;
+    u32 x0;
     f32 sc;
     GXColor col;
 
@@ -504,7 +504,7 @@ static inline void debugDrawLogRect(void)
             x0 -= 2;
         }
         x1 = x + 2;
-        x0 = x0 * (sc = gDebugScaleX + gDebugScaleBiasX);
+        x0 *= (sc = gDebugScaleX + gDebugScaleBiasX);
         x1 *= sc;
         y0 = y0 * (sc = gDebugScaleY + gDebugScaleBiasY);
         y1 = y1 * sc;
