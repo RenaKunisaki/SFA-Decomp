@@ -261,17 +261,18 @@ void textureInitSecondaryGXTexObj(Texture* tex, GXTexObj* obj)
 }
 
 void textureInitGXTexObj(Texture* texture) {
-    u8 hasMipmaps = 0;
+    u8 hasMipmaps[1];
     GXTexObj* gxTexObj;
+    hasMipmaps[0] = 0;
     texture->tmemAddr = NULL;
-    texture->preloaded = hasMipmaps;
+    texture->preloaded = hasMipmaps[0];
     gxTexObj = textureGetGXTexObj(texture);
     if (texture->maxLod - texture->minLod > 0) {
-        hasMipmaps = 1;
+        hasMipmaps[0] = 1;
     }
     GXInitTexObj(gxTexObj, textureGetImageData(texture), texture->width, texture->height, texture->format,
-                 texture->wrapS, texture->wrapT, hasMipmaps);
-    if (hasMipmaps != 0) {
+                 texture->wrapS, texture->wrapT, hasMipmaps[0]);
+    if (hasMipmaps[0] != 0) {
         GXInitTexObjLOD(gxTexObj, texture->minFilter, texture->magFilter, (f32)(u32)texture->minLod,
                         (f32)(s32)texture->maxLod, -2.0f, 0, 0, 0);
     } else {
