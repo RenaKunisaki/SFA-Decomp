@@ -71,7 +71,7 @@
 
 u8 gCloudLayerOverlayColor[4] = {0x20, 0x20, 0x20, 0};
 int gTexShaderAmbColor = -1;
-int gTexLightmapAmbColor = -1;
+GXColor gTexLightmapAmbColor = {0xff, 0xff, 0xff, 0xff};
 s8 gTexIndMtxScaleExp = -2;
 
 extern f32 lbl_803DEBCC;
@@ -92,7 +92,7 @@ u8 gRcpPendingWarpDest[0x10];
 FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
 FrustumPlane gPlayerRelativeFrustumPlanes[FRUSTUM_PLANE_COUNT];
 extern GXColor gTexShaderFogColor;
-extern int gTexLightmapFogColor;
+extern GXColor gTexLightmapFogColor;
 
 /*
  * TexShadowRow - 0x10-stride rows of the pending-shadow queue at the head of
@@ -260,7 +260,7 @@ Shader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, ModelRe
     Shader* shader;
     u32 shaderIdx;
     int byteBase;
-    int fogColor;
+    GXColor fogColor;
     u32 bits;
     u32 bitPos;
     u8 ambColor[3];
@@ -286,12 +286,12 @@ Shader* mapBlockRender_setLightmapShader(struct MapBlockData* blockData, ModelRe
     }
     else
     {
-        GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&fogColor);
+        GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, fogColor);
     }
     if ((SHADER_FLAGS(shader) & 1) != 0 || (SHADER_FLAGS(shader) & 0x40000) != 0 ||
         (SHADER_FLAGS(shader) & 0x800) != 0 || (SHADER_FLAGS(shader) & 0x1000) != 0)
     {
-        GXSetChanAmbColor(GX_COLOR0, *(GXColor*)&gTexLightmapAmbColor);
+        GXSetChanAmbColor(GX_COLOR0, gTexLightmapAmbColor);
         if ((SHADER_FLAGS(shader) & 0x40000) != 0)
         {
             GXSetChanCtrl(GX_COLOR0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
