@@ -101,7 +101,7 @@ void VFP_flamepoint_update(GameObject* obj)
 
         if (!(d->done = v))
         {
-            d->counter = (s8) * (s16*)(obj->anim.placementDataAddress + 0x1a);
+            d->counter = (s8)((VfpFlamePointMapData*)obj->anim.placementData)->counterInit;
         }
     }
 }

@@ -632,7 +632,7 @@ void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
 
 void Lightfoot_ResetScriptedPosition(GameObject* obj)
 {
-    switch (*(int*)((char*)obj->anim.placementDataAddress + 0x14))
+    switch (obj->anim.placement->ident)
     {
     case 0x34316:
         obj->anim.worldPosX = -2692.46f;

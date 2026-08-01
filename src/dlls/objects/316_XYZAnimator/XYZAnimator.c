@@ -527,7 +527,7 @@ void XyzAnimator_init(GameObject* obj) {
     int mapId;
 
     objAddObjectType((int)obj, XYZ_ANIMATOR_OBJECT_GROUP);
-    mapId = *(int*)(obj->anim.placementDataAddress + 0x14);
+    mapId = obj->anim.placement->ident;
     switch (mapId) {
     case 0x46406:
     case 0x4BAB1:
