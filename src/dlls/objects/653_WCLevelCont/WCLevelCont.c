@@ -97,17 +97,17 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
         }
         else if (mainGetBit(WCPUSHBLOCK_GAMEBIT_A_FADE) != 0)
         {
-            if (state->tileAResetTimer <= lbl_803E6DA8)
+            if (state->tileAResetTimer <= 0.0f)
             {
                 mainSetBits(WCPUSHBLOCK_GAMEBIT_A_COUNT, 0);
                 memcpy(gWcTileGridA, gWcTileGridAInitial.g, 0x40);
                 state->tileAResetTimer = gWcPushBlockTileResetTime;
             }
         }
-        if (state->tileAResetTimer > lbl_803E6DA8)
+        if (state->tileAResetTimer > 0.0f)
         {
             state->tileAResetTimer -= timeDelta;
-            if (state->tileAResetTimer <= lbl_803E6DA8)
+            if (state->tileAResetTimer <= 0.0f)
                 mainSetBits(WCPUSHBLOCK_GAMEBIT_A_FADE, 0);
         }
     }
@@ -122,17 +122,17 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
         }
         else if (mainGetBit(WCPUSHBLOCK_GAMEBIT_B_FADE) != 0)
         {
-            if (state->tileBResetTimer <= lbl_803E6DA8)
+            if (state->tileBResetTimer <= 0.0f)
             {
                 mainSetBits(WCPUSHBLOCK_GAMEBIT_B_COUNT, 0);
                 memcpy(gWcTileGridB, gWcTileGridBInitial.g, 0x40);
                 state->tileBResetTimer = gWcPushBlockTileResetTime;
             }
         }
-        if (state->tileBResetTimer > lbl_803E6DA8)
+        if (state->tileBResetTimer > 0.0f)
         {
             state->tileBResetTimer -= timeDelta;
-            if (state->tileBResetTimer <= lbl_803E6DA8)
+            if (state->tileBResetTimer <= 0.0f)
                 mainSetBits(WCPUSHBLOCK_GAMEBIT_B_FADE, 0);
         }
     }
@@ -318,7 +318,7 @@ int wclevelcont_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     {
         f32 t = state->eventTimer - timeDelta;
         state->eventTimer = t;
-        if (t <= lbl_803E6DA8)
+        if (t <= 0.0f)
         {
             GameObject* player;
             mainSetBits(0x7f7, 1);
@@ -330,7 +330,7 @@ int wclevelcont_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     {
         f32 t = state->eventTimer - timeDelta;
         state->eventTimer = t;
-        if (t <= lbl_803E6DA8)
+        if (t <= 0.0f)
         {
             GameObject* player;
             mainSetBits(0x802, 1);
@@ -377,7 +377,7 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
             mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
             {
                 f32 base = 24.0f;
-                *outX = base + (224.0f + px + lbl_803E6DA8);
+                *outX = base + (224.0f + px + 0.0f);
                 *outZ = base + (128.0f + pz + (f32)(bi * 48));
             }
             a -= 1;
@@ -427,7 +427,7 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
             {
                 f32 base = 24.0f;
                 *outX = base + (224.0f + px + (f32)(ai * 48));
-                *outZ = base + (128.0f + pz + lbl_803E6DA8);
+                *outZ = base + (128.0f + pz + 0.0f);
             }
             b -= 1;
             limit = -1;
@@ -560,7 +560,7 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
             {
                 f32 base = 24.0f;
                 f32 tx = 32.0f + px;
-                *outX = base + (tx + lbl_803E6DA8);
+                *outX = base + (tx + 0.0f);
                 *outZ = (129.0f + pz + (f32)(bi * 48)) + base;
             }
             a -= 1;
@@ -616,7 +616,7 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
                 f32 tz;
                 *outX = (32.0f + px + (f32)(ai * 48)) + base;
                 tz = 129.0f + pz;
-                *outZ = base + (tz + lbl_803E6DA8);
+                *outZ = base + (tz + 0.0f);
             }
             b -= 1;
             limit = -1;
@@ -825,7 +825,7 @@ void wclevelcont_update(GameObject* obj)
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_B, 0);
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_C, 0);
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_D, 0);
-            skySetLightIndex(0, lbl_803E6DA8);
+            skySetLightIndex(0, 0.0f);
             mainSetBits(GAMEBIT_WC_MagicCaveRelated0E05, 1);
         }
         obj->userData1 = 1;
