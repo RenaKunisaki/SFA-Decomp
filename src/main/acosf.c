@@ -151,7 +151,8 @@ float __kernel_cos(float y, float x) {
         firstQuadrantAngle = 1.5707964f - axisRatio * (-0.18951416f * ratioSquared + 0.97056276f);
     }
 
-    quadrantSigns = (float_bits(&y) & 0x80000000) | ((float_bits(&x) & 0x80000000) >> 1);
+    quadrantSigns = (((const FloatWord*)&y)->bits & 0x80000000) |
+                    ((((const FloatWord*)&x)->bits & 0x80000000) >> 1);
     switch (quadrantSigns) {
         case ATAN_SIGNS_POS_X_POS_Y:
             return firstQuadrantAngle;
