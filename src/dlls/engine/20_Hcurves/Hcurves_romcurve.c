@@ -1835,8 +1835,8 @@ int RomCurve_func13(u32 curveId, int typeFilter, int matchValue, int* outLink)
                 curDist = queueDist[count];
                 best[0] = 0;
                 if ((((int)node->type == typeFilter) || (typeFilter == -1)) &&
-                    ((*(u8*)((u8*)node + 0x31) == (int)matchValue ||
-                      ((*(u8*)((u8*)node + 0x32) == (int)matchValue || (*(u8*)((u8*)node + 0x33) == (int)matchValue))))))
+                    ((((RomCurvePathNode*)node)->tag0 == (int)matchValue ||
+                      ((((RomCurvePathNode*)node)->tag1 == (int)matchValue || (((RomCurvePathNode*)node)->tag2 == (int)matchValue))))))
                 {
                     done = 1;
                     *distWrite = curDist;

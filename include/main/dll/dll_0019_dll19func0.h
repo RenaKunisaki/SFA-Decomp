@@ -35,7 +35,7 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
 int dll_19_func10(GameObject* obj, u8* state, int moveArg0, int moveArg1, s16 controlMode, f32* destX, f32* destZ,
                   int* reachedOut);
 void dll_19_pollCameraTarget(GameObject* obj, void* state, u16* flags, int modeA, int modeB, s16 soundIdA, s16 soundIdB);
-void dll_19_releaseState(GameObject* obj, void* state, u8 flag);
+void dll_19_releaseState(GameObject* obj, GroundBaddieState* state, u8 flag);
 int dll_19_shouldDropTarget(GameObject* obj, void* state, f32 distThreshold, int requireFar);
 GameObject* dll_19_findAggroTarget(GameObject* self, void* state, f32 frange, int halfAngle);
 GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, int alt);
@@ -45,7 +45,7 @@ int dll_19_processMessages(GameObject* obj, void* state, void* hitbox, s16 gameB
                   s16 substateActive, s16 moveMode);
 void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8* state, int moveArg0, int moveArg1, int pathFlags, u8 initFlags,
                    f32 pathRadius);
-void dll_19_changeWeapon(u8* cam, u8* ctx);
+void dll_19_changeWeapon(GameObject* cam, u8* ctx);
 f32 dll_19_getHealthFraction(GameObject* obj);
 int dll_19_isBaddieControlObject(GameObject* obj);
 

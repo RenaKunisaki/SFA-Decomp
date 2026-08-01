@@ -125,7 +125,7 @@ f32 dll_19_getHealthFraction(GameObject* obj)
     return 0.0f;
 }
 
-void dll_19_changeWeapon(u8* cam, u8* ctx)
+void dll_19_changeWeapon(GameObject* cam, u8* ctx)
 {
     Dll19ChildObjectIdTable childObjectIds = gDll19ChildObjectIds;
 
@@ -133,23 +133,23 @@ void dll_19_changeWeapon(u8* cam, u8* ctx)
     {
         return;
     }
-    if (((GameObject*)cam)->anim.alpha == 0)
+    if (cam->anim.alpha == 0)
     {
         return;
     }
-    if (((GameObject*)cam)->childObjs[0] != NULL)
+    if (cam->childObjs[0] != NULL)
     {
-        Obj_FreeObject(((GameObject*)cam)->childObjs[0]);
-        ((GameObject*)cam)->childObjs[0] = NULL;
+        Obj_FreeObject(cam->childObjs[0]);
+        cam->childObjs[0] = NULL;
     }
     if (Obj_IsLoadingLocked() != 0)
     {
         if ((s8)ctx[1031] > 0)
         {
             ObjPlacement* setup = Obj_AllocObjectSetup(24, childObjectIds.ids[(s8)ctx[1031] - 1]);
-            ((GameObject*)cam)->childObjs[0] =
-                objSetupObject(setup, 4, -1, -1, ((GameObject*)cam)->anim.parent);
-            ((GameObject*)((GameObject*)cam)->childObjs[0])->objectFlags = ((GameObject*)cam)->objectFlags & 7;
+            cam->childObjs[0] =
+                objSetupObject(setup, 4, -1, -1, cam->anim.parent);
+            ((GameObject*)cam->childObjs[0])->objectFlags = cam->objectFlags & 7;
         }
         ctx[1033] = ctx[1031];
     }
@@ -159,28 +159,28 @@ void dll_19_changeWeapon(u8* cam, u8* ctx)
     }
 }
 
-void dll_19_releaseState(GameObject* obj, void* state, u8 flag)
+void dll_19_releaseState(GameObject* obj, GroundBaddieState* state, u8 flag)
 {
     Sfx_StopObjectChannel((int)obj, 127);
-    if ((((GroundBaddieState*)state)->configFlags & flag) == 0)
+    if ((state->configFlags & flag) == 0)
     {
         s16 soundId;
-        soundId = ((GroundBaddieState*)state)->soundIdB;
+        soundId = state->soundIdB;
         if (soundId != 0)
         {
             gTitleMenuControlInterfaceCopy->vtable->func05(obj, soundId, 0, 0, 0);
         }
-        soundId = ((GroundBaddieState*)state)->soundIdA;
+        soundId = state->soundIdA;
         if (soundId != 0)
         {
             gTitleMenuControlInterfaceCopy->vtable->func05(obj, soundId, 0, 0, 0);
         }
     }
-    voxmaps_freeRouteWork(&((GroundBaddieState*)state)->routeState);
-    if (*(u32*)&((GroundBaddieState*)state)->path != 0)
+    voxmaps_freeRouteWork(&state->routeState);
+    if (*(u32*)&state->path != 0)
     {
-        mm_free((void*)*(u32*)&((GroundBaddieState*)state)->path);
-        *(int*)&((GroundBaddieState*)state)->path = 0;
+        mm_free((void*)*(u32*)&state->path);
+        *(int*)&state->path = 0;
     }
 }
 

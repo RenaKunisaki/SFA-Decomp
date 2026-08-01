@@ -96,7 +96,9 @@ u16 gSkySunAlpha;
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
 extern f32 gSkyOverrideLightDirection[];
 extern const f32 gSkySecondsPerDay;
+extern const f32 lbl_803DF058;
 extern const f32 gSkySunMoonRiseScale;
+extern const f32 lbl_803DF0C0;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
 const SkyVec3 gSkyBaseSunDirection = {0.0f, 0.0f, 4600.0f};
 const SkyVec3 gSkyBaseMoonDirection = {0.0f, 0.0f, 4600.0f};
@@ -1173,7 +1175,7 @@ void skyUpdateLightingFromTimeOfDay(void)
             ambientIntensityCurve = &((f32*)((u8*)lightingData + 0x2c))[curveSegment];
             greenCurveOffset = (curveSegment + 7) * 4;
             blueCurveOffset = (curveSegment + 0xe) * 4;
-            zero = 0.0f;
+            zero = lbl_803DF058;
             dayStart = 18000.0f;
             lightSlotOffset = 0xa4 * slotIndex;
             if ((u32)((gSkyState[lightSlotOffset + 0xc1] >> 7) & 1) != 0)
@@ -1442,12 +1444,12 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         }
         else
         {
-            moonT += 10800.0f;
+            moonT += lbl_803DF0C0;
         }
         moonTC = moonT / 28800.0f;
-        if (moonTC < 0.0f)
+        if (moonTC < lbl_803DF058)
         {
-            moonTC = 0.0f;
+            moonTC = lbl_803DF058;
         }
         else if (moonTC > 1.0f)
         {
@@ -1455,7 +1457,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         }
         if (moonTC < 0.1f)
         {
-            if (moonTC < 0.0f)
+            if (moonTC < lbl_803DF058)
             {
                 gSkyMoonAlpha = 0;
             }
