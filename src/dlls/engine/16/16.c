@@ -1,5 +1,6 @@
 #include "main/game_ui_interface.h"
 #include "main/model_engine.h"
+#include "main/dll/dll_0010_uicontroller.h"
 
 void UIController_render(void* context, int arg1, int arg2)
 {

@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
 
 __declspec(section ".init") void __fill_mem(void* dst, int val, size_t n);
 

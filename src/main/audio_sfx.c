@@ -17,6 +17,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/mtx/vec.h"
 #include "main/audio/music_api.h"
+#include "main/audio/audio_control_api.h"
 
 u8 gSfxTriggerExtraTable[8] = {1, 2, 4, 8, 0x10, 0x20, 0x40, 0};
 

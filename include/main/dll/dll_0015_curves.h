@@ -267,4 +267,9 @@ void saveFileStruct_setCheatActive(u8 param_1, u8 param_2);
 /* extern-cleanup: defining-file public prototypes */
 void* getLastSavedGameTexts(void);
 
+void curves_gatherTrackTriangles(GameObject* obj, CurvesCollisionState* state);
+void curves_setLocalPointCollision(CurvesCollisionState* state, int pointCount, f32* localPointPositions, f32* localPointRadii, int primaryHitType);
+void dll_15_initialise_nop(void);
+void dll_15_release_nop(void);
+
 #endif /* MAIN_DLL_CURVES_H_ */

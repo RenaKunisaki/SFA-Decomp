@@ -29,6 +29,7 @@
 
 
 #include "main/render_flags.h"
+#include "main/lightmap_lifecycle_api.h"
 
 
 extern u8 gMapBlockCount; /* count of allocated blocks */

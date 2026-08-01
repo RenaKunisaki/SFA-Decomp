@@ -100,7 +100,7 @@ void TRKNubMainLoop(void);
 DSError TRKInitializeMutex(void*);
 DSError TRKAcquireMutex(void*);
 DSError TRKReleaseMutex(void*);
-void* TRK_memcpy(void* dst, const void* src, unsigned int n);
+void* TRK_memcpy(void* dst, const void* src, unsigned long n);
 
 DSError TRKInitializeEventQueue(void);
 DSError TRKInitializeMessageBuffers(void);

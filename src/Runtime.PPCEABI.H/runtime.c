@@ -26,6 +26,7 @@ asm void __shl2i(void);
 asm void __shr2u(void);
 asm void __shr2i(void);
 asm void __cvt_ull_flt(void);
+asm void __cvt_sll_flt(void);
 asm void __cvt_dbl_usll(void);
 
 void SAVE_FPR(14)(void);

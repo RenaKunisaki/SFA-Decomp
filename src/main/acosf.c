@@ -1,6 +1,9 @@
 #include "dolphin/types.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/k_tan.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/acosf.h"
+#include "main/acosf_api.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 
 
 float asinf(float value) {
