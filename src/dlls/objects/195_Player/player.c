@@ -12529,37 +12529,30 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
     }
 }
 
-void objDoTeleportAnim(GameObject* obj)
-{
+void objDoTeleportAnim(GameObject* obj) {
     PlayerState* inner = obj->extra;
-    struct
-    {
+    struct {
         u8 pad[0xc];
         f32 x;
         f32 y;
         f32 z;
     } buf;
-    f32 dy;
     f32 base = 40.0f;
     int i;
 
-    dy = base - inner->teleportAnimProgress;
-    buf.y = dy;
-    if (gPlayerTeleportAnimRearm < -40.0f)
-    {
+    buf.y = base - inner->teleportAnimProgress;
+    if (gPlayerTeleportAnimRearm < -40.0f) {
         inner->teleportAnimActive = 0;
         return;
     }
-    if (dy <= 0.0f)
-    {
+    if (buf.y <= 0.0f) {
         gPlayerTeleportAnimRearm = gPlayerTeleportAnimRearm - 0.2f * timeDelta;
         return;
     }
     gPlayerTeleportAnimRearm = base;
-    buf.y = dy + obj->anim.localPosY;
+    buf.y += obj->anim.localPosY;
     {
-        for (i = 0; i < 10; i++)
-        {
+        for (i = 0; i < 10; i++) {
             buf.x = obj->anim.localPosX + (f32)randomGetRange(-0x64, 0x64) / 10.0f;
             buf.z = obj->anim.localPosZ + (f32)randomGetRange(-0x64, 0x64) / 10.0f;
             (*gPartfxInterface)->spawnObject((void*)obj, randomGetRange(0, 2) + 0x3f4, &buf, 1, -1, NULL);
