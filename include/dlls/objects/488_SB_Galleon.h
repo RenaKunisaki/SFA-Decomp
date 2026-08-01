@@ -160,7 +160,7 @@ STATIC_ASSERT(sizeof(SBGalleonVtbl) == 0x30);
 extern ObjectDescriptor15 gSB_GalleonObjDescriptor;
 
 void DBprotection_updateFlight(GameObject* obj);
-void DBprotection_updateEnvfxGameBits(u8* state);
+void DBprotection_updateEnvfxGameBits(SBGalleonState* state);
 int DBprotection_getCameraState(GameObject* obj);
 void DBprotection_updateShield(GameObject* obj);
 void SB_Galleon_onSeqFree(GameObject* obj);

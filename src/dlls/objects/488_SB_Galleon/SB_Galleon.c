@@ -297,7 +297,7 @@ void DBprotection_updateFlight(GameObject* obj) {
         case 0:
             tx = ((SBGalleonState*)state)->homeX - 1700.0f;
             tz = ((SBGalleonState*)state)->homeZ;
-            ty = 300.0f + ((GameObject*)tricky)->anim.localPosY;
+            ty = 300.0f + tricky->anim.localPosY;
             if ((((SBGalleonState*)state)->headingLatch <= 0) &&
                 ((((SBGalleonState*)state)->phaseCounter == 0) || (((SBGalleonState*)state)->phaseCounter == 5))) {
                 ((SBGalleonState*)state)->headingLatch = 200;
@@ -307,38 +307,38 @@ void DBprotection_updateFlight(GameObject* obj) {
         case 1:
             tx = ((SBGalleonState*)state)->homeX - 800.0f;
             tz = ((SBGalleonState*)state)->homeZ;
-            ty = 300.0f + ((GameObject*)tricky)->anim.localPosY;
+            ty = 300.0f + tricky->anim.localPosY;
             break;
         case 2:
-            tx = ((GameObject*)tricky)->anim.localPosX - 500.0f;
+            tx = tricky->anim.localPosX - 500.0f;
             tz = ((SBGalleonState*)state)->homeZ;
-            ty = 250.0f + ((GameObject*)tricky)->anim.localPosY;
+            ty = 250.0f + tricky->anim.localPosY;
             break;
         case 3:
-            tx = ((GameObject*)tricky)->anim.localPosX - 535.0f;
+            tx = tricky->anim.localPosX - 535.0f;
             tz = 220.0f + ((SBGalleonState*)state)->homeZ;
-            ty = 250.0f + ((GameObject*)tricky)->anim.localPosY;
-            tz = tz + (((GameObject*)tricky)->anim.localPosZ - ((SBGalleonState*)state)->posZ);
+            ty = 250.0f + tricky->anim.localPosY;
+            tz = tz + (tricky->anim.localPosZ - ((SBGalleonState*)state)->posZ);
             ((SBGalleonState*)state)->unk7B = 0;
             break;
         case 4:
-            tx = ((GameObject*)tricky)->anim.localPosX - 535.0f;
+            tx = tricky->anim.localPosX - 535.0f;
             tz = 100.0f + ((SBGalleonState*)state)->homeZ;
-            ty = 250.0f + ((GameObject*)tricky)->anim.localPosY;
+            ty = 250.0f + tricky->anim.localPosY;
             ((SBGalleonState*)state)->unk7B = 0;
             break;
         case 5:
-            tx = ((GameObject*)tricky)->anim.localPosX - 535.0f;
+            tx = tricky->anim.localPosX - 535.0f;
             tz = ((SBGalleonState*)state)->homeZ - 220.0f;
-            ty = 250.0f + ((GameObject*)tricky)->anim.localPosY;
-            tz = tz + (((GameObject*)tricky)->anim.localPosZ - ((SBGalleonState*)state)->posZ);
+            ty = 250.0f + tricky->anim.localPosY;
+            tz = tz + (tricky->anim.localPosZ - ((SBGalleonState*)state)->posZ);
             ((SBGalleonState*)state)->unk7B = 0;
             break;
         default:
             ((SBGalleonState*)state)->unk7B = 0;
             tx = ((SBGalleonState*)state)->homeX - 880.0f;
             tz = ((SBGalleonState*)state)->homeZ;
-            ty = 260.0f + ((GameObject*)tricky)->anim.localPosY;
+            ty = 260.0f + tricky->anim.localPosY;
             break;
         }
         tx = tx - ((GameObject*)obj)->anim.localPosX;
@@ -443,7 +443,7 @@ void DBprotection_updateFlight(GameObject* obj) {
             ((SBGalleonState*)state)->cycleKind = 3;
             ((SBGalleonState*)state)->stage = 6;
             ((SBGalleonState*)state)->headingLatch = 200;
-            ((SBGalleonState*)state)->refZ = ((GameObject*)tricky)->anim.localPosZ;
+            ((SBGalleonState*)state)->refZ = tricky->anim.localPosZ;
         }
         break;
     case 2:
@@ -510,7 +510,7 @@ void DBprotection_updateFlight(GameObject* obj) {
             speedTarget = 4.0f;
             tx = 1400.0f + ((SBGalleonState*)state)->homeX;
             tz = ((SBGalleonState*)state)->homeZ;
-            ty = 280.0f + ((GameObject*)tricky)->anim.localPosY;
+            ty = 280.0f + tricky->anim.localPosY;
             nextState = 8;
             threshold = 100.0f;
             break;
@@ -518,7 +518,7 @@ void DBprotection_updateFlight(GameObject* obj) {
             speedTarget = 8.0f;
             tx = ((SBGalleonState*)state)->homeX - 1200.0f;
             tz = ((SBGalleonState*)state)->homeZ;
-            ty = 100.0f + ((GameObject*)tricky)->anim.localPosY;
+            ty = 100.0f + tricky->anim.localPosY;
             nextState = 2;
             threshold = 200.0f;
             break;
@@ -608,7 +608,7 @@ void DBprotection_updateFlight(GameObject* obj) {
         ((GameObject*)obj)->anim.localPosX = ((SBGalleonState*)state)->posX + ((SBGalleonState*)state)->swayX;
         ((GameObject*)obj)->anim.localPosY = ((SBGalleonState*)state)->posY + ((SBGalleonState*)state)->swayY;
         ((GameObject*)obj)->anim.localPosZ = ((SBGalleonState*)state)->posZ + ((SBGalleonState*)state)->swayZ +
-                                             (((GameObject*)tricky)->anim.localPosZ - ((SBGalleonState*)state)->refZ);
+                                             (tricky->anim.localPosZ - ((SBGalleonState*)state)->refZ);
         if (((SBGalleonState*)state)->stage >= 7) {
             if (((SBGalleonState*)state)->fadeTimer == 0) {
                 ObjHits_DisableObject(obj);
@@ -700,54 +700,54 @@ void DBprotection_updateFlight(GameObject* obj) {
     }
 }
 
-void DBprotection_updateEnvfxGameBits(u8* state) {
+void DBprotection_updateEnvfxGameBits(SBGalleonState* state) {
     GameObject* player;
     GameObject* effectObj;
 
     player = Obj_GetPlayerObject();
     if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_A_PENDING) != 0) {
         effectObj = ObjList_FindObjectById(DBPROTECTION_ENVFX_B);
-        getEnvfxAct(effectObj, player, state[state[0xa4] + 0xa9], 0);
+        getEnvfxAct(effectObj, player, state->envfxActs[state->envfxIndex + 4], 0);
         effectObj = ObjList_FindObjectById(DBPROTECTION_ENVFX_A);
-        getEnvfxAct(effectObj, player, state[(state[0xa4] ^ 1) + 0xa7], 0);
+        getEnvfxAct(effectObj, player, state->envfxActs[(state->envfxIndex ^ 1) + 2], 0);
         getEnvfxAct(player, player, DBPROTECTION_PLAYER_ENVFX_FLASH, 0);
         mainSetBits(DBPROTECTION_GAMEBIT_CYCLE_A_PENDING, 0);
-        ((SBGalleonState*)state)->envfxCycle = DBPROTECTION_GAMEBIT_CYCLE_A_DONE;
+        state->envfxCycle = DBPROTECTION_GAMEBIT_CYCLE_A_DONE;
     }
 
     if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_B_PENDING) != 0) {
         effectObj = ObjList_FindObjectById(DBPROTECTION_ENVFX_A);
-        getEnvfxAct(effectObj, player, state[state[0xa4] + 0xa9], 0);
+        getEnvfxAct(effectObj, player, state->envfxActs[state->envfxIndex + 4], 0);
         effectObj = ObjList_FindObjectById(DBPROTECTION_ENVFX_B);
-        getEnvfxAct(effectObj, player, state[(state[0xa4] ^ 1) + 0xa7], 0);
+        getEnvfxAct(effectObj, player, state->envfxActs[(state->envfxIndex ^ 1) + 2], 0);
         getEnvfxAct(player, player, DBPROTECTION_PLAYER_ENVFX_FLASH, 0);
         mainSetBits(DBPROTECTION_GAMEBIT_CYCLE_B_PENDING, 0);
-        ((SBGalleonState*)state)->envfxCycle = DBPROTECTION_GAMEBIT_CYCLE_B_DONE;
+        state->envfxCycle = DBPROTECTION_GAMEBIT_CYCLE_B_DONE;
     }
 
     if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_A_DONE) != 0) {
-        if (((SBGalleonState*)state)->envfxCycle != DBPROTECTION_GAMEBIT_CYCLE_A_DONE) {
-            state[0xa4] = (u8)(state[0xa4] ^ 1);
+        if (state->envfxCycle != DBPROTECTION_GAMEBIT_CYCLE_A_DONE) {
+            state->envfxIndex = state->envfxIndex ^ 1;
         }
-        getEnvfxAct(player, player, state[(state[0xa4] ^ 1) + 0xa5], 0);
-        getEnvfxAct(player, player, state[state[0xa4] + 0xa9], 0);
+        getEnvfxAct(player, player, state->envfxActs[state->envfxIndex ^ 1], 0);
+        getEnvfxAct(player, player, state->envfxActs[state->envfxIndex + 4], 0);
         getEnvfxAct(player, player, DBPROTECTION_PLAYER_ENVFX_SWAP, 0);
         mainSetBits(DBPROTECTION_GAMEBIT_CYCLE_A_DONE, 0);
     }
 
     if (mainGetBit(DBPROTECTION_GAMEBIT_CYCLE_B_DONE) != 0) {
-        if (((SBGalleonState*)state)->envfxCycle != DBPROTECTION_GAMEBIT_CYCLE_B_DONE) {
-            state[0xa4] = (u8)(state[0xa4] ^ 1);
+        if (state->envfxCycle != DBPROTECTION_GAMEBIT_CYCLE_B_DONE) {
+            state->envfxIndex = state->envfxIndex ^ 1;
         }
-        getEnvfxAct(player, player, state[(state[0xa4] ^ 1) + 0xa5], 0);
-        getEnvfxAct(player, player, state[state[0xa4] + 0xa9], 0);
+        getEnvfxAct(player, player, state->envfxActs[state->envfxIndex ^ 1], 0);
+        getEnvfxAct(player, player, state->envfxActs[state->envfxIndex + 4], 0);
         getEnvfxAct(player, player, DBPROTECTION_PLAYER_ENVFX_SWAP, 0);
         mainSetBits(DBPROTECTION_GAMEBIT_CYCLE_B_DONE, 0);
     }
 }
 
 int DBprotection_getCameraState(GameObject* obj) {
-    return *(s8*)((char*)(int*)obj->extra + 0x70);
+    return ((SBGalleonState*)obj->extra)->cameraState;
 }
 
 void DBprotection_updateShield(GameObject* obj) {
@@ -765,7 +765,7 @@ void DBprotection_updateShield(GameObject* obj) {
         (*gScreenTransitionInterface)->start(0xa, 1);
     }
 
-    DBprotection_updateEnvfxGameBits((u8*)state);
+    DBprotection_updateEnvfxGameBits(state);
 
     if (gDBprotectionTransitionPending != 0 && (*gScreenTransitionInterface)->isFinished() != 0) {
         (*gScreenTransitionInterface)->step(0x50, 1);
