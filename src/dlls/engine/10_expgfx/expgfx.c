@@ -4293,7 +4293,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
     s16 texS1 = 0;
     s16 texS0 = 0;
     f32 scaleVal;
-    u8 sourceModeValue;
+    u32 sourceModeValue;
 
     ExpgfxQuadVertex* quadVertices;
 
@@ -4573,6 +4573,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
             } else {
                 sourceModeValue = 0;
             }
+            sourceModeValue = (u8)sourceModeValue;
             modePoolIndex = poolIndex;
             runtime->poolSourceModes[modePoolIndex] = sourceModeValue;
             if (runtime->poolSourceModes[modePoolIndex] != 0 &&
