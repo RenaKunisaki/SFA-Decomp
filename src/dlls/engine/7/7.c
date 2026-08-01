@@ -37,7 +37,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
 
 u8 gNewCloudBlizzardActivePrev;
-void* lbl_803DD1C8;
+void* sNewCloudsTexture;
 void* gNewCloudType1Texture;
 u8 gNewCloudInitialized;
 f32 gNewCloudScrollPhaseA;
@@ -1612,7 +1612,7 @@ void newclouds_run(void)
     nearest = 1e30f;
     if (gNewCloudInitialized == 0)
     {
-        lbl_803DD1C8 = textureLoadAsset(0x16a);
+        sNewCloudsTexture = textureLoadAsset(0x16a);
         clouds[0] = textureLoadAsset(0x5da);
         clouds[1] = textureLoadAsset(0x63f);
         clouds[2] = textureLoadAsset(0x640);
@@ -2218,10 +2218,10 @@ void newclouds_release(void)
 {
     int i;
 
-    if (lbl_803DD1C8 != NULL)
+    if (sNewCloudsTexture != NULL)
     {
-        textureFree((Texture*)(lbl_803DD1C8));
-        lbl_803DD1C8 = NULL;
+        textureFree((Texture*)(sNewCloudsTexture));
+        sNewCloudsTexture = NULL;
     }
     for (i = 0; i < 4; i++)
     {
