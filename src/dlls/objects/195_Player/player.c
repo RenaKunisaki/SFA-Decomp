@@ -43,7 +43,9 @@
 #include "main/dll/dll_02AE_waterflowwe.h"
 #include "track/intersect_api.h"
 #include "main/track_dolphin_api.h"
+#define TRACK_BBOX_MASK_TYPE s8
 #include "main/track_bbox_api.h"
+#undef TRACK_BBOX_MASK_TYPE
 #include "main/vecmath_distance_api.h"
 
 #include "sys/objects.h"
@@ -10855,7 +10857,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     f32* sc1p = sc1;
     f32 sc0[3];
     f32* sc0p = sc0;
-    s8 dirs[13] = {0xb, 4, 6, 0xa, 0xa, 3, 3, 2, 0xe, 0x10, 0x12, 0x13, 5};
+    u8 dirs[13] = {0xb, 4, 6, 0xa, 0xa, 3, 3, 2, 0xe, 0x10, 0x12, 0x13, 5};
     u16 dirMasks[13] = {1, 2, 4, 8, 8, 0x10, 0x10, 0x40, 0x80, 0x100, 1, 0x20, 0xffff};
     struct
     {
