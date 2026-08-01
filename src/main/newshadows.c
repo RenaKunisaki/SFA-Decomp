@@ -1465,10 +1465,10 @@ void newShadowsInitProceduralTextures(void)
                 rowPixelOffset = (row & 3) * 2;
                 for (; column < 0x40; column++)
                 {
-                    f32 shift, intensity;
-                    f32 rowCoord, columnCoord;
                     int highByte, lowByte;
                     int texelAddress = (int)gNewShadowNoiseTexFrames[frame] + h + rowPixelOffset;
+                    f32 shift, intensity;
+                    f32 rowCoord, columnCoord;
                     texelAddress += (column & 3) * 8;
                     texelAddress += (column >> 2) * 0x200;
                     rowCoord = row * lbl_803DEDE0;
