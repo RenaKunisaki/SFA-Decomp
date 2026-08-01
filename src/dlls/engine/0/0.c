@@ -401,7 +401,7 @@ extern const f32 gPauseMenuPodiumRollAmplitude;
 extern const f32 gPauseMenuPodiumBaseY;
 extern const double gPauseMenuPodiumBobAmplitude;
 extern f32 lbl_803E2188;
-extern const f32 lbl_803E218C;
+extern const f32 gPauseMenuCommunicatorMaxScale;
 extern const f32 gPauseMenuRingScale;
 extern const f32 gPauseMenuRingUnselectedScale;
 extern const f32 lbl_803E209C;
@@ -7073,7 +7073,7 @@ void pauseMenuAnimateCarousel(void)
     }
     gGameUiCommunicatorObjects[1]->anim.localPosY = gGameUiCommunicatorObjects[0]->anim.localPosY;
     {
-        f32 spin = lbl_803E218C * gPauseMenuPodiumRamp;
+        f32 spin = gPauseMenuCommunicatorMaxScale * gPauseMenuPodiumRamp;
         gGameUiCommunicatorObjects[1]->anim.rootMotionScale = spin * gPauseMenuRingScale;
     }
     ObjAnim_AdvanceCurrentMove((int)gGameUiCommunicatorObjects[1], 0.01f, timeDelta,
