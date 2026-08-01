@@ -429,7 +429,7 @@ const GameUiTimeIdList sTimeListTimeBits = {{0x2B7, 0x2CB, 0x2CC, 0x2B6, 0x2D7, 
 const GameUiIndirectMatrix sGameUiZeroIndTexMtx = {0};
 extern f32 gPauseMenuMapSwivelCos;
 extern s16 cMenuFadeCounter;
-extern f32 lbl_803DD844;
+extern f32 gHudStatusFadeOpacity;
 extern f32 gHudStatusAlpha;
 extern const f64 lbl_803E1EA0;
 extern const f64 lbl_803E1EA8;
@@ -493,7 +493,7 @@ typedef struct CounterText
     char text[8];
 } CounterText;
 
-extern u8 lbl_803DD840;
+extern u8 gHudStatsSnapshotPending;
 extern int gCMenuItemCount;
 extern s16 gCMenuSelIndex;
 extern s8 gCMenuCurSection;
@@ -604,7 +604,7 @@ extern s16 gCMenuSelActiveBit;
 extern s16 gCMenuPrevStickY;
 extern u8 gCMenuScrollLock;
 extern s16 gCMenuScrollVel;
-extern int lbl_803DD8A8;
+extern int gCMenuOpenFrames;
 extern int yButtonItemFlags;
 extern s16 gYButtonUsedBit;
 extern s16 gYButtonActiveBit;
@@ -2070,19 +2070,19 @@ void hudDrawStatusBarsAndCounters(int unused1, int unused2, int unused3)
         op = hudElementOpacity;
     else
         op = 0.0f;
-    if (op > lbl_803DD844)
+    if (op > gHudStatusFadeOpacity)
     {
-        f32 t = 8.5f * timeDelta + lbl_803DD844;
-        lbl_803DD844 = t;
+        f32 t = 8.5f * timeDelta + gHudStatusFadeOpacity;
+        gHudStatusFadeOpacity = t;
         if (t > hudElementOpacity)
-            lbl_803DD844 = hudElementOpacity;
+            gHudStatusFadeOpacity = hudElementOpacity;
     }
-    else if (op < lbl_803DD844)
+    else if (op < gHudStatusFadeOpacity)
     {
-        f32 t = lbl_803DD844 - 8.5f * timeDelta;
-        lbl_803DD844 = t;
+        f32 t = gHudStatusFadeOpacity - 8.5f * timeDelta;
+        gHudStatusFadeOpacity = t;
         if (t < 0.0f)
-            lbl_803DD844 = 0.0f;
+            gHudStatusFadeOpacity = 0.0f;
     }
     alpha = gHudStatusAlpha;
     if (alpha != 0)
@@ -2881,9 +2881,9 @@ void pauseMenuDrawStatus(void)
     }
     statusSlot = 0;
     statuses[HUD_STATUS_UNKNOWN_6] = 0;
-    if ((lbl_803DD840 & 1) != 0)
+    if ((gHudStatsSnapshotPending & 1) != 0)
     {
-        lbl_803DD840 = lbl_803DD840 & ~1;
+        gHudStatsSnapshotPending = gHudStatsSnapshotPending & ~1;
         for (statusSlot = 0; statusSlot < HUD_STATUS_COUNT; statusSlot++)
         {
             int initialValue = statuses[statusSlot];
@@ -2916,7 +2916,7 @@ void pauseMenuDrawStatus(void)
         {
             hud->statusOpacity[HUD_STATUS_FUEL_CELLS] = 0.1f;
         }
-        lbl_803DD844 = 0.0f;
+        gHudStatusFadeOpacity = 0.0f;
     }
     else
     {
@@ -8164,7 +8164,7 @@ void cMenuRun(void)
         if (notOpen)
         {
             cMenuState = 0;
-            lbl_803DD8A8 = 0;
+            gCMenuOpenFrames = 0;
             gCMenuScrollVel = 0;
         }
         if ((s8)isOpen != 0)
@@ -8290,10 +8290,10 @@ void GameUI_showMinimapInfoText(s32 textId, s32 posY, s32 posX)
     gMinimapInfoTextX = posX;
 }
 
-/* Latch the u8 flag at lbl_803DD840 to 1. */
+/* Latch the u8 flag at gHudStatsSnapshotPending to 1. */
 void GameUI_requestPlayerStatsSnapshot(void)
 {
-    lbl_803DD840 = 1;
+    gHudStatsSnapshotPending = 1;
 }
 
 /* Iterate a 0x10-stride struct array at
@@ -8747,9 +8747,9 @@ void GameUI_frameEnd(void)
         if (cMenuEnabled != 0)
             cMenuUpdateAnims();
         hudUpdateMinimapReveal();
-        lbl_803DD8A8++;
-        if (lbl_803DD8A8 > 2)
-            lbl_803DD8A8 = 2;
+        gCMenuOpenFrames++;
+        if (gCMenuOpenFrames > 2)
+            gCMenuOpenFrames = 2;
 
         {
             s16 sv = (*gCameraInterface)->getMinimapInfoText();
@@ -9067,7 +9067,7 @@ s8 gCMenuCurSection;
 s16 gCMenuSelIndex;
 int gCMenuItemCount;
 s8 gCMenuScriptedInput;
-int lbl_803DD8A8;
+int gCMenuOpenFrames;
 u32 gCMenuButtons;
 int gCMenuScriptedButtons;
 s16 gCMenuScriptedStickX;
@@ -9099,8 +9099,8 @@ u16 gHeadDisplayPanelHeight;
 s16 gHeadDisplayFadeAlpha;
 f32 gPauseMenuMapSwivelCos;
 u8 gCMenuItemIcons[GCMENU_ITEM_ICON_COUNT];
-f32 lbl_803DD844;
-u8 lbl_803DD840;
+f32 gHudStatusFadeOpacity;
+u8 gHudStatsSnapshotPending;
 f32 gHudStatusAlpha;
 s16 arwingHudAlpha;
 Texture* gTrickyHudCachedIconTexture;
