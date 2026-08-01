@@ -3826,7 +3826,7 @@ void* trickyFindCirclingTarget(GameObject* obj, void* state);
     *(u8*)((st) + 0xa) = 0;                                                                                            \
     TRICKY_RESET_TAIL(st)
 
-#define TRICKY_BARK(obj, snd, p4)                                                                                      \
+#define TRICKY_BARK(obj, snd, p4, cfg)                                                                                 \
     {                                                                                                                  \
         cfg = *(u8**)&((GameObject*)(obj))->extra;                                                                     \
         if (!((TrickyState*)cfg)->soundSuppressed)                                                                        \
@@ -3850,7 +3850,9 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
     int* bestWarp = NULL;
     f32 bestDetourSavings = 0.0f;
     int warpCount;
-    u8* cfg;
+    u8* approachCfg;
+    u8* orbitCfg;
+    u8* finishCfg;
 
     switch (t->substate)
     {
@@ -4053,7 +4055,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                 f32 rv;
                 rv = (s32)randomGetRange(0xc8, 0x258);
                 t->cooldownA = rv / 2.0f;
-                TRICKY_BARK((int*)gobj, 0x29b, 0x1000);
+                TRICKY_BARK((int*)gobj, 0x29b, 0x1000, approachCfg);
             }
         }
         break;
@@ -4134,7 +4136,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                 }
             }
             Sfx_RemoveLoopedObjectSound((u32)gobj, SFXTRIG_trpopn_c);
-            TRICKY_BARK((int*)gobj, 0x29d, 0);
+            TRICKY_BARK((int*)gobj, 0x29d, 0, finishCfg);
             {
                 u32 m;
                 u32 f2 = t->stateFlags;
@@ -4204,7 +4206,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                        stores below are byte-neutral as fields). */
                 if (*(void**)((u8*)t + 0x724) == NULL)
                 {
-                    TRICKY_BARK((int*)gobj, 0x35b, 0x500);
+                    TRICKY_BARK((int*)gobj, 0x35b, 0x500, orbitCfg);
                 }
                 if (*(void**)((u8*)t + 0x724) == NULL || *(int**)&t->unk724 != bestWarp)
                 {
