@@ -862,7 +862,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     }
 
     if ((coordsToMapCell(((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosZ) == 0xe) ||
-        ((u32)objGetNearestTypeTo(SKEETLA_TARGET_OBJGROUP, (GameObject*)obj, &nearestDistance) != 0u))
+        (objGetNearestTypeTo(SKEETLA_TARGET_OBJGROUP, (GameObject*)obj, &nearestDistance) != NULL))
     {
         state->pathControlFlags &= ~4;
     }
@@ -3497,7 +3497,7 @@ int trickyShouldGoToWarpPoint(u8* tricky, u8* state)
         result = 1;
     }
 
-    if ((u8*)objGetNearestTypeTo(PRESSURESWITCHFB_REMOVE_GROUP_ID, (GameObject*)tricky, &dist) != NULL)
+    if (objGetNearestTypeTo(PRESSURESWITCHFB_REMOVE_GROUP_ID, (GameObject*)tricky, &dist) != NULL)
     {
         return 0;
     }
@@ -7343,15 +7343,15 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
     u8* ptr;
     u8 lo;
     u8 hi;
-    u8* found;
+    GameObject* found;
     int sv;
     f32 ang;
 
     lo = 1;
     hi = 3;
     arr[0] = 200.0f;
-    found = (u8*)objGetNearestTypeTo(SHTHORNTAIL_OBJECT_GROUP, (GameObject*)obj, arr);
-    if (found != NULL && (((GameObject*)found)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
+    found = objGetNearestTypeTo(SHTHORNTAIL_OBJECT_GROUP, (GameObject*)obj, arr);
+    if (found != NULL && ((found)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
     {
         lo = 0;
     }
@@ -7362,8 +7362,8 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
     switch (randomGetRange(lo, hi))
     {
     case 0:
-        ((TrickyState*)state)->followObj = (GameObject*)found;
-        objGetJointWorldPosition((GameObject*)found, 0, (float*)(state + 0x72c));
+        ((TrickyState*)state)->followObj = found;
+        objGetJointWorldPosition(found, 0, (float*)(state + 0x72c));
         if ((u8*)((TrickyState*)state)->targetPosPtr != state + 0x72c)
         {
             ((TrickyState*)state)->targetPosPtr = (f32*)(state + 0x72c);

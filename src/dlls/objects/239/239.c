@@ -287,7 +287,7 @@ int pushable_updateMagicGem(GameObject* obj, PushableState* state) {
     }
     if (state->nearestObj == NULL) {
         state->nearestObj =
-            (GameObject*)objGetNearestTypeTo(PUSHABLE_MAGIC_GEM_TARGET_OBJECT_GROUP, obj, nearestDistance);
+            objGetNearestTypeTo(PUSHABLE_MAGIC_GEM_TARGET_OBJECT_GROUP, obj, nearestDistance);
     }
     if (state->nearestObj == NULL) {
         return 0;

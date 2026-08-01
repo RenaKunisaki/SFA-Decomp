@@ -313,7 +313,7 @@ void kytesmum_update(GameObject* obj)
     s16 diff;
     int absDiff;
     short moveIdx;
-    int nearest;
+    GameObject* nearest;
 
     nearDist = 200.0f;
     if (runtime->questComplete == 0)
@@ -368,10 +368,10 @@ void kytesmum_update(GameObject* obj)
     characterDoEyeAnims(obj, &runtime->eyeAnimState);
     objSoundUpdateMouth(obj, &runtime->modelSoundState);
     nearest = objGetNearestTypeTo(KYTESMUM_TARGET_OBJGROUP, obj, &nearDist);
-    if ((void*)nearest != NULL)
+    if (nearest != NULL)
     {
         TRICKY_INTERFACE(nearest)
-            ->sideCommandEnable((GameObject*)nearest, obj, KYTESMUM_TRICKY_COMMAND_KIND,
+            ->sideCommandEnable(nearest, obj, KYTESMUM_TRICKY_COMMAND_KIND,
                                 KYTESMUM_TRICKY_COMMAND_TYPE);
     }
 }

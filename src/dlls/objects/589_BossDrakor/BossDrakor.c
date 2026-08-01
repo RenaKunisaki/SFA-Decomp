@@ -108,7 +108,7 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int inner = *(int*)&(obj)->extra;
     int i;
-    int target;
+    GameObject* target;
     int eventId;
     BossDrakorState* s = (BossDrakorState*)inner;
     ((BossDrakorState*)inner)->flags198.b10 = 1;
@@ -128,20 +128,20 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
         {
         case 6:
             target = objGetNearestTypeTo(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
-            if ((void*)target != NULL && (obj)->childCount != 0)
+            if (target != NULL && (obj)->childCount != 0)
             {
-                (*(BossDrakorSpellStoneInterface**)((GameObject*)target)->anim.dll)
-                    ->setState((GameObject*)target, BOSSDRAKOR_SPELLSTONE_STATE_HELD);
-                ObjLink_DetachChild(obj, (GameObject*)target);
+                (*(BossDrakorSpellStoneInterface**)target->anim.dll)
+                    ->setState(target, BOSSDRAKOR_SPELLSTONE_STATE_HELD);
+                ObjLink_DetachChild(obj, target);
             }
             break;
         case 7:
             target = objGetNearestTypeTo(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
-            if ((void*)target != NULL)
+            if (target != NULL)
             {
-                (*(BossDrakorSpellStoneInterface**)((GameObject*)target)->anim.dll)
-                    ->setState((GameObject*)target, BOSSDRAKOR_SPELLSTONE_STATE_IDLE);
-                ObjLink_AttachChild(obj, (GameObject*)target, 1);
+                (*(BossDrakorSpellStoneInterface**)target->anim.dll)
+                    ->setState(target, BOSSDRAKOR_SPELLSTONE_STATE_IDLE);
+                ObjLink_AttachChild(obj, target, 1);
                 s->textTimer = 400.0f;
             }
             break;
@@ -425,7 +425,7 @@ void bossdrakor_handleActionEvent(GameObject* obj, BossDrakorState* state, int a
     int* tbl = gBossDrakorMoveStateTable;
     BossDrakorState* s = state;
     f32 t;
-    int found;
+    GameObject* found;
     if (action >= 26 || action <= -1)
     {
         return;
@@ -532,9 +532,9 @@ void bossdrakor_handleActionEvent(GameObject* obj, BossDrakorState* state, int a
         }
     case 24:
         found = objGetNearestTypeTo(DRAKORHOVERPAD_OBJGROUP, obj, 0);
-        if ((void*)found != NULL)
+        if (found != NULL)
         {
-            drakorhoverpad_resetPendingMotion((GameObject*)(found));
+            drakorhoverpad_resetPendingMotion(found);
         }
         break;
     }

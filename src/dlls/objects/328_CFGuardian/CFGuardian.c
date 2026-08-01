@@ -588,7 +588,7 @@ int cfguardian_updateMain(GameObject* obj) {
         break;
     case CFGUARDIAN_STATE_TALK_1: /* talk spot: greet and head-track the player; 0x43 advances */
     {
-        void* nearestObject = (void*)objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
+        GameObject* nearestObject = objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
         if (nearestObject != NULL && nearestDistance < 300.0f) {
             dll_2E_setLockTarget(&state->moveLib, nearestObject);
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
@@ -627,7 +627,7 @@ int cfguardian_updateMain(GameObject* obj) {
         break;
     case CFGUARDIAN_STATE_TALK_2: /* second talk loop; 0x4be sends her onward */
     {
-        void* nearestObject = (void*)objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
+        GameObject* nearestObject = objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
         if (nearestObject != NULL && nearestDistance < 300.0f) {
             dll_2E_setLockTarget(&state->moveLib, nearestObject);
         }

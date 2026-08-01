@@ -130,7 +130,7 @@ int DIMSnowHorn1_stateHandler0B(GameObject* obj, DIMSnowHorn1State* state)
 
 int DIMSnowHorn1_stateHandler0A(GameObject* obj, DIMSnowHorn1State* state, f32 t)
 {
-    int near;
+    GameObject* near;
     DIMSnowHorn1State* inner;
     int phase;
     int moveIdx;
@@ -267,7 +267,7 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, DIMSnowHorn1State* state, f32 t
                                  &state->baddie.moveSpeed);
     if ((*(int*)&state->baddie.pressedButtons & PAD_BUTTON_A) != 0)
     {
-        if ((void*)near == NULL || (((GameObject*)near)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0)
+        if (near == NULL || ((near)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0)
         {
             return 0xc;
         }
@@ -282,7 +282,7 @@ int DIMSnowHorn1_stateHandler09(GameObject* obj, DIMSnowHorn1State* state, f32 f
     f32 sp = 300.0f;
     s16 turnRate;
 
-    near = (GameObject*)(objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp));
+    near = (objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp));
     inner = (obj)->extra;
     state->baddie.flags0 |= 0x200000;
 
@@ -387,7 +387,7 @@ int DIMSnowHorn1_stateHandler07(GameObject* obj, DIMSnowHorn1State* state)
     f32 sp = 300.0f;
     f32 fz;
 
-    near = (void*)objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp);
+    near = objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &sp);
     inner = (obj)->extra;
     (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     fz = 0.0f;
@@ -1043,7 +1043,7 @@ int DIMSnowHorn1_canMount(GameObject* obj)
         return 0;
     }
 
-    nearest = (void*)objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &range);
+    nearest = objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &range);
     if ((nearest != NULL) && ((nearest->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0))
     {
         buttonDisable(0, PAD_BUTTON_A);
@@ -1222,9 +1222,9 @@ void DIMSnowHorn1_ridingUpdate(GameObject* obj, int frameStep, int slot)
     DIMSnowHorn1_spawnFootstepEffects((int)obj, state, state);
 }
 
-static inline s16 DIMSnowHorn1_angleTo(GameObject* obj, char* found)
+static inline s16 DIMSnowHorn1_angleTo(GameObject* obj, GameObject* found)
 {
-    s16 angleDelta = (obj)->anim.rotX - (u16)((GameObject*)found)->anim.rotX;
+    s16 angleDelta = (obj)->anim.rotX - (u16)(found)->anim.rotX;
     if (angleDelta > 0x8000)
     {
         angleDelta = angleDelta - 0xffff;
@@ -1244,7 +1244,7 @@ void DIMSnowHorn1_update(GameObject* obj)
     int data;
     s8 modeIndex = -1;
     s16 angleDelta;
-    char* found;
+    GameObject* found;
     DIMSnowHorn1State* statePtr;
     GameObject* playerObj;
     u32 flip;
@@ -1333,14 +1333,14 @@ void DIMSnowHorn1_update(GameObject* obj)
     case 3:
     case 4:
         nearDist = 300.0f;
-        found = (char*)objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &nearDist);
+        found = objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &nearDist);
         if (((DIMSnowHorn1State*)data)->mountMode == 0 && ((DIMSnowHorn1State*)data)->baddie.controlMode == 7 &&
             getXZDistance(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 10000.0f)
         {
-            if (found != NULL && (((GameObject*)found)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE))
+            if (found != NULL && ((found)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE))
             {
                 setAButtonIcon(0x14);
-                if (((GameObject*)found)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
+                if ((found)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
                 {
                     int layer = getCurMapLayer();
                     (*gMapEventInterface)->restartPoint(&player->anim.localPosX, 0x584, layer, 0);
@@ -1365,10 +1365,10 @@ void DIMSnowHorn1_update(GameObject* obj)
         }
         else if (((DIMSnowHorn1State*)data)->mountMode == 2)
         {
-            if (found != NULL && (((GameObject*)found)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE))
+            if (found != NULL && ((found)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE))
             {
                 setAButtonIcon(0x15);
-                if (((GameObject*)found)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
+                if ((found)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
                 {
                     buttonDisable(0, PAD_BUTTON_A);
                     mainSetBits(GAMEBIT_SNOWHORN_RIDING, 0);
@@ -1390,7 +1390,7 @@ void DIMSnowHorn1_update(GameObject* obj)
                         SnowHornEntry* tbl = (SnowHornEntry*)base;
                         int bit2;
                         int cc;
-                        mainSetBits(tbl[modeIndex].h1e, ((GameObject*)found)->anim.placementData[0xd]);
+                        mainSetBits(tbl[modeIndex].h1e, (found)->anim.placementData[0xd]);
                         bit2 = tbl[modeIndex].h20;
                         cc = modeIndex;
                         flip = 0;
