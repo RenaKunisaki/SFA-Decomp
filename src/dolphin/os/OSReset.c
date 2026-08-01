@@ -1,5 +1,7 @@
 
 #include "dolphin/os/__os.h"
+#include "string.h"
+#include <dolphin/pad.h>
 
 // These macros are copied from OSThread.c. Or ARE they the same
 // macros? They dont seem to be in the SDK headers.

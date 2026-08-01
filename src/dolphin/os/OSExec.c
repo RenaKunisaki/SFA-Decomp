@@ -1,6 +1,9 @@
 #include <stdarg.h>
 
 #include "dolphin/os/__os.h"
+#include "string.h"
+#include <dolphin/ai.h>
+#include <dolphin/dvd/__dvd.h>
 
 extern volatile u32 BOOT_REGION_START AT_ADDRESS(0x812FDFF0);
 extern volatile u32 BOOT_REGION_END AT_ADDRESS(0x812FDFEC);

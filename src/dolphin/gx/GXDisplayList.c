@@ -1,6 +1,7 @@
 
 
 #include "dolphin/gx/__gx.h"
+#include "string.h"
 
 
 typedef struct {

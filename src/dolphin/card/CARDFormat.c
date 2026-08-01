@@ -1,6 +1,7 @@
 
 #include "dolphin/os/__os.h"
 #include "dolphin/card/__card.h"
+#include "string.h"
 
 static void FormatCallback(s32 chan, s32 result) {
     CARDControl* card;

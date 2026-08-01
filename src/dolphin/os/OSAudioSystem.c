@@ -1,5 +1,6 @@
 
 #include "dolphin/os/__os.h"
+#include "string.h"
 
 extern u8 DSPInitCode_8032C520[128];
 

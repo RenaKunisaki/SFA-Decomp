@@ -2,6 +2,9 @@
 #include <dolphin/PPCArch.h>
 #include <dolphin/db.h>
 #include "dolphin/os/__os.h"
+#include <dolphin/exi.h>
+#include <dolphin/sipriv.h>
+#include "string.h"
 
 #define OS_BI2_DEBUG_ADDRESS 0x800000F4
 #define DEBUGFLAG_ADDR 0x800030E8
@@ -160,12 +163,12 @@ static void ClearArena(void)
 
     if ((u32)OSGetArenaLo() < (u32)__OSSavedRegionStart) {
         if ((u32)OSGetArenaHi() <= (u32)__OSSavedRegionStart) {
-            memset((u32)OSGetArenaLo(), 0U, (u32)OSGetArenaHi() - (u32)OSGetArenaLo());
+            memset(OSGetArenaLo(), 0U, (u32)OSGetArenaHi() - (u32)OSGetArenaLo());
             return;
         }
         memset(OSGetArenaLo(), 0U, (u32)__OSSavedRegionStart - (u32)OSGetArenaLo());
         if ((u32)OSGetArenaHi() > (u32)__OSSavedRegionEnd) {
-            memset((u32)__OSSavedRegionEnd, 0, (u32)OSGetArenaHi() - (u32)__OSSavedRegionEnd);
+            memset(__OSSavedRegionEnd, 0, (u32)OSGetArenaHi() - (u32)__OSSavedRegionEnd);
         }
     }
 }

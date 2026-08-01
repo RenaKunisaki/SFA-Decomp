@@ -2,6 +2,8 @@
 #include "TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk.h"
 #include "TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk_glue.h"
 #include "TRK_MINNOW_DOLPHIN/ppc/Generic/mpc_7xx_603e.h"
+#include "TRK_MINNOW_DOLPHIN/ppc/Generic/flush_cache.h"
+#include "TRK_MINNOW_DOLPHIN/MetroTRK/Portable/notify.h"
 
 typedef struct StopInfo_PPC {
 	u32 PC;
@@ -237,9 +239,9 @@ DSError TRKTargetAccessMemory(void* data, u32 start, size_t* length, MemoryAcces
 			TRK_ppc_memcpy(data, addr, *length, savedMsr, param4);
 		} else {
 			TRK_ppc_memcpy(addr, data, *length, param4, savedMsr);
-			TRK_flush_cache((u32)addr, *length);
+			TRK_flush_cache(addr, *length);
 			if ((void*)start != addr) {
-				TRK_flush_cache(start, *length);
+				TRK_flush_cache((void*)start, *length);
 			}
 		}
 	}
@@ -827,6 +829,8 @@ asm void TRKInterruptHandlerEnableInterrupts(void)
 }
 #endif // clang-format on
 
+static inline BOOL TRKTargetCheckStep();
+
 DSError TRKTargetInterrupt(TRKEvent* event)
 {
 	DSError error = DS_NoError;
@@ -1103,7 +1107,7 @@ DSError TRKTargetSupportRequest()
 		gTRKCPUState.Default.GPR[3] = ioResult;
 
 		if (commandId == DSMSG_ReadFile) {
-			TRK_flush_cache(gTRKCPUState.Default.GPR[6], *length);
+			TRK_flush_cache((void*)gTRKCPUState.Default.GPR[6], *length);
 		}
 	}
 
@@ -1313,7 +1317,7 @@ static inline DSError TRKPPCAccessSpecialReg(void* value, u32* access_func, BOOL
 #endif
 
 	// Flush cache
-	TRK_flush_cache((u32)access_func, (sizeof(access_func) * 10));
+	TRK_flush_cache((void*)(u32)access_func, (sizeof(access_func) * 10));
 	(*asm_access)((u32*)value, &TRKvalue128_temp);
 
 	return DS_NoError;

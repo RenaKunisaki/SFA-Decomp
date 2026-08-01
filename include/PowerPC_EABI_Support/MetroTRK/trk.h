@@ -34,6 +34,9 @@ DSError TRKDoContinue(TRKBuffer*);
 DSError TRKDoStep(TRKBuffer*);
 DSError TRKDoStop(TRKBuffer*);
 
+DSError TRKStandardACK(TRKBuffer* buffer, MessageCommandID commandID,
+                       DSReplyError replyError);
+
 void SetBufferPosition(TRKBuffer*, u32);
 void SetTRKConnected(BOOL);
 BOOL GetTRKConnected(void);

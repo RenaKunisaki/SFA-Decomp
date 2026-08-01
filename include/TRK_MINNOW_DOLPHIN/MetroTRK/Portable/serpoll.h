@@ -3,4 +3,6 @@
 
 #include "PowerPC_EABI_Support/MetroTRK/trk.h"
 
+MessageBufferID TRKTestForPacket();
+
 #endif /* METROTRK_PORTABLE_SERPOLL_H */

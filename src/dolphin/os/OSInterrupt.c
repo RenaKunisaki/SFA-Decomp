@@ -1,5 +1,6 @@
 
 #include "dolphin/os/__os.h"
+#include "string.h"
 
 #if DEBUG
 u64 __OSSpuriousInterrupts = 0;

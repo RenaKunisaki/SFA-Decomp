@@ -1,4 +1,5 @@
 #include <dolphin/dvd/__dvd.h>
+#include "string.h"
 
 typedef void (*stateFunc)(DVDCommandBlock* block);
 stateFunc LastState;

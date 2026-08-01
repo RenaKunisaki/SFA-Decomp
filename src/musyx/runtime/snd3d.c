@@ -10,6 +10,7 @@
 #include "musyx/synth_delay.h"
 #include "musyx/data_tables.h"
 #include "musyx/snd_core.h"
+#include "musyx/hw_init.h"
 
 #define S3D_UNLINK_EMITTER(emitter)                                                                                    \
     do                                                                                                                 \

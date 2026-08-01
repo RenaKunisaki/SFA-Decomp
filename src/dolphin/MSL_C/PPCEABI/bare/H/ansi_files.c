@@ -1,5 +1,6 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/ansi_files.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/file_io.h"
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/alloc.h"
 
 static unsigned char stdin_buff[0x100];
 static unsigned char stdout_buff[0x100];

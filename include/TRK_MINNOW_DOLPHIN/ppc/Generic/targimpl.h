@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 void TRKTargetSetInputPendingPtr(void* ptr);
+u32 __TRK_get_MSR(void);
 DSError TRKTargetFlushCache(u8, void* start, void* end);
 DSError TRKTargetAccessARAM(u32 p1, u32 p2, u32* p3, BOOL read);
 DSError TRKTargetAccessMemory(void* data, u32 start, size_t* length,

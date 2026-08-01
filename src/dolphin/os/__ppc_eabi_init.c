@@ -1,5 +1,6 @@
 
 #include "dolphin/os/__ppc_eabi_init.h"
+#include <dolphin/PPCArch.h>
 
 typedef void (*voidfunctionptr)(void);
 

@@ -1,5 +1,6 @@
 
 #include "dolphin/os/__os.h"
+#include "string.h"
 
 // prototypes
 void __OSSystemCallVectorStart(void);

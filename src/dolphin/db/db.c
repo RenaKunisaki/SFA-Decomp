@@ -1,5 +1,6 @@
 #include <dolphin/db.h>
 #include <dolphin/os.h>
+#include <dolphin/PPCArch.h>
 
 int DBVerbose;
 DBInterface* __DBInterface;

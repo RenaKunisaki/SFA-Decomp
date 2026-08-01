@@ -1,6 +1,7 @@
 #include "musyx/hw_aram.h"
 #include "musyx/synth_config.h"
 #include "musyx/aram.h"
+#include "PowerPC_EABI_Support/Runtime/runtime.h"
 
 
 extern f32 lbl_803E78E8;

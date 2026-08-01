@@ -1,5 +1,6 @@
 
 #include "dolphin/card/__card.h"
+#include "string.h"
 
 
 BOOL __CARDCompareFileName(CARDDir* ent, const char* fileName) {

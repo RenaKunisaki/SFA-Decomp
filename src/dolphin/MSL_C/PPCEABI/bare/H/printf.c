@@ -4,6 +4,7 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/stdio.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/stdlib.h"
 #include "string.h"
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/direct_io.h"
 
 
 #define TARGET_FLOAT_IMPLICIT_J_BIT 1
