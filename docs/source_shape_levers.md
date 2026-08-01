@@ -15,17 +15,41 @@ the two spellings into one expression tree).
 
 Run these in order. Each one can end the round without a build.
 
-1. **Rank by `structB`, never by missing bytes or by how close the percentage looks.**
+1. **Run `python3 tools/fn_flag_probe.py <unit>` FIRST. A MATCH under any other profile means
+   the source axis is CLOSED for that function — stop spelling.** This is the cheapest check
+   and it is decisive in a way no amount of reading asm is: if the function comes out
+   **byte-identical** under a different `-opt` profile, then no source spelling is missing, and
+   every hour spent on the C is spent on the wrong axis.
+   `subtitleUpdateAndDraw` is the worked example, and it cost **seven refuted spellings** before
+   anyone ran the probe: it reports MATCH under four profiles (`prop`, `noprop`,
+   `noprop+noauto`, `prop+noauto`), all of which are plain `-opt nopeephole,noschedule` against
+   the unit's configured `level=1`.
+   **A MATCH does not mean you may take it.** Switching the TU is a legitimate change
+   (TU-level cflags in `configure.py`, not a pragma, not a split) but it is priced against the
+   *whole unit*: here `subtitleUpdateAndDraw` 97.799 -> **100.000** while
+   `subtitleBuildLineTable` 100.000 -> **19.887**, unit 99.34590 -> **57.36807**. Take the
+   profile only if the unit total improves.
+   **Then check whether the levels reconcile — usually they don't, and `level` dominates.**
+   Both `level=1,nopropagation` and `level=1,nocse` returned *exactly* the baseline, to the
+   digit: the extra tokens are inert on top of `level=1`. When two functions want different
+   `-opt level` settings there is no combined profile, and step 6 decides whether a split is
+   even permitted.
+2. **Rank by `structB`, never by missing bytes or by how close the percentage looks.**
    Missing bytes measure how much is wrong; `structB` measures how much is *reachable*.
    The near-flip band (>=99%, <100%) is **structurally empty** — six candidates triaged, all
    six with **zero instruction-count delta**, four pure register permutation plus pool
    relocations. Functions reach 99% precisely because everything source-addressable is
    already gone.
-2. **Check whether the function is already worked.** The `structB` sweep has no memory. Two
-   `grep`s — the memory files and `git log` on the file — distinguish "largest unworked entry"
-   from "documented cap". `worldplanet_update` was briefed as the former and was the latter: a
-   120-permutation declaration sweep had already run on it, flat, recorded as "organic residue".
-3. **Read the unit's `mw_version` and cflags — and note whether the informative flag is
+3. **Check whether the function is already worked — including prior *probe* results, not just
+   prior commits.** The `structB` sweep has no memory. Two `grep`s — the memory files and
+   `git log` on the file — distinguish "largest unworked entry" from "documented cap".
+   `worldplanet_update` was briefed as the former and was the latter: a 120-permutation
+   declaration sweep had already run on it, flat, recorded as "organic residue".
+   This check covers **probe output too**: `subtitleUpdateAndDraw`'s `fn_flag_probe` result had
+   already been measured and recorded earlier in the same session, and was re-derived from
+   scratch because the briefing didn't restate it. Both sides own this one — read the record
+   before re-running a sweep, and restate known results when handing a target over.
+4. **Read the unit's `mw_version` and cflags — and note whether the informative flag is
    *present* or *absent*.** This is asymmetric and the asymmetry matters:
    - flag **present** (e.g. `engine/86` builds `noschedule`) → a load-*position* difference
      **cannot** be the scheduler, so it is promoted to source-reachable. This is what cracked
@@ -41,11 +65,26 @@ Run these in order. Each one can end the round without a build.
      census came back **zero surplus in every function** on `WORLDplanet.c`, and Lane B measured
      `SB_Galleon.c` — also GC/1.3 — at `extsb` **29/29**. Read the version to know *which*
      levers are worth censusing, then census before writing anything.
-4. **Look for a sibling-site control inside the same function.** If the same construct gets
+5. **Look for a sibling-site control inside the same function.** If the same construct gets
    two different treatments in one basic block, the difference is operand-dependent and the
    operand is the knob. In `modelRenderInterpolateRootTransform` a *full* 64-bit AND and a
    *low-half-only* AND sit in the same block — which is what identified operand **type** as
    the lever there.
+6. **If step 1 found two functions wanting different profiles, run the pool-ownership test
+   before even thinking about a split.** CLAUDE.md's "never split a DOL-confirmed TU to isolate
+   a flag profile" is policy; the pool test can turn it into a *fact* for your specific unit,
+   which is much stronger and ends the question permanently.
+   **The test:** list the unit's `.sdata2` symbols, then map every `.text` relocation targeting
+   one of them back to the function it lands in. **A compiler-minted pool word referenced by two
+   functions is unreachable cross-TU** — the compiler mints a pool per translation unit, so
+   those two functions are provably in the same TU. (Same method that settled the worldplanet
+   merge in `1ce3e5d8a`.)
+   Worked example — `main/subtitle.c`, one contiguous `.text [0x8001B46C, 0x8001BB78)`, one
+   `.bss`, one 32-byte pool. Of five pool words, exactly one is shared, and it is shared by
+   exactly the two functions that want different profiles:
+   `lbl_803DE728 <- {subtitleUpdateAndDraw, subtitleBuildLineTable}`. One real TU, proven. The
+   split that would let each take its own `-opt level` is therefore **forbidden by evidence**,
+   not merely discouraged — and `subtitleUpdateAndDraw`'s residual is closed on principle.
 
 ## Levers that fired
 
@@ -233,6 +272,35 @@ both lineage evidence and a measured gain at the exact call site.
 
 ## Refutations worth knowing before you spend a build
 
+**The reference corpus can refute a shape at scale — use it to prove a cap, not just to find a
+donor.** `tools/refcorpus/search_corpus.py --asm` takes a regex over newline-separated
+`mnemonic operands` text, so a target shape can be transcribed register-for-register with
+backreferences and searched across ~42.9k GC/2.0-compiled functions. Worked case,
+`subtitleUpdateAndDraw` (retail: `addi r0,rX,lo` / in-place `slwi rN,rN,2` / `add rY,r0,rN` …
+later `lwzx rZ,rZ,rN`):
+
+| shape | corpus (42,932 fns, all profiles) | our tree (991 objects, our flags) |
+|---|---|---|
+| in-place `slwi` surviving a new base into `lwzx` | 394 | 54 objects |
+| `base -> r0` + in-place `slwi` + `add` from `r0` | **6** | **0** |
+| both together (retail's actual shape) | **0** | **0** |
+
+Search the halves separately — that split is what makes the null *explanatory*. The 6 hits are
+three functions across two profiles, all one C idiom (MP4 `fn_1_230`): **one base object with two
+parallel member arrays at the same index**, so the base becomes a single-use temp and sinks to
+`r0` while the scaled index stays live. That idiom is structurally unavailable at the subtitle
+site, because retail emits **two independent symbol relocations** there (`gSubtitleLineStrs` and
+`gSubtitleLineTimes`, adjacent 0x400 parallel arrays, separate `lis`/`addi` pairs) — there is no
+single base to hang both off. A null plus the mechanism for the null beats a null alone.
+Also note the profile split: those donors appear under `both_off` and `peep_on` but never
+`sched_on`/`both_on` — scheduling destroys the shape.
+
+**A failed probe can still recover a positive fact about the original source.** Replacing
+`subtitle.c`'s `char** lineStrs[1]; lineStrs[0] = gSubtitleLineStrs;` walker with the corpus
+donor's own plain `gSubtitleLineStrs[lineIndex]` measured **97.799 -> 96.604**. The spelling is
+refuted *and* the walker is now known to be load-bearing rather than incidental — worth recording
+so nobody "simplifies" it later.
+
 **Transcribing the target's instruction order into C is not recovering its source.** Retail's
 blend in `modelApplyBoneTransform` is operation-major (three `mullw`, three more, three `add`,
 three `srwi`...). Written literally in C it forces all six components live simultaneously and
@@ -355,6 +423,14 @@ transposed, the knob is the cast lever above, not the source text.
 
 ## Gate reminders that cost real score today
 
+- **Read the prior probe record before re-running a sweep — and restate known results when
+  handing a target over.** `subtitleUpdateAndDraw`'s `fn_flag_probe` result (MATCH under four
+  profiles, and the unaffordable 100.000 / 19.887 / 57.37 trade) had already been measured and
+  recorded earlier in the same session; the target was then handed on without that result being
+  restated, and it was re-derived from scratch. This is a two-sided failure and both sides are
+  cheap to fix: **the worker greps the record (screen step 3), the briefer restates what is
+  already known.** Prior *probe output* counts as prior work even when it produced no commit —
+  a measured null leaves no trace in `git log`, which is exactly why it must be written down.
 - **A fuzzy drop can be the signature of a now-correct allocation.** `player_SeqFn` held a
   spurious 12th saved register; removing it gave retail's exact 11-wide band and took the
   function's **structural regions to 0** — but the unit read **0.029 lower**, because the *wrong*
