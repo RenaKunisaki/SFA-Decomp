@@ -42,8 +42,9 @@ void subtitleUpdateAndDraw(int unused) {
         gSubtitleCurTime = currentTime;
         lineIndex = gSubtitleLineIndex;
         if (lineIndex + 1 < gSubtitleLineCount && currentTime >= gSubtitleLineTimes[lineIndex + 1]) {
-            char** lineStrs = gSubtitleLineStrs;
-            commands = subtitleParseControlCmds(lineStrs[lineIndex], &commandCount);
+            char** lineStrs[1];
+            lineStrs[0] = gSubtitleLineStrs;
+            commands = subtitleParseControlCmds(lineStrs[0][lineIndex], &commandCount);
             if (commands != NULL) {
                 SubtitleCmd* command = &commands[commandCount];
                 while (command--, commandCount-- != 0) {
