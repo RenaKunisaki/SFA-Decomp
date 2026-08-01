@@ -317,6 +317,7 @@
 #include "dlls/objects/520_WM_Wallpowe.h"
 #include "dlls/objects/521_WM_LevelCon.h"
 #include "dlls/objects/522_WM_GeneralS.h"
+#include "dlls/objects/599_DR_EarthWar.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
@@ -540,7 +541,7 @@ extern ResourceDescriptor gDBHoleControl1ObjDescriptor, gDB_eggObjDescriptor, gD
     gDFP_LevelControlObjDescriptor, gDFP_ObjCreatorObjDescriptor, gDFP_TorchObjDescriptor;
 extern ResourceDescriptor gDFP_seqpointObjDescriptor;
 extern ResourceDescriptor gDIMSnowHorn1ObjDescriptor;
-extern ResourceDescriptor gDIM_trickyObjDescriptor, gDR_CloudRunnerObjDescriptor, gDR_EarthWarriorObjDescriptor;
+extern ResourceDescriptor gDIM_trickyObjDescriptor, gDR_CloudRunnerObjDescriptor;
 extern ResourceDescriptor gDfperchwitchObjDescriptor, gDfpfloorbarObjDescriptor, gDfplightniObjDescriptor,
     gDfppowerslObjDescriptor;
 extern ResourceDescriptor gDfpstatue1ObjDescriptor, gDfptargetblockObjDescriptor, gDirectionalLightObjDescriptor;
@@ -1823,7 +1824,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gKtFallingrocksObjDescriptor,
     &gSnowBikeObjDescriptor,
     &gDIMSnowHorn1ObjDescriptor,
-    &gDR_EarthWarriorObjDescriptor,
+    (ResourceDescriptor*)&gDR_EarthWarriorObjDescriptor,
     &gDR_CloudRunnerObjDescriptor,
     &gSB_CloudRunnerObjDescriptor,
     &gStaticCameraObjDescriptor,
