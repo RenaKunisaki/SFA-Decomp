@@ -340,7 +340,15 @@ extern inline float sqrtf(float x)
 extern const f32 lbl_803DED38;
 extern const f32 lbl_803DED3C;
 extern const f32 lbl_803DED40;
+extern const f32 lbl_803DEDC0;
 extern const f32 lbl_803DEDD0;
+extern const f32 lbl_803DEDE0;
+extern const f32 lbl_803DEDF0;
+extern const f32 lbl_803DEDF4;
+extern const f32 lbl_803DEDFC;
+extern const f32 lbl_803DEE14;
+extern const f32 lbl_803DEE18;
+extern const f32 lbl_803DEE1C;
 extern const f32 gNewShadowFovY;
 extern f32 gNewShadowAspectWide, gNewShadowAspectNarrow;
 extern f32 gMapSavedPlayerOffsetX, gMapSavedPlayerOffsetZ;
@@ -1282,8 +1290,8 @@ void createNewShadowDistortionTexture(void)
             }
             normY *= s;
             dirX *= s;
-            normY = 127.0f * normY + 128.0f;
-            dirX = 127.0f * dirX + 128.0f;
+            normY = lbl_803DEDC0 * normY + 128.0f;
+            dirX = lbl_803DEDC0 * dirX + 128.0f;
             ((NewShadowVectorTexel*)(texel + 0x60))->packedXY =
                 (u16)((int)dirX | (((int)normY & 0xffff) << 8));
         }
@@ -1452,8 +1460,8 @@ void newShadowsInitProceduralTextures(void)
                     f32 rowCoord, columnCoord;
                     texelAddress += (column & 3) * 8;
                     texelAddress += (column >> 2) * 0x200;
-                    rowCoord = row * 0.015625f;
-                    columnCoord = column * 0.015625f;
+                    rowCoord = row * lbl_803DEDE0;
+                    columnCoord = column * lbl_803DEDE0;
                     evalNoisePlacements(rowCoord, columnCoord, frame,
                                 gNewShadowPlacements, noisePlacementCount, &shift, &intensity);
                     highByte = 255.0f * intensity;
@@ -1535,11 +1543,11 @@ static inline void fillDiskTexture(void)
             base = (u8*)gNewShadowDiskTexture;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x80 + 0x60;
-            dx = cy * 0.0625f;
+            dx = cy * lbl_803DEDD0;
             dz = (f32)j - 16.0f;
-            dz = dz * 0.0625f;
-            dx = dx * 1.1f;
-            dz = dz * 1.1f;
+            dz = dz * lbl_803DEDD0;
+            dx = dx * lbl_803DEDF0;
+            dz = dz * lbl_803DEDF0;
             d2 = dx * dx + dz * dz;
             base[off] = 255.0f * ((d2 > 1.0f) ? 0.0f : (1.0f - d2));
         }
@@ -1568,11 +1576,11 @@ static inline void fillSmallDiskTexture(void)
             base = (u8*)gNewShadowSmallDiskTexture;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x40 + 0x60;
-            dx = cy * 0.125f;
+            dx = cy * lbl_803DED40;
             dz = (f32)j - 8.0f;
-            dz = dz * 0.125f;
-            dx = dx * 1.2f;
-            dz = dz * 1.2f;
+            dz = dz * lbl_803DED40;
+            dx = dx * lbl_803DEDF4;
+            dz = dz * lbl_803DEDF4;
             d2 = dx * dx + dz * dz;
             if (d2 > 1.0f)
             {
@@ -1631,10 +1639,10 @@ static inline void fillFalloffTexture(void)
             base = (u8*)gNewShadowFalloffTexture;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x200 + 0x60;
-            dy = cy * 0.015625f;
-            cx = ((f32)j - 64.0f) * 0.015625f;
+            dy = cy * lbl_803DEDE0;
+            cx = ((f32)j - 64.0f) * lbl_803DEDE0;
             d2 = sqrtf(dy * dy + cx * cx);
-            if (d2 < 0.5f)
+            if (d2 < lbl_803DED38)
             {
                 val = 0xa0;
             }
@@ -1644,7 +1652,7 @@ static inline void fillFalloffTexture(void)
             }
             else
             {
-                val = 160.0f * (1.0f - (d2 - 0.5f) / 0.5f);
+                val = 160.0f * (1.0f - (d2 - lbl_803DED38) / lbl_803DED38);
             }
             base[off] = val;
         }
@@ -1673,7 +1681,7 @@ static inline void fillLightningTexture(void)
             base = (u8*)gNewShadowLightningTexture;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x80 + 0x60;
-            v = sqrtf(__fabsf(c0 * 0.0625f));
+            v = sqrtf(__fabsf(c0 * lbl_803DEDD0));
             v = sqrtf(v);
             base[off] = 255.0f * (1.0f - v);
         }
@@ -1691,7 +1699,7 @@ static inline void fillRingTexture(void)
         int rowoff;
         int lowoff;
         f32 cy2;
-        cy = ((f32)i - 64.0f) * 0.015625f;
+        cy = ((f32)i - 64.0f) * lbl_803DEDE0;
         j = 0;
         rowoff = (i >> 3) * 0x20;
         lowoff = i & 7;
@@ -1704,22 +1712,22 @@ static inline void fillRingTexture(void)
             base = (u8*)gNewShadowRingTexture;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x200 + 0x60;
-            cx = ((f32)j - 64.0f) * 0.015625f;
+            cx = ((f32)j - 64.0f) * lbl_803DEDE0;
             d2 = sqrtf(cx * cx + cy2);
-            if (d2 < 0.25f || d2 > 0.75f)
+            if (d2 < lbl_803DED3C || d2 > 0.75f)
             {
                 d2 = 0.0f;
             }
             else
             {
-                f32 t = 2.0f * (d2 - 0.25f);
-                if (t > 0.5f)
+                f32 t = 2.0f * (d2 - lbl_803DED3C);
+                if (t > lbl_803DED38)
                 {
-                    d2 = -(2.0f * (t - 0.5f) - 1.0f);
+                    d2 = -(2.0f * (t - lbl_803DED38) - 1.0f);
                 }
                 else
                 {
-                    d2 = -(2.0f * (0.5f - t) - 1.0f);
+                    d2 = -(2.0f * (lbl_803DED38 - t) - 1.0f);
                 }
                 d2 = sqrtf(d2);
             }
@@ -1806,16 +1814,16 @@ void allocLotsOfTextures(void)
                 f32 d1, d2, cc2, d3, n1, b;
                 f64 n2, n3;
                 f32 a;
-                rc = fi * 0.03125f;
-                rc2 = fi2 * 0.03125f;
-                cc = ((f32)j - 32.0f) * 0.03125f;
+                rc = fi * lbl_803DEDFC;
+                rc2 = fi2 * lbl_803DEDFC;
+                cc = ((f32)j - 32.0f) * lbl_803DEDFC;
                 cc = cc * cc;
                 d1 = sqrtf(rc * rc + cc);
                 d2 = sqrtf(rc2 * rc2 + cc);
                 cc2 = (f32)(j + 1) - 32.0f;
-                cc2 = cc2 * 0.03125f;
+                cc2 = cc2 * lbl_803DEDFC;
                 cc2 = cc2 * cc2;
-                rc = fi * 0.03125f;
+                rc = fi * lbl_803DEDFC;
                 d3 = sqrtf(rc * rc + cc2);
                 n1 = -mathCosfHighPrecision(18.852f * d1);
                 n2 = __fabs(mathCosfHighPrecision(18.852f * d2));
@@ -1845,26 +1853,26 @@ void allocLotsOfTextures(void)
                     f32 cc, d1, d2, cc2, d3, n1, n2, n3, a, b, rowCoord;
                     f32 c;
                     int bi, ci, ai;
-                    rowCoord = fj * 0.03125f;
-                    rc2 = fj2 * 0.03125f;
+                    rowCoord = fj * lbl_803DEDFC;
+                    rc2 = fj2 * lbl_803DEDFC;
                     dst += bumpRowOff;
                     dst += (i & 3) * 8;
                     dst += (i >> 2) * 0x200;
                     cc = (f32)i - 32.0f;
-                    cc = cc * 0.03125f;
+                    cc = cc * lbl_803DEDFC;
                     cc = cc * cc;
                     d1 = sqrtf(rowCoord * rowCoord + cc);
                     d2 = sqrtf(rc2 * rc2 + cc);
                     cc2 = (f32)(i + 1) - 32.0f;
-                    cc2 = cc2 * 0.03125f;
+                    cc2 = cc2 * lbl_803DEDFC;
                     cc2 = cc2 * cc2;
-                    rowCoord = fj * 0.03125f;
+                    rowCoord = fj * lbl_803DEDFC;
                     d3 = sqrtf(rowCoord * rowCoord + cc2);
                     n1 = -mathCosfHighPrecision(18.852f * d1);
                     n2 = -mathCosfHighPrecision(18.852f * d2);
                     n3 = -mathCosfHighPrecision(18.852f * d3);
-                    a = inv * (127.0f * (n1 - n2)) + 127.0f;
-                    b = inv * (127.0f * (n1 - n3)) + 127.0f;
+                    a = inv * (lbl_803DEDC0 * (n1 - n2)) + lbl_803DEDC0;
+                    b = inv * (lbl_803DEDC0 * (n1 - n3)) + lbl_803DEDC0;
                     if (d1 < 1.0f)
                     {
                         d1 = sqrtf(1.0f - d1);
@@ -1876,8 +1884,8 @@ void allocLotsOfTextures(void)
                     c = 32.0f * d1;
                     if (c > 15.0f)
                         c = 15.0f;
-                    a = a * 0.03125f;
-                    b = b * 0.0625f;
+                    a = a * lbl_803DEDFC;
+                    b = b * lbl_803DEDD0;
                     bi = (int)b & 0xf;
                     ci = ((u16)(int)c & 0xf) << 4;
                     ai = ((u16)(int)a & 7) << 12;
@@ -1917,10 +1925,10 @@ void allocLotsOfTextures(void)
         for (; j < 0x80; j++)
         {
             u8* base = (u8*)gNewShadowRadialTexture;
-            f32 cyScaled = cy * 0.015625f;
+            f32 cyScaled = cy * lbl_803DEDE0;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x200 + 0x60;
-            cx = __fabsf(((f32)j - 64.0f) * 0.015625f);
+            cx = __fabsf(((f32)j - 64.0f) * lbl_803DEDE0);
             cx = cx * cx;
             d2 = sqrtf(__fabsf(cyScaled) * __fabsf(cyScaled) + cx);
             v = 1.0f - d2;
@@ -1950,18 +1958,18 @@ void allocLotsOfTextures(void)
         int hi;
         int t;
         u16 v;
-        x -= 0.5f;
+        x -= lbl_803DED38;
         t = gNewShadowReflectionGradientTexture + (i & 3) * 2;
         t += (i >> 2) * 0x20;
         hi = ((int)(255.0f * x + 128.0f) & 0xff) << 8;
-        *(u16*)(t + 0x60) = (u16)(hi | ((int)0.5f & 0xff));
+        *(u16*)(t + 0x60) = (u16)(hi | ((int)lbl_803DED38 & 0xff));
         t = gNewShadowReflectionGradientTexture + (i & 3) * 2;
         t += (i >> 2) * 0x20;
-        *(u16*)(t + 0x68) = (u16)(hi | ((int)85.5f & 0xff));
+        *(u16*)(t + 0x68) = (u16)(hi | ((int)lbl_803DEE14 & 0xff));
         t = gNewShadowReflectionGradientTexture + (i & 3) * 2;
         t += (i >> 2) * 0x20;
-        *(u16*)(t + 0x70) = (u16)(hi | ((int)170.5f & 0xff));
-        v = (u16)(hi | ((int)255.5f & 0xff));
+        *(u16*)(t + 0x70) = (u16)(hi | ((int)lbl_803DEE18 & 0xff));
+        v = (u16)(hi | ((int)lbl_803DEE1C & 0xff));
         t = gNewShadowReflectionGradientTexture + (i & 3) * 2;
         t += (i >> 2) * 0x20;
         *(u16*)(t + 0x78) = v;
