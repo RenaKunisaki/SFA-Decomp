@@ -830,7 +830,7 @@ void minimapFreeTexture(void)
 
 void Minimap_frameStart(void)
 {
-    int player;
+    GameObject* player;
     u16 sfx;
     int held;
     int pressed;
@@ -844,10 +844,10 @@ void Minimap_frameStart(void)
     f32 dist = 3.4028235e38f;
 
     sfx = 0;
-    player = (int)Obj_GetPlayerObject();
-    if ((void*)player == NULL || (*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
-        Camera_GetViewportYOffset() != 0 || (((GameObject*)player)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
-        objIsCurModelNotZero((void*)player) == 0 || pauseMenuState != 0)
+    player = Obj_GetPlayerObject();
+    if (player == NULL || (*gCameraInterface)->getMode() == CAMERA_MODE_VIEWFINDER_RESOURCE_ID ||
+        Camera_GetViewportYOffset() != 0 || (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
+        objIsCurModelNotZero(player) == 0 || pauseMenuState != 0)
     {
         if (gMinimapZoomSfxActive != 0)
         {
@@ -998,8 +998,8 @@ void Minimap_frameStart(void)
                     }
                     slot = Camera_GetCurrent();
                     targetAngle =
-                        getAngle(((GameObject*)gMinimapRadarTarget)->anim.localPosX - ((GameObject*)player)->anim.localPosX,
-                                 ((GameObject*)gMinimapRadarTarget)->anim.localPosZ - ((GameObject*)player)->anim.localPosZ);
+                        getAngle(gMinimapRadarTarget->anim.localPosX - player->anim.localPosX,
+                                 gMinimapRadarTarget->anim.localPosZ - player->anim.localPosZ);
                     targetAngle = slot->yaw + targetAngle;
                     angleDelta = targetAngle - (u16)((GameObject*)gMinimapBlipObjects[1])->anim.rotZ;
                     if (angleDelta > 0x8000)

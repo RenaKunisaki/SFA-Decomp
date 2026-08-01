@@ -174,10 +174,10 @@ void renderClouds(int a, int b, int c, int d)
 
     if (gCloudOverrideObject != NULL)
     {
-        sky2ApplyModelTint((GameObject*)gCloudOverrideObject);
-        model = Obj_GetActiveModel((GameObject*)gCloudOverrideObject);
+        sky2ApplyModelTint(gCloudOverrideObject);
+        model = Obj_GetActiveModel(gCloudOverrideObject);
         model->bufferFlags &= ~8;
-        ((u8*)gCloudOverrideObject)[0x37] = 0xff;
+        gCloudOverrideObject->anim.renderAlpha = 0xff;
         v = view->x;
         gCloudOverrideObject->anim.worldPosX = v;
         gCloudOverrideObject->anim.localPosX = v;
