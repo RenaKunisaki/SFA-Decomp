@@ -17,9 +17,12 @@ void drawScaledTexture(void* texture, f32 x, f32 y, INTERSECT_HUD_ALPHA_TYPE alp
 void drawPartialTexture(void* texture, f32 x, f32 y, INTERSECT_HUD_ALPHA_TYPE alpha, int scale, int width, int height,
                         int u, int v);
 #undef INTERSECT_HUD_ALPHA_TYPE
+#ifdef INTERSECT_HUD_RECT_COLOR_POINTER
+void hudDrawRect(int x1, int y1, int x2, int y2, GXColor* color);
+#else
 void hudDrawRect(int x1, int y1, int x2, int y2, GXColor color);
-void drawViewFinderLine(f32 x1, f32 y1, f32 x2, f32 y2, f32 x3, f32 y3, f32 x4, f32 y4,
-                        GXColor* color);
+#endif
+void drawViewFinderLine(f32 x1, f32 y1, f32 x2, f32 y2, f32 x3, f32 y3, f32 x4, f32 y4, GXColor* color);
 void hudDrawTriangle(f32 x1, f32 y1, f32 x2, f32 y2, f32 x3, f32 y3, GXColor color);
 void setHudOpacity(u8 opacity);
 
