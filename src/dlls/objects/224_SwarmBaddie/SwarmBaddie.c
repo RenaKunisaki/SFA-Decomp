@@ -170,7 +170,7 @@ void SwarmBaddie_update(GameObject* obj) {
         state->hitVolumeEnvelope -= 0.005f;
     }
     volume = state->hitVolumeEnvelope;
-    Sfx_SetObjectChannelVolume((u32)obj, 0x40, (63.0f * volume),
+    Sfx_SetObjectChannelVolume(obj, 0x40, (63.0f * volume),
                                0.05f * mathSinf((SWARMBADDIE_PI * (f32)(state->yawWavePhase + state->rollWavePhase)) /
                                                 SWARMBADDIE_S16_ANGLE_SCALE) +
                                    volume);
@@ -216,7 +216,7 @@ void SwarmBaddie_init(GameObject* obj, SwarmBaddiePlacement* placement, int skip
                 ->initCurve((void*)state->curve, (void*)obj, state->chaseRadius, gSwarmBaddieCurveInitData, -1) == 0) {
             state->flags |= SWARMBADDIE_FLAG_PATH_NEEDS_LINK;
         }
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_en_grumb4_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_grumb4_c);
     }
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }

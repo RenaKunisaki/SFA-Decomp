@@ -1451,10 +1451,10 @@ void playerSetDisguised(GameObject* obj, int mode)
         tricky = getTrickyObject();
         if (tricky != NULL)
         {
-            trickyImpress((GameObject*)tricky);
+            trickyImpress(tricky);
         }
         mainSetBits(GAMEBIT_PlayerIsDisguised, 1);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_en_lrope_powerup);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_lrope_powerup);
         (*gBoneParticleEffectInterface)->spawnEffect((void*)obj, 0x801, NULL, 0x50, NULL);
         oldModel = (int)Obj_GetActiveModel(obj);
         Obj_SetActiveModelIndex(obj, 2);
@@ -1478,7 +1478,7 @@ void playerSetDisguised(GameObject* obj, int mode)
         memcpy((void*)*(int*)((char*)newModel + 0x2c), (void*)*(int*)((char*)oldModel + 0x2c), 0x68);
         memcpy((void*)*(int*)((char*)newModel + 0x30), (void*)*(int*)((char*)oldModel + 0x30), 0x68);
         mainSetBits(GAMEBIT_PlayerIsDisguised, 0);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_en_lrope_powerup);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_lrope_powerup);
     }
 }
 
@@ -2529,19 +2529,19 @@ int playerState3D(int obj, int state, f32 fv)
     if (((PlayerState*)state)->baddie.eventFlags & 0x200)
     {
         doRumble(5.0f);
-        Sfx_PlayFromObject(obj, SFXTRIG_rserv1_c);
+        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_rserv1_c);
         inner->pendingFxFlags |= 4;
     }
     if ((((PlayerState*)state)->baddie.moveEventFlags & 1) == 0 &&
         ((GameObject*)obj)->anim.currentMoveProgress > 0.2f)
     {
-        Sfx_PlayFromObject(obj, SFXTRIG_sp_sa_def01);
+        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_sp_sa_def01);
         ((PlayerState*)state)->baddie.moveEventFlags |= 1;
     }
     if ((((PlayerState*)state)->baddie.moveEventFlags & 2) == 0 &&
         ((GameObject*)obj)->anim.currentMoveProgress > 0.7f)
     {
-        Sfx_PlayFromObject(obj, surfaceSfxSelectTrigger(inner->surfaceType, inner->footstepSoundId));
+        Sfx_PlayFromObject((GameObject*)obj, surfaceSfxSelectTrigger(inner->surfaceType, inner->footstepSoundId));
         ((PlayerState*)state)->baddie.moveEventFlags |= 2;
     }
     if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
@@ -2602,16 +2602,16 @@ int playerState3C(GameObject* obj, int state, f32 fv)
     if ((((PlayerState*)state)->baddie.moveEventFlags & 1) == 0 &&
         obj->anim.currentMoveProgress > 0.2f)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_sp_sa_def01);
+        Sfx_PlayFromObject(obj, SFXTRIG_sp_sa_def01);
         ((PlayerState*)state)->baddie.moveEventFlags |= 1;
     }
     if ((((PlayerState*)state)->baddie.moveEventFlags & 2) == 0 &&
         obj->anim.currentMoveProgress > 0.7f)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_fox_fightbreath2);
+        Sfx_PlayFromObject(obj, SFXTRIG_fox_fightbreath2);
         ((PlayerState*)state)->baddie.moveEventFlags |= 2;
     }
-    if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
+    if (*&((PlayerState*)state)->baddie.moveDone != 0)
     {
         ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedEndIceSpellAndSettleHeading;
         return 0x25;
@@ -2670,13 +2670,13 @@ int playerState3B(GameObject* obj, int state, f32 fv)
     if (((PlayerState*)state)->baddie.eventFlags & 0x200)
     {
         doRumble(5.0f);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_rserv1_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_rserv1_c);
         inner->pendingFxFlags |= 4;
     }
     if ((((PlayerState*)state)->baddie.moveEventFlags & 1) == 0 &&
         obj->anim.currentMoveProgress > 0.2f)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_fox_fightbreath2);
+        Sfx_PlayFromObject(obj, SFXTRIG_fox_fightbreath2);
         ((PlayerState*)state)->baddie.moveEventFlags |= 1;
     }
     if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
@@ -2738,13 +2738,13 @@ int playerState3A(GameObject* obj, int state, f32 fv)
     if (((PlayerState*)state)->baddie.eventFlags & 0x200)
     {
         doRumble(5.0f);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_rserv1_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_rserv1_c);
         inner->pendingFxFlags |= 4;
     }
     if ((((PlayerState*)state)->baddie.moveEventFlags & 1) == 0 &&
         obj->anim.currentMoveProgress > 0.2f)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_fox_fightbreath2);
+        Sfx_PlayFromObject(obj, SFXTRIG_fox_fightbreath2);
         ((PlayerState*)state)->baddie.moveEventFlags |= 1;
     }
     if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
@@ -2965,15 +2965,15 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
     case 0x85:
         inner->chargeLevel = inner->chargeLevel + 2.0f * fv / 6.0f;
         inner->chargeLevel = 0.5f * fv + inner->chargeLevel;
-        if (inner->chargeLevel >= (f32)(u32) ((PlayerState*)inner)->chargeCapacity)
+        if (inner->chargeLevel >= (f32)(u32) inner->chargeCapacity)
         {
             int amt;
             int r35c;
             int v;
             int hi;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_fox_roll2);
-            amt = -((PlayerState*)inner)->chargeCapacity;
-            r35c = *(int*)((char*)(*(int*)&obj->extra) + 0x35c);
+            Sfx_PlayFromObject(obj, SFXTRIG_fox_roll2);
+            amt = -inner->chargeCapacity;
+            r35c = *(int*)((char*)*(int*)&obj->extra + 0x35c);
             v = ((PlayerStatus*)r35c)->magic + amt;
             if (v < 0)
             {
@@ -2999,9 +2999,9 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
             void* tricky = getTrickyObject();
             if (tricky != NULL)
             {
-                trickyImpress((GameObject*)tricky);
+                trickyImpress(tricky);
             }
-            Sfx_PlayFromObject((int)obj, SFXTRIG_staff_boulder_move1);
+            Sfx_PlayFromObject(obj, SFXTRIG_staff_boulder_move1);
             staffStartQuakeSpell(&obj->anim.localPosX);
             ((ByteFlags*)((char*)inner + 0x3f3))->b10 = 1;
             doRumble(30.0f);
@@ -3014,7 +3014,7 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
         }
         break;
     default:
-        Sfx_PlayFromObject((int)obj, SFXTRIG_staff_boulder_drops);
+        Sfx_PlayFromObject(obj, SFXTRIG_staff_boulder_drops);
         f = 0.0f;
         ((PlayerState*)state)->baddie.animSpeedC = f;
         ((PlayerState*)state)->baddie.animSpeedB = f;
@@ -3066,7 +3066,7 @@ int playerState35(GameObject* obj, int state)
             (((PlayerState*)state)->baddie.moveEventFlags & 1) == 0)
         {
             ((PlayerState*)state)->baddie.moveEventFlags |= 1;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_recrate_hit);
+            Sfx_PlayFromObject(obj, SFXTRIG_recrate_hit);
         }
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
@@ -3081,14 +3081,14 @@ int playerState35(GameObject* obj, int state)
         {
             ((PlayerState*)state)->baddie.moveEventFlags |= 1;
             doRumble(5.0f);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_staff_rapidfire);
+            Sfx_PlayFromObject(obj, SFXTRIG_staff_rapidfire);
             cfPrisonGuard_setGameBitMirror(gPlayerInteractTarget, 0);
         }
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
             ObjAnim_SetCurrentMove((int)obj, 0xe4, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.02857f;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_staff_lever);
+            Sfx_PlayFromObject(obj, SFXTRIG_staff_lever);
         }
         break;
     case 0xe1:
@@ -3096,7 +3096,7 @@ int playerState35(GameObject* obj, int state)
             (((PlayerState*)state)->baddie.moveEventFlags & 1) == 0)
         {
             ((PlayerState*)state)->baddie.moveEventFlags |= 1;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_recrate_hit);
+            Sfx_PlayFromObject(obj, SFXTRIG_recrate_hit);
         }
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
@@ -3111,14 +3111,14 @@ int playerState35(GameObject* obj, int state)
         {
             ((PlayerState*)state)->baddie.moveEventFlags |= 1;
             doRumble(5.0f);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_staff_rapidfire);
+            Sfx_PlayFromObject(obj, SFXTRIG_staff_rapidfire);
             cfPrisonGuard_setGameBitMirror(gPlayerInteractTarget, 1);
         }
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
             ObjAnim_SetCurrentMove((int)obj, 0xe5, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.02857f;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_staff_lever);
+            Sfx_PlayFromObject(obj, SFXTRIG_staff_lever);
         }
         break;
     case 0xe4:
@@ -3182,10 +3182,10 @@ int playerState34(GameObject* obj, int state)
         if (obj->anim.currentMoveProgress > 0.6f &&
             (((PlayerState*)state)->baddie.moveEventFlags & 1) == 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_recrate_smash);
+            Sfx_PlayFromObject(obj, SFXTRIG_recrate_smash);
             ((PlayerState*)state)->baddie.moveEventFlags |= 1;
         }
-        if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
+        if (*&((PlayerState*)state)->baddie.moveDone != 0)
         {
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
@@ -3235,7 +3235,7 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
         {
             if (((GameObject*)obj)->anim.currentMoveProgress > 0.4f)
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_staff_rocket_boost);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_staff_rocket_boost);
                 gPlayerRocketBoostSfxPlayed = 1;
             }
         }
@@ -3261,7 +3261,7 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
         else if ((flags & 0x200) != 0)
         {
             buttonDisable(0, PAD_BUTTON_B);
-            Sfx_PlayFromObject(obj, SFXTRIG_staff_rocket_boost);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_staff_rocket_boost);
             ObjAnim_SetCurrentMove(obj, 0xd1, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.0333f;
         }
@@ -3287,7 +3287,8 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
             gPlayerStaffSfxTimer = gPlayerStaffSfxTimer - fv;
             if (gPlayerStaffSfxTimer < 0.0f)
             {
-                Sfx_PlayFromObject(obj, (u16)(inner->characterId == 0 ? SFXTRIG_impact3 : SFXTRIG_literun116));
+                Sfx_PlayFromObject((GameObject*)obj,
+                                   (u16)(inner->characterId == 0 ? SFXTRIG_impact3 : SFXTRIG_literun116));
                 gPlayerStaffSfxTimer = (f32)(int)randomGetRange(0xa, 0x12);
             }
             switch (cfPrisonGuard_getPullRateMode(gPlayerInteractTarget))
@@ -3330,7 +3331,7 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
         if (prog >= 0.99f)
         {
             staffactivated_spawnMapEventDebris(gPlayerInteractTarget);
-            Sfx_PlayFromObject(obj, (u16)(inner->characterId == 0 ? SFXTRIG_impact3 : SFXTRIG_literun116));
+            Sfx_PlayFromObject((GameObject*)obj, (u16)(inner->characterId == 0 ? SFXTRIG_impact3 : SFXTRIG_literun116));
             ObjAnim_SetCurrentMove(obj, 0xd0, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.05f;
         }
@@ -3346,7 +3347,7 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
         cfPrisonGuard_setLiftHeight(gPlayerInteractTarget, 0x800);
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_menuups16k);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_menuups16k);
             ObjAnim_SetCurrentMove(obj, 0xb2, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.01f;
         }
@@ -3356,7 +3357,7 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
         if ((inner->buttonsJustPressed & PAD_BUTTON_B) != 0)
         {
             buttonDisable(0, PAD_BUTTON_B);
-            Sfx_PlayFromObject(obj, SFXTRIG_staff_rocket_boost);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_staff_rocket_boost);
             ObjAnim_SetCurrentMove(obj, 0xad, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.0333f;
         }
@@ -3431,7 +3432,7 @@ int playerStateStaffBoost(GameObject* obj, int state, f32 fv)
         {
             if (obj->anim.currentMoveProgress > 0.35f)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_staff_quake_powerup);
+                Sfx_PlayFromObject(obj, SFXTRIG_staff_quake_powerup);
                 gPlayerQuakeChargeSfxPlayed = 1;
             }
         }
@@ -3439,7 +3440,7 @@ int playerStateStaffBoost(GameObject* obj, int state, f32 fv)
         {
             if ((inner->buttonsHeld & mask) != 0)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_staff_quake_strike);
+                Sfx_PlayFromObject(obj, SFXTRIG_staff_quake_strike);
                 ObjAnim_SetCurrentMove((int)obj, 0x87, 0.0f, 0);
                 ((PlayerState*)state)->baddie.moveSpeed = 0.01f;
             }
@@ -3478,7 +3479,7 @@ int playerStateStaffBoost(GameObject* obj, int state, f32 fv)
                     v = ((PlayerStatus*)sub)->maxMagic;
                 }
                 ((PlayerStatus*)sub)->magic = v;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_staff_boulder_move2);
+                Sfx_PlayFromObject(obj, SFXTRIG_staff_boulder_move2);
                 ObjAnim_SetCurrentMove((int)obj, 0x88, 0.0f, 0);
                 ((PlayerState*)state)->baddie.moveSpeed = 0.05f;
             }
@@ -3492,7 +3493,7 @@ int playerStateStaffBoost(GameObject* obj, int state, f32 fv)
     case 0x43:
         if ((inner->buttonsHeld & mask) != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_staff_quake_strike);
+            Sfx_PlayFromObject(obj, SFXTRIG_staff_quake_strike);
             ObjAnim_SetCurrentMove((int)obj, 0x87, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.01f;
         }
@@ -4555,7 +4556,7 @@ int playerStateStopAimStaff(int obj, int state, f32 fv)
         u8 c;
         ObjAnim_SetCurrentMove(obj, 0x449, 0.0f, 0);
         ((PlayerState*)state)->baddie.moveSpeed = 0.0333f;
-        Sfx_PlayFromObject(obj, SFXTRIG_staff_swipes_short);
+        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_staff_swipes_short);
         c = inner->curAnimId;
         if (c != 0x42 && c != 0x4c)
         {
@@ -4604,7 +4605,7 @@ int playerStateStartAimStaff(GameObject* obj, int state, f32 fv)
         {
             if (inner->staffGrown == 0)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swddirt16);
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_swddirt16);
                 if (gPlayerPathObject != NULL)
                 {
                     b = (((PlayerState*)inner)->flags3F4 >> 6) & 1;
@@ -4806,13 +4807,13 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
             if ((((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
             {
                 doRumble(5.0f);
-                Sfx_PlayFromObject((int)obj, SFXTRIG_rserv1_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_rserv1_c);
                 inner->pendingFxFlags = inner->pendingFxFlags | 4;
             }
             if ((((PlayerState*)state)->baddie.eventFlags & 0x400) != 0)
             {
                 doRumble(5.0f);
-                Sfx_PlayFromObject((int)obj, SFXTRIG_rserv1_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_rserv1_c);
                 inner->pendingFxFlags = inner->pendingFxFlags | 4;
             }
             if ((((PlayerState*)state)->baddie.moveEventFlags & 1) == 0 &&
@@ -4828,14 +4829,14 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
                 {
                     sfx = 0x1c;
                 }
-                Sfx_PlayFromObject((int)obj, sfx);
+                Sfx_PlayFromObject(obj, sfx);
                 ((PlayerState*)state)->baddie.moveEventFlags = ((PlayerState*)state)->baddie.moveEventFlags | 1;
             }
             if ((((PlayerState*)state)->baddie.moveEventFlags & 2) == 0 &&
                 obj->anim.currentMoveProgress >
                     *(f32*)((inner->moveSlots + 0x54) + (u32)inner->moveSlotIndex * 0xb0))
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_sswsh);
+                Sfx_PlayFromObject(obj, SFXTRIG_sswsh);
                 ((PlayerState*)state)->baddie.moveEventFlags = ((PlayerState*)state)->baddie.moveEventFlags | 2;
             }
         }
@@ -5005,7 +5006,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
             {
                 if (0.0f == inner->boulderChargeLevel)
                 {
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_staff_boulder_drops);
+                    Sfx_PlayFromObject(obj, SFXTRIG_staff_boulder_drops);
                 }
                 inner->boulderChargeLevel = 2.0f * timeDelta + inner->boulderChargeLevel;
                 if (inner->boulderChargeLevel > 60.0f)
@@ -5500,7 +5501,7 @@ int playerState21(int obj, int state, f32 fv)
             {
                 sfxId = 0x214;
             }
-            Sfx_PlayFromObject(obj, sfxId);
+            Sfx_PlayFromObject((GameObject*)obj, sfxId);
             ObjAnim_SetCurrentMove(obj, 0xc6, 0.0f, 0);
         }
         if (((GameObject*)obj)->anim.velocityX * ((GameObject*)obj)->anim.velocityX +
@@ -5533,7 +5534,7 @@ int playerState21(int obj, int state, f32 fv)
             {
                 sfxId = 0x214;
             }
-            Sfx_PlayFromObject(obj, sfxId);
+            Sfx_PlayFromObject((GameObject*)obj, sfxId);
             ObjAnim_SetCurrentMove(obj, 0xc6, 0.0f, 0);
         }
         if (((GameObject*)obj)->anim.velocityX * ((GameObject*)obj)->anim.velocityX +
@@ -5925,7 +5926,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
             if (gPlayerSfxTimerD <= 0)
             {
                 gPlayerSfxTimerD = randomGetRange(0xb4, 0xf0);
-                Sfx_PlayFromObject(obj, SFXTRIG_literun116);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_literun116);
             }
             *(u32*)&inner->flags360 |= 0x200LL;
             if (inner->stickDirection != prev || *(s8*)&inner->latchedStickDir == 0)
@@ -6088,7 +6089,7 @@ int playerState1C(GameObject* obj, int state)
         }
         ObjAnim_SetCurrentMove((int)obj, 0x57, 0.0f, 0);
         ((PlayerState*)state)->baddie.moveSpeed = 0.016f;
-        Sfx_PlayFromObject((int)obj, (u16)(inner->characterId == 0 ? SFXTRIG_impact3 : SFXTRIG_literun116));
+        Sfx_PlayFromObject(obj, (u16)(inner->characterId == 0 ? SFXTRIG_impact3 : SFXTRIG_literun116));
     }
     if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
     {
@@ -7558,11 +7559,11 @@ void playerPlayClimbingSound(GameObject* obj, int p2)
         cell = coordsToMapCell(obj->anim.localPosX, obj->anim.localPosZ);
         if (cell == 0x12)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mv_ropecreak22);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_ropecreak22);
         }
         else
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_foot);
+            Sfx_PlayFromObject(obj, SFXTRIG_foot);
         }
     }
     if (gPlayerSfxTimerB > 0)
@@ -7586,7 +7587,7 @@ void playerPlayClimbingSound(GameObject* obj, int p2)
                 {
                     sfx = 0x25;
                 }
-                Sfx_PlayFromObject((int)obj, (u16)sfx);
+                Sfx_PlayFromObject(obj, (u16)sfx);
                 gPlayerSfxTimerB = 0x3c;
             }
         }
@@ -7686,7 +7687,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
         f32 f3;
         if ((((PlayerState*)state)->baddie.eventFlags & 1) != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mv_dive4_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_dive4_c);
         }
         f3 = obj->anim.localPosY - (32.0f + inner->climbBaseY);
         if (f3 < 0.0f)
@@ -7781,7 +7782,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
         if ((((PlayerState*)state)->baddie.eventFlags & 1) != 0)
         {
             int snd = surfaceSfxSelectTrigger(inner->surfaceType, inner->footstepSoundId);
-            Sfx_PlayFromObject((int)obj, snd);
+            Sfx_PlayFromObject(obj, snd);
             doRumble(5.0f);
             if (inner->waterDepth > 0.0f)
             {
@@ -7925,10 +7926,10 @@ int playerStateOnLadder(int obj, int state)
         switch (((PlayerState*)inner)->footstepSurface)
         {
         case 4:
-            Sfx_PlayFromObject(obj, SFXTRIG_foot_33a);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_foot_33a);
             break;
         default:
-            Sfx_PlayFromObject(obj, SFXTRIG_foot_var);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_foot_var);
             break;
         }
     }
@@ -7956,10 +7957,10 @@ int playerStateOnLadder(int obj, int state)
     case 7:
         if ((((PlayerState*)state)->baddie.eventFlags & 0x80) != 0)
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_foot);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_foot);
             if (((PlayerState*)inner)->characterId == 0)
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_jump3);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_jump3);
             }
         }
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
@@ -8036,7 +8037,7 @@ int playerStateOnLadder(int obj, int state)
     default:
         if ((((PlayerState*)state)->baddie.eventFlags & 0x80) != 0)
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_foot_var);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_foot_var);
         }
         if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0 && ((PlayerState*)inner)->climbStep > 3)
         {
@@ -8352,17 +8353,17 @@ int playerStateClimbOntoLadder(GameObject* obj, int state, f32 fv)
     {
         int o = (int)obj;
         u16 sfxId = inner->characterId == 0 ? 0x398 : 0x1d;
-        Sfx_PlayFromObject(o, sfxId);
+        Sfx_PlayFromObject((GameObject*)o, sfxId); // what?
     }
     if ((((PlayerState*)state)->baddie.eventFlags & 1) != 0)
     {
         switch (inner->footstepSurface)
         {
         case 4:
-            Sfx_PlayFromObject((int)obj, SFXTRIG_foot_33a);
+            Sfx_PlayFromObject(obj, SFXTRIG_foot_33a);
             break;
         default:
-            Sfx_PlayFromObject((int)obj, SFXTRIG_foot_var);
+            Sfx_PlayFromObject(obj, SFXTRIG_foot_var);
             break;
         }
     }
@@ -8573,7 +8574,7 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
             {
                 ((GameObject*)obj)->anim.velocityY = 0.0f;
             }
-            Sfx_PlayFromObject(obj,
+            Sfx_PlayFromObject((GameObject*)obj,
                                (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom_var : SFXTRIG_sa_def));
         }
         break;
@@ -8610,11 +8611,11 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
             {
                 gPlayerCurrentMoveId = 5;
                 blend = 0.014f;
-                Sfx_PlayFromObject(obj,
+                Sfx_PlayFromObject((GameObject*)obj,
                                    (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_jump3 : SFXTRIG_sabrepush));
                 if (((PlayerState*)inner)->unk608 == 5)
                 {
-                    Sfx_PlayFromObject(obj, SFXTRIG_fox_swimstroke222);
+                    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_fox_swimstroke222);
                 }
             }
             else if (((PlayerState*)state)->baddie.moveInputZ < -5.0f)
@@ -8639,10 +8640,10 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
         {
             gPlayerCurrentMoveId = 5;
             blend = 0.014f;
-            Sfx_PlayFromObject(obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_jump3 : SFXTRIG_sabrepush));
+            Sfx_PlayFromObject((GameObject*)obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_jump3 : SFXTRIG_sabrepush));
             if (((PlayerState*)inner)->unk608 == 5)
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_fox_swimstroke222);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_fox_swimstroke222);
             }
         }
         else if (((PlayerState*)state)->baddie.moveInputZ < -5.0f)
@@ -8806,13 +8807,13 @@ int playerState0B(GameObject* obj, int state)
     case 0x1a:
         if (((PlayerState*)state)->baddie.eventFlags & 1)
         {
-            Sfx_PlayFromObject((int)obj, (u16)(inner->characterId == 0 ? SFXTRIG_jump3 : SFXTRIG_sabrepush));
+            Sfx_PlayFromObject(obj, (u16)(inner->characterId == 0 ? SFXTRIG_jump3 : SFXTRIG_sabrepush));
         }
         if ((((u32)inner->flags3F0 >> 5) & 1) || gPlayerCurrentMoveId == 0x1a)
         {
             if (((PlayerState*)state)->baddie.eventFlags & 0x80)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_fox_swimstroke222);
+                Sfx_PlayFromObject(obj, SFXTRIG_fox_swimstroke222);
             }
         }
     case 0xe:
@@ -8919,7 +8920,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
         void* sub;
-        Sfx_PlayFromObject((int)obj,
+        Sfx_PlayFromObject(obj,
                            (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom_heel : SFXTRIG_sa_def01));
         ((PlayerState*)state)->baddie.stateId = 0xa;
         ((PlayerState*)inner)->stateHandler = 0;
@@ -9452,7 +9453,7 @@ int playerStateThrowing(GameObject* obj, int state)
 
     if (((PlayerState*)state)->baddie.eventFlags & 1)
     {
-        Sfx_PlayFromObject((int)obj, (u16)(inner->characterId == 0 ? SFXTRIG_foxcom_decoy : SFXTRIG_sa_jump02));
+        Sfx_PlayFromObject(obj, (u16)(inner->characterId == 0 ? SFXTRIG_foxcom_decoy : SFXTRIG_sa_jump02));
     }
 
     if (((PlayerState*)inner)->heldObj == NULL && *(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
@@ -9511,7 +9512,7 @@ int playerState06(GameObject* obj, int state)
         {
         case 0x6d:
         case 0x754:
-            Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_putdown_31f);
+            Sfx_PlayFromObject(obj, SFXTRIG_barrel_putdown_31f);
             break;
         case 0x1f4:
         case 0x1f5:
@@ -9520,10 +9521,10 @@ int playerState06(GameObject* obj, int state)
         case 0x1f8:
         case 0x1f9:
         case 0x519:
-            Sfx_PlayFromObject((int)obj, SFXTRIG_weetinkoneshot);
+            Sfx_PlayFromObject(obj, SFXTRIG_weetinkoneshot);
             break;
         default:
-            Sfx_PlayFromObject((int)obj, SFXTRIG_vineclimb116);
+            Sfx_PlayFromObject(obj, SFXTRIG_vineclimb116);
             break;
         }
     }
@@ -9636,7 +9637,7 @@ int playerState05(GameObject* obj, int state)
         {
             snd = 0x3c1;
         }
-        Sfx_PlayFromObject((int)obj, snd);
+        Sfx_PlayFromObject(obj, snd);
     }
     return 0;
 }
@@ -10440,7 +10441,7 @@ int playerStateIdle(int obj, int state, f32 fv)
             fv = 0.005f;
             if (RandomTimer_UpdateRangeTrigger((void*)(inner + 0x3ec), 2.0f, 5.0f) != 0)
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_fox_452);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_fox_452);
             }
         }
         else
@@ -12329,7 +12330,7 @@ void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, 
         setup->posX = *(f32*)((char*)slot + 0xc);
         setup->posY = *(f32*)((char*)slot + 0x10);
         setup->posZ = *(f32*)((char*)slot + 0x14);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_staff_rocket_hitdirt);
+        Sfx_PlayFromObject(obj, SFXTRIG_staff_rocket_hitdirt);
         o = objSetupObject(setup, 5, -1, -1, NULL);
         if (o != NULL)
         {
@@ -12385,7 +12386,7 @@ void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInpu
         setup->color[1] = 1;
         setup->color[2] = 0xff;
         setup->color[3] = 0xff;
-        ObjPath_GetPointWorldPosition((GameObject*)gPlayerPathObject, 0, &x0, &y0, &z0, 0);
+        ObjPath_GetPointWorldPosition(gPlayerPathObject, 0, &x0, &y0, &z0, 0);
         setup->posX = x0 + randomOffset;
         setup->posY = y0 + randomOffset;
         setup->posZ = z0 + randomOffset;
@@ -12428,7 +12429,7 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
     slot = (int)Camera_GetCurrent();
     if (Obj_IsLoadingLocked())
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_hitpos_6_20a);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_hitpos_6_20a);
         setup = Obj_AllocObjectSetup(0x24, 0x14b);
         *(u8*)((char*)setup + 0x4) = 2;
         *(u8*)((char*)setup + 0x5) = 1;
@@ -12877,7 +12878,7 @@ void playerCastSpell(int a, int b, int c)
             ((PlayerStatus*)sub)->magic = v;
         }
         playerSetDisguised((GameObject*)a, 1);
-        Sfx_PlayFromObject(a, SFXTRIG_dn_boar1_c_209);
+        Sfx_PlayFromObject((GameObject*)a, SFXTRIG_dn_boar1_c_209);
         break;
     case 0x5bd:
         c = -1;
@@ -13379,7 +13380,7 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
                 ->setMode(CAMERA_MODE_FORCE_BEHIND_RESOURCE_ID, 1, 0, sizeof(camp), &camp, 0x1e, 0xff);
             if (gPlayerFrameCounter - gPlayerLastSfxFrame > 2)
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_headcam_in);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_headcam_in);
             }
             gPlayerLastSfxFrame = gPlayerFrameCounter;
             ((ByteFlags*)((char*)inner + 0x3f1))->b10 = 1;
@@ -13748,8 +13749,8 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
         if ((((*((int*)(&((PlayerState*)state)->baddie.eventFlags))) & 1) != 0) &&
             (((PlayerState*)inner)->characterId != 0))
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_fox_bigfallgrunt2);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_foot_ladder2);
+            Sfx_PlayFromObject(obj, SFXTRIG_fox_bigfallgrunt2);
+            Sfx_PlayFromObject(obj, SFXTRIG_foot_ladder2);
         }
         if ((*((s8*)(&((PlayerState*)state)->baddie.moveDone))) != 0)
         {
@@ -13790,9 +13791,9 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             CameraShake_SetOffset(15.0f);
             ObjAnim_SetCurrentMove((int)obj, 0xb, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.015f;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_foot_crawl2);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_watery_bubble);
-            ObjPath_GetPointWorldPosition((GameObject*)obj, 0xb, &v[3], &v[4], &v[5], 0);
+            Sfx_PlayFromObject(obj, SFXTRIG_foot_crawl2);
+            Sfx_PlayFromObject(obj, SFXTRIG_watery_bubble);
+            ObjPath_GetPointWorldPosition(obj, 0xb, &v[3], &v[4], &v[5], 0);
             if (ps->surfaceType == 0x1a)
             {
                 hv = 0x14;
@@ -13805,7 +13806,7 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 0;
             if (ps->waterDepth > 1.5f)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_foot_run_jingle3);
+                Sfx_PlayFromObject(obj, SFXTRIG_foot_run_jingle3);
             }
         }
         else if (hdiff > 130.0f)
@@ -13813,13 +13814,13 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             doRumble(10.0f);
             ObjAnim_SetCurrentMove((int)obj, 0x13, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.035f;
-            Sfx_PlayFromObject((int)obj, sfx);
-            Sfx_StopFromObject((int)obj,
+            Sfx_PlayFromObject(obj, sfx);
+            Sfx_StopFromObject(obj,
                                (u16)((ps->characterId == 0) ? (SFXTRIG_jump2) : (SFXTRIG_sa_climb02)));
             ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 1;
             if (ps->waterDepth > 1.5f)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_foot_run_jingle3_429);
+                Sfx_PlayFromObject(obj, SFXTRIG_foot_run_jingle3_429);
             }
         }
         else if (hdiff > 52.0f)
@@ -13827,13 +13828,13 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             doRumble(10.0f);
             ObjAnim_SetCurrentMove((int)obj, 0x13, 0.0f, 0);
             ((PlayerState*)state)->baddie.moveSpeed = 0.035f;
-            Sfx_PlayFromObject((int)obj, sfx);
+            Sfx_PlayFromObject(obj, sfx);
             Sfx_PlayFromObject(
-                (int)obj, (u16)((((PlayerState*)inner)->characterId == 0) ? (SFXTRIG_panting2) : (SFXTRIG_sa_jump03_var)));
-            ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 1;
+                obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_panting2 : SFXTRIG_sa_jump03_var));
+            ((ByteFlags*)((char*)inner + 0x3f2))->b08 = 1;
             if (((PlayerState*)inner)->waterDepth > 1.5f)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_foot_run_jingle3_42a);
+                Sfx_PlayFromObject(obj, SFXTRIG_foot_run_jingle3_42a);
             }
         }
         else
@@ -13847,7 +13848,7 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 1;
             if (((PlayerState*)inner)->waterDepth > 1.5f)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_foot_run_jingle3_42b);
+                Sfx_PlayFromObject(obj, SFXTRIG_foot_run_jingle3_42b);
             }
         }
         if (hdiff > 52.0f)
@@ -13877,7 +13878,7 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             if (Sfx_IsPlayingFromObject(
                     0, (u16)((((PlayerState*)inner)->characterId == 0) ? (SFXTRIG_jump2) : (SFXTRIG_sa_climb02))) == 0)
             {
-                Sfx_PlayFromObject((int)obj, (u16)((ps->characterId == 0) ? (SFXTRIG_jump2) : (SFXTRIG_sa_climb02)));
+                Sfx_PlayFromObject(obj, (u16)((ps->characterId == 0) ? (SFXTRIG_jump2) : (SFXTRIG_sa_climb02)));
             }
             ((PlayerState*)inner)->fallSeverity = 2;
         }
@@ -13944,7 +13945,7 @@ int playerUpdateFallingMotion(GameObject* obj, int inner, int p3)
     {
         u16 snd;
         doRumble(5.0f);
-        Sfx_PlayFromObject((int)obj, (u16)surfaceSfxSelectTrigger(((PlayerState*)inner)->surfaceType,
+        Sfx_PlayFromObject(obj, (u16)surfaceSfxSelectTrigger(((PlayerState*)inner)->surfaceType,
                                                                  ((PlayerState*)inner)->footstepSoundId));
         if (((PlayerState*)inner)->characterId == 0)
         {
@@ -13954,7 +13955,7 @@ int playerUpdateFallingMotion(GameObject* obj, int inner, int p3)
         {
             snd = 0x25;
         }
-        Sfx_PlayFromObject((int)obj, snd);
+        Sfx_PlayFromObject(obj, snd);
         ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
         ((ByteFlags*)((char*)inner + 0x3f1))->b08 = 1;
         ((ByteFlags*)((char*)inner + 0x3f2))->b10 = 1;
@@ -14078,7 +14079,7 @@ void playerUpdateWaterMotion(GameObject* obj, int inner, int state)
     {
         if ((((PlayerState*)state)->baddie.eventFlags & 0x200) != 0)
         {
-            Sfx_PlayAtPositionFromObject((int)obj, obj->anim.localPosX,
+            Sfx_PlayAtPositionFromObject(obj, obj->anim.localPosX,
                                          ((PlayerState*)inner)->waterSurfaceY, obj->anim.localPosZ, 0xe);
         }
         if (((PlayerState*)inner)->waterDepth < 25.0f &&
@@ -14093,7 +14094,7 @@ void playerUpdateWaterMotion(GameObject* obj, int inner, int state)
     {
         if ((((PlayerState*)state)->baddie.eventFlags & 1) != 0)
         {
-            Sfx_PlayAtPositionFromObject((int)obj, obj->anim.localPosX,
+            Sfx_PlayAtPositionFromObject(obj, obj->anim.localPosX,
                                          ((PlayerState*)inner)->waterSurfaceY, obj->anim.localPosZ, 0xf);
         }
         if (((PlayerState*)inner)->waterDepth < 25.0f &&
@@ -14220,7 +14221,7 @@ void playerUpdateStaffAttack(GameObject* obj, int state, int p3)
     if ((((PlayerState*)p3)->baddie.eventFlags & 0x200) != 0)
     {
         doRumble(5.0f);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_rserv1_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_rserv1_c);
         ((PlayerState*)state)->pendingFxFlags |= 4;
     }
     {
@@ -14274,7 +14275,7 @@ void playerEnterDeepWater(int obj, int inner, int state)
     z = 0.0f;
     ((PlayerState*)inner)->waterCurrentVelB = z;
     ((PlayerState*)inner)->waterCurrentVelA = z;
-    Sfx_StopFromObject(obj,
+    Sfx_StopFromObject((GameObject*)obj,
                        (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_jump2 : SFXTRIG_sa_climb02));
 
     if ((void*)gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
@@ -14301,7 +14302,7 @@ void playerEnterDeepWater(int obj, int inner, int state)
     }
     if (((GameObject*)obj)->anim.velocityY < -2.0f)
     {
-        Sfx_PlayFromObject(obj, SFXTRIG_mv_curtainopen16_212);
+        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_mv_curtainopen16_212);
         (*gWaterfxInterface)
             ->spawnSplashBurst((void*)obj, ((GameObject*)obj)->anim.localPosX, ((GameObject*)obj)->anim.localPosY,
                                ((GameObject*)obj)->anim.localPosZ, 10.0f);
@@ -14402,7 +14403,7 @@ void playerStartWallTransition(GameObject* obj, int inner, int state)
         {
             sfxId = 0x2d6;
         }
-        Sfx_PlayFromObject((int)obj, sfxId);
+        Sfx_PlayFromObject(obj, sfxId);
     }
     ((PlayerState*)inner)->isHoldingObject = 0;
     {
@@ -14492,7 +14493,7 @@ void playerStartStaffAttack(GameObject* obj, int state, int p3)
         {
             sound = 0x427;
         }
-        Sfx_PlayFromObject((int)obj, sound);
+        Sfx_PlayFromObject(obj, sound);
     }
     else
     {
@@ -14504,7 +14505,7 @@ void playerStartStaffAttack(GameObject* obj, int state, int p3)
         {
             sound = 0x2e;
         }
-        Sfx_PlayFromObject((int)obj, sound);
+        Sfx_PlayFromObject(obj, sound);
     }
 }
 
@@ -15172,7 +15173,7 @@ void playerProcessHitResponse(int obj, int inner, int state)
                 if (gPlayerSfxTimerA == 0)
                 {
                     Sfx_PlayFromObject(
-                        obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_pole1_c : SFXTRIG_wp_pole1_c));
+                        (GameObject*)obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_pole1_c : SFXTRIG_wp_pole1_c));
                 }
                 gPlayerSfxTimerA = 6;
             }
@@ -15249,22 +15250,22 @@ void playerProcessHitResponse(int obj, int inner, int state)
                 case 0x5b8:
                 case 0x5b9:
                 case 0x5e1:
-                    Sfx_PlayFromObject((int)hitObj, SFXTRIG_snort);
+                    Sfx_PlayFromObject((GameObject*)hitObj, SFXTRIG_snort);
                     break;
                 case 0x5f9:
                 case 0x5fa:
                 case 0x5fe:
-                    Sfx_PlayFromObject((int)hitObj, SFXTRIG_swd);
+                    Sfx_PlayFromObject((GameObject*)hitObj, SFXTRIG_swd);
                     break;
                 case 0x2c5:
-                    Sfx_PlayFromObject((int)hitObj, SFXTRIG_wp_crtsmsh6);
+                    Sfx_PlayFromObject((GameObject*)hitObj, SFXTRIG_wp_crtsmsh6);
                     break;
                 case 0x709:
-                    Sfx_PlayFromObject((int)hitObj, SFXTRIG_wp_fball2_c);
+                    Sfx_PlayFromObject((GameObject*)hitObj, SFXTRIG_wp_fball2_c);
                     break;
                 case 0x458:
                 case 0x842:
-                    Sfx_PlayFromObject((int)hitObj, SFXTRIG_baddie_mika_death);
+                    Sfx_PlayFromObject((GameObject*)hitObj, SFXTRIG_baddie_mika_death);
                     break;
                 }
             }
@@ -15275,21 +15276,21 @@ void playerProcessHitResponse(int obj, int inner, int state)
                     (((GameObject*)hitObj)->anim.romDefNo == 0x613 || ((GameObject*)hitObj)->anim.romDefNo == 0x70f))
                 {
                     Sfx_PlayFromObject(
-                        obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom : SFXTRIG_sabrepush163));
+                        (GameObject*)obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom : SFXTRIG_sabrepush163));
                 }
                 else
                 {
-                    Sfx_PlayFromObject(obj, SFXTRIG_watery_bubble3);
+                    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_watery_bubble3);
                 }
                 break;
             case 0x14:
             case 0x1f:
                 Sfx_PlayFromObject(
-                    obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom : SFXTRIG_sabrepush163));
-                Sfx_PlayFromObject(obj, SFXTRIG_en_cvdrip1c_393);
-                if (Sfx_IsPlayingFromObject(obj, SFXTRIG_foot_metal_scuff) == 0)
+                    (GameObject*)obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom : SFXTRIG_sabrepush163));
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_en_cvdrip1c_393);
+                if (Sfx_IsPlayingFromObject((GameObject*)obj, SFXTRIG_foot_metal_scuff) == 0)
                 {
-                    Sfx_PlayFromObject(obj, SFXTRIG_foot_metal_scuff);
+                    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_foot_metal_scuff);
                 }
                 if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                 {
@@ -15297,7 +15298,7 @@ void playerProcessHitResponse(int obj, int inner, int state)
                 }
                 break;
             case 0x1c:
-                Sfx_PlayFromObject(obj, SFXTRIG_fox_var);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_fox_var);
                 if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                 {
                     objDoHitParticleFx((void*)obj, 0.014f, buf, 8, 0);
@@ -15305,13 +15306,13 @@ void playerProcessHitResponse(int obj, int inner, int state)
                 break;
             default:
                 Sfx_PlayFromObject(
-                    obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom : SFXTRIG_sabrepush163));
+                    (GameObject*)obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom : SFXTRIG_sabrepush163));
                 if (hitObj != NULL)
                 {
                     switch (((GameObject*)hitObj)->anim.romDefNo)
                     {
                     case 0x33:
-                        Sfx_PlayFromObject(obj, SFXTRIG_snort);
+                        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_snort);
                         if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                         {
                             objDoHitParticleFx((void*)obj, 0.014f, buf, 5, 0);
@@ -15409,10 +15410,10 @@ void playerUpdateKnockbackTimers(GameObject* obj, int state)
         ((PlayerState*)state)->knockbackTimer - timeDelta * ((PlayerState*)state)->knockbackDrainRate;
     if (((PlayerState*)state)->knockbackTimer <= (zero = 0.0f))
     {
-        if (Sfx_IsPlayingFromObject((int)obj, SFXTRIG_foot_metal_scuff))
+        if (Sfx_IsPlayingFromObject((GameObject*)obj, SFXTRIG_foot_metal_scuff))
         {
-            Sfx_StopFromObject((int)obj, SFXTRIG_foot_metal_scuff);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_foot_metal_land);
+            Sfx_StopFromObject((GameObject*)obj, SFXTRIG_foot_metal_scuff);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_foot_metal_land);
         }
         ((PlayerState*)state)->knockbackTimer = 0.0f;
         return;
@@ -16139,7 +16140,7 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
                 }
                 else
                 {
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_208);
+                    Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_208);
                     gPlayerSinkSfxTimer = (f32)(int)randomGetRange(0x27, 0x3c);
                 }
             }
@@ -16313,7 +16314,7 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
                 ((PlayerState*)inner)->heldObj = 0;
             }
-            Sfx_PlayFromObject(obj,
+            Sfx_PlayFromObject((GameObject*)obj,
                                (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_foxcom : SFXTRIG_sabrepush163));
             break;
         }
@@ -17992,7 +17993,7 @@ void playerDoHitDetection(int obj)
                     {
                         doRumble(5.0f);
                         ((PlayerState*)inner)->rumbleCooldown = 30.0f;
-                        Sfx_PlayFromObject(obj, SFXTRIG_foot_run_jingle4);
+                        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_foot_run_jingle4);
                     }
                     dt = mathSinf((3.1415927f * (f32)((PlayerState*)inner)->yaw) / 32768.0f);
                     {
@@ -18305,7 +18306,7 @@ void playerUpdate(GameObject* obj)
             {
                 int po = (int)obj;
                 if (Sfx_IsPlayingFromObject(
-                        po, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_jump2 : SFXTRIG_sa_climb02)) == 0)
+                        (GameObject*)po, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_jump2 : SFXTRIG_sa_climb02)) == 0)
                 {
                     Sfx_PlayFromObject(
                         0, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_jump2 : SFXTRIG_sa_climb02));

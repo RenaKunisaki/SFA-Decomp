@@ -1426,7 +1426,7 @@ void Obj_UpdateObject(GameObject* obj)
             cb(obj, 0x7fb, NULL, 0x50, NULL);
             cb = (*gBoneParticleEffectInterface)->spawnEffect;
             cb(obj, 0x7fc, NULL, 0x32, NULL);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_barrel_bounce1);
+            Sfx_PlayFromObject(obj, SFXTRIG_barrel_bounce1);
         }
     }
     if ((obj->objectFlags & OBJECT_OBJFLAG_UPDATE_DISABLED) == 0)
@@ -1531,7 +1531,7 @@ void Obj_FreeObject(GameObject* obj)
         return;
     }
     Sfx_RemoveLoopedObjectSoundForObject((u32)obj);
-    Sfx_StopObjectChannel((u32)obj, 0x7f);
+    Sfx_StopObjectChannel(obj, 0x7f);
     if (obj->objectFlags & OBJECT_FLAG_IN_UPDATE_LIST)
     {
         for (i = 0; i < gObjCount; i++)

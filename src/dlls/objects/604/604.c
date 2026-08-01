@@ -200,7 +200,7 @@ void snowclaw_spawnDropBomb(GameObject* obj, GameObject* owner, int launchMode, 
                        8) +
                       0x8000) >>
                      8);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_2e4);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_2e4);
         switch ((u8)launchMode)
         {
         case 0:
@@ -281,12 +281,12 @@ void snowclaw_updateMountAttack(GameObject* obj, GameObject* mount)
             if (turnSign == 0)
             {
                 inner->unk30 = 0.004f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_id_2e3);
+                Sfx_PlayFromObject(obj, SFXTRIG_id_2e3);
             }
             else
             {
                 inner->unk30 = 0.003f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_id_2e2);
+                Sfx_PlayFromObject(obj, SFXTRIG_id_2e2);
             }
             if (turnSign != 0)
             {
@@ -589,9 +589,9 @@ void snowclaw_hitDetect(GameObject* obj)
         if (s->hitCooldown < 0)
         {
             s->health -= 1;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_en_sbalhis6_f2);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_attack);
-            Sfx_PlayFromObject((int)obj, gSnowClawHurtSfxTable[s->health]);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_sbalhis6_f2);
+            Sfx_PlayFromObject(obj, SFXTRIG_attack);
+            Sfx_PlayFromObject(obj, gSnowClawHurtSfxTable[s->health]);
             s->hitCooldown = 0x14;
             s->attackDelay -= 0x28;
             if (s->health < 0)
@@ -782,7 +782,7 @@ void snowclaw_update(GameObject* obj)
 
     if (randomChanceOneIn(0x12c) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_2e5);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_2e5);
     }
 
     if (s->health < 4)

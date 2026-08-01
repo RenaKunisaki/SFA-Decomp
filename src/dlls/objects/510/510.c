@@ -110,7 +110,7 @@ void PressureSwitch_update(GameObject* obj) {
             }
             if (state->chimeLatch == 0 && contact != NULL && contact->anim.romDefNo == PRESSURE_SWITCH_CHIME_SEQ_ID) {
                 if (isPlayerFar == 0) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_mpick1_b);
+                    Sfx_PlayFromObject(obj, SFXTRIG_mpick1_b);
                 }
                 state->chimeLatch = 1;
             }
@@ -184,9 +184,9 @@ void PressureSwitch_update(GameObject* obj) {
         }
     }
     if (isMoving != 0) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_en_treedrum16);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_treedrum16);
     } else {
-        Sfx_StopObjectChannel((int)obj, PRESSURE_SWITCH_MOVE_SFX_CHANNEL);
+        Sfx_StopObjectChannel(obj, PRESSURE_SWITCH_MOVE_SFX_CHANNEL);
     }
     if (state->retriggerTimer != 0) {
         state->retriggerTimer -= framesThisStep;

@@ -459,8 +459,8 @@ void mmpMoonRock_update(GameObject* obj) {
     } else {
         state->heightLevel = 0;
     }
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_en_diallp_c);
-    Sfx_SetObjectChannelVolume((u32)obj, MMP_MOON_ROCK_SFX_CHANNEL, state->heightLevel * 0x20 + 0x20, 0.5f);
+    Sfx_PlayFromObject(obj, SFXTRIG_en_diallp_c);
+    Sfx_SetObjectChannelVolume(obj, MMP_MOON_ROCK_SFX_CHANNEL, state->heightLevel * 0x20 + 0x20, 0.5f);
     {
         f32 speed = obj->anim.velocityY;
         if (speed < 0.1f * ((20.0f * state->heightLevel + state->baseY) - obj->anim.localPosY)) {

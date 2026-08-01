@@ -13,6 +13,7 @@
 #include "main/object_render.h"
 #include "main/objseq.h"
 #include "dlls/object_descriptor.h"
+#include "dlls/objects/373_DFropenode.h"
 
 #include "main/audio/sfx_trigger_ids.h"
 
@@ -24,7 +25,6 @@ int lbl_803DDD70;
 int gDrShackleRotZOffset = -32768;
 
 #define DRSHACKLE_OBJGROUP  0x37
-#define DFROPENODE_OBJGROUP 0x17 /* DLL 373 dfropenode (path nodes) */
 
 static inline int* DrShackle_GetActiveModel(void* obj)
 {
@@ -196,7 +196,7 @@ void drshackle_update(GameObject* obj)
     u32* list;
     if (placement->pathObjGroupBase != 0 && *(void**)state == 0)
     {
-        list = (u32*)objGetAllOfType(DFROPENODE_OBJGROUP, &count);
+        list = (u32*)objGetAllOfType(DFROPENODE_OBJECT_GROUP, &count);
         while (count-- != 0)
         {
             sub = *(int*)(*list + 0x4c);

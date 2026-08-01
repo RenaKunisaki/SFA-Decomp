@@ -580,7 +580,7 @@ void dbegg_update(GameObject* obj)
                     v = v >= 0.0f ? v : -v;
                     if (v > 0.2f)
                     {
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_id_2df);
+                        Sfx_PlayFromObject(obj, SFXTRIG_id_2df);
                     }
                 }
                 objMove((GameObject*)obj, (obj)->anim.velocityX * timeDelta, (obj)->anim.velocityY * timeDelta,

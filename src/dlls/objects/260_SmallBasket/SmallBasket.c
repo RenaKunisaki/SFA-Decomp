@@ -131,7 +131,7 @@ void SmallBasket_handleHit(GameObject* obj, GameObject* player, SmallBasketState
                 if (hitType != 5) {
                     objDoHitParticleFx((void*)obj, gSmallBasketEffectScale[0], &effectParams, 4, 0);
                     if (Sfx_IsPlayingFromObject(0, SFXTRIG_staff_rocket_powerup) == 0) {
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_staff_rocket_powerup);
+                        Sfx_PlayFromObject(obj, SFXTRIG_staff_rocket_powerup);
                     }
                     return;
                 }
@@ -156,7 +156,7 @@ void SmallBasket_handleHit(GameObject* obj, GameObject* player, SmallBasketState
             objDoHitParticleFx((void*)obj, gSmallBasketEffectScale[0], &effectParams, 1, 0);
             Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
             if (Sfx_IsPlayingFromObject(0, (u16)state->hitSfxId) == 0) {
-                Sfx_PlayFromObject((u32)obj, (u16)state->hitSfxId);
+                Sfx_PlayFromObject(obj, (u16)state->hitSfxId);
             }
             state->disableTimer = SMALLBASKET_HIT_DISABLE_FRAMES;
             state->throwState = SMALLBASKET_THROW_NONE;
@@ -746,7 +746,7 @@ void SmallBasket_update(GameObject* obj) {
                             effectParams.rotX = effectParams.rotX + ((ObjAnimComponent*)player->anim.parent)->rotX;
                         }
                         vecRotateZXY((s16*)&effectParams, &obj->anim.velocityX);
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_throw);
+                        Sfx_PlayFromObject(obj, SFXTRIG_barrel_throw);
                     } else if (playerIsPuttingDown(player) != 0) {
                         state->carryState = SMALLBASKET_CARRY_IDLE;
                         state->throwState = SMALLBASKET_THROW_DROPPED;
@@ -770,7 +770,7 @@ void SmallBasket_update(GameObject* obj) {
                         effectParams.rotY = 0;
                         effectParams.rotX = player->anim.rotX;
                         vecRotateZXY((s16*)&effectParams, &obj->anim.velocityX);
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_throw);
+                        Sfx_PlayFromObject(obj, SFXTRIG_barrel_throw);
                         state->carryAttached = 0;
                         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                     }
@@ -802,7 +802,7 @@ void SmallBasket_update(GameObject* obj) {
                 effectParams.posZ = obj->anim.localPosZ;
                 objDoHitParticleFx((void*)obj, gSmallBasketEffectScale[0], &effectParams, 1, 0);
                 (*gSmallBasketResource)->spawnBreakEffect(obj, 1, 0, 2, -1, 0);
-                Sfx_PlayFromObject((int)obj, (u16)state->hitSfxId);
+                Sfx_PlayFromObject(obj, (u16)state->hitSfxId);
                 state->disableTimer = SMALLBASKET_HIT_DISABLE_FRAMES;
                 state->throwState = SMALLBASKET_THROW_NONE;
                 obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
@@ -843,12 +843,12 @@ void SmallBasket_update(GameObject* obj) {
         if ((state->ambientSfxTimer <= 0) && (state->carryState != SMALLBASKET_CARRY_IDLE)) {
             subtype = state->subtype;
             if ((subtype == SMALLBASKET_SUBTYPE_ENERGY_EGG) || (subtype == SMALLBASKET_SUBTYPE_APPLE)) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_id_6c);
+                Sfx_PlayFromObject(obj, SFXTRIG_id_6c);
                 state->ambientSfxTimer =
                     (s16)(randomGetRange(0, SMALLBASKET_RANDOM_DELAY_MAX) + SMALLBASKET_RANDOM_DELAY_BASE);
             } else if (((u8)(subtype - SMALLBASKET_SUBTYPE_GREEN_SCARAB) <= 1) ||
                        (subtype == SMALLBASKET_SUBTYPE_GOLD_SCARAB)) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_vineclimb116);
+                Sfx_PlayFromObject(obj, SFXTRIG_vineclimb116);
                 state->ambientSfxTimer =
                     (s16)(randomGetRange(0, SMALLBASKET_RANDOM_DELAY_MAX) + SMALLBASKET_RANDOM_DELAY_BASE);
             }

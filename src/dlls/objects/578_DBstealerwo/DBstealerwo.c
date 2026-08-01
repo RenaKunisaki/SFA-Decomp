@@ -535,7 +535,7 @@ int dbstealerworm_stateHandlerA0E(GameObject* obj, BaddieState* baddie)
         sub->msgSlotIndex = 0x24;
         sub->msgMode = 0;
         ObjMsg_SendToObject((void*)sub->linkedObj, 0x11, obj, 0x12);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_dimspit6);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_dimspit6);
     }
     if ((obj)->anim.currentMoveProgress > 0.3f)
     {
@@ -1150,7 +1150,7 @@ int dbstealerworm_stateHandlerA09(GameObject* obj, BaddieState* baddie)
         sub_40c->msgSlotIndex = slotIndex;
         sub_40c->msgMode = 0;
         ObjMsg_SendToObject((void*)sub_40c->linkedObj, 17, obj, 18);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_dimspit6);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_dimspit6);
     }
     bs->stateTag = 18;
     if (bs->moveJustStartedA != '\0')
@@ -1421,14 +1421,14 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
         frac = blob->aggression / 40.0f;
         if (RandomTimer_UpdateRangeTrigger(&sub->randomTimer4C, 1.0f, 3.0f) != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_weev);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_weev);
         }
     }
     else
     {
         if (RandomTimer_UpdateRangeTrigger(&sub->randomTimer48, 1.0f, 3.0f) != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie);
         }
         if (((BaddieState*)baddie)->moveJustStartedA != 0)
         {
@@ -1635,11 +1635,11 @@ int dbstealerworm_stateHandlerA05(GameObject* obj, BaddieState* baddie)
         result = (**(int (**)(int))(*(int*)(*(int*)(player_c8 + 0x68)) + 0x44))(player_c8);
         if (result != 0)
         {
-            Sfx_PlayFromObject((int)obj, gDbStealerwormSfxIds[randomGetRange(3, 4)]);
+            Sfx_PlayFromObject(obj, gDbStealerwormSfxIds[randomGetRange(3, 4)]);
         }
         else
         {
-            Sfx_PlayFromObject((int)obj, gDbStealerwormSfxIds[randomGetRange(0, 2)]);
+            Sfx_PlayFromObject(obj, gDbStealerwormSfxIds[randomGetRange(0, 2)]);
         }
         {
             int frame1;
@@ -1793,7 +1793,7 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
     }
     if (bs->moveDone != 0)
     {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_eggylaugh116);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_eggylaugh116);
         sub_40c->unk04 = 1.0f;
         ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
         bs->targetObj = 0;
@@ -2133,7 +2133,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
         }
         if (sub->countdown > sub->nextSfxTime && dist < 400.0f)
         {
-            Sfx_PlayFromObject((int)obj, gDbStealerwormBurrowFootstepSfx[1]);
+            Sfx_PlayFromObject(obj, gDbStealerwormBurrowFootstepSfx[1]);
             sub->nextSfxTime = sub->nextSfxTime + (f32)randomGetRange(0x32, 0xfa);
         }
         sub->countdown += timeDelta;

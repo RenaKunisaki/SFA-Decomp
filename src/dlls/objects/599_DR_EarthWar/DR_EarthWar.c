@@ -461,7 +461,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
         hitState->suppressOutgoingHits = 0;
         ObjAnim_SetCurrentMove((int)obj, 0x14, 0.0f, 0);
         ((EarthWarriorState*)state)->baddie.moveDone = 0;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_earthhuff);
+        Sfx_PlayFromObject(obj, SFXTRIG_earthhuff);
     }
     ((EarthWarriorState*)state)->baddie.flags0 |= 0x800000;
     ((EarthWarriorState*)state)->baddie.stateId = 0;
@@ -1104,7 +1104,7 @@ void DR_EarthWarrior_hitDetect(GameObject* obj)
             {
                 doRumble((f32)(int)randomGetRange(2, 5));
                 inner->sub.footstepCooldown = 30.0f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_foot_run_jingle4);
+                Sfx_PlayFromObject(obj, SFXTRIG_foot_run_jingle4);
             }
             if (inner->baddie.groundContact != 0 ||
                 (((ObjHitsPriorityState*)obj->anim.hitReactState)->flags & 8))

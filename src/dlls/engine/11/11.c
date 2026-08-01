@@ -1300,15 +1300,15 @@ void dll_0B_updateActiveEffects(void)
                 {
                     ((ExpFn4)modgfx_scrollTexCoords)(eff, PENDING_SPAWNS + emOff, active, 0);
                 }
-                if ((((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x10000) && active != 0)
+                if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x10000 && active != 0)
                 {
                     if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->param14 == -1)
                     {
-                        Sfx_StopObjectChannel((int)*(int**)&((PartfxEffectState*)eff)->sourceObject, 0x40);
+                        Sfx_StopObjectChannel((GameObject*)((PartfxEffectState*)eff)->sourceObject, 0x40);
                     }
                     else
                     {
-                        Sfx_PlayFromObject((u32)((PartfxEffectState*)eff)->sourceObject,
+                        Sfx_PlayFromObject((GameObject*)((PartfxEffectState*)eff)->sourceObject,
                                            (u16) * (s16*)(PENDING_SPAWNS + emOff + 0x14));
                     }
                 }

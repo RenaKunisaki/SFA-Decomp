@@ -6,8 +6,7 @@
 #include "main/map_block.h"
 #include "main/lightmap_text_color_api.h"
 
-typedef struct LightmapVertex
-{
+typedef struct LightmapVertex {
     s16 x;
     s16 y;
     s16 z;
@@ -20,9 +19,20 @@ typedef struct LightmapVertex
     u8 a;
 } LightmapVertex;
 
+typedef struct LightmapTriangle {
+    u8 flags;
+    u8 vertexIndices[3];
+    s16 textureCoordinates[3][2];
+} LightmapTriangle;
+
 STATIC_ASSERT(sizeof(LightmapVertex) == 0x10);
 STATIC_ASSERT(offsetof(LightmapVertex, s) == 0x08);
 STATIC_ASSERT(offsetof(LightmapVertex, r) == 0x0c);
+
+STATIC_ASSERT(offsetof(LightmapTriangle, flags) == 0x00);
+STATIC_ASSERT(offsetof(LightmapTriangle, vertexIndices) == 0x01);
+STATIC_ASSERT(offsetof(LightmapTriangle, textureCoordinates) == 0x04);
+STATIC_ASSERT(sizeof(LightmapTriangle) == 0x10);
 
 MapBlockData* mapGetBlockAtPos(int x, int y, int layer);
 void* RomList_GetLoadedPages(void);

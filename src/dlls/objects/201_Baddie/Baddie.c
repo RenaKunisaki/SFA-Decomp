@@ -235,7 +235,7 @@ void Tricky_resumeAfterCommand(GameObject* obj, int state)
             hitState->suppressOutgoingHits = 0;
         }
         ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 4;
-        Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_holorays16, 2);
+        Sfx_PlayFromObjectLimited(obj, SFXTRIG_holorays16, 2);
         ObjHits_EnableObject(obj);
     }
     if ((((EnemyState*)state)->controlFlags & 0x40000000) != 0)
@@ -302,7 +302,7 @@ void tricky_handleDefeat(GameObject* obj, int state)
             hitState->suppressOutgoingHits = 0;
         }
         ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 1;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_iceywindlp16_233);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16_233);
         if (randomGetRange(0, 100) > 50)
         {
             if ((((EnemyState*)state)->flags2E4 & 0x100000) != 0)
@@ -443,7 +443,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                     ((EnemyState*)state)->current = 0;
                     ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 & ~0x20LL;
                     ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x200;
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_barrel_bounce1);
+                    Sfx_PlayFromObject(obj, SFXTRIG_barrel_bounce1);
                 }
                 else
                 {
@@ -649,7 +649,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
         {
             if (((EnemyState*)state)->frozenFadeCounter == 0)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_fox_kick2);
+                Sfx_PlayFromObject(obj, SFXTRIG_fox_kick2);
                 ((EnemyState*)state)->frozenFadeCounter = 0x1f;
             }
             Obj_StartModelFadeIn(obj, 0x12c);

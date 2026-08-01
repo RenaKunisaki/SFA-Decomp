@@ -6,29 +6,22 @@
 #include "main/attract_movie_api.h"
 #include "main/fileio.h"
 #include "main/frame_timing.h"
-#include "main/pi_flush_api.h"
-#include "main/textrender_api.h"
-#include "main/gameloop_api.h"
 #include "main/mm.h"
-#include "sys/objects.h"
-#include "main/pad.h"
-#include "main/pi_dolphin_api.h"
-#include "main/resource.h"
-#include "main/vecmath.h"
 #define SYNTH_INTERNAL_USE_PROJECT_TYPES
-#include "src/musyx/runtime/synth_internal.h"
-#include "game/objects/object.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
-#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/ai.h"
 #include "dolphin/ar.h"
 #include "dolphin/dvd.h"
 #include "dolphin/os/OSCache.h"
 #include "dolphin/os/OSReport.h"
 #include "dolphin/os/OSRtc.h"
-#include "musyx/synth_callback.h"
+#include "src/musyx/runtime/synth_internal.h"
+#include "main/gamebits_api.h"
+#include "main/audio/sfx_object_system_api.h"
+#include "main/audio/stream_api.h"
+#include "musyx/snd3d.h"
+#include "musyx/snd_core.h"
 
 const MusicSeqStartParams gMusicSeqStartParamsDefault = {
     4, {0xFFFFFFFF, 0xFFFFFFFF}, 0x100, {0, 0x7F}, 0, NULL, 0, NULL};
@@ -1004,8 +997,7 @@ void Music_Update(void)
 
     ch = gMusicChannels;
     i = 0xf;
-    do
-    {
+    do {
         int status = ch->status;
         if (status != 0 && status != 4)
         {
@@ -1014,9 +1006,7 @@ void Music_Update(void)
                 if (status == 4 || status == 5)
                 {
                     ch->status = 5;
-                }
-                else
-                {
+                } else {
                     Music_FreeChannel(ch);
                 }
             }

@@ -358,8 +358,8 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                             drakormissile_startActiveLaunch((GameObject*)(missile));
                             storeZeroToFloatParam(&s->jawAnimTimer);
                             s16toFloat(&s->jawAnimTimer, 0x1e);
-                            Sfx_PlayFromObject((int)obj, SFXTRIG__UNK);
-                            Sfx_PlayFromObject((int)obj, SFXTRIG_cahit2_c);
+                            Sfx_PlayFromObject(obj, SFXTRIG__UNK);
+                            Sfx_PlayFromObject(obj, SFXTRIG_cahit2_c);
                         }
                     }
                 }
@@ -382,7 +382,7 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                     ((DrakordThornbushPlacement*)setup)->baseRadius = lbl_803DC194;
                     ((DrakordThornbushPlacement*)setup)->spawnHealth = lbl_803DC190;
                     loadObjectAtObject(obj, setup);
-                    Sfx_PlayFromObject((int)obj, SFXTRIG__UNK);
+                    Sfx_PlayFromObject(obj, SFXTRIG__UNK);
                 }
             }
             break;
@@ -638,12 +638,12 @@ void bossdrakor_hitDetect(GameObject* obj)
             if (s->hitSfxCooldown <= 0.0f)
             {
                 s->hitSfxCooldown = 300.0f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG__UNK_var);
+                Sfx_PlayFromObject(obj, SFXTRIG__UNK_var);
             }
             if (s->hurtSfxCooldown <= 0.0f)
             {
                 s->hurtSfxCooldown = 10.0f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_mpwru1);
+                Sfx_PlayFromObject(obj, SFXTRIG_mpwru1);
             }
             shakeInit = 2.0f;
             s->shakeVel = shakeInit;
@@ -655,7 +655,7 @@ void bossdrakor_hitDetect(GameObject* obj)
             if (s->hurtSfxCooldown < 0.0f)
             {
                 s->hurtSfxCooldown = 10.0f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_sc_npu_216);
+                Sfx_PlayFromObject(obj, SFXTRIG_sc_npu_216);
             }
         }
     }
@@ -849,10 +849,10 @@ void bossdrakor_update(GameObject* obj)
         switch (p[0x13])
         {
         case 0:
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_sliftloop11);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_sliftloop11);
             break;
         case 7:
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_sliftloop11);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_sliftloop11);
             break;
         }
         p++;

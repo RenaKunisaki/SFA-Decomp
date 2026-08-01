@@ -6,6 +6,8 @@
 #include "dolphin/dvd.h"
 #include "musyx/snd_reverb.h"
 #include "musyx/synth_queue.h"
+#include "dolphin/mtx/vec.h"
+#include "game/objects/object.h"
 
 #define SFX_OBJECT_CHANNEL_COUNT 56
 #define SFX_LOOPED_OBJECT_SOUND_FLAG_ALIVE 1
@@ -103,10 +105,8 @@ typedef struct SfxObjectChannel {
     u8 volume;
     u16 fxId;
     u8 pad0a[0x02];
-    f32 x;
-    f32 y;
-    f32 z;
-    u32 object;
+    Vec pos;
+    GameObject* object;
     u16 channelMask;
     u16 sfxId;
     f32 nearDistance;
@@ -258,7 +258,7 @@ extern void* gAudioStarfoxSSampleBufferHandle;
 extern ReverbState gAudioReverbSettings;
 extern u32 gAudioAramBlock[0x2C / sizeof(u32)];
 
-SfxObjectChannel* Sfx_FindObjectChannel(u32 obj, u32 channel, u16 sfxId, s32 mode);
+SfxObjectChannel* Sfx_FindObjectChannel(GameObject* obj, u32 channel, u16 sfxId, s32 mode);
 void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel);
 void Music_Update(void);
 void Sfx_UpdateObjectSounds(void);

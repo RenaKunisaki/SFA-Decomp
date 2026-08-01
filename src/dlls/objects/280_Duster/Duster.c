@@ -221,7 +221,7 @@ void duster_update(GameObject* obj) {
         } else {
             characterState = (DusterCharacterState*)(*gMapEventInterface)->getCurCharacterState();
             if (characterState->collectedCount < characterState->maxCollectedCount) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_sc_cam90_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_sc_cam90_c);
                 (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);
                 (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);
                 (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);

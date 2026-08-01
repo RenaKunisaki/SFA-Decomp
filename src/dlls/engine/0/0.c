@@ -743,7 +743,7 @@ void cMenuPlayTrickyCommandSfx(int obj)
     }
     if (sfx != 0)
     {
-        Sfx_PlayFromObjectLimited(obj, sfx, 1);
+        Sfx_PlayFromObjectLimited((GameObject*)obj, sfx, 1);
     }
 }
 
@@ -2977,7 +2977,7 @@ void pauseMenuDrawStatus(void)
                 {
                 case HUD_STATUS_SCARABS:
                     Sfx_PlayFromObject(0, SFXTRIG_scabshort32);
-                    displayedValuePtr = ((int*)(base + 0xB74)) + statusIndex;
+                    displayedValuePtr = (int*)(base + 0xB74) + statusIndex;
                     displayedValue = *displayedValuePtr;
                     statusValue = statuses[statusIndex];
                     if (displayedValue > statusValue)

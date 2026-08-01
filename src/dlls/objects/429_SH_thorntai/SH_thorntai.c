@@ -228,7 +228,7 @@ void SHthorntail_updateTailSwing(u32 objectId, SHthorntailState* state) {
     case SHTHORNTAIL_TAIL_SWING_READY:
         state->tailSwingTimer = state->tailSwingTimer - timeDelta;
         if (state->tailSwingTimer <= SHTHORNTAIL_TIMER_DONE_THRESHOLD) {
-            Sfx_PlayFromObject(objectId, SHTHORNTAIL_TAIL_SWING_WINDUP_VOLUME_ID);
+            Sfx_PlayFromObject((GameObject*)objectId, SHTHORNTAIL_TAIL_SWING_WINDUP_VOLUME_ID);
             state->tailSwingState = SHTHORNTAIL_TAIL_SWING_WINDUP;
             state->tailSwingTimer = SHTHORNTAIL_TAIL_SWING_WINDUP_TIME;
         }
@@ -236,7 +236,7 @@ void SHthorntail_updateTailSwing(u32 objectId, SHthorntailState* state) {
     case SHTHORNTAIL_TAIL_SWING_WINDUP:
         state->tailSwingTimer = state->tailSwingTimer - timeDelta;
         if (state->tailSwingTimer <= SHTHORNTAIL_TIMER_DONE_THRESHOLD) {
-            Sfx_PlayFromObject(objectId, SHTHORNTAIL_TAIL_SWING_ACTIVE_VOLUME_ID);
+            Sfx_PlayFromObject((GameObject*)objectId, SHTHORNTAIL_TAIL_SWING_ACTIVE_VOLUME_ID);
             state->tailSwingState = SHTHORNTAIL_TAIL_SWING_ACTIVE;
         }
         break;
@@ -434,7 +434,7 @@ void SHthorntail_updateState(GameObject* obj, SHthorntailState* runtime) {
         alertTriggered = RandomTimer_UpdateRangeTrigger(
             &runtime->proximityAlertState, SHTHORNTAIL_PROXIMITY_ALERT_MIN_TIME, SHTHORNTAIL_PROXIMITY_ALERT_MAX_TIME);
         if (alertTriggered != 0) {
-            Sfx_PlayFromObject((u32)obj, SHTHORNTAIL_ALERT_VOLUME_ID);
+            Sfx_PlayFromObject(obj, SHTHORNTAIL_ALERT_VOLUME_ID);
         }
         runtime->idleTimer = runtime->idleTimer - timeDelta;
         if (runtime->idleTimer <= SHTHORNTAIL_IDLE_COUNTDOWN_TIME) {
@@ -859,7 +859,7 @@ u32 SHthorntail_updateLevelControlState(GameObject* obj, int unused, ObjSeqState
     runtime = obj->extra;
     levelControlReady = (int)(runtime->behaviorFlags & SHTHORNTAIL_FLAG_LEVELCONTROL_READY);
     if (levelControlReady == 0) {
-        Sfx_StopObjectChannel((u32)obj, SHTHORNTAIL_LEVELCONTROL_AUDIO_CHANNEL);
+        Sfx_StopObjectChannel(obj, SHTHORNTAIL_LEVELCONTROL_AUDIO_CHANNEL);
         runtime->behaviorState = SHTHORNTAIL_STATE_IDLE;
         randomIdleWait = randomGetRange(SHTHORNTAIL_IDLE_WAIT_MIN, SHTHORNTAIL_IDLE_WAIT_MAX);
         runtime->idleTimer = (float)randomIdleWait;
@@ -1024,11 +1024,13 @@ void SHthorntail_update(int obj) {
         for (i = 0, eventId = (s8*)&animEvents; i < animEvents.triggerCount; i = i + 1) {
             if (eventId[0x13] == '\0') {
                 if (SHTHORNTAIL_STATE_TRIGGER0_SFX(stateTables)[runtime->behaviorState] != 0) {
-                    Sfx_PlayFromObject(obj, SHTHORNTAIL_STATE_TRIGGER0_SFX(stateTables)[runtime->behaviorState]);
+                    Sfx_PlayFromObject((GameObject*)(u32)obj,
+                                       SHTHORNTAIL_STATE_TRIGGER0_SFX(stateTables)[runtime->behaviorState]);
                 }
             } else if ((eventId[0x13] == '\a') &&
                        (SHTHORNTAIL_STATE_TRIGGER7_SFX(stateTables)[runtime->behaviorState] != 0)) {
-                Sfx_PlayFromObject(obj, SHTHORNTAIL_STATE_TRIGGER7_SFX(stateTables)[runtime->behaviorState]);
+                Sfx_PlayFromObject((GameObject*)(u32)obj,
+                                   SHTHORNTAIL_STATE_TRIGGER7_SFX(stateTables)[runtime->behaviorState]);
             }
             eventId++;
         }

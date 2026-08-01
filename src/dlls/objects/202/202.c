@@ -533,7 +533,7 @@ void wispBaddiePlayMoveEventSfx(GameObject* obj, void* animState)
 
     if ((((EnemyState*)animState)->animEventMask & 0x200) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_sml_trex_snap3);
+        Sfx_PlayFromObject(obj, SFXTRIG_sml_trex_snap3);
         player = Obj_GetPlayerObject();
         if ((player->objectFlags & WISPBADDIE_OBJFLAG_PARENT_SLACK) == 0)
         {
@@ -550,19 +550,19 @@ void wispBaddiePlayMoveEventSfx(GameObject* obj, void* animState)
     }
     if ((((EnemyState*)animState)->animEventMask & 0x40) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_spotfox01);
+        Sfx_PlayFromObject(obj, SFXTRIG_spotfox01);
     }
     if ((((EnemyState*)animState)->animEventMask & 0x1000) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_scream1);
+        Sfx_PlayFromObject(obj, SFXTRIG_scream1);
     }
     if ((((EnemyState*)animState)->animEventMask & 1) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_pullup2);
+        Sfx_PlayFromObject(obj, SFXTRIG_pullup2);
     }
     if ((((EnemyState*)animState)->animEventMask & 0x80) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_death01);
+        Sfx_PlayFromObject(obj, SFXTRIG_death01);
     }
 }
 
@@ -641,8 +641,8 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
             f32 z;
             if (msgId != 0x1a && attacker->anim.romDefNo != NEWSEQOBJ_ATTACKER_GUNPOWDERBARREL && attacker->anim.romDefNo != NEWSEQOBJ_ATTACKER_METALBARREL)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_swdout1);
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_gethit02);
+                Sfx_PlayFromObject(obj, SFXTRIG_swdout1);
+                Sfx_PlayFromObject(obj, SFXTRIG_gethit02);
             }
             ((EnemyState*)state)->flags2E8 |= 0x10;
             {
@@ -751,15 +751,15 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
         }
         if (((EnemyState*)state)->current == 0)
         {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_land);
+            Sfx_PlayFromObject(obj, SFXTRIG_land);
         }
         else
         {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_attack);
+            Sfx_PlayFromObject(obj, SFXTRIG_attack);
         }
         if (msgId != 0x1a && msgId != 0x1f && attacker->anim.romDefNo != NEWSEQOBJ_ATTACKER_GUNPOWDERBARREL && attacker->anim.romDefNo != NEWSEQOBJ_ATTACKER_METALBARREL)
         {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_stftest);
+            Sfx_PlayFromObject(obj, SFXTRIG_stftest);
         }
     }
     return ret;
@@ -1004,7 +1004,7 @@ void sharpClawUpdateApproach(GameObject* obj, void* state)
 
     if ((((EnemyState*)state)->controlFlags & 0x20000000) != 0 && (((EnemyState*)state)->prevControlFlags & 0x20000000) == 0)
     {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_mumble02);
+        Sfx_PlayFromObject(obj, SFXTRIG_sc_mumble02);
         ((EnemyState*)state)->controlFlags |= (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
     }
 
@@ -1512,7 +1512,7 @@ void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
 void guardClawUpdateWhileFrozen(GameObject* obj, u8* state, int wpad0, int wpad1, int wpad2, int wpad3, Vec* wpad4,
                                 int wpad5)
 {
-    Sfx_PlayFromObject((int)obj, SFXTRIG_wp_pole1_c_23);
+    Sfx_PlayFromObject(obj, SFXTRIG_wp_pole1_c_23);
     ((EnemyState*)state)->flags2E8 |= 0x10;
 }
 
@@ -1614,7 +1614,7 @@ void guardClaw_update(GameObject* obj, u8* state)
             if (animTbl[((EnemyState*)state)->userData1 * 12] != 0 &&
                 animTbl[((EnemyState*)state)->userData1 * 12] != 4)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_eggsnatch_carry3);
+                Sfx_PlayFromObject(obj, SFXTRIG_baddie_eggsnatch_carry3);
             }
             baddieSetMove(
                 obj, (int)state, animTbl[((EnemyState*)state)->userData1 * 12],
@@ -1689,8 +1689,8 @@ void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, in
     if (msg == 16 || msg == 17) {
         return;
     }
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_pole1_c_23);
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_en_lrope_powerdown);
+    Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_wp_pole1_c_23);
+    Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_en_lrope_powerdown);
     ((EnemyState*)state)->flags2E8 |= 0x8;
     ((EnemyState*)state)->gcRobot.cooldownTimer = (f32)(u32)(u16)sub[0]->unk2C;
     baddieSetMove((GameObject*)obj, (int)state, 1, 2.5f, 0, 0);
@@ -1737,7 +1737,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
         {
             ((EnemyState*)state)->gcRobot.cooldownTimer = 0.0f;
             ((EnemyState*)state)->flags2E4 |= 0x20;
-            Sfx_StopObjectChannel((u32)obj, 4);
+            Sfx_StopObjectChannel(obj, 4);
             baddieSetMove(obj, (int)state, 0, 1.0f, 0, 0);
         }
         else if (!(((EnemyState*)state)->flags2E4 & 0x20))
@@ -1797,9 +1797,9 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
         }
         if (obj->anim.localPosY - path->posY < -1.0f)
         {
-            if (Sfx_IsPlayingFromObject((u32)obj, SFXTRIG_dn_boar1_c_18d) == 0)
+            if (Sfx_IsPlayingFromObject(obj, SFXTRIG_dn_boar1_c_18d) == 0)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_18d);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_18d);
             }
             ((EnemyState*)state)->userData1 = 1;
         }
@@ -1812,9 +1812,9 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
     {
         if (obj->anim.localPosY - def->base.posY < -0.4f)
         {
-            if (Sfx_IsPlayingFromObject((u32)obj, SFXTRIG_dn_boar1_c_18d) == 0)
+            if (Sfx_IsPlayingFromObject(obj, SFXTRIG_dn_boar1_c_18d) == 0)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_18d);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_18d);
             }
             ((EnemyState*)state)->userData1 = 1;
         }
@@ -1860,12 +1860,12 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
         {
             ObjHits_RecordObjectHit(Obj_GetPlayerObject(), obj, 0x16, 2, 0);
             gcRobotLight_init(obj, 0x3b2);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_rolovr_6);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_rolovr_6);
             ((EnemyState*)state)->gcRobot.cooldownTimer = gGcRobotPatrolCatchCooldown;
         }
         if ((int)randomGetRange(0, (int)(1000.0f * oneOverTimeDelta)) == 0)
         {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_sp_literun114);
+            Sfx_PlayFromObject(obj, SFXTRIG_sp_literun114);
         }
         child2 = obj->childObjs[0];
         if (child2 != 0)
@@ -1940,7 +1940,7 @@ void mikaladon_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wp
     {
         return;
     }
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_248);
+    Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_dn_boar1_c_248);
     ((EnemyState*)state)->current = 0;
     ((EnemyState*)state)->flags2E4 |= 0x20;
     ((EnemyState*)state)->flags2E8 |= 0x8;
@@ -2035,7 +2035,7 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
                     if (spawned != NULL)
                     {
                         spawned->ownerObj = obj;
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_id_249);
+                        Sfx_PlayFromObject(obj, SFXTRIG_id_249);
                     }
                 }
             }
@@ -2058,13 +2058,13 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
     {
         state->actor.ambientSfxTimer =
             (f32)(int)randomGetRange(MIKALADON_AMBIENT_SFX_MIN_DELAY, MIKALADON_AMBIENT_SFX_MAX_DELAY);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_id_31);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_31);
     }
     state->actor.loopSfxTimer -= timeDelta;
     if (state->actor.loopSfxTimer <= gMikaladonZero)
     {
         state->actor.loopSfxTimer = gMikaladonDefaultPeriod;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_id_24a);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_24a);
     }
 }
 
@@ -2121,7 +2121,7 @@ void vambat_updateWhileFrozen(int obj, u8* state, int unused, int msgFlag, int w
         if (msgFlag == 16)
         {
             bs->flags2E8 = bs->flags2E8 | 0x28;
-            Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_wingflap);
+            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_mika_wingflap);
             bs->current = 0;
         }
     }
@@ -2134,7 +2134,7 @@ void vambat_updateWhileFrozen(int obj, u8* state, int unused, int msgFlag, int w
         else
         {
             bs->flags2E8 = bs->flags2E8 | 0x8;
-            Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_wingflap);
+            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_mika_wingflap);
             bs->current = 0;
         }
     }
@@ -2193,7 +2193,7 @@ void vambat_updateIdle(GameObject* obj, int state)
     if (((EnemyState*)state)->vambat.heartbeatSfxTimer <= 0.0f)
     {
         ((EnemyState*)state)->vambat.heartbeatSfxTimer = 60.0f;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_mn_heart1_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_heart1_c);
     }
     ((EnemyState*)state)->vambat.engagedTimer = 0.0f;
 }
@@ -2216,7 +2216,7 @@ void vambat_updateEngaged(GameObject* obj, int state)
     }
     if ((bs->controlFlags & BADDIE_CONTROL_JUST_TRIGGERED) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_mika_bombwhistle);
+        Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_bombwhistle);
     }
     if ((bs->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
     {
@@ -2372,7 +2372,7 @@ void kooshy_spawnProjectile(GameObject* obj, int state)
             }
             *(int*)&((GameObject*)newObj)->ownerObj = (int)obj;
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_blooplaugh2);
+        Sfx_PlayFromObject(obj, SFXTRIG_baddie_blooplaugh2);
     }
 }
 
@@ -2395,12 +2395,12 @@ void kooshy_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int msgF
         ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x8;
         if (damage > (s32)((EnemyState*)state)->current)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_sc_walkstep);
+            Sfx_PlayFromObject(obj, SFXTRIG_sc_walkstep);
             ((EnemyState*)state)->current = 0;
         }
         else
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_sc_runstep);
+            Sfx_PlayFromObject(obj, SFXTRIG_sc_runstep);
             ((EnemyState*)state)->current = (u16)(((EnemyState*)state)->current - damage);
         }
     }
@@ -2461,7 +2461,7 @@ void kooshy_updateIdle(GameObject* obj, int state)
     flagByte = ((EnemyState*)state)->userData2;
     if ((flagByte & 0x40) == 0)
     {
-        Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_baddie_blooplaugh3, 2);
+        Sfx_PlayFromObjectLimited(obj, SFXTRIG_baddie_blooplaugh3, 2);
         baddieSetMove(obj, state, 2, 1.0f, 0, 0);
         ((EnemyState*)state)->userData2 = (u8)((((EnemyState*)state)->userData2) | 0x40);
         ((EnemyState*)state)->userData1 = 0;
@@ -2501,7 +2501,7 @@ void kooshy_updateIdle(GameObject* obj, int state)
             }
             else if (mode == 4)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_newtricky_01j);
+                Sfx_PlayFromObject(obj, SFXTRIG_newtricky_01j);
             }
         }
         baddieSetMove(obj, state, mode, 1.5f, 0, 0);
@@ -2518,7 +2518,7 @@ void kooshy_updateIdle(GameObject* obj, int state)
         {
             rnd = randomGetRange(0x96, 0x12c);
             ((EnemyState*)state)->kooshy.sfxTimer = (f32)(s32)rnd;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_sc_clubswipe);
+            Sfx_PlayFromObject(obj, SFXTRIG_sc_clubswipe);
         }
     }
     magicplantSpawnMovePuffs(obj, state);
@@ -2529,7 +2529,7 @@ void kooshy_updateEngaged(GameObject* obj, int state)
     ((EnemyState*)state)->userData2 = ((EnemyState*)state)->userData2 & 0xbf;
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0 && (obj)->anim.currentMove != 1)
     {
-        Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_baddie_eggsnatch_movelp, 2);
+        Sfx_PlayFromObjectLimited(obj, SFXTRIG_baddie_eggsnatch_movelp, 2);
         baddieSetMove(obj, state, 1, 1.0f, 0, 0);
     }
     magicplantSpawnMovePuffs(obj, state);
@@ -2609,7 +2609,7 @@ void weevil_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int msgF
         {
             ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x8;
             ((EnemyState*)state)->current = 0;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_25f);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_25f);
         }
     }
     else if (msgFlag == 0x11)
@@ -2694,7 +2694,7 @@ void weevil_updateIdle(GameObject* obj, int state)
     {
         rnd = randomGetRange(0x3c, 0x78);
         ((EnemyState*)state)->weevil.gruntTimer = (f32)(s32)rnd;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_25e);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_25e);
     }
     ctr = ((EnemyState*)state)->userData2;
     if (ctr != 0)
@@ -2752,7 +2752,7 @@ void weevil_updateEngaged(GameObject* obj, int state)
         ((EnemyState*)state)->weevil.retreatTimer = 50.0f;
         baddieTurnTowardPoint(obj, state, ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
                     ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ, 1, 0);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_25d);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_25d);
     }
     obj->anim.rotY = ((EnemyState*)state)->spawnRotY;
     obj->anim.rotZ = ((EnemyState*)state)->spawnRotZ;
@@ -2816,7 +2816,7 @@ void baddieSpawnWaterRipple(GameObject* obj, EnemyState* state)
         (*gWaterfxInterface)->spawnRipple(tx, state->fireflyLantern.anchorY, tz, 0, 0.0f, 3);
         if (sqrtf(obj->anim.velocityX * obj->anim.velocityX + obj->anim.velocityZ * obj->anim.velocityZ) > 0.5f)
         {
-            Sfx_PlayAtPositionFromObject((int)obj, stk.x, stk.y, stk.z, SFXstaff_proj_putaway);
+            Sfx_PlayAtPositionFromObject(obj, stk.x, stk.y, stk.z, SFXstaff_proj_putaway);
         }
     }
 }
@@ -2830,8 +2830,8 @@ void pinPon_updateWhileFrozen(int obj, EnemyState* state, int unused, int cmd, i
     if (self->anim.currentMoveProgress > 0.5f)
     {
         state->flags2E8 |= 8;
-        Sfx_PlayFromObject(obj, SFXTRIG_en_rfall5_c);
-        Sfx_PlayFromObject((int)self, SFXTRIG_wp_iceywindlp16_233);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_en_rfall5_c);
+        Sfx_PlayFromObject(self, SFXTRIG_wp_iceywindlp16_233);
         state->current = 0;
         state->flags2E4 |= 32;
     }
@@ -2890,12 +2890,12 @@ void pinPon_updateIdle(GameObject* obj, int state)
         {
             if ((obj)->anim.currentMoveProgress > 0.5)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_kooshy_hit);
+                Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_hit);
                 ((EnemyState*)state)->animPlaySpeed = -0.02f;
             }
             else
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_kooshy_death);
+                Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_death);
                 ((EnemyState*)state)->animPlaySpeed = 0.02f;
             }
         }
@@ -2917,7 +2917,7 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
     curve = (RomCurveWalker*)*state;
     if (((EnemyState*)state)->controlFlags & 0x80000000U)
     {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_windlift_loop);
+        Sfx_PlayFromObject(obj, SFXTRIG_windlift_loop);
     }
     if (((((EnemyState*)state)->controlFlags & 0x2000U) != 0) &&
         ((Curve_AdvanceAlongPath(&curve->curve, 0.0f) != 0 || curve->atSegmentEnd != 0) &&
@@ -2972,12 +2972,12 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
             }
             else if ((obj)->anim.currentMoveProgress > 0.5)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_kooshy_hit);
+                Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_hit);
                 ((EnemyState*)state)->animPlaySpeed = -0.02f;
             }
             else
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_kooshy_death);
+                Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_death);
                 ((EnemyState*)state)->animPlaySpeed = 0.02f;
             }
         }
@@ -2989,12 +2989,12 @@ void pinPon_updateEngaged(GameObject* obj, int* state)
                 ((EnemyState*)state)->fireflyLantern.breathTimer = fval;
                 if ((obj)->anim.currentMoveProgress > 0.5)
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_kooshy_hit);
+                    Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_hit);
                     ((EnemyState*)state)->animPlaySpeed = -0.02f;
                 }
                 else
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_kooshy_death);
+                    Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_death);
                     ((EnemyState*)state)->animPlaySpeed = 0.1f;
                 }
             }
@@ -3589,7 +3589,7 @@ void rachnopUpdateWhileFrozen(GameObject* obj, u8* state, int unused, int eventK
     else if (eventKind != 0x11)
     {
         ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_zyck_lash_254);
+        Sfx_PlayFromObject(obj, SFXTRIG_baddie_zyck_lash_254);
         ((EnemyState*)state)->current = 0;
     }
     return;
@@ -3612,7 +3612,7 @@ void rachnopUpdateIdle(GameObject* obj, int state)
         }
         if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_id_253);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_253);
             Baddie_SetMove((int)obj, state, 2, 1.0f, 0, 0);
         }
     }
@@ -3634,7 +3634,7 @@ void rachnopUpdateApproach(GameObject* obj, int state)
         if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
         {
             Baddie_SetMove((int)obj, state, 0, (0.5f), 0, 0);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_id_252);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_252);
         }
     }
     else
@@ -3674,7 +3674,7 @@ void rachnopUpdateAttack(GameObject* obj, int state)
         {
             if (outIds[0] < 0x5dc)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_251);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_251);
                 Baddie_SetMove((int)obj, state, 1, 0.5f, 0, 0);
             }
             else
@@ -3775,7 +3775,7 @@ void spittingEbaSpawnPollen(GameObject* obj, int state)
             ((GameObject*)ref)->anim.velocityY = cosVal;
             ((GameObject*)ref)->anim.velocityZ = velY;
             *(u32*)&((GameObject*)ref)->ownerObj = (u32)obj;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_mika_cackle);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_cackle);
         }
     }
     return;
@@ -3828,21 +3828,21 @@ void spittingEbaUpdateWhileFrozen(int obj, u8* state, int unused1, int eventKind
         if (damage > (int)(u32)((EnemyState*)state)->current)
         {
             ((EnemyState*)state)->current = 0;
-            Sfx_PlayFromObject(obj, SFXTRIG_baddie_zyck_strike);
-            Sfx_PlayFromObject(obj, SFXTRIG_stftest);
+            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_zyck_strike);
+            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_stftest);
         }
         else
         {
             ((EnemyState*)state)->current = ((EnemyState*)state)->current - damage;
-            Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_call);
-            Sfx_PlayFromObject(obj, SFXTRIG_stftest);
+            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_kooshy_call);
+            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_stftest);
         }
         ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
     }
     else
     {
         ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
-        Sfx_PlayFromObject(obj, SFXTRIG_mv_ladderslide16_250);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mv_ladderslide16_250);
     }
     return;
 }
@@ -3897,7 +3897,7 @@ void spittingEbaUpdateEngaged(GameObject* obj, int state)
         else if ((obj->anim.currentMove == 5) && (timerExpired))
         {
             Baddie_SetMove(obj, state, 6, (1.0f), 0, 0);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_kooshy_death);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_death);
         }
         else if (obj->anim.currentMove == 6)
         {
@@ -3908,7 +3908,7 @@ void spittingEbaUpdateEngaged(GameObject* obj, int state)
                  ((((EnemyState*)state)->controlFlags & 0x4000000) != 0))
         {
             Baddie_SetMove(obj, state, 4, (1.0f), 0, 0);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_kooshy_hit);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_hit);
         }
     }
     spittingEbaUpdateTimeOfDay((int)obj, state);
@@ -3950,7 +3950,7 @@ void wbUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int wpad
         }
         else
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_wingflap_260);
+            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_mika_wingflap_260);
             ((EnemyState*)state)->current = 0;
             ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 | 0x20;
             ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
@@ -3975,7 +3975,7 @@ void wbUpdateEngaged(u32 obj, int state)
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DUSTER_HIT_VOLUME_SLOT, 1, 0);
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        Sfx_PlayFromObject(obj, SFXTRIG_mn_heart1_c_261);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mn_heart1_c_261);
     }
     ((EnemyState*)state)->duster.decoyTimer = ((EnemyState*)state)->duster.decoyTimer - timeDelta;
     if (((EnemyState*)state)->duster.decoyTimer <= 0.0f)
@@ -3990,7 +3990,7 @@ void wbUpdateEngaged(u32 obj, int state)
             randVal = randomGetRange(600, 0x352);
             ((EnemyState*)state)->duster.decoyTimer = (float)(int)randVal;
         }
-        Sfx_PlayFromObject(obj, SFXTRIG_baddie_eba_pollenspin);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_eba_pollenspin);
     }
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
@@ -4067,7 +4067,7 @@ void wbUpdateIdle(u32 obj, int state)
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DUSTER_HIT_VOLUME_SLOT, 1, 0);
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        Sfx_PlayFromObject(obj, SFXTRIG_mn_heart1_c_261);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mn_heart1_c_261);
     }
     ((EnemyState*)state)->duster.decoyTimer = ((EnemyState*)state)->duster.decoyTimer - timeDelta;
     if (((EnemyState*)state)->duster.decoyTimer <= 0.0f)
@@ -4082,7 +4082,7 @@ void wbUpdateIdle(u32 obj, int state)
             randVal = randomGetRange(600, 0x352);
             ((EnemyState*)state)->duster.decoyTimer = (float)(int)randVal;
         }
-        Sfx_PlayFromObject(obj, SFXTRIG_baddie_eba_pollenspin);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_eba_pollenspin);
     }
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
@@ -4195,13 +4195,13 @@ void mutatedEbaPlayMoveSfx(u32 obj, EnemyState* state)
     case 5:
         if (state->animEventMask != 0)
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_bite);
+            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_rach_bite);
         }
         break;
     case 6:
         if (state->animEventMask != 0)
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_bite);
+            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_rach_bite);
         }
         break;
     case 7:
@@ -4209,11 +4209,11 @@ void mutatedEbaPlayMoveSfx(u32 obj, EnemyState* state)
         {
             if (((GameObject*)obj)->anim.currentMoveProgress < 0.15f)
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_bite);
+                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_rach_bite);
             }
             else
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_death);
+                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_kooshy_death);
             }
         }
         break;
@@ -4222,15 +4222,15 @@ void mutatedEbaPlayMoveSfx(u32 obj, EnemyState* state)
         {
             if (((GameObject*)obj)->anim.currentMoveProgress < 0.25f)
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_hit);
+                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_kooshy_hit);
             }
             else if (((GameObject*)obj)->anim.currentMoveProgress < 0.75f)
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_call1);
+                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_rach_call1);
             }
             else
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_death);
+                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_kooshy_death);
             }
         }
         break;
@@ -4253,14 +4253,14 @@ void mutatedEbaUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, 
         {
             if ((((move = ((GameObject*)obj)->anim.currentMove) == 0) || (move == 1)) || (move == 3) || (move == 4))
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_mv_ladderslide16_250);
+                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mv_ladderslide16_250);
                 ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
             }
             else
             {
                 baddieSetMove((GameObject*)obj, (int)state, 4, 1.0f, 0, 0);
                 ((EnemyState*)state)->userData1 = 0;
-                Sfx_PlayFromObject(obj, SFXTRIG_baddie_kooshy_call);
+                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_kooshy_call);
                 ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
             }
         }
@@ -4368,7 +4368,7 @@ void hoodedZyckUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, 
     else
     {
         ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 8;
-        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_244);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_dn_boar1_c_244);
         ((EnemyState*)state)->current = 0;
     }
     return;
@@ -5009,7 +5009,7 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
                                                     ((ObjPlacement*)setup)->posZ) /
                                                    dur;
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_en_cvdrip1c_4ae);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_cvdrip1c_4ae);
     }
 }
 
@@ -5043,7 +5043,7 @@ void crawlerPlayMoveEventFx(GameObject* obj, u8* state)
             sub = &entry[i];
             if (sub->sfxId != 0)
             {
-                Sfx_PlayFromObject((int)obj, sub->sfxId);
+                Sfx_PlayFromObject(obj, sub->sfxId);
             }
             if (sub->shakeAmt != 0)
             {
@@ -5132,11 +5132,11 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
                 switch (attacker->anim.romDefNo)
                 {
                 case 0x416:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
+                    Sfx_PlayFromObject(obj, SFXTRIG_snort);
                     break;
                 case 0:
                 case 0x69:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_stftest);
+                    Sfx_PlayFromObject(obj, SFXTRIG_stftest);
                     break;
                 }
                 gCrawlerHitSfxTimer = 100.0f;
@@ -5144,7 +5144,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
         }
         else
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_swd_var);
+            Sfx_PlayFromObject(obj, SFXTRIG_swd_var);
         }
         ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
         return;
@@ -5185,20 +5185,20 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
                 switch (attacker->anim.romDefNo)
                 {
                 case 0x416:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
+                    Sfx_PlayFromObject(obj, SFXTRIG_snort);
                     break;
                 case 0:
                 case 0x69:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_stftest);
+                    Sfx_PlayFromObject(obj, SFXTRIG_stftest);
                     break;
                 }
-                Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_var);
+                Sfx_PlayFromObject(obj, SFXTRIG_baddie_var);
                 gCrawlerHitSfxTimer = 100.0f;
             }
         }
         else
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_stftest_var);
+            Sfx_PlayFromObject(obj, SFXTRIG_stftest_var);
         }
         if (damage > ((EnemyState*)state)->current)
         {
@@ -5236,20 +5236,20 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
                     switch (attacker->anim.romDefNo)
                     {
                     case 0x416:
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
+                        Sfx_PlayFromObject(obj, SFXTRIG_snort);
                         break;
                     case 0:
                     case 0x69:
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_stftest);
+                        Sfx_PlayFromObject(obj, SFXTRIG_stftest);
                         break;
                     }
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_var);
+                    Sfx_PlayFromObject(obj, SFXTRIG_baddie_var);
                     gCrawlerHitSfxTimer = 100.0f;
                 }
             }
             else
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_stftest_var);
+                Sfx_PlayFromObject(obj, SFXTRIG_stftest_var);
             }
             return;
         }
@@ -5263,20 +5263,20 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
                     switch (attacker->anim.romDefNo)
                     {
                     case 0x416:
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
+                        Sfx_PlayFromObject(obj, SFXTRIG_snort);
                         break;
                     case 0:
                     case 0x69:
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_stftest);
+                        Sfx_PlayFromObject(obj, SFXTRIG_stftest);
                         break;
                     }
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_var);
+                    Sfx_PlayFromObject(obj, SFXTRIG_baddie_var);
                     gCrawlerHitSfxTimer = 100.0f;
                 }
             }
             else
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_swd_var);
+                Sfx_PlayFromObject(obj, SFXTRIG_swd_var);
             }
             ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
         }
@@ -5292,20 +5292,20 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
                 switch (attacker->anim.romDefNo)
                 {
                 case 0x416:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_snort);
+                    Sfx_PlayFromObject(obj, SFXTRIG_snort);
                     break;
                 case 0:
                 case 0x69:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_stftest);
+                    Sfx_PlayFromObject(obj, SFXTRIG_stftest);
                     break;
                 }
-                Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_var);
+                Sfx_PlayFromObject(obj, SFXTRIG_baddie_var);
                 gCrawlerHitSfxTimer = 100.0f;
             }
         }
         else
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_swd_var);
+            Sfx_PlayFromObject(obj, SFXTRIG_swd_var);
         }
     }
     ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
@@ -5566,7 +5566,7 @@ void crawler_updateB(GameObject* obj, u8* state)
         ((EnemyState*)state)->userData1 = 0;
         if (obj->anim.romDefNo == FIRECRAWLER_SEQID_FIRECRAWLER)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_eggsnatch_var);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_eggsnatch_var);
             if (obj->childObjs[0] != NULL)
             {
                 firepipe_clearLinkedUpdateFlag(obj->childObjs[0]);
@@ -5979,7 +5979,7 @@ void crawler_rotateVectorYaw(int unused1, int* unused2, f32* vec, int unused3, i
 
 void hagabonMK2_stopLoopSfx(int obj, u8* state)
 {
-    Sfx_StopFromObject(obj, SFXTRIG_baddie_rach_death);
+    Sfx_StopFromObject((GameObject*)obj, SFXTRIG_baddie_rach_death);
 }
 
 void hagabonMK2_updateWhileFrozen(int obj, u8* st, int unused, int cmd, int wpad0, int wpad1, Vec* wpad2, int wpad3)
@@ -5995,8 +5995,8 @@ void hagabonMK2_updateWhileFrozen(int obj, u8* st, int unused, int cmd, int wpad
     else
     {
         ((EnemyState*)st)->flags2E8 |= 0x8;
-        Sfx_StopFromObject(objI, SFXTRIG_baddie_rach_death);
-        Sfx_PlayFromObject(obj, SFXTRIG_baddie_eba_leavesopen);
+        Sfx_StopFromObject((GameObject*)objI, SFXTRIG_baddie_rach_death);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_eba_leavesopen);
         ((EnemyState*)st)->current = 0;
     }
 }
@@ -6044,7 +6044,7 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
         CrawlerSeq12* sq = (CrawlerSeq12*)gCrawlerSeqTable;
         ((EnemyState*)state)->userData1 = sq[((EnemyState*)state)->userData1].mode;
         ((EnemyState*)state)->crawler.emergeTimer = 200.0f;
-        Sfx_StopFromObject((int)obj, SFXTRIG_baddie_rach_death);
+        Sfx_StopFromObject(obj, SFXTRIG_baddie_rach_death);
     }
 
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_PATH_FOLLOW) != 0)
@@ -6144,22 +6144,22 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
 
     if ((int)randomGetRange(0, 0x2ee) == 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_eba);
+        Sfx_PlayFromObject(obj, SFXTRIG_baddie_eba);
     }
 
     if (((EnemyState*)state)->crawler.engineTimer > 0.0f)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_rach_death);
+        Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_death);
         {
             f32 t = ((EnemyState*)state)->crawler.engineTimer;
-            Sfx_SetObjectSfxVolume((u32)obj, SFXTRIG_baddie_rach_death,
+            Sfx_SetObjectSfxVolume(obj, SFXTRIG_baddie_rach_death,
                                    (127.0f * t) / 2184.0f,
                                    t / 2184.0f);
         }
     }
     else
     {
-        Sfx_StopFromObject((int)obj, SFXTRIG_baddie_rach_death);
+        Sfx_StopFromObject(obj, SFXTRIG_baddie_rach_death);
     }
 
     {
@@ -6167,7 +6167,7 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
         if (*(GameObject**)&((EnemyState*)state)->lastHitObject != NULL &&
             ((t = (*(GameObject**)&((EnemyState*)state)->lastHitObject)->anim.romDefNo) == 0x1f || t == 0))
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_fball2_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_fball2_c);
         }
     }
 }
@@ -6253,22 +6253,22 @@ void hagabonMK2_update(GameObject* obj, u8* state)
     }
     if (((EnemyState*)state)->crawler.engineTimer > 0.0f)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_rach_death);
+        Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_death);
         {
             f32 t = ((EnemyState*)state)->crawler.engineTimer;
-            Sfx_SetObjectSfxVolume((u32)obj, SFXTRIG_baddie_rach_death,
+            Sfx_SetObjectSfxVolume(obj, SFXTRIG_baddie_rach_death,
                                    (127.0f * t) / 2184.0f,
                                    t / 2184.0f);
         }
     }
     else
     {
-        Sfx_StopFromObject((int)obj, SFXTRIG_baddie_rach_death);
+        Sfx_StopFromObject(obj, SFXTRIG_baddie_rach_death);
     }
     if (*(GameObject**)&((EnemyState*)state)->lastHitObject != NULL && ((*(GameObject**)&((EnemyState*)state)->lastHitObject)->anim.romDefNo == 0x1f ||
                                                 (*(GameObject**)&((EnemyState*)state)->lastHitObject)->anim.romDefNo == 0))
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_fball2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_fball2_c);
     }
 }
 
@@ -6373,11 +6373,11 @@ void snowworm_updateWhileFrozen(int obj, u8* st, int p3, int cmd, int p5, int su
     }
     if (((EnemyState*)st)->current == 0)
     {
-        Sfx_PlayFromObject(obj, SFXTRIG_baddie_eggsnatch_carry2);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_eggsnatch_carry2);
     }
     if (cmd == 0x1a)
         return;
-    Sfx_PlayFromObject(obj, SFXTRIG_stftest);
+    Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_stftest);
 }
 
 void crawler_playReactionEffects(GameObject* obj, int* st)
@@ -6388,14 +6388,14 @@ void crawler_playReactionEffects(GameObject* obj, int* st)
     case 2:
         if (((EnemyState*)st)->animEventMask != 0)
         {
-            Sfx_PlayFromObjectLimited((u32)obj, SFXTRIG_baddie_blooplaugh3, 2);
+            Sfx_PlayFromObjectLimited(obj, SFXTRIG_baddie_blooplaugh3, 2);
         }
         flag = 1;
         break;
     case 3:
         if (((EnemyState*)st)->animEventMask != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_haga_death);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_haga_death);
         }
         break;
     case 4:
@@ -6403,37 +6403,37 @@ void crawler_playReactionEffects(GameObject* obj, int* st)
         {
             if (obj->anim.currentMoveProgress < 0.15f)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_blooplaugh1);
+                Sfx_PlayFromObject(obj, SFXTRIG_baddie_blooplaugh1);
             }
             else
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_rach_call1);
+                Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_call1);
             }
         }
         break;
     case 5:
         if (((EnemyState*)st)->animEventMask != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_eggsnatch);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_eggsnatch);
         }
         break;
     case 6:
         if (((EnemyState*)st)->animEventMask != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_eggsnatch);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_eggsnatch);
         }
         break;
     case 7:
         if (((EnemyState*)st)->animEventMask != 0)
         {
-            Sfx_PlayFromObjectLimited((u32)obj, SFXTRIG_baddie_eggsnatch_movelp, 2);
+            Sfx_PlayFromObjectLimited(obj, SFXTRIG_baddie_eggsnatch_movelp, 2);
         }
         flag = 1;
         break;
     case 9:
         if (((EnemyState*)st)->animEventMask != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_blooplaugh2);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_blooplaugh2);
         }
         break;
     }
@@ -6938,16 +6938,16 @@ int iceBaddie_updateLandingState(GameObject* obj, GroundBaddieState* state) {
     if ((state->baddie.moveEventFlags & 1) == 0) {
         player = Obj_GetPlayerObject();
         if (player->anim.romDefNo != 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
         } else {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_swd);
+            Sfx_PlayFromObject(obj, SFXTRIG_swd);
         }
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_en_rfall5_c);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_26f);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_rfall5_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_26f);
         state->baddie.moveEventFlags |= 1;
     }
     if ((state->baddie.moveEventFlags & 2) == 0 && obj->anim.currentMoveProgress > 0.3f) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_iceywindlp16_233);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16_233);
         state->baddie.moveEventFlags |= 2;
         (*gBaddieControlInterface)->spawnChild(obj, objectState->triggerId, -1, 0);
     }
@@ -7026,11 +7026,11 @@ int iceBaddie_updateDropState(GameObject* obj, GroundBaddieState* state) {
         Obj_GetPlayerObject();
         player = Obj_GetPlayerObject();
         if (player->anim.romDefNo != 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
         } else {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_swd);
+            Sfx_PlayFromObject(obj, SFXTRIG_swd);
         }
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_26e);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_26e);
     }
     state->baddie.stateTag = 3;
     state->baddie.moveSpeed = 0.015f;
@@ -7053,7 +7053,7 @@ int iceBaddie_updateCommDownState(GameObject* obj, GroundBaddieState* state) {
         control = (IceBaddieControl*)objectState->control;
         state->baddie.eventFlags &= ~BADDIE_EVENT_FOOTSTEP;
         control->effectFlags |= ICEBADDIE_FX_ARM_ICEBALL;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_dsmk2_c_cf);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_dsmk2_c_cf);
     }
     (*gPlayerInterface)->rotateTowardTarget(obj, state, timeDelta, 4);
     return 0;
@@ -7511,7 +7511,7 @@ void iceBaddie_updateTargetMotion(GameObject* obj, GroundBaddieState* objectStat
     if (control->ambientSfxTimer >= 300) {
         control->ambientSfxTimer = randomGetRange(0, 200);
         if (state->baddie.controlMode == 7 || state->baddie.controlMode == 8) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_26c);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_26c);
         }
     }
     if ((objectState->configFlags & 2) != 0) {
@@ -7642,7 +7642,7 @@ void iceBaddie_update(GameObject* obj, int unusedA, int unusedB) {
             (*gBaddieControlInterface)
                 ->initGroundBaddie(obj, (u8*)placement, (u8*)objectState, 14, 8, 0x102, 0x26, 20.0f);
             objectState->targetState = 0;
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_seal4_c_263);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_seal4_c_263);
             ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
             objectState->baddie.moveDone = 0;
             obj->anim.alpha = 0xff;

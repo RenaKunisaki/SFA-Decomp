@@ -81,7 +81,7 @@ void dfshLaserBeam_update(GameObject* obj) {
         if (state->cycleTimer < 0) {
             if (state->beamBlocked == 0) {
                 state->cycleTimer = 0x190;
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_78);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_78);
                 state->beamVolumeScale = 0.0f;
             } else {
                 state->cycleTimer = 0x113;
@@ -89,9 +89,9 @@ void dfshLaserBeam_update(GameObject* obj) {
             state->blastPhase = 0;
         } else if (state->cycleTimer < state->warmupThreshold) {
             if (state->blastPhase == 0) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_79);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_79);
                 if (state->beamBlocked == 0) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_77);
+                    Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_77);
                 }
                 state->blastPhase = 1;
                 if (gDFSHLaserBeamEffectResource != NULL) {
@@ -99,7 +99,7 @@ void dfshLaserBeam_update(GameObject* obj) {
                 }
             }
             if (state->cycleTimer < 0x28) {
-                Sfx_StopObjectChannel((int)obj, DFSH_LASER_BEAM_SFX_CHANNEL);
+                Sfx_StopObjectChannel(obj, DFSH_LASER_BEAM_SFX_CHANNEL);
                 if ((state->beamVolumeScale >= 0.0f) && (state->beamBlocked == 0)) {
                     state->beamVolumeScale -= 0.0026000000070780516f * timeDelta;
                 }
@@ -117,7 +117,7 @@ void dfshLaserBeam_update(GameObject* obj) {
     }
 
     if (state->beamState != 0) {
-        Sfx_SetObjectChannelVolume((u32)obj, DFSH_LASER_BEAM_SFX_CHANNEL, 127.0f * state->beamVolumeScale, 0.5f);
+        Sfx_SetObjectChannelVolume(obj, DFSH_LASER_BEAM_SFX_CHANNEL, 127.0f * state->beamVolumeScale, 0.5f);
     }
 
     beamRange = (f32)(int)placement->beamRange;
@@ -189,7 +189,7 @@ void dfshLaserBeam_update(GameObject* obj) {
                     if (objGetAnimState80A(player) != DFSH_LASER_BEAM_PLAYER_SLIDE_STATE) {
                         int i;
 
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_espk2_c);
+                        Sfx_PlayFromObject(obj, SFXTRIG_wp_espk2_c);
                         for (i = 0; i < DFSH_LASER_BEAM_HIT_PARTICLE_COUNT; i++) {
                             (*gPartfxInterface)
                                 ->spawnObject(Obj_GetPlayerObject(), DFSH_LASER_BEAM_HIT_PARTICLE_ID, NULL,

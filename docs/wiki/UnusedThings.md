@@ -39,6 +39,36 @@ another (ID `0004BE3E`), but set to only appear in acts 9, 10, and 12, none of w
   leading to two fuel cells, and another pair near the floating platforms above. Two of these cells
   share the same flag, so collecting one causes the other to disappear.
 
+### Shipped code bugs pinned by the decomp
+
+Five genuine bugs in Rare's shipped code, each proven against the retail asm (the decompiled
+source reproduces them faithfully and must not "fix" them):
+
+1. **The `325767` trig-constant typo** (`src/main/dll/maketex.c`, `ObjSeq_func20`):
+   `fa = fa * 3.142f / 325767.0f;` — should be `32767`. Cause of the wiki's Tricky "Weird Head
+   Movement"; see [Tricky](Tricky) for the full derivation.
+2. **Feed-queue-full error print reads a second object that isn't there**
+   (`src/dlls/objects/196_Tricky/tricky.c`, `trickyReportError` path) — the wiki's "Death
+   Crash" null dereference. In the retail NTSC binary this repo targets, the report body
+   appears stripped at the queue-full site; see [Tricky](Tricky) for the caveats.
+3. **Pause-menu status counter drops an argument** (`src/dlls/engine/0/0.c`,
+   `pauseMenuDrawStatus`): `sprintf(buf, "%d/%d", lbl_803A9364[3])` passes one value for two
+   `%d` conversions — the second prints whatever happens to be in the next argument register.
+   The retail asm emits exactly one argument, so this is Rare's bug, not a decomp error.
+4. **`objShouldLoad` prints addresses as floats, twice** (`src/main/shader.c`): the verbose
+   loader path calls `OSReport("LOAD FAIL: Outside map x=%f y=%f z=%f\n", &placement->posX,
+   &placement->posY, &placement->posZ)` and
+5. `OSReport("LOAD PASS: In range %f\n", &d)` — both pass **pointers** to `%f` conversions.
+   Retail's asm agrees exactly (`addi` address materialization plus `crclr` = "no FP varargs"),
+   so Rare wrote the `&`s; the debug output printed garbage for these fields.
+
+Shipped **data** bugs are ledgered where their formats are documented: the corrupt ANIMCURV
+entry 583 (stored `dataSize` `0x80B9`, true size 0x14, in all 23 containers that carry it — the
+loader reads it as a negative `s16`, so the record can never load), the 10 ANIMCURV ids that
+drifted between the root copy and a per-map copy, and the 60 dead bytes in the root `.bin` are
+all in [Files](Files); the fuel-cell GameBit collisions above are placement-data bugs
+(see [ChapBits](ChapBits) for the bit machinery).
+
 ## globalmap.bin
 
 Old version of the map grid. Same format but many differences. In general many maps were packed
@@ -366,6 +396,47 @@ missing reader.
 - **HUD screen-width offset half** (`src/dlls/engine/0/0.c`): game-UI init computes
   `gGameUiScreenWidthOffset = width - 320` and `gGameUiScreenHeightOffset = height - 240`; the
   height half is consumed, the width half has zero loads binary-wide.
+- **mm texture-allocation phase flag** (`src/main/mm.c`, `mmSetTextureAllocationState` →
+  `gMmTextureAllocationState`): a pure setter with six live callers bracketing texture-upload
+  phases (`src/main/texture.c` sets 2/0 around the RCP texture-memory setup and 1/0 around the
+  alloc-failure path; `src/main/objprint_dolphin.c` sets 2/0 around its draw pass) — but the
+  allocator-side checker is gone; zero loads binary-wide. Same class as the expgfx guards above.
+- **Menu-state export** (`src/main/modelEngine.c`, `menuSetState` → `gMenuState`, initialized
+  to -1): one live cross-DLL caller (`src/dlls/engine/51/51.c`, passes 0); zero loads.
+- **Game-UI "unused HUD setting" export** (`src/dlls/engine/0/0.c`,
+  `GameUI_setUnusedHudSetting` → `gGameUiUnusedHudSetting`, initialized to 1): the setter is
+  still published in the GameUI DLL function-export table, but the backing byte has zero loads.
+- **Name-entry scroll Y half** (`src/dlls/objects/704/704.c`, `nameEntrySetScroll(x, y)`): the X
+  half is applied to the name-entry text (4 retail loads); the Y half is stored with zero loads.
+  The live caller (`src/dlls/engine/54/54.c`, the save-name entry screen) passes a computed X
+  and a constant 0 for Y.
+- **Title-screen previous-menu push halves** (`src/dlls/objects/704/704.c`,
+  `titleScreenSetMenuActive` / `titleScreenSetMenuSelection`): each saves the outgoing value
+  into `gTitleScreenPrevMenuActive`/`gTitleScreenPrevMenuSelection` before writing the new one;
+  the current halves are live (3-4 loads each), the prev halves have zero loads — whatever
+  consumed "return to previous menu" is gone.
+- **Attract-movie centering offsets** (`src/n_attractmode.c`): after `THPPlayerGetVideoInfo`,
+  the attract-mode player computes `gAttractMovieOffsetX/Y = (framebuffer dim - movie dim) / 2`;
+  zero loads — the movie is drawn without the centering the code still computes each boot.
+- **Orphaned init allocations**: three init-time `mmAlloc` results are stored to pointers with
+  zero loads binary-wide — `gObjHitsWorkBuffer` (`src/main/objhits.c`, 0x1900 bytes),
+  `lbl_803DCBC0` (`src/main/object.c`, 0x10 bytes) and `lbl_803DCD10`
+  (`src/main/pi_pathsearch.c`, 0x20 bytes). The memory is claimed every boot and never touched
+  again.
+- **One-shot kicks whose consumer is gone**: `gBlastedDamageTimer`
+  (`src/dlls/objects/345/345.c`: set to a frame count on each damage stage, never decremented or
+  read), `gCamcontrolReticleSpin` (`src/dlls/engine/1_camcontrol/camcontrol.c`: a spin-step
+  constant stored per frame while the aim reticle spins, while the actual rotation uses an
+  inline `1024.0f * timeDelta`), `gRcpTexAllocFailed` (`src/main/texture.c`: RCP texture-alloc
+  failure flag nothing checks), `gNewCloudStarsInitialized` (`src/main/skystars.c`: init-once
+  guard set at the end of star init, never tested — the init relies on its caller instead), and
+  `gCloudPrisonCurveId` (`src/dlls/objects/325_CloudPrison/CloudPrison.c`: the RomCurve
+  `findByAction` result is latched and discarded; only the needs-lookup flag next to it is
+  live).
+- **Plain-texmtx allocator half** (`src/main/shader_dolphin.c`, `gRcpNextTexMtx`): the
+  post-transform slot counter `gRcpNextPostTexMtx` is fully live (83 loads / 24 stores); the
+  plain texmtx counter is only ever reset to its base value (0x27, or 30 in one path) and never
+  bumped or read — the consumer that handed out plain texture-matrix slots is gone.
 - One decomp-side artifact found (and left in place) by the same scan: `shadowGetSunMagnitude`
   (`src/main/shadow_dolphin.c`) is an **invented reader** — a zero-caller static wrapping
   `gSunMagnitude` that provably does not exist in the retail object (retail `.text` is 0x1CCC
@@ -378,14 +449,80 @@ missing reader.
   re-derivation of the TU's real constant declarations; for census purposes `gSunMagnitude` is
   a store-only latch like the entries above.
 
-Most other store-only globals found by the same scan are one-off debug snapshot mirrors (e.g.
-`gShadowTrackTriangleCount`, `gTrackTriangleCount`, `gDvdLastDriveStatus`,
-`gObjSeqCurrentTrackId`, the `lbl_803DCEE8`-`lbl_803DCF18` shadow-track snapshot cluster) rather
-than whole severed mechanisms; a value stored *and used in-register* in the same function also
-shows up as "never loaded" without being dead (`gPauseMenuHoloRotY`, `gPlayerMoveTargetYaw`,
-`gMoonFxDayNo`, `gNewShadowLightAngleY`, `gCamForceBehindTraceDistance`,
-`gWmLevelControlBlendedLightIntensity` are that class), so store-only alone is not proof of
-severance — the entries above are additionally pure-setter/pure-latch shaped.
+#### Census disposition — all 227 store-only rows adjudicated
+
+The scan finds exactly **227** data symbols that are stored but never loaded and never
+address-taken anywhere in the retail binary. Every row falls into one of the classes below; the
+partition is exact (23 + 24 + 30 + 17 + 10 + 39 + 84 = 227).
+
+**Vendor code, not Rare vestiges (23).** SDK/MSL/musyx rows whose readers are debug-build
+asserts or accessor APIs this game never links or calls: `ArenaStart`/`ArenaEnd` (OSAlloc),
+`DBVerbose`, `DrawDone` (GXMisc), `FirstTimeInBootrom`/`ResetRequired` (dvd),
+`LastLength`/`LastReadIssued` (dvdlow), `GXOverflowSuspendInProgress`, `SheetImage` (OSFont),
+`__AR_BlockLength`/`__AR_ExpansionSize`/`__AR_FreeBlocks`/`__AR_InternalSize` (ar),
+`__DSP_tmp_task`, `__GXCurrentBPFifo`, `__memReg` (GXInit), `errno` (MSL), and the musyx ARAM
+queue latches `aramQueueValid`/`aramQueueWrite`/`aramStream`/`aramStreamFreeList` plus
+`lbl_803DE284` (synth_job_init).
+
+**Severed mechanisms (24 prior + 17 above = 41).** The bullet entries in this section: the
+render-override channel (10 globals), the sub-map carrier latch pair, the root-motion rotation
+triple, the ObjSeq camera-rotation quad, `gWaterFxDisabled`, the two expgfx guards,
+`gGameUiScreenWidthOffset`, `gSunMagnitude`, plus this census pass's additions
+(`gMmTextureAllocationState`, `gMenuState`, `gGameUiUnusedHudSetting`, `gNameEntryScrollY`, the
+two title-screen prev halves, the two attract-movie offsets, the three orphaned allocations,
+the five one-shot kicks, and `gRcpNextTexMtx`).
+
+**Per-frame oscillator exports (30).** The `gEffectN`/`gModgfxSineWave`/`gPartfxOscSine`
+family, one bullet above.
+
+**Store-then-use-in-register false positives (10).** The value is stored to the global and the
+*same register* is consumed immediately (a call argument or a follow-on expression), so the
+global itself has zero loads without the code being dead: `gPauseMenuHoloPosY`,
+`gPauseMenuHoloRotY`, `gPauseMenuHoloScale` (each stored then passed straight to
+`pauseMenuSetHoloTransform`), `gTrickyHudIconRotY` (stored then passed to `PSMTXRotRad`),
+`gGameTextLastLanguage` (the store's value also assigns the live `languageId` local),
+`gPlayerMoveTargetYaw`, `gMoonFxDayNo`, `gNewShadowLightAngleY`, `gCamForceBehindTraceDistance`
+and `gWmLevelControlBlendedLightIntensity`. Store-only alone is therefore not proof of
+severance; the mechanism entries above are additionally pure-setter/pure-latch shaped.
+
+**Named one-off latches and telemetry mirrors (39).** A result or status is latched to a named
+global no shipped code reads back — snapshot/debug class rather than a whole subsystem:
+crash/debug mirrors (`gErrDar`, `gErrDsisr` — the sibling `gErrContext` *is* read —
+`gDebugMarginBottom`/`Right` vs the live `gDebugPrintOriginX/Y`, `gDvdLastDriveStatus`,
+`gShadowTrackGridOrigin`/`gShadowTrackTriangleBuffer`/`gShadowTrackTriangleCount`,
+`gTrackTriangleCount`, `gMmLastFreeTick`, `gMmRegion0Size` — `gMmRegion0Used` is live),
+discarded lookup/computation results (`gAudioStreamPlayAddrCallbackResult` — the `...Done` flag
+is live — `gCreditsText`, `gTumbleweedBushDefaultText`, `gWeirdMenuTextHandle`,
+`gGameUiProjballObject`, `gExpgfxLastAddedSlot`, `gExpgfxSlotType1Average` — whose numerator
+`lbl_803DD274` is *load-only* in retail, so the stored average is always 0 —
+`gIceBaddieA05MoveVariant`/`gIceBaddieA06MoveVariant` (randomized move variants rolled and
+never consumed), `gKTRexPhaseCounter` (GameBit mirrored to a global; readers use the GameBit),
+`gObjSeqCurrentTrackId`, `gObjShadowDist`, `gPlayerShadowCamRotY`, `gSubtitleCurTime`,
+`gObjHitsPriorityHitTickDelta`, `gVoxMapsMaxMapIndex`, `gVoxMapsScratchBufferPtr`), and
+severed halves of live pairs (`gMinimapInfoTextXCommitted`/`YCommitted` vs the live
+uncommitted pair, `gMinimapTexU`/`V`, `gPlayerStaffBoostStartY` vs the live `...TargetY`,
+`gShaderLoadCenterY` vs the live X/Z, `gSbGalleonSkyBlendHold` and `gWmLevelControlBlendHold`
+restore-holds vs their live blend factors, `gSbGalleonSkyLightIntensity` and
+`gWorldPlanetCurIntensity` computed intensity bytes vs their live lerp inputs,
+`sLanternFireFlyLightActive`).
+
+**Nameless `lbl_*` latches (84).** Per project rule these stay unnamed (no reader = no name).
+By writer they are: the shadow-track snapshot cluster `lbl_803DCEE8`-`lbl_803DCF18` (13,
+shadow_dolphin), the shader_dolphin init-reset cluster `lbl_803DCD48`-`lbl_803DCD64` (11), the
+pi_videoinit mirror cluster `lbl_803DCCE0`/`CCF4`/`CCF8`/`CCFC`/`CD00` (5), texture.c
+`lbl_803DCDB0`/`DB4`, lightmap.c `lbl_803DCE54`/`CE58`/`CEAC`, and one-shot flag/prev-value
+latches in pi_dolphin (`lbl_803DB5C8`, `lbl_803DCC98`), pi_pathsearch (`lbl_803DCD08`),
+shader.c (`lbl_803DB620`), gameloop (`lbl_803DCA38`/`CA3F`), model.c (`lbl_803DCB58`/`CB5C`),
+object.c (`lbl_803DCB70`), objprint_dolphin (`lbl_803DCC34`), track_dolphin (`lbl_803DCF44`),
+intersect (`lbl_803DCFF4`, `lbl_803DD03C`), engine DLLs 2 (`lbl_803DD08A`/`D0B6`/`D0DC`), 7
+(`lbl_803DD1B0`), expgfx (`lbl_803DD253`), 13 (`lbl_803DD29A`), 27 (`lbl_803DD348` — copied
+from the load-only `lbl_803DD2C4`), 15 (`lbl_803DD44E`/`D44F`/`D450`), 18 (`lbl_803DD458`), 17
+(`lbl_803DD4A8`), camcontrol (`lbl_803DD4CB`/`D4CC`), 50 (`lbl_803DD5F4`), 52 (`lbl_803DD618`),
+53 (`lbl_803DD6B4`), 54 (`lbl_803DD6EC`/`D6ED`), 55 (`lbl_803DD6F9`/`D6FC`/`D70C`), 0
+(`lbl_803DBA88`, `lbl_803DD81C`/`D820`), object DLLs 704 (`lbl_803DD9CC`/`D9D0`), WM_Galleon
+(`lbl_803DC0F0`), ECSH_Shrine (`lbl_803DDBC0`), SH_swapston (`lbl_803DDBF4`), WM_sun
+(`lbl_803DDCAC`), WORLDplanet (`lbl_803DDD10`), player (`lbl_803DE430`/`DE464`/`DE4B0`), and
+textrender_run (`lbl_803DC980`, `lbl_803DC9D0` — copied from the load-only `lbl_803DC9D4`).
 
 ### Not found in this codebase
 
