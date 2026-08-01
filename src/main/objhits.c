@@ -62,9 +62,9 @@
 #include "main/objprint_internal.h"
 
 GameObject* gObjHitsActiveHitVolumeObjects[OBJHITS_ACTIVE_HIT_VOLUME_OBJECT_COUNT] = {NULL};
-ObjHitsSweepEntry* gObjHitsSweepEntryPtrs[OBJHITS_SWEEP_ENTRY_CAPACITY];
-ObjHitsSweepEntry gObjHitsSweepEntries[OBJHITS_SWEEP_ENTRY_CAPACITY];
 ObjHitsContactScratchEntry gObjHitsContactScratch[OBJHITS_CONTACT_SCRATCH_COUNT];
+ObjHitsSweepEntry gObjHitsSweepEntries[OBJHITS_SWEEP_ENTRY_CAPACITY];
+ObjHitsSweepEntry* gObjHitsSweepEntryPtrs[OBJHITS_SWEEP_ENTRY_CAPACITY];
 extern ObjHitsPriorityWorkSlot* gObjHitsPriorityHitStates;
 extern f32 gObjHitsResponseDominanceRatio;
 
@@ -2399,8 +2399,8 @@ typedef struct ObjectTypeIndexTable {
 
 STATIC_ASSERT(sizeof(ObjectTypeIndexTable) == 0x58);
 
-u32 gObjectTypeList[OBJTYPE_LIST_MAX];
 ObjectTypeIndexTable gObjectTypeIndices;
+u32 gObjectTypeList[OBJTYPE_LIST_MAX];
 
 typedef struct ObjContactCallbackEntry {
     GameObject* objA;
