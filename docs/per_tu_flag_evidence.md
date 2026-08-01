@@ -30,12 +30,27 @@ the unit.
 | 4 | `main/gameloop_buttonobj.c` | `removeButtonObject` (220 B) | **none** — hypothesis *unconfirmed* | — | — | Retail emits `srwi r0,r3,3; cmplwi r0,0`; we fuse to `srwi. r0,r3,3`. The TU is `-opt noschedule` only (peephole **ON**) while the rest of `main/` is `nopeephole`, so peephole fusion was the natural hypothesis — but `fn_flag_probe.py`, **all of whose profiles are `nopeephole`**, reports no match. Peephole-off alone does not fix it. Recorded as unexplained, not as a peephole finding. |
 | 5 | `dlls/.../SaveGame` | `SaveGame_gplaySetObjGroupStatus` | `-opt peephole,noschedule` | 97.981 → 87.746 | 99.743 → 92.652 | Catastrophic: the profile that helps the region destroys the unit. A clear negative. |
 | 6 | `main/gametext_tail.c` | `textMeasureFn_80016c9c` (1836 B) | `-opt noloopinvariants` | 98.039 → 98.943 | not recorded | Breaks `gameTextRenderById` **100 → 95.404**. Net loss; the classic shape of this whole table. |
+| 7 | `dlls/objects/202/202.c` | `gcRobotPatrol_updateWhileFrozen` (212 B) | **`-opt nocse`** — **byte-exact** | 98.679 → 100 | matched_code 97.570 → **60.358** | **The largest collateral in the table.** Buys exactly 1 function and costs 24, dropping **23 from 100** — `iceBaddie_updateEffectAnchors` 100 → 92.429, `sharpClawHandleHitMessage` 100 → 92.557, `crawler_updateB/C` (1624 B / 1944 B) ≈ 100 → 95.4/95.8. Unit matched functions **135 → 113**. Adjudicated: current `noloopinvariants` stands. |
 
 Rows 1–4 were measured in this lane. Rows 5–6 were measured elsewhere and are relayed here with
 their reported numbers so the set is in one place; re-measure before relying on them. A further
 `acosf` / `sincosf` / `gameloop_buttonobj` profile sweep exists in the same lane's records and is
 **not** reproduced here because this file should not carry numbers nobody in it measured — pull it
 from that lane before adjudicating.
+
+### Note on row 7 — why a flag can look right and be a rehome artifact
+
+`-opt nocse` was a genuine, correctly-measured win when `7c3b1b0b2` set it: at that time
+gcrobotpatrol was its **own standalone TU** and the flag took its `.text` to 100 with the other
+three functions unmoved. The DLL rehome then merged it into `dlls/objects/202/202.c` — today a
+138-function object DLL — and `18a7f991e3` set `noloopinvariants` for `crawlerPlayMoveEventFx`
+(98.67 → 100, zero per-function regressions). The old flag's evidence did not survive its TU.
+**A per-TU flag is only as valid as the TU boundary it was measured on; re-measure every flag a
+rehome or merge carries across.**
+
+Also measured: `nocse,noloopinvariants` together is **bit-identical to `nocse` alone**
+(60.35806 / 98.70133 / 113) — once CSE is off, loop-invariant motion has nothing left to hoist,
+so the combination cannot buy both wins. There is no reconciling profile.
 
 ### Note on row 3
 

@@ -423,6 +423,21 @@ transposed, the knob is the cast lever above, not the source text.
 
 ## Gate reminders that cost real score today
 
+- **`fnbytes` positional diff counts actively mislead when the lengths differ.** One missing
+  instruction shifts every later index, so the count measures *misalignment*, not badness.
+  On `streamsLoadedCallback` the baseline scored 39 "positional diffs" at 69 insn against a
+  cast variant's 9 at the target's 70 — and `report.json` showed the 39-diff baseline was the
+  **better** of the two by 0.586. Length parity is not match quality. Screen with `fnbytes` if
+  you like; adjudicate only on `report.json`. Joins the SequenceMatcher/autojunk trap in the
+  same family: proxy metrics manufacture confident, wrong orderings.
+- **Plain `ninja` does not rebuild a deleted `NonMatching` source object, and `report.json`
+  scores the unit anyway — silently and much lower.** Deleting `202.o` and running a full
+  `ninja` (EXIT=0, DOL retail-identical) left the object absent and the unit reading
+  60.358 / 113 matched functions instead of 97.570 / 135. Nothing errors; it looks exactly
+  like a catastrophic regression you just caused. Always rebuild the object by **explicit
+  target** (or `ninja all_source`) before reading a unit's score, and confirm the `.o` exists.
+  Same masking family as the stale-object race in `docs/rename_safety.md`.
+
 - **Read the prior probe record before re-running a sweep — and restate known results when
   handing a target over.** `subtitleUpdateAndDraw`'s `fn_flag_probe` result (MATCH under four
   profiles, and the unaffordable 100.000 / 19.887 / 57.37 trade) had already been measured and
@@ -504,7 +519,7 @@ that desyncs source from symbols **in a unit you are not editing**, so the defin
 still builds and the damage surfaces elsewhere. Key the replacement on the full
 `NAME = .section:0xADDRESS;` string and assert it matches exactly once.
 
-## The high-water-mark regression audit (axis CLOSED — sized, not worth working)
+## The high-water-mark regression audit (axis DRAINED — sized, then worked to empty)
 
 This repo records scores in commit messages (`fn 98.840->99.476`, `99.444->100`), which
 makes history an audit corpus: any function now scoring below a score once claimed for it
@@ -549,15 +564,57 @@ measuring anything:
 - **tu-context** — claimed before a TU merge/split, so the unit profile differed.
   `expgfx_updateActivePools`' 99.67 predates the 7-fragment merge; its `(u16)` cast lever
   still exists in today's source, so nothing was lost but the fragment's flag profile.
+- **bystander-reading** — the claiming commit never touched the function's unit at all;
+  the number was quoted in passing while the commit worked on something else, so the
+  "high-water" is just what the function happened to read that day. **Check the claim's
+  diff paths before believing a join.** `textureLoad`'s 99.07 comes from `4298a3ea0`,
+  a commit whose only source change was `shader`'s `mapInitSetRects`; `pauseMenuDrawStatus`
+  likewise, and that commit's actual change (`pauseMenuDrawElement`'s 5th param as `u8`)
+  is still in today's source. One `git show --stat` dissolves these.
 - **candidate** — none of the above; verify by measuring at the claiming commit before
   proposing a recovery.
+
+A claim can also be **half** accepted-trade: `tricky_SeqFn`'s 99.70 bundled a principled
+counter decouple (`int k`, still present today) with `*(f32*)&lbl_803E23E8`, a banned
+pool-reconstruction const since purged. The surviving half is not evidence the gap is
+recoverable — the residual *is* the purge cost. Split bundled claims before pricing them.
+Same shape as `Shield_update`, whose 100.0 is the value *before* a principled `int`-param
+retype; the `(u16) fcos16` narrowing that recovered most of it is still in the source, and
+current equals the post-retype claim exactly.
 
 ### Sizing result (2026-08, 42,030 commits, 2,006 claimed symbols)
 48 functions below high-water -> 19 rounding noise -> 29 real -> 7 lane-owned -> 22 mine.
 Of those, `zlbDecompress` (stale-claim) is 534 of ~674 bytes, and the next three largest
-(`expgfx` x3, 65 B) are accepted-trade or tu-context. **Addressable remainder ~75 bytes
-across ~18 functions at 2-5 bytes each — below the effort line.** The table lives in the
-audit commit body if anyone wants the tail.
+(`expgfx` x3, 65 B) are accepted-trade or tu-context. The table lives in the audit commit
+body if anyone wants the tail.
+
+### The tail was then worked, not deferred (axis DRAINED)
+"Below the effort line" was a judgment call, so the ~18-function tail was measured out
+entry by entry rather than left standing. **Nothing landed, and that is the result:** the
+recoverable mass was two peer recoveries already cashed; every other entry is principle,
+context, or fragment mirage. Worth knowing before anyone re-derives it:
+- **Every queue-2 "tu-context" entry dissolved on the merge commit's own numbers.** The
+  commits record the *drop*: `mtxRotateByVec3s` "99.45->98.35 (its exact pre-carve score)",
+  `ObjSeq_onMapSetup` 99.79->80.26, `trickyFindReachableRouteIndex` 99.786->97.821. The
+  high-water is a pre-merge/pre-split fragment score in all three; current is at or above
+  the post-merge value. Read the claiming commit before building anything.
+- **A high-water can be below current.** `DBprotection_updateFlight` was already 99.707
+  against a 99.680 claim — a peer had fixed it. Re-read current before opening an entry.
+- **Restructured-context is stale-claim's common form.** `SaveGame_gplaySetObjGroupStatus`'s
+  claim was a comma-order swap in a walking-pointer loop; the DLL rehome rewrote that loop
+  as an indexed loop inside a `static inline` helper. The construct the claim steered no
+  longer exists.
+- **The one genuinely recoverable entry was declined on principle.** `streamsLoadedCallback`
+  reaches its 98.571 high-water exactly, but *only* via `*(int*)&gAudioPendingLoadFlags &=
+  ~(s64)AUDIO_LOAD_STREAMS` — a codegen-steering pun two commits removed deliberately. All
+  three principled alternatives (bare `~(s64)`, bare `~(u64)`, macro typed `0x4LL`) measure
+  97.057. That the pun is the *only* route is what makes it a hack, not recovered source.
+  The honest lever would be evidence for a different original type on the flags global.
+- **Both band knobs can be simultaneously exhausted.** `modelCalcVtxGroupMtxs`: 120
+  declaration permutations (4 distinct outcomes, current ties the minimum) plus 6
+  definition-order permutations of its copy-class call returns (current is the unique
+  minimum). Residual is copy-class param homing plus a float magic constant with no named
+  local behind it, at band width 6 — the >=5 regime where the model is ~0.1% predictive.
 
 - `docs/data_axis.md` — the data axis, closed: the section-granular pairing law, two refuted gates, the vein taxonomy and the screen order.
 - `docs/band_width_worklist.md` — where a structural fix can stick (`structB` vs `regB`).
