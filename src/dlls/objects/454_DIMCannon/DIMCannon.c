@@ -267,6 +267,7 @@ int lbl_803DBF10 = 152100;
 f32 lbl_803DBF14 = -300.0f;
 
 void* gDimCannonResource;
+int lbl_803DDB54;
 
 int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     DimCannonState* state;

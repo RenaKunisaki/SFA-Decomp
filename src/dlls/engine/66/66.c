@@ -38,6 +38,7 @@ STATIC_ASSERT(offsetof(CameraModeNormalSlideTransform, translation) == 0x0C);
 STATIC_ASSERT(sizeof(CameraModeNormalSlideTransform) == 0x18);
 
 CameraModeNormalState* gCameraModeNormalState;
+int lbl_803DD534;
 f32 gCameraModeNormalScaledTimeDelta;
 u8 gCamcontrolTraceBboxBlocked;
 
