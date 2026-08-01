@@ -1027,6 +1027,19 @@ extern int gSunOcclusionSampleOffsets[];
 extern f32 lbl_803DEBDC;
 extern f32 lbl_803DEC40;
 
+static inline void GXPosition3f32(const f32 x, const f32 y, const f32 z)
+{
+    GXWGFifo.f32 = x;
+    GXWGFifo.f32 = y;
+    GXWGFifo.f32 = z;
+}
+
+static inline void GXTexCoord2f32(const f32 s, const f32 t)
+{
+    GXWGFifo.f32 = s;
+    GXWGFifo.f32 = t;
+}
+
 void* trackGetBlockDescriptors(u32* outVal);
 
 void mapBlockRender_setVtxDcrs(u8 doSetup, MapBlockData* block, Shader* shader,
@@ -1304,26 +1317,14 @@ void renderGlows(void)
                 fade = 20000.0f * sunDot;
                 sunDot = fade * lbl_803DEC40;
                 GXBegin(GX_QUADS, GX_VTXFMT2, 4);
-                GXWGFifo.f32 = -sunDot;
-                GXWGFifo.f32 = -sunDot;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                GXWGFifo.f32 = sunDot;
-                GXWGFifo.f32 = -sunDot;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                GXWGFifo.f32 = lbl_803DEBDC;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                GXWGFifo.f32 = sunDot;
-                GXWGFifo.f32 = sunDot;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                GXWGFifo.f32 = lbl_803DEBDC;
-                GXWGFifo.f32 = lbl_803DEBDC;
-                GXWGFifo.f32 = -sunDot;
-                GXWGFifo.f32 = sunDot;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                GXWGFifo.f32 = lbl_803DEBDC;
+                GXPosition3f32(-sunDot, -sunDot, lbl_803DEBCC);
+                GXTexCoord2f32(lbl_803DEBCC, lbl_803DEBCC);
+                GXPosition3f32(sunDot, -sunDot, lbl_803DEBCC);
+                GXTexCoord2f32(lbl_803DEBDC, lbl_803DEBCC);
+                GXPosition3f32(sunDot, sunDot, lbl_803DEBCC);
+                GXTexCoord2f32(lbl_803DEBDC, lbl_803DEBDC);
+                GXPosition3f32(-sunDot, sunDot, lbl_803DEBCC);
+                GXTexCoord2f32(lbl_803DEBCC, lbl_803DEBDC);
             }
         }
     }
@@ -1351,48 +1352,20 @@ void renderGlows(void)
             e = gGlowLightList[i];
             if (e->glowAlpha != 0)
             {
-                f32 quadZ;
-                f32 quadY;
-                f32 quadX;
-
                 selectTexture((Texture*)((int)e->glowTexture), 0);
                 _gxSetTevColor2((int)((f32)(u32)e->glowColor[0] * e->activeIntensity),
                                 (int)((f32)(u32)e->glowColor[1] * e->activeIntensity),
                                 (int)((f32)(u32)e->glowColor[2] * e->activeIntensity),
                                 (u8)((int)(e->glowColor[3] * e->glowAlpha) >> 8));
                 GXBegin(GX_QUADS, GX_VTXFMT2, 4);
-                quadZ = e->viewZ;
-                quadY = e->viewY - e->glowScale;
-                quadX = e->viewX - e->glowScale;
-                GXWGFifo.f32 = quadX;
-                GXWGFifo.f32 = quadY;
-                GXWGFifo.f32 = quadZ;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                quadZ = e->viewZ;
-                quadY = e->viewY - e->glowScale;
-                quadX = e->viewX + e->glowScale;
-                GXWGFifo.f32 = quadX;
-                GXWGFifo.f32 = quadY;
-                GXWGFifo.f32 = quadZ;
-                GXWGFifo.f32 = lbl_803DEBDC;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                quadZ = e->viewZ;
-                quadY = e->viewY + e->glowScale;
-                quadX = e->viewX + e->glowScale;
-                GXWGFifo.f32 = quadX;
-                GXWGFifo.f32 = quadY;
-                GXWGFifo.f32 = quadZ;
-                GXWGFifo.f32 = lbl_803DEBDC;
-                GXWGFifo.f32 = lbl_803DEBDC;
-                quadZ = e->viewZ;
-                quadY = e->viewY + e->glowScale;
-                quadX = e->viewX - e->glowScale;
-                GXWGFifo.f32 = quadX;
-                GXWGFifo.f32 = quadY;
-                GXWGFifo.f32 = quadZ;
-                GXWGFifo.f32 = lbl_803DEBCC;
-                GXWGFifo.f32 = lbl_803DEBDC;
+                GXPosition3f32(e->viewX - e->glowScale, e->viewY - e->glowScale, e->viewZ);
+                GXTexCoord2f32(lbl_803DEBCC, lbl_803DEBCC);
+                GXPosition3f32(e->viewX + e->glowScale, e->viewY - e->glowScale, e->viewZ);
+                GXTexCoord2f32(lbl_803DEBDC, lbl_803DEBCC);
+                GXPosition3f32(e->viewX + e->glowScale, e->viewY + e->glowScale, e->viewZ);
+                GXTexCoord2f32(lbl_803DEBDC, lbl_803DEBDC);
+                GXPosition3f32(e->viewX - e->glowScale, e->viewY + e->glowScale, e->viewZ);
+                GXTexCoord2f32(lbl_803DEBCC, lbl_803DEBDC);
             }
         }
         GXSetCurrentMtx(GX_PNMTX0);
