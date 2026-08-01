@@ -236,7 +236,7 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
         distSq = dx * dx + dz * dz;
         dist = sqrtf(distSq);
         heightDelta = (10.0f + state->aimTargetY) - state->launchOriginY;
-        distSq = (distSq > 10.0f) ? distSq : 10.0f;
+        distSq = (distSq < 10.0f) ? 10.0f : distSq;
         if ((distSq < (f32)((s32)(placement->targetRadius * 2) * (s32)(placement->targetRadius * 2))) ||
             (heightDelta < lbl_803DBF14) || ((((GameObject*)player)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)) {
             state->shouldSpawnProjectile = 0;
