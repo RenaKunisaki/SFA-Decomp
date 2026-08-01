@@ -494,7 +494,7 @@ crash/debug mirrors (`gErrDar`, `gErrDsisr` — the sibling `gErrContext` *is* r
 discarded lookup/computation results (`gAudioStreamPlayAddrCallbackResult` — the `...Done` flag
 is live — `gCreditsText`, `gTumbleweedBushDefaultText`, `gWeirdMenuTextHandle`,
 `gGameUiProjballObject`, `gExpgfxLastAddedSlot`, `gExpgfxSlotType1Average` — whose numerator
-`lbl_803DD274` is *load-only* in retail, so the stored average is always 0 —
+`gExpgfxSlotType1Sum` is *load-only* in retail, so the stored average is always 0 —
 `gIceBaddieA05MoveVariant`/`gIceBaddieA06MoveVariant` (randomized move variants rolled and
 never consumed), `gKTRexPhaseCounter` (GameBit mirrored to a global; readers use the GameBit),
 `gObjSeqCurrentTrackId`, `gObjShadowDist`, `gPlayerShadowCamRotY`, `gSubtitleCurTime`,
@@ -523,6 +523,76 @@ from the load-only `lbl_803DD2C4`), 15 (`lbl_803DD44E`/`D44F`/`D450`), 18 (`lbl_
 (`lbl_803DC0F0`), ECSH_Shrine (`lbl_803DDBC0`), SH_swapston (`lbl_803DDBF4`), WM_sun
 (`lbl_803DDCAC`), WORLDplanet (`lbl_803DDD10`), player (`lbl_803DE430`/`DE464`/`DE4B0`), and
 textrender_run (`lbl_803DC980`, `lbl_803DC9D0` — copied from the load-only `lbl_803DC9D4`).
+
+#### Load-only complement — the 397 loads-but-never-stored rows adjudicated
+
+The mirror scan finds **397** data symbols in writable sections that are loaded but never
+stored and never address-taken anywhere in the retail binary (reloc census over all 1069
+objects; the same store-through-register caveat applies in reverse — a store through a
+computed pointer would be invisible, so the surprising rows below were re-verified against
+the retail object asm directly). Every reader of these symbols sees the section's boot value:
+the initializer for `.sdata`, zero for `.sbss`. The partition is exact
+(340 + 11 + 9 + 37 = 397).
+
+**Initialized tuning constants never touched at runtime (340, `.sdata`/`.data`).** The benign
+bulk: named per-object tuning parameters (the `gAndross*` family alone is ~60 rows, plus
+`gSnowBike*`, `gProximityMine*`, `gCameraModeNpcSpeak*`, the HUD/pause-menu layout webs, the
+intersect_render color/scale webs) that a 2002 dev left as non-`const` globals. Functionally
+constants; nothing severed.
+
+**Zero constants in `.sbss2`/`.bss2` (11).** Compiler-placed zero-valued read-only data
+(`lbl_803E8440`-`803E8474` cluster, `gTexShaderFogColor`/`gTexLightmapFogColor`,
+`sSynthFadeUnit`): zero literals, not state.
+
+**Vendor rows (9, `.sbss`).** SDK latches whose writers this game never links or reaches:
+`__aborting`, `CancelLastError`, `sDvdfsCurrentDirEntry`, `BarnacleEnabled`,
+`TokenCB`/`DrawDoneCB` (the setter APIs are never called), `__OSInIPL`, `__OSIsGcam`,
+`aramUploadChunkSize`.
+
+**Game rows in `.sbss` — always-zero reads (37).** The signal class; every reader observes 0:
+
+- **Half-severed accumulator (1).** `gExpgfxSlotType1Sum` (was `lbl_803DD274`): expgfx
+  computes `gExpgfxSlotType1Average = gExpgfxSlotType1Sum / gExpgfxSlotType1Count` and
+  increments the count, but nothing ever accumulates into the sum — asm-verified as the sole
+  `lwz` feeding a `divw`, so the stored "average" is always `0 / n = 0` (which is why the
+  average itself sits in the store-only census above). The accumulate half of the mechanism
+  was severed.
+- **Severed orthographic projection mode (4).** `gCameraOrthoTop`/`Bottom`/`Left`/`Right` are
+  read only inside `gCameraProjectionMode == 1` arms (four `C_MTXOrtho` call sites,
+  asm-verified as the only accesses) — and `gCameraProjectionMode`'s single store in the
+  whole binary writes 0, so the ortho mode is unreachable and its extents were never
+  configured.
+- **Never-installed pointer channels (5).** `lbl_803DCAB0` (an
+  `EnvironmentUpdateInterface**` hook: lightmap NULL-checks it and would call
+  `(*p)->update()`, but no code ever installs it), `lbl_803DCF40` (track_dolphin line
+  sort-order buffer behind a `!= 0` guard, never allocated), `gMapCellRenderInstrsTable`
+  (base pointer in `mapDebugRender`'s cell dump, never allocated), `gNewCloudModelLight`
+  (NULL-guarded `ModelLightStruct_free` of a light never created), `gDummy39Texture`
+  (`Dummy39_release` frees a texture no code ever allocates).
+- **Never-set guard flags (8).** Branches whose flag no shipped code raises:
+  `lbl_803DCACC` (gameloop), `lbl_803DCC20`/`CC35`/`CC36` (objprint pass guards),
+  `gLightmapScreenImageEnabled` (the lightmap-path `screenImageDraw` call never fires),
+  `gObjSeqStreamSuppressed` (exported in `objseq_api.h`, never raised — audio-stream
+  suppression by ObjSeq is a dead channel), `lbl_803DDCE0` (DBHoleContr force-hide),
+  `gVfpDragHeadActiveIndex` (head-selection latch stuck at 0: only head 0 is ever active).
+- **Zero-propagation latch pairs (5).** The load side of pairs whose store side is in the
+  store-only census: `lbl_803DC9D4` (copied into `lbl_803DC9D0`, textrender_run),
+  `lbl_803DCF1C`/`lbl_803DCF20` (fanned into the shadow_dolphin `CF0C`-`CF18` snapshot
+  cluster), `lbl_803DD060` (change-detector against `lbl_803DD062` that can never fire),
+  `lbl_803DD2C4` (defined in engine DLL 14, copied cross-DLL into 27's `lbl_803DD348`).
+- **Shipped-zero tuning values (14).** Live code paths reading a parameter whose value is
+  simply 0, several sitting beside initialized `.sdata` siblings:
+  `gModelChainJitterScale` (chain jitter multiplied out to nothing),
+  `gCameraModeNpcSpeakMode6AnchorLerpScale` (its eight mode-6 siblings are initialized),
+  `gPauseMenuHoloRotXAmp` (X wobble amplitude 0; Y/Z are live), `lbl_803DD7F8`/`D7F9` (HUD
+  bar x-offsets), `lbl_803DD8BA` (exported via a getter), `gWarpStoneYawBias`/
+  `gWarpStoneHeadPitchOffset`, `lbl_803DDD68` (DR_LaserCan pitch bias), `lbl_803DDD70`
+  (622 rotation offset), `gGfLevelConProjectileYaw`/`gGfLevelConRingProjectilePitchSource`,
+  `gDRCloudRunnerAirMeterBaseline`, and `gViewportJitterField` (every
+  `GXSetViewportJitter`-path call passes field 0).
+
+Nothing was deleted: every symbol is load-bearing for section layout, and the `.sdata` rows
+carry their initializers in the DOL image.
 
 ### Not found in this codebase
 

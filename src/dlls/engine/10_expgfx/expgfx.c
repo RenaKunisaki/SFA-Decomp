@@ -1965,7 +1965,7 @@ int expgfx_acquireResourceEntry(int resourceId)
 }
 
 int gExpgfxSlotType1Average;
-int lbl_803DD274;
+int gExpgfxSlotType1Sum;
 int gExpgfxSlotType1Count;
 int gExpgfxLastAddedSlot;
 u16 gExpgfxPhaseAngleB;
@@ -4534,7 +4534,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
         if (slotType == 1)
         {
             gExpgfxSlotType1Count = gExpgfxSlotType1Count + 1;
-            gExpgfxSlotType1Average = lbl_803DD274 / gExpgfxSlotType1Count;
+            gExpgfxSlotType1Average = gExpgfxSlotType1Sum / gExpgfxSlotType1Count;
         }
 
         slot->colorByte0 = (u8)((int)*(u16*)&config->colorByte0 >> 8);
