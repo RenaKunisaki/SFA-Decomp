@@ -83,7 +83,7 @@ u32 gRcpTexAllocTag = 6;
 char sDebugIntLineFormat[] = "%d\n";
 
 void* textureAlloc(u16 w, u16 h, int fmt, u8 mip, u8 maxLod, u8 wrapS, u8 wrapT, u8 minFilter, u8 magFilter);
-void textureInitGXTexObj(Texture* texture);
+void textureInitGXTexObj(void* textureData);
 
 void* textureIdxToPtr(int idx)
 {
@@ -260,9 +260,10 @@ void textureInitSecondaryGXTexObj(Texture* tex, GXTexObj* obj)
     }
 }
 
-void textureInitGXTexObj(Texture* texture) {
+void textureInitGXTexObj(void* textureData) {
     u8 hasMipmaps[1];
     GXTexObj* gxTexObj;
+    Texture* texture = (Texture*)textureData;
     hasMipmaps[0] = 0;
     texture->tmemAddr = NULL;
     texture->preloaded = hasMipmaps[0];
