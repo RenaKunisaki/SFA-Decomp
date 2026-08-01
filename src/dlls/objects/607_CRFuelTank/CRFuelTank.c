@@ -6,6 +6,7 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/maketex_timer_api.h"
 #include "main/objhits.h"
+#include "sys/objects.h"
 
 #define CRFUELTANK_HIT_VOLUME_SLOT 0x1d
 
@@ -52,7 +53,7 @@ void crfueltank_hitDetect(GameObject* obj)
         if (hitObj->anim.romDefNo == CRFUELTANK_TRIGGER_OBJ)
         {
             ObjHits_DisableObject(obj);
-            Sfx_PlayFromObject((GameObject*)Obj_GetPlayerObject(), SFXTRIG_ar_barrel16);
+            Sfx_PlayFromObject(Obj_GetPlayerObject(), SFXTRIG_ar_barrel16);
             obj->anim.alpha = 0xfa;
             obj->userData2 = 1;
             if (def->hitEvent != -1)

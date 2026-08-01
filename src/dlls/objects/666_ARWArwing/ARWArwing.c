@@ -73,6 +73,7 @@
 #include "main/loaded_file_flags.h"
 #include "main/map_load.h"
 #include "main/rcp_dolphin_api.h"
+#include "main/pi_dolphin_api.h"
 
 GameObject* gArwing;
 
