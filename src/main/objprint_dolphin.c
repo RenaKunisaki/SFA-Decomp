@@ -75,7 +75,6 @@ extern s32 gModelMtxCacheState;
 extern s32 gObjFuzzLayerIndex;
 extern u8 gObjFuzzPassActive;
 extern u32 lbl_803DB468;
-extern f32 lbl_803DEA28;
 
 int objNormalizeRotationMatrix(f32* matrix, f32* out)
 {
@@ -121,10 +120,6 @@ int objNormalizeRotationMatrix(f32* matrix, f32* out)
     return 1;
 }
 
-extern f32 gObjPrintHalfPi;
-extern f32 gObjPrintNegHalfPi;
-extern const f32 gObjPrintAngleUnitScale;
-extern const f32 gObjPrintTwoPi;
 
 int objMatrixToRotation(f32* m, s16* outA, s16* outB, s16* outC)
 {
@@ -138,9 +133,9 @@ int objMatrixToRotation(f32* m, s16* outA, s16* outB, s16* outC)
         return 0;
     }
     x = asinf(-buf[6]);
-    if (x < gObjPrintHalfPi)
+    if (x < 1.5707964f)
     {
-        if (x > gObjPrintNegHalfPi)
+        if (x > -1.5707964f)
         {
             y = __kernel_cos(buf[2], buf[10]);
             z = __kernel_cos(buf[4], buf[5]);
@@ -158,9 +153,9 @@ int objMatrixToRotation(f32* m, s16* outA, s16* outB, s16* outC)
         z = 0.0f;
         y = y - z;
     }
-    *outC = (s16)(s32)(gObjPrintAngleUnitScale * z / gObjPrintTwoPi);
-    *outB = (s16)(s32)(gObjPrintAngleUnitScale * x / gObjPrintTwoPi);
-    *outA = (s16)(s32)(gObjPrintAngleUnitScale * y / gObjPrintTwoPi);
+    *outC = (s16)(s32)(65536.0f * z / 6.2831855f);
+    *outB = (s16)(s32)(65536.0f * x / 6.2831855f);
+    *outA = (s16)(s32)(65536.0f * y / 6.2831855f);
     return 1;
 }
 
@@ -298,7 +293,8 @@ const IndTexMtx23 sObjFuzzShellIndMtxA = {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f
 const IndTexMtx23 sObjFuzzShellIndMtxB = {{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f}}};
 
 extern u8 gObjFuzzPhaseLatched;
-extern u32 lbl_803DEA00;
+
+static const GXColor sObjFuzzDirLightEnvColor = {0xD8, 0xE0, 0xFF, 0xFF};
 extern u32 lbl_803DB470;
 extern int lbl_803DB498;
 extern int lbl_803DB49C;
@@ -344,7 +340,7 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
     getNewShadowNoiseTextureFrames(&noiseTextures, &noiseFrameCount);
     fz = (f32)gObjFuzzLayerIndex / (f32)(s32)noiseFrameCount;
     fz = fz * fz;
-    fz = fz * lbl_803DEA28;
+    fz = fz / 2.0f;
     selectTexture((Texture*)(textureIdxToPtr(*(u32*)Shader_getLayer(rop, 0))), 0);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXSetTevDirect(GX_TEVSTAGE0);
@@ -422,7 +418,7 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
     else
     {
         ModelLightStruct* lt;
-        kc2 = *(GXColor*)&lbl_803DEA00;
+        kc2 = sObjFuzzDirLightEnvColor;
         lt = objCreateLight((void*)obj, 0);
         if (lt != NULL)
         {
@@ -528,7 +524,7 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
     else
     {
         fz = (f32)gObjFuzzLayerIndex / (f32)(s32)noiseFrameCount;
-        fz = fz * lbl_803DEA28;
+        fz = fz / 2.0f;
     }
     selectTexture((Texture*)(textureIdxToPtr(*(u32*)Shader_getLayer(rop, 0))), 0);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
@@ -1298,13 +1294,8 @@ static void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* 
     }
 }
 
-extern f32 lbl_803DEA28;
 
 
-extern f32 gObjPrintHalfPi;
-extern f32 gObjPrintNegHalfPi;
-extern const f32 gObjPrintAngleUnitScale;
-extern const f32 gObjPrintTwoPi;
 
 
 #include "main/objprint_dolphin_internal.h"
@@ -1315,17 +1306,12 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
 static void objRenderChild(int* child, int* parent, u8 isShadow);
 
 extern volatile int gAssetLoadInFlightFlags;
-extern f32 lbl_803DEA4C;
-extern f32 lbl_803DEA50;
-extern f32 lbl_803DEA54;
 extern s16 gDefragDelayFrames;
 extern u32 gAssetLoadCompletedFlags;
 
 
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 
-extern f32 lbl_803DEA64;
-extern f32 lbl_803DEA6C;
 
 #include "main/dll/ppcwgpipe_struct.h"
 
@@ -2666,11 +2652,11 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     fuzzPass = passMaskCopy & 4;
     if (fuzzPass || (passMaskCopy & 8))
     {
-        fade = lbl_803DEA4C;
+        fade = 0.08f;
     }
     else if (passMaskCopy & 2)
     {
-        fade = lbl_803DEA50;
+        fade = 0.15f;
     }
     did = 0;
     if (!(((ObjModel*)am)->bufferFlags & 8))
@@ -2804,7 +2790,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     {
         if (fuzzPass || fuzzShadowPass || (passMaskCopy & 8))
         {
-            f32 sc2 = 1.0f + (lbl_803DEA54 * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
+            f32 sc2 = 1.0f + (1.5f * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
             PSMTXTrans((MtxPtr)tm, -*(f32*)(m + 0x44), -*(f32*)(m + 0x48), -*(f32*)(m + 0x4c));
             PSMTXScale((MtxPtr)sm, sc2, sc2, sc2);
             PSMTXConcat((MtxPtr)sm, (MtxPtr)tm, (MtxPtr)sm);
@@ -3203,7 +3189,7 @@ void objRenderFuzz(int* obj)
     dist = sqrtf(dx * dx + dy * dy + dz * dz);
     if (strong == 0)
     {
-        cnt = (s32)((lbl_803DEA64 * (2.0f * dist)) /
+        cnt = (s32)((5.25f * (2.0f * dist)) /
                     (((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale));
         gObjFuzzStep = 2;
     }
@@ -3488,7 +3474,7 @@ void objRenderModel(GameObject* obj)
     gObjShadowColor[3] = obj->anim.modelState->shadowAlpha;
     getObjectShadowDrawParams(obj, &d1, &d2, &d3, &d4);
     col = *(u32*)gObjShadowColor;
-    hudDrawColored(d1, d3, d4, &col, (s32)(lbl_803DEA6C * d2), 1);
+    hudDrawColored(d1, d3, d4, &col, (s32)(256.0f * d2), 1);
 }
 
 void objSetRenderingShadowPass(u8 x)
