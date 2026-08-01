@@ -76,6 +76,7 @@ f32 lbl_803DC190 = 1.0f;
 f32 lbl_803DC194 = 150.0f;
 s16 gBossDrakorMaxJawStepAngle = 0xE38;
 s16 gBossDrakorJawAnglePerTick = 0x2D8;
+int lbl_803DC19C[1] = {0};
 
 #define BOSSDRAKOR_MAP_ARENA          0x1d /* map-event id set to act 3 on boss defeat */
 #define BOSSDRAKOR_OBJGROUP           0x45

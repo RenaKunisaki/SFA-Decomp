@@ -13,6 +13,7 @@
 #include "string.h"
 
 CameraModeTalkState* gCameraModeTalkState;
+int lbl_803DD544;
 
 void CameraModeTalk_copyToCurrent(const CameraModeTalkInputs* inputs) {
     gCameraModeTalkState->turnInput = inputs->turn;
