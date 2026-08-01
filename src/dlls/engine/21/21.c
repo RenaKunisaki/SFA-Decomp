@@ -597,8 +597,7 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
     u8 pointCount;
     u32 flags;
     f32* localPoint;
-    f32* targetRow;
-    int zoff[2];
+    int zoff;
     int pointIndex;
     s32 pointLimit;
     int mode;
@@ -610,7 +609,7 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
     f32 matrix[16];
 
     pointCount = collision->pointCounts & CURVES_POINT_COUNT_LOCAL_MASK;
-    collision->localPointHitMask = zoff[0] = 0;
+    collision->localPointHitMask = zoff = 0;
     pointIndex = 0;
     while (pointIndex < pointCount)
     {
@@ -623,7 +622,7 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
             mode = 4;
         }
         collision->localPointHitMask |=
-            trackGetLineIntersect(&collision->localPointTarget[0][zoff[0]], &collision->localPointWorld[0][zoff[0]],
+            trackGetLineIntersect(&collision->localPointTarget[0][zoff], &collision->localPointWorld[0][zoff],
                                collision->localPointRadii[pointIndex], mode,
                                (TrackBBoxHit*)collision->localHitPlanes, obj,
                                (u8)collision->primaryHitType,
@@ -640,13 +639,13 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
             {
                 mode = 4;
             }
-            trackGetLineIntersect(&collision->localPointTarget[0][zoff[0]], &collision->localPointWorld[0][zoff[0]],
+            trackGetLineIntersect(&collision->localPointTarget[0][zoff], &collision->localPointWorld[0][zoff],
                                collision->localPointRadii[pointIndex], mode,
                                (TrackBBoxHit*)collision->localHitPlanes, obj,
                                (u8)collision->secondaryHitType, -1, 0, (s8)collision->activeTimer);
         }
         pointIndex++;
-        zoff[0] += 3;
+        zoff += 3;
     }
     if (pointCount > 1)
     {
@@ -690,18 +689,13 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
     transform.y = obj->anim.localPosY;
     transform.z = obj->anim.localPosZ;
     setMatrixFromObjectPos(matrix, &transform);
-    zoff[0] = 0;
-    targetRow = (f32*)collision;
-    zoff[1] = zoff[0];
-    for (; zoff[0] < pointCount * 3; zoff[0] += 3)
+    for (zoff = 0; zoff < pointCount * 3; zoff += 3)
     {
-        targetRow[69] = targetRow[57];
-        targetRow[71] = targetRow[59];
-        localPoint = (f32*)((u8*)collision->localPointPositions + zoff[1]);
+        collision->localPointTarget[0][zoff] = collision->localPointWorld[0][zoff];
+        collision->localPointTarget[0][zoff + 2] = collision->localPointWorld[0][zoff + 2];
+        localPoint = collision->localPointPositions + zoff;
         Matrix_TransformPoint(matrix, localPoint[0], localPoint[1], localPoint[2], &tempX,
-                              &collision->localPointTarget[0][zoff[0] + 1], &tempZ);
-        zoff[1] += 0xc;
-        targetRow += 3;
+                              &collision->localPointTarget[0][zoff + 1], &tempZ);
     }
 }
 
@@ -960,8 +954,6 @@ f32 curves_sampleHeight(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height)
 RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, int queryAll)
 {
     int pairCount;
-    RomCurvePoint* outPoint;
-    TrackGroundHit** hitPointCursor;
     TrackGroundHit** hitPoints;
 
     if (obj != sCurvesCachedHitObj)
@@ -973,17 +965,14 @@ RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, in
         {
             sCurvesCachedHitCount = ROMCURVE_GETCURVES_MAX_POINTS;
         }
-        hitPointCursor = hitPoints;
-        outPoint = sCurvesHitPoints;
         for (pairCount = 0; pairCount < sCurvesCachedHitCount; pairCount++)
         {
-            outPoint[pairCount].height = hitPointCursor[0]->height;
-            outPoint[pairCount].normalX = hitPointCursor[0]->normalX;
-            outPoint[pairCount].normalY = hitPointCursor[0]->normalY;
-            outPoint[pairCount].normalZ = hitPointCursor[0]->normalZ;
-            outPoint[pairCount].object = hitPointCursor[0]->object;
-            outPoint[pairCount].surfaceType = hitPointCursor[0]->surfaceType;
-            hitPointCursor++;
+            sCurvesHitPoints[pairCount].height = hitPoints[pairCount]->height;
+            sCurvesHitPoints[pairCount].normalX = hitPoints[pairCount]->normalX;
+            sCurvesHitPoints[pairCount].normalY = hitPoints[pairCount]->normalY;
+            sCurvesHitPoints[pairCount].normalZ = hitPoints[pairCount]->normalZ;
+            sCurvesHitPoints[pairCount].object = hitPoints[pairCount]->object;
+            sCurvesHitPoints[pairCount].surfaceType = hitPoints[pairCount]->surfaceType;
         }
     }
     *outCount = sCurvesCachedHitCount;

@@ -29,6 +29,7 @@
 #include "sys/objects.h"
 
 CameraModeViewfinderState* gCameraModeViewfinderState;
+int lbl_803DD54C;
 
 char sCameraModeViewfinderYDebugFormat[] = "y=%f\n";
 
