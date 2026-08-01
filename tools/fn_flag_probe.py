@@ -65,6 +65,10 @@ from function_objdump import load_units
 REPO = Path(__file__).resolve().parent.parent
 
 # name -> (-opt token, -inline token).  None keeps the unit's configured value.
+#
+# These REPLACE the unit's -opt wholesale, and every alternative hardcodes
+# "nopeephole,noschedule".  That is safe only for units already configured that
+# way -- i.e. main/ under GC/2.0.  See PROFILES_125N for why.
 PROFILES: dict[str, tuple[str | None, str | None]] = {
     "as-configured":  (None, None),
     "prop":           ("nopeephole,noschedule", None),
@@ -76,6 +80,44 @@ PROFILES: dict[str, tuple[str | None, str | None]] = {
     "noprop+inloff":  ("nopeephole,noschedule,nopropagation", "off"),
     "prop+inloff":    ("nopeephole,noschedule", "off"),
 }
+
+# RELATIVE profiles, used for units whose configured -opt is not already
+# "nopeephole,noschedule" -- musyx/audio (GC/1.2.5n) configures plain -O4,p with
+# NO -opt at all, i.e. peephole and scheduling ON.  Against those units the
+# absolute table above is not a probe but a demolition: substitute() finds no
+# -opt to replace, APPENDS "nopeephole,noschedule,...", and every alternative
+# silently also turns two major passes off.  Measured, that yields a table where
+# every alternative column is "-" for every function -- indistinguishable from a
+# genuinely closed flag axis, which is the most dangerous failure a tool of this
+# kind can have.  Here the tokens are ADDED to whatever the unit configures.
+#
+# The token set is the measured-LIVE vocabulary (see --census).  Unknown tokens
+# are accepted and SILENTLY IGNORED by 1.2.5n exactly as w81 proved for GC/2.0,
+# so a token earns its place here only by changing some unit's output.
+PROFILES_125N: dict[str, tuple[str | None, str | None]] = {
+    "as-configured":    (None, None),
+    "nocse":            ("nocse", None),
+    "noprop":           ("nopropagation", None),
+    "nolifetimes":      ("nolifetimes", None),
+    "noloopinv":        ("noloopinvariants", None),
+    "nostrength":       ("nostrength", None),
+    "nodead":           ("nodead", None),
+    "nocse+noprop":     ("nocse,nopropagation", None),
+    "noloopinv+nodead": ("noloopinvariants,nodead", None),
+}
+
+# Tokens probed by --census.  The first is a deliberate nonsense token: it is
+# the negative control for silent-unknown-token acceptance and MUST come out
+# "inert".  The trailing positive forms are already on at -O4,p, so "inert" for
+# them means "no observable effect here", not "rejected".
+CENSUS_TOKENS = [
+    "__BOGUS__",
+    "nopeephole", "noschedule", "nocse", "nopropagation", "nolifetimes",
+    "noloopinvariants", "nostrength", "nodead",
+    "noautoinline", "nofp_contract", "nointrinsics", "noaliasing", "novectorize",
+    "peephole", "schedule", "cse", "propagation", "lifetimes", "loopinvariants",
+    "strength", "dead",
+]
 
 
 def ninja_cflags(obj_path: str) -> tuple[list[str], str]:
@@ -102,7 +144,16 @@ def ninja_cflags(obj_path: str) -> tuple[list[str], str]:
     return shlex.split(cflags.group(1)), mwv.group(1)
 
 
-def substitute(flags: list[str], opt: str | None, inline: str | None) -> list[str]:
+def substitute(flags: list[str], opt: str | None, inline: str | None,
+               relative: bool = False) -> list[str]:
+    """Apply an -opt/-inline override.
+
+    relative=False replaces the effective -opt outright (the historical
+    behaviour, correct for units already configured nopeephole,noschedule).
+    relative=True ADDS the tokens to whatever the unit configures, preserving
+    its peephole/scheduling state -- required for any unit whose baseline is
+    not nopeephole,noschedule, or the "probe" changes several axes at once.
+    """
     out = list(flags)
     for key, val in (("-opt", opt), ("-inline", inline)):
         if val is None:
@@ -111,10 +162,24 @@ def substitute(flags: list[str], opt: str | None, inline: str | None) -> list[st
         if positions:
             # Later MWCC options override earlier ones.  Some profiles append
             # an override to cflags_base, so replace the effective occurrence.
-            out[positions[-1] + 1] = val
+            if relative and key == "-opt":
+                out[positions[-1] + 1] = f"{out[positions[-1] + 1]},{val}"
+            else:
+                out[positions[-1] + 1] = val
         else:
             out += [key, val]
     return out
+
+
+def wants_relative(flags: list[str]) -> bool:
+    """A unit needs relative profiles unless it already configures the
+    nopeephole,noschedule baseline the absolute table assumes."""
+    positions = [i for i, flag in enumerate(flags[:-1]) if flag == "-opt"]
+    if not positions:
+        return True
+    configured = flags[positions[-1] + 1]
+    toks = set(configured.split(","))
+    return not {"nopeephole", "noschedule"} <= toks
 
 
 def compile_probe(src: str, flags: list[str], mwv: str, outdir: Path) -> Path | None:
@@ -147,7 +212,16 @@ def main() -> int:
     ap.add_argument("unit")
     ap.add_argument("--symbol", action="append", default=[])
     ap.add_argument("--all", action="store_true")
-    ap.add_argument("--profiles", default=",".join(PROFILES))
+    ap.add_argument("--profiles", default=None)
+    ap.add_argument("--census", action="store_true",
+                    help="probe each -opt token alone for LIVENESS (does it change output?) "
+                         "and for CONTROL RETENTION, instead of running profiles")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--relative", dest="relative", action="store_true", default=None,
+                      help="ADD profile tokens to the unit's configured -opt (default for any "
+                           "unit not already configured nopeephole,noschedule)")
+    mode.add_argument("--absolute", dest="relative", action="store_false",
+                      help="REPLACE the unit's -opt outright")
     args = ap.parse_args()
 
     units = load_units(REPO / "build/GSAE01/config.json")
@@ -171,12 +245,55 @@ def main() -> int:
         print("no symbols to probe")
         return 2
 
-    names = [p for p in args.profiles.split(",") if p in PROFILES]
-    results: dict[str, dict[str, str]] = {}
+    relative = wants_relative(flags) if args.relative is None else args.relative
+    table = PROFILES_125N if relative else PROFILES
     outroot = REPO / "build/flag_probe_fn"
+
+    def want_bytes(sym: str) -> list | None:
+        try:
+            return [b for b, _ in disassemble(objdump, target, sym)]
+        except LookupError:
+            return None
+
+    if args.census:
+        base = compile_probe(src, flags, mwv, outroot / "_census_base")
+        if base is None:
+            print("baseline compile FAILED -- cannot census")
+            return 2
+
+        def got_bytes(obj, sym):
+            try:
+                return [b for b, _ in disassemble(objdump, obj, sym)]
+            except LookupError:
+                return None
+
+        ctrl = [s for s in symbols
+                if want_bytes(s) is not None and got_bytes(base, s) == want_bytes(s)]
+        print(f"unit {args.unit}   mw_version={mwv}   symbols={len(symbols)}   "
+              f"as-configured controls={len(ctrl)}")
+        print("A token is LIVE only if it changes output.  __BOGUS__ is the negative control "
+              "for silent-unknown-token acceptance and MUST read inert.\n")
+        print(f"{'token':24}{'live?':8}{'controls kept':16}note")
+        for tok in CENSUS_TOKENS:
+            obj = compile_probe(src, substitute(flags, tok, None, relative=True),
+                                mwv, outroot / "_census_tok")
+            if obj is None:
+                print(f"{tok:24}{'ERR':8}{'-':16}compile failed / token rejected")
+                continue
+            live = any(got_bytes(obj, s) != got_bytes(base, s) for s in symbols)
+            kept = sum(1 for s in ctrl if got_bytes(obj, s) == want_bytes(s))
+            note = "" if live else "IGNORED (silent-unknown, or already-on no-op)"
+            print(f"{tok:24}{'LIVE' if live else 'inert':8}"
+                  f"{f'{kept}/{len(ctrl)}':16}{note}")
+        return 0
+
+    names = [p for p in (args.profiles.split(",") if args.profiles else list(table))
+             if p in table]
+    results: dict[str, dict[str, str]] = {}
     for pname in names:
-        opt, inline = PROFILES[pname]
-        obj = compile_probe(src, substitute(flags, opt, inline), mwv, outroot / pname)
+        opt, inline = table[pname]
+        obj = compile_probe(src, substitute(flags, opt, inline, relative=relative),
+                            mwv, outroot / pname)
         for sym in symbols:
             if obj is None:
                 results.setdefault(sym, {})[pname] = "ERR"
@@ -193,6 +310,7 @@ def main() -> int:
                 results.setdefault(sym, {})[pname] = "MATCH" if want == got else "-"
 
     width = max(len(s) for s in symbols) + 2
+    print(f"mw_version={mwv}   profiles={'RELATIVE (added to configured -opt)' if relative else 'ABSOLUTE (replace -opt)'}")
     print(f"{'function':{width}}" + "".join(f"{n:>16}" for n in names))
     for sym in symbols:
         row = results[sym]
@@ -200,14 +318,36 @@ def main() -> int:
         print(f"{sym:{width}}{cells}")
 
     cfg = names[0] if names and names[0] == "as-configured" else None
+
+    # POSITIVE CONTROLS -- printed by default and deliberately hard to skip.
+    # A profile that breaks every already-matching function tells you nothing
+    # about the functions you are probing: its "-" cells are the tool failing,
+    # not the flag axis closing.  Reading this row is what distinguishes a real
+    # closure from a vacuous one.
+    controls = [s for s in symbols if results[s].get(cfg) == "MATCH"] if cfg else []
+    unsound: list[str] = []
+    if controls:
+        kept = {n: sum(1 for s in controls if results[s].get(n) == "MATCH") for n in names}
+        unsound = [n for n in names if n != cfg and kept[n] == 0]
+        print(f"\n{'CONTROLS kept':{width}}" +
+              "".join(f"{f'{kept[n]}/{len(controls)}':>16}" for n in names))
+        print(f"  ({len(controls)} functions match as-configured; a profile that keeps none of "
+              f"them is UNSOUND on this unit and its column is uninformative)")
+        if unsound:
+            print(f"  UNSOUND profiles (0 controls kept, results ignored): {', '.join(unsound)}")
+            if len(unsound) == len([n for n in names if n != cfg]):
+                print("  *** EVERY alternative profile is UNSOUND here: this unit's flag axis is "
+                      "UNPROBED, not closed.  Do not read the '-' cells as evidence. ***")
+
+    sound = [n for n in names if n != cfg and n not in unsound]
     gained = [s for s in symbols
               if results[s].get(cfg) != "MATCH"
-              and any(results[s].get(n) == "MATCH" for n in names)]
+              and any(results[s].get(n) == "MATCH" for n in sound)]
     if gained:
-        print("\nfunctions a DIFFERENT profile would fix "
+        print("\nfunctions a DIFFERENT (and SOUND) profile would fix "
               "(=> per-TU flag is wrong, or the unit merges TUs and needs a split):")
         for s in gained:
-            wins = [n for n in names if results[s].get(n) == "MATCH"]
+            wins = [n for n in sound if results[s].get(n) == "MATCH"]
             print(f"  {s:{width}} <- {','.join(wins)}")
     return 0
 
