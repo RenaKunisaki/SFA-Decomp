@@ -98,6 +98,35 @@ playerStateShootFireball 98.905, playerStateTryCastSpell 98.714, playerStateAimS
 **Tell.** Target `lis rS,K` into a saved reg + N x `addi rD,rS,lo` spanning `bl`/`bctrl`;
 ours repeats the pair per site.
 
+## 4b. Retail-deleted redundant ext before a narrow store in a nopeephole TU (compiler-side)
+
+**Mechanism.** The narrow-store extension rule (lane C9) is upheld: at `-opt nopeephole`,
+`s16field += <int-typed expr>` always emits `extsh` before the `sth`. Retail's
+`babyCloudRunner_turnTowardTarget` (objects/332, nopeephole TU proven by its siblings) shows
+that ext deleted while every other instruction — including the surrounding
+extend-at-use pattern — matches our nopeephole compile byte-for-byte. Recompiling the same
+source with `-opt peephole` reproduces retail's store region exactly, but full peephole also
+transforms the rest of the function (fn 98.86->93.52 on the TU flip; render 100->91.25,
+sequenceCallback 100->94.22). Retail's pipeline applied the redundant-ext deletion without the
+other peephole transforms — a pass subset no flag or (banned) pragma selects. No fix exists.
+
+**Probe evidence (A59).** 34-case spelling fuzz + targeted probes over local type x callee
+return type x statement structure x cast placement x lhs form (bitfield/union/pointer): the only
+source-level elision paths are (a) an unpromoted-narrow-typed rhs per the C9 matrix, and
+(b) a NEW deferred form — `s16 y = s16call();` leaves `y` unextended, a statement-level
+`y >>= k` then shifts the RAW register and `field += y` elides — but under `-O4,p` (GC/2.0 and
+GC/1.3.2) the shifted value is rematerialised (`srawi`+`extsh`) at every later use, never
+materialised once (measured in-tree: 98.86 -> 89.20). GC/1.1/1.2.5 canonicalise eagerly
+instead. The retail single-`srawi` + extend-at-use shape is unreachable from source; the
+refcorpus has ZERO instances of `lha; srawi; add; sth`-without-ext across all 38,736
+functions x 4 profiles.
+
+**Rows:** babyCloudRunner_turnTowardTarget (objects/332) 98.864, gap 1.136. Sibling tell
+banked by C9: dll_98_func03 (152) `sth`->`lha` store-forward weld 99.77.
+
+**Tell.** A nopeephole unit whose ONLY diff is a surplus `extsh`/`extsb`/`clrlwi` immediately
+before a narrow store, with the rhs int-typed and extend-at-use everywhere else matching.
+
 ## 5. Toolchain caps (source-unreachable; sight-list)
 
 Closed classes with no reachable spelling — bank on sight, details in the memory topic files:
