@@ -90,6 +90,8 @@ plausible. Don't.
 | **Merged-TU duplication** | equal distinct constant counts, retail merely holding more copies; our side always *smaller* | TU-boundary artifact. `objects/202` is 421→127 slots at 119 distinct on both sides. Leave it. |
 | **Pool-order TU artifacts** | same value multiset, different offsets; size 4v8 / 8v4 shifts | TU-boundary artifact per CLAUDE.md. Leave the unit `NonMatching`; do not reconstruct the pool. |
 | **Unowned `gap_*` bytes** | splitter-emitted `gap_NN_8XXXXXXX_section` symbols marking bytes no symbol owns | Not ours to define. Exclude from every screen — counting them manufactures a phantom gap. |
+| **Cross-symbol reach through an adjacent base** | `displacement_oob_check` reports typed reads past a symbol's claimed size; the over-reach lands **inside a correctly-claimed neighbour** | Faithful, not a defect. Retail addresses the sibling through the same base. **Correcting the size would overlap a correctly-carved symbol.** Decline. |
+| **Splitter attribution artifact** | the OOB screen fires on the **retail** object but not on ours, for `.text` that is byte-identical | Not a real access and not a divergence — the splitter attributed a same-page address to a preceding symbol plus displacement. Nothing to fix; the code already matches. Decline. |
 | **Genuine content** | our side missing *distinct values* the retail side has | The only real class. Exactly one instance found tree-wide (`player_SeqFn`, +8232 B, a retype — not an added constant). |
 
 Of 25 non-`auto_` data-losing units, **13 have `missing == .sdata2` size exactly**, every one with an
@@ -97,6 +99,47 @@ overwhelmingly anonymous pool: `intersect_render` 236/236 (13 named / 40 anon), 
 (0/41), `DIMSnowHorn` 144/144 (2/33), `BossDrakor` 120/120 (0/27), `DR_LaserCan` 100/100,
 `engine/19` 96/96, `CFGuardian` 88/88, `SH_thorntai` 80/80, `DFropenode` 76/76, `engine/69` and
 `DIM_BossTon` 64/64, `engine/24` and `sincosf` 32/32.
+
+### The under-claimed-size discriminator: are the bytes past the claim UNOWNED?
+
+The last two rows above are the ones that look **exactly** like a real defect in tool output, so
+classify with this test before touching `symbols.txt`. `tools/displacement_oob_check.py` reports
+typed reads landing past a symbol's claimed size. That is a real fix class *only* when the bytes
+past the claim belong to nobody:
+
+- **Unowned bytes ⇒ genuinely under-claimed; correctable.** The sky-RGBA case: five `.sbss`
+  objects claimed `size:0x1`, the bytes after them unowned, and the splitter minting 3-byte
+  `gap_*` fillers **derived from the bad claim** (no `gap_` entry exists in `symbols.txt`, so the
+  fillers are an output of the error, never evidence for it). Proven by **layout** — at 4 bytes
+  every symbol lands on its exact retail address — with `.text` byte-identical and the DOL
+  bit-identical.
+- **Owned bytes ⇒ cross-symbol reach; decline.** Every over-reach in the current population lands
+  inside a correctly-claimed neighbour, so the axis has **no upside by construction, not by bad
+  luck**. Worked survey (5 distinct symbols; note the tool's hit count is **accesses, not
+  symbols** — 70 source-side hits were 2 symbols, 194 retail-side hits were 4):
+
+  | symbol | claimed | max read | pad to next | lands inside |
+  |---|---|---|---|---|
+  | `gObjFxCrystalSparkleTbl` | 0x1e | +0x110 | 2 | `gObjFxHitPulseTbl` |
+  | `lbl_802C1D50` | 0x18 | +0x50 | 0 | `lbl_802C1D68` |
+  | `RunQueue` | 0x100 | +0x6e4 | 0 | `DefaultThread` |
+  | `CommandList` | 0x3c | +0xcc | 4 | `Curr` |
+  | `gWritePos` | 0x4 | +0x8 | 0 | `gReadCount` |
+
+**Corroborating the carve itself — the reloc standard.** When a base is read past its end, ask
+whether retail *independently relocates* the symbol the read lands in. It does for
+`gObjFxPulseVariantTbl` and `gObjFxHitPulseTbl` (their own `ADDR16_HA`/`LO` pairs at `0x18ea` /
+`0x191a`), and **a single merged table could never produce those** — so the carve is confirmed and
+a size correction is affirmatively wrong, not merely unnecessary. Check our relocations against
+retail's at the same `.text` offsets too: matching there means our cross-reach spelling is
+faithful, however odd it reads in C.
+
+**And distrust the headline.** This axis was briefed as "a table claimed at one entry, read at
+seven-plus" — inverted. The table is correctly sized; its *siblings* are read through its base.
+Run the tool's own `control` mode first (it self-builds a paired probe) and read the w82 record —
+this screen was once ~88% false positives before it was fixed — **even when the instrument comes
+recommended.** Applying that brief mechanically would have put an overlapping size claim into
+`symbols.txt`.
 
 ---
 
