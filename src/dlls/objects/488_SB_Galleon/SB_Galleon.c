@@ -80,7 +80,7 @@ ObjectDescriptor15 gSB_GalleonObjDescriptor = {
 void DBprotection_updateFlight(GameObject* obj) {
     ObjPlacement* spawnData;
     SBGalleonState* state;
-    f32 ty;
+    f32 tx;
     GameObject** objects;
     GameObject* otherObj;
     s8 c;
@@ -98,7 +98,7 @@ void DBprotection_updateFlight(GameObject* obj) {
     f32 blendK;
     f32 lerpD;
     f32 zRatio;
-    f32 tx;
+    f32 ty;
     GameObject* tricky;
     f32 tz;
     f32 ambA;
@@ -346,9 +346,9 @@ void DBprotection_updateFlight(GameObject* obj) {
         tz = tz - ((GameObject*)obj)->anim.localPosZ;
         ((SBGalleonState*)state)->speed = 3.0f;
         dist = sqrtf(tz * tz + (tx * tx + dy * dy));
-        tx = tx * 0.0625f;
-        dy = dy * 0.03125f;
-        tz = tz * 0.03125f;
+        tx *= 0.0625f;
+        dy *= 0.03125f;
+        tz *= 0.03125f;
         if (tx > 6.0f) {
             tx = 6.0f;
         }
@@ -369,7 +369,8 @@ void DBprotection_updateFlight(GameObject* obj) {
         }
         ((SBGalleonState*)state)->phaseTimer += framesThisStep;
         lerpD = tx - ((SBGalleonState*)state)->driftX;
-        ((SBGalleonState*)state)->driftX = lerpD * 0.125f + ((SBGalleonState*)state)->driftX;
+        blendK = 0.125f;
+        ((SBGalleonState*)state)->driftX += lerpD * blendK;
         ((SBGalleonState*)state)->driftY += (dy - ((SBGalleonState*)state)->driftY) / 14.0f;
         ((SBGalleonState*)state)->driftZ += (tz - ((SBGalleonState*)state)->driftZ) / 24.0f;
         ambA = 1911.0f;

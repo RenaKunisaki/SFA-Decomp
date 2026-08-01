@@ -447,7 +447,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
         state->flagsC40 |= HIGHTOP_FLAG_CURVE_FOLLOW;
         state->flagsC40 |= HIGHTOP_FLAG_CURVE_ARMED;
         state->flagsC49.b1 = 0;
-        curve->initFromCurveId((RomCurveWalker*)((char*)state + 0xa10), obj, 0x3463a,
+        curve->initFromCurveId(&state->curveWalker, obj, 0x3463a,
                                (curve = *gRomCurveInterface));
         state2 = obj->extra;
         state2->flagsC49.b7 = 1;
@@ -465,7 +465,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
     state->stateTimer -= (f32)(u32)framesThisStep;
     if (obj->anim.currentMove != 9 && obj->anim.currentMove != 0x11)
     {
-        RandomTimer_UpdateRangeTrigger((char*)state + 0xc34, 4.0f, 8.0f);
+        RandomTimer_UpdateRangeTrigger(&state->randomTimerC34, 4.0f, 8.0f);
         if (count == 0)
         {
             if (state->stateTimer < 0.0f)
@@ -761,7 +761,7 @@ int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
         ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0xa);
     }
     ObjAnim_SampleRootCurvePhase(&obj->anim, stateArg->baddie.animSpeedA,
-                                 (f32*)((char*)stateArg + 0x2a0));
+                                 &stateArg->baddie.moveSpeed);
     return 0;
 }
 

@@ -6,6 +6,7 @@
 #include "main/dll/DR/dr_types.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/dll_002E_moveLib.h"
+#include "main/dll/curve_walker.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/objprint_sound_api.h"
@@ -45,7 +46,7 @@ typedef struct HighTopRuntime
     u8 pad3B4[0x3bc - 0x3b4];
     ObjSoundState modelSoundState;
     MoveLibState lookController; /* 0x3ec: dll_2E look-controller block */
-    u8 padA10[0xb18 - 0xa10];
+    RomCurveWalker curveWalker;
     f32 pathPointWorldPositions[12];
     ObjKfAnimState keyframeAnimState;
     u8 padB60[0xb6c - 0xb60];
@@ -65,7 +66,7 @@ typedef struct HighTopRuntime
     f32 curveFollowSpeedScale;
     f32 transitionTimer;
     f32 stateTimer;
-    u8 padC34[4];
+    f32 randomTimerC34;
     f32 sfxIntervalTimer;
     s32 savedControlMode;
     u16 flagsC40;
