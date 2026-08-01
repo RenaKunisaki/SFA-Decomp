@@ -32,6 +32,8 @@ s32 gSpiritDoorLockTexScrollSpeed = 40;
 s32 gSpiritDoorLockTexScrollWrap = 39;
 
 const u32 gSpiritDoorLockOrbitOffsetBase[4] = {0, 0, 0x40E00000, 0};
+
+extern const f32 lbl_803E4430;
 extern const f32 gSpiritDoorLockDefaultScale;
 extern const f32 gSpiritDoorLockApproachRange;
 extern const f32 gSpiritDoorLockScaleFactor;
@@ -183,7 +185,7 @@ void SpiritDoorLock_init(GameObject* obj, const SpiritDoorLockPlacement* placeme
     state->active = 0;
 
     scale = placement->scale * gSpiritDoorLockScaleFactor;
-    isDefaultScale = (scale != 0.0f);
+    isDefaultScale = (scale != lbl_803E4430);
     isDefaultScale = !isDefaultScale;
     if (isDefaultScale) {
         scale = gSpiritDoorLockDefaultScale;
