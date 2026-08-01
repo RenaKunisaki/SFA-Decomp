@@ -1048,7 +1048,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "musyx/runtime/mcmd_loop.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/mcmd_setup.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/mcmd_volume.c"),
-            Object(NonMatching, "musyx/runtime/mcmd_exec.c", extra_cflags=["-inline", "noauto"]),
+            Object(MatchingFor("GSAE01"), "musyx/runtime/mcmd_exec.c", extra_cflags=["-inline", "noauto"]),
             Object(MatchingFor("GSAE01"), "musyx/runtime/adsr_data.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/vid_init.c"),
             Object(MatchingFor("GSAE01"), "musyx/runtime/vid_get.c", mw_version="GC/2.0"),

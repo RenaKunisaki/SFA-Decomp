@@ -557,24 +557,6 @@ static inline void mcmdSendKeyOff(McmdVoiceState* svoice, McmdCommandArgs* cstep
     }
 }
 
-static inline void mcmdSetupLFO(McmdVoiceState* svoice, McmdCommandArgs* cstep)
-{
-    u32 time;
-    u32 phase;
-    u8 controllerIndex;
-
-    controllerIndex = (u8)(cstep->flags >> 8);
-    time = (u16)(cstep->flags >> 0x10);
-    sndConvertMs(&time);
-    if (svoice->lfo[controllerIndex].period != 0)
-    {
-        phase = (u16)cstep->value;
-        sndConvertMs(&phase);
-        svoice->lfo[controllerIndex].time = phase;
-    }
-    svoice->lfo[controllerIndex].period = time;
-}
-
 /*
  * Assign a voice to a key group, evicting existing group members according to
  * the command's kill mode.
@@ -939,7 +921,6 @@ void macHandleActive(McmdVoiceState* sv)
         case 0x1d: /* pitch sweep 1 */
         {
             s32 delta;
-            u32 unused2[5];
             sv->sweepOff[0] = 0;
             sv->sweepNum[0] = (macCurrentCmd.flags >> 8) & 0xff;
             sv->sweepCnt[0] = sv->sweepNum[0] << 0x10;
@@ -1207,8 +1188,24 @@ void macHandleActive(McmdVoiceState* sv)
             break;
         }
         case 0x50: /* setup LFO */
-            mcmdSetupLFO(sv, &macCurrentCmd);
+        {
+            u32 unused2;
+            u32 phase;
+            u32 time;
+            u8 controllerIndex;
+
+            controllerIndex = (u8)(macCurrentCmd.flags >> 8);
+            time = (u16)(macCurrentCmd.flags >> 0x10);
+            sndConvertMs(&time);
+            if (sv->lfo[controllerIndex].period != 0)
+            {
+                phase = (u16)macCurrentCmd.value;
+                sndConvertMs(&phase);
+                sv->lfo[controllerIndex].time = phase;
+            }
+            sv->lfo[controllerIndex].period = time;
             break;
+        }
         case 0x58: /* mode select */
             sv->volTable = ((cmd >> 8) & 0xff) != 0 ? 1 : 0;
             sv->itdMode = ((macCurrentCmd.flags >> 0x10) & 0xff) != 0 ? 0 : 1;
@@ -1238,6 +1235,7 @@ void macHandleActive(McmdVoiceState* sv)
         {
             u8 ctrl = (cmd >> 8) & 0xff;
             u8 index = (cmd >> 0x10) & 0xff;
+            u32 unused3[4];
             varSet32(sv, ctrl, index, (s16)*cmdValuePtr);
             break;
         }
