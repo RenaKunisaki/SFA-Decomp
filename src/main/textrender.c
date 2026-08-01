@@ -61,6 +61,8 @@ char lbl_803DB404[4] = {0};
 
 typedef f32 Mtx[3][4];
 
+extern const f32 lbl_803DE70C;
+extern const f32 lbl_803DE710;
 extern u32 sSubtitleCtrlCmdScratch[];
 
 static void translateToDinoLanguage(u8* str);
@@ -618,7 +620,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 spaceExtra = 0.0f;
                 gameTextMeasureString(p, gGameTextScale, &measW, NULL, 0, 0, -1);
                 x = win->width - measW;
-                x = x * 0.5f + win->x;
+                x = x * lbl_803DE70C + win->x;
                 break;
             case TEXT_ALIGN_JUSTIFY:
             {
@@ -669,7 +671,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
 
         u0 = (f32)(g->u << 5);
         v0 = (f32)(g->v << 5);
-        e710 = 4.0f;
+        e710 = lbl_803DE710;
         fx0 = (f32)g->offsetX * gGameTextScale;
         fx0 = x + fx0;
         fx0 = e710 * fx0;
@@ -729,10 +731,10 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 fx1 = fx0 + iw;
                 fy0 = (f32)(winBase[126].y + ((winBase[126].height - ih) >> 1));
                 fy1 = fy0 + ih;
-                fx0 = fx0 * 4.0f;
-                fx1 = fx1 * 4.0f;
-                fy0 = fy0 * 4.0f;
-                fy1 = fy1 * 4.0f;
+                fx0 = fx0 * lbl_803DE710;
+                fx1 = fx1 * lbl_803DE710;
+                fy0 = fy0 * lbl_803DE710;
+                fy1 = fy1 * lbl_803DE710;
             }
 
             if (mode != 0)
