@@ -1611,9 +1611,11 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
     {
         for (i = 0, off = i; i < 3; off += 4, i++)
         {
-            u8* dstv = *(u8**)((u8*)arr[slot] + 0x78 + off);
             int j;
-            s16* sb = vertexData;
+            s16* sb;
+            u8* dstv;
+            dstv = *(u8**)((u8*)arr[slot] + 0x78 + off);
+            sb = vertexData;
             for (j = 0; j < vertexCount; j++)
             {
                 *(s16*)(dstv + 0) = sb[0];
