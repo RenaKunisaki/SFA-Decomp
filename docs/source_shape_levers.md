@@ -418,6 +418,61 @@ targets, so a "missing value" there may be an address word rather than a constan
 
 ## See also
 
+## The high-water-mark regression audit (axis CLOSED — sized, not worth working)
+
+This repo records scores in commit messages (`fn 98.840->99.476`, `99.444->100`), which
+makes history an audit corpus: any function now scoring below a score once claimed for it
+is a candidate silent regression. Two peer recoveries proved the idea (`4e4e3ff587`
++0.586 on `streamsLoadedCallback`, `ca7470b8b1` +0.636 on `renderSunAndMoon`). The full
+sweep was run once; the axis is closed. Do not re-run it without new evidence.
+
+### Method
+Parse `git log --all --pretty='%H%x01%s%x02%b%x03'` for `<symbol> <A>-><B>` pairs
+(also `->`, `→`, `=>`); high-water for a symbol is `max(A,B)` over all claims, since a
+commit documenting a regression still records the higher score. Exclude tree-wide words
+(`matched_code`, `tree`, `fuzzy`, ...). Join against current per-function fuzzy by
+sweeping `tools/unitfuzzy.py` over every unit (~0.06 s each, ~1 min for 927). Functions
+absent from `unitfuzzy` output are at 100% and cannot be below a high-water.
+Rank by `(high - current) x size` to get bytes, not percentages.
+
+### Two preconditions, both learned by getting them wrong
+1. **Run only on a freshly built tree.** `unitfuzzy` reads objects, so stale objects
+   manufacture phantom regressions. The first sweep reported 51 hits including three
+   `newshadows.c` functions that were already fixed in HEAD; `ninja all_source` rebuilt
+   988 objects and all three returned to their high-water values. Always
+   `locked_ninja` + `all_source` immediately before sweeping.
+2. **Filter claim precision.** Commit messages write 2 dp, `unitfuzzy` reports 3+, so a
+   claim of `99.65` against a current 99.647 looks like a 0.003 regression and is nothing.
+   **19 of 48 hits were this.** Discard `delta < 0.01`.
+
+### Verdict taxonomy
+A hit is a lead, not a verdict. Classify from the claiming commit's message before
+measuring anything:
+- **stale-claim** — measured in a context that no longer exists (different compiler or
+  file). `zlbDecompress` 53.5 vs a 76.26 claim measured when zlb was inside
+  `pi_dolphin.c` under MWCC with a `#pragma optimization_level` island; zlb is now its
+  own ProDG unit. That single entry was 79% of the axis's apparent bytes and is a mirage.
+- **accepted-trade** — the high score was bought with a construct since purged on
+  principle. Not a lost score, a paid principle. Cleanest examples: `sceneDraw`'s claim
+  names its own "load-bearing volatile CSE-defeat pun"; `expgfx_updateSourceFrameFlags`
+  98.87->92.98 is annotated "PRAGMA WALL PROVEN"; `expgfxGetSlot` 97.70->93.68 is
+  "(goto-capped fn)". Also covers artificial TU splits merged back per CLAUDE.md
+  ("accept match regressions"): `renderOpMatrix`/`modelLoadMtxsToGx` both reached 100.000
+  only as a separate `.c` compiled with `-opt nopropagation` (`88607918a`), merged back by
+  `13eaecb9e4`.
+- **tu-context** — claimed before a TU merge/split, so the unit profile differed.
+  `expgfx_updateActivePools`' 99.67 predates the 7-fragment merge; its `(u16)` cast lever
+  still exists in today's source, so nothing was lost but the fragment's flag profile.
+- **candidate** — none of the above; verify by measuring at the claiming commit before
+  proposing a recovery.
+
+### Sizing result (2026-08, 42,030 commits, 2,006 claimed symbols)
+48 functions below high-water -> 19 rounding noise -> 29 real -> 7 lane-owned -> 22 mine.
+Of those, `zlbDecompress` (stale-claim) is 534 of ~674 bytes, and the next three largest
+(`expgfx` x3, 65 B) are accepted-trade or tu-context. **Addressable remainder ~75 bytes
+across ~18 functions at 2-5 bytes each — below the effort line.** The table lives in the
+audit commit body if anyone wants the tail.
+
 - `docs/band_width_worklist.md` — where a structural fix can stick (`structB` vs `regB`).
 - `docs/rename_safety.md` — the rename gate and the stale-object race.
 - `docs/per_tu_flag_evidence.md` — per-TU flag measurements, for whoever adjudicates them.
