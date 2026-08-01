@@ -20,6 +20,10 @@
 #include "main/objseq.h"
 #include "main/objtexture.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objhits.h"
+#include "main/render_lactions_api.h"
+#include "sys/objects/lifecycle.h"
 
 /*
  * romDefNo values resolved through the active EN OBJINDEX.bin and OBJECTS.bin.
@@ -213,7 +217,7 @@ void CFCrate_update(GameObject* obj) {
     case CFCRATE_OBJ_VFP_LOCKSYM: {
         ObjTextureRuntimeSlot* texture = objFindTexture(obj, 0, 0);
         if ((texture != NULL) && (mainGetBit(state->gameBitA) != 0) && (texture->textureId == 0)) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_en_littletink22_3c4);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_littletink22_3c4);
             texture->textureId = CFCRATE_LOCK_ACTIVE_TEXTURE_ID;
         }
         break;
@@ -277,7 +281,7 @@ void CFCrate_update(GameObject* obj) {
 
             tableOffset = randomGetRange(0, state->sfxCount - 1) << 1;
             sfxTable = (u8*)state->sfxTable;
-            Sfx_PlayFromObject((int)obj, *(u16*)(sfxTable + tableOffset));
+            Sfx_PlayFromObject(obj, *(u16*)(sfxTable + tableOffset));
             state->sfxTimer = state->sfxPeriod;
             tableOffset = randomGetRange(0, state->sfxPeriod);
             state->sfxTimer = state->sfxTimer + tableOffset;

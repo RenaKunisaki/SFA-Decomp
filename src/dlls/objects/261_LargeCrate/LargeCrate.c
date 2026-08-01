@@ -25,6 +25,9 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_object_query_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 #define LARGECRATE_LINKED_ID_BASE       0x40000
 #define LARGECRATE_ROB_WAVE_DIRECT_ID   0x66
@@ -181,7 +184,7 @@ void LargeCrate_updateConveyorSlide(GameObject* obj, LargeCrateState* state) {
                 (linkedIdOffset == LARGECRATE_ROB_WAVE_ID_65D2)) {
                 if (Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX) < LARGECRATE_WARNING_DISTANCE) {
                     if (mainGetBit(LARGECRATE_GAMEBIT_SFX_MUTE) == 0) {
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_tr_jbike_snowhit);
+                        Sfx_PlayFromObject(obj, SFXTRIG_tr_jbike_snowhit);
                     }
                 }
             }
@@ -517,16 +520,16 @@ void LargeCrate_update(GameObject* obj) {
                 objDoHitParticleFx((void*)obj, LARGECRATE_EFFECT_SCALE, &effectParams, 1, 0);
                 if (state->damageTaken < state->damageThreshold) {
                     if (Sfx_IsPlayingFromObject(0, (u16)state->hitSfxId) == 0) {
-                        Sfx_PlayFromObject((int)obj, (u16)state->hitSfxId);
+                        Sfx_PlayFromObject(obj, (u16)state->hitSfxId);
                     }
                     if (obj->anim.romDefNo == LARGECRATE_SEQUENCE_VARIANT_A) {
                         state->spinSpeed = randomGetRange(LARGECRATE_SPIN_SPEED_MIN, LARGECRATE_SPIN_SPEED_MAX);
                     }
                 } else {
-                    Sfx_StopObjectChannel((int)obj, 0x7F);
+                    Sfx_StopObjectChannel(obj, 0x7F);
                     (*gLargeCrateResource)->spawnBreakEffect(obj, 1, 0, 2, -1, 0);
                     if (Sfx_IsPlayingFromObject(0, (u16)state->breakSfxId) == 0) {
-                        Sfx_PlayFromObject((int)obj, (u16)state->breakSfxId);
+                        Sfx_PlayFromObject(obj, (u16)state->breakSfxId);
                     }
                     state->breakTimer = LARGECRATE_BREAK_FRAMES;
                     state->damageTaken = 0;

@@ -10,6 +10,9 @@
 #include "dolphin/os/OSCache.h"
 #include "dolphin/os/OSInterrupt.h"
 #include "dolphin/os/OSMessage.h"
+#include "dolphin/thp/THPPlayer.h"
+#include "main/fileio.h"
+#include "string.h"
 
 char sPicMenuThpMagic[] = "THP";
 

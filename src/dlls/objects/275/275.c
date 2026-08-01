@@ -3,6 +3,8 @@
 #include "dolphin/os.h"
 #include "game/objects/object.h"
 #include "main/objseq.h"
+#include "main/gamebits_api.h"
+#include "main/objtype.h"
 
 #define SEQ_OBJ2_GROUP                               0xF
 #define SEQ_OBJ2_TYPE_ID                             0

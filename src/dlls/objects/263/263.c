@@ -21,6 +21,11 @@
 #include "main/sky_interface.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/obj_message.h"
+#include "main/obj_query.h"
+#include "main/objtype.h"
 
 #define WINDLIFT107_HIT_VOLUME_SLOT     0xE
 #define WINDLIFT107_OBJECT_GROUP_ID     0x10
@@ -103,7 +108,7 @@ static void windLift107_finishSpitBurst(GameObject* obj, f32 playerDistance) {
                                           WINDLIFT107_EFFECT_MODEL_ID, NULL);
     gWindLift107Resource170->vtable->spawn(obj, 0, &effectParams, WINDLIFT107_EFFECT_SPAWN_MODE,
                                            WINDLIFT107_EFFECT_MODEL_ID, NULL);
-    Sfx_PlayFromObject((int)obj, SFXTRIG_wp_crthit6);
+    Sfx_PlayFromObject(obj, SFXTRIG_wp_crthit6);
     zero = 0.0f;
     obj->anim.velocityX = zero;
     obj->anim.velocityZ = zero;
@@ -224,7 +229,7 @@ void windLift107_update(GameObject* obj) {
         }
     }
     if (state->burstTimer != 0) {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_70);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_70);
         state->burstTimer -= framesThisStep;
         if (randomGetRange(0, WINDLIFT107_PARTICLE_RANDOM_MAX) == WINDLIFT107_PARTICLE_RANDOM_MAX) {
             (*gPartfxInterface)
@@ -248,7 +253,7 @@ void windLift107_update(GameObject* obj) {
         return;
     }
     if (state->disableTimer != 0) {
-        Sfx_StopObjectChannel((int)obj, SFXen_firlp6);
+        Sfx_StopObjectChannel(obj, SFXen_firlp6);
         state->disableTimer -= framesThisStep;
         if (state->disableTimer <= 0) {
             if (state->cooldownDuration != 0) {
@@ -325,7 +330,7 @@ void windLift107_update(GameObject* obj) {
                 launchParams.rotY = 0;
                 launchParams.rotX = player->anim.rotX;
                 vecRotateZXY(&launchParams.rotX, &obj->anim.velocityX);
-                Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_6a);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_6a);
             } else if (carryState == WINDLIFT107_CARRY_HELD && obj->userData2 == 0) {
                 f32 zero;
                 state->carryState = WINDLIFT107_CARRY_IDLE;
@@ -334,7 +339,7 @@ void windLift107_update(GameObject* obj) {
                 obj->anim.velocityX = zero;
                 obj->anim.velocityY = zero;
                 obj->anim.velocityZ = zero;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_6a);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_6a);
             }
         }
     }

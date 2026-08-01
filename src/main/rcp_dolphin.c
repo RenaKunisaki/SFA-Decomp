@@ -31,6 +31,7 @@
 #include "main/gx_scissor_api.h"
 #include "string.h"
 #include "dolphin/gx/GXCull.h"
+#include "track/intersect_depth_state_api.h"
 
 u8 gRcpDistortSlotIndex;
 u8 gRcpDistortGroup;

@@ -23,6 +23,10 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gamebits_api.h"
+#include "main/obj_message.h"
+#include "main/objtype.h"
 
 #define DLL_CE_OBJGROUP                    3
 #define DLL_CE_CHILD_OBJ                   778
@@ -280,16 +284,16 @@ int chukChuk_updateWindupState(GameObject* obj, GroundBaddieState* state) {
     }
     if ((state->baddie.moveEventFlags & 1) == 0) {
         if (((GameObject*)Obj_GetPlayerObject())->anim.romDefNo != 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
         } else {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_swd);
+            Sfx_PlayFromObject(obj, SFXTRIG_swd);
         }
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_en_rfall5_c);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_seal4_c_263);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_rfall5_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_seal4_c_263);
         state->baddie.moveEventFlags |= 1;
     }
     if ((state->baddie.moveEventFlags & 2) == 0 && obj->anim.currentMoveProgress > 0.3f) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_iceywindlp16_233);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16_233);
         state->baddie.moveEventFlags |= 2;
         (*gBaddieControlInterface)->spawnChild(obj, objectState->triggerId, -1, 0);
     }
@@ -324,18 +328,18 @@ int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state) {
                          ->getHitReactValue((GameObject*)playerChild);
         if (childState != 0) {
             if (player->anim.romDefNo != 0) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
             } else {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_95);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_95);
             }
         } else {
             if (player->anim.romDefNo != 0) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
             } else {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_swd);
+                Sfx_PlayFromObject(obj, SFXTRIG_swd);
             }
         }
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_267);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_267);
     }
     state->baddie.stateTag = 3;
     state->baddie.moveSpeed = 0.015f;
@@ -384,7 +388,7 @@ int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state) {
 
         state->baddie.eventFlags = state->baddie.eventFlags & ~BADDIE_EVENT_FOOTSTEP;
         control->effectFlags |= DLL_CE_EFFECT_PROJECTILE;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_rach_bite_266);
+        Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_bite_266);
     }
     return 0;
 }
@@ -585,7 +589,7 @@ void chukChuk_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Gro
         }
         if (control->soundTimer > control->nextSoundTime) {
             if (playerDistance < 400.0f) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_265);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_265);
                 control->nextSoundTime += (f32)(s32)randomGetRange(50, 250);
             }
         }
@@ -644,7 +648,7 @@ void dll_CE_handleMessage(GameObject* obj, int message) {
     switch ((u8)message) {
     case DLL_CE_MESSAGE_HIDE:
         ((DllCEControl*)objectState->control)->coordinationFlags |= DLL_CE_COORDINATION_HIDDEN;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_264);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_264);
         (*gPlayerInterface)->setState((void*)obj, (void*)stateAlias, 1);
         stateAlias->baddie.substate = 4;
         stateAlias->baddie.moveJustStartedB = 1;
@@ -718,7 +722,7 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
             (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) != 0) {
             (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)placement, (u8*)state, 7, 6, 0x102, 0x26, 20.0f);
             state->targetState = 0;
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_seal4_c_263);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_seal4_c_263);
             ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
             state->baddie.moveDone = 0;
             obj->anim.alpha = 0xff;

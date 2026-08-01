@@ -5,6 +5,7 @@
 #include "sys/objects.h"
 #include "main/maketex_random_api.h"
 #include "main/dll/dll_0020_effect7.h"
+#include "main/vecmath.h"
 
 f32 gEffect7SinValueA;
 f32 gEffect7SinValueB;

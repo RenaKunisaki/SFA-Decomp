@@ -5,6 +5,7 @@
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/render_lactions_api.h"
 
 #define MAGIC_LIGHT_SEQ_GLOW              0x172
 #define MAGIC_LIGHT_SEQ_PROXIMITY         0x16B

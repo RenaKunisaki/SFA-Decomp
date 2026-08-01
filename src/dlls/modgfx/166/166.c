@@ -4,6 +4,7 @@
 #include "main/dll/dll_00A6_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
+#include "main/vecmath.h"
 
 typedef struct DllA6EffectVertex {
     s16 positionX;

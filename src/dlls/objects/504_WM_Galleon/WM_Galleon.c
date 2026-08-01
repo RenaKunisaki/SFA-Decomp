@@ -7,6 +7,10 @@
 #include "main/object_render.h"
 #include "main/objseq.h"
 #include "sys/objects.h"
+#include "main/dll/player_api.h"
+#include "main/render_lactions_api.h"
+#include "main/resource.h"
+#include "main/track_dolphin_api.h"
 
 u32 lbl_803DC0F0 = 3;
 

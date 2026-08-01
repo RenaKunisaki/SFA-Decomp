@@ -40,6 +40,9 @@
 #include "main/player_control_interface.h"
 #include "main/dll/DR/dll_024F_ktrexlevel.h"
 #include "main/camera_shake_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/model.h"
+#include "string.h"
 
 GroundBaddieState* gKTRexRuntime;
 KTRexArenaState* gKTRexState;
@@ -269,7 +272,7 @@ int ktrex_stateHandlerA10(GameObject* obj, GroundBaddieState* runtime)
     }
     if (RandomTimer_UpdateRangeTrigger(&gKTRexState->breathSfxTimer, 2.0f, 4.0f) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexbreathout11);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexbreathout11);
     }
     {
         f32 u4 = gKTRexState->stateTimer - timeDelta;
@@ -470,7 +473,7 @@ int ktrex_stateHandlerA05(GameObject* obj, GroundBaddieState* runtime)
     }
     if (RandomTimer_UpdateRangeTrigger(&gKTRexState->breathSfxTimer, 2.0f, 4.0f) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexbreathout11);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexbreathout11);
     }
     if (ktrex_updateArenaPathProgress(runtime) != 0)
     {
@@ -734,7 +737,7 @@ int ktrex_stateHandlerB08(GameObject* obj, GroundBaddieState* runtime)
         ObjAnim_SetCurrentMove((int)obj, 13, 0.0f, 0);
         runtime->baddie.moveSpeed =
             0.0017f + 0.0012f * (f32)(int)(gKTRexState->phaseCounter >> 1);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_rexroarlng11);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexroarlng11);
     }
     if ((gKTRexRuntime->baddie.eventFlags & 1) != 0)
     {
@@ -770,7 +773,7 @@ int ktrex_stateHandlerB06(GameObject* obj, GroundBaddieState* runtime)
     if (runtime->baddie.moveJustStartedA != 0)
     {
         ObjAnim_SetCurrentMove((int)obj, 11, 0.0f, 0);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_rexelctro11);
+        Sfx_PlayFromObject(obj, SFXTRIG_rexelctro11);
         runtime->baddie.moveSpeed = 0.006f;
         z = 0.0f;
         runtime->baddie.animSpeedA = z;
@@ -1035,8 +1038,8 @@ void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime)
         gKTRexEffectSpawnWork.posX = playerMapOffsetX + (pt = contactPoints + hitType * 4)[1];
         gKTRexEffectSpawnWork.posY = pt[2];
         gKTRexEffectSpawnWork.posZ = playerMapOffsetZ + pt[3];
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexhurt12);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_stftest122);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexhurt12);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122);
         (*gPartfxInterface)->spawnObject((void*)obj, 0x4b2, &gKTRexEffectSpawnWork, 0x200001, -1, NULL);
         (*gPartfxInterface)->spawnObject((void*)obj, 0x4b3, &gKTRexEffectSpawnWork, 0x200001, -1, NULL);
         if (hit == 0xe)
@@ -1057,7 +1060,7 @@ void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime)
     }
     else if (gKTRexContactEffectCooldown == 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_95);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_95);
         contactPoints = KTRex_GetActiveContactPointTable(obj);
         gKTRexEffectSpawnWork.posX = contactPoints[hitType * 4 + 1] + playerMapOffsetX;
         gKTRexEffectSpawnWork.posY = contactPoints[hitType * 4 + 2];
@@ -1099,35 +1102,35 @@ void ktrex_updateAttackEffects(GameObject* obj)
     }
     if ((gKTRexState->phaseFlags & 0x40) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexroarsht11);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexroarsht11);
     }
     if ((gKTRexState->phaseFlags & 0x80) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexroarmed11);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexroarmed11);
     }
     if ((gKTRexState->phaseFlags & 0x100) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexroarlng11);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexroarlng11);
     }
     if ((gKTRexState->phaseFlags & 0x200) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexexhale16);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexexhale16);
     }
     if ((gKTRexState->phaseFlags & 0x10000) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_en_fireup_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_fireup_c);
     }
     if ((gKTRexState->phaseFlags & 0x40000) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexthrash11);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexthrash11);
     }
     if ((gKTRexState->phaseFlags & 0x80000) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexhurt12);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexhurt12);
     }
     if ((gKTRexState->phaseFlags & 0x2000) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexhurt12);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexhurt12);
     }
     if ((gKTRexState->phaseFlags & 0x1000) != 0)
     {
@@ -1135,7 +1138,7 @@ void ktrex_updateAttackEffects(GameObject* obj)
     }
     if ((gKTRexState->phaseFlags & 0x20000) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_en_fireup_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_fireup_c);
         CameraShake_Enable();
         CameraShake_SetOffset(2.0f * mag);
     }
@@ -1151,17 +1154,17 @@ void ktrex_updateAttackEffects(GameObject* obj)
     }
     if ((gKTRexState->phaseFlags & 0x4000) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexbreathin11);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexbreathin11);
         gKTRexState->laneAltSelect ^= 1;
     }
     if ((gKTRexState->phaseFlags & 0x8000) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexbreathout11);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexbreathout11);
         gKTRexState->laneAltSelect ^= 1;
     }
     if ((gKTRexState->phaseFlags & 0x3) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexfoot11);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexfoot11);
         doRumble(4.0f);
         if (mag > 0.1f)
         {
@@ -1173,7 +1176,7 @@ void ktrex_updateAttackEffects(GameObject* obj)
     if ((gKTRexState->phaseFlags & 0xc) != 0)
     {
         doRumble(8.0f);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexfoot11_91);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexfoot11_91);
         if (mag > 0.1f)
         {
             CameraShake_Enable();
@@ -1184,7 +1187,7 @@ void ktrex_updateAttackEffects(GameObject* obj)
     if ((gKTRexState->phaseFlags & 0x30) != 0)
     {
         doRumble(12.0f);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_rexfoot11_92);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_rexfoot11_92);
         if (mag > 0.1f)
         {
             CameraShake_Enable();
@@ -1265,7 +1268,7 @@ void ktrex_updateAttackEffects(GameObject* obj)
     gKTRexState->phaseFlags &= 0x1800LL;
     if (((ObjHitsPriorityState*)(obj)->anim.hitReactState)->lastHitObject == (int)Obj_GetPlayerObject())
     {
-        Sfx_PlayFromObject((int)Obj_GetPlayerObject(), SFXTRIG_mv_bflconc1_2b9);
+        Sfx_PlayFromObject(Obj_GetPlayerObject(), SFXTRIG_mv_bflconc1_2b9);
     }
 }
 

@@ -4,6 +4,7 @@
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_001F_effect6.h"
+#include "main/vecmath.h"
 
 f32 gEffect6Osc0Value;
 f32 gEffect6Osc1Value;

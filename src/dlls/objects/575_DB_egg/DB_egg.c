@@ -55,6 +55,7 @@
 #include "dolphin/pad.h"
 #include "main/lightmap_api.h"
 #include "main/track_bbox_api.h"
+#include "main/object_update_list.h"
 
 #define DBEGG_OBJGROUP         0x24
 #define DBEGG_SIBLING_OBJGROUP 0x14

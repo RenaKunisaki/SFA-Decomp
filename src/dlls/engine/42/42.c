@@ -4,6 +4,7 @@
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_002A_effect17.h"
+#include "main/vecmath.h"
 
 f32 gEffect17SinValueA;
 f32 gEffect17SinValueB;

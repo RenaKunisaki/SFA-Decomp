@@ -9,6 +9,7 @@
 #include "main/resource.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
 
 #define DLL19C_EFFECT_RESOURCE_ID 0x82
 #define DLL19C_CHILD_OBJECT_ID    0x248

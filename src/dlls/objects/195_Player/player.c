@@ -3691,6 +3691,7 @@ int playerState31(GameObject* obj, int p2)
 
 int playerState30(GameObject* obj, int state, f32 fv)
 {
+    u32 fxFlags;
     PlayerState* inner = obj->extra;
     struct
     {
@@ -3725,10 +3726,11 @@ int playerState30(GameObject* obj, int state, f32 fv)
         }
         ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.x, &pfx.y, &pfx.z, 0);
         pfx.scale = 2.5f;
+        fxFlags = 0x200000;
         pfx.mode = 0;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, fxFlags + 1, -1, NULL);
         pfx.mode = 1;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, fxFlags + 1, -1, NULL);
         if ((inner->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
             ((PlayerStatus*)((PlayerState*)obj->extra)->playerStatus)->magic == 0 || getCurSeqNo() != 0)
         {
@@ -3812,7 +3814,8 @@ int playerState30(GameObject* obj, int state, f32 fv)
     }
     if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0)
     {
-        if (((PlayerState*)state)->baddie.inputSector == 2 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
+        u8 sel = ((PlayerState*)state)->baddie.inputSector;
+        if (sel == 2 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
         {
             inner->moveSlotIndex = 1;
             ObjAnim_SetCurrentMove(
@@ -3821,7 +3824,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedResetMoveHitState;
             return 0x27;
         }
-        if (((PlayerState*)state)->baddie.inputSector == 3 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
+        if (sel == 3 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
         {
             inner->moveSlotIndex = 4;
             ObjAnim_SetCurrentMove(
@@ -3830,7 +3833,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedResetMoveHitState;
             return 0x27;
         }
-        if (((PlayerState*)state)->baddie.inputSector == 1 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
+        if (sel == 1 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
         {
             inner->moveSlotIndex = 3;
             ObjAnim_SetCurrentMove(
@@ -3839,7 +3842,7 @@ int playerState30(GameObject* obj, int state, f32 fv)
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedResetMoveHitState;
             return 0x27;
         }
-        if (((PlayerState*)state)->baddie.inputSector == 4 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
+        if (sel == 4 && ((PlayerState*)state)->baddie.inputMagnitude > 0.3f)
         {
             inner->moveSlotIndex = 2;
             ObjAnim_SetCurrentMove(
@@ -3967,6 +3970,7 @@ int playerStateFireLaser(int obj, int state, f32 fv)
 int playerStateShootFireball(GameObject* obj, int state, f32 fv)
 {
     PlayerState* inner = obj->extra;
+    u32 fxFlags;
     int r;
     f32 timer;
     struct
@@ -4027,10 +4031,11 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
         }
         ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.x, &pfx.y, &pfx.z, 0);
         pfx.scale = 2.5f;
+        fxFlags = 0x200000;
         pfx.mode = 0;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, fxFlags + 1, -1, NULL);
         pfx.mode = 1;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, fxFlags + 1, -1, NULL);
         if ((((PlayerState*)inner)->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
             ((PlayerStatus*)((PlayerState*)obj->extra)->playerStatus)->magic == 0 || getCurSeqNo() != 0)
         {
@@ -4138,6 +4143,8 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
 int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
 {
     PlayerState* inner = obj->extra;
+    u32 fxFlags;
+    s16 deferredCmd;
     f32 timer;
     struct
     {
@@ -4171,10 +4178,11 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
         }
         ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.x, &pfx.y, &pfx.z, 0);
         pfx.scale = 2.5f;
+        fxFlags = 0x200000;
         pfx.mode = 0;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, fxFlags + 1, -1, NULL);
         pfx.mode = 1;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, fxFlags + 1, -1, NULL);
         if ((inner->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
             ((PlayerStatus*)((PlayerState*)obj->extra)->playerStatus)->magic == 0 || getCurSeqNo() != 0)
         {
@@ -4200,7 +4208,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
             }
         }
     }
-    else if (inner->deferredItemCommand != -1 || (inner->buttonsJustPressed & PAD_BUTTON_Y) != 0)
+    else if ((deferredCmd = inner->deferredItemCommand) != -1 || (inner->buttonsJustPressed & PAD_BUTTON_Y) != 0)
     {
         int hasYButtonItem;
         u16 buttonMask;
@@ -4213,7 +4221,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
         else
         {
             hasYButtonItem = 0;
-            itemId = inner->deferredItemCommand;
+            itemId = deferredCmd;
             buttonMask = 0x100;
         }
         if (inner->deferredItemCommand != -1 ||
@@ -4299,6 +4307,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
 int playerStateAimStaff(int obj, int state, f32 fv)
 {
     PlayerState* inner = ((GameObject*)obj)->extra;
+    u32 fxFlags;
     int r;
     f32 spin;
     PartFxSpawnParams pfx;
@@ -4408,10 +4417,11 @@ int playerStateAimStaff(int obj, int state, f32 fv)
             }
             ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.posX, &pfx.posY, &pfx.posZ, 0);
             pfx.scale = 2.5f;
+            fxFlags = 0x200000;
             pfx.arg3 = 0;
-            (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, fxFlags + 1, -1, NULL);
             pfx.arg3 = 1;
-            (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, fxFlags + 1, -1, NULL);
             if ((inner->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
                 *(s16*)((char*)*(int*)((char*)*(int*)&((GameObject*)obj)->extra + 0x35c) + 0x4) == 0 ||
                 getCurSeqNo() != 0)

@@ -62,6 +62,9 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/gameloop_api.h"
 #include "track/intersect_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/map_load.h"
 
 ObjectDescriptor gTriggerObjDescriptor = {
     0,
@@ -510,9 +513,9 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
             break;
         case 4:
             if (legCode >= 0) {
-                Sfx_PlayFromObject((u32)obj, (u16)((p[2] << 8) | p[3]));
+                Sfx_PlayFromObject(obj, (u16)((p[2] << 8) | p[3]));
             } else {
-                Sfx_StopFromObject((u32)obj, (u16)((p[2] << 8) | p[3]));
+                Sfx_StopFromObject(obj, (u16)((p[2] << 8) | p[3]));
             }
             break;
         case 6:
@@ -896,7 +899,7 @@ void Trigger_free(GameObject* obj) {
 
     while (i < 8) {
         if ((entry[0] & (TRIGGER_CMD_ON_ENTER | TRIGGER_CMD_ON_EXIT)) != 0 && entry[1] != 3 && entry[1] == 4) {
-            Sfx_StopFromObject((u32)obj, (u16)((entry[2] << 8) | entry[3]));
+            Sfx_StopFromObject(obj, (u16)((entry[2] << 8) | entry[3]));
         }
         i++;
         entry += 4;

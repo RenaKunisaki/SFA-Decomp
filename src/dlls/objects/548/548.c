@@ -5,6 +5,8 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "game/objects/object_setup.h"
+#include "main/gamebits_api.h"
+#include "main/objprint_render_api.h"
 
 static const f32 lbl_803E6150 = 100.0f;
 

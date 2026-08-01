@@ -11,6 +11,7 @@
 #include "main/objfx.h"
 #include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
+#include "main/objhits.h"
 
 #define FLAMEBLAST_HIT_VOLUME_SLOT 0x1A
 #define FLAMEBLAST_HIT_TYPE        1

@@ -36,6 +36,10 @@
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/texture.h"
 #include "main/gametext_color_api.h"
+#include "dlls/objects/489_SB_Propelle.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
 
 #define DBPROTECTION_GAMEBIT_CYCLE_A_PENDING  0xa3c
 #define DBPROTECTION_GAMEBIT_CYCLE_B_PENDING  0xa3d
@@ -134,9 +138,9 @@ void DBprotection_updateFlight(GameObject* obj) {
         }
     }
     if (state->phase >= 2) {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_tr_gal_lightning);
+        Sfx_PlayFromObject(obj, SFXTRIG_tr_gal_lightning);
     } else {
-        Sfx_StopFromObject((int)obj, SFXTRIG_tr_gal_lightning);
+        Sfx_StopFromObject(obj, SFXTRIG_tr_gal_lightning);
     }
     tricky = state->targetObj;
     if (tricky == NULL) {
@@ -300,7 +304,7 @@ void DBprotection_updateFlight(GameObject* obj) {
                 ((((SBGalleonState*)state)->phaseCounter == 0) || (((SBGalleonState*)state)->phaseCounter == 5))) {
                 ((SBGalleonState*)state)->headingLatch = 200;
             }
-            Sfx_IsPlayingFromObjectChannel((int)obj, 2); /* The result is intentionally unused. */
+            Sfx_IsPlayingFromObjectChannel(obj, 2); /* The result is intentionally unused. */
             break;
         case 1:
             tx = ((SBGalleonState*)state)->homeX - 800.0f;
@@ -433,8 +437,8 @@ void DBprotection_updateFlight(GameObject* obj) {
             ((SBGalleonState*)state)->headingLatch = 200;
             {
                 int sfxObj = sbGetPropeller();
-                Sfx_StopFromObject(sfxObj, SFXTRIG_swtst1_c);
-                Sfx_PlayFromObject(sfxObj, SFXTRIG_mv_curtainloop16);
+                Sfx_StopFromObject((GameObject*)sfxObj, SFXTRIG_swtst1_c);
+                Sfx_PlayFromObject((GameObject*)sfxObj, SFXTRIG_mv_curtainloop16);
             }
             mainSetBits(DBPROTECTION_GAMEBIT_DIVE_ACTIVE, 0);
         } else if (((SBGalleonState*)state)->phaseCounter >= 4) {
@@ -779,12 +783,12 @@ void DBprotection_updateShield(GameObject* obj) {
     if (state->shieldSfxLatch == 0) {
         if (angleSin < -0.9f) {
             if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_tr_gal_crateslide);
+                Sfx_PlayFromObject(obj, SFXTRIG_tr_gal_crateslide);
             }
             state->shieldSfxLatch = 1;
         } else if (angleSin > 0.9f) {
             if (mainGetBit(DBPROTECTION_GAMEBIT_MUTE_SFX) == 0) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_tr_gal_sailflap3);
+                Sfx_PlayFromObject(obj, SFXTRIG_tr_gal_sailflap3);
             }
             state->shieldSfxLatch = 1;
         }
@@ -1007,10 +1011,10 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             }
             break;
         case SBGALLEON_SEQEV_SFX_ON:
-            Sfx_PlayFromObject((u32)obj, SBGALLEON_SFX_SPLASH);
+            Sfx_PlayFromObject(obj, SBGALLEON_SFX_SPLASH);
             break;
         case SBGALLEON_SEQEV_SFX_OFF:
-            Sfx_StopFromObject((u32)obj, SBGALLEON_SFX_SPLASH);
+            Sfx_StopFromObject(obj, SBGALLEON_SFX_SPLASH);
             break;
         case SBGALLEON_SEQEV_TOGGLE_DAMAGE_PHASE_8:
             if (state->damagePhase == 8) {
@@ -1026,7 +1030,7 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             state->skyFlag = 0;
             break;
         case SBGALLEON_SEQEV_SPLASH_SFX:
-            Sfx_PlayFromObject(sbGetPropeller(), SBGALLEON_SFX_SPRAY);
+            Sfx_PlayFromObject((GameObject*)sbGetPropeller(), SBGALLEON_SFX_SPRAY);
             break;
         case SBGALLEON_SEQEV_MUSIC:
             state->musicIdB = SBGALLEON_MUSIC_INTRO;
@@ -1121,7 +1125,7 @@ int SB_Galleon_onPartDestroyed(GameObject* obj) {
     int phase = state->phase;
     if (phase != 1) {
         if (phase >= 2) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_npu_216_3f);
+            Sfx_PlayFromObject(obj, SFXTRIG_sc_npu_216_3f);
         }
         state->stage += 1;
         return 1;

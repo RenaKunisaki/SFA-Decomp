@@ -8,6 +8,9 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "game/objects/object_setup.h"
+#include "main/map_load.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/pi_dolphin_api.h"
 
 static const f32 lbl_803E6128 = 1.0f;
 

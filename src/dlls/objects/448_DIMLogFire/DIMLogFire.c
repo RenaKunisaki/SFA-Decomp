@@ -19,6 +19,9 @@
 #include "main/objhits.h"
 #include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/objtype.h"
 
 #define DIM_LOG_FIRE_HIT_VOLUME_SLOT 0x1F
 #define DIM_LOG_FIRE_SMOKE_PARTICLE  215
@@ -44,9 +47,9 @@ int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     (void)unused;
 
     if (state->mode == DIM_LOG_FIRE_MODE_LIT) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_mushdizzylp12);
+        Sfx_PlayFromObject(obj, SFXTRIG_mushdizzylp12);
     } else {
-        Sfx_StopObjectChannel((u32)obj, 64);
+        Sfx_StopObjectChannel(obj, 64);
     }
     switch (animUpdate->curEventId) {
     case DIM_LOG_FIRE_ANIM_COMMAND_TOGGLE_SMOKE:
@@ -61,9 +64,9 @@ int DIMLogFire_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     }
     if (state->smokeEnabled != 0) {
         (*gPartfxInterface)->spawnObject(obj, DIM_LOG_FIRE_SMOKE_PARTICLE, NULL, 0, -1, NULL);
-        Sfx_StopObjectChannel((u32)obj, 5);
+        Sfx_StopObjectChannel(obj, 5);
     } else {
-        Sfx_StopObjectChannel((u32)obj, 1);
+        Sfx_StopObjectChannel(obj, 1);
     }
     animUpdate->curEventId = 0;
     return 0;
@@ -141,7 +144,7 @@ void DIMLogFire_update(GameObject* obj) {
         if (state->light != NULL) {
             modelLightStruct_setEnabled(state->light, 1, 2.0f);
         }
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_mushdizzylp12);
+        Sfx_PlayFromObject(obj, SFXTRIG_mushdizzylp12);
         state->flickerTimerA = state->flickerTimerA - timeDelta;
         if (state->flickerTimerA <= 0.0f) {
             flickerFlagA = 7;

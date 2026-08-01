@@ -1,6 +1,9 @@
 #include "main/frame_timing.h"
 #include "main/texture.h"
 #include "dlls/object_descriptor.h"
+#include "main/model_engine.h"
+#include "main/rcp_dolphin_api.h"
+#include "sys/objects.h"
 
 #define DUMMY39_COUNTDOWN_FRAMES 0x28
 #define DUMMY39_WARP_MAP         0x60

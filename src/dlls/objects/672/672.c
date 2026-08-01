@@ -27,6 +27,9 @@
 #include "main/object_render.h"
 #include "main/audio/sfx_play_legacy_api.h"
 #include "main/dll/headdisplay.h"
+#include "main/gamebits_api.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/objhits.h"
 
 #define RING_SEQID_ARW_ARWING 0x601 /* "ARWArwing" (DLL 0x29A) */
 #define RING_OBJ_ARW_GOLD   0x060b

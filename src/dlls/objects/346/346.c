@@ -8,6 +8,10 @@
 #include "main/model.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objtype.h"
+#include "main/vecmath.h"
+#include "track/intersect_api.h"
 
 #define EXPLODABLE_FRAGMENT_SETUP_MODE           5
 #define EXPLODABLE_FRAGMENT_VTABLE_STATUS_OFFSET 0x20
@@ -250,7 +254,7 @@ void explodable_update(GameObject* obj) {
             if (mainGetBit(placement->activateGameBit) != 0) {
                 explodable_buildFragments(obj, placementAddress, 0, stateAddress);
                 if (state->breakSfxId != 0) {
-                    Sfx_PlayFromObject((u32)obj, state->breakSfxId & 0xffff);
+                    Sfx_PlayFromObject(obj, state->breakSfxId & 0xffff);
                 }
                 state->phase = EXPLODABLE_PHASE_BREAKING;
                 obj->anim.alpha = 0;

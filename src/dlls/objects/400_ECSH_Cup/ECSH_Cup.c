@@ -14,6 +14,8 @@
 #include "main/objtype.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
 
 typedef struct ECSHShrineCallbackTable {
     void* unknown00[9];

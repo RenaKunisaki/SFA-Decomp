@@ -3,6 +3,7 @@
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/dll_0028_effect15.h"
+#include "main/vecmath.h"
 
 WaterfxCfg gEffect15DefaultSpawnParams;
 

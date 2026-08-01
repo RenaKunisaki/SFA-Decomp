@@ -27,6 +27,10 @@
 #include "main/gametext_color_api.h"
 #include "dlls/objects/291_fuelCell.h"
 #include "dlls/object_descriptor.h"
+#include "main/dll/player_api.h"
+#include "main/gametext_charset_api.h"
+#include "main/gametext_show_api.h"
+#include "sys/objects/lifecycle.h"
 
 u8 gMinimapEnabled = 1;
 s8 gMinimapSavedViewMode = -1;

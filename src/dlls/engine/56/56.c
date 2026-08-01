@@ -7,6 +7,10 @@
 #include "main/dll/dll_0038_weirdunusedmenu.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
 #include "dolphin/pad.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/savegame.h"
+#include "main/model_engine.h"
+#include "main/pad_api.h"
 
 #define WIDGET_FLAG_SAVING 0x1000
 

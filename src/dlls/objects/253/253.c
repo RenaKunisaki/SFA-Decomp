@@ -9,6 +9,8 @@
 #include "main/object_render.h"
 #include "main/objseq.h"
 #include "main/objtype.h"
+#include "main/gamebits_api.h"
+#include "main/objprint_render_api.h"
 
 #define DLL_FD_RENDER_SCALE         1.0f
 #define DLL_FD_TARGET_SEARCH_RADIUS 1e+02f

@@ -9,6 +9,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/objtexture.h"
+#include "main/objhits.h"
 
 char sMMPBridgeTextureOffsetDebugFormat[] = "S %d\n";
 

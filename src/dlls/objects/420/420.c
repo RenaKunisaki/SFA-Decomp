@@ -9,6 +9,9 @@
 
 #include "dlls/objects/419.h"
 #include "sys/objects.h"
+#include "main/dll/player_api.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
 
 #define NW_ICE_COLLISION_ALPHA_THRESHOLD 0xC0
 #define NW_ICE_NEAR_DISTANCE             120.0f

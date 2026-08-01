@@ -11,6 +11,7 @@
 #include "main/gamebits.h"
 #include "main/resource.h"
 #include "sys/objects.h"
+#include "main/vecmath.h"
 
 #define AREAFXEMIT_GAME_BIT_NONE -1
 

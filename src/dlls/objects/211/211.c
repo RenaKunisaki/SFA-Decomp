@@ -44,6 +44,11 @@
 #include "main/obj_message.h"
 #include "main/gamebits.h"
 #include "game/objects/object_setup.h"
+#include "main/obj_contact.h"
+#include "main/objhits.h"
+#include "main/objprint_api.h"
+#include "main/objtype.h"
+#include "sys/objects/lifecycle.h"
 
 
 #define LANDED_ARWING_SCRIPT_MODE 6

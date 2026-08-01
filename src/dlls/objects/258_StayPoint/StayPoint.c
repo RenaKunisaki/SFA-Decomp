@@ -9,6 +9,9 @@
 #include "main/gamebits.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects/lifecycle.h"
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/dll_80136a40.h"
+#include "main/objprint_render_api.h"
 
 #define STAYPOINT_ENGAGE_RADIUS_SQ 1e+02f
 

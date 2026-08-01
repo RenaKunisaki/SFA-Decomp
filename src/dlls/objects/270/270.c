@@ -14,6 +14,10 @@
 #include "main/objtexture.h"
 #include "main/screen_transition.h"
 #include "sys/objects.h"
+#include "main/dll/tricky_api.h"
+#include "main/lightmap_api.h"
+#include "main/rcp_dolphin.h"
+#include "sys/objects/lifecycle.h"
 
 static const f32 gDeathSeqCameraYawAngle = -0.7853982f;
 static const f32 gDeathSeqCameraPitchAngle = 0.3926991f;

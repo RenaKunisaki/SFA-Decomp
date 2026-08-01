@@ -33,6 +33,9 @@
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/objtype.h"
 #include "main/lightmap_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/obj_message.h"
+#include "main/objhits.h"
 
 GameObject* gDll19NearestObj;
 f32 gDll19SegmentRadius;
@@ -164,7 +167,7 @@ void dll_19_changeWeapon(GameObject* cam, u8* ctx)
 
 void dll_19_releaseState(GameObject* obj, GroundBaddieState* state, u8 flag)
 {
-    Sfx_StopObjectChannel((int)obj, 127);
+    Sfx_StopObjectChannel(obj, 127);
     if ((state->configFlags & flag) == 0)
     {
         s16 soundId;
@@ -502,7 +505,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
                 ((BaddieState*)baddieState)->lastHitPriority = hit;
             }
         }
-        Sfx_StopObjectChannel((int)obj, 16);
+        Sfx_StopObjectChannel(obj, 16);
         ObjMsg_SendToObject((void*)hitId, DLL19_ADVANCE_MSG, obj, 0);
     }
     return hit;

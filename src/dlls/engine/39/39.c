@@ -1,6 +1,7 @@
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/dll_0027_effect14.h"
+#include "main/vecmath.h"
 
 #define EFFECT_FLAG_HAS_SRC 0x200000
 

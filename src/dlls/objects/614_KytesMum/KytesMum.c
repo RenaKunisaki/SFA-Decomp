@@ -39,6 +39,11 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/vecmath.h"
 #include "dolphin/pad.h"
+#include "main/dll/player_api.h"
+#include "main/dll/savegame_object_api.h"
+#include "main/object_update_list.h"
+#include "main/pad_api.h"
+#include "sys/objects/lifecycle.h"
 
 s16 gKytesMumRoamEventSfxTable[4] = {0x1B4, 0x1B5, 0x1B6, 0};
 s16 gKytesMumQuestEventSfxTable[4] = {0x336, 0x337, 0x337, 0};

@@ -31,6 +31,12 @@
 #include "sys/objects.h"
 #include "string.h"
 #include "main/camera.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/dll/player_api.h"
+#include "main/dll/savegame_object_api.h"
+#include "main/maketex.h"
+#include "sys/objects/lifecycle.h"
 
 typedef struct PushableCollisionProbe {
     f32 radii[4];   /* 0x00 */
@@ -206,10 +212,10 @@ int pushable_updateCurtain(int obj, PushableState* state) {
     placement = ((GameObject*)obj)->anim.placementDataAddress;
     player = Obj_GetPlayerObject();
     if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (playerGetStateValue(player, 10) != 0)) {
-        Sfx_StopObjectChannel(obj, 8);
+        Sfx_StopObjectChannel((GameObject*)obj, 8);
         return 0;
     }
-    Sfx_PlayFromObject(obj, SFXTRIG_treedrum16);
+    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_treedrum16);
     state->flags |= PUSHABLE_FLAG_MOVED;
     if ((state->flags & PUSHABLE_FLAG_AIRBORNE) == 0) {
         pushable_resolveCollisions((GameObject*)obj, state);
@@ -220,7 +226,7 @@ int pushable_updateCurtain(int obj, PushableState* state) {
         ((GameObject*)obj)->anim.localPosX = (f32)(((ObjPlacement*)placement)->posX - PUSHABLE_CURTAIN_POSITION_X);
         ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)placement)->posY;
         ((GameObject*)obj)->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + ((ObjPlacement*)placement)->posZ);
-        Sfx_PlayFromObject(obj, SFXTRIG_curtainopen16);
+        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_curtainopen16);
     }
     if (mainGetBit(GAMEBIT_PushableRelated0A1A) != 0) {
         ((GameObject*)obj)->anim.localPosX = ((ObjPlacement*)placement)->posX;
@@ -338,7 +344,7 @@ int pushable_updateMagicGem(GameObject* obj, PushableState* state) {
             (*effectInterface)->spawn(obj, PUSHABLE_MAGIC_GEM_EFFECT_ID, NULL, 2, -1, NULL);
             (*effectInterface)->spawn(obj, PUSHABLE_MAGIC_GEM_EFFECT_ID, NULL, 2, -1, NULL);
             Resource_Release(effectInterface);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_espar5_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_espar5_c);
         } else {
             state->eyePosX += state->eyeDriftSpeedX;
             if (state->eyePosX > PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX) {
@@ -883,7 +889,7 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
             f32 travelZ = obj->anim.localPosZ - state->posHistZ[4];
             if (travelX * travelX + travelZ * travelZ > PUSHABLE_UNIT_SCALE &&
                 (state->flags & PUSHABLE_FLAG_PUSH_SFX_DUE) != 0) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_birdymornin11);
+                Sfx_PlayFromObject(obj, SFXTRIG_birdymornin11);
                 state->flags = state->flags & ~PUSHABLE_FLAG_PUSH_SFX_DUE;
             }
         }
@@ -1209,7 +1215,7 @@ void pushable_update(GameObject* obj) {
         break;
     case PUSHABLE_SEQ_ID_DIM2_ICE_BLOCK:
         if (PUSHABLE_ZERO == state->prevWaterDepth && state->waterDepth > PUSHABLE_ZERO) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_curtainopen16);
+            Sfx_PlayFromObject(obj, SFXTRIG_curtainopen16);
             mainSetBits(GAMEBIT_PushableRelated0272, 1);
         }
         if (mainGetBit(GAMEBIT_PushableRelated0272) != 0) {

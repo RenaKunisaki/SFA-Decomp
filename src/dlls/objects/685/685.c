@@ -16,6 +16,7 @@
 #include "main/dll/dll_02AD_softbody.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "main/objhits.h"
 
 f32 gSoftBodySlowPhase;
 f32 gSoftBodyFastPhase;

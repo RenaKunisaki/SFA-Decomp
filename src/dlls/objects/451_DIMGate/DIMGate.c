@@ -7,6 +7,7 @@
 
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
+#include "main/objhits.h"
 
 #define DIM_GATE_TRIGGER_SEQUENCE_ID 399
 

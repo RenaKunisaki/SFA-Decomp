@@ -11,6 +11,7 @@
 #include "main/object_transform.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/vecmath.h"
+#include "main/obj_query.h"
 
 CameraModeNpcSpeakState* gCameraModeNpcSpeakState;
 f32 gCameraModeNpcSpeakMode6AnchorLerpScale;

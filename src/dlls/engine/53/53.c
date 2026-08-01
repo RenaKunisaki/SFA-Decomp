@@ -26,6 +26,10 @@
 #include "main/dll/player_status.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "string.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gametext_color_api.h"
+#include "main/gametext_show_str_api.h"
+#include "main/pad.h"
 
 /*
  * frontend_control - save-file-select screen behaviour for the front end.

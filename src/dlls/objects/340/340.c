@@ -7,6 +7,9 @@
 #include "main/game_ui_interface.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/obj_message.h"
+#include "main/objfx_hit_emitter_api.h"
+#include "main/objhits.h"
 
 typedef enum CfPrisonCageObjectSequenceId {
     CFPRISONCAGE_SEQUENCE_ID_CAGE = 0x127,

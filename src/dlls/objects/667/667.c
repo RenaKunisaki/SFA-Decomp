@@ -32,6 +32,10 @@
 #include "main/object_render.h"
 #include "dolphin/mtx/vec.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
+#include "sys/objects/lifecycle.h"
 
 f32 gArwingAndrossRingScaleStep = 0.1f;
 f32 gArwingAndrossRingSpinStep = 500.0f;
@@ -176,7 +180,7 @@ void arwingandrossstuff_hitDetect(GameObject* obj)
     {
         if (objAnim->romDefNo != ARW_SEQID_INVINCIBLE)
         {
-            Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_ar_laser116, 4);
+            Sfx_PlayFromObjectLimited(obj, SFXTRIG_ar_laser116, 4);
         }
         if (objAnim->romDefNo == ARW_SEQID_ANDROSS_RING)
         {
@@ -265,7 +269,7 @@ void arwingandrossstuff_update(GameObject* obj)
         {
             if (object->anim.romDefNo != ARW_SEQID_INVINCIBLE)
             {
-                Sfx_PlayFromObjectLimited((int)object, SFXTRIG_ar_laser116, 4);
+                Sfx_PlayFromObjectLimited(object, SFXTRIG_ar_laser116, 4);
             }
             state->despawnTimer = 40.0f;
             object->anim.alpha = 0;

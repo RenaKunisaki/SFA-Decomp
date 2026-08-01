@@ -19,6 +19,9 @@
 #include "main/resource.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/objhits.h"
+#include "main/shader_api.h"
 
 #define DLL19E_LOS_MIN_DISTANCE       50.0f
 #define DLL19E_LOS_OBJECT_OFFSET      32.0f
@@ -254,7 +257,7 @@ void dll414_update(GameObject* obj) {
                 state->needsOpenSfx = 1;
                 state->delayTimer = 1;
             } else {
-                Sfx_StopObjectChannel((int)obj, DLL19E_EFFECT_SFX_CHANNEL);
+                Sfx_StopObjectChannel(obj, DLL19E_EFFECT_SFX_CHANNEL);
                 (*gModgfxInterface)->detachSource(obj);
                 (*gExpgfxInterface)->freeSource((u32)obj);
                 if ((state->gameBitId != -1) && (mainGetBit(state->gameBitId) != 0)) {

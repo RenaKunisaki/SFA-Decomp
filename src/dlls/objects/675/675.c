@@ -16,6 +16,8 @@
 #include "main/dll/ARW/dll_02A3.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
+#include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
 int gDll2A3UpdatedThisFrame;
 int gDll2A3InstanceCount;

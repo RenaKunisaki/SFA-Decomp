@@ -11,6 +11,9 @@
 #include "main/objfx.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/gamebits_api.h"
+#include "main/objtype.h"
+#include "main/vecmath.h"
 
 #define MAGICMAKER_SPAWN_GAMEBIT             0x26B
 #define MAGICMAKER_MATCH_COUNT_LIMIT         10

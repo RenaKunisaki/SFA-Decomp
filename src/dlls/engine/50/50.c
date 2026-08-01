@@ -6,6 +6,13 @@
 #include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "dlls/object_descriptor.h"
 #include "track/intersect_hud_api.h"
+#include "main/dll/tricky.h"
+#include "main/gametext_color_api.h"
+#include "main/gametext_show_str_api.h"
+#include "main/map_load.h"
+#include "main/model_engine.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/sky.h"
 
 f32 lbl_803DD5F4;
 s8 gTitleScreenInitFrameStartPending;

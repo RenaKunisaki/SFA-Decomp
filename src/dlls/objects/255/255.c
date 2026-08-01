@@ -18,6 +18,13 @@
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/dll/player_api.h"
+#include "main/gamebits_api.h"
+#include "main/obj_link.h"
+#include "main/obj_message.h"
+#include "sys/objects/lifecycle.h"
 
 #define MAGICGEM_MSG_IN_RANGE    0x7000A /* Sent to the player when a gem enters pickup range. */
 #define MAGICGEM_MSG_PICKUP      0x7000B /* Awards magic and starts the collection burst. */
@@ -143,8 +150,8 @@ static inline void MagicDust_collect(GameObject* obj, MagicGemState* state, Game
     (*gExpgfxInterface)->freeSource2((u32)obj);
     itemPickupDoParticleFx(obj, MAGICGEM_RENDER_SCALE, state->mode, MAGICGEM_PICKUP_PARTICLE_COUNT);
     ObjHits_DisableObject(obj);
-    Sfx_PlayFromObject((int)obj, (u16)state->sfxId);
-    Sfx_StopFromObject((int)obj, SFXTRIG_rfall5_c);
+    Sfx_PlayFromObject(obj, (u16)state->sfxId);
+    Sfx_StopFromObject(obj, SFXTRIG_rfall5_c);
     playerAddRemoveMagic(player, (int)objectDef->magicAmount);
     state->flags &= ~MAGICGEM_FLAG_BURST_MASK;
     state->flags |= MAGICGEM_FLAG_COLLECTED;
@@ -200,7 +207,7 @@ void MagicDust_update(GameObject* obj) {
         if ((state->flags & MAGICGEM_FLAG_SETTLED) != 0) {
             obj->anim.rotX += framesThisStep * MAGICGEM_ROTATION_STEP;
             if ((state->ambientTimer -= framesThisStep) < 0) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_rfall5_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_rfall5_c);
                 value = randomGetRange(MAGICGEM_AMBIENT_TIMER_MIN, MAGICGEM_AMBIENT_TIMER_MAX);
                 state->ambientTimer = value;
             }
@@ -252,7 +259,7 @@ void MagicDust_update(GameObject* obj) {
                     }
                 }
                 obj->anim.alpha = MAGICGEM_MIN_ALPHA;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_en_liftstpc);
+                Sfx_PlayFromObject(obj, SFXTRIG_en_liftstpc);
             }
             objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                     obj->anim.velocityZ * timeDelta);
@@ -272,7 +279,7 @@ void MagicDust_update(GameObject* obj) {
                 f32 velocityZ = -obj->anim.velocityZ;
                 f32 speed = sqrtf(velocityX * velocityX + velocityY * velocityY + velocityZ * velocityZ);
                 if (speed > MAGICGEM_BOUNCE_SFX_SPEED) {
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_en_lflsh3_c_16b);
+                    Sfx_PlayFromObject(obj, SFXTRIG_en_lflsh3_c_16b);
                 }
                 if (state->contactNormalY >= MAGICGEM_FLOOR_NORMAL_THRESHOLD) {
                     obj->anim.velocityY = -obj->anim.velocityY;

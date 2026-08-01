@@ -5,6 +5,10 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "main/vecmath.h"
+#include "main/gamebits_api.h"
+#include "main/object_update_list.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
 
 int spellstone_idleCallback(void)
 {

@@ -12,6 +12,9 @@
 #include "main/pi_dolphin_api.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/dll/player_api.h"
+#include "main/gamebits_api.h"
+#include "main/objhits.h"
 
 #define DEATH_GAS_AIR_METER_CAPACITY              6000
 #define DEATH_GAS_AIR_METER_FULL                  6000.0f

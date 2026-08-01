@@ -14,6 +14,10 @@
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/objhits.h"
 
 #define DLL197_EFFECT_RESOURCE_ID        0x69
 #define DLL197_EFFECT_SPAWN_FLAGS        0x10004
@@ -146,12 +150,12 @@ void dll407_update(int objectAddress) {
 
     player = Obj_GetPlayerObject();
     distance = Vec_distance(&player->anim.worldPosX, &((GameObject*)objectAddress)->anim.worldPosX);
-    if (Sfx_IsPlayingFromObjectChannel(objectAddress, DLL197_PROXIMITY_SFX_CHANNEL) != 0) {
+    if (Sfx_IsPlayingFromObjectChannel((GameObject*)objectAddress, DLL197_PROXIMITY_SFX_CHANNEL) != 0) {
         if (distance >= DLL197_PROXIMITY_DISTANCE && state->active != 0) {
-            Sfx_StopObjectChannel(objectAddress, DLL197_PROXIMITY_SFX_CHANNEL);
+            Sfx_StopObjectChannel((GameObject*)objectAddress, DLL197_PROXIMITY_SFX_CHANNEL);
         }
     } else if (distance < DLL197_PROXIMITY_DISTANCE && state->active != 0) {
-        Sfx_PlayFromObject(objectAddress, SFXTRIG_mushdizzylp12);
+        Sfx_PlayFromObject((GameObject*)objectAddress, SFXTRIG_mushdizzylp12);
     }
 
     objUpdateOpacity((GameObject*)objectAddress);
@@ -196,7 +200,7 @@ void dll407_update(int objectAddress) {
 
     if (state->active != 0 && state->sparkTimer <= 0 && state->sparkArmed != 0) {
         state->sparkArmed = 0;
-        Sfx_PlayFromObject(objectAddress, SFXTRIG_cvdrip1c);
+        Sfx_PlayFromObject((GameObject*)objectAddress, SFXTRIG_cvdrip1c);
     }
 
     if (state->active == state->previousActive) {
@@ -232,7 +236,7 @@ void dll407_update(int objectAddress) {
         state->sparkArmed = 1;
         state->sparkTimer = 1;
     } else {
-        Sfx_StopObjectChannel(objectAddress, DLL197_SHUTDOWN_SFX_CHANNEL);
+        Sfx_StopObjectChannel((GameObject*)objectAddress, DLL197_SHUTDOWN_SFX_CHANNEL);
         (*gModgfxInterface)->detachSource((void*)objectAddress);
         (*gExpgfxInterface)->freeSource(objectAddress);
         if (state->gameBit != -1 && mainGetBit(state->gameBit) != 0) {

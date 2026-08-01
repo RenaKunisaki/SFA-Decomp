@@ -18,6 +18,12 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "track/intersect_depth_state_api.h"
+#include "dolphin/gx/GXPixel.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/hud_visibility_api.h"
+#include "main/objtype.h"
 
 #define FUEL_CELL_MESSAGE_IN_RANGE 0x7000A /* Sent to the player when pickup is offered. */
 #define FUEL_CELL_MESSAGE_RELEASE  0x7000B /* Sent after the player completes the pickup. */
@@ -205,7 +211,7 @@ void FuelCell_update(GameObject* obj) {
                     ObjMsg_SendToObject(player, FUEL_CELL_MESSAGE_IN_RANGE, obj, (u32)&state->triggerGameBit);
                     state->flags.pickupPending = 1;
                     mainSetBits(GAMEBIT_ITEM_FuelCell_CantGet, 1);
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_lockoff22);
+                    Sfx_PlayFromObject(obj, SFXTRIG_lockoff22);
                 }
             }
         } else if (state->flags.active) {

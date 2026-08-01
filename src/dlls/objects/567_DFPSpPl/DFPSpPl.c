@@ -4,6 +4,8 @@
  * the completion GameBit, clears the activation bit, and disables itself.
  */
 #include "main/dll/CF/laser.h"
+#include "main/gamebits_api.h"
+#include "main/objprint_render_api.h"
 
 int DFPSpPl_getExtraSize(void)
 {

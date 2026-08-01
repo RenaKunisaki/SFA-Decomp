@@ -4,6 +4,8 @@
 #include "main/model.h"
 #include "main/object_render.h"
 #include "main/vecmath.h"
+#include "main/object_transform.h"
+#include "main/objtype.h"
 
 #define DECORATION11A_COLLISION_OBJECT_GROUP 2
 #define DECORATION11A_ROTATION_SHIFT         8

@@ -57,6 +57,14 @@ int gAskProgressiveScanNoX = 0x16A;
 #include "main/voxmaps.h"
 #include "track/intersect_api.h"
 #include "string.h"
+#include "dolphin/vi.h"
+#include "main/audio/sfx_object_system_api.h"
+#include "main/gametext_color_api.h"
+#include "main/gametext_command_api.h"
+#include "main/gametext_show_api.h"
+#include "main/gametext_show_str_api.h"
+#include "main/pi_flush_api.h"
+#include "track/intersect_card_api.h"
 
 f32 gGameLoopResetFadeOutTimer;
 void* gAskProgressiveScanFlag;

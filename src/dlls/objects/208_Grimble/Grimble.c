@@ -16,6 +16,11 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gamebits_api.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
+#include "sys/objects/lifecycle.h"
 
 #define GRIMBLE_OBJECT_GROUP                      3
 #define GRIMBLE_PATH_OBJECT_GROUP                 0x17
@@ -160,7 +165,7 @@ int grimble_stateHandlerA09(GameObject* obj, GroundBaddieState* state) {
     state->baddie.animSpeedA = speed;
     state->baddie.animSpeedB = speed;
     if (state->baddie.moveJustStartedA != 0) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_seal4_c_27c);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_seal4_c_27c);
         if (state->baddie.moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 2, 0.0f, 0);
             state->baddie.moveDone = 0;
@@ -185,7 +190,7 @@ int grimble_stateHandlerA08(GameObject* obj, GroundBaddieState* state) {
     }
     state->baddie.moveSpeed = 0.048f;
     if (((s32)state->baddie.eventFlags & BADDIE_EVENT_LANDING) != 0) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_iceywindlp16_233);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16_233);
         state->baddie.eventFlags &= ~BADDIE_EVENT_LANDING;
         (*gBaddieControlInterface)->spawnChild(obj, objectState->triggerId, -1, 1);
     }
@@ -204,7 +209,7 @@ int grimble_stateHandlerA07(GameObject* obj, GroundBaddieState* state) {
         state->baddie.moveDone = 0;
     }
     if (state->baddie.moveJustStartedA != 0) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_ms_windlift_loop);
+        Sfx_PlayFromObject(obj, SFXTRIG_ms_windlift_loop);
     }
     state->baddie.moveSpeed = 0.018f;
     pathRotX = control->baseRotX;
@@ -503,7 +508,7 @@ int grimble_stateHandlerA01(GameObject* obj, char* state, f32 timeStep) {
     if ((((GroundBaddieState*)state)->baddie.eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
         ((GroundBaddieState*)state)->baddie.eventFlags =
             ((GroundBaddieState*)state)->baddie.eventFlags & ~BADDIE_EVENT_FOOTSTEP;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_mv_persquk1);
+        Sfx_PlayFromObject(obj, SFXTRIG_mv_persquk1);
     }
     (*(void (**)(int, char*, f32))(
         *(int*)(*(int*)(((GrimbleControl*)controlData)->pathObj + GRIMBLE_PATH_INTERFACE_OFFSET)) +
@@ -585,7 +590,7 @@ int grimble_stateHandlerA00(GameObject* obj, char* state, f32 timeStep) {
     if ((((GroundBaddieState*)state)->baddie.eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
         ((GroundBaddieState*)state)->baddie.eventFlags =
             ((GroundBaddieState*)state)->baddie.eventFlags & ~BADDIE_EVENT_FOOTSTEP;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_mv_persquk1);
+        Sfx_PlayFromObject(obj, SFXTRIG_mv_persquk1);
     }
     (*(void (**)(int, f32, f32*, f32*, f32*))(
         *(int*)(*(int*)(((GrimbleControl*)controlData)->pathObj + GRIMBLE_PATH_INTERFACE_OFFSET)) +

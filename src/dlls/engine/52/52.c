@@ -12,6 +12,15 @@
 #include "main/dll/dll_0057_cameramodetitle.h"
 #include "main/dll/dll_02C0_front.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
+#include "main/audio/audio_control_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/baddie/dll_003C_TumbleweedBush.h"
+#include "main/dll/front_game_text_box_api.h"
+#include "main/game_timer_control_api.h"
+#include "main/lightmap_api.h"
+#include "main/lightmap_render_control_api.h"
+#include "main/map_load.h"
+#include "main/model_engine.h"
 
 u8 gTitleMenuPanelOpen;
 s8 gTitleMenuLoadDelay;

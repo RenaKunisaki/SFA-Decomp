@@ -50,6 +50,11 @@
 #include "main/player_control_interface.h"
 #include "dlls/object_descriptor.h"
 #include "dolphin/pad.h"
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/tricky_api.h"
+#include "main/maketex_random_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/pad_api.h"
 
 void* gHighTopDefaultStateHandler;
 f32 gHighTopGroundMarkerMtx[16];

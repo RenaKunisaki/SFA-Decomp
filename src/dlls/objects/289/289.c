@@ -8,6 +8,10 @@
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/minimap_api.h"
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/obj_trigger.h"
+#include "main/objprint_render_api.h"
+#include "sys/objects.h"
 
 #define INFO_TEXT_DISPLAY_DURATION 600.0f
 

@@ -21,6 +21,12 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_00C9_enemy.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/maketex_random_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/obj_message.h"
 
 #define BABYCLOUDRUNNER_MUTTER_SFX_COUNT 4
 #define BABYCLOUDRUNNER_AIR_METER_COUNT  4
@@ -95,7 +101,7 @@ int babyCloudRunner_updateBurrowAnimation(GameObject* obj) {
     if (obj->anim.currentMove == BABYCLOUDRUNNER_MOVE_SURFACE) {
         if (obj->anim.currentMoveProgress > 0.5f) {
             if (!state->stateFlags.burrowSfxLatched) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_mn_heart1_c_334);
+                Sfx_PlayFromObject(obj, SFXTRIG_mn_heart1_c_334);
                 state->stateFlags.burrowSfxLatched = 1;
             }
         } else {
@@ -173,7 +179,7 @@ int babyCloudRunner_tryCapture(void* object) {
     }
     objSoundStartTimed(obj, &state->soundState, BABYCLOUDRUNNER_CAPTURE_SFX_ID, BABYCLOUDRUNNER_CAPTURE_SFX_PITCH, -1,
                        1);
-    Sfx_PlayFromObject((int)obj, SFXTRIG_wp_ice_freeze);
+    Sfx_PlayFromObject(obj, SFXTRIG_wp_ice_freeze);
     return 0;
 }
 
@@ -439,7 +445,7 @@ void babyCloudRunner_update(GameObject* obj) {
                 if (mainGetBit(state->runnerIndex + GAMEBIT_CFRelated0B2E) != 0) {
                     state->runnerState = BABYCLOUDRUNNER_STATE_FREED;
                     (*gGameUIInterface)->airMeterShutdown();
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_menuups16k);
+                    Sfx_PlayFromObject(obj, SFXTRIG_menuups16k);
                     storeZeroToFloatParam(&state->countdownTimer);
                 }
             } else {

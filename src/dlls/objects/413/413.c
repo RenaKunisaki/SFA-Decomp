@@ -6,6 +6,9 @@
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/objhits.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/render_lactions_api.h"
+#include "sys/objects/lifecycle.h"
 
 #define DLL19D_HIT_VOLUME_SLOT              0xE
 #define DLL19D_DEFAULT_HIT_TYPE             1
@@ -103,7 +106,7 @@ void dll413_update(GameObject* obj) {
 
     hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     if (hitState->contactFlags != 0) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_npu_216);
+        Sfx_PlayFromObject(obj, SFXTRIG_npu_216);
         (*gPartfxInterface)->spawnObject(obj, DLL19D_PARTFX_IMPACT, &spawnParams, DLL19D_IMPACT_PARTFX_MODE, -1, NULL);
         (*gPartfxInterface)->spawnObject(obj, DLL19D_PARTFX_IMPACT, &spawnParams, DLL19D_IMPACT_PARTFX_MODE, -1, NULL);
         (*gPartfxInterface)->spawnObject(obj, DLL19D_PARTFX_IMPACT, &spawnParams, DLL19D_IMPACT_PARTFX_MODE, -1, NULL);

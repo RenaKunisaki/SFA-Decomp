@@ -12,6 +12,7 @@
 #include "main/object_render.h"
 #include "main/textrender_api.h"
 #include "main/texture.h"
+#include "main/pad_api.h"
 
 #define INFOPOINT_FONT_TEXTURE_ASSET_ID 616
 

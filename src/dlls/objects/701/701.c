@@ -26,6 +26,11 @@
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 #include "main/vecmath.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/ARW/dll_029A_arwarwing.h"
+#include "main/obj_path.h"
+#include "main/objhits.h"
 
 /* Andross body object id, located once and cached in androssObj. */
 #define ANDROSS_OBJ_ID              0x47b77
@@ -98,12 +103,12 @@ void androsshand_handleDamage(GameObject* obj, AndrossHandState* state)
             state->health -= 1;
             state->hitCooldown = 6;
             state->zSpringVelocity = gAndrossHandHitImpulse;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_wmap_nameoff);
+            Sfx_PlayFromObject(obj, SFXTRIG_wmap_nameoff);
             if (state->health == 0)
             {
                 state->handState = ANDROSSHAND_STATE_DEAD;
                 andross_setPartSignal(state->androssObj, 1);
-                Sfx_PlayFromObject((int)obj, SFXTRIG_en_barrelblow11);
+                Sfx_PlayFromObject(obj, SFXTRIG_en_barrelblow11);
                 ObjPath_GetPointWorldPosition(obj, 0, &x, &y, &z, 0);
                 spawnDimExplosion((u8*)obj, x, y, z, 120.0f, 1, 1, 1, 1, 0, 1, 0);
             }
@@ -340,7 +345,7 @@ void AndrossHand_update(int obj)
         if (o->anim.currentMoveProgress >= 0.25f && state->soundGate == 0)
         {
             state->soundGate = 1;
-            Sfx_PlayFromObject(obj, SFXTRIG_and_ring_lp);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_and_ring_lp);
         }
         if (o->anim.currentMoveProgress >= 1.0f)
         {
@@ -388,12 +393,12 @@ void AndrossHand_update(int obj)
             o->anim.currentMoveProgress < 0.4f && state->soundGate == 0)
         {
             state->soundGate = 1;
-            Sfx_PlayFromObject(obj, SFXTRIG_and_chompf);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_and_chompf);
         }
         if (o->anim.currentMoveProgress >= 0.4f && state->soundGate != 0)
         {
             state->soundGate = 0;
-            Sfx_PlayFromObject(obj, SFXTRIG_rockshat16);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_rockshat16);
         }
         if (o->anim.currentMoveProgress >= 1.0f)
         {

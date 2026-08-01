@@ -38,6 +38,9 @@
 #include "dolphin/gx/GXTev.h"
 #include "dolphin/pad.h"
 #include "main/vecmath.h"
+#include "main/obj_message.h"
+#include "main/objprint_render_api.h"
+#include "track/intersect_depth_state_api.h"
 
 #define SHOPITEM_TARGET_OBJGROUP 9
 

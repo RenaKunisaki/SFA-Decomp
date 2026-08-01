@@ -18,6 +18,10 @@
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_02B1_cmbsrc.h"
+#include "main/objtype.h"
+#include "sys/objects/lifecycle.h"
 
 #define FIREBALL_HIT_VOLUME_SLOT 14
 
@@ -324,9 +328,9 @@ void Fireball_update(GameObject* obj) {
     {
         if (FIREBALL_HIT_STATE(obj)->contactFlags != 0) {
             if (FIREBALL_HIT_STATE(obj)->contactHitVolume != FIREBALL_HIT_VOLUME_SLOT) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_npu_216);
+                Sfx_PlayFromObject(obj, SFXTRIG_npu_216);
             } else {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_foot_water_walk_1);
+                Sfx_PlayFromObject(obj, SFXTRIG_foot_water_walk_1);
                 (*gWaterfxInterface)
                     ->spawnSplashBurst(obj, obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, 6.0f);
                 (*gWaterfxInterface)

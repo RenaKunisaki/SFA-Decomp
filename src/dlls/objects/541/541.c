@@ -22,6 +22,9 @@
 #include "main/object_render.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/VF/dll_021D_vfplift.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/pad_api.h"
 
 #define VFPLIFT1_OBJTYPE             0x3b7
 #define VFPLIFT2_OBJTYPE             0x3bf
@@ -118,8 +121,8 @@ void vfplift23_updateState(GameObject* obj)
             buttonDisable(0, VFPLIFT_INTERACT_BUTTON_MASK);
             vfplift_trigger(VFPLIFT_TRIGGER_LOWER, (int)obj);
             state->mode = VFPLIFT_STATE_LOWERED;
-            Sfx_PlayFromObject((int)obj, VFPLIFT_SFX_MOVE);
-            Sfx_StopObjectChannel((int)obj, VFPLIFT_SFX_CHANNEL_MOVE);
+            Sfx_PlayFromObject(obj, VFPLIFT_SFX_MOVE);
+            Sfx_StopObjectChannel(obj, VFPLIFT_SFX_CHANNEL_MOVE);
             mainSetBits(state->toggleGameBit, 0);
         }
         else
@@ -139,8 +142,8 @@ void vfplift23_updateState(GameObject* obj)
             buttonDisable(0, VFPLIFT_INTERACT_BUTTON_MASK);
             vfplift_trigger(VFPLIFT_TRIGGER_RAISE, (int)obj);
             state->mode = VFPLIFT_STATE_RAISED;
-            Sfx_PlayFromObject((int)obj, VFPLIFT_SFX_MOVE);
-            Sfx_StopObjectChannel((int)obj, VFPLIFT_SFX_CHANNEL_MOVE);
+            Sfx_PlayFromObject(obj, VFPLIFT_SFX_MOVE);
+            Sfx_StopObjectChannel(obj, VFPLIFT_SFX_CHANNEL_MOVE);
             mainSetBits(state->toggleGameBit, 1);
         }
         else
@@ -207,8 +210,8 @@ void vfplift1_updateState(GameObject* obj)
             buttonDisable(0, VFPLIFT_INTERACT_BUTTON_MASK);
             vfplift_trigger(VFPLIFT_TRIGGER_LOWER, (int)obj);
             state->mode = VFPLIFT_STATE_LOWERED;
-            Sfx_PlayFromObject((int)obj, VFPLIFT_SFX_MOVE);
-            Sfx_StopObjectChannel((int)obj, VFPLIFT_SFX_CHANNEL_MOVE);
+            Sfx_PlayFromObject(obj, VFPLIFT_SFX_MOVE);
+            Sfx_StopObjectChannel(obj, VFPLIFT_SFX_CHANNEL_MOVE);
             mainSetBits(state->toggleGameBit, 1);
         }
         else
@@ -228,8 +231,8 @@ void vfplift1_updateState(GameObject* obj)
             buttonDisable(0, VFPLIFT_INTERACT_BUTTON_MASK);
             vfplift_trigger(VFPLIFT_TRIGGER_RAISE, (int)obj);
             state->mode = VFPLIFT_STATE_RAISED;
-            Sfx_PlayFromObject((int)obj, VFPLIFT_SFX_MOVE);
-            Sfx_StopObjectChannel((int)obj, VFPLIFT_SFX_CHANNEL_MOVE);
+            Sfx_PlayFromObject(obj, VFPLIFT_SFX_MOVE);
+            Sfx_StopObjectChannel(obj, VFPLIFT_SFX_CHANNEL_MOVE);
             mainSetBits(state->toggleGameBit, 0);
         }
         else

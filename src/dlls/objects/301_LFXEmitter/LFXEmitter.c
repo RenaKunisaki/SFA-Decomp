@@ -11,6 +11,9 @@
 #include "main/mm.h"
 #include "sys/objects.h"
 #include "main/curve.h"
+#include "main/asset_load.h"
+#include "main/objtype.h"
+#include "sys/objects/lifecycle.h"
 
 #define LFXEMITTER_OBJECT_GROUP        0x1C
 #define LFXEMITTER_LIGHT_ACTION_HEAP   0x12

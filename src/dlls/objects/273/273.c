@@ -5,6 +5,10 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/obj_trigger.h"
+#include "main/objprint_render_api.h"
+#include "main/objtype.h"
+#include "main/pad_api.h"
 
 #define DOOR_LOCK_OBJECT_GROUP                       0xF
 #define DOOR_LOCK_INPUT_PORT                         0

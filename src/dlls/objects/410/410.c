@@ -11,6 +11,7 @@
 #include "main/resource.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
 
 #define DLL19A_EFFECT_RESOURCE_ID          0x82
 #define DLL19A_RESET_GAMEBIT               0x5B9
@@ -70,7 +71,7 @@ void dll410_update(GameObject* obj) {
             effectResource = Resource_Acquire(DLL19A_EFFECT_RESOURCE_ID, 1);
             (*effectResource)->spawn(obj, 0, NULL, 1, -1, NULL);
             (*effectResource)->spawn(obj, 1, NULL, 1, -1, NULL);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_hitpos_6);
+            Sfx_PlayFromObject(obj, SFXTRIG_hitpos_6);
             Resource_Release(effectResource);
             state->spawnTimerRate = 1;
             obj->userData2 = 1;

@@ -19,6 +19,8 @@
 #include "main/objtype.h"
 #include "main/dll/objfx_api.h"
 #include "dlls/object_descriptor.h"
+#include "main/obj_path.h"
+#include "main/objhits.h"
 
 #define DRCAGEWITH_CHILD_OBJ 1143
 #define DRCAGEWITH_CAGE_NOROPE_OBJ 2154

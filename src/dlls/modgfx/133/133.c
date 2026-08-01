@@ -4,6 +4,7 @@
 #include "main/dll/dll_0085_modgfx.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
+#include "main/vecmath.h"
 
 typedef enum Dll85Variant {
     DLL85_VARIANT_BURST = 4,

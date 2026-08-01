@@ -30,6 +30,8 @@
 #include "main/resource.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/critical_regions.gamecube.h"
 #include "sys/objects/lifecycle.h"
+#include "main/gx_scissor_api.h"
+#include "main/pi_dolphin_api.h"
 
 CloudActionRuntime gCloudActionRuntime;
 

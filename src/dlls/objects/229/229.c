@@ -26,6 +26,10 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/dll/dll_00E2_staff_api.h"
+#include "main/hud_visibility_api.h"
 
 #define SHIELD_NORMAL_WAVE_SCALE 0.5f
 #define SHIELD_SFX_VOLUME_SCALE  0.5f

@@ -49,6 +49,8 @@
 #include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/music_api.h"
+#include "main/dll/dll_0000_gameui_api.h"
 
 #define DIMBOSS_OBJECT_TYPE_ID 0x49
 

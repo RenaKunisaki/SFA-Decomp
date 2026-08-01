@@ -21,6 +21,8 @@
 #include "dolphin/dvd.h"
 #include "dolphin/os/OSReport.h"
 #include "dolphin/os/OSRtc.h"
+#include "main/audio/music_api.h"
+#include "main/pi_flush_api.h"
 
 static const f32 gAudioStreamEndPosInfinite = 9.0e9f;
 static const f32 gAudioStreamFramesPerSecond = 60.0f;

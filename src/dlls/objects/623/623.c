@@ -17,6 +17,8 @@
 #include "main/objtexture.h"
 #include "main/objtype.h"
 #include "main/object_render.h"
+#include "main/object_update_list.h"
+#include "main/objhits.h"
 
 #define DRGENERATOR_OBJGROUP 0x3
 #define DRGENERATOR_OBJ      0x716

@@ -14,6 +14,8 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objhits.h"
 
 #define POLLEN_FRAGMENT_SETUP_SIZE          0x24
 #define POLLEN_FRAGMENT_SETUP_KIND          5
@@ -94,7 +96,7 @@ void Pollen_update(GameObject* obj) {
         obj->anim.velocityY = -(POLLEN_GRAVITY * timeDelta - previousVelocityY);
         if (previousVelocityY >= 0.0f && obj->anim.velocityY <= 0.0f) {
             Pollen_burst(obj);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_majring2);
+            Sfx_PlayFromObject(obj, SFXTRIG_majring2);
             obj->anim.alpha = 0;
         }
         objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta, obj->anim.velocityZ * timeDelta);
@@ -106,7 +108,7 @@ void Pollen_update(GameObject* obj) {
              ((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject == (u32)getTrickyObject())) {
             CameraShake_Enable();
             CameraShake_SetOffset(1.0f);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_b6);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_b6);
             obj->anim.alpha = 0;
             state->despawnTimer = POLLEN_DESPAWN_DELAY;
             ObjHits_DisableObject(obj);

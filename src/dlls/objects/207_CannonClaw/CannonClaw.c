@@ -9,6 +9,8 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
+#include "main/objhits.h"
+#include "sys/objects/lifecycle.h"
 
 #define CANNON_CLAW_TRICKY_OBJECT_ID 0x1723
 #define CANNON_CLAW_ARM_MOVE_ID      0x208

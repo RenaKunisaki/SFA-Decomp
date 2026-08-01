@@ -23,6 +23,12 @@
 #include "main/objfx.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_024E_drakordthornbush.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/maketex_api.h"
+#include "main/object_update_list.h"
+#include "main/objhits.h"
+#include "sys/objects/lifecycle.h"
 
 int gThornBushLightningHitTable[2] = {15, 14};
 int gThornBushThornHitTable[2] = {5, 5};
@@ -107,7 +113,7 @@ void drakord_thornbush_hitDetect(GameObject* obj)
                 }
                 else
                 {
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_wmap_nameoff_496);
+                    Sfx_PlayFromObject(obj, SFXTRIG_wmap_nameoff_496);
                 }
             }
         }
@@ -126,7 +132,7 @@ void drakord_thornbush_hitDetect(GameObject* obj)
                                      0, 0, 1, 1);
                 break;
             case THORNBUSH_SEQ_LIGHTNING:
-                Sfx_PlayFromObject((int)obj, SFXTRIG_awghitobj16);
+                Sfx_PlayFromObject(obj, SFXTRIG_awghitobj16);
                 spawnExplosion(obj, (f32)(s32)(inner->radius << 1), 1, 1, 1,
                                      1, 0, 1, 0);
                 Obj_UpdateLightningCluster(obj, inner->lightningEntries, 3,

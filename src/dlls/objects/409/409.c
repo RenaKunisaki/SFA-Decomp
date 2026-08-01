@@ -19,6 +19,8 @@
 #include "main/shader_api.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/obj_message.h"
+#include "sys/objects/lifecycle.h"
 
 #define DLL199_TARGET_OBJECT_GROUP  0xE
 #define DLL199_SPAWNED_OBJECT_GROUP 0x3

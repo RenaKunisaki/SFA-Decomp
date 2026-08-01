@@ -13,6 +13,11 @@
 #include "main/objtexture.h"
 #include "main/objtype.h"
 #include "main/vecmath_distance_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/dll/player_api.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define PRESSURESWITCHFB_PARTFX_ID                      0x7C3
 #define PRESSURESWITCHFB_ANIM_COMMAND_IDLE              0
@@ -319,9 +324,9 @@ void PressureSwitchFB_update(GameObject* obj) {
             }
         }
         if ((s8)isMoving != 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_firlp6);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_firlp6);
         } else {
-            Sfx_StopObjectChannel((u32)obj, PRESSURESWITCHFB_MOVEMENT_SFX_CHANNEL);
+            Sfx_StopObjectChannel(obj, PRESSURESWITCHFB_MOVEMENT_SFX_CHANNEL);
         }
         if (((placement->drivesTricky != 0) && ((trickyObj = (GameObject*)getTrickyObject()) != NULL)) &&
             (mainGetBit(placement->pressedGameBit) == 0)) {

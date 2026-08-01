@@ -22,6 +22,11 @@
 #include "sys/objects.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
+#include "main/obj_path.h"
+#include "main/objhits.h"
+#include "main/objprint_api.h"
+#include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
 /* tree variant seqIds (retail OBJECTS.bin names, all DLL 0x2AF) */
 #define TREE_SEQID_SMALL_FERN      0x798 /* "smallfern" */
