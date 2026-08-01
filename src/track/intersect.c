@@ -762,17 +762,16 @@ void OSReport(const char* msg, ...);
 
 
 /* .bss block 0x80391DC0-0x803967C0 */
-f32 gWaterFxState[4];
-Texture* gWaterFxTextures[4];
-RippleEntry gWaterRipples[0x100];
-SplashQuad gWaterSplashQuads[0x100];
-DepthReadRequest gDepthReadResults[0x14];
-DepthReadRequest gDepthReadPendingQueue[0x14];
-
-f32 gCameraModelViewMatrix[3][4];
-f32 gCameraLightPerspectiveMatrix[3][4];
-f32 gCameraLightPerspectiveFlipYMatrix[3][4];
-f32 gCameraLightPerspectiveScaledMatrix[3][4];
-f32 hudMatrix[4][4];
-int lbl_803968C0[0x10];
 SaveCardFileInfo gSaveCardFileInfo;
+int lbl_803968C0[0x10];
+f32 hudMatrix[4][4];
+f32 gCameraLightPerspectiveScaledMatrix[3][4];
+f32 gCameraLightPerspectiveFlipYMatrix[3][4];
+f32 gCameraLightPerspectiveMatrix[3][4];
+f32 gCameraModelViewMatrix[3][4];
+DepthReadRequest gDepthReadPendingQueue[0x14];
+DepthReadRequest gDepthReadResults[0x14];
+SplashQuad gWaterSplashQuads[0x100];
+RippleEntry gWaterRipples[0x100];
+Texture* gWaterFxTextures[4];
+f32 gWaterFxState[4];

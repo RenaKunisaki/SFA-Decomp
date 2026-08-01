@@ -1399,7 +1399,6 @@ static void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int
 }
 
 
-MapRomListIndex gMapRomListIndexes[120];
 
 void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* entry, int layer);
 
@@ -3447,15 +3446,15 @@ void buildPlayerRelativeFrustumPlanes(void)
     frustumPlanes_updateAabbCornerIndices(gPlayerRelativeFrustumPlanes, FRUSTUM_PLANE_COUNT);
 }
 
-char gLightmapDrawQueue[0x3F48];
-u8 gCloudLayerTexMatrix[0x30];
-u8 gGlowLightList[0x190];
-f32 distortionFilterVector[0x1c];
-int gShaderMapRomBuffers[0x5];
-BlockEntry gShaderRomListSlots[8];
-u8 gMapBlockCellStateTables[0x14];
-int gMapBlockCellEntryTables[5];
-s8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
-
-MapRomListPage* gLoadedRomListPages[ROM_LIST_PAGE_COUNT];
 WarpVec gCameraPosByTransformSpace[0x29];
+MapRomListPage* gLoadedRomListPages[ROM_LIST_PAGE_COUNT];
+MapRomListIndex gMapRomListIndexes[120];
+s8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
+int gMapBlockCellEntryTables[5];
+u8 gMapBlockCellStateTables[0x14];
+BlockEntry gShaderRomListSlots[8];
+int gShaderMapRomBuffers[0x5];
+f32 distortionFilterVector[0x1c];
+u8 gGlowLightList[0x190];
+u8 gCloudLayerTexMatrix[0x30];
+char gLightmapDrawQueue[0x3F48];

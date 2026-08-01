@@ -734,6 +734,20 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
     return 1;
 }
 
+s32 gObjTableFileRequestFlags;
+s16 gForceNextLoadSync;
+u8 gLoadFilesInitDone;
+void** gDvdFileInfoPool;
+int gPendingDvdReadCount;
+u32 gAssetLoadCompletedFlags;
+volatile int gAssetLoadInFlightFlags;
+int gModelsArchiveLoadCount;
+s16 gDefragDelayFrames;
+u32 gRomListLoadInFlight;
+u32 gForceLoadImmediately;
+u32 lbl_803DCC6C;
+u32 lbl_803DCC68;
+
 ModelLightStruct* gObjSelectedLights;
 u8 lbl_803DCC60;
 s32 gObjSelectedLightCount;
@@ -2313,7 +2327,9 @@ void objRenderInvalidateStateCache(void)
 }
 typedef void (*ObjShadowCb)(int* obj, int* am, f32* wm);
 
-extern f32 gObjBoneMtxBuffer[0xC00];
+u32 gObjBlockStatus[0x63F6];
+u8 gResourceFileTable[0x160];
+f32 gObjBoneMtxBuffer[0xC00];
 
 
 static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
@@ -3575,7 +3591,6 @@ static inline int loadedFileFlags(void)
     OSRestoreInterrupts(s);
     return v;
 }
-extern u8 gResourceFileTable[0x160];
 
 void defragMemory(int mode)
 {
@@ -3796,9 +3811,6 @@ void defragMemory(int mode)
     mmSetTextureAllocationState(0);
 }
 
-f32 gObjBoneMtxBuffer[0xC00];
-
-extern u32 gObjBlockStatus[0x63F6];
 
 void animCurvReadCb(s32 result, DVDFileInfo* fileInfo)
 {
@@ -3899,8 +3911,6 @@ void voxMapTabReadCb(s32 result, DVDFileInfo* fileInfo)
     }
 }
 
-u8 gResourceFileTable[0x160];
-
 
 void blocksTabReadCb(s32 result, DVDFileInfo* fileInfo)
 {
@@ -3942,7 +3952,6 @@ void romListReadCb(s32 result, DVDFileInfo* fileInfo)
 }
 
 extern u32 gResourceFileBuffers[];
-u32 gObjBlockStatus[0x63F6];
 
 void blocksReadCb(s32 result, DVDFileInfo* fileInfo)
 {
@@ -4304,18 +4313,6 @@ int getLoadedFileFlags(int slot)
     return loadedFileFlags();
 }
 
-
-s32 gObjTableFileRequestFlags;
-s16 gForceNextLoadSync;
-u8 gLoadFilesInitDone;
-void** gDvdFileInfoPool;
-int gPendingDvdReadCount;
-u32 gAssetLoadCompletedFlags;
-volatile int gAssetLoadInFlightFlags;
-int gModelsArchiveLoadCount;
-s16 gDefragDelayFrames;
-u32 gRomListLoadInFlight;
-u32 gForceLoadImmediately;
 
 u32 loadTableFiles(void)
 {

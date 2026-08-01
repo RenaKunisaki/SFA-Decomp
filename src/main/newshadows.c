@@ -302,6 +302,7 @@ f32 lbl_803DB670 = 1.3333334f;
 
 extern u32 gNewShadowFrameTextures[NEW_SHADOW_FRAME_COUNT];
 extern Texture* gNewShadowNoiseTexFrames[0x10];
+extern f32 gNewShadowPlacements[0x112];
 u8 gSurfaceSfxTable[0xD8] = {
     0x03, 0x46, 0x03, 0x46, 0x03, 0x46, 0x03, 0x47, 0x03, 0x48, 0x03, 0x49, 0x03, 0x4A, 0x03, 0x4B,
     0x03, 0x46, 0x03, 0x4C, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04,
@@ -1050,7 +1051,6 @@ void getNewShadowCausticTexture(u32* p)
     *p = (u32)gNewShadowCausticTexture;
 }
 
-Texture* gNewShadowTextureTable[8][4];
 
 void getObjectShadowDrawParams(GameObject* obj, u32* outTexture, f32* outScale, int* outX, int* outY)
 {
@@ -1061,7 +1061,6 @@ void getObjectShadowDrawParams(GameObject* obj, u32* outTexture, f32* outScale, 
     *outY = (int)obj->anim.modelState->shadowOffsetY;
 }
 
-Texture* gNewShadowNoiseTexFrames[0x10];
 
 f32 getNewShadowDistortionWaveOffset(void)
 {
@@ -1113,7 +1112,6 @@ u32 getNewShadowReflectionGradientTexture(void)
     return gNewShadowReflectionGradientTexture;
 }
 
-u32 gNewShadowFrameTextures[NEW_SHADOW_FRAME_COUNT];
 u32 getNewShadowInverseRampTexture(void)
 {
     return gNewShadowInverseRampTexture;
@@ -1211,9 +1209,6 @@ void newShadowsBeginFrame(void)
     }
 }
 
-NewShadowCaster gNewShadowCasterTable[NEW_SHADOW_MAX_QUEUED_CASTERS];
-NewShadowCastSlot gNewShadowCastSlots[NEW_SHADOW_MAX_CASTERS];
-u32 gNewShadowCastTextures[NEW_SHADOW_MAX_CAST_TEXTURES];
 
 void newshadows_getReflectionScrollOffsets(f32* outScrollX, f32* outScrollY)
 {
@@ -1221,7 +1216,6 @@ void newshadows_getReflectionScrollOffsets(f32* outScrollX, f32* outScrollY)
     *outScrollY = gNewShadowReflectionScrollY;
 }
 
-f32 gNewShadowPlacements[0x112];
 
 /* Builds the animated water-noise assets: scatters up to 50 non-overlapping random
    placements ([0]=lifetime 8..16 frames, [1..2]=pos, [3]=outer size, [4]=inner size),
@@ -1508,6 +1502,15 @@ void newShadowsInitProceduralTextures(void)
     gNewShadowReflectionScrollY = 0.0f;
     testAndSet_onlyUseHeap3(savedHeap);
 }
+
+
+f32 gNewShadowPlacements[0x112];
+u32 gNewShadowCastTextures[NEW_SHADOW_MAX_CAST_TEXTURES];
+NewShadowCastSlot gNewShadowCastSlots[NEW_SHADOW_MAX_CASTERS];
+NewShadowCaster gNewShadowCasterTable[NEW_SHADOW_MAX_QUEUED_CASTERS];
+Texture* gNewShadowNoiseTexFrames[0x10];
+Texture* gNewShadowTextureTable[8][4];
+u32 gNewShadowFrameTextures[NEW_SHADOW_FRAME_COUNT];
 
 
 static inline void fillDiskTexture(void)

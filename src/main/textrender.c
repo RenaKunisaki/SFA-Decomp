@@ -1057,12 +1057,12 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count)
     }
 }
 
-TextFont gGameTextCharsets[0xA0 / sizeof(TextFont)];
-
-
-
-
 GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
+
+
+
+
+TextFont gGameTextCharsets[0xA0 / sizeof(TextFont)];
 
 
 void* jumptable_802C9E84[16] = {
@@ -1129,8 +1129,8 @@ int getControlCharLen(u32 c)
 }
 
 
-u8 gGameTextBase[0x20];
-u8 sGameTextFallbackBufSlots[0x20];
-u8 sGameTextFallbackDefs[0x280];
-u32 sSubtitleCtrlCmdScratch[0x240];
 GameTextSlot gGameTextCommandSlots[0xA00 / sizeof(GameTextSlot)];
+u32 sSubtitleCtrlCmdScratch[0x240];
+u8 sGameTextFallbackDefs[0x280];
+u8 sGameTextFallbackBufSlots[0x20];
+u8 gGameTextBase[0x20];
