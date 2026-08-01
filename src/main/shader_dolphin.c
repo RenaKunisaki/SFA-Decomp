@@ -93,11 +93,12 @@ struct piIndMtx
 
 const struct piIndMtx sEnvMapBumpIndMtx = {
     {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
-const IndTexMtx23 lbl_802C1D68[4] = {
-    {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}},
-    {{{3.0f, -1.0f, 1.0f}, {1.0f, -1.0f, 3.0f}}},
-    {{{1.0f, -2.0f, 1.0f}, {-2.0f, -1.0f, 1.0f}}},
-    {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}}};
+const IndTexMtx23 sHeavyFogIndMtx = {
+    {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
+const Vec sWarpedRingRotAxes[4] = {
+    {3.0f, -1.0f, 1.0f}, {1.0f, -1.0f, 3.0f}, {1.0f, -2.0f, 1.0f}, {-2.0f, -1.0f, 1.0f}};
+const IndTexMtx23 sWarpedRingIndMtx = {
+    {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
 const IndTexMtx23 sHeatShimmerIndMtx1 = {
     {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
 const IndTexMtx23 sHeatShimmerIndMtx2[2] = {
@@ -1127,7 +1128,7 @@ void renderHeavyFog(void* fogColor)
     f32 b;
     f32(*iv)[4];
     f32 k;
-    im = lbl_802C1D68[0];
+    im = sHeavyFogIndMtx;
     iv = (f32(*)[4])Camera_GetInverseViewMatrix();
     mcc[0][0] = 0.0f;
     mcc[0][1] = 0.0f;
