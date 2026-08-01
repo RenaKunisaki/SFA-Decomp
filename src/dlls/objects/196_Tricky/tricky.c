@@ -3846,7 +3846,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
 {
     char* str = lbl_8031D2E8;
     u8 ok;
-    int hasTarget;
+    int hasTarget = 0;
     int* bestWarp = NULL;
     f32 bestDetourSavings = 0.0f;
     int warpCount;
