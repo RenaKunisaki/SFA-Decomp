@@ -2,23 +2,23 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 
 extern const float lbl_803E7D40;
-extern const float lbl_803E7D44;
-extern const float lbl_803E7D48;
-extern const float lbl_803E7D4C;
-extern const float lbl_803E7D50;
-extern const float lbl_803E7D54;
-extern const float lbl_803E7D58;
-extern const float lbl_803E7D5C;
+extern const float gSinCosSinCoeff1;
+extern const float gSinCosSinCoeff3;
+extern const float gSinCosSinCoeff5;
+extern const float gSinCosCosCoeff0;
+extern const float gSinCosCosCoeff2;
+extern const float gSinCosCosCoeff4;
+extern const float gSinCosCosCoeff6;
 
 void mathSinCosf(float x, float* outSin, float* outCos) {
     u16 quadrant;
     float reducedAngle = trigReduceQuadrant(&quadrant, x);
     float reducedSquared = reducedAngle * reducedAngle;
     float sinApprox =
-        reducedAngle * (reducedSquared * (lbl_803E7D4C * reducedSquared + lbl_803E7D48) + lbl_803E7D44);
+        reducedAngle * (reducedSquared * (gSinCosSinCoeff5 * reducedSquared + gSinCosSinCoeff3) + gSinCosSinCoeff1);
     float cosApprox =
-        reducedSquared * (reducedSquared * (lbl_803E7D5C * reducedSquared + lbl_803E7D58) + lbl_803E7D54) +
-        lbl_803E7D50;
+        reducedSquared * (reducedSquared * (gSinCosCosCoeff6 * reducedSquared + gSinCosCosCoeff4) + gSinCosCosCoeff2) +
+        gSinCosCosCoeff0;
 
     switch (quadrant & 6) {
         case 0:
@@ -49,10 +49,10 @@ void mathSinCosf(float x, float* outSin, float* outCos) {
 }
 
 const float lbl_803E7D40 = 0.0f;
-const float lbl_803E7D44 = 0.78539425f;
-const float lbl_803E7D48 = -0.08071397f;
-const float lbl_803E7D4C = 0.0024270867f;
-const float lbl_803E7D50 = 1.0f;
-const float lbl_803E7D54 = -0.30842426f;
-const float lbl_803E7D58 = 0.015849913f;
-const float lbl_803E7D5C = -0.000318879f;
+const float gSinCosSinCoeff1 = 0.78539425f;
+const float gSinCosSinCoeff3 = -0.08071397f;
+const float gSinCosSinCoeff5 = 0.0024270867f;
+const float gSinCosCosCoeff0 = 1.0f;
+const float gSinCosCosCoeff2 = -0.30842426f;
+const float gSinCosCosCoeff4 = 0.015849913f;
+const float gSinCosCosCoeff6 = -0.000318879f;
