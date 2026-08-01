@@ -104,11 +104,11 @@ static const IndMtxInit sIndMtxZeroInit = {{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}}
 
 extern GXColor lbl_803E8454;
 
-extern f32 lbl_8030EA10[3][2][3];
-extern f32 lbl_8030EA58[2][3];
-extern f32 lbl_8030EA70[2][3];
-extern f32 lbl_8030EA88[2][3];
-extern f32 lbl_8030EAA0[2][3];
+extern f32 gWaterReflectionIndTexMtx[3][2][3];
+extern f32 gFrozenObjectIndTexMtx[2][3];
+extern f32 gScreenImageIndTexMtx1[2][3];
+extern f32 gScreenImageIndTexMtx2[2][3];
+extern f32 gWhirlpoolIndTexMtx[2][3];
 
 extern inline float sqrtf(float x)
 {
@@ -290,8 +290,8 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD2, GX_TEXMAP2);
     GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, lbl_8030EAA0, -1);
-    GXSetIndTexMtx(2, lbl_8030EAA0, -2);
+    GXSetIndTexMtx(1, gWhirlpoolIndTexMtx, -1);
+    GXSetIndTexMtx(2, gWhirlpoolIndTexMtx, -2);
     GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
     GXSetTevIndirect(1, 0, 0, 7, 2, 0, 0, 0, 0, 0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP1, GX_COLOR_NULL);
@@ -508,12 +508,12 @@ void screenImageDraw(u8 alpha)
 
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
     GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, lbl_8030EA70, -3);
+    GXSetIndTexMtx(1, gScreenImageIndTexMtx1, -3);
     GXSetTevIndirect(1, 0, 0, 7, 1, 6, 6, 0, 0, 1);
 
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD2, GX_TEXMAP1);
     GXSetIndTexCoordScale(1, 0, 0);
-    GXSetIndTexMtx(2, lbl_8030EA88, -3);
+    GXSetIndTexMtx(2, gScreenImageIndTexMtx2, -3);
     GXSetTevIndirect(2, 1, 0, 7, 2, 0, 0, 1, 0, 1);
 
     GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_ALPHA_BUMPN);
@@ -1162,7 +1162,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
 
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
     GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, lbl_8030EA58, -1);
+    GXSetIndTexMtx(1, gFrozenObjectIndTexMtx, -1);
     GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
     GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
@@ -4374,7 +4374,7 @@ void setupWaterReflectionTev(int handle1, int handle2)
     GXColor tev2;
     f32 (*indBase[1])[2][3];
 
-    indBase[0] = lbl_8030EA10;
+    indBase[0] = gWaterReflectionIndTexMtx;
     selectReflectionTexture(0);
     selectTexture((Texture*)handle1, 1);
     selectTexture((Texture*)handle2, 2);

@@ -324,14 +324,14 @@ u32 gWhirlpoolReflectionTintColor = 0xFFFFFF60;
 u32 gWhirlpoolReflectionKColor = 0xA0A0A080;
 
 
-f32 lbl_8030EA10[3][2][3] = {
+f32 gWaterReflectionIndTexMtx[3][2][3] = {
     {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
     {{0.0f, 0.8f, 0.0f}, {0.0f, 0.0f, 0.8f}},
     {{0.0f, -0.2f, 0.0f}, {0.0f, 0.0f, 0.2f}}};
-f32 lbl_8030EA58[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EA70[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EA88[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gFrozenObjectIndTexMtx[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gScreenImageIndTexMtx1[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gScreenImageIndTexMtx2[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gWhirlpoolIndTexMtx[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 
 #include "track/intersect_internal.h"
 
@@ -763,7 +763,7 @@ void OSReport(const char* msg, ...);
 
 /* .bss block 0x80391DC0-0x803967C0 */
 SaveCardFileInfo gSaveCardFileInfo;
-int lbl_803968C0[0x10];
+int gPerspectiveMtx[0x10];
 f32 hudMatrix[4][4];
 f32 gCameraLightPerspectiveScaledMatrix[3][4];
 f32 gCameraLightPerspectiveFlipYMatrix[3][4];
