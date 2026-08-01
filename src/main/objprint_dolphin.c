@@ -473,7 +473,7 @@ extern ObjPrintGXColor gObjFuzzKColor;
 extern u8 lbl_803DCC35;
 extern u8 lbl_803DCC36;
 extern s32 gObjSelectedLightCount;
-extern u8 lbl_803DCC60;
+extern u8 gObjProjectedLightChannel;
 extern int lbl_803DB48C;
 extern int lbl_803DB490;
 
@@ -600,7 +600,7 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
         GXSetTevDirect(GX_TEVSTAGE2);
         GXLoadTexMtxImm((MtxPtr)modelLightStruct_getProjectionTexMtx(gObjSelectedLights), GX_PTTEXMTX3, GX_MTX3x4);
         GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, GX_PTTEXMTX3);
-        if (lbl_803DCC60 == 0 || lbl_803DCC60 == 2)
+        if (gObjProjectedLightChannel == 0 || gObjProjectedLightChannel == 2)
         {
             GXSetTevOrder(GX_TEVSTAGE2, GX_TEXCOORD1, GX_TEXMAP5, GX_COLOR0A0);
         }
@@ -622,7 +622,7 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
         {
             GXSetTevColorIn(GX_TEVSTAGE2, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC, GX_CC_C1);
         }
-        else if (lbl_803DCC60 == 0 || lbl_803DCC60 == 1)
+        else if (gObjProjectedLightChannel == 0 || gObjProjectedLightChannel == 1)
         {
             GXSetTevColorIn(GX_TEVSTAGE2, GX_CC_ZERO, GX_CC_RASC, GX_CC_TEXC, GX_CC_C1);
         }
@@ -749,7 +749,7 @@ u32 lbl_803DCC6C;
 u32 lbl_803DCC68;
 
 ModelLightStruct* gObjSelectedLights;
-u8 lbl_803DCC60;
+u8 gObjProjectedLightChannel;
 s32 gObjSelectedLightCount;
 u8 gObjOverrideColor[3];
 GXColor gObjCurChanColor;
@@ -1085,7 +1085,7 @@ static void objSetupLightChannels(u8* model, u8* obj)
                     got = 0;
                     k = 0;
                     lp = &gObjSelectedLights;
-                    sp = &lbl_803DCC60;
+                    sp = &gObjProjectedLightChannel;
                     for (; k < gObjSelectedLightCount; k++)
                     {
                         int t = modelLightStruct_getProjectedLightChannelPreference(*lp);
@@ -1864,7 +1864,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         {
             i = 0;
             lp = &gObjSelectedLights;
-            sp = &lbl_803DCC60;
+            sp = &gObjProjectedLightChannel;
             for (; i < gObjSelectedLightCount; i++)
             {
                 u8* t = (u8*)modelLightStruct_getProjectionTexture(*lp);
