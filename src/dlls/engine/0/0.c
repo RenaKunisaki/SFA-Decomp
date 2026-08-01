@@ -757,7 +757,7 @@ static const SmallText sHudBlankSmallText = { "   " };
 static const ArwingScoreText sArwingBlankScore = { "   " };
 static const GXColor sCMenuRingIconColor = { 0xFF, 0xFF, 0xFF, 0xFF };
 static const GXColor sCMenuRingModelColor = { 0xFF, 0xFF, 0xFF, 0xFF };
-static const SmallText sHudBlankButtonLabel = { "   " };
+const SmallText gHudBlankButtonLabel = { "   " };
 static const CounterText sHudBlankCounterTextA = { "       " };
 static const CounterText sHudBlankCounterTextB = { "       " };
 const GXColor gViewFinderLineColor = { 0x00, 0xFF, 0x00, 0xFF };
@@ -3115,7 +3115,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
 
     base = (u8*)lbl_803A87F0;
     player = Obj_GetPlayerObject();
-    label = sHudBlankButtonLabel;
+    label = gHudBlankButtonLabel;
     icon = 0;
     if ((cMenuFadeCounter != 0) && (cMenuEnabled != 0))
     {
