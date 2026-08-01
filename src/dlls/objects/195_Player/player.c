@@ -13097,7 +13097,6 @@ void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* 
     }
     {
         int r0;
-        f32 k;
         if (!((((u32)player->flags3F1 >> 5) & 1) || (((u32)player->flags3F0 >> 4) & 1))) {
             r0 = player->targetYawRate;
         } else {
@@ -13121,7 +13120,7 @@ void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* 
         if (g < -0x8000) {
             g += 0xffff;
         }
-        g = (int)((f32)(int)g * (k = 0.15f));
+        g *= 0.15f;
         if (g < -0x16c) {
             g = -0x16c;
         } else if (g > 0x16c) {
