@@ -5,25 +5,18 @@
 #include "main/camera.h"
 #include "main/gamebits.h"
 #include "main/gameloop_api.h"
-#include "main/mm.h"
 #include "sys/objects.h"
 #include "main/objseq_api.h"
-#include "main/pad.h"
-#include "main/pi_dolphin_api.h"
-#include "main/resource.h"
 #include "main/vecmath.h"
 #define SYNTH_INTERNAL_USE_PROJECT_TYPES
 #include "src/musyx/runtime/synth_internal.h"
 #include "game/objects/object.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
-#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
-#include "dolphin/ai.h"
-#include "dolphin/dvd.h"
 #include "dolphin/mtx/vec.h"
-#include "dolphin/os/OSRtc.h"
+#include "main/audio/music_api.h"
 
 u8 gSfxTriggerExtraTable[8] = {1, 2, 4, 8, 0x10, 0x20, 0x40, 0};
 
@@ -35,8 +28,8 @@ void* gSfxTriggersData;
 
 SfxObjectChannel gSfxObjectChannels[0xC40 / sizeof(SfxObjectChannel)];
 
-static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* vector);
-static f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta);
+static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, Vec* vector);
+static f32 Sfx_GetListenerRelativeDistance(Vec* soundPos, Vec* outDelta);
 
 static inline SfxObjectChannel* Sfx_FindFreeObjectChannel(void)
 {
@@ -54,7 +47,7 @@ static inline SfxObjectChannel* Sfx_FindFreeObjectChannel(void)
 }
 
 
-u32 Sfx_PlayFromObjectLimited(u32 obj, u16 sfxId, int limit)
+u32 Sfx_PlayFromObjectLimited(GameObject* obj, u16 sfxId, int limit)
 {
     SfxObjectChannel* ch = Sfx_FindObjectChannel(0, 0, sfxId, 3);
     if (ch != NULL && (int)gSfxObjectChannelMatchCount > limit)
@@ -69,7 +62,7 @@ u32 Sfx_PlayFromObjectLimited(u32 obj, u16 sfxId, int limit)
     return gSfxObjectChannelMatchCount;
 }
 
-int Sfx_IsPlayingFromObjectChannel(int obj, int channel)
+int Sfx_IsPlayingFromObjectChannel(GameObject* obj, int channel)
 {
     SfxObjectChannel* objectChannel;
 
@@ -89,7 +82,7 @@ int Sfx_IsPlayingFromObjectChannel(int obj, int channel)
     return 0;
 }
 
-s32 Sfx_IsPlayingFromObject(int obj, u16 sfxId)
+s32 Sfx_IsPlayingFromObject(GameObject* obj, u16 sfxId)
 {
     SfxObjectChannel* objectChannel;
 
@@ -155,8 +148,7 @@ void Sfx_SetObjectSoundsPaused(s32 paused)
     i = SFX_OBJECT_CHANNEL_COUNT - 1;
     pausedByte = paused;
 
-    do
-    {
+    do {
         if (objectChannel->handle != (u32)-1)
         {
             if (paused != 0)
@@ -173,11 +165,11 @@ void Sfx_SetObjectSoundsPaused(s32 paused)
     } while (i-- != 0);
 }
 
-void Sfx_StopObjectChannel(int obj, int channel)
+void Sfx_StopObjectChannel(GameObject* obj, int channel)
 {
     SfxObjectChannel* objectChannel;
 
-    if (((u8)channel == 0) || ((u32)obj == 0))
+    if ((u8)channel == 0 || obj == 0)
     {
         objectChannel = NULL;
     }
@@ -193,7 +185,7 @@ void Sfx_StopObjectChannel(int obj, int channel)
     }
 }
 
-void Sfx_StopFromObject(int obj, u16 sfxId)
+void Sfx_StopFromObject(GameObject* obj, u16 sfxId)
 {
     SfxObjectChannel* objectChannel;
 
@@ -214,7 +206,7 @@ void Sfx_StopFromObject(int obj, u16 sfxId)
 }
 
 
-void Sfx_SetObjectChannelVolume(u32 obj, u32 channel, u8 volume, f32 volumeScale)
+void Sfx_SetObjectChannelVolume(GameObject* obj, u32 channel, u8 volume, f32 volumeScale)
 {
     u8 volumeByte;
     SfxObjectChannel* objectChannel;
@@ -270,25 +262,20 @@ void Sfx_SetObjectChannelVolume(u32 obj, u32 channel, u8 volume, f32 volumeScale
     }
 }
 
-void Sfx_SetObjectSfxVolume(int obj, u16 sfxId, u8 volume, f32 volumeScale)
+void Sfx_SetObjectSfxVolume(GameObject* obj, u16 sfxId, u8 volume, f32 volumeScale)
 {
     u8 volumeByte;
     SfxObjectChannel* objectChannel;
 
     volumeByte = volume;
-    if (sfxId != 0)
-    {
+    if (sfxId != 0) {
         objectChannel = Sfx_FindObjectChannel(obj, 0, sfxId, 2);
-    }
-    else
-    {
+    } else {
         objectChannel = NULL;
     }
 
-    if (objectChannel != NULL)
-    {
-        if (volumeByte != 0xFE)
-        {
+    if (objectChannel != NULL) {
+        if (volumeByte != 0xFE) {
             u32 ctrlVolume;
 
             if (volumeByte == 0xFF)
@@ -326,22 +313,22 @@ void Sfx_SetObjectSfxVolume(int obj, u16 sfxId, u8 volume, f32 volumeScale)
     }
 }
 
-void Sfx_PlayFromObjectChannel(u32 obj, u32 channel, u16 sfxId)
+void Sfx_PlayFromObjectChannel(GameObject* obj, u32 channel, u16 sfxId)
 {
     Sfx_PlayFromObjectEx(obj, NULL, channel, sfxId);
 }
 
-void Sfx_PlayAtPositionFromObject(int obj, f32 x, f32 y, f32 z, u16 sfxId)
+void Sfx_PlayAtPositionFromObject(GameObject* obj, f32 x, f32 y, f32 z, u16 sfxId)
 {
-    f32 pos[3];
+    Vec pos;
+    pos.x = x;
+    pos.y = y;
+    pos.z = z;
 
-    pos[0] = x;
-    pos[1] = y;
-    pos[2] = z;
-    Sfx_PlayFromObjectEx(obj, pos, 0, sfxId);
+    Sfx_PlayFromObjectEx(obj, &pos, 0, sfxId);
 }
 
-void Sfx_PlayFromObject(u32 obj, u16 sfxId)
+void Sfx_PlayFromObject(GameObject* obj, u16 sfxId)
 {
     Sfx_PlayFromObjectEx(obj, NULL, 0, sfxId);
 }
@@ -429,19 +416,19 @@ void Sfx_UpdateObjectSounds(void)
     i = SFX_OBJECT_CHANNEL_COUNT;
     while (i-- != 0)
     {
-        if ((ch->handle != (u32)-1) && (ch->hasPosition != 0))
+        if (ch->handle != (u32)-1 && ch->hasPosition != 0)
         {
             if (ch->tracksObjectPosition != 0)
             {
-                if ((((GameObject*)ch->object)->objectFlags & SFX_LOOPED_OBJECT_STOP_FLAG) != 0)
+                if ((ch->object->objectFlags & SFX_LOOPED_OBJECT_STOP_FLAG) != 0)
                 {
                     ch->tracksObjectPosition = 0;
                 }
                 else
                 {
-                    ch->x = ((GameObject*)ch->object)->anim.worldPosX;
-                    ch->y = ((GameObject*)ch->object)->anim.worldPosY;
-                    ch->z = ((GameObject*)ch->object)->anim.worldPosZ;
+                    ch->pos.x = ch->object->anim.worldPosX;
+                    ch->pos.y = ch->object->anim.worldPosY;
+                    ch->pos.z = ch->object->anim.worldPosZ;
                 }
             }
 
@@ -486,7 +473,7 @@ void Sfx_InitObjectChannels(void)
     Sfx_SetGlobalReverbLevel(0);
 }
 
-void Sfx_PlayFromObjectEx(u32 obj, f32* pos, u32 channel, u16 sfxId)
+void Sfx_PlayFromObjectEx(GameObject* obj, Vec* pos, u32 channel, u16 sfxId)
 {
     u16 outSfxId;
     u8 vol;
@@ -496,31 +483,26 @@ void Sfx_PlayFromObjectEx(u32 obj, f32* pos, u32 channel, u16 sfxId)
     int channelMask;
     int stealExisting;
     int globalCtrlDisabled;
-    f32 delta[3];
     SfxObjectChannel* found;
     SfxObjectChannel* ch;
     int tracksObj;
 
     tracksObj = 0;
-    if (!Sfx_ResolveObjectSfxId((int*)&obj, &sfxId))
-    {
+    if (!Sfx_ResolveObjectSfxId((int*)&obj, &sfxId)) {
         return;
     }
     if (!Sfx_ReadTriggerParams((SfxTriggerFull*)Sfx_FindTrigger(sfxId), &outSfxId, &vol, &pitch, &nearDist, &farDist,
-                               &channelMask, &stealExisting, &globalCtrlDisabled))
-    {
+                               &channelMask, &stealExisting, &globalCtrlDisabled)) {
         return;
     }
-    if (obj != 0 && pos == NULL)
-    {
-        pos = &((GameObject*)obj)->anim.worldPosX;
+    if (obj != 0 && pos == NULL) {
+        pos = &obj->anim.worldPos;
         tracksObj = 1;
     }
-    if (pos != NULL)
-    {
+    if (pos != NULL) {
+        Vec delta;
         f32 maxDist = farDist;
-        if (!(Sfx_GetListenerRelativeDistance(pos, delta) <= maxDist))
-        {
+        if (!(Sfx_GetListenerRelativeDistance(pos, &delta) <= maxDist)) {
             return;
         }
     }
@@ -588,9 +570,9 @@ void Sfx_PlayFromObjectEx(u32 obj, f32* pos, u32 channel, u16 sfxId)
             }
             ch->tracksObjectPosition = t;
         }
-        ch->x = pos[0];
-        ch->y = pos[1];
-        ch->z = pos[2];
+        ch->pos.x = pos->x;
+        ch->pos.y = pos->y;
+        ch->pos.z = pos->z;
         Sfx_UpdateObjectChannel3D(ch);
     }
     else
@@ -773,9 +755,9 @@ SfxObjectChannel* Sfx_AllocObjectChannel(u16 fxId, u8 volume, double pitch, u8 p
         ch->handle = handle;
         {
             f32 fz = 0.0f;
-            ch->x = fz;
-            ch->y = fz;
-            ch->z = fz;
+            ch->pos.x = fz;
+            ch->pos.y = fz;
+            ch->pos.z = fz;
         }
         ch->fxId = fxId;
         ch->volume = 0x64;
@@ -798,62 +780,50 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
     f32 near;
     f32 far;
     f32 volf;
-    f32 delta[3];
+    Vec delta;
 
     slot = Camera_GetCurrent();
-    if (slot == NULL || objectChannel == NULL)
-    {
+    if (slot == NULL || objectChannel == NULL) {
         return;
     }
-    if (!objectChannel->hasPosition)
-    {
+    if (!objectChannel->hasPosition) {
         return;
     }
     volf = (f32)(u32)objectChannel->volume;
     level = volf;
     near = objectChannel->nearDistance;
     far = objectChannel->farDistance;
-    dist = Sfx_GetListenerRelativeDistance(&objectChannel->x, delta);
-    if (dist > 1.1f * far)
-    {
+    dist = Sfx_GetListenerRelativeDistance(&objectChannel->pos, &delta);
+    if (dist > 1.1f * far) {
         sndFXKeyOff(objectChannel->handle);
         objectChannel->handle = (u32)-1;
         return;
     }
-    Sfx_RotateVectorByAngles(0, 0, -slot->worldRoll, delta);
-    Sfx_RotateVectorByAngles(slot->yaw, 0, 0, delta);
-    Sfx_RotateVectorByAngles(0, -slot->worldPitch, 0, delta);
-    if (dist > 0.01f)
-    {
+    Sfx_RotateVectorByAngles(0, 0, -slot->worldRoll, &delta);
+    Sfx_RotateVectorByAngles(slot->yaw, 0, 0, &delta);
+    Sfx_RotateVectorByAngles(0, -slot->worldPitch, 0, &delta);
+    if (dist > 0.01f) {
         f32 scale;
         int pan;
         int fx;
 
-        if (dist < near)
-        {
+        if (dist < near) {
             level = (int)(f64)volf;
-        }
-        else if (dist > far)
-        {
+        } else if (dist > far) {
             level = 1;
-        }
-        else
-        {
+        } else {
             level = (int)(volf * (1.0f - (dist - near) / (far - near)));
-            if (level < 1)
-            {
+            if (level < 1) {
                 level = 1;
-            }
-            else if ((f32)level > volf)
-            {
+            } else if ((f32)level > volf) {
                 level = (int)(f64)volf;
             }
         }
         scale = 1.2f / dist;
-        delta[0] = delta[0] * scale;
-        delta[1] = delta[1] * scale;
-        delta[2] = delta[2] * scale;
-        pan = (int)(64.0f + 63.0f * delta[0]);
+        delta.x *= scale;
+        delta.y *= scale;
+        delta.z *= scale;
+        pan = (int)(64.0f + 63.0f * delta.x);
         if (pan > 0x7f)
         {
             pan = 0x7f;
@@ -862,7 +832,7 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
         {
             pan = 0;
         }
-        fx = (int)(64.0f + 63.0f * delta[2]);
+        fx = (int)(64.0f + 63.0f * delta.z);
         if (fx > 0x7f)
         {
             fx = 0x7f;
@@ -890,12 +860,12 @@ void Sfx_UpdateObjectChannel3D(SfxObjectChannel* objectChannel)
     }
 }
 
-static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
+static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, Vec* v)
 {
     f32 ra;
-    f32 x = v[0];
-    f32 y = v[1];
-    f32 z = v[2];
+    f32 x = v->x;
+    f32 y = v->y;
+    f32 z = v->z;
     f32 ca;
     f32 rb;
     f32 cb;
@@ -935,12 +905,13 @@ static void Sfx_RotateVectorByAngles(s16 angX, s16 angY, s16 angZ, f32* v)
     A = A - t1;
     B = B + t0;
 
-    v[0] = A;
-    v[1] = B;
-    v[2] = p;
+    v->x = A;
+    v->y = B;
+    v->z = p;
 }
 
-static f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta) {
+static f32 Sfx_GetListenerRelativeDistance(Vec* soundPos, Vec* outDelta)
+{
     Vec v;
     f32 t;
     double t2;
@@ -980,27 +951,26 @@ static f32 Sfx_GetListenerRelativeDistance(f32* soundPos, f32* outDelta) {
     {
         return 0.0f;
     }
-    PSVECSubtract(listener, (Vec*)soundPos, (Vec*)outDelta);
-    return PSVECMag((Vec*)outDelta);
+    PSVECSubtract(listener, soundPos, outDelta);
+    return PSVECMag(outDelta);
 }
 
-SfxObjectChannel* Sfx_FindObjectChannel(u32 obj, u32 channel, u16 sfxId, s32 mode)
+SfxObjectChannel* Sfx_FindObjectChannel(GameObject* obj, u32 channel, u16 sfxId, s32 mode)
 {
     SfxObjectChannel* objectChannel = gSfxObjectChannels;
     SfxObjectChannel* bestChannel = NULL;
-    u64 bestAge;
+    u64 bestAge = mode == 2 ? 0 : -1;
     int channelMask;
     s32 i;
 
-    bestAge = (mode == 2) ? 0 : -1;
     gSfxObjectChannelMatchCount = 0;
     channelMask = (u8)channel;
 
     for (i = SFX_OBJECT_CHANNEL_COUNT; i != 0; i--)
     {
-        if ((objectChannel->handle != (u32)-1) && ((obj == 0) || (objectChannel->object == obj)) &&
-            (((u8)channel == 0) || ((objectChannel->channelMask & channelMask) != 0)) &&
-            ((sfxId == 0) || (objectChannel->sfxId == sfxId)))
+        if (objectChannel->handle != (u32)-1 && (obj == 0 || objectChannel->object == obj) &&
+            ((u8)channel == 0 || (objectChannel->channelMask & channelMask) != 0) &&
+            (sfxId == 0 || objectChannel->sfxId == sfxId))
         {
             gSfxObjectChannelMatchCount++;
 
@@ -1025,7 +995,7 @@ SfxObjectChannel* Sfx_FindObjectChannel(u32 obj, u32 channel, u16 sfxId, s32 mod
                 break;
             }
 
-            if ((mode != 3) && ((int)gSfxObjectChannelMatchCount == 3))
+            if (mode != 3 && (int)gSfxObjectChannelMatchCount == 3)
             {
                 return bestChannel;
             }

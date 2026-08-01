@@ -101,8 +101,8 @@ void drakormissile_startActiveLaunch(GameObject* obj)
     state->timer = DRAKORMISSILE_ACTIVE_TIMER;
     ObjHits_SetTargetMask(obj, DRAKORMISSILE_TARGET_MASK);
     ObjHits_SetHitVolumeSlot(&obj->anim, DRAKORMISSILE_HIT_VOLUME_SLOT, 1, 0);
-    Sfx_PlayFromObject((int)obj, DRAKORMISSILE_ACTIVE_SFX_A);
-    Sfx_PlayFromObject((int)obj, DRAKORMISSILE_ACTIVE_SFX_B);
+    Sfx_PlayFromObject(obj, DRAKORMISSILE_ACTIVE_SFX_A);
+    Sfx_PlayFromObject(obj, DRAKORMISSILE_ACTIVE_SFX_B);
 }
 
 void drakormissile_startStraightLaunch(GameObject* obj, GameObject* from, GameObject* target, f32 speed)
@@ -179,7 +179,7 @@ void drakormissile_startStraightLaunch(GameObject* obj, GameObject* from, GameOb
     state->light = light;
     (obj)->anim.alpha = 255;
     (obj)->anim.rootMotionScale = 0.5f * (obj)->anim.modelInstance->rootMotionScaleBase;
-    Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_173);
+    Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_173);
 }
 
 int drakormissile_isFadingOut(GameObject* obj)
@@ -287,8 +287,8 @@ void drakormissile_update(int obj)
         if (state->timer > DRAKORMISSILE_CLEAR_TIMER)
         {
             ObjHits_DisableObject((GameObject*)obj);
-            Sfx_StopFromObject(obj, SFXTRIG_dn_boar1_c_173);
-            Sfx_StopFromObject(obj, DRAKORMISSILE_ACTIVE_SFX_A);
+            Sfx_StopFromObject((GameObject*)obj, SFXTRIG_dn_boar1_c_173);
+            Sfx_StopFromObject((GameObject*)obj, DRAKORMISSILE_ACTIVE_SFX_A);
             state->state = DRAKORMISSILE_STATE_FADEOUT;
         }
         break;
@@ -370,7 +370,7 @@ void drakormissile_update(int obj)
             state->timer = 0;
             if ((((ObjHitsPriorityState*)o->anim.hitReactState)->flags & 8) != 0)
             {
-                Sfx_PlayFromObject(obj, SFXTRIG_wp_blaserrecoil16);
+                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_wp_blaserrecoil16);
             }
             if (o->anim.mapEventSlot == 2)
             {

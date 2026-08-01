@@ -843,12 +843,12 @@ void hightop_playMovementSfx(GameObject* obj, HighTopRuntime* state2, HighTopRun
         {
             idx = 1;
         }
-        Sfx_PlayFromObject((u32)obj, (u16)gHighTopMovementSfxIds[idx]);
+        Sfx_PlayFromObject(obj, (u16)gHighTopMovementSfxIds[idx]);
     }
     if ((s32)state->baddie.eventFlags & 0x100)
     {
         objfx_shakeCameraByDistance(obj, 1000.0f);
-        Sfx_PlayFromObject((u32)obj, gHighTopMovementSfxIds[0]);
+        Sfx_PlayFromObject(obj, gHighTopMovementSfxIds[0]);
     }
 }
 
@@ -1177,7 +1177,7 @@ void HighTop_update(GameObject* obj)
         if (runtime->sfxIntervalTimer > 60.0f)
         {
             runtime->sfxIntervalTimer -= 60.0f;
-            Sfx_PlayFromObject((u32)self, SFXTRIG_hightop_fstep);
+            Sfx_PlayFromObject((GameObject*)(u32)self, SFXTRIG_hightop_fstep);
         }
     }
 }

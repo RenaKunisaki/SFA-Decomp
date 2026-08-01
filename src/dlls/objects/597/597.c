@@ -517,7 +517,7 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 localVelZ, int
         (localVelZ < 0.0f) ? 0.0f : ((localVelZ > 70.0f) ? 70.0f : localVelZ);
     if (channelFlags & 1)
     {
-        if (Sfx_IsPlayingFromObjectChannel((int)obj, 8))
+        if (Sfx_IsPlayingFromObjectChannel(obj, 8))
         {
             gDrCloudCageWindVolume = 11.6f * clamped;
             if (gDrCloudCageWindVolume < 0.0f)
@@ -548,13 +548,13 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 localVelZ, int
             {
                 vol = 0;
             }
-            Sfx_SetObjectChannelVolume((u32)obj, 8, vol & 0xff,
+            Sfx_SetObjectChannelVolume(obj, 8, vol & 0xff,
                                        0.1f + gDrCloudCageWindVolume / 70.0f);
         }
     }
     if (channelFlags & 2)
     {
-        if (Sfx_IsPlayingFromObjectChannel((int)obj, 1))
+        if (Sfx_IsPlayingFromObjectChannel(obj, 1))
         {
             if (((DRCloudCageState*)state)->distanceGate < 18.0f)
             {
@@ -582,14 +582,14 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 localVelZ, int
                 {
                     vol = 0;
                 }
-                Sfx_SetObjectChannelVolume((u32)obj, 1, vol & 0xff, 0.1f + gDrCloudCageWindVolume);
+                Sfx_SetObjectChannelVolume(obj, 1, vol & 0xff, 0.1f + gDrCloudCageWindVolume);
             }
         }
     }
     if (channelFlags & 4)
     {
-        Sfx_PlayFromObject((u32)obj, ((DRCloudCageState*)state)->windSfxId);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_tr_gal_rumblelp11);
+        Sfx_PlayFromObject(obj, ((DRCloudCageState*)state)->windSfxId);
+        Sfx_PlayFromObject(obj, SFXTRIG_tr_gal_rumblelp11);
         if (intensity > 5)
         {
             ((DRCloudCageState*)state)->channel2Vol = ((DRCloudCageState*)state)->channel2Vol + timeDelta;
@@ -1071,7 +1071,7 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
         }
         else
         {
-            Sfx_StopObjectChannel((u32)obj, 0x7f);
+            Sfx_StopObjectChannel((GameObject*)obj, 0x7f);
             if (st->velLimitX > 0.1f)
             {
                 if (randomGetRange(0, 10) == 0)
@@ -1327,11 +1327,11 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
                 doRumble(st->impactShakeTimer * fa);
                 CameraShake_Enable();
                 CameraShake_SetOffset(st->impactShakeTimer / 12.0f);
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_tr_jbike_bombbeep);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_tr_jbike_bombbeep);
                 fb = (80.0f < 3.0f * st->impactShakeTimer) ? 80.0f
                                                                           : 3.0f * st->impactShakeTimer;
                 {
-                    Sfx_SetObjectSfxVolume((u32)obj, SFXTRIG_tr_jbike_bombbeep, fb, 0.1f);
+                    Sfx_SetObjectSfxVolume((GameObject*)obj, SFXTRIG_tr_jbike_bombbeep, fb, 0.1f);
                 }
             }
         }
@@ -1542,7 +1542,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
 
     if ((origBit4 == 0) && (flags->b4 != 0))
     {
-        Sfx_PlayFromObject(obj, SFXTRIG_bblast16);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_bblast16);
     }
 
     target = 0.0f;
@@ -2113,10 +2113,10 @@ void SnowBike_hitDetect(GameObject* obj)
             {
                 vol = 30;
             }
-            if (Sfx_IsPlayingFromObjectChannel((int)obj, 32) == 0)
+            if (Sfx_IsPlayingFromObjectChannel(obj, 32) == 0)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_tr_jbike_bombbeep);
-                Sfx_SetObjectSfxVolume((int)obj, SFXTRIG_tr_jbike_bombbeep, vol, 127.0f);
+                Sfx_PlayFromObject(obj, SFXTRIG_tr_jbike_bombbeep);
+                Sfx_SetObjectSfxVolume(obj, SFXTRIG_tr_jbike_bombbeep, vol, 127.0f);
             }
         }
     }
@@ -2279,7 +2279,7 @@ void SnowBike_update(GameObject* obj)
             {
                 s->playerInRange = 0;
             }
-            Sfx_StopObjectChannel((int)obj, 0x57);
+            Sfx_StopObjectChannel(obj, 0x57);
         }
     }
     break;

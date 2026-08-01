@@ -342,11 +342,11 @@ void DR_LaserCannon_hitDetect(GameObject* obj)
         state->health -= hitVolume;
         Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&hitPosX, 6.0f);
         objfx_shakeCameraByDistance(obj, 300.0f);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_ar_awghitobj16);
+        Sfx_PlayFromObject(obj, SFXTRIG_ar_awghitobj16);
         if (state->health <= 0)
         {
             tricky = (int*)getTrickyObject();
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_barrelblow11_4b6);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_barrelblow11_4b6);
             spawnExplosion((GameObject*)(int)obj, 50.0f, 0, 1, 1, 1, 0, 1, 0);
             state->flags.b0 = 1;
             mainSetBits(setup->destroyedGameBit, 1);
@@ -448,7 +448,7 @@ void DR_LaserCannon_update(GameObject* obj)
             hit = drlasercannon_aimAtTarget(obj, (GameObject*)target, &state->aim, 0x168, &state->muzzleX);
             if (hit != 0)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_id_1ad);
+                Sfx_PlayFromObject(obj, SFXTRIG_id_1ad);
             }
         }
         else
@@ -508,8 +508,8 @@ void DR_LaserCannon_update(GameObject* obj)
                             state->beamObject = spawned;
                             ObjAnim_SetCurrentMove((int)obj, 1, 0.0f, 0);
                             state->animStepScale = 0.018f;
-                            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_cahit2_c);
-                            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_blasershot11);
+                            Sfx_PlayFromObject(obj, SFXTRIG_wp_cahit2_c);
+                            Sfx_PlayFromObject(obj, SFXTRIG_wp_blasershot11);
                         }
                     }
                     s16toFloat(&state->reloadTimer, (s16)(setup->reloadFrames << 2));

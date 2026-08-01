@@ -209,12 +209,12 @@ int cfguardian_playEventSfx(u32 obj, ObjAnimEventList* eventList, s16* sfxIds) {
         switch (eventList->triggeredIds[eventIndex]) {
         case CFGUARDIAN_ANIM_EVENT_MOVE_SFX:
             if (sfxIds != NULL) {
-                Sfx_PlayFromObject(obj, sfxIds[0]);
+                Sfx_PlayFromObject((GameObject*)obj, sfxIds[0]);
             }
             break;
         case CFGUARDIAN_ANIM_EVENT_ALT_SFX:
             if (sfxIds != NULL) {
-                Sfx_PlayFromObject(obj, sfxIds[1]);
+                Sfx_PlayFromObject((GameObject*)obj, sfxIds[1]);
             }
             break;
         case CFGUARDIAN_ANIM_EVENT_MARKER_1:
@@ -230,12 +230,12 @@ int cfguardian_playEventSfx(u32 obj, ObjAnimEventList* eventList, s16* sfxIds) {
             marker = 4;
             break;
         case CFGUARDIAN_ANIM_EVENT_FLAP_SFX:
-            Sfx_PlayFromObject(obj, CFGUARDIAN_SFX_FLAP);
+            Sfx_PlayFromObject((GameObject*)obj, CFGUARDIAN_SFX_FLAP);
             break;
         }
     }
     if (marker != 0 && sfxIds != NULL) {
-        Sfx_PlayFromObject(obj, sfxIds[2]);
+        Sfx_PlayFromObject((GameObject*)obj, sfxIds[2]);
     }
     return marker;
 }

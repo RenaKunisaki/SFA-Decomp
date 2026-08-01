@@ -102,8 +102,8 @@ int WM_GeneralScales_sequenceCallback(int objectHandle, int unusedArg2, ObjSeqSt
             (*gPartfxInterface)
                 ->spawnObject((void*)objectHandle, WM_GENERAL_SCALES_PARTFX_ID, NULL, WM_GENERAL_SCALES_PARTFX_MODE,
                               WM_GENERAL_SCALES_PARTFX_MODEL_NONE, partfxOutput);
-            Sfx_PlayFromObject(objectHandle, SFXTRIG_id_7b);
-            Sfx_PlayFromObject(objectHandle, SFXTRIG_id_7c);
+            Sfx_PlayFromObject((GameObject*)objectHandle, SFXTRIG_id_7b);
+            Sfx_PlayFromObject((GameObject*)objectHandle, SFXTRIG_id_7c);
             state->unknown00 = WM_GENERAL_SCALES_SLAM_A_VALUE;
             break;
         case WM_GENERAL_SCALES_SEQUENCE_EVENT_SLAM_B:
@@ -111,8 +111,8 @@ int WM_GeneralScales_sequenceCallback(int objectHandle, int unusedArg2, ObjSeqSt
             (*gPartfxInterface)
                 ->spawnObject((void*)objectHandle, WM_GENERAL_SCALES_PARTFX_ID, NULL, WM_GENERAL_SCALES_PARTFX_MODE,
                               WM_GENERAL_SCALES_PARTFX_MODEL_NONE, NULL);
-            Sfx_PlayFromObject(objectHandle, SFXTRIG_id_7b);
-            Sfx_PlayFromObject(objectHandle, SFXTRIG_id_7c);
+            Sfx_PlayFromObject((GameObject*)objectHandle, SFXTRIG_id_7b);
+            Sfx_PlayFromObject((GameObject*)objectHandle, SFXTRIG_id_7c);
             state->unknown00 = WM_GENERAL_SCALES_SLAM_B_VALUE;
             break;
         case WM_GENERAL_SCALES_SEQUENCE_EVENT_IDLE:

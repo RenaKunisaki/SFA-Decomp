@@ -56,7 +56,7 @@ enum {
 
 u8 gDBSHSymbolScuffSfxEnabled = 1;
 
-int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjSeqState* animUpdate) {
+int dbshSymbol_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int volume;
     int* objectList;
     int objectIndex;
@@ -67,17 +67,17 @@ int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjSeqState* ani
     int player;
 
     (void)unused;
-    state = ((GameObject*)objectAddress)->extra;
+    state = obj->extra;
     player = (int)Obj_GetPlayerObject();
-    Sfx_SetObjectSfxVolume(objectAddress, SFXTRIG_blockscrape_lp, 10, DBSH_SYMBOL_SFX_VOLUME_SCALE);
-    Sfx_KeepAliveLoopedObjectSound(objectAddress, SFXTRIG_blockscrape_lp);
+    Sfx_SetObjectSfxVolume(obj, SFXTRIG_blockscrape_lp, 10, DBSH_SYMBOL_SFX_VOLUME_SCALE);
+    Sfx_KeepAliveLoopedObjectSound((u32)obj, SFXTRIG_blockscrape_lp);
     animUpdate->movementState = 0;
     for (i = 0; i < animUpdate->eventCount; i++) {
         if (animUpdate->eventIds[i] == DBSH_SYMBOL_ANIM_EVENT_START) {
             gameTimerInit(DBSH_SYMBOL_TIMER_ID, DBSH_SYMBOL_TIMER_DURATION);
             timerSetToCountUp();
             state->flags.sequenceInactive = 0;
-            ((GameObject*)objectAddress)->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_VISIBLE;
+            obj->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_VISIBLE;
         }
     }
     if (state->flags.sequenceInactive != 0) {
@@ -98,7 +98,7 @@ int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjSeqState* ani
     }
     for (i = 0; i < framesThisStep; i++) {
         if (isGameTimerDisabled() != 0) {
-            Sfx_PlayFromObject(objectAddress, SFXTRIG_wp_iceywindlp16);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16);
             state->flags.spinCompleted = 0;
             state->flags.sequenceInactive = 1;
             (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, DBSH_SYMBOL_YIELD_REASON);
@@ -113,7 +113,7 @@ int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjSeqState* ani
         state->spinProgress = (int)((f32)state->spinProgress + state->spinSpeed);
         if (state->spinProgress >= DBSH_SYMBOL_SPIN_COMPLETE) {
             gameTimerStop();
-            Sfx_PlayFromObject(objectAddress, SFXTRIG_wp_iceywindlp16);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16);
             ObjAnim_SetCurrentMove(player, 0, 0.0f, 0);
             state->flags.spinCompleted = 1;
             state->flags.sequenceInactive = 1;
@@ -166,7 +166,7 @@ int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjSeqState* ani
             state->playerSfxTimer =
                 (f32)randomGetRange(DBSH_SYMBOL_SFX_TIMER_LONG_MIN, DBSH_SYMBOL_SFX_TIMER_LONG_MAX);
         }
-        Sfx_PlayFromObject(player, SFXTRIG_literun116_var);
+        Sfx_PlayFromObject((GameObject*)(u32)player, SFXTRIG_literun116_var);
     }
     state->objectSfxTimer = state->objectSfxTimer - timeDelta;
     if (state->objectSfxTimer < 0.0f) {
@@ -177,7 +177,7 @@ int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjSeqState* ani
             state->objectSfxTimer =
                 (f32)randomGetRange(DBSH_SYMBOL_SFX_TIMER_LONG_MIN, DBSH_SYMBOL_SFX_TIMER_LONG_MAX);
         }
-        Sfx_PlayFromObject(objectAddress, SFXTRIG_spotfox03);
+        Sfx_PlayFromObject(obj, SFXTRIG_spotfox03);
     }
     {
         f32 absoluteSpeed = (DBSH_SYMBOL_VOLUME_SPEED_SCALE * state->spinSpeed >= 0.0f)
@@ -188,7 +188,7 @@ int dbshSymbol_processAnimEvents(int objectAddress, int unused, ObjSeqState* ani
         if (volume > DBSH_SYMBOL_MAX_SFX_VOLUME) {
             volume = DBSH_SYMBOL_MAX_SFX_VOLUME;
         }
-        Sfx_SetObjectSfxVolume(objectAddress, SFXTRIG_blockscrape_lp, volume, DBSH_SYMBOL_SFX_VOLUME_SCALE);
+        Sfx_SetObjectSfxVolume(obj, SFXTRIG_blockscrape_lp, volume, DBSH_SYMBOL_SFX_VOLUME_SCALE);
     }
     return 0;
 }
@@ -228,7 +228,7 @@ void dbshSymbol_update(GameObject* obj) {
         } else if (phase == DBSH_SYMBOL_PHASE_PLAY_SCUFF) {
             if (gDBSHSymbolScuffSfxEnabled != 0) {
                 gDBSHSymbolScuffSfxEnabled = 0;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_wp_iceywindlp16);
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16);
             }
             state->phase = DBSH_SYMBOL_PHASE_START_SEQUENCE;
             gDBSHSymbolScuffSfxEnabled = 1;
@@ -239,7 +239,7 @@ void dbshSymbol_update(GameObject* obj) {
             } else {
                 mainSetBits(DBSH_GAMEBIT_SYMBOL_SPIN_FAILED, 1);
             }
-            Sfx_StopObjectChannel((int)obj, DBSH_SYMBOL_SFX_CHANNEL);
+            Sfx_StopObjectChannel(obj, DBSH_SYMBOL_SFX_CHANNEL);
             state->flags.sequenceInactive = 1;
         }
     }

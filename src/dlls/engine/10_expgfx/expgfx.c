@@ -2874,7 +2874,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                             (*gWaterfxInterface)->spawnSplashBurst(NULL, rotParams.x, rotParams.y, rotParams.z, EXPGFX_SLOT_MOTION_STEP);
                             if (srcObj != NULL && coordsToMapCell(srcObj->localPosX, srcObj->localPosZ) == 0x10)
                             {
-                                Sfx_PlayFromObject((u32)srcObj, SFXTRIG_blkscrp6);
+                                Sfx_PlayFromObject((GameObject*)srcObj, SFXTRIG_blkscrp6);
                             }
                             slot->impactEffectId = -1;
                             slot->behaviorFlags |= EXPGFX_BEHAVIOR_WATER_RIPPLE_ON_IMPACT | 0LL;

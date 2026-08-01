@@ -158,13 +158,13 @@ void kytesmum_playAnimationEventSfx(u32 obj, u8* arg, s16* sfxData)
         case 0:
             if (sfxData != 0)
             {
-                Sfx_PlayFromObject(obj, sfxData[0]);
+                Sfx_PlayFromObject((GameObject*)obj, sfxData[0]);
             }
             break;
         case 7:
             if (sfxData != 0)
             {
-                Sfx_PlayFromObject(obj, sfxData[1]);
+                Sfx_PlayFromObject((GameObject*)obj, sfxData[1]);
             }
             break;
         case 1:
@@ -186,7 +186,7 @@ void kytesmum_playAnimationEventSfx(u32 obj, u8* arg, s16* sfxData)
     }
     if (flags != 0 && sfxData != 0)
     {
-        Sfx_PlayFromObject(obj, sfxData[3]);
+        Sfx_PlayFromObject((GameObject*)obj, sfxData[3]);
     }
 }
 

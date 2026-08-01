@@ -92,7 +92,7 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj) {
     if (mainGetBit(GAMEBIT_TRICKYCURVE_PLAYER_HIT) != 0) {
         mainSetBits(GAMEBIT_TRICKYCURVE_PLAYER_HIT, 0);
         gBoneParticleEffectTimer = 0xf;
-        Sfx_PlayFromObject((u32)gobj, SFXTRIG_id_281);
+        Sfx_PlayFromObject(gobj, SFXTRIG_id_281);
     }
     model = (ObjModel*)gobj->anim.banks[gobj->anim.bankIndex];
     if (gBoneParticleStageIndex > 6) {
@@ -109,11 +109,11 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj) {
     if (gBoneParticleDrift > BONE_PARTICLE_DRIFT_MAX) {
         gBoneParticleDriftVelocity[0] *= BONE_PARTICLE_DRIFT_REBOUND;
         gBoneParticleDrift = BONE_PARTICLE_DRIFT_MAX;
-        Sfx_PlayFromObject((u32)gobj, SFXTRIG_id_282);
+        Sfx_PlayFromObject(gobj, SFXTRIG_id_282);
     } else if (gBoneParticleDrift < BONE_PARTICLE_DRIFT_MIN) {
         gBoneParticleDriftVelocity[0] *= BONE_PARTICLE_DRIFT_REBOUND;
         gBoneParticleDrift = BONE_PARTICLE_DRIFT_MIN;
-        Sfx_PlayFromObject((u32)gobj, SFXTRIG_id_282);
+        Sfx_PlayFromObject(gobj, SFXTRIG_id_282);
     }
     bufferIndex = 0;
     drawBufferCursor = gBoneParticleEffectBuffers;

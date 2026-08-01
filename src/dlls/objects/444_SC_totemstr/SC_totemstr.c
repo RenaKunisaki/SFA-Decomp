@@ -271,7 +271,7 @@ int platform1_control(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             } else {
                 state->platformSfxTimer = (f32)randomGetRange(0x78, 0xf0);
             }
-            Sfx_PlayFromObject((int)obj, SFXTRIG_spotfox03);
+            Sfx_PlayFromObject(obj, SFXTRIG_spotfox03);
         }
         if (diff < 0.0f) {
             absDiff = -diff;
@@ -282,7 +282,7 @@ int platform1_control(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         if (volume > 100) {
             volume = 100;
         }
-        Sfx_SetObjectSfxVolume((int)obj, SFXTRIG_blockscrape_lp, volume & 0xff, 127.0f);
+        Sfx_SetObjectSfxVolume(obj, SFXTRIG_blockscrape_lp, volume & 0xff, 127.0f);
         result = 0;
     }
 

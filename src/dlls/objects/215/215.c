@@ -77,7 +77,7 @@ void kaldachompspit_burst(GameObject* obj) {
         for (i = 0; i < KALDACHOMPSPIT_POISON_BURST_COUNT; i++) {
             (*gPartfxInterface)->spawnObject((void*)obj, KALDACHOMPSPIT_PARTFX_POISON_BURST, NULL, 1, -1, &i);
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_lummy311);
+        Sfx_PlayFromObject(obj, SFXTRIG_lummy311);
     }
 }
 
@@ -127,7 +127,7 @@ void KaldaChompSpit_update(GameObject* obj) {
     state = obj->extra;
     obj->userData1 = (int)((f32)obj->userData1 - timeDelta);
     if (obj->userData1 < 0) {
-        Sfx_StopObjectChannel((int)obj, 0x7f);
+        Sfx_StopObjectChannel(obj, 0x7f);
         Obj_FreeObject(obj);
     } else if (objAnim->alpha != 0) {
         if (obj->userData1 < KALDACHOMPSPIT_FADE_START_LIFETIME) {
@@ -135,10 +135,10 @@ void KaldaChompSpit_update(GameObject* obj) {
             if ((f32)(u32)objAnim->alpha - (alphaDecay = KALDACHOMPSPIT_ALPHA_FADE_RATE * timeDelta) > 0.0f) {
                 objAnim->alpha = (f32)(u32)objAnim->alpha - alphaDecay;
             } else {
-                Sfx_StopObjectChannel((int)obj, 0x7f);
+                Sfx_StopObjectChannel(obj, 0x7f);
                 objAnim->alpha = 0;
             }
-            Sfx_SetObjectChannelVolume((u32)obj, 0x40, (objAnim->alpha >> 1), 0.5f);
+            Sfx_SetObjectChannelVolume(obj, 0x40, (objAnim->alpha >> 1), 0.5f);
         }
         moveX = obj->anim.velocityX * timeDelta;
         moveY = obj->anim.velocityY * timeDelta;
@@ -201,7 +201,7 @@ void KaldaChompSpit_init(GameObject* obj) {
     obj->userData1 = KALDACHOMPSPIT_INITIAL_LIFETIME;
     ObjHits_DisableObject(obj);
     obj->anim.alpha = 0xff;
-    Sfx_PlayFromObject((int)obj, SFXTRIG_whiz3_c);
+    Sfx_PlayFromObject(obj, SFXTRIG_whiz3_c);
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     if (state->light == NULL) {
         state->light = objCreateLight(obj, 1);

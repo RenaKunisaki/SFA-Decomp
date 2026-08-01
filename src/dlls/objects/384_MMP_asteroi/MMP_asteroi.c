@@ -137,7 +137,7 @@ void mmpAsteroidRe_update(GameObject* obj) {
             if (volume > 0x7F) {
                 volume = 0x7F;
             }
-            Sfx_SetObjectChannelVolume((u32)obj, MMP_ASTEROID_RE_SFX_CHANNEL, volume, 0.5f);
+            Sfx_SetObjectChannelVolume(obj, MMP_ASTEROID_RE_SFX_CHANNEL, volume, 0.5f);
         }
         if (state->intensity != 0) {
             f32 speed = obj->anim.velocityY;

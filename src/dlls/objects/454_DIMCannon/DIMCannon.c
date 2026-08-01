@@ -164,7 +164,7 @@ void DIMCannon_spawnBall(GameObject* obj, u8 variant) {
     }
 
     ObjAnim_SetCurrentMove(objHandle, 0, 0.0f, 0);
-    Sfx_PlayFromObject(objHandle, SFXTRIG_tr_jrumbalp);
+    Sfx_PlayFromObject((GameObject*)objHandle, SFXTRIG_tr_jrumbalp);
 }
 
 void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 targetZ, f32 unusedDistance) {
@@ -331,7 +331,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 Sfx_KeepAliveLoopedObjectSound((u32)obj, SFXTRIG_gal_sailflap2);
             } else {
                 if (state->previousAimDelta != 0) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_cnplarlp);
+                    Sfx_PlayFromObject(obj, SFXTRIG_cnplarlp);
                 }
             }
             state->previousAimDelta = aimDelta;
@@ -345,15 +345,15 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 buttonDisable(0, PAD_BUTTON_A);
                 if (Player_GetCurrentMagic((int)player) >= 1) {
                     state->airMeterCharge += framesThisStep;
-                    if (Sfx_IsPlayingFromObjectChannel((u32)obj, 2) == 0) {
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_gal_sailflap1);
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_tr_cnplarlp);
+                    if (Sfx_IsPlayingFromObjectChannel(obj, 2) == 0) {
+                        Sfx_PlayFromObject(obj, SFXTRIG_gal_sailflap1);
+                        Sfx_PlayFromObject(obj, SFXTRIG_tr_cnplarlp);
                     }
                 } else {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_staff_swipes_long);
+                    Sfx_PlayFromObject(obj, SFXTRIG_staff_swipes_long);
                 }
             } else {
-                Sfx_StopObjectChannel((u32)obj, 2);
+                Sfx_StopObjectChannel(obj, 2);
             }
             if (state->airMeterCharge > gDimCannonMaxCharge) {
                 state->airMeterCharge = gDimCannonMaxCharge;
@@ -393,10 +393,10 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 *(u8*)&state->chargeTimer = 0x3c;
                 animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A;
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
-                if (Sfx_IsPlayingFromObjectChannel((u32)obj, 8) != 0) {
-                    Sfx_IsPlayingFromObjectChannel((u32)obj, 0);
+                if (Sfx_IsPlayingFromObjectChannel(obj, 8) != 0) {
+                    Sfx_IsPlayingFromObjectChannel(obj, 0);
                 }
-                Sfx_StopObjectChannel((u32)obj, 2);
+                Sfx_StopObjectChannel(obj, 2);
             }
             ObjAnim_AdvanceCurrentMove((int)obj, gDimCannonAnimAdvanceSpeedCur, timeDelta, NULL);
         }

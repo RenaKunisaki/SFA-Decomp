@@ -74,7 +74,7 @@ void wcfloortile_update(GameObject* obj)
                                                    offsetof(ObjHitboxTransformState, contactObjects));
                     if (e->anim.classId == 1)
                     {
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_c6);
+                        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_c6);
                         state->phase = WCFLOORTILE_PHASE_FALLING;
                         state->shakeTime = z;
                         obj->anim.velocityY = z;

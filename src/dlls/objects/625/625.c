@@ -436,7 +436,7 @@ int drakorhoverpad_init(GameObject* obj)
                 ((DrakorHoverpadState*)p)->commandSpeed = (f->b01 != 0) ? -2.0f : (*(f32*)&gDrakorHoverpadSpeedStep);
             }
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_309);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_309);
     }
     return 0;
 }
@@ -564,7 +564,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         {
             f->state = 3;
             ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_30b);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_30b);
         }
         break;
     case 17:
@@ -572,7 +572,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         {
             f->state = 4;
             ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_30b);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_30b);
         }
         break;
     case 10:
@@ -685,7 +685,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         {
             ((DrakorHoverpadState*)p)->commandSpeed = (*(f32*)&gDrakorHoverpadSpeedStep) * cur;
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_309);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_309);
         break;
     case 20:
         g->f10 = !g->f10;
@@ -808,8 +808,8 @@ void drakorhoverpad_updateMain(GameObject* obj)
             (obj)->anim.localPosY = ((DrakorHoverpadState*)p)->curve.posY;
             (obj)->anim.localPosZ = ((DrakorHoverpadState*)p)->curve.posZ;
             ((DrakorHoverpadState*)p)->commandSpeed = (*(f32*)&gDrakorHoverpadSpeedStep);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_308);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_30a);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_308);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_30a);
         }
         return;
     }
@@ -1001,4 +1001,3 @@ void drakorhoverpad_release(void)
 void drakorhoverpad_initialise(void)
 {
 }
-
