@@ -423,6 +423,22 @@ transposed, the knob is the cast lever above, not the source text.
 
 ## Gate reminders that cost real score today
 
+- **`fn_flag_probe` is only sound on GC/2.0 units. On MWCC 1.2.5n (musyx/audio) it returns a vacuous
+  all-`-` table that is indistinguishable from "no profile helps".** Its profile vocabulary is GC/2.0
+  `-opt` shaped, and on 1.2.5n every non-default profile is destructive *as a class*. Measured, counting
+  MATCHes per column: `main/objhits.c` (GC/2.0) keeps **78–118 of 118** matched functions alive across the
+  eight alternative profiles, so a `-` there is real evidence; `musyx/runtime/synth_queue.c` and
+  `synth_seq_dispatch.c` (1.2.5n) score **exactly 0 MATCH in all eight** — not one already-matched function
+  survives any alternative. The tool cannot discover a better profile there, only confirm the current one.
+  **Always read the probe's positive controls (do the already-100 functions still MATCH?) before treating
+  a `-` column as a closed flag axis.** A 1.2.5n-aware probe does not exist yet; until it does, the flag
+  axis on audio units is *unprobed*, not closed.
+- **Positional diff counts ARE sound when every variant is the same length** — the shift artifact that
+  makes them lie needs a length difference. For a pure-`regB` function (identical mnemonic stream,
+  operands only differing) a permutation sweep can be screened on diff counts and only the winner
+  confirmed on `report.json`. Check `target N insn / current N insn` first; if N ever moves, stop using
+  the count.
+
 - **`fnbytes` positional diff counts actively mislead when the lengths differ.** One missing
   instruction shifts every later index, so the count measures *misalignment*, not badness.
   On `streamsLoadedCallback` the baseline scored 39 "positional diffs" at 69 insn against a
