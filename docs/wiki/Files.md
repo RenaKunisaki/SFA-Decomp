@@ -23,7 +23,7 @@ have fixed capacity anyway.
 | OBJSEQ.bin | OBJSEQ.tab | [Object sequences](Scripting#OBJSEQ) |
 | TEX0.bin | TEX0.tab | [Textures](Textures), eg environment |
 | TEX1.bin | TEX1.tab | [Textures](Textures), eg characters |
-| VOXMAP.bin | VOXMAP.tab | Voxel data, relates to camera |
+| VOXMAP.bin | VOXMAP.tab | Voxel occupancy grid for AI route-finding, fully decoded; loaded but never read in retail (severed link - see [Maps](Maps)) |
 
 Each of these names is also present in the disc root; not sure if those root copies are used.
 Not every `modXX.zlb.bin` has a corresponding `modXX.tab` in the root.
@@ -39,9 +39,9 @@ Excludes the map-specific files above.
 | CAMACTIO.bin | 2048 | (none) | - | Defines camera movements |
 | ENVFXACT.bin | 98304 | (none) | - | Defines weather effects |
 | globalma.bin | 768 | (none) | - | Defines the global coordinates of each map |
-| HITS.bin | 392544 | HITS.tab | 6400 | related to map hit detection |
+| HITS.bin | 392544 | HITS.tab | 6400 | per-block map hit/collision chunks; format confirmed (see the per-file table below) |
 | LACTIONS.bin | 40960 | (none) | - | 1024 fixed 0x28-byte light-action records used by LFXEmitter |
-| MAPINFO.bin | 3744 | (none) | - | name, type, params for each map - [Map List](MapList) - mostly unused in final version |
+| MAPINFO.bin | 3744 | (none) | - | 0x20-byte per-map records: editor name, mapType, carrier objType - [Map List](MapList); mapType is live in the final version, the name and (via a severed latch) objType are not - see the per-file table below |
 | MAPS.bin | 111648 | MAPS.tab | 3296 | Defines the blocks that make up each map |
 | MODANIM.BIN | 11232 | MODANIM.TAB | 2528 | ? related to [Animation](Animation) |
 | MODLINES.bin | 7424 | MODLINES.tab | 192 | ? related to models |
@@ -53,9 +53,9 @@ Excludes the map-specific files above.
 | TABLES.bin | 736 | TABLES.tab | 96 | relates to texture animation - deleting it stops waterfall animations |
 | TEXPRE.bin | 482048 | TEXPRE.tab | 832 | textures for something (sort of "TEX2") |
 | TEXTABLE.bin | 6496 | (none) | - | maps texture IDs to indices |
-| (none) | - | TRKBLK.tab | 160 | relates to map blocks |
+| (none) | - | TRKBLK.tab | 160 | per-romlist-group base block ids; format confirmed (see the per-file table below) |
 | WARPTAB.bin | 2048 | (none) | - | [Warp destinations](Warptab) |
-| WEAPONDA.bin | 51264 | (none) | - | relates to staff animations |
+| WEAPONDA.bin | 51264 | (none) | - | staff-endpoint sample streams for staff moves; format confirmed (see the per-file table below) |
 
 ## Misc files in the disc root
 
@@ -267,7 +267,7 @@ Per-map compressed blocks (`modXX.zlb.bin`) are handled separately by
 | AMAP.BIN/TAB | 0x32/0x31 | `src/main/model.c` | 0x31 (`AMAP.TAB`) is `gModelAnimOffsetTable`, a per-4-anim-group 0x20-byte offset block (`(id & ~3) << 2` stride); 0x32 (`AMAP.BIN`) backs `ModelFileHeader::animationDataSection`/`animationDataFileOffset` - refines the wiki's guess: the **.TAB is the id->offset index**, the **.BIN is the animation payload** it points into |
 | BITTABLE.BIN | 0x33 | `src/main/gameloop_main.c` (`loadAssetFileById(&gGameBitTable, 0x33)`) | 4-byte `GameBitDef` records, one per GameBit id (`include/main/gamebits.h` holds the symbolic id enum) |
 | CAMACTIO.bin | 0x0b | `src/dlls/engine/1_camcontrol/camcontrol.c` | records are `sizeof(CamcontrolTriggeredAction)` each, fetched by action index via `getTabEntry` |
-| ENVFXACT.bin | 0x57 | table slot only | `src/dlls/objects/286_MagicCaveBo/MagicCaveBo.c` uses `envFxAct`/`EnvfxAct`-named locals, consistent with "weather effects", but the loader itself wasn't traced |
+| ENVFXACT.bin | 0x57 | `src/main/render.c` (`getEnvfxAct` / `getEnvfxActImmediately`) | **format confirmed**: 0x60-byte tagged records (`EnvfxActEntry`) fetched via `getTabEntry(e, 0x57, idx * 0x60, 0x60)`; the kind byte at +0x5C dispatches the record to its environment handler — 0/1/2/4 = newclouds (engine DLL 7), 3 = sky2 (DLL 6), 5 = sky (DLL 5), 6 = cloudaction (DLL 9), each via that DLL's `updateEnvfxAct`; all four handlers save `id - 1` into adjacent `SaveGameEnvState` slots and `shader.c`'s map setup replays them via `getEnvfxActImmediately` |
 | globalma.bin | 0x15 | `src/main/shader.c` (`loadAssetFileById(&data, 0x15)` + `getDataFileSize(0x15)`) | loaded whole; see [Maps](Maps) for the grid format |
 | HITS.bin/tab | 0x28/0x29 | `src/main/tex_dolphin.c` (`MapBlock_initHits`), `src/main/lightmap_initmapblocks.c` (0x29 -> `gHitsTab`), `src/main/track_dolphin.c` | **format confirmed**: `.tab` = 1600 `u32` byte-offsets (one per block index, all 32-byte aligned; rev1 deltas sum exactly to the .bin size); per-block chunk = consecutive 0x14-byte `MapHitLine` records (`include/main/map_block.h`), count = chunk size / 0x14 |
 | MAPINFO.bin | 0x1f | `src/main/shader.c` (`MapInfoRecord`, `getTabEntry(..., 0x1f, mapId << 5, 0x20)`) | **format confirmed**: 0x20-byte records `{ char name[0x1c]; s8 mapType; u8 unk1d; s16 objType; }` - `mapType` drives `curMapType`; `objType` (rev1 corpus: nonzero on exactly the 28 mapType-1 sub-maps, resolving through OBJINDEX/OBJECTS to the map's carrier object, e.g. `cfcolumn`->`CF_BobbingC`, `galleonship`->`SB_Galleon`) is copied into a write-only latch on sub-map entry; `unk1d` is 6 in all 117 records |
