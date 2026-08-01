@@ -21,6 +21,7 @@
 #include "main/mapEventTypes.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 #include "main/pi_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
@@ -85,7 +86,7 @@ u8 ccGasVentControl_countUnblockedVents(GameObject* obj, CCGasVentControlState* 
         blockerClearDistance = CC_GAS_VENT_CONTROL_BLOCKER_CLEAR_DISTANCE;
         for (; i < CC_GAS_VENT_CONTROL_VENT_COUNT; i++) {
             GameObject* nearestBlocker =
-                (GameObject*)objGetNearestTypeTo(CC_GAS_VENT_BLOCKER_OBJECT_GROUP, vents[i], 0);
+                objGetNearestTypeTo(CC_GAS_VENT_BLOCKER_OBJECT_GROUP, vents[i], 0);
             if (getXZDistance(&vents[i]->anim.worldPosX, &nearestBlocker->anim.worldPosX) > blockerClearDistance) {
                 unblockedVentCount = unblockedVentCount + 1u;
             }

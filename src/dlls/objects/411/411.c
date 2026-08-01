@@ -18,6 +18,7 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/render_envfx_api.h"
 #include "main/resource.h"
 #include "main/shader_api.h"
@@ -264,7 +265,7 @@ void dll411_update(GameObject* obj) {
             }
         }
     } else {
-        nearestObject = (GameObject*)objGetNearestTypeTo(DLL19B_TARGET_OBJGROUP, player, &distance);
+        nearestObject = objGetNearestTypeTo(DLL19B_TARGET_OBJGROUP, player, &distance);
         if (nearestObject != NULL && distance < DLL19B_NEAREST_DISTANCE_MAX && distance > DLL19B_NEAREST_DISTANCE_MIN) {
             positionDelta = nearestObject->anim.localPosZ - player->anim.localPosZ;
             if (positionDelta <= 0.0f) {

@@ -27,6 +27,7 @@
 #include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/objprint_api.h"
+#include "main/objtype.h"
 #include "main/vecmath.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -888,7 +889,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
         (s16)(((DrakorHoverpadState*)p)->anglePhase + framesThisStep * 0x320);
     if (g->f10 != 0)
     {
-        nearest = (GameObject*)objGetNearestTypeTo(BOSSDRAKOR_OBJGROUP, obj, 0);
+        nearest = objGetNearestTypeTo(BOSSDRAKOR_OBJGROUP, obj, 0);
         if (nearest != NULL)
         {
             yawDelta = Obj_GetYawDeltaToObject(obj, nearest, 0);

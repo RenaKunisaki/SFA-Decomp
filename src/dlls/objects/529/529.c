@@ -13,6 +13,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
@@ -158,7 +159,7 @@ void wmwallcrawler_hitDetect(GameObject* obj)
         }
         else
         {
-            target = (GameObject*)(objGetNearestTypeTo(WMWALLCRAWLER_TARGET_OBJGROUP, obj, &stk));
+            target = objGetNearestTypeTo(WMWALLCRAWLER_TARGET_OBJGROUP, obj, &stk);
         }
         ObjHits_RecordObjectHit(target, obj, 0xb, 1, 0);
         state->mode = WMWALLCRAWLER_MODE_DIE;
@@ -197,7 +198,7 @@ void wmwallcrawler_update(GameObject* obj)
     best = 10000.0f;
     player = (state->flags & WMWALLCRAWLER_FLAG_TARGET_NEAREST) == 0
                  ? (u32)Obj_GetPlayerObject()
-                 : objGetNearestTypeTo(WMWALLCRAWLER_TARGET_OBJGROUP, (GameObject*)ob, &best);
+                 : (u32)objGetNearestTypeTo(WMWALLCRAWLER_TARGET_OBJGROUP, (GameObject*)ob, &best);
     if (player != 0)
     {
         sq = mainGetBit(0x789);

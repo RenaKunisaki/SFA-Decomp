@@ -16,6 +16,7 @@
 #include "main/gamebits.h"
 #include "main/mapEvent.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/objprint_anim_api.h"
 #include "main/obj_trigger.h"
 #include "main/vecmath.h"
@@ -327,7 +328,7 @@ void sh_queenearthwalker_update(GameObject* obj) {
     } else {
         switch (action) {
         case 1:
-            target = (GameObject*)objGetNearestTypeTo(QUEEN_EARTH_WALKER_TARGET_OBJECT_GROUP, obj, NULL);
+            target = objGetNearestTypeTo(QUEEN_EARTH_WALKER_TARGET_OBJECT_GROUP, obj, NULL);
             (*gObjectTriggerInterface)->preempt((int)target, 0x1324);
             (*gObjectTriggerInterface)->runSequence(1, target, 0x10);
             state->flags |= (QUEEN_EARTH_WALKER_FLAG_LATCHED | QUEEN_EARTH_WALKER_FLAG_EYE_ANIMS);
@@ -356,7 +357,7 @@ void sh_queenearthwalker_update(GameObject* obj) {
             state->stateIndex = 3;
             break;
         case 8:
-            target = (GameObject*)objGetNearestTypeTo(QUEEN_EARTH_WALKER_TARGET_OBJECT_GROUP, obj, NULL);
+            target = objGetNearestTypeTo(QUEEN_EARTH_WALKER_TARGET_OBJECT_GROUP, obj, NULL);
             (*gObjectTriggerInterface)->preempt((int)target, 0x6a4);
             (*gObjectTriggerInterface)->runSequence(7, target, 8);
             state->stateIndex = 4;

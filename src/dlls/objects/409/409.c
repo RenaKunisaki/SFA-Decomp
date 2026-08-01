@@ -12,6 +12,7 @@
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/pad.h"
 #include "main/render_envfx_api.h"
 #include "main/resource.h"
@@ -247,7 +248,7 @@ void dll409_update(GameObject* obj) {
             }
         }
     } else {
-        found = (GameObject*)objGetNearestTypeTo(DLL199_TARGET_OBJECT_GROUP, player, &dist);
+        found = objGetNearestTypeTo(DLL199_TARGET_OBJECT_GROUP, player, &dist);
         if ((found != 0) && (dist < 300.0f) && (dist > 100.0f)) {
             dz = found->anim.localPosZ - player->anim.localPosZ;
             if (dz <= 0.0f) {
@@ -330,7 +331,7 @@ void dll409_update(GameObject* obj) {
             state->channel3BrightnessDelta = 1;
             (*gObjectTriggerInterface)->runSequence(2, obj, 0xffffffff);
             dist = 10000.0f;
-            found = (GameObject*)objGetNearestTypeTo(DLL199_SPAWNED_OBJECT_GROUP, obj, &dist);
+            found = objGetNearestTypeTo(DLL199_SPAWNED_OBJECT_GROUP, obj, &dist);
             if (found != 0) {
                 Obj_FreeObject(found);
             }
@@ -353,7 +354,7 @@ void dll409_update(GameObject* obj) {
             break;
         case 3:
             dist = 10000.0f;
-            found = (GameObject*)objGetNearestTypeTo(DLL199_SPAWNED_OBJECT_GROUP, obj, &dist);
+            found = objGetNearestTypeTo(DLL199_SPAWNED_OBJECT_GROUP, obj, &dist);
             if (found != 0) {
                 Obj_FreeObject(found);
             }

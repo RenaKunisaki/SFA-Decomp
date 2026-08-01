@@ -13,6 +13,7 @@
 #include "main/object_render.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
+#include "main/objtype.h"
 #include "main/obj_trigger.h"
 #include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin_api.h"
@@ -143,7 +144,7 @@ static void landed_arwing_runTargetSequence(GameObject* obj) {
     GameObject* nearest;
     LandedArwingPlacement* placement = (LandedArwingPlacement*)obj->anim.placementData;
 
-    nearest = (GameObject*)objGetNearestTypeTo(LANDED_ARWING_TARGET_OBJECT_GROUP, obj, NULL);
+    nearest = objGetNearestTypeTo(LANDED_ARWING_TARGET_OBJECT_GROUP, obj, NULL);
     if (obj->anim.mapEventSlot == 0xD && mainGetBit(GAMEBIT_Tricky_SaidGoodBye) != 0) {
         nearest->anim.localPosY += 20.0f;
         (*gObjectTriggerInterface)->runSequence(2, nearest, -1);
@@ -466,7 +467,7 @@ void landed_arwing_updateHitReaction(GameObject* obj, LandedArwingHitReactionSta
                 break;
             case LANDED_ARWING_REACTION_DAMAGE_NEAREST:
                 range = lbl_803E3BC0;
-                other = (GameObject*)objGetNearestTypeTo(STAFF_ACTIVATED_OBJECT_GROUP, obj, &range);
+                other = objGetNearestTypeTo(STAFF_ACTIVATED_OBJECT_GROUP, obj, &range);
                 if (other != NULL) {
                     otherState = other->extra;
                     if (((StaffActivatedPlacement*)other->anim.placementData)->siblingGameBit > 0) {

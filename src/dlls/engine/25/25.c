@@ -31,6 +31,7 @@
 #include "main/player_control_interface.h"
 #include "main/dll/dll_0019_dll19func0.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "main/objtype.h"
 
 GameObject* gDll19NearestObj;
 f32 gDll19SegmentRadius;
@@ -584,7 +585,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
                 }
             }
             nearDist = 750.0f;
-            gDll19NearestObj = (GameObject*)objGetNearestTypeTo(DLL19_TARGET_OBJGROUP, (GameObject*)obj, &nearDist);
+            gDll19NearestObj = objGetNearestTypeTo(DLL19_TARGET_OBJGROUP, (GameObject*)obj, &nearDist);
             source->anim.worldPosX = savedX;
             source->anim.worldPosY = savedY;
             source->anim.worldPosZ = savedZ;

@@ -14,6 +14,7 @@
 #include "main/mapEventTypes.h"
 #include "main/objprint_api.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 #include "main/resource.h"
 #include "main/shader_api.h"
 #include "sys/objects.h"
@@ -181,7 +182,7 @@ void dll_F7_update(GameObject* obj) {
             GameObject* collectible;
 
             radius = DLLF7_COLLECTIBLE_SEARCH_RADIUS;
-            collectible = (GameObject*)objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &radius);
+            collectible = objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &radius);
             if (collectible != NULL) {
                 collectible->anim.localPosX = collectible->anim.worldPosX = obj->anim.localPosX;
                 collectible->anim.localPosY = collectible->anim.worldPosY =

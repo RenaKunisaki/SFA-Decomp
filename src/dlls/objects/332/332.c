@@ -17,6 +17,7 @@
 #include "main/objprint_character_api.h"
 #include "main/objprint_sound_api.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -247,7 +248,7 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjSeqState* a
     }
     if (inRange == 0 && state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
         f32 radius = (f32)placement->outerRadius;
-        if ((void*)objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, &radius) != NULL) {
+        if (objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, &radius) != NULL) {
             inRange = 1;
         }
     }
@@ -396,7 +397,7 @@ void babyCloudRunner_update(GameObject* obj) {
                     return;
                 }
                 if (state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
-                    nearbyObject = (GameObject*)objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, 0);
+                    nearbyObject = objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, 0);
                     if (nearbyObject != NULL && Vec_distance(&nearbyObject->anim.worldPosX, &state->handoffPosition.x) <
                                                     gBabyCloudRunnerTargetNearDist) {
                         babyCloudRunner_turnTowardTarget(obj, nearbyObject, state, 0);
@@ -432,7 +433,7 @@ void babyCloudRunner_update(GameObject* obj) {
                     (*gGameUIInterface)->runAirMeter((int)state->countdownTimer);
                 }
                 if (inRange == 0 &&
-                    (void*)objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, &radius) != NULL) {
+                    objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, &radius) != NULL) {
                     inRange = 1;
                 }
                 if (mainGetBit(state->runnerIndex + GAMEBIT_CFRelated0B2E) != 0) {

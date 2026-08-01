@@ -9,6 +9,7 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 
@@ -75,7 +76,7 @@ void DIMDismountPoint_update(GameObject* obj) {
     f32 searchRadius;
 
     searchRadius = 500.0f;
-    nearestNeighbor = (GameObject*)objGetNearestTypeTo(DIM_DISMOUNT_MOUNT_OBJECT_GROUP, obj, &searchRadius);
+    nearestNeighbor = objGetNearestTypeTo(DIM_DISMOUNT_MOUNT_OBJECT_GROUP, obj, &searchRadius);
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if (mainGetBit(GAMEBIT_NW_SnowHorn03E3) != 0) {
         obj->hitVolumeIndex = 1;

@@ -19,6 +19,7 @@
 #include "main/dll/WC/dll_0291_wctile.h"
 #include "sys/objects.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 
 #define WCTILE_RENDER_TYPE_BASE    0x400
 #define WCTILE_RENDER_TYPE_SHIFT   0xb
@@ -84,7 +85,7 @@ void wctile_update(GameObject* obj)
 
     if ((void*)state->controller == NULL)
     {
-        state->controller = (GameObject*)objGetNearestTypeTo(WCTILE_CONTROLLER_GROUP, obj, &nearest);
+        state->controller = objGetNearestTypeTo(WCTILE_CONTROLLER_GROUP, obj, &nearest);
         objAnim->alpha = 0;
         return;
     }
