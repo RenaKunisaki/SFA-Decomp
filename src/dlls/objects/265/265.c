@@ -20,6 +20,7 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/frustum.h"
 
 #define BREAKABLE_CARRYABLE_HIT_VOLUME_SLOT 5
 #define BREAKABLE_CARRYABLE_HITBOX_RADIUS   0x28

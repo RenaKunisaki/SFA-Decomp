@@ -19,6 +19,7 @@
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/frustum.h"
 
 #define SCARAB_ORIENTATION_DIRECTION     0
 #define SCARAB_ORIENTATION_GROUND_NORMAL 1

@@ -12,6 +12,8 @@
 #include "main/frame_timing.h"
 #include "main/mm.h"
 #include "sys/objects.h"
+#include "main/curve.h"
+#include "main/audio/sfx_position_api.h"
 
 #define WISPBADDIE_HIT_VOLUME_SLOT 10
 
@@ -149,7 +151,7 @@ void WispBaddie_update(GameObject* obj) {
             state->flags = (u8)(flags & ~WISPBADDIE_FLAG_CHASE_PLAYER);
             state->flags = (u8)(state->flags | WISPBADDIE_FLAG_CHASE_LOCKOUT);
         }
-        Sfx_PlayAtPositionFromObject((int)obj, hitPosX, hitPosY, hitPosZ, SFXTRIG_robolaser16);
+        Sfx_PlayAtPositionFromObject(obj, hitPosX, hitPosY, hitPosZ, SFXTRIG_robolaser16);
     }
 
     particleMode = 4;

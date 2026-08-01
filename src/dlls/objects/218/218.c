@@ -21,6 +21,7 @@
 #include "main/model_light.h"
 #include "main/objhits.h"
 #include "main/objtype.h"
+#include "sys/objects.h"
 
 f32 gPollenFragmentSpinRateX = 1024.0f;
 f32 gPollenFragmentSpinRateY = 512.0f;

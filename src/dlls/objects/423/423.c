@@ -18,6 +18,7 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/curve.h"
 
 /* EdibleMushroomState::flags bits */
 #define EDIBLE_MUSHROOM_FLAG_ANIM_DONE 0x1  /* current move finished this frame */

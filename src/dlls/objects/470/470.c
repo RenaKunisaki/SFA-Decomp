@@ -16,6 +16,7 @@
 #include "main/object_render.h"
 #include "main/objtexture.h"
 #include "sys/objects.h"
+#include "main/vecmath.h"
 
 #define DLL1D6_ACTION_SLOT_COUNT  4
 #define DLL1D6_ACTION_DATA_SIZE   40

@@ -63,6 +63,8 @@
 #include "main/object_render.h"
 #include "dolphin/mtx/vec.h"
 #include "main/debug.h"
+#include "main/maketex_sequence_api.h"
+#include "main/audio/sfx_channel_volume_api.h"
 
 GameObject* gArwing;
 
@@ -858,7 +860,7 @@ void arwarwing_updateRollAndEngine(int obj, ArwingState* state)
         sum = 1.0 + log2fBitEstimate(state->velZ / state->maxSpeedZ);
         vol = (f32)(sum / 2.0);
         Sfx_KeepAliveLoopedObjectSound(obj, SFXTRIG_ar_boost16);
-        Sfx_SetObjectChannelVolume(obj, 0x40, 0xfe, vol);
+        Sfx_SetObjectChannelVolume((GameObject*)obj, 0x40, 0xfe, vol);
     }
 
     arwarwinggu_setTextureFrame(state->escortObj, state->enginePitch);

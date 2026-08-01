@@ -31,6 +31,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "dolphin/mtx/vec.h"
+#include "sys/objects.h"
 
 f32 gArwingAndrossRingScaleStep = 0.1f;
 f32 gArwingAndrossRingSpinStep = 500.0f;

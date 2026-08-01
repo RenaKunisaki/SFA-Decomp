@@ -5,6 +5,7 @@
 #include "main/fileio.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "dlls/object_descriptor.h"
+#include "track/intersect_hud_api.h"
 
 f32 lbl_803DD5F4;
 s8 gTitleScreenInitFrameStartPending;

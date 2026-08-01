@@ -26,6 +26,8 @@
 #include "dolphin/mtx/vec.h"
 #include "main/objfx.h"
 #include "main/dll/baddie_state.h"
+#include "main/curve.h"
+#include "main/vecmath.h"
 
 f32 lbl_803DC3A0 = 2.0f;
 f32 lbl_803DC3A4 = 0.2f;

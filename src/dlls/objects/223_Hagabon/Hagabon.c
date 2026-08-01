@@ -21,6 +21,7 @@
 #include "main/vecmath.h"
 #include "string.h"
 #include "sys/objects.h"
+#include "main/curve.h"
 
 #define HAGABON_HIT_VOLUME_SLOT 10
 #define HAGABON_OBJECT_GROUP    3

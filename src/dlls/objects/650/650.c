@@ -48,6 +48,7 @@
 #include "main/player_control_interface.h"
 #include "dlls/object_descriptor.h"
 #include "dolphin/pad.h"
+#include "main/vecmath.h"
 
 static const f32 gWcEarthWalkerCurveAdvanceStep = 0.5f;
 static const f32 gWcEarthWalkerApproachPlayerDistance = 200.0f;

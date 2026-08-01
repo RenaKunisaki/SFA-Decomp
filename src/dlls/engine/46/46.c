@@ -14,6 +14,7 @@
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "track/intersect_api.h"
+#include "main/curve.h"
 #define MOVELIB_TARGET_OBJGROUP 8
 
 #define MOVELIB_CURVE_WALK_DONE 0x10

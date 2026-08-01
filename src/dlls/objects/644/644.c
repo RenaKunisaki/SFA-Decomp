@@ -37,6 +37,7 @@
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
 #include "dolphin/pad.h"
+#include "main/vecmath.h"
 
 #define SHOPITEM_TARGET_OBJGROUP 9
 

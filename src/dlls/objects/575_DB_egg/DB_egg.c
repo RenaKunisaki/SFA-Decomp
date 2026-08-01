@@ -53,6 +53,8 @@
 #include "dlls/object_descriptor.h"
 #include "dolphin/mtx/vec.h"
 #include "dolphin/pad.h"
+#include "main/lightmap_api.h"
+#include "main/track_bbox_api.h"
 
 #define DBEGG_OBJGROUP         0x24
 #define DBEGG_SIBLING_OBJGROUP 0x14

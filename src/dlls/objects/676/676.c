@@ -16,6 +16,7 @@
 #include "main/dll/ARW/dll_02A4.h"
 #include "dlls/object_descriptor.h"
 #include "main/object_render.h"
+#include "sys/objects.h"
 
 /* random start-rotation range and per-axis spin-rate range */
 #define ROT_RANGE_MAX 0xffff

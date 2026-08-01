@@ -15,6 +15,8 @@
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "sys/objects/lifecycle.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 
 #define KALDACHOMPSPIT_HIT_VOLUME_SLOT_EXPLOSIVE 31
 #define KALDACHOMPSPIT_HIT_VOLUME_SLOT_DEFAULT   10

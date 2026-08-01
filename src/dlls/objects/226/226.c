@@ -51,6 +51,7 @@
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
 #include "dolphin/gx/GXTransform.h"
+#include "main/audio/sfx_position_api.h"
 
 extern u8 gStaffQuakeSpellState[0x28];
 extern void* gStaffSwipeTextures[2];
@@ -837,7 +838,7 @@ void staff_hitDetectGeometry(GameObject* obj) {
             idx = contactHitVolume;
         }
         if (idx == 14) {
-            Sfx_PlayAtPositionFromObject((int)obj, hitState->contactPosX, hitState->contactPosY, hitState->contactPosZ,
+            Sfx_PlayAtPositionFromObject(obj, hitState->contactPosX, hitState->contactPosY, hitState->contactPosZ,
                                          SFXTRIG_foot_water_walk_1);
             (*gWaterfxInterface)
                 ->spawnSplashBurst(obj, hitState->contactPosX, hitState->contactPosY, hitState->contactPosZ, 0.0f);
@@ -856,7 +857,7 @@ void staff_hitDetectGeometry(GameObject* obj) {
                 ->spawn(OBJHITREACT_HIT_EFFECT_PARENT_NONE, OBJHITREACT_HIT_EFFECT_MODE, &v,
                         OBJHITREACT_HIT_EFFECT_SPAWN_FLAGS, OBJHITREACT_HIT_EFFECT_NO_SOURCE,
                         &tbl.colors[sStaffContactColorIndices[idx]]);
-            Sfx_PlayAtPositionFromObject((int)obj, hitState->contactPosX, hitState->contactPosY, hitState->contactPosZ,
+            Sfx_PlayAtPositionFromObject(obj, hitState->contactPosX, hitState->contactPosY, hitState->contactPosZ,
                                          (u16)sStaffContactSfxIds[idx]);
         }
     }

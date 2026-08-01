@@ -25,6 +25,7 @@
 #include "main/dll/dll_02BD_androsshand.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/vecmath.h"
 
 /* Andross body object id, located once and cached in androssObj. */
 #define ANDROSS_OBJ_ID              0x47b77

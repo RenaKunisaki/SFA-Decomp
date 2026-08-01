@@ -15,6 +15,7 @@
 #include "main/dll/ARW/dll_02A2_arwspeedstr.h"
 #include "main/dll/ARW/dll_02A3.h"
 #include "main/object_render.h"
+#include "sys/objects.h"
 
 int gDll2A3UpdatedThisFrame;
 int gDll2A3InstanceCount;

@@ -10,6 +10,7 @@
 #include "main/mldf_fileid.h"
 #include "main/mm.h"
 #include "sys/objects.h"
+#include "main/curve.h"
 
 #define LFXEMITTER_OBJECT_GROUP        0x1C
 #define LFXEMITTER_LIGHT_ACTION_HEAP   0x12

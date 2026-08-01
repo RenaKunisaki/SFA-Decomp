@@ -12,6 +12,7 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/obj_list.h"
+#include "sys/objects.h"
 
 #define ICEBALL_HIT_VOLUME_SLOT 10
 #define ICEBALL_PARTICLE_COUNT  25

@@ -13,6 +13,8 @@
 #include "main/objfx.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/curve.h"
+#include "main/pad_api.h"
 
 typedef struct RollingBarrelCurveInitPair {
     s32 unknown00;

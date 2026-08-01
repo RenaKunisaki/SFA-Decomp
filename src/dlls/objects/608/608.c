@@ -11,6 +11,8 @@
 #include "main/vecmath.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/lightmap_api.h"
+#include "main/track_dolphin_api.h"
 
 s32 gProximityMineLifespanFrames = 40;
 f32 gProximityMineGlowScale = 50.0f;

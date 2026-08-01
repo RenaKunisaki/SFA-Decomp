@@ -39,6 +39,7 @@
 #include "main/dll/dll_0263_gmmazewell.h"
 #include "main/player_control_interface.h"
 #include "main/dll/DR/dll_024F_ktrexlevel.h"
+#include "main/camera_shake_api.h"
 
 GroundBaddieState* gKTRexRuntime;
 KTRexArenaState* gKTRexState;

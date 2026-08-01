@@ -19,6 +19,7 @@
 #include "main/shader_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_position_api.h"
 
 #define DLLF7_OBJECT_TYPE_ID 2
 
@@ -138,7 +139,7 @@ void dll_F7_update(GameObject* obj) {
     if (ObjHits_GetPriorityHitWithPosition(obj, 0, 0, &hitVolume, &hitEffect.spawn.posX, &hitEffect.spawn.posY,
                                            &hitEffect.spawn.posZ) != 0) {
         if ((state->hitsRemaining -= hitVolume) > 0) {
-            Sfx_PlayAtPositionFromObject((int)obj, hitEffect.spawn.posX, hitEffect.spawn.posY, hitEffect.spawn.posZ,
+            Sfx_PlayAtPositionFromObject(obj, hitEffect.spawn.posX, hitEffect.spawn.posY, hitEffect.spawn.posZ,
                                          SFXTRIG_crtsmsh6);
             Obj_SetActiveModelIndex(obj, DLLF7_HIT_COUNT - state->hitsRemaining);
             state->bounceOffset = DLLF7_BOUNCE_START_OFFSET;

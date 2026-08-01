@@ -22,6 +22,7 @@
 #include "main/player_control_interface.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/track_dolphin_api.h"
 
 #define DLL28B_OBJ_GROUP    3
 #define OBJFLAG_BIT_2000000 0x2000000

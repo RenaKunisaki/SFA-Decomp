@@ -32,6 +32,7 @@
 #include "main/dll/dll_0019_dll19func0.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/objtype.h"
+#include "main/lightmap_api.h"
 
 GameObject* gDll19NearestObj;
 f32 gDll19SegmentRadius;

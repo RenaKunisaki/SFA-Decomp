@@ -36,6 +36,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/dll_0271_drakorhoverpad_internal.h"
+#include "main/camera_shake_api.h"
 
 const f32 gDrakorHoverpadSpeedStep = 2.0f;
 f32 gDrakorHoverpadMtx[16];

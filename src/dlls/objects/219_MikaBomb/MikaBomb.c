@@ -14,6 +14,7 @@
 #include "main/resource.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/track_dolphin_api.h"
 
 #define MIKABOMB_HIT_VOLUME_SLOT 5
 

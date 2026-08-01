@@ -15,6 +15,7 @@
 #include "main/objtexture.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/vecmath.h"
 
 #define CHUKCHUK_CHILD_OBJ_ICEBALL      1307
 #define CHUKCHUK_ICEBALL_SETUP_SIZE     0x24

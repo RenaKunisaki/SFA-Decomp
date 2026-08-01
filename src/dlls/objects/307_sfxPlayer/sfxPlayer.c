@@ -8,6 +8,7 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_position_api.h"
 
 #define SFXPLAYER_GAME_BIT_NONE -1
 
@@ -69,7 +70,7 @@ static inline void SfxPlayer_startSound(GameObject* obj, SfxPlayerPlacement* pla
                 Sfx_PlayFromObject((u32)soundObj, soundId);
             }
         } else {
-            Sfx_PlayAtPositionFromObject((int)soundObj, soundObj->anim.localPosX, soundObj->anim.localPosY,
+            Sfx_PlayAtPositionFromObject(soundObj, soundObj->anim.localPosX, soundObj->anim.localPosY,
                                          soundObj->anim.localPosZ, soundId);
         }
     }
