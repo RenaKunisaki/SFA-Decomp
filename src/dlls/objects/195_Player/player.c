@@ -353,7 +353,7 @@ const u8 lbl_802C2B30[12][16] = {
     {0x40, 0x04, 0x01, 0x05}, {0x40, 0x00, 0x04, 0x02}, {0x40, 0x02, 0x04, 0x06},
 };
 
-const f32 lbl_802C2BF0[24] = {
+const f32 gPlayerTeleportBoxCorners[24] = {
     -14.5f, 20.0f, -14.5f, 14.5f, 20.0f, -14.5f, -14.5f, 20.0f, 14.5f, 14.5f, 20.0f, 14.5f,
     -14.5f, -7.0f, -14.5f, 14.5f, -7.0f, -14.5f, -14.5f, -7.0f, 14.5f, 14.5f, -7.0f, 14.5f,
 };
@@ -12691,13 +12691,13 @@ void playerDrawTeleportAnim(GameObject* obj)
         }
         if (i < 4)
         {
-            p->x = (20.0f * lbl_802C2BF0[i * 3 + 0]);
-            p->z = (20.0f * lbl_802C2BF0[i * 3 + 2]);
+            p->x = (20.0f * gPlayerTeleportBoxCorners[i * 3 + 0]);
+            p->z = (20.0f * gPlayerTeleportBoxCorners[i * 3 + 2]);
         }
         else
         {
-            p->x = (20.0f * lbl_802C2BF0[i * 3 + 0]);
-            p->z = (20.0f * lbl_802C2BF0[i * 3 + 2]);
+            p->x = (20.0f * gPlayerTeleportBoxCorners[i * 3 + 0]);
+            p->z = (20.0f * gPlayerTeleportBoxCorners[i * 3 + 2]);
         }
         p->r = 0xff;
         p->g = 0;
