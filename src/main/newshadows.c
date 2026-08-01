@@ -293,7 +293,7 @@ Texture* gNewShadowReflectionTexture;
 u8 gNewShadowCasterCount;
 
 u8 lbl_803DB668[8] = {0xFF, 7, 6, 5, 4, 3, 2, 1};
-f32 lbl_803DB670 = 1.3333334f;
+f32 gStandardAspectRatio = 1.3333334f;
 
 #include "main/newshadows_internal.h"
 
@@ -938,7 +938,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     {
         Camera_SetCurrentViewIndex(0);
         Camera_SetFovY(savedFovY);
-        Camera_SetAspectRatio(lbl_803DB670);
+        Camera_SetAspectRatio(gStandardAspectRatio);
         Camera_UpdateProjection(NULL, 0);
     }
     Camera_UpdateViewMatrices();

@@ -2,7 +2,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 
 extern const f32 lbl_803E7730;
-extern const f32 lbl_803E7748;
+extern const f32 GXDrawTwoPi;
 
 static GXVtxDescList vcd[27];
 static GXVtxAttrFmtList vat[27];
@@ -33,7 +33,7 @@ void GXDrawTorus(f32 rc, u8 numc, u8 numt) {
     f32 x;
     f32 y;
     f32 z;
-    f32 twopi = lbl_803E7748;
+    f32 twopi = GXDrawTwoPi;
     f32 rt;
 
     rt = lbl_803E7730 - rc;

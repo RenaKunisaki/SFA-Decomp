@@ -31,7 +31,7 @@
 u8 runListNum;
 u8 startListNumnum;
 u8 startGroupNum;
-u8 lbl_803DE36A;
+u8 sSnd3dStereo;
 u8 snd_max_studios;
 u8 snd_base_studio;
 u32 snd_used_studios;
@@ -213,7 +213,7 @@ void s3dInit(u32 flags)
     snd_base_studio = S3D_BASE_STUDIO;
     snd_max_studios = S3D_MAX_STUDIOS;
     s3dCallCnt = 0;
-    lbl_803DE36A = stereo;
+    sSnd3dStereo = stereo;
 }
 
 /*

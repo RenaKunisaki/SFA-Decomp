@@ -40,7 +40,7 @@ static u8 lbl_803CD710[0x50];
 extern u8 startGroupNum;
 extern u8 startListNumnum;
 extern u8 runListNum;
-extern u8 lbl_803DE36A;
+extern u8 sSnd3dStereo;
 
 #define S3D_MAX_GROUPS                   0x40
 #define S3D_MAX_ACTIVE_NODES             0x40
@@ -390,7 +390,7 @@ static void StartContinousEmitters(void)
         for (node = startGroup[groupIndex].list; node != (START_LIST*)0x0; node = node->next)
         {
             if ((startGroup[groupIndex].running != (RUN_LIST*)0x0) &&
-                !((lbl_803DE36A != 0) &&
+                !((sSnd3dStereo != 0) &&
                   ((startGroup[groupIndex].id & S3D_GROUP_KEY_STEREO_LIMIT) != 0) &&
                   (startGroup[groupIndex].numRunning < startGroup[groupIndex].list->em->maxVoices)))
             {
