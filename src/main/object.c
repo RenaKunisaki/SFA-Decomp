@@ -190,8 +190,6 @@ extern f32 lbl_803DE8D8;
 extern f32 gObjColorFadeRate;
 extern f32 gObjColorFadeAlphaMax;
 GameObject* gEffectBoxObjects[20];
-extern const f32 lbl_803DE890;
-extern const f32 lbl_803DE8B8;
 extern f32 lbl_803DE8CC;
 extern f32 lbl_803DE8D0;
 extern f32 lbl_803DE8BC;
@@ -268,7 +266,7 @@ void Obj_UpdateRollingRotation(GameObject* obj)
         vecA[1] = lbl_803DE88C;
         vecA[2] = -dx / len;
         vecB[0] = lbl_803DE88C;
-        vecB[1] = lbl_803DE890;
+        vecB[1] = 1.0f;
         vecB[2] = lbl_803DE88C;
         PSVECCrossProduct((Vec*)vecA, (Vec*)vecB, (Vec*)cross);
         PSMTXRotAxisRad((MtxPtr)rot, (Vec*)cross, lbl_803DE894 * (lbl_803DE898 * -len));
@@ -525,7 +523,7 @@ void Obj_TransformLocalPointByWorldMatrix(u8* obj, f32* src, f32* dst, u8 flag)
     if (flag)
     {
         savedZ = ((GameObject*)obj)->anim.rootMotionScale;
-        ((GameObject*)obj)->anim.rootMotionScale = lbl_803DE890;
+        ((GameObject*)obj)->anim.rootMotionScale = 1.0f;
     }
     Obj_BuildWorldTransformMatrix((GameObject*)obj, mtx, 0);
     PSMTXMultVec((MtxPtr)mtx, (Vec*)src, (Vec*)dst);
@@ -555,7 +553,7 @@ void objWorldToLocalPos(f32* out, MatrixTransform* transform, f32* in)
     inverse.rotX = -transform->rotX;
     inverse.rotY = -transform->rotY;
     inverse.rotZ = -transform->rotZ;
-    inverse.scale = lbl_803DE890;
+    inverse.scale = 1.0f;
     mtxRotateByVec3s(rotMtx, &inverse);
     mtx44Transpose(rotMtx, transposed);
     PSMTXMultVec((MtxPtr)transposed, (Vec*)in, (Vec*)rotated);
@@ -585,7 +583,7 @@ void Obj_BuildInverseWorldTransformMatrix(GameObject* obj, f32* out)
     transform.rotX = -obj->anim.rotX;
     transform.rotY = -obj->anim.rotY;
     transform.rotZ = -obj->anim.rotZ;
-    transform.scale = lbl_803DE890;
+    transform.scale = 1.0f;
     mtxRotateByVec3s(rotMtx, &transform);
     mtx44Transpose(rotMtx, out);
     if (obj->anim.parent == NULL)
@@ -622,7 +620,7 @@ void Obj_BuildWorldTransformMatrix(GameObject* obj, f32* mtx, int flags)
         objFlags &= 0x8;
         if (objFlags == 0)
         {
-            scale = lbl_803DE890;
+            scale = 1.0f;
             obj->anim.rootMotionScale = scale;
         }
     }
@@ -807,9 +805,9 @@ void objSetSlot(GameObject* obj, s8 slot)
 
 int objApplyVelocity(GameObject* obj)
 {
-    obj->anim.localPosX += timeDelta * (lbl_803DE8B8 * (obj->externalVelX + obj->anim.velocityX));
-    obj->anim.localPosY += timeDelta * (lbl_803DE8B8 * (obj->externalVelY + obj->anim.velocityY));
-    obj->anim.localPosZ += timeDelta * (lbl_803DE8B8 * (obj->externalVelZ + obj->anim.velocityZ));
+    obj->anim.localPosX += timeDelta * (0.5f * (obj->externalVelX + obj->anim.velocityX));
+    obj->anim.localPosY += timeDelta * (0.5f * (obj->externalVelY + obj->anim.velocityY));
+    obj->anim.localPosZ += timeDelta * (0.5f * (obj->externalVelZ + obj->anim.velocityZ));
     return 1;
 }
 
@@ -1710,7 +1708,7 @@ void modelInitBones(f32 scale, void* model)
                     *(f32*)(*(u8**)(tbl + 0xc) + off) = lbl_803DE8D8;
                 }
                 w = *(f32*)(*(u8**)(hdr + 0x1c) + off);
-                if (w >= lbl_803DE890)
+                if (w >= 1.0f)
                 {
                     *(f32*)(*(u8**)(tbl + 0xc) + off) *= w;
                 }
