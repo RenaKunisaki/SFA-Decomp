@@ -60,8 +60,8 @@ extern GXColor gMotionBlurKColor;
 extern GXColor gHeatEffectKColor;
 extern u32 lbl_803DB6A8;
 extern f32 gCausticReflectionDiskScale;
-extern f32 lbl_803DB6B0;
-extern f32 lbl_803DB6B4;
+extern f32 gTrackProjectedTexScale;
+extern f32 gTrackNormalTexScale;
 extern f32 gFrozenReflectionNormalScale;
 extern GXColor gFrozenTintColor;
 extern f32 gFrozenWhirlpoolTexScale;
@@ -1647,7 +1647,7 @@ int objModelProjectedIndirectRenderCb(GameObject* object, ObjModel* model, int s
     renderOp = ObjModel_GetRenderOp(modelFile, slot);
     baseTexture = textureIdxToPtr(*(int*)Shader_getLayer(renderOp, 0));
 
-    PSMTXScale(normalTexMtx, lbl_803DB6B4, lbl_803DB6B4, 0.0f);
+    PSMTXScale(normalTexMtx, gTrackNormalTexScale, gTrackNormalTexScale, 0.0f);
     normalTexMtx[2][3] = 1.0f;
     GXLoadTexMtxImm(normalTexMtx, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_TRUE, GX_PTTEXMTX7);
@@ -1669,10 +1669,10 @@ int objModelProjectedIndirectRenderCb(GameObject* object, ObjModel* model, int s
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD0, GX_TEXMAP2);
     GXSetIndTexCoordScale(1, 0, 0);
     GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
-    PSMTXScale(transformMtx, lbl_803DB6B0, lbl_803DB6B0, 1.0f);
+    PSMTXScale(transformMtx, gTrackProjectedTexScale, gTrackProjectedTexScale, 1.0f);
     PSMTXConcat(transformMtx, gCameraLightPerspectiveFlipYMatrix, projectedTexMtx);
-    PSMTXTrans(transformMtx, 0.5f * (1.0f - lbl_803DB6B0),
-               0.5f * (1.0f - lbl_803DB6B0), 0.0f);
+    PSMTXTrans(transformMtx, 0.5f * (1.0f - gTrackProjectedTexScale),
+               0.5f * (1.0f - gTrackProjectedTexScale), 0.0f);
     PSMTXConcat(transformMtx, projectedTexMtx, projectedTexMtx);
     GXLoadTexMtxImm(projectedTexMtx, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_TRUE, GX_PTTEXMTX6);
