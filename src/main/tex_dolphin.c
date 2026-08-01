@@ -1494,9 +1494,9 @@ void* mapBlockGetPolygonGroup(void* obj, int idx)
     return (char*)((int**)obj)[0x50 / 4] + idx * 0x14;
 }
 
-void* mapBlockGetEdge(int* obj, int idx)
+MapBlockBoundsRec* mapBlockGetDisplayListBounds(MapBlockData* obj, int idx)
 {
-    return (char*)((int**)obj)[0x68 / 4] + idx * 0x1c;
+    return &obj->displayLists[idx];
 }
 
 Shader* mapBlockGetShader(MapBlockData* obj, int idx)
@@ -1571,7 +1571,7 @@ void MapBlock_init(MapBlockData* block)
     if (block->shaders != NULL)
         block->shaders = mapBlockRelocatePointer(block, block->shaders);
 
-    for (i = 0; i < block->edgeCount; i++)
+    for (i = 0; i < block->displayListCount; i++)
     {
         block->displayLists[i].dlist = mapBlockRelocatePointer(block, block->displayLists[i].dlist);
     }
@@ -1695,7 +1695,7 @@ void mapClearBlockEdgeFlags(void)
         block = gMapBlocks[i];
         if (block != NULL)
         {
-            for (j = 0; j < block->edgeCount; j++)
+            for (j = 0; j < block->displayListCount; j++)
             {
                 block->displayLists[j].flags = 0;
             }
