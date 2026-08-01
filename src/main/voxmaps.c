@@ -1224,6 +1224,7 @@ u8* voxmaps_getRouteNode(u8* rowCounts, int* nodeBase, u8* bitmap, int tileX, in
 int* voxmaps_updateActiveMap(VoxPos* obj)
 {
     VoxMaps* vm = &gVoxMaps;
+    int* worldOrigins;
     int gridX;
     int gridZ;
     int cellIndex;
@@ -1238,13 +1239,14 @@ int* voxmaps_updateActiveMap(VoxPos* obj)
     MapCellEntry* cell;
     VoxMapSlotOrigin* origin;
 
+    worldOrigins = vm->blockOriginWorld;
     zWorldOffset = obj->z * 10 + 5 - gMapBlockOriginWorldZ;
 
     gridX = fastFloorf((f32)(obj->x * 10 + 5 - gMapBlockOriginWorldX) / 6.4e+02f);
     gridZ = fastFloorf((f32)zWorldOffset / 6.4e+02f);
 
-    vm->blockOriginWorld[0] = gMapBlockOriginWorldX + gridX * 640;
-    vm->blockOriginWorld[1] = gMapBlockOriginWorldZ + gridZ * 640;
+    worldOrigins[0] = gMapBlockOriginWorldX + gridX * 640;
+    worldOrigins[1] = gMapBlockOriginWorldZ + gridZ * 640;
     for (slot = 0; slot < 2; slot++)
     {
         vm->blockOriginGrid[slot] = vm->blockOriginWorld[slot] / 10;
