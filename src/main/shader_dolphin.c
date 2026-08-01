@@ -91,7 +91,7 @@ struct piIndMtx
     f32 m[2][3];
 };
 
-const struct piIndMtx lbl_802C1D50 = {
+const struct piIndMtx sEnvMapBumpIndMtx = {
     {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
 const IndTexMtx23 lbl_802C1D68[4] = {
     {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}},
@@ -958,11 +958,11 @@ void addWarpedRingTevStages(void)
     f32 rx;
     f32 ry;
     void* invView;
-    va = ((Vec*)&lbl_802C1D50)[4];
-    vb = ((Vec*)&lbl_802C1D50)[5];
-    vc = ((Vec*)&lbl_802C1D50)[6];
-    vd = ((Vec*)&lbl_802C1D50)[7];
-    im = *(IndTexMtx23*)((Vec*)&lbl_802C1D50 + 8);
+    va = ((Vec*)&sEnvMapBumpIndMtx)[4];
+    vb = ((Vec*)&sEnvMapBumpIndMtx)[5];
+    vc = ((Vec*)&sEnvMapBumpIndMtx)[6];
+    vd = ((Vec*)&sEnvMapBumpIndMtx)[7];
+    im = *(IndTexMtx23*)((Vec*)&sEnvMapBumpIndMtx + 8);
     invView = Camera_GetInverseViewMatrix();
     PSMTXRotAxisRad(mf8, &va, 1.0f);
     PSMTXRotAxisRad(mc8, &vb, 1.0f);
@@ -1916,7 +1916,7 @@ int addEnvMapBumpStages(void* p1, int p2, u8 p3, u32 p4)
     int result;
     int texmap;
     int t;
-    indmtx = lbl_802C1D50;
+    indmtx = sEnvMapBumpIndMtx;
     t = lbl_803DB5E8 & 1;
     result = 0;
     if (t == 0)
