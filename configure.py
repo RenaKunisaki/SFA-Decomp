@@ -1474,7 +1474,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/370_LINKB_levco/LINKB_levco.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/371_LINK_levcon/LINK_levcon.c", cflags=cflags_dll_noopt_noinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/372_CCriverflow/CCriverflow.c"),
-            Object(NonMatching, "dlls/objects/373_DFropenode/DFropenode.c", cflags=cflags_dll_noopt_noinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/373_DFropenode/DFropenode.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/374_DFSH_Door1S/DFSH_Door1S.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/375/375.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/376_DFSH_Shrine/DFSH_Shrine.c"),

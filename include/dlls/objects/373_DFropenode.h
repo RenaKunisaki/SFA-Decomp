@@ -6,19 +6,27 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
+#define DFROPENODE_OBJECT_GROUP 0x17
+
+typedef enum DFropenodeStyle {
+    DFROPENODE_STYLE_ROPE,
+    DFROPENODE_STYLE_WATER,
+    DFROPENODE_STYLE_COUNT
+} DFropenodeStyle;
+
 typedef struct DFropenodePlacement {
     ObjPlacement base;
-    u8 roleFlags;
+    u8 nodeId; /* odd IDs start a rope; the following even ID ends it */
     u8 pad19[0x1B - 0x19];
-    u8 variant;
+    u8 style; /* DFropenodeStyle */
     s16 fadeGameBit;
     u8 pad1E[0x20 - 0x1E];
 } DFropenodePlacement;
 
 typedef struct DFropenodeRopeNode {
     Vec pos;
-    f32 velocity[3];
-    f32 force[3];
+    Vec velocity;
+    Vec force;
     u8 linkCount;
     u8 pad25[3];
     struct DFropenodeRopeLink* links[2];
@@ -33,7 +41,7 @@ typedef struct DFropenodeRopeLink {
     f32 restLength;
     f32 stiffness;
     f32 maxLength;
-    f32 force[3];
+    Vec force;
 } DFropenodeRopeLink;
 
 typedef struct DFropenodeRope {
@@ -41,19 +49,24 @@ typedef struct DFropenodeRope {
     DFropenodeRopeLink* links;
     u8 count;
     u8 pad09[3];
-    f32 start[3];
-    f32 end[3];
+    Vec start;
+    Vec end;
     f32 totalLength;
-    s32 enabled;
-    f32 maxSlack;
-    f32 step;
+    s32 solverIterations;
+    f32 maxForce;
+    f32 timeStep;
     s8 sway;
-    u8 direction;
+    s8 direction;
     u8 pad36[2];
     f32 damping;
-    f32 inverseTicks;
-    f32 stepPerTick;
+    f32 gravityOverMass;
+    f32 stepOverMass;
 } DFropenodeRope;
+
+typedef struct DFropenodePlaneEquation {
+    Vec normal;
+    f32 distance;
+} DFropenodePlaneEquation;
 
 typedef struct DFropenodeState {
     GameObject* linkedNode;
@@ -64,10 +77,7 @@ typedef struct DFropenodeState {
     f32 minimumY;
     s16 ropeYaw;
     u8 pad1A[2];
-    f32 planeNormalX;
-    f32 planeNormalY;
-    f32 planeNormalZ;
-    f32 planeDistance;
+    DFropenodePlaneEquation plane;
     DFropenodeRope* rope;
     u8 hidden : 1;
     u8 pad30 : 7;
@@ -82,7 +92,7 @@ typedef struct DFropenodeRenderState {
 
 typedef struct DFropenodeInterface {
     ObjectInterface object;
-    void (*getPlaneEquation)(GameObject* obj, f32* out);
+    void (*getPlaneEquation)(GameObject* obj, DFropenodePlaneEquation* out);
     void (*getWorldPosAtPhase)(f32 phase, GameObject* obj, f32* xOut, f32* yOut, f32* zOut);
     void (*advancePhaseByDistance)(GameObject* obj, f32* phase, f32 distance);
     void (*applyForceAtPhase)(f32 phase, f32 force, GameObject* obj);
@@ -92,13 +102,13 @@ typedef struct DFropenodeInterface {
     void (*setVisible)(GameObject* obj, int visible);
     int (*isVisible)(GameObject* obj);
     void (*setMinY)(GameObject* obj, f32 value);
-    void (*clearLinkedObj)(GameObject* state);
+    void (*clearLinkedObj)(GameObject* obj);
 } DFropenodeInterface;
 
 STATIC_ASSERT(offsetof(DFropenodePlacement, base) == 0x00);
-STATIC_ASSERT(offsetof(DFropenodePlacement, roleFlags) == 0x18);
+STATIC_ASSERT(offsetof(DFropenodePlacement, nodeId) == 0x18);
 STATIC_ASSERT(offsetof(DFropenodePlacement, pad19) == 0x19);
-STATIC_ASSERT(offsetof(DFropenodePlacement, variant) == 0x1B);
+STATIC_ASSERT(offsetof(DFropenodePlacement, style) == 0x1B);
 STATIC_ASSERT(offsetof(DFropenodePlacement, fadeGameBit) == 0x1C);
 STATIC_ASSERT(offsetof(DFropenodePlacement, pad1E) == 0x1E);
 STATIC_ASSERT(sizeof(DFropenodePlacement) == 0x20);
@@ -126,15 +136,19 @@ STATIC_ASSERT(offsetof(DFropenodeRope, count) == 0x08);
 STATIC_ASSERT(offsetof(DFropenodeRope, start) == 0x0C);
 STATIC_ASSERT(offsetof(DFropenodeRope, end) == 0x18);
 STATIC_ASSERT(offsetof(DFropenodeRope, totalLength) == 0x24);
-STATIC_ASSERT(offsetof(DFropenodeRope, enabled) == 0x28);
-STATIC_ASSERT(offsetof(DFropenodeRope, maxSlack) == 0x2C);
-STATIC_ASSERT(offsetof(DFropenodeRope, step) == 0x30);
+STATIC_ASSERT(offsetof(DFropenodeRope, solverIterations) == 0x28);
+STATIC_ASSERT(offsetof(DFropenodeRope, maxForce) == 0x2C);
+STATIC_ASSERT(offsetof(DFropenodeRope, timeStep) == 0x30);
 STATIC_ASSERT(offsetof(DFropenodeRope, sway) == 0x34);
 STATIC_ASSERT(offsetof(DFropenodeRope, direction) == 0x35);
 STATIC_ASSERT(offsetof(DFropenodeRope, damping) == 0x38);
-STATIC_ASSERT(offsetof(DFropenodeRope, inverseTicks) == 0x3C);
-STATIC_ASSERT(offsetof(DFropenodeRope, stepPerTick) == 0x40);
+STATIC_ASSERT(offsetof(DFropenodeRope, gravityOverMass) == 0x3C);
+STATIC_ASSERT(offsetof(DFropenodeRope, stepOverMass) == 0x40);
 STATIC_ASSERT(sizeof(DFropenodeRope) == 0x44);
+
+STATIC_ASSERT(offsetof(DFropenodePlaneEquation, normal) == 0x00);
+STATIC_ASSERT(offsetof(DFropenodePlaneEquation, distance) == 0x0C);
+STATIC_ASSERT(sizeof(DFropenodePlaneEquation) == 0x10);
 
 STATIC_ASSERT(offsetof(DFropenodeState, linkedNode) == 0x00);
 STATIC_ASSERT(offsetof(DFropenodeState, boundsMinX) == 0x04);
@@ -144,10 +158,7 @@ STATIC_ASSERT(offsetof(DFropenodeState, boundsMaxZ) == 0x10);
 STATIC_ASSERT(offsetof(DFropenodeState, minimumY) == 0x14);
 STATIC_ASSERT(offsetof(DFropenodeState, ropeYaw) == 0x18);
 STATIC_ASSERT(offsetof(DFropenodeState, pad1A) == 0x1A);
-STATIC_ASSERT(offsetof(DFropenodeState, planeNormalX) == 0x1C);
-STATIC_ASSERT(offsetof(DFropenodeState, planeNormalY) == 0x20);
-STATIC_ASSERT(offsetof(DFropenodeState, planeNormalZ) == 0x24);
-STATIC_ASSERT(offsetof(DFropenodeState, planeDistance) == 0x28);
+STATIC_ASSERT(offsetof(DFropenodeState, plane) == 0x1C);
 STATIC_ASSERT(offsetof(DFropenodeState, rope) == 0x2C);
 STATIC_ASSERT(offsetof(DFropenodeState, pad31) == 0x31);
 STATIC_ASSERT(sizeof(DFropenodeState) == 0x34);
@@ -170,22 +181,23 @@ STATIC_ASSERT(offsetof(DFropenodeInterface, setMinY) == 0x40);
 STATIC_ASSERT(offsetof(DFropenodeInterface, clearLinkedObj) == 0x44);
 STATIC_ASSERT(sizeof(DFropenodeInterface) == 0x48);
 
+void DFropenode_updateRopeSimulation(DFropenodeRope* rope);
 void DFropenode_setMinY(GameObject* obj, f32 value);
-int DFropenode_isVisible(GameObject* obj);
+s16 DFropenode_isVisible(GameObject* obj);
 void DFropenode_setVisible(GameObject* obj, int visible);
-int DFropenode_getAngle(GameObject* obj);
+s16 DFropenode_getAngle(GameObject* obj);
 void DFropenode_clearLinkedObj(GameObject* obj);
 int DFropenode_findNearestRopePoint(GameObject* obj, f32 worldX, f32 worldY, f32 worldZ, f32* distanceOut,
                                     f32* phaseOut, u8* sideOut);
 void DFropenode_applyForceAtPhase(f32 phase, f32 force, GameObject* obj);
 void DFropenode_advancePhaseByDistance(GameObject* obj, f32* phase, f32 distance);
 void DFropenode_getWorldPosAtPhase(f32 phase, GameObject* obj, f32* xOut, f32* yOut, f32* zOut);
-void DFropenode_getPlaneEquation(GameObject* obj, f32* out);
+void DFropenode_getPlaneEquation(GameObject* obj, DFropenodePlaneEquation* out);
 int DFropenode_syncRopeToEndpoints(GameObject* obj);
 int DFropenode_getExtraSize(void);
 int DFropenode_getObjectTypeId(void);
 void DFropenode_free(GameObject* obj);
-void DFropenode_render(GameObject* obj, int p2, int p3);
+void DFropenode_render(GameObject* obj, int gdl, int mtxs);
 void DFropenode_hitDetect(void);
 void DFropenode_update(GameObject* obj);
 void DFropenode_init(GameObject* obj, DFropenodePlacement* placement);
