@@ -76,7 +76,7 @@ s8 gTexIndMtxScaleExp = -2;
 
 extern f32 lbl_803DEBCC;
 extern const f32 lbl_803DEBFC;
-extern const f32 lbl_803DEC20;
+extern const f32 gTrackPackedCoordScale;
 extern const f32 gTexIndMtxScale;
 extern f32 lbl_803DEC28;
 extern int lbl_803DEBB0;
@@ -116,7 +116,7 @@ static u8 mapBlockBounds_HasCornerPastDepthThreshold(MapBlockBoundsRec* bounds, 
     f32 timing;
 
     i = 0;
-    timing = lbl_803DEC20;
+    timing = gTrackPackedCoordScale;
     fbset = lbl_803DEC28;
     while (1)
     {
@@ -1442,9 +1442,9 @@ void trackPackVector(short* out, float* vec)
 
 void trackUnpackVector(s16* in, f32* out)
 {
-    out[0] = (f32)(s32)in[0] * lbl_803DEC20;
-    out[1] = (f32)(s32)in[1] * lbl_803DEC20;
-    out[2] = (f32)(s32)in[2] * lbl_803DEC20;
+    out[0] = (f32)(s32)in[0] * gTrackPackedCoordScale;
+    out[1] = (f32)(s32)in[1] * gTrackPackedCoordScale;
+    out[2] = (f32)(s32)in[2] * gTrackPackedCoordScale;
 }
 
 /* trackBuildModelTriangles -- gather model triangles overlapping a swept bbox into the
