@@ -3,6 +3,7 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 
 #define DLL_115_GROUP                              0xF
 #define DLL_115_TYPE_ID                            0

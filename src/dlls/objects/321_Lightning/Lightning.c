@@ -6,6 +6,8 @@
 #include "main/newclouds.h"
 #include "main/objtype.h"
 #include "main/objfx.h"
+#include "main/mm.h"
+#include "main/vecmath.h"
 
 #define LIGHTNING_AGE_ROUND_BIAS             0.5f
 #define LIGHTNING_BURST_CHANCE               100

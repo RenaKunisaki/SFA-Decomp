@@ -20,6 +20,12 @@
 #include "main/dll/DR/dll_026E_drshackle.h"
 #include "main/dll/DR/dr_types.h"
 #include "main/vecmath.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gamebits_api.h"
+#include "main/model.h"
+#include "main/obj_path.h"
+#include "main/objprint_render_api.h"
 
 int lbl_803DDD70;
 int gDrShackleRotZOffset = -32768;
@@ -173,7 +179,7 @@ void drshackle_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visi
 void drshackle_hitDetect(unsigned long obj)
 {
     char* state = ((GameObject*)obj)->extra;
-    if (Sfx_IsPlayingFromObjectChannel(obj, 1) == 0 && ((BitFlags8*)(state + 0x1a))->b0 != 0)
+    if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 1) == 0 && ((BitFlags8*)(state + 0x1a))->b0 != 0)
     {
         Vec vec;
         int n;
@@ -181,7 +187,7 @@ void drshackle_hitDetect(unsigned long obj)
         n = 0xc8 - (int)(30.0f * PSVECMag(&vec));
         if (randomGetRange(0, (n < 1) ? 1 : ((n > 0xc8) ? 0xc8 : n)) == 0)
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_1b3);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_dn_boar1_c_1b3);
         }
     }
 }

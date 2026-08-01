@@ -5,6 +5,9 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "game/objects/object_setup.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 
 typedef struct VfpBlock1State
@@ -47,18 +50,18 @@ void VFP_Block1_update(GameObject* obj)
 {
     GameObject* player = (GameObject*)Obj_GetPlayerObject();
     f32 dist = Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX);
-    if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x40) != 0)
+    if (Sfx_IsPlayingFromObjectChannel(obj, 0x40) != 0)
     {
         if (dist < 90.0f)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mv_mushdizzylp12);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_mushdizzylp12);
         }
     }
     else
     {
         if (dist >= 90.0f)
         {
-            Sfx_StopObjectChannel((int)obj, 0x40);
+            Sfx_StopObjectChannel(obj, 0x40);
         }
     }
 }

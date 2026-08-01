@@ -14,6 +14,10 @@
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
 #define DIM_LAVA_DEBRIS_SEQUENCE_ID       0x1FA
 #define DIM_LAVA_DEBRIS_PARTICLE_EFFECT   0x1F5
@@ -183,7 +187,7 @@ void lavaball1be_update(GameObject* obj) {
                     obj->anim.velocityZ * deltaTime);
             if (obj->anim.velocityY < DIM_LAVA_FALLING_VELOCITY) {
                 if (!(state->statusFlags & DIM_LAVA_FLAG_FALLING)) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_en_cvdrip1c_3dd);
+                    Sfx_PlayFromObject(obj, SFXTRIG_en_cvdrip1c_3dd);
                     state->statusFlags |= DIM_LAVA_FLAG_FALLING;
                 }
             } else {

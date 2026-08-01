@@ -8,6 +8,10 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/obj_link.h"
+#include "main/obj_list.h"
+#include "sys/objects.h"
 
 #define DLL_184_ANIM_EVENT_CREATE_CHILD  1
 #define DLL_184_ANIM_EVENT_REMOVE_CHILD  2
@@ -72,7 +76,7 @@ void dll_184_free(GameObject* obj) {
     }
     (*gObjectTriggerInterface)->freeState((u8*)state);
     gTitleMenuControlInterfaceCopy->vtable->func05((void*)obj, 0xffff, 0, 0, 0);
-    Sfx_StopObjectChannel((int)obj, DLL_184_OBJECT_SOUND_CHANNEL_ALL);
+    Sfx_StopObjectChannel(obj, DLL_184_OBJECT_SOUND_CHANNEL_ALL);
 }
 
 void dll_184_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {

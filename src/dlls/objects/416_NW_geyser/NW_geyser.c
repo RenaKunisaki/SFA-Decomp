@@ -14,6 +14,8 @@
 #include "main/mapEventTypes.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/objhits.h"
 
 #define NW_GEYSER_DISABLE_GAMEBIT    0xA
 #define NW_GEYSER_COMPLETION_GAMEBIT 0x398

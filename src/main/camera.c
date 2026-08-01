@@ -10,6 +10,7 @@
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "track/intersect_api.h"
+#include "main/rcp_dolphin_api.h"
 
 f32 gCameraNearPlane = 2.5f;
 f32 gCameraFarPlane = 10000.0f;

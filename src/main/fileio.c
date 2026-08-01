@@ -3,6 +3,16 @@
 #include "main/mm.h"
 #include "dolphin/dvd.h"
 #include "dolphin/os/OSCache.h"
+#include "main/audio/sfx_object_system_api.h"
+#include "main/gameloop_api.h"
+#include "main/gametext_charset_api.h"
+#include "main/gametext_color_api.h"
+#include "main/gametext_show_api.h"
+#include "main/loaded_file_flags.h"
+#include "main/pad.h"
+#include "main/pi_flush_api.h"
+#include "main/pi_frame_api.h"
+#include "main/textrender_api.h"
 
 // DVDGetDriveStatus() drive-status codes
 #define DVD_STATE_FATAL_ERROR -1

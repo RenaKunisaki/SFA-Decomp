@@ -21,6 +21,10 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_80136a40.h"
+#include "main/objhits.h"
 
 #define BOMB_PLANT_HIT_VOLUME_SLOT 5
 #define BOMB_PLANT_SPARK_PARTICLE  0x7F1
@@ -176,7 +180,7 @@ void BombPlant_explode(GameObject* obj, BombPlantStateConfig* unusedConfig, Bomb
     if (tricky != NULL) {
         trickyImpress(tricky);
     }
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_bombplant_woompf);
+    Sfx_PlayFromObject(obj, SFXTRIG_bombplant_woompf);
     {
         ObjHitsPriorityState* hitState;
 
@@ -244,7 +248,7 @@ void BombPlant_update(GameObject* obj) {
 
     case BOMB_PLANT_STATE_GROWING:
         if ((state->flags & BOMB_PLANT_STATE_FLAG_JUST_ENTERED) != 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_bombplant_grows);
+            Sfx_PlayFromObject(obj, SFXTRIG_bombplant_grows);
             state->flags &= ~BOMB_PLANT_STATE_FLAG_JUST_ENTERED;
             spawnPlacement = (BombPlantPlacement*)obj->anim.placementData;
             obj->anim.alpha = 0xFF;
@@ -305,7 +309,7 @@ void BombPlant_update(GameObject* obj) {
             if (hitType == 0x10) {
                 Obj_StartModelFadeIn(obj, 0x12C);
             } else if ((u32)(hitType - 0xE) <= 1 || hitType == 0x11) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_ladderslide16);
+                Sfx_PlayFromObject(obj, SFXTRIG_mv_ladderslide16);
                 hitPosition.x += playerMapOffsetX;
                 hitPosition.z += playerMapOffsetZ;
                 objDoHitParticleFx(obj, 0.014f, &lightPosition, 1, 0);

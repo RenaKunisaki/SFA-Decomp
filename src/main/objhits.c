@@ -60,6 +60,7 @@
 #include "dolphin/gx/GXTransform.h"
 #include "track/intersect_api.h"
 #include "main/objprint_internal.h"
+#include "main/objprint_render_api.h"
 
 GameObject* gObjHitsActiveHitVolumeObjects[OBJHITS_ACTIVE_HIT_VOLUME_OBJECT_COUNT] = {NULL};
 ObjHitsSweepEntry* gObjHitsSweepEntryPtrs[OBJHITS_SWEEP_ENTRY_CAPACITY];

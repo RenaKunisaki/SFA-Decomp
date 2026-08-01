@@ -5,6 +5,7 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 #include "main/gamebits.h"
+#include "main/vecmath.h"
 
 typedef struct Dll96EffectVertex {
     s16 positionX;

@@ -16,6 +16,7 @@
  */
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/dll_021B.h"
+#include "main/gamebits_api.h"
 
 #define DLL_21B_ENABLE_BIT_A   0x503
 #define DLL_21B_ENABLE_BIT_B   0x504

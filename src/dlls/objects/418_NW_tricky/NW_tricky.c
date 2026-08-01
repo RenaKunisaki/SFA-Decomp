@@ -18,6 +18,9 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/dll/dll_80136a40.h"
+#include "main/objtype.h"
 
 #define NW_TRICKY_HERDING_COMPLETE_GAMEBIT 0xD11
 #define NW_TRICKY_HERD_OBJECT_GROUP        3
@@ -48,7 +51,7 @@ int nwTricky_processAnimEvents(GameObject* unusedObj, int unusedArg, ObjSeqState
     (void)unusedArg;
     (void)unusedAnimUpdate;
 
-    Sfx_StopObjectChannel((u32)getTrickyObject(), NW_TRICKY_SOUND_CHANNEL);
+    Sfx_StopObjectChannel(getTrickyObject(), NW_TRICKY_SOUND_CHANNEL);
     return 0;
 }
 

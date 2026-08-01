@@ -3,6 +3,7 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 
 #define IM_MULTI_SEQ_GROUP                     0xF
 #define IM_MULTI_SEQ_TYPE_ID                   0

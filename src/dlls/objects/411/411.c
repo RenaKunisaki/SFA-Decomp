@@ -24,6 +24,8 @@
 #include "main/shader_api.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/dll/player_api.h"
+#include "main/obj_message.h"
 
 #define DLL19B_TARGET_OBJGROUP 0xE
 

@@ -42,6 +42,10 @@
 #include "main/dll/dll_022C_dll22c.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/render_lactions_api.h"
 
 /*
  * DbStealerwormControl - the per-family control record hung off
@@ -131,9 +135,9 @@ void dll_22C_update(int obj)
         {
             if (object->anim.localPosY < 60.0f + placement->posY)
             {
-                if (Sfx_IsPlayingFromObjectChannel(obj, 8) == 0)
+                if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 8) == 0)
                 {
-                    Sfx_PlayFromObject(obj, SFXTRIG_id_116);
+                    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_id_116);
                     blob->sfxLatch = 1;
                 }
                 object->anim.localPosY += timeDelta;
@@ -141,7 +145,7 @@ void dll_22C_update(int obj)
                 {
                     object->anim.localPosY = 60.0f + placement->posY;
                     blob->mode = DLL22C_MODE_HOLD_SETUP;
-                    Sfx_StopObjectChannel(obj, 8);
+                    Sfx_StopObjectChannel((GameObject*)obj, 8);
                 }
             }
         }
@@ -185,18 +189,18 @@ void dll_22C_update(int obj)
                 if (object->anim.localPosY == 60.0f + placement->posY)
                 {
                     blob->mode = DLL22C_MODE_DESCEND;
-                    if (Sfx_IsPlayingFromObjectChannel(obj, 8) == 0)
+                    if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 8) == 0)
                     {
-                        Sfx_PlayFromObject(obj, SFXTRIG_liftloop);
+                        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_liftloop);
                         blob->sfxLatch = 1;
                     }
                 }
                 else if (object->anim.localPosY == placement->posY - 1228.0f)
                 {
                     blob->mode = DLL22C_MODE_ASCEND;
-                    if (Sfx_IsPlayingFromObjectChannel(obj, 8) == 0)
+                    if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 8) == 0)
                     {
-                        Sfx_PlayFromObject(obj, SFXTRIG_liftloop);
+                        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_liftloop);
                         blob->sfxLatch = 1;
                     }
                 }
@@ -230,14 +234,14 @@ void dll_22C_update(int obj)
             {
                 object->anim.localPosY = placement->posY - heightOffset;
                 blob->mode = DLL22C_MODE_HOLD;
-                Sfx_StopObjectChannel(obj, 8);
+                Sfx_StopObjectChannel((GameObject*)obj, 8);
                 blob->pauseTimer = 0x64;
             }
             Vec_xzDistance(&object->anim.worldPosX, &player->anim.worldPosX);
         }
         else
         {
-            Sfx_StopObjectChannel(obj, 8);
+            Sfx_StopObjectChannel((GameObject*)obj, 8);
             Vec_xzDistance(&object->anim.worldPosX, &player->anim.worldPosX);
             blob->mode = DLL22C_MODE_HOLD;
             blob->pauseTimer = 0x64;
@@ -254,7 +258,7 @@ void dll_22C_update(int obj)
                 object->anim.localPosY = heightOffset + placement->posY;
                 blob->mode = DLL22C_MODE_HOLD;
                 blob->pauseTimer = 0x64;
-                Sfx_StopObjectChannel(obj, 8);
+                Sfx_StopObjectChannel((GameObject*)obj, 8);
             }
             Vec_xzDistance(&object->anim.worldPosX, &player->anim.worldPosX);
         }
@@ -262,7 +266,7 @@ void dll_22C_update(int obj)
         {
             blob->mode = DLL22C_MODE_HOLD;
             blob->pauseTimer = 0x64;
-            Sfx_StopObjectChannel(obj, 8);
+            Sfx_StopObjectChannel((GameObject*)obj, 8);
             Vec_xzDistance(&object->anim.worldPosX, &player->anim.worldPosX);
         }
         break;

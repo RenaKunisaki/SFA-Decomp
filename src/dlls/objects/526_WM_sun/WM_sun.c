@@ -17,6 +17,10 @@
 #include "main/objtexture.h"
 #include "main/render_envfx_api.h"
 #include "main/vecmath.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/lightmap_api.h"
+#include "main/mm.h"
+#include "sys/objects/lifecycle.h"
 
 s16 gWmSunEnvfxTimer;
 s16 lbl_803DDCAE;
@@ -385,7 +389,7 @@ void wmsun_update(GameObject* obj)
                 randomGetRange(0, 0xffff);
                 randomGetRange(0, 0xffff);
                 randomGetRange(0, 0xffff);
-                Sfx_PlayFromObject((int)obj, SFXTRIG_en_icecrk16);
+                Sfx_PlayFromObject(obj, SFXTRIG_en_icecrk16);
             }
             wmsun_updateGlare(obj);
         }

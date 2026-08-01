@@ -18,6 +18,10 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_80136a40.h"
+#include "main/dll/player_api.h"
+#include "main/objtype.h"
 
 STATIC_ASSERT(sizeof(StaffActivatedState) == sizeof(LandedArwingHitReactionState));
 STATIC_ASSERT(offsetof(StaffActivatedState, pad08) == offsetof(LandedArwingHitReactionState, animationStepScale));
@@ -74,11 +78,11 @@ void staffactivated_updateLiftHeight(GameObject* obj, StaffActivatedState* state
         }
         if (state->previousLiftHeight == STAFF_ACTIVATED_LIFT_MOVE_HEIGHT &&
             state->liftHeight < STAFF_ACTIVATED_LIFT_MOVE_HEIGHT) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mammoth_grunt);
+            Sfx_PlayFromObject(obj, SFXTRIG_mammoth_grunt);
         }
         if (state->liftHeight < 0) {
             if (state->previousLiftHeight > 0) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_mammoth_grunt1);
+                Sfx_PlayFromObject(obj, SFXTRIG_mammoth_grunt1);
                 rumbleStrength = state->peakLiftHeight / STAFF_ACTIVATED_LIFT_RUMBLE_DIVISOR;
                 if (rumbleStrength > 0) {
                     doRumble((f32)rumbleStrength);
@@ -95,7 +99,7 @@ void staffactivated_updateLiftHeight(GameObject* obj, StaffActivatedState* state
     previousHeight = state->previousLiftHeight;
     if ((previousHeight < STAFF_ACTIVATED_LIFT_SFX_HEIGHT && state->liftHeight >= STAFF_ACTIVATED_LIFT_SFX_HEIGHT) ||
         (previousHeight >= STAFF_ACTIVATED_LIFT_SFX_HEIGHT && state->liftHeight < STAFF_ACTIVATED_LIFT_SFX_HEIGHT)) {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_mammoth_grunt);
+        Sfx_PlayFromObject(obj, SFXTRIG_mammoth_grunt);
     }
     ObjHits_PollPriorityHitEffectWithCooldown(obj, STAFF_ACTIVATED_HIT_EFFECT_MODE, STAFF_ACTIVATED_HIT_EFFECT_RED,
                                               STAFF_ACTIVATED_HIT_EFFECT_GREEN, STAFF_ACTIVATED_HIT_EFFECT_BLUE,

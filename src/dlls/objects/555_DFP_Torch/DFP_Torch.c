@@ -18,6 +18,9 @@
 #include "main/voxmaps.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/objhits.h"
 
 /* DfpTorchState.mode: torch behaviour selected from placement->mode */
 #define DFPTORCH_MODE_ALWAYS_LIT 0 /* permanently burning, ignited at init */
@@ -147,7 +150,7 @@ void DFP_Torch_update(GameObject* obj)
     Dll69EffectParams prm;
 
     prm = gDfpTorchEffectParams;
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_mushdizzylp12);
+    Sfx_PlayFromObject(obj, SFXTRIG_mushdizzylp12);
     objUpdateOpacity(obj);
     switch (state->mode)
     {
@@ -179,7 +182,7 @@ void DFP_Torch_update(GameObject* obj)
         if (state->lit != 0 && state->flickerTimer <= 0 && state->sfxPending != 0)
         {
             state->sfxPending = 0;
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_cvdrip1c);
+            Sfx_PlayFromObject(obj, SFXTRIG_cvdrip1c);
         }
         if (state->lit != state->prevLit)
         {
@@ -215,7 +218,7 @@ void DFP_Torch_update(GameObject* obj)
             }
             else
             {
-                Sfx_StopObjectChannel((int)obj, 0x40);
+                Sfx_StopObjectChannel(obj, 0x40);
                 (*gModgfxInterface)->detachSource((void*)obj);
                 (*gExpgfxInterface)->freeSource((u32)obj);
                 if (state->gameBit != -1)

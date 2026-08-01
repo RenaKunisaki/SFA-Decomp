@@ -13,6 +13,9 @@
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/dll/player_api.h"
+#include "main/obj_message.h"
+#include "main/objhits.h"
 
 #define DUSTER_MOVE_STEP_SCALE             0.02f
 #define DUSTER_MESSAGE_IN_RANGE            0x7000A

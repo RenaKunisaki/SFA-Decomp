@@ -16,6 +16,8 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/vecmath.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objhits.h"
 
 #define CHUKCHUK_CHILD_OBJ_ICEBALL      1307
 #define CHUKCHUK_ICEBALL_SETUP_SIZE     0x24
@@ -74,7 +76,7 @@ void chukChuk_spawnAimedIceBall(GameObject* obj) {
 void ChukChuk_handleMessage(GameObject* obj, int message) {
     switch ((u8)message) {
     case CHUKCHUK_MESSAGE_PROJECTILE_HIT:
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_rach_bite_26b);
+        Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_bite_26b);
         break;
     }
 }
@@ -169,17 +171,17 @@ void ChukChuk_update(GameObject* obj) {
                     ((u32)relativeAngle & 0xffff) > ((0xffff - state->arcHalfAngle) & 0xffff)) {
                     attackRoll = randomGetRange(0, 99);
                     if (attackRoll < state->attackChance || (state->flags & CHUKCHUK_FLAG_FORCED_ATTACK) != 0) {
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_zyck_lash_268);
+                        Sfx_PlayFromObject(obj, SFXTRIG_baddie_zyck_lash_268);
                         chukChuk_spawnAimedIceBall(obj);
                     } else {
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_zyck_call02);
+                        Sfx_PlayFromObject(obj, SFXTRIG_baddie_zyck_call02);
                     }
                 } else {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_zyck_call02);
+                    Sfx_PlayFromObject(obj, SFXTRIG_baddie_zyck_call02);
                 }
             }
         } else if ((state->flags & CHUKCHUK_FLAG_PRIMED) != 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_zyck_call02);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_zyck_call02);
         }
         state->prevDistance = playerDistance;
         if (ObjHits_GetPriorityHit(obj, &hitResult.hitObject, &hitResult.sphereIndex, &hitResult.hitVolume) ==
@@ -189,10 +191,10 @@ void ChukChuk_update(GameObject* obj) {
                 ObjHits_DisableObject(obj);
                 obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
                 state->flags |= CHUKCHUK_FLAG_DEAD;
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_lummy311_26a);
+                Sfx_PlayFromObject(obj, SFXTRIG_mn_lummy311_26a);
                 mainSetBits(state->gameBit, 1);
                 state->steamTimer = CHUKCHUK_STEAM_DURATION;
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_zyck_lash);
+                Sfx_PlayFromObject(obj, SFXTRIG_baddie_zyck_lash);
             }
         }
         state->flags &= ~(CHUKCHUK_FLAG_PRIMED | CHUKCHUK_FLAG_FORCED_ATTACK);

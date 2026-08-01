@@ -17,6 +17,9 @@
 #include "sys/objects/lifecycle.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/objhits.h"
 
 #define KALDACHOMPSPIT_HIT_VOLUME_SLOT_EXPLOSIVE 31
 #define KALDACHOMPSPIT_HIT_VOLUME_SLOT_DEFAULT   10

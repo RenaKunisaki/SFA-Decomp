@@ -37,6 +37,10 @@
 #include "dlls/object_descriptor.h"
 #include "main/dll/dll_0271_drakorhoverpad_internal.h"
 #include "main/camera_shake_api.h"
+#include "main/obj_path.h"
+#include "main/obj_query.h"
+#include "main/objhits.h"
+#include "string.h"
 
 const f32 gDrakorHoverpadSpeedStep = 2.0f;
 f32 gDrakorHoverpadMtx[16];

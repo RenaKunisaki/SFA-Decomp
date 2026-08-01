@@ -17,6 +17,9 @@
 #include "main/resource.h"
 #include "main/shader_api.h"
 #include "sys/objects.h"
+#include "main/dll/player_staff_api.h"
+#include "main/gamebits_api.h"
+#include "main/objhits.h"
 
 #define TREASURE_CHEST_OBJECT_TYPE_ID 0
 #define TREASURE_CHEST_GAME_BIT_NONE  -1

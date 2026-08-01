@@ -20,6 +20,9 @@
 #include "string.h"
 #include "sys/objects.h"
 #include "main/curve.h"
+#include "main/obj_message.h"
+#include "main/objtype.h"
+#include "sys/objects/lifecycle.h"
 
 #define DLL_CB_OBJGROUP                     3
 #define DLL_CB_FLAG400_PENDING_HIT_REACTION 0x2

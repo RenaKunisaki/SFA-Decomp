@@ -6,6 +6,10 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/textrender_api.h"
 #include "dolphin/pad.h"
+#include "main/audio/music_api.h"
+#include "main/gametext_api.h"
+#include "main/gametext_color_api.h"
+#include "main/mm.h"
 
 #define TITLE_MENU_FLAG_ENABLED          0x01
 #define TITLE_MENU_FLAG_WRAP             0x02

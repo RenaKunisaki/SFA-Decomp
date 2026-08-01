@@ -27,6 +27,7 @@
 #include "main/track_dolphin_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/obj_list.h"
 
 #define INVHIT_OBJECT_TYPE_ID 0
 #define INVHIT_RENDER_SCALE   1.0f

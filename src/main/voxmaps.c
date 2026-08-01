@@ -11,6 +11,9 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/os/OSReport.h"
+#include "main/asset_load.h"
+#include "main/table_file.h"
+#include "string.h"
 
 #define VOXMAP_SLOT_COUNT           6
 #define VOXMAPS_ROUTE_NODE_CAPACITY 200

@@ -1,6 +1,9 @@
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "dolphin/pad.h"
+#include "main/hud_visibility_api.h"
+#include "main/pad.h"
+#include "track/intersect_screen_api.h"
 
 #define PAD_ACCEPT_MASK  (PAD_BUTTON_A | PAD_BUTTON_START)
 

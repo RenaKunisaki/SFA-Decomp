@@ -15,6 +15,10 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/track_dolphin_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
 
 #define MIKABOMB_HIT_VOLUME_SLOT 5
 
@@ -88,7 +92,7 @@ void MikaBomb_update(GameObject* obj) {
         if (alphaFloat - (fadeStep = gMikaBombFadeRate * timeDelta) > gMikaBombZero) {
             obj->anim.alpha = alpha - fadeStep;
         } else {
-            Sfx_StopObjectChannel((int)obj, 0x7f);
+            Sfx_StopObjectChannel(obj, 0x7f);
             obj->anim.alpha = 0;
             Obj_FreeObject(obj);
             return;
@@ -112,7 +116,7 @@ void MikaBomb_update(GameObject* obj) {
                 MikaBombState* impactState = obj->extra;
                 u32 effectId;
                 playerSpawnCountRange = gMikaBombExplosionSpawnCountRange;
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_dsmk2_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_dsmk2_c);
                 effectId = randomGetRange(0, 2);
                 (*impactState->resource)->spawn(obj, effectId, NULL, 2, -1, &playerSpawnCountRange);
                 ObjHitbox_SetSphereRadius(
@@ -130,7 +134,7 @@ void MikaBomb_update(GameObject* obj) {
                 MikaBombState* impactState = obj->extra;
                 u32 effectId;
                 groundSpawnCountRange = gMikaBombExplosionSpawnCountRange;
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_dsmk2_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_dsmk2_c);
                 effectId = randomGetRange(0, 2);
                 (*impactState->resource)->spawn(obj, effectId, NULL, 2, -1, &groundSpawnCountRange);
                 ObjHitbox_SetSphereRadius(

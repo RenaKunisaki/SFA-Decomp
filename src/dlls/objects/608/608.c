@@ -13,6 +13,13 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/lightmap_api.h"
 #include "main/track_dolphin_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/obj_path.h"
+#include "main/shader_api.h"
+#include "sys/objects/lifecycle.h"
 
 s32 gProximityMineLifespanFrames = 40;
 f32 gProximityMineGlowScale = 50.0f;
@@ -36,9 +43,9 @@ void ProximityMine_expire(GameObject* obj)
 
     state = obj->extra;
     Obj_GetPlayerObject();
-    Sfx_StopFromObject((u32)obj, SFXTRIG_id_2e9);
-    Sfx_StopFromObject((u32)obj, SFXTRIG_id_2e8);
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_crthit6);
+    Sfx_StopFromObject(obj, SFXTRIG_id_2e9);
+    Sfx_StopFromObject(obj, SFXTRIG_id_2e8);
+    Sfx_PlayFromObject(obj, SFXTRIG_crthit6);
     zeroVelocity = 0.0f;
     obj->anim.velocityX = zeroVelocity;
     obj->anim.velocityZ = zeroVelocity;
@@ -181,13 +188,13 @@ void ProximityMine_update(GameObject* obj)
                 trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY,
                                      obj->anim.localPosZ, &groundY, 0);
                 obj->anim.localPosY -= groundY;
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_id_2e6);
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_id_2e8);
+                Sfx_PlayFromObject(obj, SFXTRIG_id_2e6);
+                Sfx_PlayFromObject(obj, SFXTRIG_id_2e8);
             }
             else
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_id_2e7);
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_id_2e9);
+                Sfx_PlayFromObject(obj, SFXTRIG_id_2e7);
+                Sfx_PlayFromObject(obj, SFXTRIG_id_2e9);
             }
         }
         if (state->effectHandle == NULL)
@@ -221,7 +228,7 @@ void ProximityMine_update(GameObject* obj)
     {
         if (timerIsActive(&state->resetTimer) != 0)
         {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_id_ef);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_ef);
             if (state->effectHandle == NULL)
             {
                 state->effectHandle = modelLightStruct_createPointLight(obj, 0xff, 0, 0, 0);
@@ -257,7 +264,7 @@ void ProximityMine_update(GameObject* obj)
             break;
         }
         case PROXIMITYMINE_MODE_EXPIRED:
-            Sfx_StopObjectChannel((u32)obj, 0x40);
+            Sfx_StopObjectChannel(obj, 0x40);
             if (timerCountDown(&state->renderTimer) != 0)
             {
                 Obj_FreeObject(obj);
@@ -285,7 +292,7 @@ void ProximityMine_update(GameObject* obj)
             params.rotY = 0;
             params.rotX = obj->anim.rotX;
             vecRotateZXY(&params.rotX, &obj->anim.velocityX);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_id_f0);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_f0);
         }
         case PROXIMITYMINE_MODE_FLIGHT:
             if (timerCountDown(&state->launchTimer) != 0)
@@ -326,7 +333,7 @@ void ProximityMine_update(GameObject* obj)
             {
                 if ((state->effectHandle->enabled != 0) && (state->effectVisible == 0))
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_gal_prophitbird);
+                    Sfx_PlayFromObject(obj, SFXTRIG_gal_prophitbird);
                 }
                 state->effectVisible = state->effectHandle->enabled;
             }

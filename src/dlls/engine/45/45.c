@@ -5,6 +5,7 @@
 #include "main/frame_timing.h"
 #include "main/maketex_random_api.h"
 #include "main/dll/dll_002D_effect20.h"
+#include "main/vecmath.h"
 
 f32 gEffect20SineValue0;
 f32 gEffect20SineValue1;

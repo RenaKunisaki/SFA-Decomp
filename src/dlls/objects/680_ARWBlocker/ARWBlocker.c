@@ -14,6 +14,8 @@
 #include "main/dll/ARW/dll_02A8_arwblocker.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/dll/ARW/dll_029A_arwarwing.h"
+#include "main/objhits.h"
 
 /* placement sequenceMode: which object sequence the blocker fires on approach */
 #define ARWBLOCKER_SEQMODE_DEFAULT 0 /* fires sequence 0; never reports "armed" */

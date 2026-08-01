@@ -11,6 +11,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
+#include "main/audio/sfx_play_api.h"
 
 #define DIM_BARRIER_PHASE_ARMED    0
 #define DIM_BARRIER_PHASE_FADING   1
@@ -68,9 +69,9 @@ void dimbarrier_update(GameObject* obj) {
             if (--state->triggerCountdown <= 0) {
                 state->phase = DIM_BARRIER_PHASE_FADING;
                 state->fadeTimer = DIM_BARRIER_FADE_DURATION;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_wp_dsmk2_c_206);
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_dsmk2_c_206);
             } else {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_wp_dsmk2_c_207);
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_dsmk2_c_207);
             }
         }
         break;

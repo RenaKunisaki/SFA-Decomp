@@ -10,6 +10,10 @@
 #include "main/gamebits_api.h"
 #include "main/objtexture.h"
 #include "main/object_render.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/maketex_sequence_api.h"
+#include "main/objhits.h"
+#include "main/objprint_api.h"
 
 #define PROJECTILE_SWITCH_OBJECT_TYPE_BASE  0x400
 #define PROJECTILE_SWITCH_OBJECT_TYPE_SHIFT 11
@@ -105,9 +109,9 @@ void ProjectileSwitch_hitDetect(GameObject* obj) {
         }
         updatedState = obj->extra;
         if (obj->anim.mapEventSlot == PROJECTILE_SWITCH_SPECIAL_MAP_EVENT_SLOT) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_menuups16k);
+            Sfx_PlayFromObject(obj, SFXTRIG_menuups16k);
         } else {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_63);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_63);
         }
         texture = objFindTexture(obj, 0, 0);
         if (texture != NULL) {
@@ -118,9 +122,9 @@ void ProjectileSwitch_hitDetect(GameObject* obj) {
     } else {
         updatedState = obj->extra;
         if (obj->anim.mapEventSlot == PROJECTILE_SWITCH_SPECIAL_MAP_EVENT_SLOT) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_menuups16k);
+            Sfx_PlayFromObject(obj, SFXTRIG_menuups16k);
         } else {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_mpwru1_62);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_mpwru1_62);
         }
         texture = objFindTexture(obj, 0, 0);
         if (texture != NULL) {

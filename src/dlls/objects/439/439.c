@@ -19,6 +19,9 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/obj_path.h"
+#include "main/objhits.h"
 
 #define SC_MUSIC_TREE_AMBIENT_EFFECT_PHASE_MIN      0x708
 #define SC_MUSIC_TREE_AMBIENT_EFFECT_PHASE_MAX      0x1770
@@ -110,18 +113,18 @@ void sc_musictree_handleHitObject(GameObject* obj, ScMusicTreeState* state, int 
 
     switch (ident) {
     case SC_MUSIC_TREE_MAP_TOTEM_1:
-        Sfx_PlayFromObject((int)obj, SFXTRIG_sdrstp_c);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_sdrstp_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_gland2_c);
         mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_1, 1);
         break;
     case SC_MUSIC_TREE_MAP_TOTEM_2:
-        Sfx_PlayFromObject((int)obj, SFXTRIG_en_sdrstp_c);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_sdrstp_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_gland2_c);
         mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_2, 1);
         break;
     case SC_MUSIC_TREE_MAP_TOTEM_3:
-        Sfx_PlayFromObject((int)obj, SFXTRIG_en_sdrstp_c_12d);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_sdrstp_c_12d);
+        Sfx_PlayFromObject(obj, SFXTRIG_gland2_c);
         mainSetBits(SC_LEVEL_CONTROL_GAMEBIT_TOTEM_COMBO_3, 1);
         break;
     case SC_MUSIC_TREE_MAP_GATE_1:
@@ -240,8 +243,8 @@ void sc_musictree_update(GameObject* obj) {
                 Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
                 sc_musictree_handleHitObject(obj, state, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK);
             } else {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_swdtest222);
-                Sfx_PlayFromObject((int)obj, SFXTRIG_gland2_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_swdtest222);
+                Sfx_PlayFromObject(obj, SFXTRIG_gland2_c);
             }
             {
                 f32 zero = 0.0f;

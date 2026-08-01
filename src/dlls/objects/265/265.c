@@ -21,6 +21,8 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/frustum.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objhits.h"
 
 #define BREAKABLE_CARRYABLE_HIT_VOLUME_SLOT 5
 #define BREAKABLE_CARRYABLE_HITBOX_RADIUS   0x28
@@ -74,7 +76,7 @@ void breakableCarryable_update(GameObject* obj) {
         (*gCarryableInterface)->updateHeld(obj, state);
         if (ObjHits_GetPriorityHit(obj, NULL, NULL, &hitVolumeIndex) != 0) {
             (*gCarryableInterface)->stopCarrying(obj, state);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_crtsmsh6);
+            Sfx_PlayFromObject(obj, SFXTRIG_crtsmsh6);
             ObjHitbox_SetSphereRadius((ObjAnimComponent*)obj, BREAKABLE_CARRYABLE_HITBOX_RADIUS);
             ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, BREAKABLE_CARRYABLE_HIT_VOLUME_SLOT,
                                      BREAKABLE_CARRYABLE_HITBOX_TYPE, 0);

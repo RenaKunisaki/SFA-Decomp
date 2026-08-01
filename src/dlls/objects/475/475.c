@@ -11,6 +11,8 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 enum {
     DLL1DB_MOTION_STATE_TOP = 1,
@@ -71,26 +73,26 @@ void dll_1DB_update(GameObject* obj) {
 
     switch (state->motionState) {
     case DLL1DB_MOTION_STATE_TOP:
-        Sfx_StopObjectChannel((int)obj, 8);
+        Sfx_StopObjectChannel(obj, 8);
         if (playerContacted == 0) {
             state->contactLost = 1;
         } else if (state->contactLost != 0 && state->boarded != 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_wickpickup16);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_wickpickup16);
             state->motionState = DLL1DB_MOTION_STATE_FALLING;
             state->verticalVelocity = 0.0f;
         }
 
         if (mainGetBit(placement->triggerGameBit) != 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_wickpickup16);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_wickpickup16);
             state->motionState = DLL1DB_MOTION_STATE_FALLING;
             state->verticalVelocity = 0.0f;
         }
         break;
     case DLL1DB_MOTION_STATE_BOTTOM:
-        Sfx_StopObjectChannel((int)obj, 8);
+        Sfx_StopObjectChannel(obj, 8);
         if (state->boarded != 0) {
             if (playerContacted == 0) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_wickpickup16);
+                Sfx_PlayFromObject(obj, SFXTRIG_mv_wickpickup16);
                 state->motionState = DLL1DB_MOTION_STATE_RISING;
                 state->verticalVelocity = 0.0f;
                 state->boarded = 0;
@@ -98,7 +100,7 @@ void dll_1DB_update(GameObject* obj) {
             }
         } else {
             if (mainGetBit(placement->triggerGameBit) == 0) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_wickpickup16);
+                Sfx_PlayFromObject(obj, SFXTRIG_mv_wickpickup16);
                 state->motionState = DLL1DB_MOTION_STATE_RISING;
                 state->verticalVelocity = 0.0f;
                 state->boarded = 0;
@@ -119,7 +121,7 @@ void dll_1DB_update(GameObject* obj) {
 
         obj->anim.localPosY = state->verticalVelocity * timeDelta + obj->anim.localPosY;
         if (obj->anim.localPosY > placement->base.posY) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_lflsh2_b);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_lflsh2_b);
             obj->anim.localPosY = placement->base.posY;
             state->motionState = DLL1DB_MOTION_STATE_TOP;
             if (playerContacted != 0) {
@@ -140,7 +142,7 @@ void dll_1DB_update(GameObject* obj) {
 
         obj->anim.localPosY = state->verticalVelocity * timeDelta + obj->anim.localPosY;
         if (obj->anim.localPosY < placement->base.posY - 235.5f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_lflsh2_b);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_lflsh2_b);
             obj->anim.localPosY = placement->base.posY - 235.5f;
             state->motionState = DLL1DB_MOTION_STATE_BOTTOM;
             mainSetBits(placement->boardedGameBit, 1);

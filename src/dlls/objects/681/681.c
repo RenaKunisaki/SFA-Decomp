@@ -19,6 +19,9 @@
 #include "main/gamebits.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/LGT/dll_02A9_lgtpointlight.h"
+#include "main/objtype.h"
+#include "main/sky.h"
+#include "sys/objects.h"
 
 const f32 gPointLightInitialDirection[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 

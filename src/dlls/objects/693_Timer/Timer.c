@@ -18,6 +18,11 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/game_timer_control_api.h"
+#include "main/gamebits_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/objtype.h"
 
 f32 gTimerGlowScale = 7.0f;
 f32 gTimerTextureScrollScale = 5.0f;
@@ -130,7 +135,7 @@ void timer_update(GameObject* obj)
                 case TIMER_MAP_NO_FOOTSTEP:
                     break;
                 default:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_mpick1_b);
+                    Sfx_PlayFromObject(obj, SFXTRIG_mpick1_b);
                     break;
                 }
             }
@@ -215,7 +220,7 @@ void timer_update(GameObject* obj)
         {
             if (scroll == 1 && scroll != flags->flag20)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_timerbeep);
+                Sfx_PlayFromObject(obj, SFXTRIG_barrel_timerbeep);
             }
             modelLightStruct_setEnabled(state->lightSlot, (u8)scroll, 0.0f);
         }

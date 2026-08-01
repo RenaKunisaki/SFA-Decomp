@@ -25,6 +25,9 @@
 #include "main/objfx.h"
 #include "main/dll/dll_02B1_cmbsrc.h"
 #include "main/object_render.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/objhits.h"
 
 u8 gCmbsrcColorCycleIndexTable[8] = {5, 6, 4, 0, 0, 0, 0, 0};
 
@@ -344,7 +347,7 @@ void cmbsrc_free(int obj)
     {
         ModelLightStruct_free(state->light);
     }
-    Sfx_StopObjectChannel((int)cmbsrc, CMBSRC_LOOP_SOUND_CHANNEL);
+    Sfx_StopObjectChannel(cmbsrc, CMBSRC_LOOP_SOUND_CHANNEL);
 }
 
 void cmbsrc_render(GameObject* cmbsrc, int p2, int p3, int p4, int p5, s8 visible)
@@ -424,7 +427,7 @@ void cmbsrc_update(GameObject* cmbsrc)
             }
             if (setup->flags & CMBSRC_MAP_LOOP_SOUND)
             {
-                Sfx_StopObjectChannel((u32)cmbsrc, CMBSRC_LOOP_SOUND_CHANNEL);
+                Sfx_StopObjectChannel(cmbsrc, CMBSRC_LOOP_SOUND_CHANNEL);
             }
             ObjHits_DisableObject((GameObject*)cmbsrc);
             if (setup->gameBit != -1)

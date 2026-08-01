@@ -10,6 +10,8 @@
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/obj_path.h"
+#include "main/objhits.h"
 
 #define ICEBLAST_OBJECT_TYPE_ID 0
 #define ICEBLAST_RENDER_SCALE   1.0f

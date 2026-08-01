@@ -4,6 +4,8 @@
 
 #include "main/object_render.h"
 #include "sys/objects.h"
+#include "main/objtype.h"
+#include "main/vecmath.h"
 
 #define ATTRACTOR_OBJECT_GROUP 0x1E
 

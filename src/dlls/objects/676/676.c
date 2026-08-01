@@ -17,6 +17,8 @@
 #include "dlls/object_descriptor.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
+#include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
 /* random start-rotation range and per-axis spin-rate range */
 #define ROT_RANGE_MAX 0xffff

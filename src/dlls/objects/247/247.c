@@ -20,6 +20,9 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/audio/sfx_position_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gamebits_api.h"
+#include "main/objhits.h"
 
 #define DLLF7_OBJECT_TYPE_ID 2
 
@@ -163,7 +166,7 @@ void dll_F7_update(GameObject* obj) {
         }
         state->broken = 1;
         state->unk08 = 0;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dsmk2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_dsmk2_c);
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
         if ((int)placement->completeGameBit != -1) {
             mainSetBits((int)placement->completeGameBit, 1);

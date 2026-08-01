@@ -17,6 +17,9 @@
 #include "main/objtexture.h"
 #include "sys/objects.h"
 #include "main/vecmath.h"
+#include "main/asset_load.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objhits.h"
 
 #define DLL1D6_ACTION_SLOT_COUNT  4
 #define DLL1D6_ACTION_DATA_SIZE   40
@@ -83,7 +86,7 @@ void dll_1D6_update(GameObject* obj) {
         state->downTimer -= framesThisStep;
         state->dizzyTimer = state->dizzyTimer - framesThisStep;
         if (state->dizzyTimer <= 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_trpopn_c_9f);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_trpopn_c_9f);
         }
         if (state->downTimer <= 0) {
             model = dll1d6_getActiveModel(obj);
@@ -93,7 +96,7 @@ void dll_1D6_update(GameObject* obj) {
                 state->upTimer = 15;
             }
             state->flags &= ~DLL1D6_STATE_FLAG_DOWN_PHASE;
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_1f6);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_1f6);
         }
     } else {
         ObjModelBlendChannel* blendChannel;
@@ -113,7 +116,7 @@ void dll_1D6_update(GameObject* obj) {
                 state->downTimer = 15;
             }
             state->flags |= DLL1D6_STATE_FLAG_DOWN_PHASE;
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_1f7);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_1f7);
             state->dizzyTimer = 20;
         }
     }

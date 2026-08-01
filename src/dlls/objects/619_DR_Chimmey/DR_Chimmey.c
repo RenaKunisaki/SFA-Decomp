@@ -11,6 +11,7 @@
 #include "main/object_render.h"
 #include "main/dll/DR/dll_026B_drchimmey.h"
 #include "main/dll/dll_00C4_tricky.h"
+#include "main/objprint_render_api.h"
 
 #define DRCHIMMEY_INITIAL_OFFERING_COUNT 3
 #define DRCHIMMEY_REPEAT_OFFERING_COUNT  1

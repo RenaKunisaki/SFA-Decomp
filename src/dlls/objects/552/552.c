@@ -1,6 +1,7 @@
 /* DLL 0x0228 */
 #include "main/dll/CF/laser.h"
 #include "main/gamebits.h"
+#include "main/objprint_render_api.h"
 
 int VFP_SpellPlace_getExtraSize(void)
 {

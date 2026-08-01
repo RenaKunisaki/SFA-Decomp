@@ -15,6 +15,9 @@
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/savegame_object_api.h"
+#include "main/objhits.h"
 
 int dll_1DA_getExtraSize(void) {
     return sizeof(Dll1DAState);
@@ -46,7 +49,7 @@ void dll_1DA_hitDetect(GameObject* obj) {
         (void)Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
         obj->anim.velocityX = hitObject->anim.velocityX * (scale = 0.5f);
         obj->anim.velocityZ = hitObject->anim.velocityZ * scale;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_en_birdymornin11_1f9);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_birdymornin11_1f9);
     }
 }
 

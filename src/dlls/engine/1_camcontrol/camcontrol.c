@@ -39,6 +39,12 @@
 #include "sys/objects/lifecycle.h"
 #include "track/intersect_api.h"
 #include "track/intersect_depth_state_api.h"
+#include "dolphin/gx/GXCull.h"
+#include "dolphin/gx/GXPixel.h"
+#include "dolphin/gx/GXTev.h"
+#include "main/asset_load.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_0000_gameui_api.h"
 
 struct CamcontrolTriggeredAction {
     s8 actionKind;

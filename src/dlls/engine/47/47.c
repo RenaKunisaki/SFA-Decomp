@@ -5,6 +5,12 @@
 #include "main/frame_timing.h"
 #include "main/track_dolphin_api.h"
 #include "dolphin/pad.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/player_api.h"
+#include "main/dll/savegame_object_api.h"
+#include "main/obj_message.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
 
 #define CARRYABLE_MSG_PLAYER_GRAB 0x100008
 

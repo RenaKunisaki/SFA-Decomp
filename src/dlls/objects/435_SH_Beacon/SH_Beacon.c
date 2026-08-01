@@ -21,6 +21,10 @@
 #include "main/objseq.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/objhits.h"
 
 /* Active EN OBJINDEX maps runtime object ID 0x55 to SH_BeaconTw. */
 #define SH_BEACON_TWINKLE_OBJECT_ID  0x55

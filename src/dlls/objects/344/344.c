@@ -32,6 +32,9 @@
 #include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_80136a40.h"
+#include "main/dll/savegame_object_api.h"
 
 #define GUNPOWDER_BARREL_HIT_VOLUME_SLOT_BLAST     5
 #define GUNPOWDER_BARREL_HIT_VOLUME_SLOT_BODY      0xE
@@ -131,7 +134,7 @@ void gunpowderBarrel_launchAtTarget(GameObject* obj, u8 usePlayerStrength) {
     transform.rotX = state->launchYaw;
     vecRotateZXY(&transform.rotX, &state->throwVelocityX);
     state->motionFlags = state->motionFlags | GUNPOWDER_BARREL_MOTION_FLAG_SLEEPING;
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_barrel_throw_d3);
+    Sfx_PlayFromObject(obj, SFXTRIG_barrel_throw_d3);
     state->motionFlags = state->motionFlags | GUNPOWDER_BARREL_MOTION_FLAG_IN_FLIGHT;
     if (state->configFlags.returnHome != 0) {
         placement = (GunpowderBarrelPlacement*)obj->anim.placement;
@@ -242,7 +245,7 @@ void gunpowderBarrel_homeOnTarget(GameObject* obj, s16 rotYModeArg, s16 rotZMode
         approachRate = zero;
     }
     if (approachRate >= 1.0f) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_barrel_putdown);
+        Sfx_PlayFromObject(obj, SFXTRIG_barrel_putdown);
         approachRate = 1.0f;
         obj->anim.velocityY = targetDeltaY;
         target->anim.localPosX += 20.0f;
@@ -341,7 +344,7 @@ void gunpowderBarrel_triggerExplosion(GameObject* obj) {
         ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, 0x14, -5, 0x14);
         ObjHits_EnableObject(obj);
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, GUNPOWDER_BARREL_HIT_VOLUME_SLOT_BLAST, 4, 0);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_en_barrelblow11_d1);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_barrelblow11_d1);
         obj->anim.localPosY += 10.0f;
         spawnExplosion(obj, 0.0f, 1, 1, 0, 0, 0, 1, 0);
         if (state->heldByCarryInterface != 0) {
@@ -436,7 +439,7 @@ void gunpowderBarrel_updatePhysics(GameObject* obj) {
             } else {
                 if (!state->heldFlags.wasOnGround) {
                     if (state->heldFlags.landed) {
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_barrel_putdown);
+                        Sfx_PlayFromObject(obj, SFXTRIG_barrel_putdown);
                     } else {
                         state->heldFlags.landed = 1;
                     }
@@ -619,7 +622,7 @@ void gunpowderBarrel_hitDetect(int obj) {
 
             if (state->impactSoundCooldown > 60.0f) {
                 if (PSVECMag(&state->throwVelocity) > gGunpowderBarrelImpactSoundSpeedThreshold) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_statue_waterfall);
+                    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_statue_waterfall);
                 }
                 state->impactSoundCooldown = 0.0f;
             }

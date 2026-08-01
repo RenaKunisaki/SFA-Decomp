@@ -29,6 +29,9 @@
 #include "main/audio/sfx_stop_object_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/vecmath.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
+#include "sys/objects/lifecycle.h"
 
 f32 lbl_803DC2B0 = 0.9f;
 f32 lbl_803DC2B4 = 0.1f;
