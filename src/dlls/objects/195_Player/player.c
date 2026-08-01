@@ -4955,11 +4955,12 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
     {
         *(int*)&obj->anim.weaponDaTable = (inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0) + 0x60;
         if (obj->anim.currentMove !=
-            gPlayerMoveSlotTable[*(s16*)((inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0) + 0x2)])
+            gPlayerMoveSlotTable[((PlayerMoveSlot*)inner->moveSlots + (u32)inner->moveSlotIndex)->moveTableIndex])
         {
             ObjAnim_SetCurrentMove(
-                (int)obj, gPlayerMoveSlotTable[*(s16*)((inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0) + 0x2)],
-                *(f32*)((inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0) + 0x68), 0);
+                (int)obj,
+                gPlayerMoveSlotTable[((PlayerMoveSlot*)inner->moveSlots + (u32)inner->moveSlotIndex)->moveTableIndex],
+                ((PlayerMoveSlot*)inner->moveSlots + (u32)inner->moveSlotIndex)->animSpeed, 0);
             ObjAnim_SetCurrentEventStepFrames(&obj->anim, 2);
         }
         ((PlayerState*)state)->baddie.moveChainFlags = ((PlayerState*)state)->baddie.moveChainFlags & ~0xef;
@@ -5058,9 +5059,9 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
         for (i = 0; i != 3; i++)
         {
             if (obj->anim.currentMoveProgress >=
-                    *(f32*)((inner->moveSlots + ((u32)inner->moveSlotIndex * 0xb0 + i * 4)) + 0x30) &&
+                    ((PlayerMoveSlot*)inner->moveSlots + (u32)inner->moveSlotIndex)->hitWindowStart[i] &&
                 obj->anim.currentMoveProgress <=
-                    *(f32*)((inner->moveSlots + ((u32)inner->moveSlotIndex * 0xb0 + i * 4)) + 0x3c))
+                    ((PlayerMoveSlot*)inner->moveSlots + (u32)inner->moveSlotIndex)->hitWindowEnd[i])
             {
                 if ((s8)Player_GetObjHitsState(obj)->suppressOutgoingHits == 0)
                 {
@@ -15850,14 +15851,13 @@ void playerUpdateMotionState(GameObject* obj, int inner, int state)
         {
             f32 frac = (((PlayerState*)state)->baddie.animSpeedA - *(f32*)(((PlayerState*)inner)->moveParams + 0x10)) /
                        (((PlayerState*)inner)->maxSpeed - *(f32*)(((PlayerState*)inner)->moveParams + 0x10));
-            f32 v430 = ((PlayerState*)inner)->yawSmoothRate;
             ((PlayerState*)inner)->yawSmoothRate =
-                v430 * ((((PlayerState*)inner)->yawSmoothScale - 1.0f) *
+                ((PlayerState*)inner)->yawSmoothRate * ((((PlayerState*)inner)->yawSmoothScale - 1.0f) *
                             ((frac < 0.0f) ? 0.0f : ((frac > 1.0f) ? 1.0f : frac)) +
                         1.0f);
         }
     }
-    if (*(void**)((char*)inner + 0x464) != NULL)
+    if ((void*)((PlayerState*)inner)->leanCurve != NULL)
     {
         int n = ((PlayerState*)inner)->targetYawRateSigned;
         ((PlayerState*)inner)->leanCurveScale =
