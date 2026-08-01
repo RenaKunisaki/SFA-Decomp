@@ -385,36 +385,24 @@ transposed, the knob is the cast lever above, not the source text.
 
 ## The data axis: `matched_data` measures symbol PAIRING, not pool contents
 
-**Before chasing a data shortfall, check whether `missing bytes == the unit's `.sdata2` size`.**
-If it does, the loss is that our pool symbols are anonymous (`@262`, `@263`…) while retail's are
-named (`lbl_803DF058`, `gSkySecondsPerDay`…). objdiff pairs data symbols **by name**, so an
-unpaired pool scores **zero regardless of what is in it**.
+**The axis is CLOSED and fully documented in `docs/data_axis.md` — read that before spending a
+build on a data score.** The short form:
 
-**Proven the only way that counts.** `engine/5` had three genuinely missing `.sdata2` constants
-(`0.55f`, `10800.0f`, `86400.0f`). Replacing the stand-ins with literals made the pool contents
-**exactly match** — 44 slots / 41 distinct on both sides, nothing absent in either direction, 41
-of 44 slots agreeing in place. **`matched_data` did not move: 600/776 before, 600/776 after.**
-Its `.sdata2` is 176 B in both builds and its missing data is exactly 176 B.
-
-**It generalises.** Of 25 non-`auto_` data-losing units, **13 have `missing == .sdata2` size
-exactly**, every one with an overwhelmingly anonymous pool — `intersect_render` 236/236 (13
-named / 40 anon), `engine/5` 176/176 (0/41), `DIMSnowHorn` 144/144 (2/33), `BossDrakor` 120/120
-(0/27), `DR_LaserCan` 100/100, `engine/19` 96/96, `CFGuardian` 88/88, `SH_thorntai` 80/80,
-`DFropenode` 76/76, `engine/69` and `DIM_BossTon` 64/64, `engine/24` and `sincosf` 32/32.
-
-**So this gap is closed on principle, not exhaustion.** Making those pairs would require our
-source to *define named `.sdata2` constants*, which is the **banned pool-reconstruction
-construct** — the one CLAUDE.md names as the mistake that keeps getting re-introduced. Do not.
-
-**The distinct-values screen is still worth running — it just answers a different question.**
-Compare distinct constant values in `.sdata2` on both sides: equal distinct counts with retail
-merely holding more copies is a **merged-TU artifact** (leave it; `objects/202` is 421→127 slots
-at 119 distinct both sides); ours genuinely missing distinct values is a **content** defect,
-which is real source recovery even when it is not costed. Run the checks in the order
-**missing distinct values → duplicate inflation → size → order**: a merged-TU is *always*
-smaller on our side, so size alone cannot distinguish the two, and checking size first
-misclassifies it. Trust `.sdata2` verdicts above `.data`/`.sdata` ones — those carry relocation
-targets, so a "missing value" there may be an address word rather than a constant.
+- **First screen: is `missing bytes == a whole section's size`?** If yes it is the pairing
+  artifact and nothing else will change the verdict. objdiff pairs data symbols by name; our
+  pool constants are anonymous (`@262`, `@263`…) while retail's are named (`lbl_803DF058`…).
+- **The blindness is SECTION-granular** — a section holding *any* unpairable anonymous symbol
+  scores zero as a unit, however many of its named symbols are byte-perfect. Proof:
+  `intersect_render` `.rodata` (0 anonymous) 216/216 vs `.sdata2` (40 anonymous) 0/236, with
+  51 of those bytes byte-identical *and* name-identical on both sides.
+- **Two refuted gates, do not re-try:** naming (measured null — renaming to matching names moved
+  nothing) and binding (the splitter emits every retail data symbol global, statics included, so
+  retail-side linkage carries zero information; de-`static`-ing chases a tool artifact).
+- **Closing the gap would require defining named `.sdata2` constants** — the banned
+  pool-reconstruction construct CLAUDE.md names as the mistake that keeps recurring. Do not.
+- **The distinct-values screen still answers a different, useful question.** Run its checks in the
+  order **missing distinct values → duplicate inflation → size → order**: a merged TU is always
+  smaller on our side, so checking size first misclassifies it.
 
 ## See also
 
@@ -495,6 +483,7 @@ Of those, `zlbDecompress` (stale-claim) is 534 of ~674 bytes, and the next three
 across ~18 functions at 2-5 bytes each — below the effort line.** The table lives in the
 audit commit body if anyone wants the tail.
 
+- `docs/data_axis.md` — the data axis, closed: the section-granular pairing law, two refuted gates, the vein taxonomy and the screen order.
 - `docs/band_width_worklist.md` — where a structural fix can stick (`structB` vs `regB`).
 - `docs/rename_safety.md` — the rename gate and the stale-object race.
 - `docs/per_tu_flag_evidence.md` — per-TU flag measurements, for whoever adjudicates them.
