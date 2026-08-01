@@ -171,7 +171,7 @@ typedef struct BaddieState {
     u8 inputSector; /* quadrant of the stick heading relative to the actor's facing: 0 while the stick is inside the deadzone, else 1..4 from (4 - ((diff - 0x6000) / 0x4000)) in dll_000F player_steerFromInput; player.c switches the approach/turn move on it and copies it into PlayerState.moveChainIndex */
     s8 movementFlags; /* root-motion / velocity handling flags for the shared player controller */
     s8 stateTag; /* per-tick state/mode index (written each tick; compared ==1/==3 across the baddie cluster + player) */
-    u8 unk34E;
+    s8 unk34E;
     s8 lastHitPriority;
     u8 unk350[4];
     s8 hitPoints; /* remaining hit points; decremented on hit, < 1 = dead */
@@ -253,7 +253,7 @@ typedef struct GroundBaddieState {
     u8 pad3D4[0x3DC - 0x3D4];
     void *path; /* rom-curve/path record */
     void *savedPendingParentObj; /* obj+0xC0 swap slot around the player-interface update */
-    u8 unk3E4[4];
+    f32 pathRadius;
     f32 glowAlpha; /* 0x3e8: alpha of the red glow tint RGBA(200,0,0,glowAlpha), passed to objSetGlowColor + objParticleFn alpha arg in baddie render */
     f32 glowRate; /* 0x3ec: per-frame delta added to glowAlpha; negated when the alpha ramp reaches its ceiling (ktrex) */
     s16 triggerId; /* config-sourced id (loaded from config+0x22) handed to BaddieControlInterface.spawnChild when a move/landing event fires */
@@ -276,7 +276,9 @@ typedef struct GroundBaddieState {
     u8 configFlags; /* bits 1/2/0x10 */
     u8 subMode; /* sub-state-machine index 0/1/2 (switch/==-tested; &subMode handed to BaddieControlInterface.processMessages as the route-phase out-param) */
     u8 aggression; /* percent-ish; randomGetRange(0, x), > 50 compares */
-    u8 unk407[0x40C - 0x407];
+    u8 unk407[0x40A - 0x407];
+    s8 lastHitSphereIndex;
+    u8 unk40B;
     void *control; /* per-family control/extra record (engine-allocated; treasurechest casts its slot to LandedArwingState*) */
 } GroundBaddieState;
 
@@ -284,7 +286,9 @@ STATIC_ASSERT(sizeof(GroundBaddieState) == 0x410);
 STATIC_ASSERT(offsetof(GroundBaddieState, routeNav) == 0x35C);
 STATIC_ASSERT(offsetof(GroundBaddieState, routeState) == 0x384);
 STATIC_ASSERT(offsetof(GroundBaddieState, eyeAnimState) == 0x3AC);
+STATIC_ASSERT(offsetof(GroundBaddieState, pathRadius) == 0x3E4);
 STATIC_ASSERT(offsetof(GroundBaddieState, targetState) == 0x402);
+STATIC_ASSERT(offsetof(GroundBaddieState, lastHitSphereIndex) == 0x40A);
 STATIC_ASSERT(offsetof(GroundBaddieState, control) == 0x40C);
 
 #endif /* MAIN_DLL_BADDIE_STATE_H_ */
