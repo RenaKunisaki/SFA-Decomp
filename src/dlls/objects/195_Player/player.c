@@ -11671,10 +11671,10 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
                     wallHit = 1;
                 }
             }
-            pl += 4;
+            i++;
             dp++;
             cp += 2;
-            i++;
+            pl += 4;
         } while (i < 2);
         if (dists[0] < dists[1])
         {

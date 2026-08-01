@@ -2157,8 +2157,9 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
     activeCountWalk = poolActiveCounts;
     slotTypeVal = slotType;
     for (batchGroup = 0; batchGroup < EXPGFX_POOL_SEARCH_BATCH_COUNT;
-         sourceIdWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE, poolSlotTypeIds++,
-             activeCountWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE, searchIndex++, batchGroup++)
+         sourceIdWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE,
+             activeCountWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE, poolSlotTypeIds++,
+             searchIndex++, batchGroup++)
     {
         if ((sourceId == sourceIdWalk[0]) && (slotTypeVal == *poolSlotTypeIds) &&
             (activeCountWalk[0] < EXPGFX_SLOTS_PER_POOL))

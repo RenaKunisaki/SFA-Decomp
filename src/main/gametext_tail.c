@@ -619,8 +619,8 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
             boundary++;
             lineIdx++;
         }
-        charPos++;
         src++;
+        charPos++;
     }
     *dst = 0;
     return buffer;

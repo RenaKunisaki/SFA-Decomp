@@ -1588,8 +1588,8 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
                 dstc[1] = sd[0] - bias;
                 dstc[2] = sd[1] - bias;
                 dstc[3] = sd[2] - bias;
-                sd += 3;
                 dstc += 0x10;
+                sd += 3;
             }
         }
     }
@@ -1632,8 +1632,8 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
                 dstv[0xd] = 0xff;
                 dstv[0xe] = 0xff;
                 dstv[0xf] = 0xff;
-                dstv += 0x10;
                 sb += 5;
+                dstv += 0x10;
             }
         }
     }

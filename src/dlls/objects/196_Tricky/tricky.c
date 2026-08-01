@@ -1499,8 +1499,8 @@ int trickyFindReachableRouteIndex(u8* state, void** routes, u8* routeFlags, int 
                 break;
             }
             wp++;
-            sp += 0x30;
             stp++;
+            sp += 0x30;
         }
 
         switch (failedCount)
@@ -2183,7 +2183,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                         {
                             int pref;
                             
-                            for (i = 0, pref = (int)state; i < 4; pref += 2, i++)
+                            for (i = 0, pref = (int)state; i < 4; i++, pref += 2)
                             {
                                 if (*(s16*)(pref + 152) == trickyPatch)
                                 {
@@ -2211,7 +2211,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                     {
                         int pref;
                         
-                        for (i = 0, pref = (int)state; i < 4; pref += 2, i++)
+                        for (i = 0, pref = (int)state; i < 4; i++, pref += 2)
                         {
                             if (*(s16*)(pref + 152) == tp)
                             {
@@ -2293,7 +2293,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                         {
                             int pref;
                             
-                            for (i = 0, pref = (int)state; i < 4; pref += 2, i++)
+                            for (i = 0, pref = (int)state; i < 4; i++, pref += 2)
                             {
                                 if (*(s16*)(pref + 152) == targetWg)
                                 {
@@ -2317,7 +2317,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                             {
                                 int pref;
                                 
-                                for (i = 0, pref = (int)state; i < 4; pref += 2, i++)
+                                for (i = 0, pref = (int)state; i < 4; i++, pref += 2)
                                 {
                                     if (*(s16*)(pref + 152) == p)
                                     {

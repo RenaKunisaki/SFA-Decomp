@@ -557,9 +557,9 @@ void waterfx_render(int obj, int renderParam)
         {
             setupReflectionDistortTev((int)gWaterfxWakeTexture);
         }
-        for (j = 0, poolOffset = 0, descriptorOffset = 0, vertexOffset = 0;
+        for (poolOffset = 0, j = 0, descriptorOffset = 0, vertexOffset = 0;
              j < WATERFX_POOL_SIZE;
-             poolOffset += 0x1c, descriptorOffset += 0x20, vertexOffset += 0x40, j++)
+             j++, descriptorOffset += 0x20, poolOffset += 0x1c, vertexOffset += 0x40)
         {
             g = (WaterEntry*)(gWaterfxWakePool + poolOffset);
             if (g->active != 0 && g->f18 == 0)
