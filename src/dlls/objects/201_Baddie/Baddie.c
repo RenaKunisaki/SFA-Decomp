@@ -140,7 +140,7 @@ STATIC_ASSERT(sizeof(struct VisBits16) == 0x10);
 const struct VisBits16 gTrickyVisibilityBitsInit = {{0x10000, 0x20000, 0x40000, 0x80000}};
 const StaffCollisionColorArgs gTrickyFrozenFxColors = {0x08, 0xFF, 0xFF, 0x78};
 
-int gTrickyNearestObject;
+GameObject* gTrickyNearestObject;
 StaffCollisionInterface** gBaddieStaffCollisionInterface;
 
 /* object groups: the enemy's own group / secondary group left on a message */
@@ -796,19 +796,19 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
             (obj)->anim.worldPosX = savedX;
             (obj)->anim.worldPosY = savedY;
             (obj)->anim.worldPosZ = savedZ;
-            if ((void*)gTrickyNearestObject != NULL)
+            if (gTrickyNearestObject != NULL)
             {
                 v = (obj)->anim.localPosX;
-                ((GameObject*)gTrickyNearestObject)->anim.worldPosX = v;
-                ((GameObject*)gTrickyNearestObject)->anim.localPosX = v;
+                gTrickyNearestObject->anim.worldPosX = v;
+                gTrickyNearestObject->anim.localPosX = v;
                 v = 15.0f + (obj)->anim.localPosY;
-                ((GameObject*)gTrickyNearestObject)->anim.worldPosY = v;
-                ((GameObject*)gTrickyNearestObject)->anim.localPosY = v;
+                gTrickyNearestObject->anim.worldPosY = v;
+                gTrickyNearestObject->anim.localPosY = v;
                 v = (obj)->anim.localPosZ;
-                ((GameObject*)gTrickyNearestObject)->anim.worldPosZ = v;
-                ((GameObject*)gTrickyNearestObject)->anim.localPosZ = v;
+                gTrickyNearestObject->anim.worldPosZ = v;
+                gTrickyNearestObject->anim.localPosZ = v;
             }
-            return gTrickyNearestObject;
+            return (int)gTrickyNearestObject;
         default:
             return 0;
         }
@@ -846,13 +846,13 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
     ((ObjPlacement*)setup)->color[1] = ((ObjPlacement*)parentSetup)->color[1];
     ((ObjPlacement*)setup)->color[3] = ((ObjPlacement*)parentSetup)->color[3];
     nearest = (int)objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
-    gTrickyNearestObject = nearest;
+    gTrickyNearestObject = (GameObject*)nearest;
     if ((((GameObject*)nearest)->anim.romDefNo == TRICKY_OBJ_APPLE) || (((GameObject*)nearest)->anim.romDefNo == TRICKY_CHILD_OBJ_ENERGY_EGG))
     {
         (*(void (**)(int, f32, f32, f32))(*(int*)(*(int*)&((GameObject*)nearest)->anim.dll) + 0x2c))(
             nearest, 0.0f, 1.0f, 0.0f);
     }
-    return gTrickyNearestObject;
+    return (int)gTrickyNearestObject;
 }
 
 void baddieInstantiateWeapon(GameObject* obj, int state)
@@ -1959,7 +1959,7 @@ int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int max, Enem
     resultCount = 0;
     if ((flags & 1) != 0)
     {
-        tgt = (GameObject*)objGetNearestTypeTo(ENEMY_OBJGROUP, obj, &radius);
+        tgt = objGetNearestTypeTo(ENEMY_OBJGROUP, obj, &radius);
         out->obj = tgt;
         if (tgt != 0)
         {

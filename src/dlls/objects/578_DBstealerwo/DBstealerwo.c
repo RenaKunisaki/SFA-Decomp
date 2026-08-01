@@ -836,7 +836,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     }
     if (found == 0)
     {
-        if ((u32)obj ==
+        if (obj ==
             objGetNearestTypeTo(DBSTEALERWORM_OBJGROUP, (GameObject*)*(int*)&baddie->targetObj, 0))
         {
             sub->savedTargetObj = *(int*)&baddie->targetObj;
@@ -2101,12 +2101,12 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
                ->findAggroTarget(obj, (void*)baddie, st->aggroRange, 0x8000);
     if (near == 0 && (st->configFlags & 0x10) != 0)
     {
-        near = (GameObject*)objGetNearestTypeTo(DBEGG_OBJGROUP, obj, &stk.range);
+        near = objGetNearestTypeTo(DBEGG_OBJGROUP, obj, &stk.range);
     }
     if (near == 0 && (st->configFlags & 0x10) != 0 && (st->configFlags & 2) == 0 &&
         (((GroundBaddiePlacement*)data)->flags & 2) != 0)
     {
-        near = (GameObject*)objGetNearestTypeTo(DBEGG_OBJGROUP, obj, 0);
+        near = objGetNearestTypeTo(DBEGG_OBJGROUP, obj, 0);
     }
     if (near != 0 && (st->configFlags & 2) == 0)
     {

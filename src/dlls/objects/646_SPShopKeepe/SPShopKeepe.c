@@ -914,7 +914,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[3] = 255;
         ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
-        ((ShopkeeperSpawnSetup*)setup)->base.ident = ((ShopkeeperState*)state)->vendorObj;
+        ((ShopkeeperSpawnSetup*)setup)->base.ident = (int)((ShopkeeperState*)state)->vendorObj;
         objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 
@@ -931,7 +931,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
         ((ShopkeeperSpawnSetup*)setup)->kind = 1;
-        ((ShopkeeperSpawnSetup*)setup)->base.ident = ((ShopkeeperState*)state)->vendorObj;
+        ((ShopkeeperSpawnSetup*)setup)->base.ident = (int)((ShopkeeperState*)state)->vendorObj;
         objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 }
@@ -995,7 +995,7 @@ void ShopKeeper_update(GameObject* obj)
         ShopKeeper_turnTowardPlayer(obj, player, 1);
     }
     (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase;
-    if (*(void**)&((ShopkeeperState*)state)->vendorObj == NULL)
+    if (((ShopkeeperState*)state)->vendorObj == NULL)
     {
         ((ShopkeeperState*)state)->vendorObj =
             objGetNearestTypeTo(SPSHOPKEEPER_TARGET_OBJGROUP, obj, &dist);

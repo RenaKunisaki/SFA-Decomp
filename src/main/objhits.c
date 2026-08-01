@@ -3250,9 +3250,9 @@ GameObject* objGetNearestTypeToExcludingSelf(int group, GameObject* obj, float* 
     return nearest;
 }
 
-int objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance) {
+GameObject* objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance) {
     u32* entry;
-    u32 nearest;
+    GameObject* nearest;
     GameObject* o;
     int index;
     int limit;
@@ -3277,7 +3277,7 @@ int objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance) {
             distanceSq = vec3f_distanceSquared(&o->anim.worldPosX, &((GameObject*)*entry)->anim.worldPosX);
             if (distanceSq < bestDistanceSq) {
                 bestDistanceSq = distanceSq;
-                nearest = *entry;
+                nearest = (GameObject*)*entry;
             }
         }
         entry++;

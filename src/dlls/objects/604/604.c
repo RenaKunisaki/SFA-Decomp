@@ -498,7 +498,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
     int found;
     int oldFlag;
     f32 dist;
-    int near;
+    GameObject* near;
     f32 zero = 0.0f;
 
     dist = 5000.0f;
@@ -538,10 +538,10 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
             s->b0 != 0)
         {
             near = objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
-            if ((u32)near != 0 && SNOWCLAW_TARGET_INTERFACE(near)->getState((GameObject*)near) != 0 &&
-                SNOWCLAW_TARGET_INTERFACE(near)->setState((GameObject*)near, 0) != 0)
+            if (near != NULL && SNOWCLAW_TARGET_INTERFACE(near)->getState(near) != 0 &&
+                SNOWCLAW_TARGET_INTERFACE(near)->setState(near, 0) != 0)
             {
-                ObjLink_AttachChild(obj, (GameObject*)near, 0);
+                ObjLink_AttachChild(obj, near, 0);
             }
         }
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
@@ -569,7 +569,7 @@ void snowclaw_hitDetect(GameObject* obj)
     int* inner;
     SnowclawState* s;
     int sub;
-    int* near;
+    GameObject* near;
     GameObject* player;
     f32 dist;
     int hit;
@@ -606,11 +606,11 @@ void snowclaw_hitDetect(GameObject* obj)
                 }
                 if (obj->anim.romDefNo == SNOWCLAW_SEQID_CR_SNOWCLAW)
                 {
-                    near = (int*)objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
+                    near = objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
                     if (near != 0)
                     {
-                        ObjLink_DetachChild(obj, (GameObject*)near);
-                        SNOWCLAW_TARGET_INTERFACE(near)->setState((GameObject*)near, 2);
+                        ObjLink_DetachChild(obj, near);
+                        SNOWCLAW_TARGET_INTERFACE(near)->setState(near, 2);
                     }
                 }
                 if (obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW || obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW2)

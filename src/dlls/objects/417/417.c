@@ -268,7 +268,7 @@ int NW_mammoth_updateSleepCycle(GameObject* obj, NwMammothState* state) {
 void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammothPlacement* placement) {
     GameObject* tw2;
     GameObject* tw;
-    int nearestObj = objGetNearestTypeTo(NW_MAMMOTH_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
+    GameObject* nearestObj = objGetNearestTypeTo(NW_MAMMOTH_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
 
     switch (state->stateIndex) {
     case 9:
@@ -301,7 +301,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
         }
         break;
     case 0xc:
-        (*gObjectTriggerInterface)->preempt(nearestObj, 0x5aa);
+        (*gObjectTriggerInterface)->preempt((int)nearestObj, 0x5aa);
         (*gObjectTriggerInterface)->runSequence(3, (void*)nearestObj, 0x30);
         state->stateIndex = 0xd;
         break;
@@ -397,7 +397,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
         }
         break;
     case 0x10:
-        (*gObjectTriggerInterface)->preempt(nearestObj, 0x157c);
+        (*gObjectTriggerInterface)->preempt((int)nearestObj, 0x157c);
         (*gObjectTriggerInterface)->runSequence(1, (void*)nearestObj, 2);
         state->stateIndex = 0x13;
         break;

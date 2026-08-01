@@ -1361,7 +1361,7 @@ int playerIsQuakeShockwaveActive(GameObject* obj)
 int playerFindNearestFirefly(GameObject* player)
 {
     f32 dist = 300.0f;
-    return objGetNearestTypeTo(LANTERNFIREFLY_OBJGROUP, player, &dist);
+    return (int)objGetNearestTypeTo(LANTERNFIREFLY_OBJGROUP, player, &dist);
 }
 
 int playerIsClimbingWall(GameObject* obj)
@@ -11255,7 +11255,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
                 continue;
             }
             nearDist = 50.0f;
-            t8 = objGetNearestTypeTo(WALL_ANIMATOR_GROUP_CLIMBABLE, (GameObject*)obj, &nearDist);
+            t8 = (int)objGetNearestTypeTo(WALL_ANIMATOR_GROUP_CLIMBABLE, (GameObject*)obj, &nearDist);
             ok2 = 1;
             if ((u32)t8 != 0)
             {
@@ -17138,12 +17138,12 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 break;
             case 0x10:
             {
-                int t;
+                GameObject* t;
                 nearArg = 400.0f;
                 t = objGetNearestTypeTo(6, (GameObject*)obj, &nearArg);
-                if ((u32)t != 0)
+                if (t != NULL)
                 {
-                    Obj_SetParent((GameObject*)obj, (GameObject*)t, 1);
+                    Obj_SetParent((GameObject*)obj, t, 1);
                 }
                 break;
             }
@@ -17415,7 +17415,7 @@ void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
             else
             {
                 f32 dist = 500.0f;
-                *(int*)&((PlayerState*)inner2)->baddie.targetObj = objGetNearestTypeTo(3, (GameObject*)obj, &dist);
+                ((PlayerState*)inner2)->baddie.targetObj = objGetNearestTypeTo(3, (GameObject*)obj, &dist);
             }
         }
         else
