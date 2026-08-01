@@ -91,7 +91,7 @@ extern u8 gCloudLayerTexMatrix[0x30];
 u8 gRcpPendingWarpDest[0x10];
 FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
 FrustumPlane gPlayerRelativeFrustumPlanes[FRUSTUM_PLANE_COUNT];
-extern int gTexShaderFogColor;
+extern GXColor gTexShaderFogColor;
 extern int gTexLightmapFogColor;
 
 /*
@@ -876,7 +876,7 @@ static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
 Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRenderInstrsState* state) {
     Shader* shader;
     u32 shaderIdx;
-    int fogColor;
+    GXColor fogColor;
     u8* byteBase;
     u32 flags;
     int* cloudTex;
@@ -906,7 +906,7 @@ Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRende
     if ((SHADER_FLAGS(shader) & 4) != 0) {
         _gxSetFogParams();
     } else {
-        GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&fogColor);
+        GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, fogColor);
     }
     if ((shader != 0) && ((SHADER_FLAGS(shader) & 0x80000000) != 0)) {
         return shader;
