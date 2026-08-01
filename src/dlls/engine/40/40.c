@@ -15,11 +15,11 @@ ObjectDescriptor6 Effect15_funcs = {
     (ObjectDescriptorCallback)Effect15_release,
     0,
     (ObjectDescriptorCallback)Effect15_func03_nop,
-    (ObjectDescriptorCallback)Effect15_func04,
+    (ObjectDescriptorCallback)Effect15_spawnObject,
     (ObjectDescriptorCallback)Effect15_func05_nop,
 };
 
-int Effect15_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect15_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                     f32* extraArgs)
 {
     int spawnResult;

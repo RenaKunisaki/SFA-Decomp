@@ -130,7 +130,7 @@ typedef struct
     int displayedItemValues[13]; /* 0xb74 */
 } GameUiHud;
 
-extern u32 lbl_8031BF90[6];
+extern u32 gGameUiHudAnimObjIds[6];
 
 /* extern-cleanup: defining-file public prototypes */
 void pauseMenuAnimateCarousel(void);

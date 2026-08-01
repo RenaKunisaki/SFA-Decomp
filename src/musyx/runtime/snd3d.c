@@ -14,11 +14,11 @@
 #define S3D_UNLINK_EMITTER(emitter)                                                                                    \
     do                                                                                                                 \
     {                                                                                                                  \
-        if ((emitter)->next != (Snd3DEmitter*)0x0)                                                                     \
+        if ((emitter)->next != (SND_EMITTER*)0x0)                                                                     \
         {                                                                                                              \
             (emitter)->next->prev = (emitter)->prev;                                                                   \
         }                                                                                                              \
-        if ((emitter)->prev != (Snd3DEmitter*)0x0)                                                                     \
+        if ((emitter)->prev != (SND_EMITTER*)0x0)                                                                     \
         {                                                                                                              \
             (emitter)->prev->next = (emitter)->next;                                                                   \
         }                                                                                                              \
@@ -28,30 +28,30 @@
         }                                                                                                              \
     } while (0)
 
-u8 s3dSortedCnt;
-u8 s3dActiveCnt;
-u8 s3dGroupCnt;
+u8 runListNum;
+u8 startListNumnum;
+u8 startGroupNum;
 u8 lbl_803DE36A;
 u8 snd_max_studios;
 u8 snd_base_studio;
 u32 snd_used_studios;
-SndStudioInputLink* s3dDoorRoot;
-SndSpatialEntry* s3dRoomRoot;
-SndSpatialListener* s3dListenerRoot;
-Snd3DEmitter* s3dEmitterRoot;
+SND_DOOR* s3dDoorRoot;
+SND_ROOM* s3dRoomRoot;
+SND_LISTENER* s3dListenerRoot;
+SND_EMITTER* s3dEmitterRoot;
 u8 s3dCallCnt;
 
 void s3dHandle(void)
 {
-    Snd3DEmitter* emitter;
-    Snd3DEmitter* next;
-    SndSpatialEntry* entry;
+    SND_EMITTER* em;
+    SND_EMITTER* next;
+    SND_ROOM* entry;
     u32 flags;
-    f32 distance;
-    f32 azimuth;
+    f32 vol;
+    f32 xPan;
+    f32 yPan;
+    f32 zPan;
     f32 pitch;
-    f32 frontBack;
-    f32 pan;
 
     if (s3dCallCnt != 0)
     {
@@ -60,143 +60,143 @@ void s3dHandle(void)
     }
 
     s3dCallCnt = S3D_UPDATE_SKIP_TICKS;
-    s3dGroupCnt = 0;
-    s3dActiveCnt = 0;
-    s3dSortedCnt = 0;
-    emitter = s3dEmitterRoot;
+    startGroupNum = 0;
+    startListNumnum = 0;
+    runListNum = 0;
+    em = s3dEmitterRoot;
 
-    for (; emitter != (Snd3DEmitter*)0x0; emitter = next)
+    for (; em != (SND_EMITTER*)0x0; em = next)
     {
-        next = emitter->next;
+        next = em->next;
 
-        if ((emitter->flags & S3D_EMITTER_FLAG_REMOVE) != 0)
+        if ((em->flags & S3D_EMITTER_FLAG_REMOVE) != 0)
         {
-            S3D_UNLINK_EMITTER(emitter);
-            emitter->flags &= 0xffff;
-            if (emitter->handle != S3D_INVALID_FX_HANDLE)
+            S3D_UNLINK_EMITTER(em);
+            em->flags &= 0xffff;
+            if (em->vid != S3D_INVALID_FX_HANDLE)
             {
-                synthSendKeyOff(emitter->handle);
+                synthSendKeyOff(em->vid);
             }
             continue;
         }
 
-        if ((emitter->flags & (S3D_EMITTER_FLAG_PLAYING | S3D_EMITTER_FLAG_POSITIONAL)) != 0)
+        if ((em->flags & (S3D_EMITTER_FLAG_PLAYING | S3D_EMITTER_FLAG_POSITIONAL)) != 0)
         {
-            s3dCalcEmitter(emitter, &distance, &pan, &azimuth, &pitch, &frontBack);
+            CalcEmitter(em, &vol, &pitch, &xPan, &yPan, &zPan);
         }
 
-        flags = emitter->flags;
+        flags = em->flags;
         if ((flags & S3D_EMITTER_FLAG_WAITING_FOR_ROOM) == 0)
         {
             if ((flags & S3D_EMITTER_FLAG_PLAYING) != 0)
             {
-                if ((0.0f == distance) && ((flags & S3D_EMITTER_FLAG_STOP_AT_ORIGIN) != 0))
+                if ((0.0f == vol) && ((flags & S3D_EMITTER_FLAG_STOP_AT_ORIGIN) != 0))
                 {
-                    emitter->flags |= S3D_EMITTER_FLAG_WAITING_FOR_ROOM;
-                    emitter->flags &= ~S3D_EMITTER_FLAG_PLAYING;
+                    em->flags |= S3D_EMITTER_FLAG_WAITING_FOR_ROOM;
+                    em->flags &= ~S3D_EMITTER_FLAG_PLAYING;
                 }
-                else if ((0.0f == distance) && ((flags & S3D_EMITTER_FLAG_REMOVE_AT_ORIGIN) != 0))
+                else if ((0.0f == vol) && ((flags & S3D_EMITTER_FLAG_REMOVE_AT_ORIGIN) != 0))
                 {
-                    S3D_UNLINK_EMITTER(emitter);
-                    emitter->flags &= 0xffff;
-                    if (emitter->handle != S3D_INVALID_FX_HANDLE)
+                    S3D_UNLINK_EMITTER(em);
+                    em->flags &= 0xffff;
+                    if (em->vid != S3D_INVALID_FX_HANDLE)
                     {
-                        synthSendKeyOff(emitter->handle);
+                        synthSendKeyOff(em->vid);
                     }
                     continue;
                 }
                 else if ((flags & S3D_EMITTER_FLAG_POSITIONAL) != 0)
                 {
-                    if ((u32)s3dInsertActiveEmitter(emitter, distance, azimuth, pitch, frontBack, pan) != 0)
+                    if ((u32)AddStartingEmitter(em, vol, xPan, yPan, zPan, pitch) != 0)
                     {
                         continue;
                     }
                 }
                 else
                 {
-                    entry = emitter->entry;
-                    if (((entry == (SndSpatialEntry*)0x0) || (entry->assignedVoice != 0xff)) &&
-                        (emitter->handle =
-                             synthFXStart(emitter->fxId, S3D_DEFAULT_FX_VOLUME, S3D_DEFAULT_FX_PAN,
-                                          entry != (SndSpatialEntry*)0x0 ? entry->assignedVoice : emitter->studio,
+                    entry = em->room;
+                    if (((entry == (SND_ROOM*)0x0) || (entry->studio != 0xff)) &&
+                        (em->vid =
+                             synthFXStart(em->fxid, S3D_DEFAULT_FX_VOLUME, S3D_DEFAULT_FX_PAN,
+                                          entry != (SND_ROOM*)0x0 ? entry->studio : em->studio,
                                           (flags & S3D_EMITTER_FLAG_USE_AUX_STUDIO) != 0)) != S3D_INVALID_FX_HANDLE)
                     {
                     }
                     else
                     {
-                        if ((emitter->flags & S3D_EMITTER_FLAG_RESTART_ON_STOP) != 0)
+                        if ((em->flags & S3D_EMITTER_FLAG_RESTART_ON_STOP) != 0)
                         {
                             continue;
                         }
-                        emitter->flags |= S3D_EMITTER_FLAG_REMOVE;
-                        emitter->flags &= ~S3D_EMITTER_FLAG_PLAYING;
+                        em->flags |= S3D_EMITTER_FLAG_REMOVE;
+                        em->flags &= ~S3D_EMITTER_FLAG_PLAYING;
                     }
                 }
             }
             else
             {
-                if ((emitter->handle = sndFXCheck(emitter->handle)) == S3D_INVALID_FX_HANDLE)
+                if ((em->vid = sndFXCheck(em->vid)) == S3D_INVALID_FX_HANDLE)
                 {
-                    if ((emitter->flags & S3D_EMITTER_FLAG_RESTART_ON_STOP) != 0)
+                    if ((em->flags & S3D_EMITTER_FLAG_RESTART_ON_STOP) != 0)
                     {
-                        emitter->flags |= S3D_EMITTER_FLAG_PLAYING;
+                        em->flags |= S3D_EMITTER_FLAG_PLAYING;
                     }
                     else
                     {
-                        emitter->flags |= S3D_EMITTER_FLAG_REMOVE;
+                        em->flags |= S3D_EMITTER_FLAG_REMOVE;
                     }
                 }
             }
 
-            if (emitter->handle != S3D_INVALID_FX_HANDLE)
+            if (em->vid != S3D_INVALID_FX_HANDLE)
             {
-                if ((emitter->flags & S3D_EMITTER_FLAG_POSITIONAL) != 0)
+                if ((em->flags & S3D_EMITTER_FLAG_POSITIONAL) != 0)
                 {
-                    s3dInsertSortedEmitter(emitter, distance);
+                    AddRunningEmitter(em, vol);
                 }
-                if ((0.0f == distance) && ((emitter->flags & S3D_EMITTER_FLAG_STOP_AT_ORIGIN) != 0))
+                if ((0.0f == vol) && ((em->flags & S3D_EMITTER_FLAG_STOP_AT_ORIGIN) != 0))
                 {
-                    synthSendKeyOff(emitter->handle);
-                    emitter->handle = S3D_INVALID_FX_HANDLE;
-                    if ((emitter->flags & S3D_EMITTER_FLAG_RESTART_ON_STOP) != 0)
+                    synthSendKeyOff(em->vid);
+                    em->vid = S3D_INVALID_FX_HANDLE;
+                    if ((em->flags & S3D_EMITTER_FLAG_RESTART_ON_STOP) != 0)
                     {
-                        emitter->flags |= S3D_EMITTER_FLAG_WAITING_FOR_ROOM;
+                        em->flags |= S3D_EMITTER_FLAG_WAITING_FOR_ROOM;
                     }
                     else
                     {
-                        emitter->flags |= S3D_EMITTER_FLAG_REMOVE;
+                        em->flags |= S3D_EMITTER_FLAG_REMOVE;
                     }
                 }
                 else
                 {
-                    s3dApplyEmitterControls(emitter, distance, azimuth, pitch, frontBack, pan);
+                    SetFXParameters(em, vol, xPan, yPan, zPan, pitch);
                 }
             }
-            if ((emitter->flags & S3D_EMITTER_FLAG_AGE_OUT) != 0)
+            if ((em->flags & S3D_EMITTER_FLAG_AGE_OUT) != 0)
             {
-                emitter->age += 0.3f;
-                if (emitter->age >= 1.0f)
+                em->fade += 0.3f;
+                if (em->fade >= 1.0f)
                 {
-                    emitter->flags &= ~S3D_EMITTER_FLAG_AGE_OUT;
+                    em->flags &= ~S3D_EMITTER_FLAG_AGE_OUT;
                 }
             }
         }
         else
         {
-            entry = emitter->entry;
-            if (((entry == (SndSpatialEntry*)0x0) ||
-                 ((entry != (SndSpatialEntry*)0x0) && (entry->assignedVoice != 0xff))) &&
-                (0.0f != distance))
+            entry = em->room;
+            if (((entry == (SND_ROOM*)0x0) ||
+                 ((entry != (SND_ROOM*)0x0) && (entry->studio != 0xff))) &&
+                (0.0f != vol))
             {
-                emitter->flags &= ~S3D_EMITTER_FLAG_WAITING_FOR_ROOM;
-                emitter->flags |= S3D_EMITTER_FLAG_PLAYING;
+                em->flags &= ~S3D_EMITTER_FLAG_WAITING_FOR_ROOM;
+                em->flags |= S3D_EMITTER_FLAG_PLAYING;
             }
         }
     }
 
-    s3dStartQueuedEmitters();
-    s3dAllocateRoomStudios();
-    s3dUpdateDoorStudioInputs();
+    StartContinousEmitters();
+    CheckRoomStatus();
+    CheckDoorStatus();
 }
 
 /*
@@ -226,7 +226,7 @@ void s3dExit(void)
 /*
  * Sound init: clamps voice/stream counts, calls hwInit, then walks
  * a chain of subsystem inits if hwInit succeeded; sets the
- * gSynthInitialized flag last.
+ * sndActive flag last.
  */
 int sndInit(u8 voiceCount, u8 streamCount, u8 unk5, u8 stereo, u32 flags, u32 aramSize)
 {
@@ -234,7 +234,7 @@ int sndInit(u8 voiceCount, u8 streamCount, u8 unk5, u8 stereo, u32 flags, u32 ar
     u32 sampleRatePad[3];
     int result;
 
-    gSynthInitialized = 0;
+    sndActive = 0;
     if (voiceCount <= SND_MAX_VOICES)
     {
         SYNTH_CONFIGURATION->voiceCount = voiceCount;
@@ -259,15 +259,15 @@ int sndInit(u8 voiceCount, u8 streamCount, u8 unk5, u8 stereo, u32 flags, u32 ar
     if (result == 0)
     {
         u8 voiceCountSnapshot = SYNTH_CONFIGURATION->voiceCount;
-        synthResetLoadedGroupCount();
+        dataInitStack();
         dataInit(0, aramSize);
         seqInit();
         synthIdleWaitActive = 0;
         synthInit(SND_DEFAULT_SAMPLE_RATE, voiceCountSnapshot);
         streamInit();
-        synthInitVirtualSampleTable();
+        vsInit();
         s3dInit(flags);
-        gSynthInitialized = 1;
+        sndActive = 1;
         result = 0;
     }
     return result;

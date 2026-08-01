@@ -43,7 +43,7 @@ typedef struct CmbSrcColorIndexPair
 
 int gSfxplayerEffectHandles[8];
 
-static const CmbSrcColorIndexPair lbl_803E6450 = {0x00040005, 0x0006000B};
+static const CmbSrcColorIndexPair sDFPRotatePColorIndices = {0x00040005, 0x0006000B};
 
 #define SFXPLAYER_UPDATE_EFFECT_HANDLE_POS(handleExpr, obj, rot, angleStep)                                            \
     do                                                                                                                 \
@@ -119,7 +119,7 @@ int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex)
     int handleOffset;
     s16* colorIndices;
 
-    *(CmbSrcColorIndexPair*)colorIndexWords = *(CmbSrcColorIndexPair*)&lbl_803E6450;
+    *(CmbSrcColorIndexPair*)colorIndexWords = *(CmbSrcColorIndexPair*)&sDFPRotatePColorIndices;
 
     if (Obj_IsLoadingLocked() == 0)
     {

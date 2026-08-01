@@ -25,7 +25,7 @@ static void snd_handle_irq(void)
     u8 voiceIndex;
     u8 i;
 
-    if (gSynthInitialized == 0)
+    if (sndActive == 0)
     {
         return;
     }
@@ -69,7 +69,7 @@ static void snd_handle_irq(void)
     streamHandle();
     hwIRQLeaveCritical();
     hwIRQEnterCritical();
-    synthUpdateVirtualSamples();
+    vsSampleUpdates();
     hwIRQLeaveCritical();
 }
 

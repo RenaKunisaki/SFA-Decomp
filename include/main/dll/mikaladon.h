@@ -1,7 +1,7 @@
 #ifndef H_MAIN_DLL_MIKALADON_H
 #define H_MAIN_DLL_MIKALADON_H
 
-#include "main/dll/baddie_state.h"
+#include "main/dll/dll_00C9_enemy.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 
@@ -18,10 +18,9 @@ typedef struct MikaladonFields
     u8 dropTimer;
 } MikaladonFields;
 
-/* The shared baddie core treats 0x323..0x345 as per-family scratch. */
 typedef union MikaladonState
 {
-    BaddieState baddie;
+    EnemyState enemy;
     MikaladonFields actor;
 } MikaladonState;
 

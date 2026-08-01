@@ -148,7 +148,7 @@ void sndConvertMs(u32* p)
  */
 void sndConvertTicks(u32* p, McmdVoiceState* state)
 {
-    int div = synthGetVoiceSlotChannelScale(state);
+    int div = synthGetTicksPerSecond(state);
     *p = (((*p << 16) / div) * 0x3e8) >> 5;
 }
 

@@ -30,11 +30,11 @@ ObjectDescriptor6 Effect10_funcs = {
     (ObjectDescriptorCallback)Effect10_release,
     0,
     (ObjectDescriptorCallback)Effect10_func03_nop,
-    (ObjectDescriptorCallback)Effect10_func04,
-    (ObjectDescriptorCallback)Effect10_func05,
+    (ObjectDescriptorCallback)Effect10_spawnObject,
+    (ObjectDescriptorCallback)Effect10_updateFrameState,
 };
 
-int Effect10_func04(s16* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, f32* extraParam)
+int Effect10_spawnObject(s16* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, f32* extraParam)
 {
     PartFxSpawn p;
     u32 hasSrc;
@@ -553,7 +553,7 @@ int Effect10_func04(s16* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcB
     return (*gExpgfxInterface)->spawnEffect(&p, -1, id, 0);
 }
 
-void Effect10_func05(void)
+void Effect10_updateFrameState(void)
 {
     f32 sum;
     f32 step;

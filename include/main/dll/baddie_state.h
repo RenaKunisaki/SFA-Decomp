@@ -133,12 +133,8 @@ typedef struct BaddieState {
     f32 nudgePosY;
     f32 nudgePosZ;
     f32 nudgeYaw; /* anim.rotX delta added as nudgeYawProgress ramps */
+    BaddieStateExitFn stateExitFn; /* run once on control-mode change, then replaced by nextStateExitFn */
     union {
-        f32 unk304;
-        BaddieStateExitFn stateExitFn;
-    };
-    union {
-        f32 unk308;
         int stateHandler; /* player state callback address */
         BaddieStateExitFn nextStateExitFn;
     };
@@ -154,8 +150,8 @@ typedef struct BaddieState {
  * splash. */
 #define BADDIE_EVENT_LANDING 0x200
     s32 eventFlags; /* bits 1/0x200 observed */
-    f32 unk318;
-    f32 unk31C;
+    f32 heldButtons;
+    f32 pressedButtons;
     u8 unk320[0x32E - 0x320];
     s16 stateTimer; /* count-up dt-accumulating timer, gated > 0x78, reset to 0 on state entry */
     s16 cameraYaw;
@@ -171,7 +167,7 @@ typedef struct BaddieState {
     s8 moveDone; /* set when the current move completes; SeqFns chain the next mode off it */
     u8 unk347[2];
     u8 hasTarget; /* cleared with death/reset */
-    u8 unk34A;
+    u8 moveChainFlags; /* bit0: chain-input window open (move progress within [slot+0x20, slot+0x24)); bit1: past the chain-commit progress (slot+0x28); bit2: next move queued (A pressed in the window, or the slot auto-chains) */
     u8 inputSector; /* quadrant of the stick heading relative to the actor's facing: 0 while the stick is inside the deadzone, else 1..4 from (4 - ((diff - 0x6000) / 0x4000)) in dll_000F player_steerFromInput; player.c switches the approach/turn move on it and copies it into PlayerState.moveChainIndex */
     s8 movementFlags; /* root-motion / velocity handling flags for the shared player controller */
     s8 stateTag; /* per-tick state/mode index (written each tick; compared ==1/==3 across the baddie cluster + player) */

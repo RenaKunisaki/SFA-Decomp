@@ -4,6 +4,6 @@
 #include "ghidra_import.h"
 #include "musyx/mcmd.h"
 
-void voiceUnregister(McmdVoiceState *voice);
+void voiceResetLastStarted(McmdVoiceState *voice);
 
 #endif /* MUSYX_VOICE_UNREGISTER_H_ */

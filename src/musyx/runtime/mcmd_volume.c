@@ -5,8 +5,8 @@
 #include "musyx/snd_service.h"
 #include "musyx/mcmd_volume.h"
 
-/* 64-bit control-flag word overlaying inputFlags(hi)/outputFlags(lo). */
-#define MAC_CFLAGS(sv)     (*(u64*)&(sv)->inputFlags)
+/* 64-bit control-flag word overlaying cFlagsHi(hi)/cFlagsLo(lo). */
+#define MAC_CFLAGS(sv)     (*(u64*)&(sv)->cFlagsHi)
 #define MAC_FLAG64(hi, lo) (((u64)(hi) << 32) | (u64)(lo))
 
 /*
@@ -83,9 +83,9 @@ void mcmdScaleVolume(McmdVoiceState* svoice, McmdCommandArgs* cstep, s32 start_v
     curve = (u16)(u8)(cstep->flags >> 0x18);
     curve |= (((u16)(u8)cstep->value) << 8);
     tvol = TranslateVolume(tvol, curve);
-    svoice->volumeTarget = tvol;
-    svoice->volumeStart = start_vol;
-    svoice->volumeStep = (s32)(tvol - start_vol) / mstime;
+    svoice->envTarget = tvol;
+    svoice->envCurrent = start_vol;
+    svoice->envDelta = (s32)(tvol - start_vol) / mstime;
     svoice->volume = start_vol;
     MAC_CFLAGS(svoice) |= MAC_FLAG64(0, 0x8000);
 }

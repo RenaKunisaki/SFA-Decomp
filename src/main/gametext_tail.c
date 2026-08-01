@@ -97,18 +97,18 @@ void gameTextRenderById(int a, int b, int c)
     u8 save4 = gGameTextColorA;
     int i;
 
-    lbl_803DC9C0 = 1;
+    gGameTextRenderingById = 1;
     if (gCurTextBox != NULL)
     {
         slot = gCurTextBox;
     }
-    else if (def->slotHint == 255)
+    else if (def->boxId == 255)
     {
         slot = (TextSlot*)gTextBoxes + 2;
     }
     else
     {
-        slot = (TextSlot*)gTextBoxes + def->slotHint;
+        slot = (TextSlot*)gTextBoxes + def->boxId;
     }
 
     if (slot == (TextSlot*)gTextBoxes + 0x85)
@@ -184,7 +184,7 @@ void gameTextRenderById(int a, int b, int c)
         gameTextRenderStrs(def->strings[i], slot - (TextSlot*)gTextBoxes);
     }
 
-    lbl_803DC9C0 = 0;
+    gGameTextRenderingById = 0;
     if (gGameTextMeasureOnly == 0)
     {
         Camera_ApplyCurrentViewport(0);
@@ -235,13 +235,13 @@ void gameTextShow(int a)
 
 static inline int gameTextCtrlCharLen(u32 c)
 {
-    SpecialGlyph* p = gGameTextCtrlCodeArgCounts;
+    CtrlCharEntry* p = gGameTextCtrlCodeArgCounts;
     int i = 46;
     while (i--)
     {
         if (p->key == c)
         {
-            return p->val;
+            return p->len;
         }
         p++;
     }
@@ -278,7 +278,7 @@ void gameTextTickReveal(int textId, TextDisplayState* state)
     int special;
     u8* defAddress;
 
-    if (gameTextFonts->mode == 1)
+    if (gameTextFonts->status == 1)
     {
         return;
     }
@@ -379,16 +379,16 @@ void gameTextQueueReveal(int a, int b)
     e->arg1 = b;
 }
 
-static inline MeasGlyph* gameTextFindGlyph(u32 ch, int langIdx)
+static inline TextGlyph* gameTextFindGlyph(u32 ch, int langIdx)
 {
-    MeasGlyph* g;
+    TextGlyph* g;
     int cnt;
 
     g = gameTextFonts->glyphs;
     cnt = gameTextFonts->glyphCount;
     while (cnt-- != 0)
     {
-        if (g->key == ch && g->lang == langIdx)
+        if (g->key == ch && g->font == langIdx)
         {
             return g;
         }
@@ -450,7 +450,7 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
     int cursor;
     int* boundary;
     int langIdx;
-    FontSizeEntry* sizeEntry;
+    FontMetrics* sizeEntry;
     int lineOff;
     int* bp;
     int lineCount;
@@ -479,7 +479,7 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
     }
     else
     {
-        i = sLanguageNameTable[curLanguage].sizeIdx;
+        i = sLanguageNameTable[curLanguage].fontId;
     }
     langIdx = i;
     sizeEntry = &gGameTextFontMetrics[i];
@@ -493,9 +493,9 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
     {
         return 0;
     }
-    if (lbl_803DC9AA != 0 || lbl_803DC9A8 != 0)
+    if (gGameTextCursorX != 0 || gGameTextCursorY != 0)
     {
-        width = (f32)(u32)lbl_803DC9AA;
+        width = (f32)(u32)gGameTextCursorX;
     }
 
     lineStarts[0] = 0;
@@ -545,7 +545,7 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
         }
         else
         {
-            MeasGlyph* found = gameTextFindGlyph(ch, langIdx);
+            TextGlyph* found = gameTextFindGlyph(ch, langIdx);
             if (found != NULL)
             {
                 int advance = (found->width + found->offsetX) + found->advanceX;
@@ -628,7 +628,7 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
 
 void* gameTextGetBox(int box)
 {
-    return &gTextBoxes[box * 0x20];
+    return &gTextBoxes[box];
 }
 
 void* gameTextGetCurBox(void)

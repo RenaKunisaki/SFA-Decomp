@@ -389,7 +389,7 @@ void TitleMenuItem_initialise(void)
     slots[5] = NULL;
 }
 
-u32 lbl_8031C2B4[19] = {0x00000000,
+u32 TitleMenuItem_funcs[19] = {0x00000000,
                         0x00000000,
                         0x00000000,
                         0x000e0000,

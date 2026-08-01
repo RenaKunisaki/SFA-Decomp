@@ -3,72 +3,14 @@
 
 #include "dolphin/dvd.h"
 #include "main/gametext_box_api.h"
+#include "main/gametext_internal.h"
 #include "main/textrender_api.h"
 #include "main/texture.h"
 
-typedef struct
-{
-    u32 key;     /* 0x00 */
-    u16 u;       /* 0x04 */
-    u16 v;       /* 0x06 */
-    s8 offsetX;  /* 0x08 */
-    s8 advanceX; /* 0x09 */
-    s8 offsetY;  /* 0x0a */
-    s8 advanceY; /* 0x0b */
-    u8 width;    /* 0x0c */
-    u8 height;   /* 0x0d */
-    u8 lang;     /* 0x0e */
-    u8 page;     /* 0x0f */
-} TextGlyph;
-
-typedef struct
-{
-    TextGlyph* glyphs; /* 0x00 */
-    u16* entries;      /* 0x04 */
-    int glyphCount;    /* 0x08 */
-    int entryCount;    /* 0x0c */
-    Texture* textures[3]; /* 0x10 */
-    int mode;          /* 0x1c */
-    f32 timer;         /* 0x20 */
-    u8 dirId;          /* 0x24 */
-    u8 languageId;     /* 0x25 */
-    u8 pad26[2];       /* 0x26 */
-} TextFont;
-
 STATIC_ASSERT(offsetof(GameTextBox, style) == 0x13);
 STATIC_ASSERT(offsetof(GameTextBox, alpha) == 0x1E);
-
-typedef struct
-{
-    u32 key;
-    int len;
-} CtrlCharEntry;
-
-typedef struct
-{
-    char* name;
-    u8 sizeIdx;
-    u8 pad05[3];
-} LanguageName;
-
-/*
- * A disc-status message: the id of the equivalent gametext entry, its line
- * list, and the style word the drawer reads (top byte = text alpha).
- */
-typedef struct DiscStatusMessage
-{
-    u16 textId;    /* 0x00 */
-    u16 lineCount; /* 0x02 */
-    u32 style;     /* 0x04 */
-    char** lines;  /* 0x08 */
-} DiscStatusMessage;
-
-typedef struct
-{
-    u8 _pad[0x1c];
-    int state;
-    u8 _pad2[8];
-} GameTextStateElem;
+STATIC_ASSERT(sizeof(TextFont) == 0x28);
+STATIC_ASSERT(offsetof(TextFont, status) == 0x1c);
 
 typedef struct
 {
@@ -120,16 +62,6 @@ STATIC_ASSERT(offsetof(GameTextRuntime, commandStringBuffer) == 0x3c0);
 STATIC_ASSERT(offsetof(GameTextRuntime, commands) == 0xbc0);
 STATIC_ASSERT(offsetof(GameTextRuntime, fonts) == 0x15c0);
 STATIC_ASSERT(offsetof(GameTextRuntime, loadSlots) == 0x1660);
-
-typedef struct GameTextCharset
-{
-    u8* strings;
-    u8* entries;
-    int headerCount;
-    int count;
-    u8 pad10[0xc];
-    int status;
-} GameTextCharset;
 
 typedef struct
 {
@@ -220,15 +152,6 @@ typedef struct SubtitleLineTable
     f32 times[SUBTITLE_LINE_COUNT];
 } SubtitleLineTable;
 
-typedef struct SubtitleTextEntry
-{
-    u8 pad0[2];
-    u16 count;
-    u8 pad4[4];
-    char** strs;
-} SubtitleTextEntry;
-
-extern GameTextBox gTextBoxes[GAMETEXT_BOX_COUNT];
 extern int gGameTextSequenceMode;
 extern int gSubtitleActive;
 extern int gGameTextPendingDir;
@@ -253,17 +176,7 @@ extern int gGameTextBoxColorB;
 extern int gGameTextBoxColorA;
 extern Texture* gSubtitleBoxTextures[];
 extern Texture* gGameTextBoxFrameTextures[];
-extern void* gCurTextBox;
-
-typedef void (*GameTextDrawFunc)(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
-
-extern int curLanguage;
 extern int curGameTextDir;
-extern int gameTextCharset;
-extern TextFont* gameTextFonts;
-extern GameTextDrawFunc gameTextDrawFunc;
-extern LanguageName sLanguageNameTable[];
-extern u8 gGameTextFontMetrics[];
 extern int gGameTextShadowOffsetX;
 extern int gGameTextShadowOffsetY;
 extern u8 gGameTextBase[];

@@ -25,7 +25,6 @@
 #define SND_OUTPUTMODE_STEREO   1 /* plain stereo */
 #define SND_OUTPUTMODE_SURROUND 2 /* Dolby Pro Logic surround */
 
-extern u8 synthITDDefault[8][2];
 extern u8 synthAuxBMIDISet[8];
 extern u8 synthAuxBMIDI[8];
 extern u8 synthAuxAMIDISet[8];
@@ -38,7 +37,7 @@ extern u32 synthFlags;
 void sndSeqVolume(u8 volume, u16 time, u32 seqId, u8 mode)
 {
     sndBegin();
-    synthUpdateHandle(volume, time, seqId, mode);
+    seqVolume(volume, time, seqId, mode);
     sndEnd();
 }
 
@@ -47,7 +46,7 @@ void sndSeqVolume(u8 volume, u16 time, u32 seqId, u8 mode)
  */
 u16 seqGetMIDIPriority(u8 slot, u8 event)
 {
-    return gSynthVoiceNotes[slot][event];
+    return seqMIDIPriority[slot][event];
 }
 
 /*
@@ -87,15 +86,12 @@ int sndFXKeyOff(u32 handle)
     return result;
 }
 
-/*
- * MusyX FX start wrapper, adding the current studio's cached aux index.
- */
 u32 sndFXStartEx(u16 fxId, u8 volume, u8 pan, u8 studio)
 {
     u32 result;
     u8 auxIndex;
     sndBegin();
-    auxIndex = synthITDDefault[studio][1];
+    auxIndex = synthITDDefault[studio].sfx;
     result = synthFXStart(fxId, volume, pan, studio, auxIndex);
     sndEnd();
     return result;
@@ -194,7 +190,7 @@ void sndSetAuxProcessingCallbacks(u8 studio, SynthAuxCallback auxACallback, void
         synthAuxAMIDI[studio] = auxAIndex;
         if (auxAIndex != 0xff)
         {
-            synthAuxAMIDISet[studio] = synthResolveHandle((u32)auxAData);
+            synthAuxAMIDISet[studio] = seqGetPrivateId((u32)auxAData);
             synthAuxACallback[studio] = auxACallback;
             synthAuxAUser[studio] = auxAUser;
         }
@@ -209,7 +205,7 @@ void sndSetAuxProcessingCallbacks(u8 studio, SynthAuxCallback auxACallback, void
         synthAuxBMIDI[studio] = auxBIndex;
         if (auxBIndex != 0xff)
         {
-            synthAuxBMIDISet[studio] = synthResolveHandle((u32)auxBData);
+            synthAuxBMIDISet[studio] = seqGetPrivateId((u32)auxBData);
             synthAuxBCallback[studio] = auxBCallback;
             synthAuxBUser[studio] = auxBUser;
         }
@@ -234,8 +230,8 @@ void synthActivateStudio(u8 studio, u32 isMaster, SND_STUDIO_TYPE type)
     synthAuxBCallback[studio] = 0;
     synthAuxAMIDI[studio] = 0xff;
     synthAuxBMIDI[studio] = 0xff;
-    synthITDDefault[studio][1] = 0;
-    synthITDDefault[studio][0] = 0;
+    synthITDDefault[studio].sfx = 0;
+    synthITDDefault[studio].music = 0;
     hwActivateStudio(studio, isMaster, type);
     sndEnd();
 }
@@ -257,9 +253,9 @@ void synthDeactivateStudio(u8 studio)
         voice = (u8*)synthVoice + offset;
         if (studio == ((McmdVoiceState*)voice)->studio)
         {
-            if (((McmdVoiceState*)voice)->voiceHandle != 0xffffffff)
+            if (((McmdVoiceState*)voice)->id != 0xffffffff)
             {
-                voiceKillById(((McmdVoiceState*)voice)->vidListNode->id);
+                voiceKillSound(((McmdVoiceState*)voice)->vidList->vid);
             }
             else
             {

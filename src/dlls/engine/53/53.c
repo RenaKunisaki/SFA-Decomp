@@ -48,7 +48,7 @@
 #define SECONDS_PER_MINUTE  60
 
 extern u8 enableDebugText;
-extern void* lbl_803A8680[4];
+extern void* gSaveSelectTextures[4];
 
 void saveFileSelect_checkCheatCodes(void)
 {
@@ -124,8 +124,8 @@ void saveSelect_drawText(int unused, int alpha)
     int minutes;
     int seconds;
 
-    drawTexture(lbl_803A8680[1], 282.0f, 142.0f, alpha, 0x100);
-    drawTexture(lbl_803A8680[2], 322.0f, 142.0f, alpha, 0x100);
+    drawTexture(gSaveSelectTextures[1], 282.0f, 142.0f, alpha, 0x100);
+    drawTexture(gSaveSelectTextures[2], 322.0f, 142.0f, alpha, 0x100);
     gameTextSetColor(0xff, 0xff, 0xff, alpha);
 
     saveFileSelect_saveSlots =
@@ -160,7 +160,7 @@ void saveSelect_drawText(int unused, int alpha)
  * confirms a slot. Slot 0 is the "back" choice: if a save already exists
  * (gSaveGameEnabled) it returns to the choose-slot screen, otherwise it plays
  * the rotation sfx, kicks off screen transition 0x14, and arms the
- * pending-action flags (lbl_803DD6CC/CF). Any other slot starts a new
+ * pending-action flags (gSaveSelectQuitPending/CF). Any other slot starts a new
  * game: it flags the choice, plays the confirm sfx, runs transition 0x14,
  * tears down the four title-menu control sub-objects via vtable slot 7,
  * and records the chosen value (gSaveSelectChapter).
@@ -170,9 +170,9 @@ void saveSelect_drawText(int unused, int alpha)
  */
 
 extern u8 gSaveSelectChapter;
-extern u8 lbl_803DD6CC;
-extern u8 lbl_803DD6CD;
-extern s8 lbl_803DD6CF;
+extern u8 gSaveSelectQuitPending;
+extern u8 gSaveSelectLaunchPending;
+extern s8 gSaveSelectExitTimer;
 
 void saveSelectSetSlot(int slot, int value)
 {
@@ -187,20 +187,20 @@ void saveSelectSetSlot(int slot, int value)
         {
             Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
             (*gScreenTransitionInterface)->start(0x14, 5);
-            lbl_803DD6CF = 0x23;
-            lbl_803DD6CC = 1;
+            gSaveSelectExitTimer = 0x23;
+            gSaveSelectQuitPending = 1;
         }
     }
     else
     {
-        lbl_803DD6CD = 1;
+        gSaveSelectLaunchPending = 1;
         Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up); /* confirm sfx (unnamed in sfx_ids.h) */
         (*gScreenTransitionInterface)->start(0x14, 1);
         gTitleMenuControlInterface->vtable->func0A(0);
         gTitleMenuControlInterface->vtable->func0A(1);
         gTitleMenuControlInterface->vtable->func0A(2);
         gTitleMenuControlInterface->vtable->func0A(3);
-        lbl_803DD6CF = 0x23;
+        gSaveSelectExitTimer = 0x23;
         gSaveSelectChapter = value;
     }
 }
@@ -241,10 +241,10 @@ typedef struct SaveSelectPanel
 
 #define SAVESELECTSCREEN_TEXTURE_ID 0x2dd
 
-s8 lbl_803DD6CF;
+s8 gSaveSelectExitTimer;
 s8 gSaveSelectRefreshCounter;
-u8 lbl_803DD6CD;
-u8 lbl_803DD6CC;
+u8 gSaveSelectLaunchPending;
+u8 gSaveSelectQuitPending;
 void* gSaveSelectTexture;
 u8 gSaveSelectMenuItemActive;
 u8 gSaveSelectChapter;
@@ -261,7 +261,7 @@ u8 saveFileSelect_saveDirty;
 s8 saveFileSelect_currentSlotIndex;
 void* gSaveSelectCachedText;
 extern void* lbl_8031A804[4];
-void* lbl_803A8680[4];
+void* gSaveSelectTextures[4];
 extern SaveSelectPanel gSaveSelectPanels[];
 extern u8 lbl_8031A7F8[];
 static void saveSelectGoToChapterSelect(void);
@@ -329,8 +329,8 @@ static void saveFileSelect_init(int sel, int slot)
     {
         Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
         (*gScreenTransitionInterface)->start(20, 5);
-        lbl_803DD6CF = 0x23;
-        lbl_803DD6CC = 1;
+        gSaveSelectExitTimer = 0x23;
+        gSaveSelectQuitPending = 1;
     }
     else if (sel != -1)
     {
@@ -431,14 +431,14 @@ static void saveSelectGoToChapterSelect(void)
     }
     else
     {
-        lbl_803DD6CD = 1;
+        gSaveSelectLaunchPending = 1;
         Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up);
         (*gScreenTransitionInterface)->start(20, 1);
         gTitleMenuControlInterface->vtable->func0A(0);
         gTitleMenuControlInterface->vtable->func0A(1);
         gTitleMenuControlInterface->vtable->func0A(2);
         gTitleMenuControlInterface->vtable->func0A(3);
-        lbl_803DD6CF = 0x23;
+        gSaveSelectExitTimer = 0x23;
         gSaveSelectChapter = 0;
     }
 }
@@ -536,7 +536,7 @@ static void saveSelectScreenFree(int runExitCallback)
         lbl_803DD6AC = NULL;
     }
 
-    p = lbl_803A8680;
+    p = gSaveSelectTextures;
     zero = NULL;
     for (i = 0; i < 4; i++)
     {
@@ -691,7 +691,7 @@ int SaveSelectScreen_run(void)
     int btn;
     s8* flagPtr;
 
-    timer = lbl_803DD6CF;
+    timer = gSaveSelectExitTimer;
     frames = framesThisStep;
     if (frames > 3)
     {
@@ -699,18 +699,18 @@ int SaveSelectScreen_run(void)
     }
     if (timer > 0)
     {
-        lbl_803DD6CF -= frames;
+        gSaveSelectExitTimer -= frames;
     }
     if ((*gScreenTransitionInterface)->isFinished() == 0)
     {
         gTitleMenuLinkInterface->vtable->resetTimers();
         gSaveSelectRefreshCounter = 4;
     }
-    if (lbl_803DD6CD != 0 || lbl_803DD6CC != 0)
+    if (gSaveSelectLaunchPending != 0 || gSaveSelectQuitPending != 0)
     {
-        if ((timer <= 12 || lbl_803DD6CF > 12) && lbl_803DD6CF <= 0)
+        if ((timer <= 12 || gSaveSelectExitTimer > 12) && gSaveSelectExitTimer <= 0)
         {
-            if (lbl_803DD6CD != 0)
+            if (gSaveSelectLaunchPending != 0)
             {
                 n_attractmode_releaseMovieBuffers();
                 if (gSaveGameEnabled != 0)
@@ -757,7 +757,7 @@ int SaveSelectScreen_run(void)
                 loadUiDll(4);
             }
         }
-        return lbl_803DD6CF <= 12;
+        return gSaveSelectExitTimer <= 12;
     }
     if (gSaveSelectPanelIndex == SAVE_SELECT_PANEL_CONFIRM_ERASE)
     {
@@ -769,8 +769,8 @@ int SaveSelectScreen_run(void)
         else if (btn & PAD_BUTTON_B)
         {
             (*gScreenTransitionInterface)->start(0x14, 5);
-            lbl_803DD6CF = 0x23;
-            lbl_803DD6CC = 1;
+            gSaveSelectExitTimer = 0x23;
+            gSaveSelectQuitPending = 1;
         }
     }
     else
@@ -821,13 +821,13 @@ int SaveSelectScreen_run(void)
                 }
                 else if (sel == 1)
                 {
-                    lbl_803DD6CD = 1;
+                    gSaveSelectLaunchPending = 1;
                     (*gScreenTransitionInterface)->start(0x14, 5);
                     gTitleMenuControlInterface->vtable->func0A(0);
                     gTitleMenuControlInterface->vtable->func0A(1);
                     gTitleMenuControlInterface->vtable->func0A(2);
                     gTitleMenuControlInterface->vtable->func0A(3);
-                    lbl_803DD6CF = 0x23;
+                    gSaveSelectExitTimer = 0x23;
                 }
                 break;
             case SAVE_SELECT_PANEL_CHAPTER_SELECT:
@@ -875,7 +875,7 @@ void SaveSelectScreen_initialise(void)
 
     for (i = 0; i < 4; i++)
     {
-        lbl_803A8680[i] = textureLoadAsset(gSaveSelectTextureIds[i]);
+        gSaveSelectTextures[i] = textureLoadAsset(gSaveSelectTextureIds[i]);
     }
 
     if (getPrevUiDll() != 6)
@@ -909,9 +909,9 @@ void SaveSelectScreen_initialise(void)
         saveFileSelect_cheatInputTimer = 0;
     }
 
-    lbl_803DD6CC = 0;
-    lbl_803DD6CD = 0;
-    lbl_803DD6CF = 0;
+    gSaveSelectQuitPending = 0;
+    gSaveSelectLaunchPending = 0;
+    gSaveSelectExitTimer = 0;
     gSaveSelectRefreshCounter = 4;
     lbl_803DD6B4 = 0;
 
@@ -1063,7 +1063,7 @@ u8 lbl_8031A7F8[12] = {0, 0, 5, 213, 0, 0, 5, 214, 0, 0, 5, 212};
 void* lbl_8031A804[4] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00000000};
 u16 saveFileSelect_debugCheatSequence[6] = {0x4000, 0x8000, 0x4000, 0x8000, 4, 0};
 u16 saveFileSelect_slotCheatSequence[6] = {0x400, 0x800, 0x8000, 0x8000, 2, 0};
-void* lbl_8031A82C[10] = {(void*)0x00000000,      (void*)0x00000000,           (void*)0x00000000,
+void* SaveSelectScreen_funcs[10] = {(void*)0x00000000,      (void*)0x00000000,           (void*)0x00000000,
                           (void*)0x00050000,      SaveSelectScreen_initialise, SaveSelectScreen_release,
                           (void*)0x00000000,      SaveSelectScreen_run,        SaveSelectScreen_frameEnd_nop,
                           SaveSelectScreen_render};

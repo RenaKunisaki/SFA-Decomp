@@ -1,19 +1,11 @@
 #include "musyx/synth_seq_events.h"
 
-typedef struct SynthVoiceKeyGroups
-{
-    u8 pad[0x14E8];
-    SynthKeyGroupState keyGroupStates[SYNTH_VOICE_NOTE_COUNT];
-} SynthVoiceKeyGroups;
-
 #define SYNTH_TRACK_COMMAND_END  0xFFFF
 #define SYNTH_TRACK_COMMAND_JUMP 0xFFFE
 
 #define TRACK_CMD(cursor) ((SynthTrackCommand*)(cursor)->current)
 
-#define KEYGROUP_STATE(voice, index) (((SynthKeyGroupState*)((u8*)(voice) + 0x14E8))[index])
-
-SynthSequenceEvent* synthGetNextChannelEvent(u8 channel)
+SynthSequenceEvent* GenerateNextTrackEvent(u8 channel)
 {
     u32 trackId;
     SynthTrackCursor* track;
@@ -24,12 +16,12 @@ SynthSequenceEvent* synthGetNextChannelEvent(u8 channel)
     u32 modTime;
 
     trackId = channel;
-    track = SYNTH_TRACK_CURSOR(gSynthCurrentVoice, channel);
-    pattern = SYNTH_SEQUENCE_STATE(gSynthCurrentVoice, trackId);
+    track = &cseq->track[channel];
+    pattern = &cseq->pattern[trackId];
 
     if (track->current != 0)
     {
-        ev = SYNTH_CHANNEL_EVENT(gSynthCurrentVoice, trackId);
+        ev = &cseq->channelEvents[trackId];
         ev->trackId = channel;
         ev->state = pattern;
 
@@ -46,15 +38,15 @@ SynthSequenceEvent* synthGetNextChannelEvent(u8 channel)
 
                 if (TRACK_CMD(track)->command == SYNTH_TRACK_COMMAND_JUMP)
                 {
-                    if (SYNTH_KEYGROUP_MAP(gSynthCurrentVoice) == 0)
+                    if (cseq->keyGroupMap == 0)
                     {
-                        if (KEYGROUP_STATE(gSynthCurrentVoice, 0).active)
+                        if (cseq->section[0].loopDisable)
                         {
                             track->current = 0;
                             return 0;
                         }
                     }
-                    else if (KEYGROUP_STATE(gSynthCurrentVoice, SYNTH_KEYGROUP_MAP(gSynthCurrentVoice)[trackId]).active)
+                    else if (cseq->section[cseq->keyGroupMap[trackId]].loopDisable)
                     {
                         track->current = 0;
                         return 0;
@@ -132,7 +124,7 @@ SynthSequenceEvent* synthGetNextChannelEvent(u8 channel)
 /*
  * Sorted-by-time insert into a channel event queue.
  */
-void synthInsertChannelEvent(SynthSequenceQueue* queue, SynthSequenceEvent* event)
+void InsertGlobalEvent(SynthSequenceQueue* queue, SynthSequenceEvent* event)
 {
     SynthSequenceEvent* current;
     SynthSequenceEvent* prev;

@@ -27,8 +27,8 @@ ObjectDescriptor6 Effect8_funcs = {
     (ObjectDescriptorCallback)Effect8_release,
     0,
     (ObjectDescriptorCallback)Effect8_func03_nop,
-    (ObjectDescriptorCallback)Effect8_func04,
-    (ObjectDescriptorCallback)Effect8_func05,
+    (ObjectDescriptorCallback)Effect8_spawnObject,
+    (ObjectDescriptorCallback)Effect8_updateFrameState,
 };
 
 
@@ -45,7 +45,7 @@ ObjectDescriptor6 Effect8_funcs = {
         spawnParams = &gEffect8DefaultSpawnParams;                                                               \
     } while (0)
 
-int Effect8_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect8_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                    s16* extraArgs)
 {
     int spawnResult;
@@ -432,7 +432,7 @@ int Effect8_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
 }
 #undef FILL8
 
-void Effect8_func05(void)
+void Effect8_updateFrameState(void)
 {
     f32 sum;
     f32 step;

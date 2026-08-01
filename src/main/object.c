@@ -61,8 +61,8 @@ s16* gObjSeqToObjIdTable;
 int gObjSeqToObjIdMax;
 GameObject** gObjDeferredFreeList;
 int gObjDeferredFreeCount;
-GameObject** lbl_803DCB90;
-int lbl_803DCB8C;
+GameObject** gObjPendingDefFreeList;
+int gObjPendingDefFreeCount;
 GameObject** gObjList;
 int gObjCount;
 ObjLinkedList gObjUpdateList;
@@ -190,30 +190,16 @@ extern f32 lbl_803DE8D8;
 extern f32 gObjColorFadeRate;
 extern f32 gObjColorFadeAlphaMax;
 GameObject* gEffectBoxObjects[20];
-extern int gObjTablesBinCount;
-extern int* gObjTablesBinIndex;
-extern u8* gObjTablesBinData;
-extern int gObjCount;
-extern GameObject** gObjList;
 extern const f32 lbl_803DE890;
 extern const f32 lbl_803DE8B8;
-extern int gObjDeferredFreeCount;
-extern GameObject** gObjDeferredFreeList;
 extern char sObjSetupObjectLoadingLockedWarning[];
 extern char sObjDebugStrings[];
-extern s16 gObjPartitionPivot;
-extern int gObjSeqToObjIdMax;
-extern s16* gObjSeqToObjIdTable;
 extern f32 lbl_803DE8CC;
 extern f32 lbl_803DE8D0;
-extern u8* gObjFileRefCount;
-extern u32 gObjUpdateFlags;
 extern f32 lbl_803DE8BC;
 extern f32 gObjPi;
 extern f32 lbl_803DE8C4;
 extern f32 lbl_803DE8C8;
-extern int* gObjFileOffsetTable;
-extern int gObjFileCount;
 extern f32 gMapSavedPlayerOffsetX;
 extern f32 gMapSavedPlayerOffsetZ;
 
@@ -947,8 +933,6 @@ char sObjDebugStrings[] = {
 
 char sObjSetupObjectLoadingLockedWarning[] = "<objSetupObject>  loading is locked can't setup objno %d\n";
 
-extern u8** gObjFileBufferTable;
-extern char sObjFreeObjdefError[];
 
 ObjPlacement* Obj_AllocObjectSetup(int size, int type)
 {
@@ -1167,24 +1151,9 @@ static void objFreeObjdef(u8* obj, int flag)
     mm_free(obj);
 }
 
-extern ObjLinkedList gObjUpdateList;
-extern s8 gEffectBoxObjectCount;
-
-extern int gObjDefCaptureMode;
-
-
-
-
-extern GameObject* gEffectBoxObjects[20];
 
 void Obj_RegisterObject(GameObject* obj, int b);
 
-extern char sObjUnknownTypeUsingDummyObjectWarning[];
-
-
-extern u8 gObjCameraSetupBlock[32];
-
-extern char sObjFreeNonExistentObjectWarning[];
 
 int loadModLines(int idx, s16* outCount)
 {
@@ -1600,20 +1569,20 @@ void Obj_FreeObject(GameObject* obj)
     if (obj->unkEA != 0)
     {
         i = 0;
-        base = lbl_803DCB90;
-        for (; i < lbl_803DCB8C; i++)
+        base = gObjPendingDefFreeList;
+        for (; i < gObjPendingDefFreeCount; i++)
         {
             if (base[i] == obj)
             {
                 break;
             }
         }
-        if (i == lbl_803DCB8C)
+        if (i == gObjPendingDefFreeCount)
         {
-            if (lbl_803DCB8C < OBJ_PENDING_DEF_FREE_CAPACITY)
+            if (gObjPendingDefFreeCount < OBJ_PENDING_DEF_FREE_CAPACITY)
             {
-                lbl_803DCB90[lbl_803DCB8C] = obj;
-                lbl_803DCB8C++;
+                gObjPendingDefFreeList[gObjPendingDefFreeCount] = obj;
+                gObjPendingDefFreeCount++;
                 return;
             }
         }
@@ -2448,11 +2417,11 @@ void Obj_ResetObjectSystem(void)
     Obj_FreeDeferredObjects();
     gObjDefCaptureMode = 2;
     gObjDeferredFreeCount = 0;
-    lbl_803DCB8C = 0;
+    gObjPendingDefFreeCount = 0;
     gObjCount = 0;
     objListInit(&gObjUpdateList, 0x38);
     gObjDeferredFreeCount = 0;
-    lbl_803DCB8C = 0;
+    gObjPendingDefFreeCount = 0;
     lbl_803DCB70 = 0;
     gObjCount = 0;
     objListInit(&gObjUpdateList, 0x38);
@@ -2713,7 +2682,7 @@ void Obj_InitObjectSystem(void)
     int i;
 
     gObjDeferredFreeList = mmAlloc(OBJ_DEFERRED_FREE_CAPACITY * sizeof(*gObjDeferredFreeList), 0xe, 0);
-    lbl_803DCB90 = mmAlloc(OBJ_PENDING_DEF_FREE_CAPACITY * sizeof(*lbl_803DCB90), 0xe, 0);
+    gObjPendingDefFreeList = mmAlloc(OBJ_PENDING_DEF_FREE_CAPACITY * sizeof(*gObjPendingDefFreeList), 0xe, 0);
     lbl_803DCBC0 = mmAlloc(0x10, 0xe, 0);
     loadAssetFileById(&gObjSeqToObjIdTable, MLDF_FILEID_OBJINDEX_BIN);
     gObjSeqToObjIdMax = (getDataFileSize(MLDF_FILEID_OBJINDEX_BIN) >> 1) - 1;
@@ -2747,7 +2716,7 @@ void Obj_InitObjectSystem(void)
     gObjList = mmAlloc(OBJ_LIST_CAPACITY * sizeof(*gObjList), 0xe, 0);
     ObjHits_InitWorkBuffers();
     gObjDeferredFreeCount = 0;
-    lbl_803DCB8C = 0;
+    gObjPendingDefFreeCount = 0;
     lbl_803DCB70 = 0;
     gObjCount = 0;
     objListInit(&gObjUpdateList, 0x38);

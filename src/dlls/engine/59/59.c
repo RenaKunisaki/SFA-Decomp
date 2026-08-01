@@ -118,7 +118,7 @@ void Menu_initialise(void)
     gMenuArmed = 0;
 }
 
-u32 lbl_8031C168[16] = {0x00000000,           0x00000000,           0x00000000,       0x000b0000,
+u32 Menu_funcs[16] = {0x00000000,           0x00000000,           0x00000000,       0x000b0000,
                         (u32)Menu_initialise, (u32)Menu_release,    0x00000000,       (u32)Menu_reset,
                         (u32)Menu_open,       (u32)Menu_addItem,    (u32)Menu_addItemEx, (u32)Menu_setCancelId,
                         (u32)Menu_poll,       (u32)Menu_func09_nop, (u32)Menu_setArmed, (u32)Menu_getItemCount};

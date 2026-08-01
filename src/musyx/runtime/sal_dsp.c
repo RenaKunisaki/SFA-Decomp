@@ -13,7 +13,7 @@ typedef struct
     u8 dram[0x2000];
 } SalDspTask;
 
-static SalDspTask lbl_803D4880;
+static SalDspTask sDspTask;
 u16 dspSlave[0xCF0] = {
     0x0000, 0x0000, 0x029F, 0x0C10, 0x029F, 0x0C1F, 0x029F, 0x0C3B, 0x029F, 0x0C4A, 0x029F, 0x0C50, 0x029F, 0x0C82,
     0x029F, 0x0C88, 0x1302, 0x1303, 0x1204, 0x1305, 0x1306, 0x8E00, 0x8C00, 0x8B00, 0x0092, 0x00FF, 0x8100, 0x8900,
@@ -257,22 +257,22 @@ u16 dspSlaveLength = sizeof(dspSlave);
 
 int salInitDsp(u32 flags)
 {
-    lbl_803D4880.task.iram_mmem_addr = dspSlave;
-    lbl_803D4880.task.iram_length = dspSlaveLength;
-    lbl_803D4880.task.iram_addr = 0;
-    lbl_803D4880.task.dram_mmem_addr = (u16*)((u8*)&lbl_803D4880 + 0x60);
-    lbl_803D4880.task.dram_length = 0x2000;
-    lbl_803D4880.task.dram_addr = 0;
-    lbl_803D4880.task.dsp_init_vector = 0x10;
-    lbl_803D4880.task.dsp_resume_vector = 0x30;
-    lbl_803D4880.task.init_cb = dspInitCallback;
-    lbl_803D4880.task.res_cb = dspResumeCallback;
-    lbl_803D4880.task.done_cb = NULL;
-    lbl_803D4880.task.req_cb = NULL;
-    lbl_803D4880.task.priority = 0;
+    sDspTask.task.iram_mmem_addr = dspSlave;
+    sDspTask.task.iram_length = dspSlaveLength;
+    sDspTask.task.iram_addr = 0;
+    sDspTask.task.dram_mmem_addr = (u16*)((u8*)&sDspTask + 0x60);
+    sDspTask.task.dram_length = 0x2000;
+    sDspTask.task.dram_addr = 0;
+    sDspTask.task.dsp_init_vector = 0x10;
+    sDspTask.task.dsp_resume_vector = 0x30;
+    sDspTask.task.init_cb = dspInitCallback;
+    sDspTask.task.res_cb = dspResumeCallback;
+    sDspTask.task.done_cb = NULL;
+    sDspTask.task.req_cb = NULL;
+    sDspTask.task.priority = 0;
 
     DSPInit();
-    DSPAddTask(&lbl_803D4880.task);
+    DSPAddTask(&sDspTask.task);
     salDspInitIsDone = 0;
     sndEnd();
     while (salDspInitIsDone == 0)

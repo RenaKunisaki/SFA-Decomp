@@ -126,7 +126,7 @@ u8 gInflateBitReverseTable[ZLB_BIT_REVERSE_TABLE_SIZE] = {
 #define ZROT1(b) ((((u32)(b) << sh) | ((u32)(b) >> (32 - sh))) & 1)
 #define ZROT8(b) ((((u32)(b) << sh) | ((u32)(b) >> (32 - sh))) & 0xff)
 #define ZGB8() ((u32)src[1] << (8 - pos) | ZROT8(src[0]))
-#define ZGB16() ((u32)src[1] << (8 - pos) | ZROT8(src[0]) | (u32)src[2] << (0x10 - pos))
+#define ZGB16() ((u32)src[2] << (0x10 - pos) | ZGB8())
 #define ZADV(n) (pos += (n), src += pos >> 3, pos &= 7, sh = 32 - pos)
 #define ZROTL(b, m) (((u32)(b) << (m)) | ((u32)(b) >> (32 - (m))))
 
@@ -166,7 +166,7 @@ int zlbDecompress(u8 *compressedData, int compressedSize, u8 *destination, void 
     do {
         final = ZROT1(src[0]);
         ZADV(1);
-        type = ZGB8() & 3;
+        type = (ZROT8(src[0]) | (pos > 6 ? (u32)src[1] << (8 - pos) : 0)) & 3;
         ZADV(2);
         if (type == 0) {
             u32 len;

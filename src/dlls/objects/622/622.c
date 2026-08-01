@@ -58,10 +58,10 @@ int drshackle_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     return 0;
 }
 
-int drshackle_func0B(GameObject* obj)
+int drshackle_getAttachSlot(GameObject* obj)
 {
     DrshacklePlacement* placement = (DrshacklePlacement*)obj->anim.placementData;
-    return placement->unk19;
+    return placement->attachSlot;
 }
 
 int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int e, int f)
@@ -259,5 +259,5 @@ ObjectDescriptor12 gDrShackleObjDescriptor = {
     (ObjectDescriptorCallback)drshackle_getObjectTypeId,
     (ObjectDescriptorExtraSizeCallback)drshackle_getExtraSize,
     (ObjectDescriptorCallback)drshackle_renderAtPathPoint,
-    (ObjectDescriptorCallback)drshackle_func0B,
+    (ObjectDescriptorCallback)drshackle_getAttachSlot,
 };

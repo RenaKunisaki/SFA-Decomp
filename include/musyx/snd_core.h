@@ -3,7 +3,7 @@
 
 #include "ghidra_import.h"
 
-extern u8 gSynthInitialized;
+extern u8 sndActive;
 extern u8 synthIdleWaitActive;
 
 void sndQuit(void);

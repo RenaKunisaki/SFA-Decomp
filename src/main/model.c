@@ -312,8 +312,8 @@ void modelAnimEvalSlotPair(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
             }
         }
     }
-    lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount, (u8*)gModelJointScratchBuffer,
-                 flags, (u8)mode);
+    modelAnimBuildJointMatrices(&mtxBuf, dst, &work, file->jointData, file->jointCount,
+                                (u8*)gModelJointScratchBuffer, flags, (u8)mode);
 }
 void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 blend, int flags)
 {
@@ -364,8 +364,8 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
         {
             outFlags |= 0x20;
         }
-        lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount, (u8*)gModelJointScratchBuffer,
-                     flags, outFlags | 0x40);
+        modelAnimBuildJointMatrices(&mtxBuf, dst, &work, file->jointData, file->jointCount,
+                                    (u8*)gModelJointScratchBuffer, flags, outFlags | 0x40);
     }
     else
     {
@@ -414,8 +414,8 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
                 }
                 work.eventCountdown = slotEvent;
                 modelAnimUpdateChannels(file, &work, 2);
-                lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount,
-                             (u8*)gModelJointScratchBuffer, flags, blendMask);
+                modelAnimBuildJointMatrices(&mtxBuf, dst, &work, file->jointData, file->jointCount,
+                                            (u8*)gModelJointScratchBuffer, flags, blendMask);
                 if (blendMask != 0)
                 {
                     outFlags |= 1 << i;
@@ -454,8 +454,8 @@ void modelAnimEvalChannels(u8* dst, ObjModel* model, ObjAnimState* channel, f32 
             {
                 outFlags |= 0x20;
             }
-            lbl_80006C6C(&mtxBuf, dst, &work, file->jointData, file->jointCount,
-                         (u8*)gModelJointScratchBuffer, flags, outFlags);
+            modelAnimBuildJointMatrices(&mtxBuf, dst, &work, file->jointData, file->jointCount,
+                                        (u8*)gModelJointScratchBuffer, flags, outFlags);
         }
     }
 }
@@ -677,10 +677,10 @@ int modelGetAmapSize(int modelId, int amapFlag, int animCount)
     int totalSize;
     int index;
 
-    totalSize = animCount;
+    totalSize = 0;
     if (amapFlag != 0)
     {
-        totalSize = (totalSize << 1) + 8;
+        totalSize += animCount * 2 + 8;
         while (totalSize & 7)
         {
             totalSize++;
@@ -688,7 +688,7 @@ int modelGetAmapSize(int modelId, int amapFlag, int animCount)
     }
     else
     {
-        totalSize = totalSize << 2;
+        totalSize += animCount * 4;
         while (totalSize & 7)
         {
             totalSize++;
@@ -1000,8 +1000,8 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
     if (b & 0x8000)
     {
         pos = alignUp2(pos);
-        *(int*)&((ObjModel*)out2)->unk54 = pos;
-        *(u8*)(((ObjModel*)out2)->unk54 + 0x18) = 0;
+        *(int*)&((ObjModel*)out2)->groundShadowVerts = pos;
+        *(u8*)(((ObjModel*)out2)->groundShadowVerts + 0x18) = 0;
     }
     *(int*)&((ObjModel*)out2)->renderAttachment = 0;
     ((ObjModel*)out2)->file = (ModelFileHeader*)p;
@@ -1571,29 +1571,27 @@ void model_multMtxs(u8* model, f32* out)
         PSMTXConcat((MtxPtr)out, base + j * 4, base + j * 4);
     }
 }
-void modelInitBoneMtxs(ObjModel* model, f32* outReordered)
-{
+void modelInitBoneMtxs(ObjModel* model, f32* outReordered) {
     ModelFileHeader* file;
     u32 i;
+    ROMtxPtr reorderCursor[1];
+    int boneByteOff[1];
     MtxPtr mtx;
-    int boneByteOff;
-    ROMtxPtr reorderCursor;
     ModelBone* bone;
     Mtx transMtx;
 
     file = model->file;
     i = 0;
-    boneByteOff = 0;
-    reorderCursor = (ROMtxPtr)outReordered;
-    for (; i < file->jointCount; i++)
-    {
+    boneByteOff[0] = 0;
+    reorderCursor[0] = (ROMtxPtr)outReordered;
+    for (; i < file->jointCount; i++) {
         mtx = modelGetBoneMtx(model, i);
-        bone = (ModelBone*)(file->jointData + boneByteOff);
+        bone = (ModelBone*)(file->jointData + boneByteOff[0]);
         PSMTXTrans(transMtx, -bone->tail[0], -bone->tail[1], -bone->tail[2]);
         PSMTXConcat(mtx, transMtx, transMtx);
-        PSMTXReorder(transMtx, reorderCursor);
-        boneByteOff += 0x1c;
-        reorderCursor += 4;
+        PSMTXReorder(transMtx, reorderCursor[0]);
+        reorderCursor[0] += 4;
+        boneByteOff[0] += 0x1c;
     }
 }
 
@@ -2508,13 +2506,13 @@ void ObjModel_ResolveRenderOpTextures(u8* m)
         {
             *(int*)(op + 0x34) = 0;
         }
-        if (((Shader*)op)->unk38 != -1)
+        if (((Shader*)op)->indTextureId != -1)
         {
-            ((Shader*)op)->unk38 = ((ModelFileHeader*)m)->textureIds[((Shader*)op)->unk38];
+            ((Shader*)op)->indTextureId = ((ModelFileHeader*)m)->textureIds[((Shader*)op)->indTextureId];
         }
         else
         {
-            ((Shader*)op)->unk38 = 0;
+            ((Shader*)op)->indTextureId = 0;
         }
         if (*(int*)(op + 0x1c) != -1)
         {
@@ -2605,9 +2603,9 @@ void ObjModel_RelocateModelData(u8* m)
             ((ModelFileHeader*)m)->jointBlendData = m + *(u32*)&((ModelFileHeader*)m)->jointBlendData;
         }
     }
-    if (*(u32*)&((ModelFileHeader*)m)->unk54)
+    if (*(u32*)&((ModelFileHeader*)m)->extraJointDefs)
     {
-        ((ModelFileHeader*)m)->unk54 = m + *(u32*)&((ModelFileHeader*)m)->unk54;
+        ((ModelFileHeader*)m)->extraJointDefs = m + *(u32*)&((ModelFileHeader*)m)->extraJointDefs;
     }
     if (*(u32*)&((ModelFileHeader*)m)->textureIds)
     {

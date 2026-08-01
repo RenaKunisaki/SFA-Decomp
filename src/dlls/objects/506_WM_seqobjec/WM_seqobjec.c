@@ -27,7 +27,7 @@ int WM_seqobject_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             gWMSeqObjectToggleState = 1 - gWMSeqObjectToggleState;
         }
     }
-    animUpdate->unk80 = 0;
+    animUpdate->curEventId = 0;
     animUpdate->movementState = 0;
     return 0;
 }

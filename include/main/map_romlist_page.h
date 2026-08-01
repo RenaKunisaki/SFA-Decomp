@@ -5,25 +5,33 @@
 
 typedef struct MapRomListPage
 {
-    u8 unk00[0x08];
+    s16 sizeX;
+    s16 sizeZ;
+    s16 originX;
+    s16 originZ;
     u16 objectDataSize;
     u8 unk0A[0x02];
-    void* unk0C;
+    u32* cells;
     u8* loadedObjectBits;
-    void* unk14;
+    u32* cellRects;
     u8 unk18;
     u8 mapLayer;
     u8 unk1A[0x06];
     ObjPlacement* objects;
     f32 worldX;
     f32 worldZ;
-    void* unk2C;
-    void* unk30;
-    void* unk34;
+    u32* layerRects;
+    u32* visCellRects;
+    u32* visLayerRects;
 } MapRomListPage;
 
 STATIC_ASSERT(offsetof(MapRomListPage, objectDataSize) == 0x08);
+STATIC_ASSERT(offsetof(MapRomListPage, cells) == 0x0C);
 STATIC_ASSERT(offsetof(MapRomListPage, loadedObjectBits) == 0x10);
+STATIC_ASSERT(offsetof(MapRomListPage, cellRects) == 0x14);
+STATIC_ASSERT(offsetof(MapRomListPage, layerRects) == 0x2C);
+STATIC_ASSERT(offsetof(MapRomListPage, visCellRects) == 0x30);
+STATIC_ASSERT(offsetof(MapRomListPage, visLayerRects) == 0x34);
 STATIC_ASSERT(offsetof(MapRomListPage, objects) == 0x20);
 STATIC_ASSERT(offsetof(MapRomListPage, worldX) == 0x24);
 STATIC_ASSERT(offsetof(MapRomListPage, worldZ) == 0x28);

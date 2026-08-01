@@ -151,7 +151,7 @@ def main():
             if tag == 'equal':
                 continue
             n += max(i2 - i1, j2 - j1)
-            regions.append((tag, T[i1:i2], C[j1:j2]))
+            regions.append((tag, i1, i2, j1, j2, T[i1:i2], C[j1:j2]))
         print(('REGBLIND' if blind else 'RAW'), 'target', len(T), 'cur', len(C), 'diff', n)
         if blind and POOL_FOLDED:
             u = sorted(set(POOL_FOLDED))
@@ -162,8 +162,9 @@ def main():
         if blind:
             if not regions:
                 print('  (pure register permutation -- no structural work available)')
-            for tag, a, b in regions:
-                print(' ', tag, 'T:', a, '\n      C:', b)
+            for tag, i1, i2, j1, j2, a, b in regions:
+                print(' ', tag, 'T[%d:%d]:' % (i1, i2), a,
+                      '\n      C[%d:%d]:' % (j1, j2), b)
     return 0
 
 

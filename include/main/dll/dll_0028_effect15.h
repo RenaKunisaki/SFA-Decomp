@@ -3,7 +3,7 @@
 
 #include "main/dll/partfx_interface.h"
 
-int Effect15_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect15_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                     f32* extraArgs);
 void Effect15_func05_nop(void);
 void Effect15_func03_nop(void);

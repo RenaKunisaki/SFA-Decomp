@@ -268,7 +268,7 @@ const ObjFxColorTable gObjFxCrystalSparkleTbl = {
     {0x0000, 0x00FF, 0x7FFF, 0x7FC0, 0xFFFF, 0x7FFF, 0x7FC0, 0xFFFF,
      0xA000, 0xFFA0, 0x007F, 0x40FF, 0x0000, 0x0000, 0x0000}};
 const ObjFxS32Table5 gObjFxPulseVariantTbl = {{0, 0, 0, 1, 2}};
-const ObjFxSparkleEffectTable lbl_802C200C = {
+const ObjFxSparkleEffectTable gObjFxHitPulseTbl = {
     {{0, 2, 3, 3, 3}},
     {{0x0000, 0x00DF, 0x0160, 0x00DE, 0x0200, 0x00DD, 0x00E0, 0x00E4, 0x007B,
       0x0000, 0x07D3, 0x07D3, 0x07D4, 0x07D5, 0x07D6, 0x07DC, 0x07DC, 0x07DC,
@@ -781,7 +781,7 @@ void objShowButtonGlow(void* obj, f32 intensity, u8 glowKind)
 void objfx_spawnFrameTimedHitPulse(GameObject* obj, f32 scale, u8 type, u8 variant, f32 yOffset)
 {
     ObjFxS32Table5 variantTbl = gObjFxPulseVariantTbl;
-    ObjFxS32Table5 countTbl = lbl_802C200C.counts;
+    ObjFxS32Table5 countTbl = gObjFxHitPulseTbl.counts;
     f32 offset[3];
     int frame;
     if (type == 0)
@@ -2411,7 +2411,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     f32* maxYPtr;
     f32* minZPtr;
     f32* maxZPtr;
-    int pool;
+    u32 poolOrResource;
     int sky;
     ExpgfxStaticDataLayout* staticData;
     s16 slotIdx;
@@ -2424,17 +2424,16 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     GameObject* player;
     GameObject* tricky;
     u8* nextCacheBuf;
-    u32 resource;
     s8* activeCountScan;
     int curPool;
     u32* maskPtr;
-    ExpgfxSlot* curCacheBuf;
     u8* curPoolBuf;
     ObjAnimComponent* srcObj;
     u8 cacheQueued;
     int ambRPlus1;
     int ambGPlus1;
     int ambBPlus1;
+    ExpgfxSlot* curCacheBuf;
     void* cache;
     u8 ambientScaled[3]; /* BGR order: [2]=R, [1]=G, [0]=B */
     ExpgfxRotateParams rotParams;
@@ -2491,12 +2490,12 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
             break;
         }
     }
-    pool = nextActivePool;
-    if (pool != -1)
+    poolOrResource = nextActivePool;
+    if ((s32)poolOrResource != -1)
     {
         u8 cacheParity;
 
-        copyToCache(cache, (void*)runtime->slotPoolBases[pool], EXPGFX_POOL_CACHE_LINE_COUNT);
+        copyToCache(cache, (void*)runtime->slotPoolBases[poolOrResource], EXPGFX_POOL_CACHE_LINE_COUNT);
         cacheParity = 1;
         curCacheBuf = (ExpgfxSlot*)(cache);
         Camera_GetCurrent();
@@ -2514,9 +2513,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
         ambBPlus1 = ambientScaled[0] + 1;
         boundsMin = EXPGFX_BOUNDS_INIT_MIN;
         boundsMax = EXPGFX_BOUNDS_INIT_MAX;
-        while (pool > -1)
+        while ((s32)poolOrResource > -1)
         {
-            curPoolBuf = (u8*)runtime + pool * sizeof(ExpgfxBounds);
+            curPoolBuf = (u8*)runtime + poolOrResource * sizeof(ExpgfxBounds);
             bounds = (ExpgfxBounds*)(curPoolBuf + EXPGFX_POOL_BOUNDS_OFFSET);
             bounds->minX = boundsMin;
             maxXPtr = &bounds->maxX;
@@ -2529,10 +2528,11 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
             *minZPtr = boundsMin;
             maxZPtr = &bounds->maxZ;
             *maxZPtr = boundsMax;
-            curPool = pool;
-            scanIdx = pool + 1;
+            curPool = poolOrResource;
+            scanIdx = curPool + 1;
             curPoolBuf = (u8*)runtime + scanIdx;
-            activeCountScan = (s8*)(curPoolBuf + EXPGFX_POOL_ACTIVE_COUNTS_OFFSET);
+            activeCountScan = (s8*)curPoolBuf;
+            activeCountScan += EXPGFX_POOL_ACTIVE_COUNTS_OFFSET;
             for (; scanIdx < EXPGFX_POOL_COUNT || (nextActivePool = -1, 0); scanIdx++)
             {
                 if (*activeCountScan != 0)
@@ -2555,7 +2555,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
             cacheQueueWait(cacheQueued);
             slot--;
             slotIdx = 0;
-            maskPtr = (u32*)((u8*)runtime + pool * 4);
+            maskPtr = (u32*)((u8*)runtime + curPool * 4);
             maskPtr = (u32*)((u8*)maskPtr + EXPGFX_POOL_ACTIVE_MASKS_OFFSET);
             curPoolBuf = (u8*)cache + cacheParity * 0x1000;
             for (; slotIdx < EXPGFX_SLOTS_PER_POOL; slotIdx++)
@@ -2576,7 +2576,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                 entry = (ExpgfxTableEntry*)((u8*)runtime->expTab +
                                             (((u32)slot->encodedTableIndex >> 1) & EXPGFX_SLOT_TABLE_INDEX_MASK) * 16);
                 srcObj = (ObjAnimComponent*)entry->sourceId;
-                resource = entry->resource;
+                poolOrResource = entry->resource;
                 slot->stateBits.bits.frameParity = 0;
                 slot->stateBits.bits.quadReady = 1;
                 if ((slot->behaviorFlags & EXPGFX_BEHAVIOR_HOLD_LIFETIME_TIMER) == 0)
@@ -2954,7 +2954,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                     }
                 }
                 quad = (ExpgfxQuadVertex*)slot;
-                if (resource == 0)
+                if (poolOrResource == 0)
                 {
                     debugPrintf(staticData->noTextureString);
                 }
@@ -2966,7 +2966,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                     texT1 = 0;
                     texS0 = 0;
                     texS1 = 0;
-                    if (resource != 0)
+                    if (poolOrResource != 0)
                     {
                         texS0 = 0x80;
                         texT0 = 0x80;
@@ -3411,9 +3411,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                     }
                 }
             }
-            memcpyToCache((void*)*(u32*)((u8*)runtime->slotPoolBases + pool * 4), curPoolBuf, EXPGFX_POOL_CACHE_LINE_COUNT);
+            memcpyToCache((void*)*(u32*)((u8*)runtime->slotPoolBases + curPool * 4), curPoolBuf, EXPGFX_POOL_CACHE_LINE_COUNT);
             cacheQueued = 1;
-            pool = nextActivePool;
+            poolOrResource = nextActivePool;
         }
         cacheQueueWait(0);
     }
@@ -4121,8 +4121,7 @@ void expgfx_free(u32 sourceId)
     }
 }
 
-static inline void expgfx_clearResourceTable(ExpgfxResourceEntry* resourceEntry, s32 zeroFlag, s32 zeroResource,
-                                             s32 zeroId, s32 zeroScore, s32 zeroReserved)
+static inline void expgfx_clearResourceTable(ExpgfxResourceEntry* resourceEntry)
 {
     int resourceIndex;
     for (resourceIndex = 0; resourceIndex < EXPGFX_RESOURCE_TABLE_COUNT; resourceEntry++, resourceIndex++)
@@ -4132,11 +4131,11 @@ static inline void expgfx_clearResourceTable(ExpgfxResourceEntry* resourceEntry,
         {
             textureFree((Texture*)(resourceEntry->resource));
         }
-        gExpgfxTextureFreeInProgress = zeroFlag;
-        resourceEntry->resource = (void*)zeroResource;
-        resourceEntry->resourceId = zeroId;
-        resourceEntry->evictionScore = zeroScore;
-        resourceEntry->reserved = zeroReserved;
+        gExpgfxTextureFreeInProgress = 0;
+        resourceEntry->resource = NULL;
+        resourceEntry->resourceId = 0;
+        resourceEntry->evictionScore = 0;
+        resourceEntry->reserved = 0;
     }
 }
 
@@ -4229,7 +4228,7 @@ void expgfx_resetAllPools(void)
 
     resourceEntry = runtime[0]->resourceTable;
     {
-        expgfx_clearResourceTable(resourceEntry, 0, 0, 0, 0, 0);
+        expgfx_clearResourceTable(resourceEntry);
     }
 }
 
@@ -4569,7 +4568,11 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
         {
             int modePoolIndex;
 
-            sourceModeValue = (config->behaviorFlags & EXPGFX_BEHAVIOR_SOURCE_MODE_FLAG) != 0 ? 1 : 0;
+            if ((config->behaviorFlags & EXPGFX_BEHAVIOR_SOURCE_MODE_FLAG) != 0) {
+                sourceModeValue = 1;
+            } else {
+                sourceModeValue = 0;
+            }
             modePoolIndex = poolIndex;
             runtime->poolSourceModes[modePoolIndex] = sourceModeValue;
             if (runtime->poolSourceModes[modePoolIndex] != 0 &&

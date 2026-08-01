@@ -9,12 +9,12 @@ typedef void (*SynthMessageCallback)(u32 voiceId, s32 message);
 
 extern SynthMessageCallback synthMessageCallback;
 
-void synthRecycleVoiceCallbacks(SynthVoice *voice);
-SynthCallbackLink *synthAllocCallback(s32 triggerValue, u8 controllerIndex);
-s32 synthUpdateCallbacks(void);
-void synthFlushCallbacks(void);
-void synthFreeCallback(SynthCallbackLink *callback);
-u32 synthAssignHandle(s32 voiceIndex);
-u32 synthResolveHandle(u32 handle);
+void ResetNotes(SynthVoice *voice);
+SynthCallbackLink *AllocateNote(s32 triggerValue, u8 controllerIndex);
+s32 HandleNotes(void);
+void KeyOffNotes(void);
+void seqFreeKeyOffNote(SynthCallbackLink *callback);
+u32 GetPublicId(s32 voiceIndex);
+u32 seqGetPrivateId(u32 seqId);
 
 #endif /* MUSYX_SYNTH_CALLBACK_H_ */

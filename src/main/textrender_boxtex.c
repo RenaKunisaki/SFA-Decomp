@@ -23,8 +23,8 @@ void gameTextInitBoxTextures(void) {
     u16* cornerDst;
     int assetCount;
     int cornerBlockRow;
-    int edgeBlockRow;
     u16* edgeDst;
+    int edgeBlockRow;
 
     assetCount = 1;
     textureAsset = &gGameTextBoxTexAssets + 1;
@@ -110,8 +110,8 @@ void gameTextInitBoxTextures(void) {
     gGameTextBoxEdgeTexture = texture;
     edgeDst = (u16*)(texture + 1);
     edgeBlockRow = 0;
+    row = edgeBlockRow;
     for (; edgeBlockRow < 5; edgeBlockRow++) {
-        row = edgeBlockRow * 4;
         column = 0;
         column0Offset = 0;
         for (; column < 20;) {
@@ -146,6 +146,7 @@ void gameTextInitBoxTextures(void) {
             column += 4;
             column0Offset += 8;
         }
+        row += 4;
     }
     DCFlushRange(gGameTextBoxEdgeTexture + 1, 800);
 }

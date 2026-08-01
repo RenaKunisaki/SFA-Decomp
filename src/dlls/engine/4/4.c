@@ -127,7 +127,7 @@ void Dummy04_initialise(void)
 {
 }
 
-u32 lbl_80311378[48] = {
+u32 Dummy04_funcs[48] = {
     0, 0, 0, 0x002b0000,
     (u32)Dummy04_initialise, (u32)Dummy04_release, 0, (u32)Dummy04_func03_ret_m1,
     (u32)Dummy04_func04_nop, (u32)Dummy04_func05_ret_0, (u32)Dummy04_onSetupPlayer, (u32)Dummy04_func07_nop,

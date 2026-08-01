@@ -89,10 +89,14 @@ typedef struct PlayerMoveSlot
     f32 hitWindowUnk94[3];
     f32 unkA0;
     f32 unkA4;
-    u8 unkA8[8];
+    u8 hitInterval[3];  /* 0xA8: per-hit-window repeat-hit interval, copied into PlayerState.hitInterval */
+    u8 hitCountMax[3];  /* 0xAB: per-hit-window max hit count, copied into PlayerState.hitCountMax */
+    u8 padAE[2];
 } PlayerMoveSlot;
 
 STATIC_ASSERT(sizeof(PlayerMoveSlot) == 0xb0);
+STATIC_ASSERT(offsetof(PlayerMoveSlot, hitInterval) == 0xA8);
+STATIC_ASSERT(offsetof(PlayerMoveSlot, hitCountMax) == 0xAB);
 STATIC_ASSERT(offsetof(PlayerMoveSlot, moveTableIndex) == 0x02);
 STATIC_ASSERT(offsetof(PlayerMoveSlot, hitWindowFlags) == 0x08);
 STATIC_ASSERT(offsetof(PlayerMoveSlot, hitVolumeId) == 0x14);
@@ -170,10 +174,10 @@ STATIC_ASSERT(offsetof(PlayerMotionTuning, targetYawRateLimitCurve) == 0x1a8);
 STATIC_ASSERT(offsetof(PlayerMotionTuning, yawSmoothRateCurve) == 0x260);
 STATIC_ASSERT(offsetof(PlayerMotionTuning, yawRateLimitCurve) == 0x304);
 
-extern PlayerMotionTuning lbl_803332B0;
+extern PlayerMotionTuning gPlayerMotionTuning;
 extern s16 lbl_8033366C[];
 extern f32 lbl_8033369C[];
-extern f32 lbl_803DAF88[];
+extern f32 gPlayerMoveRootHeights[];
 extern f32 gPlayerModelChainOriginX;
 extern f32 gPlayerModelChainOriginY;
 extern f32 gPlayerModelChainOriginZ;
@@ -195,23 +199,23 @@ extern f32 lbl_803DC6E0;
 extern f32 lbl_803DC6E4;
 extern u8 gPlayerIceSpellSustaining;
 extern f32 lbl_803DE430;
-extern f32 lbl_803DE438;
-extern f32 lbl_803DE43C;
-extern f32 lbl_803DE440;
+extern f32 gPlayerClimbStartY;
+extern f32 gPlayerClimbEndY;
+extern f32 gPlayerSinkSfxTimer;
 extern u8 lbl_803DE458;
 extern u8 gPlayerHitReactionVariant;
 extern f32 gPlayerFireLaserCountdown;
-extern f32 lbl_803DE460;
+extern f32 gPlayerStaffSfxTimer;
 extern f32 lbl_803DE464;
-extern f32 lbl_803DE468;
-extern s8 lbl_803DE46C;
+extern f32 gPlayerSeqWalkPrevDist;
+extern s8 gPlayerSeqWalkStallFrames;
 extern f32 gPlayerTeleportAnimRearm;
 extern f32 gPlayerLiftRockPullAccum;
-extern u8 lbl_803DE48C;
-extern u8 lbl_803DE48D;
+extern u8 gPlayerRocketBoostSfxPlayed;
+extern u8 gPlayerQuakeChargeSfxPlayed;
 extern f32 gPlayerStaffBoostTargetY;
 extern f32 gPlayerStaffBoostStartY;
-extern f32 lbl_803DE498;
+extern f32 gPlayerLadderSlideVel;
 extern s16 lbl_803DE4B0;
 
 extern const u8 lbl_802C2B30[][16];

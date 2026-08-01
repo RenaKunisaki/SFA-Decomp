@@ -193,6 +193,35 @@ Cross-references verified by reading the source at the paths below.
   the RomCurve network this page covers — flagged here only to avoid confusing the two, per the
   wiki's own opening disambiguation.
 
+## On-disc corpus (rev1) — the variable-length record family settled
+
+The RomCurve records ship inside the per-map `.romlist.zlb` object streams (objType 110), not in
+`ANIMCURV.bin` (which is the AnimCurv sequence data above). A survey of **every** type-110 record
+across all 124 rev1 romlists (5480 records) settles the on-disk shape of the
+`RomCurveDef`(0x2C)/`RomCurvePlacementDef`(0x30)/`ObjfsaRomCurveDef`(0x34) prefix family:
+
+- **Every shipped record carries the full 0x34-byte base** — record lengths are 13/14/15/17 words
+  (0x34/0x38/0x3C/0x44 bytes); no 11- or 12-word record exists. The 0x2C and 0x30 structs are
+  runtime prefix views, not smaller on-disk variants: `rotZ/rotY/rotX` (0x2C-0x2E) and the two
+  `s16` GameBit gates Enable/Disable (0x30/0x32) are present on every record (gates are `-1` on
+  most; otherwise plausible GameBit ids).
+- **Tail length is a function of the Type byte (0x19)**, closing the variable-length question:
+  - +0 bytes (13 words): types 0x00, 0x01, 0x02, 0x03, 0x07, 0x0C, 0x19, 0x1C, 0x1F, 0x23,
+    0x24, 0x27, 0x28, 0x29, 0x2A — including the dominant type 0x24 (Tricky/Objfsa, 1940
+    records), whose `Objfsa` consumers read 0x30/0x32 as the `s16` gate pair while the dead
+    `RomCurve_func13` overlays 0x31-0x33 as `u8`s: same four bytes, two views.
+  - +4 bytes (14 words): types 0x09, 0x15, 0x17, 0x1B.
+  - +8 bytes (15 words): types 0x08 and 0x1A — exactly the `ROMCURVE_TYPE_SPECIAL_ANGLE_8`/`_1A`
+    pair (`dll_0015_curves.h`); the tail's last two bytes look like a `{u8, u8}` parameter pair.
+  - +0x10 bytes (17 words): type 0x26 only (697 records; a 16-byte `u8` array, mostly `0x05`s).
+- **Curve ids (offset 0x14) are globally unique** across the whole disc: 5480/5480 distinct.
+- Checkpoint-route records (objType 5) are uniformly 16 words; 181 shipped.
+- Shipped-type gaps worth knowing: **type 0x16 ships zero records** and **type 0x17 ships exactly
+  one** (map `wastes`, id 3948, all four links `-1`) — so the two unnamed `RomCurveInterface`
+  vtable slots backed by `curves_findNearestOfType16` (slot 0x48) and
+  `curves_findEnclosingLoopOfType17` (slot 0x50), which already have zero callers binary-wide,
+  also could never return a useful result against retail data.
+
 ## Ready-to-adopt code
 
 Two write-ups the wiki backs with concrete values that this codebase doesn't yet centralize:

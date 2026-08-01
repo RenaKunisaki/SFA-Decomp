@@ -145,7 +145,7 @@ int gameBitDecrement(int bit)
 int gameBitIncrement(int bit)
 {
     int val = mainGetBit(bit) + 1;
-    int max = 1 << ((gGameBitTable[bit * 4 + 2] & GAMEBIT_FLAG_WIDTH_MASK) + 1);
+    int max = 1 << ((gGameBitTable[bit].flags & GAMEBIT_FLAG_WIDTH_MASK) + 1);
     if (val < max)
     {
         mainSetBits(bit, val);
@@ -185,7 +185,7 @@ u32 mainGetBit(int gameBit)
     {
         return 0;
     }
-    flags = gGameBitTable[id * 4 + 2];
+    flags = gGameBitTable[id].flags;
     switch (flags >> GAMEBIT_FLAG_BANK_SHIFT)
     {
     case 0:
@@ -201,7 +201,7 @@ u32 mainGetBit(int gameBit)
         base = gGameBitSaveData + 0x5d8;
         break;
     }
-    start = *(u16*)(gGameBitTable + id * 4);
+    start = gGameBitTable[id].firstBit;
     result = 0;
     bit = 1;
     endPtr = &end;
@@ -259,7 +259,7 @@ void mainSetBits(int gameBit, int value)
     {
         return;
     }
-    switch (gGameBitTable[id * 4 + 2] >> GAMEBIT_FLAG_BANK_SHIFT)
+    switch (gGameBitTable[id].flags >> GAMEBIT_FLAG_BANK_SHIFT)
     {
     case 0:
         base = gGameBitSaveData + 0xef0;
@@ -278,13 +278,13 @@ void mainSetBits(int gameBit, int value)
         limit = 0xac;
         break;
     }
-    if (gGameBitTable[id * 4 + 2] & GAMEBIT_FLAG_SYNC)
+    if (gGameBitTable[id].flags & GAMEBIT_FLAG_SYNC)
     {
-        taskHintRecordCompletedTask(gGameBitTable[id * 4 + 3]);
+        taskHintRecordCompletedTask(gGameBitTable[id].taskHintId);
     }
-    start = *(u16*)(gGameBitTable + id * 4);
+    start = gGameBitTable[id].firstBit;
     bit = 1;
-    end = ((gGameBitTable[id * 4 + 2] & GAMEBIT_FLAG_WIDTH_MASK) + 1) + start;
+    end = ((gGameBitTable[id].flags & GAMEBIT_FLAG_WIDTH_MASK) + 1) + start;
     for (i = start; i < end; i++)
     {
         int shift = i & 7;
@@ -471,7 +471,7 @@ void setGameState(int state)
 }
 
 
-/* GameBit descriptor flags byte (gGameBitTable[id*4 + 2]). */
+/* GameBit descriptor flags byte (gGameBitTable[id].flags). */
 
 
 

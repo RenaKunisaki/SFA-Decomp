@@ -43,9 +43,9 @@ int dimbridgecogmai_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) 
 
     animUpdate->movementState = 0;
     if ((placement->flags & DIM_BRIDGE_COG_FLAG_WAIT_FOR_SEQUENCE) != 0 &&
-        animUpdate->unk80 == DIM_BRIDGE_COG_SEQUENCE_COMPLETE_COMMAND) {
+        animUpdate->curEventId == DIM_BRIDGE_COG_SEQUENCE_COMPLETE_COMMAND) {
         mainSetBits(placement->doneGameBit, 1);
-        animUpdate->unk80 = 0;
+        animUpdate->curEventId = 0;
     }
     return 0;
 }

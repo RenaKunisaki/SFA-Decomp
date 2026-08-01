@@ -17,7 +17,6 @@
 #define SYNTH_VOICE_HANDLE_OFFSET 0xF4
 #define SYNTH_VOICE_ACTIVE_HANDLE_OFFSET 0x34
 #define SYNTH_VOICE_PRIORITY_TICK_OFFSET 0x110
-#define SYNTH_VOICE_STATE_FLAGS_OFFSET 0x118
 #define SYNTH_VOICE_MIDI_SLOT_OFFSET 0x121
 #define SYNTH_VOICE_MIDI_CHANNEL_OFFSET 0x122
 
@@ -29,11 +28,11 @@ extern u8 voiceFxRunning;
 extern u8 voiceFreeListTail;
 extern u8 voiceFreeListRoot;
 
-void voiceInitPriorityTables(void);
-void voiceBreakAndFree(u32 voice);
+void synthInitAllocationAids(void);
+void voiceUnblock(u32 voice);
 void voiceKill(u32 voice);
-int voiceKillById(u32 id);
-u32 voiceIsRegistered(McmdVoiceState *voice);
-void voiceRegister(McmdVoiceState* state);
+int voiceKillSound(u32 id);
+u32 voiceIsLastStarted(McmdVoiceState *voice);
+void voiceSetLastStarted(McmdVoiceState* state);
 
 #endif /* MUSYX_VOICE_MANAGE_H_ */

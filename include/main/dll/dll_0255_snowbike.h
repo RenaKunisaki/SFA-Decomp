@@ -9,17 +9,47 @@
 #include "main/objseq.h"
 
 typedef struct SnowBikeRouteFlags {
-    u8 hi : 4;
-    u8 active : 1;
-    u8 lo : 3;
+    u8 resetLatch : 1;   /* 0x80 */
+    u8 pathActive : 1;   /* 0x40 */
+    u8 uiPrompt : 1;     /* 0x20 */
+    u8 impulseLatch : 1; /* 0x10 */
+    u8 active : 1;       /* 0x08 */
+    u8 b04 : 1;          /* 0x04 */
+    u8 b02 : 1;          /* 0x02 */
+    u8 b01 : 1;          /* 0x01 */
 } SnowBikeRouteFlags;
 
 /* Per-object extra state for the rideable SnowBike / CloudRunner bike.
  * Offsets recovered from SnowBike_init/SnowBike_update derefs; the
  * 0x178..0x3DC block is the gPathControlInterface curves-collision state
  * and the 0x428 byte carries the SnowBikeFlags bitfield overlay. */
+typedef struct DRCloudCagePointPair
+{
+    f32 startX;
+    f32 startY;
+    f32 startZ;
+    s16 startAlpha;
+    u8 startColorByte;
+    u8 pad0F;
+    f32 endX;
+    f32 endY;
+    f32 endZ;
+    s16 endAlpha;
+    u8 endColorByte;
+    u8 pad1F;
+} DRCloudCagePointPair;
+
+typedef struct DRCloudCageTrail
+{
+    DRCloudCagePointPair* points;
+    s16 count;
+    u8 flags;
+    u8 pad07;
+} DRCloudCageTrail;
+
 typedef struct SnowBikeState {
-    u8 pad000[0xc];
+    s16 savedRotX;          /* 0x000: saved anim.rotX on mount (restored on dismount) */
+    u8 pad002[0xa];
     f32 posSnapshotX;       /* 0x00c: position snapshot X */
     f32 posSnapshotY;       /* 0x010: position snapshot Y */
     f32 posSnapshotZ;       /* 0x014: position snapshot Z */
@@ -66,21 +96,29 @@ typedef struct SnowBikeState {
     u8 pad231[0xDF];
     s16 unk310;             /* 0x310 */
     s16 unk312;             /* 0x312 */
-    u8 pad314[0xC2];
+    u8 pad314[0xBF];
+    s8 unk3D3;              /* 0x3d3 */
+    u8 pad3D4[0x2];
     u8 unk3D6;              /* 0x3d6 */
     u8 pad3D7[0x2];
     s8 unk3D9;              /* 0x3d9 */
     u8 pad3DA[0x6];
     f32 collisionFxDamping;             /* 0x3e0 */
     f32 collisionFxTimer;             /* 0x3e4 */
-    u8 pad3E8[0xc];
+    f32 modelMtxPosX;       /* 0x3e8: model matrix position */
+    f32 modelMtxPosY;       /* 0x3ec */
+    f32 modelMtxPosZ;       /* 0x3f0 */
     f32 unk3F4;             /* 0x3f4 */
     f32 unk3F8;             /* 0x3f8 */
-    u8 pad3FC[0x10];
+    u8 pad3FC[0x4];
+    f32 mountPosX;          /* 0x400: local position latched at mount */
+    f32 mountPosY;          /* 0x404 */
+    f32 mountPosZ;          /* 0x408 */
     s16 yawCurrent;             /* 0x40c: yaw current */
     s16 yaw;             /* 0x40e: yaw target */
     int unk410;             /* 0x410 */
-    u8 pad414[0x8];
+    f32 unk414;             /* 0x414: signed steer/lean value, read scaled by 1/400 and sign-tested */
+    u8 pad418[0x4];
     s16 savedRotY;             /* 0x41c: saved anim.rotY (restored after temp halo modify) */
     s16 savedRotZ;             /* 0x41e: saved anim.rotZ (restored after temp halo modify) */
     u8 playerInRange;       /* 0x420: 1 while the mount hitbox reports INTERACT_FLAG_IN_RANGE, else 0; forced 0 once GAMEBIT_DIM_CrossedBlizzard is set; returned by the SnowBike_getMountSide vtable getter */
@@ -102,7 +140,7 @@ typedef struct SnowBikeState {
     f32 timer;              /* 0x43c: countdown timer (decays by timeDelta, fires+resets at floor) */
     s16 modelId;             /* 0x440: model id */
     u8 pad442[0x6];
-    s16 unk448;             /* 0x448 */
+    s16 completionGameBit;  /* 0x448: gamebit set to 1 when the mount/ride completes (SnowBike_setMountState) */
     s16 gameBitId;             /* 0x44a: gamebit id */
     s16 steerAngleDeg;      /* 0x44c: stick steering angle in deg (getAngle/gSnowBikeBamToDeg); gates partfx in angle bands */
     u8 pad44E[0x2];
@@ -120,11 +158,11 @@ typedef struct SnowBikeState {
     f32 baseVelLimitZ;             /* 0x478 */
     f32 localVelXLimit;             /* 0x47c */
     f32 localVelYLimit;             /* 0x480 */
-    f32 distanceScaleLimit; /* 0x484: symmetric clamp bound applied to distanceScale */
+    f32 localVelZLimit;     /* 0x484: symmetric clamp bound applied to localVelZ */
     u8 pad488[0xc];
     f32 localVelX;             /* 0x494 */
     f32 localVelY;             /* 0x498 */
-    f32 distanceScale;             /* 0x49c */
+    f32 localVelZ;             /* 0x49c: local-frame velocity Z (PSVECMag/PSVECScale treat 0x494 as a Vec) */
     u8 pad4A0[0xC];
     f32 collisionBounceScale; /* 0x4ac: collision velocity-retention scalar (localVel *= dot*collisionBounceScale + K on hit) */
     f32 liftAccel;          /* 0x4b0: vertical accel integrated into localVelY (localVelY += liftAccel*dt); also scales turn force */
@@ -134,7 +172,8 @@ typedef struct SnowBikeState {
     f32 airMeterCurrent;             /* 0x4bc */
     f32 airDrainRate;             /* 0x4c0 */
     f32 airMeterRefillTimer; /* 0x4c4: counts down by rate*timeDelta (clamped [0,K]); while non-zero, refills airMeterCurrent */
-    u8 pad4C8[0x54];        /* 0x4c8: 9 path allocation slots (stride 8) */
+    DRCloudCageTrail trails[9]; /* 0x4c8: cloud-trail records (drcloudcage_updateTrails walks them by raw stride) */
+    DRCloudCageTrail* activeTrails[3]; /* 0x510: the three head-trail slots (accessed raw - the spawn loop walks them via a running slot base) */
     f32 homePosX;             /* 0x51c: home X */
     f32 homePosY;             /* 0x520: home Y */
     f32 homePosZ;             /* 0x524: home Z */
@@ -147,7 +186,7 @@ typedef struct SnowBikeState {
     f32 turnVelScale;       /* 0x540: smoothed scale on the strafe/turn velocity delta */
     f32 turnForceGain;      /* 0x544: smoothed gain (* unk4B0) on the strafe/turn force input */
     f32 localVelXDamp;      /* 0x548: smoothed base of powfBitEstimate(.,dt) damping localVelX */
-    f32 distanceScaleDamp;  /* 0x54c: smoothed base of powfBitEstimate(.,dt) damping distanceScale */
+    f32 localVelZDamp;  /* 0x54c: smoothed base of powfBitEstimate(.,dt) damping localVelZ */
     f32 unk550;             /* 0x550 */
     f32 unk554;             /* 0x554 */
     f32 unk558;             /* 0x558: exponentially smoothed toward a clamped unk578; never read outside its own update */
@@ -157,7 +196,7 @@ typedef struct SnowBikeState {
     f32 unk574;             /* 0x574: held target for unk534 (riding-paused state) */
     f32 unk578;             /* 0x578: held target for unk558 (riding-paused state) */
     f32 localVelXDampTarget;     /* 0x57c: held target for localVelXDamp (riding-paused state) */
-    f32 distanceScaleDampTarget; /* 0x580: held target for distanceScaleDamp (riding-paused state) */
+    f32 localVelZDampTarget; /* 0x580: held target for localVelZDamp (riding-paused state) */
     f32 unk584;             /* 0x584 */
     s16 haloDriftPhaseA;    /* 0x588: integrated phase, fed to mathSinf for halo-light drift */
     s16 haloDriftPhaseB;    /* 0x58a: integrated phase, fed to mathSinf for halo-light drift */
@@ -166,6 +205,8 @@ typedef struct SnowBikeState {
     f32 haloPitchDrift;             /* 0x594: halo-light yaw drift */
     f32 haloDriftB;         /* 0x598: halo drift channel-B output (haloDriftAmpB * sin(phaseB)); added to anim.rotZ */
 } SnowBikeState; /* extends to at least 0x59C (DRhightop/DRhalolight tail) */
+STATIC_ASSERT(offsetof(SnowBikeState, trails) == 0x4C8);
+STATIC_ASSERT(offsetof(SnowBikeState, activeTrails) == 0x510);
 STATIC_ASSERT(offsetof(SnowBikeState, refPosX) == 0x16C);
 STATIC_ASSERT(offsetof(SnowBikeState, unk3D6) == 0x3D6);
 STATIC_ASSERT(offsetof(SnowBikeState, collisionFxDamping) == 0x3E0);

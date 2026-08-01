@@ -31,15 +31,15 @@ u32 lbl_803DD188;
 u8* gSky2State;
 s8 gSky2DrawMode;
 
-s8 lbl_803DB750 = 1;
-int lbl_803DB754 = 1;
-u8 lbl_803DB758 = 1;
+s8 gSky2TintDisabled = 1;
+int gSky2EnvfxFirstTime = 1;
+u8 gSky2RunFirstTime = 1;
 
 /* gSkyEnvFxFlags: per-group env-FX trigger enables + update state */
-#define SKY_ENVFX_GROUP_C        0x01 /* lbl_803DD138 group (GameBit 0x3ab) */
-#define SKY_ENVFX_GROUP_A        0x02 /* lbl_803DD130 group (GameBit 0x3ac) */
-#define SKY_ENVFX_GROUP_B        0x04 /* lbl_803DD13C group */
-#define SKY_ENVFX_GROUP_D        0x08 /* lbl_803DD134 group (weather) */
+#define SKY_ENVFX_GROUP_C        0x01 /* gSkyEnvFxGroupCTable group (GameBit 0x3ab) */
+#define SKY_ENVFX_GROUP_A        0x02 /* gSkyEnvFxGroupATable group (GameBit 0x3ac) */
+#define SKY_ENVFX_GROUP_B        0x04 /* gSkyEnvFxGroupBTable group */
+#define SKY_ENVFX_GROUP_D        0x08 /* gSkyEnvFxGroupDTable group (weather) */
 #define SKY_ENVFX_UPDATE_PENDING 0x10 /* sun position changed; process this frame */
 #define SKY_ENVFX_IMMEDIATE      0x20 /* fire acts immediately vs deferred */
 /* env-effect ids activated together when the GROUP_D (weather) flag is clear
@@ -53,21 +53,15 @@ u8 lbl_803DB758 = 1;
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
 extern u8 gSkyConfigFieldIndices[];
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
-extern int lbl_803DB610;
-extern s8 gSky2DrawMode;
-extern u8* gSky2State;
+extern int gSky2EnvfxActIndex;
 extern u16 lbl_803E8460;
 extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];
-const SkyVec3 lbl_802C1F98 = {-1000.0f, -1000.0f, -1000.0f};
-
-
+const SkyVec3 sSky2BestWeightsInit = {-1000.0f, -1000.0f, -1000.0f};
 
 
 void skyGetCurrentAmbientAndLightColors(u8* ambientRed, u8* ambientGreen, u8* ambientBlue, u8* lightRed, u8* lightGreen,
                                         u8* lightBlue);
-
-
 
 
 void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue, int ambientIntensity,
@@ -264,7 +258,7 @@ void sky2StepSlotAnim(int slot)
             if ((*(SkySlotAnim**)(&gSky2State + slot))->blend < zero)
             {
                 (*(SkySlotAnim**)(&gSky2State + slot))->blend = zero;
-                lbl_803DB750 = 1;
+                gSky2TintDisabled = 1;
             }
         }
         else if ((flags & 4) != 0 && anim->blend < (spd = 255.0f))
@@ -394,7 +388,7 @@ void sky2ApplyModelTint(GameObject* obj)
     {
         Obj_SetModelColorOverrideRecursive(obj, 0, 0, 0, 0, 0);
     }
-    if (lbl_803DB750 == 0 && (*(u16*)((s = gSky2State) + 4) & 1) == 0)
+    if (gSky2TintDisabled == 0 && (*(u16*)((s = gSky2State) + 4) & 1) == 0)
     {
         v = ((SkySlotAnim*)s)->fogNear;
         if (v < 0.0f)
@@ -426,7 +420,7 @@ void sky2ApplyTextColor(int obj)
 
     if (s != NULL)
     {
-        if (lbl_803DB750 == 0 && (*(u16*)(s + 4) & 1) == 0)
+        if (gSky2TintDisabled == 0 && (*(u16*)(s + 4) & 1) == 0)
         {
             v = ((SkySlotAnim*)s)->fogNear;
             if (v < 0.0f)
@@ -494,6 +488,7 @@ void sky2_run(void)
     int i;
     u8* p;
     f32* dst;
+    f32* knot;
     f32 colorMax;
     int k;
     int d;
@@ -524,10 +519,11 @@ void sky2_run(void)
     f32 spd;
     f32 value;
     f32 offset;
-    f32 negativeRange;
+    f32 wobbleRange;
+    f32 half;
     f32 ambientScale;
 
-    best = lbl_802C1F98;
+    best = sSky2BestWeightsInit;
     r = 0.0f;
     g = r;
     b = r;
@@ -537,7 +533,7 @@ void sky2_run(void)
     *(u16*)&idx = lbl_803E8460;
     idx.pad = lbl_803E8462;
     skyGetSunColor(0, &red, &green, &blue);
-    if (lbl_803DB758 != 0)
+    if (gSky2RunFirstTime != 0)
     {
         z = 0.0f;
         dst = lbl_8039A7B8;
@@ -569,7 +565,7 @@ void sky2_run(void)
         dst[21] = c154;
         dst[22] = z;
         dst[23] = c154;
-        lbl_803DB758 = 0;
+        gSky2RunFirstTime = 0;
     }
     cam = Camera_GetCurrent();
     zv = 0.0f;
@@ -590,7 +586,7 @@ void sky2_run(void)
     {
         if (*pp != NULL && ((SkySlotAnim*)*pp)->b317 != 0)
         {
-            lbl_803DB750 = 0;
+            gSky2TintDisabled = 0;
             p = *pp;
             if (((SkySlotAnim*)p)->unk48 != 0)
             {
@@ -729,7 +725,8 @@ void sky2_run(void)
                     r = ((SkySlotAnim*)p)->cur[0] * best.x + r;
                     g = ((SkySlotAnim*)p)->cur[0xb] * best.x + g;
                     b = ((SkySlotAnim*)p)->cur[0x16] * best.x + b;
-                    sa = *(f32*)(*pp + bestKnotOffset + 0x1fc) * best.x + sa;
+                    knot = (f32*)(*pp + bestKnotOffset + 0x1fc);
+                    sa = *knot * best.x + sa;
                     sb = ((SkySlotAnim*)p)->cur2[0xb] * best.x + sb;
                 }
                 if (best.y > zero)
@@ -738,7 +735,8 @@ void sky2_run(void)
                     r = ((SkySlotAnim*)p)->cur[0] * best.y + r;
                     g = ((SkySlotAnim*)p)->cur[0xb] * best.y + g;
                     b = ((SkySlotAnim*)p)->cur[0x16] * best.y + b;
-                    sa = *(f32*)(*pp + secondKnotOffset + 0x1fc) * best.y + sa;
+                    knot = (f32*)(*pp + secondKnotOffset + 0x1fc);
+                    sa = *knot * best.y + sa;
                     sb = ((SkySlotAnim*)p)->cur2[0xb] * best.y + sb;
                 }
             }
@@ -775,9 +773,10 @@ void sky2_run(void)
                     ((SkySlotAnim*)p)->b314 = 1;
                     value = 0.0f;
                     ((SkySlotAnim*)*pp)->wobbleOffset = value;
-                    negativeRange = -(sb - sa);
+                    wobbleRange = sb - sa;
+                    half = 0.5f;
                     ((SkySlotAnim*)*pp)->wobbleAmp =
-                        randomGetRange((int)(negativeRange * 0.5f), (int)(-negativeRange * 0.5f));
+                        randomGetRange((int)(-wobbleRange * half), (int)(wobbleRange * half));
                     ((SkySlotAnim*)*pp)->wobbleStep = 0.05f * randomGetRange(1, 10);
                 }
                 else if (((SkySlotAnim*)p)->b314 == 1)
@@ -893,8 +892,8 @@ void sky2_onMapSetup(void)
     f32 b;
     f32 a;
 
-    lbl_803DB610 = -1;
-    (&lbl_803DB610)[1] = -1;
+    gSky2EnvfxActIndex = -1;
+    (&gSky2EnvfxActIndex)[1] = -1;
     i = 0;
     slot = (void**)&gSky2State;
     a = 1150.0f;
@@ -916,10 +915,10 @@ void sky2_onMapSetup(void)
         ((SkySlotAnim*)*slot)->colorB2 = 255;
         ((SkySlotAnim*)*slot)->fogNear2 = a;
         ((SkySlotAnim*)*slot)->fogFar2 = b;
-        if (lbl_803DB754 != 0)
+        if (gSky2EnvfxFirstTime != 0)
         {
             getEnvfxAct(NULL, NULL, 9, 0);
-            lbl_803DB754 = 0;
+            gSky2EnvfxFirstTime = 0;
         }
         slot++;
     }
@@ -927,7 +926,7 @@ void sky2_onMapSetup(void)
 
 void sky2_update(int a, int b, u8* cfg)
 {
-    u8* env;
+    SaveGameEnvState* env;
     u16 bits;
     u8* st;
     int m40;
@@ -940,8 +939,8 @@ void sky2_update(int a, int b, u8* cfg)
     env = saveGameGetEnvState();
     if (cfg != NULL)
     {
-        (&lbl_803DB610)[1] = lbl_803DB610 = (s16)((Sky2Config*)cfg)->envfxActId - 1;
-        *(s16*)(env + 0xc) = (s16)((Sky2Config*)cfg)->envfxActId - 1;
+        (&gSky2EnvfxActIndex)[1] = gSky2EnvfxActIndex = (s16)((Sky2Config*)cfg)->envfxActId - 1;
+        env->sky2EnvfxActId = (s16)((Sky2Config*)cfg)->envfxActId - 1;
         flags58 = ((Sky2Config*)cfg)->flags;
         b1 = (flags58 & 0x80) ? 1 : 0;
         if (((SkySlotAnim*)(&gSky2State)[b1])->b317 == 0)
@@ -1045,8 +1044,8 @@ void sky2_initialise(void)
 {
     u8* state;
 
-    lbl_803DB610 = -1;
-    (&lbl_803DB610)[1] = -1;
+    gSky2EnvfxActIndex = -1;
+    (&gSky2EnvfxActIndex)[1] = -1;
     if (gSky2State != NULL)
     {
         mm_free(gSky2State);

@@ -83,7 +83,7 @@ extern int lbl_803DEBB0;
 extern ModelLightStruct* gTexDimmedLightList[2];
 extern ModelLightStruct* gTexBlockLightList[2];
 extern int gLightmapDrawQueueCount;
-extern int* lbl_803DCE34;
+extern int* gCloudLayerTexture;
 extern int gTexIndMtxTable[];
 extern u8 gLightmapDrawQueue[];
 extern u8 gCloudLayerTexMatrix[0x30];
@@ -879,7 +879,7 @@ Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRende
     int fogColor;
     u8* byteBase;
     u32 flags;
-    int* lightList;
+    int* cloudTex;
     u8 ambColor[3];
     u8 fogRgba[4];
     u32 bits;
@@ -925,8 +925,8 @@ Shader* mapBlockRender_setShader(u8 doSetup, MapBlockData* blockData, ModelRende
         mapBlockRender_setupShaderTextures(shader, 0x80);
     }
     flags = SHADER_FLAGS(shader);
-    if ((flags & 0x20) != 0 && (lightList = lbl_803DCE34) != 0) {
-        addSignedOverlayTexStage((u8*)lightList, &gCloudLayerTexMatrix, gCloudLayerOverlayColor);
+    if ((flags & 0x20) != 0 && (cloudTex = gCloudLayerTexture) != 0) {
+        addSignedOverlayTexStage((u8*)cloudTex, &gCloudLayerTexMatrix, gCloudLayerOverlayColor);
     } else if ((flags & 0x40) != 0) {
         addWarpedRingTevStages();
     } else if (isHeavyFogEnabled()) {
@@ -1012,10 +1012,10 @@ extern u32 gSunFlareScissorX;
 extern u32 gSunFlareScissorY;
 extern u32 gSunFlareScissorWidth;
 extern u32 gSunFlareScissorHeight;
-extern u8 lbl_803DCE06;
+extern u8 gGlowLightCount;
 extern ModelLightStruct* gGlowLightList[];
 extern u8 gMapBlockCount;
-extern int lbl_803DCE80;
+extern int gHitsTab;
 extern int gMapBlockIndexCount;
 extern int* gMapBlockIndexList;
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -1328,9 +1328,9 @@ void renderGlows(void)
         }
     }
     colorScale = alpha;
-    if (lbl_803DCE06 != 0)
+    if (gGlowLightCount != 0)
     {
-        for (i = 0; i < lbl_803DCE06; i++)
+        for (i = 0; i < gGlowLightCount; i++)
         {
             int d;
             e = gGlowLightList[i];
@@ -1346,7 +1346,7 @@ void renderGlows(void)
         GXSetCurrentMtx(GX_IDENTITY);
         gxTevColor1TexAlphaStage();
         gxSetAdditiveBlendNoZTest();
-        for (i = 0; i < lbl_803DCE06; i++)
+        for (i = 0; i < gGlowLightCount; i++)
         {
             e = gGlowLightList[i];
             if (e->glowAlpha != 0)
@@ -1438,7 +1438,7 @@ void queueGlowRender(ModelLightStruct* light)
     int visible;
     u8 idx;
 
-    if (lbl_803DCE06 >= 100)
+    if (gGlowLightCount >= 100)
         return;
 
     visible = isGlowInFrustum(light);
@@ -1451,7 +1451,7 @@ void queueGlowRender(ModelLightStruct* light)
             light->glowAlphaStep = -0x10;
         }
     }
-    idx = lbl_803DCE06++;
+    idx = gGlowLightCount++;
     gGlowLightList[idx] = light;
 }
 
@@ -1607,7 +1607,7 @@ void MapBlock_init(MapBlockData* block)
 void MapBlock_initHits(MapBlockData* block, int index)
 {
     int i;
-    int* table = (int*)lbl_803DCE80;
+    int* table = (int*)gHitsTab;
     int fileOff = table[index];
     int size = table[index + 1] - fileOff;
     MapHitLine* entry;

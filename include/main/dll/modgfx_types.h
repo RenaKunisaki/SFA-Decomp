@@ -377,8 +377,16 @@ typedef struct PartfxEffectState
     u32 flags;
     s32 initialDelayFrames;
     f32 alphaValues[4];
-    f32 blendColorR;
-    f32 blendColorG;
+    union
+    {
+        f32 blendColorR;
+        f32 sourceAlphaStep;
+    };
+    union
+    {
+        f32 blendColorG;
+        f32 sourceAlphaCurrent;
+    };
     f32 blendColorB;
     f32 blendColorStepR;
     f32 blendColorStepG;

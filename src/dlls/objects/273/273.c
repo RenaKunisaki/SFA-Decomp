@@ -46,16 +46,16 @@ static int DoorLock_animEventCallback(GameObject* obj, int unused, ObjSeqState* 
     (void)unused;
 
     placement = (DoorLockPlacement*)obj->anim.placementData;
-    if (animUpdate->unk80 != DOOR_LOCK_TRIGGER_COMMAND_NONE) {
+    if (animUpdate->curEventId != DOOR_LOCK_TRIGGER_COMMAND_NONE) {
         if ((placement->flags & DOOR_LOCK_FLAG_CALLBACK_SETS_UNLOCKED) != 0 &&
-            animUpdate->unk80 == DOOR_LOCK_TRIGGER_COMMAND_SET_UNLOCKED) {
+            animUpdate->curEventId == DOOR_LOCK_TRIGGER_COMMAND_SET_UNLOCKED) {
             mainSetBits(placement->unlockedGameBit, DOOR_LOCK_UNLOCKED);
         }
-        if (animUpdate->unk80 == DOOR_LOCK_TRIGGER_COMMAND_YIELD_QUEUED &&
+        if (animUpdate->curEventId == DOOR_LOCK_TRIGGER_COMMAND_YIELD_QUEUED &&
             placement->queuedSequenceId != DOOR_LOCK_QUEUED_SEQUENCE_ID_NONE) {
             (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, placement->queuedSequenceId);
         }
-        animUpdate->unk80 = DOOR_LOCK_TRIGGER_COMMAND_NONE;
+        animUpdate->curEventId = DOOR_LOCK_TRIGGER_COMMAND_NONE;
     }
     obj->userData2 = DOOR_LOCK_CUSTOM_RENDER_DISABLED;
     return 0;

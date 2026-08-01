@@ -83,14 +83,10 @@ TitleMenuItem* gOptionsMenuItems[8];
 #define OPTIONS_SUBMENU_LANGUAGE 3
 
 extern s8 gOptionsActivePanel;
-extern u8 gOptionsRequestedPanel;
-extern u8 lbl_803DD6F9;
 extern int lbl_803DD6FC;
-extern int gOptionsLastSelectedRow;
 extern s8 gOptionsExitCountdown;
 extern s8 gOptionsExitRequested;
 extern s8 gOptionsLayoutRefreshFrames;
-extern s8 lbl_803DD70C;
 
 void optionsMenu_applyAudioSetting(int action, int option)
 {

@@ -99,12 +99,9 @@ void CameraModeArwing_update(CameraObject* camera) {
         rotationStep = (s32)((f32)angleDelta * timeDelta);
         camera->anim.rotY = rotationStep / 16.0f + (f32)camera->anim.rotY;
     } else if (arwarwing_isExplodingOrWarping(target) != 0) {
-        f32 rollRate = gCameraModeArwingState.rollRate;
-        rollRate = rollRate * 0.98f;
-        gCameraModeArwingState.rollRate = rollRate;
-        camera->anim.rotZ = rollRate * timeDelta + (f32)camera->anim.rotZ;
+        gCameraModeArwingState.rollRate *= 0.98f;
+        camera->anim.rotZ = gCameraModeArwingState.rollRate * timeDelta + (f32)camera->anim.rotZ;
     } else {
-        f32 rotationStep;
         int targetRoll = (s32)((f32)gCameraModeArwingState.inputRoll * gCameraModeArwingState.rollScale);
         targetRoll = targetRoll - (u16)camera->anim.rotZ;
         if (targetRoll > 0x8000) {
@@ -113,8 +110,7 @@ void CameraModeArwing_update(CameraObject* camera) {
         if (targetRoll < -0x8000) {
             targetRoll = targetRoll + 0xffff;
         }
-        rotationStep = (f32)targetRoll * timeDelta;
-        camera->anim.rotZ = rotationStep / 16.0f + (f32)camera->anim.rotZ;
+        camera->anim.rotZ = ((f32)targetRoll * timeDelta) / 16.0f + (f32)camera->anim.rotZ;
         targetYaw = targetYaw - (u16)camera->anim.rotX;
         if (targetYaw > 0x8000) {
             targetYaw = targetYaw - 0xffff;
@@ -122,8 +118,7 @@ void CameraModeArwing_update(CameraObject* camera) {
         if (targetYaw < -0x8000) {
             targetYaw = targetYaw + 0xffff;
         }
-        rotationStep = (f32)targetYaw * timeDelta;
-        camera->anim.rotX = rotationStep / 16.0f + (f32) * (s16*)camera;
+        camera->anim.rotX = ((f32)targetYaw * timeDelta) / 16.0f + (f32) * (s16*)camera;
         targetPitch = targetPitch - (u16)camera->anim.rotY;
         if (targetPitch > 0x8000) {
             targetPitch = targetPitch - 0xffff;
@@ -131,8 +126,7 @@ void CameraModeArwing_update(CameraObject* camera) {
         if (targetPitch < -0x8000) {
             targetPitch = targetPitch + 0xffff;
         }
-        rotationStep = (f32)targetPitch * timeDelta;
-        camera->anim.rotY = rotationStep / 16.0f + (f32)camera->anim.rotY;
+        camera->anim.rotY = ((f32)targetPitch * timeDelta) / 16.0f + (f32)camera->anim.rotY;
     }
     Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY, camera->anim.worldPosZ,
                                    &camera->anim.localPosX, &camera->anim.localPosY, &camera->anim.localPosZ,

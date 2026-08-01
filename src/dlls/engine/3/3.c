@@ -61,9 +61,9 @@ typedef struct CheckpointNavState
 s32 Checkpoint_buildControlPoints(CheckpointRouteEntry* checkpoint, s32 linkIndex, f32* outX, f32* outY, f32* outZ, u8 mode,
                  f32 lateralOffset, f32 verticalOffset)
 {
-    f32 prodC;
-    f32 prodB;
     f32 prodA;
+    f32 prodB;
+    f32 prodC;
     f32 sinB;
     f32 prodD;
     s32 routeIndex;
@@ -861,7 +861,7 @@ void Checkpoint_initialise(void)
     gCheckpointRankItems = (void*)((u8*)gCheckpointPartFxListBuffer + 0x28);
 }
 
-u32 lbl_803112E8[22] = {
+u32 Checkpoint_funcs[22] = {
     0, 0, 0, 0x00110000,
     (u32)Checkpoint_initialise, (u32)Checkpoint_release, 0, (u32)Checkpoint_reset,
     (u32)Checkpoint_Add, (u32)Checkpoint_Remove, (u32)Checkpoint_findRouteForObject, (u32)Checkpoint_getRouteHeading,

@@ -82,7 +82,7 @@ typedef enum Dll19BAnimEvent {
 } Dll19BAnimEvent;
 
 /* Engine-owned environment-effect override; this unit consumes its first word. */
-extern int lbl_803DB610;
+extern int gSky2EnvfxActIndex;
 u32 gDll19BShaderResult;
 
 ObjectDescriptor gDll19BObjDescriptor = {
@@ -131,10 +131,10 @@ int dll411_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* animUp
                 getEnvfxAct(obj, obj, DLL19B_ENVFX_A, 0);
                 break;
             case DLL19B_ANIM_EVENT_ENVFX_OVERRIDE:
-                if (lbl_803DB610 == -1) {
+                if (gSky2EnvfxActIndex == -1) {
                     getEnvfxAct(obj, obj, DLL19B_ENVFX_B, 0);
                 } else {
-                    getEnvfxAct(obj, obj, lbl_803DB610, 0);
+                    getEnvfxAct(obj, obj, gSky2EnvfxActIndex, 0);
                 }
                 break;
             case DLL19B_ANIM_EVENT_PENDING:

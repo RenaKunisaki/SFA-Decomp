@@ -4,8 +4,8 @@
 #include "types.h"
 #include "main/dll/partfx_interface.h"
 
-int Effect10_func04(s16* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, f32* p6);
-void Effect10_func05(void);
+int Effect10_spawnObject(s16* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte, f32* p6);
+void Effect10_updateFrameState(void);
 void Effect10_func03_nop(void);
 void Effect10_release(void);
 void Effect10_initialise(void);

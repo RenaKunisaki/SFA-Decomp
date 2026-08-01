@@ -49,14 +49,14 @@ enum MldfFileId {
     MLDF_FILEID_HITS_TAB        = 0x29, /* HITS.tab */
     MLDF_FILEID_MODELS_TAB_A    = 0x2a, /* MODELS.tab, slot A */
     MLDF_FILEID_MODELS_BIN_A    = 0x2b, /* MODELS.bin, slot A */
-    MLDF_FILEID_MODELIND_BIN    = 0x2c, /* MODELIND.bin - model id -> index, 8-byte records */
+    MLDF_FILEID_MODELIND_BIN    = 0x2c, /* MODELIND.bin - s16 array, model id -> real model id */
     MLDF_FILEID_MODANIM_TAB     = 0x2d, /* MODANIM.TAB - per-model anim header index */
     MLDF_FILEID_MODANIM_BIN     = 0x2e, /* MODANIM.BIN - per-model anim header buffer */
     MLDF_FILEID_ANIM_TAB_A      = 0x2f, /* ANIM.TAB, slot A */
     MLDF_FILEID_ANIM_BIN_A      = 0x30, /* ANIM.BIN, slot A */
     MLDF_FILEID_AMAP_TAB        = 0x31, /* AMAP.TAB - anim id -> offset index */
     MLDF_FILEID_AMAP_BIN        = 0x32, /* AMAP.BIN - anim data payload */
-    MLDF_FILEID_BITTABLE_BIN    = 0x33, /* BITTABLE.bin */
+    MLDF_FILEID_BITTABLE_BIN    = 0x33, /* BITTABLE.bin - 4-byte GameBitDef records */
     MLDF_FILEID_WEAPONDA_BIN    = 0x34, /* WEAPONDA.bin - weaponDaTable entries */
     MLDF_FILEID_VOXOBJ_TAB      = 0x35, /* VOXOBJ.tab */
     MLDF_FILEID_VOXOBJ_BIN      = 0x36, /* VOXOBJ.bin */

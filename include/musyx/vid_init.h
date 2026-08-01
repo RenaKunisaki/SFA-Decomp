@@ -4,10 +4,10 @@
 #include "ghidra_import.h"
 #include "musyx/mcmd.h"
 
-extern McmdVidListNode vidListNodes[128];
+extern VID_LIST vidList[128];
 extern u32 vidCurrentId;
-extern McmdVidListNode* vidRoot;
-extern McmdVidListNode* vidFree;
+extern VID_LIST* vidRoot;
+extern VID_LIST* vidFree;
 
 void vidInit(void);
 

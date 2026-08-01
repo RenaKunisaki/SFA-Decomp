@@ -60,7 +60,6 @@ static void WaveAnimator_buildSharedTables(WaveAnimatorState* config) {
     int phaseY;
     int phaseOffset;
     int phaseStepY;
-    f32 yWave;
     f32 zeroHeight;
 
     gWaveAnimatorHeightTable = mmAlloc(sizeof(f32) * config->period * config->period, 0xFFFFFF, 0);
@@ -83,11 +82,9 @@ static void WaveAnimator_buildSharedTables(WaveAnimatorState* config) {
         rowOffset = heightOffset;
         xRadians = 3.1415927f * x;
         for (; j < config->period; j++) {
-            f32 sinY = mathSinf((3.1415927f * phaseY) / 32768.0f);
-            f32 sinX;
-            yWave = config->ampY * sinY;
-            sinX = mathSinf(xRadians / 32768.0f);
-            *(f32*)((u8*)gWaveAnimatorHeightTable + rowOffset) = config->ampX * sinX + yWave;
+            *(f32*)((u8*)gWaveAnimatorHeightTable + rowOffset) =
+                config->ampX * mathSinf(xRadians / 32768.0f) +
+                config->ampY * mathSinf((3.1415927f * phaseY) / 32768.0f);
             if (*(f32*)((u8*)gWaveAnimatorHeightTable + rowOffset) < config->minHeight) {
                 config->minHeight = *(f32*)((u8*)gWaveAnimatorHeightTable + rowOffset);
             }

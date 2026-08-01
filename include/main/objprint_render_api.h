@@ -8,7 +8,7 @@ typedef struct ModelLightStruct ModelLightStruct;
 typedef struct ModelFileHeader ModelFileHeader;
 typedef struct ObjModel ObjModel;
 
-extern ModelLightStruct* lbl_803DCC64;
+extern ModelLightStruct* gObjSelectedLights;
 
 void objRender(int a, int b, int c, int d, GameObject* obj, int flag);
 void objFuzzSetupGxState(void* obj);

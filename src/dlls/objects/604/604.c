@@ -75,7 +75,14 @@ typedef struct SnowclawState
     u8 tickCounter;
     u8 padA7[0xA8 - 0xA7];
     u16 moveIdBase;
-    u8 flags;
+    union {
+        u8 flags;
+        struct {
+            u8 b0 : 1;
+            u8 flag6 : 1;
+            u8 rest : 6;
+        };
+    };
     u8 padAB[0xAC - 0xAB];
     f32 particleAlpha;
 } SnowclawState;
@@ -95,13 +102,6 @@ STATIC_ASSERT(offsetof(SnowclawTargetInterface, getState) == 0x24);
 
 #define SNOWCLAW_MOUNT_INTERFACE(mount)   (*(IMSnowClawMountInterface**)((GameObject*)(mount))->anim.dll)
 #define SNOWCLAW_TARGET_INTERFACE(target) (*(SnowclawTargetInterface**)((GameObject*)(target))->anim.dll)
-
-typedef struct
-{
-    u8 b0 : 1;
-    u8 flag6 : 1;
-    u8 rest : 6;
-} SnowclawAaFlags;
 
 typedef struct SnowClawDropObjectTable
 {
@@ -429,7 +429,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
             if (found != 0)
             {
                 SNOWCLAW_TARGET_INTERFACE(found)->setState((GameObject*)found, 2);
-                ((SnowclawAaFlags*)&s->flags)->b0 = 0;
+                s->b0 = 0;
             }
             break;
         }
@@ -439,7 +439,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
             if (found != 0)
             {
                 SNOWCLAW_TARGET_INTERFACE(found)->setState((GameObject*)found, 0);
-                ((SnowclawAaFlags*)&s->flags)->b0 = 1;
+                s->b0 = 1;
             }
             break;
         }
@@ -535,7 +535,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
             obj->anim.renderAlpha = s->mountAlpha;
         }
         if ((obj)->childCount == 0 && (obj)->anim.romDefNo == SNOWCLAW_SEQID_CR_SNOWCLAW &&
-            ((SnowclawAaFlags*)&s->flags)->b0 != 0)
+            s->b0 != 0)
         {
             near = objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
             if ((u32)near != 0 && SNOWCLAW_TARGET_INTERFACE(near)->getState((GameObject*)near) != 0 &&
@@ -548,7 +548,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
         ObjPath_GetPointWorldPosition(obj, 1, &s->posX, &s->posY,
                                       &s->posZ, 0);
         obj->anim.renderAlpha = oldFlag;
-        if (((SnowclawAaFlags*)&s->flags)->flag6 != 0)
+        if (s->flag6 != 0)
         {
             if (s->particleAlpha != zero)
             {
@@ -557,7 +557,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
             }
             else
             {
-                ((SnowclawAaFlags*)&s->flags)->flag6 = 0;
+                s->flag6 = 0;
             }
             objDoParticleFx(obj, 1.0f, 3, s->particleAlpha, 0);
         }
@@ -621,7 +621,7 @@ void snowclaw_hitDetect(GameObject* obj)
                 {
                     (*gObjectTriggerInterface)->runSequence(0, (void*)obj, 3);
                 }
-                ((SnowclawAaFlags*)&s->flags)->flag6 = 1;
+                s->flag6 = 1;
                 s->particleAlpha = 1.0f;
                 s->velX =
                     0.1f * mathSinf(3.1415927f * (f32)obj->anim.rotX / 32768.0f);
@@ -682,7 +682,7 @@ void snowclaw_update(GameObject* obj)
     pulseTable = gSnowClawPulseTable;
     inner = obj->extra;
     s = (SnowclawState*)inner;
-    if (((SnowclawState*)obj->extra)->hitFlag != 0 && (u32)((((SnowclawState*)obj->extra)->flags >> 6) & 1) != 0)
+    if (((SnowclawState*)obj->extra)->hitFlag != 0 && ((SnowclawState*)obj->extra)->flag6 != 0)
     {
         s->particleAlpha = 0.0f;
     }
@@ -847,7 +847,7 @@ void snowclaw_init(GameObject* obj, s8* init)
     s16toFloat(&inner->attackTimer, * (int*)(table + 0x3c));
     seqPairTablePrepare((u8*)(int)gSnowClawMoveTable, 6);
     gSnowClawDropBombAngle = 0x96;
-    ((SnowclawAaFlags*)&inner->flags)->b0 = 0;
+    inner->b0 = 0;
 }
 
 void snowclaw_release(void)

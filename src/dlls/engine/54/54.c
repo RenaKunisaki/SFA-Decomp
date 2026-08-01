@@ -27,7 +27,6 @@ u16 gEnterSaveNameColorAnimTime;
 f32 gEnterSaveNameTargetScrollVel;
 f32 gEnterSaveNameScrollVelocity;
 
-#define gEnterSaveNameRefreshState lbl_803DD6EC
 
 void EnterSaveNameScreen_render(void)
 {
@@ -217,7 +216,7 @@ u32 EnterSaveNameScreen_run(void)
                 selectedText = gameTextGetStr(gEnterSaveNameCharTextIds[gEnterSaveNameSelectedIndex]);
                 gEnterSaveNameBuffer[gEnterSaveNameLength++] = selectedText[0];
                 gEnterSaveNameBuffer[gEnterSaveNameLength] = 0;
-                gEnterSaveNameRefreshState = 2;
+                lbl_803DD6EC = 2;
                 Sfx_PlayFromObject(0, ENTER_SAVE_NAME_SFX_TYPE);
                 if (gEnterSaveNameLength == ENTER_SAVE_NAME_MAX_LENGTH)
                 {
@@ -229,7 +228,7 @@ u32 EnterSaveNameScreen_run(void)
                 Sfx_PlayFromObject(0, ENTER_SAVE_NAME_SFX_DELETE);
                 gEnterSaveNameLength -= 1;
                 gEnterSaveNameBuffer[gEnterSaveNameLength] = 0;
-                gEnterSaveNameRefreshState = 2;
+                lbl_803DD6EC = 2;
                 gEnterSaveNameAutoScrolling = 0;
             }
             else if (gEnterSaveNameSelectedIndex == ENTER_SAVE_NAME_DONE_INDEX)
@@ -245,7 +244,7 @@ u32 EnterSaveNameScreen_run(void)
                 slotIndex = saveFileSelect_currentSlotIndex;
                 gplayNewGame(gEnterSaveNameBuffer, slotIndex);
                 loadUiDll(ENTER_SAVE_NAME_MENU_DLL);
-                gEnterSaveNameRefreshState = 2;
+                lbl_803DD6EC = 2;
             }
         }
         else if (buttons & PAD_BUTTON_B)
@@ -256,7 +255,7 @@ u32 EnterSaveNameScreen_run(void)
             {
                 gEnterSaveNameLength -= 1;
                 gEnterSaveNameBuffer[gEnterSaveNameLength] = 0;
-                gEnterSaveNameRefreshState = 2;
+                lbl_803DD6EC = 2;
             }
             else
             {

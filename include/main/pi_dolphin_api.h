@@ -36,7 +36,7 @@ void addSphereMapLitStages(void* texture, f32* texMtx, void* color, int unused);
 void addTexLayerStagesLit(void* texture, void* texMtx);
 void addLitColorStage(u8 mode);
 int addEnvMapBumpStages(void* texture, int stageCount, u8 mode, u32 indirectTextureId);
-void addSphereMapTexStage(void* textureRef, u8 objectFlags);
+void addSphereMapTexStage(void* textureRef, u8 intensity);
 void addLightTexReg2Stage(void* textureRef, u8 hasBaseTexture, u8 mode);
 void addAlphaLitColorReg2Stage(u8 mode);
 void addCastShadowTevStages(u8* objectInstance);

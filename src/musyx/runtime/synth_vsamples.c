@@ -7,29 +7,29 @@
 #include "musyx/hw_break.h"
 
 
-SynthVirtualSampleState synthVirtualSampleState;
+VS vs;
 
 /*
  * Reset the virtual sample stream buffer table.
  */
-void synthInitVirtualSampleTable(void)
+void vsInit(void)
 {
     int i;
-    SynthVirtualSampleState* state = &synthVirtualSampleState;
+    VS* state = &vs;
 
-    state->entryCount = 0;
+    state->numBuffers = 0;
     for (i = 0; i < SYNTH_VIRTUAL_SAMPLE_MAX_VOICES; i++)
     {
-        state->voiceMap[i] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
+        state->voices[i] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
     }
-    state->nextId = 0;
+    state->nextInstID = 0;
     state->callback = 0;
 }
 
 static inline void vsFreeBuffer(u8 entryIndex)
 {
-    synthVirtualSampleState.entries[entryIndex].mode = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
-    synthVirtualSampleState.voiceMap[synthVirtualSampleState.entries[entryIndex].voice] =
+    vs.streamBuffer[entryIndex].state = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
+    vs.voices[vs.streamBuffer[entryIndex].voice] =
         SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
 }
 
@@ -37,14 +37,14 @@ static inline u8 vsAllocateBuffer(void)
 {
     u8 i;
 
-    for (i = 0; i < synthVirtualSampleState.entryCount; ++i)
+    for (i = 0; i < vs.numBuffers; ++i)
     {
-        if (synthVirtualSampleState.entries[i].mode != SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE)
+        if (vs.streamBuffer[i].state != SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE)
         {
             continue;
         }
-        synthVirtualSampleState.entries[i].mode = SYNTH_VIRTUAL_SAMPLE_MODE_ACTIVE;
-        synthVirtualSampleState.entries[i].position = 0;
+        vs.streamBuffer[i].state = SYNTH_VIRTUAL_SAMPLE_MODE_ACTIVE;
+        vs.streamBuffer[i].last = 0;
         return i;
     }
 
@@ -58,16 +58,16 @@ static inline u16 vsNewInstanceID(void)
 
     do
     {
-        instID = synthVirtualSampleState.nextId++;
-        for (i = 0; i < synthVirtualSampleState.entryCount; ++i)
+        instID = vs.nextInstID++;
+        for (i = 0; i < vs.numBuffers; ++i)
         {
-            if (synthVirtualSampleState.entries[i].mode != SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE &&
-                synthVirtualSampleState.entries[i].callbackData.generation == instID)
+            if (vs.streamBuffer[i].state != SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE &&
+                vs.streamBuffer[i].info.instID == instID)
             {
                 break;
             }
         }
-    } while (i != synthVirtualSampleState.entryCount);
+    } while (i != vs.numBuffers);
 
     return instID;
 }
@@ -76,35 +76,35 @@ static inline u16 vsNewInstanceID(void)
  * Allocate a stream buffer for the voice and set up its virtual sample
  * loop buffer.
  */
-u32 synthClaimVirtualSampleSlot(u8 voiceID)
+u32 vsSampleStartNotify(u8 voiceID)
 {
     u8 sb;
     u8 i;
     u32 addr;
 
-    for (i = 0; i < synthVirtualSampleState.entryCount; ++i)
+    for (i = 0; i < vs.numBuffers; ++i)
     {
-        if (synthVirtualSampleState.entries[i].mode != SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE &&
-            synthVirtualSampleState.entries[i].voice == voiceID)
+        if (vs.streamBuffer[i].state != SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE &&
+            vs.streamBuffer[i].voice == voiceID)
         {
             vsFreeBuffer(i);
         }
     }
 
-    sb = synthVirtualSampleState.voiceMap[voiceID] = vsAllocateBuffer();
+    sb = vs.voices[voiceID] = vsAllocateBuffer();
     if (sb != SYNTH_VIRTUAL_SAMPLE_FREE_SLOT)
     {
-        addr = aramGetStreamBufferAddress(synthVirtualSampleState.voiceMap[voiceID], 0);
-        hwSetVirtualSampleLoopBuffer(voiceID, addr, synthVirtualSampleState.loopSize);
-        synthVirtualSampleState.entries[sb].callbackData.sampleId = hwGetSampleID(voiceID);
-        synthVirtualSampleState.entries[sb].callbackData.generation = vsNewInstanceID();
-        synthVirtualSampleState.entries[sb].type = hwGetSampleType(voiceID);
-        synthVirtualSampleState.entries[sb].voice = voiceID;
-        if (synthVirtualSampleState.callback != 0)
+        addr = aramGetStreamBufferAddress(vs.voices[voiceID], 0);
+        hwSetVirtualSampleLoopBuffer(voiceID, addr, vs.bufferLength);
+        vs.streamBuffer[sb].info.smpID = hwGetSampleID(voiceID);
+        vs.streamBuffer[sb].info.instID = vsNewInstanceID();
+        vs.streamBuffer[sb].smpType = hwGetSampleType(voiceID);
+        vs.streamBuffer[sb].voice = voiceID;
+        if (vs.callback != 0)
         {
-            synthVirtualSampleState.callback(SYNTH_VIRTUAL_SAMPLE_CLAIM_CALLBACK_KIND,
-                                             &synthVirtualSampleState.entries[sb].callbackData);
-            return (synthVirtualSampleState.entries[sb].callbackData.generation << 8) | (u8)voiceID;
+            vs.callback(SYNTH_VIRTUAL_SAMPLE_CLAIM_CALLBACK_KIND,
+                                             &vs.streamBuffer[sb].info);
+            return (vs.streamBuffer[sb].info.instID << 8) | (u8)voiceID;
         }
         hwSetVirtualSampleLoopBuffer(voiceID, 0, 0);
     }
@@ -117,75 +117,75 @@ u32 synthClaimVirtualSampleSlot(u8 voiceID)
 }
 
 /*
- * Sample-completion handler: if the packed (slotIdx, sampleId)
+ * Sample-completion handler: if the packed (slotIdx, smpID)
  * still matches the active sample, fire the global "done" callback
  * with kind=2, then clear the entry's mode and free the slot back to
  * the index pool.
  */
-void synthHandleVirtualSampleDone(u32 packed)
+void vsSampleEndNotify(u32 packed)
 {
-    SynthVirtualSampleState* state;
-    SynthVirtualSampleEntry* entry;
+    VS* state;
+    VS_BUFFER* entry;
     u32 entryOffset;
     u8* slots;
     u8 vid;
-    u32 generation;
+    u32 instID;
 
-    state = &synthVirtualSampleState;
+    state = &vs;
     if (packed == SYNTH_VIRTUAL_SAMPLE_INVALID_ID)
     {
         return;
     }
-    vid = (slots = state->voiceMap)[(u8)packed];
+    vid = (slots = state->voices)[(u8)packed];
     if (vid == SYNTH_VIRTUAL_SAMPLE_FREE_SLOT)
     {
         return;
     }
     entryOffset = vid * SYNTH_VIRTUAL_SAMPLE_ENTRY_SIZE;
-    generation = (packed >> 8) & 0xffff;
-    if (state->entries[vid].callbackData.generation != generation)
+    instID = (packed >> 8) & 0xffff;
+    if (state->streamBuffer[vid].info.instID != instID)
     {
         return;
     }
     if (state->callback != NULL)
     {
-        state->callback(SYNTH_VIRTUAL_SAMPLE_DONE_CALLBACK_KIND, &state->entries[vid].callbackData);
+        state->callback(SYNTH_VIRTUAL_SAMPLE_DONE_CALLBACK_KIND, &state->streamBuffer[vid].info);
     }
-    entry = (SynthVirtualSampleEntry*)((u8*)state->entries + entryOffset);
-    entry->mode = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
+    entry = (VS_BUFFER*)((u8*)state->streamBuffer + entryOffset);
+    entry->state = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
     slots[entry->voice] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
 }
 
-static void synthAdvanceVirtualSampleEntry(void* entry, u32 elapsed)
+static void vsUpdateBuffer(void* entry, u32 elapsed)
 {
-    SynthVirtualSampleState* state;
-    SynthVirtualSampleEntry* sample;
+    VS* state;
+    VS_BUFFER* sample;
     u32* loopSizePtr;
     struct
     {
         u32 len, off;
     } d; /* struct-typed pair claims target frame slot */
 
-    state = &synthVirtualSampleState;
+    state = &vs;
     sample = entry;
-    if (sample->position == elapsed)
+    if (sample->last == elapsed)
     {
         return;
     }
-    if ((s32)sample->position < elapsed)
+    if ((s32)sample->last < elapsed)
     {
-        switch (sample->type)
+        switch (sample->smpType)
         {
         case SYNTH_VIRTUAL_SAMPLE_STREAM_TYPE:
-            sample->callbackData.start =
-                (sample->position / SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_SAMPLES) * SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_BYTES;
-            sample->callbackData.size = elapsed - sample->position;
-            sample->callbackData.wrapA = 0;
-            sample->callbackData.wrapB = 0;
-            if ((d.len = state->callback(SYNTH_VIRTUAL_SAMPLE_STREAM_CALLBACK_KIND, &sample->callbackData)) != 0)
+            sample->info.data.update.off1 =
+                (sample->last / SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_SAMPLES) * SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_BYTES;
+            sample->info.data.update.len1 = elapsed - sample->last;
+            sample->info.data.update.off2 = 0;
+            sample->info.data.update.len2 = 0;
+            if ((d.len = state->callback(SYNTH_VIRTUAL_SAMPLE_STREAM_CALLBACK_KIND, &sample->info)) != 0)
             {
-                d.off = sample->position + d.len;
-                sample->position = d.off % state->loopSize;
+                d.off = sample->last + d.len;
+                sample->last = d.off % state->bufferLength;
             }
             break;
         default:
@@ -194,19 +194,19 @@ static void synthAdvanceVirtualSampleEntry(void* entry, u32 elapsed)
     }
     else if (elapsed == 0)
     {
-        switch (sample->type)
+        switch (sample->smpType)
         {
         case SYNTH_VIRTUAL_SAMPLE_STREAM_TYPE:
-            sample->callbackData.start =
-                (sample->position / SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_SAMPLES) * SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_BYTES;
-            loopSizePtr = &state->loopSize;
-            sample->callbackData.size = *loopSizePtr - sample->position;
-            sample->callbackData.wrapA = 0;
-            sample->callbackData.wrapB = 0;
-            if ((d.len = state->callback(SYNTH_VIRTUAL_SAMPLE_STREAM_CALLBACK_KIND, &sample->callbackData)) != 0)
+            sample->info.data.update.off1 =
+                (sample->last / SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_SAMPLES) * SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_BYTES;
+            loopSizePtr = &state->bufferLength;
+            sample->info.data.update.len1 = *loopSizePtr - sample->last;
+            sample->info.data.update.off2 = 0;
+            sample->info.data.update.len2 = 0;
+            if ((d.len = state->callback(SYNTH_VIRTUAL_SAMPLE_STREAM_CALLBACK_KIND, &sample->info)) != 0)
             {
-                d.off = sample->position + d.len;
-                sample->position = d.off % *loopSizePtr;
+                d.off = sample->last + d.len;
+                sample->last = d.off % *loopSizePtr;
             }
             break;
         default:
@@ -215,19 +215,19 @@ static void synthAdvanceVirtualSampleEntry(void* entry, u32 elapsed)
     }
     else
     {
-        switch (sample->type)
+        switch (sample->smpType)
         {
         case SYNTH_VIRTUAL_SAMPLE_STREAM_TYPE:
-            sample->callbackData.start =
-                (sample->position / SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_SAMPLES) * SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_BYTES;
-            loopSizePtr = &state->loopSize;
-            sample->callbackData.size = *loopSizePtr - sample->position;
-            sample->callbackData.wrapA = 0;
-            sample->callbackData.wrapB = elapsed;
-            if ((d.len = state->callback(SYNTH_VIRTUAL_SAMPLE_STREAM_CALLBACK_KIND, &sample->callbackData)) != 0)
+            sample->info.data.update.off1 =
+                (sample->last / SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_SAMPLES) * SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_BYTES;
+            loopSizePtr = &state->bufferLength;
+            sample->info.data.update.len1 = *loopSizePtr - sample->last;
+            sample->info.data.update.off2 = 0;
+            sample->info.data.update.len2 = elapsed;
+            if ((d.len = state->callback(SYNTH_VIRTUAL_SAMPLE_STREAM_CALLBACK_KIND, &sample->info)) != 0)
             {
-                d.off = sample->position + d.len;
-                sample->position = d.off % *loopSizePtr;
+                d.off = sample->last + d.len;
+                sample->last = d.off % *loopSizePtr;
             }
             break;
         default:
@@ -236,38 +236,36 @@ static void synthAdvanceVirtualSampleEntry(void* entry, u32 elapsed)
     }
 }
 
-#define SYNTH_VIRTUAL_SAMPLE_VOICE_STRIDE         0x404
-#define SYNTH_VIRTUAL_SAMPLE_VOICE_RELEASE_OFFSET 0x206
 #define SYNTH_VIRTUAL_SAMPLE_RELEASE_SCALE        0xa0
 #define SYNTH_VIRTUAL_SAMPLE_RELEASE_ROUND        0xfff
 #define SYNTH_VIRTUAL_SAMPLE_RELEASE_SHIFT        0x1000
 
-extern s16 synthLoadedGroupCount;
+extern s16 sp;
 
 /*
  * Periodic virtual-sample tick processor: walks 64 active voices, computes
- * elapsed tick for each, and either advances the envelope (mode 1)
- * or runs sample-completion logic (mode 2 - checks current sample
+ * elapsed tick for each, and either advances the stream buffer (state 1)
+ * or runs sample-completion logic (state 2 - checks current sample
  * id matches expected and triggers a stop+vacate when threshold
  * elapsed).
  */
-void synthUpdateVirtualSamples(void)
+void vsSampleUpdates(void)
 {
-    SynthVirtualSampleState* state;
+    VS* state;
     u8* slotMap;
     u32 i;
     u32 currentTick;
     u32 elapsed;
-    SynthVirtualSampleEntry* entry;
+    VS_BUFFER* entry;
     u8 vid;
 
-    if (synthVirtualSampleState.callback != 0)
+    if (vs.callback != 0)
     {
-        state = &synthVirtualSampleState;
+        state = &vs;
         slotMap = (u8*)state;
         for (i = 0; i < SYNTH_VIRTUAL_SAMPLE_MAX_VOICES; i++, slotMap++)
         {
-            vid = slotMap[SYNTH_VIRTUAL_SAMPLE_VOICE_MAP_OFFSET];
+            vid = slotMap[offsetof(VS, voices)];
             if (vid == SYNTH_VIRTUAL_SAMPLE_FREE_SLOT)
             {
                 continue;
@@ -276,11 +274,11 @@ void synthUpdateVirtualSamples(void)
             {
                 continue;
             }
-            vid = slotMap[SYNTH_VIRTUAL_SAMPLE_VOICE_MAP_OFFSET];
-            entry = &state->entries[vid];
+            vid = slotMap[offsetof(VS, voices)];
+            entry = &state->streamBuffer[vid];
 
             currentTick = hwChangeStudio(i);
-            if (entry->type == SYNTH_VIRTUAL_SAMPLE_STREAM_TYPE)
+            if (entry->smpType == SYNTH_VIRTUAL_SAMPLE_STREAM_TYPE)
             {
                 elapsed =
                     (currentTick / SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_SAMPLES) * SYNTH_VIRTUAL_SAMPLE_ADPCM_FRAME_SAMPLES;
@@ -290,52 +288,50 @@ void synthUpdateVirtualSamples(void)
                 elapsed = currentTick;
             }
 
-            switch (entry->mode)
+            switch (entry->state)
             {
             case SYNTH_VIRTUAL_SAMPLE_MODE_ACTIVE:
-                synthAdvanceVirtualSampleEntry(entry, elapsed);
+                vsUpdateBuffer(entry, elapsed);
                 break;
             case SYNTH_VIRTUAL_SAMPLE_MODE_DONE_WAIT:
             {
-                u32 sampleId = hwGetVirtualSampleID(entry->voice);
-                u32 expected = ((u32)entry->callbackData.generation << 8) | entry->voice;
+                u32 smpID = hwGetVirtualSampleID(entry->voice);
+                u32 expected = ((u32)entry->info.instID << 8) | entry->voice;
 
-                if (expected == sampleId)
+                if (expected == smpID)
                 {
                     u32 prev;
 
-                    synthAdvanceVirtualSampleEntry(entry, elapsed);
-                    prev = entry->lastTick;
+                    vsUpdateBuffer(entry, elapsed);
+                    prev = entry->finalLast;
                     if (currentTick >= prev)
                     {
-                        entry->remaining -= (currentTick - prev);
+                        entry->finalGoodSamples -= (currentTick - prev);
                     }
                     else
                     {
-                        entry->remaining -= state->loopSize - (prev - currentTick);
+                        entry->finalGoodSamples -= state->bufferLength - (prev - currentTick);
                     }
-                    entry->lastTick = currentTick;
+                    entry->finalLast = currentTick;
 
-                    if ((s32)(u32)((s32)(*(u16*)((u8*)synthVoice +
-                                                 entry->voice * SYNTH_VIRTUAL_SAMPLE_VOICE_STRIDE +
-                                                 SYNTH_VIRTUAL_SAMPLE_VOICE_RELEASE_OFFSET) *
+                    if ((s32)(u32)((s32)(synthVoice[entry->voice].curPitch *
                                              SYNTH_VIRTUAL_SAMPLE_RELEASE_SCALE +
                                          SYNTH_VIRTUAL_SAMPLE_RELEASE_ROUND) /
                                    SYNTH_VIRTUAL_SAMPLE_RELEASE_SHIFT) >
-                        (s32)entry->remaining)
+                        (s32)entry->finalGoodSamples)
                     {
                         if (hwVoiceInStartup(entry->voice) == 0)
                         {
                             hwBreak(entry->voice);
                         }
-                        entry->mode = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
-                        state->voiceMap[entry->voice] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
+                        entry->state = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
+                        state->voices[entry->voice] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
                     }
                 }
                 else
                 {
-                    entry->mode = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
-                    state->voiceMap[entry->voice] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
+                    entry->state = SYNTH_VIRTUAL_SAMPLE_MODE_INACTIVE;
+                    state->voices[entry->voice] = SYNTH_VIRTUAL_SAMPLE_FREE_SLOT;
                 }
             }
             break;
@@ -347,7 +343,7 @@ void synthUpdateVirtualSamples(void)
 /*
  * Reset the loaded sound-group table count.
  */
-void synthResetLoadedGroupCount(void)
+void dataInitStack(void)
 {
-    synthLoadedGroupCount = 0;
+    sp = 0;
 }

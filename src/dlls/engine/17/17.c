@@ -263,6 +263,6 @@ u8 gTaskHintMapData[512] = {
     255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
     255, 255, 255, 255, 0,   0};
 
-void* lbl_80311BE0[10] = {(void*)0x00000000,  (void*)0x00000000, (void*)0x00000000, (void*)0x00050000,
+void* screens_funcs[10] = {(void*)0x00000000,  (void*)0x00000000, (void*)0x00000000, (void*)0x00050000,
                           screens_initialise, screens_release,   (void*)0x00000000, screens_show,
                           screens_remove,     screens_run};

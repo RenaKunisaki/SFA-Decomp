@@ -197,8 +197,8 @@ def main() -> None:
         if args.context:
             n = args.context
             print(f"  ...{t[max(0, i1 - n):i1]}")
-        print(f"{tag:7s} T: {tt}")
-        print(f"        C: {cc}")
+        print(f"{tag} T: {tt}")
+        print(f"{' ' * len(tag)} C: {cc}")
         if args.context:
             print(f"  ...{t[i2:i2 + args.context]}")
         if args.classify:

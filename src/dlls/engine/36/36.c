@@ -14,11 +14,11 @@ ObjectDescriptor6 Effect11_funcs = {
     (ObjectDescriptorCallback)Effect11_release,
     0,
     (ObjectDescriptorCallback)Effect11_func03_nop,
-    (ObjectDescriptorCallback)Effect11_func04,
+    (ObjectDescriptorCallback)Effect11_spawnObject,
     (ObjectDescriptorCallback)Effect11_func05_nop,
 };
 
-int Effect11_func04(s16* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte)
+int Effect11_spawnObject(s16* obj, int id, PartFxSpawnParams* src, u32 flags, u8 srcByte)
 {
     PartFxSpawn p;
     u32 hasOffset;

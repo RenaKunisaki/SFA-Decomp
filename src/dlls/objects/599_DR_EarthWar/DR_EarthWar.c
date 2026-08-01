@@ -55,9 +55,7 @@ typedef struct DREarthWarriorPlacement
 /* Combat sub-block of the EarthWarrior state (state+0xb58). */
 typedef struct EarthWarriorSub
 {
-    u8 pad000[0x264];
-    u8 unk264;
-    u8 pad265[0xfb];
+    u8 pad000[0x360];
     int unk360;
     u8 pad364[0x8c];
     u8 flags3F0; /* ByteFlags: b40 leap, b80 airborne */
@@ -80,11 +78,11 @@ typedef struct EarthWarriorSub
     f32 currentYawStepRate;      /* 0x434: per-frame step cap (currentYawStepRate*timeDelta) for the currentYaw turn */
     f32 animSpeedSmoothing; /* 0x438: interpolate() rate/gain closing animSpeedC toward targetAnimSpeed (copied from unk830) */
     u8 pad43C[0x14];
-    u8* unk450;
-    u8* unk454;
-    u8* unk458;
-    u8* unk45C;
-    u8* unk460;
+    u8* paramCurve0; /* curve-data ptrs + counts mirror PlayerState 0x450/0x8D0 (init-only here; no sampling reader in this DLL) */
+    u8* paramCurve1;
+    u8* paramCurve2;
+    u8* paramCurve3;
+    u8* paramCurve4;
     u8 pad464[0xc];
     f32 unk470;
     int unk474;
@@ -121,11 +119,11 @@ typedef struct EarthWarriorSub
     u8 pad8B1[0x1b];
     s8 attackPhase; /* attack phase */
     u8 pad8CD[3];
-    u8 unk8D0;
-    u8 unk8D1;
-    u8 unk8D2;
-    u8 unk8D3;
-    u8 unk8D4;
+    u8 paramCurve0Count;
+    u8 paramCurve1Count;
+    u8 paramCurve2Count;
+    u8 paramCurve3Count;
+    u8 paramCurve4Count;
     u8 pad8D5[3];
     u16 flags8D8;
     u8 pad8DA[6];
@@ -159,13 +157,13 @@ typedef struct EarthWarriorSub
 STATIC_ASSERT(sizeof(EarthWarriorSub) == 0x9a4);
 STATIC_ASSERT(offsetof(EarthWarriorSub, moveTable) == 0x3f8);
 STATIC_ASSERT(offsetof(EarthWarriorSub, configRow) == 0x400);
-STATIC_ASSERT(offsetof(EarthWarriorSub, unk450) == 0x450);
+STATIC_ASSERT(offsetof(EarthWarriorSub, paramCurve0) == 0x450);
 STATIC_ASSERT(offsetof(EarthWarriorSub, appliedYaw) == 0x478);
 STATIC_ASSERT(offsetof(EarthWarriorSub, currentYaw) == 0x484);
 STATIC_ASSERT(offsetof(EarthWarriorSub, savedYaw) == 0x494);
 STATIC_ASSERT(offsetof(EarthWarriorSub, unk7E0) == 0x7e0);
 STATIC_ASSERT(offsetof(EarthWarriorSub, animSpeedASmoothing) == 0x82c);
-STATIC_ASSERT(offsetof(EarthWarriorSub, unk8D0) == 0x8d0);
+STATIC_ASSERT(offsetof(EarthWarriorSub, paramCurve0Count) == 0x8d0);
 STATIC_ASSERT(offsetof(EarthWarriorSub, posX) == 0x8e0);
 STATIC_ASSERT(offsetof(EarthWarriorSub, unk8EC) == 0x8ec);
 STATIC_ASSERT(offsetof(EarthWarriorSub, unk986) == 0x986);
@@ -244,11 +242,11 @@ typedef struct DREarthWarriorInitData
     u8 unk3C[0x10];
     u8 unk4C[0x18];
     u8 unk64[0x20];
-    u8 unk84[0x54];
-    u8 unkD8[0x40];
-    u8 unk118[0xA4];
-    u8 unk1BC[0xA4];
-    u8 unk260[4];
+    u8 configRow[0x54];
+    u8 moveTable[0x40];
+    u8 paramCurve0Data[0xA4];
+    u8 paramCurve1Data[0xA4];
+    u8 paramCurve2Data[4];
 } DREarthWarriorInitData;
 extern u8 gDREarthWarriorRowIndices[];
 const EWColorTbl gDREarthWarriorColors = {
@@ -339,8 +337,12 @@ static void DR_EarthWarrior_updateLookAtBones(GameObject* obj, EarthWarriorSub* 
         angleDelta = angleDelta + 0xffff;
     }
     responseScale = 0.15f;
-    angleDelta = (int)((f32)angleDelta * responseScale);
-    angleDelta = (angleDelta < -0x16c) ? -0x16c : ((angleDelta > 0x16c) ? 0x16c : angleDelta);
+    angleDelta *= responseScale;
+    if (angleDelta < -0x16c) {
+        angleDelta = -0x16c;
+    } else if (angleDelta > 0x16c) {
+        angleDelta = 0x16c;
+    }
     warrior->aimAccumY = angleDelta * timeDelta + (f32)(s32) * (s16*)&warrior->aimAccumY;
     warrior->aimHalfY = warrior->aimAccumY / 2;
     {
@@ -388,7 +390,6 @@ static void DR_EarthWarrior_updateLookAtBones(GameObject* obj, EarthWarriorSub* 
         secondaryLookBone[0] = (s16)(absoluteHalfY >> 1);
     }
 }
-int DR_EarthWarrior_updateLeap(GameObject* obj, int sub, int state);
 int DR_EarthWarrior_defaultStateHandler(void)
 {
     return 0x0;
@@ -453,7 +454,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int state)
         ((ByteFlags*)&q->flags3F2)->b10 = 1;
     }
     if (!((ByteFlags*)&q->flags3F0)->b80 && !((ByteFlags*)&q->flags3F0)->b40 &&
-        !((ByteFlags*)&inner->sub.flags994)->b01 && (*(int*)&((EarthWarriorState*)state)->baddie.unk31C & 0x100))
+        !((ByteFlags*)&inner->sub.flags994)->b01 && (*(int*)&((EarthWarriorState*)state)->baddie.pressedButtons & 0x100))
     {
         buttonDisable(0, PAD_BUTTON_A);
         ((ByteFlags*)&inner->sub.flags994)->b01 = 1;
@@ -727,7 +728,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie)
         (obj)->anim.velocityZ = z;
     }
     if (!((ByteFlags*)&q->flags3F0)->b80 && !((ByteFlags*)&q->flags3F0)->b40 &&
-        !((ByteFlags*)&inner->sub.flags994)->b01 && (*(int*)&((BaddieState*)baddie)->unk31C & 0x100))
+        !((ByteFlags*)&inner->sub.flags994)->b01 && (*(int*)&((BaddieState*)baddie)->pressedButtons & 0x100))
     {
         buttonDisable(0, PAD_BUTTON_A);
         ((ByteFlags*)&inner->sub.flags994)->b01 = 1;
@@ -1163,8 +1164,8 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
     {
         ((EarthWarriorState*)inner)->baddie.moveInputX = (f32)padGetStickX(0);
         ((EarthWarriorState*)inner)->baddie.moveInputZ = (f32)padGetStickY(0);
-        *(int*)&((EarthWarriorState*)inner)->baddie.unk31C = getButtonsJustPressed(0);
-        *(int*)&((EarthWarriorState*)inner)->baddie.unk318 = getButtonsHeld(0);
+        *(int*)&((EarthWarriorState*)inner)->baddie.pressedButtons = getButtonsJustPressed(0);
+        *(int*)&((EarthWarriorState*)inner)->baddie.heldButtons = getButtonsHeld(0);
         ((EarthWarriorState*)inner)->baddie.cameraYaw = *(s16*)slot;
     }
     else
@@ -1172,8 +1173,8 @@ void DR_EarthWarrior_runController(GameObject* obj, int t, int p3)
         f32 v = 0.0f;
         ((EarthWarriorState*)inner)->baddie.moveInputX = v;
         ((EarthWarriorState*)inner)->baddie.moveInputZ = v;
-        *(int*)&((EarthWarriorState*)inner)->baddie.unk31C = 0;
-        *(int*)&((EarthWarriorState*)inner)->baddie.unk318 = 0;
+        *(int*)&((EarthWarriorState*)inner)->baddie.pressedButtons = 0;
+        *(int*)&((EarthWarriorState*)inner)->baddie.heldButtons = 0;
         ((EarthWarriorState*)inner)->baddie.cameraYaw = 0;
     }
     ((EarthWarriorState*)inner)->baddie.flags0 |= 0x1000000;
@@ -1333,24 +1334,24 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     inner->moveLib.modeBits |= 2;
     inner->sub.unk8EC = 4.32f;
     inner->sub.health = def->airMeterMax;
-    inner->sub.moveTable = (int)base->unkD8;
-    inner->sub.configRow = (int)base->unk84;
+    inner->sub.moveTable = (int)base->moveTable;
+    inner->sub.configRow = (int)base->configRow;
     {
         f32 v = 1.0f;
         inner->sub.unk834 = v;
         inner->sub.animSpeedASmoothing = v;
     }
     inner->sub.animSpeedSmoothingReload = 0.06f;
-    inner->sub.unk450 = base->unk118;
-    inner->sub.unk8D0 = 0x29;
-    inner->sub.unk454 = base->unk1BC;
-    inner->sub.unk8D1 = 0x29;
-    inner->sub.unk458 = base->unk260;
-    inner->sub.unk8D2 = 0x2e;
-    inner->sub.unk45C = base->unk1BC;
-    inner->sub.unk8D3 = 0x29;
-    inner->sub.unk460 = base->unk260;
-    inner->sub.unk8D4 = 0x2e;
+    inner->sub.paramCurve0 = base->paramCurve0Data;
+    inner->sub.paramCurve0Count = 0x29;
+    inner->sub.paramCurve1 = base->paramCurve1Data;
+    inner->sub.paramCurve1Count = 0x29;
+    inner->sub.paramCurve2 = base->paramCurve2Data;
+    inner->sub.paramCurve2Count = 0x2e;
+    inner->sub.paramCurve3 = base->paramCurve1Data;
+    inner->sub.paramCurve3Count = 0x29;
+    inner->sub.paramCurve4 = base->paramCurve2Data;
+    inner->sub.paramCurve4Count = 0x2e;
     inner->sub.unk7E0 = 5.555f;
     {
         s16 h = (obj)->anim.rotX;

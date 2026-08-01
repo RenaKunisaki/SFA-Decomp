@@ -6,8 +6,8 @@
 #define DUMMY39_WARP_MAP         0x60
 #define DUMMY39_MAX_STEP_FRAMES  3
 
-extern u8 lbl_803DD728;
-extern u8* lbl_803DD72C;
+extern u8 gDummy39Countdown;
+extern u8* gDummy39Texture;
 
 void Dummy39_render(void)
 {
@@ -26,11 +26,11 @@ int Dummy39_run(void)
     step = framesThisStep;
     if (step > DUMMY39_MAX_STEP_FRAMES)
         step = DUMMY39_MAX_STEP_FRAMES;
-    cur = lbl_803DD728;
+    cur = gDummy39Countdown;
     if ((s8)cur > 0)
     {
         next = cur - step;
-        *(s8*)&lbl_803DD728 = next;
+        *(s8*)&gDummy39Countdown = next;
         if ((s8)(u8)next <= 0)
         {
             loadUiDll(1);
@@ -42,12 +42,12 @@ int Dummy39_run(void)
 
 void Dummy39_release(void)
 {
-    textureFree((Texture*)(lbl_803DD72C));
+    textureFree((Texture*)(gDummy39Texture));
 }
 
 void Dummy39_initialise(void)
 {
-    lbl_803DD728 = DUMMY39_COUNTDOWN_FRAMES;
+    gDummy39Countdown = DUMMY39_COUNTDOWN_FRAMES;
 }
 
 ObjectDescriptor6 Dummy39_funcs = {

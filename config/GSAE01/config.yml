@@ -143,6 +143,8 @@ clean_extab: false
 # address materializations. The original
 # compiler emitted plain immediates (MWCC never folds extern+const into reloc addends).
 block_relocations:
+- target: 0x80380209
+  end: 0x8038020A
 - target: 0x80100100
   end: 0x80100104
 - target: 0x80180100

@@ -2,15 +2,15 @@
 #include "musyx/mcmd.h"
 #include "musyx/vid_init.h"
 
-McmdVidListNode* get_vidlist(u32 id)
+VID_LIST* get_vidlist(u32 id)
 {
-    McmdVidListNode* node;
+    VID_LIST* node;
     u32 value;
 
     node = vidRoot;
     while (node != NULL)
     {
-        value = node->id;
+        value = node->vid;
         if (value == id)
         {
             return node;

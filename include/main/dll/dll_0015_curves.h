@@ -221,8 +221,8 @@ int RomCurve_projectPointToAdjacentWindow(int* curveIds, f32 x, f32 y, f32 z, f3
                                           f32* outVerticalOffset, f32* outPhase);
 int curves_isPointInsideLoop(int curveId, f32 x, f32 y, f32 z, f32* outDistance);
 int curves_findNearestOfType16(f32 x, f32 y, f32 z, int param_4);
-int RomCurve_func13(u32 curveId, int typeFilter, int param_3, int* param_4);
-int RomCurve_func11(RomCurveDef* curve, int typeFilter, int actionFilter, int* outCurveId);
+int RomCurve_func13(u32 curveId, int typeFilter, int matchValue, int* outLink);
+int RomCurve_findLinkTowardNearestOfType(RomCurveDef* curve, int typeFilter, int actionFilter, int* previousCurveId);
 int RomCurve_getRandomLinkedOfTypes(RomCurveDef* curve, int* types, int typeCount, int* previousLinkId);
 int curves_findByAction(int action);
 f32 curves_distXZ(f32 x, f32 z, u32 curveId);

@@ -798,14 +798,14 @@ void player_setState(void* ctx, void* p, int new_state)
         ((BaddieState*)p)->prevControlMode = ((BaddieState*)p)->controlMode;
         ((BaddieState*)p)->controlMode = new_state;
         {
-            void (*fn)(void) = *(void (**)(void))&((BaddieState*)p)->unk304;
+            void (*fn)(void) = *(void (**)(void))&((BaddieState*)p)->stateExitFn;
             if (fn != 0)
             {
                 fn();
-                *(void**)&((BaddieState*)p)->unk304 = 0;
+                *(void**)&((BaddieState*)p)->stateExitFn = 0;
             }
         }
-        *(void**)&((BaddieState*)p)->unk304 = *(void**)&((BaddieState*)p)->unk308;
+        *(void**)&((BaddieState*)p)->stateExitFn = *(void**)&((BaddieState*)p)->nextStateExitFn;
     }
     ((BaddieState*)p)->controlTimer = 0;
     ((BaddieState*)p)->moveJustStartedA = 1;
@@ -1053,7 +1053,7 @@ void player_initialise(void)
 {
 }
 
-u32 lbl_80311438[30] = {
+u32 player_funcs[30] = {
     0, 0, 0, 0x00190000,
     (u32)player_initialise, (u32)player_release, 0, (u32)player_init,
     (u32)player_update, (u32)player_updateVel, (u32)player_setOverride, (u32)player_setState,

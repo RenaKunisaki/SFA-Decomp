@@ -495,8 +495,11 @@ data around had no visible effect in-game).
     `+0x1C`/`+0x1E` off a per-map-ID row in the in-memory `MAPS.tab` — offsets that don't match
     `infoOffset`'s own layout, so this is a different (likely `blockTable`-relative) table, not
     confirmed to be `infoOffset` itself.
-- No struct for `MAPINFO.bin`'s `name`/`type`/`objType` record was found — only the filename
-  constant (`sResourceFileNameMapinfoBin`) is present; nothing reads it by field name in this pass.
+- `MAPINFO.bin`'s record is now typed in source: `MapInfoRecord` in `src/main/shader.c`
+  (`char name[0x1c]; s8 mapType; u8 unk1d; s16 objType;`). `mapType` is read when resolving a
+  world position to a map id; `objType` is copied into a write-only latch on sub-map entry
+  (rev1 corpus: nonzero on exactly the 28 mapType-1 sub-maps, and each value resolves through
+  OBJINDEX/OBJECTS to the sub-map's carrier object, e.g. `cfcolumn`->`CF_BobbingC`).
 - No numeric HITS.bin `type` (0x01–0x11) check was traced to source in this pass, beyond the
   conceptual player-state names above.
 - `DisplayListPtr`/bounding-box `shaderId`/`specialBitAddr` fields (wiki 0x13/0x14/0x16/0x18) have

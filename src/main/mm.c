@@ -27,7 +27,7 @@ int gMmRegion0Used;
 int gMmTickCount;
 int gMmRegion0Size;
 int gMmOpCount;
-u8 lbl_803DCB10;
+u8 gMmTextureAllocationState;
 int gMmNextAllocId;
 int gMmUseHeap3;
 
@@ -179,9 +179,10 @@ extern MmStore* gMmStoreArray[MM_STORE_COUNT];
 
 void* mmAllocateFromFBMemoryStore(int handle, int size)
 {
-    int requestedSize = size;
+    int requestedSize[1];
     MmStore* store;
     int storeIndex;
+    requestedSize[0] = size;
     store = NULL;
     storeIndex = 0;
     while (storeIndex < MM_STORE_COUNT)
@@ -200,13 +201,13 @@ void* mmAllocateFromFBMemoryStore(int handle, int size)
     if (store != NULL)
     {
         size = store->size - ((int)store->ptrCurrent - (int)store->ptrStore);
-        if (size < requestedSize)
+        if (size < requestedSize[0])
         {
             OSReport(sMmAllocateFromFBMemoryStoreSpaceError);
             return 0;
         }
-        store->ptrCurrent = (char*)store->ptrCurrent + requestedSize;
-        return (void*)((int)store->ptrCurrent - requestedSize);
+        store->ptrCurrent = (char*)store->ptrCurrent + requestedSize[0];
+        return (void*)((int)store->ptrCurrent - requestedSize[0]);
     }
     return 0;
 }
@@ -861,7 +862,7 @@ int getHeapItemSize(void* ptr)
 }
 void mmSetTextureAllocationState(int state)
 {
-    lbl_803DCB10 = state;
+    gMmTextureAllocationState = state;
 }
 void* mmInitRegion(u8* buf, int size, int numSlots);
 

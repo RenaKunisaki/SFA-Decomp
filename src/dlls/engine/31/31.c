@@ -24,11 +24,11 @@ ObjectDescriptor6 Effect6_funcs = {
     (ObjectDescriptorCallback)Effect6_release,
     NULL,
     (ObjectDescriptorCallback)Effect6_func03_nop,
-    (ObjectDescriptorCallback)Effect6_func04,
-    (ObjectDescriptorCallback)Effect6_func05,
+    (ObjectDescriptorCallback)Effect6_spawnObject,
+    (ObjectDescriptorCallback)Effect6_updateFrameState,
 };
 
-int Effect6_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect6_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                    u16* extraArgs)
 {
     int spawnResult;
@@ -233,7 +233,7 @@ int Effect6_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
     return spawnResult;
 }
 
-void Effect6_func05(void)
+void Effect6_updateFrameState(void)
 {
     f32 sum;
     f32 step;

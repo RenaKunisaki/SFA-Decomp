@@ -72,7 +72,7 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj) {
     u32 id;
     u32 cls;
     u8* mtx;
-    GameObject* gobj;
+    GameObject* gobj = (GameObject*)obj;
     const u8* effectDataBytes;
     const f32* scaleA;
     const f32* scaleB;
@@ -88,7 +88,6 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj) {
     f32 dy;
     f32 dz;
 
-    gobj = (GameObject*)obj;
     effectDataBytes = (const u8*)gBoneParticleConfigTable;
     if (mainGetBit(GAMEBIT_TRICKYCURVE_PLAYER_HIT) != 0) {
         mainSetBits(GAMEBIT_TRICKYCURVE_PLAYER_HIT, 0);
@@ -363,13 +362,13 @@ void boneParticleEffect_spawnAtBones(GameObject* obj, int effectId, void* extraA
                 data.unk0 = src[0];
                 data.unk4 = src[2];
                 data.unk2 = src[1];
-                data.unk6 = src[3];
+                data.effectParam = src[3];
             } else {
                 data.scale = (1.0f);
                 data.unk0 = 0;
                 data.unk4 = 0;
                 data.unk2 = 0;
-                data.unk6 = 0;
+                data.effectParam = 0;
             }
             (*gPartfxInterface)->spawnObject(obj, effectId, &data, 2, -1, extraArg);
         }

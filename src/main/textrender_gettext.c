@@ -18,7 +18,7 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
     u16* entry;
 
     strings = gGameTextFontData;
-    if (gameTextFonts->mode != 2)
+    if (gameTextFonts->status != 2)
     {
         gGameTextBufferIndex = gGameTextBufferIndex + 1;
         if (gGameTextBufferIndex >= 8)
@@ -29,7 +29,7 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
         gCurTextBuffer = *(int*)*(int**)(gGameTextLastEntry + 8);
         *(u16*)gGameTextLastEntry = 0xffff;
         gGameTextFallbackBuf = (int)(sGameTextFallbackBufSlots + gGameTextBufferIndex * 4);
-        switch (gameTextFonts->mode)
+        switch (gameTextFonts->status)
         {
         case 0:
             sprintf((char*)gCurTextBuffer, strings + 0xec4);
@@ -88,7 +88,7 @@ void* gameTextGetStr(int textId)
     void* textEntry;
 
     strings = gGameTextFontData;
-    if (gameTextFonts->mode != 2)
+    if (gameTextFonts->status != 2)
     {
         gGameTextBufferIndex = gGameTextBufferIndex + 1;
         if (gGameTextBufferIndex >= 8)
@@ -99,7 +99,7 @@ void* gameTextGetStr(int textId)
         gCurTextBuffer = *(int*)*(int**)(gGameTextLastEntry + 8);
         *(u16*)gGameTextLastEntry = 0xffff;
         gGameTextFallbackBuf = (int)(sGameTextFallbackBufSlots + gGameTextBufferIndex * 4);
-        switch (gameTextFonts->mode)
+        switch (gameTextFonts->status)
         {
         case 0:
             sprintf((char*)gCurTextBuffer, strings + 0xec4);
@@ -137,7 +137,7 @@ void* gameTextGet(int textId)
     strings = gGameTextFontData;
     fonts = gameTextFonts;
 
-    if (fonts->mode != 2)
+    if (fonts->status != 2)
     {
         gGameTextBufferIndex++;
         if (gGameTextBufferIndex >= 8)
@@ -151,7 +151,7 @@ void* gameTextGet(int textId)
         p = gameTextBase + gGameTextBufferIndex * 4;
         gGameTextFallbackBuf = (int)(p + 0x20);
 
-        switch (gameTextFonts->mode)
+        switch (gameTextFonts->status)
         {
         case 0:
             sprintf((char*)gCurTextBuffer, strings + 0xec4);
@@ -169,7 +169,7 @@ void* gameTextGet(int textId)
         return gGameTextLastEntry;
     }
 
-    entry = fonts->entries;
+    entry = (u16*)fonts->entries;
     count = fonts->entryCount;
     while (count != 0)
     {
@@ -225,8 +225,8 @@ void gameTextResetCursor(int flags)
 {
     if (flags & 1)
     {
-        lbl_803DC9AA = 0;
-        lbl_803DC9A8 = 0;
+        gGameTextCursorX = 0;
+        gGameTextCursorY = 0;
     }
     if (flags & 2)
     {
@@ -239,8 +239,8 @@ void gameTextSetCursor(u16 x, u16 y, int flags)
 {
     if (flags & 1)
     {
-        lbl_803DC9AA = x;
-        lbl_803DC9A8 = y;
+        gGameTextCursorX = x;
+        gGameTextCursorY = y;
     }
     if (flags & 2)
     {

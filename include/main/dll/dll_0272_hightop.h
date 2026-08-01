@@ -150,14 +150,14 @@ int hightop_stateHandler10(GameObject* obj, HighTopRuntime* runtime);
 
 typedef struct HighTopTuning
 {
-    int dispatchArgs[4];
+    int shacklePathPoints[4];
     f32 unk10[22];
 } HighTopTuning;
 
 STATIC_ASSERT(sizeof(HighTopTuning) == 0x68);
 STATIC_ASSERT(offsetof(HighTopTuning, unk10) == 0x10);
 
-extern HighTopTuning lbl_8032AB48;
+extern HighTopTuning gHighTopTuning;
 extern f32 gHighTopPathPointRadii[2];
 extern s16 gHighTopLookYawOffset;
 extern u8 lbl_803DC308[8];

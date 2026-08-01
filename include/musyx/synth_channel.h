@@ -3,6 +3,6 @@
 
 #include "ghidra_import.h"
 
-void synthSetHandleMixData(u32 handle, u32 mixValue0, u32 mixValue1);
+void seqMute(u32 seqId, u32 mask1, u32 mask2);
 
 #endif /* MUSYX_SYNTH_CHANNEL_H_ */

@@ -121,12 +121,10 @@ void firstPersonExit(CameraObject* camera) {
     if (((gCameraModeViewfinderState->yawCurve.start - gCameraModeViewfinderState->yawCurve.end) > 32768.0f) ||
         ((gCameraModeViewfinderState->yawCurve.start - gCameraModeViewfinderState->yawCurve.end) < -32768.0f)) {
         if (gCameraModeViewfinderState->yawCurve.start < 0.0f) {
-            gCameraModeViewfinderState->yawCurve.start =
-                *(f32*)&gCameraModeViewfinderState->yawCurve.start + gCameraModeViewfinderFullCircle;
+            gCameraModeViewfinderState->yawCurve.start += gCameraModeViewfinderFullCircle;
         } else {
             if (gCameraModeViewfinderState->yawCurve.end < 0.0f) {
-                gCameraModeViewfinderState->yawCurve.end =
-                    *(f32*)&gCameraModeViewfinderState->yawCurve.end + gCameraModeViewfinderFullCircle;
+                gCameraModeViewfinderState->yawCurve.end += gCameraModeViewfinderFullCircle;
             }
         }
     }
@@ -138,12 +136,10 @@ void firstPersonExit(CameraObject* camera) {
     if (((gCameraModeViewfinderState->pitchCurve.start - gCameraModeViewfinderState->pitchCurve.end) > 32768.0f) ||
         ((gCameraModeViewfinderState->pitchCurve.start - gCameraModeViewfinderState->pitchCurve.end) < -32768.0f)) {
         if (gCameraModeViewfinderState->pitchCurve.start < 0.0f) {
-            gCameraModeViewfinderState->pitchCurve.start =
-                *(f32*)&gCameraModeViewfinderState->pitchCurve.start + gCameraModeViewfinderFullCircle;
+            gCameraModeViewfinderState->pitchCurve.start += gCameraModeViewfinderFullCircle;
         } else {
             if (gCameraModeViewfinderState->pitchCurve.end < 0.0f) {
-                gCameraModeViewfinderState->pitchCurve.end =
-                    *(f32*)&gCameraModeViewfinderState->pitchCurve.end + gCameraModeViewfinderFullCircle;
+                gCameraModeViewfinderState->pitchCurve.end += gCameraModeViewfinderFullCircle;
             }
         }
     }
@@ -334,9 +330,10 @@ void CameraModeViewfinder_free(CameraObject* camera) {
 }
 
 void CameraModeViewfinder_update(CameraObject* camera) {
-    GameObject* focus;
     GameObject* fadeTarget;
+    int brightness;
     GameObject* exitTarget;
+    GameObject* focus;
     int angleDiff;
     f32 relativeX;
     f32 relativeY;
@@ -398,9 +395,7 @@ void CameraModeViewfinder_update(CameraObject* camera) {
         }
         camera->unk13E = 1;
         break;
-    case CAMERA_MODE_VIEWFINDER_PHASE_FADE_BACK: {
-        int brightness;
-
+    case CAMERA_MODE_VIEWFINDER_PHASE_FADE_BACK:
         camera->anim.worldPosX = gCameraModeViewfinderState->positionXCurve.end;
         camera->anim.worldPosY = gCameraModeViewfinderState->positionYCurve.end;
         camera->anim.worldPosZ = gCameraModeViewfinderState->positionZCurve.end;
@@ -441,7 +436,8 @@ void CameraModeViewfinder_update(CameraObject* camera) {
             camera->anim.rotY = 0;
         } else {
             relativeY = camera->anim.worldPosY - (focus->anim.worldPosY + gCameraModeViewfinderTargetHeight);
-            angleDiff = (getAngle(relativeY, relativeDistance) & 0xffff) - (camera->anim.rotY & 0xffffU);
+            angleDiff = getAngle(relativeY, relativeDistance) & 0xffff;
+            angleDiff -= camera->anim.rotY & 0xffffU;
             if (angleDiff > 0x8000) {
                 angleDiff = angleDiff - 0xffff;
             }
@@ -468,7 +464,6 @@ void CameraModeViewfinder_update(CameraObject* camera) {
         }
         camera->unk13E = 1;
         break;
-    }
     case CAMERA_MODE_VIEWFINDER_PHASE_IDLE:
         break;
     }

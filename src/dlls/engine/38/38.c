@@ -8,7 +8,7 @@
 
 WaterfxCfg gEffect13DefaultSplashParams;
 
-int Effect13_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId)
+int Effect13_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId)
 {
     int spawnResult;
     PartFxSpawn cfg;
@@ -180,6 +180,6 @@ ObjectDescriptor6 Effect13_funcs = {
     (ObjectDescriptorCallback)Effect13_release,
     0,
     (ObjectDescriptorCallback)Effect13_func03_nop,
-    (ObjectDescriptorCallback)Effect13_func04,
+    (ObjectDescriptorCallback)Effect13_spawnObject,
     (ObjectDescriptorCallback)Effect13_func05_nop,
 };

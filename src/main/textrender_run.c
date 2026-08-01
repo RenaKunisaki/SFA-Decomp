@@ -47,14 +47,14 @@ int lbl_803DC9D0;
 void* gCurTextBox;
 int lbl_803DC9C8;
 char* gGameTextCommandStringCursor;
-int lbl_803DC9C0;
+int gGameTextRenderingById;
 int gGameTextMeasureOnly;
 int gGameTextBoundsMinY;
 int gGameTextBoundsMaxY;
 int gGameTextBoundsMinX;
 int gGameTextBoundsMaxX;
-u16 lbl_803DC9AA;
-u16 lbl_803DC9A8;
+u16 gGameTextCursorX;
+u16 gGameTextCursorY;
 u8 gGameTextColorR;
 u8 gGameTextColorG;
 u8 gGameTextColorB;
@@ -83,7 +83,7 @@ extern u16 gGameTextSjisGlyphTable[];
 extern char sGameTextMapPathFormat[];
 extern GXColor gGameTextClearColor;
 extern int gGameTextFontTexRowPitch;
-extern GameTextStateElem gGameTextCharsets[];
+extern TextFont gGameTextCharsets[];
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 
 typedef struct GameTextTableHeader
@@ -116,7 +116,7 @@ void gameTextLoadDir(int dirId)
 
     if (dirId == 3)
     {
-        gameTextFonts = (TextFont*)&gGameTextCharsets[GAMETEXT_SLOT_ERROR];
+        gameTextFonts = &gGameTextCharsets[GAMETEXT_SLOT_ERROR];
         gameTextCharset = GAMETEXT_SLOT_ERROR;
         color = gGameTextClearColor;
         hudDrawRect(0, 0, 0xa00, 0x780, color);
@@ -133,7 +133,7 @@ void gameTextLoadDir(int dirId)
     else if (dirId == 0x1c)
     {
         curGameTextDir = dirId;
-        gameTextFonts = (TextFont*)&gGameTextCharsets[GAMETEXT_SLOT_HUD];
+        gameTextFonts = &gGameTextCharsets[GAMETEXT_SLOT_HUD];
         gameTextCharset = GAMETEXT_SLOT_HUD;
         if (gameTextDrawFunc == NULL)
         {
@@ -147,7 +147,7 @@ void gameTextLoadDir(int dirId)
     }
     else
     {
-        gameTextFonts = (TextFont*)&gGameTextCharsets[GAMETEXT_SLOT_DIALOGUE];
+        gameTextFonts = &gGameTextCharsets[GAMETEXT_SLOT_DIALOGUE];
         gameTextCharset = GAMETEXT_SLOT_DIALOGUE;
         if (gameTextDrawFunc == NULL)
         {
@@ -176,7 +176,7 @@ void gameTextSetCharset(int charset, int flags)
 {
     if (gameTextDrawFunc != NULL || (flags & 1))
     {
-        gameTextFonts = (TextFont*)&gGameTextCharsets[charset];
+        gameTextFonts = &gGameTextCharsets[charset];
         gameTextCharset = charset;
         if (charset == 2)
         {
@@ -216,7 +216,7 @@ f32 gameTextGetTimer(void)
 
 int gameTextGetState(int i)
 {
-    return gGameTextCharsets[i].state;
+    return gGameTextCharsets[i].status;
 }
 
 void gameTextRun(void)
@@ -371,7 +371,7 @@ void gameTextRun(void)
         }
     }
 
-    if (gameTextFonts->mode == 1)
+    if (gameTextFonts->status == 1)
     {
         gameTextFonts->timer += timeDelta;
     }
@@ -388,8 +388,8 @@ void gameTextRun(void)
     }
 
     gGameTextRevealActive = 0;
-    lbl_803DC9AA = 0;
-    lbl_803DC9A8 = 0;
+    gGameTextCursorX = 0;
+    gGameTextCursorY = 0;
 
     i = gGameTextCommandCount;
     while (i-- != 0)
@@ -460,13 +460,13 @@ void gameTextRun(void)
         case 10:
         {
             u16 b1 = cmd->arg1;
-            lbl_803DC9AA = (u16)cmd->arg0;
-            lbl_803DC9A8 = b1;
+            gGameTextCursorX = (u16)cmd->arg0;
+            gGameTextCursorY = b1;
             break;
         }
         case 11:
-            lbl_803DC9AA = 0;
-            lbl_803DC9A8 = 0;
+            gGameTextCursorX = 0;
+            gGameTextCursorY = 0;
             break;
         case 12:
             gGameTextShadowEnabled = cmd->arg0;
@@ -489,7 +489,8 @@ void gameTextRun(void)
             break;
         }
         case 15:
-            gameTextFonts = &runtime->fonts[cmd->arg0];
+            gameTextFonts = (TextFont*)((cmd->arg0 * sizeof(TextFont) + offsetof(GameTextRuntime, fonts)) +
+                                         (int)runtime);
             gameTextCharset = cmd->arg0;
             if (cmd->arg0 == 2)
             {
@@ -691,7 +692,7 @@ void loadGameTextSequence(int sequenceSlotDir, int sequenceId)
         slot++;
     } while (i-- != 0);
 
-    gameTextBase->fonts[GAMETEXT_SLOT_CUTSCENE].mode = 1;
+    gameTextBase->fonts[GAMETEXT_SLOT_CUTSCENE].status = 1;
     slot = gameTextBase->loadSlots;
     slot = (slot->active == 0)       ? slot
            : ((++slot)->active == 0) ? slot
@@ -814,7 +815,7 @@ void gameTextLoadForCurMap(int sourceId)
 void gameTextBuildSystemFontAtlas(void)
 {
     int wbytes;
-    u8* base30;
+    FontMetrics* base30;
     TextFont* charset;
     u8* buf;
     int sizeA;
@@ -832,7 +833,7 @@ void gameTextBuildSystemFontAtlas(void)
 
     fontData = (u8*)gGameTextFontData;
     base30 = gGameTextFontMetrics;
-    charset = (TextFont*)&gGameTextCharsets[GAMETEXT_SLOT_ERROR];
+    charset = &gGameTextCharsets[GAMETEXT_SLOT_ERROR];
     savedHeap = testAndSet_onlyUseHeap3(0);
     buf = mmAlloc(0x120, 0x1a, 0);
     switch (OSGetFontEncode())
@@ -859,23 +860,23 @@ void gameTextBuildSystemFontAtlas(void)
         {
             charset->glyphs = (TextGlyph*)fontData;
             charset->glyphCount = 0x55;
-            charset->entries = (u16*)(fontData + 0x8ec);
+            charset->entries = (GameTextDef*)(fontData + 0x8ec);
             charset->entryCount = 7;
         }
         else
         {
             charset->glyphs = (TextGlyph*)(fontData + 0x940);
             charset->glyphCount = 0x2b;
-            charset->entries = (u16*)(fontData + 0xe24);
+            charset->entries = (GameTextDef*)(fontData + 0xe24);
             charset->entryCount = 7;
         }
     }
     charset->textures[0] = (Texture*)textureAlloc(0x200, 0x60, 0, 0, 0, 0, 0, 1, 1);
-    *(u16*)(base30 + 0x60) = charset->glyphCount;
-    *(u8*)(base30 + 0x64) = 0x30;
-    *(u8*)(base30 + 0x65) = 0x20;
-    *(u16*)(base30 + 0x68) = 0;
-    *(u16*)(base30 + 0x6a) = 0x18;
+    base30[6].glyphCount = charset->glyphCount;
+    base30[6].unk04 = 0x30;
+    base30[6].unk05 = 0x20;
+    base30[6].maxWidth = 0;
+    base30[6].lineHeight = 0x18;
     count = charset->glyphCount;
     glyph = charset->glyphs;
     x = 0;
@@ -910,9 +911,9 @@ void gameTextBuildSystemFontAtlas(void)
             s[1] = 0;
         }
         OSGetFontWidth((const char*)s, &width);
-        if (width > *(u16*)(base30 + 0x68))
+        if (width > base30[6].maxWidth)
         {
-            *(u16*)(base30 + 0x68) = width;
+            base30[6].maxWidth = width;
         }
         wbytes = width >> 3;
         if ((width & 7) != 0)
@@ -942,7 +943,7 @@ void gameTextBuildSystemFontAtlas(void)
         glyph->advanceY = 0;
         glyph->width = width;
         glyph->height = 0x18;
-        glyph->lang = 6;
+        glyph->font = 6;
         glyph->page = 0;
         {
             int ty;
@@ -982,7 +983,7 @@ void gameTextBuildSystemFontAtlas(void)
     mm_free(bufB);
     mm_free(buf);
     testAndSet_onlyUseHeap3(savedHeap);
-    charset->mode = 2;
+    charset->status = 2;
 }
 
 /* Install a completed language/charset load, upload its textures, and compact
@@ -1012,43 +1013,43 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
     u16* old;
     int delta;
     int* strs2;
-    GameTextCharset* cs;
+    TextFont* cs;
 
     DCStoreRange(loadSlot->loadHandle, loadSlot->loadedSize);
     if (loadSlot->sourceId == 1)
     {
-        cs = (GameTextCharset*)&gGameTextCharsets[1];
+        cs = &gGameTextCharsets[1];
     }
     else if (loadSlot->sourceId == 3)
     {
-        cs = (GameTextCharset*)&gGameTextCharsets[3];
+        cs = &gGameTextCharsets[3];
     }
     else
     {
-        cs = (GameTextCharset*)&gGameTextCharsets[0];
+        cs = &gGameTextCharsets[0];
         curGameTextDir = loadSlot->dirId;
         curLanguage = loadSlot->languageId;
     }
     data = loadSlot->loadHandle;
-    cs->headerCount = data[0];
-    if (cs->headerCount == 0)
+    cs->glyphCount = data[0];
+    if (cs->glyphCount == 0)
     {
         cs->status = 3;
         loadSlot->state = 6;
         return;
     }
-    cs->strings = (u8*)(data + 1);
-    hdr = (GameTextTableHeader*)((u8*)data + cs->headerCount * 16);
-    cs->count = hdr->entryCount;
+    cs->glyphs = (TextGlyph*)(data + 1);
+    hdr = (GameTextTableHeader*)((u8*)data + cs->glyphCount * 16);
+    cs->entryCount = hdr->entryCount;
     ofs = hdr->textureOffset;
     entries = (u8*)(hdr + 1);
-    cs->entries = entries;
-    stringTable = (GameTextStringTable*)(entries + cs->count * 12);
+    cs->entries = (GameTextDef*)entries;
+    stringTable = (GameTextStringTable*)(entries + cs->entryCount * 12);
     numStrings = stringTable->count;
     strs = stringTable->offsets;
-    for (i = 0; i < cs->count; i++)
+    for (i = 0; i < cs->entryCount; i++)
     {
-        *(int**)(cs->entries + i * 12 + 8) = strs + *(int*)(cs->entries + i * 12 + 8);
+        *(int**)((u8*)cs->entries + i * 12 + 8) = strs + *(int*)((u8*)cs->entries + i * 12 + 8);
     }
     txt = (u8*)&stringTable->offsets[numStrings];
     {
@@ -1135,12 +1136,12 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
             *d++ = *s++;
         }
     }
-    cs->strings = cs->strings + delta;
-    cs->entries = cs->entries + delta;
-    for (i = 0; i < cs->count; i++)
+    cs->glyphs = (TextGlyph*)((u8*)cs->glyphs + delta);
+    cs->entries = (GameTextDef*)((u8*)cs->entries + delta);
+    for (i = 0; i < cs->entryCount; i++)
     {
-        int ev = *(int*)(cs->entries + i * 12 + 8);
-        *(int*)(cs->entries + i * 12 + 8) = ev + delta;
+        int ev = *(int*)((u8*)cs->entries + i * 12 + 8);
+        *(int*)((u8*)cs->entries + i * 12 + 8) = ev + delta;
     }
     strs2 = (int*)((u8*)strs + delta);
     for (i = 0; i < numStrings; i++)

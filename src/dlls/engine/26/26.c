@@ -31,7 +31,7 @@ PartFxSpawnParams gEffect1DefaultSpawnParams;
         spawnParams = &gEffect1DefaultSpawnParams;                                                               \
     } while (0)
 
-int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect1_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                    s16* extraArgs)
 {
     int spawnResult;
@@ -1046,7 +1046,7 @@ int Effect1_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
 #undef FILL320
 
 
-void Effect1_func05(void)
+void Effect1_updateFrameState(void)
 {
     f32 sum;
     f32 step;
@@ -1097,6 +1097,6 @@ ObjectDescriptor6 Effect1_funcs = {
     (ObjectDescriptorCallback)Effect1_release,
     0,
     (ObjectDescriptorCallback)Effect1_func03_nop,
-    (ObjectDescriptorCallback)Effect1_func04,
-    (ObjectDescriptorCallback)Effect1_func05,
+    (ObjectDescriptorCallback)Effect1_spawnObject,
+    (ObjectDescriptorCallback)Effect1_updateFrameState,
 };

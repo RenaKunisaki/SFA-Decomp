@@ -11,14 +11,28 @@ typedef struct VoxMapSlotOrigin {
     s16 gridZ;
 } VoxMapSlotOrigin;
 
+typedef struct VoxMapFile {
+    u8 pad00[4];
+    int minY;
+    u8 pad08[4];
+    int maxY;
+    u8 pad10[4];
+    int* nodeBase;
+    int f18;
+    u8* rowCounts;
+    int f20;
+    u8* bitmap;
+    int f28;
+} VoxMapFile;
+
 typedef struct VoxMaps {
     VoxMapSlotOrigin slotOrigin[6];
     int timer[6];
     int blockId[6];
     int blockOriginWorld[2];
     int blockOriginGrid[2];
-    int f58;
-    void* mapBuffer[6];
+    VoxMapFile* activeMap;
+    VoxMapFile* mapBuffer[6];
 } VoxMaps;
 
 typedef struct VoxPos {
@@ -27,36 +41,13 @@ typedef struct VoxPos {
     s16 z;
 } VoxPos;
 
-typedef struct VoxActiveMap {
-    u8 pad00[4];
-    int minY;
-    u8 pad08[4];
-    int maxY;
-    u8 pad10[4];
-    int* nodeBase;
-    u8 pad18[4];
-    u8* header;
-    u8 pad20[4];
-    u8* bitmap;
-} VoxActiveMap;
-
 typedef struct VoxState {
-    int unk00;
-    int unk04;
+    int blockOriginWorldX;
+    int blockOriginWorldZ;
     int originX;
     int originZ;
-    VoxActiveMap* activeMap;
+    VoxMapFile* activeMap;
 } VoxState;
-
-typedef struct VoxMapFile {
-    u8 pad00[0x14];
-    int f14;
-    int f18;
-    int f1c;
-    int f20;
-    int f24;
-    int f28;
-} VoxMapFile;
 
 typedef struct VoxBoxArg {
     s16 x;
@@ -124,7 +115,7 @@ extern VoxState gVoxMapsRouteState;
 extern char sVoxmapsRouteNodesListOverflow[];
 extern char sVoxMapsDebugStrings[];
 
-u8* voxmaps_getRouteNode(u8* header, int* nodeBase, u8* bitmap, int tileX, int ySlot, int tileZ);
+u8* voxmaps_getRouteNode(u8* rowCounts, int* nodeBase, u8* bitmap, int tileX, int ySlot, int tileZ);
 void voxmaps_freeRouteWork(RouteState* state);
 void voxmaps_allocRouteWork(RouteState* state);
 void voxmaps_updateTimers(void);
@@ -142,7 +133,7 @@ int voxmaps_processRouteQueue(RouteState* state, int count);
 int voxmaps_updateRoutePath(RouteNav* nav, RouteState* state);
 int voxmaps_buildRouteWaypoints(RouteState* state, int maxPathPoints);
 void loadVoxMaps(int handle, int* outCount, int* outSize);
-void* voxLoadVoxMapActual(int mapArg, int slot, int b9, int b8);
+VoxMapFile* voxLoadVoxMapActual(int mapArg, int slot, int b9, int b8);
 int voxmaps_traceTraversableRoute(s16* dest, s16* start, s16* lastReachableOut);
 
 #endif /* MAIN_VOXMAPS_H_ */

@@ -27,8 +27,8 @@ ObjectDescriptor6 Effect7_funcs = {
     (ObjectDescriptorCallback)Effect7_release,
     0,
     (ObjectDescriptorCallback)Effect7_func03_nop,
-    (ObjectDescriptorCallback)Effect7_func04,
-    (ObjectDescriptorCallback)Effect7_func05,
+    (ObjectDescriptorCallback)Effect7_spawnObject,
+    (ObjectDescriptorCallback)Effect7_updateFrameState,
 };
 
 
@@ -45,7 +45,7 @@ ObjectDescriptor6 Effect7_funcs = {
         spawnParams = &gEffect7DefaultSpawnParams;                                                               \
     } while (0)
 
-int Effect7_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
+int Effect7_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams, u32 spawnFlags, u8 modelId,
                    s16* extraArgs)
 {
     int spawnResult;
@@ -334,7 +334,7 @@ int Effect7_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
         cfg.scale = 0.0006f * (f32)(s32)randomGetRange(0x3c, 0x50);
         {
             int t = randomGetRange(0, 5);
-            t += spawnParams->unk6;
+            t += spawnParams->effectParam;
             cfg.lifetimeFrames = t + 7;
         }
         cfg.textureId = 0x185;
@@ -425,7 +425,7 @@ int Effect7_func04(void* sourceObj, int effectId, PartFxSpawnParams* spawnParams
 }
 #undef FILL368
 
-void Effect7_func05(void)
+void Effect7_updateFrameState(void)
 {
     f32 sum;
     f32 step;

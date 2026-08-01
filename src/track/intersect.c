@@ -272,8 +272,8 @@ u8 gGxZModeCompareEnable;
 int gGxZModeCompareFunc;
 u8 gGxZModeUpdateEnable;
 u8 gGxZCompLocCached;
-u8 lbl_803DD010;
-f32 lbl_803DD00C;
+u8 gMoonFxDayNo;
+f32 gSnowFlashOverlayAngle;
 u8 gTevStageCount;
 u8 gTevTexGenCount;
 u8 gTevChanCount;
@@ -288,19 +288,19 @@ u8 gWaterRippleWriteIdx;
 u32 lbl_803DCFF4;
 u8 gWaterFxBank;
 
-u8 lbl_803DB678 = 0x60;
+u8 gReflectionTintAlpha = 0x60;
 u8 gHudTintAlpha = 0xFF;
 u32 lbl_803DB67C = 0xFFFFFF60;
-GXColor lbl_803DB680 = {0xFF, 0xFF, 0xFF, 0x60};
-GXColor lbl_803DB684 = {0xA0, 0xA0, 0xA0, 0x80};
-GXColor lbl_803DB688 = {0xFF, 0xFF, 0xFF, 0x60};
-GXColor lbl_803DB68C = {0xA0, 0xA0, 0xA0, 0x80};
+GXColor gReflectionBumpTintColor = {0xFF, 0xFF, 0xFF, 0x60};
+GXColor gReflectionBumpKColor = {0xA0, 0xA0, 0xA0, 0x80};
+GXColor gReflectionTintColor = {0xFF, 0xFF, 0xFF, 0x60};
+GXColor gReflectionKColor = {0xA0, 0xA0, 0xA0, 0x80};
 u32 lbl_803DB690 = 0xC0000000;
 u32 lbl_803DB694 = 0x00C00000;
 u32 lbl_803DB698 = 0x0000C000;
 u32 lbl_803DB69C = 0x666666FF;
-GXColor lbl_803DB6A0 = {0, 0, 0, 0x7F};
-GXColor lbl_803DB6A4 = {0xFF, 0xFF, 0xFF, 0xFC};
+GXColor gMotionBlurKColor = {0, 0, 0, 0x7F};
+GXColor gHeatEffectKColor = {0xFF, 0xFF, 0xFF, 0xFC};
 u32 lbl_803DB6A8 = 0xFFFFFFFF;
 f32 gCausticReflectionDiskScale = 0.55f;
 f32 lbl_803DB6B0 = 2.0f;
@@ -311,19 +311,17 @@ f32 gFrozenWhirlpoolTexScale = 2.0f;
 f32 gDistortionTexCoordScale = 0.3878f;
 f32 gDistortionAlphaRadius = 15.0f;
 f32 gDistortionIndMtxRadius = 100.0f;
-GXColor lbl_803DB6D0 = {0x42, 0x42, 0x42, 0};
-GXColor lbl_803DB6D4 = {0x81, 0x81, 0x81, 0};
-GXColor lbl_803DB6D8 = {0x19, 0x19, 0x19, 0};
-GXColor lbl_803DB6DC = {0x10, 0x10, 0x10, 0xFF};
-GXColor lbl_803DB6E0 = {0, 0, 0, 0xFF};
-GXColor lbl_803DB6E4 = {0, 0, 0x80, 0};
-GXColor lbl_803DB6E8 = {0x80, 0x80, 0, 0};
-GXColor lbl_803DB6EC = {0, 0x80, 0, 0};
-GXColor lbl_803DB6F0 = {0x80, 0, 0x80, 0};
-u32 lbl_803DB6F4 = 0xFFFFFF60;
-u32 lbl_803DB6F8 = 0xA0A0A080;
-
-
+GXColor gSpiritVisionKColor0 = {0x42, 0x42, 0x42, 0};
+GXColor gSpiritVisionKColor1 = {0x81, 0x81, 0x81, 0};
+GXColor gSpiritVisionKColor2 = {0x19, 0x19, 0x19, 0};
+GXColor gSpiritVisionRegColor = {0x10, 0x10, 0x10, 0xFF};
+GXColor gScreenImageRegColor = {0, 0, 0, 0xFF};
+GXColor gScreenImageKColor0 = {0, 0, 0x80, 0};
+GXColor gScreenImageKColor1 = {0x80, 0x80, 0, 0};
+GXColor gScreenImageKColor2 = {0, 0x80, 0, 0};
+GXColor gScreenImageKColor3 = {0x80, 0, 0x80, 0};
+u32 gWhirlpoolReflectionTintColor = 0xFFFFFF60;
+u32 gWhirlpoolReflectionKColor = 0xA0A0A080;
 
 
 f32 lbl_8030EA10[3][2][3] = {
@@ -501,10 +499,6 @@ void waterFxDraw(void)
     }
     Camera_ApplyFullViewport();
 }
-
-extern u32 lbl_803DCFF4;
-
-
 
 
 #include "track/intersect_internal.h"
@@ -699,12 +693,7 @@ void waterFxInit(void)
 }
 
 
-
 /* 4x4 identity fill. */
-
-
-
-
 
 
 void drawPartialTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int width, int height, int u_offset,
@@ -746,12 +735,6 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale);
  * output.
  */
 void OSReport(const char* msg, ...);
-
-
-
-
-
-
 
 
 /*

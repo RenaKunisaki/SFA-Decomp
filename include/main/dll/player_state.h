@@ -162,7 +162,7 @@ typedef struct PlayerState {
     s8 climbStepCount; /* 0x4e5: total number of climb steps for the current climbable; climbStep >= climbStepCount-3 (within 3 of the top) selects the top-of-climb transition */
     u8 climbingUp; /* 0x4e6: climb direction, 1 while ascending (forward Y lerp start->target), 0 while descending (reverse lerp) */
     s8 climbSampleDone; /* 0x4e7: one-shot latch for the climb move's initial joint-transform sampling; while 0 (and moveId<=1) samples the start/end root motion into moveStartPosY then sets to 1 */
-    f32 climbEndLocalY; /* target local-Y for the ledge climb-up/down move (case 6/7): anim.localPosY is lerped w*(climbEndLocalY - localPosY)+localPosY by currentMoveProgress, snapped to climbEndLocalY on moveDone; also the camera-focus Y (paired with climbBaseY in camBuf, and lbl_803DE43C = climbEndLocalY + offset) */
+    f32 climbEndLocalY; /* target local-Y for the ledge climb-up/down move (case 6/7): anim.localPosY is lerped w*(climbEndLocalY - localPosY)+localPosY by currentMoveProgress, snapped to climbEndLocalY on moveDone; also the camera-focus Y (paired with climbBaseY in camBuf, and gPlayerClimbEndY = climbEndLocalY + offset) */
     f32 climbBaseY; /* base local-Y for the climb-step lerp: climbTargetY = climbStep*climbStepHeight + climbBaseY */
     f32 climbStepHeight; /* per-step vertical rise; multiplied by climbStep to form climbTargetY */
     f32 climbTargetY; /* target localPosY for the current climb step (climbStep*climbStepHeight + climbBaseY); lerp endpoint */
@@ -348,7 +348,7 @@ typedef struct PlayerState {
     f32 waterDepth; /* waterSurfaceY - worldPosY; player's submerged depth, drives splash/ripple FX */
     f32 waterSurfaceY; /* water surface world-Y (from cfg+0x1c0); compared against worldPosY */
     f32 speedScale; /* 0-1 movement-speed multiplier from terrain (water depth / slope); currentSpeed = (maxSpeed-K) * (t * speedScale) */
-    f32 unk844;
+    f32 animSpeedRate; /* 0x844: per-frame anim-speed rate integrated into baddie.animSpeedC (animSpeedRate*timeDelta); captured from animSpeedA */
     f32 prevWorldPosY;
     f32 groundRefY; /* 0x84C: worldPosY latched when grounded */
     f32 fallThresholdY; /* 0x850: groundRefY minus a margin; worldPosY <= this triggers the fall path */
@@ -370,7 +370,7 @@ typedef struct PlayerState {
     f32 animSpeedStart; /* 0x88c: initial baddie.animSpeedA magnitude at move start (set as animSpeedA = -animSpeedStart) */
     f32 pushVelX; /* planar push/displacement velocity X: eased toward a target push via interpolate, decayed by powfBitEstimate, snapped to 0 near zero; added to the transformed world position */
     f32 pushVelZ;
-    int stateHandler; /* staged state/anim handler fn-ptr (stored as int); copied into baddie.unk304 handler slot on anim change */
+    int stateHandler; /* staged state/anim handler fn-ptr (stored as int); copied into baddie.stateExitFn on anim change */
     u16 unk89C;
     u8 pad89E[0x8A0 - 0x89E];
     u16 periodicHitTimer; /* accumulates dt; on crossing 0x78 wraps (-=0x78) and fires a periodic ObjHits position-hit */
@@ -412,11 +412,11 @@ typedef struct PlayerState {
     s8 activeHitWindow; /* index (0-2) of the currently-active hit window in the move's HitDesc list; -1 = none active */
     s8 hitWindowIndex; /* latched copy of activeHitWindow used to index per-window hit data (offset *4) */
     u8 cutsceneEnded; /* one-shot flag set to 1 when cutsceneTimer expires and cutsceneEnterExit(0,0) runs (in playerUpdate / playerUpdateWhileTimeStopped); cleared to 0 on a new move start; signals the cutscene/time-stop just finished */
-    u8 unk8D0;
-    u8 unk8D1;
-    u8 unk8D2;
-    u8 unk8D3;
-    u8 unk8D4;
+    u8 paramCurve0Count; /* f32 sample count of paramCurve0 (0x4f4-0x450 = 0x29*4) */
+    u8 paramCurve1Count;
+    u8 paramCurve2Count;
+    u8 paramCurve3Count;
+    u8 paramCurve4Count;
     u8 pad8D5[0x8D8 - 0x8D5];
     u16 pendingFxFlags; /* one-shot particle-effect request bits (1/2/8 spray-splash, 4 landing burst); set on events, cleared after the FX is spawned */
     u8 pad8DA[0x8DC - 0x8DA];

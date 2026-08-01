@@ -5,6 +5,7 @@
 #include "ghidra_import.h"
 #include "global.h"
 #include "main/dll/duster_api.h"
+#include "main/objprint_character_api.h"
 #include "main/objseq.h"
 
 struct ModelLightStruct;
@@ -30,7 +31,9 @@ typedef struct EnemyState {
     u8 unk261; /* bbox trace filter handed to trackGetLineIntersect */
     u8 unk262[0x264 - 0x262];
     s8 surfaceFlags; /* ENEMY_SURFACE_FLAG_* */
-    u8 unk265[0x29C - 0x265];
+    u8 unk265[0x26C - 0x265];
+    CharacterEyeAnimState eyeAnimState;
+    u8 unk294[0x29C - 0x294];
     GameObject* trackedObj; /* current engagement target */
     u16 turnOctant; /* (u16 turnAngleDelta >> 13): which 1/8 sector the turn falls in */
     u16 turnAngleDelta; /* signed angle to trackedObj minus world rotX, normalized to +/-0x8000 */
@@ -116,17 +119,11 @@ typedef struct EnemyState {
             f32 gruntTimer;
         } weevil;
         struct {
-            f32 eventDelayTimer;
-            f32 unk328;
-            f32 moveHoldTimer;
-            f32 unk330;
-        } wisp;
-        struct {
-            f32 unk324;
-            f32 seqTimer;
-            f32 unk32C;
-            f32 unk330;
-        } seqObj;
+            f32 eventDelayTimer; /* delay before the next flags2F1 anim event: refilled intervalTimer + randomGetRange from the family table */
+            f32 seqTimer; /* 16B-SeqEntry hold countdown; while nonzero with phaseAngle set the event controller is locked out; expiry chains phaseAngle via row+0xa/+0xb */
+            f32 moveHoldTimer; /* event-move hold countdown; sets controlFlags 0x40 while running, restores BADDIE_CONTROL_SEQUENCE_DRIVEN on expiry */
+            f32 moveHoldDuration; /* initial moveHoldTimer value (60 * blendScale * row blend); a hit while the move runs resets moveHoldTimer to it */
+        } sharpClaw;
         struct {
             f32 phaseTimer;
             f32 decoyTimer;
@@ -135,8 +132,23 @@ typedef struct EnemyState {
             f32 trackTimer;
             f32 breathTimer;
             f32 anchorY;
-            f32 unk330;
+            f32 rippleTimer; /* baddieSpawnWaterRipple countdown: init 30, reset randomGetRange(30,60), spawns a water ripple at anchorY on expiry */
         } fireflyLantern;
+        struct {
+            f32 idleTimer;   /* vambat_updateIdle: += timeDelta, wraps at 360 clearing flags2E4 0x10000 (re-allows engagement) */
+            f32 heartbeatSfxTimer; /* countdown reset to 60, plays SFXTRIG_mn_heart1_c on expiry */
+            f32 engagedTimer; /* vambat_updateEngaged: += timeDelta; >360 or line-of-sight lost sets flags2E4 0x10000 and disengages */
+        } vambat;
+        struct {
+            u8 pad324[8];
+            f32 cooldownTimer; /* light-off countdown: seeded from placement +0x2C on powerdown msg, or gGcRobotPatrolCatchCooldown after catching the player; light child freed while >0, flags2E4 0x20 restored on expiry */
+        } gcRobot;
+        struct {
+            f32 sfxTimer; /* kooshy_updateIdle: countdown, init 150, reset randomGetRange(150,300), plays SFXTRIG_sc_clubswipe on expiry */
+        } kooshy;
+        struct {
+            f32 idleTimer; /* pinPon_updateIdle: += timeDelta, wraps at 360 clearing flags2E4 0x10000 (same idiom as vambat.idleTimer) */
+        } pinPon;
     };
     f32 intervalTimer;
     u16 phaseAngle;
@@ -166,10 +178,7 @@ typedef struct EnemyState {
             u8 reactStep;
         } crawler;
         struct {
-            u8 activeEventIndex;
-        } wisp;
-        struct {
-            u8 unk33C;
+            u8 activeEventIndex; /* row index shared by the parallel 12-byte event tables (FamilyTable tbl8 in the controller, tbl24 in the hit handler) */
             u8 idleRow; /* 12-byte IdleRow index, chained through row+9 */
             u8 idleRowStarted;
         } sharpClaw;
@@ -192,6 +201,7 @@ STATIC_ASSERT(offsetof(EnemyState, familyData) == 0x33C);
 STATIC_ASSERT(offsetof(EnemyState, lastHitObject) == 0x340);
 STATIC_ASSERT(offsetof(EnemyState, physicsActive) == 0x25F);
 STATIC_ASSERT(offsetof(EnemyState, surfaceFlags) == 0x264);
+STATIC_ASSERT(offsetof(EnemyState, eyeAnimState) == 0x26C);
 STATIC_ASSERT(offsetof(EnemyState, trackedObj) == 0x29C);
 STATIC_ASSERT(offsetof(EnemyState, aggroRange) == 0x2A8);
 STATIC_ASSERT(offsetof(EnemyState, lookDirX) == 0x2B8);

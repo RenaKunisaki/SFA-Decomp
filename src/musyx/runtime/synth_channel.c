@@ -1,12 +1,12 @@
 #include "src/musyx/runtime/synth_internal.h"
 
-void synthSetHandleMixData(u32 handle, u32 mixValue0, u32 mixValue1)
+void seqMute(u32 seqId, u32 mask1, u32 mask2)
 {
     SynthVoiceRuntime* runtime;
     u32 slot;
 
     runtime = SYNTH_VOICE_RUNTIME();
-    slot = synthResolveHandleSlot(handle);
+    slot = seqGetPrivateIdInline(seqId);
 
     if (slot == SYNTH_HANDLE_INVALID)
     {
@@ -15,13 +15,13 @@ void synthSetHandleMixData(u32 handle, u32 mixValue0, u32 mixValue1)
 
     if ((slot & SYNTH_HANDLE_QUEUED_FLAG) == 0)
     {
-        runtime->voices[slot].trackMute[0] = mixValue0;
-        runtime->voices[slot].trackMute[1] = mixValue1;
+        runtime->voices[slot].trackMute[0] = mask1;
+        runtime->voices[slot].trackMute[1] = mask2;
     }
     else
     {
-        runtime->voices[slot & SYNTH_HANDLE_ID_MASK].pendingUpdate.flags |= SYNTH_PENDING_FLAG_MIX_DATA;
-        runtime->voices[slot & SYNTH_HANDLE_ID_MASK].pendingUpdate.mixValue0 = mixValue0;
-        runtime->voices[slot & SYNTH_HANDLE_ID_MASK].pendingUpdate.mixValue1 = mixValue1;
+        runtime->voices[slot & SYNTH_HANDLE_ID_MASK].syncCrossInfo.flags |= SND_CROSSFADE_TRACKMUTE;
+        runtime->voices[slot & SYNTH_HANDLE_ID_MASK].syncCrossInfo.trackMute2[0] = mask1;
+        runtime->voices[slot & SYNTH_HANDLE_ID_MASK].syncCrossInfo.trackMute2[1] = mask2;
     }
 }

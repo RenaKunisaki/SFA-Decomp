@@ -43,7 +43,7 @@ WeirdMenuWork gWeirdMenuWidgetWork = {
 
 u32 gWeirdMenuWidgetLayout[3] = {0x000000f9, 0xffffffff, 0x00000102};
 
-u32 lbl_8031ADA4[11] = {0x00000000, 0x00000000, 0x00000000, 0x00050000,
+u32 WeirdUnusedMenu_funcs[11] = {0x00000000, 0x00000000, 0x00000000, 0x00050000,
         (u32)WeirdUnusedMenu_initialise, (u32)WeirdUnusedMenu_release,
         0x00000000, (u32)WeirdUnusedMenu_run, (u32)WeirdUnusedMenu_frameEnd,
         (u32)WeirdUnusedMenu_render, 0x00000000};

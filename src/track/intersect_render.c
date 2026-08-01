@@ -43,21 +43,21 @@
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
 #include "track/intersect_internal.h"
-extern u8 lbl_803DD010;
-extern f32 lbl_803DD00C;
+extern u8 gMoonFxDayNo;
+extern f32 gSnowFlashOverlayAngle;
 
-extern u8 lbl_803DB678;
+extern u8 gReflectionTintAlpha;
 extern u8 gHudTintAlpha;
-extern GXColor lbl_803DB680;
-extern GXColor lbl_803DB684;
-extern GXColor lbl_803DB688;
-extern GXColor lbl_803DB68C;
+extern GXColor gReflectionBumpTintColor;
+extern GXColor gReflectionBumpKColor;
+extern GXColor gReflectionTintColor;
+extern GXColor gReflectionKColor;
 extern u32 lbl_803DB690;
 extern u32 lbl_803DB694;
 extern u32 lbl_803DB698;
 extern u32 lbl_803DB69C;
-extern GXColor lbl_803DB6A0;
-extern GXColor lbl_803DB6A4;
+extern GXColor gMotionBlurKColor;
+extern GXColor gHeatEffectKColor;
 extern u32 lbl_803DB6A8;
 extern f32 gCausticReflectionDiskScale;
 extern f32 lbl_803DB6B0;
@@ -68,17 +68,17 @@ extern f32 gFrozenWhirlpoolTexScale;
 extern f32 gDistortionTexCoordScale;
 extern f32 gDistortionAlphaRadius;
 extern f32 gDistortionIndMtxRadius;
-extern GXColor lbl_803DB6D0;
-extern GXColor lbl_803DB6D4;
-extern GXColor lbl_803DB6D8;
-extern GXColor lbl_803DB6DC;
-extern GXColor lbl_803DB6E0;
-extern GXColor lbl_803DB6E4;
-extern GXColor lbl_803DB6E8;
-extern GXColor lbl_803DB6EC;
-extern GXColor lbl_803DB6F0;
-extern u32 lbl_803DB6F4;
-extern u32 lbl_803DB6F8;
+extern GXColor gSpiritVisionKColor0;
+extern GXColor gSpiritVisionKColor1;
+extern GXColor gSpiritVisionKColor2;
+extern GXColor gSpiritVisionRegColor;
+extern GXColor gScreenImageRegColor;
+extern GXColor gScreenImageKColor0;
+extern GXColor gScreenImageKColor1;
+extern GXColor gScreenImageKColor2;
+extern GXColor gScreenImageKColor3;
+extern u32 gWhirlpoolReflectionTintColor;
+extern u32 gWhirlpoolReflectionKColor;
 
 typedef struct
 {
@@ -91,7 +91,7 @@ typedef struct
     u32 blk[6][7];
 } IndStageInitData;
 
-static const IndStageInitData lbl_802C1EA8 = {
+static const IndStageInitData sIndStageInitData = {
     {{0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f}},
     {{0xF, 0xF, 0xF, 0xF, 0xF, 0xF, 0xF},
      {2, 2, 2, 2, 2, 1, 0},
@@ -99,7 +99,7 @@ static const IndStageInitData lbl_802C1EA8 = {
      {2, 2, 2, 1, 0, 0, 0},
      {0xF, 0xF, 0xF, 0xF, 0xF, 0xF, 0xF},
      {2, 1, 0, 0, 0, 0, 0}}};
-static const IndMtxInit lbl_802C1F68 = {{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
+static const IndMtxInit sIndMtxZeroInit = {{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
 
 
 extern GXColor lbl_803E8454;
@@ -268,23 +268,25 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
 
     if (isHeavyFogEnabled() != 0)
     {
-        ((u8*)&lbl_803DB6F4)[0] = ((u8*)&gFogColor)[0];
-        ((u8*)&lbl_803DB6F4)[1] = ((u8*)&gFogColor)[1];
-        ((u8*)&lbl_803DB6F4)[2] = ((u8*)&gFogColor)[2];
-        ((u8*)&lbl_803DB6F4)[3] = 0x80;
+        ((u8*)&gWhirlpoolReflectionTintColor)[0] = ((u8*)&gFogColor)[0];
+        ((u8*)&gWhirlpoolReflectionTintColor)[1] = ((u8*)&gFogColor)[1];
+        ((u8*)&gWhirlpoolReflectionTintColor)[2] = ((u8*)&gFogColor)[2];
+        ((u8*)&gWhirlpoolReflectionTintColor)[3] = 0x80;
     }
     else
     {
         (*gSkyInterface)
-            ->getCurrentAmbientAndLightColors((u8*)&lbl_803DB6F4, (u8*)&lbl_803DB6F4 + 1, (u8*)&lbl_803DB6F4 + 2,
+            ->getCurrentAmbientAndLightColors((u8*)&gWhirlpoolReflectionTintColor,
+                                              (u8*)&gWhirlpoolReflectionTintColor + 1,
+                                              (u8*)&gWhirlpoolReflectionTintColor + 2,
                                               &ignoredLightColor, &ignoredLightColor, &ignoredLightColor);
-        ((u8*)&lbl_803DB6F4)[0] = (u8)((int)((u8*)&lbl_803DB6F4)[0] >> 3);
-        ((u8*)&lbl_803DB6F4)[1] = (u8)((int)((u8*)&lbl_803DB6F4)[1] >> 3);
-        ((u8*)&lbl_803DB6F4)[2] = (u8)((int)((u8*)&lbl_803DB6F4)[2] >> 3);
-        ((u8*)&lbl_803DB6F4)[3] = lbl_803DB678;
+        ((u8*)&gWhirlpoolReflectionTintColor)[0] = (u8)((int)((u8*)&gWhirlpoolReflectionTintColor)[0] >> 3);
+        ((u8*)&gWhirlpoolReflectionTintColor)[1] = (u8)((int)((u8*)&gWhirlpoolReflectionTintColor)[1] >> 3);
+        ((u8*)&gWhirlpoolReflectionTintColor)[2] = (u8)((int)((u8*)&gWhirlpoolReflectionTintColor)[2] >> 3);
+        ((u8*)&gWhirlpoolReflectionTintColor)[3] = gReflectionTintAlpha;
     }
-    GXSetTevColor(GX_TEVREG2, *(GXColor*)&lbl_803DB6F4);
-    GXSetTevKColor(GX_KCOLOR0, *(GXColor*)&lbl_803DB6F8);
+    GXSetTevColor(GX_TEVREG2, *(GXColor*)&gWhirlpoolReflectionTintColor);
+    GXSetTevKColor(GX_KCOLOR0, *(GXColor*)&gWhirlpoolReflectionKColor);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD2, GX_TEXMAP2);
     GXSetIndTexCoordScale(0, 0, 0);
@@ -475,11 +477,11 @@ void screenImageDraw(u8 alpha)
     updateReflectionTextures();
     selectReflectionTexture(0);
     selectTexture((Texture*)handle, 1);
-    lbl_803DB6E4.a = alpha;
-    GXSetTevKColor(GX_KCOLOR0, lbl_803DB6E4);
-    GXSetTevKColor(GX_KCOLOR1, lbl_803DB6E8);
-    GXSetTevKColor(GX_KCOLOR2, lbl_803DB6EC);
-    GXSetTevKColor(GX_KCOLOR3, lbl_803DB6F0);
+    gScreenImageKColor0.a = alpha;
+    GXSetTevKColor(GX_KCOLOR0, gScreenImageKColor0);
+    GXSetTevKColor(GX_KCOLOR1, gScreenImageKColor1);
+    GXSetTevKColor(GX_KCOLOR2, gScreenImageKColor2);
+    GXSetTevKColor(GX_KCOLOR3, gScreenImageKColor3);
 
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
@@ -559,7 +561,7 @@ void screenImageDraw(u8 alpha)
 
     GXSetTevKColorSel(GX_TEVSTAGE6, GX_TEV_KCSEL_K3);
     GXSetTevKAlphaSel(GX_TEVSTAGE6, GX_TEV_KASEL_1_2);
-    GXSetTevColor(GX_TEVREG2, lbl_803DB6E0);
+    GXSetTevColor(GX_TEVREG2, gScreenImageRegColor);
     GXSetTevOrder(GX_TEVSTAGE6, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
     GXSetTevDirect(GX_TEVSTAGE6);
     GXSetTevColorIn(GX_TEVSTAGE6, GX_CC_KONST, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1);
@@ -649,10 +651,10 @@ void doSpiritVisionFilter(void)
 
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
-    GXSetTevKColor(GX_KCOLOR0, lbl_803DB6D0);
-    GXSetTevKColor(GX_KCOLOR1, lbl_803DB6D4);
-    GXSetTevKColor(GX_KCOLOR2, lbl_803DB6D8);
-    GXSetTevColor(GX_TEVREG0, lbl_803DB6DC);
+    GXSetTevKColor(GX_KCOLOR0, gSpiritVisionKColor0);
+    GXSetTevKColor(GX_KCOLOR1, gSpiritVisionKColor1);
+    GXSetTevKColor(GX_KCOLOR2, gSpiritVisionKColor2);
+    GXSetTevColor(GX_TEVREG0, gSpiritVisionRegColor);
 
     GXSetNumTexGens(1);
     GXSetNumIndStages(0);
@@ -1569,8 +1571,8 @@ int moonFxRenderCallback(u8* obj, int* objB, int slot)
     op = (int)ObjModel_GetRenderOp((ModelFileHeader*)objB[0], slot);
     tex = (Texture*)textureIdxToPtr(*(int*)Shader_getLayer((void*)op, 0));
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
-    lbl_803DD010 = mainGetBit(0x2ba);
-    tx = lbl_803DD010 / 30.0f;
+    gMoonFxDayNo = mainGetBit(0x2ba);
+    tx = gMoonFxDayNo / 30.0f;
     PSMTXTrans(mtx, tx, 0.0f, 0.0f);
     GXLoadTexMtxImm(mtx, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
@@ -1639,7 +1641,7 @@ int objModelProjectedIndirectRenderCb(GameObject* object, ObjModel* model, int s
     int alphaValue;
     void (*postRenderCallback)(GameObject*, ObjModel*, int);
 
-    *(IndMtxInit*)indirectMtx = lbl_802C1F68;
+    *(IndMtxInit*)indirectMtx = sIndMtxZeroInit;
 
     modelFile = model->file;
     renderOp = ObjModel_GetRenderOp(modelFile, slot);
@@ -3003,12 +3005,12 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     int stage_base;
     f32 f31_val;
 
-    buf_c4 = *(Blk28*)&lbl_802C1EA8.blk[0];
-    buf_a8 = *(Blk28*)&lbl_802C1EA8.blk[1];
-    buf_8c = *(Blk28*)&lbl_802C1EA8.blk[2];
-    buf_70 = *(Blk28*)&lbl_802C1EA8.blk[3];
-    buf_54 = *(Blk28*)&lbl_802C1EA8.blk[4];
-    buf_38 = *(Blk28*)&lbl_802C1EA8.blk[5];
+    buf_c4 = *(Blk28*)&sIndStageInitData.blk[0];
+    buf_a8 = *(Blk28*)&sIndStageInitData.blk[1];
+    buf_8c = *(Blk28*)&sIndStageInitData.blk[2];
+    buf_70 = *(Blk28*)&sIndStageInitData.blk[3];
+    buf_54 = *(Blk28*)&sIndStageInitData.blk[4];
+    buf_38 = *(Blk28*)&sIndStageInitData.blk[5];
     stab = sProjectedShadowStageCounts;
     *(u32*)&fog_var = lbl_803E8450;
 
@@ -3686,13 +3688,13 @@ void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u
     ratio2 = ((f32)(u32)Camera_GetCurrentViewPitch() - 32768.0f) / 8192.0f;
     if (getHudHiddenFrameCount() != 0)
     {
-        angle = lbl_803DD00C;
+        angle = gSnowFlashOverlayAngle;
     }
     else
     {
         f32 t = atanf_fast(((f32*)vec)[0] / ((f32*)vec)[1]);
-        angle = lbl_803DD00C + interpolate(t - lbl_803DD00C, 0.05f, timeDelta);
-        lbl_803DD00C = angle;
+        angle = gSnowFlashOverlayAngle + interpolate(t - gSnowFlashOverlayAngle, 0.05f, timeDelta);
+        gSnowFlashOverlayAngle = angle;
     }
     c_K2.a = flashAlpha;
 
@@ -3854,7 +3856,7 @@ void doHeatEffect(u8 alpha)
     u8 a2;
     u8 a1;
 
-    *(IndMtxInit*)indMtx = lbl_802C1EA8.ind;
+    *(IndMtxInit*)indMtx = sIndStageInitData.ind;
     v = (s16)Camera_GetCurrentViewPitch();
     if (v < 0)
     {
@@ -3898,7 +3900,7 @@ void doHeatEffect(u8 alpha)
     GXSetIndTexMtx(1, (f32(*)[3])indMtx, -6);
     GXSetTevIndirect(1, 0, 0, 7, 1, 0, 0, 0, 0, 0);
 
-    GXSetTevKColor(GX_KCOLOR0, lbl_803DB6A4);
+    GXSetTevKColor(GX_KCOLOR0, gHeatEffectKColor);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevDirect(GX_TEVSTAGE0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP1, GX_COLOR_NULL);
@@ -3995,7 +3997,7 @@ void doHeatEffect(u8 alpha)
 /*
  * Fullscreen 640x480 textured quad with caller-supplied alpha. The alpha
  * is multiplied by 255.0f (a 0..255 scale), converted to int and
- * stamped into byte 3 of the K0 GXColor cache (lbl_803DB6A0). Sets up
+ * stamped into byte 3 of the K0 GXColor cache (gMotionBlurKColor). Sets up
  * one TEV stage that K-multiplies the texture by alpha; uses fixed UVs
  * 0..0x80 so the texture maps once across the screen. Used when fading
  * the screen to texture (e.g. boot logo / "now loading").
@@ -4004,9 +4006,9 @@ void renderMotionBlur(f32 alpha)
 {
     Mtx mtx;
 
-    lbl_803DB6A0.a = 255.0f * alpha;
+    gMotionBlurKColor.a = 255.0f * alpha;
     selectReflectionTexture(0);
-    GXSetTevKColor(GX_KCOLOR0, lbl_803DB6A0);
+    GXSetTevKColor(GX_KCOLOR0, gMotionBlurKColor);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     PSMTXIdentity(mtx);
     GXLoadTexMtxImm(mtx, GX_TEXMTX2, GX_MTX2x4);
@@ -4551,23 +4553,23 @@ void setupReflectionDistortTev(int texHandle)
     indMtx[5] = 0.5f;
     if (isHeavyFogEnabled())
     {
-        lbl_803DB688.r = gFogColor.r;
-        lbl_803DB688.g = gFogColor.g;
-        lbl_803DB688.b = gFogColor.b;
-        lbl_803DB688.a = 0x80;
+        gReflectionTintColor.r = gFogColor.r;
+        gReflectionTintColor.g = gFogColor.g;
+        gReflectionTintColor.b = gFogColor.b;
+        gReflectionTintColor.a = 0x80;
     }
     else
     {
         (*gSkyInterface)
-            ->getCurrentAmbientAndLightColors(&lbl_803DB688.r, &lbl_803DB688.g, &lbl_803DB688.b, &ignoredLightColor,
+            ->getCurrentAmbientAndLightColors(&gReflectionTintColor.r, &gReflectionTintColor.g, &gReflectionTintColor.b, &ignoredLightColor,
                                               &ignoredLightColor, &ignoredLightColor);
-        lbl_803DB688.r = lbl_803DB688.r >> 3;
-        lbl_803DB688.g = lbl_803DB688.g >> 3;
-        lbl_803DB688.b = lbl_803DB688.b >> 3;
-        lbl_803DB688.a = lbl_803DB678;
+        gReflectionTintColor.r = gReflectionTintColor.r >> 3;
+        gReflectionTintColor.g = gReflectionTintColor.g >> 3;
+        gReflectionTintColor.b = gReflectionTintColor.b >> 3;
+        gReflectionTintColor.a = gReflectionTintAlpha;
     }
-    GXSetTevColor(GX_TEVREG2, lbl_803DB688);
-    GXSetTevKColor(GX_KCOLOR0, lbl_803DB68C);
+    GXSetTevColor(GX_TEVREG2, gReflectionTintColor);
+    GXSetTevKColor(GX_KCOLOR0, gReflectionKColor);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
     GXSetIndTexCoordScale(0, 0, 0);
@@ -4641,23 +4643,23 @@ void setupReflectionBumpDistortTev(void* texture)
     indMtx[5] = 0.0f;
     if (isHeavyFogEnabled())
     {
-        lbl_803DB680.r = gFogColor.r;
-        lbl_803DB680.g = gFogColor.g;
-        lbl_803DB680.b = gFogColor.b;
-        lbl_803DB680.a = 0x80;
+        gReflectionBumpTintColor.r = gFogColor.r;
+        gReflectionBumpTintColor.g = gFogColor.g;
+        gReflectionBumpTintColor.b = gFogColor.b;
+        gReflectionBumpTintColor.a = 0x80;
     }
     else
     {
         (*gSkyInterface)
-            ->getCurrentAmbientAndLightColors(&lbl_803DB680.r, &lbl_803DB680.g, &lbl_803DB680.b, &ignoredLightColor,
+            ->getCurrentAmbientAndLightColors(&gReflectionBumpTintColor.r, &gReflectionBumpTintColor.g, &gReflectionBumpTintColor.b, &ignoredLightColor,
                                               &ignoredLightColor, &ignoredLightColor);
-        lbl_803DB680.r = lbl_803DB680.r >> 3;
-        lbl_803DB680.g = lbl_803DB680.g >> 3;
-        lbl_803DB680.b = lbl_803DB680.b >> 3;
-        lbl_803DB680.a = lbl_803DB678;
+        gReflectionBumpTintColor.r = gReflectionBumpTintColor.r >> 3;
+        gReflectionBumpTintColor.g = gReflectionBumpTintColor.g >> 3;
+        gReflectionBumpTintColor.b = gReflectionBumpTintColor.b >> 3;
+        gReflectionBumpTintColor.a = gReflectionTintAlpha;
     }
-    GXSetTevColor(GX_TEVREG2, lbl_803DB680);
-    GXSetTevKColor(GX_KCOLOR0, lbl_803DB684);
+    GXSetTevColor(GX_TEVREG2, gReflectionBumpTintColor);
+    GXSetTevKColor(GX_KCOLOR0, gReflectionBumpKColor);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
     GXSetIndTexCoordScale(0, 0, 0);
@@ -4832,7 +4834,7 @@ void setupWaterCausticTev(void)
         ((u8*)&lbl_803DB67C)[0] = (u8)(((u8*)&lbl_803DB67C)[0] >> 3);
         *p1 = (u8)(*p1 >> 3);
         *p2 = (u8)(*p2 >> 3);
-        ((u8*)&lbl_803DB67C)[3] = lbl_803DB678;
+        ((u8*)&lbl_803DB67C)[3] = gReflectionTintAlpha;
     }
     temp = *(GXColor*)&lbl_803DB67C;
     GXSetTevKColor(GX_KCOLOR0, temp);

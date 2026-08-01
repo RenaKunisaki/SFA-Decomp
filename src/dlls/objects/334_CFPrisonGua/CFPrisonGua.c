@@ -66,7 +66,7 @@ int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjSeqState* ani
     u32 messageArgument = 0;
     CfPrisonGuardPlacement* placement = (CfPrisonGuardPlacement*)obj->anim.placement;
 
-    switch (animUpdate->unk80) {
+    switch (animUpdate->curEventId) {
     case CFPRISONGUARD_TRIGGER_ALARM_RAMP_RESET:
         state->alarmRamp = 0.0f;
         break;
@@ -165,9 +165,9 @@ int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjSeqState* ani
     animUpdate->movementState = 0;
     while (ObjMsg_Pop(obj, &message, &messageSender, &messageArgument) != 0) {
     }
-    if (animUpdate->unk80 == CFPRISONGUARD_TRIGGER_LACTION) {
+    if (animUpdate->curEventId == CFPRISONGUARD_TRIGGER_LACTION) {
         getLActions(obj, obj, CFPRISONGUARD_LACTION_ID, 0, 0, 0);
-        animUpdate->unk80 = 0;
+        animUpdate->curEventId = 0;
     }
     return 0;
 }

@@ -16,6 +16,7 @@
 #include "main/dll/dll_0035_saveselectscreen.h"
 #include "string.h"
 #include "main/gametext_color_api.h"
+#include "main/gametext_internal.h"
 #include "main/vecmath.h"
 #include "dolphin/pad.h"
 
@@ -40,7 +41,6 @@ u8 gLinkNavigationEnabled;
 extern char sTumbleweedBushSlotOverflowErr[];
 extern char sTumbleweedBushNavLinkRangeErr[];
 
-extern u8 gGameTextFontMetrics[];
 #define PAD_ACCEPT_MASK  (PAD_BUTTON_A | PAD_BUTTON_START)
 
 
@@ -155,11 +155,11 @@ void Link_refreshOverlappingItemTimers(void)
     {
         if (getCurLanguage() == 4)
         {
-            iconHeight = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
+            iconHeight = gGameTextFontMetrics[0].lineHeight + 2;
         }
         else
         {
-            iconHeight = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
+            iconHeight = gGameTextFontMetrics[4].lineHeight + 2;
         }
         selTop = sel->textTop - 2;
     }
@@ -186,11 +186,11 @@ void Link_refreshOverlappingItemTimers(void)
             {
                 if (getCurLanguage() == 4)
                 {
-                    iconHeight = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
+                    iconHeight = gGameTextFontMetrics[0].lineHeight + 2;
                 }
                 else
                 {
-                    iconHeight = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
+                    iconHeight = gGameTextFontMetrics[4].lineHeight + 2;
                 }
                 itemTop = gTumbleweedBushItems[i].textTop - 2;
             }
@@ -250,11 +250,11 @@ void Link_scanItemVerticalBounds(void)
         {
             if (getCurLanguage() == 4)
             {
-                iconHeight = *(u16*)(gGameTextFontMetrics + 0xa) + 2;
+                iconHeight = gGameTextFontMetrics[0].lineHeight + 2;
             }
             else
             {
-                iconHeight = *(u16*)(gGameTextFontMetrics + 0x4a) + 2;
+                iconHeight = gGameTextFontMetrics[4].lineHeight + 2;
             }
             top = item->textTop - 2;
         }
@@ -826,7 +826,7 @@ struct LinkObjDescriptor
     void* fns[16];
 };
 
-struct LinkObjDescriptor lbl_8031C1E4 = {
+struct LinkObjDescriptor Link_funcs = {
     {0, 0, 0},
     0x000F0000,
     {

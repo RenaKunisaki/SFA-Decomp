@@ -9,7 +9,7 @@ extern const u16 gItdPanDelayTable[128];
 
 /*
  * hwSetVolume - large mix-volume setter; computes 4-channel pan from
- * 3-axis float input via salCalcVolumeMatrix, clamps each to s16, and writes
+ * 3-axis float input via salCalcVolume, clamps each to s16, and writes
  * back to the voice's pan/volume table.
  */
 void hwSetVolume(u32 voiceIndex, u8 volumeTable, f32 volume, u32 pan, u32 surroundPan,
@@ -31,7 +31,7 @@ void hwSetVolume(u32 voiceIndex, u8 volumeTable, f32 volume, u32 pan, u32 surrou
     {
         u32 f0w = voice->flags;
         f0w &= DSP_VOICE_ITD_ENABLED_FLAG;
-        salCalcVolumeMatrix(volumeTable, out, pan, surroundPan, f0w != 0,
+        salCalcVolume(volumeTable, out, pan, surroundPan, f0w != 0,
                             dspStudio[voice->studio].type == SND_STUDIO_TYPE_DPL2, volume, auxA, auxB);
     }
 

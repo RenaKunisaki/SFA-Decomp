@@ -772,6 +772,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     int found;
     int i;
     int q;
+    int j;
     RingBufferQueue* mq;
     int* objs;
     GameObject* player;
@@ -960,7 +961,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     {
         keys = objGetLookAtJointKeys();
         zero = 0;
-        for (q = 1, keys = keys + 1; q < 9; keys++, q++)
+        for (j = 1, keys = keys + 1; j < 9; keys++, j++)
         {
             vec = objFindJointPoseVector(obj, *keys);
             if (vec != 0)
@@ -2139,7 +2140,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
     }
 }
 
-int dbstealerworm_func0B(GameObject* obj, u8 msg, int* out)
+int dbstealerworm_handleMessage(GameObject* obj, u8 msg, int* out)
 {
     GroundBaddieState* state = obj->extra;
     DbStealerwormControl* sub = (DbStealerwormControl*)state->control;
@@ -2285,8 +2286,7 @@ void dbstealerworm_update(GameObject* obj)
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     if ((u32)((DbStealerwormControl*)sub)->flags44 >> 4 & 1)
     {
-        grp = (DbWormMsgGroup*)(tbl + ((GroundBaddiePlacement*)data)->unk24 * 8);
-        grp = (DbWormMsgGroup*)((char*)grp + 0x15c);
+        grp = &((DbWormMsgGroup*)(tbl + 0x15c))[((GroundBaddiePlacement*)data)->unk24];
         ((DbStealerwormControl*)sub)->msgStack = Queue_Alloc(0x14, 0xc);
         n = grp->count;
         for (; n != 0;)
@@ -2553,7 +2553,7 @@ u32 gDBstealerwormObjDescriptor[39] = {0x00000000,
                                        (u32)dbstealerworm_getObjectTypeId,
                                        (u32)dbstealerworm_getExtraSize,
                                        (u32)dbstealerworm_getControlMode,
-                                       (u32)dbstealerworm_func0B,
+                                       (u32)dbstealerworm_handleMessage,
                                        0x20537461,
                                        0x636b202d,
                                        0x2d2d2d2d,

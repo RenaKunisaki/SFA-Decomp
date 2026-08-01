@@ -855,7 +855,7 @@ void waterfx_initialise(void)
     waterfx_buildSplashDisplayList();
 }
 
-ResourceDescriptorCallbacks11 lbl_8030F830 = {
+ResourceDescriptorCallbacks11 waterfx_funcs = {
     {0x00000000, 0x00000000, 0x00000000, 0x000a0000},
     {(ResourceDescriptorCallback)waterfx_initialise,
      (ResourceDescriptorCallback)waterfx_release,

@@ -40,8 +40,6 @@ u8 gRcpWarpDistortListBuilt;
 
 GXColor gRcpDistortAmbColor = {0, 0, 0, 0};
 GXColor gRcpDistortMatColor = {0xff, 0xff, 0xff, 0xff};
-extern u8 gRcpWarpDistortListBuilt;
-extern u32 gRcpWarpDistortListSize;
 typedef struct RcpDistortSlot
 {
     u8* texture;   // 0x00
@@ -63,9 +61,6 @@ STATIC_ASSERT(offsetof(RcpDistortSlot, group) == 0x1a);
 STATIC_ASSERT(offsetof(RcpDistortSlot, mode) == 0x1b);
 
 extern RcpDistortSlot gRcpDistortSlots[6];
-extern u8 gRcpDistortSlotIndex;
-extern void* gRcpDistortTexture;
-extern u8 gRcpDistortGroup;
 static const f32 gRcpScreenWidth = 640.0f;
 static const f32 gRcpScreenHeight = 480.0f;
 void* textureAlloc(u16 w, u16 h, int fmt, u8 mip, u8 maxLod, u8 wrapS, u8 wrapT, u8 minFilter, u8 magFilter);
@@ -92,7 +87,6 @@ static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** ligh
     modelLightChannels_applyGXControls();
 }
 
-void addVertexColorKAlphaStage(GXColor* param);
 static int Rcp_SetupDistortionLights(int model, f32* params);
 static const f32 gRcpDistortScaleA[1] = {2.146452f};
 static const f32 gRcpDistortPowExp[1] = {2.520326f};

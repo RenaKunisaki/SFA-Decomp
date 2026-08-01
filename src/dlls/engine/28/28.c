@@ -17,7 +17,7 @@ ObjectDescriptor6 Effect3_funcs = {
     (ObjectDescriptorCallback)Effect3_release,
     0,
     (ObjectDescriptorCallback)Effect3_func03_nop,
-    (ObjectDescriptorCallback)Effect3_spawnEffect,
+    (ObjectDescriptorCallback)Effect3_spawnObject,
     (ObjectDescriptorCallback)Effect3_func05_nop,
 };
 
@@ -32,7 +32,7 @@ static inline PartFxSpawnParams* Effect3_getDefaultSpawnParams(void) {
     return &gEffect3DefaultSpawnParams;
 }
 
-int Effect3_spawnEffect(GameObject* sourceObject, int effectId, PartFxSpawnParams* spawnParamsIn, u32 spawnFlags,
+int Effect3_spawnObject(GameObject* sourceObject, int effectId, PartFxSpawnParams* spawnParamsIn, u32 spawnFlags,
                         u8 modelId, f32* extraArgs) {
     u32 hasAttachedSource;
     PartFxSpawn cfg;

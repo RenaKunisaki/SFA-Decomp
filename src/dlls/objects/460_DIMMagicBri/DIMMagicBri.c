@@ -95,8 +95,8 @@ int dimmagicbridge_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     animUpdate->movementState = 0;
     animUpdate->flags &= ~0x40;
     dimmagicbridge_scrollTextureChannels((int)obj, stateBytes);
-    if (animUpdate->unk80 == 1) {
-        animUpdate->unk80 = 0;
+    if (animUpdate->curEventId == 1) {
+        animUpdate->curEventId = 0;
         state->ignited = 1;
     }
     if (state->ignited != 0) {

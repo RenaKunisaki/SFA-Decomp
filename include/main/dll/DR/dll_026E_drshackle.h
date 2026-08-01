@@ -10,7 +10,7 @@ typedef struct DrshacklePlacement
 {
     ObjPlacement base;
     s8 startPathPoint;    /* 0x18: seeds pathPointA (only its parity is used) */
-    s8 unk19;             /* 0x19: reported by drshackle_func0B */
+    s8 attachSlot;        /* 0x19: which of the HighTop's four shackle path-point slots this chain occupies */
     s16 pathObjGroupBase; /* 0x1A: base id of the path objects this chain binds */
     s16 quarterTurns;     /* 0x1C: rotZ in quarter turns; ==1 also selects two slots */
     s16 activeGameBit;    /* 0x1E: game bit that keeps the chain active */
@@ -38,7 +38,7 @@ typedef struct DrshackleState
 } DrshackleState;
 
 STATIC_ASSERT(offsetof(DrshacklePlacement, startPathPoint) == 0x18);
-STATIC_ASSERT(offsetof(DrshacklePlacement, unk19) == 0x19);
+STATIC_ASSERT(offsetof(DrshacklePlacement, attachSlot) == 0x19);
 STATIC_ASSERT(offsetof(DrshacklePlacement, pathObjGroupBase) == 0x1A);
 STATIC_ASSERT(offsetof(DrshacklePlacement, quarterTurns) == 0x1C);
 STATIC_ASSERT(offsetof(DrshacklePlacement, activeGameBit) == 0x1E);
@@ -52,7 +52,7 @@ extern int gDrShackleRotZOffset;
 extern int lbl_803DDD70;
 
 int drshackle_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
-int drshackle_func0B(GameObject* obj);
+int drshackle_getAttachSlot(GameObject* obj);
 int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int e, int f);
 int drshackle_getExtraSize(void);
 int drshackle_getObjectTypeId(void);

@@ -74,22 +74,13 @@ extern u32 renderFlags;
 #define RENDERFLAG_OVERCAST        0x40000
 #define RENDERFLAG_HIDE_STARS      0x80000
 
-extern f32 lbl_803DEBF8;
-extern f32 lbl_803DEBFC;
-extern f32 lbl_803DEBCC;
-extern f32 lbl_803DEBDC;
-extern f32 lbl_803DEC00;
 extern f32 gLightmapDegToBamScale;
-extern f32 lbl_803DEC08;
-extern f32 lbl_803DEC0C;
 extern FrustumPlane gViewFrustumPlanes[];
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
-extern f32 lbl_803DEC18;
-extern u32 lbl_803DCE34;
-extern f32 lbl_803DEC10;
+extern u32 gCloudLayerTexture;
 extern u16 lbl_803DCEAC;
-extern u8 lbl_803DCE06;
+extern u8 gGlowLightCount;
 extern s32 heatEffectIntensity;
 extern u8 gLightmapScreenImageEnabled;
 extern s8 gMapBlockDrawOrderFrontToBack[];
@@ -145,25 +136,25 @@ static void updateVisibleGeometry(void)
     cam = Camera_GetCurrent();
     if ((renderFlags & RENDERFLAG_WIDESCREEN) != 0 || (renderFlags & RENDERFLAG_DRAW_DISTANCE) != 0)
     {
-        scale = Camera_GetFovY() / lbl_803DEBF8;
+        scale = Camera_GetFovY() / 1.5f;
     }
     else
     {
         scale = Camera_GetFovY();
-        scale *= lbl_803DEBFC;
+        scale *= 0.5f;
     }
     xx = cam->worldX - playerMapOffsetX;
     yy = cam->worldY;
     zz = cam->worldZ - playerMapOffsetZ;
-    st.x = lbl_803DEBCC;
-    st.y = lbl_803DEBCC;
-    st.z = lbl_803DEBCC;
-    st.scale = lbl_803DEBDC;
+    st.x = 0.0f;
+    st.y = 0.0f;
+    st.z = 0.0f;
+    st.scale = 1.0f;
     st.rotX = 0x8000 - cam->worldYaw;
     st.rotY = -cam->worldPitch;
     st.rotZ = cam->worldRoll;
     setMatrixFromObjectPos(m, &st);
-    Matrix_TransformPoint(m, 0.0f, 0.0f, lbl_803DEC00, &ox, &oy, &oz);
+    Matrix_TransformPoint(m, 0.0f, 0.0f, -1.0f, &ox, &oy, &oz);
     gViewFrustumPlanes[0].normalX = ox;
     gViewFrustumPlanes[n = 0].normalY = oy;
     gViewFrustumPlanes[n = 0].normalZ = oz;
@@ -175,27 +166,27 @@ static void updateVisibleGeometry(void)
     tt = fcos16HighPrecision(fov);
     ratio = fsin16HighPrecision(fov) / tt;
     ratio2 = ratio * ratio;
-    ff = lbl_803DEC08;
+    ff = 1.333333f;
     tt = ff * ratio2;
     tt = atanf(sqrtf(ff * tt + ratio2));
     ff = mathSinfHighPrecision(tt);
     ss = mathCosfHighPrecision(tt);
-    Matrix_TransformPoint(m, ss, lbl_803DEBCC, -ff, &ox, &oy, &oz);
+    Matrix_TransformPoint(m, ss, 0.0f, -ff, &ox, &oy, &oz);
     gViewFrustumPlanes[n = 1].normalX = ox;
     gViewFrustumPlanes[n].normalY = oy;
     gViewFrustumPlanes[n].normalZ = oz;
     pw[n * 5] = -(zz * oz + (xx * ox + yy * oy));
-    Matrix_TransformPoint(m, -ss, lbl_803DEBCC, -ff, &ox, &oy, &oz);
+    Matrix_TransformPoint(m, -ss, 0.0f, -ff, &ox, &oy, &oz);
     gViewFrustumPlanes[n = 2].normalX = ox;
     gViewFrustumPlanes[n].normalY = oy;
     gViewFrustumPlanes[n].normalZ = oz;
     pw[n * 5] = -(zz * oz + (xx * ox + yy * oy));
-    Matrix_TransformPoint(m, lbl_803DEBCC, -ss, -ff, &ox, &oy, &oz);
+    Matrix_TransformPoint(m, 0.0f, -ss, -ff, &ox, &oy, &oz);
     gViewFrustumPlanes[n = 3].normalX = ox;
     gViewFrustumPlanes[n].normalY = oy;
     gViewFrustumPlanes[n].normalZ = oz;
     pw[n * 5] = -(zz * oz + (xx * ox + yy * oy));
-    Matrix_TransformPoint(m, lbl_803DEBCC, ss, -ff, &ox, &oy, &oz);
+    Matrix_TransformPoint(m, 0.0f, ss, -ff, &ox, &oy, &oz);
     gViewFrustumPlanes[n = 4].normalX = ox;
     gViewFrustumPlanes[n].normalY = oy;
     gViewFrustumPlanes[n].normalZ = oz;
@@ -235,8 +226,6 @@ void* RomList_GetLoadedPages(void)
 u32 gVisibleObjectSortKeys[0x400];
 extern int gLightmapDeferredObjectCount;
 extern s16 gVisibleObjectSortKeyCount;
-
-
 
 
 extern s16* gMapBlockCellEntryTables[];
@@ -388,7 +377,6 @@ void sortVisibleObjectKeysDescending(u32* arr, int n)
     }
 }
 
-void sortVisibleObjectKeysDescending(u32* arr, int n);
 void getVisibleObjects(s8* opacity)
 {
     int part;
@@ -460,7 +448,7 @@ void getVisibleObjects(s8* opacity)
                                                  ((GameObject*)o)->anim.localPosZ - playerMapOffsetZ, &a, &b,
                                                  &depth, (f32*)&((GameObject*)o)->anim.targetObj);
                     }
-                    depthInt = (int)(lbl_803DEC0C * (lbl_803DEBDC + depth));
+                    depthInt = (int)(1e+03f * (1.0f + depth));
                 }
                 if ((((GameObject*)o)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0 &&
                     ((GameObject*)o)->anim.modelState != NULL &&
@@ -707,12 +695,12 @@ void renderSceneGeometry(u8 renderType, s8* order)
     while (layer >= 0);
 }
 extern u8 bEnableMotionBlur;
-extern f32 lbl_803DB62C;
+extern f32 gMotionBlurAmount;
 
 extern u8 bEnableBlurFilter;
-extern f32 lbl_803DCE50;
-extern f32 lbl_803DCE4C;
-extern f32 blurFilterArea;
+extern f32 blurFilterX;
+extern f32 blurFilterY;
+extern f32 blurFilterZ;
 extern u8 bBlurFilterUseArea;
 extern u8 bBiggerBlurFilter;
 extern u8 bEnableDistortionFilter;
@@ -722,7 +710,6 @@ extern u8 distortionFilterColor[3];
 extern u8 bEnableMonochromeFilter;
 extern u8 bEnableSpiritVision;
 extern u8 bEnableViewFinderHud;
-extern f32 lbl_803DEC14;
 extern s32 bEnableColorFilter;
 
 void sceneDraw(void)
@@ -739,21 +726,21 @@ void sceneDraw(void)
     s8 buf[616];
 
     q = (char*)gLightmapDrawQueue;
-    lbl_803DCE34 = (u32)cloudGetLayerTextureSize(&skyA, &skyB);
-    if (lbl_803DCE34 != 0)
+    gCloudLayerTexture = (u32)cloudGetLayerTexture(&skyA, &skyB);
+    if (gCloudLayerTexture != 0)
     {
-        *(f32*)(q + 0x3f48) = lbl_803DEC10;
-        *(f32*)(q + 0x3f4c) = lbl_803DEBCC;
-        *(f32*)(q + 0x3f50) = lbl_803DEBCC;
-        *(f32*)(q + 0x3f54) = lbl_803DEC10 * playerMapOffsetX + skyA;
-        *(f32*)(q + 0x3f58) = lbl_803DEBCC;
-        *(f32*)(q + 0x3f5c) = lbl_803DEBCC;
-        *(f32*)(q + 0x3f60) = lbl_803DEC10;
-        *(f32*)(q + 0x3f64) = lbl_803DEC10 * playerMapOffsetZ + skyB;
-        *(f32*)(q + 0x3f68) = lbl_803DEBCC;
-        *(f32*)(q + 0x3f6c) = lbl_803DEBCC;
-        *(f32*)(q + 0x3f70) = lbl_803DEBCC;
-        *(f32*)(q + 0x3f74) = lbl_803DEBDC;
+        *(f32*)(q + 0x3f48) = 0.0005f;
+        *(f32*)(q + 0x3f4c) = 0.0f;
+        *(f32*)(q + 0x3f50) = 0.0f;
+        *(f32*)(q + 0x3f54) = 0.0005f * playerMapOffsetX + skyA;
+        *(f32*)(q + 0x3f58) = 0.0f;
+        *(f32*)(q + 0x3f5c) = 0.0f;
+        *(f32*)(q + 0x3f60) = 0.0005f;
+        *(f32*)(q + 0x3f64) = 0.0005f * playerMapOffsetZ + skyB;
+        *(f32*)(q + 0x3f68) = 0.0f;
+        *(f32*)(q + 0x3f6c) = 0.0f;
+        *(f32*)(q + 0x3f70) = 0.0f;
+        *(f32*)(q + 0x3f74) = 1.0f;
         PSMTXConcat((MtxPtr)(q + 0x3f48), (MtxPtr)Camera_GetInverseViewMatrix(),
                     (MtxPtr)(q + 0x3f48));
     }
@@ -762,7 +749,7 @@ void sceneDraw(void)
     shadowVolumeBeginFrame();
     gVisibleObjectSortKeyCount = 1;
     lbl_803DCEAC = 0;
-    lbl_803DCE06 = 0;
+    gGlowLightCount = 0;
     drawReflectionTexture();
     gLightmapDrawQueueCount = 0;
     getVisibleObjects(buf);
@@ -815,7 +802,7 @@ void sceneDraw(void)
     renderObjects(buf);
     if (CameraShake_IsActive() != 0 || (int)bEnableMotionBlur != 0)
     {
-        renderMotionBlur(lbl_803DB62C);
+        renderMotionBlur(gMotionBlurAmount);
     }
     if (getHudHiddenFrameCount() == 0)
     {
@@ -823,7 +810,7 @@ void sceneDraw(void)
     }
     if (bEnableBlurFilter != 0)
     {
-        doBlurFilter(lbl_803DCE50, lbl_803DCE4C, blurFilterArea, bBlurFilterUseArea,
+        doBlurFilter(blurFilterX, blurFilterY, blurFilterZ, bBlurFilterUseArea,
                      bBiggerBlurFilter);
     }
     if (heatEffectIntensity != 0)
@@ -895,7 +882,7 @@ void sceneDraw(void)
     }
     if (bEnableViewFinderHud != 0)
     {
-        drawViewFinderAperture(lbl_803DEC14, lbl_803DEC18, 0x40, 0);
+        drawViewFinderAperture(3.1e+02f, 2.3e+02f, 0x40, 0);
     }
     if (bEnableColorFilter == 1)
     {
@@ -905,7 +892,7 @@ void sceneDraw(void)
 }
 
 extern s8 curMapType;
-extern int lbl_803DCEA8;
+extern int gSceneCamera;
 
 void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad5)
 {
@@ -921,7 +908,7 @@ void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad
     Camera_UpdateViewMatrices();
     Camera_RebuildProjectionMatrix();
     updateLights();
-    lbl_803DCEA8 = (int)Camera_GetCurrent();
+    gSceneCamera = (int)Camera_GetCurrent();
     sceneDraw();
     Camera_SetupFullscreenViewport(NULL);
     renderFlags &= ~2LL;
@@ -1012,45 +999,16 @@ u32 shouldDrawShadows(void) { return renderFlags & RENDERFLAG_DRAW_SHADOWS; }
 int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void lightmapDrawQueuedObject(GameObject* obj);
 void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);
 void lightmap_sortTransparentDrawQueue(void);
 
-void getVisibleObjects(s8 * opacity);
-
-
-void renderSceneGeometry(u8 renderType, s8* order);
 
 void renderShadowType3(u8* obj, u32 b, s32 offset);
 
 void lightmap_sortTransparentDrawQueue(void);
-
-
-
-
-
-
-
-
-
-void sortVisibleObjectKeysDescending(u32* arr, int n);
 
 
 void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* viewMtx);

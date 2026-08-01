@@ -38,7 +38,7 @@
 
 u8 gNewCloudBlizzardActivePrev;
 void* lbl_803DD1C8;
-void* lbl_803DD1C4;
+void* gNewCloudType1Texture;
 u8 gNewCloudInitialized;
 f32 gNewCloudScrollPhaseA;
 f32 gNewCloudScrollPhaseB;
@@ -50,15 +50,15 @@ int gNewCloudFlashRotAngle;
 ModelLightStruct* gNewCloudModelLight;
 LightningEffect* gActiveLightning;
 u8 gNewCloudBlizzardActive;
-u8 lbl_803DD19A;
-u8 lbl_803DD199;
+u8 gNewCloudSnowFlashAlphaK1;
+u8 gNewCloudSnowFlashAlphaK0;
 u8 gNewCloudSnowFlashAlpha;
 f32 gNewCloudOvercastFadeRate;
-f32 lbl_803DD190;
+f32 gNewCloudSnowFlashScroll;
 
 f32 gNewCloudOvercastFadeLevel = 1.0f;
-f32 lbl_803DB764 = 1.0f;
-f32 lbl_803DB768 = 1.0f;
+f32 gNewCloudSnowFlashScale = 1.0f;
+f32 gNewCloudSnowFlashParallax = 1.0f;
 int gNewCloudWindSourcesInit = 1;
 
 static const GXColor gNewCloudSnowFogColor = {255, 255, 255, 255};
@@ -553,7 +553,6 @@ void snowCloudBuildBoxVerts(f32* out, f32 height, f32 scale)
     out[22] = zero;
     out[23] = edge;
 }
-void snowCloudBuildBoxVerts(f32* out, f32 height, f32 scale);
 void mm_free_(void* ptr)
 {
     mm_free(ptr);
@@ -664,15 +663,15 @@ void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId)
 
 void snowFreeSnowCloud(int cloudId)
 {
-    u8* env;
+    SaveGameEnvState* env;
     u8* p;
     int i;
 
     env = saveGameGetEnvState();
     if (cloudId >= 0 && cloudId <= 2 && getSaveGameLoadStatus() == 0)
     {
-        ((s16*)(env + 0xe))[cloudId] = -1;
-        ((s8*)(env + 0x41))[cloudId] = -1;
+        env->cloudEnvfxActIds[cloudId] = -1;
+        env->cloudStationary[cloudId] = -1;
     }
     for (i = 0; i < 8; i++)
     {
@@ -704,7 +703,6 @@ void snowFreeSnowCloud(int cloudId)
     }
 }
 NewCloud* gNewClouds[8];
-void snowFreeSnowCloud(int index);
 
 void dll_07_func0A_nop(void)
 {
@@ -836,7 +834,7 @@ int snowPrintSnowCloud(int arg, int cloudId)
     PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), (MtxPtr)mtxT, (MtxPtr)mtxT);
     GXLoadPosMtxImm((MtxPtr)mtxT, GX_PNMTX0);
     texIdx = 0;
-    selectTexture((Texture*)(((NewCloud*)p)->cloudType == 0 ? gNewCloudLayerTextures[0] : lbl_803DD1C4), 0);
+    selectTexture((Texture*)(((NewCloud*)p)->cloudType == 0 ? gNewCloudLayerTextures[0] : gNewCloudType1Texture), 0);
     GXSetCullMode(GX_CULL_NONE);
     gxTevResetStages();
     gxTevTextureTimesColor1Stage();
@@ -1568,8 +1566,8 @@ void newclouds_renderSnowClouds(int renderPass)
     }
     if (gNewCloudSnowFlashAlpha != 0)
     {
-        drawSnowFlashOverlay(lbl_803DD190, gNewCloudSnowFlashAlpha, lbl_8039A8F0, lbl_803DB764,
-                        lbl_803DD199, lbl_803DD19A, lbl_803DB768);
+        drawSnowFlashOverlay(gNewCloudSnowFlashScroll, gNewCloudSnowFlashAlpha, lbl_8039A8F0, gNewCloudSnowFlashScale,
+                        gNewCloudSnowFlashAlphaK0, gNewCloudSnowFlashAlphaK1, gNewCloudSnowFlashParallax);
     }
 }
 void newclouds_run(void)
@@ -1619,7 +1617,7 @@ void newclouds_run(void)
         clouds[1] = textureLoadAsset(0x63f);
         clouds[2] = textureLoadAsset(0x640);
         clouds[3] = textureLoadAsset(0x641);
-        lbl_803DD1C4 = textureLoadAsset(0x151);
+        gNewCloudType1Texture = textureLoadAsset(0x151);
         gNewCloudInitialized = 1;
     }
     if (renderModeSetOrGet(-1) == 1)
@@ -1862,20 +1860,20 @@ void newclouds_run(void)
             viewRotationMatrix = Camera_GetViewRotationMatrix();
             if (((NewCloud*)nearestCloud)->cloudType == 0)
             {
-                lbl_803DD190 = 0.125f * (-0.12f * timeDelta) + lbl_803DD190;
-                lbl_803DB764 = 1.5f;
-                lbl_803DD199 = 0xf9;
-                lbl_803DD19A = 0xfd;
-                lbl_803DB768 = 5.0f;
+                gNewCloudSnowFlashScroll = 0.125f * (-0.12f * timeDelta) + gNewCloudSnowFlashScroll;
+                gNewCloudSnowFlashScale = 1.5f;
+                gNewCloudSnowFlashAlphaK0 = 0xf9;
+                gNewCloudSnowFlashAlphaK1 = 0xfd;
+                gNewCloudSnowFlashParallax = 5.0f;
                 PSMTXIdentity(mtx);
             }
             else
             {
-                lbl_803DD190 = -0.12f * timeDelta + lbl_803DD190;
-                lbl_803DB764 = 1.0f;
-                lbl_803DD199 = 0xf8;
-                lbl_803DD19A = 0xfc;
-                lbl_803DB768 = 1.0f;
+                gNewCloudSnowFlashScroll = -0.12f * timeDelta + gNewCloudSnowFlashScroll;
+                gNewCloudSnowFlashScale = 1.0f;
+                gNewCloudSnowFlashAlphaK0 = 0xf8;
+                gNewCloudSnowFlashAlphaK1 = 0xfc;
+                gNewCloudSnowFlashParallax = 1.0f;
                 PSMTXRotRad(mtx, 'z', rot);
             }
             PSMTXConcat((MtxPtr)viewRotationMatrix, mtx, mtx);
@@ -1883,9 +1881,9 @@ void newclouds_run(void)
                 Vec* flashVector = (Vec*)((u32)clouds + 0xd8);
                 PSMTXMultVec(mtx, flashVector, flashVector);
             }
-            if (lbl_803DD190 < -16.0f)
+            if (gNewCloudSnowFlashScroll < -16.0f)
             {
-                lbl_803DD190 += 16.0f;
+                gNewCloudSnowFlashScroll += 16.0f;
             }
         }
     }
@@ -1959,14 +1957,14 @@ void newclouds_onMapSetup(void)
     gNewCloudScrollPhaseA = a;
     gNewCloudScrollPhaseB = a;
     gNewCloudScrollPhaseC = a;
-    lbl_803DD190 = a;
+    gNewCloudSnowFlashScroll = a;
     b = (gNewCloudOvercastFadeLevel = 1.0f);
     gNewCloudOvercastFadeRate = a;
     gNewCloudSnowFlashAlpha = 0;
-    lbl_803DB764 = b;
-    lbl_803DD199 = 0;
-    lbl_803DD19A = 0;
-    lbl_803DB768 = b;
+    gNewCloudSnowFlashScale = b;
+    gNewCloudSnowFlashAlphaK0 = 0;
+    gNewCloudSnowFlashAlphaK1 = 0;
+    gNewCloudSnowFlashParallax = b;
     gNewCloudBlizzardActivePrev = 0;
     Music_Trigger(MUSICTRIG_crun_dungeon, 0);
 }
@@ -2052,7 +2050,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
                 switch (cfg->cloudIndex)
                 {
                 case 0:
-                    *(s16*)(env + 0xe) = (s16)cfg->windCount - 1;
+                    *(s16*)(env + 0xe) = (s16)cfg->envfxActId - 1;
                     *(int*)(env + 0x14) = posA[0];
                     *(int*)(env + 0x18) = posA[1];
                     *(int*)(env + 0x1c) = posA[2];
@@ -2078,7 +2076,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
                     }
                     break;
                 case 1:
-                    *(s16*)(env + 0x10) = (s16)cfg->windCount - 1;
+                    *(s16*)(env + 0x10) = (s16)cfg->envfxActId - 1;
                     *(int*)(env + 0x20) = posA[0];
                     *(int*)(env + 0x24) = posA[1];
                     *(int*)(env + 0x28) = posA[2];
@@ -2104,7 +2102,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
                     }
                     break;
                 case 2:
-                    *(s16*)(env + 0x12) = (s16)cfg->windCount - 1;
+                    *(s16*)(env + 0x12) = (s16)cfg->envfxActId - 1;
                     *(int*)(env + 0x2c) = posA[0];
                     *(int*)(env + 0x30) = posA[1];
                     *(int*)(env + 0x34) = posA[2];
@@ -2233,10 +2231,10 @@ void newclouds_release(void)
             gNewCloudLayerTextures[i] = NULL;
         }
     }
-    if (lbl_803DD1C4 != NULL)
+    if (gNewCloudType1Texture != NULL)
     {
-        textureFree((Texture*)(lbl_803DD1C4));
-        lbl_803DD1C4 = NULL;
+        textureFree((Texture*)(gNewCloudType1Texture));
+        gNewCloudType1Texture = NULL;
     }
     if (gNewCloudModelLight != NULL)
     {
@@ -2251,7 +2249,7 @@ void newclouds_initialise(void)
 }
 int gNewCloudMusicIdByType[5] = {43, 0, 0, 0, 0};
 
-u32 lbl_8030F5B4[15] = { 0x00000000, 0x00000000, 0x00000000, 0x000a0000, (u32)newclouds_initialise, (u32)newclouds_release, 0x00000000, (u32)newclouds_updateEnvfxAct, (u32)newclouds_onMapSetup, (u32)newclouds_killSnowCloud, (u32)newclouds_run, (u32)newclouds_renderSnowClouds, (u32)newclouds_isBlizzardActive, (u32)dll_07_func09, (u32)dll_07_func0A_nop };
+u32 newclouds_funcs[15] = { 0x00000000, 0x00000000, 0x00000000, 0x000a0000, (u32)newclouds_initialise, (u32)newclouds_release, 0x00000000, (u32)newclouds_updateEnvfxAct, (u32)newclouds_onMapSetup, (u32)newclouds_killSnowCloud, (u32)newclouds_run, (u32)newclouds_renderSnowClouds, (u32)newclouds_isBlizzardActive, (u32)dll_07_func09, (u32)dll_07_func0A_nop };
 
 char sSnowFreeSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowFreeSnowCloud\n";
 char sSnowPrintSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowPrintSnowCloud\n";
