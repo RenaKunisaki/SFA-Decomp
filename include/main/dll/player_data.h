@@ -219,6 +219,5 @@ extern f32 gPlayerLadderSlideVel;
 extern s16 lbl_803DE4B0;
 
 extern const u8 lbl_802C2B30[][16];
-extern const f32 lbl_802C2BF0[];
 
 #endif /* MAIN_DLL_PLAYER_DATA_H_ */

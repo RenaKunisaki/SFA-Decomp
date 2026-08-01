@@ -373,6 +373,11 @@ transposed, the knob is the cast lever above, not the source text.
   fuzzy_match_percent for this unit`) with a green build, and a touch-plus-rebuild restored it
   to 99.21875. Note that an unscorable unit is **excluded from the aggregate, not counted as
   zero**, so this repair *lowers* reported fuzzy — it is still correct.
+- **Assert the object exists after a by-name rebuild — the path is easy to get wrong.** A batch
+  helper that builds `build/GSAE01/src/main/textrender.c.o` instead of `…/textrender.o` asks ninja
+  for a target that does not exist. Without an `[ -f $O ]` assertion the loop scores three **stale**
+  objects and reports three false "free" verdicts; with it, the run fails loudly. Strip the `.c`
+  (`${f%.c}.o`), and assert. This is the third distinct save from that one check.
 - **Word-boundary every identifier check.** A bare substring guard (`"mode" in body`) fires
   falsely on `modelState`/`modelInstance`. One did, aborting a rename *after* `symbols.txt` and
   the header were already written — the partial-rename state that scores zero with a green
