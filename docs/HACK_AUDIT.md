@@ -22,6 +22,8 @@ no `#pragma` of any kind, no `goto`, no `__declspec(section ...)`, no
 match-volatiles/CSE-blocking puns, no dummy `register ... asm("rN")` declarations
 used to reserve allocator registers, and no `lbl_`-named pool-reconstruction consts.
 Units that cannot match without them stay NonMatching or await a TU re-split.
+Residual classes whose only known cure is one of these banned constructs are catalogued,
+with measured per-row prices and recognition tells, in `docs/priced_classes.md`.
 
 ## Waves 1-2 (complete purge of src/main + src/track)
 
