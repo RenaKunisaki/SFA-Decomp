@@ -559,7 +559,7 @@ void waterfx_render(int obj, int renderParam)
         }
         for (poolOffset = 0, j = 0, descriptorOffset = 0, vertexOffset = 0;
              j < WATERFX_POOL_SIZE;
-             j++, descriptorOffset += 0x20, poolOffset += 0x1c, vertexOffset += 0x40)
+             poolOffset += 0x1c, descriptorOffset += 0x20, vertexOffset += 0x40, j++)
         {
             g = (WaterEntry*)(gWaterfxWakePool + poolOffset);
             if (g->active != 0 && g->f18 == 0)
