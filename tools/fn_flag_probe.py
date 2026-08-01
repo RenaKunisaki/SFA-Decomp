@@ -107,8 +107,11 @@ def substitute(flags: list[str], opt: str | None, inline: str | None) -> list[st
     for key, val in (("-opt", opt), ("-inline", inline)):
         if val is None:
             continue
-        if key in out:
-            out[out.index(key) + 1] = val
+        positions = [i for i, flag in enumerate(out[:-1]) if flag == key]
+        if positions:
+            # Later MWCC options override earlier ones.  Some profiles append
+            # an override to cflags_base, so replace the effective occurrence.
+            out[positions[-1] + 1] = val
         else:
             out += [key, val]
     return out
