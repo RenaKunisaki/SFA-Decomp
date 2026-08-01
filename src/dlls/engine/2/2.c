@@ -76,6 +76,7 @@ extern char sMemoryCardFileNameString[];
 volatile u32 gSaveCardState = 0xD;
 char* sMemoryCardFileName = sMemoryCardFileNameString;
 int gSaveCardBackdropColor = 0x404040FF;
+int lbl_803DB70C[1] = {0};
 
 typedef struct SeqRunFlags
 {
@@ -1371,6 +1372,7 @@ char sSeqAAnimDataTag[] = "SEQA";
 char sSeqBAnimDataTag[] = "SEQB";
 int lbl_803DB744[1] = {0};
 GXColor gObjSeqDefaultColor = {0x20, 0x20, 0x20, 0xFF};
+int lbl_803DB74C[1] = {0};
 
 typedef struct ObjSeqBgCmd
 {
