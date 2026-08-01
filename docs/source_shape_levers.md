@@ -418,6 +418,28 @@ targets, so a "missing value" there may be an address word rather than a constan
 
 ## See also
 
+## Two rename-gate steps added after they each caught a live error
+
+Both fired within one naming batch and neither reached a commit. They belong in the
+rename gate alongside the `--refs` radius, the by-name rebuild, the per-version check and
+the `unitfuzzy` equality check (see `docs/rename_safety.md`).
+
+**1. Name-availability grep, tree-wide, BEFORE renaming.** A name being accurate is not
+enough; it must also be unused. Naming `lbl_803DB670` (`.sdata`, 1.3333334) as
+`gCameraAspectRatio` collided with `camera.c`'s own live aspect ratio -- the same value at
+a different address, 0x803DB268 -- and the link failed with `multiply-defined`. Run
+`grep -rn '\bNEWNAME\b' src/ include/ config/` first; the correct name here was
+`gStandardAspectRatio`, the standard-aspect counterpart to `widescreenAspect_803DEC1C` in
+the widescreen branch that consumes it.
+
+**2. Edit `symbols.txt` by ADDRESS, never by name or value search-and-replace.** After the
+collision above, a plain `s/gCameraAspectRatio/gStandardAspectRatio/` over
+`config/GSAE01/symbols.txt` renamed BOTH entries -- including `camera.c`'s symbol at
+0x803DB268, which the source still called `gCameraAspectRatio`. That is a partial rename
+that desyncs source from symbols **in a unit you are not editing**, so the defining unit
+still builds and the damage surfaces elsewhere. Key the replacement on the full
+`NAME = .section:0xADDRESS;` string and assert it matches exactly once.
+
 ## The high-water-mark regression audit (axis CLOSED — sized, not worth working)
 
 This repo records scores in commit messages (`fn 98.840->99.476`, `99.444->100`), which
