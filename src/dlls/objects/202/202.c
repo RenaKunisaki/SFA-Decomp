@@ -1680,21 +1680,19 @@ Seq11ERow gSeq11EStateTable[6] = {
     {2.0f, 0x0, 7, 0, 4, 1}, {2.0f, 0x0, 3, 5, 5, 0}, {3.5f, 0x1, 4, 5, 5, 0},
 };
 
-
-void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wpad0, int wpad1, Vec* wpad2, int wpad3)
-{
-    GroundBaddiePlacement* sub;
+void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wpad0, int wpad1, Vec* wpad2,
+                                     int wpad3) {
+    GroundBaddiePlacement* sub[1];
     f32 fz;
 
-    sub = (GroundBaddiePlacement*)((GameObject*)obj)->anim.placementData;
-    if (msg == 16 || msg == 17)
-    {
+    sub[0] = (GroundBaddiePlacement*)((GameObject*)obj)->anim.placementData;
+    if (msg == 16 || msg == 17) {
         return;
     }
     Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_pole1_c_23);
     Sfx_PlayFromObject((u32)obj, SFXTRIG_en_lrope_powerdown);
     ((EnemyState*)state)->flags2E8 |= 0x8;
-    ((EnemyState*)state)->gcRobot.cooldownTimer = (f32)(u32)(u16)sub->unk2C;
+    ((EnemyState*)state)->gcRobot.cooldownTimer = (f32)(u32)(u16)sub[0]->unk2C;
     baddieSetMove((GameObject*)obj, (int)state, 1, 2.5f, 0, 0);
     ((EnemyState*)state)->flags2E4 &= ~0x20LL;
     fz = 0.0f;
