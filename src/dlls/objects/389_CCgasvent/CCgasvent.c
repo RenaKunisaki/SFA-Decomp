@@ -10,6 +10,7 @@
 #include "game/objects/object.h"
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits_api.h"
+#include "main/objtype.h"
 
 #define CC_GAS_VENT_PARTICLE_GAS        0x3DF
 #define CC_GAS_VENT_PARTICLE_SPAWN_MODE 0

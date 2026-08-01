@@ -11,6 +11,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/objtexture.h"
+#include "main/objtype.h"
 #include "main/vecmath_distance_api.h"
 
 #define PRESSURESWITCHFB_PARTFX_ID                      0x7C3
@@ -179,7 +180,7 @@ void PressureSwitchFB_update(GameObject* obj) {
             state->contactTimer = 0;
         }
         searchRadius = PRESSURESWITCHFB_TARGET_SEARCH_RADIUS;
-        nearestTarget = objGetNearestTypeTo(PRESSURESWITCHFB_TARGET_OBJECT_GROUP, obj, &searchRadius);
+        nearestTarget = (u32)objGetNearestTypeTo(PRESSURESWITCHFB_TARGET_OBJECT_GROUP, obj, &searchRadius);
         if (nearestTarget != 0) {
             state->contactTimer = PRESSURESWITCHFB_CONTACT_FRAMES;
         }

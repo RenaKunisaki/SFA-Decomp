@@ -10,6 +10,7 @@
 #include "string.h"
 #include "main/obj_path.h"
 #include "main/obj_query.h"
+#include "main/objtype.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "track/intersect_api.h"

@@ -11,6 +11,7 @@
 #include "main/game_ui_interface.h"
 #include "main/objHitReact_types.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
 #include "main/resource.h"
@@ -133,7 +134,7 @@ void TreasureChest_update(GameObject* obj) {
         if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             playerPullOutStaff(Obj_GetPlayerObject(), TREASURE_CHEST_STAFF_MODE);
-            nearestCollectible = objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDist);
+            nearestCollectible = (u32)objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDist);
             if (nearestCollectible != 0) {
                 (*gObjectTriggerInterface)->setObjects((int)((GameObject*)nearestCollectible)->anim.romDefNo, 0, 0);
                 (*gObjectTriggerInterface)

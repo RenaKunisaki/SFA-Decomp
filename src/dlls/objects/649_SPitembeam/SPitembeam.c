@@ -10,6 +10,7 @@
  * despawns itself.
  */
 #include "main/objtexture.h"
+#include "main/objtype.h"
 #include "main/dll/SP/dll_0289_spitembeam.h"
 #include "dlls/object_descriptor.h"
 

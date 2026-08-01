@@ -5,6 +5,7 @@
 #include "main/dll/tricky_api.h"
 #include "main/object_render.h"
 #include "main/obj_list.h"
+#include "main/objtype.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 

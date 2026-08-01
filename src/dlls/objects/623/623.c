@@ -15,6 +15,7 @@
 #include "main/gamebits_api.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
+#include "main/objtype.h"
 #include "main/object_render.h"
 
 #define DRGENERATOR_OBJGROUP 0x3

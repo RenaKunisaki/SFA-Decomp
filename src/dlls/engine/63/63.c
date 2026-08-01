@@ -3,6 +3,7 @@
 #include "main/dll/ppcwgpipe_struct.h"
 #include "dlls/object_descriptor.h"
 #include "main/model_engine.h"
+#include "main/objtype.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 
 char sDll3FTimerFormat[] = "%2d";
