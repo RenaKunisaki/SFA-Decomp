@@ -52,13 +52,13 @@ extern GXColor gReflectionBumpTintColor;
 extern GXColor gReflectionBumpKColor;
 extern GXColor gReflectionTintColor;
 extern GXColor gReflectionKColor;
-extern u32 lbl_803DB690;
-extern u32 lbl_803DB694;
-extern u32 lbl_803DB698;
-extern u32 lbl_803DB69C;
+extern u32 gWaterReflectionKColorR;
+extern u32 gWaterReflectionKColorG;
+extern u32 gWaterReflectionKColorB;
+extern u32 gBlurFilterKColor;
 extern GXColor gMotionBlurKColor;
 extern GXColor gHeatEffectKColor;
-extern u32 lbl_803DB6A8;
+extern u32 gObjectShadowTevColor;
 extern f32 gCausticReflectionDiskScale;
 extern f32 gTrackProjectedTexScale;
 extern f32 gTrackNormalTexScale;
@@ -2822,7 +2822,7 @@ void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u
     GXSetTevKColor(GX_KCOLOR0, *(GXColor*)colorPtr);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
-    GXSetTevColor(GX_TEVREG1, *(GXColor*)&lbl_803DB6A8);
+    GXSetTevColor(GX_TEVREG1, *(GXColor*)&gObjectShadowTevColor);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
     GXSetTevDirect(GX_TEVSTAGE0);
     GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_KONST);
@@ -4132,7 +4132,7 @@ void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5)
 
     GXSetTevKColor(GX_KCOLOR0, c0);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
-    c1 = *(GXColor*)&lbl_803DB69C;
+    c1 = *(GXColor*)&gBlurFilterKColor;
     GXSetTevKColor(GX_KCOLOR1, c1);
 
     GXSetNumTexGens(6);
@@ -4401,13 +4401,13 @@ void setupWaterReflectionTev(int handle1, int handle2)
                                               &ignoredLightColor);
     }
 
-    k0 = *(GXColor*)&lbl_803DB690;
+    k0 = *(GXColor*)&gWaterReflectionKColorR;
     ((void (*)(int, GXColor*))GXSetTevKColor)(0, &k0);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
-    k1 = *(GXColor*)&lbl_803DB694;
+    k1 = *(GXColor*)&gWaterReflectionKColorG;
     ((void (*)(int, GXColor*))GXSetTevKColor)(1, &k1);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K1);
-    k2 = *(GXColor*)&lbl_803DB698;
+    k2 = *(GXColor*)&gWaterReflectionKColorB;
     ((void (*)(int, GXColor*))GXSetTevKColor)(2, &k2);
     GXSetTevKColorSel(GX_TEVSTAGE2, GX_TEV_KCSEL_K2);
 
@@ -4762,7 +4762,7 @@ int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 void setupWaterCausticTev(void)
 {
-    extern u32 lbl_803DB67C;
+    extern u32 gWaterCausticKColor;
 
     Mtx mtx_cc;
     Mtx mtx_9c;
@@ -4817,10 +4817,10 @@ void setupWaterCausticTev(void)
 
     if (isHeavyFogEnabled() != 0)
     {
-        ((u8*)&lbl_803DB67C)[0] = ((u8*)&gFogColor)[0];
-        ((u8*)&lbl_803DB67C)[1] = ((u8*)&gFogColor)[1];
-        ((u8*)&lbl_803DB67C)[2] = ((u8*)&gFogColor)[2];
-        ((u8*)&lbl_803DB67C)[3] = 0x80;
+        ((u8*)&gWaterCausticKColor)[0] = ((u8*)&gFogColor)[0];
+        ((u8*)&gWaterCausticKColor)[1] = ((u8*)&gFogColor)[1];
+        ((u8*)&gWaterCausticKColor)[2] = ((u8*)&gFogColor)[2];
+        ((u8*)&gWaterCausticKColor)[3] = 0x80;
     }
     else
     {
@@ -4828,15 +4828,15 @@ void setupWaterCausticTev(void)
         u8* p1;
         u8* p2;
         (*gSkyInterface)
-            ->getCurrentAmbientAndLightColors((u8*)&lbl_803DB67C, p1 = (u8*)&lbl_803DB67C + 1,
-                                              p2 = (u8*)&lbl_803DB67C + 2, &ignoredLightColor, &ignoredLightColor,
+            ->getCurrentAmbientAndLightColors((u8*)&gWaterCausticKColor, p1 = (u8*)&gWaterCausticKColor + 1,
+                                              p2 = (u8*)&gWaterCausticKColor + 2, &ignoredLightColor, &ignoredLightColor,
                                               &ignoredLightColor);
-        ((u8*)&lbl_803DB67C)[0] = (u8)(((u8*)&lbl_803DB67C)[0] >> 3);
+        ((u8*)&gWaterCausticKColor)[0] = (u8)(((u8*)&gWaterCausticKColor)[0] >> 3);
         *p1 = (u8)(*p1 >> 3);
         *p2 = (u8)(*p2 >> 3);
-        ((u8*)&lbl_803DB67C)[3] = gReflectionTintAlpha;
+        ((u8*)&gWaterCausticKColor)[3] = gReflectionTintAlpha;
     }
-    temp = *(GXColor*)&lbl_803DB67C;
+    temp = *(GXColor*)&gWaterCausticKColor;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
