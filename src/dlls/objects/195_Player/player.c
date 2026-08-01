@@ -121,6 +121,7 @@
 #include "main/player_control_interface.h"
 #include "dlls/objects/242_iceblast.h"
 #include "main/sky.h"
+#include "main/rcp_dolphin_api.h"
 
 #undef BADDIE_MOVE_STATUS_SIGNED
 

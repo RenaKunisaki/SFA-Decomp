@@ -1,5 +1,7 @@
 #include "global.h"
 #include "dolphin/mtx.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_position_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/partfx_interface.h"
@@ -174,7 +176,7 @@ void objAudioDispatchAnimEvents(GameObject* obj, ObjAnimEventList* events, u8 ty
         }
         else
         {
-            Sfx_PlayAtPositionFromObject((int)obj, vec[0], vec[1], vec[2], sfxTab[sfx]);
+            Sfx_PlayAtPositionFromObject(obj, vec[0], vec[1], vec[2], sfxTab[sfx]);
         }
     }
     if (i == 5)

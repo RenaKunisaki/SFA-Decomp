@@ -2,8 +2,14 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/objects/209_TumbleWeedB.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/curve.h"
+#include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_00C4_tricky.h"
+#include "main/dll/dll_00C9_enemy.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/path_control_interface.h"
 #include "main/dll/player_target.h"
@@ -158,7 +164,7 @@ int NW_mammoth_processAnimEvents(GameObject* obj, int unusedArg, ObjSeqState* an
     (void)unusedArg;
     state = (NwMammothState*)obj->extra;
     if ((state->runtimeFlags & NW_MAMMOTH_RUNTIME_RESET_PATH) == 0) {
-        Sfx_StopObjectChannel((int)obj, 0x7f);
+        Sfx_StopObjectChannel(obj, 0x7f);
         state->pathSpeed = 0.0f;
         state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_MENU_LOCK;
         state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_RESET_PATH;
@@ -224,7 +230,7 @@ int NW_mammoth_updateSleepCycle(GameObject* obj, NwMammothState* state) {
     switch (state->stateIndex) {
     case 0x14:
         if (animCue != 0) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_14b);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_14b);
         }
         if (state->runtimeFlags & NW_MAMMOTH_RUNTIME_ANIM_ENDED) {
             state->stateIndex = 0x15;
@@ -233,7 +239,7 @@ int NW_mammoth_updateSleepCycle(GameObject* obj, NwMammothState* state) {
         break;
     case 0x15:
         if (animCue != 0) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_sa_off);
+            Sfx_PlayFromObject(obj, SFXTRIG_sa_off);
         }
         state->stateTimer -= timeDelta;
         if (night == 0 && state->stateTimer <= 0.0f) {
@@ -255,7 +261,7 @@ int NW_mammoth_updateSleepCycle(GameObject* obj, NwMammothState* state) {
         break;
     case 0x16:
         if (animCue != 0) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_14d);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_14d);
         }
         if (state->runtimeFlags & NW_MAMMOTH_RUNTIME_ANIM_ENDED) {
             state->stateIndex = state->daytimeStateIndex;
@@ -274,7 +280,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
     case 9:
         state->sfxTimer += timeDelta;
         if (state->sfxTimer > 900.0f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_skeep_mumb);
+            Sfx_PlayFromObject(obj, SFXTRIG_skeep_mumb);
             state->sfxTimer -= 900.0f;
         }
         if (state->playerDistanceSq < (f32)(s32)(placement->triggerDistance * placement->triggerDistance)) {
@@ -289,7 +295,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
     case 0xb:
         state->sfxTimer += timeDelta;
         if (state->sfxTimer > 900.0f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_skeep_mumb);
+            Sfx_PlayFromObject(obj, SFXTRIG_skeep_mumb);
             state->sfxTimer -= 900.0f;
         }
         if (ObjTrigger_IsSet((int)obj) != 0) {
@@ -352,8 +358,8 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
                 if (tw2 != NULL && tw2->anim.romDefNo == 0x3fb) {
                     if (getXZDistance(&obj->anim.worldPosX, &tw2->anim.worldPosX) <
                         (f32)(s32)(setup[0xC] * setup[0xC])) {
-                        if (Sfx_IsPlayingFromObjectChannel((int)obj, 0x10) == 0) {
-                            Sfx_PlayFromObject((int)obj, SFXTRIG_mammoth_snowstep);
+                        if (Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
+                            Sfx_PlayFromObject(obj, SFXTRIG_mammoth_snowstep);
                         }
                         if ((*(NwMammothTumbleweedInterface**)tw2->anim.dll)->isHoming(tw2) == 0) {
                             (*(NwMammothTumbleweedInterface**)tw2->anim.dll)
@@ -373,7 +379,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
     }
     case 0xe:
         if (getXZDistance(&state->spawnPosX, &state->trackedObject->anim.worldPosX) < 6.25f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mammoth_annoyed);
+            Sfx_PlayFromObject(obj, SFXTRIG_mammoth_annoyed);
             tumbleweedbush_activatePiece(state->trackedObject);
             state->stateIndex = 0xf;
         }
@@ -390,7 +396,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
                 state->stateIndex = 0x11;
             } else {
                 if (state->uiMessageCount % 2 == 0) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_id_14f);
+                    Sfx_PlayFromObject(obj, SFXTRIG_id_14f);
                 }
                 state->stateIndex = 0xd;
             }
@@ -404,7 +410,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
     case 0x11:
         if (!(state->playerObject->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) &&
             state->airMeterValue >= NW_MAMMOTH_AIR_METER_MAX_VALUE) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_menuups16k);
+            Sfx_PlayFromObject(obj, SFXTRIG_menuups16k);
             (*gScreenTransitionInterface)->start(0x14, 1);
             state->stateIndex = 0x12;
             mainSetBits(0xd32, 0);

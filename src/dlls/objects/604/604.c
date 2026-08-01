@@ -22,6 +22,10 @@
 #include "main/maketex_timer_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/shader_api.h"
+#include "main/vecmath.h"
+#include "main/obj_link.h"
+#include "main/obj_path.h"
+#include "main/dll/dll_0255_snowbike.h"
 
 f32 gSnowClawPulseScale = 1.0f;
 f32 gSnowClawPulseOffsetY = -15.0f;

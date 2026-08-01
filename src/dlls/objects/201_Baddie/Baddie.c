@@ -69,6 +69,7 @@
 #include "main/gameloop_gamebit_api.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/obj_path.h"
+#include "main/dll/player_api.h"
 
 u8 lbl_8031DBD8[12] = {0};
 u8 lbl_8031DBE4[12] = {0};

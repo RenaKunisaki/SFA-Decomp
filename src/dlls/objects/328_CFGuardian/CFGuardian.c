@@ -4,7 +4,9 @@
 #include "dolphin/pad.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/camera_interface.h"
+#include "main/curve.h"
 #include "main/dll/dll_0015_curves.h"
+#include "main/dll/player_api.h"
 #include "main/dll/player_status.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
@@ -27,6 +29,7 @@
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "track/intersect_api.h"
 
 #define CFGUARDIAN_TARGET_OBJECT_GROUP        3
