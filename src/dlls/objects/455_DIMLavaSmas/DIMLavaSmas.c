@@ -53,40 +53,40 @@ void dimlavasmash_setBlockSurfaceFlags(MapBlockData* map, int disable, int surfa
 }
 
 int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
-    int* def;
+    DimLavaSmashPlacement* def;
     int hit;
     MapBlockData* block;
-    int* state;
+    DimLavaSmashState* state;
     ObjHitsPriorityState* hitState;
 
     (void)unused;
 
     state = (obj)->extra;
-    def = *(int**)&(obj)->anim.placementData;
-    if (((DimLavaSmashState*)state)->phase == DIM_LAVA_SMASH_PHASE_WAITING) {
-        if (mainGetBit(((DimLavaSmashPlacement*)def)->gateGameBit) != 0) {
+    def = (DimLavaSmashPlacement*)(obj)->anim.placementData;
+    if (state->phase == DIM_LAVA_SMASH_PHASE_WAITING) {
+        if (mainGetBit(def->gateGameBit) != 0) {
             hitState = (ObjHitsPriorityState*)(obj)->anim.hitReactState;
             hitState->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
             if (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0) {
                 if (((GameObject*)hit)->anim.romDefNo == DIM_LAVA_PROJECTILE_SEQUENCE_ID) {
-                    ((DimLavaSmashState*)state)->phase = DIM_LAVA_SMASH_PHASE_SMASHING;
+                    state->phase = DIM_LAVA_SMASH_PHASE_SMASHING;
                     Sfx_PlayFromObject((int)obj, SFXTRIG_en_mushsporedisp22);
                     block =
                         mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
                     if (block != NULL) {
-                        dimlavasmash_setBlockSurfaceFlags(block, 1, ((DimLavaSmashState*)state)->surfaceLayerId);
-                        dimlavasmash_setBlockSurfaceFlags(block, 0, ((DimLavaSmashState*)state)->surfaceLayerId + 1);
+                        dimlavasmash_setBlockSurfaceFlags(block, 1, state->surfaceLayerId);
+                        dimlavasmash_setBlockSurfaceFlags(block, 0, state->surfaceLayerId + 1);
                     }
                 }
             }
         }
     } else {
         if (animUpdate->curEventId == DIM_LAVA_SMASH_ANIM_COMMAND_COMPLETE) {
-            mainSetBits(((DimLavaSmashPlacement*)def)->triggerGameBit, 1);
-            ((DimLavaSmashState*)state)->phase = DIM_LAVA_SMASH_PHASE_COMPLETE;
+            mainSetBits(def->triggerGameBit, 1);
+            state->phase = DIM_LAVA_SMASH_PHASE_COMPLETE;
         }
     }
-    return ((DimLavaSmashState*)state)->phase == DIM_LAVA_SMASH_PHASE_WAITING;
+    return state->phase == DIM_LAVA_SMASH_PHASE_WAITING;
 }
 
 int dimlavasmash_getExtraSize(void) {

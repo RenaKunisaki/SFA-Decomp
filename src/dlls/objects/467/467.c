@@ -82,7 +82,7 @@ extern f32 gWorldObjAdvanceMoveTable[4];
 
 u8 gWorldObjVariantAlphaTable[8] = {0xFF, 0x99, 0x1A, 0, 0, 0, 0, 0};
 int gWorldObjEffectRenderDelay;
-int gWorldObjEffectTargetObj;
+GameObject* gWorldObjEffectTargetObj;
 
 void worldobj_spawnGreatFoxEffects(GameObject* obj) {
     static const f32 sWorldObjGreatFoxOffsetScale[1] = {0.64f};
@@ -352,7 +352,7 @@ void worldobj_update(GameObject* obj) {
         ObjAnim_AdvanceCurrentMove((int)obj, 0.005f, timeDelta, (ObjAnimEventList*)&vec[3]);
         break;
     case WORLDOBJ_PEPPER_OBJ:
-        if (state->controlByte != ((ObjAnimComponent*)obj)->bankIndex) {
+        if (state->controlByte != obj->anim.bankIndex) {
             Obj_SetActiveModelIndex(obj, state->controlByte);
         }
         if (state->spinZStep != (gAudioStreamCurrentId != 0)) {
@@ -423,15 +423,15 @@ void worldobj_update(GameObject* obj) {
                 ModelLightStruct_free(state->light);
                 state->light = NULL;
             }
-            ((WorldObjState*)((GameObject*)gWorldObjEffectTargetObj)->extra)->effectState = 1;
-            ((GameObject*)gWorldObjEffectTargetObj)->anim.localPosX = obj->anim.localPosX;
-            ((GameObject*)gWorldObjEffectTargetObj)->anim.localPosY = 20.0f + obj->anim.localPosY;
-            ((GameObject*)gWorldObjEffectTargetObj)->anim.localPosZ = obj->anim.localPosZ;
+            ((WorldObjState*)gWorldObjEffectTargetObj->extra)->effectState = 1;
+            gWorldObjEffectTargetObj->anim.localPosX = obj->anim.localPosX;
+            gWorldObjEffectTargetObj->anim.localPosY = 20.0f + obj->anim.localPosY;
+            gWorldObjEffectTargetObj->anim.localPosZ = obj->anim.localPosZ;
             objA = ObjList_FindObjectById(0x4300c);
             if (objA != NULL && (objA->anim.flags & OBJANIM_FLAG_HIDDEN)) {
-                Obj_SetActiveModelIndex((GameObject*)gWorldObjEffectTargetObj, 1);
+                Obj_SetActiveModelIndex(gWorldObjEffectTargetObj, 1);
             } else {
-                Obj_SetActiveModelIndex((GameObject*)gWorldObjEffectTargetObj, 0);
+                Obj_SetActiveModelIndex(gWorldObjEffectTargetObj, 0);
             }
         } else if (state->light != NULL) {
             ModelLightStruct_free(state->light);
@@ -577,7 +577,7 @@ void worldobj_init(GameObject* obj, const WorldObjSetup* setup) {
         break;
     case WORLDOBJ_ARROW_OBJ:
         state->effectState = 0;
-        gWorldObjEffectTargetObj = (int)obj;
+        gWorldObjEffectTargetObj = obj;
         break;
     case WORLDOBJ_CLOUDRUNNER_OBJ:
         state->lookAtTargetRef = 0x4aaf7;

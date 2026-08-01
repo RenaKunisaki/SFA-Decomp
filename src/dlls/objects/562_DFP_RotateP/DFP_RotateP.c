@@ -265,7 +265,7 @@ void sfxplayer_update(GameObject* obj)
     u8 mode;
     SfxplayerState* state;
     SfxplayerStateFlags* flags;
-    u32 hitObj;
+    GameObject* hitObj;
 
     state = (SfxplayerState*)obj->extra;
     flags = &state->flags;
@@ -333,13 +333,13 @@ void sfxplayer_update(GameObject* obj)
             {
                 if (handles[i * SFXPLAYER_EFFECT_HANDLES_PER_RING] != 0)
                 {
-                    hitObj = 0;
+                    hitObj = NULL;
                     hitType = ObjHits_GetPriorityHit((GameObject*)(handles[i * SFXPLAYER_EFFECT_HANDLES_PER_RING + 1]),
                                                      (int*)&hitObj, 0x0, 0x0);
                     if (hitType == SFXPLAYER_HIT_TYPE_RING_TARGET)
                     {
                         mode = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);
-                        if ((mode == SFXPLAYER_MODE_SINGLE) || (((GameObject*)hitObj)->userData1 == i))
+                        if ((mode == SFXPLAYER_MODE_SINGLE) || (hitObj->userData1 == i))
                         {
                             if (handles[i * SFXPLAYER_EFFECT_HANDLES_PER_RING] != 0)
                             {
