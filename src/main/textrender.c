@@ -61,10 +61,6 @@ char lbl_803DB404[4] = {0};
 
 typedef f32 Mtx[3][4];
 
-extern const f32 lbl_803DE70C;
-extern const f32 lbl_803DE710;
-extern const f32 lbl_803DE714;
-extern const f32 lbl_803DE718;
 extern u32 sSubtitleCtrlCmdScratch[];
 
 static void translateToDinoLanguage(u8* str);
@@ -622,7 +618,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 spaceExtra = 0.0f;
                 gameTextMeasureString(p, gGameTextScale, &measW, NULL, 0, 0, -1);
                 x = win->width - measW;
-                x = x * lbl_803DE70C + win->x;
+                x = x * 0.5f + win->x;
                 break;
             case TEXT_ALIGN_JUSTIFY:
             {
@@ -673,7 +669,7 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
 
         u0 = (f32)(g->u << 5);
         v0 = (f32)(g->v << 5);
-        e710 = lbl_803DE710;
+        e710 = 4.0f;
         fx0 = (f32)g->offsetX * gGameTextScale;
         fx0 = x + fx0;
         fx0 = e710 * fx0;
@@ -684,12 +680,12 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
         fy1 = e710 * ((f32)(u32)g->height * gGameTextScale) + fy0;
         if (fx0 < 0.0f && fx1 > 0.0f)
         {
-            u0 = lbl_803DE714 * -fx0 + u0;
+            u0 = 8.0f * -fx0 + u0;
             fx0 = 0.0f;
         }
         if (fy0 < 0.0f && fy1 > 0.0f)
         {
-            v0 = lbl_803DE714 * -fy0 + v0;
+            v0 = 8.0f * -fy0 + v0;
             fy0 = 0.0f;
         }
 
@@ -733,10 +729,10 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
                 fx1 = fx0 + iw;
                 fy0 = (f32)(winBase[126].y + ((winBase[126].height - ih) >> 1));
                 fy1 = fy0 + ih;
-                fx0 = fx0 * lbl_803DE710;
-                fx1 = fx1 * lbl_803DE710;
-                fy0 = fy0 * lbl_803DE710;
-                fy1 = fy1 * lbl_803DE710;
+                fx0 = fx0 * 4.0f;
+                fx1 = fx1 * 4.0f;
+                fy0 = fy0 * 4.0f;
+                fy1 = fy1 * 4.0f;
             }
 
             if (mode != 0)
@@ -788,15 +784,15 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
 
             if (gameTextDrawFunc != NULL)
             {
-                f32 sH = lbl_803DE718 * tex->height;
-                f32 sW = lbl_803DE718 * tex->width;
+                f32 sH = 32.0f * tex->height;
+                f32 sW = 32.0f * tex->width;
                 gameTextDrawFunc(fx0, fy0, fx1, fy1, u0 / sW, v0 / sH, (u0 + (f32)(g->width << 5)) / sW,
                                  (v0 + (f32)(g->height << 5)) / sH);
             }
             else
             {
-                f32 sH = lbl_803DE718 * tex->height;
-                f32 sW = lbl_803DE718 * tex->width;
+                f32 sH = 32.0f * tex->height;
+                f32 sW = 32.0f * tex->width;
                 textRenderChar((int)fx0, fy0, fx1, fy1, u0 / sW, v0 / sH, (u0 + (f32)(g->width << 5)) / sW,
                                (v0 + (f32)(g->height << 5)) / sH);
             }
