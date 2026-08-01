@@ -173,7 +173,7 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
         }
         else
         {
-            int j, i;
+            int i, j;
             for (i = 0; i < src1->height; i++)
             {
                 u32 wd;
@@ -1466,11 +1466,14 @@ void newShadowsInitProceduralTextures(void)
                 for (; column < 0x40; column++)
                 {
                     f32 shift, intensity;
+                    f32 rowCoord, columnCoord;
                     int highByte, lowByte;
                     int texelAddress = (int)gNewShadowNoiseTexFrames[frame] + h + rowPixelOffset;
                     texelAddress += (column & 3) * 8;
                     texelAddress += (column >> 2) * 0x200;
-                    evalNoisePlacements(row * lbl_803DEDE0, column * lbl_803DEDE0, frame,
+                    rowCoord = row * lbl_803DEDE0;
+                    columnCoord = column * lbl_803DEDE0;
+                    evalNoisePlacements(rowCoord, columnCoord, frame,
                                 gNewShadowPlacements, noisePlacementCount, &shift, &intensity);
                     highByte = 255.0f * intensity;
                     highByte = (highByte & 0xffff) << 8;
@@ -1673,8 +1676,6 @@ static inline void fillLightningTexture(void)
         lowoff = i & 7;
         c0 = i - 16.0f;
         lowoff += rowoff;
-        c0 = c0 * lbl_803DEDD0;
-        c0 = __fabsf(c0);
         for (; j < 4; j++)
         {
             int off;
@@ -1682,7 +1683,7 @@ static inline void fillLightningTexture(void)
             base = (u8*)gNewShadowLightningTexture;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x80 + 0x60;
-            v = sqrtf(c0);
+            v = sqrtf(__fabsf(c0 * lbl_803DEDD0));
             v = sqrtf(v);
             base[off] = 255.0f * (1.0f - v);
         }
@@ -1811,13 +1812,13 @@ void allocLotsOfTextures(void)
             fi2 = (f32)(i + 1) - 32.0f;
             for (; j < 0x40; j++)
             {
-                f32 cc = (f32)j - 32.0f;
+                f32 cc;
                 f32 d1, d2, cc2, d3, n1, b;
                 f64 n2, n3;
                 f32 a;
                 rc = fi * lbl_803DEDFC;
                 rc2 = fi2 * lbl_803DEDFC;
-                cc = cc * lbl_803DEDFC;
+                cc = ((f32)j - 32.0f) * lbl_803DEDFC;
                 cc = cc * cc;
                 d1 = sqrtf(rc * rc + cc);
                 d2 = sqrtf(rc2 * rc2 + cc);
@@ -1923,15 +1924,15 @@ void allocLotsOfTextures(void)
         lowoff = i & 7;
         cy = i - 64.0f;
         lowoff += rowoff;
-        cy = cy * lbl_803DEDE0;
         for (; j < 0x80; j++)
         {
             u8* base = (u8*)gNewShadowRadialTexture;
+            f32 cyScaled = cy * lbl_803DEDE0;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x200 + 0x60;
             cx = __fabsf(((f32)j - 64.0f) * lbl_803DEDE0);
             cx = cx * cx;
-            d2 = sqrtf(__fabsf(cy) * __fabsf(cy) + cx);
+            d2 = sqrtf(__fabsf(cyScaled) * __fabsf(cyScaled) + cx);
             v = 1.0f - d2;
             if (v < 0.0f)
                 v = 0.0f;
