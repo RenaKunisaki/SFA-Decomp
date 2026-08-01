@@ -23,12 +23,12 @@ enum
     ANDROSSLIGH_ANCHOR_OBJ_ID = 0x47dd9
 };
 
-static f32 gAndrossLighRadiusX = 0.025f;
-static f32 gAndrossLighRadiusY = 0.1f;
-static f32 gAndrossLighLifetime = 10.0f;
-static f32 gAndrossLighWidth = 100.0f;
-static f32 gAndrossLighHalfLength = 300.0f;
-static f32 gAndrossLighViewOffsetScale = 0.05f;
+f32 gAndrossLighRadiusX = 0.025f;
+f32 gAndrossLighRadiusY = 0.1f;
+f32 gAndrossLighLifetime = 10.0f;
+f32 gAndrossLighWidth = 100.0f;
+f32 gAndrossLighHalfLength = 300.0f;
+f32 gAndrossLighViewOffsetScale = 0.05f;
 
 void androssligh_updateBeam(GameObject* obj, AndrossLighState* state)
 {

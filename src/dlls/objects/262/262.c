@@ -72,7 +72,7 @@ typedef union ScarabMoneyValues {
     u8 values[4];
 } ScarabMoneyValues;
 
-static const ScarabMoneyValues gScarabMoneyValues = {0x01050A32};
+const ScarabMoneyValues gScarabMoneyValues = {0x01050A32};
 
 typedef struct ScarabSweepSphere {
     f32 radii[4];   /* 0x00 */

@@ -95,7 +95,7 @@ ReverbState gAudioReverbSettings;
 u32 gAudioAramBlock[0x2C / sizeof(u32)];
 MusicChannel gMusicChannels[0x240 / sizeof(MusicChannel)];
 
-static const SalHooks gAudioMemHooks = {_audioAlloc, audioFree};
+const SalHooks gAudioMemHooks = {_audioAlloc, audioFree};
 
 void AudioAramReadAllocAsync(void* source, u32 size, void** outBuf, AudioArqRequestCallback callback,
                              MusicTrackSlot* callbackArg1, MusicChannel* callbackArg2,

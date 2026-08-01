@@ -19,12 +19,12 @@ Dll77SequenceParamBlock gDll77SequenceParams = {
     0,
 };
 
-static const f32 gDll77Cmd0X = 999.0f;
-static const f32 gDll77Cmd0Y = 85.0f;
-static const f32 gDll77Cmd0Z = 86.0f;
-static const f32 gDll77Zero = 0.0f;
-static const f32 gDll77CmdY = 200.0f;
-static const f32 gDll77Scale = 1.0f;
+const f32 gDll77Cmd0X = 999.0f;
+const f32 gDll77Cmd0Y = 85.0f;
+const f32 gDll77Cmd0Z = 86.0f;
+const f32 gDll77Zero = 0.0f;
+const f32 gDll77CmdY = 200.0f;
+const f32 gDll77Scale = 1.0f;
 
 void dll_77_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
     ModgfxSpawnPacket packet;

@@ -19,12 +19,12 @@ Dll76SequenceParamBlock gDll76SequenceParams = {
     0,
 };
 
-static const f32 gDll76Cmd0X = 999.0f;
-static const f32 gDll76Cmd0Y = 83.0f;
-static const f32 gDll76Cmd0Z = 84.0f;
-static const f32 gDll76Zero = 0.0f;
-static const f32 gDll76CmdY = 200.0f;
-static const f32 gDll76Scale = 1.0f;
+const f32 gDll76Cmd0X = 999.0f;
+const f32 gDll76Cmd0Y = 83.0f;
+const f32 gDll76Cmd0Z = 84.0f;
+const f32 gDll76Zero = 0.0f;
+const f32 gDll76CmdY = 200.0f;
+const f32 gDll76Scale = 1.0f;
 
 void dll_76_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
     ModgfxSpawnPacket packet;

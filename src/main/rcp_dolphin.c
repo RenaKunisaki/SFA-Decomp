@@ -89,8 +89,8 @@ static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** ligh
 }
 
 static int Rcp_SetupDistortionLights(int model, f32* params);
-static const f32 gRcpDistortScaleA[1] = {2.146452f};
-static const f32 gRcpDistortPowExp[1] = {2.520326f};
+const f32 gRcpDistortScaleA[1] = {2.146452f};
+const f32 gRcpDistortPowExp[1] = {2.520326f};
 static const f32 gRcpDistortColorScale[1] = {255.0f};
 
 static void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*32, 0.0f) */

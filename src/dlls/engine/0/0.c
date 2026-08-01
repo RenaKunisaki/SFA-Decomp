@@ -758,8 +758,8 @@ static const ArwingScoreText sArwingBlankScore = { "   " };
 static const GXColor sCMenuRingIconColor = { 0xFF, 0xFF, 0xFF, 0xFF };
 static const GXColor sCMenuRingModelColor = { 0xFF, 0xFF, 0xFF, 0xFF };
 const SmallText gHudBlankButtonLabel = { "   " };
-static const CounterText sHudBlankCounterTextA = { "       " };
-static const CounterText sHudBlankCounterTextB = { "       " };
+const CounterText gHudBlankCounterTextA = { "       " };
+const CounterText gHudBlankCounterTextB = { "       " };
 const GXColor gViewFinderLineColor = { 0x00, 0xFF, 0x00, 0xFF };
 static const GXColor sPauseMenuHoloChanColor = { 0xC0, 0xC0, 0xFF, 0xA0 };
 static const GXColor sQuadTevBaseColor = { 0xC0, 0xC0, 0xFF, 0x80 };
@@ -2422,8 +2422,8 @@ void hudDrawCounter(int idx, s16 value, s16 target, int alpha, int timer, int* y
     CounterText buf2;
     f32 width;
 
-    buf1 = sHudBlankCounterTextA;
-    buf2 = sHudBlankCounterTextB;
+    buf1 = gHudBlankCounterTextA;
+    buf2 = gHudBlankCounterTextB;
     if ((u8)alpha != 0)
     {
         if (((f32)timer < 30.0f) || ((f32)timer > 150.0f) || ((timer & 8) != 0) || (idx == 30))

@@ -61,8 +61,8 @@ f32 gNewCloudSnowFlashScale = 1.0f;
 f32 gNewCloudSnowFlashParallax = 1.0f;
 int gNewCloudWindSourcesInit = 1;
 
-static const GXColor gNewCloudSnowFogColor = {255, 255, 255, 255};
-static const GXColor gNewCloudLightningFogColor = {255, 255, 255, 255};
+const GXColor gNewCloudSnowFogColor = {255, 255, 255, 255};
+const GXColor gNewCloudLightningFogColor = {255, 255, 255, 255};
 
 typedef struct
 {
