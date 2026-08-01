@@ -90,8 +90,6 @@ void DBprotection_updateFlight(GameObject* obj) {
     u32 angY;
     int iv;
     int dv;
-    int rollA;
-    int rollB;
     f32 amp;
     f32 limit;
     f32 negLimit;
@@ -675,16 +673,15 @@ void DBprotection_updateFlight(GameObject* obj) {
             zero = 0.0f;
             ((SBGalleonState*)state)->swayX = zero;
             ((SBGalleonState*)state)->swayY = zero;
-            rollA = (s16)(-((SBGalleonState*)state)->swayZ * ((SBGalleonState*)state)->rollScaleSmooth);
-            rollB =
-                (s16)(0.5f * (-((SBGalleonState*)state)->swayY * ((SBGalleonState*)state)->rollScaleSmooth));
+            t = (s16)(-((SBGalleonState*)state)->swayZ * ((SBGalleonState*)state)->rollScaleSmooth);
+            wrap = (s16)(0.5f * (-((SBGalleonState*)state)->swayY * ((SBGalleonState*)state)->rollScaleSmooth));
         } else {
             ((SBGalleonState*)state)->swayZ -=
                 timeDelta * (((SBGalleonState*)state)->swayZ * ((SBGalleonState*)state)->swayResponseSmooth);
             ((SBGalleonState*)state)->swayY -=
                 timeDelta * (((SBGalleonState*)state)->swayY * ((SBGalleonState*)state)->swayResponseSmooth);
-            rollA = 0;
-            rollB = rollA;
+            t = 0;
+            wrap = t;
         }
         ((GameObject*)obj)->anim.localPosX =
             ((SBGalleonState*)state)->swayX * ((SBGalleonState*)state)->moveScale + ((SBGalleonState*)state)->posX;
@@ -693,9 +690,9 @@ void DBprotection_updateFlight(GameObject* obj) {
         ((GameObject*)obj)->anim.localPosZ =
             ((SBGalleonState*)state)->swayZ * ((SBGalleonState*)state)->moveScale + ((SBGalleonState*)state)->posZ;
         ((SBGalleonState*)state)->rollLatch = ((SBGalleonState*)state)->rollLatch +
-                                              ((framesThisStep * (rollA - ((SBGalleonState*)state)->rollLatch)) >> 5);
+                                              ((framesThisStep * (t - ((SBGalleonState*)state)->rollLatch)) >> 5);
         ((GameObject*)obj)->anim.rotY =
-            ((GameObject*)obj)->anim.rotY + ((framesThisStep * (rollB - ((GameObject*)obj)->anim.rotY)) >> 5);
+            ((GameObject*)obj)->anim.rotY + ((framesThisStep * (wrap - ((GameObject*)obj)->anim.rotY)) >> 5);
         ((GameObject*)obj)->anim.rotX = ((SBGalleonState*)state)->rollLatch + 0x4000;
         ((GameObject*)obj)->anim.rotZ = ((GameObject*)obj)->anim.rotX - 0x4000;
     }
