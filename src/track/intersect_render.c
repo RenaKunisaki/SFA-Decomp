@@ -257,7 +257,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     selectReflectionTexture(1);
     tex2 = textureIdxToPtr(((Shader*)renderOp)->auxTextureIndex);
     wrapBit = (((Texture*)tex2)->maxLod - ((Texture*)tex2)->minLod > 0) ? GX_TRUE : GX_FALSE;
-    GXInitTexObj((void*)((u8*)tex2 + 0x20), (u8*)tex2 + 0x60, ((Texture*)tex2)->width, ((Texture*)tex2)->height,
+    GXInitTexObj((void*)((Texture*)tex2)->gxTexObj, (u8*)tex2 + 0x60, ((Texture*)tex2)->width, ((Texture*)tex2)->height,
                  ((Texture*)tex2)->format, GX_REPEAT, GX_REPEAT, wrapBit);
     selectTexture((Texture*)tex2, 2);
     GXLoadTexMtxImm(gCameraLightPerspectiveScaledMatrix, GX_PTTEXMTX6, GX_MTX3x4);
@@ -273,9 +273,9 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
 
     if (isHeavyFogEnabled() != 0)
     {
-        ((u8*)&gWhirlpoolReflectionTintColor)[0] = ((u8*)&gFogColor)[0];
-        ((u8*)&gWhirlpoolReflectionTintColor)[1] = ((u8*)&gFogColor)[1];
-        ((u8*)&gWhirlpoolReflectionTintColor)[2] = ((u8*)&gFogColor)[2];
+        ((u8*)&gWhirlpoolReflectionTintColor)[0] = gFogColor.r;
+        ((u8*)&gWhirlpoolReflectionTintColor)[1] = gFogColor.g;
+        ((u8*)&gWhirlpoolReflectionTintColor)[2] = gFogColor.b;
         ((u8*)&gWhirlpoolReflectionTintColor)[3] = 0x80;
     }
     else
@@ -1921,18 +1921,18 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     GXSetIndTexMtx(2, (f32(*)[3])indMtx_2c, -4);
     GXSetTevIndirect(1, 1, 0, 7, 2, 0, 0, 1, 0, 0);
 
-    ((f32*)mtx_8c)[0] = gCausticReflectionDiskScale;
-    ((f32*)mtx_8c)[1] = 0.0f;
-    ((f32*)mtx_8c)[2] = 0.0f;
-    ((f32*)mtx_8c)[3] = 0.5f;
-    ((f32*)mtx_8c)[4] = 0.0f;
-    ((f32*)mtx_8c)[5] = gCausticReflectionDiskScale;
-    ((f32*)mtx_8c)[6] = 0.0f;
-    ((f32*)mtx_8c)[7] = 0.5f;
-    ((f32*)mtx_8c)[8] = 0.0f;
-    ((f32*)mtx_8c)[9] = 0.0f;
-    ((f32*)mtx_8c)[10] = 0.0f;
-    ((f32*)mtx_8c)[11] = 1.0f;
+    mtx_8c[0][0] = gCausticReflectionDiskScale;
+    mtx_8c[0][1] = 0.0f;
+    mtx_8c[0][2] = 0.0f;
+    mtx_8c[0][3] = 0.5f;
+    mtx_8c[1][0] = 0.0f;
+    mtx_8c[1][1] = gCausticReflectionDiskScale;
+    mtx_8c[1][2] = 0.0f;
+    mtx_8c[1][3] = 0.5f;
+    mtx_8c[2][0] = 0.0f;
+    mtx_8c[2][1] = 0.0f;
+    mtx_8c[2][2] = 0.0f;
+    mtx_8c[2][3] = 1.0f;
     GXLoadTexMtxImm((f32(*)[4])mtx_8c, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTTEXMTX7);
 
@@ -2360,10 +2360,10 @@ void drawPartialTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int
     w = (s32)(((u32)(width << 2) * drawScale) >> 8);
     sx = 4.0f * sx;
     sy = 4.0f * sy;
-    u0 = (f32)(u32)u_offset / (f32)((u16*)obj)[5];
-    v0 = (f32)(u32)v_offset / (f32)((u16*)obj)[6];
-    u1 = (f32)(u32)(width + u_offset) / (f32)((u16*)obj)[5];
-    v1 = (f32)(u32)(height + v_offset) / (f32)((u16*)obj)[6];
+    u0 = (f32)(u32)u_offset / (f32)((Texture*)obj)->width;
+    v0 = (f32)(u32)v_offset / (f32)((Texture*)obj)->height;
+    u1 = (f32)(u32)(width + u_offset) / (f32)((Texture*)obj)->width;
+    v1 = (f32)(u32)(height + v_offset) / (f32)((Texture*)obj)->height;
 
     GXBegin(GX_QUADS, GX_VTXFMT1, 4);
 
@@ -2541,8 +2541,8 @@ void drawScaledTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int 
     sx = 4.0f * sx;
     sy = 4.0f * sy;
     {
-        f32 ur = (f32)(u32)width / (f32)(u16)((u16*)obj)[5];
-        f32 vr = (f32)(u32)height / (f32)(u16)((u16*)obj)[6];
+        f32 ur = (f32)(u32)width / (f32)(u16)((Texture*)obj)->width;
+        f32 vr = (f32)(u32)height / (f32)(u16)((Texture*)obj)->height;
         if ((fbits & 1) != 0)
         {
             u0 = ur;
@@ -2779,8 +2779,8 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
         gGxZModeValid = 1;
     }
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-    w = ((((u16*)obj)[5] << 2) * (u16)scale) / 256;
-    h = ((((u16*)obj)[6] << 2) * (u16)scale) / 256;
+    w = ((((Texture*)obj)->width << 2) * (u16)scale) / 256;
+    h = ((((Texture*)obj)->height << 2) * (u16)scale) / 256;
     sx = 4.0f * sx;
     sy = 4.0f * sy;
     GXBegin(GX_QUADS, GX_VTXFMT1, 4);
@@ -3708,7 +3708,7 @@ void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u
     }
     else
     {
-        f32 t = atanf_fast(((f32*)vec)[0] / ((f32*)vec)[1]);
+        f32 t = atanf_fast(((Vec*)vec)->x / ((Vec*)vec)->y);
         angle = gSnowFlashOverlayAngle + interpolate(t - gSnowFlashOverlayAngle, 0.05f, timeDelta);
         gSnowFlashOverlayAngle = angle;
     }
@@ -4834,9 +4834,9 @@ void setupWaterCausticTev(void)
 
     if (isHeavyFogEnabled() != 0)
     {
-        ((u8*)&gWaterCausticKColor)[0] = ((u8*)&gFogColor)[0];
-        ((u8*)&gWaterCausticKColor)[1] = ((u8*)&gFogColor)[1];
-        ((u8*)&gWaterCausticKColor)[2] = ((u8*)&gFogColor)[2];
+        ((u8*)&gWaterCausticKColor)[0] = gFogColor.r;
+        ((u8*)&gWaterCausticKColor)[1] = gFogColor.g;
+        ((u8*)&gWaterCausticKColor)[2] = gFogColor.b;
         ((u8*)&gWaterCausticKColor)[3] = 0x80;
     }
     else
