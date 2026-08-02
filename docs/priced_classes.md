@@ -334,3 +334,48 @@ The audit also adds a third sensor blind spot to the two this file already recor
 rotation inside an already-NonMatching unit loses `matched_data` at `dfuzzy +0.000000` with zero
 per-function regressions and zero demotions, so neither the demotion tell nor the threshold
 counters fire. `5d467157cb` -144, `f5fe00213f` -60, `620b69dc2d` -16.
+
+## 8. `.sdata2` mint-order divergence with byte-identical code (measured 2026-08-02)
+
+The residual `.sdata2` gaps left on the pool leads are one class, and it is not the
+folded-scalar class of §7. Code is byte-identical; only the ORDER in which MWCC minted the
+pool differs. Measured layout rule (this tree, GC/2.0):
+
+1. `.sdata2` objects are laid out **sequentially in mint order**, 8-byte objects forced to
+   8-alignment. The 4-byte hole that forcing leaves is **never backfilled** — 0 backfills
+   across all 675 source objects that have a `.sdata2`.
+2. Mint order is: file-scope objects at their **declaration point**, then per function in
+   source order — its front-end literals in source order, then the backend's own
+   int-to-float bias doubles.
+3. A file-scope `const f32 X = V;` (`static` or not) is **folded at the read site**: the
+   object is still emitted at its declaration point *and* a duplicate literal is minted at
+   first use. Measured in `679_ARWProximit`: adding the three consts left all three duplicate
+   literals in place, 18 words against retail's 16.
+4. The only read that does not fold is an array subscript — i.e. the `SINGLE_ELEM_CONST_ARRAY`
+   that `tools/banned_shapes_check.py` bans (75 baselined, regrowth is a gate failure).
+
+So where retail's pool head holds values whose only readers sit inside functions, the original
+minted them from a file-scope object that our source cannot legally re-declare, and the bytes
+are **unreachable within policy**. This is the concrete form of CLAUDE.md's standing rule:
+"If the pool ORDER genuinely differs, that is a TU-boundary artifact — leave the unit
+`NonMatching`, do not reconstruct the pool."
+
+Sweep result: the §7 folded-scalar tell (a named `.sdata2` object with zero relocations) has
+**17 instances tree-wide and every one is in a unit with `gap == 0`** — that lens is exhausted,
+do not re-survey it.
+
+| unit | gap | mechanism | probe result |
+| --- | --- | --- | --- |
+| `679_ARWProximit` | 64 | retail mints `0.0f, 100.0f, 127.0f` ahead of `arwproximit_render`'s `1.0f`; all three are read only from inside `arwproximit_update` | 1-element-array form gives **120/120 data, all 9 functions still 100.0** — and trips `banned_shapes_check` as regrowth. PRICED 64 B |
+| `engine/68` | 128 | **not** a wrong constant: retail's `120.0f` at `.sdata2+0x44` is a plain literal of `firstPersonDoControls`, minted between `15360.0f` (0x40) and `16.0f` (0x48) | plain literal makes `.sdata2` byte-identical (64/192 -> **192/192**) but drops `firstPersonDoControls` 100.0 -> 94.512; tree 99.811676 -> 99.809730. PRICED 128 B |
+| `engine/7` | 232 | one missing 4-byte mint cascades: retail mints a `1.0f` at 0x0c as a front-end literal of `lightningGetRemainingFraction`, after its `0.0f` and before its two bias doubles. Ours has only the `0.0f`, so 0x0c stays a hole, every later slot shifts 4, and a second hole opens at 0x84 | the missing `1.0f` emits no code in retail's `fn1` either — recovering it needs a phantom minter. DECLINE |
+| `237`, `704`, `model`/`modellight`, `213_Kaldachom`, `279_AppleOnTree`, `597`, `195_Player`, `intersect_render`, `main/object` | 88-784 | same class; several heads are led by a bias double, which cannot be declared at all | not probed individually — the class verdict covers them |
+
+`engine/68` carries a second, separate defect worth a code lane: `firstPersonDoControls` only
+holds 100.0 because it divides by `gCameraModeViewfinderStickScale`, an `extern const f32` that
+**no translation unit defines**. Being an opaque global, it blocks `-opt propagation` from
+sinking the single-use temp `spinI` past the `camera->anim.rotX` store; with any in-TU form of
+the constant MWCC sinks it and ~14 instructions move. The extern is a crutch, not a constant.
+Also measured there: file-scope `const f32` 94.512; function-local `static const f32` folds to a
+literal (data 192/192, code 94.512); `const f32 X[1]` restores 100.0 but the object lands at the
+declaration point (0x00) or at the start of the function's static run (0x20), never at 0x44.
