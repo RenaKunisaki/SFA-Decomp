@@ -215,7 +215,7 @@ void vecRotateYXZ(s16* a, f32* v)
     v[2] = z;
 }
 
-extern f32 lbl_803DE7F0;
+const f32 gVecMathAngleScaleInv[1] = {1.0f / 65536.0f};
 
 void vecRotateZXY(s16* rotation, f32* vector)
 {
@@ -255,17 +255,17 @@ void mtxRotateByVec3s(f32* mtx, const void* transform)
     const MatrixTransform* xf = (const MatrixTransform*)transform;
 
     s = (f32)(int)(65536.0f * fcos16((u16)xf->rotX));
-    cx = s * lbl_803DE7F0;
+    cx = s * gVecMathAngleScaleInv[0];
     s = (f32)(int)(65536.0f * fsin16((u16)xf->rotX));
-    sx = s * lbl_803DE7F0;
+    sx = s * gVecMathAngleScaleInv[0];
     s = (f32)(int)(65536.0f * fcos16((u16)xf->rotY));
-    cy = s * lbl_803DE7F0;
+    cy = s * gVecMathAngleScaleInv[0];
     s = (f32)(int)(65536.0f * fsin16((u16)xf->rotY));
-    sy = s * lbl_803DE7F0;
+    sy = s * gVecMathAngleScaleInv[0];
     cz = (f32)(int)(65536.0f * fcos16((u16)xf->rotZ));
-    cz = cz * lbl_803DE7F0;
+    cz = cz * gVecMathAngleScaleInv[0];
     sz = (f32)(int)(65536.0f * fsin16((u16)xf->rotZ));
-    sz = sz * lbl_803DE7F0;
+    sz = sz * gVecMathAngleScaleInv[0];
 
     t1 = cy * cz;
     s = t1 * cx;

@@ -64,7 +64,6 @@ STATIC_ASSERT(offsetof(BossDrakorState, curveWalker) == 0x28);
 STATIC_ASSERT(offsetof(BossDrakorState, soundState) == 0x130);
 STATIC_ASSERT(sizeof(BossDrakorState) == 0x1a4);
 
-extern f32 lbl_803E6510;
 
 extern f32 gBossDrakorMissileTargetScatterFactor;
 extern f32 gBossDrakorMissileInitialSpeedFactor;

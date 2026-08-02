@@ -95,7 +95,6 @@ u16 gSkySunAlpha;
 #define SKY_CHILD_OBJ_MOON           0x62c /* spawned into gSkyMoonObject */
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
 extern f32 gSkyOverrideLightDirection[];
-extern const f32 gSkySecondsPerDay;
 extern const f32 lbl_803DF058;
 extern const f32 gSkySunMoonRiseScale;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
@@ -1104,6 +1103,8 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
     gSkyState[slot * 0xa4 + 0xc0] = blendAlpha;
 }
 
+const f32 gSkySecondsPerDay[1] = {86400.0f};
+
 void skyUpdateLightingFromTimeOfDay(void)
 {
     int curveSegment;
@@ -1142,11 +1143,11 @@ void skyUpdateLightingFromTimeOfDay(void)
     }
     else
     {
-        normalizedTime = (((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay < 0.0f)
+        normalizedTime = (((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay[0] < 0.0f)
                              ? 0.0f
-                             : ((((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay > 1.0f)
+                             : ((((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay[0] > 1.0f)
                                     ? 1.0f
-                                    : ((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay);
+                                    : ((SkyState*)gSkyState)->timeOfDay / gSkySecondsPerDay[0]);
         if (normalizedTime <= 0.25f)
         {
             segmentFraction = normalizedTime / 0.25f;
@@ -1594,7 +1595,7 @@ void skyRenderTimeOfDayBackdrop(void)
             return;
         }
         sky = *(int**)&gSkyState;
-        frac = ((SkyTimeBlend*)sky)->time / gSkySecondsPerDay;
+        frac = ((SkyTimeBlend*)sky)->time / gSkySecondsPerDay[0];
         t = (frac < 0.0f) ? 0.0f : ((frac > 1.0f) ? 1.0f : frac);
         u = 0.0f;
         if (t >= u && t < 0.125f)
@@ -1878,13 +1879,13 @@ void skyUpdateTimeOfDay(void)
     {
         {
             ((SkyState*)gSkyState)->timeOfDay += ((SkyState*)gSkyState)->timeOfDayRate * timeDelta;
-            if (((SkyState*)gSkyState)->timeOfDay >= gSkySecondsPerDay)
+            if (((SkyState*)gSkyState)->timeOfDay >= gSkySecondsPerDay[0])
             {
-                ((SkyState*)gSkyState)->timeOfDay = ((SkyState*)gSkyState)->timeOfDay - gSkySecondsPerDay;
+                ((SkyState*)gSkyState)->timeOfDay = ((SkyState*)gSkyState)->timeOfDay - gSkySecondsPerDay[0];
             }
             else if (((SkyState*)gSkyState)->timeOfDay < 0.0f)
             {
-                ((SkyState*)gSkyState)->timeOfDay = ((SkyState*)gSkyState)->timeOfDay + gSkySecondsPerDay;
+                ((SkyState*)gSkyState)->timeOfDay = ((SkyState*)gSkyState)->timeOfDay + gSkySecondsPerDay[0];
             }
             if (getSunPos(&time) != 0)
             {

@@ -402,6 +402,8 @@ static inline void render_writePackedU16(RenderPackedAddress address, u16 value)
     bufB <<= (bitpos & 0xFFFFFFFF);                                                                                    \
     bitpos += (nb);
 
+const f32 gModelRenderSubframeScale[1] = {16384.0f};
+
 void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s16* outRotation)
 {
     f32 framePhase = anim->framePhase;
@@ -425,7 +427,7 @@ void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s
     curB = addrB;
     end = RENDER_PACKED_ADDRESS(outPosition + 3);
     framePhase = framePhase - floorf(framePhase);
-    framePhase = framePhase * gModelRenderSubframeScale;
+    framePhase = framePhase * gModelRenderSubframeScale[0];
     frac = (int)framePhase;
 
     render_copyPackedU64Head(&bufA, posA);
