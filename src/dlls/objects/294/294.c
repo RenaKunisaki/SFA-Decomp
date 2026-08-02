@@ -143,6 +143,10 @@ static void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj) {
     }
 }
 
+static f32 moonrockAngleToRadians(s16 angle) {
+    return MOONROCK_ANGLE_TO_RADIANS(angle);
+}
+
 static int triggerPointInBox(GameObject* obj, f32* point) {
     u8* data;
     f32 pointX;
@@ -166,10 +170,10 @@ static int triggerPointInBox(GameObject* obj, f32* point) {
     pointY = point[1];
     pointZ = point[2];
 
-    yawSin = mathSinf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotX));
-    yawCos = mathCosf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotX));
-    pitchSin = mathSinf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotY));
-    pitchCos = mathCosf(MOONROCK_ANGLE_TO_RADIANS(o->anim.rotY));
+    yawSin = mathSinf(moonrockAngleToRadians(o->anim.rotX));
+    yawCos = mathCosf(moonrockAngleToRadians(o->anim.rotX));
+    pitchSin = mathSinf(moonrockAngleToRadians(o->anim.rotY));
+    pitchCos = mathCosf(moonrockAngleToRadians(o->anim.rotY));
 
     relX = pointX - o->anim.worldPosX;
     relY = pointY - o->anim.worldPosY;
@@ -327,6 +331,10 @@ void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement) {
 }
 
 /* Classify the target against the two vertical endpoint cylinders used by trigger type 0x230. */
+static f32 triggerRangeToModelScale(f32 range) {
+    return range / 55.4256f;
+}
+
 void triggerEvalEndpointCylinders(GameObject* obj, GameObject* seqObj) {
     f32 distSqA;
     f32 dyB;
@@ -1025,12 +1033,12 @@ void Trigger_hitDetect(GameObject* obj) {
                 switch (((TriggerPlacement*)def)->typeId) {
                 case 0x4b:
                     if (ok) {
-                        triggerEvalEndpointSpheres(obj, target);
+                        ((void (*)(GameObject*, GameObject*))triggerEvalEndpointSpheres)(obj, target);
                     }
                     break;
                 case 0x230:
                     if (ok) {
-                        triggerEvalEndpointCylinders(obj, target);
+                        ((void (*)(GameObject*, GameObject*))triggerEvalEndpointCylinders)(obj, target);
                     }
                     break;
                 case 0x4c:
@@ -1052,8 +1060,8 @@ void Trigger_hitDetect(GameObject* obj) {
                 case 0x4d:
                     if (ok) {
                         TriggerState* st = (TriggerState*)(obj)->extra;
-                        inside = triggerPointInBox(obj, &st->prevTargetPosX);
-                        wasInside = triggerPointInBox(obj, &st->targetPosX);
+                        inside = ((int (*)(GameObject*, f32*))triggerPointInBox)(obj, &st->prevTargetPosX);
+                        wasInside = ((int (*)(GameObject*, f32*))triggerPointInBox)(obj, &st->targetPosX);
                         if (inside != 0) {
                             if (wasInside == 0) {
                                 objInterpretSeq(obj, target, 1, 0);
@@ -1093,7 +1101,7 @@ void Trigger_hitDetect(GameObject* obj) {
                     break;
                 case 0xf4:
                     if (ok) {
-                        triggerEvalCurveLoop(obj, target);
+                        ((void (*)(GameObject*, GameObject*))triggerEvalCurveLoop)(obj, target);
                     }
                     break;
                 }
@@ -1118,7 +1126,7 @@ void Trigger_init(GameObject* obj, u8* params) {
         obj->anim.rotZ = 0;
         obj->anim.rotY = 0;
         obj->anim.rotX = (s16)(((TriggerPlacement*)params)->rot[0] << 8);
-        obj->anim.rootMotionScale = range / 55.4256f;
+        obj->anim.rootMotionScale = triggerRangeToModelScale(range);
         break;
     case 0x4c:
         ((TriggerState*)state)->gateBits[0] = ((TriggerPlacement*)params)->gateBitSrc[0];
