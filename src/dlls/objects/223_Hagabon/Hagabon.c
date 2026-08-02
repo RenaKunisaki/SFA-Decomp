@@ -8,6 +8,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/objfx_api.h"
+#include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
@@ -222,8 +223,7 @@ void Hagabon_update(GameObject* obj) {
     HagabonState* state;
     RomCurveWalker* oldCurve;
     HagabonPlacement* placement;
-    f32 lightPos[3];
-    f32 effectPos[3];
+    PartFxSpawnParams effectParams;
     f32 distanceDelta[3];
     f32 dist;
     GameObject* hitObject;
@@ -276,17 +276,17 @@ void Hagabon_update(GameObject* obj) {
             }
         }
     } else {
-        if (ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &lightPos[0], &lightPos[1],
-                                               &lightPos[2]) != 0) {
+        if (ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &effectParams.posX, &effectParams.posY,
+                                               &effectParams.posZ) != 0) {
             Sfx_StopObjectChannel(obj, HAGABON_SOUND_CHANNEL_ALL);
             state->flags |= HAGABON_FLAG_FADE_OUT;
             Sfx_PlayFromObject(obj, SFXTRIG_en_rfall5_c);
             Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16_233);
             Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_238);
             Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
-            lightPos[0] += playerMapOffsetX;
-            lightPos[2] += playerMapOffsetZ;
-            objDoHitParticleFx((void*)obj, 0.014f, effectPos, 3, 0);
+            effectParams.posX += playerMapOffsetX;
+            effectParams.posZ += playerMapOffsetZ;
+            objDoHitParticleFx((void*)obj, 0.014f, &effectParams, 3, 0);
             (*gMapEventInterface)
                 ->addTime(placement->base.ident, (f32)(s32)(placement->timeReward * HAGABON_MAP_SECONDS_PER_MINUTE));
             if (placement->armGameBit != HAGABON_GAME_BIT_NONE) {

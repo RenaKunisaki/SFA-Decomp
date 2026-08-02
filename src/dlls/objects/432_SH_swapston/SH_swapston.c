@@ -488,13 +488,12 @@ void warpstone_render(GameObject* obj, int renderArg2, int renderArg3, int rende
 
 void warpstone_hitDetect(GameObject* obj) {
     int* state = (obj)->extra;
-    f32 pos[3];
-    f32 lightPos[3];
+    PartFxSpawnParams lightParams;
 
-    if (ObjHits_GetPriorityHitWithPosition(obj, 0, 0, 0, &pos[0], &pos[1], &pos[2]) != 0) {
-        pos[0] += playerMapOffsetX;
-        pos[2] += playerMapOffsetZ;
-        objDoHitParticleFx((void*)obj, 0.01f, lightPos, 1, 0);
+    if (ObjHits_GetPriorityHitWithPosition(obj, 0, 0, 0, &lightParams.posX, &lightParams.posY, &lightParams.posZ) != 0) {
+        lightParams.posX += playerMapOffsetX;
+        lightParams.posZ += playerMapOffsetZ;
+        objDoHitParticleFx((void*)obj, 0.01f, &lightParams, 1, 0);
         if (randomChanceOneIn(3) != 0) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_swapstone_move_short_2bc);
         } else {
