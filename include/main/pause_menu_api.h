@@ -17,4 +17,7 @@ extern s16 gMinimapAreaNameAlpha;
 extern u8 gMinimapHelpTextActive;
 extern s16 gMinimapAreaNameId;
 
+extern u8 gDummy39Countdown;
+extern u8* gDummy39Texture;
+
 #endif /* MAIN_PAUSE_MENU_API_H_ */

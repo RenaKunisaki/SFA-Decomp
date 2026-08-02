@@ -53,7 +53,6 @@ u8 gSky2RunFirstTime = 1;
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
 extern u8 gSkyConfigFieldIndices[];
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
-extern int gSky2EnvfxActIndex;
 extern u16 lbl_803E8460;
 extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];

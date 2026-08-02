@@ -70,7 +70,6 @@ typedef struct MapInfoRecord
     s16 objType;     /* +0x1e: carrier object type for mapType-1 sub-maps, else 0 */
 } MapInfoRecord;
 extern WarpVec gCameraPosByTransformSpace[];
-extern const f32 gMapBlockWorldSize;
 
 #include "sys/objects/lifecycle.h"
 #include "game/objects/object_setup.h"

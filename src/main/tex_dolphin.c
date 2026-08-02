@@ -76,7 +76,6 @@ s8 gTexIndMtxScaleExp = -2;
 
 extern f32 lbl_803DEBCC;
 extern const f32 lbl_803DEBFC;
-extern const f32 gTrackPackedCoordScale;
 extern const f32 gTexIndMtxScale;
 extern f32 lbl_803DEC28;
 extern int lbl_803DEBB0;

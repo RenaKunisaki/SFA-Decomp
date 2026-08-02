@@ -11,4 +11,7 @@ int getEnvfxAct(void* source, void* target, u16 index, int flags);
     (((EnvfxActVoidFn)getEnvfxAct)((void*)(source), (void*)(target), (index), (flags)))
 #define getEnvfxActImmediatelyVoid(source, target, index, flags)                                                       \
     (((EnvfxActVoidFn)getEnvfxActImmediately)((void*)(source), (void*)(target), (index), (flags)))
+
+extern int gSky2EnvfxActIndex;
+
 #endif /* MAIN_RENDER_ENVFX_API_H_ */

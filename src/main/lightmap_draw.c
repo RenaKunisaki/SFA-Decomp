@@ -356,8 +356,6 @@ void lightmap_sortTransparentDrawQueue(void)
 
 
 
-extern f32 gTrackPackedCoordScale;
-
 void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector)
 {
     Vec stk;

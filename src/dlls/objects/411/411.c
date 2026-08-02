@@ -85,7 +85,6 @@ typedef enum Dll19BAnimEvent {
 } Dll19BAnimEvent;
 
 /* Engine-owned environment-effect override; this unit consumes its first word. */
-extern int gSky2EnvfxActIndex;
 u32 gDll19BShaderResult;
 
 ObjectDescriptor gDll19BObjDescriptor = {

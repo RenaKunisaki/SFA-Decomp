@@ -1316,8 +1316,6 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
 static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
 static void objRenderChild(int* child, int* parent, u8 isShadow);
 
-extern volatile int gAssetLoadInFlightFlags;
-extern s16 gDefragDelayFrames;
 extern u32 gAssetLoadCompletedFlags;
 
 
@@ -3495,8 +3493,6 @@ void objSetRenderingShadowPass(u8 x)
     gObjRenderingShadowPass = x;
 }
 
-
-extern int gPendingDvdReadCount;
 
 void initLoadFileReadCb(s32 result, DVDFileInfo* fileInfo)
 {

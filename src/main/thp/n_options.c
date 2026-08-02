@@ -35,6 +35,7 @@
 #include "dolphin/gx/GXTev.h"
 #include "string.h"
 #include "track/intersect_depth_state_api.h"
+#include "main/attract_movie_api.h"
 
 static const GXColorS10 sMovieTevColor0 = {-90, 0, -114, 135};
 static const GXColor sMovieKColor0 = {0x00, 0x00, 0xE2, 0x58};
@@ -48,10 +49,6 @@ static const GXColor sMovieKColor2 = {0xFF, 0x00, 0xFF, 0x80};
 
 s32 gAttractMovieAudioActive;
 extern AIDCallback gAttractMovieAudioPrevDmaCallback;
-extern s32 gAttractMovieAudioMode;
-extern u32 gAttractMovieAudioMixSourceAddr;
-extern u32 gAttractMovieAudioPendingSourceAddr;
-extern u32 gAttractMovieAudioDmaBufferIndex;
 extern OSMessageQueue gAttractMovieSpentTextureSetQueue[1];
 
 u16 gAttractMovieVolumeScale[128] = {

@@ -169,10 +169,6 @@ u8 gIceBaddieA06MoveVariant;
 
 u8 gIceBaddieA05MoveVariant;
 
-extern IceBaddieStateHandler gIceBaddieStateHandlersB[8];
-
-extern IceBaddieStateHandler gIceBaddieStateHandlersA[14];
-
 s16 gIceBaddieAttackMoves[8] = {5, 6, 8, 6, 5, 8, 6, 0};
 
 s16 gIceBaddieAttackMovesAlt[8] = {8, 6, 9, 8, 6, 9, 9, 0};

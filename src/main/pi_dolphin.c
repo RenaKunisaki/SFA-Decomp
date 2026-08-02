@@ -3305,7 +3305,6 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
 }
 
 extern int gMapRomListBuffers[];
-extern u32 gResourceFileBuffers[];
 extern int gRomListLoadInFlight;
 
 

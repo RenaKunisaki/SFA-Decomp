@@ -220,7 +220,6 @@ u32 gVisibleObjectSortKeys[0x400];
 
 
 extern s16* gMapBlockCellEntryTables[];
-extern f32 gMapBlockWorldSize;
 
 int coordsToMapCell(f32 x, f32 z)
 {

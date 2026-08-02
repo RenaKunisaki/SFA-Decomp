@@ -59,8 +59,6 @@ int macActiveRoot;
 u8 macStepsThisFrame;
 extern const f32 sMacDlsScaleMax; /* 1023.0f */
 extern const f32 sMacOne;         /* 1.0f */
-extern f32 voiceAdsrSustainTable[];
-extern u8 voiceAdsrDecayTable[];
 /*
  * Choose a randomized note/velocity command and dispatch it through the
  * normal set-key handler.

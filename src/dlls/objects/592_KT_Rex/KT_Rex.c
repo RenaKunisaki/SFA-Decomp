@@ -51,8 +51,6 @@ int gKTRexContactEffectCooldown;
 StaffCollisionInterface** gKTRexResource;
 
 KTRexWork gKTRexEffectSpawnWork;
-extern void* gKTRexStateHandlersB[10];
-extern void* gKTRexStateHandlersA[12];
 
 s16 gKTRexMoveIdByLaneB05[4] = {9, 0x12, 0x12, 0};
 s16 gKTRexWalkMoveIdByLane[4] = {1, 2, 3, 0};

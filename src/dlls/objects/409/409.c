@@ -47,7 +47,6 @@
 #define DLL199_MESSAGE_DECREASE_CHANNEL_2 0x30005
 #define DLL199_MESSAGE_INCREASE_CHANNEL_2 0x30006
 
-extern int gSky2EnvfxActIndex;
 u32 gDll199Event9Result;
 
 ObjectDescriptor gDll199ObjDescriptor = {

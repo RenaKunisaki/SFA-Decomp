@@ -382,7 +382,6 @@ extern int gLastTaskHintId;
 extern s16 gHudCommAlertTimer;
 extern f32 gPauseMenuOpenAmount;
 extern GameObject* gGameUiHudAnimObjects[6];
-extern u8 gTimeListPromptSelection;
 extern s16 gHudIncomingCommTimer;
 extern s8 pauseMenuFrameCounter;
 extern CMenuSection gCMenuSections[];
@@ -463,7 +462,6 @@ char sHighScoreStarMark[] = "x10";
 
 
 extern s8 gMinimapAreaNameActive;
-extern short gMinimapAreaNameAlpha;
 extern short gMinimapRevealAmount;
 extern short gCMenuScrollTimer;
 extern short gCMenuPrevStickX;
@@ -609,7 +607,6 @@ extern u32 gGameUiBlinkAnimFlags;
 int cMenuCountAvailableEntries(CMenuItemDef* items, s8 useTricky);
 extern u8 shouldOpenCMenu;
 extern int lbl_803A9320[0x11];
-extern u8 gMinimapHelpTextActive;
 extern int lbl_803DD898;
 extern int gGameUiScreenWidthOffset;
 void gameUiUpdateNpcDialogue(void);
