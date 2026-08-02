@@ -147,7 +147,7 @@ void WispBaddie_update(GameObject* obj) {
 
     state = obj->extra;
     curve = state->curve;
-    hitPriority = ObjHits_GetPriorityHitWithPosition(obj, (int*)&hitObjectBits, (int*)&hitSphereIndexBits,
+    hitPriority = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)&hitObjectBits, (int*)&hitSphereIndexBits,
                                                      (u32*)&hitVolumeBits, &hitPosX, &hitPosY, &hitPosZ);
     if (hitPriority != 0) {
         state->hitRadius = 0.01f;

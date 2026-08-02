@@ -119,7 +119,8 @@ void SmallBasket_handleHit(GameObject* obj, GameObject* player, SmallBasketState
     f32 candidateY;
     f32 zero;
 
-    hitType = ObjHits_GetPriorityHitWithPosition(obj, &hitScratch[3], &hitScratch[2], (u32*)&hitScratch[1],
+    hitType = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)&hitScratch[3], &hitScratch[2],
+                                                 (u32*)&hitScratch[1],
                                                  &effectParams.posX, &effectParams.posY, &effectParams.posZ);
     if (hitType != 0) {
         if (hitType == 0x10) {

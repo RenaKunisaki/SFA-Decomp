@@ -96,7 +96,7 @@ void drakord_thornbush_hitDetect(GameObject* obj)
     if (inner->health != 0)
     {
         destroyed = timerCountDown(&inner->regrowTimer);
-        hit = ObjHits_GetPriorityHitWithPosition(obj, (int*)&hitObj, 0, (u32*)&damage, &hitPosX, &hitPosY,
+        hit = ObjHits_GetPriorityHitWithPosition(obj, &hitObj, 0, (u32*)&damage, &hitPosX, &hitPosY,
                                                  &hitPosZ);
         if (hit != 0)
         {

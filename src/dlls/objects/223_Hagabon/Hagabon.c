@@ -226,7 +226,7 @@ void Hagabon_update(GameObject* obj) {
     f32 effectPos[3];
     f32 distanceDelta[3];
     f32 dist;
-    int hitObject;
+    GameObject* hitObject;
     int hitSphereIndex;
     u32 hitVolume;
     u8 flags;

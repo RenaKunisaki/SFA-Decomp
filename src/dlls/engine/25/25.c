@@ -398,7 +398,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
     int hit;
     int v28;
     int v24;
-    int hitId;
+    GameObject* hitObject;
     f32 posX;
     f32 posY;
     f32 posZ;
@@ -449,7 +449,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
     {
         return 0;
     }
-    hit = ObjHits_GetPriorityHitWithPosition(obj, &hitId, &v28, (u32*)&v24, &posX, &posY, &posZ);
+    hit = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &v28, (u32*)&v24, &posX, &posY, &posZ);
     ((GroundBaddieState*)state)->lastHitSphereIndex = v28;
     if (hit != 0)
     {
@@ -506,7 +506,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
             }
         }
         Sfx_StopObjectChannel(obj, 16);
-        ObjMsg_SendToObject((void*)hitId, DLL19_ADVANCE_MSG, obj, 0);
+        ObjMsg_SendToObject(hitObject, DLL19_ADVANCE_MSG, obj, 0);
     }
     return hit;
 }

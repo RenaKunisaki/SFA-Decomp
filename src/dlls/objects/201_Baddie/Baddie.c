@@ -406,7 +406,8 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
         {
             ObjHits_DisableObject(obj);
         }
-        hit = ObjHits_GetPriorityHitWithPosition(obj, &attacker, &hitArg, &hitCount, &hitPos.x, &hitPos.y, &hitPos.z);
+        hit = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)&attacker, &hitArg, &hitCount, &hitPos.x, &hitPos.y,
+                                                 &hitPos.z);
         hitPos.x += playerMapOffsetX;
         hitPos.z += playerMapOffsetZ;
         ((EnemyState*)state)->repeatHitCooldown -= timeDelta;

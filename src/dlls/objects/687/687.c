@@ -154,7 +154,7 @@ void tree_update(GameObject* obj)
     int i;
     u16 playerDist;
     f32 dx, dz, dist;
-    int hitObject;      /* out-params required by API, not read by this fn */
+    GameObject* hitObject; /* out-param required by API, not read by this fn */
     int hitSphereIndex; /* out-params required by API, not read by this fn */
     u32 hitVolume;      /* out-params required by API, not read by this fn */
     f32 colorVec[3];    /* dual role: hit world-position outparam, then scaled effect colour */

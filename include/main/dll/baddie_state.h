@@ -110,7 +110,10 @@ typedef struct BaddieState {
     f32 moveInputX;
     f32 animSpeedC; /* third of the animSpeed family - stored in lockstep with animSpeedB (z = K; animSpeedC = z; animSpeedB = z), scaled with animSpeedA and obj+0x28 */
     f32 inputMagnitude;
-    void *trackedObj; /* current target/player object */
+    union {
+        void* trackedObj; /* current target/player object */
+        f32 previousInputMagnitude;
+    };
     f32 moveSpeed; /* per-mode movement speed */
     f32 gravity; /* fall acceleration: velocityY -= gravity * timeDelta (dll_000F player_applyGravity) */
     /* 0x2A8/0x2AC are two independent 0..1 ramp progresses for the deferred
@@ -150,8 +153,8 @@ typedef struct BaddieState {
  * splash. */
 #define BADDIE_EVENT_LANDING 0x200
     s32 eventFlags; /* bits 1/0x200 observed */
-    f32 heldButtons;
-    f32 pressedButtons;
+    u32 heldButtons;
+    int pressedButtons;
     u8 unk320[0x32E - 0x320];
     s16 stateTimer; /* count-up dt-accumulating timer, gated > 0x78, reset to 0 on state entry */
     s16 cameraYaw;
@@ -186,11 +189,14 @@ STATIC_ASSERT(sizeof(BaddieState) == 0x35C);
 STATIC_ASSERT(offsetof(BaddieState, controlMode) == 0x274);
 STATIC_ASSERT(offsetof(BaddieState, moveJustStartedB) == 0x27B);
 STATIC_ASSERT(offsetof(BaddieState, trackedObj) == 0x29C);
+STATIC_ASSERT(offsetof(BaddieState, previousInputMagnitude) == 0x29C);
 STATIC_ASSERT(offsetof(BaddieState, moveSpeed) == 0x2A0);
 STATIC_ASSERT(offsetof(BaddieState, targetObj) == 0x2D0);
 STATIC_ASSERT(offsetof(BaddieState, nudgePosX) == 0x2F4);
 STATIC_ASSERT(offsetof(BaddieState, nudgeYaw) == 0x300);
 STATIC_ASSERT(offsetof(BaddieState, eventFlags) == 0x314);
+STATIC_ASSERT(offsetof(BaddieState, heldButtons) == 0x318);
+STATIC_ASSERT(offsetof(BaddieState, pressedButtons) == 0x31C);
 STATIC_ASSERT(offsetof(BaddieState, stateTimer) == 0x32E);
 STATIC_ASSERT(offsetof(BaddieState, controlTimer) == 0x338);
 STATIC_ASSERT(offsetof(BaddieState, moveDone) == 0x346);

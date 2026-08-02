@@ -654,10 +654,12 @@ enum GameBitId {
     GAMEBIT_DR_ActNo = 0x76E,                            /* table 1; size 4 */
     GAMEBIT_DRBOT_ActNo = 0x76F,                         /* table 1; size 4 */
     GAMEBIT_ITEM_DeletedSpell777_Got = 0x777,            /* table 2; in spell bits table but does nothing */
+    GAMEBIT_DR_EarthWarriorUnknown_2 = 0x7BC,            /* set by DR_EarthWar.c when mounted */
     GAMEBIT_ITEM_SpellStone7BD_Got = 0x7BD,              /* table 2; unused? */
     GAMEBIT_ITEM_SpellStone7BF_Got = 0x7BF,              /* table 1 */
     GAMEBIT_OFP_Reopened = 0x7C2,                        /* table 2; hint 403; ref dfptop/HitAnimator target */
     GAMEBIT_HT_ObjStates = 0x7CE,                        /* table 3; size 32 */
+    GAMEBIT_DR_EarthWarriorUnknown_3 = 0x7D4,            /* cleared by DR_EarthWar.c when mounted */
     GAMEBIT_ITEM_MapDR_Got = 0x7DD,                      /* table 2 */
     GAMEBIT_ITEM_MapWM_Got = 0x7E5,                      /* table 2 */
     GAMEBIT_ITEM_MapOFP_Got = 0x7E9,                     /* table 2 */
@@ -738,6 +740,7 @@ enum GameBitId {
     GAMEBIT_IncomingCommunication = 0x9D5,               /* table 0; Slippy calling you */
     GAMEBIT_ArwingRelated09D6 = 0x9D6,                   /* table 1 */
     GAMEBIT_DR_FlewTo = 0x9E9,                           /* table 2; hint 385; cleared when Arwing flies to Dragon Rock */
+    GAMEBIT_DR_EarthWarriorUnknown_1 = 0x9EC,            /* read by DR_EarthWar.c  */
     GAMEBIT_DR_EnteredDrakorTower = 0x9F3,               /* table 2; hint 394 */
     GAMEBIT_DIM_RodeSnowHornThroughGates = 0x9F6,        /* table 2; hint 285; ref snowmines/HitAnimator target */
     GAMEBIT_PushableRelated0A1A = 0xA1A,                 /* table 0 */

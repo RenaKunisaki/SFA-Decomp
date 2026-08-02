@@ -74,15 +74,13 @@ void stopRumble(void)
     }
 }
 
-void doRumble(f32 duration)
-{
-    if (rumbleEnabled != 0 && getGameState() == 1)
-    {
+void doRumble(f32 duration) {
+    if (rumbleEnabled != 0 && getGameState() == 1) {
         f32 rumbleTimer;
 
         PADControlMotor(0, PAD_MOTOR_RUMBLE);
         rumbleTimer = gRumbleTimer;
-        gRumbleTimer = (rumbleTimer > duration) ? rumbleTimer : duration;
+        gRumbleTimer = rumbleTimer > duration ? rumbleTimer : duration;
     }
 }
 

@@ -837,7 +837,7 @@ GameObject* getTrickyObject(void)
 GameObject* Obj_GetPlayerObject(void)
 {
     int count;
-    GameObject** objs = (GameObject**)objGetAllOfType(0, &count);
+    GameObject** objs = objGetAllOfType(0, &count);
     if (count != 0)
     {
         return objs[0];

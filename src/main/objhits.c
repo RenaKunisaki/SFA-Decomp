@@ -3017,11 +3017,10 @@ void ObjHits_AddContactObject(GameObject* obj, GameObject* contactObj) {
     storeState = *(int*)((u8*)obj + OBJHITBOX_TRANSFORM_STATE_OFFSET);
     contactObjectIndex = (*(char*)(transformState + OBJHITBOX_STATE_CONTACT_OBJECT_COUNT_OFFSET))++;
     *(int*)(storeState + OBJHITBOX_STATE_CONTACT_OBJECTS_OFFSET + contactObjectIndex * 4) = (int)contactObj;
-    return;
 }
 
-int ObjHits_GetPriorityHitWithPosition(GameObject* obj, int* outHitObject, int* outSphereIndex, u32* outHitVolume,
-                                       float* outHitPosX, float* outHitPosY, float* outHitPosZ) {
+int ObjHits_GetPriorityHitWithPosition(GameObject* obj, GameObject** outHitObject, int* outSphereIndex,
+                                       u32* outHitVolume, float* outHitPosX, float* outHitPosY, float* outHitPosZ) {
     u8 hitPriority;
     int hitCount;
     ObjHitsPriorityState* hitState;
@@ -3045,21 +3044,25 @@ int ObjHits_GetPriorityHitWithPosition(GameObject* obj, int* outHitObject, int* 
             }
         }
         if (bestHitSlot != -1) {
-            if (outHitObject != 0x0) {
-                *outHitObject = hitState->hitObjects[bestHitSlot];
+            if (outHitObject != NULL) {
+                *outHitObject = (GameObject*)hitState->hitObjects[bestHitSlot];
             }
+
             if (outSphereIndex != 0x0) {
                 *outSphereIndex = hitState->sphereIndices[bestHitSlot];
             }
+
             if (outHitVolume != 0x0) {
                 *outHitVolume = hitState->hitVolumes[bestHitSlot];
             }
+
             if (outHitPosX != (float*)0x0) {
                 *outHitPosX = hitState->hitPosX[bestHitSlot];
                 *outHitPosY = hitState->hitPosY[bestHitSlot];
                 *outHitPosZ = hitState->hitPosZ[bestHitSlot];
             }
-            return (int)(s8)bestPriority;
+
+            return (s8)bestPriority;
         }
     }
     return 0;
@@ -3628,8 +3631,8 @@ int ObjHits_PollPriorityHitWithCooldown(GameObject* obj, float* cooldown, int* o
     *cooldown = *cooldown - timeDelta;
     if (*cooldown <= 0.0f) {
         if (outHitPos != (float*)0x0) {
-            collisionType = ObjHits_GetPriorityHitWithPosition(obj, outHitObject, 0x0, 0x0, outHitPos, outHitPos + 1,
-                                                               outHitPos + 2);
+            collisionType = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)outHitObject, 0x0, 0x0, outHitPos,
+                                                               outHitPos + 1, outHitPos + 2);
             if (collisionType != 0) {
                 ObjHits_ConvertHitPositionToWorld(obj, outHitPos);
             }
@@ -3649,10 +3652,10 @@ int ObjHits_PollPriorityHitEffectWithCooldown(GameObject* obj, u32 hitFxMode, u3
     StaffCollisionInterface** effectResource;
     PartFxSpawnParams effectParams;
     StaffCollisionColorArgs effectArgs;
-    u32 hitObject;
+    GameObject* hitObject;
 
     *cooldown = *cooldown - timeDelta;
-    collisionType = ObjHits_GetPriorityHitWithPosition(obj, (int*)&hitObject, 0x0, 0x0, &effectParams.posX,
+    collisionType = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, 0x0, 0x0, &effectParams.posX,
                                                        &effectParams.posY, &effectParams.posZ);
     if ((*cooldown <= 0.0f) && (collisionType != 0)) {
         *cooldown = 45.0f;
@@ -3671,8 +3674,7 @@ int ObjHits_PollPriorityHitEffectWithCooldown(GameObject* obj, u32 hitFxMode, u3
             (*effectResource)
                 ->spawn(OBJHITREACT_HIT_EFFECT_PARENT_NONE, OBJHITREACT_HIT_EFFECT_MODE, &effectParams,
                         OBJHITREACT_HIT_EFFECT_SPAWN_FLAGS, OBJHITREACT_HIT_EFFECT_NO_SOURCE, &effectArgs);
-            if (((sfxId != 0) && (hitObject != 0)) &&
-                (((GameObject*)hitObject)->anim.romDefNo == OBJLIB_HITOBJ_SEQID_STAFF)) {
+            if (((sfxId != 0) && (hitObject != 0)) && (hitObject->anim.romDefNo == OBJLIB_HITOBJ_SEQID_STAFF)) {
                 Sfx_PlayFromObject(obj, sfxId);
             }
         }
