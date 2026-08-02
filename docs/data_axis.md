@@ -1,4 +1,38 @@
-# The data axis — CLOSED
+# The data axis — REOPENED on the pool side (see correction)
+
+> ## ⚠️ CORRECTION 2026-08 — the central premise below is WRONG, and it was measured wrong twice
+>
+> This document asserted that a sub-100 `.sdata2` is an *artifact* of anonymous `@N` symbols failing
+> to pair. **That is false. `.sdata2` is scored by BYTES, not by names.** Three measurements, any one
+> of which refutes it:
+>
+> 1. **600 units** have an entirely anonymous `@N` `.sdata2` and score **fuzzy 100.0**. `audio_sfx`
+>    is the clean exhibit: our side all `@N` and *local*, retail's all `lbl_*`/named and *global*,
+>    retail even carrying two symbols at 0x0c/0x0e that we do not emit at all — **100.0**.
+> 2. **All 48** sub-100 `.sdata2` sections have genuinely **differing bytes**. Zero are
+>    byte-identical. Anonymity is not doing any work in any of them.
+> 3. The differences are frequently **pool ORDER**, which is initialized data and therefore real.
+>    `track/intersect_render`, the worked proof in §1, holds the *same* constants in a *different
+>    sequence* — retail `3f490fdb bf000000` at 0x50 with the int→double magic at 0x60, ours
+>    `3f490fdb 4b800000` at 0x50 with the magic at 0x90.
+>
+> **Consequence: sub-100 `.sdata2` is a real, live, source-addressable class** (emission order —
+> see `sdata2-emission-order-law-w57`), not a closed artifact. It must not be screened out as
+> "anonymous-pool blindness". The banned construct remains banned: recovering pool *order* is a
+> source-shape question, and never a licence to define named `.sdata2` constants.
+>
+> **How the error survived:** the original screen used `missing == section size exactly` as its
+> signature. That test cannot distinguish "the section did not pair" from "the section's bytes
+> differ", because both zero the whole section. A later classifier of mine then hard-coded
+> `anon @N ⇒ SCORE-BLOCKED` and propagated the premise into a tree-wide census. **Neither instrument
+> ever compared the bytes.** Always diff `objdump -s -j <section>` before calling a data difference
+> an artifact.
+>
+> Retained below and still correct: the `.bss`/`.sbss` order results (§1 corollary), the
+> `gap_*` exclusion rule, the binding-carries-no-information result, the `.sbss2` and `284`
+> stop-rules, and the over-claimed-extent class.
+
+# (original) The data axis — CLOSED
 
 `matched_data` measures data-**symbol pairing**, not pool contents. Every remaining shortfall in
 the tree has been classified, and none of it is a missing constant. This file exists so the axis
@@ -49,9 +83,15 @@ contents *exactly* match — 44 slots / 41 distinct on both sides, nothing absen
 
 ### Corollary — objdiff is ORDER-BLIND: the pend-cluster theorem
 
-> objdiff pairs data symbols **by name** and is blind to address order. Therefore a section whose
-> **only** defect is symbol order **already scores 100**. "Order is the last defect" and
-> "section < 100" are **mutually exclusive by construction**.
+> A **zero-filled** section (`.bss`, `.sbss`) whose only defect is symbol *order* **already scores
+> 100**, because permuting symbols across uniformly zero bytes changes nothing observable.
+> So for `.bss`/`.sbss`, "order is the last defect" and "section < 100" are mutually exclusive.
+
+⚠️ **Scope, corrected.** This holds for the **zero-filled** sections only. It was originally written
+as "objdiff pairs data symbols by name and is blind to order", generalised to all data sections —
+that mechanism claim is **wrong** (see the correction at the top of this file). In an *initialized*
+section (`.data`, `.sdata`, `.sdata2`) order changes bytes, so order is fully visible there and is a
+live defect class. The `.bss` result below stands on its own measurement.
 
 So a screen of the form *"fix the order wherever the section is fully pairable and order is the sole
 remaining difference"* enumerates an **empty set** — not in a given unit, but anywhere. Do not build
@@ -59,10 +99,14 @@ that screen again.
 
 Confirmed empirically on `dlls/engine/7`: its `.bss` holds a genuine permutation — retail
 `gNewCloudLayerTextures@0x00 / gNewClouds@0x10`, ours exactly reversed, same names and sizes — and
-the section reads **fuzzy 100.0**. A tree-wide run over all 49 unmatched data sections returned
-**zero** order-is-last-defect candidates (47 sections / 11,156 of 11,268 bytes blocked by anonymous
-`@N`; one set-differs; one sizes-differ — the last two were the only genuine defects, and both are
-now fixed).
+the section reads **fuzzy 100.0**.
+
+⚠️ The tree-wide run originally cited here classified 47 sections as "blocked by anonymous `@N`".
+**That classification is withdrawn** — those 47 are real byte differences, mostly pool order, and
+are the reopened class described in the correction at the top. What survives from that run is only
+its `.bss`/`.sbss` half: no zero-filled section anywhere in the tree is order-defective, and the
+two genuine non-pool defects it surfaced (`intersect` `.sbss` naming, `engine/60` `.sbss` extent)
+were both fixed — `90cabeaf76`, `6e7b713c49`.
 
 This does **not** make `.bss` emission order worthless: it is what makes a unit *link*
 byte-identical, which is the criterion for a `NonMatching → MatchingFor` flip. The point is only
@@ -110,7 +154,7 @@ plausible. Don't.
 | class | signature | verdict |
 |---|---|---|
 | **Anonymous-pool pairing** (section-granular) | `missing == section size` exactly; section holds `@N` symbols | Artifact. Fixing it requires our source to *define named `.sdata2` constants* — the **banned pool-reconstruction construct**. Closed on principle. |
-| **Jump-table naming** (the `.data` analogue) | a `.data` section where the unpaired symbols are all `switch` jump tables — retail `jumptable_8XXXXXXX`, ours `@N` — with **identical sizes and identical order** | Artifact, and *less* fixable than the pool class: C has no syntax for naming a compiler-generated jump table, so there is not even a banned hack available. Benign; never rank it. Proof below. |
+| **Jump-table naming** (`.data` only — NOT a pool analogue) | a `.data` section whose unpaired symbols are all `switch` jump tables — retail `jumptable_8XXXXXXX`, ours `@N` — with identical sizes, identical order, and **byte-identical section contents** | Artifact. ⚠️ **Corrected**: this is *not* "the `.data` analogue of the pool class" — the pool class is not a pairing failure at all (see the correction at the top). `.data` and `.sdata2` are scored differently, and `engine/2` is the **only** unit tree-wide where `.data` holds `@N` and scores under 100; 117 other units hold `@N` in `.data` and score 100. Verified benign the only way that counts: `objdump -s -j .data` is byte-identical on both sides and relocation counts match 265/265. C cannot name a compiler-generated jump table, so nothing is actionable. Never rank it. |
 | **Over-claimed extent absorbing inter-TU padding** | `symbols.txt` claims more bytes than the source object emits, and the surplus reaches exactly to where the **next TU's** section begins | Real, correctable — trim the claim to the atom's true extent. The surplus becomes a `gap_*` filler, which objdiff skips. ⚠️ The retail carve's size is generated **from** the claim, so "the retail object says N bytes" is **circular** — decide from access width, neighbouring atom sizes, and the section range instead. Landed: `engine/60`, `6e7b713c49`. |
 | **Merged-TU duplication** | equal distinct constant counts, retail merely holding more copies; our side always *smaller* | TU-boundary artifact. `objects/202` is 421→127 slots at 119 distinct on both sides. Leave it. |
 | **Pool-order TU artifacts** | same value multiset, different offsets; size 4v8 / 8v4 shifts | TU-boundary artifact per CLAUDE.md. Leave the unit `NonMatching`; do not reconstruct the pool. |
