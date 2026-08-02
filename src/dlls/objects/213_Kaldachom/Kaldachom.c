@@ -80,7 +80,7 @@ f32 gKaldachomMouthSpawnScratch;
 int lbl_803DDA9C;
 f32 gKaldachomDustSpawnScratch;
 void* gKaldachomEffectResource;
-u8 gKaldachomHitLightWork[0x18];
+PartFxSpawnParams gKaldachomHitLightWork;
 KaldachomStateHandler gKaldachomStateHandlersB[6];
 KaldachomStateHandler gKaldachomStateHandlersA[8];
 
@@ -534,10 +534,10 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
         hitResult = (*gBaddieControlInterface)
                         ->updateHitReaction(obj, (void*)stateAddress, (char*)objectStateAddress + 0x35c,
                                             ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, NULL, 1,
-                                            gKaldachomHitLightWork);
+                                            &gKaldachomHitLightWork);
         if (hitResult != 0) {
             if ((hitResult != 0x10) && (hitResult != 0x11)) {
-                objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 3, 0);
+                objDoHitParticleFx((void*)obj, 0.014f, &gKaldachomHitLightWork, 3, 0);
                 (*gPlayerInterface)->setState(obj, (void*)stateAddress, 4);
                 ((GroundBaddieState*)stateAddress)->baddie.hitPoints -= 1;
                 Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
@@ -551,20 +551,20 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
         hitResult = (*gBaddieControlInterface)
                         ->updateHitReaction(obj, (void*)stateAddress, (char*)objectStateAddress + 0x35c,
                                             ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, NULL, 1,
-                                            gKaldachomHitLightWork);
+                                            &gKaldachomHitLightWork);
         if (hitResult != 0) {
             if (hitResult != 0x11) {
                 if ((hitResult != 0x10) && (control->hitFlashTimer < 64.0f)) {
                     kaldachom_spawnDustEffects(obj, control);
-                    *(f32*)(gKaldachomHitLightWork + 8) = 1.0f;
-                    *(u16*)(gKaldachomHitLightWork + 4) = 0;
-                    *(u16*)(gKaldachomHitLightWork + 2) = 0;
-                    *(u16*)(gKaldachomHitLightWork + 0) = 0;
+                    gKaldachomHitLightWork.scale = 1.0f;
+                    gKaldachomHitLightWork.rotZ = 0;
+                    gKaldachomHitLightWork.rotY = 0;
+                    gKaldachomHitLightWork.rotX = 0;
                     (*(void (**)(int, int, void*, int, int, void*))(*(int*)gKaldachomEffectResource + 4))(
-                        0, 1, gKaldachomHitLightWork, 0x401, -1, (KaldachomCombatParams*)((u8*)&stack + 0xc));
+                        0, 1, &gKaldachomHitLightWork, 0x401, -1, (KaldachomCombatParams*)((u8*)&stack + 0xc));
                     playerSetHitReactionVariant(playerObj, 2);
                     (*gPlayerInterface)->setState(obj, (void*)stateAddress, 5);
-                    objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 4, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, &gKaldachomHitLightWork, 4, 0);
                     Sfx_PlayFromObject(obj, SFXTRIG_swdout1);
                 }
             } else {
@@ -573,7 +573,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                     ((GroundBaddieState*)stateAddress)->baddie.moveJustStartedB = 1;
                     ((GroundBaddieState*)stateAddress)->baddie.moveJustStartedA = 1;
                     ((GroundBaddieState*)stateAddress)->baddie.substate = 1;
-                    objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 1, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, &gKaldachomHitLightWork, 1, 0);
                     Sfx_PlayFromObject(obj, SFXTRIG_stftest);
                     Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_call3);
                 }

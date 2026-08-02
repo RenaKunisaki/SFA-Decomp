@@ -1120,7 +1120,7 @@ void HighTop_update(GameObject* obj)
     *(int*)state &= ~0x8000;
     if ((runtime->flagsC40 & HIGHTOP_FLAG_CURVE_FOLLOW) != 0)
     {
-        int ev = Obj_UpdateRomCurveFollowVelocity((GameObject*)self, (RomCurveWalker*)(state + 0xa10),
+        int ev = Obj_UpdateRomCurveFollowVelocity((GameObject*)self, &runtime->curveWalker,
                                                   lbl_803DC324 *
                                                       (runtime->curveFollowSpeedScale * timeDelta),
                                                   70.0f, 8.0f * timeDelta, 0);

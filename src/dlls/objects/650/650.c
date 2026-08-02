@@ -460,8 +460,8 @@ void earthwalker_init(GameObject* obj, int setup)
      * player distance and the head snaps back to neutral). */
     dll_2E_setLookAtMaxDistance((MoveLibState*)ewState, gEarthWalkerLookAtMaxDistance);
     ewState->moveLibFlags611 |= 2;
-    obj->anim.rotX = (s16)((s8) * (s8*)(setup + 0x18) << 8);
-    ewState->encounterType = *(u8*)(setup + 0x19);
+    obj->anim.rotX = (s16)(((EarthWalkerPlacement*)setup)->spawnRot << 8);
+    ewState->encounterType = ((EarthWalkerPlacement*)setup)->encounterType;
     if (ewState->encounterType == 1)
     {
         if ((int)mainGetBit(GAMEBIT_WC_FoundKing) != 0 || (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == 2)

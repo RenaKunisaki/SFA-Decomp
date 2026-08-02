@@ -113,7 +113,7 @@ int ShopKeeper_popQueuedState(int objHandle, int animState)
     state = (int)obj->extra;
     spawnParam = 1.0f;
 
-    if (*(s8*)(animState + 0x27a) != 0)
+    if (((BaddieState*)animState)->moveJustStartedA != 0)
     {
         if ((obj->objectFlags & DLL801E66DC_OBJFLAG_RENDERED) != 0)
         {
@@ -121,11 +121,11 @@ int ShopKeeper_popQueuedState(int objHandle, int animState)
         }
     }
 
-    *(u8*)(state + 0x9d6) = 0;
-    *(f32*)(animState + 0x280) = 0.0f;
-    if (*(u8*)(state + 0x9d6) == 0)
+    ((ShopkeeperState*)state)->opacity = 0;
+    ((BaddieState*)animState)->animSpeedA = 0.0f;
+    if (((ShopkeeperState*)state)->opacity == 0)
     {
-        stk = *(RingBufferQueue**)(state + 0x9b0);
+        stk = ((ShopkeeperState*)state)->msgStack;
         nextState = 0;
         if (Stack_IsEmpty(stk) == 0)
         {
@@ -164,7 +164,7 @@ int TREX_Lazerwall_popQueuedState(GameObject* obj, int animState)
     playerObj = Obj_GetPlayerObject();
     state = (obj)->extra;
 
-    if (*(s8*)(animState + 0x27a) != 0)
+    if (((BaddieState*)animState)->moveJustStartedA != 0)
     {
         if (Stack_IsEmpty(state->stack) != 0)
         {
@@ -203,7 +203,7 @@ int TREX_Lazerwall_popQueuedState(GameObject* obj, int animState)
                 }
             }
 
-            *(f32*)(animState + 0x280) = 0.0f;
+            ((BaddieState*)animState)->animSpeedA = 0.0f;
             state->flags = (u8)(state->flags | LAZERWALL_FLAG_ADVANCED);
         }
     }

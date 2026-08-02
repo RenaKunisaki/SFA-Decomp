@@ -25,6 +25,7 @@
 #include "main/shader_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/path_control_interface.h"
+#include "main/dll/partfx_interface.h"
 #include "main/track_bbox_api.h"
 #include "main/dll/landedArwing.h"
 #include "main/dll/dll_00D3_staffAction.h"
@@ -1215,7 +1216,7 @@ typedef struct DllD3Placement
 } DllD3Placement;
 
 void* gLandedArwingStateHandlers[6];
-int gStaffActionHitLightParams[6];
+PartFxSpawnParams gStaffActionHitLightParams;
 void* gLandedArwingDefaultStateHandler;
 
 void dll_D3_update(GameObject* obj)
@@ -1329,15 +1330,15 @@ void dll_D3_update(GameObject* obj)
             ->updateHitReaction(obj, state, (void*)((int)state + 0x35c),
                                 ((TreasureChestState*)state)->gameBitB, gStaffActionHitReactionMoves,
                                 gStaffActionHitReactionDamage, 0,
-                                gStaffActionHitLightParams);
+                                &gStaffActionHitLightParams);
         if ((int)((TreasureChestState*)state)->hitPoints < hits)
         {
             (*(LandedArwingStaffInterface**)((GameObject*)player->childObjs[0])->anim.dll)
                 ->getSwipeTextureIndex((GameObject*)player->childObjs[0]);
-            *(f32*)((char*)gStaffActionHitLightParams + 0xc) = obj->anim.localPosX;
-            *(f32*)((char*)gStaffActionHitLightParams + 0x10) = obj->anim.localPosY;
-            *(f32*)((char*)gStaffActionHitLightParams + 0x14) = obj->anim.localPosZ;
-            objDoHitParticleFx(obj, 0.014f, gStaffActionHitLightParams, 1, 0);
+            gStaffActionHitLightParams.posX = obj->anim.localPosX;
+            gStaffActionHitLightParams.posY = obj->anim.localPosY;
+            gStaffActionHitLightParams.posZ = obj->anim.localPosZ;
+            objDoHitParticleFx(obj, 0.014f, &gStaffActionHitLightParams, 1, 0);
         }
     }
 

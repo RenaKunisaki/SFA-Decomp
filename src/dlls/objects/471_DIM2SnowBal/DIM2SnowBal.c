@@ -92,7 +92,7 @@ void dim2snowball_update(GameObject* obj) {
 
         state->path.count =
             (*(int (**)(int*, void*, void*, void*, void*))(**(int**)((char*)pathGenerator + 0x68) + 0x20))(
-                pathGenerator, (char*)state + 0x84, (char*)state + 0x88, (char*)state + 0x8c, (char*)state + 0xa8);
+                pathGenerator, &state->path.px, &state->path.py, &state->path.pz, &state->pathNodeData);
         state->path.dir = 0;
         state->path.eval = Curve_EvalHermite;
         state->path.coeffFn = Curve_BuildHermiteCoeffs;
@@ -139,7 +139,7 @@ void dim2snowball_update(GameObject* obj) {
             obj->anim.velocityZ = obj->anim.velocityZ * damping;
             objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                     obj->anim.velocityZ * timeDelta);
-            collided = trackGetLineIntersect(&obj->anim.previousLocalPosX, (f32*)((char*)obj + 0xc), 36.0f, 0, NULL, obj,
+            collided = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX, 36.0f, 0, NULL, obj,
                                           8, -1, 0, 0);
             if (collided != 0) {
                 obj->anim.velocityX = -obj->anim.velocityX;

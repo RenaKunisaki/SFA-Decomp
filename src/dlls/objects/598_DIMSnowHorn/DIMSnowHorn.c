@@ -147,7 +147,7 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, DIMSnowHorn1State* state, f32 t
     inner = (obj)->extra;
     if (mainGetBit(GAMEBIT_SNOWHORN_RIDING) != 0)
     {
-        if (RandomTimer_UpdateRangeTrigger((char*)inner + 0xd04, 3.0f, 6.0f) != 0)
+        if (RandomTimer_UpdateRangeTrigger(&inner->randomTimerD04, 3.0f, 6.0f) != 0)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_hightop_call1);
         }
@@ -447,7 +447,7 @@ int DIMSnowHorn1_stateHandler07(GameObject* obj, DIMSnowHorn1State* state)
     }
     if (mainGetBit(GAMEBIT_SNOWHORN_RIDING) != 0)
     {
-        if (RandomTimer_UpdateRangeTrigger((char*)inner + 0xd04, 3.0f, 6.0f) != 0)
+        if (RandomTimer_UpdateRangeTrigger(&inner->randomTimerD04, 3.0f, 6.0f) != 0)
         {
             Sfx_PlayFromObject((int)obj, SFXTRIG_hightop_call1);
         }
@@ -631,7 +631,7 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, DIMSnowHorn1State* state)
             }
             else
             {
-                if (RandomTimer_UpdateRangeTrigger((char*)inner + 0xd08, 4.0f, 8.0f) != 0)
+                if (RandomTimer_UpdateRangeTrigger(&inner->randomTimerD08, 4.0f, 8.0f) != 0)
                 {
                     Sfx_PlayFromObject((int)obj, SFXTRIG_thorntail_chew1);
                 }
@@ -1270,7 +1270,7 @@ void DIMSnowHorn1_update(GameObject* obj)
             arm = (ObjHitReactEntry*)(base + 0x6c);
         }
         ((DIMSnowHorn1State*)data)->hitReactState = ObjHitReact_Update(
-            (int)obj, arm, 1, ((DIMSnowHorn1State*)data)->hitReactState, (f32*)((char*)data + 0xa94));
+            (int)obj, arm, 1, ((DIMSnowHorn1State*)data)->hitReactState, &((DIMSnowHorn1State*)data)->hitReactStepScale);
         if (((DIMSnowHorn1State*)data)->hitReactState != 0)
         {
             characterHeadLookRelax(obj, (void*)(data + 0x980));
@@ -1445,11 +1445,11 @@ void DIMSnowHorn1_init(GameObject* obj, int def, int spawnFlag)
     DIMSnowHorn1State* inner;
     u8* pathState;
     s8 idx;
-    (obj)->anim.rotX = (s16)((s8) * (s8*)((char*)def + 0x18) << 8);
+    (obj)->anim.rotX = (s16)(((DIMSnowHorn1Placement*)def)->spawnRot << 8);
     (obj)->animEventCallback = (void*)DIMSnowHorn1_animEventCallback;
     objAddObjectType((int)obj, DIMSNOWHORN1_OBJGROUP);
     inner = (obj)->extra;
-    inner->mode = *(u8*)((char*)def + 0x19);
+    inner->mode = ((DIMSnowHorn1Placement*)def)->spawnVariant;
     inner->advanceCountThreshold = 5;
     inner->airMeterValue = 0x3e8;
     if ((obj)->anim.modelState != NULL)
