@@ -539,3 +539,178 @@ The 148 honest rows are settled by the oracle; a later census should not re-flag
 `main/render` is the one structurally unreachable row even after `90b1a0f251`: retail's
 `.sdata2` there is 64 bytes of which 60 are `pad_11_803DE508_sdata2`, another TU's data, so the
 section stays 15 words short (9040/9104) no matter how its own constant is spelled.
+
+
+## 9b. Which crutch slots a declaration point can actually reach
+
+Section 9 sized the crutch class and priced the plain-literal route. It left one question open,
+and the whole remaining decision rests on it: for a given crutch, is retail's pool slot
+**reachable from a declaration point** - so that the const route of `90b1a0f251` could in
+principle put a word there - or is it a front-end literal minted in the middle of one function's
+own run, where no declaration can land? Section 9 answered that for a single instance
+(`engine/5`'s `0.55f` at 0x5c, measured mid-run) by trying it. This section answers it for all
+of them, and it starts by correcting the model everyone has been reasoning from.
+
+### The declaration point is NOT the head of the pool
+
+The natural reading of the `objhits` experiment - two file-scope consts declared together at the
+top emitted at 0x000 and 0x004 - is that declarations land at the head of `.sdata2` and the
+minted literals follow. **That is wrong, and it is wrong in the direction that matters.** Three
+`const f32` objects declared at three different points of `dlls/engine/68/68.c` - before the
+first function, after `firstPersonPlaceCamera`, and after `firstPersonEnter` - emit at
+
+    0x04    declared before the first function
+    0x0c    declared after the first function
+    0x60    declared after the third function
+
+interleaved with the literal groups of the functions they sit between. The tree already contains
+the same evidence from a landed commit: `90b1a0f251`'s `gVecMathAngleScaleInv`, declared at
+`vecmath.c:218`, sits at `.sdata2` **0x30**, not at 0x00. A file-scope const emits **at its
+declaration position in the translation unit**. The `objhits` pair landed at 0x000/0x004 only
+because both were declared in the same place.
+
+So the reachable set is not "the first word of the pool" (which would be three slots out of
+fifty-one). It is **every slot that falls on a boundary between two functions' mint groups**.
+
+### Reading the boundaries off retail's own object
+
+Retail's split object gives the groups directly. Take its `.sdata2` symbols in offset order and
+its `.text` relocations; each pool slot is referenced by a set of functions, and walking the
+slots in order while holding a current owner - keep it if it still references this slot,
+otherwise advance to the next function that does - segments the pool into contiguous mint groups
+in `.text` order. A crutch is at a **declaration point** when the last non-crutch slot before it
+and the first non-crutch slot after it are minted by *different* functions (or when it is at the
+head or tail of the section); it is **mid-run** when both neighbours are minted by the same one.
+
+The segmentation is calibrated against the three instances other lanes have already measured,
+and it reproduces all three:
+
+| slot | measured elsewhere | this model |
+| --- | --- | --- |
+| `engine/5` 0x5c `gSkySunMoonRiseScale` | section 9: front-end literal mid-`renderSunAndMoon` | mid-run |
+| `engine/68` 0x44 `gCameraModeViewfinderStickScale` | section 8: no declaration point reaches it | mid-run |
+| `704` 0x18 `lbl_803E2300` | section 9: plain literal recovers 0 | mid-run |
+
+### The table
+
+51 crutches in 9 units at `10b2cb641b` (`main/object`'s 16 were closed by `ca33bc08`).
+**26 sit at a declaration point; 25 are mid-run.**
+
+**`dlls/engine/0/0`** - 20 crutches, 9 at a declaration point, 11 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0094 | `gGameUiAngleDivisor` | mid-run | inside `pauseMenuSetHoloTransform` |
+| 0x00c0 | `hudElementOpacity` | mid-run | inside `drawViewFinderHud` |
+| 0x00c4 | `lbl_803E1EC4` | mid-run | inside `drawViewFinderHud` |
+| 0x00c8 | `gGameUiPi` | mid-run | inside `drawViewFinderHud` |
+| 0x0130 | `lbl_803E1F30` | mid-run | inside `drawViewFinderHud` |
+| 0x0134 | `lbl_803E1F34` | mid-run | inside `drawViewFinderHud` |
+| 0x0170 | `gViewFinderBamToDeg` | mid-run | inside `drawViewFinderHud` |
+| 0x01bc | `gHudElemOpacityFloor` | **declaration point** | `hudDrawCounter` / `pauseMenuDrawStatus` |
+| 0x0210 | `lbl_803E2010` | mid-run | inside `hudDrawButtons` |
+| 0x024c | `lbl_803E204C` | mid-run | inside `headDisplayDraw` |
+| 0x029c | `lbl_803E209C` | mid-run | inside `pauseMenuDraw` |
+| 0x02b8 | `lbl_803E20B8` | **declaration point** | `pauseMenuDrawStatusPage` / `pauseMenuDrawSideRails` |
+| 0x0308 | `gPauseMenuGridCursorScale` | mid-run | inside `pauseMenuDrawGrid` |
+| 0x0328 | `lbl_803E2128` | **declaration point** | `pauseMenuDrawGridCell` / `timeListDraw` |
+| 0x0378 | `gPauseMenuPodiumRollAmplitude` | **declaration point** | `pauseMenuRunSubmenu` / `pauseMenuAnimateCarousel` |
+| 0x037c | `gPauseMenuPodiumBaseY` | **declaration point** | `pauseMenuRunSubmenu` / `pauseMenuAnimateCarousel` |
+| 0x0380 | `gPauseMenuPodiumBobAmplitude` | **declaration point** | `pauseMenuRunSubmenu` / `pauseMenuAnimateCarousel` |
+| 0x038c | `gPauseMenuCommunicatorMaxScale` | **declaration point** | `pauseMenuAnimateCarousel` / `mapScreenDrawHud` |
+| 0x0390 | `gPauseMenuRingScale` | **declaration point** | `pauseMenuAnimateCarousel` / `mapScreenDrawHud` |
+| 0x0394 | `gPauseMenuRingUnselectedScale` | **declaration point** | `pauseMenuAnimateCarousel` / `mapScreenDrawHud` |
+
+**`dlls/engine/5/5`** - 2 crutches, 1 at a declaration point, 1 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0000 | `lbl_803DF058` | **declaration point** | `head of pool` / `skySetLightIndex` |
+| 0x005c | `gSkySunMoonRiseScale` | mid-run | inside `renderSunAndMoon` |
+
+**`dlls/engine/68/68`** - 1 crutches, 0 at a declaration point, 1 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0044 | `gCameraModeViewfinderStickScale` | mid-run | inside `firstPersonDoControls` |
+
+**`dlls/objects/195_Player/player`** - 3 crutches, 1 at a declaration point, 2 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x003c | `lbl_803E7EA4` | mid-run | inside `playerUpdateTail` |
+| 0x0078 | `lbl_803E7EE0` | **declaration point** | `playerCastSpell` / `playerGetAimAngles` |
+| 0x00ac | `lbl_803E7F14` | mid-run | inside `playerState3D` |
+
+**`dlls/objects/704/704`** - 1 crutches, 0 at a declaration point, 1 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0018 | `lbl_803E2300` | mid-run | inside `titleScreenDrawMenuFrame` |
+
+**`main/model`** - 7 crutches, 7 at a declaration point, 0 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0024 | `gModelDotClampMax` | **declaration point** | `modelAnimResetState` / `modelChainUpdateNodesPassive` |
+| 0x0028 | `gModelDotClampMin` | **declaration point** | `modelAnimResetState` / `modelChainUpdateNodesPassive` |
+| 0x0040 | `gModelPhaseWrapPeriod` | **declaration point** | `modelChainApplyDampingAndJitter` / `ObjModel_ApplyBlendChannels` |
+| 0x0044 | `gModelDefaultOriginX` | **declaration point** | `modelChainApplyDampingAndJitter` / `ObjModel_ApplyBlendChannels` |
+| 0x0048 | `gModelDefaultOriginY` | **declaration point** | `modelChainApplyDampingAndJitter` / `ObjModel_ApplyBlendChannels` |
+| 0x004c | `gModelDefaultOriginZ` | **declaration point** | `modelChainApplyDampingAndJitter` / `ObjModel_ApplyBlendChannels` |
+| 0x0050 | `gModelVertexScale` | **declaration point** | `modelChainApplyDampingAndJitter` / `ObjModel_ApplyBlendChannels` |
+
+**`main/newshadows`** - 14 crutches, 5 at a declaration point, 9 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0028 | `gNewShadowFovY` | **declaration point** | `renderObjectShadowTexture` / `renderShadows` |
+| 0x0030 | `lbl_803DED38` | mid-run | inside `renderShadows` |
+| 0x0038 | `lbl_803DED40` | mid-run | inside `renderShadows` |
+| 0x0070 | `gNewShadowAspectWide` | mid-run | inside `renderShadows` |
+| 0x0074 | `gNewShadowAspectNarrow` | mid-run | inside `renderShadows` |
+| 0x00b8 | `lbl_803DEDC0` | mid-run | inside `createNewShadowDistortionTexture` |
+| 0x00c8 | `lbl_803DEDD0` | **declaration point** | `createNewShadowDistortionTexture` / `evalNoisePlacements` |
+| 0x00d8 | `lbl_803DEDE0` | mid-run | inside `newShadowsInitProceduralTextures` |
+| 0x00e8 | `lbl_803DEDF0` | mid-run | inside `allocLotsOfTextures` |
+| 0x00ec | `lbl_803DEDF4` | mid-run | inside `allocLotsOfTextures` |
+| 0x00f4 | `lbl_803DEDFC` | mid-run | inside `allocLotsOfTextures` |
+| 0x010c | `lbl_803DEE14` | **declaration point** | `allocLotsOfTextures` / `end of pool` |
+| 0x0110 | `lbl_803DEE18` | **declaration point** | `allocLotsOfTextures` / `end of pool` |
+| 0x0114 | `lbl_803DEE1C` | **declaration point** | `allocLotsOfTextures` / `end of pool` |
+
+**`main/objhits`** - 2 crutches, 2 at a declaration point, 0 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0000 | `gObjHitsScalarZero` | **declaration point** | `head of pool` / `ObjHits_InitWorkBuffers` |
+| 0x0008 | `gObjHitsScalarOne` | **declaration point** | `ObjHits_InitWorkBuffers` / `ObjHits_CheckTrackContact` |
+
+**`main/vecmath`** - 1 crutches, 1 at a declaration point, 0 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0000 | `lbl_803DE7C0` | **declaration point** | `head of pool` / `interpolate` |
+
+### What the table does and does not license
+
+A **declaration point** verdict is necessary, not sufficient. It says the slot's *position* is
+reachable; it says nothing about the *read*. A plain `const f32` read folds at `-O4`, and the
+folded value mints a duplicate further down the pool - that is what the `objhits` probe showed,
+and it is why the only spelling that has actually reached one of these slots is the
+single-element const array. That pin is adjudicated per instance by the const lane
+(section 8's retraction), and nothing here changes who decides it.
+
+A **mid-run** verdict is a real closure. It says the word was minted by a literal written inside
+that function's body, so the fix is in the function, not in any declaration - and 25 of the 51
+crutches are in that class, including every crutch in `engine/68` and `704` and eleven of
+`engine/0`'s twenty. Those rows should stop being counted as candidates for the const route.
+
+Two further consequences worth recording. `main/model`'s seven crutches are **all** at
+declaration points, in two adjacent runs (0x24-0x28 and 0x40-0x50) - the cleanest remaining unit
+of the class,
+and section 9 measured its plain-literal route at 0 recovered data, so nothing about it has been
+tried at the right instrument yet. And `dlls/engine/0`'s nine reachable slots fall into four
+adjacent runs (0x1bc, 0x2b8, 0x328, 0x378-0x380, 0x38c-0x394), which matters because section 9's
+decisive negative there - twenty correct words inserted **lost 4936 bytes** - was measured on the
+all-or-nothing literal route across the whole section, not on those runs.
