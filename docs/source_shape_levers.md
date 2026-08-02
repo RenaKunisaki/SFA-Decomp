@@ -34,6 +34,9 @@ Run these in order. Each one can end the round without a build.
    digit: the extra tokens are inert on top of `level=1`. When two functions want different
    `-opt level` settings there is no combined profile, and step 6 decides whether a split is
    even permitted.
+   **Do not escalate a flat probe into a combination sweep** — the pair/triple `-opt` space is
+   exhausted over all 89 units carrying sub-100 functions, zero candidates; see
+   `docs/per_tu_flag_evidence.md`.
 2. **Rank by `structB`, never by missing bytes or by how close the percentage looks.**
    Missing bytes measure how much is wrong; `structB` measures how much is *reachable*.
    The near-flip band (>=99%, <100%) is **structurally empty** — six candidates triaged, all
