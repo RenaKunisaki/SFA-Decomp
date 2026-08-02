@@ -389,18 +389,12 @@ extern const f32 hudElementOpacity;
 extern int gGameUiScreenHeightOffset;
 extern f32 gTrickyHudIconPosX, gTrickyHudIconPosY, gTrickyHudIconPosZ, gTrickyHudIconScale;
 extern f32 gTrickyHudIconRotZ, gTrickyHudIconRotX, gTrickyHudIconRotY, gPauseMenuSavedFovY;
-extern f32 gViewFinderBamToDeg;
-extern f32 gHudElemOpacityFloor;
 extern const double gPauseMenuGridCursorScale;
 extern const double lbl_803E2128;
 extern const f32 lbl_803E204C;
 extern const f32 lbl_803E2010;
-extern const f32 gPauseMenuPodiumRollAmplitude;
 extern const f32 gPauseMenuPodiumBaseY;
-extern const double gPauseMenuPodiumBobAmplitude;
-extern const f32 gPauseMenuCommunicatorMaxScale;
 extern const f32 gPauseMenuRingScale;
-extern const f32 gPauseMenuRingUnselectedScale;
 extern const f32 lbl_803E209C;
 extern const f32 lbl_803E20B8;
 extern const f32 gGameUiAngleDivisor;
@@ -1829,9 +1823,9 @@ void drawViewFinderHud(void)
             majorLabelFadeScale = 170.0;
             t = (int)(fadeAmount * majorLabelFadeScale);
             majorLabelAlpha = (t < 0) ? 0 : ((t > 0xc8) ? 0xc8 : t);
-            headingIndex = (int)((f32)gViewFinderCamAngle / gViewFinderBamToDeg);
-            headingOffset = gViewFinderCamAngle - headingIndex * gViewFinderBamToDeg;
-            tickSpacing = viewScale * (gViewFinderBamToDeg / lbl_803DBAE8);
+            headingIndex = (int)((f32)gViewFinderCamAngle / 182.04445f);
+            headingOffset = gViewFinderCamAngle - headingIndex * 182.04445f;
+            tickSpacing = viewScale * (182.04445f / lbl_803DBAE8);
             headingOffset = headingOffset / lbl_803DBAE8;
             tickX = (f32)(320.0 + headingOffset * viewScale);
             heading = -headingIndex;
@@ -2872,7 +2866,7 @@ void pauseMenuDrawStatus(void)
         {
             int initialValue = statuses[statusSlot];
             ((int*)(base + 0xB30))[statusSlot] = ((int*)(base + 0xB74))[statusSlot] = initialValue;
-            ((f32*)(base + 0xAFC))[statusSlot] = gHudElemOpacityFloor;
+            ((f32*)(base + 0xAFC))[statusSlot] = -30.0f;
         }
         if ((mainGetBit(GAMEBIT_ITEM_BombSpore_ShowCount) != 0) ||
             (statuses[HUD_STATUS_BOMB_SPORES] != 0))
@@ -2995,9 +2989,9 @@ void pauseMenuDrawStatus(void)
                 }
                 break;
             default:
-                if (*opacity < gHudElemOpacityFloor)
+                if (*opacity < -30.0f)
                 {
-                    *opacity = gHudElemOpacityFloor;
+                    *opacity = -30.0f;
                 }
                 break;
             }
@@ -7046,9 +7040,9 @@ void pauseMenuAnimateCarousel(void)
     gPauseMenuPodiumSpinFrame += framesThisStep;
     gGameUiCommunicatorObjects[0]->anim.rotX = (s16)(gPauseMenuPodiumSpinFrame << 9);
     gGameUiCommunicatorObjects[0]->anim.rotZ =
-        gPauseMenuPodiumRollAmplitude * mathSinf(gGameUiPi * (f32)(gPauseMenuPodiumSpinFrame * 1000) / gGameUiAngleDivisor);
+        400.0f * mathSinf(gGameUiPi * (f32)(gPauseMenuPodiumSpinFrame * 1000) / gGameUiAngleDivisor);
     gGameUiCommunicatorObjects[0]->anim.localPosY =
-        (f32)(gPauseMenuPodiumBobAmplitude * mathSinf(gGameUiPi * (f32)(gPauseMenuPodiumSpinFrame * 400) / gGameUiAngleDivisor) +
+        (f32)(0.05 * mathSinf(gGameUiPi * (f32)(gPauseMenuPodiumSpinFrame * 400) / gGameUiAngleDivisor) +
               gPauseMenuPodiumBaseY);
     {
         int d = 0x400 - gPauseMenuPodiumRamp;
@@ -7057,7 +7051,7 @@ void pauseMenuAnimateCarousel(void)
     }
     gGameUiCommunicatorObjects[1]->anim.localPosY = gGameUiCommunicatorObjects[0]->anim.localPosY;
     {
-        f32 spin = gPauseMenuCommunicatorMaxScale * gPauseMenuPodiumRamp;
+        f32 spin = 0.13f * gPauseMenuPodiumRamp;
         gGameUiCommunicatorObjects[1]->anim.rootMotionScale = spin * gPauseMenuRingScale;
     }
     ObjAnim_AdvanceCurrentMove((int)gGameUiCommunicatorObjects[1], 0.01f, timeDelta,
@@ -7078,7 +7072,7 @@ void pauseMenuAnimateCarousel(void)
         }
         else
         {
-            sel = gPauseMenuRingUnselectedScale;
+            sel = 0.06f;
         }
         sel = gPauseMenuRingExpand * sel;
         gGameUiHudAnimObjects[k]->anim.rootMotionScale = sel * gPauseMenuRingScale;
