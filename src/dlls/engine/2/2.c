@@ -3863,12 +3863,12 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         sub = *(s16*)(cmd + 2) & 0xff;
         if (sub < 0xf)
         {
-            ObjModel_SetBlendChannelTargets((ObjModel*)action, 2, *(s8*)(*(u8**)(action + 0x28) + 0x2d), sub - 1,
+            ObjModel_SetBlendChannelTargets((ObjModel*)action, 2, ((ObjModel*)action)->blendChannels[2].morphTargetB, sub - 1,
                                             t, 0);
         }
         else
         {
-            ObjModel_SetBlendChannelTargets((ObjModel*)action, 0, *(s8*)(*(u8**)(action + 0x28) + 0xd), sub - 1,
+            ObjModel_SetBlendChannelTargets((ObjModel*)action, 0, ((ObjModel*)action)->blendChannels[0].morphTargetB, sub - 1,
                                             t, 0);
         }
         break;
