@@ -100,6 +100,7 @@
 #include "main/audio/music_api.h"
 #include "main/gx_scissor_api.h"
 
+#include "main/textrender_internal.h"
 typedef struct HudTrickyInterface
 {
     void* unknown00[8];
@@ -563,7 +564,6 @@ extern u8 gPauseMenuTextCharset;
 extern s16 gPauseMenuRingExpand;
 extern s16 gPauseMenuTitleDelayTimer;
 extern s16 gPauseMenuPodiumRamp;
-extern Texture* gGameTextBoxFrameTextures[5];
 extern f32 gPauseMenuMapSwivelVel;
 extern int lbl_803DD81C;
 extern u8 gPauseMenuCloseAnimIndex;

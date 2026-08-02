@@ -86,6 +86,7 @@ extern WarpVec gCameraPosByTransformSpace[];
 #include "string.h"
 #include "main/rcp_dolphin.h"
 
+#include "main/gameloop_internal.h"
 int lbl_803DB620 = -1;
 s8 gMapLayerOffsets[8] = {0, -2, -1, 1, 2, 0, 0, 0};
 f32 gMotionBlurAmount = 0.5f;
@@ -365,7 +366,6 @@ typedef struct WarpDestination
 } WarpDestination;
 
 extern u8 gRcpPendingWarpDest[];
-extern u8 gGameLoopFullMapUnloadPending;
 
 void loadNextMap(void)
 {

@@ -17,6 +17,7 @@
 #include "main/texture.h"
 #include "track/intersect_api.h"
 #include "main/frame_timing.h"
+#include "main/pi_dolphin.h"
 #include "main/lightmap_text_color_api.h"
 #include "main/debug.h"
 #include "dolphin/gx/GXMisc.h"
@@ -50,9 +51,6 @@ char sErrFmtRegisterRange[] = "%d - %d";
 
 /* debug font glyph-atlas texture asset (gDebugFontTex0) */
 #define DEBUG_FONT_TEXTURE0_ID 0x25D
-
-extern void* externalFrameBuffer1;
-extern void* externalFrameBuffer0;
 
 u16 gErrExceptionType;
 OSContext* gErrContext;

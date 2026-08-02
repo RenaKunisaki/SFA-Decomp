@@ -22,7 +22,6 @@
 #include "musyx/mcmd_setup.h"
 #include "musyx/snd_core.h"
 #include "string.h"
-extern s32 synthGlobalVariable[16];
 
 #define SYNTH_GLOBAL_REG(index) (synthGlobalVariable[(index) - 0x10])
 

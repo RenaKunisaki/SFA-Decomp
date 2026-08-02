@@ -111,4 +111,8 @@ extern u8 bEnableViewFinderHud;
 extern s32 bEnableColorFilter;
 extern s8 curMapType;
 
+extern void* gHitsTab;
+extern int gLightmapDrawQueueCount;
+extern void* gCloudLayerTexture;
+
 #endif /* MAIN_SHADER_API_H_ */

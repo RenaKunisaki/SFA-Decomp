@@ -38,4 +38,29 @@ extern char* lbl_803DCD08;
 extern s16 gForceNextLoadSync;
 extern u8 gLoadFilesInitDone;
 
+extern volatile int gAssetLoadCompletedFlags;
+extern u8 lbl_803DCD00;
+extern int lbl_803DCCFC;
+extern u8 lbl_803DCCF8;
+extern int lbl_803DCCF4;
+extern void* externalFrameBuffer0;
+extern void* externalFrameBuffer1;
+extern u32 gGxFifoSize;
+extern char* lbl_803DCCE0;
+extern void* gGxFifoBase;
+extern void* renderFrameBuffer;
+extern void* displayFrameBuffer;
+extern char gVideoFlipWaitQueue;
+extern int gDispCopyYScaleLines;
+extern GXColor gEfbCopyClearColor;
+extern u8 gDispCopyFilterWeights[8];
+extern char gVideoFlipQueueBuffer[0x78];
+extern f32 gFrameElapsedMs;
+extern f32 gFrameStepRemainder;
+extern u8 gGpuHangRecoveryEnabled;
+extern volatile int gGpuStallRetraceCount;
+extern u8 gGxBreakPtEnabled;
+extern u8 gVideoBlackScreenFrameCount;
+extern u16 gGxDrawSyncToken;
+
 #endif /* MAIN_PI_DOLPHIN_H_ */

@@ -4743,7 +4743,6 @@ int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 void setupWaterCausticTev(void)
 {
-    extern u32 gWaterCausticKColor;
 
     Mtx mtx_cc;
     Mtx mtx_9c;

@@ -78,7 +78,6 @@ extern f32 gLightmapDegToBamScale;
 extern FrustumPlane gViewFrustumPlanes[];
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
-extern void* gCloudLayerTexture;
 extern s8 gMapBlockDrawOrderFrontToBack[];
 extern s8 gMapBlockDrawOrderBackToFront[];
 extern int gMapBlockCellStateTables[];
@@ -194,7 +193,6 @@ MapBlockData* mapGetBlock(int i)
 }
 
 extern u32 gLightmapDrawQueue[];
-extern int gLightmapDrawQueueCount;
 
 s8* mapGetBlockIdx(int layer)
 {

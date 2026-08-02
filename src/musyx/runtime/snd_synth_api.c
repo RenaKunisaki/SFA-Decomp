@@ -25,10 +25,6 @@
 #define SND_OUTPUTMODE_STEREO   1 /* plain stereo */
 #define SND_OUTPUTMODE_SURROUND 2 /* Dolby Pro Logic surround */
 
-extern u8 synthAuxBMIDISet[8];
-extern u8 synthAuxBMIDI[8];
-extern u8 synthAuxAMIDISet[8];
-extern u8 synthAuxAMIDI[8];
 extern u32 synthFlags;
 
 /*
