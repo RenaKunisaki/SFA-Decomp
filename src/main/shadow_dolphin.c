@@ -917,7 +917,7 @@ void shadowSetLightDirection(f32 directionX, f32 directionY, f32 directionZ, int
     Vec normalizedDirection;
     f32 directionSimilarity;
     f32 directionMagnitudeSquared;
-    f32 previousMagnitudeSquared;
+    f32 magnitudeSquared;
     f32 combinedMagnitudeSquared;
 
     normalizedDirection.x = directionX;
@@ -935,19 +935,19 @@ void shadowSetLightDirection(f32 directionX, f32 directionY, f32 directionZ, int
     gShadowOffsetZ = directionZ * magnitude;
     directionSimilarity = normalizedDirection.x * gPrevSunDir[0] + normalizedDirection.y * gPrevSunDir[1] +
                           normalizedDirection.z * gPrevSunDir[2];
-    directionMagnitudeSquared = normalizedDirection.x * normalizedDirection.x +
-                                normalizedDirection.y * normalizedDirection.y;
-    directionMagnitudeSquared += normalizedDirection.z * normalizedDirection.z;
-    previousMagnitudeSquared = gPrevSunDir[0] * gPrevSunDir[0] + gPrevSunDir[1] * gPrevSunDir[1] +
-                               gPrevSunDir[2] * gPrevSunDir[2];
-    combinedMagnitudeSquared = directionMagnitudeSquared * previousMagnitudeSquared;
+    magnitudeSquared = normalizedDirection.x * normalizedDirection.x +
+                       normalizedDirection.y * normalizedDirection.y;
+    directionMagnitudeSquared = magnitudeSquared + normalizedDirection.z * normalizedDirection.z;
+    magnitudeSquared = gPrevSunDir[0] * gPrevSunDir[0] + gPrevSunDir[1] * gPrevSunDir[1] +
+                       gPrevSunDir[2] * gPrevSunDir[2];
+    combinedMagnitudeSquared = directionMagnitudeSquared * magnitudeSquared;
     if (combinedMagnitudeSquared)
     {
-        previousMagnitudeSquared = sqrtf(combinedMagnitudeSquared);
+        magnitudeSquared = sqrtf(combinedMagnitudeSquared);
     }
-    if (previousMagnitudeSquared)
+    if (magnitudeSquared)
     {
-        gSunDotCos = directionSimilarity / previousMagnitudeSquared;
+        gSunDotCos = directionSimilarity / magnitudeSquared;
     }
     else
     {
