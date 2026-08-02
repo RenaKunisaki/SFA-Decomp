@@ -26,13 +26,14 @@
 #include "dolphin/mtx/vec.h"
 #include "main/objfx.h"
 #include "main/dll/baddie_state.h"
+#include "main/dll/partfx_interface.h"
 #include "main/curve.h"
 #include "main/vecmath.h"
 
-f32 lbl_803DC3A0 = 2.0f;
-f32 lbl_803DC3A4 = 0.2f;
-f32 lbl_803DC3A8 = 20.0f;
-u16 lbl_803DC3AC = 0x40;
+f32 gObjLightningClusterRadiusX = 2.0f;
+f32 gObjLightningClusterRadiusY = 0.2f;
+f32 gObjLightningClusterLifetime = 20.0f;
+u16 gObjLightningClusterWidth = 0x40;
 
 int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int count, f32 intensity,
                                ModelLight** light)
@@ -66,7 +67,7 @@ int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int c
         {
             lightningRender(entries[i]);
             entries[i]->timer += framesThisStep;
-            if ((f32)(u32)entries[i]->timer > lbl_803DC3A8)
+            if ((f32)(u32)entries[i]->timer > gObjLightningClusterLifetime)
             {
                 mm_free_(entries[i]);
                 entries[i] = 0;
@@ -81,8 +82,8 @@ int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int c
             pos[1] += 0.001f * (intensity * (f32)(int)(randomGetRange(0, 0x7d0) - 0x3e8));
             pos[2] += 0.001f * (intensity * (f32)(int)(randomGetRange(0, 0x7d0) - 0x3e8));
             entries[i] =
-                lightningCreate((const Vec3f*)&obj->anim.localPosX, (const Vec3f*)pos, lbl_803DC3A0,
-                                           lbl_803DC3A4, lbl_803DC3A8, lbl_803DC3AC, 0);
+                lightningCreate((const Vec3f*)&obj->anim.localPosX, (const Vec3f*)pos, gObjLightningClusterRadiusX,
+                                           gObjLightningClusterRadiusY, gObjLightningClusterLifetime, gObjLightningClusterWidth, 0);
             spawned = 1;
         }
     }
@@ -178,15 +179,11 @@ void voxmaps_traceScaledVectorEnd(f32* out, void* origin, f32* dir, f32 scale)
 
 void Obj_SpawnHitLightAndFade(GameObject* obj, const Vec3f* pos, f32 scale)
 {
-    struct
-    {
-        f32 _pad[3];
-        f32 vec[3];
-    } s;
+    PartFxSpawnParams s;
 
-    s.vec[0] = pos->x + playerMapOffsetX;
-    s.vec[1] = pos->y;
-    s.vec[2] = pos->z + playerMapOffsetZ;
+    s.posX = pos->x + playerMapOffsetX;
+    s.posY = pos->y;
+    s.posZ = pos->z + playerMapOffsetZ;
     objDoHitParticleFx(obj, 0.014f, &s, 1, 0);
     Obj_SetModelColorFadeRecursive(obj, 0x5a, 0xc8, 0, 0, 1);
 }

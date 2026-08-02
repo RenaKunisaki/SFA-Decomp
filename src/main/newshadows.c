@@ -292,7 +292,7 @@ u8 gNewShadowHeavyFogIntensity;
 Texture* gNewShadowReflectionTexture;
 u8 gNewShadowCasterCount;
 
-u8 lbl_803DB668[8] = {0xFF, 7, 6, 5, 4, 3, 2, 1};
+u8 gShadowCastModeTable[8] = {0xFF, 7, 6, 5, 4, 3, 2, 1};
 f32 gStandardAspectRatio = 1.3333334f;
 
 #include "main/newshadows_internal.h"
@@ -823,7 +823,7 @@ void renderShadows(int unused0, int unused1, int unused2)
                     Texture** texturePool = shadowData->castTextures;
                     texture = texturePool + (u8)texIdx;
                     castSlot->texture = *texture;
-                    castSlot->mode = lbl_803DB668[(u8)texIdx];
+                    castSlot->mode = gShadowCastModeTable[(u8)texIdx];
                     objRenderShadowIfVisible(obj, 0, 0, 0, 0, 0);
                     if (casterPtr->flags == 2)
                     {

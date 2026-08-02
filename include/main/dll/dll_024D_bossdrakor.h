@@ -66,10 +66,10 @@ STATIC_ASSERT(sizeof(BossDrakorState) == 0x1a4);
 
 extern f32 lbl_803E6510;
 
-extern f32 lbl_803DC188;
-extern f32 lbl_803DC18C;
-extern f32 lbl_803DC190;
-extern f32 lbl_803DC194;
+extern f32 gBossDrakorMissileTargetScatterFactor;
+extern f32 gBossDrakorMissileInitialSpeedFactor;
+extern f32 gBossDrakorThornbushSpawnHealth;
+extern f32 gBossDrakorThornbushBaseRadius;
 extern s16 gBossDrakorMaxJawStepAngle;
 extern s16 gBossDrakorJawAnglePerTick;
 

@@ -70,10 +70,10 @@
 #include "main/dll/dll_024E_drakordthornbush.h"
 #include "dlls/object_descriptor.h"
 
-f32 lbl_803DC188 = 3.0f;
-f32 lbl_803DC18C = 8.0f;
-f32 lbl_803DC190 = 1.0f;
-f32 lbl_803DC194 = 150.0f;
+f32 gBossDrakorMissileTargetScatterFactor = 3.0f;
+f32 gBossDrakorMissileInitialSpeedFactor = 8.0f;
+f32 gBossDrakorThornbushSpawnHealth = 1.0f;
+f32 gBossDrakorThornbushBaseRadius = 150.0f;
 s16 gBossDrakorMaxJawStepAngle = 0xE38;
 s16 gBossDrakorJawAnglePerTick = 0x2D8;
 int lbl_803DC19C[1] = {0};
@@ -334,7 +334,7 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                         missile = loadObjectAtObject(obj, setup);
                         if (missile != NULL)
                         {
-                            prod = lbl_803DC188 * Vec_distance(&(obj)->anim.worldPosX,
+                            prod = gBossDrakorMissileTargetScatterFactor * Vec_distance(&(obj)->anim.worldPosX,
                                                                &player->anim.worldPosX);
                             target.x = player->anim.localPosX +
                                         (f32)(s32)randomGetRange(lo = (int)-prod, hi = (int)prod);
@@ -353,7 +353,7 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                             PSVECSubtract(&vecB, &vecC, &vecC);
                             PSVECNormalize(&vecC, &vecC);
                             PSVECScale(&vecC, &missile->anim.velocity,
-                                       s->missileBaseSpeed * lbl_803DC18C);
+                                       s->missileBaseSpeed * gBossDrakorMissileInitialSpeedFactor);
                             *mstate = spd;
                             drakormissile_startActiveLaunch((GameObject*)(missile));
                             storeZeroToFloatParam(&s->jawAnimTimer);
@@ -379,8 +379,8 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                     setup->posY = s->homePosY;
                     setup->posZ = s->homePosZ;
                     ((DrakordThornbushPlacement*)setup)->regrowDelay = 0x3c;
-                    ((DrakordThornbushPlacement*)setup)->baseRadius = lbl_803DC194;
-                    ((DrakordThornbushPlacement*)setup)->spawnHealth = lbl_803DC190;
+                    ((DrakordThornbushPlacement*)setup)->baseRadius = gBossDrakorThornbushBaseRadius;
+                    ((DrakordThornbushPlacement*)setup)->spawnHealth = gBossDrakorThornbushSpawnHealth;
                     loadObjectAtObject(obj, setup);
                     Sfx_PlayFromObject(obj, SFXTRIG__UNK);
                 }
